@@ -72,13 +72,9 @@ asmlinkage void car_stage_entry(void)
 
 	/*
 	 * This writes contents to DRAM backing before teardown.
-	 * todo: move CAR teardown to postcar implementation and
-	 *       relocate amdinitenv to ramstage.
+	 * todo: move CAR teardown to postcar implementation.
 	 */
 	chipset_teardown_car();
-
-	post_code(0x44);
-	AGESAWRAPPER(amdinitenv);
 
 	post_code(0x50);
 	run_ramstage();

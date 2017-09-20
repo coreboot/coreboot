@@ -14,6 +14,8 @@
  */
 
 #include <chip.h>
+#include <bootstate.h>
+#include <console/console.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/cpu.h>
 #include <device/device.h>
@@ -21,6 +23,8 @@
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
 #include <soc/southbridge.h>
+#include <agesawrapper.h>
+#include <agesawrapper_call.h>
 
 struct device_operations cpu_bus_ops = {
 	.read_resources	  = DEVICE_NOOP,
@@ -75,3 +79,11 @@ struct chip_operations soc_amd_stoneyridge_ops = {
 	.init = &soc_init,
 	.final = &soc_final
 };
+
+static void do_initenv(void *unused)
+{
+	post_code(0x46);
+	AGESAWRAPPER(amdinitenv);
+}
+
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, do_initenv, NULL);

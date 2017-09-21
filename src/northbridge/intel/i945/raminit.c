@@ -391,7 +391,7 @@ static void gather_common_timing(struct sys_info *sysinfo,
 				!= SPD_STATUS_OK) {
 			/* Try again with SMBUS byte read */
 			printk(BIOS_DEBUG, "i2c block operation failed,"
-				"trying smbus byte operation.\n");
+				" trying smbus byte operation.\n");
 			for (j = 0; j < 64; j++)
 				raw_spd[j] = spd_read_byte(device, j);
 			if (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP))

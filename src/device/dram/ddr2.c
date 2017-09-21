@@ -188,26 +188,26 @@ static u32 spd_decode_quarter_time(u8 c)
  */
 static int spd_decode_tRR_time(u32 *tRR, u8 c)
 {
-	switch (c) {
+	switch (c & ~0x80) {
 	default:
 		printk(BIOS_WARNING, "Invalid tRR value 0x%x\n", c);
 		return CB_ERR;
-	case 0x80:
+	case 0x0:
 		*tRR = 15625 << 8;
 		break;
-	case 0x81:
+	case 0x1:
 		*tRR = 15625 << 6;
 		break;
-	case 0x82:
+	case 0x2:
 		*tRR = 15625 << 7;
 		break;
-	case 0x83:
+	case 0x3:
 		*tRR = 15625 << 9;
 		break;
-	case 0x84:
+	case 0x4:
 		*tRR = 15625 << 10;
 		break;
-	case 0x85:
+	case 0x5:
 		*tRR = 15625 << 11;
 		break;
 	}
@@ -545,6 +545,9 @@ int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 	/* Refresh rate in us */
 	if (spd_decode_tRR_time(&dimm->tRR, spd[12]) != CB_SUCCESS)
 		ret = SPD_STATUS_INVALID_FIELD;
+	dimm->flags.self_refresh = (spd[12] >> 7) & 1;
+	printram("The assembly supports self refresh: %s\n",
+		dimm->flags.self_refresh ? "true", "false");
 
 	/* Number of PLLs on DIMM */
 	if (dimm->rev >= 0x11)

@@ -119,6 +119,8 @@ union dimm_flags_st {
 		unsigned bl4:1;
 		/* DIMM Package is stack */
 		unsigned stacked:1;
+		/* the assembly supports self refresh */
+		unsigned self_refresh:1;
 	};
 	unsigned int raw;
 };

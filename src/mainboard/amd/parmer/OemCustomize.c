@@ -66,75 +66,75 @@
  * 38 DP2_TX[P,N]6
  */
 
-static const PCIe_PORT_DESCRIPTOR PortList [] = {
+static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	/* PCIe port, Lanes 8:23, PCI Device Number 2, PCIE SLOT0 x16 */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 8, 23),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 2, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 8, 23),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 2, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 	/* PCIe port, Lanes 16:23, PCI Device Number 3, Disabled */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 16, 23),
-		PCIE_PORT_DATA_INITIALIZER (PortDisabled, ChannelTypeExt6db, 3, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 16, 23),
+		PCIE_PORT_DATA_INITIALIZER(PortDisabled, ChannelTypeExt6db, 3, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 
 	/* PCIe port, Lanes 4, PCI Device Number 4, PCIE MINI0 */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 4),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 4),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 
 	/* PCIe port, Lanes 5, PCI Device Number 5, PCIE MINI1 */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 5, 5),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 5, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 5, 5),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 5, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 
 	/* PCIe port, Lanes 6, PCI Device Number 6, PCIE SLOT1 x1 */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 6, 6),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 6, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 6, 6),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 6, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 
 	/* PCIe port, Lanes 7, PCI Device Number 7, LAN */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 7, 7),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 7, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 7, 7),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 7, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 
 	/* PCIe port, Lanes 0:3, PCI Device Number 8, Bridge to FCH */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 8, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 3),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 8, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
 	},
 };
 
-static const PCIe_DDI_DESCRIPTOR DdiList [] = {
+static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 	/* DP0 to HDMI0/DP */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 24, 27),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux1, Hdp1)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 24, 27),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux1, Hdp1)
 	},
 	/* DP1 to FCH */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 28, 31),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeNutmegDpToVga, Aux2, Hdp2)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 28, 31),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeNutmegDpToVga, Aux2, Hdp2)
 	},
 	/* DP2 to HDMI1/DP */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 32, 35),
-		/* PCIE_DDI_DATA_INITIALIZER (ConnectorTypeEDP, Aux3, Hdp3) */
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux3, Hdp3)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 32, 35),
+		/* PCIE_DDI_DATA_INITIALIZER(ConnectorTypeEDP, Aux3, Hdp3) */
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux3, Hdp3)
 	},
 };
 
@@ -207,12 +207,12 @@ void board_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *InitEarly)
  *  use its default conservative settings.
  */
 static CONST PSO_ENTRY ROMDATA PlatformMemoryTable[] = {
-  NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 1),
-  NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 2),
-  MEMCLK_DIS_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
-  CKE_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x05, 0x0A),
-  ODT_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00),
-  CS_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+  NUMBER_OF_DIMMS_SUPPORTED(ANY_SOCKET, ANY_CHANNEL, 1),
+  NUMBER_OF_CHANNELS_SUPPORTED(ANY_SOCKET, 2),
+  MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+  CKE_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0x05, 0x0A),
+  ODT_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00),
+  CS_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
 
   PSO_END
 };

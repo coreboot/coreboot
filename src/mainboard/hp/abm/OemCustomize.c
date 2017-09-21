@@ -22,11 +22,11 @@
 #include <northbridge/amd/agesa/state_machine.h>
 
 
-static const PCIe_PORT_DESCRIPTOR PortList [] = {
+static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 3, 3),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 5,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 3, 3),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db, 2, 5,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -35,8 +35,8 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 1, PCI Device Number 2, ...) */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 2, 2),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 4,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 2, 2),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db, 2, 4,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -45,8 +45,8 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 2, PCI Device Number 2, ...) */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 1, 1),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 3,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 1, 1),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db, 2, 3,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -55,8 +55,8 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 3, PCI Device Number 2, ...) */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 0),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 2,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 0),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db, 2, 2,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -65,8 +65,8 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 4-7, PCI Device Number 4, ...) */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 7),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 1,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 7),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db, 2, 1,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -74,18 +74,18 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	}
 };
 
-static const PCIe_DDI_DESCRIPTOR DdiList [] = {
+static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 	/* DP0 to HDMI0/DP */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 8, 11),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux1, Hdp1)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 8, 11),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeHDMI, Aux1, Hdp1)
 	},
 	/* DP1 to FCH */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 12, 15),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux2, Hdp2)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 12, 15),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeHDMI, Aux2, Hdp2)
 	},
 };
 
@@ -162,14 +162,14 @@ static CONST PSO_ENTRY ROMDATA PlatformMemoryTable[] = {
 		SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A,
 		SEED_A),
 
-  NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, ONE_DIMM),
-  NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, ONE_DIMM),
-  MOTHER_BOARD_LAYERS (LAYERS_6),
+  NUMBER_OF_DIMMS_SUPPORTED(ANY_SOCKET, ANY_CHANNEL, ONE_DIMM),
+  NUMBER_OF_CHANNELS_SUPPORTED(ANY_SOCKET, ONE_DIMM),
+  MOTHER_BOARD_LAYERS(LAYERS_6),
 
-  MEMCLK_DIS_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
-  CKE_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08), /* TODO: bit2map, bit3map */
-  ODT_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08),
-  CS_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08, 0x00, 0x00, 0x00, 0x00),
+  MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+  CKE_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08), /* TODO: bit2map, bit3map */
+  ODT_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08),
+  CS_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08, 0x00, 0x00, 0x00, 0x00),
 
   PSO_END
 };

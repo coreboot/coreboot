@@ -18,12 +18,12 @@
 #include <boardid.h>
 
 
-static const PCIe_PORT_DESCRIPTOR PortList [] = {
+static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 8-15, PCI Device Number 3, ...) */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 8, 15),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 3, 1,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 8, 15),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db, 3, 1,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -33,8 +33,8 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 2, PCI Device Number 2, ...) */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 7, 7),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 5,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 7, 7),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db, 2, 5,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -43,8 +43,8 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 3, PCI Device Number 2, ...) */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 6, 6),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortDisabled, ChannelTypeExt6db, 2, 4,
+		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 6, 6),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortDisabled, ChannelTypeExt6db, 2, 4,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -53,8 +53,8 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 4-7, PCI Device Number 2, ...) */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 5, 5),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 3,
+		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 5, 5),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db, 2, 3,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -63,8 +63,8 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 4-5, PCI Device Number 2, ...) */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 5),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 2,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 5),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db, 2, 2,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -73,8 +73,8 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 0-3, PCI Device Number 2, ...) */
 	{
 		DESCRIPTOR_TERMINATE_LIST, /* Descriptor flags  !!!IMPORTANT!!! Terminate last element of array */
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 1,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 3),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db, 2, 1,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -83,24 +83,24 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 
 };
 
-static const PCIe_DDI_DESCRIPTOR DdiList [] = {
+static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 	/* DP0 */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 16, 19),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux1, Hdp1)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 16, 19),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux1, Hdp1)
 	},
 	/* DP1 */
 	{
 		0, /*DESCRIPTOR_TERMINATE_LIST, */
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 20, 23),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux2, Hdp2)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 20, 23),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux2, Hdp2)
 	},
 	/* DP2 */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 24, 27),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux3, Hdp3)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 24, 27),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux3, Hdp3)
 	},
 };
 
@@ -136,13 +136,13 @@ VOID OemCustomizeInitEarly (
 
 static const PSO_ENTRY DDR4PlatformMemoryConfiguration[] = {
 	DRAM_TECHNOLOGY(ANY_SOCKET, DDR4_TECHNOLOGY),
-	NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
-	NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 2),
-	MOTHER_BOARD_LAYERS (LAYERS_6),
-	MEMCLK_DIS_MAP (ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),
-	CKE_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff),
-	ODT_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff),
-	CS_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),
+	NUMBER_OF_DIMMS_SUPPORTED(ANY_SOCKET, ANY_CHANNEL, 2),
+	NUMBER_OF_CHANNELS_SUPPORTED(ANY_SOCKET, 2),
+	MOTHER_BOARD_LAYERS(LAYERS_6),
+	MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),
+	CKE_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff),
+	ODT_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff),
+	CS_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),
 	PSO_END
 };
 

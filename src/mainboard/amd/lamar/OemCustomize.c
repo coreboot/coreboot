@@ -17,7 +17,7 @@
 #include <northbridge/amd/pi/agesawrapper.h>
 
 
-static const PCIe_PORT_DESCRIPTOR PortList [] = {
+static const PCIe_PORT_DESCRIPTOR PortList[] = {
 
 	/*
 	 * Lanes to pins to PCI device mapping can be found in section 2.12 of the
@@ -26,8 +26,8 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 
 	{	/* PCIe x16 Connector J119, DP4/5/6, GFX[15:0], Lanes [31:16], PCI 00:02.1 */
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 16, 31),
-		PCIE_PORT_DATA_INITIALIZER_V2 (
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 16, 31),
+		PCIE_PORT_DATA_INITIALIZER_V2(
 				PortEnabled,
 				ChannelTypeExt6db, 0, 0,
 				HotplugDisabled,
@@ -41,8 +41,8 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 
 	{	/* PCIe x4 Connector J118, GPP[3:0], Lanes [11:8], PCI 00:03.2 */
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 8, 11),
-		PCIE_PORT_DATA_INITIALIZER_V2 (
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 8, 11),
+		PCIE_PORT_DATA_INITIALIZER_V2(
 				PortEnabled,
 				ChannelTypeExt6db, 0, 0,
 				HotplugDisabled,
@@ -56,11 +56,11 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 
 	{	/* PCIe x4 Connector J120, GPP[7:4], Lanes [15:12] */
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (
+		PCIE_ENGINE_DATA_INITIALIZER(
 				IS_ENABLED(CONFIG_ENABLE_DP3_DAUGHTER_CARD_IN_J120) ? PcieUnusedEngine : PciePortEngine,
 				12, 15
 		),
-		PCIE_PORT_DATA_INITIALIZER_V2 (
+		PCIE_PORT_DATA_INITIALIZER_V2(
 				PortEnabled,
 				ChannelTypeExt6db, 0, 0,
 				HotplugDisabled,
@@ -73,32 +73,32 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 
 };
 
-static const PCIe_DDI_DESCRIPTOR DdiList [] = {
+static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 	{	/* DP3 */
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (
+		PCIE_ENGINE_DATA_INITIALIZER(
 				IS_ENABLED(CONFIG_ENABLE_DP3_DAUGHTER_CARD_IN_J120) ? PcieDdiEngine : PcieUnusedEngine,
 				12, 15
 		),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux4, Hdp4)
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux4, Hdp4)
 	},
 
 	{	/* DP2 */
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 36, 39),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux3, Hdp3)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 36, 39),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux3, Hdp3)
 	},
 
 	{	/* DP1 */
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 32, 35),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux2, Hdp2)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 32, 35),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux2, Hdp2)
 	},
 
 	{	/* DP0 */
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 4, 7),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux1, Hdp1)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 4, 7),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux1, Hdp1)
 	},
 };
 

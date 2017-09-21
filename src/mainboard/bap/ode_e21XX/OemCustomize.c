@@ -16,12 +16,12 @@
 #include <northbridge/amd/pi/agesawrapper.h>
 
 
-static const PCIe_PORT_DESCRIPTOR PortList [] = {
+static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 2-3, PCI Device 2, Function 4) */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 2, 3),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 4,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 2, 3),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db, 2, 4,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -30,8 +30,8 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lane 1, PCI Device 2, Function 3) */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 1, 1),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 3,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 1, 1),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db, 2, 3,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -40,8 +40,8 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lane 0, PCI Device 2, Function 2) */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 0),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 2,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 0),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db, 2, 2,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -50,8 +50,8 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 4-7, PCI Device 2, Function 1) */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 7),
-		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 1,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 7),
+		PCIE_PORT_DATA_INITIALIZER_V2(PortEnabled, ChannelTypeExt6db, 2, 1,
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
@@ -59,18 +59,18 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	}
 };
 
-static const PCIe_DDI_DESCRIPTOR DdiList [] = {
+static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 	/* eDP0 to LVDS connector */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 8, 11),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux1, Hdp1)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 8, 11),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux1, Hdp1)
 	},
 	/* DP1 to HDMI */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 12, 15),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux2, Hdp2)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 12, 15),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeHDMI, Aux2, Hdp2)
 	},
 };
 

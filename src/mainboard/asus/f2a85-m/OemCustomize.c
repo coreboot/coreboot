@@ -67,24 +67,24 @@
  * 38 DP2_TX[P,N]6
  */
 
-static const PCIe_PORT_DESCRIPTOR PortList [] = {
+static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	/* PCIe port, Lanes 8:23, PCI Device Number 2, blue x16 slot */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 8, 23),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 2, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 8, 23),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 2, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 	/* PCIe port, Lanes 4:7, PCI Device Number 4, black x16 slot (in fact x4) */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 7),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 7),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 	/* PCIe port, Lanes 0:3, UMI link to SB, PCI Device Number 8 */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 8, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 3),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 8, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
 	},
 };
 
@@ -94,24 +94,24 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
  * Tested and works: VGA/DVI
  * Untested: HDMI
  */
-static const PCIe_DDI_DESCRIPTOR DdiList [] = {
+static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 	// DP0 to HDMI0/DP
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 24, 27),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux1, Hdp1)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 24, 27),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeHDMI, Aux1, Hdp1)
 	},
 	// DP1 to FCH
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 28, 31),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeNutmegDpToVga, Aux2, Hdp2)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 28, 31),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeNutmegDpToVga, Aux2, Hdp2)
 	},
 	// DP2 to HDMI1/DP
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 32, 35),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux3, Hdp3)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 32, 35),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeHDMI, Aux3, Hdp3)
 	},
 };
 
@@ -211,22 +211,22 @@ void board_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *InitEarly)
  */
 static CONST PSO_ENTRY ROMDATA MemoryTable_M[] = {
 
-  NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
-  NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 2),
+  NUMBER_OF_DIMMS_SUPPORTED(ANY_SOCKET, ANY_CHANNEL, 2),
+  NUMBER_OF_CHANNELS_SUPPORTED(ANY_SOCKET, 2),
 /*
   TODO: is this OK for DDR3 socket FM2?
-  MEMCLK_DIS_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
-  CKE_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x05, 0x0A),
-  ODT_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00),
-  CS_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+  MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+  CKE_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0x05, 0x0A),
+  ODT_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00),
+  CS_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
   */
   PSO_END
 };
 
 static CONST PSO_ENTRY ROMDATA MemoryTable_M_LE[] = {
 
-  NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 1),
-  NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 2),
+  NUMBER_OF_DIMMS_SUPPORTED(ANY_SOCKET, ANY_CHANNEL, 1),
+  NUMBER_OF_CHANNELS_SUPPORTED(ANY_SOCKET, 2),
 
   PSO_END
 };

@@ -278,6 +278,7 @@ endif # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
 $(eval $(call create_class_compiler,postcar,x86_32))
 postcar-generic-ccopts += -D__POSTCAR__
 
+postcar-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 postcar-y += boot.c
 postcar-y += cbfs_and_run.c
 postcar-y += cbmem.c

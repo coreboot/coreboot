@@ -25,7 +25,7 @@
 #include <rules.h>
 #include <symbols.h>
 
-#if ENV_RAMSTAGE
+#if ENV_RAMSTAGE || ENV_POSTCAR
 
 /* This is filled with acpi_is_wakeup() call early in ramstage. */
 static int acpi_slp_type = -1;

@@ -22,19 +22,19 @@
 
 static void *GetHeapBase(void)
 {
-	void *heap = (void *)BIOS_HEAP_START_ADDRESS;
-
-	if (acpi_is_wakeup_s3())
-		heap = cbmem_find(CBMEM_ID_RESUME_SCRATCH);
-
-	return heap;
+	return cbmem_add(CBMEM_ID_RESUME_SCRATCH, BIOS_HEAP_SIZE);
 }
 
-void EmptyHeap(void)
+static void EmptyHeap(int unused)
 {
 	void *BiosManagerPtr = GetHeapBase();
 	memset(BiosManagerPtr, 0, BIOS_HEAP_SIZE);
 }
+
+#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
+#error "Only EARLY_CBMEM_INIT is supported."
+#endif
+ROMSTAGE_CBMEM_INIT_HOOK(EmptyHeap)
 
 AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {

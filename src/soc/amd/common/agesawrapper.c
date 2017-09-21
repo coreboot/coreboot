@@ -173,8 +173,6 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(PostParams->StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
-	/* Initialize heap space */
-	EmptyHeap();
 
 	return status;
 }

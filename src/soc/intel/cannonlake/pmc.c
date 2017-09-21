@@ -87,22 +87,6 @@ static void pch_set_acpi_mode(void)
 	}
 }
 
-int soc_get_rtc_failed(void)
-{
-	uint8_t reg8;
-	int rtc_failed;
-	uint8_t *pmcbase = pmc_mmio_regs();
-
-	reg8 = read8(pmcbase + GEN_PMCON_B);
-	rtc_failed = reg8 & RTC_BATTERY_DEAD;
-	if (rtc_failed) {
-		reg8 &= ~RTC_BATTERY_DEAD;
-		write8(pmcbase + GEN_PMCON_B, reg8);
-		printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
-	}
-	return rtc_failed;
-}
-
 static void config_deep_sX(uint32_t offset, uint32_t mask, int sx, int enable)
 {
 	uint32_t reg;

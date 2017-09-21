@@ -255,7 +255,7 @@ static size_t calculate_reserved_mem_size(uintptr_t dram_base,
  * the base registers from each other to determine sizes of the regions. In
  * other words, the memory map is in a fixed order no matter what.
  */
-static uintptr_t calculate_dram_base(void)
+static uintptr_t calculate_dram_base(size_t *reserved_mem_size)
 {
 	uintptr_t dram_base;
 	const struct device *dev;
@@ -271,15 +271,34 @@ static uintptr_t calculate_dram_base(void)
 	dram_base -= calculate_traditional_mem_size(dram_base, dev);
 
 	/* Get Intel Reserved Memory Range Size */
-	dram_base -= calculate_reserved_mem_size(dram_base, dev);
+	*reserved_mem_size = calculate_reserved_mem_size(dram_base, dev);
+
+	dram_base -= *reserved_mem_size;
 
 	return dram_base;
+}
+
+/*
+ * SoC implementation
+ *
+ * SoC call to summarize all Intel Reserve MMIO size and report to SA
+ */
+size_t soc_reserved_mmio_size(void)
+{
+	size_t chipset_mem_size;
+
+	calculate_dram_base(&chipset_mem_size);
+
+	/* Get Intel Reserved Memory Range Size */
+	return chipset_mem_size;
 }
 
 /* Fill up memory layout information */
 void fill_soc_memmap_ebda(struct ebda_config *cfg)
 {
-	cfg->tolum_base = calculate_dram_base();
+	size_t chipset_mem_size;
+
+	cfg->tolum_base = calculate_dram_base(&chipset_mem_size);
 }
 
 void cbmem_top_init(void)

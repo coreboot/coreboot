@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015-2016 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,10 +14,12 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
 #include <cbmem.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <program_loading.h>
 #include <agesawrapper.h>
@@ -27,6 +30,11 @@
 
 asmlinkage void car_stage_entry(void)
 {
+	struct postcar_frame pcf;
+	uintptr_t top_of_ram;
+	void *smm_base;
+	size_t smm_size;
+	uintptr_t tseg_base;
 	msr_t base, mask;
 	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
 	int vmtrrs = mtrr_cap.lo & MTRR_CAP_VCNT;
@@ -70,14 +78,38 @@ asmlinkage void car_stage_entry(void)
 	post_code(0x43);
 	cbmem_initialize_empty();
 
+	post_code(0x44);
+	if (postcar_frame_init(&pcf, 1 * KiB))
+		die("Unable to initialize postcar frame.\n");
+
 	/*
-	 * This writes contents to DRAM backing before teardown.
-	 * todo: move CAR teardown to postcar implementation.
+	 * We need to make sure ramstage will be run cached. At this point exact
+	 * location of ramstage in cbmem is not known. Instruct postcar to cache
+	 * 16 megs under cbmem top which is a safe bet to cover ramstage.
 	 */
-	chipset_teardown_car();
+	top_of_ram = (uintptr_t) cbmem_top();
+	/* cbmem_top() needs to be at least 16 MiB aligned */
+	assert(ALIGN_DOWN(top_of_ram, 16*MiB) == top_of_ram);
+	postcar_frame_add_mtrr(&pcf, top_of_ram - 16*MiB, 16*MiB,
+		MTRR_TYPE_WRBACK);
 
-	post_code(0x50);
-	run_ramstage();
+	/* Cache the memory-mapped boot media. */
+	postcar_frame_add_mtrr(&pcf, -CONFIG_ROM_SIZE, CONFIG_ROM_SIZE,
+					MTRR_TYPE_WRPROT);
 
-	post_code(0x54);  /* Should never see this post code. */
+	/*
+	 * Cache the TSEG region at the top of ram. This region is
+	 * not restricted to SMM mode until SMM has been relocated.
+	 * By setting the region to cacheable it provides faster access
+	 * when relocating the SMM handler as well as using the TSEG
+	 * region for other purposes.
+	 */
+	smm_region_info(&smm_base, &smm_size);
+	tseg_base = (uintptr_t)smm_base;
+	postcar_frame_add_mtrr(&pcf, tseg_base, smm_size, MTRR_TYPE_WRBACK);
+
+	post_code(0x45);
+	run_postcar_phase(&pcf);
+
+	post_code(0x50);  /* Should never see this post code. */
 }

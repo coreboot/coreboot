@@ -63,6 +63,9 @@ verstage-y += reset.c
 verstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 verstage-y += tsc_freq.c
 
+postcar-$(CONFIG_STONEYRIDGE_UART) += uart.c
+postcar-y += ramtop.c
+
 ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c

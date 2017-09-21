@@ -17,7 +17,6 @@
 #ifndef __PI_STONEYRIDGE_NORTHBRIDGE_H__
 #define __PI_STONEYRIDGE_NORTHBRIDGE_H__
 
-#include <arch/cpu.h>
 #include <arch/io.h>
 #include <device/device.h>
 
@@ -57,8 +56,5 @@ void domain_read_resources(device_t dev);
 void domain_set_resources(device_t dev);
 void fam15_finalize(void *chip_info);
 void setup_uma_memory(void);
-
-/* todo: remove this when postcar stage is in place */
-asmlinkage void chipset_teardown_car(void);
 
 #endif /* __PI_STONEYRIDGE_NORTHBRIDGE_H__ */

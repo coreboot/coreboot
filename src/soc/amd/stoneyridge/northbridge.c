@@ -22,11 +22,10 @@
 #include <console/console.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/cpu.h>
+#include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/hypertransport.h>
-#include <lib.h>
 #include <agesawrapper.h>
 #include <agesawrapper_call.h>
 #include <soc/northbridge.h>
@@ -34,15 +33,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-
-/*
- * AMD vendorcode files. Place at the end so coreboot defaults and maintained
- * and not set by vendorcode
- */
-#include <AGESA.h>
-#include <FieldAccessors.h>
-#include <Porting.h>
-#include <Topology.h>
 
 typedef struct dram_base_mask {
 	u32 base; /* [47:27] at [28:8] */

@@ -387,8 +387,7 @@ static void gather_common_timing(struct sys_info *sysinfo,
 		printk(BIOS_DEBUG, "Reading SPD using i2c block operation.\n");
 		if (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP) && bytes_read > 0)
 			hexdump(raw_spd, bytes_read);
-		if (bytes_read != 64 || spd_decode_ddr2(&dimm_info, raw_spd)
-				!= SPD_STATUS_OK) {
+		if (bytes_read != 64) {
 			/* Try again with SMBUS byte read */
 			printk(BIOS_DEBUG, "i2c block operation failed,"
 				" trying smbus byte operation.\n");
@@ -396,10 +395,14 @@ static void gather_common_timing(struct sys_info *sysinfo,
 				raw_spd[j] = spd_read_byte(device, j);
 			if (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP))
 				hexdump(raw_spd, 64);
-			if (spd_decode_ddr2(&dimm_info, raw_spd)
-					!= SPD_STATUS_OK)
-				continue;
 		}
+
+		if (spd_decode_ddr2(&dimm_info, raw_spd) != SPD_STATUS_OK) {
+			printk(BIOS_WARNING, "Encountered problems with SPD, "
+				"skipping this DIMM.\n");
+			continue;
+		}
+
 		if (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP))
 			dram_print_spd_ddr2(&dimm_info);
 

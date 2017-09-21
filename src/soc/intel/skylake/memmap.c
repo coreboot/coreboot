@@ -14,12 +14,14 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/ebda.h>
 #include <arch/io.h>
 #include <cbmem.h>
 #include <chip.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <intelblocks/ebda.h>
 #include <intelblocks/systemagent.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -274,6 +276,18 @@ static uintptr_t calculate_dram_base(void)
 	return dram_base;
 }
 
+/* Fill up memory layout information */
+void fill_soc_memmap_ebda(struct ebda_config *cfg)
+{
+	cfg->tolum_base = calculate_dram_base();
+}
+
+void cbmem_top_init(void)
+{
+	/* Fill up EBDA area */
+	fill_ebda_area();
+}
+
 /*
  *     +-------------------------+  Top of RAM (aligned)
  *     | System Management Mode  |
@@ -303,6 +317,9 @@ static uintptr_t calculate_dram_base(void)
  */
 void *cbmem_top(void)
 {
+	struct ebda_config ebda_cfg;
+	struct ebda_config *cfg = &ebda_cfg;
+
 	/*
 	 * Check if Tseg has been initialized, we will use this as a flag
 	 * to check if the MRC is done, and only then continue to read the
@@ -312,5 +329,7 @@ void *cbmem_top(void)
 	if (sa_get_tseg_base() == 0)
 		return NULL;
 
-	return (void *)calculate_dram_base();
+	read_ebda_data(cfg, sizeof(*cfg));
+
+	return (void *)(uintptr_t)cfg->tolum_base;
 }

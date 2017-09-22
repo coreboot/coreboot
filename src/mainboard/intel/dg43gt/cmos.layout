@@ -92,7 +92,6 @@ enumerations
 7     2     Keep
 10    0     AHCI
 10    1     Compatible
-11    0     1M
 11    1     4M
 11    2     8M
 11    3     16M

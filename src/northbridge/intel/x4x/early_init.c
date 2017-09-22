@@ -74,7 +74,11 @@ void x4x_early_init(void)
 		get_option(&gfxsize, "gfx_uma_size");
 		if (gfxsize > 12)
 			gfxsize = 6;
-		pci_write_config16(d0f0, D0F0_GGC, 0x0100 | (gfxsize + 1) << 4);
+		/* Need at least 4M for cbmem_top alignment */
+		else if (gfxsize < 1)
+			gfxsize = 1;
+		/* Set GTT size to 2+2M */
+		pci_write_config16(d0f0, D0F0_GGC, 0x0b00 | (gfxsize + 1) << 4);
 	} else { /* Does not feature internal graphics */
 		pci_write_config32(d0f0, D0F0_DEVEN, D0EN | D1EN | PEG1EN);
 		pci_write_config16(d0f0, D0F0_GGC, (1 << 1));

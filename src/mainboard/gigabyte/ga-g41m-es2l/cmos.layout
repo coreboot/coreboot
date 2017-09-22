@@ -92,7 +92,6 @@ enumerations
 7     0     Disable
 7     1     Enable
 7     2     Keep
-11    0     1M
 11    1     4M
 11    2     8M
 11    3     16M

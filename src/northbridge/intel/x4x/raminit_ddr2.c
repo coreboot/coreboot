@@ -1293,18 +1293,22 @@ static void mmap_ddr2(struct sysinfo *s)
 	bool reclaim;
 	u32 gfxsize, gttsize, tsegsize, mmiosize, tom, tolud, touud;
 	u32 gfxbase, gttbase, tsegbase, reclaimbase, reclaimlimit;
+	u32 mmiostart, umasizem;
 	u16 ggc;
 	u16 ggc2uma[] = { 0, 1, 4, 8, 16, 32, 48, 64, 128, 256, 96,
 			  160, 224, 352 };
 	u8 ggc2gtt[] = { 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 3, 4};
+	u8 reg8;
 
 	ggc = pci_read_config16(PCI_DEV(0, 0, 0), 0x52);
 	gfxsize = ggc2uma[(ggc & 0xf0) >> 4];
 	gttsize = ggc2gtt[(ggc & 0xf00) >> 8];
-	tsegsize = 1; // 1MB TSEG
+	tsegsize = 8; // 8MB TSEG
 	mmiosize = 0x800; // 2GB MMIO
+	umasizem = gfxsize + gttsize + tsegsize;
+	mmiostart = 0x1000 - mmiosize + umasizem;
 	tom = s->channel_capacity[0] + s->channel_capacity[1] - ME_UMA_SIZEMB;
-	tolud = MIN(0x1000 - mmiosize, tom);
+	tolud = MIN(mmiostart, tom);
 
 	reclaim = false;
 	if ((tom - tolud) > 0x40)
@@ -1336,6 +1340,11 @@ static void mmap_ddr2(struct sysinfo *s)
 	pci_write_config16(PCI_DEV(0, 0, 0), 0xa2, touud);
 	pci_write_config32(PCI_DEV(0, 0, 0), 0xa4, gfxbase << 20);
 	pci_write_config32(PCI_DEV(0, 0, 0), 0xa8, gttbase << 20);
+	/* Enable and set tseg size to 8M */
+	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), D0F0_ESMRAMC);
+	reg8 &= ~0x7;
+	reg8 |= (2 << 1) | (1 << 0); /* 8M and TSEG_Enable */
+	pci_write_config8(PCI_DEV(0, 0, 0), D0F0_ESMRAMC, reg8);
 	pci_write_config32(PCI_DEV(0, 0, 0), 0xac, tsegbase << 20);
 }
 

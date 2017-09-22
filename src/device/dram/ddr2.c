@@ -194,16 +194,22 @@ static int spd_decode_tRR_time(u32 *tRR, u8 c)
 		return CB_ERR;
 	case 0x80:
 		*tRR = 15625 << 8;
+		break;
 	case 0x81:
 		*tRR = 15625 << 6;
+		break;
 	case 0x82:
 		*tRR = 15625 << 7;
+		break;
 	case 0x83:
 		*tRR = 15625 << 9;
+		break;
 	case 0x84:
 		*tRR = 15625 << 10;
+		break;
 	case 0x85:
 		*tRR = 15625 << 11;
+		break;
 	}
 	return CB_SUCCESS;
 }

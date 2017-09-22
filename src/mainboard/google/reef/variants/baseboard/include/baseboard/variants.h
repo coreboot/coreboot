@@ -21,6 +21,9 @@
 #include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
+/* Return the sku id based off the strapping resistors attached to SoC. */
+uint8_t sku_strapping_value(void);
+
 /* Return the board id for the current variant board. */
 uint8_t variant_board_id(void);
 

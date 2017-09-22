@@ -52,16 +52,22 @@ static void mainboard_init(void *chip_info)
  * a pulldown. This way we can generate 9 different values with the
  * 2 pins.
  */
-uint8_t __attribute__((weak)) variant_board_sku(void)
+uint8_t sku_strapping_value(void)
 {
-	static int board_sku_num = -1;
 	gpio_t board_sku_gpios[] = {
 		[1] = GPIO_17, [0] = GPIO_16,
 	};
 	const size_t num = ARRAY_SIZE(board_sku_gpios);
 
+	return gpio_base3_value(board_sku_gpios, num);
+}
+
+uint8_t __attribute__((weak)) variant_board_sku(void)
+{
+	static int board_sku_num = -1;
+
 	if (board_sku_num < 0)
-		board_sku_num = gpio_base3_value(board_sku_gpios, num);
+		board_sku_num = sku_strapping_value();
 
 	return board_sku_num;
 }

@@ -18,7 +18,7 @@
 #include <arch/io.h>
 #include <arch/acpi.h>
 #include <bootstate.h>
-
+#include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -79,7 +79,7 @@ static void sb_init_acpi_ports(void)
 	pm_write16(PM_CPU_CTRL, ACPI_CPU_CONTROL);
 
 	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
-		pm_write16(PM_ACPI_SMI_CMD, ACPI_SMI_CTL_PORT);
+		pm_write16(PM_ACPI_SMI_CMD, APM_CNT);
 		enable_acpi_cmd_smi();
 	} else {
 		pm_write16(PM_ACPI_SMI_CMD, 0);

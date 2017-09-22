@@ -24,13 +24,13 @@
 #include <arch/acpigen.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
+#include <cpu/x86/smm.h>
 #include <cbmem.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/acpi.h>
 #include <soc/southbridge.h>
 #include <soc/nvs.h>
-#include <soc/smi.h>
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
@@ -88,9 +88,9 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->sci_int = 9;		/* IRQ 09 - ACPI SCI */
 
 	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
-		fadt->smi_cmd = ACPI_SMI_CTL_PORT;
-		fadt->acpi_enable = ACPI_SMI_CMD_ENABLE;
-		fadt->acpi_disable = ACPI_SMI_CMD_DISABLE;
+		fadt->smi_cmd = APM_CNT;
+		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
+		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
 		fadt->s4bios_req = 0;	/* Not supported */
 		fadt->pstate_cnt = 0;	/* Not supported */
 		fadt->cst_cnt = 0;	/* Not supported */

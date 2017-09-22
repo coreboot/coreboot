@@ -485,6 +485,9 @@ struct soc_intel_skylake_config {
 	 * 0b - Enabled
 	 * 1b - Disabled
 	 */
+	/* FSP 1.1 */
+	u8 FastPkgCRampDisable;
+	/* FSP 2.0 */
 	u8 FastPkgCRampDisableIa;
 	u8 FastPkgCRampDisableGt;
 	u8 FastPkgCRampDisableSa;

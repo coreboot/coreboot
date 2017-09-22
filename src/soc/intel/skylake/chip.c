@@ -196,6 +196,13 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 
 	params->SendVrMbxCmd = config->SendVrMbxCmd;
 
+	/* Acoustic Noise Mitigation */
+	params->AcousticNoiseMitigation = config->AcousticNoiseMitigation;
+	params->SlowSlewRateForIa = config->SlowSlewRateForIa;
+	params->SlowSlewRateForGt = config->SlowSlewRateForGt;
+	params->SlowSlewRateForSa = config->SlowSlewRateForSa;
+	params->FastPkgCRampDisable = config->FastPkgCRampDisable;
+
 	soc_irq_settings(params);
 }
 
@@ -801,6 +808,21 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 	fsp_display_upd_value("SendVrMbxCmd", 1,
 		original->SendVrMbxCmd,
 		params->SendVrMbxCmd);
+	fsp_display_upd_value("AcousticNoiseMitigation", 1,
+		original->AcousticNoiseMitigation,
+		params->AcousticNoiseMitigation);
+	fsp_display_upd_value("SlowSlewRateForIa", 1,
+		original->SlowSlewRateForIa,
+		params->SlowSlewRateForIa);
+	fsp_display_upd_value("SlowSlewRateForGt", 1,
+		original->SlowSlewRateForGt,
+		params->SlowSlewRateForGt);
+	fsp_display_upd_value("SlowSlewRateForSa", 1,
+		original->SlowSlewRateForSa,
+		params->SlowSlewRateForSa);
+	fsp_display_upd_value("FastPkgCRampDisable", 1,
+		original->FastPkgCRampDisable,
+		params->FastPkgCRampDisable);
 }
 
 static void pci_set_subsystem(device_t dev, unsigned int vendor,

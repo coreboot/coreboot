@@ -31,9 +31,6 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 
 	post_code(0x32);
 
-	/* Ensure the EC is in the right mode for recovery */
-	google_chromeec_early_init();
-
 	/* Initialize GPIOs */
 	init_gpios(mainboard_gpio_config);
 

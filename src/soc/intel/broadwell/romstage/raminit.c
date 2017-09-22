@@ -65,12 +65,6 @@ void raminit(struct pei_data *pei_data)
 		reset_system();
 	} else {
 		printk(BIOS_DEBUG, "No MRC cache found.\n");
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
-		if (pei_data->boot_mode == ACPI_S0) {
-			/* Ensure EC is running RO firmware. */
-			google_chromeec_check_ec_image(EC_IMAGE_RO);
-		}
-#endif
 	}
 
 	/*

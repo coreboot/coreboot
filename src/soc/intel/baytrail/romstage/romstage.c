@@ -128,11 +128,6 @@ void * asmlinkage romstage_main(unsigned long bist,
 
 	gfx_init();
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
-	/* Ensure the EC is in the right mode for recovery */
-	google_chromeec_early_init();
-#endif
-
 	/* Call into mainboard. */
 	mainboard_romstage_entry(&rp);
 

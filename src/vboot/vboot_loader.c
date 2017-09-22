@@ -91,22 +91,6 @@ static void vboot_prepare(void)
 		verstage_main();
 		car_set_var(vboot_executed, 1);
 		vb2_save_recovery_reason_vbnv();
-
-		/*
-		 * Avoid double memory retrain when the EC is running RW code
-		 * and a recovery request came in through an EC host event. The
-		 * double retrain happens because the EC won't be rebooted
-		 * until kernel verification notices the EC isn't running RO
-		 * code which is after memory training. Therefore, reboot the
-		 * EC after we've saved the potential recovery request so it's
-		 * not lost. Lastly, only perform this sequence on x86
-		 * platforms since those are the ones that currently do a
-		 * costly memory training in recovery mode.
-		 */
-		if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC) &&
-			IS_ENABLED(CONFIG_ARCH_X86))
-			google_chromeec_early_init();
-
 	} else if (verstage_should_load()) {
 		struct cbfsf file;
 		struct prog verstage =

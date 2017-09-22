@@ -69,7 +69,6 @@ struct romstage_params {
  *  30.  FSP binary/FspNotify
  */
 
-void mainboard_check_ec_image(struct romstage_params *params);
 void mainboard_memory_init_params(struct romstage_params *params,
 	MEMORY_INIT_UPD *memory_params);
 void mainboard_romstage_entry(struct romstage_params *params);

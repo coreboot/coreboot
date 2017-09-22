@@ -182,11 +182,6 @@ void romstage_common(const struct romstage_params *params)
 
 	wake_from_s3 = early_pch_init(params->gpio_map, params->rcba_config);
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
-	/* Ensure the EC is in the right mode for recovery */
-	google_chromeec_early_init();
-#endif
-
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(params->bist);
 

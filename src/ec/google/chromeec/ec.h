@@ -40,12 +40,6 @@ int google_chromeec_set_device_enabled_events(uint32_t mask);
 uint32_t google_chromeec_get_device_current_events(void);
 void google_chromeec_log_device_events(uint32_t mask);
 
-/* If recovery mode is enabled and EC is not running RO firmware reboot. */
-void google_chromeec_early_init(void);
-/* Reboot if EC firmware is not expected type. */
-void google_chromeec_check_ec_image(int expected_type);
-void google_chromeec_check_pd_image(int expected_type);
-
 int google_chromeec_check_feature(int feature);
 uint8_t google_chromeec_calc_checksum(const uint8_t *data, int size);
 u16 google_chromeec_get_board_version(void);

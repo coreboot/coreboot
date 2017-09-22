@@ -146,7 +146,6 @@ void romstage_common(struct romstage_params *params)
 			hard_reset();
 		} else {
 			printk(BIOS_DEBUG, "No MRC cache found.\n");
-			mainboard_check_ec_image(params);
 		}
 	}
 
@@ -198,20 +197,6 @@ void after_cache_as_ram_stage(void)
 __attribute__((weak)) struct chipset_power_state *fill_power_state(void)
 {
 	return NULL;
-}
-
-__attribute__((weak)) void mainboard_check_ec_image(
-	struct romstage_params *params)
-{
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
-	struct pei_data *pei_data;
-
-	pei_data = params->pei_data;
-	if (params->pei_data->boot_mode == ACPI_S0) {
-		/* Ensure EC is running RO firmware. */
-		google_chromeec_check_ec_image(EC_IMAGE_RO);
-	}
-#endif
 }
 
 /* Board initialization before and after RAM is enabled */

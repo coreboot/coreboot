@@ -325,70 +325,6 @@ int google_chromeec_reboot(int dev_idx, enum ec_reboot_cmd type, uint8_t flags)
 }
 
 #ifndef __SMM__
-#ifdef __PRE_RAM__
-void google_chromeec_check_ec_image(int expected_type)
-{
-	struct chromeec_command cec_cmd;
-	struct ec_response_get_version cec_resp = { { 0 } };
-
-	cec_cmd.cmd_code = EC_CMD_GET_VERSION;
-	cec_cmd.cmd_version = 0;
-	cec_cmd.cmd_data_out = &cec_resp;
-	cec_cmd.cmd_size_in = 0;
-	cec_cmd.cmd_size_out = sizeof(cec_resp);
-	cec_cmd.cmd_dev_index = 0;
-	google_chromeec_command(&cec_cmd);
-
-	if (cec_cmd.cmd_code || cec_resp.current_image != expected_type) {
-		/* Reboot the EC and make it come back in RO mode */
-		printk(BIOS_DEBUG, "Rebooting with EC in RO mode:\n");
-		post_code(0); /* clear current post code */
-		/* Let the platform prepare for the EC taking out the system power. */
-		if (IS_ENABLED(CONFIG_VBOOT))
-			vboot_platform_prepare_reboot();
-		google_chromeec_reboot(0, EC_REBOOT_COLD, 0);
-		udelay(1000);
-		hard_reset();
-		halt();
-	}
-}
-
-/* Check for recovery mode and ensure PD/EC is in RO */
-void google_chromeec_early_init(void)
-{
-	if (!IS_ENABLED(CONFIG_CHROMEOS) || !vboot_recovery_mode_enabled())
-		return;
-
-	/* Check USB PD chip state first */
-	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_PD))
-		google_chromeec_check_pd_image(EC_IMAGE_RO);
-
-	/* If in recovery ensure EC is running RO firmware. */
-	google_chromeec_check_ec_image(EC_IMAGE_RO);
-}
-
-void google_chromeec_check_pd_image(int expected_type)
-{
-	struct chromeec_command cec_cmd;
-	struct ec_response_get_version cec_resp = { { 0 } };
-
-	cec_cmd.cmd_code = EC_CMD_GET_VERSION;
-	cec_cmd.cmd_version = 0;
-	cec_cmd.cmd_data_out = &cec_resp;
-	cec_cmd.cmd_size_in = 0;
-	cec_cmd.cmd_size_out = sizeof(cec_resp);
-	cec_cmd.cmd_dev_index = 1; /* PD */
-	google_chromeec_command(&cec_cmd);
-
-	if (cec_cmd.cmd_code || cec_resp.current_image != expected_type) {
-		/* Reboot the PD and make it come back in RO mode */
-		printk(BIOS_DEBUG, "Rebooting PD to RO mode\n");
-		google_chromeec_reboot(1 /* PD */, EC_REBOOT_COLD, 0);
-		udelay(1000);
-	}
-}
-#endif
-
 u16 google_chromeec_get_board_version(void)
 {
 	struct chromeec_command cmd;
@@ -696,19 +632,6 @@ void google_chromeec_init(void)
 		       cec_resp.current_image);
 		ec_image_type = cec_resp.current_image;
 	}
-
-	if (cec_cmd.cmd_code ||
-	    (vboot_recovery_mode_enabled() &&
-	     (cec_resp.current_image != EC_IMAGE_RO))) {
-		/* Reboot the EC and make it come back in RO mode */
-		printk(BIOS_DEBUG, "Rebooting with EC in RO mode:\n");
-		post_code(0); /* clear current post code */
-		google_chromeec_reboot(0, EC_REBOOT_COLD, 0);
-		udelay(1000);
-		hard_reset();
-		halt();
-	}
-
 }
 
 int google_ec_running_ro(void)

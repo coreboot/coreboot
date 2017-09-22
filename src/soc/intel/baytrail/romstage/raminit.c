@@ -137,12 +137,6 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 		reset_system();
 	} else {
 		printk(BIOS_DEBUG, "No MRC cache found.\n");
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
-		if (prev_sleep_state == ACPI_S0) {
-			/* Ensure EC is running RO firmware. */
-			google_chromeec_check_ec_image(EC_IMAGE_RO);
-		}
-#endif
 	}
 
 	/* Determine if mrc.bin is in the cbfs. */

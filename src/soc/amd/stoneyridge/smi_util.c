@@ -8,15 +8,12 @@
 #include <console/console.h>
 #include <soc/smi.h>
 
-#define STONEYRIDGE_SMI_ACPI_COMMAND		75
-
 static void configure_smi(uint8_t smi_num, uint8_t mode)
 {
 	uint8_t reg32_offset, bit_offset;
 	uint32_t reg32;
 
-	/* SMI sources range from [0:149] */
-	if (smi_num > 149) {
+	if (smi_num >= NUMBER_SMITYPES) {
 		printk(BIOS_WARNING, "BUG: Invalid SMI: %u\n", smi_num);
 		return;
 	}
@@ -74,5 +71,5 @@ void disable_gevent_smi(uint8_t gevent)
 /** Enable SMIs on writes to ACPI SMI command port */
 void enable_acpi_cmd_smi(void)
 {
-	configure_smi(STONEYRIDGE_SMI_ACPI_COMMAND, SMI_MODE_SMI);
+	configure_smi(SMITYPE_SMI_CMD_PORT, SMI_MODE_SMI);
 }

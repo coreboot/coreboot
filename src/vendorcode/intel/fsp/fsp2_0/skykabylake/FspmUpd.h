@@ -844,7 +844,7 @@ typedef struct {
 
 /** Offset 0x02E3 - Ring Downbin
   Ring Downbin enable/disable. When enabled, CPU will ensure the ring ratio is always
-  lower than the core ratio.<b>0: Disable</b>; 1: Enable.
+  lower than the core ratio. 0: Disable; <b>1: Enable.</b>
   $EN_DIS
 **/
   UINT8                       RingDownBin;
@@ -1255,9 +1255,15 @@ typedef struct {
 **/
   UINT8                       Avx3RatioOffset;
 
-/** Offset 0x051B
+/** Offset 0x051B - Ask MRC to clear memory content
+  Ask MRC to clear memory content <b>0: Do not Clear Memory;</b> 1: Clear Memory.
+  $EN_DIS
 **/
-  UINT8                       ReservedFspmUpd[5];
+  UINT8                       CleanMemory;
+
+/** Offset 0x051C
+**/
+  UINT8                       ReservedFspmUpd[4];
 } FSP_M_CONFIG;
 
 /** Fsp M Test Configuration

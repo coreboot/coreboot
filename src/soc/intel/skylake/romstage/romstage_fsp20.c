@@ -80,11 +80,11 @@ static void save_dimm_info(void)
 	dimm_max = ARRAY_SIZE(mem_info->dimm);
 	ctrlr_info = &memory_info_hob->Controller[0];
 	for (channel = 0; channel < MAX_CH && index < dimm_max; channel++) {
-		channel_info = &ctrlr_info->Channel[channel];
+		channel_info = &ctrlr_info->ChannelInfo[channel];
 		if (channel_info->Status != 2)
 			continue;
 		for (dimm = 0; dimm < MAX_DIMM && index < dimm_max; dimm++) {
-			src_dimm = &channel_info->Dimm[dimm];
+			src_dimm = &channel_info->DimmInfo[dimm];
 			dest_dimm = &mem_info->dimm[index];
 
 			if (src_dimm->Status != DIMM_PRESENT)
@@ -93,8 +93,8 @@ static void save_dimm_info(void)
 			/* Populate the DIMM information */
 			dimm_info_fill(dest_dimm,
 				src_dimm->DimmCapacity,
-				memory_info_hob->DdrType,
-				memory_info_hob->Frequency,
+				memory_info_hob->MemoryType,
+				memory_info_hob->ConfiguredMemoryClockSpeed,
 				channel_info->ChannelId,
 				src_dimm->DimmId,
 				(const char *)src_dimm->ModulePartNum,

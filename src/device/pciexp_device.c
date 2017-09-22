@@ -149,16 +149,55 @@ static void pciexp_config_max_latency(device_t root, device_t dev)
 			root->ops->ops_pci->set_L1_ss_latency(dev, cap + 4);
 }
 
-static void pciexp_enable_ltr(device_t dev)
+static bool pciexp_is_ltr_supported(device_t dev, unsigned int cap)
+{
+	unsigned int val;
+
+	val = pci_read_config16(dev, cap + PCI_EXP_DEV_CAP2_OFFSET);
+
+	if (val & LTR_MECHANISM_SUPPORT)
+		return true;
+
+	return false;
+}
+
+static void pciexp_configure_ltr(device_t dev)
 {
 	unsigned int cap;
+
 	cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
-	if(!cap) {
+
+	/*
+	 * Check if capibility pointer is valid and
+	 * device supports LTR mechanism.
+	 */
+	if (!cap || !pciexp_is_ltr_supported(dev, cap)) {
 		printk(BIOS_INFO, "Failed to enable LTR for dev = %s\n",
-			dev_path(dev));
+				dev_path(dev));
 		return;
 	}
-	pci_update_config32(dev, cap + 0x28, ~(1 << 10), 1 << 10);
+
+	cap += PCI_EXP_DEV_CTL_STS2_CAP_OFFSET;
+
+	/* Enable LTR for device */
+	pci_update_config32(dev, cap, ~LTR_MECHANISM_EN, LTR_MECHANISM_EN);
+
+	/* Configure Max Snoop Latency */
+	pciexp_config_max_latency(dev->bus->dev, dev);
+}
+
+static void pciexp_enable_ltr(device_t dev)
+{
+	struct bus *bus;
+	device_t child;
+
+	for (bus = dev->link_list ; bus ; bus = bus->next) {
+		for (child = bus->children; child; child = child->sibling) {
+			pciexp_configure_ltr(child);
+			if (child->ops && child->ops->scan_bus)
+				pciexp_enable_ltr(child);
+		}
+	}
 }
 
 static unsigned char pciexp_L1_substate_cal(device_t dev, unsigned int endp_cap,
@@ -232,8 +271,6 @@ static void pciexp_L1_substate_commit(device_t root, device_t dev,
 	printk(BIOS_INFO, "Power On Value = 0x%x, Power On Scale = 0x%x\n",
 		endp_power_on_value, power_on_scale);
 
-	pciexp_enable_ltr(root);
-
 	pci_update_config32(root, root_cap + 0x08, ~0xff00,
 		(comm_mode_rst_time << 8));
 
@@ -255,10 +292,6 @@ static void pciexp_L1_substate_commit(device_t root, device_t dev,
 
 		pci_update_config32(dev_t, end_cap + 0x08, ~0x1f,
 			L1SubStateSupport);
-
-		pciexp_enable_ltr(dev_t);
-
-		pciexp_config_max_latency(root, dev_t);
 	}
 }
 
@@ -400,7 +433,6 @@ void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 			     unsigned int max_devfn)
 {
 	device_t child;
-
 	pci_scan_bus(bus, min_devfn, max_devfn);
 
 	for (child = bus->children; child; child = child->sibling) {
@@ -415,6 +447,7 @@ void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 void pciexp_scan_bridge(device_t dev)
 {
 	do_pci_scan_bridge(dev, pciexp_scan_bus);
+	pciexp_enable_ltr(dev);
 }
 
 /** Default device operations for PCI Express bridges */

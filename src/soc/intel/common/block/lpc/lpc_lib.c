@@ -161,7 +161,7 @@ static void lpc_set_bios_control_reg(uint8_t bios_cntl_bit)
 	device_t dev = PCH_DEV_LPC;
 	uint8_t bc_cntl;
 
-	assert((bios_cntl_bit & (bios_cntl_bit - 1)) == 0);
+	assert(IS_POWER_OF_2(bios_cntl_bit));
 	bc_cntl = pci_read_config8(dev, LPC_BIOS_CNTL);
 	bc_cntl |= bios_cntl_bit;
 	pci_write_config8(dev, LPC_BIOS_CNTL, bc_cntl);

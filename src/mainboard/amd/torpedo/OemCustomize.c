@@ -14,12 +14,8 @@
  */
 
 
-#include <string.h>
 #include <northbridge/amd/agesa/state_machine.h>
-#include <vendorcode/amd/agesa/f12/Proc/CPU/heapManager.h>
 #include <PlatformMemoryConfiguration.h>
-#include "amdlib.h"
-
 
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	// Initialize Port descriptor (PCIe port, Lanes 8:15, PCI Device Number 2, ...)
@@ -75,83 +71,17 @@ static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 	}
 };
 
-static const PCIe_COMPLEX_DESCRIPTOR Llano = {
-	DESCRIPTOR_TERMINATE_LIST,
-	0,
-	&PortList[0],
-	&DdiList[0]
+static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
+	.Flags        = DESCRIPTOR_TERMINATE_LIST,
+	.SocketId     = 0,
+	.PciePortList = PortList,
+	.DdiLinkList  = DdiList,
 };
-
-/*---------------------------------------------------------------------------------------*/
-/**
- *  OemCustomizeInitEarly
- *
- *  Description:
- *    This stub function will call the host environment through the binary block
- *    interface (call-out port) to provide a user hook opportunity
- *
- *  Parameters:
- *    @param[in]      *InitEarly
- *
- *    @retval         VOID
- *
- **/
-/*---------------------------------------------------------------------------------------*/
 
 void board_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *InitEarly)
 {
-	AGESA_STATUS         Status;
-	VOID                 *LlanoPcieComplexListPtr;
-	VOID                 *LlanoPciePortPtr;
-	VOID                 *LlanoPcieDdiPtr;
-
-	ALLOCATE_HEAP_PARAMS AllocHeapParams;
-
-	// GNB PCIe topology Porting
-
-	//
-	// Allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR
-	//
-	AllocHeapParams.RequestedBufferSize = sizeof(Llano) + sizeof(PortList) + sizeof(DdiList);
-
-	AllocHeapParams.BufferHandle = AMD_MEM_MISC_HANDLES_START;
-	AllocHeapParams.Persist = HEAP_LOCAL_CACHE;
-	Status = HeapAllocateBuffer (&AllocHeapParams, &InitEarly->StdHeader);
-	ASSERT(Status == AGESA_SUCCESS);
-
-	LlanoPcieComplexListPtr = (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
-
-	AllocHeapParams.BufferPtr += sizeof(Llano);
-	LlanoPciePortPtr        = (PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
-
-	AllocHeapParams.BufferPtr += sizeof(PortList);
-	LlanoPcieDdiPtr         = (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
-
-	LibAmdMemFill (LlanoPcieComplexListPtr,
-	                 0,
-	                 sizeof(Llano),
-	                 &InitEarly->StdHeader);
-
-	LibAmdMemFill (LlanoPciePortPtr,
-	                 0,
-	                 sizeof(PortList),
-	                 &InitEarly->StdHeader);
-
-	LibAmdMemFill (LlanoPcieDdiPtr,
-	                 0,
-	                 sizeof(DdiList),
-	                 &InitEarly->StdHeader);
-
-	LibAmdMemCopy (LlanoPcieComplexListPtr, &Llano, sizeof(Llano), &InitEarly->StdHeader);
-	LibAmdMemCopy (LlanoPciePortPtr, &PortList[0], sizeof(PortList), &InitEarly->StdHeader);
-	LibAmdMemCopy (LlanoPcieDdiPtr, &DdiList[0], sizeof(DdiList), &InitEarly->StdHeader);
-
-
-	((PCIe_COMPLEX_DESCRIPTOR*)LlanoPcieComplexListPtr)->PciePortList = (PCIe_PORT_DESCRIPTOR*)LlanoPciePortPtr;
-	((PCIe_COMPLEX_DESCRIPTOR*)LlanoPcieComplexListPtr)->DdiLinkList = (PCIe_DDI_DESCRIPTOR*)LlanoPcieDdiPtr;
-
-	InitEarly->GnbConfig.PcieComplexList = LlanoPcieComplexListPtr;
-	InitEarly->GnbConfig.PsppPolicy      = 0;
+	InitEarly->GnbConfig.PcieComplexList = &PcieComplex;
+	InitEarly->GnbConfig.PsppPolicy		= 0;
 }
 
 /*----------------------------------------------------------------------------------------

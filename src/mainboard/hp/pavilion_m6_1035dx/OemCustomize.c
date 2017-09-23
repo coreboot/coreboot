@@ -15,10 +15,8 @@
 
 #include "Porting.h"
 #include "AGESA.h"
-#include "amdlib.h"
 
 #include <northbridge/amd/agesa/state_machine.h>
-#include <vendorcode/amd/agesa/f15tn/Proc/CPU/heapManager.h>
 #include <PlatformMemoryConfiguration.h>
 
 
@@ -146,54 +144,16 @@ void board_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 	FchReset->Xhci1Enable = FALSE;
 }
 
-/*---------------------------------------------------------------------------------------*/
-/**
- *  OemCustomizeInitEarly
- *
- *  Description:
- *    This stub function will call the host environment through the binary block
- *    interface (call-out port) to provide a user hook opportunity
- *
- *  Parameters:
- *    @param[in]      *InitEarly
- *
- *    @retval         VOID
- *
- **/
-/*---------------------------------------------------------------------------------------*/
+static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
+	.Flags        = DESCRIPTOR_TERMINATE_LIST,
+	.SocketId     = 0,
+	.PciePortList = PortList,
+	.DdiLinkList  = DdiList,
+};
 
 void board_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *InitEarly)
 {
-	AGESA_STATUS            Status;
-	PCIe_COMPLEX_DESCRIPTOR *PcieComplexListPtr;
-
-	ALLOCATE_HEAP_PARAMS AllocHeapParams;
-
-	/* GNB PCIe topology Porting */
-
-	/*  */
-	/* Allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR */
-	/*  */
-	AllocHeapParams.RequestedBufferSize = sizeof(PCIe_COMPLEX_DESCRIPTOR);
-
-	AllocHeapParams.BufferHandle = AMD_MEM_MISC_HANDLES_START;
-	AllocHeapParams.Persist = HEAP_LOCAL_CACHE;
-	Status = HeapAllocateBuffer (&AllocHeapParams, &InitEarly->StdHeader);
-	ASSERT(Status == AGESA_SUCCESS);
-
-	PcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
-
-	LibAmdMemFill (PcieComplexListPtr,
-		       0,
-		       sizeof(PCIe_COMPLEX_DESCRIPTOR),
-		       &InitEarly->StdHeader);
-
-	PcieComplexListPtr->Flags        = DESCRIPTOR_TERMINATE_LIST;
-	PcieComplexListPtr->SocketId     = 0;
-	PcieComplexListPtr->PciePortList = PortList;
-	PcieComplexListPtr->DdiLinkList  = DdiList;
-
-	InitEarly->GnbConfig.PcieComplexList = PcieComplexListPtr;
+	InitEarly->GnbConfig.PcieComplexList = &PcieComplex;
 }
 
 /*----------------------------------------------------------------------------------------

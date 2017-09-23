@@ -14,12 +14,9 @@
  */
 
 #include "AGESA.h"
-#include "amdlib.h"
-#include "heapManager.h"
 #include <PlatformMemoryConfiguration.h>
 
 #include <northbridge/amd/agesa/state_machine.h>
-
 
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	{
@@ -113,44 +110,9 @@ void board_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 	FchReset->IdeEnable = 0;
 }
 
-/*---------------------------------------------------------------------------------------*/
-/**
- *  OemCustomizeInitEarly
- *
- *  Description:
- *    This is the stub function will call the host environment through the binary block
- *    interface (call-out port) to provide a user hook opportunity
- *
- *  Parameters:
- *    @param[in]      *InitEarly
- *
- *    @retval         VOID
- *
- **/
-/*---------------------------------------------------------------------------------------*/
-
 void board_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *InitEarly)
 {
-	AGESA_STATUS            Status;
-	PCIe_COMPLEX_DESCRIPTOR *PcieComplexListPtr;
-
-	ALLOCATE_HEAP_PARAMS AllocHeapParams;
-
-	/* GNB PCIe topology Porting */
-
-	/*  */
-	/* Allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR */
-	/*  */
-	AllocHeapParams.RequestedBufferSize = sizeof(PcieComplex);
-
-	AllocHeapParams.BufferHandle = AMD_MEM_MISC_HANDLES_START;
-	AllocHeapParams.Persist = HEAP_LOCAL_CACHE;
-	Status = HeapAllocateBuffer (&AllocHeapParams, &InitEarly->StdHeader);
-	ASSERT(Status == AGESA_SUCCESS);
-
-	PcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
-	LibAmdMemCopy  (PcieComplexListPtr, &PcieComplex, sizeof(PcieComplex), &InitEarly->StdHeader);
-	InitEarly->GnbConfig.PcieComplexList = PcieComplexListPtr;
+	InitEarly->GnbConfig.PcieComplexList = &PcieComplex;
 }
 
 /*----------------------------------------------------------------------------------------

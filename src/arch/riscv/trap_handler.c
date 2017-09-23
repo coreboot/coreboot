@@ -245,7 +245,7 @@ void handle_misaligned_load(trapframe *tf) {
 	insn_t memWidth = (faultingInstruction & widthMask) >> 12;
 	insn_t destMask = 0xF80;
 	insn_t destRegister = (faultingInstruction & destMask) >> 7;
-	printk(BIOS_DEBUG, "Width: 0x%x\n", memWidth);
+	printk(BIOS_DEBUG, "Width:              %d bits\n", (1 << memWidth) * 8);
 	if (memWidth == 3) {
 		// load double, handle the issue
 		void* badAddress = (void*) tf->badvaddr;
@@ -274,7 +274,7 @@ void handle_misaligned_store(trapframe *tf) {
 	insn_t memWidth = (faultingInstruction & widthMask) >> 12;
 	insn_t srcMask = 0x1F00000;
 	insn_t srcRegister = (faultingInstruction & srcMask) >> 20;
-	printk(BIOS_DEBUG, "Width: 0x%x\n", memWidth);
+	printk(BIOS_DEBUG, "Width:              %d bits\n", (1 << memWidth) * 8);
 	if (memWidth == 3) {
 		// store double, handle the issue
 		void* badAddress = (void*) tf->badvaddr;

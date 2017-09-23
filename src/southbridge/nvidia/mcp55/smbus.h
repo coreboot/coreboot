@@ -56,7 +56,7 @@ static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 	unsigned char global_status_register;
 	unsigned char byte;
 
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outb(((device & 0x7f) << 1)|1 , smbus_io_base + SMBXMITADD);
 	smbus_delay();
 
@@ -90,7 +90,7 @@ static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	outb(val, smbus_io_base + SMBHSTCMD);
 	smbus_delay();
 
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outb(((device & 0x7f) << 1) | 0, smbus_io_base + SMBXMITADD);
 	smbus_delay();
 
@@ -114,7 +114,7 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	unsigned char global_status_register;
 	unsigned char byte;
 
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outb(((device & 0x7f) << 1)|1 , smbus_io_base + SMBXMITADD);
 	smbus_delay();
 	/* set the command/address... */
@@ -148,7 +148,7 @@ static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device, unsigned
 	outb(val, smbus_io_base + SMBHSTDAT0);
 	smbus_delay();
 
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outb(((device & 0x7f) << 1) | 0, smbus_io_base + SMBXMITADD);
 	smbus_delay();
 

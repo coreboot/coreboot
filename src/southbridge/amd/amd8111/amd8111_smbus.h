@@ -62,7 +62,7 @@ static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(smbus_io_base + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), smbus_io_base + SMBGCTL);
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outw(((device & 0x7f) << 1) | 1, smbus_io_base + SMBHSTADDR);
 	/* set the command/address... */
 	outb(0, smbus_io_base + SMBHSTCMD);
@@ -107,7 +107,7 @@ static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(smbus_io_base + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), smbus_io_base + SMBGCTL);
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outw(((device & 0x7f) << 1) | 0, smbus_io_base + SMBHSTADDR);
 	/* set the command/address... */
 	outb(0, smbus_io_base + SMBHSTCMD);
@@ -150,7 +150,7 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(smbus_io_base + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), smbus_io_base + SMBGCTL);
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outw(((device & 0x7f) << 1) | 1, smbus_io_base + SMBHSTADDR);
 	/* set the command/address... */
 	outb(address & 0xFF, smbus_io_base + SMBHSTCMD);
@@ -195,7 +195,7 @@ static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device, unsigned
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(smbus_io_base + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), smbus_io_base + SMBGCTL);
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outw(((device & 0x7f) << 1) | 0, smbus_io_base + SMBHSTADDR);
 	outb(address & 0xFF, smbus_io_base + SMBHSTCMD);
 	/* set up for a byte data write */ /* FIXME */
@@ -235,7 +235,7 @@ static int do_smbus_block_read(unsigned smbus_io_base, unsigned device, unsigned
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(smbus_io_base + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), smbus_io_base + SMBGCTL);
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outw(((device & 0x7f) << 1) | 1, smbus_io_base + SMBHSTADDR);
 	/* set the command/address... */
 	outb(cmd & 0xFF, smbus_io_base + SMBHSTCMD);
@@ -290,7 +290,7 @@ static int do_smbus_block_write(unsigned smbus_io_base, unsigned device, unsigne
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(smbus_io_base + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), smbus_io_base + SMBGCTL);
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outw(((device & 0x7f) << 1) | 0, smbus_io_base + SMBHSTADDR);
 	/* set the command/address... */
 	outb(cmd & 0xFF, smbus_io_base + SMBHSTCMD);

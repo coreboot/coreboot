@@ -59,7 +59,7 @@ int do_smbus_recv_byte(u32 smbus_io_base, u32 device)
 	if (smbus_wait_until_ready(smbus_io_base) < 0)
 		return -2;	/* not ready */
 
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outb(((device & 0x7f) << 1) | 1, smbus_io_base + SMBHSTADDR);
 
 	byte = inb(smbus_io_base + SMBHSTCTRL);
@@ -87,7 +87,7 @@ int do_smbus_send_byte(u32 smbus_io_base, u32 device, u8 val)
 	/* set the command... */
 	outb(val, smbus_io_base + SMBHSTCMD);
 
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outb(((device & 0x7f) << 1) | 0, smbus_io_base + SMBHSTADDR);
 
 	byte = inb(smbus_io_base + SMBHSTCTRL);
@@ -113,7 +113,7 @@ int do_smbus_read_byte(u32 smbus_io_base, u32 device,
 	/* set the command/address... */
 	outb(address & 0xff, smbus_io_base + SMBHSTCMD);
 
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outb(((device & 0x7f) << 1) | 1, smbus_io_base + SMBHSTADDR);
 
 	byte = inb(smbus_io_base + SMBHSTCTRL);
@@ -142,7 +142,7 @@ int do_smbus_write_byte(u32 smbus_io_base, u32 device,
 	/* set the command/address... */
 	outb(address & 0xff, smbus_io_base + SMBHSTCMD);
 
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outb(((device & 0x7f) << 1) | 0, smbus_io_base + SMBHSTADDR);
 
 	/* output value */

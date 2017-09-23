@@ -115,7 +115,7 @@ int do_smbus_read_byte(unsigned int smbus_base, u8 device,
 	/* Disable interrupts */
 	outb(inb(smbus_base + SMBHSTCTL) & ~SMBHSTCNT_INTREN,
 		smbus_base + SMBHSTCTL);
-	/* Set the device I'm talking too */
+	/* Set the device I'm talking to */
 	outb(((device & 0x7f) << 1) | 1, smbus_base + SMBXMITADD);
 	/* Set the command/address... */
 	outb(address & 0xff, smbus_base + SMBHSTCMD);
@@ -164,7 +164,7 @@ int do_smbus_write_byte(unsigned int smbus_base, u8 device,
 	/* Disable interrupts */
 	outb(inb(smbus_base + SMBHSTCTL) & ~SMBHSTCNT_INTREN,
 		smbus_base + SMBHSTCTL);
-	/* Set the device I'm talking too */
+	/* Set the device I'm talking to */
 	outb(((device & 0x7f) << 1) & ~0x01, smbus_base + SMBXMITADD);
 	/* Set the command/address... */
 	outb(address & 0xff, smbus_base + SMBHSTCMD);
@@ -217,7 +217,7 @@ int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 	/* Disable interrupts */
 	outb(inb(smbus_base + SMBHSTCTL) & ~SMBHSTCNT_INTREN,
 		smbus_base + SMBHSTCTL);
-	/* Set the device I'm talking too */
+	/* Set the device I'm talking to */
 	outb(((device & 0x7f) << 1) | 1, smbus_base + SMBXMITADD);
 	/* Set the command/address... */
 	outb(cmd & 0xff, smbus_base + SMBHSTCMD);
@@ -292,7 +292,7 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 	/* Disable interrupts */
 	outb(inb(smbus_base + SMBHSTCTL) & ~SMBHSTCNT_INTREN,
 		smbus_base + SMBHSTCTL);
-	/* Set the device I'm talking too */
+	/* Set the device I'm talking to */
 	outb(((device & 0x7f) << 1) & ~0x01, smbus_base + SMBXMITADD);
 	/* Set the command/address... */
 	outb(cmd & 0xff, smbus_base + SMBHSTCMD);

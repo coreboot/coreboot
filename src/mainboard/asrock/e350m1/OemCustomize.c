@@ -23,13 +23,21 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 7),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGen2, PcieGen2, AspmL0sL1, 0)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 4,
+				HotplugDisabled,
+				PcieGen2,
+				PcieGen2,
+				AspmL0sL1, 0)
 	},
 	// Initialize Port descriptor (PCIe port, Lanes 8, PCI Device Number 8, ...)
 	{
 		DESCRIPTOR_TERMINATE_LIST,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 3),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 8, HotplugDisabled, PcieGen2, PcieGen2, AspmL0sL1, 0)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 8,
+				HotplugDisabled,
+				PcieGen2,
+				PcieGen2,
+				AspmL0sL1, 0)
 	}
 };
 

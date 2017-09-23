@@ -71,31 +71,51 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 8, 23),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 2, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 2,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, 1)
 	},
 	/* PCIe port, Lane 4, PCI Device Number 4, Realtek LAN */
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 4),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 4,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, 1)
 	},
 	/* PCIe port, Lane 5, PCI Device Number 5, x1 slot (1) */
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 5, 5),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 5, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 5,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, 1)
 	},
 	/* PCIe port, Lane 6, PCI Device Number 6, x1 slot (2) */
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 6, 6),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 6, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 6,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, 1)
 	},
 	/* PCIe port, Lanes 0:3, UMI link to SB, PCI Device Number 8 */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 3),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 8, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 8,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, 0)
 	},
 };
 

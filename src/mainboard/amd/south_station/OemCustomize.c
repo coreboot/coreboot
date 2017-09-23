@@ -23,31 +23,51 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 4),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGen2, PcieGen2, AspmL0sL1, 4)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 4,
+				HotplugDisabled,
+				PcieGen2,
+				PcieGen2,
+				AspmL0sL1, 4)
 	},
 	// Initialize Port descriptor (PCIe port, Lanes 5, PCI Device Number 5, ...)
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 5, 5),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 5, HotplugDisabled, PcieGen2, PcieGen2, AspmL0sL1, 5)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 5,
+				HotplugDisabled,
+				PcieGen2,
+				PcieGen2,
+				AspmL0sL1, 5)
 	},
 	// Initialize Port descriptor (PCIe port, Lanes 6, PCI Device Number 6, ...)
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 6, 6),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 6, HotplugDisabled, PcieGen2, PcieGen2, AspmL0sL1, 6)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 6,
+				HotplugDisabled,
+				PcieGen2,
+				PcieGen2,
+				AspmL0sL1, 6)
 	},
 	// Initialize Port descriptor (PCIe port, Lanes 7, PCI Device Number 7, ...)
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 7, 7),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 7, HotplugDisabled, PcieGen2, PcieGen2, AspmL0sL1, 7)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 7,
+				HotplugDisabled,
+				PcieGen2,
+				PcieGen2,
+				AspmL0sL1, 7)
 	},
 	// Initialize Port descriptor (PCIe port, Lanes 8, PCI Device Number 8, ...)
 	{
 		DESCRIPTOR_TERMINATE_LIST,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 3),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 8, HotplugDisabled, PcieGen2, PcieGen2, AspmL0sL1, 0)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 8,
+				HotplugDisabled,
+				PcieGen2,
+				PcieGen2,
+				AspmL0sL1, 0)
 	}
 };
 

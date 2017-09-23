@@ -22,37 +22,61 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 8, 15),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 2, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, BIT2)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 2,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, BIT2)
 	},
 	// Initialize Port descriptor (PCIe port, Lanes 16:19, PCI Device Number 3, ...)
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 16, 19),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 3, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, BIT3)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 3,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, BIT3)
 	},
 	// Initialize Port descriptor (PCIe port, Lanes 4, PCI Device Number 4, ...)
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 4),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 4,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, 0)
 	},
 	// Initialize Port descriptor (PCIe port, Lanes 5, PCI Device Number 5, ...)
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 5, 5),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 5, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 5,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, 0)
 	},
 	// Initialize Port descriptor (PCIe port, Lanes 6, PCI Device Number 6, ...)
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 6, 6),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 6, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 6,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, 0)
 	},
 	// Initialize Port descriptor (PCIe port, Lanes 7, PCI Device Number 7, ...)
 	{
 		DESCRIPTOR_TERMINATE_LIST,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 7, 7),
-		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 7, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 7,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, 0)
 	}
 };
 

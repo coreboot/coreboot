@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include "PlatformGnbPcieComplex.h"
 
 #include <string.h>
 #include <northbridge/amd/agesa/state_machine.h>
@@ -59,12 +58,6 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 7, 7),
 		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 7, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
 	}
-	// Initialize Port descriptor (PCIe port, Lanes 8, PCI Device Number 8, ...)
-//	{
-//		DESCRIPTOR_TERMINATE_LIST,
-//		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 8, 8),
-//		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 8, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
-//	}
 };
 
 static const PCIe_DDI_DESCRIPTOR DdiList [] = {

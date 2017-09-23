@@ -15,7 +15,6 @@
 
 #include "AGESA.h"
 #include <PlatformMemoryConfiguration.h>
-#include "PlatformGnbPcieComplex.h"
 
 #include <northbridge/amd/agesa/state_machine.h>
 
@@ -24,13 +23,13 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 7),
-		PCIE_PORT_DATA_INITIALIZER(GNB_GPP_PORT4_PORT_PRESENT, GNB_GPP_PORT4_CHANNEL_TYPE, 4, GNB_GPP_PORT4_HOTPLUG_SUPPORT, GNB_GPP_PORT4_SPEED_MODE, GNB_GPP_PORT4_SPEED_MODE, GNB_GPP_PORT4_LINK_ASPM, 0)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGen2, PcieGen2, AspmL0sL1, 0)
 	},
 	// Initialize Port descriptor (PCIe port, Lanes 8, PCI Device Number 8, ...)
 	{
 		DESCRIPTOR_TERMINATE_LIST,
 		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 3),
-		PCIE_PORT_DATA_INITIALIZER(GNB_GPP_PORT8_PORT_PRESENT, GNB_GPP_PORT8_CHANNEL_TYPE, 8, GNB_GPP_PORT8_HOTPLUG_SUPPORT, GNB_GPP_PORT8_SPEED_MODE, GNB_GPP_PORT8_SPEED_MODE, GNB_GPP_PORT8_LINK_ASPM, 0)
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 8, HotplugDisabled, PcieGen2, PcieGen2, AspmL0sL1, 0)
 	}
 };
 

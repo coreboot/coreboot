@@ -15,42 +15,41 @@
 
 #include "AGESA.h"
 #include <PlatformMemoryConfiguration.h>
-#include "PlatformGnbPcieComplex.h"
 
 #include <string.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
-        // Initialize Port descriptor (PCIe port, Lanes 4, PCI Device Number 4, ...)
-        {
-          0,
-          PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 4),
-          PCIE_PORT_DATA_INITIALIZER(GNB_GPP_PORT4_PORT_PRESENT, GNB_GPP_PORT4_CHANNEL_TYPE, 4, GNB_GPP_PORT4_HOTPLUG_SUPPORT, GNB_GPP_PORT4_SPEED_MODE, GNB_GPP_PORT4_SPEED_MODE, GNB_GPP_PORT4_LINK_ASPM, 4)
-        },
-        // Initialize Port descriptor (PCIe port, Lanes 5, PCI Device Number 5, ...)
-        {
-          0,
-          PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 5, 5),
-          PCIE_PORT_DATA_INITIALIZER(GNB_GPP_PORT5_PORT_PRESENT, GNB_GPP_PORT5_CHANNEL_TYPE, 5, GNB_GPP_PORT5_HOTPLUG_SUPPORT, GNB_GPP_PORT5_SPEED_MODE, GNB_GPP_PORT5_SPEED_MODE, GNB_GPP_PORT5_LINK_ASPM, 5)
-        },
-        // Initialize Port descriptor (PCIe port, Lanes 6, PCI Device Number 6, ...)
-        {
-          0,
-          PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 6, 6),
-          PCIE_PORT_DATA_INITIALIZER(GNB_GPP_PORT6_PORT_PRESENT, GNB_GPP_PORT6_CHANNEL_TYPE, 6, GNB_GPP_PORT6_HOTPLUG_SUPPORT, GNB_GPP_PORT6_SPEED_MODE, GNB_GPP_PORT6_SPEED_MODE, GNB_GPP_PORT6_LINK_ASPM, 6)
-        },
-        // Initialize Port descriptor (PCIe port, Lanes 7, PCI Device Number 7, ...)
-        {
-          0,
-          PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 7, 7),
-          PCIE_PORT_DATA_INITIALIZER(GNB_GPP_PORT7_PORT_PRESENT, GNB_GPP_PORT7_CHANNEL_TYPE, 7, GNB_GPP_PORT7_HOTPLUG_SUPPORT, GNB_GPP_PORT7_SPEED_MODE, GNB_GPP_PORT7_SPEED_MODE, GNB_GPP_PORT7_LINK_ASPM, 7)
-        },
-        // Initialize Port descriptor (PCIe port, Lanes 8, PCI Device Number 8, ...)
-        {
-          DESCRIPTOR_TERMINATE_LIST,
-          PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 3),
-          PCIE_PORT_DATA_INITIALIZER(GNB_GPP_PORT8_PORT_PRESENT, GNB_GPP_PORT8_CHANNEL_TYPE, 8, GNB_GPP_PORT8_HOTPLUG_SUPPORT, GNB_GPP_PORT8_SPEED_MODE, GNB_GPP_PORT8_SPEED_MODE, GNB_GPP_PORT8_LINK_ASPM, 0)
-        }
+	// Initialize Port descriptor (PCIe port, Lanes 4, PCI Device Number 4, ...)
+	{
+		0,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 4),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGen2, PcieGen2, AspmL0sL1, 4)
+	},
+	// Initialize Port descriptor (PCIe port, Lanes 5, PCI Device Number 5, ...)
+	{
+		0,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 5, 5),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 5, HotplugDisabled, PcieGen2, PcieGen2, AspmL0sL1, 5)
+	},
+	// Initialize Port descriptor (PCIe port, Lanes 6, PCI Device Number 6, ...)
+	{
+		0,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 6, 6),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 6, HotplugDisabled, PcieGen2, PcieGen2, AspmL0sL1, 6)
+	},
+	// Initialize Port descriptor (PCIe port, Lanes 7, PCI Device Number 7, ...)
+	{
+		0,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 7, 7),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 7, HotplugDisabled, PcieGen2, PcieGen2, AspmL0sL1, 7)
+	},
+	// Initialize Port descriptor (PCIe port, Lanes 8, PCI Device Number 8, ...)
+	{
+		DESCRIPTOR_TERMINATE_LIST,
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 3),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 8, HotplugDisabled, PcieGen2, PcieGen2, AspmL0sL1, 0)
+	}
 };
 
 static const PCIe_DDI_DESCRIPTOR DdiList[] = {

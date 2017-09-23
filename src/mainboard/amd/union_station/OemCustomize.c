@@ -77,15 +77,13 @@ static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 8, 11),
-		//PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux1, Hdp1)
-		{ConnectorTypeHDMI, Aux1, Hdp1}
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeHDMI, Aux1, Hdp1)
 	},
 	// Initialize Ddi descriptor (DDI interface Lanes 12:15, DdB, ...)
 	{
 		DESCRIPTOR_TERMINATE_LIST,
 		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 12, 15),
-		//PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux2, Hdp2)
-		{ConnectorTypeHDMI, Aux2, Hdp2}
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeHDMI, Aux2, Hdp2)
 	}
 };
 

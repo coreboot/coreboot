@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <AGESA.h>
 #include <northbridge/amd/pi/agesawrapper.h>
 
 

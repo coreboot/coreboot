@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <AGESA.h>
 #include <agesawrapper.h>
 #include <PlatformMemoryConfiguration.h>
 

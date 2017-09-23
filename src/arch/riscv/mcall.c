@@ -92,16 +92,13 @@ uintptr_t mcall_set_timer(uint64_t when)
 
 void hls_init(uint32_t hart_id)
 {
-	query_result res;
-
 	printk(BIOS_SPEW, "hart %d: HLS is %p\n", hart_id, HLS());
 	memset(HLS(), 0, sizeof(*HLS()));
 	HLS()->hart_id = hart_id;
 
-	res = query_config_string(configstring(), "rtc{addr");
-	HLS()->time = (void *)get_uint(res);
-	res = query_config_string(configstring(), "core{0{0{timecmp");
-	HLS()->timecmp = (void *)get_uint(res);
+	/* Initialize these pointers with dummy values, for now */
+	HLS()->time = NULL;
+	HLS()->timecmp = NULL;
 
 	printk(BIOS_SPEW, "Time is %p and timecmp is %p\n",
 	       HLS()->time, HLS()->timecmp);

@@ -1,5 +1,7 @@
 ifeq ($(CONFIG_SOC_AMD_COMMON),y)
 
+CPPFLAGS_common += -I$(src)/soc/amd/common
+
 bootblock-y += agesawrapper.c
 bootblock-y += def_callouts.c
 bootblock-y += heapmanager.c

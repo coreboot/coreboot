@@ -23,7 +23,6 @@
 #define HAS_LEGACY_WRAPPER CONFIG(BINARYPI_LEGACY_WRAPPER)
 
 /* eventlog */
-const char *agesa_struct_name(int state);
 void agesawrapper_trace(AGESA_STATUS ret, AMD_CONFIG_PARAMS *StdHeader, const char *func);
 AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus);
 
@@ -54,6 +53,17 @@ void board_BeforeAgesa(struct sysinfo *cb);
 void platform_once(struct sysinfo *cb);
 
 void agesa_set_interface(struct sysinfo *cb);
+
+struct agesa_state {
+	u8 apic_id;
+
+	AGESA_STRUCT_NAME func;
+	const char *function_name;
+};
+
+void agesa_state_on_entry(struct agesa_state *task, AGESA_STRUCT_NAME func);
+void agesa_state_on_exit(struct agesa_state *task,
+	AMD_CONFIG_PARAMS *StdHeader);
 int agesa_execute_state(struct sysinfo *cb, AGESA_STRUCT_NAME func);
 
 /* AGESA dispatchers */

@@ -1,6 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2016 Kyösti Mälkki
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -18,6 +20,7 @@
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <amdlib.h>
+#include <debug_util.h>
 #include <AGESA.h>
 #include <AMD.h>
 
@@ -40,7 +43,7 @@ static const char *AgesaFunctionNameStr[] = {
  * under vendorcode/ tree.
  */
 
-const char *agesa_struct_name(int state)
+static const char *agesa_struct_name(AGESA_STRUCT_NAME state)
 {
 #if CONFIG(CPU_AMD_AGESA_OPENSOURCE)
 	if ((state < AMD_INIT_RECOVERY) || (state > AMD_IDENTIFY_DIMMS))
@@ -55,6 +58,27 @@ const char *agesa_struct_name(int state)
 	int index = state - (AMD_INIT_RECOVERY >> 12);
 #endif
 	return AgesaFunctionNameStr[index];
+}
+
+void agesa_state_on_entry(struct agesa_state *task, AGESA_STRUCT_NAME func)
+{
+	task->apic_id = (u8) (cpuid_ebx(1) >> 24);
+	task->func = func;
+	task->function_name = agesa_struct_name(func);
+
+	printk(BIOS_DEBUG, "\nAPIC %02d: ** Enter %s [%08x]\n",
+		task->apic_id, task->function_name, task->func);
+}
+
+void agesa_state_on_exit(struct agesa_state *task,
+	AMD_CONFIG_PARAMS *StdHeader)
+{
+	printk(BIOS_DEBUG, "APIC %02d: Heap in %s (%d) at 0x%08x\n",
+		task->apic_id, heap_status_name(StdHeader->HeapStatus),
+		StdHeader->HeapStatus, (u32)StdHeader->HeapBasePtr);
+
+	printk(BIOS_DEBUG, "APIC %02d: ** Exit  %s [%08x]\n",
+		task->apic_id, task->function_name, task->func);
 }
 
 /*

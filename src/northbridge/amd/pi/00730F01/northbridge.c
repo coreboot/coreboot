@@ -30,7 +30,6 @@
 #include <Porting.h>
 #include <AGESA.h>
 #include <FieldAccessors.h>
-#include <Options.h>
 #include <Topology.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)

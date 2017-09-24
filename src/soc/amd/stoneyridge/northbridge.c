@@ -41,7 +41,6 @@
  */
 #include <AGESA.h>
 #include <FieldAccessors.h>
-#include <Options.h>
 #include <Porting.h>
 #include <Topology.h>
 

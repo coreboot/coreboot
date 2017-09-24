@@ -18,7 +18,6 @@
 #include <cbmem.h>
 #include <delay.h>
 #include <cpu/x86/mtrr.h>
-#include <cpuRegisters.h>
 #include <FchPlatform.h>
 #include <heapManager.h>
 #include <agesawrapper.h>

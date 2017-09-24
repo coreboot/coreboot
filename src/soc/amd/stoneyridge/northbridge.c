@@ -40,7 +40,6 @@
  * and not set by vendorcode
  */
 #include <AGESA.h>
-#include <cpuRegisters.h>
 #include <FieldAccessors.h>
 #include <Options.h>
 #include <Porting.h>
@@ -573,7 +572,7 @@ void cpu_bus_scan(device_t dev)
 	}
 
 	/* Get max and actual number of cores */
-	pccount = cpuid_ecx(AMD_CPUID_ASIZE_PCCOUNT);
+	pccount = cpuid_ecx(0x80000008);
 	core_max = 1 << ((pccount >> 12) & 0xf);
 	core_nums = (pccount & 0xF);
 

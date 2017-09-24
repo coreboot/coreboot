@@ -32,7 +32,6 @@
 #include <FieldAccessors.h>
 #include <Options.h>
 #include <Topology.h>
-#include <cpuRegisters.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
 #include <northbridge/amd/pi/agesawrapper.h>
@@ -935,7 +934,7 @@ static void cpu_bus_scan(device_t dev)
 #endif
 
 	/* Get Max Number of cores(MNC) */
-	coreid_bits = (cpuid_ecx(AMD_CPUID_ASIZE_PCCOUNT) & 0x0000F000) >> 12;
+	coreid_bits = (cpuid_ecx(0x80000008) & 0x0000F000) >> 12;
 	core_max = 1 << (coreid_bits & 0x000F); //mnc
 
 	ApicIdCoreIdSize = ((cpuid_ecx(0x80000008)>>12) & 0xF);

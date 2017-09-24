@@ -42,7 +42,6 @@
 // TODO This list needs to be pruned of anything that is not API
 #include "AGESA.h"
 #include "agesawrapper.h"
-#include "FieldAccessors.h"
 #include "AcpiLib.h"
 #include "FchCommonCfg.h"
 #include "Fch.h"
@@ -460,76 +459,4 @@ HeapDeallocateBuffer (
 	InterfaceParams.NewStructPtr = &BufferHandle;
 
 	return Dispatcher(&InterfaceParams);
-}
-
-/**********************************************************************
- * Interface call:  AmdSetValue
- **********************************************************************/
-AGESA_STATUS
-AmdSetValue (
-  IN       CONST AGESA_FIELD_NAME name,
-  IN OUT   VOID* value,
-  IN       UINT32 size
-  )
-{
-	AGESA_STATUS status = AGESA_UNSUPPORTED;
-
-	MODULE_ENTRY Dispatcher = NULL;
-	const AMD_MODULE_HEADER* module = agesawrapper_locate_module(ModuleIdentifier);
-
-	AMD_ACCESSOR_PARAMS AccessorParams = {};
-
-	if (!module) return status;
-	Dispatcher = module->ModuleDispatcher;
-
-	AccessorParams.StdHeader.AltImageBasePtr = 0;
-	AccessorParams.StdHeader.CalloutPtr = NULL;
-	AccessorParams.StdHeader.Func = AMD_SET_VALUE;
-	AccessorParams.StdHeader.ImageBasePtr = 0;
-
-	AccessorParams.AllocationMethod = ByHost;
-	AccessorParams.FieldName = name;
-	AccessorParams.FieldValue = value;
-	AccessorParams.FieldSize = size;
-
-	status = Dispatcher(&AccessorParams);
-	return status;
-}
-
-/**********************************************************************
- * Interface call:  AmdGetValue
- **********************************************************************/
-AGESA_STATUS
-AmdGetValue (
-  IN       CONST AGESA_FIELD_NAME name,
-  IN OUT   VOID** value,
-  IN       UINT32 size
-  )
-{
-	AGESA_STATUS status = AGESA_UNSUPPORTED;
-
-	MODULE_ENTRY Dispatcher = NULL;
-	const AMD_MODULE_HEADER* module = agesawrapper_locate_module(ModuleIdentifier);
-
-	AMD_ACCESSOR_PARAMS AccessorParams = {};
-
-	if (!module) return status;
-	Dispatcher = module->ModuleDispatcher;
-
-	AccessorParams.StdHeader.AltImageBasePtr = 0;
-	AccessorParams.StdHeader.CalloutPtr = NULL;
-	AccessorParams.StdHeader.Func = AMD_GET_VALUE;
-	AccessorParams.StdHeader.ImageBasePtr = 0;
-
-	AccessorParams.AllocationMethod = ByHost;
-	AccessorParams.FieldName = name;
-	AccessorParams.FieldValue = *value;
-	AccessorParams.FieldSize = size;
-
-	status = Dispatcher(&AccessorParams);
-
-	*value = AccessorParams.FieldValue;
-	size = AccessorParams.FieldSize;
-
-	return status;
 }

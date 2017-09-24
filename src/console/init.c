@@ -33,7 +33,7 @@ static int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 
 static inline int get_log_level(void)
 {
-	if (IS_ENABLED(CONSOLE_LEVEL_CONST))
+	if (CONSOLE_LEVEL_CONST)
 		return CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 
 	return console_loglevel;
@@ -50,6 +50,9 @@ static inline void set_log_level(int new_level)
 static void init_log_level(void)
 {
 	int debug_level = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+
+	if (CONSOLE_LEVEL_CONST)
+		return;
 
 	get_option(&debug_level, "debug_level");
 

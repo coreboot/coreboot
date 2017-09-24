@@ -14,11 +14,9 @@
 #
 
 CPPFLAGS_x86_32 += -I$(src)/southbridge/amd/cimx/sb800
-CPPFLAGS_x86_32 += -I$(src)/include/cpu/amd/common
 CPPFLAGS_x86_32 += -I$(src)/vendorcode/amd/cimx/sb800
 
 CPPFLAGS_x86_64 += -I$(src)/southbridge/amd/cimx/sb800
-CPPFLAGS_x86_64 += -I$(src)/include/cpu/amd/common
 CPPFLAGS_x86_64 += -I$(src)/vendorcode/amd/cimx/sb800
 
 romstage-y += ACPILIB.c

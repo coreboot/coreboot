@@ -16,7 +16,7 @@
 #ifndef _AMD_H_
 #define _AMD_H_
 
-#include <cpu/amd/common/cbtypes.h>
+#include "cbtypes.h"
 
 #define VOLATILE  volatile
 #define CALLCONV

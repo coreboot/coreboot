@@ -81,7 +81,7 @@
 
 
 #define CIMX_S3_SAVE 1
-#include <cpu/amd/common/cbtypes.h>
+#include "cbtypes.h"
 #include <console/console.h>
 
 #include "amd.h" //cimx typedef

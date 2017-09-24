@@ -18,7 +18,7 @@
 
 #pragma pack(push,1)
 
-#include <cpu/amd/common/cbtypes.h>
+#include "cbtypes.h"
 #include <console/console.h>
 #include <commonlib/loglevel.h>
 #ifdef NULL

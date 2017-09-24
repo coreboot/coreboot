@@ -17,7 +17,7 @@
 #define _GPIO_H_
 
 #include <stdint.h>
-#include <cbtypes.h>
+#include "cbtypes.h"
 
 #define Mmio_Address( BaseAddr, Register ) \
 	( (UINTN)BaseAddr + \

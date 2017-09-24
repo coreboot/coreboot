@@ -36,6 +36,7 @@ AGESA_INC  = -I$(src)/vendorcode/amd/include
 AGESA_INC += -I$(AGESA_ROOT)
 AGESA_INC += -I$(AGESA_ROOT)/../common
 AGESA_INC += -I$(AGESA_ROOT)/Include
+AGESA_INC += -I$(src)/mainboard/$(MAINBOARDDIR)	# OptionsIds.h
 
 BUILDOPTS_INCLUDES = -I$(AGESA_ROOT)/Config $(AGESA_INC) $(AGESA_AUTOINCLUDES)
 

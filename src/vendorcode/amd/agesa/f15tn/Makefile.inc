@@ -36,6 +36,7 @@ AGESA_INC  = -I$(src)/vendorcode/amd/include
 AGESA_INC += -I$(AGESA_ROOT)
 AGESA_INC += -I$(AGESA_ROOT)/../common
 AGESA_INC += -I$(AGESA_ROOT)/Include
+AGESA_INC += -I$(src)/mainboard/$(MAINBOARDDIR)	# OptionsIds.h
 
 BUILDOPTS_INCLUDES = -I$(AGESA_ROOT)/Config $(AGESA_INC) $(AGESA_AUTOINCLUDES)
 
@@ -47,7 +48,6 @@ CFLAGS_x86_64 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno
 CPPFLAGS_x86_ANY =
 CPPFLAGS_x86_ANY += -I$(AGESA_ROOT)/Proc/CPU			# heapManager.h
 CPPFLAGS_x86_ANY += -I$(AGESA_ROOT)/Proc/CPU/Family
-CPPFLAGS_x86_ANY += -I$(AGESA_ROOT)/Proc/IDS			# OptionsIds.h
 
 CPPFLAGS_x86_ANY += -I$(AGESA_ROOT)/Proc/Fch			# FchPlatform.h
 CPPFLAGS_x86_ANY += -I$(AGESA_ROOT)/Proc/Fch/Common		# FchCommonCfg.h

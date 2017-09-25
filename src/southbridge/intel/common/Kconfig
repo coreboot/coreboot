@@ -8,6 +8,10 @@ config SOUTHBRIDGE_INTEL_COMMON_SMBUS
 	def_bool n
 	select HAVE_DEBUG_SMBUS
 
+config SOUTHBRIDGE_INTEL_COMMON_SPI
+	def_bool n
+	select SPI_FLASH
+
 config HAVE_INTEL_CHIPSET_LOCKDOWN
 	def_bool n
 

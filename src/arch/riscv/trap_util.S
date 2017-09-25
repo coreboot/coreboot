@@ -128,10 +128,14 @@ trap_entry:
 .Lsmp_hang:
   bnez sp, .Lsmp_hang
 
-  # TODO: Use the old stack pointer (plus an offset) for exceptions in machine
-  # mode, to avoid overwriting stack data.
-    la	sp, _estack
-    addi sp,sp,-MENTRY_FRAME_SIZE
+  # Use a different stack than in the main context, to to avoid overwriting
+  # stack data.
+  # TODO: Maybe use the old stack pointer (plus an offset) instead. But only if
+  # the previous mode was M, because it would be a very bad idea to use a stack
+  # pointer provided by unprivileged code!
+  la	sp, _estack
+  addi	sp, sp, -2048	# 2 KiB is half of the stack space
+  addi	sp, sp, -MENTRY_FRAME_SIZE
 
   save_tf
   move  a0,sp

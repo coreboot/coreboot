@@ -33,10 +33,49 @@
 #include <spd.h>
 #include <string.h>
 #include <device/dram/ddr2.h>
+#include <mrc_cache.h>
+
+#define MRC_CACHE_VERSION 0
 
 static inline int spd_read_byte(unsigned int device, unsigned int address)
 {
 	return smbus_read_byte(device, address);
+}
+
+static enum cb_err verify_spds(const u8 *spd_map,
+			const struct sysinfo *ctrl_cached)
+{
+	int i;
+	u8 raw_spd[256] = {};
+	u16 crc;
+
+	for (i = 0; i < TOTAL_DIMMS; i++) {
+		if (!(spd_map[i]))
+			continue;
+		int len = smbus_read_byte(spd_map[i], 0);
+		if (len < 0 && ctrl_cached->dimms[i].card_type
+				== RAW_CARD_UNPOPULATED)
+			continue;
+		if (len > 0 && ctrl_cached->dimms[i].card_type
+				== RAW_CARD_UNPOPULATED)
+			return CB_ERR;
+
+		if (ctrl_cached->spd_type == DDR2) {
+			i2c_block_read(spd_map[i], 64, 9, &raw_spd[64]);
+			i2c_block_read(spd_map[i], 93, 6, &raw_spd[93]);
+			crc = spd_ddr2_calc_unique_crc(raw_spd, len);
+		} else { /*
+			  * DDR3: TODO ddr2.h and ddr3.h
+			  * cannot be included directly
+			  */
+			crc = 0;
+			// i2c_block_read(spd_map[i], 117, 11, &raw_spd[117]);
+			// crc = spd_ddr3_calc_unique_crc(raw_spd, len);
+		}
+		if (crc != ctrl_cached->dimms[i].spd_crc)
+			return CB_ERR;
+	}
+	return CB_SUCCESS;
 }
 
 struct abs_timings {
@@ -192,6 +231,9 @@ static int ddr2_save_dimminfo(u8 dimm_idx, u8 *raw_spd,
 				MAX(saved_timings->min_tCLK_cas[i],
 					decoded_dimm.cycle_time[i]);
 	}
+
+	s->dimms[dimm_idx].spd_crc = spd_ddr2_calc_unique_crc(raw_spd,
+					spd_decode_spd_size_ddr2(raw_spd[0]));
 	return CB_SUCCESS;
 }
 
@@ -292,10 +334,10 @@ static void decode_spd_select_timings(struct sysinfo *s)
 		if (s->spd_type == DDR2){
 			printk(BIOS_DEBUG,
 				"Reading SPD using i2c block operation.\n");
-			if (i2c_block_read(device, 0, 64, raw_spd) != 64) {
+			if (i2c_block_read(device, 0, 128, raw_spd) != 128) {
 				printk(BIOS_DEBUG, "i2c block operation failed,"
 					" trying smbus byte operation.\n");
-				for (j = 0; j < 64; j++)
+				for (j = 0; j < 128; j++)
 					raw_spd[j] = spd_read_byte(device, j);
 			}
 			if (ddr2_save_dimminfo(i, raw_spd, &saved_timings, s)) {
@@ -385,8 +427,10 @@ static void checkreset_ddr2(int boot_path)
  */
 void sdram_initialize(int boot_path, const u8 *spd_map)
 {
-	struct sysinfo s;
+	struct sysinfo s, *ctrl_cached;
 	u8 reg8;
+	int fast_boot, cbmem_was_inited, cache_not_found;
+	struct region_device rdev;
 
 	printk(BIOS_DEBUG, "Setting up RAM controller.\n");
 
@@ -394,28 +438,62 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 
 	memset(&s, 0, sizeof(struct sysinfo));
 
-	s.boot_path = boot_path;
-	s.spd_map[0] = spd_map[0];
-	s.spd_map[1] = spd_map[1];
-	s.spd_map[2] = spd_map[2];
-	s.spd_map[3] = spd_map[3];
+	cache_not_found = mrc_cache_get_current(MRC_TRAINING_DATA,
+						MRC_CACHE_VERSION, &rdev);
 
-	checkreset_ddr2(s.boot_path);
+	if (cache_not_found || (region_device_sz(&rdev) < sizeof(s))) {
+		if (boot_path == BOOT_PATH_RESUME) {
+			/* Failed S3 resume, reset to come up cleanly */
+			outb(0x6, 0xcf9);
+			halt();
+		}
+		ctrl_cached = NULL;
+	} else {
+		ctrl_cached = rdev_mmap_full(&rdev);
+	}
 
-	/* Detect dimms per channel */
-	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xe9);
-	printk(BIOS_DEBUG, "Dimms per channel: %d\n", (reg8 & 0x10) ? 1 : 2);
+	/* verify MRC cache for fast boot */
+	if (boot_path != BOOT_PATH_RESUME && ctrl_cached) {
+		/* check SPD checksum to make sure the DIMMs haven't been
+		 * replaced */
+		fast_boot = verify_spds(spd_map, ctrl_cached) == CB_SUCCESS;
+		if (!fast_boot)
+			printk(BIOS_DEBUG, "SPD checksums don't match,"
+				" dimm's have been replaced\n");
+	} else {
+		fast_boot = boot_path == BOOT_PATH_RESUME;
+	}
 
-	mchinfo_ddr2(&s);
+	if (fast_boot) {
+		printk(BIOS_DEBUG, "Using cached raminit settings\n");
+		memcpy(&s, ctrl_cached, sizeof(s));
+		s.boot_path = boot_path;
+		mchinfo_ddr2(&s);
+		print_selected_timings(&s);
+	} else {
+		s.boot_path = boot_path;
+		s.spd_map[0] = spd_map[0];
+		s.spd_map[1] = spd_map[1];
+		s.spd_map[2] = spd_map[2];
+		s.spd_map[3] = spd_map[3];
+		checkreset_ddr2(s.boot_path);
 
-	find_fsb_speed(&s);
-	decode_spd_select_timings(&s);
-	print_selected_timings(&s);
-	find_dimm_config(&s);
+		/* Detect dimms per channel */
+		reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xe9);
+		printk(BIOS_DEBUG, "Dimms per channel: %d\n",
+			(reg8 & 0x10) ? 1 : 2);
+
+		mchinfo_ddr2(&s);
+
+		find_fsb_speed(&s);
+		decode_spd_select_timings(&s);
+		print_selected_timings(&s);
+		find_dimm_config(&s);
+	}
 
 	switch (s.spd_type) {
 	case DDR2:
-		raminit_ddr2(&s);
+		raminit_ddr2(&s, fast_boot);
 		break;
 	case DDR3:
 		// FIXME Add: raminit_ddr3(&s);
@@ -431,4 +509,14 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf4);
 	pci_write_config8(PCI_DEV(0, 0, 0), 0xf4, reg8 | 1);
 	printk(BIOS_DEBUG, "RAM initialization finished.\n");
+
+	cbmem_was_inited = !cbmem_recovery(s.boot_path == BOOT_PATH_RESUME);
+	if (!fast_boot)
+		mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION,
+					&s, sizeof(s));
+	if (s.boot_path == BOOT_PATH_RESUME && !cbmem_was_inited) {
+		/* Failed S3 resume, reset to come up cleanly */
+		outb(0x6, 0xcf9);
+		halt();
+	}
 }

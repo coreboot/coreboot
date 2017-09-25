@@ -1045,77 +1045,46 @@ static void jedec_ddr2(struct sysinfo *s)
 	printk(BIOS_DEBUG, "MRS done\n");
 }
 
-static void sdram_save_receive_enable(void)
+static void sdram_recover_receive_enable(const struct sysinfo *s)
 {
-	int i = 0;
-	u16 reg16;
-	u8 values[18];
-	u8 lane, ch;
-
-	FOR_EACH_CHANNEL(ch) {
-		lane = 0;
-		while (lane < 8) {
-			values[i] = (MCHBAR8(0x400*ch + 0x560 + lane++ * 4) & 0xf);
-			values[i++] |= (MCHBAR8(0x400*ch + 0x560 + lane++ * 4) & 0xf) << 4;
-		}
-		values[i++] = (MCHBAR32(0x400*ch + 0x248) >> 16) & 0xf;
-		reg16 = MCHBAR16(0x400*ch + 0x5fa);
-		values[i++] = reg16 & 0xff;
-		values[i++] = (reg16 >> 8) & 0xff;
-		reg16 = MCHBAR16(0x400*ch + 0x58c);
-		values[i++] = reg16 & 0xff;
-		values[i++] = (reg16 >> 8) & 0xff;
-	}
-
-	for (i = 0; i < ARRAY_SIZE(values); i++)
-		cmos_write(values[i], 128 + i);
-}
-
-static void sdram_recover_receive_enable(void)
-{
-	u8 i;
 	u32 reg32;
-	u16 reg16;
-	u8 values[18];
-	u8 ch, lane;
+	u16 medium, coarse_offset;
+	u8 pi_tap;
+	int lane, channel;
 
-	for (i = 0; i < ARRAY_SIZE(values); i++)
-		values[i] = cmos_read(128 + i);
+	FOR_EACH_POPULATED_CHANNEL(s->dimms, channel) {
+		medium = 0;
+		coarse_offset = 0;
+		reg32 = MCHBAR32(0x400 * channel + 0x248);
+		reg32 &= ~0xf0000;
+		reg32 |= s->rcven_t[channel].min_common_coarse << 16;
+		MCHBAR32(0x400 * channel + 0x248) = reg32;
 
-	i = 0;
-	FOR_EACH_CHANNEL(ch) {
-		lane = 0;
-		while (lane < 8) {
-			MCHBAR8(0x400*ch + 0x560 + lane++ * 4) = 0x70 |
-				(values[i] & 0xf);
-			MCHBAR8(0x400*ch + 0x560 + lane++ * 4) = 0x70 |
-				((values[i++] >> 4) & 0xf);
+		for (lane = 0; lane < 8; lane++) {
+			medium |= s->rcven_t[channel].medium[lane]
+				<< (lane * 2);
+			coarse_offset |=
+				(s->rcven_t[channel].coarse_offset[lane] & 0x3)
+				<< (lane * 2);
+
+			pi_tap = MCHBAR8(0x400 * channel + 0x560 + lane * 4);
+			pi_tap &= ~0x7f;
+			pi_tap |= s->rcven_t[channel].tap[lane];
+			pi_tap |= s->rcven_t[channel].pi[lane] << 4;
+			MCHBAR8(0x400 * channel + 0x560 + lane * 4) = pi_tap;
 		}
-		reg32 = (MCHBAR32(0x400*ch + 0x248) & ~0xf0000)
-		  | ((values[i++] & 0xf) << 16);
-		MCHBAR32(0x400*ch + 0x248) = reg32;
-		reg16 = values[i++];
-		reg16 |= values[i++] << 8;
-		MCHBAR16(0x400*ch + 0x5fa) = reg16;
-		reg16 = values[i++];
-		reg16 |= values[i++] << 8;
-		MCHBAR16(0x400*ch + 0x58c) = reg16;
+		MCHBAR16(0x400 * channel + 0x58c) = medium;
+		MCHBAR16(0x400 * channel + 0x5fa) = coarse_offset;
 	}
 }
 
-static void sdram_program_receive_enable(struct sysinfo *s)
+static void sdram_program_receive_enable(struct sysinfo *s, int fast_boot)
 {
-	/* enable upper CMOS */
-	RCBA32(0x3400) = (1 << 2);
-
 	/* Program Receive Enable Timings */
-	if ((s->boot_path == BOOT_PATH_WARM_RESET)
-		|| (s->boot_path == BOOT_PATH_RESUME)) {
-		sdram_recover_receive_enable();
-	} else {
+	if (fast_boot)
+		sdram_recover_receive_enable(s);
+	else
 		rcven(s);
-		sdram_save_receive_enable();
-	}
 }
 
 static void dradrb_ddr2(struct sysinfo *s)
@@ -1470,7 +1439,7 @@ static void power_ddr2(struct sysinfo *s)
 		MCHBAR8(0x561 + (lane << 2)) = MCHBAR8(0x561 + (lane << 2)) & ~(1 << 3);
 }
 
-void raminit_ddr2(struct sysinfo *s)
+void raminit_ddr2(struct sysinfo *s, int fast_boot)
 {
 	u8 ch;
 	u8 r, bank;
@@ -1613,7 +1582,7 @@ void raminit_ddr2(struct sysinfo *s)
 	}
 
 	// Receive enable
-	sdram_program_receive_enable(s);
+	sdram_program_receive_enable(s, fast_boot);
 	printk(BIOS_DEBUG, "Done rcven\n");
 
 	// Finish rcven

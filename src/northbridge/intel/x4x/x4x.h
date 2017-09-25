@@ -279,6 +279,15 @@ struct dimminfo {
 	unsigned int	ranks;
 	unsigned int	rows;
 	unsigned int	cols;
+	u16             spd_crc;
+};
+
+struct rcven_timings {
+	u8 min_common_coarse;
+	u8 coarse_offset[8];
+	u8 medium[8];
+	u8 tap[8];
+	u8 pi[8];
 };
 
 /* The setup is up to two DIMMs per channel */
@@ -293,6 +302,7 @@ struct sysinfo {
 	struct timings	selected_timings;
 	struct dimminfo	dimms[4];
 	u8		spd_map[4];
+	struct rcven_timings rcven_t[TOTAL_CHANNELS];
 };
 #define BOOT_PATH_NORMAL	0
 #define BOOT_PATH_WARM_RESET	1
@@ -331,8 +341,8 @@ u32 decode_igd_memory_size(u32 gms);
 u32 decode_igd_gtt_size(u32 gsm);
 u8 decode_pciebar(u32 *const base, u32 *const len);
 void sdram_initialize(int boot_path, const u8 *spd_map);
-void raminit_ddr2(struct sysinfo *);
-void rcven(const struct sysinfo *);
+void raminit_ddr2(struct sysinfo *s, int fast_boot);
+void rcven(struct sysinfo *s);
 u32 fsb2mhz(u32 speed);
 u32 ddr2mhz(u32 speed);
 

@@ -242,15 +242,6 @@ static void init_dmi(void)
 
 static void x4x_prepare_resume(int s3resume)
 {
-	int cbmem_recovered;
-
-	cbmem_recovered = !cbmem_recovery(s3resume);
-	if (!cbmem_recovered && s3resume) {
-		/* Failed S3 resume, reset to come up cleanly */
-		outb(0x6, 0xcf9);
-		halt();
-	}
-
 	romstage_handoff_init(s3resume);
 }
 

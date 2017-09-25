@@ -304,7 +304,7 @@ static int calibrate_receive_enable(u8 channel, u8 lane,
 	return 0;
 }
 
-void rcven(const struct sysinfo *s)
+void rcven(struct sysinfo *s)
 {
 	int i;
 	u8 channel, lane, reg8;
@@ -354,6 +354,7 @@ void rcven(const struct sysinfo *s)
 				mincoarse = timing[lane].coarse;
 		}
 		printk(BIOS_DEBUG, "Found min coarse value = %d\n", mincoarse);
+		s->rcven_t[channel].min_common_coarse = mincoarse;
 		printk(BIOS_DEBUG, "Receive enable, final timings:\n");
 		/* Normalise coarse */
 		for (lane = 0; lane < 8; lane++) {
@@ -365,6 +366,10 @@ void rcven(const struct sysinfo *s)
 				"medium: %d; tap: %d\n",
 				channel, lane, reg8, timing[lane].medium,
 				timing[lane].tap);
+			s->rcven_t[channel].coarse_offset[lane] = reg8;
+			s->rcven_t[channel].medium[lane] = timing[lane].medium;
+			s->rcven_t[channel].tap[lane] = timing[lane].tap;
+			s->rcven_t[channel].pi[lane] = timing[lane].pi;
 			MCHBAR16(0x400 * channel + 0x5fa) =
 				(MCHBAR16(0x400 * channel + 0x5fa) &
 				~(3 << (lane * 2))) | (reg8 << (lane * 2));

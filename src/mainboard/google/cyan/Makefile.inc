@@ -18,7 +18,6 @@ romstage-$(CONFIG_CHROMEOS) += chromeos.c
 romstage-$(CONFIG_ENABLE_BUILTIN_COM1) += com_init.c
 romstage-y += spd/spd.c
 
-ramstage-y += boardid.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += ec.c
 ramstage-y += irqroute.c

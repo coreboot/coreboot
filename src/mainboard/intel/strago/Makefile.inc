@@ -14,11 +14,9 @@
 ## GNU General Public License for more details.
 ##
 
-romstage-y += boardid.c
 romstage-$(CONFIG_MAINBOARD_HAS_CHROMEOS) += chromeos.c
 romstage-$(CONFIG_ENABLE_BUILTIN_COM1) += com_init.c
 
-ramstage-y += boardid.c
 ramstage-$(CONFIG_MAINBOARD_HAS_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_MAINBOARD_HAS_CHROMEOS) += ec.c
 ramstage-$(CONFIG_MAINBOARD_HAS_CHROMEOS) += gpio.c

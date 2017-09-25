@@ -18,10 +18,8 @@ bootblock-$(CONFIG_CHROMEOS) += chromeos.c
 
 verstage-$(CONFIG_CHROMEOS) += chromeos.c
 
-romstage-y += boardid.c
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 
-ramstage-y += boardid.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 ramstage-y += mainboard.c

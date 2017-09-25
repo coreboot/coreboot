@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2016 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015-2017 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,14 +13,18 @@
  * GNU General Public License for more details.
  */
 
+#include <chip.h>
 #include <agesawrapper.h>
 
-#define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
+#define DIMMS_PER_CHANNEL 2
+#if DIMMS_PER_CHANNEL > MAX_DIMMS_PER_CH
+#error "Too many DIMM sockets defined for the mainboard"
+#endif
 
 static const PSO_ENTRY DDR4PlatformMemoryConfiguration[] = {
 	DRAM_TECHNOLOGY(ANY_SOCKET, DDR4_TECHNOLOGY),
-	NUMBER_OF_DIMMS_SUPPORTED(ANY_SOCKET, ANY_CHANNEL, 2),
-	NUMBER_OF_CHANNELS_SUPPORTED(ANY_SOCKET, 1),
+	NUMBER_OF_DIMMS_SUPPORTED(ANY_SOCKET, ANY_CHANNEL, DIMMS_PER_CHANNEL),
+	NUMBER_OF_CHANNELS_SUPPORTED(ANY_SOCKET, MAX_DRAM_CH),
 	MOTHER_BOARD_LAYERS(LAYERS_6),
 	MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL,
 				0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),

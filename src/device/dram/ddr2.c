@@ -322,6 +322,7 @@ int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 		dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
 		return SPD_STATUS_CRC_ERROR;
 	}
+	dimm->checksum = spd[63];
 
 	reg8 = spd[62];
 	if ((reg8 & 0xf0) != 0x10) {

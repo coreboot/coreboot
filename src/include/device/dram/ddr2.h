@@ -186,6 +186,7 @@ struct dimm_attr_st {
 	u32 tPLL;
 	u32 tRR;
 
+	u8 checksum;
 	/* Manufacturer ID */
 	u32 manufacturer_id;
 	/* ASCII part number - NULL terminated */

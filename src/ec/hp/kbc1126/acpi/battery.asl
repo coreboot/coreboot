@@ -235,7 +235,7 @@ Name (NDBS, Package (0x04)
 	0x04B0
 })
 
-Method (\ISTR, 2, NotSerialized)
+Method (\ISTR, 2, Serialized)
 {
 	Name (NUMB, Buffer (6) { "     " })
 	Local0 = Arg0

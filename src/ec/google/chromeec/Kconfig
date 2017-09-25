@@ -11,6 +11,12 @@ config EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
 	  not defined, the memmap data is instead accessed on 900h-9ffh via
 	  the LPC bus.
 
+config EC_GOOGLE_CHROMEEC_BOARDID
+	depends on EC_GOOGLE_CHROMEEC
+	def_bool n
+	help
+	  Provides common routine for reading boardid from Chrome EC.
+
 config EC_GOOGLE_CHROMEEC_I2C
 	depends on EC_GOOGLE_CHROMEEC
 	bool

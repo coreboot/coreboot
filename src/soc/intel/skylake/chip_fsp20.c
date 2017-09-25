@@ -271,6 +271,14 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 */
 	params->SendVrMbxCmd1 = config->SendVrMbxCmd;
 
+	/*
+	 * Activates VR mailbox command for Intersil VR C-state issues.
+	 * 0 - no mailbox command sent.
+	 * 1 - VR mailbox command sent for IA/GT rails only.
+	 * 2 - VR mailbox command sent for IA/GT/SA rails.
+	 */
+	params->IslVrCmd = config->IslVrCmd;
+
 	/* Acoustic Noise Mitigation */
 	params->AcousticNoiseMitigation = config->AcousticNoiseMitigation;
 	params->SlowSlewRateForIa = config->SlowSlewRateForIa;

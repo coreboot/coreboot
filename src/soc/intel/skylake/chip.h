@@ -518,6 +518,14 @@ struct soc_intel_skylake_config {
 		/* coreboot handles locking */
 		CHIPSET_LOCKDOWN_COREBOOT,
 	} chipset_lockdown;
+
+	/*
+	 * Activates VR mailbox command for Intersil VR C-state issues.
+	 * 0 - no mailbox command sent.
+	 * 1 - VR mailbox command sent for IA/GT rails only.
+	 * 2 - VR mailbox command sent for IA/GT/SA rails.
+	 */
+	u8 IslVrCmd;
 };
 
 typedef struct soc_intel_skylake_config config_t;

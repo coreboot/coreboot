@@ -18,6 +18,7 @@ chip soc/amd/stoneyridge
 	{
 		{ {0xA0, 0x00} }, // socket 0 - Channel 0, slot 0
 	}"
+	register "dram_clear_on_reset" = "DRAM_CONTENTS_KEEP"
 
 	device cpu_cluster 0 on
 		device lapic 10 on end

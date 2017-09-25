@@ -35,6 +35,4 @@ void OemPostParams(AMD_POST_PARAMS *PostParams)
 {
 	PostParams->MemConfig.PlatformMemoryConfiguration =
 				(PSO_ENTRY *)DDR4PlatformMemoryConfiguration;
-	/* disable memory clear for pstore memory storage and boot time */
-	PostParams->MemConfig.EnableMemClr = FALSE;
 }

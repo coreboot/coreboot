@@ -16,26 +16,40 @@
  */
 
 #include <arch/io.h>
+#include <console/console.h>
 #include <gpio.h>
 #include <soc/gpio.h>
 
-/* The following functions must be implemented by SoC/board code. */
+static uintptr_t gpio_get_address(gpio_t gpio_num)
+{
+	uintptr_t gpio_address;
+
+	if (gpio_num < 64)
+		gpio_address = GPIO_BANK0_CONTROL(gpio_num);
+	else if (gpio_num < 128)
+		gpio_address = GPIO_BANK1_CONTROL(gpio_num);
+	else
+		gpio_address = GPIO_BANK2_CONTROL(gpio_num);
+
+	return gpio_address;
+}
 
 int gpio_get(gpio_t gpio_num)
 {
 	uint32_t reg;
+	uintptr_t gpio_address = gpio_get_address(gpio_num);
 
-	reg = read32((void *)(uintptr_t)gpio_num);
+	reg = read32((void *)gpio_address);
 
 	return !!(reg & GPIO_PIN_STS);
 }
 
-
 void gpio_set(gpio_t gpio_num, int value)
 {
 	uint32_t reg;
+	uintptr_t gpio_address = gpio_get_address(gpio_num);
 
-	reg = read32((void *)(uintptr_t)gpio_num);
+	reg = read32((void *)gpio_address);
 	reg &= ~GPIO_OUTPUT_MASK;
 	reg |=  !!value << GPIO_OUTPUT_SHIFT;
 	write32((void *)(uintptr_t)gpio_num, reg);
@@ -44,8 +58,9 @@ void gpio_set(gpio_t gpio_num, int value)
 void gpio_input_pulldown(gpio_t gpio_num)
 {
 	uint32_t reg;
+	uintptr_t gpio_address = gpio_get_address(gpio_num);
 
-	reg = read32((void *)(uintptr_t)gpio_num);
+	reg = read32((void *)gpio_address);
 	reg &= ~GPIO_PULLUP_ENABLE;
 	reg |=  GPIO_PULLDOWN_ENABLE;
 	write32((void *)(uintptr_t)gpio_num, reg);
@@ -54,8 +69,9 @@ void gpio_input_pulldown(gpio_t gpio_num)
 void gpio_input_pullup(gpio_t gpio_num)
 {
 	uint32_t reg;
+	uintptr_t gpio_address = gpio_get_address(gpio_num);
 
-	reg = read32((void *)(uintptr_t)gpio_num);
+	reg = read32((void *)gpio_address);
 	reg &= ~GPIO_PULLDOWN_ENABLE;
 	reg |=  GPIO_PULLUP_ENABLE;
 	write32((void *)(uintptr_t)gpio_num, reg);
@@ -64,8 +80,9 @@ void gpio_input_pullup(gpio_t gpio_num)
 void gpio_input(gpio_t gpio_num)
 {
 	uint32_t reg;
+	uintptr_t gpio_address = gpio_get_address(gpio_num);
 
-	reg = read32((void *)(uintptr_t)gpio_num);
+	reg = read32((void *)gpio_address);
 	reg &= ~GPIO_OUTPUT_ENABLE;
 	write32((void *)(uintptr_t)gpio_num, reg);
 }
@@ -73,8 +90,9 @@ void gpio_input(gpio_t gpio_num)
 void gpio_output(gpio_t gpio_num, int value)
 {
 	uint32_t reg;
+	uintptr_t gpio_address = gpio_get_address(gpio_num);
 
-	reg = read32((void *)(uintptr_t)gpio_num);
+	reg = read32((void *)gpio_address);
 	reg |=  GPIO_OUTPUT_ENABLE;
 	write32((void *)(uintptr_t)gpio_num, reg);
 }

@@ -29,103 +29,107 @@
 #define GPIO_OUTPUT_ENABLE	(1 << 23)
 
 /* GPIO_0 - GPIO_62 */
-#define GPIO_BANK0_CONTROL (AMD_SB_ACPI_MMIO_ADDR + 0x1500)
-#define   GPIO_0	(GPIO_BANK0_CONTROL + 0x00)
-#define   GPIO_1	(GPIO_BANK0_CONTROL + 0x04)
-#define   GPIO_2	(GPIO_BANK0_CONTROL + 0x08)
-#define   GPIO_3	(GPIO_BANK0_CONTROL + 0x0c)
-#define   GPIO_4	(GPIO_BANK0_CONTROL + 0x10)
-#define   GPIO_5	(GPIO_BANK0_CONTROL + 0x14)
-#define   GPIO_6	(GPIO_BANK0_CONTROL + 0x18)
-#define   GPIO_7	(GPIO_BANK0_CONTROL + 0x1c)
-#define   GPIO_8	(GPIO_BANK0_CONTROL + 0x20)
-#define   GPIO_9	(GPIO_BANK0_CONTROL + 0x24)
-#define   GPIO_10	(GPIO_BANK0_CONTROL + 0x28)
-#define   GPIO_11	(GPIO_BANK0_CONTROL + 0x2c)
-#define   GPIO_12	(GPIO_BANK0_CONTROL + 0x30)
-#define   GPIO_13	(GPIO_BANK0_CONTROL + 0x34)
-#define   GPIO_14	(GPIO_BANK0_CONTROL + 0x38)
-#define   GPIO_15	(GPIO_BANK0_CONTROL + 0x3c)
-#define   GPIO_16	(GPIO_BANK0_CONTROL + 0x40)
-#define   GPIO_17	(GPIO_BANK0_CONTROL + 0x44)
-#define   GPIO_18	(GPIO_BANK0_CONTROL + 0x48)
-#define   GPIO_19	(GPIO_BANK0_CONTROL + 0x4c)
-#define   GPIO_20	(GPIO_BANK0_CONTROL + 0x50)
-#define   GPIO_21	(GPIO_BANK0_CONTROL + 0x54)
-#define   GPIO_22	(GPIO_BANK0_CONTROL + 0x58)
-#define   GPIO_23	(GPIO_BANK0_CONTROL + 0x5c)
-#define   GPIO_24	(GPIO_BANK0_CONTROL + 0x60)
-#define   GPIO_25	(GPIO_BANK0_CONTROL + 0x64)
-#define   GPIO_26	(GPIO_BANK0_CONTROL + 0x68)
-#define   GPIO_39	(GPIO_BANK0_CONTROL + 0x9c)
-#define   GPIO_42	(GPIO_BANK0_CONTROL + 0xa8)
+#define GPIO_BANK0_CONTROL(gpio) \
+	(AMD_SB_ACPI_MMIO_ADDR + 0x1500 + ((gpio) * 4))
+#define GPIO_0				0
+#define GPIO_1				1
+#define GPIO_2				2
+#define GPIO_3				3
+#define GPIO_4				4
+#define GPIO_5				5
+#define GPIO_6				6
+#define GPIO_7				7
+#define GPIO_8				8
+#define GPIO_9				9
+#define GPIO_10				10
+#define GPIO_11				11
+#define GPIO_12				12
+#define GPIO_13				13
+#define GPIO_14				14
+#define GPIO_15				15
+#define GPIO_16				16
+#define GPIO_17				17
+#define GPIO_18				18
+#define GPIO_19				19
+#define GPIO_20				20
+#define GPIO_21				21
+#define GPIO_22				22
+#define GPIO_23				23
+#define GPIO_24				24
+#define GPIO_25				25
+#define GPIO_26				26
+#define GPIO_39				39
+#define GPIO_42				42
 
 /* GPIO_64 - GPIO_127 */
-#define GPIO_BANK1_CONTROL (AMD_SB_ACPI_MMIO_ADDR + 0x1600)
-#define   GPIO_64	(GPIO_BANK1_CONTROL + 0x00)
-#define   GPIO_65	(GPIO_BANK1_CONTROL + 0x04)
-#define   GPIO_66	(GPIO_BANK1_CONTROL + 0x08)
-#define   GPIO_67	(GPIO_BANK1_CONTROL + 0x0c)
-#define   GPIO_68	(GPIO_BANK1_CONTROL + 0x10)
-#define   GPIO_69	(GPIO_BANK1_CONTROL + 0x14)
-#define   GPIO_70	(GPIO_BANK1_CONTROL + 0x18)
-#define   GPIO_71	(GPIO_BANK1_CONTROL + 0x1c)
-#define   GPIO_72	(GPIO_BANK1_CONTROL + 0x20)
-#define   GPIO_74	(GPIO_BANK1_CONTROL + 0x28)
-#define   GPIO_75	(GPIO_BANK1_CONTROL + 0x2c)
-#define   GPIO_76	(GPIO_BANK1_CONTROL + 0x30)
-#define   GPIO_84	(GPIO_BANK1_CONTROL + 0x50)
-#define   GPIO_85	(GPIO_BANK1_CONTROL + 0x54)
-#define   GPIO_86	(GPIO_BANK1_CONTROL + 0x58)
-#define   GPIO_87	(GPIO_BANK1_CONTROL + 0x5c)
-#define   GPIO_88	(GPIO_BANK1_CONTROL + 0x60)
-#define   GPIO_89	(GPIO_BANK1_CONTROL + 0x64)
-#define   GPIO_90	(GPIO_BANK1_CONTROL + 0x68)
-#define   GPIO_91	(GPIO_BANK1_CONTROL + 0x6c)
-#define   GPIO_92	(GPIO_BANK1_CONTROL + 0x70)
-#define   GPIO_93	(GPIO_BANK1_CONTROL + 0x74)
-#define   GPIO_95	(GPIO_BANK1_CONTROL + 0x7c)
-#define   GPIO_96	(GPIO_BANK1_CONTROL + 0x80)
-#define   GPIO_97	(GPIO_BANK1_CONTROL + 0x84)
-#define   GPIO_98	(GPIO_BANK1_CONTROL + 0x88)
-#define   GPIO_99	(GPIO_BANK1_CONTROL + 0x8c)
-#define   GPIO_100	(GPIO_BANK1_CONTROL + 0x90)
-#define   GPIO_101	(GPIO_BANK1_CONTROL + 0x94)
-#define   GPIO_102	(GPIO_BANK1_CONTROL + 0x98)
-#define   GPIO_113	(GPIO_BANK1_CONTROL + 0xc4)
-#define   GPIO_114	(GPIO_BANK1_CONTROL + 0xc8)
-#define   GPIO_115	(GPIO_BANK1_CONTROL + 0xcc)
-#define   GPIO_116	(GPIO_BANK1_CONTROL + 0xd0)
-#define   GPIO_117	(GPIO_BANK1_CONTROL + 0xd4)
-#define   GPIO_118	(GPIO_BANK1_CONTROL + 0xd8)
-#define   GPIO_119	(GPIO_BANK1_CONTROL + 0xdc)
-#define   GPIO_120	(GPIO_BANK1_CONTROL + 0xe0)
-#define   GPIO_121	(GPIO_BANK1_CONTROL + 0xe4)
-#define   GPIO_122	(GPIO_BANK1_CONTROL + 0xe8)
-#define   GPIO_126	(GPIO_BANK1_CONTROL + 0xf8)
+#define GPIO_BANK1_CONTROL(gpio) \
+	(AMD_SB_ACPI_MMIO_ADDR + 0x1600 + (((gpio) - 64) * 4))
+#define GPIO_64				64
+#define GPIO_65				65
+#define GPIO_66				66
+#define GPIO_67				67
+#define GPIO_68				68
+#define GPIO_69				69
+#define GPIO_70				70
+#define GPIO_71				71
+#define GPIO_72				72
+#define GPIO_74				74
+#define GPIO_75				75
+#define GPIO_76				76
+#define GPIO_84				84
+#define GPIO_85				85
+#define GPIO_86				86
+#define GPIO_87				87
+#define GPIO_88				88
+#define GPIO_89				89
+#define GPIO_90				90
+#define GPIO_91				91
+#define GPIO_92				92
+#define GPIO_93				93
+#define GPIO_95				95
+#define GPIO_96				96
+#define GPIO_97				97
+#define GPIO_98				98
+#define GPIO_99				99
+#define GPIO_100			100
+#define GPIO_101			101
+#define GPIO_102			102
+#define GPIO_113			113
+#define GPIO_114			114
+#define GPIO_115			115
+#define GPIO_116			116
+#define GPIO_117			117
+#define GPIO_118			118
+#define GPIO_119			119
+#define GPIO_120			120
+#define GPIO_121			121
+#define GPIO_122			122
+#define GPIO_126			126
 
 /* GPIO_128 - GPIO_183 */
-#define GPIO_BANK2_CONTROL (AMD_SB_ACPI_MMIO_ADDR + 0x1700)
-#define   GPIO_129	(GPIO_BANK2_CONTROL + 0x04)
-#define   GPIO_130	(GPIO_BANK2_CONTROL + 0x08)
-#define   GPIO_131	(GPIO_BANK2_CONTROL + 0x0c)
-#define   GPIO_132	(GPIO_BANK2_CONTROL + 0x10)
-#define   GPIO_133	(GPIO_BANK2_CONTROL + 0x14)
-#define   GPIO_134	(GPIO_BANK2_CONTROL + 0x18)
-#define   GPIO_135	(GPIO_BANK2_CONTROL + 0x1c)
-#define   GPIO_136	(GPIO_BANK2_CONTROL + 0x20)
-#define   GPIO_137	(GPIO_BANK2_CONTROL + 0x24)
-#define   GPIO_138	(GPIO_BANK2_CONTROL + 0x28)
-#define   GPIO_139	(GPIO_BANK2_CONTROL + 0x2c)
-#define   GPIO_140	(GPIO_BANK2_CONTROL + 0x30)
-#define   GPIO_141	(GPIO_BANK2_CONTROL + 0x34)
-#define   GPIO_142	(GPIO_BANK2_CONTROL + 0x38)
-#define   GPIO_143	(GPIO_BANK2_CONTROL + 0x3c)
-#define   GPIO_144	(GPIO_BANK2_CONTROL + 0x40)
-#define   GPIO_145	(GPIO_BANK2_CONTROL + 0x44)
-#define   GPIO_146	(GPIO_BANK2_CONTROL + 0x48)
-#define   GPIO_147	(GPIO_BANK2_CONTROL + 0x4c)
-#define   GPIO_148	(GPIO_BANK2_CONTROL + 0x50)
+#define GPIO_BANK2_CONTROL(gpio) \
+	(AMD_SB_ACPI_MMIO_ADDR + 0x1700 + (((gpio) - 128) * 4))
+/* GPIO_128 Reserved */
+#define GPIO_129			129
+#define GPIO_130			130
+#define GPIO_131			131
+#define GPIO_132			132
+#define GPIO_133			133
+#define GPIO_134			134
+#define GPIO_135			135
+#define GPIO_136			136
+#define GPIO_137			137
+#define GPIO_138			138
+#define GPIO_139			139
+#define GPIO_140			140
+#define GPIO_141			141
+#define GPIO_142			142
+#define GPIO_143			143
+#define GPIO_144			144
+#define GPIO_145			145
+#define GPIO_146			146
+#define GPIO_147			147
+#define GPIO_148			148
 
 typedef uint32_t gpio_t;
 

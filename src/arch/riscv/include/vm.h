@@ -73,7 +73,7 @@ void flush_tlb(void);
 			"csrs		mstatus, %1\n"			\
 			STRINGIFY(insn) " %0, 0(%2)\n"			\
 			"csrc		mstatus, %1\n"			\
-			: "=r"(value) : "r"(mprv), "r"(p) : "memory"	\
+			: "=&r"(value) : "r"(mprv), "r"(p) : "memory"	\
 		);							\
 		return value;						\
 	}

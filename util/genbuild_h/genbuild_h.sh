@@ -48,7 +48,7 @@ NetBSD|OpenBSD|DragonFly|FreeBSD|Darwin)
 	date -r $1 $2
 	;;
 *)
-	date -d @$1 $2
+	date -d @$1 $2 | sed -e 's/\///g'
 esac
 }
 
@@ -70,7 +70,7 @@ printf "#define COREBOOT_BUILD_YEAR_BCD 0x$(our_date "$DATE" +%y)\n"
 printf "#define COREBOOT_BUILD_MONTH_BCD 0x$(our_date "$DATE" +%m)\n"
 printf "#define COREBOOT_BUILD_DAY_BCD 0x$(our_date "$DATE" +%d)\n"
 printf "#define COREBOOT_BUILD_WEEKDAY_BCD 0x$(our_date "$DATE" +%w)\n"
-printf "#define COREBOOT_DMI_DATE \"$(our_date "$DATE" +%m/%d/%Y)\"\n"
+printf "#define COREBOOT_DMI_DATE \"$(our_date "$DATE" +%Y/%m/%d)\"\n"
 printf "\n"
 printf "#define COREBOOT_COMPILE_TIME \"$(our_date "$DATE" +%T)\"\n"
 printf "#endif\n"

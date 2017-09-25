@@ -125,17 +125,19 @@ static void print_trap_information(const trapframe *tf)
 
 static void gettimer(void)
 {
-	query_result res;
-	const char *config;
+	/*
+	 * FIXME: This hard-coded value (currently) works on spike, but we
+	 * should really read it from the device tree.
+	 */
+	uintptr_t clint = 0x02000000;
 
-	config = configstring();
-	query_rtc(config, (uintptr_t *)&time);
+	time    = (void *)(clint + 0xbff8);
+	timecmp = (void *)(clint + 0x4000);
+
 	if (!time)
 		die("Got timer interrupt but found no timer.");
-	res = query_config_string(config, "core{0{0{timecmp");
-	timecmp = (void *)get_uint(res);
 	if (!timecmp)
-		die("Got a timer interrupt but found no timecmp.");
+		die("Got timer interrupt but found no timecmp.");
 }
 
 static void interrupt_handler(trapframe *tf)

@@ -547,7 +547,7 @@ int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 		ret = SPD_STATUS_INVALID_FIELD;
 	dimm->flags.self_refresh = (spd[12] >> 7) & 1;
 	printram("The assembly supports self refresh: %s\n",
-		dimm->flags.self_refresh ? "true", "false");
+		 dimm->flags.self_refresh ? "true" : "false");
 
 	/* Number of PLLs on DIMM */
 	if (dimm->rev >= 0x11)

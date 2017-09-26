@@ -11,18 +11,6 @@
 #include <soc/smi.h>
 #include <soc/southbridge.h>
 
-
-#define SMI_0x88_ACPI_COMMAND		(1 << 11)
-
-enum smi_source {
-	SMI_SOURCE_SCI = (1 << 0),
-	SMI_SOURCE_GPE = (1 << 1),
-	SMI_SOURCE_0x84 = (1 << 2),
-	SMI_SOURCE_0x88 = (1 << 3),
-	SMI_SOURCE_IRQ_TRAP = (1 << 4),
-	SMI_SOURCE_0x90 = (1 << 5)
-};
-
 static void sb_apmc_smi_handler(void)
 {
 	u32 reg32;
@@ -51,78 +39,77 @@ int southbridge_io_trap_handler(int smif)
 
 static void process_smi_sci(void)
 {
-	const uint32_t status = smi_read32(0x10);
+	const uint32_t status = smi_read32(SMI_SCI_STATUS);
 
 	/* Clear events to prevent re-entering SMI if event isn't handled */
-	smi_write32(0x10, status);
+	smi_write32(SMI_SCI_STATUS, status);
 }
 
 static void process_gpe_smi(void)
 {
-	const uint32_t status = smi_read32(0x80);
-	const uint32_t gevent_mask = (1 << 24) - 1;
+	const uint32_t status = smi_read32(SMI_REG_SMISTS0);
 
 	/* Only Bits [23:0] indicate GEVENT SMIs. */
-	if (status & gevent_mask) {
+	if (status & GEVENT_MASK) {
 		/* A GEVENT SMI occurred */
-		mainboard_smi_gpi(status & gevent_mask);
+		mainboard_smi_gpi(status & GEVENT_MASK);
 	}
 
 	/* Clear events to prevent re-entering SMI if event isn't handled */
-	smi_write32(0x80, status);
+	smi_write32(SMI_REG_SMISTS0, status);
 }
 
 static void process_smi_0x84(void)
 {
-	const uint32_t status = smi_read32(0x84);
+	const uint32_t status = smi_read32(SMI_REG_SMISTS1);
 
 	/* Clear events to prevent re-entering SMI if event isn't handled */
-	smi_write32(0x84, status);
+	smi_write32(SMI_REG_SMISTS1, status);
 }
 
 static void process_smi_0x88(void)
 {
-	const uint32_t status = smi_read32(0x88);
+	const uint32_t status = smi_read32(SMI_REG_SMISTS2);
 
-	if (status & SMI_0x88_ACPI_COMMAND) {
+	if (status & TYPE_TO_MASK(SMITYPE_SMI_CMD_PORT)) {
 		/* Command received via ACPI SMI command port */
 		sb_apmc_smi_handler();
 	}
 	/* Clear events to prevent re-entering SMI if event isn't handled */
-	smi_write32(0x88, status);
+	smi_write32(SMI_REG_SMISTS2, status);
 }
 
 static void process_smi_0x8c(void)
 {
-	const uint32_t status = smi_read32(0x8c);
+	const uint32_t status = smi_read32(SMI_REG_SMISTS3);
 
 	/* Clear events to prevent re-entering SMI if event isn't handled */
-	smi_write32(0x8c, status);
+	smi_write32(SMI_REG_SMISTS4, status);
 }
 
 static void process_smi_0x90(void)
 {
-	const uint32_t status = smi_read32(0x90);
+	const uint32_t status = smi_read32(SMI_REG_SMISTS4);
 
 	/* Clear events to prevent re-entering SMI if event isn't handled */
-	smi_write32(0x90, status);
+	smi_write32(SMI_REG_SMISTS4, status);
 }
 
 void southbridge_smi_handler(void)
 {
-	const uint16_t smi_src = smi_read16(0x94);
+	const uint16_t smi_src = smi_read16(SMI_REG_POINTER);
 
-	if (smi_src & SMI_SOURCE_SCI)
+	if (smi_src & SMI_STATUS_SRC_SCI)
 		process_smi_sci();
-	if (smi_src & SMI_SOURCE_GPE)
+	if (smi_src & SMI_STATUS_SRC_0)
 		process_gpe_smi();
-	if (smi_src & SMI_SOURCE_0x84)
+	if (smi_src & SMI_STATUS_SRC_1)
 		process_smi_0x84();
-	if (smi_src & SMI_SOURCE_0x88)
+	if (smi_src & SMI_STATUS_SRC_2)
 		process_smi_0x88();
-	if (smi_src & SMI_SOURCE_IRQ_TRAP)
+	if (smi_src & SMI_STATUS_SRC_3)
 		process_smi_0x8c();
-	if (smi_src & SMI_SOURCE_0x90)
+	if (smi_src & SMI_STATUS_SRC_4)
 		process_smi_0x90();
 }
 

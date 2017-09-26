@@ -86,6 +86,8 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 	m_cfg->PcieRpEnableMask = mask;
 	m_cfg->PrmrrSize = config->PrmrrSize;
 	m_cfg->EnableC6Dram = config->enable_c6dram;
+	/* Disable Cpu Ratio Override temporary. */
+	m_cfg->CpuRatio = 0;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

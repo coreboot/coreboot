@@ -56,6 +56,8 @@ config CPU_SPECIFIC_OPTIONS
 	select RELOCATABLE_RAMSTAGE
 	select POSTCAR_STAGE
 	select POSTCAR_CONSOLE
+	select SSE
+	select SSE2
 
 config VBOOT
 	select AMDFW_OUTSIDE_CBFS

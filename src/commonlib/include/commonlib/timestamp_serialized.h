@@ -123,7 +123,7 @@ static const struct timestamp_id_to_name {
 } timestamp_ids[] = {
 	/* Marker to report base_time. */
 	{ 0,			"1st timestamp" },
-	{ TS_START_ROMSTAGE,	"start of rom stage" },
+	{ TS_START_ROMSTAGE,	"start of romstage" },
 	{ TS_BEFORE_INITRAM,	"before ram initialization" },
 	{ TS_AFTER_INITRAM,	"after ram initialization" },
 	{ TS_END_ROMSTAGE,	"end of romstage" },

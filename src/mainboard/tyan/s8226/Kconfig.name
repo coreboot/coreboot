@@ -1,2 +1,0 @@
-config BOARD_TYAN_S8226
-	bool "S8226"

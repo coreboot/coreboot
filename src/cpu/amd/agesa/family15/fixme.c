@@ -47,7 +47,6 @@ MsrWrite (
 	__writemsr (MsrAddress, Value);
 }
 
-#if !IS_ENABLED(CONFIG_BOARD_AMD_DINAR)
 void amd_initcpuio(void)
 {
 	UINT32			PciData;
@@ -137,126 +136,6 @@ void amd_initcpuio(void)
 		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 	}
 }
-#else
-
-#define MMIO_NP_BIT		BIT7
-
-void amd_initcpuio(void)
-{
-	UINT64 MsrReg;
-	UINT32 PciData;
-	PCI_ADDR PciAddress;
-	AMD_CONFIG_PARAMS StdHeader;
-	UINT32 TopMem;
-	UINT32 nodes;
-	UINT32 node;
-	UINT32 SbLink;
-	UINT32 i;
-
-	/* get the number of coherent nodes in the system */
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 0, 0x60);
-	LibAmdPciRead(AccessWidth32, PciAddress, &PciData, &StdHeader);
-	nodes = ((PciData >> 4) & 7) + 1;	//nodes[6:4]
-	/* Find out the Link ID of Node0 that connects to the
-	 * Southbridge (system IO hub). e.g. family10 MCM Processor,
-	 * SbLink is Processor0 Link2, internal Node0 Link3
-	 */
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 0, 0x64);
-	LibAmdPciRead(AccessWidth32, PciAddress, &PciData, &StdHeader);
-	SbLink = (PciData >> 8) & 3;	//assume ganged
-	/* Enable MMIO on AMD CPU Address Map Controller for all nodes */
-	for (node = 0; node < nodes; node++) {
-		/* clear all MMIO Mapped Base/Limit Registers */
-		for (i = 0; i < 8; i++) {
-			PciData = 0x00000000;
-			PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x80 + i * 8);
-			LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-			PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x84 + i * 8);
-			LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-		}
-		/* clear all IO Space Base/Limit Registers */
-		for (i = 0; i < 4; i++) {
-			PciData = 0x00000000;
-			PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xC0 + i * 8);
-			LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-			PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xC4 + i * 8);
-			LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-		}
-
-		/* Enable MMIO on AMD CPU Address Map Controller */
-
-		/* Set VGA Ram MMIO 0000A0000-0000BFFFF to Node0 sbLink */
-		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x80);
-		PciData = (0xA0000 >> 8) | 3;
-		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x84);
-		PciData = 0xB0000 >> 8;
-		PciData &= (~0xFF);
-		PciData |= SbLink << 4;
-		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-
-		/* Set UMA MMIO. */
-		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x88);
-		LibAmdMsrRead(0xC001001A, &MsrReg, &StdHeader);
-		TopMem = (UINT32) MsrReg;
-		MsrReg = (MsrReg >> 8) | 3;
-		PciData = (UINT32) MsrReg;
-		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x8c);
-		if (TopMem <= CONFIG_MMCONF_BASE_ADDRESS) {
-			PciData = (CONFIG_MMCONF_BASE_ADDRESS - 1) >> 8;
-		} else {
-			PciData = (0x100000000ull - 1) >> 8;
-		}
-		PciData &= (~0xFF);
-		PciData |= SbLink << 4;
-		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-
-		/* Set PCIE MMIO. */
-		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x90);
-		PciData = (CONFIG_MMCONF_BASE_ADDRESS >> 8) | 3;
-		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x94);
-		PciData = ((CONFIG_MMCONF_BASE_ADDRESS + CONFIG_MMCONF_BUS_NUMBER * 4096 * 256 - 1) >> 8) & (~0xFF);
-		PciData &= (~0xFF);
-		PciData |= MMIO_NP_BIT;
-		PciData |= SbLink << 4;
-		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-
-		/* Set XAPIC MMIO. 24K */
-		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x98);
-		PciData = (0xFEC00000 >> 8) | 3;
-		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x9c);
-		PciData = ((0xFEC00000 + 6 * 4096 - 1) >> 8);
-		PciData &= (~0xFF);
-		PciData |= MMIO_NP_BIT;
-		PciData |= SbLink << 4;
-		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-
-		/* Set Local APIC MMIO. 4K*4= 16K, Llano CPU are 4 cores */
-		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xA0);
-		PciData = (0xFEE00000 >> 8) | 3;
-		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xA8);
-		PciData = (0xFEE00000 + 4 * 4096 - 1) >> 8;
-		PciData &= (~0xFF);
-		PciData |= MMIO_NP_BIT;
-		PciData |= SbLink << 4;
-		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-
-		/* Set PCIO: 0x0 - 0xFFF000  and enabled VGA IO */
-		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xC0);
-		PciData = 0x13;
-		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xC4);
-		PciData = 0x00FFF000;
-		PciData &= (~0x7F);
-		PciData |= SbLink << 4;
-		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-	}
-}
-#endif
 
 void amd_initmmio(void)
 {
@@ -269,28 +148,6 @@ void amd_initmmio(void)
 	 */
 	MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (LibAmdBitScanReverse(CONFIG_MMCONF_BUS_NUMBER) << 2) | 1;
 	LibAmdMsrWrite(0xC0010058, &MsrReg, &StdHeader);
-
-#if IS_ENABLED(CONFIG_BOARD_AMD_DINAR)
-	UINT32 PciData;
-	PCI_ADDR PciAddress;
-
-	/* Set PCIE MMIO. */
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x94);
-	/* FIXME: LSB bits are not cleared for PciData. */
-	PciData = ((CONFIG_MMCONF_BASE_ADDRESS + CONFIG_MMCONF_BUS_NUMBER * 4096 * 256 - 1) >> 8) | MMIO_NP_BIT;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x90);
-	PciData = (CONFIG_MMCONF_BASE_ADDRESS >> 8) | 3;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-
-	/* Enable memory access */
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0, 0, 0x04);
-	LibAmdPciRead(AccessWidth8, PciAddress, &PciData, &StdHeader);
-	PciData |= BIT1;
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0, 0, 0x04);
-	LibAmdPciWrite(AccessWidth8, PciAddress, &PciData, &StdHeader);
-#endif
 
 	/* Set ROM cache onto WP to decrease post time */
 	MsrReg = (0x0100000000 - CACHE_ROM_SIZE) | 5;

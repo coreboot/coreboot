@@ -1,2 +1,0 @@
-Category: server
-Release year: 2010

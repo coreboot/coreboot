@@ -50,6 +50,13 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData,
 AGESA_STATUS agesa_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINTN Data,
 							VOID *ConfigPtr);
+AGESA_STATUS agesa_RunFcnOnAllAps(UINT32 Func, UINTN Data, VOID *ConfigPtr);
+AGESA_STATUS agesa_LateRunApTask(UINT32 Func, UINTN Data, VOID *ConfigPtr);
+AGESA_STATUS agesa_PcieSlotResetControl(UINT32 Func, UINTN Data,
+							VOID *ConfigPtr);
+AGESA_STATUS agesa_WaitForAllApsFinished(UINT32 Func, UINTN Data,
+							VOID *ConfigPtr);
+AGESA_STATUS agesa_IdleAnAp(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 AGESA_STATUS GetBiosCallout(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 

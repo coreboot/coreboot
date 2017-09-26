@@ -144,3 +144,46 @@ AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 #endif
 	return Status;
 }
+
+AGESA_STATUS agesa_RunFcnOnAllAps(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+{
+	printk(BIOS_WARNING, "Warning - Missing AGESA callout: %s\n", __func__);
+	AGESA_STATUS Status = AGESA_UNSUPPORTED;
+
+	return Status;
+}
+
+AGESA_STATUS agesa_LateRunApTask(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+{
+	printk(BIOS_WARNING, "Warning - Missing AGESA callout: %s\n", __func__);
+	AGESA_STATUS Status = AGESA_UNSUPPORTED;
+
+	return Status;
+}
+
+
+AGESA_STATUS agesa_PcieSlotResetControl(UINT32 Func, UINTN Data,
+	VOID *ConfigPtr)
+{
+	printk(BIOS_WARNING, "Warning - Missing AGESA callout: %s\n", __func__);
+	AGESA_STATUS Status = AGESA_UNSUPPORTED;
+
+	return Status;
+}
+
+AGESA_STATUS agesa_WaitForAllApsFinished(UINT32 Func, UINTN Data,
+	VOID *ConfigPtr)
+{
+	printk(BIOS_WARNING, "Warning - Missing AGESA callout: %s\n", __func__);
+	AGESA_STATUS Status = AGESA_UNSUPPORTED;
+
+	return Status;
+}
+
+AGESA_STATUS agesa_IdleAnAp(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+{
+	printk(BIOS_WARNING, "Warning - Missing AGESA callout: %s\n", __func__);
+	AGESA_STATUS Status = AGESA_UNSUPPORTED;
+
+	return Status;
+}

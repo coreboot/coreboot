@@ -42,12 +42,22 @@
 #endif
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
-#define MAP_BYTES (1024*1024)
 
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
+
+/* Return < 0 on error, 0 on success. */
+static int parse_cbtable(u64 address, size_t table_size);
+
+struct mapping {
+	void *virt;
+	size_t offset;
+	size_t virt_size;
+	unsigned long long phys;
+	size_t size;
+};
 
 #define CBMEM_VERSION "1.1"
 
@@ -57,9 +67,105 @@ static int verbose = 0;
 
 /* File handle used to access /dev/mem */
 static int mem_fd;
+static struct mapping lbtable_mapping;
 
-static uint64_t lbtable_address;
-static size_t lbtable_size;
+static void die(const char *msg)
+{
+	if (msg)
+		fputs(msg, stderr);
+	exit(1);
+}
+
+static unsigned long long system_page_size(void)
+{
+	static unsigned long long page_size;
+
+	if (!page_size)
+		page_size = getpagesize();
+
+	return page_size;
+}
+
+static inline size_t size_to_mib(size_t sz)
+{
+	return sz >> 20;
+}
+
+/* Return mapping of physical address requested. */
+static const void *mapping_virt(const struct mapping *mapping)
+{
+	const char *v = mapping->virt;
+
+	if (v == NULL)
+		return NULL;
+
+	return v + mapping->offset;
+}
+
+/* Returns 0 on success, < 0 on error. mapping is filled in. */
+static const void *map_memory(struct mapping *mapping, unsigned long long phys,
+				size_t sz)
+{
+	void *v;
+	unsigned long long page_size;
+
+	page_size = system_page_size();
+
+	mapping->virt = NULL;
+	mapping->offset = phys % page_size;
+	mapping->virt_size = sz + mapping->offset;
+	mapping->size = sz;
+	mapping->phys = phys;
+
+	if (size_to_mib(mapping->virt_size) == 0) {
+		debug("Mapping %zuB of physical memory at 0x%llx (requested 0x%llx).\n",
+			mapping->virt_size, phys - mapping->offset, phys);
+	} else {
+		debug("Mapping %zuMB of physical memory at 0x%llx (requested 0x%llx).\n",
+			size_to_mib(mapping->virt_size), phys - mapping->offset,
+			phys);
+	}
+
+	v = mmap(NULL, mapping->virt_size, PROT_READ, MAP_SHARED, mem_fd,
+			phys - mapping->offset);
+
+	if (v == MAP_FAILED) {
+		debug("Mapping failed %zuB of physical memory at 0x%llx.\n",
+			mapping->virt_size, phys - mapping->offset);
+		return NULL;
+	}
+
+	mapping->virt = v;
+
+	if (mapping->offset != 0)
+		debug("  ... padding virtual address with 0x%zx bytes.\n",
+			mapping->offset);
+
+	return mapping_virt(mapping);
+}
+
+/* Returns 0 on success, < 0 on error. mapping is cleared if successful. */
+static int unmap_memory(struct mapping *mapping)
+{
+	if (mapping->virt == NULL)
+		return -1;
+
+	munmap(mapping->virt, mapping->virt_size);
+	mapping->virt = NULL;
+	mapping->offset = 0;
+	mapping->virt_size = 0;
+
+	return 0;
+}
+
+/* Return size of physical address mapping requested. */
+static size_t mapping_size(const struct mapping *mapping)
+{
+	if (mapping->virt == NULL)
+		return 0;
+
+	return mapping->size;
+}
 
 /*
  * Some architectures map /dev/mem memory in a way that doesn't support
@@ -110,115 +216,6 @@ static u16 ipchcksum(const void *addr, unsigned size)
 	return (u16) sum;
 }
 
-/*
- * Functions to map / unmap physical memory into virtual address space. These
- * functions always maps 1MB at a time and can only map one area at once.
- */
-static const void *mapped_virtual;
-static size_t mapped_size;
-
-static inline size_t size_to_mib(size_t sz)
-{
-	return sz >> 20;
-}
-
-static void unmap_memory(void)
-{
-	if (mapped_virtual == NULL) {
-		fprintf(stderr, "Error unmapping memory\n");
-		return;
-	}
-	if (size_to_mib(mapped_size) == 0) {
-		debug("Unmapping %zuMB of virtual memory at %p.\n",
-		      size_to_mib(mapped_size), mapped_virtual);
-	} else {
-		debug("Unmapping %zuMB of virtual memory at %p.\n",
-		      size_to_mib(mapped_size), mapped_virtual);
-	}
-	munmap((void *)mapped_virtual, mapped_size);
-	mapped_virtual = NULL;
-	mapped_size = 0;
-}
-
-static const void *map_memory_size(u64 physical, size_t size,
-					uint8_t abort_on_failure)
-{
-	const void *v;
-	off_t p;
-	u64 page = getpagesize();
-	size_t padding;
-
-	if (mapped_virtual != NULL)
-		unmap_memory();
-
-	/* Mapped memory must be aligned to page size */
-	p = physical & ~(page - 1);
-	padding = physical & (page-1);
-	size += padding;
-
-	if (size_to_mib(size) == 0) {
-		debug("Mapping %zuB of physical memory at 0x%jx (requested 0x%jx).\n",
-		      size, (intmax_t)p, (intmax_t)physical);
-	} else {
-		debug("Mapping %zuMB of physical memory at 0x%jx (requested 0x%jx).\n",
-		      size_to_mib(size), (intmax_t)p, (intmax_t)physical);
-	}
-
-	v = mmap(NULL, size, PROT_READ, MAP_SHARED, mem_fd, p);
-
-	/* Only try growing down when address exceeds page size so that
-	   one doesn't underflow the offset request. */
-	if (v == MAP_FAILED && p >= page) {
-		/* The mapped area may have overrun the upper cbmem boundary when trying to
-		 * align to the page size.  Try growing down instead of up...
-		 */
-		p -= page;
-		padding += page;
-		size &= ~(page - 1);
-		size = size + (page - 1);
-		v = mmap(NULL, size, PROT_READ, MAP_SHARED, mem_fd, p);
-		debug("  ... failed.  Mapping %zuB of physical memory at 0x%jx.\n",
-		      size, (intmax_t)p);
-	}
-
-	if (v == MAP_FAILED) {
-		if (abort_on_failure) {
-			fprintf(stderr, "Failed to mmap /dev/mem: %s\n",
-				strerror(errno));
-			exit(1);
-		} else {
-			return 0;
-		}
-	}
-
-	/* Remember what we actually mapped ... */
-	mapped_virtual = v;
-	mapped_size = size;
-
-	/* ... but return address to the physical memory that was requested */
-	if (padding)
-		debug("  ... padding virtual address with 0x%zx bytes.\n",
-			padding);
-	v += padding;
-
-	return v;
-}
-
-static const void *map_lbtable(void)
-{
-	if (lbtable_address == 0 || lbtable_size == 0) {
-		fprintf(stderr, "No coreboot table area found!\n");
-		return NULL;
-	}
-
-	return map_memory_size(lbtable_address, lbtable_size, 1);
-}
-
-static void unmap_lbtable(void)
-{
-	unmap_memory();
-}
-
 /* Find the first cbmem entry filling in the details. */
 static int find_cbmem_entry(uint32_t id, uint64_t *addr, size_t *size)
 {
@@ -226,14 +223,14 @@ static int find_cbmem_entry(uint32_t id, uint64_t *addr, size_t *size)
 	size_t offset;
 	int ret = -1;
 
-	table = map_lbtable();
+	table = mapping_virt(&lbtable_mapping);
 
 	if (table == NULL)
 		return -1;
 
 	offset = 0;
 
-	while (offset < lbtable_size) {
+	while (offset < mapping_size(&lbtable_mapping)) {
 		const struct lb_record *lbr;
 		const struct lb_cbmem_entry *lbe;
 
@@ -253,7 +250,6 @@ static int find_cbmem_entry(uint32_t id, uint64_t *addr, size_t *size)
 		break;
 	}
 
-	unmap_lbtable();
 	return ret;
 }
 
@@ -291,107 +287,154 @@ static struct lb_cbmem_ref parse_cbmem_ref(const struct lb_cbmem_ref *cbmem_ref)
 	return ret;
 }
 
-static int parse_cbtable(u64 address, size_t table_size, uint8_t abort_on_failure)
+static void parse_memory_tags(const struct lb_memory *mem)
 {
-	int i, found = 0, ret = 0;
+	int num_entries;
+	int i;
+
+	/* Peel off the header size and calculate the number of entries. */
+	num_entries = (mem->size - sizeof(*mem)) / sizeof(mem->map[0]);
+
+	for (i = 0; i < num_entries; i++) {
+		if (mem->map[i].type != LB_MEM_TABLE)
+			continue;
+		debug("      LB_MEM_TABLE found.\n");
+		/* The last one found is CBMEM */
+		cbmem = mem->map[i];
+	}
+}
+
+/* Return < 0 on error, 0 on success, 1 if forwarding table entry found. */
+static int parse_cbtable_entries(const struct mapping *table_mapping)
+{
+	size_t i;
+	const struct lb_record* lbr_p;
+	size_t table_size = mapping_size(table_mapping);
+	const void *lbtable = mapping_virt(table_mapping);
+	int forwarding_table_found = 0;
+
+	for (i = 0; i < table_size; i += lbr_p->size) {
+		lbr_p = lbtable + i;
+		debug("  coreboot table entry 0x%02x\n", lbr_p->tag);
+		switch (lbr_p->tag) {
+		case LB_TAG_MEMORY:
+			debug("    Found memory map.\n");
+			parse_memory_tags(lbtable + i);
+			continue;
+		case LB_TAG_TIMESTAMPS: {
+			debug("    Found timestamp table.\n");
+			timestamps = parse_cbmem_ref((struct lb_cbmem_ref *) lbr_p);
+			continue;
+		}
+		case LB_TAG_CBMEM_CONSOLE: {
+			debug("    Found cbmem console.\n");
+			console = parse_cbmem_ref((struct lb_cbmem_ref *) lbr_p);
+			continue;
+		}
+		case LB_TAG_FORWARD: {
+			int ret;
+			/*
+			 * This is a forwarding entry - repeat the
+			 * search at the new address.
+			 */
+			struct lb_forward lbf_p =
+				*(const struct lb_forward *) lbr_p;
+			debug("    Found forwarding entry.\n");
+			ret = parse_cbtable(lbf_p.forward, 0);
+
+			/* Assume the forwarding entry is valid. If this fails
+			 * then there's a total failure. */
+			if (ret < 0)
+				return -1;
+			forwarding_table_found = 1;
+		}
+		default:
+			break;
+		}
+	}
+
+	return forwarding_table_found;
+}
+
+/* Return < 0 on error, 0 on success. */
+static int parse_cbtable(u64 address, size_t table_size)
+{
 	const void *buf;
+	struct mapping header_mapping;
+	size_t req_size;
+	size_t i;
+
+	req_size = table_size;
+	/* Default to 4 KiB search space. */
+	if (req_size == 0)
+		req_size = 4 * 1024;
 
 	debug("Looking for coreboot table at %" PRIx64 " %zd bytes.\n",
-		address, table_size);
-	buf = map_memory_size(address, table_size, abort_on_failure);
+		address, req_size);
+
+	buf = map_memory(&header_mapping, address, req_size);
+
 	if (!buf)
-		return -2;
+		return -1;
 
-	/* look at every 16 bytes within 4K of the base */
-
-	for (i = 0; i < 0x1000; i += 0x10) {
+	/* look at every 16 bytes */
+	for (i = 0; i < req_size; i += 16) {
+		int ret;
 		const struct lb_header *lbh;
-		const struct lb_record *lbr_p;
-		const void *lbtable;
-		int j;
+		struct mapping table_mapping;
 
-		lbh = (const struct lb_header *)(buf + i);
+		if (req_size - i < sizeof(struct lb_header))
+			return -1;
+
+		lbh = buf + i;
 		if (memcmp(lbh->signature, "LBIO", sizeof(lbh->signature)) ||
 		    !lbh->header_bytes ||
 		    ipchcksum(lbh, sizeof(*lbh))) {
 			continue;
 		}
-		lbtable = buf + i + lbh->header_bytes;
 
-		if (ipchcksum(lbtable, lbh->table_bytes) !=
-		    lbh->table_checksum) {
-			debug("Signature found, but wrong checksum.\n");
+		/* Map in the whole table to parse. */
+		if (!map_memory(&table_mapping, address + i + lbh->header_bytes,
+				 lbh->table_bytes)) {
+			debug("Couldn't map in table\n");
 			continue;
 		}
 
-		found = 1;
+		if (ipchcksum(mapping_virt(&table_mapping), lbh->table_bytes) !=
+		    lbh->table_checksum) {
+			debug("Signature found, but wrong checksum.\n");
+			unmap_memory(&table_mapping);
+			continue;
+		}
+
 		debug("Found!\n");
 
-		/* Keep reference to lbtable. */
-		lbtable_address = address;
-		lbtable_address += ((uint8_t *)lbtable - (uint8_t *)lbh);
-		lbtable_size = lbh->table_bytes;
+		ret = parse_cbtable_entries(&table_mapping);
 
-		for (j = 0; j < lbh->table_bytes; j += lbr_p->size) {
-			lbr_p = (const struct lb_record *)((char *)lbtable + j);
-			debug("  coreboot table entry 0x%02x\n", lbr_p->tag);
-			switch (lbr_p->tag) {
-			case LB_TAG_MEMORY: {
-				int i = 0;
-				debug("    Found memory map.\n");
-				const struct lb_memory *memory =
-						(const struct lb_memory *)lbr_p;
-				while ((char *)&memory->map[i] < ((char *)lbr_p
-							    + lbr_p->size)) {
-					if (memory->map[i].type == LB_MEM_TABLE) {
-						debug("      LB_MEM_TABLE found.\n");
-						/* The last one found is CBMEM */
-						cbmem = memory->map[i];
-					}
-					i++;
-				}
-				continue;
-			}
-			case LB_TAG_TIMESTAMPS: {
-				debug("    Found timestamp table.\n");
-				timestamps = parse_cbmem_ref((const struct lb_cbmem_ref *) lbr_p);
-				continue;
-			}
-			case LB_TAG_CBMEM_CONSOLE: {
-				debug("    Found cbmem console.\n");
-				console = parse_cbmem_ref((const struct lb_cbmem_ref *) lbr_p);
-				continue;
-			}
-			case LB_TAG_FORWARD: {
-				/*
-				 * This is a forwarding entry - repeat the
-				 * search at the new address.
-				 */
-				const struct lb_forward lbf_p =
-					*(const struct lb_forward *) lbr_p;
-				debug("    Found forwarding entry.\n");
-				unmap_memory();
-				ret = parse_cbtable(lbf_p.forward, table_size, 0);
-				if (ret == -2) {
-					/* try again with a smaller memory mapping request */
-					ret = parse_cbtable(lbf_p.forward, table_size / 2, 1);
-					if (ret == -2)
-						exit(1);
-					else
-						return ret;
-				} else {
-					return ret;
-				}
-			}
-			default:
-				break;
-			}
-
+		/* Table parsing failed. */
+		if (ret < 0) {
+			unmap_memory(&table_mapping);
+			continue;
 		}
-	}
-	unmap_memory();
 
-	return found;
+		/* Succeeded in parsing the table. Header not needed anymore. */
+		unmap_memory(&header_mapping);
+
+		/*
+		 * Table parsing succeeded. If forwarding table not found update
+		 * coreboot table mapping for future use.
+		 */
+		if (ret == 0)
+			lbtable_mapping = table_mapping;
+		else
+			unmap_memory(&table_mapping);
+
+		return 0;
+	}
+
+	unmap_memory(&header_mapping);
+
+	return -1;
 }
 
 #if defined(linux) && (defined(__i386__) || defined(__x86_64__))
@@ -552,6 +595,7 @@ static void dump_timestamps(int mach_readable)
 	size_t size;
 	uint64_t prev_stamp;
 	uint64_t total_time;
+	struct mapping timestamp_mapping;
 
 	if (timestamps.tag != LB_TAG_TIMESTAMPS) {
 		fprintf(stderr, "No timestamps found in coreboot table.\n");
@@ -559,7 +603,9 @@ static void dump_timestamps(int mach_readable)
 	}
 
 	size = sizeof(*tst_p);
-	tst_p = map_memory_size((unsigned long)timestamps.cbmem_addr, size, 1);
+	tst_p = map_memory(&timestamp_mapping, timestamps.cbmem_addr, size);
+	if (!tst_p)
+		die("Unable to map timestamp header\n");
 
 	timestamp_set_tick_freq(tst_p->tick_freq_mhz);
 
@@ -567,8 +613,11 @@ static void dump_timestamps(int mach_readable)
 		printf("%d entries total:\n\n", tst_p->num_entries);
 	size += tst_p->num_entries * sizeof(tst_p->entries[0]);
 
-	unmap_memory();
-	tst_p = map_memory_size((unsigned long)timestamps.cbmem_addr, size, 1);
+	unmap_memory(&timestamp_mapping);
+
+	tst_p = map_memory(&timestamp_mapping, timestamps.cbmem_addr, size);
+	if (!tst_p)
+		die("Unable to map full timestamp table\n");
 
 	/* Report the base time within the table. */
 	prev_stamp = 0;
@@ -602,7 +651,7 @@ static void dump_timestamps(int mach_readable)
 		printf("\n");
 	}
 
-	unmap_memory();
+	unmap_memory(&timestamp_mapping);
 }
 
 struct cbmem_console {
@@ -620,6 +669,7 @@ static void dump_console(int one_boot_only)
 	const struct cbmem_console *console_p;
 	char *console_c;
 	size_t size, cursor;
+	struct mapping console_mapping;
 
 	if (console.tag != LB_TAG_CBMEM_CONSOLE) {
 		fprintf(stderr, "No console found in coreboot table.\n");
@@ -627,13 +677,16 @@ static void dump_console(int one_boot_only)
 	}
 
 	size = sizeof(*console_p);
-	console_p = map_memory_size((unsigned long)console.cbmem_addr, size, 1);
+	console_p = map_memory(&console_mapping, console.cbmem_addr, size);
+	if (!console_p)
+		die("Unable to map console object.\n");
+
 	cursor = console_p->cursor & CBMC_CURSOR_MASK;
 	if (!(console_p->cursor & CBMC_OVERFLOW) && cursor < console_p->size)
 		size = cursor;
 	else
 		size = console_p->size;
-	unmap_memory();
+	unmap_memory(&console_mapping);
 
 	console_c = malloc(size + 1);
 	if (!console_c) {
@@ -642,8 +695,12 @@ static void dump_console(int one_boot_only)
 	}
 	console_c[size] = '\0';
 
-	console_p = map_memory_size((unsigned long)console.cbmem_addr,
-	                            size + sizeof(*console_p), 1);
+	console_p = map_memory(&console_mapping, console.cbmem_addr,
+		size + sizeof(*console_p));
+
+	if (!console_p)
+		die("Unable to map full console object.\n");
+
 	if (console_p->cursor & CBMC_OVERFLOW) {
 		if (cursor >= size) {
 			printf("cbmem: ERROR: CBMEM console struct is illegal, "
@@ -693,7 +750,7 @@ static void dump_console(int one_boot_only)
 
 	puts(console_c + cursor);
 	free(console_c);
-	unmap_memory();
+	unmap_memory(&console_mapping);
 }
 
 static void hexdump(unsigned long memory, int length)
@@ -701,14 +758,11 @@ static void hexdump(unsigned long memory, int length)
 	int i;
 	const uint8_t *m;
 	int all_zero = 0;
+	struct mapping hexdump_mapping;
 
-	m = map_memory_size((intptr_t)memory, length, 1);
-
-	if (length > MAP_BYTES) {
-		printf("Truncating hex dump from %d to %d bytes\n\n",
-			length, MAP_BYTES);
-		length = MAP_BYTES;
-	}
+	m = map_memory(&hexdump_mapping, memory, length);
+	if (!m)
+		die("Unable to map hexdump memory.\n");
 
 	for (i = 0; i < length; i += 16) {
 		int j;
@@ -734,7 +788,7 @@ static void hexdump(unsigned long memory, int length)
 		}
 	}
 
-	unmap_memory();
+	unmap_memory(&hexdump_mapping);
 }
 
 static void dump_cbmem_hex(void)
@@ -751,16 +805,16 @@ void rawdump(uint64_t base, uint64_t size)
 {
 	int i;
 	const uint8_t *m;
+	struct mapping dump_mapping;
 
-	m = map_memory_size((intptr_t)base, size, 1);
-	if (!m) {
-		fprintf(stderr, "Failed to map memory");
-		return;
-	}
+	m = map_memory(&dump_mapping, base, size);
+	if (!m)
+		die("Unable to map rawdump memory\n");
 
 	for (i = 0 ; i < size; i++)
 		printf("%c", m[i]);
-	unmap_memory();
+
+	unmap_memory(&dump_mapping);
 }
 
 static void dump_cbmem_raw(unsigned int id)
@@ -770,14 +824,14 @@ static void dump_cbmem_raw(unsigned int id)
 	uint64_t base = 0;
 	uint64_t size = 0;
 
-	table = map_lbtable();
+	table = mapping_virt(&lbtable_mapping);
 
 	if (table == NULL)
 		return;
 
 	offset = 0;
 
-	while (offset < lbtable_size) {
+	while (offset < mapping_size(&lbtable_mapping)) {
 		const struct lb_record *lbr;
 		const struct lb_cbmem_entry *lbe;
 
@@ -795,8 +849,6 @@ static void dump_cbmem_raw(unsigned int id)
 			break;
 		}
 	}
-
-	unmap_lbtable();
 
 	if (!base)
 		fprintf(stderr, "id %0x not found in cbtable\n", id);
@@ -852,7 +904,7 @@ static void dump_cbmem_toc(void)
 	const uint8_t *table;
 	size_t offset;
 
-	table = map_lbtable();
+	table = mapping_virt(&lbtable_mapping);
 
 	if (table == NULL)
 		return;
@@ -863,7 +915,7 @@ static void dump_cbmem_toc(void)
 	i = 0;
 	offset = 0;
 
-	while (offset < lbtable_size) {
+	while (offset < mapping_size(&lbtable_mapping)) {
 		const struct lb_record *lbr;
 		const struct lb_cbmem_entry *lbe;
 
@@ -877,8 +929,6 @@ static void dump_cbmem_toc(void)
 		cbmem_print_entry(i, lbe->id, lbe->address, lbe->entry_size);
 		i++;
 	}
-
-	unmap_lbtable();
 }
 
 #define COVERAGE_MAGIC 0x584d4153
@@ -913,6 +963,7 @@ static void dump_coverage(void)
 	uint64_t start;
 	size_t size;
 	const void *coverage;
+	struct mapping coverage_mapping;
 	unsigned long phys_offset;
 #define phys_to_virt(x) ((void *)(unsigned long)(x) + phys_offset)
 
@@ -922,7 +973,9 @@ static void dump_coverage(void)
 	}
 
 	/* Map coverage area */
-	coverage = map_memory_size(start, size, 1);
+	coverage = map_memory(&coverage_mapping, start, size);
+	if (!coverage)
+		die("Unable to map coverage area.\n");
 	phys_offset = (unsigned long)coverage - (unsigned long)start;
 
 	printf("Dumping coverage data...\n");
@@ -959,7 +1012,7 @@ static void dump_coverage(void)
 		else
 			file = NULL;
 	}
-	unmap_memory();
+	unmap_memory(&coverage_mapping);
 }
 
 static void print_version(void)
@@ -1251,17 +1304,20 @@ int main(int argc, char** argv)
 		dtbuffer++;
 	}
 
-	parse_cbtable(baseaddr, cb_table_size, 1);
+	parse_cbtable(baseaddr, cb_table_size);
 #else
 	int j;
-	static const int possible_base_addresses[] = { 0, 0xf0000 };
+	unsigned long long possible_base_addresses[] = { 0, 0xf0000 };
 
 	/* Find and parse coreboot table */
 	for (j = 0; j < ARRAY_SIZE(possible_base_addresses); j++) {
-		if (parse_cbtable(possible_base_addresses[j], MAP_BYTES, 1))
+		if (!parse_cbtable(possible_base_addresses[j], 0))
 			break;
 	}
 #endif
+
+	if (mapping_virt(&lbtable_mapping) == NULL)
+		die("Table not found.\n");
 
 	if (print_console)
 		dump_console(one_boot_only);
@@ -1280,6 +1336,8 @@ int main(int argc, char** argv)
 
 	if (print_defaults || print_timestamps)
 		dump_timestamps(machine_readable_timestamps);
+
+	unmap_memory(&lbtable_mapping);
 
 	close(mem_fd);
 	return 0;

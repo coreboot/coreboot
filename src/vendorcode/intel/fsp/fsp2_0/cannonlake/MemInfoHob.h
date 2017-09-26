@@ -260,13 +260,6 @@ typedef struct {
   UINT32            GdxcMotBase;
   UINT32            GdxcMotSize;
 #endif //CPU_CFL
-//
-// CPU:RestrictedBegin
-//
-  UINT32            SharedMailboxBase;
-//
-// CPU:RestrictedEnd
-//
 } MEMORY_PLATFORM_DATA;
 
 typedef struct {

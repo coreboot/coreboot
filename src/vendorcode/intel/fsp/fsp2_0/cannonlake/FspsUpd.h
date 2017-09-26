@@ -437,11 +437,25 @@ typedef struct {
 **/
   UINT8                       SataRstLegacyOrom;
 
-/** Offset 0x011B - PchPostMemRsvd
+/** Offset 0x011B - Trace Hub Memory Base
+  If Trace Hub is enabled and trace to memory is desired, BootLoader needs to allocate
+  trace hub memory as reserved and uncacheable, set the base to ensure Trace Hub
+  memory is configured properly.
+**/
+  UINT32                      TraceHubMemBase;
+
+/** Offset 0x011F - PMC Debug Message Enable
+  When Enabled, PMC HW will send debug messages to trace hub; When Disabled, PMC HW
+  will never send debug meesages to trace hub. Noted: When Enabled, may not enter S0ix
+  $EN_DIS
+**/
+  UINT8                       PmcDbgMsgEn;
+
+/** Offset 0x0120 - PchPostMemRsvd
   Reserved for PCH Post-Mem
   $EN_DIS
 **/
-  UINT8                       PchPostMemRsvd[42];
+  UINT8                       PchPostMemRsvd[37];
 
 /** Offset 0x0145 - Enable Ufs Controller
   Enable/disable Ufs 2.0 Controller.
@@ -458,13 +472,7 @@ typedef struct {
 
 /** Offset 0x0147
 **/
-  UINT8                       UnusedUpdSpace3;
-
-/** Offset 0x0148 - CNVi BT Interface
-  This option configures BT device interface to either USB or UART
-  0:UART, 1:USB
-**/
-  UINT8                       PchCnviBtInterface;
+  UINT8                       UnusedUpdSpace3[2];
 
 /** Offset 0x0149 - PCH USB OverCurrent mapping enable
   1: Will program USB OC pin mapping in xHCI controller memory, 0: Will clear OC pin
@@ -473,11 +481,9 @@ typedef struct {
 **/
   UINT8                       PchUsbOverCurrentEnable;
 
-/** Offset 0x014A - CNVi BT Uart Type
-  This is a test option which allows configuration of UART type for BT communication
-  0:Serial IO Uart0, 1:ISH Uart0, 2:Uart over external pads
+/** Offset 0x014A
 **/
-  UINT8                       PchCnviBtUartType;
+  UINT8                       UnusedUpdSpace4;
 
 /** Offset 0x014B - CNVi MfUart1 Type
   This option configures Uart type which connects to MfUart1
@@ -500,7 +506,7 @@ typedef struct {
 
 /** Offset 0x014E
 **/
-  UINT8                       UnusedUpdSpace4;
+  UINT8                       UnusedUpdSpace5;
 
 /** Offset 0x014F - PCHHOT# pin
   Enable PCHHOT# pin assertion when temperature is higher than PchHotLevel. 0: disable, 1: enable
@@ -590,7 +596,7 @@ typedef struct {
 
 /** Offset 0x015F
 **/
-  UINT8                       UnusedUpdSpace5[4];
+  UINT8                       UnusedUpdSpace6[4];
 
 /** Offset 0x0163 - PCH PCIe root port connection type
   0: built-in device, 1:slot
@@ -627,7 +633,7 @@ typedef struct {
 
 /** Offset 0x01FB
 **/
-  UINT8                       UnusedUpdSpace6[5];
+  UINT8                       UnusedUpdSpace7[5];
 
 /** Offset 0x0200 - Enable/Disable SA CRID
   Enable: SA CRID, Disable (Default): SA CRID
@@ -636,8 +642,8 @@ typedef struct {
   UINT8                       CridEnable;
 
 /** Offset 0x0201 - DMI ASPM
-  0=Disable, 2(Default)=L1
-  0:Disable, 2:L1
+  0=Disable, 3(Default)=L0sL1
+  0:Disable, 3:L0sL1
 **/
   UINT8                       DmiAspm;
 
@@ -683,7 +689,7 @@ typedef struct {
 
 /** Offset 0x0219
 **/
-  UINT8                       UnusedUpdSpace7;
+  UINT8                       UnusedUpdSpace8;
 
 /** Offset 0x021A - Enable or disable GNA device
   0=Disable, 1(Default)=Enable
@@ -760,7 +766,13 @@ typedef struct {
   Reserved for SA Post-Mem Production
   $EN_DIS
 **/
-  UINT8                       SaPostMemProductionRsvd[70];
+  UINT8                       SaPostMemProductionRsvd[46];
+
+/** Offset 0x025F - PCIE RP Disable Gen2PLL Shutdown and L1 Clock Gating Enable
+  PCIE RP Disable Gen2PLL Shutdown and L1 Clock Gating Enable Workaround needed for
+  Alpine ridge 
+**/
+  UINT8                       PcieRootPortGen2PllL1CgDisable[24];
 
 /** Offset 0x0277 - Advanced Encryption Standard (AES) feature
   Enable or Disable Advanced Encryption Standard (AES) feature; </b>0: Disable; <b>1: Enable
@@ -876,7 +888,7 @@ typedef struct {
 
 /** Offset 0x02BB
 **/
-  UINT8                       UnusedUpdSpace8[10];
+  UINT8                       UnusedUpdSpace9[10];
 
 /** Offset 0x02C5 - DcLoadline
   PCODE MMIO Mailbox: DcLoadline in 1/100 mOhms (ie. 1250 = 12.50 mOhm); Range is
@@ -931,11 +943,10 @@ typedef struct {
 **/
   UINT8                       SendVrMbxCmd;
 
-/** Offset 0x0304 - Enable or Disable VMX
-  Enable or Disable VMX; 0: Disable; <b>1: Enable</b>.
-  $EN_DIS
+/** Offset 0x0304 - Reserved
+  Reserved
 **/
-  UINT8                       VmxEnable;
+  UINT8                       Reserved2;
 
 /** Offset 0x0305 - Enable or Disable TXT
   Enable or Disable TXT; 0: Disable; <b>1: Enable</b>.
@@ -945,7 +956,7 @@ typedef struct {
 
 /** Offset 0x0306
 **/
-  UINT8                       UnusedUpdSpace9[6];
+  UINT8                       UnusedUpdSpace10[6];
 
 /** Offset 0x030C - Skip Multi-Processor Initialization
   When this is skipped, boot loader must initialize processors before SilicionInit
@@ -1012,7 +1023,7 @@ typedef struct {
 
 /** Offset 0x032B
 **/
-  UINT8                       UnusedUpdSpace10[27];
+  UINT8                       UnusedUpdSpace11[27];
 
 /** Offset 0x0346 - Enable DMI ASPM
   ASPM on PCH side of the DMI Link.
@@ -1055,7 +1066,7 @@ typedef struct {
 
 /** Offset 0x0367
 **/
-  UINT8                       UnusedUpdSpace11;
+  UINT8                       UnusedUpdSpace12;
 
 /** Offset 0x0368 - VC Type
   Virtual Channel Type Select: 0: VC0, 1: VC1.
@@ -1094,34 +1105,9 @@ typedef struct {
 **/
   UINT8                       PchHdaIDispCodecDisconnect;
 
-/** Offset 0x036E - DSP DMIC Select (PCH_HDAUDIO_DMIC_TYPE enum)
-  0: Disable; 1: 2ch array; 2: 4ch array; 3: 1ch array.
-  0: Disable, 1: 2ch array, 2: 4ch array, 3: 1ch array
+/** Offset 0x036E
 **/
-  UINT8                       PchHdaDspEndpointDmic;
-
-/** Offset 0x036F - DSP Bluetooth enablement
-  0: Disable; 1: Enable.
-  $EN_DIS
-**/
-  UINT8                       PchHdaDspEndpointBluetooth;
-
-/** Offset 0x0370 - DSP I2S enablement
-  0: Disable; 1: Enable.
-  $EN_DIS
-**/
-  UINT8                       PchHdaDspEndpointI2s;
-
-/** Offset 0x0371 - Bitmask of supported DSP features
-  [BIT0] - WoV; [BIT1] - BT Sideband; [BIT2] - Codec VAD; [BIT5] - BT Intel HFP; [BIT6]
-  - BT Intel A2DP; [BIT7] - DSP based speech pre-processing disabled; [BIT8] - 0:
-  Intel WoV, 1: Windows Voice Activation.
-**/
-  UINT32                      PchHdaDspFeatureMask;
-
-/** Offset 0x0375
-**/
-  UINT8                       UnusedUpdSpace12[8];
+  UINT8                       UnusedUpdSpace13[15];
 
 /** Offset 0x037D - Enable PCH Io Apic Entry 24-119
   0: Disable; 1: Enable.
@@ -1136,7 +1122,7 @@ typedef struct {
 
 /** Offset 0x037F
 **/
-  UINT8                       UnusedUpdSpace13;
+  UINT8                       UnusedUpdSpace14;
 
 /** Offset 0x0380 - Enable PCH ISH SPI GPIO pins assigned
   0: Disable; 1: Enable.
@@ -1236,7 +1222,7 @@ typedef struct {
 
 /** Offset 0x0390
 **/
-  UINT8                       UnusedUpdSpace14[3];
+  UINT8                       UnusedUpdSpace15[3];
 
 /** Offset 0x0393 - Enable LOCKDOWN BIOS LOCK
   Enable the BIOS Lock feature and set EISS bit (D31:F5:RegDCh[5]) for the BIOS region
@@ -1363,7 +1349,7 @@ typedef struct {
 
 /** Offset 0x05BE
 **/
-  UINT8                       UnusedUpdSpace15[10];
+  UINT8                       UnusedUpdSpace16[10];
 
 /** Offset 0x05C8 - PCIE RP Aspm
   The ASPM configuration of the root port (see: PCH_PCIE_ASPM_CONTROL). Default is
@@ -1422,7 +1408,7 @@ typedef struct {
 
 /** Offset 0x0664
 **/
-  UINT8                       UnusedUpdSpace16;
+  UINT8                       UnusedUpdSpace17;
 
 /** Offset 0x0665 - PCIE Compliance Test Mode
   Compliance Test Mode shall be enabled when using Compliance Load Board.
@@ -1439,7 +1425,7 @@ typedef struct {
 
 /** Offset 0x0667
 **/
-  UINT8                       UnusedUpdSpace17[2];
+  UINT8                       UnusedUpdSpace18[2];
 
 /** Offset 0x0669 - PCH Pm PME_B0_S5_DIS
   When cleared (default), wake events from PME_B0_STS are allowed in S5 if PME_B0_EN = 1.
@@ -1465,7 +1451,7 @@ typedef struct {
 
 /** Offset 0x066F
 **/
-  UINT8                       UnusedUpdSpace18;
+  UINT8                       UnusedUpdSpace19;
 
 /** Offset 0x0670 - PCH Pm Wol Enable Override
   Corresponds to the WOL Enable Override bit in the General PM Configuration B (GEN_PMCON_B) register.
@@ -1554,7 +1540,7 @@ typedef struct {
 
 /** Offset 0x067D
 **/
-  UINT8                       UnusedUpdSpace19[3];
+  UINT8                       UnusedUpdSpace20[3];
 
 /** Offset 0x0680 - PCH Pm Lpc Clock Run
   This member describes whether or not the LPC ClockRun feature of PCH should be enabled.
@@ -1587,7 +1573,7 @@ typedef struct {
 
 /** Offset 0x0685
 **/
-  UINT8                       UnusedUpdSpace20;
+  UINT8                       UnusedUpdSpace21;
 
 /** Offset 0x0686 - PCH Pm Disable Native Power Button
   Power button native mode disable.
@@ -1627,7 +1613,7 @@ typedef struct {
 
 /** Offset 0x068C
 **/
-  UINT8                       UnusedUpdSpace21;
+  UINT8                       UnusedUpdSpace22;
 
 /** Offset 0x068D - PCH Sata Pwr Opt Enable
   SATA Power Optimizer on PCH side.
@@ -1806,9 +1792,17 @@ typedef struct {
 **/
   UINT8                       PchScsEmmcHs400DriverStrength;
 
-/** Offset 0x06FA
+/** Offset 0x06FA - PCH SerialIo I2C Pads Termination
+  0x1: None, 0x13: 1kOhm weak pull-up, 0x15: 5kOhm weak pull-up, 0x19: 20kOhm weak
+  pull-up - Enable/disable SerialIo I2C0,I2C1,I2C2,I2C3,I2C4,I2C5 pads termination
+  respectively. One byte for each controller, byte0 for I2C0, byte1 for I2C1, and so on.
+  0x1:None, 0x13:1kOhm WPU, 0x15:5kOhm WPU, 0x19:20kOhm WPU
 **/
-  UINT8                       UnusedUpdSpace22[7];
+  UINT8                       PchSerialIoI2cPadsTermination[6];
+
+/** Offset 0x0700
+**/
+  UINT8                       UnusedUpdSpace23;
 
 /** Offset 0x0701 - PcdSerialIoUart0PinMuxing
   Select SerialIo Uart0 pin muxing. Setting applicable only if SerialIO UART0 is enabled.
@@ -1818,7 +1812,7 @@ typedef struct {
 
 /** Offset 0x0702
 **/
-  UINT8                       UnusedUpdSpace23[1];
+  UINT8                       UnusedUpdSpace24[1];
 
 /** Offset 0x0703 - Enables UART hardware flow control, CTS and RTS lines
   Enables UART hardware flow control, CTS and RTS linesh.
@@ -2075,9 +2069,15 @@ typedef struct {
 **/
   UINT8                       SataRstOptaneMemory;
 
-/** Offset 0x0751
+/** Offset 0x0751 - PCH Sata Rst CPU Attached Storage
+  CPU Attached Storage
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace24[3];
+  UINT8                       SataRstCpuAttachedStorage;
+
+/** Offset 0x0752
+**/
+  UINT8                       UnusedUpdSpace25[2];
 
 /** Offset 0x0754 - Pch PCIE device override table pointer
   The PCIe device table is being used to override PCIe device ASPM settings. This
@@ -2171,14 +2171,23 @@ typedef struct {
   UINT8                       MeUnconfigOnRtcClear;
 
 /** Offset 0x07A9 - Enable PS_ON.
-  When FALSE, PS_ON is to be disabled.
+  PS_ON is a new C10 state from the CPU on desktop SKUs that enables a lower power
+  target that will be required by the California Energy Commission (CEC). When FALSE,
+  PS_ON is to be disabled.
   $EN_DIS
 **/
   UINT8                       PsOnEnable;
 
-/** Offset 0x07AA
+/** Offset 0x07AA - Pmc Cpu C10 Gate Pin Enable
+  Enable/Disable platform support for CPU_C10_GATE# pin to control gating of CPU VccIO
+  and VccSTG rails instead of SLP_S0# pin.
+  $EN_DIS
 **/
-  UINT8                       ReservedFspsUpd[3];
+  UINT8                       PmcCpuC10GatePinEnable;
+
+/** Offset 0x07AB
+**/
+  UINT8                       ReservedFspsUpd[2];
 } FSP_S_CONFIG;
 
 /** Fsp S Test Configuration
@@ -2742,10 +2751,9 @@ typedef struct {
 **/
   UINT16                      PsysPmax;
 
-/** Offset 0x0858 - Interrupt Response Time Limit of C-State LatencyContol0
-  Interrupt Response Time Limit of C-State LatencyContol0. Range of value 0 to 0x3FF
+/** Offset 0x0858
 **/
-  UINT16                      CstateLatencyControl0Irtl;
+  UINT8                       Reserved0[2];
 
 /** Offset 0x085A - Interrupt Response Time Limit of C-State LatencyContol1
   Interrupt Response Time Limit of C-State LatencyContol1.Range of value 0 to 0x3FF
@@ -3059,35 +3067,29 @@ typedef struct {
 **/
   UINT8                       PchPmDisableEnergyReport;
 
-/** Offset 0x0A5F - PCH Pm Pmc Read Disable
-  When set to true, this bit disallows host reads to PMC XRAM.
-  $EN_DIS
-**/
-  UINT8                       PchPmPmcReadDisable;
-
-/** Offset 0x0A60 - PCH Sata Test Mode
+/** Offset 0x0A5F - PCH Sata Test Mode
   Allow entrance to the PCH SATA test modes.
   $EN_DIS
 **/
   UINT8                       SataTestMode;
 
-/** Offset 0x0A61 - PCH USB OverCurrent mapping lock enable
+/** Offset 0x0A60 - PCH USB OverCurrent mapping lock enable
   If this policy option is enabled then BIOS will program OCCFDONE bit in xHCI meaning
   that OC mapping data will be consumed by xHCI and OC mapping registers will be locked.
   $EN_DIS
 **/
   UINT8                       PchXhciOcLock;
 
-/** Offset 0x0A62 - PCH USB Access Control setting
+/** Offset 0x0A61 - PCH USB Access Control setting
   This policy option controls setting the Access Control (ACCTRL) bit in XHCC1 which
   will lock write access to registers controlled by its functionality.
   $EN_DIS
 **/
   UINT8                       PchXhciAcLock;
 
-/** Offset 0x0A63
+/** Offset 0x0A62
 **/
-  UINT8                       UnusedUpdSpace25[15];
+  UINT8                       UnusedUpdSpace26[16];
 
 /** Offset 0x0A72 - Skip POSTBOOT SAI
   This skip the Post Boot Sai programming. 0: Set Post Boot Sai; 1: Skip Post Boot Sai.
@@ -3095,9 +3097,15 @@ typedef struct {
 **/
   UINT8                       SkipPostBootSai;
 
-/** Offset 0x0A73
+/** Offset 0x0A73 - Mctp Broadcast Cycle
+  Test, Determine if MCTP Broadcast is enabled <b>0: Disable</b>; 1: Enable.
+  $EN_DIS
 **/
-  UINT8                       ReservedFspsTestUpd[13];
+  UINT8                       MctpBroadcastCycle;
+
+/** Offset 0x0A74
+**/
+  UINT8                       ReservedFspsTestUpd[12];
 } FSP_S_TEST_CONFIG;
 
 /** Fsp S Restricted Configuration
@@ -3110,7 +3118,7 @@ typedef struct {
 
 /** Offset 0x0A84
 **/
-  UINT8                       UnusedUpdSpace26;
+  UINT8                       UnusedUpdSpace27;
 
 /** Offset 0x0A85 - Enable or disable GNA Error Check Disable Bit
   0=Disable, 1(Default)=Enable
@@ -3378,7 +3386,7 @@ typedef struct {
 
 /** Offset 0x0ACB
 **/
-  UINT8                       UnusedUpdSpace27[49];
+  UINT8                       UnusedUpdSpace28[49];
 
 /** Offset 0x0AFC - SaPostMemRestrictedRsvd
   Reserved for SA Post-Mem Restricted
@@ -3490,7 +3498,7 @@ typedef struct {
 
 /** Offset 0x0B5E
 **/
-  UINT8                       UnusedUpdSpace28;
+  UINT8                       UnusedUpdSpace29;
 
 /** Offset 0x0B5F - Pch Tc Lock Down
   Pch Tc Lock Down.
@@ -3518,7 +3526,7 @@ typedef struct {
 
 /** Offset 0x0B63
 **/
-  UINT8                       UnusedUpdSpace29;
+  UINT8                       UnusedUpdSpace30;
 
 /** Offset 0x0B64 - Configuration Lockdown (BCLD)
   0: POR (Enable), 1: Enable, 2: Disable.
@@ -3532,11 +3540,9 @@ typedef struct {
 **/
   UINT8                       PchHdaTestLowFreqLinkClkSrc;
 
-/** Offset 0x0B66 - I2s Configuration
-  0: Disabled, 1: Realtek ALC298, 2: Realtek ALC286S, 3: Analog Devices, 4: I2S_24b_48kHz_Master,
-  5: I2S_24b_48kHz_Slave, 6: PCM_16b_8kHz_Master, 7: PCM_16b_8kHz_Slave.
+/** Offset 0x0B66
 **/
-  UINT32                      PchHdaTestI2sConfiguration;
+  UINT8                       UnusedUpdSpace31[4];
 
 /** Offset 0x0B6A - PCH Lan Test WOL Fast Support
   Enables bit B_PCH_ACPI_GPE0_EN_127_96_PME_B0 during PchLanSxCallback in PchLanSxSmm.
@@ -3578,7 +3584,7 @@ typedef struct {
 
 /** Offset 0x0BE4
 **/
-  UINT8                       UnusedUpdSpace30[72];
+  UINT8                       UnusedUpdSpace32[72];
 
 /** Offset 0x0C2C - PCH Pcie bem
   PCH Pcie bem.
@@ -3808,7 +3814,7 @@ typedef struct {
 
 /** Offset 0x0C6F
 **/
-  UINT8                       UnusedUpdSpace31[2];
+  UINT8                       UnusedUpdSpace33[2];
 
 /** Offset 0x0C71 - This locks down Enables the thermal sensor
   0: Disabled, 1: Enabled.
@@ -3830,7 +3836,7 @@ typedef struct {
 
 /** Offset 0x0C74
 **/
-  UINT8                       UnusedUpdSpace32[10];
+  UINT8                       UnusedUpdSpace34[10];
 
 /** Offset 0x0C7E - USB EP Type Lock Policy
   USB EP Type Lock Policy.
@@ -3849,7 +3855,7 @@ typedef struct {
 
 /** Offset 0x0C8A
 **/
-  UINT8                       UnusedUpdSpace33[4];
+  UINT8                       UnusedUpdSpace35[4];
 
 /** Offset 0x0C8E - Xhci Controller Enable
   0: Disable; 1: Enable.
@@ -3858,7 +3864,7 @@ typedef struct {
 
 /** Offset 0x0C8F
 **/
-  UINT8                       UnusedUpdSpace34;
+  UINT8                       UnusedUpdSpace36;
 
 /** Offset 0x0C90 - Unlock to enable NOA for SV usage
   1: Unlock to enable NOA usage. 0: Set Xhci OC registers, Set Xhci OCCDone bit, XHCI
@@ -3885,22 +3891,16 @@ typedef struct {
 
 /** Offset 0x0C94
 **/
-  UINT8                       UnusedUpdSpace35[2];
+  UINT8                       UnusedUpdSpace37[2];
 
 /** Offset 0x0C96 - Restricted Flash Lock Down
   Restricted Flash Lock Down.
 **/
   UINT8                       PchTestFlashLockDown;
 
-/** Offset 0x0C97 - Restricted Mctp Broad cast Cycle
-  Determine if MCTP Broadcast is enabled. 0: PLATFORM_POR, 1: FORCE_ENABLE, 2: FORCE_DISABLE.
-  0: PLATFORM_POR, 1: FORCE_ENABLE, 2: FORCE_DISABLE
+/** Offset 0x0C97
 **/
-  UINT8                       PchTestMctpBroadcastCycle;
-
-/** Offset 0x0C98
-**/
-  UINT8                       UnusedUpdSpace36;
+  UINT8                       UnusedUpdSpace38[2];
 
 /** Offset 0x0C99 - PCH PMC ER Debug mode
   Disable/Enable Energy Reporting Debug Mode.
@@ -3908,15 +3908,9 @@ typedef struct {
 **/
   UINT8                       TestPchPmErDebugMode;
 
-/** Offset 0x0C9A - PCH ACPI Timer Disable
-  0: False, Acpi Timer is enabled; 1: True, Acpi Timer is disabled
-  $EN_DIS
+/** Offset 0x0C9A
 **/
-  UINT8                       TestAcpiTmrDisable;
-
-/** Offset 0x0C9B
-**/
-  UINT8                       UnusedUpdSpace37;
+  UINT8                       UnusedUpdSpace39[2];
 
 /** Offset 0x0C9C - USB2/TS LDO Dynamic Shutdown
   Enable/Disable USB2/TS LDO Dynamic Shutdown
@@ -3974,25 +3968,42 @@ typedef struct {
 **/
   UINT8                       PcieAllowL0sWithGen3;
 
-/** Offset 0x0CA5 - PchSiliconRestrictedRsvd
-  Reserved for CPU Post-Mem Restricted
+/** Offset 0x0CA5 - CNVi BT Interface
+  This option configures BT device interface to either USB or UART
+  0:UART, 1:USB
+**/
+  UINT8                       TestCnviBtInterface;
+
+/** Offset 0x0CA6 - CNVi BT Uart Type
+  This is a test option which allows configuration of UART type for BT communication
+  0:Serial IO Uart0, 1:ISH Uart0, 2:Uart over external pads
+**/
+  UINT8                       TestCnviBtUartType;
+
+/** Offset 0x0CA7 - Enable/Disable DMI L1 entry disable mode 
+  Enable/Disable DMI L1 entry disable mode.
+**/
+  UINT8                       PcieRpTestDmiL1Edm[24];
+
+/** Offset 0x0CBF - PchSiliconRestrictedRsvd
+  Reserved for PCH Post-Mem Restricted
   $EN_DIS
 **/
-  UINT8                       PchSiliconRestrictedRsvd[5];
+  UINT8                       PchSiliconRestrictedRsvd[3];
 
-/** Offset 0x0CAA - Si Config SvPolicyEnable.
+/** Offset 0x0CC2 - Si Config SvPolicyEnable.
   Platform specific common policies that used by several silicon components. SvPolicyEnable.
   $EN_DIS
 **/
   UINT8                       SiSvPolicyEnable;
 
-/** Offset 0x0CAB - Si Config HsleWorkaround
+/** Offset 0x0CC3 - Si Config HsleWorkaround
   Enable/Disable HSLE model specific workarounds
   $EN_DIS
 **/
   UINT8                       HsleWorkaround;
 
-/** Offset 0x0CAC
+/** Offset 0x0CC4
 **/
   UINT8                       ReservedFspsRestrictedUpd[4];
 } FSP_S_RESTRICTED_CONFIG;
@@ -4017,7 +4028,7 @@ typedef struct {
 **/
   FSP_S_RESTRICTED_CONFIG     FspsRestrictedConfig;
 
-/** Offset 0x0CB0
+/** Offset 0x0CC8
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

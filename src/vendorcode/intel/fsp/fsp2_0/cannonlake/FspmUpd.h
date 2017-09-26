@@ -41,8 +41,7 @@ are permitted provided that the following conditions are met:
 #include <MemInfoHob.h>
 
 ///
-/// The ChipsetInit Info structure provides the information of ME ChipsetInit CRC and BIOS
-/// ChipsetInit CRC.
+/// The ChipsetInit Info structure provides the information of ME ChipsetInit CRC and BIOS ChipsetInit CRC.
 ///
 typedef struct {
   UINT8             Revision;         ///< Chipset Init Info Revision
@@ -202,9 +201,10 @@ typedef struct {
 /** Offset 0x00AA - Platform Debug Consent
   To 'opt-in' for debug, please select 'Enabled' with the desired debug probe type.
   Enabling this BIOS option may alter the default value of other debug-related BIOS
-  options. Note: DCI OOB (aka BSSB) uses CCA probe
-  0:Disabled, 1:Enabled (DCI OOB+DbC), 2:Enabled (DCI OOB), 3:Enabled (USB3 DbC),
-  4:Enabled (XDP/MIPI60)
+  options. Note: DCI OOB (aka BSSB) uses CCA probe; [DCI OOB+DbC] and [USB2 DbC]
+  have the same setting
+  0:Disabled, 1:Enabled (DCI OOB+[DbC]), 2:Enabled (DCI OOB), 3:Enabled (USB3 DbC),
+  4:Enabled (XDP/MIPI60), 5:Enabled (USB2 DbC)
 **/
   UINT8                       PlatformDebugConsent;
 
@@ -272,7 +272,7 @@ typedef struct {
 /** Offset 0x00BC - SA GV
   System Agent dynamic frequency support and when enabled memory will be training
   at two different frequencies. Only effects ULX/ULT CPUs. 0=Disabled, 1=FixedLow,
-  2=FixedHigh, and 3=Enabled.
+  2=FixedMid, 3=FixedHigh, and 4=Enabled.
   0:Disabled, 1:FixedLow, 2:FixedMid, 3:FixedHigh, 4:Enabled
 **/
   UINT8                       SaGv;
@@ -326,25 +326,25 @@ typedef struct {
 **/
   UINT8                       ScramblerSupport;
 
-/** Offset 0x00C8 - MMA Test Content Pointer
-  Pointer to MMA Test Content in Memory
+/** Offset 0x00C8 - EV Loader Test Content Pointer
+  Pointer to EV Loader Test Content in Memory
 **/
-  UINT32                      MmaTestContentPtr;
+  UINT32                      EvTestContentPtr;
 
-/** Offset 0x00CC - MMA Test Content Size
-  Size of MMA Test Content in Memory
+/** Offset 0x00CC - EV Loader Test Content Size
+  Size of EV Loader Test Content in Memory
 **/
-  UINT32                      MmaTestContentSize;
+  UINT32                      EvTestContentSize;
 
-/** Offset 0x00D0 - MMA Test Config Pointer
-  Pointer to MMA Test Config in Memory
+/** Offset 0x00D0 - EV Loader Test Config Pointer
+  Pointer to EV Loader Test Config in Memory
 **/
-  UINT32                      MmaTestConfigPtr;
+  UINT32                      EvTestConfigPtr;
 
-/** Offset 0x00D4 - MMA Test Config Size
-  Size of MMA Test Config in Memory
+/** Offset 0x00D4 - EV Loader Test Config Size
+  Size of EV Loader Test Config in Memory
 **/
-  UINT32                      MmaTestConfigSize;
+  UINT32                      EvTestConfigSize;
 
 /** Offset 0x00D8 - SPD Profile Selected
   Select DIMM timing profile. Options are 0=Default profile, 1=Custom profile, 2=XMP
@@ -354,8 +354,8 @@ typedef struct {
   UINT8                       SpdProfileSelected;
 
 /** Offset 0x00D9 - Memory Reference Clock
-  Automatic, 100MHz, 133MHz.
-  0:Auto, 1:133MHz, 2:100MHz
+  100MHz, 133MHz.
+  0:133MHz, 1:100MHz
 **/
   UINT8                       RefClk;
 
@@ -702,7 +702,7 @@ typedef struct {
   UINT8                       DmiGen3EndPointHint[8];
 
 /** Offset 0x0140 - DMI Gen3 RxCTLEp per-Bundle control
-  Range: 0-15, 12 is default for each bundle, must be specified based upon platform design
+  Range: 0-15, 0 is default for each bundle, must be specified based upon platform design
 **/
   UINT8                       DmiGen3RxCtlePeaking[4];
 
@@ -713,45 +713,45 @@ typedef struct {
 /** Offset 0x0148 - PEG Gen3 RxCTLEp per-Bundle control
   Range: 0-15, 12 is default for each bundle, must be specified based upon platform design
 **/
-  UINT8                       PegGen3RxCtlePeaking[8];
+  UINT8                       PegGen3RxCtlePeaking[10];
 
-/** Offset 0x0150 - Memory data pointer for saved preset search results
+/** Offset 0x0152 - Memory data pointer for saved preset search results
   The reference code will store the Gen3 Preset Search results in the SaDataHob's
   PegData structure (SA_PEG_DATA) and platform code can save/restore this data to
   skip preset search in the following boots. Range: 0-0xFFFFFFFF, default is 0
 **/
   UINT32                      PegDataPtr;
 
-/** Offset 0x0154 - PEG PERST# GPIO information
+/** Offset 0x0156 - PEG PERST# GPIO information
   The reference code will use the information in this structure in order to reset
   PCIe Gen3 devices during equalization, if necessary
 **/
   UINT8                       PegGpioData[28];
 
-/** Offset 0x0170 - PCIe Hot Plug Enable/Disable per port
+/** Offset 0x0172 - PCIe Hot Plug Enable/Disable per port
   0(Default): Disable, 1: Enable
 **/
   UINT8                       PegRootPortHPE[4];
 
-/** Offset 0x0174 - DeEmphasis control for DMI
+/** Offset 0x0176 - DeEmphasis control for DMI
   DeEmphasis control for DMI. 0=-6dB, 1(Default)=-3.5 dB
   0: -6dB, 1: -3.5dB
 **/
   UINT8                       DmiDeEmphasis;
 
-/** Offset 0x0175 - Selection of the primary display device
+/** Offset 0x0177 - Selection of the primary display device
   0=iGFX, 1=PEG, 2=PCIe Graphics on PCH, 3(Default)=AUTO, 4=Switchable Graphics
   0:iGFX, 1:PEG, 2:PCIe Graphics on PCH, 3:AUTO, 4:Switchable Graphics
 **/
   UINT8                       PrimaryDisplay;
 
-/** Offset 0x0176 - Selection of iGFX GTT Memory size
+/** Offset 0x0178 - Selection of iGFX GTT Memory size
   1=2MB, 2=4MB, 3=8MB, Default is 3
   1:2MB, 2:4MB, 3:8MB
 **/
   UINT16                      GttSize;
 
-/** Offset 0x0178 - Temporary MMIO address for GMADR
+/** Offset 0x017A - Temporary MMIO address for GMADR
   The reference code will use this as Temporary MMIO address space to access GMADR
   Registers.Platform should provide conflict free Temporary MMIO Range: GmAdr to
   (GmAdr + ApertureSize). Default is (PciExpressBaseAddress - ApertureSize) to (PciExpressBaseAddress
@@ -759,7 +759,7 @@ typedef struct {
 **/
   UINT32                      GmAdr;
 
-/** Offset 0x017C - Temporary MMIO address for GTTMMADR
+/** Offset 0x017E - Temporary MMIO address for GTTMMADR
   The reference code will use this as Temporary MMIO address space to access GTTMMADR
   Registers.Platform should provide conflict free Temporary MMIO Range: GttMmAdr
   to (GttMmAdr + 2MB MMIO + 6MB Reserved + GttSize). Default is (GmAdr - (2MB MMIO
@@ -767,112 +767,111 @@ typedef struct {
 **/
   UINT32                      GttMmAdr;
 
-/** Offset 0x0180 - Selection of PSMI Region size
+/** Offset 0x0182 - Selection of PSMI Region size
   0=32MB, 1=288MB, 2=544MB, 3=800MB, 4=1024MB Default is 0
   0:32MB, 1:288MB, 2:544MB, 3:800MB, 4:1024MB
 **/
   UINT8                       PsmiRegionSize;
 
-/** Offset 0x0181 - Switchable Graphics GPIO information for PEG 0
+/** Offset 0x0183 - Switchable Graphics GPIO information for PEG 0
   Switchable Graphics GPIO information for PEG 0, for Reset, power and wake GPIOs
 **/
   UINT8                       SaRtd3Pcie0Gpio[24];
 
-/** Offset 0x0199 - Switchable Graphics GPIO information for PEG 1
+/** Offset 0x019B - Switchable Graphics GPIO information for PEG 1
   Switchable Graphics GPIO information for PEG 1, for Reset, power and wake GPIOs
 **/
   UINT8                       SaRtd3Pcie1Gpio[24];
 
-/** Offset 0x01B1 - Switchable Graphics GPIO information for PEG 2
+/** Offset 0x01B3 - Switchable Graphics GPIO information for PEG 2
   Switchable Graphics GPIO information for PEG 2, for Reset, power and wake GPIOs
 **/
   UINT8                       SaRtd3Pcie2Gpio[24];
 
-/** Offset 0x01C9 - Switchable Graphics GPIO information for PEG 3
+/** Offset 0x01CB - Switchable Graphics GPIO information for PEG 3
   Switchable Graphics GPIO information for PEG 3, for Reset, power and wake GPIOs
 **/
   UINT8                       SaRtd3Pcie3Gpio[24];
 
-/** Offset 0x01E1 - Enable/Disable MRC TXT dependency
-  When enabled MRC execution will wait for TXT initialization to be done first. Disabled(0x0)
-  (Default): MRC will not wait for TXT initialization, Enabled(0x1): MRC will wait for TXT
-  initialization $EN_DIS
+/** Offset 0x01E3 - Enable/Disable MRC TXT dependency
+  When enabled MRC execution will wait for TXT initialization to be done first. Disabled(0x0)(Default):
+  MRC will not wait for TXT initialization, Enabled(0x1): MRC will wait for TXT initialization
+  $EN_DIS
 **/
   UINT8                       TxtImplemented;
 
-/** Offset 0x01E2 - Enable/Disable SA OcSupport
+/** Offset 0x01E4 - Enable/Disable SA OcSupport
   Enable: Enable SA OcSupport, Disable(Default): Disable SA OcSupport
   $EN_DIS
 **/
   UINT8                       SaOcSupport;
 
-/** Offset 0x01E3 - GT slice Voltage Mode
+/** Offset 0x01E5 - GT slice Voltage Mode
   0(Default): Adaptive, 1: Override
   0: Adaptive, 1: Override
 **/
   UINT8                       GtVoltageMode;
 
-/** Offset 0x01E4 - Maximum GTs turbo ratio override
+/** Offset 0x01E6 - Maximum GTs turbo ratio override
   0(Default)=Minimal/Auto, 60=Maximum
 **/
   UINT8                       GtMaxOcRatio;
 
-/** Offset 0x01E5 - The voltage offset applied to GT slice
+/** Offset 0x01E7 - The voltage offset applied to GT slice
   0(Default)=Minimal, 1000=Maximum
 **/
   UINT16                      GtVoltageOffset;
 
-/** Offset 0x01E7 - The GT slice voltage override which is applied to the entire range of GT
-   frequencies
+/** Offset 0x01E9 - The GT slice voltage override which is applied to the entire range of GT frequencies
   0(Default)=Minimal, 2000=Maximum
 **/
   UINT16                      GtVoltageOverride;
 
-/** Offset 0x01E9 - adaptive voltage applied during turbo frequencies
+/** Offset 0x01EB - adaptive voltage applied during turbo frequencies
   0(Default)=Minimal, 2000=Maximum
 **/
   UINT16                      GtExtraTurboVoltage;
 
-/** Offset 0x01EB - voltage offset applied to the SA
+/** Offset 0x01ED - voltage offset applied to the SA
   0(Default)=Minimal, 1000=Maximum
 **/
   UINT16                      SaVoltageOffset;
 
-/** Offset 0x01ED - PCIe root port Function number for Switchable Graphics dGPU
+/** Offset 0x01EF - PCIe root port Function number for Switchable Graphics dGPU
   Root port Index number to indicate which PCIe root port has dGPU
 **/
   UINT8                       RootPortIndex;
 
-/** Offset 0x01EE - Realtime Memory Timing
+/** Offset 0x01F0 - Realtime Memory Timing
   0(Default): Disabled, 1: Enabled. When enabled, it will allow the system to perform
   realtime memory timing changes after MRC_DONE.
   0: Disabled, 1: Enabled
 **/
   UINT8                       RealtimeMemoryTiming;
 
-/** Offset 0x01EF - Enable/Disable SA IPU
+/** Offset 0x01F1 - Enable/Disable SA IPU
   Enable(Default): Enable SA IPU, Disable: Disable SA IPU
   $EN_DIS
 **/
   UINT8                       SaIpuEnable;
 
-/** Offset 0x01F0 - IPU IMR Configuration
+/** Offset 0x01F2 - IPU IMR Configuration
   0:IPU Camera, 1:IPU Gen Default is 0
   0:IPU Camera, 1:IPU Gen
 **/
   UINT8                       SaIpuImrConfiguration;
 
-/** Offset 0x01F1 - Selection of PSMI Support On/Off
+/** Offset 0x01F3 - Selection of PSMI Support On/Off
   0(Default) = FALSE, 1 = TRUE. When TRUE, it will allow the PSMI Support
   $EN_DIS
 **/
   UINT8                       GtPsmiSupport;
 
-/** Offset 0x01F2 - SaPreMemProductionRsvd
+/** Offset 0x01F4 - SaPreMemProductionRsvd
   Reserved for SA Pre-Mem Production
   $EN_DIS
 **/
-  UINT8                       SaPreMemProductionRsvd[14];
+  UINT8                       SaPreMemProductionRsvd[12];
 
 /** Offset 0x0200 - BIST on Reset
   Enable or Disable BIST on Reset; <b>0: Disable</b>; 1: Enable.
@@ -1063,8 +1062,8 @@ typedef struct {
   UINT8                       BiosGuardToolsInterface;
 
 /** Offset 0x0225 - EnableSgx
-  Enable/Disable. 0: Disable, Enable/Disable SGX feature, 1: enable
-  $EN_DIS
+  Enable/Disable. 0: Disable, Enable/Disable SGX feature, 1: enable, 2: Software Control
+  0: Disable, 1: Enable, 2: Software Control
 **/
   UINT8                       EnableSgx;
 
@@ -1079,7 +1078,7 @@ typedef struct {
   UINT8                       UnusedUpdSpace6;
 
 /** Offset 0x0228 - PrmrrSize
-  Enable/Disable. 0: Disable, define default value of PrmrrSize , 1: enable
+  0=Invalid, 32MB=0x2000000, 64MB=0x4000000, 128MB=0x8000000, 256MB=0x10000000
 **/
   UINT32                      PrmrrSize;
 
@@ -2233,9 +2232,25 @@ typedef struct {
 **/
   UINT8                       CleanMemory;
 
-/** Offset 0x050D
+/** Offset 0x050D - LpDdrDqDqsReTraining
+  Enables/Disable LpDdrDqDqsReTraining
+  $EN_DIS
 **/
-  UINT8                       ReservedFspmUpd[19];
+  UINT8                       LpDdrDqDqsReTraining;
+
+/** Offset 0x050E - Post Code Output Port
+  This option configures Post Code Output Port
+**/
+  UINT16                      PostCodeOutputPort;
+
+/** Offset 0x0510 - RMTLoopCount
+  Specifies the Loop Count to be used during Rank Margin Tool Testing. 0 - AUTO
+**/
+  UINT8                       RMTLoopCount;
+
+/** Offset 0x0511
+**/
+  UINT8                       ReservedFspmUpd[15];
 } FSP_M_CONFIG;
 
 /** Fsp M Test Configuration
@@ -2489,11 +2504,17 @@ typedef struct {
 **/
   UINT8                       PanelPowerEnable;
 
-/** Offset 0x0583 - SaPreMemTestRsvd
+/** Offset 0x0583 - BdatTestType
+  Indicates the type of Memory Training data to populate into the BDAT ACPI table.
+  0:Rank Marign Tool, 1:Margin2D
+**/
+  UINT8                       BdatTestType;
+
+/** Offset 0x0584 - SaPreMemTestRsvd
   Reserved for SA Pre-Mem Test
   $EN_DIS
 **/
-  UINT8                       SaPreMemTestRsvd[13];
+  UINT8                       SaPreMemTestRsvd[12];
 
 /** Offset 0x0590 - TotalFlashSize
   Enable/Disable. 0: Disable, define default value of TotalFlashSize , 1: enable
@@ -2544,8 +2565,8 @@ typedef struct {
   UINT8                       BypassPhySyncReset;
 
 /** Offset 0x059D - Force ME DID Init Status
-  Test, 0: disable, 1: Success, 2: No Memory in Channels, 3: Memory Init Error, 4:
-  Memory not preserved across reset, Set ME DID init stat value
+  Test, 0: disable, 1: Success, 2: No Memory in Channels, 3: Memory Init Error, Set
+  ME DID init stat value
   $EN_DIS
 **/
   UINT8                       DidInitStat;

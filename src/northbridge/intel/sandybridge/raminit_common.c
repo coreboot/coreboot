@@ -3098,9 +3098,9 @@ void set_scrambling_seed(ramctr_timing * ctrl)
 	};
 	FOR_ALL_POPULATED_CHANNELS {
 		MCHBAR32(0x4020 + 0x400 * channel) &= ~0x10000000;
-		write32(DEFAULT_MCHBAR + 0x4034, seeds[channel][0]);
-		write32(DEFAULT_MCHBAR + 0x403c, seeds[channel][1]);
-		write32(DEFAULT_MCHBAR + 0x4038, seeds[channel][2]);
+		MCHBAR32(0x4034 + 0x400 * channel) = seeds[channel][0];
+		MCHBAR32(0x403c + 0x400 * channel) = seeds[channel][1];
+		MCHBAR32(0x4038 + 0x400 * channel) = seeds[channel][2];
 	}
 }
 

@@ -31,7 +31,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <ec/google/chromeec/ec.h>
-#include <soc/intel/common/opregion.h>
+#include <drivers/intel/gma/opregion.h>
 #include <rules.h>
 #include <soc/acpi.h>
 #include <soc/gfx.h>
@@ -476,40 +476,7 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 /* Initialize IGD OpRegion, called from ACPI code */
 static int update_igd_opregion(igd_opregion_t *opregion)
 {
-	u16 reg16;
-	struct device *igd;
-
-	/* TODO Initialize Mailbox 1 */
-	opregion->mailbox1.clid = 1;
-
-	/* TODO Initialize Mailbox 3 */
-	opregion->mailbox3.bclp = IGD_BACKLIGHT_BRIGHTNESS;
-	opregion->mailbox3.pfit = IGD_FIELD_VALID | IGD_PFIT_STRETCH;
-	opregion->mailbox3.pcft = 0; /* should be (IMON << 1) & 0x3e */
-	opregion->mailbox3.cblv = IGD_FIELD_VALID | IGD_INITIAL_BRIGHTNESS;
-	opregion->mailbox3.bclm[0] = IGD_WORD_FIELD_VALID + 0x0000;
-	opregion->mailbox3.bclm[1] = IGD_WORD_FIELD_VALID + 0x0a19;
-	opregion->mailbox3.bclm[2] = IGD_WORD_FIELD_VALID + 0x1433;
-	opregion->mailbox3.bclm[3] = IGD_WORD_FIELD_VALID + 0x1e4c;
-	opregion->mailbox3.bclm[4] = IGD_WORD_FIELD_VALID + 0x2866;
-	opregion->mailbox3.bclm[5] = IGD_WORD_FIELD_VALID + 0x327f;
-	opregion->mailbox3.bclm[6] = IGD_WORD_FIELD_VALID + 0x3c99;
-	opregion->mailbox3.bclm[7] = IGD_WORD_FIELD_VALID + 0x46b2;
-	opregion->mailbox3.bclm[8] = IGD_WORD_FIELD_VALID + 0x50cc;
-	opregion->mailbox3.bclm[9] = IGD_WORD_FIELD_VALID + 0x5ae5;
-	opregion->mailbox3.bclm[10] = IGD_WORD_FIELD_VALID + 0x64ff;
-
-	/*
-	 * TODO This needs to happen in S3 resume, too.
-	 * Maybe it should move to the finalize handler
-	 */
-	igd = dev_find_slot(0, PCI_DEVFN(GFX_DEV, GFX_FUNC));
-
-	pci_write_config32(igd, ASLS, (u32)opregion);
-	reg16 = pci_read_config16(igd, SWSCI);
-	reg16 &= ~(1 << 0);
-	reg16 |= (1 << 15);
-	pci_write_config16(igd, SWSCI, reg16);
+	/* FIXME: Add platform specific mailbox initialization */
 
 	return 0;
 }
@@ -528,7 +495,7 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 
 		printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");
 		opregion = (igd_opregion_t *)current;
-		init_igd_opregion(opregion);
+		intel_gma_init_igd_opregion(opregion);
 		update_igd_opregion(opregion);
 		current += sizeof(igd_opregion_t);
 		current = acpi_align_current(current);

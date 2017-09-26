@@ -21,7 +21,6 @@
 #include <device/device.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
-#include <soc/intel/common/opregion.h>
 
 #define FSP_SIL_UPD FSP_S_CONFIG
 #define FSP_MEM_UPD FSP_M_CONFIG

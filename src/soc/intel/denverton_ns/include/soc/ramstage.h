@@ -19,7 +19,6 @@
 #include <device/device.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
-#include <soc/intel/common/opregion.h>
 
 void denverton_init_cpus(device_t dev);
 void mainboard_silicon_init_params(FSPS_UPD *params);

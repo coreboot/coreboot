@@ -17,8 +17,7 @@
 #define __AGESAWRAPPER_H__
 
 #include <stdint.h>
-#include <Porting.h>
-#include <AGESA.h>
+#include <agesa_headers.h>
 
 enum {
 	PICK_DMI,       /* DMI Interface */

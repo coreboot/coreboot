@@ -84,18 +84,35 @@ static AGESA_STATUS fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 }
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
+	/* Required callouts */
 	{AGESA_ALLOCATE_BUFFER,          agesa_AllocateBuffer },
 	{AGESA_DEALLOCATE_BUFFER,        agesa_DeallocateBuffer },
+	{AGESA_DO_RESET,                 agesa_Reset },
 	{AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
 	{AGESA_READ_SPD,                 agesa_ReadSpd },
-	{AGESA_DO_RESET,                 agesa_Reset },
-	{AGESA_READ_SPD_RECOVERY,        agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
-	{AGESA_GET_IDS_INIT_DATA,        agesa_EmptyIdsInitData },
-	{AGESA_HOOKBEFORE_DQS_TRAINING,  agesa_NoopSuccess },
-	{AGESA_HOOKBEFORE_EXIT_SELF_REF, agesa_NoopSuccess },
-	{AGESA_FCH_OEM_CALLOUT,          fch_initenv },
-	{AGESA_GNB_GFX_GET_VBIOS_IMAGE,  agesa_GfxGetVbiosImage }
+	{AGESA_RUNFUNC_ON_ALL_APS,       agesa_RunFcnOnAllAps },
+	{AMD_LATE_RUN_AP_TASK,           agesa_LateRunApTask },
+	{AGESA_GNB_PCIE_SLOT_RESET,      agesa_PcieSlotResetControl },
+	{AGESA_WAIT_FOR_ALL_APS,         agesa_WaitForAllApsFinished },
+	{AGESA_IDLE_AN_AP,               agesa_IdleAnAp },
+
+	/* Optional callouts */
+	{AGESA_GET_IDS_INIT_DATA,             agesa_EmptyIdsInitData },
+	//AgesaHeapRebase - Hook ID?
+	{AGESA_HOOKBEFORE_DRAM_INIT,          agesa_NoopUnsupported },
+	{AGESA_HOOKBEFORE_DQS_TRAINING,       agesa_NoopUnsupported },
+	{AGESA_EXTERNAL_2D_TRAIN_VREF_CHANGE, agesa_NoopUnsupported },
+	{AGESA_HOOKBEFORE_EXIT_SELF_REF,      agesa_NoopUnsupported },
+	{AGESA_GNB_GFX_GET_VBIOS_IMAGE,       agesa_GfxGetVbiosImage },
+	{AGESA_FCH_OEM_CALLOUT,               fch_initenv },
+	{AGESA_EXTERNAL_VOLTAGE_ADJUST,       agesa_NoopUnsupported },
+	{AGESA_GNB_PCIE_CLK_REQ,              agesa_NoopUnsupported },
+
+	/* Deprecated */
+	{AGESA_HOOKBEFORE_DRAM_INIT_RECOVERY, agesa_NoopUnsupported},
+	{AGESA_READ_SPD_RECOVERY,             agesa_NoopUnsupported },
+
 };
 
 const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);

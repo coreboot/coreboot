@@ -18,8 +18,8 @@
 
 cd $(dirname $0)
 
-CROSSGCC_DATE="August 16th, 2017"
-CROSSGCC_VERSION="1.47"
+CROSSGCC_DATE="September 19th, 2017"
+CROSSGCC_VERSION="1.48"
 CROSSGCC_COMMIT=$( git describe )
 
 # default settings
@@ -304,18 +304,6 @@ ada_requested() {
 	echo "${LANGUAGES}" | grep -q '\<ada\>'
 }
 
-check_sum() {
-	test -z "$CHECKSUM" || \
-	test "$(cat sum/$1.cksum 2>/dev/null | sed -e 's@.*\([0-9a-f]\{40,\}\).*@\1@')" = \
-	"$($CHECKSUM tarballs/$1 2>/dev/null | sed -e 's@.*\([0-9a-f]\{40,\}\).*@\1@')"
-}
-
-compute_sum() {
-	test ! -f sum/$1.cksum && test -f tarballs/$1 && \
-	(test -z "$CHECKSUM" || $CHECKSUM tarballs/$1 > sum/$1.cksum ) && \
-	printf "(checksum created. ${RED}Note. Please upload sum/$1.cksum if the corresponding archive is upgraded.)${NC}"
-}
-
 download() {
 	package=$1
 	archive="$(eval echo \$$package"_ARCHIVE")"
@@ -323,21 +311,105 @@ download() {
 	FILE=$(basename $archive)
 	printf " * $FILE "
 
-	if test -f tarballs/$FILE && check_sum $FILE ; then
-		echo "(cached)"
+	if test -f tarballs/$FILE; then
+		printf "(cached)... "
 	else
 		printf "(downloading from $archive)"
 		rm -f tarballs/$FILE
 		cd tarballs
 		download_showing_percentage $archive
 		cd ..
-		compute_sum $FILE
 	fi
 
 	if [ ! -f tarballs/$FILE ]; then
 		printf "${RED}Failed to download $FILE.${NC}\n"
 		exit 1
 	fi
+}
+
+# Compute the hash of the package given in $1, and print it raw (just the
+# hexadecimal hash).
+compute_hash() {
+	package=$1
+	archive="$(eval echo \$$package"_ARCHIVE")"
+	file="$(basename "$archive")"
+
+	if test -z "$CHECKSUM"; then
+		echo "${RED}\$CHECKSUM program missing. This is bad.${NC}" 1>&2
+		exit 1
+	fi
+
+	$CHECKSUM "tarballs/$file" 2>/dev/null | sed -e 's@.*\([0-9a-f]\{40,\}\).*@\1@'
+}
+
+error_hash_missing() {
+	package="$1"
+	archive="$(eval echo \$$package"_ARCHIVE")"
+	file="$(basename "$archive")"
+
+	fullhashfile="util/crossgcc/sum/$file.cksum"
+	printf "${RED}hash file missing:${NC}\n\n" 1>&2
+	printf "Please verify util/crossgcc/tarball/$file carefully\n" 1>&2
+	printf "(using PGP if possible), and then rename\n" 1>&2
+	printf "        ${CYAN}${fullhashfile}.calc${NC}\n" 1>&2
+	printf "     to ${CYAN}${fullhashfile}${NC}\n\n" 1>&2
+
+	exit 1
+}
+
+# Read the known hash file of the package given in $1, and print it raw.
+get_known_hash() {
+	package=$1
+	archive="$(eval echo \$$package"_ARCHIVE")"
+	file="$(basename "$archive")"
+	hashfile="sum/$file.cksum"
+
+	if [ ! -f "$hashfile" ]; then
+		calc_hash="$(compute_hash "$package")" || exit 1
+		echo "$calc_hash  tarballs/$file" > "${hashfile}.calc"
+
+		error_hash_missing "$package"
+		exit 1
+	fi
+
+	cat "$hashfile" | sed -e 's@.*\([0-9a-f]\{40,\}\).*@\1@'
+}
+
+error_hash_mismatch() {
+	package=$1
+	known_hash="$2"
+	computed_hash="$3"
+	archive="$(eval echo \$$package"_ARCHIVE")"
+	file="$(basename "$archive")"
+
+	printf "${RED}hash mismatch:${NC}\n\n"
+	printf "             expected (known) hash: $known_hash\n"
+	printf "calculated hash of downloaded file: $computed_hash\n\n"
+
+	printf "If you think this is due to a network error, please delete\n"
+	printf "  ${CYAN}util/crossgcc/tarballs/$file${NC}\n"
+	printf "and try again. If the problem persists, it may be due to an\n"
+	printf "administration error on the file server, or you might be\n"
+	printf "subject to a Man-in-the-Middle attack\n\n"
+
+	exit 1
+}
+
+# verify_hash - Check that the hash of the file given in $1 matches the known
+# hash; Bail out on mismatch or missing hash file.
+verify_hash() {
+	package=$1
+	archive="$(eval echo \$$package"_ARCHIVE")"
+
+	known_hash="$(get_known_hash "$package")" || exit "$?"
+	computed_hash="$(compute_hash "$package")" || exit "$?"
+
+	if [ "$known_hash" != "$computed_hash" ]; then
+		error_hash_mismatch "$package" "$known_hash" "$computed_hash"
+		exit 1
+	fi
+
+	printf "${GREEN}hash verified ("$known_hash")${NC}\n"
 }
 
 unpack_and_patch() {
@@ -965,7 +1037,7 @@ if searchtool wget "GNU" nofail > /dev/null; then
 		wget $url 2>&1 | while read line; do
 			echo $line | grep -o "[0-9]\+%" | awk '{printf("\b\b\b\b%4s", $1)}'
 		done
-		printf "${NC}\n"
+		printf "${NC}... "
 	}
 elif searchtool curl "^curl " > /dev/null; then
 	download_showing_percentage() {
@@ -1129,10 +1201,11 @@ export PATH=$DESTDIR$TARGETDIR/bin:$PATH
 
 # Download, unpack, patch and build all packages
 
-printf "Downloading tarballs ... \n"
+printf "Downloading and verifing tarballs ... \n"
 mkdir -p tarballs
 for P in $PACKAGES; do
-	download $P
+	download "$P" || exit "$?"
+	verify_hash "$P" || exit "$?"
 done
 printf "Downloaded tarballs ... ${green}ok${NC}\n"
 

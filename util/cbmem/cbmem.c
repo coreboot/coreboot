@@ -114,7 +114,7 @@ static u16 ipchcksum(const void *addr, unsigned size)
  * Functions to map / unmap physical memory into virtual address space. These
  * functions always maps 1MB at a time and can only map one area at once.
  */
-static void *mapped_virtual;
+static const void *mapped_virtual;
 static size_t mapped_size;
 
 static inline size_t size_to_mib(size_t sz)
@@ -135,14 +135,15 @@ static void unmap_memory(void)
 		debug("Unmapping %zuMB of virtual memory at %p.\n",
 		      size_to_mib(mapped_size), mapped_virtual);
 	}
-	munmap(mapped_virtual, mapped_size);
+	munmap((void *)mapped_virtual, mapped_size);
 	mapped_virtual = NULL;
 	mapped_size = 0;
 }
 
-static void *map_memory_size(u64 physical, size_t size, uint8_t abort_on_failure)
+static const void *map_memory_size(u64 physical, size_t size,
+					uint8_t abort_on_failure)
 {
-	void *v;
+	const void *v;
 	off_t p;
 	u64 page = getpagesize();
 	size_t padding;
@@ -203,7 +204,7 @@ static void *map_memory_size(u64 physical, size_t size, uint8_t abort_on_failure
 	return v;
 }
 
-static void *map_lbtable(void)
+static const void *map_lbtable(void)
 {
 	if (lbtable_address == 0 || lbtable_size == 0) {
 		fprintf(stderr, "No coreboot table area found!\n");
@@ -221,7 +222,7 @@ static void unmap_lbtable(void)
 /* Find the first cbmem entry filling in the details. */
 static int find_cbmem_entry(uint32_t id, uint64_t *addr, size_t *size)
 {
-	uint8_t *table;
+	const uint8_t *table;
 	size_t offset;
 	int ret = -1;
 
@@ -233,16 +234,16 @@ static int find_cbmem_entry(uint32_t id, uint64_t *addr, size_t *size)
 	offset = 0;
 
 	while (offset < lbtable_size) {
-		struct lb_record *lbr;
-		struct lb_cbmem_entry *lbe;
+		const struct lb_record *lbr;
+		const struct lb_cbmem_entry *lbe;
 
-		lbr = (void *)(table + offset);
+		lbr = (const void *)(table + offset);
 		offset += lbr->size;
 
 		if (lbr->tag != LB_TAG_CBMEM_ENTRY)
 			continue;
 
-		lbe = (void *)lbr;
+		lbe = (const void *)lbr;
 		if (lbe->id != id)
 			continue;
 
@@ -276,7 +277,7 @@ static struct lb_memory_range cbmem;
  * systems out there with a firmware that does not produce the right
  * lb_cbmem_ref structure. Hence we try to autocorrect this issue here.
  */
-static struct lb_cbmem_ref parse_cbmem_ref(struct lb_cbmem_ref *cbmem_ref)
+static struct lb_cbmem_ref parse_cbmem_ref(const struct lb_cbmem_ref *cbmem_ref)
 {
 	struct lb_cbmem_ref ret;
 
@@ -293,7 +294,7 @@ static struct lb_cbmem_ref parse_cbmem_ref(struct lb_cbmem_ref *cbmem_ref)
 static int parse_cbtable(u64 address, size_t table_size, uint8_t abort_on_failure)
 {
 	int i, found = 0, ret = 0;
-	void *buf;
+	const void *buf;
 
 	debug("Looking for coreboot table at %" PRIx64 " %zd bytes.\n",
 		address, table_size);
@@ -304,12 +305,12 @@ static int parse_cbtable(u64 address, size_t table_size, uint8_t abort_on_failur
 	/* look at every 16 bytes within 4K of the base */
 
 	for (i = 0; i < 0x1000; i += 0x10) {
-		struct lb_header *lbh;
-		struct lb_record* lbr_p;
-		void *lbtable;
+		const struct lb_header *lbh;
+		const struct lb_record *lbr_p;
+		const void *lbtable;
 		int j;
 
-		lbh = (struct lb_header *)(buf + i);
+		lbh = (const struct lb_header *)(buf + i);
 		if (memcmp(lbh->signature, "LBIO", sizeof(lbh->signature)) ||
 		    !lbh->header_bytes ||
 		    ipchcksum(lbh, sizeof(*lbh))) {
@@ -332,14 +333,14 @@ static int parse_cbtable(u64 address, size_t table_size, uint8_t abort_on_failur
 		lbtable_size = lbh->table_bytes;
 
 		for (j = 0; j < lbh->table_bytes; j += lbr_p->size) {
-			lbr_p = (struct lb_record*) ((char *)lbtable + j);
+			lbr_p = (const struct lb_record *)((char *)lbtable + j);
 			debug("  coreboot table entry 0x%02x\n", lbr_p->tag);
 			switch (lbr_p->tag) {
 			case LB_TAG_MEMORY: {
 				int i = 0;
 				debug("    Found memory map.\n");
-				struct lb_memory *memory =
-						(struct lb_memory *)lbr_p;
+				const struct lb_memory *memory =
+						(const struct lb_memory *)lbr_p;
 				while ((char *)&memory->map[i] < ((char *)lbr_p
 							    + lbr_p->size)) {
 					if (memory->map[i].type == LB_MEM_TABLE) {
@@ -353,12 +354,12 @@ static int parse_cbtable(u64 address, size_t table_size, uint8_t abort_on_failur
 			}
 			case LB_TAG_TIMESTAMPS: {
 				debug("    Found timestamp table.\n");
-				timestamps = parse_cbmem_ref((struct lb_cbmem_ref *) lbr_p);
+				timestamps = parse_cbmem_ref((const struct lb_cbmem_ref *) lbr_p);
 				continue;
 			}
 			case LB_TAG_CBMEM_CONSOLE: {
 				debug("    Found cbmem console.\n");
-				console = parse_cbmem_ref((struct lb_cbmem_ref *) lbr_p);
+				console = parse_cbmem_ref((const struct lb_cbmem_ref *) lbr_p);
 				continue;
 			}
 			case LB_TAG_FORWARD: {
@@ -366,8 +367,8 @@ static int parse_cbtable(u64 address, size_t table_size, uint8_t abort_on_failur
 				 * This is a forwarding entry - repeat the
 				 * search at the new address.
 				 */
-				struct lb_forward lbf_p =
-					*(struct lb_forward *) lbr_p;
+				const struct lb_forward lbf_p =
+					*(const struct lb_forward *) lbr_p;
 				debug("    Found forwarding entry.\n");
 				unmap_memory();
 				ret = parse_cbtable(lbf_p.forward, table_size, 0);
@@ -547,7 +548,7 @@ uint64_t timestamp_print_entry(uint32_t id, uint64_t stamp, uint64_t prev_stamp)
 static void dump_timestamps(int mach_readable)
 {
 	int i;
-	struct timestamp_table *tst_p;
+	const struct timestamp_table *tst_p;
 	size_t size;
 	uint64_t prev_stamp;
 	uint64_t total_time;
@@ -616,7 +617,7 @@ struct cbmem_console {
 /* dump the cbmem console */
 static void dump_console(int one_boot_only)
 {
-	struct cbmem_console *console_p;
+	const struct cbmem_console *console_p;
 	char *console_c;
 	size_t size, cursor;
 
@@ -698,7 +699,7 @@ static void dump_console(int one_boot_only)
 static void hexdump(unsigned long memory, int length)
 {
 	int i;
-	uint8_t *m;
+	const uint8_t *m;
 	int all_zero = 0;
 
 	m = map_memory_size((intptr_t)memory, length, 1);
@@ -749,7 +750,7 @@ static void dump_cbmem_hex(void)
 void rawdump(uint64_t base, uint64_t size)
 {
 	int i;
-	uint8_t *m;
+	const uint8_t *m;
 
 	m = map_memory_size((intptr_t)base, size, 1);
 	if (!m) {
@@ -764,7 +765,7 @@ void rawdump(uint64_t base, uint64_t size)
 
 static void dump_cbmem_raw(unsigned int id)
 {
-	uint8_t *table;
+	const uint8_t *table;
 	size_t offset;
 	uint64_t base = 0;
 	uint64_t size = 0;
@@ -777,16 +778,16 @@ static void dump_cbmem_raw(unsigned int id)
 	offset = 0;
 
 	while (offset < lbtable_size) {
-		struct lb_record *lbr;
-		struct lb_cbmem_entry *lbe;
+		const struct lb_record *lbr;
+		const struct lb_cbmem_entry *lbe;
 
-		lbr = (void *)(table + offset);
+		lbr = (const void *)(table + offset);
 		offset += lbr->size;
 
 		if (lbr->tag != LB_TAG_CBMEM_ENTRY)
 			continue;
 
-		lbe = (void *)lbr;
+		lbe = (const void *)lbr;
 		if (lbe->id == id) {
 			debug("found id for raw dump %0x", lbe->id);
 			base = lbe->address;
@@ -848,7 +849,7 @@ void cbmem_print_entry(int n, uint32_t id, uint64_t base, uint64_t size)
 static void dump_cbmem_toc(void)
 {
 	int i;
-	uint8_t *table;
+	const uint8_t *table;
 	size_t offset;
 
 	table = map_lbtable();
@@ -863,16 +864,16 @@ static void dump_cbmem_toc(void)
 	offset = 0;
 
 	while (offset < lbtable_size) {
-		struct lb_record *lbr;
-		struct lb_cbmem_entry *lbe;
+		const struct lb_record *lbr;
+		const struct lb_cbmem_entry *lbe;
 
-		lbr = (void *)(table + offset);
+		lbr = (const void *)(table + offset);
 		offset += lbr->size;
 
 		if (lbr->tag != LB_TAG_CBMEM_ENTRY)
 			continue;
 
-		lbe = (void *)lbr;
+		lbe = (const void *)lbr;
 		cbmem_print_entry(i, lbe->id, lbe->address, lbe->entry_size);
 		i++;
 	}
@@ -911,7 +912,7 @@ static void dump_coverage(void)
 {
 	uint64_t start;
 	size_t size;
-	void *coverage;
+	const void *coverage;
 	unsigned long phys_offset;
 #define phys_to_virt(x) ((void *)(unsigned long)(x) + phys_offset)
 

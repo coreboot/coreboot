@@ -141,20 +141,21 @@ $(eval $(call create_class_compiler,libagesa,x86_64))
 endif
 
 agesa_src_files := $(strip $(sort $(foreach file,$(strip $(agesa_raw_files)),$(call strip_quotes,$(file)))))
-agesa_src_path := $(strip $(obj)/agesa)
+agesa_output_path := $(obj)/libagesa
+agesa_src_path := $(agesa_output_path)
 agesa_dirs := $(sort $(abspath $(dir $(call src-to-obj,libagesa,$(agesa_src_files)))))
 
 additional-dirs += $(agesa_src_path) $(agesa_dirs)
 
 $(foreach file,$(strip $(agesa_src_files)),$(eval $(call create_agesa_cp_template,$(file))))
 
-$(obj)/agesa/libagesa.a: $(call src-to-obj,libagesa,$(agesa_src_files))
+$(agesa_output_path)/libagesa.a: $(call src-to-obj,libagesa,$(agesa_src_files))
 	@printf "    AGESA      $(subst $(obj)/,,$(@))\n"
 	ar rcs $@ $+
 
-bootblock-libs += $(obj)/agesa/libagesa.a
-romstage-libs += $(obj)/agesa/libagesa.a
-ramstage-libs += $(obj)/agesa/libagesa.a
+bootblock-libs += $(agesa_output_path)/libagesa.a
+romstage-libs += $(agesa_output_path)/libagesa.a
+ramstage-libs += $(agesa_output_path)/libagesa.a
 
 #######################################################################
 

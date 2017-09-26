@@ -53,6 +53,11 @@ static void init_temp_mon (void *base_adr)
 		}
 	}
 	ctrl->sensornum = num;
+
+	/* Program sensor selection and temperature thresholds. */
+	FPGA_SET_PARAM(FANSensorSelect, ctrl->sensorselect);
+	FPGA_SET_PARAM(T_Warn, ctrl->t_warn);
+	FPGA_SET_PARAM(T_Crit, ctrl->t_crit);
 }
 
 static void init_fan_ctrl (void *base_adr)
@@ -61,9 +66,6 @@ static void init_fan_ctrl (void *base_adr)
 	volatile fan_ctrl_t *ctrl = (fan_ctrl_t *)base_adr;
 
 	/* Program all needed fields of FAN controller. */
-	FPGA_SET_PARAM(FANSensorSelect, ctrl->sensorselect);
-	FPGA_SET_PARAM(T_Warn, ctrl->t_warn);
-	FPGA_SET_PARAM(T_Crit, ctrl->t_crit);
 	FPGA_SET_PARAM(FANSamplingTime, ctrl->samplingtime);
 	FPGA_SET_PARAM(FANSetPoint, ctrl->setpoint);
 	FPGA_SET_PARAM(FANHystCtrl, ctrl->hystctrl);

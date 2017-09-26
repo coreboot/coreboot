@@ -1,2 +1,0 @@
-config BOARD_PCENGINES_APU3
-	bool "APU3"

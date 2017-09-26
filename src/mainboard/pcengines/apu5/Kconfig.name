@@ -1,2 +1,0 @@
-config BOARD_PCENGINES_APU5
-	bool "APU5"

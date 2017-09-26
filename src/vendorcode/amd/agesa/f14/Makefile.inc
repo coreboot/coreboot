@@ -59,7 +59,7 @@ subdirs-y += $(dir $(shell cd $(dir); find Proc -name Makefile.inc))
 
 $(obj)/libagesa.fam14.a: $$(libagesa-objs)
 	@printf " AGESA $(subst $(obj)/,,$(@))\n"
-	$(AR_romstage) rcs $@ $+
+	$(AR_libagesa) rcs $@ $+
 
 romstage-libs += $(obj)/libagesa.fam14.a
 ramstage-libs += $(obj)/libagesa.fam14.a

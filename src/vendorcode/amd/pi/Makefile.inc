@@ -151,7 +151,7 @@ $(foreach file,$(strip $(agesa_src_files)),$(eval $(call create_agesa_cp_templat
 
 $(agesa_output_path)/libagesa.a: $(call src-to-obj,libagesa,$(agesa_src_files))
 	@printf "    AGESA      $(subst $(obj)/,,$(@))\n"
-	ar rcs $@ $+
+	$(AR_libagesa) rcs $@ $+
 
 bootblock-libs += $(agesa_output_path)/libagesa.a
 romstage-libs += $(agesa_output_path)/libagesa.a

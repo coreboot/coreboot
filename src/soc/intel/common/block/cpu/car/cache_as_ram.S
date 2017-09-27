@@ -255,6 +255,24 @@ car_nem:
 .global car_cqos
 car_cqos:
 	/*
+	 * Create CBM_LEN_MASK based on CBM_LEN
+	 * Get CPUID.(EAX=10H, ECX=2H):EAX.CBM_LEN[bits 4:0]
+	 */
+	mov $0x10, %eax
+	mov $0x2,  %ecx
+	cpuid
+	and $0x1F, %eax
+	add $1, %al
+
+	mov $1, %ebx
+	mov %al, %cl
+	shl %cl, %ebx
+	sub $1, %ebx
+
+	/* Store the CBM_LEN_MASK in mm3 for later use. */
+	movd %ebx, %mm3
+
+	/*
 	 * Disable both L1 and L2 prefetcher. For yet-to-understood reason,
 	 * prefetchers slow down filling cache with rep stos in CQOS mode.
 	 */
@@ -284,7 +302,7 @@ car_cqos:
 	/* Set this mask for initial cache fill */
 	mov	$MSR_L2_QOS_MASK(0), %ecx
 	rdmsr
-	mov	%bl, %al
+	mov	%ebx, %eax
 	wrmsr
 
 	/* Set CLOS selector to 0 */
@@ -297,8 +315,15 @@ car_cqos:
 	mov	$MSR_L2_QOS_MASK(1), %ecx
 	rdmsr
 	/* Invert bits that are to be used for cache */
-	mov	%bl, %al
-	xor	$~0, %al			/* invert 8 bits */
+	mov	%ebx, %eax
+	xor	$~0, %eax			/* invert 32 bits */
+
+	/*
+	 * Use CBM_LEN_MASK stored in mm3 to set bits based on Capacity Bit
+	 * Mask Length.
+	 */
+	movd	%mm3, %ebx
+	and	%ebx, %eax
 	wrmsr
 
 	post_code(0x26)

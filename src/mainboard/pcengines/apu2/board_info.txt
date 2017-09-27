@@ -1,6 +1,7 @@
-Board name: PC Engines APU2
+Board name: apu2
 Board URL: http://www.pcengines.ch/apu2c2.htm
 Category: half
+ROM package: SOIC-8
 ROM protocol: SPI
 ROM socketed: n
 Flashrom support: y

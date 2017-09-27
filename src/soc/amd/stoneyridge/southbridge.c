@@ -53,7 +53,7 @@ void pm_write16(u8 reg, u16 value)
 	write16((void *)(PM_MMIO_BASE + reg), value);
 }
 
-u16 pm_read16(u16 reg)
+u16 pm_read16(u8 reg)
 {
 	return read16((void *)(PM_MMIO_BASE + reg));
 }

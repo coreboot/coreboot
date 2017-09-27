@@ -48,6 +48,12 @@ void bootblock_mainboard_early_init(void)
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
 		write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 3));
 
+	/* Reconfigure GPIO1 from dynamic voltage selection through GPIO0_B1 to
+	   hardcoded 1.8V, and change that pin to a normal GPIO. The TRM says
+	   this is already the power-on reset, but we all know that TRMs lie. */
+	write32(&rk3399_pmugrf->soc_con0, RK_SETBITS(1 << 9 | 1 << 8));
+	write32(&rk3399_pmugrf->gpio0b_iomux, RK_CLRBITS(3 << 2));
+
 	/* Enable rails powering GPIO blocks, among other things. */
 	gpio_output(GPIO_P30V_EN, 1);
 	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))

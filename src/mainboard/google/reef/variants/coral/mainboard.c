@@ -18,10 +18,14 @@
 #include "baseboard/variants.h"
 #include <soc/cpu.h>
 #include <soc/intel/apollolake/chip.h>
+#include <soc/intel/common/vbt.h>
 
 enum {
 	SKU_2_SANTA = 2,
-	SKU_3_SANTA = 3
+	SKU_3_SANTA = 3,
+	SKU_160_NASHER = 160,
+	SKU_161_NASHER = 161,
+	SKU_162_NASHER = 162,
 };
 
 uint8_t variant_board_sku(void)
@@ -58,6 +62,22 @@ void mainboard_devtree_update(struct device *dev)
 		cfg->usb2eye[1].Usb20PerPortTxiSet = 2;
 		break;
 	default:
+		break;
+	}
+}
+
+const char *mainboard_vbt_filename(void)
+{
+	int sku_id = variant_board_sku();
+
+	switch (sku_id) {
+	case SKU_160_NASHER:
+	case SKU_161_NASHER:
+	case SKU_162_NASHER:
+		return "vbt-nasher.bin";
+		break;
+	default:
+		return "vbt.bin";
 		break;
 	}
 }

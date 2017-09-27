@@ -42,6 +42,8 @@ void sb_enable(device_t dev)
 
 static void sb_init_acpi_ports(void)
 {
+	u32 reg;
+
 	/* We use some of these ports in SMM regardless of whether or not
 	 * ACPI tables are generated. Enable these ports indiscriminately.
 	 */
@@ -57,6 +59,22 @@ static void sb_init_acpi_ports(void)
 		/* APMC - SMI Command Port */
 		pm_write16(PM_ACPI_SMI_CMD, APM_CNT);
 		configure_smi(SMITYPE_SMI_CMD_PORT, SMI_MODE_SMI);
+
+		/* SMI on SlpTyp requires sending SMI before completion
+		 * response of the I/O write.  The BKDG also specifies
+		 * clearing ForceStpClkRetry for SMI trapping.
+		 */
+		reg = pm_read32(PM_PCI_CTRL);
+		reg |= FORCE_SLPSTATE_RETRY;
+		reg &= ~FORCE_STPCLK_RETRY;
+		pm_write32(PM_PCI_CTRL, reg);
+
+		/* Disable SlpTyp feature */
+		reg = pm_read8(PM_RST_CTRL1);
+		reg &= ~SLPTYPE_CONTROL_EN;
+		pm_write8(PM_RST_CTRL1, reg);
+
+		configure_smi(SMITYPE_SLP_TYP, SMI_MODE_SMI);
 	} else {
 		pm_write16(PM_ACPI_SMI_CMD, 0);
 	}

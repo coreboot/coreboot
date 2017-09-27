@@ -41,6 +41,9 @@
 #define PM2_INDEX			0xcd0
 #define PM2_DATA			0xcd1
 
+#define PM_PCI_CTRL			0x08
+#define   FORCE_SLPSTATE_RETRY		BIT(25)
+#define   FORCE_STPCLK_RETRY		BIT(24)
 #define PM_ACPI_MMIO_EN			0x24
 #define PM_SERIRQ_CONF			0x54
 #define PM_EVT_BLK			0x60
@@ -50,6 +53,8 @@
 #define PM_GPE0_BLK			0x68
 #define PM_ACPI_SMI_CMD			0x6a
 #define PM_ACPI_CONF			0x74
+#define PM_RST_CTRL1			0xbe
+#define   SLPTYPE_CONTROL_EN		BIT(5)
 #define PM_PMIO_DEBUG			0xd2
 #define PM_MANUAL_RESET			0xd3
 #define PM_HUD_SD_FLASH_CTRL		0xe7

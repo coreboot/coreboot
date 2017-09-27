@@ -22,12 +22,20 @@
 
 #define VBT_SIGNATURE 0x54425624
 
+__attribute__((weak))
+const char *mainboard_vbt_filename(void)
+{
+	return "vbt.bin";
+}
+
 enum cb_err locate_vbt(struct region_device *rdev)
 {
 	uint32_t vbtsig = 0;
 	struct cbfsf file_desc;
 
-	if (cbfs_boot_locate(&file_desc, "vbt.bin", NULL) < 0) {
+	const char *filename = mainboard_vbt_filename();
+
+	if (cbfs_boot_locate(&file_desc, filename, NULL) < 0) {
 		printk(BIOS_ERR, "Could not locate a VBT file in in CBFS\n");
 		return CB_ERR;
 	}

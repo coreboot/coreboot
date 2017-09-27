@@ -19,6 +19,14 @@
 #include <commonlib/region.h>
 #include <types.h>
 
+/*
+ * Returns the CBFS filename of the VBT blob.
+ *
+ * The default implementation returns "vbt.bin", but other implementations can
+ * override this.
+ */
+const char *mainboard_vbt_filename(void);
+
 /* locate .vbt file */
 enum cb_err locate_vbt(struct region_device *rdev);
 /*

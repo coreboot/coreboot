@@ -57,8 +57,9 @@ static void sb_init_acpi_ports(void)
 	pm_write16(PM_CPU_CTRL, ACPI_CPU_CONTROL);
 
 	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+		/* APMC - SMI Command Port */
 		pm_write16(PM_ACPI_SMI_CMD, APM_CNT);
-		enable_acpi_cmd_smi();
+		configure_smi(SMITYPE_SMI_CMD_PORT, SMI_MODE_SMI);
 	} else {
 		pm_write16(PM_ACPI_SMI_CMD, 0);
 	}

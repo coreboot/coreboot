@@ -200,9 +200,9 @@ struct smi_sources_t {
 };
 
 uint16_t pm_acpi_smi_cmd_port(void);
+void configure_smi(uint8_t smi_num, uint8_t mode);
 void configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level);
 void disable_gevent_smi(uint8_t gevent);
-void enable_acpi_cmd_smi(void);
 
 #ifndef __SMM__
 void enable_smi_generation(void);

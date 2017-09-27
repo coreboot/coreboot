@@ -9,7 +9,7 @@
 #include <soc/southbridge.h>
 #include <soc/smi.h>
 
-static void configure_smi(uint8_t smi_num, uint8_t mode)
+void configure_smi(uint8_t smi_num, uint8_t mode)
 {
 	uint8_t reg32_offset, bit_offset;
 	uint32_t reg32;
@@ -67,12 +67,6 @@ void disable_gevent_smi(uint8_t gevent)
 
 	/* SMI0 source is GEVENT0 and so on */
 	configure_smi(gevent, SMI_MODE_DISABLE);
-}
-
-/** Enable SMIs on writes to ACPI SMI command port */
-void enable_acpi_cmd_smi(void)
-{
-	configure_smi(SMITYPE_SMI_CMD_PORT, SMI_MODE_SMI);
 }
 
 uint16_t pm_acpi_smi_cmd_port(void)

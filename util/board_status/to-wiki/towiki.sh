@@ -19,7 +19,7 @@ while read line; do
 		commit=`echo $i | cut -d/ -f3`
 		datetime_path=`echo $i | cut -d/ -f4`
 		datetime=`echo $datetime_path | tr _ :`
-		datetime_human=`LC_ALL=C TZ=UTC date --date="$datetime"`
+		datetime_human=`LC_ALL=C TZ=UTC0 date --date="$datetime"`
 		upstream=`grep "^Upstream revision:" $vendor_board/$commit/$datetime_path/revision.txt |cut -d: -f2-`
 		upstream=`git log -1 --format=%H $upstream`
 		if ! echo "$have"| grep  "^$vendor_board:" > /dev/null; then

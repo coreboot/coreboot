@@ -20,7 +20,7 @@ TIMESOURCE=""
 
 export LANG=C
 export LC_ALL=C
-export TZ=UTC
+export TZ=UTC0
 
 top=`dirname $0`/../..
 
@@ -35,7 +35,7 @@ elif [ -e "${top}/.git" -a -x "$(command -v git)" ]; then
 else
 	GITREV=Unknown
 	TIMESOURCE="date"
-	DATE=$(LANG= LC_ALL=C TZ=UTC date +%s)
+	DATE=$(LANG= LC_ALL=C TZ=UTC0 date +%s)
 fi
 
 our_date() {

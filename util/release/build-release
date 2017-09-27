@@ -13,7 +13,7 @@ set -e
 # set local + tz to be reproducible
 LC_ALL=C
 LANG=C
-TZ=UTC
+TZ=UTC0
 export LC_ALL LANG TZ
 
 if [ -z "$VERSION_NAME" ] || [ "$VERSION_NAME" = "--help" ] || [ -z "$COMMIT_ID" ]; then

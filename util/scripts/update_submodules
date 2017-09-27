@@ -21,7 +21,7 @@
 
 export LANG=C
 export LC_ALL=C
-export TZ=UTC
+export TZ=UTC0
 
 min_commits=10
 

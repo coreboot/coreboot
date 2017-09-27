@@ -14,6 +14,7 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <fsp/util.h>
+#include <soc/intel/common/vbt.h>
 
 enum pixel_format {
 	pixel_rgbx_8bpc = 0,
@@ -95,13 +96,16 @@ enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 
 uintptr_t fsp_load_vbt(void)
 {
-	void *vbt;
+	struct region_device rdev;
+	void *vbt_data = NULL;
 
-	vbt = cbfs_boot_map_with_leak("vbt.bin", CBFS_TYPE_RAW, NULL);
-	if (!vbt)
+	if (locate_vbt(&rdev) != CB_ERR)
+		vbt_data = rdev_mmap_full(&rdev);
+
+	if (vbt_data == NULL)
 		printk(BIOS_NOTICE, "Could not locate a VBT file in CBFS\n");
 
-	return (uintptr_t)vbt;
+	return (uintptr_t)vbt_data;
 }
 
 int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)

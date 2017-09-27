@@ -66,10 +66,10 @@ IASL_ARCHIVE="https://acpica.org/sites/acpica/files/acpica-unix2-${IASL_VERSION}
 PYTHON_ARCHIVE="https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz"
 EXPAT_ARCHIVE="https://downloads.sourceforge.net/sourceforge/expat/expat-${EXPAT_VERSION}.tar.bz2"
 # CLANG toolchain archive locations
-LLVM_ARCHIVE="https://llvm.org/releases/${CLANG_VERSION}/llvm-${CLANG_VERSION}.src.tar.xz"
-CFE_ARCHIVE="https://llvm.org/releases/${CLANG_VERSION}/cfe-${CLANG_VERSION}.src.tar.xz"
-CRT_ARCHIVE="https://llvm.org/releases/${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz"
-CTE_ARCHIVE="https://llvm.org/releases/${CLANG_VERSION}/clang-tools-extra-${CLANG_VERSION}.src.tar.xz"
+LLVM_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/llvm-${CLANG_VERSION}.src.tar.xz"
+CFE_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/cfe-${CLANG_VERSION}.src.tar.xz"
+CRT_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz"
+CTE_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/clang-tools-extra-${CLANG_VERSION}.src.tar.xz"
 MAKE_ARCHIVE="https://ftpmirror.gnu.org/make/make-${MAKE_VERSION}.tar.bz2"
 CMAKE_ARCHIVE="https://cmake.org/files/v3.9/cmake-${CMAKE_VERSION}.tar.gz"
 

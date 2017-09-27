@@ -5,7 +5,6 @@
  * Subject to the GNU GPL v2, or (at your option) any later version.
  */
 
-
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>
@@ -27,7 +26,7 @@ enum smi_source {
 static void sb_apmc_smi_handler(void)
 {
 	u32 reg32;
-	const uint8_t cmd = inb(APM_CNT);
+	const uint8_t cmd = inb(pm_acpi_smi_cmd_port());
 
 	switch (cmd) {
 	case APM_CNT_ACPI_ENABLE:

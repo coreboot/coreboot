@@ -74,3 +74,8 @@ void enable_acpi_cmd_smi(void)
 {
 	configure_smi(SMITYPE_SMI_CMD_PORT, SMI_MODE_SMI);
 }
+
+uint16_t pm_acpi_smi_cmd_port(void)
+{
+	return pm_read16(PM_ACPI_SMI_CMD);
+}

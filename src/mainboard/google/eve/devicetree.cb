@@ -342,6 +342,7 @@ chip soc/intel/skylake
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "compat_string" = ""realtek,rt5514""
 				register "irq" = "ACPI_IRQ_EDGE_HIGH(GPP_F10_IRQ)"
+				register "speed" = "12 * MHz"
 				device spi 0 on end
 			end
 		end # GSPI #0

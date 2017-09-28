@@ -107,15 +107,7 @@
 
 .globl estack
   .text
-  .global  supervisor_trap_entry
-supervisor_trap_entry:
-    csrw mscratch, sp
-    # load in the top of the machine stack
-    la	sp, _estack
-    addi sp,sp,-MENTRY_FRAME_SIZE
-    save_tf
-    move  a0,sp
-    jal trap_handler
+
     .global  trap_entry
 trap_entry:
   csrw mscratch, sp

@@ -517,6 +517,12 @@ static const struct pci_driver mc_driver_1 __pci_driver = {
 	.device = 0x0154, /* Ivy bridge */
 };
 
+static const struct pci_driver mc_driver_158 __pci_driver = {
+	.ops    = &mc_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = 0x0158, /* Ivy bridge */
+};
+
 static void cpu_bus_init(device_t dev)
 {
 	initialize_cpus(dev->link_list);

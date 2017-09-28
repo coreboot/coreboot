@@ -271,6 +271,7 @@ u32 map_oprom_vendev(u32 vendev)
 	case 0x80860156:		/* IVB GT1 Mobile */
 	case 0x80860162:		/* IVB GT2 Desktop */
 	case 0x80860166:		/* IVB GT2 Mobile */
+	case 0x8086016a:		/* IVB GT2 Server */
 		new_vendev = 0x80860106;/* SNB GT1 Mobile */
 		break;
 	}
@@ -756,7 +757,7 @@ static struct device_operations gma_func0_ops = {
 
 static const unsigned short pci_device_ids[] = { 0x0102, 0x0106, 0x010a, 0x0112,
 						 0x0116, 0x0122, 0x0126, 0x0156,
-						 0x0166, 0x0162, 0x0152,
+						 0x0166, 0x0162, 0x016a, 0x0152,
 						 0 };
 
 static const struct pci_driver gma __pci_driver = {

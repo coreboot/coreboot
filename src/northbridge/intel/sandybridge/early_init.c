@@ -98,6 +98,7 @@ static void sandybridge_setup_graphics(void)
 	case 0x0156: /* IvyBridge */
 	case 0x0162: /* IvyBridge */
 	case 0x0166: /* IvyBridge */
+	case 0x016a: /* IvyBridge */
 		break;
 	default:
 		printk(BIOS_DEBUG, "Graphics not supported by this CPU/chipset.\n");

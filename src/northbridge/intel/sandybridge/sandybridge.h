@@ -201,9 +201,6 @@
 #ifndef __ASSEMBLER__
 static inline void barrier(void) { asm("" ::: "memory"); }
 
-#define PCI_DEVICE_ID_SB 0x0104
-#define PCI_DEVICE_ID_IB 0x0154
-
 #ifdef __SMM__
 void intel_sandybridge_finalize_smm(void);
 #else /* !__SMM__ */

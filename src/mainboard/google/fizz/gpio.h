@@ -31,6 +31,12 @@
 /* eSPI virtual wire reporting */
 #define EC_SCI_GPI		GPE0_ESPI
 
+/* SKU_ID GPIOs */
+#define GPIO_SKU_ID0		GPP_C12
+#define GPIO_SKU_ID1		GPP_C13
+#define GPIO_SKU_ID2		GPP_C14
+#define GPIO_SKU_ID3		GPP_C15
+
 #ifndef __ACPI__
 /* Pad configuration in ramstage */
 /* Leave eSPI pins untouched from default settings */

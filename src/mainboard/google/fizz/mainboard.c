@@ -18,10 +18,22 @@
 #include <chip.h>
 #include <device/device.h>
 #include <ec/ec.h>
-#include <intelblocks/mp_init.h>
+#include <ec/google/chromeec/ec.h>
+#include <gpio.h>
+#include <mainboard/google/fizz/gpio.h>
+#include <soc/gpio.h>
 #include <soc/pci_devs.h>
 #include <soc/nhlt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
+#define FIZZ_SKU_ID_I7_U42 0x4
+#define FIZZ_PL2_I7_U42    44
+#define FIZZ_PL2_OTHERS    29
+/*
+ * For type-C chargers, set PL2 to 90% of max power to account for
+ * cable loss and FET Rdson loss in the path from the source.
+ */
+#define GET_TYPEC_PL2(w)   (9 * (w) / 10)
 
 static const char *oem_id = "GOOGLE";
 static const char *oem_table_id = "FIZZ";
@@ -29,23 +41,37 @@ static const char *oem_table_id = "FIZZ";
 /*
  * mainboard_get_pl2
  *
- * @return value Pl2 should be set to based on cpu id
+ * @return value Pl2 should be set to
  *
- * TODO: This is purely based on cpu id, which only works for the
- * current build because we have a different cpu id per sku.  However,
- * on the next build, we'll have distinct board ids per sku.  We'll
- * need to modify that at this point.
+ * Check if charger is USB C.  If so, set to 90% of the max value.
+ * Otherwise, set PL2 based on sku id.
  */
 static u32 mainboard_get_pl2(void)
 {
-	struct cpuid_result cpuidr;
+	const gpio_t sku_id_gpios[] = {
+		GPIO_SKU_ID0,
+		GPIO_SKU_ID1,
+		GPIO_SKU_ID2,
+		GPIO_SKU_ID3,
+	};
+	enum usb_chg_type type;
+	u32 watts;
 
-	cpuidr = cpuid(1);
-	if (cpuidr.eax == CPUID_KABYLAKE_Y0) {
-		/* i7 needs higher pl2 */
-		return 44;
-	}
-	return 29;
+	int rv = google_chromeec_get_usb_pd_power_info(&type, &watts);
+	int sku_id;
+
+	/* If we can't get charger info or not PD charger, assume barrel jack */
+	if (rv != 0 || type != USB_CHG_TYPE_PD) {
+		/* using the barrel jack, get PL2 based on sku id */
+		watts = FIZZ_PL2_OTHERS;
+		sku_id = gpio_base2_value(sku_id_gpios,
+					  ARRAY_SIZE(sku_id_gpios));
+		if (sku_id == FIZZ_SKU_ID_I7_U42)
+			watts = FIZZ_PL2_I7_U42;
+	} else
+		watts = GET_TYPEC_PL2(watts);
+
+	return watts;
 }
 
 static void mainboard_init(device_t dev)

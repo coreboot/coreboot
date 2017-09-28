@@ -24,7 +24,4 @@ riscvpayload:
 	li t2,  (1<<11)
 	or t0, t0, t2
 	csrw mstatus, t0
-
-	// We're still in toolchain no mans land.
-	.word 0x30200073
-	//mret
+	mret

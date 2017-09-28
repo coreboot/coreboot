@@ -42,6 +42,11 @@ uint32_t soc_get_smi_status(uint32_t generic_sts);
  */
 int soc_prev_sleep_state(const struct chipset_power_state *ps,
 					int prev_sleep_state);
+
+/* PM1 */
+void pmc_update_pm1_enable(uint16_t events);
+uint16_t pmc_read_pm1_enable(void);
+
 /*
  * Function to print, clear, and return SMI status bits in SMI_STS
  * register. This function internally calls pmc_reset_smi_status with

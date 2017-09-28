@@ -72,6 +72,23 @@ static uint32_t print_smi_status(uint32_t smi_sts)
 	return smi_sts;
 }
 
+/*
+ * Update supplied events in PM1_EN register. This does not disable any already
+ * set events.
+ */
+void pmc_update_pm1_enable(u16 events)
+{
+	u16 pm1_en = pmc_read_pm1_enable();
+	pm1_en |= events;
+	pmc_enable_pm1(pm1_en);
+}
+
+/* Read events set in PM1_EN register. */
+uint16_t pmc_read_pm1_enable(void)
+{
+	return inw(ACPI_BASE_ADDRESS + PM1_EN);
+}
+
 uint32_t pmc_clear_smi_status(void)
 {
 	uint32_t sts = pmc_reset_smi_status();

@@ -129,6 +129,12 @@ static void enable_tmpin(const u16 base, const u8 tmpin,
 		ite_ec_write(base, ITE_EC_TEMP_ADJUST[tmpin-1], conf->offset);
 	}
 
+	/* Set temperature limits */
+	u8 max = conf->max;
+	ite_ec_write(base, ITE_EC_HIGH_TEMP_LIMIT(tmpin),
+		     max ? max : 127);
+	ite_ec_write(base, ITE_EC_LOW_TEMP_LIMIT(tmpin), conf->min);
+
 	/* Enable the startup of monitoring operation */
 	reg = ite_ec_read(base, ITE_EC_CONFIGURATION);
 	reg |= ITE_EC_CONFIGURATION_START;

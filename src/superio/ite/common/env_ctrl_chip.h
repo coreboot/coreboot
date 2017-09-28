@@ -32,6 +32,9 @@ struct ite_ec_thermal_config {
 	enum ite_ec_thermal_mode mode;
 	/* Offset is used for diode sensors and PECI */
 	u8 offset;
+	/* Limits */
+	u8 min;
+	u8 max;
 };
 
 /* Bit mask for voltage pins VINx */

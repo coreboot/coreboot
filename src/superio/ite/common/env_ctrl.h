@@ -86,6 +86,9 @@
 #define   ITE_EC_FAN_CTL_TEMPIN_MASK		(3 << 0)
 #define   ITE_EC_FAN_CTL_TEMPIN(x)		(((x)-1) & 3)
 
+#define ITE_EC_HIGH_TEMP_LIMIT(x)		(0x40 + ((x-1) * 2))
+#define ITE_EC_LOW_TEMP_LIMIT(x)		(0x41 + ((x-1) * 2))
+
 #define ITE_EC_ADC_VOLTAGE_CHANNEL_ENABLE	0x50
 #define ITE_EC_ADC_TEMP_CHANNEL_ENABLE		0x51
 #define   ITE_EC_ADC_TEMP_EXT_REPORTS_TO(x)	(((x) & 3) << 6)

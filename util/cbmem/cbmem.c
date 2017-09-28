@@ -102,7 +102,7 @@ static const void *mapping_virt(const struct mapping *mapping)
 	return v + mapping->offset;
 }
 
-/* Returns 0 on success, < 0 on error. mapping is filled in. */
+/* Returns virtual address on success, NULL on error. mapping is filled in. */
 static const void *map_memory(struct mapping *mapping, unsigned long long phys,
 				size_t sz)
 {
@@ -378,13 +378,10 @@ static int parse_cbtable(u64 address, size_t table_size)
 		return -1;
 
 	/* look at every 16 bytes */
-	for (i = 0; i < req_size; i += 16) {
+	for (i = 0; i <= req_size - sizeof(struct lb_header); i += 16) {
 		int ret;
 		const struct lb_header *lbh;
 		struct mapping table_mapping;
-
-		if (req_size - i < sizeof(struct lb_header))
-			return -1;
 
 		lbh = buf + i;
 		if (memcmp(lbh->signature, "LBIO", sizeof(lbh->signature)) ||

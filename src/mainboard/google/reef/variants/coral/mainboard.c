@@ -26,8 +26,12 @@ enum {
 
 uint8_t variant_board_sku(void)
 {
-	// we know that the values are in 0..255
-	return google_chromeec_get_sku_id();
+	static int sku = -1;
+
+	if (sku == -1)
+		sku = google_chromeec_get_sku_id();
+
+	return sku;
 }
 
 void variant_nhlt_oem_overrides(const char **oem_id,

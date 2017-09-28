@@ -99,13 +99,13 @@ static void enable_peci(const u16 base, const u8 tmpin)
  * into TMPINx register
  */
 static void enable_tmpin(const u16 base, const u8 tmpin,
-			 const enum ite_ec_thermal_mode mode)
+			 const struct ite_ec_thermal_config *const conf)
 {
 	u8 reg;
 
 	reg = ite_ec_read(base, ITE_EC_ADC_TEMP_CHANNEL_ENABLE);
 
-	switch (mode) {
+	switch (conf->mode) {
 	case THERMAL_DIODE:
 		reg |= ITE_EC_ADC_TEMP_DIODE_MODE(tmpin);
 		break;
@@ -115,11 +115,19 @@ static void enable_tmpin(const u16 base, const u8 tmpin,
 	default:
 		printk(BIOS_WARNING,
 		       "Unsupported thermal mode 0x%x on TMPIN%d\n",
-		       mode, tmpin);
+		       conf->mode, tmpin);
 		return;
 	}
 
 	ite_ec_write(base, ITE_EC_ADC_TEMP_CHANNEL_ENABLE, reg);
+
+	/* Set temperature offsets */
+	if (conf->mode != THERMAL_RESISTOR) {
+		reg = ite_ec_read(base, ITE_EC_BEEP_ENABLE);
+		reg |= ITE_EC_TEMP_ADJUST_WRITE_ENABLE;
+		ite_ec_write(base, ITE_EC_BEEP_ENABLE, reg);
+		ite_ec_write(base, ITE_EC_TEMP_ADJUST[tmpin-1], conf->offset);
+	}
 
 	/* Enable the startup of monitoring operation */
 	reg = ite_ec_read(base, ITE_EC_CONFIGURATION);
@@ -233,7 +241,7 @@ void ite_ec_init(const u16 base, const struct ite_ec_config *const conf)
 
 	/* Enable HWM if configured */
 	for (i = 0; i < ITE_EC_TMPIN_CNT; ++i)
-		enable_tmpin(base, i + 1, conf->tmpin_mode[i]);
+		enable_tmpin(base, i + 1, &conf->tmpin[i]);
 
 	/* Enable reading of voltage pins */
 	ite_ec_write(base, ITE_EC_ADC_VOLTAGE_CHANNEL_ENABLE, conf->vin_mask);

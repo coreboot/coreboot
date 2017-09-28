@@ -110,9 +110,10 @@ chip northbridge/intel/i945
 			device pci 1f.0 on # LPC bridge
 				ioapic_irq 2 INTA 0x10
 				chip superio/ite/it8718f # Super I/O
-					register "TMPIN1" = "THERMAL_RESISTOR"
-					register "TMPIN2" = "THERMAL_RESISTOR"
-					register "TMPIN3" = "THERMAL_DIODE"
+					register "TMPIN1.mode" = "THERMAL_RESISTOR"
+					register "TMPIN2.mode" = "THERMAL_RESISTOR"
+					register "TMPIN3.mode" = "THERMAL_DIODE"
+					register "TMPIN3.offset" = "0"
 					register "ec.vin_mask" = "VIN_ALL"
 
 					register "FAN1.mode" = "FAN_SMART_AUTOMATIC"

@@ -28,6 +28,12 @@ enum ite_ec_thermal_mode {
 	THERMAL_RESISTOR,
 };
 
+struct ite_ec_thermal_config {
+	enum ite_ec_thermal_mode mode;
+	/* Offset is used for diode sensors and PECI */
+	u8 offset;
+};
+
 /* Bit mask for voltage pins VINx */
 enum ite_ec_voltage_pin {
 	VIN0 = 0x01,
@@ -74,25 +80,28 @@ struct ite_ec_config {
 	u8 peci_tmpin;
 
 	/*
-	 * Enable thermal mode on TMPINx.
-	 */
-	enum ite_ec_thermal_mode tmpin_mode[ITE_EC_TMPIN_CNT];
-
-	/*
 	 * Enable reading of voltage pins VINx.
 	 */
 	enum ite_ec_voltage_pin vin_mask;
 
 	/*
+	 * Enable temperature sensors in given mode.
+	 */
+	struct ite_ec_thermal_config tmpin[ITE_EC_TMPIN_CNT];
+
+	/*
 	 * Enable a FAN in given mode.
 	 */
 	struct ite_ec_fan_config fan[ITE_EC_FAN_CNT];
+
+	/* FIXME: enable beep when exceeding TMPIN, VIN, FAN limits */
 };
 
 /* Some shorthands for device trees */
-#define TMPIN1	ec.tmpin_mode[0]
-#define TMPIN2	ec.tmpin_mode[1]
-#define TMPIN3	ec.tmpin_mode[2]
+#define TMPIN1	ec.tmpin[0]
+#define TMPIN2	ec.tmpin[1]
+#define TMPIN3	ec.tmpin[2]
+
 #define FAN1	ec.fan[0]
 #define FAN2	ec.fan[1]
 #define FAN3	ec.fan[2]

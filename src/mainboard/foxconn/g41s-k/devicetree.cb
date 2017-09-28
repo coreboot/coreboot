@@ -85,9 +85,10 @@ chip northbridge/intel/x4x		# Northbridge
 			device pci 1f.0 on		# ISA bridge
 				subsystemid 0x105b 0x0dda
 				chip superio/ite/it8720f	# Super I/O
-					register "TMPIN1" = "THERMAL_DIODE"
-					register "TMPIN2" = "THERMAL_RESISTOR"
-					register "TMPIN3" = "THERMAL_MODE_DISABLED"
+					register "TMPIN1.mode" = "THERMAL_DIODE"
+					register "TMPIN1.offset" = "0"
+					register "TMPIN2.mode" = "THERMAL_RESISTOR"
+					register "TMPIN3.mode" = "THERMAL_MODE_DISABLED"
 
 					register "ec.vin_mask" = "VIN_ALL"
 

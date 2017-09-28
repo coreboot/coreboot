@@ -58,9 +58,9 @@ chip northbridge/amd/agesa/family15tn/root_complex
 				device pci 14.2 on  end # HDA	0x4383
 				device pci 14.3 on      # LPC	0x439d
 					chip superio/ite/it8728f
-						register "TMPIN1" = "THERMAL_RESISTOR"
-						register "TMPIN2" = "THERMAL_RESISTOR"
-						register "TMPIN3" = "THERMAL_RESISTOR"
+						register "TMPIN1.mode" = "THERMAL_RESISTOR"
+						register "TMPIN2.mode" = "THERMAL_RESISTOR"
+						register "TMPIN3.mode" = "THERMAL_RESISTOR"
 
 						register "FAN1.mode" = "FAN_SMART_AUTOMATIC"
 						register "FAN1.smart.tmpin" = "1"

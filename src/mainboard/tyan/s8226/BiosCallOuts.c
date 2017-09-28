@@ -14,7 +14,6 @@
  */
 
 #include "AGESA.h"
-#include "amdlib.h"
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <arch/io.h>

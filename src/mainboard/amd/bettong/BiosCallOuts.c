@@ -16,7 +16,6 @@
 #include <device/pci_def.h>
 #include <device/device.h>
 #include "AGESA.h"
-#include "amdlib.h"
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <northbridge/amd/pi/00660F01/chip.h>
 #include "FchPlatform.h"

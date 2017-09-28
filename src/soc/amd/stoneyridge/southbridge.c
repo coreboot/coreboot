@@ -38,36 +38,6 @@ int acpi_get_sleep_type(void)
 	return (int)tmp;
 }
 
-void pm_write8(u8 reg, u8 value)
-{
-	write8((void *)(PM_MMIO_BASE + reg), value);
-}
-
-u8 pm_read8(u8 reg)
-{
-	return read8((void *)(PM_MMIO_BASE + reg));
-}
-
-void pm_write16(u8 reg, u16 value)
-{
-	write16((void *)(PM_MMIO_BASE + reg), value);
-}
-
-u16 pm_read16(u8 reg)
-{
-	return read16((void *)(PM_MMIO_BASE + reg));
-}
-
-void pm_write32(u8 reg, u32 value)
-{
-	write32((void *)(PM_MMIO_BASE + reg), value);
-}
-
-u32 pm_read32(u8 reg)
-{
-	return read32((void *)(PM_MMIO_BASE + reg));
-}
-
 void sb_enable(device_t dev)
 {
 	printk(BIOS_DEBUG, "%s\n", __func__);

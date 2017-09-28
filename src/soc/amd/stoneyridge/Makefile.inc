@@ -74,6 +74,7 @@ ramstage-y += fixme.c
 ramstage-y += gpio.c
 ramstage-y += hda.c
 ramstage-y += southbridge.c
+ramstage-y += sb_util.c
 ramstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += imc.c
 ramstage-y += lpc.c
 ramstage-y += model_15_init.c
@@ -92,6 +93,7 @@ ramstage-y += tsc_freq.c
 
 smm-y += smihandler.c
 smm-y += smi_util.c
+smm-y += sb_util.c
 smm-y += tsc_freq.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c
 

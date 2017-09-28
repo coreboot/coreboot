@@ -9,6 +9,7 @@
 
 #include <console/console.h>
 #include <cpu/cpu.h>
+#include <soc/southbridge.h>
 #include <soc/smi.h>
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)

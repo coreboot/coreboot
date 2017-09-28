@@ -25,10 +25,9 @@
 
 #define IO_APIC2_ADDR			0xfec20000
 
-/* Offsets from ACPI_MMIO_BASE
- * This is defined by AGESA, but we don't include AGESA headers to avoid
- * polluting the namespace.
- */
+/* Offsets from ACPI_MMIO_BASE */
+#define APU_SMI_BASE			0xfed80200
+
 #define PM_MMIO_BASE			0xfed80300
 
 #define APU_UART0_BASE			0xfedc6000
@@ -194,6 +193,10 @@ u32 pm_read32(u8 reg);
 void pm_write8(u8 reg, u8 value);
 void pm_write16(u8 reg, u16 value);
 void pm_write32(u8 reg, u32 value);
+u16 smi_read16(u8 reg);
+u32 smi_read32(u8 reg);
+void smi_write16(u8 reg, u16 value);
+void smi_write32(u8 reg, u32 value);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 void s3_resume_init_data(void *FchParams);
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);

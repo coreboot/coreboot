@@ -20,9 +20,6 @@
 
 #include <arch/io.h>
 
-/* ACPI_MMIO_BASE + 0x200 -- leave this string here so grep catches it. */
-#define SMI_BASE			0xfed80200
-
 #define SMI_SCI_STATUS			0x10
 
 /* SMI source and status */
@@ -196,26 +193,6 @@ enum smi_lvl {
 	SMI_LVL_LOW = 0,
 	SMI_LVL_HIGH = 1,
 };
-
-static inline uint32_t smi_read32(uint8_t offset)
-{
-	return read32((void *)(SMI_BASE + offset));
-}
-
-static inline void smi_write32(uint8_t offset, uint32_t value)
-{
-	write32((void *)(SMI_BASE + offset), value);
-}
-
-static inline uint16_t smi_read16(uint8_t offset)
-{
-	return read16((void *)(SMI_BASE + offset));
-}
-
-static inline void smi_write16(uint8_t offset, uint16_t value)
-{
-	write16((void *)(SMI_BASE + offset), value);
-}
 
 void configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level);
 void disable_gevent_smi(uint8_t gevent);

@@ -6,6 +6,7 @@
  */
 
 #include <console/console.h>
+#include <soc/southbridge.h>
 #include <soc/smi.h>
 
 static void configure_smi(uint8_t smi_num, uint8_t mode)

@@ -194,6 +194,11 @@ enum smi_lvl {
 	SMI_LVL_HIGH = 1,
 };
 
+struct smi_sources_t {
+	int type;
+	void (*handler)(void);
+};
+
 uint16_t pm_acpi_smi_cmd_port(void);
 void configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level);
 void disable_gevent_smi(uint8_t gevent);

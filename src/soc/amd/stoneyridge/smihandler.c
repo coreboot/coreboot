@@ -1,8 +1,18 @@
 /*
- * SMI handler for Hudson southbridges
+ * This file is part of the coreboot project.
  *
+ * Copyright (C) 2017 Advanced Micro Devices, Inc.
  * Copyright (C) 2014 Alexandru Gagniuc <mr.nuke.me@gmail.com>
- * Subject to the GNU GPL v2, or (at your option) any later version.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License, or (at your
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
 #include <console/console.h>
@@ -37,6 +47,14 @@ int southbridge_io_trap_handler(int smif)
 	return 0;
 }
 
+/*
+ * Table of functions supported in the SMI handler.  Note that SMI source setup
+ * in southbridge.c is unrelated to this list.
+ */
+struct smi_sources_t smi_sources[] = {
+	{ .type = SMITYPE_SMI_CMD_PORT, .handler = sb_apmc_smi_handler },
+};
+
 static void process_smi_sci(void)
 {
 	const uint32_t status = smi_read32(SMI_SCI_STATUS);
@@ -45,54 +63,39 @@ static void process_smi_sci(void)
 	smi_write32(SMI_SCI_STATUS, status);
 }
 
-static void process_gpe_smi(void)
+static void *get_source_handler(int source)
 {
-	const uint32_t status = smi_read32(SMI_REG_SMISTS0);
+	int i;
 
-	/* Only Bits [23:0] indicate GEVENT SMIs. */
-	if (status & GEVENT_MASK) {
-		/* A GEVENT SMI occurred */
-		mainboard_smi_gpi(status & GEVENT_MASK);
+	for (i = 0 ; i < ARRAY_SIZE(smi_sources) ; i++)
+		if (smi_sources[i].type == source)
+			return smi_sources[i].handler;
+
+	return NULL;
+}
+
+static void process_smi_sources(uint32_t reg)
+{
+	const uint32_t status = smi_read32(reg);
+	int bit_zero = 32 / sizeof(uint32_t) * (reg - SMI_REG_SMISTS0);
+	void (*source_handler)(void);
+	int i;
+
+	for (i = 0 ; i < 32 ; i++) {
+		if (status & (1 << i)) {
+			source_handler = get_source_handler(i + bit_zero);
+			if (source_handler)
+				source_handler();
+		}
 	}
 
-	/* Clear events to prevent re-entering SMI if event isn't handled */
-	smi_write32(SMI_REG_SMISTS0, status);
-}
+	if (reg == SMI_REG_SMISTS0)
+		if (status & GEVENT_MASK)
+			/* Gevent[23:0] are assumed to be mainboard-specific */
+			mainboard_smi_gpi(status & GEVENT_MASK);
 
-static void process_smi_0x84(void)
-{
-	const uint32_t status = smi_read32(SMI_REG_SMISTS1);
-
-	/* Clear events to prevent re-entering SMI if event isn't handled */
-	smi_write32(SMI_REG_SMISTS1, status);
-}
-
-static void process_smi_0x88(void)
-{
-	const uint32_t status = smi_read32(SMI_REG_SMISTS2);
-
-	if (status & TYPE_TO_MASK(SMITYPE_SMI_CMD_PORT)) {
-		/* Command received via ACPI SMI command port */
-		sb_apmc_smi_handler();
-	}
-	/* Clear events to prevent re-entering SMI if event isn't handled */
-	smi_write32(SMI_REG_SMISTS2, status);
-}
-
-static void process_smi_0x8c(void)
-{
-	const uint32_t status = smi_read32(SMI_REG_SMISTS3);
-
-	/* Clear events to prevent re-entering SMI if event isn't handled */
-	smi_write32(SMI_REG_SMISTS4, status);
-}
-
-static void process_smi_0x90(void)
-{
-	const uint32_t status = smi_read32(SMI_REG_SMISTS4);
-
-	/* Clear events to prevent re-entering SMI if event isn't handled */
-	smi_write32(SMI_REG_SMISTS4, status);
+	/* Clear all events in this register */
+	smi_write32(reg, status);
 }
 
 void southbridge_smi_handler(void)
@@ -102,15 +105,15 @@ void southbridge_smi_handler(void)
 	if (smi_src & SMI_STATUS_SRC_SCI)
 		process_smi_sci();
 	if (smi_src & SMI_STATUS_SRC_0)
-		process_gpe_smi();
+		process_smi_sources(SMI_REG_SMISTS0);
 	if (smi_src & SMI_STATUS_SRC_1)
-		process_smi_0x84();
+		process_smi_sources(SMI_REG_SMISTS1);
 	if (smi_src & SMI_STATUS_SRC_2)
-		process_smi_0x88();
+		process_smi_sources(SMI_REG_SMISTS2);
 	if (smi_src & SMI_STATUS_SRC_3)
-		process_smi_0x8c();
+		process_smi_sources(SMI_REG_SMISTS3);
 	if (smi_src & SMI_STATUS_SRC_4)
-		process_smi_0x90();
+		process_smi_sources(SMI_REG_SMISTS4);
 }
 
 void southbridge_smi_set_eos(void)

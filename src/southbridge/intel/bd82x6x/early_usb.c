@@ -29,7 +29,9 @@ early_usb_init (const struct southbridge_usb_port *portmap)
 		/* 3560 */ 0x024c8001, 0x000024a3, 0x00040002, 0x01000050,
 		/* 3570 */ 0x02000772, 0x16000f9f, 0x1800ff4f, 0x0001d630,
 	};
-	const u32 currents[] = { 0x20000153, 0x20000f57, 0x2000055b, 0x20000f51, 0x2000094a, 0x2000035f };
+	const u32 currents[] = { 0x20000153, 0x20000f57, 0x2000055b, 0x20000f51,
+				 0x2000094a, 0x2000035f, 0x20000f53, 0x20000357,
+				 0x20000353 };
 	int i;
 	/* Activate PMBAR.  */
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);

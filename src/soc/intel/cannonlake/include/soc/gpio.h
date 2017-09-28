@@ -19,6 +19,6 @@
 #include <soc/gpio_defs.h>
 #include <intelblocks/gpio.h>
 
-#define CROS_GPIO_DEVICE_NAME	"INT344B:00"
+#define CROS_GPIO_DEVICE_NAME	"INT34BB:00"
 
 #endif

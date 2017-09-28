@@ -276,6 +276,12 @@ M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
 S:	Supported
 F:	src/mainboard/asus/kgpe-d16/
 
+PC ENGINES ALL MAINBOARDS
+M:	Piotr Król <piotr.krol@3mdeb.com>
+M:	Kamil Wcisło <kamil.wcislo@3mdeb.com>
+S:	Supported
+F:	src/mainboard/pcengines/
+
 AMD FAMILY10H & FAMILY15H (NON-AGESA) CPUS & NORTHBRIDGE
 M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
 S:	Supported

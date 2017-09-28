@@ -15,7 +15,10 @@
 
 #include <cpu/x86/mtrr.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
-#include "amdlib.h"
+
+#include <Porting.h>
+#include <AGESA.h>
+#include <amdlib.h>
 
 void amd_initcpuio(void)
 {

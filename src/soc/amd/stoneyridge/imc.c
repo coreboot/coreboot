@@ -21,7 +21,6 @@
 #include <delay.h>
 #include <Porting.h>
 #include <AGESA.h>
-#include <Lib/amdlib.h>
 #include <Proc/Fch/Common/FchCommonCfg.h>
 #include <Proc/Fch/Fch.h>
 #include <Proc/Fch/FchPlatform.h>

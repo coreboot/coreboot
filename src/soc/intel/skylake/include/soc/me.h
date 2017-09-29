@@ -188,6 +188,8 @@ union me_hfs3 {
 	} __packed fields;
 };
 
+#define PCI_ME_HFSTS4			0x64
+#define PCI_ME_HFSTS5			0x68
 #define PCI_ME_HFSTS6			0x6c
 #define ME_HFS6_FPF_NOT_COMMITTED	0x0
 #define ME_HFS6_FPF_ERROR		0x2

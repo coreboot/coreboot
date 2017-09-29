@@ -232,6 +232,18 @@ void intel_me_status(void)
 	hfs3.data = me_read_config32(PCI_ME_HFSTS3);
 	hfs6.data = me_read_config32(PCI_ME_HFSTS6);
 
+	printk(BIOS_DEBUG, "ME: Host Firmware Status Register 1 : 0x%08X\n",
+		hfs.data);
+	printk(BIOS_DEBUG, "ME: Host Firmware Status Register 2 : 0x%08X\n",
+		hfs2.data);
+	printk(BIOS_DEBUG, "ME: Host Firmware Status Register 3 : 0x%08X\n",
+		hfs3.data);
+	printk(BIOS_DEBUG, "ME: Host Firmware Status Register 4 : 0x%08X\n",
+		me_read_config32(PCI_ME_HFSTS4));
+	printk(BIOS_DEBUG, "ME: Host Firmware Status Register 5 : 0x%08X\n",
+		me_read_config32(PCI_ME_HFSTS5));
+	printk(BIOS_DEBUG, "ME: Host Firmware Status Register 6 : 0x%08X\n",
+		hfs6.data);
 	/* Check Current States */
 	printk(BIOS_DEBUG, "ME: FW Partition Table      : %s\n",
 	       hfs.fields.fpt_bad ? "BAD" : "OK");

@@ -19,7 +19,10 @@ void *cbmem_top(void)
 	uintptr_t base;
 	size_t size;
 
-	query_mem(configstring(), &base, &size);
+	/* Use dummy values until we can query the memory size again */
+	//query_mem(configstring(), &base, &size);
+	base = 0x80000000;
+	size = 128 * MiB;
 
 	return (void *)(base + size);
 }

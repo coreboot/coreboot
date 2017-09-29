@@ -324,8 +324,8 @@ static void elog_nv_write(size_t offset, size_t size)
 
 	address = rdev_mmap(rdev, offset, size);
 
-	elog_debug("%s(address=0x%p offset=0x%08x size=%u)\n", __func__,
-		   address, offset, size);
+	elog_debug("%s(address=0x%p offset=0x%08zx size=%zu)\n", __func__,
+		 address, offset, size);
 
 	if (address == NULL)
 		return;

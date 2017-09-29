@@ -114,6 +114,8 @@ _start:
 	movl	stack_top, %edx
 	subl	%eax, %edx
 	mov	%edx, %esp
+	andl	$0xfffffff0, %esp /* ensure stack alignment */
+
 	/* Save CPU number. */
 	mov	%ecx, %esi
 
@@ -192,7 +194,8 @@ load_msr:
 	mov	%eax, %cr4
 #endif
 
-	/* c_handler(cpu_num) */
+	/* c_handler(cpu_num), preserve proper stack alignment */
+	sub	$12, %esp
 	push	%esi	/* cpu_num */
 	mov	c_handler, %eax
 	call	*%eax

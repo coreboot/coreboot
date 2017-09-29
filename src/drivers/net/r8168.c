@@ -31,11 +31,13 @@
 #include <device/pci_def.h>
 #include <delay.h>
 #include <fmap.h>
+#include "chip.h"
 
 #define NIC_TIMEOUT		1000
 
 #define CMD_REG			0x37
 #define  CMD_REG_RESET		0x10
+#define CMD_LED0_LED1		0x18
 
 #define CFG_9346		0x50
 #define  CFG_9346_LOCK		0x00
@@ -211,22 +213,59 @@ static void program_mac_address(struct device *dev, u16 io_base)
 	printk(BIOS_DEBUG, "done\n");
 }
 
+static void r8168_set_customized_led(struct device *dev, u16 io_base)
+{
+	struct drivers_net_config *config = dev->chip_info;
+
+	if (!config)
+		return;
+
+	/* Read the customized LED setting from devicetree */
+	printk(BIOS_DEBUG, "r8168: Customized LED 0x%x\n", config->customized_leds);
+
+	/*
+	 * Refer to RTL8111H datasheet 7.2 Customizable LED Configuration
+	 * Starting from offset 0x18
+	 * Bit[15:12]	LED Feature Control(FC)
+	 * Bit[11:08]	LED Select for PINLED2
+	 * Bit[07:04]	LED Select for PINLED1
+	 * Bit[03:00]	LED Select for PINLED0
+	 *
+	 * Speed	Link10M		Link100M	Link1000M	ACT/Full
+	 * LED0		Bit0		Bit1		Bit2		Bit3
+	 * LED1		Bit4		Bit5		Bit6		Bit7
+	 * LED2		Bit8		Bit9		Bit10		Bit11
+	 * FC		Bit12		Bit13		Bit14		Bit15
+	 */
+
+	/* Set customized LED registers */
+	outw(config->customized_leds, io_base + CMD_LED0_LED1);
+	printk(BIOS_DEBUG, "r8168: read back LED setting as 0x%x\n",
+		inw(io_base + CMD_LED0_LED1));
+}
+
 static void r8168_init(struct device *dev)
 {
 	/* Get the resource of the NIC mmio */
 	struct resource *nic_res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	u16 io_base = (u16)nic_res->base;
 
+	/* Check if the base is invalid */
+	if (!io_base) {
+		printk(BIOS_ERR, "r8168: Error cant find IO resource\n");
+		return;
+	}
 	/* Enable but do not set bus master */
 	pci_write_config16(dev, PCI_COMMAND,
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 
 	/* Program MAC address based on CBFS "macaddress" containing
 	 * a string AA:BB:CC:DD:EE:FF */
-	if (io_base)
-		program_mac_address(dev, io_base);
-	else
-		printk(BIOS_ERR, "r8168: Error cant find MMIO resource\n");
+	program_mac_address(dev, io_base);
+
+	/* Program customized LED mode */
+	if (IS_ENABLED(CONFIG_RT8168_SET_LED_MODE))
+		r8168_set_customized_led(dev, io_base);
 }
 
 static struct device_operations r8168_ops  = {

@@ -18,3 +18,14 @@ config RT8168_GET_MAC_FROM_VPD
 	bool
 	default n
 	select REALTEK_8168_RESET
+
+config RT8168_SET_LED_MODE
+	bool
+	default n
+	select REALTEK_8168_RESET
+	help
+	  This is to set a customized LED mode to distinguish 10/100/1000
+	  link and speed status with limited LEDs avaiable on a board.
+	  Please refer to RTL811x datasheet section 7.2 Customizable LED
+	  Configuration for details. With this flag enabled, the
+	  customized_leds variable will be read from devicetree setting.

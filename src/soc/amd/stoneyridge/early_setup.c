@@ -23,31 +23,47 @@
 #include <cbmem.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
-#include <Fch/Fch.h>
 #include <cpu/x86/msr.h>
 #include <delay.h>
 
+/* vendor includes */
+#include <Porting.h>
+#include <AGESA.h>
+#include <Fch/Fch.h>
+
 void configure_stoneyridge_uart(void)
 {
-	u8 byte;
+	u8 byte, byte2;
 
+	/* Power on the UART and AMBA devices */
 	byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56
 					+ CONFIG_UART_FOR_CONSOLE * 2);
-	byte |= 1 << 3;
+	byte |= AOAC_PWR_ON_DEV;
 	write8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56
 					+ CONFIG_UART_FOR_CONSOLE * 2, byte);
+
 	byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62);
-	byte |= 1 << 3;
+	byte |= AOAC_PWR_ON_DEV;
 	write8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62, byte);
+
+	/* Set the GPIO mux to UART */
 	write8((void *)FCH_IOMUXx89_UART0_RTS_L_EGPIO137, 0);
 	write8((void *)FCH_IOMUXx8A_UART0_TXD_EGPIO138, 0);
 	write8((void *)FCH_IOMUXx8E_UART1_RTS_L_EGPIO142, 0);
 	write8((void *)FCH_IOMUXx8F_UART1_TXD_EGPIO143, 0);
 
-	udelay(2000);
-	/* reset UART */
-	write8((void *)APU_UART0_BASE + (0x2000 * CONFIG_UART_FOR_CONSOLE)
-					+ 0x88, 0x01);
+	/* Wait for the UART and AMBA devices to indicate power and clock OK */
+	do {
+		udelay(100);
+		byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG57
+					+ CONFIG_UART_FOR_CONSOLE * 2);
+		byte &= (A0AC_PWR_RST_STATE | AOAC_RST_CLK_OK_STATE);
+		byte2 = read8((void *)ACPI_MMIO_BASE + AOAC_BASE
+					+ FCH_AOAC_REG63);
+		byte2 &= (A0AC_PWR_RST_STATE | AOAC_RST_CLK_OK_STATE);
+	} while (!((byte == (A0AC_PWR_RST_STATE | AOAC_RST_CLK_OK_STATE)) &&
+		   (byte2 == (A0AC_PWR_RST_STATE | AOAC_RST_CLK_OK_STATE))));
+
 }
 
 void sb_pci_port80(void)

@@ -14,6 +14,18 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 
 ## [Unreleased]
 
+## [v4.6.1] - 2017-09-29
+### Added
+- "Disable retrieving SPD info" feature in Memtest86+
+- Piotr Król and Kamil Wcisło as PC Engines platforms maintainers
+
+### Changed
+- APU3 and APU5 targets are now available as APU2 variants. This change removes
+redundant code which was similar for APU2/3/5 boards.
+
+### Fixed
+- Date format in sign of life string
+
 ## [v4.6.1] - 2017-08-30
 ### Added
 - APU5 target

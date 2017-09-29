@@ -14,7 +14,7 @@
 # GNU General Public License for more details.
 #
 
-if BOARD_PCENGINES_APU2
+if BOARD_PCENGINES_APU2 || BOARD_PCENGINES_APU3 || BOARD_PCENGINES_APU5
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -30,14 +30,27 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select USE_BLOBS
 	select GENERIC_SPD_BIN
 	select PXE
+	select MEMTEST_DISABLE_SPD if MEMTEST_SECONDARY_PAYLOAD
 
 config MAINBOARD_DIR
 	string
 	default pcengines/apu2
 
+config VARIANT_DIR
+	string
+	default apu2 if BOARD_PCENGINES_APU2
+	default apu3 if BOARD_PCENGINES_APU3
+	default apu5 if BOARD_PCENGINES_APU5
+
+config DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "PC Engines apu2"
+	default "PC Engines apu2" if BOARD_PCENGINES_APU2
+	default "PC Engines apu3" if BOARD_PCENGINES_APU3
+	default "PC Engines apu5" if BOARD_PCENGINES_APU5
 
 config MAX_CPUS
 	int

@@ -216,7 +216,7 @@ static void mainboard_enable(device_t dev)
 static void mainboard_final(void *chip_info)
 {
 	//
-	// Turn off LED D4 and D5
+	// Turn off LED 2 and 3
 	//
 	write_gpio(GPIO_58, 1);
 	write_gpio(GPIO_59, 1);

@@ -14,7 +14,7 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 
 ## [Unreleased]
 
-## [v4.6.1] - 2017-09-29
+## [v4.6.2] - 2017-09-29
 ### Added
 - "Disable retrieving SPD info" feature in Memtest86+
 - Piotr Król and Kamil Wcisło as PC Engines platforms maintainers
@@ -113,7 +113,8 @@ redundant code which was similar for APU2/3/5 boards.
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.1...coreboot-4.6.x
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.2...coreboot-4.6.x
+[v4.6.2]: https://github.com/pcengines/coreboot/compare/v4.6.1...v4.6.2
 [v4.6.1]: https://github.com/pcengines/coreboot/compare/v4.6.0...v4.6.1
 [v4.6.0]: https://github.com/pcengines/coreboot/compare/v4.5.8...v4.6.0
 [v4.5.8]: https://github.com/pcengines/coreboot/compare/v4.5.7...v4.5.8

@@ -25,6 +25,8 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <commonlib/helpers.h>
+#include <cbmem.h>
+#include <southbridge/intel/i82801ix/nvs.h>
 
 #include "drivers/intel/gma/i915_reg.h"
 #include "chip.h"
@@ -32,6 +34,7 @@
 #include <drivers/intel/gma/intel_bios.h>
 #include <drivers/intel/gma/edid.h>
 #include <drivers/intel/gma/i915.h>
+#include <drivers/intel/gma/opregion.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
 
@@ -47,6 +50,19 @@ u32 gtt_read(u32 reg)
 void gtt_write(u32 reg, u32 data)
 {
 	write32(res2mmio(gtt_res, reg, 0), data);
+}
+
+uintptr_t gma_get_gnvs_aslb(const void *gnvs)
+{
+	const global_nvs_t *gnvs_ptr = gnvs;
+	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
+}
+
+void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
+{
+	global_nvs_t *gnvs_ptr = gnvs;
+	if (gnvs_ptr)
+		gnvs_ptr->aslb = aslb;
 }
 
 static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
@@ -758,6 +774,8 @@ static void gma_func0_init(struct device *dev)
 
 	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
 		gma_ngi(dev, &edid_lvds);
+
+	intel_gma_restore_opregion();
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -793,6 +811,37 @@ static void gma_ssdt(device_t device)
 	drivers_intel_gma_displays_ssdt_generate(gfx);
 }
 
+static unsigned long
+gma_write_acpi_tables(struct device *const dev,
+		      unsigned long current,
+		      struct acpi_rsdp *const rsdp)
+{
+	igd_opregion_t *opregion = (igd_opregion_t *)current;
+	global_nvs_t *gnvs;
+
+	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
+		return current;
+
+	current += sizeof(igd_opregion_t);
+
+	/* GNVS has been already set up */
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs) {
+		/* IGD OpRegion Base Address */
+		gma_set_gnvs_aslb(gnvs, (uintptr_t)opregion);
+	} else {
+		printk(BIOS_ERR, "Error: GNVS table not found.\n");
+	}
+
+	current = acpi_align_current(current);
+	return current;
+}
+
+static const char *gma_acpi_name(const struct device *dev)
+{
+	return "GFX0";
+}
+
 static struct pci_operations gma_pci_ops = {
 	.set_subsystem = gma_set_subsystem,
 };
@@ -806,6 +855,8 @@ static struct device_operations gma_func0_ops = {
 	.scan_bus = 0,
 	.enable = 0,
 	.ops_pci = &gma_pci_ops,
+	.acpi_name = gma_acpi_name,
+	.write_acpi_tables = gma_write_acpi_tables,
 };
 
 static const unsigned short pci_device_ids[] =

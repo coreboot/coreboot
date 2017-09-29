@@ -81,6 +81,15 @@ enum usb_charge_mode {
 };
 int google_chromeec_set_usb_charge_mode(u8 port_id, enum usb_charge_mode mode);
 int google_chromeec_set_usb_pd_role(u8 port, enum usb_pd_control_role role);
+/*
+ * Retrieve the charger type and max wattage.
+ *
+ * @param type      charger type
+ * @param max_watts charger max wattage
+ * @return non-zero for error, otherwise 0.
+ */
+int google_chromeec_get_usb_pd_power_info(enum usb_chg_type *type,
+					  u32 *max_watts);
 
 /* internal structure to send a command to the EC and wait for response. */
 struct chromeec_command {

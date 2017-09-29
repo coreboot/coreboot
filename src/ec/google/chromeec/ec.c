@@ -609,6 +609,35 @@ int google_chromeec_set_usb_charge_mode(u8 port_id, enum usb_charge_mode mode)
 	return google_chromeec_command(&cmd);
 }
 
+/* Get charger power info in Watts.  Also returns type of charger */
+int google_chromeec_get_usb_pd_power_info(enum usb_chg_type *type,
+					  u32 *max_watts)
+{
+	struct ec_params_usb_pd_power_info req = {
+		.port = PD_POWER_CHARGING_PORT,
+	};
+	struct ec_response_usb_pd_power_info rsp;
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_USB_PD_POWER_INFO,
+		.cmd_version = 0,
+		.cmd_data_in = &req,
+		.cmd_size_in = sizeof(req),
+		.cmd_data_out = &rsp,
+		.cmd_size_out = sizeof(rsp),
+		.cmd_dev_index = 0,
+	};
+	struct usb_chg_measures m;
+	int rv = google_chromeec_command(&cmd);
+	if (rv != 0)
+		return rv;
+	/* values are given in milliAmps and milliVolts */
+	*type = rsp.type;
+	m = rsp.meas;
+	*max_watts = (m.current_max * m.voltage_max) / 1000000;
+
+	return 0;
+}
+
 int google_chromeec_set_usb_pd_role(u8 port, enum usb_pd_control_role role)
 {
 	struct ec_params_usb_pd_control req = {

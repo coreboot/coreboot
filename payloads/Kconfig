@@ -106,6 +106,15 @@ config MEMTEST_MASTER
 	  non-reproducible, as it can fetch different code each time.
 endchoice
 
+config MEMTEST_SPD
+	bool "Disable retrieving SPD info"
+	depends on MEMTEST_SECONDARY_PAYLOAD
+	help
+	  Disables retrieving RAM SPD info in Memtest86+.
+
+	  Some chipsets and mainboards do not support this feature and it
+	  should be disabled in Memtest86+ to avoid unwanted behaviour.
+
 config NVRAMCUI_SECONDARY_PAYLOAD
 	bool "Load nvramcui as a secondary payload"
 	default n

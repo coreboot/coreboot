@@ -15,7 +15,7 @@
 
 TAG-$(CONFIG_MEMTEST_MASTER)=origin/master
 NAME-$(CONFIG_MEMTEST_MASTER)=Master
-TAG-$(CONFIG_MEMTEST_STABLE)=a4efe01c3d15cdb6c64adc8dfe5f890c15459f27
+TAG-$(CONFIG_MEMTEST_STABLE)=7afa395fe8b11d681b27c38e204814ba643c2108
 NAME-$(CONFIG_MEMTEST_STABLE)=Stable
 
 project_name=Memtest86+
@@ -37,13 +37,13 @@ fetch: $(project_dir)
 checkout: fetch
 	echo "    Checking out $(project_name) revision $(NAME-y) ($(TAG-y))"
 	cd $(project_dir); \
-		git checkout gerrit_19053
+		git checkout master; \
+ 		git branch -D coreboot 2>/dev/null; \
+ 		git checkout -b coreboot $(TAG-y)
 
 build: checkout
 	echo "    MAKE       $(project_name) $(NAME-y)"
-	if [ "$(CONFIG_MEMTEST_SPD)" = "y" ]; then \
-		 $(MAKE) -C $(project_dir) CB_NOSPD=1 all; \
-	else $(MAKE) -C $(project_dir) all; fi
+	$(MAKE) -C $(project_dir) all
 
 clean:
 	test -d $(project_dir) && $(MAKE) -C $(project_dir) clean || exit 0

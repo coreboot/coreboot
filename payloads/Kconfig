@@ -106,7 +106,7 @@ config MEMTEST_MASTER
 	  non-reproducible, as it can fetch different code each time.
 endchoice
 
-config MEMTEST_SPD
+config MEMTEST_DISABLE_SPD
 	bool "Disable retrieving SPD info"
 	depends on MEMTEST_SECONDARY_PAYLOAD
 	help

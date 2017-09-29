@@ -28,6 +28,11 @@
 /* Offsets from ACPI_MMIO_BASE */
 #define APU_SMI_BASE			0xfed80200
 
+/*
+ * Offsets from ACPI_MMIO_BASE
+ * This is defined by AGESA, but we don't include AGESA headers to avoid
+ * polluting the namespace.
+ */
 #define PM_MMIO_BASE			0xfed80300
 
 #define APU_UART0_BASE			0xfedc6000
@@ -46,6 +51,17 @@
 #define   FORCE_STPCLK_RETRY		BIT(24)
 #define PM_ACPI_MMIO_EN			0x24
 #define PM_SERIRQ_CONF			0x54
+#define   PM_SERIRQ_NUM_BITS_17		0x0000
+#define   PM_SERIRQ_NUM_BITS_18		0x0004
+#define   PM_SERIRQ_NUM_BITS_19		0x0008
+#define   PM_SERIRQ_NUM_BITS_20		0x000c
+#define   PM_SERIRQ_NUM_BITS_21		0x0010
+#define   PM_SERIRQ_NUM_BITS_22		0x0014
+#define   PM_SERIRQ_NUM_BITS_23		0x0018
+#define   PM_SERIRQ_NUM_BITS_24		0x001c
+#define   PM_SERIRQ_MODE		BIT(6)
+#define   PM_SERIRQ_ENABLE		BIT(7)
+
 #define PM_EVT_BLK			0x60
 #define PM1_CNT_BLK			0x62
 #define PM_TMR_BLK			0x64
@@ -60,6 +76,10 @@
 #define PM_HUD_SD_FLASH_CTRL		0xe7
 #define PM_YANG_SD_FLASH_CTRL		0xe8
 #define PM_PCIB_CFG			0xea
+#define PM_LPC_GATING			0xec
+#define   PM_LPC_AB_NO_BYPASS_EN	BIT(2)
+#define   PM_LPC_A20_EN			BIT(1)
+#define   PM_LPC_ENABLE			BIT(0)
 
 #define SYS_RESET			0xcf9
 
@@ -70,13 +90,26 @@
 #define ACPI_GPE0_BLK		(STONEYRIDGE_ACPI_IO_BASE + 0x10) /* 8 bytes */
 #define ACPI_CPU_CONTROL	(STONEYRIDGE_ACPI_IO_BASE + 0x08) /* 6 bytes */
 
-#define REV_STONEYRIDGE_A11			0x11
-#define REV_STONEYRIDGE_A12			0x12
+#define ACPI_SMI_CTL_PORT		0xb2
+#define ACPI_SMI_CMD_CST_CONTROL	0xde
+#define ACPI_SMI_CMD_PST_CONTROL	0xad
+#define ACPI_SMI_CMD_DISABLE		0xbe
+#define ACPI_SMI_CMD_ENABLE		0xef
+#define ACPI_SMI_CMD_S4_REQ		0xc0
+
+#define REV_STONEYRIDGE_A11		0x11
+#define REV_STONEYRIDGE_A12		0x12
 
 #define SPIROM_BASE_ADDRESS_REGISTER	0xa0
 #define   ROUTE_TPM_2_SPI		BIT(3)
-#define   SPI_ROM_ENABLE		0x02
+#define   SPI_ABORT_ENABLE		BIT(2)
+#define   SPI_ROM_ENABLE		BIT(1)
+#define   SPI_ROM_ALT_ENABLE		BIT(0)
+#define   SPI_PRESERVE_BITS		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
 #define   SPI_BASE_ADDRESS		0xfec10000
+
+#define LPC_PCI_CONTROL			0x40
+#define   LEGACY_DMA_EN			BIT(2)
 
 #define LPC_IO_PORT_DECODE_ENABLE	0x44
 #define   DECODE_ENABLE_PARALLEL_PORT0	BIT(0)
@@ -115,16 +148,57 @@
 #define LPC_IO_OR_MEM_DECODE_ENABLE	0x48
 #define   LPC_WIDEIO2_ENABLE		BIT(25)
 #define   LPC_WIDEIO1_ENABLE		BIT(24)
+#define   DECODE_IO_PORT_ENABLE6	BIT(23)
+#define   DECODE_IO_PORT_ENABLE5	BIT(22)
+#define   DECODE_IO_PORT_ENABLE4	BIT(21)
+#define   DECODE_IO_PORT_ENABLE3	BIT(19)
+#define   DECODE_IO_PORT_ENABLE2	BIT(18)
+#define   DECODE_IO_PORT_ENABLE1	BIT(17)
+#define   DECODE_IO_PORT_ENABLE0	BIT(16)
+#define   LPC_SYNC_TIMEOUT_COUNT_ENABLE	BIT(7)
 #define   LPC_WIDEIO0_ENABLE		BIT(2)
+/* Assuming word access to higher word (register 0x4a) */
+#define LPC_IO_OR_MEM_DEC_EN_HIGH	0x4a
+#define   LPC_WIDEIO2_ENABLE_H		BIT(9)
+#define   LPC_WIDEIO1_ENABLE_H		BIT(8)
+#define   DECODE_IO_PORT_ENABLE6_H	BIT(7)
+#define   DECODE_IO_PORT_ENABLE5_H	BIT(6)
+#define   DECODE_IO_PORT_ENABLE4_H	BIT(5)
+#define   DECODE_IO_PORT_ENABLE3_H	BIT(3)
+#define   DECODE_IO_PORT_ENABLE2_H	BIT(2)
+#define   DECODE_IO_PORT_ENABLE1_H	BIT(1)
+#define   DECODE_IO_PORT_ENABLE0_H	BIT(0)
 
+/*
+ * Register 0x64 is 32-bit, composed by two 16-bit sub-registers.
+ * For ease of access, each sub-register is declared separetely.
+ */
 #define LPC_WIDEIO_GENERIC_PORT		0x64
+#define LPC_WIDEIO1_GENERIC_PORT	0x66
+#define ROM_ADDRESS_RANGE1_START	0x68
+#define ROM_ADDRESS_RANGE1_END		0x6a
+#define ROM_ADDRESS_RANGE2_START	0x6c
+#define ROM_ADDRESS_RANGE2_END		0x6e
 
 #define LPC_ALT_WIDEIO_RANGE_ENABLE	0x74
 #define   LPC_ALT_WIDEIO2_ENABLE	BIT(3)
 #define   LPC_ALT_WIDEIO1_ENABLE	BIT(2)
 #define   LPC_ALT_WIDEIO0_ENABLE	BIT(0)
 
+#define LPC_MISC_CONTROL_BITS		0x78
+#define   LPC_NOHOG			BIT(0)
+
 #define LPC_WIDEIO2_GENERIC_PORT	0x90
+
+/*
+ * LPC register 0xb8 is DWORD, here there are definitions for byte
+ * access. For example, bits 31-24 are accessed through byte access
+ * at register 0xbb ().
+ */
+#define LPC_ROM_DMA_EC_HOST_CONTROL	0xb8
+
+#define LPC_HOST_CONTROL		0xbb
+#define   SPI_FROM_HOST_PREFETCH_EN	BIT(0)
 
 #define SPI_CNTRL0			0x00
 #define   SPI_READ_MODE_MASK		(BIT(30) | BIT(29) | BIT(18))
@@ -161,6 +235,10 @@
 
 #define SPI100_HOST_PREF_CONFIG		0x2c
 #define   SPI_RD4DW_EN_HOST		BIT(15)
+
+#define FCH_MISC_REG40_OSCOUT1_EN	BIT(2)
+
+#define FLASH_BASE_ADDR			((0xffffffff - CONFIG_ROM_SIZE) + 1)
 
 static inline int sb_sata_enable(void)
 {

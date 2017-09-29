@@ -40,7 +40,10 @@ static void lpc_init(device_t dev)
 	u32 dword;
 	device_t sm_dev;
 
-	/* Enable the LPC Controller */
+	/*
+	 * Enable the LPC Controller
+	 * SMBus register 0x64 is not defined in public datasheet.
+	 */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC));
 	dword = pci_read_config32(sm_dev, 0x64);
 	dword |= 1 << 20;
@@ -50,37 +53,40 @@ static void lpc_init(device_t dev)
 	isa_dma_init();
 
 	/* Enable DMA transaction on the LPC bus */
-	byte = pci_read_config8(dev, 0x40);
-	byte |= (1 << 2);
-	pci_write_config8(dev, 0x40, byte);
+	byte = pci_read_config8(dev, LPC_PCI_CONTROL);
+	byte |= LEGACY_DMA_EN;
+	pci_write_config8(dev, LPC_PCI_CONTROL, byte);
 
 	/* Disable the timeout mechanism on LPC */
-	byte = pci_read_config8(dev, 0x48);
-	byte &= ~(1 << 7);
-	pci_write_config8(dev, 0x48, byte);
+	byte = pci_read_config8(dev, LPC_IO_OR_MEM_DECODE_ENABLE);
+	byte &= ~LPC_SYNC_TIMEOUT_COUNT_ENABLE;
+	pci_write_config8(dev, LPC_IO_OR_MEM_DECODE_ENABLE, byte);
 
 	/* Disable LPC MSI Capability */
-	byte = pci_read_config8(dev, 0x78);
+	byte = pci_read_config8(dev, LPC_MISC_CONTROL_BITS);
+	/* BIT 1 is not defined in public datasheet. */
 	byte &= ~(1 << 1);
-	/* Keep the old way. i.e., when bus master/DMA cycle is going
+
+	/*
+	 * Keep the old way. i.e., when bus master/DMA cycle is going
 	 * on on LPC, it holds PCI grant, so no LPC slave cycle can
 	 * interrupt and visit LPC.
 	 */
-	byte &= ~(1 << 0);
-	pci_write_config8(dev, 0x78, byte);
+	byte &= ~LPC_NOHOG;
+	pci_write_config8(dev, LPC_MISC_CONTROL_BITS, byte);
 
-	/* bit0: Enable prefetch a cacheline (64 bytes) when Host reads
-	 *       code from SPI ROM
+	/*
 	 * bit3: Fix SPI_CS# timing issue when running at 66M. TODO:A12.
-	 * todo: verify both these against BKDG
+	 * todo: verify against BKDG
 	 */
-	byte = pci_read_config8(dev, 0xbb);
-	byte |= 1 << 0 | 1 << 3;
-	pci_write_config8(dev, 0xbb, byte);
+	byte = pci_read_config8(dev, LPC_HOST_CONTROL);
+	byte |= SPI_FROM_HOST_PREFETCH_EN | 1 << 3;
+	pci_write_config8(dev, LPC_HOST_CONTROL, byte);
 
 	cmos_check_update_date();
 
-	/* Initialize the real time clock.
+	/*
+	 * Initialize the real time clock.
 	 * The 0 argument tells cmos_init not to
 	 * update CMOS unless it is invalid.
 	 * 1 tells cmos_init to always initialize the CMOS.
@@ -94,9 +100,9 @@ static void lpc_init(device_t dev)
 	setup_i8254();
 
 	/* Set up SERIRQ, enable continuous mode */
-	byte = (BIT(4) | BIT(7));
+	byte = (PM_SERIRQ_NUM_BITS_21 | PM_SERIRQ_ENABLE);
 	if (!IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE))
-		byte |= BIT(6);
+		byte |= PM_SERIRQ_MODE;
 
 	pm_write8(PM_SERIRQ_CONF, byte);
 }
@@ -117,8 +123,8 @@ static void lpc_read_resources(device_t dev)
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	res->base = 0xff800000;
-	res->size = 0x00800000; /* 8 MB for flash */
+	res->base = FLASH_BASE_ADDR;
+	res->size = CONFIG_ROM_SIZE;
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
@@ -145,7 +151,7 @@ static void lpc_set_resources(struct device *dev)
 	/* Special case. The SpiRomEnable and other enables should STAY set. */
 	res = find_resource(dev, 2);
 	spi_enable_bits = pci_read_config32(dev, SPIROM_BASE_ADDRESS_REGISTER);
-	spi_enable_bits &= 0xf;
+	spi_enable_bits &= SPI_PRESERVE_BITS;
 	pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER,
 			res->base | spi_enable_bits);
 
@@ -171,71 +177,72 @@ static void set_lpc_resource(device_t child,
 			continue;
 		base = res->base;
 		end = resource_end(res);
-		/* find a resource size */
 		printk(BIOS_DEBUG,
-		     "Southbridge LPC decode:%s, base=0x%08x, end=0x%08x\n",
-		     dev_path(child), base, end);
+			"Southbridge LPC decode:%s, base=0x%08x, end=0x%08x\n",
+			dev_path(child), base, end);
+		/* find a resource size */
 		switch (base) {
 		case 0x60:	/*  KB */
 		case 0x64:	/*  MS */
-			set |= (1 << 29);
+			set |= DECODE_ENABLE_KBC_PORT;
 			rsize = 1;
 			break;
 		case 0x3f8:	/*  COM1 */
-			set |= (1 << 6);
+			set |= DECODE_ENABLE_SERIAL_PORT0;
 			rsize = 8;
 			break;
 		case 0x2f8:	/*  COM2 */
-			set |= (1 << 7);
+			set |= DECODE_ENABLE_SERIAL_PORT1;
 			rsize = 8;
 			break;
 		case 0x378:	/*  Parallel 1 */
-			set |= (1 << 0);
-			set |= (1 << 1); /* + 0x778 for ECP */
+			set |= DECODE_ENABLE_PARALLEL_PORT0;
+			/* enable 0x778 for ECP mode */
+			set |= DECODE_ENABLE_PARALLEL_PORT1;
 			rsize = 8;
 			break;
 		case 0x3f0:	/*  FD0 */
-			set |= (1 << 26);
+			set |= DECODE_ENABLE_FDC_PORT0;
 			rsize = 8;
 			break;
 		case 0x220:	/*  0x220 - 0x227 */
-			set |= (1 << 8);
+			set |= DECODE_ENABLE_SERIAL_PORT2;
 			rsize = 8;
 			break;
 		case 0x228:	/*  0x228 - 0x22f */
-			set |= (1 << 9);
+			set |= DECODE_ENABLE_SERIAL_PORT3;
 			rsize = 8;
 			break;
 		case 0x238:	/*  0x238 - 0x23f */
-			set |= (1 << 10);
+			set |= DECODE_ENABLE_SERIAL_PORT4;
 			rsize = 8;
 			break;
 		case 0x300:	/*  0x300 - 0x301 */
-			set |= (1 << 18);
+			set |= DECODE_ENABLE_MIDI_PORT0;
 			rsize = 2;
 			break;
 		case 0x400:
-			set_x |= (1 << 16);
+			set_x |= DECODE_IO_PORT_ENABLE0;
 			rsize = 0x40;
 			break;
 		case 0x480:
-			set_x |= (1 << 17);
+			set_x |= DECODE_IO_PORT_ENABLE1;
 			rsize = 0x40;
 			break;
 		case 0x500:
-			set_x |= (1 << 18);
+			set_x |= DECODE_IO_PORT_ENABLE2;
 			rsize = 0x40;
 			break;
 		case 0x580:
-			set_x |= (1 << 19);
+			set_x |= DECODE_IO_PORT_ENABLE3;
 			rsize = 0x40;
 			break;
 		case 0x4700:
-			set_x |= (1 << 22);
+			set_x |= DECODE_IO_PORT_ENABLE5;
 			rsize = 0xc;
 			break;
 		case 0xfd60:
-			set_x |= (1 << 23);
+			set_x |= DECODE_IO_PORT_ENABLE6;
 			rsize = 16;
 			break;
 		default:
@@ -250,30 +257,30 @@ static void set_lpc_resource(device_t child,
 			*reg |= set;
 			*reg_x |= set_x;
 		/* check if we can fit resource in variable range */
-		} else if ((var_num < 3) && ((res->size <= 16) ||
-				(res->size == 512))) {
+		} else if ((var_num < 3) &&
+		    ((res->size <= 16) || (res->size == 512))) {
 			/* use variable ranges if pre-defined do not match */
 			switch (var_num) {
 			case 0:
-				*reg_x |= (1 << 2);
+				*reg_x |= LPC_WIDEIO0_ENABLE;
 				if (res->size <= 16)
-					*wiosize |= (1 << 0);
+					*wiosize |= LPC_ALT_WIDEIO0_ENABLE;
 				break;
 			case 1:
-				*reg_x |= (1 << 24);
+				*reg_x |= LPC_WIDEIO1_ENABLE;
 				if (res->size <= 16)
-					*wiosize |= (1 << 2);
+					*wiosize |= LPC_ALT_WIDEIO1_ENABLE;
 				break;
 			case 2:
-				*reg_x |= (1 << 25);
+				*reg_x |= LPC_WIDEIO2_ENABLE;
 				if (res->size <= 16)
-					*wiosize |= (1 << 3);
+					*wiosize |= LPC_ALT_WIDEIO2_ENABLE;
 				break;
 			}
-			reg_var[var_num++] =
-			    base & 0xffff;
+			reg_var[var_num++] = base & 0xffff;
 		} else {
-			printk(BIOS_ERR, "cannot fit LPC decode region:");
+			printk(BIOS_ERR,
+				"cannot fit LPC decode region:");
 			printk(BIOS_ERR, "%s, base = 0x%08x, end = 0x%08x\n",
 				dev_path(child), base, end);
 		}
@@ -294,9 +301,10 @@ static void lpc_enable_childrens_resources(device_t dev)
 	int var_num = 0;
 	u16 reg_var[3];
 	u16 reg_size[1] = {512};
-	u8 wiosize = pci_read_config8(dev, 0x74);
+	u8 wiosize = pci_read_config8(dev, LPC_ALT_WIDEIO_RANGE_ENABLE);
 
-	/* Be a bit relaxed, tolerate that LPC region might be bigger than
+	/*
+	 * Be a bit relaxed, tolerate that LPC region might be bigger than
 	 * resource we try to fit, do it like this for all regions < 16 bytes.
 	 * If there is a resource > 16 bytes it must be 512 bytes to be able
 	 * to allocate the fresh LPC window.
@@ -306,26 +314,26 @@ static void lpc_enable_childrens_resources(device_t dev)
 	 * The code tries to check if resource can fit into this region.
 	 */
 
-	reg = pci_read_config32(dev, 0x44);
-	reg_x = pci_read_config32(dev, 0x48);
+	reg = pci_read_config32(dev, LPC_IO_PORT_DECODE_ENABLE);
+	reg_x = pci_read_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE);
 
 	/* check if ranges are free and don't use them if already taken */
-	if (reg_x & (1 << 2))
+	if (reg_x & LPC_WIDEIO0_ENABLE)
 		var_num = 1;
 	/* just in case check if someone did not manually set other ranges */
-	if (reg_x & (1 << 24))
+	if (reg_x & LPC_WIDEIO1_ENABLE)
 		var_num = 2;
 
-	if (reg_x & (1 << 25))
+	if (reg_x & LPC_WIDEIO2_ENABLE)
 		var_num = 3;
 
 	/* check AGESA region size */
-	if (wiosize & (1 << 0))
+	if (wiosize & LPC_ALT_WIDEIO0_ENABLE)
 		reg_size[0] = 16;
 
-	reg_var[2] = pci_read_config16(dev, 0x90);
-	reg_var[1] = pci_read_config16(dev, 0x66);
-	reg_var[0] = pci_read_config16(dev, 0x64);
+	reg_var[2] = pci_read_config16(dev, LPC_WIDEIO2_GENERIC_PORT);
+	reg_var[1] = pci_read_config16(dev, LPC_WIDEIO1_GENERIC_PORT);
+	reg_var[0] = pci_read_config16(dev, LPC_WIDEIO_GENERIC_PORT);
 
 	/* todo: clean up the code style here */
 	for (link = dev->link_list; link; link = link->next) {
@@ -344,21 +352,21 @@ static void lpc_enable_childrens_resources(device_t dev)
 			}
 		}
 	}
-	pci_write_config32(dev, 0x44, reg);
-	pci_write_config32(dev, 0x48, reg_x);
+	pci_write_config32(dev, LPC_IO_PORT_DECODE_ENABLE, reg);
+	pci_write_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE, reg_x);
 	/* Set WideIO for as many IOs found (fall through is on purpose) */
 	switch (var_num) {
 	case 3:
-		pci_write_config16(dev, 0x90, reg_var[2]);
+		pci_write_config16(dev, LPC_WIDEIO2_GENERIC_PORT, reg_var[2]);
 		/* fall through */
 	case 2:
-		pci_write_config16(dev, 0x66, reg_var[1]);
+		pci_write_config16(dev, LPC_WIDEIO1_GENERIC_PORT, reg_var[1]);
 		/* fall through */
 	case 1:
-		pci_write_config16(dev, 0x64, reg_var[0]);
+		pci_write_config16(dev, LPC_WIDEIO_GENERIC_PORT, reg_var[0]);
 		break;
 	}
-	pci_write_config8(dev, 0x74, wiosize);
+	pci_write_config8(dev, LPC_ALT_WIDEIO_RANGE_ENABLE, wiosize);
 }
 
 static void lpc_enable_resources(device_t dev)

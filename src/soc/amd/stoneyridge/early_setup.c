@@ -76,9 +76,9 @@ void sb_pci_port80(void)
 
 	dev = PCI_DEV(0, PCU_DEV, LPC_FUNC);
 
-	byte = pci_read_config8(dev, 0x4a);
-	byte &= ~(1 << 5); /* disable lpc port 80 */
-	pci_write_config8(dev, 0x4a, byte);
+	byte = pci_read_config8(dev, LPC_IO_OR_MEM_DEC_EN_HIGH);
+	byte &= ~DECODE_IO_PORT_ENABLE4_H; /* disable lpc port 80 */
+	pci_write_config8(dev, LPC_IO_OR_MEM_DEC_EN_HIGH, byte);
 }
 
 void sb_lpc_port80(void)
@@ -87,17 +87,17 @@ void sb_lpc_port80(void)
 	pci_devfn_t dev;
 
 	/* Enable LPC controller */
-	outb(0xec, PM_INDEX);
+	outb(PM_LPC_GATING, PM_INDEX);
 	byte = inb(PM_DATA);
-	byte |= 1;
-	outb(0xec, PM_INDEX);
+	byte |= PM_LPC_ENABLE;
+	outb(PM_LPC_GATING, PM_INDEX);
 	outb(byte, PM_DATA);
 
 	/* Enable port 80 LPC decode in pci function 3 configuration space. */
 	dev = PCI_DEV(0, PCU_DEV, LPC_FUNC);
-	byte = pci_read_config8(dev, 0x4a);
-	byte |= 1 << 5; /* enable port 80 */
-	pci_write_config8(dev, 0x4a, byte);
+	byte = pci_read_config8(dev, LPC_IO_OR_MEM_DEC_EN_HIGH);
+	byte |= DECODE_IO_PORT_ENABLE4_H; /* enable port 80 */
+	pci_write_config8(dev, LPC_IO_OR_MEM_DEC_EN_HIGH, byte);
 }
 
 void sb_lpc_decode(void)
@@ -216,7 +216,7 @@ int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
 	printk(BIOS_DEBUG, "Writing %x of size %d to nvram pos: %d\n",
 					dword, size, nvram_pos);
 
-	for (i = 0 ; i < size ; i++) {
+	for (i = 0; i < size; i++) {
 		outb(nvram_pos, BIOSRAM_INDEX);
 		outb((dword >> (8 * i)) & 0xff, BIOSRAM_DATA);
 		nvram_pos++;
@@ -229,7 +229,7 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 {
 	u32 data = *old_dword;
 	int i;
-	for (i = 0 ; i < size ; i++) {
+	for (i = 0; i < size; i++) {
 		outb(nvram_pos, BIOSRAM_INDEX);
 		data &= ~(0xff << (i * 8));
 		data |= inb(BIOSRAM_DATA) << (i * 8);
@@ -252,7 +252,7 @@ void sb_clk_output_48Mhz(void)
 	ctrl = read32((void *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40));
 
 	/* clear the OSCOUT1_ClkOutputEnb to enable the 48 Mhz clock */
-	ctrl &= ~(1<<2);
+	ctrl &= ~FCH_MISC_REG40_OSCOUT1_EN;
 	write32((void *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40), ctrl);
 }
 
@@ -336,29 +336,37 @@ void sb_enable_rom(void)
 
 	dev = PCI_DEV(0, PCU_DEV, LPC_FUNC);
 
-	/* Decode variable LPC ROM address ranges 1 and 2. */
-	reg8 = pci_io_read_config8(dev, 0x48);
-	reg8 |= (1 << 3) | (1 << 4);
-	pci_io_write_config8(dev, 0x48, reg8);
-
-	/* LPC ROM address range 1: */
-	/* Enable LPC ROM range mirroring start at 0x000e(0000). */
-	pci_io_write_config16(dev, 0x68, 0x000e);
-	/* Enable LPC ROM range mirroring end at 0x000f(ffff). */
-	pci_io_write_config16(dev, 0x6a, 0x000f);
-
-	/* LPC ROM address range 2: */
 	/*
+	 * Decode variable LPC ROM address ranges 1 and 2.
+	 * Bits 3-4 are not defined in any publicly available datasheet
+	 */
+	reg8 = pci_io_read_config8(dev, LPC_IO_OR_MEM_DECODE_ENABLE);
+	reg8 |= (1 << 3) | (1 << 4);
+	pci_io_write_config8(dev, LPC_IO_OR_MEM_DECODE_ENABLE, reg8);
+
+	/*
+	 * LPC ROM address range 1:
+	 * Enable LPC ROM range mirroring start at 0x000e(0000).
+	 */
+	pci_io_write_config16(dev, ROM_ADDRESS_RANGE1_START, 0x000e);
+
+	/* Enable LPC ROM range mirroring end at 0x000f(ffff). */
+	pci_io_write_config16(dev, ROM_ADDRESS_RANGE1_END, 0x000f);
+
+	/*
+	 * LPC ROM address range 2:
+	 *
 	 * Enable LPC ROM range start at:
 	 * 0xfff8(0000): 512KB
 	 * 0xfff0(0000): 1MB
 	 * 0xffe0(0000): 2MB
 	 * 0xffc0(0000): 4MB
 	 */
-	pci_io_write_config16(dev, 0x6c, 0x10000
+	pci_io_write_config16(dev, ROM_ADDRESS_RANGE2_START, 0x10000
 					- (CONFIG_COREBOOT_ROMSIZE_KB >> 6));
+
 	/* Enable LPC ROM range end at 0xffff(ffff). */
-	pci_io_write_config16(dev, 0x6e, 0xffff);
+	pci_io_write_config16(dev, ROM_ADDRESS_RANGE2_END, 0xffff);
 }
 
 void bootblock_fch_early_init(void)

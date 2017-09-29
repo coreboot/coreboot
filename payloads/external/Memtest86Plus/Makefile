@@ -42,8 +42,8 @@ checkout: fetch
 build: checkout
 	echo "    MAKE       $(project_name) $(NAME-y)"
 	if [ "$(CONFIG_MEMTEST_SPD)" = "y" ]; then \
-		 CB_NOSPD=1; fi
-	$(MAKE) -C $(project_dir) all
+		 $(MAKE) -C $(project_dir) CB_NOSPD=1 all; \
+	else $(MAKE) -C $(project_dir) all; fi
 
 clean:
 	test -d $(project_dir) && $(MAKE) -C $(project_dir) clean || exit 0

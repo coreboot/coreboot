@@ -88,7 +88,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		printk(BIOS_INFO, "...WARM RESET...\n\n\n");
 		distinguish_cpu_resets(0);
 		soft_reset();
-		die("After soft_reset_x - shouldn't see this message!!!\n");
+		die("After soft_reset - shouldn't see this message!!!\n");
 	}
 
 	post_code(0x40);

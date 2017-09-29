@@ -293,7 +293,7 @@ void sr5650_htinit_dect_and_enable_isochronous_link(void)
 		if (!((pci_read_config32(sr5650_f0, 0xc8) >> 12) & 0x1)) {
 			printk(BIOS_INFO, "...WARM RESET...\n\n\n");
 			soft_reset();
-			die("After soft_reset_x - shouldn't see this message!!!\n");
+			die("After soft_reset - shouldn't see this message!!!\n");
 		}
 	}
 }

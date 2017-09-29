@@ -60,7 +60,7 @@ void agesa_main(struct sysinfo *cb)
 		printk(BIOS_INFO, "...WARM RESET...\n\n\n");
 		distinguish_cpu_resets(0);
 		soft_reset();
-		die("After soft_reset_x - shouldn't see this message!!!\n");
+		die("After soft_reset - shouldn't see this message!!!\n");
 	}
 
 	post_code(0x40);

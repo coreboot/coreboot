@@ -190,7 +190,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (!warm_reset_detect(0)) {
 		printk(BIOS_INFO, "...WARM RESET...\n\n\n");
 		soft_reset();
-		die("After soft_reset_x - shouldn't see this message!!!\n");
+		die("After soft_reset - shouldn't see this message!!!\n");
 	}
 
 	/* It's the time to set ctrl in sysinfo now; */

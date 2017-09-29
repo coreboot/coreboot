@@ -17,8 +17,8 @@
 #include <bootstate.h>
 #include <chip.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
-#include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
@@ -29,18 +29,11 @@
 
 static void lpc_lockdown_config(const struct soc_intel_skylake_config *config)
 {
-	struct device *dev;
-	uint8_t reg_mask = 0;
-
-	dev = PCH_DEV_LPC;
-
 	/* Set Bios Interface Lock, Bios Lock */
-	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT)
-		reg_mask |= LPC_BC_BILD | LPC_BC_LE;
-
-	pci_or_config8(dev, BIOS_CNTL, reg_mask);
-	/* Ensure an additional read back after performing lock down */
-	pci_read_config8(dev, BIOS_CNTL);
+	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
+		lpc_set_bios_interface_lock_down();
+		lpc_set_lock_enable();
+	}
 }
 
 static void pmc_lockdown_config(void)

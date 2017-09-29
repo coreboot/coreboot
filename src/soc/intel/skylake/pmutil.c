@@ -27,12 +27,12 @@
 #include <device/pci_def.h>
 #include <console/console.h>
 #include <halt.h>
+#include <intelblocks/lpc_lib.h>
 #include <rules.h>
 #include <stdlib.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
-#include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/pmc.h>

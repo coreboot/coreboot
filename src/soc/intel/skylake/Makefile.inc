@@ -21,6 +21,7 @@ bootblock-y += gspi.c
 bootblock-y += pch.c
 bootblock-y += pmutil.c
 bootblock-y += spi.c
+bootblock-y += lpc.c
 
 verstage-y += gspi.c
 verstage-y += pch.c

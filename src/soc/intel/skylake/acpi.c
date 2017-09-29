@@ -31,11 +31,11 @@
 #include <cpu/intel/turbo.h>
 #include <ec/google/chromeec/ec.h>
 #include <intelblocks/cpulib.h>
+#include <intelblocks/lpc_lib.h>
 #include <soc/intel/common/acpi.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
-#include <soc/lpc.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
@@ -556,7 +556,7 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 	return current;
 }
 
-unsigned long southcluster_write_acpi_tables(device_t device,
+unsigned long southbridge_write_acpi_tables(device_t device,
 					     unsigned long current,
 					     struct acpi_rsdp *rsdp)
 {
@@ -564,7 +564,7 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 	return acpi_align_current(current);
 }
 
-void southcluster_inject_dsdt(device_t device)
+void southbridge_inject_dsdt(device_t device)
 {
 	global_nvs_t *gnvs;
 

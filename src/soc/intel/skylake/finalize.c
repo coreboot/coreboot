@@ -21,10 +21,10 @@
 #include <console/post_codes.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <reg_script.h>
 #include <spi-generic.h>
-#include <soc/lpc.h>
 #include <soc/me.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>

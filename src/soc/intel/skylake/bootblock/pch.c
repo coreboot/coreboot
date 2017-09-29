@@ -20,12 +20,12 @@
 #include <device/pci_def.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/itss.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
 #include <intelblocks/smbus.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
-#include <soc/lpc.h>
 #include <soc/p2sb.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
@@ -34,19 +34,11 @@
 #include <soc/pmc.h>
 #include <soc/smbus.h>
 
-#define PCR_DMI_LPCLGIR1	0x2730
-#define PCR_DMI_LPCLGIR2	0x2734
-#define PCR_DMI_LPCLGIR3	0x2738
-#define PCR_DMI_LPCLGIR4	0x273c
-
 #define PCR_DMI_ACPIBA		0x27B4
 #define PCR_DMI_ACPIBDID	0x27B8
 #define PCR_DMI_PMBASEA		0x27AC
 #define PCR_DMI_PMBASEC		0x27B0
 #define PCR_DMI_TCOBASE		0x2778
-
-#define PCR_DMI_LPCIOD		0x2770
-#define PCR_DMI_LPCIOE		0x2774
 
 static void enable_p2sbbar(void)
 {
@@ -72,54 +64,6 @@ void bootblock_pch_early_init(void)
 	fast_spi_early_init(SPI_BASE_ADDRESS);
 	enable_p2sbbar();
 }
-
-static void pch_enable_lpc(void)
-{
-	/* Lookup device tree in romstage */
-	const struct device *dev;
-	const config_t *config;
-
-	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
-	if (!dev || !dev->chip_info)
-		return;
-	config = dev->chip_info;
-
-	/* Set in PCI generic decode range registers */
-	pci_write_config32(PCH_DEV_LPC, LPC_GEN1_DEC, config->gen1_dec);
-	pci_write_config32(PCH_DEV_LPC, LPC_GEN2_DEC, config->gen2_dec);
-	pci_write_config32(PCH_DEV_LPC, LPC_GEN3_DEC, config->gen3_dec);
-	pci_write_config32(PCH_DEV_LPC, LPC_GEN4_DEC, config->gen4_dec);
-
-	/* Mirror these same settings in DMI PCR */
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR1, config->gen1_dec);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR2, config->gen2_dec);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR3, config->gen3_dec);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR4, config->gen4_dec);
-}
-
-static void pch_interrupt_init(void)
-{
-	const struct device *dev;
-	const config_t *config;
-	uint8_t pch_interrupt_routing[MAX_PXRC_CONFIG];
-
-	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
-	if (!dev || !dev->chip_info)
-		return;
-	config = dev->chip_info;
-
-	pch_interrupt_routing[0] = config->pirqa_routing;
-	pch_interrupt_routing[1] = config->pirqb_routing;
-	pch_interrupt_routing[2] = config->pirqc_routing;
-	pch_interrupt_routing[3] = config->pirqd_routing;
-	pch_interrupt_routing[4] = config->pirqe_routing;
-	pch_interrupt_routing[5] = config->pirqf_routing;
-	pch_interrupt_routing[6] = config->pirqg_routing;
-	pch_interrupt_routing[7] = config->pirqh_routing;
-
-	itss_irq_init(pch_interrupt_routing);
-}
-
 
 static void soc_config_acpibase(void)
 {
@@ -235,18 +179,12 @@ static void enable_heci(void)
 
 void pch_early_iorange_init(void)
 {
-	/* Lookup device tree in romstage */
-	u16 lpc_en;
-
 	/* IO Decode Range */
-	lpc_en = COMA_RANGE | (COMB_RANGE << 4);
-	pci_write_config16(PCH_DEV_LPC, LPC_IO_DEC, lpc_en);
-	pcr_write16(PID_DMI, PCR_DMI_LPCIOD, lpc_en);
+	lpc_io_setup_comm_a_b();
 
 	/* IO Decode Enable */
-	lpc_en = CNF1_LPC_EN | COMA_LPC_EN | KBC_LPC_EN | MC_LPC_EN;
-	pci_write_config16(PCH_DEV_LPC, LPC_EN, lpc_en);
-	pcr_write16(PID_DMI, PCR_DMI_LPCIOE, lpc_en);
+	lpc_enable_fixed_io_ranges(LPC_IOE_SUPERIO_2E_2F | LPC_IOE_KBC_60_64 |
+		LPC_IOE_EC_62_66);
 
 	/* Program generic IO Decode Range */
 	pch_enable_lpc();
@@ -268,12 +206,6 @@ void pch_early_init(void)
 
 	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
 	soc_config_tco();
-
-	/*
-	 * Interrupt Configuration Register Programming
-	 * PIRQx to IRQ Programming
-	 */
-	pch_interrupt_init();
 
 	/* Program SMBUS_BASE_ADDRESS and Enable it */
 	smbus_common_init();

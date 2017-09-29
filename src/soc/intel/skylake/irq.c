@@ -15,6 +15,8 @@
 
 #include <device/device.h>
 #include <device/pci.h>
+#include <intelblocks/lpc_lib.h>
+#include <intelblocks/itss.h>
 #include <soc/ramstage.h>
 #include <soc/interrupt.h>
 #include <soc/irq.h>
@@ -266,4 +268,73 @@ void soc_irq_settings(FSP_SIL_UPD *params)
 		params->TcoIrqSelect = config->TcoIrqSelect;
 	/* TCO Irq enable/disable */
 	params->TcoIrqEnable = config->TcoIrqEnable;
+}
+
+/*
+ * PIRQ[n]_ROUT[3:0] - PIRQ Routing Control
+ * 0x00 - 0000 = Reserved
+ * 0x01 - 0001 = Reserved
+ * 0x02 - 0010 = Reserved
+ * 0x03 - 0011 = IRQ3
+ * 0x04 - 0100 = IRQ4
+ * 0x05 - 0101 = IRQ5
+ * 0x06 - 0110 = IRQ6
+ * 0x07 - 0111 = IRQ7
+ * 0x08 - 1000 = Reserved
+ * 0x09 - 1001 = IRQ9
+ * 0x0A - 1010 = IRQ10
+ * 0x0B - 1011 = IRQ11
+ * 0x0C - 1100 = IRQ12
+ * 0x0D - 1101 = Reserved
+ * 0x0E - 1110 = IRQ14
+ * 0x0F - 1111 = IRQ15
+ * PIRQ[n]_ROUT[7] - PIRQ Routing Control
+ * 0x80 - The PIRQ is not routed.
+ */
+
+void soc_pch_pirq_init(const struct device *dev)
+{
+	const config_t *config = dev->chip_info;
+	uint8_t pch_interrupt_routing[MAX_PXRC_CONFIG];
+	device_t irq_dev;
+
+	pch_interrupt_routing[0] = config->pirqa_routing;
+	pch_interrupt_routing[1] = config->pirqb_routing;
+	pch_interrupt_routing[2] = config->pirqc_routing;
+	pch_interrupt_routing[3] = config->pirqd_routing;
+	pch_interrupt_routing[4] = config->pirqe_routing;
+	pch_interrupt_routing[5] = config->pirqf_routing;
+	pch_interrupt_routing[6] = config->pirqg_routing;
+	pch_interrupt_routing[7] = config->pirqh_routing;
+
+	itss_irq_init(pch_interrupt_routing);
+
+	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
+		u8 int_pin = 0, int_line = 0;
+
+		if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)
+			continue;
+
+		int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);
+
+		switch (int_pin) {
+		case 1: /* INTA# */
+			int_line = config->pirqa_routing;
+			break;
+		case 2: /* INTB# */
+			int_line = config->pirqb_routing;
+			break;
+		case 3: /* INTC# */
+			int_line = config->pirqc_routing;
+			break;
+		case 4: /* INTD# */
+			int_line = config->pirqd_routing;
+			break;
+		}
+
+		if (!int_line)
+			continue;
+
+		pci_write_config8(irq_dev, PCI_INTERRUPT_LINE, int_line);
+	}
 }

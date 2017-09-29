@@ -28,9 +28,7 @@
 #include <soc/southbridge.h>
 #include <soc/smbus.h>
 #include <soc/smi.h>
-#if IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM)
 #include <fchec.h>
-#endif
 
 
 int acpi_get_sleep_type(void)
@@ -98,12 +96,11 @@ void southbridge_init(void *chip_info)
 
 void southbridge_final(void *chip_info)
 {
-#if IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM)
-	agesawrapper_fchecfancontrolservice();
-#if !IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE)
-	enable_imc_thermal_zone();
-#endif
-#endif
+	if (IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM)) {
+		agesawrapper_fchecfancontrolservice();
+		if (!IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE))
+			enable_imc_thermal_zone();
+	}
 }
 
 /*

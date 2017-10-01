@@ -295,49 +295,39 @@ void dram_timing_regs(ramctr_timing *ctrl)
 
 void dram_dimm_mapping(ramctr_timing *ctrl)
 {
-	u32 reg, val32;
 	int channel;
 	dimm_info *info = &ctrl->info;
 
 	FOR_ALL_CHANNELS {
-		dimm_attr *dimmA = 0;
-		dimm_attr *dimmB = 0;
-		reg = 0;
-		val32 = 0;
+		dimm_attr *dimmA, *dimmB;
+		u32 reg = 0;
+
 		if (info->dimm[channel][0].size_mb >=
 		    info->dimm[channel][1].size_mb) {
-			// dimm 0 is bigger, set it to dimmA
 			dimmA = &info->dimm[channel][0];
 			dimmB = &info->dimm[channel][1];
-			reg |= (0 << 16);
+			reg |= 0 << 16;
 		} else {
-			// dimm 1 is bigger, set it to dimmA
 			dimmA = &info->dimm[channel][1];
 			dimmB = &info->dimm[channel][0];
-			reg |= (1 << 16);
+			reg |= 1 << 16;
 		}
-		// dimmA
-		if (dimmA && (dimmA->ranks > 0)) {
-			val32 = dimmA->size_mb / 256;
-			reg = (reg & ~0xff) | val32;
-			val32 = dimmA->ranks - 1;
-			reg = (reg & ~0x20000) | (val32 << 17);
-			val32 = (dimmA->width / 8) - 1;
-			reg = (reg & ~0x80000) | (val32 << 19);
-		}
-		// dimmB
-		if (dimmB && (dimmB->ranks > 0)) {
-			val32 = dimmB->size_mb / 256;
-			reg = (reg & ~0xff00) | (val32 << 8);
-			val32 = dimmB->ranks - 1;
-			reg = (reg & ~0x40000) | (val32 << 18);
-			val32 = (dimmB->width / 8) - 1;
-			reg = (reg & ~0x100000) | (val32 << 20);
-		}
-		reg = (reg & ~0x200000) | (1 << 21);	// rank interleave
-		reg = (reg & ~0x400000) | (1 << 22);	// enhanced interleave
 
-		// Save MAD-DIMM register
+		if (dimmA && (dimmA->ranks > 0)) {
+			reg |= dimmA->size_mb / 256;
+			reg |= (dimmA->ranks - 1) << 17;
+			reg |= (dimmA->width / 8 - 1) << 19;
+		}
+
+		if (dimmB && (dimmB->ranks > 0)) {
+			reg |= (dimmB->size_mb / 256) << 8;
+			reg |= (dimmB->ranks - 1) << 18;
+			reg |= (dimmB->width / 8 - 1) << 20;
+		}
+
+		reg |= 1 << 21; /* rank interleave */
+		reg |= 1 << 22; /* enhanced interleave */
+
 		if ((dimmA && (dimmA->ranks > 0))
 		    || (dimmB && (dimmB->ranks > 0))) {
 			ctrl->mad_dimm[channel] = reg;

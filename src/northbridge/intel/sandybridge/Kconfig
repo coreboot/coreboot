@@ -54,6 +54,15 @@ config NATIVE_RAMINIT_IGNORE_MAX_MEM_FUSES
 	  Disabled by default as it might causes system instability.
 	  Handle with care!
 
+config NATIVE_RAMINIT_IGNORE_XMP_MAX_DIMMS
+	bool "Ignore XMP profile max DIMMs per channel"
+	default n
+	depends on USE_NATIVE_RAMINIT
+	help
+	  Ignore the max DIMMs per channel restriciton defined in XMP profiles.
+	  Disabled by default as it might cause system instability.
+	  Handle with care!
+
 config CBFS_SIZE
 	hex
 	default 0x100000

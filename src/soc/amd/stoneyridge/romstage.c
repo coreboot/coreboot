@@ -88,8 +88,6 @@ asmlinkage void car_stage_entry(void)
 	 * 16 megs under cbmem top which is a safe bet to cover ramstage.
 	 */
 	top_of_ram = (uintptr_t) cbmem_top();
-	/* cbmem_top() needs to be at least 16 MiB aligned */
-	assert(ALIGN_DOWN(top_of_ram, 16*MiB) == top_of_ram);
 	postcar_frame_add_mtrr(&pcf, top_of_ram - 16*MiB, 16*MiB,
 		MTRR_TYPE_WRBACK);
 

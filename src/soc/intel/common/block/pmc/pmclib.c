@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/early_variables.h>
 #include <arch/io.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -20,8 +21,41 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/gpio.h>
 #include <soc/pm.h>
+#include <string.h>
 #include <timer.h>
 #include <vboot/vboot_common.h>
+
+static struct chipset_power_state power_state CAR_GLOBAL;
+
+struct chipset_power_state *pmc_get_power_state(void)
+{
+	struct chipset_power_state *ptr = NULL;
+
+	if (cbmem_possibly_online())
+		ptr = cbmem_find(CBMEM_ID_POWER_STATE);
+
+	/* cbmem is online but ptr is not populated yet */
+	if (ptr == NULL && !(ENV_RAMSTAGE || ENV_POSTCAR))
+		return car_get_var_ptr(&power_state);
+
+	return ptr;
+}
+
+static void migrate_power_state(int is_recovery)
+{
+	struct chipset_power_state *ps_cbmem;
+	struct chipset_power_state *ps_car;
+
+	ps_car = car_get_var_ptr(&power_state);
+	ps_cbmem = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*ps_cbmem));
+
+	if (ps_cbmem == NULL) {
+		printk(BIOS_DEBUG, "Not adding power state to cbmem!\n");
+		return;
+	}
+	memcpy(ps_cbmem, ps_car, sizeof(*ps_cbmem));
+}
+ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state)
 
 static void print_num_status_bits(int num_bits, uint32_t status,
 				  const char *const bit_names[])
@@ -322,7 +356,7 @@ void pmc_fixup_power_state(void)
 	int i;
 	struct chipset_power_state *ps;
 
-	ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	ps = pmc_get_power_state();
 	if (ps == NULL)
 		return;
 

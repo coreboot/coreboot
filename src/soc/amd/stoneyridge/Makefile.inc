@@ -38,12 +38,14 @@ subdirs-y += ../../../cpu/x86/pae
 subdirs-y += ../../../cpu/x86/smm
 
 bootblock-$(CONFIG_STONEYRIDGE_UART) += uart.c
+bootblock-y += BiosCallOuts.c
 bootblock-y += fixme.c
 bootblock-y += bootblock/bootblock.c
 bootblock-y += early_setup.c
 bootblock-y += pmutil.c
 bootblock-y += tsc_freq.c
 
+romstage-y += BiosCallOuts.c
 romstage-y += romstage.c
 romstage-y += early_setup.c
 romstage-y += dimmSpd.c
@@ -66,6 +68,7 @@ verstage-y += tsc_freq.c
 postcar-$(CONFIG_STONEYRIDGE_UART) += uart.c
 postcar-y += ramtop.c
 
+ramstage-y += BiosCallOuts.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c

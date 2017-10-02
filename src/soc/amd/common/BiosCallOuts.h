@@ -19,6 +19,7 @@
 
 #include <Porting.h>
 #include <AGESA.h>
+#include <FchPlatform.h>
 
 #define BIOS_HEAP_START_ADDRESS		0x010000000
 #define BIOS_HEAP_SIZE			0x30000
@@ -48,8 +49,6 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData,
 							VOID *ConfigPrt);
 
 AGESA_STATUS agesa_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr);
-AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINTN Data,
-							VOID *ConfigPtr);
 AGESA_STATUS agesa_RunFcnOnAllAps(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_LateRunApTask(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_PcieSlotResetControl(UINT32 Func, UINTN Data,
@@ -60,6 +59,12 @@ AGESA_STATUS agesa_IdleAnAp(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 AGESA_STATUS GetBiosCallout(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
+AGESA_STATUS agesa_fch_initreset(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
+AGESA_STATUS agesa_fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
+
+void platform_FchParams_reset(FCH_RESET_DATA_BLOCK *FchParams_reset);
+void platform_FchParams_env(FCH_DATA_BLOCK *FchParams_env);
+void oem_fan_control(FCH_DATA_BLOCK *FchParams);
 typedef struct {
 	UINT32 CalloutName;
 	CALLOUT_ENTRY CalloutPtr;

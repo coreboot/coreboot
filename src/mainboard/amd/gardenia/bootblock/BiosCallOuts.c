@@ -45,26 +45,7 @@ static const GPIO_CONTROL oem_gardenia_gpio[] = {
 	{-1}
 };
 
-static AGESA_STATUS fch_initreset(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
+void platform_FchParams_reset(FCH_RESET_DATA_BLOCK *FchParams_reset)
 {
-	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
-
-	if (StdHeader->Func == AMD_INIT_RESET) {
-		FCH_RESET_DATA_BLOCK *FchParams_reset;
-		FchParams_reset = (FCH_RESET_DATA_BLOCK *)FchData;
-		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
-		FchParams_reset->FchReset.SataEnable = sb_sata_enable();
-		FchParams_reset->FchReset.IdeEnable = sb_ide_enable();
-		FchParams_reset->EarlyOemGpioTable = oem_gardenia_gpio;
-		printk(BIOS_DEBUG, "Done\n");
-	}
-
-	return AGESA_SUCCESS;
+	FchParams_reset->EarlyOemGpioTable = oem_gardenia_gpio;
 }
-
-const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
-	{AGESA_FCH_OEM_CALLOUT,          fch_initreset },
-	{AGESA_GNB_PCIE_SLOT_RESET,      agesa_PcieSlotResetControl }
-};
-
-const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);

@@ -15,15 +15,55 @@
  */
 
 #include <cbfs.h>
-#include <spd_bin.h>
 
 #include <AGESA.h>
 #include <amdlib.h>
 #include <Ids.h>
 #include <agesawrapper.h>
 #include <BiosCallOuts.h>
-#include <dimmSpd.h>
 #include <soc/southbridge.h>
+
+#if ENV_BOOTBLOCK
+const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
+	{ AGESA_DO_RESET,                 agesa_Reset },
+	{ AGESA_FCH_OEM_CALLOUT,          agesa_fch_initreset },
+	{ AGESA_GNB_PCIE_SLOT_RESET,      agesa_PcieSlotResetControl }
+};
+#else
+const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
+	/* Required callouts */
+	{ AGESA_ALLOCATE_BUFFER,          agesa_AllocateBuffer },
+	{ AGESA_DEALLOCATE_BUFFER,        agesa_DeallocateBuffer },
+	{ AGESA_DO_RESET,                 agesa_Reset },
+	{ AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
+	{ AGESA_READ_SPD,                 agesa_ReadSpd },
+	{ AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
+	{ AGESA_RUNFUNC_ON_ALL_APS,       agesa_RunFcnOnAllAps },
+	{ AMD_LATE_RUN_AP_TASK,           agesa_LateRunApTask },
+	{ AGESA_GNB_PCIE_SLOT_RESET,      agesa_PcieSlotResetControl },
+	{ AGESA_WAIT_FOR_ALL_APS,         agesa_WaitForAllApsFinished },
+	{ AGESA_IDLE_AN_AP,               agesa_IdleAnAp },
+
+	/* Optional callouts */
+	{ AGESA_GET_IDS_INIT_DATA,             agesa_EmptyIdsInitData },
+	//AgesaHeapRebase - Hook ID?
+	{ AGESA_HOOKBEFORE_DRAM_INIT,          agesa_NoopUnsupported },
+	{ AGESA_HOOKBEFORE_DQS_TRAINING,       agesa_NoopUnsupported },
+	{ AGESA_EXTERNAL_2D_TRAIN_VREF_CHANGE, agesa_NoopUnsupported },
+	{ AGESA_HOOKBEFORE_EXIT_SELF_REF,      agesa_NoopUnsupported },
+	{ AGESA_GNB_GFX_GET_VBIOS_IMAGE,       agesa_GfxGetVbiosImage },
+	{ AGESA_FCH_OEM_CALLOUT,               agesa_fch_initenv },
+	{ AGESA_EXTERNAL_VOLTAGE_ADJUST,       agesa_NoopUnsupported },
+	{ AGESA_GNB_PCIE_CLK_REQ,              agesa_NoopUnsupported },
+
+	/* Deprecated */
+	{ AGESA_HOOKBEFORE_DRAM_INIT_RECOVERY, agesa_NoopUnsupported},
+	{ AGESA_READ_SPD_RECOVERY,             agesa_NoopUnsupported },
+
+};
+#endif
+
+const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 
 AGESA_STATUS GetBiosCallout(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
@@ -113,37 +153,6 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData,
 	printk(BIOS_DEBUG, "agesa_GfxGetVbiosImage: IMGptr=%p\n",
 						pVbiosImageInfo->ImagePtr);
 	return pVbiosImageInfo->ImagePtr ? AGESA_SUCCESS : AGESA_WARNING;
-}
-
-AGESA_STATUS agesa_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr)
-{
-	AGESA_STATUS Status = AGESA_UNSUPPORTED;
-#ifdef __PRE_RAM__
-	Status = AmdMemoryReadSPD(Func, Data, ConfigPtr);
-#endif
-	return Status;
-}
-
-AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr)
-{
-	AGESA_STATUS Status = AGESA_UNSUPPORTED;
-
-#ifdef __PRE_RAM__
-	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
-	if (info->MemChannelId > 0)
-		return AGESA_UNSUPPORTED;
-	if (info->SocketId != 0)
-		return AGESA_UNSUPPORTED;
-	if (info->DimmId != 0)
-		return AGESA_UNSUPPORTED;
-
-	/* Read index 0, first SPD_SIZE bytes of spd.bin file. */
-	if (read_ddr3_spd_from_cbfs((u8 *)info->Buffer, 0) < 0)
-		die("No SPD data\n");
-
-	Status = AGESA_SUCCESS;
-#endif
-	return Status;
 }
 
 AGESA_STATUS agesa_RunFcnOnAllAps(UINT32 Func, UINTN Data, VOID *ConfigPtr)

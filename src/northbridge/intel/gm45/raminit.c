@@ -1241,10 +1241,6 @@ static void program_memory_map(const dimminfo_t *const dimms, const channel_mode
 			printk(BIOS_DEBUG, " and %uM GTT\n", gsm_sizek >> 10);
 
 			uma_sizem = (gms_sizek + gsm_sizek) >> 10;
-			/* Further reduce MTRR usage if it costs use less than
-			   16 MiB.  */
-			if (ALIGN_UP(uma_sizem, 64) - uma_sizem <= 16)
-				uma_sizem = ALIGN_UP(uma_sizem, 64);
 		}
 	}
 

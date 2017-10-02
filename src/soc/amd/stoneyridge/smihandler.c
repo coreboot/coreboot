@@ -17,7 +17,11 @@
 
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <cpu/x86/cache.h>
+#include <arch/acpi.h>
+#include <arch/hlt.h>
 #include <delay.h>
+#include <device/pci_def.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>
 
@@ -42,6 +46,69 @@ static void sb_apmc_smi_handler(void)
 	mainboard_smi_apmc(cmd);
 }
 
+static void disable_all_smi_status(void)
+{
+	smi_write32(smi_read32(SMI_SCI_STATUS), SMI_SCI_STATUS);
+	smi_write32(smi_read32(SMI_REG_SMISTS0), SMI_REG_SMISTS0);
+	smi_write32(smi_read32(SMI_REG_SMISTS1), SMI_REG_SMISTS1);
+	smi_write32(smi_read32(SMI_REG_SMISTS2), SMI_REG_SMISTS2);
+	smi_write32(smi_read32(SMI_REG_SMISTS3), SMI_REG_SMISTS3);
+	smi_write32(smi_read32(SMI_REG_SMISTS4), SMI_REG_SMISTS4);
+}
+
+static void sb_slp_typ_handler(void)
+{
+	uint32_t pm1cnt, pci_ctrl;
+	uint8_t slp_typ, rst_ctrl;
+
+	/* Figure out SLP_TYP */
+	pm1cnt = inl(pm_acpi_pm_cnt_blk());
+	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x\n", pm1cnt);
+	slp_typ = acpi_sleep_from_pm1(pm1cnt);
+
+	/* Do any mainboard sleep handling */
+	mainboard_smi_sleep(slp_typ);
+
+	switch (slp_typ) {
+	case ACPI_S0:
+		printk(BIOS_DEBUG, "SMI#: Entering S0 (On)\n");
+		break;
+	case ACPI_S3:
+		printk(BIOS_DEBUG, "SMI#: Entering S3 (Suspend-To-RAM)\n");
+		break;
+	case ACPI_S4:
+		printk(BIOS_DEBUG, "SMI#: Entering S4 (Suspend-To-Disk)\n");
+		break;
+	case ACPI_S5:
+		printk(BIOS_DEBUG, "SMI#: Entering S5 (Soft Power off)\n");
+		break;
+	default:
+		printk(BIOS_DEBUG, "SMI#: ERROR: SLP_TYP reserved\n");
+		break;
+	}
+
+	if (slp_typ >= ACPI_S3) {
+		wbinvd();
+
+		disable_all_smi_status();
+
+		/* Do not send SMI before AcpiPm1CntBlkx00[SlpTyp] */
+		pci_ctrl = pm_read32(PM_PCI_CTRL);
+		pci_ctrl &= ~FORCE_SLPSTATE_RETRY;
+		pci_ctrl |= FORCE_STPCLK_RETRY;
+		pm_write32(PM_PCI_CTRL, pci_ctrl);
+
+		/* Enable SlpTyp */
+		rst_ctrl = pm_read8(PM_RST_CTRL1);
+		rst_ctrl |= SLPTYPE_CONTROL_EN;
+		pm_write8(PM_RST_CTRL1, rst_ctrl);
+
+		/* Reissue Pm1 write */
+		outl(pm1cnt | SLP_EN, pm_acpi_pm_cnt_blk());
+		hlt();
+	}
+}
+
 int southbridge_io_trap_handler(int smif)
 {
 	return 0;
@@ -53,6 +120,7 @@ int southbridge_io_trap_handler(int smif)
  */
 struct smi_sources_t smi_sources[] = {
 	{ .type = SMITYPE_SMI_CMD_PORT, .handler = sb_apmc_smi_handler },
+	{ .type = SMITYPE_SLP_TYP, .handler = sb_slp_typ_handler},
 };
 
 static void process_smi_sci(void)

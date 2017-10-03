@@ -248,10 +248,18 @@ ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 PHONY+=add_amdfw
 INTERMEDIATE+=add_amdfw
 
+# Calculate firmware position inside the ROM
+STONEYRIDGE_FWM_ROM_POSITION=$(call int-add, \
+	$(call int-subtract, $(CONFIG_ROM_SIZE) \
+	$(call int-shift-left, \
+	0x80000 $(CONFIG_AMD_FWM_POSITION_INDEX))) 0x20000)
+
 add_amdfw: $(obj)/coreboot.pre $(obj)/amdfw.rom
-	printf "    DD         Adding AMD Firmware\n"
+	printf "    DD         Adding AMD Firmware at ROM offset 0x%x\n" \
+		"$(STONEYRIDGE_FWM_ROM_POSITION)"
 	dd if=$(obj)/amdfw.rom \
-		of=$(obj)/coreboot.pre conv=notrunc bs=1 seek=131072 >/dev/null 2>&1
+		of=$(obj)/coreboot.pre conv=notrunc bs=1 \
+		seek=$(STONEYRIDGE_FWM_ROM_POSITION) >/dev/null 2>&1
 
 else # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 

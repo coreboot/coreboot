@@ -15,7 +15,7 @@
 
 #include <soc/ramstage.h>
 
-void mainboard_silicon_init_params(SILICON_INIT_UPD *params)
+void board_silicon_USB2_override(SILICON_INIT_UPD *params)
 {
 	if (SocStepping() >= SocD0) {
 

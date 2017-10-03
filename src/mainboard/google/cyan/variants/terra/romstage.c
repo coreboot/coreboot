@@ -15,11 +15,10 @@
  */
 
 #include <soc/romstage.h>
-#include <chip.h>
+#include <baseboard/variants.h>
 #include <mainboard/google/cyan/spd/spd_util.h>
 
-void mainboard_memory_init_params(struct romstage_params *params,
-	MEMORY_INIT_UPD *memory_params)
+void variant_memory_init_params(MEMORY_INIT_UPD *memory_params)
 {
 	int ram_id = get_ramid();
 
@@ -45,10 +44,4 @@ void mainboard_memory_init_params(struct romstage_params *params,
 		memory_params->PcdDramDensity = 3;
 		memory_params->PcdDualRankDram = 0;
 	}
-
-	/* Update SPD data */
-	memory_params->PcdMemoryTypeEnable = MEM_LPDDR3;
-	memory_params->PcdMemorySpdPtr = (u32)params->pei_data->spd_data_ch0;
-	memory_params->PcdMemChannel0Config = params->pei_data->spd_ch0_config;
-	memory_params->PcdMemChannel1Config = params->pei_data->spd_ch1_config;
 }

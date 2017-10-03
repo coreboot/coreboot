@@ -17,7 +17,7 @@
 #include <boardid.h>
 #include <variant/onboard.h>
 
-void mainboard_silicon_init_params(SILICON_INIT_UPD *params)
+void board_silicon_USB2_override(SILICON_INIT_UPD *params)
 {
 	uint8_t	boardid = 0;
 	uint8_t	projectid = 0;

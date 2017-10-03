@@ -21,10 +21,10 @@ romstage-y += spd/spd.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += ec.c
 ramstage-y += irqroute.c
-ramstage-y += ramstage.c
 ramstage-y += w25q64.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
 subdirs-y += variants/$(VARIANT_DIR)
+CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include

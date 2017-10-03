@@ -1005,6 +1005,7 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 		gpio_registers = baytrail_score_ssus_gpio_registers;
 		size = ARRAY_SIZE(baytrail_score_ssus_gpio_registers);
 		break;
+	case PCI_DEVICE_ID_INTEL_B150:
 	case PCI_DEVICE_ID_INTEL_CM236:
 		print_gpio_groups(sb);
 		return 0;

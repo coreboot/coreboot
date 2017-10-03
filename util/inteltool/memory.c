@@ -218,6 +218,7 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_E3:
 	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_U:
 	case PCI_DEVICE_ID_INTEL_CORE_5TH_GEN_U:
+	case PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_D2:
 	case PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_WST:
 	case PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_D:
 	case PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_M:

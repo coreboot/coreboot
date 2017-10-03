@@ -454,6 +454,7 @@ void print_gpio_groups(struct pci_dev *const sb)
 	const struct gpio_community *const *communities;
 
 	switch (sb->device_id) {
+	case PCI_DEVICE_ID_INTEL_B150:
 	case PCI_DEVICE_ID_INTEL_CM236:
 		community_count = ARRAY_SIZE(sunrise_communities);
 		communities = sunrise_communities;

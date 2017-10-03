@@ -119,6 +119,8 @@ static const struct {
 	  "6th generation (Skylake-S/H family) Core Processor (Workstation)" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_D,
 	  "6th generation (Skylake-S family) Core Processor (Desktop)" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_D2,
+	  "6th generation (Skylake-S family) Core Processor (Desktop)" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BAYTRAIL, "Bay Trail" },
 	/* Southbridges (LPC controllers) */
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371XX, "371AB/EB/MB" },

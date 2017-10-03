@@ -27,3 +27,21 @@
 
 /* GPIO controller */
 #include "gpio.asl"
+
+/* LPC 0:1f.0 */
+#include "lpc.asl"
+
+/* PCH HDA */
+#include "pch_hda.asl"
+
+/* Serial IO */
+#include "serialio.asl"
+
+/* SMBus 0:1f.3 */
+#include "smbus.asl"
+
+/* USB XHCI 0:14.0 */
+#include "xhci.asl"
+
+/* PCI _OSC */
+#include <soc/intel/common/acpi/pci_osc.asl>

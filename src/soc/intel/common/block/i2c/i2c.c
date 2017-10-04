@@ -96,9 +96,12 @@ static void lpss_i2c_dev_init(struct device *dev)
 	const struct lpss_i2c_bus_config *config;
 	int bus = lpss_i2c_dev_to_bus(dev);
 
+	if (bus < 0)
+		return;
+
 	config = i2c_get_soc_cfg(bus, dev);
 
-	if (!config || bus < 0)
+	if (!config)
 		return;
 
 	lpss_i2c_init(bus, config);
@@ -125,6 +128,9 @@ static void lpss_i2c_acpi_fill_ssdt(struct device *dev)
 		return;
 
 	bus = lpss_i2c_dev_to_bus(dev);
+
+	if (bus < 0)
+		return;
 
 	bcfg = i2c_get_soc_cfg(bus, dev);
 

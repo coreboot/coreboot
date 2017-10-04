@@ -44,7 +44,7 @@ uintptr_t i2c_get_soc_early_base(unsigned int bus)
 /* Convert I2C bus number to PCI device and function */
 int i2c_soc_bus_to_devfn(unsigned int bus)
 {
-	if (bus >= 0 && bus <= 3)
+	if (bus <= 3)
 		return PCI_DEVFN(PCH_DEV_SLOT_SIO1, bus);
 	else if (bus >= 4 && bus <= 7)
 		return PCI_DEVFN(PCH_DEV_SLOT_SIO2, (bus - 4));

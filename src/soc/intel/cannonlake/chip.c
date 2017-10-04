@@ -66,6 +66,10 @@ static const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_PCIE10:	return "RP10";
 	case PCH_DEVFN_PCIE11:	return "RP11";
 	case PCH_DEVFN_PCIE12:	return "RP12";
+	case PCH_DEVFN_PCIE13:	return "RP13";
+	case PCH_DEVFN_PCIE14:	return "RP14";
+	case PCH_DEVFN_PCIE15:	return "RP15";
+	case PCH_DEVFN_PCIE16:	return "RP16";
 	case PCH_DEVFN_UART0:	return "UAR0";
 	case PCH_DEVFN_UART1:	return "UAR1";
 	case PCH_DEVFN_GSPI0:	return "SPI0";
@@ -173,7 +177,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	int i;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
 	const struct device *dev = SA_DEV_ROOT;
-	const config_t *config = dev->chip_info;
+	config_t *config = dev->chip_info;
 
 	/* Parse device tree and enable/disable devices */
 	parse_devicetree(params);
@@ -240,6 +244,16 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	params->XdciEnable = config->XdciEnable;
+
+	/* PCI Express */
+	for (i = 0; i < ARRAY_SIZE(config->PcieClkSrcUsage); i++) {
+		if (config->PcieClkSrcUsage[i] == 0)
+			config->PcieClkSrcUsage[i] = PCIE_CLK_NOTUSED;
+	}
+	memcpy(params->PcieClkSrcUsage, config->PcieClkSrcUsage,
+	       sizeof(config->PcieClkSrcUsage));
+	memcpy(params->PcieClkSrcClkReq, config->PcieClkSrcClkReq,
+	       sizeof(config->PcieClkSrcClkReq));
 
 	/* eMMC and SD */
 	params->ScsEmmcEnabled = config->ScsEmmcEnabled;

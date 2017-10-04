@@ -20,6 +20,7 @@
 
 #include <intelblocks/gspi.h>
 #include <stdint.h>
+#include <soc/pch.h>
 #include <soc/serialio.h>
 #include <soc/usb.h>
 #include <soc/vr_config.h>
@@ -131,10 +132,15 @@ struct soc_intel_cannonlake_config {
 	/* Enable/Disable HD Audio Link. Muxed with SSP0/SSP1/SNDW1 */
 	uint8_t PchHdaAudioLinkHda;
 
-	/* Pcie Root Ports */
+	/* PCIe Root Ports */
 	uint8_t PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
-	uint8_t PcieRpClkReqSupport[CONFIG_MAX_ROOT_PORTS];
-	uint8_t PcieRpClkReqNumber[CONFIG_MAX_ROOT_PORTS];
+	/* PCIe ouput clocks type to Pcie devices.
+	 * 0-23: PCH rootport, 0x70: LAN, 0x80: unspecified but in use,
+	 * 0xFF: not used */
+	uint8_t PcieClkSrcUsage[CONFIG_MAX_ROOT_PORTS];
+	/* PCIe ClkReq-to-ClkSrc mapping, number of clkreq signal assigned to
+	 * clksrc. */
+	uint8_t PcieClkSrcClkReq[CONFIG_MAX_ROOT_PORTS];
 
 	/* SMBus */
 	uint8_t SmbusEnable;

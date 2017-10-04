@@ -1,0 +1,94 @@
+image: registry.gitlab.com/pcengines/apu2-documentation:latest
+
+services:
+  - docker:dind
+
+stages:
+  - build_crosscompiler
+  - build_rom
+
+build_crosscompiler:
+  stage: build_crosscompiler
+  tags: 
+    - docker
+  script:
+    - test -e ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/coreboot/util/crossgcc/xgcc || { make crossgcc-i386 CPUS=$(nproc) &&  mkdir -p ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/coreboot/util/crossgcc/ && mv -f ${CI_PROJECT_DIR}/util/crossgcc/xgcc ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/coreboot/util/crossgcc/ ; }
+  cache:
+    key: apu
+    paths:
+      - ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/coreboot/util/crossgcc/xgcc
+
+build:apu2:
+  variables:
+    PLATFORM: "apu2"
+    RELEASE_DIR: ${CI_PROJECT_DIR}/apu2_fw_rel
+  stage: build_rom
+  tags: 
+    - docker
+  dependencies:
+    - build_crosscompiler
+  script:
+    - mkdir -p apu2_fw_rel && cd apu2_fw_rel
+    - repo init -u https://github.com/pcengines/release_manifests.git -b coreboot-4.6.x
+    - repo sync --force-sync
+    - cp ${CI_PROJECT_DIR}/configs/pcengines_${PLATFORM}.config ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/coreboot/.config
+    - ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/apu2-documentation/scripts/build_release_img.sh build-ml
+  cache:
+    policy: pull
+    key: apu
+    paths:
+      - ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/coreboot/util/crossgcc/xgcc
+  artifacts:
+    name: ${PLATFORM}
+    paths:
+      - ${CI_PROJECT_DIR}/apu2_fw_rel/${PLATFORM}_*
+      
+build:apu3:
+  variables:
+    PLATFORM: "apu3"
+    RELEASE_DIR: ${CI_PROJECT_DIR}/apu2_fw_rel
+  stage: build_rom
+  tags: 
+    - docker
+  dependencies:
+    - build_crosscompiler
+  script:
+    - mkdir -p apu2_fw_rel && cd apu2_fw_rel
+    - repo init -u https://github.com/pcengines/release_manifests.git -b coreboot-4.6.x
+    - repo sync --force-sync
+    - cp ${CI_PROJECT_DIR}/configs/pcengines_${PLATFORM}.config ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/coreboot/.config
+    - ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/apu2-documentation/scripts/build_release_img.sh build-ml
+  cache:
+    policy: pull
+    key: apu
+    paths:
+      - ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/coreboot/util/crossgcc/xgcc
+  artifacts:
+    name: ${PLATFORM}
+    paths:
+      - ${CI_PROJECT_DIR}/apu2_fw_rel/${PLATFORM}_*
+      
+build:apu5:
+  variables:
+    PLATFORM: "apu5"
+    RELEASE_DIR: ${CI_PROJECT_DIR}/apu2_fw_rel
+  stage: build_rom
+  tags: 
+    - docker
+  dependencies:
+    - build_crosscompiler
+  script:
+    - mkdir -p apu2_fw_rel && cd apu2_fw_rel
+    - repo init -u https://github.com/pcengines/release_manifests.git -b coreboot-4.6.x
+    - repo sync --force-sync
+    - cp ${CI_PROJECT_DIR}/configs/pcengines_${PLATFORM}.config ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/coreboot/.config
+    - ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/apu2-documentation/scripts/build_release_img.sh build-ml
+  cache:
+    policy: pull
+    key: apu
+    paths:
+      - ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/coreboot/util/crossgcc/xgcc
+  artifacts:
+    name: ${PLATFORM}
+    paths:
+      - ${CI_PROJECT_DIR}/apu2_fw_rel/${PLATFORM}_*

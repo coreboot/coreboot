@@ -222,12 +222,12 @@ uint32_t google_chromeec_get_device_current_events(void)
 	return 0;
 }
 
-void google_chromeec_log_device_events(uint32_t mask)
+static void google_chromeec_log_device_events(uint32_t mask)
 {
 	uint32_t events;
 	int i;
 
-	if (!IS_ENABLED(CONFIG_ELOG))
+	if (!IS_ENABLED(CONFIG_ELOG) || !mask)
 		return;
 
 	if (google_chromeec_check_feature(EC_FEATURE_DEVICE_EVENT) != 1)
@@ -240,6 +240,53 @@ void google_chromeec_log_device_events(uint32_t mask)
 		if (EC_DEVICE_EVENT_MASK(i) & events)
 			elog_add_event_byte(ELOG_TYPE_EC_DEVICE_EVENT, i);
 	}
+}
+
+static void google_chromeec_log_events(u32 mask)
+{
+	u8 event;
+	u32 wake_mask;
+
+	if (!IS_ENABLED(CONFIG_ELOG))
+		return;
+
+	/* Set wake mask so events will be read from ACPI interface */
+	wake_mask = google_chromeec_get_wake_mask();
+	google_chromeec_set_wake_mask(mask);
+
+	while ((event = google_chromeec_get_event()) != 0) {
+		if (EC_HOST_EVENT_MASK(event) & mask)
+			elog_add_event_byte(ELOG_TYPE_EC_EVENT, event);
+	}
+
+	google_chromeec_set_wake_mask(wake_mask);
+}
+
+void google_chromeec_events_init(const struct google_chromeec_event_info *info,
+					bool is_s3_wakeup)
+{
+	if (is_s3_wakeup) {
+		google_chromeec_log_events(info->log_events |
+						info->s3_wake_events);
+
+		/* Log and clear device events that may wake the system. */
+		google_chromeec_log_device_events(info->s3_device_events);
+
+		/* Disable SMI and wake events. */
+		google_chromeec_set_smi_mask(0);
+
+		/* Clear pending events. */
+		while (google_chromeec_get_event() != 0)
+			;
+
+		/* Restore SCI event mask. */
+		google_chromeec_set_sci_mask(info->sci_events);
+	} else
+		google_chromeec_log_events(info->log_events |
+						info->s5_wake_events);
+
+	/* Clear wake event mask. */
+	google_chromeec_set_wake_mask(0);
 }
 
 int google_chromeec_check_feature(int feature)
@@ -518,25 +565,6 @@ u32 google_chromeec_get_wake_mask(void)
 {
 	return google_chromeec_get_mask(
 		EC_CMD_HOST_EVENT_GET_WAKE_MASK);
-}
-
-void google_chromeec_log_events(u32 mask)
-{
-#if IS_ENABLED(CONFIG_ELOG)
-	u8 event;
-	u32 wake_mask;
-
-	/* Set wake mask so events will be read from ACPI interface */
-	wake_mask = google_chromeec_get_wake_mask();
-	google_chromeec_set_wake_mask(mask);
-
-	while ((event = google_chromeec_get_event()) != 0) {
-		if (EC_HOST_EVENT_MASK(event) & mask)
-			elog_add_event_byte(ELOG_TYPE_EC_EVENT, event);
-	}
-
-	google_chromeec_set_wake_mask(wake_mask);
-#endif
 }
 
 int google_chromeec_set_usb_charge_mode(u8 port_id, enum usb_charge_mode mode)

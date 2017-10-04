@@ -38,7 +38,6 @@ void google_chromeec_init(void);
 uint32_t google_chromeec_get_device_enabled_events(void);
 int google_chromeec_set_device_enabled_events(uint32_t mask);
 uint32_t google_chromeec_get_device_current_events(void);
-void google_chromeec_log_device_events(uint32_t mask);
 
 int google_chromeec_check_feature(int feature);
 uint8_t google_chromeec_calc_checksum(const uint8_t *data, int size);
@@ -49,7 +48,6 @@ u32 google_chromeec_get_events_b(void);
 int google_chromeec_clear_events_b(u32 mask);
 int google_chromeec_kbbacklight(int percent);
 void google_chromeec_post(u8 postcode);
-void google_chromeec_log_events(u32 mask);
 int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len);
 uint8_t google_chromeec_get_switches(void);
 
@@ -117,5 +115,15 @@ int crosec_command_proto(struct chromeec_command *cec_command,
 			 crosec_io_t crosec_io, void *context);
 
 int google_chromeec_command(struct chromeec_command *cec_command);
+
+struct google_chromeec_event_info {
+	uint32_t log_events;
+	uint32_t sci_events;
+	uint32_t s3_wake_events;
+	uint32_t s3_device_events;
+	uint32_t s5_wake_events;
+};
+void google_chromeec_events_init(const struct google_chromeec_event_info *info,
+					bool is_s3_wakeup);
 
 #endif /* _EC_GOOGLE_CHROMEEC_EC_H */

@@ -28,19 +28,28 @@
 
 #define HIGH_MEMORY_SAVE	(CONFIG_RAMTOP - CONFIG_RAMBASE)
 
-#if IS_ENABLED(CONFIG_ACPI_INTEL_HARDWARE_SLEEP_VALUES)
 /*
  * The type and enable fields are common in ACPI, but the
- * values themselves are hardware implementation idefiend.
+ * values themselves are hardware implementation defined.
  */
-#define SLP_EN		(1 << 13)
-#define SLP_TYP_SHIFT	10
-#define SLP_TYP		(7 << SLP_TYP_SHIFT)
-#define  SLP_TYP_S0	0
-#define  SLP_TYP_S1	1
-#define  SLP_TYP_S3	5
-#define  SLP_TYP_S4	6
-#define  SLP_TYP_S5	7
+#if IS_ENABLED(CONFIG_ACPI_INTEL_HARDWARE_SLEEP_VALUES)
+ #define SLP_EN		(1 << 13)
+ #define SLP_TYP_SHIFT	10
+ #define SLP_TYP	(7 << SLP_TYP_SHIFT)
+ #define  SLP_TYP_S0	0
+ #define  SLP_TYP_S1	1
+ #define  SLP_TYP_S3	5
+ #define  SLP_TYP_S4	6
+ #define  SLP_TYP_S5	7
+#elif IS_ENABLED(CONFIG_ACPI_AMD_HARDWARE_SLEEP_VALUES)
+ #define SLP_EN		(1 << 13)
+ #define SLP_TYP_SHIFT	10
+ #define SLP_TYP	(7 << SLP_TYP_SHIFT)
+ #define  SLP_TYP_S0	0
+ #define  SLP_TYP_S1	1
+ #define  SLP_TYP_S3	3
+ #define  SLP_TYP_S4	4
+ #define  SLP_TYP_S5	5
 #endif
 
 #if !defined(__ASSEMBLER__) && !defined(__ACPI__) && !defined(__ROMCC__)
@@ -700,7 +709,8 @@ enum {
 	ACPI_S5,
 };
 
-#if IS_ENABLED(CONFIG_ACPI_INTEL_HARDWARE_SLEEP_VALUES)
+#if IS_ENABLED(CONFIG_ACPI_INTEL_HARDWARE_SLEEP_VALUES) \
+		|| IS_ENABLED(CONFIG_ACPI_AMD_HARDWARE_SLEEP_VALUES)
 /* Given the provided PM1 control register return the ACPI sleep type. */
 static inline int acpi_sleep_from_pm1(uint32_t pm1_cnt)
 {

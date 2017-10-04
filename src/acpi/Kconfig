@@ -8,5 +8,11 @@ config ACPI_SATA_GENERATOR
 config ACPI_INTEL_HARDWARE_SLEEP_VALUES
 	def_bool n
 	help
-	  Provide common definitions for Intel hardware PM1_CNT regiser sleep
+	  Provide common definitions for Intel hardware PM1_CNT register sleep
+	  values.
+
+config ACPI_AMD_HARDWARE_SLEEP_VALUES
+	def_bool n
+	help
+	  Provide common definitions for AMD hardware PM1_CNT register sleep
 	  values.

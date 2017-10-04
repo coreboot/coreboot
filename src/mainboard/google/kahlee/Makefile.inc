@@ -34,3 +34,5 @@ ramstage-y += OemCustomize.c
 
 verstage-y += chromeos.c
 verstage-y += ec.c
+
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c

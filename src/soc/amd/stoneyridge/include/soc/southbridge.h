@@ -202,6 +202,7 @@ u16 smi_read16(u8 reg);
 u32 smi_read32(u8 reg);
 void smi_write16(u8 reg, u16 value);
 void smi_write32(u8 reg, u32 value);
+uint16_t pm_acpi_pm_cnt_blk(void);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 void s3_resume_init_data(void *FchParams);
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);

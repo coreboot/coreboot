@@ -64,3 +64,8 @@ void smi_write16(uint8_t offset, uint16_t value)
 {
 	write16((void *)(APU_SMI_BASE + offset), value);
 }
+
+uint16_t pm_acpi_pm_cnt_blk(void)
+{
+	return pm_read16(PM1_CNT_BLK);
+}

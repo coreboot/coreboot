@@ -171,7 +171,7 @@ static region_t get_region(const frba_t *frba, unsigned int region_type)
 
 	limit_mask = base_mask << 16;
 
-	if (region_type >= MAX_REGIONS) {
+	if (region_type >= max_regions) {
 		fprintf(stderr, "Invalid region type %d.\n", region_type);
 		exit (EXIT_FAILURE);
 	}
@@ -190,7 +190,7 @@ static region_t get_region(const frba_t *frba, unsigned int region_type)
 static void set_region(frba_t *frba, unsigned int region_type,
 		       const region_t *region)
 {
-	if (region_type >= MAX_REGIONS_OLD) {
+	if (region_type >= max_regions) {
 		fprintf(stderr, "Invalid region type %u.\n", region_type);
 		exit (EXIT_FAILURE);
 	}

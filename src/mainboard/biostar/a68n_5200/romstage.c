@@ -2,6 +2,8 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2016 Edward O'Callaghan <funfunctor@folklore1984.net>
+ * Copyright (C) 2017 Damien Zammit <damien@zamaudio.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,31 +26,62 @@
 #include <commonlib/loglevel.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
+#include <superio/ite/common/ite.h>
+#include <superio/ite/it8728f/it8728f.h>
+
+#define SB_MMIO 0xFED80000
+#define SB_MMIO_MISC32(x) *(volatile u32 *)(SB_MMIO + 0xE00 + (x))
+
+#define SERIAL_DEV PNP_DEV(0x2e, IT8728F_SP1)
+#define GPIO_DEV PNP_DEV(0x2e, IT8728F_GPIO)
+#define CLKIN_DEV PNP_DEV(0x2e, IT8728F_GPIO)
+
+static void sbxxx_enable_48mhzout(void)
+{
+	/* most likely programming to 48MHz out signal */
+	/* Set auxiliary output clock frequency on OSCOUT1 pin to be 48MHz */
+	u32 reg32;
+	reg32 = SB_MMIO_MISC32(0x28);
+	reg32 &= 0xfff8ffff;
+	SB_MMIO_MISC32(0x28) = reg32;
+
+	/* Enable Auxiliary Clock1, disable FCH 14 MHz OscClk */
+	reg32 = SB_MMIO_MISC32(0x40);
+	reg32 &= 0xffffbffb;
+	SB_MMIO_MISC32(0x40) = reg32;
+}
 
 void board_BeforeAgesa(struct sysinfo *cb)
 {
-	int i;
-	u32 val;
+	u8 byte;
 
-	/* In Hudson RRG, PMIOxD2[5:4] is "Drive strength control for
-	 *  LpcClk[1:0]".  To be consistent with Parmer, setting to 4mA
-	 *  even though the register is not documented in the Kabini BKDG.
-	 *  Otherwise the serial output is bad code.
-	 */
-	outb(0xD2, 0xcd6);
-	outb(0x00, 0xcd7);
-
-	/* Disable PCI-PCI bridge and release GPIO32/33 for other uses. */
-	outb(0xea, 0xcd6);
+	/* Enable the AcpiMmio space */
+	outb(0x24, 0xcd6);
 	outb(0x1, 0xcd7);
 
 	/* Set LPC decode enables. */
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
 	pci_write_config32(dev, 0x44, 0xff03ffd5);
 
-	hudson_lpc_port80();
+	if (IS_ENABLED(CONFIG_POST_DEVICE_PCI_PCIE))
+		hudson_pci_port80();
 
-	/* On Larne, after LpcClkDrvSth is set, it needs some time to be stable, because of the buffer ICS551M */
-	for (i = 0; i < 200000; i++)
-		val = inb(0xcd6);
+	if (IS_ENABLED(CONFIG_POST_DEVICE_LPC))
+		hudson_lpc_port80();
+
+	/* enable SIO LPC decode */
+	byte = pci_read_config8(dev, 0x48);
+	byte |= 3;	/* 2e, 2f */
+	pci_write_config8(dev, 0x48, byte);
+
+	/* enable serial decode */
+	byte = pci_read_config8(dev, 0x44);
+	byte |= (1 << 6);  /* 0x3f8 */
+	pci_write_config8(dev, 0x44, byte);
+
+	/* run ite */
+	sbxxx_enable_48mhzout();
+	ite_conf_clkin(CLKIN_DEV, ITE_UART_CLK_PREDIVIDE_48);
+	ite_kill_watchdog(GPIO_DEV);
+	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

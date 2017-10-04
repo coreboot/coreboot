@@ -2,6 +2,8 @@
 # This file is part of the coreboot project.
 #
 # Copyright (C) 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2016 Edward O'Callaghan <funfunctor@folklore1984.net>
+# Copyright (C) 2017 Damien Zammit <damien@zamaudio.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,6 +22,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select CPU_AMD_AGESA_FAMILY16_KB
 	select NORTHBRIDGE_AMD_AGESA_FAMILY16_KB
 	select SOUTHBRIDGE_AMD_AGESA_YANGTZE
+	select SUPERIO_ITE_IT8728F
 	select HAVE_OPTION_TABLE
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
@@ -57,6 +60,6 @@ config ONBOARD_VGA_IS_PRIMARY
 
 config HUDSON_LEGACY_FREE
 	bool
-	default y
+	default n
 
 endif # BOARD_BIOSTAR_A68N5200

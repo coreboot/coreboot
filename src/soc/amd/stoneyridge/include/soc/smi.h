@@ -20,7 +20,18 @@
 
 #include <arch/io.h>
 
+#define SMI_GEVENTS			24
+#define SCIMAPS				58
+#define SCI_GPES			32
+
+#define SMI_EVENT_STATUS		0x0
+#define SMI_EVENT_ENABLE		0x04
+#define SMI_SCI_TRIG			0x08
+#define SMI_SCI_LEVEL			0x0c
 #define SMI_SCI_STATUS			0x10
+#define SMI_SCI_EN			0x14
+#define SMI_SCI_MAP0			0x40
+# define SMI_SCI_MAP(X)			(SMI_SCI_MAP0 + (X))
 
 /* SMI source and status */
 #define SMITYPE_AGPIO65				0
@@ -189,9 +200,21 @@ enum smi_mode {
 	SMI_MODE_IRQ13 = 3,
 };
 
-enum smi_lvl {
-	SMI_LVL_LOW = 0,
-	SMI_LVL_HIGH = 1,
+enum smi_sci_type {
+	NONE,
+	SCI,
+	SMI,
+	BOTH,
+};
+
+enum smi_sci_lvl {
+	SMI_SCI_LVL_LOW,
+	SMI_SCI_LVL_HIGH,
+};
+
+enum smi_sci_dir {
+	SMI_SCI_EDG,
+	SMI_SCI_LVL,
 };
 
 struct smi_sources_t {
@@ -199,10 +222,19 @@ struct smi_sources_t {
 	void (*handler)(void);
 };
 
+struct sci_source {
+	uint8_t scimap;		/* SCIMAP 0-57 */
+	uint8_t gpe;		/* 32 GPEs */
+	uint8_t direction;	/* Active High or Low,  smi_sci_lvl */
+	uint8_t level;		/* Edge or Level,  smi_sci_dir */
+};
+
 uint16_t pm_acpi_smi_cmd_port(void);
 void configure_smi(uint8_t smi_num, uint8_t mode);
 void configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level);
+void configure_scimap(const struct sci_source *sci);
 void disable_gevent_smi(uint8_t gevent);
+void gpe_configure_sci(const struct sci_source *scis, size_t num_gpes);
 
 #ifndef __SMM__
 void enable_smi_generation(void);

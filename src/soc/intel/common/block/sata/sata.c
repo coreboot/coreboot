@@ -45,6 +45,11 @@ static void sata_final(device_t dev)
 	u32 port_impl, temp;
 
 	dev = PCH_DEV_SATA;
+
+	/* Set Bus Master */
+	temp = pci_read_config32(dev, PCI_COMMAND);
+	pci_write_config32(dev, PCI_COMMAND, temp | PCI_COMMAND_MASTER);
+
 	/* Read Ports Implemented (GHC_PI) */
 	port_impl = read32(ahcibar + SATA_ABAR_PORT_IMPLEMENTED) & 0x07;
 	/* Port enable */

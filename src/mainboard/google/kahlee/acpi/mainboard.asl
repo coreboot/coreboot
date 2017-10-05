@@ -72,7 +72,7 @@ Device (RTEK)   /* Audio Codec driver I2CS*/
 		Name (_CID, "AMDI1002")
 	}
 
-	Method (_CRS, 0x0, NotSerialized)
+	Method (_CRS, 0x0, Serialized)
 	{
 		Name (SBUF, ResourceTemplate ()
 		{

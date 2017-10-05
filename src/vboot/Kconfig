@@ -221,6 +221,13 @@ config VBOOT_FWID_VERSION
 	  This is the second part of the FWID written to various regions of a
 	  vboot firmware image to identify its version.
 
+config RO_REGION_ONLY
+	string "Additional files that should not be copied to RW"
+	default ""
+	help
+	  Add a space delimited list of filenames that should only be in the
+	  RO section.
+
 menu "GBB configuration"
 
 config GBB_HWID

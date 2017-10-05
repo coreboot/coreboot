@@ -152,6 +152,7 @@ regions-for-file = $(subst $(spc),$(comma),$(sort \
 		font.bin \
 		vbgfx.bin \
 		rmu.bin \
+		$(call strip_quotes,$(CONFIG_RO_REGION_ONLY)) \
 		,$(1)),COREBOOT,COREBOOT FW_MAIN_A FW_MAIN_B)))
 
 CONFIG_GBB_HWID := $(call strip_quotes,$(CONFIG_GBB_HWID))

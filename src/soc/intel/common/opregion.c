@@ -27,12 +27,7 @@ enum cb_err init_igd_opregion(igd_opregion_t *opregion)
 	optionrom_vbt_t *vbt;
 	optionrom_vbt_t *ext_vbt;
 
-	if (locate_vbt(&vbt_rdev) == CB_ERR) {
-		printk(BIOS_ERR, "VBT not found\n");
-		return CB_ERR;
-	};
-
-	vbt = rdev_mmap_full(&vbt_rdev);
+	vbt = locate_vbt(&vbt_rdev);
 
 	if (!vbt) {
 		printk(BIOS_ERR, "VBT couldn't be read\n");

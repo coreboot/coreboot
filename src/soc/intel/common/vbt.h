@@ -27,8 +27,8 @@
  */
 const char *mainboard_vbt_filename(void);
 
-/* locate .vbt file */
-enum cb_err locate_vbt(struct region_device *rdev);
+/* locate vbt.bin file. Returns a pointer to its content. */
+void *locate_vbt(struct region_device *rdev);
 /*
  * Returns VBT pointer and mapping after checking prerequisites for Pre OS
  * Graphics initialization

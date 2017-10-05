@@ -28,7 +28,7 @@ const char *mainboard_vbt_filename(void)
 	return "vbt.bin";
 }
 
-enum cb_err locate_vbt(struct region_device *rdev)
+void *locate_vbt(struct region_device *rdev)
 {
 	uint32_t vbtsig = 0;
 	struct cbfsf file_desc;
@@ -37,7 +37,7 @@ enum cb_err locate_vbt(struct region_device *rdev)
 
 	if (cbfs_boot_locate(&file_desc, filename, NULL) < 0) {
 		printk(BIOS_ERR, "Could not locate a VBT file in in CBFS\n");
-		return CB_ERR;
+		return NULL;
 	}
 
 	cbfs_file_data(rdev, &file_desc);
@@ -45,16 +45,14 @@ enum cb_err locate_vbt(struct region_device *rdev)
 
 	if (vbtsig != VBT_SIGNATURE) {
 		printk(BIOS_ERR, "Missing/invalid signature in VBT data file!\n");
-		return CB_ERR;
+		return NULL;
 	}
 
-	return CB_SUCCESS;
+	return rdev_mmap_full(rdev);
 }
 
 void *vbt_get(struct region_device *rdev)
 {
-	void *vbt_data;
-
 	if (!IS_ENABLED(CONFIG_RUN_FSP_GOP))
 		return NULL;
 
@@ -64,10 +62,5 @@ void *vbt_get(struct region_device *rdev)
 		return NULL;
 	if (!display_init_required())
 		return NULL;
-	if (locate_vbt(rdev) != CB_ERR) {
-		vbt_data = rdev_mmap_full(rdev);
-		return vbt_data;
-	} else {
-		return NULL;
-	}
+	return locate_vbt(rdev);
 }

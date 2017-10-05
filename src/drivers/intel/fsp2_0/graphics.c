@@ -99,8 +99,7 @@ uintptr_t fsp_load_vbt(void)
 	struct region_device rdev;
 	void *vbt_data = NULL;
 
-	if (locate_vbt(&rdev) != CB_ERR)
-		vbt_data = rdev_mmap_full(&rdev);
+	vbt_data = locate_vbt(&rdev);
 
 	if (vbt_data == NULL)
 		printk(BIOS_NOTICE, "Could not locate a VBT file in CBFS\n");

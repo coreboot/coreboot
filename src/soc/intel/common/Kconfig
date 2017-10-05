@@ -6,7 +6,6 @@ config SOC_INTEL_COMMON
 if SOC_INTEL_COMMON
 
 comment "Intel SoC Common Code"
-source "src/soc/intel/common/basecode/Kconfig"
 source "src/soc/intel/common/block/Kconfig"
 
 config CACHE_MRC_SETTINGS

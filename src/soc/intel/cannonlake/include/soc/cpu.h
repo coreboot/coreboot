@@ -19,6 +19,7 @@
 
 #include <arch/cpu.h>
 #include <device/device.h>
+#include <intelblocks/msr.h>
 
 /* Supported CPUIDs */
 #define CPUID_CANNONLAKE_A0	0x60660
@@ -35,7 +36,6 @@
 
 /* Power in units of mW */
 #define C1_POWER	0x3e8
-#define C3_POWER	0x1f4
 #define C6_POWER	0x15e
 #define C7_POWER	0xc8
 #define C8_POWER	0xc8

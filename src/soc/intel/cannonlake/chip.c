@@ -154,6 +154,7 @@ static struct device_operations cpu_bus_ops = {
 	.set_resources    = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.init             = DEVICE_NOOP,
+	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
 static void soc_enable(device_t dev)

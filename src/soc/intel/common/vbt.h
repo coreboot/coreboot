@@ -28,10 +28,10 @@
 const char *mainboard_vbt_filename(void);
 
 /* locate vbt.bin file. Returns a pointer to its content. */
-void *locate_vbt(struct region_device *rdev);
+void *locate_vbt(void);
 /*
  * Returns VBT pointer and mapping after checking prerequisites for Pre OS
  * Graphics initialization
  */
-void *vbt_get(struct region_device *rdev);
+void *vbt_get(void);
 #endif

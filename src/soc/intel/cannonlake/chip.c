@@ -26,7 +26,6 @@
 #include <string.h>
 
 static void *vbt;
-static struct region_device vbt_rdev;
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 static const char *soc_acpi_name(const struct device *dev)
@@ -164,17 +163,10 @@ static void soc_enable(device_t dev)
 		dev->ops = &cpu_bus_ops;
 }
 
-static void soc_final(void *data)
-{
-	if (vbt)
-		rdev_munmap(&vbt_rdev, vbt);
-}
-
 struct chip_operations soc_intel_cannonlake_ops = {
 	CHIP_NAME("Intel Cannonlake")
 	.enable_dev	= &soc_enable,
 	.init		= &soc_init_pre_device,
-	.final		= &soc_final
 };
 
 /* UPD parameters to be initialized before SiliconInit */
@@ -189,7 +181,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	parse_devicetree(params);
 
 	/* Save VBT info and mapping */
-	vbt = vbt_get(&vbt_rdev);
+	vbt = vbt_get();
 
 	/* Load VBT before devicetree-specific config. */
 	params->GraphicsConfigPtr = (uintptr_t)vbt;

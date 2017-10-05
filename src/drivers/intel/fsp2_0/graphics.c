@@ -96,10 +96,7 @@ enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 
 uintptr_t fsp_load_vbt(void)
 {
-	struct region_device rdev;
-	void *vbt_data = NULL;
-
-	vbt_data = locate_vbt(&rdev);
+	void *vbt_data = locate_vbt();
 
 	if (vbt_data == NULL)
 		printk(BIOS_NOTICE, "Could not locate a VBT file in CBFS\n");

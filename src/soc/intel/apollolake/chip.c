@@ -49,7 +49,6 @@
 #include "chip.h"
 
 static void *vbt;
-static struct region_device vbt_rdev;
 
 static const char *soc_acpi_name(const struct device *dev)
 {
@@ -317,7 +316,7 @@ static void soc_init(void *data)
 	struct global_nvs_t *gnvs;
 
 	/* Save VBT info and mapping */
-	vbt = vbt_get(&vbt_rdev);
+	vbt = vbt_get();
 
 	/* Snapshot the current GPIO IRQ polarities. FSP is setting a
 	 * default policy that doesn't honor boards' requirements. */
@@ -354,9 +353,6 @@ static void soc_init(void *data)
 
 static void soc_final(void *data)
 {
-	if (vbt)
-		rdev_munmap(&vbt_rdev, vbt);
-
 	/* Disable global reset, just in case */
 	pmc_global_reset_enable(0);
 	/* Make sure payload/OS can't trigger global reset */

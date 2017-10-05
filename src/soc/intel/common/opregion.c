@@ -23,11 +23,10 @@
 
 enum cb_err init_igd_opregion(igd_opregion_t *opregion)
 {
-	struct region_device vbt_rdev;
 	optionrom_vbt_t *vbt;
 	optionrom_vbt_t *ext_vbt;
 
-	vbt = locate_vbt(&vbt_rdev);
+	vbt = locate_vbt();
 
 	if (!vbt) {
 		printk(BIOS_ERR, "VBT couldn't be read\n");
@@ -63,8 +62,6 @@ enum cb_err init_igd_opregion(igd_opregion_t *opregion)
 
 	/* FIXME We just assume we're mobile for now */
 	opregion->header.mailboxes = MAILBOXES_MOBILE;
-
-	rdev_munmap(&vbt_rdev, vbt);
 
 	return CB_SUCCESS;
 }

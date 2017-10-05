@@ -17,6 +17,7 @@
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <bootmode.h>
+#include <bootstate.h>
 
 #include "vbt.h"
 
@@ -28,10 +29,16 @@ const char *mainboard_vbt_filename(void)
 	return "vbt.bin";
 }
 
-void *locate_vbt(struct region_device *rdev)
+static struct region_device vbt_rdev;
+static void *vbt_data;
+
+void *locate_vbt(void)
 {
 	uint32_t vbtsig = 0;
 	struct cbfsf file_desc;
+
+	if (vbt_data != NULL)
+		return vbt_data;
 
 	const char *filename = mainboard_vbt_filename();
 
@@ -40,18 +47,19 @@ void *locate_vbt(struct region_device *rdev)
 		return NULL;
 	}
 
-	cbfs_file_data(rdev, &file_desc);
-	rdev_readat(rdev, &vbtsig, 0, sizeof(uint32_t));
+	cbfs_file_data(&vbt_rdev, &file_desc);
+	rdev_readat(&vbt_rdev, &vbtsig, 0, sizeof(uint32_t));
 
 	if (vbtsig != VBT_SIGNATURE) {
 		printk(BIOS_ERR, "Missing/invalid signature in VBT data file!\n");
 		return NULL;
 	}
 
-	return rdev_mmap_full(rdev);
+	vbt_data = rdev_mmap_full(&vbt_rdev);
+	return vbt_data;
 }
 
-void *vbt_get(struct region_device *rdev)
+void *vbt_get(void)
 {
 	if (!IS_ENABLED(CONFIG_RUN_FSP_GOP))
 		return NULL;
@@ -62,5 +70,13 @@ void *vbt_get(struct region_device *rdev)
 		return NULL;
 	if (!display_init_required())
 		return NULL;
-	return locate_vbt(rdev);
+	return locate_vbt();
 }
+
+static void unmap_vbt(void *unused)
+{
+	if (vbt_data)
+		rdev_munmap(&vbt_rdev, vbt_data);
+}
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, unmap_vbt, NULL);
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, unmap_vbt, NULL);

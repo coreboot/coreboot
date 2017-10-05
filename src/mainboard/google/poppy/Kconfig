@@ -5,7 +5,8 @@ config BOARD_GOOGLE_BASEBOARD_POPPY
 	select BOARD_ROMSIZE_KB_16384
 	select DRIVERS_I2C_GENERIC
 	select DRIVERS_I2C_HID
-	select DRIVERS_I2C_MAX98927
+	select DRIVERS_I2C_MAX98927 if !BOARD_GOOGLE_NAUTILUS
+	select DRIVERS_PS2_KEYBOARD if BOARD_GOOGLE_NAUTILUS
 	select DRIVERS_SPI_ACPI
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_BOARDID
@@ -14,7 +15,7 @@ config BOARD_GOOGLE_BASEBOARD_POPPY
 	select HAVE_ACPI_TABLES
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_USES_FSP2_0
-	select NO_FADT_8042
+	select NO_FADT_8042 if !BOARD_GOOGLE_NAUTILUS
 	select POPPY_USE_I2C_TPM if !VBOOT_MOCK_SECDATA
 	select SOC_INTEL_KABYLAKE
 
@@ -22,6 +23,7 @@ if BOARD_GOOGLE_BASEBOARD_POPPY
 
 config DEVICETREE
 	string
+	default "variants/nautilus/devicetree.cb" if BOARD_GOOGLE_NAUTILUS
 	default "variants/soraka/devicetree.cb" if BOARD_GOOGLE_SORAKA
 	default "variants/baseboard/devicetree.cb"
 
@@ -41,6 +43,7 @@ config GBB_HWID
 	string
 	depends on CHROMEOS
 	default "POPPY TEST 8294" if BOARD_GOOGLE_POPPY
+	default "NAUTILUS TEST 3013" if BOARD_GOOGLE_NAUTILUS
 	default "SORAKA TEST 1869" if BOARD_GOOGLE_SORAKA
 
 config INCLUDE_NHLT_BLOBS
@@ -50,6 +53,11 @@ config INCLUDE_NHLT_BLOBS
 	select NHLT_MAX98927
 	select NHLT_RT5663
 
+config INCLUDE_NHLT_BLOBS_NAUTILUS
+	bool "Include blobs for nautilus audio."
+	select NHLT_DMIC_2CH
+	select NHLT_DMIC_4CH
+
 config MAINBOARD_DIR
 	string
 	default "google/poppy"
@@ -57,11 +65,13 @@ config MAINBOARD_DIR
 config MAINBOARD_FAMILY
 	string
 	default "Google_Poppy" if BOARD_GOOGLE_POPPY
+	default "Google_Nautilus" if BOARD_GOOGLE_NAUTILUS
 	default "Google_Soraka" if BOARD_GOOGLE_SORAKA
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Poppy" if BOARD_GOOGLE_POPPY
+	default "Nautilus" if BOARD_GOOGLE_NAUTILUS
 	default "Soraka" if BOARD_GOOGLE_SORAKA
 
 config MAX_CPUS
@@ -92,6 +102,7 @@ config TPM_TIS_ACPI_INTERRUPT
 config VARIANT_DIR
 	string
 	default "poppy" if BOARD_GOOGLE_POPPY
+	default "nautilus" if BOARD_GOOGLE_NAUTILUS
 	default "soraka" if BOARD_GOOGLE_SORAKA
 
 config VBOOT

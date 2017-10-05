@@ -19,6 +19,7 @@ RUN \
 	useradd -p locked -m coreboot && \
 	apt-get -qq update && \
 	apt-get -qqy install \
+		bc \
 		bison \
 		bzip2 \
 		ccache \

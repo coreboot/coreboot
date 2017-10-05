@@ -28,6 +28,7 @@
 #include <fsp/util.h>
 #include <romstage_handoff.h>
 #include <soc/acpi.h>
+#include <soc/intel/common/vbt.h>
 #include <soc/interrupt.h>
 #include <soc/irq.h>
 #include <soc/pci_devs.h>
@@ -116,9 +117,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Load VBT */
 	if (is_s3_wakeup) {
 		printk(BIOS_DEBUG, "S3 resume do not pass VBT to GOP\n");
-	} else if (display_init_required()) {
+	} else if (display_init_required() && IS_ENABLED(CONFIG_RUN_FSP_GOP)) {
 		/* Get VBT data */
-		vbt_data = fsp_load_vbt();
+		vbt_data = (uintptr_t)locate_vbt();
 		if (vbt_data)
 			printk(BIOS_DEBUG, "Passing VBT to GOP\n");
 		else

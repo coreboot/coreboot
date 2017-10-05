@@ -94,16 +94,6 @@ enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 	return CB_SUCCESS;
 }
 
-uintptr_t fsp_load_vbt(void)
-{
-	void *vbt_data = locate_vbt();
-
-	if (vbt_data == NULL)
-		printk(BIOS_NOTICE, "Could not locate a VBT file in CBFS\n");
-
-	return (uintptr_t)vbt_data;
-}
-
 int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 {
 	enum cb_err ret;

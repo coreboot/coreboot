@@ -434,7 +434,7 @@ EOF
 				lastgood_diff_hex="0${lastgood_diff_hex}"
 			fi
 			cell_bgcolor="#${lastgood_diff_hex}ff00"
-			echo "| style=\"background:${cell_bgcolor}\" | [[#$vendor/$board|$lastgood]]"
+			echo "| style=\"background:${cell_bgcolor}\" | [[#$venboard|$lastgood]]"
 		fi
 
 		echo "| $northbridge_nice"

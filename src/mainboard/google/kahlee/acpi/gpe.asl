@@ -15,63 +15,26 @@
 
 Scope (\_GPE)
 {
-	/*  General event 3  */
-	Method (_L03)
-	{
-		/* DBGO ("\\_GPE\\_L00\n") */
-		Notify (\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
-	}
-
-	/*  Legacy PM event  */
+	/*  PCIE WLAN Wake event  */
 	Method (_L08)
 	{
 		/* DBGO ("\\_GPE\\_L08\n") */
-	}
-
-	/*  Temp warning (TWarn) event  */
-	Method (_L09)
-	{
-		/* DBGO ("\\_GPE\\_L09\n") */
-		/* Notify (\_TZ.TZ00, 0x80) */
-	}
-
-	/*  USB controller PME#  */
-	Method (_L0B)
-	{
-		/* DBGO ("\\_GPE\\_L0B\n") */
-		Notify (\_SB.PCI0.EHC0, 0x02)	/* NOTIFY_DEVICE_WAKE */
-		Notify (\_SB.PCI0.XHC0, 0x02)	/* NOTIFY_DEVICE_WAKE */
 		Notify (\_SB.PWRB, 0x02)	/* NOTIFY_DEVICE_WAKE */
 	}
 
-	/*  ExtEvent0 SCI event  */
-	Method (_L10)
-	{
-		/* DBGO ("\\_GPE\\_L10\n") */
-	}
-
-	/*  ExtEvent1 SCI event  */
-	Method (_L11)
-	{
-		/* DBGO ("\\_GPE\\_L11\n") */
-	}
-
-	/*  GPIO0 or GEvent8 event  */
+	/*  EHCI USB controller PME#  SCIMAP24*/
 	Method (_L18)
 	{
 		/* DBGO ("\\_GPE\\_L18\n") */
-		Notify (\_SB.PCI0.PBR4, 0x02)	/* NOTIFY_DEVICE_WAKE */
-		Notify (\_SB.PCI0.PBR5, 0x02)	/* NOTIFY_DEVICE_WAKE */
-		Notify (\_SB.PCI0.PBR6, 0x02)	/* NOTIFY_DEVICE_WAKE */
-		Notify (\_SB.PCI0.PBR7, 0x02)	/* NOTIFY_DEVICE_WAKE */
+		Notify (\_SB.PCI0.EHC0, 0x02)	/* NOTIFY_DEVICE_WAKE */
 		Notify (\_SB.PWRB, 0x02)	/* NOTIFY_DEVICE_WAKE */
 	}
 
-	/*  Azalia SCI event  */
-	Method (_L1B)
+	/*  XHCI USB controller PME#  SCIMAP56*/
+	Method (_L1F)
 	{
-		/* DBGO("\\_GPE\\_L1B\n") */
-		Notify (\_SB.PCI0.AZHD, 0x02)	/* NOTIFY_DEVICE_WAKE */
+		/* DBGO ("\\_GPE\\_L1F\n") */
+		Notify (\_SB.PCI0.XHC0, 0x02)	/* NOTIFY_DEVICE_WAKE */
 		Notify (\_SB.PWRB, 0x02)	/* NOTIFY_DEVICE_WAKE */
 	}
 }	/* End Scope GPE */

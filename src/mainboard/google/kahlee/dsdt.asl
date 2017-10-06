@@ -59,8 +59,6 @@ DefinitionBlock (
 		Device(PWRB) {
 			Name(_HID, EISAID("PNP0C0C"))
 			Name(_UID, 0xAA)
-			Name(_PRW, Package () {3, 0x04})
-			Name(_STA, 0x0B)
 		}
 
 		Device(PCI0) {

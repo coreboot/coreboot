@@ -19,6 +19,8 @@
 #include <agesawrapper.h>
 #include <amd_pci_util.h>
 #include <ec.h>
+#include <mainboard.h>
+#include <soc/smi.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /***********************************************************
@@ -79,7 +81,13 @@ static void pirq_setup(void)
 
 static void mainboard_init(void *chip_info)
 {
+	const struct sci_source *gpes;
+	size_t num;
+
 	mainboard_ec_init();
+
+	gpes = get_gpe_table(&num);
+	gpe_configure_sci(gpes, num);
 }
 
 /*************************************************

@@ -15,10 +15,15 @@
 
 #include <AGESA.h>
 #include <FchPlatform.h>
+#include <mainboard.h>
+#include <soc/smi.h>
 #include <soc/southbridge.h>
 #include <stdlib.h>
 
 const GPIO_CONTROL oem_kahlee_gpio[] = {
+	/* AGPIO2 PCIE/WLAN WAKE# SCI*/
+	{2, Function1, FCH_GPIO_PULL_UP_ENABLE },
+
 	/* SER TX */
 	{8, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
 						| FCH_GPIO_OUTPUT_ENABLE},
@@ -45,6 +50,8 @@ const GPIO_CONTROL oem_kahlee_gpio[] = {
 	/* APU_I2C_3_SDA */
 	{20, Function1, FCH_GPIO_PULL_UP_ENABLE },
 
+	/* AGPIO22 EC_SCI */
+	{22, Function1, FCH_GPIO_PULL_UP_ENABLE },
 
 	/* APU_BT_ON# */
 	{24, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
@@ -91,3 +98,48 @@ const GPIO_CONTROL oem_kahlee_gpio[] = {
 
 	{-1}
 };
+
+/*
+ * GPE setup table must match ACPI GPE ASL
+ *  { gevent, gpe, direction, level }
+ */
+static const struct sci_source gpe_table[] = {
+
+	/* EC AGPIO22/Gevent3 -> GPE 3 */
+	{
+		.scimap = 3,
+		.gpe = 3,
+		.direction = SMI_SCI_LVL_LOW,
+		.level = SMI_SCI_EDG,
+	},
+
+	/* PCIE/WLAN AGPIO2/Gevent8 -> GPE8 */
+	{
+		.scimap = 8,
+		.gpe = 8,
+		.direction = SMI_SCI_LVL_LOW,
+		.level = SMI_SCI_LVL,
+	},
+
+	/* EHCI USB_PME -> GPE24 */
+	{
+		.scimap = 24,
+		.gpe = 24,
+		.direction = SMI_SCI_LVL_HIGH,
+		.level = SMI_SCI_LVL,
+	},
+
+	/* XHCIC0 -> GPE31 */
+	{
+		.scimap = 56,
+		.gpe = 31,
+		.direction = SMI_SCI_LVL_HIGH,
+		.level = SMI_SCI_LVL,
+	},
+};
+
+const struct sci_source *get_gpe_table(size_t *num)
+{
+	*num = ARRAY_SIZE(gpe_table);
+	return gpe_table;
+}

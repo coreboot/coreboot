@@ -552,60 +552,32 @@ static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
 static void calc_var_mtrrs_without_hole(struct var_mtrr_state *var_state,
 					struct range_entry *r)
 {
-	uint32_t a1, a2, b1, b2, c1, c2;
-	int mtrr_type;
+	const int mtrr_type = range_entry_mtrr_type(r);
 
-	/*
-	 * For each range that meets the non-default type process it in the
-	 * following manner:
-	 * +------------------+ c2 = end
-	 * |  0 or more bytes |
-	 * +------------------+ b2 = c1 = ALIGN_DOWN(end)
-	 * |                  |
-	 * +------------------+ b1 = a2 = ALIGN_UP(begin)
-	 * |  0 or more bytes |
-	 * +------------------+ a1 = begin
-	 *
-	 * Thus, there are 3 sub-ranges to configure variable MTRRs for.
-	 */
-	mtrr_type = range_entry_mtrr_type(r);
-
-	a1 = range_entry_base_mtrr_addr(r);
-	c2 = range_entry_end_mtrr_addr(r);
+	uint32_t base = range_entry_base_mtrr_addr(r);
+	uint32_t end = range_entry_end_mtrr_addr(r);
 
 	/* The end address is within the first 1MiB. The fixed MTRRs take
 	 * precedence over the variable ones. Therefore this range
 	 * can be ignored. */
-	if (c2 <= RANGE_1MB)
+	if (end <= RANGE_1MB)
 		return;
 
 	/* Again, the fixed MTRRs take precedence so the beginning
 	 * of the range can be set to 0 if it starts at or below 1MiB. */
-	if (a1 <= RANGE_1MB)
-		a1 = 0;
+	if (base <= RANGE_1MB)
+		base = 0;
 
 	/* If the range starts above 4GiB the processing is done. */
-	if (!var_state->above4gb && a1 >= RANGE_4GB)
+	if (!var_state->above4gb && base >= RANGE_4GB)
 		return;
 
 	/* Clip the upper address to 4GiB if addresses above 4GiB
 	 * are not being processed. */
-	if (!var_state->above4gb && c2 > RANGE_4GB)
-		c2 = RANGE_4GB;
+	if (!var_state->above4gb && end > RANGE_4GB)
+		end = RANGE_4GB;
 
-	/* Don't align up or down on the range if it is smaller
-	 * than the minimum granularity. */
-	if ((c2 - a1) < MTRR_MIN_ALIGN) {
-		calc_var_mtrr_range(var_state, a1, c2 - a1, mtrr_type);
-		return;
-	}
-
-	b1 = a2 = ALIGN_UP(a1, MTRR_MIN_ALIGN);
-	b2 = c1 = ALIGN_DOWN(c2, MTRR_MIN_ALIGN);
-
-	calc_var_mtrr_range(var_state, a1, a2 - a1, mtrr_type);
-	calc_var_mtrr_range(var_state, b1, b2 - b1, mtrr_type);
-	calc_var_mtrr_range(var_state, c1, c2 - c1, mtrr_type);
+	calc_var_mtrr_range(var_state, base, end - base, mtrr_type);
 }
 
 static void __calc_var_mtrrs(struct memranges *addr_space,

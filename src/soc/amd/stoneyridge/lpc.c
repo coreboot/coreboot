@@ -152,6 +152,135 @@ static void lpc_set_resources(struct device *dev)
 	pci_dev_set_resources(dev);
 }
 
+static void set_lpc_resource(device_t child,
+				int *variable_num,
+				u16 *reg_var,
+				u32 *reg,
+				u32 *reg_x,
+				u16 reg_size,
+				u8  *wiosize)
+{
+	struct resource *res;
+	u32 base, end;
+	u32 rsize = 0, set = 0, set_x = 0;
+	u16 var_num;
+
+	var_num = *variable_num;
+	for (res = child->resource_list; res; res = res->next) {
+		if (!(res->flags & IORESOURCE_IO))
+			continue;
+		base = res->base;
+		end = resource_end(res);
+		/* find a resource size */
+		printk(BIOS_DEBUG,
+		     "Southbridge LPC decode:%s, base=0x%08x, end=0x%08x\n",
+		     dev_path(child), base, end);
+		switch (base) {
+		case 0x60:	/*  KB */
+		case 0x64:	/*  MS */
+			set |= (1 << 29);
+			rsize = 1;
+			break;
+		case 0x3f8:	/*  COM1 */
+			set |= (1 << 6);
+			rsize = 8;
+			break;
+		case 0x2f8:	/*  COM2 */
+			set |= (1 << 7);
+			rsize = 8;
+			break;
+		case 0x378:	/*  Parallel 1 */
+			set |= (1 << 0);
+			set |= (1 << 1); /* + 0x778 for ECP */
+			rsize = 8;
+			break;
+		case 0x3f0:	/*  FD0 */
+			set |= (1 << 26);
+			rsize = 8;
+			break;
+		case 0x220:	/*  0x220 - 0x227 */
+			set |= (1 << 8);
+			rsize = 8;
+			break;
+		case 0x228:	/*  0x228 - 0x22f */
+			set |= (1 << 9);
+			rsize = 8;
+			break;
+		case 0x238:	/*  0x238 - 0x23f */
+			set |= (1 << 10);
+			rsize = 8;
+			break;
+		case 0x300:	/*  0x300 - 0x301 */
+			set |= (1 << 18);
+			rsize = 2;
+			break;
+		case 0x400:
+			set_x |= (1 << 16);
+			rsize = 0x40;
+			break;
+		case 0x480:
+			set_x |= (1 << 17);
+			rsize = 0x40;
+			break;
+		case 0x500:
+			set_x |= (1 << 18);
+			rsize = 0x40;
+			break;
+		case 0x580:
+			set_x |= (1 << 19);
+			rsize = 0x40;
+			break;
+		case 0x4700:
+			set_x |= (1 << 22);
+			rsize = 0xc;
+			break;
+		case 0xfd60:
+			set_x |= (1 << 23);
+			rsize = 16;
+			break;
+		default:
+			rsize = 0;
+			/* try AGESA allocated region in region 0 */
+			if ((var_num > 0) && ((base >= reg_var[0]) &&
+			    ((base + res->size) <= (reg_var[0] + reg_size))))
+				rsize = reg_size;
+		}
+		/* check if region found and matches the enable */
+		if (res->size <= rsize) {
+			*reg |= set;
+			*reg_x |= set_x;
+		/* check if we can fit resource in variable range */
+		} else if ((var_num < 3) && ((res->size <= 16) ||
+				(res->size == 512))) {
+			/* use variable ranges if pre-defined do not match */
+			switch (var_num) {
+			case 0:
+				*reg_x |= (1 << 2);
+				if (res->size <= 16)
+					*wiosize |= (1 << 0);
+				break;
+			case 1:
+				*reg_x |= (1 << 24);
+				if (res->size <= 16)
+					*wiosize |= (1 << 2);
+				break;
+			case 2:
+				*reg_x |= (1 << 25);
+				if (res->size <= 16)
+					*wiosize |= (1 << 3);
+				break;
+			}
+			reg_var[var_num++] =
+			    base & 0xffff;
+		} else {
+			printk(BIOS_ERR, "cannot fit LPC decode region:");
+			printk(BIOS_ERR, "%s, base = 0x%08x, end = 0x%08x\n",
+				dev_path(child), base, end);
+		}
+	}
+	*variable_num = var_num;
+}
+
 /**
  * @brief Enable resources for children devices
  *
@@ -199,125 +328,19 @@ static void lpc_enable_childrens_resources(device_t dev)
 	reg_var[0] = pci_read_config16(dev, 0x64);
 
 	/* todo: clean up the code style here */
-	for (link = dev->link_list ; link ; link = link->next) {
+	for (link = dev->link_list; link; link = link->next) {
 		device_t child;
 		for (child = link->children; child;
 		     child = child->sibling) {
 			if (child->enabled
 			    && (child->path.type == DEVICE_PATH_PNP)) {
-				struct resource *res;
-				for (res = child->resource_list ; res ; res = res->next) {
-					u32 base, end;	/*  don't need long long */
-					u32 rsize, set = 0, set_x = 0;
-					if (!(res->flags & IORESOURCE_IO))
-						continue;
-					base = res->base;
-					end = resource_end(res);
-					/* find a resource size */
-					printk(BIOS_DEBUG, "Southbridge LPC decode:%s, base=0x%08x, end=0x%08x\n",
-					     dev_path(child), base, end);
-					switch (base) {
-					case 0x60:	/*  KB */
-					case 0x64:	/*  MS */
-						set |= (1 << 29);
-						rsize = 1;
-						break;
-					case 0x3f8:	/*  COM1 */
-						set |= (1 << 6);
-						rsize = 8;
-						break;
-					case 0x2f8:	/*  COM2 */
-						set |= (1 << 7);
-						rsize = 8;
-						break;
-					case 0x378:	/*  Parallel 1 */
-						set |= (1 << 0);
-						set |= (1 << 1); /* + 0x778 for ECP */
-						rsize = 8;
-						break;
-					case 0x3f0:	/*  FD0 */
-						set |= (1 << 26);
-						rsize = 8;
-						break;
-					case 0x220:	/*  0x220 - 0x227 */
-						set |= (1 << 8);
-						rsize = 8;
-						break;
-					case 0x228:	/*  0x228 - 0x22f */
-						set |= (1 << 9);
-						rsize = 8;
-						break;
-					case 0x238:	/*  0x238 - 0x23f */
-						set |= (1 << 10);
-						rsize = 8;
-						break;
-					case 0x300:	/*  0x300 - 0x301 */
-						set |= (1 << 18);
-						rsize = 2;
-						break;
-					case 0x400:
-						set_x |= (1 << 16);
-						rsize = 0x40;
-						break;
-					case 0x480:
-						set_x |= (1 << 17);
-						rsize = 0x40;
-						break;
-					case 0x500:
-						set_x |= (1 << 18);
-						rsize = 0x40;
-						break;
-					case 0x580:
-						set_x |= (1 << 19);
-						rsize = 0x40;
-						break;
-					case 0x4700:
-						set_x |= (1 << 22);
-						rsize = 0xc;
-						break;
-					case 0xfd60:
-						set_x |= (1 << 23);
-						rsize = 16;
-						break;
-					default:
-						rsize = 0;
-						/* try AGESA allocated region in region 0 */
-						if ((var_num > 0) && ((base >= reg_var[0]) &&
-								((base + res->size) <= (reg_var[0] + reg_size[0]))))
-							rsize = reg_size[0];
-					}
-					/* check if region found and matches the enable */
-					if (res->size <= rsize) {
-						reg |= set;
-						reg_x |= set_x;
-					/* check if we can fit resource in variable range */
-					} else if ((var_num < 3) &&
-						    ((res->size <= 16) || (res->size == 512))) {
-						/* use variable ranges if pre-defined do not match */
-						switch (var_num) {
-						case 0:
-							reg_x |= (1 << 2);
-							if (res->size <= 16)
-								wiosize |= (1 << 0);
-							break;
-						case 1:
-							reg_x |= (1 << 24);
-							if (res->size <= 16)
-								wiosize |= (1 << 2);
-							break;
-						case 2:
-							reg_x |= (1 << 25);
-							if (res->size <= 16)
-								wiosize |= (1 << 3);
-							break;
-						}
-						reg_var[var_num++] =
-						    base & 0xffff;
-					} else {
-						printk(BIOS_ERR, "cannot fit LPC decode region:%s, base=0x%08x, end=0x%08x\n",
-							dev_path(child), base, end);
-					}
-				}
+				set_lpc_resource(child,
+						&var_num,
+						reg_var,
+						&reg,
+						&reg_x,
+						reg_size[0],
+						&wiosize);
 			}
 		}
 	}

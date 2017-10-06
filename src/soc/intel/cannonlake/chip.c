@@ -25,8 +25,6 @@
 #include <soc/ramstage.h>
 #include <string.h>
 
-static void *vbt;
-
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 static const char *soc_acpi_name(const struct device *dev)
 {
@@ -180,11 +178,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Parse device tree and enable/disable devices */
 	parse_devicetree(params);
 
-	/* Save VBT info and mapping */
-	vbt = vbt_get();
-
 	/* Load VBT before devicetree-specific config. */
-	params->GraphicsConfigPtr = (uintptr_t)vbt;
+	params->GraphicsConfigPtr = (uintptr_t)vbt_get();
 
 	/* Set USB OC pin to 0 first */
 	for (i = 0; i < ARRAY_SIZE(params->Usb2OverCurrentPin); i++) {

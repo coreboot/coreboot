@@ -48,8 +48,6 @@
 
 #include "chip.h"
 
-static void *vbt;
-
 static const char *soc_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -315,9 +313,6 @@ static void soc_init(void *data)
 {
 	struct global_nvs_t *gnvs;
 
-	/* Save VBT info and mapping */
-	vbt = vbt_get();
-
 	/* Snapshot the current GPIO IRQ polarities. FSP is setting a
 	 * default policy that doesn't honor boards' requirements. */
 	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
@@ -534,7 +529,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	static struct soc_intel_apollolake_config *cfg;
 
 	/* Load VBT before devicetree-specific config. */
-	silconfig->GraphicsConfigPtr = (uintptr_t)vbt;
+	silconfig->GraphicsConfigPtr = (uintptr_t)vbt_get();
 
 	struct device *dev = SA_DEV_ROOT;
 

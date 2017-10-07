@@ -72,7 +72,7 @@ static const struct soc_gpio_map gpse_gpio_map[] = {
 	GPIO_NC, /* 79  GPI ILB_SERIRQ */
 	Native_M1, /* 80  USB_OC0_B */
 	NATIVE_INT(1, L1), /* 81  SDMMC3_CD_B */
-	GPIO_NC,  /* 82  spkr	 asummed gpio number */
+	GPIO_NC,  /* 82  spkr	 assumed gpio number */
 	Native_M1, /* 83 SUSPWRDNACK */
 	SPARE_PIN,/* 84 spare pin */
 	Native_M1, /* 85 SDMMC3_1P8_EN */

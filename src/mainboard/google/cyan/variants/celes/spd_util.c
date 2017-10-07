@@ -49,10 +49,10 @@ int get_variant_spd_index(int ram_id, int *dual)
 
 	/* Determine if single or dual channel memory system */
 	/* RAMID3 is deterministic for celes */
-	*dual = ((ram_id > 3) & 0x1) ? 0 : 1;
+	*dual = ((ram_id >> 3) & 0x1) ? 0 : 1;
 
 	/* Display the RAM type */
-	printk(BIOS_DEBUG, dual ? "4GiB " : "2GiB ");
+	printk(BIOS_DEBUG, *dual ? "4GiB " : "2GiB ");
 	switch (spd_index) {
 	case 0:
 		printk(BIOS_DEBUG, "Samsung K4E8E304EE-EGCE\n");

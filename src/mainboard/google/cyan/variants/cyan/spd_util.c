@@ -33,7 +33,7 @@ int get_variant_spd_index(int ram_id, int *dual)
 {
 	/* Determine if single or dual channel memory system */
 	/* RAMID1 is deterministic for cyan */
-	*dual = ((ram_id > 1) & 0x1) ? 0 : 1;
+	*dual = ((ram_id >> 1) & 0x1) ? 0 : 1;
 
 	/* Display the RAM type */
 	switch (ram_id) {

@@ -65,7 +65,7 @@ Device(EC)
 				DKR3, 1		/* Dock register 3 */
 	}
 
-	Method (_CRS, 0)
+	Method (_CRS, 0, Serialized)
 	{
 		Name (ECMD, ResourceTemplate()
 		{

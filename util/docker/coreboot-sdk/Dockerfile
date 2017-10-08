@@ -51,6 +51,7 @@ RUN \
 		libyaml-dev \
 		m4 \
 		make \
+		nasm \
 		openssl \
 		p7zip-full \
 		patch \

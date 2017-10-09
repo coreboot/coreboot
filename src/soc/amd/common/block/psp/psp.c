@@ -14,8 +14,6 @@
  */
 
 #include <arch/io.h>
-#include <delay.h>
-#include <cbmem.h>
 #include <timer.h>
 #include <device/pci_def.h>
 #include <console/console.h>

@@ -105,7 +105,7 @@ void flush_tlb(void);
 DEFINE_MPRV_READ(mprv_read_u8, uint8_t, lbu)
 DEFINE_MPRV_READ(mprv_read_u16, uint16_t, lhu)
 DEFINE_MPRV_READ(mprv_read_u32, uint32_t, lwu)
-DEFINE_MPRV_READ(mprv_read_u64, uint32_t, ld)
+DEFINE_MPRV_READ(mprv_read_u64, uint64_t, ld)
 DEFINE_MPRV_READ(mprv_read_long, long, ld)
 DEFINE_MPRV_READ(mprv_read_ulong, unsigned long, ld)
 DEFINE_MPRV_WRITE(mprv_write_u8, uint8_t, sb)

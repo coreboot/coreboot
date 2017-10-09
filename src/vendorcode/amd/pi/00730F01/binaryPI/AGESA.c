@@ -49,19 +49,6 @@
 #include "FchDef.h"
 #include "amdlib.h"
 
-// TODO These need to be replaced with calls to CreateStruct()
-AGESA_STATUS
-HeapAllocateBuffer (
-  IN OUT   VOID *AllocateHeapParams,
-  IN OUT   VOID *StdHeader
-  );
-
-AGESA_STATUS
-HeapDeallocateBuffer (
-  IN       UINT32 BufferHandle,
-  IN       VOID *StdHeader
-  );
-
 CONST UINT32 ImageSignature = IMAGE_SIGNATURE;
 CONST UINT32 ModuleSignature = MODULE_SIGNATURE;
 CONST CHAR8 ModuleIdentifier[] = AGESA_ID;
@@ -522,53 +509,6 @@ ImcIdle (
   )
 {
 	((FCH_DATA_BLOCK*)FchDataPtr)->StdHeader->Func = 0;
-}
-
-// TODO This has to be removed
-AGESA_STATUS
-HeapAllocateBuffer (
-  IN OUT   VOID *AllocateHeapParams,
-  IN OUT   VOID *StdHeader
-  )
-{
-	MODULE_ENTRY Dispatcher = NULL;
-	const AMD_MODULE_HEADER* module = agesawrapper_locate_module(ModuleIdentifier);
-
-	AMD_INTERFACE_PARAMS InterfaceParams = {};
-
-	if (!module) return AGESA_UNSUPPORTED;
-	Dispatcher = module->ModuleDispatcher;
-
-	InterfaceParams.StdHeader = *(AMD_CONFIG_PARAMS*)StdHeader;
-	InterfaceParams.StdHeader.Func = AMD_HEAP_ALLOCATE_BUFFER;
-
-	InterfaceParams.AllocationMethod = PreMemHeap;
-	InterfaceParams.NewStructPtr = AllocateHeapParams;
-
-	return Dispatcher(&InterfaceParams);
-}
-
-// TODO This has to be removed
-AGESA_STATUS
-HeapDeallocateBuffer (
-  IN       UINT32 BufferHandle,
-  IN       VOID *StdHeader
-  )
-{
-	MODULE_ENTRY Dispatcher = NULL;
-	const AMD_MODULE_HEADER* module = agesawrapper_locate_module(ModuleIdentifier);
-
-	AMD_INTERFACE_PARAMS InterfaceParams = {};
-
-	if (!module) return AGESA_UNSUPPORTED;
-	Dispatcher = module->ModuleDispatcher;
-
-	InterfaceParams.StdHeader = *(AMD_CONFIG_PARAMS*)StdHeader;
-	InterfaceParams.StdHeader.Func = AMD_HEAP_DEALLOCATE_BUFFER;
-
-	InterfaceParams.NewStructPtr = &BufferHandle;
-
-	return Dispatcher(&InterfaceParams);
 }
 
 /**********************************************************************

@@ -148,6 +148,7 @@ struct soc_intel_skylake_config {
 	u8 SataSalpSupport;
 	u8 SataPortsEnable[8];
 	u8 SataPortsDevSlp[8];
+	u8 SataSpeedLimit;
 
 	/* Audio related */
 	u8 EnableAzalia;

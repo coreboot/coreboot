@@ -206,6 +206,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->Device4Enable = config->Device4Enable;
 	params->SataEnable = config->EnableSata;
 	params->SataMode = config->SataMode;
+	params->SataSpeedLimit = config->SataSpeedLimit;
+
 	tconfig->PchLockDownGlobalSmi = config->LockDownConfigGlobalSmi;
 	tconfig->PchLockDownRtcLock = config->LockDownConfigRtcLock;
 	/*

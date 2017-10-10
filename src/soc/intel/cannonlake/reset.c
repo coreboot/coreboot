@@ -16,10 +16,12 @@
 #include <compiler.h>
 #include <console/console.h>
 #include <intelblocks/cse.h>
+#include <intelblocks/pmclib.h>
 #include <fsp/util.h>
 #include <reset.h>
 #include <string.h>
 #include <timer.h>
+#include <soc/pci_devs.h>
 
 /* Reset Request  */
 #define MKHI_GLOBAL_RESET			0x0b
@@ -82,10 +84,9 @@ void do_global_reset(void)
 {
 	/* Ask CSE to do the global reset */
 	send_heci_reset_message();
-	/*
-	 * TODO: Presumbily we shouldn't return. But if we did, fallback to
-	 * alternative way of triggered global reset provided by pmclib.
-	 */
+	/* global reset if CSE fail to reset */
+	pmc_global_reset_enable(1);
+	hard_reset();
 }
 
 void chipset_handle_reset(uint32_t status)

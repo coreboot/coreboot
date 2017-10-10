@@ -15,7 +15,6 @@
  */
 
 #include <device/device.h>
-#include <intelblocks/cse.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
@@ -194,6 +193,4 @@ void pch_early_init(void)
 	smbus_common_init();
 
 	enable_rtc_upper_bank();
-
-	heci_init(HECI1_BASE_ADDRESS);
 }

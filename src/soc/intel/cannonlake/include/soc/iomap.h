@@ -63,7 +63,7 @@
 
 #define GPIO_BASE_SIZE		0x10000
 
-#define HECI1_BASE_ADDRESS		0xFEDA2000
+#define HECI1_BASE_ADDRESS	0xfeda2000
 
 /* PTT registers */
 #define PTT_TXT_BASE_ADDRESS	0xfed30800

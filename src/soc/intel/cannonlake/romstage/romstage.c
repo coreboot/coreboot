@@ -21,8 +21,10 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <fsp/util.h>
+#include <intelblocks/cse.h>
 #include <intelblocks/pmclib.h>
 #include <memory_info.h>
+#include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
@@ -41,6 +43,8 @@ asmlinkage void car_stage_entry(void)
 
 	/* Program MCHBAR, DMIBAR, GDXBAR and EDRAMBAR */
 	systemagent_early_init();
+	/* initialize Heci interface */
+	heci_init(HECI1_BASE_ADDRESS);
 
 	timestamp_add_now(TS_START_ROMSTAGE);
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;

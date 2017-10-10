@@ -101,6 +101,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	/* Enable SMBus controller based on config */
 	m_cfg->SmbusEnable = config->SmbusEnable;
+	/* Set debug probe type */
+	m_cfg->PlatformDebugConsent = config->DebugConsent;
 
 	mainboard_memory_init_params(mupd);
 }

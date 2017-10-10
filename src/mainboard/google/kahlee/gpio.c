@@ -37,8 +37,7 @@ const GPIO_CONTROL oem_kahlee_gpio[] = {
 						| FCH_GPIO_OUTPUT_ENABLE},
 
 	/* EC_IN_RW */
-	{15, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
+	{15, Function1, FCH_GPIO_PULL_UP_ENABLE },
 
 	/* APU_I2C_3_SCL */
 	{19, Function1, FCH_GPIO_PULL_UP_ENABLE },

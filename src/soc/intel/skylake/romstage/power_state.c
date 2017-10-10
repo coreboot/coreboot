@@ -44,7 +44,8 @@ int soc_prev_sleep_state(const struct chipset_power_state *ps,
 	 * S5 because the PCH does not set the WAK_STS bit when waking
 	 * from a true G3 state.
 	 */
-	if (ps->gen_pmcon_b & (PWR_FLR | SUS_PWR_FLR))
+	if (!(ps->pm1_sts & WAK_STS) &&
+	    (ps->gen_pmcon_b & (PWR_FLR | SUS_PWR_FLR)))
 		prev_sleep_state = ACPI_S5;
 
 	/*

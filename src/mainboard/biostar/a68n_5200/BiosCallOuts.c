@@ -170,6 +170,8 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 
 void board_FCH_InitReset(struct sysinfo *cb_NA, FCH_RESET_DATA_BLOCK *FchParams_reset)
 {
+	FchParams_reset->Mode = FCH_SPI_MODE_NORMAL;
+	FchParams_reset->QeEnabled = FALSE;
 }
 
 void board_FCH_InitEnv(struct sysinfo *cb_NA, FCH_DATA_BLOCK *FchParams_env)

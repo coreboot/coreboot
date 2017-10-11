@@ -30,7 +30,8 @@ struct gdtarg {
 #endif
 } __packed;
 
-/* Copy GDT to new location and reload it.
+/*
+ * Copy GDT to new location and reload it.
  * FIXME: We only do this for BSP CPU.
  */
 static void move_gdt(int is_recovery)

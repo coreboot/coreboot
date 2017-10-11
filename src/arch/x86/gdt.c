@@ -37,7 +37,7 @@ struct gdtarg {
 static void move_gdt(int is_recovery)
 {
 	void *newgdt;
-	u16 num_gdt_bytes = (uintptr_t)&gdt_end - (uintptr_t)&gdt;
+	u16 num_gdt_bytes;
 	struct gdtarg gdtarg;
 
 	/* ramstage is already in high memory. No need to use a new gdt. */
@@ -45,6 +45,7 @@ static void move_gdt(int is_recovery)
 		return;
 
 	newgdt = cbmem_find(CBMEM_ID_GDT);
+	num_gdt_bytes = (uintptr_t)&gdt_end - (uintptr_t)&gdt;
 	if (!newgdt) {
 		newgdt = cbmem_add(CBMEM_ID_GDT, ALIGN(num_gdt_bytes, 512));
 		if (!newgdt) {

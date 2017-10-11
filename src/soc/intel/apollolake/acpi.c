@@ -27,6 +27,7 @@
 #include <gpio.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/sgx.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
 #include <soc/nvs.h>
@@ -125,6 +126,9 @@ void acpi_create_gnvs(struct global_nvs_t *gnvs)
 		gnvs->scdp = gpio_get_pad_portid(cfg->sdcard_cd_gpio);
 		gnvs->scdo = gpio_acpi_pin(cfg->sdcard_cd_gpio);
 	}
+
+	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX))
+		sgx_fill_gnvs(gnvs);
 }
 
 uint32_t acpi_fill_soc_wake(uint32_t generic_pm1_en,

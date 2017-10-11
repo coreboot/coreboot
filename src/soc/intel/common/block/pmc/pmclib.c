@@ -558,4 +558,6 @@ void pmc_gpe_init(void)
 
 	/* Set the routes in the GPIO communities as well. */
 	gpio_route_gpe(dw0, dw1, dw2);
+
+	pmc_disable_all_gpe();
 }

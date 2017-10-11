@@ -16,6 +16,8 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_SGX_H
 #define SOC_INTEL_COMMON_BLOCK_SGX_H
 
+#include <soc/nvs.h>
+
 struct sgx_param {
 	uint8_t enable;
 };
@@ -41,5 +43,8 @@ void sgx_configure(void);
 /* SOC specific API to get SGX params.
  * returns 0, if able to get SGX params; otherwise returns -1 */
 int soc_fill_sgx_param(struct sgx_param *sgx_param);
+
+/* Fill GNVS data with SGX status, EPC base and length */
+void sgx_fill_gnvs(global_nvs_t *gnvs);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_SGX_H */

@@ -29,6 +29,14 @@
 static bool sgx_param_valid;
 static struct sgx_param g_sgx_param;
 
+static inline uint64_t sgx_resource(uint32_t low, uint32_t high)
+{
+	uint64_t val;
+	val = (uint64_t)(high & SGX_RESOURCE_MASK_HI) << 32;
+	val |= low & SGX_RESOURCE_MASK_LO;
+	return val;
+}
+
 static const struct sgx_param *get_sgx_param(void)
 {
 	if (sgx_param_valid)
@@ -221,4 +229,33 @@ void sgx_configure(void)
 	/* Activate the SGX feature, if PRMRR config was aprroved by MCHECK */
 	if (is_prmrr_approved())
 		activate_sgx();
+}
+
+void sgx_fill_gnvs(global_nvs_t *gnvs)
+{
+	struct cpuid_result cpuid_regs;
+
+	if (!soc_sgx_enabled() || !is_sgx_supported()) {
+		printk(BIOS_DEBUG,
+			"SGX: not enabled or not supported. skip gnvs fill\n");
+		return;
+	}
+
+	/* Get EPC base and size.
+	 * Intel SDM: Table 36-6. CPUID Leaf 12H, Sub-Leaf Index 2 or
+	 * Higher for enumeration of SGX Resources. Same Table mentions
+	 * about return values of the CPUID */
+	cpuid_regs = cpuid_ext(SGX_RESOURCE_ENUM_CPUID_LEAF,
+				SGX_RESOURCE_ENUM_CPUID_SUBLEAF);
+
+	if (cpuid_regs.eax & SGX_RESOURCE_ENUM_BIT) {
+		/* EPC section enumerated */
+		gnvs->ecps = 1;
+		gnvs->emna = sgx_resource(cpuid_regs.eax, cpuid_regs.ebx);
+		gnvs->elng = sgx_resource(cpuid_regs.ecx, cpuid_regs.edx);
+	}
+
+	printk(BIOS_DEBUG,
+		"SGX: gnvs ECP status = %d base = 0x%llx len = 0x%llx\n",
+			gnvs->ecps, gnvs->emna, gnvs->elng);
 }

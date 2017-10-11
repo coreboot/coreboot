@@ -35,8 +35,8 @@ static void sata_init(struct device *dev)
 	#define SATA_CAPABILITIES_REG 0xfc
 	#define CFG_CAP_SPM (1<<12)
 
-	volatile u32 *ahci_ptr = (u32 *)(pci_read_config32(dev,
-				AHCI_BASE_ADDRESS_REG) & 0xffffff00);
+	u32 *ahci_ptr = (void *)(uintptr_t)ALIGN_DOWN(
+		pci_read_config32(dev, AHCI_BASE_ADDRESS_REG), 256);
 	u32 temp;
 
 	/* unlock the write-protect */
@@ -68,8 +68,6 @@ static struct device_operations sata_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_AMD_SB900_SATA,
-	PCI_DEVICE_ID_AMD_SB900_SATA_AHCI,
 	PCI_DEVICE_ID_AMD_CZ_SATA,
 	PCI_DEVICE_ID_AMD_CZ_SATA_AHCI,
 	0

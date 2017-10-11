@@ -32,6 +32,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/lpc_lib.h>
+#include <intelblocks/sgx.h>
 #include <soc/intel/common/acpi.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
@@ -200,6 +201,9 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 	/* Set USB2/USB3 wake enable bitmaps. */
 	gnvs->u2we = config->usb2_wake_enable_bitmap;
 	gnvs->u3we = config->usb3_wake_enable_bitmap;
+
+	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX))
+		sgx_fill_gnvs(gnvs);
 }
 
 unsigned long acpi_fill_mcfg(unsigned long current)

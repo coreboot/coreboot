@@ -72,3 +72,8 @@ Method (_OSC, 4)
 		Return (Arg3)
 	}
 }
+
+/* SGX */
+#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX)
+#include <soc/intel/common/acpi/sgx.asl>
+#endif

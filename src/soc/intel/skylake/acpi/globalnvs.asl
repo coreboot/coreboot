@@ -67,6 +67,9 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	U2WE,	16,	// 0x3f - USB2 Wake Enable Bitmap
 	U3WE,	8,	// 0x41 - USB3 Wake Enable Bitmap
 	UIOR,	8,	// 0x42 - UART debug controller init on S3 resume
+	EPCS,	8,	// 0x43 - SGX Enabled status
+	EMNA,	64,	// 0x44 - 0x4B EPC base address
+	ELNG,	64,	// 0x4C - 0x53 EPC Length
 
 	/* ChromeOS specific */
 	Offset (0x100),

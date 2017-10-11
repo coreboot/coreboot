@@ -30,6 +30,7 @@ romstage-$(CONFIG_UART_DEBUG) += uart.c
 ramstage-y += acpi.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
+ramstage-y += finalize.c
 ramstage-y += gpio.c
 ramstage-y += gspi.c
 ramstage-y += gpio.c

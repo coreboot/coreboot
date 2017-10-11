@@ -230,27 +230,39 @@ uint32_t pmc_clear_tco_status(void)
 }
 
 /* GPE */
-void pmc_enable_gpe(uint32_t mask)
+static void pmc_enable_gpe(int gpe, uint32_t mask)
 {
-	uint32_t gpe0a_en = inl(ACPI_BASE_ADDRESS + GPE0_EN(GPE_STD));
-	gpe0a_en |= mask;
-	outl(gpe0a_en, ACPI_BASE_ADDRESS + GPE0_EN(GPE_STD));
+	uint32_t gpe0_en = inl(ACPI_BASE_ADDRESS + GPE0_EN(gpe));
+	gpe0_en |= mask;
+	outl(gpe0_en, ACPI_BASE_ADDRESS + GPE0_EN(gpe));
 }
 
-void pmc_disable_gpe(uint32_t mask)
+static void pmc_disable_gpe(int gpe, uint32_t mask)
 {
-	uint32_t gpe0a_en = inl(ACPI_BASE_ADDRESS + GPE0_EN(GPE_STD));
-	gpe0a_en &= ~mask;
-	outl(gpe0a_en, ACPI_BASE_ADDRESS + GPE0_EN(GPE_STD));
+	uint32_t gpe0_en = inl(ACPI_BASE_ADDRESS + GPE0_EN(gpe));
+	gpe0_en &= ~mask;
+	outl(gpe0_en, ACPI_BASE_ADDRESS + GPE0_EN(gpe));
+}
+
+void pmc_enable_std_gpe(uint32_t mask)
+{
+	pmc_enable_gpe(GPE_STD, mask);
+}
+
+void pmc_disable_std_gpe(uint32_t mask)
+{
+	pmc_disable_gpe(GPE_STD, mask);
 }
 
 void pmc_disable_all_gpe(void)
 {
-	pmc_disable_gpe(~0);
+	int i;
+	for (i = 0; i < GPE0_REG_MAX; i++)
+		pmc_disable_gpe(i, ~0);
 }
 
 /* Clear the gpio gpe0 status bits in ACPI registers */
-void pmc_clear_gpi_gpe_sts(void)
+static void pmc_clear_gpi_gpe_status(void)
 {
 	int i;
 
@@ -263,14 +275,14 @@ void pmc_clear_gpi_gpe_sts(void)
 	}
 }
 
-static uint32_t reset_gpe_status(void)
+static uint32_t reset_std_gpe_status(void)
 {
 	uint32_t gpe_sts = inl(ACPI_BASE_ADDRESS + GPE0_STS(GPE_STD));
 	outl(gpe_sts, ACPI_BASE_ADDRESS + GPE0_STS(GPE_STD));
 	return gpe_sts;
 }
 
-static uint32_t print_gpe_sts(uint32_t gpe_sts)
+static uint32_t print_std_gpe_sts(uint32_t gpe_sts)
 {
 	size_t array_size;
 	const char *const *sts_arr;
@@ -278,18 +290,24 @@ static uint32_t print_gpe_sts(uint32_t gpe_sts)
 	if (!gpe_sts)
 		return gpe_sts;
 
-	printk(BIOS_DEBUG, "GPE0a_STS: ");
+	printk(BIOS_DEBUG, "GPE0 STD STS: ");
 
-	sts_arr = soc_gpe_sts_array(&array_size);
+	sts_arr = soc_std_gpe_sts_array(&array_size);
 	print_num_status_bits(array_size, gpe_sts, sts_arr);
 	printk(BIOS_DEBUG, "\n");
 
 	return gpe_sts;
 }
 
-uint32_t pmc_clear_gpe_status(void)
+static void pmc_clear_std_gpe_status(void)
 {
-	return print_gpe_sts(reset_gpe_status());
+	print_std_gpe_sts(reset_std_gpe_status());
+}
+
+void pmc_clear_all_gpe_status(void)
+{
+	pmc_clear_std_gpe_status();
+	pmc_clear_gpi_gpe_status();
 }
 
 __attribute__ ((weak))
@@ -297,7 +315,7 @@ void soc_clear_pm_registers(uintptr_t pmc_bar)
 {
 }
 
-void pmc_clear_status(void)
+void pmc_clear_prsts(void)
 {
 	uint32_t prsts;
 	uintptr_t pmc_bar;
@@ -504,7 +522,7 @@ void pmc_gpe_init(void)
 	/*
 	 * Get the dwX values for pmc gpe settings.
 	 */
-	soc_get_gpe_configs(&dw0, &dw1, &dw2);
+	soc_get_gpi_gpe_configs(&dw0, &dw1, &dw2);
 
 	const uint32_t gpio_cfg_mask =
 	    (GPE0_DWX_MASK << GPE0_DW_SHIFT(0)) |

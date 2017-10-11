@@ -107,7 +107,7 @@ const char *const *soc_tco_sts_array(size_t *tco_arr)
  * GPE0
  */
 
-const char *const *soc_gpe_sts_array(size_t *gpe_arr)
+const char *const *soc_std_gpe_sts_array(size_t *gpe_arr)
 {
 	static const char *const gpe_sts_bits[] = {
 		[1] = "HOTPLUG",
@@ -208,7 +208,7 @@ uintptr_t soc_read_pmc_base(void)
 	return (uintptr_t) (pmc_mmio_regs());
 }
 
-void soc_get_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
+void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
 {
 	DEVTREE_CONST struct soc_intel_skylake_config *config;
 

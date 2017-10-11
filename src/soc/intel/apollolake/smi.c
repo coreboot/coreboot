@@ -42,7 +42,7 @@ void southbridge_smm_clear_state(void)
 	pmc_clear_smi_status();
 	pmc_clear_pm1_status();
 	pmc_clear_tco_status();
-	pmc_clear_gpe_status();
+	pmc_clear_all_gpe_status();
 }
 
 void southbridge_smm_enable_smi(void)
@@ -50,7 +50,7 @@ void southbridge_smm_enable_smi(void)
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	/* Configure events */
 	pmc_enable_pm1(PWRBTN_EN | GBL_EN);
-	pmc_disable_gpe(PME_B0_EN);
+	pmc_disable_std_gpe(PME_B0_EN);
 
 	/* Enable SMI generation */
 	pmc_enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS | GPIO_EN);

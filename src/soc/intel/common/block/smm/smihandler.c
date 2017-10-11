@@ -151,7 +151,7 @@ void smihandler_southbridge_sleep(
 		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
 
 	/* Clear pending GPE events */
-	pmc_clear_gpe_status();
+	pmc_clear_all_gpe_status();
 
 	/* Next, do the deed. */
 
@@ -182,9 +182,6 @@ void smihandler_southbridge_sleep(
 		printk(BIOS_DEBUG, "SMI#: ERROR: SLP_TYP reserved\n");
 		break;
 	}
-
-	/* Clear the gpio gpe0 status bits in ACPI registers */
-	pmc_clear_gpi_gpe_sts();
 
 	/* Tri-state specific GPIOS to avoid leakage during S3/S5 */
 
@@ -328,7 +325,7 @@ void smihandler_southbridge_pm1(
 void smihandler_southbridge_gpe0(
 	const struct smm_save_state_ops *save_state_ops)
 {
-	pmc_clear_gpe_status();
+	pmc_clear_all_gpe_status();
 }
 
 void smihandler_southbridge_tco(

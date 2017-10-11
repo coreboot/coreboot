@@ -154,7 +154,7 @@ static void pmc_init(struct device *dev)
 	pch_log_state();
 
 	/* Now that things have been logged clear out the PMC state. */
-	pmc_clear_status();
+	pmc_clear_prsts();
 }
 
 static const struct device_operations device_ops = {

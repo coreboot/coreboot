@@ -100,40 +100,34 @@ uint32_t soc_reset_tco_status(void);
 /* GPE */
 
 /*
- * We have gpe0a_en/sts, gpe0b_en/sts, gpe0c_en/sts and gpe0d_en/sts
- * registers. gpe0a_en is symmetrical to the general purpose event
- * 0a status register and have all the enable bits for
- * gpe's. Other gpe registers gpe0b_en, gpe0c_en and
- * gpe0d_en are symmetrical to general purpose event status
- * registers and reads/writes to those register will result in
- * the transaction being forwarded to the corresponding GPIO
- * community based on the GPIO_GPE_CFG.gpe0_dw1, GPIO_GPE_CFG.gpe0_dw2
- * and GPIO_GPE_CFG.gpe0_dw3 register configuration.
+ * We have symmetrical pairs of GPE0_EN/STS registers for Standard(STD) and GPIO
+ * events. STD events are specific to SoC and one of the GPE0_EN/STS pairs
+ * handles the STD events. Other GPE0_EN/STS pairs are used for GPIO events
+ * based on the GPE0_DWx mappings.
  *
  * STS registers are symmetrical to event enable registers.
- * For gpe0a_sts register if the corresponding _EN bit is set in gpe0a_en,
- * then when the STS bit get set, the PMC will generate a Wake Event.
- * Once back in an S0 state (or if already in an S0 state when the event
+ * In case of STD events, for GPE0_STS register if the corresponding _EN bit is
+ * set in GPE0_EN, then when the STS bit gets set, the PMC will generate a Wake
+ * Event. Once back in an S0 state (or if already in an S0 state when the event
  * occurs), the PMC will also generate an SCI if the SCI_EN bit is set,
- * or an SMI# if the SCI_EN bit is not set. Other gpe registers gpe0b_sts,
- * gpe0c_sts and gpe0d_sts are symmetrical to general purpose event enable
- * registers and reads/writes to those register will result in
- * the transaction being forwarded to the corresponding GPIO
- * community based on the GPIO_GPE_CFG.gpe0_dw1, GPIO_GPE_CFG.gpe0_dw2 and
- * GPIO_GPE_CFG.gpe0_dw3 register configuration.
+ * or an SMI# if the SCI_EN bit is not set.
+ *
+ * GPIO GPE registers are symmetrical to STD GPE registers and reads/writes to
+ * those register will result in the transaction being forwarded to the
+ * corresponding GPIO community based on the GPIO_GPE_CFG.gpe0_dwX register
+ * configuration.
  */
-/* Enable a standard GPE in gpe0_en register */
-void pmc_enable_gpe(uint32_t mask);
-/* Disable a standard GPE in gpe0a_en register */
-void pmc_disable_gpe(uint32_t mask);
-/* Disable all GPE's in gpe0a_en register */
+/* Enable a standard GPE. */
+void pmc_enable_std_gpe(uint32_t mask);
+/* Disable a standard GPE. */
+void pmc_disable_std_gpe(uint32_t mask);
+/* Disable all GPE's in STD and GPIO GPE registers. */
 void pmc_disable_all_gpe(void);
-/* Clear all GPE status and return "standard" GPE event status */
-uint32_t pmc_clear_gpe_status(void);
+/* Clear STD and GPIO GPE status registers. */
+void pmc_clear_all_gpe_status(void);
+
 /* Clear status bits in Power and Reset Status (PRSTS) register */
-void pmc_clear_status(void);
-/* Clear the gpio gpe0 status bits in ACPI registers */
-void pmc_clear_gpi_gpe_sts(void);
+void pmc_clear_prsts(void);
 
 /*
  * Enable or disable global reset. If global reset is enabled, hard reset and
@@ -162,7 +156,7 @@ int pmc_fill_power_state(struct chipset_power_state *ps);
 /*
  * Sets the gpe routing table by properly programming the GPE_CFG
  * and the MISCCFG registers. This function calls soc specific
- * soc_get_gpe_configs which reads the devicetree info
+ * soc_get_gpi_gpe_configs which reads the devicetree info
  * and populates the dw variables and also returns the bit offset
  * in GPIO_CFG register which is assigned to ACPI register.
  */
@@ -182,17 +176,17 @@ const char * const *soc_smi_sts_array(size_t *a);
 
 /*
  * This function returns array of string which represents
- * names for the General purpose Event status register bits.
+ * names for the STD GPE status register bits.
  * Size of the array is returned as an output parameter.
  */
-const char * const *soc_gpe_sts_array(size_t *a);
+const char * const *soc_std_gpe_sts_array(size_t *a);
 
 /*
  * This function gets the gpe0 dwX values from devicetree
  * for pmc_gpe_init which will use those to set the GPE_CFG
  * register.
  */
-void soc_get_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2);
+void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2);
 
 /*
  * Reads soc specific power management crtitical registers, fills

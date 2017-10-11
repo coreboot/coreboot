@@ -153,7 +153,7 @@ static void southbridge_smi_sleep(void)
 			elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
 
 	/* Clear pending GPE events */
-	pmc_clear_gpe_status();
+	pmc_clear_all_gpe_status();
 
 	/* Next, do the deed. */
 	switch (slp_typ) {
@@ -360,7 +360,7 @@ static void southbridge_smi_pm1(void)
 
 static void southbridge_smi_gpe0(void)
 {
-	pmc_clear_gpe_status();
+	pmc_clear_all_gpe_status();
 }
 
 void __attribute__((weak))

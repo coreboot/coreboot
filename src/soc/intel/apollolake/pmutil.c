@@ -108,7 +108,7 @@ const char *const *soc_tco_sts_array(size_t *a)
 	return tco_sts_bits;
 }
 
-const char *const *soc_gpe_sts_array(size_t *a)
+const char *const *soc_std_gpe_sts_array(size_t *a)
 {
 	static const char *const gpe_sts_bits[] = {
 		[0] = "PCIE_SCI",
@@ -151,7 +151,7 @@ void soc_clear_pm_registers(uintptr_t pmc_bar)
 	write32((void *)(pmc_bar + GEN_PMCON1), gen_pmcon1 & ~RPS);
 }
 
-void soc_get_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
+void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
 {
 	DEVTREE_CONST struct soc_intel_apollolake_config *config;
 

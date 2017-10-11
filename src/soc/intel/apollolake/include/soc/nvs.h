@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2015-2017 Intel Corp.
  * (Written by Lance Zhao <lijian.zhao@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -44,6 +44,9 @@ typedef struct global_nvs_t {
 	uint8_t		scdo; /* 0x2A - GPIO pad offset relative to the community */
 	uint8_t		uior; /* 0x2B - UART debug controller init on S3
 					 resume */
+	uint8_t		ecps; /* 0x2C - SGX Enabled status */
+	uint64_t	emna; /* 0x2D - 0x34 EPC base address */
+	uint64_t	elng; /* 0x35 - 0x3C EPC Length */
 	uint8_t		unused[212];
 
 	/* ChromeOS specific (0x100 - 0xfff) */

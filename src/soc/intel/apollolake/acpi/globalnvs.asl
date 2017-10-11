@@ -42,6 +42,9 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	SCDP,	8,      // 0x29 - SD_CD GPIO portid
 	SCDO,	8,      // 0x2A - GPIO pad offset relative to the community
 	UIOR,	8,      // 0x2B - UART debug controller init on S3 resume
+	EPCS,   8,      // 0x2C - SGX Enabled status
+	EMNA,   64,     // 0x2D - 0x34 EPC base address
+	ELNG,   64,     // 0x35 - 0x3C EPC Length
 
 	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
 	Offset (0x100),

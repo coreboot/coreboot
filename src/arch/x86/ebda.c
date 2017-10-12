@@ -18,7 +18,6 @@
 #include <string.h>
 #include <arch/io.h>
 #include <arch/ebda.h>
-#include <arch/acpi.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
 
@@ -83,10 +82,6 @@ void setup_ebda(u32 low_memory_size, u16 ebda_segment, u16 ebda_size)
 	u16 low_memory_kb;
 	u16 ebda_kb;
 	void *ebda;
-
-	/* Skip in S3 resume path */
-	if (acpi_is_wakeup_s3())
-		return;
 
 	if (!low_memory_size || !ebda_segment || !ebda_size)
 		return;

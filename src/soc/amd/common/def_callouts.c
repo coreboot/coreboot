@@ -67,17 +67,14 @@ AGESA_STATUS agesa_Reset(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	ResetType = Data;
 	StdHeader = ConfigPtr;
 
-	/* Perform the RESET based upon the ResetType. In case of
-	 * WARM_RESET_WHENEVER and COLD_RESET_WHENEVER, the request will go to
-	 * AmdResetManager. During the critical condition, where reset is
-	 * required immediately, the reset will be invoked directly by writing
-	 * 0x04 to port 0xCF9 (Reset Port).
+	/*
+	 * This should perform the RESET based upon the ResetType, but coreboot
+	 * doesn't have a reset manager to handle a WHENEVER case. Do all
+	 * resets immediately.
 	 */
 	switch (ResetType) {
 	case WARM_RESET_WHENEVER:
 	case COLD_RESET_WHENEVER:
-		break;
-
 	case WARM_RESET_IMMEDIATELY:
 	case COLD_RESET_IMMEDIATELY:
 		Value = 0x06;

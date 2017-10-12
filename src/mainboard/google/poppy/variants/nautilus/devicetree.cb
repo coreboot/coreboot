@@ -311,6 +311,11 @@ chip soc/intel/skylake
 		device pci 17.0 off end # SATA
 		device pci 19.0 on  end # UART #2
 		device pci 19.1 on
+			chip drivers/generic/max98357a
+				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A23)"
+				register "sdmode_delay" = "5"
+				device generic 0 on end
+			end
 			chip drivers/i2c/da7219
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D9_IRQ)"
 				register "btn_cfg" = "50"

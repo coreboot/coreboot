@@ -37,15 +37,21 @@ Device (GPIO)
 	{
 		/* GPIO Community 0 */
 		CreateDWordField (^RBUF, ^COM0._BAS, BAS0)
+		CreateDWordField (^RBUF, ^COM0._LEN, LEN0)
 		Store (^^PCRB (PID_GPIOCOM0), BAS0)
+		Store (GPIO_BASE_SIZE, LEN0)
 
 		/* GPIO Community 1 */
 		CreateDWordField (^RBUF, ^COM1._BAS, BAS1)
+		CreateDWordField (^RBUF, ^COM1._LEN, LEN1)
 		Store (^^PCRB (PID_GPIOCOM1), BAS1)
+		Store (GPIO_BASE_SIZE, LEN1)
 
 		/* GPIO Community 4 */
 		CreateDWordField (^RBUF, ^COM4._BAS, BAS4)
+		CreateDWordField (^RBUF, ^COM4._LEN, LEN3)
 		Store (^^PCRB (PID_GPIOCOM4), BAS4)
+		Store (GPIO_BASE_SIZE, LEN3)
 
 		Return (RBUF)
 	}

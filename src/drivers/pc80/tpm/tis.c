@@ -125,10 +125,11 @@ static const struct device_name atmel_devices[] = {
 
 static const struct device_name infineon_devices[] = {
 	{0x000b, "SLB9635 TT 1.2"},
-	{0x001a, "SLB9660 TT 1.2"},
 #if IS_ENABLED(CONFIG_TPM2)
+	{0x001a, "SLB9665 TT 2.0"},
 	{0x001b, "SLB9670 TT 2.0"},
 #else
+	{0x001a, "SLB9660 TT 1.2"},
 	{0x001b, "SLB9670 TT 1.2"},
 #endif
 	{0xffff}

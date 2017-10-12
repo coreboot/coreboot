@@ -23,6 +23,7 @@
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
 #include <soc/southbridge.h>
+#include <amdblocks/psp.h>
 #include <agesawrapper.h>
 #include <agesawrapper_call.h>
 
@@ -78,10 +79,14 @@ struct chip_operations soc_amd_stoneyridge_ops = {
 	.final = &soc_final
 };
 
-static void do_initenv(void *unused)
+static void earliest_ramstage(void *unused)
 {
 	post_code(0x46);
+	if (IS_ENABLED(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW))
+		psp_load_named_blob(MBOX_BIOS_CMD_SMU_FW2, "smu_fw2");
+
+	post_code(0x47);
 	AGESAWRAPPER(amdinitenv);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, do_initenv, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, earliest_ramstage, NULL);

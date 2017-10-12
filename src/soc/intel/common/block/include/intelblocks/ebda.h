@@ -18,7 +18,7 @@
 
 #include <soc/ebda.h>
 
-#define EBDA_SIGNATURE 0xebda
+#define EBDA_SIGNATURE 0xebdaebda
 
 /*
  * Mainboard Override function
@@ -44,6 +44,10 @@ void fill_soc_memmap_ebda(struct ebda_config *cfg);
  * 4. Store EBDA structure into EBDA area
  */
 void fill_ebda_area(void);
+
+/* Fill the ebda object pointed to by cfg. Object will be zero filled
+ * if signature check fails. */
+void retrieve_ebda_object(struct ebda_config *cfg);
 
 /*
  * EBDA structure

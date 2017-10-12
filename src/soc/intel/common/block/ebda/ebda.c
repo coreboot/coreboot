@@ -15,6 +15,7 @@
 
 #include <arch/ebda.h>
 #include <intelblocks/ebda.h>
+#include <string.h>
 
 /*
  * Mainboard Override function
@@ -46,4 +47,12 @@ void fill_ebda_area(void)
 	create_soc_ebda(cfg);
 	create_mainboard_ebda(cfg);
 	write_ebda_data(cfg, sizeof(*cfg));
+}
+
+void retrieve_ebda_object(struct ebda_config *cfg)
+{
+	read_ebda_data(cfg, sizeof(*cfg));
+
+	if (cfg->signature != EBDA_SIGNATURE)
+		memset(cfg, 0, sizeof(*cfg));
 }

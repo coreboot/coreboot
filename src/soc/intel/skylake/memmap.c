@@ -348,7 +348,7 @@ void *cbmem_top(void)
 	if (sa_get_tseg_base() == 0)
 		return NULL;
 
-	read_ebda_data(cfg, sizeof(*cfg));
+	retrieve_ebda_object(cfg);
 
 	return (void *)(uintptr_t)cfg->tolum_base;
 }

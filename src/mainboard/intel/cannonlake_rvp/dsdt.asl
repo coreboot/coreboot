@@ -39,4 +39,8 @@ DefinitionBlock(
 	// Chrome OS specific
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 	#endif
+
+	// Chipset specific sleep states
+	#include <soc/intel/cannonlake/acpi/sleepstates.asl>
+
 }

@@ -196,6 +196,4 @@ void pch_early_init(void)
 	enable_rtc_upper_bank();
 
 	heci_init(HECI1_BASE_ADDRESS);
-
-	clear_cbmem_top();
 }

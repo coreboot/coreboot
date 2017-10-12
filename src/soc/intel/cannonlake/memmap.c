@@ -13,6 +13,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+#include <arch/ebda.h>
 #include <arch/io.h>
 #include <cbmem.h>
 #include <chip.h>
@@ -20,8 +22,8 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/util.h>
+#include <intelblocks/ebda.h>
 #include <intelblocks/systemagent.h>
-#include <soc/bootblock.h>
 #include <soc/pci_devs.h>
 #include <soc/smm.h>
 #include <soc/systemagent.h>
@@ -79,20 +81,6 @@ int smm_subregion(int sub, void **start, size_t *size)
 	*size = sub_size;
 
 	return 0;
-}
-
-static void *top_of_ram_register(void)
-{
-	int num;
-	int offset;
-	num = (read32((uintptr_t *)HPET_BASE_ADDRESS) >> 8) & 0x1f;
-	offset = 0x100 + (0x20 * num) + 0x08;
-	return (void *)(uintptr_t)(HPET_BASE_ADDRESS + offset);
-}
-
-void clear_cbmem_top(void)
-{
-	write32(top_of_ram_register(), 0);
 }
 
 static bool is_ptt_enable(void)
@@ -268,44 +256,62 @@ static uintptr_t calculate_dram_base(size_t *reserved_mem_size)
 	return dram_base;
 }
 
-void cbmem_top_init(void)
+/* Fill up memory layout information */
+void fill_soc_memmap_ebda(struct ebda_config *cfg)
 {
-	uintptr_t top;
 	size_t chipset_mem_size;
 
-	top = calculate_dram_base(&chipset_mem_size);
-
-	write32(top_of_ram_register(), top);
+	cfg->tolum_base = calculate_dram_base(&chipset_mem_size);
 }
 
+void cbmem_top_init(void)
+{
+	/* Fill up EBDA area */
+	fill_ebda_area();
+}
+
+/*
+ *     +-------------------------+  Top of RAM (aligned)
+ *     | System Management Mode  |
+ *     |      code and data      |  Length: CONFIG_TSEG_SIZE
+ *     |         (TSEG)          |
+ *     +-------------------------+  SMM base (aligned)
+ *     |                         |
+ *     | Chipset Reserved Memory |
+ *     |                         |
+ *     +-------------------------+  top_of_ram (aligned)
+ *     |                         |
+ *     |       CBMEM Root        |
+ *     |                         |
+ *     +-------------------------+
+ *     |                         |
+ *     |   FSP Reserved Memory   |
+ *     |                         |
+ *     +-------------------------+
+ *     |                         |
+ *     |  Various CBMEM Entries  |
+ *     |                         |
+ *     +-------------------------+  top_of_stack (8 byte aligned)
+ *     |                         |
+ *     |   stack (CBMEM Entry)   |
+ *     |                         |
+ *     +-------------------------+
+ */
 void *cbmem_top(void)
 {
+	struct ebda_config ebda_cfg;
+	struct ebda_config *cfg = &ebda_cfg;
+
 	/*
-	 *     +-------------------------+  Top of RAM (aligned)
-	 *     | System Management Mode  |
-	 *     |      code and data      |  Length: CONFIG_TSEG_SIZE
-	 *     |         (TSEG)          |
-	 *     +-------------------------+  SMM base (aligned)
-	 *     |                         |
-	 *     | Chipset Reserved Memory |
-	 *     |                         |
-	 *     +-------------------------+  top_of_ram (aligned)
-	 *     |                         |
-	 *     |       CBMEM Root        |
-	 *     |                         |
-	 *     +-------------------------+
-	 *     |                         |
-	 *     |   FSP Reserved Memory   |
-	 *     |                         |
-	 *     +-------------------------+
-	 *     |                         |
-	 *     |  Various CBMEM Entries  |
-	 *     |                         |
-	 *     +-------------------------+  top_of_stack (8 byte aligned)
-	 *     |                         |
-	 *     |   stack (CBMEM Entry)   |
-	 *     |                         |
-	 *     +-------------------------+
+	 * Check if Tseg has been initialized, we will use this as a flag
+	 * to check if the MRC is done, and only then continue to read the
+	 * PRMMR_BASE MSR. The system hangs if PRMRR_BASE MSR is read before
+	 * PRMRR_MASK MSR lock bit is set.
 	 */
-	return (void *)(uintptr_t)read32(top_of_ram_register());
+	if (sa_get_tseg_base() == 0)
+		return NULL;
+
+	retrieve_ebda_object(cfg);
+
+	return (void *)(uintptr_t)cfg->tolum_base;
 }

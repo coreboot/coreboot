@@ -32,6 +32,8 @@
 #define MBOX_BIOS_CMD_CLEAR_S3_STS 0x07
 #define MBOX_BIOS_CMD_C3_DATA_INFO 0x08
 #define MBOX_BIOS_CMD_NOP          0x09
+#define MBOX_BIOS_CMD_SMU_FW       0x19
+#define MBOX_BIOS_CMD_SMU_FW2      0x1a
 #define MBOX_BIOS_CMD_ABORT        0xfe
 
 /* generic PSP interface status */
@@ -79,11 +81,23 @@ struct mbox_default_buffer {	/* command-response buffer unused by command */
 #define PSPSTS_SEND_ERROR   4
 #define PSPSTS_INIT_TIMEOUT 5
 #define PSPSTS_CMD_TIMEOUT  6
+/* other error codes */
+#define PSPSTS_UNSUPPORTED  7
+#define PSPSTS_INVALID_NAME 8
+#define PSPSTS_INVALID_BLOB 9
 
 #define PSP_INIT_TIMEOUT 10000 /* 10 seconds */
 #define PSP_CMD_TIMEOUT 1000 /* 1 second */
 
 /* BIOS-to-PSP functions return 0 if successful, else negative value */
+
 int psp_notify_dram(void);
+
+/*
+ * type: identical to the corresponding PSP command, e.g. pass
+ *       MBOX_BIOS_CMD_SMU_FW2 to load SMU FW2 blob.
+ * name: cbfs file name
+ */
+int psp_load_named_blob(int type, const char *name);
 
 #endif /* __AMD_PSP_H__ */

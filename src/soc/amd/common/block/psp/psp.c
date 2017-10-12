@@ -14,6 +14,8 @@
  */
 
 #include <arch/io.h>
+#include <cbfs.h>
+#include <region_file.h>
 #include <timer.h>
 #include <device/pci_def.h>
 #include <console/console.h>
@@ -198,4 +200,59 @@ int psp_notify_dram(void)
 		printk(BIOS_DEBUG, "OK\n");
 
 	return cmd_status;
+}
+
+/*
+ * Tell the PSP to load a firmware blob from a location in the BIOS image.
+ */
+static int psp_load_blob(int type, void *addr)
+{
+	int cmd_status;
+
+	if (!IS_ENABLED(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW)) {
+		printk(BIOS_ERR, "BUG: Selectable firmware is not supported\n");
+		return PSPSTS_UNSUPPORTED;
+	}
+
+	/* only two types currently supported */
+	if (type != MBOX_BIOS_CMD_SMU_FW && type != MBOX_BIOS_CMD_SMU_FW2) {
+		printk(BIOS_ERR, "BUG: Invalid PSP blob type %x\n", type);
+		return PSPSTS_INVALID_BLOB;
+	}
+
+	printk(BIOS_DEBUG, "PSP: Load blob type %x from @%p... ", type, addr);
+
+	/* Blob commands use the buffer registers as data, not pointer to buf */
+	cmd_status = send_psp_command(type, addr);
+
+	if (cmd_status)
+		printk(BIOS_DEBUG, "%s\n", status_to_string(cmd_status));
+	else
+		printk(BIOS_DEBUG, "OK\n");
+
+	return cmd_status;
+}
+
+int psp_load_named_blob(int type, const char *name)
+{
+	void *blob;
+	struct cbfsf cbfs_file;
+	struct region_device rdev;
+	int r;
+
+	if (cbfs_boot_locate(&cbfs_file, name, NULL)) {
+		printk(BIOS_ERR, "BUG: Cannot locate blob for PSP loading\n");
+		return PSPSTS_INVALID_NAME;
+	}
+
+	cbfs_file_data(&rdev, &cbfs_file);
+	blob = rdev_mmap_full(&rdev);
+	if (blob) {
+		r = psp_load_blob(type, blob);
+		rdev_munmap(&rdev, blob);
+	} else {
+		printk(BIOS_ERR, "BUG: Cannot map blob for PSP loading\n");
+		return PSPSTS_INVALID_NAME;
+	}
+	return r;
 }

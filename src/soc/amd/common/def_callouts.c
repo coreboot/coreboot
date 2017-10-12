@@ -33,8 +33,12 @@ AGESA_STATUS GetBiosCallout(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 		if (BiosCallouts[i].CalloutName == Func)
 			break;
 	}
-	if (i >= BiosCalloutsLen)
+
+	if (i >= BiosCalloutsLen) {
+		printk(BIOS_ERR, "ERROR: AGESA Callout Not Supported: 0x%x",
+			(u32)Func);
 		return AGESA_UNSUPPORTED;
+	}
 
 	return BiosCallouts[i].CalloutPtr(Func, Data, ConfigPtr);
 }

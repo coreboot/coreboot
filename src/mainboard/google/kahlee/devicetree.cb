@@ -34,6 +34,7 @@ chip soc/amd/stoneyridge
 		device pci 2.4 on  end # x1 PCIe slot
 		device pci 2.5 on  end # Cardreader
 		# devices on the NB/SB Link, but on the same pci bus
+		device pci 8.0 on  end # PSP
 		device pci 9.0 on  end # PCIe Host Bridge
 		device pci 9.2 on  end # HDA
 		device pci 10.0 on  end # xHCI

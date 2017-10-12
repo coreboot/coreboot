@@ -39,6 +39,7 @@ static AGESA_STATUS fch_initreset(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 }
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
+	{AGESA_DO_RESET,                 agesa_Reset },
 	{AGESA_FCH_OEM_CALLOUT,          fch_initreset },
 	{AGESA_GNB_PCIE_SLOT_RESET,      agesa_PcieSlotResetControl }
 };

@@ -90,8 +90,18 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 
 		/* EHCI configuration */
 		FchParams->Usb.Ehci3Enable = !IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
-		FchParams->Usb.Ehci1Enable = FALSE;	// Disable EHCI 0 (port 0 to 3)
-		FchParams->Usb.Ehci2Enable = TRUE;	// Enable EHCI 1 ( port 4 to 7) port 4 and 5 to EHCI header port 6 and 7 to PCIe slot.
+
+		if (IS_ENABLED(CONFIG_BOARD_PCENGINES_APU2)) {
+			// Disable EHCI 0 (port 0 to 3)
+			FchParams->Usb.Ehci1Enable = FALSE;
+		} else {
+			// Enable EHCI 0 (port 0 to 3)
+			FchParams->Usb.Ehci1Enable = TRUE;
+		}
+
+		// Enable EHCI 1 ( port 4 to 7)
+		// port 4 and 5 to EHCI header port 6 and 7 to PCIe slot.
+		FchParams->Usb.Ehci2Enable = TRUE;
 
 		/* sata configuration */
 		FchParams->Sata.SataDevSlpPort0 = 0;	// Disable DEVSLP0 and 1 to make sure GPIO55 and 59 are not used by DEVSLP

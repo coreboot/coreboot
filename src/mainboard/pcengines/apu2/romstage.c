@@ -116,7 +116,12 @@ static void early_lpc_init(void)
 	//
 	// Configure output disabled, value low, pull up/down disabled
 	//
-	configure_gpio(ACPI_MMIO_BASE, IOMUX_GPIO_32, Function0, GPIO_32, setting);
+	if (IS_ENABLED(CONFIG_BOARD_PCENGINES_APU2) ||
+		IS_ENABLED(CONFIG_BOARD_PCENGINES_APU3)) {
+		configure_gpio(ACPI_MMIO_BASE,
+			IOMUX_GPIO_32, Function0, GPIO_32, setting);
+	}
+
 	configure_gpio(ACPI_MMIO_BASE, IOMUX_GPIO_49, Function2, GPIO_49, setting);
 	configure_gpio(ACPI_MMIO_BASE, IOMUX_GPIO_50, Function2, GPIO_50, setting);
 	configure_gpio(ACPI_MMIO_BASE, IOMUX_GPIO_71, Function0, GPIO_71, setting);
@@ -124,6 +129,11 @@ static void early_lpc_init(void)
 	// Configure output enabled, value low, pull up/down disabled
 	//
 	setting = 0x1 << GPIO_OUTPUT_ENABLE;
+	if (IS_ENABLED(CONFIG_BOARD_PCENGINES_APU3)) {
+		configure_gpio(ACPI_MMIO_BASE,
+			IOMUX_GPIO_33, Function0, GPIO_33, setting);
+	}
+
 	configure_gpio(ACPI_MMIO_BASE, IOMUX_GPIO_57, Function1, GPIO_57, setting);
 	configure_gpio(ACPI_MMIO_BASE, IOMUX_GPIO_58, Function1, GPIO_58, setting);
 	configure_gpio(ACPI_MMIO_BASE, IOMUX_GPIO_59, Function3, GPIO_59, setting);
@@ -131,6 +141,13 @@ static void early_lpc_init(void)
 	// Configure output enabled, value high, pull up/down disabled
 	//
 	setting = 0x1 << GPIO_OUTPUT_ENABLE | 0x1 << GPIO_OUTPUT_VALUE;
+	if (IS_ENABLED(CONFIG_BOARD_PCENGINES_APU5)) {
+		configure_gpio(ACPI_MMIO_BASE,
+			IOMUX_GPIO_32, Function0, GPIO_32, setting);
+		configure_gpio(ACPI_MMIO_BASE,
+			IOMUX_GPIO_33, Function0, GPIO_33, setting);
+	}
+
 	configure_gpio(ACPI_MMIO_BASE, IOMUX_GPIO_51, Function2, GPIO_51, setting);
 	configure_gpio(ACPI_MMIO_BASE, IOMUX_GPIO_55, Function3, GPIO_55, setting);
 	configure_gpio(ACPI_MMIO_BASE, IOMUX_GPIO_64, Function2, GPIO_64, setting);

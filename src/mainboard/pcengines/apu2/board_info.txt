@@ -1,4 +1,4 @@
-Board name: apu2
+Board name: apu2 apu3 apu5
 Board URL: http://www.pcengines.ch/apu2c2.htm
 Category: half
 ROM package: SOIC-8

@@ -32,6 +32,7 @@ ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-y += finalize.c
 ramstage-y += gpio.c
+ramstage-y += graphics.c
 ramstage-y += gspi.c
 ramstage-y += gpio.c
 ramstage-y += lpc.c

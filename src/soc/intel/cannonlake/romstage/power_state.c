@@ -24,14 +24,20 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 
-static struct chipset_power_state power_state CAR_GLOBAL;
+int acpi_get_sleep_type(void)
+{
+	struct chipset_power_state *ps;
+
+	ps = pmc_get_power_state();
+	return ps->prev_sleep_state;
+}
 
 static void migrate_power_state(int is_recovery)
 {
 	struct chipset_power_state *ps_cbmem;
 	struct chipset_power_state *ps_car;
 
-	ps_car = car_get_var_ptr(&power_state);
+	ps_car = pmc_get_power_state();
 	ps_cbmem = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*ps_cbmem));
 
 	if (ps_cbmem == NULL) {

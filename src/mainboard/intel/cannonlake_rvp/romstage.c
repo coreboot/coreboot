@@ -36,18 +36,10 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	mainboard_fill_rcomp_res_data(&mem_cfg->RcompResistor);
 	mainboard_fill_rcomp_strength_data(&mem_cfg->RcompTarget);
 
-	if (IS_ENABLED(CONFIG_BOARD_INTEL_CANNONLAKE_RVPU)) {
-		mem_cfg->DqPinsInterleaved = 1;
-		mem_cfg->CaVrefConfig = 2; /* VREF_CA->CHA VREF_DQ_B->CHB */
-		spd_index = 1;
-	} else { /* For CONFIG_BOARD_INTEL_CANNONLAKE_RVPY */
-		mem_cfg->DqPinsInterleaved = 0;
-		mem_cfg->CaVrefConfig = 0; /* VREF_CA->CHA/CHB */
-		mem_cfg->ECT = 1; /* Early Command Training Enabled */
-		spd_index = 2;
-	}
-
-	printk(BIOS_DEBUG,"SPD INDEX =0x%u\n", spd_index);
+	mem_cfg->DqPinsInterleaved = 0;
+	mem_cfg->CaVrefConfig = 0; /* VREF_CA->CHA/CHB */
+	mem_cfg->ECT = 1; /* Early Command Training Enabled */
+	spd_index = 2;
 
 	struct region_device spd_rdev;
 

@@ -26,6 +26,10 @@ enum {
 	SKU_160_NASHER = 160,
 	SKU_161_NASHER = 161,
 	SKU_162_NASHER = 162,
+	SKU_163_NASHER360 = 163,
+	SKU_164_NASHER360 = 164,
+	SKU_165_NASHER360 = 165,
+	SKU_166_NASHER360 = 166,
 };
 
 uint8_t variant_board_sku(void)
@@ -74,6 +78,10 @@ const char *mainboard_vbt_filename(void)
 	case SKU_160_NASHER:
 	case SKU_161_NASHER:
 	case SKU_162_NASHER:
+	case SKU_163_NASHER360:
+	case SKU_164_NASHER360:
+	case SKU_165_NASHER360:
+	case SKU_166_NASHER360:
 		return "vbt-nasher.bin";
 		break;
 	default:

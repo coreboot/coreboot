@@ -126,4 +126,10 @@ struct google_chromeec_event_info {
 void google_chromeec_events_init(const struct google_chromeec_event_info *info,
 					bool is_s3_wakeup);
 
+/*
+ * Get next available MKBP event in ec_response_get_next_event. Returns 0 on
+ * success, < 0 otherwise.
+ */
+int google_chromeec_get_mkbp_event(struct ec_response_get_next_event *event);
+
 #endif /* _EC_GOOGLE_CHROMEEC_EC_H */

@@ -160,6 +160,21 @@ int google_chromeec_clear_events_b(u32 mask)
 		EC_CMD_HOST_EVENT_CLEAR_B, mask);
 }
 
+int google_chromeec_get_mkbp_event(struct ec_response_get_next_event *event)
+{
+	struct chromeec_command cmd;
+
+	cmd.cmd_code = EC_CMD_GET_NEXT_EVENT;
+	cmd.cmd_version = 0;
+	cmd.cmd_data_in = NULL;
+	cmd.cmd_size_in = 0;
+	cmd.cmd_data_out = event;
+	cmd.cmd_size_out = sizeof(*event);
+	cmd.cmd_dev_index = 0;
+
+	return google_chromeec_command(&cmd);
+}
+
 /* Get the current device event mask */
 uint32_t google_chromeec_get_device_enabled_events(void)
 {

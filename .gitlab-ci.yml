@@ -77,7 +77,6 @@ build_crosscompiler:
     paths:
       - ${RELEASE_DIR}/${PLATFORM}_* 
   only:
-    - web
     - tag
 
 .publish_rom: &publish_rom
@@ -90,7 +89,6 @@ build_crosscompiler:
     - curl -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -X MKCOL "${UPLOADER_URL}/${PLATFORM}/"; curl -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -X MKCOL "${UPLOADER_URL}/${PLATFORM}/releases/"
     - for file in ${RELEASE_DIR}/${PLATFORM}_*.tar.gz; do curl -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -T ${file} "${UPLOADER_URL}/${PLATFORM}/releases/"; done
   only:
-    - web
     - tag
     
 build:apu2:

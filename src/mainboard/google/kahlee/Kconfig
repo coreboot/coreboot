@@ -70,4 +70,8 @@ config GBB_HWID
 	depends on CHROMEOS
 	default "KAHLEE TEST 6421"
 
+config AMD_FWM_POSITION_INDEX
+	int
+	default 1
+
 endif # BOARD_GOOGLE_KAHLEE

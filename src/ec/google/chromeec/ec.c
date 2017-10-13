@@ -261,20 +261,28 @@ void google_chromeec_log_events(u32 mask)
 {
 	u8 event;
 	u32 wake_mask;
+	bool restore_wake_mask = false;
 
 	if (!IS_ENABLED(CONFIG_ELOG))
 		return;
 
-	/* Set wake mask so events will be read from ACPI interface */
-	wake_mask = google_chromeec_get_wake_mask();
-	google_chromeec_set_wake_mask(mask);
+	/*
+	 * If the EC supports unified wake masks, then there is no need to set
+	 * wake mask before reading out the host events.
+	 */
+	if (google_chromeec_check_feature(EC_FEATURE_UNIFIED_WAKE_MASKS) != 1) {
+		wake_mask = google_chromeec_get_wake_mask();
+		google_chromeec_set_wake_mask(mask);
+		restore_wake_mask = true;
+	}
 
 	while ((event = google_chromeec_get_event()) != 0) {
 		if (EC_HOST_EVENT_MASK(event) & mask)
 			elog_add_event_byte(ELOG_TYPE_EC_EVENT, event);
 	}
 
-	google_chromeec_set_wake_mask(wake_mask);
+	if (restore_wake_mask)
+		google_chromeec_set_wake_mask(wake_mask);
 }
 
 void google_chromeec_events_init(const struct google_chromeec_event_info *info,

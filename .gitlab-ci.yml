@@ -24,7 +24,8 @@ build_crosscompiler:
     paths:
       - ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/coreboot/util/crossgcc/xgcc
   only:
-    - web      
+    - tags
+    - web    
       
 .build_rom_apu: &build_rom_apu
   variables:
@@ -50,7 +51,8 @@ build_crosscompiler:
     paths:
       - ${RELEASE_DIR}/${PLATFORM}_*
   only:
-    - web      
+    - tags
+    - web     
       
 .test_rom: &test_rom
   variables:
@@ -61,6 +63,7 @@ build_crosscompiler:
   script:
     - ls -la ${RELEASE_DIR}/${PLATFORM}_*.rom
   only:
+    - tags
     - web
 
 .sign_rom: &sign_rom
@@ -77,7 +80,7 @@ build_crosscompiler:
     paths:
       - ${RELEASE_DIR}/${PLATFORM}_* 
   only:
-    - tag
+    - tags
 
 .publish_rom: &publish_rom
   variables:
@@ -87,9 +90,9 @@ build_crosscompiler:
     - docker
   script:
     - curl -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -X MKCOL "${UPLOADER_URL}/${PLATFORM}/"; curl -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -X MKCOL "${UPLOADER_URL}/${PLATFORM}/releases/"
-    - for file in ${RELEASE_DIR}/${PLATFORM}_*.tar.gz; do curl -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -T ${file} "${UPLOADER_URL}/${PLATFORM}/releases/"; done
+    - for file in ${RELEASE_DIR}/${PLATFORM}_*.tar.gz; do curl --fail -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -T ${file} "${UPLOADER_URL}/${PLATFORM}/releases/"; done
   only:
-    - tag
+    - tags
     
 build:apu2:
   <<: *build_rom_apu

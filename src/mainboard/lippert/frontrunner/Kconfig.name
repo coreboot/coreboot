@@ -1,2 +1,0 @@
-config BOARD_LIPPERT_FRONTRUNNER
-	bool "Cool FrontRunner"

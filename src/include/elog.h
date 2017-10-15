@@ -215,6 +215,10 @@ struct elog_event_mem_cache_update {
 #define ELOG_EC_DEVICE_EVENT_DSP            0x02
 #define ELOG_EC_DEVICE_EVENT_WIFI           0x03
 
+/* S0ix sleep/wake */
+#define ELOG_TYPE_S0IX_ENTER              0xaf
+#define ELOG_TYPE_S0IX_EXIT               0xb0
+
 #if IS_ENABLED(CONFIG_ELOG)
 /* Eventlog backing storage must be initialized before calling elog_init(). */
 extern int elog_init(void);
@@ -248,5 +252,17 @@ extern u32 gsmi_exec(u8 command, u32 *param);
 
 u32 boot_count_read(void);
 u32 boot_count_increment(void);
+
+/*
+ * Callback from GSMI handler to allow platform to log any wake source
+ * information.
+ */
+void elog_gsmi_cb_platform_log_wake_source(void);
+
+/*
+ * Callback from GSMI handler to allow mainboard to log any wake source
+ * information.
+ */
+void elog_gsmi_cb_mainboard_log_wake_source(void);
 
 #endif /* ELOG_H_ */

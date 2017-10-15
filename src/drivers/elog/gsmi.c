@@ -25,6 +25,8 @@
 
 #define GSMI_CMD_SET_EVENT_LOG		0x08
 #define GSMI_CMD_CLEAR_EVENT_LOG	0x09
+#define GSMI_CMD_LOG_S0IX_SUSPEND	0x0a
+#define GSMI_CMD_LOG_S0IX_RESUME	0x0b
 #define GSMI_CMD_HANDSHAKE_TYPE		0xc1
 
 #define GSMI_HANDSHAKE_NONE		0x7f
@@ -45,6 +47,16 @@ struct gsmi_clear_eventlog_param {
 	u32 percentage;
 	u32 data_type;
 } __packed;
+
+void __attribute__((weak)) elog_gsmi_cb_platform_log_wake_source(void)
+{
+	/* Default weak implementation, does nothing. */
+}
+
+void __attribute__((weak)) elog_gsmi_cb_mainboard_log_wake_source(void)
+{
+	/* Default weak implementation, does nothing. */
+}
 
 /* Param is usually EBX, ret in EAX */
 u32 gsmi_exec(u8 command, u32 *param)
@@ -103,6 +115,19 @@ u32 gsmi_exec(u8 command, u32 *param)
 
 		if (elog_clear() == 0)
 			ret = GSMI_RET_SUCCESS;
+		break;
+
+	case GSMI_CMD_LOG_S0IX_SUSPEND:
+	case GSMI_CMD_LOG_S0IX_RESUME:
+		ret = GSMI_RET_SUCCESS;
+
+		if (command == GSMI_CMD_LOG_S0IX_SUSPEND)
+			elog_add_event(ELOG_TYPE_S0IX_ENTER);
+		else {
+			elog_add_event(ELOG_TYPE_S0IX_EXIT);
+			elog_gsmi_cb_platform_log_wake_source();
+			elog_gsmi_cb_mainboard_log_wake_source();
+		}
 		break;
 
 	default:

@@ -25,8 +25,6 @@
 #include "../../../southbridge/intel/i82801gx/i82801gx.h"
 #elif IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801DX)
 #include "../../../southbridge/intel/i82801dx/i82801dx.h"
-#elif IS_ENABLED(CONFIG_SOC_INTEL_SCH)
-#include "../../../soc/intel/sch/sch.h"
 #elif IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801IX)
 #include "../../../southbridge/intel/i82801ix/i82801ix.h"
 #elif IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801JX)

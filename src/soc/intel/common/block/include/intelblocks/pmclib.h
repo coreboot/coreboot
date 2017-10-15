@@ -149,7 +149,9 @@ struct chipset_power_state *pmc_get_power_state(void);
 
 /*
  * Reads and prints ACPI specific PM registers which are common across
- * chipsets. Returns the previous sleep state which is one of ACPI_SX values.
+ * chipsets. Returns the previous sleep state which is one of ACPI_SX
+ * values. Additionally, it also disables all GPEs after GPE_EN
+ * registers are read.
  */
 int pmc_fill_power_state(struct chipset_power_state *ps);
 

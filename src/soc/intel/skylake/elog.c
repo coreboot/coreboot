@@ -20,6 +20,7 @@
 #include <device/pci_ops.h>
 #include <stdint.h>
 #include <elog.h>
+#include <intelblocks/pmclib.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/smbus.h>
@@ -382,3 +383,10 @@ static void pch_log_state(void *unused)
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, pch_log_state, NULL);
+
+void elog_gsmi_cb_platform_log_wake_source(void)
+{
+	struct chipset_power_state ps;
+	pmc_fill_pm_reg_info(&ps);
+	pch_log_wake_source(&ps);
+}

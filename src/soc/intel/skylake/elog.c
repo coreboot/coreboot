@@ -170,7 +170,7 @@ static bool pch_xhci_update_wake_event(device_t dev)
 }
 
 struct pme_status_info {
-	int devfn;
+	device_t dev;
 	uint8_t reg_offset;
 	uint32_t elog_event;
 };
@@ -184,7 +184,7 @@ static void pch_log_add_elog_event(const struct pme_status_info *info,
 	 * If wake source is XHCI, check for detailed wake source events on
 	 * USB2/3 ports.
 	 */
-	if ((info->devfn == PCH_DEVFN_XHCI) && pch_xhci_update_wake_event(dev))
+	if ((info->dev == PCH_DEV_XHCI) && pch_xhci_update_wake_event(dev))
 		return;
 
 	elog_add_event_wake(info->elog_event, 0);
@@ -197,18 +197,17 @@ static void pch_log_pme_internal_wake_source(void)
 	uint16_t val;
 	bool dev_found = false;
 
-	static const struct pme_status_info pme_status_info[] = {
-		{ PCH_DEVFN_HDA, 0x54, ELOG_WAKE_SOURCE_PME_HDA },
-		{ PCH_DEVFN_GBE, 0xcc, ELOG_WAKE_SOURCE_PME_GBE },
-		{ PCH_DEVFN_SATA, 0x74, ELOG_WAKE_SOURCE_PME_SATA },
-		{ PCH_DEVFN_CSE, 0x54, ELOG_WAKE_SOURCE_PME_CSE },
-		{ PCH_DEVFN_XHCI, 0x74, ELOG_WAKE_SOURCE_PME_XHCI },
-		{ PCH_DEVFN_USBOTG, 0x84, ELOG_WAKE_SOURCE_PME_XDCI },
+	struct pme_status_info pme_status_info[] = {
+		{ PCH_DEV_HDA, 0x54, ELOG_WAKE_SOURCE_PME_HDA },
+		{ PCH_DEV_GBE, 0xcc, ELOG_WAKE_SOURCE_PME_GBE },
+		{ PCH_DEV_SATA, 0x74, ELOG_WAKE_SOURCE_PME_SATA },
+		{ PCH_DEV_CSE, 0x54, ELOG_WAKE_SOURCE_PME_CSE },
+		{ PCH_DEV_XHCI, 0x74, ELOG_WAKE_SOURCE_PME_XHCI },
+		{ PCH_DEV_USBOTG, 0x84, ELOG_WAKE_SOURCE_PME_XDCI },
 	};
 
 	for (i = 0; i < ARRAY_SIZE(pme_status_info); i++) {
-		dev = dev_find_slot(0, pme_status_info[i].devfn);
-
+		dev = pme_status_info[i].dev;
 		if (!dev)
 			continue;
 
@@ -232,23 +231,23 @@ static void pch_log_rp_wake_source(void)
 	device_t dev;
 	uint32_t val;
 
-	static const struct pme_status_info pme_status_info[] = {
-		{ PCH_DEVFN_PCIE1, 0x60, ELOG_WAKE_SOURCE_PME_PCIE1 },
-		{ PCH_DEVFN_PCIE2, 0x60, ELOG_WAKE_SOURCE_PME_PCIE2 },
-		{ PCH_DEVFN_PCIE3, 0x60, ELOG_WAKE_SOURCE_PME_PCIE3 },
-		{ PCH_DEVFN_PCIE4, 0x60, ELOG_WAKE_SOURCE_PME_PCIE4 },
-		{ PCH_DEVFN_PCIE5, 0x60, ELOG_WAKE_SOURCE_PME_PCIE5 },
-		{ PCH_DEVFN_PCIE6, 0x60, ELOG_WAKE_SOURCE_PME_PCIE6 },
-		{ PCH_DEVFN_PCIE7, 0x60, ELOG_WAKE_SOURCE_PME_PCIE7 },
-		{ PCH_DEVFN_PCIE8, 0x60, ELOG_WAKE_SOURCE_PME_PCIE8 },
-		{ PCH_DEVFN_PCIE9, 0x60, ELOG_WAKE_SOURCE_PME_PCIE9 },
-		{ PCH_DEVFN_PCIE10, 0x60, ELOG_WAKE_SOURCE_PME_PCIE10 },
-		{ PCH_DEVFN_PCIE11, 0x60, ELOG_WAKE_SOURCE_PME_PCIE11 },
-		{ PCH_DEVFN_PCIE12, 0x60, ELOG_WAKE_SOURCE_PME_PCIE12 },
+	struct pme_status_info pme_status_info[] = {
+		{ PCH_DEV_PCIE1, 0x60, ELOG_WAKE_SOURCE_PME_PCIE1 },
+		{ PCH_DEV_PCIE2, 0x60, ELOG_WAKE_SOURCE_PME_PCIE2 },
+		{ PCH_DEV_PCIE3, 0x60, ELOG_WAKE_SOURCE_PME_PCIE3 },
+		{ PCH_DEV_PCIE4, 0x60, ELOG_WAKE_SOURCE_PME_PCIE4 },
+		{ PCH_DEV_PCIE5, 0x60, ELOG_WAKE_SOURCE_PME_PCIE5 },
+		{ PCH_DEV_PCIE6, 0x60, ELOG_WAKE_SOURCE_PME_PCIE6 },
+		{ PCH_DEV_PCIE7, 0x60, ELOG_WAKE_SOURCE_PME_PCIE7 },
+		{ PCH_DEV_PCIE8, 0x60, ELOG_WAKE_SOURCE_PME_PCIE8 },
+		{ PCH_DEV_PCIE9, 0x60, ELOG_WAKE_SOURCE_PME_PCIE9 },
+		{ PCH_DEV_PCIE10, 0x60, ELOG_WAKE_SOURCE_PME_PCIE10 },
+		{ PCH_DEV_PCIE11, 0x60, ELOG_WAKE_SOURCE_PME_PCIE11 },
+		{ PCH_DEV_PCIE12, 0x60, ELOG_WAKE_SOURCE_PME_PCIE12 },
 	};
 
 	for (i = 0; i < ARRAY_SIZE(pme_status_info); i++) {
-		dev = dev_find_slot(0, pme_status_info[i].devfn);
+		dev = pme_status_info[i].dev;
 
 		if (!dev)
 			continue;

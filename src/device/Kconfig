@@ -605,23 +605,6 @@ config INTEL_GMA_VBT_FILE
 	help
 	  The path and filename of the VBT binary.
 
-config INTEL_MBI
-	bool "Add an MBI image"
-	depends on NORTHBRIDGE_INTEL_I82830
-	help
-	  Select this option if you have an Intel MBI image that you would
-	  like to add to your ROM.
-
-	  You will be able to specify the location and file name of the
-	  image later.
-
-config MBI_FILE
-	string "Intel MBI path and filename"
-	depends on INTEL_MBI
-	default "mbi.bin"
-	help
-	  The path and filename of the file to use as VGA BIOS.
-
 config SOFTWARE_I2C
 	bool "Enable I2C controller emulation in software"
 	default n

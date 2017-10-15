@@ -43,10 +43,6 @@ cbfs-files-$(CONFIG_VGA_BIOS) += pci$(stripped_vgabios_id).rom
 pci$(stripped_vgabios_id).rom-file := $(call strip_quotes,$(CONFIG_VGA_BIOS_FILE))
 pci$(stripped_vgabios_id).rom-type := optionrom
 
-cbfs-files-$(CONFIG_INTEL_MBI) += mbi.bin
-mbi.bin-file := $(call strip_quotes,$(CONFIG_MBI_FILE))
-mbi.bin-type := mbi
-
 ###############################################################################
 # common support for early assembly includes
 ###############################################################################

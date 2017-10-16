@@ -23,5 +23,5 @@ extern const GPIO_CONTROL oem_kahlee_gpio[];
 
 void platform_FchParams_reset(FCH_RESET_DATA_BLOCK *FchParams_reset)
 {
-	FchParams_reset->EarlyOemGpioTable = oem_kahlee_gpio;
+	FchParams_reset->EarlyOemGpioTable = (void *)oem_kahlee_gpio;
 }

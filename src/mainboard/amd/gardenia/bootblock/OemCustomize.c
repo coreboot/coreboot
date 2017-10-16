@@ -102,8 +102,8 @@ static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
 	.Flags        = DESCRIPTOR_TERMINATE_LIST,
 	.SocketId     = 0,
-	.PciePortList = PortList,
-	.DdiLinkList  = DdiList
+	.PciePortList = (void *)PortList,
+	.DdiLinkList  = (void *)DdiList
 };
 
 static const UINT32 AzaliaCodecAlc286Table[] = {
@@ -150,7 +150,7 @@ static CONST CODEC_VERB_TABLE_LIST CodecTableList[] = {
 /*---------------------------------------------------------------------------*/
 VOID OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly)
 {
-	InitEarly->GnbConfig.PcieComplexList = &PcieComplex;
+	InitEarly->GnbConfig.PcieComplexList = (void *)&PcieComplex;
 	InitEarly->PlatformConfig.AzaliaCodecVerbTable =
 					(uint64_t)(uintptr_t)CodecTableList;
 }

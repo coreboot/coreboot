@@ -23,7 +23,7 @@ extern const GPIO_CONTROL oem_kahlee_gpio[];
 
 void platform_FchParams_env(FCH_DATA_BLOCK *FchParams_env)
 {
-	FchParams_env->PostOemGpioTable = oem_kahlee_gpio;
+	FchParams_env->PostOemGpioTable = (void *)oem_kahlee_gpio;
 
 	/* SDHCI/MMC configuration */
 	FchParams_env->Sd.SdSlotType = 1; // EMMC

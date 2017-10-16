@@ -101,8 +101,8 @@ static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
 	.Flags        = DESCRIPTOR_TERMINATE_LIST,
 	.SocketId     = 0,
-	.PciePortList = PortList,
-	.DdiLinkList  = DdiList
+	.PciePortList = (void *)PortList,
+	.DdiLinkList  = (void *)DdiList
 };
 
 /*---------------------------------------------------------------------------*/
@@ -123,7 +123,7 @@ static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
 /*---------------------------------------------------------------------------*/
 VOID OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly)
 {
-	InitEarly->GnbConfig.PcieComplexList = &PcieComplex;
+	InitEarly->GnbConfig.PcieComplexList = (void *)&PcieComplex;
 	InitEarly->PlatformConfig.GnbAzI2sBusSelect = GnbAcpI2sBus;
 	InitEarly->PlatformConfig.GnbAzI2sBusPinConfig = GnbAcp2Tx4RxBluetooth;
 }

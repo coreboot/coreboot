@@ -47,5 +47,5 @@ static const GPIO_CONTROL oem_gardenia_gpio[] = {
 
 void platform_FchParams_reset(FCH_RESET_DATA_BLOCK *FchParams_reset)
 {
-	FchParams_reset->EarlyOemGpioTable = oem_gardenia_gpio;
+	FchParams_reset->EarlyOemGpioTable = (void *)oem_gardenia_gpio;
 }

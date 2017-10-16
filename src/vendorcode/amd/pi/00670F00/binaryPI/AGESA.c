@@ -367,36 +367,3 @@ AmdGet2DDataEye (
 	Dispatcher = module->ModuleDispatcher;
 	return Dispatcher(AmdGetDataEye);
 }
-
-/**********************************************************************
- * FCH Functions
- **********************************************************************/
-
-VOID FchInitS3LateRestore (IN FCH_DATA_BLOCK *FchDataPtr);
-VOID FchInitS3EarlyRestore (IN FCH_DATA_BLOCK *FchDataPtr);
-
-VOID
-FchInitS3EarlyRestore (
-  IN      FCH_DATA_BLOCK     *FchDataPtr
-  )
-{
-	MODULE_ENTRY Dispatcher = NULL;
-	const AMD_MODULE_HEADER* module = agesawrapper_locate_module(ModuleIdentifier);
-	FchDataPtr->StdHeader->Func = FCH_INIT_S3_EARLY_RESTORE;
-	if (!module) return;
-	Dispatcher = module->ModuleDispatcher;
-	Dispatcher(FchDataPtr);
-}
-
-VOID
-FchInitS3LateRestore (
-  IN      FCH_DATA_BLOCK     *FchDataPtr
-  )
-{
-	MODULE_ENTRY Dispatcher = NULL;
-	const AMD_MODULE_HEADER* module = agesawrapper_locate_module(ModuleIdentifier);
-	FchDataPtr->StdHeader->Func = FCH_INIT_S3_LATE_RESTORE;
-	if (!module) return;
-	Dispatcher = module->ModuleDispatcher;
-	Dispatcher(FchDataPtr);
-}

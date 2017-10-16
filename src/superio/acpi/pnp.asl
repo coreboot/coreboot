@@ -124,7 +124,7 @@
 	ShiftLeft (One, IRQ_FROM, IRQ_TAG##W)
 
 #define PNP_READ_DMA(DMA_FROM, RESOURCE_TEMPLATE, DMA_TAG) \
-	CreateWordField (RESOURCE_TEMPLATE, DMA_TAG._DMA, DMA_TAG##W)\
+	CreateByteField (RESOURCE_TEMPLATE, DMA_TAG._DMA, DMA_TAG##W)\
 	ShiftLeft (One, DMA_FROM, DMA_TAG##W)
 
 #define PNP_WRITE_IO(IO_TO, RESOURCE, IO_TAG) \
@@ -137,7 +137,7 @@
 	Subtract (FindSetLeftBit (IRQ_TAG##W), 1, IRQ_TO)
 
 #define PNP_WRITE_DMA(DMA_TO, RESOURCE, DMA_TAG) \
-	CreateWordField (RESOURCE, DMA_TAG._DMA, DMA_TAG##W)\
+	CreateByteField (RESOURCE, DMA_TAG._DMA, DMA_TAG##W)\
 	Subtract (FindSetLeftBit (DMA_TAG##W), 1, DMA_TO)
 
 #endif

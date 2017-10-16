@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014-2016 Siemens AG.
+ * Copyright (C) 2014-2017 Siemens AG.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <device/pci_def.h>
 #include <string.h>
 #include <types.h>
 #include <delay.h>
@@ -218,9 +219,15 @@ static void init(struct device *dev)
 	return;
 }
 
+static void set_resources(device_t dev)
+{
+	pci_dev_set_resources(dev);
+	dev->command |= PCI_COMMAND_MASTER;
+}
+
 static struct device_operations i210_ops  = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources    = set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = init,
 	.scan_bus         = 0,

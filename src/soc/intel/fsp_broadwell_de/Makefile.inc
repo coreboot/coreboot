@@ -11,6 +11,8 @@ subdirs-y += ../../../cpu/x86/cache
 subdirs-y += ../../../lib/fsp
 subdirs-y += fsp
 
+romstage-y += gpio.c
+
 ramstage-y += spi.c
 ramstage-y += cpu.c
 ramstage-y += chip.c
@@ -27,6 +29,7 @@ ramstage-y += smbus_common.c
 ramstage-y += smbus.c
 romstage-y += tsc_freq.c
 ramstage-y += smi.c
+ramstage-y += gpio.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += pmutil.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += pmutil.c

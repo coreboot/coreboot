@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,5 +63,9 @@
 /* ACPI Base Address */
 #define ACPI_BASE_ADDRESS        0x400
 #define ACPI_BASE_SIZE           0x80
+
+/* GPIO Base Address */
+#define GPIO_BASE_ADDRESS        0x500
+#define GPIO_BASE_SIZE           0x80
 
 #endif /* _SOC_IOMAP_H_ */

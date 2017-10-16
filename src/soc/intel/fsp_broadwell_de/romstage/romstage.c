@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +33,7 @@
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
+#include <soc/gpio.h>
 #include <build.h>
 
 static void init_rtc(void)
@@ -44,6 +46,16 @@ static void init_rtc(void)
 	}
 	cmos_init(gen_pmcon3 & RTC_PWR_STS);
 }
+
+/* Set up IO address range and enable it for the GPIO block. */
+static void setup_gpio_io_address(void)
+{
+	pci_write_config32(PCI_DEV(0, LPC_DEV, LPC_FUNC), GPIO_BASE_ADR_OFFSET,
+					GPIO_BASE_ADDRESS);
+	pci_write_config8(PCI_DEV(0, LPC_DEV, LPC_FUNC), GPIO_CTRL_OFFSET,
+					GPIO_DECODE_ENABLE);
+}
+
 
 /* Entry from cache-as-ram.inc. */
 void *asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
@@ -58,6 +70,7 @@ void *asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
 	}
 	console_init();
 	init_rtc();
+	setup_gpio_io_address();
 
 	/* Call into mainboard. */
 	post_code(0x41);

@@ -4,6 +4,7 @@
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -196,6 +197,17 @@ static void sc_add_io_resources(device_t dev)
 	res->size = LPC_DEFAULT_IO_RANGE_UPPER - LPC_DEFAULT_IO_RANGE_LOWER;
 	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	/* Add the resource for GPIOs */
+	res = new_resource(dev, GPIO_BASE_ADR_OFFSET);
+	res->base = GPIO_BASE_ADDRESS;
+	res->size = GPIO_BASE_SIZE;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	/* There is a separated enable-bit in GPIO_CTRL-register. It was set
+	 * already in romstage but FSP was active in the meantime and could have
+	 * cleared it. Set it here again to enable allocated IO-space for sure.
+	 */
+	pci_write_config8(dev, GPIO_CTRL_OFFSET, GPIO_DECODE_ENABLE);
 }
 
 static void sc_read_resources(device_t dev)

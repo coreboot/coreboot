@@ -364,6 +364,12 @@ source "src/drivers/*/*/Kconfig"
 source "src/commonlib/storage/Kconfig"
 endmenu
 
+menu "Security"
+
+source "src/security/Kconfig"
+
+endmenu
+
 source "src/acpi/Kconfig"
 
 # This option is for the current boards/chipsets where SPI flash

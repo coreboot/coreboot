@@ -125,26 +125,40 @@ int get_spd_cbfs_rdev(struct region_device *spd_rdev, u8 spd_index)
 							CONFIG_DIMM_SPD_SIZE);
 }
 
-static void get_spd(u8 *spd, u8 addr)
+static void smbus_read_spd(u8 *spd, u8 addr)
 {
 	u16 i;
-	if (smbus_read_byte(0, addr, 0)  == 0xff) {
+	u8 step = 1;
+
+	if (IS_ENABLED(CONFIG_SPD_READ_BY_WORD))
+		step = sizeof(uint16_t);
+
+	for (i = 0; i < SPD_PAGE_LEN; i += step) {
+		if (IS_ENABLED(CONFIG_SPD_READ_BY_WORD))
+			((u16*)spd)[i / sizeof(uint16_t)] =
+				 smbus_read_word(0, addr, i);
+		else
+			spd[i] = smbus_read_byte(0, addr, i);
+	}
+}
+
+static void get_spd(u8 *spd, u8 addr)
+{
+	if (smbus_read_byte(0, addr, 0) == 0xff) {
 		printk(BIOS_INFO, "No memory dimm at address %02X\n",
 			addr << 1);
 		/* Make sure spd is zeroed if dimm doesn't exist. */
 		memset(spd, 0, CONFIG_DIMM_SPD_SIZE);
 		return;
 	}
+	smbus_read_spd(spd, addr);
 
-	for (i = 0; i < SPD_PAGE_LEN; i++)
-		spd[i] = smbus_read_byte(0, addr, i);
 	/* Check if module is DDR4, DDR4 spd is 512 byte. */
 	if (spd[SPD_DRAM_TYPE] == SPD_DRAM_DDR4 &&
-		CONFIG_DIMM_SPD_SIZE >= SPD_DRAM_DDR4) {
+		CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
 		/* Switch to page 1 */
 		smbus_write_byte(0, SPD_PAGE_1, 0, 0);
-		for (i = 0; i < SPD_PAGE_LEN; i++)
-			spd[i+SPD_PAGE_LEN] = smbus_read_byte(0, addr, i);
+		smbus_read_spd(spd + SPD_PAGE_LEN, addr);
 		/* Restore to page 0 */
 		smbus_write_byte(0, SPD_PAGE_0, 0, 0);
 	}

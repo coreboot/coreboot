@@ -36,6 +36,11 @@ static const struct reg_script smbus_init_script[] = {
 	REG_SCRIPT_END,
 };
 
+u16 smbus_read_word(u32 smbus_dev, u8 addr, u8 offset)
+{
+	return smbus_read16(SMBUS_IO_BASE, addr, offset);
+}
+
 u8 smbus_read_byte(u32 smbus_dev, u8 addr, u8 offset)
 {
 	return smbus_read8(SMBUS_IO_BASE, addr, offset);

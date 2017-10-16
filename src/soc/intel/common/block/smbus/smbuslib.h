@@ -34,5 +34,7 @@ int smbus_read8(unsigned int smbus_base, unsigned int device,
 		unsigned int address);
 int smbus_write8(unsigned int smbus_base, unsigned int device,
 		unsigned int address, unsigned int data);
+int smbus_read16(unsigned int smbus_base, unsigned int device,
+		unsigned int address);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_SMBUS__LIB_H */

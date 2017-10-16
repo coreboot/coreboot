@@ -135,3 +135,44 @@ int smbus_write8(unsigned int smbus_base, unsigned int device,
 
 	return 0;
 }
+
+int smbus_read16(unsigned int smbus_base, unsigned int device,
+	unsigned int address)
+{
+	unsigned char global_status_register;
+	unsigned short data;
+
+	if (smbus_wait_till_ready(smbus_base) < 0)
+		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
+
+	/* Set up transaction */
+	/* Disable interrupts */
+	outb(inb(smbus_base + SMBHSTCTL) & ~1, smbus_base + SMBHSTCTL);
+	/* Set the device I'm talking to */
+	outb(((device & 0x7f) << 1) | 1, smbus_base + SMBXMITADD);
+	/* Set the command/address... */
+	outb(address & 0xff, smbus_base + SMBHSTCMD);
+	/* Set up for a word data read */
+	outb((inb(smbus_base + SMBHSTCTL) & 0xe3) | (0x3 << 2),
+		(smbus_base + SMBHSTCTL));
+	/* Clear any lingering errors, so the transaction will run */
+	outb(inb(smbus_base + SMBHSTSTAT), smbus_base + SMBHSTSTAT);
+
+	/* Start the command */
+	outb((inb(smbus_base + SMBHSTCTL) | 0x40),
+	     smbus_base + SMBHSTCTL);
+
+	/* Poll for transaction completion */
+	if (smbus_wait_till_done(smbus_base) < 0)
+		return SMBUS_WAIT_UNTIL_DONE_TIMEOUT;
+
+	global_status_register = inb(smbus_base + SMBHSTSTAT);
+	/* Ignore the "In Use" status... */
+	if ((global_status_register & ~(3 << 5)) != (1 << 1))
+		return SMBUS_ERROR;
+
+	/* Read results of transaction */
+	data = inw(smbus_base + SMBHSTDAT0);
+
+	return data;
+}

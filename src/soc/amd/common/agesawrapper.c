@@ -122,7 +122,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_POST;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
-	AmdParamStruct.StdHeader.AltImageBasePtr = NULL;
+	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
 	AmdParamStruct.StdHeader.CalloutPtr = &GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;

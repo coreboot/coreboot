@@ -14,7 +14,9 @@
  */
 
 #include <cpu/x86/smm.h>
+#include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/smm.h>
+#include <elog.h>
 #include <gpio.h>
 #include <soc/gpio.h>
 #include <soc/smm.h>
@@ -38,4 +40,10 @@ int mainboard_smi_apmc(u8 apmc)
 	chromeec_smi_apmc(apmc, MAINBOARD_EC_SCI_EVENTS,
 			MAINBOARD_EC_SMI_EVENTS);
 	return 0;
+}
+
+void elog_gsmi_cb_mainboard_log_wake_source(void)
+{
+	google_chromeec_log_events(MAINBOARD_EC_LOG_EVENTS |
+					MAINBOARD_EC_S0IX_WAKE_EVENTS);
 }

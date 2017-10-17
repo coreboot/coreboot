@@ -386,10 +386,11 @@ void pmc_fixup_power_state(void)
 	}
 }
 
-/* Reads and prints ACPI specific PM registers */
-int pmc_fill_power_state(struct chipset_power_state *ps)
+void pmc_fill_pm_reg_info(struct chipset_power_state *ps)
 {
 	int i;
+
+	memset(ps, 0, sizeof(*ps));
 
 	ps->pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
 	ps->pm1_en = inw(ACPI_BASE_ADDRESS + PM1_EN);
@@ -406,6 +407,12 @@ int pmc_fill_power_state(struct chipset_power_state *ps)
 	}
 
 	soc_fill_power_state(ps);
+}
+
+/* Reads and prints ACPI specific PM registers */
+int pmc_fill_power_state(struct chipset_power_state *ps)
+{
+	pmc_fill_pm_reg_info(ps);
 
 	ps->prev_sleep_state = pmc_prev_sleep_state(ps);
 	printk(BIOS_DEBUG, "prev_sleep_state %d\n", ps->prev_sleep_state);

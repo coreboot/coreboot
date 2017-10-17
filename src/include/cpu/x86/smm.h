@@ -90,7 +90,12 @@ typedef struct {
 	u32	tr_limit;
 	u64	tr_base;
 
-	u8	reserved4[40];
+	u64	io_restart_rip;
+	u64	io_restart_rcx;
+	u64	io_restart_rsi;
+	u64	io_restart_rdi;
+	u32	smm_io_trap_offset;
+	u32	local_smi_status;
 
 	u8	io_restart;
 	u8	autohalt_restart;

@@ -86,7 +86,7 @@ const char *const *soc_smi_sts_array(size_t *a)
  */
 uint32_t soc_get_smi_status(uint32_t generic_sts)
 {
-	if (generic_sts == 0 && !(inl(ACPI_BASE_ADDRESS + PM1_CNT) & SCI_EN)) {
+	if (generic_sts == 0 && !(pmc_read_pm1_control() & SCI_EN)) {
 		uint16_t pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
 
 		/* Fake PM1 status bit if power button pressed. */

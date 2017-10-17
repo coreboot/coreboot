@@ -24,6 +24,7 @@
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <commonlib/loglevel.h>
+#include <timestamp.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/pi/agesawrapper.h>
@@ -56,6 +57,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	hudson_lpc_port80();
 
 	if (!cpu_init_detectedx && boot_cpu()) {
+		timestamp_init(timestamp_get());
+		timestamp_add_now(TS_START_ROMSTAGE);
+
 		post_code(0x30);
 		early_lpc_init();
 
@@ -82,8 +86,15 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x39);
 	AGESAWRAPPER(amdinitearly);
 
+	timestamp_add_now(TS_BEFORE_INITRAM);
+
 	post_code(0x40);
 	AGESAWRAPPER(amdinitpost);
+
+	/* FIXME: Detect if TSC frequency changed during raminit? */
+	timestamp_rescale_table(1, 4);
+
+	timestamp_add_now(TS_AFTER_INITRAM);
 }
 
 void agesa_postcar(struct sysinfo *cb)

@@ -18,6 +18,7 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <bootmem.h>
+#include <bootstate.h>
 #include <boot/tables.h>
 #include <boot/coreboot_tables.h>
 #include <arch/pirq_routing.h>
@@ -194,7 +195,45 @@ static unsigned long write_smbios_table(unsigned long rom_table_end)
  * in case our data structures grow beyond 0x400. Only GDT
  * and the coreboot table use low_tables.
  */
-static uintptr_t forwarding_table = 0x500;
+#define FORWARDING_TABLE_ADDR ((uintptr_t)0x500)
+static uintptr_t forwarding_table = FORWARDING_TABLE_ADDR;
+
+/*
+ * For EARLY_EBDA_INIT the BDA area will be wiped on the resume path which
+ * has the forwarding table entry. Therefore, when tables are written an
+ * entry is placed in cbmem that can be restored on OS resume to the proper
+ * location.
+ */
+static void stash_forwarding_table(uintptr_t addr, size_t sz)
+{
+	void *cbmem_addr = cbmem_add(CBMEM_ID_CBTABLE_FWD, sz);
+
+	if (cbmem_addr == NULL) {
+		printk(BIOS_ERR, "Unable to allocate CBMEM forwarding entry.\n");
+		return;
+	}
+
+	memcpy(cbmem_addr, (void *)addr, sz);
+}
+
+#if IS_ENABLED(CONFIG_EARLY_EBDA_INIT)
+static void restore_forwarding_table(void *dest)
+{
+	const struct cbmem_entry *fwd_entry;
+
+	fwd_entry = cbmem_entry_find(CBMEM_ID_CBTABLE_FWD);
+
+	if (fwd_entry == NULL) {
+		printk(BIOS_ERR, "Unable to restore CBMEM forwarding entry.\n");
+		return;
+	}
+
+	memcpy(dest, cbmem_entry_start(fwd_entry), cbmem_entry_size(fwd_entry));
+}
+
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY,
+	restore_forwarding_table, (void *)FORWARDING_TABLE_ADDR);
+#endif
 
 void arch_write_tables(uintptr_t coreboot_table)
 {
@@ -216,6 +255,9 @@ void arch_write_tables(uintptr_t coreboot_table)
 		rom_table_end = write_smbios_table(rom_table_end);
 
 	sz = write_coreboot_forwarding_table(forwarding_table, coreboot_table);
+
+	if (IS_ENABLED(CONFIG_EARLY_EBDA_INIT))
+		stash_forwarding_table(forwarding_table, sz);
 
 	forwarding_table += sz;
 	/* Align up to page boundary for historical consistency. */

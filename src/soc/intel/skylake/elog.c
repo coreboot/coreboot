@@ -226,6 +226,16 @@ static void pch_log_pme_internal_wake_source(void)
 		dev_found = true;
 	}
 
+	/*
+	 * If device is still not found, but the wake source is internal PME,
+	 * try probing XHCI ports to see if any of the USB2/3 ports indicate
+	 * that it was the wake source. This path would be taken in case of GSMI
+	 * logging with S0ix where the pci_pm_resume_noirq runs and clears the
+	 * PME_STS_BIT in controller register.
+	 */
+	if (!dev_found)
+		dev_found = pch_xhci_update_wake_event(PCH_DEV_XHCI);
+
 	if (!dev_found)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_INTERNAL, 0);
 }

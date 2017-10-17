@@ -132,4 +132,7 @@ void google_chromeec_events_init(const struct google_chromeec_event_info *info,
  */
 int google_chromeec_get_mkbp_event(struct ec_response_get_next_event *event);
 
+/* Log host events to eventlog based on the mask provided. */
+void google_chromeec_log_events(u32 mask);
+
 #endif /* _EC_GOOGLE_CHROMEEC_EC_H */

@@ -257,7 +257,7 @@ static void google_chromeec_log_device_events(uint32_t mask)
 	}
 }
 
-static void google_chromeec_log_events(u32 mask)
+void google_chromeec_log_events(u32 mask)
 {
 	u8 event;
 	u32 wake_mask;

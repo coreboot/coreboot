@@ -64,13 +64,10 @@ static void extemp_force_idle_status(const u16 base)
 }
 
 /*
- * Setup External Temperature to read via PECI into TMPINx register
+ * Setup PECI interface
  */
-static void enable_peci(const u16 base, const u8 tmpin)
+static void enable_peci(const u16 base)
 {
-	if (tmpin == 0 || tmpin > ITE_EC_TMPIN_CNT)
-		return;
-
 	/* Enable PECI interface */
 	ite_ec_write(base, ITE_EC_INTERFACE_SELECT,
 			   ITE_EC_INTERFACE_SEL_PECI |
@@ -88,14 +85,10 @@ static void enable_peci(const u16 base, const u8 tmpin)
 	ite_ec_write(base, ITE_EC_EXTEMP_CONTROL,
 			   ITE_EC_EXTEMP_CTRL_AUTO_4HZ |
 			   ITE_EC_EXTEMP_CTRL_AUTO_START);
-
-	/* External Temperature reported in TMPINx register */
-	ite_ec_write(base, ITE_EC_ADC_TEMP_CHANNEL_ENABLE,
-			   (tmpin & 3) << 6);
 }
 
 /*
- * Set up External Temperature to read via thermal diode/resistor
+ * Set up External Temperature to read via PECI or thermal diode/resistor
  * into TMPINx register
  */
 static void enable_tmpin(const u16 base, const u8 tmpin,
@@ -106,6 +99,14 @@ static void enable_tmpin(const u16 base, const u8 tmpin,
 	reg = ite_ec_read(base, ITE_EC_ADC_TEMP_CHANNEL_ENABLE);
 
 	switch (conf->mode) {
+	case THERMAL_PECI:
+		if (reg & ITE_EC_ADC_TEMP_EXT_REPORTS_TO_MASK) {
+			printk(BIOS_WARNING, "PECI specified for multiple TMPIN\n");
+			return;
+		}
+		enable_peci(base);
+		reg |= ITE_EC_ADC_TEMP_EXT_REPORTS_TO(tmpin);
+		break;
 	case THERMAL_DIODE:
 		reg |= ITE_EC_ADC_TEMP_DIODE_MODE(tmpin);
 		break;
@@ -242,9 +243,6 @@ void ite_ec_init(const u16 base, const struct ite_ec_config *const conf)
 	fan_ctl |= ITE_EC_FAN_CTL_POLARITY_HIGH;
 	ite_ec_write(base, ITE_EC_FAN_CTL_MODE, fan_ctl);
 
-	/* Enable PECI if configured */
-	enable_peci(base, conf->peci_tmpin);
-
 	/* Enable HWM if configured */
 	for (i = 0; i < ITE_EC_TMPIN_CNT; ++i)
 		enable_tmpin(base, i + 1, &conf->tmpin[i]);
@@ -261,6 +259,7 @@ void ite_ec_init(const u16 base, const struct ite_ec_config *const conf)
 	 * busy state. Therefore, check the status and terminate
 	 * processes if needed.
 	 */
-	if (conf->peci_tmpin != 0)
-		extemp_force_idle_status(base);
+	for (i = 0; i < ITE_EC_TMPIN_CNT; ++i)
+		if (conf->tmpin[i].mode == THERMAL_PECI)
+			extemp_force_idle_status(base);
 }

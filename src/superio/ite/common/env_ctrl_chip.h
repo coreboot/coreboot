@@ -26,6 +26,7 @@ enum ite_ec_thermal_mode {
 	THERMAL_MODE_DISABLED = 0,
 	THERMAL_DIODE,
 	THERMAL_RESISTOR,
+	THERMAL_PECI,
 };
 
 struct ite_ec_thermal_config {
@@ -76,12 +77,6 @@ struct ite_ec_fan_config {
 };
 
 struct ite_ec_config {
-	/*
-	 * Enable external temperature sensor to use PECI GetTemp()
-	 * command and store in register TMPIN 1, 2, or 3.
-	 */
-	u8 peci_tmpin;
-
 	/*
 	 * Enable reading of voltage pins VINx.
 	 */

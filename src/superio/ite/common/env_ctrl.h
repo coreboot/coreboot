@@ -91,6 +91,7 @@
 
 #define ITE_EC_ADC_VOLTAGE_CHANNEL_ENABLE	0x50
 #define ITE_EC_ADC_TEMP_CHANNEL_ENABLE		0x51
+#define   ITE_EC_ADC_TEMP_EXT_REPORTS_TO_MASK	(3 << 6)
 #define   ITE_EC_ADC_TEMP_EXT_REPORTS_TO(x)	(((x) & 3) << 6)
 #define   ITE_EC_ADC_TEMP_RESISTOR_MODE(x)	(1 << ((x)+2))
 #define   ITE_EC_ADC_TEMP_DIODE_MODE(x)		(1 << ((x)-1))

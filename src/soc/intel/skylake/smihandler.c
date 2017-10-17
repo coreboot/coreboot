@@ -510,6 +510,13 @@ static smi_handler_t southbridge_smi[SMI_STS_BITS] = {
 	[MONITOR_STS_BIT] = southbridge_smi_monitor,
 };
 
+#define SMI_HANDLER_SCI_EN(__bit)	(1 << (__bit))
+
+/* SMI handlers that should be serviced in SCI mode too. */
+uint32_t smi_handler_sci_mask =
+	SMI_HANDLER_SCI_EN(APM_STS_BIT) |
+	SMI_HANDLER_SCI_EN(SMI_ON_SLP_EN_STS_BIT);
+
 /*
  * Interrupt handler for SMI#
  */
@@ -523,6 +530,17 @@ void southbridge_smi_handler(void)
 	 * happening in the following calls.
 	 */
 	smi_sts = pmc_clear_smi_status();
+
+	/*
+	 * In SCI mode, execute only those SMI handlers that have
+	 * declared themselves as available for service in that mode
+	 * using smi_handler_sci_mask.
+	 */
+	if (pmc_read_pm1_control() & SCI_EN)
+		smi_sts &= smi_handler_sci_mask;
+
+	if (!smi_sts)
+		return;
 
 	/* Call SMI sub handler for each of the status bits */
 	for (i = 0; i < ARRAY_SIZE(southbridge_smi); i++) {

@@ -155,18 +155,28 @@ void pmc_enable_pm1(uint16_t events)
 	outw(events, ACPI_BASE_ADDRESS + PM1_EN);
 }
 
+uint32_t pmc_read_pm1_control(void)
+{
+	return inl(ACPI_BASE_ADDRESS + PM1_CNT);
+}
+
+void pmc_write_pm1_control(uint32_t pm1_cnt)
+{
+	outl(pm1_cnt, ACPI_BASE_ADDRESS + PM1_CNT);
+}
+
 void pmc_enable_pm1_control(uint32_t mask)
 {
-	uint32_t pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
+	uint32_t pm1_cnt = pmc_read_pm1_control();
 	pm1_cnt |= mask;
-	outl(pm1_cnt, ACPI_BASE_ADDRESS + PM1_CNT);
+	pmc_write_pm1_control(pm1_cnt);
 }
 
 void pmc_disable_pm1_control(uint32_t mask)
 {
-	uint32_t pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
+	uint32_t pm1_cnt = pmc_read_pm1_control();
 	pm1_cnt &= ~mask;
-	outl(pm1_cnt, ACPI_BASE_ADDRESS + PM1_CNT);
+	pmc_write_pm1_control(pm1_cnt);
 }
 
 static uint16_t reset_pm1_status(void)
@@ -357,7 +367,7 @@ static int pmc_prev_sleep_state(const struct chipset_power_state *ps)
 		}
 
 		/* Clear SLP_TYP. */
-		outl(ps->pm1_cnt & ~(SLP_TYP), ACPI_BASE_ADDRESS + PM1_CNT);
+		pmc_write_pm1_control(ps->pm1_cnt & ~(SLP_TYP));
 	}
 	return soc_prev_sleep_state(ps, prev_sleep_state);
 }
@@ -394,7 +404,7 @@ void pmc_fill_pm_reg_info(struct chipset_power_state *ps)
 
 	ps->pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
 	ps->pm1_en = inw(ACPI_BASE_ADDRESS + PM1_EN);
-	ps->pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
+	ps->pm1_cnt = pmc_read_pm1_control();
 
 	printk(BIOS_DEBUG, "pm1_sts: %04x pm1_en: %04x pm1_cnt: %08x\n",
 	       ps->pm1_sts, ps->pm1_en, ps->pm1_cnt);
@@ -470,7 +480,7 @@ int vboot_platform_is_resuming(void)
 	if (!(inw(ACPI_BASE_ADDRESS + PM1_STS) & WAK_STS))
 		return 0;
 
-	return acpi_sleep_from_pm1(inl(ACPI_BASE_ADDRESS + PM1_CNT)) == ACPI_S3;
+	return acpi_sleep_from_pm1(pmc_read_pm1_control()) == ACPI_S3;
 }
 
 /* Read and clear GPE status (defined in arch/acpi.h) */
@@ -512,8 +522,10 @@ int acpi_get_gpe(int gpe)
  */
 void vboot_platform_prepare_reboot(void)
 {
-	const uint16_t port = ACPI_BASE_ADDRESS + PM1_CNT;
-	outl((inl(port) & ~(SLP_TYP)) | (SLP_TYP_S5 << SLP_TYP_SHIFT), port);
+	uint32_t pm1_cnt;
+	pm1_cnt = (pmc_read_pm1_control() & ~(SLP_TYP)) |
+		(SLP_TYP_S5 << SLP_TYP_SHIFT);
+	pmc_write_pm1_control(pm1_cnt);
 }
 
 void poweroff(void)

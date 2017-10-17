@@ -101,6 +101,10 @@ static bool pch_xhci_port_wake_check(uintptr_t base, uint8_t num,
 		/* Read port status and control register for the port. */
 		port_status = read32((void *)base);
 
+		/* Ensure that the status is not all 1s. */
+		if (port_status == 0xffffffff)
+			continue;
+
 		/*
 		 * Check if CSC bit is set and port is capable of wake on
 		 * connect/disconnect to identify if the port caused wake
@@ -110,6 +114,7 @@ static bool pch_xhci_port_wake_check(uintptr_t base, uint8_t num,
 		    pch_xhci_wake_capable(port_status)) {
 			elog_add_event_wake(event, i + 1);
 			found = true;
+			continue;
 		}
 
 		/*

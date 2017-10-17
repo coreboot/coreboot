@@ -220,13 +220,9 @@ static const struct pad_config gpio_table[] = {
 	/* F3  : GPP_F_3 */
 	PAD_CFG_TERM_GPO(GPP_F3, 0, UP_20K, PLTRST),
 	/* F4  : CNV_BRI_DT_UART0_RTSB */
-	PAD_CFG_NF(GPP_F4, UP_20K, DEEP, GPIO),
 	/* F5  : CNV_BRI_RSP_UART0_RXD */
-	PAD_CFG_NF(GPP_F5, UP_20K, DEEP, GPIO),
 	/* F6  : CNV_RGI_DT_UART0_TXD */
-	PAD_CFG_NF(GPP_F6, UP_20K, DEEP, GPIO),
 	/* F7  : CNV_RGI_DT_RSP_UART9_CTSB */
-	PAD_CFG_NF(GPP_F7, UP_20K, DEEP, GPIO),
 	/* F8  : CNV_MFUART2_RXD */
 	PAD_CFG_NF(GPP_F8, UP_20K, DEEP, NF1),
 	/* F9  : CNV_MFUART2_TXD */
@@ -266,13 +262,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_G7, DN_20K, DEEP, GPIO),
 
 	/* H0  : SSP2_SCLK */
-	PAD_CFG_NF(GPP_H0, UP_20K, DEEP, GPIO),
 	/* H1  : SSP2_SFRM */
-	PAD_CFG_NF(GPP_H1, UP_20K, DEEP, GPIO),
 	/* H2  : SSP2_TXD */
-	PAD_CFG_NF(GPP_H2, UP_20K, DEEP, GPIO),
 	/* H3  : SSP2_RXD */
-	PAD_CFG_NF(GPP_H3, UP_20K, DEEP, GPIO),
 	/* H4  : I2C2_SDA */
 	/* H5  : I2C2_SCL */
 	/* H6  : I2C3_SDA */

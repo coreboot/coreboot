@@ -70,7 +70,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	int cbmem_initted;
 	u16 reg16;
 
-	timestamp_init(timestamp_get());
+	timestamp_init(get_initial_timestamp());
 	timestamp_add_now(TS_START_ROMSTAGE);
 
 	/* basic northbridge setup, including MMCONF BAR */

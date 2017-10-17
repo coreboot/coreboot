@@ -16,7 +16,7 @@
 #ifndef __VBOOT_MISC_H__
 #define __VBOOT_MISC_H__
 
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 struct vb2_context;
 struct vb2_shared_data;

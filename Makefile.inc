@@ -91,7 +91,7 @@ subdirs-y += util/cbfstool util/sconfig util/nvramtool util/broadcom
 subdirs-y += util/futility util/marvell util/blobtool
 subdirs-y += $(wildcard src/arch/*)
 subdirs-y += src/mainboard/$(MAINBOARDDIR)
-subdirs-y += src/vboot
+subdirs-y += src/security
 subdirs-y += payloads payloads/external
 
 subdirs-y += site-local

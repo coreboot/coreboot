@@ -30,7 +30,7 @@
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
 #include <soc/intel/broadwell/chip.h>
-#include <vboot/vbnv.h>
+#include <security/vboot/vbnv.h>
 #include <soc/igd.h>
 
 #define GT_RETRY		1000

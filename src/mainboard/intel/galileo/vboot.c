@@ -24,8 +24,8 @@
 #include "gen1.h"
 #include "gen2.h"
 #include <spi_flash.h>
-#include <vboot/vboot_common.h>
-#include <vboot/vbnv.h>
+#include <security/vboot/vboot_common.h>
+#include <security/vboot/vbnv.h>
 
 int clear_recovery_mode_switch(void)
 {

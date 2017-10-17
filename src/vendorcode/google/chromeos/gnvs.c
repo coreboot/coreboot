@@ -20,8 +20,8 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <elog.h>
-#include <vboot/vbnv.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vbnv.h>
+#include <security/vboot/vboot_common.h>
 #include <vboot_struct.h>
 
 #include "chromeos.h"

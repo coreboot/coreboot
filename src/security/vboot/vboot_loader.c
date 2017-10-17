@@ -21,9 +21,9 @@
 #include <rmodule.h>
 #include <rules.h>
 #include <string.h>
-#include <vboot/misc.h>
-#include <vboot/symbols.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/misc.h>
+#include <security/vboot/symbols.h>
+#include <security/vboot/vboot_common.h>
 
 /* Ensure vboot configuration is valid: */
 _Static_assert(IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK) +

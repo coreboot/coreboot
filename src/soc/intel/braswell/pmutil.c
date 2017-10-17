@@ -23,7 +23,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <stdint.h>
-#include <vboot/vbnv.h>
+#include <security/vboot/vbnv.h>
 
 #if defined(__SIMPLE_DEVICE__)
 

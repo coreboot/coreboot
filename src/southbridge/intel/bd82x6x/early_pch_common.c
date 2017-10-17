@@ -22,7 +22,7 @@
 #include <arch/acpi.h>
 #include <console/console.h>
 #include <rules.h>
-#include <vboot/vbnv.h>
+#include <security/vboot/vbnv.h>
 
 #if ENV_ROMSTAGE
 uint64_t get_initial_timestamp(void)

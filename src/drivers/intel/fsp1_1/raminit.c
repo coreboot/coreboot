@@ -23,7 +23,7 @@
 #include <reset.h>
 #include <string.h>
 #include <timestamp.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 void raminit(struct romstage_params *params)
 {

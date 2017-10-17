@@ -32,7 +32,7 @@
 #include <soc/systemagent.h>
 #include <stdlib.h>
 #include <string.h>
-#include <vboot/vbnv.h>
+#include <security/vboot/vbnv.h>
 
 uintptr_t fsp_soc_get_igd_bar(void)
 {

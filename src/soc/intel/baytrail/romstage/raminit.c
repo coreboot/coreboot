@@ -30,7 +30,7 @@
 #include <soc/romstage.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 static void reset_system(void)
 {

@@ -21,8 +21,8 @@
 #include <bootmode.h>
 #include <device/device.h>
 #include <rules.h>
-#include <vboot/misc.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/misc.h>
+#include <security/vboot/vboot_common.h>
 
 #if IS_ENABLED(CONFIG_CHROMEOS)
 /* functions implemented in watchdog.c */

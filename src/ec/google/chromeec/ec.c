@@ -26,7 +26,7 @@
 #include <reset.h>
 #include <rtc.h>
 #include <stdlib.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 #include "chip.h"
 #include "ec.h"

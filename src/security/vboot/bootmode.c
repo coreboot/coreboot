@@ -20,9 +20,9 @@
 #include <rules.h>
 #include <string.h>
 #include <vb2_api.h>
-#include <vboot/misc.h>
-#include <vboot/vbnv.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/misc.h>
+#include <security/vboot/vbnv.h>
+#include <security/vboot/vboot_common.h>
 
 static int vb2_get_recovery_reason_shared_data(void)
 {

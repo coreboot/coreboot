@@ -15,8 +15,8 @@
 
 #include <types.h>
 #include <ec/google/chromeec/ec.h>
-#include <vboot/vbnv.h>
-#include <vboot/vbnv_layout.h>
+#include <security/vboot/vbnv.h>
+#include <security/vboot/vbnv_layout.h>
 
 void read_vbnv_ec(uint8_t *vbnv_copy)
 {

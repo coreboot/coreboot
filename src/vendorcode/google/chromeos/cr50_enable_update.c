@@ -20,7 +20,7 @@
 #include <halt.h>
 #include <tpm_lite/tlcl.h>
 #include <vb2_api.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 static void enable_update(void *unused)
 {

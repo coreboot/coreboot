@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <vboot/vbnv.h>
+#include <security/vboot/vbnv.h>
 
 int vbnv_cmos_failed(void)
 {

@@ -16,8 +16,8 @@
 #include <arch/early_variables.h>
 #include <string.h>
 #include <types.h>
-#include <vboot/vbnv.h>
-#include <vboot/vbnv_layout.h>
+#include <security/vboot/vbnv.h>
+#include <security/vboot/vbnv_layout.h>
 
 static int vbnv_initialized CAR_GLOBAL;
 static uint8_t vbnv[VBOOT_VBNV_BLOCK_SIZE] CAR_GLOBAL;

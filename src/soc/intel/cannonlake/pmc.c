@@ -36,8 +36,8 @@
 #include <cpu/x86/smm.h>
 #include <soc/pcr_ids.h>
 #include <soc/ramstage.h>
-#include <vboot/vbnv.h>
-#include <vboot/vbnv_layout.h>
+#include <security/vboot/vbnv.h>
+#include <security/vboot/vbnv_layout.h>
 
 static void pch_pmc_add_mmio_resources(device_t dev)
 {

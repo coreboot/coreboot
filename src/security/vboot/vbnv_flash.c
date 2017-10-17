@@ -20,9 +20,9 @@
 #include <string.h>
 #include <vb2_api.h>
 #include <vboot_nvstorage.h>
-#include <vboot/vboot_common.h>
-#include <vboot/vbnv.h>
-#include <vboot/vbnv_layout.h>
+#include <security/vboot/vboot_common.h>
+#include <security/vboot/vbnv.h>
+#include <security/vboot/vbnv_layout.h>
 
 #define BLOB_SIZE VB2_NVDATA_SIZE
 

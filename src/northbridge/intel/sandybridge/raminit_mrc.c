@@ -31,7 +31,7 @@
 #include "raminit.h"
 #include "pei_data.h"
 #include "sandybridge.h"
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 /* Management Engine is in the southbridge */
 #include "southbridge/intel/bd82x6x/me.h"

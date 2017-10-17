@@ -32,7 +32,7 @@
 #include <symbols.h>
 #include <timestamp.h>
 #include <tpm_lite/tlcl.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 #include <vb2_api.h>
 
 static void mrc_cache_update_tpm_hash(const uint8_t *data, size_t size)

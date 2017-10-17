@@ -40,7 +40,7 @@
 #include <soc/pmc.h>
 #include <soc/smbus.h>
 #include <timer.h>
-#include <vboot/vbnv.h>
+#include <security/vboot/vbnv.h>
 #include "chip.h"
 
 /*

@@ -34,7 +34,7 @@
 #include <symbols.h>
 #include <vbe.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 #include "board.h"
 

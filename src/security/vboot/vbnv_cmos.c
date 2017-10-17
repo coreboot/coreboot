@@ -17,8 +17,8 @@
 #include <console/console.h>
 #include <types.h>
 #include <pc80/mc146818rtc.h>
-#include <vboot/vbnv.h>
-#include <vboot/vbnv_layout.h>
+#include <security/vboot/vbnv.h>
+#include <security/vboot/vbnv_layout.h>
 
 static void clear_vbnv_battery_cutoff_flag(uint8_t *vbnv_copy)
 {

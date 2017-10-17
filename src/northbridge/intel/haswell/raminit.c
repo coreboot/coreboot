@@ -28,7 +28,7 @@
 #include <device/dram/ddr3.h>
 #include <smbios.h>
 #include <spd.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 #include "raminit.h"
 #include "pei_data.h"
 #include "haswell.h"

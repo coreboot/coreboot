@@ -23,7 +23,7 @@
 #include <soc/pm.h>
 #include <string.h>
 #include <timer.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 static struct chipset_power_state power_state CAR_GLOBAL;
 

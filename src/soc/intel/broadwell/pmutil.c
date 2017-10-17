@@ -28,7 +28,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/gpio.h>
-#include <vboot/vbnv.h>
+#include <security/vboot/vbnv.h>
 
 /* Print status bits with descriptive names */
 static void print_status_bits(u32 status, const char *bit_names[])

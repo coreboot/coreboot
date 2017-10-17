@@ -23,7 +23,7 @@
 #include <fmap.h>
 #include <ip_checksum.h>
 #include <region_file.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 #include "mrc_cache.h"
 #include "nvm.h"

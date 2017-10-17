@@ -24,7 +24,7 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <console/console.h>
-#include <vboot/vbnv.h>
+#include <security/vboot/vbnv.h>
 #include "pch.h"
 
 #if IS_ENABLED(CONFIG_INTEL_LYNXPOINT_LP)

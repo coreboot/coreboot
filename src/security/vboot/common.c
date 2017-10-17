@@ -20,9 +20,9 @@
 #include <reset.h>
 #include <string.h>
 #include <vb2_api.h>
-#include <vboot/misc.h>
-#include <vboot/symbols.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/misc.h>
+#include <security/vboot/symbols.h>
+#include <security/vboot/vboot_common.h>
 
 struct selected_region {
 	uint32_t offset;

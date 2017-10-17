@@ -22,7 +22,7 @@
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
-#include <vboot/vbnv.h>
+#include <security/vboot/vbnv.h>
 
 #if defined(__SIMPLE_DEVICE__)
 

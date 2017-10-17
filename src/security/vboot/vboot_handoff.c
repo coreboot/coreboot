@@ -34,8 +34,8 @@
 #include <stdlib.h>
 #include <timestamp.h>
 #include <vboot_struct.h>
-#include <vboot/vbnv.h>
-#include <vboot/misc.h>
+#include <security/vboot/vbnv.h>
+#include <security/vboot/misc.h>
 
 /**
  * Sets vboot_handoff based on the information in vb2_shared_data

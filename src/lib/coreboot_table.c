@@ -32,7 +32,7 @@
 #include <cbmem.h>
 #include <bootmem.h>
 #include <spi_flash.h>
-#include <vboot/vbnv_layout.h>
+#include <security/vboot/vbnv_layout.h>
 #if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 #include <option_table.h>
 #endif

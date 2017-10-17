@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <vboot/vbnv_layout.h>
+#include <security/vboot/vbnv_layout.h>
 
 #if IS_ENABLED(CONFIG_CHROMEOS)
 

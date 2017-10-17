@@ -35,7 +35,7 @@
 #include <soc/romstage.h>
 #include <string.h>
 #include <timestamp.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
 {	\

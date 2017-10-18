@@ -15,7 +15,7 @@
 #include <compiler.h>
 #include <types.h>
 
-#include "../tss.h"
+#include <security/tpm/tss.h>
 
 /* This should be plenty for what firmware needs. */
 #define TPM_BUFFER_SIZE 256

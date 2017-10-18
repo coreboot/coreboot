@@ -9,11 +9,11 @@
 #include <endian.h>
 #include <string.h>
 #include <vb2_api.h>
+#include <security/tpm/tis.h>
+#include <security/tpm/antirollback.h>
 
 #include "tss_structures.h"
 #include "tss_marshaling.h"
-#include "../tis.h"
-#include "../antirollback.h"
 
 /*
  * This file provides interface between firmware and TPM2 device. The TPM1.2

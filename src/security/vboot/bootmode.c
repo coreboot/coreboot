@@ -169,3 +169,20 @@ int vboot_developer_mode_enabled(void)
 
 	return 0;
 }
+
+#if IS_ENABLED(CONFIG_VBOOT_NO_BOARD_SUPPORT)
+/**
+ * TODO: Create flash protection interface which implements get_write_protect_state.
+ * get_recovery_mode_switch should be implemented as default function.
+ */
+int __attribute__((weak)) get_write_protect_state(void)
+{
+	return 0;
+}
+
+int __attribute__((weak)) get_recovery_mode_switch(void)
+{
+	return 0;
+}
+
+#endif

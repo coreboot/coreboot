@@ -221,6 +221,15 @@ config VBOOT_FWID_VERSION
 	  This is the second part of the FWID written to various regions of a
 	  vboot firmware image to identify its version.
 
+config VBOOT_NO_BOARD_SUPPORT
+	bool "Allow the use of vboot without board support"
+	default n
+	help
+	  Enable weak functions for get_write_protect_state and
+	  get_recovery_mode_switch in order to proceed with refactoring
+	  of the vboot2 code base. Later on this code is removed and replaced
+	  by interfaces.
+
 config RO_REGION_ONLY
 	string "Additional files that should not be copied to RW"
 	default ""

@@ -35,7 +35,7 @@
 #include <security/tpm/antirollback.h>
 #include <stdlib.h>
 #include <string.h>
-#include <security/tpm/tlcl.h>
+#include <security/tpm/tss.h>
 #include <vb2_api.h>
 #include <console/console.h>
 

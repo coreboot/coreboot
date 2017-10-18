@@ -31,7 +31,7 @@
 #include <string.h>
 #include <symbols.h>
 #include <timestamp.h>
-#include <security/tpm/tlcl.h>
+#include <security/tpm/tss.h>
 #include <security/vboot/vboot_common.h>
 #include <vb2_api.h>
 

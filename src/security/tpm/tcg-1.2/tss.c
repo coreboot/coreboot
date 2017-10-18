@@ -17,11 +17,11 @@
 #include <arch/early_variables.h>
 #include <assert.h>
 #include <string.h>
-#include <security/tpm/tpm.h>
+#include <security/tpm/tis.h>
 #include <vb2_api.h>
-#include "tlcl_internal.h"
-#include "tlcl_structures.h"
-#include "../tlcl.h"
+#include "tss_internal.h"
+#include "tss_structures.h"
+#include "../tss.h"
 
 #ifdef FOR_TEST
 #include <stdio.h>

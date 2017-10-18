@@ -36,7 +36,7 @@
 #include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>
-#include <security/tpm/tpm.h>
+#include <security/tpm/tis.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)

@@ -14,7 +14,7 @@
  */
 
 #include <arch/acpi.h>
-#include <security/tpm/tpm.h>
+#include <security/tpm/tis.h>
 
 int tis_plat_irq_status(void)
 {

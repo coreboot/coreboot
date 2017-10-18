@@ -23,7 +23,7 @@
 #include <endian.h>
 #include <string.h>
 #include <timer.h>
-#include <security/tpm/tpm.h>
+#include <security/tpm/tis.h>
 
 #include "tpm.h"
 

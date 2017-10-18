@@ -3,8 +3,8 @@
  * found in the LICENSE file.
  */
 
-#ifndef TPM_LITE_TLCL_INTERNAL_H_
-#define TPM_LITE_TLCL_INTERNAL_H_
+#ifndef TCG_TSS_INTERNAL_H_
+#define TCG_TSS_INTERNAL_H_
 
 /*
  * These numbers derive from adding the sizes of command fields as shown in the
@@ -62,4 +62,4 @@ static inline void from_tpm_uint16(const uint8_t *buffer, uint16_t *x)
 	*x = (buffer[0] << 8) | buffer[1];
 }
 
-#endif  /* TPM_LITE_TLCL_INTERNAL_H_ */
+#endif  /* TCG_TSS_INTERNAL_H_ */

@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef TPM_H_
-#define TPM_H_
+#ifndef TIS_H_
+#define TIS_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -99,4 +99,4 @@ void init_tpm(int s3resume);
  */
 int tis_plat_irq_status(void);
 
-#endif /* TPM_H_ */
+#endif /* TIS_H_ */

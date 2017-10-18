@@ -18,7 +18,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <elog.h>
 #include <halt.h>
-#include <security/tpm/tlcl.h>
+#include <security/tpm/tss.h>
 #include <vb2_api.h>
 #include <security/vboot/vboot_common.h>
 

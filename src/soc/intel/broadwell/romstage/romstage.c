@@ -25,7 +25,7 @@
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
 #include <elog.h>
-#include <security/tpm/tpm.h>
+#include <security/tpm/tis.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <stage_cache.h>

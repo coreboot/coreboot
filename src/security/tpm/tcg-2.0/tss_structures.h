@@ -4,8 +4,8 @@
  * found in the LICENSE file.
  */
 
-#ifndef __SRC_LIB_TPM2_TLCL_STRUCTURES_H
-#define __SRC_LIB_TPM2_TLCL_STRUCTURES_H
+#ifndef TCG2_TSS_STRUCTURES_H_
+#define TCG2_TSS_STRUCTURES_H_
 
 /*
  * This file includes a subset of definitions of TPM protocol version 2.x
@@ -15,7 +15,7 @@
 #include <compiler.h>
 #include <types.h>
 
-#include "../tlcl.h"
+#include "../tss.h"
 
 /* This should be plenty for what firmware needs. */
 #define TPM_BUFFER_SIZE 256
@@ -370,4 +370,4 @@ struct tpm2_hierarchy_control_cmd {
 	TPMI_YES_NO state;
 };
 
-#endif // __SRC_LIB_TPM2_TLCL_STRUCTURES_H
+#endif // TCG2_TSS_STRUCTURES_H_

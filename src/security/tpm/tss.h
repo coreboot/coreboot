@@ -9,8 +9,8 @@
  * A low-level library for interfacing to TPM hardware or an emulator.
  */
 
-#ifndef TPM_LITE_TLCL_H_
-#define TPM_LITE_TLCL_H_
+#ifndef TSS_H_
+#define TSS_H_
 #include <stdint.h>
 #include <types.h>
 
@@ -174,4 +174,4 @@ uint32_t tlcl_cr50_enable_nvcommits(void);
 uint32_t tlcl_cr50_enable_update(uint16_t timeout_ms,
 				 uint8_t *num_restored_headers);
 
-#endif  /* TPM_LITE_TLCL_H_ */
+#endif  /* TSS_H_ */

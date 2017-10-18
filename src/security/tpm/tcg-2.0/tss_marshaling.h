@@ -3,11 +3,11 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
-#ifndef __SRC_LIB_TPM2_MARSHALING_H
-#define __SRC_LIB_TPM2_MARSHALING_H
+#ifndef TCG2_TSS_MARSHALING_H_
+#define TCG2_TSS_MARSHALING_H_
 
 #include <commonlib/iobuf.h>
-#include "tpm2_tlcl_structures.h"
+#include "tss_structures.h"
 
 /* The below functions are used to serialize/deserialize TPM2 commands. */
 
@@ -43,4 +43,4 @@ int tpm_marshal_command(TPM_CC command, void *tpm_command_body,
  */
 struct tpm2_response *tpm_unmarshal_response(TPM_CC command, struct ibuf *ib);
 
-#endif // __SRC_LIB_TPM2_MARSHALING_H
+#endif // TCG2_TSS_MARSHALING_H_

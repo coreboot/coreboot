@@ -35,7 +35,7 @@
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
-#include <security/tpm/tpm.h>
+#include <security/tpm/tis.h>
 #include <cbfs.h>
 
 #include <southbridge/intel/bd82x6x/chip.h>

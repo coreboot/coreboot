@@ -34,7 +34,7 @@
 
 #include <security/tpm/antirollback.h>
 #include <stdlib.h>
-#include <security/tpm/tlcl.h>
+#include <security/tpm/tss.h>
 #include <vb2_api.h>
 
 uint32_t tpm_extend_pcr(struct vb2_context *ctx, int pcr,

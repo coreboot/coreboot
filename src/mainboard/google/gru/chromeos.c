@@ -17,7 +17,7 @@
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
-#include <security/tpm/tpm.h>
+#include <security/tpm/tis.h>
 
 #include "board.h"
 

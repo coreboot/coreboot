@@ -10,9 +10,9 @@
 #include <string.h>
 #include <vb2_api.h>
 
-#include "tpm2_tlcl_structures.h"
-#include "tpm2_marshaling.h"
-#include "../tpm.h"
+#include "tss_structures.h"
+#include "tss_marshaling.h"
+#include "../tis.h"
 #include "../antirollback.h"
 
 /*

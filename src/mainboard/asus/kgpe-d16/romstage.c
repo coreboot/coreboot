@@ -46,7 +46,7 @@
 #include <cpu/amd/family_10h-family_15h/init_cpus.h>
 #include <arch/early_variables.h>
 #include <cbmem.h>
-#include <security/tpm/tpm.h>
+#include <security/tpm/tis.h>
 
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"

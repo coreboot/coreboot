@@ -35,7 +35,7 @@
 #include <cpu/x86/msr.h>
 #include <halt.h>
 #include <cbfs.h>
-#include <security/tpm/tpm.h>
+#include <security/tpm/tis.h>
 #include "ec/compal/ene932/ec.h"
 
 void pch_enable_lpc(void)

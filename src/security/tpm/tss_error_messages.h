@@ -9,8 +9,8 @@
  * Version 1.2 Level 2 Revision 103 26 October 2006 Draft.
  */
 
-#ifndef TPM_ERROR_MESSAGES_H
-#define TPM_ERROR_MESSAGES_H
+#ifndef TSS_ERROR_MESSAGES_H_
+#define TSS_ERROR_MESSAGES_H_
 
 #define TPM_E_BASE 0x0
 #define TPM_E_NON_FATAL 0x800
@@ -252,4 +252,4 @@ because the ordinal required resources that have not been tested"},
 time-out period"},
 };
 
-#endif				/* TPM_ERROR_MESSAGES_H */
+#endif				/* TSS_ERROR_MESSAGES_H_ */

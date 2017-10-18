@@ -28,7 +28,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <bootmode.h>
-#include <security/tpm/tpm.h>
+#include <security/tpm/tis.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>

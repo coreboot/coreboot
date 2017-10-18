@@ -39,7 +39,7 @@
 #include <device/i2c_simple.h>
 #include <endian.h>
 #include <timer.h>
-#include <security/tpm/tpm.h>
+#include <security/tpm/tis.h>
 #include "tpm.h"
 
 #define CR50_MAX_BUFSIZE	63

@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "tpm2_marshaling.h"
+#include "tss_marshaling.h"
 
 static uint16_t tpm_tag CAR_GLOBAL;  /* Depends on the command type. */
 

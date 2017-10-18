@@ -35,7 +35,7 @@
 #include <timestamp.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
-#include <security/tpm/tpm.h>
+#include <security/tpm/tis.h>
 
 #include "dock.h"
 #include "arch/early_variables.h"

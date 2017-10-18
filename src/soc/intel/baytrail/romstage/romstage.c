@@ -30,7 +30,7 @@
 #include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>
-#include <security/tpm/tpm.h>
+#include <security/tpm/tis.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>

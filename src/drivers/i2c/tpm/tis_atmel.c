@@ -23,7 +23,7 @@
 #include <device/i2c_simple.h>
 #include <endian.h>
 #include <lib.h>
-#include <tpm.h>
+#include <security/tpm/tpm.h>
 #include <timer.h>
 
 #define RECV_TIMEOUT            (1 * 1000)  /* 1 second */

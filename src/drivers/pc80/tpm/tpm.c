@@ -32,7 +32,7 @@
 #include <arch/acpi_device.h>
 #include <device/device.h>
 #include <console/console.h>
-#include <tpm.h>
+#include <security/tpm/tpm.h>
 #include <arch/early_variables.h>
 #include <device/pnp.h>
 #include "chip.h"

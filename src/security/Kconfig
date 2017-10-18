@@ -13,3 +13,4 @@
 ##
 
 source "src/security/vboot/Kconfig"
+source "src/security/tpm/Kconfig"

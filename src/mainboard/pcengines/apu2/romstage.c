@@ -33,7 +33,7 @@
 #include <cpu/x86/lapic.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <Fch/Fch.h>
-#include <tpm.h>
+#include <security/tpm/tpm.h>
 
 #include "gpio_ftns.h"
 

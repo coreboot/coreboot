@@ -22,7 +22,7 @@
 #include <device/i2c_simple.h>
 #include <endian.h>
 #include <lib.h>
-#include <tpm.h>
+#include <security/tpm/tpm.h>
 #include "tpm.h"
 #include <timer.h>
 

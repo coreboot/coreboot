@@ -53,16 +53,6 @@ verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 verstage-y += boot_device.c
 verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 
-verstage-$(CONFIG_TPM) += tlcl.c
-verstage-$(CONFIG_TPM2) += tpm2_marshaling.c
-verstage-$(CONFIG_TPM2) += tpm2_tlcl.c
-
-ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
-romstage-$(CONFIG_TPM) += tlcl.c
-romstage-$(CONFIG_TPM2) += tpm2_marshaling.c
-romstage-$(CONFIG_TPM2) += tpm2_tlcl.c
-endif # CONFIG_VBOOT_SEPARATE_VERSTAGE
-
 verstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 verstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 
@@ -144,8 +134,6 @@ ramstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 ramstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 ramstage-y += b64_decode.c
 ramstage-$(CONFIG_ACPI_NHLT) += nhlt.c
-ramstage-$(CONFIG_TPM2) += tpm2_marshaling.c
-ramstage-$(CONFIG_TPM2) += tpm2_tlcl.c
 
 romstage-y += cbmem_common.c
 romstage-y += imd_cbmem.c

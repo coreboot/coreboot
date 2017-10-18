@@ -43,7 +43,7 @@
 #include <soc/romstage.h>
 #include <soc/smm.h>
 #include <soc/spi.h>
-#include <tpm.h>
+#include <security/tpm/tpm.h>
 
 void program_base_addresses(void)
 {

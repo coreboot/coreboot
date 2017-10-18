@@ -32,9 +32,9 @@
  * stored in the TPM NVRAM.
  */
 
-#include <antirollback.h>
+#include <security/tpm/antirollback.h>
 #include <stdlib.h>
-#include <tpm_lite/tlcl.h>
+#include <security/tpm/tlcl.h>
 #include <vb2_api.h>
 
 uint32_t tpm_extend_pcr(struct vb2_context *ctx, int pcr,

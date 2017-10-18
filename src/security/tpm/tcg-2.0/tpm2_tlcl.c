@@ -4,16 +4,16 @@
  * found in the LICENSE file.
  */
 
-#include <antirollback.h>
 #include <arch/early_variables.h>
 #include <console/console.h>
 #include <endian.h>
-#include <lib/tpm2_tlcl_structures.h>
 #include <string.h>
-#include <tpm.h>
 #include <vb2_api.h>
 
+#include "tpm2_tlcl_structures.h"
 #include "tpm2_marshaling.h"
+#include "../tpm.h"
+#include "../antirollback.h"
 
 /*
  * This file provides interface between firmware and TPM2 device. The TPM1.2

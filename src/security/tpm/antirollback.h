@@ -9,7 +9,7 @@
 #ifndef ANTIROLLBACK_H_
 #define ANTIROLLBACK_H_
 
-#include "tpm_lite/tss_constants.h"
+#include "tss_constants.h"
 
 struct vb2_context;
 enum vb2_pcr_digest;

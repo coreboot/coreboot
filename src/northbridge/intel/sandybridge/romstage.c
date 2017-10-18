@@ -28,7 +28,7 @@
 #include <device/pci_def.h>
 #include <device/device.h>
 #include <halt.h>
-#include <tpm.h>
+#include <security/tpm/tpm.h>
 #include <northbridge/intel/sandybridge/chip.h>
 #include "southbridge/intel/bd82x6x/pch.h"
 #include <southbridge/intel/common/gpio.h>

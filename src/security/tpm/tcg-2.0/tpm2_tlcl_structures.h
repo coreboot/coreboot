@@ -13,8 +13,9 @@
  */
 #include <stdint.h>
 #include <compiler.h>
-#include <tpm_lite/tlcl.h>
 #include <types.h>
+
+#include "../tlcl.h"
 
 /* This should be plenty for what firmware needs. */
 #define TPM_BUFFER_SIZE 256

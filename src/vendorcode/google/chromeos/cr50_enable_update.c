@@ -18,7 +18,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <elog.h>
 #include <halt.h>
-#include <tpm_lite/tlcl.h>
+#include <security/tpm/tlcl.h>
 #include <vb2_api.h>
 #include <security/vboot/vboot_common.h>
 
@@ -71,4 +71,3 @@ static void enable_update(void *unused)
 	halt();
 }
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_ENTRY, enable_update, NULL);
-

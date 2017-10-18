@@ -42,7 +42,7 @@
 #include "northbridge/intel/haswell/raminit.h"
 #include "southbridge/intel/lynxpoint/pch.h"
 #include "southbridge/intel/lynxpoint/me.h"
-#include <tpm.h>
+#include <security/tpm/tpm.h>
 
 static inline void reset_system(void)
 {

@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <antirollback.h>
+#include <security/tpm/antirollback.h>
 #include <arch/exception.h>
 #include <assert.h>
 #include <bootmode.h>

@@ -1,9 +1,3 @@
-config MAINBOARD_HAS_LPC_TPM
-	bool
-	default n
-	help
-	  Board has TPM support
-
 config LPC_TPM
 	bool "Enable TPM support"
 	depends on MAINBOARD_HAS_LPC_TPM

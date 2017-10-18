@@ -12,7 +12,7 @@
  */
 
 #include <compiler.h>
-#include <antirollback.h>
+#include <security/tpm/antirollback.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
 #include <arch/symbols.h>
@@ -31,7 +31,7 @@
 #include <string.h>
 #include <symbols.h>
 #include <timestamp.h>
-#include <tpm_lite/tlcl.h>
+#include <security/tpm/tlcl.h>
 #include <security/vboot/vboot_common.h>
 #include <vb2_api.h>
 

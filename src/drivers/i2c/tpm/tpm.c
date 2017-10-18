@@ -38,7 +38,7 @@
 #include <device/i2c_simple.h>
 #include <endian.h>
 #include <timer.h>
-#include <tpm.h>
+#include <security/tpm/tpm.h>
 #include "tpm.h"
 
 /* max. number of iterations after I2C NAK */

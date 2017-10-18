@@ -17,7 +17,7 @@
 #include <console/cbmem_console.h>
 #include <console/console.h>
 #include <arch/acpi.h>
-#include <tpm.h>
+#include <security/tpm/tpm.h>
 #include <reset.h>
 
 //#define EXTRA_LOGGING

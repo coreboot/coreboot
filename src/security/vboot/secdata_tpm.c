@@ -32,10 +32,10 @@
  * stored in the TPM NVRAM.
  */
 
-#include <antirollback.h>
+#include <security/tpm/antirollback.h>
 #include <stdlib.h>
 #include <string.h>
-#include <tpm_lite/tlcl.h>
+#include <security/tpm/tlcl.h>
 #include <vb2_api.h>
 #include <console/console.h>
 

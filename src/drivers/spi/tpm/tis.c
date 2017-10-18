@@ -7,7 +7,7 @@
 #include <arch/early_variables.h>
 #include <console/console.h>
 #include <string.h>
-#include <tpm.h>
+#include <security/tpm/tpm.h>
 
 #include "tpm.h"
 

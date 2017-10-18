@@ -24,8 +24,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <reg_script.h>
+#include <cbmem.h>
 #include <drivers/intel/gma/i915_reg.h>
+#include <drivers/intel/gma/opregion.h>
 #include <soc/cpu.h>
+#include <soc/nvs.h>
 #include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
@@ -479,6 +482,19 @@ static void igd_cdclk_init(struct device *dev, const int is_broadwell)
 	gtt_rmw(0x64810, 0xfffff800, dpdiv);
 }
 
+uintptr_t gma_get_gnvs_aslb(const void *gnvs)
+{
+	const global_nvs_t *gnvs_ptr = gnvs;
+	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
+}
+
+void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
+{
+	global_nvs_t *gnvs_ptr = gnvs;
+	if (gnvs_ptr)
+		gnvs_ptr->aslb = aslb;
+}
+
 static void igd_init(struct device *dev)
 {
 	int is_broadwell = !!(cpu_family_model() == BROADWELL_FAMILY_ULT);
@@ -555,6 +571,33 @@ static void igd_init(struct device *dev)
 		gtt_write(DDI_BUF_CTL_A, DDI_BUF_IS_IDLE | DDI_A_4_LANES |
 			  DDI_INIT_DISPLAY_DETECTED);
 	}
+
+	intel_gma_restore_opregion();
+}
+
+static unsigned long
+gma_write_acpi_tables(struct device *const dev, unsigned long current,
+		struct acpi_rsdp *const rsdp)
+{
+	igd_opregion_t *opregion = (igd_opregion_t *)current;
+	global_nvs_t *gnvs;
+
+	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
+		return current;
+
+	current += sizeof(igd_opregion_t);
+
+	/* GNVS has been already set up */
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs) {
+		/* IGD OpRegion Base Address */
+		gma_set_gnvs_aslb(gnvs, (uintptr_t)opregion);
+	} else {
+		printk(BIOS_ERR, "Error: GNVS table not found.\n");
+	}
+
+	current = acpi_align_current(current);
+	return current;
 }
 
 static struct device_operations igd_ops = {
@@ -563,6 +606,7 @@ static struct device_operations igd_ops = {
 	.enable_resources	= &pci_dev_enable_resources,
 	.init			= &igd_init,
 	.ops_pci		= &broadwell_pci_ops,
+	.write_acpi_tables	= gma_write_acpi_tables,
 };
 
 static const unsigned short pci_device_ids[] = {

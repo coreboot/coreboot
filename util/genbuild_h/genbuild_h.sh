@@ -28,7 +28,7 @@ if [ "${BUILD_TIMELESS}" = "1" ]; then
 	GITREV=Timeless
 	TIMESOURCE="fixed"
 	DATE=0
-elif [ -e "${top}/.git" -a -x "$(command -v git)" ]; then
+elif GIT_DIR="${top}/.git" git status > /dev/null 2>&1; then
 	GITREV=$(LANG= git log -1 --format=format:%h)
 	TIMESOURCE=git
 	DATE=$(git log --pretty=format:%ct -1)

@@ -263,12 +263,12 @@ static uintptr_t calculate_dram_base(size_t *reserved_mem_size)
  */
 size_t soc_reserved_mmio_size(void)
 {
-	size_t chipset_mem_size;
+	struct ebda_config cfg;
 
-	calculate_dram_base(&chipset_mem_size);
+	retrieve_ebda_object(&cfg);
 
 	/* Get Intel Reserved Memory Range Size */
-	return chipset_mem_size;
+	return cfg.reserved_mem_size;
 }
 
 /* Fill up memory layout information */
@@ -277,6 +277,7 @@ void fill_soc_memmap_ebda(struct ebda_config *cfg)
 	size_t chipset_mem_size;
 
 	cfg->tolum_base = calculate_dram_base(&chipset_mem_size);
+	cfg->reserved_mem_size = chipset_mem_size;
 }
 
 void cbmem_top_init(void)

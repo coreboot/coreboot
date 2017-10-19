@@ -19,6 +19,7 @@
 struct ebda_config {
 	uint32_t signature; /* 0x00 - EBDA signature */
 	uint32_t tolum_base; /* 0x04 - coreboot memory start */
+	uint32_t reserved_mem_size; /* 0x08 - chipset reserved memory size */
 };
 
 #endif

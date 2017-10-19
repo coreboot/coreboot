@@ -36,8 +36,8 @@
 #include <arch/cpu.h>
 #include <arch/acpi.h>
 #include <memrange.h>
-#if IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS)
 #include <cpu/amd/mtrr.h>
+#if IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS)
 #define MTRR_FIXED_WRBACK_BITS (MTRR_READ_MEM | MTRR_WRITE_MEM)
 #else
 #define MTRR_FIXED_WRBACK_BITS 0
@@ -81,6 +81,30 @@ void enable_fixed_mtrr(void)
 	msr = rdmsr(MTRR_DEF_TYPE_MSR);
 	msr.lo |= MTRR_DEF_TYPE_EN | MTRR_DEF_TYPE_FIX_EN;
 	wrmsr(MTRR_DEF_TYPE_MSR, msr);
+}
+
+void fixed_mtrrs_expose_amd_rwdram(void)
+{
+	msr_t syscfg;
+
+	if (!IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS))
+		return;
+
+	syscfg = rdmsr(SYSCFG_MSR);
+	syscfg.lo |= SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, syscfg);
+}
+
+void fixed_mtrrs_hide_amd_rwdram(void)
+{
+	msr_t syscfg;
+
+	if (!IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS))
+		return;
+
+	syscfg = rdmsr(SYSCFG_MSR);
+	syscfg.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, syscfg);
 }
 
 static void enable_var_mtrr(unsigned char deftype)
@@ -310,6 +334,8 @@ static void commit_fixed_mtrrs(void)
 	msr_t fixed_msrs[NUM_FIXED_MTRRS];
 	unsigned long msr_index[NUM_FIXED_MTRRS];
 
+	fixed_mtrrs_expose_amd_rwdram();
+
 	memset(&fixed_msrs, 0, sizeof(fixed_msrs));
 
 	msr_num = 0;
@@ -351,6 +377,8 @@ static void commit_fixed_mtrrs(void)
 	for (i = 0; i < ARRAY_SIZE(fixed_msrs); i++)
 		wrmsr(msr_index[i], fixed_msrs[i]);
 	enable_cache();
+	fixed_mtrrs_hide_amd_rwdram();
+
 }
 
 void x86_setup_fixed_mtrrs_no_enable(void)

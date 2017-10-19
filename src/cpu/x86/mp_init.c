@@ -299,6 +299,8 @@ static int save_bsp_msrs(char *start, int size)
 		return -1;
 	}
 
+	fixed_mtrrs_expose_amd_rwdram();
+
 	msr_entry = (void *)start;
 	for (i = 0; i < NUM_FIXED_MTRRS; i++)
 		msr_entry = save_msr(fixed_mtrrs[i], msr_entry);
@@ -309,6 +311,8 @@ static int save_bsp_msrs(char *start, int size)
 	}
 
 	msr_entry = save_msr(MTRR_DEF_TYPE_MSR, msr_entry);
+
+	fixed_mtrrs_hide_amd_rwdram();
 
 	return msr_count;
 }

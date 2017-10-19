@@ -15,6 +15,7 @@
  */
 
 #include <cpu/x86/cr.h>
+#include <cpu/amd/mtrr.h>
 
 /* The SIPI vector is responsible for initializing the APs in the sytem. It
  * loads microcode, sets up MSRs, and enables caching before calling into
@@ -172,6 +173,15 @@ microcode_done:
 	mov	msr_count, %ebx
 	test	%ebx, %ebx
 	jz	1f
+
+#if IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS)
+	/* Allow modification of RdDram and WrDram bits */
+	mov	$SYSCFG_MSR, %ecx
+	rdmsr
+	or	$SYSCFG_MSR_MtrrFixDramModEn, %eax
+	wrmsr
+#endif
+
 load_msr:
 	mov	(%edi), %ecx
 	mov	4(%edi), %eax
@@ -180,6 +190,13 @@ load_msr:
 	add	$12, %edi
 	dec	%ebx
 	jnz	load_msr
+
+#if IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS)
+	mov	$SYSCFG_MSR, %ecx
+	rdmsr
+	and	$~SYSCFG_MSR_MtrrFixDramModEn, %eax
+	wrmsr
+#endif
 
 1:
 	/* Enable caching. */

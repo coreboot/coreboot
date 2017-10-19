@@ -76,6 +76,10 @@ void x86_setup_mtrrs_with_detect(void);
  */
 void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb);
 void enable_fixed_mtrr(void);
+/* Unhide Rd/WrDram bits and allow modification for AMD. */
+void fixed_mtrrs_expose_amd_rwdram(void);
+/* Hide Rd/WrDram bits and allow modification for AMD. */
+void fixed_mtrrs_hide_amd_rwdram(void);
 void x86_setup_fixed_mtrrs(void);
 /* Set up fixed MTRRs but do not enable them. */
 void x86_setup_fixed_mtrrs_no_enable(void);

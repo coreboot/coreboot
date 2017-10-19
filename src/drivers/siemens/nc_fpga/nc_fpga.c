@@ -22,7 +22,10 @@
 #include <string.h>
 #include <delay.h>
 #include <hwilib.h>
+#include <bootstate.h>
 #include "nc_fpga.h"
+
+static void *nc_fpga_bar0;
 
 #define FPGA_SET_PARAM(src, dst) \
 { \
@@ -111,6 +114,9 @@ static void nc_fpga_init(struct device *dev)
 	/* Ensure this is really a NC FPGA by checking magic register. */
 	if (read32(bar0_ptr + NC_MAGIC_OFFSET) != NC_FPGA_MAGIC)
 		return;
+	/* Save BAR0 address so that it can be used on all NC_FPGA devices to
+	   set the FW_DONE bit before jumping to payload. */
+	nc_fpga_bar0 = bar0_ptr;
 	/* Open hwinfo block. */
 	if (hwilib_find_blocks("hwinfo.hex") != CB_SUCCESS)
 		return;
@@ -133,6 +139,22 @@ static void nc_fpga_init(struct device *dev)
 		FPGA_SET_PARAM(PF_PwmFreq, *bl_pwm_ptr);
 	}
 }
+
+#if IS_ENABLED(CONFIG_NC_FPGA_NOTIFY_CB_READY)
+/* Set FW_DONE bit in FPGA before jumping to payload. */
+static void set_fw_done(void *unused)
+{
+	uint32_t reg;
+
+	if (nc_fpga_bar0) {
+		reg = read32(nc_fpga_bar0 + NC_DIAG_CTRL_OFFSET);
+		reg |= NC_DIAG_FW_DONE;
+		write32(nc_fpga_bar0 + NC_DIAG_CTRL_OFFSET, reg);
+	}
+}
+
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, set_fw_done, NULL);
+#endif
 
 static struct device_operations nc_fpga_ops  = {
 	.read_resources   = pci_dev_read_resources,

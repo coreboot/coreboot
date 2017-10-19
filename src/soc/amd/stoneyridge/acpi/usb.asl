@@ -17,12 +17,10 @@
 /* 0:12.0 - EHCI */
 Device(EHC0) {
 	Name(_ADR, 0x00120000)
-	Name(_PRW, Package() {0x0b, 3})
 } /* end EHC0 */
 
 
 /* 0:10.0 - XHCI 0*/
 Device(XHC0) {
 	Name(_ADR, 0x00100000)
-	Name(_PRW, Package() {0x0b, 4})
 } /* end XHC0 */

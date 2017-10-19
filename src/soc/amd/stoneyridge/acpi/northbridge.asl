@@ -49,7 +49,6 @@ Device(AMRT) {
 /* Gpp 0 */
 Device(PBR4) {
 	Name(_ADR, 0x00020001)
-	Name(_PRW, Package() {0x18, 4})
 	Method(_PRT,0) {
 		If(PMOD){ Return(APS4) }	/* APIC mode */
 		Return (PS4)			/* PIC Mode */
@@ -59,7 +58,6 @@ Device(PBR4) {
 /* Gpp 1 */
 Device(PBR5) {
 	Name(_ADR, 0x00020002)
-	Name(_PRW, Package() {0x18, 4})
 	Method(_PRT,0) {
 		If(PMOD){ Return(APS5) }	/* APIC mode */
 		Return (PS5)			/* PIC Mode */
@@ -69,7 +67,6 @@ Device(PBR5) {
 /* Gpp 2 */
 Device(PBR6) {
 	Name(_ADR, 0x00020003)
-	Name(_PRW, Package() {0x18, 4})
 	Method(_PRT,0) {
 		If(PMOD){ Return(APS6) }	/* APIC mode */
 		Return (PS6)			/* PIC Mode */
@@ -79,7 +76,6 @@ Device(PBR6) {
 /* Gpp 3 */
 Device(PBR7) {
 	Name(_ADR, 0x00020004)
-	Name(_PRW, Package() {0x18, 4})
 	Method(_PRT,0) {
 		If(PMOD){ Return(APS7) }	/* APIC mode */
 		Return (PS7)			/* PIC Mode */
@@ -89,7 +85,6 @@ Device(PBR7) {
 /* Gpp 4 */
 Device(PBR8) {
 	Name(_ADR, 0x00020005)
-	Name(_PRW, Package() {0x18, 4})
 	Method(_PRT,0) {
 		If(PMOD){ Return(APS8) }	/* APIC mode */
 		Return (PS8)			/* PIC Mode */

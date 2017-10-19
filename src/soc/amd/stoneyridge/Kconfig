@@ -98,14 +98,6 @@ config CPU_ADDR_BITS
 	int
 	default 48
 
-config CBB
-	hex
-	default 0x0
-
-config CDB
-	hex
-	default 0x18
-
 config BOTTOMIO_POSITION
 	hex "Bottom of 32-bit IO space"
 	default 0xD0000000

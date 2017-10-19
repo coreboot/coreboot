@@ -338,12 +338,12 @@ void fam15_finalize(void *chip_info)
 {
 	device_t dev;
 	u32 value;
-	dev = dev_find_slot(0, PCI_DEVFN(0, 0)); /* clear IoapicSbFeatureEn */
+	dev = dev_find_slot(0, GNB_DEVFN); /* clear IoapicSbFeatureEn */
 	pci_write_config32(dev, 0xf8, 0);
 	pci_write_config32(dev, 0xfc, 5); /* TODO: move it to dsdt.asl */
 
 	/* disable No Snoop */
-	dev = dev_find_slot(0, PCI_DEVFN(1, 1));
+	dev = dev_find_slot(0, HDA0_DEVFN);
 	value = pci_read_config32(dev, 0x60);
 	value &= ~(1 << 11);
 	pci_write_config32(dev, 0x60, value);

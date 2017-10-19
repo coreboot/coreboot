@@ -15,6 +15,7 @@
 
 #include <device/pci_def.h>
 #include <device/device.h>
+#include <soc/pci_devs.h>
 #include <stdlib.h>
 
 /* warning: Porting.h includes an open #pragma pack(1) */
@@ -27,7 +28,7 @@ AGESA_STATUS AmdMemoryReadSPD(UINT32 unused1, UINTN unused2,
 						AGESA_READ_SPD_PARAMS *info)
 {
 	int spdAddress;
-	DEVTREE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	DEVTREE_CONST struct device *dev = dev_find_slot(0, DCT_DEVFN);
 	DEVTREE_CONST struct soc_amd_stoneyridge_config *conf = dev->chip_info;
 
 	if ((dev == 0) || (conf == 0))

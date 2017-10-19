@@ -41,7 +41,7 @@
 #define HDA0_DEV		0x1
 #define HDA0_FUNC		1
 #define HDA0_DEVID		015b3
-#define HDA0_DEVFN		PCI_DEVFN(HDA_DEV, HDA_FUNC)
+#define HDA0_DEVFN		PCI_DEVFN(HDA0_DEV, HDA0_FUNC)
 
 /* Host Bridge */
 #define HOST_DEV		0x2
@@ -155,7 +155,7 @@
 #define HDA0_DEV		0x1
 #define HDA0_FUNC		1
 #define HDA0_DEVID		015b3
-#define HDA0_DEVFN		PCI_DEVFN(HDA_DEV, HDA_FUNC)
+#define HDA0_DEVFN		PCI_DEVFN(HDA0_DEV, HDA0_FUNC)
 
 /* Host Bridge */
 #define HOST_DEV		0x2

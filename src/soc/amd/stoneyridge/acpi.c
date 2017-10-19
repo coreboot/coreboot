@@ -29,6 +29,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/acpi.h>
+#include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <soc/nvs.h>
 
@@ -239,7 +240,7 @@ void generate_cpu_entries(device_t device)
 	device_t cdb_dev;
 
 	/* Stoney Ridge is single node, just report # of cores */
-	cdb_dev = dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB, 5));
+	cdb_dev = dev_find_slot(0, NB_DEVFN);
 	cores = (pci_read_config32(cdb_dev, 0x84) & 0xff) + 1;
 
 	printk(BIOS_DEBUG, "ACPI \\_PR report %d core(s)\n", cores);

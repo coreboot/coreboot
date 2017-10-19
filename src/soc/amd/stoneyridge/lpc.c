@@ -44,7 +44,7 @@ static void lpc_init(device_t dev)
 	 * Enable the LPC Controller
 	 * SMBus register 0x64 is not defined in public datasheet.
 	 */
-	sm_dev = dev_find_slot(0, PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC));
+	sm_dev = dev_find_slot(0, SMBUS_DEVFN);
 	dword = pci_read_config32(sm_dev, 0x64);
 	dword |= 1 << 20;
 	pci_write_config32(sm_dev, 0x64, dword);

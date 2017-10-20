@@ -110,7 +110,7 @@ config IED_REGION_SIZE
 
 config MAX_ROOT_PORTS
 	int
-	default 24
+	default 16
 
 config SMM_TSEG_SIZE
 	hex

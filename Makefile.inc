@@ -494,6 +494,12 @@ $(ROMCC_BIN): $(top)/util/romcc/romcc.c
 	@# https://www.coreboot.org/pipermail/coreboot/2010-February/055825.html
 	$(HOSTCC) -g $(STACK) -Wall -o $@ $<
 
+BLOBTOOL:=$(objutil)/blobtool/blobtool
+$(BLOBTOOL):
+	@printf "    Compile BLOBTOOL\n"
+	+$(MAKE) -C $(top)/util/blobtool
+	cp -a $(top)/util/ifdtool/blobtool $@
+
 IFDTOOL:=$(objutil)/ifdtool/ifdtool
 $(IFDTOOL):
 	@printf "    Compile IFDTOOL\n"
@@ -600,7 +606,7 @@ gitconfig:
 include util/crossgcc/Makefile.inc
 
 .PHONY: tools
-tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY) $(objutil)/blobtool/blobtool
+tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY) $(BLOBTOOL)
 
 ###########################################################################
 # Common recipes for all stages

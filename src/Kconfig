@@ -333,7 +333,7 @@ config CBFS_AUTOGEN_ATTRIBUTES
 menu "Chipset"
 
 comment "SoC"
-source "src/soc/*/*/Kconfig"
+source "src/soc/*/Kconfig"
 comment "CPU"
 source "src/cpu/Kconfig"
 comment "Northbridge"

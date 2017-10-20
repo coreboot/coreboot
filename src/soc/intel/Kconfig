@@ -1,0 +1,15 @@
+# Load all chipsets
+source "src/soc/intel/apollolake/Kconfig"
+source "src/soc/intel/baytrail/Kconfig"
+source "src/soc/intel/braswell/Kconfig"
+source "src/soc/intel/broadwell/Kconfig"
+source "src/soc/intel/cannonlake/Kconfig"
+source "src/soc/intel/denverton_ns/Kconfig"
+source "src/soc/intel/fsp_baytrail/Kconfig"
+source "src/soc/intel/fsp_broadwell_de/Kconfig"
+source "src/soc/intel/quark/Kconfig"
+source "src/soc/intel/sch/Kconfig"
+source "src/soc/intel/skylake/Kconfig"
+
+# Load common config
+source "src/soc/intel/common/Kconfig"

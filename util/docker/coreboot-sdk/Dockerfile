@@ -75,7 +75,7 @@ RUN \
 	git clone https://review.coreboot.org/coreboot && \
 	cd coreboot/util/crossgcc && \
 	git checkout {{DOCKER_COMMIT}} && \
-	make all_without_gdb \
+	make {{CROSSGCC_PARAM}} \
 		BUILD_LANGUAGES=c,ada CPUS=$(nproc) DEST=/opt/xgcc && \
 	cd /root && \
 	rm -rf coreboot

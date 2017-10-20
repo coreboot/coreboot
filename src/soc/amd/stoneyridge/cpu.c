@@ -18,6 +18,7 @@
 #include <cpu/x86/mp.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/lapic.h>
 #include <cpu/amd/amdfam15.h>
 #include <device/device.h>
 #include <soc/pci_devs.h>
@@ -113,3 +114,33 @@ void stoney_init_cpus(struct device *dev)
 	if (mp_init_with_smm(dev->link_list, &mp_ops) < 0)
 		printk(BIOS_ERR, "MP initialization failure.\n");
 }
+
+static void model_15_init(device_t dev)
+{
+	printk(BIOS_DEBUG, "Model 15 Init.\n");
+
+	int i;
+	msr_t msr;
+
+	/* zero the machine check error status registers */
+	msr.lo = 0;
+	msr.hi = 0;
+	for (i = 0 ; i < 6 ; i++)
+		wrmsr(MCI_STATUS + (i * 4), msr);
+
+	setup_lapic();
+}
+
+static struct device_operations cpu_dev_ops = {
+	.init = model_15_init,
+};
+
+static struct cpu_device_id cpu_table[] = {
+	{ X86_VENDOR_AMD, 0x670f00 },
+	{ 0, 0 },
+};
+
+static const struct cpu_driver model_15 __cpu_driver = {
+	.ops      = &cpu_dev_ops,
+	.id_table = cpu_table,
+};

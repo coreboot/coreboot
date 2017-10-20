@@ -92,7 +92,6 @@ ramstage-y += southbridge.c
 ramstage-y += sb_util.c
 ramstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += imc.c
 ramstage-y += lpc.c
-ramstage-y += model_15_init.c
 ramstage-y += northbridge.c
 ramstage-y += pmutil.c
 ramstage-y += reset.c

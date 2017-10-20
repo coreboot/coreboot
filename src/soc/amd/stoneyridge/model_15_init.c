@@ -16,7 +16,6 @@
 #include <console/console.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <string.h>
@@ -26,21 +25,8 @@
 
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
-#include <cpu/x86/mtrr.h>
 #include <cpu/amd/amdfam15.h>
 #include <arch/acpi.h>
-
-static void msr_rw_dram(unsigned int reg)
-{
-#define RW_DRAM (MTRR_READ_MEM | MTRR_WRITE_MEM)
-#define ALL_RW_DRAM ((RW_DRAM << 24) | (RW_DRAM << 16) | \
-		     (RW_DRAM << 8)  | (RW_DRAM))
-
-	msr_t mtrr = rdmsr(reg);
-	mtrr.hi |= ALL_RW_DRAM;
-	mtrr.lo |= ALL_RW_DRAM;
-	wrmsr(reg, mtrr);
-}
 
 static void model_15_init(device_t dev)
 {
@@ -48,29 +34,6 @@ static void model_15_init(device_t dev)
 
 	int i;
 	msr_t msr;
-
-	disable_cache();
-
-	/* Enable access to AMD RdDram and WrDram extension bits */
-	msr = rdmsr(SYSCFG_MSR);
-	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
-	msr.lo &= ~SYSCFG_MSR_MtrrFixDramEn;
-	wrmsr(SYSCFG_MSR, msr);
-
-	/* Send all but A0000-BFFFF to DRAM */
-	msr_rw_dram(MTRR_FIX_64K_00000);
-	msr_rw_dram(MTRR_FIX_16K_80000);
-	for (i = MTRR_FIX_4K_C0000 ; i <= MTRR_FIX_4K_F8000 ; i++)
-		msr_rw_dram(i);
-
-	/* Hide RdDram and WrDram bits, and clear Tom2ForceMemTypeWB */
-	msr = rdmsr(SYSCFG_MSR);
-	msr.lo &= ~SYSCFG_MSR_TOM2WB;
-	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
-	msr.lo |= SYSCFG_MSR_MtrrFixDramEn;
-	wrmsr(SYSCFG_MSR, msr);
-
-	x86_enable_cache();
 
 	/* zero the machine check error status registers */
 	msr.lo = 0;

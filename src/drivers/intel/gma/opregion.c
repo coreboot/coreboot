@@ -260,7 +260,26 @@ intel_gma_init_igd_opregion(igd_opregion_t *opregion)
 
 	/* 8kb */
 	opregion->header.size = sizeof(igd_opregion_t) / 1024;
-	opregion->header.version = IGD_OPREGION_VERSION;
+
+	/*
+	 * Left-shift version field to accomodate Intel Windows driver quirk
+	 * when not using a VBIOS.
+	 * Required for Legacy boot + NGI, UEFI + NGI, and UEFI + GOP driver.
+	 *
+	 * Tested on: (platform, GPU, windows driver version)
+	 * samsung/stumpy (SNB, GT2, 9.17.10.4459)
+	 * google/link (IVB, GT2, 15.33.4653)
+	 * google/wolf (HSW, GT1, 15.40.36.4703)
+	 * google/panther (HSW, GT2, 15.40.36.4703)
+	 * google/rikku (BDW, GT1, 15.40.36.4703)
+	 * google/lulu (BDW, GT2, 15.40.36.4703)
+	 * google/chell (SKL-Y, GT2, 15.45.21.4821)
+	 * google/sentry (SKL-U, GT1, 15.45.21.4821)
+	 * purism/librem13v2 (SKL-U, GT2, 15.45.21.4821)
+	 *
+	 * No adverse effects when using VBIOS or booting Linux.
+	 */
+	opregion->header.version = IGD_OPREGION_VERSION << 24;
 
 	// FIXME We just assume we're mobile for now
 	opregion->header.mailboxes = MAILBOXES_MOBILE;

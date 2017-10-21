@@ -104,7 +104,7 @@ static int xfer(const struct spi_slave *slave, const void *dout,
 
 	/* Validate the buffer sizes */
 	if (bytesin > sizeof(ctrlr->data)) {
-		printk(BIOS_ERR, "bytesin > %ld\n", sizeof(ctrlr->data));
+		printk(BIOS_ERR, "bytesin > %zu\n", sizeof(ctrlr->data));
 		goto error;
 	}
 

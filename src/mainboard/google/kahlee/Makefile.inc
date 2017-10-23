@@ -14,7 +14,7 @@
 #
 
 bootblock-y += bootblock/bootblock.c
-bootblock-y += bootblock/BiosCallOuts.c
+bootblock-y += BiosCallOuts.c
 bootblock-y += bootblock/OemCustomize.c
 bootblock-y += ec.c
 bootblock-y += gpio.c

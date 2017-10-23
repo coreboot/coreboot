@@ -980,6 +980,8 @@ ifeq ($(CONFIG_CPU_MICROCODE_CBFS_GENERATE),y)
 endif
 endif
 	mv $@.tmp $@
+	@printf "    CBFSLAYOUT  $(subst $(obj)/,,$(@))\n\n"
+	$(CBFSTOOL) $@ layout
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $@ print -r $(subst $(spc),$(comma),$(all-regions))
 

@@ -8,6 +8,7 @@ if SOC_INTEL_CANNONLAKE
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
 	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
+	select ACPI_NHLT
 	select ARCH_BOOTBLOCK_X86_32
 	select ARCH_RAMSTAGE_X86_32
 	select ARCH_ROMSTAGE_X86_32
@@ -67,6 +68,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_BLOCK_SPI
 	select SOC_INTEL_COMMON_BLOCK_TIMER
 	select SOC_INTEL_COMMON_BLOCK_UART
+	select SOC_INTEL_COMMON_NHLT
 	select SOC_INTEL_COMMON_RESET
 	select SSE2
 	select SUPPORT_CPU_UCODE_IN_CBFS
@@ -110,6 +112,41 @@ config DCACHE_BSP_STACK_SIZE
 config IED_REGION_SIZE
 	hex
 	default 0x400000
+
+config NHLT_DMIC_1CH_16B
+	bool
+	depends on ACPI_NHLT
+	default n
+	help
+	  Include DSP firmware settings for 1 channel 16B DMIC array.
+
+config NHLT_DMIC_2CH_16B
+	bool
+	depends on ACPI_NHLT
+	default n
+	help
+	  Include DSP firmware settings for 2 channel 16B DMIC array.
+
+config NHLT_DMIC_4CH_16B
+	bool
+	depends on ACPI_NHLT
+	default n
+	help
+	  Include DSP firmware settings for 4 channel 16B DMIC array.
+
+config NHLT_MAX98357
+	bool
+	depends on ACPI_NHLT
+	default n
+	help
+	  Include DSP firmware settings for headset codec.
+
+config NHLT_DA7219
+	bool
+	depends on ACPI_NHLT
+	default n
+	help
+	  Include DSP firmware settings for headset codec.
 
 config MAX_ROOT_PORTS
 	int

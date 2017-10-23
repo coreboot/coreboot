@@ -42,6 +42,7 @@ ramstage-y += gpio.c
 ramstage-y += i2c.c
 ramstage-y += lpc.c
 ramstage-y += memmap.c
+ramstage-y += nhlt.c
 ramstage-y += pmc.c
 ramstage-y += pmutil.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
@@ -72,5 +73,33 @@ CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/cannonlake
 
 CPPFLAGS_common += -I$(src)/soc/intel/cannonlake
 CPPFLAGS_common += -I$(src)/soc/intel/cannonlake/include
+
+# DSP firmware settings files.
+NHLT_BLOB_PATH = 3rdparty/blobs/soc/intel/cnl/nhlt-blobs
+DMIC_1CH_48KHZ_16B = dmic-1ch-48khz-16b.bin
+DMIC_2CH_48KHZ_16B = dmic-2ch-48khz-16b.bin
+DMIC_4CH_48KHZ_16B = dmic-4ch-48khz-16b.bin
+MAX98357_RENDER = max98357-render-2ch-48khz-24b.bin
+DA7219_RENDER_CAPTURE = dialog-2ch-48khz-24b.bin
+
+cbfs-files-$(CONFIG_NHLT_DMIC_1CH_16B) += $(DMIC_1CH_48KHZ_16B)
+$(DMIC_1CH_48KHZ_16B)-file := $(NHLT_BLOB_PATH)/$(DMIC_1CH_48KHZ_16B)
+$(DMIC_1CH_48KHZ_16B)-type := raw
+
+cbfs-files-$(CONFIG_NHLT_DMIC_2CH_16B) += $(DMIC_2CH_48KHZ_16B)
+$(DMIC_2CH_48KHZ_16B)-file := $(NHLT_BLOB_PATH)/$(DMIC_2CH_48KHZ_16B)
+$(DMIC_2CH_48KHZ_16B)-type := raw
+
+cbfs-files-$(CONFIG_NHLT_DMIC_4CH_16B) += $(DMIC_4CH_48KHZ_16B)
+$(DMIC_4CH_48KHZ_16B)-file := $(NHLT_BLOB_PATH)/$(DMIC_4CH_48KHZ_16B)
+$(DMIC_4CH_48KHZ_16B)-type := raw
+
+cbfs-files-$(CONFIG_NHLT_MAX98357) += $(MAX98357_RENDER)
+$(MAX98357_RENDER)-file := $(NHLT_BLOB_PATH)/$(MAX98357_RENDER)
+$(MAX98357_RENDER)-type := raw
+
+cbfs-files-$(CONFIG_NHLT_DA7219) += $(DA7219_RENDER_CAPTURE)
+$(DA7219_RENDER_CAPTURE)-file := $(NHLT_BLOB_PATH)/$(DA7219_RENDER_CAPTURE)
+$(DA7219_RENDER_CAPTURE)-type := raw
 
 endif

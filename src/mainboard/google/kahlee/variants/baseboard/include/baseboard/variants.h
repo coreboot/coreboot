@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Advanced Micro Devices, Inc.
+ * Copyright (C) 2017 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,20 +13,12 @@
  * GNU General Public License for more details.
  */
 
-#include <boardid.h>
-#include <console/console.h>
-#include <gpio.h>
-#include <variant/gpio.h>
-#include <baseboard/variants.h>
 
-uint8_t board_id(void)
-{
-	MAYBE_STATIC int id = -1;
+#ifndef __BASEBOARD_VARIANTS_H__
+#define __BASEBOARD_VARIANTS_H__
 
-	if (id < 0) {
-		id = variant_board_id();
-		printk(BIOS_SPEW, "Board ID: %#x.\n", id);
-	}
+#include <stddef.h>
 
-	return id;
-}
+size_t variant_board_id(void);
+
+#endif /* __BASEBOARD_VARIANTS_H__ */

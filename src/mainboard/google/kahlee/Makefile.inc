@@ -17,22 +17,25 @@ bootblock-y += bootblock/bootblock.c
 bootblock-y += BiosCallOuts.c
 bootblock-y += bootblock/OemCustomize.c
 bootblock-y += ec.c
-bootblock-y += gpio.c
 
 romstage-y += BiosCallOuts.c
 romstage-y += boardid.c
 romstage-y += chromeos.c
-romstage-y += gpio.c
 romstage-y += OemCustomize.c
 
 ramstage-y += BiosCallOuts.c
 ramstage-y += boardid.c
 ramstage-y += chromeos.c
 ramstage-y += ec.c
-ramstage-y += gpio.c
 ramstage-y += OemCustomize.c
 
 verstage-y += chromeos.c
 verstage-y += ec.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+
+subdirs-y += variants/baseboard
+CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include
+
+subdirs-y += variants/$(VARIANT_DIR)
+CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include

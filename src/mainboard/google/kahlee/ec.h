@@ -18,11 +18,7 @@
 
 #include <ec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
-
-/* AGPIO22 -> GPE3 */
-#define EC_SCI_GPI   3
-/* GPIO_S5_07 is EC_SMI#, but it is bit 23 in GPE_STS and ALT_GPIO_SMI. */
-#define EC_SMI_GPI   23
+#include <variant/gpio.h>
 
 #define MAINBOARD_EC_SCI_EVENTS \
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED)        |\

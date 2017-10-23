@@ -19,17 +19,18 @@
 #include <soc/southbridge.h>
 #include <stdlib.h>
 
-extern const GPIO_CONTROL oem_kahlee_gpio[];
+extern const GPIO_CONTROL agesa_board_gpios[];
 
 void platform_FchParams_reset(FCH_RESET_DATA_BLOCK *FchParams_reset)
 {
-	FchParams_reset->EarlyOemGpioTable = (void *)oem_kahlee_gpio;
+	FchParams_reset->EarlyOemGpioTable = (void *)agesa_board_gpios;
 }
 
 void platform_FchParams_env(FCH_DATA_BLOCK *FchParams_env)
 {
-	FchParams_env->PostOemGpioTable = (void *)oem_kahlee_gpio;
+	FchParams_env->PostOemGpioTable = (void *)agesa_board_gpios;
 
 	/* SDHCI/MMC configuration */
-	FchParams_env->Sd.SdSlotType = 1; // EMMC
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KAHLEE))
+		FchParams_env->Sd.SdSlotType = 1; // EMMC
 }

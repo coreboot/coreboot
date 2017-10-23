@@ -19,10 +19,7 @@
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <gpio.h>
-
-/* SPI Write protect */
-#define CROS_WP_GPIO		GPIO_142
-#define GPIO_EC_IN_RW		GPIO_15
+#include <variant/gpio.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {

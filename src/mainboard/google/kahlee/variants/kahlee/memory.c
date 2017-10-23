@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Advanced Micro Devices, Inc.
+ * Copyright 2017 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,20 +13,17 @@
  * GNU General Public License for more details.
  */
 
-#include <boardid.h>
-#include <console/console.h>
-#include <gpio.h>
-#include <variant/gpio.h>
+#include <gpio.h> /* src/include/gpio.h */
 #include <baseboard/variants.h>
+#include <baseboard/gpio.h>
 
-uint8_t board_id(void)
+size_t variant_board_id(void)
 {
-	MAYBE_STATIC int id = -1;
+	gpio_t pads[] = {
+		[2] = MEM_CONFIG2,
+		[1] = MEM_CONFIG1,
+		[0] = MEM_CONFIG0,
+	};
 
-	if (id < 0) {
-		id = variant_board_id();
-		printk(BIOS_SPEW, "Board ID: %#x.\n", id);
-	}
-
-	return id;
+	return gpio_pullup_base2_value(pads, ARRAY_SIZE(pads));
 }

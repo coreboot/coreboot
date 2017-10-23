@@ -19,8 +19,9 @@
 #include <soc/smi.h>
 #include <soc/southbridge.h>
 #include <stdlib.h>
+#include <variant/gpio.h>
 
-const GPIO_CONTROL oem_kahlee_gpio[] = {
+const GPIO_CONTROL agesa_board_gpios[] = {
 	/* AGPIO2 PCIE/WLAN WAKE# SCI*/
 	{2, Function1, FCH_GPIO_PULL_UP_ENABLE },
 

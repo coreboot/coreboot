@@ -35,9 +35,17 @@ config MAINBOARD_DIR
 	string
 	default google/kahlee
 
+config VARIANT_DIR
+	string
+	default "kahlee" if BOARD_GOOGLE_KAHLEE
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "Kahlee"
+	default "Kahlee" if BOARD_GOOGLE_KAHLEE
+
+config DEVICETREE
+	string
+	default "variants/${CONFIG_VARIANT_DIR}/devicetree.cb"
 
 config MAX_CPUS
 	int
@@ -66,7 +74,7 @@ config CHROMEOS
 config GBB_HWID
 	string
 	depends on CHROMEOS
-	default "KAHLEE TEST 6421"
+	default "KAHLEE TEST 6421" if BOARD_GOOGLE_KAHLEE
 
 config AMD_FWM_POSITION_INDEX
 	int

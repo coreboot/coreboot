@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Advanced Micro Devices, Inc.
+ * Copyright (C) 2017 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,20 +13,25 @@
  * GNU General Public License for more details.
  */
 
-#include <boardid.h>
-#include <console/console.h>
-#include <gpio.h>
-#include <variant/gpio.h>
-#include <baseboard/variants.h>
+#ifndef __BASEBOARD_GPIO_H__
+#define __BASEBOARD_GPIO_H__
 
-uint8_t board_id(void)
-{
-	MAYBE_STATIC int id = -1;
+#ifndef __ACPI__
+#include <soc/gpio.h>
 
-	if (id < 0) {
-		id = variant_board_id();
-		printk(BIOS_SPEW, "Board ID: %#x.\n", id);
-	}
+# define MEM_CONFIG0		GPIO_0
+# define MEM_CONFIG1		GPIO_0
+# define MEM_CONFIG2		GPIO_0
+# define MEM_CONFIG3		GPIO_0
 
-	return id;
-}
+/* SPI Write protect */
+#define CROS_WP_GPIO		GPIO_0
+#define GPIO_EC_IN_RW		GPIO_0
+
+#endif /* _ACPI__ */
+
+#define EC_SCI_GPI		0
+
+#define EC_SMI_GPI		0
+
+#endif /* __BASEBOARD_GPIO_H__ */

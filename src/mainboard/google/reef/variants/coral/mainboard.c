@@ -21,8 +21,12 @@
 #include <soc/intel/common/vbt.h>
 
 enum {
+        SKU_0_ASTRONAUT = 0,
+        SKU_1_ASTRONAUT = 1,
 	SKU_2_SANTA = 2,
 	SKU_3_SANTA = 3,
+        SKU_61_ASTRONAUT = 61,
+        SKU_62_ASTRONAUT = 62,
 	SKU_160_NASHER = 160,
 	SKU_161_NASHER = 161,
 	SKU_162_NASHER = 162,
@@ -60,11 +64,21 @@ void mainboard_devtree_update(struct device *dev)
 	sku_id = variant_board_sku();
 
 	switch (sku_id) {
+        case SKU_0_ASTRONAUT:
+        case SKU_1_ASTRONAUT:
+		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
+		cfg->usb2eye[1].Usb20PerPortTxiSet = 2;
+		break;
 	case SKU_2_SANTA:
 	case SKU_3_SANTA:
 		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
 		cfg->usb2eye[1].Usb20PerPortTxiSet = 2;
 		break;
+        case SKU_61_ASTRONAUT:
+        case SKU_62_ASTRONAUT:
+		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
+		cfg->usb2eye[1].Usb20PerPortTxiSet = 5;
+                break;
 	default:
 		break;
 	}

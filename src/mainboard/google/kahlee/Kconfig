@@ -13,10 +13,8 @@
 # GNU General Public License for more details.
 #
 
-if BOARD_GOOGLE_KAHLEE
-
-config BOARD_SPECIFIC_OPTIONS # dummy
-	def_bool y
+config BOARD_GOOGLE_BASEBOARD_KAHLEE
+	bool
 	select SOC_AMD_STONEYRIDGE_FT4
 	select BOARD_ROMSIZE_KB_8192
 	select DRIVERS_PS2_KEYBOARD
@@ -31,16 +29,20 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SERIRQ_CONTINUOUS_MODE
 	select STONEYRIDGE_UART
 
+if BOARD_GOOGLE_BASEBOARD_KAHLEE
+
 config MAINBOARD_DIR
 	string
 	default google/kahlee
 
 config VARIANT_DIR
 	string
+	default "grunt" if BOARD_GOOGLE_GRUNT
 	default "kahlee" if BOARD_GOOGLE_KAHLEE
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Grunt" if BOARD_GOOGLE_GRUNT
 	default "Kahlee" if BOARD_GOOGLE_KAHLEE
 
 config DEVICETREE
@@ -78,10 +80,11 @@ config CHROMEOS
 config GBB_HWID
 	string
 	depends on CHROMEOS
+	default "GRUNT TEST XXXX" if BOARD_GOOGLE_GRUNT
 	default "KAHLEE TEST 6421" if BOARD_GOOGLE_KAHLEE
 
 config AMD_FWM_POSITION_INDEX
 	int
 	default 1
 
-endif # BOARD_GOOGLE_KAHLEE
+endif # BOARD_GOOGLE_KAHLEE || BOARD_GOOGLE_GRUNT

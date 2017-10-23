@@ -48,8 +48,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A18, UP_20K, DEEP, NF1),
 	/* A19 : ISH_GP_1 */
 	PAD_CFG_NF(GPP_A19, UP_20K, DEEP, NF1),
-	/* A20 : ISH_GP_2 */
-	PAD_CFG_NF(GPP_A20, UP_20K, DEEP, NF1),
+	/* A20 : aduio codec irq  */
+	PAD_CFG_GPI_APIC_LOW(GPP_A20, NONE, DEEP),
 	/* A21 : ISH_GP_3 */
 	PAD_CFG_NF(GPP_A21, UP_20K, DEEP, NF1),
 	/* A22 : ISH_GP_4 */
@@ -149,15 +149,19 @@ static const struct pad_config gpio_table[] = {
 	/* D16 : ISH_UART0_CTSB_SML0BALERTB */
 	PAD_CFG_GPI_SCI_HIGH(GPP_D16, NONE, DEEP, LEVEL),
 	/* D17 : DMIC_CLK_1_SNDW3_CLK */
+	PAD_CFG_NF(GPP_D17, UP_20K, DEEP, NF1),
 	/* D18 : DMIC_DATA_1_SNDW3_DATA */
+	PAD_CFG_NF(GPP_D18, UP_20K, DEEP, NF1),
 	/* D19 : DMIC_CLK_0_SNDW4_CLK */
+	PAD_CFG_NF(GPP_D19, UP_20K, DEEP, NF1),
 	/* D20 : DMIC_DATA_0_SNDW4_DATA */
+	PAD_CFG_NF(GPP_D20, UP_20K, DEEP, NF1),
 	/* D21 : SPI1_IO_2 */
 	PAD_CFG_NF(GPP_D21, NONE, PLTRST, NF1),
 	/* D22 : SPI1_IO_3 */
 	PAD_CFG_NF(GPP_D22, NONE, PLTRST, NF1),
 	/* D23 : SPP_MCLK */
-
+	PAD_CFG_NF(GPP_D23, NONE, DEEP, NF1),
 	/* E0  : SATAXPCIE_0_SATAGP_0 */
 #if IS_ENABLED(CONFIG_BOARD_INTEL_CANNONLAKE_RVPY)
 	PAD_CFG_NF(GPP_E0, UP_20K, DEEP, NF1),
@@ -242,7 +246,9 @@ static const struct pad_config gpio_table[] = {
 	/* H4  : I2C2_SDA */
 	/* H5  : I2C2_SCL */
 	/* H6  : I2C3_SDA */
+	PAD_CFG_NF(GPP_H6, UP_2K, DEEP, NF1),
 	/* H7  : I2C3_SCL */
+	PAD_CFG_NF(GPP_H7, UP_2K, DEEP, NF1),
 	/* H8  : I2C4_SDA */
 	/* H9  : I2C4_SCL */
 	/* H10 : I2C5_SDA_ISH_I2C2_SDA */

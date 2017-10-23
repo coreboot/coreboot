@@ -232,6 +232,30 @@ static void enable_fan(const u16 base, const u8 fan,
 	ite_ec_write(base, ITE_EC_FAN_MAIN_CTL, reg);
 }
 
+static void enable_beeps(const u16 base, const struct ite_ec_config *const conf)
+{
+	u8 reg = 0;
+	u8 freq = ITE_EC_BEEP_TONE_DIVISOR(10) | ITE_EC_BEEP_FREQ_DIVISOR(10);
+
+	if (conf->tmpin_beep) {
+		reg |= ITE_EC_BEEP_ON_TMP_LIMIT;
+		ite_ec_write(base, ITE_EC_BEEP_FREQ_DIV_OF_TMPIN, freq);
+	}
+	if (conf->fan_beep) {
+		reg |= ITE_EC_BEEP_ON_FAN_LIMIT;
+		ite_ec_write(base, ITE_EC_BEEP_FREQ_DIV_OF_FAN, freq);
+	}
+	if (conf->vin_beep) {
+		reg |= ITE_EC_BEEP_ON_VIN_LIMIT;
+		ite_ec_write(base, ITE_EC_BEEP_FREQ_DIV_OF_VIN, freq);
+	}
+
+	if (reg) {
+		reg |= ite_ec_read(base, ITE_EC_BEEP_ENABLE);
+		ite_ec_write(base, ITE_EC_BEEP_ENABLE, reg);
+	}
+}
+
 void ite_ec_init(const u16 base, const struct ite_ec_config *const conf)
 {
 	size_t i;
@@ -253,6 +277,9 @@ void ite_ec_init(const u16 base, const struct ite_ec_config *const conf)
 	/* Enable FANx if configured */
 	for (i = 0; i < ITE_EC_FAN_CNT; ++i)
 		enable_fan(base, i + 1, &conf->fan[i]);
+
+	/* Enable beeps if configured */
+	enable_beeps(base, conf);
 
 	/*
 	 * System may get wrong temperature data when SIO is in

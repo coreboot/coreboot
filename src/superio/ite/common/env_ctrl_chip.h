@@ -92,7 +92,9 @@ struct ite_ec_config {
 	 */
 	struct ite_ec_fan_config fan[ITE_EC_FAN_CNT];
 
-	/* FIXME: enable beep when exceeding TMPIN, VIN, FAN limits */
+	bool tmpin_beep;
+	bool fan_beep;
+	bool vin_beep;
 };
 
 /* Some shorthands for device trees */

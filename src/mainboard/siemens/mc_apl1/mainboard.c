@@ -21,7 +21,9 @@
 #include <hwilib.h>
 #include <i210.h>
 #include <intelblocks/lpc_lib.h>
+#include <intelblocks/pcr.h>
 #include <soc/pci_devs.h>
+#include <soc/pcr_ids.h>
 #include <string.h>
 #include <bootstate.h>
 #include <timer.h>
@@ -142,6 +144,12 @@ static void mainboard_final(void *chip_info)
 		cmd |= PCI_COMMAND_MASTER;
 		pci_write_config16(dev, PCI_COMMAND, cmd);
 	}
+
+	/*
+	 * PIR6 register mapping for PCIe root ports
+	 * INTA#->PIRQB#, INTB#->PIRQC#, INTC#->PIRQD#, INTD#-> PIRQA#
+	 */
+	pcr_write16(PID_ITSS, 0x314c, 0x0321);
 }
 
 static void wait_for_legacy_dev(void *unused)

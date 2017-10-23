@@ -18,6 +18,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <gpio.h>
 #include <hwilib.h>
 #include <i210.h>
 #include <intelblocks/lpc_lib.h>
@@ -177,7 +178,14 @@ static void wait_for_legacy_dev(void *unused)
 	printk(BIOS_NOTICE, "done!\n");
 }
 
+static void finalize_boot(void *unused)
+{
+	/* Set coreboot ready LED. */
+	gpio_output(CNV_RGI_DT, 1);
+}
+
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENUMERATE, BS_ON_ENTRY, wait_for_legacy_dev, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, finalize_boot, NULL);
 
 struct chip_operations mainboard_ops = {
 	.init = mainboard_init,

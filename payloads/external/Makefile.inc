@@ -27,6 +27,7 @@ PAYLOAD_VERSION=payloads/external/FILO/filo/build/version.h
 endif
 ifeq ($(CONFIG_PAYLOAD_DEPTHCHARGE),y)
 PAYLOAD_CONFIG=payloads/external/depthcharge/depthcharge/.config
+$(PAYLOAD_CONFIG): payloads/external/depthcharge/depthcharge/build/depthcharge.elf
 #TODO: Figure out version
 endif
 

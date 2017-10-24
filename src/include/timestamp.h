@@ -57,8 +57,18 @@ uint32_t get_us_since_boot(void);
 #define get_us_since_boot() 0
 #endif
 
+/**
+ * Workaround for guard combination above.
+ * Looks like CONFIG_EARLY_CBMEM_INIT selects
+ * timestamp.c to be build.
+ */
+#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
 /* Implemented by the architecture code */
 uint64_t timestamp_get(void);
+#else
+#define timestamp_get() 0
+#endif
+
 uint64_t get_initial_timestamp(void);
 /* Returns timestamp tick frequency in MHz. */
 int timestamp_tick_freq_mhz(void);

@@ -37,7 +37,7 @@ chip northbridge/intel/i440bx		# Northbridge
           end
           device pnp 3f0.8 on		# GPIO 2
           end
-          device pnp 3f0.a on		# ACPI
+          device pnp 3f0.a off		# ACPI
           end
         end
       end

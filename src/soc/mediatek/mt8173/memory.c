@@ -343,7 +343,8 @@ void mt_mem_init(const struct mt8173_sdram_params *sdram_params)
 	mt_set_emi(sdram_params);
 
 	if (IS_ENABLED(CONFIG_MEMORY_TEST)) {
-		/* do memory test:
+		/*
+		 * do memory test:
 		 * set memory scan range 0x2000
 		 * larger test length, longer system boot up time
 		 */

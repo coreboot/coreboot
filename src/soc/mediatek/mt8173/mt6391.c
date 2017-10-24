@@ -415,7 +415,9 @@ static void mt6391_default_buck_voltage(void)
 {
 	u16 reg_val = 0;
 	u16 buck_val = 0;
-	/* There are two kinds of PMIC used for MT8173 : MT6397s/MT6391.
+	/*
+	 * There are two kinds of PMIC used for MT8173 : MT6397s/MT6391.
+	 *
 	 * MT6397s: the default voltage of register was not suitable for
 	 * MT8173, needs to apply the setting of eFuse.
 	 * VPCA15/VSRMCA15/: 1.15V

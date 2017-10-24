@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015-2017 Intel Corp.
+ * Copyright (C) 2017 Siemens AG, Inc.
  * (Written by Andrey Petrov <andrey.petrov@intel.com> for Intel Corp.)
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
@@ -84,6 +85,12 @@ void soc_core_init(device_t cpu)
 	/* Configure Core PRMRR for SGX. */
 	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX))
 		prmrr_core_configure();
+
+	/* Set Max Non-Turbo ratio if RAPL is disabled. */
+	if (IS_ENABLED(CONFIG_APL_SKIP_SET_POWER_LIMITS)) {
+		cpu_set_p_state_to_max_non_turbo_ratio();
+		cpu_disable_eist();
+	}
 }
 
 #if !IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)

@@ -462,7 +462,7 @@ static void mt6391_default_buck_voltage(void)
 void mt6391_init(void)
 {
 	if (pwrap_init())
-		die("ERROR - Failed to initial pmic wrap!");
+		die("ERROR - Failed to initialize pmic wrap!");
 	/* pmic initial setting */
 	mt6391_init_setting();
 

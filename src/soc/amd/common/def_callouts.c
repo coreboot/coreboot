@@ -39,7 +39,6 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
 	{ AGESA_READ_SPD,                 agesa_ReadSpd },
 	{ AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
 	{ AGESA_RUNFUNC_ON_ALL_APS,       agesa_RunFcnOnAllAps },
-	{ AMD_LATE_RUN_AP_TASK,           agesa_LateRunApTask },
 	{ AGESA_GNB_PCIE_SLOT_RESET,      agesa_PcieSlotResetControl },
 	{ AGESA_WAIT_FOR_ALL_APS,         agesa_WaitForAllApsFinished },
 	{ AGESA_IDLE_AN_AP,               agesa_IdleAnAp },
@@ -162,15 +161,6 @@ AGESA_STATUS agesa_RunFcnOnAllAps(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 
 	return Status;
 }
-
-AGESA_STATUS agesa_LateRunApTask(UINT32 Func, UINTN Data, VOID *ConfigPtr)
-{
-	printk(BIOS_WARNING, "Warning - Missing AGESA callout: %s\n", __func__);
-	AGESA_STATUS Status = AGESA_UNSUPPORTED;
-
-	return Status;
-}
-
 
 AGESA_STATUS agesa_PcieSlotResetControl(UINT32 Func, UINTN Data,
 	VOID *ConfigPtr)

@@ -280,7 +280,8 @@ static int tpm2_write_reg(unsigned reg_number, const void *buffer, size_t bytes)
  * To read a register, start transaction, transfer data from the TPM, deassert
  * CS when done.
  *
- * Returns one to indicate success, zero to indicate failure.
+ * Returns one to indicate success, zero to indicate failure. In case of
+ * failure zero out the user buffer.
  */
 static int tpm2_read_reg(unsigned reg_number, void *buffer, size_t bytes)
 {
@@ -368,21 +369,52 @@ static int tpm2_claim_locality(void)
 	return 1;
 }
 
+/* Device/vendor ID values of the TPM devices this driver supports. */
+static const uint32_t supported_did_vids[] = {
+	0x00281ae0  /* H1 based Cr50 security chip. */
+};
+
 int tpm2_init(struct spi_slave *spi_if)
 {
 	uint32_t did_vid, status;
 	uint8_t cmd;
+	int retries;
 	struct tpm2_info *tpm_info = car_get_var_ptr(&g_tpm_info);
 	struct spi_slave *spi_slave = car_get_var_ptr(&g_spi_slave);
 
 	memcpy(spi_slave, spi_if, sizeof(*spi_if));
 
 	/*
-	 * It is enough to check the first register read error status to bail
-	 * out in case of malfunctioning TPM.
+	 * 150 ms should be enough to synchronize with the TPM even under the
+	 * worst nested reset request conditions. In vast majority of cases
+	 * there would be no wait at all.
 	 */
-	if (!tpm2_read_reg(TPM_DID_VID_REG, &did_vid, sizeof(did_vid)))
+	printk(BIOS_INFO, "Probing TPM: ");
+	for (retries = 15; retries > 0; retries--) {
+		int i;
+
+		/* In case of falure to read div_vid is set to zero. */
+		tpm2_read_reg(TPM_DID_VID_REG, &did_vid, sizeof(did_vid));
+
+		for (i = 0; i < ARRAY_SIZE(supported_did_vids); i++)
+			if (did_vid == supported_did_vids[i])
+				break; /* Tpm is up and ready. */
+
+		if (i < ARRAY_SIZE(supported_did_vids))
+			break;
+
+		/* TPM might be resetting, let's retry in a bit. */
+		mdelay(10);
+		printk(BIOS_INFO, ".");
+	}
+
+	if (!retries) {
+		printk(BIOS_ERR, "\n%s: Failed to connect to the TPM\n",
+		       __func__);
 		return -1;
+	}
+
+	printk(BIOS_INFO, " done!\n");
 
 	/* Claim locality 0. */
 	if (!tpm2_claim_locality())

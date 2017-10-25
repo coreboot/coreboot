@@ -61,7 +61,7 @@ typedef struct {
 	u8	ecps; /* 0x43 - SGX Enabled status */
 	u64	emna; /* 0x44 - 0x4B EPC base address */
 	u64	elng; /* 0x4C - 0x53 EPC Length */
-	u8	unused[189];
+	u8	unused[172];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

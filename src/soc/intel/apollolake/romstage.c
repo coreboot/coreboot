@@ -53,8 +53,6 @@
 #include <compiler.h>
 #include "chip.h"
 
-static struct chipset_power_state power_state CAR_GLOBAL;
-
 static const uint8_t hob_variable_guid[16] = {
 	0x7d, 0x14, 0x34, 0xa0, 0x0c, 0x69, 0x54, 0x41,
 	0x8d, 0xe6, 0xc0, 0x44, 0x64, 0x1d, 0xe9, 0x42,
@@ -110,22 +108,6 @@ static void disable_watchdog(void)
 	reg |= TCO_TMR_HLT;
 	outl(reg, ACPI_BASE_ADDRESS + TCO1_CNT);
 }
-
-static void migrate_power_state(int is_recovery)
-{
-	struct chipset_power_state *ps_cbmem;
-	struct chipset_power_state *ps_car;
-
-	ps_car = car_get_var_ptr(&power_state);
-	ps_cbmem = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*ps_cbmem));
-
-	if (ps_cbmem == NULL) {
-		printk(BIOS_DEBUG, "Unable to add power state to cbmem!\n");
-		return;
-	}
-	memcpy(ps_cbmem, ps_car, sizeof(*ps_cbmem));
-}
-ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state);
 
 /*
  * Punit Initialization code. This all isn't documented, but
@@ -211,7 +193,7 @@ asmlinkage void car_stage_entry(void)
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
 	bool s3wake;
-	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
+	struct chipset_power_state *ps = pmc_get_power_state();
 	void *smm_base;
 	size_t smm_size, var_size;
 	const void *new_var_data;
@@ -312,7 +294,7 @@ static void check_full_retrain(const FSPM_UPD *mupd)
 	if (mupd->FspmArchUpd.BootMode != FSP_BOOT_WITH_FULL_CONFIGURATION)
 		return;
 
-	ps = car_get_var_ptr(&power_state);
+	ps = pmc_get_power_state();
 
 	if (ps->gen_pmcon1 & WARM_RESET_STS) {
 		printk(BIOS_INFO, "Full retrain unsupported on warm reboot.\n");

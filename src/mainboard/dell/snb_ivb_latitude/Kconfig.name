@@ -21,6 +21,9 @@ config BOARD_DELL_LATITUDE_E6520
 config BOARD_DELL_LATITUDE_E5530
 	bool "Latitude E5530"
 
+config BOARD_DELL_LATITUDE_E6230
+	bool "Latitude E6230"
+
 config BOARD_DELL_LATITUDE_E6330
 	bool "Latitude E6330"
 

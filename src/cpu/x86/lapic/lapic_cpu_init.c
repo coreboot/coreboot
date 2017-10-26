@@ -351,7 +351,7 @@ void stop_this_cpu(void)
 	unsigned long send_status;
 	unsigned long id;
 
-	id = lapic_read(LAPIC_ID) >> 24;
+	id = lapicid();
 
 	printk(BIOS_DEBUG, "CPU %ld going down...\n", id);
 

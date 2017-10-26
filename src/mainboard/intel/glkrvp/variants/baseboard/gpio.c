@@ -284,8 +284,8 @@ variant_sleep_gpio_table(size_t *num)
 
 static const struct cros_gpio cros_gpios[] = {
 #if 0
-	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, GPIO_COMM_NW_NAME),
-	CROS_GPIO_WP_AH(PAD_NW(GPIO_PCH_WP), GPIO_COMM_NW_NAME),
+	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AH(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
 #endif
 };
 

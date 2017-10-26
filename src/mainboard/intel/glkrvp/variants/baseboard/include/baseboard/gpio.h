@@ -29,10 +29,6 @@
 
 #define GPE_EC_WAKE	GPE0_DW1_06
 
-/* Write Protect and indication if EC is in RW code. */
-#define GPIO_PCH_WP	GPIO_75
-#define GPIO_EC_IN_RW	GPIO_41
-
 /*  Memory SKU GPIOs. */
 #define MEM_CONFIG3	GPIO_45
 #define MEM_CONFIG2	GPIO_38

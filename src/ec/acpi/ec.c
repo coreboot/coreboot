@@ -111,6 +111,21 @@ u8 recv_ec_data(void)
 	return data;
 }
 
+void ec_clear_out_queue(void)
+{
+	int timeout = 0x7fff;
+	printk(BIOS_SPEW, "Clearing EC output queue...\n");
+	while (--timeout && (inb(ec_cmd_reg) & EC_OBF)) {
+		u8 data = inb(ec_data_reg);
+		printk(BIOS_SPEW, "Discarding a garbage byte: 0x%02x\n", data);
+		udelay(10);
+	}
+	if (!timeout)
+		printk(BIOS_ERR, "Timeout while clearing EC output queue!\n");
+	else
+		printk(BIOS_SPEW, "EC output queue has been cleared.\n");
+}
+
 u8 ec_read(u8 addr)
 {
 	send_ec_command(0x80);

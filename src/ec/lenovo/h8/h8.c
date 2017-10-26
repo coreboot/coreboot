@@ -196,6 +196,7 @@ static void h8_enable(struct device *dev)
 
 	dev->ops = &h8_dev_ops;
 
+	ec_clear_out_queue();
 	h8_log_ec_version();
 
 	/* Always enable I/O range 0x1600-0x160f and thermal management */

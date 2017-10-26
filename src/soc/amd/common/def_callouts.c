@@ -15,9 +15,13 @@
  */
 
 #include <cbfs.h>
+#include <cpu/x86/lapic.h>
+#include <cpu/x86/mp.h>
+#include <timer.h>
 #include <amdlib.h>
 #include <BiosCallOuts.h>
 #include "agesawrapper.h"
+#include <agesawrapper_call.h>
 #include <reset.h>
 #include <soc/southbridge.h>
 
@@ -35,11 +39,13 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
 	{ AGESA_DO_RESET,                 agesa_Reset },
 	{ AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
 	{ AGESA_READ_SPD,                 agesa_ReadSpd },
+	{ AGESA_GNB_PCIE_SLOT_RESET,      agesa_PcieSlotResetControl },
+#if ENV_RAMSTAGE
 	{ AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
 	{ AGESA_RUNFUNC_ON_ALL_APS,       agesa_RunFcnOnAllAps },
-	{ AGESA_GNB_PCIE_SLOT_RESET,      agesa_PcieSlotResetControl },
 	{ AGESA_WAIT_FOR_ALL_APS,         agesa_WaitForAllApsFinished },
 	{ AGESA_IDLE_AN_AP,               agesa_IdleAnAp },
+#endif /* ENV_RAMSTAGE */
 
 	/* Optional callouts */
 	{ AGESA_GET_IDS_INIT_DATA,             agesa_EmptyIdsInitData },
@@ -131,14 +137,6 @@ AGESA_STATUS agesa_Reset(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	return Status;
 }
 
-AGESA_STATUS agesa_RunFuncOnAp(UINT32 Func, UINTN Data, VOID *ConfigPtr)
-{
-	AGESA_STATUS Status;
-
-	Status = agesawrapper_amdlaterunaptask(Func, Data, ConfigPtr);
-	return Status;
-}
-
 AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData,
 							VOID *ConfigPrt)
 {
@@ -151,14 +149,6 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData,
 	printk(BIOS_DEBUG, "agesa_GfxGetVbiosImage: IMGptr=%p\n",
 						pVbiosImageInfo->ImagePtr);
 	return pVbiosImageInfo->ImagePtr ? AGESA_SUCCESS : AGESA_WARNING;
-}
-
-AGESA_STATUS agesa_RunFcnOnAllAps(UINT32 Func, UINTN Data, VOID *ConfigPtr)
-{
-	printk(BIOS_WARNING, "Warning - Missing AGESA callout: %s\n", __func__);
-	AGESA_STATUS Status = AGESA_UNSUPPORTED;
-
-	return Status;
 }
 
 AGESA_STATUS __attribute__((weak)) platform_PcieSlotResetControl(UINT32 Func,
@@ -175,10 +165,77 @@ AGESA_STATUS agesa_PcieSlotResetControl(UINT32 Func, UINTN Data,
 	return platform_PcieSlotResetControl(Func, Data, ConfigPtr);
 }
 
+/*
+ * Application Processor callouts:
+ * agesa_RunFuncOnAp() and agesa_RunFcnOnAllAps() are called after main memory
+ * has been initialized and coreboot has taken control of AP task dispatching.
+ * These functions execute callout_ap_entry() on each AP, which calls the
+ * AmdLateRunApTask() entry point if it is a targeted AP.
+ */
+
+/*
+ * Global data for APs.
+ * Passed from the AGESA_Callout for the agesawrapper_amdlaterunaptask.
+ */
+static struct agesa_data {
+	UINT32 Func;
+	UINTN Data;
+	VOID *ConfigPtr;
+} agesadata;
+
+/*
+ * BSP deploys APs to callout_ap_entry(), which calls
+ * agesawrapper_amdlaterunaptask with the agesadata.
+ */
+static void callout_ap_entry(void)
+{
+	AGESA_STATUS Status = AGESA_UNSUPPORTED;
+
+	printk(BIOS_DEBUG, "%s Func: 0x%x,  Data: 0x%lx, Ptr: 0x%p \n",
+		__func__, agesadata.Func, agesadata.Data, agesadata.ConfigPtr);
+
+	/* Check if this AP should run the function */
+	if (!((agesadata.Func == AGESA_RUNFUNC_ONAP) &&
+	    (agesadata.Data == lapicid())))
+		return;
+
+	Status = agesawrapper_amdlaterunaptask(agesadata.Func, agesadata.Data,
+			agesadata.ConfigPtr);
+
+	if (Status)
+		printk(BIOS_DEBUG, "There was a problem with %lx returned %s\n",
+			lapicid(), decodeAGESA_STATUS(Status));
+}
+
+AGESA_STATUS agesa_RunFuncOnAp(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+{
+	printk(BIOS_DEBUG, "%s\n", __func__);
+
+	agesadata.Func = Func;
+	agesadata.Data = Data;
+	agesadata.ConfigPtr = ConfigPtr;
+	mp_run_on_aps(callout_ap_entry, 100 * USECS_PER_MSEC);
+
+	return AGESA_SUCCESS;
+}
+
+AGESA_STATUS agesa_RunFcnOnAllAps(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+{
+	printk(BIOS_DEBUG, "%s\n", __func__);
+
+	agesadata.Func = Func;
+	agesadata.Data = Data;
+	agesadata.ConfigPtr = ConfigPtr;
+	mp_run_on_aps(callout_ap_entry, 100 * USECS_PER_MSEC);
+
+	return AGESA_SUCCESS;
+}
+
 AGESA_STATUS agesa_WaitForAllApsFinished(UINT32 Func, UINTN Data,
 	VOID *ConfigPtr)
 {
-	printk(BIOS_WARNING, "Warning - Missing AGESA callout: %s\n", __func__);
+	printk(BIOS_WARNING, "Warning - AGESA callout: %s not supported\n",
+		__func__);
 	AGESA_STATUS Status = AGESA_UNSUPPORTED;
 
 	return Status;
@@ -186,7 +243,8 @@ AGESA_STATUS agesa_WaitForAllApsFinished(UINT32 Func, UINTN Data,
 
 AGESA_STATUS agesa_IdleAnAp(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
-	printk(BIOS_WARNING, "Warning - Missing AGESA callout: %s\n", __func__);
+	printk(BIOS_WARNING, "Warning - AGESA callout: %s no supported\n",
+		__func__);
 	AGESA_STATUS Status = AGESA_UNSUPPORTED;
 
 	return Status;

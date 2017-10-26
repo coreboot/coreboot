@@ -162,13 +162,18 @@ AGESA_STATUS agesa_RunFcnOnAllAps(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	return Status;
 }
 
+AGESA_STATUS __attribute__((weak)) platform_PcieSlotResetControl(UINT32 Func,
+	UINTN Data, VOID *ConfigPtr)
+{
+	printk(BIOS_WARNING, "Warning - AGESA callout: %s not supported\n",
+		__func__);
+	return AGESA_UNSUPPORTED;
+}
+
 AGESA_STATUS agesa_PcieSlotResetControl(UINT32 Func, UINTN Data,
 	VOID *ConfigPtr)
 {
-	printk(BIOS_WARNING, "Warning - Missing AGESA callout: %s\n", __func__);
-	AGESA_STATUS Status = AGESA_UNSUPPORTED;
-
-	return Status;
+	return platform_PcieSlotResetControl(Func, Data, ConfigPtr);
 }
 
 AGESA_STATUS agesa_WaitForAllApsFinished(UINT32 Func, UINTN Data,

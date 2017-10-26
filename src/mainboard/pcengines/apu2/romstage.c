@@ -33,6 +33,7 @@
 #include <Fch/Fch.h>
 #include "gpio_ftns.h"
 #include <build.h>
+#include "bios_knobs.h"
 
 static void early_lpc_init(void);
 
@@ -76,11 +77,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		data = *memptr;
 		printk(BIOS_INFO, "FCH_MISC_REG40 is 0x%08x \n", data);
 
-		// sign of life strings
-		printk(BIOS_ALERT, CONFIG_MAINBOARD_PART_NUMBER "\n");
-		printk(BIOS_ALERT, "coreboot build %s\n", COREBOOT_DMI_DATE);
-		printk(BIOS_ALERT, "BIOS version %s\n", COREBOOT_ORIGIN_GIT_TAG);
+		bool scon = check_console();
 
+		if(scon) {
+			// sign of life strings
+			printk(BIOS_ALERT, CONFIG_MAINBOARD_PART_NUMBER "\n");
+			printk(BIOS_ALERT, "coreboot build %s\n", COREBOOT_DMI_DATE);
+			printk(BIOS_ALERT, "BIOS version %s\n", COREBOOT_ORIGIN_GIT_TAG);
+		}
 		//
 		// Configure clock request
 		//
@@ -106,7 +110,17 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		// force it to be always on
 		data |= 0xF << (1 * 4); // CLKREQ GFX to GFXCLK
 #else
-		data |= 0xA << (1 * 4); // CLKREQ GFX to GFXCLK
+		bool mpcie2_clk = check_mpcie2_clk();
+		if (mpcie2_clk) {
+			// make GFXCLK to ignore CLKREQ# input
+			// force it to be always on
+			data |= 0xF << (1 * 4); // CLKREQ GFX to GFXCLK
+			printk(BIOS_DEBUG, "mPCIe clock enabled\n");
+		}
+		else {
+			data |= 0xA << (1 * 4);	// CLKREQ GFX to GFXCLK
+			printk(BIOS_DEBUG, "mPCIe clock disabled\n");
+		}
 #endif
 
 		*((u32 *)(ACPI_MMIO_BASE + MISC_BASE+FCH_MISC_REG04)) = data;

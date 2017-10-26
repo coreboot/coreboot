@@ -152,32 +152,44 @@ static void config_gpio_mux(void)
 		printk(BIOS_INFO, "UARTC enabled\n");
 
 		uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP3);
-		if (uart) uart->enabled = 1;
+		if (uart)
+			uart->enabled = 1;
+
 		gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO0);
-		if (gpio) gpio->enabled = 0;
+		if (gpio)
+			gpio->enabled = 0;
 	} else {
 		printk(BIOS_INFO, "UARTC disabled\n");
 
 		uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP3);
-		if (uart) uart->enabled = 0;
+		if (uart)
+			uart->enabled = 0;
+
 		gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO0);
-		if (gpio) gpio->enabled = 1;
+		if (gpio)
+			gpio->enabled = 1;
 	}
 
 	if (check_uartd()) {
 		printk(BIOS_INFO, "UARTD enabled\n");
 
 		uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP4);
-		if (uart) uart->enabled = 1;
+		if (uart)
+			uart->enabled = 1;
+
 		gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO1);
-		if (gpio) gpio->enabled = 0;
+		if (gpio)
+			gpio->enabled = 0;
 	} else {
 		printk(BIOS_INFO, "UARTD disabled\n");
 
 		uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP4);
-		if (uart) uart->enabled = 0;
+		if (uart)
+			uart->enabled = 0;
+
 		gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO1);
-		if (gpio)  gpio->enabled = 1;
+		if (gpio)
+			gpio->enabled = 1;
 	}
 }
 
@@ -211,7 +223,9 @@ static void mainboard_enable(device_t dev)
 	}
 
 	if (scon) {
-		if ( spd_buffer[3] == 8 ) 	printk(BIOS_ALERT, " ECC");
+		if (spd_buffer[3] == 8)
+			printk(BIOS_ALERT, " ECC");
+
 		printk(BIOS_ALERT, " DRAM\n\n");
 	}
 	//

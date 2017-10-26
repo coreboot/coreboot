@@ -56,7 +56,6 @@ ramstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 ramstage-y += lpc.c
 ramstage-y += memmap.c
 ramstage-y += mmap_boot.c
-ramstage-y += p2sb.c
 ramstage-y += uart.c
 ramstage-y += nhlt.c
 ramstage-y += systemagent.c

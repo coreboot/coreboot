@@ -28,6 +28,7 @@
 #include <device/pci.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/p2sb.h>
 #include <intelblocks/msr.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
@@ -43,7 +44,6 @@
 #include <spi-generic.h>
 #include <soc/cpu.h>
 #include <soc/pm.h>
-#include <soc/p2sb.h>
 #include <soc/systemagent.h>
 
 #include "chip.h"

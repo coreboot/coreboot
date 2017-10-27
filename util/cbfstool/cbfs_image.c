@@ -1460,24 +1460,26 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 	unsigned int decompressed_size = 0;
 	unsigned int compression = cbfs_file_get_compression_info(entry,
 		&decompressed_size);
+	const char *compression_name = lookup_name_by_type(
+			types_cbfs_compression, compression, "????");
 
-	if (compression == CBFS_COMPRESS_NONE) {
-		fprintf(fp, "%-30s 0x%-8x %-12s %d\n",
-			*name ? name : "(empty)",
-			cbfs_get_entry_addr(image, entry),
-			get_cbfs_entry_type_name(ntohl(entry->type)),
-			ntohl(entry->len));
-	} else {
-		fprintf(fp, "%-30s 0x%-8x %-12s %d (%d after %s decompression)\n",
+	if (compression == CBFS_COMPRESS_NONE)
+		fprintf(fp, "%-30s 0x%-8x %-12s %8d %-4s\n",
 			*name ? name : "(empty)",
 			cbfs_get_entry_addr(image, entry),
 			get_cbfs_entry_type_name(ntohl(entry->type)),
 			ntohl(entry->len),
-			decompressed_size,
-			lookup_name_by_type(types_cbfs_compression,
-				compression, "(unknown)")
+			compression_name
 			);
-	}
+	else
+		fprintf(fp, "%-30s 0x%-8x %-12s %8d %-4s (%d decompressed)\n",
+			*name ? name : "(empty)",
+			cbfs_get_entry_addr(image, entry),
+			get_cbfs_entry_type_name(ntohl(entry->type)),
+			ntohl(entry->len),
+			compression_name,
+			decompressed_size
+			);
 
 	struct cbfs_file_attr_hash *hash = NULL;
 	while ((hash = cbfs_file_get_next_hash(entry, hash)) != NULL) {
@@ -1579,7 +1581,7 @@ int cbfs_print_directory(struct cbfs_image *image)
 {
 	if (cbfs_is_legacy_cbfs(image))
 		cbfs_print_header_info(image);
-	printf("%-30s %-10s %-12s Size\n", "Name", "Offset", "Type");
+	printf("%-30s %-10s %-12s   Size   Comp\n", "Name", "Offset", "Type");
 	cbfs_walk(image, cbfs_print_entry_info, NULL);
 	return 0;
 }

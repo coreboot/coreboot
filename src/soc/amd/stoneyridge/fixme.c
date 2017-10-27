@@ -13,79 +13,67 @@
  * GNU General Public License for more details.
  */
 
+#include <device/device.h>
+#include <cpu/cpu.h>
+#include <cpu/x86/lapic_def.h>
+#include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/amd/mtrr.h>
+#include <cpu/amd/amdfam15.h>
 #include <soc/pci_devs.h>
+#include <soc/pci_devs.h>
+#include <soc/northbridge.h>
+#include <soc/southbridge.h>
 #include <agesawrapper.h>
-#include <amdlib.h>
 
+/*
+ * Enable VGA cycles.  Set memory ranges of the FCH legacy devices (TPM, HPET,
+ * BIOS RAM, Watchdog Timer, IOAPIC and ACPI) as non-posted.  Set remaining
+ * MMIO to posted.  Route all I/O to the southbridge.
+ */
 void amd_initcpuio(void)
 {
-	UINT64                        MsrReg;
-	UINT32                        PciData;
-	PCI_ADDR                      PciAddress;
-	AMD_CONFIG_PARAMS             StdHeader;
+	msr_t topmem = rdmsr(TOP_MEM); /* todo: build bsp_topmem() earlier */
+	uintptr_t base, limit;
 
 	/* Enable legacy video routing: D18F1xF4 VGA Enable */
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0xf4);
-	PciData = 1;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+	pci_write_config32(SOC_ADDR_DEV, D18F1_VGAEN, VGA_ADDR_ENABLE);
 
-	/* The platform BIOS needs to ensure the memory ranges of SB800
-	 * legacy devices (TPM, HPET, BIOS RAM, Watchdog Timer, I/O APIC and
-	 * ACPI) are set to non-posted regions.
-	 */
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x84);
-	/* last address before processor local APIC at FEE00000 */
-	PciData = 0x00fedf00;
-	PciData |= 1 << 7;    /* set NP (non-posted) bit */
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x80);
-	/* lowest NP address is HPET at FED00000 */
-	PciData = (0xfed00000 >> 8) | 3;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+	/* Non-posted: range(HPET-LAPIC) or 0xfed00000 through 0xfee00000-1 */
+	base = (HPET_BASE_ADDRESS >> 8) | MMIO_WE | MMIO_RE;
+	limit = (ALIGN_DOWN(LOCAL_APIC_ADDR - 1, 64 * KiB) >> 8) | MMIO_NP;
+	pci_write_config32(SOC_ADDR_DEV, NB_MMIO_LIMIT_LO(0), limit);
+	pci_write_config32(SOC_ADDR_DEV, NB_MMIO_BASE_LO(0), base);
 
-	/* Map the remaining PCI hole as posted MMIO */
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x8c);
-	PciData = 0x00fecf00; /* last address before non-posted range */
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-	LibAmdMsrRead(TOP_MEM, &MsrReg, &StdHeader);
-	MsrReg = (MsrReg >> 8) | 3;
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x88);
-	PciData = (UINT32)MsrReg;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+	/* Remaining PCI hole posted MMIO: TOM-HPET (TOM through 0xfed00000-1 */
+	base = (topmem.lo >> 8) | MMIO_WE | MMIO_RE;
+	limit = ALIGN_DOWN(HPET_BASE_ADDRESS - 1, 64 * KiB) >> 8;
+	pci_write_config32(SOC_ADDR_DEV, NB_MMIO_LIMIT_LO(1), limit);
+	pci_write_config32(SOC_ADDR_DEV, NB_MMIO_BASE_LO(1), base);
 
-	/* Send all IO (0000-FFFF) to southbridge. */
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0xc4);
-	PciData = 0x0000f000;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0xc0);
-	PciData = 0x00000003;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+	/* Route all I/O downstream */
+	base = 0 | IO_WE | IO_RE;
+	limit = ALIGN_DOWN(0xffff, 4 * KiB);
+	pci_write_config32(SOC_ADDR_DEV, NB_IO_LIMIT(0), limit);
+	pci_write_config32(SOC_ADDR_DEV, NB_IO_BASE(0), base);
 }
 
+/* Set the MMIO Configuration Base Address and Bus Range. */
 void amd_initmmio(void)
 {
-	UINT64                        MsrReg;
-	AMD_CONFIG_PARAMS             StdHeader;
+	msr_t mmconf;
+	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
+	int mtrr;
+
+	mmconf.hi = 0;
+	mmconf.lo = CONFIG_MMCONF_BASE_ADDRESS | MMIO_RANGE_EN
+			| fms(CONFIG_MMCONF_BUS_NUMBER) << MMIO_BUS_RANGE_SHIFT;
+	wrmsr(MMIO_CONF_BASE, mmconf);
 
 	/*
-	  Set the MMIO Configuration Base Address and Bus Range onto MMIO
-	  configuration base Address MSR register.
-	*/
-	MsrReg = CONFIG_MMCONF_BASE_ADDRESS |
-			(LibAmdBitScanReverse(CONFIG_MMCONF_BUS_NUMBER) << 2)
-			| 1;
-	LibAmdMsrWrite(0xc0010058, &MsrReg, &StdHeader);
-
-	/* Set ROM cache onto WP to decrease post time */
-	MsrReg = (0x0100000000ull - CACHE_ROM_SIZE) | 5ull;
-	LibAmdMsrWrite(0x20c, &MsrReg, &StdHeader);
-	MsrReg = ((1ULL << CONFIG_CPU_ADDR_BITS) - CACHE_ROM_SIZE) | 0x800ull;
-	LibAmdMsrWrite(0x20d, &MsrReg, &StdHeader);
-
-	if (IS_ENABLED(CONFIG_UDELAY_LAPIC)) {
-		LibAmdMsrRead(0x1b, &MsrReg, &StdHeader);
-		MsrReg |= 1 << 11;
-		LibAmdMsrWrite(0x1b, &MsrReg, &StdHeader);
-	}
+	 * todo: AGESA currently writes variable MTRRs.  Once that is
+	 *       corrected, un-hardcode this MTRR.
+	 */
+	mtrr = (mtrr_cap.lo & MTRR_CAP_VCNT) - 2;
+	set_var_mtrr(mtrr, FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
 }

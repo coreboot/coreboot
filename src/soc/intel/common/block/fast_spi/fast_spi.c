@@ -230,7 +230,7 @@ void fast_spi_cache_bios_region(void)
 		return;
 
 	/* Round to power of two */
-	alignment = 1 << (log2_ceil(bios_size));
+	alignment = 1UL << (log2_ceil(bios_size));
 	bios_size = ALIGN_UP(bios_size, alignment);
 	base = 4ULL*GiB - bios_size;
 

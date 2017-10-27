@@ -25,6 +25,7 @@ void mainboard_ec_init(void)
 		.sci_events = MAINBOARD_EC_SCI_EVENTS,
 		.s3_wake_events = MAINBOARD_EC_S3_WAKE_EVENTS,
 		.s5_wake_events = MAINBOARD_EC_S5_WAKE_EVENTS,
+		.s0ix_wake_events = MAINBOARD_EC_S0IX_WAKE_EVENTS,
 	};
 
 	google_chromeec_events_init(&info, acpi_is_wakeup_s3());

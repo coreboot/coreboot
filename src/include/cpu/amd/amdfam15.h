@@ -26,6 +26,10 @@
 # define SMM_LOCK			(1 << 0)
 #define NB_CFG_MSR			0xC001001f
 
+#define MMIO_CONF_BASE			0xC0010058
+# define MMIO_BUS_RANGE_SHIFT		2
+# define MMIO_RANGE_EN			(1 << 0)
+
 #define PSTATE_0_MSR			0xC0010064
 
 #define LS_CFG_MSR			0xC0011020

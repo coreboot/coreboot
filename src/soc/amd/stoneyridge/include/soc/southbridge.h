@@ -25,6 +25,11 @@
 
 #define IO_APIC2_ADDR			0xfec20000
 
+#if IS_ENABLED(CONFIG_HPET_ADDRESS_OVERRIDE)
+#error HPET address override is not allowed and must be fixed at 0xfed00000
+#endif
+#define HPET_BASE_ADDRESS		0xfed00000
+
 /* Offsets from ACPI_MMIO_BASE */
 #define APU_SMI_BASE			0xfed80200
 

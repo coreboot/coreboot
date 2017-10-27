@@ -88,7 +88,7 @@ void lpc_open_pmio_window(uint16_t base, uint16_t size)
 		window_size = MIN(size, LPC_LGIR_MAX_WINDOW_SIZE);
 
 		/* Window size must be a power of two for the AMASK to work. */
-		alignment = 1 << (log2_ceil(window_size));
+		alignment = 1UL << (log2_ceil(window_size));
 		window_size = ALIGN_UP(window_size, alignment);
 
 		/* Address[15:2] in LGIR[15:12] and Mask[7:2] in LGIR[23:18]. */

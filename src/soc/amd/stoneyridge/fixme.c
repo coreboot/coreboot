@@ -66,8 +66,6 @@ void amd_initcpuio(void)
 void amd_initmmio(void)
 {
 	UINT64                        MsrReg;
-	UINT32                        PciData;
-	PCI_ADDR                      PciAddress;
 	AMD_CONFIG_PARAMS             StdHeader;
 
 	/*
@@ -78,11 +76,6 @@ void amd_initmmio(void)
 			(LibAmdBitScanReverse(CONFIG_MMCONF_BUS_NUMBER) << 2)
 			| 1;
 	LibAmdMsrWrite(0xc0010058, &MsrReg, &StdHeader);
-
-	/* For serial port */
-	PciData = 0xff03ffd5;
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, PCU_DEV, LPC_FUNC, 0x44);
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
 	/* Set ROM cache onto WP to decrease post time */
 	MsrReg = (0x0100000000ull - CACHE_ROM_SIZE) | 5ull;

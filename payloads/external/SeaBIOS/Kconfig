@@ -72,7 +72,7 @@ config PAYLOAD_CONFIGFILE
 
 config SEABIOS_BOOTORDER_FILE
 	string "SeaBIOS bootorder file"
-	default "$(top)/src/mainboard/$(MAINBOARDDIR)/bootorder"
+	default "$(top)/src/mainboard/$(MAINBOARDDIR)/variants/$(CONFIG_VARIANT_DIR)/bootorder"
 	help
 	  Add a SeaBIOS bootorder file.  From the wiki:
 	  "The bootorder file may be used to configure the boot up order. The file

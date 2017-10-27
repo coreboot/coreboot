@@ -26,9 +26,20 @@
 # define CPU_CNT_MASK		0x1f /*  CpuCnt + 1 = no. CPUs */
 
 /* D18F1 - Address Map Registers */
+#define D18F1_MMIO_BASE0_LO	0x80
+# define MMIO_WE		(1 << 1)
+# define MMIO_RE		(1 << 0)
+#define D18F1_MMIO_LIMIT0_LO	0x84
+# define MMIO_NP		(1 << 7)
+#define D18F1_IO_BASE0		0xc0
+# define IO_WE			(1 << 1)
+# define IO_RE			(1 << 0)
+#define D18F1_IO_LIMIT0		0xc4
 #define D18F1_DRAM_HOLE		0xf0
 # define DRAM_HOIST_VALID	(1 << 1)
 # define DRAM_HOLE_VALID	(1 << 0)
+#define D18F1_VGAEN		0xf4
+# define VGA_ADDR_ENABLE	(1 << 0)
 
 enum {
 	/* SMM handler area. */

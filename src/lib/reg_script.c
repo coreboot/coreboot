@@ -373,7 +373,6 @@ static uint64_t reg_script_read_msr(struct reg_script_context *ctx)
 	const struct reg_script *step = reg_script_get_step(ctx);
 	msr_t msr = rdmsr(step->reg);
 	uint64_t value = msr.hi;
-	value = msr.hi;
 	value <<= 32;
 	value |= msr.lo;
 	return value;

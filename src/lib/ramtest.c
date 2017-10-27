@@ -74,6 +74,8 @@ static inline void test_pattern(unsigned short int idx,
  * Simple write-read-verify memory test. See console debug output for
  * any dislocated bytes.
  *
+ * Tests 1MiB of memory starting from start.
+ *
  * @param start   System memory offset, aligned to 128bytes
  */
 static int ram_bitset_nodie(unsigned long start)

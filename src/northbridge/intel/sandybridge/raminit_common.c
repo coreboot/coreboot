@@ -16,7 +16,6 @@
 #include "raminit_tables.h"
 #include "sandybridge.h"
 
-/* FIXME: no ECC support */
 /* FIXME: no support for 3-channel chipsets */
 
 /* length:      [1..4] */
@@ -309,12 +308,21 @@ void dram_dimm_mapping(ramctr_timing *ctrl)
 	}
 }
 
-void dram_dimm_set_mapping(ramctr_timing *ctrl)
+void dram_dimm_set_mapping(ramctr_timing *ctrl, int training)
 {
 	int channel;
+	u32 ecc;
+
+	if (ctrl->ecc_enabled)
+		ecc = training ? (1 << 24) : (3 << 24);
+	else
+		ecc = 0;
+
 	FOR_ALL_CHANNELS {
-		MCHBAR32(MAD_DIMM(channel)) = ctrl->mad_dimm[channel];
+		MCHBAR32(MAD_DIMM(channel)) = ctrl->mad_dimm[channel] | ecc;
 	}
+
+	//udelay(10); /* TODO: Might be needed for ECC configurations; so far works without. */
 }
 
 void dram_zones(ramctr_timing *ctrl, int training)
@@ -2120,13 +2128,13 @@ static int test_320c(ramctr_timing *ctrl, int channel, int slotrank)
 				lanes_ok |= 1 << lane;
 		}
 		ctr++;
-		if (lanes_ok == ((1 << NUM_LANES) - 1))
+		if (lanes_ok == ((1 << ctrl->lanes) - 1))
 			break;
 	}
 
 	ctrl->timings[channel][slotrank] = saved_rt;
 
-	return lanes_ok != ((1 << NUM_LANES) - 1);
+	return lanes_ok != ((1 << ctrl->lanes) - 1);
 }
 
 static void fill_pattern5(ramctr_timing *ctrl, int channel, int patno)
@@ -3004,6 +3012,46 @@ int channel_test(ramctr_timing *ctrl)
 			}
 	}
 	return 0;
+}
+
+void channel_scrub(ramctr_timing *ctrl)
+{
+	int channel, slotrank, row, rowsize;
+
+	FOR_ALL_POPULATED_CHANNELS FOR_ALL_POPULATED_RANKS {
+		rowsize = 1 << ctrl->info.dimm[channel][slotrank >> 1].row_bits;
+		for (row = 0; row < rowsize; row += 16) {
+
+			wait_for_iosav(channel);
+
+			/* DRAM command ACT */
+			MCHBAR32(IOSAV_n_SP_CMD_CTRL_ch(channel, 0)) = IOSAV_ACT;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTRL_ch(channel, 0)) =
+				(MAX((ctrl->tFAW >> 2) + 1, ctrl->tRRD) << 10)
+				| 1 | (ctrl->tRCD << 16);
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
+				row | 0x00060000 | (slotrank << 24);
+			MCHBAR32(IOSAV_n_ADDR_UPDATE_ch(channel, 0)) = 0x00000241;
+
+			/* DRAM command WR */
+			MCHBAR32(IOSAV_n_SP_CMD_CTRL_ch(channel, 1)) = IOSAV_WR;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTRL_ch(channel, 1)) = 0x08281081;
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = row | (slotrank << 24);
+			MCHBAR32(IOSAV_n_ADDR_UPDATE_ch(channel, 1)) = 0x00000242;
+
+			/* DRAM command PRE */
+			MCHBAR32(IOSAV_n_SP_CMD_CTRL_ch(channel, 2)) = IOSAV_PRE;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTRL_ch(channel, 2)) = 0x00280c01;
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) =
+				0x00060400 | (slotrank << 24);
+			MCHBAR32(IOSAV_n_ADDR_UPDATE_ch(channel, 2)) = 0x00000240;
+
+			/* execute command queue */
+			MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(3);
+
+			wait_for_iosav(channel);
+		}
+	}
 }
 
 void set_scrambling_seed(ramctr_timing *ctrl)

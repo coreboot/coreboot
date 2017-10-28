@@ -537,7 +537,7 @@ int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_
 	MCHBAR32(MC_INIT_STATE_G) &= ~(1 << 5);
 
 	/* Set MAD-DIMM registers */
-	dram_dimm_set_mapping(ctrl);
+	dram_dimm_set_mapping(ctrl, 1);
 	printk(BIOS_DEBUG, "Done dimm mapping\n");
 
 	/* Zone config */
@@ -608,7 +608,13 @@ int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_
 		err = channel_test(ctrl);
 		if (err)
 			return err;
+
+		if (ctrl->ecc_enabled)
+			channel_scrub(ctrl);
 	}
+
+	/* Set MAD-DIMM registers */
+	dram_dimm_set_mapping(ctrl, 0);
 
 	return 0;
 }

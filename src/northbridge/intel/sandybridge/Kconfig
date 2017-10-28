@@ -100,6 +100,12 @@ config DCACHE_RAM_MRC_VAR_SIZE
 	hex
 	default 0x0
 
+config RAMINIT_ENABLE_ECC
+	bool "Enable ECC if supported"
+	default y
+	help
+	  Enable ECC if supported by both, host and RAM.
+
 endif # USE_NATIVE_RAMINIT
 
 if !USE_NATIVE_RAMINIT

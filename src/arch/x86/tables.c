@@ -216,7 +216,6 @@ static void stash_forwarding_table(uintptr_t addr, size_t sz)
 	memcpy(cbmem_addr, (void *)addr, sz);
 }
 
-#if IS_ENABLED(CONFIG_EARLY_EBDA_INIT)
 static void restore_forwarding_table(void *dest)
 {
 	const struct cbmem_entry *fwd_entry;
@@ -233,7 +232,6 @@ static void restore_forwarding_table(void *dest)
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY,
 	restore_forwarding_table, (void *)FORWARDING_TABLE_ADDR);
-#endif
 
 void arch_write_tables(uintptr_t coreboot_table)
 {
@@ -256,8 +254,7 @@ void arch_write_tables(uintptr_t coreboot_table)
 
 	sz = write_coreboot_forwarding_table(forwarding_table, coreboot_table);
 
-	if (IS_ENABLED(CONFIG_EARLY_EBDA_INIT))
-		stash_forwarding_table(forwarding_table, sz);
+	stash_forwarding_table(forwarding_table, sz);
 
 	forwarding_table += sz;
 	/* Align up to page boundary for historical consistency. */

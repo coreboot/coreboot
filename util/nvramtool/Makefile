@@ -17,7 +17,6 @@
 PROGRAM = nvramtool
 
 CC      = gcc
-STRIP	= strip
 INSTALL = /usr/bin/install
 PREFIX  = /usr/local
 CFLAGS  = -O2 -g -Wall -W -I. -DCMOS_HAL=1
@@ -47,7 +46,6 @@ all: dep $(PROGRAM)
 
 $(PROGRAM): $(OBJS)
 	$(CC) -o $(PROGRAM) $(OBJS) $(LDFLAGS) $(CFLAGS)
-	$(STRIP) $(STRIP_ARGS) $(PROGRAM)
 
 clean:
 	rm -f $(PROGRAM) $(OBJS) junit.xml

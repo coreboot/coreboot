@@ -50,6 +50,8 @@
 
 extern int debug;
 
+#define PCI_VENDOR_ID_INTEL 0x8086
+
 // Definitely has ME and can be disabled
 #define PCI_DEVICE_ID_INTEL_ICH8ME		0x2811
 #define PCI_DEVICE_ID_INTEL_ICH9ME		0x2917

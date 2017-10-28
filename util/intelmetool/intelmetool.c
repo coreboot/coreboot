@@ -63,7 +63,8 @@ static void dumpmemfile(uint8_t *phys, uint32_t size)
 	fclose(fp);
 }
 
-static void rehide_me() {
+static void rehide_me(void)
+{
 	if (fd2 & 0x2) {
 		printf("Re-hiding MEI device...");
 		fd2 = *(uint32_t *)(rcba + FD2);
@@ -78,7 +79,8 @@ static void rehide_me() {
  * Real ME memory is located around top of memory minus 64MB. (I think)
  * so we avoid cloning to this part.
  */
-static void dump_me_memory() {
+static void dump_me_memory(void)
+{
 	uintptr_t me_clone = 0x60000000;
 	uint8_t *dump;
 
@@ -107,7 +109,8 @@ static void dump_me_memory() {
 	}
 }
 
-static int pci_platform_scan() {
+static int pci_platform_scan(void)
+{
 	struct pci_access *pacc;
 	struct pci_dev *dev;
 	char namebuf[1024];
@@ -125,7 +128,7 @@ static int pci_platform_scan() {
 			PCI_LOOKUP_DEVICE, dev->vendor_id, dev->device_id);
 		if (name == NULL)
 			name = "<unknown>";
-		if (dev->vendor_id == 0x8086) {
+		if (dev->vendor_id == PCI_VENDOR_ID_INTEL) {
 			if (PCI_DEV_HAS_ME_DISABLE(dev->device_id)) {
 				printf(CGRN "Good news, you have a `%s` so ME is present but can be disabled, continuing...\n\n" RESET, name);
 				break;
@@ -145,10 +148,10 @@ static int pci_platform_scan() {
 	}
 
 	if (dev != NULL &&
-	!PCI_DEV_HAS_ME_DISABLE(dev->device_id) &&
-	!PCI_DEV_HAS_ME_DIFFICULT(dev->device_id) &&
-	!PCI_DEV_CAN_DISABLE_ME_IF_PRESENT(dev->device_id) &&
-	!PCI_DEV_ME_NOT_SURE(dev->device_id)) {
+	    !PCI_DEV_HAS_ME_DISABLE(dev->device_id) &&
+	    !PCI_DEV_HAS_ME_DIFFICULT(dev->device_id) &&
+	    !PCI_DEV_CAN_DISABLE_ME_IF_PRESENT(dev->device_id) &&
+	    !PCI_DEV_ME_NOT_SURE(dev->device_id)) {
 		printf(CCYN "ME is not present on your board or unkown\n\n" RESET);
 		pci_cleanup(pacc);
 		return 1;
@@ -159,7 +162,9 @@ static int pci_platform_scan() {
 	return 0;
 }
 
-static struct pci_dev *pci_me_interface_scan(const char **name, char *namebuf, int namebuf_size) {
+static struct pci_dev *pci_me_interface_scan(const char **name, char *namebuf,
+                                             int namebuf_size)
+{
 	struct pci_access *pacc;
 	struct pci_dev *dev;
 	int me = 0;
@@ -174,7 +179,7 @@ static struct pci_dev *pci_me_interface_scan(const char **name, char *namebuf, i
 		pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_SIZES | PCI_FILL_CLASS);
 		*name = pci_lookup_name(pacc, namebuf, namebuf_size,
 			PCI_LOOKUP_DEVICE, dev->vendor_id, dev->device_id);
-		if (dev->vendor_id == 0x8086) {
+		if (dev->vendor_id == PCI_VENDOR_ID_INTEL) {
 			if (PCI_DEV_HAS_SUPPORTED_ME(dev->device_id)) {
 				me = 1;
 				break;
@@ -193,7 +198,8 @@ static struct pci_dev *pci_me_interface_scan(const char **name, char *namebuf, i
 	return dev;
 }
 
-static int activate_me() {
+static int activate_me(void)
+{
 	struct pci_access *pacc;
 	struct pci_dev *sb;
 	uint32_t rcba_phys;
@@ -236,7 +242,8 @@ static int activate_me() {
 	return 0;
 }
 
-static void dump_me_info() {
+static void dump_me_info(void)
+{
 	struct pci_dev *dev;
 	uint32_t stat, stat2;
 	char namebuf[1024];
@@ -257,6 +264,7 @@ static void dump_me_info() {
 
 	if (name == NULL)
 		name = "<unknown>";
+
 	printf("MEI found: [%x:%x] %s\n\n", dev->vendor_id, dev->device_id, name);
 	stat = pci_read_long(dev, 0x40);
 	printf("ME Status   : 0x%x\n", stat);
@@ -268,7 +276,7 @@ static void dump_me_info() {
 	intel_me_extend_valid(dev);
 	printf("\n");
 
-	if ((stat & 0xf000) >> 12 != 0) {
+	if (stat & 0xf000) {
 		printf("ME: has a broken implementation on your board with this BIOS\n");
 	}
 
@@ -328,8 +336,8 @@ int main(int argc, char *argv[])
 	};
 
 	while ((opt = getopt_long(argc, argv, "vh?sd",
-	                                long_options, &option_index)) != EOF) {
-	switch (opt) {
+				long_options, &option_index)) != EOF) {
+		switch (opt) {
 		case 'v':
 			print_version();
 			exit(0);
@@ -346,8 +354,8 @@ int main(int argc, char *argv[])
 			print_usage(argv[0]);
 			exit(0);
 			break;
-			}
 		}
+	}
 
 	#if defined(__FreeBSD__)
 		if (open("/dev/io", O_RDWR) < 0) {
@@ -376,12 +384,12 @@ int main(int argc, char *argv[])
 	#endif
 
 	switch(cmd_exec) {
-		case 1:
-			dump_me_info();
-			break;
-		default:
-			print_usage(argv[0]);
-			break;
+	case 1:
+		dump_me_info();
+		break;
+	default:
+		print_usage(argv[0]);
+		break;
 	}
 
 	return 0;

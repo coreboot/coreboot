@@ -43,7 +43,7 @@
 /*
  * WARNING: Do not forget to increase MRC_CACHE_VERSION when the saved data is changed!
  */
-#define MRC_CACHE_VERSION 3
+#define MRC_CACHE_VERSION 4
 
 typedef struct odtmap_st {
 	u16 rttwr;
@@ -132,6 +132,8 @@ typedef struct ramctr_timing_st {
 	int pi_code_offset;
 	int pi_coding_threshold;
 
+	bool ecc_supported;
+	bool ecc_forced;
 	int edge_offset[3];
 	int timC_offset[3];
 
@@ -190,5 +192,8 @@ void set_normal_operation(ramctr_timing *ctrl);
 void final_registers(ramctr_timing *ctrl);
 void restore_timings(ramctr_timing *ctrl);
 int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_uma_size);
+
+bool get_host_ecc_cap(void);
+bool get_host_ecc_forced(void);
 
 #endif

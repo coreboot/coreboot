@@ -437,6 +437,32 @@ static unsigned int get_mmio_size(void)
 		return cfg->pci_mmio_size;
 }
 
+/*
+ * Returns the ECC mode the NB is running at. It takes precedence over ECC capability.
+ * The ME/PCU/.. has the ability to change this.
+ * Return 0: ECC is optional
+ * Return 1: ECC is forced
+ */
+bool get_host_ecc_forced(void)
+{
+	/* read Capabilities A Register */
+	const u32 reg32 = pci_read_config32(HOST_BRIDGE, CAPID0_A);
+	return !!(reg32 & (1 << 24));
+}
+
+/*
+ * Returns the ECC capability.
+ * The ME/PCU/.. has the ability to change this.
+ * Return 0: ECC is disabled
+ * Return 1: ECC is possible
+ */
+bool get_host_ecc_cap(void)
+{
+	/* read Capabilities A Register */
+	const u32 reg32 = pci_read_config32(HOST_BRIDGE, CAPID0_A);
+	return !(reg32 & (1 << 25));
+}
+
 void dram_memorymap(ramctr_timing *ctrl, int me_uma_size)
 {
 	u32 reg, val, reclaim, tom, gfxstolen, gttsize;

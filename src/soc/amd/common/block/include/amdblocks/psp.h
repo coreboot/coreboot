@@ -16,6 +16,7 @@
 #ifndef __AMD_PSP_H__
 #define __AMD_PSP_H__
 
+#include <soc/pci_devs.h>
 #include <stdint.h>
 #include <compiler.h>
 #include <Porting.h>
@@ -78,15 +79,6 @@ struct mbox_default_buffer {	/* command-response buffer unused by command */
 #define PSPSTS_SEND_ERROR   4
 #define PSPSTS_INIT_TIMEOUT 5
 #define PSPSTS_CMD_TIMEOUT  6
-
-#if !defined(__SIMPLE_DEVICE__)
-#include <device/device.h>
-#include <device/pci_def.h>
-#define PSP_DEV dev_find_slot(0, PCI_DEVFN(PSP_PCI_DEV, PSP_PCI_FN))
-#else
-#include <arch/io.h>
-#define PSP_DEV PCI_DEV(0, PSP_PCI_DEV, PSP_PCI_FN)
-#endif
 
 #define PSP_INIT_TIMEOUT 10000 /* 10 seconds */
 #define PSP_CMD_TIMEOUT 1000 /* 1 second */

@@ -127,8 +127,8 @@ static int send_psp_command(u32 command, void *buffer)
 	if (!mbox)
 		return -PSPSTS_NOBASE;
 
-	command_reg = pci_read_config32(PSP_DEV, PCI_COMMAND);
-	pci_write_config32(PSP_DEV, PCI_COMMAND, command_reg |
+	command_reg = pci_read_config32(SOC_PSP_DEV, PCI_COMMAND);
+	pci_write_config32(SOC_PSP_DEV, PCI_COMMAND, command_reg |
 				PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 
 	/* check for PSP error conditions */
@@ -168,7 +168,7 @@ static int send_psp_command(u32 command, void *buffer)
 	}
 exit:
 	/* restore command register to original value */
-	pci_write_config32(PSP_DEV, PCI_COMMAND, command_reg);
+	pci_write_config32(SOC_PSP_DEV, PCI_COMMAND, command_reg);
 	return status;
 }
 

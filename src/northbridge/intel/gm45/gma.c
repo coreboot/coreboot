@@ -35,6 +35,7 @@
 #include <drivers/intel/gma/opregion.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
+#include <drivers/intel/gma/libgfxinit.h>
 
 #define BASE_FREQUENCY 96000
 
@@ -770,8 +771,12 @@ static void gma_func0_init(struct device *dev)
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev, edid_lvds.ascii_string);
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
 		gma_ngi(dev, &edid_lvds);
+	} else if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
+		int lightup_ok;
+		gma_gfxinit(&lightup_ok);
+	}
 
 	intel_gma_restore_opregion();
 }

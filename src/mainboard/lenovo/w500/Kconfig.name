@@ -1,0 +1,2 @@
+config BOARD_LENOVO_W500
+	bool "ThinkPad W500"

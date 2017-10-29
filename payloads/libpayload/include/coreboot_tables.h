@@ -244,19 +244,6 @@ struct cb_x86_rom_mtrr {
 	uint32_t index;
 };
 
-#define CB_TAG_MAC_ADDRS       0x0026
-struct mac_address {
-	uint8_t mac_addr[6];
-	uint8_t pad[2];         /* Pad it to 8 bytes to keep it simple. */
-};
-
-struct cb_macs {
-	uint32_t tag;
-	uint32_t size;
-	uint32_t count;
-	struct mac_address mac_addrs[0];
-};
-
 #define CB_TAG_RAM_CODE		0x0028
 struct cb_ram_code {
 	uint32_t tag;
@@ -290,6 +277,19 @@ struct cb_tsc_info {
 	uint32_t size;
 
 	uint32_t freq_khz;
+};
+
+#define CB_TAG_MAC_ADDRS       0x0033
+struct mac_address {
+	uint8_t mac_addr[6];
+	uint8_t pad[2];         /* Pad it to 8 bytes to keep it simple. */
+};
+
+struct cb_macs {
+	uint32_t tag;
+	uint32_t size;
+	uint32_t count;
+	struct mac_address mac_addrs[0];
 };
 
 #define CB_TAG_SERIALNO		0x002a

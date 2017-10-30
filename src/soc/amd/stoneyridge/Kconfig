@@ -294,6 +294,22 @@ config USE_PSPSCUREOS
 
 	  If unsure, answer 'y'
 
+config SOC_AMD_SMU_FANLESS
+	bool
+	depends on SOC_AMD_PSP_SELECTABLE_SMU_FW
+	default n if SOC_AMD_SMU_NOTFANLESS
+	default y
+
+config SOC_AMD_SMU_FANNED
+	bool
+	depends on SOC_AMD_PSP_SELECTABLE_SMU_FW
+	default n
+	select SOC_AMD_SMU_NOTFANLESS
+
+config SOC_AMD_SMU_NOTFANLESS	# helper symbol - do not use
+	bool
+	depends on SOC_AMD_PSP_SELECTABLE_SMU_FW
+
 config AMDFW_OUTSIDE_CBFS
 	bool "The AMD firmware is outside CBFS"
 	default n

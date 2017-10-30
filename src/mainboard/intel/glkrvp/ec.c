@@ -72,5 +72,12 @@ void mainboard_ec_init(void)
 	if (IS_ENABLED(CONFIG_GLK_INTEL_EC)) {
 		printk(BIOS_ERR, "S3 Hack Enable ACPI mode: outb(0xaa,0x66)\n");
 		outb(0xaa, 0x66);
+		printk(BIOS_INFO, "Hack to turn on the CPU fan\n");
+		outb(0x81, 0x66);
+	        outb(0x44, 0x62);
+		outb(0x32, 0x62);
+                /* Need delay here, hence second outb */
+                outb(0x32, 0x62);
+		outb(0x1a, 0x66);
 	}
 }

@@ -186,10 +186,23 @@ check_member(rk_mipi_regs, dsi_int_msk1, 0xc8);
 #define VCO_IN_CAP_CON_HIGH	(0x2 << 1)
 #define REF_BIAS_CUR_SEL	BIT(0)
 
-#define CP_CURRENT_3MA		BIT(3)
+#define CP_CURRENT_1_5UA	0x0
+#define CP_CURRENT_3UA		0x1
+#define CP_CURRENT_4_5UA	0x2
+#define CP_CURRENT_7_5UA	0x6
+#define CP_CURRENT_6UA		0x9
+#define CP_CURRENT_12UA		0xb
+#define CP_CURRENT_SEL(val)	((val) & 0xf)
+
 #define CP_PROGRAM_EN		BIT(7)
+
 #define LPF_PROGRAM_EN		BIT(6)
-#define LPF_RESISTORS_20_KOHM	0
+#define LPF_RESISTORS_15_5KOHM	0x1
+#define LPF_RESISTORS_13KOHM	0x2
+#define LPF_RESISTORS_11_5KOHM	0x4
+#define LPF_RESISTORS_10_5KOHM	0x8
+#define LPF_RESISTORS_8KOHM	0x10
+#define LPF_RESISTORS_SEL(val)	((val) & 0x3f)
 
 #define HSFREQRANGE_SEL(val)	(((val) & 0x3f) << 1)
 
@@ -271,9 +284,11 @@ enum {
 	MIPI_DCS_SET_DISPLAY_ON = 0x29,
 };
 
-struct dphy_pll_testdin_map {
+struct dphy_pll_parameter_map {
 	unsigned int max_mbps;
-	u8 testdin;
+	u8 hsfreqrange;
+	u8 icpctrl;
+	u8 lpfctrl;
 };
 
 struct rk_mipi_dsi {

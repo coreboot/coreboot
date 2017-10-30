@@ -30,14 +30,10 @@
 #endif
 #define HPET_BASE_ADDRESS		0xfed00000
 
-/* Offsets from ACPI_MMIO_BASE */
+/* Register blocks at fixed offsets from FED8_0000h and enabled in PMx04[1] */
+
 #define APU_SMI_BASE			0xfed80200
 
-/*
- * Offsets from ACPI_MMIO_BASE
- * This is defined by AGESA, but we don't include AGESA headers to avoid
- * polluting the namespace.
- */
 #define PM_MMIO_BASE			0xfed80300
 
 #define APU_UART0_BASE			0xfedc6000

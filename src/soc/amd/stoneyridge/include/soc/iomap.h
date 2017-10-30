@@ -18,6 +18,7 @@
 #define __SOC_STONEYRIDGE_IOMAP_H__
 
 /* MMIO Ranges */
+#define PSP_MAILBOX_BAR3_BASE		0xf0a00000
 #define SPI_BASE_ADDRESS		0xfec10000
 #define IO_APIC2_ADDR			0xfec20000
 

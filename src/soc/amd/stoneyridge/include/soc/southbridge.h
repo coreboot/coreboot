@@ -21,8 +21,14 @@
 #include <types.h>
 #include <device/pci_ids.h>
 #include <device/device.h>
+#include <device/pci_def.h>
 #include <soc/iomap.h>
 #include "chip.h"
+
+/* PSP at D8F0 */
+#define PSP_MAILBOX_BAR			PCI_BASE_ADDRESS_4 /* BKDG: "BAR3" */
+#define PSP_BAR_ENABLES			0x48
+#define  PSP_MAILBOX_BAR_EN		0x10
 
 /* Power management index/data registers */
 #define BIOSRAM_INDEX			0xcd4

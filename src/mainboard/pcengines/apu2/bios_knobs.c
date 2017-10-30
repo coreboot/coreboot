@@ -54,13 +54,14 @@ static char * findstr(const char *s, const char *pattern)
 
 static u8 check_knob_value(const char *s)
 {
-
 	const char *boot_file = NULL;
 	size_t boot_file_len = 0;
 	char * token = NULL;
 
-
-
+	//
+	// This function locates a file in cbfs, maps it to memory and returns
+	// a void* pointer
+	//
 	boot_file = cbfs_boot_map_with_leak(BOOTORDER_FILE, CBFS_TYPE_RAW, &boot_file_len);
 	if (boot_file == NULL)
 		printk(BIOS_ALERT, "file [%s] not found in CBFS\n", BOOTORDER_FILE);

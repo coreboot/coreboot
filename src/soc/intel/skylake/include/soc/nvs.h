@@ -18,11 +18,12 @@
 #ifndef _SOC_NVS_H_
 #define _SOC_NVS_H_
 
-#include <rules.h>
+#include <commonlib/helpers.h>
 #include <compiler.h>
+#include <rules.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 
-typedef struct {
+typedef struct global_nvs_t {
 	/* Miscellaneous */
 	u16	osys; /* 0x00 - Operating System */
 	u8	smif; /* 0x02 - SMI function call ("TRAP") */
@@ -66,6 +67,7 @@ typedef struct {
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;
 } __packed global_nvs_t;
+check_member(global_nvs_t, chromeos, 0x100);
 
 #if ENV_SMM
 /* Used in SMM to find the ACPI GNVS address */

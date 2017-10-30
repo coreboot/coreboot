@@ -24,6 +24,7 @@
 #ifndef __SOC_STONEYRIDGE_NVS_H__
 #define __SOC_STONEYRIDGE_NVS_H__
 
+#include <commonlib/helpers.h>
 #include <compiler.h>
 #include <stdint.h>
 #include <vendorcode/google/chromeos/gnvs.h>
@@ -48,5 +49,6 @@ typedef struct global_nvs_t {
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;
 } __packed global_nvs_t;
+check_member(global_nvs_t, chromeos, 0x100);
 
 #endif /* __SOC_STONEYRIDGE_NVS_H__ */

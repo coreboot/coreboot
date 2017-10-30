@@ -17,11 +17,12 @@
 #ifndef _BAYTRAIL_NVS_H_
 #define _BAYTRAIL_NVS_H_
 
+#include <commonlib/helpers.h>
 #include <compiler.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <soc/device_nvs.h>
 
-typedef struct {
+typedef struct global_nvs_t {
 	/* Miscellaneous */
 	u16	osys; /* 0x00 - Operating System */
 	u8	smif; /* 0x02 - SMI function call ("TRAP") */
@@ -66,6 +67,7 @@ typedef struct {
 	/* Baytrail LPSS (0x1000) */
 	device_nvs_t dev;
 } __packed global_nvs_t;
+check_member(global_nvs_t, chromeos, 0x100);
 
 void acpi_create_gnvs(global_nvs_t *gnvs);
 #ifdef __SMM__

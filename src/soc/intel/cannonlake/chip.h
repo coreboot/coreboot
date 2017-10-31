@@ -19,6 +19,7 @@
 #define _SOC_CHIP_H_
 
 #include <intelblocks/gspi.h>
+#include <intelblocks/lpss_i2c.h>
 #include <stdint.h>
 #include <soc/pch.h>
 #include <soc/gpio_defs.h>
@@ -26,6 +27,8 @@
 #include <soc/serialio.h>
 #include <soc/usb.h>
 #include <soc/vr_config.h>
+
+#define CANNONLAKE_I2C_DEV_MAX	6
 
 struct soc_intel_cannonlake_config {
 	/* GSPI */
@@ -250,6 +253,9 @@ struct soc_intel_cannonlake_config {
 
 	/* GPIO SD card detect pin */
 	unsigned int sdcard_cd_gpio;
+
+	/* I2C bus configuration */
+	struct lpss_i2c_bus_config i2c[CANNONLAKE_I2C_DEV_MAX];
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

@@ -57,7 +57,8 @@ static void w83667hg_a_init(struct device *dev)
 		mouse_detected = pc_keyboard_init(PROBE_AUX_DEVICE);
 
 		if (!mouse_detected && !acpi_is_wakeup_s3()) {
-			/* Disable mouse controller */
+			printk(BIOS_INFO, "%s: Disable mouse controller.",
+					__func__);
 			pnp_enter_conf_mode_8787(dev);
 			byte = pnp_read_config(dev, 0x2a);
 			byte |= 0x1 << 1;

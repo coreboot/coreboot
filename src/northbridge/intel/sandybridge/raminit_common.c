@@ -264,16 +264,18 @@ void dram_timing_regs(ramctr_timing *ctrl)
 
 		dram_odt_stretch(ctrl, channel);
 
-		// REFI
-		reg = 0;
-		val32 = ctrl->tREFI;
-		reg = (reg & ~0xffff) | val32;
-		val32 = ctrl->tRFC;
-		reg = (reg & ~0x1ff0000) | (val32 << 16);
-		val32 = (u32) (ctrl->tREFI * 9) / 1024;
-		reg = (reg & ~0xfe000000) | (val32 << 25);
-		printram("REFI [%x] = %x\n", 0x400 * channel + 0x4298,
-		       reg);
+		/*
+		 * TC—Refresh timing parameters
+		 * The tREFIx9 field should be programmed to minimum of
+		 * 8.9*tREFI (to allow for possible delays from ZQ or
+		 * isoc) and tRASmax (70us) divided by 1024.
+		 */
+		val32 = MIN((ctrl->tREFI * 89) / 10, (70000 << 8) / ctrl->tCK);
+
+		reg = ((ctrl->tREFI & 0xffff) << 0) |
+			((ctrl->tRFC & 0x1ff) << 16) |
+			(((val32 / 1024) & 0x7f) << 25);
+		printram("REFI [%x] = %x\n", 0x400 * channel + 0x4298, reg);
 		MCHBAR32(0x400 * channel + 0x4298) = reg;
 
 		MCHBAR32(0x400 * channel + 0x4294) |= 0xff;

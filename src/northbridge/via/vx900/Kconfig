@@ -41,4 +41,8 @@ config VGA_BIOS_ID
 	string
 	default "1106,7122"
 
+config BOOTBLOCK_NORTHBRIDGE_INIT
+	string
+	default "northbridge/via/vx900/bootblock.c"
+
 endif

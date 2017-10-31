@@ -23,7 +23,9 @@
 #define DEVICE_REV_VT1211_REG   0x21
 
 static const struct superio_registers reg_table[] = {
-	{0x3c, "VT82C686A/VT82C686B/VT1211", {
+	{0x3c00, "VT82C686A/VT82C686B", {
+		{EOT}}},
+	{0x3c01, "VT1211", {
 		{EOT}}},
 	{EOT}
 };
@@ -75,41 +77,45 @@ static void exit_conf_mode_via_vt82c686(void)
 void probe_idregs_via(uint16_t port)
 {
 	uint16_t id;
+	uint8_t devid;
 	uint8_t rev;
 
 	if (port == 0x3f0) {
-		probing_for("VIA", "(init=vt82c686)", port);
+		probing_for("VIA", "(init=vt82c686) ", port);
 		if (enter_conf_mode_via_vt82c686())
 			return;
 
-		id = regval(port, DEVICE_ID_VT82C686_REG);
+		devid = regval(port, DEVICE_ID_VT82C686_REG);
 		rev = regval(port, DEVICE_REV_VT82C686_REG);
+		id = devid << 8;
 
 		if (superio_unknown(reg_table, id)) {
 			if (verbose)
-				printf(NOTFOUND "id=0x%04x, rev=0x%02x\n", id, rev);
+				printf(NOTFOUND "id=0x%02x, rev=0x%02x\n", devid, rev);
 		} else {
-			printf("Found VIA %s (id=0x%04x, rev=0x%02x) at 0x%x\n",
-			       get_superio_name(reg_table, id), id, rev, port);
+			printf("Found VIA %s (id=0x%02x, rev=0x%02x) at 0x%x\n",
+			       get_superio_name(reg_table, id), devid, rev, port);
 			chip_found = 1;
 		}
 		exit_conf_mode_via_vt82c686();
 		if (chip_found)
 			return;
 	} else {
-		probing_for("VIA", "(init=0x87,0x87)", port);
+		probing_for("VIA", "(init=0x87,0x87) ", port);
 		enter_conf_mode_winbond_fintek_ite_8787(port);
 
-	        id = regval(port, DEVICE_ID_VT1211_REG);
+	        devid = regval(port, DEVICE_ID_VT1211_REG);
 		rev = regval(port, DEVICE_REV_VT1211_REG);
+		id = (devid << 8) | 1;
 
 		if (superio_unknown(reg_table, id)) {
 			if (verbose)
-				printf(NOTFOUND "id=0x%04x, rev=0x%02x\n", id, rev);
+				printf(NOTFOUND "id=0x%02x, rev=0x%02x\n", devid, rev);
 		} else {
-			printf("Found VIA %s (id=0x%04x, rev=0x%02x) at 0x%x\n",
-			       get_superio_name(reg_table, id), id, rev, port);
+			printf("Found VIA %s (id=0x%02x, rev=0x%02x) at 0x%x\n",
+			       get_superio_name(reg_table, id), devid, rev, port);
 			chip_found = 1;
+			dump_superio("VIA", reg_table, port, id, LDN_SEL);
 		}
 	}
 

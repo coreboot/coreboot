@@ -104,8 +104,9 @@ struct cbfs_file_attribute {
 #define CBFS_FILE_ATTR_TAG_UNUSED2 0xffffffff
 #define CBFS_FILE_ATTR_TAG_COMPRESSION 0x42435a4c
 #define CBFS_FILE_ATTR_TAG_HASH 0x68736148
-#define CBFS_FILE_ATTR_TAG_POSITION 0x42435350  /* PSCB */
+#define CBFS_FILE_ATTR_TAG_POSITION 0x42435350 /* PSCB */
 #define CBFS_FILE_ATTR_TAG_ALIGNMENT 0x42434c41 /* ALCB */
+#define CBFS_FILE_ATTR_TAG_PADDING 0x47444150 /* PDNG */
 
 struct cbfs_file_attr_compression {
 	uint32_t tag;

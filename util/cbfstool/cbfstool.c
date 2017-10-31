@@ -71,6 +71,7 @@ static struct param {
 	uint32_t cbfsoffset;
 	uint32_t cbfsoffset_assigned;
 	uint32_t arch;
+	uint32_t padding;
 	bool u64val_assigned;
 	bool fill_partial_upward;
 	bool fill_partial_downward;
@@ -419,6 +420,18 @@ static int cbfs_add_component(const char *filename,
 				return -1;
 			attrs->alignment = htonl(param.alignment);
 		}
+	}
+
+	if (param.padding) {
+		const uint32_t hs = sizeof(struct cbfs_file_attribute);
+		uint32_t size = MAX(hs, param.padding);
+		INFO("Padding %d bytes\n", size);
+		struct cbfs_file_attribute *attr =
+			(struct cbfs_file_attribute *)cbfs_add_file_attr(
+					header, CBFS_FILE_ATTR_TAG_PADDING,
+					size);
+		if (attr == NULL)
+			return -1;
 	}
 
 	if (IS_TOP_ALIGNED_ADDRESS(offset))
@@ -1139,12 +1152,12 @@ static int cbfs_truncate(void)
 }
 
 static const struct command commands[] = {
-	{"add", "H:r:f:n:t:c:b:a:yvA:gh?", cbfs_add, true, true},
-	{"add-flat-binary", "H:r:f:n:l:e:c:b:vA:gh?", cbfs_add_flat_binary,
+	{"add", "H:r:f:n:t:c:b:a:p:yvA:gh?", cbfs_add, true, true},
+	{"add-flat-binary", "H:r:f:n:l:e:c:b:p:vA:gh?", cbfs_add_flat_binary,
 				true, true},
-	{"add-payload", "H:r:f:n:t:c:b:C:I:vA:gh?", cbfs_add_payload,
+	{"add-payload", "H:r:f:n:t:c:b:C:I:p:vA:gh?", cbfs_add_payload,
 				true, true},
-	{"add-stage", "a:H:r:f:n:t:c:b:P:S:yvA:gh?", cbfs_add_stage,
+	{"add-stage", "a:H:r:f:n:t:c:b:P:S:p:yvA:gh?", cbfs_add_stage,
 				true, true},
 	{"add-int", "H:r:i:n:b:vgh?", cbfs_add_integer, true, true},
 	{"add-master-header", "H:r:vh?", cbfs_add_master_header, true, true},
@@ -1187,6 +1200,7 @@ static struct option long_options[] = {
 	{"machine",       required_argument, 0, 'm' },
 	{"name",          required_argument, 0, 'n' },
 	{"offset",        required_argument, 0, 'o' },
+	{"padding",       required_argument, 0, 'p' },
 	{"page-size",     required_argument, 0, 'P' },
 	{"size",          required_argument, 0, 's' },
 	{"top-aligned",   required_argument, 0, 'T' },
@@ -1267,7 +1281,7 @@ static void usage(char *name)
 	     "COMMANDs:\n"
 	     " add [-r image,regions] -f FILE -n NAME -t TYPE [-A hash] \\\n"
 	     "        [-c compression] [-b base-address | -a alignment] \\\n"
-	     "        [-y|--xip if TYPE is FSP]                            "
+	     "        [-p padding size] [-y|--xip if TYPE is FSP]           "
 			"Add a component\n"
 	     " add-payload [-r image,regions] -f FILE -n NAME [-A hash] \\\n"
 	     "        [-c compression] [-b base-address] \\\n"
@@ -1501,6 +1515,14 @@ int main(int argc, char **argv)
 				param.alignment = strtoul(optarg, &suffix, 0);
 				if (!*optarg || (suffix && *suffix)) {
 					ERROR("Invalid alignment '%s'.\n",
+						optarg);
+					return 1;
+				}
+				break;
+			case 'p':
+				param.padding = strtoul(optarg, &suffix, 0);
+				if (!*optarg || (suffix && *suffix)) {
+					ERROR("Invalid pad size '%s'.\n",
 						optarg);
 					return 1;
 				}

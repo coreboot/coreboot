@@ -184,9 +184,56 @@ static void vx900_lpc_init(device_t dev)
 	dump_pci_device(dev);
 }
 
+static void vx900_lpc_read_resources(device_t dev)
+{
+	struct resource *res;
+	pci_dev_read_resources(dev);
+
+	/* MMIO space */
+	res = new_resource(dev, VX900_MMCONFIG_MBAR);
+	res->size = 0x1000;
+	res->align = 12;
+	res->gran = 12;
+	res->limit = 0xffffffff;
+	res->flags = IORESOURCE_MEM | IORESOURCE_RESERVE;
+
+	/* SPI controller */
+	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
+	res->size = 0x8;
+	res->align = 12;
+	res->gran = 12;
+	res->limit = 0xffffffff;
+	res->flags = IORESOURCE_MEM | IORESOURCE_RESERVE;
+}
+
+static void vx900_lpc_set_resources(device_t dev)
+{
+	struct resource *mmio, *spi;
+        u32 reg;
+
+	mmio = find_resource(dev, VX900_MMCONFIG_MBAR);
+	if (mmio) {
+		report_resource_stored(dev, mmio, "<mmconfig>");
+		mmio->flags |= IORESOURCE_STORED;
+		reg = pci_read_config32(dev, VX900_MMCONFIG_MBAR);
+		reg &= 0xff000000;
+		reg |= mmio->base >> 8;
+		pci_write_config32(dev, VX900_MMCONFIG_MBAR, reg);
+
+		spi = find_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
+		if (spi) {
+			report_resource_stored(dev, spi, "<spi>");
+			spi->flags |= IORESOURCE_STORED;
+			/* Set base and the enable bit. */
+			((u32*)(uintptr_t)mmio->base)[0] = (spi->base | 0x01);
+		}
+	}
+	pci_dev_set_resources(dev);
+}
+
 static struct device_operations vx900_lpc_ops = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources = pci_dev_set_resources,
+	.read_resources = vx900_lpc_read_resources,
+	.set_resources = vx900_lpc_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = vx900_lpc_init,
 	.scan_bus = scan_lpc_bus,

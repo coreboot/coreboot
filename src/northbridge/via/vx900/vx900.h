@@ -26,6 +26,8 @@
 
 #define SMBUS_IO_BASE	0x500
 
+#define VX900_MMCONFIG_MBAR		0xbc
+
 /* The maximum number of DIMM slots that the VX900 supports */
 #define VX900_MAX_DIMM_SLOTS 2
 #define VX900_MAX_MEM_RANKS 4

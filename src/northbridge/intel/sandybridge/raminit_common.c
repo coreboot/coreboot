@@ -3202,7 +3202,14 @@ void final_registers(ramctr_timing * ctrl)
 
 	write32(DEFAULT_MCHBAR + 0x400c, (read32(DEFAULT_MCHBAR + 0x400c) & 0xFFFFCFFF) | 0x1000);	// OK
 	write32(DEFAULT_MCHBAR + 0x440c, (read32(DEFAULT_MCHBAR + 0x440c) & 0xFFFFCFFF) | 0x1000);	// OK
-	write32(DEFAULT_MCHBAR + 0x4cb0, 0x00000740);
+
+	if (ctrl->mobile)
+		/* APD - DLL Off, 64 DCLKs until idle, decision per rank */
+		MCHBAR32(PM_PDWN_Config) = 0x00000740;
+	else
+		/* APD - PPD, 64 DCLKs until idle, decision per rank */
+		MCHBAR32(PM_PDWN_Config) = 0x00000340;
+
 	write32(DEFAULT_MCHBAR + 0x4380, 0x00000aaa);	// OK
 	write32(DEFAULT_MCHBAR + 0x4780, 0x00000aaa);	// OK
 	write32(DEFAULT_MCHBAR + 0x4f88, 0x5f7003ff);	// OK

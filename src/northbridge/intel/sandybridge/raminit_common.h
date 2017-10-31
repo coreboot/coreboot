@@ -150,8 +150,9 @@ typedef struct ramctr_timing_st {
 #define MAKE_ERR ((channel<<16)|(slotrank<<8)|1)
 #define GET_ERR_CHANNEL(x) (x>>16)
 
-#define MC_BIOS_REQ 0x5e00
-#define MC_BIOS_DATA 0x5e04
+#define MC_BIOS_REQ		0x5e00
+#define MC_BIOS_DATA		0x5e04
+#define PM_PDWN_Config		0x4cb0
 
 u8 get_CWL(u32 tCK);
 void dram_mrscommands(ramctr_timing * ctrl);

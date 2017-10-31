@@ -249,7 +249,7 @@ static const struct {
 	{probe_idregs_smsc,	{0x2e, 0x4e, 0x162e, 0x164e, 0x3f0, 0x370, EOT}},
 	{probe_idregs_winbond,	{0x2e, 0x4e, 0x3f0, 0x370, 0x250, EOT}},
 #ifdef PCI_SUPPORT
-	{probe_idregs_via,	{0x3f0, EOT}},
+	{probe_idregs_via,	{0x2e, 0x4e, 0x3f0, EOT}},
 	/* in fact read the BASE from HW */
 	{probe_idregs_amd,	{0xaa, EOT}},
 #endif

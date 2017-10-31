@@ -19,8 +19,11 @@
 #define DEVICE_ID_VT82C686_REG	0xe0
 #define DEVICE_REV_VT82C686_REG	0xe1
 
+#define DEVICE_ID_VT1211_REG    0x20
+#define DEVICE_REV_VT1211_REG   0x21
+
 static const struct superio_registers reg_table[] = {
-	{0x3c, "VT82C686A/VT82C686B", {
+	{0x3c, "VT82C686A/VT82C686B/VT1211", {
 		{EOT}}},
 	{EOT}
 };
@@ -74,26 +77,43 @@ void probe_idregs_via(uint16_t port)
 	uint16_t id;
 	uint8_t rev;
 
-	probing_for("VIA", "", port);
+	if (port == 0x3f0) {
+		probing_for("VIA", "(init=vt82c686)", port);
+		if (enter_conf_mode_via_vt82c686())
+			return;
 
-	if (enter_conf_mode_via_vt82c686())
-		return;
+		id = regval(port, DEVICE_ID_VT82C686_REG);
+		rev = regval(port, DEVICE_REV_VT82C686_REG);
 
-	id = regval(port, DEVICE_ID_VT82C686_REG);
-	rev = regval(port, DEVICE_REV_VT82C686_REG);
-
-	if (superio_unknown(reg_table, id)) {
-		if (verbose)
-			printf(NOTFOUND "id=0x%04x, rev=0x%02x\n", id, rev);
+		if (superio_unknown(reg_table, id)) {
+			if (verbose)
+				printf(NOTFOUND "id=0x%04x, rev=0x%02x\n", id, rev);
+		} else {
+			printf("Found VIA %s (id=0x%04x, rev=0x%02x) at 0x%x\n",
+			       get_superio_name(reg_table, id), id, rev, port);
+			chip_found = 1;
+		}
 		exit_conf_mode_via_vt82c686();
-		return;
+		if (chip_found)
+			return;
+	} else {
+		probing_for("VIA", "(init=0x87,0x87)", port);
+		enter_conf_mode_winbond_fintek_ite_8787(port);
+
+	        id = regval(port, DEVICE_ID_VT1211_REG);
+		rev = regval(port, DEVICE_REV_VT1211_REG);
+
+		if (superio_unknown(reg_table, id)) {
+			if (verbose)
+				printf(NOTFOUND "id=0x%04x, rev=0x%02x\n", id, rev);
+		} else {
+			printf("Found VIA %s (id=0x%04x, rev=0x%02x) at 0x%x\n",
+			       get_superio_name(reg_table, id), id, rev, port);
+			chip_found = 1;
+		}
 	}
 
-	printf("Found VIA %s (id=0x%04x, rev=0x%02x) at 0x%x\n",
-	       get_superio_name(reg_table, id), id, rev, port);
-	chip_found = 1;
-
-	exit_conf_mode_via_vt82c686();
+	exit_conf_mode_winbond_fintek_ite_8787(port);
 }
 
 void print_via_chips(void)

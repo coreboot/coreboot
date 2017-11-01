@@ -14,6 +14,7 @@
 ## GNU General Public License for more details.
 ##
 
+romstage-y += romstage.c
 romstage-y += spd_util.c
 
 ramstage-y += gpio.c

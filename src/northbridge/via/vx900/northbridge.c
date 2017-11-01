@@ -120,6 +120,7 @@ static u64 vx900_remap_above_4g(device_t mcu, u32 tolm)
 	 */
 	if (tolm >= vx900_get_top_of_ram(mcu)) {
 		printk(BIOS_DEBUG, "Nothing to remap\n");
+		return 0;
 	}
 
 	/* This is how the Vendor BIOS. Keep it for comparison for now */
@@ -275,7 +276,8 @@ static void vx900_set_resources(device_t dev)
 	       uma_memory_size >> 20);
 	/* FIXME: How do we handle remapping above 4G? */
 	u64 tor = vx900_remap_above_4g(mcu, pci_tolm);
-	ram_resource(dev, idx++, RAM_4GB >> 10, (tor - RAM_4GB) >> 10);
+	if (tor)
+		ram_resource(dev, idx++, RAM_4GB >> 10, (tor - RAM_4GB) >> 10);
 
 	set_late_cbmem_top(tolmk << 10);
 

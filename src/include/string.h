@@ -156,6 +156,11 @@ static inline int isspace(int c)
 	}
 }
 
+static inline int isprint(int c)
+{
+	return c >= ' ' && c <= '~';
+}
+
 static inline int isdigit(int c)
 {
 	return (c >= '0' && c <= '9');

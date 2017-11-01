@@ -310,11 +310,19 @@ chip soc/intel/skylake
 				register "hid" = ""10EC5514""
 				register "name" = ""RT54""
 				register "desc" = ""Realtek RT5514""
-				register "property_count" = "1"
+				register "property_count" = "3"
 				# Set the DMIC initial delay to 16ms to avoid pop noise
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 				register "property_list[0].name" = ""realtek,dmic-init-delay""
 				register "property_list[0].integer" = "16"
+				# Set clock name for RT5514 to calibrate DSP clock.
+				register "property_list[1].type" = "ACPI_DP_TYPE_STRING"
+				register "property_list[1].name" = ""realtek,dsp-calib-clk-name""
+				register "property_list[1].string" = ""ssp1_mclk""
+				# Set clock rate for RT5514 to calibrate DSP clock.
+				register "property_list[2].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[2].name" = ""realtek,dsp-calib-clk-rate""
+				register "property_list[2].integer" = "24000000"
 				device i2c 57 on end
 			end
 		end # I2C #4

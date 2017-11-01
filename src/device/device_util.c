@@ -274,6 +274,9 @@ const char *dev_path(device_t dev)
 		memcpy(buffer, "<null>", 7);
 	} else {
 		switch(dev->path.type) {
+		case DEVICE_PATH_NONE:
+			memcpy(buffer, "NONE", 5);
+			break;
 		case DEVICE_PATH_ROOT:
 			memcpy(buffer, "Root Device", 12);
 			break;

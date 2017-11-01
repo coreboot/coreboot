@@ -88,7 +88,7 @@ void __weak variant_board_ec_set_skuid(void)
 {
 }
 
-const char *smbios_mainboard_sku(void)
+const char *smbios_system_sku(void)
 {
 	static char sku_str[7]; /* sku{0..255} */
 

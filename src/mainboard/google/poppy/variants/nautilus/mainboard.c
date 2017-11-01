@@ -28,7 +28,7 @@
 #define B_PCH_OC_WDT_CTL_EN		BIT14
 #define B_PCH_OC_WDT_CTL_UNXP_RESET_STS	BIT22
 
-const char *smbios_mainboard_sku(void)
+const char *smbios_system_sku(void)
 {
 	static char sku_str[5]; /* sku{0-1} */
 

@@ -22,7 +22,7 @@ uint32_t sku_id(void)
 	return VARIANT_SKU_ID;
 }
 
-const char *smbios_mainboard_sku(void)
+const char *smbios_system_sku(void)
 {
 	return VARIANT_SKU_NAME;
 }

@@ -263,7 +263,7 @@ static void usb_oc_setup(void)
 /*
  * We will stuff the memory size into the smbios sku location.
  */
-const char *smbios_mainboard_sku(void)
+const char *smbios_system_sku(void)
 {
 	static char sku[5];
 	if (sku[0] != 0)

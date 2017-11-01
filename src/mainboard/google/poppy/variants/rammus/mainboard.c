@@ -34,7 +34,7 @@ uint32_t variant_board_sku(void)
 	return sku_id;
 }
 
-const char *smbios_mainboard_sku(void)
+const char *smbios_system_sku(void)
 {
 	static char sku_str[14]; /* sku{0..4294967295} */
 

@@ -177,7 +177,7 @@ static uint8_t board_oem_id(void)
 	return oem_id;
 }
 
-const char *smbios_mainboard_sku(void)
+const char *smbios_system_sku(void)
 {
 	static char sku_str[5]; /* sku{0..7} */
 

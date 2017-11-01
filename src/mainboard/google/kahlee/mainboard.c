@@ -216,7 +216,7 @@ void __weak variant_mainboard_suspend_resume(void)
 {
 }
 
-const char *smbios_mainboard_sku(void)
+const char *smbios_system_sku(void)
 {
 	static char sku_str[7]; /* sku{0..255} */
 

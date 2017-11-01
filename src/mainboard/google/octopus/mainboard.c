@@ -131,7 +131,7 @@ static uint32_t get_board_sku(void)
 	return sku_id;
 }
 
-const char *smbios_mainboard_sku(void)
+const char *smbios_system_sku(void)
 {
 	static char sku_str[7]; /* sku{0..255} */
 	uint32_t sku_id = get_board_sku();

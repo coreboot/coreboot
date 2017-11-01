@@ -35,22 +35,23 @@ int smbios_write_type41(unsigned long *current, int *handle,
 			const char *name, u8 instance, u16 segment,
 			u8 bus, u8 device, u8 function);
 
+const char *smbios_system_manufacturer(void);
+const char *smbios_system_product_name(void);
+const char *smbios_system_serial_number(void);
+const char *smbios_system_version(void);
+void smbios_system_set_uuid(u8 *uuid);
+const char *smbios_system_sku(void);
+
 const char *smbios_mainboard_manufacturer(void);
 const char *smbios_mainboard_product_name(void);
-
 const char *smbios_mainboard_serial_number(void);
 const char *smbios_mainboard_version(void);
-void smbios_mainboard_set_uuid(u8 *uuid);
+
 const char *smbios_mainboard_bios_version(void);
 const char *smbios_mainboard_asset_tag(void);
 u8 smbios_mainboard_feature_flags(void);
 const char *smbios_mainboard_location_in_chassis(void);
-
-const char *smbios_mainboard_sku(void);
 u8 smbios_mainboard_enclosure_type(void);
-#ifdef CONFIG_MAINBOARD_FAMILY
-const char *smbios_mainboard_family(void);
-#endif
 
 #define BIOS_CHARACTERISTICS_PCI_SUPPORTED	(1 << 7)
 #define BIOS_CHARACTERISTICS_PC_CARD		(1 << 8)

@@ -41,8 +41,8 @@ const char *smbios_mainboard_serial_number(void)
 	return CONFIG_MAINBOARD_SERIAL_NUMBER;
 }
 
-/* Override smbios_mainboard_set_uuid */
-void smbios_mainboard_set_uuid(u8 *uuid)
+/* Override smbios_system_set_uuid */
+void smbios_system_set_uuid(u8 *uuid)
 {
 	const u8 *bmc_uuid = bmcinfo_uuid();
 	if (bmc_uuid)

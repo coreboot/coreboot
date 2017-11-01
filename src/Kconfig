@@ -631,33 +631,33 @@ config SMBIOS_PROVIDED_BY_MOBO
 	default n
 
 config MAINBOARD_SERIAL_NUMBER
-	string "SMBIOS Serial Number"
+	prompt "SMBIOS Serial Number" if !SMBIOS_PROVIDED_BY_MOBO
+	string
 	depends on GENERATE_SMBIOS_TABLES
-	depends on !SMBIOS_PROVIDED_BY_MOBO
 	default "123456789"
 	help
 	  The Serial Number to store in SMBIOS structures.
 
 config MAINBOARD_VERSION
-	string "SMBIOS Version Number"
+	prompt "SMBIOS Version Number" if !SMBIOS_PROVIDED_BY_MOBO
+	string
 	depends on GENERATE_SMBIOS_TABLES
-	depends on !SMBIOS_PROVIDED_BY_MOBO
 	default "1.0"
 	help
 	  The Version Number to store in SMBIOS structures.
 
 config MAINBOARD_SMBIOS_MANUFACTURER
-	string "SMBIOS Manufacturer"
+	prompt "SMBIOS Manufacturer" if !SMBIOS_PROVIDED_BY_MOBO
+	string
 	depends on GENERATE_SMBIOS_TABLES
-	depends on !SMBIOS_PROVIDED_BY_MOBO
 	default MAINBOARD_VENDOR
 	help
 	  Override the default Manufacturer stored in SMBIOS structures.
 
 config MAINBOARD_SMBIOS_PRODUCT_NAME
-	string "SMBIOS Product name"
+	prompt "SMBIOS Product name" if !SMBIOS_PROVIDED_BY_MOBO
+	string
 	depends on GENERATE_SMBIOS_TABLES
-	depends on !SMBIOS_PROVIDED_BY_MOBO
 	default MAINBOARD_PART_NUMBER
 	help
 	  Override the default Product name stored in SMBIOS structures.

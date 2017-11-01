@@ -495,7 +495,7 @@ const char *smbios_mainboard_serial_number(void)
 	return type1_serial_number ?: CONFIG_MAINBOARD_SERIAL_NUMBER;
 }
 
-void smbios_mainboard_set_uuid(u8 *uuid)
+void smbios_system_set_uuid(u8 *uuid)
 {
 	fw_cfg_smbios_init();
 	memcpy(uuid, type1_uuid, 16);

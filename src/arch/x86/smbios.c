@@ -402,8 +402,6 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	return len;
 }
 
-#if !CONFIG(SMBIOS_PROVIDED_BY_MOBO)
-
 const char *__weak smbios_mainboard_serial_number(void)
 {
 	return CONFIG_MAINBOARD_SERIAL_NUMBER;
@@ -423,12 +421,6 @@ const char *__weak smbios_mainboard_product_name(void)
 {
 	return CONFIG_MAINBOARD_SMBIOS_PRODUCT_NAME;
 }
-
-void __weak smbios_mainboard_set_uuid(u8 *uuid)
-{
-	/* leave all zero */
-}
-#endif
 
 const char *__weak smbios_mainboard_asset_tag(void)
 {
@@ -450,17 +442,35 @@ smbios_board_type __weak smbios_mainboard_board_type(void)
 	return SMBIOS_BOARD_TYPE_UNKNOWN;
 }
 
-const char *__weak smbios_mainboard_sku(void)
+const char *__weak smbios_system_serial_number(void)
+{
+	return smbios_mainboard_serial_number();
+}
+
+const char *__weak smbios_system_version(void)
+{
+	return smbios_mainboard_version();
+}
+
+const char *__weak smbios_system_manufacturer(void)
+{
+	return smbios_mainboard_manufacturer();
+}
+
+const char *__weak smbios_system_product_name(void)
+{
+	return smbios_mainboard_product_name();
+}
+
+void __weak smbios_system_set_uuid(u8 *uuid)
+{
+	/* leave all zero */
+}
+
+const char *__weak smbios_system_sku(void)
 {
 	return "";
 }
-
-#ifdef CONFIG_MAINBOARD_FAMILY
-const char *smbios_mainboard_family(void)
-{
-	return CONFIG_MAINBOARD_FAMILY;
-}
-#endif /* CONFIG_MAINBOARD_FAMILY */
 
 static int smbios_write_type1(unsigned long *current, int handle)
 {
@@ -472,17 +482,17 @@ static int smbios_write_type1(unsigned long *current, int handle)
 	t->handle = handle;
 	t->length = len - 2;
 	t->manufacturer = smbios_add_string(t->eos,
-		smbios_mainboard_manufacturer());
+		smbios_system_manufacturer());
 	t->product_name = smbios_add_string(t->eos,
-		smbios_mainboard_product_name());
+		smbios_system_product_name());
 	t->serial_number = smbios_add_string(t->eos,
-		smbios_mainboard_serial_number());
-	t->sku = smbios_add_string(t->eos, smbios_mainboard_sku());
-	t->version = smbios_add_string(t->eos, smbios_mainboard_version());
+		smbios_system_serial_number());
+	t->sku = smbios_add_string(t->eos, smbios_system_sku());
+	t->version = smbios_add_string(t->eos, smbios_system_version());
 #ifdef CONFIG_MAINBOARD_FAMILY
-	t->family = smbios_add_string(t->eos, smbios_mainboard_family());
+	t->family = smbios_add_string(t->eos, CONFIG_MAINBOARD_FAMILY);
 #endif
-	smbios_mainboard_set_uuid(t->uuid);
+	smbios_system_set_uuid(t->uuid);
 	len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
 	return len;
@@ -526,7 +536,7 @@ static int smbios_write_type3(unsigned long *current, int handle)
 	t->handle = handle;
 	t->length = len - 2;
 	t->manufacturer = smbios_add_string(t->eos,
-		smbios_mainboard_manufacturer());
+		smbios_system_manufacturer());
 	t->bootup_state = SMBIOS_STATE_SAFE;
 	t->power_supply_state = SMBIOS_STATE_SAFE;
 	t->thermal_state = SMBIOS_STATE_SAFE;

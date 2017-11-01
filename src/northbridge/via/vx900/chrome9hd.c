@@ -89,7 +89,7 @@ u32 chrome9hd_fb_size(void)
 	tom_mb = (pci_read_config16(mcu, 0x88) & 0x07ff) << (24 - 20);
 	max_size_mb = tom_mb >> 2;
 	if (size_mb > max_size_mb) {
-		printk(BIOS_ALERT, "The framebuffer size of of %dMB is larger"
+		printk(BIOS_ALERT, "The framebuffer size of %dMB is larger"
 		       " than 1/4 of available memory.\n"
 		       " Limiting framebuffer to %dMB\n", size_mb, max_size_mb);
 		size_mb = max_size_mb;

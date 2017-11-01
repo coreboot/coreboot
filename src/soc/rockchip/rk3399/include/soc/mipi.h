@@ -244,6 +244,17 @@ check_member(rk_mipi_regs, dsi_int_msk1, 0xc8);
 #define AFE_BIAS_BANDGAP_ANALOG_PROGRAMMABILITY 0x22
 #define HS_RX_CONTROL_OF_LANE_0 0x44
 
+#define GEN_CMD_EMPTY			BIT(0)
+#define GEN_CMD_FULL			BIT(1)
+#define GEN_PLD_W_EMPTY			BIT(2)
+#define GEN_PLD_W_FULL			BIT(3)
+#define GEN_PLD_R_EMPTY			BIT(4)
+#define GEN_PLD_R_FULL			BIT(5)
+#define GEN_RD_CMD_BUSY			BIT(6)
+
+#define MIPI_DSI_DCS_SHORT_WRITE	0x05
+#define MIPI_DSI_DCS_LONG_WRITE		0x39
+
 enum mipi_dsi_pixel_format {
 	MIPI_DSI_FMT_RGB888,
 	MIPI_DSI_FMT_RGB666,

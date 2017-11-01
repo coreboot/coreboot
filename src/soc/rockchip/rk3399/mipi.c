@@ -460,22 +460,61 @@ static void rk_mipi_dsi_init(struct rk_mipi_dsi *dsi)
 		TX_ESC_CLK_DIVIDSION(esc_clk_division));
 }
 
-static int rk_mipi_dsi_dcs_transfer(struct rk_mipi_dsi *dsi, u32 hdr_val)
+static void rk_mipi_message_config(struct rk_mipi_dsi *dsi)
 {
-	int ret;
-
-	hdr_val = GEN_HDATA(hdr_val) | GEN_HTYPE(0x05);
-	ret = read32(&mipi_regs->dsi_cmd_pkt_status);
-	if (ret < 0) {
-		printk(BIOS_DEBUG, "failed to get available command FIFO\n");
-		return ret;
-	}
-
 	write32(&mipi_regs->dsi_lpclk_ctrl, 0);
 	write32(&mipi_regs->dsi_cmd_mode_cfg, CMD_MODE_ALL_LP);
+}
+
+static int rk_mipi_dsi_check_cmd_fifo(struct rk_mipi_dsi *dsi)
+{
+	struct stopwatch sw;
+	int val;
+
+	stopwatch_init_msecs_expire(&sw, 20);
+	do {
+		val = read32(&mipi_regs->dsi_cmd_pkt_status);
+		if (!(val & GEN_CMD_FULL))
+			return 0 ;
+	} while (!stopwatch_expired(&sw));
+
+	return -1;
+}
+
+static int rk_mipi_dsi_gen_pkt_hdr_write(struct rk_mipi_dsi *dsi, u32 hdr_val)
+{
+	int val;
+	struct stopwatch sw;
+	u32 mask;
+
+	if (rk_mipi_dsi_check_cmd_fifo(dsi)) {
+		printk(BIOS_ERR, "failed to get available command FIFO\n");
+		return -1;
+	}
+
 	write32(&mipi_regs->dsi_gen_hdr, hdr_val);
 
-	return 0;
+	mask = GEN_CMD_EMPTY | GEN_PLD_W_EMPTY;
+	stopwatch_init_msecs_expire(&sw, 20);
+	do {
+		val = read32(&mipi_regs->dsi_cmd_pkt_status);
+		if ((val & mask) == mask)
+			return 0 ;
+	} while (!stopwatch_expired(&sw));
+	printk(BIOS_ERR, "failed to write command FIFO\n");
+
+	return -1;
+}
+
+static int rk_mipi_dsi_dcs_cmd(struct rk_mipi_dsi *dsi, u8 cmd)
+{
+	u32 val;
+
+	rk_mipi_message_config(dsi);
+
+	val = GEN_HDATA(cmd) | GEN_HTYPE(MIPI_DSI_DCS_SHORT_WRITE);
+
+	return rk_mipi_dsi_gen_pkt_hdr_write(dsi, val);
 }
 
 void rk_mipi_prepare(const struct edid *edid, u32 display_on_mdelay, u32 video_mode_mdelay)
@@ -501,10 +540,12 @@ void rk_mipi_prepare(const struct edid *edid, u32 display_on_mdelay, u32 video_m
 	rk_mipi_dsi_wait_for_two_frames(&rk_mipi, edid);
 
 	rk_mipi_dsi_set_mode(&rk_mipi, MIPI_DSI_CMD_MODE);
-	if (rk_mipi_dsi_dcs_transfer(&rk_mipi, MIPI_DCS_EXIT_SLEEP_MODE) < 0)
+
+	if (rk_mipi_dsi_dcs_cmd(&rk_mipi, MIPI_DCS_EXIT_SLEEP_MODE) < 0)
 		return;
 	mdelay(display_on_mdelay);
-	if (rk_mipi_dsi_dcs_transfer(&rk_mipi, MIPI_DCS_SET_DISPLAY_ON) < 0)
+
+	if (rk_mipi_dsi_dcs_cmd(&rk_mipi, MIPI_DCS_SET_DISPLAY_ON) < 0)
 		return;
 	mdelay(video_mode_mdelay);
 

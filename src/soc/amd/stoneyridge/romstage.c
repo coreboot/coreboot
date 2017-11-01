@@ -15,6 +15,7 @@
  */
 
 #include <arch/cpu.h>
+#include <arch/acpi.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
@@ -24,6 +25,7 @@
 #include <device/device.h>
 #include <chip.h>
 #include <program_loading.h>
+#include <romstage_handoff.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
 #include <soc/northbridge.h>
@@ -40,45 +42,59 @@ asmlinkage void car_stage_entry(void)
 	msr_t base, mask;
 	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
 	int vmtrrs = mtrr_cap.lo & MTRR_CAP_VCNT;
+	int s3_resume = acpi_s3_resume_allowed() && acpi_is_wakeup_s3();
 	int i;
 
 	console_init();
 
-	post_code(0x40);
-	do_agesawrapper(agesawrapper_amdinitpost, "amdinitpost");
+	if (!s3_resume) {
+		post_code(0x40);
+		do_agesawrapper(agesawrapper_amdinitpost, "amdinitpost");
 
-	post_code(0x41);
-	/*
-	 * TODO: This is a hack to work around current AGESA behavior.  AGESA
-	 *       needs to change to reflect that coreboot owns the MTRRs.
-	 *
-	 * After setting up DRAM, AGESA also completes the configuration of the
-	 * MTRRs, setting regions to WB.  Anything written to memory between
-	 * now and and when CAR is dismantled will be in cache and lost.  For
-	 * now, set the regions UC to ensure the writes get to DRAM.
-	 */
-	for (i = 0 ; i < vmtrrs ; i++) {
-		base = rdmsr(MTRR_PHYS_BASE(i));
-		mask = rdmsr(MTRR_PHYS_MASK(i));
-		if (!(mask.lo & MTRR_PHYS_MASK_VALID))
-			continue;
+		post_code(0x41);
+		/*
+		 * TODO: This is a hack to work around current AGESA behavior.
+		 *       AGESA needs to change to reflect that coreboot owns
+		 *       the MTRRs.
+		 *
+		 * After setting up DRAM, AGESA also completes the configuration
+		 * of the MTRRs, setting regions to WB.  Anything written to
+		 * memory between now and and when CAR is dismantled will be
+		 * in cache and lost.  For now, set the regions UC to ensure
+		 * the writes get to DRAM.
+		 */
+		for (i = 0 ; i < vmtrrs ; i++) {
+			base = rdmsr(MTRR_PHYS_BASE(i));
+			mask = rdmsr(MTRR_PHYS_MASK(i));
+			if (!(mask.lo & MTRR_PHYS_MASK_VALID))
+				continue;
 
-		if ((base.lo & 0x7) == MTRR_TYPE_WRBACK) {
-			base.lo &= ~0x7;
-			base.lo |= MTRR_TYPE_UNCACHEABLE;
-			wrmsr(MTRR_PHYS_BASE(i), base);
+			if ((base.lo & 0x7) == MTRR_TYPE_WRBACK) {
+				base.lo &= ~0x7;
+				base.lo |= MTRR_TYPE_UNCACHEABLE;
+				wrmsr(MTRR_PHYS_BASE(i), base);
+			}
 		}
+		/* Disable WB from to region 4GB-TOM2. */
+		msr_t sys_cfg = rdmsr(SYSCFG_MSR);
+		sys_cfg.lo &= ~SYSCFG_MSR_TOM2WB;
+		wrmsr(SYSCFG_MSR, sys_cfg);
+	} else {
+		printk(BIOS_INFO, "S3 detected\n");
+		post_code(0x60);
+		do_agesawrapper(agesawrapper_amdinitresume, "amdinitresume");
+
+		post_code(0x61);
 	}
-	/* Disable WB from to region 4GB-TOM2. */
-	msr_t sys_cfg = rdmsr(SYSCFG_MSR);
-	sys_cfg.lo &= ~SYSCFG_MSR_TOM2WB;
-	wrmsr(SYSCFG_MSR, sys_cfg);
 
 	post_code(0x42);
 	psp_notify_dram();
 
 	post_code(0x43);
-	cbmem_initialize_empty();
+	if (cbmem_recovery(s3_resume))
+		printk(BIOS_CRIT, "Failed to recover cbmem\n");
+	if (romstage_handoff_init(s3_resume))
+		printk(BIOS_ERR, "Failed to set romstage handoff data\n");
 
 	post_code(0x44);
 	if (postcar_frame_init(&pcf, 1 * KiB))

@@ -21,6 +21,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <drivers/i2c/designware/dw_i2c.h>
+#include <romstage_handoff.h>
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
@@ -110,12 +111,19 @@ struct chip_operations soc_amd_stoneyridge_ops = {
 
 static void earliest_ramstage(void *unused)
 {
-	post_code(0x46);
-	if (IS_ENABLED(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW))
-		psp_load_named_blob(MBOX_BIOS_CMD_SMU_FW2, "smu_fw2");
+	if (!romstage_handoff_is_resume()) {
+		post_code(0x46);
+		if (IS_ENABLED(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW))
+			psp_load_named_blob(MBOX_BIOS_CMD_SMU_FW2, "smu_fw2");
 
-	post_code(0x47);
-	do_agesawrapper(agesawrapper_amdinitenv, "amdinitenv");
+		post_code(0x47);
+		do_agesawrapper(agesawrapper_amdinitenv, "amdinitenv");
+	} else {
+		/* Complete the initial system restoration */
+		post_code(0x46);
+		do_agesawrapper(agesawrapper_amds3laterestore,
+						"amds3laterestore");
+	}
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, earliest_ramstage, NULL);

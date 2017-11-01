@@ -28,6 +28,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <romstage_handoff.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
 #include <agesa_headers.h>
@@ -425,14 +426,9 @@ void domain_read_resources(device_t dev)
 
 void domain_enable_resources(device_t dev)
 {
-	if (acpi_is_wakeup_s3())
-		do_agesawrapper(agesawrapper_fchs3laterestore,
-				"fchs3laterestore");
-
 	/* Must be called after PCI enumeration and resource allocation */
-	else
+	if (!romstage_handoff_is_resume())
 		do_agesawrapper(agesawrapper_amdinitmid, "amdinitmid");
-	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
 }
 
 void domain_set_resources(device_t dev)

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2010-2017 Advanced Micro Devices, Inc.
  * Copyright (C) 2014 Sage Electronic Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
@@ -255,12 +255,12 @@ u32 pm_read32(u8 reg);
 void pm_write8(u8 reg, u8 value);
 void pm_write16(u8 reg, u16 value);
 void pm_write32(u8 reg, u32 value);
-u8 smi_read8(u8 reg);
-u16 smi_read16(u8 reg);
-u32 smi_read32(u8 reg);
-void smi_write8(u8 reg, u8 value);
-void smi_write16(u8 reg, u16 value);
-void smi_write32(u8 reg, u32 value);
+uint8_t smi_read8(uint8_t offset);
+uint16_t smi_read16(uint8_t offset);
+uint32_t smi_read32(uint8_t offset);
+void smi_write8(uint8_t offset, uint8_t value);
+void smi_write16(uint8_t offset, uint16_t value);
+void smi_write32(uint8_t offset, uint32_t value);
 uint16_t pm_acpi_pm_cnt_blk(void);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);

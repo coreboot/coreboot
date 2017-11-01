@@ -130,7 +130,11 @@ files_added:: $(IFWITOOL)
 endif
 
 # DSP firmware settings files.
+ifeq ($(CONFIG_SOC_INTEL_GLK),y)
+NHLT_BLOB_PATH = 3rdparty/blobs/soc/intel/glk/nhlt-blobs
+else
 NHLT_BLOB_PATH = 3rdparty/blobs/soc/intel/apollolake/nhlt-blobs
+endif
 DMIC_1CH_48KHZ_16B = dmic-1ch-48khz-16b.bin
 DMIC_2CH_48KHZ_16B = dmic-2ch-48khz-16b.bin
 DMIC_4CH_48KHZ_16B = dmic-4ch-48khz-16b.bin

@@ -26,15 +26,34 @@
 # define CPU_CNT_MASK		0x1f /*  CpuCnt + 1 = no. CPUs */
 
 /* D18F1 - Address Map Registers */
+
+/* MMIO base and limit */
 #define D18F1_MMIO_BASE0_LO	0x80
 # define MMIO_WE		(1 << 1)
 # define MMIO_RE		(1 << 0)
 #define D18F1_MMIO_LIMIT0_LO	0x84
 # define MMIO_NP		(1 << 7)
+#define D18F1_MMIO_BASELIM0_HI	0x180
+#define D18F1_MMIO_BASE8_LO	0x1a0
+#define D18F1_MMIO_LIMIT8_LO	0x1a4
+#define D18F1_MMIO_BASELIM8_HI	0x1c0
+#define NB_MMIO_BASE_LO(reg)	((reg) * 2 * sizeof(uint32_t) + (((reg) < 8) \
+					? D18F1_MMIO_BASE0_LO \
+					: D18F1_MMIO_BASE8_LO \
+						- 8 * sizeof(uint64_t)))
+#define NB_MMIO_LIMIT_LO(reg)	(NB_MMIO_BASE_LO(reg) + sizeof(uint32_t))
+#define NB_MMIO_BASELIM_HI(reg)	((reg) * sizeof(uint32_t) + (((reg) < 8) \
+					? D18F1_MMIO_BASELIM0_HI \
+					: D18F1_MMIO_BASELIM8_HI \
+						- 8 * sizeof(uint32_t)))
+/* I/O base and limit */
 #define D18F1_IO_BASE0		0xc0
 # define IO_WE			(1 << 1)
 # define IO_RE			(1 << 0)
 #define D18F1_IO_LIMIT0		0xc4
+#define NB_IO_BASE(reg)		((reg) * 2 * sizeof(uint32_t) + D18F1_IO_BASE0)
+#define NB_IO_LIMIT(reg)	(NB_IO_BASE(reg) + sizeof(uint32_t))
+
 #define D18F1_DRAM_HOLE		0xf0
 # define DRAM_HOIST_VALID	(1 << 1)
 # define DRAM_HOLE_VALID	(1 << 0)

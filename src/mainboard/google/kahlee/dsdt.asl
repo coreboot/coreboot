@@ -77,6 +77,9 @@ DefinitionBlock (
 
 	} /* End \_SB scope */
 
+	/* Thermal handler */
+	#include "acpi/thermal.asl"
+
 	/* Chrome OS specific */
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 

@@ -18,9 +18,12 @@
 #include <arch/acpi.h>
 #include <agesawrapper.h>
 #include <amd_pci_util.h>
+#include <cbmem.h>
 #include <ec.h>
 #include <baseboard/variants.h>
+#include <soc/nvs.h>
 #include <soc/smi.h>
+#include <variant/thermal.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /***********************************************************
@@ -104,7 +107,22 @@ static void kahlee_enable(device_t dev)
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 }
 
+
+static void mainboard_final(void *chip_info)
+{
+	struct global_nvs_t *gnvs;
+
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+
+	if (gnvs) {
+		gnvs->tmps = CTL_TDP_SENSOR_ID;
+		gnvs->tcrt = CRITICAL_TEMPERATURE;
+		gnvs->tpsv = PASSIVE_TEMPERATURE;
+	}
+}
+
 struct chip_operations mainboard_ops = {
 	.init = mainboard_init,
 	.enable_dev = kahlee_enable,
+	.final = mainboard_final,
 };

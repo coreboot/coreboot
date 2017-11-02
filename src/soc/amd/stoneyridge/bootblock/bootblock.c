@@ -17,6 +17,9 @@
 #include <stdint.h>
 #include <assert.h>
 #include <console/console.h>
+#include <cpu/x86/msr.h>
+#include <cpu/x86/mtrr.h>
+#include <cpu/amd/amdfam15.h>
 #include <smp/node.h>
 #include <bootblock_common.h>
 #include <agesawrapper.h>
@@ -35,6 +38,26 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 		bootblock_soc_early_init(); /* APs will not return */
 
 	bootblock_main_with_timestamp(base_timestamp);
+}
+
+/* Set the MMIO Configuration Base Address and Bus Range. */
+static void amd_initmmio(void)
+{
+	msr_t mmconf;
+	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
+	int mtrr;
+
+	mmconf.hi = 0;
+	mmconf.lo = CONFIG_MMCONF_BASE_ADDRESS | MMIO_RANGE_EN
+			| fms(CONFIG_MMCONF_BUS_NUMBER) << MMIO_BUS_RANGE_SHIFT;
+	wrmsr(MMIO_CONF_BASE, mmconf);
+
+	/*
+	 * todo: AGESA currently writes variable MTRRs.  Once that is
+	 *       corrected, un-hardcode this MTRR.
+	 */
+	mtrr = (mtrr_cap.lo & MTRR_CAP_VCNT) - 2;
+	set_var_mtrr(mtrr, FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
 }
 
 void bootblock_soc_early_init(void)

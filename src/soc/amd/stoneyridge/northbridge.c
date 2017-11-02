@@ -23,6 +23,7 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdfam15.h>
 #include <cpu/cpu.h>
+#include <cpu/x86/lapic_def.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -30,6 +31,7 @@
 #include <agesawrapper.h>
 #include <agesawrapper_call.h>
 #include <soc/northbridge.h>
+#include <soc/southbridge.h>
 #include <soc/pci_devs.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -334,6 +336,38 @@ static const struct pci_driver family15_northbridge __pci_driver = {
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = PCI_DEVICE_ID_AMD_15H_MODEL_707F_NB_HT,
 };
+
+/*
+ * Enable VGA cycles.  Set memory ranges of the FCH legacy devices (TPM, HPET,
+ * BIOS RAM, Watchdog Timer, IOAPIC and ACPI) as non-posted.  Set remaining
+ * MMIO to posted.  Route all I/O to the southbridge.
+ */
+void amd_initcpuio(void)
+{
+	uintptr_t topmem = bsp_topmem();
+	uintptr_t base, limit;
+
+	/* Enable legacy video routing: D18F1xF4 VGA Enable */
+	pci_write_config32(SOC_ADDR_DEV, D18F1_VGAEN, VGA_ADDR_ENABLE);
+
+	/* Non-posted: range(HPET-LAPIC) or 0xfed00000 through 0xfee00000-1 */
+	base = (HPET_BASE_ADDRESS >> 8) | MMIO_WE | MMIO_RE;
+	limit = (ALIGN_DOWN(LOCAL_APIC_ADDR - 1, 64 * KiB) >> 8) | MMIO_NP;
+	pci_write_config32(SOC_ADDR_DEV, NB_MMIO_LIMIT_LO(0), limit);
+	pci_write_config32(SOC_ADDR_DEV, NB_MMIO_BASE_LO(0), base);
+
+	/* Remaining PCI hole posted MMIO: TOM-HPET (TOM through 0xfed00000-1 */
+	base = (topmem >> 8) | MMIO_WE | MMIO_RE;
+	limit = ALIGN_DOWN(HPET_BASE_ADDRESS - 1, 64 * KiB) >> 8;
+	pci_write_config32(SOC_ADDR_DEV, NB_MMIO_LIMIT_LO(1), limit);
+	pci_write_config32(SOC_ADDR_DEV, NB_MMIO_BASE_LO(1), base);
+
+	/* Route all I/O downstream */
+	base = 0 | IO_WE | IO_RE;
+	limit = ALIGN_DOWN(0xffff, 4 * KiB);
+	pci_write_config32(SOC_ADDR_DEV, NB_IO_LIMIT(0), limit);
+	pci_write_config32(SOC_ADDR_DEV, NB_IO_BASE(0), base);
+}
 
 void fam15_finalize(void *chip_info)
 {

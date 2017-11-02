@@ -51,7 +51,6 @@ AGESA_STATUS agesawrapper_fchs3laterestore(void);
 
 VOID OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly);
 VOID amd_initcpuio(void);
-VOID amd_initmmio(void);
 const void *agesawrapper_locate_module(const CHAR8 name[8]);
 
 void OemPostParams(AMD_POST_PARAMS *PostParams);

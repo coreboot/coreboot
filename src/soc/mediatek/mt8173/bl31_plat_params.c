@@ -16,5 +16,5 @@
 
 void *soc_get_bl31_plat_params(bl31_params_t *bl31_params)
 {
-	return (void *)NULL;
+	return NULL;
 }

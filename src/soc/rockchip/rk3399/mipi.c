@@ -123,10 +123,38 @@ static void rk_mipi_dsi_phy_write(struct rk_mipi_dsi *dsi,
 	write32(&mipi_regs->dsi_phy_tst_ctrl0, PHY_TESTCLK | PHY_UNTESTCLR);
 }
 
+/* bytes_per_ns - Nanoseconds to byte clock cycles */
+static inline unsigned int bytes_per_ns(struct rk_mipi_dsi *dsi, int ns)
+{
+	return DIV_ROUND_UP((u64)ns * dsi->lane_bps, (u64)8 * NSECS_PER_SEC);
+}
+
+ /* bits_per_ns - Nanoseconds to bit time periods */
+static inline unsigned int bits_per_ns(struct rk_mipi_dsi *dsi, int ns)
+{
+	return DIV_ROUND_UP((u64)ns * dsi->lane_bps, NSECS_PER_SEC);
+}
+
+static int rk_mipi_dsi_wait_phy_lock(struct rk_mipi_dsi *dsi)
+{
+	struct stopwatch sw;
+	int val;
+
+	stopwatch_init_msecs_expire(&sw, 20);
+	do {
+		val = read32(&mipi_regs->dsi_phy_status);
+		if (val & LOCK)
+			return 0;
+	} while (!stopwatch_expired(&sw));
+
+	return -1;
+}
+
 static int rk_mipi_dsi_phy_init(struct rk_mipi_dsi *dsi)
 {
-	int i, vco;
+	int i, vco, val;
 	int lane_mbps = div_round_up(dsi->lane_bps, USECS_PER_SEC);
+	struct stopwatch sw;
 
 	vco = (lane_mbps < 200) ? 0 : (lane_mbps + 100) / 200;
 
@@ -192,10 +220,47 @@ static int rk_mipi_dsi_phy_init(struct rk_mipi_dsi *dsi)
 			      TER_RESISTOR_HIGH | LEVEL_SHIFTERS_ON |
 			      SETRD_MAX | POWER_MANAGE |
 			      TER_RESISTORS_ON);
+	rk_mipi_dsi_phy_write(dsi, HS_TX_CLOCK_LANE_REQUEST_STATE_TIME_CONTROL,
+			      TLP_PROGRAM_EN | bytes_per_ns(dsi, 500));
+	rk_mipi_dsi_phy_write(dsi, HS_TX_CLOCK_LANE_PREPARE_STATE_TIME_CONTROL,
+			      THS_PRE_PROGRAM_EN | bits_per_ns(dsi, 40));
+	rk_mipi_dsi_phy_write(dsi, HS_TX_CLOCK_LANE_HS_ZERO_STATE_TIME_CONTROL,
+			      THS_ZERO_PROGRAM_EN | bytes_per_ns(dsi, 300));
+	rk_mipi_dsi_phy_write(dsi, HS_TX_CLOCK_LANE_TRAIL_STATE_TIME_CONTROL,
+			      THS_PRE_PROGRAM_EN | bits_per_ns(dsi, 100));
+	rk_mipi_dsi_phy_write(dsi, HS_TX_CLOCK_LANE_EXIT_STATE_TIME_CONTROL,
+			      BIT(5) | bytes_per_ns(dsi, 100));
+	rk_mipi_dsi_phy_write(dsi, HS_TX_CLOCK_LANE_POST_TIME_CONTROL,
+			      BIT(5) | (bytes_per_ns(dsi, 60) + 7));
+	rk_mipi_dsi_phy_write(dsi, HS_TX_DATA_LANE_REQUEST_STATE_TIME_CONTROL,
+			      TLP_PROGRAM_EN | bytes_per_ns(dsi, 500));
+	rk_mipi_dsi_phy_write(dsi, HS_TX_DATA_LANE_PREPARE_STATE_TIME_CONTROL,
+			      THS_PRE_PROGRAM_EN | (bits_per_ns(dsi, 50) + 5));
+	rk_mipi_dsi_phy_write(dsi, HS_TX_DATA_LANE_HS_ZERO_STATE_TIME_CONTROL,
+				   THS_ZERO_PROGRAM_EN |
+				   (bytes_per_ns(dsi, 140) + 2));
+	rk_mipi_dsi_phy_write(dsi, HS_TX_DATA_LANE_TRAIL_STATE_TIME_CONTROL,
+			      THS_PRE_PROGRAM_EN | (bits_per_ns(dsi, 60) + 8));
+	rk_mipi_dsi_phy_write(dsi, HS_TX_DATA_LANE_EXIT_STATE_TIME_CONTROL,
+			      BIT(5) | bytes_per_ns(dsi, 100));
 
 	write32(&mipi_regs->dsi_phy_rstz, PHY_ENFORCEPLL | PHY_ENABLECLK |
 					  PHY_UNRSTZ | PHY_UNSHUTDOWNZ);
-	return 0;
+
+	if (rk_mipi_dsi_wait_phy_lock(dsi)) {
+		printk(BIOS_ERR, "failed to wait for phy lock state\n");
+		return -1;
+	}
+
+	stopwatch_init_msecs_expire(&sw, 20);
+	do {
+		val = read32(&mipi_regs->dsi_phy_status);
+		if (val & STOP_STATE_CLK_LANE)
+			return 0;
+	} while (!stopwatch_expired(&sw));
+
+	printk(BIOS_ERR, "failed to wait for phy clk lane stop state");
+	return -1;
 }
 
 static inline int mipi_dsi_pixel_format_to_bpp(enum mipi_dsi_pixel_format fmt)

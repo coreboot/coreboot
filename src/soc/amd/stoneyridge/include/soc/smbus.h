@@ -17,6 +17,7 @@
 #define __STONEYRIDGE_SMBUS_H__
 
 #include <stdint.h>
+#include <soc/iomap.h>
 
 #define SMBHSTSTAT			0x0
 #define   SMBHST_STAT_FAILED		0x10
@@ -59,17 +60,12 @@
 #define SMBSLVDAT			0xc
 #define SMBTIMING			0xe
 
-#define SMB_BASE_ADDR			0xb00
-
 #define AX_INDXC			0
 #define AX_INDXP			2
 #define AXCFG				4
 #define ABCFG				6
 #define RC_INDXC			1
 #define RC_INDXP			3
-
-#define AB_INDX				0xcd8
-#define AB_DATA				(AB_INDX+4)
 
 /*
  * Between 1-10 seconds, We should never timeout normally

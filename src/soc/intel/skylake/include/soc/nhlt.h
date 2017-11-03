@@ -77,4 +77,10 @@ int nhlt_soc_add_rt5663(struct nhlt *nhlt, int hwlink);
  */
 int nhlt_soc_add_max98927(struct nhlt *nhlt, int hwlink);
 
+/*
+ * Add da7219 headset codec on provided SSP link. Return 0 on success, < 0
+ * on error.
+ */
+int nhlt_soc_add_da7219(struct nhlt *nhlt, int hwlink);
+
 #endif

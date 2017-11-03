@@ -272,6 +272,12 @@ config NHLT_MAX98927
 	help
 	  Include DSP firmware settings for max98927 amplifier.
 
+config NHLT_DA7219
+	bool
+	default n
+	help
+	  Include DSP firmware settings for DA7219 headset codec.
+
 choice
 	prompt "Cache-as-ram implementation"
 	default CAR_NEM_ENHANCED

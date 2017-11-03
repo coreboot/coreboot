@@ -55,8 +55,7 @@ config INCLUDE_NHLT_BLOBS
 
 config INCLUDE_NHLT_BLOBS_NAUTILUS
 	bool "Include blobs for nautilus audio."
-	select NHLT_DMIC_2CH
-	select NHLT_DMIC_4CH
+	select NHLT_DA7219
 
 config MAINBOARD_DIR
 	string

@@ -226,11 +226,9 @@ static void configure_codec(void)
 	/* AUDIO IO domain 1.8V voltage selection */
 	write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 1));
 
-	/* CPU1_P1.8V_AUDIO_PWREN for P1.8_AUDIO */
-	gpio_output(GPIO(0, A, 2), 1);
-
-	/* set CPU1_SPK_PA_EN output */
-	gpio_output(GPIO(1, A, 2), 0);
+	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
+		gpio_output(GPIO_P18V_AUDIO_PWREN, 1);
+	gpio_output(GPIO_SPK_PA_EN, 0);
 
 	rkclk_configure_i2s(12288000);
 }

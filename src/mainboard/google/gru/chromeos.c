@@ -36,6 +36,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_EC_IN_RW.raw, ACTIVE_HIGH, -1, "EC in RW"},
 		{GPIO_EC_IRQ.raw, ACTIVE_LOW, -1, "EC interrupt"},
 		{GPIO_RESET.raw, ACTIVE_HIGH, -1, "reset"},
+		{GPIO_SPK_PA_EN.raw, ACTIVE_HIGH, -1, "speaker enable"},
 #if IS_ENABLED(CONFIG_GRU_HAS_TPM2)
 		{GPIO_TPM_IRQ.raw, ACTIVE_HIGH, -1, "TPM interrupt"},
 #endif

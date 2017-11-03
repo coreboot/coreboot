@@ -239,9 +239,8 @@ AGESA_STATUS agesa_DeallocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	PrevNodePtr->NextNodeOffset = AllocNodePtr->NextNodeOffset;
 
 	/* Zero out the buffer, and clear the BufferHandle */
-	LibAmdMemFill((UINT8 *)AllocNodePtr + sizeof(BIOS_BUFFER_NODE), 0,
-						AllocNodePtr->BufferSize,
-						&(AllocParams->StdHeader));
+	memset((UINT8 *)AllocNodePtr + sizeof(BIOS_BUFFER_NODE), 0,
+		AllocNodePtr->BufferSize);
 	AllocNodePtr->BufferHandle = 0;
 	AllocNodePtr->BufferSize += sizeof(BIOS_BUFFER_NODE);
 

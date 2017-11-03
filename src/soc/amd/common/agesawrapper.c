@@ -30,16 +30,16 @@ void __attribute__((weak)) OemPostParams(AMD_POST_PARAMS *PostParams) {}
 
 #ifndef __PRE_RAM__
 /* ACPI table pointers returned by AmdInitLate */
-static void *DmiTable    = NULL;
-static void *AcpiPstate  = NULL;
-static void *AcpiSrat    = NULL;
-static void *AcpiSlit    = NULL;
+static void *DmiTable;
+static void *AcpiPstate;
+static void *AcpiSrat;
+static void *AcpiSlit;
 
-static void *AcpiWheaMce = NULL;
-static void *AcpiWheaCmc = NULL;
-static void *AcpiAlib    = NULL;
-static void *AcpiIvrs    = NULL;
-static void *AcpiCrat    = NULL;
+static void *AcpiWheaMce;
+static void *AcpiWheaCmc;
+static void *AcpiAlib;
+static void *AcpiIvrs;
+static void *AcpiCrat;
 #endif /* #ifndef __PRE_RAM__ */
 
 AGESA_STATUS agesawrapper_amdinitreset(void)

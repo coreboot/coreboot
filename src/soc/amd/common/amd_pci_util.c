@@ -22,10 +22,10 @@
 #include <amd_pci_int_defs.h>
 #include <amd_pci_int_types.h>
 
-const struct pirq_struct *pirq_data_ptr = NULL;
-u32 pirq_data_size = 0;
-const u8 *intr_data_ptr = NULL;
-const u8 *picr_data_ptr = NULL;
+const struct pirq_struct *pirq_data_ptr;
+u32 pirq_data_size;
+const u8 *intr_data_ptr;
+const u8 *picr_data_ptr;
 
 /*
  * Read the FCH PCI_INTR registers 0xC00/0xC01 at a

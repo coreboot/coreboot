@@ -204,6 +204,13 @@ chip soc/intel/skylake
 		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,
 	}"
 
+	# Enable I2C5 for audio codec at 400kHz
+		register "i2c[5]" = "{
+		.speed = I2C_SPEED_FAST,
+		.rise_time_ns = 104,
+		.fall_time_ns = 52,
+	}"
+
 	register "speed_shift_enable" = "1"
 	# PL2 override 15W for KBL-Y
 	register "tdp_pl2_override" = "15"
@@ -241,7 +248,25 @@ chip soc/intel/skylake
 		device pci 16.4 off end # Management Engine Interface 3
 		device pci 17.0 off end # SATA
 		device pci 19.0 on  end # UART #2
-		device pci 19.1 on  end # I2C #5
+		device pci 19.1 on
+			chip drivers/i2c/da7219
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D9_IRQ)"
+				register "btn_cfg" = "50"
+				register "mic_det_thr" = "500"
+				register "jack_ins_deb" = "20"
+				register "jack_det_rate" = ""32ms_64ms""
+				register "jack_rem_deb" = "1"
+				register "a_d_btn_thr" = "0xa"
+				register "d_b_btn_thr" = "0x16"
+				register "b_c_btn_thr" = "0x21"
+				register "c_mic_btn_thr" = "0x3e"
+				register "btn_avg" = "4"
+				register "adc_1bit_rpt" = "1"
+				register "micbias_lvl" = "2600"
+				register "mic_amp_in_sel" = ""diff""
+				device i2c 1A on end
+			end
+		end # I2C #5
 		device pci 19.2 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""

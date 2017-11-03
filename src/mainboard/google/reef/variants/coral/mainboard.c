@@ -89,6 +89,10 @@ const char *mainboard_vbt_filename(void)
 	int sku_id = variant_board_sku();
 
 	switch (sku_id) {
+        case SKU_0_ASTRONAUT:
+        case SKU_1_ASTRONAUT:
+		return "vbt-astronaut.bin";
+		break;
 	case SKU_2_SANTA:
 	case SKU_3_SANTA:
 		return "vbt-santa.bin";

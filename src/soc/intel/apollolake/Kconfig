@@ -390,4 +390,10 @@ config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
 	hex
 	default 0x7fff
 
+config SOC_ESPI
+	bool
+	default n
+	help
+	  Use eSPI bus instead of LPC
+
 endif

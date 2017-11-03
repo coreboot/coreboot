@@ -44,14 +44,14 @@
 /* Internal Graphics */
 #define GFX_DEV			0x1
 #define GFX_FUNC		0
-#define GFX_DEVID		098e4 /* subject to SKU/OPN variation */
+#define GFX_DEVID		0x98e4 /* subject to SKU/OPN variation */
 #define GFX_DEVFN		PCI_DEVFN(GFX_DEV, GFX_FUNC)
 #define SOC_GFX_DEV		_SOC_DEV(GFX_DEV, GFX_FUNC)
 
 /* HD Audio 0 */
 #define HDA0_DEV		0x1
 #define HDA0_FUNC		1
-#define HDA0_DEVID		015b3
+#define HDA0_DEVID		0x15b3
 #define HDA0_DEVFN		PCI_DEVFN(HDA0_DEV, HDA0_FUNC)
 #define SOC_HDA0_DEV		_SOC_DEV(HDA0_DEV, HDA0_FUNC)
 

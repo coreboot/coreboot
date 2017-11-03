@@ -25,7 +25,7 @@ ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_HEADER),y)
 cbfs-files-y  += cpu_microcode_blob.bin
 cpu_microcode_blob.bin-file = $(objgenerated)/microcode.bin
 
-$(objgenerated)/microcode.bin:
+$(objgenerated)/microcode.bin: $(call strip_quotes,$(CONFIG_CPU_MICROCODE_HEADER_FILES))
 	echo "   util/scripts/ucode_h_to_bin.sh $(objgenerated)/microcode.bin \"$(CONFIG_CPU_MICROCODE_HEADER_FILES)\""
 	util/scripts/ucode_h_to_bin.sh $(objgenerated)/microcode.bin $(CONFIG_CPU_MICROCODE_HEADER_FILES)
 endif

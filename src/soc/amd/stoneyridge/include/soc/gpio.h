@@ -20,7 +20,7 @@
 #define GPIO_DEVICE_DESC	"GPIO Controller"
 
 #ifndef __ACPI__
-#include <soc/amd/common/amd_defs.h>
+#include <soc/iomap.h>
 #include <types.h>
 
 #define GPIO_PIN_STS		(1 << 16)

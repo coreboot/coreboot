@@ -21,6 +21,7 @@
 #include <chip.h>
 #include <console/console.h>
 #include <cpu/amd/mtrr.h>
+#include <cpu/amd/amdfam15.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>
@@ -97,7 +98,7 @@ static void read_resources(device_t dev)
 	 * It is not honored by the coreboot resource allocator if it is in
 	 * the CPU_CLUSTER.
 	 */
-	mmconf_resource(dev, 0xc0010058);
+	mmconf_resource(dev, MMIO_CONF_BASE);
 }
 
 static void set_resource(device_t dev, struct resource *resource, u32 nodeid)

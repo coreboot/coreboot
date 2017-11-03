@@ -17,8 +17,6 @@
 #include <agesawrapper.h>
 #include <PlatformMemoryConfiguration.h>
 
-#define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
-
 static const PSO_ENTRY DDR4PlatformMemoryConfiguration[] = {
 	DRAM_TECHNOLOGY(ANY_SOCKET, DDR4_TECHNOLOGY),
 	NUMBER_OF_DIMMS_SUPPORTED(ANY_SOCKET, ANY_CHANNEL, 1),

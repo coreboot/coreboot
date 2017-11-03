@@ -17,8 +17,6 @@
 #include <agesawrapper.h>
 #include <PlatformMemoryConfiguration.h>
 
-#define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
-
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 7:4, D2F1) for NC*/
 	{

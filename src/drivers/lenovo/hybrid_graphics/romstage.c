@@ -76,20 +76,31 @@ void early_hybrid_graphics(bool *enable_igd, bool *enable_peg)
 	}
 
 	/*
-	 * Need to do power handling here as we know there's a dGPU to
-	 * turn off. Support GPIO and Thinker1.
+	 * Need to do power handling here as we know there's a dGPU.
+	 * Support GPIO and Thinker1.
 	 */
-	if (!*enable_peg) {
-		if (config->has_dgpu_power_gpio) {
+	if (config->has_dgpu_power_gpio) {
+		if (*enable_peg)
+			set_gpio(config->dgpu_power_gpio,
+				 !config->dgpu_power_off_lvl);
+		else
 			set_gpio(config->dgpu_power_gpio,
 				 config->dgpu_power_off_lvl);
-		} else if (config->has_thinker1) {
+	} else if (config->has_thinker1) {
+		const size_t power_en = !!(pmh7_register_read(0x50) & 0x08);
+		if (*enable_peg && !power_en) {
+			pmh7_register_clear_bit(0x50, 7); // DGPU_RST
+			pmh7_register_set_bit(0x50, 3); // DGPU_PWR
+			mdelay(10);
+			pmh7_register_set_bit(0x50, 7); // DGPU_RST
+			mdelay(50);
+		} else if (!*enable_peg && power_en) {
 			pmh7_register_clear_bit(0x50, 7); // DGPU_RST
 			udelay(100);
 			pmh7_register_clear_bit(0x50, 3); // DGPU_PWR
-		} else {
-			printk(BIOS_ERR, "Hybrid graphics:"
-			       " FIXME: dGPU power not disabled !\n");
 		}
+	} else {
+		printk(BIOS_ERR, "Hybrid graphics:"
+		       " FIXME: dGPU power handling not implemented\n");
 	}
 }

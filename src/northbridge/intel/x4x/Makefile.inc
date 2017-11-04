@@ -22,6 +22,7 @@ romstage-y += raminit_ddr2.c
 romstage-y += ram_calc.c
 romstage-y += rcven.c
 romstage-y += raminit_tables.c
+romstage-y += dq_dqs.c
 
 ramstage-y += acpi.c
 ramstage-y += ram_calc.c

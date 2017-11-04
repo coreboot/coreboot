@@ -366,6 +366,12 @@ void rcven(struct sysinfo *s);
 u32 fsb2mhz(u32 speed);
 u32 ddr2mhz(u32 speed);
 u32 test_address(int channel, int rank);
+void dqsset(u8 ch, u8 lane, const struct dll_setting *setting);
+void dqset(u8 ch, u8 lane, const struct dll_setting *setting);
+void rt_set_dqs(u8 channel, u8 lane, u8 rank,
+		struct rt_dqs_setting *dqs_setting);
+int do_write_training(struct sysinfo *s);
+int do_read_training(struct sysinfo *s);
 
 extern const struct dll_setting default_ddr2_667_ctrl[7];
 extern const struct dll_setting default_ddr2_800_ctrl[7];

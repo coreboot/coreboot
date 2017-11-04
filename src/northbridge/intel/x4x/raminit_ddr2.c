@@ -293,7 +293,7 @@ static void cmdset(u8 ch, const struct dll_setting *setting)
  * All finer DQ and DQS DLL settings are set to the same value
  * for each rank in a channel, while coarse is common.
  */
-static void dqsset(u8 ch, u8 lane, const struct dll_setting *setting)
+void dqsset(u8 ch, u8 lane, const struct dll_setting *setting)
 {
 	int rank;
 
@@ -320,7 +320,7 @@ static void dqsset(u8 ch, u8 lane, const struct dll_setting *setting)
 	}
 }
 
-static void dqset(u8 ch, u8 lane, const struct dll_setting *setting)
+void dqset(u8 ch, u8 lane, const struct dll_setting *setting)
 {
 	int rank;
 	MCHBAR32(0x400 * ch + 0x5fc) = (MCHBAR32(0x400 * ch + 0x5fc)
@@ -346,12 +346,12 @@ static void dqset(u8 ch, u8 lane, const struct dll_setting *setting)
 	}
 }
 
-static void rt_set_dqs(u8 channel, u8 lane, u8 rank,
+void rt_set_dqs(u8 channel, u8 lane, u8 rank,
 		struct rt_dqs_setting *dqs_setting)
 {
 	u16 saved_tap = MCHBAR16(0x540 + 0x400 * channel + lane * 4);
 	u16 saved_pi = MCHBAR16(0x542 + 0x400 * channel + lane * 4);
-	printk(RAM_SPEW, "RT DQS: ch%d, L%d, %d.%d\n", channel, lane,
+	printk(RAM_SPEW, "RT DQS: ch%d, r%d, L%d: %d.%d\n", channel, rank, lane,
 		dqs_setting->tap,
 		dqs_setting->pi);
 
@@ -1680,9 +1680,14 @@ void raminit_ddr2(struct sysinfo *s, int fast_boot)
 
 	// XXX tRD
 
-	// XXX Write training
-
-	// XXX Read training
+	if (!fast_boot) {
+		if (s->selected_timings.mem_clk > MEM_CLOCK_667MHz) {
+			if(do_write_training(s))
+				die("DQ write training failed!");
+		}
+		if (do_read_training(s))
+			die("DQS read training failed!");
+	}
 
 	// DRADRB
 	dradrb_ddr2(s);

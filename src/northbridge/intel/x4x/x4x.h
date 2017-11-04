@@ -250,6 +250,11 @@ struct dll_setting {
 	u8 coarse;
 };
 
+struct rt_dqs_setting {
+	u8 tap;
+	u8 pi;
+};
+
 enum n_banks {
 	N_BANKS_4 = 0,
 	N_BANKS_8 = 1,
@@ -303,6 +308,13 @@ struct sysinfo {
 	struct dimminfo	dimms[4];
 	u8		spd_map[4];
 	struct rcven_timings rcven_t[TOTAL_CHANNELS];
+	/*
+	 * The rt_dqs delay register for rank 0 seems to be used
+	 * for all other ranks on the channel, so only save that
+	 */
+	struct rt_dqs_setting rt_dqs[TOTAL_CHANNELS][8];
+	struct dll_setting dqs_settings[TOTAL_CHANNELS][8];
+	struct dll_setting dq_settings[TOTAL_CHANNELS][8];
 };
 #define BOOT_PATH_NORMAL	0
 #define BOOT_PATH_WARM_RESET	1
@@ -316,22 +328,6 @@ enum ddr2_signals {
 	CTRL1,
 	CTRL2,
 	CTRL3,
-	DQS1,
-	DQS2,
-	DQS3,
-	DQS4,
-	DQS5,
-	DQS6,
-	DQS7,
-	DQS8,
-	DQ1,
-	DQ2,
-	DQ3,
-	DQ4,
-	DQ5,
-	DQ6,
-	DQ7,
-	DQ8
 };
 
 #ifndef __BOOTBLOCK__
@@ -345,6 +341,22 @@ void raminit_ddr2(struct sysinfo *s, int fast_boot);
 void rcven(struct sysinfo *s);
 u32 fsb2mhz(u32 speed);
 u32 ddr2mhz(u32 speed);
+
+extern const struct dll_setting default_ddr2_667_ctrl[7];
+extern const struct dll_setting default_ddr2_800_ctrl[7];
+extern const struct dll_setting default_ddr3_800_ctrl[2][7];
+extern const struct dll_setting default_ddr3_1067_ctrl[2][7];
+extern const struct dll_setting default_ddr3_1333_ctrl[2][7];
+extern const struct dll_setting default_ddr2_667_dqs[8];
+extern const struct dll_setting default_ddr2_800_dqs[8];
+extern const struct dll_setting default_ddr3_800_dqs[2][8];
+extern const struct dll_setting default_ddr3_1067_dqs[2][8];
+extern const struct dll_setting default_ddr3_1333_dqs[2][8];
+extern const struct dll_setting default_ddr2_667_dq[8];
+extern const struct dll_setting default_ddr2_800_dq[8];
+extern const struct dll_setting default_ddr3_800_dq[2][8];
+extern const struct dll_setting default_ddr3_1067_dq[2][8];
+extern const struct dll_setting default_ddr3_1333_dq[2][8];
 
 struct acpi_rsdp;
 #ifndef __SIMPLE_DEVICE__

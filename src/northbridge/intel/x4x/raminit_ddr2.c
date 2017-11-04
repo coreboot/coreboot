@@ -26,6 +26,7 @@
 #else
 #include <southbridge/intel/i82801jx/i82801jx.h>
 #endif
+#include <string.h>
 #include "iomap.h"
 #include "x4x.h"
 
@@ -344,6 +345,24 @@ static void dqset(u8 ch, u8 lane, const struct dll_setting *setting)
 	}
 }
 
+static void rt_set_dqs(u8 channel, u8 lane, u8 rank,
+		struct rt_dqs_setting *dqs_setting)
+{
+	u16 saved_tap = MCHBAR16(0x540 + 0x400 * channel + lane * 4);
+	u16 saved_pi = MCHBAR16(0x542 + 0x400 * channel + lane * 4);
+	printk(RAM_SPEW, "RT DQS: ch%d, L%d, %d.%d\n", channel, lane,
+		dqs_setting->tap,
+		dqs_setting->pi);
+
+	saved_tap &= ~(0xf << (rank * 4));
+	saved_tap |= dqs_setting->tap << (rank * 4);
+	MCHBAR16(0x540 + 0x400 * channel + lane * 4) = saved_tap;
+
+	saved_pi &= ~(0x7 << (rank * 3));
+	saved_pi |= dqs_setting->pi << (rank * 3);
+	MCHBAR16(0x542 + 0x400 * channel + lane * 4) = saved_pi;
+}
+
 static void timings_ddr2(struct sysinfo *s)
 {
 	u8 i;
@@ -574,7 +593,6 @@ static void dll_ddr2(struct sysinfo *s)
 	u8 i, j, r, reg8, clk, async = 0;
 	u16 reg16 = 0;
 	u32 reg32 = 0;
-	u8 lane;
 
 	MCHBAR16(0x180) = (MCHBAR16(0x180) & ~0x7e06) | 0xc04;
 	MCHBAR16(0x182) = (MCHBAR16(0x182) & ~0x3ff) | 0xc8;
@@ -660,60 +678,6 @@ static void dll_ddr2(struct sysinfo *s)
 	MCHBAR8(0x1a4) = MCHBAR8(0x1a4) | 0x40;
 	MCHBAR16(0x5f0) = (MCHBAR16(0x5f0) & ~0x400) | 0x400;
 
-	static const struct dll_setting dll_setting_667[23] = {
-	//	tap  pi db  delay
-		{13, 0, 1, 0, 0},
-		{4,  1, 0, 0, 0},
-		{13, 0, 1, 0, 0},
-		{4,  5, 0, 0, 0},
-		{4,  1, 0, 0, 0},
-		{4,  1, 0, 0, 0},
-		{4,  1, 0, 0, 0},
-		{1,  5, 1, 1, 1},
-		{1,  6, 1, 1, 1},
-		{2,  0, 1, 1, 1},
-		{2,  1, 1, 1, 1},
-		{2,  1, 1, 1, 1},
-		{14, 6, 1, 0, 0},
-		{14, 3, 1, 0, 0},
-		{14, 0, 1, 0, 0},
-		{9,  0, 0, 0, 1},
-		{9,  1, 0, 0, 1},
-		{9,  2, 0, 0, 1},
-		{9,  2, 0, 0, 1},
-		{9,  1, 0, 0, 1},
-		{6,  4, 0, 0, 1},
-		{6,  2, 0, 0, 1},
-		{5,  4, 0, 0, 1}
-	};
-
-	static const struct dll_setting dll_setting_800[23] = {
-	//	tap  pi db  delay
-		{11, 5, 1, 0, 0},
-		{0,  5, 1, 1, 0},
-		{11, 5, 1, 0, 0},
-		{1,  4, 1, 1, 0},
-		{0,  5, 1, 1, 0},
-		{0,  5, 1, 1, 0},
-		{0,  5, 1, 1, 0},
-		{2,  5, 1, 1, 1},
-		{2,  6, 1, 1, 1},
-		{3,  0, 1, 1, 1},
-		{3,  0, 1, 1, 1},
-		{3,  3, 1, 1, 1},
-		{2,  0, 1, 1, 1},
-		{1,  3, 1, 1, 1},
-		{0,  3, 1, 1, 1},
-		{9,  3, 0, 0, 1},
-		{9,  4, 0, 0, 1},
-		{9,  5, 0, 0, 1},
-		{9,  6, 0, 0, 1},
-		{10, 0, 0, 0, 1},
-		{8,  1, 0, 0, 1},
-		{7,  5, 0, 0, 1},
-		{6,  2, 0, 0, 1}
-	};
-
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
 		MCHBAR16(0x400*i + 0x5f0) = (MCHBAR16(0x400*i + 0x5f0) & ~0x3fc) | 0x3fc;
 		MCHBAR32(0x400*i + 0x5fc) = MCHBAR32(0x400*i + 0x5fc) & ~0xcccccccc;
@@ -725,9 +689,9 @@ static void dll_ddr2(struct sysinfo *s)
 		const struct dll_setting *setting;
 
 		if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz)
-			setting = dll_setting_667;
+			setting = default_ddr2_667_ctrl;
 		else
-			setting = dll_setting_800;
+			setting = default_ddr2_800_ctrl;
 
 		clkset0(i, &setting[CLKSET0]);
 		clkset1(i, &setting[CLKSET1]);
@@ -834,32 +798,77 @@ static void dll_ddr2(struct sysinfo *s)
 
 	if (s->selected_timings.mem_clk == MEM_CLOCK_1333MHz)
 		MCHBAR8(0x18c) = MCHBAR8(0x18c) | 1;
+}
 
-	// Program DQ/DQS dll settings
-	reg32 = 0;
-	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
+static void select_default_dq_dqs_settings(struct sysinfo *s)
+{
+	int ch, lane;
+
+	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
 		for (lane = 0; lane < 8; lane++) {
-			if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz)
-				reg32 = 0x06db7777;
-			else if (s->selected_timings.mem_clk == MEM_CLOCK_800MHz)
-				reg32 = 0x00007777;
-			MCHBAR32(0x400*i + 0x540 + lane*4) =
-				(MCHBAR32(0x400*i + 0x540 + lane*4) & 0x0fffffff) |
-				reg32;
+			switch (s->selected_timings.mem_clk) {
+			case MEM_CLOCK_667MHz:
+				memcpy(s->dqs_settings[ch],
+					default_ddr2_667_dqs,
+					sizeof(s->dqs_settings[ch]));
+				memcpy(s->dq_settings[ch],
+					default_ddr2_667_dq,
+					sizeof(s->dq_settings[ch]));
+				s->rt_dqs[ch][lane].tap = 7;
+				s->rt_dqs[ch][lane].pi = 2;
+				break;
+			case MEM_CLOCK_800MHz:
+				if (s->spd_type == DDR2) {
+					memcpy(s->dqs_settings[ch],
+						default_ddr2_800_dqs,
+						sizeof(s->dqs_settings[ch]));
+					memcpy(s->dq_settings[ch],
+						default_ddr2_800_dq,
+						sizeof(s->dq_settings[ch]));
+
+					s->rt_dqs[ch][lane].tap = 7;
+					s->rt_dqs[ch][lane].pi = 0;
+				} else { /* DDR3 */
+					/* TODO: DDR3 write DQ-DQS */
+					s->rt_dqs[ch][lane].tap = 6;
+					s->rt_dqs[ch][lane].pi = 2;
+				}
+				break;
+			case MEM_CLOCK_1066MHz:
+				/* TODO: DDR3 write DQ-DQS */
+				s->rt_dqs[ch][lane].tap = 5;
+				s->rt_dqs[ch][lane].pi = 2;
+				break;
+			case MEM_CLOCK_1333MHz:
+				/* TODO: DDR3 write DQ-DQS */
+				s->rt_dqs[ch][lane].tap = 7;
+				s->rt_dqs[ch][lane].pi = 0;
+				break;
+			default: /* not supported */
+				break;
+			}
 		}
 	}
+}
 
-	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
-		if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz) {
-			for (lane = 0; lane < 8; lane++)
-				dqsset(i, lane, &dll_setting_667[DQS1+lane]);
-			for (lane = 0; lane < 8; lane++)
-				dqset(i, lane, &dll_setting_667[DQ1+lane]);
-		} else {
-			for (lane = 0; lane < 8; lane++)
-				dqsset(i, lane, &dll_setting_800[DQS1+lane]);
-			for (lane = 0; lane < 8; lane++)
-				dqset(i, lane, &dll_setting_800[DQ1+lane]);
+/*
+ * It looks like only the RT DQS register for the first rank
+ * is used for all ranks. Just set all the 'unused' RT DQS registers
+ * to the same as rank 0, out of precaution.
+ */
+static void set_all_dq_dqs_dll_settings(struct sysinfo *s)
+{
+	// Program DQ/DQS dll settings
+	int ch, lane, rank;
+
+	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
+		for (lane = 0; lane < 8; lane++) {
+			FOR_EACH_RANK_IN_CHANNEL(rank) {
+				rt_set_dqs(ch, lane, rank,
+					&s->rt_dqs[ch][lane]);
+			}
+			dqsset(ch, lane, &s->dqs_settings[ch][lane]);
+			dqset(ch, lane, &s->dq_settings[ch][lane]);
 		}
 	}
 }
@@ -1486,6 +1495,9 @@ void raminit_ddr2(struct sysinfo *s, int fast_boot)
 
 	// Program DLL
 	dll_ddr2(s);
+	if (!fast_boot)
+		select_default_dq_dqs_settings(s);
+	set_all_dq_dqs_dll_settings(s);
 
 	// RCOMP
 	if (s->boot_path != BOOT_PATH_WARM_RESET) {

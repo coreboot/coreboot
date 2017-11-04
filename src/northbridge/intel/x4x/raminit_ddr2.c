@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <stdint.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
@@ -974,9 +975,79 @@ static void odt_ddr2(struct sysinfo *s)
 	}
 }
 
+static void pre_jedec_memory_map(void)
+{
+	/*
+	 * Configure the memory mapping in stacked mode (channel 1 being mapped
+	 * above channel 0) and with 128M per rank.
+	 * This simplifies dram trainings a lot since those need a test address.
+	 *
+	 * +-------------+ => 0
+	 * | ch 0, rank 0|
+	 * +-------------+ => 0x8000000 (128M)
+	 * | ch 0, rank 1|
+	 * +-------------+ => 0x10000000 (256M)
+	 * | ch 0, rank 2|
+	 * +-------------+ => 0x18000000 (384M)
+	 * | ch 0, rank 3|
+	 * +-------------+ => 0x20000000 (512M)
+	 * | ch 1, rank 0|
+	 * +-------------+ => 0x28000000 (640M)
+	 * | ch 1, rank 1|
+	 * +-------------+ => 0x30000000 (768M)
+	 * | ch 1, rank 2|
+	 * +-------------+ => 0x38000000 (896M)
+	 * | ch 1, rank 3|
+	 * +-------------+
+	 *
+	 * After all trainings are done this is set to the real values specified
+	 * by the SPD.
+	 */
+	/* Set rank 0-3 populated */
+	MCHBAR32(C0CKECTRL) = (MCHBAR32(C0CKECTRL) & ~1) | 0xf00000;
+	MCHBAR32(C1CKECTRL) = (MCHBAR32(C1CKECTRL) & ~1) | 0xf00000;
+	/* Set size of each rank to 128M */
+	MCHBAR16(C0DRA01) = 0x0101;
+	MCHBAR16(C0DRA23) = 0x0101;
+	MCHBAR16(C1DRA01) = 0x0101;
+	MCHBAR16(C1DRA23) = 0x0101;
+	MCHBAR16(C0DRB0) = 0x0002;
+	MCHBAR16(C0DRB1) = 0x0004;
+	MCHBAR16(C0DRB2) = 0x0006;
+	MCHBAR16(C0DRB3) = 0x0008;
+	MCHBAR16(C1DRB0) = 0x0002;
+	MCHBAR16(C1DRB1) = 0x0004;
+	MCHBAR16(C1DRB2) = 0x0006;
+	/*
+	 * For some reason the boundary needs to be 0x10 instead of 0x8 here.
+	 * Vendor does this too...
+	 */
+	MCHBAR16(C1DRB3) = 0x0010;
+	MCHBAR8(0x111) = MCHBAR8(0x111) | STACKED_MEM;
+	MCHBAR32(0x104) = 0;
+	MCHBAR16(0x102) = 0x400;
+	MCHBAR8(0x110) = (2 << 5) | (3 << 3);
+	MCHBAR16(0x10e) = 0;
+	MCHBAR32(0x108) = 0;
+	pci_write_config16(PCI_DEV(0, 0, 0), D0F0_TOLUD, 0x4000);
+	/* TOM(64M unit) = 1G = TOTAL_CHANNELS * RANKS_PER_CHANNEL * 128M */
+	pci_write_config16(PCI_DEV(0, 0, 0), D0F0_TOM, 0x10);
+	/* TOUUD(1M unit) = 1G = TOTAL_CHANNELS * RANKS_PER_CHANNEL * 128M */
+	pci_write_config16(PCI_DEV(0, 0, 0), D0F0_TOUUD, 0x0400);
+	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_GBSM, 0x40000000);
+	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_BGSM, 0x40000000);
+	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_TSEG, 0x40000000);
+}
+
+u32 test_address(int channel, int rank)
+{
+	ASSERT(channel <= 1 && rank < 4);
+	return channel * 512 * MiB + rank * 128 * MiB;
+}
+
 static void dojedec_ddr2(u8 r, u8 ch, u8 cmd, u16 val)
 {
-	u32 addr = (ch << 29) | (r*0x08000000);
+	u32 addr = test_address(ch, r);
 	volatile u32 rubbish;
 
 	MCHBAR8(0x271) = (MCHBAR8(0x271) & ~0x3e) | cmd;
@@ -1046,7 +1117,7 @@ static void jedec_ddr2(struct sysinfo *s)
 			default:
 				break;
 			}
-			dojedec_ddr2(r + ch*4, ch, jedec[i][0], v);
+			dojedec_ddr2(r, ch, jedec[i][0], v);
 			udelay(1);
 			printk(RAM_SPEW, "Jedec step %d\n", i);
 		}
@@ -1516,27 +1587,7 @@ void raminit_ddr2(struct sysinfo *s, int fast_boot)
 		printk(BIOS_DEBUG, "Done RCOMP update\n");
 	}
 
-	// Set defaults
-	MCHBAR32(0x260) = (MCHBAR32(0x260) & ~1) | 0xf00000;
-	MCHBAR32(0x660) = (MCHBAR32(0x660) & ~1) | 0xf00000;
-	MCHBAR32(0x208) = 0x01010101;
-	MCHBAR32(0x608) = 0x01010101;
-	MCHBAR32(0x200) = 0x00040002;
-	MCHBAR32(0x204) = 0x00080006;
-	MCHBAR32(0x600) = 0x00040002;
-	MCHBAR32(0x604) = 0x00100006;
-	MCHBAR8(0x111) = MCHBAR8(0x111) | 0x2;
-	MCHBAR32(0x104) = 0;
-	MCHBAR16(0x102) = 0x400;
-	MCHBAR8(0x100) = (2 << 5) | (3 << 3);
-	MCHBAR16(0x10e) = 0;
-	MCHBAR32(0x108) = 0;
-	pci_write_config16(PCI_DEV(0, 0, 0), 0xb0, 0x4000);
-	pci_write_config16(PCI_DEV(0, 0, 0), 0xa0, 0x0010);
-	pci_write_config16(PCI_DEV(0, 0, 0), 0xa2, 0x0400);
-	pci_write_config32(PCI_DEV(0, 0, 0), 0xa4, 0x40000000);
-	pci_write_config32(PCI_DEV(0, 0, 0), 0xa8, 0x40000000);
-	pci_write_config32(PCI_DEV(0, 0, 0), 0xac, 0x40000000);
+	pre_jedec_memory_map();
 
 	// IOBUFACT
 	if (CHANNEL_IS_POPULATED(s->dimms, 0)) {
@@ -1613,7 +1664,7 @@ void raminit_ddr2(struct sysinfo *s, int fast_boot)
 		volatile u32 data;
 		FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
 			for (bank = 0; bank < 4; bank++) {
-				reg32 = (ch << 29) | (r*0x8000000) |
+				reg32 = test_address(ch, r) |
 					(bank << 12);
 				write32((u32 *)reg32, 0xffffffff);
 				data = read32((u32 *)reg32);

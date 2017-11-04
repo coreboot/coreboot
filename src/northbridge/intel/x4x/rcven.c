@@ -306,9 +306,13 @@ static int calibrate_receive_enable(u8 channel, u8 lane,
 
 void rcven(struct sysinfo *s)
 {
-	int i;
+	int rank;
 	u8 channel, lane, reg8;
-	u32 addr;
+	/*
+	 * Using the macros below the compiler warns about this possibly being
+	 * unitialised.
+	 */
+	u32 addr = 0;
 	struct rec_timing timing[8];
 	u8 mincoarse;
 
@@ -316,11 +320,15 @@ void rcven(struct sysinfo *s)
 	MCHBAR8(0x9d8) = MCHBAR8(0x9d8) & ~0xc;
 	MCHBAR8(0x5dc) = MCHBAR8(0x5dc) & ~0x80;
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, channel) {
-		addr = (channel << 29);
 		mincoarse = 0xff;
-		for (i = 0; i < RANKS_PER_CHANNEL &&
-			     !RANK_IS_POPULATED(s->dimms, channel, i); i++)
-			addr += 128 * MiB;
+		/*
+		 * Receive enable calibration happens on the first populated
+		 * rank on each channel.
+		 */
+		FOR_EACH_POPULATED_RANK_IN_CHANNEL(s->dimms, channel, rank) {
+			addr = test_address(channel, rank);
+			break;
+		}
 		for (lane = 0; lane < 8; lane++) {
 			printk(BIOS_DEBUG, "Channel %d, Lane %d addr=0x%08x\n",
 				channel, lane, addr);

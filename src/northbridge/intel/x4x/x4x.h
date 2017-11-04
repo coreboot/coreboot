@@ -86,6 +86,25 @@
 #define MCHBAR16(x) (*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
 #define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
 
+#define CHDECMISC	0x111
+#define STACKED_MEM	(1 << 1)
+
+#define C0DRB0		0x200
+#define C0DRB1		0x202
+#define C0DRB2		0x204
+#define C0DRB3		0x206
+#define C0DRA01		0x208
+#define C0DRA23		0x20a
+#define C0CKECTRL	0x260
+
+#define C1DRB0		0x600
+#define C1DRB1		0x602
+#define C1DRB2		0x604
+#define C1DRB3		0x606
+#define C1DRA01		0x608
+#define C1DRA23		0x60a
+#define C1CKECTRL	0x660
+
 #define PMSTS_MCHBAR		0x0f14	/* Self refresh channel status */
 #define PMSTS_WARM_RESET	(1 << 8)
 #define PMSTS_BOTH_SELFREFRESH	(3 << 0)
@@ -341,6 +360,7 @@ void raminit_ddr2(struct sysinfo *s, int fast_boot);
 void rcven(struct sysinfo *s);
 u32 fsb2mhz(u32 speed);
 u32 ddr2mhz(u32 speed);
+u32 test_address(int channel, int rank);
 
 extern const struct dll_setting default_ddr2_667_ctrl[7];
 extern const struct dll_setting default_ddr2_800_ctrl[7];

@@ -51,7 +51,8 @@ const MAXPROMPTRETRY = 3
 
 func PromptUser(prompt string, opts []string) (match string, err error) {
 	for i := 1; i < MAXPROMPTRETRY; i++ {
-		fmt.Println("%s. (%s) Default:%s", prompt, strings.Join(opts, "/"), opts[0])
+		fmt.Printf("%s. (%s) Default:%s\n", prompt,
+		           strings.Join(opts, "/"), opts[0])
 		var usrInput string
 		fmt.Scanln(&usrInput)
 

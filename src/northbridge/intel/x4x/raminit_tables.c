@@ -29,7 +29,7 @@ const struct dll_setting default_ddr2_667_ctrl[7] = {
 	{4,  1, 0, 0, 0, 0}, /* ctrl3 */
 };
 
-const struct dll_setting default_ddr2_667_dqs[8] = {
+const struct dll_setting default_ddr2_667_dqs[TOTAL_BYTELANES] = {
 	{1,  5, 1, 1, 1, 0},
 	{1,  6, 1, 1, 1, 0},
 	{2,  0, 1, 1, 1, 0},
@@ -40,7 +40,7 @@ const struct dll_setting default_ddr2_667_dqs[8] = {
 	{14, 0, 1, 0, 0, 0},
 };
 
-const struct dll_setting default_ddr2_667_dq[8] = {
+const struct dll_setting default_ddr2_667_dq[TOTAL_BYTELANES] = {
 	{9,  0, 0, 0, 1, 0},
 	{9,  1, 0, 0, 1, 0},
 	{9,  2, 0, 0, 1, 0},
@@ -62,7 +62,7 @@ const struct dll_setting default_ddr2_800_ctrl[7] = {
 	{0,  5, 1, 1, 0, 0},
 };
 
-const struct dll_setting default_ddr2_800_dqs[8] = {
+const struct dll_setting default_ddr2_800_dqs[TOTAL_BYTELANES] = {
 	{2,  5, 1, 1, 1, 0},
 	{2,  6, 1, 1, 1, 0},
 	{3,  0, 1, 1, 1, 0},
@@ -73,7 +73,7 @@ const struct dll_setting default_ddr2_800_dqs[8] = {
 	{0,  3, 1, 1, 1, 0},
 };
 
-const struct dll_setting default_ddr2_800_dq[8] = {
+const struct dll_setting default_ddr2_800_dq[TOTAL_BYTELANES] = {
 	{9,  3, 0, 0, 1, 0},
 	{9,  4, 0, 0, 1, 0},
 	{9,  5, 0, 0, 1, 0},
@@ -104,7 +104,7 @@ const struct dll_setting default_ddr3_800_ctrl[2][7] = {
 		{3, 6, 0, 0, 0, 0}, }
 };
 
-const struct dll_setting default_ddr3_800_dqs[2][8] = {
+const struct dll_setting default_ddr3_800_dqs[2][TOTAL_BYTELANES] = {
 	{ /* 1N */
 		{12, 0, 1, 0, 0, 0},
 		{1, 1, 1, 1, 1, 0},
@@ -125,7 +125,7 @@ const struct dll_setting default_ddr3_800_dqs[2][8] = {
 		{0, 3, 1, 1, 1, 0}, }
 };
 
-const struct dll_setting default_ddr3_800_dq[2][8] = {
+const struct dll_setting default_ddr3_800_dq[2][TOTAL_BYTELANES] = {
 	{ /* 1N */
 		{4, 1, 0, 0, 1, 0},
 		{6, 4, 0, 0, 1, 0},
@@ -165,7 +165,7 @@ const struct dll_setting default_ddr3_1067_ctrl[2][7] = {
 		{2, 2, 1, 1, 0, 0}, }
 };
 
-const struct dll_setting default_ddr3_1067_dqs[2][8] = {
+const struct dll_setting default_ddr3_1067_dqs[2][TOTAL_BYTELANES] = {
 	{ /* 1N */
 		{2, 5, 1, 1, 1, 0},
 		{5, 1, 0, 0, 1, 0},
@@ -187,7 +187,7 @@ const struct dll_setting default_ddr3_1067_dqs[2][8] = {
 	}
 };
 
-const struct dll_setting default_ddr3_1067_dq[2][8] = {
+const struct dll_setting default_ddr3_1067_dq[2][TOTAL_BYTELANES] = {
 	{ /* 1N */
 		{6, 5, 0, 0, 1, 0},
 		{9, 3, 1, 0, 1, 0},
@@ -228,7 +228,7 @@ const struct dll_setting default_ddr3_1333_ctrl[2][7] = {
 		{4, 5, 0, 0, 0, 0}, }
 };
 
-const struct dll_setting default_ddr3_1333_dqs[2][8] = {
+const struct dll_setting default_ddr3_1333_dqs[2][TOTAL_BYTELANES] = {
 	{ /* 1N */
 		{2, 4, 1, 1, 1, 0},
 		{5, 1, 0, 0, 1, 0},
@@ -249,7 +249,7 @@ const struct dll_setting default_ddr3_1333_dqs[2][8] = {
 		{9, 6, 0, 0, 1, 0}, }
 };
 
-const struct dll_setting default_ddr3_1333_dq[2][8] = {
+const struct dll_setting default_ddr3_1333_dq[2][TOTAL_BYTELANES] = {
 	{ /* 1N */
 		{6, 5, 0, 0, 1, 0},
 		{9, 3, 1, 0, 1, 0},

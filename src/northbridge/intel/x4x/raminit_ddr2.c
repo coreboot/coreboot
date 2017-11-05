@@ -805,49 +805,46 @@ static void select_default_dq_dqs_settings(struct sysinfo *s)
 {
 	int ch, lane;
 
-	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
-		for (lane = 0; lane < 8; lane++) {
-			switch (s->selected_timings.mem_clk) {
-			case MEM_CLOCK_667MHz:
+	FOR_EACH_POPULATED_CHANNEL_AND_BYTELANE(s->dimms, ch, lane) {
+		switch (s->selected_timings.mem_clk) {
+		case MEM_CLOCK_667MHz:
+			memcpy(s->dqs_settings[ch],
+				default_ddr2_667_dqs,
+				sizeof(s->dqs_settings[ch]));
+			memcpy(s->dq_settings[ch],
+				default_ddr2_667_dq,
+				sizeof(s->dq_settings[ch]));
+			s->rt_dqs[ch][lane].tap = 7;
+			s->rt_dqs[ch][lane].pi = 2;
+			break;
+		case MEM_CLOCK_800MHz:
+			if (s->spd_type == DDR2) {
 				memcpy(s->dqs_settings[ch],
-					default_ddr2_667_dqs,
+					default_ddr2_800_dqs,
 					sizeof(s->dqs_settings[ch]));
 				memcpy(s->dq_settings[ch],
-					default_ddr2_667_dq,
+					default_ddr2_800_dq,
 					sizeof(s->dq_settings[ch]));
 				s->rt_dqs[ch][lane].tap = 7;
-				s->rt_dqs[ch][lane].pi = 2;
-				break;
-			case MEM_CLOCK_800MHz:
-				if (s->spd_type == DDR2) {
-					memcpy(s->dqs_settings[ch],
-						default_ddr2_800_dqs,
-						sizeof(s->dqs_settings[ch]));
-					memcpy(s->dq_settings[ch],
-						default_ddr2_800_dq,
-						sizeof(s->dq_settings[ch]));
-
-					s->rt_dqs[ch][lane].tap = 7;
-					s->rt_dqs[ch][lane].pi = 0;
-				} else { /* DDR3 */
-					/* TODO: DDR3 write DQ-DQS */
-					s->rt_dqs[ch][lane].tap = 6;
-					s->rt_dqs[ch][lane].pi = 2;
-				}
-				break;
-			case MEM_CLOCK_1066MHz:
-				/* TODO: DDR3 write DQ-DQS */
-				s->rt_dqs[ch][lane].tap = 5;
-				s->rt_dqs[ch][lane].pi = 2;
-				break;
-			case MEM_CLOCK_1333MHz:
-				/* TODO: DDR3 write DQ-DQS */
-				s->rt_dqs[ch][lane].tap = 7;
 				s->rt_dqs[ch][lane].pi = 0;
-				break;
-			default: /* not supported */
-				break;
+			} else { /* DDR3 */
+				/* TODO: DDR3 write DQ-DQS */
+				s->rt_dqs[ch][lane].tap = 6;
+				s->rt_dqs[ch][lane].pi = 2;
 			}
+			break;
+		case MEM_CLOCK_1066MHz:
+			/* TODO: DDR3 write DQ-DQS */
+			s->rt_dqs[ch][lane].tap = 5;
+			s->rt_dqs[ch][lane].pi = 2;
+			break;
+		case MEM_CLOCK_1333MHz:
+			/* TODO: DDR3 write DQ-DQS */
+			s->rt_dqs[ch][lane].tap = 7;
+			s->rt_dqs[ch][lane].pi = 0;
+			break;
+		default: /* not supported */
+			break;
 		}
 	}
 }
@@ -863,7 +860,7 @@ static void set_all_dq_dqs_dll_settings(struct sysinfo *s)
 	int ch, lane, rank;
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
-		for (lane = 0; lane < 8; lane++) {
+		FOR_EACH_BYTELANE(lane) {
 			FOR_EACH_RANK_IN_CHANNEL(rank) {
 				rt_set_dqs(ch, lane, rank,
 					&s->rt_dqs[ch][lane]);
@@ -1140,7 +1137,7 @@ static void sdram_recover_receive_enable(const struct sysinfo *s)
 		reg32 |= s->rcven_t[channel].min_common_coarse << 16;
 		MCHBAR32(0x400 * channel + 0x248) = reg32;
 
-		for (lane = 0; lane < 8; lane++) {
+	        FOR_EACH_BYTELANE(lane) {
 			medium |= s->rcven_t[channel].medium[lane]
 				<< (lane * 2);
 			coarse_offset |=

@@ -161,6 +161,7 @@
 
 #define TOTAL_CHANNELS 2
 #define TOTAL_DIMMS 4
+#define TOTAL_BYTELANES 8
 #define DIMMS_PER_CHANNEL (TOTAL_DIMMS / TOTAL_CHANNELS)
 #define RAW_CARD_UNPOPULATED 0xff
 #define RAW_CARD_POPULATED 0
@@ -215,6 +216,10 @@
 	FOR_EACH_CHANNEL(ch) FOR_EACH_RANK_IN_CHANNEL(r)
 #define FOR_EACH_POPULATED_RANK(dimms, ch, r) \
 	FOR_EACH_RANK(ch, r) IF_RANK_POPULATED(dimms, ch, r)
+#define FOR_EACH_BYTELANE(l) \
+	for (l = 0; l < TOTAL_BYTELANES; l++)
+#define FOR_EACH_POPULATED_CHANNEL_AND_BYTELANE(dimms, ch, l) \
+	FOR_EACH_POPULATED_CHANNEL (dimms, ch) FOR_EACH_BYTELANE(l)
 
 #define DDR3_MAX_CAS 18
 
@@ -308,10 +313,10 @@ struct dimminfo {
 
 struct rcven_timings {
 	u8 min_common_coarse;
-	u8 coarse_offset[8];
-	u8 medium[8];
-	u8 tap[8];
-	u8 pi[8];
+	u8 coarse_offset[TOTAL_BYTELANES];
+	u8 medium[TOTAL_BYTELANES];
+	u8 tap[TOTAL_BYTELANES];
+	u8 pi[TOTAL_BYTELANES];
 };
 
 /* The setup is up to two DIMMs per channel */
@@ -331,9 +336,9 @@ struct sysinfo {
 	 * The rt_dqs delay register for rank 0 seems to be used
 	 * for all other ranks on the channel, so only save that
 	 */
-	struct rt_dqs_setting rt_dqs[TOTAL_CHANNELS][8];
-	struct dll_setting dqs_settings[TOTAL_CHANNELS][8];
-	struct dll_setting dq_settings[TOTAL_CHANNELS][8];
+	struct rt_dqs_setting rt_dqs[TOTAL_CHANNELS][TOTAL_BYTELANES];
+	struct dll_setting dqs_settings[TOTAL_CHANNELS][TOTAL_BYTELANES];
+	struct dll_setting dq_settings[TOTAL_CHANNELS][TOTAL_BYTELANES];
 };
 #define BOOT_PATH_NORMAL	0
 #define BOOT_PATH_WARM_RESET	1
@@ -367,16 +372,16 @@ extern const struct dll_setting default_ddr2_800_ctrl[7];
 extern const struct dll_setting default_ddr3_800_ctrl[2][7];
 extern const struct dll_setting default_ddr3_1067_ctrl[2][7];
 extern const struct dll_setting default_ddr3_1333_ctrl[2][7];
-extern const struct dll_setting default_ddr2_667_dqs[8];
-extern const struct dll_setting default_ddr2_800_dqs[8];
-extern const struct dll_setting default_ddr3_800_dqs[2][8];
-extern const struct dll_setting default_ddr3_1067_dqs[2][8];
-extern const struct dll_setting default_ddr3_1333_dqs[2][8];
-extern const struct dll_setting default_ddr2_667_dq[8];
-extern const struct dll_setting default_ddr2_800_dq[8];
-extern const struct dll_setting default_ddr3_800_dq[2][8];
-extern const struct dll_setting default_ddr3_1067_dq[2][8];
-extern const struct dll_setting default_ddr3_1333_dq[2][8];
+extern const struct dll_setting default_ddr2_667_dqs[TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr2_800_dqs[TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr3_800_dqs[2][TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr3_1067_dqs[2][TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr3_1333_dqs[2][TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr2_667_dq[TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr2_800_dq[TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr3_800_dq[2][TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr3_1067_dq[2][TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr3_1333_dq[2][TOTAL_BYTELANES];
 
 struct acpi_rsdp;
 #ifndef __SIMPLE_DEVICE__

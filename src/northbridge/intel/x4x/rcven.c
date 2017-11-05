@@ -313,7 +313,7 @@ void rcven(struct sysinfo *s)
 	 * unitialised.
 	 */
 	u32 addr = 0;
-	struct rec_timing timing[8];
+	struct rec_timing timing[TOTAL_BYTELANES];
 	u8 mincoarse;
 
 	MCHBAR8(0x5d8) = MCHBAR8(0x5d8) & ~0xc;
@@ -329,7 +329,7 @@ void rcven(struct sysinfo *s)
 			addr = test_address(channel, rank);
 			break;
 		}
-		for (lane = 0; lane < 8; lane++) {
+		FOR_EACH_BYTELANE(lane) {
 			printk(BIOS_DEBUG, "Channel %d, Lane %d addr=0x%08x\n",
 				channel, lane, addr);
 			timing[lane].coarse = (s->selected_timings.CAS + 1);
@@ -365,7 +365,7 @@ void rcven(struct sysinfo *s)
 		s->rcven_t[channel].min_common_coarse = mincoarse;
 		printk(BIOS_DEBUG, "Receive enable, final timings:\n");
 		/* Normalise coarse */
-		for (lane = 0; lane < 8; lane++) {
+		FOR_EACH_BYTELANE(lane) {
 			if (timing[lane].coarse == 0)
 				reg8 = 0;
 			else

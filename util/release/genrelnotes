@@ -26,7 +26,7 @@
 
 # Check for tools
 
-if ! ( git --version cloc --version ) > /dev/null 2>&1
+if ! ( git --version && cloc --version ) > /dev/null 2>&1
 then
 	echo "ERROR: cloc or git is not installed.  Exiting"
 	exit 1
@@ -42,13 +42,6 @@ if ! git diff-index --quiet --cached HEAD 2>/dev/null || \
 	[ "$(git diff origin/master --shortstat 2>/dev/null | tail -n1)" != "" ]; then
 	echo "ERROR: repo is not clean.  Exiting."
 	exit 1
-fi
-
-if grep -q 'review.coreboot.org' .git/config; then
-	COREBOOT=1
-else
-	echo "This doesn't look like a coreboot repo. Disabling coreboot specifics"
-	COREBOOT=0
 fi
 
 # Verify the command line arguments
@@ -89,8 +82,6 @@ else
 	LOGFILE="$MAIN_LOGFILE"
 fi
 
-
-
 get_author_commit_count() {
 	git log "${NEW_GIT_VERSION}" 2>/dev/null | grep -c "^Author: $1"
 }
@@ -106,9 +97,10 @@ log_versions() {
 
 # Get the first commit id in the current tree
 get_latest_commit_id() {
-	pushd "$1" > /dev/null
+(
+	cd "$1"
 	git log 2>/dev/null | grep '^commit ' | head -1 | sed 's/commit //'
-	popd > /dev/null
+)
 }
 
 # Main get log function
@@ -117,13 +109,22 @@ _get_log() {
 	local newver="$2"
 	local title="$3"
 	local paths="$4"
+	local keywords="$5"
 
-	# Leave ${paths} unquoted
+	# Leave ${paths} unquoted in the git commands
 	# shellcheck disable=SC2086
-	git log --abbrev-commit --pretty=oneline \
-		"${oldver}..${newver}" -- ${paths} 2>/dev/null | \
-		sort -t ' ' -k 2 | \
-		uniq
+	{ \
+		if [ -n "$paths" ]; then \
+			git log --abbrev-commit --pretty=oneline \
+				"${oldver}..${newver}" -- ${paths} \
+				2>/dev/null; \
+		fi; \
+		if [ -n "$keywords" ]; then \
+			git log --abbrev-commit --pretty=oneline \
+			"${oldver}..${newver}" 2>/dev/null \
+			| grep -i "$keywords"; \
+		fi \
+	} | sort -t ' ' -k 2 | uniq
 }
 
 # Output to a new log, then compare to the first logfile, and only output
@@ -131,23 +132,23 @@ _get_log() {
 get_log_dedupe() {
 	local title="$1"
 	local paths="$2"
+	local keywords="$3"
 	local log
 	local commits
 
 	dedupe_tmpfile="$(mktemp "LOGFILE.XXXX")"
 
 	log=$(_get_log "$OLD_GIT_VERSION" "$NEW_GIT_VERSION" \
-		"$title" "$paths")
+		"$title" "$paths" "$keywords")
 
 	echo "$log" > "$dedupe_tmpfile"
 
 	log=$(grep -Fxv -f "$LOGFILE" "$dedupe_tmpfile")
 	commits=$(echo "$log" | wc -l)
 
-	if [ -n "$log" ]; then
-		printf "%s\n%s\n\n" "$title ($commits commits)" \
-			"$log" >> "$LOGFILE"
-	fi
+	#echo "$title: $paths $keywords" >> "$LOGFILE"
+	printf "%s\n%s\n\n" "##### $title ($commits commits) #####" \
+		"$log" >> "$LOGFILE"
 
 	rm "$dedupe_tmpfile"
 }
@@ -163,20 +164,23 @@ get_log_submodule() {
 	printf "Submodule %s\n" "$submodule_dir"
 	printf "commit %s to commit %s\n\n" "$old_version" "$new_version"
 
-	pushd "${TOP}/$submodule_dir" > /dev/null
-	log=$(_get_log "$old_version" "$new_version" "$submodule_dir" ".")
+	(
+	cd "${TOP}/$submodule_dir"
+	log="$(_get_log "$old_version" "$new_version" "$submodule_dir" "." "")"
 	commits=$(echo "$log" | wc -l)
 
 	if [ -n "$log" ]; then
-		printf "%s\n%s\n\n" "$submodule_dir ($commits commits)" \
-			"$log" >> "$LOGFILE"
+		printf "%s\n" "$submodule_dir ($commits commits)" >> "$LOGFILE"
+		printf "\n" >> "$LOGFILE"
 	fi
-
-	popd > /dev/null
+	)
 }
 
 find_areas() {
-	find "$1" -name "$2" | sed "s|$1/||" | sed "s|/$2||" | sort
+	local directory="$1"
+	local filename="$2"
+	local skip="$3"
+	find "$directory" -name "$filename" | sed "s|/$filename||" | sed "s|/$directory||" | grep -v "$skip" | sort
 }
 
 # Make sure things get cleaned up if ctl-c is pressed while the old version
@@ -210,6 +214,18 @@ show_diff () {
 	fi
 }
 
+get_sloc () {
+	# Because cloc works on extensions, and .inc identifies as pascal,
+	# rename Makefile.inc, then remap the other .inc files to c
+	find 'src' -name 'Makefile.inc' -exec rename 's/Makefile\.inc/gnumakefile/' {} \;
+
+	cloc --progress-rate=0 --quiet --script-lang="Bourne Shell",bash \
+		--force-lang=c,inc --exclude-dir=vendorcode src
+
+	# Change all the makefiles back to Makefile.inc
+	find 'src' -name 'gnumakefile' -exec rename 's/gnumakefile/Makefile\.inc/' {} \;
+}
+
 # Start collecting data from the old and new revisions.
 # This is relatively disruptive to the tree, so trap on ctl-c so that
 # things can be put back to normal
@@ -219,59 +235,44 @@ trap version_ctrl_c SIGINT
 printf -- "Finding old submodule versions...\n"
 git checkout "$OLD_GIT_VERSION" > /dev/null 2>&1
 git submodule update --init --checkout  > /dev/null 2>&1
-if [ "$COREBOOT" -eq "1" ]; then
-	BLOBS_OLD_VERSION=$(get_latest_commit_id "${TOP}/3rdparty/blobs")
-	VBOOT_OLD_VERSION=$(get_latest_commit_id "${TOP}/3rdparty/vboot")
-	ARM_OLD_VERSION=$(get_latest_commit_id "${TOP}/3rdparty/arm-trusted-firmware")
-	CHROME_EC_OLD_VERSION=$(get_latest_commit_id "${TOP}/3rdparty/chromeec/")
-	NVIDIA_OLD_VERSION=$(get_latest_commit_id "${TOP}/util/nvidia/cbootimage")
+for module in $(git submodule --quiet foreach pwd); do
+	name="$(basename "$module" | sed 's/-/_/g')"
+	version="${name^^}_OLD_VERSION"
+	declare "$version"=$(get_latest_commit_id "$module")
+done
 
-	printf "Logging directories in the old tree\n"
-	mainboard_list_old=$(find_areas "src/mainboard" 'Kconfig.name' | grep '/')
-	cpu_list_old=$(find_areas "src/cpu" "Kconfig")
-	soc_list_old=$(find_areas "src/soc" "Kconfig")
-	northbridge_list_old=$(find_areas "src/northbridge" "Kconfig")
-	sio_list_old=$(find_areas "src/superio" "Makefile.inc")
-	southbridge_list_old=$(find_areas "src/southbridge" "Kconfig")
+printf "Logging directories in the old tree\n"
+mainboard_list_old=$(grep -h "^[[:space:]]*config\>[[:space:]]*\<BOARD_" src/mainboard/*/*/Kconfig.name 2>/dev/null | sed "s,^.*\<BOARD_\([A-Z0-9_]*\)\>.*$,\1," | sort)
+cpu_list_old=$(find_areas "src/cpu" "Kconfig" "intel/common")
+soc_list_old=$(find_areas "src/soc" "Makefile.inc" "intel/common\|amd/common\|romstage")
+northbridge_list_old=$(find_areas "src/northbridge" "Kconfig" "")
+sio_list_old=$(find_areas "src/superio" "Makefile.inc" "")
+southbridge_list_old=$(find_areas "src/southbridge" "Kconfig" "")
 
-	# Because cloc works on extensions, and .inc identifies as pascal,
-	# rename Makefile.inc, then remap the other .inc files to c
-	find 'src' -name 'Makefile.inc' -exec rename 's/Makefile\.inc/gnumakefile/' {} \;
-fi
 printf "Calculating old SLOC\n"
-OLD_SLOC=$(cloc --progress-rate=0 --quiet --script-lang="Bourne Shell",bash \
-	--force-lang=c,inc --exclude-dir=vendorcode src)
-if [ "$COREBOOT" -eq "1" ]; then
-	find 'src' -name 'gnumakefile' -exec rename 's/gnumakefile/Makefile\.inc/' {} \;
-fi
+OLD_SLOC=$(get_sloc)
 
 #check out new version and get information
 printf -- "\nFinding new submodule versions...\n"
 git checkout "$NEW_GIT_VERSION"  > /dev/null 2>&1
 git submodule update --init --checkout  > /dev/null 2>&1
-if [ "$COREBOOT" -eq "1" ]; then
-	BLOBS_NEW_VERSION=$(get_latest_commit_id "${TOP}/3rdparty/blobs")
-	VBOOT_NEW_VERSION=$(get_latest_commit_id "${TOP}/3rdparty/vboot")
-	ARM_NEW_VERSION=$(get_latest_commit_id "${TOP}/3rdparty/arm-trusted-firmware")
-	CHROME_EC_NEW_VERSION=$(get_latest_commit_id "${TOP}/3rdparty/chromeec/")
-	NVIDIA_NEW_VERSION=$(get_latest_commit_id "${TOP}/util/nvidia/cbootimage")
 
-	printf "Logging directories in the new tree\n"
-	mainboard_list_new=$(find_areas "src/mainboard" 'Kconfig.name' | grep '/')
-	cpu_list_new=$(find_areas "src/cpu" "Kconfig")
-	soc_list_new=$(find_areas "src/soc" "Kconfig")
-	northbridge_list_new=$(find_areas "src/northbridge" "Kconfig")
-	sio_list_new=$(find_areas "src/superio" "Makefile.inc")
-	southbridge_list_new=$(find_areas "src/southbridge" "Kconfig")
+for module in $(git submodule --quiet foreach pwd); do
+	name="$(basename "$module" | sed 's/-/_/g')"
+	version="${name^^}_NEW_VERSION"
+	declare "$version"=$(get_latest_commit_id "$module")
+done
 
-	find 'src' -name 'Makefile.inc' -exec rename 's/Makefile\.inc/gnumakefile/' {} \;
-fi
+printf "Logging directories in the new tree\n"
+mainboard_list_new=$(grep -h "^[[:space:]]*config\>[[:space:]]*\<BOARD_" src/mainboard/*/*/Kconfig.name 2>/dev/null | sed "s,^.*\<BOARD_\([A-Z0-9_]*\)\>.*$,\1," | sort)
+cpu_list_new=$(find_areas "src/cpu" "Kconfig" "intel/common")
+soc_list_new=$(find_areas "src/soc" "Makefile.inc" "intel/common\|amd/common\|romstage")
+northbridge_list_new=$(find_areas "src/northbridge" "Kconfig" "")
+sio_list_new=$(find_areas "src/superio" "Makefile.inc" "")
+southbridge_list_new=$(find_areas "src/southbridge" "Kconfig" "")
+
 printf "Calculating new SLOC\n"
-NEW_SLOC=$(cloc --progress-rate=0 --quiet --script-lang="Bourne Shell",bash \
-	--force-lang=c,inc --exclude-dir=vendorcode src)
-if [ "$COREBOOT" -eq "1" ]; then
-	find 'src' -name 'gnumakefile' -exec rename 's/gnumakefile/Makefile\.inc/' {} \;
-fi
+NEW_SLOC=$(get_sloc)
 
 git checkout origin/master  > /dev/null 2>&1
 git submodule update --init --checkout  > /dev/null 2>&1
@@ -289,88 +290,132 @@ log_versions "$(git log --pretty=%H \
 	"${OLD_GIT_VERSION}..${NEW_GIT_VERSION}" 2>/dev/null | head -1 )"
 echo "" >> "$LOGFILE"
 
-if [ "$COREBOOT" -eq "1" ]; then
+### SPECIFIC AREAS FOR RELEASE ###
+get_log_dedupe "cleanup" "" "spelling\|Use tabs\|transition away from device_t\|space [around\|before]\|code formatting\|commented code\|code cleanup\|capitalize\|unnecessary whitespace\|checkpatch"
 
-	# 1st, Show mainboards so that changes that are mainboard specific don't get
-	# grabbed by changes in the architectures
-	get_log_dedupe "Mainboards" "src/mainboard/"
+get_log_dedupe "Google Kahlee / AMD Gardenia" "src/mainboard/google/kahlee src/mainboard/amd/gardenia" "kahlee\|gardenia"
+get_log_dedupe "AMD Stoney Ridge" "src/soc/amd/stoneyridge" "stoney"
 
-	# Show architectures 2nd - separate the various pieces out
-	# This works by getting a list of directories that have Kconfigs containing _ARCH
-	# then filtering out generic areas.  X86 has too many non-compliant directories
-	# for that to work well, so just supply a list
-	# shellcheck disable=SC2013
-	{
-	get_log_dedupe "ARM" \
-		"$(for codedir in $(grep -rl "_ARM" --include=Kconfig | \
-		grep -v 'src/mainboard\|payloads/\|drivers/\|vendorcode/\|console' ); \
-		do dirname "$codedir"; done | grep -v '^src$')"
+get_log_dedupe "Google Eve / Poppy / Fizz / Soraka / Nautilus / Intel KblRvp" "src/mainboard/google/eve src/mainboard/google/poppy src/mainboard/google/fizz src/mainboard/intel/kblrvp" "eve[ :]\|poppy\|fizz\|soraka\|nautilus\|kblrvp"
+#get_log_dedupe "Intel Kunimitsu / Google Chell / Lars / Glados" "src/mainboard/google/lars src/mainboard/google/chell src/mainboard/google/glados src/mainboard/intel/kunimitsu" "chell\|lars\|kunimitsu"
+get_log_dedupe "Purism SKL" "src/mainboard/purism/librem_skl" "librem13v2\|librem_skl"
+get_log_dedupe "Intel Skylake / Kabylake" "src/soc/intel/skylake"  "skylake\|sky.lake\|kabylake\|kaby.lake"
 
-	get_log_dedupe "RISC-V" \
-		"$(for codedir in $(grep -rl "_RISCV" --include=Kconfig | \
-		grep -v 'src/mainboard\|payloads/\|drivers/\|vendorcode/\|console' ); \
-		do dirname "$codedir"; done | grep -v '^src$')"
+get_log_dedupe "Google Cyan / Intel Strago" "src/mainboard/google/cyan src/mainboard/intel/strago" "cyan\|strago"
+get_log_dedupe "Intel Braswell" "src/soc/intel/braswell" "braswell"
 
-	get_log_dedupe "X86" \
-		"src/arch/x86 src/cpu/x86 src/cpu/intel src/soc/intel src/cpu/amd \
-		src/northbridge/intel src/northbridge/amd src/southbridge/intel \
-		src/southbridge/amd src/drivers/intel/fsp1_0 src/drivers/intel/fsp1_1 \
-		src/include/amd src/include/intel src/include/x86 src/include/pc80"
+get_log_dedupe "Google Kevin / Gru / Bob / Scarlet / Nefario" "src/mainboard/google/gru" "kevin\|gru[^b]"
+get_log_dedupe "Rockchip rk3399" "src/soc/rockchip/rk3399" "rk3399"
 
-	get_log_dedupe "MIPS" \
-		"$(for codedir in $(grep -rl "_MIPS" --include=Kconfig | \
-		grep -v 'src/mainboard\|payloads/\|drivers/\|vendorcode/\|console' ); \
-		do dirname "$codedir"; done | grep -v '^src$')"
-	}
-	# Next, print all the rest of the specific areas
-	get_log_dedupe "ACPI"		"src/acpi/"
-	get_log_dedupe "Console"	"src/console/ src/include/console"
-	get_log_dedupe "SuperIO"	"src/superio/ src/include/superio"
-	get_log_dedupe "EC "		"src/ec"
-	get_log_dedupe "Drivers" 	"src/drivers/"
-	get_log_dedupe "Devices" 	"src/device/ src/include/device"
+get_log_dedupe "Google Reef / Pyro / Sand / Snappy / Nasher" "src/mainboard/google/reef" "reef\|pyro\|sand[ :]\|snappy\|nasher"
+#get_log_dedupe "Intel apollolake_rvp leafhill minnow3" "src/mainboard/intel/apollolake_rvp src/mainboard/intel/leafhill src/mainboard/intel/minnow3" "apollolake_rvp\|leafhill\|minnow3"
+get_log_dedupe "Siemens mc_apl1" "src/mainboard/siemens/mc_apl1" "mc_apl1"
+get_log_dedupe "Intel Apollolake" "src/soc/intel/apollolake" "apollolake\|apollo.lake"
 
-	# 5th, print the generic areas - This goes late so that the specific
-	# area changes will catch any commits in these areas first.
-	get_log_dedupe "Lib" 		"src/lib/"
-	get_log_dedupe "Commonlib"	"src/commonlib/"
-	get_log_dedupe "Include"	"src/include/"
-	get_log_dedupe "Utilities" 	"util/"
-	get_log_dedupe "Payloads"	"payloads/"
-	get_log_dedupe "Vendorcode"	"src/vendorcode/"
-	get_log_dedupe "Documentation"	"Documentation/ README"
+get_log_dedupe "Google Zoombini / Intel cannonlake_rvp" "src/mainboard/google/zoombini src/mainboard/intel/cannonlake_rvp" "zoombini\|cannonlake_rvp"
+get_log_dedupe "Intel CannonLake" "src/soc/intel/cannonlake src/mainboard/intel/cannonlake_rvp" "cannonlake"
 
-	# Then look at areas that are usually outside the mainboards and architectures
-	get_log_dedupe "Build system" \
-		"Makefile Makefile.inc toolchain.inc src/Kconfig src/cpu/Makefile.inc"
+get_log_dedupe "Intel Galileo" "src/mainboard/intel/galileo" "galileo"
+get_log_dedupe "Intel Quark" "src/soc/intel/quark" "quark"
 
-	# Finally, get anything that was missed above
-	get_log_dedupe "MISC" "."
+get_log_dedupe "Intel Baytrail" "src/soc/intel/baytrail" "baytrail"
+#get_log_dedupe "Google Gale / Qualcomm QX ipq40xx" "src/mainboard/google/gale src/soc/qualcomm/ipq40xx" "gale\|ipq40"
+#et_log_dedupe "Google Rotor / Marvell Mvmap2315" "src/soc/marvell/mvmap2315 src/mainboard/google/rotor" "marvell\|mvmap\|rotor"
 
-	# Show areas that have been added or removed
-	show_diff "mainboards"   "$mainboard_list_old"   "$mainboard_list_new"
-	show_diff "processors"   "$cpu_list_old"         "$cpu_list_new"
-	show_diff "socs"         "$soc_list_old"         "$soc_list_new"
-	show_diff "northbridges" "$northbridge_list_old" "$northbridge_list_new"
-	show_diff "southbridges" "$southbridge_list_old" "$southbridge_list_new"
-	show_diff "sios"         "$sio_list_old"         "$sio_list_new"
+get_log_dedupe "Gigabyte ga-g41m-es2l" "src/mainboard/gigabyte/ga-g41m-es2l" "es2l"
+get_log_dedupe "Intel x4x northbridge / LGA775" "src/northbridge/intel/x4x src/cpu/intel/socket_LGA775" "x4x\|lga775"
 
-	# Log submodules
-	printf "Submodules\n----------\n" >> "$LOGFILE"
-	get_log_submodule "$BLOBS_OLD_VERSION" "$BLOBS_NEW_VERSION" \
-		"3rdparty/blobs"
-	get_log_submodule "$ARM_OLD_VERSION" "$ARM_NEW_VERSION" \
-		"3rdparty/arm-trusted-firmware"
-	get_log_submodule "$VBOOT_OLD_VERSION" "$VBOOT_NEW_VERSION" \
-		"3rdparty/vboot"
-	get_log_submodule "$CHROME_EC_OLD_VERSION" "$CHROME_EC_NEW_VERSION" \
-		"3rdparty/chromeec/"
-	get_log_submodule "$NVIDIA_OLD_VERSION" "$NVIDIA_NEW_VERSION" \
-		"util/nvidia/cbootimage"
+get_log_dedupe "Intel Sandybridge / Ivybridge" "src/southbridge/intel/bd82x6x src/southbridge/intel/fsp_bd82x6x src/northbridge/intel/sandybridge src/northbridge/intel/fsp_sandybridge src/cpu/intel/fsp_model_206ax src/cpu/intel/model_206ax" "sandybridge\|ivybridge\|bd82x6x"
 
-else
-	get_log_dedupe "Commits" "."
-fi
+get_log_dedupe "Intel Common" "src/soc/intel/common src/southbridge/intel/common src/northbridge/intel/common" ""
+get_log_dedupe "Amd Common" "src/soc/amd/common src/southbridge/amd/common" ""
+
+get_log_dedupe "Intel vendorcode / FSP" "src/drivers/intel/fsp* src/vendorcode/intel" ""
+get_log_dedupe "AMD vendorcode / AGESA / PI" "src/vendorcode/amd" ""
+get_log_dedupe "Google vendorcode" "src/vendorcode/google"
+
+get_log_dedupe "TPM" "src/drivers/i2c/tpm" "tpm"
+get_log_dedupe "Vboot" "src/vboot" "vboot"
+
+
+### GENERAL AREAS FOR RELEASE ###
+# shellcheck disable=SC2013
+{
+get_log_dedupe "ARM" \
+	"$(for codedir in $(grep -rl "_ARM" --include=Kconfig | \
+	grep -v 'src/mainboard\|payloads/\|drivers/\|vendorcode/\|console' ); \
+	do dirname "$codedir"; done | grep -v '^src$')"
+
+get_log_dedupe "RISC-V" \
+	"$(for codedir in $(grep -rl "_RISCV" --include=Kconfig | grep -v 'payloads/\|drivers/\|vendorcode/\|console' ); do dirname "$codedir"; done | grep -v '^src$')" \
+	"riscv\|risc-v\|lowrisc"
+
+get_log_dedupe "MIPS" \
+	"$(for codedir in $(grep -rl "_MIPS" --include=Kconfig | \
+	grep -v 'src/mainboard\|payloads/\|drivers/\|vendorcode/\|console' ); \
+	do dirname "$codedir"; done | grep -v '^src$')"
+}
+
+get_log_dedupe "X86 intel" \
+	"src/cpu/intel src/soc/intel src/northbridge/intel \
+	src/southbridge/intel src/include/intel src/drivers/intel"
+
+get_log_dedupe "X86 amd" \
+	"src/cpu/amd src/northbridge/amd src/southbridge/amd src/include/amd src/soc/amd" \
+	"agesa\|binarypi\|binary.pi"
+
+get_log_dedupe "X86 common" \
+	"src/arch/x86 src/cpu/x86 src/include/x86 src/include/pc80"
+
+get_log_dedupe "Mainboards" "src/mainboard/"
+
+# Next, print all the rest of the specific areas
+get_log_dedupe "ACPI"		"src/acpi/"
+get_log_dedupe "Console"	"src/console src/include/console"
+get_log_dedupe "SuperIO"	"src/superio src/include/superio"
+get_log_dedupe "EC"		"src/ec"
+get_log_dedupe "Drivers"	"src/drivers"
+get_log_dedupe "Devices"	"src/device src/include/device"
+
+# 5th, print the generic areas - This goes late so that the specific
+# area changes will catch any commits in these areas first.
+get_log_dedupe "Toolchain"	"util/crossgcc"
+get_log_dedupe "cbfstool"	"util/cbfstool"
+get_log_dedupe "Lint tools"	"util/lint"
+get_log_dedupe "Lib"		"src/lib"
+get_log_dedupe "Commonlib"	"src/commonlib"
+get_log_dedupe "Include"	"src/include"
+get_log_dedupe "Utilities"	"util"
+get_log_dedupe "Payloads"	"payloads"
+get_log_dedupe "Vendorcode"	"src/vendorcode"
+get_log_dedupe "Documentation"	"Documentation README"
+
+# Then look at areas that are usually outside the mainboards and architectures
+get_log_dedupe "Build system" \
+	"Makefile Makefile.inc toolchain.inc src/Kconfig src/cpu/Makefile.inc"
+
+get_log_dedupe "Submodules" "3rdparty util/nvidia/cbootimage"
+# Finally, get anything that was missed above
+get_log_dedupe "MISC" "."
+
+# Show areas that have been added or removed
+show_diff "mainboards"   "$mainboard_list_old"   "$mainboard_list_new"
+show_diff "processors"   "$cpu_list_old"         "$cpu_list_new"
+show_diff "socs"         "$soc_list_old"         "$soc_list_new"
+show_diff "northbridges" "$northbridge_list_old" "$northbridge_list_new"
+show_diff "southbridges" "$southbridge_list_old" "$southbridge_list_new"
+show_diff "sios"         "$sio_list_old"         "$sio_list_new"
+
+# Log submodules
+printf "Submodules\n----------\n" >> "$LOGFILE"
+for module in $(git submodule --quiet foreach pwd); do
+	name=$(basename "$module")
+	# shellcheck disable=SC2001
+	path=$(echo "$module" | sed 's|.*coreboot||')
+	old_version=$(echo "${name^^}_OLD_VERSION" | sed 's/-/_/g')
+	new_version=$(echo "${name^^}_NEW_VERSION" | sed 's/-/_/g')
+	get_log_submodule "${!old_version}" "${!new_version}" "$path"
+done
 
 printf "\nrepo statistics\n-------------------\n" >> "$LOGFILE"
 before_names="$(mktemp "OLDNAMES.XXXX")"

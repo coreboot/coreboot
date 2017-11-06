@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2016 - 2017 Intel Corp.
+ * Copyright (C) 2017 Online SAS.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +17,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
-#include <harcuvar_boardid.h>
-#include <hsio.h>
 #include <reset.h>
 #include <soc/fiamux.h>
 #include <soc/iomap.h>
@@ -237,7 +236,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg)
 	FSPM_UPD *mupd = container_of(m_cfg, FSPM_UPD, FspmConfig);
 	size_t num;
 	uint16_t supported_hsio_lanes;
-	uint8_t boardid = board_id();
 	BL_HSIO_INFORMATION *hsio_config;
 
 	/* Set the parameters for MemoryInit */
@@ -250,17 +248,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg)
 		/* Assume the validating silicon has max lanes. */
 		supported_hsio_lanes = BL_ME_FIA_MUX_LANE_NUM_MAX;
 
-		switch (boardid) {
-		case BoardIdHarcuvar:
-			num = ARRAY_SIZE(harcuvar_hsio_config);
-			hsio_config =
-			    (BL_HSIO_INFORMATION *)harcuvar_hsio_config;
-			break;
-		default:
-			num = 0;
-			hsio_config = NULL;
-			break;
-		}
+		num = mainboard_get_hsio_config(&hsio_config);
 
 		if (get_fiamux_hsio_info(supported_hsio_lanes, num,
 					 &hsio_config))

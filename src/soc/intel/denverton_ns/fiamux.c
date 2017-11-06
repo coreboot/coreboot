@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 - 2017 Intel Corporation
+ * Copyright (C) 2017 Online SAS
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,4 +138,10 @@ BL_FIA_MUX_CONFIG_HOB *get_fiamux_hob_data(void)
 	}
 
 	return fiamux_hob_data;
+}
+
+__attribute__((weak)) size_t mainboard_get_hsio_config(BL_HSIO_INFORMATION **p_hsio_config)
+{
+	*p_hsio_config = NULL;
+	return 0;
 }

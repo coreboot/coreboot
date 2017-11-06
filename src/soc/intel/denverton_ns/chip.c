@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015 - 2017 Intel Corp.
+ * Copyright (C) 2017 Online SAS.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +32,6 @@
 #include <soc/ramstage.h>
 #include <soc/fiamux.h>
 #include <spi-generic.h>
-#include <hsio.h>
-#include <harcuvar_boardid.h>
 
 static void pci_domain_set_resources(device_t dev)
 {
@@ -74,7 +73,6 @@ static void soc_silicon_init_params(FSPS_UPD *silupd)
 {
 	size_t num;
 	uint16_t supported_hsio_lanes;
-	uint8_t boardid = board_id();
 	BL_HSIO_INFORMATION *hsio_config;
 	BL_FIA_MUX_CONFIG_HOB *fiamux_hob_data = get_fiamux_hob_data();
 
@@ -82,16 +80,7 @@ static void soc_silicon_init_params(FSPS_UPD *silupd)
 	supported_hsio_lanes =
 		(uint16_t)fiamux_hob_data->FiaMuxConfig.SkuNumLanesAllowed;
 
-	switch (boardid) {
-	case BoardIdHarcuvar:
-		num = ARRAY_SIZE(harcuvar_hsio_config);
-		hsio_config = (BL_HSIO_INFORMATION *)harcuvar_hsio_config;
-		break;
-	default:
-		num = 0;
-		hsio_config = NULL;
-		break;
-	}
+	num = mainboard_get_hsio_config(&hsio_config);
 
 	if (get_fiamux_hsio_info(supported_hsio_lanes, num, &hsio_config))
 		die("HSIO Configuration is invalid, please correct it!");

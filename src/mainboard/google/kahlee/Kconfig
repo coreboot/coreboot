@@ -47,6 +47,10 @@ config DEVICETREE
 	string
 	default "variants/${CONFIG_VARIANT_DIR}/devicetree.cb"
 
+config MAINBOARD_FAMILY
+	string
+	default "Google_Kahlee"
+
 config MAX_CPUS
 	int
 	default 4

@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2016 Intel Corp.
- * Copyright 2017 Siemens AG.
+ * Copyright (C) 2017 Siemens AG
  * (Written by Lance Zhao <lijian.zhao@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify

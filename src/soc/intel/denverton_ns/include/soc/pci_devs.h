@@ -40,6 +40,7 @@
 #define SA_DEV 0x0
 #define SA_FUNC 0
 #define SA_DEVID 0x1980
+#define SA_DEVID_DNVAD 0x1995
 #define SOC_DEV SA_DEV
 #define SOC_FUNC SA_FUNC
 #define SOC_DEVID SA_DEVID

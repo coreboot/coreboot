@@ -37,6 +37,8 @@
 #define TPM_RID_REG       (TPM_LOCALITY_0_SPI_BASE + 0xf04)
 #define TPM_FW_VER	  (TPM_LOCALITY_0_SPI_BASE + 0xf90)
 
+#define CR50_TIMEOUT_INIT_MS 30000 /* Very long timeout for TPM init */
+
 /* SPI slave structure for TPM device. */
 static struct spi_slave g_spi_slave CAR_GLOBAL;
 
@@ -342,6 +344,7 @@ static void tpm2_write_access_reg(uint8_t cmd)
 static int tpm2_claim_locality(void)
 {
 	uint8_t access;
+	struct stopwatch sw;
 
 	access = tpm2_read_access_reg();
 	/*
@@ -353,6 +356,13 @@ static int tpm2_claim_locality(void)
 		access = tpm2_read_access_reg();
 	}
 
+	/*
+	 * If cr50 is doing a long crypto operation, it can take up to
+	 * 30 seconds to get a valid status value back
+	 */
+	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_INIT_MS);
+	while (!stopwatch_expired(&sw) && access != TPM_ACCESS_VALID)
+		access = tpm2_read_access_reg();
 	if (access != TPM_ACCESS_VALID) {
 		printk(BIOS_ERR, "Invalid reset status: %#x\n", access);
 		return 0;

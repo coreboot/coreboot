@@ -43,6 +43,7 @@
 #include "tpm.h"
 
 #define CR50_MAX_BUFSIZE	63
+#define CR50_TIMEOUT_INIT_MS	30000	/* Very long timeout for TPM init */
 #define CR50_TIMEOUT_LONG_MS	2000	/* Long timeout while waiting for TPM */
 #define CR50_TIMEOUT_SHORT_MS	2	/* Short timeout during transactions */
 #define CR50_TIMEOUT_NOIRQ_MS	20	/* Timeout for TPM ready without IRQ */
@@ -423,7 +424,7 @@ int tpm_vendor_probe(unsigned int bus, uint32_t addr)
 	struct stopwatch sw;
 	uint8_t buf = 0;
 	int ret;
-	long sw_run_duration = CR50_TIMEOUT_LONG_MS;
+	long sw_run_duration = CR50_TIMEOUT_INIT_MS;
 
 	tpm_dev->bus = bus;
 	tpm_dev->addr = addr;

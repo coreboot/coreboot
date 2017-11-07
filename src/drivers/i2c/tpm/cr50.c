@@ -170,57 +170,88 @@ static int cr50_i2c_write(struct tpm_chip *chip,
 	return cr50_i2c_wait_tpm_ready(chip);
 }
 
-static int check_locality(struct tpm_chip *chip, int loc)
+/*
+ * Cr50 processes reset requests asynchronously and consceivably could be busy
+ * executing a long command and not reacting to the reset pulse for a while.
+ *
+ * This function will make sure that the AP does not proceed with boot until
+ * TPM finished reset processing.
+ */
+static int process_reset(struct tpm_chip *chip)
 {
-	uint8_t mask = TPM_ACCESS_VALID | TPM_ACCESS_ACTIVE_LOCALITY;
-	uint8_t buf;
+	struct stopwatch sw;
+	uint8_t access;
 
-	if (cr50_i2c_read(chip, TPM_ACCESS(loc), &buf, 1) < 0)
-		return -1;
+	/*
+	 * Locality is released by TPM reset.
+	 *
+	 * If locality is taken at this point, this could be due to the fact
+	 * that the TPM is performing a long operation and has not processed
+	 * reset request yet. We'll wait up to CR50_TIMEOUT_INIT_MS and see if
+	 * it releases locality when reset is processed.
+	 */
+	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_INIT_MS);
+	do {
+		int rv;
+		const uint8_t mask =
+			TPM_ACCESS_VALID | TPM_ACCESS_ACTIVE_LOCALITY;
 
-	if ((buf & mask) == mask) {
-		chip->vendor.locality = loc;
-		return loc;
-	}
+		rv = cr50_i2c_read(chip, TPM_ACCESS(0),
+				   &access, sizeof(access));
+		if (rv || ((access & mask) == mask)) {
+			/*
+			 * Don't bombard the chip with traffic, let it keep
+			 * processing the command.
+			 */
+			mdelay(2);
+			continue;
+		}
+
+		printk(BIOS_INFO, "TPM ready after %ld ms\n",
+		       stopwatch_duration_msecs(&sw));
+
+		return 0;
+	} while (!stopwatch_expired(&sw));
+
+	printk(BIOS_ERR,
+	       "TPM failed to reset after %ld ms, status: %#x\n",
+	       stopwatch_duration_msecs(&sw), access);
 
 	return -1;
 }
 
-static void release_locality(struct tpm_chip *chip, int force)
+/*
+ * Locality could be already claimed (if this is a later coreboot stage and
+ * the RO did not release it), or not yet claimed, if this is verstage or the
+ * older RO did release it.
+ */
+static int claim_locality(struct tpm_chip *chip)
 {
-	uint8_t mask = TPM_ACCESS_VALID | TPM_ACCESS_REQUEST_PENDING;
-	uint8_t addr = TPM_ACCESS(chip->vendor.locality);
-	uint8_t buf;
+	uint8_t access;
+	const uint8_t mask = TPM_ACCESS_VALID | TPM_ACCESS_ACTIVE_LOCALITY;
 
-	if (cr50_i2c_read(chip, addr, &buf, 1) < 0)
-		return;
-
-	if (force || (buf & mask) == mask) {
-		buf = TPM_ACCESS_ACTIVE_LOCALITY;
-		cr50_i2c_write(chip, addr, &buf, 1);
-	}
-
-	chip->vendor.locality = 0;
-}
-
-static int request_locality(struct tpm_chip *chip, int loc)
-{
-	uint8_t buf = TPM_ACCESS_REQUEST_USE;
-	struct stopwatch sw;
-
-	if (check_locality(chip, loc) >= 0)
-		return loc;
-
-	if (cr50_i2c_write(chip, TPM_ACCESS(loc), &buf, 1) < 0)
+	if (cr50_i2c_read(chip, TPM_ACCESS(0), &access, sizeof(access)))
 		return -1;
 
-	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_LONG_MS);
-	while (check_locality(chip, loc) < 0) {
-		if (stopwatch_expired(&sw))
-			return -1;
-		mdelay(CR50_TIMEOUT_SHORT_MS);
+	if ((access & mask) == mask) {
+		printk(BIOS_INFO, "Locality already claimed\n");
+		return 0;
 	}
-	return loc;
+
+	access = TPM_ACCESS_REQUEST_USE;
+	if (cr50_i2c_write(chip, TPM_ACCESS(0),
+			   &access, sizeof(access)))
+		return -1;
+
+	if (cr50_i2c_read(chip, TPM_ACCESS(0), &access, sizeof(access)))
+		return -1;
+
+	if ((access & mask) != mask) {
+		printk(BIOS_INFO, "Failed to claim locality.\n");
+		return -1;
+	}
+
+	return 0;
 }
 
 /* cr50 requires all 4 bytes of status register to be read */
@@ -419,38 +450,6 @@ static void cr50_vendor_init(struct tpm_chip *chip)
 
 int tpm_vendor_probe(unsigned int bus, uint32_t addr)
 {
-	struct tpm_inf_dev *tpm_dev = car_get_var_ptr(&g_tpm_dev);
-	struct tpm_chip probe_chip;
-	struct stopwatch sw;
-	uint8_t buf = 0;
-	int ret;
-	long sw_run_duration = CR50_TIMEOUT_INIT_MS;
-
-	tpm_dev->bus = bus;
-	tpm_dev->addr = addr;
-
-	cr50_vendor_init(&probe_chip);
-
-	/* Wait for TPM_ACCESS register ValidSts bit to be set */
-	stopwatch_init_msecs_expire(&sw, sw_run_duration);
-	do {
-		ret = cr50_i2c_read(&probe_chip, TPM_ACCESS(0), &buf, 1);
-		if (!ret && (buf & TPM_STS_VALID)) {
-			sw_run_duration = stopwatch_duration_msecs(&sw);
-			break;
-		}
-		mdelay(CR50_TIMEOUT_SHORT_MS);
-	} while (!stopwatch_expired(&sw));
-
-	printk(BIOS_INFO,
-	       "%s: ValidSts bit %s(%d) in TPM_ACCESS register after %ld ms\n",
-	       __func__, (buf & TPM_STS_VALID) ? "set" : "clear",
-	       (buf & TPM_STS_VALID) >> 7, sw_run_duration);
-
-	/* Claim failure if the ValidSts (bit 7) is clear */
-	if (!(buf & TPM_STS_VALID))
-		return -1;
-
 	return 0;
 }
 
@@ -469,16 +468,20 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 
 	cr50_vendor_init(chip);
 
-	if (request_locality(chip, 0) != 0)
+	if (ENV_VERSTAGE || ENV_BOOTBLOCK)
+		if (process_reset(chip))
+			return -1;
+
+	if (claim_locality(chip))
 		return -1;
 
 	/* Read four bytes from DID_VID register */
 	if (cr50_i2c_read(chip, TPM_DID_VID(0), (uint8_t *)&vendor, 4) < 0)
-		goto out_err;
+		return -1;
 
 	if (vendor != CR50_DID_VID) {
 		printk(BIOS_DEBUG, "Vendor ID 0x%08x not recognized\n", vendor);
-		goto out_err;
+		return -1;
 	}
 
 	printk(BIOS_DEBUG, "cr50 TPM 2.0 (i2c %u:0x%02x id 0x%x)\n",
@@ -486,13 +489,8 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 
 	chip->is_open = 1;
 	return 0;
-
-out_err:
-	release_locality(chip, 1);
-	return -1;
 }
 
 void tpm_vendor_cleanup(struct tpm_chip *chip)
 {
-	release_locality(chip, 1);
 }

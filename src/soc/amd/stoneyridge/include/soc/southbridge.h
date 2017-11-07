@@ -55,6 +55,18 @@
 #define   PM_SERIRQ_ENABLE		BIT(7)
 
 #define PM_EVT_BLK			0x60
+#define   WAK_STS			BIT(15) /*AcpiPmEvtBlkx00 Pm1Status */
+#define   PCIEXPWAK_STS			BIT(14)
+#define   RTC_STS			BIT(10)
+#define   PWRBTN_STS			BIT(8)
+#define   GBL_STS			BIT(5)
+#define   BM_STS			BIT(4)
+#define   TIMER_STS			BIT(0)
+#define   PCIEXPWAK_DIS			BIT(14) /*AcpiPmEvtBlkx02 Pm1Enable */
+#define   RTC_EN			BIT(10)
+#define   PWRBTN_EN			BIT(8)
+#define   GBL_EN			BIT(5)
+#define   TIMER_STS			BIT(0)
 #define PM1_CNT_BLK			0x62
 #define PM_TMR_BLK			0x64
 #define PM_CPU_CTRL			0x66

@@ -57,13 +57,12 @@ ramstage-y += memmap.c
 ramstage-y += mmap_boot.c
 ramstage-y += uart.c
 ramstage-y += nhlt.c
-ramstage-y += systemagent.c
 ramstage-y += spi.c
+ramstage-y += systemagent.c
 ramstage-y += pmutil.c
 ramstage-y += pmc.c
 ramstage-y += reset.c
 ramstage-y += sram.c
-ramstage-y += spi.c
 ramstage-y += xdci.c
 ramstage-y += sd.c
 

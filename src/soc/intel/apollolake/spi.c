@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2016 Google Inc.
+ * Copyright 2017 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,11 +15,8 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-#include <intelblocks/fast_spi.h>
 #include <intelblocks/spi.h>
 #include <soc/pci_devs.h>
-#include <spi-generic.h>
 
 int spi_soc_devfn_to_bus(unsigned int devfn)
 {
@@ -45,9 +43,3 @@ int spi_soc_bus_to_devfn(unsigned int bus)
 	}
 	return -1;
 }
-
-const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
-	{ .ctrlr = &fast_spi_flash_ctrlr, .bus_start = 0, .bus_end = 0 },
-};
-
-const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

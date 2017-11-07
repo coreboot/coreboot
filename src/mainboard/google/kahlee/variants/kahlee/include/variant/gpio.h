@@ -22,6 +22,12 @@
 #define MEM_CONFIG0	GPIO_135
 #define MEM_CONFIG1	GPIO_140
 #define MEM_CONFIG2	GPIO_144
+/*
+ * Kahlee only uses 3 GPIOs to determine memory configuration, but other
+ * variants use 4. MEM_CONFIG3 must be defined so that the weak baseboard
+ * version of the variant_board_id() function can compile.
+ */
+#define MEM_CONFIG3	0
 
 /* SPI Write protect */
 #define CROS_WP_GPIO		GPIO_142

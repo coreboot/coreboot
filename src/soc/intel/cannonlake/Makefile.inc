@@ -54,13 +54,11 @@ ramstage-y += sd.c
 smm-y += gpio.c
 smm-y += pmutil.c
 smm-y += smihandler.c
-smm-$(CONFIG_SPI_FLASH_SMM) += spi.c
 smm-$(CONFIG_UART_DEBUG) += uart.c
 smm-$(CONFIG_UART_DEBUG) += uart_pch.c
 
 postcar-y += memmap.c
 postcar-y += pmutil.c
-postcar-y += spi.c
 postcar-$(CONFIG_UART_DEBUG) += uart.c
 
 verstage-y += gspi.c

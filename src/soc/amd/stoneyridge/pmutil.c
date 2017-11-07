@@ -13,10 +13,21 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
+#include <soc/southbridge.h>
+#include <security/vboot/vboot_common.h>
 #include <security/vboot/vbnv.h>
 
 int vbnv_cmos_failed(void)
 {
 	/* FIXME: RTC failure checking not supported. */
 	return 0;
+}
+
+int vboot_platform_is_resuming(void)
+{
+	if (!(inw(pm_acpi_pm_evt_blk()) & WAK_STS))
+		return 0;
+
+	return acpi_sleep_from_pm1(inw(pm_acpi_pm_cnt_blk())) == ACPI_S3;
 }

@@ -58,6 +58,7 @@ romstage-y += ramtop.c
 romstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 romstage-y += tsc_freq.c
 
+verstage-y += sb_util.c
 verstage-y += pmutil.c
 verstage-y += reset.c
 verstage-$(CONFIG_STONEYRIDGE_UART) += uart.c

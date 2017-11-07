@@ -29,6 +29,7 @@ static const struct blc_pwm_t blc_entries[] = {
 	{"LTN141WD-L05", 110},
 	/* T500 */
 	{"LP154W02-TL06", 110},
+	{"LTN154P2-L05", 110},
 	{"LTN154P3-L02", 110},
 	{"LTN154X3-L02", 110},
 };

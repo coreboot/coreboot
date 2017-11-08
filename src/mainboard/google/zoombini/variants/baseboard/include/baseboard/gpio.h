@@ -16,6 +16,7 @@
 #ifndef __MAINBOARD_GPIO_H__
 #define __MAINBOARD_GPIO_H__
 
+#include <soc/gpe.h>
 #include <soc/gpio.h>
 
 /* Memory configuration board straps */
@@ -34,5 +35,5 @@
 #define GPE_EC_WAKE		GPP_74
 
 /* eSPI virtual wire reporting */
-#define EC_SCI_GPI		GPP_76
+#define EC_SCI_GPI		GPE0_ESPI
 #endif

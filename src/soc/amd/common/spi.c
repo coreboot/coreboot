@@ -16,24 +16,24 @@
 #include <console/console.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
+#include "s3_resume.h"
 
 void spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len)
 {
-	struct spi_flash *flash;
+	struct spi_flash flash;
 
 	spi_init();
-	flash = spi_flash_probe(0, 0);
-	if (!flash) {
+	if (spi_flash_probe(0, 0, &flash)) {
 		printk(BIOS_DEBUG, "Could not find SPI device\n");
 		/* Dont make flow stop. */
 		return;
 	}
 
-	spi_flash_volatile_group_begin(flash);
+	spi_flash_volatile_group_begin(&flash);
 
-	spi_flash_erase(flash, pos, size);
-	spi_flash_write(flash, pos, sizeof(len), &len);
-	spi_flash_write(flash, pos + sizeof(len), len, buf);
+	spi_flash_erase(&flash, pos, size);
+	spi_flash_write(&flash, pos, sizeof(len), &len);
+	spi_flash_write(&flash, pos + sizeof(len), len, buf);
 
-	spi_flash_volatile_group_end(flash);
+	spi_flash_volatile_group_end(&flash);
 }

@@ -48,7 +48,7 @@ static void sm_init(device_t dev)
 
 static int lsmbus_recv_byte(device_t dev)
 {
-	u32 device;
+	u8 device;
 	struct resource *res;
 	struct bus *pbus;
 
@@ -62,7 +62,7 @@ static int lsmbus_recv_byte(device_t dev)
 
 static int lsmbus_send_byte(device_t dev, u8 val)
 {
-	u32 device;
+	u8 device;
 	struct resource *res;
 	struct bus *pbus;
 
@@ -76,7 +76,7 @@ static int lsmbus_send_byte(device_t dev, u8 val)
 
 static int lsmbus_read_byte(device_t dev, u8 address)
 {
-	u32 device;
+	u8 device;
 	struct resource *res;
 	struct bus *pbus;
 
@@ -90,7 +90,7 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 
 static int lsmbus_write_byte(device_t dev, u8 address, u8 val)
 {
-	u32 device;
+	u8 device;
 	struct resource *res;
 	struct bus *pbus;
 
@@ -108,20 +108,12 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.write_byte = lsmbus_write_byte,
 };
 
-static void sm_read_resources(device_t dev)
-{
-}
-
-static void sm_set_resources(struct device *dev)
-{
-}
-
 static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
 static struct device_operations smbus_ops = {
-	.read_resources = sm_read_resources,
-	.set_resources = sm_set_resources,
+	.read_resources = DEVICE_NOOP,
+	.set_resources = DEVICE_NOOP,
 	.enable_resources = pci_dev_enable_resources,
 	.init = sm_init,
 	.scan_bus = scan_smbus,

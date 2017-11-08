@@ -27,8 +27,10 @@
 #define   SMBHST_STAT_BUSY		0x01
 #define   SMBHST_STAT_CLEAR		0xff
 #define   SMBHST_STAT_NOERROR		0x02
+#define   SMBHST_STAT_VAL_BITS		0x1f
+#define   SMBHST_STAT_ERROR_BITS	0x1c
 
-#define   SMBSLVSTAT			0x1
+#define SMBSLVSTAT			0x1
 #define   SMBSLV_STAT_ALERT		0x20
 #define   SMBSLV_STAT_SHADOW2		0x10
 #define   SMBSLV_STAT_SHADOW1		0x08
@@ -60,6 +62,9 @@
 #define SMBSLVDAT			0xc
 #define SMBTIMING			0xe
 
+#define SMB_ASF_IO_BASE			0x01
+#define SMB_SPEED_400KHZ		(66000000 / (400000 * 4))
+
 #define AX_INDXC			0
 #define AX_INDXP			2
 #define AXCFG				4
@@ -86,10 +91,10 @@
 #define rcindxp_reg(reg, port, mask, val)	\
 	alink_rc_indx((RC_INDXP), (reg), (port), (mask), (val))
 
-int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
-int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val);
-int do_smbus_recv_byte(u32 smbus_io_base, u32 device);
-int do_smbus_send_byte(u32 smbus_io_base, u32 device, u8 val);
+int do_smbus_read_byte(u16 smbus_io_base, u8 device, u8 address);
+int do_smbus_write_byte(u16 smbus_io_base, u8 device, u8 address, u8 val);
+int do_smbus_recv_byte(u16 smbus_io_base, u8 device);
+int do_smbus_send_byte(u16 smbus_io_base, u8 device, u8 val);
 void alink_rc_indx(u32 reg_space, u32 reg_addr, u32 port, u32 mask, u32 val);
 void alink_ab_indx(u32 reg_space, u32 reg_addr, u32 mask, u32 val);
 void alink_ax_indx(u32 space /*c or p? */, u32 axindc, u32 mask, u32 val);

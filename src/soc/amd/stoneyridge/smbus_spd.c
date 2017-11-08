@@ -24,101 +24,49 @@
 #include <dimmSpd.h>
 
 /*
- * readSmbusByteData - read a single SPD byte from any offset
- */
-static int readSmbusByteData(int iobase, int address, char *buffer, int offset)
-{
-	unsigned int status;
-	UINT64 limit;
-
-	address |= 1; // set read bit
-
-	__outbyte(iobase + SMBHSTSTAT, SMBHST_STAT_CLEAR);
-	__outbyte(iobase + SMBSLVSTAT, SMBSLV_STAT_CLEAR);
-	__outbyte(iobase + SMBHSTCMD, offset);		// offset in eeprom
-	__outbyte(iobase + SMBHSTADDR, address);	// slave addr & read bit
-	__outbyte(iobase + SMBHSTCTRL, SMBHST_CTRL_STRT + SMBHST_CTRL_BDT_RW);
-
-	// time limit to avoid hanging for unexpected error status
-	limit = __rdtsc() + 2000000000 / 10;
-	for (;;) {
-		status = __inbyte(iobase + SMBHSTSTAT);
-		if (__rdtsc() > limit)
-			break;
-		if ((status & SMBHST_STAT_INTERRUPT) == 0)
-			continue;	// SMBusInterrupt not set, keep waiting
-		if ((status & SMBHST_STAT_BUSY) == SMBHST_STAT_BUSY)
-			continue;	// HostBusy set, keep waiting
-		break;
-	}
-
-	buffer[0] = __inbyte(iobase + SMBHSTDAT0);
-	if (status == SMBHST_STAT_NOERROR)
-		status = 0;		// done with no errors
-	return status;
-}
-
-/*
- * readSmbusByte - read a single SPD byte from the default offset
- *                 this function is faster function readSmbusByteData
- */
-static int readSmbusByte(int iobase, int address, char *buffer)
-{
-	unsigned int status;
-	UINT64 limit;
-
-	__outbyte(iobase + SMBHSTSTAT, SMBHST_STAT_CLEAR);
-	__outbyte(iobase + SMBHSTCTRL, SMBHST_CTRL_STRT + SMBHST_CTRL_BTE_RW);
-
-	// time limit to avoid hanging for unexpected error status
-	limit = __rdtsc() + 2000000000 / 10;
-	for (;;) {
-		status = __inbyte(iobase + SMBHSTSTAT);
-		if (__rdtsc() > limit)
-			break;
-		if ((status & SMBHST_STAT_INTERRUPT) == 0)
-			continue;	// SMBusInterrupt not set, keep waiting
-		if ((status & SMBHST_STAT_BUSY) == SMBHST_STAT_BUSY)
-			continue;	// HostBusy set, keep waiting
-		break;
-	}
-
-	buffer[0] = __inbyte(iobase + SMBHSTDAT0);
-	if (status == SMBHST_STAT_NOERROR)
-		status = 0;		// done with no errors
-	return status;
-}
-
-/*
  * readspd - Read one or more SPD bytes from a DIMM.
  *           Start with offset zero and read sequentially.
  *           Optimization relies on autoincrement to avoid
  *           sending offset for every byte.
  *          Reads 128 bytes in 7-8 ms at 400 KHz.
  */
-static int readspd(int iobase, int SmbusSlaveAddress, char *buffer, int count)
+static int readspd(uint16_t iobase, int SmbusSlaveAddress,
+			char *buffer, size_t count)
 {
-	int index, error;
+	u8 dev_addr;
+	size_t index;
+	int error;
+	char *pbuf = buffer;
 
 	printk(BIOS_SPEW, "-------------READING SPD-----------\n");
 	printk(BIOS_SPEW, "iobase: 0x%08X, SmbusSlave: 0x%08X, count: %d\n",
-					iobase, SmbusSlaveAddress, count);
+					iobase, SmbusSlaveAddress, (int)count);
 
-	/* read the first byte using offset zero */
-	error = readSmbusByteData(iobase, SmbusSlaveAddress, buffer, 0);
+	/*
+	 * Convert received device address to the format accepted by
+	 * do_smbus_read_byte and do_smbus_recv_byte.
+	 */
+	dev_addr = (SmbusSlaveAddress >> 1);
 
-	if (error) {
+	/* Read the first SPD byte */
+	error = do_smbus_read_byte(iobase, dev_addr, 0);
+	if (error < 0) {
 		printk(BIOS_ERR, "-------------SPD READ ERROR-----------\n");
 		return error;
+	} else {
+		*pbuf = (char) error;
+		pbuf++;
 	}
 
-	/* read the remaining bytes using auto-increment for speed */
-	for (index = 1; index < count; index++) {
-		error = readSmbusByte(iobase, SmbusSlaveAddress,
-					&buffer[index]);
-		if (error) {
+	/* Read the remaining SPD bytes using do_smbus_recv_byte for speed */
+	for (index = 1 ; index < count ; index++) {
+		error = do_smbus_recv_byte(iobase, dev_addr);
+		if (error < 0) {
 			printk(BIOS_ERR, "-------------SPD READ ERROR-----------\n");
 			return error;
+		} else {
+			*pbuf = (char) error;
+			pbuf++;
 		}
 	}
 	printk(BIOS_SPEW, "\n");
@@ -129,22 +77,22 @@ static int readspd(int iobase, int SmbusSlaveAddress, char *buffer, int count)
 
 static void writePmReg(int reg, int data)
 {
-	__outbyte(PM_INDEX, reg);
-	__outbyte(PM_DATA, data);
+	outb(reg, PM_INDEX);
+	outb(data, PM_DATA);
 }
 
-static void setupFch(int ioBase)
+static void setupFch(uint16_t ioBase)
 {
-	/* register 0x2c and 0x2d are not defined in public datasheet */
-	writePmReg(0x2d, ioBase >> 8);
-	writePmReg(0x2c, ioBase | 1);
-	/* set SMBus clock to 400 KHz */
-	__outbyte(ioBase + SMBTIMING, 66000000 / 400000 / 4);
+	writePmReg(SMB_ASF_IO_BASE, ioBase >> 8);
+	outb(SMB_SPEED_400KHZ, ioBase + SMBTIMING);
+	/* Clear all SMBUS status bits */
+	outb(SMBHST_STAT_CLEAR, ioBase + SMBHSTSTAT);
+	outb(SMBSLV_STAT_CLEAR, ioBase + SMBSLVSTAT);
 }
 
 int sb_readSpd(int spdAddress, char *buf, size_t len)
 {
-	int ioBase = SMB_BASE_ADDR;
+	uint16_t ioBase = SMB_BASE_ADDR;
 	setupFch(ioBase);
 	return readspd(ioBase, spdAddress, buf, len);
 }

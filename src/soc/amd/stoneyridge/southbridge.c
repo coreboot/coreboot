@@ -26,7 +26,6 @@
 #include <cbmem.h>
 #include <amd_pci_util.h>
 #include <soc/southbridge.h>
-#include <soc/smbus.h>
 #include <soc/smi.h>
 #include <fchec.h>
 

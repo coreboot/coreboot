@@ -265,6 +265,7 @@ void smi_write8(uint8_t offset, uint8_t value);
 void smi_write16(uint8_t offset, uint16_t value);
 void smi_write32(uint8_t offset, uint32_t value);
 uint16_t pm_acpi_pm_cnt_blk(void);
+uint16_t pm_acpi_pm_evt_blk(void);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 void bootblock_fch_early_init(void);

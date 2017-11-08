@@ -79,3 +79,8 @@ uint16_t pm_acpi_pm_cnt_blk(void)
 {
 	return pm_read16(PM1_CNT_BLK);
 }
+
+uint16_t pm_acpi_pm_evt_blk(void)
+{
+	return pm_read16(PM_EVT_BLK);
+}

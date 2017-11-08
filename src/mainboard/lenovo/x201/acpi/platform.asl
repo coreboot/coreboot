@@ -63,6 +63,9 @@ Method(_PTS,1)
 
 Method(_WAK,1)
 {
+	/* Wake the HKEY to init BT/WWAN */
+	\_SB.PCI0.LPCB.EC.HKEY.WAKE (Arg0)
+
 	/* Not implemented.  */
 	Return(Package(){0,0})
 }

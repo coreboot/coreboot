@@ -157,6 +157,11 @@ Device (HKEY)
 		Return (\_SB.PCI0.LPCB.EC.GSTS)
 	}
 
+	/* Has thinkpad_acpi module loaded */
+	Name (HAST, 0)
+
+	/* State after sleep */
+	Name (WBDC, 0)
 	/*
 	 * Returns the current state:
 	 *  Bit 0: BT HW present
@@ -165,14 +170,15 @@ Device (HKEY)
 	 */
 	Method (GBDC, 0)
 	{
+		Store (One, HAST)
+
 		If (HBDC) {
 			Store(One, Local0)
 			If(\_SB.PCI0.LPCB.EC.BTEB)
 			{
 				Or(Local0, 2, Local0)
 			}
-			/* FIXME: Implement state at resume, for now Enabled */
-			Or(Local0, 4, Local0)
+			Or(Local0, ShiftLeft(WBDC, 2), Local0)
 			Return (Local0)
 		} Else {
 			Return (0)
@@ -186,14 +192,18 @@ Device (HKEY)
 	 */
 	Method (SBDC, 1)
 	{
+		Store (One, HAST)
+
 		If (HBDC) {
 			ShiftRight (And(Arg0, 2), 1, Local0)
 			Store (Local0, \_SB.PCI0.LPCB.EC.BTEB)
-
-			/* FIXME: Store state at resume */
+			ShiftRight (And(Arg0, 4), 2, Local0)
+			Store (Local0, WBDC)
 		}
 	}
 
+	/* State after sleep */
+	Name (WWAN, 0)
 	/*
 	 * Returns the current state:
 	 *  Bit 0: WWAN HW present
@@ -202,14 +212,15 @@ Device (HKEY)
 	 */
 	Method (GWAN, 0)
 	{
+		Store (One, HAST)
+
 		If (HWAN) {
 			Store(One, Local0)
 			If(\_SB.PCI0.LPCB.EC.WWEB)
 			{
 				Or(Local0, 2, Local0)
 			}
-			/* FIXME: Implement state at resume, for now Enabled */
-			Or(Local0, 4, Local0)
+			Or(Local0, ShiftLeft(WWAN, 2), Local0)
 			Return (Local0)
 		} Else {
 			Return (0)
@@ -223,11 +234,12 @@ Device (HKEY)
 	 */
 	Method (SWAN, 1)
 	{
+		Store (One, HAST)
+
 		If (HWAN) {
 			ShiftRight (And(Arg0, 2), 1, Local0)
 			Store (Local0, \_SB.PCI0.LPCB.EC.WWEB)
-
-			/* FIXME: Store state at resume */
+			ShiftRight (And(Arg0, 4), 2, WWAN)
 		}
 	}
 
@@ -289,6 +301,26 @@ Device (HKEY)
 		If (HUWB) {
 			ShiftRight (And(Arg0, 2), 1, Local0)
 			Store (Local0, \_SB.PCI0.LPCB.EC.UWBE)
+		}
+	}
+
+	/*
+	 * Store initial state
+	 */
+	Method (_INI, 0, NotSerialized)
+	{
+		Store (\_SB.PCI0.LPCB.EC.BTEB, WBDC)
+		Store (\_SB.PCI0.LPCB.EC.WWEB, WWAN)
+	}
+
+	/*
+	 * Called from _WAK
+	 */
+	Method (WAKE, 1)
+	{
+		If (HAST) {
+			Store (WBDC, \_SB.PCI0.LPCB.EC.BTEB)
+			Store (WWAN, \_SB.PCI0.LPCB.EC.WWEB)
 		}
 	}
 }

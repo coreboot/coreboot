@@ -540,9 +540,8 @@ int lpss_i2c_gen_speed_config(struct lpss_i2c_regs *regs,
 	uint16_t hcnt_min, lcnt_min;
 	int i;
 
-	/* Clock must be provided by Kconfig */
-	if (!ic_clk)
-		return -1;
+	_Static_assert(CONFIG_SOC_INTEL_COMMON_LPSS_CLOCK_MHZ != 0,
+		"SOC_INTEL_COMMON_LPSS_CLOCK_MHZ can't be zero!");
 
 	/* Apply board specific override for this speed if found */
 	for (i = 0; i < LPSS_I2C_SPEED_CONFIG_COUNT; i++) {

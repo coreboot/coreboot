@@ -44,6 +44,8 @@
 #define SRAM_BASE_2			0xfe902000
 #define SRAM_SIZE_2			(4 * KiB)
 
+#define HECI1_BASE_ADDRESS		0xfed1a000
+
 /* Temporary BAR for SPI until PCI enumeration assigns a BAR in ramstage. */
 #define PRERAM_SPI_BASE_ADDRESS		0xfe010000
 

@@ -14,6 +14,26 @@
  */
 
 Scope (\_SB.PCI0) {
+	/* EMMC */
+	Device(PEMC) {
+		Name(_ADR, 0x001A0000)
+
+		OperationRegion(SCSR, PCI_Config, 0x00, 0x100)
+		Field(SCSR, WordAcc, NoLock, Preserve) {
+			Offset(0xA2),   // 0xA2, Device PG config
+			, 2,
+			PGEN, 1         // [BIT2] PGE - PG Enable
+		}
+
+		Method(_PS0, 0, Serialized) {
+			Stall (50) // Sleep 50 ms
+			Store(0, PGEN) // Disable PG
+		}
+
+		Method(_PS3, 0, Serialized) {
+			Store(1, PGEN) // Enable PG
+		}
+	}
 
 	/* SD CARD */
 	Device (SDXC)

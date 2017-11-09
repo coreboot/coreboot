@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 - 2014 Advanced Micro Devices, Inc.
+ * Copyright (C) 2012 - 2017 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <BiosCallOuts.h>
 #include <string.h>
 
+void __attribute__((weak)) SetMemParams(AMD_POST_PARAMS *PostParams) {}
 void __attribute__((weak)) OemPostParams(AMD_POST_PARAMS *PostParams) {}
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
@@ -118,14 +119,18 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	AmdCreateStruct (&AmdParamStruct);
 	PostParams = (AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr;
 
-	// Do not use IS_ENABLED here.  CONFIG_GFXUMA should always have a value.  Allow
-	// the compiler to flag the error if CONFIG_GFXUMA is not set.
 	PostParams->MemConfig.UmaMode = CONFIG_GFXUMA ? UMA_AUTO : UMA_NONE;
 	PostParams->MemConfig.UmaSize = 0;
 	PostParams->MemConfig.BottomIo = (UINT16)
 					 (CONFIG_BOTTOMIO_POSITION >> 24);
 
+	SetMemParams(PostParams);
 	OemPostParams(PostParams);
+	printk(BIOS_SPEW, "DRAM clear on reset: %s\n",
+		(PostParams->MemConfig.EnableMemClr == FALSE) ? "Keep" :
+		(PostParams->MemConfig.EnableMemClr == TRUE) ? "Clear" :
+		"unknown"
+	);
 
 	status = AmdInitPost (PostParams);
 

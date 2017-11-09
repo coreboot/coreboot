@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2012 - 2017 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,5 +54,6 @@ VOID amd_initcpuio(void);
 const void *agesawrapper_locate_module(const CHAR8 name[8]);
 
 void OemPostParams(AMD_POST_PARAMS *PostParams);
+void SetMemParams(AMD_POST_PARAMS *PostParams);
 
 #endif /* __AGESAWRAPPER_H__ */

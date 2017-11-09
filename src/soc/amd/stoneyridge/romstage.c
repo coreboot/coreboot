@@ -111,3 +111,17 @@ asmlinkage void car_stage_entry(void)
 
 	post_code(0x50);  /* Should never see this post code. */
 }
+
+void SetMemParams(AMD_POST_PARAMS *PostParams)
+{
+	const struct soc_amd_stoneyridge_config *cfg;
+	const struct device *dev = dev_find_slot(0, GNB_DEVFN);
+
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_ERR, "ERROR: Could not find SoC devicetree config\n");
+		return;
+	}
+
+	cfg = dev->chip_info;
+	PostParams->MemConfig.EnableMemClr = cfg->dram_clear_on_reset;
+}

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2016 Intel Corporation.
+ * Copyright (C) 2016-2017 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -202,47 +202,6 @@ union me_hfs6 {
 	} __packed fields;
 };
 
-/*
- * Management Engine MMIO registers
- */
-#define MMIO_ME_CB_WW	0x00
-#define MMIO_HOST_CSR	0x04
-
-union host_csr {
-	u32 data;
-	struct {
-	u32 int_en: 1;
-	u32 int_sts: 1;
-	u32 int_gen: 1;
-	u32 host_ready: 1;
-	u32 host_reset: 1;
-	u32 rsv: 3;
-	u32 host_read_offset: 8;
-	u32 host_write_offset: 8;
-	u32 me_cir_depth: 8;
-	} __packed fields;
-};
-
-#define MMIO_ME_CB_RW	0x08
-#define MMIO_ME_CSR	0x0C
-
-union me_csr {
-	u32 data;
-	struct {
-	u32 int_en: 1;
-	u32 int_sts: 1;
-	u32 int_gen: 1;
-	u32 host_ready: 1;
-	u32 host_reset: 1;
-	u32 rsv: 3;
-	u32 me_read_offset: 8;
-	u32 me_write_offset: 8;
-	u32 me_cir_buff: 8;
-	} __packed fields;
-};
-
-#define MMIO_ME_D0I3	0x800
-
 /* Reset Request  */
 #define MKHI_GLOBAL_RESET	0x0b
 
@@ -254,23 +213,6 @@ union me_csr {
 
 #define BIOS_HOST_ADD	0x00
 #define HECI_MKHI_ADD	0x07
-
-#define MAX_HECI_MESSAGE 5
-#define HECI_TIMEOUT 15000000 /* 15sec */
-#define HECI_SEND_TIMEOUT 5000000 /* 5sec */
-#define HECI_READ_TIMEOUT 5000000 /* 5sec */
-#define HECI_DELAY 1000 /* 1ms */
-
-union mei_header {
-	u32 data;
-	struct {
-	u32 client_address: 8;
-	u32 host_address: 8;
-	u32 length: 9;
-	u32 reserved: 6;
-	u32 is_complete: 1;
-	} __packed fields;
-};
 
 void intel_me_status(void);
 int send_global_reset(void);

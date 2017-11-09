@@ -18,6 +18,7 @@
 #include <chip.h>
 #include <device/device.h>
 #include <device/pci_def.h>
+#include <intelblocks/cse.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
@@ -157,27 +158,6 @@ static void soc_config_tco(void)
 	outw(tcocnt, tcobase + TCO1_CNT);
 }
 
-static void enable_heci(void)
-{
-	device_t dev = PCH_DEV_CSE;
-	u8 pcireg;
-
-	/* Assign Resources to HECI1 */
-	/* Clear BIT 1-2 of Command Register */
-	pcireg = pci_read_config8(dev, PCI_COMMAND);
-	pcireg &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-	pci_write_config8(dev, PCI_COMMAND, pcireg);
-
-	/* Program Temporary BAR for HECI1 */
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0, HECI1_BASE_ADDRESS);
-	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0x0);
-
-	/* Enable Bus Master and MMIO Space */
-	pcireg = pci_read_config8(dev, PCI_COMMAND);
-	pcireg |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_config8(dev, PCI_COMMAND, pcireg);
-}
-
 void pch_early_iorange_init(void)
 {
 	/* IO Decode Range */
@@ -216,5 +196,6 @@ void pch_early_init(void)
 
 	enable_rtc_upper_bank();
 
-	enable_heci();
+	/* initialize Heci interface */
+	heci_init(HECI1_BASE_ADDRESS);
 }

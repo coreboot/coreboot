@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corporation.
+ * Copyright (C) 2016-2017 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,38 +15,21 @@
 
 #include <arch/io.h>
 #include <commonlib/helpers.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <device/pci_ids.h>
+#include <intelblocks/cse.h>
+#include <soc/iomap.h>
+#include <soc/me.h>
+#include <soc/pci_devs.h>
 #include <stdint.h>
-#include <compiler.h>
 #include <stdlib.h>
 #include <string.h>
-#include <soc/iomap.h>
-#include <soc/pci_devs.h>
-#include <soc/me.h>
-#include <delay.h>
-#include <timer.h>
 
 static inline u32 me_read_config32(int offset)
 {
 	return pci_read_config32(PCH_DEV_CSE, offset);
-}
-
-static inline void me_write_config32(int offset, u32 value)
-{
-	pci_write_config32(PCH_DEV_CSE, offset, value);
-}
-
-static inline u32 me_read_mmio32(int offset)
-{
-	return read32((void *)(HECI1_BASE_ADDRESS + offset));
-}
-
-static inline void me_write_mmio32(u16 offset, u32 value)
-{
-	write32((void *)(HECI1_BASE_ADDRESS + offset), value);
 }
 
 /* HFSTS1[3:0] Current Working State Values */
@@ -368,291 +351,6 @@ void intel_me_status(void)
 	}
 }
 
-/*
-* Aligning a byte length to length in dwords.
-*/
-static u32 get_dword_length(u32 byte_length)
-{
-	return ALIGN_UP(byte_length, sizeof(uint32_t)) / sizeof(uint32_t);
-}
-
-/*
-* Get remaining message count in dword from circular buffer based on
-* write and read offset.
-*/
-static u32 get_cb_msg_count(u32 data)
-{
-	u8 read_offset = data >> 8;
-	u8 write_offset = data >> 16;
-
-	return get_dword_length(write_offset - read_offset);
-}
-
-static int wait_heci_ready(void)
-{
-	struct stopwatch sw;
-	int timeout = 0;
-	union me_csr csr;
-
-	stopwatch_init_msecs_expire(&sw, HECI_TIMEOUT);
-	while (1) {
-		do {
-			csr.data = me_read_mmio32(MMIO_ME_CSR);
-			if (csr.fields.host_ready)
-				return 0;
-		} while (!(timeout = stopwatch_expired(&sw)));
-
-		printk(BIOS_ERR, "ME_RDY bit is not set after 15 sec");
-		return -1;
-	}
-}
-
-static int wait_heci_cb_avail(u32 len)
-{
-	struct stopwatch sw;
-	union host_csr csr;
-
-	csr.data = me_read_mmio32(MMIO_HOST_CSR);
-	/*
-	* if timeout has happened, return failure as
-	* the circular buffer is not empty
-	*/
-	stopwatch_init_msecs_expire(&sw, HECI_SEND_TIMEOUT);
-	/* Must have room for message and message header */
-	while (len > (get_dword_length(csr.fields.me_cir_depth) -
-			get_cb_msg_count(csr.data))) {
-		if (stopwatch_expired(&sw)) {
-			printk(BIOS_ERR,
-			"Circular Buffer never emptied within 5 sec");
-			return -1;
-		}
-		/* wait before trying again */
-		udelay(HECI_DELAY);
-		/* read HOST_CSR for next iteration */
-		csr.data = me_read_mmio32(MMIO_HOST_CSR);
-	}
-	return 0;
-}
-
-static int send_heci_packet(union mei_header *head, u32 len, u32 *payload)
-{
-	int sts;
-	int index;
-	union me_csr csr;
-	union host_csr hcsr;
-
-	/*
-	 * wait until there is sufficient room in CB
-	 */
-	sts = wait_heci_cb_avail(len + 1);
-	if (sts != 0)
-		return -1;
-
-	/* Write message header */
-	me_write_mmio32(MMIO_ME_CB_WW, head->data);
-
-	/* Write message body */
-	for (index = 0; index < len; index++)
-		me_write_mmio32(MMIO_ME_CB_WW, payload[index]);
-
-	/* Set Interrupt Generate bit */
-	hcsr.data = me_read_mmio32(MMIO_HOST_CSR);
-	hcsr.fields.int_gen = 1;
-	me_write_mmio32(MMIO_HOST_CSR, hcsr.data);
-
-	/* Check if ME Ready bit is set, if set to 0 then return fatal error */
-	csr.data = me_read_mmio32(MMIO_ME_CSR);
-	if (csr.fields.host_ready)
-		return 0;
-	else
-		return -1;
-}
-
-static int recv_heci_packet(union mei_header *head, u32 *packet,
-		 u32 *packet_size)
-{
-	union me_csr csr;
-	union host_csr hcsr;
-	int rec_msg = 0;
-	struct stopwatch sw;
-	u32 length, index;
-
-	/* Clear Interrupt Status bit */
-	hcsr.data = me_read_mmio32(MMIO_HOST_CSR);
-	hcsr.fields.int_sts = 1;
-	me_write_mmio32(MMIO_HOST_CSR, hcsr.data);
-
-	/* Check if circular buffer overflow
-	 * if yes then return fatal error
-	 */
-	csr.data = me_read_mmio32(MMIO_ME_CSR);
-	if (get_cb_msg_count(csr.data) >
-			get_dword_length(csr.fields.me_cir_buff))
-		return -1;
-	/*
-	* if timeout has happened, return failure as
-	* the circular buffer is not empty
-	*/
-	stopwatch_init_msecs_expire(&sw, HECI_READ_TIMEOUT);
-	/* go until we got message pkt */
-	do {
-		if (stopwatch_expired(&sw)) {
-			printk(BIOS_ERR,
-			"Circular Buffer not filled within 5 sec");
-			*packet_size = 0;
-			return -1;
-		}
-		csr.data = me_read_mmio32(MMIO_ME_CSR);
-		/* Read one message from HECI buffer */
-		if (get_cb_msg_count(csr.data) > 0) {
-			head->data = me_read_mmio32(MMIO_ME_CB_RW);
-			/* calculate the message length in dword */
-			length = get_dword_length(head->fields.length);
-			if (head->fields.length == 0) {
-				*packet_size = 0;
-				goto SET_IG;
-			}
-			/* Make sure, we have enough space to catch all */
-			if (head->fields.length <= *packet_size) {
-				csr.data = me_read_mmio32(MMIO_ME_CSR);
-				/* get complete message into circular buffer */
-				while (length > get_cb_msg_count(csr.data)) {
-					udelay(HECI_DELAY);
-					csr.data = me_read_mmio32(MMIO_ME_CSR);
-				}
-				/* here is the message */
-				for (index = 0; index < length; index++)
-					packet[index] =
-						me_read_mmio32(MMIO_ME_CB_RW);
-
-				rec_msg = 1;
-				*packet_size = head->fields.length;
-			} else {
-				/* Too small buffer */
-				*packet_size = 0;
-				return -1;
-			}
-		}
-	} while (!rec_msg);
-
-	/*
-	 * Check if ME Ready bit is set, if set to 0 then return fatal error
-	 * because ME might have reset during transaction and we might have
-	 * read a junk data from CB
-	*/
-	csr.data = me_read_mmio32(MMIO_ME_CSR);
-	if (!(csr.fields.host_ready))
-		return -1;
-SET_IG:
-	/* Set Interrupt Generate bit */
-	hcsr.data = me_read_mmio32(MMIO_HOST_CSR);
-	hcsr.fields.int_gen = 1;
-	me_write_mmio32(MMIO_HOST_CSR, hcsr.data);
-	return 0;
-}
-
-static int
-send_heci_message(void *msg, int len, u8 hostaddress, u8 clientaddress)
-{
-	u8 retry;
-	int status = -1;
-	u32 cir_buff_depth;
-	union host_csr csr;
-	union mei_header head;
-	int cur = 0;
-	u32 slength, rlength;
-
-	for (retry = 0; retry < MAX_HECI_MESSAGE; retry++) {
-		if (wait_heci_ready() != 0)
-			continue;
-		/* HECI is ready */
-		csr.data = me_read_mmio32(MMIO_HOST_CSR);
-		cir_buff_depth = csr.fields.me_cir_depth;
-		head.fields.client_address = clientaddress;
-		head.fields.host_address = hostaddress;
-		while (len > cur) {
-			rlength = get_dword_length(len - cur);
-			/*
-			 * Set the message complete bit if this is last packet
-			 * in message needs to be "less than" to account for
-			 * the header OR needs to be exact equal to CB depth
-			 */
-			if (rlength <= cir_buff_depth)
-				head.fields.is_complete = 1;
-			else
-				head.fields.is_complete = 0;
-			/*
-			 * calculate length for message header
-			 * header length = smaller of CB buffer or
-			 * remaining message
-			 */
-			slength = ((cir_buff_depth <= rlength)
-					? ((cir_buff_depth - 1) * 4)
-					: (len - cur));
-			head.fields.length = slength;
-			head.fields.reserved = 0;
-			/*
-			 * send the current packet
-			 * (cur should be treated as index for message)
-			 */
-			status = send_heci_packet(&head,
-				get_dword_length(head.fields.length), msg);
-			if (status != 0)
-				break;
-			/* update the length information */
-			cur += slength;
-			msg += cur;
-		}
-		if (!status)
-			break;
-	}
-	return status;
-}
-
-static int
-recv_heci_message(void *message, u32 *message_size)
-{
-	union mei_header head;
-	int cur = 0;
-	u8 retry;
-	int status = -1;
-	int msg_complete = 0;
-	u32 pkt_buff;
-
-	for (retry = 0; retry < MAX_HECI_MESSAGE; retry++) {
-		if (wait_heci_ready() != 0)
-			continue;
-		/* HECI is ready */
-		while ((cur < *message_size) && (msg_complete == 0)) {
-			pkt_buff = *message_size - cur;
-			status = recv_heci_packet(&head, message + (cur >> 2),
-						&pkt_buff);
-			if (status == -1) {
-				*message_size = 0;
-				break;
-			}
-			msg_complete = head.fields.is_complete;
-			if (pkt_buff == 0) {
-				/* if not in middle of msg and msg complete bit
-				 * is set then this is a valid zero length msg
-				 */
-				if ((cur == 0) && (msg_complete == 1))
-					status = 0;
-				else
-					status = -1;
-				*message_size = 0;
-				break;
-			}
-			cur += pkt_buff;
-		}
-		if (!status) {
-			*message_size = cur;
-			break;
-		}
-	}
-	return status;
-}
-
 static int send_heci_reset_message(void)
 {
 	int status;
@@ -675,19 +373,21 @@ static int send_heci_reset_message(void)
 		.req_origin = GR_ORIGIN_BIOS_POST,
 		.reset_type = GLOBAL_RST_TYPE
 	};
-	u32 reply_size;
+	size_t reply_size;
 
-	status = send_heci_message(&msg, sizeof(msg),
-			BIOS_HOST_ADD, HECI_MKHI_ADD);
-	if (status != 0)
+	heci_reset();
+
+	status = heci_send(&msg, sizeof(msg), BIOS_HOST_ADD, HECI_MKHI_ADD);
+	if (!status)
 		return -1;
 
 	reply_size = sizeof(reply);
 	memset(&reply, 0, reply_size);
-	if (recv_heci_message(&reply, &reply_size) == -1)
+	status = heci_receive(&reply, &reply_size);
+	if (!status)
 		return -1;
 	/* get reply result from HECI MSG  */
-	if (reply.result != 0) {
+	if (reply.result) {
 		printk(BIOS_DEBUG, "%s: Exit with Failure\n", __func__);
 		return -1;
 	}

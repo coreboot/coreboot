@@ -131,6 +131,10 @@ config CPU_BCLK_MHZ
 	int
 	default 100
 
+config SOC_INTEL_COMMON_LPSS_CLOCK_MHZ
+	int
+	default 120
+
 config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 	int
 	default 3

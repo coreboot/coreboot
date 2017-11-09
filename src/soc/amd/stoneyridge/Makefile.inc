@@ -91,12 +91,14 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 ramstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 ramstage-y += usb.c
 ramstage-y += tsc_freq.c
+ramstage-$(CONFIG_SPI_FLASH) += spi.c
 
 smm-y += smihandler.c
 smm-y += smi_util.c
 smm-y += sb_util.c
 smm-y += tsc_freq.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c
+smm-$(CONFIG_SPI_FLASH) += spi.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge
 CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge/include

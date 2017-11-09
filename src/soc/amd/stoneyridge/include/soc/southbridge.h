@@ -197,7 +197,11 @@
 #define LPC_HOST_CONTROL		0xbb
 #define   SPI_FROM_HOST_PREFETCH_EN	BIT(0)
 
+/* SPI Controller */
+#define SPI_FIFO_DEPTH			8
+
 #define SPI_CNTRL0			0x00
+#define   SPI_BUSY			BIT(31)
 #define   SPI_READ_MODE_MASK		(BIT(30) | BIT(29) | BIT(18))
 /* Nominal is 16.7MHz on older devices, 33MHz on newer */
 #define   SPI_READ_MODE_NOM		0x00000000
@@ -207,13 +211,33 @@
 #define   SPI_READ_MODE_QUAD144		(BIT(30) |           BIT(18))
 #define   SPI_READ_MODE_NORMAL66	(BIT(30) | BIT(29)          )
 #define   SPI_READ_MODE_FAST		(BIT(30) | BIT(29) | BIT(18))
+#define   SPI_FIFO_PTR_CLR		BIT(20)
 #define   SPI_ARB_ENABLE		BIT(19)
-
+#define   EXEC_OPCODE			BIT(16)
+#define SPI_REG_CNTRL01			0x01
+#define SPI_REG_CNTRL02			0x02
+#define   SPI_FIFO_PTR_CLR02		(SPI_FIFO_PTR_CLR >> 16)
 #define SPI_CNTRL1			0x0c
+#define  SPI_FIFO_PTR_MASK		(BIT(8) | BIT(9) | BIT(10))
+#define SPI_CNTRL11			0x0d
+#define  SPI_FIFO_PTR_MASK11		(SPI_FIFO_PTR_MASK >> 8)
+
+#define SPI100_SPEED_CONFIG		0x22
 /* Use SPI_SPEED_16M-SPI_SPEED_66M below for the southbridge */
 #define   SPI_CNTRL1_SPEED_MASK		(BIT(15) | BIT(14) | BIT(13) | BIT(12))
 #define   SPI_NORM_SPEED_SH		12
 #define   SPI_FAST_SPEED_SH		8
+
+#define SPI_EXT_INDEX			0x1e
+#define SPI_EXT_DATA			0x1f
+#define   SPI_DDR_CMD			0x0
+#define   SPI_QDR_CMD			0x1
+#define   SPI_DPR_CMD			0x2
+#define   SPI_QPR_CMD			0x3
+#define   SPI_MODE_BYTE			0x4
+#define   SPI_TX_BYTE_COUNT		0x5
+#define   SPI_RX_BYTE_COUNT		0x6
+#define   SPI_SPI_DATA_FIFO_PTR		0x7
 
 #define SPI100_ENABLE			0x20
 #define   SPI_USE_SPI100		BIT(0)

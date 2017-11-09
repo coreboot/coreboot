@@ -44,7 +44,13 @@ typedef struct global_nvs_t {
 	uint32_t	prt0; /* 0x25 - 0x28 - PERST_0 Address */
 	uint8_t		scdp; /* 0x29 - SD_CD GPIO portid */
 	uint8_t		scdo; /* 0x2A - GPIO pad offset relative to the community */
-	uint8_t		unused[213];
+	uint8_t		tmps; /* 0x2B - Temperature Sensor ID */
+	uint8_t		tlvl; /* 0x2C - Throttle Level Limit */
+	uint8_t		flvl; /* 0x2D - Current FAN Level */
+	uint8_t		tcrt; /* 0x2E - Critical Threshold */
+	uint8_t		tpsv; /* 0x2F - Passive Threshold */
+	uint8_t		tmax; /* 0x30 - CPU Tj_max */
+	uint8_t		unused[207];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

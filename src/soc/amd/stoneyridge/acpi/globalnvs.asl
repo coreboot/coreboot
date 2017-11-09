@@ -41,6 +41,12 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	PRT0,	32,     // 0x25 - 0x28 - PERST_0 Address
 	SCDP,	8,      // 0x29 - SD_CD GPIO portid
 	SCDO,	8,      // 0x2A - GPIO pad offset relative to the community
+	TMPS,	8,	// 0x2B - Temperature Sensor ID
+	TLVL,	8,	// 0x2C - Throttle Level Limit
+	FLVL,	8,	// 0x2D - Current FAN Level
+	TCRT,	8,	// 0x2E - Critical Threshold
+	TPSV,	8,	// 0x2F - Passive Threshold
+	TMAX,	8,	// 0x30 - CPU Tj_max
 	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
 	Offset (0x100),
 	#include <vendorcode/google/chromeos/acpi/gnvs.asl>

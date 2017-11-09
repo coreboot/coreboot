@@ -14,6 +14,7 @@
  */
 
 #include <arch/early_variables.h>
+#include <assert.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <delay.h>
@@ -21,12 +22,10 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <intelblocks/cse.h>
+#include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <string.h>
 #include <timer.h>
-
-/* default window for early boot, must be at least 12 bytes in size */
-#define HECI1_BASE_ADDRESS	0xfed1a000
 
 /* Wait up to 15 sec for HECI to get ready */
 #define HECI_DELAY_READY	(15 * 1000)
@@ -108,15 +107,35 @@ void heci_init(uintptr_t tempbar)
 	cse->sec_bar = tempbar;
 }
 
+/* Get HECI BAR 0 from PCI configuration space */
+static uint32_t get_cse_bar(void)
+{
+	uintptr_t bar;
+
+	bar = pci_read_config32(PCH_DEV_CSE, PCI_BASE_ADDRESS_0);
+	assert(bar != 0);
+	/*
+	 * Bits 31-12 are the base address as per EDS for SPI,
+	 * Don't care about 0-11 bit
+	 */
+	return bar & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+}
+
 static uint32_t read_bar(uint32_t offset)
 {
 	struct cse_device *cse = car_get_var_ptr(&g_cse);
+	/* Reach PCI config space to get BAR incase CAR global not available */
+	if (!cse->sec_bar)
+		cse->sec_bar = get_cse_bar();
 	return read32((void *)(cse->sec_bar + offset));
 }
 
 static void write_bar(uint32_t offset, uint32_t val)
 {
 	struct cse_device *cse = car_get_var_ptr(&g_cse);
+	/* Reach PCI config space to get BAR incase CAR global not available */
+	if (!cse->sec_bar)
+		cse->sec_bar = get_cse_bar();
 	return write32((void *)(cse->sec_bar + offset), val);
 }
 

@@ -200,9 +200,6 @@ device_t alloc_find_dev(struct bus *parent, struct device_path *path);
 device_t dev_find_device(u16 vendor, u16 device, device_t from);
 device_t dev_find_class(unsigned int class, device_t from);
 device_t dev_find_path(device_t prev_match, enum device_path_type path_type);
-device_t dev_find_slot(unsigned int bus, unsigned int devfn);
-device_t dev_find_slot_on_smbus(unsigned int bus, unsigned int addr);
-device_t dev_find_slot_pnp(u16 port, u16 device);
 device_t dev_find_lapic(unsigned int apic_id);
 int dev_count_cpu(void);
 
@@ -243,11 +240,6 @@ void fixed_mem_resource(device_t dev, unsigned long index,
 void mmconf_resource_init(struct resource *res, resource_t base, int buses);
 void mmconf_resource(struct device *dev, unsigned long index);
 
-void scan_smbus(device_t bus);
-void scan_generic_bus(device_t bus);
-void scan_static_bus(device_t bus);
-void scan_lpc_bus(device_t bus);
-
 /* It is the caller's responsibility to adjust regions such that ram_resource()
  * and mmio_resource() do not overlap.
  */
@@ -270,7 +262,7 @@ void scan_lpc_bus(device_t bus);
 void tolm_test(void *gp, struct device *dev, struct resource *new);
 u32 find_pci_tolm(struct bus *bus);
 
-#else /* vv __SIMPLE_DEVICE__ vv */
+#endif
 
 DEVTREE_CONST struct device *dev_find_slot(unsigned int bus,
 						unsigned int devfn);
@@ -280,7 +272,10 @@ DEVTREE_CONST struct device *dev_find_slot_on_smbus(unsigned int bus,
 							unsigned int addr);
 DEVTREE_CONST struct device *dev_find_slot_pnp(u16 port, u16 device);
 
-#endif
+void scan_smbus(struct device *bus);
+void scan_generic_bus(struct device *bus);
+void scan_static_bus(struct device *bus);
+void scan_lpc_bus(struct device *bus);
 
 #endif /* !defined(__ROMCC__) */
 

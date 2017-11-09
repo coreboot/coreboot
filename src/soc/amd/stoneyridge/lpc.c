@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2010-2017 Advanced Micro Devices, Inc.
  * Copyright (C) 2014 Sage Electronic Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
@@ -158,20 +158,62 @@ static void lpc_set_resources(struct device *dev)
 	pci_dev_set_resources(dev);
 }
 
-static void set_lpc_resource(device_t child,
-				int *variable_num,
+/*
+ * Structure to simplify code obtaining the total of used wide IO
+ * registers and the size assigned to each. Used on set_child_resource
+ * and lpc_enable_childrens_resources.
+ */
+struct _wide_IO_enable_bits {
+	u32	enable[3];
+	u8	alt[3];
+} wio_en = {
+		{
+			LPC_WIDEIO0_ENABLE,
+			LPC_WIDEIO1_ENABLE,
+			LPC_WIDEIO2_ENABLE
+		},
+		{
+			LPC_ALT_WIDEIO0_ENABLE,
+			LPC_ALT_WIDEIO1_ENABLE,
+			LPC_ALT_WIDEIO2_ENABLE
+		}
+};
+
+static void set_child_resource(device_t child,
+				int *wio_total_ptr,
 				u16 *reg_var,
 				u32 *reg,
 				u32 *reg_x,
-				u16 reg_size,
 				u8  *wiosize)
 {
 	struct resource *res;
 	u32 base, end;
 	u32 rsize = 0, set = 0, set_x = 0;
-	u16 var_num;
+	int i, wio_total = *wio_total_ptr;
+	u16 reg_size[3];
 
-	var_num = *variable_num;
+	/*
+	 * Be a bit relaxed, tolerate that LPC region might be bigger than
+	 * resource we try to fit, do it like this for all regions < 16 bytes.
+	 * If there is a resource > 16 bytes it must be 512 bytes to be able
+	 * to allocate the fresh LPC window.
+	 *
+	 * AGESA and early initialization can set a wide IO port. This code
+	 * will verify if required region was previously set and will avoid
+	 * setting a new wide IO resource if one is already set.
+	 */
+
+	/*
+	 * For each wideIO get the current size, 16,  512,
+	 * or 0 if it isn't used.
+	 */
+	for (i = 0; i < 3; i++) {
+		if (i < wio_total) /* convert to index */
+			reg_size[i] = (*wiosize & wio_en.alt[i]) ? 16 : 512;
+		else
+			reg_size[i] = 0;
+	}
+
 	for (res = child->resource_list; res; res = res->next) {
 		if (!(res->flags & IORESOURCE_IO))
 			continue;
@@ -247,37 +289,32 @@ static void set_lpc_resource(device_t child,
 			break;
 		default:
 			rsize = 0;
-			/* try AGESA allocated region in region 0 */
-			if ((var_num > 0) && ((base >= reg_var[0]) &&
-			    ((base + res->size) <= (reg_var[0] + reg_size))))
-				rsize = reg_size;
+			if (wio_total > 0) {
+				for (i = 0; i < wio_total; i++) {
+					if ((base >= reg_var[i]) &&
+					    ((base + res->size) <=
+					     (reg_var[i] + reg_size[i]))) {
+						rsize = reg_size[i];
+						printk(BIOS_DEBUG,
+							"Covered by wideIO");
+						printk(BIOS_DEBUG, " %d\n", i);
+						break;
+					}
+				}
+			}
 		}
 		/* check if region found and matches the enable */
 		if (res->size <= rsize) {
 			*reg |= set;
 			*reg_x |= set_x;
 		/* check if we can fit resource in variable range */
-		} else if ((var_num < 3) &&
-		    ((res->size <= 16) || (res->size == 512))) {
-			/* use variable ranges if pre-defined do not match */
-			switch (var_num) {
-			case 0:
-				*reg_x |= LPC_WIDEIO0_ENABLE;
-				if (res->size <= 16)
-					*wiosize |= LPC_ALT_WIDEIO0_ENABLE;
-				break;
-			case 1:
-				*reg_x |= LPC_WIDEIO1_ENABLE;
-				if (res->size <= 16)
-					*wiosize |= LPC_ALT_WIDEIO1_ENABLE;
-				break;
-			case 2:
-				*reg_x |= LPC_WIDEIO2_ENABLE;
-				if (res->size <= 16)
-					*wiosize |= LPC_ALT_WIDEIO2_ENABLE;
-				break;
-			}
-			reg_var[var_num++] = base & 0xffff;
+		} else if ((wio_total < 3) && (res->size <= 512)) {
+			reg_var[wio_total] = base;
+			*reg_x |= wio_en.enable[i];
+			if (res->size <= 16)
+				*wiosize |= wio_en.alt[wio_total];
+			wio_total++;
+			*wio_total_ptr = wio_total;
 		} else {
 			printk(BIOS_ERR,
 				"cannot fit LPC decode region:");
@@ -285,7 +322,6 @@ static void set_lpc_resource(device_t child,
 				dev_path(child), base, end);
 		}
 	}
-	*variable_num = var_num;
 }
 
 /**
@@ -298,38 +334,21 @@ static void lpc_enable_childrens_resources(device_t dev)
 {
 	struct bus *link;
 	u32 reg, reg_x;
-	int var_num = 0;
+	int i, wio_total = 0;
 	u16 reg_var[3];
-	u16 reg_size[1] = {512};
 	u8 wiosize = pci_read_config8(dev, LPC_ALT_WIDEIO_RANGE_ENABLE);
-
-	/*
-	 * Be a bit relaxed, tolerate that LPC region might be bigger than
-	 * resource we try to fit, do it like this for all regions < 16 bytes.
-	 * If there is a resource > 16 bytes it must be 512 bytes to be able
-	 * to allocate the fresh LPC window.
-	 *
-	 * AGESA likes to enable already one LPC region in wide port base
-	 * 0x64-0x65, using DFLT_SIO_PME_BASE_ADDRESS, 512 bytes size
-	 * The code tries to check if resource can fit into this region.
-	 */
 
 	reg = pci_read_config32(dev, LPC_IO_PORT_DECODE_ENABLE);
 	reg_x = pci_read_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE);
 
-	/* check if ranges are free and don't use them if already taken */
-	if (reg_x & LPC_WIDEIO0_ENABLE)
-		var_num = 1;
-	/* just in case check if someone did not manually set other ranges */
-	if (reg_x & LPC_WIDEIO1_ENABLE)
-		var_num = 2;
-
-	if (reg_x & LPC_WIDEIO2_ENABLE)
-		var_num = 3;
-
-	/* check AGESA region size */
-	if (wiosize & LPC_ALT_WIDEIO0_ENABLE)
-		reg_size[0] = 16;
+	/*
+	 * Detect the number of used ranges (wide IO), and don't use those
+	 * already taken.
+	 */
+	for (i = 0; i < 3; i++) {
+		if (reg_x & wio_en.enable[i])
+			wio_total = i + 1;
+	}
 
 	reg_var[2] = pci_read_config16(dev, LPC_WIDEIO2_GENERIC_PORT);
 	reg_var[1] = pci_read_config16(dev, LPC_WIDEIO1_GENERIC_PORT);
@@ -342,12 +361,11 @@ static void lpc_enable_childrens_resources(device_t dev)
 		     child = child->sibling) {
 			if (child->enabled
 			    && (child->path.type == DEVICE_PATH_PNP)) {
-				set_lpc_resource(child,
-						&var_num,
+				set_child_resource(child,
+						&wio_total,
 						reg_var,
 						&reg,
 						&reg_x,
-						reg_size[0],
 						&wiosize);
 			}
 		}
@@ -355,7 +373,7 @@ static void lpc_enable_childrens_resources(device_t dev)
 	pci_write_config32(dev, LPC_IO_PORT_DECODE_ENABLE, reg);
 	pci_write_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE, reg_x);
 	/* Set WideIO for as many IOs found (fall through is on purpose) */
-	switch (var_num) {
+	switch (wio_total) {
 	case 3:
 		pci_write_config16(dev, LPC_WIDEIO2_GENERIC_PORT, reg_var[2]);
 		/* fall through */

@@ -30,3 +30,20 @@ External (\_PR.CP04, DeviceObj)
 External (\_PR.CP05, DeviceObj)
 External (\_PR.CP06, DeviceObj)
 External (\_PR.CP07, DeviceObj)
+
+/* Return a package containing enabled processor entries */
+Method (PPKG)
+{
+	If (LGreaterEqual (\PCNT, 2)) {
+		Return (Package ()
+		{
+			\_PR.CP00,
+			\_PR.CP01
+		})
+	} Else {
+		Return (Package ()
+		{
+			\_PR.CP00
+		})
+	}
+}

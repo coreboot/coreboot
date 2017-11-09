@@ -32,9 +32,7 @@
 
 int acpi_get_sleep_type(void)
 {
-	u16 tmp = inw(ACPI_PM1_CNT_BLK);
-	tmp = ((tmp & (7 << 10)) >> 10);
-	return (int)tmp;
+	return acpi_sleep_from_pm1(inw(pm_acpi_pm_cnt_blk()));
 }
 
 void sb_enable(device_t dev)

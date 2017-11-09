@@ -71,17 +71,16 @@ typedef struct {
 **/
   UINT8                       VmxEnable;
 
-/** Offset 0x0025 - Memory region allocation for Processor Trace
-  Memory region allocation for Processor Trace, allowed range is from 4K (0x0) to
-  128MB (0xF); <b>0xFF: Disable. 0xFF:Disable(Default)
+/** Offset 0x0025 - Depricated UPD
+   Depricated UPD
 **/
-  UINT8                       ProcTraceMemSize;
+  UINT8                       Reserved;
 
 /** Offset 0x0026 - Enable Processor Trace
   Enable or Disable Processor Trace feature.  0:Disable(Default), 1:Enable.
   $EN_DIS
 **/
-  UINT8                       ProcTraceEnable;
+  UINT8                       ProcessorTraceEnable;
 
 /** Offset 0x0027 - Eist
   Enable or Disable Intel SpeedStep Technology. 0:Disable, 1:Enable(Default).
@@ -1476,56 +1475,56 @@ typedef struct {
 **/
   UINT32                      EmmcMasterSwCntl;
 
-/** Offset 0x0318 - PCIe Selectable De-emphasis
+/** Offset 0x0318 - SGX Epoch 0
+  SGX Epoch 0. 0x0(Default).
+**/
+  UINT64                      SgxEpoch0;
+
+/** Offset 0x0320 - SGX Epoch 1
+  SGX Epoch 1. 0x0(Default).
+**/
+  UINT64                      SgxEpoch1;
+
+/** Offset 0x0328 - MicrocodePatchAddress
+  MicrocodePatchAddress. 0x0(Default).
+**/
+  UINT64                      MicrocodePatchAddress;
+
+/** Offset 0x0330 - PCIe Selectable De-emphasis
   When the Link is operating at 5.0 GT/s speed, this bit selects the level of de-emphasis
   for an Upstream component. 1b:-3.5 dB 0b:-6 dB. 0:Disable, 1:Enable(Default).
 **/
   UINT8                       PcieRpSelectableDeemphasis[6];
 
-/** Offset 0x031E - Monitor Mwait Enable
+/** Offset 0x0336 - Monitor Mwait Enable
   Enable/Disable Monitor Mwait. For Windows* OS, this should be Enabled. For Linux
   based OS, this should be Disabled. 0:Disable, 1:Enable(Default).
   $EN_DIS
 **/
   UINT8                       MonitorMwaitEnable;
 
-/** Offset 0x031F - Universal Audio Architecture compliance for DSP enabled system
+/** Offset 0x0337 - Universal Audio Architecture compliance for DSP enabled system
   0: Not-UAA Compliant (Intel SST driver supported only), 1: UAA Compliant (HDA Inbox
   driver or SST driver supported).
   $EN_DIS
 **/
   UINT8                       HdAudioDspUaaCompliance;
 
-/** Offset 0x0320 - IRQ Interrupt Polarity Control
+/** Offset 0x0338 - IRQ Interrupt Polarity Control
   Set IRQ Interrupt Polarity Control to ITSS.IPC[0]~IPC[3]. 0:Active High, 1:Active Low
 **/
   UINT32                      IPC[4];
 
-/** Offset 0x0330 - Disable ModPHY dynamic power gate
+/** Offset 0x0348 - Disable ModPHY dynamic power gate
   Disable ModPHY dynamic power gate for the specific SATA port.
 **/
   UINT8                       SataPortsDisableDynamicPg[2];
 
-/** Offset 0x0332 - Init CPU during S3 resume
+/** Offset 0x034A - Init CPU during S3 resume
   0: Do not initialize CPU during S3 resume. 1: Initialize CPU during S3 resume.
   $EN_DIS
 **/
   UINT8                       InitS3Cpu;
-
-/** Offset 0x0333 - SGX Epoch 0
-  SGX Epoch 0. 0x0(Default).
-**/
-  UINT64                      SgxEpoch0;
-
-/** Offset 0x033B - SGX Epoch 1
-  SGX Epoch 1. 0x0(Default).
-**/
-  UINT64                      SgxEpoch1;
-
-/** Offset 0x0343 - MicrocodePatchAddress
-  MicrocodePatchAddress. 0x0(Default).
-**/
-  UINT64                      MicrocodePatchAddress;
 
 /** Offset 0x034B - CNVi Mode
   Selects CNVi Mode. 0:Disable, 1:Auto(Default).
@@ -1562,47 +1561,47 @@ typedef struct {
 **/
   UINT8                       HgDgpuPwrEnable[8];
 
-/** Offset 0x035F - dGPU Delay after power enable
+/** Offset 0x035F - HG Enable
+  Enables/Disables Hybrid Graphics . 0 : Disable(Default), 1 : Enable
+  0x1:Enabled, 0x0:Disabled
+**/
+  UINT8                       HgEnabled;
+
+/** Offset 0x0360 - dGPU Delay after power enable
   Delay for DGPU after Hold Reset if HG is enable : 0 : Minimum , 1000 : Maximum ,
   300 : Default
   0 : Minimum , 1000 : Maximum , 300 : Default
 **/
   UINT16                      HgDelayAfterPwrEn;
 
-/** Offset 0x0361 -  dGPU Delay after hold reset
+/** Offset 0x0362 -  dGPU Delay after hold reset
   Delay for DGPU after Hold Reset if HG is enable : 0 : Minimum , 1000 : Maximum ,
   100 : Default
   0 : Minimum , 1000 : Maximum , 100 : Default
 **/
   UINT16                      HgDelayAfterHoldReset;
 
-/** Offset 0x0363 - HG Enable
-  Enables/Disables Hybrid Graphics . 0 : Disable(Default), 1 : Enable
-  0x1:Enabled, 0x0:Disabled
+/** Offset 0x0364 - CpuS3ResumeMtrrDataSize
+  Size of S3 resume MTRR data.
 **/
-  UINT8                       HgEnabled;
+  UINT16                      CpuS3ResumeMtrrDataSize;
 
-/** Offset 0x0364 - PAVP ASMF
+/** Offset 0x0366 - PAVP ASMF
   Enable/Disable PAVP ASMF  0:Disable, 1:Enable(Default).
   $EN_DIS
 **/
   UINT8                       PavpAsmf;
 
-/** Offset 0x0365 - CpuS3ResumeMtrrDataSize
-  Size of S3 resume MTRR data.
-**/
-  UINT16                      CpuS3ResumeMtrrDataSize;
-
-/** Offset 0x0367 - CpuS3ResumeMtrrData
-  Pointer CPU S3 Resume MTRR Data
-**/
-  UINT32                      CpuS3ResumeMtrrData;
-
-/** Offset 0x036B - PAVP Auto TearDown Grace Period Enable
+/** Offset 0x0367 - PAVP Auto TearDown Grace Period Enable
   Enable/Disable PAVP Auto TearDown Grace Period 0:Disable, 1:Enable(Default).
   $EN_DIS
 **/
   UINT8                       AutoTearDownGracePeriod;
+
+/** Offset 0x0368 - CpuS3ResumeMtrrData
+  Pointer CPU S3 Resume MTRR Data
+**/
+  UINT32                      CpuS3ResumeMtrrData;
 
 /** Offset 0x036C - SeC EndOfPost EnableDisable
   Enable/Disable SeC EOPEnable  0:Disable, 1:Enable(Default).
@@ -1628,26 +1627,53 @@ typedef struct {
 **/
   UINT8                       OsBoot;
 
-/** Offset 0x0370 - AP threads Idle Manner
+/** Offset 0x0370 - System Vendor ID
+  Upd for vendor ID for assigning to devices 
+**/
+  UINT16                      SiSVID;
+
+/** Offset 0x0372 - Sub system Vendor ID
+  Upd for subsystem ID for assigning to devices
+**/
+  UINT16                      SiSSID;
+
+/** Offset 0x0374 - CpuBistData
+  Pointer CPU BIST Data
+**/
+  UINT32                      CpuBistData;
+
+/** Offset 0x0378 - Base of memory region allocated for Processor Trace
+  Base address of memory region allocated for Processor Trace. Processor Trace requires
+  2^N alignment and size in bytes per thread, from 4KB to 128MB. <b>0: Disable</b>
+**/
+  UINT64                      ProcessorTraceMemBase;
+
+/** Offset 0x0380 - Memory region allocation for Processor Trace
+  Length in bytes of memory region allocated for Processor Trace. Processor Trace
+  requires 2^N alignment and size in bytes per thread, from 4KB to 128MB. <b>0: Disable</b>
+**/
+  UINT32                      ProcessorTraceMemLength;
+
+/** Offset 0x0384 - AP threads Idle Manner
   AP threads Idle Manner for waiting signal to run 1:HALT loop 2:MWAIT loop 3:RUN lOOP
   $EN_DIS
 **/
   UINT8                       ApIdleManner;
 
-/** Offset 0x0371
+/** Offset 0x0385
 **/
-  UINT8                       ReservedFspsUpd[3];
+  UINT8                       ReservedFspsUpd[11];
 } FSP_S_CONFIG;
 
 /** Fsp S Test Configuration
 **/
 typedef struct {
 
-/** Offset 0x0374
+/** Offset 0x0390
 **/
   UINT32                      Signature;
 
-/** Offset 0x0378
+/** Offset 0x0394
 **/
   UINT8                       ReservedFspsTestUpd[12];
 } FSP_S_TEST_CONFIG;
@@ -1656,50 +1682,50 @@ typedef struct {
 **/
 typedef struct {
 
-/** Offset 0x0384
+/** Offset 0x03A0
 **/
   UINT32                      Signature;
 
-/** Offset 0x0388 - Selective enable SGX
+/** Offset 0x03A4 - Selective enable SGX
   Selective enable SGX. 0xFFFF(Default).
 **/
   UINT16                      SelectiveEnableSgx;
 
-/** Offset 0x038A - SGX debug mode
+/** Offset 0x03A6 - SGX debug mode
   Select SGX mode. 0:Disable(default), 1:Enable
   0:Disable(default), 1:Enable
 **/
   UINT8                       SgxDebugMode;
 
-/** Offset 0x038B - SGX Launch Control Policy Mode
+/** Offset 0x03A7 - SGX Launch Control Policy Mode
   Select Launch Control Policy Mode. 0:Intel - Default, 1:Per-boot Select mode(default)
   0:Intel locked , 1:Unlocked mode(default) , 2: Locked mode
 **/
   UINT8                       SgxLcp;
 
-/** Offset 0x038C - LE KeyHash0
+/** Offset 0x03A8 - LE KeyHash0
   LE KeyHash0. 0x0(Default).
 **/
   UINT64                      SgxLePubKeyHash0;
 
-/** Offset 0x0394 - LE KeyHash1
+/** Offset 0x03B0 - LE KeyHash1
   LE KeyHash1. 0x0(Default).
 **/
   UINT64                      SgxLePubKeyHash1;
 
-/** Offset 0x039C - LE KeyHash2
+/** Offset 0x03B8 - LE KeyHash2
   LE KeyHash2. 0x0(Default).
 **/
   UINT64                      SgxLePubKeyHash2;
 
-/** Offset 0x03A4 - LE KeyHash3
+/** Offset 0x03C0 - LE KeyHash3
   LE KeyHash3. 0x0(Default).
 **/
   UINT64                      SgxLePubKeyHash3;
 
-/** Offset 0x03AC
+/** Offset 0x03C8
 **/
-  UINT8                       ReservedFspsRestrictedUpd[2];
+  UINT8                       ReservedFspsRestrictedUpd[8];
 } FSP_S_RESTRICTED_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -1714,15 +1740,19 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x0374
+/** Offset 0x0390
 **/
   FSP_S_TEST_CONFIG           FspsTestConfig;
 
-/** Offset 0x0384
+/** Offset 0x03A0
 **/
   FSP_S_RESTRICTED_CONFIG     FspsRestrictedConfig;
 
-/** Offset 0x03AE
+/** Offset 0x03D0
+**/
+  UINT8                       UnusedUpdSpace7[6];
+
+/** Offset 0x03D6
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

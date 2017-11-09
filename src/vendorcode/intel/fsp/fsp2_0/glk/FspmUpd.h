@@ -913,13 +913,7 @@ typedef struct {
 **/
   UINT8                       EnableSgx;
 
-/** Offset 0x014B - PRMRR size
-  PRMRR size. 0:Invalid (default), 1:32MB, 2:64MB 3:128MB
-  0:Invalid (default), 1:32MB, 2:64MB 3:128MB
-**/
-  UINT32                      PrmrrSize;
-
-/** Offset 0x014F - Periodic Retraining Disable
+/** Offset 0x014B - Periodic Retraining Disable
   Periodic Retraining Disable - This option allows customers to disable LPDDR4 Periodic
   Retraining for debug purposes. Periodic Retraining should be enabled in production.
   Periodic retraining allows the platform to operate reliably over a larger voltage
@@ -929,6 +923,12 @@ typedef struct {
   0x0:Enabled, 0x1:Disabled
 **/
   UINT8                       PeriodicRetrainingDisable;
+
+/** Offset 0x014C - PRMRR size
+  PRMRR size. 0:Invalid (default), 1:32MB, 2:64MB 3:128MB
+  0:Invalid (default), 1:32MB, 2:64MB 3:128MB
+**/
+  UINT32                      PrmrrSize;
 
 /** Offset 0x0150 - Enable Reset System
   Enable FSP to trigger reset instead of returning reset request. 0x00: Return the
@@ -977,18 +977,18 @@ typedef struct {
 
 /** Offset 0x016C
 **/
-  UINT8                       ReservedFspmTestUpd[18];
+  UINT8                       ReservedFspmTestUpd[20];
 } FSP_M_TEST_CONFIG;
 
 /** Fsp M Restricted Configuration
 **/
 typedef struct {
 
-/** Offset 0x017E
+/** Offset 0x0180
 **/
   UINT32                      Signature;
 
-/** Offset 0x0182
+/** Offset 0x0184
 **/
   UINT8                       ReservedFspmRestrictedUpd[124];
 } FSP_M_RESTRICTED_CONFIG;
@@ -1013,11 +1013,15 @@ typedef struct {
 **/
   FSP_M_TEST_CONFIG           FspmTestConfig;
 
-/** Offset 0x017E
+/** Offset 0x0180
 **/
   FSP_M_RESTRICTED_CONFIG     FspmRestrictedConfig;
 
-/** Offset 0x01FE
+/** Offset 0x0200
+**/
+  UINT8                       UnusedUpdSpace1[6];
+
+/** Offset 0x0206
 **/
   UINT16                      UpdTerminator;
 } FSPM_UPD;

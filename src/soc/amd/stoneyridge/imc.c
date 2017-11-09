@@ -78,3 +78,13 @@ void enable_imc_thermal_zone(void)
 	WriteECmsg(MSG_SYS_TO_IMC, AccessWidth8, &FunNum, &StdHeader);
 	WaitForEcLDN9MailboxCmdAck(&StdHeader);
 }
+
+void imc_sleep(void)
+{
+	ImcSleep(NULL);
+}
+
+void imc_wakeup(void)
+{
+	ImcWakeup(NULL);
+}

@@ -18,5 +18,7 @@
 
 void imc_reg_init(void);
 void enable_imc_thermal_zone(void);
+void imc_sleep(void);
+void imc_wakeup(void);
 
 #endif

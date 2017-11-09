@@ -175,26 +175,4 @@
 #define  PCH_DEV_GBE		_PCH_DEV(LPC, 6)
 #define  PCH_DEV_TRACEHUB	_PCH_DEV(LPC, 7)
 
-static inline int spi_devfn_to_bus(unsigned int devfn)
-{
-	switch (devfn) {
-	case PCH_DEVFN_SPI: return 0;
-	case PCH_DEVFN_GSPI0: return 1;
-	case PCH_DEVFN_GSPI1: return 2;
-	case PCH_DEVFN_GSPI2: return 3;
-	}
-	return -1;
-}
-
-static inline int spi_bus_to_devfn(unsigned int bus)
-{
-	switch (bus) {
-	case 0: return PCH_DEVFN_SPI;
-	case 1: return PCH_DEVFN_GSPI0;
-	case 2: return PCH_DEVFN_GSPI1;
-	case 3: return PCH_DEVFN_GSPI2;
-	}
-	return -1;
-}
-
 #endif

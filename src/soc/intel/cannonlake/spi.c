@@ -22,9 +22,40 @@
 #include <device/spi.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/spi.h>
 #include <soc/ramstage.h>
 #include <soc/pci_devs.h>
 #include <spi-generic.h>
+
+int spi_soc_devfn_to_bus(unsigned int devfn)
+{
+	switch (devfn) {
+	case PCH_DEVFN_SPI:
+		return 0;
+	case PCH_DEVFN_GSPI0:
+		return 1;
+	case PCH_DEVFN_GSPI1:
+		return 2;
+	case PCH_DEVFN_GSPI2:
+		return 3;
+	}
+	return -1;
+}
+
+int spi_soc_bus_to_devfn(unsigned int bus)
+{
+	switch (bus) {
+	case 0:
+		return PCH_DEVFN_SPI;
+	case 1:
+		return PCH_DEVFN_GSPI0;
+	case 2:
+		return PCH_DEVFN_GSPI1;
+	case 3:
+		return PCH_DEVFN_GSPI2;
+	}
+	return -1;
+}
 
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
 	{ .ctrlr = &fast_spi_flash_ctrlr, .bus_start = 0, .bus_end = 0 },
@@ -40,7 +71,7 @@ const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);
 
 static int spi_dev_to_bus(struct device *dev)
 {
-	return spi_devfn_to_bus(dev->path.pci.devfn);
+	return spi_soc_devfn_to_bus(dev->path.pci.devfn);
 }
 
 static struct spi_bus_operations spi_bus_ops = {

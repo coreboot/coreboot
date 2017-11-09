@@ -17,6 +17,7 @@
 #include <assert.h>
 #include <device/device.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/spi.h>
 #include <soc/iomap.h>
 #include "chip.h"
 
@@ -66,5 +67,5 @@ int gspi_soc_bus_to_devfn(unsigned int gspi_bus)
 	if (gspi_bus >= CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX)
 		return -1;
 
-	return spi_bus_to_devfn(GSPI_TO_SPI_BUS(gspi_bus));
+	return spi_soc_bus_to_devfn(GSPI_TO_SPI_BUS(gspi_bus));
 }

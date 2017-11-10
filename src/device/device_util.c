@@ -33,9 +33,9 @@
  * @return Pointer to a device structure for the device on bus at path
  *         or 0/NULL if no device is found.
  */
-device_t find_dev_path(struct bus *parent, struct device_path *path)
+struct device *find_dev_path(struct bus *parent, struct device_path *path)
 {
-	device_t child;
+	struct device *child;
 	for (child = parent->children; child; child = child->sibling) {
 		if (path_eq(path, &child->path))
 			break;
@@ -116,9 +116,10 @@ struct device *dev_find_slot_pnp(u16 port, u16 device)
  * @param apic_id The Local APIC ID number.
  * @return Pointer to the device structure (if found), 0 otherwise.
  */
-device_t dev_find_lapic(unsigned apic_id)
+struct device *dev_find_lapic(unsigned apic_id)
 {
-	device_t dev, result = NULL;
+	struct device *dev;
+	struct device *result = NULL;
 
 	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->path.type == DEVICE_PATH_APIC &&
@@ -137,9 +138,11 @@ device_t dev_find_lapic(unsigned apic_id)
  * @param path_type The Device Path Type.
  * @return Pointer to the device structure (if found), 0 otherwise.
  */
-device_t dev_find_path(device_t prev_match, enum device_path_type path_type)
+struct device *dev_find_path(device_t prev_match,
+				enum device_path_type path_type)
 {
-	device_t dev, result = NULL;
+	struct device *dev;
+	struct device *result = NULL;
 
 	if (prev_match == NULL)
 		prev_match = all_devices;
@@ -206,7 +209,7 @@ struct device *dev_find_class(unsigned int class, struct device *from)
  * @param dev The device path to encode.
  * @return Device path encoded into lower 3 bytes of dword.
  */
-u32 dev_path_encode(device_t dev)
+u32 dev_path_encode(struct device *dev)
 {
 	u32 ret;
 
@@ -265,7 +268,7 @@ u32 dev_path_encode(device_t dev)
  * Warning: This function uses a static buffer. Don't call it more than once
  * from the same print statement!
  */
-const char *dev_path(device_t dev)
+const char *dev_path(struct device *dev)
 {
 	static char buffer[DEVICE_PATH_MAX];
 
@@ -338,7 +341,7 @@ const char *dev_path(device_t dev)
 	return buffer;
 }
 
-const char *dev_name(device_t dev)
+const char *dev_name(struct device *dev)
 {
 	if (dev->name)
 		return dev->name;
@@ -443,7 +446,7 @@ static int allocate_more_resources(void)
  * @param prev TODO
  * @return TODO.
  */
-static void free_resource(device_t dev, struct resource *res,
+static void free_resource(struct device *dev, struct resource *res,
 			  struct resource *prev)
 {
 	if (prev)
@@ -462,7 +465,7 @@ static void free_resource(device_t dev, struct resource *res,
  *
  * @param dev The device to find the resource on.
  */
-void compact_resources(device_t dev)
+void compact_resources(struct device *dev)
 {
 	struct resource *res, *next, *prev = NULL;
 
@@ -483,7 +486,7 @@ void compact_resources(device_t dev)
  * @param index The index of the resource on the device.
  * @return The resource, if it already exists.
  */
-struct resource *probe_resource(device_t dev, unsigned index)
+struct resource *probe_resource(struct device *dev, unsigned index)
 {
 	struct resource *res;
 
@@ -506,7 +509,7 @@ struct resource *probe_resource(device_t dev, unsigned index)
  * @param index The index of the resource on the device.
  * @return TODO.
  */
-struct resource *new_resource(device_t dev, unsigned index)
+struct resource *new_resource(struct device *dev, unsigned index)
 {
 	struct resource *resource, *tail;
 
@@ -553,7 +556,7 @@ struct resource *new_resource(device_t dev, unsigned index)
  * @param index The index of the resource on the device.
  * return TODO.
  */
-struct resource *find_resource(device_t dev, unsigned index)
+struct resource *find_resource(struct device *dev, unsigned index)
 {
 	struct resource *resource;
 
@@ -667,7 +670,7 @@ const char *resource_type(struct resource *resource)
  * @param resource The resource that was just stored.
  * @param comment TODO
  */
-void report_resource_stored(device_t dev, struct resource *resource,
+void report_resource_stored(struct device *dev, struct resource *resource,
 			    const char *comment)
 {
 	char buf[10];
@@ -753,7 +756,7 @@ void search_global_resources(unsigned long type_mask, unsigned long type,
 	}
 }
 
-void dev_set_enabled(device_t dev, int enable)
+void dev_set_enabled(struct device *dev, int enable)
 {
 	if (dev->enabled == enable)
 		return;
@@ -768,7 +771,7 @@ void dev_set_enabled(device_t dev, int enable)
 
 void disable_children(struct bus *bus)
 {
-	device_t child;
+	struct device *child;
 
 	for (child = bus->children; child; child = child->sibling) {
 		struct bus *link;
@@ -782,10 +785,10 @@ void disable_children(struct bus *bus)
  * Returns true if the device is an enabled bridge that has at least
  * one enabled device on its secondary bus.
  */
-bool dev_is_active_bridge(device_t dev)
+bool dev_is_active_bridge(struct device *dev)
 {
 	struct bus *link;
-	device_t child;
+	struct device *child;
 
 	if (!dev || !dev->enabled)
 		return 0;
@@ -934,7 +937,7 @@ void show_all_devs_resources(int debug_level, const char* msg)
 	}
 }
 
-void fixed_mem_resource(device_t dev, unsigned long index,
+void fixed_mem_resource(struct device *dev, unsigned long index,
 		  unsigned long basek, unsigned long sizek, unsigned long type)
 {
 	struct resource *resource;
@@ -1003,7 +1006,7 @@ u32 find_pci_tolm(struct bus *bus)
 /* Count of enabled CPUs */
 int dev_count_cpu(void)
 {
-	device_t cpu;
+	struct device *cpu;
 	int count = 0;
 
 	for (cpu = all_devices; cpu; cpu = cpu->next) {

@@ -917,10 +917,9 @@ typedef struct {
 **/
   UINT8                       CoreVoltageMode;
 
-/** Offset 0x0207 - Minimum clr turbo ratio override
-  Minimum clr turbo ratio override. <b>0: Hardware defaults.</b> Range: 0-83
+/** Offset 0x0207
 **/
-  UINT8                       RingMinOcRatio;
+  UINT8                       UnusedUpdSpace6;
 
 /** Offset 0x0208 - Maximum clr turbo ratio override
   Maximum clr turbo ratio override allows to increase CPU clr frequency beyond the
@@ -1075,7 +1074,7 @@ typedef struct {
 
 /** Offset 0x0227
 **/
-  UINT8                       UnusedUpdSpace6;
+  UINT8                       UnusedUpdSpace7;
 
 /** Offset 0x0228 - PrmrrSize
   0=Invalid, 32MB=0x2000000, 64MB=0x4000000, 128MB=0x8000000, 256MB=0x10000000
@@ -1853,7 +1852,7 @@ typedef struct {
 
 /** Offset 0x04C7
 **/
-  UINT8                       UnusedUpdSpace7;
+  UINT8                       UnusedUpdSpace8;
 
 /** Offset 0x04C8 - RAPL PL 2 Power
   range[0;2^14-1]= [2047.875;0]in W, (224= Def)
@@ -2481,7 +2480,7 @@ typedef struct {
 
 /** Offset 0x0579
 **/
-  UINT8                       UnusedUpdSpace8;
+  UINT8                       UnusedUpdSpace9;
 
 /** Offset 0x057A - Jitter Dwell Time for PCIe Gen3 Software Equalization
   Range: 0-65535, default is 1000. @warning Do not change from the default

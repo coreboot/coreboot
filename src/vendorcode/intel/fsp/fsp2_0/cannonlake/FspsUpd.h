@@ -975,45 +975,51 @@ typedef struct {
   PCODE MMIO Mailbox: Adjust the RFI frequency relative to the nominal frequency in
   increments of 100KHz. For subtraction, change McivrRfiFrequencyPrefix. <b>0: Auto</b>.
 **/
-  UINT16                      McivrRfiFrequencyAdjust;
+  UINT8                       McivrRfiFrequencyAdjust;
 
-/** Offset 0x0310 - FIVR RFI Frequency
+/** Offset 0x030F - FIVR RFI Frequency
   PCODE MMIO Mailbox: Set the desired RFI frequency, in increments of 100KHz. <b>0:
   Auto</b>. Range varies based on XTAL clock: 0-1918 (Up to 191.8HMz) for 24MHz clock;
   0-1535 (Up to 153.5MHz) for 19MHz clock.
 **/
   UINT16                      FivrRfiFrequency;
 
-/** Offset 0x0312 - McIVR RFI Spread Spectrum
+/** Offset 0x0311 - McIVR RFI Spread Spectrum
   PCODE MMIO Mailbox: McIVR RFI Spread Spectrum. <b>0: 0%</b>; 1: +/- 0.5%; 2: +/-
   1%; 3: +/- 1.5%; 4: +/- 2%; 5: +/- 3%; 6: +/- 4%; 7: +/- 5%; 8: +/- 6%.
 **/
   UINT8                       McivrSpreadSpectrum;
 
-/** Offset 0x0313 - FIVR RFI Spread Spectrum
+/** Offset 0x0312 - FIVR RFI Spread Spectrum
   PCODE MMIO Mailbox: FIVR RFI Spread Spectrum, in 0.1% increments. <b>0: 0%</b>;
   Range: 0.0% to 10.0% (0-100).
 **/
   UINT8                       FivrSpreadSpectrum;
 
-/** Offset 0x0314 - Disable Fast Slew Rate for Deep Package C States for VR FIVR domain
+/** Offset 0x0313 - Disable Fast Slew Rate for Deep Package C States for VR FIVR domain
   Disable Fast Slew Rate for Deep Package C States based on Acoustic Noise Mitigation
   feature enabled. <b>0: False</b>; 1: True
   $EN_DIS
 **/
   UINT8                       FastPkgCRampDisableFivr;
 
-/** Offset 0x0315 - Slew Rate configuration for Deep Package C States for VR FIVR domain
+/** Offset 0x0314 - Slew Rate configuration for Deep Package C States for VR FIVR domain
   Slew Rate configuration for Deep Package C States for VR FIVR domain based on Acoustic
   Noise Mitigation feature enabled. <b>0: Fast/2</b>; 1: Fast/4; 2: Fast/8; 3: Fast/16
   0: Fast/2, 1: Fast/4, 2: Fast/8, 3: Fast/16
 **/
   UINT8                       SlowSlewRateForFivr;
 
-/** Offset 0x0316 - CpuBistData
+/** Offset 0x0315 - CpuBistData
   Pointer CPU BIST Data
 **/
   UINT32                      CpuBistData;
+
+/** Offset 0x0319 - Activates VR mailbox command for Intersil VR C-state issues.
+  Intersil VR mailbox command. <b>0 - no mailbox command sent.</b>  1 - VR mailbox
+  command sent for IA/GT rails only. 2 - VR mailbox command sent for IA/GT/SA rails.
+**/
+  UINT8                       IslVrCmd;
 
 /** Offset 0x031A - ReservedCpuPostMemProduction
   Reserved for CPU Post-Mem Production
@@ -2935,11 +2941,23 @@ typedef struct {
 **/
   UINT8                       CpuWakeUpTimer;
 
-/** Offset 0x08A3 - ReservedCpuPostMemTest
+/** Offset 0x08A3 - Minimum Ring ratio limit override
+  Minimum Ring ratio limit override. <b>0: Hardware defaults.</b> Range: 0 - Max turbo
+  ratio limit
+**/
+  UINT8                       MinRingRatioLimit;
+
+/** Offset 0x08A4 - Minimum Ring ratio limit override
+  Maximum Ring ratio limit override. <b>0: Hardware defaults.</b> Range: 0 - Max turbo
+  ratio limit
+**/
+  UINT8                       MaxRingRatioLimit;
+
+/** Offset 0x08A5 - ReservedCpuPostMemTest
   Reserved for CPU Post-Mem Test
   $EN_DIS
 **/
-  UINT8                       ReservedCpuPostMemTest[23];
+  UINT8                       ReservedCpuPostMemTest[21];
 
 /** Offset 0x08BA - SgxSinitDataFromTpm
   SgxSinitDataFromTpm default values

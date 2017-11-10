@@ -142,9 +142,15 @@ typedef struct {
 #ifndef MRC_DDR_TYPE_LPDDR3
 #define MRC_DDR_TYPE_LPDDR3   2
 #endif
+#ifndef CPU_CFL//CNL
+#ifndef MRC_DDR_TYPE_LPDDR4
+#define MRC_DDR_TYPE_LPDDR4   3
+#endif
+#else//CFL
 #ifndef MRC_DDR_TYPE_UNKNOWN
 #define MRC_DDR_TYPE_UNKNOWN  3
 #endif
+#endif//CPU_CFL-endif
 
 #define MAX_PROFILE_NUM     4 // number of memory profiles supported
 #define MAX_XMP_PROFILE_NUM 2 // number of XMP profiles supported

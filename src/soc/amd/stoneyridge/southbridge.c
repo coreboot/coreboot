@@ -61,10 +61,11 @@ static void sb_init_acpi_ports(void)
 		pm_write16(PM_ACPI_SMI_CMD, 0);
 	}
 
-	/* AcpiDecodeEnable, When set, SB uses the contents of the PM registers
-	 * at index 60-6B to decode ACPI I/O address. AcpiSmiEn & SmiCmdEn
-	 */
-	pm_write8(PM_ACPI_CONF, BIT(0) | BIT(1) | BIT(4) | BIT(2));
+	/* Decode ACPI registers and enable standard features */
+	pm_write8(PM_ACPI_CONF, PM_ACPI_DECODE_STD |
+				PM_ACPI_GLOBAL_EN |
+				PM_ACPI_RTC_EN_EN |
+				PM_ACPI_TIMER_EN_EN);
 }
 
 void southbridge_init(void *chip_info)

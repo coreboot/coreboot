@@ -27,7 +27,7 @@
 AGESA_STATUS AmdMemoryReadSPD(UINT32 unused1, UINTN unused2,
 						AGESA_READ_SPD_PARAMS *info)
 {
-	int spdAddress;
+	uint8_t spdAddress;
 	DEVTREE_CONST struct device *dev = dev_find_slot(0, DCT_DEVFN);
 	DEVTREE_CONST struct soc_amd_stoneyridge_config *conf = dev->chip_info;
 

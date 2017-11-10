@@ -30,10 +30,10 @@
  *           sending offset for every byte.
  *          Reads 128 bytes in 7-8 ms at 400 KHz.
  */
-static int readspd(uint16_t iobase, int SmbusSlaveAddress,
+static int readspd(uint16_t iobase, uint8_t SmbusSlaveAddress,
 			char *buffer, size_t count)
 {
-	u8 dev_addr;
+	uint8_t dev_addr;
 	size_t index;
 	int error;
 	char *pbuf = buffer;
@@ -90,7 +90,7 @@ static void setupFch(uint16_t ioBase)
 	outb(SMBSLV_STAT_CLEAR, ioBase + SMBSLVSTAT);
 }
 
-int sb_readSpd(int spdAddress, char *buf, size_t len)
+int sb_readSpd(uint8_t spdAddress, char *buf, size_t len)
 {
 	uint16_t ioBase = SMB_BASE_ADDR;
 	setupFch(ioBase);

@@ -20,7 +20,7 @@ AGESA_STATUS
 AmdMemoryReadSPD(IN UINT32 Func, IN UINTN Data,
 				IN OUT AGESA_READ_SPD_PARAMS *SpdData);
 
-int sb_readSpd(int spdAddress, char *buf, size_t len);
+int sb_readSpd(uint8_t spdAddress, char *buf, size_t len);
 int smbus_readSpd(int spdAddress, char *buf, size_t len);
 
 #endif

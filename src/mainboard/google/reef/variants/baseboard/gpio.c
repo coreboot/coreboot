@@ -376,7 +376,7 @@ static const struct pad_config sleep_gpio_table[] = {
 };
 
 const struct pad_config * __attribute__((weak))
-variant_sleep_gpio_table(size_t *num)
+variant_sleep_gpio_table(u8 slp_typ, size_t *num)
 {
 	*num = ARRAY_SIZE(sleep_gpio_table);
 	return sleep_gpio_table;

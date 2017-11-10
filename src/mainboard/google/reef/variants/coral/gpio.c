@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
@@ -368,16 +369,28 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 	return early_gpio_table;
 }
 
-/* GPIO settings before entering sleep. */
-static const struct pad_config sleep_gpio_table[] = {
+/* Default GPIO settings before entering sleep. */
+static const struct pad_config default_sleep_gpio_table[] = {
 	PAD_CFG_GPO(GPIO_150, 0, DEEP),		/* NFC_RESET_ODL */
 	PAD_CFG_GPI_APIC_LOW(GPIO_20, NONE, DEEP),	/* NFC_INT_L */
 };
 
-const struct pad_config *variant_sleep_gpio_table(size_t *num)
+/* GPIO settings before entering S5, which are same as default_sleep_gpio_table
+ * but also turn off EN_PP3300_DX_LTE_SOC. */
+static const struct pad_config s5_sleep_gpio_table[] = {
+	PAD_CFG_GPO(GPIO_150, 0, DEEP),		/* NFC_RESET_ODL */
+	PAD_CFG_GPI_APIC_LOW(GPIO_20, NONE, DEEP),	/* NFC_INT_L */
+	PAD_CFG_GPO(GPIO_78, 0, DEEP),		/* I2S1_SDO -- EN_PP3300_DX_LTE_SOC */
+};
+
+const struct pad_config *variant_sleep_gpio_table(u8 slp_typ, size_t *num)
 {
-	*num = ARRAY_SIZE(sleep_gpio_table);
-	return sleep_gpio_table;
+	if (slp_typ == ACPI_S5) {
+		*num = ARRAY_SIZE(s5_sleep_gpio_table);
+		return s5_sleep_gpio_table;
+	}
+	*num = ARRAY_SIZE(default_sleep_gpio_table);
+	return default_sleep_gpio_table;
 }
 
 static const struct cros_gpio cros_gpios[] = {

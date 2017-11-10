@@ -21,6 +21,8 @@
 #include <cbmem.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <device/device.h>
+#include <chip.h>
 #include <program_loading.h>
 #include <agesawrapper.h>
 #include <agesawrapper_call.h>
@@ -118,7 +120,7 @@ void SetMemParams(AMD_POST_PARAMS *PostParams)
 	const struct device *dev = dev_find_slot(0, GNB_DEVFN);
 
 	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "ERROR: Could not find SoC devicetree config\n");
+		printk(BIOS_ERR, "ERROR: Cannot find SoC devicetree config\n");
 		/* In case of a BIOS error, only attempt to set UMA. */
 		PostParams->MemConfig.UmaMode = IS_ENABLED(CONFIG_GFXUMA) ?
 					UMA_AUTO : UMA_NONE;

@@ -54,9 +54,6 @@ static int send_heci_reset_message(void)
 	} __packed;
 	struct reset_message msg = {
 		.cmd = MKHI_GLOBAL_RESET,
-		.group_id = 0,
-		.reserved = 0,
-		.result = 0,
 		.req_origin = GR_ORIGIN_BIOS_POST,
 		.reset_type = GLOBAL_RST_TYPE
 	};

@@ -119,9 +119,32 @@ void SetMemParams(AMD_POST_PARAMS *PostParams)
 
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "ERROR: Could not find SoC devicetree config\n");
+		/* In case of a BIOS error, only attempt to set UMA. */
+		PostParams->MemConfig.UmaMode = IS_ENABLED(CONFIG_GFXUMA) ?
+					UMA_AUTO : UMA_NONE;
 		return;
 	}
 
 	cfg = dev->chip_info;
+
 	PostParams->MemConfig.EnableMemClr = cfg->dram_clear_on_reset;
+
+	switch (cfg->uma_mode) {
+	case UMAMODE_NONE:
+		PostParams->MemConfig.UmaMode = UMA_NONE;
+		break;
+	case UMAMODE_SPECIFIED_SIZE:
+		PostParams->MemConfig.UmaMode = UMA_SPECIFIED;
+		/* 64 KiB blocks. */
+		PostParams->MemConfig.UmaSize = cfg->uma_size / (64 * KiB);
+		break;
+	case UMAMODE_AUTO_LEGACY:
+		PostParams->MemConfig.UmaMode = UMA_AUTO;
+		PostParams->MemConfig.UmaVersion = UMA_LEGACY;
+		break;
+	case UMAMODE_AUTO_NON_LEGACY:
+		PostParams->MemConfig.UmaMode = UMA_AUTO;
+		PostParams->MemConfig.UmaVersion = UMA_NON_LEGACY;
+		break;
+	}
 }

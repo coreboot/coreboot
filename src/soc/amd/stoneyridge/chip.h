@@ -16,7 +16,9 @@
 #ifndef __STONEYRIDGE_CHIP_H__
 #define __STONEYRIDGE_CHIP_H__
 
+#include <stddef.h>
 #include <stdint.h>
+#include <commonlib/helpers.h>
 
 #define MAX_NODES 1
 #define MAX_DRAM_CH 1
@@ -28,6 +30,20 @@ struct soc_amd_stoneyridge_config {
 		DRAM_CONTENTS_KEEP,
 		DRAM_CONTENTS_CLEAR
 	} dram_clear_on_reset;
+
+	enum {
+		/* Do not enable UMA in the system. */
+		UMAMODE_NONE,
+		/* Enable UMA with a specific size. */
+		UMAMODE_SPECIFIED_SIZE,
+		/* Let AGESA determine the proper size. Non-legacy requires
+		 * the resolution to be specified PLATFORM_CONFIGURATION */
+		UMAMODE_AUTO_LEGACY,
+		UMAMODE_AUTO_NON_LEGACY,
+	} uma_mode;
+
+	/* Used if UMAMODE_SPECIFIED_SIZE is set. */
+	size_t uma_size;
 };
 
 typedef struct soc_amd_stoneyridge_config config_t;

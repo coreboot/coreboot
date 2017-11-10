@@ -25,6 +25,9 @@ DefinitionBlock (
 {	/* Start of ASL file */
 	/* #include <arch/x86/acpi/debug.asl> */	/* as needed */
 
+	/* global NVS and variables */
+	#include <globalnvs.asl>
+
 	/* Globals for the platform */
 	#include "acpi/mainboard.asl"
 

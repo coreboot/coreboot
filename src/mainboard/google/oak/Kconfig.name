@@ -3,11 +3,11 @@ config BOARD_GOOGLE_OAK
 	select BOARD_GOOGLE_OAK_COMMON
 
 config BOARD_GOOGLE_ELM
-	bool "Elm"
+	bool "Elm (Acer Chromebook R13)"
 	select BOARD_GOOGLE_OAK_COMMON
 
 config BOARD_GOOGLE_HANA
-	bool "Hana"
+	bool "Hana (Lenovo N23 Yoga Chromebook)"
 	select BOARD_GOOGLE_OAK_COMMON
 
 config BOARD_GOOGLE_ROWAN

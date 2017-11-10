@@ -1,2 +1,2 @@
 config BOARD_GOOGLE_BUTTERFLY
-	bool "Butterfly"
+	bool "Butterfly (HP Pavilion Chromebook 14)"

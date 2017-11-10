@@ -1,2 +1,2 @@
 config BOARD_GOOGLE_PARROT
-	bool "Parrot"
+	bool "Parrot (Acer C7 710 Chromebook)"

@@ -1,13 +1,13 @@
 config BOARD_GOOGLE_BANJO
-	bool "Banjo"
+	bool "Banjo (Acer Chromebook 15.6\" (CB3-531))"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_CANDY
-	bool "Candy"
+	bool "Candy (Dell Chromebook 11 (3120))"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_CLAPPER
-	bool "Clapper"
+	bool "Clapper (Lenovo N20 Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_ENGUARDE
@@ -15,11 +15,11 @@ config BOARD_GOOGLE_ENGUARDE
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_GLIMMER
-	bool "Glimmer"
+	bool "Glimmer (Lenovo ThinkPad 11e Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_GNAWTY
-	bool "Gnawty"
+	bool "Gnawty (Acer Chromebook 11 (C730/C730E/C735))"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_HELI
@@ -27,23 +27,23 @@ config BOARD_GOOGLE_HELI
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_KIP
-	bool "Kip"
+	bool "Kip (HP Chromebook 11 G3 / G4 / G4 EE)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_NINJA
-	bool "Ninja"
+	bool "Ninja (AOpen Chromebox Commercial)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_ORCO
-	bool "Orco"
+	bool "Orco (Lenovo 100S Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_QUAWKS
-	bool "Quawks"
+	bool "Quawks (ASUS Chromebook C300)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_SQUAWKS
-	bool "Squawks"
+	bool "Squawks (ASUS Chromebook C200)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_RAMBI
@@ -51,13 +51,13 @@ config BOARD_GOOGLE_RAMBI
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_SUMO
-	bool "Sumo"
+	bool "Sumo (AOpen Chromebase Commercial)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_SWANKY
-	bool "Swanky"
+	bool "Swanky (Toshiba Chromebook 2)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_WINKY
-	bool "Winky"
+	bool "Winky (Samsung Chromebook 2 11 - XE500C12)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI

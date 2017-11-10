@@ -1,2 +1,2 @@
 config BOARD_GOOGLE_CHELL
-	bool "Chell"
+	bool "Chell (HP Chromebook 13 G1)"

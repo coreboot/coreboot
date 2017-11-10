@@ -1,5 +1,5 @@
 config BOARD_GOOGLE_KEVIN
-	bool "Kevin"
+	bool "Kevin (Samsung Chromebook Plus)"
 	select BOARD_GOOGLE_GRU_COMMON
 
 config BOARD_GOOGLE_GRU
@@ -7,7 +7,7 @@ config BOARD_GOOGLE_GRU
 	select BOARD_GOOGLE_GRU_COMMON
 
 config BOARD_GOOGLE_BOB
-	bool "Bob"
+	bool "Bob (Asus Chromebook Flip C101PA)"
 	select BOARD_GOOGLE_GRU_COMMON
 
 config BOARD_GOOGLE_SCARLET

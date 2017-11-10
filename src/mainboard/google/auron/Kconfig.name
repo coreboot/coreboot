@@ -1,19 +1,19 @@
 config BOARD_GOOGLE_AURON_PAINE
-	bool "Auron_Paine"
+	bool "Auron_Paine (Acer C670 Chromebook 11)"
 	select BOARD_GOOGLE_BASEBOARD_AURON
 
 config BOARD_GOOGLE_AURON_YUNA
-	bool "Auron_Yuna"
+	bool "Auron_Yuna (Acer Chromebook 15)"
 	select BOARD_GOOGLE_BASEBOARD_AURON
 
 config BOARD_GOOGLE_GANDOF
-	bool "Gandof"
+	bool "Gandof (Toshiba Chromebook 2 (2015 Edition))"
 	select BOARD_GOOGLE_BASEBOARD_AURON
 
 config BOARD_GOOGLE_LULU
-	bool "Lulu"
+	bool "Lulu (Dell Chromebook 13 7310)"
 	select BOARD_GOOGLE_BASEBOARD_AURON
 
 config BOARD_GOOGLE_SAMUS
-	bool "Samus"
+	bool "Samus (Google Chromebook Pixel (2015))"
 	select BOARD_GOOGLE_BASEBOARD_AURON

@@ -1,24 +1,24 @@
 config BOARD_GOOGLE_VEYRON_JAQ
-	bool "Haier Chromebook 11 (Veyron_Jaq)"
+	bool "Veyron_Jaq (Haier Chromebook 11)"
 	select BOARD_GOOGLE_VEYRON
 	select SYSTEM_TYPE_LAPTOP
 
 config BOARD_GOOGLE_VEYRON_JERRY
-	bool "Hisense Chromebook 11 (Veyron_Jerry)"
+	bool "Veyron_Jerry (Hisense Chromebook 11)"
 	select BOARD_GOOGLE_VEYRON
 	select SYSTEM_TYPE_LAPTOP
 
 config BOARD_GOOGLE_VEYRON_MIGHTY
-	bool "Haier Chromebook 11(edu) (Veyron_Mighty)"
+	bool "Veyron_Mighty (Haier Chromebook 11(edu))"
 	select BOARD_GOOGLE_VEYRON
 	select SYSTEM_TYPE_LAPTOP
 
 config BOARD_GOOGLE_VEYRON_MINNIE
-	bool "ASUS Chromebook Flip C100 (Veyron_Minnie)"
+	bool "Veyron_Minnie (ASUS Chromebook Flip C100)"
 	select BOARD_GOOGLE_VEYRON
 	select SYSTEM_TYPE_LAPTOP
 
 config BOARD_GOOGLE_VEYRON_SPEEDY
-	bool "ASUS C201 Chromebook (Veyron_Speedy)"
+	bool "Veyron_Speedy (ASUS C201 Chromebook)"
 	select BOARD_GOOGLE_VEYRON
 	select SYSTEM_TYPE_LAPTOP

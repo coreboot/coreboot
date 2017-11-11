@@ -15,7 +15,7 @@
 
 #include <AGESA.h>
 #include <FchPlatform.h>
-#include <mainboard.h>
+#include <baseboard/variants.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>
 #include <stdlib.h>

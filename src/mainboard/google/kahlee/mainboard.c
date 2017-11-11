@@ -19,7 +19,7 @@
 #include <agesawrapper.h>
 #include <amd_pci_util.h>
 #include <ec.h>
-#include <mainboard.h>
+#include <baseboard/variants.h>
 #include <soc/smi.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

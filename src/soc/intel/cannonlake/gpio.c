@@ -33,10 +33,10 @@ static const struct reset_mapping rst_map_com0[] = {
 };
 
 static const struct pad_community cnl_communities[] = {
-	{ /* GPP A, B, G */
+	{ /* GPP A, B, G, SPI */
 		.port = PID_GPIOCOM0,
 		.first_pad = GPP_A0,
-		.last_pad = GPP_G7,
+		.last_pad = GPIO_RSVD_11,
 		.num_gpi_regs = NUM_GPIO_COM0_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -47,10 +47,10 @@ static const struct pad_community cnl_communities[] = {
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map_com0,
 		.num_reset_vals = ARRAY_SIZE(rst_map_com0),
-	}, { /* GPP D, F, H */
+	}, { /* GPP D, F, H, VGPIO */
 		.port = PID_GPIOCOM1,
 		.first_pad = GPP_D0,
-		.last_pad = GPP_H23,
+		.last_pad = GPIO_RSVD_52,
 		.num_gpi_regs = NUM_GPIO_COM1_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -75,17 +75,31 @@ static const struct pad_community cnl_communities[] = {
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
-	}, { /* GPP C, E */
-		.port = PID_GPIOCOM4,
-		.first_pad = GPP_C0,
-		.last_pad = GPP_E23,
+	}, { /* AZA, CPU */
+		.port = PID_GPIOCOM3,
+		.first_pad = HDA_BCLK,
+		.last_pad = GPIO_RSVD_78,
 		.num_gpi_regs = NUM_GPIO_COM3_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
 		.gpi_smi_sts_reg_0 = GPI_SMI_STS_0,
 		.gpi_smi_en_reg_0 = GPI_SMI_EN_0,
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
-		.name = "GPP_CE",
+		.name = "GP_AC",
+		.acpi_path = "\\_SB.PCI0.GPIO",
+		.reset_map = rst_map,
+		.num_reset_vals = ARRAY_SIZE(rst_map),
+	}, { /* GPP C, E, JTAG, HVMOS */
+		.port = PID_GPIOCOM4,
+		.first_pad = GPP_C0,
+		.last_pad = GPIO_RSVD_67,
+		.num_gpi_regs = NUM_GPIO_COM4_GPI_REGS,
+		.pad_cfg_base = PAD_CFG_BASE,
+		.host_own_reg_0 = HOSTSW_OWN_REG_0,
+		.gpi_smi_sts_reg_0 = GPI_SMI_STS_0,
+		.gpi_smi_en_reg_0 = GPI_SMI_EN_0,
+		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
+		.name = "GPP_CEJ",
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),

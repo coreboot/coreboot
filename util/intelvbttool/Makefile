@@ -15,12 +15,13 @@
 
 PROGRAM = intelvbttool
 CC ?= gcc
-CFLAGS ?= -O2
+CFLAGS ?= -O2 -g
 CFLAGS += -Wall -Werror
+CFLAGS += -I../../src/commonlib/include
 
 all: $(PROGRAM)
 
-$(PROGRAM):
+$(PROGRAM): $(PROGRAM).c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(PROGRAM).c -o $(PROGRAM)
 
 clean:

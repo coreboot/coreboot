@@ -20,7 +20,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <getopt.h>
 #include <errno.h>
+#include <stdarg.h>
+#include <commonlib/helpers.h>
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -30,10 +33,27 @@ typedef uint32_t u32;
 typedef struct {
 	u16 signature;
 	u8 size;
-	u8 reserved[21];
+	u8 entrypoint[4];
+	u8 checksum;
+	u8 reserved[16];
 	u16 pcir_offset;
 	u16 vbt_offset;
 } __attribute__ ((packed)) optionrom_header_t;
+
+typedef struct {
+	u32 signature;
+	u16 vendor;
+	u16 device;
+	u16 reserved1;
+	u16 length;
+	u8  revision;
+	u8  classcode[3];
+	u16 imagelength;
+	u16 coderevision;
+	u8  codetype;
+	u8  indicator;
+	u16 reserved2;
+} __attribute__((packed)) optionrom_pcir_t;
 
 struct vbt_header {
 	u8 signature[20];
@@ -221,6 +241,8 @@ struct bdb_sdvo_lvds_options {
 } __attribute__ ((packed));
 
 
+static const size_t ignore_checksum = 1;
+
 #define BDB_GENERAL_FEATURES	  1
 #define BDB_GENERAL_DEFINITIONS	  2
 
@@ -233,143 +255,370 @@ struct bdb_sdvo_lvds_options {
 
 #define BDB_SKIP		254
 
-static void parse_vbt(const void *vbt)
+/* print helpers */
+static void print(const char *format, ...)
 {
-	const struct vbt_header *head = vbt;
+	va_list args;
+	fprintf(stdout, "VBTTOOL: ");
+	va_start(args, format);
+	vfprintf(stdout, format, args);
+	va_end(args);
+}
+
+static void printt(const char *format, ...)
+{
+	va_list args;
+	fprintf(stdout, "\t");
+	va_start(args, format);
+	vfprintf(stdout, format, args);
+	va_end(args);
+}
+
+static void printwarn(const char *format, ...)
+{
+	va_list args;
+	fprintf(stderr, "VBTTOOL: WARN: ");
+	va_start(args, format);
+	vfprintf(stderr, format, args);
+	va_end(args);
+}
+
+static void printerr(const char *format, ...)
+{
+	va_list args;
+	fprintf(stderr, "VBTTOOL: ERR: ");
+	va_start(args, format);
+	vfprintf(stderr, format, args);
+	va_end(args);
+}
+
+struct fileobject {
+	unsigned char *data;
+	size_t size;
+};
+
+/* file object helpers */
+
+/*
+ * Alloc a file object of given size.
+ * Returns NULL on error.
+ */
+static struct fileobject *malloc_fo(const size_t size)
+{
+	struct fileobject *fo;
+	if (!size)
+		return NULL;
+
+	fo = malloc(sizeof(*fo));
+	if (!fo)
+		return NULL;
+	fo->data = malloc(size);
+	if (!fo->data) {
+		free(fo);
+		return NULL;
+	}
+	fo->size = size;
+
+	return fo;
+}
+
+/* Free a fileobject structure */
+static void free_fo(struct fileobject *fo)
+{
+	if (fo) {
+		free(fo->data);
+		free(fo);
+	}
+}
+
+/* Resize file object and keep memory content */
+static struct fileobject *remalloc_fo(struct fileobject *old,
+				      const size_t size)
+{
+	struct fileobject *fo = old;
+
+	if (!old || !size)
+		return NULL;
+
+	fo->data = realloc(fo->data, size);
+
+	if (!fo->data)
+		return NULL;
+
+	fo->size = size;
+
+	return fo;
+}
+
+/*
+ * Creates a new subregion copy of fileobject.
+ * Returns NULL if offset is greater than fileobject size.
+ * Returns NULL on error.
+ */
+static struct fileobject *malloc_fo_sub(const struct fileobject *old,
+					const size_t off)
+{
+	struct fileobject *fo;
+
+	if (!old || off > old->size)
+		return NULL;
+
+	fo = malloc_fo(old->size - off);
+	if (!fo)
+		return NULL;
+
+	memcpy(fo->data, old->data + off, fo->size);
+
+	return fo;
+}
+
+/* file helpers */
+
+/* Create fileobject from file */
+static struct fileobject *read_file(const char *filename)
+{
+	FILE *fd = fopen(filename, "rb");
+
+	if (!fd) {
+		printerr("%s open failed: %s\n", filename, strerror(errno));
+		return NULL;
+	}
+
+	if (fseek(fd, 0, SEEK_END)) {
+		printerr("%s seek failed: %s\n", filename, strerror(errno));
+		fclose(fd);
+		return NULL;
+	}
+
+	const off_t size = ftell(fd);
+	if (size < 0 || size > SIZE_MAX) {
+		printerr("%s tell failed: %s\n", filename, strerror(errno));
+		fclose(fd);
+		return NULL;
+	}
+
+	if (fseek(fd, 0, SEEK_SET)) {
+		printerr("%s seek failed: %s\n", filename, strerror(errno));
+		fclose(fd);
+		return NULL;
+	}
+
+	struct fileobject *fo = malloc_fo(size);
+	if (!fo) {
+		printerr("malloc failed\n");
+		fclose(fd);
+		return NULL;
+	}
+
+	if (fread(fo->data, 1, size, fd) != size) {
+		fclose(fd);
+		free_fo(fo);
+		return NULL;
+	}
+
+	if (fclose(fd)) {
+		printerr("%s close failed: %s\n", filename, strerror(errno));
+		free_fo(fo);
+		return NULL;
+	}
+
+	fo->size = size;
+
+	return fo;
+}
+
+/* Create fileobject from physical memory at given address of size 64 KiB */
+static struct fileobject *read_physmem(size_t addr)
+{
+	const int fd = open("/dev/mem", O_RDONLY);
+	const size_t size = 64 * 2 * KiB;
+	if (fd < 0) {
+		printerr("/dev/mem open failed: %s\n", strerror(errno));
+		return NULL;
+	}
+
+	const void *data = mmap(0, size, PROT_READ, MAP_SHARED, fd, addr);
+	if (data == MAP_FAILED) {
+		close(fd);
+		printerr("mmap failed: %s\n", strerror(errno));
+		return NULL;
+	}
+
+	struct fileobject *fo = malloc_fo(size);
+	if (!fo) {
+		printerr("malloc failed\n");
+		munmap((void *)data, size);
+		close(fd);
+		return NULL;
+	}
+
+	memcpy(fo->data, data, size);
+	munmap((void *)data, size);
+
+	if (close(fd)) {
+		printerr("/dev/mem close failed: %s\n", strerror(errno));
+		free_fo(fo);
+		return NULL;
+	}
+
+	return fo;
+}
+
+/* Write fileobject contents to file */
+static int write_file(const char *filename, const struct fileobject *fo)
+{
+	FILE *fd_out = fopen(filename, "wb");
+
+	if (!fd_out) {
+		printerr("%s open failed: %s\n", filename, strerror(errno));
+		return 1;
+	}
+	if (fwrite(fo->data, 1, fo->size, fd_out) != fo->size) {
+		fclose(fd_out);
+		return 1;
+	}
+	return fclose(fd_out);
+}
+
+/* dump VBT contents in human readable form */
+static void dump_vbt(const struct fileobject *fo)
+{
+	if (fo->size < sizeof(struct vbt_header))
+		return;
+
+	const struct vbt_header *head = (const struct vbt_header *)fo->data;
 	const struct bdb_header *bdb;
-	int i;
 	const u8 *ptr;
+	int i;
 	int is_first_skip = 1;
 
-	if (memcmp(head->signature, "$VBT", 4) != 0) {
-		fprintf(stderr, "invalid VBT signature\n");
-		exit(1);
-	}
-	printf("signature: <%20.20s>\n", head->signature);
-	printf("version: %d.%02d\n", head->version / 100,
+	printt("signature: <%20.20s>\n", head->signature);
+	printt("version: %d.%02d\n", head->version / 100,
 	       head->version % 100);
 	if (head->header_size != sizeof(struct vbt_header))
-		printf("header size: 0x%x\n", head->header_size);
-	printf("VBT size: 0x%x\n", head->vbt_size);
-	printf("VBT checksum: 0x%x\n", head->vbt_checksum);
+		printt("header size: 0x%x\n", head->header_size);
+	printt("VBT size: 0x%x\n", head->vbt_size);
+	printt("VBT checksum: 0x%x\n", head->vbt_checksum);
 	if (head->reserved0)
-		printf("header reserved0: 0x%x\n", head->reserved0);
+		printt("header reserved0: 0x%x\n", head->reserved0);
 	if (head->bdb_offset != sizeof(struct vbt_header))
-		printf("BDB offset: 0x%x\n", head->bdb_offset);
+		printt("BDB offset: 0x%x\n", head->bdb_offset);
 
 	for (i = 0; i < 4; i++)
 		if (head->aim_offset[i])
-			printf("AIM[%d] offset: 0x%x\n", i,
+			printt("AIM[%d] offset: 0x%x\n", i,
 			       head->aim_offset[i]);
-	bdb = (const void *) ((const char *) vbt + head->bdb_offset);
+	if (head->bdb_offset + sizeof(*bdb) > fo->size)
+		return;
+	bdb = (const void *) (fo->data + head->bdb_offset);
 
 	if (memcmp("BIOS_DATA_BLOCK ", bdb->signature, 16) != 0) {
-		fprintf(stderr, "invalid BDB signature:%s\n",
+		printerr("invalid BDB signature:%s\n",
 			bdb->signature);
 		exit(1);
 	}
-	printf("BDB version: %d.%02d\n", bdb->version / 100,
+	printt("BDB version: %d.%02d\n", bdb->version / 100,
 	       bdb->version % 100);
 	if (bdb->header_size != sizeof(struct bdb_header))
-		printf("BDB header size: 0x%x\n", bdb->header_size);
+		printt("BDB header size: 0x%x\n", bdb->header_size);
 	if (bdb->bdb_size != head->vbt_size - head->bdb_offset)
-		printf("BDB size: 0x%x\n", bdb->bdb_size);
+		printt("BDB size: 0x%x\n", bdb->bdb_size);
 	for (ptr = (const u8 *) bdb + bdb->header_size;
 	     ptr < (const u8 *) bdb + bdb->bdb_size;) {
 		u16 secsz = (ptr[1] | (ptr[2] << 8));
 		u8 sectype = ptr[0];
 		const u8 *section = ptr + 3;
 
-		printf("section type %d, size 0x%x\n", sectype, secsz);
+		printt("section type %d, size 0x%x\n", sectype, secsz);
 		ptr += secsz + 3;
 		switch (sectype) {
 		case BDB_GENERAL_FEATURES:{
 				const struct bdb_general_features *sec =
 				    (const void *) section;
-				printf("General features:\n");
+				printt("General features:\n");
 
 				if (sec->panel_fitting)
-					printf("\tpanel_fitting = 0x%x\n",
+					printt("\tpanel_fitting = 0x%x\n",
 					       sec->panel_fitting);
 				if (sec->flexaim)
-					printf("\tflexaim = 0x%x\n",
+					printt("\tflexaim = 0x%x\n",
 					       sec->flexaim);
 				if (sec->msg_enable)
-					printf("\tmsg_enable = 0x%x\n",
+					printt("\tmsg_enable = 0x%x\n",
 					       sec->msg_enable);
 				if (sec->clear_screen)
-					printf("\tclear_screen = 0x%x\n",
+					printt("\tclear_screen = 0x%x\n",
 					       sec->clear_screen);
 				if (sec->color_flip)
-					printf("\tcolor_flip = 0x%x\n",
+					printt("\tcolor_flip = 0x%x\n",
 					       sec->color_flip);
 				if (sec->download_ext_vbt)
-					printf
+					printt
 					    ("\tdownload_ext_vbt = 0x%x\n",
 					     sec->download_ext_vbt);
-				printf("\t*enable_ssc = 0x%x\n",
+				printt("\t*enable_ssc = 0x%x\n",
 				       sec->enable_ssc);
-				printf("\t*ssc_freq = 0x%x\n",
+				printt("\t*ssc_freq = 0x%x\n",
 				       sec->ssc_freq);
 				if (sec->enable_lfp_on_override)
-					printf
+					printt
 					    ("\tenable_lfp_on_override = 0x%x\n",
 					     sec->enable_lfp_on_override);
 				if (sec->disable_ssc_ddt)
-					printf
+					printt
 					    ("\tdisable_ssc_ddt = 0x%x\n",
 					     sec->disable_ssc_ddt);
 				if (sec->rsvd7)
-					printf("\trsvd7 = 0x%x\n",
+					printt("\trsvd7 = 0x%x\n",
 					       sec->rsvd7);
-				printf("\t*display_clock_mode = 0x%x\n",
+				printt("\t*display_clock_mode = 0x%x\n",
 				       sec->display_clock_mode);
 				if (sec->rsvd8)
-					printf("\trsvd8 = 0x%x\n",
+					printt("\trsvd8 = 0x%x\n",
 					       sec->rsvd8);
-				printf("\tdisable_smooth_vision = 0x%x\n",
+				printt("\tdisable_smooth_vision = 0x%x\n",
 				       sec->disable_smooth_vision);
 				if (sec->single_dvi)
-					printf("\tsingle_dvi = 0x%x\n",
+					printt("\tsingle_dvi = 0x%x\n",
 					       sec->single_dvi);
 				if (sec->rsvd9)
-					printf("\trsvd9 = 0x%x\n",
+					printt("\trsvd9 = 0x%x\n",
 					       sec->rsvd9);
-				printf
+				printt
 				    ("\t*fdi_rx_polarity_inverted = 0x%x\n",
 				     sec->fdi_rx_polarity_inverted);
 				if (sec->rsvd10)
-					printf("\trsvd10 = 0x%x\n",
+					printt("\trsvd10 = 0x%x\n",
 					       sec->rsvd10);
 				if (sec->legacy_monitor_detect)
-					printf
+					printt
 					    ("\tlegacy_monitor_detect = 0x%x\n",
 					     sec->legacy_monitor_detect);
-				printf("\t*int_crt_support = 0x%x\n",
+				printt("\t*int_crt_support = 0x%x\n",
 				       sec->int_crt_support);
-				printf("\t*int_tv_support = 0x%x\n",
+				printt("\t*int_tv_support = 0x%x\n",
 				       sec->int_tv_support);
 				if (sec->int_efp_support)
-					printf
+					printt
 					    ("\tint_efp_support = 0x%x\n",
 					     sec->int_efp_support);
 				if (sec->dp_ssc_enb)
-					printf("\tdp_ssc_enb = 0x%x\n",
+					printt("\tdp_ssc_enb = 0x%x\n",
 					       sec->dp_ssc_enb);
 				if (sec->dp_ssc_freq)
-					printf("\tdp_ssc_freq = 0x%x\n",
+					printt("\tdp_ssc_freq = 0x%x\n",
 					       sec->dp_ssc_freq);
 				if (sec->rsvd11)
-					printf("\trsvd11 = 0x%x\n",
+					printt("\trsvd11 = 0x%x\n",
 					       sec->rsvd11);
 				break;
 			}
 		case BDB_DRIVER_FEATURES:{
 				const struct bdb_driver_features *sec =
 				    (const void *) section;
-				printf("\t*LVDS config: %d\n",
+				printt("\t*LVDS config: %d\n",
 				       sec->lvds_config);
-				printf("\t*Dual frequency: %d\n",
+				printt("\t*Dual frequency: %d\n",
 				       sec->dual_frequency);
 
 				break;
@@ -377,7 +626,7 @@ static void parse_vbt(const void *vbt)
 		case BDB_SDVO_LVDS_OPTIONS:{
 				const struct bdb_sdvo_lvds_options *sec =
 				    (const void *) section;
-				printf("\t*Panel type: %d\n",
+				printt("\t*Panel type: %d\n",
 				       sec->panel_type);
 
 				break;
@@ -386,29 +635,29 @@ static void parse_vbt(const void *vbt)
 				const struct bdb_general_definitions *sec =
 				    (const void *) section;
 				int ndev;
-				printf("\t*CRT DDC GMBUS pin: %d\n",
+				printt("\t*CRT DDC GMBUS pin: %d\n",
 				       sec->crt_ddc_gmbus_pin);
 
-				printf("\tDPMS ACPI: %d\n",
+				printt("\tDPMS ACPI: %d\n",
 				       sec->dpms_acpi);
-				printf("\tSkip boot CRT detect: %d\n",
+				printt("\tSkip boot CRT detect: %d\n",
 				       sec->skip_boot_crt_detect);
-				printf("\tDPMS aim: %d\n", sec->dpms_aim);
+				printt("\tDPMS aim: %d\n", sec->dpms_aim);
 				if (sec->rsvd1)
-					printf("\trsvd1: 0x%x\n",
+					printt("\trsvd1: 0x%x\n",
 					       sec->rsvd1);
-				printf("\tboot_display: { %x, %x }\n",
+				printt("\tboot_display: { %x, %x }\n",
 				       sec->boot_display[0],
 				       sec->boot_display[1]);
 				if (sec->child_dev_size !=
 				    sizeof(struct common_child_dev_config))
-					printf("\tchild_dev_size: %d\n",
+					printt("\tchild_dev_size: %d\n",
 					       sec->child_dev_size);
 				ndev = (secsz - sizeof(*sec)) /
 					sizeof(struct common_child_dev_config);
-				printf("\t%d devices\n", ndev);
+				printt("\t%d devices\n", ndev);
 				for (i = 0; i < ndev; i++) {
-					printf("\t*device type: %x ",
+					printt("\t*device type: %x ",
 					       sec->devices[i].
 					       device_type);
 #define	 DEVICE_TYPE_INT_LFP	0x1022
@@ -416,35 +665,35 @@ static void parse_vbt(const void *vbt)
 #define DEVICE_TYPE_EFP_DVI_HOTPLUG_PWR	0x6052
 					switch (sec->devices[i].device_type) {
 					case DEVICE_TYPE_INT_LFP:
-						printf("(flat panel)\n");
+						printt("(flat panel)\n");
 						break;
 					case DEVICE_TYPE_INT_TV:
-						printf("(TV)\n");
+						printt("(TV)\n");
 						break;
 					case DEVICE_TYPE_EFP_DVI_HOTPLUG_PWR:
-						printf
+						printt
 						    ("(DVI)\n");
 						break;
 					case 0:
-						printf("(Empty)\n");
+						printt("(Empty)\n");
 						break;
 					default:
-						printf("(Unknown)\n");
+						printt("(Unknown)\n");
 						break;
 					}
 					if (!sec->devices[i].device_type)
 						continue;
-					printf("\t *dvo_port: %x\n",
+					printt("\t *dvo_port: %x\n",
 					       sec->devices[i].dvo_port);
-					printf("\t *i2c_pin: %x\n",
+					printt("\t *i2c_pin: %x\n",
 					       sec->devices[i].i2c_pin);
-					printf("\t *slave_addr: %x\n",
+					printt("\t *slave_addr: %x\n",
 					       sec->devices[i].slave_addr);
-					printf("\t *ddc_pin: %x\n",
+					printt("\t *ddc_pin: %x\n",
 					       sec->devices[i].ddc_pin);
-					printf("\t *dvo_wiring: %x\n",
+					printt("\t *dvo_wiring: %x\n",
 					       sec->devices[i].dvo_wiring);
-					printf("\t edid_ptr: %x\n",
+					printt("\t edid_ptr: %x\n",
 					       sec->devices[i].edid_ptr);
 				}
 
@@ -456,84 +705,528 @@ static void parse_vbt(const void *vbt)
 				if (!is_first_skip)
 					break;
 				is_first_skip = 0;
-				printf("\ttype: %x\n", sec->type);
-				printf("\trelstage: %x\n", sec->relstage);
-				printf("\tchipset: %x\n", sec->chipset);
-				printf(sec->lvds_present ? "\tLVDS\n"
+				printt("\ttype: %x\n", sec->type);
+				printt("\trelstage: %x\n", sec->relstage);
+				printt("\tchipset: %x\n", sec->chipset);
+				printt(sec->lvds_present ? "\tLVDS\n"
 				       : "\tNo LVDS\n");
-				printf(sec->tv_present ? "\tTV\n"
+				printt(sec->tv_present ? "\tTV\n"
 				       : "\tNo TV\n");
 				if (sec->rsvd2)
-					printf("\trsvd2: 0x%x\n",
+					printt("\trsvd2: 0x%x\n",
 					       sec->rsvd2);
 				for (i = 0; i < 4; i++)
 					if (sec->rsvd3[i])
-						printf
+						printt
 						    ("\trsvd3[%d]: 0x%x\n",
 						     i, sec->rsvd3[i]);
-				printf("\tSignon: %.155s\n", sec->signon);
-				printf("\tCopyright: %.155s\n",
+				printt("\tSignon: %.155s\n", sec->signon);
+				printt("\tCopyright: %.155s\n",
 				       sec->copyright);
-				printf("\tCode segment: %x\n",
+				printt("\tCode segment: %x\n",
 				       sec->code_segment);
-				printf("\tDOS Boot mode: %x\n",
+				printt("\tDOS Boot mode: %x\n",
 				       sec->dos_boot_mode);
-				printf("\tBandwidth percent: %x\n",
+				printt("\tBandwidth percent: %x\n",
 				       sec->bandwidth_percent);
 				if (sec->rsvd4)
-					printf("\trsvd4: 0x%x\n",
+					printt("\trsvd4: 0x%x\n",
 					       sec->rsvd4);
-				printf("\tBandwidth percent: %x\n",
+				printt("\tBandwidth percent: %x\n",
 				       sec->resize_pci_bios);
 				if (sec->rsvd5)
-					printf("\trsvd5: 0x%x\n",
+					printt("\trsvd5: 0x%x\n",
 					       sec->rsvd5);
 				break;
 			}
 		}
 	}
-
 }
 
-static void parse_vbios(const void *ptr)
+/* Returns a new fileobject containing a valid VBT */
+static void parse_vbt(const struct fileobject *fo,
+		      struct fileobject **vbt)
 {
-	const optionrom_header_t *oh;
-	oh = ptr;
+	*vbt = NULL;
+
+	if (fo->size < sizeof(struct vbt_header)) {
+		printerr("image is to small\n");
+		return;
+	}
+
+	const struct vbt_header *head =
+	    (const struct vbt_header *)fo->data;
+
+	if (memcmp(head->signature, "$VBT", 4) != 0) {
+		printerr("invalid VBT signature\n");
+		return;
+	}
+
+	if (!head->vbt_size || head->vbt_size > fo->size) {
+		printerr("invalid VBT size\n");
+		return;
+	}
+
+	if (!head->bdb_offset ||
+	    head->bdb_offset > fo->size - sizeof(struct bdb_header)) {
+		printerr("invalid BDB offset\n");
+		return;
+	}
+
+	if (!head->header_size || head->header_size > fo->size) {
+		printerr("invalid header size\n");
+		return;
+	}
+
+	const struct bdb_header *const bdb_head =
+	    (const struct bdb_header *)((const u8 *)head + head->bdb_offset);
+	if (memcmp(bdb_head->signature, "BIOS_DATA_BLOCK ", 16) != 0) {
+		printerr("invalid BDB signature\n");
+		return;
+	}
+
+	if (!bdb_head->header_size || bdb_head->header_size > fo->size) {
+		printerr("invalid BDB header size\n");
+		return;
+	}
+
+	/* Duplicate fo as caller is owner and remalloc frees the object */
+	*vbt = remalloc_fo(malloc_fo_sub(fo, 0), head->vbt_size);
+}
+
+/* Option ROM checksum */
+static u8 checksum_vbios(const optionrom_header_t *oh)
+{
+	const u8 *ptr = (const u8 *)oh;
+	size_t i;
+
+	u8 cksum = 0;
+	for (i = 0; i < ((MIN(oh->size, 128)) * 512); i++)
+		cksum += ptr[i];
+
+	return cksum;
+}
+
+/* Verify Option ROM contents */
+static int is_valid_vbios(const struct fileobject *fo)
+{
+	if (fo->size > 64 * 2 * KiB) {
+		printerr("VBIOS is to big\n");
+		return 0;
+	}
+
+	if (fo->size < sizeof(optionrom_header_t)) {
+		printerr("VBIOS is to small\n");
+		return 0;
+	}
+
+	const optionrom_header_t *oh = (const optionrom_header_t *)fo->data;
+
 	if (oh->signature != 0xaa55) {
-		fprintf(stderr, "bad oprom signature: %x\n",
-			oh->signature);
-		return;
+		printerr("bad oprom signature: 0x%x\n", oh->signature);
+		return 0;
 	}
+
+	if (oh->size == 0 || oh->size > 0x80 || oh->size * 512 > fo->size) {
+		printerr("bad oprom size: 0x%x\n", oh->size);
+		return 0;
+	}
+
+	const u8 cksum = checksum_vbios(oh);
+	if (cksum) {
+		if (!ignore_checksum) {
+			printerr("bad oprom checksum: 0x%x\n", cksum);
+			return 0;
+		}
+		printwarn("bad oprom checksum: 0x%x\n", cksum);
+	}
+
+	if (oh->pcir_offset + sizeof(optionrom_pcir_t) > fo->size) {
+		printerr("bad pcir offset: 0x%x\n", oh->pcir_offset);
+		return 0;
+	}
+
+	if (oh->pcir_offset) {
+		const optionrom_pcir_t *pcir;
+		pcir = (const optionrom_pcir_t *)
+		    ((const u8 *)oh + oh->pcir_offset);
+
+		if (pcir->signature != 0x52494350) {
+			printerr("Invalid PCIR signature\n");
+			return 0;
+		}
+
+		if (pcir->vendor != 0x8086) {
+			printerr("Not an Intel VBIOS\n");
+			return 0;
+		}
+
+		if (pcir->classcode[0] != 0 || pcir->classcode[1] != 0 ||
+		    pcir->classcode[2] != 3) {
+			printerr("Not a VGA Option Rom\n");
+			return 0;
+		}
+	} else {
+		printwarn("no PCIR header found\n");
+	}
+
+	return 1;
+}
+
+/*
+ * Parse Option ROM and return a valid VBT fileobject.
+ * Caller has to make sure that it is a valid VBIOS.
+ * Return a NULL fileobject on error.
+ */
+static void parse_vbios(const struct fileobject *fo,
+			struct fileobject **vbt)
+{
+	const optionrom_header_t *oh = (const optionrom_header_t *)fo->data;
+	const struct vbt_header *head;
+	size_t i;
+
+	*vbt = NULL;
+
 	if (!oh->vbt_offset) {
-		fprintf(stderr, "no VBT found\n");
+		printerr("no VBT found\n");
 		return;
 	}
-	parse_vbt((const char *) ptr + oh->vbt_offset);
+
+	if (oh->vbt_offset > (fo->size - sizeof(struct vbt_header))) {
+		printerr("invalid VBT offset\n");
+		return;
+	}
+
+	head = (const struct vbt_header *)fo->data;
+	if (memcmp(head->signature, "$VBT", 4) == 0) {
+		parse_vbt(fo, vbt);
+		if (*vbt)
+			return;
+	}
+
+	printwarn("VBT wasn't found at specified offset\n");
+
+	for (i = sizeof(optionrom_header_t);
+	     i <= fo->size - sizeof(struct vbt_header); i++) {
+		struct fileobject *fo_vbt = malloc_fo_sub(fo, i);
+		if (!fo_vbt)
+			continue;
+
+		head = (const struct vbt_header *)fo_vbt->data;
+		if (memcmp(head->signature, "$VBT", 4) == 0)
+			parse_vbt(fo_vbt, vbt);
+
+		free_fo(fo_vbt);
+
+		if (*vbt)
+			return;
+	}
+}
+
+/* Short VBT summary in human readable form */
+static void print_vbt(const struct fileobject *fo)
+{
+	const struct bdb_header *bdb;
+
+	if (fo->size < sizeof(struct vbt_header))
+		return;
+
+	const struct vbt_header *head = (const struct vbt_header *)fo->data;
+
+	print("Found VBT:\n");
+	printt("signature: <%20.20s>\n", head->signature);
+	printt("version: %d.%02d\n", head->version / 100, head->version % 100);
+	if (head->header_size != sizeof(struct vbt_header))
+		printt("header size: 0x%x\n", head->header_size);
+	printt("VBT size: 0x%x\n", head->vbt_size);
+	printt("VBT checksum: 0x%x\n", head->vbt_checksum);
+
+	if (head->bdb_offset > (fo->size - sizeof(struct bdb_header))) {
+		printerr("invalid BDB offset\n");
+		return;
+	}
+	bdb = (const struct bdb_header *)
+	    ((const char *)head + head->bdb_offset);
+
+	if (memcmp("BIOS_DATA_BLOCK ", bdb->signature, 16) != 0) {
+		printerr("invalid BDB signature:%s\n", bdb->signature);
+		return;
+	}
+	printt("BDB version: %u.%02u\n", bdb->version / 100,
+	       bdb->version % 100);
+}
+
+static void print_usage(const char *argv0, struct option *long_options)
+{
+	size_t i = 0;
+	printf("\nUsage:\n");
+	printf("%s --<SOURCECMD> [filename] --<DESTCMD> [filename]\n\n", argv0);
+	printf("SOURCECMD set the VBT source. Supported:\n");
+	printf(" %-10s: Legacy BIOS area at phys. memory 0xc0000\n",
+	       "inlegacy");
+	printf(" %-10s: Read raw Intel VBT file\n", "invbt");
+	printf(" %-10s: Read VBT from Intel Option ROM file\n\n", "inoprom");
+	printf("DESTCMD set the VBT destination. Supported:\n");
+	printf(" %-10s: Print VBT in human readable form\n", "outdump");
+	printf(" %-10s: Write raw Intel VBT file\n", "outvbt");
+	printf(" %-10s: Patch existing Intel Option ROM\n\n", "patchoprom");
+
+	printf("Supported arguments:\n");
+	while (long_options[i].name) {
+		printf("\t-%c --%s %s\n", long_options[i].val,
+		       long_options[i].name, long_options[i].has_arg ?
+		       "<path>"  : "");
+		i++;
+	};
+}
+
+/* Open a VBIOS file, calculate the checksum and fix it */
+static int fix_vbios_checksum(const char *filename)
+{
+	struct fileobject *fo = read_file(filename);
+	if (!fo) {
+		printerr("%s open failed\n", filename);
+		return 1;
+	}
+
+	if (fo->size < sizeof(optionrom_header_t))
+		return 1;
+
+	optionrom_header_t *oh = (optionrom_header_t *)fo->data;
+
+	if (oh->size * 512 > fo->size)
+		return 1;
+
+	/* fix checksum */
+	oh->checksum = -(checksum_vbios(oh) - oh->checksum);
+
+	if (write_file(filename, fo)) {
+		printerr("%s write failed\n", filename);
+		free_fo(fo);
+		return 1;
+	}
+	free_fo(fo);
+
+	return 0;
+}
+
+/* Return the VBT structure size in bytes */
+static size_t vbt_size(const struct fileobject *fo)
+{
+	if (!fo || fo->size < sizeof(struct vbt_header))
+		return 0;
+	const struct vbt_header *head = (const struct vbt_header *)fo->data;
+
+	return head->vbt_size;
+}
+
+/*
+ * Patch an Intel Option ROM with new VBT.
+ * Caller has to make sure that VBIOS and VBT are valid.
+ * Return 1 on error.
+ */
+static int patch_vbios(struct fileobject *fo,
+		       const struct fileobject *fo_vbt)
+{
+	optionrom_header_t *oh = (optionrom_header_t *)fo->data;
+	struct vbt_header *head;
+
+	struct fileobject *old_vbt = NULL;
+	parse_vbios(fo, &old_vbt);
+
+	if (old_vbt) {
+		if (oh->vbt_offset + vbt_size(old_vbt) == fo->size) {
+			/* Located at the end of file - reduce file size */
+			if (fo->size < vbt_size(old_vbt))
+				return 1;
+			fo = remalloc_fo(fo, fo->size - vbt_size(old_vbt));
+			if (!fo) {
+				printerr("Failed to allocate memory\n");
+				return 1;
+			}
+			oh->vbt_offset = 0;
+		} else if (vbt_size(old_vbt) < vbt_size(fo_vbt)) {
+			/* In the middle of the file - Remove old VBT */
+			memset(fo->data + oh->vbt_offset, 0xff,
+			       vbt_size(old_vbt));
+			oh->vbt_offset = 0;
+		} else {
+			/* New VBT overwrites existing one - Clear memory */
+			memset(fo->data + oh->vbt_offset, 0xff,
+			       vbt_size(old_vbt));
+		}
+
+		free_fo(old_vbt);
+	}
+
+	if (!oh->vbt_offset) {
+		print("increasing VBIOS to append VBT\n");
+		if ((fo->size + vbt_size(fo_vbt)) >= 64 * KiB) {
+			printerr("VBT won't fit\n");
+			return 1;
+		}
+
+		oh->vbt_offset = fo->size;
+		fo = remalloc_fo(fo, fo->size + vbt_size(fo_vbt));
+		if (!fo) {
+			printerr("Failed to allocate memory\n");
+			return 1;
+		}
+		oh->size = (fo->size + 512 - 1) / 512;
+	}
+
+	head = (struct vbt_header *)((u8 *)oh + oh->vbt_offset);
+	memcpy(head, fo_vbt->data, vbt_size(fo_vbt));
+
+	return 0;
 }
 
 int main(int argc, char **argv)
 {
-	const void *ptr;
-	int fd;
-	off_t offset;
-	if (argc == 2) {
-		fd = open(argv[1], O_RDONLY);
-		offset = 0;
-	} else {
-		fd = open("/dev/mem", O_RDONLY);
-		offset = 0xc0000;
+	int opt, option_index = 0;
+
+	size_t has_input = 0, has_output = 0;
+	size_t dump = 0, in_legacy = 0;
+	char *in_vbt = NULL, *in_oprom = NULL;
+	char *out_vbt = NULL, *patch_oprom = NULL;
+	static struct option long_options[] = {
+		{"help", 0, 0, 'h'},
+		{"outdump", 0, 0, 'd'},
+		{"inlegacy", 0, 0, 'l'},
+		{"invbt", required_argument, 0, 'f'},
+		{"inoprom", required_argument, 0, 'o'},
+		{"outvbt", required_argument, 0, 'v'},
+		{"patchoprom", required_argument, 0, 'p'},
+		{0, 0, 0, 0}
+	};
+
+	while ((opt = getopt_long(argc, argv, "hdlf:o:v:p:i",
+		   long_options, &option_index)) != EOF) {
+		switch (opt) {
+		case 'd':
+			dump = 1;
+			has_output = 1;
+			break;
+		case 'l':
+			in_legacy = 1;
+			has_input = 1;
+			break;
+		case 'f':
+			in_vbt = strdup(optarg);
+			has_input = 1;
+			break;
+		case 'o':
+			in_oprom = strdup(optarg);
+			has_input = 1;
+			break;
+		case 'v':
+			out_vbt = strdup(optarg);
+			has_output = 1;
+			break;
+		case 'p':
+			patch_oprom = strdup(optarg);
+			has_output = 1;
+			break;
+		case '?':
+		case 'h':
+			print_usage(argv[0], long_options);
+			exit(0);
+			break;
+		}
 	}
-	if (fd < 0) {
-		fprintf(stderr, "open failed: %s\n", strerror(errno));
+
+	if (!has_input)
+		printerr("No input specified !\n");
+	if (!has_output)
+		printerr("No output specified !\n");
+	if (argc < 2 || argc > 6 || !has_input || !has_output) {
+		print_usage(argv[0], long_options);
 		return 1;
 	}
 
-	ptr = mmap(0, 65536, PROT_READ, MAP_SHARED, fd, offset);
-	if (ptr == MAP_FAILED) {
-		fprintf(stderr, "mmap failed: %s\n", strerror(errno));
+	struct fileobject *fo;
+
+	if (in_legacy)
+		fo = read_physmem(0xc0000);
+	else if (in_vbt)
+		fo = read_file(in_vbt);
+	else
+		fo = read_file(in_oprom);
+
+	if (!fo) {
+		printerr("Failed to read input file\n");
 		return 1;
 	}
-	parse_vbios(ptr);
-	close(fd);
+
+	struct fileobject *vbt = NULL;
+	if (in_legacy || in_oprom) {
+		if (!is_valid_vbios(fo)) {
+			printerr("Invalid input file\n");
+
+			free_fo(fo);
+			return 1;
+		}
+		parse_vbios(fo, &vbt);
+	} else
+		parse_vbt(fo, &vbt);
+
+	free_fo(fo);
+
+	if (!vbt) {
+		printerr("Failed to find VBT.\n");
+		return 1;
+	}
+
+	if (!dump)
+		print_vbt(vbt);
+
+	if (dump) {
+		dump_vbt(vbt);
+	} else if (out_vbt) {
+		if (write_file(out_vbt, vbt))
+			printerr("Failed to write VBT\n");
+		else
+			print("VBT written to %s\n", out_vbt);
+	} else if (patch_oprom) {
+		fo = read_file(patch_oprom);
+		if (!fo) {
+			printerr("Failed to read input file\n");
+			return 1;
+		}
+		if (!is_valid_vbios(fo)) {
+			printerr("Invalid input file\n");
+			free_fo(fo);
+			return 1;
+		}
+		if (patch_vbios(fo, vbt)) {
+			printerr("Failed to patch VBIOS\n");
+			free_fo(fo);
+			return 1;
+		}
+		if (write_file(patch_oprom, fo)) {
+			printerr("Failed to write VBIOS\n");
+			free_fo(fo);
+			return 1;
+		}
+		free_fo(fo);
+		if (fix_vbios_checksum(patch_oprom)) {
+			printerr("Failed to fix checksum\n");
+			return 1;
+		}
+		print("VBIOS %s successfully patched\n", patch_oprom);
+	}
+
+	/* cleanup */
+	if (patch_oprom)
+		free(patch_oprom);
+	if (out_vbt)
+		free(out_vbt);
+	if (in_vbt)
+		free(in_vbt);
+	if (in_oprom)
+		free(in_oprom);
+
+	free_fo(vbt);
+
 	return 0;
 }

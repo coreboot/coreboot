@@ -53,7 +53,7 @@
 
 CONST UINT32 ImageSignature = IMAGE_SIGNATURE;
 CONST UINT32 ModuleSignature = MODULE_SIGNATURE;
-CONST CHAR8 ModuleIdentifier[] = AGESA_ID;
+CONST CHAR8 ModuleIdentifier[8] = AGESA_ID;
 
 /**********************************************************************
  * Interface call:  AmdCreateStruct

@@ -19,7 +19,9 @@
 
 #include <stddef.h>
 #include <soc/smi.h>
+#include <AGESA.h>
 
+const GPIO_CONTROL *get_gpio_table(void);
 const struct sci_source *get_gpe_table(size_t *num);
 size_t variant_board_id(void);
 

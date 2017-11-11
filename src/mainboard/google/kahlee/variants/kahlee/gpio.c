@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <variant/gpio.h>
 
-const GPIO_CONTROL agesa_board_gpios[] = {
+static const GPIO_CONTROL agesa_board_gpios[] = {
 	/* AGPIO2 PCIE/WLAN WAKE# SCI*/
 	{2, Function1, FCH_GPIO_PULL_UP_ENABLE },
 
@@ -99,6 +99,11 @@ const GPIO_CONTROL agesa_board_gpios[] = {
 
 	{-1}
 };
+
+const GPIO_CONTROL *get_gpio_table(void)
+{
+	return agesa_board_gpios;
+}
 
 /*
  * GPE setup table must match ACPI GPE ASL

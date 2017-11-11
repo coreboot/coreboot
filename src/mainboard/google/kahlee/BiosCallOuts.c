@@ -18,17 +18,16 @@
 #include <FchPlatform.h>
 #include <soc/southbridge.h>
 #include <stdlib.h>
-
-extern const GPIO_CONTROL agesa_board_gpios[];
+#include <baseboard/variants.h>
 
 void platform_FchParams_reset(FCH_RESET_DATA_BLOCK *FchParams_reset)
 {
-	FchParams_reset->EarlyOemGpioTable = (void *)agesa_board_gpios;
+	FchParams_reset->EarlyOemGpioTable = (void *)get_gpio_table();
 }
 
 void platform_FchParams_env(FCH_DATA_BLOCK *FchParams_env)
 {
-	FchParams_env->PostOemGpioTable = (void *)agesa_board_gpios;
+	FchParams_env->PostOemGpioTable = (void *)get_gpio_table();
 
 	/* SDHCI/MMC configuration */
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KAHLEE))

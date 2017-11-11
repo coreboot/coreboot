@@ -20,9 +20,14 @@
 #include <soc/southbridge.h>
 #include <stdlib.h>
 
-const GPIO_CONTROL __attribute__((weak)) agesa_board_gpios[] = {
+static const GPIO_CONTROL agesa_board_gpios[] = {
 
 };
+
+const __attribute__((weak)) GPIO_CONTROL *get_gpio_table(void)
+{
+	return agesa_board_gpios;
+}
 
 /*
  * GPE setup table must match ACPI GPE ASL

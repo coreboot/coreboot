@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2017 Google, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,34 +14,35 @@
  * GNU General Public License for more details.
  */
 
-// Use simple device model for this file even in ramstage
-#define __SIMPLE_DEVICE__
-
 #include <arch/io.h>
 #include <reset.h>
+#include <soc/northbridge.h>
+#include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 
-#define HT_INIT_CONTROL			0x6c
- #define HTIC_BIOSR_Detect		(1 << 5)
-
-
-static void set_bios_reset(void)
+/* Clear bits 5, 9 & 10, used to signal the reset type */
+static void clear_bios_reset(void)
 {
 	u32 htic;
-	htic = pci_io_read_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL);
-	htic &= ~HTIC_BIOSR_Detect;
-	pci_io_write_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL, htic);
+	htic = pci_read_config32(SOC_HT_DEV, HT_INIT_CONTROL);
+	htic &= ~HTIC_BIOSR_DETECT;
+	pci_write_config32(SOC_HT_DEV, HT_INIT_CONTROL, htic);
 }
 
 void do_hard_reset(void)
 {
-	set_bios_reset();
-	/* Try rebooting through port 0xcf9 */
-	/*
-	 * Actually it is not a real hard_reset
-	 *  --- it only reset coherent link table,
-	 *  but not reset link freq and width
-	 */
-	outb((0 << 3) | (0 << 2) | (1 << 1), SYS_RESET);
-	outb((0 << 3) | (1 << 2) | (1 << 1), SYS_RESET);
+	clear_bios_reset();
+
+	/* De-assert and then assert all PwrGood signals on CF9 reset. */
+	pm_write16(PWR_RESET_CFG, pm_read16(PWR_RESET_CFG) |
+		TOGGLE_ALL_PWR_GOOD);
+	outb(RST_CMD | SYS_RST, SYS_RESET);
+}
+
+void do_soft_reset(void)
+{
+	clear_bios_reset();
+
+	/* Assert reset signals only. */
+	outb(RST_CMD | SYS_RST, SYS_RESET);
 }

@@ -42,6 +42,8 @@ bootblock-y += BiosCallOuts.c
 bootblock-y += bootblock/bootblock.c
 bootblock-y += early_setup.c
 bootblock-y += pmutil.c
+bootblock-y += reset.c
+bootblock-y += sb_util.c
 bootblock-y += tsc_freq.c
 
 romstage-y += BiosCallOuts.c
@@ -51,6 +53,8 @@ romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
 romstage-y += gpio.c
 romstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += imc.c
 romstage-y += pmutil.c
+romstage-y += reset.c
+romstage-y += sb_util.c
 romstage-y += smbus.c
 romstage-y += smbus_spd.c
 romstage-y += ramtop.c

@@ -24,6 +24,8 @@
 #define D18F0_NODE_ID		0x60
 #define D18F0_CPU_CNT		0x62 /* BKDG defines as a field in DWORD 0x60 */
 # define CPU_CNT_MASK		0x1f /*  CpuCnt + 1 = no. CPUs */
+#define HT_INIT_CONTROL		0x6c
+# define HTIC_BIOSR_DETECT	((1 << 5) | (1 << 9) | (1 << 10))
 
 /* D18F1 - Address Map Registers */
 

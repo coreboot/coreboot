@@ -259,6 +259,15 @@
 
 #define FCH_MISC_REG40_OSCOUT1_EN	BIT(2)
 
+/* IO 0xcf9 - Reset control port*/
+#define   FULL_RST			BIT(3)
+#define   RST_CMD			BIT(2)
+#define   SYS_RST			BIT(1)
+
+/* PMx10 - Power Reset Config */
+#define PWR_RESET_CFG			0x10
+#define   TOGGLE_ALL_PWR_GOOD		BIT(1)
+
 static inline int sb_sata_enable(void)
 {
 	/* True if IDE or AHCI. */

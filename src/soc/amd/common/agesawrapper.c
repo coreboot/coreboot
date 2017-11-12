@@ -24,8 +24,6 @@
 void __attribute__((weak)) SetMemParams(AMD_POST_PARAMS *PostParams) {}
 void __attribute__((weak)) OemPostParams(AMD_POST_PARAMS *PostParams) {}
 
-#define FILECODE UNASSIGNED_FILE_FILECODE
-
 #ifndef __PRE_RAM__
 /* ACPI table pointers returned by AmdInitLate */
 static void *DmiTable;

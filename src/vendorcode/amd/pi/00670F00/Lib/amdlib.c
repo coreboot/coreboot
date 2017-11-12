@@ -45,7 +45,6 @@
 
 #include <AGESA.h>
 #include <cpuRegisters.h>
-#include <Filecode.h>
 #include <Ids.h>
 #include <Porting.h>
 #include "amdlib.h"
@@ -55,8 +54,6 @@ RDATA_GROUP (G1_PEICC)
 #if !defined(AMDLIB_OPTIMIZE)
 	#define AMDLIB_OPTIMIZE
 #endif
-
-#define FILECODE LIB_AMDLIB_FILECODE
 
 BOOLEAN
 STATIC

@@ -42,8 +42,6 @@
 ****************************************************************************
 */
 #include "FchPlatform.h"
-#include "Filecode.h"
-#define FILECODE PROC_FCH_IMC_IMCLIB_FILECODE
 
 /**
  * WriteECmsg

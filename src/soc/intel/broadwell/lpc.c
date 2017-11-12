@@ -601,12 +601,24 @@ static void southcluster_inject_dsdt(device_t device)
 	}
 }
 
+static unsigned long broadwell_write_acpi_tables(device_t device,
+						 unsigned long current,
+						 struct acpi_rsdp *rsdp)
+{
+	if (IS_ENABLED(CONFIG_INTEL_PCH_UART_CONSOLE))
+		current = acpi_write_dbg2_pci_uart(rsdp, current,
+			(CONFIG_INTEL_PCH_UART_CONSOLE_NUMBER == 1) ?
+				PCH_DEV_UART1 : PCH_DEV_UART0,
+			ACPI_ACCESS_SIZE_BYTE_ACCESS);
+	return acpi_write_hpet(device, current, rsdp);
+}
+
 static struct device_operations device_ops = {
 	.read_resources		= &pch_lpc_read_resources,
 	.set_resources		= &pci_dev_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
 	.acpi_inject_dsdt_generator = southcluster_inject_dsdt,
-	.write_acpi_tables      = acpi_write_hpet,
+	.write_acpi_tables      = broadwell_write_acpi_tables,
 	.init			= &lpc_init,
 	.scan_bus		= &scan_lpc_bus,
 	.ops_pci		= &broadwell_pci_ops,

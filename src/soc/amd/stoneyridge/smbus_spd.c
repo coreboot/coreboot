@@ -13,12 +13,9 @@
  * GNU General Public License for more details.
  */
 
+#include <agesawrapper.h>
 #include <device/pci_def.h>
 #include <device/device.h>
-
-/* warning: Porting.h includes an open #pragma pack(1) */
-#include <Porting.h>
-#include <AGESA.h>
 #include <soc/southbridge.h>
 #include <soc/smbus.h>
 #include <dimmSpd.h>

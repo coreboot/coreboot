@@ -16,12 +16,9 @@
 #ifndef __AMD_STONEY_FCHEC__
 #define __AMD_STONEY_FCHEC__
 
+#include <agesawrapper.h>
 #include <soc/imc.h>
-#include "Porting.h"
-#include "AGESA.h"
-#include "FchCommonCfg.h"
 
-extern VOID FchECfancontrolservice (IN VOID *FchDataPtr);
 void agesawrapper_fchecfancontrolservice(void);
 
 #endif

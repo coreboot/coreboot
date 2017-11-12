@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <agesawrapper.h>
 #include <assert.h>
 #include <stdint.h>
 #include <arch/io.h>
@@ -25,11 +26,6 @@
 #include <soc/pci_devs.h>
 #include <cpu/x86/msr.h>
 #include <delay.h>
-
-/* vendor includes */
-#include <Porting.h>
-#include <AGESA.h>
-#include <Fch/Fch.h>
 
 void configure_stoneyridge_uart(void)
 {

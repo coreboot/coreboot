@@ -20,7 +20,6 @@
 #include <soc/southbridge.h>
 
 #include <agesawrapper.h>
-#include <AGESA.h>
 #include <amdlib.h>
 #include <dimmSpd.h>
 

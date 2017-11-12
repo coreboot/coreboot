@@ -15,15 +15,11 @@
 
 #define __SIMPLE_DEVICE__
 
+#include <agesawrapper.h>
 #include <soc/imc.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <delay.h>
-#include <Porting.h>
-#include <AGESA.h>
-#include <Proc/Fch/Common/FchCommonCfg.h>
-#include <Proc/Fch/Fch.h>
-#include <Proc/Fch/FchPlatform.h>
 
 #define VACPI_MMIO_VBASE ((u8 *)ACPI_MMIO_BASE)
 

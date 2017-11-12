@@ -13,8 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <AGESA.h>
-#include <FchPlatform.h>
+#include <agesawrapper.h>
 #include <baseboard/variants.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>

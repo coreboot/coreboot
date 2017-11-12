@@ -14,9 +14,7 @@
  */
 
 #include <chip.h>
-#include <AGESA.h>
 #include <agesawrapper.h>
-#include <PlatformMemoryConfiguration.h>
 
 #define DIMMS_PER_CHANNEL 1
 #if DIMMS_PER_CHANNEL > MAX_DIMMS_PER_CH

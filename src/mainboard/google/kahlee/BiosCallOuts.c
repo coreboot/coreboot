@@ -13,9 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include <AGESA.h>
+#include <agesawrapper.h>
 #include <BiosCallOuts.h>
-#include <FchPlatform.h>
 #include <soc/southbridge.h>
 #include <stdlib.h>
 #include <baseboard/variants.h>

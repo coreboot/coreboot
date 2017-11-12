@@ -19,7 +19,7 @@
 
 #include <stddef.h>
 #include <soc/smi.h>
-#include <AGESA.h>
+#include <agesawrapper.h>
 
 const GPIO_CONTROL *get_gpio_table(void);
 const struct sci_source *get_gpe_table(size_t *num);

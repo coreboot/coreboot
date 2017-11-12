@@ -404,6 +404,43 @@ typedef struct acpi_madt_irqoverride {
 	u16 flags;			/* MPS INTI flags */
 } __packed acpi_madt_irqoverride_t;
 
+#define ACPI_DBG2_PORT_SERIAL			0x8000
+#define  ACPI_DBG2_PORT_SERIAL_16550		0x0000
+#define  ACPI_DBG2_PORT_SERIAL_16550_DBGP	0x0001
+#define  ACPI_DBG2_PORT_SERIAL_ARM_PL011	0x0003
+#define  ACPI_DBG2_PORT_SERIAL_ARM_SBSA		0x000e
+#define  ACPI_DBG2_PORT_SERIAL_ARM_DDC		0x000f
+#define  ACPI_DBG2_PORT_SERIAL_BCM2835		0x0010
+#define ACPI_DBG2_PORT_IEEE1394			0x8001
+#define  ACPI_DBG2_PORT_IEEE1394_STANDARD	0x0000
+#define ACPI_DBG2_PORT_USB			0x8002
+#define  ACPI_DBG2_PORT_USB_XHCI		0x0000
+#define  ACPI_DBG2_PORT_USB_EHCI		0x0001
+#define ACPI_DBG2_PORT_NET			0x8003
+
+/* DBG2: Microsoft Debug Port Table 2 header */
+typedef struct acpi_dbg2_header {
+	struct acpi_table_header header;
+	uint32_t devices_offset;
+	uint32_t devices_count;
+} __attribute__ ((packed)) acpi_dbg2_header_t;
+
+/* DBG2: Microsoft Debug Port Table 2 device entry */
+typedef struct acpi_dbg2_device {
+	uint8_t  revision;
+	uint16_t length;
+	uint8_t  address_count;
+	uint16_t namespace_string_length;
+	uint16_t namespace_string_offset;
+	uint16_t oem_data_length;
+	uint16_t oem_data_offset;
+	uint16_t port_type;
+	uint16_t port_subtype;
+	uint8_t  reserved[2];
+	uint16_t base_address_offset;
+	uint16_t address_size_offset;
+} __attribute__ ((packed)) acpi_dbg2_device_t;
+
 /* FADT (Fixed ACPI Description Table) */
 typedef struct acpi_fadt {
 	struct acpi_table_header header;
@@ -667,6 +704,13 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg);
 
 void acpi_create_facs(acpi_facs_t *facs);
 
+void acpi_create_dbg2(acpi_dbg2_header_t *dbg2_header,
+		      int port_type, int port_subtype,
+		      acpi_addr_t *address, uint32_t address_size,
+		      const char *device_path);
+
+unsigned long acpi_write_dbg2_pci_uart(acpi_rsdp_t *rsdp, unsigned long current,
+				       struct device *dev, uint8_t access_size);
 void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 		      unsigned long (*acpi_fill_dmar)(unsigned long));
 unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,

@@ -40,7 +40,7 @@ AGESA_INC += -I$(AGESA_ROOT)/binaryPI
 AGESA_INC += -I$(AGESA_ROOT)
 AGESA_INC += -I$(AGESA_ROOT)/Include
 AGESA_INC += -I$(src)/vendorcode/amd/pi
-AGESA_INC += -I$(src)/vendorcode/amd/pi/Lib
+AGESA_INC += -I$(AGESA_ROOT)/Lib
 
 AGESA_INC += -I$(AGESA_ROOT)/Proc
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Common
@@ -96,14 +96,14 @@ $(call src-to-obj,libagesa,$1): $(agesa_src_path)/$(notdir $1) $(obj)/config.h $
 
 endef
 
-agesa_raw_files += $(wildcard $(src)/vendorcode/amd/pi/Lib/*.[cS])
+agesa_raw_files += $(wildcard $(AGESA_ROOT)/Lib/*.[cS])
 
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/binaryPI/*.[cS])
 
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Common/*.[cS])
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Psp/PspBaseLib/*.[cS])
 ifeq ($(CONFIG_STONEYRIDGE_IMC_FWM),y)
-agesa_raw_files += $(wildcard $(src)/vendorcode/amd/pi/Lib/imc/*.c)
+agesa_raw_files += $(wildcard $(AGESA_ROOT)/Lib/imc/*.c)
 endif
 
 classes-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += libagesa

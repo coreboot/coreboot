@@ -18,6 +18,7 @@
 #include <amdlib.h>
 #include <BiosCallOuts.h>
 #include "agesawrapper.h"
+#include <reset.h>
 #include <soc/southbridge.h>
 
 #if ENV_BOOTBLOCK
@@ -100,7 +101,6 @@ AGESA_STATUS agesa_EmptyIdsInitData(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 AGESA_STATUS agesa_Reset(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
-	UINT8 Value;
 	UINTN ResetType;
 	AMD_CONFIG_PARAMS *StdHeader;
 
@@ -114,11 +114,13 @@ AGESA_STATUS agesa_Reset(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	 */
 	switch (ResetType) {
 	case WARM_RESET_WHENEVER:
-	case COLD_RESET_WHENEVER:
 	case WARM_RESET_IMMEDIATELY:
+		do_soft_reset();
+		break;
+
+	case COLD_RESET_WHENEVER:
 	case COLD_RESET_IMMEDIATELY:
-		Value = 0x06;
-		LibAmdIoWrite(AccessWidth8, SYS_RESET, &Value, StdHeader);
+		do_hard_reset();
 		break;
 
 	default:

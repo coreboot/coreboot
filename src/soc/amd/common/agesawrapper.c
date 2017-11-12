@@ -13,14 +13,11 @@
  * GNU General Public License for more details.
  */
 
-#include <AGESA.h>
+#include "agesawrapper.h"
 #include <cbfs.h>
 #include <cbmem.h>
 #include <delay.h>
 #include <cpu/x86/mtrr.h>
-#include <FchPlatform.h>
-#include <heapManager.h>
-#include <agesawrapper.h>
 #include <BiosCallOuts.h>
 #include <string.h>
 

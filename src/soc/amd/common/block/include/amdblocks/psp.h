@@ -16,11 +16,10 @@
 #ifndef __AMD_PSP_H__
 #define __AMD_PSP_H__
 
+#include <agesawrapper.h>
 #include <soc/pci_devs.h>
 #include <stdint.h>
 #include <compiler.h>
-#include <Porting.h>
-#include <Proc/Psp/PspBaseLib/PspBaseLib.h>
 
 /* x86 to PSP commands */
 #define MBOX_BIOS_CMD_DRAM_INFO    0x01

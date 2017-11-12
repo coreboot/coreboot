@@ -12,12 +12,11 @@
  */
 
 
-#include <AGESA.h>
+#include "agesawrapper.h"
 #include <amdlib.h>
 #include <arch/acpi.h>
 #include <BiosCallOuts.h>
 #include <cbmem.h>
-#include <heapManager.h>
 #include <string.h>
 
 static void *GetHeapBase(void)

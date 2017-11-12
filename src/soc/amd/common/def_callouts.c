@@ -15,12 +15,9 @@
  */
 
 #include <cbfs.h>
-
-#include <AGESA.h>
 #include <amdlib.h>
-#include <Ids.h>
-#include <agesawrapper.h>
 #include <BiosCallOuts.h>
+#include "agesawrapper.h"
 #include <soc/southbridge.h>
 
 #if ENV_BOOTBLOCK

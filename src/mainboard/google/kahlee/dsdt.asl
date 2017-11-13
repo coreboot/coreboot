@@ -73,7 +73,7 @@ DefinitionBlock (
 		#include <pci_int.asl>
 
 		/* Describe the devices in the Southbridge */
-		#include "acpi/carrizo_fch.asl"
+		#include <soc_fch.asl>
 
 	} /* End \_SB scope */
 

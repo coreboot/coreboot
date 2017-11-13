@@ -58,7 +58,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	TCRT,	 8,	// 0x19 - critical trip point
 	DTSE,	 8,	// 0x1a - Digital Thermal Sensor enable
 	DTS1,	 8,	// 0x1b - DT sensor 1
-	DTS2,	 8,	// 0x1c - DT sensor 2
+	FLVL,	 8,	// 0x1c - current fan level
 	/* Battery Support */
 	Offset (0x1e),
 	BNUM,	 8,	// 0x1e - number of batteries

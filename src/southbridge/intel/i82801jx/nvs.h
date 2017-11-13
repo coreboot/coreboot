@@ -42,7 +42,7 @@ typedef struct {
 	u8	crtt; /* 0x19 - critical trip point */
 	u8	dtse; /* 0x1a - Digital Thermal Sensor enable */
 	u8	dts1; /* 0x1b - DT sensor 1 */
-	u8	dts2; /* 0x1c - DT sensor 2 */
+	u8	flvl; /* 0x1c - current fan level */
 	u8	rsvd2;
 	/* Battery Support */
 	u8	bnum; /* 0x1e - number of batteries */

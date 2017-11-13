@@ -329,7 +329,7 @@ heci_send(const void *msg, size_t len, uint8_t host_addr, uint8_t client_addr)
 			continue;
 		}
 
-		csr = read_cse_csr();
+		csr = read_host_csr();
 		cb_size = ((csr & CSR_CBD) >> CSR_CBD_START) * SLOT_SIZE;
 		/*
 		 * Reserve one slot for the header. Limit max message

@@ -19,7 +19,7 @@
 #include <string.h>
 #include <amd_pci_util.h>
 #include <pc80/i8259.h>
-#include <amd_pci_int_defs.h>
+#include <soc/amd_pci_int_defs.h>
 #include <amd_pci_int_types.h>
 
 const struct pirq_struct *pirq_data_ptr;

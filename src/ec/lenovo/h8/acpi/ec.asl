@@ -286,6 +286,22 @@ Device(EC)
 		^HKEY.RTAB (0xA)
 	}
 
+	/*
+	 * Set FAN disengage:
+	 * Arg0: 1: Run at full speed
+	 *       0: Automatic fan control
+	 */
+	Method (FANE, 1, Serialized)
+	{
+		If (Arg0) {
+			Store (One, FAND)
+			Store (Zero, FANA)
+		} Else {
+			Store (Zero, FAND)
+			Store (One, FANA)
+		}
+	}
+
 	Device (HKEY)
 	{
 		Name (_HID, EisaId ("IBM0068"))

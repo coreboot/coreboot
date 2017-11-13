@@ -101,7 +101,7 @@ External (\PPKG, MethodObj)
 			/* Active fan 10 degree below passive threshold */
 			Subtract (Local0, 10, Local0)
 
-			If (LEqual (\_SB.PCI0.LPCB.EC.FAND, 1)) {
+			If (\FLVL) {
 				/* Turn of 5 degree below trip point */
 				Subtract (Local0, 5, Local0)
 			}
@@ -113,23 +113,27 @@ External (\PPKG, MethodObj)
 
 		PowerResource (FPwR, 0, 0)
 		{
+			/*
+			 * WINDOWS BUG: Don't read from EmbeddedControl
+			 * in PowerResources. Use system-memory instead!
+			 */
 			Method (_STA) {
-				If (LEqual (\_SB.PCI0.LPCB.EC.FAND, 0)) {
-					Return (Zero)
-				} Else {
-					Return (One)
-				}
+				Return (\FLVL)
 			}
 
+			/*
+			 * WINDOWS BUG: Don't write to FIELD elements located
+			 * in another ACPI scope. Call a method that does it!
+			 */
 			Method (_ON) {
-				Store (One, \_SB.PCI0.LPCB.EC.FAND)
-				Store (Zero, \_SB.PCI0.LPCB.EC.FANA)
+				\_SB.PCI0.LPCB.EC.FANE(One)
+				Store (One, \FLVL)
 				Notify (\_TZ.THM0, NOTIFY_TZ_TRIPPTCHG)
 			}
 
 			Method (_OFF) {
-				Store (Zero, \_SB.PCI0.LPCB.EC.FAND)
-				Store (One, \_SB.PCI0.LPCB.EC.FANA)
+				\_SB.PCI0.LPCB.EC.FANE(Zero)
+				Store (Zero, \FLVL)
 				Notify (\_TZ.THM0, NOTIFY_TZ_TRIPPTCHG)
 			}
 		}

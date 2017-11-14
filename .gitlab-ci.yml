@@ -7,12 +7,21 @@ variables:
   RELEASE_DIR: ${CI_PROJECT_DIR}/apu2_fw_rel
 
 stages:
+  - check_dependencies
   - build_crosscompiler
   - build_rom
   - test_rom
   - sign_rom
   - publish_rom
 
+check_dependencies:
+  stage: check_dependencies
+  script:
+    - git ls-remote https://github.com/pcengines/release_manifests.git | grep ${CI_COMMIT_REF_NAME}
+  only:
+    - tags
+    - web 
+    
 build_crosscompiler:
   stage: build_crosscompiler
   tags: 

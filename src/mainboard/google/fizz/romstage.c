@@ -24,9 +24,9 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	FSP_M_CONFIG *mem_cfg = &mupd->FspmConfig;
 	const FSPM_ARCH_UPD *arch_upd = &mupd->FspmArchUpd;
 	/* Rcomp resistor */
-	const u16 rcomp_resistor[] = { 200, 81, 162 };
+	const u16 rcomp_resistor[] = { 121, 81, 100 };
 	/* Rcomp target */
-	const u16 rcomp_target[] = { 100, 40, 40, 23, 40 };
+	const u16 rcomp_target[] = { 100, 40, 20, 20, 26 };
 
 	/* SPD was saved in S0/S5 path, skips it when resumes from S3 */
 	if (arch_upd->BootMode == FSP_BOOT_ON_S3_RESUME)

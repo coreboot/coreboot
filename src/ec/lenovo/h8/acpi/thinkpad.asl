@@ -153,4 +153,41 @@ Device (HKEY)
 	{
 		Return (\_SB.PCI0.LPCB.EC.GSTS)
 	}
+
+	/*
+	 * Returns the current state:
+	 *  Bit 0: BT HW present
+	 *  Bit 1: BT radio enabled
+	 *  Bit 2: BT state at resume
+	 */
+	Method (GBDC, 0)
+	{
+		If (HBDC) {
+			Store(One, Local0)
+			If(\_SB.PCI0.LPCB.EC.BTEB)
+			{
+				Or(Local0, 2, Local0)
+			}
+			/* FIXME: Implement state at resume, for now Enabled */
+			Or(Local0, 4, Local0)
+			Return (Local0)
+		} Else {
+			Return (0)
+		}
+	}
+
+	/*
+	 * Set the current state:
+	 *  Bit 1: BT radio enabled
+	 *  Bit 2: BT state at resume
+	 */
+	Method (SBDC, 1)
+	{
+		If (HBDC) {
+			ShiftRight (And(Arg0, 2), 1, Local0)
+			Store (Local0, \_SB.PCI0.LPCB.EC.BTEB)
+
+			/* FIXME: Store state at resume */
+		}
+	}
 }

@@ -8,6 +8,7 @@ endif
 ramstage-y += h8.c
 ramstage-y += bluetooth.c
 ramstage-y += wwan.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += ssdt.c
 smm-y += smm.c
 
 endif

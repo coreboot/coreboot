@@ -17,7 +17,6 @@
 #define __AMD_PCI_UTIL_H__
 
 #include <stdint.h>
-#include <soc/amd_pci_int_defs.h>
 
 /* FCH index/data registers */
 #define PCI_INTR_INDEX		0xc00

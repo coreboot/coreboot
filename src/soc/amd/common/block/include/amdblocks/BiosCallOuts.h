@@ -18,10 +18,17 @@
 #define __CALLOUTS_AMD_AGESA_H__
 
 #include <amdblocks/agesawrapper.h>
+#include <amdblocks/s3_resume.h>
 
-#define BIOS_HEAP_START_ADDRESS		0x010000000
 #define BIOS_HEAP_SIZE			0x30000
 #define BSP_STACK_BASE_ADDR		0x30000
+
+struct cbmem_usage {
+	uint8_t heap_base[BIOS_HEAP_SIZE];
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+	uint8_t s3_vol_data[S3_VOLATILE_SIZE];
+#endif
+};
 
 typedef struct _BIOS_HEAP_MANAGER {
 	UINT32 StartOfAllocatedNodes;

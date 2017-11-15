@@ -21,7 +21,10 @@
 
 static void *GetHeapBase(void)
 {
-	return cbmem_add(CBMEM_ID_RESUME_SCRATCH, BIOS_HEAP_SIZE);
+	struct cbmem_usage *heap;
+	heap = (struct cbmem_usage *)cbmem_add(CBMEM_ID_RESUME_SCRATCH,
+						sizeof(struct cbmem_usage));
+	return &heap->heap_base;
 }
 
 static void EmptyHeap(int unused)

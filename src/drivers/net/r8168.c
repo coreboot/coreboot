@@ -22,6 +22,8 @@
  */
 
 #include <cbfs.h>
+#include <arch/acpi_device.h>
+#include <arch/acpigen.h>
 #include <string.h>
 #include <arch/io.h>
 #include <console/console.h>
@@ -268,16 +270,66 @@ static void r8168_init(struct device *dev)
 		r8168_set_customized_led(dev, io_base);
 }
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#define R8168_ACPI_HID "R8168"
+static void r8168_net_fill_ssdt(struct device *dev)
+{
+	struct drivers_net_config *config = dev->chip_info;
+	const char *path = acpi_device_path(dev->bus->dev);
+	u32 address;
+
+	if (!path || !config)
+		return;
+
+	/* Device */
+	acpigen_write_scope(path);
+	acpigen_write_device(acpi_device_name(dev));
+	acpigen_write_name_string("_HID", R8168_ACPI_HID);
+	acpigen_write_name_integer("_UID", 0);
+	if (dev->chip_ops)
+		acpigen_write_name_string("_DDN", dev->chip_ops->name);
+
+	/* Address */
+	address = PCI_SLOT(dev->path.pci.devfn) & 0xffff;
+	address <<= 16;
+	address |= PCI_FUNC(dev->path.pci.devfn) & 0xffff;
+	acpigen_write_name_dword("_ADR", address);
+
+	/* Wake capabilities */
+	if (config->wake)
+		acpigen_write_PRW(config->wake, 3);
+
+	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* Scope */
+
+	printk(BIOS_INFO, "%s.%s: %s %s\n", path, acpi_device_name(dev),
+		dev->chip_ops ? dev->chip_ops->name : "", dev_path(dev));
+}
+
+static const char *r8168_net_acpi_name(const struct device *dev)
+{
+	return "RLTK";
+}
+#endif
+
 static struct device_operations r8168_ops  = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = r8168_init,
 	.scan_bus         = 0,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.acpi_name                = &r8168_net_acpi_name,
+	.acpi_fill_ssdt_generator = &r8168_net_fill_ssdt,
+#endif
 };
 
 static const struct pci_driver r8168_driver __pci_driver = {
 	.ops    = &r8168_ops,
 	.vendor = 0x10ec,
 	.device = 0x8168,
+};
+
+struct chip_operations drivers_net_ops = {
+	CHIP_NAME("Realtek r8168")
 };

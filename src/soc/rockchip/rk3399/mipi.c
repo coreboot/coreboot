@@ -162,6 +162,15 @@ static int rk_mipi_dsi_phy_init(struct rk_mipi_dsi *dsi)
 	rk_mipi_dsi_phy_write(dsi, PLL_LOOP_DIVIDER_RATIO,
 			      LOOP_DIV_LOW_SEL(dsi->feedback_div) |
 			      LOW_PROGRAM_EN);
+
+	/*
+	 * we need set divider control register immediately to make
+	 * the configured LSB effective according to IP simulation
+	 * and lab test results. Only in this way can we get correct
+	 * mipi phy pll frequency.
+	 */
+	rk_mipi_dsi_phy_write(dsi, PLL_INPUT_AND_LOOP_DIVIDER_RATIOS_CONTROL,
+			      PLL_LOOP_DIV_EN | PLL_INPUT_DIV_EN);
 	rk_mipi_dsi_phy_write(dsi, PLL_LOOP_DIVIDER_RATIO,
 			      LOOP_DIV_HIGH_SEL(dsi->feedback_div) |
 			      HIGH_PROGRAM_EN);
@@ -209,11 +218,15 @@ static inline int mipi_dsi_pixel_format_to_bpp(enum mipi_dsi_pixel_format fmt)
 static int rk_mipi_dsi_get_lane_bps(struct rk_mipi_dsi *dsi,
 				    const struct edid *edid)
 {
-	u32 i, pre;
-	u64 pclk, pllref, tmp, target_bps;
-	u32 m = 1, n = 1;
+	u64 pclk, target_bps;
 	u32 max_bps = dppa_map[ARRAY_SIZE(dppa_map) - 1].max_mbps * MHz;
 	int bpp;
+	u64 best_freq = 0;
+	u64 fvco_min, fvco_max, fref;
+	u32 min_prediv, max_prediv;
+	u32 prediv, best_prediv;
+	u64 fbdiv, best_fbdiv;
+	u32 min_delta;
 
 	bpp = mipi_dsi_pixel_format_to_bpp(dsi->format);
 	if (bpp < 0) {
@@ -222,32 +235,64 @@ static int rk_mipi_dsi_get_lane_bps(struct rk_mipi_dsi *dsi,
 		return bpp;
 	}
 	pclk = edid->mode.pixel_clock * MSECS_PER_SEC;
+
 	/* take 1 / 0.8, since mbps must bigger than bandwidth of RGB */
 	target_bps = pclk / dsi->lanes * bpp / 8 * 10;
 	if (target_bps >= max_bps) {
 		printk(BIOS_DEBUG, "DPHY clock frequency is out of range\n");
 		return -1;
 	}
-	pllref = OSC_HZ;
-	tmp = pllref;
-	/*
-	 * The limits on the PLL divisor are:
-	 *
-	 *	5MHz <= (pllref / n) <= 40MHz
-	 */
-	for (i = pllref / (5 * MHz); i > div_round_up(pllref, 40 * MHz); i--) {
-		pre = pllref / i;
-		if ((tmp > (target_bps % pre)) && (target_bps / pre < 512)) {
-			tmp = target_bps % pre;
-			n = i;
-			m = target_bps / pre;
-		}
-		if (tmp == 0)
-			break;
+
+	fref = OSC_HZ;
+
+	/* constraint: 5Mhz <= Fref / N <= 40MHz */
+	min_prediv = div_round_up(fref, 40 * MHz);
+	max_prediv = fref / (5 * MHz);
+
+	/* constraint: 80MHz <= Fvco <= 1500Mhz */
+	fvco_min = 80 * MHz;
+	fvco_max = 1500 * MHz;
+	min_delta = 1500 * MHz;
+
+	for (prediv = min_prediv; prediv <= max_prediv; prediv++) {
+		u64 freq;
+		int delta;
+
+		/* Fvco = Fref * M / N */
+		fbdiv = target_bps * prediv / fref;
+
+		/*
+		 * Due to the use of a "by 2 pre-scaler", the range of the
+		 * feedback multiplication value M is limited to even division
+		 * numbers, and m must be in 6 <= m <= 512.
+		 */
+		fbdiv += fbdiv % 2;
+		if (fbdiv < 6 || fbdiv > 512)
+			continue;
+
+		freq = (u64)fbdiv * fref / prediv;
+		if (freq < fvco_min || freq > fvco_max)
+			continue;
+
+		delta = target_bps - freq;
+		delta = ABS(delta);
+		if (delta >= min_delta)
+			continue;
+
+		best_prediv = prediv;
+		best_fbdiv = fbdiv;
+		min_delta = delta;
+		best_freq = freq;
 	}
-	dsi->lane_bps = pllref / n * m;
-	dsi->input_div = n;
-	dsi->feedback_div = m;
+
+	if (best_freq) {
+		dsi->lane_bps = best_freq;
+		dsi->input_div = best_prediv;
+		dsi->feedback_div = best_fbdiv;
+	} else {
+		printk(BIOS_ERR, "Can not find best_freq for DPHY\n");
+		return -1;
+	}
 
 	return 0;
 }

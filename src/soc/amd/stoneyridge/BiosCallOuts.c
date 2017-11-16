@@ -21,7 +21,7 @@
 
 #include <agesawrapper.h>
 #include <amdlib.h>
-#include <dimmSpd.h>
+#include <amdblocks/dimm_spd.h>
 
 AGESA_STATUS agesa_fch_initreset(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 {

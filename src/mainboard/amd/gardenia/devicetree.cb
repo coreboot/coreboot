@@ -14,7 +14,7 @@
 #
 chip soc/amd/stoneyridge
 
-	register "spdAddrLookup" = "
+	register "spd_addr_lookup" = "
 	{
 		{ {0xA2, 0x00} }, // socket 0 - Channel 0, slots 0 & 1
 	}"

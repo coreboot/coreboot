@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2012, 2017 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ AGESA_STATUS
 AmdMemoryReadSPD(IN UINT32 Func, IN UINTN Data,
 				IN OUT AGESA_READ_SPD_PARAMS *SpdData);
 
-int sb_readSpd(uint8_t spdAddress, char *buf, size_t len);
-int smbus_readSpd(int spdAddress, char *buf, size_t len);
+int sb_read_spd(uint8_t spdAddress, char *buf, size_t len);
 
 #endif

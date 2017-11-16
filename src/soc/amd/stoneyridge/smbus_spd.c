@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2012, 2017 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 #include <device/device.h>
 #include <soc/southbridge.h>
 #include <soc/smbus.h>
-#include <dimmSpd.h>
+#include <amdblocks/dimm_spd.h>
 
 /*
  * readspd - Read one or more SPD bytes from a DIMM.
@@ -72,24 +72,24 @@ static int readspd(uint16_t iobase, uint8_t SmbusSlaveAddress,
 	return 0;
 }
 
-static void writePmReg(int reg, int data)
+static void write_pm_reg(int reg, int data)
 {
 	outb(reg, PM_INDEX);
 	outb(data, PM_DATA);
 }
 
-static void setupFch(uint16_t ioBase)
+static void setup_fch(uint16_t ioBase)
 {
-	writePmReg(SMB_ASF_IO_BASE, ioBase >> 8);
+	write_pm_reg(SMB_ASF_IO_BASE, ioBase >> 8);
 	outb(SMB_SPEED_400KHZ, ioBase + SMBTIMING);
 	/* Clear all SMBUS status bits */
 	outb(SMBHST_STAT_CLEAR, ioBase + SMBHSTSTAT);
 	outb(SMBSLV_STAT_CLEAR, ioBase + SMBSLVSTAT);
 }
 
-int sb_readSpd(uint8_t spdAddress, char *buf, size_t len)
+int sb_read_spd(uint8_t spdAddress, char *buf, size_t len)
 {
 	uint16_t ioBase = SMB_BASE_ADDR;
-	setupFch(ioBase);
+	setup_fch(ioBase);
 	return readspd(ioBase, spdAddress, buf, len);
 }

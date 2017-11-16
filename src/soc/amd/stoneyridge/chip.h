@@ -25,7 +25,7 @@
 #define MAX_DIMMS_PER_CH 2
 
 struct soc_amd_stoneyridge_config {
-	u8 spdAddrLookup[MAX_NODES][MAX_DRAM_CH][MAX_DIMMS_PER_CH];
+	u8 spd_addr_lookup[MAX_NODES][MAX_DRAM_CH][MAX_DIMMS_PER_CH];
 	enum {
 		DRAM_CONTENTS_KEEP,
 		DRAM_CONTENTS_CLEAR

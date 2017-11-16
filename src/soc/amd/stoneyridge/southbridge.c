@@ -16,7 +16,6 @@
 #include <console/console.h>
 
 #include <arch/io.h>
-#include <arch/acpi.h>
 #include <bootstate.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
@@ -481,11 +480,6 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 	printk(BIOS_DEBUG, "Loading %x of size %d to nvram pos:%d\n",
 					*old_dword, size, nvram_pos-size);
 	return nvram_pos;
-}
-
-int acpi_get_sleep_type(void)
-{
-	return acpi_sleep_from_pm1(inw(pm_acpi_pm_cnt_blk()));
 }
 
 void sb_enable(device_t dev)

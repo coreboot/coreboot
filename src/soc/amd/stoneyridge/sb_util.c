@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <soc/southbridge.h>
 
 void pm_write8(u8 reg, u8 value)
@@ -113,4 +114,9 @@ void xhci_pm_write32(uint8_t reg, uint32_t value)
 uint32_t xhci_pm_read32(uint8_t reg)
 {
 	return read32((void *)(XHCI_ACPI_PM_MMIO_BASE + reg));
+}
+
+int acpi_get_sleep_type(void)
+{
+	return acpi_sleep_from_pm1(inw(pm_acpi_pm_cnt_blk()));
 }

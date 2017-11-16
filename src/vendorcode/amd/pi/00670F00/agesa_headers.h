@@ -17,7 +17,7 @@
 #define __AGESA_HEADERS_H__
 
 #pragma pack(push)
-#include <Porting.h>
+#include "Porting.h"
 #include "AGESA.h"
 #include "AMD.h"
 

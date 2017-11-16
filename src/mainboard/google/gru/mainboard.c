@@ -34,7 +34,8 @@
 
 /*
  * We have to drive the stronger pull-up within 1 second of powering up the
- * touchpad to prevent its firmware from falling into recovery. Not on Scarlet.
+ * touchpad to prevent its firmware from falling into recovery. Not on
+ * Scarlet-based boards.
  */
 static void configure_touchpad(void)
 {
@@ -90,9 +91,10 @@ static void register_gpio_suspend(void)
 	 * with highest voltage first.
 	 * Since register_bl31() appends to the front of the list, we need to
 	 * register them backwards, with 1.5V coming first.
-	 * 1.5V and 1.8V are EC-controlled on Scarlet, so we skip them.
+	 * 1.5V and 1.8V are EC-controlled on Scarlet derivatives,
+	 * so we skip them.
 	 */
-	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
+	if (!IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)) {
 		static struct bl31_gpio_param param_p15_en = {
 			.h = { .type = PARAM_SUSPEND_GPIO },
 			.gpio = { .polarity = BL31_GPIO_LEVEL_LOW },
@@ -159,7 +161,7 @@ static void configure_sdmmc(void)
 	gpio_output(GPIO(2, A, 2), 1);  /* SDMMC_SDIO_PWR_EN */
 
 	/* set SDMMC_DET_L pin */
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
+	if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
 		/*
 		 * do not have external pull up, so need to
 		 * set this pin internal pull up
@@ -170,10 +172,10 @@ static void configure_sdmmc(void)
 
 	/*
 	 * Keep sd card io domain 3v
-	 * In Scarlet this GPIO set to high will get 3v,
+	 * In Scarlet derivatives, this GPIO set to high will get 3v,
 	 * With other board variants setting this GPIO low results in 3V.
 	 */
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
+	if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
 		gpio_output(GPIO(2, D, 4), 1);
 	else
 		gpio_output(GPIO(2, D, 4), 0);
@@ -226,7 +228,7 @@ static void configure_codec(void)
 	/* AUDIO IO domain 1.8V voltage selection */
 	write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 1));
 
-	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
+	if (!IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
 		gpio_output(GPIO_P18V_AUDIO_PWREN, 1);
 	gpio_output(GPIO_SPK_PA_EN, 0);
 
@@ -235,7 +237,7 @@ static void configure_codec(void)
 
 static void configure_display(void)
 {
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
+	if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)) {
 		gpio_output(GPIO(4, D, 1), 0);	/* DISPLAY_RST_L */
 		gpio_output(GPIO(4, D, 3), 1);	/* PPVARP_LCD */
 		mdelay(10);
@@ -340,7 +342,7 @@ static void mainboard_init(device_t dev)
 	setup_usb(0);
 	if (IS_ENABLED(CONFIG_GRU_HAS_WLAN_RESET))
 		assert_wifi_reset();
-	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
+	if (!IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)) {
 		configure_touchpad();		/* Scarlet: works differently */
 		setup_usb(1);			/* Scarlet: only one USB port */
 	}

@@ -35,6 +35,11 @@ config GRU_HAS_WLAN_RESET
 	default y if BOARD_GOOGLE_GRU || BOARD_GOOGLE_KEVIN || BOARD_GOOGLE_BOB
 	default n
 
+config GRU_BASEBOARD_SCARLET
+	bool
+	default y if BOARD_GOOGLE_SCARLET
+	default n
+
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select BOARD_ID_AUTO

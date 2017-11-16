@@ -44,8 +44,8 @@ void bootblock_mainboard_early_init(void)
 	 */
 	write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 0));
 
-	/* Scarlet gpio4cd iodomain is 1.8V */
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
+	/* Scarlet-based gpio4cd iodomain is 1.8V */
+	if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
 		write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 3));
 
 	/* Reconfigure GPIO1 from dynamic voltage selection through GPIO0_B1 to
@@ -56,7 +56,7 @@ void bootblock_mainboard_early_init(void)
 
 	/* Enable rails powering GPIO blocks, among other things. */
 	gpio_output(GPIO_P30V_EN, 1);
-	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET))
+	if (!IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
 		gpio_output(GPIO_P15V_EN, 1);	/* Scarlet: EC-controlled */
 
 #if IS_ENABLED(CONFIG_DRIVERS_UART)
@@ -102,7 +102,7 @@ static void configure_tpm(void)
 	if (IS_ENABLED(CONFIG_GRU_HAS_TPM2)) {
 		rockchip_spi_init(CONFIG_DRIVER_TPM_SPI_BUS, 1500*KHz);
 
-		if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
+		if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)) {
 			gpio_input(GPIO(2, B, 1));	/* SPI2_MISO no-pull */
 			gpio_input(GPIO(2, B, 2));	/* SPI2_MOSI no-pull */
 			gpio_input(GPIO(2, B, 3));	/* SPI2_CLK no-pull */

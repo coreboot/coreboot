@@ -48,7 +48,7 @@ int pwm_design_voltage[][2] = {
 	[PWM_REGULATOR_CENTERLOG] = {7994, 10499}
 };
 
-/* Applies for Scarlet */
+/* Applies for Scarlet-based boards. */
 int scarlet_pwm_design_voltage[][2] = {
 	[PWM_REGULATOR_GPU] = {7996, 10990},
 	[PWM_REGULATOR_BIG] = {8000, 12992},
@@ -63,7 +63,7 @@ int pwm_enum_to_pwm_number[] = {
 #else
 	[PWM_REGULATOR_CENTERLOG] = -1,
 #endif
-#if IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)
+#if IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)
 	[PWM_REGULATOR_BIG] = 3,
 #else
 	[PWM_REGULATOR_BIG] = 1,
@@ -85,7 +85,7 @@ void pwm_regulator_configure(enum pwm_regulator pwm, int millivolt)
 	} else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && board_id() >= 6) {
 		voltage_min = kevin6_pwm_design_voltage[pwm][0];
 		voltage_max = kevin6_pwm_design_voltage[pwm][1];
-	} else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
+	} else if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)) {
 		voltage_min = scarlet_pwm_design_voltage[pwm][0];
 		voltage_max = scarlet_pwm_design_voltage[pwm][1];
 	}

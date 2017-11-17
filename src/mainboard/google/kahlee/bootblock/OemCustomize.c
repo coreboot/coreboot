@@ -13,9 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <AGESA.h>
 #include <agesawrapper.h>
-#include <PlatformMemoryConfiguration.h>
 
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 7:4, D2F1) for NC*/

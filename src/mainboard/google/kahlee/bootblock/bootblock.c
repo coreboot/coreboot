@@ -14,8 +14,8 @@
  */
 
 #include <bootblock_common.h>
-#include <ec.h>
 #include <soc/southbridge.h>
+#include <variant/ec.h>
 
 void bootblock_mainboard_init(void)
 {

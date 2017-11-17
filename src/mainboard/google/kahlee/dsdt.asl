@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include "ec.h"
+#include <variant/ec.h>
 
 /* DefinitionBlock Statement */
 DefinitionBlock (

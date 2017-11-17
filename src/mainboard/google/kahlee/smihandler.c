@@ -18,7 +18,7 @@
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/smm.h>
 #include <soc/smi.h>
-#include "ec.h"
+#include <variant/ec.h>
 
 void mainboard_smi_sleep(u8 slp_typ)
 {

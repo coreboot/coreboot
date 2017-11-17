@@ -1,0 +1,1 @@
+#include <baseboard/ec.h>

@@ -19,10 +19,10 @@
 #include <agesawrapper.h>
 #include <amd_pci_util.h>
 #include <cbmem.h>
-#include <ec.h>
 #include <baseboard/variants.h>
 #include <soc/nvs.h>
 #include <soc/smi.h>
+#include <variant/ec.h>
 #include <variant/thermal.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

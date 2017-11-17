@@ -41,6 +41,8 @@
  *
  ***************************************************************************/
 
+#include <check_for_wrapper.h>
+
 #ifndef _CPU_FAM_REGISTERS_H_
 #define _CPU_FAM_REGISTERS_H_
 

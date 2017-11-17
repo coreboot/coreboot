@@ -40,6 +40,8 @@
  *
  ***************************************************************************/
 
+#include <check_for_wrapper.h>
+
 #ifndef _CPU_FAMILY_TRANSLATION_H_
 #define _CPU_FAMILY_TRANSLATION_H_
 

@@ -41,6 +41,8 @@
  *
  ***************************************************************************/
 
+#include <check_for_wrapper.h>
+
 #ifndef _CPU_TABLE_H_
 #define _CPU_TABLE_H_
 

@@ -40,6 +40,7 @@
  *
  ***************************************************************************/
 
+#include "check_for_wrapper.h"
 
 #ifndef _AGESA_H_
 #define _AGESA_H_

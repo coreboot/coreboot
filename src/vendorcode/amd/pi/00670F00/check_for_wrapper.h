@@ -13,23 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __AGESA_HEADERS_H__
-#define __AGESA_HEADERS_H__
+/* Do not use header guards on this file */
 
-#define AGESA_HEADERS_ARE_WRAPPED
-#pragma pack(push)
-#include "Porting.h"
-#include "AGESA.h"
-#include "AMD.h"
-
-#include "Proc/Fch/Common/FchCommonCfg.h"
-#include "Proc/Fch/Fch.h"
-#include "Include/Ids.h"
-#include "Include/PlatformMemoryConfiguration.h"
-#include "Proc/Fch/FchPlatform.h"
-#include "Proc/CPU/heapManager.h"
-#include "Proc/Psp/PspBaseLib/PspBaseLib.h"
-#pragma pack(pop)
-#undef AGESA_HEADERS_ARE_WRAPPED
-
+/* This header should be included *BEFORE* any guards in the AGESA header */
+#if !defined AGESA_HEADERS_ARE_WRAPPED && !ENV_LIBAGESA
+#error AGESA headers should be included by agesawrapper.h or agesa_headers.h
 #endif

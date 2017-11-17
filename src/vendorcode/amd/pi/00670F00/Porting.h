@@ -40,6 +40,8 @@
  *
  ***************************************************************************/
 
+#include <check_for_wrapper.h>
+
 #ifndef _PORTING_H_
 #define _PORTING_H_
 

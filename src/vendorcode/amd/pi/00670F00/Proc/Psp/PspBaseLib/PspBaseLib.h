@@ -41,6 +41,8 @@
  *
  ***************************************************************************/
 
+#include <check_for_wrapper.h>
+
 #ifndef _PSP_BASE_LIB_H_
 #define _PSP_BASE_LIB_H_
 

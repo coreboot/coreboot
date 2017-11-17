@@ -39,6 +39,8 @@
  *
  ***************************************************************************/
 
+#include <check_for_wrapper.h>
+
 #ifndef _PSP_DIRECTORY_H_
 #define _PSP_DIRECTORY_H_
 

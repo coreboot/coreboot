@@ -41,6 +41,8 @@
  *
  ***************************************************************************/
 
+#include <check_for_wrapper.h>
+
 #ifndef _AMD_FCH_H_
 #define _AMD_FCH_H_
 

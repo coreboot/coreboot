@@ -26,6 +26,8 @@
  *
  */
 
+#include <check_for_wrapper.h>
+
 #if defined (__GNUC__)
 #include <stdint.h>
 /* I/O intrin functions.  */

@@ -39,6 +39,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***************************************************************************/
+
+#include <check_for_wrapper.h>
+
 #include "Ids.h"
 
 #ifndef _OPTION_IDS_H_

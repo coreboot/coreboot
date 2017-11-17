@@ -17,7 +17,7 @@
 #include <baseboard/variants.h>
 #include <variant/gpio.h>
 
-size_t __attribute__((weak)) variant_board_id(void)
+uint8_t __attribute__((weak)) variant_board_id(void)
 {
 	gpio_t pads[] = {
 		[3] = MEM_CONFIG3,
@@ -26,5 +26,5 @@ size_t __attribute__((weak)) variant_board_id(void)
 		[0] = MEM_CONFIG0,
 	};
 
-	return gpio_pullup_base2_value(pads, ARRAY_SIZE(pads));
+	return gpio_base2_value(pads, ARRAY_SIZE(pads));
 }

@@ -33,22 +33,21 @@ ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)
 
 AGESA_ROOT = $(call strip_quotes,$(CONFIG_AGESA_BINARY_PI_VENDORCODE_PATH))
 
+BINARY_PI_INC  = -I$(AGESA_ROOT)
+BINARY_PI_INC += -I$(AGESA_ROOT)/binaryPI
+BINARY_PI_INC += -I$(AGESA_ROOT)/Include
+BINARY_PI_INC += -I$(AGESA_ROOT)/Lib
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/Common
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/CPU
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/CPU/Family
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/Fch
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/Fch/Common
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/Psp/PspBaseLib
+
+
 AGESA_INC = -I$(obj)
-
-AGESA_INC += -I$(src)/mainboard/$(MAINBOARDDIR)
-AGESA_INC += -I$(AGESA_ROOT)/binaryPI
-AGESA_INC += -I$(AGESA_ROOT)
-AGESA_INC += -I$(AGESA_ROOT)/Include
-AGESA_INC += -I$(src)/vendorcode/amd/pi
-AGESA_INC += -I$(AGESA_ROOT)/Lib
-
-AGESA_INC += -I$(AGESA_ROOT)/Proc
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Common
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Common
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Psp/PspBaseLib
+AGESA_INC += $(BINARY_PI_INC)
 
 AGESA_INC += -I$(src)/soc/amd/stoneyridge/include
 AGESA_INC += -I$(src)/soc/amd/common
@@ -58,22 +57,12 @@ AGESA_INC += -I$(src)/include
 AGESA_INC += -I$(src)/commonlib/include
 AGESA_INC += -I$(VBOOT_SOURCE)/firmware/include
 
-AGESA_CFLAGS += -march=amdfam10 -mno-3dnow -fno-zero-initialized-in-bss
-AGESA_CFLAGS += -fno-strict-aliasing -D__LIBAGESA__
-CFLAGS_x86_32 += $(AGESA_CFLAGS)
-CFLAGS_x86_64 += $(AGESA_CFLAGS)
+AGESA_CFLAGS += -march=amdfam10 -fno-strict-aliasing -D__LIBAGESA__
 
-export AGESA_ROOT := $(AGESA_ROOT)
-export AGESA_INC  := $(AGESA_INC)
-export AGESA_CFLAGS  := $(AGESA_CFLAGS)
-
-CC_bootblock := $(CC_bootblock) $(AGESA_INC) $(AGESA_CFLAGS)
-CC_romstage := $(CC_romstage) $(AGESA_INC) $(AGESA_CFLAGS)
+CC_bootblock := $(CC_bootblock) $(BINARY_PI_INC)
+CC_romstage := $(CC_romstage) $(BINARY_PI_INC)
 CC_postcar:= $(CC_postcar) -I$(AGESA_ROOT)/binaryPI
-CC_ramstage := $(CC_ramstage) $(AGESA_INC) $(AGESA_CFLAGS)
-
-CC_x86_32 := $(CC_x86_32) $(AGESA_INC) $(AGESA_CFLAGS)
-CC_x86_64 := $(CC_x86_64) $(AGESA_INC) $(AGESA_CFLAGS)
+CC_ramstage := $(CC_ramstage) $(BINARY_PI_INC)
 
 #######################################################################
 
@@ -88,10 +77,11 @@ $(agesa_src_path)/$(notdir $1): $1
 
 $(call src-to-obj,libagesa,$1): $(agesa_src_path)/$(notdir $1) $(obj)/config.h $(src)/include/kconfig.h
 	@printf "    CC         $$(subst $(obj)/,,$$(@))\n"
-	$(CC_libagesa) -c -MMD $(CFLAGS_libagesa) $(AGESA_CFLAGS)                 \
-	               $(AGESA_INC)                                               \
-	               -include $(src)/include/rules.h -include $(src)/include/kconfig.h \
-	               -o $$@                                                     \
+	$(CC_libagesa) -c -MMD $(CFLAGS_libagesa) $(AGESA_CFLAGS)             \
+	               $(AGESA_INC)                                           \
+	               -include $(src)/include/rules.h                        \
+	               -include $(src)/include/kconfig.h                      \
+	               -o $$@                                                 \
 	               $(agesa_src_path)/$(notdir $1)
 
 endef

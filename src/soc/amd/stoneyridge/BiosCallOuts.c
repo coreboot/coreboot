@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011, 2017 Advanced Micro Devices, Inc.
  * Copyright (C) 2013 Sage Electronic Engineering, LLC
  * Copyright (C) 2017 Google Inc.
  *
@@ -15,13 +15,17 @@
  * GNU General Public License for more details.
  */
 
+#include <device/device.h>
 #include <device/pci_def.h>
 #include <BiosCallOuts.h>
 #include <soc/southbridge.h>
+#include <soc/pci_devs.h>
+#include <stdlib.h>
 
 #include <agesawrapper.h>
 #include <amdlib.h>
 #include <amdblocks/dimm_spd.h>
+#include "chip.h"
 
 AGESA_STATUS agesa_fch_initreset(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 {
@@ -91,24 +95,53 @@ AGESA_STATUS agesa_fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 
 AGESA_STATUS agesa_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
-	AGESA_STATUS Status = AGESA_UNSUPPORTED;
+	uint8_t spd_address;
+	int err;
+	DEVTREE_CONST struct device *dev;
+	DEVTREE_CONST struct soc_amd_stoneyridge_config *conf;
+	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
 
 	if (!ENV_ROMSTAGE)
-		return Status;
+		return AGESA_UNSUPPORTED;
 
-	if (IS_ENABLED(CONFIG_GENERIC_SPD_BIN)) {
-		AGESA_READ_SPD_PARAMS *info = ConfigPtr;
-		if (info->MemChannelId > 0)
-			return AGESA_UNSUPPORTED;
-		if (info->SocketId != 0)
-			return AGESA_UNSUPPORTED;
-		if (info->DimmId > 1)
-			return AGESA_UNSUPPORTED;
+	dev = dev_find_slot(0, DCT_DEVFN);
+	if (dev == NULL)
+		return AGESA_ERROR;
 
-		die("SPD in cbfs not yet supported.\n");
-	} else {
-		Status = AmdMemoryReadSPD(Func, Data, ConfigPtr);
-	}
+	conf = dev->chip_info;
+	if (conf == NULL)
+		return AGESA_ERROR;
 
-	return Status;
+	if (info->SocketId >= ARRAY_SIZE(conf->spd_addr_lookup))
+		return AGESA_ERROR;
+	if (info->MemChannelId >= ARRAY_SIZE(conf->spd_addr_lookup[0]))
+		return AGESA_ERROR;
+	if (info->DimmId >= ARRAY_SIZE(conf->spd_addr_lookup[0][0]))
+		return AGESA_ERROR;
+
+	spd_address = conf->spd_addr_lookup
+		[info->SocketId][info->MemChannelId][info->DimmId];
+	if (spd_address == 0)
+		return AGESA_ERROR;
+
+	err = mainboard_read_spd(spd_address, (void *)info->Buffer,
+				CONFIG_DIMM_SPD_SIZE);
+
+	/* Read the SPD if the mainboard didn't fill the buffer */
+	if (err || (*info->Buffer == 0))
+		err = sb_read_spd(spd_address, (void *)info->Buffer,
+				CONFIG_DIMM_SPD_SIZE);
+
+	if (err)
+		return AGESA_ERROR;
+
+	return AGESA_SUCCESS;
+}
+
+/* Allow mainboards to fill the SPD buffer */
+__attribute__((weak)) int mainboard_read_spd(uint8_t spdAddress, char *buf,
+						size_t len)
+{
+	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
+	return -1; /* SPD not read */
 }

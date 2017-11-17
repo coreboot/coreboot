@@ -346,37 +346,48 @@ static int tpm2_claim_locality(void)
 	uint8_t access;
 	struct stopwatch sw;
 
-	access = tpm2_read_access_reg();
 	/*
-	 * If active locality is set (maybe reset line is not connected?),
-	 * release the locality and try again.
-	 */
-	if (access & TPM_ACCESS_ACTIVE_LOCALITY) {
-		tpm2_write_access_reg(TPM_ACCESS_ACTIVE_LOCALITY);
-		access = tpm2_read_access_reg();
-	}
-
-	/*
-	 * If cr50 is doing a long crypto operation, it can take up to
-	 * 30 seconds to get a valid status value back
+	 * Locality is released by TPM reset.
+	 *
+	 * If locality is taken at this point, this could be due to the fact
+	 * that the TPM is performing a long operation and has not processed
+	 * reset request yet. We'll wait up to CR50_TIMEOUT_INIT_MS and see if
+	 * it releases locality when reset is processed.
 	 */
 	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_INIT_MS);
-	while (!stopwatch_expired(&sw) && access != TPM_ACCESS_VALID)
+	do {
 		access = tpm2_read_access_reg();
-	if (access != TPM_ACCESS_VALID) {
-		printk(BIOS_ERR, "Invalid reset status: %#x\n", access);
-		return 0;
-	}
+		if (access & TPM_ACCESS_ACTIVE_LOCALITY) {
+			/*
+			 * Don't bombard the chip with traffic, let it keep
+			 * processing the command.
+			 */
+			mdelay(2);
+			continue;
+		}
 
-	tpm2_write_access_reg(TPM_ACCESS_REQUEST_USE);
-	access = tpm2_read_access_reg();
-	if (access != (TPM_ACCESS_VALID | TPM_ACCESS_ACTIVE_LOCALITY)) {
-		printk(BIOS_ERR, "Failed to claim locality 0, status: %#x\n",
-		       access);
-		return 0;
-	}
+		/*
+		 * Ok, the locality is free, TPM must be reset, let's claim
+		 * it.
+		 */
 
-	return 1;
+		tpm2_write_access_reg(TPM_ACCESS_REQUEST_USE);
+		access = tpm2_read_access_reg();
+		if (access != (TPM_ACCESS_VALID | TPM_ACCESS_ACTIVE_LOCALITY)) {
+			break;
+		}
+
+		printk(BIOS_INFO, "TPM ready after %ld ms\n",
+		       stopwatch_duration_msecs(&sw));
+
+		return 1;
+	} while (!stopwatch_expired(&sw));
+
+	printk(BIOS_ERR,
+	       "Failed to claim locality 0 after %ld ms, status: %#x\n",
+	       stopwatch_duration_msecs(&sw), access);
+
+	return 0;
 }
 
 /* Device/vendor ID values of the TPM devices this driver supports. */
@@ -426,9 +437,13 @@ int tpm2_init(struct spi_slave *spi_if)
 
 	printk(BIOS_INFO, " done!\n");
 
-	/* Claim locality 0. */
-	if (!tpm2_claim_locality())
-		return -1;
+	if (ENV_VERSTAGE || ENV_BOOTBLOCK)
+		/*
+		 * Claim locality 0, do it only during the first
+		 * initialization after reset.
+		 */
+		if (!tpm2_claim_locality())
+			return -1;
 
 	read_tpm_sts(&status);
 	if ((status & TPM_STS_FAMILY_MASK) != TPM_STS_FAMILY_TPM_2_0) {

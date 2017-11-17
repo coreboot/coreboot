@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2016 Advanced Micro Devices, Inc.
+ * Copyright (C) 2017 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,3 +12,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+#include <amdblocks/dimm_spd.h>
+#include <baseboard/variants.h>
+
+int mainboard_read_spd(uint8_t spdAddress, char *buf, size_t len)
+{
+	return variant_mainboard_read_spd(spdAddress, buf, len);
+}

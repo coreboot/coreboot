@@ -19,14 +19,13 @@
 #ifndef __ACPI__
 #include <soc/gpio.h>
 
-#define MEM_CONFIG0	GPIO_135
-#define MEM_CONFIG1	GPIO_140
-#define MEM_CONFIG2	GPIO_144
 /*
- * Kahlee only uses 3 GPIOs to determine memory configuration, but other
- * variants use 4. MEM_CONFIG3 must be defined so that the weak baseboard
- * version of the variant_board_id() function can compile.
+ * Kahlee doesn't use MEM_CONFIG GPIOs, but they are required to build
+ * the baseboard weak memory_sku function.
  */
+#define MEM_CONFIG0	0
+#define MEM_CONFIG1	0
+#define MEM_CONFIG2	0
 #define MEM_CONFIG3	0
 
 /* SPI Write protect */

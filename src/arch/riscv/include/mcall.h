@@ -23,31 +23,11 @@
 /* We save 37 registers, currently. */
 #define MENTRY_FRAME_SIZE (HLS_SIZE + 37 * 8)
 
-#define MCALL_HART_ID			 0
-#define MCALL_NUM_HARTS			 1
-#define MCALL_QUERY_MEMORY		 2
-#define MCALL_CONSOLE_PUTCHAR		 3
-#define MCALL_CONSOLE_GETCHAR		 4
-#define MCALL_SEND_IPI			 6
-#define MCALL_CLEAR_IPI			 7
-#define MCALL_SHUTDOWN			 8
-#define MCALL_SET_TIMER			 9
-#define MCALL_REMOTE_SFENCE_VM		10
-#define MCALL_REMOTE_FENCE_I		11
-#define MCALL_CONFIG_STRING_BASE	12
-#define MCALL_CONFIG_STRING_SIZE	13
-
 #ifndef __ASSEMBLER__
 
 #include <arch/encoding.h>
 #include <atomic.h>
 #include <stdint.h>
-
-typedef struct {
-	unsigned long base;
-	unsigned long size;
-	unsigned long node_id;
-} memory_block_info;
 
 typedef struct {
 	unsigned long dev;
@@ -80,14 +60,6 @@ typedef struct {
 
 #define MACHINE_STACK_SIZE RISCV_PGSIZE
 
-uintptr_t mcall_query_memory(uintptr_t id, memory_block_info *p);
-uintptr_t mcall_console_putchar(uint8_t ch);
-uintptr_t mcall_dev_req(sbi_device_message *m);
-uintptr_t mcall_dev_resp(void);
-uintptr_t mcall_set_timer(unsigned long long when);
-uintptr_t mcall_clear_ipi(void);
-uintptr_t mcall_send_ipi(uintptr_t recipient);
-uintptr_t mcall_shutdown(void);
 void hls_init(uint32_t hart_id); // need to call this before launching linux
 
 #endif // __ASSEMBLER__

@@ -28,67 +28,12 @@
 #include <arch/barrier.h>
 #include <arch/errno.h>
 #include <atomic.h>
-#include <commonlib/configstring.h>
 #include <console/console.h>
 #include <mcall.h>
 #include <string.h>
 #include <vm.h>
 
 int mcalldebug; // set this interactively for copious debug.
-
-uintptr_t mcall_query_memory(uintptr_t id, memory_block_info *info)
-{
-	if (id == 0) {
-		uintptr_t base;
-		size_t size;
-
-		query_mem(configstring(), &base, &size);
-
-		mprv_write_ulong(&info->base, base);
-		mprv_write_ulong(&info->size, size);
-		return 0;
-	}
-
-	return -1;
-}
-
-uintptr_t mcall_send_ipi(uintptr_t recipient)
-{
-	die("mcall_send_ipi is currently not implemented");
-	return 0;
-}
-
-uintptr_t mcall_clear_ipi(void)
-{
-	// only clear SSIP if no other events are pending
-	if (HLS()->device_response_queue_head == NULL) {
-		clear_csr(mip, MIP_SSIP);
-		/* Ensure the other hart sees it. */
-		mb();
-	}
-
-	return atomic_swap(&HLS()->ipi_pending, 0);
-}
-
-uintptr_t mcall_shutdown(void)
-{
-	die("mcall_shutdown is currently not implemented");
-	return 0;
-}
-
-uintptr_t mcall_set_timer(uint64_t when)
-{
-	uint64_t *timecmp = HLS()->timecmp;
-
-	if (mcalldebug)
-		printk(BIOS_SPEW,
-		       "hart %d: HLS %p: mcall timecmp@%p to 0x%llx\n",
-		       HLS()->hart_id, HLS(), timecmp, when);
-	*timecmp = when;
-	clear_csr(mip, MIP_STIP);
-	set_csr(mie, MIP_MTIP);
-	return 0;
-}
 
 void hls_init(uint32_t hart_id)
 {
@@ -102,10 +47,4 @@ void hls_init(uint32_t hart_id)
 
 	printk(BIOS_SPEW, "Time is %p and timecmp is %p\n",
 	       HLS()->time, HLS()->timecmp);
-}
-
-uintptr_t mcall_console_putchar(uint8_t ch)
-{
-	do_putchar(ch);
-	return 0;
 }

@@ -15,61 +15,13 @@
  */
 
 #include <arch/exception.h>
-#include <arch/sbi.h>
 #include <console/console.h>
-#include <mcall.h>
 #include <string.h>
 #include <vm.h>
 #include <commonlib/configstring.h>
 
 static uint64_t *time;
 static uint64_t *timecmp;
-
-void handle_supervisor_call(trapframe *tf) {
-	uintptr_t call = tf->gpr[17]; /* a7 */
-	uintptr_t arg0 = tf->gpr[10]; /* a0 */
-	uintptr_t arg1 = tf->gpr[11]; /* a1 */
-	uintptr_t returnValue;
-	switch(call) {
-		case MCALL_HART_ID:
-			printk(BIOS_DEBUG, "Getting hart id...\n");
-			returnValue = read_csr(0xf14);//mhartid);
-			break;
-		case MCALL_NUM_HARTS:
-			/* TODO: parse the hardware-supplied config string and
-			   return the correct value */
-			returnValue = 1;
-			break;
-		case MCALL_CONSOLE_PUTCHAR:
-			returnValue = mcall_console_putchar(arg0);
-			break;
-		case MCALL_SEND_IPI:
-			printk(BIOS_DEBUG, "Sending IPI...\n");
-			returnValue = mcall_send_ipi(arg0);
-			break;
-		case MCALL_CLEAR_IPI:
-			printk(BIOS_DEBUG, "Clearing IPI...\n");
-			returnValue = mcall_clear_ipi();
-			break;
-		case MCALL_SHUTDOWN:
-			printk(BIOS_DEBUG, "Shutting down...\n");
-			returnValue = mcall_shutdown();
-			break;
-		case MCALL_SET_TIMER:
-			returnValue = mcall_set_timer(arg0);
-			break;
-		case MCALL_QUERY_MEMORY:
-			printk(BIOS_DEBUG, "Querying memory, CPU #%lld...\n", arg0);
-			returnValue = mcall_query_memory(arg0, (memory_block_info*) arg1);
-			break;
-		default:
-			printk(BIOS_DEBUG, "ERROR! Unrecognized SBI call\n");
-			returnValue = 0;
-			break; // note: system call we do not know how to handle
-	}
-	tf->gpr[10] = returnValue;
-	write_csr(mepc, read_csr(mepc) + 4);
-}
 
 static const char *const exception_names[] = {
 	"Instruction address misaligned",
@@ -204,6 +156,7 @@ void trap_handler(trapframe *tf)
 		case CAUSE_FAULT_LOAD:
 		case CAUSE_FAULT_STORE:
 		case CAUSE_USER_ECALL:
+		case CAUSE_SUPERVISOR_ECALL:
 		case CAUSE_HYPERVISOR_ECALL:
 		case CAUSE_MACHINE_ECALL:
 			print_trap_information(tf);
@@ -215,11 +168,6 @@ void trap_handler(trapframe *tf)
 		case CAUSE_MISALIGNED_STORE:
 			print_trap_information(tf);
 			handle_misaligned_store(tf);
-			return;
-		case CAUSE_SUPERVISOR_ECALL:
-			/* Don't print so we make console putchar calls look
-			   the way they should */
-			handle_supervisor_call(tf);
 			return;
 		default:
 			printk(BIOS_EMERG, "================================\n");

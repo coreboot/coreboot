@@ -16,7 +16,6 @@
 
 #include <arch/barrier.h>
 #include <arch/encoding.h>
-#include <arch/sbi.h>
 #include <atomic.h>
 #include <console/console.h>
 #include <stdint.h>
@@ -144,7 +143,6 @@ pte_t pte_create(uintptr_t ppn, int prot, int user)
 // The current RISCV *physical* address space is this:
 // * 0 - 2 GiB: miscellaneous IO devices
 // * 2 GiB - 4 GiB DRAM
-// * top 2048 bytes of memory: SBI (which we round out to a 4K page)
 // We have determined, also, that if code references a physical address
 // not backed by a device, we'll take a fault. In other words, we don't
 // need to finely map the memory-mapped devices as we would on an x86.
@@ -166,16 +164,11 @@ pte_t pte_create(uintptr_t ppn, int prot, int user)
 // I.e. we use 1 GiB PTEs for 4 GiB.
 // Linux/BSD uses this mapping just enough to replace it.
 //
-// The SBI page is the last page in the 64 bit address space.
-// map that using the middle_pts shown below.
+// Top 2G map: map the 2 Gib - 4 GiB of physical address space to
+// 0xffffffff_80000000. This will be needed until the GNU toolchain can compile
+// code to run at 0xffffffc000000000, i.e. the start of Sv39.
 //
-// Top 2G map, including SBI page: map the 2 Gib - 4 GiB of physical
-// address space to 0xffffffff_80000000. This will be needed until the
-// GNU toolchain can compile code to run at 0xffffffc000000000,
-// i.e. the start of Sv39.
-//
-// Only Harvey/Plan 9 uses this Mapping, and temporarily.  It can
-// never be full removed as we need the 4KiB mapping for the SBI page.
+// Only Harvey/Plan 9 uses this Mapping, and temporarily.
 //
 // standard RISCV map long term: Map IO space, and all of DRAM, to the *lowest*
 // possible negative address for this implementation,
@@ -187,15 +180,13 @@ pte_t pte_create(uintptr_t ppn, int prot, int user)
 // It is our intent on Harvey (and eventually Akaros) that we use
 // this map, once the toolchain can correctly support it.
 // We have tested this arrangement and it lets us boot harvey to user mode.
-void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart, pte_t *sbi_pt)
+void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart, pte_t *pt)
 {
-	memset(sbi_pt, 0, RISCV_PGSIZE);
-	// need to leave room for sbi page
 	// 0xFFF... - 0xFFFFFFFF81000000 - RISCV_PGSIZE
 	intptr_t memorySize = 0x7F000000;
 
 	// middle page table
-	pte_t* middle_pt = (void*)sbi_pt + RISCV_PGSIZE;
+	pte_t* middle_pt = (void*)pt;
 	size_t num_middle_pts = 2; // 3 level page table, 39 bit virtual address space for now
 
 	// root page table
@@ -214,20 +205,6 @@ void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart, pte_t *sbi_pt)
 		middle_pt[l2_idx] = pte_create(paddr >> RISCV_PGSHIFT,
 					       PTE_U|PTE_R|PTE_W|PTE_X, 0);
 	}
-
-	// map SBI at top of vaddr space
-	// only need to map a single page for sbi interface
-	uintptr_t num_sbi_pages = 1;
-	uintptr_t sbiStartAddress = (uintptr_t) &sbi_page;
-	uintptr_t sbiAddr = sbiStartAddress;
-	for (uintptr_t i = 0; i < num_sbi_pages; i++) {
-		uintptr_t idx = (1 << RISCV_PGLEVEL_BITS) - num_sbi_pages + i;
-		sbi_pt[idx] = pte_create(sbiAddr >> RISCV_PGSHIFT,
-					 PTE_R|PTE_X, 0);
-		sbiAddr += RISCV_PGSIZE;
-	}
-	pte_t* sbi_pte = middle_pt + ((num_middle_pts << RISCV_PGLEVEL_BITS)-1);
-	*sbi_pte = ptd_create((uintptr_t)sbi_pt >> RISCV_PGSHIFT);
 
 	// IO space. Identity mapped.
 	root_pt[0x000] = pte_create(0x00000000 >> RISCV_PGSHIFT,

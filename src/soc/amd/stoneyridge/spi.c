@@ -114,7 +114,7 @@ void spi_init(void)
 }
 
 static int do_command(uint8_t cmd, const void *dout,
-		size_t bytesout, void *din, size_t *bytesin)
+		size_t bytesout, uint8_t **din, size_t *bytesin)
 {
 	size_t count;
 	size_t max_in = MIN(*bytesin, SPI_FIFO_DEPTH);
@@ -138,8 +138,8 @@ static int do_command(uint8_t cmd, const void *dout,
 	for (count = 0; count < bytesout; count++)
 		spi_read8(SPI_CNTRL1); /* skip the bytes we sent */
 
-	for (count = 0; count < max_in; count++, din++)
-		*(uint8_t *)din = spi_read8(SPI_CNTRL1);
+	for (count = 0; count < max_in; count++, (*din)++)
+		**din = spi_read8(SPI_CNTRL1);
 
 	*bytesin -= max_in;
 	return 0;
@@ -168,7 +168,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	}
 
 	do {
-		if (do_command(cmd, dout, bytesout, din, &bytesin))
+		if (do_command(cmd, dout, bytesout, (uint8_t **)&din, &bytesin))
 			return -1;
 	} while (bytesin);
 

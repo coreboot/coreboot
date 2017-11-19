@@ -1,5 +1,5 @@
 config BOARD_GOOGLE_BANON
-	bool "Banon (Acer 15.6\" Chromebook)"
+	bool "Banon (Acer Chromebook 15 (CB3-532))"
 	select BOARD_GOOGLE_BASEBOARD_CYAN
 
 config BOARD_GOOGLE_CELES
@@ -7,7 +7,7 @@ config BOARD_GOOGLE_CELES
 	select BOARD_GOOGLE_BASEBOARD_CYAN
 
 config BOARD_GOOGLE_CYAN
-	bool "Cyan (Acer Chromebook R11)"
+	bool "Cyan (Acer Chromebook R11 (C738T))"
 	select BOARD_GOOGLE_BASEBOARD_CYAN
 
 config BOARD_GOOGLE_EDGAR
@@ -15,11 +15,11 @@ config BOARD_GOOGLE_EDGAR
 	select BOARD_GOOGLE_BASEBOARD_CYAN
 
 config BOARD_GOOGLE_KEFKA
-	bool "Kefka (Dell Chromebook 11 Model 3180)"
+	bool "Kefka (Dell Chromebook 11 3180/3189)"
 	select BOARD_GOOGLE_BASEBOARD_CYAN
 
 config BOARD_GOOGLE_REKS
-	bool "Reks (Lenovo Chromebook 11)"
+	bool "Reks (Lenovo N22/N42 Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_CYAN
 
 config BOARD_GOOGLE_RELM
@@ -31,7 +31,7 @@ config BOARD_GOOGLE_SETZER
 	select BOARD_GOOGLE_BASEBOARD_CYAN
 
 config BOARD_GOOGLE_TERRA
-	bool "Terra (ASUS Chromebook C202SA/C300SA)"
+	bool "Terra (ASUS Chromebook C202SA/C300SA/C301SA)"
 	select BOARD_GOOGLE_BASEBOARD_CYAN
 
 config BOARD_GOOGLE_ULTIMA

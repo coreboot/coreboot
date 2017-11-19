@@ -1,2 +1,2 @@
 config BOARD_GOOGLE_LARS
-	bool "Lars (Chromebook 14 for work (CP5-471))"
+	bool "Lars (Acer Chromebook 14 for Work (CP5-471))"

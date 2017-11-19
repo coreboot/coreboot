@@ -1,5 +1,5 @@
 config BOARD_GOOGLE_MCCLOUD
-	bool "Mccloud (Acer Chromebox)"
+	bool "Mccloud (Acer Chromebox CXI)"
 	select BOARD_GOOGLE_BASEBOARD_BELTINO
 
 config BOARD_GOOGLE_MONROE
@@ -11,7 +11,7 @@ config BOARD_GOOGLE_PANTHER
 	select BOARD_GOOGLE_BASEBOARD_BELTINO
 
 config BOARD_GOOGLE_TRICKY
-	bool "Tricky (Dell Chromebox)"
+	bool "Tricky (Dell Chromebox 3010)"
 	select BOARD_GOOGLE_BASEBOARD_BELTINO
 
 config BOARD_GOOGLE_ZAKO

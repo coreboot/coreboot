@@ -18,13 +18,12 @@
 #include <arch/encoding.h>
 #include <rules.h>
 #include <console/console.h>
-#include <commonlib/configstring.h>
 
 void arch_prog_run(struct prog *prog)
 {
 	void (*doit)(void *) = prog_entry(prog);
 	void riscvpayload(const char *configstring, void *payload);
-	const char *config = configstring();
+	const char *config = NULL;
 
 	if (ENV_RAMSTAGE && prog_type(prog) == PROG_PAYLOAD) {
 		printk(BIOS_SPEW, "Config string: '%s'\n", config);

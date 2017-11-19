@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include <string.h>
 #include <vm.h>
-#include <commonlib/configstring.h>
 
 static uint64_t *time;
 static uint64_t *timecmp;

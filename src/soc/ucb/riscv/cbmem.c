@@ -12,7 +12,6 @@
  */
 
 #include <cbmem.h>
-#include <commonlib/configstring.h>
 
 void *cbmem_top(void)
 {

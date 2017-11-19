@@ -24,6 +24,7 @@
 #include "me.h"
 #include "mmap.h"
 #include "intelmetool.h"
+#include "rcba.h"
 
 #define FD2 0x3428
 #define ME_COMMAND_DELAY 10000
@@ -32,8 +33,6 @@ extern int fd_mem;
 int debug = 0;
 
 static uint32_t fd2 = 0;
-static const int size = 0x4000;
-static volatile uint8_t *rcba;
 
 static void dumpmem(uint8_t *phys, uint32_t size)
 {
@@ -61,16 +60,6 @@ static void dumpmemfile(uint8_t *phys, uint32_t size)
 		fprintf(fp, "%c", *((uint8_t *) (phys + i)));
 	}
 	fclose(fp);
-}
-
-static void rehide_me(void)
-{
-	if (fd2 & 0x2) {
-		printf("Re-hiding MEI device...");
-		fd2 = *(uint32_t *)(rcba + FD2);
-		*(uint32_t *)(rcba + FD2) = fd2 | 0x2;
-		printf("done\n");
-	}
 }
 
 /* You need >4GB total ram, in kernel cmdline, use 'mem=1000m'
@@ -103,7 +92,9 @@ static void dump_me_memory(void)
 		printf("done\n\nHere are the first bytes:\n");
 		dumpmemfile(dump, 0x2000000);
 		//printf("Try reading 0x%zx with other mmap tool...\n"
-		//	"Press enter to quit, you only get one chance to run this tool before reboot required for some reason\n", me_clone);
+		//       "Press enter to quit, you only get one chance to run"
+		//       "this tool before reboot required for some reason\n",
+		//       me_clone);
 		while (getc(stdin) != '\n') {};
 		unmap_physical(dump, 0x2000000);
 	}
@@ -123,27 +114,36 @@ static int pci_platform_scan(void)
 	pci_scan_bus(pacc);
 
 	for (dev=pacc->devices; dev; dev=dev->next) {
-		pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_SIZES | PCI_FILL_CLASS);
+		pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES |
+				   PCI_FILL_SIZES | PCI_FILL_CLASS);
 		name = pci_lookup_name(pacc, namebuf, sizeof(namebuf),
 			PCI_LOOKUP_DEVICE, dev->vendor_id, dev->device_id);
 		if (name == NULL)
 			name = "<unknown>";
-		if (dev->vendor_id == PCI_VENDOR_ID_INTEL) {
-			if (PCI_DEV_HAS_ME_DISABLE(dev->device_id)) {
-				printf(CGRN "Good news, you have a `%s` so ME is present but can be disabled, continuing...\n\n" RESET, name);
-				break;
-			} else if (PCI_DEV_HAS_ME_DIFFICULT(dev->device_id)) {
-				printf(CRED "Bad news, you have a `%s` so you have ME hardware on board and you can't control or disable it, continuing...\n\n" RESET, name);
-				break;
-			} else if (PCI_DEV_CAN_DISABLE_ME_IF_PRESENT(dev->device_id)) {
-				printf(CYEL "Not sure if ME hardware is present because you have a `%s`, but it is possible to disable it if you do, continuing...\n\n" RESET, name);
-				break;
-			} else if (PCI_DEV_ME_NOT_SURE(dev->device_id)) {
-				printf(CYEL "Found `%s`. Not sure whether you have ME hardware, exiting\n\n" RESET, name);
-				pci_cleanup(pacc);
-				return 1;
-				break;
-			}
+		if (dev->vendor_id != PCI_VENDOR_ID_INTEL)
+			continue;
+
+		if (PCI_DEV_HAS_ME_DISABLE(dev->device_id)) {
+			printf(CGRN "Good news, you have a `%s` so ME is "
+			       "present but can be disabled, continuing...\n\n"
+			       RESET, name);
+			break;
+		} else if (PCI_DEV_HAS_ME_DIFFICULT(dev->device_id)) {
+			printf(CRED "Bad news, you have a `%s` so you have ME "
+			       "hardware on board and you can't control or "
+			       "disable it, continuing...\n\n" RESET, name);
+			break;
+		} else if (PCI_DEV_CAN_DISABLE_ME_IF_PRESENT(dev->device_id)) {
+			printf(CYEL "Not sure if ME hardware is present "
+			       "because you have a `%s`, but it is possible to "
+			       "disable it if you do, continuing...\n\n" RESET,
+			       name);
+			break;
+		} else if (PCI_DEV_ME_NOT_SURE(dev->device_id)) {
+			printf(CYEL "Found `%s`. Not sure whether you have ME "
+			       "hardware, exiting\n\n" RESET, name);
+			pci_cleanup(pacc);
+			return 1;
 		}
 	}
 
@@ -152,7 +152,8 @@ static int pci_platform_scan(void)
 	    !PCI_DEV_HAS_ME_DIFFICULT(dev->device_id) &&
 	    !PCI_DEV_CAN_DISABLE_ME_IF_PRESENT(dev->device_id) &&
 	    !PCI_DEV_ME_NOT_SURE(dev->device_id)) {
-		printf(CCYN "ME is not present on your board or unkown\n\n" RESET);
+		printf(CCYN "ME is not present on your board or unknown\n\n"
+		       RESET);
 		pci_cleanup(pacc);
 		return 1;
 	}
@@ -160,6 +161,43 @@ static int pci_platform_scan(void)
 	pci_cleanup(pacc);
 
 	return 0;
+}
+
+static int activate_me(void)
+{
+	if (read_rcba32(FD2, &fd2)) {
+		printf("Error reading RCBA\n");
+		return 1;
+	}
+	if (write_rcba32(FD2, fd2 & ~0x2)) {
+		printf("Error writing RCBA\n");
+		return 1;
+	}
+	if (debug) {
+		if (fd2 & 0x2)
+			printf("MEI was hidden on PCI, now unlocked\n");
+		else
+			printf("MEI not hidden on PCI, checking if visible\n");
+	}
+	return 0;
+}
+
+static void rehide_me(void)
+{
+	if (fd2 & 0x2) {
+		if (debug)
+			printf("Re-hiding MEI device...");
+		if (read_rcba32(FD2, &fd2)) {
+			printf("Error reading RCBA\n");
+			return;
+		}
+		if (write_rcba32(FD2, fd2 | 0x2)) {
+			printf("Error writing RCBA\n");
+			return;
+		}
+		if (debug)
+			printf("done\n");
+	}
 }
 
 static struct pci_dev *pci_me_interface_scan(const char **name, char *namebuf,
@@ -176,14 +214,16 @@ static struct pci_dev *pci_me_interface_scan(const char **name, char *namebuf,
 	pci_scan_bus(pacc);
 
 	for (dev=pacc->devices; dev; dev=dev->next) {
-		pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_SIZES | PCI_FILL_CLASS);
+		pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES |
+				   PCI_FILL_SIZES | PCI_FILL_CLASS);
 		*name = pci_lookup_name(pacc, namebuf, namebuf_size,
 			PCI_LOOKUP_DEVICE, dev->vendor_id, dev->device_id);
-		if (dev->vendor_id == PCI_VENDOR_ID_INTEL) {
-			if (PCI_DEV_HAS_SUPPORTED_ME(dev->device_id)) {
-				me = 1;
-				break;
-			}
+		if (dev->vendor_id != PCI_VENDOR_ID_INTEL)
+			continue;
+
+		if (PCI_DEV_HAS_SUPPORTED_ME(dev->device_id)) {
+			me = 1;
+			break;
 		}
 	}
 
@@ -198,74 +238,28 @@ static struct pci_dev *pci_me_interface_scan(const char **name, char *namebuf,
 	return dev;
 }
 
-static int activate_me(void)
-{
-	struct pci_access *pacc;
-	struct pci_dev *sb;
-	uint32_t rcba_phys;
-
-	pacc = pci_alloc();
-	pacc->method = PCI_ACCESS_I386_TYPE1;
-
-	pci_init(pacc);
-	pci_scan_bus(pacc);
-
-	sb = pci_get_dev(pacc, 0, 0, 0x1f, 0);
-	if (!sb) {
-		printf("Uh oh, southbridge not on BDF(0:31:0), please report this error, exiting.\n");
-		pci_cleanup(pacc);
-		return 1;
-	}
-	pci_fill_info(sb, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_SIZES | PCI_FILL_CLASS);
-
-	rcba_phys = pci_read_long(sb, 0xf0) & 0xfffffffe;
-	rcba = map_physical((off_t)rcba_phys, size);
-	if (rcba == NULL) {
-		printf("Could not map MEI PCI device memory\n");
-		pci_free_dev(sb);
-		pci_cleanup(pacc);
-		return 1;
-	}
-
-	//printf("RCBA at 0x%08" PRIx32 "\n", (uint32_t)rcba_phys);
-	fd2 = *(uint32_t *)(rcba + FD2);
-	*(uint32_t *)(rcba + FD2) = fd2 & ~0x2;
-	if (fd2 & 0x2) {
-		printf("MEI was hidden on PCI, now unlocked\n");
-	} else {
-		printf("MEI not hidden on PCI, checking if visible\n");
-	}
-
-	pci_free_dev(sb);
-	pci_cleanup(pacc);
-
-	return 0;
-}
-
 static void dump_me_info(void)
 {
 	struct pci_dev *dev;
 	uint32_t stat, stat2;
 	char namebuf[1024];
-	const char *name;
+	const char *name = NULL;
 
-	if (pci_platform_scan()) {
+	if (pci_platform_scan())
 		exit(1);
-	}
 
-	if (activate_me()) {
+	if (activate_me())
 		exit(1);
-	}
 
 	dev = pci_me_interface_scan(&name, namebuf, sizeof(namebuf));
-	if (!dev) {
+	if (!dev)
 		exit(1);
-	}
 
 	if (name == NULL)
 		name = "<unknown>";
 
-	printf("MEI found: [%x:%x] %s\n\n", dev->vendor_id, dev->device_id, name);
+	printf("MEI found: [%x:%x] %s\n\n",
+	       dev->vendor_id, dev->device_id, name);
 	stat = pci_read_long(dev, 0x40);
 	printf("ME Status   : 0x%x\n", stat);
 	stat2 = pci_read_long(dev, 0x48);
@@ -276,9 +270,9 @@ static void dump_me_info(void)
 	intel_me_extend_valid(dev);
 	printf("\n");
 
-	if (stat & 0xf000) {
-		printf("ME: has a broken implementation on your board with this BIOS\n");
-	}
+	if (stat & 0xf000)
+		printf("ME: has a broken implementation on your board with"
+		       "this firmware\n");
 
 	intel_mei_setup(dev);
 	usleep(ME_COMMAND_DELAY);
@@ -292,33 +286,24 @@ static void dump_me_info(void)
 	usleep(ME_COMMAND_DELAY);
 
 	rehide_me();
-
-	munmap((void*)rcba, size);
 }
 
 static void print_version(void)
 {
 	printf("intelmetool v%s -- ", INTELMETOOL_VERSION);
 	printf("Copyright (C) 2015 Damien Zammit\n\n");
-	printf(
-		"This program is free software: you can redistribute it and/or modify\n"
-		"it under the terms of the GNU General Public License as published by\n"
-		"the Free Software Foundation, version 2 of the License.\n\n"
-		"This program is distributed in the hope that it will be useful,\n"
-		"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-		"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-		"GNU General Public License for more details.\n\n");
+	printf(GPLV2COPYRIGHT);
 }
 
 static void print_usage(const char *name)
 {
 	printf("usage: %s [-vh?sd]\n", name);
 	printf("\n"
-			 "   -v | --version:                   print the version\n"
-			 "   -h | --help:                      print this help\n\n"
-			 "   -s | --show:                      dump all me information on console\n"
-			 "   -d | --debug:                     enable debug output\n"
-			 "\n");
+	       "   -v | --version:         print the version\n"
+	       "   -h | --help:            print this help\n\n"
+	       "   -s | --show:            dump all me information on console\n"
+	       "   -d | --debug:           enable debug output\n"
+	       "\n");
 	exit(1);
 }
 
@@ -377,7 +362,8 @@ int main(int argc, char *argv[])
 		}
 
 	#ifndef __DARWIN__
-		if ((fd_mem = open("/dev/mem", O_RDWR)) < 0) {
+		fd_mem = open("/dev/mem", O_RDWR);
+		if (fd_mem < 0) {
 			perror("Can not open /dev/mem");
 			exit(1);
 		}

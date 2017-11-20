@@ -2,7 +2,7 @@ if PAYLOAD_GRUB2
 
 choice
 	prompt "GRUB2 version"
-	default GRUB2_MASTER
+	default GRUB2_STABLE
 
 config GRUB2_STABLE
 	bool "2.02"

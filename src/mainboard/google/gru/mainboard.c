@@ -369,7 +369,11 @@ static void prepare_backlight_i2c(void)
 
 void mainboard_power_on_backlight(void)
 {
-	gpio_output(GPIO_BACKLIGHT, 1);  /* BL_EN */
+	gpio_output(GPIO_BL_EN, 1);  /* BL_EN */
+
+	/* Configure as output GPIO, to be toggled by payload. */
+	if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
+		gpio_output(GPIO_BACKLIGHT, 0);
 
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU))
 		prepare_backlight_i2c();

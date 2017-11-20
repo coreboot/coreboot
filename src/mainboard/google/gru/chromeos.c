@@ -32,7 +32,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_WP.raw, ACTIVE_HIGH, get_write_protect_state(),
 		 "write protect"},
 		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
+#if IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)
 		{GPIO_BACKLIGHT.raw, ACTIVE_HIGH, -1, "backlight"},
+#endif
 		{GPIO_EC_IN_RW.raw, ACTIVE_HIGH, -1, "EC in RW"},
 		{GPIO_EC_IRQ.raw, ACTIVE_LOW, -1, "EC interrupt"},
 		{GPIO_RESET.raw, ACTIVE_HIGH, -1, "reset"},

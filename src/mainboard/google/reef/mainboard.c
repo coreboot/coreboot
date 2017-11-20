@@ -72,7 +72,7 @@ uint8_t __attribute__((weak)) variant_board_sku(void)
 	return board_sku_num;
 }
 
-/* Set variabnt board sku to ec by sku id */
+/* Set variant board sku to ec by sku id */
 void __attribute__((weak)) variant_board_ec_set_skuid(void)
 {
 }

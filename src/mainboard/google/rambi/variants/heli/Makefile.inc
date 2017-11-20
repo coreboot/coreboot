@@ -15,7 +15,7 @@
 
 SPD_BIN = $(obj)/spd.bin
 
-# Order matters for SPD sources. The following indicies
+# Order matters for SPD sources. The following indices
 # define the SPD data to use.
 # RAM_ID	Vendor	Vendor_PN	Freq	Size	Total_size	channel
 # 0b0011	Hynix	H5TC4G63AFR-PBA	1600MHZ	4Gb	2GB	single-channel

@@ -18,7 +18,7 @@ romstage-y += spd.c
 
 SPD_BIN = $(obj)/spd.bin
 
-# Order matters for SPD sources. The following indicies
+# Order matters for SPD sources. The following indices
 # define the SPD data to use.
 SPD_SOURCES = micron_4GiB_dimm_MTA9ASF51272PZ-2G1A2
 

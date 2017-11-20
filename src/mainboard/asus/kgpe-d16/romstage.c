@@ -131,7 +131,7 @@ void activate_spd_rom(const struct mem_controller *ctrl) {
 }
 
 /* Voltages are specified by index
- * Valid indicies for this platform are:
+ * Valid indices for this platform are:
  * 0: 1.5V
  * 1: 1.35V
  * 2: 1.25V

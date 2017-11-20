@@ -38,7 +38,7 @@ const struct lpddr4_cfg *variant_lpddr4_config(void);
 size_t variant_memory_sku(void);
 /* Return board SKU. Limited to uint8_t, so it fits into 3 decimal digits */
 uint8_t variant_board_sku(void);
-/* Set variabnt board sku to ec by sku id */
+/* Set variant board sku to ec by sku id */
 void variant_board_ec_set_skuid(void);
 
 /* Return ChromeOS gpio table and fill in number of entries. */

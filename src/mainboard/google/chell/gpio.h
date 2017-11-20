@@ -182,7 +182,7 @@ static const struct pad_config gpio_table[] = {
 /*
  * The next 4 pads are for bit banging the amplifiers. They are connected
  * together with i2s0 signals. For default behavior of i2s make these
- * gpio inupts.
+ * gpio inputs.
  */
 /* I2S2_SCLK */		PAD_CFG_GPI_GPIO_DRIVER(GPP_F0, NONE, DEEP),
 /* I2S2_SFRM */		PAD_CFG_GPI_GPIO_DRIVER(GPP_F1, NONE, DEEP),

@@ -125,7 +125,7 @@ void lb_board(struct lb_header *header)
 	dma->range_size = _dma_coherent_size;
 
 #if IS_ENABLED(CONFIG_CHROMEOS)
-	/* Retrieve the switch interface MAC addressses. */
+	/* Retrieve the switch interface MAC addresses. */
 	lb_table_add_macs_from_vpd(header);
 #endif
 }

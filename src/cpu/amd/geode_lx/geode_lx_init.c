@@ -58,7 +58,7 @@ static struct device_operations cpu_dev_ops = {
 	.init = geode_lx_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{X86_VENDOR_AMD, 0x05A2},
 	{0, 0},
 };

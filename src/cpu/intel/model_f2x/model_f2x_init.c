@@ -47,7 +47,7 @@ static struct device_operations cpu_dev_ops = {
 	.init     = model_f2x_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x0f22 },
 	{ X86_VENDOR_INTEL, 0x0f24 },
 	{ X86_VENDOR_INTEL, 0x0f25 },

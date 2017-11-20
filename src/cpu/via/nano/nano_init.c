@@ -188,7 +188,7 @@ static struct device_operations cpu_dev_ops = {
 	.init = nano_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{X86_VENDOR_CENTAUR, 0x06f2},	// VIA NANO 1000/2000 Series
 	{X86_VENDOR_CENTAUR, 0x06f8},	// VIA NANO 3000 rev B0
 	{X86_VENDOR_CENTAUR, 0x06fa},	// VIA NANO 3000 rev B2

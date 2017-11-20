@@ -375,7 +375,7 @@ static struct device_operations cpu_dev_ops = {
 	.init     = model_206ax_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x206a0 }, /* Intel Sandybridge */
 	{ X86_VENDOR_INTEL, 0x206a6 }, /* Intel Sandybridge D1 */
 	{ X86_VENDOR_INTEL, 0x206a7 }, /* Intel Sandybridge D2/J1 */

@@ -684,7 +684,7 @@ static struct device_operations cpu_dev_ops = {
 	.init = cpu_core_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, CPUID_HASWELL_ULT },
 	{ X86_VENDOR_INTEL, CPUID_BROADWELL_C0 },
 	{ X86_VENDOR_INTEL, CPUID_BROADWELL_D0 },

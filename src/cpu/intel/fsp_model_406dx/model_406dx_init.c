@@ -161,7 +161,7 @@ static struct device_operations cpu_dev_ops = {
 	.init     = model_406dx_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x406d0 }, /* Intel Avoton/Rangeley A1 */
 	{ X86_VENDOR_INTEL, 0x406d8 }, /* Intel Avoton/Rangeley B0 */
 	{ 0, 0 },

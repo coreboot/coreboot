@@ -156,7 +156,7 @@ static struct device_operations cpu_dev_ops = {
 	.init     = model_6ex_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x06e0 }, /* Intel Core Solo/Core Duo */
 	{ X86_VENDOR_INTEL, 0x06e8 }, /* Intel Core Solo/Core Duo */
 	{ X86_VENDOR_INTEL, 0x06ec }, /* Intel Core Solo/Core Duo */

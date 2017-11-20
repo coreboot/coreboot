@@ -54,7 +54,7 @@ static struct device_operations cpu_dev_ops = {
 	.init = denverton_core_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{X86_VENDOR_INTEL,
 	 CPUID_DENVERTON_A0_A1},		/* Denverton-NS A0/A1 CPUID */
 	{X86_VENDOR_INTEL, CPUID_DENVERTON_B0}, /* Denverton-NS B0 CPUID */

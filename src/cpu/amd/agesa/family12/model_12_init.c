@@ -98,7 +98,7 @@ static struct device_operations cpu_dev_ops = {
 	.init = model_12_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0x300f00 },   /* LN1_A0x */
 	{ X86_VENDOR_AMD, 0x300f01 },   /* LN1_A1x */
 	{ X86_VENDOR_AMD, 0x300f10 },   /* LN1_B0x */

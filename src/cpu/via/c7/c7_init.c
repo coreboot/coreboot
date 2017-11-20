@@ -213,7 +213,7 @@ static struct device_operations cpu_dev_ops = {
  * allows us to keep the table significantly smaller.
  */
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{X86_VENDOR_CENTAUR, 0x06A0},	// VIA C7 Esther
 	{X86_VENDOR_CENTAUR, 0x06A9},	// VIA C7 Esther
 	{X86_VENDOR_CENTAUR, 0x06D0},	// VIA C7-M

@@ -558,7 +558,7 @@ static struct device_operations cpu_dev_ops = {
 	.init = model_fxx_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 #if !IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 	{ X86_VENDOR_AMD, 0xf40 },   /* SH-B0 (socket 754) */
 	{ X86_VENDOR_AMD, 0xf50 },   /* SH-B0 (socket 940) */

@@ -64,7 +64,7 @@ static struct device_operations cpu_dev_ops = {
  * Mobile Intel Pentium III/III-M Processor Specification Update
  * http://download.intel.com/design/intarch/specupdt/24530663.pdf
  */
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x0611 }, /* Pentium Pro, B0 */
 	{ X86_VENDOR_INTEL, 0x0612 }, /* Pentium Pro, C0 */
 	{ X86_VENDOR_INTEL, 0x0616 }, /* Pentium Pro, sA0 */

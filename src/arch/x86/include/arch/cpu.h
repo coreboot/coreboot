@@ -178,7 +178,7 @@ struct cpu_device_id {
 
 struct cpu_driver {
 	struct device_operations *ops;
-	struct cpu_device_id *id_table;
+	const struct cpu_device_id *id_table;
 	struct acpi_cstate *cstates;
 };
 

@@ -103,7 +103,7 @@ static struct device_operations cpu_dev_ops = {
 	.init = soc_init_core,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, CPUID_APOLLOLAKE_A0 },
 	{ X86_VENDOR_INTEL, CPUID_APOLLOLAKE_B0 },
 	{ X86_VENDOR_INTEL, CPUID_APOLLOLAKE_E0 },

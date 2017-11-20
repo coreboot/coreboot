@@ -4,6 +4,11 @@ choice
 	prompt "GRUB2 version"
 	default GRUB2_MASTER
 
+config GRUB2_STABLE
+	bool "2.02"
+	help
+	  Stable GRUB2 version
+
 config GRUB2_MASTER
 	bool "HEAD"
 	help

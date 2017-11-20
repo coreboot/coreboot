@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015-2017 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,19 +61,8 @@ DefinitionBlock (
 			Name(_STA, 0x0B)
 		}
 
-		Device(PCI0) {
-			/* Describe the AMD Northbridge */
-			#include <northbridge.asl>
-
-			/* Describe the AMD Fusion Controller Hub Southbridge */
-			#include <fch.asl>
-		}
-
-		/* Describe PCI INT[A-H] for the Southbridge */
-		#include <pci_int.asl>
-
-		/* Describe the devices in the Southbridge */
-		#include <soc_fch.asl>
+		/* Describe the SOC */
+		#include <soc.asl>
 
 	} /* End \_SB scope */
 

@@ -237,7 +237,11 @@ static void configure_codec(void)
 
 static void configure_display(void)
 {
-	if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)) {
+	/*
+	 * Rainier is Scarlet-derived, but uses EDP so use board-specific
+	 * config rather than baseboard.
+	 */
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
 		gpio_output(GPIO(4, D, 1), 0);	/* DISPLAY_RST_L */
 		gpio_output(GPIO(4, D, 3), 1);	/* PPVARP_LCD */
 		mdelay(10);

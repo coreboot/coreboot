@@ -763,6 +763,7 @@ static u32 make_mr0(ramctr_timing * ctrl, u8 rank)
 {
 	u16 mr0reg, mch_cas, mch_wr;
 	static const u8 mch_wr_t[12] = { 1, 2, 3, 4, 0, 5, 0, 6, 0, 7, 0, 0 };
+	const size_t is_mobile = get_platform_type() == PLATFORM_MOBILE;
 
 	/* DLL Reset - self clearing - set after CLK frequency has been changed */
 	mr0reg = 0x100;
@@ -783,7 +784,7 @@ static u32 make_mr0(ramctr_timing * ctrl, u8 rank)
 	mr0reg = (mr0reg & ~0xe00) | (mch_wr << 9);
 
 	// Precharge PD - Fast (desktop) 0x1 or slow (mobile) 0x0 - mostly power-saving feature
-	mr0reg = (mr0reg & ~0x1000) | (!ctrl->mobile << 12);
+	mr0reg = (mr0reg & ~0x1000) | (!is_mobile << 12);
 	return mr0reg;
 }
 
@@ -3193,6 +3194,8 @@ static int encode_5d10(int ns)
 /* FIXME: values in this function should be hardware revision-dependent.  */
 void final_registers(ramctr_timing * ctrl)
 {
+	const size_t is_mobile = get_platform_type() == PLATFORM_MOBILE;
+
 	int channel;
 	int t1_cycles = 0, t1_ns = 0, t2_ns;
 	int t3_ns;
@@ -3203,7 +3206,7 @@ void final_registers(ramctr_timing * ctrl)
 	write32(DEFAULT_MCHBAR + 0x400c, (read32(DEFAULT_MCHBAR + 0x400c) & 0xFFFFCFFF) | 0x1000);	// OK
 	write32(DEFAULT_MCHBAR + 0x440c, (read32(DEFAULT_MCHBAR + 0x440c) & 0xFFFFCFFF) | 0x1000);	// OK
 
-	if (ctrl->mobile)
+	if (is_mobile)
 		/* APD - DLL Off, 64 DCLKs until idle, decision per rank */
 		MCHBAR32(PM_PDWN_Config) = 0x00000740;
 	else

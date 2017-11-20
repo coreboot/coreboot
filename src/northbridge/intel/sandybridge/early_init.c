@@ -186,7 +186,7 @@ static void start_peg_link_training(void)
 	}
 }
 
-void sandybridge_early_initialization(int chipset_type)
+void sandybridge_early_initialization(void)
 {
 	u32 capid0_a;
 	u32 deven;
@@ -195,10 +195,12 @@ void sandybridge_early_initialization(int chipset_type)
 	/* Device ID Override Enable should be done very early */
 	capid0_a = pci_read_config32(PCI_DEV(0, 0, 0), 0xe4);
 	if (capid0_a & (1 << 10)) {
+		const size_t is_mobile = get_platform_type() == PLATFORM_MOBILE;
+
 		reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf3);
 		reg8 &= ~7; /* Clear 2:0 */
 
-		if (chipset_type == SANDYBRIDGE_MOBILE)
+		if (is_mobile)
 			reg8 |= 1; /* Set bit 0 */
 
 		pci_write_config8(PCI_DEV(0, 0, 0), 0xf3, reg8);

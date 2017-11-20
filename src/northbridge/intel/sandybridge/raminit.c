@@ -308,7 +308,7 @@ static int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot,
 		return try_init_dram_ddr3_ivy(ctrl, fast_boot, s3_resume, me_uma_size);
 }
 
-static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
+static void init_dram_ddr3(int min_tck, int s3resume)
 {
 	int me_uma_size;
 	int cbmem_was_inited;
@@ -398,7 +398,6 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 	if (!fast_boot) {
 		/* Reset internal state */
 		memset(&ctrl, 0, sizeof(ctrl));
-		ctrl.mobile = mobile;
 		ctrl.tCK = min_tck;
 
 		/* Get architecture */
@@ -421,7 +420,6 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 
 		/* Reset internal state */
 		memset(&ctrl, 0, sizeof(ctrl));
-		ctrl.mobile = mobile;
 		ctrl.tCK = min_tck;
 
 		/* Get architecture */
@@ -480,5 +478,5 @@ void perform_raminit(int s3resume)
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
-	init_dram_ddr3(1, get_mem_min_tck(), s3resume);
+	init_dram_ddr3(get_mem_min_tck(), s3resume);
 }

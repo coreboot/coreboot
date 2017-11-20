@@ -85,7 +85,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	/* Perform some early chipset initialization required
 	 * before RAM initialization can work
 	 */
-	sandybridge_early_initialization(SANDYBRIDGE_MOBILE);
+	sandybridge_early_initialization();
 	printk(BIOS_DEBUG, "Back from sandybridge_early_initialization()\n");
 
 	s3resume = southbridge_detect_s3_resume();

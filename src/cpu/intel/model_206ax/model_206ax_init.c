@@ -514,6 +514,9 @@ static void model_206ax_init(struct device *cpu)
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
 
+	/* Print platform ID */
+	printk(BIOS_INFO, "CPU: platform id %x\n", get_platform_id());
+
 	/* Setup MTRRs based on physical address size */
 	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();

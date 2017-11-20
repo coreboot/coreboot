@@ -75,7 +75,6 @@ struct ramctr_timing_st;
 
 typedef struct ramctr_timing_st {
 	u16 spd_crc[NUM_CHANNELS][NUM_SLOTS];
-	int mobile;
 	int sandybridge;
 
 	/* DDR base_freq = 100 Mhz / 133 Mhz */

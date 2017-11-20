@@ -17,11 +17,6 @@
 #ifndef __NORTHBRIDGE_INTEL_SANDYBRIDGE_SANDYBRIDGE_H__
 #define __NORTHBRIDGE_INTEL_SANDYBRIDGE_SANDYBRIDGE_H__
 
-/* Chipset types */
-#define SANDYBRIDGE_MOBILE	0
-#define SANDYBRIDGE_DESKTOP	1
-#define SANDYBRIDGE_SERVER	2
-
 /* Device ID for SandyBridge and IvyBridge */
 #define BASE_REV_SNB	0x00
 #define BASE_REV_IVB	0x50
@@ -62,6 +57,13 @@
 
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__
+#include <cpu/intel/model_206ax/model_206ax.h>
+
+/* Chipset types */
+enum platform_type {
+	PLATFORM_MOBILE = 0,
+	PLATFORM_DESKTOP_SERVER,
+};
 
 #include <rules.h>
 
@@ -204,7 +206,7 @@ static inline void barrier(void) { asm("" ::: "memory"); }
 void intel_sandybridge_finalize_smm(void);
 #else /* !__SMM__ */
 int bridge_silicon_revision(void);
-void sandybridge_early_initialization(int chipset_type);
+void sandybridge_early_initialization(void);
 void sandybridge_init_iommu(void);
 void sandybridge_late_initialization(void);
 void northbridge_romstage_finalize(int s3resume);
@@ -224,6 +226,7 @@ void mainboard_early_init(int s3resume);
 void mainboard_config_superio(void);
 int mainboard_should_reset_usb(int s3resume);
 void perform_raminit(int s3resume);
+enum platform_type get_platform_type(void);
 
 #if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>

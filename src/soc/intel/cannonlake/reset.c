@@ -80,7 +80,9 @@ static int send_heci_reset_message(void)
 void do_global_reset(void)
 {
 	/* Ask CSE to do the global reset */
-	send_heci_reset_message();
+	if (!send_heci_reset_message())
+		return;
+
 	/* global reset if CSE fail to reset */
 	pmc_global_reset_enable(1);
 	hard_reset();

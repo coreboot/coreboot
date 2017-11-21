@@ -69,7 +69,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 int get_recovery_mode_switch(void)
 {
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
-	uint32_t ec_events;
+	uint64_t ec_events;
 
 	ec_events = google_chromeec_get_events_b();
 	return !!(ec_events &

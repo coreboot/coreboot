@@ -597,7 +597,7 @@ enum host_event_code {
 	EC_HOST_EVENT_INVALID = 32
 };
 /* Host event mask */
-#define EC_HOST_EVENT_MASK(event_code) (1UL << ((event_code) - 1))
+#define EC_HOST_EVENT_MASK(event_code) (1ULL << ((event_code) - 1))
 
 /* Arguments at EC_LPC_ADDR_HOST_ARGS */
 struct __ec_align4 ec_lpc_host_args {

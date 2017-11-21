@@ -34,7 +34,7 @@
 
 void log_recovery_mode_switch(void)
 {
-	uint32_t *events;
+	uint64_t *events;
 
 	if (cbmem_find(CBMEM_ID_EC_HOSTEVENT))
 		return;
@@ -48,7 +48,7 @@ void log_recovery_mode_switch(void)
 
 static void google_chromeec_elog_add_recovery_event(void *unused)
 {
-	uint32_t *events = cbmem_find(CBMEM_ID_EC_HOSTEVENT);
+	uint64_t *events = cbmem_find(CBMEM_ID_EC_HOSTEVENT);
 	uint8_t event_byte = EC_EVENT_KEYBOARD_RECOVERY;
 
 	if (!events)
@@ -111,7 +111,7 @@ void google_chromeec_post(u8 postcode)
  * Query the EC for specified mask indicating enabled events.
  * The EC maintains separate event masks for SMI, SCI and WAKE.
  */
-static u32 google_chromeec_get_mask(u8 type)
+static uint64_t google_chromeec_get_mask(u8 type)
 {
 	struct ec_params_host_event_mask req;
 	struct ec_response_host_event_mask rsp;
@@ -130,13 +130,13 @@ static u32 google_chromeec_get_mask(u8 type)
 	return 0;
 }
 
-static int google_chromeec_set_mask(u8 type, u32 mask)
+static int google_chromeec_set_mask(uint8_t type, uint64_t mask)
 {
 	struct ec_params_host_event_mask req;
 	struct ec_response_host_event_mask rsp;
 	struct chromeec_command cmd;
 
-	req.mask = mask;
+	req.mask = (uint32_t)mask;
 	cmd.cmd_code = type;
 	cmd.cmd_version = 0;
 	cmd.cmd_data_in = &req;
@@ -148,14 +148,14 @@ static int google_chromeec_set_mask(u8 type, u32 mask)
 	return google_chromeec_command(&cmd);
 }
 
-u32 google_chromeec_get_events_b(void)
+uint64_t google_chromeec_get_events_b(void)
 {
 	return google_chromeec_get_mask(EC_CMD_HOST_EVENT_GET_B);
 }
 
-int google_chromeec_clear_events_b(u32 mask)
+int google_chromeec_clear_events_b(uint64_t mask)
 {
-	printk(BIOS_DEBUG, "Chrome EC: clear events_b mask to 0x%08x\n", mask);
+	printk(BIOS_DEBUG, "Chrome EC: clear events_b mask to 0x%016llx\n", mask);
 	return google_chromeec_set_mask(
 		EC_CMD_HOST_EVENT_CLEAR_B, mask);
 }
@@ -176,7 +176,7 @@ int google_chromeec_get_mkbp_event(struct ec_response_get_next_event *event)
 }
 
 /* Get the current device event mask */
-uint32_t google_chromeec_get_device_enabled_events(void)
+uint64_t google_chromeec_get_device_enabled_events(void)
 {
 	struct ec_params_device_event req;
 	struct ec_response_device_event rsp;
@@ -197,13 +197,13 @@ uint32_t google_chromeec_get_device_enabled_events(void)
 }
 
 /* Set the current device event mask */
-int google_chromeec_set_device_enabled_events(uint32_t mask)
+int google_chromeec_set_device_enabled_events(uint64_t mask)
 {
 	struct ec_params_device_event req;
 	struct ec_response_device_event rsp;
 	struct chromeec_command cmd;
 
-	req.event_mask = mask;
+	req.event_mask = (uint32_t)mask;
 	req.param = EC_DEVICE_EVENT_PARAM_SET_ENABLED_EVENTS;
 	cmd.cmd_code = EC_CMD_DEVICE_EVENT;
 	cmd.cmd_version = 0;
@@ -217,7 +217,7 @@ int google_chromeec_set_device_enabled_events(uint32_t mask)
 }
 
 /* Read and clear pending device events */
-uint32_t google_chromeec_get_device_current_events(void)
+uint64_t google_chromeec_get_device_current_events(void)
 {
 	struct ec_params_device_event req;
 	struct ec_response_device_event rsp;
@@ -237,9 +237,9 @@ uint32_t google_chromeec_get_device_current_events(void)
 	return 0;
 }
 
-static void google_chromeec_log_device_events(uint32_t mask)
+static void google_chromeec_log_device_events(uint64_t mask)
 {
-	uint32_t events;
+	uint64_t events;
 	int i;
 
 	if (!IS_ENABLED(CONFIG_ELOG) || !mask)
@@ -249,7 +249,7 @@ static void google_chromeec_log_device_events(uint32_t mask)
 		return;
 
 	events = google_chromeec_get_device_current_events() & mask;
-	printk(BIOS_INFO, "EC Device Events: 0x%08x\n", events);
+	printk(BIOS_INFO, "EC Device Events: 0x%016llx\n", events);
 
 	for (i = 0; i < sizeof(events) * 8; i++) {
 		if (EC_DEVICE_EVENT_MASK(i) & events)
@@ -257,10 +257,10 @@ static void google_chromeec_log_device_events(uint32_t mask)
 	}
 }
 
-void google_chromeec_log_events(u32 mask)
+void google_chromeec_log_events(uint64_t mask)
 {
 	u8 event;
-	u32 wake_mask;
+	uint64_t wake_mask;
 	bool restore_wake_mask = false;
 
 	if (!IS_ENABLED(CONFIG_ELOG))
@@ -563,28 +563,28 @@ int google_chromeec_i2c_xfer(uint8_t chip, uint8_t addr, int alen,
 	return 0;
 }
 
-int google_chromeec_set_sci_mask(u32 mask)
+int google_chromeec_set_sci_mask(uint64_t mask)
 {
-	printk(BIOS_DEBUG, "Chrome EC: Set SCI mask to 0x%08x\n", mask);
+	printk(BIOS_DEBUG, "Chrome EC: Set SCI mask to 0x%016llx\n", mask);
 	return google_chromeec_set_mask(
 		EC_CMD_HOST_EVENT_SET_SCI_MASK, mask);
 }
 
-int google_chromeec_set_smi_mask(u32 mask)
+int google_chromeec_set_smi_mask(uint64_t mask)
 {
-	printk(BIOS_DEBUG, "Chrome EC: Set SMI mask to 0x%08x\n", mask);
+	printk(BIOS_DEBUG, "Chrome EC: Set SMI mask to 0x%016llx\n", mask);
 	return google_chromeec_set_mask(
 		EC_CMD_HOST_EVENT_SET_SMI_MASK, mask);
 }
 
-int google_chromeec_set_wake_mask(u32 mask)
+int google_chromeec_set_wake_mask(uint64_t mask)
 {
-	printk(BIOS_DEBUG, "Chrome EC: Set WAKE mask to 0x%08x\n", mask);
+	printk(BIOS_DEBUG, "Chrome EC: Set WAKE mask to 0x%016llx\n", mask);
 	return google_chromeec_set_mask(
 		EC_CMD_HOST_EVENT_SET_WAKE_MASK, mask);
 }
 
-u32 google_chromeec_get_wake_mask(void)
+uint64_t google_chromeec_get_wake_mask(void)
 {
 	return google_chromeec_get_mask(
 		EC_CMD_HOST_EVENT_GET_WAKE_MASK);

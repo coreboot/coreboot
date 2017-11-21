@@ -46,8 +46,7 @@
 #ifndef _AMD_LIB_H_
 #define _AMD_LIB_H_
 
-#include "Porting.h"
-#include "AMD.h"
+#include <agesa_headers.h>
 
 #define IOCF8 0xCF8
 #define IOCFC 0xCFC

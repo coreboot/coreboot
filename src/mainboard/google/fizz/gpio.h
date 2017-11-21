@@ -37,6 +37,11 @@
 #define GPIO_SKU_ID2		GPP_C14
 #define GPIO_SKU_ID3		GPP_C15
 
+/* OEM ID GPIOs */
+#define GPIO_OEM_ID1		GPP_D10
+#define GPIO_OEM_ID2		GPP_D11
+#define GPIO_OEM_ID3		GPP_D12
+
 #ifndef __ACPI__
 /* Pad configuration in ramstage */
 /* Leave eSPI pins untouched from default settings */
@@ -163,9 +168,12 @@ static const struct pad_config gpio_table[] = {
 /* ISH_I2C1_SCL */	PAD_CFG_NC(GPP_D8),
 /* ISH_SPI_CS# */	PAD_CFG_GPI_INT(GPP_D9, NONE,
 					PLTRST, EDGE), /* HP_IRQ_GPIO */
-/* ISH_SPI_CLK */	PAD_CFG_NC(GPP_D10),
-/* ISH_SPI_MISO */	PAD_CFG_NC(GPP_D11),
-/* ISH_SPI_MOSI */	PAD_CFG_NC(GPP_D12),
+/* ISH_SPI_CLK */	PAD_CFG_GPI_GPIO_DRIVER(GPP_D10, NONE,
+						DEEP), /* OEM_ID1 */
+/* ISH_SPI_MISO */	PAD_CFG_GPI_GPIO_DRIVER(GPP_D11, NONE,
+						DEEP), /* OEM_ID2 */
+/* ISH_SPI_MOSI */	PAD_CFG_GPI_GPIO_DRIVER(GPP_D12, NONE,
+						DEEP), /* OEM_ID3 */
 /* ISH_UART0_RXD */	PAD_CFG_NC(GPP_D13),
 /* ISH_UART0_TXD */	PAD_CFG_NC(GPP_D14),
 /* ISH_UART0_RTS# */	PAD_CFG_NC(GPP_D15),

@@ -21,9 +21,11 @@
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <mainboard/google/fizz/gpio.h>
+#include <smbios.h>
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>
 #include <soc/nhlt.h>
+#include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #define FIZZ_SKU_ID_I7_U42 0x4
@@ -72,6 +74,29 @@ static u32 mainboard_get_pl2(void)
 		watts = GET_TYPEC_PL2(watts);
 
 	return watts;
+}
+
+static uint8_t board_oem_id(void)
+{
+	static int board_oem_id = -1;
+	const gpio_t oem_id_gpios[] = {
+		GPIO_OEM_ID1,
+		GPIO_OEM_ID2,
+		GPIO_OEM_ID3,
+	};
+	if (board_oem_id < 0)
+		board_oem_id = gpio_base2_value(oem_id_gpios,
+						ARRAY_SIZE(oem_id_gpios));
+	return board_oem_id;
+}
+
+const char *smbios_mainboard_sku(void)
+{
+	static char sku_str[5]; /* sku{0..7} */
+
+	snprintf(sku_str, sizeof(sku_str), "sku%d", board_oem_id());
+
+	return sku_str;
 }
 
 static void mainboard_init(device_t dev)

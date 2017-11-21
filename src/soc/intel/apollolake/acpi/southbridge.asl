@@ -56,4 +56,10 @@ Scope (\_SB)
 /* SGX */
 #if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX)
 #include <soc/intel/common/acpi/sgx.asl>
+
+/* CNVi */
+#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#include "cnvi.asl"
+#endif
+
 #endif

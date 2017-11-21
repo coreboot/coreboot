@@ -33,6 +33,7 @@
 #define GPE0A_GPIO_TIER1_SCI_STS	15
 #define GPE0A_SMB_WAK_STS		16
 #define GPE0A_SATA_PME_STS		17
+#define GPE0A_CNVI_PME_STS	        18
 
 /* Group DW0 is reserved in Apollolake */
 

@@ -30,7 +30,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select USE_BLOBS
 	select GENERIC_SPD_BIN
 	select PXE
-	select MEMTEST_DISABLE_SPD if MEMTEST_SECONDARY_PAYLOAD
 
 config MAINBOARD_DIR
 	string

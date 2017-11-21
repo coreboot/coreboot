@@ -116,6 +116,12 @@ config SEABIOS_BOOTMENU_MESSAGE_FILE
 	help
 	  TBD
 
+config SEABIOS_SERCON_PORT_FILE
+	string "SeaBIOS sercon-port file"
+	default "$(top)/src/mainboard/$(MAINBOARDDIR)/sercon-port"
+	help
+	  TBD
+
 config PAYLOAD_FILE
 	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"
 

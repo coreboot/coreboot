@@ -8,7 +8,7 @@
  * Copyright (C) 2005-2009 coresystems GmbH
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
  * Raptor Engineering
- * Copyright (C) 2016 Siemens AG
+ * Copyright (C) 2016-2017 Siemens AG
  *
  * ACPI FADT, FACS, and DSDT table support added by
  * Nick Barker <nick.barker9@btinternet.com>, and those portions
@@ -732,6 +732,10 @@ unsigned long acpi_write_dbg2_pci_uart(acpi_rsdp_t *rsdp, unsigned long current,
 
 	if (!dev) {
 		printk(BIOS_ERR, "%s: Device not found\n", __func__);
+		return current;
+	}
+	if (!dev->enabled) {
+		printk(BIOS_INFO, "%s: Device not enabled\n", __func__);
 		return current;
 	}
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);

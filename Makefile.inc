@@ -495,10 +495,6 @@ $(ROMCC_BIN): $(top)/util/romcc/romcc.c
 	$(HOSTCC) -g $(STACK) -Wall -o $@ $<
 
 BLOBTOOL:=$(objutil)/blobtool/blobtool
-$(BLOBTOOL):
-	@printf "    Compile BLOBTOOL\n"
-	+$(MAKE) -C $(top)/util/blobtool
-	cp -a $(top)/util/ifdtool/blobtool $@
 
 IFDTOOL:=$(objutil)/ifdtool/ifdtool
 $(IFDTOOL):

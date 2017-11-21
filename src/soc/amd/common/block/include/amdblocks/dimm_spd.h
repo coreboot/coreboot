@@ -16,6 +16,10 @@
 #ifndef __DIMMSPD_H__
 #define __DIMMSPD_H__
 
+#include <agesawrapper.h>
+#include <stddef.h>
+#include <stdint.h>
+
 AGESA_STATUS
 AmdMemoryReadSPD(IN UINT32 Func, IN UINTN Data,
 				IN OUT AGESA_READ_SPD_PARAMS *SpdData);

@@ -99,16 +99,6 @@ static void soc_early_romstage_init(void)
 		lpc_io_setup_comm_a_b();
 }
 
-static void disable_watchdog(void)
-{
-	uint32_t reg;
-
-	/* Stop TCO timer */
-	reg = inl(ACPI_BASE_ADDRESS + TCO1_CNT);
-	reg |= TCO_TMR_HLT;
-	outl(reg, ACPI_BASE_ADDRESS + TCO1_CNT);
-}
-
 /*
  * Punit Initialization code. This all isn't documented, but
  * this is the recipe.
@@ -202,7 +192,6 @@ asmlinkage void car_stage_entry(void)
 	timestamp_add_now(TS_START_ROMSTAGE);
 
 	soc_early_romstage_init();
-	disable_watchdog();
 
 	console_init();
 

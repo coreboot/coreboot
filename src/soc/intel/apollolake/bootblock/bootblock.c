@@ -89,6 +89,8 @@ static void enable_pmcbar(void)
 
 void bootblock_soc_early_init(void)
 {
+	uint32_t reg;
+
 	enable_pmcbar();
 
 	/* Clear global reset promotion bit */
@@ -109,4 +111,9 @@ void bootblock_soc_early_init(void)
 
 	/* Initialize GPE for use as interrupt status */
 	pmc_gpe_init();
+
+	/* Stop TCO timer */
+	reg = inl(ACPI_BASE_ADDRESS + TCO1_CNT);
+	reg |= TCO_TMR_HLT;
+	outl(reg, ACPI_BASE_ADDRESS + TCO1_CNT);
 }

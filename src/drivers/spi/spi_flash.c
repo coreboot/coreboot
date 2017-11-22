@@ -72,7 +72,7 @@ int spi_flash_cmd(const struct spi_slave *spi, u8 cmd, void *response, size_t le
 	return ret;
 }
 
-static int spi_flash_cmd_read(const struct spi_slave *spi, const u8 *cmd,
+int spi_flash_cmd_read(const struct spi_slave *spi, const u8 *cmd,
 			      size_t cmd_len, void *data, size_t data_len)
 {
 	int ret = do_spi_flash_cmd(spi, cmd, cmd_len, data, data_len);
@@ -408,6 +408,12 @@ int spi_flash_erase(const struct spi_flash *flash, u32 offset, size_t len)
 int spi_flash_status(const struct spi_flash *flash, u8 *reg)
 {
 	return flash->internal_status(flash, reg);
+}
+
+int spi_flash_read_sec(const struct spi_flash * flash, u32 offset, size_t len,
+		void *buf)
+{
+	return flash->internal_read_sec(flash, offset, len, buf);
 }
 
 static uint32_t volatile_group_count CAR_GLOBAL;

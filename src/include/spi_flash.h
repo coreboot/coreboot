@@ -44,6 +44,8 @@ struct spi_flash {
 	int (*internal_erase)(const struct spi_flash *flash, u32 offset,
 				size_t len);
 	int (*internal_status)(const struct spi_flash *flash, u8 *reg);
+	int (*internal_read_sec)(const struct spi_flash *flash, u32 offset,
+				size_t len, void *buf);
 };
 
 void lb_spi_flash(struct lb_header *header);
@@ -65,6 +67,8 @@ int spi_flash_write(const struct spi_flash *flash, u32 offset, size_t len,
 		    const void *buf);
 int spi_flash_erase(const struct spi_flash *flash, u32 offset, size_t len);
 int spi_flash_status(const struct spi_flash *flash, u8 *reg);
+int spi_flash_read_sec(const struct spi_flash * flash, u32 offset, size_t len,
+		   void *buf);
 /*
  * Some SPI controllers require exclusive access to SPI flash when volatile
  * operations like erase or write are being performed. In such cases,

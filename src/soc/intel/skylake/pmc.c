@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2017 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,25 +18,40 @@
 #include <chip.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_ids.h>
-#include <arch/io.h>
-#include <arch/ioapic.h>
-#include <arch/acpi.h>
-#include <cpu/cpu.h>
-#include <intelblocks/pcr.h>
+#include <intelblocks/pmc.h>
 #include <intelblocks/pmclib.h>
-#include <pc80/mc146818rtc.h>
+#include <intelblocks/rtc.h>
 #include <reg_script.h>
-#include <string.h>
-#include <soc/gpio.h>
-#include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
-#include <soc/pmc.h>
-#include <cpu/x86/smm.h>
-#include <soc/pcr_ids.h>
-#include <soc/ramstage.h>
+
+void pmc_set_disb(void)
+{
+	/* Set the DISB after DRAM init */
+	u32 disb_val;
+	device_t dev = PCH_DEV_PMC;
+
+	disb_val = pci_read_config32(dev, GEN_PMCON_A);
+	disb_val |= DISB;
+
+	/* Don't clear bits that are write-1-to-clear */
+	disb_val &= ~(GBL_RST_STS | MS4V);
+	pci_write_config32(dev, GEN_PMCON_A, disb_val);
+}
+
+#if ENV_RAMSTAGE
+/* Fill up PMC resource structure */
+int pmc_soc_get_resources(struct pmc_resource_config *cfg)
+{
+	cfg->pwrmbase_offset = PWRMBASE;
+	cfg->pwrmbase_addr = PCH_PWRM_BASE_ADDRESS;
+	cfg->pwrmbase_size = PCH_PWRM_BASE_SIZE;
+	cfg->abase_offset = ABASE;
+	cfg->abase_addr = ACPI_BASE_ADDRESS;
+	cfg->abase_size = ACPI_BASE_SIZE;
+
+	return 0;
+}
 
 static const struct reg_script pch_pmc_misc_init_script[] = {
 	/* SLP_S4=4s, SLP_S3=50ms, disable SLP_X stretching after SUS loss. */
@@ -58,68 +73,11 @@ static const struct reg_script pmc_write1_to_clear_script[] = {
 	REG_SCRIPT_END
 };
 
-static void pch_pmc_add_mmio_resources(device_t dev)
-{
-	struct resource *res;
-
-	/* Memory-mmapped I/O registers. */
-	res = new_resource(dev, PWRMBASE);
-	res->base = PCH_PWRM_BASE_ADDRESS;
-	res->size = PCH_PWRM_BASE_SIZE;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
-			IORESOURCE_FIXED | IORESOURCE_RESERVE;
-}
-
-static void pch_pmc_add_io_resource(device_t dev, u16 base, u16 size, int index)
-{
-	struct resource *res;
-	res = new_resource(dev, index);
-	res->base = base;
-	res->size = size;
-	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-}
-
-static void pch_pmc_add_io_resources(device_t dev)
-{
-	/* PMBASE */
-	pch_pmc_add_io_resource(dev, ACPI_BASE_ADDRESS, ACPI_BASE_SIZE, ABASE);
-}
-
-static void pch_pmc_read_resources(device_t dev)
-{
-	/* Get the normal PCI resources of this device. */
-	pci_dev_read_resources(dev);
-
-	/* Add non-standard MMIO resources. */
-	pch_pmc_add_mmio_resources(dev);
-
-	/* Add IO resources. */
-	pch_pmc_add_io_resources(dev);
-}
-
-static void pch_set_acpi_mode(void)
-{
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) && !acpi_is_wakeup_s3()) {
-		printk(BIOS_DEBUG, "Disabling ACPI via APMC:\n");
-		outb(APM_CNT_ACPI_DISABLE, APM_CNT);
-		printk(BIOS_DEBUG, "done.\n");
-	}
-}
-
-static void pch_rtc_init(void)
-{
-	/* Ensure the date is set including century byte. */
-	cmos_check_update_date();
-
-	cmos_init(rtc_failure());
-}
-
-static void pch_power_options(void)
+static void pch_power_options(struct device *dev)
 {
 	u16 reg16;
 	const char *state;
-	/*PMC Controller Device 0x1F, Func 02*/
-	device_t dev = PCH_DEV_PMC;
+
 	/* Get the chip configuration */
 	int pwr_on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 
@@ -199,19 +157,19 @@ static void config_deep_sx(uint32_t deepsx_config)
 	write32(pmcbase + DSX_CFG, reg);
 }
 
-static void pmc_init(struct device *dev)
+void pmc_soc_init(struct device *dev)
 {
-	config_t *config = dev->chip_info;
+	const config_t *config = dev->chip_info;
 
-	pch_rtc_init();
+	rtc_init();
 
 	/* Initialize power management */
-	pch_power_options();
+	pch_power_options(dev);
 
 	/* Note that certain bits may be cleared from running script as
 	 * certain bit fields are write 1 to clear. */
 	reg_script_run_on_dev(dev, pch_pmc_misc_init_script);
-	pch_set_acpi_mode();
+	pmc_set_acpi_mode();
 
 	config_deep_s3(config->deep_s3_enable_ac, config->deep_s3_enable_dc);
 	config_deep_s5(config->deep_s5_enable_ac, config->deep_s5_enable_dc);
@@ -220,24 +178,4 @@ static void pmc_init(struct device *dev)
 	/* Clear registers that contain write-1-to-clear bits. */
 	reg_script_run_on_dev(dev, pmc_write1_to_clear_script);
 }
-
-static struct device_operations device_ops = {
-	.read_resources		= &pch_pmc_read_resources,
-	.set_resources		= &pci_dev_set_resources,
-	.enable_resources	= &pci_dev_enable_resources,
-	.init			= &pmc_init,
-	.scan_bus		= &scan_lpc_bus,
-	.ops_pci		= &soc_pci_ops,
-};
-
-static const unsigned short pci_device_ids[] = {
-	0x9d21,
-	0xa121,
-	0
-};
-
-static const struct pci_driver pch_lpc __pci_driver = {
-	.ops	 = &device_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
-	.devices = pci_device_ids,
-};
+#endif

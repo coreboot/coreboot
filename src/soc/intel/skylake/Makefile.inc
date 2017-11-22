@@ -37,6 +37,7 @@ romstage-y += memmap.c
 romstage-y += me.c
 romstage-y += pch.c
 romstage-y += pei_data.c
+romstage-y += pmc.c
 romstage-y += pmutil.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 romstage-y += spi.c

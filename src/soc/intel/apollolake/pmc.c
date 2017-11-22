@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corp.
+ * Copyright (C) 2016-2017 Intel Corp.
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,74 +15,27 @@
  * GNU General Public License for more details.
  */
 
+#include "chip.h"
+#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
-#include <console/console.h>
-#include <cpu/x86/smm.h>
+#include <intelblocks/pmc.h>
 #include <intelblocks/pmclib.h>
 #include <soc/iomap.h>
-#include <soc/gpio.h>
-#include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <timer.h>
-#include "chip.h"
 
-/*
- * The ACPI IO BAR (offset 0x20) is not PCI compliant. We've observed cases
- * where the BAR reads back as 0, but the IO window is open. This also means
- * that it will not respond to PCI probing. In the event that probing the BAR
- * fails, we still need to create a resource for it.
- */
-static void read_resources(device_t dev)
+/* Fill up PMC resource structure */
+int pmc_soc_get_resources(struct pmc_resource_config *cfg)
 {
-	struct resource *res;
-	pci_dev_read_resources(dev);
+	cfg->pwrmbase_offset = PCI_BASE_ADDRESS_0;
+	cfg->pwrmbase_addr = PMC_BAR0;
+	cfg->pwrmbase_size = PMC_BAR0_SIZE;
+	cfg->abase_offset = PCI_BASE_ADDRESS_4;
+	cfg->abase_addr = ACPI_BASE_ADDRESS;
+	cfg->abase_size = ACPI_BASE_SIZE;
 
-	res = new_resource(dev, PCI_BASE_ADDRESS_0);
-	res->base = PMC_BAR0;
-	res->size = PMC_BAR0_SIZE;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-
-	res = new_resource(dev, PCI_BASE_ADDRESS_4);
-	res->base = ACPI_BASE_ADDRESS;
-	res->size = ACPI_BASE_SIZE;
-	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-}
-
-/*
- * Part 2:
- * Resources are assigned, and no other device was given an IO resource to
- * overlap with our ACPI BAR. But because the resource is FIXED,
- * pci_dev_set_resources() will not store it for us. We need to do that
- * explicitly.
- */
-static void set_resources(device_t dev)
-{
-	struct resource *res;
-
-	pci_dev_set_resources(dev);
-
-	res = find_resource(dev, PCI_BASE_ADDRESS_0);
-	pci_write_config32(dev, res->index, res->base);
-	dev->command |= PCI_COMMAND_MEMORY;
-	res->flags |= IORESOURCE_STORED;
-	report_resource_stored(dev, res, " PMC BAR");
-
-	res = find_resource(dev, PCI_BASE_ADDRESS_4);
-	pci_write_config32(dev, res->index, res->base);
-	dev->command |= PCI_COMMAND_IO;
-	res->flags |= IORESOURCE_STORED;
-	report_resource_stored(dev, res, " ACPI BAR");
-}
-
-static void pch_set_acpi_mode(void)
-{
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) && !acpi_is_wakeup_s3()) {
-		printk(BIOS_DEBUG, "Disabling ACPI via APMC:");
-		outb(APM_CNT_ACPI_DISABLE, APM_CNT);
-		printk(BIOS_DEBUG, "Done.\n");
-	}
+	return 0;
 }
 
 static int choose_slp_s3_assertion_width(int width_usecs)
@@ -138,14 +91,14 @@ static void set_slp_s3_assertion_width(int width_usecs)
 	write32((void *)gen_pmcon3, reg);
 }
 
-static void pmc_init(struct device *dev)
+void pmc_soc_init(struct device *dev)
 {
 	const struct soc_intel_apollolake_config *cfg = dev->chip_info;
 
 	/* Set up GPE configuration */
 	pmc_gpe_init();
 	pmc_fixup_power_state();
-	pch_set_acpi_mode();
+	pmc_set_acpi_mode();
 
 	if (cfg != NULL)
 		set_slp_s3_assertion_width(cfg->slp_s3_assertion_width_usecs);
@@ -156,22 +109,3 @@ static void pmc_init(struct device *dev)
 	/* Now that things have been logged clear out the PMC state. */
 	pmc_clear_prsts();
 }
-
-static const struct device_operations device_ops = {
-	.read_resources		= read_resources,
-	.set_resources		= set_resources,
-	.enable_resources	= pci_dev_enable_resources,
-	.init                   = &pmc_init,
-};
-
-static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_APL_PMC,
-	PCI_DEVICE_ID_INTEL_GLK_PMC,
-	0,
-};
-
-static const struct pci_driver pmc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.devices= pci_device_ids,
-};

@@ -263,8 +263,9 @@ check_member(rk_mipi_regs, dsi_int_msk1, 0xc8);
 #define GEN_PLD_R_FULL			BIT(5)
 #define GEN_RD_CMD_BUSY			BIT(6)
 
-#define MIPI_DSI_DCS_SHORT_WRITE	0x05
-#define MIPI_DSI_DCS_LONG_WRITE		0x39
+#define MIPI_DSI_DCS_SHORT_WRITE		0x05
+#define MIPI_DSI_GENERIC_SHORT_WRITE_2_PARAM	0x23
+#define MIPI_DSI_DCS_LONG_WRITE			0x39
 
 enum mipi_dsi_pixel_format {
 	MIPI_DSI_FMT_RGB888,
@@ -314,6 +315,7 @@ struct dphy_pll_parameter_map {
 };
 
 struct rk_mipi_dsi {
+	struct rk_mipi_regs *mipi_regs;
 	u64 lane_bps; /* per lane */
 	u32 lanes;
 	u32 format;
@@ -321,5 +323,21 @@ struct rk_mipi_dsi {
 	u16 feedback_div;
 };
 
-void rk_mipi_prepare(const struct edid *edid, u32 display_on_mdelay, u32 video_mode_mdelay);
+struct panel_init_command {
+	u8 cmd;
+	u8 data;
+};
+
+struct mipi_panel_data {
+	u8 mipi_num;
+	enum mipi_dsi_pixel_format format;
+	u8 lanes;
+	u32 display_on_udelay;
+	u32 video_mode_udelay;
+	u32 num_init_commands;
+	struct panel_init_command *init_cmd;
+};
+
+void rk_mipi_prepare(const struct edid *edid,
+		     const struct mipi_panel_data *panel_data);
 #endif

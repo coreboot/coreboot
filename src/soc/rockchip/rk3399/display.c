@@ -48,27 +48,13 @@ static void reset_edp(void)
 	printk(BIOS_WARNING, "Retrying epd initialization.\n");
 }
 
-static void rk_get_mipi_mode(struct edid *edid, device_t dev)
-{
-	struct soc_rockchip_rk3399_config *conf = dev->chip_info;
-
-	edid->mode.pixel_clock = conf->panel_pixel_clock;
-	edid->mode.refresh = conf->panel_refresh;
-	edid->mode.ha = conf->panel_ha;
-	edid->mode.hbl = conf->panel_hbl;
-	edid->mode.hso = conf->panel_hso;
-	edid->mode.hspw = conf->panel_hspw;
-	edid->mode.va = conf->panel_va;
-	edid->mode.vbl = conf->panel_vbl;
-	edid->mode.vso = conf->panel_vso;
-	edid->mode.vspw = conf->panel_vspw;
-}
 void rk_display_init(device_t dev)
 {
 	struct edid edid;
 	struct soc_rockchip_rk3399_config *conf = dev->chip_info;
 	enum vop_modes detected_mode = VOP_MODE_UNKNOWN;
 	int retry_count = 0;
+	const struct mipi_panel_data *panel_data = NULL;
 
 	/* let's use vop0 in rk3399 */
 	uint32_t vop_id = 0;
@@ -111,13 +97,42 @@ retry_edp:
 		rkclk_configure_mipi();
 		rkclk_configure_vop_aclk(vop_id, 200 * MHz);
 
-		/* disable turnrequest turndisable forcetxstop forcerxmode */
+		/*
+		 * disable tx0 turnrequest, turndisable,
+		 * forcetxstop, forcerxmode
+		 */
 		write32(&rk3399_grf->soc_con22, RK_CLRBITS(0xffff));
-		/* select mipi-dsi0 signal from vop0 */
-		write32(&rk3399_grf->soc_con20, RK_CLRBITS(1 << 0));
 
-		rk_get_mipi_mode(&edid, dev);
-		detected_mode = VOP_MODE_MIPI;
+		/* disable tx1 turndisable, forcetxstop, forcerxmode */
+		write32(&rk3399_grf->soc_con23, RK_CLRBITS(0xfff0));
+
+		/*
+		 * enable dphy_tx1rx1_masterslavez,
+		 * clear dphy_tx1rx1_enableclk,
+		 * clear dphy_tx1rx1_basedir,
+		 * disable tx1 turnrequest
+		 */
+		write32(&rk3399_grf->soc_con24,
+			RK_CLRSETBITS(1 << 7 | 1 << 6 | 1 << 5 | 0xf,
+				      1 << 7 | 0 << 6 | 0 << 5 | 0 << 0));
+
+		/* dphy_tx1rx1_enable */
+		write32(&rk3399_grf->soc_con23, RK_SETBITS(0xf));
+
+		/* select mipi-dsi0 and mipi-dsi1 signal from vop0 */
+		write32(&rk3399_grf->soc_con20,
+			RK_CLRBITS((1 << 0) | (1 << 4)));
+
+		panel_data = mainboard_get_mipi_mode(&edid);
+		if (panel_data) {
+			if (panel_data->mipi_num > 1)
+				detected_mode = VOP_MODE_DUAL_MIPI;
+			else
+				detected_mode = VOP_MODE_MIPI;
+		} else {
+			printk(BIOS_WARNING, "Can not get mipi panel data\n");
+			return;
+		}
 		break;
 	default:
 		printk(BIOS_WARNING, "Unsupported vop_mode, aborting.\n");
@@ -138,7 +153,8 @@ retry_edp:
 
 	switch (detected_mode) {
 	case VOP_MODE_MIPI:
-		rk_mipi_prepare(&edid, conf->panel_display_on_mdelay, conf->panel_video_mode_mdelay);
+	case VOP_MODE_DUAL_MIPI:
+		rk_mipi_prepare(&edid, panel_data);
 		break;
 	case VOP_MODE_EDP:
 		/* will enable edp in depthcharge */

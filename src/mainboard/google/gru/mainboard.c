@@ -375,6 +375,11 @@ void mainboard_power_on_backlight(void)
 		prepare_backlight_i2c();
 }
 
+const struct mipi_panel_data *mainboard_get_mipi_mode(struct edid *edid)
+{
+	return NULL;
+}
+
 static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = &mainboard_init;

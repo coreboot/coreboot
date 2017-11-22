@@ -120,6 +120,7 @@ enum vop_modes {
 	VOP_MODE_EDP = 0,
 	VOP_MODE_HDMI,
 	VOP_MODE_MIPI,
+	VOP_MODE_DUAL_MIPI,
 	VOP_MODE_NONE,
 	VOP_MODE_AUTO_DETECT,
 	VOP_MODE_UNKNOWN,
@@ -139,7 +140,9 @@ enum vop_modes {
 #define M_EDP_OUT_EN       (1 << 14)
 #define M_HDMI_OUT_EN      (1 << 13)
 #define M_RGB_OUT_EN       (1 << 12)
-#define M_ALL_OUT_EN (M_MIPI_OUT_EN | M_EDP_OUT_EN | M_HDMI_OUT_EN | M_RGB_OUT_EN)
+#define M_DUAL_MIPI_OUT_EN	(1 << 3)
+#define M_ALL_OUT_EN (M_MIPI_OUT_EN | M_EDP_OUT_EN | M_HDMI_OUT_EN |\
+		      M_RGB_OUT_EN | M_DUAL_MIPI_OUT_EN)
 #define M_EDPI_WMS_FS      (1 << 10)
 #define M_EDPI_WMS_MODE    (1 << 9)
 #define M_EDPI_HALT_EN     (1 << 8)
@@ -154,6 +157,7 @@ enum vop_modes {
 #define V_MMU_EN(x)         (((x) & 1) << 20)
 #define V_DMA_BURST_LENGTH(x) (((x) & 3) << 18)
 #define V_MIPI_OUT_EN(x)      (((x) & 1) << 15)
+#define V_DUAL_MIPI_EN(x)	(((x) & 1) << 3)
 #define V_EDP_OUT_EN(x)       (((x) & 1) << 14)
 #define V_HDMI_OUT_EN(x)      (((x) & 1) << 13)
 #define V_RGB_OUT_EN(x)       (((x) & 1) << 12)

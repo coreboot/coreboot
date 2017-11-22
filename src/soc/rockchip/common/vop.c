@@ -119,8 +119,13 @@ void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode)
 		dsp_out_mode = 15;
 		break;
 	case VOP_MODE_MIPI:
-		clrsetbits_le32(&preg->sys_ctrl,
-				M_ALL_OUT_EN, V_MIPI_OUT_EN(1));
+		clrsetbits_le32(&preg->sys_ctrl, M_ALL_OUT_EN,
+				V_MIPI_OUT_EN(1));
+		dsp_out_mode = 0;
+		break;
+	case VOP_MODE_DUAL_MIPI:
+		clrsetbits_le32(&preg->sys_ctrl, M_ALL_OUT_EN,
+				V_MIPI_OUT_EN(1) | V_DUAL_MIPI_EN(1));
 		dsp_out_mode = 0;
 		break;
 	case VOP_MODE_EDP:

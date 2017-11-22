@@ -30,8 +30,10 @@
 #include <soc/soc.h>
 #include <timer.h>
 
-static struct rk_mipi_dsi rk_mipi;
-static struct rk_mipi_regs *mipi_regs = (void *)MIPI_BASE;
+static struct rk_mipi_dsi rk_mipi[2] = {
+	{ .mipi_regs = (void *)MIPI0_BASE},
+	{ .mipi_regs = (void *)MIPI1_BASE}
+};
 
 /*
  * The controller should generate 2 frames before
@@ -110,17 +112,20 @@ static void rk_mipi_dsi_phy_write(struct rk_mipi_dsi *dsi,
 	 * is latched internally as the current test code. Test data is
 	 * programmed internally by rising edge on TESTCLK.
 	 */
-	write32(&mipi_regs->dsi_phy_tst_ctrl0, PHY_TESTCLK | PHY_UNTESTCLR);
+	write32(&dsi->mipi_regs->dsi_phy_tst_ctrl0,
+		PHY_TESTCLK | PHY_UNTESTCLR);
 
-	write32(&mipi_regs->dsi_phy_tst_ctrl1, PHY_TESTEN | PHY_TESTDOUT(0) |
-					       PHY_TESTDIN(test_code));
+	write32(&dsi->mipi_regs->dsi_phy_tst_ctrl1,
+		PHY_TESTEN | PHY_TESTDOUT(0) | PHY_TESTDIN(test_code));
 
-	write32(&mipi_regs->dsi_phy_tst_ctrl0, PHY_UNTESTCLK | PHY_UNTESTCLR);
+	write32(&dsi->mipi_regs->dsi_phy_tst_ctrl0,
+		PHY_UNTESTCLK | PHY_UNTESTCLR);
 
-	write32(&mipi_regs->dsi_phy_tst_ctrl1, PHY_UNTESTEN | PHY_TESTDOUT(0) |
-					       PHY_TESTDIN(test_data));
+	write32(&dsi->mipi_regs->dsi_phy_tst_ctrl1,
+		PHY_UNTESTEN | PHY_TESTDOUT(0) | PHY_TESTDIN(test_data));
 
-	write32(&mipi_regs->dsi_phy_tst_ctrl0, PHY_TESTCLK | PHY_UNTESTCLR);
+	write32(&dsi->mipi_regs->dsi_phy_tst_ctrl0,
+		PHY_TESTCLK | PHY_UNTESTCLR);
 }
 
 /* bytes_per_ns - Nanoseconds to byte clock cycles */
@@ -142,7 +147,7 @@ static int rk_mipi_dsi_wait_phy_lock(struct rk_mipi_dsi *dsi)
 
 	stopwatch_init_msecs_expire(&sw, 20);
 	do {
-		val = read32(&mipi_regs->dsi_phy_status);
+		val = read32(&dsi->mipi_regs->dsi_phy_status);
 		if (val & LOCK)
 			return 0;
 	} while (!stopwatch_expired(&sw));
@@ -166,9 +171,9 @@ static int rk_mipi_dsi_phy_init(struct rk_mipi_dsi *dsi)
 	}
 
 	/* Start by clearing PHY state */
-	write32(&mipi_regs->dsi_phy_tst_ctrl0, PHY_UNTESTCLR);
-	write32(&mipi_regs->dsi_phy_tst_ctrl0, PHY_TESTCLR);
-	write32(&mipi_regs->dsi_phy_tst_ctrl0, PHY_UNTESTCLR);
+	write32(&dsi->mipi_regs->dsi_phy_tst_ctrl0, PHY_UNTESTCLR);
+	write32(&dsi->mipi_regs->dsi_phy_tst_ctrl0, PHY_TESTCLR);
+	write32(&dsi->mipi_regs->dsi_phy_tst_ctrl0, PHY_UNTESTCLR);
 
 	rk_mipi_dsi_phy_write(dsi, PLL_BIAS_CUR_SEL_CAP_VCO_CONTROL,
 			      BYPASS_VCO_RANGE |
@@ -244,8 +249,9 @@ static int rk_mipi_dsi_phy_init(struct rk_mipi_dsi *dsi)
 	rk_mipi_dsi_phy_write(dsi, HS_TX_DATA_LANE_EXIT_STATE_TIME_CONTROL,
 			      BIT(5) | bytes_per_ns(dsi, 100));
 
-	write32(&mipi_regs->dsi_phy_rstz, PHY_ENFORCEPLL | PHY_ENABLECLK |
-					  PHY_UNRSTZ | PHY_UNSHUTDOWNZ);
+	write32(&dsi->mipi_regs->dsi_phy_rstz,
+				PHY_ENFORCEPLL | PHY_ENABLECLK |
+				PHY_UNRSTZ | PHY_UNSHUTDOWNZ);
 
 	if (rk_mipi_dsi_wait_phy_lock(dsi)) {
 		printk(BIOS_ERR, "failed to wait for phy lock state\n");
@@ -254,7 +260,7 @@ static int rk_mipi_dsi_phy_init(struct rk_mipi_dsi *dsi)
 
 	stopwatch_init_msecs_expire(&sw, 20);
 	do {
-		val = read32(&mipi_regs->dsi_phy_status);
+		val = read32(&dsi->mipi_regs->dsi_phy_status);
 		if (val & STOP_STATE_CLK_LANE)
 			return 0;
 	} while (!stopwatch_expired(&sw));
@@ -281,7 +287,8 @@ static inline int mipi_dsi_pixel_format_to_bpp(enum mipi_dsi_pixel_format fmt)
 }
 
 static int rk_mipi_dsi_get_lane_bps(struct rk_mipi_dsi *dsi,
-				    const struct edid *edid)
+				    const struct edid *edid,
+				    const struct mipi_panel_data *panel_data)
 {
 	u64 pclk, target_bps;
 	u32 max_bps = dppa_map[ARRAY_SIZE(dppa_map) - 1].max_mbps * MHz;
@@ -302,7 +309,7 @@ static int rk_mipi_dsi_get_lane_bps(struct rk_mipi_dsi *dsi,
 	pclk = edid->mode.pixel_clock * MSECS_PER_SEC;
 
 	/* take 1 / 0.8, since mbps must bigger than bandwidth of RGB */
-	target_bps = pclk / dsi->lanes * bpp / 8 * 10;
+	target_bps = pclk / panel_data->lanes * bpp / 8 * 10;
 	if (target_bps >= max_bps) {
 		printk(BIOS_DEBUG, "DPHY clock frequency is out of range\n");
 		return -1;
@@ -381,38 +388,48 @@ static void rk_mipi_dsi_dpi_config(struct rk_mipi_dsi *dsi)
 		break;
 	}
 
-	write32(&mipi_regs->dsi_dpi_vcid, 0);
-	write32(&mipi_regs->dsi_dpi_color_coding, color);
+	write32(&dsi->mipi_regs->dsi_dpi_vcid, 0);
+	write32(&dsi->mipi_regs->dsi_dpi_color_coding, color);
 
-	write32(&mipi_regs->dsi_dpi_cfg_pol, 0);
+	write32(&dsi->mipi_regs->dsi_dpi_cfg_pol, 0);
 
-	write32(&mipi_regs->dsi_dpi_lp_cmd_tim, OUTVACT_LPCMD_TIME(4) |
-						INVACT_LPCMD_TIME(4));
+	write32(&dsi->mipi_regs->dsi_dpi_lp_cmd_tim,
+		OUTVACT_LPCMD_TIME(4) | INVACT_LPCMD_TIME(4));
 }
 
 static void rk_mipi_dsi_packet_handler_config(struct rk_mipi_dsi *dsi)
 {
-	write32(&mipi_regs->dsi_pckhdl_cfg, EN_CRC_RX | EN_ECC_RX | EN_BTA);
+	write32(&dsi->mipi_regs->dsi_pckhdl_cfg,
+		EN_CRC_RX | EN_ECC_RX | EN_BTA);
 }
 
 static void rk_mipi_dsi_video_mode_config(struct rk_mipi_dsi *dsi)
 {
-	write32(&mipi_regs->dsi_vid_mode_cfg,
+	write32(&dsi->mipi_regs->dsi_vid_mode_cfg,
 		VID_MODE_TYPE_BURST_SYNC_PULSES | ENABLE_LOW_POWER);
 }
 
-static void rk_mipi_dsi_video_packet_config(struct rk_mipi_dsi *dsi)
+static void rk_mipi_dsi_video_packet_config(struct rk_mipi_dsi *dsi,
+			const struct edid *edid,
+			const struct mipi_panel_data *panel_data)
 {
-	write32(&mipi_regs->dsi_vid_pkt_size, VID_PKT_SIZE(0x300));
+	int pkt_size;
+
+	if (panel_data->mipi_num > 1)
+		pkt_size = VID_PKT_SIZE(edid->mode.ha / 2 + 4);
+	else
+		pkt_size = VID_PKT_SIZE(edid->mode.ha);
+
+	write32(&dsi->mipi_regs->dsi_vid_pkt_size, pkt_size);
 }
 
 static void rk_mipi_dsi_command_mode_config(struct rk_mipi_dsi *dsi)
 {
-	write32(&mipi_regs->dsi_to_cnt_cfg,
+	write32(&dsi->mipi_regs->dsi_to_cnt_cfg,
 		HSTX_TO_CNT(1000) | LPRX_TO_CNT(1000));
-	write32(&mipi_regs->dsi_bta_to_cnt, 0xd00);
-	write32(&mipi_regs->dsi_cmd_mode_cfg, CMD_MODE_ALL_LP);
-	write32(&mipi_regs->dsi_mode_cfg, ENABLE_CMD_MODE);
+	write32(&dsi->mipi_regs->dsi_bta_to_cnt, 0xd00);
+	write32(&dsi->mipi_regs->dsi_cmd_mode_cfg, CMD_MODE_ALL_LP);
+	write32(&dsi->mipi_regs->dsi_mode_cfg, ENABLE_CMD_MODE);
 }
 
 /* Get lane byte clock cycles. */
@@ -439,12 +456,12 @@ static void rk_mipi_dsi_line_timer_config(struct rk_mipi_dsi *dsi,
 	hbp = edid->mode.hbl - edid->mode.hso - edid->mode.hspw;
 
 	lbcc = rk_mipi_dsi_get_hcomponent_lbcc(dsi, htotal, edid);
-	write32(&mipi_regs->dsi_vid_hline_time, lbcc);
+	write32(&dsi->mipi_regs->dsi_vid_hline_time, lbcc);
 
 	lbcc = rk_mipi_dsi_get_hcomponent_lbcc(dsi, hsa, edid);
-	write32(&mipi_regs->dsi_vid_hsa_time, lbcc);
+	write32(&dsi->mipi_regs->dsi_vid_hsa_time, lbcc);
 	lbcc = rk_mipi_dsi_get_hcomponent_lbcc(dsi, hbp, edid);
-	write32(&mipi_regs->dsi_vid_hbp_time, lbcc);
+	write32(&dsi->mipi_regs->dsi_vid_hbp_time, lbcc);
 }
 
 static void rk_mipi_dsi_vertical_timing_config(struct rk_mipi_dsi *dsi,
@@ -457,10 +474,10 @@ static void rk_mipi_dsi_vertical_timing_config(struct rk_mipi_dsi *dsi,
 	vfp = edid->mode.vso;
 	vbp = edid->mode.vbl - edid->mode.vso - edid->mode.vspw;
 
-	write32(&mipi_regs->dsi_vid_vactive_lines, vactive);
-	write32(&mipi_regs->dsi_vid_vsa_lines, vsa);
-	write32(&mipi_regs->dsi_vid_vfp_lines, vfp);
-	write32(&mipi_regs->dsi_vid_vbp_lines, vbp);
+	write32(&dsi->mipi_regs->dsi_vid_vactive_lines, vactive);
+	write32(&dsi->mipi_regs->dsi_vid_vsa_lines, vsa);
+	write32(&dsi->mipi_regs->dsi_vid_vfp_lines, vfp);
+	write32(&dsi->mipi_regs->dsi_vid_vbp_lines, vbp);
 }
 
 static void rk_mipi_dsi_dphy_timing_config(struct rk_mipi_dsi *dsi)
@@ -469,40 +486,40 @@ static void rk_mipi_dsi_dphy_timing_config(struct rk_mipi_dsi *dsi)
 	 * HS-PREPARE: 40ns + 4 * UI ~ 85ns + 6 * UI
 	 * HS-EXIT: 100ns
 	 */
-	write32(&mipi_regs->dsi_phy_tmr_cfg, PHY_HS2LP_TIME(0x40) |
+	write32(&dsi->mipi_regs->dsi_phy_tmr_cfg, PHY_HS2LP_TIME(0x40) |
 					     PHY_LP2HS_TIME(0x40) |
 					     MAX_RD_TIME(10000));
 
-	write32(&mipi_regs->dsi_phy_tmr_lpclk_cfg, PHY_CLKHS2LP_TIME(0x40) |
-						   PHY_CLKLP2HS_TIME(0x40));
+	write32(&dsi->mipi_regs->dsi_phy_tmr_lpclk_cfg,
+		PHY_CLKHS2LP_TIME(0x40) | PHY_CLKLP2HS_TIME(0x40));
 }
 
 static void rk_mipi_dsi_clear_err(struct rk_mipi_dsi *dsi)
 {
-	read32(&mipi_regs->dsi_int_st0);
-	read32(&mipi_regs->dsi_int_st1);
-	write32(&mipi_regs->dsi_int_msk0, 0);
-	write32(&mipi_regs->dsi_int_msk1, 0);
+	read32(&dsi->mipi_regs->dsi_int_st0);
+	read32(&dsi->mipi_regs->dsi_int_st1);
+	write32(&dsi->mipi_regs->dsi_int_msk0, 0);
+	write32(&dsi->mipi_regs->dsi_int_msk1, 0);
 }
 
 static void rk_mipi_dsi_dphy_interface_config(struct rk_mipi_dsi *dsi)
 {
-	write32(&mipi_regs->dsi_phy_if_cfg, PHY_STOP_WAIT_TIME(0x20) |
+	write32(&dsi->mipi_regs->dsi_phy_if_cfg, PHY_STOP_WAIT_TIME(0x20) |
 					    N_LANES(dsi->lanes));
 }
 
 static void rk_mipi_dsi_set_mode(struct rk_mipi_dsi *dsi,
 				 enum rk_mipi_dsi_mode mode)
 {
-	write32(&mipi_regs->dsi_pwr_up, RESET);
+	write32(&dsi->mipi_regs->dsi_pwr_up, RESET);
 	if (mode == MIPI_DSI_CMD_MODE) {
-		write32(&mipi_regs->dsi_mode_cfg, ENABLE_CMD_MODE);
+		write32(&dsi->mipi_regs->dsi_mode_cfg, ENABLE_CMD_MODE);
 	} else {
-		write32(&mipi_regs->dsi_mode_cfg, ENABLE_VIDEO_MODE);
+		write32(&dsi->mipi_regs->dsi_mode_cfg, ENABLE_VIDEO_MODE);
 		rk_mipi_dsi_video_mode_config(dsi);
-		write32(&mipi_regs->dsi_lpclk_ctrl, PHY_TXREQUESTCLKHS);
+		write32(&dsi->mipi_regs->dsi_lpclk_ctrl, PHY_TXREQUESTCLKHS);
 	}
-	write32(&mipi_regs->dsi_pwr_up, POWERUP);
+	write32(&dsi->mipi_regs->dsi_pwr_up, POWERUP);
 }
 
 static void rk_mipi_dsi_init(struct rk_mipi_dsi *dsi)
@@ -515,20 +532,21 @@ static void rk_mipi_dsi_init(struct rk_mipi_dsi *dsi)
 	 * which is:
 	 *     (lane_mbps >> 3) / 20 > esc_clk_division
 	 */
-	u32 esc_clk_division = div_round_up(dsi->lane_bps, 8 * 20 * USECS_PER_SEC);
+	u32 esc_clk_division = div_round_up(dsi->lane_bps,
+					    8 * 20 * USECS_PER_SEC);
 
-	write32(&mipi_regs->dsi_pwr_up, RESET);
-	write32(&mipi_regs->dsi_phy_rstz, PHY_DISFORCEPLL | PHY_DISABLECLK |
-					  PHY_RSTZ | PHY_SHUTDOWNZ);
-	write32(&mipi_regs->dsi_clk_cfg,
+	write32(&dsi->mipi_regs->dsi_pwr_up, RESET);
+	write32(&dsi->mipi_regs->dsi_phy_rstz,
+		PHY_DISFORCEPLL | PHY_DISABLECLK | PHY_RSTZ | PHY_SHUTDOWNZ);
+	write32(&dsi->mipi_regs->dsi_clk_cfg,
 		TO_CLK_DIVIDSION(10) |
 		TX_ESC_CLK_DIVIDSION(esc_clk_division));
 }
 
 static void rk_mipi_message_config(struct rk_mipi_dsi *dsi)
 {
-	write32(&mipi_regs->dsi_lpclk_ctrl, 0);
-	write32(&mipi_regs->dsi_cmd_mode_cfg, CMD_MODE_ALL_LP);
+	write32(&dsi->mipi_regs->dsi_lpclk_ctrl, 0);
+	write32(&dsi->mipi_regs->dsi_cmd_mode_cfg, CMD_MODE_ALL_LP);
 }
 
 static int rk_mipi_dsi_check_cmd_fifo(struct rk_mipi_dsi *dsi)
@@ -538,7 +556,7 @@ static int rk_mipi_dsi_check_cmd_fifo(struct rk_mipi_dsi *dsi)
 
 	stopwatch_init_msecs_expire(&sw, 20);
 	do {
-		val = read32(&mipi_regs->dsi_cmd_pkt_status);
+		val = read32(&dsi->mipi_regs->dsi_cmd_pkt_status);
 		if (!(val & GEN_CMD_FULL))
 			return 0 ;
 	} while (!stopwatch_expired(&sw));
@@ -557,12 +575,12 @@ static int rk_mipi_dsi_gen_pkt_hdr_write(struct rk_mipi_dsi *dsi, u32 hdr_val)
 		return -1;
 	}
 
-	write32(&mipi_regs->dsi_gen_hdr, hdr_val);
+	write32(&dsi->mipi_regs->dsi_gen_hdr, hdr_val);
 
 	mask = GEN_CMD_EMPTY | GEN_PLD_W_EMPTY;
 	stopwatch_init_msecs_expire(&sw, 20);
 	do {
-		val = read32(&mipi_regs->dsi_cmd_pkt_status);
+		val = read32(&dsi->mipi_regs->dsi_cmd_pkt_status);
 		if ((val & mask) == mask)
 			return 0 ;
 	} while (!stopwatch_expired(&sw));
@@ -582,37 +600,74 @@ static int rk_mipi_dsi_dcs_cmd(struct rk_mipi_dsi *dsi, u8 cmd)
 	return rk_mipi_dsi_gen_pkt_hdr_write(dsi, val);
 }
 
-void rk_mipi_prepare(const struct edid *edid, u32 display_on_mdelay, u32 video_mode_mdelay)
+static int rk_mipi_dsi_dci_cmd_arg(struct rk_mipi_dsi *dsi, u8 cmd, u8 arg)
 {
-	rk_mipi.lanes = 4;
-	rk_mipi.format = MIPI_DSI_FMT_RGB888;
-	if (rk_mipi_dsi_get_lane_bps(&rk_mipi, edid) < 0)
+	u32 val;
+	u16 data;
+
+	rk_mipi_message_config(dsi);
+
+	data = cmd | (arg << 8);
+	val = GEN_HDATA(data) | GEN_HTYPE(MIPI_DSI_GENERIC_SHORT_WRITE_2_PARAM);
+
+	return rk_mipi_dsi_gen_pkt_hdr_write(dsi, val);
+}
+
+static void rk_mipi_enable(struct rk_mipi_dsi *dsi,
+			   const struct edid *edid,
+			   const struct mipi_panel_data *panel_data)
+{
+	if (rk_mipi_dsi_get_lane_bps(dsi, edid, panel_data) < 0)
 		return;
 
-	rk_mipi_dsi_init(&rk_mipi);
-	rk_mipi_dsi_dpi_config(&rk_mipi);
-	rk_mipi_dsi_packet_handler_config(&rk_mipi);
-	rk_mipi_dsi_video_mode_config(&rk_mipi);
-	rk_mipi_dsi_video_packet_config(&rk_mipi);
-	rk_mipi_dsi_command_mode_config(&rk_mipi);
-	rk_mipi_dsi_line_timer_config(&rk_mipi, edid);
-	rk_mipi_dsi_vertical_timing_config(&rk_mipi, edid);
-	rk_mipi_dsi_dphy_timing_config(&rk_mipi);
-	rk_mipi_dsi_dphy_interface_config(&rk_mipi);
-	rk_mipi_dsi_clear_err(&rk_mipi);
-	if (rk_mipi_dsi_phy_init(&rk_mipi) < 0)
+	rk_mipi_dsi_init(dsi);
+	rk_mipi_dsi_dpi_config(dsi);
+	rk_mipi_dsi_packet_handler_config(dsi);
+	rk_mipi_dsi_video_mode_config(dsi);
+	rk_mipi_dsi_video_packet_config(dsi, edid, panel_data);
+	rk_mipi_dsi_command_mode_config(dsi);
+	rk_mipi_dsi_line_timer_config(dsi, edid);
+	rk_mipi_dsi_vertical_timing_config(dsi, edid);
+	rk_mipi_dsi_dphy_timing_config(dsi);
+	rk_mipi_dsi_dphy_interface_config(dsi);
+	rk_mipi_dsi_clear_err(dsi);
+	if (rk_mipi_dsi_phy_init(dsi) < 0)
 		return;
-	rk_mipi_dsi_wait_for_two_frames(&rk_mipi, edid);
+	rk_mipi_dsi_wait_for_two_frames(dsi, edid);
 
-	rk_mipi_dsi_set_mode(&rk_mipi, MIPI_DSI_CMD_MODE);
+	rk_mipi_dsi_set_mode(dsi, MIPI_DSI_CMD_MODE);
+}
 
-	if (rk_mipi_dsi_dcs_cmd(&rk_mipi, MIPI_DCS_EXIT_SLEEP_MODE) < 0)
-		return;
-	mdelay(display_on_mdelay);
+void rk_mipi_prepare(const struct edid *edid,
+		     const struct mipi_panel_data *panel_data)
+{
+	int i, num;
 
-	if (rk_mipi_dsi_dcs_cmd(&rk_mipi, MIPI_DCS_SET_DISPLAY_ON) < 0)
-		return;
-	mdelay(video_mode_mdelay);
+	for (i = 0; i < panel_data->mipi_num; i++) {
+		rk_mipi[i].lanes = panel_data->lanes / panel_data->mipi_num;
+		rk_mipi[i].format = panel_data->format;
+		rk_mipi_enable(&rk_mipi[i], edid, panel_data);
+	}
 
-	rk_mipi_dsi_set_mode(&rk_mipi, MIPI_DSI_VID_MODE);
+	for (num = 0; num < panel_data->num_init_commands; num++) {
+		for (i = 0; i < panel_data->mipi_num; i++)
+			rk_mipi_dsi_dci_cmd_arg(&rk_mipi[i],
+						panel_data->init_cmd[num].cmd,
+						panel_data->init_cmd[num].data);
+	}
+
+	for (i = 0; i < panel_data->mipi_num; i++) {
+		if (rk_mipi_dsi_dcs_cmd(&rk_mipi[i],
+					MIPI_DCS_EXIT_SLEEP_MODE) < 0)
+			return;
+	}
+	udelay(panel_data->display_on_udelay);
+	for (i = 0; i < panel_data->mipi_num; i++) {
+		if (rk_mipi_dsi_dcs_cmd(&rk_mipi[i],
+					MIPI_DCS_SET_DISPLAY_ON) < 0)
+			return;
+	}
+	udelay(panel_data->video_mode_udelay);
+	for (i = 0; i < panel_data->mipi_num; i++)
+		rk_mipi_dsi_set_mode(&rk_mipi[i], MIPI_DSI_VID_MODE);
 }

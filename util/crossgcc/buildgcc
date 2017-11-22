@@ -1236,6 +1236,11 @@ PROGNAME=$(basename "$0")
 rm -f "$DESTDIR$TARGETDIR/share/$PROGNAME-*"
 cp "$PROGNAME" "$DESTDIR$TARGETDIR/share/$PROGNAME-$CROSSGCC_VERSION-$CROSSGCC_COMMIT"
 
+# Adding edk2 tools template
+mkdir -p "$DESTDIR$TARGETDIR/share/edk2config"
+sed -e "s,@@PREFIX@@,$TARGETDIR,g" edk2tools.txt > "$DESTDIR$TARGETDIR/share/edk2config/tools_def.txt"
+printf "Copied EDK2 tools template ... ${green}ok${NC}\n"
+
 cleanup
 
 printf "\n${green}You can now run $NAME from $TARGETDIR.${NC}\n"

@@ -13,4 +13,4 @@
  * GNU General Public License for more details.
  */
 
-#include <baseboard/acpi/dptf.asl>
+/* Dummy file until DPTF support is added. */

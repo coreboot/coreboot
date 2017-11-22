@@ -43,6 +43,9 @@
 #define PM_RTC_SHADOW	    0x5B
 #define PM_S_STATE_CONTROL  0xBA
 
+#define SEC_REG_SERIAL_ADDR 0x1000
+#define MAX_SERIAL_LEN	    10
+
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
  * This table is responsible for physically routing the PIC and
@@ -406,17 +409,15 @@ static void mainboard_final(void *chip_info)
  * We will stuff a modified version of the first NICs (BDF 1:0.0) MAC address
  * into the smbios serial number location.
  */
-const char *smbios_mainboard_serial_number(void)
-{
-	static char serial[10];
+static int read_serial_from_nic(char *serial, size_t len) {
 	device_t nic_dev;
 	uintptr_t bar10;
 	u32 mac_addr = 0;
 	int i;
 
 	nic_dev = dev_find_slot(1, PCI_DEVFN(0, 0));
-	if ((serial[0] != 0) || !nic_dev)
-		return serial;
+	if (!serial || !nic_dev)
+		return -1;
 
 	/* Read in the last 3 bytes of NIC's MAC address. */
 	bar10 = pci_read_config32(nic_dev, 0x10);
@@ -430,7 +431,43 @@ const char *smbios_mainboard_serial_number(void)
 	mac_addr /= 4;
 	mac_addr -= 64;
 
-	snprintf(serial, sizeof(serial), "%d", mac_addr);
+	snprintf(serial, len, "%d", mac_addr);
+	return 0;
+}
+
+static int read_serial_from_flash(char *serial, size_t len) {
+	const struct spi_flash *flash = NULL;;
+	int ret;
+
+	flash = boot_device_spi_flash();
+	if (flash == NULL) {
+		printk(BIOS_WARNING, "Can't get boot flash device\n");
+		return -1;
+	}
+
+	ret = spi_flash_read_sec(flash, SEC_REG_SERIAL_ADDR, len, serial);
+	if (ret) {
+		printk(BIOS_WARNING, "Can't read security registers\n");
+		return ret;
+	}
+
+	return ret;
+}
+
+const char *smbios_mainboard_serial_number(void)
+{
+	static char serial[MAX_SERIAL_LEN + 1] = { 0 }; /* extra slot for \0 */
+	int ret;
+
+	ret = read_serial_from_flash(serial, sizeof(serial)-1);
+	if (ret || (serial[0] == 0) || (serial[0] == 0xff)) {
+		ret = read_serial_from_nic(serial, sizeof(serial)-1);
+		if (ret) {
+			serial[0] = '0';
+			serial[1] = '\0';
+		}
+	}
+
 	return serial;
 }
 

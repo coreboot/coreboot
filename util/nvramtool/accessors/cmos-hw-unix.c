@@ -11,7 +11,7 @@
 #define INW(x) __extension__ ({ u_int tmp = (x); inw(tmp); })
 #define INL(x) __extension__ ({ u_int tmp = (x); inl(tmp); })
 #else
-#if defined(__GLIBC__)
+#if defined(__GLIBC__) && (defined(__i386__) || defined(__x86_64__))
 #include <sys/io.h>
 #endif
 #if (defined(__MACH__) && defined(__APPLE__))
@@ -76,6 +76,8 @@ static void cmos_hal_init(void* data);
 static unsigned char cmos_hal_read(unsigned addr);
 static void cmos_hal_write(unsigned addr, unsigned char value);
 static void cmos_set_iopl(int level);
+
+#if defined(__i386__) || defined(__x86_64__)
 
 /* no need to initialize anything */
 static void cmos_hal_init(__attribute__((unused)) void *data)
@@ -159,6 +161,32 @@ static void cmos_set_iopl(int level)
 	}
 #endif
 }
+
+#else
+
+/* no need to initialize anything */
+static void cmos_hal_init(__attribute__((unused)) void *data)
+{
+	return;
+}
+
+static unsigned char cmos_hal_read(__attribute__((unused)) unsigned index)
+{
+	return;
+}
+
+static void cmos_hal_write(__attribute__((unused)) unsigned index,
+			   __attribute__((unused)) unsigned char value)
+{
+	return;
+}
+
+static void cmos_set_iopl(__attribute__((unused)) int level)
+{
+	return;
+}
+
+#endif
 
 cmos_access_t cmos_hal = {
 	.init = cmos_hal_init,

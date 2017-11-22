@@ -158,39 +158,14 @@ static void lpc_set_resources(struct device *dev)
 	pci_dev_set_resources(dev);
 }
 
-/*
- * Structure to simplify code obtaining the total of used wide IO
- * registers and the size assigned to each. Used on set_child_resource
- * and lpc_enable_childrens_resources.
- */
-struct _wide_IO_enable_bits {
-	u32	enable[3];
-	u8	alt[3];
-} wio_en = {
-		{
-			LPC_WIDEIO0_ENABLE,
-			LPC_WIDEIO1_ENABLE,
-			LPC_WIDEIO2_ENABLE
-		},
-		{
-			LPC_ALT_WIDEIO0_ENABLE,
-			LPC_ALT_WIDEIO1_ENABLE,
-			LPC_ALT_WIDEIO2_ENABLE
-		}
-};
-
 static void set_child_resource(device_t child,
-				int *wio_total_ptr,
-				u16 *reg_var,
 				u32 *reg,
-				u32 *reg_x,
-				u8  *wiosize)
+				u32 *reg_x)
 {
 	struct resource *res;
 	u32 base, end;
 	u32 rsize = 0, set = 0, set_x = 0;
-	int i, wio_total = *wio_total_ptr;
-	u16 reg_size[3];
+	int wideio_index;
 
 	/*
 	 * Be a bit relaxed, tolerate that LPC region might be bigger than
@@ -202,17 +177,6 @@ static void set_child_resource(device_t child,
 	 * will verify if required region was previously set and will avoid
 	 * setting a new wide IO resource if one is already set.
 	 */
-
-	/*
-	 * For each wideIO get the current size, 16,  512,
-	 * or 0 if it isn't used.
-	 */
-	for (i = 0; i < 3; i++) {
-		if (i < wio_total) /* convert to index */
-			reg_size[i] = (*wiosize & wio_en.alt[i]) ? 16 : 512;
-		else
-			reg_size[i] = 0;
-	}
 
 	for (res = child->resource_list; res; res = res->next) {
 		if (!(res->flags & IORESOURCE_IO))
@@ -289,18 +253,11 @@ static void set_child_resource(device_t child,
 			break;
 		default:
 			rsize = 0;
-			if (wio_total > 0) {
-				for (i = 0; i < wio_total; i++) {
-					if ((base >= reg_var[i]) &&
-					    ((base + res->size) <=
-					     (reg_var[i] + reg_size[i]))) {
-						rsize = reg_size[i];
-						printk(BIOS_DEBUG,
-							"Covered by wideIO");
-						printk(BIOS_DEBUG, " %d\n", i);
-						break;
-					}
-				}
+			wideio_index = sb_find_wideio_range(base, res->size);
+			if (wideio_index != WIDEIO_RANGE_ERROR) {
+				rsize = sb_wideio_size(wideio_index);
+				printk(BIOS_DEBUG, "Covered by wideIO");
+				printk(BIOS_DEBUG, " %d\n", wideio_index);
 			}
 		}
 		/* check if region found and matches the enable */
@@ -308,18 +265,23 @@ static void set_child_resource(device_t child,
 			*reg |= set;
 			*reg_x |= set_x;
 		/* check if we can fit resource in variable range */
-		} else if ((wio_total < 3) && (res->size <= 512)) {
-			reg_var[wio_total] = base;
-			*reg_x |= wio_en.enable[i];
-			if (res->size <= 16)
-				*wiosize |= wio_en.alt[wio_total];
-			wio_total++;
-			*wio_total_ptr = wio_total;
 		} else {
-			printk(BIOS_ERR,
-				"cannot fit LPC decode region:");
-			printk(BIOS_ERR, "%s, base = 0x%08x, end = 0x%08x\n",
-				dev_path(child), base, end);
+			wideio_index = sb_set_wideio_range(base, res->size);
+			if (wideio_index != WIDEIO_RANGE_ERROR) {
+				/* preserve wide IO related bits. */
+				*reg_x = pci_read_config32(SOC_LPC_DEV,
+					LPC_IO_OR_MEM_DECODE_ENABLE);
+
+				printk(BIOS_DEBUG,
+					"Range assigned to wide IO %d\n",
+					wideio_index);
+			} else {
+				printk(BIOS_ERR,
+					"cannot fit LPC decode region:");
+				printk(BIOS_ERR,
+					"%s, base = 0x%08x, end = 0x%08x\n",
+					dev_path(child), base, end);
+			}
 		}
 	}
 }
@@ -334,27 +296,10 @@ static void lpc_enable_childrens_resources(device_t dev)
 {
 	struct bus *link;
 	u32 reg, reg_x;
-	int i, wio_total = 0;
-	u16 reg_var[3];
-	u8 wiosize = pci_read_config8(dev, LPC_ALT_WIDEIO_RANGE_ENABLE);
 
 	reg = pci_read_config32(dev, LPC_IO_PORT_DECODE_ENABLE);
 	reg_x = pci_read_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE);
 
-	/*
-	 * Detect the number of used ranges (wide IO), and don't use those
-	 * already taken.
-	 */
-	for (i = 0; i < 3; i++) {
-		if (reg_x & wio_en.enable[i])
-			wio_total = i + 1;
-	}
-
-	reg_var[2] = pci_read_config16(dev, LPC_WIDEIO2_GENERIC_PORT);
-	reg_var[1] = pci_read_config16(dev, LPC_WIDEIO1_GENERIC_PORT);
-	reg_var[0] = pci_read_config16(dev, LPC_WIDEIO_GENERIC_PORT);
-
-	/* todo: clean up the code style here */
 	for (link = dev->link_list; link; link = link->next) {
 		device_t child;
 		for (child = link->children; child;
@@ -362,29 +307,13 @@ static void lpc_enable_childrens_resources(device_t dev)
 			if (child->enabled
 			    && (child->path.type == DEVICE_PATH_PNP)) {
 				set_child_resource(child,
-						&wio_total,
-						reg_var,
 						&reg,
-						&reg_x,
-						&wiosize);
+						&reg_x);
 			}
 		}
 	}
 	pci_write_config32(dev, LPC_IO_PORT_DECODE_ENABLE, reg);
 	pci_write_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE, reg_x);
-	/* Set WideIO for as many IOs found (fall through is on purpose) */
-	switch (wio_total) {
-	case 3:
-		pci_write_config16(dev, LPC_WIDEIO2_GENERIC_PORT, reg_var[2]);
-		/* fall through */
-	case 2:
-		pci_write_config16(dev, LPC_WIDEIO1_GENERIC_PORT, reg_var[1]);
-		/* fall through */
-	case 1:
-		pci_write_config16(dev, LPC_WIDEIO_GENERIC_PORT, reg_var[0]);
-		break;
-	}
-	pci_write_config8(dev, LPC_ALT_WIDEIO_RANGE_ENABLE, wiosize);
 }
 
 static void lpc_enable_resources(device_t dev)

@@ -19,12 +19,10 @@ bootblock-y += bootblock/OemCustomize.c
 bootblock-y += ec.c
 
 romstage-y += BiosCallOuts.c
-romstage-y += boardid.c
 romstage-y += chromeos.c
 romstage-y += OemCustomize.c
 
 ramstage-y += BiosCallOuts.c
-ramstage-y += boardid.c
 ramstage-y += chromeos.c
 ramstage-y += ec.c
 ramstage-y += OemCustomize.c

@@ -23,6 +23,6 @@
 
 const GPIO_CONTROL *get_gpio_table(void);
 const struct sci_source *get_gpe_table(size_t *num);
-uint8_t variant_board_id(void);
+uint8_t variant_memory_sku(void);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

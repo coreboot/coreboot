@@ -40,7 +40,6 @@ subdirs-y += ../../../cpu/x86/smm
 bootblock-$(CONFIG_STONEYRIDGE_UART) += uart.c
 bootblock-y += BiosCallOuts.c
 bootblock-y += bootblock/bootblock.c
-bootblock-y += early_setup.c
 bootblock-y += pmutil.c
 bootblock-y += reset.c
 bootblock-y += sb_util.c
@@ -49,7 +48,6 @@ bootblock-y += southbridge.c
 
 romstage-y += BiosCallOuts.c
 romstage-y += romstage.c
-romstage-y += early_setup.c
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
 romstage-y += gpio.c
 romstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += imc.c

@@ -30,6 +30,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select USE_BLOBS
 	select GENERIC_SPD_BIN
 	select PXE
+	select SPI_FLASH
+	select SPI_FLASH_WINBOND
 
 config MAINBOARD_DIR
 	string

@@ -32,6 +32,36 @@ static const struct reset_mapping rst_map_com0[] = {
 	{ .logical = PAD_CFG0_LOGICAL_RESET_RSMRST, .chipset = 3U << 30 },
 };
 
+static const struct pad_group cnl_community0_groups[] = {
+	INTEL_GPP(GPP_A0, GPP_A0, GPIO_RSVD_0),		/* GPP_A */
+	INTEL_GPP(GPP_A0, GPP_B0, GPIO_RSVD_2),		/* GPP_B */
+	INTEL_GPP(GPP_A0, GPP_G0, GPP_G7),		/* GPP_G */
+	INTEL_GPP(GPP_A0, GPIO_RSVD_3, GPIO_RSVD_11),	/* SPI */
+};
+
+static const struct pad_group cnl_community1_groups[] = {
+	INTEL_GPP(GPP_D0, GPP_D0, GPIO_RSVD_12),	/* GPP_D */
+	INTEL_GPP(GPP_D0, GPP_F0, GPP_F23),		/* GPP_F */
+	INTEL_GPP(GPP_D0, GPP_H0, GPP_H23),		/* GPP_H */
+	INTEL_GPP(GPP_D0, GPIO_RSVD_12, GPIO_RSVD_52),	/* VGPIO */
+};
+
+static const struct pad_group cnl_community2_groups[] = {
+	INTEL_GPP(GPD0, GPD0, GPD11),			/* GPD */
+};
+
+static const struct pad_group cnl_community3_groups[] = {
+	INTEL_GPP(HDA_BCLK, HDA_BCLK, SSP1_TXD),		/* AZA */
+	INTEL_GPP(HDA_BCLK, GPIO_RSVD_68, GPIO_RSVD_78),	/* CPU */
+};
+
+static const struct pad_group cnl_community4_groups[] = {
+	INTEL_GPP(GPP_C0, GPP_C0, GPP_C23),		/* GPP_C */
+	INTEL_GPP(GPP_C0, GPP_E0, GPP_E23),		/* GPP_E */
+	INTEL_GPP(GPP_C0, GPIO_RSVD_53, GPIO_RSVD_61),	/* JTAG */
+	INTEL_GPP(GPP_C0, GPIO_RSVD_62, GPIO_RSVD_67),	/* HVMOS */
+};
+
 static const struct pad_community cnl_communities[] = {
 	{ /* GPP A, B, G, SPI */
 		.port = PID_GPIOCOM0,
@@ -47,6 +77,8 @@ static const struct pad_community cnl_communities[] = {
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map_com0,
 		.num_reset_vals = ARRAY_SIZE(rst_map_com0),
+		.groups = cnl_community0_groups,
+		.num_groups = ARRAY_SIZE(cnl_community0_groups),
 	}, { /* GPP D, F, H, VGPIO */
 		.port = PID_GPIOCOM1,
 		.first_pad = GPP_D0,
@@ -61,6 +93,8 @@ static const struct pad_community cnl_communities[] = {
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = cnl_community1_groups,
+		.num_groups = ARRAY_SIZE(cnl_community1_groups),
 	}, { /* GPD */
 		.port = PID_GPIOCOM2,
 		.first_pad = GPD0,
@@ -75,6 +109,8 @@ static const struct pad_community cnl_communities[] = {
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = cnl_community2_groups,
+		.num_groups = ARRAY_SIZE(cnl_community2_groups),
 	}, { /* AZA, CPU */
 		.port = PID_GPIOCOM3,
 		.first_pad = HDA_BCLK,
@@ -89,6 +125,8 @@ static const struct pad_community cnl_communities[] = {
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = cnl_community3_groups,
+		.num_groups = ARRAY_SIZE(cnl_community3_groups),
 	}, { /* GPP C, E, JTAG, HVMOS */
 		.port = PID_GPIOCOM4,
 		.first_pad = GPP_C0,
@@ -103,6 +141,8 @@ static const struct pad_community cnl_communities[] = {
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = cnl_community4_groups,
+		.num_groups = ARRAY_SIZE(cnl_community4_groups),
 	}
 };
 

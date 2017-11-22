@@ -23,6 +23,12 @@
 #ifndef __ACPI__
 #include <types.h>
 
+#define INTEL_GPP(first_of_community, start_of_group, end_of_group) \
+	{                                               \
+		.first_pad = (start_of_group) - (first_of_community), \
+		.size = (end_of_group) - (start_of_group) + 1,        \
+	}
+
 /*
  * Following should be defined in soc/gpio.h
  * GPIO_MISCCFG - offset to GPIO MISCCFG Register
@@ -55,6 +61,14 @@ struct reset_mapping {
 	uint32_t chipset;
 };
 
+
+/* Structure describes the groups within each community */
+struct pad_group {
+	int		first_pad; /* offset of first pad of the group relative
+	to the community */
+	unsigned int	size; /* Size of the group */
+};
+
 /* This structure will be used to describe a community or each group within a
  * community when multiple groups exist inside a community
  */
@@ -76,6 +90,8 @@ struct pad_community {
 	const struct reset_mapping	*reset_map; /* PADRSTCFG logical to
 			chipset mapping */
 	size_t		num_reset_vals;
+	const struct pad_group	*groups;
+	size_t		num_groups;
 };
 
 /*

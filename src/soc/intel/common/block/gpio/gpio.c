@@ -68,22 +68,42 @@ static inline size_t relative_pad_in_comm(const struct pad_community *comm,
 	return gpio - comm->first_pad;
 }
 
-static inline size_t gpio_group_index_scaled(const struct pad_community *comm,
-					unsigned int relative_pad, size_t scale)
-{
-	return (relative_pad / comm->max_pads_per_group) * scale;
-}
-
+/* find the group within the community that the pad is a part of */
 static inline size_t gpio_group_index(const struct pad_community *comm,
 					unsigned int relative_pad)
 {
-	return gpio_group_index_scaled(comm, relative_pad, 1);
+	size_t i;
+
+	assert(comm->groups != NULL);
+
+	/* find the base pad number for this pad's group */
+	for (i = 0; i < comm->num_groups; i++) {
+		if (relative_pad >= comm->groups[i].first_pad &&
+			relative_pad < comm->groups[i].first_pad +
+			comm->groups[i].size) {
+			return i;
+		}
+	}
+
+	assert(0);
+
+	return i;
+}
+
+static inline size_t gpio_group_index_scaled(const struct pad_community *comm,
+					unsigned int relative_pad, size_t scale)
+{
+	return gpio_group_index(comm, relative_pad) * scale;
 }
 
 static inline size_t gpio_within_group(const struct pad_community *comm,
 						unsigned int relative_pad)
 {
-	return relative_pad % comm->max_pads_per_group;
+	size_t i;
+
+	i = gpio_group_index(comm, relative_pad);
+
+	return relative_pad - comm->groups[i].first_pad;
 }
 
 static inline uint32_t gpio_bitmask_within_group(

@@ -27,6 +27,28 @@ static const struct reset_mapping rst_map[] = {
 	{ .logical = PAD_CFG0_LOGICAL_RESET_PLTRST, .chipset = 2U << 30 },
 };
 
+static const struct pad_group apl_community_n_groups[] = {
+	INTEL_GPP(N_OFFSET, N_OFFSET, GPIO_31),	/* NORTH 0 */
+	INTEL_GPP(N_OFFSET, GPIO_32, TRST_B),	/* NORTH 1 */
+	INTEL_GPP(N_OFFSET, TMS, SVID0_CLK),	/* NORTH 2 */
+};
+
+static const struct pad_group apl_community_w_groups[] = {
+	INTEL_GPP(W_OFFSET, W_OFFSET, OSC_CLK_OUT_1),/* WEST 0 */
+	INTEL_GPP(W_OFFSET, OSC_CLK_OUT_2, SUSPWRDNACK),/* WEST 1 */
+};
+
+static const struct pad_group apl_community_sw_groups[] = {
+	INTEL_GPP(SW_OFFSET, SW_OFFSET, SMB_ALERTB),	/* SOUTHWEST 0 */
+	INTEL_GPP(SW_OFFSET, SMB_CLK, LPC_FRAMEB),	/* SOUTHWEST 1 */
+};
+
+static const struct pad_group apl_community_nw_groups[] = {
+	INTEL_GPP(NW_OFFSET, NW_OFFSET, PROCHOT_B),	/* NORTHWEST 0 */
+	INTEL_GPP(NW_OFFSET, PMIC_I2C_SCL, GPIO_106),/* NORTHWEST 1 */
+	INTEL_GPP(NW_OFFSET, GPIO_109, GPIO_123),	/* NORTHWEST 2 */
+};
+
 static const struct pad_community apl_gpio_communities[] = {
 	{
 		.port = PID_GPIO_SW,
@@ -43,6 +65,8 @@ static const struct pad_community apl_gpio_communities[] = {
 		.acpi_path = "\\_SB.GPO3",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = apl_community_sw_groups,
+		.num_groups = ARRAY_SIZE(apl_community_sw_groups),
 	}, {
 		.port = PID_GPIO_W,
 		.first_pad = W_OFFSET,
@@ -58,6 +82,8 @@ static const struct pad_community apl_gpio_communities[] = {
 		.acpi_path = "\\_SB.GPO2",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = apl_community_w_groups,
+		.num_groups = ARRAY_SIZE(apl_community_w_groups),
 	}, {
 		.port = PID_GPIO_NW,
 		.first_pad = NW_OFFSET,
@@ -73,6 +99,8 @@ static const struct pad_community apl_gpio_communities[] = {
 		.acpi_path = "\\_SB.GPO1",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = apl_community_nw_groups,
+		.num_groups = ARRAY_SIZE(apl_community_nw_groups),
 	}, {
 		.port = PID_GPIO_N,
 		.first_pad = N_OFFSET,
@@ -89,6 +117,8 @@ static const struct pad_community apl_gpio_communities[] = {
 		.acpi_path = "\\_SB.GPO0",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = apl_community_n_groups,
+		.num_groups = ARRAY_SIZE(apl_community_n_groups),
 	}
 };
 

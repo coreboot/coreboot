@@ -20,6 +20,7 @@
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
 
+
 static const struct reset_mapping rst_map[] = {
 	{ .logical = PAD_CFG0_LOGICAL_RESET_RSMRST, .chipset = 0U << 30},
 	{ .logical = PAD_CFG0_LOGICAL_RESET_DEEP, .chipset = 1U << 30},
@@ -31,6 +32,38 @@ static const struct reset_mapping rst_map_com2[] = {
 	{ .logical = PAD_CFG0_LOGICAL_RESET_DEEP, .chipset = 1U << 30},
 	{ .logical = PAD_CFG0_LOGICAL_RESET_PLTRST, .chipset = 2U << 30},
 	{ .logical = PAD_CFG0_LOGICAL_RESET_RSMRST, .chipset = 3U << 30},
+};
+
+static const struct pad_group skl_community_com0_groups[] = {
+	INTEL_GPP(GPP_A0, GPP_A0, GPP_A23),	/* GPP A */
+	INTEL_GPP(GPP_A0, GPP_B0, GPP_B23),	/* GPP B */
+};
+
+static const struct pad_group skl_community_com1_groups[] = {
+	INTEL_GPP(GPP_C0, GPP_C0, GPP_C23),	/* GPP C */
+#if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
+	INTEL_GPP(GPP_C0, GPP_D0, GPP_D23),	/* GPP D */
+	INTEL_GPP(GPP_C0, GPP_E0, GPP_E12),	/* GPP E */
+	INTEL_GPP(GPP_C0, GPP_F0, GPP_F23),	/* GPP F */
+	INTEL_GPP(GPP_C0, GPP_G0, GPP_G23),	/* GPP G */
+	INTEL_GPP(GPP_C0, GPP_H0, GPP_H23),	/* GPP H */
+#else
+	INTEL_GPP(GPP_C0, GPP_D0, GPP_D23),	/* GPP D */
+	INTEL_GPP(GPP_C0, GPP_E0, GPP_E23),	/* GPP E */
+#endif
+};
+
+static const struct pad_group skl_community_com3_groups[] = {
+#if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
+	INTEL_GPP(GPP_I0, GPP_I0, GPP_I10),	/* GPP I */
+#else
+	INTEL_GPP(GPP_F0, GPP_F0, GPP_F23),	/* GPP F */
+	INTEL_GPP(GPP_F0, GPP_G0, GPP_G7),	/* GPP G */
+#endif
+};
+
+static const struct pad_group skl_community_com2_groups[] = {
+	INTEL_GPP(GPD0, GPD0, GPD11),		/* GPP GDP */
 };
 
 static const struct pad_community skl_gpio_communities[] = {
@@ -48,6 +81,8 @@ static const struct pad_community skl_gpio_communities[] = {
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = skl_community_com0_groups,
+		.num_groups = ARRAY_SIZE(skl_community_com0_groups),
 	}, {
 		.port = PID_GPIOCOM1,
 		.first_pad = GPP_C0,
@@ -66,6 +101,8 @@ static const struct pad_community skl_gpio_communities[] = {
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = skl_community_com1_groups,
+		.num_groups = ARRAY_SIZE(skl_community_com1_groups),
 	}, {
 		.port = PID_GPIOCOM3,
 #if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
@@ -85,6 +122,8 @@ static const struct pad_community skl_gpio_communities[] = {
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = skl_community_com3_groups,
+		.num_groups = ARRAY_SIZE(skl_community_com3_groups),
 	}, {
 		.port = PID_GPIOCOM2,
 		.first_pad = GPD0,
@@ -99,6 +138,8 @@ static const struct pad_community skl_gpio_communities[] = {
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map_com2,
 		.num_reset_vals = ARRAY_SIZE(rst_map_com2),
+		.groups = skl_community_com2_groups,
+		.num_groups = ARRAY_SIZE(skl_community_com2_groups),
 	}
 };
 

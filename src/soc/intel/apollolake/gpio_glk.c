@@ -21,10 +21,32 @@
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
 
+
 static const struct reset_mapping rst_map[] = {
 	{ .logical = PAD_CFG0_LOGICAL_RESET_PWROK, .chipset = 0U << 30 },
 	{ .logical = PAD_CFG0_LOGICAL_RESET_DEEP, .chipset = 1U << 30 },
 	{ .logical = PAD_CFG0_LOGICAL_RESET_PLTRST, .chipset = 2U << 30 },
+};
+
+static const struct pad_group glk_community_audio_groups[] = {
+	INTEL_GPP(AUDIO_OFFSET, AUDIO_OFFSET, GPIO_175),	/* AUDIO 0 */
+};
+
+static const struct pad_group glk_community_nw_groups[] = {
+	INTEL_GPP(NW_OFFSET, NW_OFFSET, GPIO_31),	/* NORTHWEST 0 */
+	INTEL_GPP(NW_OFFSET, GPIO_32, GPIO_63),		/* NORTHWEST 1 */
+	INTEL_GPP(NW_OFFSET, GPIO_64, GPIO_214),	/* NORTHWEST 2 */
+};
+
+static const struct pad_group glk_community_scc_groups[] = {
+	INTEL_GPP(SCC_OFFSET, SCC_OFFSET, GPIO_206),	/* SCC 0 */
+	INTEL_GPP(SCC_OFFSET, GPIO_207, GPIO_209),	/* SCC 1 */
+};
+
+static const struct pad_group glk_community_n_groups[] = {
+	INTEL_GPP(N_OFFSET, N_OFFSET, GPIO_107),	/* NORTH 0 */
+	INTEL_GPP(N_OFFSET, GPIO_108, GPIO_139),	/* NORTH 1 */
+	INTEL_GPP(N_OFFSET, GPIO_140, GPIO_155),	/* NORTH 2 */
 };
 
 static const struct pad_community glk_gpio_communities[] = {
@@ -43,6 +65,8 @@ static const struct pad_community glk_gpio_communities[] = {
 		.acpi_path = "\\_SB.GPO0",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = glk_community_nw_groups,
+		.num_groups = ARRAY_SIZE(glk_community_nw_groups),
 	}, {
 		.port = PID_GPIO_N,
 		.first_pad = N_OFFSET,
@@ -58,6 +82,8 @@ static const struct pad_community glk_gpio_communities[] = {
 		.acpi_path = "\\_SB.GPO1",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = glk_community_n_groups,
+		.num_groups = ARRAY_SIZE(glk_community_n_groups),
 	}, {
 		.port = PID_GPIO_AUDIO,
 		.first_pad = AUDIO_OFFSET,
@@ -73,6 +99,8 @@ static const struct pad_community glk_gpio_communities[] = {
 		.acpi_path = "\\_SB.GPO2",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = glk_community_audio_groups,
+		.num_groups = ARRAY_SIZE(glk_community_audio_groups),
 	}, {
 		.port = PID_GPIO_SCC,
 		.first_pad = SCC_OFFSET,
@@ -89,6 +117,8 @@ static const struct pad_community glk_gpio_communities[] = {
 		.acpi_path = "\\_SB.GPO3",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = glk_community_scc_groups,
+		.num_groups = ARRAY_SIZE(glk_community_scc_groups),
 	},
 };
 

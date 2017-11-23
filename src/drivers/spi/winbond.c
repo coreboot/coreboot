@@ -27,9 +27,10 @@
 #define CMD_W25_RES		0xab	/* Release from DP, and Read Signature */
 #define CMD_W25_RD_SEC		0x48	/* Read security registers */
 
-#define ADDR_W25_SEC1      0x10
-#define ADDR_W25_SEC2      0x20
-#define ADDR_W25_SEC3      0x30
+#define ADDR_W25_SEC1		0x10	/* Address offset for sec register 1 */
+#define ADDR_W25_SEC2		0x20	/* Address offset for sec register 2 */
+#define ADDR_W25_SEC3		0x30	/* Address offset for sec register 3 */
+#define ADDR_W25_SEC_SHIFT	8	/* Address shift for sec registers */
 
 struct winbond_spi_flash_params {
 	uint16_t	id;
@@ -202,14 +203,17 @@ out:
 	return ret;
 }
 
-static int winbond_sec_read(const struct spi_flash *flash, u32 offset, size_t len, void *buf)
+static int winbond_sec_read(const struct spi_flash *flash, u32 offset,
+			    size_t len, void *buf)
 {
-	int ret = 1;
+	int ret;
 	u8 cmd[5];
-	u8 reg = (offset >> 8) & 0xFF;
+	u8 reg = (offset >> ADDR_W25_SEC_SHIFT) & 0xFF;
 	u8 addr = offset & 0xFF;
 
-	if (reg != ADDR_W25_SEC1 && reg != ADDR_W25_SEC2 && reg != ADDR_W25_SEC3) {
+	if ((reg != ADDR_W25_SEC1) &&
+	    (reg != ADDR_W25_SEC2) &&
+	    (reg != ADDR_W25_SEC3) {
 		printk(BIOS_WARNING, "SF: Wrong security register\n");
 		return 1;
 	}
@@ -218,11 +222,12 @@ static int winbond_sec_read(const struct spi_flash *flash, u32 offset, size_t le
 	cmd[1] = 0x0;
 	cmd[2] = reg;
 	cmd[3] = addr;
-	cmd[4] = 0x0; // dummy
+	cmd[4] = 0x0; /* dummy byte */
 
 	ret = spi_flash_cmd_read(&flash->spi, cmd, sizeof(cmd), buf, len);
 	if (ret) {
-		printk(BIOS_WARNING, "SF: Can't read sec register %d\n", reg >> 4);
+		printk(BIOS_WARNING, "SF: Can't read sec register %d\n",
+		       reg >> 4);
 	}
 
 	return ret;

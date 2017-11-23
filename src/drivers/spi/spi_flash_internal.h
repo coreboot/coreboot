@@ -34,7 +34,7 @@
 /* Send a single-byte command to the device and read the response */
 int spi_flash_cmd(const struct spi_slave *spi, u8 cmd, void *response, size_t len);
 int spi_flash_cmd_read(const struct spi_slave *spi, const u8 *cmd,
-			      size_t cmd_len, void *data, size_t data_len);
+		       size_t cmd_len, void *data, size_t data_len);
 
 int spi_flash_cmd_read_fast(const struct spi_flash *flash, u32 offset,
 		size_t len, void *data);

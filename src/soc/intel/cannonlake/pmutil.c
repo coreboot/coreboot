@@ -128,13 +128,15 @@ const char *const *soc_std_gpe_sts_array(size_t *a)
 	return gpe_sts_bits;
 }
 
+/*
+ * PMC controller gets hidden from PCI bus
+ * during FSP-Silicon init call. Hence PWRMBASE
+ * can't be accessible using PCI configuration space
+ * read/write.
+ */
 uint8_t *pmc_mmio_regs(void)
 {
-	uint32_t reg32;
-
-	reg32 = pci_read_config32(PCH_DEV_PMC, PWRMBASE);
-
-	return (void *)(uintptr_t)ALIGN_DOWN(reg32, 4 * KiB);
+	return (void *)(uintptr_t)PCH_PWRM_BASE_ADDRESS;
 }
 
 uint16_t smbus_tco_regs(void)

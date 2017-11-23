@@ -16,7 +16,8 @@
 config BOARD_GOOGLE_BASEBOARD_KAHLEE
 	bool
 	select SOC_AMD_STONEYRIDGE_FT4
-	select BOARD_ROMSIZE_KB_8192
+	select BOARD_ROMSIZE_KB_16384 if BOARD_GOOGLE_GRUNT
+	select BOARD_ROMSIZE_KB_8192 if BOARD_GOOGLE_KAHLEE
 	select DRIVERS_PS2_KEYBOARD
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_LPC
@@ -52,6 +53,15 @@ config DEVICETREE
 config MAINBOARD_FAMILY
 	string
 	default "Google_Kahlee"
+
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/variants/${CONFIG_VARIANT_DIR}/chromeos.fmd" if CHROMEOS
+	default ""
+	help
+	  The build system creates a default FMAP from ROM_SIZE and CBFS_SIZE,
+	  but in some cases more complex setups are required.
+	  When an fmd is specified, it overrides the default format.
 
 config MAX_CPUS
 	int

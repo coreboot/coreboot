@@ -123,7 +123,7 @@ retry_edp:
 		write32(&rk3399_grf->soc_con20,
 			RK_CLRBITS((1 << 0) | (1 << 4)));
 
-		panel_data = mainboard_get_mipi_mode(&edid);
+		panel_data = mainboard_get_mipi_mode(&edid.mode);
 		if (panel_data) {
 			if (panel_data->mipi_num > 1)
 				detected_mode = VOP_MODE_DUAL_MIPI;

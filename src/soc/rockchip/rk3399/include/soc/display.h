@@ -23,5 +23,6 @@
 
 void rk_display_init(device_t dev);
 void mainboard_power_on_backlight(void);
-const struct mipi_panel_data *mainboard_get_mipi_mode(struct edid *edid);
+const struct mipi_panel_data *mainboard_get_mipi_mode
+				(struct edid_mode *edid_mode);
 #endif

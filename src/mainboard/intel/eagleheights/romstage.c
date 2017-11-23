@@ -171,7 +171,7 @@ void mainboard_romstage_entry(unsigned long bist)
 		 * bits 47:32, where BUS_RATIO_MAX and VID_MAX
 		 * are encoded
 		 */
-		msr = rdmsr(IA32_PERF_STS);
+		msr = rdmsr(IA32_PERF_STATUS);
 		perf = msr.hi & 0x0000ffff;
 
 		/* Write VID_MAX & BUS_RATIO_MAX to

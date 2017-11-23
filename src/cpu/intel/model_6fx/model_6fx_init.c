@@ -94,7 +94,7 @@ static void configure_misc(void)
 	wrmsr(IA32_MISC_ENABLE, msr);
 
 	// set maximum CPU speed
-	msr = rdmsr(IA32_PERF_STS);
+	msr = rdmsr(IA32_PERF_STATUS);
 	int busratio_max = (msr.hi >> (40-32)) & 0x1f;
 
 	msr = rdmsr(IA32_PLATFORM_ID);

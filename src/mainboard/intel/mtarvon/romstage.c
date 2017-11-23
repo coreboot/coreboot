@@ -100,7 +100,7 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	/* Set CPU frequency/voltage to maximum */
 	/* FIXME: move to Pentium M init code */
-	msr = rdmsr(0x198);
+	msr = rdmsr(IA32_PERF_STATUS);
 	perf = msr.hi & 0xffff;
 	msr = rdmsr(0x199);
 	msr.lo &= 0xffff0000;

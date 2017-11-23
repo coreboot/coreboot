@@ -25,6 +25,12 @@
 #define CMD_W25_CE		0xc7	/* Chip Erase */
 #define CMD_W25_DP		0xb9	/* Deep Power-down */
 #define CMD_W25_RES		0xab	/* Release from DP, and Read Signature */
+#define CMD_W25_RD_SEC		0x48	/* Read security registers */
+
+#define ADDR_W25_SEC1		0x10	/* Address offset for sec register 1 */
+#define ADDR_W25_SEC2		0x20	/* Address offset for sec register 2 */
+#define ADDR_W25_SEC3		0x30	/* Address offset for sec register 3 */
+#define ADDR_W25_SEC_SHIFT	8	/* Address shift for sec registers */
 
 struct winbond_spi_flash_params {
 	uint16_t	id;
@@ -197,6 +203,38 @@ out:
 	return ret;
 }
 
+static int winbond_sec_read(const struct spi_flash *flash, u32 offset,
+			    size_t len, void *buf)
+{
+	int ret;
+	u8 cmd[5];
+	u8 reg = (offset >> ADDR_W25_SEC_SHIFT) & 0xFF;
+	u8 addr = offset & 0xFF;
+
+	if ((reg != ADDR_W25_SEC1) &&
+	    (reg != ADDR_W25_SEC2) &&
+	    (reg != ADDR_W25_SEC3) {
+		printk(BIOS_WARNING, "SF: Wrong security register\n");
+		return 1;
+	}
+
+	cmd[0] = CMD_W25_RD_SEC;
+	cmd[1] = 0x0;
+	cmd[2] = reg;
+	cmd[3] = addr;
+	cmd[4] = 0x0; /* dummy byte */
+
+	ret = spi_flash_cmd_read(&flash->spi, cmd, sizeof(cmd), buf, len);
+	if (ret) {
+		printk(BIOS_WARNING, "SF: Can't read sec register %d\n",
+		       reg >> 4);
+	}
+
+	return ret;
+}
+
+
+
 static struct winbond_spi_flash stm;
 
 struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode)
@@ -227,6 +265,7 @@ struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode)
 	stm.flash.internal_write = winbond_write;
 	stm.flash.internal_erase = spi_flash_cmd_erase;
 	stm.flash.internal_status = spi_flash_cmd_status;
+	stm.flash.internal_read_sec = winbond_sec_read;
 #if CONFIG_SPI_FLASH_NO_FAST_READ
 	stm.flash.internal_read = spi_flash_cmd_read_slow;
 #else

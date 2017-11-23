@@ -1098,7 +1098,7 @@ DefinitionBlock (
 
 	#include "acpi/usb.asl"
 
-	/* South Bridge */
+	/* System Bus */
 	Scope(\_SB) { /* Start \_SB scope */
 		#include <arch/x86/acpi/globutil.asl> /* global utility methods expected within the \_SB scope */
 

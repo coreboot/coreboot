@@ -363,7 +363,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 #include "acpi/routing.asl"
 #include "acpi/usb.asl"
 
-	/* South Bridge */
+	/* System Bus */
 	Scope(\_SB)
 	{
 		/* Start \_SB scope */

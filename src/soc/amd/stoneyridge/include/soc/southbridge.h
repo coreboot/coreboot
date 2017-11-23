@@ -268,6 +268,28 @@
 #define PWR_RESET_CFG			0x10
 #define   TOGGLE_ALL_PWR_GOOD		BIT(1)
 
+#define XHCI_PM_INDIRECT_INDEX		0x48
+#define XHCI_PM_INDIRECT_DATA		0x4C
+#define   XHCI_OVER_CURRENT_CONTROL	0x30
+
+#define EHCI_OVER_CURRENT_CONTROL	0x70
+
+#define USB_OC0				0
+#define USB_OC1				1
+#define USB_OC2				2
+#define USB_OC3				3
+#define USB_OC4				4
+#define USB_OC5				5
+#define USB_OC6				6
+#define USB_OC7				7
+#define USB_OC_DISABLE			0xf
+#define USB_OC_DISABLE_ALL		0xffff
+
+#define OC_PORT0_SHIFT		0
+#define OC_PORT1_SHIFT		4
+#define OC_PORT2_SHIFT		8
+#define OC_PORT3_SHIFT		12
+
 static inline int sb_sata_enable(void)
 {
 	/* True if IDE or AHCI. */
@@ -321,5 +343,14 @@ uint32_t xhci_pm_read32(uint8_t reg);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 void bootblock_fch_early_init(void);
+
+/*
+ * Call the mainboard to get the USB Over Current Map. The mainboard
+ * returns the map and 0 on Success or -1 on error or no map. There is
+ * a default weak function in usb.c if the mainboard doesn't have any
+ * over current support.
+ */
+int mainboard_get_xhci_oc_map(uint16_t *usb_oc_map);
+int mainboard_get_ehci_oc_map(uint16_t *usb_oc_map);
 
 #endif /* __STONEYRIDGE_H__ */

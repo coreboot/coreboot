@@ -15,7 +15,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_USES_FSP2_0
 	select NO_FADT_8042
 	select SOC_INTEL_KABYLAKE
-	select FIZZ_USE_SPI_TPM
+	select MAINBOARD_HAS_SPI_TPM_CR50
+	select SPI_TPM
+	select TPM2
 	select GENERIC_SPD_BIN
 	select RT8168_GET_MAC_FROM_VPD
 	select RT8168_SET_LED_MODE
@@ -29,16 +31,7 @@ config VBOOT
 	select HAS_RECOVERY_MRC_CACHE
 	select MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN
 
-config DRIVER_TPM_I2C_BUS
-	depends on FIZZ_USE_I2C_TPM
-	default 0x1
-
-config DRIVER_TPM_I2C_ADDR
-	depends on FIZZ_USE_I2C_TPM
-	default 0x50
-
 config DRIVER_TPM_SPI_BUS
-	depends on FIZZ_USE_SPI_TPM
 	default 0x1
 
 config GBB_HWID
@@ -69,22 +62,6 @@ config DIMM_MAX
 config DIMM_SPD_SIZE
 	int
 	default 512
-
-# Select this option to enable use of cr50 I2C TPM on fizz.
-config FIZZ_USE_I2C_TPM
-	bool
-	default n
-	select I2C_TPM
-	select MAINBOARD_HAS_I2C_TPM_CR50
-	select TPM2
-
-# Select this option to enable use of cr50 I2C TPM on fizz.
-config FIZZ_USE_SPI_TPM
-	bool
-	default n
-	select MAINBOARD_HAS_SPI_TPM_CR50
-	select SPI_TPM
-	select TPM2
 
 config TPM_TIS_ACPI_INTERRUPT
 	int

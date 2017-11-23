@@ -132,7 +132,6 @@ static unsigned long mainboard_write_acpi_tables(
 
 static void mainboard_enable(device_t dev)
 {
-	device_t tpm;
 	device_t root = SA_DEV_ROOT;
 	config_t *conf = root->chip_info;
 
@@ -140,20 +139,6 @@ static void mainboard_enable(device_t dev)
 
 	dev->ops->init = mainboard_init;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
-
-	/* Disable unused interface for TPM. */
-	if (!IS_ENABLED(CONFIG_FIZZ_USE_SPI_TPM)) {
-		tpm = PCH_DEV_GSPI0;
-		if (tpm)
-			tpm->enabled = 0;
-	}
-
-	if (!IS_ENABLED(CONFIG_FIZZ_USE_I2C_TPM)) {
-		tpm = PCH_DEV_I2C1;
-		if (tpm)
-			tpm->enabled = 0;
-	}
-
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
 }
 

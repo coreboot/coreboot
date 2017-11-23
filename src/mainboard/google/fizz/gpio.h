@@ -92,7 +92,6 @@ static const struct pad_config gpio_table[] = {
 /* SLP_S0# */		PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1), /* PM_SLP_S0# */
 /* PLTRST# */		PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1), /* PCI_PLTRST# */
 /* SPKR */		PAD_CFG_NF(GPP_B14, NONE, DEEP, NF1), /* SPKR */
-#if IS_ENABLED(CONFIG_FIZZ_USE_SPI_TPM)
 /* GSPI0_CS# */		PAD_CFG_NF(GPP_B15, NONE, DEEP,
 				   NF1), /* PCH_SPI_H1_3V3_CS_L */
 /* GSPI0_CLK */		PAD_CFG_NF(GPP_B16, NONE, DEEP,
@@ -101,12 +100,6 @@ static const struct pad_config gpio_table[] = {
 				   NF1), /* PCH_SPI_H1_3V3_MISO */
 /* GSPI0_MOSI */	PAD_CFG_NF(GPP_B18, NONE, DEEP,
 				   NF1), /* PCH_SPI_H1_3V3_MOSI */
-#else
-/* GSPI0_CS# */		PAD_CFG_NC(GPP_B15),
-/* GSPI0_CLK */		PAD_CFG_NC(GPP_B16),
-/* GSPI0_MISO */	PAD_CFG_NC(GPP_B17),
-/* GSPI0_MOSI */	PAD_CFG_NC(GPP_B18),
-#endif
 /* GSPI1_CS# */		PAD_CFG_NC(GPP_B19), /* TP111 */
 /* GSPI1_CLK */		PAD_CFG_GPI_GPIO_DRIVER(GPP_B20, 20K_PU,
 						DEEP), /* VR_DISABLE_L */
@@ -142,15 +135,8 @@ static const struct pad_config gpio_table[] = {
 						DEEP), /* SKU_ID3 */
 /* I2C0_SDA */		PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 /* I2C0_SCL */		PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),
-#if IS_ENABLED(CONFIG_FIZZ_USE_I2C_TPM)
-/* I2C1_SDA */		PAD_CFG_NF(GPP_C18, NONE, DEEP,
-				   NF1), /* PCH_I2C1_H1_3V3_SDA */
-/* I2C1_SCL */		PAD_CFG_NF(GPP_C19, NONE, DEEP,
-				   NF1), /* PCH_I2C1_H1_3V3_SCL */
-#else
 /* I2C1_SDA */		PAD_CFG_NC(GPP_C18),
 /* I2C1_SCL */		PAD_CFG_NC(GPP_C19),
-#endif
 /* UART2_RXD */		PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1), /* SERVO */
 /* UART2_TXD */		PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1), /* SERVO */
 /* UART2_RTS# */	PAD_CFG_NC(GPP_C22), /* TP309 */
@@ -275,7 +261,6 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-#if IS_ENABLED(CONFIG_FIZZ_USE_SPI_TPM)
 /* GSPI0_CS# */		PAD_CFG_NF(GPP_B15, NONE, DEEP,
 				   NF1), /* PCH_SPI_H1_3V3_CS_L */
 /* GSPI0_CLK */		PAD_CFG_NF(GPP_B16, NONE, DEEP,
@@ -284,13 +269,6 @@ static const struct pad_config early_gpio_table[] = {
 				   NF1), /* PCH_SPI_H1_3V3_MISO */
 /* GSPI0_MOSI */	PAD_CFG_NF(GPP_B18, NONE, DEEP,
 				   NF1), /* PCH_SPI_H1_3V3_MOSI */
-#endif
-#if IS_ENABLED(CONFIG_FIZZ_USE_I2C_TPM)
-/* I2C1_SDA */		PAD_CFG_NF(GPP_C18, NONE, DEEP,
-				   NF1), /* PCH_I2C1_H1_3V3_SDA */
-/* I2C1_SCL */		PAD_CFG_NF(GPP_C19, NONE, DEEP,
-				   NF1), /* PCH_I2C1_H1_3V3_SCL */
-#endif
 /* SATAXPCI0 */		PAD_CFG_GPI_APIC_INVERT(GPP_E0, NONE,
 						PLTRST), /* H1_PCH_INT_ODL */
 /* Ensure UART pins are in native mode for H1. */

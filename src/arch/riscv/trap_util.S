@@ -140,15 +140,10 @@ trap_entry:
   save_tf
   move  a0,sp
   jal trap_handler
-  .global supervisor_call_return
-supervisor_call_return:
-  csrr a0, mscratch
-  restore_regs
-  # go back into supervisor call
-  mret
-  .global machine_call_return
-machine_call_return:
-    csrr a0, mscratch
-    restore_regs
-    # go back into machine call
-    mret
+
+	.global trap_return
+trap_return:
+	csrr	a0, mscratch
+	restore_regs
+	# go back to the previous mode
+	mret

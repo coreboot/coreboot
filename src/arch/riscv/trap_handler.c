@@ -69,7 +69,7 @@ void handle_supervisor_call(trapframe *tf) {
 	}
 	tf->gpr[10] = returnValue;
 	write_csr(mepc, read_csr(mepc) + 4);
-	asm volatile("j supervisor_call_return");
+	asm volatile("j trap_return");
 }
 
 static const char *const exception_names[] = {
@@ -264,7 +264,7 @@ void handle_misaligned_load(trapframe *tf) {
 
 	// return to where we came from
 	write_csr(mepc, read_csr(mepc) + 4);
-	asm volatile("j machine_call_return");
+	asm volatile("j trap_return");
 }
 
 void handle_misaligned_store(trapframe *tf) {
@@ -292,5 +292,5 @@ void handle_misaligned_store(trapframe *tf) {
 
 	// return to where we came from
 	write_csr(mepc, read_csr(mepc) + 4);
-	asm volatile("j machine_call_return");
+	asm volatile("j trap_return");
 }

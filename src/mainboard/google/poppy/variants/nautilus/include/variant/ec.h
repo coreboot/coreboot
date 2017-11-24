@@ -75,6 +75,6 @@
 
 #define SIO_EC_MEMMAP_ENABLE	/* EC Memory Map Resources */
 #define SIO_EC_HOST_ENABLE	/* EC Host Interface Resources */
-#define SIO_EC_ENABLE_P2SK
+#define SIO_EC_ENABLE_PS2K
 
 #endif /* __MAINBOARD_EC_H__ */

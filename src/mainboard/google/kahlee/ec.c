@@ -36,9 +36,9 @@ static void ramstage_ec_init(void)
 
 static void early_ec_init(void)
 {
-#ifdef __PRE_RAM__
 	uint16_t ec_ioport_base;
 	size_t ec_ioport_size;
+	int status;
 
 	/*
 	 * Set up LPC decoding for the ChromeEC I/O port ranges:
@@ -50,8 +50,11 @@ static void early_ec_init(void)
 	printk(BIOS_DEBUG,
 		"LPC Setup google_chromeec_ioport_range: %04x, %08zx\n",
 		ec_ioport_base, ec_ioport_size);
-	lpc_wideio_512_window(ec_ioport_base);
-#endif //_PRE_RAM_
+	status = sb_set_wideio_range(ec_ioport_base, ec_ioport_size);
+	if (status == WIDEIO_RANGE_ERROR)
+		printk(BIOS_WARNING, "ERROR: Failed to assign a range\n");
+	else
+		printk(BIOS_DEBUG, "Range assigned to wide IO %d\n", status);
 }
 
 void mainboard_ec_init(void)

@@ -371,6 +371,8 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	/* B8  : SRCCLKREQ3# ==> WLAN_PE_RST */
+	PAD_CFG_GPO(GPP_B8, 0, RSMRST),
 #if IS_ENABLED(CONFIG_POPPY_USE_SPI_TPM)
 	/* B15 : GSPI0_CS# ==> PCH_SPI_H1_3V3_CS_L */
 	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),

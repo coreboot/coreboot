@@ -45,6 +45,7 @@ bootblock-y += pmutil.c
 bootblock-y += reset.c
 bootblock-y += sb_util.c
 bootblock-y += tsc_freq.c
+bootblock-y += southbridge.c
 
 romstage-y += BiosCallOuts.c
 romstage-y += romstage.c
@@ -60,6 +61,7 @@ romstage-y += smbus_spd.c
 romstage-y += ramtop.c
 romstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 romstage-y += tsc_freq.c
+romstage-y += southbridge.c
 
 verstage-y += sb_util.c
 verstage-y += pmutil.c

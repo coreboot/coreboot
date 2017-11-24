@@ -69,7 +69,6 @@ void handle_supervisor_call(trapframe *tf) {
 	}
 	tf->gpr[10] = returnValue;
 	write_csr(mepc, read_csr(mepc) + 4);
-	asm volatile("j trap_return");
 }
 
 static const char *const exception_names[] = {
@@ -212,16 +211,16 @@ void trap_handler(trapframe *tf)
 		case CAUSE_MISALIGNED_LOAD:
 			print_trap_information(tf);
 			handle_misaligned_load(tf);
-			break;
+			return;
 		case CAUSE_MISALIGNED_STORE:
 			print_trap_information(tf);
 			handle_misaligned_store(tf);
-			break;
+			return;
 		case CAUSE_SUPERVISOR_ECALL:
 			/* Don't print so we make console putchar calls look
 			   the way they should */
 			handle_supervisor_call(tf);
-			break;
+			return;
 		default:
 			printk(BIOS_EMERG, "================================\n");
 			printk(BIOS_EMERG, "coreboot: can not handle a trap:\n");
@@ -264,7 +263,6 @@ void handle_misaligned_load(trapframe *tf) {
 
 	// return to where we came from
 	write_csr(mepc, read_csr(mepc) + 4);
-	asm volatile("j trap_return");
 }
 
 void handle_misaligned_store(trapframe *tf) {
@@ -292,5 +290,4 @@ void handle_misaligned_store(trapframe *tf) {
 
 	// return to where we came from
 	write_csr(mepc, read_csr(mepc) + 4);
-	asm volatile("j trap_return");
 }

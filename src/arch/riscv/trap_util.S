@@ -141,7 +141,6 @@ trap_entry:
   move  a0,sp
   jal trap_handler
 
-	.global trap_return
 trap_return:
 	csrr	a0, mscratch
 	restore_regs

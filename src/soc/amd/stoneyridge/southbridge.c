@@ -82,10 +82,131 @@ const static struct irq_idx_name irq_association[] = {
 	{ PIRQ_UART1,	"UART1\t" },
 };
 
+/*
+ * Structure to simplify code obtaining the total of used wide IO
+ * registers and the size assigned to each.
+ */
+static struct wide_io_ioport_and_bits {
+	uint32_t enable;
+	uint16_t port;
+	uint8_t alt;
+} wio_io_en[TOTAL_WIDEIO_PORTS] = {
+	{
+		LPC_WIDEIO0_ENABLE,
+		LPC_WIDEIO_GENERIC_PORT,
+		LPC_ALT_WIDEIO0_ENABLE
+	},
+	{
+		LPC_WIDEIO1_ENABLE,
+		LPC_WIDEIO1_GENERIC_PORT,
+		LPC_ALT_WIDEIO1_ENABLE
+	},
+	{
+		LPC_WIDEIO2_ENABLE,
+		LPC_WIDEIO2_GENERIC_PORT,
+		LPC_ALT_WIDEIO2_ENABLE
+	}
+};
+
 const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
 {
 	*size = ARRAY_SIZE(irq_association);
 	return irq_association;
+}
+
+/**
+ * @brief Find the size of a particular wide IO
+ *
+ * @param index = index of desired wide IO
+ *
+ * @return size of desired wide IO
+ */
+uint16_t sb_wideio_size(int index)
+{
+	uint32_t enable_register;
+	uint16_t size = 0;
+	uint8_t alternate_register;
+
+	if (index >= TOTAL_WIDEIO_PORTS)
+		return size;
+	enable_register = pci_read_config32(SOC_LPC_DEV,
+				LPC_IO_OR_MEM_DECODE_ENABLE);
+	alternate_register = pci_read_config8(SOC_LPC_DEV,
+				LPC_ALT_WIDEIO_RANGE_ENABLE);
+	if (enable_register & wio_io_en[index].enable)
+		size = (alternate_register & wio_io_en[index].alt) ?
+				16 : 512;
+	return size;
+}
+
+/**
+ * @brief Identify if any LPC wide IO is covering the IO range
+ *
+ * @param start = start of IO range
+ * @param size = size of IO range
+ *
+ * @return Index of wide IO covering the range or error
+ */
+int sb_find_wideio_range(uint16_t start, uint16_t size)
+{
+	uint32_t enable_register;
+	int i, index = WIDEIO_RANGE_ERROR;
+	uint16_t end, current_size, start_wideio, end_wideio;
+
+	end = start + size;
+	enable_register = pci_read_config32(SOC_LPC_DEV,
+					   LPC_IO_OR_MEM_DECODE_ENABLE);
+	for (i = 0; i < TOTAL_WIDEIO_PORTS; i++) {
+		current_size = sb_wideio_size(i);
+		if (current_size == 0)
+			continue;
+		start_wideio = pci_read_config16(SOC_LPC_DEV,
+						 wio_io_en[i].port);
+		end_wideio = start_wideio + current_size;
+		if ((start >= start_wideio) && (end <= end_wideio)) {
+			index = i;
+			break;
+		}
+	}
+	return index;
+}
+
+/**
+ * @brief Program a LPC wide IO to support an IO range
+ *
+ * @param start = start of range to be routed through wide IO
+ * @param size = size of range to be routed through wide IO
+ *
+ * @return Index of wide IO register used or error
+ */
+int sb_set_wideio_range(uint16_t start, uint16_t size)
+{
+	int i, index = WIDEIO_RANGE_ERROR;
+	uint32_t enable_register;
+	uint8_t alternate_register;
+
+	enable_register = pci_read_config32(SOC_LPC_DEV,
+					   LPC_IO_OR_MEM_DECODE_ENABLE);
+	alternate_register = pci_read_config8(SOC_LPC_DEV,
+					      LPC_ALT_WIDEIO_RANGE_ENABLE);
+	for (i = 0; i < TOTAL_WIDEIO_PORTS; i++) {
+		if (enable_register & wio_io_en[i].enable)
+			continue;
+		index = i;
+		pci_write_config16(SOC_LPC_DEV, wio_io_en[i].port, start);
+		enable_register |= wio_io_en[i].enable;
+		pci_write_config32(SOC_LPC_DEV, LPC_IO_OR_MEM_DECODE_ENABLE,
+				   enable_register);
+		if (size <= 16)
+			alternate_register |= wio_io_en[i].alt;
+		else
+			alternate_register &= ~wio_io_en[i].alt;
+		pci_write_config8(SOC_LPC_DEV,
+				  LPC_ALT_WIDEIO_RANGE_ENABLE,
+				  alternate_register);
+		break;
+	}
+	return index;
 }
 
 void configure_stoneyridge_uart(void)

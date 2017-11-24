@@ -290,6 +290,9 @@
 #define OC_PORT2_SHIFT		8
 #define OC_PORT3_SHIFT		12
 
+#define WIDEIO_RANGE_ERROR		-1
+#define TOTAL_WIDEIO_PORTS		3
+
 static inline int sb_sata_enable(void)
 {
 	/* True if IDE or AHCI. */
@@ -343,6 +346,32 @@ uint32_t xhci_pm_read32(uint8_t reg);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 void bootblock_fch_early_init(void);
+/**
+ * @brief Find the size of a particular wide IO
+ *
+ * @param index = index of desired wide IO
+ *
+ * @return size of desired wide IO
+ */
+uint16_t sb_wideio_size(int index);
+/**
+ * @brief Identify if any LPC wide IO is covering the IO range
+ *
+ * @param start = start of IO range
+ * @param size = size of IO range
+ *
+ * @return Index of wide IO covering the range or error
+ */
+int sb_find_wideio_range(uint16_t start, uint16_t size);
+/**
+ * @brief Program a LPC wide IO to support an IO range
+ *
+ * @param start = start of range to be routed through wide IO
+ * @param size = size of range to be routed through wide IO
+ *
+ * @return Index of wide IO register used or error
+ */
+int sb_set_wideio_range(uint16_t start, uint16_t size);
 
 /*
  * Call the mainboard to get the USB Over Current Map. The mainboard

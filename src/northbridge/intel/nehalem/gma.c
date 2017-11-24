@@ -488,10 +488,11 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	}
 
 	/* 12: Normal Frequency Request */
-	/* RPNFREQ_VAL comes from MCHBAR 0x5998 23:16 (8 bits!? use 7) */
+	/* RPNFREQ_VAL comes from MCHBAR 0x5998 23:16 */
+	/* only the lower 7 bits are used and shifted left by 25 */
 	reg32 = MCHBAR32(0x5998);
 	reg32 >>= 16;
-	reg32 &= 0xef;
+	reg32 &= 0x7f;
 	reg32 <<= 25;
 	gtt_write(0xa008, reg32);
 

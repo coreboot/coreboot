@@ -130,9 +130,6 @@ static struct timestamp_table *timestamp_table_get(void)
 	if (!timestamp_should_run())
 		return NULL;
 
-	if (ts_table != NULL)
-		return ts_table;
-
 	ts_cache = timestamp_cache_get();
 
 	if (ts_cache == NULL) {

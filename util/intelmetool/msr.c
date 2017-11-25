@@ -26,28 +26,23 @@
 #ifndef __DARWIN__
 static int fd_msr = 0;
 
-static uint64_t rdmsr(int addr)
+static int rdmsr(int addr, uint64_t *msr)
 {
-	uint32_t buf[2];
-	uint64_t msr = 0;
-
 	if (lseek(fd_msr, (off_t) addr, SEEK_SET) == -1) {
 		perror("Could not lseek() to MSR");
 		close(fd_msr);
 		return -1;
 	}
 
-	if (read(fd_msr, buf, 8) == 8) {
-		msr = buf[1];
-		msr <<= 32;
-		msr |= buf[0];
+	if (read(fd_msr, msr, 8) == 8) {
 		close(fd_msr);
-		return msr;
+		return 0;
 	}
 
 	if (errno == EIO) {
 		perror("IO error couldn't read MSR.");
 		close(fd_msr);
+		/* On older platforms the MSR might not exists */
 		return -2;
 	}
 
@@ -68,7 +63,8 @@ int msr_bootguard(uint64_t *msr, int debug)
 		return -1;
 	}
 
-	*msr = rdmsr(MSR_BOOTGUARD);
+	if (rdmsr(MSR_BOOTGUARD, msr) < 0)
+		return -1;
 #endif
 
 	if (!debug)

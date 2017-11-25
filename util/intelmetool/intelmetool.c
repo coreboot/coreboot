@@ -308,9 +308,6 @@ static void dump_bootguard_info(void)
 	const char *name;
 	uint64_t bootguard = 0;
 
-	if (msr_bootguard(&bootguard, debug) < 0)
-		return;
-
 	if (pci_platform_scan())
 		exit(1);
 
@@ -328,13 +325,21 @@ static void dump_bootguard_info(void)
 		bootguard &= ~0xff;
 	}
 
-	if (ME_major_ver < 9 ||
-	    (ME_major_ver == 9 && ME_minor_ver < 5) ||
-	    !BOOTGUARD_CAPABILITY(bootguard)) {
+	/* ME_major_ver is zero on some platforms (Mac) */
+	if (ME_major_ver &&
+	    (ME_major_ver < 9 ||
+	     (ME_major_ver == 9 && ME_minor_ver < 5) ||
+	     !BOOTGUARD_CAPABILITY(bootguard))) {
 		print_cap("BootGuard                                 ", 0);
 		printf(CGRN "\nYour system isn't bootguard ready. You can "
 		       "flash other firmware!\n" RESET);
 		rehide_me();
+		return;
+	}
+
+	if (msr_bootguard(&bootguard, debug) < 0) {
+		printf("ME Capability: %-43s: " CCYN "%s\n" RESET,
+		       "BootGuard Mode", "Unknown");
 		return;
 	}
 

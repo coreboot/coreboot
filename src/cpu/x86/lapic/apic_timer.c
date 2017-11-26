@@ -48,6 +48,7 @@ static int set_timer_fsb(void)
 	int core_fsb[8] = { -1, 133, -1, 166, -1, 100, -1, -1 };
 	int core2_fsb[8] = { 266, 133, 200, 166, 333, 100, -1, -1 };
 	int f2x_fsb[8] = { 100, 133, 200, 166, -1, -1, -1, -1 };
+	msr_t msr;
 
 	get_fms(&c, cpuid_eax(1));
 	switch (c.x86) {
@@ -74,16 +75,17 @@ static int set_timer_fsb(void)
 			return 0;
 		}
 	case 0xf: /* Netburst */
+		msr = rdmsr(MSR_EBC_FREQUENCY_ID);
 		switch (c.x86_model) {
 		case 0x2:
 			car_set_var(g_timer_fsb,
-				f2x_fsb[(rdmsr(0x2c).lo >> 16) & 7]);
+				f2x_fsb[(msr.lo >> 16) & 7]);
 			return 0;
 		case 0x3:
 		case 0x4:
 		case 0x6:
 			car_set_var(g_timer_fsb,
-				core2_fsb[(rdmsr(0x2c).lo >> 16) & 7]);
+				core2_fsb[(msr.lo >> 16) & 7]);
 			return 0;
 		}  /* default: fallthrough */
 	default:

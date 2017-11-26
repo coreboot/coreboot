@@ -94,7 +94,7 @@ static u8 msr_get_fsb(void)
 
 	/* Netburst */
 	if (((eax >> 8) & 0xf) == 0xf) {
-		msr = rdmsr(0x2c);
+		msr = rdmsr(MSR_EBC_FREQUENCY_ID);
 		fsbcfg = (msr.lo >> 16) & 0x7;
 	} else { /* Intel Core 2 */
 		msr = rdmsr(MSR_FSB_FREQ);

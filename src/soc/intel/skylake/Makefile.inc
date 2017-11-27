@@ -46,7 +46,6 @@ ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP1_1) += chip.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += chip_fsp20.c
 ramstage-y += cpu.c
-ramstage-y += dsp.c
 ramstage-y += elog.c
 ramstage-y += finalize.c
 ramstage-y += gpio.c

@@ -17,14 +17,6 @@
 #ifndef _SOC_PM_H_
 #define _SOC_PM_H_
 
-#include <arch/acpi.h>
-#include <arch/io.h>
-#include <compiler.h>
-#include <soc/gpe.h>
-#include <soc/iomap.h>
-#include <soc/smbus.h>
-#include <soc/pmc.h>
-
 #define PM1_STS			0x00
 #define  WAK_STS		(1 << 15)
 #define  PCIEXPWAK_STS		(1 << 14)
@@ -116,7 +108,8 @@
 #define   WADT_EN		(1 << 18)
 #define   GPIO_T2_EN		(1 << 15)
 #define   ESPI_EN		(1 << 14)
-#define   PME_B0_EN		(1 << 13)
+#define   PME_B0_EN_BIT		13
+#define   PME_B0_EN		(1 << PME_B0_EN_BIT)
 #define   ME_SCI_EN		(1 << 12)
 #define   PME_EN		(1 << 11)
 #define   BATLOW_EN		(1 << 10)
@@ -145,6 +138,16 @@
 #define	PSS_LATENCY_TRANSITION	10
 #define	PSS_LATENCY_BUSMASTER	10
 
+#if !defined(__ACPI__)
+
+#include <arch/acpi.h>
+#include <arch/io.h>
+#include <compiler.h>
+#include <soc/gpe.h>
+#include <soc/iomap.h>
+#include <soc/smbus.h>
+#include <soc/pmc.h>
+
 struct chipset_power_state {
 	uint16_t pm1_sts;
 	uint16_t pm1_en;
@@ -168,4 +171,5 @@ uint16_t smbus_tco_regs(void);
 /* Set the DISB after DRAM init */
 void pmc_set_disb(void);
 
+#endif /* !defined(__ACPI__) */
 #endif

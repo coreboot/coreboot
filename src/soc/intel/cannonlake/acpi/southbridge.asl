@@ -45,3 +45,6 @@
 
 /* PCI _OSC */
 #include <soc/intel/common/acpi/pci_osc.asl>
+
+/* CNVi */
+#include "cnvi.asl"

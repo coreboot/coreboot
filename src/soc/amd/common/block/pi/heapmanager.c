@@ -19,7 +19,7 @@
 #include <cbmem.h>
 #include <string.h>
 
-static void *agesa_heap_base(void)
+void *agesa_heap_base(void)
 {
 	struct cbmem_usage *heap;
 	heap = (struct cbmem_usage *)cbmem_add(CBMEM_ID_RESUME_SCRATCH,

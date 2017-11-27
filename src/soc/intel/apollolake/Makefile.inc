@@ -62,7 +62,6 @@ ramstage-y += systemagent.c
 ramstage-y += pmutil.c
 ramstage-y += pmc.c
 ramstage-y += reset.c
-ramstage-y += sram.c
 ramstage-y += xdci.c
 ramstage-y += sd.c
 

@@ -1,0 +1,4 @@
+config SOC_INTEL_COMMON_BLOCK_SRAM
+	bool
+	help
+	  Intel Processor common SRAM support

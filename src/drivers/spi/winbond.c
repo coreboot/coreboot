@@ -213,7 +213,7 @@ static int winbond_sec_read(const struct spi_flash *flash, u32 offset,
 
 	if ((reg != ADDR_W25_SEC1) &&
 	    (reg != ADDR_W25_SEC2) &&
-	    (reg != ADDR_W25_SEC3) {
+	    (reg != ADDR_W25_SEC3)) {
 		printk(BIOS_WARNING, "SF: Wrong security register\n");
 		return 1;
 	}

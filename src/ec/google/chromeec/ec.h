@@ -91,6 +91,16 @@ int google_chromeec_set_usb_pd_role(u8 port, enum usb_pd_control_role role);
 int google_chromeec_get_usb_pd_power_info(enum usb_chg_type *type,
 					  u32 *max_watts);
 
+/*
+ * Set max current and voltage of a dedicated charger.
+ *
+ * @param current_lim Max current in mA
+ * @param voltage_lim Max voltage in mV
+ * @return non-zero for error, otherwise 0.
+ */
+int google_chromeec_override_dedicated_charger_limit(u16 current_lim,
+						     u16 voltage_lim);
+
 /* internal structure to send a command to the EC and wait for response. */
 struct chromeec_command {
 	uint16_t    cmd_code;	  /* command code in, status out */

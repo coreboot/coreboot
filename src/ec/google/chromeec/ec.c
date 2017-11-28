@@ -638,6 +638,26 @@ int google_chromeec_get_usb_pd_power_info(enum usb_chg_type *type,
 	return 0;
 }
 
+int google_chromeec_override_dedicated_charger_limit(u16 current_lim,
+						     u16 voltage_lim)
+{
+	struct ec_params_dedicated_charger_limit p = {
+		.current_lim = current_lim,
+		.voltage_lim = voltage_lim,
+	};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_OVERRIDE_DEDICATED_CHARGER_LIMIT,
+		.cmd_version = 0,
+		.cmd_data_in = &p,
+		.cmd_size_in = sizeof(p),
+		.cmd_data_out = NULL,
+		.cmd_size_out = 0,
+		.cmd_dev_index = 0,
+	};
+
+	return google_chromeec_command(&cmd);
+}
+
 int google_chromeec_set_usb_pd_role(u8 port, enum usb_pd_control_role role)
 {
 	struct ec_params_usb_pd_control req = {

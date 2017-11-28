@@ -19,7 +19,6 @@
 #include <console/console.h>
 #include <string.h>
 #include <vb2_api.h>
-#include <vboot_nvstorage.h>
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/vbnv.h>
 #include <security/vboot/vbnv_layout.h>

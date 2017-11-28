@@ -212,6 +212,7 @@ Device (EC0)
 	{
 		Store ("EC: LID OPEN", Debug)
 		Store (LIDS, \LIDS)
+		Notify (CREC, 0x2)
 #ifdef EC_ENABLE_LID_SWITCH
 		Notify (LID0, 0x80)
 #endif
@@ -297,6 +298,7 @@ Device (EC0)
 	Method (_Q0D, 0, NotSerialized)
 	{
 		Store ("EC: KEY PRESSED", Debug)
+		Notify (CREC, 0x2)
 	}
 
 	// Thermal Shutdown Imminent
@@ -354,17 +356,18 @@ Device (EC0)
 		Notify (CREC, 0x80)
 	}
 
-#ifdef EC_ENABLE_TABLET_EVENT
 	// TABLET mode switch Event
 	Method (_Q1D, 0, NotSerialized)
 	{
 		Store ("EC: TABLET mode switch Event", Debug)
+		Notify (CREC, 0x2)
+#ifdef EC_ENABLE_TABLET_EVENT
 		If (CondRefOf (\_SB.DPTF.TPET)) {
 			\_SB.DPTF.TPET()
 		}
 		Notify (TBMC, 0x80)
-	}
 #endif
+	}
 
 	/*
 	 * Dynamic Platform Thermal Framework support

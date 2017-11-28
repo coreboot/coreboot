@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2017 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,87 +14,46 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
-#include <arch/io.h>
-#include <bootmode.h>
-#include <chip.h>
 #include <console/console.h>
-#include <delay.h>
-#include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <drivers/intel/gma/i915_reg.h>
+#include <intelblocks/graphics.h>
 #include <soc/intel/common/opregion.h>
-#include <soc/acpi.h>
-#include <soc/cpu.h>
-#include <soc/pm.h>
 #include <soc/ramstage.h>
-#include <soc/systemagent.h>
-#include <stdlib.h>
-#include <string.h>
-#include <security/vboot/vbnv.h>
 
 uintptr_t fsp_soc_get_igd_bar(void)
 {
-	device_t dev = SA_DEV_IGD;
-
-	/* Check if IGD PCI device is disabled */
-	if (!dev->enabled)
-		return 0;
-
-	return find_resource(dev, PCI_BASE_ADDRESS_2)->base;
+	return graphics_get_memory_base();
 }
 
-u32 map_oprom_vendev(u32 vendev)
-{
-	return SA_IGD_OPROM_VENDEV;
-}
-
-static struct resource *gtt_res = NULL;
-
-static unsigned long gtt_read(unsigned long reg)
-{
-	u32 val;
-	val = read32((void *)(unsigned int)(gtt_res->base + reg));
-	return val;
-}
-
-static void gtt_write(unsigned long reg, unsigned long data)
-{
-	write32((void *)(unsigned int)(gtt_res->base + reg), data);
-}
-
-static inline void gtt_rmw(u32 reg, u32 andmask, u32 ormask)
-{
-	u32 val = gtt_read(reg);
-	val &= andmask;
-	val |= ormask;
-	gtt_write(reg, val);
-}
-
-static void igd_init(struct device *dev)
+void graphics_soc_init(struct device *dev)
 {
 	u32 ddi_buf_ctl;
-
-	gtt_res = find_resource(dev, PCI_BASE_ADDRESS_0);
-	if (!gtt_res || !gtt_res->base)
-		return;
 
 	/*
 	 * Enable DDI-A (eDP) 4-lane operation if the link is not up yet.
 	 * This will allow the kernel to use 4-lane eDP links properly
 	 * if the VBIOS or GOP driver does not execute.
 	 */
-	ddi_buf_ctl = gtt_read(DDI_BUF_CTL_A);
+	ddi_buf_ctl = graphics_gtt_read(DDI_BUF_CTL_A);
 	if (!acpi_is_wakeup_s3() && !(ddi_buf_ctl & DDI_BUF_CTL_ENABLE)) {
 		ddi_buf_ctl |= DDI_A_4_LANES;
-		gtt_write(DDI_BUF_CTL_A, ddi_buf_ctl);
+		graphics_gtt_write(DDI_BUF_CTL_A, ddi_buf_ctl);
 	}
 
+	/*
+	 * GFX PEIM module inside FSP binary is taking care of graphics
+	 * initialization based on INTEL_GMA_ADD_VBT_DATA_FILE Kconfig
+	 * option and input VBT file. Hence no need to load/execute legacy VGA
+	 * OpROM in order to initialize GFX.
+	 *
+	 * In case of non-FSP solution, SoC need to select VGA_ROM_RUN
+	 * Kconfig to perform GFX initialization through VGA OpRom.
+	 */
 	if (IS_ENABLED(CONFIG_INTEL_GMA_ADD_VBT_DATA_FILE))
 		return;
 
-	/* IGD needs to be Bus Master */
+	/* IGD needs to Bus Master */
 	u32 reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
@@ -104,7 +63,7 @@ static void igd_init(struct device *dev)
 }
 
 /* Initialize IGD OpRegion, called from ACPI code */
-static int update_igd_opregion(igd_opregion_t *opregion)
+static void update_igd_opregion(igd_opregion_t *opregion)
 {
 	u16 reg16;
 
@@ -131,12 +90,10 @@ static int update_igd_opregion(igd_opregion_t *opregion)
 	reg16 &= ~GSSCIE;
 	reg16 |= SMISCISEL;
 	pci_write_config16(SA_DEV_IGD, SWSCI, reg16);
-
-	return 0;
 }
 
-static unsigned long write_acpi_igd_opregion(device_t device,
-				unsigned long current, struct acpi_rsdp *rsdp)
+uintptr_t graphics_soc_write_acpi_opregion(struct device *device,
+		uintptr_t current, struct acpi_rsdp *rsdp)
 {
 	igd_opregion_t *opregion;
 
@@ -161,33 +118,3 @@ static unsigned long write_acpi_igd_opregion(device_t device,
 	printk(BIOS_DEBUG, "current = %lx\n", current);
 	return current;
 }
-
-static struct device_operations igd_ops = {
-	.read_resources		= &pci_dev_read_resources,
-	.set_resources		= &pci_dev_set_resources,
-	.enable_resources	= &pci_dev_enable_resources,
-	.init			= &igd_init,
-	.ops_pci		= &soc_pci_ops,
-	.write_acpi_tables	= write_acpi_igd_opregion,
-};
-
-static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_SKL_GT1_SULTM,
-	PCI_DEVICE_ID_INTEL_SKL_GT2_SULXM,
-	PCI_DEVICE_ID_INTEL_SKL_GT2_SULTM,
-	PCI_DEVICE_ID_INTEL_SKL_GT2_SHALM,
-	PCI_DEVICE_ID_INTEL_SKL_GT2_SWKSM,
-	PCI_DEVICE_ID_INTEL_SKL_GT4_SHALM,
-	PCI_DEVICE_ID_INTEL_KBL_GT1_SULTM,
-	PCI_DEVICE_ID_INTEL_KBL_GT2_SULXM,
-	PCI_DEVICE_ID_INTEL_KBL_GT2_SULTM,
-	PCI_DEVICE_ID_INTEL_KBL_GT2_SULTMR,
-	PCI_DEVICE_ID_INTEL_KBL_GT2_SHALM,
-	0,
-};
-
-static const struct pci_driver igd_driver __pci_driver = {
-	.ops	 = &igd_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
-	.devices = pci_device_ids,
-};

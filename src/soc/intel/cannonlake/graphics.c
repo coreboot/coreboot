@@ -14,29 +14,21 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
-#include <soc/pci_devs.h>
 #include <drivers/intel/gma/opregion.h>
+#include <intelblocks/graphics.h>
 
 uintptr_t fsp_soc_get_igd_bar(void)
 {
-	device_t dev = SA_DEV_IGD;
-
-	/* Check if IGD PCI device is disabled */
-	if (!dev->enabled)
-		return 0;
-
-	return find_resource(dev, PCI_BASE_ADDRESS_2)->base;
+	return graphics_get_memory_base();
 }
 
-static unsigned long igd_write_opregion(device_t dev, unsigned long current,
-				struct acpi_rsdp *rsdp)
+uintptr_t graphics_soc_write_acpi_opregion(struct device *device,
+		uintptr_t current, struct acpi_rsdp *rsdp)
 {
 	igd_opregion_t *opregion;
 
@@ -50,30 +42,3 @@ static unsigned long igd_write_opregion(device_t dev, unsigned long current,
 
 	return acpi_align_current(current);
 }
-
-static const struct device_operations igd_ops = {
-	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init             = pci_dev_init,
-	.write_acpi_tables = igd_write_opregion,
-	.enable           = DEVICE_NOOP
-};
-
-static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_CNL_GT2_ULX_1,
-	PCI_DEVICE_ID_INTEL_CNL_GT2_ULX_2,
-	PCI_DEVICE_ID_INTEL_CNL_GT2_ULX_3,
-	PCI_DEVICE_ID_INTEL_CNL_GT2_ULX_4,
-	PCI_DEVICE_ID_INTEL_CNL_GT2_ULT_1,
-	PCI_DEVICE_ID_INTEL_CNL_GT2_ULT_2,
-	PCI_DEVICE_ID_INTEL_CNL_GT2_ULT_3,
-	PCI_DEVICE_ID_INTEL_CNL_GT2_ULT_4,
-	0,
-};
-
-static const struct pci_driver integrated_graphics_driver __pci_driver = {
-	.ops		= &igd_ops,
-	.vendor		= PCI_VENDOR_ID_INTEL,
-	.devices	= pci_device_ids,
-};

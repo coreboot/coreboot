@@ -141,6 +141,13 @@ config NHLT_MAX98357
 	help
 	  Include DSP firmware settings for headset codec.
 
+config NHLT_MAX98373
+	bool
+	depends on ACPI_NHLT
+	default n
+	help
+	  Include DSP firmware settings for headset codec.
+
 config NHLT_DA7219
 	bool
 	depends on ACPI_NHLT

@@ -65,6 +65,4 @@ DefinitionBlock(
 		/* Include common dptf ASL files */
 		#include <soc/intel/common/acpi/dptf/dptf.asl>
 	}
-	#include "touchpad.asl"
-	#include "touchpanel.asl"
 }

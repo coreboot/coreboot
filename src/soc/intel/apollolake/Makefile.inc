@@ -60,6 +60,7 @@ ramstage-y += nhlt.c
 ramstage-y += spi.c
 ramstage-y += systemagent.c
 ramstage-y += pmutil.c
+ramstage-y += pnpconfig.c
 ramstage-y += pmc.c
 ramstage-y += reset.c
 ramstage-y += xdci.c

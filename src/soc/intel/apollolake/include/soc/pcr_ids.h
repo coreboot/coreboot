@@ -32,4 +32,8 @@
 #define PID_ITSS	0xD0
 #define PID_RTC		0xD1
 
+#define PID_AUNIT	0x4d
+#define PID_BUNIT	0x4c
+#define PID_TUNIT	0x52
+
 #endif	/* SOC_INTEL_APL_PCR_H */

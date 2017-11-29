@@ -30,6 +30,12 @@
 #define CLKREQ_DISABLED		0xf
 #define APOLLOLAKE_I2C_DEV_MAX	8
 
+enum pnp_settings {
+	PNP_PERF,
+	PNP_POWER,
+	PNP_PERF_POWER,
+};
+
 struct soc_intel_apollolake_config {
 	/*
 	 * Mapping from PCIe root port to CLKREQ input on the SOC. The SOC has
@@ -133,6 +139,12 @@ struct soc_intel_apollolake_config {
 	 * (1) set sgx_enable = 1
 	 * (2) set PrmrrSize to supported size */
 	uint8_t sgx_enable;
+
+	/* Select PNP Settings.
+	 * (0) Performance,
+	 * (1) Power
+	 * (2) Power & Performance */
+	enum pnp_settings pnp_settings;
 };
 
 typedef struct soc_intel_apollolake_config config_t;

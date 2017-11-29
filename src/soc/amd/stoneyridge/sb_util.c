@@ -76,6 +76,51 @@ void smi_write8(uint8_t offset, uint8_t value)
 	write8((void *)(APU_SMI_BASE + offset), value);
 }
 
+uint8_t biosram_read8(uint8_t offset)
+{
+	outb(offset, BIOSRAM_INDEX);
+	return inb(BIOSRAM_DATA);
+}
+
+void biosram_write8(uint8_t offset, uint8_t value)
+{
+	outb(offset, BIOSRAM_INDEX);
+	outb(value, BIOSRAM_DATA);
+}
+
+uint16_t biosram_read16(uint8_t offset)
+{
+	int i;
+	uint16_t value = 0;
+	for (i = sizeof(value) - 1 ; i >= 0 ; i--)
+		value = (value << 8) | biosram_read8(offset + i);
+	return value;
+}
+
+uint32_t biosram_read32(uint8_t offset)
+{
+	uint32_t value = biosram_read16(offset + sizeof(uint16_t)) << 16;
+	return value | biosram_read16(offset);
+}
+
+void biosram_write16(uint8_t offset, uint16_t value)
+{
+	int i;
+	for (i = 0 ; i < sizeof(value) ; i++) {
+		biosram_write8(offset + i, value & 0xff);
+		value >>= 8;
+	}
+}
+
+void biosram_write32(uint8_t offset, uint32_t value)
+{
+	int i;
+	for (i = 0 ; i < sizeof(value) ; i++) {
+		biosram_write8(offset + i, value & 0xff);
+		value >>= 8;
+	}
+}
+
 uint16_t pm_acpi_pm_cnt_blk(void)
 {
 	return pm_read16(PM1_CNT_BLK);

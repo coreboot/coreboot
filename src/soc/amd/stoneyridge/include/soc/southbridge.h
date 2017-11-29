@@ -30,14 +30,7 @@
 #define PSP_BAR_ENABLES			0x48
 #define  PSP_MAILBOX_BAR_EN		0x10
 
-/* Power management index/data registers */
-#define BIOSRAM_INDEX			0xcd4
-#define BIOSRAM_DATA			0xcd5
-#define PM_INDEX			0xcd6
-#define PM_DATA				0xcd7
-#define PM2_INDEX			0xcd0
-#define PM2_DATA			0xcd1
-
+/* Power management registers:  0xfed80300 or index/data at IO 0xcd6/cd7 */
 #define PM_PCI_CTRL			0x08
 #define   FORCE_SLPSTATE_RETRY		BIT(25)
 #define   FORCE_STPCLK_RETRY		BIT(24)

@@ -51,6 +51,12 @@
 #define  ACPI_GPE0_BLK		(STONEYRIDGE_ACPI_IO_BASE + 0x10) /* 8 bytes */
 #define  ACPI_PM_TMR_BLK	(STONEYRIDGE_ACPI_IO_BASE + 0x18) /* 4 bytes */
 #define SMB_BASE_ADDR			0xb00
+#define PM2_INDEX			0xcd0
+#define PM2_DATA			0xcd1
+#define BIOSRAM_INDEX			0xcd4
+#define BIOSRAM_DATA			0xcd5
+#define PM_INDEX			0xcd6
+#define PM_DATA				0xcd7
 #define AB_INDX				0xcd8
 #define AB_DATA				(AB_INDX+4)
 #define SYS_RESET			0xcf9

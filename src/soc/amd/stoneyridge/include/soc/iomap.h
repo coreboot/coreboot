@@ -66,4 +66,7 @@
 #define AMD_GPIO_MUX			(AMD_SB_ACPI_MMIO_ADDR + 0x00000d00)
 #define AMD_GPIO_CONTROL		(AMD_SB_ACPI_MMIO_ADDR + 0x00001500)
 
+/* BiosRam Ranges at 0xfed80500 or I/O 0xcd4/0xcd5 */
+#define BIOSRAM_CBMEM_TOP		0xf0 /* 4 bytes */
+
 #endif /* __SOC_STONEYRIDGE_IOMAP_H__ */

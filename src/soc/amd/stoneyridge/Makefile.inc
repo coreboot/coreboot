@@ -47,6 +47,7 @@ bootblock-y += reset.c
 bootblock-y += sb_util.c
 bootblock-y += tsc_freq.c
 bootblock-y += southbridge.c
+bootblock-y += sb_util.c
 
 romstage-y += BiosCallOuts.c
 romstage-y += i2c.c
@@ -76,6 +77,7 @@ verstage-y += tsc_freq.c
 postcar-y += monotonic_timer.c
 postcar-$(CONFIG_STONEYRIDGE_UART) += uart.c
 postcar-y += ramtop.c
+postcar-y += sb_util.c
 
 ramstage-y += BiosCallOuts.c
 ramstage-y += i2c.c

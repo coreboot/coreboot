@@ -22,20 +22,16 @@
 #include <cpu/amd/mtrr.h>
 #include <cbmem.h>
 #include <soc/northbridge.h>
-
-#define CBMEM_TOP_SCRATCHPAD 0x78
+#include <soc/southbridge.h>
 
 void backup_top_of_low_cacheable(uintptr_t ramtop)
 {
-	uint16_t top_cache = ramtop >> 16;
-	pci_write_config16(PCI_DEV(0,0,0), CBMEM_TOP_SCRATCHPAD, top_cache);
+	biosram_write32(BIOSRAM_CBMEM_TOP, ramtop);
 }
 
 uintptr_t restore_top_of_low_cacheable(void)
 {
-	uint16_t top_cache;
-	top_cache = pci_read_config16(PCI_DEV(0,0,0), CBMEM_TOP_SCRATCHPAD);
-	return (top_cache << 16);
+	return biosram_read32(BIOSRAM_CBMEM_TOP);
 }
 
 void *cbmem_top(void)

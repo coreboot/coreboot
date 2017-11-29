@@ -135,6 +135,10 @@ config VGA_BIOS_FILE
 	string
 	default "3rdparty/blobs/northbridge/amd/00670F00/VBIOS.bin"
 
+config S3_VGA_ROM_RUN
+	bool
+	default n
+
 config RAMTOP
 	hex
 	default 0x1000000

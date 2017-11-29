@@ -999,13 +999,6 @@ cbfs-files-$(CONFIG_BOOTSPLASH_IMAGE) += bootsplash$(BOOTSPLASH_SUFFIX)
 bootsplash$(BOOTSPLASH_SUFFIX)-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))
 bootsplash$(BOOTSPLASH_SUFFIX)-type := bootsplash
 
-cbfs-files-$(CONFIG_BOARD_ID_MANUAL) += board_id
-board_id-file := $(obj)/board_id
-board_id-type := raw
-
-$(obj)/board_id:
-	printf $(CONFIG_BOARD_ID_STRING) > $@
-
 # Ensure that no payload segment overlaps with memory regions used by ramstage
 # (not for x86 since it can relocate itself in that case)
 ifneq ($(CONFIG_ARCH_X86),y)

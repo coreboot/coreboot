@@ -27,4 +27,10 @@
 #define URARA_BOARD_ID_KENNET	4
 #define URARA_BOARD_ID_SPACE	5
 
+struct board_hw {
+	uint8_t i2c_interface;
+};
+
+const struct board_hw *board_get_hw(void);
+
 #endif

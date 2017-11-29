@@ -236,14 +236,6 @@ config UPDATE_IMAGE
 
 	  If unsure, select 'N'
 
-config BOARD_ID_STRING
-	string "Board ID"
-	# Default value set at the end of the file
-	depends on BOARD_ID_MANUAL
-	help
-	  This string is placed in the 'board_id' CBFS file for indicating
-	  board type.
-
 config RAM_CODE_SUPPORT
 	bool
 	help
@@ -1222,16 +1214,6 @@ config BOARD_ID_AUTO
 	  Mainboards that can read a board ID from the hardware straps
 	  (ie. GPIO) select this configuration option.
 
-config BOARD_ID_MANUAL
-	bool
-	default n
-	depends on !BOARD_ID_AUTO
-	help
-	  If you want to maintain a board ID, but the hardware does not
-	  have straps to automatically determine the ID, you can say Y
-	  here and add a file named 'board_id' to CBFS. If you don't know
-	  what this is about, say N.
-
 config BOOTBLOCK_CUSTOM
 	# To be selected by arch, SoC or mainboard if it does not want use the normal
 	# src/lib/bootblock.c#main() C entry point.
@@ -1255,10 +1237,6 @@ config COMPRESS_PRERAM_STAGES
 
 config INCLUDE_CONFIG_FILE
 	default y
-
-config BOARD_ID_STRING
-	default "(none)"
-	depends on BOARD_ID_MANUAL
 
 config BOOTSPLASH_FILE
 	depends on BOOTSPLASH_IMAGE

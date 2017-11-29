@@ -246,7 +246,7 @@ static inline void lb_vboot_handoff(struct lb_header *header) {}
 
 static void lb_board_id(struct lb_header *header)
 {
-#if IS_ENABLED(CONFIG_BOARD_ID_AUTO) || IS_ENABLED(CONFIG_BOARD_ID_MANUAL)
+#if IS_ENABLED(CONFIG_BOARD_ID_AUTO)
 	struct lb_board_id  *bid;
 
 	bid = (struct lb_board_id *)lb_new_record(header);

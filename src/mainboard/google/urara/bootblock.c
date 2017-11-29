@@ -20,6 +20,8 @@
 #include <assert.h>
 #include <boardid.h>
 
+#include "urara_boardid.h"
+
 #define PADS_FUNCTION_SELECT0_ADDR	(0xB8101C00 + 0xC0)
 
 #define GPIO_BIT_EN_ADDR(bank)		(0xB8101C00 + 0x200 + (0x24 * (bank)))

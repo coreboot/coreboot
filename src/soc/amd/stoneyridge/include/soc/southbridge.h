@@ -343,8 +343,6 @@ void xhci_pm_write16(uint8_t reg, uint16_t value);
 uint16_t xhci_pm_read16(uint8_t reg);
 void xhci_pm_write32(uint8_t reg, uint32_t value);
 uint32_t xhci_pm_read32(uint8_t reg);
-int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
-int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 void bootblock_fch_early_init(void);
 /**
  * @brief Find the size of a particular wide IO

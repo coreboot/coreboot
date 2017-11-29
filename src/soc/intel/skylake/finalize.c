@@ -32,6 +32,7 @@
 #include <soc/pm.h>
 #include <soc/smbus.h>
 #include <soc/systemagent.h>
+#include <soc/thermal.h>
 #include <stdlib.h>
 
 #define PSF_BASE_ADDRESS	0xA00
@@ -114,6 +115,15 @@ static void pch_finalize_script(void)
 	dev = PCH_DEV_PMC;
 	pmcbase = pmc_mmio_regs();
 	config = dev->chip_info;
+
+	/*
+	 * Set low maximum temp value used for dynamic thermal sensor
+	 * shutdown consideration.
+	 *
+	 * If Dynamic Thermal Shutdown is enabled then PMC logic shuts down the
+	 * thermal sensor when CPU is in a C-state and DTS Temp <= LTT.
+	 */
+	pch_thermal_configuration();
 
 	/*
 	 * Disable ACPI PM timer based on dt policy

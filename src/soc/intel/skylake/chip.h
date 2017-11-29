@@ -527,6 +527,9 @@ struct soc_intel_skylake_config {
 	 * 2 - VR mailbox command sent for IA/GT/SA rails.
 	 */
 	u8 IslVrCmd;
+
+	/* PCH Trip Temperature */
+	u8 pch_trip_temp;
 };
 
 typedef struct soc_intel_skylake_config config_t;

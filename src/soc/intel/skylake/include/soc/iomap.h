@@ -64,6 +64,8 @@
 
 #define HECI1_BASE_ADDRESS	0xfed1a000
 
+#define THERMAL_BASE_ADDRESS	0xfe600000
+
 /* CPU Trace reserved memory size */
 #define GDXC_MOT_MEMORY_SIZE	(96*MiB)
 #define GDXC_IOT_MEMORY_SIZE	(32*MiB)

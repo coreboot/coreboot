@@ -4,5 +4,8 @@ config BOARD_PCENGINES_APU2
 config BOARD_PCENGINES_APU3
 	bool "APU3"
 
+config BOARD_PCENGINES_APU4
+	bool "APU4"
+
 config BOARD_PCENGINES_APU5
 	bool "APU5"

@@ -1,0 +1,6 @@
+Board name: PC Engines APU4
+Board URL:
+Category: half
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

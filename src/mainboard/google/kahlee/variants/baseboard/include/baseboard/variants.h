@@ -25,5 +25,7 @@ const GPIO_CONTROL *get_gpio_table(void);
 const struct sci_source *get_gpe_table(size_t *num);
 uint8_t variant_memory_sku(void);
 int variant_mainboard_read_spd(uint8_t spdAddress, char *buf, size_t len);
+int variant_get_xhci_oc_map(uint16_t *usb_oc_map);
+int variant_get_ehci_oc_map(uint16_t *usb_oc_map);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

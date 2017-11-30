@@ -23,6 +23,7 @@
 #include <boardid.h>
 #include <soc/nvs.h>
 #include <soc/smi.h>
+#include <soc/southbridge.h>
 #include <variant/ec.h>
 #include <variant/thermal.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -123,6 +124,16 @@ static void mainboard_final(void *chip_info)
 		gnvs->tcrt = CRITICAL_TEMPERATURE;
 		gnvs->tpsv = PASSIVE_TEMPERATURE;
 	}
+}
+
+int mainboard_get_xhci_oc_map(uint16_t *map)
+{
+	return variant_get_xhci_oc_map(map);
+}
+
+int mainboard_get_ehci_oc_map(uint16_t *map)
+{
+	return variant_get_ehci_oc_map(map);
 }
 
 struct chip_operations mainboard_ops = {

@@ -138,6 +138,14 @@ etc/boot-menu-message-file := $(strip $(CONFIG_SEABIOS_BOOTMENU_MESSAGE_FILE))
 etc/boot-menu-message-type := raw
 endif
 
+
+# add a SeaBIOS sercon-port file
+ifneq ($(strip $(CONFIG_SEABIOS_SERCON_PORT_FILE)),)
+cbfs-files-y += etc/sercon-port
+etc/sercon-port-file := $(strip $(CONFIG_SEABIOS_SERCON_PORT_FILE))
+etc/sercon-port-type := raw
+endif
+
 # Depthcharge
 
 payloads/external/depthcharge/depthcharge/build/depthcharge.elf depthcharge: $(DOTCONFIG) $(CBFSTOOL)
@@ -206,10 +214,6 @@ ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO),yy)
 		SERIAL_BAUD_RATE=$(CONFIG_TTYS0_BAUD)
 endif
 
-ifeq ($(CONFIG_MEMTEST_DISABLE_SPD),y)
-	MEMTEST_SPD_OPTIONS=CB_NOSPD=1
-endif
-
 payloads/external/Memtest86Plus/memtest86plus/memtest: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/Memtest86Plus all \
 		CC="$(CC_x86_32)" \
@@ -218,8 +222,6 @@ payloads/external/Memtest86Plus/memtest86plus/memtest: $(DOTCONFIG)
 		AS="$(AS_x86_32)" \
 		CONFIG_MEMTEST_MASTER=$(CONFIG_MEMTEST_MASTER) \
 		CONFIG_MEMTEST_STABLE=$(CONFIG_MEMTEST_STABLE) \
-		CONFIG_MEMTEST_SPD=$(CONFIG_MEMTEST_SPD) \
-		$(MEMTEST_SPD_OPTIONS) \
 		$(MEMTEST_SERIAL_OPTIONS) \
 		MFLAGS= MAKEFLAGS=
 
@@ -232,15 +234,6 @@ cbfs-files-$(CONFIG_SORTBOOTORDER_SECONDARY_PAYLOAD) += img/setup
 img/setup-file := payloads/external/sortbootorder/sortbootorder/sortbootorder.elf
 img/setup-type := payload
 img/setup-compression := $(CBFS_PAYLOAD_COMPRESS_FLAG)
-
-# sgabios
-
-payloads/external/sgabios/sgabios.bin sgabios:
-	$(MAKE) -C payloads/external/sgabios
-
-cbfs-files-y += vgaroms/sgabios.bin
-vgaroms/sgabios.bin-file := payloads/external/sgabios/sgabios.bin
-vgaroms/sgabios.bin-type := raw
 
 # iPXE
 
@@ -265,13 +258,19 @@ cbfs-files-$(CONFIG_PXE_ROM)$(CONFIG_BUILD_IPXE) += genroms/pxe.rom
 genroms/pxe.rom-file = $(PXE_ROM_FILE)
 genroms/pxe.rom-type := raw
 
+ifeq ($(CONFIG_PXE_SERIAL_CONSOLE),y)
+IPXE_SERIAL_CONSOLE = $(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO)
+else
+IPXE_SERIAL_CONSOLE = n
+endif
+
 payloads/external/iPXE/ipxe/ipxe.rom ipxe: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/iPXE all \
 	CROSS_COMPILE="$(CROSS_COMPILE_$(ARCH-ramstage-y))" \
 	PXE_ROM_PCI_ID=$(PXE_ROM_PCI_ID) \
 	CONFIG_IPXE_MASTER=$(CONFIG_IPXE_MASTER) \
 	CONFIG_IPXE_STABLE=$(CONFIG_IPXE_STABLE) \
-	CONSOLE_SERIAL=$(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO) \
+	CONSOLE_SERIAL=$(IPXE_SERIAL_CONSOLE) \
 	IPXE_UART=$(IPXE_UART) \
 	CONFIG_TTYS0_BAUD=$(CONFIG_TTYS0_BAUD) \
 	CONFIG_PXE_CUSTOM_GENERAL_H=$(CONFIG_PXE_CUSTOM_GENERAL_H) \

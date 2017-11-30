@@ -14,7 +14,8 @@
 # GNU General Public License for more details.
 #
 
-if BOARD_PCENGINES_APU2 || BOARD_PCENGINES_APU3 || BOARD_PCENGINES_APU5
+if BOARD_PCENGINES_APU2 || BOARD_PCENGINES_APU3 || BOARD_PCENGINES_APU4 || \
+	BOARD_PCENGINES_APU5
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -30,7 +31,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select USE_BLOBS
 	select GENERIC_SPD_BIN
 	select PXE
-	select MEMTEST_DISABLE_SPD if MEMTEST_SECONDARY_PAYLOAD
+	select SPI_FLASH
+	select SPI_FLASH_WINBOND
 
 config MAINBOARD_DIR
 	string
@@ -40,6 +42,7 @@ config VARIANT_DIR
 	string
 	default apu2 if BOARD_PCENGINES_APU2
 	default apu3 if BOARD_PCENGINES_APU3
+	default apu4 if BOARD_PCENGINES_APU4
 	default apu5 if BOARD_PCENGINES_APU5
 
 config DEVICETREE
@@ -50,6 +53,7 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "PC Engines apu2" if BOARD_PCENGINES_APU2
 	default "PC Engines apu3" if BOARD_PCENGINES_APU3
+	default "PC Engines apu4" if BOARD_PCENGINES_APU4
 	default "PC Engines apu5" if BOARD_PCENGINES_APU5
 
 config MAX_CPUS
@@ -74,13 +78,18 @@ config AGESA_BINARY_PI_FILE
 
 choice
 	prompt "J19 pins 1-10"
-	default APU2_PINMUX_UART_C
+	default APU2_PINMUX_UART_C if BOARD_PCENGINES_APU2 || \
+		BOARD_PCENGINES_APU3 || BOARD_PCENGINES_APU4
+	default APU2_PINMUX_UART_C if BOARD_PCENGINES_APU5
+
 
 config APU2_PINMUX_OFF_C
 	bool "disable"
 
 config APU2_PINMUX_GPIO0
 	bool "GPIO"
+	depends on BOARD_PCENGINES_APU2 || BOARD_PCENGINES_APU3 || \
+		BOARD_PCENGINES_APU4
 
 config APU2_PINMUX_UART_C
 	bool "UART 0x3e8"
@@ -89,13 +98,17 @@ endchoice
 
 choice
 	prompt "J19 pins 11-20"
-	default APU2_PINMUX_UART_D
+	default APU2_PINMUX_UART_D if BOARD_PCENGINES_APU2 || \
+		BOARD_PCENGINES_APU3 || BOARD_PCENGINES_APU4
+	default APU2_PINMUX_UART_D if BOARD_PCENGINES_APU5
 
 config APU2_PINMUX_OFF_D
 	bool "disable"
 
 config APU2_PINMUX_GPIO1
 	bool "GPIO"
+	depends on BOARD_PCENGINES_APU2 || BOARD_PCENGINES_APU3 || \
+		BOARD_PCENGINES_APU4
 
 config APU2_PINMUX_UART_D
 	bool "UART 0x2e8"

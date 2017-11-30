@@ -147,7 +147,28 @@ publish:apu3:
   <<: *publish_rom
   variables:
     PLATFORM: apu3
+
+   
+build:apu4:
+  <<: *build_rom_apu
+  variables:
+    PLATFORM: apu4
+
+.test:apu4:
+  <<: *test_rom
+  variables:
+    PLATFORM: apu4
     
+.sign:apu4:
+  <<: *sign_rom
+  variables:
+    PLATFORM: apu4
+    
+publish:apu4:
+  <<: *publish_rom
+  variables:
+    PLATFORM: apu4 
+
     
 build:apu5:
   <<: *build_rom_apu

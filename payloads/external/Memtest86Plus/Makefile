@@ -15,12 +15,12 @@
 
 TAG-$(CONFIG_MEMTEST_MASTER)=origin/master
 NAME-$(CONFIG_MEMTEST_MASTER)=Master
-TAG-$(CONFIG_MEMTEST_STABLE)=7afa395fe8b11d681b27c38e204814ba643c2108
+TAG-$(CONFIG_MEMTEST_STABLE)=08dd5879f6518f79969be0cc96fc180e4293b90c
 NAME-$(CONFIG_MEMTEST_STABLE)=Stable
 
 project_name=Memtest86+
 project_dir=$(CURDIR)/memtest86plus
-project_git_repo=https://github.com/pcengines/memtest86plus.git
+project_git_repo=https://review.coreboot.org/memtest86plus.git
 
 all: build
 

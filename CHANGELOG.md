@@ -9,10 +9,20 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 1. After cloning run `make crossgcc-i386` to build the toolchain.
 2. `make menuconfig` and set:
   * `Mainboard/Mainboard vendor` → `PCEngines`
-  * `Mainboard/Mainboard model` → `APU2` or `APU3`
+  * `Mainboard/Mainboard model` → `APU2`, `APU3` or `APU5`
 3. `make`
 
 ## [Unreleased]
+
+## [v4.6.4] - 2017-11-30
+### Added
+- SPI support
+- Security register support for reading serial number
+
+### Changed
+- Upgrade SeaBIOS to 1.11.0.1
+- Update sortbootorder to v4.6.4
+- Switch Memtest86+ to mainline
 
 ## [v4.6.3] - 2017-10-30
 ### Added
@@ -117,7 +127,8 @@ redundant code which was similar for APU2/3/5 boards.
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.3...coreboot-4.6.x
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.4...coreboot-4.6.x
+[v4.6.4]: https://github.com/pcengines/coreboot/compare/v4.6.3...v4.6.4
 [v4.6.3]: https://github.com/pcengines/coreboot/compare/v4.6.2...v4.6.3
 [v4.6.2]: https://github.com/pcengines/coreboot/compare/v4.6.1...v4.6.2
 [v4.6.1]: https://github.com/pcengines/coreboot/compare/v4.6.0...v4.6.1

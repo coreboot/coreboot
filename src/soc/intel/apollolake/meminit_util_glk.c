@@ -39,6 +39,10 @@ void save_lpddr4_dimm_info(const struct lpddr4_cfg *lp4cfg, size_t mem_sku)
 	}
 
 	memory_info_hob = fsp_find_smbios_memory_info(&hob_size);
+	if (memory_info_hob == NULL) {
+		printk(BIOS_ERR, "SMBIOS memory info HOB is missing\n");
+		return;
+	}
 
 	/*
 	 * Allocate CBMEM area for DIMM information used to populate SMBIOS

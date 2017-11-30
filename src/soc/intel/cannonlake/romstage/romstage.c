@@ -92,6 +92,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 	m_cfg->EnableC6Dram = config->enable_c6dram;
 	/* Disable Cpu Ratio Override temporary. */
 	m_cfg->CpuRatio = 0;
+	m_cfg->PcdSerialIoUartNumber = CONFIG_UART_FOR_CONSOLE;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

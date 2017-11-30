@@ -1,4 +1,4 @@
-Board name: PC Engines APU2
+Board name: apu2 apu3 apu4 apu5
 Board URL: http://www.pcengines.ch/apu2c2.htm
 Category: half
 ROM protocol: SPI

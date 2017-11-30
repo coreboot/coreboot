@@ -4,10 +4,10 @@
 #
 ####################################################################################
 
-DEFINE COREBOOT_IA32_PREFIX              = @@PREFIX@@/i386-elf-
-DEFINE COREBOOT_X64_PREFIX               = @@PREFIX@@/x86_64-elf-
-DEFINE COREBOOT_ARM_PREFIX               = @@PREFIX@@/arm-eabi-
-DEFINE COREBOOT_AARCH64_PREFIX           = @@PREFIX@@/arch64-elf-
+DEFINE COREBOOT_IA32_PREFIX              = @@PREFIX@@/bin/i386-elf-
+DEFINE COREBOOT_X64_PREFIX               = @@PREFIX@@/bin/x86_64-elf-
+DEFINE COREBOOT_ARM_PREFIX               = @@PREFIX@@/bin/arm-eabi-
+DEFINE COREBOOT_AARCH64_PREFIX           = @@PREFIX@@/bin/arch64-elf-
 
 DEFINE COREBOOT_IA32_CC_FLAGS            = DEF(GCC5_IA32_CC_FLAGS)
 DEFINE COREBOOT_X64_CC_FLAGS             = DEF(GCC5_X64_CC_FLAGS)

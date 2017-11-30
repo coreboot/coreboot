@@ -20,6 +20,7 @@ check_dependencies:
     - git ls-remote https://github.com/pcengines/release_manifests.git | grep ${CI_COMMIT_REF_NAME}
   only:
     - tags
+    - web 
     
 build_crosscompiler:
   stage: build_crosscompiler
@@ -38,7 +39,6 @@ build_crosscompiler:
 .build_rom_apu: &build_rom_apu
   variables:
     PLATFORM: apux
-    MANIFEST_FALLBACK_BRANCH: coreboot-xxxx
   stage: build_rom
   tags: 
     - docker
@@ -47,7 +47,6 @@ build_crosscompiler:
   script:
     - mkdir -p apu2_fw_rel && cd apu2_fw_rel
     - if [ -n "$CI_COMMIT_TAG" ]; then REPO_REVISION="refs/tags/$CI_COMMIT_REF_NAME"; else REPO_REVISION="$CI_COMMIT_REF_NAME"; fi
-    - git ls-remote https://github.com/pcengines/coreboot.git | grep ${REPO_REVISION} || REPO_REVISION="$MANIFEST_FALLBACK_BRANCH"
     - repo init -u https://github.com/pcengines/release_manifests.git -b ${REPO_REVISION}
     - repo sync --force-sync
     - cp ${CI_PROJECT_DIR}/configs/pcengines_${PLATFORM}.config ${CI_PROJECT_DIR}/apu2_fw_rel/apu2/coreboot/.config
@@ -109,7 +108,6 @@ build:apu2:
   <<: *build_rom_apu
   variables:
     PLATFORM: apu2
-    MANIFEST_FALLBACK_BRANCH: coreboot-4.6.x
 
 .test:apu2:
   <<: *test_rom
@@ -131,7 +129,6 @@ build:apu3:
   <<: *build_rom_apu
   variables:
     PLATFORM: apu3
-    MANIFEST_FALLBACK_BRANCH: coreboot-4.6.x
 
 .test:apu3:
   <<: *test_rom
@@ -153,7 +150,6 @@ build:apu5:
   <<: *build_rom_apu
   variables:
     PLATFORM: apu5
-    MANIFEST_FALLBACK_BRANCH: coreboot-4.6.x
 
 .test:apu5:
   <<: *test_rom

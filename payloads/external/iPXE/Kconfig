@@ -63,6 +63,13 @@ config PXE_ROM_FILE
 	help
 	  The path and filename of the file to use as PXE ROM.
 
+config PXE_SERIAL_CONSOLE
+	bool "Enable serial console"
+	def_bool n
+	help
+	  Enable/disable iPXE serial console. Since SeaBIOS supports serial
+	  console this option might be helpful to avoid duplicated output.
+
 config PXE_ROM_ID
 	string "network card PCI IDs"
 	default "8086,157b"

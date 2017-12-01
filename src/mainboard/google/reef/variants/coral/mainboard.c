@@ -21,16 +21,16 @@
 #include <soc/intel/common/vbt.h>
 
 enum {
-        SKU_0_ASTRONAUT = 0,
-        SKU_1_ASTRONAUT = 1,
+	SKU_0_ASTRONAUT = 0,
+	SKU_1_ASTRONAUT = 1,
 	SKU_2_SANTA = 2,
 	SKU_3_SANTA = 3,
 	SKU_4_LAVA = 4,
 	SKU_5_LAVA = 5,
 	SKU_9_LAVA = 9,
 	SKU_10_LAVA = 10,
-        SKU_61_ASTRONAUT = 61,
-        SKU_62_ASTRONAUT = 62,
+	SKU_61_ASTRONAUT = 61,
+	SKU_62_ASTRONAUT = 62,
 	SKU_160_NASHER = 160,
 	SKU_161_NASHER = 161,
 	SKU_162_NASHER = 162,

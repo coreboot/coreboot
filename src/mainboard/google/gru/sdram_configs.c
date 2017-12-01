@@ -23,11 +23,24 @@
 #include <types.h>
 
 static const char *sdram_configs[] = {
-	[0] = "sdram-lpddr3-hynix-4GB",
-	[3] = "sdram-lpddr3-samsung-2GB-24EB",
-	[4] = "sdram-lpddr3-micron-2GB",
-	[5] = "sdram-lpddr3-samsung-4GB-04EB",
-	[6] = "sdram-lpddr3-micron-4GB",
+
+	/* Samsung K4E6E304EB-EGCE */
+	[0] = "sdram-lpddr3-generic-4GB",
+
+	/* Hynix H9CCNNNBJTALAR */
+	[1] = "sdram-lpddr3-generic-4GB",
+
+	/* Samsung K4E8E324EB-EGCF */
+	[3] = "sdram-lpddr3-generic-2GB",
+
+	/* Micron MT52L256M32D1PF */
+	[4] = "sdram-lpddr3-generic-2GB",
+
+	/* Samsung K4E6E304EB-EGCE, duplicate to 0 */
+	[5] = "sdram-lpddr3-generic-4GB",
+
+	/* Micron MT52L512M32D2PF */
+	[6] = "sdram-lpddr3-generic-4GB",
 };
 
 static struct rk3399_sdram_params params;

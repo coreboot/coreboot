@@ -14,17 +14,11 @@
 ##
 
 sdram-params :=
-sdram-params += sdram-lpddr3-hynix-4GB-928
+sdram-params += sdram-lpddr3-generic-4GB-928
+sdram-params += sdram-lpddr3-generic-4GB-800
 
-sdram-params += sdram-lpddr3-micron-2GB-800
-sdram-params += sdram-lpddr3-micron-2GB-928
-sdram-params += sdram-lpddr3-micron-4GB-800
-sdram-params += sdram-lpddr3-micron-4GB-928
-
-sdram-params += sdram-lpddr3-samsung-2GB-24EB-800
-sdram-params += sdram-lpddr3-samsung-2GB-24EB-928
-sdram-params += sdram-lpddr3-samsung-4GB-04EB-800
-sdram-params += sdram-lpddr3-samsung-4GB-04EB-928
+sdram-params += sdram-lpddr3-generic-2GB-928
+sdram-params += sdram-lpddr3-generic-2GB-800
 
 $(foreach params,$(sdram-params), \
 	$(eval cbfs-files-y += $(params)) \

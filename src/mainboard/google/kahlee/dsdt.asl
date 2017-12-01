@@ -33,9 +33,6 @@ DefinitionBlock (
 	/* Globals for the platform */
 	#include "acpi/mainboard.asl"
 
-	/* Describe the USB Overcurrent pins */
-	#include "variant/acpi/usb_oc.asl"
-
 	/* PCI IRQ mapping for the Southbridge */
 	#include <pcie.asl>
 

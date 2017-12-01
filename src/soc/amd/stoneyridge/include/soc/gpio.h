@@ -61,6 +61,7 @@
 #define GPIO_25				25
 #define GPIO_26				26
 #define GPIO_39				39
+#define GPIO_40				40
 #define GPIO_42				42
 
 /* GPIO_64 - GPIO_127 */

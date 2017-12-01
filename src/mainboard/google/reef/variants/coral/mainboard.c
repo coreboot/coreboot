@@ -25,6 +25,10 @@ enum {
         SKU_1_ASTRONAUT = 1,
 	SKU_2_SANTA = 2,
 	SKU_3_SANTA = 3,
+	SKU_4_LAVA = 4,
+	SKU_5_LAVA = 5,
+	SKU_9_LAVA = 9,
+	SKU_10_LAVA = 10,
         SKU_61_ASTRONAUT = 61,
         SKU_62_ASTRONAUT = 62,
 	SKU_160_NASHER = 160,
@@ -71,6 +75,13 @@ void mainboard_devtree_update(struct device *dev)
 		break;
 	case SKU_2_SANTA:
 	case SKU_3_SANTA:
+		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
+		cfg->usb2eye[1].Usb20PerPortTxiSet = 2;
+		break;
+	case SKU_4_LAVA:
+	case SKU_5_LAVA:
+	case SKU_9_LAVA:
+	case SKU_10_LAVA:
 		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
 		cfg->usb2eye[1].Usb20PerPortTxiSet = 2;
 		break;

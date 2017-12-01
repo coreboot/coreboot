@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Sage Electronic Engineering, LLC.
+ * Copyright (C) 2017 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +18,7 @@
 #define __AMD_PCI_UTIL_H__
 
 #include <stdint.h>
+#include <soc/amd_pci_int_defs.h>
 
 /* FCH index/data registers */
 #define PCI_INTR_INDEX		0xc00
@@ -25,6 +27,11 @@
 struct pirq_struct {
 	u8 devfn;
 	u8 PIN[4];	/* PINA/B/C/D are index 0/1/2/3 */
+};
+
+struct irq_idx_name {
+	uint8_t index;
+	const char * const name;
 };
 
 extern const struct pirq_struct *pirq_data_ptr;
@@ -36,5 +43,6 @@ u8 read_pci_int_idx(u8 index, int mode);
 void write_pci_int_idx(u8 index, int mode, u8 data);
 void write_pci_cfg_irqs(void);
 void write_pci_int_table(void);
+const struct irq_idx_name *sb_get_apic_reg_association(size_t *size);
 
 #endif /* __AMD_PCI_UTIL_H__ */

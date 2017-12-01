@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Sage Electronic Engineering, LLC.
+ * Copyright (C) 2017 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +21,6 @@
 #include <amd_pci_util.h>
 #include <pc80/i8259.h>
 #include <soc/amd_pci_int_defs.h>
-#include <amd_pci_int_types.h>
 
 const struct pirq_struct *pirq_data_ptr;
 u32 pirq_data_size;
@@ -54,40 +54,38 @@ void write_pci_int_idx(u8 index, int mode, u8 data)
  */
 void write_pci_int_table(void)
 {
-	u8 byte;
+	uint8_t byte;
+	size_t i, limit;
+	const struct irq_idx_name *idx_name;
 
-	if (picr_data_ptr == NULL || intr_data_ptr == NULL) {
+	idx_name = sb_get_apic_reg_association(&limit);
+	if (picr_data_ptr == NULL || idx_name == NULL) {
 		printk(BIOS_ERR, "Warning: Can't write PCI_INTR 0xC00/0xC01"
 				" registers because\n"
-				"'mainboard_picr_data' or 'mainboard_intr_data'"
-				" tables are NULL\n");
+				"'mainboard_picr_data' or"
+				" irq_association' tables are NULL\n");
 		return;
 	}
 
 	/* PIC IRQ routine */
-	printk(BIOS_DEBUG, "PCI_INTR tables: Writing registers C00/C01 for PIC"
-				" mode PCI IRQ routing:\n"
-				"\tPCI_INTR_INDEX\t\tPCI_INTR_DATA\n");
-	for (byte = 0 ; byte < FCH_INT_TABLE_SIZE ; byte++) {
-		if (intr_types[byte]) {
-			write_pci_int_idx(byte, 0, (u8) picr_data_ptr[byte]);
-			printk(BIOS_DEBUG, "\t0x%02X %s\t: 0x%02X\n",
-					byte, intr_types[byte],
-					read_pci_int_idx(byte, 0));
-		}
-	}
-
-	/* APIC IRQ routine */
-	printk(BIOS_DEBUG, "PCI_INTR tables: Writing registers C00/C01 for APIC"
-				" mode PCI IRQ routing:\n"
-				"\tPCI_INTR_INDEX\t\tPCI_INTR_DATA\n");
-	for (byte = 0 ; byte < FCH_INT_TABLE_SIZE ; byte++) {
-		if (intr_types[byte]) {
-			write_pci_int_idx(byte, 1, (u8) intr_data_ptr[byte]);
-			printk(BIOS_DEBUG, "\t0x%02X %s\t: 0x%02X\n",
-					byte, intr_types[byte],
-					read_pci_int_idx(byte, 1));
-		}
+	printk(BIOS_DEBUG, "PCI_INTR tables: Writing registers C00/C01 for"
+				" PCI IRQ routing:\n"
+				"\tPCI_INTR_INDEX\t\tPIC mode"
+				"\tAPIC mode\n");
+	/*
+	 * Iterate table idx_name, indexes outside the table are ignored
+	 * (assumed not connected within the chip). For each iteration,
+	 * get the register index "byte" and the name of the associated
+	 * IRQ source for printing.
+	 */
+	for (i = 0 ; i < limit; i++) {
+		byte = idx_name[i].index;
+		write_pci_int_idx(byte, 0, (u8) picr_data_ptr[byte]);
+		printk(BIOS_DEBUG, "\t0x%02X %s\t0x%02X\t\t",
+				byte, idx_name[i].name,
+				read_pci_int_idx(byte, 0));
+		write_pci_int_idx(byte, 1, (u8) intr_data_ptr[byte]);
+		printk(BIOS_DEBUG, "0x%02X\n", read_pci_int_idx(byte, 1));
 	}
 }
 
@@ -108,7 +106,10 @@ void write_pci_cfg_irqs(void)
 	u16 devfn = 0;        /* A PCI Device and Function number */
 	u8  bridged_device = 0;	/* This device is on a PCI bridge */
 	u32 i = 0;
+	size_t limit;
+	const struct irq_idx_name *idx_name;
 
+	idx_name = sb_get_apic_reg_association(&limit);
 	if (pirq_data_ptr == NULL) {
 		printk(BIOS_WARNING, "Warning: Can't write PCI IRQ assignments"
 				" because 'mainboard_pirq_data' structure does"
@@ -172,11 +173,20 @@ void write_pci_cfg_irqs(void)
 					" perhaps this device was"
 					" defined wrong?\n");
 			continue;
-		} else if (pci_intr_idx >= FCH_INT_TABLE_SIZE) {
-			/* Index out of bounds */
-			printk(BIOS_ERR, "%s: got 0xC00/0xC01 table index"
-					" 0x%x, max is 0x%x\n", __func__,
-					pci_intr_idx, FCH_INT_TABLE_SIZE);
+		}
+		/*
+		 * Find the name associated with register [pci_intr_idx]
+		 * and print information.
+		 */
+		for (i = 0; i < limit; i++) {
+			if (idx_name[i].index == pci_intr_idx)
+				break;
+		}
+		if (i == limit) {
+			printk(BIOS_SPEW, "Got register index 0x%02x"
+					  " undefined in table irq_idx_name,\n"
+					  " perhaps this device was"
+					  " defined wrong?\n", pci_intr_idx);
 			continue;
 		}
 
@@ -208,10 +218,11 @@ void write_pci_cfg_irqs(void)
 		if (bridged_device)
 			printk(BIOS_SPEW, "\tSwizzled to\t: %d (%s)\n",
 					target_pin, pin_to_str(target_pin));
+
 		printk(BIOS_SPEW, "\tPCI_INTR idx\t: 0x%02x (%s)\n"
-					"\tINT_LINE\t: 0x%X (IRQ %d)\n",
-					pci_intr_idx, intr_types[pci_intr_idx],
-					int_line, int_line);
+				  "\tINT_LINE\t: 0x%X (IRQ %d)\n",
+				  pci_intr_idx, idx_name[i].name,
+				  int_line, int_line);
 	}	/* for (dev = all_devices) */
 	printk(BIOS_DEBUG, "PCI_CFG IRQ: Finished writing PCI config space"
 					" IRQ assignments\n");

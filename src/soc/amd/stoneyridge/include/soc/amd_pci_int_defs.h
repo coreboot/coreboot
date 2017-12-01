@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Sage Electronic Engineering, LLC.
+ * Copyright (C) 2017 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +18,8 @@
 #define __AMD_PCI_INT_DEFS_H__
 
 /*
- * PIRQ and device routing - these define the index
- * into the FCH PCI_INTR 0xC00/0xC01 interrupt
- * routing table
+ * PIRQ and device routing - these define the index into the
+ * FCH PCI_INTR 0xC00/0xC01 interrupt routing table.
  */
 
 #define PIRQ_NC		0x1f	/* Not Used */
@@ -44,26 +44,18 @@
 #define PIRQ_ASF	0x12	/* ASF */
 #define PIRQ_HDA	0x13	/* HDA		14h.2 */
 #define PIRQ_FC		0x14	/* FC */
-#define PIRQ_GEC	0x15	/* GEC */
 #define PIRQ_PMON	0x16	/* Performance Monitor */
 #define PIRQ_SD		0x17	/* SD */
+#define PIRQ_SDIO	0x1a	/* SDIO */
 #define PIRQ_IMC0	0x20	/* IMC INT0 */
 #define PIRQ_IMC1	0x21	/* IMC INT1 */
 #define PIRQ_IMC2	0x22	/* IMC INT2 */
 #define PIRQ_IMC3	0x23	/* IMC INT3 */
 #define PIRQ_IMC4	0x24	/* IMC INT4 */
 #define PIRQ_IMC5	0x25	/* IMC INT5 */
-#define PIRQ_OHCI1	0x30	/* USB OHCI	12h.0 */
-#define PIRQ_EHCI1	0x31	/* USB EHCI	12h.2 */
-#define PIRQ_OHCI2	0x32	/* USB OHCI	13h.0 */
-#define PIRQ_EHCI2	0x33	/* USB EHCI	13h.2 */
-#define PIRQ_OHCI3	0x34	/* USB OHCI	16h.0 */
-#define PIRQ_EHCI3	0x35	/* USB EHCI	16h.2 */
-#define PIRQ_OHCI4	0x36	/* USB OHCI	14h.5 */
-#define PIRQ_IDE	0x40	/* IDE		14h.1 */
+#define PIRQ_EHCI	0x30	/* USB EHCI	12h.0 */
+#define PIRQ_XHCI	0x34	/* USB XHCI	10h.0 */
 #define PIRQ_SATA	0x41	/* SATA		11h.0 */
-
-#define FCH_INT_TABLE_SIZE 0x76
 #define PIRQ_GPIO	0x62	/* GPIO Controller Interrupt */
 #define PIRQ_I2C0	0x70
 #define PIRQ_I2C1	0x71

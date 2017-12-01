@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2010-2017 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,9 +27,66 @@
 #include <amd_pci_util.h>
 #include <soc/southbridge.h>
 #include <soc/smi.h>
+#include <soc/amd_pci_int_defs.h>
 #include <fchec.h>
 #include <delay.h>
 #include <soc/pci_devs.h>
+
+/*
+ * Table of APIC register index and associated IRQ name. Using IDX_XXX_NAME
+ * provides a visible association with the index, therefor helping
+ * maintainability of table. If a new index/name is defined in
+ * amd_pci_int_defs.h, just add the pair at the end of this table.
+ * Order is not important.
+ */
+const static struct irq_idx_name irq_association[] = {
+	{ PIRQ_A,	"INTA#\t" },
+	{ PIRQ_B,	"INTB#\t" },
+	{ PIRQ_C,	"INTC#\t" },
+	{ PIRQ_D,	"INTD#\t" },
+	{ PIRQ_E,	"INTE#\t" },
+	{ PIRQ_F,	"INTF#\t" },
+	{ PIRQ_G,	"INTG#\t" },
+	{ PIRQ_H,	"INTH#\t" },
+	{ PIRQ_MISC,	"Misc\t" },
+	{ PIRQ_MISC0,	"Misc0\t" },
+	{ PIRQ_MISC1,	"Misc1\t" },
+	{ PIRQ_MISC2,	"Misc2\t" },
+	{ PIRQ_SIRQA,	"Ser IRQ INTA" },
+	{ PIRQ_SIRQB,	"Ser IRQ INTB" },
+	{ PIRQ_SIRQC,	"Ser IRQ INTC" },
+	{ PIRQ_SIRQD,	"Ser IRQ INTD" },
+	{ PIRQ_SCI,	"SCI\t" },
+	{ PIRQ_SMBUS,	"SMBUS\t" },
+	{ PIRQ_ASF,	"ASF\t" },
+	{ PIRQ_HDA,	"HDA\t" },
+	{ PIRQ_FC,	"FC\t\t" },
+	{ PIRQ_PMON,	"PerMon\t" },
+	{ PIRQ_SD,	"SD\t\t" },
+	{ PIRQ_SDIO,	"SDIO\t" },
+	{ PIRQ_IMC0,	"IMC INT0\t" },
+	{ PIRQ_IMC1,	"IMC INT1\t" },
+	{ PIRQ_IMC2,	"IMC INT2\t" },
+	{ PIRQ_IMC3,	"IMC INT3\t" },
+	{ PIRQ_IMC4,	"IMC INT4\t" },
+	{ PIRQ_IMC5,	"IMC INT5\t" },
+	{ PIRQ_EHCI,	"EHCI\t" },
+	{ PIRQ_XHCI,	"XHCI\t" },
+	{ PIRQ_SATA,	"SATA\t" },
+	{ PIRQ_GPIO,	"GPIO\t" },
+	{ PIRQ_I2C0,	"I2C0\t" },
+	{ PIRQ_I2C1,	"I2C1\t" },
+	{ PIRQ_I2C2,	"I2C2\t" },
+	{ PIRQ_I2C3,	"I2C3\t" },
+	{ PIRQ_UART0,	"UART0\t" },
+	{ PIRQ_UART1,	"UART1\t" },
+};
+
+const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
+{
+	*size = ARRAY_SIZE(irq_association);
+	return irq_association;
+}
 
 void configure_stoneyridge_uart(void)
 {

@@ -246,6 +246,7 @@ static inline void lb_vboot_handoff(struct lb_header *header) {}
 
 __attribute__((weak)) uint32_t board_id(void) { return UNDEFINED_STRAPPING_ID; }
 __attribute__((weak)) uint32_t ram_code(void) { return UNDEFINED_STRAPPING_ID; }
+__attribute__((weak)) uint32_t sku_id(void) { return UNDEFINED_STRAPPING_ID; }
 
 static void lb_board_id(struct lb_header *header)
 {
@@ -308,6 +309,23 @@ static void lb_ram_code(struct lb_header *header)
 	rec->id_code = code;
 
 	printk(BIOS_INFO, "RAM code: %d\n", code);
+}
+
+static void lb_sku_id(struct lb_header *header)
+{
+	struct lb_strapping_id *rec;
+	uint32_t sid = sku_id();
+
+	if (sid == UNDEFINED_STRAPPING_ID)
+		return;
+
+	rec = (struct lb_strapping_id *)lb_new_record(header);
+
+	rec->tag = LB_TAG_SKU_ID;
+	rec->size = sizeof(*rec);
+	rec->id_code = sid;
+
+	printk(BIOS_INFO, "SKU ID: %d\n", sid);
 }
 
 static void add_cbmem_pointers(struct lb_header *header)
@@ -544,11 +562,10 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	lb_vboot_handoff(head);
 #endif
 
-	/* Add board ID if available */
+	/* Add strapping IDs if available */
 	lb_board_id(head);
-
-	/* Add RAM config if available */
 	lb_ram_code(head);
+	lb_sku_id(head);
 
 	/* Add SPI flash description if available */
 	if (IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))

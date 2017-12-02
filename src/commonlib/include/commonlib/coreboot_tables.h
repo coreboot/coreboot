@@ -290,6 +290,7 @@ struct lb_x86_rom_mtrr {
 
 #define LB_TAG_BOARD_ID		0x0025
 #define LB_TAG_RAM_CODE		0x0028
+#define LB_TAG_SKU_ID		0x002d
 
 struct lb_strapping_id {
 	uint32_t tag;

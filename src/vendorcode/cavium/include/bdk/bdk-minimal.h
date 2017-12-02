@@ -10,13 +10,12 @@
  * bdk-minimal.h: Subset of bdk.h used by coreboot
  */
 
-#ifndef __SOC_CAVIUM_COMMON_BDK_MINIMAL_H__
-#define __SOC_CAVIUM_COMMON_BDK_MINIMAL_H__
+#ifndef BDK_MINIMAL_H__
+#define BDK_MINIMAL_H__
 
 #include <console/console.h>	/* for printk */
 #include <endian.h>
 #include <stddef.h>		/* for NULL */
-#include <libbdk-hal/bdk-access.h>
 
 #define bdk_le16_to_cpu(x)	le16_to_cpu(x)
 #define bdk_le32_to_cpu(x)	le32_to_cpu(x)
@@ -28,11 +27,6 @@
 #define bdk_cpu_to_le32(x)	cpu_to_le32(x)
 #define bdk_cpu_to_le64(x)	cpu_to_le64(x)
 
-#define __BYTE_ORDER __BYTE_ORDER__
-/* Watch out for __BIG_ENDIAN. coreboot usually checks if it's defined at all
- * but the Cavium BDK checks its value. */
-#define __BIG_ENDIAN 4321
-
 #define printf(format, ...)	printk(BIOS_DEBUG, format, ##__VA_ARGS__)
 #define puts(str)		printk(BIOS_INFO, str)
 #define fflush(x)		/* output gets flushed automatically */
@@ -42,8 +36,10 @@
 #include <libbdk-arch/bdk-asm.h>
 #include <libbdk-arch/bdk-model.h>
 #include <libbdk-arch/bdk-numa.h>
+#include <libbdk-hal/bdk-access.h>
 
 #include <libbdk-arch/bdk-require.h>
+
 #include <libbdk-arch/bdk-csr.h>
 
 #include <libbdk-os/bdk-thread.h>
@@ -57,4 +53,4 @@
 
 static inline char *getenv(const char *name) { return NULL; }
 
-#endif /* !__SOC_CAVIUM_COMMON_BDK_MINIMAL_H__ */
+#endif /* BDK_MINIMAL_H__ */

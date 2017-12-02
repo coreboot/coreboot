@@ -1,0 +1,27 @@
+config SOC_CAVIUM_CN81XX
+	bool
+	default n
+	select ARCH_BOOTBLOCK_ARMV8_64
+	select ARCH_RAMSTAGE_ARMV8_64
+	select ARCH_ROMSTAGE_ARMV8_64
+	select ARCH_VERSTAGE_ARMV8_64
+	select BOOTBLOCK_CONSOLE
+	select DRIVERS_UART_PL011
+	select GENERIC_UDELAY
+	select HAVE_MONOTONIC_TIMER
+	select UART_OVERRIDE_REFCLK
+	select SOC_CAVIUM_COMMON
+
+if SOC_CAVIUM_CN81XX
+
+config ARCH_ARMV8_EXTENSION
+	int
+	default 1
+
+config HEAP_SIZE
+	default 0x10000
+
+config STACK_SIZE
+	default 0x2000
+
+endif

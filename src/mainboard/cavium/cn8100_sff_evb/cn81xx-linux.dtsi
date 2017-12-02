@@ -1,0 +1,496 @@
+/*
+ * Cavium Thunder DTS file - Thunder SoC description
+ *
+ * Copyright (C) 2016, Cavium Inc.
+ *
+ * This file is dual-licensed: you can use it either under the terms
+ * of the GPL or the X11 license, at your option. Note that this dual
+ * licensing only applies to this file, and not this project as a
+ * whole.
+ *
+ * a) This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; version 2 of the License.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ * Or, alternatively,
+ *
+ *  b) Permission is hereby granted, free of charge, to any person
+ *     obtaining a copy of this software and associated documentation
+ *     files (the "Software"), to deal in the Software without
+ *     restriction, including without limitation the rights to use,
+ *     copy, modify, merge, publish, distribute, sublicense, and/or
+ *     sell copies of the Software, and to permit persons to whom the
+ *     Software is furnished to do so, subject to the following
+ *     conditions:
+ *
+ *     The above copyright notice and this permission notice shall be
+ *     included in all copies or substantial portions of the Software.
+ *
+ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *     OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+/ {
+	model = "Cavium ThunderX CN81XX board";
+	compatible = "cavium,thunder-81xx";
+	interrupt-parent = <&gic0>;
+	#address-cells = <2>;
+	#size-cells = <2>;
+
+	psci {
+		compatible = "arm,psci-0.2";
+		method = "smc";
+	};
+
+	cpus {
+		#address-cells = <2>;
+		#size-cells = <0>;
+
+		cpu-map {
+			cluster0 {
+				core0 {
+					cpu = <&CPU0>;
+				};
+				core1 {
+					cpu = <&CPU1>;
+				};
+				core2 {
+					cpu = <&CPU2>;
+				};
+				core3 {
+					cpu = <&CPU3>;
+				};
+			};
+		};
+
+		CPU0: cpu@0 {
+			device_type = "cpu";
+			compatible = "cavium,thunder", "arm,armv8";
+			reg = <0x0 0x000>;
+			enable-method = "psci";
+			/* socket 0 */
+			numa-node-id = <0>;
+			next-level-cache = <&thunderx_L2_0>;
+		};
+		CPU1: cpu@1 {
+			device_type = "cpu";
+			compatible = "cavium,thunder", "arm,armv8";
+			reg = <0x0 0x001>;
+			enable-method = "psci";
+			numa-node-id = <0>;
+			next-level-cache = <&thunderx_L2_0>;
+		};
+		CPU2: cpu@2 {
+			device_type = "cpu";
+			compatible = "cavium,thunder", "arm,armv8";
+			reg = <0x0 0x002>;
+			enable-method = "psci";
+			numa-node-id = <0>;
+			next-level-cache = <&thunderx_L2_0>;
+		};
+		CPU3: cpu@3 {
+			device_type = "cpu";
+			compatible = "cavium,thunder", "arm,armv8";
+			reg = <0x0 0x003>;
+			enable-method = "psci";
+			numa-node-id = <0>;
+			next-level-cache = <&thunderx_L2_0>;
+		};
+	};
+
+	thunderx_L2_0: l2-cache0 {
+		compatible = "cache";
+		numa-node-id = <0>;
+	};
+
+	timer {
+		compatible = "arm,armv8-timer";
+		interrupts = <1 13 4>,
+			     <1 14 4>,
+			     <1 11 4>,
+			     <1 10 4>;
+	};
+
+	pmu {
+		compatible = "cavium,thunder-pmu", "arm,armv8-pmuv3";
+		interrupts = <1 7 4>;
+	};
+
+	mmc_supply_3v3: mmc_supply_3v3 {
+		compatible = "regulator-fixed";
+		regulator-name = "mmc_supply_3v3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+
+		gpio = <&gpio_6_0 8 0>;
+		enable-active-high;
+	};
+
+	gic0: interrupt-controller@801000000000 {
+		compatible = "arm,gic-v3";
+		#interrupt-cells = <3>;
+		#address-cells = <2>;
+		#size-cells = <2>;
+		#redistributor-regions = <1>;
+		ranges;
+		interrupt-controller;
+		reg = <0x8010 0x00000000 0x0 0x010000>, /* GICD */
+		      <0x8010 0x80000000 0x0 0x600000>; /* GICR */
+		interrupts = <1 9 4>;
+
+		its: gic-its@801000020000 {
+			compatible = "arm,gic-v3-its";
+			reg = <0x8010 0x20000 0x0 0x200000>;
+			msi-controller;
+			numa-node-id = <0>;
+		};
+	};
+
+	soc@0 {
+		compatible = "simple-bus";
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		numa-node-id = <0>;
+
+		refclkuaa: refclkuaa {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <116640000>;
+			clock-output-names = "refclkuaa";
+		};
+
+		sclk: sclk {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <800000000>;
+			clock-output-names = "sclk";
+		};
+
+		uaa0: serial@87e028000000 {
+			compatible = "arm,pl011", "arm,primecell";
+			reg = <0x87e0 0x28000000 0x0 0x1000>;
+			interrupts = <0 5 4>;
+			clocks = <&refclkuaa>;
+			clock-names = "apb_pclk";
+			skip-init;
+		};
+
+		uaa1: serial@87e029000000 {
+			compatible = "arm,pl011", "arm,primecell";
+			reg = <0x87e0 0x29000000 0x0 0x1000>;
+			interrupts = <0 6 4>;
+			clocks = <&refclkuaa>;
+			clock-names = "apb_pclk";
+			skip-init;
+		};
+
+		uaa2: serial@87e02a000000 {
+			compatible = "arm,pl011", "arm,primecell";
+			reg = <0x87e0 0x2a000000 0x0 0x1000>;
+			interrupts = <0 7 4>;
+			clocks = <&refclkuaa>;
+			clock-names = "apb_pclk";
+			skip-init;
+		};
+
+		uaa3: serial@87e02b000000 {
+			compatible = "arm,pl011", "arm,primecell";
+			reg = <0x87e0 0x2b000000 0x0 0x1000>;
+			interrupts = <0 8 4>;
+			clocks = <&refclkuaa>;
+			clock-names = "apb_pclk";
+			skip-init;
+		};
+
+		watch-dog@8440000a0000 {
+			compatible = "arm,sbsa-gwdt";
+			reg = <0x8440 0xa0000 0x0 0x1000>, <0x8440 0xb0000 0x0 0x1000>;
+			interrupts = <0 9 4>;
+		};
+
+		pbus0: nor@0 {
+			compatible = "cfi-flash";
+			reg = <0x8000 0x0 0x0 0x800000>;
+			device-width = <1>;
+			bank-width = <1>;
+			clocks = <&sclk>;
+		};
+
+		smmu0@830000000000 {
+			compatible = "cavium,smmu-v2";
+			reg = <0x8300 0x0 0x0 0x2000000>;
+			#global-interrupts = <1>;
+			interrupts = <0 68 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>,
+				     <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>,
+				     <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>,
+				     <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>,
+				     <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>,
+				     <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>,
+				     <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>,
+				     <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>,
+				     <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>,
+				     <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>,
+				     <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>, <0 69 4>;
+
+			mmu-masters = <&ecam0 0x100>,
+				      <&pem0  0x200>,
+				      <&pem1  0x300>,
+				      <&pem2  0x400>;
+
+		};
+
+		ecam0: pci@848000000000 {
+			compatible = "pci-host-ecam-generic";
+			device_type = "pci";
+			msi-parent = <&its>;
+			msi-map = <0 &its 0 0x10000>;
+			bus-range = <0 31>;
+			#size-cells = <2>;
+			#address-cells = <3>;
+			#stream-id-cells = <1>;
+			u-boot,dm-pre-reloc;
+			dma-coherent;
+			reg = <0x8480 0x00000000 0 0x02000000>;	 /* Configuration space */
+			ranges = <0x03000000 0x8010 0x00000000 0x8010 0x00000000 0x080 0x00000000>, /* mem ranges */
+				 <0x03000000 0x8100 0x00000000 0x8100 0x00000000 0x80  0x00000000>, /* SATA */
+				 <0x03000000 0x8680 0x00000000 0x8680 0x00000000 0x160 0x28000000>, /* UARTs */
+				 <0x03000000 0x87e0 0x2c000000 0x87e0 0x2c000000 0x000 0x94000000>, /* PEMs */
+				 <0x03000000 0x8400 0x00000000 0x8400 0x00000000 0x010 0x00000000>, /* RNM */
+				 <0x03000000 0x8430 0x00000000 0x8430 0x00000000 0x02  0x00000000>, /* NIC0*/
+				 <0x03000000 0x87e0 0xc6000000 0x87e0 0xc6000000 0x01f 0x3a000000>;
+
+			mrml_bridge: mrml-bridge0@1,0 {
+				compatible = "pci-bridge", "cavium,thunder-8890-mrml-bridge";
+				#size-cells = <2>;
+				#address-cells = <3>;
+				ranges = <0x03000000 0x87e0 0x00000000 0x03000000 0x87e0 0x00000000 0x10 0x00000000>;
+				reg = <0x0800 0 0 0 0>; /* DEVFN = 0x08 (1:0) */
+				device_type = "pci";
+				u-boot,dm-pre-reloc;
+
+				mdio-nexus@1,3 {
+					compatible = "cavium,thunder-8890-mdio-nexus";
+					#address-cells = <2>;
+					#size-cells = <2>;
+					reg = <0x0b00 0 0 0 0>; /* DEVFN = 0x0b (1:3) */
+					assigned-addresses = <0x03000000 0x87e0 0x05000000 0x0 0x800000>;
+					ranges = <0x87e0 0x05000000 0x03000000 0x87e0 0x05000000 0x0 0x800000>;
+					mdio0@87e005003800 {
+						compatible = "cavium,thunder-8890-mdio";
+						#address-cells = <1>;
+						#size-cells = <0>;
+						reg = <0x87e0 0x05003800 0x0 0x30>;
+					};
+					mdio1@87e005003880 {
+						compatible = "cavium,thunder-8890-mdio";
+						#address-cells = <1>;
+						#size-cells = <0>;
+						reg = <0x87e0 0x05003880 0x0 0x30>;
+					};
+				};
+
+				mmc_1_4: mmc@1,4 {
+					compatible = "cavium,thunder-8890-mmc";
+					reg = <0x0c00 0 0 0 0>;	/* DEVFN = 0x0c (1:4) */
+					#address-cells = <1>;
+					#size-cells = <0>;
+					clocks = <&sclk>;
+				};
+
+				i2c_9_0: i2c@9,0 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					compatible = "cavium,thunder-8890-twsi";
+					reg = <0x4800 0 0 0 0>; /*  DEVFN = 0x48 (9:0) */
+					clock-frequency = <100000>;
+					clocks = <&sclk>;
+					u-boot,dm-pre-reloc;
+				};
+
+				i2c_9_1: i2c@9,1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					compatible = "cavium,thunder-8890-twsi";
+					reg = <0x4900 0 0 0 0>; /*  DEVFN = 0x49 (9:1) */
+					clock-frequency = <100000>;
+					clocks = <&sclk>;
+					u-boot,dm-pre-reloc;
+				};
+
+				rgx0 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					compatible = "cavium,thunder-8890-bgx";
+					reg = <0x9000 0 0 0 0>; /* DEVFN = 0x90 (16:1) */
+				};
+				bgx0 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					compatible = "cavium,thunder-8890-bgx";
+					reg = <0x8000 0 0 0 0>; /* DEVFN = 0x80 (16:0) */
+				};
+				bgx1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					compatible = "cavium,thunder-8890-bgx";
+					reg = <0x8100 0 0 0 0>; /* DEVFN = 0x81 (16:1) */
+				};
+			};
+
+			spi_7_0: spi@7,0 {
+				compatible = "cavium,thunder-8190-spi";
+				reg = <0x3800 0x0 0x0 0x0 0x0>; /*  DEVFN = 0x38 (7:0) */
+				#address-cells = <1>;
+				#size-cells = <0>;
+				clocks = <&sclk>;
+			};
+
+			gpio_6_0: gpio0@6,0 {
+				#gpio-cells = <2>;
+				compatible = "cavium,thunder-8890-gpio";
+				gpio-controller;
+				reg = <0x3000 0 0 0 0>; /*  DEVFN = 0x30 (6:0) */
+				u-boot,dm-pre-reloc;
+			};
+
+			nfc: nand@b,0 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				compatible = "cavium,cn8130-nand";
+				reg = <0x5800 0 0 0 0>; /* DEVFN = 0x58 (b:0) */
+				clocks = <&sclk>;
+			};
+		};
+
+		pem0: pci@87e0c0000000 {
+
+			/* "cavium,pci-host-thunder-pem" implies that
+			 the first bus in bus-range has config access
+			 via the "PEM space", subsequent buses have
+			 config assess via the "Configuration space".
+			 The "mem64 PEM" range is used to map the PEM
+			 BAR0, which is used by the AER and PME MSI-X
+			 sources. UEFI and Linux must assign the same
+			 bus number to each device, otherwise Linux
+			 enumeration gets confused.  Because UEFI
+			 skips the PEM bus and its PCIe-RC bridge it
+			 uses a numbering that starts 1 bus higher.
+			 */
+
+			compatible = "cavium,pci-host-thunder-pem";
+			device_type = "pci";
+			msi-parent = <&its>;
+			msi-map = <0 &its 0 0x10000>;
+			bus-range = <0x1f 0x57>;
+			#size-cells = <2>;
+			#address-cells = <3>;
+			#stream-id-cells = <1>;
+			dma-coherent;
+			reg = <0x8800 0x1f000000 0x0 0x39000000>,  /* Configuration space */
+				<0x87e0 0xc0000000 0x0 0x01000000>; /* PEM space */
+			ranges = <0x01000000 0x00 0x00000000 0x8830 0x00000000 0x00 0x00010000>, /* I/O */
+				 <0x03000000 0x00 0x10000000 0x8810 0x10000000 0x0f 0xf0000000>, /* mem64 */
+				 <0x43000000 0x10 0x00000000 0x8820 0x00000000 0x10 0x00000000>, /* mem64-pref */
+				 <0x03000000 0x87e0 0xc0000000 0x87e0 0xc0000000 0x00 0x01000000>; /* mem64 PEM */
+
+			#interrupt-cells = <1>;
+			interrupt-map-mask = <0 0 0 7>;
+			interrupt-map = <0 0 0 1 &gic0 0 0 0 16 4>, /* INTA */
+					<0 0 0 2 &gic0 0 0 0 17 4>, /* INTB */
+					<0 0 0 3 &gic0 0 0 0 18 4>, /* INTC */
+					<0 0 0 4 &gic0 0 0 0 19 4>; /* INTD */
+		};
+
+		pem1: pci@87e0c1000000 {
+			compatible = "cavium,pci-host-thunder-pem";
+			device_type = "pci";
+			msi-parent = <&its>;
+			msi-map = <0 &its 0 0x10000>;
+			bus-range = <0x57 0x8f>;
+			#size-cells = <2>;
+			#address-cells = <3>;
+			#stream-id-cells = <1>;
+			dma-coherent;
+			reg = <0x8840 0x57000000 0x0 0x39000000>,  /* Configuration space */
+				<0x87e0 0xc1000000 0x0 0x01000000>; /* PEM space */
+			ranges = <0x01000000 0x00 0x00010000 0x8870 0x00010000 0x00 0x00010000>, /* I/O */
+				 <0x03000000 0x00 0x10000000 0x8850 0x10000000 0x0f 0xf0000000>, /* mem64 */
+				 <0x43000000 0x10 0x00000000 0x8860 0x00000000 0x10 0x00000000>, /* mem64-pref */
+				 <0x03000000 0x87e0 0xc1000000 0x87e0 0xc1000000 0x00 0x01000000>; /* mem64 PEM */
+
+			#interrupt-cells = <1>;
+			interrupt-map-mask = <0 0 0 7>;
+			interrupt-map = <0 0 0 1 &gic0 0 0 0 20 4>, /* INTA */
+					<0 0 0 2 &gic0 0 0 0 21 4>, /* INTB */
+					<0 0 0 3 &gic0 0 0 0 22 4>, /* INTC */
+					<0 0 0 4 &gic0 0 0 0 23 4>; /* INTD */
+		};
+
+		pem2: pci@87e0c2000000 {
+			compatible = "cavium,pci-host-thunder-pem";
+			device_type = "pci";
+			msi-parent = <&its>;
+			msi-map = <0 &its 0 0x10000>;
+			bus-range = <0x8f 0xc7>;
+			#size-cells = <2>;
+			#address-cells = <3>;
+			#stream-id-cells = <1>;
+			dma-coherent;
+			reg = <0x8880 0x8f000000 0x0 0x39000000>,  /* Configuration space */
+				<0x87e0 0xc2000000 0x0 0x01000000>; /* PEM space */
+			ranges = <0x01000000 0x00 0x00020000 0x88b0 0x00020000 0x00 0x00010000>, /* I/O */
+				 <0x03000000 0x00 0x10000000 0x8890 0x10000000 0x0f 0xf0000000>, /* mem64 */
+				 <0x43000000 0x10 0x00000000 0x88a0 0x00000000 0x10 0x00000000>, /* mem64-pref */
+				 <0x03000000 0x87e0 0xc2000000 0x87e0 0xc2000000 0x00 0x01000000>; /* mem64 PEM */
+
+			#interrupt-cells = <1>;
+			interrupt-map-mask = <0 0 0 7>;
+			interrupt-map = <0 0 0 1 &gic0 0 0 0 24 4>, /* INTA */
+					<0 0 0 2 &gic0 0 0 0 25 4>, /* INTB */
+					<0 0 0 3 &gic0 0 0 0 26 4>, /* INTC */
+					<0 0 0 4 &gic0 0 0 0 27 4>; /* INTD */
+		};
+
+		tdm: tdm@d,0 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			compatible = "cavium,thunder-8190-tdm";
+			reg = <0x6800 0 0 0>; /*  DEVFN = 0x68 (d:0) */
+			clocks = <&sclk>;
+		};
+	};
+
+	aliases {
+		serial0 = &uaa0;
+		serial1 = &uaa1;
+		serial2 = &uaa2;
+		serial3 = &uaa3;
+		i2c0 = &i2c_9_0;
+		i2c1 = &i2c_9_1;
+		spi0 = &spi_7_0;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+
+	memory@0 {
+		device_type = "memory";
+		reg = <0x0 0x01400000 0x0 0x7EC00000>;
+		/* socket 0 */
+		numa-node-id = <0>;
+	};
+};

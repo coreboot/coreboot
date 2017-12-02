@@ -31,6 +31,7 @@
 #define AMD_SB_ACPI_MMIO_ADDR		0xfed80000
 #define APU_SMI_BASE			0xfed80200
 #define PM_MMIO_BASE			0xfed80300
+#define XHCI_ACPI_PM_MMIO_BASE		0xfed81c00
 #define APU_UART0_BASE			0xfedc6000
 #define APU_UART1_BASE			0xfedc8000
 

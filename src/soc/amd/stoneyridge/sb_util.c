@@ -84,3 +84,33 @@ uint16_t pm_acpi_pm_evt_blk(void)
 {
 	return pm_read16(PM_EVT_BLK);
 }
+
+void xhci_pm_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(XHCI_ACPI_PM_MMIO_BASE + reg), value);
+}
+
+uint8_t xhci_pm_read8(uint8_t reg)
+{
+	return read8((void *)(XHCI_ACPI_PM_MMIO_BASE + reg));
+}
+
+void xhci_pm_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(XHCI_ACPI_PM_MMIO_BASE + reg), value);
+}
+
+uint16_t xhci_pm_read16(uint8_t reg)
+{
+	return read16((void *)(XHCI_ACPI_PM_MMIO_BASE + reg));
+}
+
+void xhci_pm_write32(uint8_t reg, uint32_t value)
+{
+	write32((void *)(XHCI_ACPI_PM_MMIO_BASE + reg), value);
+}
+
+uint32_t xhci_pm_read32(uint8_t reg)
+{
+	return read32((void *)(XHCI_ACPI_PM_MMIO_BASE + reg));
+}

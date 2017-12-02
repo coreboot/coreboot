@@ -1,8 +1,49 @@
 chip soc/intel/cannonlake
 
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route. i.e. If this route changes then the affected GPE
+	# offset bits also need to be changed.
+	register "gpe0_dw0" = "PMC_GPP_A"
+	register "gpe0_dw1" = "PMC_GPP_B"
+	register "gpe0_dw2" = "PMC_GPP_C"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end
+
+	# FSP configuration
+	register "SaGv" = "3"
+	register "FspSkipMpInit" = "1"
+	register "SmbusEnable" = "1"
+	register "ScsEmmcEnabled" = "1"
+	register "ScsEmmcHs400Enabled" = "1"
+	register "ScsSdCardEnabled" = "1"
+
+	# Use GSPI0 for cr50 TPM. Early init is required to set up a BAR for TPM
+	# communication before memory is up.
+	register "gspi[0]" = "{
+		.speed_mhz = 1,
+		.early_init = 1,
+	}"
+
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC1)"
+	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC2)"
+	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)"
+	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC_SKIP)"
+	register "usb2_ports[5]" = "USB2_PORT_TYPE_C(OC_SKIP)"
+	register "usb2_ports[6]" = "USB2_PORT_TYPE_C(OC_SKIP)"
+	register "usb2_ports[7]" = "USB2_PORT_TYPE_C(OC_SKIP)"
+	register "usb2_ports[8]" = "USB2_PORT_TYPE_C(OC_SKIP)"
+	register "usb2_ports[9]" = "USB2_PORT_TYPE_C(OC_SKIP)"
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC0)"
 
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge

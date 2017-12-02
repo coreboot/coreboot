@@ -86,4 +86,8 @@ config ZOOMBINI_USE_SPI_TPM
 	select SPI_TPM
 	select TPM2
 
+config TPM_TIS_ACPI_INTERRUPT
+	int
+	default 76 # GPE0_DW2_12 (GPP_C12)
+
 endif # BOARD_GOOGLE_BASEBOARD_ZOOMBINI

@@ -236,12 +236,6 @@ config UPDATE_IMAGE
 
 	  If unsure, select 'N'
 
-config RAM_CODE_SUPPORT
-	bool
-	help
-	  If enabled, coreboot discovers RAM configuration (value obtained by
-	  reading board straps) and stores it in coreboot table.
-
 config BOOTSPLASH_IMAGE
 	bool "Add a bootsplash image"
 	help
@@ -1206,13 +1200,6 @@ config DIMM_SPD_SIZE
 
 config SPD_READ_BY_WORD
 	bool
-
-config BOARD_ID_AUTO
-	bool
-	default n
-	help
-	  Mainboards that can read a board ID from the hardware straps
-	  (ie. GPIO) select this configuration option.
 
 config BOOTBLOCK_CUSTOM
 	# To be selected by arch, SoC or mainboard if it does not want use the normal

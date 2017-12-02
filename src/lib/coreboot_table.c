@@ -244,11 +244,16 @@ static inline void lb_vboot_handoff(struct lb_header *header) {}
 #endif /* CONFIG_VBOOT */
 #endif /* CONFIG_CHROMEOS */
 
+__attribute__((weak)) uint32_t board_id(void) { return UNDEFINED_STRAPPING_ID; }
+__attribute__((weak)) uint32_t ram_code(void) { return UNDEFINED_STRAPPING_ID; }
+
 static void lb_board_id(struct lb_header *header)
 {
-#if IS_ENABLED(CONFIG_BOARD_ID_AUTO)
 	struct lb_strapping_id  *rec;
 	uint32_t bid = board_id();
+
+	if (bid == UNDEFINED_STRAPPING_ID)
+		return;
 
 	rec = (struct lb_strapping_id *)lb_new_record(header);
 
@@ -257,7 +262,6 @@ static void lb_board_id(struct lb_header *header)
 	rec->id_code = bid;
 
 	printk(BIOS_INFO, "Board ID: %d\n", bid);
-#endif
 }
 
 static void lb_boot_media_params(struct lb_header *header)
@@ -291,9 +295,11 @@ static void lb_boot_media_params(struct lb_header *header)
 
 static void lb_ram_code(struct lb_header *header)
 {
-#if IS_ENABLED(CONFIG_RAM_CODE_SUPPORT)
 	struct lb_strapping_id *rec;
 	uint32_t code = ram_code();
+
+	if (code == UNDEFINED_STRAPPING_ID)
+		return;
 
 	rec = (struct lb_strapping_id *)lb_new_record(header);
 
@@ -302,7 +308,6 @@ static void lb_ram_code(struct lb_header *header)
 	rec->id_code = code;
 
 	printk(BIOS_INFO, "RAM code: %d\n", code);
-#endif
 }
 
 static void add_cbmem_pointers(struct lb_header *header)

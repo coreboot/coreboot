@@ -1,0 +1,92 @@
+if BOARD_INTEL_DCP847SKE
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select CPU_INTEL_SOCKET_RPGA989
+	select SUPERIO_NUVOTON_NCT6776
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select SOUTHBRIDGE_INTEL_C216
+	select SERIRQ_CONTINUOUS_MODE
+	select INTEL_INT15
+	select MAINBOARD_HAS_LIBGFXINIT
+
+menu "Debugging"
+
+config DISABLE_UART_ON_TESTPADS
+	bool "Disable UART on testpads"
+	default y
+	select NO_UART_ON_SUPERIO
+	help
+	  Serial output requires soldering to the testpad next to
+	  NCT5577D pin 18 (txd) and gnd.
+
+endmenu
+
+config HAVE_IFD_BIN
+	bool
+	default n
+
+config HAVE_ME_BIN
+	bool
+	default n
+
+config MAINBOARD_DIR
+	string
+	default intel/dcp847ske
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Intel NUC DCP847SKE"
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0106.rom"
+
+config VGA_BIOS_ID
+	string
+	default "8086,0106"
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x2044
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x8086
+
+config MAX_CPUS
+	int
+	default 2
+
+config USBDEBUG_HCD_INDEX
+	int
+	default 2
+
+config IFD_GBE_SECTION
+	string
+	default "0x00001000:0x00002fff"
+
+config IFD_ME_SECTION
+	string
+	default "0x00003000:0x001bffff"
+
+config IFD_BIOS_SECTION
+	string
+	default "0x001c0000:0x007fffff"
+
+config CBFS_SIZE
+	hex
+	default 0x00640000
+
+config MAINBOARD_SMBIOS_MANUFACTURER
+	string
+	default "Intel Corporation"
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	string
+	default "DCP847SKE"
+
+endif # BOARD_INTEL_DCP847SKE

@@ -539,7 +539,7 @@ typedef struct {
   UINT8                       PegDisableSpreadSpectrumClocking;
 
 /** Offset 0x0235 - DMI Gen3 Root port preset values per lane
-  Used for programming DMI Gen3 preset values per lane. Range: 0-9, 8 is default for each lane
+  Used for programming DMI Gen3 preset values per lane. Range: 0-9, 4 is default for each lane
 **/
   UINT8                       DmiGen3RootPortPreset[4];
 
@@ -554,7 +554,7 @@ typedef struct {
   UINT8                       DmiGen3EndPointHint[4];
 
 /** Offset 0x0241 - DMI Gen3 RxCTLEp per-Bundle control
-  Range: 0-15, 12 is default for each bundle, must be specified based upon platform design
+  Range: 0-15, 3 is default for each bundle, must be specified based upon platform design
 **/
   UINT8                       DmiGen3RxCtlePeaking[2];
 

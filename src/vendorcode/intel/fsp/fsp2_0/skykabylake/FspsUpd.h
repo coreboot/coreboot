@@ -451,9 +451,16 @@ typedef struct {
 **/
   UINT8                       AmtSolEnabled;
 
-/** Offset 0x015D
+/** Offset 0x015D - Configure CLKSRC Number
+  Configure Root Port CLKSRC Number. Each value in arrary can be between 0-6 for valid
+  clock numbers or 0x1F for an invalid number. One byte for each port, byte0 for
+  port1, byte1 for port2, and so on.
 **/
-  UINT8                       UnusedUpdSpace6[163];
+  UINT8                       PcieRpClkSrcNumber[24];
+
+/** Offset 0x0175
+**/
+  UINT8                       UnusedUpdSpace6[139];
 
 /** Offset 0x0200 - Subsystem Vendor ID for SA devices
   Subsystem ID that will be programmed to SA devices: Default SubSystemVendorId=0x8086

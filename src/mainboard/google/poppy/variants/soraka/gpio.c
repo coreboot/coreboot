@@ -92,16 +92,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
 	/* B14 : SPKR ==> NC */
 	PAD_CFG_NC(GPP_B14),
-#if IS_ENABLED(CONFIG_POPPY_USE_SPI_TPM)
-	/* B15 : GSPI0_CS# ==> PCH_SPI_H1_3V3_CS_L */
-	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),
-	/* B16 : GSPI0_CLK ==> PCH_SPI_H1_3V3_CLK */
-	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF1),
-	/* B17 : GSPI0_MISO ==> PCH_SPI_H1_3V3_MISO */
-	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
-	/* B18 : GSPI0_MOSI ==> PCH_SPI_H1_3V3_MOSI */
-	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
-#else
 	/* B15 : GSPI0_CS# ==> NC */
 	PAD_CFG_NC(GPP_B15),
 	/* B16 : GSPI0_CLK ==> NC */
@@ -110,7 +100,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_B17),
 	/* B18 : GSPI0_MOSI ==> NC */
 	PAD_CFG_NC(GPP_B18),
-#endif
 	/* B19 : GSPI1_CS# ==> NC */
 	PAD_CFG_NC(GPP_B19),
 	/* B20 : GSPI1_CLK ==> NC */
@@ -158,17 +147,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 	/* C17 : I2C0_SCL ==> PCH_I2C0_TOUCHSCREEN_3V3_SCL */
 	PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),
-#if IS_ENABLED(CONFIG_POPPY_USE_I2C_TPM)
 	/* C18 : I2C1_SDA ==> PCH_I2C1_H1_3V3_SDA */
 	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1),
 	/* C19 : I2C1_SCL ==> PCH_I2C1_H1_3V3_SCL */
 	PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1),
-#else
-	/* C18 : I2C1_SDA ==> NC */
-	PAD_CFG_NC(GPP_C18),
-	/* C19 : I2C1_SCL ==> NC */
-	PAD_CFG_NC(GPP_C19),
-#endif
 	/* C20 : UART2_RXD ==> PCHRX_SERVOTX_UART */
 	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
 	/* C21 : UART2_TXD ==> PCHTX_SERVORX_UART */
@@ -373,23 +355,10 @@ static const struct pad_config gpio_table[] = {
 static const struct pad_config early_gpio_table[] = {
 	/* B8  : SRCCLKREQ3# ==> WLAN_PE_RST */
 	PAD_CFG_GPO(GPP_B8, 0, RSMRST),
-#if IS_ENABLED(CONFIG_POPPY_USE_SPI_TPM)
-	/* B15 : GSPI0_CS# ==> PCH_SPI_H1_3V3_CS_L */
-	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),
-	/* B16 : GSPI0_CLK ==> PCH_SPI_H1_3V3_CLK */
-	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF1),
-	/* B17 : GSPI0_MISO ==> PCH_SPI_H1_3V3_MISO */
-	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
-	/* B18 : GSPI0_MOSI ==> PCH_SPI_H1_3V3_MOSI */
-	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
-#endif
-
-#if IS_ENABLED(CONFIG_POPPY_USE_I2C_TPM)
 	/* C18 : I2C1_SDA ==> PCH_I2C1_H1_3V3_SDA */
 	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1),
 	/* C19 : I2C1_SCL ==> PCH_I2C1_H1_3V3_SCL */
 	PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1),
-#endif
 
 	/* Ensure UART pins are in native mode for H1. */
 	/* C20 : UART2_RXD ==> PCHRX_SERVOTX_UART */

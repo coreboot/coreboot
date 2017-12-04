@@ -77,7 +77,7 @@ struct soc_intel_cannonlake_config {
 	/* Deep Sx Configuration
 	 *  DSX_EN_WAKE_PIN       - Enable WAKE# pin
 	 *  DSX_EN_LAN_WAKE_PIN   - Enable LAN_WAKE# pin
-	 *  DSX_EN_AC_PRESENT_PIN - Enable AC_PRESENT pin */
+	 *  DSX_DIS_AC_PRESENT_PD - Disable pull-down on AC_PRESENT pin */
 	uint32_t deep_sx_config;
 
 	/* TCC activation offset */

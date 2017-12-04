@@ -103,7 +103,7 @@
 #define   REQ_CNV_NOWAKE_DSX		(1 << 4)
 #define    REQ_BATLOW_DSX		(1 << 3)
 #define   DSX_EN_WAKE_PIN		(1 << 2)
-#define   DSX_EN_AC_PRESENT_PIN		(1 << 1)
+#define   DSX_DIS_AC_PRESENT_PD	(1 << 1)
 #define   DSX_EN_LAN_WAKE_PIN		(1 << 0)
 #define DSX_CFG_MASK			(0x1f << 0)
 

@@ -235,13 +235,6 @@ chip soc/intel/skylake
 	}"
 
 
-	# Use GSPI0 for cr50 TPM. Early init is required to set up a BAR for TPM
-	# communication before memory is up.
-	register "gspi[0]" = "{
-		 .speed_mhz = 1,
-		 .early_init = 1,
-	}"
-
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
@@ -250,7 +243,7 @@ chip soc/intel/skylake
 		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
-		[PchSerialIoIndexSpi0]  = PchSerialIoPci,
+		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled,
 		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled,
 		[PchSerialIoIndexUart0] = PchSerialIoPci,
 		[PchSerialIoIndexUart1] = PchSerialIoDisabled,
@@ -374,14 +367,7 @@ chip soc/intel/skylake
 		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1e.0 on  end # UART #0
 		device pci 1e.1 off end # UART #1
-		device pci 1e.2 on
-			chip drivers/spi/acpi
-				 register "hid" = "ACPI_DT_NAMESPACE_HID"
-				 register "compat_string" = ""google,cr50""
-				 register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E0_IRQ)"
-				 device spi 0 on end
-			end
-		end # GSPI #0
+		device pci 1e.2 off end # GSPI #0
 		device pci 1e.3 off end # GSPI #1
 		device pci 1e.4 on  end # eMMC
 		device pci 1e.5 off end # SDIO

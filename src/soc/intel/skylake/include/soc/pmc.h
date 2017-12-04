@@ -87,7 +87,7 @@
 #define DSX_CFG			0x34
 #define  DSX_CFG_MASK		0x7
 #define  DSX_EN_WAKE_PIN	(1 << 2)
-#define  DSX_EN_AC_PRESENT_PIN	(1 << 1)
+#define  DSX_DIS_AC_PRESENT_PD	(1 << 1)
 #define  DSX_EN_LAN_WAKE_PIN	(1 << 0)
 #define PMSYNC_TPR_CFG		0xc4
 #define  PMSYNC_LOCK		(1 << 31)

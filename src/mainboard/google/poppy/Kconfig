@@ -90,6 +90,11 @@ config VARIANT_HAS_I2C_TPM
 	select MAINBOARD_HAS_I2C_TPM_CR50
 	select TPM2
 
+# Select this option to enable camera ACPI support on the variant.
+config VARIANT_HAS_CAMERA_ACPI
+	bool
+	default n
+
 # Select this option to enable use of cr50 SPI TPM on the variant.
 config VARIANT_HAS_SPI_TPM
 	bool
@@ -102,6 +107,7 @@ config VARIANT_SPECIFIC_OPTIONS_POPPY
 	def_bool n
 	select DRIVERS_I2C_MAX98927
 	select NO_FADT_8042
+	select VARIANT_HAS_CAMERA_ACPI
 	select VARIANT_HAS_I2C_TPM if !VBOOT_MOCK_SECDATA
 
 config VARIANT_SPECIFIC_OPTIONS_NAUTILUS
@@ -114,6 +120,7 @@ config VARIANT_SPECIFIC_OPTIONS_SORAKA
 	def_bool n
 	select DRIVERS_I2C_MAX98927
 	select NO_FADT_8042
+	select VARIANT_HAS_CAMERA_ACPI
 	select VARIANT_HAS_I2C_TPM if !VBOOT_MOCK_SECDATA
 
 config VBOOT

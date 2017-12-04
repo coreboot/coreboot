@@ -23,6 +23,7 @@
 #include <rmodule.h>
 #include <string.h>
 #include <timestamp.h>
+#include <amdblocks/s3_resume.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/BiosCallOuts.h>
 
@@ -370,6 +371,142 @@ AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINTN Data,
 		/* agesawrapper_readeventlog(); */
 		ASSERT(Status == AGESA_SUCCESS);
 	}
+
+	return Status;
+}
+
+AGESA_STATUS agesawrapper_amdinitrtb(void)
+{
+	AGESA_STATUS Status;
+	AMD_INTERFACE_PARAMS AmdParamStruct = {
+		.AgesaFunctionName = AMD_INIT_RTB,
+		.AllocationMethod = PostMemDram,
+		.StdHeader.CalloutPtr = &GetBiosCallout,
+	};
+	AMD_RTB_PARAMS *RtbParams;
+
+	create_struct(&AmdParamStruct);
+
+	RtbParams = (AMD_RTB_PARAMS *)AmdParamStruct.NewStructPtr;
+
+	timestamp_add_now(TS_AGESA_INIT_RTB_START);
+	Status = AmdInitRtb(RtbParams);
+	timestamp_add_now(TS_AGESA_INIT_RTB_DONE);
+
+	if (Status != AGESA_SUCCESS) {
+		agesawrapper_readeventlog(AmdParamStruct.StdHeader.HeapStatus);
+		ASSERT(Status == AGESA_SUCCESS);
+	}
+
+	if (save_s3_info(RtbParams->S3DataBlock.NvStorage,
+			 RtbParams->S3DataBlock.NvStorageSize,
+			 RtbParams->S3DataBlock.VolatileStorage,
+			 RtbParams->S3DataBlock.VolatileStorageSize))
+		printk(BIOS_ERR, "S3 data not saved, resuming impossible\n");
+
+	AmdReleaseStruct(&AmdParamStruct);
+
+	return Status;
+}
+
+AGESA_STATUS agesawrapper_amdinitresume(void)
+{
+	AGESA_STATUS status;
+	AMD_INTERFACE_PARAMS AmdParamStruct = {
+		.AgesaFunctionName = AMD_INIT_RESUME,
+		.AllocationMethod = PreMemHeap,
+		.StdHeader.CalloutPtr = &GetBiosCallout,
+	};
+	AMD_RESUME_PARAMS *InitResumeParams;
+	size_t nv_size;
+
+	if (!acpi_s3_resume_allowed())
+		return AGESA_UNSUPPORTED;
+
+	create_struct(&AmdParamStruct);
+
+	InitResumeParams = (AMD_RESUME_PARAMS *)AmdParamStruct.NewStructPtr;
+
+	get_s3nv_info(&InitResumeParams->S3DataBlock.NvStorage, &nv_size);
+	InitResumeParams->S3DataBlock.NvStorageSize = nv_size;
+
+	timestamp_add_now(TS_AGESA_INIT_RESUME_START);
+	status = AmdInitResume(InitResumeParams);
+	timestamp_add_now(TS_AGESA_INIT_RESUME_DONE);
+
+	if (status != AGESA_SUCCESS)
+		agesawrapper_readeventlog(AmdParamStruct.StdHeader.HeapStatus);
+	AmdReleaseStruct(&AmdParamStruct);
+
+	return status;
+}
+
+AGESA_STATUS agesawrapper_amds3laterestore(void)
+{
+	AGESA_STATUS Status;
+	AMD_INTERFACE_PARAMS AmdParamStruct = {
+		.AgesaFunctionName = AMD_S3LATE_RESTORE,
+		.AllocationMethod = ByHost,
+		.StdHeader.CalloutPtr = &GetBiosCallout,
+	};
+	AMD_S3LATE_PARAMS *S3LateParams;
+	size_t vol_size;
+
+	if (!acpi_s3_resume_allowed())
+		return AGESA_UNSUPPORTED;
+
+	amd_initcpuio();
+
+	create_struct(&AmdParamStruct);
+
+	S3LateParams = (AMD_S3LATE_PARAMS *)AmdParamStruct.NewStructPtr;
+
+	get_s3vol_info(&S3LateParams->S3DataBlock.VolatileStorage, &vol_size);
+	S3LateParams->S3DataBlock.VolatileStorageSize = vol_size;
+
+	timestamp_add_now(TS_AGESA_S3_LATE_START);
+	Status = AmdS3LateRestore(S3LateParams);
+	timestamp_add_now(TS_AGESA_S3_LATE_DONE);
+
+	if (Status != AGESA_SUCCESS) {
+		agesawrapper_readeventlog(AmdParamStruct.StdHeader.HeapStatus);
+		ASSERT(Status == AGESA_SUCCESS);
+	}
+	AmdReleaseStruct(&AmdParamStruct);
+
+	return Status;
+}
+
+AGESA_STATUS agesawrapper_amds3finalrestore(void)
+{
+	AGESA_STATUS Status;
+	AMD_INTERFACE_PARAMS AmdParamStruct = {
+		.AgesaFunctionName = AMD_S3FINAL_RESTORE,
+		.AllocationMethod = ByHost,
+		.StdHeader.CalloutPtr = &GetBiosCallout,
+	};
+	AMD_S3FINAL_PARAMS *S3FinalParams;
+	size_t vol_size;
+
+	if (!acpi_s3_resume_allowed())
+		return AGESA_UNSUPPORTED;
+
+	create_struct(&AmdParamStruct);
+
+	S3FinalParams = (AMD_S3FINAL_PARAMS *)AmdParamStruct.NewStructPtr;
+
+	get_s3vol_info(&S3FinalParams->S3DataBlock.VolatileStorage, &vol_size);
+	S3FinalParams->S3DataBlock.VolatileStorageSize = vol_size;
+
+	timestamp_add_now(TS_AGESA_S3_FINAL_START);
+	Status = AmdS3FinalRestore(S3FinalParams);
+	timestamp_add_now(TS_AGESA_S3_FINAL_DONE);
+
+	if (Status != AGESA_SUCCESS) {
+		agesawrapper_readeventlog(AmdParamStruct.StdHeader.HeapStatus);
+		ASSERT(Status == AGESA_SUCCESS);
+	}
+	AmdReleaseStruct(&AmdParamStruct);
 
 	return Status;
 }

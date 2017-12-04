@@ -43,9 +43,10 @@ AGESA_STATUS agesawrapper_amdinitmid(void);
 void *agesawrapper_getlateinitptr(int pick);
 AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINTN Data,
 							void *ConfigPtr);
-AGESA_STATUS agesawrapper_amdS3Save(void);
+AGESA_STATUS agesawrapper_amdinitrtb(void);
 AGESA_STATUS agesawrapper_amdinitresume(void);
 AGESA_STATUS agesawrapper_amds3laterestore(void);
+AGESA_STATUS agesawrapper_amds3finalrestore(void);
 
 AGESA_STATUS agesawrapper_fchs3earlyrestore(void);
 AGESA_STATUS agesawrapper_fchs3laterestore(void);

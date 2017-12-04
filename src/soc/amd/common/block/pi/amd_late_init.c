@@ -33,7 +33,7 @@ static void agesawrapper_post_device(void *unused)
 	if (!acpi_s3_resume_allowed())
 		return;
 
-	do_agesawrapper(agesawrapper_amdS3Save, "amdS3Save");
+	do_agesawrapper(agesawrapper_amdinitrtb, "amdinitrtb");
 }
 
 BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT,

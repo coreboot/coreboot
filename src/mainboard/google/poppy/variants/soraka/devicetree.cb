@@ -5,7 +5,7 @@ chip soc/intel/skylake
 	register "deep_s3_enable_dc" = "0"
 	register "deep_s5_enable_ac" = "1"
 	register "deep_s5_enable_dc" = "1"
-	register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN | DSX_EN_WAKE_PIN"
+	register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN | DSX_EN_WAKE_PIN | DSX_DIS_AC_PRESENT_PD"
 
 	# GPE configuration
 	# Note that GPE events called out in ASL code rely on this

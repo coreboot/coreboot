@@ -14,21 +14,20 @@ bootblock-y += bootblock/cpu.c
 bootblock-y += i2c.c
 bootblock-y += bootblock/pch.c
 bootblock-y += bootblock/report_platform.c
-bootblock-$(CONFIG_UART_DEBUG) += bootblock/uart.c
-bootblock-$(CONFIG_UART_DEBUG) += uart_debug.c
 bootblock-y += gpio.c
 bootblock-y += gspi.c
 bootblock-y += pch.c
 bootblock-y += pmutil.c
 bootblock-y += spi.c
 bootblock-y += lpc.c
+bootblock-$(CONFIG_UART_DEBUG) += uart.c
 
 verstage-y += gspi.c
 verstage-y += pch.c
-verstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 verstage-y += pmutil.c
 verstage-y += i2c.c
 verstage-y += spi.c
+verstage-$(CONFIG_UART_DEBUG) += uart.c
 
 romstage-y += gpio.c
 romstage-y += gspi.c
@@ -41,7 +40,7 @@ romstage-y += pmc.c
 romstage-y += pmutil.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 romstage-y += spi.c
-romstage-$(CONFIG_UART_DEBUG) += uart_debug.c
+romstage-$(CONFIG_UART_DEBUG) += uart.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP1_1) += chip.c
@@ -69,8 +68,7 @@ ramstage-y += smmrelocate.c
 ramstage-y += spi.c
 ramstage-y += systemagent.c
 ramstage-y += thermal.c
-ramstage-y += uart.c
-ramstage-$(CONFIG_UART_DEBUG) += uart_debug.c
+ramstage-$(CONFIG_UART_DEBUG) += uart.c
 ramstage-y += vr_config.c
 
 smm-y += elog.c
@@ -78,13 +76,12 @@ smm-y += gpio.c
 smm-y += pch.c
 smm-y += pmutil.c
 smm-y += smihandler.c
-smm-$(CONFIG_UART_DEBUG) += uart_debug.c
-smm-y += uart.c
+smm-$(CONFIG_UART_DEBUG) += uart.c
 
 postcar-y += memmap.c
-postcar-$(CONFIG_UART_DEBUG) += uart_debug.c
 postcar-y += gspi.c
 postcar-y += spi.c
+postcar-$(CONFIG_UART_DEBUG) += uart.c
 
 # cpu_microcode_bins += ???
 

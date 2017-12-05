@@ -277,8 +277,14 @@ static void pciexp_L1_substate_commit(device_t root, device_t dev,
 	pci_update_config32(root, root_cap + 0x0c , 0xffffff04,
 		(endp_power_on_value << 3) | (power_on_scale));
 
-	pci_update_config32(root, root_cap + 0x08, ~0xe3ff0000,
-		(1 << 21) | (1 << 23) | (1 << 30));
+	/* TODO: 0xa0, 2 are values that work on some chipsets but really
+	 * should be determined dynamically by looking at downstream devices.
+	 */
+	pci_update_config32(root, root_cap + 0x08,
+		~(ASPM_LTR_L12_THRESHOLD_VALUE_MASK |
+			ASPM_LTR_L12_THRESHOLD_SCALE_MASK),
+		(0xa0 << ASPM_LTR_L12_THRESHOLD_VALUE_OFFSET) |
+		(2 << ASPM_LTR_L12_THRESHOLD_SCALE_OFFSET));
 
 	pci_update_config32(root, root_cap + 0x08, ~0x1f,
 		L1SubStateSupport);
@@ -287,8 +293,11 @@ static void pciexp_L1_substate_commit(device_t root, device_t dev,
 		pci_update_config32(dev_t, end_cap + 0x0c , 0xffffff04,
 			(endp_power_on_value << 3) | (power_on_scale));
 
-		pci_update_config32(dev_t, end_cap + 0x08, ~0xe3ff0000,
-			(1 << 21) | (1 << 23) | (1 << 30));
+		pci_update_config32(dev_t, end_cap + 0x08,
+			~(ASPM_LTR_L12_THRESHOLD_VALUE_MASK |
+				ASPM_LTR_L12_THRESHOLD_SCALE_MASK),
+			(0xa0 << ASPM_LTR_L12_THRESHOLD_VALUE_OFFSET) |
+			(2 << ASPM_LTR_L12_THRESHOLD_SCALE_OFFSET));
 
 		pci_update_config32(dev_t, end_cap + 0x08, ~0x1f,
 			L1SubStateSupport);

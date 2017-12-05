@@ -15,6 +15,7 @@
 
 #include <boardid.h>
 #include <console/console.h>
+#include <gpio.h>
 #include <stdlib.h>
 #include <soc/saradc.h>
 
@@ -74,4 +75,19 @@ uint32_t board_id(void)
 uint32_t ram_code(void)
 {
 	return get_index(0, &cached_ram_id);
+}
+
+uint32_t sku_id(void)
+{
+	if (!IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
+		return UNDEFINED_STRAPPING_ID;
+
+	static uint32_t sku_id = UNDEFINED_STRAPPING_ID;
+	if (sku_id != UNDEFINED_STRAPPING_ID)
+		return sku_id;
+
+	gpio_t pins[3] = {[2] = GPIO(3, D, 6), [1] = GPIO(3, D, 5),
+			  [0] = GPIO(3, D, 4)}; /* GPIO3_D4 is LSB */
+	sku_id = gpio_base2_value(pins, ARRAY_SIZE(pins));
+	return sku_id;
 }

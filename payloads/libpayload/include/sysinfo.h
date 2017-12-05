@@ -108,8 +108,11 @@ struct sysinfo_t {
 	void		*cbmem_cons;
 	void		*mrc_cache;
 	void		*acpi_gnvs;
+
+#define UNDEFINED_STRAPPING_ID (~0)
 	u32		board_id;
 	u32		ram_code;
+
 	void		*wifi_calibration;
 	uint64_t	ramoops_buffer;
 	uint32_t	ramoops_buffer_size;

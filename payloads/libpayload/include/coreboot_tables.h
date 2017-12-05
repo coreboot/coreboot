@@ -239,6 +239,7 @@ struct cb_x86_rom_mtrr {
 
 #define CB_TAG_BOARD_ID		0x0025
 #define CB_TAG_RAM_CODE		0x0028
+#define CB_TAG_SKU_ID		0x002d
 struct cb_strapping_id {
 	uint32_t tag;
 	uint32_t size;

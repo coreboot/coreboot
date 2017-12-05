@@ -112,6 +112,7 @@ struct sysinfo_t {
 #define UNDEFINED_STRAPPING_ID (~0)
 	u32		board_id;
 	u32		ram_code;
+	u32		sku_id;
 
 	void		*wifi_calibration;
 	uint64_t	ramoops_buffer;

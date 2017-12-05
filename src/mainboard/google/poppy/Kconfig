@@ -17,6 +17,7 @@ if BOARD_GOOGLE_BASEBOARD_POPPY
 
 config DEVICETREE
 	string
+	default "variants/nami/devicetree.cb" if BOARD_GOOGLE_NAMI
 	default "variants/nautilus/devicetree.cb" if BOARD_GOOGLE_NAUTILUS
 	default "variants/soraka/devicetree.cb" if BOARD_GOOGLE_SORAKA
 	default "variants/baseboard/devicetree.cb"
@@ -37,6 +38,7 @@ config GBB_HWID
 	string
 	depends on CHROMEOS
 	default "POPPY TEST 8294" if BOARD_GOOGLE_POPPY
+	default "NAMI TEST 1669" if BOARD_GOOGLE_NAMI
 	default "NAUTILUS TEST 3013" if BOARD_GOOGLE_NAUTILUS
 	default "SORAKA TEST 1869" if BOARD_GOOGLE_SORAKA
 
@@ -58,12 +60,14 @@ config MAINBOARD_DIR
 config MAINBOARD_FAMILY
 	string
 	default "Google_Poppy" if BOARD_GOOGLE_POPPY
+	default "Google_Nami" if BOARD_GOOGLE_NAMI
 	default "Google_Nautilus" if BOARD_GOOGLE_NAUTILUS
 	default "Google_Soraka" if BOARD_GOOGLE_SORAKA
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Poppy" if BOARD_GOOGLE_POPPY
+	default "Nami" if BOARD_GOOGLE_NAMI
 	default "Nautilus" if BOARD_GOOGLE_NAUTILUS
 	default "Soraka" if BOARD_GOOGLE_SORAKA
 
@@ -78,6 +82,7 @@ config TPM_TIS_ACPI_INTERRUPT
 config VARIANT_DIR
 	string
 	default "poppy" if BOARD_GOOGLE_POPPY
+	default "nami" if BOARD_GOOGLE_NAMI
 	default "nautilus" if BOARD_GOOGLE_NAUTILUS
 	default "soraka" if BOARD_GOOGLE_SORAKA
 
@@ -108,6 +113,12 @@ config VARIANT_SPECIFIC_OPTIONS_POPPY
 	select NO_FADT_8042
 	select VARIANT_HAS_CAMERA_ACPI
 	select VARIANT_HAS_I2C_TPM if !VBOOT_MOCK_SECDATA
+
+config VARIANT_SPECIFIC_OPTIONS_NAMI
+	def_bool n
+	select DRIVERS_PS2_KEYBOARD
+	select DRIVERS_SPI_ACPI
+	select VARIANT_HAS_SPI_TPM if !VBOOT_MOCK_SECDATA
 
 config VARIANT_SPECIFIC_OPTIONS_NAUTILUS
 	def_bool n

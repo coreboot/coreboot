@@ -16,7 +16,7 @@
 #include <boardid.h>
 #include <ec/google/chromeec/ec.h>
 
-uint8_t board_id(void)
+uint32_t board_id(void)
 {
 	MAYBE_STATIC int id = -1;
 

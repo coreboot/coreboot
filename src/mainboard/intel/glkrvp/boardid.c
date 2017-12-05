@@ -23,7 +23,7 @@
 #define BOARD_ID_GLK_RVP2_LP4	0x8 /* RVP2 - LP4 Socket */
 #define EC_FAB_ID_CMD	0x0D /* Get the board fab ID in the lower 3 bits */
 
-uint8_t board_id(void)
+uint32_t board_id(void)
 {
 	MAYBE_STATIC int id = -1;
 	if (id < 0) {

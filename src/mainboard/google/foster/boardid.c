@@ -18,7 +18,7 @@
 #include <console/console.h>
 #include <gpio.h>
 
-uint8_t board_id(void)
+uint32_t board_id(void)
 {
 	return 0;
 }

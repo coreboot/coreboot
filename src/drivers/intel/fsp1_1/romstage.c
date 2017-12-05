@@ -20,7 +20,6 @@
 #include <arch/cbfs.h>
 #include <arch/early_variables.h>
 #include <assert.h>
-#include <boardid.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/intel/microcode.h>
@@ -73,13 +72,6 @@ asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)
 
 	/* Get power state */
 	params.power_state = fill_power_state();
-
-	/*
-	 * Read and print board version.  Done after SOC romstage
-	 * in case PCH needs to be configured to talk to the EC.
-	 */
-	if (IS_ENABLED(CONFIG_BOARD_ID_AUTO))
-		printk(BIOS_INFO, "MLB: board version %d\n", board_id());
 
 	/* Call into mainboard. */
 	mainboard_romstage_entry(&params);

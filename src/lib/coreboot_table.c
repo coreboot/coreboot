@@ -247,13 +247,16 @@ static inline void lb_vboot_handoff(struct lb_header *header) {}
 static void lb_board_id(struct lb_header *header)
 {
 #if IS_ENABLED(CONFIG_BOARD_ID_AUTO)
-	struct lb_board_id  *bid;
+	struct lb_strapping_id  *rec;
+	uint32_t bid = board_id();
 
-	bid = (struct lb_board_id *)lb_new_record(header);
+	rec = (struct lb_strapping_id *)lb_new_record(header);
 
-	bid->tag = LB_TAG_BOARD_ID;
-	bid->size = sizeof(*bid);
-	bid->board_id = board_id();
+	rec->tag = LB_TAG_BOARD_ID;
+	rec->size = sizeof(*rec);
+	rec->id_code = bid;
+
+	printk(BIOS_INFO, "Board ID: %d\n", bid);
 #endif
 }
 
@@ -289,13 +292,16 @@ static void lb_boot_media_params(struct lb_header *header)
 static void lb_ram_code(struct lb_header *header)
 {
 #if IS_ENABLED(CONFIG_RAM_CODE_SUPPORT)
-	struct lb_ram_code *code;
+	struct lb_strapping_id *rec;
+	uint32_t code = ram_code();
 
-	code = (struct lb_ram_code *)lb_new_record(header);
+	rec = (struct lb_strapping_id *)lb_new_record(header);
 
-	code->tag = LB_TAG_RAM_CODE;
-	code->size = sizeof(*code);
-	code->ram_code = ram_code();
+	rec->tag = LB_TAG_RAM_CODE;
+	rec->size = sizeof(*rec);
+	rec->id_code = code;
+
+	printk(BIOS_INFO, "RAM code: %d\n", code);
 #endif
 }
 

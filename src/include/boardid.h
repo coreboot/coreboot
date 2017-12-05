@@ -18,7 +18,9 @@
 
 #include <stdint.h>
 
-uint8_t board_id(void);
+#define UNDEFINED_STRAPPING_ID (~0)
+
+uint32_t board_id(void);
 uint32_t ram_code(void);
 
 #endif /* __INCLUDE_BOARDID_H__ */

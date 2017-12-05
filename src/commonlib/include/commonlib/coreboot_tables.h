@@ -289,18 +289,12 @@ struct lb_x86_rom_mtrr {
 };
 
 #define LB_TAG_BOARD_ID		0x0025
-struct lb_board_id {
-	uint32_t tag;
-	uint32_t size;
-	/* Board ID as retrieved from the board revision GPIOs. */
-	uint32_t board_id;
-};
-
 #define LB_TAG_RAM_CODE		0x0028
-struct lb_ram_code {
+
+struct lb_strapping_id {
 	uint32_t tag;
 	uint32_t size;
-	uint32_t ram_code;
+	uint32_t id_code;
 };
 
 #define LB_TAG_SPI_FLASH	0x0029

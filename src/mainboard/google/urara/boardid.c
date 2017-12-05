@@ -89,7 +89,7 @@ const struct board_hw *board_get_hw(void)
 	return 0;
 }
 
-uint8_t board_id(void)
+uint32_t board_id(void)
 {
 	if (cached_board_id == -1)
 		cached_board_id = retrieve_board_id();

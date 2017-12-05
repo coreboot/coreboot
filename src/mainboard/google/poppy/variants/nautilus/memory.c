@@ -37,6 +37,7 @@ static const u16 rcomp_target[] = { 100, 40, 40, 23, 40 };
 
 void variant_memory_params(struct memory_params *p)
 {
+	p->type = MEMORY_LPDDR3;
 	p->dq_map = dq_map;
 	p->dq_map_size = sizeof(dq_map);
 	p->dqs_map = dqs_map;

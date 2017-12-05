@@ -22,20 +22,52 @@
 
 #include <fsp/soc_binding.h>
 
-#define SPD_LEN		256
+/* Offset to identify DRAM type. */
+#define SPD_DRAM_TYPE_OFF	2
+#define SPD_DRAM_LPDDR3	0xf1
+#define SPD_DRAM_DDR4		0x0c
 
-#define SPD_DRAM_TYPE		2
-#define  SPD_DRAM_DDR3		0x0b
-#define  SPD_DRAM_LPDDR3	0xf1
-#define SPD_DENSITY_BANKS	4
-#define SPD_ADDRESSING		5
-#define SPD_ORGANIZATION	7
-#define SPD_BUS_DEV_WIDTH	8
-#define SPD_PART_OFF		128
-#define  SPD_PART_LEN		18
-#define SPD_MANU_OFF		148
+/* Length of SPD data. */
+#define SPD_LEN_LPDDR3		256
+#define SPD_LEN_DDR4		512
 
-static void mainboard_print_spd_info(uint8_t spd[])
+/* Fields that are common across different memory types. */
+#define SPD_DENSITY_BANKS_OFF	4
+#define SPD_ADDRESSING_OFF	5
+#define SPD_PART_LEN		18
+
+/* Fields that are different depending upon memory type. */
+#define SPD_ORG_OFF_LPDDR3	7
+#define SPD_BUSW_OFF_LPDDR3	8
+#define SPD_PART_OFF_LPDDR3	128
+
+#define SPD_ORG_OFF_DDR4	12
+#define SPD_BUSW_OFF_DDR4	13
+#define SPD_PART_OFF_DDR4	329
+
+#define SPD_INFO(_type)				\
+	[MEMORY_##_type] = {				\
+		.str = #_type,				\
+		.type_code = SPD_DRAM_##_type,		\
+		.len = SPD_LEN_##_type,		\
+		.org_off = SPD_ORG_OFF_##_type,	\
+		.busw_off = SPD_BUSW_OFF_##_type,	\
+		.part_off = SPD_PART_OFF_##_type,	\
+	}
+
+static const struct dram_info {
+	const char *str;
+	uint16_t type_code;
+	uint16_t len;
+	uint16_t org_off;
+	uint16_t busw_off;
+	uint16_t part_off;
+} spd_info[MEMORY_COUNT] = {
+	SPD_INFO(LPDDR3),
+	SPD_INFO(DDR4),
+};
+
+static void mainboard_print_spd_info(const uint8_t *spd, enum memory_type type)
 {
 	const int spd_banks[8] = {  8, 16, 32, 64, -1, -1, -1, -1 };
 	const int spd_capmb[8] = {  1,  2,  4,  8, 16, 32, 64,  0 };
@@ -45,28 +77,23 @@ static void mainboard_print_spd_info(uint8_t spd[])
 	const int spd_devw[8]  = {  4,  8, 16, 32, -1, -1, -1, -1 };
 	const int spd_busw[8]  = {  8, 16, 32, 64, -1, -1, -1, -1 };
 	char spd_name[SPD_PART_LEN+1] = { 0 };
+	const struct dram_info *info = &spd_info[type];
 
-	int banks = spd_banks[(spd[SPD_DENSITY_BANKS] >> 4) & 7];
-	int capmb = spd_capmb[spd[SPD_DENSITY_BANKS] & 7] * 256;
-	int rows  = spd_rows[(spd[SPD_ADDRESSING] >> 3) & 7];
-	int cols  = spd_cols[spd[SPD_ADDRESSING] & 7];
-	int ranks = spd_ranks[(spd[SPD_ORGANIZATION] >> 3) & 7];
-	int devw  = spd_devw[spd[SPD_ORGANIZATION] & 7];
-	int busw  = spd_busw[spd[SPD_BUS_DEV_WIDTH] & 7];
+	assert (info->type_code == spd[SPD_DRAM_TYPE_OFF]);
 
 	/* Module type */
-	printk(BIOS_INFO, "SPD: module type is ");
-	switch (spd[SPD_DRAM_TYPE]) {
-	case SPD_DRAM_LPDDR3:
-		printk(BIOS_INFO, "LPDDR3\n");
-		break;
-	default:
-		printk(BIOS_INFO, "Unknown (%02x)\n", spd[SPD_DRAM_TYPE]);
-		return;
-	}
+	printk(BIOS_INFO, "SPD: module type is %s\n", info->str);
+
+	int banks = spd_banks[(spd[SPD_DENSITY_BANKS_OFF] >> 4) & 7];
+	int capmb = spd_capmb[spd[SPD_DENSITY_BANKS_OFF] & 7] * 256;
+	int rows  = spd_rows[(spd[SPD_ADDRESSING_OFF] >> 3) & 7];
+	int cols  = spd_cols[spd[SPD_ADDRESSING_OFF] & 7];
+	int ranks = spd_ranks[(spd[info->org_off] >> 3) & 7];
+	int devw  = spd_devw[spd[info->org_off] & 7];
+	int busw  = spd_busw[spd[info->busw_off] & 7];
 
 	/* Module Part Number */
-	memcpy(spd_name, &spd[SPD_PART_OFF], SPD_PART_LEN);
+	memcpy(spd_name, &spd[info->part_off], SPD_PART_LEN);
 	spd_name[SPD_PART_LEN] = 0;
 	printk(BIOS_INFO, "SPD: module part is %s\n", spd_name);
 
@@ -83,11 +110,12 @@ static void mainboard_print_spd_info(uint8_t spd[])
 	}
 }
 
-static uintptr_t mainboard_get_spd_data(void)
+static uintptr_t mainboard_get_spd_data(enum memory_type type)
 {
 	char *spd_file;
 	size_t spd_file_len;
 	int spd_index;
+	const size_t spd_len = spd_info[type].len;
 
 	spd_index = variant_memory_sku();
 	assert(spd_index >= 0);
@@ -100,17 +128,15 @@ static uintptr_t mainboard_get_spd_data(void)
 		die("SPD data not found.");
 
 	/* make sure we have at least one SPD in the file. */
-	if (spd_file_len < SPD_LEN)
+	if (spd_file_len < spd_len)
 		die("Missing SPD data.");
 
 	/* Make sure we did not overrun the buffer */
-	if (spd_file_len < ((spd_index + 1) * SPD_LEN)) {
-		printk(BIOS_ERR, "SPD index override to 1 - old hardware?\n");
-		spd_index = 1;
-	}
+	if (spd_file_len < ((spd_index + 1) * spd_len))
+		die("Invalid SPD index.");
 
-	spd_index *= SPD_LEN;
-	mainboard_print_spd_info((uint8_t *)(spd_file + spd_index));
+	spd_index *= spd_len;
+	mainboard_print_spd_info((uint8_t *)(spd_file + spd_index), type);
 
 	return (uintptr_t)(spd_file + spd_index);
 }
@@ -122,13 +148,19 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 	variant_memory_params(&p);
 
-	memcpy(&mem_cfg->DqByteMapCh0, p.dq_map, p.dq_map_size);
-	memcpy(&mem_cfg->DqsMapCpu2DramCh0, p.dqs_map, p.dqs_map_size);
+	assert(p.type < MEMORY_COUNT);
+
+	if (p.dq_map && p.dq_map_size)
+		memcpy(&mem_cfg->DqByteMapCh0, p.dq_map, p.dq_map_size);
+
+	if (p.dqs_map && p.dqs_map_size)
+		memcpy(&mem_cfg->DqsMapCpu2DramCh0, p.dqs_map, p.dqs_map_size);
+
 	memcpy(&mem_cfg->RcompResistor, p.rcomp_resistor,
 		p.rcomp_resistor_size);
 	memcpy(&mem_cfg->RcompTarget, p.rcomp_target, p.rcomp_target_size);
 
-	mem_cfg->MemorySpdPtr00 = mainboard_get_spd_data();
+	mem_cfg->MemorySpdPtr00 = mainboard_get_spd_data(p.type);
 	mem_cfg->MemorySpdPtr10 = mem_cfg->MemorySpdPtr00;
-	mem_cfg->MemorySpdDataLen = SPD_LEN;
+	mem_cfg->MemorySpdDataLen = spd_info[p.type].len;
 }

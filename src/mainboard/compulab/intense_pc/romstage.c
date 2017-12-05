@@ -17,21 +17,39 @@
 #include <lib.h>
 #include <arch/io.h>
 #include "northbridge/intel/sandybridge/raminit_native.h"
+#include <superio/smsc/sio1007/chip.h>
+
+#define SIO_PORT 0x164e
 
 void pch_enable_lpc(void)
 {
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x3f0f);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x84, 0x0000164d);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x000c0681);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x8c, 0x000406f1);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x90, 0x000c06a1);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0010);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xac, 0x00010000);
+	device_t dev = PCH_LPC_DEV;
+
+	/* Set COM1/COM2 decode range */
+	pci_write_config16(dev, LPC_IO_DEC, 0x0010);
+
+	/* Enable SuperIO */
+	u16 lpc_config = CNF1_LPC_EN | CNF2_LPC_EN;
+	pci_write_config16(dev, LPC_EN, lpc_config);
+
+	/* Map 1 byte to the LPC bus. */
+	pci_write_config32(dev, LPC_GEN1_DEC, 0x00164d);
+
+	/* Map a range for the runtime_port registers to the LPC bus. */
+	pci_write_config32(dev, LPC_GEN2_DEC, 0xc0181);
+
+#if IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)
+	/* Enable COM1 */
+	if (sio1007_enable_uart_at(SIO_PORT)) {
+		pci_write_config16(dev, LPC_EN,
+				   lpc_config | COMA_LPC_EN);
+	}
+#endif
 }
 
 void rcba_config(void)
 {
-	/* Disable devices.  */
+	/* Disable devices. */
 	RCBA32(0x3414) = 0x00000000;
 	RCBA32(0x3418) = 0x16e81fe3;
 
@@ -59,6 +77,35 @@ void mainboard_early_init(int s3resume)
 
 void mainboard_config_superio(void)
 {
+	const u16 port = SIO_PORT;
+	const u16 runtime_port = 0x180;
+
+	/* Turn on configuration mode. */
+	outb(0x55, port);
+
+	/* Set the GPIO direction, polarity, and type. */
+	sio1007_setreg(port, 0x31, 1 << 0, 1 << 0);
+	sio1007_setreg(port, 0x32, 0 << 0, 1 << 0);
+	sio1007_setreg(port, 0x33, 0 << 0, 1 << 0);
+
+	/* Set the base address for the runtime register block. */
+	sio1007_setreg(port, 0x30, runtime_port >> 4, 0xff);
+	sio1007_setreg(port, 0x21, runtime_port >> 12, 0xff);
+
+	/* Turn on address decoding for it. */
+	sio1007_setreg(port, 0x3a, 1 << 1, 1 << 1);
+
+	/* Set the value of GPIO 10 by changing GP1, bit 0. */
+	u8 byte;
+	byte = inb(runtime_port + 0xc);
+	byte |= (1 << 0);
+	outb(byte, runtime_port + 0xc);
+
+	/* Turn off address decoding for it. */
+	sio1007_setreg(port, 0x3a, 0 << 1, 1 << 1);
+
+	/* Turn off configuration mode. */
+	outb(0xaa, port);
 }
 
 void mainboard_get_spd(spd_raw_data *spd, bool id_only)

@@ -21,8 +21,6 @@
 #include <device/device.h>
 #include <rules.h>
 
-u8 pch_revision(void);
-u16 pch_type(void);
 void pch_log_state(void);
 #if ENV_RAMSTAGE
 void pch_disable_devfn(device_t dev);

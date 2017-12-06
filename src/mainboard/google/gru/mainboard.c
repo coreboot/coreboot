@@ -527,14 +527,14 @@ const struct mipi_panel_data kd097d04_panel = {
 
 static const struct edid_mode kd097d04_edid_mode = {
 	.name = "1536x2048@60Hz",
-	.pixel_clock = 213000,
+	.pixel_clock = 216000,
 	.refresh = 60,
 	.ha = 1536,
-	.hbl = 164,
-	.hso = 70,
+	.hbl = 186,
+	.hso = 81,
 	.hspw = 24,
 	.va = 2048,
-	.vbl = 44,
+	.vbl = 42,
 	.vso = 17,
 	.vspw = 2,
 };

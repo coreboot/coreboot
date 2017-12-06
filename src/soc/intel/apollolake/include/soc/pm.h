@@ -47,6 +47,7 @@
 
 #define SMI_EN			0x40
 
+#define SMI_ESPI		28 /* This bit is present in GLK*/
 #define SMI_OCP_CSE		27
 #define SMI_SPI			26
 #define SMI_SPI_SSMI		25
@@ -71,6 +72,11 @@
 #define SMI_EOS			1
 #define SMI_GBL			0
 
+#if IS_ENABLED(CONFIG_SOC_ESPI)
+#define   ESPI_SMI_EN	(1 << SMI_ESPI) /* Valid for GLK with ESPI */
+#else
+#define   ESPI_SMI_EN	0
+#endif
 #define   USB_EN	(1 << SMI_XHCI) /* Legacy USB2 SMI logic */
 #define   PERIODIC_EN	(1 << SMI_PERIODIC) /* SMI on PERIODIC_STS in SMI_STS */
 #define   TCO_EN	(1 << SMI_TCO) /* Enable TCO Logic (BIOSWE et al) */
@@ -97,10 +103,11 @@
  *  - on TCO events
  */
 #define   ENABLE_SMI_PARAMS \
-	(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS | GPIO_EN)
+	(ESPI_SMI_EN | APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS | GPIO_EN)
 
 #define SMI_STS			0x44
 /* Bits for SMI status */
+#define  ESPI_SMI_STS_BIT	28
 #define  PMC_OCP_SMI_STS	27
 #define  SPI_SMI_STS		26
 #define  SPI_SSMI_STS		25
@@ -138,6 +145,7 @@
 #define  GPE0_C			2
 #define  GPE0_D			3
 #define GPE_STD			GPE0_A
+#define   ESPI_STS              (1 << 20) /* This bit is present in GLK */
 #define   SATA_PME_STS		(1 << 17)
 #define   SMB_WAK_STS		(1 << 16)
 #define   AVS_PME_STS		(1 << 14)
@@ -148,6 +156,7 @@
 #define   PCIE_GPE_STS		(1 << 9)
 #define   SWGPE_STS		(1 << 2)
 #define GPE0_EN(x)		(0x30 + (x * 4))
+#define   ESPI_EN		(1 << 20) /* This bit is present in GLK */
 #define   SATA_PME_EN		(1 << 17)
 #define   SMB_WAK_EN		(1 << 16)
 #define   AVS_PME_EN		(1 << 14)

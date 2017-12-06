@@ -35,11 +35,11 @@ static const GPIO_CONTROL agesa_board_gpios[] = {
 	/* GPIO_2 - WLAN_PCIE_WAKE_3V3_ODL */
 	{ GPIO_2, Function0, FCH_GPIO_PULL_UP_ENABLE },
 
-	/* GPIO_3 - TOUCHSCREEN_INT_3V3_ODL, SCI */
+	/* GPIO_3 - MEM_VOLT_SEL */
 	{ GPIO_3, Function0, FCH_GPIO_PULL_UP_ENABLE },
 
 	/* GPIO_4 - EN_PP3300_WLAN */
-	{ GPIO_4, Function0, FCH_GPIO_OUTPUT_VALUE },
+	{ GPIO_4, Function0, FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_5 - PCH_TRACKPAD_INT_3V3_ODL, SCI */
 	{ GPIO_5, Function0, FCH_GPIO_PULL_UP_ENABLE },
@@ -47,25 +47,25 @@ static const GPIO_CONTROL agesa_board_gpios[] = {
 	/* GPIO_6 - APU_RST_L / EC_SMI_ODL, SMI */
 	{ GPIO_6, Function0, FCH_GPIO_PULL_UP_ENABLE },
 
-	/* GPIO_7 - APU_PWROK_OD */
+	/* GPIO_7 - APU_PWROK_OD (currently not used) */
 	{ GPIO_7, Function0, FCH_GPIO_PULL_UP_ENABLE },
 
-	/* GPIO_8 - DDR_ALERT_3V3_L, SCI */
+	/* GPIO_8 - DDR_ALERT_3V3_L (currently not used) */
 	{ GPIO_8, Function0, FCH_GPIO_PULL_UP_ENABLE },
 
-	/* GPIO_9 - PCH_INT_ODL, SCI */
+	/* GPIO_9 - H1_PCH_INT_ODL, SCI */
 	{ GPIO_9, Function0, FCH_GPIO_PULL_UP_ENABLE },
 
-	/* GPIO_10 - SLP_S0_L */
+	/* GPIO_10 - SLP_S0_L (currently not used) */
 	{ GPIO_10, Function0, FCH_GPIO_PULL_UP_ENABLE },
 
-	/* GPIO_11 - Unused (R166) */
+	/* GPIO_11 - TOUCHSCREEN_INT_3V3_ODL, SCI */
 	{ GPIO_11, Function0, FCH_GPIO_PULL_UP_ENABLE },
 
 	/* GPIO_12 - Unused (TP126) */
 	{ GPIO_12, Function2, FCH_GPIO_PULL_UP_ENABLE },
 
-	/* GPIO_13 - APU_PEN_PDCT_ODL, SCI */
+	/* GPIO_13 - APU_PEN_PDCT_ODL (currently not used) */
 	{ GPIO_13, Function1, FCH_GPIO_PULL_UP_ENABLE },
 
 	/* GPIO_14 - APU_HP_INT_ODL, SCI */
@@ -92,7 +92,7 @@ static const GPIO_CONTROL agesa_board_gpios[] = {
 	/* GPIO_21 - APU_PEN_INT_ODL, SCI */
 	{ GPIO_21, Function1, FCH_GPIO_PULL_UP_ENABLE },
 
-	/* GPIO_22 - EC_SCI_ODL */
+	/* GPIO_22 - EC_SCI_ODL, SCI */
 	{ GPIO_22, Function1, FCH_GPIO_PULL_UP_ENABLE },
 
 	/* GPIO_23 - ACOK_OD */
@@ -103,10 +103,10 @@ static const GPIO_CONTROL agesa_board_gpios[] = {
 	{ GPIO_25, Function0, FCH_GPIO_PULL_UP_ENABLE },
 
 	/* GPIO_26 - APU_PCIE_RST_L */
-	{ GPIO_26, Function0, FCH_GPIO_OUTPUT_VALUE },
+	{ GPIO_26, Function0,  },
 
-	/* GPIO_40 - Unused */
-	{ GPIO_40, Function0, FCH_GPIO_PULL_UP_ENABLE },
+	/* GPIO_40 - EMMC_BRIDGE_RST_L */
+	{ GPIO_40, Function0, FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_42 - S5_MUX_CTRL */
 	{ GPIO_42, Function0, FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE },
@@ -114,22 +114,22 @@ static const GPIO_CONTROL agesa_board_gpios[] = {
 	/* GPIO_67 - PEN_RESET */
 	{ GPIO_67, Function0, FCH_GPIO_OUTPUT_VALUE },
 
-	/* GPIO_70 - WLAN_PE_RST */
-	{ GPIO_70, Function0, FCH_GPIO_OUTPUT_VALUE },
+	/* GPIO_70 - WLAN_PE_RST_L */
+	{ GPIO_70, Function0, FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_74 - LPC_CLK0_EC_R */
 	{ GPIO_74, Function0, FCH_GPIO_PULL_DOWN_ENABLE },
 
-	/* GPIO_75 - LPC_CLK1 */
-	{ GPIO_75, Function0, FCH_GPIO_PULL_UP_ENABLE },
+	/* GPIO_75 - Unused (strap) (R139/R130) */
+	{ GPIO_75, Function1, FCH_GPIO_PULL_UP_ENABLE },
 
 	/* GPIO_76 - EN_PP3300_TOUCHSCREEN */
-	{ GPIO_76, Function0, FCH_GPIO_OUTPUT_VALUE },
+	{ GPIO_76, Function0, FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE },
 
-	/* GPIO_84 - HUB_RST */
+	/* GPIO_84 - HUB_RST (Active High) */
 	{ GPIO_84, Function1, FCH_GPIO_OUTPUT_VALUE },
 
-	/* GPIO_85 - TOUCHSCREEN_RST_1V8 */
+	/* GPIO_85 - TOUCHSCREEN_RST (Active High) */
 	{ GPIO_85, Function1, FCH_GPIO_OUTPUT_VALUE },
 
 	/* GPIO_86 - Unused (TP109) */
@@ -142,16 +142,16 @@ static const GPIO_CONTROL agesa_board_gpios[] = {
 	{ GPIO_88, Function0,  },
 
 	/* GPIO_90 - EN_PP3300_CAMERA */
-	{ GPIO_90, Function0, FCH_GPIO_OUTPUT_VALUE },
+	{ GPIO_90, Function0, FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_91 - EN_PP3300_TRACKPAD */
-	{ GPIO_91, Function1, FCH_GPIO_OUTPUT_VALUE },
+	{ GPIO_91, Function1, FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_92 - WLAN_PCIE_CLKREQ_3V3_ODL */
 	{ GPIO_92, Function0, FCH_GPIO_PULL_UP_ENABLE },
 
-	/* GPIO_93 - Unused (TP129) */
-	{ GPIO_93, Function1, FCH_GPIO_PULL_UP_ENABLE },
+	/* GPIO_93 - EMMC_RST_L */
+	{ GPIO_93, Function1, FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_95 - SD_CLK */
 	/* GPIO_96 - SD_CMD */
@@ -184,21 +184,21 @@ static const GPIO_CONTROL agesa_board_gpios[] = {
 	{ GPIO_118, Function0,  },
 
 	/* GPIO_119 - SPK_PA_EN */
-	{ GPIO_119, Function2, FCH_GPIO_OUTPUT_VALUE },
+	{ GPIO_119, Function2, FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_120 - PCH_SPI_MISO */
 	/* GPIO_121 - PCH_SPI_MOSI */
 
-	/* GPIO_122 - APU_BIOS_FLASH_WP */
+	/* GPIO_122 - APU_BIOS_FLASH_WP_L */
 	{ GPIO_122, Function1,  },
 
 	/* GPIO_126 - DMIC_CLK2_EN */
-	{ GPIO_126, Function1, FCH_GPIO_OUTPUT_VALUE },
+	{ GPIO_126, Function1, FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_129 - APU_KBRST_L */
 	{ GPIO_129, Function0, FCH_GPIO_PULL_UP_ENABLE },
 
-	/* GPIO_130 - Unused, SCI */
+	/* GPIO_130 - Unused (TP55) */
 	{ GPIO_130, Function1, FCH_GPIO_PULL_UP_ENABLE },
 
 	/* GPIO_131 - CONFIG_STRAP3 */
@@ -207,7 +207,7 @@ static const GPIO_CONTROL agesa_board_gpios[] = {
 	/* GPIO_132 - CONFIG_STRAP4 */
 	{ GPIO_132, Function2,  },
 
-	/* GPIO_133 - APU_EDP_BKLTEN (backlight enable) */
+	/* GPIO_133 - APU_EDP_BKLTEN_L (backlight - Active LOW) */
 	{ GPIO_133, Function1, FCH_GPIO_OUTPUT_VALUE },
 
 	/* GPIO_135 - Unused (TP128) */
@@ -216,8 +216,8 @@ static const GPIO_CONTROL agesa_board_gpios[] = {
 	/* GPIO_136 - UART_PCH_RX_DEBUG_TX */
 	{ GPIO_136, Function0,  },
 
-	/* GPIO_137 - AUDIO_CLK_EN */
-	{ GPIO_137, Function1, FCH_GPIO_OUTPUT_VALUE },
+	/* GPIO_137 - AUDIO_CLK_EN (Remove in EVT?) */
+	{ GPIO_137, Function1, FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_138 - UART_PCH_TX_DEBUG_RX */
 	{ GPIO_138, Function0,  },
@@ -225,19 +225,19 @@ static const GPIO_CONTROL agesa_board_gpios[] = {
 	/* GPIO_139 - CONFIG_STRAP1 */
 	{ GPIO_139, Function1,  },
 
-	/* GPIO_140 - I2S_BCLK_R */
+	/* GPIO_140 - I2S_BCLK_R (init to func0, used for I2S) */
 	{ GPIO_140, Function0,  },
 
-	/* GPIO_141 - I2S2_DATA_MIC2 */
+	/* GPIO_141 - I2S2_DATA_MIC2 (init to func0, used for I2S) */
 	{ GPIO_141, Function0,  },
 
 	/* GPIO_142 - CONFIG_STRAP2 */
 	{ GPIO_142, Function1,  },
 
-	/* GPIO_143 - I2S2_DATA */
+	/* GPIO_143 - I2S2_DATA (init to func0, used for I2S) */
 	{ GPIO_143, Function0,  },
 
-	/* GPIO_144 - I2S_LR_R */
+	/* GPIO_144 - I2S_LR_R (init to func0, used for I2S) */
 	{ GPIO_144, Function0,  },
 
 	/* GPIO_145 - PCH_I2C_AUDIO_SCL */
@@ -266,14 +266,6 @@ const __attribute__((weak)) GPIO_CONTROL *get_gpio_table(void)
  */
 static const struct sci_source gpe_table[] = {
 
-	/* TOUCHSCREEN_INT_3V3_ODL */
-	{
-		.scimap = 2,
-		.gpe = 2,
-		.direction = SMI_SCI_LVL_HIGH,
-		.level = SMI_SCI_EDG,
-	},
-
 	/* PCH_TRACKPAD_INT_3V3_ODL */
 	{
 		.scimap = 7,
@@ -282,43 +274,44 @@ static const struct sci_source gpe_table[] = {
 		.level = SMI_SCI_EDG,
 	},
 
-	/* DDR_ALERT_3V3_L */
-	{
-		.scimap = 23,
-		.gpe = 23,
-		.direction = SMI_SCI_LVL_LOW,
-		.level = SMI_SCI_LVL,
-	},
-
-	/* PCH_INT_ODL */
+	/* H1_PCH_INT_ODL */
 	{
 		.scimap = 22,
 		.gpe = 22,
 		.direction = SMI_SCI_LVL_LOW,
-		.level = SMI_SCI_LVL,
+		.level = SMI_SCI_EDG,
 	},
 
-	/* APU_PEN_PDCT_ODL */
+	/* TOUCHSCREEN_INT_3V3_ODL */
 	{
-		.scimap = 21,
-		.gpe = 21,
+		.scimap = 18,
+		.gpe = 18,
 		.direction = SMI_SCI_LVL_LOW,
-		.level = SMI_SCI_LVL,
+		.level = SMI_SCI_EDG,
 	},
+
 
 	/* APU_HP_INT_ODL */
 	{
 		.scimap = 6,
 		.gpe = 6,
 		.direction = SMI_SCI_LVL_LOW,
-		.level = SMI_SCI_LVL,
+		.level = SMI_SCI_EDG,
 	},
 
 	/* APU_PEN_INT_ODL */
 	{
 		.scimap = 5,
 		.gpe = 5,
-		.direction = SMI_SCI_LVL_HIGH,
+		.direction = SMI_SCI_LVL_LOW,
+		.level = SMI_SCI_EDG,
+	},
+
+	/* EC_SCI_ODL */
+	{
+		.scimap = 3,
+		.gpe = 3,
+		.direction = SMI_SCI_LVL_LOW,
 		.level = SMI_SCI_EDG,
 	},
 };

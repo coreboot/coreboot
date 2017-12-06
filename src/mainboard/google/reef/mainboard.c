@@ -29,6 +29,14 @@
 #include <variant/ec.h>
 #include <variant/gpio.h>
 
+/* override specific gpio by sku id */
+const struct pad_config __attribute__((weak))
+*variant_sku_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}
+
 static void mainboard_init(void *chip_info)
 {
 	int boardid;
@@ -39,6 +47,9 @@ static void mainboard_init(void *chip_info)
 	printk(BIOS_INFO, "Board ID: %d\n", boardid);
 
 	pads = variant_gpio_table(&num);
+	gpio_configure_pads(pads, num);
+
+	pads = variant_sku_gpio_table(&num);
 	gpio_configure_pads(pads, num);
 
 	mainboard_ec_init();

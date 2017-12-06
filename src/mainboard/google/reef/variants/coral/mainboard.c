@@ -19,6 +19,7 @@
 #include <soc/cpu.h>
 #include <soc/intel/apollolake/chip.h>
 #include <soc/intel/common/vbt.h>
+#include <soc/gpio.h>
 
 enum {
 	SKU_0_ASTRONAUT = 0,
@@ -121,4 +122,35 @@ const char *mainboard_vbt_filename(void)
 		return "vbt.bin";
 		break;
 	}
+}
+
+static const struct pad_config nasher_gpio_tables[] = {
+	/* AVS_DMIC_CLK_A1 */
+	PAD_CFG_NF_IOSSTATE(GPIO_79, NATIVE, DEEP, NF1, Tx1RXDCRx0),
+	/* AVS_DMIC_CLK_B1 */
+	PAD_CFG_NF_IOSSTATE(GPIO_80, NATIVE, DEEP, NF1, Tx1RXDCRx0),
+};
+
+const struct pad_config *variant_sku_gpio_table(size_t *num)
+{
+	int sku_id = variant_board_sku();
+	const struct pad_config *board_gpio_tables;
+
+	switch (sku_id) {
+	case SKU_160_NASHER:
+	case SKU_161_NASHER:
+	case SKU_162_NASHER:
+	case SKU_163_NASHER360:
+	case SKU_164_NASHER360:
+	case SKU_165_NASHER360:
+	case SKU_166_NASHER360:
+		*num = ARRAY_SIZE(nasher_gpio_tables);
+		board_gpio_tables = nasher_gpio_tables;
+		break;
+	default:
+		*num = 0;
+		board_gpio_tables = NULL;
+		break;
+	}
+	return board_gpio_tables;
 }

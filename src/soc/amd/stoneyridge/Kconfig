@@ -357,4 +357,9 @@ config DIMM_SPD_SIZE
 	int
 	default 512	# DDR4
 
+config RO_REGION_ONLY
+	string
+	depends on CHROMEOS
+	default "apu/amdfw"
+
 endif # SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4

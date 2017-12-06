@@ -74,17 +74,10 @@ static struct device_operations cpu_bus_ops = {
 static void soc_enable(device_t dev)
 {
 	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		dev->ops = &pci_domain_ops;
-	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &cpu_bus_ops;
-	} else if (dev->path.type == DEVICE_PATH_PCI) {
-		/* Handle PCH device enable */
-		if (PCI_SLOT(dev->path.pci.devfn) > SA_DEV_SLOT_IGD &&
-		    (dev->ops == NULL || dev->ops->enable == NULL)) {
-			pch_enable_dev(dev);
-		}
-	}
 }
 
 struct chip_operations soc_intel_skylake_ops = {

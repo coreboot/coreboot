@@ -28,7 +28,7 @@ chip northbridge/intel/sandybridge # FIXME: check gfx.ndid and gfx.did
 	register "gpu_panel_power_up_delay" = "0"
 	register "gpu_pch_backlight" = "0x00000000"
 	device cpu_cluster 0x0 on
-		chip cpu/intel/socket_rPGA989
+		chip cpu/intel/socket_FCBGA1023
 			device lapic 0x0 on
 			end
 		end

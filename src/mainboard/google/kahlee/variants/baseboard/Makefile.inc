@@ -14,6 +14,7 @@
 #
 
 bootblock-y += gpio.c
+bootblock-y += OemCustomize.c
 
 romstage-y += gpio.c
 romstage-y += memory.c

@@ -32,6 +32,12 @@
 #define CROS_WP_GPIO		GPIO_142
 #define GPIO_EC_IN_RW		GPIO_15
 
+/* PCIe reset pins */
+#define PCIE_0_RST		GPIO_119
+#define PCIE_1_RST		0
+#define PCIE_2_RST		0
+#define PCIE_3_RST		0
+
 #endif /* _ACPI__ */
 
 /* AGPIO22 -> GPE3 */

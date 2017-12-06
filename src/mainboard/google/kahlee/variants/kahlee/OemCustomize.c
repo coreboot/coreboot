@@ -14,6 +14,7 @@
  */
 
 #include <agesawrapper.h>
+#include <variant/gpio.h>
 
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 7:4, D2F1) for NC*/
@@ -25,7 +26,7 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmL0sL1, 0x04, 0)
+				AspmL0sL1, 0, 0)
 	},
 	/* Initialize Port descriptor (PCIe port, Lanes 0:0, D2F2) for WLAN */
 	{
@@ -36,7 +37,7 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmL0sL1, 0x2, 0)
+				AspmL0sL1, PCIE_0_RST, 0)
 	},
 	/* Init Port descriptor (PCIe port, Lanes 1:1, D2F3) for Card Reader */
 	{
@@ -47,7 +48,7 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmL0sL1, 0x3, 0)
+				AspmL0sL1, PCIE_1_RST, 0)
 	},
 	/* Initialize Port descriptor (PCIe port, Lane 2, D2F4) for NC */
 	{
@@ -58,7 +59,7 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmL0sL1, 0, 0)
+				AspmL0sL1, PCIE_2_RST, 0)
 	},
 	/* Initialize Port descriptor (PCIe port, Lane3, D2F5) for NC */
 	{
@@ -69,7 +70,7 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmL0sL1, 0, 0)
+				AspmL0sL1, PCIE_3_RST, 0)
 	},
 };
 

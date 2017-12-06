@@ -15,7 +15,6 @@
 
 bootblock-y += bootblock/bootblock.c
 bootblock-y += BiosCallOuts.c
-bootblock-y += bootblock/OemCustomize.c
 bootblock-y += ec.c
 
 romstage-y += BiosCallOuts.c

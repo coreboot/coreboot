@@ -2,7 +2,8 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2009 Vipin Kumar, ST Microelectronics
- * Copyright 2016 Google Inc.
+ * Copyright 2017 Google Inc.
+ * Copyright 2017 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,13 +23,12 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
-#include <intelblocks/lpss_i2c.h>
 #include <string.h>
 #include <timer.h>
-#include "lpss_i2c.h"
+#include "dw_i2c.h"
 
 /* Use a ~10ms timeout for various operations */
-#define LPSS_I2C_TIMEOUT_US		10000
+#define DW_I2C_TIMEOUT_US		10000
 
 /* High and low times in different speed modes (in ns) */
 enum {
@@ -105,6 +105,56 @@ enum {
 	INTR_STAT_START_DET		= (1 << 10),
 	INTR_STAT_GEN_CALL		= (1 << 11),
 };
+
+/* I2C Controller MMIO register space */
+struct dw_i2c_regs {
+	uint32_t control;
+	uint32_t target_addr;
+	uint32_t slave_addr;
+	uint32_t master_addr;
+	uint32_t cmd_data;
+	uint32_t ss_scl_hcnt;
+	uint32_t ss_scl_lcnt;
+	uint32_t fs_scl_hcnt;
+	uint32_t fs_scl_lcnt;
+	uint32_t hs_scl_hcnt;
+	uint32_t hs_scl_lcnt;
+	uint32_t intr_stat;
+	uint32_t intr_mask;
+	uint32_t raw_intr_stat;
+	uint32_t rx_thresh;
+	uint32_t tx_thresh;
+	uint32_t clear_intr;
+	uint32_t clear_rx_under_intr;
+	uint32_t clear_rx_over_intr;
+	uint32_t clear_tx_over_intr;
+	uint32_t clear_rd_req_intr;
+	uint32_t clear_tx_abrt_intr;
+	uint32_t clear_rx_done_intr;
+	uint32_t clear_activity_intr;
+	uint32_t clear_stop_det_intr;
+	uint32_t clear_start_det_intr;
+	uint32_t clear_gen_call_intr;
+	uint32_t enable;
+	uint32_t status;
+	uint32_t tx_level;
+	uint32_t rx_level;
+	uint32_t sda_hold;
+	uint32_t tx_abort_source;
+	uint32_t slv_data_nak_only;
+	uint32_t dma_cr;
+	uint32_t dma_tdlr;
+	uint32_t dma_rdlr;
+	uint32_t sda_setup;
+	uint32_t ack_general_call;
+	uint32_t enable_status;
+	uint32_t fs_spklen;
+	uint32_t hs_spklen;
+	uint32_t clr_restart_det;
+	uint32_t comp_param1;
+	uint32_t comp_version;
+	uint32_t comp_type;
+} __packed;
 
 static const struct i2c_descriptor {
 	enum i2c_speed speed;
@@ -204,7 +254,7 @@ static int counts_from_freq(const struct freq *fast, const struct freq *slow)
 }
 
 /* Enable this I2C controller */
-static void lpss_i2c_enable(struct lpss_i2c_regs *regs)
+static void dw_i2c_enable(struct dw_i2c_regs *regs)
 {
 	uint32_t enable = read32(&regs->enable);
 
@@ -213,7 +263,7 @@ static void lpss_i2c_enable(struct lpss_i2c_regs *regs)
 }
 
 /* Disable this I2C controller */
-static int lpss_i2c_disable(struct lpss_i2c_regs *regs)
+static int dw_i2c_disable(struct dw_i2c_regs *regs)
 {
 	uint32_t enable = read32(&regs->enable);
 
@@ -223,7 +273,7 @@ static int lpss_i2c_disable(struct lpss_i2c_regs *regs)
 		write32(&regs->enable, enable & ~ENABLE_CONTROLLER);
 
 		/* Wait for enable bit to clear */
-		stopwatch_init_usecs_expire(&sw, LPSS_I2C_TIMEOUT_US);
+		stopwatch_init_usecs_expire(&sw, DW_I2C_TIMEOUT_US);
 		while (read32(&regs->enable_status) & ENABLE_CONTROLLER)
 			if (stopwatch_expired(&sw))
 				return -1;
@@ -233,12 +283,12 @@ static int lpss_i2c_disable(struct lpss_i2c_regs *regs)
 }
 
 /* Wait for this I2C controller to go idle for transmit */
-static int lpss_i2c_wait_for_bus_idle(struct lpss_i2c_regs *regs)
+static int dw_i2c_wait_for_bus_idle(struct dw_i2c_regs *regs)
 {
 	struct stopwatch sw;
 
 	/* Start timeout for up to 16 bytes in FIFO */
-	stopwatch_init_usecs_expire(&sw, 16 * LPSS_I2C_TIMEOUT_US);
+	stopwatch_init_usecs_expire(&sw, 16 * DW_I2C_TIMEOUT_US);
 
 	while (!stopwatch_expired(&sw)) {
 		uint32_t status = read32(&regs->status);
@@ -257,14 +307,14 @@ static int lpss_i2c_wait_for_bus_idle(struct lpss_i2c_regs *regs)
 }
 
 /* Transfer one byte of one segment, sending stop bit if requested */
-static int lpss_i2c_transfer_byte(struct lpss_i2c_regs *regs,
+static int dw_i2c_transfer_byte(struct dw_i2c_regs *regs,
 				  const struct i2c_msg *segment,
 				  size_t byte, int send_stop)
 {
 	struct stopwatch sw;
 	uint32_t cmd = CMD_DATA_CMD; /* Read op */
 
-	stopwatch_init_usecs_expire(&sw, LPSS_I2C_TIMEOUT_US);
+	stopwatch_init_usecs_expire(&sw, DW_I2C_TIMEOUT_US);
 
 	if (!(segment->flags & I2C_M_RD)) {
 		/* Write op only: Wait for FIFO not full */
@@ -297,37 +347,38 @@ static int lpss_i2c_transfer_byte(struct lpss_i2c_regs *regs,
 	return 0;
 }
 
-int lpss_i2c_transfer(unsigned int bus,
+int dw_i2c_transfer(unsigned int bus,
 		      const struct i2c_msg *segments, size_t count)
 {
 	struct stopwatch sw;
-	struct lpss_i2c_regs *regs;
+	struct dw_i2c_regs *regs;
 	size_t byte;
 	int ret = -1;
 
 	if (count == 0 || !segments)
 		return -1;
 
-	regs = (struct lpss_i2c_regs *)lpss_i2c_base_address(bus);
+	regs = (struct dw_i2c_regs *)dw_i2c_base_address(bus);
 	if (!regs) {
 		printk(BIOS_ERR, "I2C bus %u base address not found\n", bus);
 		return -1;
 	}
 
-	lpss_i2c_enable(regs);
+	dw_i2c_enable(regs);
 
-	if (lpss_i2c_wait_for_bus_idle(regs)) {
+	if (dw_i2c_wait_for_bus_idle(regs)) {
 		printk(BIOS_ERR, "I2C timeout waiting for bus %u idle\n", bus);
 		goto out;
 	}
 
 	/* Process each segment */
 	while (count--) {
-		if (CONFIG_SOC_INTEL_COMMON_BLOCK_I2C_DEBUG)
+		if (IS_ENABLED(CONFIG_DRIVERS_I2C_DESIGNWARE_DEBUG)) {
 			printk(BIOS_DEBUG, "i2c %u:%02x %s %d bytes : ",
 			       bus, segments->slave,
 			       (segments->flags & I2C_M_RD) ? "R" : "W",
 			       segments->len);
+		}
 
 		/* Set target slave address */
 		write32(&regs->target_addr, segments->slave);
@@ -339,7 +390,7 @@ int lpss_i2c_transfer(unsigned int bus,
 			 * Repeated start will be automatically generated
 			 * by the controller on R->W or W->R switch.
 			 */
-			if (lpss_i2c_transfer_byte(regs, segments, byte,
+			if (dw_i2c_transfer_byte(regs, segments, byte,
 						   count == 0) < 0) {
 				printk(BIOS_ERR, "I2C %s failed: bus %u "
 				       "addr 0x%02x\n",
@@ -349,18 +400,18 @@ int lpss_i2c_transfer(unsigned int bus,
 			}
 		}
 
-		if (CONFIG_SOC_INTEL_COMMON_BLOCK_I2C_DEBUG) {
+		if (IS_ENABLED(CONFIG_DRIVERS_I2C_DESIGNWARE_DEBUG)) {
 			int j;
 			for (j = 0; j < segments->len; j++)
 				printk(BIOS_DEBUG, "%02x ", segments->buf[j]);
-			printk(BIOS_DEBUG, "\n");
+				printk(BIOS_DEBUG, "\n");
 		}
 
 		segments++;
 	}
 
 	/* Wait for interrupt status to indicate transfer is complete */
-	stopwatch_init_usecs_expire(&sw, LPSS_I2C_TIMEOUT_US);
+	stopwatch_init_usecs_expire(&sw, DW_I2C_TIMEOUT_US);
 	while (!(read32(&regs->raw_intr_stat) & INTR_STAT_STOP_DET)) {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "I2C stop bit not received\n");
@@ -372,13 +423,13 @@ int lpss_i2c_transfer(unsigned int bus,
 	read32(&regs->clear_stop_det_intr);
 
 	/* Wait for the bus to go idle */
-	if (lpss_i2c_wait_for_bus_idle(regs)) {
+	if (dw_i2c_wait_for_bus_idle(regs)) {
 		printk(BIOS_ERR, "I2C timeout waiting for bus %u idle\n", bus);
 		goto out;
 	}
 
 	/* Flush the RX FIFO in case it is not empty */
-	stopwatch_init_usecs_expire(&sw, 16 * LPSS_I2C_TIMEOUT_US);
+	stopwatch_init_usecs_expire(&sw, 16 * DW_I2C_TIMEOUT_US);
 	while (read32(&regs->status) & STATUS_RX_FIFO_NOT_EMPTY) {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "I2C timeout flushing RX FIFO\n");
@@ -391,23 +442,23 @@ int lpss_i2c_transfer(unsigned int bus,
 
 out:
 	read32(&regs->clear_intr);
-	lpss_i2c_disable(regs);
+	dw_i2c_disable(regs);
 	return ret;
 }
 
 /* Global I2C bus handler, defined in include/device/i2c_simple.h */
 int platform_i2c_transfer(unsigned int bus, struct i2c_msg *msg, int count)
 {
-	return lpss_i2c_transfer(bus, msg, count < 0 ? 0 : count);
+	return dw_i2c_transfer(bus, msg, count < 0 ? 0 : count);
 }
 
-static int lpss_i2c_set_speed_config(unsigned int bus,
-				const struct lpss_i2c_speed_config *config)
+static int dw_i2c_set_speed_config(unsigned int bus,
+				const struct dw_i2c_speed_config *config)
 {
-	struct lpss_i2c_regs *regs;
+	struct dw_i2c_regs *regs;
 	void *hcnt_reg, *lcnt_reg;
 
-	regs = (struct lpss_i2c_regs *)lpss_i2c_base_address(bus);
+	regs = (struct dw_i2c_regs *)dw_i2c_base_address(bus);
 	if (!regs || !config)
 		return -1;
 
@@ -442,11 +493,11 @@ static int lpss_i2c_set_speed_config(unsigned int bus,
 	return 0;
 }
 
-static int lpss_i2c_gen_config_rise_fall_time(struct lpss_i2c_regs *regs,
+static int dw_i2c_gen_config_rise_fall_time(struct dw_i2c_regs *regs,
 					enum i2c_speed speed,
-					const struct lpss_i2c_bus_config *bcfg,
+					const struct dw_i2c_bus_config *bcfg,
 					int ic_clk,
-					struct lpss_i2c_speed_config *config)
+					struct dw_i2c_speed_config *config)
 {
 	const struct i2c_descriptor *bus;
 	const struct soc_clock *soc;
@@ -458,12 +509,12 @@ static int lpss_i2c_gen_config_rise_fall_time(struct lpss_i2c_regs *regs,
 	soc = get_soc_descriptor(ic_clk);
 
 	if (bus == NULL) {
-		printk(BIOS_ERR, "lpss_i2c: invalid bus speed %d\n", speed);
+		printk(BIOS_ERR, "dw_i2c: invalid bus speed %d\n", speed);
 		return -1;
 	}
 
 	if (soc == NULL) {
-		printk(BIOS_ERR, "lpss_i2c: invalid SoC clock speed %d MHz\n",
+		printk(BIOS_ERR, "dw_i2c: invalid SoC clock speed %d MHz\n",
 			ic_clk);
 		return -1;
 	}
@@ -482,9 +533,10 @@ static int lpss_i2c_gen_config_rise_fall_time(struct lpss_i2c_regs *regs,
 	min_tlow_cnt = counts_from_time(&soc->freq, bus->min_tlow_ns);
 	min_thigh_cnt = counts_from_time(&soc->freq, bus->min_thigh_ns);
 
-	printk(LPSS_DEBUG, "lpss_i2c: SoC %d/%d ns Bus: %d/%d ns\n",
+	printk(DW_I2C_DEBUG, "dw_i2c: SoC %d/%d ns Bus: %d/%d ns\n",
 		soc->freq.ticks, soc->freq.ns, bus->freq.ticks, bus->freq.ns);
-	printk(LPSS_DEBUG, "lpss_i2c: period %d rise %d fall %d tlow %d thigh %d spk %d\n",
+	printk(DW_I2C_DEBUG,
+"		dw_i2c: period %d rise %d fall %d tlow %d thigh %d spk %d\n",
 		period_cnt, rise_cnt, fall_cnt, min_tlow_cnt, min_thigh_cnt,
 		spk_cnt);
 
@@ -497,7 +549,7 @@ static int lpss_i2c_gen_config_rise_fall_time(struct lpss_i2c_regs *regs,
 	lcnt = min_tlow_cnt - rise_cnt + fall_cnt - 1;
 
 	if (hcnt < 0 || lcnt < 0) {
-		printk(BIOS_ERR, "lpss_i2c: bad counts. hcnt = %d lcnt = %d\n",
+		printk(BIOS_ERR, "dw_i2c: bad counts. hcnt = %d lcnt = %d\n",
 			hcnt, lcnt);
 		return -1;
 	}
@@ -525,26 +577,29 @@ static int lpss_i2c_gen_config_rise_fall_time(struct lpss_i2c_regs *regs,
 
 	config->sda_hold = counts_from_time(&soc->freq, data_hold_time_ns);
 
-	printk(LPSS_DEBUG, "lpss_i2c: hcnt = %d lcnt = %d sda hold = %d\n",
+	printk(DW_I2C_DEBUG, "dw_i2c: hcnt = %d lcnt = %d sda hold = %d\n",
 		hcnt, lcnt, config->sda_hold);
 
 	return 0;
 }
 
-int lpss_i2c_gen_speed_config(struct lpss_i2c_regs *regs,
+int dw_i2c_gen_speed_config(uintptr_t dw_i2c_addr,
 					enum i2c_speed speed,
-					const struct lpss_i2c_bus_config *bcfg,
-					struct lpss_i2c_speed_config *config)
+					const struct dw_i2c_bus_config *bcfg,
+					struct dw_i2c_speed_config *config)
 {
-	const int ic_clk = CONFIG_SOC_INTEL_COMMON_LPSS_CLOCK_MHZ;
+	const int ic_clk = CONFIG_DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ;
+	struct dw_i2c_regs *regs;
 	uint16_t hcnt_min, lcnt_min;
 	int i;
 
-	_Static_assert(CONFIG_SOC_INTEL_COMMON_LPSS_CLOCK_MHZ != 0,
-		"SOC_INTEL_COMMON_LPSS_CLOCK_MHZ can't be zero!");
+	regs = (struct dw_i2c_regs *)dw_i2c_addr;
+
+	_Static_assert(CONFIG_DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ != 0,
+		"DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ can't be zero!");
 
 	/* Apply board specific override for this speed if found */
-	for (i = 0; i < LPSS_I2C_SPEED_CONFIG_COUNT; i++) {
+	for (i = 0; i < DW_I2C_SPEED_CONFIG_COUNT; i++) {
 		if (bcfg->speed_config[i].speed != speed)
 			continue;
 		memcpy(config, &bcfg->speed_config[i], sizeof(*config));
@@ -553,7 +608,7 @@ int lpss_i2c_gen_speed_config(struct lpss_i2c_regs *regs,
 
 	/* If rise time is set use the time calculation. */
 	if (bcfg->rise_time_ns)
-		return lpss_i2c_gen_config_rise_fall_time(regs, speed, bcfg,
+		return dw_i2c_gen_config_rise_fall_time(regs, speed, bcfg,
 							ic_clk, config);
 
 	if (speed >= I2C_SPEED_HIGH) {
@@ -582,15 +637,15 @@ int lpss_i2c_gen_speed_config(struct lpss_i2c_regs *regs,
 	return 0;
 }
 
-static int lpss_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
-				const struct lpss_i2c_bus_config *bcfg)
+static int dw_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
+				const struct dw_i2c_bus_config *bcfg)
 {
-	struct lpss_i2c_regs *regs;
-	struct lpss_i2c_speed_config config;
+	struct dw_i2c_regs *regs;
+	struct dw_i2c_speed_config config;
 	uint32_t control;
 
 	/* Clock must be provided by Kconfig */
-	regs = (struct lpss_i2c_regs *)lpss_i2c_base_address(bus);
+	regs = (struct dw_i2c_regs *)dw_i2c_base_address(bus);
 	if (!regs || !speed)
 		return -1;
 
@@ -609,14 +664,14 @@ static int lpss_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
 	}
 
 	/* Generate speed config based on clock */
-	if (lpss_i2c_gen_speed_config(regs, speed, bcfg, &config) < 0)
+	if (dw_i2c_gen_speed_config((uintptr_t)regs, speed, bcfg, &config) < 0)
 		return -1;
 
 	/* Select this speed in the control register */
 	write32(&regs->control, control);
 
 	/* Write the speed config that was generated earlier */
-	lpss_i2c_set_speed_config(bus, &config);
+	dw_i2c_set_speed_config(bus, &config);
 
 	return 0;
 }
@@ -628,9 +683,9 @@ static int lpss_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
  * The bus speed can be passed in Hz or using values from device/i2c.h and
  * will default to I2C_SPEED_FAST if it is not provided.
  */
-int lpss_i2c_init(unsigned int bus, const struct lpss_i2c_bus_config *bcfg)
+int dw_i2c_init(unsigned int bus, const struct dw_i2c_bus_config *bcfg)
 {
-	struct lpss_i2c_regs *regs;
+	struct dw_i2c_regs *regs;
 	enum i2c_speed speed;
 
 	if (!bcfg)
@@ -638,13 +693,13 @@ int lpss_i2c_init(unsigned int bus, const struct lpss_i2c_bus_config *bcfg)
 
 	speed = bcfg->speed ? : I2C_SPEED_FAST;
 
-	regs = (struct lpss_i2c_regs *)lpss_i2c_base_address(bus);
+	regs = (struct dw_i2c_regs *)dw_i2c_base_address(bus);
 	if (!regs) {
 		printk(BIOS_ERR, "I2C bus %u base address not found\n", bus);
 		return -1;
 	}
 
-	if (lpss_i2c_disable(regs) < 0) {
+	if (dw_i2c_disable(regs) < 0) {
 		printk(BIOS_ERR, "I2C timeout disabling bus %u\n", bus);
 		return -1;
 	}
@@ -654,7 +709,7 @@ int lpss_i2c_init(unsigned int bus, const struct lpss_i2c_bus_config *bcfg)
 		CONTROL_RESTART_ENABLE);
 
 	/* Set bus speed to FAST by default */
-	if (lpss_i2c_set_speed(bus, speed, bcfg) < 0) {
+	if (dw_i2c_set_speed(bus, speed, bcfg) < 0) {
 		printk(BIOS_ERR, "I2C failed to set speed for bus %u\n", bus);
 		return -1;
 	}
@@ -666,7 +721,7 @@ int lpss_i2c_init(unsigned int bus, const struct lpss_i2c_bus_config *bcfg)
 	/* Enable stop detection interrupt */
 	write32(&regs->intr_mask, INTR_STAT_STOP_DET);
 
-	printk(BIOS_INFO, "LPSS I2C bus %u at 0x%p (%u KHz)\n",
+	printk(BIOS_INFO, "DW I2C bus %u at 0x%p (%u KHz)\n",
 	       bus, regs, speed / KHz);
 
 	return 0;

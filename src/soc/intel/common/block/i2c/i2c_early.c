@@ -20,13 +20,12 @@
 #include <device/i2c_simple.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
+#include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/lpss.h>
-#include <intelblocks/lpss_i2c.h>
-#include "lpss_i2c.h"
 
 static int lpss_i2c_early_init_bus(unsigned int bus)
 {
-	const struct lpss_i2c_bus_config *config;
+	const struct dw_i2c_bus_config *config;
 	const struct device *tree_dev;
 	pci_devfn_t dev;
 	int devfn;
@@ -64,7 +63,7 @@ static int lpss_i2c_early_init_bus(unsigned int bus)
 	lpss_reset_release(base);
 
 	/* Initialize the controller */
-	if (lpss_i2c_init(bus, config) < 0) {
+	if (dw_i2c_init(bus, config) < 0) {
 		printk(BIOS_ERR, "I2C%u failed to initialize\n", bus);
 		return -1;
 	}
@@ -72,7 +71,7 @@ static int lpss_i2c_early_init_bus(unsigned int bus)
 	return 0;
 }
 
-uintptr_t lpss_i2c_base_address(unsigned int bus)
+uintptr_t dw_i2c_base_address(unsigned int bus)
 {
 	int devfn;
 	pci_devfn_t dev;

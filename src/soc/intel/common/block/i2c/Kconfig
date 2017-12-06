@@ -1,5 +1,6 @@
 config SOC_INTEL_COMMON_BLOCK_I2C
 	bool
+	select DRIVERS_I2C_DESIGNWARE
 	help
 	  Intel Processor Common I2C support
 

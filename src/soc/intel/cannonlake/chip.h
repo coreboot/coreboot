@@ -18,8 +18,8 @@
 #ifndef _SOC_CHIP_H_
 #define _SOC_CHIP_H_
 
+#include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/gspi.h>
-#include <intelblocks/lpss_i2c.h>
 #include <stdint.h>
 #include <soc/pch.h>
 #include <soc/gpio_defs.h>
@@ -255,7 +255,7 @@ struct soc_intel_cannonlake_config {
 	unsigned int sdcard_cd_gpio;
 
 	/* I2C bus configuration */
-	struct lpss_i2c_bus_config i2c[CANNONLAKE_I2C_DEV_MAX];
+	struct dw_i2c_bus_config i2c[CANNONLAKE_I2C_DEV_MAX];
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

@@ -16,12 +16,12 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci_def.h>
-#include <intelblocks/lpss_i2c.h>
+#include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include "chip.h"
 
-const struct lpss_i2c_bus_config *i2c_get_soc_cfg(unsigned int bus,
+const struct dw_i2c_bus_config *i2c_get_soc_cfg(unsigned int bus,
 					const struct device *dev)
 {
 	const struct soc_intel_apollolake_config *config;

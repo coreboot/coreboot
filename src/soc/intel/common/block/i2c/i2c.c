@@ -18,16 +18,9 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
-#include <intelblocks/lpss_i2c.h>
-#include "lpss_i2c.h"
+#include <drivers/i2c/designware/dw_i2c.h>
 
-static int lpss_i2c_dev_to_bus(struct device *dev)
-{
-	pci_devfn_t devfn = dev->path.pci.devfn;
-	return i2c_soc_devfn_to_bus(devfn);
-}
-
-uintptr_t lpss_i2c_base_address(unsigned int bus)
+uintptr_t dw_i2c_base_address(unsigned int bus)
 {
 	int devfn;
 	struct device *dev;
@@ -52,6 +45,12 @@ uintptr_t lpss_i2c_base_address(unsigned int bus)
 	return (uintptr_t)NULL;
 }
 
+static int lpss_i2c_dev_to_bus(struct device *dev)
+{
+	pci_devfn_t devfn = dev->path.pci.devfn;
+	return i2c_soc_devfn_to_bus(devfn);
+}
+
 /*
  * Write ACPI object to describe speed configuration.
  *
@@ -63,7 +62,7 @@ uintptr_t lpss_i2c_base_address(unsigned int bus)
  * HSCN: I2C_SPEED_HIGH
  */
 static void lpss_i2c_acpi_write_speed_config(
-	const struct lpss_i2c_speed_config *config)
+	const struct dw_i2c_speed_config *config)
 {
 	if (!config)
 		return;
@@ -93,7 +92,7 @@ static void lpss_i2c_acpi_write_speed_config(
  */
 static void lpss_i2c_dev_init(struct device *dev)
 {
-	const struct lpss_i2c_bus_config *config;
+	const struct dw_i2c_bus_config *config;
 	int bus = lpss_i2c_dev_to_bus(dev);
 
 	if (bus < 0)
@@ -104,7 +103,7 @@ static void lpss_i2c_dev_init(struct device *dev)
 	if (!config)
 		return;
 
-	lpss_i2c_init(bus, config);
+	dw_i2c_init(bus, config);
 }
 
 /*
@@ -113,10 +112,10 @@ static void lpss_i2c_dev_init(struct device *dev)
  */
 static void lpss_i2c_acpi_fill_ssdt(struct device *dev)
 {
-	const struct lpss_i2c_bus_config *bcfg;
-	struct lpss_i2c_regs *regs;
-	struct lpss_i2c_speed_config sgen;
-	enum i2c_speed speeds[LPSS_I2C_SPEED_CONFIG_COUNT] = {
+	const struct dw_i2c_bus_config *bcfg;
+	uintptr_t dw_i2c_addr;
+	struct dw_i2c_speed_config sgen;
+	enum i2c_speed speeds[DW_I2C_SPEED_CONFIG_COUNT] = {
 		I2C_SPEED_STANDARD,
 		I2C_SPEED_FAST,
 		I2C_SPEED_FAST_PLUS,
@@ -137,16 +136,17 @@ static void lpss_i2c_acpi_fill_ssdt(struct device *dev)
 	if (!bcfg)
 		return;
 
-	regs = (struct lpss_i2c_regs *)lpss_i2c_base_address(bus);
-	if (!regs)
+	dw_i2c_addr = dw_i2c_base_address(bus);
+	if (!dw_i2c_addr)
 		return;
 
 	acpigen_write_scope(acpi_device_path(dev));
 
 	/* Report timing values for the OS driver */
-	for (i = 0; i < LPSS_I2C_SPEED_CONFIG_COUNT; i++) {
+	for (i = 0; i < DW_I2C_SPEED_CONFIG_COUNT; i++) {
 		/* Generate speed config. */
-		if (lpss_i2c_gen_speed_config(regs, speeds[i], bcfg, &sgen) < 0)
+		if (dw_i2c_gen_speed_config(dw_i2c_addr, speeds[i], bcfg,
+						&sgen) < 0)
 			continue;
 
 		/* Generate ACPI based on selected speed config */
@@ -159,7 +159,7 @@ static void lpss_i2c_acpi_fill_ssdt(struct device *dev)
 static int lpss_i2c_dev_transfer(struct device *dev,
 				 const struct i2c_msg *msg, size_t count)
 {
-	return lpss_i2c_transfer(lpss_i2c_dev_to_bus(dev), msg, count);
+	return dw_i2c_transfer(lpss_i2c_dev_to_bus(dev), msg, count);
 }
 
 static const struct i2c_bus_operations i2c_bus_ops = {

@@ -21,8 +21,8 @@
 
 #include <arch/acpi_device.h>
 #include <device/i2c_simple.h>
+#include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/gspi.h>
-#include <intelblocks/lpss_i2c.h>
 #include <stdint.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
@@ -251,7 +251,7 @@ struct soc_intel_skylake_config {
 	/* I2C */
 	/* Bus voltage level, default is 3.3V */
 	enum skylake_i2c_voltage i2c_voltage[SKYLAKE_I2C_DEV_MAX];
-	struct lpss_i2c_bus_config i2c[SKYLAKE_I2C_DEV_MAX];
+	struct dw_i2c_bus_config i2c[SKYLAKE_I2C_DEV_MAX];
 
 	/* GSPI */
 	struct gspi_cfg gspi[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];

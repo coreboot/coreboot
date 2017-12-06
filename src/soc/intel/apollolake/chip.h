@@ -23,8 +23,8 @@
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 #include <intelblocks/lpc_lib.h>
-#include <intelblocks/lpss_i2c.h>
 #include <device/i2c_simple.h>
+#include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/pm.h>
 #include <soc/usb.h>
 
@@ -93,7 +93,7 @@ struct soc_intel_apollolake_config {
 	enum serirq_mode serirq_mode;
 
 	/* I2C bus configuration */
-	struct lpss_i2c_bus_config i2c[APOLLOLAKE_I2C_DEV_MAX];
+	struct dw_i2c_bus_config i2c[APOLLOLAKE_I2C_DEV_MAX];
 
 	uint8_t gpe0_dw1; /* GPE0_63_32 STS/EN */
 	uint8_t gpe0_dw2; /* GPE0_95_64 STS/EN */

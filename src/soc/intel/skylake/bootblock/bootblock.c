@@ -14,8 +14,8 @@
  */
 
 #include <bootblock_common.h>
+#include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/gspi.h>
-#include <intelblocks/lpss_i2c.h>
 #include <soc/bootblock.h>
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)

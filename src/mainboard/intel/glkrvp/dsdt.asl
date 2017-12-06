@@ -14,8 +14,7 @@
  */
 
 #include <variant/ec.h>
-#define GPE_EC_WAKE	0x26
-#define EC_SCI_GPI	GPE0_DW1_05
+#include <variant/gpio.h>
 
 DefinitionBlock(
 	"dsdt.aml",

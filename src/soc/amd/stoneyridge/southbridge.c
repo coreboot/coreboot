@@ -24,7 +24,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
-#include <amd_pci_util.h>
+#include <amdblocks/amd_pci_util.h>
 #include <soc/southbridge.h>
 #include <soc/smi.h>
 #include <soc/amd_pci_int_defs.h>

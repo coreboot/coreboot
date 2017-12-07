@@ -88,6 +88,7 @@ uint32_t sku_id(void)
 
 	gpio_t pins[3] = {[2] = GPIO(3, D, 6), [1] = GPIO(3, D, 5),
 			  [0] = GPIO(3, D, 4)}; /* GPIO3_D4 is LSB */
-	sku_id = gpio_base2_value(pins, ARRAY_SIZE(pins));
+
+	sku_id = gpio_pullup_base2_value(pins, ARRAY_SIZE(pins));
 	return sku_id;
 }

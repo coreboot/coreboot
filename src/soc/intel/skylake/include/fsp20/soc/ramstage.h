@@ -32,6 +32,4 @@ void soc_init_pre_device(void *chip_info);
 void soc_irq_settings(FSP_SIL_UPD *params);
 const char *soc_acpi_name(const struct device *dev);
 
-extern struct pci_operations soc_pci_ops;
-
 #endif

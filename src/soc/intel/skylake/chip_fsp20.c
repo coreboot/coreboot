@@ -293,10 +293,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	soc_irq_settings(params);
 }
 
-struct pci_operations soc_pci_ops = {
-	.set_subsystem = &pci_dev_set_subsystem
-};
-
 /* Mainboard GPIO Configuration */
 __attribute__((weak)) void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {

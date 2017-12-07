@@ -824,18 +824,3 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 		original->FastPkgCRampDisable,
 		params->FastPkgCRampDisable);
 }
-
-static void pci_set_subsystem(device_t dev, unsigned int vendor,
-	unsigned int device)
-{
-	if (!vendor || !device)
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				   pci_read_config32(dev, PCI_VENDOR_ID));
-	else
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				   (device << 16) | vendor);
-}
-
-struct pci_operations soc_pci_ops = {
-	.set_subsystem = &pci_set_subsystem
-};

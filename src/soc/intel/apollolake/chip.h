@@ -148,6 +148,5 @@ struct soc_intel_apollolake_config {
 };
 
 typedef struct soc_intel_apollolake_config config_t;
-extern struct pci_operations soc_pci_ops;
 
 #endif	/* _SOC_APOLLOLAKE_CHIP_H_ */

@@ -71,7 +71,7 @@ build-nds32le:
 
 clean_tempfiles:
 	rm -rf build-*
-	rm -rf binutils-* gcc-* gmp-* libelf-* mpc-* mpfr-*
+	rm -rf binutils-* gcc-* gmp-* mpc-* mpfr-*
 	rm -rf llvm-* clang-tools-* cfe-* compiler-rt-*
 	rm -rf acpica-*
 	rm -rf gdb-*

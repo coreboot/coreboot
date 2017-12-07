@@ -172,6 +172,7 @@ static struct device_operations i2c_dev_ops = {
 	.enable_resources		= &pci_dev_enable_resources,
 	.scan_bus			= &scan_smbus,
 	.ops_i2c_bus			= &i2c_bus_ops,
+	.ops_pci			= &pci_dev_ops_pci,
 	.init				= &lpss_i2c_dev_init,
 	.acpi_fill_ssdt_generator	= &lpss_i2c_acpi_fill_ssdt,
 };

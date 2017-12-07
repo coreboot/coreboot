@@ -61,8 +61,9 @@ static void sata_final(device_t dev)
 static struct device_operations sata_ops = {
 	.read_resources		= &pci_dev_read_resources,
 	.set_resources		= &pci_dev_set_resources,
-	.enable_resources		= &pci_dev_enable_resources,
-	.final		= sata_final,
+	.enable_resources	= &pci_dev_enable_resources,
+	.final			= sata_final,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

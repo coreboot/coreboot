@@ -49,6 +49,7 @@ static struct device_operations spi_dev_ops = {
 	.enable_resources		= &pci_dev_enable_resources,
 	.scan_bus			= &scan_generic_bus,
 	.ops_spi_bus			= &spi_bus_ops,
+	.ops_pci			= &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

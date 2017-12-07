@@ -99,6 +99,7 @@ static const struct device_operations graphics_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= graphics_soc_init,
+	.ops_pci		= &pci_dev_ops_pci,
 	.write_acpi_tables	= graphics_soc_write_acpi_opregion,
 };
 

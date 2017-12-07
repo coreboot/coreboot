@@ -24,6 +24,8 @@
 #define PCIE_LTR_MAX_NO_SNOOP_LATENCY_VALUE	0x1003
 /* Latency tolerance reporting, max snoop latency value 3.14ms */
 #define PCIE_LTR_MAX_SNOOP_LATENCY_VALUE	0x1003
+/* PCI-E Sub-System ID */
+#define PCIE_SUBSYSTEM_VENDOR_ID	0x94
 
 static void pch_pcie_init(struct device *dev)
 {
@@ -69,8 +71,16 @@ static void pcie_set_L1_ss_max_latency(device_t dev, unsigned int offset)
 			PCIE_LTR_MAX_SNOOP_LATENCY_VALUE);
 }
 
+static void pcie_dev_set_subsystem(struct device *dev,
+		unsigned vendor, unsigned device)
+{
+	pci_write_config32(dev, PCIE_SUBSYSTEM_VENDOR_ID,
+			((device & 0xffff) << 16) | (vendor & 0xffff));
+}
+
 static struct pci_operations pcie_ops = {
 	.set_L1_ss_latency = pcie_set_L1_ss_max_latency,
+	.set_subsystem = pcie_dev_set_subsystem,
 };
 
 static struct device_operations device_ops = {

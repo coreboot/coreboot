@@ -144,6 +144,7 @@ static struct device_operations device_ops = {
 	.read_resources		= &pch_uart_read_resources,
 	.set_resources		= &pci_dev_set_resources,
 	.enable_resources	= &uart_common_enable_resources,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

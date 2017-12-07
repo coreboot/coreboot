@@ -83,6 +83,7 @@ static struct device_operations smbus_ops = {
 	.enable_resources	= &pci_dev_enable_resources,
 	.scan_bus		= &scan_smbus,
 	.init			= &pch_smbus_init,
+	.ops_pci		= &pci_dev_ops_pci,
 	.ops_smbus_bus		= &lops_smbus_bus,
 };
 

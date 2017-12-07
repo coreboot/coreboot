@@ -89,13 +89,14 @@ static void set_resources(device_t dev)
 }
 
 static struct device_operations device_ops = {
-	.read_resources = soc_lpc_read_resources,
-	.set_resources = set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.write_acpi_tables = southbridge_write_acpi_tables,
-	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
-	.init = lpc_init,
-	.scan_bus = scan_lpc_bus,
+	.read_resources			= soc_lpc_read_resources,
+	.set_resources			= set_resources,
+	.enable_resources		= pci_dev_enable_resources,
+	.write_acpi_tables		= southbridge_write_acpi_tables,
+	.acpi_inject_dsdt_generator	= southbridge_inject_dsdt,
+	.init				= lpc_init,
+	.scan_bus			= scan_lpc_bus,
+	.ops_pci			= &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

@@ -281,6 +281,7 @@ static struct device_operations systemagent_ops = {
 	.set_resources    = &pci_dev_set_resources,
 	.enable_resources = &pci_dev_enable_resources,
 	.init             = soc_systemagent_init,
+	.ops_pci          = &pci_dev_ops_pci,
 };
 
 static const unsigned short systemagent_ids[] = {

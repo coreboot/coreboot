@@ -19,6 +19,7 @@
 #ifndef _SOC_APOLLOLAKE_CHIP_H_
 #define _SOC_APOLLOLAKE_CHIP_H_
 
+#include <commonlib/helpers.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 #include <intelblocks/lpc_lib.h>

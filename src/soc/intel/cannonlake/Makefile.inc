@@ -47,7 +47,6 @@ ramstage-y += smmrelocate.c
 ramstage-y += spi.c
 ramstage-y += systemagent.c
 ramstage-$(CONFIG_UART_DEBUG) += uart.c
-ramstage-$(CONFIG_UART_DEBUG) += uart_pch.c
 ramstage-y += vr_config.c
 ramstage-y += sd.c
 
@@ -55,7 +54,6 @@ smm-y += gpio.c
 smm-y += pmutil.c
 smm-y += smihandler.c
 smm-$(CONFIG_UART_DEBUG) += uart.c
-smm-$(CONFIG_UART_DEBUG) += uart_pch.c
 
 postcar-y += memmap.c
 postcar-y += pmutil.c

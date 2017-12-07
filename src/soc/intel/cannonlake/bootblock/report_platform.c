@@ -46,6 +46,15 @@ static struct {
 };
 
 static struct {
+	u16 lpcid;
+	const char *name;
+} pch_table[] = {
+	{ PCI_DEVICE_ID_INTEL_CNL_BASE_U_LPC, "Cannonlake-U Base" },
+	{ PCI_DEVICE_ID_INTEL_CNL_U_PREMIUM_LPC, "Cannonlake-U Premium" },
+	{ PCI_DEVICE_ID_INTEL_CNL_Y_PREMIUM_LPC, "Cannonlake-Y Premium" },
+};
+
+static struct {
 	u16 igdid;
 	const char *name;
 } igd_table[] = {
@@ -58,6 +67,16 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_CNL_GT2_ULT_3, "Cannonlake ULT GT1" },
 	{ PCI_DEVICE_ID_INTEL_CNL_GT2_ULT_4, "Cannonlake ULT GT0.5" },
 };
+
+static uint8_t get_dev_revision(device_t dev)
+{
+	return pci_read_config8(dev, PCI_REVISION_ID);
+}
+
+static uint16_t get_dev_id(device_t dev)
+{
+	return pci_read_config16(dev, PCI_DEVICE_ID);
+}
 
 static void report_cpu_info(void)
 {
@@ -120,8 +139,9 @@ static void report_cpu_info(void)
 static void report_mch_info(void)
 {
 	int i;
-	u16 mchid = pci_read_config16(SA_DEV_ROOT, PCI_DEVICE_ID);
-	u8 mch_revision = pci_read_config8(SA_DEV_ROOT, PCI_REVISION_ID);
+	device_t dev = SA_DEV_ROOT;
+	uint16_t mchid = get_dev_id(dev);
+	uint8_t mch_revision = get_dev_revision(dev);
 	const char *mch_type = "Unknown";
 
 	for (i = 0; i < ARRAY_SIZE(mch_table); i++) {
@@ -132,13 +152,31 @@ static void report_mch_info(void)
 	}
 
 	printk(BIOS_DEBUG, "MCH: device id %04x (rev %02x) is %s\n",
-	       mchid, mch_revision, mch_type);
+		mchid, mch_revision, mch_type);
+}
+
+static void report_pch_info(void)
+{
+	int i;
+	device_t dev = PCH_DEV_LPC;
+	uint16_t lpcid = get_dev_id(dev);
+	const char *pch_type = "Unknown";
+
+	for (i = 0; i < ARRAY_SIZE(pch_table); i++) {
+		if (pch_table[i].lpcid == lpcid) {
+			pch_type = pch_table[i].name;
+			break;
+		}
+	}
+	printk(BIOS_DEBUG, "PCH: device id %04x (rev %02x) is %s\n",
+		lpcid, get_dev_revision(dev), pch_type);
 }
 
 static void report_igd_info(void)
 {
 	int i;
-	u16 igdid = pci_read_config16(SA_DEV_IGD, PCI_DEVICE_ID);
+	device_t dev = SA_DEV_IGD;
+	uint16_t igdid = get_dev_id(dev);
 	const char *igd_type = "Unknown";
 
 	for (i = 0; i < ARRAY_SIZE(igd_table); i++) {
@@ -148,12 +186,13 @@ static void report_igd_info(void)
 		}
 	}
 	printk(BIOS_DEBUG, "IGD: device id %04x (rev %02x) is %s\n",
-	       igdid, pci_read_config8(SA_DEV_IGD, PCI_REVISION_ID), igd_type);
+		igdid, get_dev_revision(dev), igd_type);
 }
 
 void report_platform_info(void)
 {
 	report_cpu_info();
 	report_mch_info();
+	report_pch_info();
 	report_igd_info();
 }

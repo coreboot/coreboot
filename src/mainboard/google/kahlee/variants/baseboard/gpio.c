@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <agesawrapper.h>
+#include <amdblocks/agesawrapper.h>
 #include <baseboard/variants.h>
 #include <soc/gpio.h>
 #include <soc/smi.h>

@@ -15,7 +15,7 @@
 
 #define __SIMPLE_DEVICE__
 
-#include <agesawrapper.h>
+#include <amdblocks/agesawrapper.h>
 #include <soc/imc.h>
 #include <arch/io.h>
 #include <device/device.h>

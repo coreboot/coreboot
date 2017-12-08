@@ -19,9 +19,9 @@
 #include <cpu/x86/mp.h>
 #include <timer.h>
 #include <amdlib.h>
-#include <BiosCallOuts.h>
-#include "agesawrapper.h"
-#include <agesawrapper_call.h>
+#include <amdblocks/BiosCallOuts.h>
+#include <amdblocks/agesawrapper.h>
+#include <amdblocks/agesawrapper_call.h>
 #include <reset.h>
 #include <soc/southbridge.h>
 

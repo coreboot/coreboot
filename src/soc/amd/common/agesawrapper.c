@@ -13,13 +13,13 @@
  * GNU General Public License for more details.
  */
 
-#include "agesawrapper.h"
+#include <amdblocks/agesawrapper.h>
 #include <arch/early_variables.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <delay.h>
 #include <cpu/x86/mtrr.h>
-#include <BiosCallOuts.h>
+#include <amdblocks/BiosCallOuts.h>
 #include <string.h>
 #include <timestamp.h>
 

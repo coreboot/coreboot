@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <agesawrapper.h>
+#include <amdblocks/agesawrapper.h>
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 

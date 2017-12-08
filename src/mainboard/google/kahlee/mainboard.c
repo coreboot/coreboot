@@ -16,7 +16,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/acpi.h>
-#include <agesawrapper.h>
+#include <amdblocks/agesawrapper.h>
 #include <amdblocks/amd_pci_util.h>
 #include <cbmem.h>
 #include <baseboard/variants.h>

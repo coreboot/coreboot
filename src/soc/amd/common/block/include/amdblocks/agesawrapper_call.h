@@ -14,7 +14,7 @@
 #ifndef __AGESAWRAPPER_CALL_H__
 #define __AGESAWRAPPER_CALL_H__
 
-#include "agesawrapper.h"
+#include <amdblocks/agesawrapper.h>
 #include <stdint.h>
 #include <console/console.h>
 

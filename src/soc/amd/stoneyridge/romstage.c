@@ -24,8 +24,8 @@
 #include <device/device.h>
 #include <chip.h>
 #include <program_loading.h>
-#include <agesawrapper.h>
-#include <agesawrapper_call.h>
+#include <amdblocks/agesawrapper.h>
+#include <amdblocks/agesawrapper_call.h>
 #include <soc/northbridge.h>
 #include <soc/southbridge.h>
 #include <amdblocks/psp.h>

@@ -28,8 +28,8 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <agesawrapper.h>
-#include <agesawrapper_call.h>
+#include <amdblocks/agesawrapper.h>
+#include <amdblocks/agesawrapper_call.h>
 #include <soc/northbridge.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>

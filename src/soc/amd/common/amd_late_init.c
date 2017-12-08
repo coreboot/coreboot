@@ -20,8 +20,8 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 
-#include <agesawrapper.h>
-#include <agesawrapper_call.h>
+#include <amdblocks/agesawrapper.h>
+#include <amdblocks/agesawrapper_call.h>
 
 static void agesawrapper_post_device(void *unused)
 {

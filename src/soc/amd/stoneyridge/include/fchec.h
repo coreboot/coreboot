@@ -16,7 +16,7 @@
 #ifndef __AMD_STONEY_FCHEC__
 #define __AMD_STONEY_FCHEC__
 
-#include <agesawrapper.h>
+#include <amdblocks/agesawrapper.h>
 #include <soc/imc.h>
 
 void agesawrapper_fchecfancontrolservice(void);

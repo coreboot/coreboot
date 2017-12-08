@@ -22,8 +22,8 @@
 #include <cpu/amd/amdfam15.h>
 #include <smp/node.h>
 #include <bootblock_common.h>
-#include <agesawrapper.h>
-#include <agesawrapper_call.h>
+#include <amdblocks/agesawrapper.h>
+#include <amdblocks/agesawrapper_call.h>
 #include <soc/pci_devs.h>
 #include <soc/northbridge.h>
 #include <soc/southbridge.h>

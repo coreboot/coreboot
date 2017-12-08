@@ -17,7 +17,7 @@
 #ifndef __CALLOUTS_AMD_AGESA_H__
 #define __CALLOUTS_AMD_AGESA_H__
 
-#include "agesawrapper.h"
+#include <amdblocks/agesawrapper.h>
 
 #define BIOS_HEAP_START_ADDRESS		0x010000000
 #define BIOS_HEAP_SIZE			0x30000

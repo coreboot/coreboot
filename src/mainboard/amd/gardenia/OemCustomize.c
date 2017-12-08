@@ -14,7 +14,7 @@
  */
 
 #include <chip.h>
-#include <agesawrapper.h>
+#include <amdblocks/agesawrapper.h>
 
 #define DIMMS_PER_CHANNEL 2
 #if DIMMS_PER_CHANNEL > MAX_DIMMS_PER_CH

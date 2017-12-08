@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <agesawrapper.h>
+#include <amdblocks/agesawrapper.h>
 #include <device/pci_def.h>
 #include <device/device.h>
 #include <soc/southbridge.h>

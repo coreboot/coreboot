@@ -16,7 +16,7 @@
 #ifndef __AMD_PSP_H__
 #define __AMD_PSP_H__
 
-#include <agesawrapper.h>
+#include <amdblocks/agesawrapper.h>
 #include <soc/pci_devs.h>
 #include <stdint.h>
 #include <compiler.h>

@@ -24,8 +24,8 @@
 #include <soc/northbridge.h>
 #include <soc/southbridge.h>
 #include <amdblocks/psp.h>
-#include <agesawrapper.h>
-#include <agesawrapper_call.h>
+#include <amdblocks/agesawrapper.h>
+#include <amdblocks/agesawrapper_call.h>
 
 struct device_operations cpu_bus_ops = {
 	.read_resources	  = DEVICE_NOOP,

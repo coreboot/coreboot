@@ -16,7 +16,7 @@
 #ifndef __DIMMSPD_H__
 #define __DIMMSPD_H__
 
-#include <agesawrapper.h>
+#include <amdblocks/agesawrapper.h>
 #include <stddef.h>
 #include <stdint.h>
 

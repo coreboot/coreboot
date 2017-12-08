@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <agesawrapper.h>
+#include <amdblocks/agesawrapper.h>
 #include <variant/gpio.h>
 
 static const PCIe_PORT_DESCRIPTOR PortList[] = {

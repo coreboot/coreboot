@@ -534,12 +534,48 @@ static const struct edid_mode kd097d04_edid_mode = {
 	.vspw = 2,
 };
 
+const struct mipi_panel_data inx097pfg_panel = {
+	.mipi_num = 2,
+	.format = MIPI_DSI_FMT_RGB888,
+	.lanes = 8,
+	.display_on_udelay = 120000,
+	.video_mode_udelay = 5000,
+};
+
+static const struct edid_mode inx097pfg_edid_mode = {
+	.name = "1536x2048@60Hz",
+	.pixel_clock = 220000,
+	.refresh = 60,
+	.ha = 1536,
+	.hbl = 224,
+	.hso = 100,
+	.hspw = 24,
+	.va = 2048,
+	.vbl = 38,
+	.vso = 18,
+	.vspw = 2,
+};
+
 const struct mipi_panel_data *mainboard_get_mipi_mode
 				(struct edid_mode *edid_mode)
 {
-	memcpy(edid_mode, &kd097d04_edid_mode, sizeof(struct edid_mode));
-
-	return &kd097d04_panel;
+	switch (sku_id()) {
+	case 0:
+	case 2:
+	case 4:
+	case 6:
+		memcpy(edid_mode, &inx097pfg_edid_mode,
+		       sizeof(struct edid_mode));
+		return &inx097pfg_panel;
+	case 1:
+	case 3:
+	case 5:
+	case 7:
+	default:
+		memcpy(edid_mode, &kd097d04_edid_mode,
+			sizeof(struct edid_mode));
+		return &kd097d04_panel;
+	}
 }
 
 static void mainboard_enable(device_t dev)

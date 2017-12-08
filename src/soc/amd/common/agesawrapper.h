@@ -31,6 +31,9 @@ enum {
 	PICK_CRAT,
 };
 
+/* Return current dispatcher or NULL on error. */
+MODULE_ENTRY agesa_get_dispatcher(void);
+
 AGESA_STATUS agesawrapper_amdinitreset(void);
 AGESA_STATUS agesawrapper_amdinitearly(void);
 AGESA_STATUS agesawrapper_amdinitenv(void);

@@ -14,6 +14,7 @@
  */
 
 #include "agesawrapper.h"
+#include <arch/early_variables.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <delay.h>
@@ -377,4 +378,25 @@ const void *agesawrapper_locate_module (const CHAR8 name[8])
 	module = (AMD_MODULE_HEADER*)image->ModuleInfoOffset;
 
 	return module;
+}
+
+static MODULE_ENTRY agesa_dispatcher CAR_GLOBAL;
+
+MODULE_ENTRY agesa_get_dispatcher(void)
+{
+	const AMD_MODULE_HEADER *module;
+	static const CHAR8 id[8] = AGESA_ID;
+	MODULE_ENTRY val = car_get_var(agesa_dispatcher);
+
+	if (val != NULL)
+		return val;
+
+	module = agesawrapper_locate_module(id);
+	if (!module)
+		return NULL;
+
+	val = module->ModuleDispatcher;
+	car_set_var(agesa_dispatcher, val);
+
+	return val;
 }

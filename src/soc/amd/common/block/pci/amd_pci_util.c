@@ -70,7 +70,7 @@ void write_pci_int_table(void)
 	/* PIC IRQ routine */
 	printk(BIOS_DEBUG, "PCI_INTR tables: Writing registers C00/C01 for"
 				" PCI IRQ routing:\n"
-				"\tPCI_INTR_INDEX\t\tPIC mode"
+				"PCI_INTR_INDEX\tname\t\t     PIC mode"
 				"\tAPIC mode\n");
 	/*
 	 * Iterate table idx_name, indexes outside the table are ignored
@@ -81,7 +81,7 @@ void write_pci_int_table(void)
 	for (i = 0 ; i < limit; i++) {
 		byte = idx_name[i].index;
 		write_pci_int_idx(byte, 0, (u8) picr_data_ptr[byte]);
-		printk(BIOS_DEBUG, "\t0x%02X %s\t0x%02X\t\t",
+		printk(BIOS_DEBUG, "0x%02X\t\t%-20s 0x%02X\t",
 				byte, idx_name[i].name,
 				read_pci_int_idx(byte, 0));
 		write_pci_int_idx(byte, 1, (u8) intr_data_ptr[byte]);

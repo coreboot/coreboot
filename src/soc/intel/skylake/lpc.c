@@ -31,6 +31,7 @@
 #include <reg_script.h>
 #include <soc/iomap.h>
 #include <soc/pcr_ids.h>
+#include <soc/intel/common/block/lpc/lpc_def.h>
 
 /**
   PCH preserved MMIO range, 24 MB, from 0xFD000000 to 0xFE7FFFFF
@@ -81,11 +82,17 @@ void soc_get_gen_io_dec_range(const struct device *dev, uint32_t *gen_io_dec)
 
 void soc_setup_dmi_pcr_io_dec(uint32_t *gen_io_dec)
 {
+	uint16_t lpc_en;
+
 	/* Mirror these same settings in DMI PCR */
 	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR1, gen_io_dec[0]);
 	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR2, gen_io_dec[1]);
 	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR3, gen_io_dec[2]);
 	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR4, gen_io_dec[3]);
+
+	/* LPC IO Decode Enable */
+	lpc_en = pci_read_config16(PCH_DEV_LPC, LPC_IO_ENABLES);
+	pcr_write16(PID_DMI, PCR_DMI_LPCIOE, lpc_en);
 }
 
 static const struct reg_script pch_misc_init_script[] = {

@@ -16,6 +16,7 @@
 
 #include <device/device.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/gspi.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
 #include <intelblocks/pmclib.h>
@@ -98,6 +99,7 @@ static void soc_config_pwrmbase(void)
 void bootblock_pch_early_init(void)
 {
 	fast_spi_early_init(SPI_BASE_ADDRESS);
+	gspi_early_bar_init();
 	enable_p2sbbar();
 	/*
 	 * Enabling PWRM Base for accessing

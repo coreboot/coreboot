@@ -18,6 +18,7 @@
 #include <region_file.h>
 #include <timer.h>
 #include <device/pci_def.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <amdblocks/psp.h>
 
@@ -185,6 +186,34 @@ int psp_notify_dram(void)
 }
 
 /*
+ * Notify the PSP that the system is completing the boot process.  Upon
+ * receiving this command, the PSP will only honor commands where the buffer
+ * is in SMM space.
+ */
+static void psp_notify_boot_done(void *unused)
+{
+	int cmd_status;
+	struct mbox_default_buffer buffer = {
+		.header = {
+			.size = sizeof(buffer)
+		}
+	};
+
+	printk(BIOS_DEBUG, "PSP: Notify that POST is finishing... ");
+
+	cmd_status = send_psp_command(MBOX_BIOS_CMD_BOOT_DONE, &buffer);
+
+	/* buffer's status shouldn't change but report it if it does */
+	if (rd_resp_sts(&buffer))
+		printk(BIOS_DEBUG, "buffer status=0x%x ",
+				rd_resp_sts(&buffer));
+	if (cmd_status)
+		printk(BIOS_DEBUG, "%s\n", status_to_string(cmd_status));
+	else
+		printk(BIOS_DEBUG, "OK\n");
+}
+
+/*
  * Tell the PSP to load a firmware blob from a location in the BIOS image.
  */
 static int psp_load_blob(int type, void *addr)
@@ -238,3 +267,6 @@ int psp_load_named_blob(int type, const char *name)
 	}
 	return r;
 }
+
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY,
+		psp_notify_boot_done, NULL);

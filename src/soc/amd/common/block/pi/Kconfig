@@ -1,0 +1,5 @@
+config SOC_AMD_COMMON_BLOCK_PI
+	bool
+	default n
+	help
+	  This option builds functions that interface AMD's AGESA.

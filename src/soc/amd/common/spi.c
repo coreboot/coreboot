@@ -16,7 +16,7 @@
 #include <console/console.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
-#include "s3_resume.h"
+#include <amdblocks/spi.h>
 
 void spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len)
 {

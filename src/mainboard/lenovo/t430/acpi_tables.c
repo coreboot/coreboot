@@ -29,7 +29,6 @@ static void acpi_update_thermal_table(global_nvs_t *gnvs)
 	gnvs->tcrt = CRITICAL_TEMPERATURE;
 	gnvs->tpsv = PASSIVE_TEMPERATURE;
 	gnvs->tmax = MAX_TEMPERATURE;
-	gnvs->flvl = 5;
 }
 
 void acpi_create_gnvs(global_nvs_t *gnvs)

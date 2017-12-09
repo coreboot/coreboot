@@ -218,17 +218,12 @@ static void configure_codec(void)
 	gpio_input(GPIO(3, D, 1));	/* I2S0_RX remove pull-up */
 	gpio_input(GPIO(3, D, 2));	/* I2S0_TX remove pull-up */
 	gpio_input(GPIO(3, D, 3));	/* I2S0_SDI0 remove pull-up */
-	gpio_input(GPIO(3, D, 4));	/* I2S0_SDI1 remove pull-up */
-	/* GPIO3_D5 (I2S0_SDI2SDO2) not connected */
-	gpio_input(GPIO(3, D, 6));	/* I2S0_SDO1 remove pull-up */
+	/* GPIOs 3_D4 - 3_D6 not used for I2S and are SKU ID pins on Scarlet. */
 	gpio_input(GPIO(3, D, 7));	/* I2S0_SDO0 remove pull-up */
 	gpio_input(GPIO(4, A, 0));	/* I2S0_MCLK remove pull-up */
 
-	write32(&rk3399_grf->iomux_i2s0, IOMUX_I2S0);
+	write32(&rk3399_grf->iomux_i2s0, IOMUX_I2S0_SD0);
 	write32(&rk3399_grf->iomux_i2sclk, IOMUX_I2SCLK);
-
-	/* AUDIO IO domain 1.8V voltage selection */
-	write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 1));
 
 	if (!IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
 		gpio_output(GPIO_P18V_AUDIO_PWREN, 1);

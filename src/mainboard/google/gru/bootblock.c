@@ -31,20 +31,10 @@
 
 void bootblock_mainboard_early_init(void)
 {
-	/* Let gpio2ab io domains works at 1.8V.
-	 *
-	 * If io_vsel[0] == 0(default value), gpio2ab io domains is 3.0V
-	 * powerd by APIO2_VDD, otherwise, 1.8V supplied by APIO2_VDDPST.
-	 * But from the schematic of kevin rev0, the APIO2_VDD and
-	 * APIO2_VDDPST both are 1.8V(intentionally?).
-	 *
-	 * So, by default, CPU1_SDIO_PWREN(GPIO2_A2) can't output 3.0V
-	 * because the supply is 1.8V.
-	 * Let ask GPIO2_A2 output 1.8V to make GPIO interal logic happy.
-	 */
-	write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 0));
-
-	/* Scarlet-based gpio4cd iodomain is 1.8V */
+	/* Configure all programmable IO voltage domains (3D/4A and 2A/2B) early
+	   so that we know we can use our GPIOs reliably in following code. */
+	write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 1 | 1 << 0));
+	/* On Scarlet-based boards, the 4C/4D domain is 1.8V (on others 3.0V) */
 	if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
 		write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 3));
 

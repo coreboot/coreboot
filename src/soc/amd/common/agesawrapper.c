@@ -21,6 +21,7 @@
 #include <cpu/x86/mtrr.h>
 #include <BiosCallOuts.h>
 #include <string.h>
+#include <timestamp.h>
 
 void __attribute__((weak)) SetMemParams(AMD_POST_PARAMS *PostParams) {}
 void __attribute__((weak)) OemPostParams(AMD_POST_PARAMS *PostParams) {}
@@ -63,7 +64,10 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 	AmdResetParams.FchInterface.SataEnable = !((CONFIG_STONEYRIDGE_SATA_MODE == 0) || (CONFIG_STONEYRIDGE_SATA_MODE == 3));
 	AmdResetParams.FchInterface.IdeEnable = (CONFIG_STONEYRIDGE_SATA_MODE == 0) || (CONFIG_STONEYRIDGE_SATA_MODE == 3);
 
+	timestamp_add_now(TS_AGESA_INIT_RESET_START);
 	status = AmdInitReset(&AmdResetParams);
+	timestamp_add_now(TS_AGESA_INIT_RESET_DONE);
+
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
 	return status;
@@ -89,7 +93,10 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 	OemCustomizeInitEarly (AmdEarlyParamsPtr);
 
 	AmdEarlyParamsPtr->GnbConfig.PsppPolicy = PsppDisabled;
+
+	timestamp_add_now(TS_AGESA_INIT_EARLY_START);
 	status = AmdInitEarly ((AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr);
+	timestamp_add_now(TS_AGESA_INIT_EARLY_DONE);
 
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
@@ -128,7 +135,9 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 		"unknown"
 	);
 
+	timestamp_add_now(TS_AGESA_INIT_POST_START);
 	status = AmdInitPost (PostParams);
+	timestamp_add_now(TS_AGESA_INIT_POST_DONE);
 
 	/* If UMA is enabled we currently have it below TOP_MEM as well.
 	 * UMA may or may not be cacheable, so Sub4GCacheTop could be
@@ -190,7 +199,10 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	EnvParam->FchInterface.SataIdeMode = (CONFIG_STONEYRIDGE_SATA_MODE == 3);
 	EnvParam->GnbEnvConfiguration.IommuSupport = FALSE;
 
+	timestamp_add_now(TS_AGESA_INIT_ENV_START);
 	status = AmdInitEnv (EnvParam);
+	timestamp_add_now(TS_AGESA_INIT_ENV_DONE);
+
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(EnvParam->StdHeader.HeapStatus);
 	/* Initialize Subordinate Bus Number and Secondary Bus Number
 	 * In platform BIOS this address is allocated by PCI enumeration code
@@ -258,7 +270,10 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	MidParam->FchInterface.IdeEnable = (CONFIG_STONEYRIDGE_SATA_MODE == 0) || (CONFIG_STONEYRIDGE_SATA_MODE == 3);
 	MidParam->FchInterface.SataIdeMode = (CONFIG_STONEYRIDGE_SATA_MODE == 3);
 
+	timestamp_add_now(TS_AGESA_INIT_MID_START);
 	status = AmdInitMid ((AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr);
+	timestamp_add_now(TS_AGESA_INIT_MID_DONE);
+
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
 
@@ -285,7 +300,11 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	/* NOTE: if not call amdcreatestruct, the initializer(AmdInitLateInitializer) would not be called */
 	AmdCreateStruct(&AmdParamStruct);
 	AmdLateParams = (AMD_LATE_PARAMS *)AmdParamStruct.NewStructPtr;
+
+	timestamp_add_now(TS_AGESA_INIT_LATE_START);
 	Status = AmdInitLate(AmdLateParams);
+	timestamp_add_now(TS_AGESA_INIT_LATE_DONE);
+
 	if (Status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog(AmdLateParams->StdHeader.HeapStatus);
 		ASSERT(Status == AGESA_SUCCESS);

@@ -77,6 +77,22 @@ enum timestamp_id {
 	TS_END_COPYVPD_RO = 551,
 	TS_END_COPYVPD_RW = 552,
 
+	/* 900-920 reserved for vendorcode extensions (900-940: AMD AGESA) */
+	TS_AGESA_INIT_RESET_START = 900,
+	TS_AGESA_INIT_RESET_DONE = 901,
+	TS_AGESA_INIT_EARLY_START = 902,
+	TS_AGESA_INIT_EARLY_DONE = 903,
+	TS_AGESA_INIT_POST_START = 904,
+	TS_AGESA_INIT_POST_DONE = 905,
+	TS_AGESA_INIT_ENV_START = 906,
+	TS_AGESA_INIT_ENV_DONE = 907,
+	TS_AGESA_INIT_MID_START = 908,
+	TS_AGESA_INIT_MID_DONE = 909,
+	TS_AGESA_INIT_LATE_START = 910,
+	TS_AGESA_INIT_LATE_DONE = 911,
+	TS_AGESA_INIT_RTB_START = 912,
+	TS_AGESA_INIT_RTB_DONE = 913,
+
 	/* 940-950 reserved for vendorcode extensions (940-950: Intel ME) */
 	TS_ME_INFORM_DRAM_WAIT = 940,
 	TS_ME_INFORM_DRAM_DONE = 941,
@@ -180,6 +196,22 @@ static const struct timestamp_id_to_name {
 	{ TS_VB_VBOOT_DONE,	"finished vboot kernel verification" },
 	{ TS_KERNEL_DECOMPRESSION, "starting kernel decompression/relocation" },
 	{ TS_START_KERNEL,	"jumping to kernel" },
+
+	/* AMD AGESA related timestamps */
+	{ TS_AGESA_INIT_RESET_START,	"calling AmdInitReset" },
+	{ TS_AGESA_INIT_RESET_DONE,	"back from AmdInitReset" },
+	{ TS_AGESA_INIT_EARLY_START,	"calling AmdInitEarly" },
+	{ TS_AGESA_INIT_EARLY_DONE,	"back from AmdInitEarly" },
+	{ TS_AGESA_INIT_POST_START,	"calling AmdInitPost" },
+	{ TS_AGESA_INIT_POST_DONE,	"back from AmdInitPost" },
+	{ TS_AGESA_INIT_ENV_START,	"calling AmdInitEnv" },
+	{ TS_AGESA_INIT_ENV_DONE,	"back from AmdInitEnv" },
+	{ TS_AGESA_INIT_MID_START,	"calling AmdInitMid" },
+	{ TS_AGESA_INIT_MID_DONE,	"back from AmdInitMid" },
+	{ TS_AGESA_INIT_LATE_START,	"calling AmdInitLate" },
+	{ TS_AGESA_INIT_LATE_DONE,	"back from AmdInitLate" },
+	{ TS_AGESA_INIT_RTB_START,	"calling AmdInitRtb/AmdS3Save" },
+	{ TS_AGESA_INIT_RTB_DONE,	"back from AmdInitRtb/AmdS3Save" },
 
 	/* Intel ME related timestamps */
 	{ TS_ME_INFORM_DRAM_WAIT,	"waiting for ME acknowledgement of raminit"},

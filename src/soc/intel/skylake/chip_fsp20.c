@@ -290,6 +290,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Enable/Disable EIST */
 	tconfig->Eist = config->eist_enable;
 
+	/* Set TccActivationOffset */
+	tconfig->TccActivationOffset = config->tcc_offset;
+
 	soc_irq_settings(params);
 }
 

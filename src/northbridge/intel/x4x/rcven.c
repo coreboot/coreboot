@@ -365,8 +365,9 @@ void rcven(const struct sysinfo *s)
 				"medium: %d; tap: %d\n",
 				channel, lane, reg8, timing[lane].medium,
 				timing[lane].tap);
-			MCHBAR16(0x400 * channel + 0x5fa) &=
-				~(3 << (lane * 2)) | (reg8 << (lane * 2));
+			MCHBAR16(0x400 * channel + 0x5fa) =
+				(MCHBAR16(0x400 * channel + 0x5fa) &
+				~(3 << (lane * 2))) | (reg8 << (lane * 2));
 		}
 		/* simply use timing[0] to program mincoarse */
 		timing[0].coarse = mincoarse;

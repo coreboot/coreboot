@@ -66,7 +66,8 @@ extern struct pci_driver _pci_drivers[];
 /** end of compile time generated pci driver array */
 extern struct pci_driver _epci_drivers[];
 
-
+/* Set Subsystem ID operation for PCI devices */
+extern struct pci_operations pci_dev_ops_pci;
 extern struct device_operations default_pci_ops_dev;
 extern struct device_operations default_pci_ops_bus;
 

@@ -734,7 +734,7 @@ void pci_dev_init(struct device *dev)
 }
 
 /** Default device operation for PCI devices */
-static struct pci_operations pci_dev_ops_pci = {
+struct pci_operations pci_dev_ops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
 

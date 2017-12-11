@@ -501,16 +501,16 @@ static void timestamp_set_tick_freq(unsigned long table_tick_freq_mhz)
 {
 	tick_freq_mhz = table_tick_freq_mhz;
 
-	/* Honor table frequency. */
-	if (tick_freq_mhz)
-		return;
-
-	tick_freq_mhz = arch_tick_frequency();
+	/* Honor table frequency if present. */
+	if (!tick_freq_mhz)
+		tick_freq_mhz = arch_tick_frequency();
 
 	if (!tick_freq_mhz) {
 		fprintf(stderr, "Cannot determine timestamp tick frequency.\n");
 		exit(1);
 	}
+
+	debug("Timestamp tick frequency: %ld MHz\n", tick_freq_mhz);
 }
 
 u64 arch_convert_raw_ts_entry(u64 ts)

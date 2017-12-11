@@ -1628,7 +1628,7 @@ typedef struct {
   UINT8                       OsBoot;
 
 /** Offset 0x0370 - System Vendor ID
-  Upd for vendor ID for assigning to devices 
+  Upd for vendor ID for assigning to devices
 **/
   UINT16                      SiSVID;
 
@@ -1660,9 +1660,21 @@ typedef struct {
 **/
   UINT8                       ApIdleManner;
 
-/** Offset 0x0385
+/** Offset 0x0385 - Skip P-unit Initialization
+  When this is skipped, boot loader must initialize P-unit before SilicionInit API.
+  0: Initialize(Default), 1: Skip
+  $EN_DIS
 **/
-  UINT8                       ReservedFspsUpd[11];
+  UINT8                       SkipPunitInit;
+
+/** Offset 0x0386 - Sub system Vendor ID VGA
+  Graphics PCI subsystem HgSubSystemId
+**/
+  UINT16                      HgSubSystemId;
+
+/** Offset 0x0388
+**/
+  UINT8                       ReservedFspsUpd[8];
 } FSP_S_CONFIG;
 
 /** Fsp S Test Configuration

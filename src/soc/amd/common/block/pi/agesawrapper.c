@@ -244,10 +244,11 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 
 	if (status != AGESA_SUCCESS)
 		agesawrapper_readeventlog(EnvParam->StdHeader.HeapStatus);
-	/* Initialize Subordinate Bus Number and Secondary Bus Number
+	/*
+	 * Initialize Subordinate Bus Number and Secondary Bus Number
 	 * In platform BIOS this address is allocated by PCI enumeration code
-	 Modify D1F0x18
-	*/
+	 * Modify D1F0x18
+	 */
 
 	return status;
 }
@@ -329,7 +330,10 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
-	/* NOTE: if not call amdcreatestruct, the initializer(AmdInitLateInitializer) would not be called */
+	/*
+	 * NOTE: if not call amdcreatestruct, the initializer
+	 * (AmdInitLateInitializer) would not be called.
+	 */
 	AmdCreateStruct(&AmdParamStruct);
 	AmdLateParams = (AMD_LATE_PARAMS *)AmdParamStruct.NewStructPtr;
 
@@ -354,8 +358,9 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	printk(BIOS_DEBUG, "DmiTable:%x, AcpiPstatein: %x, AcpiSrat:%x,"
 	       "AcpiSlit:%x, Mce:%x, Cmc:%x,"
 	       "Alib:%x, AcpiIvrs:%x in %s\n",
-	       (unsigned int)DmiTable, (unsigned int)AcpiPstate, (unsigned int)AcpiSrat,
-	       (unsigned int)AcpiSlit, (unsigned int)AcpiWheaMce, (unsigned int)AcpiWheaCmc,
+	       (unsigned int)DmiTable, (unsigned int)AcpiPstate,
+	       (unsigned int)AcpiSrat, (unsigned int)AcpiSlit,
+	       (unsigned int)AcpiWheaMce, (unsigned int)AcpiWheaCmc,
 	       (unsigned int)AcpiAlib, (unsigned int)AcpiIvrs, __func__);
 
 	/* AmdReleaseStruct (&AmdParamStruct); */
@@ -420,8 +425,8 @@ static int agesa_locate_stage_file(const char *name, struct region_device *rdev)
 
 const void *agesawrapper_locate_module (const CHAR8 name[8])
 {
-	const void* agesa;
-	const AMD_IMAGE_HEADER* image;
+	const void *agesa;
+	const AMD_IMAGE_HEADER *image;
 	struct region_device rdev;
 	size_t file_size;
 	const char *fname = CONFIG_AGESA_CBFS_NAME;

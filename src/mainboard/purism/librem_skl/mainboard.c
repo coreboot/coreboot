@@ -43,7 +43,8 @@ const char *smbios_mainboard_serial_number(void)
 		}
 	}
 
-	strncpy(serial_number, CONFIG_MAINBOARD_SERIAL_NUMBER, MAX_SERIAL_LENGTH);
+	strncpy(serial_number, CONFIG_MAINBOARD_SERIAL_NUMBER,
+			MAX_SERIAL_LENGTH);
 
 	return serial_number;
 }

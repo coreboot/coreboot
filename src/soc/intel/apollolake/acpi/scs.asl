@@ -109,6 +109,15 @@ Scope (\_SB.PCI0) {
 			 */
 			^^SCPG(1,0x00000041)
 		}
+
+		Device (CARD)
+		{
+			Name (_ADR, 0x00000008)
+			Method (_RMV, 0, NotSerialized)
+			{
+				Return (0)
+			}
+		}
 	} /* Device (SDHA) */
 
 	/* SD CARD */
@@ -162,5 +171,13 @@ Scope (\_SB.PCI0) {
 			Store (0, ^^GRR3)
 		}
 
+		Device (CARD)
+		{
+			Name (_ADR, 0x00000008)
+			Method (_RMV, 0, NotSerialized)
+			{
+				Return (1)
+			}
+		}
 	} /* Device (SDCD) */
 }

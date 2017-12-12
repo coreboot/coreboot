@@ -125,7 +125,15 @@ ramstage-libs += $(agesa_output_path)/libagesa.a
 
 cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += $(CONFIG_AGESA_CBFS_NAME)
 $(CONFIG_AGESA_CBFS_NAME)-file := $(CONFIG_AGESA_BINARY_PI_FILE)
+ifeq ($(CONFIG_AGESA_BINARY_PI_AS_STAGE),y)
+$(CONFIG_AGESA_CBFS_NAME)-type := stage
+$(CONFIG_AGESA_CBFS_NAME)-options :=  --xip
+# 4KiB alignment to handle any interior alignment. Current AGESA only has
+# 64 byte alignment.
+$(CONFIG_AGESA_CBFS_NAME)-align := 4096
+else
 $(CONFIG_AGESA_CBFS_NAME)-type := raw
 $(CONFIG_AGESA_CBFS_NAME)-position := $(CONFIG_AGESA_BINARY_PI_LOCATION)
+endif
 
 endif

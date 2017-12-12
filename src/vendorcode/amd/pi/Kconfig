@@ -49,6 +49,15 @@ config AGESA_BINARY_PI_FILE
 	help
 	  Specify the binary file to use for AMD platform initialization.
 
+config AGESA_BINARY_PI_AS_STAGE
+	bool "AGESA Binary PI is added as stage to CBFS."
+	depends on SOC_AMD_STONEYRIDGE_FT4 || SOC_AMD_STONEYRIDGE_FP4
+	help
+	  AGESA will be added as a stage utilizing --xip cbfstool options
+	  as needed relocating the image to the proper location in memory-mapped
+	  cpu address space. It's required that the file be in ELF format
+	  containing the relocations necessary for relocating at runtime.
+
 config AGESA_CBFS_NAME
 	string
 	default "AGESA"
@@ -56,6 +65,7 @@ config AGESA_CBFS_NAME
 config AGESA_BINARY_PI_LOCATION
 	hex "AGESA PI binary address in ROM"
 	default 0xFFE00000
+	depends on !AGESA_BINARY_PI_AS_STAGE
 	help
 	  Specify the ROM address at which to store the binary Platform
 	  Initialization code.

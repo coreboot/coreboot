@@ -381,22 +381,68 @@ AGESA_STATUS agesawrapper_amdreadeventlog (UINT8 HeapStatus)
 	return Status;
 }
 
+static int agesa_locate_file(const char *name, struct region_device *rdev,
+				uint32_t type)
+{
+	struct cbfsf fh;
+
+	if (cbfs_boot_locate(&fh, name, &type))
+		return -1;
+
+	cbfs_file_data(rdev, &fh);
+	return 0;
+}
+
+static int agesa_locate_raw_file(const char *name, struct region_device *rdev)
+{
+	return agesa_locate_file(name, rdev, CBFS_TYPE_RAW);
+}
+
+static int agesa_locate_stage_file(const char *name, struct region_device *rdev)
+{
+	const size_t metadata_sz = sizeof(struct cbfs_stage);
+
+	if (agesa_locate_file(name, rdev, CBFS_TYPE_STAGE))
+		return -1;
+
+	/* Peel off the cbfs stage metadata. */
+	return rdev_chain(rdev, rdev, metadata_sz,
+			region_device_sz(rdev) - metadata_sz);
+}
+
 const void *agesawrapper_locate_module (const CHAR8 name[8])
 {
 	const void* agesa;
 	const AMD_IMAGE_HEADER* image;
-	const AMD_MODULE_HEADER* module;
+	struct region_device rdev;
 	size_t file_size;
+	const char *fname = CONFIG_AGESA_CBFS_NAME;
+	int ret;
 
-	agesa = cbfs_boot_map_with_leak((const char *)CONFIG_AGESA_CBFS_NAME,
-						CBFS_TYPE_RAW, &file_size);
+	if (IS_ENABLED(CONFIG_AGESA_BINARY_PI_AS_STAGE))
+		ret = agesa_locate_stage_file(fname, &rdev);
+	else
+		ret = agesa_locate_raw_file(fname, &rdev);
+
+	if (ret)
+		return NULL;
+
+	file_size = region_device_sz(&rdev);
+
+	/* Assume boot device is memory mapped so the mapping can leak. */
+	assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
+
+	agesa = rdev_mmap_full(&rdev);
 
 	if (!agesa)
 		return NULL;
-	image =  LibAmdLocateImage(agesa, agesa + file_size - 1, 4096, name);
-	module = (AMD_MODULE_HEADER*)image->ModuleInfoOffset;
 
-	return module;
+	image =  LibAmdLocateImage(agesa, agesa + file_size, 4096, name);
+
+	if (!image)
+		return NULL;
+
+	return (AMD_MODULE_HEADER *)image->ModuleInfoOffset;
 }
 
 static MODULE_ENTRY agesa_dispatcher CAR_GLOBAL;

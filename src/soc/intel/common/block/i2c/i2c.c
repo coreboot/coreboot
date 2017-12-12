@@ -122,6 +122,7 @@ static void lpss_i2c_acpi_fill_ssdt(struct device *dev)
 		I2C_SPEED_HIGH,
 	};
 	int i, bus;
+	const char *path;
 
 	if (!dev->enabled)
 		return;
@@ -140,7 +141,11 @@ static void lpss_i2c_acpi_fill_ssdt(struct device *dev)
 	if (!dw_i2c_addr)
 		return;
 
-	acpigen_write_scope(acpi_device_path(dev));
+	path = acpi_device_path(dev);
+	if (!path)
+		return;
+
+	acpigen_write_scope(path);
 
 	/* Report timing values for the OS driver */
 	for (i = 0; i < DW_I2C_SPEED_CONFIG_COUNT; i++) {

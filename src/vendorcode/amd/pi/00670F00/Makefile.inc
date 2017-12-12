@@ -50,7 +50,7 @@ AGESA_INC = -I$(obj)
 AGESA_INC += $(BINARY_PI_INC)
 
 AGESA_INC += -I$(src)/soc/amd/stoneyridge/include
-AGESA_INC += -I$(src)/soc/amd/common
+AGESA_INC += -I$(src)/soc/amd/common/block/include
 
 AGESA_INC += -I$(src)/arch/x86/include
 AGESA_INC += -I$(src)/include

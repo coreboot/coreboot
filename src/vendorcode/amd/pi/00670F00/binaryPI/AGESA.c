@@ -41,7 +41,7 @@
  ***************************************************************************/
 // TODO This list needs to be pruned of anything that is not API
 #include "AGESA.h"
-#include <block/include/amdblocks/agesawrapper.h>
+#include <amdblocks/agesawrapper.h>
 #include "AcpiLib.h"
 #include "FchCommonCfg.h"
 #include "Fch.h"

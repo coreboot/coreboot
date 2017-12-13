@@ -65,6 +65,23 @@ static void pch_pmc_add_io_resources(struct device *dev,
 			cfg->abase_addr, cfg->abase_size,
 			 IORESOURCE_IO | IORESOURCE_ASSIGNED |
 			 IORESOURCE_FIXED);
+	if (IS_ENABLED(CONFIG_PMC_INVALID_READ_AFTER_WRITE)) {
+		/*
+		 * The ACPI IO BAR (offset 0x20) is not PCI compliant. We've
+		 * observed cases where the BAR reads back as 0, but the IO
+		 * window is open. This also means that it will not respond
+		 * to PCI probing.
+		 */
+		pci_write_config16(dev, cfg->abase_offset, cfg->abase_addr);
+		/*
+		 * In pci_dev_enable_resources, reading IO SPACE ACCESS bit in
+		 * STATUSCOMMAND register does not read back the written
+		 * value correctly, hence IO access gets disabled. This is
+		 * seen in some PMC devices, hence this code makes sure
+		 * IO access is available.
+		 */
+		dev->command |= PCI_COMMAND_IO;
+	}
 }
 
 static void pch_pmc_read_resources(struct device *dev)

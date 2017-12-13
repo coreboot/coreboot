@@ -30,3 +30,10 @@ config POWER_STATE_PREVIOUS_AFTER_FAILURE
 	  power
 
 endchoice
+
+config PMC_INVALID_READ_AFTER_WRITE
+	bool
+	default n
+	help
+	  Enable this for PMC devices where a read back of ACPI BAR and
+	  IO access bit does not return the previously written value.

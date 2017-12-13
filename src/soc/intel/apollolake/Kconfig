@@ -57,6 +57,7 @@ config CPU_SPECIFIC_OPTIONS
 	select PCIEX_LENGTH_256MB
 	select POSTCAR_CONSOLE
 	select POSTCAR_STAGE
+	select PMC_INVALID_READ_AFTER_WRITE
 	select REG_SCRIPT
 	select RELOCATABLE_RAMSTAGE	# Build fails if this is not selected
 	select RTC

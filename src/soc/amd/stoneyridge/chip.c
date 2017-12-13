@@ -86,7 +86,7 @@ static void earliest_ramstage(void *unused)
 		psp_load_named_blob(MBOX_BIOS_CMD_SMU_FW2, "smu_fw2");
 
 	post_code(0x47);
-	AGESAWRAPPER(amdinitenv);
+	do_agesawrapper(agesawrapper_amdinitenv, "amdinitenv");
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, earliest_ramstage, NULL);

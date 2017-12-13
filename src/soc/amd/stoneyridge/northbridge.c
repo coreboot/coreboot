@@ -424,12 +424,12 @@ void domain_read_resources(device_t dev)
 void domain_enable_resources(device_t dev)
 {
 	if (acpi_is_wakeup_s3())
-		AGESAWRAPPER(fchs3laterestore);
+		do_agesawrapper(agesawrapper_fchs3laterestore,
+				"fchs3laterestore");
 
 	/* Must be called after PCI enumeration and resource allocation */
-	if (!acpi_is_wakeup_s3())
-		AGESAWRAPPER(amdinitmid);
-
+	else
+		do_agesawrapper(agesawrapper_amdinitmid, "amdinitmid");
 	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
 }
 

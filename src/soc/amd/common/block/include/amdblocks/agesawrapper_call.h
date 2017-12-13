@@ -37,7 +37,7 @@ static const char *decodeAGESA_STATUS(AGESA_STATUS sret)
 					"AGESA_WARNING", "AGESA_ERROR",
 					"AGESA_CRITICAL", "AGESA_FATAL"
 					};
-	if (sret > 7)
+	if (sret >= ARRAY_SIZE(statusStrings))
 		return "unknown"; /* Non-AGESA error code */
 	return statusStrings[sret];
 }
@@ -51,9 +51,5 @@ static inline u32 do_agesawrapper(AGESA_STATUS (*func)(void), const char *name)
 			name, decodeAGESA_STATUS(ret));
 	return (u32)ret;
 }
-
-#define AGESAWRAPPER(func) do_agesawrapper(agesawrapper_ ## func, #func)
-
-#define AGESAWRAPPER_PRE_CONSOLE(func) agesawrapper_ ## func()
 
 #endif /* __AGESAWRAPPER_CALL_H__ */

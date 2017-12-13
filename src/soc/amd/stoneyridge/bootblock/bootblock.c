@@ -117,8 +117,9 @@ void bootblock_soc_init(void)
 		load_smu_fw1();
 
 	post_code(0x37);
-	AGESAWRAPPER(amdinitreset);
+	do_agesawrapper(agesawrapper_amdinitreset, "amdinitreset");
 
 	post_code(0x38);
-	AGESAWRAPPER(amdinitearly); /* APs will not exit amdinitearly */
+	/* APs will not exit amdinitearly */
+	do_agesawrapper(agesawrapper_amdinitearly, "amdinitearly");
 }

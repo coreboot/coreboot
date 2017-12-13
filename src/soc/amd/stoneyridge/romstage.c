@@ -45,7 +45,7 @@ asmlinkage void car_stage_entry(void)
 	console_init();
 
 	post_code(0x40);
-	AGESAWRAPPER(amdinitpost);
+	do_agesawrapper(agesawrapper_amdinitpost, "amdinitpost");
 
 	post_code(0x41);
 	/*

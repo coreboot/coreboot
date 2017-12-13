@@ -50,6 +50,11 @@ static inline void invd(void)
 	asm volatile("invd" ::: "memory");
 }
 
+static inline void clflush(void *addr)
+{
+	asm volatile ("clflush (%0)"::"r" (addr));
+}
+
 /* The following functions require the always_inline due to AMD
  * function STOP_CAR_AND_CPU that disables cache as
  * RAM, the cache as RAM stack can no longer be used. Called

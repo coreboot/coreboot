@@ -35,6 +35,7 @@
 #include "pch.h"
 #include "nvs.h"
 #include <southbridge/intel/common/pciehp.h>
+#include <southbridge/intel/common/acpi_pirq_gen.h>
 
 #define NMI_OFF	0
 
@@ -821,6 +822,7 @@ static void southbridge_fill_ssdt(device_t device)
 	config_t *chip = dev->chip_info;
 
 	intel_acpi_pcie_hotplug_generator(chip->pcie_hotplug_map, 8);
+	intel_acpi_gen_def_acpi_pirq(dev);
 }
 
 static void lpc_final(struct device *dev)

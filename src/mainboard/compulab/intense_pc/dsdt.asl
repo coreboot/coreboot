@@ -40,7 +40,6 @@ DefinitionBlock(
 		#include <northbridge/intel/sandybridge/acpi/sandybridge.asl>
 		#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		#include <southbridge/intel/bd82x6x/acpi/pch.asl>
-		#include <southbridge/intel/bd82x6x/acpi/default_irq_route.asl>
 		}
 	}
 }

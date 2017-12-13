@@ -872,8 +872,6 @@ static void lpc_tpm_fill_ssdt(struct device *dev)
 {
 	const char *path = acpi_device_path(dev->bus->dev);
 	u32 arg;
-	struct opregion opreg = OPREGION("TREG", SYSTEMMEMORY,
-					CONFIG_TPM_TIS_BASE_ADDRESS, 0x5000);
 
 	if (!path) {
 		path = "\\_SB_.PCI0.LPCB";
@@ -891,33 +889,6 @@ static void lpc_tpm_fill_ssdt(struct device *dev)
 	acpigen_emit_eisaid("PNP0C31");
 
 	acpigen_write_name_integer("_UID", 1);
-
-	acpigen_write_opregion(&opreg);
-
-	struct fieldlist tpm_field_list[] = {
-		/*
-		 * TPM_INT_ENABLE_0
-		 * bit 0 : dataAvailIntEnable,
-		 * bit 1 : stsValidIntEnable,
-		 * bit 2 : localityChangeIntEnable,
-		 * bit 3:4 typePolarity.
-		 */
-		FIELDLIST_OFFSET(0x8),
-		FIELDLIST_NAMESTR("INTE", 3),
-		FIELDLIST_NAMESTR("ITPL", 2),
-
-		/* TPM_INT_VECTOR_0 */
-		FIELDLIST_OFFSET(0xC),
-		FIELDLIST_NAMESTR("IVEC", 4),
-
-		/* TPM_DID_VID */
-		FIELDLIST_OFFSET(0xf00),
-		FIELDLIST_NAMESTR("DVID", 32),
-	};
-
-	acpigen_write_field(opreg.name, tpm_field_list,
-			ARRAY_SIZE(tpm_field_list),
-			FIELD_BYTEACC | FIELD_NOLOCK | FIELD_PRESERVE);
 
 	u32 did_vid = tpm_read_did_vid(0);
 	if (did_vid > 0 && did_vid < 0xffffffff)

@@ -133,6 +133,12 @@ void pmc_clear_all_gpe_status(void);
 void pmc_clear_prsts(void);
 
 /*
+ * Set PMC register to know which state system should be after
+ * power reapplied
+ */
+void pmc_soc_restore_power_failure(void);
+
+/*
  * Enable or disable global reset. If global reset is enabled, hard reset and
  * soft reset will trigger global reset, where both host and TXE are reset.
  * This is cleared on cold boot, hard reset, soft reset and Sx.
@@ -204,5 +210,23 @@ void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2);
  * chipset_power_state structure variable and prints.
  */
 void soc_fill_power_state(struct chipset_power_state *ps);
+
+/*
+ * Which state do we want to goto after g3 (power restored)?
+ * 0 == S5 Soft Off
+ * 1 == S0 Full On
+ * 2 == Keep Previous State
+ */
+enum {
+	MAINBOARD_POWER_STATE_OFF,
+	MAINBOARD_POWER_STATE_ON,
+	MAINBOARD_POWER_STATE_PREVIOUS,
+};
+
+/*
+ * Determines what state to go to when power is reapplied
+ * after a power failure (G3 State)
+ */
+int pmc_get_mainboard_power_failure_state_choice(void);
 
 #endif /* SOC_INTEL_COMMON_BLOCK_PMCLIB_H */

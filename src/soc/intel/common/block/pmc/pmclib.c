@@ -80,6 +80,18 @@ __attribute__ ((weak)) uint32_t soc_get_smi_status(uint32_t generic_sts)
 	return generic_sts;
 }
 
+/*
+ * Set PMC register to know which state system should be after
+ * power reapplied
+ */
+__attribute__ ((weak)) void pmc_soc_restore_power_failure(void)
+{
+	/*
+	 * SoC code should set PMC config register in order to set
+	 * MAINBOARD_POWER_ON bit as per EDS.
+	 */
+}
+
 static uint32_t pmc_reset_smi_status(void)
 {
 	uint32_t smi_sts = inl(ACPI_BASE_ADDRESS + SMI_STS);
@@ -589,4 +601,18 @@ void pmc_gpe_init(void)
 
 	/* Set the routes in the GPIO communities as well. */
 	gpio_route_gpe(dw0, dw1, dw2);
+}
+
+/*
+ * Determines what state to go to when power is reapplied
+ * after a power failure (G3 State)
+ */
+int pmc_get_mainboard_power_failure_state_choice(void)
+{
+	if (IS_ENABLED(CONFIG_POWER_STATE_PREVIOUS_AFTER_FAILURE))
+		return MAINBOARD_POWER_STATE_PREVIOUS;
+	else if (IS_ENABLED(CONFIG_POWER_STATE_ON_AFTER_FAILURE))
+		return MAINBOARD_POWER_STATE_ON;
+
+	return MAINBOARD_POWER_STATE_OFF;
 }

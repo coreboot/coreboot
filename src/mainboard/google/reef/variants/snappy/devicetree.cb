@@ -198,6 +198,17 @@ chip soc/intel/apollolake
 				register "desc" = ""Melfas Touchscreen""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPIO_21_IRQ)"
 				register "probed" = "1"
+				# Melfas TS IC doesn't have reset pin design, current FW also not
+				# declare "ce-gpios" in ACPI _DSD to let Melfas TS driver to know
+				# "enable gpio#152 (VTSP) but because of kernel bug & Melfas TS driver
+				# is unable to separate clear power sequence path for certain
+				# TS IC (ex: MIT-410) and kernel will still obstain GPIO from _CRS
+				# by index "0" since no matched "gpio" in ACPI _DSD.
+				# coreboot needs to have "dummy pin" as workaround  in order to let
+				# kernel driver grab "useless" GPIO to prevent Melfas TS driver cut
+				# power by driver itself.
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
+				register "reset_delay_ms" = "1"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
 				register "enable_delay_ms" = "5"
 				register "has_power_resource" = "1"

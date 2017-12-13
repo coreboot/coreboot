@@ -9,6 +9,7 @@ endif
 
 ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
 bootblock-y += flashconsole.c
+verstage-y += flashconsole.c
 romstage-y += flashconsole.c
 ramstage-y += flashconsole.c
 postcar-y += flashconsole.c

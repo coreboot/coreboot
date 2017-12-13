@@ -122,56 +122,37 @@ static int wait_command(struct psp_mbox *mbox)
 
 static int send_psp_command(u32 command, void *buffer)
 {
-	u32 command_reg;
-	int status = 0;
-
 	struct psp_mbox *mbox = get_mbox_address();
 	if (!mbox)
 		return -PSPSTS_NOBASE;
 
-	command_reg = pci_read_config32(SOC_PSP_DEV, PCI_COMMAND);
-	pci_write_config32(SOC_PSP_DEV, PCI_COMMAND, command_reg |
-				PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
-
 	/* check for PSP error conditions */
-	if (rd_mbox_sts(mbox) & STATUS_HALT) {
-		status = -PSPSTS_HALTED;
-		goto exit;
-	}
-	if (rd_mbox_sts(mbox) & STATUS_RECOVERY) {
-		status = -PSPSTS_RECOVERY;
-		goto exit;
-	}
+	if (rd_mbox_sts(mbox) & STATUS_HALT)
+		return -PSPSTS_HALTED;
+
+	if (rd_mbox_sts(mbox) & STATUS_RECOVERY)
+		return -PSPSTS_RECOVERY;
 
 	/* PSP must be finished with init and ready to accept a command */
-	if (wait_initialized(mbox)) {
-		status = -PSPSTS_INIT_TIMEOUT;
-		goto exit;
-	}
-	if (wait_command(mbox)) {
-		status = -PSPSTS_CMD_TIMEOUT;
-		goto exit;
-	}
+	if (wait_initialized(mbox))
+		return -PSPSTS_INIT_TIMEOUT;
+
+	if (wait_command(mbox))
+		return -PSPSTS_CMD_TIMEOUT;
 
 	/* set address of command-response buffer and write command register */
 	wr_mbox_cmd_resp(mbox, buffer);
 	wr_mbox_cmd(mbox, command);
 
 	/* PSP clears command register when complete */
-	if (wait_command(mbox)) {
-		status = -PSPSTS_CMD_TIMEOUT;
-		goto exit;
-	}
+	if (wait_command(mbox))
+		return -PSPSTS_CMD_TIMEOUT;
 
 	/* check delivery status */
-	if (rd_mbox_sts(mbox) & (STATUS_ERROR | STATUS_TERMINATED)) {
-		status = -PSPSTS_SEND_ERROR;
-		goto exit;
-	}
-exit:
-	/* restore command register to original value */
-	pci_write_config32(SOC_PSP_DEV, PCI_COMMAND, command_reg);
-	return status;
+	if (rd_mbox_sts(mbox) & (STATUS_ERROR | STATUS_TERMINATED))
+		return -PSPSTS_SEND_ERROR;
+
+	return 0;
 }
 
 /*

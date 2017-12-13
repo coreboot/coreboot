@@ -135,6 +135,10 @@ struct soc_intel_skylake_config {
 
 	/* Lan */
 	u8 EnableLan;
+	u8 EnableLanLtr;
+	u8 EnableLanK1Off;
+	u8 LanClkReqSupported;
+	u8 LanClkReqNumber;
 
 	/* SATA related */
 	u8 EnableSata;

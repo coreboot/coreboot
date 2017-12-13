@@ -186,6 +186,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchPmLanWakeFromDeepSx = config->WakeConfigPcieWakeFromDeepSx;
 
 	params->PchLanEnable = config->EnableLan;
+	if (config->EnableLan) {
+		params->PchLanLtrEnable = config->EnableLanLtr;
+		params->PchLanK1OffEnable = config->EnableLanK1Off;
+		params->PchLanClkReqSupported = config->LanClkReqSupported;
+		params->PchLanClkReqNumber = config->LanClkReqNumber;
+	}
 	params->SataSalpSupport = config->SataSalpSupport;
 	params->SsicPortEnable = config->SsicPortEnable;
 	params->ScsEmmcEnabled = config->ScsEmmcEnabled;

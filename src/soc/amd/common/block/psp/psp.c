@@ -161,13 +161,14 @@ static int send_psp_command(u32 command, void *buffer)
  */
 int psp_notify_dram(void)
 {
-	struct mbox_default_buffer buffer;
 	int cmd_status;
+	struct mbox_default_buffer buffer = {
+		.header = {
+			.size = sizeof(buffer)
+		}
+	};
 
 	printk(BIOS_DEBUG, "PSP: Notify that DRAM is available... ");
-
-	buffer.header.size = sizeof(struct mbox_default_buffer);
-	buffer.header.status = 0; /* PSP does not report status for this cmd */
 
 	cmd_status = send_psp_command(MBOX_BIOS_CMD_DRAM_INFO, &buffer);
 

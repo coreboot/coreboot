@@ -33,4 +33,7 @@ ifeq ($(CONFIG_SPI_FLASH_SMM),y)
 smm-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SPI) += spi.c
 endif
 
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_PIRQ_ACPI_GEN) += acpi_pirq_gen.c
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RCBA_PIRQ) += rcba_pirq.c
+
 endif

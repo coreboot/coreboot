@@ -131,21 +131,34 @@ Device (SIO) {
 		})
 	}
 #endif
+}
 
 #ifdef SIO_EC_ENABLE_PS2K
-	Device (PS2K)		// Keyboard
+Device (PS2K)		// Keyboard
+{
+	Name (_UID, 0)
+	Name (_ADR, 0)
+	Name (_HID, "GOOG000A")
+	Name (_CID, Package() { EISAID("PNP0303"), EISAID("PNP030B") } )
+
+	Method (_STA, 0, NotSerialized) {
+		Return (0x0F)
+	}
+
+	Name (_CRS, ResourceTemplate()
 	{
-		Name (_UID, 0)
-		Name (_ADR, 0)
-		Name (_HID, "GOOG000A")
-		Name (_CID, Package() { EISAID("PNP0303"), EISAID("PNP030B") } )
+		IO (Decode16, 0x60, 0x60, 0x01, 0x01)
+		IO (Decode16, 0x64, 0x64, 0x01, 0x01)
+#ifdef SIO_EC_PS2K_IRQ
+		SIO_EC_PS2K_IRQ
+#else
+		IRQ (Edge, ActiveHigh, Exclusive) {1}
+#endif
+	})
 
-		Method (_STA, 0, NotSerialized) {
-			Return (0x0F)
-		}
-
-		Name (_CRS, ResourceTemplate()
-		{
+	Name (_PRS, ResourceTemplate()
+	{
+		StartDependentFn (0, 0) {
 			IO (Decode16, 0x60, 0x60, 0x01, 0x01)
 			IO (Decode16, 0x64, 0x64, 0x01, 0x01)
 #ifdef SIO_EC_PS2K_IRQ
@@ -153,21 +166,8 @@ Device (SIO) {
 #else
 			IRQ (Edge, ActiveHigh, Exclusive) {1}
 #endif
-		})
-
-		Name (_PRS, ResourceTemplate()
-		{
-			StartDependentFn (0, 0) {
-				IO (Decode16, 0x60, 0x60, 0x01, 0x01)
-				IO (Decode16, 0x64, 0x64, 0x01, 0x01)
-#ifdef SIO_EC_PS2K_IRQ
-				SIO_EC_PS2K_IRQ
-#else
-				IRQ (Edge, ActiveHigh, Exclusive) {1}
-#endif
-			}
-			EndDependentFn ()
-		})
-	}
-#endif
+		}
+		EndDependentFn ()
+	})
 }
+#endif

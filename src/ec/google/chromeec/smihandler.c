@@ -59,15 +59,17 @@ static void clear_pending_events(void)
 
 void chromeec_smi_sleep(int slp_type, uint64_t s3_mask, uint64_t s5_mask)
 {
-	switch (slp_type) {
-	case ACPI_S3:
-		/* Enable wake events */
-		google_chromeec_set_wake_mask(s3_mask);
-		break;
-	case ACPI_S5:
-		/* Enable wake events */
-		google_chromeec_set_wake_mask(s5_mask);
-		break;
+	if (!google_chromeec_is_uhepi_supported()) {
+		switch (slp_type) {
+		case ACPI_S3:
+			/* Enable wake events */
+			google_chromeec_set_wake_mask(s3_mask);
+			break;
+		case ACPI_S5:
+			/* Enable wake events */
+			google_chromeec_set_wake_mask(s5_mask);
+			break;
+		}
 	}
 
 	/* Disable SCI and SMI events */

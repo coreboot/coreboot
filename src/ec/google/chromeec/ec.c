@@ -17,7 +17,9 @@
 #include <string.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <arch/early_variables.h>
 #include <arch/io.h>
+#include <assert.h>
 #include <bootmode.h>
 #include <bootstate.h>
 #include <delay.h>
@@ -31,6 +33,42 @@
 #include "chip.h"
 #include "ec.h"
 #include "ec_commands.h"
+
+#define INVALID_HCMD 0xFF
+
+/*
+ * Map UHEPI masks to non UHEPI commands in order to support old EC FW
+ * which does not support UHEPI command.
+ */
+static const struct {
+	uint8_t set_cmd;
+	uint8_t clear_cmd;
+	uint8_t get_cmd;
+} event_map[] = {
+	[EC_HOST_EVENT_MAIN] = {
+		INVALID_HCMD, EC_CMD_HOST_EVENT_CLEAR,
+		INVALID_HCMD,
+	},
+	[EC_HOST_EVENT_B] = {
+		INVALID_HCMD, EC_CMD_HOST_EVENT_CLEAR_B,
+		EC_CMD_HOST_EVENT_GET_B,
+	},
+	[EC_HOST_EVENT_SCI_MASK] = {
+		EC_CMD_HOST_EVENT_SET_SCI_MASK, INVALID_HCMD,
+		EC_CMD_HOST_EVENT_GET_SCI_MASK,
+	},
+	[EC_HOST_EVENT_SMI_MASK] = {
+		EC_CMD_HOST_EVENT_SET_SMI_MASK, INVALID_HCMD,
+		EC_CMD_HOST_EVENT_GET_SMI_MASK,
+	},
+	[EC_HOST_EVENT_ALWAYS_REPORT_MASK] = {
+		INVALID_HCMD, INVALID_HCMD, INVALID_HCMD,
+	},
+	[EC_HOST_EVENT_ACTIVE_WAKE_MASK] = {
+		EC_CMD_HOST_EVENT_SET_WAKE_MASK, INVALID_HCMD,
+		EC_CMD_HOST_EVENT_GET_WAKE_MASK,
+	},
+};
 
 void log_recovery_mode_switch(void)
 {
@@ -111,13 +149,21 @@ void google_chromeec_post(u8 postcode)
  * Query the EC for specified mask indicating enabled events.
  * The EC maintains separate event masks for SMI, SCI and WAKE.
  */
-static uint64_t google_chromeec_get_mask(u8 type)
+static int google_chromeec_uhepi_cmd(uint8_t mask, uint8_t action,
+					uint64_t *value)
 {
-	struct ec_params_host_event_mask req;
-	struct ec_response_host_event_mask rsp;
+	int ret;
+	struct ec_params_host_event req;
+	struct ec_response_host_event rsp;
 	struct chromeec_command cmd;
 
-	cmd.cmd_code = type;
+	req.action = action;
+	req.mask_type = mask;
+	if (action != EC_HOST_EVENT_GET)
+		req.value = *value;
+	else
+		*value = 0;
+	cmd.cmd_code = EC_CMD_HOST_EVENT;
 	cmd.cmd_version = 0;
 	cmd.cmd_data_in = &req;
 	cmd.cmd_size_in = sizeof(req);
@@ -125,19 +171,32 @@ static uint64_t google_chromeec_get_mask(u8 type)
 	cmd.cmd_size_out = sizeof(rsp);
 	cmd.cmd_dev_index = 0;
 
-	if (google_chromeec_command(&cmd) == 0)
-		return rsp.mask;
-	return 0;
+	ret = google_chromeec_command(&cmd);
+
+	if (action != EC_HOST_EVENT_GET)
+		return ret;
+	if (ret == 0)
+		*value = rsp.value;
+	return ret;
 }
 
-static int google_chromeec_set_mask(uint8_t type, uint64_t mask)
+static int google_chromeec_handle_non_uhepi_cmd(uint8_t hcmd, uint8_t action,
+							uint64_t *value)
 {
+	int ret = -1;
 	struct ec_params_host_event_mask req;
 	struct ec_response_host_event_mask rsp;
 	struct chromeec_command cmd;
 
-	req.mask = (uint32_t)mask;
-	cmd.cmd_code = type;
+	if (hcmd == INVALID_HCMD)
+		return ret;
+
+	if (action != EC_HOST_EVENT_GET)
+		req.mask = (uint32_t)*value;
+	else
+		*value = 0;
+
+	cmd.cmd_code = hcmd;
 	cmd.cmd_version = 0;
 	cmd.cmd_data_in = &req;
 	cmd.cmd_size_in = sizeof(req);
@@ -145,19 +204,115 @@ static int google_chromeec_set_mask(uint8_t type, uint64_t mask)
 	cmd.cmd_size_out = sizeof(rsp);
 	cmd.cmd_dev_index = 0;
 
-	return google_chromeec_command(&cmd);
+	ret = google_chromeec_command(&cmd);
+
+	if (action != EC_HOST_EVENT_GET)
+		return ret;
+	if (ret == 0)
+		*value = rsp.mask;
+
+	return ret;
+}
+
+bool google_chromeec_is_uhepi_supported(void)
+{
+#define UHEPI_SUPPORTED 1
+#define UHEPI_NOT_SUPPORTED 2
+
+	static int uhepi_support CAR_GLOBAL;
+
+	if (!uhepi_support) {
+		uhepi_support = google_chromeec_check_feature
+			(EC_FEATURE_UNIFIED_WAKE_MASKS) ? UHEPI_SUPPORTED :
+			UHEPI_NOT_SUPPORTED;
+		printk(BIOS_DEBUG, "Chrome EC: UHEPI %s\n",
+			uhepi_support == UHEPI_SUPPORTED ?
+			"supported" : "not supported");
+	}
+	return uhepi_support == UHEPI_SUPPORTED;
+}
+
+static uint64_t google_chromeec_get_mask(u8 type)
+{
+	u64 value = 0;
+
+	if (google_chromeec_is_uhepi_supported()) {
+		google_chromeec_uhepi_cmd(type, EC_HOST_EVENT_GET, &value);
+	} else {
+		assert(type < ARRAY_SIZE(event_map));
+		google_chromeec_handle_non_uhepi_cmd(
+					event_map[type].get_cmd,
+					EC_HOST_EVENT_GET, &value);
+	}
+	return value;
+}
+static int google_chromeec_clear_mask(u8 type, u64 mask)
+{
+	if (google_chromeec_is_uhepi_supported())
+		return google_chromeec_uhepi_cmd(type,
+					EC_HOST_EVENT_CLEAR, &mask);
+
+	assert(type < ARRAY_SIZE(event_map));
+	return google_chromeec_handle_non_uhepi_cmd(
+						event_map[type].clear_cmd,
+						EC_HOST_EVENT_CLEAR, &mask);
+}
+static int __unused google_chromeec_set_mask(u8 type, u64 mask)
+{
+	if (google_chromeec_is_uhepi_supported())
+		return google_chromeec_uhepi_cmd(type,
+					EC_HOST_EVENT_SET, &mask);
+
+	assert(type < ARRAY_SIZE(event_map));
+	return google_chromeec_handle_non_uhepi_cmd(
+						event_map[type].set_cmd,
+						EC_HOST_EVENT_SET, &mask);
+}
+
+static int google_chromeec_set_s3_lazy_wake_mask(uint64_t mask)
+{
+	printk(BIOS_DEBUG, "Chrome EC: Set S3 LAZY WAKE mask to 0x%016llx\n\n",
+				mask);
+	return google_chromeec_set_mask
+		(EC_HOST_EVENT_LAZY_WAKE_MASK_S3, mask);
+}
+
+static int google_chromeec_set_s5_lazy_wake_mask(uint64_t mask)
+{
+	printk(BIOS_DEBUG, "Chrome EC: Set S5 LAZY WAKE mask to 0x%016llx\n\n",
+				mask);
+	return google_chromeec_set_mask
+		(EC_HOST_EVENT_LAZY_WAKE_MASK_S5, mask);
+}
+
+static int google_chromeec_set_s0ix_lazy_wake_mask(uint64_t mask)
+{
+	printk(BIOS_DEBUG, "Chrome EC: Set S0iX LAZY WAKE mask to 0x%016llx\n\n",
+				mask);
+	return google_chromeec_set_mask
+		(EC_HOST_EVENT_LAZY_WAKE_MASK_S0IX, mask);
+}
+static void google_chromeec_set_lazy_wake_masks(uint64_t s5_mask,
+					uint64_t s3_mask, uint64_t s0ix_mask)
+{
+	if (google_chromeec_set_s5_lazy_wake_mask(s5_mask))
+		printk(BIOS_DEBUG, "Error: Set S5 LAZY WAKE mask failed\n");
+	if (google_chromeec_set_s3_lazy_wake_mask(s3_mask))
+		printk(BIOS_DEBUG, "Error: Set S3 LAZY WAKE mask failed\n");
+	if (google_chromeec_set_s0ix_lazy_wake_mask(s0ix_mask))
+		printk(BIOS_DEBUG, "Error: Set S0iX LAZY WAKE mask failed\n");
 }
 
 uint64_t google_chromeec_get_events_b(void)
 {
-	return google_chromeec_get_mask(EC_CMD_HOST_EVENT_GET_B);
+	return google_chromeec_get_mask(EC_HOST_EVENT_B);
 }
 
 int google_chromeec_clear_events_b(uint64_t mask)
 {
-	printk(BIOS_DEBUG, "Chrome EC: clear events_b mask to 0x%016llx\n", mask);
-	return google_chromeec_set_mask(
-		EC_CMD_HOST_EVENT_CLEAR_B, mask);
+	printk(BIOS_DEBUG,
+		"Chrome EC: clear events_b mask to 0x%016llx\n", mask);
+	return google_chromeec_clear_mask(EC_HOST_EVENT_B, mask);
 }
 
 int google_chromeec_get_mkbp_event(struct ec_response_get_next_event *event)
@@ -304,12 +459,21 @@ void google_chromeec_events_init(const struct google_chromeec_event_info *info,
 
 		/* Restore SCI event mask. */
 		google_chromeec_set_sci_mask(info->sci_events);
-	} else
+
+	} else {
 		google_chromeec_log_events(info->log_events |
 						info->s5_wake_events);
+		if (google_chromeec_is_uhepi_supported())
+			google_chromeec_set_lazy_wake_masks
+					(info->s5_wake_events,
+					info->s3_wake_events,
+					info->s0ix_wake_events);
+
+	}
 
 	/* Clear wake event mask. */
 	google_chromeec_set_wake_mask(0);
+
 }
 
 int google_chromeec_check_feature(int feature)
@@ -566,28 +730,25 @@ int google_chromeec_i2c_xfer(uint8_t chip, uint8_t addr, int alen,
 int google_chromeec_set_sci_mask(uint64_t mask)
 {
 	printk(BIOS_DEBUG, "Chrome EC: Set SCI mask to 0x%016llx\n", mask);
-	return google_chromeec_set_mask(
-		EC_CMD_HOST_EVENT_SET_SCI_MASK, mask);
+	return google_chromeec_set_mask(EC_HOST_EVENT_SCI_MASK, mask);
 }
 
 int google_chromeec_set_smi_mask(uint64_t mask)
 {
 	printk(BIOS_DEBUG, "Chrome EC: Set SMI mask to 0x%016llx\n", mask);
-	return google_chromeec_set_mask(
-		EC_CMD_HOST_EVENT_SET_SMI_MASK, mask);
+	return google_chromeec_set_mask(EC_HOST_EVENT_SMI_MASK, mask);
 }
 
 int google_chromeec_set_wake_mask(uint64_t mask)
 {
 	printk(BIOS_DEBUG, "Chrome EC: Set WAKE mask to 0x%016llx\n", mask);
-	return google_chromeec_set_mask(
-		EC_CMD_HOST_EVENT_SET_WAKE_MASK, mask);
+	return google_chromeec_set_mask
+			(EC_HOST_EVENT_ACTIVE_WAKE_MASK, mask);
 }
 
 uint64_t google_chromeec_get_wake_mask(void)
 {
-	return google_chromeec_get_mask(
-		EC_CMD_HOST_EVENT_GET_WAKE_MASK);
+	return google_chromeec_get_mask(EC_HOST_EVENT_ACTIVE_WAKE_MASK);
 }
 
 int google_chromeec_set_usb_charge_mode(u8 port_id, enum usb_charge_mode mode)

@@ -31,6 +31,9 @@ int google_chromeec_set_sci_mask(uint64_t mask);
 int google_chromeec_set_smi_mask(uint64_t mask);
 int google_chromeec_set_wake_mask(uint64_t mask);
 u8 google_chromeec_get_event(void);
+
+/* Check if EC supports feature EC_FEATURE_UNIFIED_WAKE_MASKS */
+bool google_chromeec_is_uhepi_supported(void);
 int google_ec_running_ro(void);
 void google_chromeec_init(void);
 
@@ -141,6 +144,7 @@ struct google_chromeec_event_info {
 	uint64_t s3_wake_events;
 	uint64_t s3_device_events;
 	uint64_t s5_wake_events;
+	uint64_t s0ix_wake_events;
 };
 void google_chromeec_events_init(const struct google_chromeec_event_info *info,
 					bool is_s3_wakeup);

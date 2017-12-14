@@ -68,7 +68,8 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 	status = AmdInitReset(&AmdResetParams);
 	timestamp_add_now(TS_AGESA_INIT_RESET_DONE);
 
-	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
+	if (status != AGESA_SUCCESS)
+		agesawrapper_readeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
 	return status;
 }
@@ -98,7 +99,8 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 	status = AmdInitEarly ((AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr);
 	timestamp_add_now(TS_AGESA_INIT_EARLY_DONE);
 
-	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
+	if (status != AGESA_SUCCESS)
+		agesawrapper_readeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
 
 	return status;
@@ -169,7 +171,8 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 			(unsigned long)(PostParams->MemConfig.UmaBase) << 16
 	);
 
-	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(PostParams->StdHeader.HeapStatus);
+	if (status != AGESA_SUCCESS)
+		agesawrapper_readeventlog(PostParams->StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
 
 	return status;
@@ -203,7 +206,8 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	status = AmdInitEnv (EnvParam);
 	timestamp_add_now(TS_AGESA_INIT_ENV_DONE);
 
-	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(EnvParam->StdHeader.HeapStatus);
+	if (status != AGESA_SUCCESS)
+		agesawrapper_readeventlog(EnvParam->StdHeader.HeapStatus);
 	/* Initialize Subordinate Bus Number and Secondary Bus Number
 	 * In platform BIOS this address is allocated by PCI enumeration code
 	 Modify D1F0x18
@@ -274,7 +278,8 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	status = AmdInitMid ((AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr);
 	timestamp_add_now(TS_AGESA_INIT_MID_DONE);
 
-	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
+	if (status != AGESA_SUCCESS)
+		agesawrapper_readeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
 
 	return status;
@@ -306,7 +311,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	timestamp_add_now(TS_AGESA_INIT_LATE_DONE);
 
 	if (Status != AGESA_SUCCESS) {
-		agesawrapper_amdreadeventlog(AmdLateParams->StdHeader.HeapStatus);
+		agesawrapper_readeventlog(AmdLateParams->StdHeader.HeapStatus);
 		ASSERT(Status == AGESA_SUCCESS);
 	}
 
@@ -351,31 +356,36 @@ AGESA_STATUS agesawrapper_amdlaterunaptask (
 
 	Status = AmdLateRunApTask (&ApExeParams);
 	if (Status != AGESA_SUCCESS) {
-		/* agesawrapper_amdreadeventlog(); */
+		/* agesawrapper_readeventlog(); */
 		ASSERT(Status == AGESA_SUCCESS);
 	}
 
 	return Status;
 }
 
-AGESA_STATUS agesawrapper_amdreadeventlog (UINT8 HeapStatus)
+AGESA_STATUS agesawrapper_readeventlog(UINT8 HeapStatus)
 {
 	AGESA_STATUS Status;
-	EVENT_PARAMS AmdEventParams;
+	EVENT_PARAMS AmdEventParams = {
+		.StdHeader.CalloutPtr = &GetBiosCallout,
+		.StdHeader.HeapStatus = HeapStatus,
+	};
 
-	memset(&AmdEventParams, 0, sizeof(AmdEventParams));
+	Status = AmdReadEventLog(&AmdEventParams);
+	if (AmdEventParams.EventClass)
+		printk(BIOS_DEBUG, "AGESA Event Log:\n");
 
-	AmdEventParams.StdHeader.AltImageBasePtr = 0;
-	AmdEventParams.StdHeader.CalloutPtr = &GetBiosCallout;
-	AmdEventParams.StdHeader.Func = 0;
-	AmdEventParams.StdHeader.ImageBasePtr = 0;
-	AmdEventParams.StdHeader.HeapStatus = HeapStatus;
-	Status = AmdReadEventLog (&AmdEventParams);
 	while (AmdEventParams.EventClass != 0) {
-		printk(BIOS_DEBUG,"\nEventLog:  EventClass = %x, EventInfo = %x.\n", (unsigned int)AmdEventParams.EventClass,(unsigned int)AmdEventParams.EventInfo);
-		printk(BIOS_DEBUG,"  Param1 = %x, Param2 = %x.\n",(unsigned int)AmdEventParams.DataParam1, (unsigned int)AmdEventParams.DataParam2);
-		printk(BIOS_DEBUG,"  Param3 = %x, Param4 = %x.\n",(unsigned int)AmdEventParams.DataParam3, (unsigned int)AmdEventParams.DataParam4);
-		Status = AmdReadEventLog (&AmdEventParams);
+		printk(BIOS_DEBUG, "  Class = %x, Info = %x,"
+				" Param1 = 0x%x, Param2 = 0x%x"
+				" Param3 = 0x%x, Param4 = 0x%x\n",
+				(u32)AmdEventParams.EventClass,
+				(u32)AmdEventParams.EventInfo,
+				(u32)AmdEventParams.DataParam1,
+				(u32)AmdEventParams.DataParam2,
+				(u32)AmdEventParams.DataParam3,
+				(u32)AmdEventParams.DataParam4);
+		Status = AmdReadEventLog(&AmdEventParams);
 	}
 
 	return Status;

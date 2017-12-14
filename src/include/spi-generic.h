@@ -16,6 +16,7 @@
 #ifndef _SPI_GENERIC_H_
 #define _SPI_GENERIC_H_
 
+#include <commonlib/region.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -115,6 +116,7 @@ struct spi_flash;
  *
  * flash_probe:	Specialized probe function provided by SPI flash
  *			controllers.
+ * flash_protect: Protect a region of flash using the SPI flash controller.
  */
 struct spi_ctrlr {
 	int (*claim_bus)(const struct spi_slave *slave);
@@ -128,6 +130,8 @@ struct spi_ctrlr {
 	bool deduct_cmd_len;
 	int (*flash_probe)(const struct spi_slave *slave,
 				struct spi_flash *flash);
+	int (*flash_protect)(const struct spi_flash *flash,
+				const struct region *region);
 };
 
 /*-----------------------------------------------------------------------

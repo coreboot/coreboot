@@ -459,3 +459,29 @@ void lb_spi_flash(struct lb_header *header)
 		flash->erase_cmd = CMD_BLOCK_ERASE;
 	}
 }
+
+
+int spi_flash_ctrlr_protect_region(const struct spi_flash *flash,
+					const struct region *region)
+{
+	const struct spi_ctrlr *ctrlr;
+	struct region flash_region = { 0 };
+
+	if (!flash)
+		return -1;
+
+	flash_region.size = flash->size;
+
+	if (!region_is_subregion(&flash_region, region))
+		return -1;
+
+	ctrlr = flash->spi.ctrlr;
+
+	if (!ctrlr)
+		return -1;
+
+	if (ctrlr->flash_protect)
+		return ctrlr->flash_protect(flash, region);
+
+	return -1;
+}

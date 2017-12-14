@@ -120,4 +120,9 @@ int chipset_volatile_group_end(const struct spi_flash *flash);
  * if CONFIG_BOOT_DEVICE_SPI_FLASH is enabled. */
 const struct spi_flash *boot_device_spi_flash(void);
 
+/* Protect a region of spi flash using its controller, if available. Returns
+ * < 0 on error, else 0 on success. */
+int spi_flash_ctrlr_protect_region(const struct spi_flash *flash,
+					const struct region *region);
+
 #endif /* _SPI_FLASH_H_ */

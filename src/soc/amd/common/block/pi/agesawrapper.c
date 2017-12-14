@@ -85,10 +85,7 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 	AmdCreateStruct (&AmdParamStruct);
 
-	AmdResetParams.FchInterface.Xhci0Enable = IS_ENABLED(CONFIG_STONEYRIDGE_XHCI_ENABLE);
-
-	AmdResetParams.FchInterface.SataEnable = !((CONFIG_STONEYRIDGE_SATA_MODE == 0) || (CONFIG_STONEYRIDGE_SATA_MODE == 3));
-	AmdResetParams.FchInterface.IdeEnable = (CONFIG_STONEYRIDGE_SATA_MODE == 0) || (CONFIG_STONEYRIDGE_SATA_MODE == 3);
+	SetFchResetParams(&AmdResetParams.FchInterface);
 
 	timestamp_add_now(TS_AGESA_INIT_RESET_START);
 	status = AmdInitReset(&AmdResetParams);
@@ -219,14 +216,10 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 	status = AmdCreateStruct (&AmdParamStruct);
-	EnvParam = (AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr;
 
-	EnvParam->FchInterface.AzaliaController = AzEnable;
-	EnvParam->FchInterface.SataClass = CONFIG_STONEYRIDGE_SATA_MODE;
-	EnvParam->FchInterface.SataEnable = !((CONFIG_STONEYRIDGE_SATA_MODE == 0) || (CONFIG_STONEYRIDGE_SATA_MODE == 3));
-	EnvParam->FchInterface.IdeEnable = (CONFIG_STONEYRIDGE_SATA_MODE == 0) || (CONFIG_STONEYRIDGE_SATA_MODE == 3);
-	EnvParam->FchInterface.SataIdeMode = (CONFIG_STONEYRIDGE_SATA_MODE == 3);
-	EnvParam->GnbEnvConfiguration.IommuSupport = FALSE;
+	EnvParam = (AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr;
+	SetFchEnvParams(&EnvParam->FchInterface);
+	SetNbEnvParams(&EnvParam->GnbEnvConfiguration);
 
 	timestamp_add_now(TS_AGESA_INIT_ENV_START);
 	status = AmdInitEnv (EnvParam);
@@ -287,16 +280,10 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
 	AmdCreateStruct (&AmdParamStruct);
+
 	MidParam = (AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr;
-
-	MidParam->GnbMidConfiguration.iGpuVgaMode = 0;/* 0 iGpuVgaAdapter, 1 iGpuVgaNonAdapter; */
-	MidParam->GnbMidConfiguration.GnbIoapicAddress = 0xFEC20000;
-
-	MidParam->FchInterface.AzaliaController = AzEnable;
-	MidParam->FchInterface.SataClass = CONFIG_STONEYRIDGE_SATA_MODE;
-	MidParam->FchInterface.SataEnable = !((CONFIG_STONEYRIDGE_SATA_MODE == 0) || (CONFIG_STONEYRIDGE_SATA_MODE == 3));
-	MidParam->FchInterface.IdeEnable = (CONFIG_STONEYRIDGE_SATA_MODE == 0) || (CONFIG_STONEYRIDGE_SATA_MODE == 3);
-	MidParam->FchInterface.SataIdeMode = (CONFIG_STONEYRIDGE_SATA_MODE == 3);
+	SetFchMidParams(&MidParam->FchInterface);
+	SetNbMidParams(&MidParam->GnbMidConfiguration);
 
 	timestamp_add_now(TS_AGESA_INIT_MID_START);
 	status = AmdInitMid ((AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr);

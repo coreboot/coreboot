@@ -54,7 +54,12 @@ VOID OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly);
 VOID amd_initcpuio(void);
 const void *agesawrapper_locate_module(const CHAR8 name[8]);
 
+void SetFchResetParams(FCH_RESET_INTERFACE *params);
 void OemPostParams(AMD_POST_PARAMS *PostParams);
 void SetMemParams(AMD_POST_PARAMS *PostParams);
+void SetFchEnvParams(FCH_INTERFACE *params);
+void SetNbEnvParams(GNB_ENV_CONFIGURATION *params);
+void SetFchMidParams(FCH_INTERFACE *params);
+void SetNbMidParams(GNB_MID_CONFIGURATION *params);
 
 #endif /* __AGESAWRAPPER_H__ */

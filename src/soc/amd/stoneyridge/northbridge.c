@@ -30,9 +30,11 @@
 #include <device/pci_ids.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
+#include <agesa_headers.h>
 #include <soc/northbridge.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
+#include <soc/iomap.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -555,4 +557,16 @@ u32 map_oprom_vendev(u32 vendev)
 				vendev, new_vendev);
 
 	return new_vendev;
+}
+
+void SetNbEnvParams(GNB_ENV_CONFIGURATION *params)
+{
+	params->IommuSupport = FALSE;
+}
+
+void SetNbMidParams(GNB_MID_CONFIGURATION *params)
+{
+	/* 0=Primary and decode all VGA resources, 1=Secondary - decode none */
+	params->iGpuVgaMode = 0;
+	params->GnbIoapicAddress = IO_APIC2_ADDR;
 }

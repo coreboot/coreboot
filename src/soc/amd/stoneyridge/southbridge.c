@@ -31,6 +31,34 @@
 #include <fchec.h>
 #include <delay.h>
 #include <soc/pci_devs.h>
+#include <agesa_headers.h>
+
+static int is_sata_config(void)
+{
+	return !((CONFIG_STONEYRIDGE_SATA_MODE == SataNativeIde)
+			|| (CONFIG_STONEYRIDGE_SATA_MODE == SataLegacyIde));
+}
+
+void SetFchResetParams(FCH_RESET_INTERFACE *params)
+{
+	params->Xhci0Enable = IS_ENABLED(CONFIG_STONEYRIDGE_XHCI_ENABLE);
+	params->SataEnable = is_sata_config();
+	params->IdeEnable = !params->SataEnable;
+}
+
+void SetFchEnvParams(FCH_INTERFACE *params)
+{
+	params->AzaliaController = AzEnable;
+	params->SataClass = CONFIG_STONEYRIDGE_SATA_MODE;
+	params->SataEnable = is_sata_config();
+	params->IdeEnable = !params->SataEnable;
+	params->SataIdeMode = (CONFIG_STONEYRIDGE_SATA_MODE == SataLegacyIde);
+}
+
+void SetFchMidParams(FCH_INTERFACE *params)
+{
+	SetFchEnvParams(params);
+}
 
 /*
  * Table of APIC register index and associated IRQ name. Using IDX_XXX_NAME

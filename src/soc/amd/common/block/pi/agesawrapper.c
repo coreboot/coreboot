@@ -129,6 +129,39 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 	return status;
 }
 
+static void print_init_post_settings(AMD_POST_PARAMS *parms)
+{
+	u64 syslimit, bottomio, uma_size, uma_start;
+	const char *mode;
+
+	switch (parms->MemConfig.UmaMode) {
+	case UMA_AUTO:
+		mode = "UMA_AUTO";
+		break;
+	case UMA_SPECIFIED:
+		mode = "UMA_SPECIFIED";
+		break;
+	case UMA_NONE:
+		mode = "UMA_NONE";
+		break;
+	default:
+		mode = "unknown!";
+		break;
+	}
+
+	syslimit = (u64)parms->MemConfig.SysLimit * 64 * KiB;
+	bottomio = (u64)parms->MemConfig.BottomIo * 64 * KiB;
+
+	uma_size = (u64)parms->MemConfig.UmaSize * 64 * KiB;
+	uma_start = (u64)parms->MemConfig.UmaBase * 64 * KiB;
+
+	printk(BIOS_SPEW, "AGESA set: umamode %s\n", mode);
+	printk(BIOS_SPEW, "         : syslimit 0x%llx, bottomio 0x%08llx\n",
+					syslimit, bottomio);
+	printk(BIOS_SPEW, "         : uma size %lluMB, uma start 0x%08llx\n",
+					uma_size / MiB, uma_start);
+}
+
 AGESA_STATUS agesawrapper_amdinitpost(void)
 {
 	AGESA_STATUS status;
@@ -164,35 +197,19 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	status = AmdInitPost (PostParams);
 	timestamp_add_now(TS_AGESA_INIT_POST_DONE);
 
-	/* If UMA is enabled we currently have it below TOP_MEM as well.
+	/*
+	 * If UMA is enabled we currently have it below TOP_MEM as well.
 	 * UMA may or may not be cacheable, so Sub4GCacheTop could be
-	 * higher than UmaBase. With UMA_NONE we see UmaBase==0. */
+	 * higher than UmaBase. With UMA_NONE we see UmaBase==0.
+	 */
+	uintptr_t top;
 	if (PostParams->MemConfig.UmaBase)
-		backup_top_of_low_cacheable(PostParams->MemConfig.UmaBase << 16);
+		top = PostParams->MemConfig.UmaBase << 16;
 	else
-		backup_top_of_low_cacheable(PostParams->MemConfig.Sub4GCacheTop);
+		top = PostParams->MemConfig.Sub4GCacheTop;
+	backup_top_of_low_cacheable(top);
 
-
-	printk(
-			BIOS_SPEW,
-			"setup_uma_memory: umamode %s\n",
-			(PostParams->MemConfig.UmaMode == UMA_AUTO) ? "UMA_AUTO" :
-			(PostParams->MemConfig.UmaMode == UMA_SPECIFIED) ? "UMA_SPECIFIED" :
-			(PostParams->MemConfig.UmaMode == UMA_NONE) ? "UMA_NONE" :
-			"unknown"
-	);
-	printk(
-			BIOS_SPEW,
-			"setup_uma_memory: syslimit 0x%08llX, bottomio 0x%08lx\n",
-			(unsigned long long)(PostParams->MemConfig.SysLimit) << 16,
-			(unsigned long)(PostParams->MemConfig.BottomIo) << 16
-	);
-	printk(
-			BIOS_SPEW,
-			"setup_uma_memory: uma size %luMB, uma start 0x%08lx\n",
-			(unsigned long)(PostParams->MemConfig.UmaSize) >> (20 - 16),
-			(unsigned long)(PostParams->MemConfig.UmaBase) << 16
-	);
+	print_init_post_settings(PostParams);
 
 	if (status != AGESA_SUCCESS)
 		agesawrapper_readeventlog(PostParams->StdHeader.HeapStatus);

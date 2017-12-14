@@ -238,7 +238,7 @@ static void relocation_handler(int cpu, uintptr_t curr_smbase,
 
 static void post_mp_init(void)
 {
-	smm_southbridge_enable();
+	smm_southbridge_enable(PWRBTN_EN | GBL_EN);
 
 	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX))
 		mp_run_on_all_cpus(sgx_configure, 2000);

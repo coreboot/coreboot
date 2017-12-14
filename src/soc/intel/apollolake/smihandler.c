@@ -34,6 +34,16 @@ const struct smm_save_state_ops *get_smm_save_state_ops(void)
 	return &em64t100_smm_ops;
 }
 
+/* SMI handlers that should be serviced in SCI mode too. */
+uint32_t smi_handler_get_sci_mask(void)
+{
+	uint32_t sci_mask =
+		SMI_HANDLER_SCI_EN(APM_SMI_STS) |
+		SMI_HANDLER_SCI_EN(SLP_SMI_STS);
+
+	return sci_mask;
+}
+
 const smi_handler_t southbridge_smi[32] = {
 	[SLP_SMI_STS] = smihandler_southbridge_sleep,
 	[APM_SMI_STS] = smihandler_southbridge_apmc,

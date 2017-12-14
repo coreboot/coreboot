@@ -21,6 +21,7 @@
 #include <cpu/x86/smm.h>
 #include <device/pci_def.h>
 #include <elog.h>
+#include <intelblocks/fast_spi.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smihandler.h>
 #include <intelblocks/uart.h>
@@ -35,9 +36,26 @@
 /* GNVS needs to be set by coreboot initiating a software SMI. */
 static struct global_nvs_t *gnvs;
 
+/* SoC overrides. */
+
 __attribute__((weak)) int smihandler_disable_busmaster(device_t dev)
 {
 	return 1;
+}
+
+/* SMI handlers that should be serviced in SCI mode too. */
+__attribute__((weak)) uint32_t smi_handler_get_sci_mask(void)
+{
+	return 0; /* No valid SCI mask for SMI handler */
+}
+
+/*
+ * Needs to implement the mechanism to know if an illegal attempt
+ * has been made to write to the BIOS area.
+ */
+__attribute__((weak)) void smihandler_check_illegal_access(uint32_t tco_sts)
+{
+	return;
 }
 
 static void *find_save_state(const struct smm_save_state_ops *save_state_ops,
@@ -175,6 +193,8 @@ void smihandler_southbridge_sleep(
 
 		/* Disable all GPE */
 		pmc_disable_all_gpe();
+		/* Set which state system will be after power reapplied */
+		pmc_soc_restore_power_failure();
 		/* also iterates over all bridges on bus 0 */
 		busmaster_disable_on_bus(0);
 		break;
@@ -201,8 +221,7 @@ void smihandler_southbridge_sleep(
 	 * the line above. However, if we entered sleep state S1 and wake
 	 * up again, we will continue to execute code in this function.
 	 */
-	reg32 = inl(ACPI_BASE_ADDRESS + PM1_CNT);
-	if (reg32 & SCI_EN) {
+	if (pmc_read_pm1_control() & SCI_EN) {
 		/* The OS is not an ACPI OS, so we set the state to S0 */
 		pmc_disable_pm1_control(SLP_EN | SLP_TYP);
 	}
@@ -240,6 +259,9 @@ static void finalize(void)
 	}
 	finalize_done = 1;
 
+	if (IS_ENABLED(CONFIG_SPI_FLASH_SMM))
+		/* Re-init SPI driver to handle locked BAR */
+		fast_spi_init();
 }
 
 void smihandler_southbridge_apmc(
@@ -308,12 +330,13 @@ void smihandler_southbridge_pm1(
 	const struct smm_save_state_ops *save_state_ops)
 {
 	uint16_t pm1_sts = pmc_clear_pm1_status();
+	u16 pm1_en = pmc_read_pm1_enable();
 
 	/*
 	 * While OSPM is not active, poweroff immediately
 	 * on a power button event.
 	 */
-	if (pm1_sts & PWRBTN_STS) {
+	if ((pm1_sts & PWRBTN_STS) && (pm1_en & PWRBTN_EN)) {
 		/* power button pressed */
 		if (IS_ENABLED(CONFIG_ELOG_GSMI))
 			elog_add_event(ELOG_TYPE_POWER_BUTTON);
@@ -336,6 +359,8 @@ void smihandler_southbridge_tco(
 	/* Any TCO event? */
 	if (!tco_sts)
 		return;
+
+	smihandler_check_illegal_access(tco_sts);
 
 	if (tco_sts & TCO_TIMEOUT) { /* TIMEOUT */
 		/* Handle TCO timeout */
@@ -390,6 +415,17 @@ void southbridge_smi_handler(void)
 	 * happening in the following calls.
 	 */
 	smi_sts = pmc_clear_smi_status();
+
+	/*
+	 * In SCI mode, execute only those SMI handlers that have
+	 * declared themselves as available for service in that mode
+	 * using smi_handler_get_sci_mask.
+	 */
+	if (pmc_read_pm1_control() & SCI_EN)
+		smi_sts &= smi_handler_get_sci_mask();
+
+	if (!smi_sts)
+		return;
 
 	save_state_ops = get_smm_save_state_ops();
 

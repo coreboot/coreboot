@@ -60,6 +60,11 @@ const struct smm_save_state_ops *get_smm_save_state_ops(void);
  */
 extern const smi_handler_t southbridge_smi[32];
 
+#define SMI_HANDLER_SCI_EN(__bit)	(1 << (__bit))
+
+/* SMI handlers that should be serviced in SCI mode too. */
+uint32_t smi_handler_get_sci_mask(void);
+
 /*
  * This function should be implemented in SOC specific code to handle
  * the SMI event on SLP_EN. The default functionality is provided in
@@ -143,6 +148,12 @@ void smihandler_southbridge_espi(
  * needs to be done for the specified device on S5 entry
  */
 int smihandler_disable_busmaster(device_t dev);
+
+/*
+ * SoC needs to implement the mechanism to know if an illegal attempt
+ * has been made to write to the BIOS area.
+ */
+void smihandler_check_illegal_access(uint32_t tco_sts);
 
 /*
  * Returns gnvs pointer within SMM context

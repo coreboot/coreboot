@@ -38,11 +38,11 @@ void smm_southbridge_clear_state(void)
 	pmc_clear_all_gpe_status();
 }
 
-void smm_southbridge_enable(void)
+void smm_southbridge_enable(uint16_t pm1_events)
 {
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	/* Configure events */
-	pmc_enable_pm1(PWRBTN_EN | GBL_EN);
+	pmc_enable_pm1(pm1_events);
 	pmc_disable_std_gpe(PME_B0_EN);
 
 	/*

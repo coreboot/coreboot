@@ -22,7 +22,6 @@
 #include <spi_flash.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "nvm.h"
-#include "spi_flash.h"
 
 /* Read flash status register to determine if write protect is active */
 int nvm_is_write_protected(void)
@@ -62,5 +61,5 @@ int nvm_protect(const struct region *r)
 	if (!IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
 		return 0;
 
-	return spi_flash_protect(region_offset(r), region_sz(r));
+	return spi_flash_ctrlr_protect_region(boot_device_spi_flash(), r);
 }

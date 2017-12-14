@@ -90,18 +90,3 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 		  "d" (APM_CNT)
 	);
 }
-
-static void pm1_enable_pwrbtn_smi(void *unused)
-{
-	/*
-	 * Enable power button SMI only before jumping to payload. This ensures
-	 * that:
-	 * 1. Power button SMI is enabled only after coreboot is done.
-	 * 2. On resume path, power button SMI is not enabled and thus avoids
-	 * any shutdowns because of power button presses due to power button
-	 * press in resume path.
-	 */
-	pmc_update_pm1_enable(PWRBTN_EN);
-}
-
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, pm1_enable_pwrbtn_smi, NULL);

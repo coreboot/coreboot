@@ -88,7 +88,7 @@ void bootblock_soc_early_init(void)
  */
 static void load_smu_fw1(void)
 {
-	u32 base, limit;
+	u32 base, limit, cmd;
 
 	/* Open a posted hole from 0x80000000 : 0xfed00000-1 */
 	base = (0x80000000 >> 8) | MMIO_WE | MMIO_RE;
@@ -99,6 +99,11 @@ static void load_smu_fw1(void)
 	/* Preload a value into "BAR3" and enable it */
 	pci_write_config32(SOC_PSP_DEV, PSP_MAILBOX_BAR, PSP_MAILBOX_BAR3_BASE);
 	pci_write_config32(SOC_PSP_DEV, PSP_BAR_ENABLES, PSP_MAILBOX_BAR_EN);
+
+	/* Enable memory access and master */
+	cmd = pci_read_config32(SOC_PSP_DEV, PCI_COMMAND);
+	cmd |= PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER;
+	pci_write_config32(SOC_PSP_DEV, PCI_COMMAND, cmd);
 
 	psp_load_named_blob(MBOX_BIOS_CMD_SMU_FW, "smu_fw");
 }

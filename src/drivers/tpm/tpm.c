@@ -30,6 +30,9 @@ static void init_tpm_dev(void *unused)
 #else
 	tpm_setup(false);
 #endif
+
+	// TCPA cbmem log
+	tcpa_log_init();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, init_tpm_dev, NULL);

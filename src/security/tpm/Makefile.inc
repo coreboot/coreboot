@@ -12,11 +12,11 @@ postcar-$(CONFIG_VBOOT) += tss/tcg-1.2/tss.c
 
 ## TSPI
 
-ramstage-y += tspi/tspi.c
-romstage-y += tspi/tspi.c
+ramstage-y += tspi/tspi.c tspi/log.c
+romstage-y += tspi/tspi.c tspi/log.c
 
-verstage-$(CONFIG_VBOOT) += tspi/tspi.c
-postcar-$(CONFIG_VBOOT) += tspi/tspi.c
+verstage-$(CONFIG_VBOOT) += tspi/tspi.c tspi/log.c
+postcar-$(CONFIG_VBOOT) += tspi/tspi.c tspi/log.c
 
 endif # CONFIG_TPM1
 
@@ -36,10 +36,10 @@ postcar-$(CONFIG_VBOOT) += tss/tcg-2.0/tss.c
 
 ## TSPI
 
-ramstage-y += tspi/tspi.c
-romstage-y += tspi/tspi.c
+ramstage-y += tspi/tspi.c tspi/log.c
+romstage-y += tspi/tspi.c tspi/log.c
 
-verstage-$(CONFIG_VBOOT) += tspi/tspi.c
-postcar-$(CONFIG_VBOOT) += tspi/tspi.c
+verstage-$(CONFIG_VBOOT) += tspi/tspi.c tspi/log.c
+postcar-$(CONFIG_VBOOT) += tspi/tspi.c tspi/log.c
 
 endif # CONFIG_TPM2

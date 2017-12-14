@@ -243,6 +243,7 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 
 	if (status != AGESA_SUCCESS)
 		agesawrapper_readeventlog(EnvParams->StdHeader.HeapStatus);
+	AmdReleaseStruct(&AmdParamStruct);
 
 	return status;
 }
@@ -345,7 +346,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	       AcpiSlit, AcpiWheaMce, AcpiWheaCmc,
 	       AcpiAlib, AcpiIvrs, __func__);
 
-	/* AmdReleaseStruct (&AmdParamStruct); */
+	AmdReleaseStruct(&AmdParamStruct);
 	return Status;
 }
 

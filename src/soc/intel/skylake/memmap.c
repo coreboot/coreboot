@@ -21,11 +21,11 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <fsp/memmap.h>
 #include <intelblocks/ebda.h>
 #include <intelblocks/systemagent.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
-#include <soc/smm.h>
 #include <soc/systemagent.h>
 #include <stdlib.h>
 

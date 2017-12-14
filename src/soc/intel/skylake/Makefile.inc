@@ -59,7 +59,6 @@ ramstage-y += pmc.c
 ramstage-y += pmutil.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 ramstage-y += sd.c
-ramstage-y += smi.c
 ramstage-y += smmrelocate.c
 ramstage-y += spi.c
 ramstage-y += systemagent.c

@@ -38,6 +38,7 @@
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/mp_init.h>
 #include <intelblocks/sgx.h>
+#include <intelblocks/smm.h>
 #include <pc80/mc146818rtc.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
@@ -436,7 +437,7 @@ static void post_mp_init(void)
 	 * Now that all APs have been relocated as well as the BSP let SMIs
 	 * start flowing.
 	 */
-	southbridge_smm_enable_smi();
+	smm_southbridge_enable(GBL_EN);
 
 	/* Lock down the SMRAM space. */
 #if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)

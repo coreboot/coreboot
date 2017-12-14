@@ -23,6 +23,7 @@
 #include <soc/gpe.h>
 #include <soc/iomap.h>
 #include <soc/pmc.h>
+#include <soc/smbus.h>
 
 /* ACPI_BASE_ADDRESS / PMBASE */
 
@@ -135,12 +136,25 @@
 
 #define GBLRST_CAUSE0_THERMTRIP	(1 << 5)
 
-/* This is defined as ETR3 in EDS. We named it as ETR here for consistency */
-#define ETR			0xac
-#define  CF9_LOCK         (1 << 31)
-#define  CF9_GLB_RST      (1 << 20)
+/*
+ * Enable SMI generation:
+ *  - on APMC writes (io 0xb2)
+ *  - on writes to SLP_EN (sleep states)
+ *  - on writes to GBL_RLS (bios commands)
+ *  - on eSPI events (does nothing on LPC systems)
+ * No SMIs:
+ *  - on microcontroller writes (io 0x62/0x66)
+ *  - on TCO events
+ */
+#define ENABLE_SMI_PARAMS \
+	(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | ESPI_SMI_EN | EOS)
 
-#define PRSTS                   0x10
+/* This is defined as ETR3 in EDS. We named it as ETR here for consistency */
+#define ETR		0xac
+#define  CF9_LOCK	(1 << 31)
+#define  CF9_GLB_RST	(1 << 20)
+
+#define PRSTS		0x10
 
 struct chipset_power_state {
 	uint16_t pm1_sts;

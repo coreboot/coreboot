@@ -26,6 +26,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <console/console.h>
+#include <intelblocks/smm.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -281,7 +282,7 @@ void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 void smm_initialize(void)
 {
 	/* Clear the SMM state in the southbridge. */
-	southbridge_smm_clear_state();
+	smm_southbridge_clear_state();
 
 	/*
 	 * Run the relocation handler for on the BSP to check and set up

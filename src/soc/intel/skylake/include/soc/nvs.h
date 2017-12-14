@@ -69,9 +69,4 @@ typedef struct global_nvs_t {
 } __packed global_nvs_t;
 check_member(global_nvs_t, chromeos, 0x100);
 
-#if ENV_SMM
-/* Used in SMM to find the ACPI GNVS address */
-global_nvs_t *smm_get_gnvs(void);
-#endif
-
 #endif

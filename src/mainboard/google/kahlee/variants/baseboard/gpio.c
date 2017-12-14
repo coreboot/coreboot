@@ -324,18 +324,15 @@ const __attribute__((weak)) struct sci_source *get_gpe_table(size_t *num)
 
 int __attribute__((weak)) variant_get_xhci_oc_map(uint16_t *map)
 {
-	*map =  USB_OC0 << OC_PORT0_SHIFT; /* USB-C Port0 = OC0 */
-	*map |= USB_OC1 << OC_PORT1_SHIFT; /* USB-C Port1 = OC1 */
-	*map |= USB_OC_DISABLE << OC_PORT2_SHIFT;
+	*map =  USB_OC0 << OC_PORT0_SHIFT; /* USB-C Port0/4 = OC0 */
+	*map |= USB_OC1 << OC_PORT1_SHIFT; /* USB-C Port1/5 = OC1 */
+	*map |= USB_OC2 << OC_PORT2_SHIFT; /* USB-A HUB Port2/6 = OC2 */
 	*map |= USB_OC_DISABLE << OC_PORT3_SHIFT;
 	return 0;
 }
 
 int __attribute__((weak)) variant_get_ehci_oc_map(uint16_t *map)
 {
-	*map =  USB_OC2 << OC_PORT0_SHIFT; /* USB-A Port0 = OC2 */
-	*map |= USB_OC3 << OC_PORT1_SHIFT; /* USB-A Port1 = OC3 */
-	*map |= USB_OC_DISABLE << OC_PORT2_SHIFT;
-	*map |= USB_OC_DISABLE << OC_PORT3_SHIFT;
+	*map = USB_OC_DISABLE_ALL;
 	return 0;
 }

@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include <fast_spi_def.h>
 #include <intelblocks/fast_spi.h>
-#include <soc/intel/common/spi_flash.h>
 #include <soc/pci_devs.h>
 #include <spi_flash.h>
 #include <string.h>
@@ -318,15 +317,6 @@ static int fast_spi_flash_probe(const struct spi_slave *dev,
 	return 0;
 }
 
-int spi_flash_get_fpr_info(struct fpr_info *info)
-{
-	BOILERPLATE_CREATE_CTX(ctx);
-
-	info->base = ctx->mmio_base + SPIBAR_FPR_BASE;
-	info->max = SPIBAR_FPR_MAX;
-	return 0;
-}
-
 /*
  * Minimal set of commands to read WPSR from FAST_SPI.
  * Returns 0 on success, < 0 on failure.
@@ -362,8 +352,64 @@ static int fast_spi_flash_ctrlr_setup(const struct spi_slave *dev)
 	return 0;
 }
 
+#define SPI_FPR_SHIFT		12
+#define SPI_FPR_MASK		0x7fff
+#define SPI_FPR_BASE_SHIFT	0
+#define SPI_FPR_LIMIT_SHIFT	16
+#define SPI_FPR_RPE		(1 << 15) /* Read Protect */
+#define SPI_FPR_WPE		(1 << 31) /* Write Protect */
+#define SPI_FPR(base, limit)	\
+	(((((limit) >> SPI_FPR_SHIFT) & SPI_FPR_MASK) << SPI_FPR_LIMIT_SHIFT) |\
+	 ((((base) >> SPI_FPR_SHIFT) & SPI_FPR_MASK) << SPI_FPR_BASE_SHIFT))
+
+/*
+ * Protect range of SPI flash defined by [start, start+size-1] using Flash
+ * Protected Range (FPR) register if available.
+ */
+static int fast_spi_flash_protect(const struct spi_flash *flash,
+					const struct region *region)
+{
+	u32 start = region_offset(region);
+	u32 end = start + region_sz(region) - 1;
+	u32 reg;
+	int fpr;
+	uintptr_t fpr_base;
+	BOILERPLATE_CREATE_CTX(ctx);
+
+	fpr_base = ctx->mmio_base + SPIBAR_FPR_BASE;
+
+	/* Find first empty FPR */
+	for (fpr = 0; fpr < SPIBAR_FPR_MAX; fpr++) {
+		reg = read32((void *)fpr_base);
+		if (reg == 0)
+			break;
+		fpr_base += sizeof(uint32_t);
+	}
+
+	if (fpr >= SPIBAR_FPR_MAX) {
+		printk(BIOS_ERR, "ERROR: No SPI FPR free!\n");
+		return -1;
+	}
+
+	/* Set protected range base and limit */
+	reg = SPI_FPR(start, end) | SPI_FPR_WPE;
+
+	/* Set the FPR register and verify it is protected */
+	write32((void *)fpr_base, reg);
+	reg = read32((void *)fpr_base);
+	if (!(reg & SPI_FPR_WPE)) {
+		printk(BIOS_ERR, "ERROR: Unable to set SPI FPR %d\n", fpr);
+		return -1;
+	}
+
+	printk(BIOS_INFO, "%s: FPR %d is enabled for range 0x%08x-0x%08x\n",
+	       __func__, fpr, start, end);
+	return 0;
+}
+
 const struct spi_ctrlr fast_spi_flash_ctrlr = {
 	.setup = fast_spi_flash_ctrlr_setup,
 	.max_xfer_size = SPI_CTRLR_DEFAULT_MAX_XFER_SIZE,
 	.flash_probe = fast_spi_flash_probe,
+	.flash_protect = fast_spi_flash_protect,
 };

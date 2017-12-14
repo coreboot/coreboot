@@ -22,7 +22,6 @@
 #include <fast_spi_def.h>
 #include <intelblocks/fast_spi.h>
 #include <lib.h>
-#include <soc/intel/common/spi_flash.h>
 #include <soc/pci_devs.h>
 #include <spi_flash.h>
 #include <spi-generic.h>

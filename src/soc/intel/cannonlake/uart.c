@@ -13,8 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#define __SIMPLE_DEVICE__
-
 #include <assert.h>
 #include <cbmem.h>
 #include <console/uart.h>
@@ -30,6 +28,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 
+#if !ENV_RAMSTAGE
 /* Serial IO UART controller legacy mode */
 #define PCR_SERIAL_IO_GPPRVRW7		0x618
 #define PCR_SIO_PCH_LEGACY_UART(idx)	(1 << (idx))
@@ -51,14 +50,6 @@ static const struct port {
 		   PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1)} /* TX */
 	}
 };
-
-#if IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM)
-uintptr_t uart_platform_base(int idx)
-{
-	/* We can only have one serial console at a time */
-	return UART_BASE_0_ADDR(idx);
-}
-#endif
 
 void pch_uart_init(void)
 {
@@ -85,6 +76,15 @@ void pch_uart_init(void)
 
 	gpio_configure_pads(p->pads, ARRAY_SIZE(p->pads));
 }
+#endif
+
+#if IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM)
+uintptr_t uart_platform_base(int idx)
+{
+	/* We can only have one serial console at a time */
+	return UART_BASE_0_ADDR(idx);
+}
+#endif
 
 device_t pch_uart_get_debug_controller(void)
 {

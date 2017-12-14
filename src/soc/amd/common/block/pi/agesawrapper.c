@@ -13,17 +13,18 @@
  * GNU General Public License for more details.
  */
 
-#include <amdblocks/agesawrapper.h>
 #include <arch/early_variables.h>
+#include <arch/acpi.h>
+#include <cpu/x86/mtrr.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <delay.h>
-#include <cpu/x86/mtrr.h>
-#include <amdblocks/BiosCallOuts.h>
 #include <rules.h>
 #include <rmodule.h>
 #include <string.h>
 #include <timestamp.h>
+#include <amdblocks/agesawrapper.h>
+#include <amdblocks/BiosCallOuts.h>
 
 void __attribute__((weak)) SetMemParams(AMD_POST_PARAMS *PostParams) {}
 void __attribute__((weak)) OemPostParams(AMD_POST_PARAMS *PostParams) {}
@@ -71,62 +72,51 @@ static AGESA_STATUS agesawrapper_readeventlog(UINT8 HeapStatus)
 AGESA_STATUS agesawrapper_amdinitreset(void)
 {
 	AGESA_STATUS status;
-	AMD_INTERFACE_PARAMS AmdParamStruct;
-	AMD_RESET_PARAMS AmdResetParams;
-
-	memset(&AmdParamStruct, 0, sizeof(AmdParamStruct));
-	memset(&AmdResetParams, 0, sizeof(AmdResetParams));
-
-	AmdParamStruct.AgesaFunctionName = AMD_INIT_RESET;
-	AmdParamStruct.AllocationMethod = ByHost;
-	AmdParamStruct.NewStructSize = sizeof(AMD_RESET_PARAMS);
-	AmdParamStruct.NewStructPtr = &AmdResetParams;
-	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
-	AmdParamStruct.StdHeader.CalloutPtr = &GetBiosCallout;
-	AmdParamStruct.StdHeader.Func = 0;
-	AmdParamStruct.StdHeader.ImageBasePtr = 0;
-	AmdCreateStruct (&AmdParamStruct);
-
-	SetFchResetParams(&AmdResetParams.FchInterface);
+	AMD_RESET_PARAMS ResetParams;
+	AMD_INTERFACE_PARAMS AmdParamStruct = {
+		.AgesaFunctionName = AMD_INIT_RESET,
+		.AllocationMethod = ByHost,
+		.NewStructSize = sizeof(AMD_RESET_PARAMS),
+		.NewStructPtr = &ResetParams,
+		.StdHeader.CalloutPtr = &GetBiosCallout
+	};
+	AmdCreateStruct(&AmdParamStruct);
+	SetFchResetParams(&ResetParams.FchInterface);
 
 	timestamp_add_now(TS_AGESA_INIT_RESET_START);
-	status = AmdInitReset(&AmdResetParams);
+	status = AmdInitReset(&ResetParams);
 	timestamp_add_now(TS_AGESA_INIT_RESET_DONE);
 
 	if (status != AGESA_SUCCESS)
 		agesawrapper_readeventlog(AmdParamStruct.StdHeader.HeapStatus);
-	AmdReleaseStruct (&AmdParamStruct);
+	AmdReleaseStruct(&AmdParamStruct);
 	return status;
 }
 
 AGESA_STATUS agesawrapper_amdinitearly(void)
 {
 	AGESA_STATUS status;
-	AMD_INTERFACE_PARAMS AmdParamStruct;
-	AMD_EARLY_PARAMS     *AmdEarlyParamsPtr;
+	AMD_EARLY_PARAMS *EarlyParams;
+	AMD_INTERFACE_PARAMS AmdParamStruct = {
+		.AgesaFunctionName = AMD_INIT_EARLY,
+		.AllocationMethod = PreMemHeap,
+		.StdHeader.CalloutPtr = &GetBiosCallout,
+	};
 
-	memset(&AmdParamStruct, 0, sizeof(AmdParamStruct));
+	AmdCreateStruct(&AmdParamStruct);
 
-	AmdParamStruct.AgesaFunctionName = AMD_INIT_EARLY;
-	AmdParamStruct.AllocationMethod = PreMemHeap;
-	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
-	AmdParamStruct.StdHeader.CalloutPtr = &GetBiosCallout;
-	AmdParamStruct.StdHeader.Func = 0;
-	AmdParamStruct.StdHeader.ImageBasePtr = 0;
-	AmdCreateStruct (&AmdParamStruct);
+	EarlyParams = (AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr;
+	OemCustomizeInitEarly(EarlyParams);
 
-	AmdEarlyParamsPtr = (AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr;
-	OemCustomizeInitEarly (AmdEarlyParamsPtr);
-
-	AmdEarlyParamsPtr->GnbConfig.PsppPolicy = PsppDisabled;
+	EarlyParams->GnbConfig.PsppPolicy = PsppDisabled;
 
 	timestamp_add_now(TS_AGESA_INIT_EARLY_START);
-	status = AmdInitEarly ((AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr);
+	status = AmdInitEarly(EarlyParams);
 	timestamp_add_now(TS_AGESA_INIT_EARLY_DONE);
 
 	if (status != AGESA_SUCCESS)
 		agesawrapper_readeventlog(AmdParamStruct.StdHeader.HeapStatus);
-	AmdReleaseStruct (&AmdParamStruct);
+	AmdReleaseStruct(&AmdParamStruct);
 
 	return status;
 }
@@ -167,21 +157,16 @@ static void print_init_post_settings(AMD_POST_PARAMS *parms)
 AGESA_STATUS agesawrapper_amdinitpost(void)
 {
 	AGESA_STATUS status;
-	AMD_INTERFACE_PARAMS  AmdParamStruct;
-	AMD_POST_PARAMS       *PostParams;
+	AMD_INTERFACE_PARAMS AmdParamStruct = {
+		.AgesaFunctionName = AMD_INIT_POST,
+		.AllocationMethod = PreMemHeap,
+		.StdHeader.CalloutPtr = &GetBiosCallout,
+	};
+	AMD_POST_PARAMS *PostParams;
 
-	memset(&AmdParamStruct, 0, sizeof(AmdParamStruct));
+	AmdCreateStruct(&AmdParamStruct);
 
-	AmdParamStruct.AgesaFunctionName = AMD_INIT_POST;
-	AmdParamStruct.AllocationMethod = PreMemHeap;
-	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
-	AmdParamStruct.StdHeader.CalloutPtr = &GetBiosCallout;
-	AmdParamStruct.StdHeader.Func = 0;
-	AmdParamStruct.StdHeader.ImageBasePtr = 0;
-
-	AmdCreateStruct (&AmdParamStruct);
 	PostParams = (AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr;
-
 	PostParams->MemConfig.UmaMode = CONFIG_GFXUMA ? UMA_AUTO : UMA_NONE;
 	PostParams->MemConfig.UmaSize = 0;
 	PostParams->MemConfig.BottomIo = (UINT16)
@@ -196,7 +181,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	);
 
 	timestamp_add_now(TS_AGESA_INIT_POST_START);
-	status = AmdInitPost (PostParams);
+	status = AmdInitPost(PostParams);
 	timestamp_add_now(TS_AGESA_INIT_POST_DONE);
 
 	/*
@@ -215,7 +200,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 
 	if (status != AGESA_SUCCESS)
 		agesawrapper_readeventlog(PostParams->StdHeader.HeapStatus);
-	AmdReleaseStruct (&AmdParamStruct);
+	AmdReleaseStruct(&AmdParamStruct);
 
 	return status;
 }
@@ -223,39 +208,30 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 AGESA_STATUS agesawrapper_amdinitenv(void)
 {
 	AGESA_STATUS status;
-	AMD_INTERFACE_PARAMS AmdParamStruct;
-	AMD_ENV_PARAMS       *EnvParam;
+	AMD_INTERFACE_PARAMS AmdParamStruct = {
+		.AgesaFunctionName = AMD_INIT_ENV,
+		.AllocationMethod = PostMemDram,
+		.StdHeader.CalloutPtr = &GetBiosCallout,
+	};
+	AMD_ENV_PARAMS *EnvParams;
 
-	memset(&AmdParamStruct, 0, sizeof(AmdParamStruct));
+	status = AmdCreateStruct(&AmdParamStruct);
 
-	AmdParamStruct.AgesaFunctionName = AMD_INIT_ENV;
-	AmdParamStruct.AllocationMethod = PostMemDram;
-	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
-	AmdParamStruct.StdHeader.CalloutPtr = &GetBiosCallout;
-	AmdParamStruct.StdHeader.Func = 0;
-	AmdParamStruct.StdHeader.ImageBasePtr = 0;
-	status = AmdCreateStruct (&AmdParamStruct);
-
-	EnvParam = (AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr;
-	SetFchEnvParams(&EnvParam->FchInterface);
-	SetNbEnvParams(&EnvParam->GnbEnvConfiguration);
+	EnvParams = (AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr;
+	SetFchEnvParams(&EnvParams->FchInterface);
+	SetNbEnvParams(&EnvParams->GnbEnvConfiguration);
 
 	timestamp_add_now(TS_AGESA_INIT_ENV_START);
-	status = AmdInitEnv (EnvParam);
+	status = AmdInitEnv(EnvParams);
 	timestamp_add_now(TS_AGESA_INIT_ENV_DONE);
 
 	if (status != AGESA_SUCCESS)
-		agesawrapper_readeventlog(EnvParam->StdHeader.HeapStatus);
-	/*
-	 * Initialize Subordinate Bus Number and Secondary Bus Number
-	 * In platform BIOS this address is allocated by PCI enumeration code
-	 * Modify D1F0x18
-	 */
+		agesawrapper_readeventlog(EnvParams->StdHeader.HeapStatus);
 
 	return status;
 }
 
-VOID* agesawrapper_getlateinitptr (int pick)
+VOID *agesawrapper_getlateinitptr(int pick)
 {
 	switch (pick) {
 	case PICK_DMI:
@@ -284,34 +260,29 @@ VOID* agesawrapper_getlateinitptr (int pick)
 AGESA_STATUS agesawrapper_amdinitmid(void)
 {
 	AGESA_STATUS status;
-	AMD_INTERFACE_PARAMS AmdParamStruct;
-	AMD_MID_PARAMS *MidParam;
+	AMD_INTERFACE_PARAMS AmdParamStruct = {
+		.AgesaFunctionName = AMD_INIT_MID,
+		.AllocationMethod = PostMemDram,
+		.StdHeader.CalloutPtr = &GetBiosCallout,
+	};
+	AMD_MID_PARAMS *MidParams;
 
 	/* Enable MMIO on AMD CPU Address Map Controller */
-	amd_initcpuio ();
+	amd_initcpuio();
 
-	memset(&AmdParamStruct, 0, sizeof(AmdParamStruct));
+	AmdCreateStruct(&AmdParamStruct);
 
-	AmdParamStruct.AgesaFunctionName = AMD_INIT_MID;
-	AmdParamStruct.AllocationMethod = PostMemDram;
-	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
-	AmdParamStruct.StdHeader.CalloutPtr = &GetBiosCallout;
-	AmdParamStruct.StdHeader.Func = 0;
-	AmdParamStruct.StdHeader.ImageBasePtr = 0;
-
-	AmdCreateStruct (&AmdParamStruct);
-
-	MidParam = (AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr;
-	SetFchMidParams(&MidParam->FchInterface);
-	SetNbMidParams(&MidParam->GnbMidConfiguration);
+	MidParams = (AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr;
+	SetFchMidParams(&MidParams->FchInterface);
+	SetNbMidParams(&MidParams->GnbMidConfiguration);
 
 	timestamp_add_now(TS_AGESA_INIT_MID_START);
-	status = AmdInitMid ((AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr);
+	status = AmdInitMid(MidParams);
 	timestamp_add_now(TS_AGESA_INIT_MID_DONE);
 
 	if (status != AGESA_SUCCESS)
 		agesawrapper_readeventlog(AmdParamStruct.StdHeader.HeapStatus);
-	AmdReleaseStruct (&AmdParamStruct);
+	AmdReleaseStruct(&AmdParamStruct);
 
 	return status;
 }
@@ -319,61 +290,51 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 AGESA_STATUS agesawrapper_amdinitlate(void)
 {
 	AGESA_STATUS Status;
-	AMD_INTERFACE_PARAMS AmdParamStruct;
-	AMD_LATE_PARAMS *AmdLateParams;
-
-	memset(&AmdParamStruct, 0, sizeof(AmdParamStruct));
-
-	AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
-	AmdParamStruct.AllocationMethod = PostMemDram;
-	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
-	AmdParamStruct.StdHeader.CalloutPtr = &GetBiosCallout;
-	AmdParamStruct.StdHeader.HeapStatus = HEAP_SYSTEM_MEM;
-	AmdParamStruct.StdHeader.Func = 0;
-	AmdParamStruct.StdHeader.ImageBasePtr = 0;
+	AMD_INTERFACE_PARAMS AmdParamStruct = {
+		.AgesaFunctionName = AMD_INIT_LATE,
+		.AllocationMethod = PostMemDram,
+		.StdHeader.CalloutPtr = &GetBiosCallout,
+	};
+	AMD_LATE_PARAMS *LateParams;
 
 	/*
 	 * NOTE: if not call amdcreatestruct, the initializer
 	 * (AmdInitLateInitializer) would not be called.
 	 */
 	AmdCreateStruct(&AmdParamStruct);
-	AmdLateParams = (AMD_LATE_PARAMS *)AmdParamStruct.NewStructPtr;
+	LateParams = (AMD_LATE_PARAMS *)AmdParamStruct.NewStructPtr;
 
 	timestamp_add_now(TS_AGESA_INIT_LATE_START);
-	Status = AmdInitLate(AmdLateParams);
+	Status = AmdInitLate(LateParams);
 	timestamp_add_now(TS_AGESA_INIT_LATE_DONE);
 
 	if (Status != AGESA_SUCCESS) {
-		agesawrapper_readeventlog(AmdLateParams->StdHeader.HeapStatus);
+		agesawrapper_readeventlog(LateParams->StdHeader.HeapStatus);
 		ASSERT(Status == AGESA_SUCCESS);
 	}
 
-	DmiTable    = AmdLateParams->DmiTable;
-	AcpiPstate  = AmdLateParams->AcpiPState;
+	DmiTable = LateParams->DmiTable;
+	AcpiPstate = LateParams->AcpiPState;
 
-	AcpiWheaMce = AmdLateParams->AcpiWheaMce;
-	AcpiWheaCmc = AmdLateParams->AcpiWheaCmc;
-	AcpiAlib    = AmdLateParams->AcpiAlib;
-	AcpiIvrs    = AmdLateParams->AcpiIvrs;
-	AcpiCrat    = AmdLateParams->AcpiCrat;
+	AcpiWheaMce = LateParams->AcpiWheaMce;
+	AcpiWheaCmc = LateParams->AcpiWheaCmc;
+	AcpiAlib = LateParams->AcpiAlib;
+	AcpiIvrs = LateParams->AcpiIvrs;
+	AcpiCrat = LateParams->AcpiCrat;
 
-	printk(BIOS_DEBUG, "DmiTable:%x, AcpiPstatein: %x, AcpiSrat:%x,"
-	       "AcpiSlit:%x, Mce:%x, Cmc:%x,"
-	       "Alib:%x, AcpiIvrs:%x in %s\n",
-	       (unsigned int)DmiTable, (unsigned int)AcpiPstate,
-	       (unsigned int)AcpiSrat, (unsigned int)AcpiSlit,
-	       (unsigned int)AcpiWheaMce, (unsigned int)AcpiWheaCmc,
-	       (unsigned int)AcpiAlib, (unsigned int)AcpiIvrs, __func__);
+	printk(BIOS_DEBUG, "DmiTable:%p, AcpiPstatein: %p, AcpiSrat:%p,"
+	       "AcpiSlit:%p, Mce:%p, Cmc:%p,"
+	       "Alib:%p, AcpiIvrs:%p in %s\n",
+	       DmiTable, AcpiPstate, AcpiSrat,
+	       AcpiSlit, AcpiWheaMce, AcpiWheaCmc,
+	       AcpiAlib, AcpiIvrs, __func__);
 
 	/* AmdReleaseStruct (&AmdParamStruct); */
 	return Status;
 }
 
-AGESA_STATUS agesawrapper_amdlaterunaptask (
-	UINT32 Func,
-	UINTN Data,
-	VOID *ConfigPtr
-	)
+AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINTN Data,
+				VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
 	AP_EXE_PARAMS ApExeParams;
@@ -387,7 +348,7 @@ AGESA_STATUS agesawrapper_amdlaterunaptask (
 	ApExeParams.FunctionNumber = Func;
 	ApExeParams.RelatedDataBlock = ConfigPtr;
 
-	Status = AmdLateRunApTask (&ApExeParams);
+	Status = AmdLateRunApTask(&ApExeParams);
 	if (Status != AGESA_SUCCESS) {
 		/* agesawrapper_readeventlog(); */
 		ASSERT(Status == AGESA_SUCCESS);
@@ -460,7 +421,7 @@ static const char *get_agesa_cbfs_name(void)
 	return CONFIG_AGESA_POST_MEMORY_CBFS_NAME;
 }
 
-const void *agesawrapper_locate_module (const CHAR8 name[8])
+const void *agesawrapper_locate_module(const CHAR8 name[8])
 {
 	const void *agesa;
 	const AMD_IMAGE_HEADER *image;

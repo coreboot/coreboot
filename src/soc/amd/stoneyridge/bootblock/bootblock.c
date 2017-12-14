@@ -91,7 +91,6 @@ static void load_smu_fw1(void)
 	u32 base, limit;
 
 	/* Open a posted hole from 0x80000000 : 0xfed00000-1 */
-	base =  0x80000000;
 	base = (0x80000000 >> 8) | MMIO_WE | MMIO_RE;
 	limit = (ALIGN_DOWN(HPET_BASE_ADDRESS - 1, 64 * KiB) >> 8);
 	pci_write_config32(SOC_ADDR_DEV, D18F1_MMIO_LIMIT0_LO, limit);

@@ -323,7 +323,7 @@ int lpss_i2c_transfer(unsigned int bus,
 
 	/* Process each segment */
 	while (count--) {
-		if (CONFIG_SOC_INTEL_COMMON_LPSS_I2C_DEBUG)
+		if (CONFIG_SOC_INTEL_COMMON_BLOCK_I2C_DEBUG)
 			printk(BIOS_DEBUG, "i2c %u:%02x %s %d bytes : ",
 			       bus, segments->slave,
 			       (segments->flags & I2C_M_RD) ? "R" : "W",
@@ -349,7 +349,7 @@ int lpss_i2c_transfer(unsigned int bus,
 			}
 		}
 
-		if (CONFIG_SOC_INTEL_COMMON_LPSS_I2C_DEBUG) {
+		if (CONFIG_SOC_INTEL_COMMON_BLOCK_I2C_DEBUG) {
 			int j;
 			for (j = 0; j < segments->len; j++)
 				printk(BIOS_DEBUG, "%02x ", segments->buf[j]);

@@ -73,21 +73,6 @@ config SOC_INTEL_COMMON_LPSS_CLOCK_MHZ
 	  at, in MHz. No default is set here as this is an SOC-specific value
 	  and must be provided by the SOC.
 
-config SOC_INTEL_COMMON_LPSS_I2C
-	bool
-	default n
-	help
-	  This driver supports the Intel Low Power Subsystem (LPSS) I2C
-	  controllers that are based on Synopsys DesignWare IP.
-
-config SOC_INTEL_COMMON_LPSS_I2C_DEBUG
-	bool "Enable debug output for LPSS I2C transactions"
-	default n
-	depends on SOC_INTEL_COMMON_LPSS_I2C
-	help
-	  Enable debug output for I2C transactions.  This can be useful
-	  when debugging I2C drivers.
-
 config MMA
 	bool "Enable MMA (Memory Margin Analysis) support for Intel Core"
 	default n

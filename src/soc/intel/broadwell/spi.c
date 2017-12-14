@@ -612,9 +612,11 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 }
 
 /* Use first empty Protected Range Register to cover region of flash */
-int spi_flash_protect(u32 start, u32 size)
+static int spi_flash_protect(const struct spi_flash *flash,
+				const struct region *region)
 {
-	u32 end = start + size - 1;
+	u32 start = region_offset(region);
+	u32 end = start + region_sz(region) - 1;
 	u32 reg;
 	int prr;
 
@@ -652,6 +654,7 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.xfer = spi_ctrlr_xfer,
 	.xfer_vector = spi_xfer_two_vectors,
 	.max_xfer_size = member_size(ich9_spi_regs, fdata),
+	.flash_protect = spi_flash_protect,
 };
 
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {

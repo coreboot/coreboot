@@ -26,7 +26,6 @@
 void __attribute__((weak)) SetMemParams(AMD_POST_PARAMS *PostParams) {}
 void __attribute__((weak)) OemPostParams(AMD_POST_PARAMS *PostParams) {}
 
-#ifndef __PRE_RAM__
 /* ACPI table pointers returned by AmdInitLate */
 static void *DmiTable;
 static void *AcpiPstate;
@@ -38,7 +37,6 @@ static void *AcpiWheaCmc;
 static void *AcpiAlib;
 static void *AcpiIvrs;
 static void *AcpiCrat;
-#endif /* #ifndef __PRE_RAM__ */
 
 static AGESA_STATUS agesawrapper_readeventlog(UINT8 HeapStatus)
 {
@@ -244,7 +242,6 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	return status;
 }
 
-#ifndef __PRE_RAM__
 VOID* agesawrapper_getlateinitptr (int pick)
 {
 	switch (pick) {
@@ -270,7 +267,6 @@ VOID* agesawrapper_getlateinitptr (int pick)
 		return NULL;
 	}
 }
-#endif /* #ifndef __PRE_RAM__ */
 
 AGESA_STATUS agesawrapper_amdinitmid(void)
 {
@@ -313,7 +309,6 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	return status;
 }
 
-#ifndef __PRE_RAM__
 AGESA_STATUS agesawrapper_amdinitlate(void)
 {
 	AGESA_STATUS Status;
@@ -362,7 +357,6 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	/* AmdReleaseStruct (&AmdParamStruct); */
 	return Status;
 }
-#endif /* #ifndef __PRE_RAM__ */
 
 AGESA_STATUS agesawrapper_amdlaterunaptask (
 	UINT32 Func,

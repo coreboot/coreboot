@@ -17,6 +17,7 @@
 #include <intelblocks/gpio.h>
 #include <intelblocks/pcr.h>
 #include <soc/pcr_ids.h>
+#include <soc/pmc.h>
 
 static const struct reset_mapping rst_map[] = {
 	{ .logical = PAD_CFG0_LOGICAL_RESET_RSMRST, .chipset = 0U << 30 },
@@ -100,15 +101,15 @@ const struct pad_community *soc_gpio_get_community(size_t *num_communities)
 const struct pmc_to_gpio_route *soc_pmc_gpio_routes(size_t *num)
 {
 	static const struct pmc_to_gpio_route routes[] = {
-		{ GPP_A, GPP_A },
-		{ GPP_B, GPP_B },
-		{ GPP_C, GPP_C },
-		{ GPP_D, GPP_D },
-		{ GPP_E, GPP_E },
-		{ GPP_F, GPP_F },
-		{ GPP_G, GPP_G },
-		{ GPP_H, GPP_H },
-		{ GPD, GPD },
+		{ PMC_GPP_A, GPP_A },
+		{ PMC_GPP_B, GPP_B },
+		{ PMC_GPP_C, GPP_C },
+		{ PMC_GPP_D, GPP_D },
+		{ PMC_GPP_E, GPP_E },
+		{ PMC_GPP_F, GPP_F },
+		{ PMC_GPP_G, GPP_G },
+		{ PMC_GPP_H, GPP_H },
+		{ PMC_GPD, GPD },
 	};
 	*num = ARRAY_SIZE(routes);
 	return routes;

@@ -18,6 +18,7 @@
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
+#include <intelblocks/pmclib.h>
 #include <intelblocks/smbus.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
@@ -191,6 +192,9 @@ void pch_early_init(void)
 
 	/* Program SMBUS_BASE_ADDRESS and Enable it */
 	smbus_common_init();
+
+	/* Set up GPE configuration */
+	pmc_gpe_init();
 
 	enable_rtc_upper_bank();
 }

@@ -24,6 +24,7 @@
 #include <soc/pch.h>
 #include <soc/gpio_defs.h>
 #include <soc/pci_devs.h>
+#include <soc/pmc.h>
 #include <soc/serialio.h>
 #include <soc/usb.h>
 #include <soc/vr_config.h>

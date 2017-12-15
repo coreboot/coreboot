@@ -165,7 +165,7 @@ config VBOOT
 
 config C_ENV_BOOTBLOCK_SIZE
 	hex
-	default 0x4000
+	default 0x8000
 
 config STACK_SIZE
 	hex

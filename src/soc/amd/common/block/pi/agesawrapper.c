@@ -40,6 +40,34 @@ static void *AcpiIvrs;
 static void *AcpiCrat;
 #endif /* #ifndef __PRE_RAM__ */
 
+static AGESA_STATUS agesawrapper_readeventlog(UINT8 HeapStatus)
+{
+	AGESA_STATUS Status;
+	EVENT_PARAMS AmdEventParams = {
+		.StdHeader.CalloutPtr = &GetBiosCallout,
+		.StdHeader.HeapStatus = HeapStatus,
+	};
+
+	Status = AmdReadEventLog(&AmdEventParams);
+	if (AmdEventParams.EventClass)
+		printk(BIOS_DEBUG, "AGESA Event Log:\n");
+
+	while (AmdEventParams.EventClass != 0) {
+		printk(BIOS_DEBUG, "  Class = %x, Info = %x,"
+				" Param1 = 0x%x, Param2 = 0x%x"
+				" Param3 = 0x%x, Param4 = 0x%x\n",
+				(u32)AmdEventParams.EventClass,
+				(u32)AmdEventParams.EventInfo,
+				(u32)AmdEventParams.DataParam1,
+				(u32)AmdEventParams.DataParam2,
+				(u32)AmdEventParams.DataParam3,
+				(u32)AmdEventParams.DataParam4);
+		Status = AmdReadEventLog(&AmdEventParams);
+	}
+
+	return Status;
+}
+
 AGESA_STATUS agesawrapper_amdinitreset(void)
 {
 	AGESA_STATUS status;
@@ -358,34 +386,6 @@ AGESA_STATUS agesawrapper_amdlaterunaptask (
 	if (Status != AGESA_SUCCESS) {
 		/* agesawrapper_readeventlog(); */
 		ASSERT(Status == AGESA_SUCCESS);
-	}
-
-	return Status;
-}
-
-AGESA_STATUS agesawrapper_readeventlog(UINT8 HeapStatus)
-{
-	AGESA_STATUS Status;
-	EVENT_PARAMS AmdEventParams = {
-		.StdHeader.CalloutPtr = &GetBiosCallout,
-		.StdHeader.HeapStatus = HeapStatus,
-	};
-
-	Status = AmdReadEventLog(&AmdEventParams);
-	if (AmdEventParams.EventClass)
-		printk(BIOS_DEBUG, "AGESA Event Log:\n");
-
-	while (AmdEventParams.EventClass != 0) {
-		printk(BIOS_DEBUG, "  Class = %x, Info = %x,"
-				" Param1 = 0x%x, Param2 = 0x%x"
-				" Param3 = 0x%x, Param4 = 0x%x\n",
-				(u32)AmdEventParams.EventClass,
-				(u32)AmdEventParams.EventInfo,
-				(u32)AmdEventParams.DataParam1,
-				(u32)AmdEventParams.DataParam2,
-				(u32)AmdEventParams.DataParam3,
-				(u32)AmdEventParams.DataParam4);
-		Status = AmdReadEventLog(&AmdEventParams);
 	}
 
 	return Status;

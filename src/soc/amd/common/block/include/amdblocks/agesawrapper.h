@@ -40,7 +40,6 @@ AGESA_STATUS agesawrapper_amdinitenv(void);
 AGESA_STATUS agesawrapper_amdinitlate(void);
 AGESA_STATUS agesawrapper_amdinitpost(void);
 AGESA_STATUS agesawrapper_amdinitmid(void);
-AGESA_STATUS agesawrapper_readeventlog(UINT8 HeapStatus);
 void *agesawrapper_getlateinitptr(int pick);
 AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINTN Data,
 							void *ConfigPtr);

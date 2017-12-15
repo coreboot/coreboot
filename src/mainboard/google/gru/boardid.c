@@ -22,7 +22,11 @@
 static const int id_readings[] = {
 /*	ID : Volts : ADC value :    Bucket	*/
 /*	==   =====   =========    ==========	*/
+#if IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN)
+/*	 0 : 0.109V:        62 :    0 -   91	*/	91,
+#else
 /*	 0 : 0.074V:        42 :    0 -   81	*/	81,
+#endif
 /*	 1 : 0.211V:       120 :   82 -  150	*/	150,
 /*	 2 : 0.319V:       181 :  151 -  211	*/	211,
 /*	 3 : 0.427V:       242 :  212 -  274	*/	274,

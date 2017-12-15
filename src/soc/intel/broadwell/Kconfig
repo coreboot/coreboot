@@ -140,10 +140,6 @@ config MRC_BIN_ADDRESS
 	hex
 	default 0xfffa0000
 
-config CACHE_MRC_SETTINGS
-	bool "Save cached MRC settings"
-	default y
-
 endif # HAVE_MRC
 
 config PRE_GRAPHICS_DELAY

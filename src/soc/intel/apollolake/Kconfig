@@ -36,6 +36,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_NHLT
 	# Misc options
 	select C_ENVIRONMENT_BOOTBLOCK
+	select CACHE_MRC_SETTINGS
 	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM if RELOCATABLE_RAMSTAGE
 	select COLLECT_TIMESTAMPS
 	select COMMON_FADT
@@ -44,6 +45,7 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_INTEL_FIRMWARE
 	select HAVE_SMI_HANDLER
 	select MRC_SETTINGS_PROTECT
+	select MRC_SETTINGS_VARIABLE_DATA
 	select NO_FIXED_XIP_ROM_SIZE
 	select NO_XIP_EARLY_STAGES
 	select PARALLEL_MP
@@ -190,14 +192,6 @@ config VERSTAGE_ADDR
 	default 0xfef40000
 	help
 	  The base address (in CAR) where verstage should be linked
-
-config CACHE_MRC_SETTINGS
-	bool
-	default y
-
-config MRC_SETTINGS_VARIABLE_DATA
-	bool
-	default y
 
 config FSP_M_ADDR
 	hex

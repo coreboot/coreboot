@@ -429,6 +429,9 @@ int tpm2_init(struct spi_slave *spi_if)
 
 	memcpy(spi_slave, spi_if, sizeof(*spi_if));
 
+	/* clear any pending irqs */
+	tis_plat_irq_status();
+
 	/*
 	 * 150 ms should be enough to synchronize with the TPM even under the
 	 * worst nested reset request conditions. In vast majority of cases

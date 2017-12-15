@@ -9,7 +9,6 @@ verstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 
 bootblock-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 
-romstage-$(CONFIG_CACHE_MRC_SETTINGS) += mrc_cache.c
 romstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 romstage-y += util.c
 romstage-$(CONFIG_MMA) += mma.c
@@ -19,7 +18,6 @@ postcar-y += util.c
 postcar-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 
 ramstage-y += hda_verb.c
-ramstage-$(CONFIG_CACHE_MRC_SETTINGS) += mrc_cache.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 ramstage-y += util.c
 ramstage-$(CONFIG_MMA) += mma.c
@@ -32,19 +30,6 @@ bootblock-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c
 verstage-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c
 romstage-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c
 ramstage-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c
-
-# Create and add the MRC cache to the cbfs image
-ifneq ($(CONFIG_CHROMEOS),y)
-$(obj)/mrc.cache: $(obj)/config.h
-	dd if=/dev/zero count=1 \
-	bs=$(shell printf "%d" $(CONFIG_MRC_SETTINGS_CACHE_SIZE) ) | \
-	tr '\000' '\377' > $@
-
-cbfs-files-$(CONFIG_CACHE_MRC_SETTINGS) += mrc.cache
-mrc.cache-file := $(obj)/mrc.cache
-mrc.cache-position := $(CONFIG_MRC_SETTINGS_CACHE_BASE)
-mrc.cache-type := mrc_cache
-endif
 
 ifeq ($(CONFIG_MMA),y)
 MMA_BLOBS_PATH = $(call strip_quotes,$(CONFIG_MMA_BLOBS_PATH))

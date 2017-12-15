@@ -28,11 +28,11 @@
 #include <ec/google/chromeec/ec_commands.h>
 #include <elog.h>
 #include <fsp/romstage.h>
+#include <mrc_cache.h>
 #include <reset.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <smbios.h>
-#include <soc/intel/common/mrc_cache.h>
 #include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>

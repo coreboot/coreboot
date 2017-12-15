@@ -1,0 +1,31 @@
+config CACHE_MRC_SETTINGS
+	bool "Save cached MRC settings"
+	default n
+
+if CACHE_MRC_SETTINGS
+
+config MRC_SETTINGS_CACHE_BASE
+	hex
+	default 0xfffe0000
+
+config MRC_SETTINGS_CACHE_SIZE
+	hex
+	default 0x10000
+
+config MRC_SETTINGS_PROTECT
+	bool "Enable protection on MRC settings"
+	default n
+
+config HAS_RECOVERY_MRC_CACHE
+	bool
+	default n
+
+config MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN
+	bool
+	default n
+
+config MRC_SETTINGS_VARIABLE_DATA
+	bool
+	default n
+
+endif # CACHE_MRC_SETTINGS

@@ -24,10 +24,10 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <memrange.h>
+#include <mrc_cache.h>
 #include <program_loading.h>
 #include <reset.h>
 #include <romstage_handoff.h>
-#include <soc/intel/common/mrc_cache.h>
 #include <string.h>
 #include <symbols.h>
 #include <timestamp.h>

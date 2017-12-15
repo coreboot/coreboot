@@ -21,8 +21,8 @@
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <halt.h>
+#include <mrc_cache.h>
 #include <soc/gpio.h>
-#include <soc/intel/common/mrc_cache.h>
 #include <soc/iomap.h>
 #include <soc/iosf.h>
 #include <soc/pci_devs.h>

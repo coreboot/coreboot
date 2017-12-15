@@ -28,13 +28,13 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <elog.h>
+#include <mrc_cache.h>
 #include <romstage_handoff.h>
 #include <string.h>
 #include <timestamp.h>
 #include <reset.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <fsp/util.h>
-#include <soc/intel/common/mrc_cache.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/iosf.h>

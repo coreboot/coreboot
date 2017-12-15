@@ -19,7 +19,7 @@
 #include <cbmem.h>
 #include <string.h>
 
-static void *GetHeapBase(void)
+static void *agesa_heap_base(void)
 {
 	struct cbmem_usage *heap;
 	heap = (struct cbmem_usage *)cbmem_add(CBMEM_ID_RESUME_SCRATCH,
@@ -29,7 +29,7 @@ static void *GetHeapBase(void)
 
 static void EmptyHeap(int unused)
 {
-	void *BiosManagerPtr = GetHeapBase();
+	void *BiosManagerPtr = agesa_heap_base();
 	memset(BiosManagerPtr, 0, BIOS_HEAP_SIZE);
 }
 
@@ -60,7 +60,7 @@ AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	AllocParams->BufferPointer = NULL;
 
 	AvailableHeapSize = BIOS_HEAP_SIZE - sizeof(BIOS_HEAP_MANAGER);
-	BiosHeapBaseAddr = GetHeapBase();
+	BiosHeapBaseAddr = agesa_heap_base();
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *)BiosHeapBaseAddr;
 
 	if (BiosHeapBasePtr->StartOfAllocatedNodes == 0) {
@@ -226,7 +226,7 @@ AGESA_STATUS agesa_DeallocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 
 	AllocParams = (AGESA_BUFFER_PARAMS *)ConfigPtr;
 
-	BiosHeapBaseAddr = GetHeapBase();
+	BiosHeapBaseAddr = agesa_heap_base();
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *)BiosHeapBaseAddr;
 
 	/* Find target node to deallocate in list of allocated nodes.
@@ -353,7 +353,7 @@ AGESA_STATUS agesa_LocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 
 	AllocParams = (AGESA_BUFFER_PARAMS *)ConfigPtr;
 
-	BiosHeapBaseAddr = GetHeapBase();
+	BiosHeapBaseAddr = agesa_heap_base();
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *)BiosHeapBaseAddr;
 
 	AllocNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;

@@ -138,7 +138,7 @@ static int decrease_tap(struct rec_timing *timing)
 static int decr_coarse_low(u8 channel, u8 lane, u32 addr,
 			struct rec_timing *timing)
 {
-	printk(BIOS_DEBUG,
+	printk(RAM_DEBUG,
 		"  Decreasing coarse until high to low transition is found\n");
 	while (sampledqs(addr, lane, channel) != DQS_LOW) {
 		if (timing->coarse == 0) {
@@ -149,7 +149,7 @@ static int decr_coarse_low(u8 channel, u8 lane, u32 addr,
 		timing->coarse--;
 		program_timing(timing, channel, lane);
 	}
-	printk(BIOS_DEBUG, "    DQS low at coarse=%d medium=%d\n",
+	printk(RAM_DEBUG, "    DQS low at coarse=%d medium=%d\n",
 		timing->coarse, timing->medium);
 	return 0;
 }
@@ -157,7 +157,7 @@ static int decr_coarse_low(u8 channel, u8 lane, u32 addr,
 static int fine_search_dqs_high(u8 channel, u8 lane, u32 addr,
 				struct rec_timing *timing)
 {
-	printk(BIOS_DEBUG,
+	printk(RAM_DEBUG,
 		"  Increasing TAP until low to high transition is found\n");
 	/*
 	 * We use a do while loop since it happens that the strobe read
@@ -184,7 +184,7 @@ static int fine_search_dqs_high(u8 channel, u8 lane, u32 addr,
 		program_timing(timing, channel, lane);
 	} while (sampledqs(addr, lane, channel) != DQS_HIGH);
 
-	printk(BIOS_DEBUG, "    DQS high at coarse=%d medium=%d tap:%d\n",
+	printk(RAM_DEBUG, "    DQS high at coarse=%d medium=%d tap:%d\n",
 		timing->coarse, timing->medium, timing->tap);
 	return 0;
 }
@@ -193,7 +193,7 @@ static int find_dqs_low(u8 channel, u8 lane, u32 addr,
 			struct rec_timing *timing)
 {
 	/* Look for DQS low, using quarter steps. */
-	printk(BIOS_DEBUG, "  Increasing medium until DQS LOW is found\n");
+	printk(RAM_DEBUG, "  Increasing medium until DQS LOW is found\n");
 	while (sampledqs(addr, lane, channel) != DQS_LOW) {
 		if (increase_medium(timing)) {
 			printk(BIOS_CRIT,
@@ -202,7 +202,7 @@ static int find_dqs_low(u8 channel, u8 lane, u32 addr,
 		}
 		program_timing(timing, channel, lane);
 	}
-	printk(BIOS_DEBUG, "    DQS low at coarse=%d medium=%d\n",
+	printk(RAM_DEBUG, "    DQS low at coarse=%d medium=%d\n",
 		timing->coarse, timing->medium);
 	return 0;
 }
@@ -210,7 +210,7 @@ static int find_dqs_high(u8 channel, u8 lane, u32 addr,
 				struct rec_timing *timing)
 {
 	/* Look for DQS high, using quarter steps. */
-	printk(BIOS_DEBUG, "  Increasing medium until DQS HIGH is found\n");
+	printk(RAM_DEBUG, "  Increasing medium until DQS HIGH is found\n");
 	while (sampledqs(addr, lane, channel) != DQS_HIGH) {
 		if (increase_medium(timing)) {
 			printk(BIOS_CRIT,
@@ -219,7 +219,7 @@ static int find_dqs_high(u8 channel, u8 lane, u32 addr,
 		}
 		program_timing(timing, channel, lane);
 	}
-	printk(BIOS_DEBUG, "    DQS high at coarse=%d medium=%d\n",
+	printk(RAM_DEBUG, "    DQS high at coarse=%d medium=%d\n",
 		timing->coarse, timing->medium);
 	return 0;
 }
@@ -315,6 +315,8 @@ void rcven(struct sysinfo *s)
 	u32 addr = 0;
 	struct rec_timing timing[TOTAL_BYTELANES];
 	u8 mincoarse;
+
+	printk(BIOS_DEBUG, "Starting DQS receiver enable calibration\n");
 
 	MCHBAR8(0x5d8) = MCHBAR8(0x5d8) & ~0xc;
 	MCHBAR8(0x9d8) = MCHBAR8(0x9d8) & ~0xc;

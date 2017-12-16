@@ -1,0 +1,2 @@
+config BOARD_HP_REVOLVE_810_G1
+	bool "EliteBook Revolve 810 G1"

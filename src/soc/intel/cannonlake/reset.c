@@ -25,6 +25,7 @@
 
 /* Reset Request  */
 #define MKHI_GLOBAL_RESET			0x0b
+#define MKHI_STATUS_SUCCESS			0
 
 #define GR_ORIGIN_BIOS_MEM_INIT			0x01
 #define GR_ORIGIN_BIOS_POST			0x02
@@ -67,13 +68,13 @@ static int send_heci_reset_message(void)
 
 	reply_size = sizeof(reply);
 	memset(&reply, 0, reply_size);
-	heci_receive(&reply, &reply_size);
-	/* get reply result from HECI MSG  */
-	if (reply.result != 0) {
-		printk(BIOS_DEBUG, "%s: Exit with Failure\n", __func__);
+	if (!heci_receive(&reply, &reply_size))
+        	return -1;
+	if (reply.result != MKHI_STATUS_SUCCESS) {
+		printk(BIOS_DEBUG, "Returned Mkhi Status is not success!\n");
 		return -1;
 	}
-	printk(BIOS_DEBUG, "%s: Exit with Success\n",  __func__);
+	printk(BIOS_DEBUG, "Heci recieve success!\n");
 	return 0;
 }
 

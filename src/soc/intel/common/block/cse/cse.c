@@ -438,6 +438,10 @@ int heci_receive(void *buff, size_t *maxlen)
 		 */
 		do {
 			received = recv_one_message(&hdr, p, left);
+			if (!received) {
+				printk(BIOS_ERR, "HECI: Failed to recieve!\n");
+				return 0;
+			}
 			left -= received;
 			p += received;
 			/* If we read out everything ping to send more */

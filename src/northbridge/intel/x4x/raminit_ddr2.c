@@ -48,24 +48,6 @@ u32 ddr2mhz(u32 speed)
 	return mhz[speed];
 }
 
-/* Find MSB bitfield location using bit scan reverse instruction */
-static u8 msbpos(u32 val)
-{
-	u32 pos;
-
-	if (val == 0) {
-		printk(BIOS_WARNING, "WARNING: Input to BSR is zero\n");
-		return 0;
-	}
-
-	asm ("bsrl %1, %0"
-		: "=r"(pos)
-		: "r"(val)
-	);
-
-	return (u8)(pos & 0xff);
-}
-
 static void clkcross_ddr2(struct sysinfo *s)
 {
 	u8 i, j;
@@ -1240,19 +1222,18 @@ static void dradrb_ddr2(struct sysinfo *s)
 		MCHBAR8(0x660) = MCHBAR8(0x660) | 1;
 
 	// DRB
-	FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
-		if (s->dimms[ch<<1].card_type != RAW_CARD_UNPOPULATED
-				&& (r) < s->dimms[ch<<1].ranks)
-			i = ch << 1;
-		else
-			i = (ch << 1) + 1;
+	FOR_EACH_RANK(ch, r) {
 		if (ch == 0) {
-			dra0 = (c0dra >> (8*r)) & 0x7f;
-			c0drb = (u16)(c0drb + drbtab[dra0]);
+			if (RANK_IS_POPULATED(s->dimms, ch, r)) {
+				dra0 = (c0dra >> (8*r)) & 0x7f;
+				c0drb = (u16)(c0drb + drbtab[dra0]);
+			}
 			MCHBAR16(0x200 + 2*r) = c0drb;
 		} else {
-			dra1 = (c1dra >> (8*r)) & 0x7f;
-			c1drb = (u16)(c1drb + drbtab[dra1]);
+			if (RANK_IS_POPULATED(s->dimms, ch, r)) {
+				dra1 = (c1dra >> (8*r)) & 0x7f;
+				c1drb = (u16)(c1drb + drbtab[dra1]);
+			}
 			MCHBAR16(0x600 + 2*r) = c1drb;
 		}
 	}
@@ -1262,14 +1243,6 @@ static void dradrb_ddr2(struct sysinfo *s)
 	totalmemorymb = s->channel_capacity[0] + s->channel_capacity[1];
 	printk(BIOS_DEBUG, "Total memory: %d + %d = %dMiB\n",
 		s->channel_capacity[0], s->channel_capacity[1], totalmemorymb);
-
-	rankpop1 >>= 4;
-	if (rankpop1) {
-		MCHBAR16(0x600 + 2*msbpos(rankpop1)) = c0drb + c1drb;
-		MCHBAR16(0x602 + 2*msbpos(rankpop1)) = c0drb + c1drb;
-		MCHBAR16(0x604 + 2*msbpos(rankpop1)) = c0drb + c1drb;
-		MCHBAR16(0x606 + 2*msbpos(rankpop1)) = c0drb + c1drb;
-	}
 
 	/* Populated channel sizes in MiB */
 	size0 = s->channel_capacity[0];

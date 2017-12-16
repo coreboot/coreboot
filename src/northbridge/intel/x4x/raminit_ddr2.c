@@ -1157,8 +1157,8 @@ static void dradrb_ddr2(struct sysinfo *s)
 	u32 dra0;
 	u32 dra1;
 	u16 totalmemorymb;
-	u32 size, offset;
-	u32 size0, size1;
+	u32 dual_channel_size, single_channel_size, single_channel_offset;
+	u32 size_ch0, size_ch1, size_me;
 	u8 dratab[2][2][2][4] = {
 	{
 		{
@@ -1245,47 +1245,79 @@ static void dradrb_ddr2(struct sysinfo *s)
 		s->channel_capacity[0], s->channel_capacity[1], totalmemorymb);
 
 	/* Populated channel sizes in MiB */
-	size0 = s->channel_capacity[0];
-	size1 = s->channel_capacity[1];
+	size_ch0 = s->channel_capacity[0];
+	size_ch1 = s->channel_capacity[1];
+	size_me = ME_UMA_SIZEMB;
 
 	MCHBAR8(0x111) = MCHBAR8(0x111) & ~0x2;
 	MCHBAR8(0x111) = MCHBAR8(0x111) | (1 << 4);
 
-	/* Set ME UMA size in MiB */
-	MCHBAR16(0x100) = ME_UMA_SIZEMB;
-
-	/* Set ME UMA Present bit */
-	MCHBAR32(0x111) = MCHBAR32(0x111) | 1;
-
-	size = MIN(size0 - ME_UMA_SIZEMB, size1) * 2;
-
-	MCHBAR16(0x104) = size;
-	MCHBAR16(0x102) = size0 + size1 - size;
+	if (size_me == 0) {
+		dual_channel_size = MIN(size_ch0, size_ch1) * 2;
+	} else {
+		if (size_ch0 == 0) {
+			/* ME needs ram on CH0 */
+			size_me = 0;
+			/* TOTEST: bailout? */
+		} else {
+			/* Set ME UMA size in MiB */
+			MCHBAR16(0x100) = size_me;
+			/* Set ME UMA Present bit */
+			MCHBAR32(0x111) = MCHBAR32(0x111) | 1;
+		}
+		dual_channel_size = MIN(size_ch0 - size_me, size_ch1) * 2;
+	}
+	MCHBAR16(0x104) = dual_channel_size;
+	single_channel_size = size_ch0 + size_ch1 - dual_channel_size;
+	MCHBAR16(0x102) = single_channel_size;
 
 	map = 0;
-	if (size0 == 0)
+	if (size_ch0 == 0)
 		map = 0;
-	else if (size1 == 0)
+	else if (size_ch1 == 0)
 		map |= 0x20;
 	else
 		map |= 0x40;
 
-	if (size == 0)
+	if (dual_channel_size == 0)
 		map |= 0x18;
+	/* Enable flex mode, we hardcode this everywhere */
+	if (size_me == 0) {
+		map |= 0x04;
+		if (size_ch0 <= size_ch1)
+			map |= 0x01;
+	} else {
+		if (size_ch0 - size_me < size_ch1)
+			map |= 0x04;
+	}
 
-	if (size0 - ME_UMA_SIZEMB >= size1)
-		map |= 0x4;
 	MCHBAR8(0x110) = map;
 	MCHBAR16(0x10e) = 0;
 
-	if (size1 != 0)
-		offset = 0;
-	else if ((size0 > size1) && ((map & 0x7) == 0x4))
-		offset = size/2 + (size0 + size1 - size);
-	else
-		offset = size/2 + ME_UMA_SIZEMB;
-	MCHBAR16(0x108) = offset;
-	MCHBAR16(0x10a) = size/2;
+	/*
+	 * "108h[15:0] Single Channel Offset for Ch0"
+	 * This is the 'limit' of the part on CH0 that cannot be matched
+	 * with memory on CH1. MCHBAR16(0x10a) is where the dual channel
+	 * memory on ch0s end and MCHBAR16(0x108) is the limit of the single
+	 * channel size on ch0.
+	 */
+	if (size_me == 0) {
+		if (size_ch0 > size_ch1)
+			single_channel_offset = dual_channel_size / 2
+				+ single_channel_size;
+		else
+			single_channel_offset = dual_channel_size / 2;
+	} else {
+		if ((size_ch0 > size_ch1) && ((map & 0x7) == 4))
+			single_channel_offset = dual_channel_size / 2
+				+ single_channel_size;
+		else
+			single_channel_offset = dual_channel_size / 2
+				+ size_me;
+	}
+
+	MCHBAR16(0x108) = single_channel_offset;
+	MCHBAR16(0x10a) = dual_channel_size / 2;
 }
 
 static void mmap_ddr2(struct sysinfo *s)

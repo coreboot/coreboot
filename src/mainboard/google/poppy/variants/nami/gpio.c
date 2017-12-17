@@ -217,10 +217,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_E2),
 	/* E3  : CPU_GP0 ==> TRACKPAD_INT# */
 	PAD_CFG_GPI_APIC(GPP_E3, NONE, PLTRST),
-	/* E4  : SATA_DEVSLP0 ==> DEVSLP0 */
-	PAD_CFG_NF(GPP_E4, NONE, DEEP, NF1),
-	/* E5  : SATA_DEVSLP1 ==> NC(TP914) */
-	PAD_CFG_NC(GPP_E5),
+	/* E4  : SATA_DEVSLP0 ==> NC(TP914) */
+	PAD_CFG_NC(GPP_E4),
+	/* E5  : SATA_DEVSLP1 ==> DEVSLP1 */
+	PAD_CFG_NF(GPP_E5, NONE, DEEP, NF1),
 	/* E6  : SATA_DEVSLP2 ==> NC(TP915) */
 	PAD_CFG_NC(GPP_E6),
 	/* E7  : CPU_GP1 ==> TOUCHSCREEN_INT# */

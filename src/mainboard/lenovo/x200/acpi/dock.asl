@@ -41,6 +41,24 @@ Scope (\_SB)
 		{
 			Return (\_SB.PCI0.LPCB.EC.DKR1)
 		}
+
+		Name (G_ID, 0xFFFFFFFF)
+		/* Returns 0x7 (dock absent) or 0x3 (dock present) */
+		Method(GGID, 0, NotSerialized)
+		{
+			Store(G_ID, Local0)
+			if (LEqual(Local0, 0xFFFFFFFF))
+			{
+				Store(Or (Or (GP02, ShiftLeft(GP03, 1)),
+					 ShiftLeft(GP04, 2)), Local0)
+				If (LEqual(Local0, 0x00))
+				{
+					Store(0x03, Local0)
+				}
+				Store(Local0, G_ID)
+			}
+			return (Local0)
+		}
 	}
 }
 
@@ -61,9 +79,14 @@ Scope(\_SB.PCI0.LPCB.EC)
 		Notify(\_SB.DOCK, 3)
 	}
 
+	/* Undock button on dock */
 	Method(_Q50, 0, NotSerialized)
 	{
-		Notify(\_SB.DOCK, 3)
+		Store(\_SB.DOCK.GGID (), Local0)
+		if (LNotEqual(Local0, 0x07))
+		{
+			Notify(\_SB.DOCK, 3)
+		}
 	}
 
 	Method(_Q58, 0, NotSerialized)
@@ -71,8 +94,22 @@ Scope(\_SB.PCI0.LPCB.EC)
 		Notify(\_SB.DOCK, 0)
 	}
 
+	/* Unplug power: only disconnect dock on force eject */
 	Method(_Q5A, 0, NotSerialized)
 	{
-		Notify(\_SB.DOCK, 3)
+		Store(\_SB.DOCK.GGID (), Local0)
+		if (LEqual(Local0, 0x07))
+		{
+			Notify(\_SB.DOCK, 3)
+		}
+		if (LEqual(Local0, 0x03))
+		{
+			Sleep(0x64)
+			Store(DKR1, Local1)
+			if (LEqual(Local1, 1))
+			{
+				Notify(\_SB.DOCK, 0)
+			}
+		}
 	}
 }

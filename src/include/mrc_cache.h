@@ -18,6 +18,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <commonlib/region.h>
 
 enum {
 	MRC_TRAINING_DATA,

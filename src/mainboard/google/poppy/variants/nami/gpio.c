@@ -265,8 +265,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_F1, NONE, DEEP),
 	/* F2  : I2S2_TXD ==> I2S2_PCH_TX_SPKR_RX_R */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_F2, NONE, DEEP),
-	/* F3  : I2S2_RXD */
-	PAD_CFG_GPI_GPIO_DRIVER(GPP_F3, NONE, DEEP),
+	/* F3  : I2S2_RXD ==> NC */
+	PAD_CFG_NC(GPP_F3),
 	/* F4  : I2C2_SDA ==> I2C_2_SDA */
 	PAD_CFG_NF_1V8(GPP_F4, NONE, DEEP, NF1),
 	/* F5  : I2C2_SCL ==> I2C_2_SCL */

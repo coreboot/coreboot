@@ -22,6 +22,7 @@
 #include <baseboard/variants.h>
 #include <boardid.h>
 #include <soc/nvs.h>
+#include <soc/pci_devs.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>
 #include <variant/ec.h>
@@ -118,9 +119,34 @@ const u8 mainboard_intr_data[] = {
 	[0x78] = 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 #endif
+
+/*
+ * This table defines the index into the picr/intr_data tables for each
+ * device.  Any enabled device and slot that uses hardware interrupts should
+ * have an entry in this table to define its index into the FCH PCI_INTR
+ * register 0xC00/0xC01.  This index will define the interrupt that it should
+ *  use. Putting PIRQ_A into the PIN A index for a device will tell that
+ * device to use PIC IRQ 10 if it uses PIN A for its hardware INT.
+ */
+static const struct pirq_struct mainboard_pirq_data[] = {
+	{ PCIE0_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
+	{ PCIE1_DEVFN,	{ PIRQ_B, PIRQ_C, PIRQ_D, PIRQ_A } },
+	{ PCIE2_DEVFN,	{ PIRQ_C, PIRQ_D, PIRQ_A, PIRQ_B } },
+	{ PCIE3_DEVFN,	{ PIRQ_D, PIRQ_A, PIRQ_B, PIRQ_C } },
+	{ PCIE4_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
+	{ HDA0_DEVFN,	{ PIRQ_NC, PIRQ_HDA, PIRQ_NC, PIRQ_NC } },
+	{ SD_DEVFN,	{ PIRQ_SD, PIRQ_NC, PIRQ_NC, PIRQ_NC } },
+	{ SMBUS_DEVFN,	{ PIRQ_SMBUS, PIRQ_NC, PIRQ_NC, PIRQ_NC } },
+	{ SATA_DEVFN,	{ PIRQ_SATA, PIRQ_NC, PIRQ_NC, PIRQ_NC } },
+	{ EHCI1_DEVFN,	{ PIRQ_EHCI, PIRQ_NC, PIRQ_NC, PIRQ_NC } },
+	{ XHCI_DEVFN,	{ PIRQ_XHCI, PIRQ_NC, PIRQ_NC, PIRQ_NC } },
+};
+
 /* PIRQ Setup */
 static void pirq_setup(void)
 {
+	pirq_data_ptr = mainboard_pirq_data;
+	pirq_data_size = ARRAY_SIZE(mainboard_pirq_data);
 	intr_data_ptr = mainboard_intr_data;
 	picr_data_ptr = mainboard_picr_data;
 }

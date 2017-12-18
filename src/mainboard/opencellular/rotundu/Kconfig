@@ -15,10 +15,8 @@
 ## GNU General Public License for more details.
 ##
 
-if BOARD_OPENCELLULAR_ROTUNDU
-
-config BOARD_SPECIFIC_OPTIONS # dummy
-	def_bool y
+config BOARD_OPENCELLULAR_BASEBOARD_ROTUNDU
+	def_bool n
 	select SOC_INTEL_FSP_BAYTRAIL
 	select BOARD_ROMSIZE_KB_16384
 	select HAVE_ACPI_TABLES
@@ -30,13 +28,26 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select USE_BLOBS
 	select HAVE_FSP_BIN if FSP_PACKAGE_DEFAULT
 
-config MAINBOARD_DIR
+if BOARD_OPENCELLULAR_BASEBOARD_ROTUNDU
+
+config VARIANT_DIR
 	string
-	default "opencellular/rotundu"
+	default "rotundu" if BOARD_OPENCELLULAR_ROTUNDU
+	default "supabrckv1" if BOARD_OPENCELLULAR_SUPABRCKV1
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Rotundu"
+	default "Rotundu" if BOARD_OPENCELLULAR_ROTUNDU
+	default "Supabrck v1" if BOARD_OPENCELLULAR_SUPABRCKV1
+
+config DEVICETREE
+	string
+	default "variants/rotundu/devicetree.cb" if BOARD_OPENCELLULAR_ROTUNDU
+	default "variants/supabrckv1/devicetree.cb" if BOARD_OPENCELLULAR_SUPABRCKV1
+
+config MAINBOARD_DIR
+	string
+	default "opencellular/rotundu"
 
 config MAINBOARD_VENDOR
 	string

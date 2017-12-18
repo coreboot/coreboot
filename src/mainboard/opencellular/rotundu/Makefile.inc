@@ -13,5 +13,7 @@
 ## GNU General Public License for more details.
 ##
 
-ramstage-y += gpio.c
+ramstage-y += variants/$(VARIANT_DIR)/gpio.c
 ramstage-y += irqroute.c
+
+subdirs-y += variants/$(VARIANT_DIR)

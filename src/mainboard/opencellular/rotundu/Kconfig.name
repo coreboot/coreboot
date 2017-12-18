@@ -1,2 +1,7 @@
 config BOARD_OPENCELLULAR_ROTUNDU
-	bool "Rotundu"
+	bool "OpenCellular Rotundu (GBCv1)"
+	select BOARD_OPENCELLULAR_BASEBOARD_ROTUNDU
+
+config BOARD_OPENCELLULAR_SUPABRCKV1
+	bool "OpenCellular Supabrck V1 (BRCK)"
+	select BOARD_OPENCELLULAR_BASEBOARD_ROTUNDU

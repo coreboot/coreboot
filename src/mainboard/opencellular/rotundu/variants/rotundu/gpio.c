@@ -17,7 +17,7 @@
 
 #include <stdlib.h>
 #include <soc/gpio.h>
-#include "irqroute.h"
+#include "../../irqroute.h"
 
 /* NCORE GPIOs */
 static const struct soc_gpio_map gpncore_gpio_map[] = {

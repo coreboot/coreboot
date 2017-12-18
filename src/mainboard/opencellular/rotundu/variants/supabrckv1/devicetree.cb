@@ -1,0 +1,81 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+## Copyright (C) 2014 Intel Corporation
+## Copyright (C) 2017-present Facebook, Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+chip soc/intel/fsp_baytrail
+
+	#### ACPI Register Settings ####
+	register "fadt_pm_profile" = "PM_UNSPECIFIED"
+	register "fadt_boot_arch"  = "ACPI_FADT_LEGACY_FREE"
+
+	#### FSP register settings ####
+	register "PcdSataMode"             = "SATA_MODE_AHCI"
+	register "PcdMrcInitSPDAddr1"      = "0xa0"
+	register "PcdMrcInitSPDAddr2"      = "0xa2"
+	register "PcdMrcInitMmioSize"      = "MMIO_SIZE_DEFAULT"
+	register "PcdeMMCBootMode"         = "EMMC_DISABLED"
+	register "PcdIgdDvmt50PreAlloc"    = "IGD_MEMSIZE_DEFAULT"
+	register "PcdApertureSize"         = "APERTURE_SIZE_DEFAULT"
+	register "PcdGttSize"              = "GTT_SIZE_DEFAULT"
+	register "PcdLpssSioEnablePciMode" = "LPSS_PCI_MODE_DEFAULT"
+	register "AzaliaAutoEnable"     = "AZALIA_FOLLOWS_DEVICETREE"
+	register "LpeAcpiModeEnable"    = "LPE_ACPI_MODE_DISABLED"
+	register "EnableMemoryDown"     = "MEMORY_DOWN_DISABLE"
+	register "DIMM0Enable"          = "DIMM0_ENABLE"
+	register "DIMM1Enable"          = "DIMM1_DISABLE"
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	device domain 0 on
+		device pci 00.0 on end	# 8086 0F00 - SoC router
+		device pci 02.0 on end	# 8086 0F31 - GFX
+		device pci 03.0 off end # 8086 0F38 - MIPI - camera interface
+
+		device pci 10.0 off end	# 8086 0F14 - EMMC 4.1 Port (MMC1 pins) - (DO NOT USE) - Only 1 EMMC port at a time
+		device pci 11.0 off end	# 8086 0F15 - SDIO Port (SD2 pins)
+		device pci 12.0 off end	# 8086 0F16 - SD Port (SD3 pins)
+		device pci 13.0 on end	# 8086 0F23 - SATA AHCI (0F20, 0F21, 0F22, 0F23)
+		device pci 14.0 on end	# 8086 0F35 - USB XHCI - Only 1 USB controller at a time
+		device pci 15.0 off end	# 8086 0F28 - LP Engine Audio
+		device pci 16.0 off end # 8086 0F37 - OTG controller
+		device pci 17.0 off end	# 8086 0F50 - EMMC 4.5 Port (MMC1 pins) - Only 1 EMMC port at a time
+		device pci 18.0 on end	# 8086 0F40 - SIO - DMA
+		device pci 18.1 on end	# 8086 0F41 -   I2C Port 1
+		device pci 18.2 off end	# 8086 0F42 -   I2C Port 2
+		device pci 18.3 on end	# 8086 0F43 -   I2C Port 3
+		device pci 18.4 off end	# 8086 0F44 -   I2C Port 4
+		device pci 18.5 off end	# 8086 0F45 -   I2C Port 5
+		device pci 18.6 off end	# 8086 0F46 -   I2C Port 6
+		device pci 18.7 off end	# 8086 0F47 -   I2C Port 7
+		device pci 1a.0 on end	# 8086 0F18 - Trusted Execution Engine
+		device pci 1b.0 off end	# 8086 0F04 - HD Audio
+		device pci 1c.0 on end	# 8086 0F48 - PCIe Root Port 1 (RADIO CARD)
+		device pci 1c.1 on end	# 8086 0F4A - PCIe Root Port 2 (GBE PHY 1)
+		device pci 1c.2 on end	# 8086 0F4C - PCIe Root Port 3 (GBE PHY 2)
+		device pci 1c.3 off end	# 8086 0F4E - PCIe Root Port 4 (NC)
+		device pci 1d.0 off end	# 8086 0F34 - USB EHCI - Only 1 USB controller at a time
+		device pci 1e.0 on end	# 8086 0F06 - SIO - DMA
+		device pci 1e.1 off end	# 8086 0F08 -   PWM 1
+		device pci 1e.2 off end	# 8086 0F09 -   PWM 2
+		device pci 1e.3 on end	# 8086 0F0A -   HSUART 1
+		device pci 1e.4 off end	# 8086 0F0C -   HSUART 2
+		device pci 1e.5 off end	# 8086 0F0E -   SPI
+		device pci 1f.0 on end	# 8086 0F1C - LPC bridge
+		device pci 1f.3 on end	# 8086 0F12 - SMBus 0
+	end
+end

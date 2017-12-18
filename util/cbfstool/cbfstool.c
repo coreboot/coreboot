@@ -27,6 +27,7 @@
 #include "cbfs.h"
 #include "cbfs_image.h"
 #include "cbfs_sections.h"
+#include "elfparsing.h"
 #include "fit.h"
 #include "partitioned_file.h"
 #include <commonlib/fsp.h>
@@ -147,7 +148,8 @@ static unsigned convert_to_from_top_aligned(const struct buffer *region,
 	return convert_to_from_absolute_top_aligned(region, offset);
 }
 
-static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size)
+static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size,
+			size_t data_size)
 {
 	if (!param.filename) {
 		ERROR("You need to specify -f/--filename.\n");
@@ -167,11 +169,17 @@ static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size)
 	if (cbfs_get_entry(&image, param.name))
 		WARN("'%s' already in CBFS.\n", param.name);
 
-	struct buffer buffer;
-	if (buffer_from_file(&buffer, param.filename) != 0) {
-		ERROR("Cannot load %s.\n", param.filename);
-		return 1;
+	if (!data_size) {
+		struct buffer buffer;
+		if (buffer_from_file(&buffer, param.filename) != 0) {
+			ERROR("Cannot load %s.\n", param.filename);
+			return 1;
+		}
+		data_size = buffer.size;
+		buffer_delete(&buffer);
 	}
+
+	DEBUG("File size is %zd (0x%zx)\n", data_size, data_size);
 
 	/* Include cbfs_file size along with space for with name. */
 	metadata_size += cbfs_calculate_file_header_size(param.name);
@@ -187,9 +195,8 @@ static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size)
 	if (param.hash != VB2_HASH_INVALID)
 		metadata_size += sizeof(struct cbfs_file_attr_hash);
 
-	int32_t address = cbfs_locate_entry(&image, buffer.size, param.pagesize,
+	int32_t address = cbfs_locate_entry(&image, data_size, param.pagesize,
 						param.alignment, metadata_size);
-	buffer_delete(&buffer);
 
 	if (address == -1) {
 		ERROR("'%s' can't fit in CBFS for page-size %#x, align %#x.\n",
@@ -579,8 +586,15 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 
 	if (param.stage_xip) {
 		int32_t address;
+		size_t data_size;
 
-		if (do_cbfs_locate(&address, sizeof(struct cbfs_stage)))  {
+		if (elf_program_file_size(buffer, &data_size) < 0) {
+			ERROR("Could not obtain ELF size\n");
+			return 1;
+		}
+
+		if (do_cbfs_locate(&address, sizeof(struct cbfs_stage),
+			data_size))  {
 			ERROR("Could not find location for XIP stage.\n");
 			return 1;
 		}
@@ -684,7 +698,7 @@ static int cbfs_add(void)
 	if (param.alignment) {
 		/* CBFS compression file attribute is unconditionally added. */
 		size_t metadata_sz = sizeof(struct cbfs_file_attr_compression);
-		if (do_cbfs_locate(&address, metadata_sz))
+		if (do_cbfs_locate(&address, metadata_sz, 0))
 			return 1;
 		local_baseaddress = address;
 	}

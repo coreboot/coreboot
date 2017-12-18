@@ -1440,3 +1440,26 @@ int elf_writer_add_rel(struct elf_writer *ew, const char *sym, Elf64_Addr addr)
 
 	return add_rel(rel_sec, &rel);
 }
+
+int elf_program_file_size(const struct buffer *input, size_t *file_size)
+{
+	Elf64_Ehdr ehdr;
+	Elf64_Phdr *phdr;
+	int i;
+	size_t loadable_file_size = 0;
+
+	if (elf_headers(input, &ehdr, &phdr, NULL))
+		return -1;
+
+	for (i = 0; i < ehdr.e_phnum; i++) {
+		if (phdr[i].p_type != PT_LOAD)
+			continue;
+		loadable_file_size += phdr[i].p_filesz;
+	}
+
+	*file_size = loadable_file_size;
+
+	free(phdr);
+
+	return 0;
+}

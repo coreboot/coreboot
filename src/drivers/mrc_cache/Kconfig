@@ -1,6 +1,7 @@
 config CACHE_MRC_SETTINGS
-	bool "Save cached MRC settings"
-	default n
+	bool
+	help
+	  Save cached MRC settings
 
 if CACHE_MRC_SETTINGS
 

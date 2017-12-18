@@ -574,8 +574,12 @@ static void update_mrc_cache(void *unused)
 }
 
 /*
- * Ensures MRC training data is stored into SPI after PCI enumeration is done
- * during BS_DEV_ENUMERATE-BS_ON_EXIT and lock down SPI protected ranges
- * during BS_DEV_RESOURCES-BS_ON_EXIT.
+ * Ensures MRC training data is stored into SPI after PCI enumeration is done.
+ * Some implementations may require this to be later than others.
  */
+
+#if IS_ENABLED(CONFIG_MRC_WRITE_NV_LATE)
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME_CHECK, BS_ON_ENTRY, update_mrc_cache, NULL);
+#else
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENUMERATE, BS_ON_EXIT, update_mrc_cache, NULL);
+#endif

@@ -59,11 +59,12 @@ void write_pci_int_table(void)
 	const struct irq_idx_name *idx_name;
 
 	idx_name = sb_get_apic_reg_association(&limit);
-	if (picr_data_ptr == NULL || idx_name == NULL) {
+	if (picr_data_ptr == NULL || intr_data_ptr == NULL ||
+	    idx_name == NULL) {
 		printk(BIOS_ERR, "Warning: Can't write PCI_INTR 0xC00/0xC01"
 				" registers because\n"
-				"'mainboard_picr_data' or"
-				" irq_association' tables are NULL\n");
+				"'mainboard_picr_data' or 'mainboard_intr_data'"
+				" or 'irq_association'\ntables are NULL\n");
 		return;
 	}
 

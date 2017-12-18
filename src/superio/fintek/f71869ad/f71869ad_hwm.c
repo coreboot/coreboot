@@ -50,6 +50,7 @@
 #define HWM_FAN1_SEG2_SPEED_COUNT  0xAB
 #define HWM_FAN1_SEG3_SPEED_COUNT  0xAC
 #define HWM_FAN1_TEMP_MAP_SEL      0xAF
+#define HWM_TEMP_SENSOR_TYPE       0x6B
 
 /* note: multifunc registers need to be tweaked before here */
 void f71869ad_hwm_init(struct device *dev)
@@ -97,6 +98,8 @@ void f71869ad_hwm_init(struct device *dev)
 	pnp_write_index(port, HWM_FAN1_SEG1_SPEED_COUNT, conf->hwm_fan1_seg1_speed_count);
 	pnp_write_index(port, HWM_FAN1_SEG2_SPEED_COUNT, conf->hwm_fan1_seg2_speed_count);
 	pnp_write_index(port, HWM_FAN1_SEG3_SPEED_COUNT, conf->hwm_fan1_seg3_speed_count);
+	/* Temperature sensor type */
+	pnp_write_index(port, HWM_TEMP_SENSOR_TYPE, conf->hwm_temp_sensor_type);
 
 	pnp_exit_conf_mode(dev);
 }

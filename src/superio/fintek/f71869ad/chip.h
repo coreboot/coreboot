@@ -37,6 +37,7 @@ struct superio_fintek_f71869ad_config {
 	uint8_t hwm_fan1_seg2_speed_count;
 	uint8_t hwm_fan1_seg3_speed_count;
 	uint8_t hwm_fan1_temp_map_sel;
+	uint8_t hwm_temp_sensor_type;
 };
 
 #endif /* SUPERIO_FINTEK_F71869AD_CHIP_H */

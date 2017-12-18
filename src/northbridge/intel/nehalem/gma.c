@@ -572,8 +572,6 @@ static void gma_pm_init_post_vbios(struct device *dev)
 	}
 }
 
-#if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
-
 static void train_link(u8 *mmio)
 {
 	/* Clear interrupts. */
@@ -1008,8 +1006,6 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 		set_vbe_mode_info_valid(&edid, lfb);
 	}
 }
-
-#endif
 
 /* Enable SCI to ACPI _GPE._L06 */
 static void gma_enable_swsci(void)

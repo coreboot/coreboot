@@ -149,6 +149,7 @@ Device(EC)
 	Method(_Q26, 0, NotSerialized)
 	{
 		Notify (AC, 0x80)
+ 		\PNOT()
 	}
 
 	/* AC status change: not present */
@@ -156,6 +157,7 @@ Device(EC)
 	{
 		Notify (AC, 0x80)
 		Store(0x50, EVNT)
+ 		\PNOT()
 	}
 
 	Method(_Q2A, 0, NotSerialized)

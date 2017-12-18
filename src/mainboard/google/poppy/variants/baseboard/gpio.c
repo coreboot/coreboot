@@ -160,16 +160,16 @@ static const struct pad_config gpio_table[] = {
 	/* C23 : UART2_CTS# ==> PCH_WP */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_C23, 20K_PU, DEEP),
 
-	/* D0  : SPI1_CS# ==> NC */
-	PAD_CFG_NC(GPP_D0),
+	/* D0  : SPI1_CS# ==> EN_PP3300_DX_LTE */
+	PAD_CFG_GPO(GPP_D0, 1, DEEP),
 	/* D1  : SPI1_CLK ==> PEN_IRQ_L */
 	PAD_CFG_GPI_APIC(GPP_D1, NONE, PLTRST),
 	/* D2  : SPI1_MISO ==> PEN_PDCT_L */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_D2, NONE, DEEP),
 	/* D3  : SPI1_MOSI ==> PEN_RST_L */
 	PAD_CFG_GPO(GPP_D3, 0, DEEP),
-	/* D4  : FASHTRIG ==> NC */
-	PAD_CFG_NC(GPP_D4),
+	/* D4  : FASHTRIG ==> LTE_GPS_OFF_ODL */
+	PAD_CFG_GPO(GPP_D4, 1, DEEP),
 	/* D5  : ISH_I2C0_SDA ==> ISH_I2C_SENSOR_1V8_SDA */
 	PAD_CFG_NF_1V8(GPP_D5, NONE, DEEP, NF1),
 	/* D6  : ISH_I2C0_SCL ==> ISH_I2C_SENSOR_1V8_SCL */
@@ -192,8 +192,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_D14),
 	/* D15 : ISH_UART0_RTS# ==> NC */
 	PAD_CFG_NC(GPP_D15),
-	/* D16 : ISH_UART0_CTS# ==> NC */
-	PAD_CFG_NC(GPP_D16),
+	/* D16 : ISH_UART0_CTS# ==> LTE_OFF_ODL */
+	PAD_CFG_GPO(GPP_D16, 1, DEEP),
 	/* D17 : DMIC_CLK1 */
 	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF1),
 	/* D18 : DMIC_DATA1 */
@@ -202,8 +202,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
 	/* D20 : DMIC_DATA0 */
 	PAD_CFG_NF(GPP_D20, NONE, DEEP, NF1),
-	/* D21 : SPI1_IO2 ==> NC */
-	PAD_CFG_NC(GPP_D21),
+	/* D21 : SPI1_IO2 ==> LTE_BODY_SAR_ODL */
+	PAD_CFG_GPO(GPP_D21, 1, DEEP),
 	/* D22 : SPI1_IO3 ==> BOOT_BEEP_OVERRIDE */
 	PAD_CFG_GPO(GPP_D22, 1, DEEP),
 	/* D23 : I2S_MCLK ==> I2S_MCLK_R */

@@ -73,43 +73,58 @@ static const struct reg_script pmc_write1_to_clear_script[] = {
 	REG_SCRIPT_END
 };
 
+/*
+ * Set which power state system will be after reapplying
+ * the power (from G3 State)
+ */
+static void pmc_set_afterg3(struct device *dev, int s5pwr)
+{
+	uint8_t reg8;
+
+	reg8 = pci_read_config8(dev, GEN_PMCON_B);
+
+	switch (s5pwr) {
+	case MAINBOARD_POWER_STATE_OFF:
+		reg8 |= 1;
+		break;
+	case MAINBOARD_POWER_STATE_ON:
+		reg8 &= ~1;
+		break;
+	case MAINBOARD_POWER_STATE_PREVIOUS:
+	default:
+		break;
+	}
+
+	pci_write_config8(dev, GEN_PMCON_B, reg8);
+}
+
 static void pch_power_options(struct device *dev)
 {
-	u16 reg16;
 	const char *state;
 
 	/* Get the chip configuration */
-	int pwr_on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	int pwr_on = pmc_get_mainboard_power_failure_state_choice();
 
 	/*
 	 * Which state do we want to goto after g3 (power restored)?
-	 * 0 == S0 Full On
-	 * 1 == S5 Soft Off
-	 *
-	 * If the option is not existent (Laptops), use Kconfig setting.
+	 * 0 == S5 Soft Off
+	 * 1 == S0 Full On
+	 * 2 == Keep Previous State
 	 */
-	/*TODO: cmos_layout.bin need to verify; cause wrong CMOS setup*/
-	//get_option(&pwr_on, "power_on_after_fail");
-	pwr_on = MAINBOARD_POWER_ON;
-	reg16 = pci_read_config16(dev, GEN_PMCON_B);
-	reg16 &= 0xfffe;
 	switch (pwr_on) {
-	case MAINBOARD_POWER_OFF:
-		reg16 |= 1;
+	case MAINBOARD_POWER_STATE_OFF:
 		state = "off";
 		break;
-	case MAINBOARD_POWER_ON:
-		reg16 &= ~1;
+	case MAINBOARD_POWER_STATE_ON:
 		state = "on";
 		break;
-	case MAINBOARD_POWER_KEEP:
-		reg16 &= ~1;
+	case MAINBOARD_POWER_STATE_PREVIOUS:
 		state = "state keep";
 		break;
 	default:
 		state = "undefined";
 	}
-	pci_write_config16(dev, GEN_PMCON_B, reg16);
+	pmc_set_afterg3(dev, pwr_on);
 	printk(BIOS_INFO, "Set power %s after power failure.\n", state);
 
 	/* Set up GPE configuration. */
@@ -178,4 +193,15 @@ void pmc_soc_init(struct device *dev)
 	/* Clear registers that contain write-1-to-clear bits. */
 	reg_script_run_on_dev(dev, pmc_write1_to_clear_script);
 }
+
+/*
+ * Set PMC register to know which state system should be after
+ * power reapplied
+ */
+void pmc_soc_restore_power_failure(void)
+{
+	pmc_set_afterg3(PCH_DEV_PMC,
+		pmc_get_mainboard_power_failure_state_choice());
+}
+
 #endif

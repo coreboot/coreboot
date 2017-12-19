@@ -135,14 +135,10 @@
 
 #define GBLRST_CAUSE0_THERMTRIP	(1 << 5)
 
-#define MAINBOARD_POWER_OFF	0
-#define MAINBOARD_POWER_ON	1
-#define MAINBOARD_POWER_KEEP	2
-
 /* This is defined as ETR3 in EDS. We named it as ETR here for consistency */
 #define ETR			0xac
-#       define CF9_LOCK         (1 << 31)
-#       define CF9_GLB_RST      (1 << 20)
+#define  CF9_LOCK         (1 << 31)
+#define  CF9_GLB_RST      (1 << 20)
 
 #define PRSTS                   0x10
 

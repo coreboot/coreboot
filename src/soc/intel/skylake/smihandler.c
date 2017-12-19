@@ -120,21 +120,10 @@ static void busmaster_disable_on_bus(int bus)
 	}
 }
 
-
 static void southbridge_smi_sleep(void)
 {
-	u8 reg8;
 	u32 reg32;
 	u8 slp_typ;
-	u8 s5pwr = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
-
-	/* save and recover RTC port values */
-	u8 tmp70, tmp72;
-	tmp70 = inb(0x70);
-	tmp72 = inb(0x72);
-	get_option(&s5pwr, "power_on_after_fail");
-	outb(tmp70, 0x70);
-	outb(tmp72, 0x72);
 
 	/* First, disable further SMIs */
 	pmc_disable_smi(SLP_SMI_EN);
@@ -173,21 +162,10 @@ static void southbridge_smi_sleep(void)
 		break;
 	case ACPI_S5:
 		printk(BIOS_DEBUG, "SMI#: Entering S5 (Soft Power off)\n");
-		/*TODO: cmos_layout.bin need to verify; cause wrong CMOS setup*/
-		s5pwr = MAINBOARD_POWER_ON;
 		/* Disable all GPE */
 		pmc_disable_all_gpe();
 
-		/*
-		 * Always set the flag in case CMOS was changed on runtime. For
-		 * "KEEP", switch to "OFF" - KEEP is software emulated
-		 */
-		reg8 = pci_read_config8(PCH_DEV_PMC, GEN_PMCON_B);
-		if (s5pwr == MAINBOARD_POWER_ON)
-			reg8 &= ~1;
-		else
-			reg8 |= 1;
-		pci_write_config8(PCH_DEV_PMC, GEN_PMCON_B, reg8);
+		pmc_soc_restore_power_failure();
 
 		/* also iterates over all bridges on bus 0 */
 		busmaster_disable_on_bus(0);

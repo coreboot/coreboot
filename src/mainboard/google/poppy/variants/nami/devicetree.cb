@@ -148,11 +148,13 @@ chip soc/intel/skylake
 	#  PcieRpEnable:                 Enable root port
 	#  PcieRpClkReqSupport:          Enable CLKREQ#
 	#  PcieRpClkReqNumber:           Uses SRCCLKREQ1#
+	#  PcieRpClkSrcNumber:           Uses 1
 	#  PcieRpAdvancedErrorReporting: Enable Advanced Error Reporting
 	#  PcieRpLtrEnable:              Enable Latency Tolerance Reporting Mechanism
 	register "PcieRpEnable[3]" = "1"
 	register "PcieRpClkReqSupport[3]" = "1"
 	register "PcieRpClkReqNumber[3]" = "1"
+	register "PcieRpClkSrcNumber[3]" = "1"
 	register "PcieRpAdvancedErrorReporting[3]" = "1"
 	register "PcieRpLtrEnable[3]" = "1"
 
@@ -160,11 +162,13 @@ chip soc/intel/skylake
 	#  PcieRpEnable:                 Enable root port
 	#  PcieRpClkReqSupport:          Enable CLKREQ#
 	#  PcieRpClkReqNumber:           Uses SRCCLKREQ3#
+	#  PcieRpClkSrcNumber:           Uses 3
 	#  PcieRpAdvancedErrorReporting: Enable Advanced Error Reporting
 	#  PcieRpLtrEnable:              Enable Latency Tolerance Reporting Mechanism
 	register "PcieRpEnable[4]" = "1"
 	register "PcieRpClkReqSupport[4]" = "1"
 	register "PcieRpClkReqNumber[4]" = "3"
+	register "PcieRpClkSrcNumber[4]" = "3"
 	register "PcieRpAdvancedErrorReporting[4]" = "1"
 	register "PcieRpLtrEnable[4]" = "1"
 
@@ -172,11 +176,13 @@ chip soc/intel/skylake
 	#  PcieRpEnable:                 Enable root port
 	#  PcieRpClkReqSupport:          Enable CLKREQ#
 	#  PcieRpClkReqNumber:           Uses SRCCLKREQ2#
+	#  PcieRpClkSrcNumber:           Uses 2
 	#  PcieRpAdvancedErrorReporting: Enable Advanced Error Reporting
 	#  PcieRpLtrEnable:              Enable Latency Tolerance Reporting Mechanism
 	register "PcieRpEnable[8]" = "1"
 	register "PcieRpClkReqSupport[8]" = "1"
 	register "PcieRpClkReqNumber[8]" = "2"
+	register "PcieRpClkSrcNumber[8]" = "2"
 	register "PcieRpAdvancedErrorReporting[8]" = "1"
 	register "PcieRpLtrEnable[8]" = "1"
 

@@ -200,6 +200,11 @@ struct soc_intel_skylake_config {
 	u8 PcieRpClkReqNumber[CONFIG_MAX_ROOT_PORTS];
 
 	/*
+	 * Clk source number for Root Port
+	 */
+	u8 PcieRpClkSrcNumber[CONFIG_MAX_ROOT_PORTS];
+
+	/*
 	 * Enable/Disable AER (Advanced Error Reporting) for Root Port
 	 * 0: Disable AER
 	 * 1: Enable AER

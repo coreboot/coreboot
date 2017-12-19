@@ -166,6 +166,19 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	memcpy(params->PcieRpLtrEnable, config->PcieRpLtrEnable,
 	       sizeof(params->PcieRpLtrEnable));
 
+	/*
+	 * PcieRpClkSrcNumber UPD is set to clock source number(0-6) for
+	 * all the enabled PCIe root ports, invalid(0x1F) is set for
+	 * disabled PCIe root ports.
+	 */
+	for (i = 0; i < CONFIG_MAX_ROOT_PORTS; i++) {
+		if (config->PcieRpClkReqSupport[i])
+			params->PcieRpClkSrcNumber[i] =
+				config->PcieRpClkSrcNumber[i];
+		else
+			params->PcieRpClkSrcNumber[i] = 0x1F;
+	}
+
 	/* disable Legacy PME */
 	memset(params->PcieRpPmSci, 0, sizeof(params->PcieRpPmSci));
 

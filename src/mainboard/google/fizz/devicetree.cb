@@ -178,6 +178,8 @@ chip soc/intel/skylake
 	register "PcieRpAdvancedErrorReporting[2]" = "1"
 	# RP 3, Enable Latency Tolerance Reporting Mechanism
 	register "PcieRpLtrEnable[2]" = "1"
+	# RP 3 uses uses CLK SRC 0
+	register "PcieRpClkSrcNumber[2]" = "0"
 
 	# Enable Root port 4(x1) for WLAN.
 	register "PcieRpEnable[3]" = "1"
@@ -189,6 +191,8 @@ chip soc/intel/skylake
 	register "PcieRpAdvancedErrorReporting[3]" = "1"
 	# RP 4, Enable Latency Tolerance Reporting Mechanism
 	register "PcieRpLtrEnable[3]" = "1"
+	# RP 4 uses uses CLK SRC 5
+	register "PcieRpClkSrcNumber[3]" = "5"
 
 	# Enable Root port 5(x4) for NVMe.
 	register "PcieRpEnable[4]" = "1"
@@ -200,6 +204,8 @@ chip soc/intel/skylake
 	register "PcieRpAdvancedErrorReporting[4]" = "1"
 	# RP 5, Enable Latency Tolerance Reporting Mechanism
 	register "PcieRpLtrEnable[4]" = "1"
+	# RP 5 uses CLK SRC 1
+	register "PcieRpClkSrcNumber[4]" = "1"
 
 	# Enable Root port 9 for BtoB.
 	register "PcieRpEnable[8]" = "1"
@@ -211,6 +217,8 @@ chip soc/intel/skylake
 	register "PcieRpAdvancedErrorReporting[8]" = "1"
 	# RP 9, Enable Latency Tolerance Reporting Mechanism
 	register "PcieRpLtrEnable[8]" = "1"
+	# RP 9 uses uses CLK SRC 2
+	register "PcieRpClkSrcNumber[8]" = "2"
 
 	register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"	# Type-C
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC3)"		# Type-A Rear

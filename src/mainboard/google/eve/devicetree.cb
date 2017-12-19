@@ -146,6 +146,8 @@ chip soc/intel/skylake
 	register "PcieRpClkReqNumber[0]" = "1"
 	register "PcieRpAdvancedErrorReporting[0]" = "1"
 	register "PcieRpLtrEnable[0]" = "1"
+	#RP 1 uses CLK SRC 1
+	register "PcieRpClkSrcNumber[0]" = "1"
 
 	# Enable Root port 5 with SRCCLKREQ4#
 	register "PcieRpEnable[4]" = "1"
@@ -153,6 +155,8 @@ chip soc/intel/skylake
 	register "PcieRpClkReqNumber[4]" = "4"
 	register "PcieRpAdvancedErrorReporting[4]" = "1"
 	register "PcieRpLtrEnable[4]" = "1"
+	#RP 5 uses CLK SRC 4
+	register "PcieRpClkSrcNumber[4]" = "4"
 
 	register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"	# Type-C Port 1
 	register "usb2_ports[1]" = "USB2_PORT_FLEX(OC_SKIP)"	# Camera

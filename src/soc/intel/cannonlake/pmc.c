@@ -25,6 +25,41 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 
+/*
+ * Set which power state system will be after reapplying
+ * the power (from G3 State)
+ */
+static void pmc_set_afterg3(struct device *dev, int s5pwr)
+{
+	uint8_t reg8;
+
+	reg8 = pci_read_config8(dev, GEN_PMCON_B);
+
+	switch (s5pwr) {
+	case MAINBOARD_POWER_STATE_OFF:
+		reg8 |= 1;
+		break;
+	case MAINBOARD_POWER_STATE_ON:
+		reg8 &= ~1;
+		break;
+	case MAINBOARD_POWER_STATE_PREVIOUS:
+	default:
+		break;
+	}
+
+	pci_write_config8(dev, GEN_PMCON_B, reg8);
+}
+
+/*
+ * Set PMC register to know which state system should be after
+ * power reapplied
+ */
+void pmc_soc_restore_power_failure(void)
+{
+	pmc_set_afterg3(PCH_DEV_PMC,
+		pmc_get_mainboard_power_failure_state_choice());
+}
+
 static void config_deep_sX(uint32_t offset, uint32_t mask, int sx, int enable)
 {
 	uint32_t reg;
@@ -66,6 +101,39 @@ static void config_deep_sx(uint32_t deepsx_config)
 	write32(pmcbase + DSX_CFG, reg);
 }
 
+static void pch_power_options(struct device *dev)
+{
+	const char *state;
+
+	/* Get the chip configuration */
+	int pwr_on = pmc_get_mainboard_power_failure_state_choice();
+
+	/*
+	 * Which state do we want to goto after g3 (power restored)?
+	 * 0 == S5 Soft Off
+	 * 1 == S0 Full On
+	 * 2 == Keep Previous State
+	 */
+	switch (pwr_on) {
+	case MAINBOARD_POWER_STATE_OFF:
+		state = "off";
+		break;
+	case MAINBOARD_POWER_STATE_ON:
+		state = "on";
+		break;
+	case MAINBOARD_POWER_STATE_PREVIOUS:
+		state = "state keep";
+		break;
+	default:
+		state = "undefined";
+	}
+	pmc_set_afterg3(dev, pwr_on);
+	printk(BIOS_INFO, "Set power %s after power failure.\n", state);
+
+	/* Set up GPE configuration. */
+	pmc_gpe_init();
+}
+
 static void pmc_init(void *unused)
 {
 	device_t dev = PCH_DEV_PMC;
@@ -74,7 +142,7 @@ static void pmc_init(void *unused)
 	rtc_init();
 
 	/* Initialize power management */
-	pmc_gpe_init();
+	pch_power_options(dev);
 
 	pmc_set_acpi_mode();
 

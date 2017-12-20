@@ -92,12 +92,15 @@
 #define SSP_REG		0x220	/* SSP Reg */
 #define   DMA_FINISH_DISABLE	(1 << 0)
 #define SPI_CS_CONTROL		0x224	/* SPI CS Control */
-#define   CS_POLARITY_LOW	(0 << 12)
-#define   CS_POLARITY_HIGH	(1 << 12)
+#define   CS_0_POL_SHIFT	(12)
+#define   CS_0_POL_MASK		(1 << CS_0_POL_SHIFT)
+#define   CS_POL_LOW		(0)
+#define   CS_POL_HIGH		(1)
 #define   CS_0			(0 << 8)
-#define   CS_STATE_LOW		(0 << 1)
-#define   CS_STATE_HIGH	(1 << 1)
-#define   CS_STATE_MASK	(1 << 1)
+#define   CS_STATE_SHIFT	(1)
+#define   CS_STATE_MASK		(1 << CS_STATE_SHIFT)
+#define   CS_V1_STATE_LOW	(0)
+#define   CS_V1_STATE_HIGH	(1)
 #define   CS_MODE_HW		(0 << 0)
 #define   CS_MODE_SW		(1 << 0)
 
@@ -265,20 +268,78 @@ enum cs_assert {
 	CS_DEASSERT,
 };
 
+/*
+ * SPI_CS_CONTROL bit definitions based on GSPI_VERSION_x:
+ *
+ * VERSION_2 (CNL GSPI controller):
+ * Polarity: Indicates inactive polarity of chip-select
+ * State   : Indicates assert/de-assert of chip-select
+ *
+ * Default (SKL/KBL GSPI controller):
+ * Polarity: Indicates active polarity of chip-select
+ * State   : Indicates low/high output state of chip-select
+ */
+static uint32_t gspi_csctrl_state_v2(uint32_t pol, enum cs_assert cs_assert)
+{
+	return cs_assert;
+}
+
+static uint32_t gspi_csctrl_state_v1(uint32_t pol, enum cs_assert cs_assert)
+{
+	uint32_t state;
+
+	if (pol == CS_POL_HIGH)
+		state = (cs_assert == CS_ASSERT) ? CS_V1_STATE_HIGH :
+			CS_V1_STATE_LOW;
+	else
+		state = (cs_assert == CS_ASSERT) ? CS_V1_STATE_LOW :
+			CS_V1_STATE_HIGH;
+
+	return state;
+}
+
+static uint32_t gspi_csctrl_state(uint32_t pol, enum cs_assert cs_assert)
+{
+	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2))
+		return gspi_csctrl_state_v2(pol, cs_assert);
+
+	return gspi_csctrl_state_v1(pol, cs_assert);
+}
+
+static uint32_t gspi_csctrl_polarity_v2(enum spi_polarity active_pol)
+{
+	/* Polarity field indicates cs inactive polarity */
+	if (active_pol == SPI_POLARITY_LOW)
+		return CS_POL_HIGH;
+	return CS_POL_LOW;
+}
+
+static uint32_t gspi_csctrl_polarity_v1(enum spi_polarity active_pol)
+{
+	/* Polarity field indicates cs active polarity */
+	if (active_pol == SPI_POLARITY_LOW)
+		return CS_POL_LOW;
+	return CS_POL_HIGH;
+}
+
+static uint32_t gspi_csctrl_polarity(enum spi_polarity active_pol)
+{
+	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2))
+		return gspi_csctrl_polarity_v2(active_pol);
+
+	return gspi_csctrl_polarity_v1(active_pol);
+}
+
 static void __gspi_cs_change(const struct gspi_ctrlr_params *p,
 				enum cs_assert cs_assert)
 {
-	uint32_t cs_ctrl, state;
+	uint32_t cs_ctrl, pol;
 	cs_ctrl = gspi_read_mmio_reg(p, SPI_CS_CONTROL);
 
 	cs_ctrl &= ~CS_STATE_MASK;
 
-	if (cs_ctrl & CS_POLARITY_HIGH)
-		state = (cs_assert == CS_ASSERT) ? CS_STATE_HIGH : CS_STATE_LOW;
-	else
-		state = (cs_assert == CS_ASSERT) ? CS_STATE_LOW : CS_STATE_HIGH;
-
-	cs_ctrl |= state;
+	pol = !!(cs_ctrl & CS_0_POL_MASK);
+	cs_ctrl |= gspi_csctrl_state(pol, cs_assert) << CS_STATE_SHIFT;
 
 	gspi_write_mmio_reg(p, SPI_CS_CONTROL, cs_ctrl);
 }
@@ -330,7 +391,7 @@ static uint32_t gspi_get_clk_div(unsigned int gspi_bus)
 static int gspi_ctrlr_setup(const struct spi_slave *dev)
 {
 	struct spi_cfg cfg;
-	uint32_t cs_ctrl, sscr0, sscr1, clocks, sitf, sirf;
+	uint32_t cs_ctrl, sscr0, sscr1, clocks, sitf, sirf, pol;
 	struct gspi_ctrlr_params params, *p = &params;
 
 	/* Only chip select 0 is supported. */
@@ -364,10 +425,9 @@ static int gspi_ctrlr_setup(const struct spi_slave *dev)
 	 * - Do not assert CS.
 	 */
 	cs_ctrl = CS_MODE_SW | CS_0;
-	if (cfg.cs_polarity == SPI_POLARITY_LOW)
-		cs_ctrl |= CS_POLARITY_LOW | CS_STATE_HIGH;
-	else
-		cs_ctrl |= CS_POLARITY_HIGH | CS_STATE_LOW;
+	pol = gspi_csctrl_polarity(cfg.cs_polarity);
+	cs_ctrl |= pol << CS_0_POL_SHIFT;
+	cs_ctrl |= gspi_csctrl_state(pol, CS_DEASSERT);
 	gspi_write_mmio_reg(p, SPI_CS_CONTROL, cs_ctrl);
 
 	/* Disable SPI controller. */

@@ -15,12 +15,34 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
+#include <intelblocks/fast_spi.h>
 #include <intelblocks/smihandler.h>
 #include <soc/pm.h>
 
 const struct smm_save_state_ops *get_smm_save_state_ops(void)
 {
 	return &em64t101_smm_ops;
+}
+
+void smihandler_check_illegal_access(uint32_t tco_sts)
+{
+	if (!((tco_sts & (1 << 8)) && IS_ENABLED(CONFIG_SPI_FLASH_SMM)
+			&& fast_spi_wpd_status()))
+		return;
+
+	/*
+	 * BWE is RW, so the SMI was caused by a
+	 * write to BWE, not by a write to the BIOS
+	 *
+	 * This is the place where we notice someone
+	 * is trying to tinker with the BIOS. We are
+	 * trying to be nice and just ignore it. A more
+	 * resolute answer would be to power down the
+	 * box.
+	 */
+	printk(BIOS_DEBUG, "Switching back to RO\n");
+	fast_spi_enable_wp();
 }
 
 /* SMI handlers that should be serviced in SCI mode too. */

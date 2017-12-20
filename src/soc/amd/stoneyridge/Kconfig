@@ -97,7 +97,7 @@ config DCACHE_BSP_STACK_SIZE
 
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
-	default 0x1200
+	default 0x1600
 	help
 	  Increase this value if preram cbmem console is getting truncated
 

@@ -64,6 +64,7 @@ config CPU_SPECIFIC_OPTIONS
 	select POSTCAR_CONSOLE
 	select SSE
 	select SSE2
+	select RTC
 
 config VBOOT
 	select VBOOT_SEPARATE_VERSTAGE

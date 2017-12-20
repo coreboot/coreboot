@@ -40,6 +40,7 @@ subdirs-y += ../../../cpu/x86/smm
 bootblock-$(CONFIG_STONEYRIDGE_UART) += uart.c
 bootblock-y += BiosCallOuts.c
 bootblock-y += bootblock/bootblock.c
+bootblock-y += i2c.c
 bootblock-y += pmutil.c
 bootblock-y += reset.c
 bootblock-y += sb_util.c
@@ -47,6 +48,7 @@ bootblock-y += tsc_freq.c
 bootblock-y += southbridge.c
 
 romstage-y += BiosCallOuts.c
+romstage-y += i2c.c
 romstage-y += romstage.c
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
 romstage-y += gpio.c
@@ -61,6 +63,7 @@ romstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 romstage-y += tsc_freq.c
 romstage-y += southbridge.c
 
+verstage-y += i2c.c
 verstage-y += sb_util.c
 verstage-y += pmutil.c
 verstage-y += reset.c
@@ -71,6 +74,7 @@ postcar-$(CONFIG_STONEYRIDGE_UART) += uart.c
 postcar-y += ramtop.c
 
 ramstage-y += BiosCallOuts.c
+ramstage-y += i2c.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c

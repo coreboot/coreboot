@@ -137,6 +137,12 @@ static void lpc_read_resources(device_t dev)
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
+	/* I2C devices (all 4 devices) */
+	res = new_resource(dev, 4);
+	res->base = I2C_BASE_ADDRESS;
+	res->size = I2C_DEVICE_SIZE * I2C_DEVICE_COUNT;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
 	compact_resources(dev);
 
 	/* Allocate ACPI NVS in CBMEM */

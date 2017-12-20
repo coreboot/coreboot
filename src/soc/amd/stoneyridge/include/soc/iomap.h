@@ -22,6 +22,11 @@
 #define SPI_BASE_ADDRESS		0xfec10000
 #define IO_APIC2_ADDR			0xfec20000
 
+/* I2C fixed address */
+#define I2C_BASE_ADDRESS	0xfedc2000
+#define I2C_DEVICE_SIZE		0x00001000
+#define I2C_DEVICE_COUNT	4
+
 #if IS_ENABLED(CONFIG_HPET_ADDRESS_OVERRIDE)
 #error HPET address override is not allowed and must be fixed at 0xfed00000
 #endif

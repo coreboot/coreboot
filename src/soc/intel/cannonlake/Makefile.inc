@@ -24,6 +24,7 @@ romstage-$(CONFIG_SOC_INTEL_CANNONLAKE_LPDDR4_INIT) += cnl_lpddr4_init.c
 romstage-y += gpio.c
 romstage-y += gspi.c
 romstage-y += i2c.c
+romstage-y += lpc.c
 romstage-y += memmap.c
 romstage-y += pmutil.c
 romstage-y += reset.c

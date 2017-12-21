@@ -39,11 +39,6 @@
 #define PCR_PSFX_TO_SHDW_PCIEN_IOEN	0x01
 #define PCR_PSFX_T0_SHDW_PCIEN	0x1C
 
-#define PCR_DMI_LPCLGIR1	0x2730
-#define PCR_DMI_LPCLGIR2	0x2734
-#define PCR_DMI_LPCLGIR3	0x2738
-#define PCR_DMI_LPCLGIR4	0x273c
-
 #define PCR_DMI_ACPIBA		0x27B4
 #define PCR_DMI_ACPIBDID	0x27B8
 #define PCR_DMI_PMBASEA		0x27AC
@@ -176,7 +171,7 @@ void pch_early_iorange_init(void)
 	}
 
 	/* IO Decode Enable */
-	dec_en |= SE_LPC_EN | KBC_LPC_EN | MC1_LPC_EN;
+	dec_en |= SE_LPC_EN | KBC_LPC_EN | MC1_LPC_EN | GAMEL_LPC_EN;
 	pci_write_config16(PCH_DEV_LPC, LPC_EN, dec_en);
 	pcr_write16(PID_DMI, PCR_DMI_LPCIOE, dec_en);
 }

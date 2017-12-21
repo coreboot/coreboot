@@ -48,6 +48,26 @@ const struct lpc_mmio_range *soc_get_fixed_mmio_ranges()
 	return cnl_lpc_fixed_mmio_ranges;
 }
 
+void soc_get_gen_io_dec_range(const struct device *dev, uint32_t *gen_io_dec)
+{
+	const config_t *config = dev->chip_info;
+
+	gen_io_dec[0] = config->gen1_dec;
+	gen_io_dec[1] = config->gen2_dec;
+	gen_io_dec[2] = config->gen3_dec;
+	gen_io_dec[3] = config->gen4_dec;
+}
+
+void soc_setup_dmi_pcr_io_dec(uint32_t *gen_io_dec)
+{
+	/* Mirror these same settings in DMI PCR */
+	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR1, gen_io_dec[0]);
+	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR2, gen_io_dec[1]);
+	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR3, gen_io_dec[2]);
+	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR4, gen_io_dec[3]);
+}
+
+#if ENV_RAMSTAGE
 static void pch_enable_ioapic(const struct device *dev)
 {
 	u32 reg32;
@@ -70,27 +90,6 @@ static void pch_enable_ioapic(const struct device *dev)
 	 */
 	io_apic_write((void *)IO_APIC_ADDR, 0x03, 0x01);
 }
-
-void soc_get_gen_io_dec_range(const struct device *dev, uint32_t *gen_io_dec)
-{
-	const config_t *config = dev->chip_info;
-
-	gen_io_dec[0] = config->gen1_dec;
-	gen_io_dec[1] = config->gen2_dec;
-	gen_io_dec[2] = config->gen3_dec;
-	gen_io_dec[3] = config->gen4_dec;
-}
-
-void soc_setup_dmi_pcr_io_dec(uint32_t *gen_io_dec)
-{
-	/* Mirror these same settings in DMI PCR */
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR1, gen_io_dec[0]);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR2, gen_io_dec[1]);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR3, gen_io_dec[2]);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR4, gen_io_dec[3]);
-}
-
-
 /*
  * PIRQ[n]_ROUT[3:0] - PIRQ Routing Control
  * 0x00 - 0000 = Reserved
@@ -204,3 +203,4 @@ void lpc_init(struct device *dev)
 	i8259_configure_irq_trigger(9, 1);
 	clock_gate_8254(dev);
 }
+#endif

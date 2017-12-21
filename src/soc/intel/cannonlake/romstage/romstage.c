@@ -22,6 +22,7 @@
 #include <console/console.h>
 #include <fsp/util.h>
 #include <intelblocks/cse.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/pmclib.h>
 #include <memory_info.h>
 #include <soc/iomap.h>
@@ -46,6 +47,8 @@ asmlinkage void car_stage_entry(void)
 	/* initialize Heci interface */
 	heci_init(HECI1_BASE_ADDRESS);
 
+	/* Program LPC generic decoding */
+	pch_enable_lpc();
 	timestamp_add_now(TS_START_ROMSTAGE);
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);

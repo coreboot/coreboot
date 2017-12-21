@@ -13,10 +13,15 @@
  * GNU General Public License for more details.
  */
 
+#include <baseboard/variants.h>
 #include <soc/ramstage.h>
 #include <variant/gpio.h>
 
-void mainboard_silicon_init_params(FSP_SIL_UPD *params)
+void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {
-	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+	size_t num;
+	const struct pad_config *gpio_table;
+
+	gpio_table = variant_gpio_table(&num);
+	gpio_configure_pads(gpio_table, num);
 }

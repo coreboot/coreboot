@@ -68,6 +68,7 @@ config VARIANT_DIR
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
 	select VBOOT_LID_SWITCH if BASEBOARD_ZOOMBINI_LAPTOP
 
 # Select this option to enable use of cr50 I2C TPM on zoombini.

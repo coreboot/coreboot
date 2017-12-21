@@ -414,9 +414,6 @@ static int gspi_ctrlr_setup(const struct spi_slave *dev)
 	/* Take controller out of reset, keeping DMA in reset. */
 	gspi_write_mmio_reg(p, RESETS, CTRLR_ACTIVE | DMA_RESET);
 
-	/* De-assert chip select. */
-	__gspi_cs_change(p, CS_DEASSERT);
-
 	/*
 	 * CS control:
 	 * - Set SW mode.
@@ -429,6 +426,9 @@ static int gspi_ctrlr_setup(const struct spi_slave *dev)
 	cs_ctrl |= pol << CS_0_POL_SHIFT;
 	cs_ctrl |= gspi_csctrl_state(pol, CS_DEASSERT);
 	gspi_write_mmio_reg(p, SPI_CS_CONTROL, cs_ctrl);
+
+	/* De-assert chip select. */
+	__gspi_cs_change(p, CS_DEASSERT);
 
 	/* Disable SPI controller. */
 	gspi_write_mmio_reg(p, SSCR0, SSCR0_SSE_DISABLE);

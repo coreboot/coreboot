@@ -1,5 +1,5 @@
 TAG-$(CONFIG_SEABIOS_MASTER)=origin/master
-TAG-$(CONFIG_SEABIOS_STABLE)=rel-1.11.0.1
+TAG-$(CONFIG_SEABIOS_STABLE)=rel-1.11.0.2
 TAG-$(CONFIG_SEABIOS_REVISION)=$(CONFIG_SEABIOS_REVISION_ID)
 
 project_git_repo=https://github.com/pcengines/seabios.git

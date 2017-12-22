@@ -62,9 +62,6 @@ extern const smi_handler_t southbridge_smi[32];
 
 #define SMI_HANDLER_SCI_EN(__bit)	(1 << (__bit))
 
-/* SMI handlers that should be serviced in SCI mode too. */
-uint32_t smi_handler_get_sci_mask(void);
-
 /*
  * This function should be implemented in SOC specific code to handle
  * the SMI event on SLP_EN. The default functionality is provided in
@@ -143,22 +140,30 @@ void smihandler_southbridge_gpi(
  */
 void smihandler_southbridge_espi(
 	const struct smm_save_state_ops *save_state_ops);
-/*
- * This function returns a 1 or 0 depending on whether disable_busmaster
- * needs to be done for the specified device on S5 entry
- */
-int smihandler_disable_busmaster(device_t dev);
-
-/*
- * SoC needs to implement the mechanism to know if an illegal attempt
- * has been made to write to the BIOS area.
- */
-void smihandler_check_illegal_access(uint32_t tco_sts);
 
 /*
  * Returns gnvs pointer within SMM context
  */
 struct global_nvs_t *smm_get_gnvs(void);
+
+/* SoC overrides. */
+
+/*
+ * This function returns a 1 or 0 depending on whether disable_busmaster
+ * needs to be done for the specified device on S5 entry
+ */
+int smihandler_soc_disable_busmaster(device_t dev);
+
+/* SMI handlers that should be serviced in SCI mode too. */
+uint32_t smihandler_soc_get_sci_mask(void);
+
+/*
+ * SoC needs to implement the mechanism to know if an illegal attempt
+ * has been made to write to the BIOS area.
+ */
+void smihandler_soc_check_illegal_access(uint32_t tco_sts);
+
+/* Mainboard overrides. */
 
 /* Mainboard handler for GPI SMIs */
 void mainboard_smi_gpi_handler(const struct gpi_status *sts);

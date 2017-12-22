@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
- * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2015-2017 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,13 +38,13 @@ static struct global_nvs_t *gnvs;
 
 /* SoC overrides. */
 
-__attribute__((weak)) int smihandler_disable_busmaster(device_t dev)
+__attribute__((weak)) int smihandler_soc_disable_busmaster(device_t dev)
 {
 	return 1;
 }
 
 /* SMI handlers that should be serviced in SCI mode too. */
-__attribute__((weak)) uint32_t smi_handler_get_sci_mask(void)
+__attribute__((weak)) uint32_t smihandler_soc_get_sci_mask(void)
 {
 	return 0; /* No valid SCI mask for SMI handler */
 }
@@ -53,10 +53,26 @@ __attribute__((weak)) uint32_t smi_handler_get_sci_mask(void)
  * Needs to implement the mechanism to know if an illegal attempt
  * has been made to write to the BIOS area.
  */
-__attribute__((weak)) void smihandler_check_illegal_access(uint32_t tco_sts)
+__attribute__((weak)) void smihandler_soc_check_illegal_access(
+	uint32_t tco_sts)
 {
 	return;
 }
+
+/* Mainboard overrides. */
+
+__attribute__((weak)) void mainboard_smi_gpi_handler(
+	const struct gpi_status *sts)
+{
+	return;
+}
+
+__attribute__((weak)) void mainboard_smi_espi_handler(void)
+{
+	return;
+}
+
+/* Common Functions */
 
 static void *find_save_state(const struct smm_save_state_ops *save_state_ops,
 	int cmd)
@@ -112,7 +128,7 @@ static void busmaster_disable_on_bus(int bus)
 			u32 reg32;
 			device_t dev = PCI_DEV(bus, slot, func);
 
-			if (!smihandler_disable_busmaster(dev))
+			if (!smihandler_soc_disable_busmaster(dev))
 				continue;
 			val = pci_read_config32(dev, PCI_VENDOR_ID);
 
@@ -360,7 +376,7 @@ void smihandler_southbridge_tco(
 	if (!tco_sts)
 		return;
 
-	smihandler_check_illegal_access(tco_sts);
+	smihandler_soc_check_illegal_access(tco_sts);
 
 	if (tco_sts & TCO_TIMEOUT) { /* TIMEOUT */
 		/* Handle TCO timeout */
@@ -381,9 +397,6 @@ void smihandler_southbridge_periodic(
 	printk(BIOS_DEBUG, "Periodic SMI.\n");
 }
 
-void __attribute__((weak))
-mainboard_smi_gpi_handler(const struct gpi_status *sts) { }
-
 void smihandler_southbridge_gpi(
 	const struct smm_save_state_ops *save_state_ops)
 {
@@ -395,8 +408,6 @@ void smihandler_southbridge_gpi(
 	/* Clear again after mainboard handler */
 	gpi_clear_get_smi_status(&smi_sts);
 }
-
-void __attribute__((weak)) mainboard_smi_espi_handler(void) { }
 
 void smihandler_southbridge_espi(
 	const struct smm_save_state_ops *save_state_ops)
@@ -419,10 +430,10 @@ void southbridge_smi_handler(void)
 	/*
 	 * In SCI mode, execute only those SMI handlers that have
 	 * declared themselves as available for service in that mode
-	 * using smi_handler_get_sci_mask.
+	 * using smihandler_soc_get_sci_mask.
 	 */
 	if (pmc_read_pm1_control() & SCI_EN)
-		smi_sts &= smi_handler_get_sci_mask();
+		smi_sts &= smihandler_soc_get_sci_mask();
 
 	if (!smi_sts)
 		return;

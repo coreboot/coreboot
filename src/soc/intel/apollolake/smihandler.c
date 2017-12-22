@@ -22,7 +22,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 
-int smihandler_disable_busmaster(device_t dev)
+int smihandler_soc_disable_busmaster(device_t dev)
 {
 	if (dev == PCH_DEV_PMC)
 		return 0;
@@ -35,7 +35,7 @@ const struct smm_save_state_ops *get_smm_save_state_ops(void)
 }
 
 /* SMI handlers that should be serviced in SCI mode too. */
-uint32_t smi_handler_get_sci_mask(void)
+uint32_t smihandler_soc_get_sci_mask(void)
 {
 	uint32_t sci_mask =
 		SMI_HANDLER_SCI_EN(APM_SMI_STS) |

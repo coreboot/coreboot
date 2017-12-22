@@ -25,7 +25,7 @@ const struct smm_save_state_ops *get_smm_save_state_ops(void)
 	return &em64t101_smm_ops;
 }
 
-void smihandler_check_illegal_access(uint32_t tco_sts)
+void smihandler_soc_check_illegal_access(uint32_t tco_sts)
 {
 	if (!((tco_sts & (1 << 8)) && IS_ENABLED(CONFIG_SPI_FLASH_SMM)
 			&& fast_spi_wpd_status()))
@@ -46,7 +46,7 @@ void smihandler_check_illegal_access(uint32_t tco_sts)
 }
 
 /* SMI handlers that should be serviced in SCI mode too. */
-uint32_t smi_handler_get_sci_mask(void)
+uint32_t smihandler_soc_get_sci_mask(void)
 {
 	uint32_t sci_mask =
 		SMI_HANDLER_SCI_EN(APM_STS_BIT) |

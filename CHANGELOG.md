@@ -14,6 +14,17 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 
 ## [Unreleased]
 
+## [v4.6.5] - 2017-11-29
+### Added
+- Apu features default values to `bootorder_def` file
+
+### Changed
+- Updated SeaBIOS to 1.11.0.2
+- Updated sortbootorder to v4.6.5
+
+### Fixed
+- Setting correct PCI_ROM_ID for iPXE depending on platform
+
 ## [v4.6.4] - 2017-11-30
 ### Added
 - SPI support
@@ -127,7 +138,8 @@ redundant code which was similar for APU2/3/5 boards.
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.4...coreboot-4.6.x
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.5...coreboot-4.6.x
+[v4.6.5]: https://github.com/pcengines/coreboot/compare/v4.6.4...v4.6.5
 [v4.6.4]: https://github.com/pcengines/coreboot/compare/v4.6.3...v4.6.4
 [v4.6.3]: https://github.com/pcengines/coreboot/compare/v4.6.2...v4.6.3
 [v4.6.2]: https://github.com/pcengines/coreboot/compare/v4.6.1...v4.6.2

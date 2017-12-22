@@ -20,6 +20,7 @@
 #include <delay.h>
 #include <cpu/x86/mtrr.h>
 #include <amdblocks/BiosCallOuts.h>
+#include <rules.h>
 #include <string.h>
 #include <timestamp.h>
 
@@ -423,14 +424,25 @@ static int agesa_locate_stage_file(const char *name, struct region_device *rdev)
 			region_device_sz(rdev) - metadata_sz);
 }
 
+static const char *get_agesa_cbfs_name(void)
+{
+	if (!IS_ENABLED(CONFIG_AGESA_SPLIT_MEMORY_FILES))
+		return CONFIG_AGESA_CBFS_NAME;
+	if (!ENV_RAMSTAGE)
+		return CONFIG_AGESA_PRE_MEMORY_CBFS_NAME;
+	return CONFIG_AGESA_POST_MEMORY_CBFS_NAME;
+}
+
 const void *agesawrapper_locate_module (const CHAR8 name[8])
 {
 	const void *agesa;
 	const AMD_IMAGE_HEADER *image;
 	struct region_device rdev;
 	size_t file_size;
-	const char *fname = CONFIG_AGESA_CBFS_NAME;
+	const char *fname;
 	int ret;
+
+	fname = get_agesa_cbfs_name();
 
 	if (IS_ENABLED(CONFIG_AGESA_BINARY_PI_AS_STAGE))
 		ret = agesa_locate_stage_file(fname, &rdev);

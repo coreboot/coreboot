@@ -8,3 +8,10 @@
 /pci@i0cf8/pci-bridge@2,5/*@0/drive@0/disk@0
 /pci@i0cf8/pci-bridge@2,5/*@0/drive@1/disk@0
 /rom@genroms/pxe.rom
+pxen0
+scon1
+usben1
+uartc1
+uartd1
+ehcien0
+mpcie2_clk0

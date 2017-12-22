@@ -72,7 +72,9 @@ config PXE_SERIAL_CONSOLE
 
 config PXE_ROM_ID
 	string "network card PCI IDs"
-	default "8086,157b"
+	default "8086,157b" if BOARD_PCENGINES_APU2
+ 	default "8086,1539" if BOARD_PCENGINES_APU3 || BOARD_PCENGINES_APU4 || \
+	BOARD_PCENGINES_APU5
 	help
 	  The comma-separated PCI vendor and device ID that would associate
 	  your PXE ROM to your network card.

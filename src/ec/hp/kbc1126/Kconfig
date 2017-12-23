@@ -42,7 +42,7 @@ config KBC1126_FW1
 config KBC1126_FW1_OFFSET
 	string
 	depends on KBC1126_FIRMWARE
-	default "0xffffe800"
+	default "0xffff8000"
 
 config KBC1126_FW2
 	string "KBC1126 filename #2 path and filename"
@@ -56,6 +56,6 @@ config KBC1126_FW2
 config KBC1126_FW2_OFFSET
 	string
 	depends on KBC1126_FIRMWARE
-	default "0xfffee000"
+	default "0xfffe0000"
 
 endif

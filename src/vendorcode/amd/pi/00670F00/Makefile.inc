@@ -124,6 +124,17 @@ ramstage-libs += $(agesa_output_path)/libagesa.a
 #######################################################################
 
 ifeq ($(CONFIG_AGESA_SPLIT_MEMORY_FILES), y)
+
+# convert input elf to rmodule
+AGESA_POST_MEM_INPUT_ELF = $(call strip_quotes,$(CONFIG_AGESA_POST_MEMORY_BINARY_PI_FILE))
+AGESA_POST_MEM_ELF = $(objcbfs)/$(patsubst %.elf,%.debug,$(notdir $(AGESA_POST_MEM_INPUT_ELF)))
+AGESA_POST_MEM_ELF_RMOD = $(AGESA_POST_MEM_ELF).rmod
+
+$(AGESA_POST_MEM_ELF): $(AGESA_POST_MEM_INPUT_ELF)
+	cp $< $@
+
+$(AGESA_POST_MEM_ELF_RMOD): $(AGESA_POST_MEM_ELF)
+
 cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += $(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)
 $(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)-file := $(CONFIG_AGESA_PRE_MEMORY_BINARY_PI_FILE)
 $(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)-type := stage
@@ -133,12 +144,9 @@ $(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)-options :=  --xip
 $(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)-align := 4096
 
 cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += $(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)
-$(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)-file := $(CONFIG_AGESA_POST_MEMORY_BINARY_PI_FILE)
+$(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)-file := $(AGESA_POST_MEM_ELF_RMOD)
 $(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)-type := stage
-$(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)-options :=  --xip
-# 4KiB alignment to handle any interior alignment. Current AGESA only has
-# 64 byte alignment.
-$(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)-align := 4096
+$(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)-compression := $(CBFS_COMPRESS_FLAG)
 else
 
 cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += $(CONFIG_AGESA_CBFS_NAME)

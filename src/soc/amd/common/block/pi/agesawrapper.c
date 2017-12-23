@@ -21,6 +21,7 @@
 #include <cpu/x86/mtrr.h>
 #include <amdblocks/BiosCallOuts.h>
 #include <rules.h>
+#include <rmodule.h>
 #include <string.h>
 #include <timestamp.h>
 
@@ -412,7 +413,8 @@ static int agesa_locate_raw_file(const char *name, struct region_device *rdev)
 	return agesa_locate_file(name, rdev, CBFS_TYPE_RAW);
 }
 
-static int agesa_locate_stage_file(const char *name, struct region_device *rdev)
+static int agesa_locate_stage_file_early(const char *name,
+					struct region_device *rdev)
 {
 	const size_t metadata_sz = sizeof(struct cbfs_stage);
 
@@ -422,6 +424,31 @@ static int agesa_locate_stage_file(const char *name, struct region_device *rdev)
 	/* Peel off the cbfs stage metadata. */
 	return rdev_chain(rdev, rdev, metadata_sz,
 			region_device_sz(rdev) - metadata_sz);
+}
+
+static int agesa_locate_stage_file_ramstage(const char *name,
+						struct region_device *rdev)
+{
+	struct prog prog = PROG_INIT(PROG_REFCODE, name);
+	struct rmod_stage_load rmod_agesa = {
+		.cbmem_id = CBMEM_ID_REFCODE,
+		.prog = &prog,
+	};
+
+	if (prog_locate(&prog))
+		return -1;
+	if (rmodule_stage_load(&rmod_agesa) < 0)
+		return -1;
+
+	return rdev_chain(rdev, prog_rdev(&prog), 0,
+		region_device_sz(prog_rdev(&prog)));
+}
+
+static int agesa_locate_stage_file(const char *name, struct region_device *rdev)
+{
+	if (!ENV_RAMSTAGE)
+		return agesa_locate_stage_file_early(name, rdev);
+	return agesa_locate_stage_file_ramstage(name, rdev);
 }
 
 static const char *get_agesa_cbfs_name(void)

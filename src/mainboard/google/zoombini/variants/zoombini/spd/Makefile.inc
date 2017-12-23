@@ -13,9 +13,6 @@
 ## GNU General Public License for more details.
 ##
 
-bootblock-y += gpio.c
-
-romstage-y += boardid.c
-
-ramstage-y += boardid.c
-ramstage-y += gpio.c
+SPD_SOURCES = Hynix_H9HCNNN8KUMLHR_1GB		# 0b000
+SPD_SOURCES += Micron_MT53B512M32D2_2GB		# 1b001
+SPD_SOURCES += Micron_MT53B1024M32D4_4GB	# 2b010

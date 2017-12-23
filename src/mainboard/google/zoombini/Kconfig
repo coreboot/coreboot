@@ -8,6 +8,7 @@ config BOARD_GOOGLE_BASEBOARD_ZOOMBINI
 	select HAVE_ACPI_TABLES
 	select MAINBOARD_HAS_CHROMEOS
 	select SOC_INTEL_CANNONLAKE
+	select SOC_INTEL_CANNONLAKE_LPDDR4_INIT
 
 if BOARD_GOOGLE_BASEBOARD_ZOOMBINI
 
@@ -18,6 +19,10 @@ config BASEBOARD_ZOOMBINI_LAPTOP
 config DEVICETREE
 	string
 	default "variants/baseboard/devicetree.cb"
+
+config DIMM_SPD_SIZE
+	int
+	default 512
 
 config DRIVER_TPM_I2C_BUS
 	depends on ZOOMBINI_USE_I2C_TPM

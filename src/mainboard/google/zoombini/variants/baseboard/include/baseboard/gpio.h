@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __MAINBOARD_GPIO_H__
-#define __MAINBOARD_GPIO_H__
+#ifndef __BASEBOARD_GPIO_H__
+#define __BASEBOARD_GPIO_H__
 
 #include <soc/gpe.h>
 #include <soc/gpio.h>

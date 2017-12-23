@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Google Inc.
+ * Copyright 2017 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,12 +13,17 @@
  * GNU General Public License for more details.
  */
 
+#include <baseboard/variants.h>
+#include <soc/cnl_lpddr4_init.h>
 #include <soc/romstage.h>
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
-/*
-	meminit_lpddr4_by_sku(&memupd->FspmConfig, get_lpddr4_config(),
-			get_memory_sku());
-*/
+	const struct spd_info spd = {
+		.spd_by_index = true,
+		.spd_spec.spd_index = variant_memory_sku(),
+	};
+
+	cannonlake_lpddr4_init(&memupd->FspmConfig,
+				variant_lpddr4_config(), &spd);
 }

@@ -23,57 +23,55 @@
 #include "acpi_pirq_gen.h"
 
 enum emit_type {
-	EMIT_NONE,
 	EMIT_APIC,
 	EMIT_PICM,
 };
 
-static size_t enumerate_root_pci_pins(const enum emit_type emit,
-				      const char *lpcb_path)
+static int create_pirq_matrix(char matrix[32][4])
 {
-	char buffer[DEVICE_PATH_MAX];
-	device_t dev;
-	pci_pin_t prev_int_pin = PCI_INT_NONE;
-	u8 prev_pci_dev = 0;
-	size_t num_devs = 0;
+	struct device *dev;
+	int num_devs = 0;
 
-	for (dev = all_devices; dev; dev = dev->next) {
+	for (dev = dev_find_slot(0, PCI_DEVFN(0, 0)); dev; dev = dev->sibling) {
 		u8 pci_dev;
 		u8 int_pin;
-		pirq_t pirq;
-
-		if (dev->path.type != DEVICE_PATH_PCI ||
-		    dev->bus->secondary != 0)
-			continue;
 
 		pci_dev = PCI_SLOT(dev->path.pci.devfn);
 		int_pin = pci_read_config8(dev, PCI_INTERRUPT_PIN);
 
-		if (int_pin == PCI_INT_NONE || int_pin > PCI_INT_D)
+		if (int_pin == PCI_INT_NONE || int_pin > PCI_INT_D ||
+				matrix[pci_dev][int_pin - PCI_INT_A]
+				!= PIRQ_NONE)
 			continue;
 
-		pirq = intel_common_map_pirq(dev, int_pin);
-		if (emit == EMIT_NONE)  /* Only print on the first pass */
-			printk(BIOS_SPEW, "ACPI_PIRQ_GEN: %s: pin=%d pirq=%d\n",
-				dev_path(dev), int_pin, pirq);
+		matrix[pci_dev][int_pin - PCI_INT_A] =
+			intel_common_map_pirq(dev, int_pin);
+		printk(BIOS_SPEW, "ACPI_PIRQ_GEN: %s: pin=%d pirq=%d\n",
+			dev_path(dev), int_pin - PCI_INT_A,
+			matrix[pci_dev][int_pin - PCI_INT_A] - PIRQ_A);
+		num_devs++;
+	}
+	return num_devs;
+}
 
-		if (pirq == PIRQ_NONE)
-			continue;
+static void gen_pirq_route(const enum emit_type emit, const char *lpcb_path,
+			char pci_int_mapping[32][4])
+{
+	int pci_dev, int_pin;
+	char buffer[DEVICE_PATH_MAX];
+	char pirq;
 
-		/* Avoid duplicate entries */
-		if (prev_pci_dev == pci_dev && prev_int_pin == int_pin) {
-			continue;
-		} else {
-			prev_int_pin = int_pin;
-			prev_pci_dev = pci_dev;
-		}
-		if (emit != EMIT_NONE) {
+	for (pci_dev = 0; pci_dev < 32; pci_dev++) {
+		for (int_pin = 0; int_pin < 4; int_pin++) {
+			pirq = pci_int_mapping[pci_dev][int_pin];
+			if (pirq == PIRQ_NONE)
+				continue;
 			acpigen_write_package(4);
 			acpigen_write_dword((pci_dev << 16) | 0xffff);
-			acpigen_write_dword(int_pin - PCI_INT_A);
+			acpigen_write_byte(int_pin);
 			if (emit == EMIT_APIC) {
-				acpigen_write_dword(0);
-				acpigen_write_dword(16 + (pirq - PIRQ_A));
+				acpigen_write_zero();
+				acpigen_write_dword(16 + pirq - PIRQ_A);
 			} else {
 				snprintf(buffer, sizeof(buffer),
 					"%s.LNK%c",
@@ -83,18 +81,24 @@ static size_t enumerate_root_pci_pins(const enum emit_type emit,
 			}
 			acpigen_pop_len();
 		}
-		num_devs++;
 	}
-	return num_devs;
 }
 
-void intel_acpi_gen_def_acpi_pirq(device_t dev)
+void intel_acpi_gen_def_acpi_pirq(struct device *dev)
 {
 	const char *lpcb_path = acpi_device_path(dev);
-	const size_t num_devs = enumerate_root_pci_pins(EMIT_NONE, lpcb_path);
+	char pci_int_mapping[32][4];
+	int num_devs;
 
-	if (!lpcb_path)
-		die("ACPI_PIRQ_GEN: Missing LPCB ACPI path\n");
+	printk(BIOS_DEBUG, "Generating ACPI PIRQ entries\n");
+
+	if (!lpcb_path) {
+		printk(BIOS_ERR, "ACPI_PIRQ_GEN: Missing LPCB ACPI path\n");
+		return;
+	}
+
+	memset(pci_int_mapping, 0, sizeof(pci_int_mapping));
+	num_devs = create_pirq_matrix(pci_int_mapping);
 
 	acpigen_write_scope("\\_SB.PCI0");
 	acpigen_write_method("_PRT", 0);
@@ -102,13 +106,13 @@ void intel_acpi_gen_def_acpi_pirq(device_t dev)
 	acpigen_emit_namestring("PICM");
 	acpigen_emit_byte(RETURN_OP);
 	acpigen_write_package(num_devs);
-	enumerate_root_pci_pins(EMIT_APIC, lpcb_path);
+	gen_pirq_route(EMIT_APIC, lpcb_path, pci_int_mapping);
 	acpigen_pop_len(); /* package */
 	acpigen_pop_len(); /* if PICM */
 	acpigen_write_else();
 	acpigen_emit_byte(RETURN_OP);
 	acpigen_write_package(num_devs);
-	enumerate_root_pci_pins(EMIT_PICM, lpcb_path);
+	gen_pirq_route(EMIT_PICM, lpcb_path, pci_int_mapping);
 	acpigen_pop_len(); /* package */
 	acpigen_pop_len(); /* else PICM */
 	acpigen_pop_len(); /* _PRT */

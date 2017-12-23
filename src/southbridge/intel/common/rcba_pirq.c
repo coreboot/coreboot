@@ -1,3 +1,18 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2017 Arthur Heymans <arthur@aheymans.xyz>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -12,31 +27,30 @@ static const u32 pirq_dir_route_reg[MAX_SLOT - MIN_SLOT + 1] = {
 	D26IR, D27IR, D28IR, D29IR, D30IR, D31IR,
 };
 
-enum pirq intel_common_map_pirq(const device_t dev, const pci_pin_t pci_pin)
+enum pirq intel_common_map_pirq(const struct device *dev,
+				const enum pci_pin pci_pin)
 {
 	u8 slot = PCI_SLOT(dev->path.pci.devfn);
 	u8 shift = 4 * (pci_pin - PCI_INT_A);
 	u8 pirq;
 	u16 reg;
 
-	if (pci_pin < 1 || pci_pin > 4) {
-		printk(BIOS_ERR, "Slot %d PCI pin %d out of bounds\n",
+	if (pci_pin < PCI_INT_A || pci_pin > PCI_INT_D) {
+		printk(BIOS_ERR,
+			"ACPI_PIRQ_GEN: Slot %d PCI pin %d out of bounds\n",
 			slot, pci_pin);
 		return PIRQ_NONE;
 	}
 
-	if (slot < MIN_SLOT || slot > MAX_SLOT) {
+	/* Slot 24 should not exist and has no D24IR but better be safe here */
+	if (slot < MIN_SLOT || slot > MAX_SLOT || slot == 24) {
 		/* non-PCH devices use 1:1 mapping. */
-		return pci_pin;
+		return (enum pirq)pci_pin;
 	}
 
 	reg = pirq_dir_route_reg[slot - MIN_SLOT];
 
-	pirq = ((RCBA16(reg) >> shift) & 0xf);
-	if (pirq > 8) {
-		printk(BIOS_ERR, "Reg 0x%04x PIRQ %c out of bounds\n",
-			reg, 'A' + pirq);
-		return PIRQ_NONE;
-	}
-	return PIRQ_A + pirq;
+	pirq = (RCBA16(reg) >> shift) & 0x7;
+
+	return (enum pirq)(PIRQ_A + pirq);
 }

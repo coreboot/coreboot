@@ -16,15 +16,15 @@
 #ifndef INTEL_COMMON_ACPI_PIRQ_GEN_H
 #define INTEL_COMMON_ACPI_PIRQ_GEN_H
 
-typedef enum pci_pin {
+enum pci_pin {
 	PCI_INT_NONE = 0,
 	PCI_INT_A,
 	PCI_INT_B,
 	PCI_INT_C,
 	PCI_INT_D,
-} pci_pin_t;
+};
 
-typedef enum pirq {
+enum pirq {
 	PIRQ_NONE = 0,
 	PIRQ_A,
 	PIRQ_B,
@@ -34,9 +34,10 @@ typedef enum pirq {
 	PIRQ_F,
 	PIRQ_G,
 	PIRQ_H,
-} pirq_t;
+};
 
-void intel_acpi_gen_def_acpi_pirq(device_t dev);
-enum pirq intel_common_map_pirq(const device_t dev, const pci_pin_t pci_pin);
+void intel_acpi_gen_def_acpi_pirq(struct device *dev);
+enum pirq intel_common_map_pirq(const struct device *dev,
+				const enum pci_pin pci_pin);
 
 #endif

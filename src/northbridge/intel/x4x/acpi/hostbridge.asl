@@ -229,6 +229,3 @@ Method (_CRS, 0, Serialized)
 
 	Return (MCRS)
 }
-
-/* IRQ assignment is mainboard specific. Get it from mainboard ACPI code */
-#include "acpi/x4x_pci_irqs.asl"

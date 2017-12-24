@@ -17,13 +17,14 @@
 
 #include <console/console.h>
 #include <console/usb.h>
+#include <commonlib/region.h>
 #include <bootmode.h>
 #include <string.h>
 #include <arch/io.h>
 #include <cbmem.h>
 #include <halt.h>
 #include <timestamp.h>
-#include <northbridge/intel/common/mrc_cache.h>
+#include <mrc_cache.h>
 #include <southbridge/intel/bd82x6x/me.h>
 #include <southbridge/intel/common/smbus.h>
 #include <cpu/x86/msr.h>
@@ -34,6 +35,8 @@
 #include "raminit_native.h"
 #include "raminit_common.h"
 #include "sandybridge.h"
+
+#define MRC_CACHE_VERSION 0
 
 /* FIXME: no ECC support.  */
 /* FIXME: no support for 3-channel chipsets.  */
@@ -292,7 +295,8 @@ static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 static void save_timings(ramctr_timing *ctrl)
 {
 	/* Save the MRC S3 restore data to cbmem */
-	store_current_mrc_cache(ctrl, sizeof(*ctrl));
+	mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION, ctrl,
+			sizeof(*ctrl));
 }
 
 static int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot,
@@ -311,7 +315,7 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 	ramctr_timing ctrl;
 	int fast_boot;
 	spd_raw_data spds[4];
-	struct mrc_data_container *mrc_cache;
+	struct region_device rdev;
 	ramctr_timing *ctrl_cached;
 	struct cpuid_result cpures;
 	int err;
@@ -347,8 +351,9 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 	early_thermal_init();
 
 	/* try to find timings in MRC cache */
-	mrc_cache = find_current_mrc_cache();
-	if (!mrc_cache || (mrc_cache->mrc_data_size < sizeof(ctrl))) {
+	int cache_not_found = mrc_cache_get_current(MRC_TRAINING_DATA,
+						MRC_CACHE_VERSION, &rdev);
+	if (cache_not_found || (region_device_sz(&rdev) < sizeof(ctrl))) {
 		if (s3resume) {
 			/* Failed S3 resume, reset to come up cleanly */
 			outb(0x6, 0xcf9);
@@ -356,7 +361,7 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 		}
 		ctrl_cached = NULL;
 	} else {
-		ctrl_cached = (ramctr_timing *)mrc_cache->mrc_data;
+		ctrl_cached = rdev_mmap_full(&rdev);
 	}
 
 	/* verify MRC cache for fast boot */

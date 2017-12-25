@@ -309,6 +309,7 @@ struct dimminfo {
 	unsigned int	rows;
 	unsigned int	cols;
 	u16             spd_crc;
+	u8		mirrored;
 };
 
 struct rcven_timings {
@@ -388,6 +389,7 @@ extern const struct dll_setting default_ddr2_800_dq[TOTAL_BYTELANES];
 extern const struct dll_setting default_ddr3_800_dq[2][TOTAL_BYTELANES];
 extern const struct dll_setting default_ddr3_1067_dq[2][TOTAL_BYTELANES];
 extern const struct dll_setting default_ddr3_1333_dq[2][TOTAL_BYTELANES];
+extern const u8 ddr3_emrs1_rtt_nom_config[16][4];
 
 struct acpi_rsdp;
 #ifndef __SIMPLE_DEVICE__

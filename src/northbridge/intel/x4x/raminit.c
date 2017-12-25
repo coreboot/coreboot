@@ -408,6 +408,9 @@ static int ddr3_save_dimminfo(u8 dimm_idx, u8 *raw_spd,
 
 	s->dimms[dimm_idx].spd_crc = spd_ddr3_calc_unique_crc(raw_spd,
 							raw_spd[0]);
+
+	s->dimms[dimm_idx].mirrored = decoded_dimm.flags.pins_mirrored;
+
 	return CB_SUCCESS;
 }
 

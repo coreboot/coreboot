@@ -1347,14 +1347,45 @@ u32 test_address(int channel, int rank)
 	return channel * 512 * MiB + rank * 128 * MiB;
 }
 
-static void dojedec_ddr2(u8 r, u8 ch, u8 cmd, u16 val)
+
+/* DDR3 Rank1 Address mirror
+ * swap the following pins:
+ * A3<->A4, A5<->A6, A7<->A8, BA0<->BA1 */
+static u32 mirror_shift_bit(const u32 data, u8 bit)
+{
+	u32 temp0 = data, temp1 = data;
+	temp0 &= 1 << bit;
+	temp0 <<= 1;
+	temp1 &= 1 << (bit + 1);
+	temp1 >>= 1;
+	return (data & ~(3 << bit)) | temp0 | temp1;
+}
+
+static void send_jedec_cmd(const struct sysinfo *s, u8 r,
+			u8 ch, u8 cmd, u32 val)
 {
 	u32 addr = test_address(ch, r);
 	volatile u32 rubbish;
+	u8 data8 = cmd;
+	u32 data32;
 
-	MCHBAR8(0x271) = (MCHBAR8(0x271) & ~0x3e) | cmd;
-	MCHBAR8(0x671) = (MCHBAR8(0x671) & ~0x3e) | cmd;
-	rubbish = read32((void *)((val<<3) | addr));
+	if (s->spd_type == DDR3 && (r & 1)
+			&& s->dimms[ch * 2 + (r >> 1)].mirrored) {
+		data8 = (u8)mirror_shift_bit(data8, 4);
+	}
+
+	MCHBAR8(0x271) = (MCHBAR8(0x271) & ~0x3e) | data8;
+	MCHBAR8(0x671) = (MCHBAR8(0x671) & ~0x3e) | data8;
+	data32 = val;
+	if (s->spd_type == DDR3 && (r & 1)
+			&& s->dimms[ch * 2 + (r >> 1)].mirrored) {
+		data32 = mirror_shift_bit(data32, 3);
+		data32 = mirror_shift_bit(data32, 5);
+		data32 = mirror_shift_bit(data32, 7);
+	}
+	data32 <<= 3;
+
+	rubbish = read32((void *)((data32 | addr)));
 	udelay(10);
 	MCHBAR8(0x271) = (MCHBAR8(0x271) & ~0x3e) | NORMALOP_CMD;
 	MCHBAR8(0x671) = (MCHBAR8(0x671) & ~0x3e) | NORMALOP_CMD;
@@ -1419,10 +1450,59 @@ static void jedec_ddr2(struct sysinfo *s)
 			default:
 				break;
 			}
-			dojedec_ddr2(r, ch, jedec[i][0], v);
+			send_jedec_cmd(s, r, ch, jedec[i][0], v);
 			udelay(1);
 			printk(RAM_SPEW, "Jedec step %d\n", i);
 		}
+	}
+	printk(BIOS_DEBUG, "MRS done\n");
+}
+
+static void jedec_ddr3(struct sysinfo *s)
+{
+	int ch, r, dimmconfig, cmd, ddr3_freq;
+
+	u8 ddr3_emrs2_rtt_wr_config[16][4] = { /* [config][Rank] */
+		{0, 0, 0, 0},	/* NC_NC */
+		{0, 0, 0, 0},	/* x8ss_NC */
+		{0, 0, 0, 0},	/* x8ds_NC */
+		{0, 0, 0, 0},	/* x16ss_NC */
+		{0, 0, 0, 0},	/* NC_x8ss */
+		{2, 0, 2, 0},	/* x8ss_x8ss */
+		{2, 2, 2, 0},	/* x8ds_x8ss */
+		{2, 0, 2, 0},	/* x16ss_x8ss */
+		{0, 0, 0, 0},	/* NC_x8ss */
+		{2, 0, 2, 2},	/* x8ss_x8ds */
+		{2, 2, 2, 2},	/* x8ds_x8ds */
+		{2, 0, 2, 2},	/* x16ss_x8ds */
+		{0, 0, 0, 0},	/* NC_x16ss */
+		{2, 0, 2, 0},	/* x8ss_x16ss */
+		{2, 2, 2, 0},	/* x8ds_x16ss */
+		{2, 0, 2, 0},	/* x16ss_x16ss */
+	};
+
+	printk(BIOS_DEBUG, "MRS...\n");
+
+	ddr3_freq = s->selected_timings.mem_clk - MEM_CLOCK_800MHz;
+	FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
+		printk(BIOS_DEBUG, "CH%d: Found Rank %d\n", ch, r);
+		send_jedec_cmd(s, r, ch, NOP_CMD, 0);
+		udelay(200);
+		dimmconfig = s->dimm_config[ch];
+		cmd = ddr3_freq << 3; /* actually twl - 5 which is same */
+		cmd |= ddr3_emrs2_rtt_wr_config[dimmconfig][r] << 9;
+		send_jedec_cmd(s, r, ch, EMRS2_CMD, cmd);
+		send_jedec_cmd(s, r, ch, EMRS3_CMD, 0);
+		cmd = ddr3_emrs1_rtt_nom_config[dimmconfig][r] << 2;
+		/* Hardcode output drive strength to 34 Ohm / RZQ/7 (why??) */
+		cmd |= (1 << 1);
+		send_jedec_cmd(s, r, ch, EMRS1_CMD, cmd);
+		/* Burst type interleaved, burst length 8, Reset DLL,
+		 * Precharge PD: DLL on */
+		send_jedec_cmd(s, r, ch, MRS_CMD, (1 << 3) | (1 << 8)
+			| (1 << 12) | ((s->selected_timings.CAS - 4) << 4)
+			| ((s->selected_timings.tWR - 4) << 9));
+		send_jedec_cmd(s, r, ch, ZQCAL_CMD, (1 << 10));
 	}
 	printk(BIOS_DEBUG, "MRS done\n");
 }
@@ -1949,8 +2029,12 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 	printk(BIOS_DEBUG, "Done pre-jedec\n");
 
 	// JEDEC reset
-	if (s->boot_path != BOOT_PATH_RESUME)
-		jedec_ddr2(s);
+	if (s->boot_path != BOOT_PATH_RESUME) {
+		if (s->spd_type == DDR2)
+			jedec_ddr2(s);
+		else /* DDR3 */
+			jedec_ddr3(s);
+	}
 
 	printk(BIOS_DEBUG, "Done jedec steps\n");
 

@@ -583,7 +583,8 @@ static void program_timings(struct sysinfo *s)
 		MCHBAR16(0x400*i + 0x25b) = ((s->selected_timings.tRP + trpmod) << 9) |
 			s->selected_timings.tRFC;
 
-		MCHBAR16(0x400*i + 0x260) = (MCHBAR16(0x400*i + 0x260) & ~0x3fe) | (100 << 1);
+		MCHBAR16(0x400*i + 0x260) = (MCHBAR16(0x400*i + 0x260) & ~0x3fe)
+			| ((s->spd_type == DDR2 ? 100 : 256) << 1);
 		MCHBAR8(0x400*i + 0x264) = 0xff;
 		MCHBAR8(0x400*i + 0x25d) = (MCHBAR8(0x400*i + 0x25d) & ~0x3f) |
 			s->selected_timings.tRAS;
@@ -636,18 +637,32 @@ static void program_timings(struct sysinfo *s)
 		MCHBAR8(0x400*i + 0x24c) = MCHBAR8(0x400*i + 0x24c) & ~0x3;
 
 		reg16 = 0;
-		switch (s->selected_timings.mem_clk) {
-		default:
-		case MEM_CLOCK_667MHz:
-			reg16 = 0x99;
-			break;
-		case MEM_CLOCK_800MHz:
-			if (s->selected_timings.CAS == 5)
-				reg16 = 0x19a;
-			else if (s->selected_timings.CAS == 6)
-				reg16 = 0x9a;
-			break;
+		if (s->spd_type == DDR2) {
+			switch (s->selected_timings.mem_clk) {
+			default:
+			case MEM_CLOCK_667MHz:
+				reg16 = 0x99;
+				break;
+			case MEM_CLOCK_800MHz:
+				if (s->selected_timings.CAS == 5)
+					reg16 = 0x19a;
+				else if (s->selected_timings.CAS == 6)
+					reg16 = 0x9a;
+				break;
+			}
+		} else { /* DDR3 */
+			switch (s->selected_timings.mem_clk) {
+			default:
+			case MEM_CLOCK_800MHz:
+			case MEM_CLOCK_1066MHz:
+				reg16 = 1;
+				break;
+			case MEM_CLOCK_1333MHz:
+				reg16 = 2;
+				break;
+			}
 		}
+
 		reg16 &= 0x7;
 		reg16 += twl + 9;
 		reg16 <<= 10;
@@ -683,6 +698,14 @@ static void program_timings(struct sysinfo *s)
 	MCHBAR8(0x12d) = (MCHBAR8(0x12d) & ~0xf) | reg8;
 	MCHBAR8(0x12f) = 0x4c;
 	reg32 = (1 << 31) | (0x80 << 14) | (1 << 13) | (0xa << 9);
+	if (s->spd_type == DDR3) {
+		MCHBAR8(0x114) = 0x42;
+		reg16 = (512 - MAX(5, s->selected_timings.tRFC + 10000
+					/ ddr2ps[s->selected_timings.mem_clk]))
+					/ 2;
+		reg16 &= 0x1ff;
+		reg32 = (reg16 << 22) | (0x80 << 14) | (0xa << 9);
+	}
 	MCHBAR32(0x6c0) = (MCHBAR32(0x6c0) & ~0xffffff00) | reg32;
 	MCHBAR8(0x6c4) = (MCHBAR8(0x6c4) & ~0x7) | 0x2;
 }
@@ -693,6 +716,9 @@ static void program_dll(struct sysinfo *s)
 	u16 reg16 = 0;
 	u32 reg32 = 0;
 
+	const u8 rank2clken[8] = { 0x04, 0x01, 0x20, 0x08, 0x01, 0x04,
+				   0x08, 0x10 };
+
 	MCHBAR16(0x180) = (MCHBAR16(0x180) & ~0x7e06) | 0xc04;
 	MCHBAR16(0x182) = (MCHBAR16(0x182) & ~0x3ff) | 0xc8;
 	MCHBAR16(0x18a) = (MCHBAR16(0x18a) & ~0x1f1f) | 0x0f0f;
@@ -701,10 +727,14 @@ static void program_dll(struct sysinfo *s)
 	switch (s->selected_timings.mem_clk) {
 	default:
 	case MEM_CLOCK_667MHz:
+	case MEM_CLOCK_1333MHz:
 		reg16 = (0xa << 9) | 0xa;
 		break;
 	case MEM_CLOCK_800MHz:
 		reg16 = (0x9 << 9) | 0x9;
+		break;
+	case MEM_CLOCK_1066MHz:
+		reg16 = (0x7 << 9) | 0x7;
 		break;
 	}
 	MCHBAR16(0x19c) = (MCHBAR16(0x19c) & ~0x1e0f) | reg16;
@@ -729,14 +759,27 @@ static void program_dll(struct sysinfo *s)
 	udelay(1); // 533ns
 
 	// ME related
-	MCHBAR32(0x1a0) = (MCHBAR32(0x1a0) & ~0x7ffffff) | 0x551803;
+	MCHBAR32(0x1a0) = (MCHBAR32(0x1a0) & ~0x7ffffff)
+		| (s->spd_type == DDR2 ? 0x551803 : 0x555801);
 
 	MCHBAR16(0x1b4) = MCHBAR16(0x1b4) & ~0x800;
-	MCHBAR8(0x1a8) = MCHBAR8(0x1a8) | 0xf0;
+	if (s->spd_type == DDR2) {
+		MCHBAR8(0x1a8) = MCHBAR8(0x1a8) | 0xf0;
+	} else { /* DDR3 */
+		reg8 = 0x9; /* 0x9 << 4 ?? */
+		if (s->dimms[0].ranks == 2)
+			reg8 &= ~0x80;
+		if (s->dimms[3].ranks == 2)
+			reg8 &= ~0x10;
+		MCHBAR8(0x1a8) = (MCHBAR8(0x1a8) & ~0xf0) | reg8;
+	}
 
 	FOR_EACH_CHANNEL(i) {
 		reg16 = 0;
-		MCHBAR16(0x400*i + 0x59c) = MCHBAR16(0x400*i + 0x59c) & ~0x3000;
+		if ((s->spd_type == DDR3) && (i == 0))
+			reg16 = (0x3 << 12);
+		MCHBAR16(0x400*i + 0x59c) = (MCHBAR16(0x400*i + 0x59c)
+					& ~0x3000) | reg16;
 
 		reg32 = 0;
 		FOR_EACH_RANK_IN_CHANNEL(r) {
@@ -747,30 +790,50 @@ static void program_dll(struct sysinfo *s)
 		MCHBAR32(0x400*i + 0x59c) = (MCHBAR32(0x400*i + 0x59c) & ~0xfff) | reg32;
 		MCHBAR8(0x400*i + 0x594) = MCHBAR8(0x400*i + 0x594) & ~1;
 
-		if (!CHANNEL_IS_POPULATED(s->dimms, i)) {
-			printk(BIOS_DEBUG, "No dimms in channel %d\n", i);
-			reg8 = 0x3f;
-		} else if (ONLY_DIMMA_IS_POPULATED(s->dimms, i)) {
-			printk(BIOS_DEBUG, "DimmA populated only in channel %d\n", i);
-			reg8 = 0x38;
-		} else if (ONLY_DIMMB_IS_POPULATED(s->dimms, i)) {
-			printk(BIOS_DEBUG, "DimmB populated only in channel %d\n", i);
-			reg8 =  0x7;
-		} else if (BOTH_DIMMS_ARE_POPULATED(s->dimms, i)) {
-			printk(BIOS_DEBUG, "Both dimms populated in channel %d\n", i);
-			reg8 = 0;
-		} else {
-			die("Unhandled case\n");
+		if (s->spd_type == DDR2) {
+			if (!CHANNEL_IS_POPULATED(s->dimms, i)) {
+				printk(BIOS_DEBUG,
+					"No dimms in channel %d\n", i);
+				reg8 = 0x3f;
+			} else if (ONLY_DIMMA_IS_POPULATED(s->dimms, i)) {
+				printk(BIOS_DEBUG,
+					"DimmA populated only in channel %d\n",
+					i);
+				reg8 = 0x38;
+			} else if (ONLY_DIMMB_IS_POPULATED(s->dimms, i)) {
+				printk(BIOS_DEBUG,
+					"DimmB populated only in channel %d\n",
+					i);
+				reg8 =  0x7;
+			} else if (BOTH_DIMMS_ARE_POPULATED(s->dimms, i)) {
+				printk(BIOS_DEBUG,
+					"Both dimms populated in channel %d\n",
+					i);
+				reg8 = 0;
+			} else {
+				die("Unhandled case\n");
+			}
+			MCHBAR32(0x400*i + 0x5a0) = (MCHBAR32(0x400*i + 0x5a0)
+					& ~0x3f000000) | ((u32)(reg8 << 24));
+
+		} else { /* DDR3 */
+			FOR_EACH_POPULATED_RANK_IN_CHANNEL(s->dimms, i, r) {
+				MCHBAR8(0x400 * i + 0x5a0 + 3) =
+					MCHBAR8(0x400 * i + 0x5a0 + 3)
+					& ~rank2clken[r + i * 4];
+			}
 		}
 
 		//reg8 = 0x00; // FIXME don't switch on all clocks anyway
-
-		MCHBAR32(0x400*i + 0x5a0) = (MCHBAR32(0x400*i + 0x5a0) & ~0x3f000000) |
-			((u32)(reg8 << 24));
 	} // END EACH CHANNEL
 
-	MCHBAR8(0x1a8) = MCHBAR8(0x1a8) | 1;
-	MCHBAR8(0x1a8) = MCHBAR8(0x1a8) & ~0x4;
+	if (s->spd_type == DDR2) {
+		MCHBAR8(0x1a8) = MCHBAR8(0x1a8) | 1;
+		MCHBAR8(0x1a8) = MCHBAR8(0x1a8) & ~0x4;
+	} else { /* DDR3 */
+		MCHBAR8(0x1a8) = MCHBAR8(0x1a8) & ~1;
+		MCHBAR8(0x1a8) = MCHBAR8(0x1a8) | 0x4;
+	}
 
 	// Update DLL timing
 	MCHBAR8(0x1a4) = MCHBAR8(0x1a4) & ~0x80;
@@ -780,17 +843,33 @@ static void program_dll(struct sysinfo *s)
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
 		MCHBAR16(0x400*i + 0x5f0) = (MCHBAR16(0x400*i + 0x5f0) & ~0x3fc) | 0x3fc;
 		MCHBAR32(0x400*i + 0x5fc) = MCHBAR32(0x400*i + 0x5fc) & ~0xcccccccc;
-		MCHBAR8(0x400*i + 0x5d9) = (MCHBAR8(0x400*i + 0x5d9) & ~0xf0) | 0x70;
-		MCHBAR16(0x400*i + 0x590) = (MCHBAR16(0x400*i + 0x590) & ~0xffff) | 0x5555;
+		MCHBAR8(0x400*i + 0x5d9) = (MCHBAR8(0x400*i + 0x5d9) & ~0xf0)
+			| (s->spd_type == DDR2 ? 0x70 : 0x60);
+		MCHBAR16(0x400*i + 0x590) = (MCHBAR16(0x400*i + 0x590) & ~0xffff)
+			| (s->spd_type == DDR2 ? 0x5555 : 0xa955);
 	}
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
 		const struct dll_setting *setting;
 
-		if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz)
+		switch(s->selected_timings.mem_clk) {
+		default: /* Should not happen */
+	        case MEM_CLOCK_667MHz:
 			setting = default_ddr2_667_ctrl;
-		else
-			setting = default_ddr2_800_ctrl;
+			break;
+		case MEM_CLOCK_800MHz:
+			if (s->spd_type == DDR2)
+				setting = default_ddr2_800_ctrl;
+			else
+				setting = default_ddr3_800_ctrl[s->nmode - 1];
+			break;
+		case MEM_CLOCK_1066MHz:
+			setting = default_ddr3_1067_ctrl[s->nmode - 1];
+			break;
+		case MEM_CLOCK_1333MHz:
+			setting = default_ddr3_1333_ctrl[s->nmode - 1];
+			break;
+		}
 
 		clkset0(i, &setting[CLKSET0]);
 		clkset1(i, &setting[CLKSET1]);
@@ -863,24 +942,42 @@ static void program_dll(struct sysinfo *s)
 		async = 1;
 	}
 
-	clk = 0x1a;
-	if (async != 1) {
-		reg8 = MCHBAR8(0x188) & 0x1e;
-		if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz &&
-			s->selected_timings.fsb_clk == FSB_CLOCK_800MHz) {
-			clk = 0x10;
-		} else if (s->selected_timings.mem_clk == MEM_CLOCK_800MHz) {
-			clk = 0x10;
-		} else {
-			clk = 0x1a;
+	switch (s->selected_timings.mem_clk) {
+	case MEM_CLOCK_667MHz:
+		clk = 0x1a;
+		if (async != 1) {
+			if (s->selected_timings.fsb_clk == FSB_CLOCK_800MHz)
+				clk = 0x10;
 		}
+		break;
+	case MEM_CLOCK_800MHz:
+	case MEM_CLOCK_1066MHz:
+		if (async != 1)
+			clk = 0x10;
+		else
+			clk = 0x1a;
+		break;
+	case MEM_CLOCK_1333MHz:
+		clk = 0x18;
+		break;
+	default:
+		clk = 0x1a;
+		break;
 	}
+
+	if (async != 1)
+		reg8 = MCHBAR8(0x188) & 0x1e;
+
 	MCHBAR8(0x180) = MCHBAR8(0x180) & ~0x80;
 
-	if ((s->selected_timings.fsb_clk == FSB_CLOCK_800MHz) &&
-	    (s->selected_timings.mem_clk == MEM_CLOCK_667MHz)) {
+	if ((s->spd_type == DDR3 && s->selected_timings.mem_clk == MEM_CLOCK_1066MHz)
+		|| (s->spd_type == DDR2 && s->selected_timings.fsb_clk == FSB_CLOCK_800MHz
+			&& s->selected_timings.mem_clk == MEM_CLOCK_667MHz)) {
 		i = MCHBAR8(0x1c8) & 0xf;
-		i = (i + 10) % 14;
+		if (s->spd_type == DDR2)
+			i = (i + 10) % 14;
+		else /* DDR3 */
+			i = (i + 3) % 12;
 		MCHBAR8(0x1c8) = (MCHBAR8(0x1c8) & ~0x1f) | i;
 		MCHBAR8(0x180) = MCHBAR8(0x180) | 0x10;
 		while (MCHBAR8(0x180) & 0x10)
@@ -926,18 +1023,33 @@ static void select_default_dq_dqs_settings(struct sysinfo *s)
 				s->rt_dqs[ch][lane].tap = 7;
 				s->rt_dqs[ch][lane].pi = 0;
 			} else { /* DDR3 */
-				/* TODO: DDR3 write DQ-DQS */
+				memcpy(s->dqs_settings[ch],
+					default_ddr3_800_dqs[s->nmode - 1],
+					sizeof(s->dqs_settings[ch]));
+				memcpy(s->dq_settings[ch],
+					default_ddr3_800_dq[s->nmode - 1],
+					sizeof(s->dq_settings[ch]));
 				s->rt_dqs[ch][lane].tap = 6;
-				s->rt_dqs[ch][lane].pi = 2;
+				s->rt_dqs[ch][lane].pi = 3;
 			}
 			break;
 		case MEM_CLOCK_1066MHz:
-			/* TODO: DDR3 write DQ-DQS */
+			memcpy(s->dqs_settings[ch],
+				default_ddr3_1067_dqs[s->nmode - 1],
+				sizeof(s->dqs_settings[ch]));
+			memcpy(s->dq_settings[ch],
+				default_ddr3_1067_dq[s->nmode - 1],
+				sizeof(s->dq_settings[ch]));
 			s->rt_dqs[ch][lane].tap = 5;
-			s->rt_dqs[ch][lane].pi = 2;
+			s->rt_dqs[ch][lane].pi = 3;
 			break;
 		case MEM_CLOCK_1333MHz:
-			/* TODO: DDR3 write DQ-DQS */
+			memcpy(s->dqs_settings[ch],
+				default_ddr3_1333_dqs[s->nmode - 1],
+				sizeof(s->dqs_settings[ch]));
+			memcpy(s->dq_settings[ch],
+				default_ddr3_1333_dq[s->nmode - 1],
+				sizeof(s->dq_settings[ch]));
 			s->rt_dqs[ch][lane].tap = 7;
 			s->rt_dqs[ch][lane].pi = 0;
 			break;

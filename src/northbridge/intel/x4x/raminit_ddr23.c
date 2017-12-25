@@ -1616,6 +1616,14 @@ static void set_dradrb(struct sysinfo *s)
 	MCHBAR8(0x262) = (MCHBAR8(0x262) & ~0xf0) | ((rankpop0 << 4) & 0xf0);
 	MCHBAR8(0x662) = (MCHBAR8(0x662) & ~0xf0) | ((rankpop1 << 4) & 0xf0);
 
+	if (s->spd_type == DDR3) {
+		FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
+			/* ZQCAL enable */
+			MCHBAR32(0x269 + 0x400 * ch) =
+				MCHBAR32(0x269 + 0x400 * ch) | (1 << 26);
+		}
+	}
+
 	if (ONLY_DIMMA_IS_POPULATED(s->dimms, 0) ||
 			ONLY_DIMMB_IS_POPULATED(s->dimms, 0))
 		MCHBAR8(0x260) = MCHBAR8(0x260) | 1;

@@ -183,9 +183,10 @@ static int ddr2_save_dimminfo(u8 dimm_idx, u8 *raw_spd,
 	 * 1KB page size. For the x16 configuration, the page size is 2KB
 	 * for all densities except the 256Mb device, which has a 1KB page
 	 * size." Micron, 'TN-47-16 Designing for High-Density DDR2 Memory'
+	 * The formula is pagesize in KiB = width * 2^col_bits / 8.
 	 */
-	s->dimms[dimm_idx].page_size = s->dimms[dimm_idx].width *
-		 (1 << decoded_dimm.col_bits);
+	s->dimms[dimm_idx].page_size = decoded_dimm.width *
+		 (1 << decoded_dimm.col_bits) / 8;
 
 	switch (decoded_dimm.banks) {
 	case 4:

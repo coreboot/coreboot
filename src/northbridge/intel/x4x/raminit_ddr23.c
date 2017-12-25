@@ -1361,8 +1361,7 @@ static u32 mirror_shift_bit(const u32 data, u8 bit)
 	return (data & ~(3 << bit)) | temp0 | temp1;
 }
 
-static void send_jedec_cmd(const struct sysinfo *s, u8 r,
-			u8 ch, u8 cmd, u32 val)
+void send_jedec_cmd(const struct sysinfo *s, u8 r, u8 ch, u8 cmd, u32 val)
 {
 	u32 addr = test_address(ch, r);
 	volatile u32 rubbish;
@@ -1933,6 +1932,24 @@ static void power_settings(struct sysinfo *s)
 		MCHBAR8(0x561 + (lane << 2)) = MCHBAR8(0x561 + (lane << 2)) & ~(1 << 3);
 }
 
+static void software_ddr3_reset(struct sysinfo *s)
+{
+	printk(BIOS_DEBUG, "Software initiated DDR3 reset.\n");
+	MCHBAR8(0x1a8) = MCHBAR8(0x1a8) | 0x02;
+	MCHBAR8(0x5da) = MCHBAR8(0x5da) & ~0x80;
+	MCHBAR8(0x1a8) = MCHBAR8(0x1a8) & ~0x02;
+	MCHBAR8(0x5da) = (MCHBAR8(0x5da) & ~0x03) | 1;
+	udelay(200);
+	MCHBAR8(0x1a8) = MCHBAR8(0x1a8) & ~0x02;
+	MCHBAR8(0x5da) = MCHBAR8(0x5da) | 0x80;
+	MCHBAR8(0x5da) = MCHBAR8(0x5da) & ~0x80;
+	udelay(500);
+	MCHBAR8(0x5da) = MCHBAR8(0x5da) | 0x03;
+	MCHBAR8(0x5da) = MCHBAR8(0x5da) & ~0x03;
+	/* After write leveling the dram needs to be reset and reinitialised */
+	jedec_ddr3(s);
+}
+
 void do_raminit(struct sysinfo *s, int fast_boot)
 {
 	u8 ch;
@@ -2019,6 +2036,17 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 		MCHBAR8(0x9d8) = MCHBAR8(0x9d8) | 0x7;
 	}
 
+	/* DDR3 reset */
+	if ((s->spd_type == DDR3) && (s->boot_path != BOOT_PATH_RESUME)) {
+		printk(BIOS_DEBUG, "DDR3 Reset.\n");
+		MCHBAR8(0x1a8) = MCHBAR8(0x1a8) & ~0x2;
+		MCHBAR8(0x5da) = MCHBAR8(0x5da) | 0x80;
+		udelay(500);
+		MCHBAR8(0x1a8) = MCHBAR8(0x1a8) & ~0x2;
+		MCHBAR8(0x5da) = MCHBAR8(0x5da) & ~0x80;
+		udelay(500);
+	}
+
 	// Pre jedec
 	MCHBAR8(0x40) = MCHBAR8(0x40) | 0x2;
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
@@ -2037,6 +2065,13 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 	}
 
 	printk(BIOS_DEBUG, "Done jedec steps\n");
+
+	if (s->spd_type == DDR3) {
+		if (!fast_boot)
+			search_write_leveling(s);
+		if (s->boot_path == BOOT_PATH_NORMAL)
+			software_ddr3_reset(s);
+	}
 
 	// After JEDEC reset
 	MCHBAR8(0x40) = MCHBAR8(0x40) & ~0x2;

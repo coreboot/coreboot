@@ -373,6 +373,8 @@ void rt_set_dqs(u8 channel, u8 lane, u8 rank,
 		struct rt_dqs_setting *dqs_setting);
 int do_write_training(struct sysinfo *s);
 int do_read_training(struct sysinfo *s);
+void search_write_leveling(struct sysinfo *s);
+void send_jedec_cmd(const struct sysinfo *s, u8 r, u8 ch, u8 cmd, u32 val);
 
 extern const struct dll_setting default_ddr2_667_ctrl[7];
 extern const struct dll_setting default_ddr2_800_ctrl[7];

@@ -27,6 +27,9 @@
 #include <amdblocks/dimm_spd.h>
 #include "chip.h"
 
+void __attribute__((weak)) platform_FchParams_reset(
+				FCH_RESET_DATA_BLOCK *FchParams_reset) {}
+
 AGESA_STATUS agesa_fch_initreset(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;

@@ -46,10 +46,6 @@ const struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
 	{GPIO_70, Function0, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
 };
 
-void platform_FchParams_reset(FCH_RESET_DATA_BLOCK *FchParams_reset)
-{
-}
-
 const struct soc_amd_stoneyridge_gpio *board_get_gpio(size_t *size)
 {
 	if (GPIO_TABLE_BOOTBLOCK) {

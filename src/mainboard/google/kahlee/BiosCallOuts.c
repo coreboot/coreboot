@@ -19,10 +19,6 @@
 #include <stdlib.h>
 #include <baseboard/variants.h>
 
-void platform_FchParams_reset(FCH_RESET_DATA_BLOCK *FchParams_reset)
-{
-}
-
 void platform_FchParams_env(FCH_DATA_BLOCK *FchParams_env)
 {
 	/* SDHCI/MMC configuration */

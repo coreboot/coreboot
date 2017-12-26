@@ -75,9 +75,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	timestamp_init(get_initial_timestamp());
 	timestamp_add_now(TS_START_ROMSTAGE);
 
-	/* Disable watchdog timer */
-	RCBA32(0x3410) = RCBA32(0x3410) | 0x20;
-
 	/* Set southbridge and Super I/O GPIOs. */
 	ich10_enable_lpc();
 	mb_gpio_init();

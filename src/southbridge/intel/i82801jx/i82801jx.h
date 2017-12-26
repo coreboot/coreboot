@@ -166,6 +166,7 @@
 #define RCBA_RPFN		0x0238
 #define RCBA_DMC		0x2010
 #define RCBA_HPTC		0x3404
+#define GCS			0x3410
 #define RCBA_BUC		0x3414
 #define RCBA_FD			0x3418 /* Function Disable, see below. */
 #define RCBA_CG			0x341c

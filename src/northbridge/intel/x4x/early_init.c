@@ -58,6 +58,13 @@ void x4x_early_init(void)
 	pci_write_config8(d0f0, D0F0_PAM(5), 0x33);
 	pci_write_config8(d0f0, D0F0_PAM(6), 0x33);
 
+	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
+	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
+	outw(1 << 11, DEFAULT_PMBASE + 0x60 + 0x08);	/* halt timer */
+	outw(1 <<  3, DEFAULT_PMBASE + 0x60 + 0x04);	/* clear timeout */
+	outw(1 <<  1, DEFAULT_PMBASE + 0x60 + 0x06);	/* clear 2nd timeout */
+	printk(BIOS_DEBUG, " done.\n");
+
 	if (!(pci_read_config32(d0f0, D0F0_CAPID0 + 4) & (1 << (46 - 32)))) {
 		/* Enable internal GFX */
 		pci_write_config32(d0f0, D0F0_DEVEN, BOARD_DEVEN);

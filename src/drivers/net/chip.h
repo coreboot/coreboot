@@ -16,7 +16,13 @@
 
 struct drivers_net_config {
 	uint16_t customized_leds;
-	unsigned wake; /* Wake pin for ACPI _PRW */
+	unsigned wake;	/* Wake pin for ACPI _PRW */
+	/*
+	 * There maybe many NIC cards in a system.
+	 * This paramter is for driver to identify what
+	 * the device number is and the valid range is [1-10].
+	 */
+	uint8_t device_index;
 };
 
 #endif /* __DRIVERS_R8168_CHIP_H__ */

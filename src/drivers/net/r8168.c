@@ -45,6 +45,8 @@
 #define  CFG_9346_LOCK		0x00
 #define  CFG_9346_UNLOCK	0xc0
 
+#define DEVICE_INDEX_BYTE	12
+#define MAX_DEVICE_SUPPORT	10
 /**
  * search: Find first instance of string in a given region
  * @param p       string to find
@@ -91,13 +93,25 @@ static u8 get_hex_digit(const u8 c)
 
 #define MACLEN 17
 
-static enum cb_err fetch_mac_string_vpd(u8 *macstrbuf)
+static enum cb_err fetch_mac_string_vpd(u8 *macstrbuf, const u8 device_index)
 {
 	struct region_device rdev;
 	void *search_address;
 	size_t search_length;
 	size_t offset;
-	char key[] = "ethernet_mac";
+	char key[] = "ethernet_mac "; /* Leave a space at tail to stuff an index */
+
+	/*
+	 * The device_index 0 is treated as an special case matching to
+	 * "ethernet_mac" with single NIC on DUT. When there are mulitple
+	 * NICs on DUT, they are mapping to "ethernet_macN", where
+	 * N is [0-9].
+	 */
+	if (device_index == 0)
+		key[DEVICE_INDEX_BYTE] = '\0';
+	else
+		/* Translate index number from integer to ascii */
+		key[DEVICE_INDEX_BYTE] = (device_index - 1) + '0';
 
 	if (fmap_locate_area_as_rdev("RO_VPD", &rdev)) {
 		printk(BIOS_ERR, "Error: Couldn't find RO_VPD region.");
@@ -112,6 +126,7 @@ static enum cb_err fetch_mac_string_vpd(u8 *macstrbuf)
 	search_length = region_device_sz(&rdev);
 	offset = search(key, search_address, strlen(key),
 			search_length);
+
 	if (offset == search_length) {
 		printk(BIOS_ERR,
 		       "Error: Could not locate '%s' in VPD\n", key);
@@ -119,14 +134,13 @@ static enum cb_err fetch_mac_string_vpd(u8 *macstrbuf)
 	}
 	printk(BIOS_DEBUG, "Located '%s' in VPD\n", key);
 
-	offset += sizeof(key);	/* move to next character */
+	offset += strlen(key) + 1;	/* move to next character */
 
 	if (offset + MACLEN > search_length) {
 		printk(BIOS_ERR, "Search result too small!\n");
 		return CB_ERR;
 	}
 	memcpy(macstrbuf, search_address + offset, MACLEN);
-
 	return CB_SUCCESS;
 }
 
@@ -172,16 +186,25 @@ static void program_mac_address(struct device *dev, u16 io_base)
 	int i = 0;
 	/* Default MAC Address of 00:E0:4C:00:C0:B0 */
 	u8 mac[6] = { 0x00, 0xe0, 0x4c, 0x00, 0xc0, 0xb0 };
+	struct drivers_net_config *config = dev->chip_info;
 
 	/* check the VPD for the mac address */
 	if (IS_ENABLED(CONFIG_RT8168_GET_MAC_FROM_VPD)) {
-		if (fetch_mac_string_vpd(macstrbuf) != CB_SUCCESS)
-			printk(BIOS_ERR, "r8168: mac address not found in VPD,"
-					 " using default 00:e0:4c:00:c0:b0\n");
+		/* Current implementation is up to 10 NIC cards */
+		if (config && config->device_index <= MAX_DEVICE_SUPPORT) {
+			if (fetch_mac_string_vpd(macstrbuf, config->device_index)
+				!= CB_SUCCESS)
+				printk(BIOS_ERR, "r8168: mac address not found in VPD,"
+								 " using default 00:e0:4c:00:c0:b0\n");
+		} else {
+			printk(BIOS_ERR, "r8168: the maximum device_index should be"
+						" less then %d\n. Using default 00:e0:4c:00:c0:b0\n",
+						MAX_DEVICE_SUPPORT);
+		}
 	} else {
 		if (fetch_mac_string_cbfs(macstrbuf) != CB_SUCCESS)
 			printk(BIOS_ERR, "r8168: Error reading MAC from CBFS,"
-					 " using default 00:e0:4c:00:c0:b0\n");
+							" using default 00:e0:4c:00:c0:b0\n");
 	}
 	get_mac_address(mac, macstrbuf);
 

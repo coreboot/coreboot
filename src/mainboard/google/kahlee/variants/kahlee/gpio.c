@@ -28,96 +28,73 @@
 const struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
 	/* AGPIO2, to become event generator */
 	{ GPIO_2, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+
+	/* SER_TX */
+	{ GPIO_8, Function1, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+
+	/* SER RX */
+	{ GPIO_9, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+
+	/* EC_IN_RW */
+	{GPIO_15, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+
+	/* APU_I2C_3_SCL */
+	{GPIO_19, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+
+	/* APU_I2C_3_SDA */
+	{GPIO_20, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+
+	/* AGPIO22 EC_SCI */
+	{GPIO_22, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+
+	/* SPI_TPM_CS_L */
+	{GPIO_76, Function1, FCH_GPIO_PULL_DOWN_ENABLE | OUTPUT_H },
+
+	/* BD_ID1 */
+	{GPIO_135, Function1, INPUT },
+
+	/* TPM_SERIRQ# */
+	{GPIO_139, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+
+	/* BD_ID2 */
+	{GPIO_140, Function1, INPUT },
+
+	/* APU_SPI_WP */
+	{GPIO_142, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+
+	/* BD_ID3 */
+	{GPIO_144, Function1, INPUT }
 };
 
 const struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
 	/* AGPIO 12 */
 	{ GPIO_12, Function2, FCH_GPIO_PULL_UP_ENABLE | INPUT },
-};
-
-static const GPIO_CONTROL agesa_board_gpios[] = {
-	/* AGPIO2 PCIE/WLAN WAKE# SCI*/
-	{2, Function1, FCH_GPIO_PULL_UP_ENABLE },
-
-	/* SER TX */
-	{8, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
-	/* SER RX */
-	{9, Function1, FCH_GPIO_PULL_UP_ENABLE },
-
-	/* AGPIO 12 */
-	{12, Function2, FCH_GPIO_PULL_UP_ENABLE },
 
 	/* TS_EN_SOC (TouchScreen enable GPIO) */
-	{13, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
+	{GPIO_13, Function1, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H},
 
 	/* CAM_PWRON (Camera enable GPIO) */
-	{14, Function1,  FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
-
-	/* EC_IN_RW */
-	{15, Function1, FCH_GPIO_PULL_UP_ENABLE },
-
-	/* APU_I2C_3_SCL */
-	{19, Function1, FCH_GPIO_PULL_UP_ENABLE },
-
-	/* APU_I2C_3_SDA */
-	{20, Function1, FCH_GPIO_PULL_UP_ENABLE },
-
-	/* AGPIO22 EC_SCI */
-	{22, Function1, FCH_GPIO_PULL_UP_ENABLE },
-
+	{GPIO_14, Function1, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
 	/* APU_BT_ON# */
-	{24, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
+	{GPIO_24, Function1, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
 
 	/* DEVSLP1_SSD */
-	{67, Function1, FCH_GPIO_PULL_UP_ENABLE},
+	{67, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
 
 	/* DEVSLP1_EMMC */
 	/* No Connect for now.
-	 * {70, Function1, FCH_GPIO_PULL_UP_ENABLE},
+	 * {GPIO_70, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT},
 	 */
 
-	/* SPI_TPM_CS_L */
-	{76, Function1, FCH_GPIO_PULL_DOWN_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						  | FCH_GPIO_OUTPUT_ENABLE},
-
 	/* CAM_LED# */
-	{84, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
+	{GPIO_84, Function1, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
 
 	/* TS_RST#  (TouchScreen Reset) */
-	{85, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
+	{GPIO_85, Function1, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
 
 	/* WLAN_RST#_AUX */
-	{119, Function2, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						 | FCH_GPIO_OUTPUT_ENABLE},
-
-	/* BD_ID1 */
-	{135, Function1, 0 },
-
-	/* TPM_SERIRQ# */
-	{139, Function1, FCH_GPIO_PULL_UP_ENABLE },
-
-	/* BD_ID2 */
-	{140, Function1, 0 },
-
-	/* APU_SPI_WP */
-	{142, Function1, FCH_GPIO_PULL_UP_ENABLE },
-
-	/* BD_ID3 */
-	{144, Function1, 0 },
-
-	{-1}
+	{GPIO_119, Function2, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
 };
-
-const GPIO_CONTROL *get_gpio_table(void)
-{
-	return agesa_board_gpios;
-}
 
 const struct soc_amd_stoneyridge_gpio *board_get_gpio(size_t *size)
 {

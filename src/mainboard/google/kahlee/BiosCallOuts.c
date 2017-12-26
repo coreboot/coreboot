@@ -21,13 +21,10 @@
 
 void platform_FchParams_reset(FCH_RESET_DATA_BLOCK *FchParams_reset)
 {
-	FchParams_reset->EarlyOemGpioTable = (void *)get_gpio_table();
 }
 
 void platform_FchParams_env(FCH_DATA_BLOCK *FchParams_env)
 {
-	FchParams_env->PostOemGpioTable = (void *)get_gpio_table();
-
 	/* SDHCI/MMC configuration */
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KAHLEE))
 		FchParams_env->Sd.SdSlotType = 1; // EMMC

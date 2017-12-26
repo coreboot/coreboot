@@ -279,6 +279,19 @@ static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
 
 	fsp_fill_mrc_cache(arch_upd, s3wake, fsp_version);
 
+	/*
+	 * For S3 resume case, if valid mrc cache data is not found
+	 * or RECOVERY_MRC_CACHE hash verification fails, the S3 data
+	 * pointer would be null and Bootmode is set to
+	 * BOOT_WITH_FULL_CONFIGURATION. This gets memory to be retrained
+	 * in S3 flow. Data context including that of imdr root pointer would
+	 * be lost, invoking a hard reset in romstage post memory init.
+	 * Issuing hard reset here, saves fsp memory initialization and
+	 * training overhead.
+	 */
+	if (s3wake && !arch_upd->NvsBufferPtr)
+		hard_reset();
+
 	return CB_SUCCESS;
 }
 

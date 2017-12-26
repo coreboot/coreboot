@@ -24,6 +24,7 @@
 #include <device/pci_def.h>
 #include <soc/iomap.h>
 #include "chip.h"
+#include <rules.h>
 
 /* PSP at D8F0 */
 #define PSP_MAILBOX_BAR			PCI_BASE_ADDRESS_4 /* BKDG: "BAR3" */
@@ -265,7 +266,6 @@
 #define XHCI_PM_INDIRECT_INDEX		0x48
 #define XHCI_PM_INDIRECT_DATA		0x4C
 #define   XHCI_OVER_CURRENT_CONTROL	0x30
-
 #define EHCI_OVER_CURRENT_CONTROL	0x70
 
 #define USB_OC0				0
@@ -286,6 +286,20 @@
 
 #define WIDEIO_RANGE_ERROR		-1
 #define TOTAL_WIDEIO_PORTS		3
+#define AMD_GPIO_MUX_MASK		0x03
+
+#if ENV_BOOTBLOCK
+#define GPIO_TABLE_BOOTBLOCK		1
+#else
+#define GPIO_TABLE_BOOTBLOCK		0
+#endif
+#define STR_GPIO_STAGE			ENV_STRING
+
+struct soc_amd_stoneyridge_gpio {
+	uint8_t gpio;
+	uint8_t function;
+	uint8_t control;
+};
 
 void sb_enable_rom(void);
 void configure_stoneyridge_uart(void);
@@ -330,6 +344,20 @@ uint16_t xhci_pm_read16(uint8_t reg);
 void xhci_pm_write32(uint8_t reg, uint32_t value);
 uint32_t xhci_pm_read32(uint8_t reg);
 void bootblock_fch_early_init(void);
+/**
+ * @brief get table and table size to program GPIO
+ *
+ * @param size = pointer to variable where to return table size
+ *
+ * @return pointer to the desired table
+ */
+const struct soc_amd_stoneyridge_gpio *board_get_gpio(size_t *size);
+/**
+ * @brief program a particular set of GPIO
+ *
+ * @return none
+ */
+void sb_program_gpio(void);
 /**
  * @brief Find the size of a particular wide IO
  *

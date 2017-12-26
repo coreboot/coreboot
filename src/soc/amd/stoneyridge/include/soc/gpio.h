@@ -30,6 +30,14 @@
 #define GPIO_OUTPUT_MASK	(1 << GPIO_OUTPUT_SHIFT)
 #define GPIO_OUTPUT_ENABLE	(1 << 23)
 
+/*
+ * The definitions below should be used to make GPIO arrays compact and
+ * easy to understand.
+ */
+#define INPUT		0
+#define OUTPUT_H	(FCH_GPIO_OUTPUT_ENABLE | FCH_GPIO_OUTPUT_VALUE)
+#define OUTPUT_L	FCH_GPIO_OUTPUT_ENABLE
+
 /* GPIO_0 - GPIO_62 */
 #define GPIO_BANK0_CONTROL(gpio) \
 	(AMD_SB_ACPI_MMIO_ADDR + 0x1500 + ((gpio) * 4))

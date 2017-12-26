@@ -155,6 +155,32 @@ const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
 	return irq_association;
 }
 
+void sb_program_gpio(void)
+{
+	void *tmp_ptr;
+	const struct soc_amd_stoneyridge_gpio *gpio_ptr;
+	size_t size;
+	uint8_t control, mux, index;
+
+	printk(BIOS_SPEW, "GPIO programming stage %s\n", STR_GPIO_STAGE);
+	gpio_ptr = board_get_gpio(&size);
+	for (index = 0; index < size; index++) {
+		mux = gpio_ptr[index].function;
+		control = gpio_ptr[index].control;
+		tmp_ptr = (void *)(gpio_ptr[index].gpio + AMD_GPIO_MUX);
+		write8(tmp_ptr, mux & AMD_GPIO_MUX_MASK);
+
+		/*
+		 * Get the address of AMD_GPIO_CONTROL (dword) relative
+		 * to the desired pin and program bits 16-23.
+		 */
+		tmp_ptr = (void *)(gpio_ptr[index].gpio * sizeof(uint32_t) +
+					AMD_GPIO_CONTROL + 2);
+		write8(tmp_ptr, control);
+	}
+	printk(BIOS_SPEW, "End GPIO programming\n");
+}
+
 /**
  * @brief Find the size of a particular wide IO
  *

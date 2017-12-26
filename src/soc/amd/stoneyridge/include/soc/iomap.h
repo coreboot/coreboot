@@ -61,4 +61,8 @@
 #define AB_DATA				(AB_INDX+4)
 #define SYS_RESET			0xcf9
 
+/* GPIO control and mux access */
+#define AMD_GPIO_MUX			(AMD_SB_ACPI_MMIO_ADDR + 0x00000d00)
+#define AMD_GPIO_CONTROL		(AMD_SB_ACPI_MMIO_ADDR + 0x00001500)
+
 #endif /* __SOC_STONEYRIDGE_IOMAP_H__ */

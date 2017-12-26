@@ -20,6 +20,21 @@
 #include <stdlib.h>
 #include <variant/gpio.h>
 
+/*
+ * As a rule of thumb, GPIO pins used by coreboot should be initialized at
+ * bootblock while GPIO pins used only by the OS should be initialized at
+ * ramstage.
+ */
+const struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
+	/* AGPIO2, to become event generator */
+	{ GPIO_2, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+};
+
+const struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
+	/* AGPIO 12 */
+	{ GPIO_12, Function2, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+};
+
 static const GPIO_CONTROL agesa_board_gpios[] = {
 	/* AGPIO2 PCIE/WLAN WAKE# SCI*/
 	{2, Function1, FCH_GPIO_PULL_UP_ENABLE },
@@ -102,6 +117,16 @@ static const GPIO_CONTROL agesa_board_gpios[] = {
 const GPIO_CONTROL *get_gpio_table(void)
 {
 	return agesa_board_gpios;
+}
+
+const struct soc_amd_stoneyridge_gpio *board_get_gpio(size_t *size)
+{
+	if (GPIO_TABLE_BOOTBLOCK) {
+		*size = ARRAY_SIZE(gpio_set_stage_reset);
+		return gpio_set_stage_reset;
+	}
+	*size = ARRAY_SIZE(gpio_set_stage_ram);
+	return gpio_set_stage_ram;
 }
 
 /*

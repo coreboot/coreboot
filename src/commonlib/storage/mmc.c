@@ -338,6 +338,10 @@ int mmc_change_freq(struct storage_media *media)
 	if (err)
 		return err;
 
+	/* Determine if the device supports enhanced strobe */
+	media->caps |= ext_csd[EXT_CSD_STROBE_SUPPORT]
+		? DRVR_CAP_ENHANCED_STROBE : 0;
+
 	if ((ctrlr->caps & DRVR_CAP_HS400) &&
 	    (ext_csd[EXT_CSD_CARD_TYPE] & MMC_HS400))
 		err = mmc_select_hs400(media);
@@ -418,10 +422,6 @@ int mmc_update_capacity(struct storage_media *media)
 
 	if (ext_csd[EXT_CSD_REV] < 2)
 		return 0;
-
-	/* Determine if the device supports enhanced strobe */
-	media->caps |= ext_csd[EXT_CSD_STROBE_SUPPORT]
-		? DRVR_CAP_ENHANCED_STROBE : 0;
 
 	/* Determine the eMMC device information */
 	media->partition_config = ext_csd[EXT_CSD_PART_CONF]

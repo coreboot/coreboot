@@ -135,14 +135,10 @@ static void post_cpus_init(void *unused)
 	if (mp_run_on_all_cpus(&x86_setup_mtrrs_with_detect, 1000) < 0)
 		printk(BIOS_ERR, "MTRR programming failure\n");
 
-	/* Temporarily cache the memory-mapped boot media. */
-	if (IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED) &&
-		IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
-		fast_spi_cache_bios_region();
-
 	x86_mtrr_check();
 }
 
 /* Do CPU MP Init before FSP Silicon Init */
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, init_cpus, NULL);
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, post_cpus_init, NULL);
+BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_EXIT, post_cpus_init, NULL);
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, post_cpus_init, NULL);

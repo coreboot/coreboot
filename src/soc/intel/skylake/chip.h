@@ -542,6 +542,9 @@ struct soc_intel_skylake_config {
 
 	/* PCH Trip Temperature */
 	u8 pch_trip_temp;
+
+	/* Enable/Disable Sata power optimization */
+	u8 SataPwrOptEnable;
 };
 
 typedef struct soc_intel_skylake_config config_t;

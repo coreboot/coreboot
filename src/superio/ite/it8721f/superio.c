@@ -19,6 +19,7 @@
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
+#include <superio/conf_mode.h>
 #include "it8721f.h"
 
 static void init(struct device *dev)
@@ -50,6 +51,7 @@ static struct device_operations ops = {
 	.enable_resources = pnp_enable_resources,
 	.enable           = pnp_enable,
 	.init             = init,
+	.ops_pnp_mode     = &pnp_conf_mode_870155_aa,
 };
 
 /* TODO: FDC, PP, EC, KBCM, IR. */

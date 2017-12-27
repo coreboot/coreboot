@@ -14,4 +14,4 @@
 ## GNU General Public License for more details.
 ##
 
-ramstage-$(CONFIG_SUPERIO_VIA_VT1211) += vt1211.c
+ramstage-$(CONFIG_SUPERIO_VIA_VT1211) += superio.c

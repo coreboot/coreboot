@@ -51,15 +51,15 @@ static struct device_operations ops = {
 
 /* TODO: FDC, PP, KBCM. */
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, IT8671F_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, IT8671F_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, 0x07f8, },
-	{ &ops, IT8671F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07f8, 0x07f8, },
+	{ NULL, IT8671F_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, IT8671F_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1,
+		0x07f8, },
+	{ NULL, IT8671F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07f8, 0x07f8, },
 };
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &pnp_ops,
-		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_ite_it8671f_ops = {

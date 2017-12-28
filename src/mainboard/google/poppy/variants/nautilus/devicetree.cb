@@ -308,7 +308,20 @@ chip soc/intel/skylake
 			end
 		end # I2C #1
 		device pci 15.2 on end # I2C #2
-		device pci 15.3 on end # I2C #3
+		device pci 15.3 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ACPI0C50""
+				register "generic.cid" = ""PNP0C50""
+				register "generic.desc" = ""Digitizer device""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_A22_IRQ)"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C9)"
+				register "generic.has_power_resource" = "1"
+				register "generic.disable_gpio_export_in_crs" = "1"
+				register "generic.wake" = "GPE0_DW0_21"
+				register "hid_desc_reg_offset" = "0x1"
+				device i2c 0x9 on end
+			end
+		end # I2C #3
 		device pci 16.0 on  end # Management Engine Interface 1
 		device pci 16.1 off end # Management Engine Interface 2
 		device pci 16.2 off end # Management Engine IDE-R

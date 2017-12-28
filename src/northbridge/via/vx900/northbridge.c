@@ -245,7 +245,7 @@ static void vx900_set_resources(device_t dev)
 	printk(BIOS_SPEW, "Found top of memory at      %dMB\n", tomk >> 10);
 
 	/* Do the same for top of low RAM */
-	vx900_tolm = (pci_read_config16(mcu, 0x84) & 0xfff0) >> 4;
+	vx900_tolm = vx900_get_tolm();
 	full_tolmk = vx900_tolm << (20 - 10);
 	/* Remap above 4G if needed */
 	full_tolmk = MIN(full_tolmk, pci_tolm >> 10);
@@ -253,7 +253,7 @@ static void vx900_set_resources(device_t dev)
 	       full_tolmk >> 10);
 
 	/* What about the framebuffer for the integrated GPU? */
-	fbufk = chrome9hd_fb_size() >> 10;
+	fbufk = vx900_get_chrome9hd_fb_size() << (20 - 10);
 	printk(BIOS_SPEW, "Integrated graphics buffer: %dMB\n", fbufk >> 10);
 
 	/* Can't use the framebuffer as system RAM, sorry */
@@ -278,8 +278,6 @@ static void vx900_set_resources(device_t dev)
 	u64 tor = vx900_remap_above_4g(mcu, pci_tolm);
 	if (tor)
 		ram_resource(dev, idx++, RAM_4GB >> 10, (tor - RAM_4GB) >> 10);
-
-	set_late_cbmem_top(tolmk << 10);
 
 	printk(BIOS_DEBUG, "======================================================\n");
 	assign_resources(dev->link_list);

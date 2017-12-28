@@ -80,7 +80,7 @@ void main(unsigned long bist)
 	ram_check((1 << 24), 0x80);
 	ram_check((512 + 256 - 1) << 20, 0x80);
 	ram_check(0x80c0000, 0x80);
-	tolm = ((pci_read_config16(MCU, 0x84) & 0xfff0) >> 4) << 20;
+	tolm = vx900_get_tolm () << 20;
 	if (tolm > (1 * (u32) GiB))
 		ram_check(1024 << 10, 0x80);
 	if (tolm > (2 * (u32) GiB))
@@ -88,10 +88,13 @@ void main(unsigned long bist)
 
 	printk(BIOS_DEBUG, "We passed RAM verify\n");
 
+	/* FIXME: read fb_size from CMOS, but until that is implemented, start
+	 * from 512MB */
+	vx900_set_chrome9hd_fb_size (512);
+
 	/* We got RAM working, now we can write the timestamps to RAM */
-#if IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
 	cbmem_recovery(0);
-#endif
+
 	/* FIXME: See if this is needed or take this out please */
 	/* Disable Memcard and SDIO */
 	pci_mod_config8(LPC, 0x51, 0, (1 << 7) | (1 << 4));

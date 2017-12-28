@@ -31,7 +31,10 @@
 
 #include <console/console.h>
 
-u32 chrome9hd_fb_size(void);
+u32 vx900_get_tolm(void);
+void vx900_set_chrome9hd_fb_size(u32 size_mb);
+u8 vx900_get_chrome9hd_fb_pow(void);
+u32 vx900_get_chrome9hd_fb_size(void);
 u8 vx900_int15_get_5f18_bl(void);
 uint64_t get_uma_memory_base(void);
 

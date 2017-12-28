@@ -23,9 +23,6 @@
 
 #include "vx900.h"
 
-#define CHROME_9_HD_MIN_FB_SIZE   8
-#define CHROME_9_HD_MAX_FB_SIZE 512
-
 /**
  * @file chrome9hd.c
  *
@@ -59,77 +56,6 @@
  *    reduces the amount of PCI MMIO space we need below 4G, and is especially
  *    useful considering we only have 8GB (33 bits) of memory-mapped space.
  */
-
-/* Helper to determine the framebuffer size */
-u32 chrome9hd_fb_size(void)
-{
-	static u32 fb_size = 0;
-	u8 reg8, ranksize;
-	u32 size_mb, tom_mb, max_size_mb;
-	int i;
-	/* We do some PCI and CMOS IO to find our value, so if we've already
-	 * found it, save some time */
-	if (fb_size != 0)
-		return fb_size;
-	/* FIXME: read fb_size from CMOS, but until that is implemented, start
-	 * from 512MB */
-	size_mb = 512;
-
-	/* The minimum framebuffer size is 8MB. */
-	size_mb = MAX(size_mb, CHROME_9_HD_MIN_FB_SIZE);
-
-	const device_t mcu = dev_find_device(PCI_VENDOR_ID_VIA,
-					     PCI_DEVICE_ID_VIA_VX900_MEMCTRL,
-					     0);
-	/*
-	 * We have two limitations on the maximum framebuffer size:
-	 * 1) (Sanity) No more that 1/4 of system RAM
-	 * 2) (Hardware limitation) No larger than DRAM in last rank
-	 * Check both of these limitations and apply them to our framebuffer */
-	tom_mb = (pci_read_config16(mcu, 0x88) & 0x07ff) << (24 - 20);
-	max_size_mb = tom_mb >> 2;
-	if (size_mb > max_size_mb) {
-		printk(BIOS_ALERT, "The framebuffer size of %dMB is larger"
-		       " than 1/4 of available memory.\n"
-		       " Limiting framebuffer to %dMB\n", size_mb, max_size_mb);
-		size_mb = max_size_mb;
-	}
-
-	/* Now handle limitation #2
-	 * Look at the ending address of the memory ranks, from last to first,
-	 * until we find one that is not zero. That is our last rank, and its
-	 * size is the limit of our framebuffer. */
-	/* FIXME:  This has a bug. If we remap memory above 4G, we consider the
-	 * memory hole as part of our RAM. Thus if we install 3G, with a TOLM of
-	 * 2.5G, our TOM will be at 5G and we'll assume we have 5G RAM instead
-	 * of the actual 3.5G */
-	for (i = VX900_MAX_MEM_RANKS - 1; i > -1; i--) {
-		reg8 = pci_read_config8(mcu, 0x40 + i);
-		if (reg8 == 0)
-			continue;
-		/* We've reached the last populated rank */
-		ranksize = reg8 - pci_read_config8(mcu, 0x48 + i);
-		max_size_mb = ranksize << 6;
-		/* That's it. We got what we needed. */
-		break;
-	};
-	if (size_mb > max_size_mb) {
-		printk(BIOS_ALERT, "The framebuffer size of %dMB is larger"
-		       " than size of the last DRAM rank.\n"
-		       " Limiting framebuffer to %dMB\n", size_mb, max_size_mb);
-		size_mb = max_size_mb;
-	}
-
-	/* Now round the framebuffer size to the closest power of 2 */
-	u8 fb_pow = 0;
-	while (size_mb >> fb_pow)
-		fb_pow++;
-	fb_pow--;
-	size_mb = (1 << fb_pow);
-	/* We store the framebuffer size in bytes, for simplicity */
-	fb_size = size_mb << 20;
-	return fb_size;
-}
 
 /**
  * vx900_int15
@@ -213,18 +139,10 @@ static void chrome9hd_set_sid_vid(u16 vendor, u16 device)
 
 static void chrome9hd_handle_uma(device_t dev)
 {
-	/* Mirror mirror, shiny glass, tell me that is not my ass */
-	u32 fb_size = chrome9hd_fb_size() >> 20;
+	u8 fb_pow = vx900_get_chrome9hd_fb_pow();
 
-	u8 fb_pow = 0;
-	while (fb_size >> fb_pow)
-		fb_pow++;
-	fb_pow--;
-
-	/* Step 6 - Let MCU know the framebuffer size */
-	device_t mcu = dev_find_device(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
-	pci_mod_config8(mcu, 0xa1, 7 << 4, (fb_pow - 2) << 4);
+	if (fb_pow == 0)
+		return;
 
 	/* Step 7 - Let GFX know the framebuffer size (through PCI and IOCTL)
 	 * The size we set here affects the behavior of BAR2, and the amount of

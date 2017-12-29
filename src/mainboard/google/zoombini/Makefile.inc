@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2017 Google Inc.
+## Copyright 2017 Google Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ romstage-y += romstage.c
 ramstage-y += boardid.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
+ramstage-y += mainboard.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 

@@ -24,14 +24,25 @@ DefinitionBlock(
 	0x20110725	// OEM revision
 )
 {
+	// Some generic macros
+	#include <soc/intel/cannonlake/acpi/platform.asl>
+
 	// global NVS and variables
 	#include <soc/intel/cannonlake/acpi/globalnvs.asl>
 
 	Scope (\_SB) {
+		Device (PCI0)
+		{
+			#include <soc/intel/cannonlake/acpi/northbridge.asl>
+			#include <soc/intel/cannonlake/acpi/southbridge.asl>
+		}
 	}
 
 	#if IS_ENABLED(CONFIG_CHROMEOS)
 	// Chrome OS specific
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 	#endif
+
+	// Chipset specific sleep states
+	#include <soc/intel/cannonlake/acpi/sleepstates.asl>
 }

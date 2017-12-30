@@ -3,3 +3,6 @@ config BOARD_ASROCK_G41C_GS_R2_0
 
 config BOARD_ASROCK_G41C_GS
 	bool "G41C-GS / G41C-S"
+
+config BOARD_ASROCK_G41M_GS
+	bool "G41M-GS"

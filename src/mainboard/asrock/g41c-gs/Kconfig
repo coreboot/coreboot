@@ -14,7 +14,7 @@
 # GNU General Public License for more details.
 #
 
-if BOARD_ASROCK_G41C_GS_R2_0 || BOARD_ASROCK_G41C_GS
+if BOARD_ASROCK_G41C_GS_R2_0 || BOARD_ASROCK_G41C_GS || BOARD_ASROCK_G41M_GS
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -23,7 +23,8 @@ config BOARD_SPECIFIC_OPTIONS
 	select NORTHBRIDGE_INTEL_X4X
 	select SOUTHBRIDGE_INTEL_I82801GX
 	select SUPERIO_NUVOTON_NCT6776 if BOARD_ASROCK_G41C_GS_R2_0
-	select SUPERIO_WINBOND_W83627DHG if BOARD_ASROCK_G41C_GS
+	select SUPERIO_WINBOND_W83627DHG if BOARD_ASROCK_G41C_GS \
+		|| BOARD_ASROCK_G41M_GS
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_1024
 	select PCIEXP_ASPM
@@ -44,11 +45,13 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "G41C-GS R2.0" if BOARD_ASROCK_G41C_GS_R2_0
 	default "G41C-GS" if BOARD_ASROCK_G41C_GS
+	default "G41M-GS" if BOARD_ASROCK_G41M_GS
 
 config DEVICETREE
 	string
 	default "variants/g41c-gs-r2/devicetree.cb" if BOARD_ASROCK_G41C_GS_R2_0
 	default "variants/g41c-gs/devicetree.cb" if BOARD_ASROCK_G41C_GS
+	default "variants/g41m-gs/devicetree.cb" if BOARD_ASROCK_G41M_GS
 
 config MAX_CPUS
 	int

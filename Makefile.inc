@@ -373,7 +373,7 @@ ifeq ($(CONFIG_COMPILER_GCC),y)
 CFLAGS_common += -fno-delete-null-pointer-checks -fconserve-stack
 endif
 
-ADAFLAGS_common += -gnatg -gnatp
+ADAFLAGS_common += -gnatp
 ADAFLAGS_common += -Wuninitialized -Wall -Werror
 ADAFLAGS_common += -pipe -g -nostdinc
 ADAFLAGS_common += -Wstrict-aliasing -Wshadow

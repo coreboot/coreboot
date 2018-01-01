@@ -149,12 +149,8 @@ clear_fixed_var_mtrr_out:
 	movl	%esi, %edi
 	movl	$(CacheSize >> 2), %ecx
 
-	/*
-	 * 0x5c5c5c5c is a memory test pattern.
-	 * TODO: Check if everything works with the zero pattern as well.
-	 */
-	/* xorl	%eax, %eax */
-	xorl	$0x5c5c5c5c, %eax
+	/* Zero out the cache-as-ram area. */
+	xorl	%eax, %eax
 	rep	stosl
 
 #ifdef CARTEST

@@ -284,6 +284,11 @@ config STONEYRIDGE_UART
 	  to FEDC_6FFFh. UART controller 1 registers
 	  range from FEDC_8000h to FEDC_8FFFh.
 
+config CONSOLE_UART_BASE_ADDRESS
+	depends on CONSOLE_SERIAL
+	hex
+	default 0xfedc6000
+
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000 if SMM_TSEG && HAVE_SMI_HANDLER

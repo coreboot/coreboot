@@ -43,6 +43,10 @@ config CHROMEOS
 	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
 	select VBOOT_LID_SWITCH
 
+config VBOOT
+	select HAS_RECOVERY_MRC_CACHE
+	select MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN
+
 config MAINBOARD_DIR
 	string
 	default intel/glkrvp

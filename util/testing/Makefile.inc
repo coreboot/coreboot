@@ -123,6 +123,12 @@ test-tools:
 	$(MAKE) -C util/romcc all test -j $(CPUS) V=$(V) Q=$(Q)
 	echo "Testing broadcom/secimage"
 	$(MAKE) -C util/broadcom/secimage test
+	@echo "Running gitconfig tests"
+	@for test in $$(find util/gitconfig/test -maxdepth 1 \
+		-type f -executable); do \
+		echo "$${test}"; \
+		"$${test}" || exit $${?}; \
+	done
 
 test-cleanup:
 	rm -rf coreboot-builds coreboot-builds-chromeos

@@ -16,7 +16,7 @@ for hooks in .git/modules/{3rdparty/blobs,libhwbase,libgfxinit}/hooks; do
 	if [ -d $hooks ]; then
 		if [ util/gitconfig/commit-msg -nt $hooks/commit-msg ] || \
 			[ ! -x $hooks/commit-msg ]; then
-			sed -e "s,%MAKE%,remake,g"
+			sed -e "s,%MAKE%,remake,g" \
 				util/gitconfig/commit-msg > $hooks/commit-msg
 			chmod +x $hooks/commit-msg
 		fi

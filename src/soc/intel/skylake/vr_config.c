@@ -14,9 +14,84 @@
  *
  */
 
+#include <arch/io.h>
+#include <device/pci_ids.h>
 #include <fsp/api.h>
 #include <soc/ramstage.h>
 #include <soc/vr_config.h>
+
+#define KBLY_ICCMAX_SA					VR_CFG_AMP(4.1)
+#define KBLY_ICCMAX_CORE				VR_CFG_AMP(24)
+#define KBLY_ICCMAX_GTS_GTUS			VR_CFG_AMP(24)
+#define KBLR_ICCMAX_SA_U42				VR_CFG_AMP(6)
+#define KBLU_ICCMAX_SA_U22				VR_CFG_AMP(4.5)
+#define KBLR_ICCMAX_CORE_U42			VR_CFG_AMP(64)
+#define KBLU_ICCMAX_CORE_U22_PREMIUM	VR_CFG_AMP(32)
+#define KBLU_ICCMAX_CORE_U22_BASE		VR_CFG_AMP(29)
+#define KBLUR_ICCMAX_GTS_GTUS			VR_CFG_AMP(31)
+
+enum kbl_sku {
+	KBL_Y_SKU,
+	KBL_R_SKU,
+	KBL_U_BASE_SKU,
+	KBL_U_PREMIUM_SKU,
+};
+
+/*
+ * Iccmax table from Doc #559100 Section 7.2 DC Specifications, the
+ * Iccmax is the same among KBL-Y but KBL-U/R.
+ * +----------------+-------------+---------------+------+-----+
+ * | Domain/Setting |  SA         |  IA           | GTUS | GTS |
+ * +----------------+-------------+---------------+------+-----+
+ * | IccMax(KBL-U/R)| 6A(U42)     | 64A(U42)      | 31A  | 31A |
+ * |                | 4.5A(Others)| 29A(P/C)      |      |     |
+ * |                |             | 32A(i3/i5)    |      |     |
+ * +----------------+-------------+---------------+------+-----+
+ * | IccMax(KBL-Y)  | 4.1A        | 24A           | 24A  | 24A |
+ * +----------------+-------------+---------------+------+-----+
+ */
+
+static const struct {
+	enum kbl_sku sku;
+	uint16_t icc_max[NUM_VR_DOMAINS];
+}sku_icc_max_mapping[] = {
+	[KBL_Y_SKU] = {
+		.sku = KBL_Y_SKU,
+		.icc_max = {
+			KBLY_ICCMAX_SA,
+			KBLY_ICCMAX_CORE,
+			KBLY_ICCMAX_GTS_GTUS,
+			KBLY_ICCMAX_GTS_GTUS
+		}
+	},
+	[KBL_R_SKU] = {
+		.sku = KBL_R_SKU,
+		.icc_max = {
+			KBLR_ICCMAX_SA_U42,
+			KBLR_ICCMAX_CORE_U42,
+			KBLUR_ICCMAX_GTS_GTUS,
+			KBLUR_ICCMAX_GTS_GTUS
+		}
+	},
+	[KBL_U_BASE_SKU] = {
+		.sku = KBL_U_BASE_SKU,
+		.icc_max = {
+			KBLU_ICCMAX_SA_U22,
+			KBLU_ICCMAX_CORE_U22_BASE,
+			KBLUR_ICCMAX_GTS_GTUS,
+			KBLUR_ICCMAX_GTS_GTUS
+		}
+	},
+	[KBL_U_PREMIUM_SKU] = {
+		.sku = KBL_U_PREMIUM_SKU,
+		.icc_max = {
+			KBLU_ICCMAX_SA_U22,
+			KBLU_ICCMAX_CORE_U22_PREMIUM,
+			KBLUR_ICCMAX_GTS_GTUS,
+			KBLUR_ICCMAX_GTS_GTUS
+		}
+	},
+};
 
 /* Default values for domain configuration. PSI3 and PSI4 are disabled. */
 static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
@@ -84,6 +159,49 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 	},
 };
 
+static uint16_t get_dev_id(device_t dev)
+{
+	return pci_read_config16(dev, PCI_DEVICE_ID);
+}
+
+static int get_kbl_sku(void)
+{
+	static int sku = -1;
+	uint16_t id;
+
+	if (sku != -1)
+		return sku;
+
+	id = get_dev_id(SA_DEV_ROOT);
+	if (id == PCI_DEVICE_ID_INTEL_KBL_U_R)
+		sku = KBL_R_SKU;
+	else if (id == PCI_DEVICE_ID_INTEL_KBL_ID_Y)
+		sku = KBL_Y_SKU;
+	else if (id == PCI_DEVICE_ID_INTEL_KBL_ID_U) {
+		id = get_dev_id(PCH_DEV_LPC);
+		if (id == PCI_DEVICE_ID_INTEL_SPT_LP_U_BASE_HDCP22)
+			sku = KBL_U_BASE_SKU;
+		else
+			sku = KBL_U_PREMIUM_SKU;
+	} else
+		/* Not one of the skus with available Icc max mapping. */
+		sku = -2;
+	return sku;
+}
+
+static uint16_t get_sku_icc_max(int domain, uint16_t board_icc_max)
+{
+	/* If board provided non-zero value, use it. */
+	if (board_icc_max)
+		return board_icc_max;
+
+	/* Check if this SKU has a mapping table entry. */
+	int sku_id = get_kbl_sku();
+	if (sku_id < 0)
+		return 0;
+	return sku_icc_max_mapping[sku_id].icc_max[domain];
+}
+
 void fill_vr_domain_config(void *params,
 		int domain, const struct vr_config *chip_cfg)
 {
@@ -107,7 +225,7 @@ void fill_vr_domain_config(void *params,
 	vr_params->Psi4Enable[domain] = cfg->psi4enable;
 	vr_params->ImonSlope[domain] = cfg->imon_slope;
 	vr_params->ImonOffset[domain] = cfg->imon_offset;
-	vr_params->IccMax[domain] = cfg->icc_max;
+	vr_params->IccMax[domain] = get_sku_icc_max(domain, cfg->icc_max);
 	vr_params->VrVoltageLimit[domain] = cfg->voltage_limit;
 
 #if IS_ENABLED(CONFIG_PLATFORM_USES_FSP2_0)

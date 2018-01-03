@@ -31,6 +31,11 @@ install:
 	install -d $(DESTDIR)/usr/bin
 	install $(TARGET) $(DESTDIR)/usr/bin
 
+.PHONY: test
+test: $(TARGET)
+	@find test -maxdepth 1 -type f -executable \
+		| xargs -I "{}" sh -c "{} $$(realpath $<)"
+
 .PHONY: clean
 
 clean:

@@ -50,6 +50,7 @@ junit.xml:
 	echo
 
 TOOLLIST= \
+broadcom/secimage \
 cbmem \
 ectool \
 futility \
@@ -110,6 +111,8 @@ test-tools:
 	$(foreach tool, $(TOOLLIST), echo "Building $(tool)";export MFLAGS= ;export MAKEFLAGS= ;$(MAKE) -C util/$(tool) all V=$(V) Q=$(Q) || exit 1; )
 	echo "Building romcc"
 	$(MAKE) -C util/romcc all test -j $(CPUS) V=$(V) Q=$(Q)
+	echo "Testing broadcom/secimage"
+	$(MAKE) -C util/broadcom/secimage test
 
 test-cleanup:
 	rm -rf coreboot-builds coreboot-builds-chromeos

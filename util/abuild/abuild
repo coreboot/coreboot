@@ -251,7 +251,13 @@ function update_config
 		{
 			echo "CONFIG_PAYLOAD_NONE=y"
 			echo "# CONFIG_PAYLOAD_ELF is not set"
-		} >> "${config_file}"
+			echo "# CONFIG_PAYLOAD_FILO is not set"
+			echo "# CONFIG_PAYLOAD_GRUB2 is not set"
+			echo "# CONFIG_PAYLOAD_OPENBIOS is not set"
+			echo "# CONFIG_PAYLOAD_DEPTHCHARGE is not set"
+			echo "# CONFIG_PAYLOAD_UBOOT is not set"
+			echo "# CONFIG_PAYLOAD_TIANOCORE is not set"
+			echo "# CONFIG_PAYLOAD_LINUXBOOT is not set"
 	elif [ "$PAYLOAD" != "/dev/null" ]; then
 		{
 			echo "# CONFIG_PAYLOAD_NONE is not set"

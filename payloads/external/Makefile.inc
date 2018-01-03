@@ -4,6 +4,7 @@
 ##
 ## Copyright (C) 2009-2010 coresystems GmbH
 ## Copyright (C) 2015 Google Inc.
+## Copyright (C) 2017 Facebook Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -29,6 +30,13 @@ ifeq ($(CONFIG_PAYLOAD_DEPTHCHARGE),y)
 PAYLOAD_CONFIG=payloads/external/depthcharge/depthcharge/.config
 $(PAYLOAD_CONFIG): payloads/external/depthcharge/depthcharge/build/depthcharge.elf
 #TODO: Figure out version
+endif
+
+ifeq ($(CONFIG_PAYLOAD_LINUXBOOT),y)
+ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUXBOOT_KERNEL_COMMANDLINE))),)
+      ADDITIONAL_PAYLOAD_CONFIG+=-C $(CONFIG_LINUXBOOT_KERNEL_COMMANDLINE)
+endif
+ADDITIONAL_PAYLOAD_CONFIG+=-I $(CONFIG_PAYLOAD_USERSPACE)
 endif
 
 ifeq ($(CONFIG_PAYLOAD_LINUX),y)
@@ -240,3 +248,32 @@ payloads/external/iPXE/ipxe/ipxe.rom ipxe: $(DOTCONFIG)
 	IPXE_UART=$(IPXE_UART) \
 	CONFIG_TTYS0_BAUD=$(CONFIG_TTYS0_BAUD) \
 	MFLAGS= MAKEFLAGS=
+
+# LinuxBoot
+
+linuxboot:
+	$(MAKE) -C payloads/external/LinuxBoot \
+		HOSTCC="$(HOSTCC)" \
+		CC="$(HOSTCC)" \
+		GCC_CC_x86_32=$(GCC_CC_x86_32) \
+		GCC_CC_x86_64=$(GCC_CC_x86_64) \
+		GCC_CC_arm=$(GCC_CC_arm) \
+		GCC_CC_arm64=$(GCC_CC_arm64) \
+		OBJCOPY_x86_32=$(OBJCOPY_x86_32) \
+		OBJCOPY_x86_64=$(OBJCOPY_x86_64) \
+		OBJCOPY_arm=$(OBJCOPY_arm) \
+		OBJCOPY_arm64=$(OBJCOPY_arm64) \
+		CPUS=$(CPUS) \
+		CONFIG_LINUXBOOT_KERNEL_VERSION=$(CONFIG_LINUXBOOT_KERNEL_VERSION) \
+		CONFIG_LINUXBOOT_KERNEL_CONFIGFILE=$(CONFIG_LINUXBOOT_KERNEL_CONFIGFILE) \
+		CONFIG_LINUXBOOT_KERNEL_COMMANDLINE=$(CONFIG_LINUXBOOT_KERNEL_COMMANDLINE) \
+		CONFIG_LINUXBOOT_UROOT_VERSION=$(CONFIG_LINUXBOOT_UROOT_VERSION) \
+		CONFIG_LINUXBOOT_UROOT_COMMANDS="$(CONFIG_LINUXBOOT_UROOT_COMMANDS)" \
+		CONFIG_LINUXBOOT_ARCH=$(CONFIG_LINUXBOOT_ARCH) \
+		CONFIG_LINUXBOOT_UROOT=$(CONFIG_LINUXBOOT_UROOT) \
+		CONFIG_LINUXBOOT_UROOT_FILES=$(CONFIG_LINUXBOOT_UROOT_FILES)
+
+payloads/external/LinuxBoot/linuxboot/kernel-image: linuxboot
+payloads/external/LinuxBoot/linuxboot/initramfs.cpio.xz: linuxboot
+payloads/external/LinuxBoot/linuxboot/kernel/.config: linuxboot
+payloads/external/LinuxBoot/linuxboot/go/src/github.com/u-root/u-root/.git: linuxboot

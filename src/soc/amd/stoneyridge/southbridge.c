@@ -181,6 +181,14 @@ void sb_program_gpio(void)
 	printk(BIOS_SPEW, "End GPIO programming\n");
 }
 
+static void sb_program_gpio_ram(void *unused)
+{
+	sb_program_gpio();
+}
+
+BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY,
+			sb_program_gpio_ram, NULL);
+
 /**
  * @brief Find the size of a particular wide IO
  *

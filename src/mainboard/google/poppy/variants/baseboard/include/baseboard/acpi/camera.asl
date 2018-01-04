@@ -14,4 +14,5 @@
  */
 
 #include "ipu_mainboard.asl"
+#include "ipu_endpoints.asl"
 #include "mipi_camera.asl"

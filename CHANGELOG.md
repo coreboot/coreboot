@@ -14,7 +14,7 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 
 ## [Unreleased]
 
-## [v4.6.5] - 2017-11-29
+## [v4.6.5] - 2017-12-29
 ### Added
 - Apu features default values to `bootorder_def` file
 

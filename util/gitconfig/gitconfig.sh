@@ -15,6 +15,10 @@
 ## GNU General Public License for more details.
 ##
 
+# In the hooks, use the same `make` tool as used when running `make gitconfig`,
+# e.g. `remake gitconfig` will set `remake` to be run by the hooks.
+MAKE="${1:-make}"
+
 if ! { cdup="$(git rev-parse --show-cdup 2>/dev/null)" && [ -z "${cdup}" ]; }
 then
 	echo "Error: Not in root of a git repository"
@@ -26,7 +30,7 @@ for hook in commit-msg pre-commit ; do
 	if [ util/gitconfig/${hook} -nt "${coreboot_hooks}/${hook}" ] \
 		|| [ ! -x "${coreboot_hooks}/${hook}" ]
 	then
-		sed -e "s,%MAKE%,remake,g" util/gitconfig/$hook \
+		sed -e "s,%MAKE%,${MAKE},g" util/gitconfig/$hook \
 			> "${coreboot_hooks}/${hook}"
 		chmod +x "${coreboot_hooks}/${hook}"
 	fi
@@ -39,7 +43,7 @@ for submodule in 3rdparty/blobs libhwbase libgfxinit; do
 		if [ util/gitconfig/commit-msg -nt "${hooks}/commit-msg" ] \
 			|| [ ! -x "${hooks}/commit-msg" ]
 		then
-			sed -e "s,%MAKE%,remake,g" util/gitconfig/commit-msg \
+			sed -e "s,%MAKE%,${MAKE},g" util/gitconfig/commit-msg \
 				> "${hooks}/commit-msg"
 			chmod +x "${hooks}/commit-msg"
 		fi

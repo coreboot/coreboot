@@ -574,7 +574,7 @@ update:
 	dongle.py -c /dev/term/1 $(obj)/coreboot.rom EOF
 
 gitconfig:
-	util/gitconfig/gitconfig.sh
+	util/gitconfig/gitconfig.sh "$(MAKE)"
 
 include util/crossgcc/Makefile.inc
 

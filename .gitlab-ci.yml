@@ -153,6 +153,7 @@ build:apu4:
   <<: *build_rom_apu
   variables:
     PLATFORM: apu4
+    MANIFEST_FALLBACK_BRANCH: coreboot-4.6.x
 
 .test:apu4:
   <<: *test_rom

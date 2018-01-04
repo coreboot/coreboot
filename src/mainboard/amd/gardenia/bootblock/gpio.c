@@ -27,42 +27,27 @@
 const struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
 	/* NFC PU */
 	{GPIO_64, Function0, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+	/* PCIe presence detect */
+	{GPIO_69, Function0, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+	/* MUX for Power Express Eval */
+	{GPIO_116, Function1, FCH_GPIO_PULL_DOWN_ENABLE | INPUT },
+	/* SD power */
+	{GPIO_119, Function2, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
 };
 
 const struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
 	/* BT radio disable */
 	{GPIO_14, Function1, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
-};
-
-static const GPIO_CONTROL oem_gardenia_gpio[] = {
-	/* BT radio disable */
-	{14, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
-	/* NFC PU */
-	{64, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
 	/* NFC wake */
-	{65, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
+	{GPIO_65, Function0, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
 	/* Webcam */
-	{66, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
-	/* PCIe presence detect */
-	{69, Function0, FCH_GPIO_PULL_UP_ENABLE},
+	{GPIO_66, Function0, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
 	/* GPS sleep */
-	{70, Function0, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						| FCH_GPIO_OUTPUT_ENABLE},
-	/* MUX for Power Express Eval */
-	{116, Function1, FCH_GPIO_PULL_DOWN_ENABLE},
-	/* SD power */
-	{119, Function2, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE
-						 | FCH_GPIO_OUTPUT_ENABLE},
-	{-1}
+	{GPIO_70, Function0, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
 };
 
 void platform_FchParams_reset(FCH_RESET_DATA_BLOCK *FchParams_reset)
 {
-	FchParams_reset->EarlyOemGpioTable = (void *)oem_gardenia_gpio;
 }
 
 const struct soc_amd_stoneyridge_gpio *board_get_gpio(size_t *size)

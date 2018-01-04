@@ -21,6 +21,8 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 ### Changed
 - Updated SeaBIOS to 1.11.0.2
 - Updated sortbootorder to v4.6.5
+- Forced EHCI controller for front USB ports
+- Disabled xHCI controller in SeaBIOS
 
 ### Fixed
 - Setting correct PCI_ROM_ID for iPXE depending on platform

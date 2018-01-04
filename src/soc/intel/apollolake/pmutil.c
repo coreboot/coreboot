@@ -186,6 +186,17 @@ void soc_fill_power_state(struct chipset_power_state *ps)
 	       ps->gen_pmcon1, ps->gen_pmcon2, ps->gen_pmcon3);
 }
 
+/* Return 0, 3, or 5 to indicate the previous sleep state. */
+int soc_prev_sleep_state(const struct chipset_power_state *ps,
+	int prev_sleep_state)
+{
+	/* WAK_STS bit will not be set when waking from G3 state */
+
+	if (!(ps->pm1_sts & WAK_STS) && (ps->gen_pmcon1 & COLD_BOOT_STS))
+		prev_sleep_state = ACPI_S5;
+	return prev_sleep_state;
+}
+
 void enable_pm_timer_emulation(void)
 {
 	/* ACPI PM timer emulation */

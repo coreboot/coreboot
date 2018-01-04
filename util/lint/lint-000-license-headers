@@ -23,7 +23,6 @@ HEADER_EXCLUDED="\
 ^util/kconfig/|\
 ^util/romcc/tests|\
 ^util/romcc/results|\
-^util/gitconfig|\
 Kconfig|\
 \<COPYING\>|\
 \<LICENSE\>|\

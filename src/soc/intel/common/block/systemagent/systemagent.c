@@ -302,6 +302,7 @@ static const unsigned short systemagent_ids[] = {
 	PCI_DEVICE_ID_INTEL_KBL_ID_H,
 	PCI_DEVICE_ID_INTEL_KBL_U_R,
 	PCI_DEVICE_ID_INTEL_KBL_ID_DT,
+	PCI_DEVICE_ID_INTEL_CFL_ID_U,
 	0
 };
 

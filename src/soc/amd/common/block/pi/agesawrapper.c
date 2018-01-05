@@ -446,7 +446,7 @@ static int agesa_locate_stage_file_ramstage(const char *name,
 
 static int agesa_locate_stage_file(const char *name, struct region_device *rdev)
 {
-	if (!ENV_RAMSTAGE)
+	if (!ENV_RAMSTAGE || !IS_ENABLED(CONFIG_AGESA_SPLIT_MEMORY_FILES))
 		return agesa_locate_stage_file_early(name, rdev);
 	return agesa_locate_stage_file_ramstage(name, rdev);
 }

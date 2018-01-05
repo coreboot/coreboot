@@ -35,37 +35,10 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 
-int get_lid_switch(void)
-{
-	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
-	/* Read lid switch state from the EC. */
-		return !!(google_chromeec_get_switches() & EC_SWITCH_LID_OPEN);
-	else
-		return 1;
-}
-
 int get_developer_mode_switch(void)
 {
 	/* No physical developer mode switch. It's virtual. */
 	return 0;
-}
-
-int get_recovery_mode_switch(void)
-{
-	if (!IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
-		return 0;
-	/* Check if the EC has posted the keyboard recovery event. */
-	return !!(google_chromeec_get_events_b() &
-		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
-}
-
-int clear_recovery_mode_switch(void)
-{
-	if (!IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
-		return 0;
-	/* Clear keyboard recovery event. */
-	return google_chromeec_clear_events_b(
-		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
 }
 
 int get_write_protect_state(void)

@@ -15,6 +15,9 @@
 ## GNU General Public License for more details.
 ##
 
+set -e # -o errexit
+set -u # -o nounset
+
 %MAKE% lint-stable
 
 PATCHDIFF=$(git diff --cached)

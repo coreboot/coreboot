@@ -90,7 +90,7 @@ config DRIVER_TPM_I2C_ADDR
 
 config DRIVER_TPM_SPI_BUS
 	hex
-	default 0x2 if BOARD_GOOGLE_SCARLET
+	default 0x2 if GRU_BASEBOARD_SCARLET
 	default 0x0
 
 config CONSOLE_SERIAL_UART_ADDRESS

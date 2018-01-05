@@ -115,9 +115,7 @@ static void ich7_enable_lpc(void)
 			| KBC_LPC_EN | FDD_LPC_EN | LPT_LPC_EN | COMB_LPC_EN
 			| COMA_LPC_EN);
 	// Enable SuperIO Power Management Events
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x000c0801);
-	/* range 0x290 - 0x297 */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN2_DEC, 0x00040291);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x00040291);
 }
 
 static void rcba_config(void)

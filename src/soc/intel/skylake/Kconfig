@@ -77,6 +77,10 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_SYNC_MFENCE
 	select UDELAY_TSC
 
+config CPU_INTEL_NUM_FIT_ENTRIES
+	int
+	default 10
+
 config MAINBOARD_USES_FSP2_0
 	bool
 	default n

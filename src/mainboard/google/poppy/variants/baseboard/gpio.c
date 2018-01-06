@@ -177,7 +177,7 @@ static const struct pad_config gpio_table[] = {
 	/* D7  : ISH_I2C1_SDA ==> NC */
 	PAD_CFG_NC(GPP_D7),
 	/* D8  : ISH_I2C1_SCL ==> PEN_EJECT_ODL -- for notification */
-	PAD_CFG_GPI(GPP_D8, NONE, PLTRST),
+	PAD_CFG_GPI(GPP_D8, 20K_PU, PLTRST),
 	/* D9  : ISH_SPI_CS# ==> HP_IRQ_GPIO */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_D9, NONE, PLTRST),
 	/* D10 : ISH_SPI_CLK ==> SPKR_RST_L */
@@ -185,7 +185,7 @@ static const struct pad_config gpio_table[] = {
 	/* D11 : ISH_SPI_MISO ==> SPKR_INT_L */
 	PAD_CFG_GPI_APIC(GPP_D11, NONE, PLTRST),
 	/* D12 : ISH_SPI_MOSI ==> PEN_EJECT_ODL -- for wake event */
-	PAD_CFG_GPI_ACPI_SCI(GPP_D12, NONE, DEEP, INVERT),
+	PAD_CFG_GPI_ACPI_SCI(GPP_D12, 20K_PU, DEEP, INVERT),
 	/* D13 : ISH_UART0_RXD ==> NC */
 	PAD_CFG_NC(GPP_D13),
 	/* D14 : ISH_UART0_TXD ==> NC */

@@ -38,7 +38,7 @@ DefinitionBlock(
 	// mainboard specific devices
 	#include "acpi/mainboard.asl"
 
-	#include <cpu/intel/common/acpi/cpu.asl>
+	#include <cpu/intel/speedstep/acpi/cpu.asl>
 
 	// Thermal Zone
 	#include "acpi/thermal.asl"

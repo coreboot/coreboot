@@ -82,6 +82,7 @@ enum {
 	AND_OP			= 0x7B,
 	OR_OP			= 0x7D,
 	NOT_OP			= 0x80,
+	NOTIFY_OP		= 0x86,
 	LEQUAL_OP		= 0x93,
 	LGREATER_OP		= 0x94,
 	LLESS_OP		= 0x95,

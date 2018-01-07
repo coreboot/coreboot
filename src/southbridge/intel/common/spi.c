@@ -83,6 +83,7 @@ typedef struct ich7_spi_regs {
 	uint16_t preop;
 	uint16_t optype;
 	uint8_t opmenu[8];
+	uint32_t pbr[3];
 } __packed ich7_spi_regs;
 
 typedef struct ich9_spi_regs {
@@ -134,6 +135,8 @@ typedef struct ich_spi_controller {
 	uint8_t *status;
 	uint16_t *control;
 	uint32_t *bbar;
+	uint32_t *fpr;
+	uint8_t fpr_max;
 } ich_spi_controller;
 
 static ich_spi_controller cntlr;
@@ -319,6 +322,8 @@ void spi_init(void)
 		cntlr.control = &ich7_spi->spic;
 		cntlr.bbar = &ich7_spi->bbar;
 		cntlr.preop = &ich7_spi->preop;
+		cntlr.fpr = &ich7_spi->pbr[0];
+		cntlr.fpr_max = 3;
 	} else {
 		ich9_spi = (ich9_spi_regs *)(rcrb + 0x3800);
 		cntlr.ich9_spi = ich9_spi;
@@ -335,6 +340,8 @@ void spi_init(void)
 		cntlr.control = (uint16_t *)ich9_spi->ssfc;
 		cntlr.bbar = &ich9_spi->bbar;
 		cntlr.preop = &ich9_spi->preop;
+		cntlr.fpr = &ich9_spi->pr[0];
+		cntlr.fpr_max = 5;
 
 		if (cntlr.hsfs & HSFS_FDV) {
 			writel_ (4, &ich9_spi->fdoc);
@@ -959,10 +966,80 @@ static int xfer_vectors(const struct spi_slave *slave,
 	return spi_flash_vector_helper(slave, vectors, count, spi_ctrlr_xfer);
 }
 
+#define SPI_FPR_SHIFT		12
+#define ICH7_SPI_FPR_MASK		0xfff
+#define ICH9_SPI_FPR_MASK		0x1fff
+#define SPI_FPR_BASE_SHIFT	0
+#define ICH7_SPI_FPR_LIMIT_SHIFT	12
+#define ICH9_SPI_FPR_LIMIT_SHIFT	16
+#define ICH9_SPI_FPR_RPE		(1 << 15) /* Read Protect */
+#define SPI_FPR_WPE		(1 << 31) /* Write Protect */
+
+static u32 spi_fpr(u32 base, u32 limit)
+{
+	u32 ret;
+	u32 mask, limit_shift;
+	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)) {
+		mask = ICH7_SPI_FPR_MASK;
+		limit_shift = ICH7_SPI_FPR_LIMIT_SHIFT;
+	} else {
+		mask = ICH9_SPI_FPR_MASK;
+		limit_shift = ICH9_SPI_FPR_LIMIT_SHIFT;
+	}
+	ret = ((limit >> SPI_FPR_SHIFT) & mask) << limit_shift;
+	ret |= ((base >> SPI_FPR_SHIFT) & mask) << SPI_FPR_BASE_SHIFT;
+	return ret;
+}
+
+/*
+ * Protect range of SPI flash defined by [start, start+size-1] using Flash
+ * Protected Range (FPR) register if available.
+ * Returns 0 on success, -1 on failure of programming fpr registers.
+ */
+static int spi_flash_protect(const struct spi_flash *flash,
+			const struct region *region)
+{
+	u32 start = region_offset(region);
+	u32 end = start + region_sz(region) - 1;
+	u32 reg;
+	int fpr;
+	uint32_t *fpr_base;
+
+	fpr_base = cntlr.fpr;
+
+	/* Find first empty FPR */
+	for (fpr = 0; fpr < cntlr.fpr_max; fpr++) {
+		reg = read32(&fpr_base[fpr]);
+		if (reg == 0)
+			break;
+	}
+
+	if (fpr == cntlr.fpr_max) {
+		printk(BIOS_ERR, "ERROR: No SPI FPR free!\n");
+		return -1;
+	}
+
+	/* Set protected range base and limit */
+	reg = spi_fpr(start, end) | SPI_FPR_WPE;
+
+	/* Set the FPR register and verify it is protected */
+	write32(&fpr_base[fpr], reg);
+	reg = read32(&fpr_base[fpr]);
+	if (!(reg & SPI_FPR_WPE)) {
+		printk(BIOS_ERR, "ERROR: Unable to set SPI FPR %d\n", fpr);
+		return -1;
+	}
+
+	printk(BIOS_INFO, "%s: FPR %d is enabled for range 0x%08x-0x%08x\n",
+	       __func__, fpr, start, end);
+	return 0;
+}
+
 static const struct spi_ctrlr spi_ctrlr = {
 	.xfer_vector = xfer_vectors,
 	.max_xfer_size = member_size(ich9_spi_regs, fdata),
 	.flash_probe = spi_flash_programmer_probe,
+	.flash_protect = spi_flash_protect,
 };
 
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {

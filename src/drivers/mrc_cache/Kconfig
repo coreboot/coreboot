@@ -5,10 +5,6 @@ config CACHE_MRC_SETTINGS
 
 if CACHE_MRC_SETTINGS
 
-config MRC_SETTINGS_CACHE_BASE
-	hex
-	default 0xfffe0000
-
 config MRC_SETTINGS_CACHE_SIZE
 	hex
 	default 0x10000

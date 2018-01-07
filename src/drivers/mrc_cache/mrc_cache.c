@@ -98,26 +98,9 @@ static const struct cache_region *cache_regions[] = {
 
 static int lookup_region_by_name(const char *name, struct region *r)
 {
-	/* This assumes memory mapped boot media just under 4GiB. */
-	const uint32_t pointer_base_32bit = -CONFIG_ROM_SIZE;
-
 	if (fmap_locate_area(name, r) == 0)
 		return 0;
-
-	/* CHROMEOS builds must get their MRC cache from FMAP. */
-	if (IS_ENABLED(CONFIG_CHROMEOS)) {
-		printk(BIOS_ERR, "MRC: Chrome OS lookup failure.\n");
-		return -1;
-	}
-
-	if (!IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED))
-		return -1;
-
-	/* Base is in the form of a pointer. Make it an offset. */
-	r->offset = CONFIG_MRC_SETTINGS_CACHE_BASE - pointer_base_32bit;
-	r->size = CONFIG_MRC_SETTINGS_CACHE_SIZE;
-
-	return 0;
+	return -1;
 }
 
 static const struct cache_region *lookup_region_type(int type)

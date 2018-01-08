@@ -14,15 +14,15 @@
  * GNU General Public License for more details.
  */
 
-#define DPTF_CPU_PASSIVE	85
-#define DPTF_CPU_CRITICAL	99
+#define DPTF_CPU_PASSIVE	93
+#define DPTF_CPU_CRITICAL	100
 #define DPTF_CPU_ACTIVE_AC0	90
 #define DPTF_CPU_ACTIVE_AC1	77
 
 #define DPTF_TSR0_SENSOR_ID	0
 #define DPTF_TSR0_SENSOR_NAME	"TMP432_Internal"
-#define DPTF_TSR0_PASSIVE	66
-#define DPTF_TSR0_CRITICAL	71
+#define DPTF_TSR0_PASSIVE	70
+#define DPTF_TSR0_CRITICAL	83
 #define DPTF_TSR0_ACTIVE_AC0	95
 #define DPTF_TSR0_ACTIVE_AC1	85
 #define DPTF_TSR0_ACTIVE_AC2	60
@@ -33,18 +33,18 @@
 
 #define DPTF_TSR1_SENSOR_ID	1
 #define DPTF_TSR1_SENSOR_NAME	"TMP432_CPU_bottom"
-#define DPTF_TSR1_PASSIVE	65
-#define DPTF_TSR1_CRITICAL	70
+#define DPTF_TSR1_PASSIVE	67
+#define DPTF_TSR1_CRITICAL	73
 
 Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */
 	Package () { \_SB.PCI0.B0D4, \_SB.PCI0.B0D4, 100, 50, 0, 0, 0, 0 },
 
 	/* CPU Effect on Temp Sensor 0 */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR0, 100, 600, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR0, 100, 100, 0, 0, 0, 0 },
 
 	/* CPU Effect on Temp Sensor 1 */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR1, 100, 600, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR1, 100, 300, 0, 0, 0, 0 },
 })
 
 Name (MPPC, Package ()
@@ -52,7 +52,7 @@ Name (MPPC, Package ()
 	0x2,		/* Revision */
 	Package () {	/* Power Limit 1 */
 		0,	/* PowerLimitIndex, 0 for Power Limit 1 */
-		1600,	/* PowerLimitMinimum */
+		3000,	/* PowerLimitMinimum */
 		15000,	/* PowerLimitMaximum */
 		1000,	/* TimeWindowMinimum */
 		1000,	/* TimeWindowMaximum */

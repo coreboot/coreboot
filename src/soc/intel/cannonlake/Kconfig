@@ -24,7 +24,6 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_INTEL_FIRMWARE
 	select HAVE_MONOTONIC_TIMER
 	select HAVE_SMI_HANDLER
-	select INTEL_CAR_NEM_ENHANCED
 	select INTEL_GMA_ACPI
 	select INTEL_GMA_ADD_VBT_DATA_FILE if RUN_FSP_GOP
 	select IOAPIC
@@ -43,7 +42,6 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	select SOC_INTEL_COMMON_BLOCK
 	select SOC_INTEL_COMMON_BLOCK_ACPI
-	select SOC_INTEL_COMMON_BLOCK_CAR
 	select SOC_INTEL_COMMON_BLOCK_CPU
 	select SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
 	select SOC_INTEL_COMMON_BLOCK_CSE
@@ -174,5 +172,32 @@ config C_ENV_BOOTBLOCK_SIZE
 config STACK_SIZE
 	hex
 	default 0x2000
+
+choice
+	prompt "Cache-as-ram implementation"
+	default USE_CANNONLAKE_CAR_NEM_ENHANCED if MAINBOARD_HAS_CHROMEOS
+	default USE_CANNONLAKE_FSP_CAR
+	help
+	  This option allows you to select how cache-as-ram (CAR) is set up.
+
+config USE_CANNONLAKE_CAR_NEM_ENHANCED
+	bool "Enhanced Non-evict mode"
+	select SOC_INTEL_COMMON_BLOCK_CAR
+	select INTEL_CAR_NEM_ENHANCED
+	help
+	  A current limitation of NEM (Non-Evict mode) is that code and data
+	  sizes are derived from the requirement to not write out any modified
+	  cache line. With NEM, if there is no physical memory behind the
+	  cached area, the modified data will be lost and NEM results will be
+	  inconsistent. ENHANCED NEM guarantees that modified data is always
+	  kept in cache while clean data is replaced.
+
+config USE_CANNONLAKE_FSP_CAR
+	bool "Use FSP CAR"
+	select FSP_CAR
+	help
+	  Use FSP APIs to initialize and tear down the Cache-As-Ram.
+
+endchoice
 
 endif

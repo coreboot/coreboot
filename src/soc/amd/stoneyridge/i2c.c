@@ -16,12 +16,12 @@
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/iomap.h>
 
-const uintptr_t i2c_bus_address[] = {	I2C_BASE_ADDRESS,
-					I2C_BASE_ADDRESS + I2C_DEVICE_SIZE * 1,
-					I2C_BASE_ADDRESS + I2C_DEVICE_SIZE * 2,
-					I2C_BASE_ADDRESS + I2C_DEVICE_SIZE * 3,
-					};
-
+static const uintptr_t i2c_bus_address[] = {
+	I2C_BASE_ADDRESS + I2C_DEVICE_SIZE * 0,
+	I2C_BASE_ADDRESS + I2C_DEVICE_SIZE * 1,
+	I2C_BASE_ADDRESS + I2C_DEVICE_SIZE * 2,
+	I2C_BASE_ADDRESS + I2C_DEVICE_SIZE * 3,
+};
 
 uintptr_t dw_i2c_base_address(unsigned int bus)
 {

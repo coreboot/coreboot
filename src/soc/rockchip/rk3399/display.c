@@ -45,7 +45,7 @@ static void reset_edp(void)
 		udelay(1);
 	write32(&cru_ptr->softrst_con[17],
 		RK_CLRBITS(1 << 12 | 1 << 13));
-	printk(BIOS_WARNING, "Retrying epd initialization.\n");
+	printk(BIOS_WARNING, "Retrying EDP initialization.\n");
 }
 
 void rk_display_init(device_t dev)
@@ -53,8 +53,9 @@ void rk_display_init(device_t dev)
 	struct edid edid;
 	struct soc_rockchip_rk3399_config *conf = dev->chip_info;
 	enum vop_modes detected_mode = VOP_MODE_UNKNOWN;
-	int retry_count = 0;
 	const struct mipi_panel_data *panel_data = NULL;
+	int retry_count_init = 0;
+	int retry_count_edp_prepare = 0;
 
 	/* let's use vop0 in rk3399 */
 	uint32_t vop_id = 0;
@@ -77,14 +78,17 @@ void rk_display_init(device_t dev)
 		write32(&rk3399_grf->soc_con25, RK_SETBITS(1 << 11));
 
 retry_edp:
-		while (retry_count++ < 3) {
+		/* Reset in case code jumped here. */
+		retry_count_init = 0;
+		while (retry_count_init++ < 3) {
 			rk_edp_init();
 			if (rk_edp_get_edid(&edid) == 0) {
 				detected_mode = VOP_MODE_EDP;
 				break;
 			}
-			if (retry_count == 3) {
-				printk(BIOS_WARNING, "Warning: epd initialization failed.\n");
+			if (retry_count_init == 3) {
+				printk(BIOS_WARNING,
+				       "Warning: EDP initialization failed.\n");
 				return;
 			} else {
 				reset_edp();
@@ -159,8 +163,13 @@ retry_edp:
 	case VOP_MODE_EDP:
 		/* will enable edp in depthcharge */
 		if (rk_edp_prepare()) {
-			reset_edp();
-			goto retry_edp; /* Rerun entire init sequence */
+			if (retry_count_edp_prepare++ < 3) {
+				reset_edp();
+				/* Rerun entire init sequence */
+				goto retry_edp;
+			}
+			printk(BIOS_ERR, "EDP preparation failed.");
+			return;
 		}
 		break;
 	default:

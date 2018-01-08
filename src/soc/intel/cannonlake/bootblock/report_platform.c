@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@
 #include <cpu/x86/msr.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <intelblocks/mp_init.h>
 #include <soc/bootblock.h>
-#include <soc/cpu.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <string.h>

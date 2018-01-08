@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2017 Intel Corporation.
+ * Copyright (C) 2017-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,6 @@
 #include <arch/cpu.h>
 #include <device/device.h>
 #include <intelblocks/msr.h>
-
-/* Supported CPUIDs */
-#define CPUID_CANNONLAKE_A0	0x60660
-#define CPUID_CANNONLAKE_B0	0x60661
-#define CPUID_CANNONLAKE_C0	0x60662
-#define CPUID_CANNONLAKE_D0	0x60663
 
 /* Latency times in units of 1024ns. */
 #define C_STATE_LATENCY_CONTROL_0_LIMIT	0x4e

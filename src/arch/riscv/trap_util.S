@@ -109,6 +109,7 @@
   .text
 
     .global  trap_entry
+    .align 2	# four byte alignment, as required by mtvec
 trap_entry:
   csrw mscratch, sp
 

@@ -15,4 +15,6 @@
 
 #include "ipu_mainboard.asl"
 #include "ipu_endpoints.asl"
-#include "mipi_camera.asl"
+#include "camera_pmic.asl"
+#include "cam0.asl"
+#include "cam1.asl"

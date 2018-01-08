@@ -164,6 +164,91 @@ Scope (\_SB.PCI0.I2C2)
 			}
 		})
 
+		Field (\_SB.PCI0.I2C2.PMIC.GPOP, ByteAcc, NoLock, Preserve)
+		{
+			Connection
+			(
+				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+					IoRestrictionInputOnly, "\\_SB.PCI0.I2C2.PMIC",
+					0x00, ResourceConsumer,,)
+				{
+					1
+				}
+			),
+			GPO1, 1,
+			Connection
+			(
+				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+					IoRestrictionInputOnly, "\\_SB.PCI0.I2C2.PMIC",
+					0x00, ResourceConsumer,,)
+				{
+					2
+				}
+			),
+			GPO2, 1,
+			Connection
+			(
+				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+					IoRestrictionOutputOnly,
+					"\\_SB.PCI0.I2C2.PMIC", 0x00,
+					ResourceConsumer,,)
+				{
+					9
+				}
+			),
+			GRST, 1,
+			Connection
+			(
+				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+					IoRestrictionOutputOnly,
+					"\\_SB.PCI0.I2C2.PMIC", 0x00,
+					ResourceConsumer,,)
+				{
+					4
+				}
+			),
+			GPO4, 1,
+			Connection
+			(
+				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+					IoRestrictionOutputOnly,
+					"\\_SB.PCI0.I2C2.PMIC", 0x00,
+					ResourceConsumer,,)
+				{
+					5
+				}
+			),
+			GPO5, 1,
+		}
+
+		/* Set or clear GRST GPIO */
+		Method (CRST, 1, Serialized)
+		{
+			GRST = Arg0
+		}
+
+		/* Read GPO1 GPIO, to configure as input */
+		Method (CGP1, 0, Serialized)
+		{
+			Return (GPO1)
+		}
+
+		/* Read GPO2 GPIO, to configure as input */
+		Method (CGP2, 0, Serialized)
+		{
+			Return (GPO2)
+		}
+		/* Set or clear GPO4 GPIO */
+		Method (CGP4, 1, Serialized)
+		{
+			GPO4 = Arg0
+		}
+
+		/* Set or clear GPO5 GPIO */
+		Method (CGP5, 1, Serialized)
+		{
+			GPO5 = Arg0
+		}
 		/* PMIC operation regions */
 		/* 0xB0: TI_PMIC_POWER_OPREGION_ID
 		 * VSIO: Sensor IO LDO output
@@ -370,11 +455,12 @@ Scope (\_SB.PCI0.I2C2)
 		PowerResource (OVTH, 0, 0) {
 			Name (STA, 0)
 			Method (_ON, 0, Serialized) {
+				/* TODO: Read Voltage and Sleep values from Sensor Obj */
 				If (LEqual (AVBL, 1)) {
 					If (LEqual (STA, 0)) {
 						If (LEqual (C0GP, 0)) {
-							\_SB.PCI0.I2C2.CAM0.CGP1()
-							\_SB.PCI0.I2C2.CAM0.CGP2()
+							\_SB.PCI0.I2C2.PMIC.CGP1()
+							\_SB.PCI0.I2C2.PMIC.CGP2()
 							C0GP = 1
 						}
 
@@ -398,7 +484,7 @@ Scope (\_SB.PCI0.I2C2)
 							DCVA = 12
 						}
 						Sleep(3)
-						\_SB.PCI0.I2C2.CAM0.CRST(1)
+						\_SB.PCI0.I2C2.PMIC.CRST(1)
 						Sleep(5)
 
 						STA = 1
@@ -413,7 +499,7 @@ Scope (\_SB.PCI0.I2C2)
 						CLE0 = 0
 						\_SB.PCI0.I2C2.PMIC.CLKD()
 						Sleep(2)
-						\_SB.PCI0.I2C2.CAM0.CRST(0)
+						\_SB.PCI0.I2C2.PMIC.CRST(0)
 						Sleep(3)
 						VDCT = 0
 						Sleep(3)
@@ -433,6 +519,7 @@ Scope (\_SB.PCI0.I2C2)
 		PowerResource (OVFI, 0, 0) {
 			Name (STA, 0)
 			Method (_ON, 0, Serialized) {
+				/* TODO: Read Voltage and Sleep values from Sensor Obj */
 				If (LEqual (AVBL, 1)) {
 					If (LEqual (STA, 0)) {
 						/* Enable VSIO regulator +
@@ -458,10 +545,10 @@ Scope (\_SB.PCI0.I2C2)
 						}
 						Sleep(3)
 
-						\_SB.PCI0.I2C4.CAM1.CGP4(1)
+						\_SB.PCI0.I2C2.PMIC.CGP4(1)
 						Sleep(3)
 
-						\_SB.PCI0.I2C4.CAM1.CGP5(1)
+						\_SB.PCI0.I2C2.PMIC.CGP5(1)
 						Sleep(3)
 						STA = 1
 					}
@@ -475,11 +562,11 @@ Scope (\_SB.PCI0.I2C2)
 						CLE1 = 0
 						\_SB.PCI0.I2C2.PMIC.CLKD()
 						Sleep(2)
-						\_SB.PCI0.I2C4.CAM1.CGP5(0)
+						\_SB.PCI0.I2C2.PMIC.CGP5(0)
 						Sleep(3)
 						VAX1 = 0
 						Sleep(1)
-						\_SB.PCI0.I2C4.CAM1.CGP4(0)
+						\_SB.PCI0.I2C2.PMIC.CGP4(0)
 						Sleep(1)
 						VAX2 = 0
 						Sleep(1)
@@ -563,333 +650,4 @@ Scope (\_SB.PCI0.I2C2)
 		}
 	}
 
-	Device (CAM0)
-	{
-		Name (_HID, "OVTID858")  /* _HID: Hardware ID */
-		Name (_UID, Zero)  /* _UID: Unique ID */
-		Name (_DDN, "OV 13858 Camera") /* _DDN: DOS Device Name */
-		Name (CAMD, 0x02)
-
-		Method (_STA, 0, NotSerialized)  /* _STA: Status */
-		{
-			Return (0x0F)
-		}
-
-		Name (_DEP, Package() { \_SB.PCI0.I2C2.PMIC })
-		Name (_CRS, ResourceTemplate ()
-		{
-			I2cSerialBus (0x0010, ControllerInitiated, 0x00061A80,
-				AddressingMode7Bit, "\\_SB.PCI0.I2C2",
-				0x00, ResourceConsumer, ,
-				)
-		})
-
-		Field (\_SB.PCI0.I2C2.PMIC.GPOP, ByteAcc, NoLock, Preserve)
-		{
-			Connection
-			(
-				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
-					IoRestrictionInputOnly, "\\_SB.PCI0.I2C2.PMIC",
-					0x00, ResourceConsumer,,)
-				{
-					1
-				}
-			),
-			GPO1, 1,
-			Connection
-			(
-				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
-					IoRestrictionInputOnly, "\\_SB.PCI0.I2C2.PMIC",
-					0x00, ResourceConsumer,,)
-				{
-					2
-				}
-			),
-			GPO2, 1,
-			Connection
-			(
-				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
-					IoRestrictionOutputOnly,
-					"\\_SB.PCI0.I2C2.PMIC", 0x00,
-					ResourceConsumer,,)
-				{
-					9
-				}
-			),
-			GRST, 1,
-		}
-
-		/* Set or clear GRST GPIO */
-		Method (CRST, 1, Serialized)
-		{
-			GRST = Arg0
-		}
-
-		/* Read GPO1 GPIO, to configure as input */
-		Method (CGP1, 0, Serialized)
-		{
-			Return (GPO1)
-		}
-
-		/* Read GPO2 GPIO, to configure as input */
-		Method (CGP2, 0, Serialized)
-		{
-			Return (GPO2)
-		}
-
-		Name (_PR0, Package () { ^^I2C2.PMIC.OVTH })
-		Name (_PR3, Package () { ^^I2C2.PMIC.OVTH })
-
-		/* Port0 of CAM0 is connected to port0 of CIO2 device */
-		Name (_DSD, Package () {
-			ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
-			Package () {
-				Package () { "port0", "PRT0" },
-			},
-			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-			Package () {
-				Package () { "clock-frequency", 19200000 },
-				Package () { "lens-focus",
-					Package () { \_SB.PCI0.I2C2.VCM0 }
-				}
-			}
-		})
-
-		Name (PRT0, Package() {
-			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-			Package () {
-				Package () { "port", 0 },
-			},
-			ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
-			Package () {
-				Package () { "endpoint0", "EP00" },
-			}
-		})
-
-		Name (EP00, Package() {
-			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-			Package () {
-				Package () { "endpoint", 0 },
-				Package () { "clock-lanes", 0 },
-				Package () { "data-lanes",
-					Package () { 1, 2, 3, 4 }
-				},
-				Package () { "link-frequencies",
-					Package() { 540000000, 270000000 }
-				},
-				Package () { "remote-endpoint",
-					Package() { \_SB.PCI0.CIO2, 0, 0 }
-				},
-			}
-		})
-
-		Method (SSDB, 0, Serialized)
-		{
-			Return (Buffer (0x5E)
-			{
-				/* 0000 */   0x00, 0x50, 0x00, 0x00, 0x00, 0x00,0x00, 0x00,
-				/* 0008 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0010 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0018 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00,
-				/* 0020 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0028 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0030 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0038 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0040 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0048 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x03,
-				/* 0050 */   0x09, 0x00, 0x02, 0x01, 0x00, 0x01, 0x00, 0x36,
-				/* 0058 */   0x6E, 0x01, 0x00, 0x00, 0x00, 0x00
-			})
-		}
-	}
-
-	Device (VCM0)
-	{
-		Name (_HID, "PRP0001")  /* _HID: Hardware ID */
-		Name (_UID, Zero)  /* _UID: Unique ID */
-		Name (_DDN, "Dongwoon AF DAC") /* _DDN: DOS Device Name */
-		Name (CAMD, 0x03)
-
-		Method (_STA, 0, NotSerialized)  /* _STA: Status */
-		{
-			Return (0x0F)
-		}
-
-		Name (_DEP, Package() { \_SB.PCI0.I2C2.PMIC })
-		Name (_CRS, ResourceTemplate ()
-		{
-			I2cSerialBus (0x000C, ControllerInitiated, 0x00061A80,
-				AddressingMode7Bit, "\\_SB.PCI0.I2C2",
-				0x00, ResourceConsumer, ,
-				)
-		})
-
-		Name (_DSD, Package () {
-			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-			Package () {
-				Package () { "compatible", "dongwoon,dw9714" },
-			}
-		})
-
-		Name (_PR0, Package () { ^PMIC.VCMP })
-		Name (_PR3, Package () { ^PMIC.VCMP })
-	}
-
-	Device (NVM0)
-	{
-		Name (_HID, "INT3499") /* _HID: Hardware ID */
-		Name (_UID, Zero)  /* _UID: Unique ID */
-		Name (_DDN, "GT24C16S/CAT24C16")  /* _DDN: DOS Device Name */
-
-		Method (_STA, 0, NotSerialized)  /* _STA: Status */
-		{
-			Return (0x0F)
-		}
-
-		Name (_DEP, Package() { \_SB.PCI0.I2C2.PMIC })
-		Name (_CRS, ResourceTemplate ()
-		{
-			I2cSerialBus (0x0050, ControllerInitiated, 0x00061A80,
-				AddressingMode7Bit, "\\_SB.PCI0.I2C2",
-				0x00, ResourceConsumer, ,)
-		})
-
-		Name (_PR0, Package () { ^PMIC.NVMP })
-		Name (_PR3, Package () { ^PMIC.NVMP })
-
-		Name (_DSD, Package ()
-		{
-			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-			Package () {
-				Package () { "size", 2048 },
-				Package () { "pagesize", 1 },
-				Package () { "read-only", 1 },
-			}
-		})
-	}
-}
-
-Scope (\_SB.PCI0.I2C4)
-{
-	Device (CAM1)
-	{
-		Name (_HID, "INT3479") /* _HID: Hardware ID */
-		Name (_UID, Zero)  /* _UID: Unique ID */
-		Name (_DDN, "OV 5670 Camera")  /* _DDN: DOS Device Name */
-		Name (CAMD, 0x02)
-
-		Method (_STA, 0, NotSerialized)  /* _STA: Status */
-		{
-			Return (0x0F)
-		}
-
-		Name (_DEP, Package() { \_SB.PCI0.I2C2.PMIC })
-		Name (_CRS, ResourceTemplate ()
-		{
-			I2cSerialBus (0x0036, ControllerInitiated, 0x00061A80,
-			AddressingMode7Bit, "\\_SB.PCI0.I2C4",
-			0x00, ResourceConsumer, ,
-			)
-		})
-
-		Field (\_SB.PCI0.I2C2.PMIC.GPOP, ByteAcc, NoLock, Preserve)
-		{
-			Connection
-			(
-				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
-					IoRestrictionOutputOnly,
-					"\\_SB.PCI0.I2C2.PMIC", 0x00,
-					ResourceConsumer,,)
-				{
-					4
-				}
-			),
-			GPO4, 1,
-			Connection
-			(
-				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
-					IoRestrictionOutputOnly,
-					"\\_SB.PCI0.I2C2.PMIC", 0x00,
-					ResourceConsumer,,)
-				{
-					5
-				}
-			),
-			GPO5, 1,
-		}
-
-		/* Set or clear GPO4 GPIO */
-		Method (CGP4, 1, Serialized)
-		{
-			GPO4 = Arg0
-		}
-
-		/* Set or clear GPO5 GPIO */
-		Method (CGP5, 1, Serialized)
-		{
-			GPO5 = Arg0
-		}
-
-		Name (_PR0, Package () { ^^I2C2.PMIC.OVFI })
-		Name (_PR3, Package () { ^^I2C2.PMIC.OVFI })
-
-		/* Port0 of CAM1 is connected to port1 of CIO2 device */
-		Name (_DSD, Package () {
-			ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
-			Package () {
-				Package () { "port0", "PRT0" },
-			},
-			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-			Package () {
-				Package () { "clock-frequency", 19200000 },
-			}
-		})
-
-		Name (PRT0, Package() {
-			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-			Package () {
-				Package () { "port", 0 },
-			},
-			ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
-			Package () {
-				Package () { "endpoint0", "EP00" },
-			}
-		})
-
-		Name (EP00, Package() {
-			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-			Package () {
-				Package () { "endpoint", 0 },
-				Package () { "clock-lanes", 0 },
-				Package () { "data-lanes",
-					Package () { 1, 2 }
-				},
-				Package () { "link-frequencies",
-					Package() { 422400000 }
-				},
-				Package () { "remote-endpoint",
-					Package() { \_SB.PCI0.CIO2, 1, 0 }
-				},
-			}
-		})
-
-		Method (SSDB, 0, Serialized)
-		{
-			Return (Buffer (0x5E)
-			{
-				/* 0000 */   0x00, 0x50, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0008 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0010 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0018 */   0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00,
-				/* 0020 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0028 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0030 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0038 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0040 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/* 0048 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x03,
-				/* 0050 */   0x09, 0x00, 0x02, 0x01, 0x00, 0x01, 0x00, 0x36,
-				/* 0058 */   0x6E, 0x01, 0x00, 0x00, 0x00, 0x00
-			})
-		}
-	}
 }

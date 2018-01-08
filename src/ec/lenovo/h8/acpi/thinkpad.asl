@@ -317,4 +317,8 @@ Device (HKEY)
 			Store (WWAN, \_SB.PCI0.LPCB.EC.WWEB)
 		}
 	}
+
+	#if IS_ENABLED(CONFIG_H8_HAS_BAT_TRESHOLDS_IMPL)
+	#include "thinkpad_bat_thresholds.asl"
+	#endif
 }

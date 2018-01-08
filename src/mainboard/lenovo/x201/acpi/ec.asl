@@ -19,3 +19,6 @@
 Scope(\_SB.PCI0.LPCB.EC)
 {
 }
+
+#define H8_BAT_THRESHOLDS_BIT7
+#include <ec/lenovo/h8/acpi/thinkpad_bat_thresholds_24.asl>

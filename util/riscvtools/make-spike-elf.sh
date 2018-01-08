@@ -18,7 +18,7 @@ if [ $# -ne 2 ]; then
 fi
 
 FLAT_FILE="$1"
-OBJECT_FILE=$(mktemp /tmp/coreboot-spike.XXXXXX.o)
+OBJECT_FILE=$(mktemp /tmp/coreboot-spike.XXXXXX)
 ELF_FILE="$2"
 TOOL_PATH="$(dirname "$0")"
 XGCC_BIN="$TOOL_PATH/../crossgcc/xgcc/bin"

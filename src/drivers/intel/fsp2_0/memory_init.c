@@ -190,8 +190,7 @@ static int mrc_cache_verify_tpm_hash(const uint8_t *data, size_t size)
 	return 1;
 }
 
-static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, bool s3wake,
-				uint32_t fsp_version)
+static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t fsp_version)
 {
 	struct region_device rdev;
 	void *data;
@@ -228,11 +227,9 @@ static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, bool s3wake,
 
 	/* MRC cache found */
 	arch_upd->NvsBufferPtr = data;
-	arch_upd->BootMode = s3wake ?
-		FSP_BOOT_ON_S3_RESUME :
-		FSP_BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
-	printk(BIOS_SPEW, "MRC cache found, size %zx bootmode:%d\n",
-				region_device_sz(&rdev), arch_upd->BootMode);
+
+	printk(BIOS_SPEW, "MRC cache found, size %zx\n",
+			region_device_sz(&rdev));
 }
 
 static enum cb_err check_region_overlap(const struct memranges *ranges,
@@ -275,22 +272,28 @@ static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
 
 	arch_upd->StackBase = (void *)stack_begin;
 
-	arch_upd->BootMode = FSP_BOOT_WITH_FULL_CONFIGURATION;
+	fsp_fill_mrc_cache(arch_upd, fsp_version);
 
-	fsp_fill_mrc_cache(arch_upd, s3wake, fsp_version);
+	/* Configure bootmode */
+	if (s3wake) {
+		/*
+		 * For S3 resume case, if valid mrc cache data is not found or
+		 * RECOVERY_MRC_CACHE hash verification fails, the S3 data
+		 * pointer would be null and S3 resume fails with fsp-m
+		 * returning error. Invoking a reset here saves time.
+		 */
+		if (!arch_upd->NvsBufferPtr)
+			hard_reset();
+		arch_upd->BootMode = FSP_BOOT_ON_S3_RESUME;
+	} else {
+		if (arch_upd->NvsBufferPtr)
+			arch_upd->BootMode =
+				FSP_BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
+		else
+			arch_upd->BootMode = FSP_BOOT_WITH_FULL_CONFIGURATION;
+	}
 
-	/*
-	 * For S3 resume case, if valid mrc cache data is not found
-	 * or RECOVERY_MRC_CACHE hash verification fails, the S3 data
-	 * pointer would be null and Bootmode is set to
-	 * BOOT_WITH_FULL_CONFIGURATION. This gets memory to be retrained
-	 * in S3 flow. Data context including that of imdr root pointer would
-	 * be lost, invoking a hard reset in romstage post memory init.
-	 * Issuing hard reset here, saves fsp memory initialization and
-	 * training overhead.
-	 */
-	if (s3wake && !arch_upd->NvsBufferPtr)
-		hard_reset();
+	printk(BIOS_SPEW, "bootmode is set to :%d\n", arch_upd->BootMode);
 
 	return CB_SUCCESS;
 }

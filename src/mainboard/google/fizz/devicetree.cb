@@ -57,7 +57,7 @@ chip soc/intel/skylake
 	register "ProbelessTrace" = "0"
 	register "EnableLan" = "1"
 	register "EnableSata" = "1"
-	register "SataSalpSupport" = "1"
+	register "SataSalpSupport" = "0"
 	register "SataMode" = "0"
 	register "SataPortsEnable[0]" = "1"
 	register "SataPortsEnable[1]" = "1"

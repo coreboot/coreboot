@@ -31,6 +31,7 @@
 #define FIZZ_SKU_ID_I7_U42 0x4
 #define FIZZ_PL2_I7_U42    44
 #define FIZZ_PL2_OTHERS    29
+#define FIZZ_PSYSPL2_ALL   90
 /*
  * For type-C chargers, set PL2 to 90% of max power to account for
  * cable loss and FET Rdson loss in the path from the source.
@@ -96,30 +97,33 @@ static uint8_t board_sku_id(void)
 }
 
 /*
- * mainboard_get_pl2
+ * mainboard_set_power_limits
  *
- * @return value Pl2 should be set to
- *
- * Check if charger is USB C.  If so, set to 90% of the max value.
- * Otherwise, set PL2 based on sku id.
+ * Set Pl2 and SysPl2 values based on detected charger.
  */
-static u32 mainboard_get_pl2(void)
+static void mainboard_set_power_limits(u32 *pl2_val, u32 *psyspl2_val)
 {
 	enum usb_chg_type type;
 	u32 watts;
+	u32 pl2, psyspl2;
 
 	int rv = google_chromeec_get_usb_pd_power_info(&type, &watts);
 
 	/* If we can't get charger info or not PD charger, assume barrel jack */
 	if (rv != 0 || type != USB_CHG_TYPE_PD) {
 		/* using the barrel jack, get PL2 based on sku id */
-		watts = FIZZ_PL2_OTHERS;
+		pl2 = FIZZ_PL2_OTHERS;
 		if (board_sku_id() == FIZZ_SKU_ID_I7_U42)
-			watts = FIZZ_PL2_I7_U42;
-	} else
-		watts = GET_TYPEC_PL2(watts);
+			pl2 = FIZZ_PL2_I7_U42;
+		/* PsysPl2 same for all SKUs */
+		psyspl2 = FIZZ_PSYSPL2_ALL;
+	} else {
+		pl2 = GET_TYPEC_PL2(watts);
+		psyspl2 = watts;
+	}
 
-	return watts;
+	*pl2_val = pl2;
+	*psyspl2_val = psyspl2;
 }
 
 static uint8_t board_oem_id(void)
@@ -210,7 +214,7 @@ static void mainboard_enable(device_t dev)
 	device_t root = SA_DEV_ROOT;
 	config_t *conf = root->chip_info;
 
-	conf->tdp_pl2_override = mainboard_get_pl2();
+	mainboard_set_power_limits(&conf->tdp_pl2_override, &conf->tdp_psyspl2);
 
 	set_bj_adapter_limit();
 

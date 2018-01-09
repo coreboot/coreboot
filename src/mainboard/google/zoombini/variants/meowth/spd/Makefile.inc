@@ -14,4 +14,24 @@
 ## GNU General Public License for more details.
 ##
 
+SPD_BIN = $(obj)/spd.bin
+
 SPD_SOURCES = Samsung_K4F8E304HB_1GB		# 0b000
+
+ifeq ($(SPD_SOURCES),)
+        SPD_DEPS := $(error SPD_SOURCES is not set. Variant must provide this)
+else
+        SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/variants/meowth/spd/$(f).spd.hex)
+endif
+
+# Include spd ROM data
+$(SPD_BIN): $(SPD_DEPS)
+	for f in $+; \
+		do for c in $$(cat $$f | grep -v ^#); \
+			do printf $$(printf '\%o' 0x$$c); \
+		done; \
+	done > $@
+
+cbfs-files-y += spd.bin
+spd.bin-file := $(SPD_BIN)
+spd.bin-type := spd

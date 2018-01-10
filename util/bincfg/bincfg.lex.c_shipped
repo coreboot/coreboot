@@ -1,5 +1,5 @@
 
-#line 3 "/coreboot/util/blobtool/blobtool.lex.c_shipped"
+#line 3 "/coreboot/util/bincfg/bincfg.lex.c_shipped"
 
 #define  YY_INT_ALIGNED short int
 
@@ -485,7 +485,7 @@ int yy_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 /*
- * blobtool - Compiler/Decompiler for data blobs with specs
+ * bincfg - Compiler/Decompiler for data blobs with specs
  * Copyright (C) 2017 Damien Zammit <damien@zamaudio.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -501,7 +501,7 @@ char *yytext;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "blobtool.tab.h"
+#include "bincfg.tab.h"
 
 extern struct blob binary;
 

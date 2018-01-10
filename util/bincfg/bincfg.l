@@ -1,5 +1,5 @@
 /*
- * blobtool - Compiler/Decompiler for data blobs with specs
+ * bincfg - Compiler/Decompiler for data blobs with specs
  * Copyright (C) 2017 Damien Zammit <damien@zamaudio.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "blobtool.tab.h"
+#include "bincfg.tab.h"
 
 extern struct blob binary;
 

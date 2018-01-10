@@ -84,7 +84,7 @@ util/*/.test
 util/amdfwtool/amdfwtool
 util/archive/archive
 util/bimgtool/bimgtool
-util/blobtool/blobtool
+util/bincfg/bincfg
 util/board_status/board-status
 util/cbfstool/cbfs-compression-tool
 util/cbfstool/cbfstool

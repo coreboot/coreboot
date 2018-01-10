@@ -88,7 +88,7 @@ subdirs-y += src/superio
 subdirs-y += $(wildcard src/drivers/*) $(wildcard src/drivers/*/*)
 subdirs-y += src/cpu src/vendorcode
 subdirs-y += util/cbfstool util/sconfig util/nvramtool util/broadcom
-subdirs-y += util/futility util/marvell util/blobtool
+subdirs-y += util/futility util/marvell util/bincfg
 subdirs-y += $(wildcard src/arch/*)
 subdirs-y += src/mainboard/$(MAINBOARDDIR)
 subdirs-y += src/security
@@ -497,7 +497,7 @@ $(ROMCC_BIN): $(top)/util/romcc/romcc.c
 	@# https://www.coreboot.org/pipermail/coreboot/2010-February/055825.html
 	$(HOSTCC) -g $(STACK) -Wall -o $@ $<
 
-BLOBTOOL:=$(objutil)/blobtool/blobtool
+BINCFG:=$(objutil)/bincfg/bincfg
 
 IFDTOOL:=$(objutil)/ifdtool/ifdtool
 $(IFDTOOL):
@@ -578,7 +578,7 @@ gitconfig:
 include util/crossgcc/Makefile.inc
 
 .PHONY: tools
-tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY) $(BLOBTOOL)
+tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY) $(BINCFG)
 
 ###########################################################################
 # Common recipes for all stages

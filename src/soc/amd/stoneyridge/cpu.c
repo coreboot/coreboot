@@ -24,6 +24,7 @@
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
 #include <soc/smi.h>
+#include <soc/iomap.h>
 #include <console/console.h>
 
 /*
@@ -47,6 +48,10 @@ static struct smm_relocation_attrs relo_attrs;
 static void pre_mp_init(void)
 {
 	x86_setup_mtrrs_with_detect();
+
+	/* The flash is now no longer cacheable. Reset to WP for performance. */
+	mtrr_use_temp_range(FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
+
 	x86_mtrr_check();
 }
 

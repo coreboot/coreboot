@@ -206,7 +206,12 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_144, NONE, DEEP, NF5, HIZCRx0, DISPUPD),/* PANEL1_VDDN */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_145, NONE, DEEP, NF5, HIZCRx0, DISPUPD),/* PANEL1_BKLTEN */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_146, NONE, DEEP, NF5, HIZCRx0, DISPUPD),/* PANEL1_BKLTCTL */
-	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_154, 1, DEEP, UP_20K, HIZCRx1, DISPUPD),/* LPC_CLKRUNB */
+
+	/*
+	 * GPIO_154 - LPC_CLKRUN# has a native function for LPC but not for
+	 * eSPI. Nonetheless if we use eSPI, it should be configured as a GPIO
+	 * and kept unconnected to allow S0ix entry.
+	 */
 
 	/* AUDIO COMMUNITY GPIOS*/
 	PAD_CFG_GPIO_HI_Z(GPIO_156, NONE, DEEP, HIZCRx0, DISPUPD),/* AVS_I2S0_MCLK -- unused */

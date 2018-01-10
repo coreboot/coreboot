@@ -73,6 +73,11 @@ chip soc/intel/cannonlake
 	# Enable cpufreq
 	register "speed_shift_enable" = "1"
 
+	# Enable Root port 8 (PCIe port 9) for NVMe
+	register "PcieRpEnable[8]" = "1"
+	register "PcieClkSrcUsage[3]" = "8"
+	register "PcieClkSrcClkReq[3]" = "3"
+
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
@@ -129,7 +134,7 @@ chip soc/intel/cannonlake
 		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 off end # PCI Express Port 9
+		device pci 1d.0 on end # PCI Express Port 9
 		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12

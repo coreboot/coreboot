@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Intel Corp.
+ * Copyright (C) 2017-2018 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ void lpc_configure_pads(void)
 	gpio_configure_pads(lpc_gpios, ARRAY_SIZE(lpc_gpios));
 }
 
-void lpc_init(struct device *dev)
+void lpc_soc_init(struct device *dev)
 {
 	const struct soc_intel_apollolake_config *cfg;
 

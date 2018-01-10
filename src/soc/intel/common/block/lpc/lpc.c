@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Intel Corp.
+ * Copyright (C) 2017-2018 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,32 +21,52 @@
 #include <intelblocks/lpc_lib.h>
 #include <soc/pm.h>
 
+/* SoC overrides */
+
 /* Common weak definition, needs to be implemented in each soc LPC driver. */
-__attribute__((weak)) void lpc_init(struct device *dev) { /* no-op */ }
-
-static void soc_lpc_add_io_resources(device_t dev)
+__attribute__((weak)) void lpc_soc_init(struct device *dev)
 {
-	struct resource *res;
-
-	/* Add the default claimed legacy IO range for the LPC device. */
-	res = new_resource(dev, 0);
-	res->base = 0;
-	res->size = 0x1000;
-	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	/* no-op */
 }
 
-static void soc_lpc_read_resources(device_t dev)
+/* Fill up LPC IO resource structure inside SoC directory */
+__attribute__((weak)) void pch_lpc_soc_fill_io_resources(struct device *dev)
+{
+	/* no-op */
+}
+
+void pch_lpc_add_new_resource(struct device *dev, uint8_t offset,
+	uintptr_t base, size_t size, unsigned long flags)
+{
+	struct resource *res;
+	res = new_resource(dev, offset);
+	res->base = base;
+	res->size = size;
+	res->flags = flags;
+}
+
+static void pch_lpc_add_io_resources(device_t dev)
+{
+	/* Add the default claimed legacy IO range for the LPC device. */
+	pch_lpc_add_new_resource(dev, 0, 0, 0x1000, IORESOURCE_IO |
+			IORESOURCE_ASSIGNED | IORESOURCE_FIXED);
+
+	/* SoC IO resource overrides */
+	pch_lpc_soc_fill_io_resources(dev);
+}
+
+static void pch_lpc_read_resources(device_t dev)
 {
 	/* Get the PCI resources of this device. */
 	pci_dev_read_resources(dev);
 
 	/* Add IO resources to LPC. */
-	soc_lpc_add_io_resources(dev);
+	pch_lpc_add_io_resources(dev);
 }
 
-static void set_child_resources(struct device *dev);
+static void pch_lpc_set_child_resources(struct device *dev);
 
-static void loop_resources(struct device *dev)
+static void pch_lpc_loop_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -62,39 +82,39 @@ static void loop_resources(struct device *dev)
 			lpc_open_mmio_window(res->base, res->size);
 		}
 	}
-	set_child_resources(dev);
+	pch_lpc_set_child_resources(dev);
 }
 
 /*
  * Loop through all the child devices' resources, and open up windows to the
  * LPC bus, as appropriate.
  */
-static void set_child_resources(struct device *dev)
+static void pch_lpc_set_child_resources(struct device *dev)
 {
 	struct bus *link;
 	struct device *child;
 
 	for (link = dev->link_list; link; link = link->next) {
 		for (child = link->children; child; child = child->sibling)
-			loop_resources(child);
+			pch_lpc_loop_resources(child);
 	}
 }
 
-static void set_resources(device_t dev)
+static void pch_lpc_set_resources(device_t dev)
 {
 	pci_dev_set_resources(dev);
 
 	/* Now open up windows to devices which have declared resources. */
-	set_child_resources(dev);
+	pch_lpc_set_child_resources(dev);
 }
 
 static struct device_operations device_ops = {
-	.read_resources			= soc_lpc_read_resources,
-	.set_resources			= set_resources,
+	.read_resources			= pch_lpc_read_resources,
+	.set_resources			= pch_lpc_set_resources,
 	.enable_resources		= pci_dev_enable_resources,
 	.write_acpi_tables		= southbridge_write_acpi_tables,
 	.acpi_inject_dsdt_generator	= southbridge_inject_dsdt,
-	.init				= lpc_init,
+	.init				= lpc_soc_init,
 	.scan_bus			= scan_lpc_bus,
 	.ops_pci			= &pci_dev_ops_pci,
 };
@@ -122,7 +142,7 @@ static const unsigned short pci_device_ids[] = {
 	0
 };
 
-static const struct pci_driver soc_lpc __pci_driver = {
+static const struct pci_driver pch_lpc __pci_driver = {
 	.ops = &device_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.devices = pci_device_ids,

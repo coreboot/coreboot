@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Intel Corp.
+ * Copyright (C) 2017-2018 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,9 @@ void lpc_open_mmio_window(uintptr_t base, size_t size);
 bool lpc_fits_fixed_mmio_window(uintptr_t base, size_t size);
 /* Init SoC Spcific LPC features. Common definition will be weak and
 each soc will need to define the init. */
-void lpc_init(struct device *dev);
+void lpc_soc_init(struct device *dev);
+/* Fill up LPC IO resource structure inside SoC directory */
+void pch_lpc_soc_fill_io_resources(struct device *dev);
 /* Init LPC GPIO pads */
 void lpc_configure_pads(void);
 /* Get SoC speicific MMIO ranges */
@@ -102,5 +104,8 @@ void soc_get_gen_io_dec_range(const struct device *dev,
 			uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES]);
 /* Mirror generic IO decoder range register settings into DMI PCR. */
 void soc_setup_dmi_pcr_io_dec(uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES]);
+/* Add resource into LPC PCI device space */
+void pch_lpc_add_new_resource(struct device *dev, uint8_t offset,
+	uintptr_t base, size_t size, unsigned long flags);
 
 #endif /* _SOC_COMMON_BLOCK_LPC_LIB_H_ */

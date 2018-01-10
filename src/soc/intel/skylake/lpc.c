@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,7 +115,7 @@ static void clock_gate_8254(struct device *dev)
 	itss_clock_gate_8254();
 }
 
-void lpc_init(struct device *dev)
+void lpc_soc_init(struct device *dev)
 {
 	/* Legacy initialization */
 	isa_dma_init();

@@ -112,7 +112,7 @@ static const GPIO_CONTROL agesa_board_gpios[] = {
 	{ GPIO_42, Function0, FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_67 - PEN_RESET */
-	{ GPIO_67, Function0, FCH_GPIO_OUTPUT_VALUE },
+	{ GPIO_67, Function0, FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_70 - WLAN_PE_RST_L */
 	{ GPIO_70, Function0, FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE },
@@ -127,10 +127,10 @@ static const GPIO_CONTROL agesa_board_gpios[] = {
 	{ GPIO_76, Function0, FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_84 - HUB_RST (Active High) */
-	{ GPIO_84, Function1, FCH_GPIO_OUTPUT_VALUE },
+	{ GPIO_84, Function1, FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_85 - TOUCHSCREEN_RST (Active High) */
-	{ GPIO_85, Function1, FCH_GPIO_OUTPUT_VALUE },
+	{ GPIO_85, Function1, FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_86 - Unused (TP109) */
 	{ GPIO_86, Function1, FCH_GPIO_PULL_UP_ENABLE },
@@ -208,7 +208,7 @@ static const GPIO_CONTROL agesa_board_gpios[] = {
 	{ GPIO_132, Function2,  },
 
 	/* GPIO_133 - APU_EDP_BKLTEN_L (backlight - Active LOW) */
-	{ GPIO_133, Function1, FCH_GPIO_OUTPUT_VALUE },
+	{ GPIO_133, Function1, FCH_GPIO_OUTPUT_ENABLE },
 
 	/* GPIO_135 - Unused (TP128) */
 	{ GPIO_135, Function1, FCH_GPIO_PULL_UP_ENABLE },

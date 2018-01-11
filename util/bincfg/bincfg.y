@@ -20,7 +20,7 @@
 #include <string.h>
 //#define YYDEBUG 1
 int yylex (void);
-void yyerror (char const *);
+static void yyerror (char const *);
 
 struct field {
 	char *name;
@@ -29,14 +29,13 @@ struct field {
 	struct field *next;
 };
 
-extern struct field *sym_table;
-struct field *putsym (char const *, unsigned int);
-struct field *getsym (char const *);
+static struct field *sym_table;
+static struct field *putsym (char const *, unsigned int);
+static struct field *getsym (char const *);
 
-struct field *sym_table;
-struct field *sym_table_tail;
+static struct field *sym_table_tail;
 
-FILE* fp;
+static FILE* fp;
 
 /* Bit array intermediary representation */
 struct blob {
@@ -51,7 +50,7 @@ struct blob {
 #define MAX_WIDTH 32
 #define CHECKSUM_SIZE 16
 
-struct blob *binary;
+static struct blob *binary;
 
 static void check_pointer (void *ptr)
 {
@@ -144,7 +143,7 @@ static void create_new_bitfields(char *name, unsigned int n, unsigned int width)
 	free(namen);
 }
 
-struct field *putsym (char const *sym_name, unsigned int w)
+static struct field *putsym (char const *sym_name, unsigned int w)
 {
 	if (getsym(sym_name)) {
 		fprintf(stderr, "Cannot add duplicate named bitfield `%s`\n",
@@ -168,7 +167,7 @@ struct field *putsym (char const *sym_name, unsigned int w)
 	return ptr;
 }
 
-struct field *getsym (char const *sym_name)
+static struct field *getsym (char const *sym_name)
 {
 	struct field *ptr;
 	for (ptr = sym_table; ptr != (struct field *) 0;
@@ -448,7 +447,7 @@ setpair:
 %%
 
 /* Called by yyparse on error.  */
-void yyerror (char const *s)
+static void yyerror (char const *s)
 {
 	fprintf (stderr, "yyerror: %s\n", s);
 }

@@ -52,7 +52,7 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	/* Init Port descriptor (PCIe port, Lanes 1:1, D2F3) NC */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 1, 1),
+		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 1, 1),
 		PCIE_PORT_DATA_INITIALIZER_V2(
 				PortDisabled,		/* mPortPresent */
 				ChannelTypeExt6db,	/* mChannelType */
@@ -68,7 +68,7 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	/* Initialize Port descriptor (PCIe port, Lane 2, D2F4) for EMMC */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER(PcieUnusedEngine, 2, 2),
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 2, 2),
 		PCIE_PORT_DATA_INITIALIZER_V2(
 				PortEnabled,		/* mPortPresent */
 				ChannelTypeExt6db,	/* mChannelType */

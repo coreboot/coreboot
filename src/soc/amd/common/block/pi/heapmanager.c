@@ -159,11 +159,12 @@ AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 							BestFitPrevNodeOffset);
 
 		/*
-		 * If BestFitNode is larger than the requested buffer,
-		 * fragment the node further
+		 * If BestFitNode is larger than the requested buffer and
+		 * has room for another buffer node, fragment the node further.
 		 */
-		if (BestFitNodePtr->BufferSize >
-		    (AllocParams->BufferLength + sizeof(BIOS_BUFFER_NODE))) {
+		if (BestFitNodePtr->BufferSize >=
+		    (AllocParams->BufferLength + sizeof(BIOS_BUFFER_NODE) +
+		     MIN_BUFFER_NODE_SIZE)) {
 			NextFreeOffset = BestFitNodeOffset +
 					 AllocParams->BufferLength +
 					 sizeof(BIOS_BUFFER_NODE);

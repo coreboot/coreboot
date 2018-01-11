@@ -34,6 +34,8 @@ typedef struct _BIOS_BUFFER_NODE {
 	UINT32 NextNodeOffset;
 } BIOS_BUFFER_NODE;
 
+#define MIN_BUFFER_NODE_SIZE (sizeof(BIOS_BUFFER_NODE) + sizeof(uint32_t))
+
 AGESA_STATUS agesa_AllocateBuffer(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_DeallocateBuffer(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_LocateBuffer(UINT32 Func, UINTN Data, VOID *ConfigPtr);

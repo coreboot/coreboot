@@ -167,7 +167,7 @@ static const struct pad_config gpio_table[] = {
 	/* D2  : SPI1_MISO ==> PEN_PDCT_L */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_D2, NONE, DEEP),
 	/* D3  : SPI1_MOSI ==> PEN_RST_L */
-	PAD_CFG_GPO(GPP_D3, 0, DEEP),
+	PAD_CFG_GPO(GPP_D3, 1, DEEP),
 	/* D4  : FASHTRIG ==> LTE_GPS_OFF_ODL */
 	PAD_CFG_GPO(GPP_D4, 1, DEEP),
 	/* D5  : ISH_I2C0_SDA ==> ISH_I2C_SENSOR_1V8_SDA */

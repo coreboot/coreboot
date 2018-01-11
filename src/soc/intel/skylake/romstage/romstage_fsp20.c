@@ -28,6 +28,7 @@
 #include <fsp/memmap.h>
 #include <intelblocks/pmclib.h>
 #include <memory_info.h>
+#include <smbios.h>
 #include <soc/intel/common/smbios.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -48,6 +49,7 @@ static void save_dimm_info(void)
 {
 	int channel, dimm, dimm_max, index;
 	size_t hob_size;
+	uint8_t ddr_type;
 	const CONTROLLER_INFO *ctrlr_info;
 	const CHANNEL_INFO *channel_info;
 	const DIMM_INFO *src_dimm;
@@ -91,10 +93,25 @@ static void save_dimm_info(void)
 			if (src_dimm->Status != DIMM_PRESENT)
 				continue;
 
+			switch(memory_info_hob->MemoryType) {
+			case MRC_DDR_TYPE_DDR4:
+				ddr_type = MEMORY_DEVICE_DDR4;
+				break;
+			case MRC_DDR_TYPE_DDR3:
+				ddr_type = MEMORY_DEVICE_DDR3;
+				break;
+			case MRC_DDR_TYPE_LPDDR3:
+				ddr_type = MEMORY_DEVICE_LPDDR3;
+				break;
+			default:
+				ddr_type = MEMORY_DEVICE_UNKNOWN;
+				break;
+			}
+
 			/* Populate the DIMM information */
 			dimm_info_fill(dest_dimm,
 				src_dimm->DimmCapacity,
-				memory_info_hob->MemoryType,
+				ddr_type,
 				memory_info_hob->ConfiguredMemoryClockSpeed,
 				channel_info->ChannelId,
 				src_dimm->DimmId,

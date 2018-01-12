@@ -199,10 +199,19 @@ struct acpi_gpio {
 	.pins = { (gpio) } }
 
 /* Basic input GPIO with default pull settings */
-#define ACPI_GPIO_INPUT(gpio) { \
+#define ACPI_GPIO_INPUT_ACTIVE_HIGH(gpio) {   \
 	.type = ACPI_GPIO_TYPE_IO, \
 	.pull = ACPI_GPIO_PULL_DEFAULT, \
 	.io_restrict = ACPI_GPIO_IO_RESTRICT_INPUT, \
+	.polarity = ACPI_GPIO_ACTIVE_HIGH,     \
+	.pin_count = 1, \
+	.pins = { (gpio) } }
+
+#define ACPI_GPIO_INPUT_ACTIVE_LOW(gpio) {   \
+	.type = ACPI_GPIO_TYPE_IO, \
+	.pull = ACPI_GPIO_PULL_DEFAULT, \
+	.io_restrict = ACPI_GPIO_IO_RESTRICT_INPUT, \
+	.polarity = ACPI_GPIO_ACTIVE_LOW,     \
 	.pin_count = 1, \
 	.pins = { (gpio) } }
 

@@ -81,7 +81,8 @@ static unsigned char* value_to_bits (unsigned int v, unsigned int w)
 static void append_field_to_blob (unsigned char b[], unsigned int w)
 {
 	unsigned int i, j;
-	binary->blb = (unsigned char *) realloc (binary->blb, binary->bloblen + w);
+	binary->blb = (unsigned char *) realloc (binary->blb,
+						 binary->bloblen + w);
 	check_pointer(binary->blb);
 	for (j = 0, i = binary->bloblen; i < binary->bloblen + w; i++, j++) {
 		binary->blb[i] = VALID_BIT | (b[j] & 1);
@@ -98,7 +99,9 @@ static void set_bitfield(char *name, unsigned int value)
 		bf->value = value & 0xffffffff;
 		i = (1 << bf->width) - 1;
 		if (bf->width > 8 * sizeof (unsigned int)) {
-			fprintf(stderr, "Overflow in bitfield, truncating bits to fit\n");
+			fprintf(stderr,
+				"Overflow in bitfield, truncating bits to"
+				" fit\n");
 			bf->value = value & i;
 		}
 		//fprintf(stderr, "Setting `%s` = %d\n", bf->name, bf->value);
@@ -144,7 +147,8 @@ static void create_new_bitfields(char *name, unsigned int n, unsigned int width)
 struct field *putsym (char const *sym_name, unsigned int w)
 {
 	if (getsym(sym_name)) {
-		fprintf(stderr, "Cannot add duplicate named bitfield `%s`\n", sym_name);
+		fprintf(stderr, "Cannot add duplicate named bitfield `%s`\n",
+			sym_name);
 		return 0;
 	}
 	struct field *ptr = (struct field *) malloc (sizeof (struct field));
@@ -339,7 +343,8 @@ static void generate_binary(void)
 	struct field *ptr;
 
 	if (binary->bloblen % 8) {
-		fprintf (stderr, "ERROR: Spec must be multiple of 8 bits wide\n");
+		fprintf (stderr,
+			 "ERROR: Spec must be multiple of 8 bits wide\n");
 		exit (1);
 	}
 
@@ -404,7 +409,8 @@ input:
 ;
 
 blob:
-  '%' eof			{ generate_setter_bitfields(binary->actualblob); }
+  '%' eof			{ generate_setter_bitfields(
+				  binary->actualblob); }
 ;
 
 spec:
@@ -504,7 +510,8 @@ int main (int argc, char *argv[])
 
 		/* Open output and parse string - output to fp */
 		if ((fp = fopen(argv[3], "wb")) == NULL) {
-			printf("Error: Could not open output file: %s\n",argv[3]);
+			printf("Error: Could not open output file: %s\n",
+			       argv[3]);
 			exit(1);
 		}
 		ret = parse_string(parsestring);
@@ -520,20 +527,23 @@ int main (int argc, char *argv[])
 
 		/* Load Actual Binary */
 		if ((fp = fopen(argv[3], "rb")) == NULL) {
-			printf("Error: Could not open binary file: %s\n",argv[3]);
+			printf("Error: Could not open binary file: %s\n",
+			       argv[3]);
 			exit(1);
 		}
 		fseek(fp, 0, SEEK_END);
 		binary->lenactualblob = ftell(fp);
 		fseek(fp, 0, SEEK_SET);
-		binary->actualblob = (unsigned char *) malloc (binary->lenactualblob);
+		binary->actualblob = (unsigned char *)malloc(
+			binary->lenactualblob);
 		check_pointer(binary->actualblob);
 		fread(binary->actualblob, 1, binary->lenactualblob, fp);
 		fclose(fp);
 
 		/* Open output and parse - output to fp */
 		if ((fp = fopen(argv[4], "w")) == NULL) {
-			printf("Error: Could not open output file: %s\n",argv[4]);
+			printf("Error: Could not open output file: %s\n",
+			       argv[4]);
 			exit(1);
 		}
 		ret = parse_string(parsestring);

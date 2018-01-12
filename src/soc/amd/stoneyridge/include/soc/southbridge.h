@@ -93,6 +93,7 @@
 #define PM_HUD_SD_FLASH_CTRL		0xe7
 #define PM_YANG_SD_FLASH_CTRL		0xe8
 #define PM_PCIB_CFG			0xea
+#define   PM_GENINT_DISABLE		BIT(0)
 #define PM_LPC_GATING			0xec
 #define   PM_LPC_AB_NO_BYPASS_EN	BIT(2)
 #define   PM_LPC_A20_EN			BIT(1)

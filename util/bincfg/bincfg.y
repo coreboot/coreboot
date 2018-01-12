@@ -208,7 +208,7 @@ static void interpret_next_blob_value (struct field *f)
 }
 
 /* {}%BIN -> {} */
-static void generate_setter_bitfields(unsigned char *bin)
+static void generate_setter_bitfields(FILE* fp, unsigned char *bin)
 {
 	unsigned int i;
 	struct field *ptr;
@@ -233,7 +233,7 @@ static void generate_setter_bitfields(unsigned char *bin)
 	fprintf (fp, "\n}\n");
 }
 
-static void generate_binary_with_gbe_checksum(void)
+static void generate_binary_with_gbe_checksum(FILE* fp)
 {
 	int i;
 	unsigned short checksum;
@@ -305,7 +305,7 @@ static void generate_binary_with_gbe_checksum(void)
 }
 
 /* {}{} -> BIN */
-static void generate_binary(void)
+static void generate_binary(FILE* fp)
 {
 	unsigned int i;
 	struct field *ptr;
@@ -317,7 +317,7 @@ static void generate_binary(void)
 	}
 
 	if (getsym ("checksum_gbe")) {
-		generate_binary_with_gbe_checksum();
+		generate_binary_with_gbe_checksum(fp);
 		return;
 	}
 
@@ -353,6 +353,7 @@ static void generate_binary(void)
 	unsigned char u8;
 	unsigned char *u8array;
 }
+%parse-param {FILE* fp}
 
 %token <str> name
 %token <u32> val
@@ -377,7 +378,7 @@ input:
 ;
 
 blob:
-  '%' eof			{ generate_setter_bitfields(
+  '%' eof			{ generate_setter_bitfields(fp,
 				  binary->actualblob); }
 ;
 
@@ -400,7 +401,7 @@ specpair:
 setter:
   '{' '}'		{	fprintf (stderr, "No values\n"); }
 | '{' valuemembers '}'	{	fprintf (stderr, "Parsed all values\n");
-				generate_binary(); }
+				generate_binary(fp); }
 ;
 
 valuemembers:
@@ -416,7 +417,7 @@ setpair:
 %%
 
 /* Called by yyparse on error.  */
-static void yyerror (char const *s)
+static void yyerror (FILE* fp, char const *s)
 {
 	fprintf (stderr, "yyerror: %s\n", s);
 }
@@ -425,12 +426,12 @@ static void yyerror (char const *s)
 void set_input_string(char* in);
 
 /* This function parses a string */
-static int parse_string(unsigned char* in) {
+static int parse_string(FILE* fp, unsigned char* in) {
 	set_input_string ((char *)in);
-	return yyparse ();
+	return yyparse (fp);
 }
 
-static unsigned int loadfile (char *file, char *filetype,
+static unsigned int loadfile (FILE* fp, char *file, char *filetype,
 	unsigned char **parsestring, unsigned int lenstr)
 {
 	unsigned int lenfile;
@@ -462,6 +463,7 @@ int main (int argc, char *argv[])
 	unsigned char c;
 	unsigned int pos = 0;
 	int ret = 0;
+	FILE* fp;
 
 #if YYDEBUG == 1
 	yydebug = 1;
@@ -473,8 +475,8 @@ int main (int argc, char *argv[])
 		/* Compile mode */
 
 		/* Load Spec */
-		lenspec = loadfile(argv[1], "spec", &parsestring, 0);
-		loadfile(argv[2], "setter", &parsestring, lenspec);
+		lenspec = loadfile(fp, argv[1], "spec", &parsestring, 0);
+		loadfile(fp, argv[2], "setter", &parsestring, lenspec);
 
 		/* Open output and parse string - output to fp */
 		if ((fp = fopen(argv[3], "wb")) == NULL) {
@@ -482,13 +484,13 @@ int main (int argc, char *argv[])
 			       argv[3]);
 			exit(1);
 		}
-		ret = parse_string(parsestring);
+		ret = parse_string(fp, parsestring);
 		free(parsestring);
 	} else if (argc == 5 && strcmp (argv[1], "-d") == 0) {
 		/* Decompile mode */
 
 		/* Load Spec */
-		lenspec = loadfile(argv[2], "spec", &parsestring, 0);
+		lenspec = loadfile(fp, argv[2], "spec", &parsestring, 0);
 
 		parsestring[lenspec] = '%';
 		parsestring[lenspec + 1] = '\0';
@@ -514,7 +516,7 @@ int main (int argc, char *argv[])
 			       argv[4]);
 			exit(1);
 		}
-		ret = parse_string(parsestring);
+		ret = parse_string(fp, parsestring);
 		free(parsestring);
 		free(binary->actualblob);
 		fclose(fp);

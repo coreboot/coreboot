@@ -39,10 +39,9 @@ struct blob {
 
 static struct field *putsym (char const *, unsigned int);
 static struct field *getsym (char const *);
-static void yyerror (char const *);
+static void yyerror (FILE* fp, char const *);
 int yylex (void);
 
-static FILE* fp;
 static struct blob *binary;
 static struct field *sym_table;
 static struct field *sym_table_tail;

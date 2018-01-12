@@ -31,7 +31,7 @@ DefinitionBlock (
 	#include <globalnvs.asl>
 
 	/* Globals for the platform */
-	#include "acpi/mainboard.asl"
+	#include <variant/acpi/mainboard.asl>
 
 	/* PCI IRQ mapping for the Southbridge */
 	#include <pcie.asl>
@@ -43,7 +43,7 @@ DefinitionBlock (
 	#include <sleepstates.asl>
 
 	/* Contains the Sleep methods (WAK, PTS, GTS, etc.) */
-	#include "acpi/sleep.asl"
+	#include <variant/acpi/sleep.asl>
 
 	/* System Bus */
 	Scope(\_SB) { /* Start \_SB scope */
@@ -51,7 +51,7 @@ DefinitionBlock (
 		#include <arch/x86/acpi/globutil.asl>
 
 		/* IRQ Routing mapping for this platform (in \_SB scope) */
-		#include "acpi/routing.asl"
+		#include <variant/acpi/routing.asl>
 
 		Device(PWRB) {
 			Name(_HID, EISAID("PNP0C0C"))
@@ -64,7 +64,7 @@ DefinitionBlock (
 	} /* End \_SB scope */
 
 	/* Thermal handler */
-	#include "acpi/thermal.asl"
+	#include <variant/acpi/thermal.asl>
 
 	/* Chrome OS specific */
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
@@ -82,6 +82,6 @@ DefinitionBlock (
 	#include <smbus.asl>
 
 	/* Define the General Purpose Events for the platform */
-	#include "acpi/gpe.asl"
+	#include <variant/acpi/gpe.asl>
 }
 /* End of ASL file */

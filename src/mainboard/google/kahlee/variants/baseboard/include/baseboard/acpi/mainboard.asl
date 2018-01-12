@@ -56,20 +56,20 @@ Device (ETPA)
 	Name (_S0W, 3)
 }
 
-/* Realtek Audio Codec */
-Device (RTEK)   /* Audio Codec driver I2CS*/
+/* DA7219 codec */
+Device (DIAL)  /* audio codec*/
 {
 	Name (_ADR, 0)
-	Name (_HID, "10EC5650")
-	Name (_CID, "10EC5650")
-	Name (_DDN, "RTEK Codec Controller ")
+	Name (_HID, "DLGS7219")
+	Name (_CID, "DLGS7219")
+	Name (_DDN, "DA7219 Codec Controller ")
 	Name (_UID, 1)
 
 	Device (I2S) /* I2S machine driver for RT5650 */
 	{
 		Name (_ADR, 1)
-		Name (_HID, "AMDI1002")
-		Name (_CID, "AMDI1002")
+		Name (_HID, "AMDI7219")
+		Name (_CID, "AMDI7219")
 	}
 
 	Method (_CRS, 0x0, Serialized)
@@ -84,9 +84,9 @@ Device (RTEK)   /* Audio Codec driver I2CS*/
 			"\\_SB.I2CA",           /* ResourceSource: I2C bus controller name */
 			)
 
-			/* Jack Detect AGPIO90 */
+			/* Jack Detect AGPIO14 */
 			GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
-				"\\_SB.GPIO") { 90 }
+				"\\_SB.GPIO") { 14 }
 		})
 		Return (SBUF)
 	}
@@ -94,5 +94,19 @@ Device (RTEK)   /* Audio Codec driver I2CS*/
 	Method (_STA)
 	{
 		Return (0xF)
+	}
+}
+
+/* MAX98357 codec */
+Device (MAXA)
+{
+	Name (_ADR, 0)
+	Name (_HID, "MX98357A")
+	Name (_CID, "MX98357A")
+	Name (_DDN, "MX98357A Codec Controller ")
+	Name (_UID, 1)
+
+	Method (_STA, 0x0, NotSerialized) {
+			Return (0x0F)
 	}
 }

@@ -101,7 +101,7 @@ static const struct pad_config gpio_table[] = {
 	/* B18 : GSPI0_MOSI ==> NC */
 	PAD_CFG_NC(GPP_B18),
 	/* B19 : GSPI1_CS# ==> CHP3_PEN_EJECT - for notification */
-	PAD_CFG_GPI(GPP_B19, NONE, DEEP),
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_B19, NONE, DEEP),
 	/* B20 : GSPI1_CLK ==> NC */
 	PAD_CFG_NC(GPP_B20),
 	/* B21 : GSPI1_MISO ==> CHP3_PEN_EJECT - for wake event */

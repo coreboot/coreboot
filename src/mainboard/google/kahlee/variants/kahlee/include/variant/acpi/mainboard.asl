@@ -14,3 +14,4 @@
  */
 
 #include <baseboard/acpi/mainboard.asl>
+#include <variant/acpi/audio.asl>

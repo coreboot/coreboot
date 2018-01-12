@@ -1,0 +1,3 @@
+config DRIVERS_GENERIC_GPIO_KEYS
+	bool
+	depends on HAVE_ACPI_TABLES

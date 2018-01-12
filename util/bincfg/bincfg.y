@@ -18,39 +18,8 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bincfg.h"
 //#define YYDEBUG 1
-int yylex (void);
-static void yyerror (char const *);
-
-struct field {
-	char *name;
-	unsigned int width;
-	unsigned int value;
-	struct field *next;
-};
-
-static struct field *sym_table;
-static struct field *putsym (char const *, unsigned int);
-static struct field *getsym (char const *);
-
-static struct field *sym_table_tail;
-
-static FILE* fp;
-
-/* Bit array intermediary representation */
-struct blob {
-	unsigned int bloblen;
-	unsigned char *blb;
-	unsigned short checksum;
-	unsigned char *actualblob;
-	unsigned int lenactualblob;
-};
-
-#define VALID_BIT 0x80
-#define MAX_WIDTH 32
-#define CHECKSUM_SIZE 16
-
-static struct blob *binary;
 
 static void check_pointer (void *ptr)
 {

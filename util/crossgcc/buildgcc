@@ -184,6 +184,10 @@ please_install()
 {
 	HALT_FOR_TOOLS=1
 	test -r /etc/os-release && . /etc/os-release
+	# vanilla debian doesn't define `ID_LIKE`, just `ID`
+	if [ -z "${ID_LIKE}" ] && [ -n "${ID}" ]; then
+		ID_LIKE=${ID}
+	fi
 	case "$ID_LIKE" in
 	debian) solution="sudo apt-get install $1" ;;
 	suse) solution="sudo zypper install $1" ;;

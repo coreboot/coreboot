@@ -15,3 +15,4 @@
 
 #include <baseboard/acpi/mainboard.asl>
 #include <variant/acpi/audio.asl>
+#include <variant/acpi/touchpad.asl>

@@ -65,7 +65,10 @@ git submodule update --init --checkout"
 
 { git config --includes user.name && \
 	git config --includes user.email; } >/dev/null || \
-	{ printf "Please configure your name and email in git:\n\n\
- git config --global user.name \"Your Name Comes Here\"\n\
- git config --global user.email your.email@example.com\n"; \
+	{ cat <<-EOMSG
+		Please configure your name and email in git:
+
+		 git config --global user.name "Your Name Comes Here"
+		 git config --global user.email your.email@example.com
+EOMSG
 exit 1; }

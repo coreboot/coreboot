@@ -15,26 +15,33 @@
 ## GNU General Public License for more details.
 ##
 
-if [ ! -d .git ]; then
-	echo "Error: Not in a git repository"
+if ! { cdup="$(git rev-parse --show-cdup 2>/dev/null)" && [ -z "${cdup}" ]; }
+then
+	echo "Error: Not in root of a git repository"
 	exit 1
 fi
-mkdir -p .git/hooks
+coreboot_hooks=$(git rev-parse --git-path hooks)
+mkdir -p "${coreboot_hooks}"
 for hook in commit-msg pre-commit ; do
-	if [ util/gitconfig/$hook -nt .git/hooks/$hook ] || \
-		[ ! -x .git/hooks/$hook ]; then
-		sed -e "s,%MAKE%,remake,g" util/gitconfig/$hook > .git/hooks/$hook
-		chmod +x .git/hooks/$hook
+	if [ util/gitconfig/${hook} -nt "${coreboot_hooks}/${hook}" ] \
+		|| [ ! -x "${coreboot_hooks}/${hook}" ]
+	then
+		sed -e "s,%MAKE%,remake,g" util/gitconfig/$hook \
+			> "${coreboot_hooks}/${hook}"
+		chmod +x "${coreboot_hooks}/${hook}"
 	fi
 done
 # Now set up the hooks for 3rdparty/
-for hooks in .git/modules/{3rdparty/blobs,libhwbase,libgfxinit}/hooks; do
-	if [ -d $hooks ]; then
-		if [ util/gitconfig/commit-msg -nt $hooks/commit-msg ] || \
-			[ ! -x $hooks/commit-msg ]; then
-			sed -e "s,%MAKE%,remake,g" \
-				util/gitconfig/commit-msg > $hooks/commit-msg
-			chmod +x $hooks/commit-msg
+for submodule in 3rdparty/blobs libhwbase libgfxinit; do
+	hooks=$(git -C "$(git config --file .gitmodules --get \
+		submodule.${submodule}.path)" rev-parse --git-path hooks)
+	if [ -d "${hooks}" ]; then
+		if [ util/gitconfig/commit-msg -nt "${hooks}/commit-msg" ] \
+			|| [ ! -x "${hooks}/commit-msg" ]
+		then
+			sed -e "s,%MAKE%,remake,g" util/gitconfig/commit-msg \
+				> "${hooks}/commit-msg"
+			chmod +x "${hooks}/commit-msg"
 		fi
 	fi
 done

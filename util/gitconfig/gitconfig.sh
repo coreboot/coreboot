@@ -56,9 +56,8 @@ git config remote.origin.push HEAD:refs/for/master
 git config alias.sup "!git submodule update --remote --rebase && \
 git submodule update --init --checkout"
 
-git config alias.sup-destroy "!git submodule deinit --force \
-\"\$(git rev-parse --show-toplevel)\"; \
-git submodule init && git submodule update --checkout"
+git config alias.sup-destroy "!git submodule deinit --all --force; \
+git submodule update --init --checkout"
 
 (git config --includes user.name >/dev/null && \
 	git config --includes user.email >/dev/null) || \

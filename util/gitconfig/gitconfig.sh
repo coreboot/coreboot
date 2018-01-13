@@ -59,9 +59,9 @@ git submodule update --init --checkout"
 git config alias.sup-destroy "!git submodule deinit --all --force; \
 git submodule update --init --checkout"
 
-(git config --includes user.name >/dev/null && \
-	git config --includes user.email >/dev/null) || \
-	(printf "Please configure your name and email in git:\n\n\
+{ git config --includes user.name && \
+	git config --includes user.email; } >/dev/null || \
+	{ printf "Please configure your name and email in git:\n\n\
  git config --global user.name \"Your Name Comes Here\"\n\
  git config --global user.email your.email@example.com\n"; \
-exit 1)
+exit 1; }

@@ -32,7 +32,8 @@ then
 	exit 1
 fi
 
-if [ ! -e ".git" ];then
+if ! { cdup="$(git rev-parse --show-cdup 2>/dev/null)" && [ -z "${cdup}" ]; }
+then
 	echo "ERROR: This is not the top directory of a git repo.  Exiting."
 	exit 1
 fi

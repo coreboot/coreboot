@@ -14,7 +14,8 @@
 ##
 
 ifneq ($(NOCOMPILE),1)
-GIT:=$(shell [ -e "$(top)/.git" ] && command -v git)
+GIT:=$(shell git -C "$(top)" rev-parse --git-dir 1>/dev/null 2>&1 \
+	&& command -v git)
 else
 GIT:=
 endif

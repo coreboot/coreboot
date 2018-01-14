@@ -22,13 +22,11 @@ export LANG=C
 export LC_ALL=C
 export TZ=UTC0
 
-top=`dirname $0`/../..
-
 if [ "${BUILD_TIMELESS}" = "1" ]; then
 	GITREV=Timeless
 	TIMESOURCE="fixed"
 	DATE=0
-elif GIT_DIR="${top}/.git" git status > /dev/null 2>&1; then
+elif [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
 	GITREV=$(LANG= git log -1 --format=format:%h)
 	TIMESOURCE=git
 	DATE=$(git log --pretty=format:%ct -1)

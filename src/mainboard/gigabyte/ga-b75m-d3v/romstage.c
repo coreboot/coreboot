@@ -61,11 +61,8 @@ static void it8728f_b75md3v_disable_reboot(pnp_devfn_t dev)
 	ite_reg_write(IT8728F_EC, 0x30, 0x01);
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
-	/* Disable unused devices (board specific) */
-	RCBA32(FD) = 0x17ee1fe1;
-
 	/* Enable HECI */
 	RCBA32(FD2) &= ~0x2;
 }

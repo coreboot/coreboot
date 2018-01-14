@@ -33,9 +33,8 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN4_DEC, 0x000c06a1);
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
-	RCBA32(FD) |= PCH_DISABLE_ALWAYS;
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {

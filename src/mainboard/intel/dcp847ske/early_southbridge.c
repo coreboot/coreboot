@@ -41,10 +41,10 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), LPC_GEN1_DEC, 0x00fc0a01);
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
 	/* Disable devices */
-	RCBA32(FD) |= PCH_DISABLE_ALWAYS | PCH_DISABLE_P2P | PCH_DISABLE_XHCI;
+	RCBA32(FD) |= PCH_DISABLE_P2P | PCH_DISABLE_XHCI;
 
 #if IS_ENABLED(CONFIG_USE_NATIVE_RAMINIT)
 	/* Enable Gigabit Ethernet */

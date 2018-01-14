@@ -63,16 +63,9 @@ void pch_enable_lpc(void)
 	}
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
-	u32 reg32;
-
 	southbridge_configure_default_intmap();
-
-	/* Disable unused devices (board specific) */
-	reg32 = RCBA32(FD);
-	reg32 |= PCH_DISABLE_ALWAYS;
-	RCBA32(FD) = reg32;
 }
 
 void mainboard_config_superio(void)

@@ -220,7 +220,6 @@ void report_platform_info(void);
 
 #endif /* !__SMM__ */
 
-void rcba_config(void);
 void pch_enable_lpc(void);
 void mainboard_early_init(int s3resume);
 void mainboard_config_superio(void);

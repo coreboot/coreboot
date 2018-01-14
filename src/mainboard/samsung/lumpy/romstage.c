@@ -63,10 +63,8 @@ void pch_enable_lpc(void)
 #endif
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
-	u32 reg32;
-
 	/*
 	 *             GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P1IP  WLAN   INTA -> PIRQB
@@ -107,11 +105,6 @@ void rcba_config(void)
 	RCBA16(OIC) = 0x0100;
 	/* PCH BWG says to read back the IOAPIC enable register */
 	(void) RCBA16(OIC);
-
-	/* Disable unused devices (board specific) */
-	reg32 = RCBA32(FD);
-	reg32 |= PCH_DISABLE_ALWAYS;
-	RCBA32(FD) = reg32;
 }
 
 static const uint8_t *locate_spd(void)

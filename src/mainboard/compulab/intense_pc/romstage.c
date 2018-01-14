@@ -47,12 +47,9 @@ void pch_enable_lpc(void)
 #endif
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
-	/* Disable devices. */
 	RCBA32(0x3414) = 0x00000000;
-	RCBA32(0x3418) = 0x16e81fe3;
-
 }
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, 0 },

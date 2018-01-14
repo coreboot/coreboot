@@ -51,13 +51,12 @@ void pch_enable_lpc(void)
 			   COMA_LPC_EN | COMB_LPC_EN);
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
 	u32 reg32;
 
 	/* Disable unused devices (board specific) */
 	reg32 = RCBA32(FD);
-	reg32 |= PCH_DISABLE_ALWAYS;
 	/* Disable PCI bridge so MRC does not probe this bus */
 	reg32 |= PCH_DISABLE_P2P;
 	RCBA32(FD) = reg32;

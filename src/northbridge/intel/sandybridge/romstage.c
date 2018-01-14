@@ -110,7 +110,8 @@ void mainboard_romstage_entry(unsigned long bist)
 	post_code(0x3c);
 
 	southbridge_configure_default_intmap();
-	rcba_config();
+	southbridge_rcba_config();
+	mainboard_rcba_config();
 
 	post_code(0x3d);
 

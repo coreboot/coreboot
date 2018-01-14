@@ -76,10 +76,8 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
-	/* Disable unused devices (board specific) */
-	RCBA32(FD) = 0x1ee51fe3;
 	RCBA32(BUC) = 0;
 }
 

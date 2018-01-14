@@ -57,11 +57,8 @@ void pch_enable_lpc(void)
 			   (0x0c << 16) | EC_LENOVO_PMH7_BASE | 1);
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
-	/* Disable unused devices (board specific, reserved only).
-	 * FIXME: Test if reserved bits are read only. */
-	RCBA32(FD) = PCH_DISABLE_ALWAYS | 0x10001fe0;
 }
 
 /* FIXME: used T530 values here */

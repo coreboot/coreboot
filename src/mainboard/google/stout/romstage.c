@@ -57,7 +57,7 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, (0x68 | 0x40001));
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
 	u32 reg32;
 
@@ -106,7 +106,6 @@ void rcba_config(void)
 
 	/* Disable unused devices (board specific) */
 	reg32 = RCBA32(FD);
-	reg32 |= PCH_DISABLE_ALWAYS;
 	/* Disable PCI bridge so MRC does not probe this bus */
 	reg32 |= PCH_DISABLE_P2P;
 	RCBA32(FD) = reg32;

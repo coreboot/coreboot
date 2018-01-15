@@ -110,6 +110,9 @@ struct soc_intel_skylake_config {
 	/* PL4 Value in Watts */
 	u32 tdp_pl4;
 
+	/* Estimated maximum platform power in Watts */
+	u16 psys_pmax;
+
 	/*
 	 * The following fields come from FspUpdVpd.h.
 	 * These are configuration values that are passed to FSP during

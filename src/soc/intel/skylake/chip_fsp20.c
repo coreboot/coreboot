@@ -93,7 +93,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	FSP_S_TEST_CONFIG *tconfig = &supd->FspsTestConfig;
 	static struct soc_intel_skylake_config *config;
 	uintptr_t vbt_data = 0;
-
 	int i;
 
 	int is_s3_wakeup = acpi_is_wakeup_s3();
@@ -106,6 +105,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	config = dev->chip_info;
 
 	mainboard_silicon_init_params(params);
+	/* Set PsysPmax if it is available from DT */
+	if (config->psys_pmax) {
+		/* PsysPmax is in unit of 1/8 Watt */
+		tconfig->PsysPmax = config->psys_pmax * 8;
+		printk(BIOS_DEBUG, "psys_pmax = %d\n", tconfig->PsysPmax);
+	}
 
 	/* Load VBT */
 	if (is_s3_wakeup) {

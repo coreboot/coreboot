@@ -17,6 +17,9 @@
 SPD_BIN = $(obj)/spd.bin
 
 SPD_SOURCES = Samsung_K4F8E304HB_1GB		# 0b000
+SPD_SOURCES += Hynix_H9HCNNN8KUMLHR_1GB		# 0b001
+SPD_SOURCES += Samsung_K4F6E3S4HM_2GB		# 0b010
+SPD_SOURCES += Hynix_H9HCNNNCPUMLHR_4GB		# 0b011
 
 ifeq ($(SPD_SOURCES),)
         SPD_DEPS := $(error SPD_SOURCES is not set. Variant must provide this)

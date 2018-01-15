@@ -28,6 +28,8 @@ This will allow autoport to detect as much as possible
 		make
 		cd ../inteltool
 		make
+		cd ../superiotool
+		make
 		cd ../autoport
 		go build
 		sudo ./autoport --input_log=logs --make_logs --coreboot_dir=../..

@@ -98,7 +98,15 @@ chip soc/intel/cannonlake
 		device pci 1e.0 on  end # UART #0
 		device pci 1e.1 off end # UART #1
 		device pci 1e.2 on  end # GSPI #0
-		device pci 1e.3 on  end # GSPI #1
+		device pci 1e.3 on
+			chip drivers/spi/acpi
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "uid" = "1"
+				register "compat_string" = ""google,cros-ec-spi""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A22_IRQ)"
+				device spi 0 on end
+			end
+		end # GSPI #1
 		device pci 1f.0 on
 			chip ec/google/chromeec
 				device pnp 0c09.0 on end

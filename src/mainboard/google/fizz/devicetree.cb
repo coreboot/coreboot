@@ -117,6 +117,7 @@ chip soc/intel/skylake
 	#| IccMax         | 7A    | 34A   | 35A   | 35A   |
 	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
 	#+----------------+-------+-------+-------+-------+
+	#Note: IccMax settings are moved to SoC code
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
@@ -126,7 +127,6 @@ chip soc/intel/skylake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(7),
 		.voltage_limit = 1520,
 	}"
 
@@ -139,7 +139,6 @@ chip soc/intel/skylake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(34),
 		.voltage_limit = 1520,
 	}"
 
@@ -152,7 +151,6 @@ chip soc/intel/skylake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(35),
 		.voltage_limit = 1520,
 	}"
 
@@ -165,7 +163,6 @@ chip soc/intel/skylake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(35),
 		.voltage_limit = 1520,
 	}"
 

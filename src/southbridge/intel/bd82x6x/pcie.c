@@ -21,6 +21,7 @@
 #include <device/pci_ids.h>
 #include <southbridge/intel/common/pciehp.h>
 #include <assert.h>
+#include <southbridge/intel/common/rcba.h>
 #include "pch.h"
 
 static void pch_pcie_pm_early(struct device *dev)

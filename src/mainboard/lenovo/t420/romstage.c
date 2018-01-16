@@ -17,6 +17,7 @@
 
 #include <arch/io.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>

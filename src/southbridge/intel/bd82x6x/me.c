@@ -39,6 +39,7 @@
 # include <device/pci.h>
 #endif
 
+#include <southbridge/intel/common/rcba.h>
 #include "me.h"
 #include "pch.h"
 

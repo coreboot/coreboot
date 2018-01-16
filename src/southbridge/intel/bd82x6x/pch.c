@@ -24,6 +24,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #endif
+#include <southbridge/intel/common/rcba.h>
 #include "pch.h"
 #include <string.h>
 

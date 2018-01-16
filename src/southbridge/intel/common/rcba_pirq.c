@@ -2,7 +2,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
-#include <southbridge/intel/common/rcba_pirq.h>
+#include <southbridge/intel/common/rcba.h>
 
 #define MAX_SLOT 31
 #define MIN_SLOT 19

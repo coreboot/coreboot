@@ -35,6 +35,7 @@
 #include "pch.h"
 #include "nvs.h"
 #include <southbridge/intel/common/pciehp.h>
+#include <southbridge/intel/common/rcba.h>
 
 #define NMI_OFF	0
 

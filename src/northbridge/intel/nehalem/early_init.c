@@ -25,6 +25,7 @@
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
 #include <arch/cpu.h>
+#include <southbridge/intel/common/rcba.h>
 
 #include "nehalem.h"
 

@@ -32,6 +32,7 @@
 #include <cbmem.h>
 #include <string.h>
 #include <cpu/x86/smm.h>
+#include <southbridge/intel/common/rcba.h>
 #include "pch.h"
 #include "nvs.h"
 #include <southbridge/intel/common/pciehp.h>

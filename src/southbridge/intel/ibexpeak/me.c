@@ -30,6 +30,7 @@
 #include <string.h>
 #include <delay.h>
 #include <elog.h>
+#include <southbridge/intel/common/rcba.h>
 
 #ifdef __SMM__
 #include <arch/io.h>

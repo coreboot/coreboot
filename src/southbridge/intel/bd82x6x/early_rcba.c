@@ -17,6 +17,7 @@
 
 #include <stdint.h>
 #include "pch.h"
+#include <southbridge/intel/common/rcba.h>
 #include "northbridge/intel/sandybridge/sandybridge.h"
 
 void

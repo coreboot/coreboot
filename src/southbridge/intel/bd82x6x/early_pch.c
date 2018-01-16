@@ -24,6 +24,7 @@
 #include <device/pci_def.h>
 #include <delay.h>
 
+#include <southbridge/intel/common/rcba.h>
 #include "pch.h"
 /* For DMI bar.  */
 #include "northbridge/intel/sandybridge/sandybridge.h"

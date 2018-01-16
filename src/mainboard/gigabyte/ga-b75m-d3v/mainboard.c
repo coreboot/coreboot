@@ -27,6 +27,7 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <smbios.h>
 #include <device/pci.h>

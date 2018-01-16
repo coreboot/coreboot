@@ -21,6 +21,7 @@
 #include <arch/io.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/hp/kbc1126/ec.h>
 

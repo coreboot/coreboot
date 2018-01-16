@@ -55,6 +55,7 @@ typedef u32 device_t;
 
 #include "nehalem.h"
 
+#include <southbridge/intel/common/rcba.h>
 #include "southbridge/intel/ibexpeak/me.h"
 
 #if REAL

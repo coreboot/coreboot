@@ -14,6 +14,7 @@
  */
 
 #include <northbridge/intel/sandybridge/sandybridge.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
 void mainboard_rcba_config(void)

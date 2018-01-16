@@ -24,6 +24,7 @@
 #include <cbmem.h>
 #include <pc80/mc146818rtc.h>
 #include <romstage_handoff.h>
+#include <southbridge/intel/common/rcba.h>
 #include "sandybridge.h"
 
 static void sandybridge_setup_bars(void)

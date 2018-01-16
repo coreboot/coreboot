@@ -169,6 +169,7 @@ typedef struct {
 
 #define QUICKPATH_BUS 0xff
 
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/ibexpeak/pch.h>
 
 /* Everything below this line is ignored in the DSDT */

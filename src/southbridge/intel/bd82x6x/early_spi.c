@@ -19,6 +19,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
 #include <delay.h>
+#include <southbridge/intel/common/rcba.h>
 #include "pch.h"
 
 #define SPI_DELAY 10     /* 10us */

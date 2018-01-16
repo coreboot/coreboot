@@ -24,6 +24,7 @@
 #include <halt.h>
 #include <pc80/mc146818rtc.h>
 #include "pch.h"
+#include <southbridge/intel/common/rcba.h>
 
 #include "nvs.h"
 

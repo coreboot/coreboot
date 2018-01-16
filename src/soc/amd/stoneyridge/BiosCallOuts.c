@@ -35,8 +35,6 @@ AGESA_STATUS agesa_fch_initreset(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 		FCH_RESET_DATA_BLOCK *FchParams_reset;
 		FchParams_reset = (FCH_RESET_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
-		FchParams_reset->FchReset.SataEnable = sb_sata_enable();
-		FchParams_reset->FchReset.IdeEnable = sb_ide_enable();
 
 		/* Get platform specific configuration changes */
 		platform_FchParams_reset(FchParams_reset);

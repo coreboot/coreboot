@@ -41,8 +41,8 @@ static int is_sata_config(void)
 void SetFchResetParams(FCH_RESET_INTERFACE *params)
 {
 	params->Xhci0Enable = IS_ENABLED(CONFIG_STONEYRIDGE_XHCI_ENABLE);
-	params->SataEnable = is_sata_config();
-	params->IdeEnable = !params->SataEnable;
+	params->SataEnable = sb_sata_enable();
+	params->IdeEnable = sb_ide_enable();
 }
 
 void SetFchEnvParams(FCH_INTERFACE *params)

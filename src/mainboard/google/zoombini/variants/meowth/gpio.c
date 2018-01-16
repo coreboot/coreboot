@@ -29,7 +29,7 @@ static const struct pad_config gpio_table[] = {
 /* CLKRUN# */		PAD_CFG_GPI(GPP_A8, NONE, DEEP), /* EC_IN_RW_OD */
 /* ESPI_CLK */		PAD_CFG_NF(GPP_A9, NONE, DEEP, NF2), /* ESPI_CLK_R */
 /* CLKOUT_LPC1 */	PAD_NC(GPP_A10, NONE),
-/* PME# */		PAD_CFG_GPO(GPP_A11, 0, DEEP), /* PCH_FP_PWR_EN */
+/* PME# */		PAD_CFG_GPO(GPP_A11, 1, DEEP), /* PCH_FP_PWR_EN */
 /* BM_BUSY# */		PAD_CFG_GPI(GPP_A12, NONE, DEEP), /* FPMCU_INT */
 /* SUSWARN# */		PAD_CFG_NF(GPP_A13, NONE, DEEP, NF1), /* SUSWARN_L */
 /* ESPI_RESET# */	PAD_CFG_NF(GPP_A14, NONE, DEEP, NF2), /* ESPI_RESET_L */

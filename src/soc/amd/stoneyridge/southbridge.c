@@ -38,6 +38,20 @@ static int is_sata_config(void)
 			|| (CONFIG_STONEYRIDGE_SATA_MODE == SataLegacyIde));
 }
 
+static inline int sb_sata_enable(void)
+{
+	/* True if IDE or AHCI. */
+	return (CONFIG_STONEYRIDGE_SATA_MODE == SataNativeIde) ||
+		(CONFIG_STONEYRIDGE_SATA_MODE == SataAhci);
+}
+
+static inline int sb_ide_enable(void)
+{
+	/* True if IDE or LEGACY IDE. */
+	return (CONFIG_STONEYRIDGE_SATA_MODE == SataNativeIde) ||
+		(CONFIG_STONEYRIDGE_SATA_MODE == SataLegacyIde);
+}
+
 void SetFchResetParams(FCH_RESET_INTERFACE *params)
 {
 	params->Xhci0Enable = IS_ENABLED(CONFIG_STONEYRIDGE_XHCI_ENABLE);

@@ -287,20 +287,6 @@
 #define WIDEIO_RANGE_ERROR		-1
 #define TOTAL_WIDEIO_PORTS		3
 
-static inline int sb_sata_enable(void)
-{
-	/* True if IDE or AHCI. */
-	return (CONFIG_STONEYRIDGE_SATA_MODE == 0) ||
-					(CONFIG_STONEYRIDGE_SATA_MODE == 2);
-}
-
-static inline int sb_ide_enable(void)
-{
-	/* True if IDE or LEGACY IDE. */
-	return (CONFIG_STONEYRIDGE_SATA_MODE == 0) ||
-					(CONFIG_STONEYRIDGE_SATA_MODE == 3);
-}
-
 void sb_enable_rom(void);
 void configure_stoneyridge_uart(void);
 void sb_clk_output_48Mhz(void);

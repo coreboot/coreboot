@@ -19,7 +19,9 @@ LC_ALL=C export LC_ALL
 EXCLUDE='^3rdparty/\|util/crossgcc/xgcc\|Binary file\|coreboot\|COREBOOT\|CorebootPayload\|CorebootModule\|minnowboard.org/Coreboot\|.*\.patch$\|CorebootBdsLib\|^payloads/external'
 
 # Use git grep if the code is in a git repo, otherwise use grep.
-if [ -n "$(command -v git)" ] && [ -d .git ]; then
+if [ -n "$(command -v git)" ] && \
+	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
+then
 	GREP_FILES="git grep -in"
 
 	# Check last commit message

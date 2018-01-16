@@ -19,7 +19,9 @@ LC_ALL=C export LC_ALL
 EXCLUDED_DIRS='^3rdparty\|^site-local'
 
 # If the code is in a git repo, only print files that are checked in
-if [ -n "$(command -v git)" ] && [ -d .git ]; then
+if [ -n "$(command -v git)" ] && \
+	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
+then
 	git ls-tree -r HEAD | \
 		grep ^120000 | \
 		cut -f2 | \

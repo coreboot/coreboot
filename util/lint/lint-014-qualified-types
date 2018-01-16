@@ -21,7 +21,9 @@ EXCLUDED_DIRS='^src/vendorcode\|^util/romcc\|cbfstool/lzma\|cbfstool/lz4'
 INCLUDED_FILES='\.[ch]:'
 
 # Use git grep if the code is in a git repo, otherwise use grep.
-if [ -n "$(command -v git)" ] && [ -d .git ]; then
+if [ -n "$(command -v git)" ] && \
+	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
+then
 	GREP_FILES="git grep -n"
 else
 	GREP_FILES="grep -rn"

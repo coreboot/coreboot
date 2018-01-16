@@ -28,10 +28,17 @@
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-#define FIZZ_SKU_ID_I7_U42 0x4
-#define FIZZ_PL2_I7_U42    44
-#define FIZZ_PL2_OTHERS    29
-#define FIZZ_PSYSPL2_ALL   90
+#define FIZZ_SKU_ID_I7_U42  0x4
+#define FIZZ_SKU_ID_I5_U42  0x5
+#define FIZZ_SKU_ID_I3_U42  0x6
+#define FIZZ_SKU_ID_I7_U22  0x3
+#define FIZZ_SKU_ID_I5_U22  0x2
+#define FIZZ_SKU_ID_I3_U22  0x1
+#define FIZZ_SKU_ID_CEL_U22 0x0
+#define FIZZ_PL2_U42        44
+#define FIZZ_PL2_U22        29
+#define FIZZ_PSYSPL2_U22    65
+#define FIZZ_PSYSPL2_U42    90
 /*
  * For type-C chargers, set PL2 to 90% of max power to account for
  * cable loss and FET Rdson loss in the path from the source.
@@ -100,24 +107,43 @@ static uint8_t board_sku_id(void)
  * mainboard_set_power_limits
  *
  * Set Pl2 and SysPl2 values based on detected charger.
+ * If detected barrel jack, use values below based on SKU.
+ * +-------------+-----+---------+-------------------+
+ * | sku_id      | PL2 | PsysPL2 | Pmax (Prop = 48W) |
+ * +-------------+-----+---------+-------------------+
+ * | i7 U42      |  44 |   90    |       119         |
+ * | i5 U42      |  44 |   90    |       119         |
+ * | i3 U42      |  44 |   90    |       119         |
+ * | i7 U22      |  29 |   65    |        91         |
+ * | i5 U22      |  29 |   65    |        91         |
+ * | i3 U22      |  29 |   65    |        91         |
+ * | celeron U22 |  29 |   65    |        91         |
+ * +-------------+-----+---------+-------------------+
  */
 static void mainboard_set_power_limits(u32 *pl2_val, u32 *psyspl2_val)
 {
 	enum usb_chg_type type;
 	u32 watts;
 	u32 pl2, psyspl2;
-
 	int rv = google_chromeec_get_usb_pd_power_info(&type, &watts);
+	uint8_t sku = board_sku_id();
+	const uint32_t u42_mask = (1 << FIZZ_SKU_ID_I7_U42) |
+				  (1 << FIZZ_SKU_ID_I5_U42) |
+				  (1 << FIZZ_SKU_ID_I3_U42);
 
 	/* If we can't get charger info or not PD charger, assume barrel jack */
 	if (rv != 0 || type != USB_CHG_TYPE_PD) {
 		/* using the barrel jack, get PL2 based on sku id */
-		pl2 = FIZZ_PL2_OTHERS;
-		if (board_sku_id() == FIZZ_SKU_ID_I7_U42)
-			pl2 = FIZZ_PL2_I7_U42;
-		/* PsysPl2 same for all SKUs */
-		psyspl2 = FIZZ_PSYSPL2_ALL;
+		pl2 = FIZZ_PL2_U22;
+		psyspl2 = FIZZ_PSYSPL2_U22;
+		/* Running a U42 SKU */
+		if ((1 << sku) & u42_mask) {
+			pl2 = FIZZ_PL2_U42;
+			psyspl2 = FIZZ_PSYSPL2_U42;
+		}
+
 	} else {
+		/* Base on max value of adapter */
 		pl2 = GET_TYPEC_PL2(watts);
 		psyspl2 = watts;
 	}

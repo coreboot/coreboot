@@ -82,15 +82,6 @@ config MAINBOARD_USE_LIBGFXINIT
 	  Use the SPARK library `libgfxinit` for the native graphics
 	  initialization. This requires an Ada toolchain.
 
-config RUN_FSP_GOP
-	bool "Run a GOP driver"
-	depends on HAVE_FSP_GOP
-	select HAVE_LINEAR_FRAMEBUFFER
-	help
-	  Some platforms (e.g. Intel Braswell and Skylake/Kaby Lake) support
-	  to run a GOP blob. This option enables graphics initialization with
-	  such a blob.
-
 # TODO: Explain differences (if any) for onboard cards.
 config VGA_ROM_RUN
 	bool "Run VGA Option ROMs"
@@ -104,6 +95,15 @@ config VGA_ROM_RUN
 	  When using a SeaBIOS payload it runs all option ROMs with much
 	  more complete BIOS interrupt services available than coreboot,
 	  which some option ROMs require in order to function correctly.
+
+config RUN_FSP_GOP
+	bool "Run a GOP driver"
+	depends on HAVE_FSP_GOP
+	select HAVE_LINEAR_FRAMEBUFFER
+	help
+	  Some platforms (e.g. Intel Braswell and Skylake/Kaby Lake) support
+	  to run a GOP blob. This option enables graphics initialization with
+	  such a blob.
 
 config NO_GFX_INIT
 	bool "None"
@@ -609,6 +609,7 @@ config INTEL_GMA_ADD_VBT_DATA_FILE
 config INTEL_GMA_VBT_FILE
 	string "VBT binary path and filename"
 	depends on INTEL_GMA_ADD_VBT_DATA_FILE
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/vbt.bin"
 	help
 	  The path and filename of the VBT binary.
 

@@ -333,6 +333,14 @@ void keyboard_init(void)
 	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))
 		return;
 
+	/*
+	 * Set default parameters.
+	 * Fix for broken QEMU ps/2 make scancodes.
+	 */
+	ret = keyboard_cmd(0xf6);
+	if (!ret)
+		return;
+
 	/* Enable scanning */
 	ret = keyboard_cmd(I8042_KBCMD_EN);
 	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))

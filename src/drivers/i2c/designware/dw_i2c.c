@@ -379,7 +379,11 @@ int dw_i2c_transfer(unsigned int bus,
 		}
 
 		/* Set target slave address */
-		write32(&regs->target_addr, segments->slave);
+		if (read32(&regs->target_addr) != segments->slave) {
+			dw_i2c_disable(regs);
+			write32(&regs->target_addr, segments->slave);
+			dw_i2c_enable(regs);
+		}
 
 		/* Read or write each byte in segment */
 		for (byte = 0; byte < segments->len; byte++) {

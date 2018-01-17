@@ -121,7 +121,9 @@ static AGESA_STATUS agesa_AllocateBuffer(BIOS_HEAP_MANAGER *BiosHeapBasePtr,
 		/* Update the remaining free space */
 		FreedNodeOffset = CurrNodeOffset + CurrNodePtr->BufferSize + sizeof(BIOS_BUFFER_NODE);
 		FreedNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + FreedNodeOffset);
-		FreedNodePtr->BufferSize = AvailableHeapSize - sizeof(BIOS_BUFFER_NODE) - CurrNodePtr->BufferSize;
+		FreedNodePtr->BufferSize = AvailableHeapSize
+					- (FreedNodeOffset - CurrNodeOffset)
+					- sizeof(BIOS_BUFFER_NODE);
 		FreedNodePtr->NextNodeOffset = 0;
 
 		/* Update the offsets for Allocated and Freed nodes */
@@ -250,25 +252,25 @@ static AGESA_STATUS agesa_DeallocateBuffer(BIOS_HEAP_MANAGER *BiosHeapBasePtr,
 	/* Zero out the buffer, and clear the BufferHandle */
 	LibAmdMemFill ((UINT8 *)AllocNodePtr + sizeof(BIOS_BUFFER_NODE), 0, AllocNodePtr->BufferSize, &(AllocParams->StdHeader));
 	AllocNodePtr->BufferHandle = 0;
-	AllocNodePtr->BufferSize += sizeof(BIOS_BUFFER_NODE);
 
 	/* Add deallocated node in order to the list of freed nodes */
 	FreedNodeOffset = BiosHeapBasePtr->StartOfFreedNodes;
 	FreedNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + FreedNodeOffset);
 
-	EndNodeOffset = AllocNodeOffset + AllocNodePtr->BufferSize;
+	EndNodeOffset = AllocNodeOffset + AllocNodePtr->BufferSize +
+						sizeof(BIOS_BUFFER_NODE);
 
 	if (AllocNodeOffset < FreedNodeOffset) {
 		/* Add to the start of the freed list */
 		if (EndNodeOffset == FreedNodeOffset) {
 			/* If the freed node is adjacent to the first node in the list, concatenate both nodes */
-			AllocNodePtr->BufferSize += FreedNodePtr->BufferSize;
+			AllocNodePtr->BufferSize += FreedNodePtr->BufferSize +
+						sizeof(BIOS_BUFFER_NODE);
 			AllocNodePtr->NextNodeOffset = FreedNodePtr->NextNodeOffset;
 
-			/* Clear the BufferSize and NextNodeOffset of the previous first node */
-			FreedNodePtr->BufferSize = 0;
-			FreedNodePtr->NextNodeOffset = 0;
-
+			/* Zero out the FreedNode header */
+			memset((UINT8 *)FreedNodePtr, 0,
+						sizeof(BIOS_BUFFER_NODE));
 		} else {
 			/* Otherwise, add freed node to the start of the list
 			 * Update NextNodeOffset and BufferSize to include the
@@ -298,11 +300,13 @@ static AGESA_STATUS agesa_DeallocateBuffer(BIOS_HEAP_MANAGER *BiosHeapBasePtr,
 		 */
 		if (NextNodeOffset == EndNodeOffset) {
 			NextNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + NextNodeOffset);
-			AllocNodePtr->BufferSize += NextNodePtr->BufferSize;
+			AllocNodePtr->BufferSize += NextNodePtr->BufferSize +
+						sizeof(BIOS_BUFFER_NODE);
 			AllocNodePtr->NextNodeOffset = NextNodePtr->NextNodeOffset;
 
-			NextNodePtr->BufferSize = 0;
-			NextNodePtr->NextNodeOffset = 0;
+			/* Zero out the NextNode header */
+			memset((UINT8 *)NextNodePtr, 0,
+						sizeof(BIOS_BUFFER_NODE));
 		} else {
 			/*AllocNodePtr->NextNodeOffset = FreedNodePtr->NextNodeOffset; */
 			AllocNodePtr->NextNodeOffset = NextNodeOffset;
@@ -311,13 +315,16 @@ static AGESA_STATUS agesa_DeallocateBuffer(BIOS_HEAP_MANAGER *BiosHeapBasePtr,
 		 * concatenate both nodes.
 		 */
 		PrevNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + PrevNodeOffset);
-		EndNodeOffset = PrevNodeOffset + PrevNodePtr->BufferSize;
+		EndNodeOffset = PrevNodeOffset + PrevNodePtr->BufferSize +
+						sizeof(BIOS_BUFFER_NODE);
 		if (AllocNodeOffset == EndNodeOffset) {
 			PrevNodePtr->NextNodeOffset = AllocNodePtr->NextNodeOffset;
-			PrevNodePtr->BufferSize += AllocNodePtr->BufferSize;
+			PrevNodePtr->BufferSize += AllocNodePtr->BufferSize +
+						sizeof(BIOS_BUFFER_NODE);
 
-			AllocNodePtr->BufferSize = 0;
-			AllocNodePtr->NextNodeOffset = 0;
+			/* Zero out the AllocNode header */
+			memset((UINT8 *)AllocNodePtr, 0,
+						sizeof(BIOS_BUFFER_NODE));
 		} else {
 			PrevNodePtr->NextNodeOffset = AllocNodeOffset;
 		}

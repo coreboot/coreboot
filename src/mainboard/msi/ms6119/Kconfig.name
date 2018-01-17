@@ -1,2 +1,0 @@
-config BOARD_MSI_MS_6119
-	bool "MS-6119"

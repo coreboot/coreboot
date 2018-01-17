@@ -1,2 +1,0 @@
-config BOARD_MSI_MS_6156
-	bool "MS-6156"

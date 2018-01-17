@@ -1,6 +1,0 @@
-Category: desktop
-Board URL: http://no.msi.com/product/mb/MS-6147.html
-ROM package: DIP32
-ROM protocol: Parallel
-ROM socketed: y
-Release year: 1999

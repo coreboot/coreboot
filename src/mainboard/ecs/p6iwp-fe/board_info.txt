@@ -1,6 +1,0 @@
-Category: desktop
-Board URL: http://www.ecs.com.tw/ECSWebSite/Product/Product_Detail.aspx?CategoryID=1&DetailID=95&DetailName=Feature&MenuID=24&LanID=4
-ROM package: PLCC
-ROM protocol: FWH
-ROM socketed: y
-Flashrom support: y

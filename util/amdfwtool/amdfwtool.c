@@ -285,6 +285,7 @@ static uint32_t integrate_firmwares(char *base, uint32_t pos, uint32_t *romsig,
 				    amd_fw_entry *fw_table, uint32_t rom_size)
 {
 	int fd;
+	ssize_t bytes;
 	struct stat fd_stat;
 	int i;
 	uint32_t rom_base_address = 0xFFFFFFFF - rom_size + 1;
@@ -323,9 +324,17 @@ static uint32_t integrate_firmwares(char *base, uint32_t pos, uint32_t *romsig,
 				exit(1);
 			}
 
-			read(fd, (void *)(base + pos), (size_t)fd_stat.st_size);
+			bytes = read(fd, (void *)(base + pos),
+					(size_t)fd_stat.st_size);
+			if (bytes == (ssize_t)fd_stat.st_size)
+				pos += fd_stat.st_size;
+			else {
+				printf("Error while reading %s\n",
+					fw_table[i].filename);
+				free(base);
+				exit(1);
+			}
 
-			pos += fd_stat.st_size;
 			close(fd);
 			pos = ALIGN(pos, 0x100U);
 		}
@@ -340,6 +349,7 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 					uint32_t rom_size)
 {
 	int fd;
+	ssize_t bytes;
 	struct stat fd_stat;
 	unsigned int i;
 	uint32_t rom_base_address = 0xFFFFFFFF - rom_size + 1;
@@ -373,9 +383,17 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 				exit(1);
 			}
 
-			read(fd, (void *)(base + pos), (size_t)fd_stat.st_size);
+			bytes = read(fd, (void *)(base + pos),
+					(size_t)fd_stat.st_size);
+			if (bytes == (ssize_t)fd_stat.st_size)
+				pos += fd_stat.st_size;
+			else {
+				printf("Error while reading %s\n",
+					fw_table[i].filename);
+				free(base);
+				exit(1);
+			}
 
-			pos += fd_stat.st_size;
 			close(fd);
 			pos = ALIGN(pos, 0x100U);
 		} else {

@@ -549,7 +549,7 @@ static void rk_mipi_message_config(struct rk_mipi_dsi *dsi)
 	write32(&dsi->mipi_regs->dsi_cmd_mode_cfg, CMD_MODE_ALL_LP);
 }
 
-static int rk_mipi_dsi_check_cmd_fifo(struct rk_mipi_dsi *dsi)
+static int rk_mipi_dsi_check_fifo(struct rk_mipi_dsi *dsi, u32 flag)
 {
 	struct stopwatch sw;
 	int val;
@@ -557,7 +557,7 @@ static int rk_mipi_dsi_check_cmd_fifo(struct rk_mipi_dsi *dsi)
 	stopwatch_init_msecs_expire(&sw, 20);
 	do {
 		val = read32(&dsi->mipi_regs->dsi_cmd_pkt_status);
-		if (!(val & GEN_CMD_FULL))
+		if (!(val & flag))
 			return 0 ;
 	} while (!stopwatch_expired(&sw));
 
@@ -570,7 +570,7 @@ static int rk_mipi_dsi_gen_pkt_hdr_write(struct rk_mipi_dsi *dsi, u32 hdr_val)
 	struct stopwatch sw;
 	u32 mask;
 
-	if (rk_mipi_dsi_check_cmd_fifo(dsi)) {
+	if (rk_mipi_dsi_check_fifo(dsi, GEN_CMD_FULL)) {
 		printk(BIOS_ERR, "failed to get available command FIFO\n");
 		return -1;
 	}
@@ -600,15 +600,65 @@ static int rk_mipi_dsi_dcs_cmd(struct rk_mipi_dsi *dsi, u8 cmd)
 	return rk_mipi_dsi_gen_pkt_hdr_write(dsi, val);
 }
 
-static int rk_mipi_dsi_dci_cmd_arg(struct rk_mipi_dsi *dsi, u8 cmd, u8 arg)
+static int rk_mipi_dsi_dci_long_write(struct rk_mipi_dsi *dsi,
+				      char *data, u32 len)
 {
+	u32 remainder;
+	int ret = 0;
+
+	while (len) {
+		if (len < 4) {
+			remainder = 0;
+			memcpy(&remainder, data, len);
+			write32(&dsi->mipi_regs->dsi_gen_pld_data, remainder);
+			len = 0;
+		} else {
+			remainder = *(u32 *)data;
+			write32(&dsi->mipi_regs->dsi_gen_pld_data, remainder);
+			data += 4;
+			len -= 4;
+		}
+
+		ret = rk_mipi_dsi_check_fifo(dsi, GEN_PLD_W_FULL);
+		if (ret) {
+			printk(BIOS_ERR, "Failed to write fifo\n");
+			return ret;
+		}
+	}
+
+	return ret;
+}
+
+static int rk_mipi_dsi_write(struct rk_mipi_dsi *dsi, char *data, int len)
+{
+	u16 buf = 0;
 	u32 val;
-	u16 data;
+	int ret = 0;
 
 	rk_mipi_message_config(dsi);
 
-	data = cmd | (arg << 8);
-	val = GEN_HDATA(data) | GEN_HTYPE(MIPI_DSI_GENERIC_SHORT_WRITE_2_PARAM);
+	switch (len) {
+	case 0:
+		die("not data!");
+	case 1:
+		val = GEN_HDATA(*data) |
+		      GEN_HTYPE(MIPI_DSI_DCS_SHORT_WRITE);
+		break;
+	case 2:
+		buf = *data++;
+		buf |= *data << 8;
+		val = GEN_HDATA(buf) |
+		      GEN_HTYPE(MIPI_DSI_DCS_SHORT_WRITE_PARAM);
+		break;
+	default:
+		ret = rk_mipi_dsi_dci_long_write(dsi, data, len);
+		if (ret) {
+			printk(BIOS_ERR, "error happened during long write\n");
+			return ret;
+		}
+		val = GEN_HDATA(len) | GEN_HTYPE(MIPI_DSI_DCS_LONG_WRITE);
+		break;
+	}
 
 	return rk_mipi_dsi_gen_pkt_hdr_write(dsi, val);
 }
@@ -642,6 +692,7 @@ void rk_mipi_prepare(const struct edid *edid,
 		     const struct mipi_panel_data *panel_data)
 {
 	int i, num;
+	struct panel_init_command *cmds;
 
 	for (i = 0; i < panel_data->mipi_num; i++) {
 		rk_mipi[i].lanes = panel_data->lanes / panel_data->mipi_num;
@@ -649,11 +700,21 @@ void rk_mipi_prepare(const struct edid *edid,
 		rk_mipi_enable(&rk_mipi[i], edid, panel_data);
 	}
 
-	for (num = 0; num < panel_data->num_init_commands; num++) {
-		for (i = 0; i < panel_data->mipi_num; i++)
-			rk_mipi_dsi_dci_cmd_arg(&rk_mipi[i],
-						panel_data->init_cmd[num].cmd,
-						panel_data->init_cmd[num].data);
+	if (panel_data->init_cmd) {
+		cmds = panel_data->init_cmd;
+		for (num = 0; cmds[num].len != 0; num++) {
+			struct panel_init_command *cmd = &cmds[num];
+			for (i = 0; i < panel_data->mipi_num; i++) {
+				if (rk_mipi_dsi_write(&rk_mipi[i], cmd->data,
+						      cmd->len))
+					return;
+
+				/* make sure panel picks up the command */
+				if (rk_mipi_dsi_dcs_cmd(&rk_mipi[i],
+							MIPI_DCS_NOP))
+					return;
+			}
+		}
 	}
 
 	for (i = 0; i < panel_data->mipi_num; i++) {

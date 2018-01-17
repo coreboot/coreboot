@@ -264,8 +264,13 @@ check_member(rk_mipi_regs, dsi_int_msk1, 0xc8);
 #define GEN_RD_CMD_BUSY			BIT(6)
 
 #define MIPI_DSI_DCS_SHORT_WRITE		0x05
+#define MIPI_DSI_DCS_SHORT_WRITE_PARAM		0x15
 #define MIPI_DSI_GENERIC_SHORT_WRITE_2_PARAM	0x23
 #define MIPI_DSI_DCS_LONG_WRITE			0x39
+
+#define MIPI_INIT_CMD(...) { \
+	.len = sizeof((char[]){__VA_ARGS__}), \
+	.data = (char[]){__VA_ARGS__} }
 
 enum mipi_dsi_pixel_format {
 	MIPI_DSI_FMT_RGB888,
@@ -324,8 +329,8 @@ struct rk_mipi_dsi {
 };
 
 struct panel_init_command {
-	u8 cmd;
-	u8 data;
+	int len;
+	char *data;
 };
 
 struct mipi_panel_data {
@@ -334,7 +339,6 @@ struct mipi_panel_data {
 	u8 lanes;
 	u32 display_on_udelay;
 	u32 video_mode_udelay;
-	u32 num_init_commands;
 	struct panel_init_command *init_cmd;
 };
 

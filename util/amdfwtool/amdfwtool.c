@@ -292,6 +292,11 @@ static uint32_t integrate_firmwares(char *base, uint32_t pos, uint32_t *romsig,
 	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
 		if (fw_table[i].filename != NULL) {
 			fd = open(fw_table[i].filename, O_RDONLY);
+			if (fd < 0) {
+				printf("Error: %s\n", strerror(errno));
+				free(base);
+				exit(1);
+			}
 			fstat(fd, &fd_stat);
 
 			switch (fw_table[i].type) {
@@ -349,6 +354,11 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 			pspdir[4+4*i+0] = fw_table[i].type;
 
 			fd = open(fw_table[i].filename, O_RDONLY);
+			if (fd < 0) {
+				printf("Error: %s\n", strerror(errno));
+				free(base);
+				exit(1);
+			}
 			fstat(fd, &fd_stat);
 			pspdir[4+4*i+1] = (uint32_t)fd_stat.st_size;
 

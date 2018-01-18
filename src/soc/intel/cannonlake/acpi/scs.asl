@@ -51,23 +51,34 @@ Scope (\_SB.PCI0) {
 	Device (SDXC)
 	{
 		Name (_ADR, 0x00140005)
+		Name (TEMP, 0)
 
 		OperationRegion (SDPC, PCI_Config, 0x00, 0x100)
 		Field (SDPC, WordAcc, NoLock, Preserve)
 		{
-			Offset(0xA2),  /* Device Power Gate config */
+			Offset (0x84),	/* PMECTRLSTATUS */
+			PMCR, 16,
+			Offset (0xA2),	/* PG_CONFIG */
 			, 2,
-			PGEN, 1 /* PGE - PG Enable */
+			PGEN, 1,	/* PG_ENABLE */
 		}
 
 		Method (_PS0, 0, Serialized)
 		{
 			Store (0, PGEN) /* Disable PG */
+
+			/* Set Power State to D0 */
+			And (PMCR, 0xFFFC, PMCR)
+			Store (PMCR, ^TEMP)
 		}
 
 		Method (_PS3, 0, Serialized)
 		{
 			Store (1, PGEN) /* Enable PG */
+
+			/* Set Power State to D3 */
+			Or (PMCR, 0x0003, PMCR)
+			Store (PMCR, ^TEMP)
 		}
 	} /* Device (SDXC) */
 }

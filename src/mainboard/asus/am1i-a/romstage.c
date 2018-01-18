@@ -116,7 +116,7 @@ static void ite_gpio_conf(pnp_devfn_t dev)
 void board_BeforeAgesa(struct sysinfo *cb)
 {
 	int i;
-	u32 t32, val;
+	u32 val;
 	u8 byte;
 	pci_devfn_t dev;
 	u32 *addr32;
@@ -145,15 +145,11 @@ void board_BeforeAgesa(struct sysinfo *cb)
 
 	/* Configure ClkDrvStr1 settings */
 	addr32 = (u32 *)0xfed80e24;
-	t32 = *addr32;
-	t32 = 0x030800aa;
-	*addr32 = t32;
+	*addr32 = 0x030800aa;
 
 	/* Configure MiscClkCntl1 settings */
 	addr32 = (u32 *)0xfed80e40;
-	t32 = *addr32;
-	t32 = 0x000c4050;
-	*addr32 = t32;
+	*addr32 = 0x000c4050;
 
 	/* enable SIO LPC decode */
 	dev = PCI_DEV(0, 0x14, 3);

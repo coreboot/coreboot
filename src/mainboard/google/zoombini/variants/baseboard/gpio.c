@@ -89,7 +89,8 @@ static const struct pad_config gpio_table[] = {
 /* UART0_TXD */
 /* UART0_RTS# */	PAD_NC(GPP_C10, NONE),
 /* UART0_CTS# */	PAD_NC(GPP_C11, NONE),
-/* UART1_RXD */		PAD_CFG_GPI(GPP_C12, NONE, DEEP), /* H1_PCH_INT_ODL */
+/* UART1_RXD */         PAD_CFG_GPI_APIC(GPP_C12, NONE, DEEP, EDGE_SINGLE,
+					 INVERT), /* H1_PCH_INT_ODL */
 /* UART1_TXD */		PAD_CFG_GPI(GPP_C13, NONE, DEEP), /* TRACKPAD_INT_ODL */
 /* UART1_RTS# */	PAD_CFG_GPI(GPP_C14, NONE, DEEP),
 					/* TOUCHSCREEN_INT_ODL */
@@ -250,6 +251,8 @@ static const struct pad_config early_gpio_table[] = {
 /* Ensure UART pins are in native mode for H1. */
 /* UART0_RXD */		/* UART_PCH_RX_DEBUG_TX */
 /* UART0_TXD */		/* UART_PCH_RX_DEBUG_RX */
+/* UART1_RXD */         PAD_CFG_GPI_APIC(GPP_C12, NONE, DEEP, EDGE_SINGLE,
+					 INVERT), /* H1_PCH_INT_ODL */
 };
 
 const struct pad_config *__attribute__((weak)) variant_gpio_table(size_t *num)

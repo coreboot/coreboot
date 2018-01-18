@@ -98,8 +98,9 @@ static const struct pad_config gpio_table[] = {
 				   NF1), /* UART_PCH_TX_DEBUG_RX */
 /* UART0_RTS# */	PAD_CFG_GPO(GPP_C10, 0, DEEP), /* PP3300_TOUCH_EN */
 /* UART0_CTS# */	PAD_NC(GPP_C11, NONE),
-/* UART1_RXD */         PAD_CFG_GPI_SCI_LOW(GPP_C12, NONE, DEEP,
-					    LEVEL), /* H1_PCH_INT_ODL */
+/* Only P0 boards need an internal pullup */
+/* UART1_RXD */         PAD_CFG_GPI_APIC(GPP_C12, UP_20K, DEEP, EDGE_SINGLE,
+					 INVERT), /* H1_PCH_INT_ODL */
 /* UART1_TXD */		PAD_NC(GPP_C13, NONE),
 /* UART1_RTS# */	PAD_CFG_GPI_SCI(GPP_C14, NONE, DEEP, EDGE_SINGLE,
 					NONE), /* TOUCHSCREEN_INT_ODL */
@@ -271,7 +272,9 @@ static const struct pad_config early_gpio_table[] = {
 /* GSPI0_MISO */	PAD_NC(GPP_B17, NONE),
 /* GSPI0_MOSI */	PAD_NC(GPP_B18, NONE),
 #endif
-/* UART1_RXD */         PAD_CFG_GPI_SCI_LOW(GPP_C12, NONE, DEEP, LEVEL),
+/* Only P0 boards need an internal pullup */
+/* UART1_RXD */         PAD_CFG_GPI_APIC(GPP_C12, UP_20K, DEEP, EDGE_SINGLE,
+					 INVERT), /* H1_PCH_INT_ODL */
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

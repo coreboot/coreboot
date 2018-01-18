@@ -30,4 +30,3 @@ else
 		sed 's|\.\/||' | \
 		grep -v "$EXCLUDED_DIRS"
 fi
-

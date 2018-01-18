@@ -17,6 +17,7 @@ Scope (\_SB.PCI0) {
 	/* EMMC */
 	Device(PEMC) {
 		Name(_ADR, 0x001A0000)
+		Name (_DDN, "eMMC Controller")
 		Name (TEMP, 0)
 
 		OperationRegion(SCSR, PCI_Config, 0x00, 0x100)
@@ -45,12 +46,22 @@ Scope (\_SB.PCI0) {
 			Or (PMCR, 0x0003, PMCR)
 			Store (PMCR, ^TEMP)
 		}
+
+		Device (CARD)
+		{
+			Name (_ADR, 0x00000008)
+			Method (_RMV, 0, NotSerialized)
+			{
+				Return (0)
+			}
+		}
 	}
 
 	/* SD CARD */
 	Device (SDXC)
 	{
 		Name (_ADR, 0x00140005)
+		Name (_DDN, "SD Controller")
 		Name (TEMP, 0)
 
 		OperationRegion (SDPC, PCI_Config, 0x00, 0x100)
@@ -79,6 +90,15 @@ Scope (\_SB.PCI0) {
 			/* Set Power State to D3 */
 			Or (PMCR, 0x0003, PMCR)
 			Store (PMCR, ^TEMP)
+		}
+
+		Device (CARD)
+		{
+			Name (_ADR, 0x00000008)
+			Method (_RMV, 0, NotSerialized)
+			{
+				Return (1)
+			}
 		}
 	} /* Device (SDXC) */
 }

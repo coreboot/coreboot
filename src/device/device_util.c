@@ -257,6 +257,7 @@ u32 dev_path_encode(struct device *dev)
 		ret |= dev->path.spi.cs;
 		break;
 	case DEVICE_PATH_NONE:
+	case DEVICE_PATH_MMIO:  /* don't care */
 	default:
 		break;
 	}
@@ -332,6 +333,10 @@ const char *dev_path(struct device *dev)
 			snprintf(buffer, sizeof (buffer), "SPI: %02x",
 				 dev->path.spi.cs);
 			break;
+		case DEVICE_PATH_MMIO:
+			snprintf(buffer, sizeof (buffer), "MMIO: %08x",
+				 dev->path.mmio.addr);
+			break;
 		default:
 			printk(BIOS_ERR, "Unknown device path type: %d\n",
 			       dev->path.type);
@@ -405,6 +410,9 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 		break;
 	case DEVICE_PATH_SPI:
 		equal = (path1->spi.cs == path2->spi.cs);
+		break;
+	case DEVICE_PATH_MMIO:
+		equal = (path1->mmio.addr == path2->mmio.addr);
 		break;
 	default:
 		printk(BIOS_ERR, "Unknown device type: %d\n", path1->type);

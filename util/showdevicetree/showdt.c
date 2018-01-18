@@ -91,6 +91,9 @@ const char *dev_path(device_t dev)
 		case DEVICE_PATH_CPU_BUS:
 			sprintf(buffer, "CPU_BUS: %02x", dev->path.cpu_bus.id);
 			break;
+		case DEVICE_PATH_MMIO:
+			sprintf(buffer, "MMIO: %08x", dev->path.mmio.addr);
+			break;
 		default:
 			printf("Unknown device path type: %d\n",
 			       dev->path.type);

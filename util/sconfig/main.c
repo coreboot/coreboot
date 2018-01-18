@@ -290,7 +290,11 @@ struct device *new_device(struct device *parent, struct device *busdev,
 		new_d->path = ".type=DEVICE_PATH_SPI,{.spi={ .cs = 0x%x }}";
 		break;
 
+	case MMIO:
+		new_d->path = ".type=DEVICE_PATH_MMIO,{.mmio={ .addr = 0x%x }}";
+		break;
 	}
+
 	return new_d;
 }
 

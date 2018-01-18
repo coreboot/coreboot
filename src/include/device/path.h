@@ -15,6 +15,7 @@ enum device_path_type {
 	DEVICE_PATH_IOAPIC,
 	DEVICE_PATH_GENERIC,
 	DEVICE_PATH_SPI,
+	DEVICE_PATH_MMIO,
 
 	/*
 	 * When adding path types to this table, please also update the
@@ -36,6 +37,7 @@ enum device_path_type {
 		"DEVICE_PATH_IOAPIC",		\
 		"DEVICE_PATH_GENERIC",		\
 		"DEVICE_PATH_SPI",		\
+		"DEVICE_PATH_MMIO",		\
 }
 
 struct domain_path {
@@ -89,6 +91,9 @@ struct generic_path {
 	unsigned int subid;
 };
 
+struct mmio_path {
+	uintptr_t addr;
+};
 
 struct device_path {
 	enum device_path_type type;
@@ -104,6 +109,7 @@ struct device_path {
 		struct cpu_bus_path	cpu_bus;
 		struct generic_path	generic;
 		struct spi_path		spi;
+		struct mmio_path	mmio;
 	};
 };
 

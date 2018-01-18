@@ -28,10 +28,27 @@ else
 	FIND_FILES="find . "
 fi
 
+HAVE_FILE=$(command -v file 1>/dev/null 2>&1; echo $?)
+
+is_eligible_executable() {
+	if [ "$HAVE_FILE" -ne 0 ]; then
+		return 1
+	fi
+	if { LC_ALL=C; file --brief "$filename" | grep -Eqw \
+		"^(Bourne shell|POSIX shell|Perl|Python) script"; };
+	then
+		return 0
+	else
+		return 1
+	fi
+}
+
 test_for_final_newline() {
 	while read filename; do
-		# Only check non-executable regular files
-		if [ -f "$filename" ] && [ ! -x "$filename" ]; then
+		# Only check regular files and script executables
+		if [ -f "$filename" ] && { [ ! -x "$filename" ] || \
+			is_eligible_executable "$filename"; };
+		then
 
 			# Verify that there is a newline at the end
 			# $() strips trailing newlines

@@ -81,4 +81,12 @@ chip soc/amd/stoneyridge
 		device pci 18.4 on  end
 		device pci 18.5 on  end
 	end #domain
+	device mmio 0xfedc5000 on
+		chip drivers/i2c/generic
+			register "hid" = ""ELAN0001""
+			register "desc" = ""ELAN Touchscreen""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_11)"
+			device i2c 10 on end
+		end
+	end
 end	#chip soc/amd/stoneyridge

@@ -147,6 +147,7 @@ func sanitize(inp string) string {
 	result := strings.ToLower(inp)
 	result = strings.Replace(result, " ", "_", -1)
 	result = strings.Replace(result, ",", "_", -1)
+	result = strings.Replace(result, "-", "_", -1)
 	for strings.HasSuffix(result, ".") {
 		result = result[0 : len(result)-1]
 	}

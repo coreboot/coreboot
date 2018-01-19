@@ -4,6 +4,7 @@ config BOARD_GOOGLE_BASEBOARD_ZOOMBINI
 	select BOARD_ROMSIZE_KB_16384
 	select DRIVERS_I2C_GENERIC
 	select DRIVERS_I2C_HID
+	select DRIVERS_I2C_MAX98373
 	select DRIVERS_SPI_ACPI
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_LPC
@@ -62,6 +63,19 @@ config MAINBOARD_PART_NUMBER
 config MAINBOARD_VENDOR
 	string
 	default "Google"
+
+config INCLUDE_SND_MAX98357_DA7219_NHLT
+	bool "Include blobs for audio with MAX98357_DA7219"
+	select NHLT_DMIC_4CH_16B
+	select NHLT_DMIC_2CH_16B
+	select NHLT_DA7219
+	select NHLT_MAX98357
+
+config INCLUDE_SND_MAX98373_NHLT
+	bool "Include blobs for audio with MAX98373"
+	select NHLT_DMIC_4CH_16B
+	select NHLT_DMIC_2CH_16B
+	select NHLT_MAX98373
 
 config VARIANT_DIR
 	string

@@ -60,6 +60,10 @@ chip soc/intel/cannonlake
 		.fall_time_ns = 38,
 	}"
 
+	register "PchHdaDspEnable" = "1"
+	register "PchHdaAudioLinkSsp0" = "1"
+	register "PchHdaAudioLinkSsp1" = "1"
+
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
@@ -81,8 +85,25 @@ chip soc/intel/cannonlake
 			end
 		end # I2C #0
 		device pci 15.1 on  end # I2C #1
-		device pci 15.2 on  end # I2C #2
-		device pci 15.3 on  end # I2C #3
+		device pci 15.2 on end # I2C #2
+		device pci 15.3 on
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "4"
+				register "imon_slot_no" = "5"
+				register "uid" = "0"
+				register "desc" = ""RIGHT SPEAKER AMP""
+				register "name" = ""MAXR""
+				device i2c 31 on end
+			end
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "6"
+				register "imon_slot_no" = "7"
+				register "uid" = "1"
+				register "desc" = ""LEFT SPEAKER AMP""
+				register "name" = ""MAXL""
+				device i2c 32 on end
+			end
+		end # I2C #3
 		device pci 16.0 on  end # Management Engine Interface 1
 		device pci 16.1 off end # Management Engine Interface 2
 		device pci 16.2 off end # Management Engine IDE-R

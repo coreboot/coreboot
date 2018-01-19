@@ -40,4 +40,8 @@ const struct lpddr4_cfg *variant_lpddr4_config(void);
 /* Return memory SKU for the board. */
 size_t variant_memory_sku(void);
 
+/* Seed the NHLT tables with the board specific information. */
+struct nhlt;
+void variant_nhlt_init(struct nhlt *nhlt);
+
 #endif /*__BASEBOARD_VARIANTS_H__ */

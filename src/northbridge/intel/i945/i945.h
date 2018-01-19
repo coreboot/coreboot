@@ -75,7 +75,7 @@
 #define LAC		0x97	/* Legacy Access Control */
 #define TOLUD		0x9c	/* Top of Low Used Memory */
 #define SMRAM		0x9d	/* System Management RAM Control */
-#define ESMRAM		0x9e	/* Extended System Management RAM Control */
+#define ESMRAMC		0x9e	/* Extended System Management RAM Control */
 
 #define TOM		0xa0
 

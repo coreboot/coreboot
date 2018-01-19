@@ -95,7 +95,7 @@ static void pci_domain_set_resources(device_t dev)
 		uma_memory_size = uma_size * 1024ULL;
 	}
 
-	reg8 = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), 0x9e);
+	reg8 = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), ESMRAMC);
 	if (reg8 & 1) {
 		int tseg_size = 0;
 		printk(BIOS_DEBUG, "TSEG decoded, subtracting ");

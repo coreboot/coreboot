@@ -250,6 +250,7 @@ chip soc/intel/skylake
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E3_IRQ)"
+				register "wake" = "GPE0_DW2_16"
 				device i2c 15 on end
 			end
 		end # I2C #1

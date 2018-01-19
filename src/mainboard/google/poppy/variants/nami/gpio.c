@@ -241,8 +241,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E14, 20K_PD, DEEP, NF1),
 	/* E15 : DDPD_HPD2 ==> NC */
 	PAD_CFG_NC(GPP_E15),
-	/* E16 : DDPE_HPD3 ==> NC(TP17) */
-	PAD_CFG_NC(GPP_E16),
+        /* E16 : DDPE_HPD3 ==> PCH_GPP_E16 */
+        PAD_CFG_GPI_ACPI_SCI(GPP_E16, NONE, DEEP, INVERT),
 	/* E17 : EDP_HPD ==> EDP_HPD */
 	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF1),
 	/* E18 : DDPB_CTRLCLK ==> SOC_DP1_CTRL_CLK */

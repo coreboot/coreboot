@@ -19,7 +19,7 @@ Scope (\_SB.PCI0.I2C5)
 	Device (RTEK)   /* Audio Codec driver I2C */
 	{
 		Name (_HID, AUDIO_CODEC_HID)
-		Name (_CID, AUDIO_CODEC_CID)
+		Name (_CID, Package() { AUDIO_CODEC_CID, "INTCCFFD" })
 		Name (_DDN, AUDIO_CODEC_DDN)
 		Name (_UID, 1)
 

@@ -38,7 +38,7 @@
  * address. Just take 1MiB @ 512MiB.
  */
 #define FIRMWARE_PHYS_BASE (512 << 20)
-#define FIRMWARE_PHYS_LENGTH (1 << 20)
+#define FIRMWARE_PHYS_LENGTH (2 << 20)
 #define FIRMWARE_PCI_REG_BASE 0xa8
 #define FIRMWARE_PCI_REG_LENGTH 0xac
 #define FIRMWARE_REG_BASE_C0 0x144000

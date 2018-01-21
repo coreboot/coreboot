@@ -36,7 +36,7 @@ Scope (\_SB.PCI0.I2C5)
 				)
 
 			 /* Jack Detect (index 0) */
-			 GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullDefault,,
+			 GpioInt (Edge, ActiveHigh, ExclusiveAndWake, PullDefault,,
 				  "\\_SB.GPSW") { JACK_DETECT_GPIO_INDEX }
 			} )
 			Return (SBUF)
@@ -54,7 +54,7 @@ Scope (\_SB.PCI0.LPEA)
 	Name (GBUF, ResourceTemplate ()
 	{
 		/* Jack Detect (index 0) */
-		GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullDefault,,
+		GpioInt (Edge, ActiveBoth, ExclusiveAndWake, PullDefault,,
 			 "\\_SB.GPSW") { JACK_DETECT_GPIO_INDEX }
 	})
 }

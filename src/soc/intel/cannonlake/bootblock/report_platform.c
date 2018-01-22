@@ -35,6 +35,7 @@ static struct {
 	{ CPUID_CANNONLAKE_A0, "Cannonlake A0" },
 	{ CPUID_CANNONLAKE_B0, "Cannonlake B0" },
 	{ CPUID_CANNONLAKE_C0, "Cannonlake C0" },
+	{ CPUID_CANNONLAKE_D0, "Cannonlake D0" },
 };
 
 static struct {

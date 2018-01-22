@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -470,9 +470,18 @@ typedef struct {
 **/
   UINT8                       PchCnviMode;
 
-/** Offset 0x0147
+/** Offset 0x0147 - SdCard power enable polarity
+  Choose SD_PWREN# polarity
+  0: Active low, 1: Active high
 **/
-  UINT8                       UnusedUpdSpace3[2];
+  UINT8                       SdCardPowerEnableActiveHigh;
+
+/** Offset 0x0148 - PCH USB2 PHY Power Gating enable
+  1: Will enable USB2 PHY SUS Well Power Gating, 0: Will not enable PG of USB2 PHY
+  Sus Well PG
+  $EN_DIS
+**/
+  UINT8                       PchUsb2PhySusPgEnable;
 
 /** Offset 0x0149 - PCH USB OverCurrent mapping enable
   1: Will program USB OC pin mapping in xHCI controller memory, 0: Will clear OC pin
@@ -483,7 +492,7 @@ typedef struct {
 
 /** Offset 0x014A
 **/
-  UINT8                       UnusedUpdSpace4;
+  UINT8                       UnusedUpdSpace3;
 
 /** Offset 0x014B - CNVi MfUart1 Type
   This option configures Uart type which connects to MfUart1
@@ -506,7 +515,7 @@ typedef struct {
 
 /** Offset 0x014E
 **/
-  UINT8                       UnusedUpdSpace5;
+  UINT8                       UnusedUpdSpace4;
 
 /** Offset 0x014F - PCHHOT# pin
   Enable PCHHOT# pin assertion when temperature is higher than PchHotLevel. 0: disable, 1: enable
@@ -594,9 +603,27 @@ typedef struct {
 **/
   UINT16                      WatchDogTimerBios;
 
-/** Offset 0x015F
+/** Offset 0x015F - Remote Assistance Trigger Availablilty
+  Enable/Disable. 0: Disable, 1: enable, Remote Assistance enable/disable state by Mebx
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace6[4];
+  UINT8                       RemoteAssistance;
+
+/** Offset 0x0160 - KVM Switch
+  Enable/Disable. 0: Disable, 1: enable, KVM enable/disable state by Mebx
+  $EN_DIS
+**/
+  UINT8                       AmtKvmEnabled;
+
+/** Offset 0x0161 - KVM Switch
+  Enable/Disable. 0: Disable, 1: enable, KVM enable/disable state by Mebx
+  $EN_DIS
+**/
+  UINT8                       ForcMebxSyncUp;
+
+/** Offset 0x0162
+**/
+  UINT8                       UnusedUpdSpace5[1];
 
 /** Offset 0x0163 - PCH PCIe root port connection type
   0: built-in device, 1:slot
@@ -604,7 +631,8 @@ typedef struct {
   UINT8                       PcieRpSlotImplemented[24];
 
 /** Offset 0x017B - Usage type for ClkSrc
-  0-23: PCH rootport, 0x40: LAN, 0x80: unspecified but in use, 0xFF: not used
+  0-23: PCH rootport, 0x40-0x43: PEG port, 0x70:LAN, 0x80: unspecified but in use
+  (free running), 0xFF: not used
 **/
   UINT8                       PcieClkSrcUsage[16];
 
@@ -631,9 +659,22 @@ typedef struct {
 **/
   UINT16                      PcieRpDetectTimeoutMs[24];
 
-/** Offset 0x01FB
+/** Offset 0x01FB - ModPHY SUS Power Domain Dynamic Gating
+  Enable/Disable ModPHY SUS Power Domain Dynamic Gating. Setting not supported on
+  PCH-H. 0: disable, 1: enable
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace7[5];
+  UINT8                       PmcModPhySusPgEnable;
+
+/** Offset 0x01FC - SlpS0WithGbeSupport
+  Enable/Disable SLP_S0 with GBE Support. 0: disable, 1: enable
+  $EN_DIS
+**/
+  UINT8                       SlpS0WithGbeSupport;
+
+/** Offset 0x01FD
+**/
+  UINT8                       UnusedUpdSpace6[3];
 
 /** Offset 0x0200 - Enable/Disable SA CRID
   Enable: SA CRID, Disable (Default): SA CRID
@@ -642,8 +683,8 @@ typedef struct {
   UINT8                       CridEnable;
 
 /** Offset 0x0201 - DMI ASPM
-  0=Disable, 3(Default)=L0sL1
-  0:Disable, 3:L0sL1
+  0=Disable, 1:L0s, 2:L1, 3(Default)=L0sL1
+  0:Disable, 1:L0s, 2:L1, 3:L0sL1
 **/
   UINT8                       DmiAspm;
 
@@ -689,7 +730,7 @@ typedef struct {
 
 /** Offset 0x0219
 **/
-  UINT8                       UnusedUpdSpace8;
+  UINT8                       UnusedUpdSpace7;
 
 /** Offset 0x021A - Enable or disable GNA device
   0=Disable, 1(Default)=Enable
@@ -698,7 +739,7 @@ typedef struct {
   UINT8                       GnaEnable;
 
 /** Offset 0x021B - State of X2APIC_OPT_OUT bit in the DMAR table
-  0=Disable/Clear, 1(Default)=Enable/Set
+  0=Disable/Clear, 1=Enable/Set
   $EN_DIS
 **/
   UINT8                       X2ApicOptOut;
@@ -762,11 +803,36 @@ typedef struct {
 **/
   UINT8                       DdiPortFDdc;
 
-/** Offset 0x0231 - SaPostMemProductionRsvd
+/** Offset 0x0231 - Enable/Disable SkipS3CdClockInit
+  Enable: Skip Full CD clock initializaton, Disable(Default): Initialize the full
+  CD clock in S3 resume due to GOP absent
+  $EN_DIS
+**/
+  UINT8                       SkipS3CdClockInit;
+
+/** Offset 0x0232 - Delta T12 Power Cycle Delay required in ms
+  Select the value for delay required. 0(Default)= No delay, 0xFFFF = Auto calculate
+  T12 Delay to max 500ms
+  0 : No Delay, 0xFFFF : Auto Calulate T12 Delay
+**/
+  UINT16                      DeltaT12PowerCycleDelay;
+
+/** Offset 0x0234 - Blt Buffer Address
+  Address of Blt buffer
+**/
+  UINT32                      BltBufferAddress;
+
+/** Offset 0x0238 - Blt Buffer Size
+  Size of Blt Buffer, is equal to PixelWidth * PixelHeight * 4 bytes (the size of
+  EFI_GRAPHICS_OUTPUT_BLT_PIXEL)
+**/
+  UINT32                      BltBufferSize;
+
+/** Offset 0x023C - SaPostMemProductionRsvd
   Reserved for SA Post-Mem Production
   $EN_DIS
 **/
-  UINT8                       SaPostMemProductionRsvd[46];
+  UINT8                       SaPostMemProductionRsvd[35];
 
 /** Offset 0x025F - PCIE RP Disable Gen2PLL Shutdown and L1 Clock Gating Enable
   PCIE RP Disable Gen2PLL Shutdown and L1 Clock Gating Enable Workaround needed for
@@ -888,7 +954,7 @@ typedef struct {
 
 /** Offset 0x02BB
 **/
-  UINT8                       UnusedUpdSpace9[10];
+  UINT8                       UnusedUpdSpace8[10];
 
 /** Offset 0x02C5 - DcLoadline
   PCODE MMIO Mailbox: DcLoadline in 1/100 mOhms (ie. 1250 = 12.50 mOhm); Range is
@@ -956,7 +1022,7 @@ typedef struct {
 
 /** Offset 0x0306
 **/
-  UINT8                       UnusedUpdSpace10[6];
+  UINT8                       UnusedUpdSpace9[6];
 
 /** Offset 0x030C - Skip Multi-Processor Initialization
   When this is skipped, boot loader must initialize processors before SilicionInit
@@ -1021,18 +1087,24 @@ typedef struct {
 **/
   UINT8                       IslVrCmd;
 
-/** Offset 0x031A - ReservedCpuPostMemProduction
+/** Offset 0x031A - Imon slope1 correction
+  PCODE MMIO Mailbox: Imon slope correction. Specified in 1/100 increment values.
+  Range is 0-200. 125 = 1.25. <b>0: Auto</b>.For all VR Indexes
+**/
+  UINT16                      ImonSlope1[5];
+
+/** Offset 0x0324 - ReservedCpuPostMemProduction
   Reserved for CPU Post-Mem Production
   $EN_DIS
 **/
-  UINT8                       ReservedCpuPostMemProduction[17];
+  UINT8                       ReservedCpuPostMemProduction[1];
 
-/** Offset 0x032B
+/** Offset 0x0325
 **/
-  UINT8                       UnusedUpdSpace11[27];
+  UINT8                       UnusedUpdSpace10[33];
 
 /** Offset 0x0346 - Enable DMI ASPM
-  ASPM on PCH side of the DMI Link.
+  Deprecated.
   $EN_DIS
 **/
   UINT8                       PchDmiAspm;
@@ -1072,7 +1144,7 @@ typedef struct {
 
 /** Offset 0x0367
 **/
-  UINT8                       UnusedUpdSpace12;
+  UINT8                       UnusedUpdSpace11;
 
 /** Offset 0x0368 - VC Type
   Virtual Channel Type Select: 0: VC0, 1: VC1.
@@ -1113,7 +1185,7 @@ typedef struct {
 
 /** Offset 0x036E
 **/
-  UINT8                       UnusedUpdSpace13[15];
+  UINT8                       UnusedUpdSpace12[15];
 
 /** Offset 0x037D - Enable PCH Io Apic Entry 24-119
   0: Disable; 1: Enable.
@@ -1128,7 +1200,7 @@ typedef struct {
 
 /** Offset 0x037F
 **/
-  UINT8                       UnusedUpdSpace14;
+  UINT8                       UnusedUpdSpace13;
 
 /** Offset 0x0380 - Enable PCH ISH SPI GPIO pins assigned
   0: Disable; 1: Enable.
@@ -1228,7 +1300,7 @@ typedef struct {
 
 /** Offset 0x0390
 **/
-  UINT8                       UnusedUpdSpace15[3];
+  UINT8                       UnusedUpdSpace14[3];
 
 /** Offset 0x0393 - Enable LOCKDOWN BIOS LOCK
   Enable the BIOS Lock feature and set EISS bit (D31:F5:RegDCh[5]) for the BIOS region
@@ -1320,10 +1392,9 @@ typedef struct {
 **/
   UINT8                       PcieRpMaxPayload[24];
 
-/** Offset 0x04E6 - PCIE RP Device Reset Pad Active High
-  Indicated whether PERST# is active 0: Low; 1: High, See: DeviceResetPad.
+/** Offset 0x04E6
 **/
-  UINT8                       PcieRpDeviceResetPadActiveHigh[24];
+  UINT8                       UnusedUpdSpace15[24];
 
 /** Offset 0x04FE - PCIE RP Pcie Speed
   Determines each PCIE Port speed capability. 0: Auto; 1: Gen1; 2: Gen2; 3: Gen3 (see:
@@ -1332,8 +1403,8 @@ typedef struct {
   UINT8                       PcieRpPcieSpeed[24];
 
 /** Offset 0x0516 - PCIE RP Gen3 Equalization Phase Method
-  PCIe Gen3 Eq Ph3 Method (see PCH_PCIE_EQ_METHOD). 0: Default; 2: Software Search;
-  4: Fixed Coeficients.
+  PCIe Gen3 Eq Ph3 Method (see PCH_PCIE_EQ_METHOD). 0: DEPRECATED, hardware equalization;
+  1: hardware equalization; 4: Fixed Coeficients.
 **/
   UINT8                       PcieRpGen3EqPh3Method[24];
 
@@ -1347,15 +1418,9 @@ typedef struct {
 **/
   UINT8                       PcieRpCompletionTimeout[24];
 
-/** Offset 0x055E - PCIE RP Device Reset Pad
-  The PCH pin assigned to device PERST# signal if available, zero otherwise.  See
-  also DeviceResetPadActiveHigh.
+/** Offset 0x055E
 **/
-  UINT32                      PcieRpDeviceResetPad[24];
-
-/** Offset 0x05BE
-**/
-  UINT8                       UnusedUpdSpace16[10];
+  UINT8                       UnusedUpdSpace16[106];
 
 /** Offset 0x05C8 - PCIE RP Aspm
   The ASPM configuration of the root port (see: PCH_PCIE_ASPM_CONTROL). Default is
@@ -1550,6 +1615,7 @@ typedef struct {
 
 /** Offset 0x0680 - PCH Pm Lpc Clock Run
   This member describes whether or not the LPC ClockRun feature of PCH should be enabled.
+  Default value is Disabled
   $EN_DIS
 **/
   UINT8                       PchPmLpcClockRun;
@@ -1771,7 +1837,7 @@ typedef struct {
   UINT8                       SataRstPcieDeviceResetDelay[3];
 
 /** Offset 0x06F5 - Enable eMMC HS400 Training
-  Determine if HS400 Training is required.
+  Deprecated.
   $EN_DIS
 **/
   UINT8                       PchScsEmmcHs400TuningRequired;
@@ -1793,7 +1859,7 @@ typedef struct {
   UINT8                       PchScsEmmcHs400TxDataDll;
 
 /** Offset 0x06F9 - I/O Driver Strength
-  I/O driver strength: 0 - 33 Ohm, 1 - 40 Ohm, 2 - 50 Ohm.
+  Deprecated.
   0:33 Ohm, 1:40 Ohm, 2:50 Ohm
 **/
   UINT8                       PchScsEmmcHs400DriverStrength;
@@ -2192,9 +2258,15 @@ typedef struct {
 **/
   UINT8                       PmcCpuC10GatePinEnable;
 
-/** Offset 0x07AB
+/** Offset 0x07AB - Pch Dmi Aspm Ctrl
+  ASPM configuration on the PCH side of the DMI/OPI Link. Default is <b>PchPcieAspmAutoConfig</b>
+  0:Disabled, 1:L0s, 2:L1, 3:L0sL1, 4:Auto
 **/
-  UINT8                       ReservedFspsUpd[2];
+  UINT8                       PchDmiAspmCtrl;
+
+/** Offset 0x07AC
+**/
+  UINT8                       ReservedFspsUpd[1];
 } FSP_S_CONFIG;
 
 /** Fsp S Test Configuration
@@ -2634,13 +2706,13 @@ typedef struct {
   UINT8                       C1e;
 
 /** Offset 0x080D - Enable or Disable Package Cstate Demotion
-  Enable or Disable Package Cstate Demotion. 0: Disable; <b>1: Enable</b>
+  Enable or Disable Package Cstate Demotion. <b>0: Disable</b>; 1: Enable
   $EN_DIS
 **/
   UINT8                       PkgCStateDemotion;
 
 /** Offset 0x080E - Enable or Disable Package Cstate UnDemotion
-  Enable or Disable Package Cstate UnDemotion. 0: Disable; <b>1: Enable</b>
+  Enable or Disable Package Cstate UnDemotion. <b>0: Disable</b>; 1: Enable
   $EN_DIS
 **/
   UINT8                       PkgCStateUnDemotion;
@@ -3111,7 +3183,7 @@ typedef struct {
   UINT8                       UnusedUpdSpace26[17];
 
 /** Offset 0x0A72 - Skip POSTBOOT SAI
-  This skip the Post Boot Sai programming. 0: Set Post Boot Sai; 1: Skip Post Boot Sai.
+  Deprecated
   $EN_DIS
 **/
   UINT8                       SkipPostBootSai;

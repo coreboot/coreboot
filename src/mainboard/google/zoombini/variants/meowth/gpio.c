@@ -226,7 +226,7 @@ static const struct pad_config gpio_table[] = {
 				   NF1), /* PCH_RCAM_SAR0_I2C5_SDA */
 /* I2C5_SCL */		PAD_CFG_NF(GPP_H11, NONE, DEEP,
 				   NF1), /* PCH_RCAM_SAR0_I2C5_SCL */
-/* M2_SKT2_CFG0 */	PAD_NC(GPP_H12, NONE),
+/* M2_SKT2_CFG0 */	PAD_CFG_GPI(GPP_H12, NONE, DEEP), /* PCH_WP_OD */
 /* M2_SKT2_CFG1 */	PAD_NC(GPP_H13, NONE),
 /* M2_SKT2_CFG2 */	PAD_NC(GPP_H14, NONE),
 /* M2_SKT2_CFG3 */	PAD_NC(GPP_H15, NONE),

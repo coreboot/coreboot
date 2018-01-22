@@ -29,7 +29,7 @@
 #define GPIO_EC_IN_RW		GPP_A8
 
 /* BIOS Flash Write Protect */
-#define GPIO_PCH_WP		GPP_A1
+#define GPIO_PCH_WP		GPP_H12
 
 /* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
 #define GPE_EC_WAKE		GPE0_LAN_WAK

@@ -42,14 +42,14 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, 1 },
 	{ 1, 1, 1 },
 	{ 1, 0, 2 },
-	{ 1, 0, 2 },
+	{ 1, 0, 2 }, /* bluetooth */
 	{ 0, 0, 3 },
-	{ 1, 0, 3 },
+	{ 1, 0, 3 }, /* smartcard */
 	{ 1, 1, 4 },
-	{ 1, 1, 4 },
-	{ 1, 0, 5 },
+	{ 1, 1, 4 }, /* mainboard USB 2.0 */
+	{ 1, 0, 5 }, /* camera */
 	{ 0, 0, 5 },
-	{ 1, 0, 6 },
+	{ 1, 0, 6 }, /* WWAN */
 	{ 0, 0, 6 },
 };
 

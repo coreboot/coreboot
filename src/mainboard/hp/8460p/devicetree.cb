@@ -67,6 +67,7 @@ chip northbridge/intel/sandybridge
 			register "pcie_hotplug_map" = "{ 0, 1, 1, 0, 0, 0, 0, 0 }"
 			register "pcie_port_coalesce" = "1"
 			register "sata_interface_speed_support" = "0x3"
+			# HDD(0), ODD(1), docking(3,5), eSATA(4)
 			register "sata_port_map" = "0x3b"
 
 			register "spi_uvscc" = "0x2005"
@@ -107,7 +108,7 @@ chip northbridge/intel/sandybridge
 			end
 			device pci 1c.5 off # PCIe Port #6
 			end
-			device pci 1c.6 off # PCIe Port #7
+			device pci 1c.6 on # PCIe Port #7, WWAN
 			end
 			device pci 1c.7 on # PCIe Port #8, NEC USB 3.0 Host Controller
 				subsystemid 0x103c 0x161c

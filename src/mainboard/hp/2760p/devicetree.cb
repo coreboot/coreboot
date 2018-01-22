@@ -106,7 +106,7 @@ chip northbridge/intel/sandybridge
 			end
 			device pci 1c.5 off # PCIe Port #6
 			end
-			device pci 1c.6 off # PCIe Port #7
+			device pci 1c.6 on # PCIe Port #7, WWAN
 			end
 			device pci 1c.7 off # PCIe Port #8
 			end

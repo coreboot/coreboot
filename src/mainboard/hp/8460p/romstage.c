@@ -43,20 +43,20 @@ void mainboard_rcba_config(void)
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 1, 0 },
-	{ 1, 0, 0 },
+	{ 1, 1, 0 }, /* USB0, eSATA */
+	{ 1, 0, 0 }, /* USB charger */
 	{ 0, 1, 1 },
-	{ 1, 1, 1 },
-	{ 1, 0, 2 },
-	{ 1, 0, 2 },
+	{ 1, 1, 1 }, /* camera */
+	{ 1, 0, 2 }, /* USB4 expresscard */
+	{ 1, 0, 2 }, /* bluetooth */
 	{ 0, 0, 3 },
-	{ 1, 0, 3 },
-	{ 1, 1, 4 },
-	{ 1, 1, 4 },
-	{ 1, 0, 5 },
-	{ 1, 0, 5 },
-	{ 1, 0, 6 },
-	{ 1, 0, 6 },
+	{ 1, 0, 3 }, /* smartcard */
+	{ 1, 1, 4 }, /* fingerprint */
+	{ 1, 1, 4 }, /* WWAN */
+	{ 1, 0, 5 }, /* CONN */
+	{ 1, 0, 5 }, /* docking */
+	{ 1, 0, 6 }, /* CONN */
+	{ 1, 0, 6 }, /* docking */
 };
 
 void mainboard_early_init(int s3resume)

@@ -5,7 +5,7 @@
 
 @copyright
   INTEL CONFIDENTIAL
-  Copyright 1999 - 2017 Intel Corporation.
+  Copyright 1999 - 2018 Intel Corporation.
 
   The source code contained or described herein and all documents related to the
   source code ("Material") are owned by Intel Corporation or its suppliers or
@@ -37,6 +37,10 @@
 #ifndef _MEM_INFO_HOB_H_
 #define _MEM_INFO_HOB_H_
 
+#include <Uefi/UefiMultiPhase.h>
+#include <Pi/PiBootMode.h>
+#include <Pi/PiHob.h>
+
 #pragma pack (push, 1)
 
 extern EFI_GUID gSiMemoryS3DataGuid;
@@ -57,25 +61,6 @@ extern EFI_GUID gSiMemoryPlatformDataGuid;
 #define   B_RANK1_PRS           BIT1
 #define   B_RANK2_PRS           BIT4
 #define   B_RANK3_PRS           BIT5
-
-// @todo remove and use the MdePkg\Include\Pi\PiHob.h
-#if !defined(_PEI_HOB_H_) && !defined(__PI_HOB_H__)
-#ifndef __HOB__H__
-typedef struct _EFI_HOB_GENERIC_HEADER {
-  UINT16  HobType;
-  UINT16  HobLength;
-  UINT32  Reserved;
-} EFI_HOB_GENERIC_HEADER;
-
-typedef struct _EFI_HOB_GUID_TYPE {
-  EFI_HOB_GENERIC_HEADER  Header;
-  EFI_GUID                Name;
-  ///
-  /// Guid specific data goes here
-  ///
-} EFI_HOB_GUID_TYPE;
-#endif
-#endif
 
 ///
 /// Defines taken from MRC so avoid having to include MrcInterface.h
@@ -183,6 +168,13 @@ typedef struct {
   UINT16 tCCD_L;  ///< Number of tCK cycles for the channel DIMM's minimum CAS-to-CAS delay for same bank group.
 } MRC_CH_TIMING;
 
+typedef struct {
+  UINT8 SG;         ///< Number of tCK cycles between transactions in the same bank group.
+  UINT8 DG;         ///< Number of tCK cycles between transactions when switching bank groups.
+  UINT8 DR;         ///< Number of tCK cycles between transactions when switching between Ranks (in the same DIMM).
+  UINT8 DD;         ///< Number of tCK cycles between transactions when switching between DIMMs.
+} MRC_TA_TIMING;
+
 ///
 /// Memory SMBIOS & OC Memory Data Hob
 ///
@@ -208,11 +200,15 @@ typedef struct {
 } CHANNEL_INFO;
 
 typedef struct {
-  UINT8            Status;                  ///< Indicates whether this controller should be used.
-  UINT16           DeviceId;                ///< The PCI device id of this memory controller.
-  UINT8            RevisionId;              ///< The PCI revision id of this memory controller.
-  UINT8            ChannelCount;            ///< Number of valid channels that exist on the controller.
-  CHANNEL_INFO     ChannelInfo[MAX_CH];     ///< The following are channel level definitions.
+  UINT8             Status;                  ///< Indicates whether this controller should be used.
+  UINT16            DeviceId;                ///< The PCI device id of this memory controller.
+  UINT8             RevisionId;              ///< The PCI revision id of this memory controller.
+  UINT8             ChannelCount;            ///< Number of valid channels that exist on the controller.
+  CHANNEL_INFO      ChannelInfo[MAX_CH];     ///< The following are channel level definitions.
+  MRC_TA_TIMING     tRd2Rd;                  ///< Read-to-Read   Turn Around Timings
+  MRC_TA_TIMING     tRd2Wr;                  ///< Read-to-Write  Turn Around Timings
+  MRC_TA_TIMING     tWr2Rd;                  ///< Write-to-Read  Turn Around Timings
+  MRC_TA_TIMING     tWr2Wr;                  ///< Write-to-Write Turn Around Timings
 } CONTROLLER_INFO;
 
 typedef struct {

@@ -116,6 +116,8 @@ chip soc/intel/skylake
 	#| ImonOffset     | 0     | 0     | 0     | 0     |
 	#| IccMax         | 7A    | 34A   | 35A   | 35A   |
 	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
+	#| AcLoadline(ohm)| 10.3m | 2.4m  | 3.1m  | 3.1m  |
+	#| DcLoadline(ohm)| 10.3m | 2.4m  | 3.1m  | 3.1m  |
 	#+----------------+-------+-------+-------+-------+
 	#Note: IccMax settings are moved to SoC code
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
@@ -128,6 +130,8 @@ chip soc/intel/skylake
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
 		.voltage_limit = 1520,
+		.ac_loadline = 1030,
+		.dc_loadline = 1030,
 	}"
 
 	register "domain_vr_config[VR_IA_CORE]" = "{
@@ -140,6 +144,8 @@ chip soc/intel/skylake
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
 		.voltage_limit = 1520,
+		.ac_loadline = 240,
+		.dc_loadline = 240,
 	}"
 
 	register "domain_vr_config[VR_GT_UNSLICED]" = "{
@@ -152,6 +158,8 @@ chip soc/intel/skylake
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
 		.voltage_limit = 1520,
+		.ac_loadline = 310,
+		.dc_loadline = 310,
 	}"
 
 	register "domain_vr_config[VR_GT_SLICED]" = "{
@@ -164,6 +172,8 @@ chip soc/intel/skylake
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
 		.voltage_limit = 1520,
+		.ac_loadline = 310,
+		.dc_loadline = 310,
 	}"
 
 	# Enable Root port 3(x1) for LAN.

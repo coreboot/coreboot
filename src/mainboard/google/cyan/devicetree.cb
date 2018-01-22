@@ -19,7 +19,7 @@ chip soc/intel/braswell
 	# Set the parameters for SiliconInit
 	############################################################
 
-	register "PcdSdcardMode" = "PCH_ACPI_MODE"
+	register "PcdSdcardMode" = "PCH_PCI_MODE"
 	register "PcdEnableHsuart0" = "0"
 	register "PcdEnableHsuart1" = "1"
 	register "PcdEnableAzalia" = "1"
@@ -36,7 +36,7 @@ chip soc/intel/braswell
 	register "PcdEnableI2C6" = "0"
 	register "PunitPwrConfigDisable" = "0"	# Enable SVID
 	register "ChvSvidConfig" = "SVID_PMIC_CONFIG"
-	register "PcdEmmcMode" = "PCH_ACPI_MODE"
+	register "PcdEmmcMode" = "PCH_PCI_MODE"
 	register "PcdUsb3ClkSsc" = "1"
 	register "PcdDispClkSsc" = "1"
 	register "PcdSataClkSsc" = "1"
@@ -84,10 +84,10 @@ chip soc/intel/braswell
 	# LPE audio codec settings
 	register "lpe_codec_clk_src" = "LPE_CLK_SRC_XTAL" # 19.2MHz clock
 
-	# Enable devices in ACPI mode
+	# Enable LPSS and LPE devices in ACPI mode
 	register "lpss_acpi_mode" = "1"
-	register "emmc_acpi_mode" = "1"
-	register "sd_acpi_mode" = "1"
+	register "emmc_acpi_mode" = "0"
+	register "sd_acpi_mode" = "0"
 	register "lpe_acpi_mode" = "1"
 
 	# Disable SLP_X stretching after SUS power well fail.

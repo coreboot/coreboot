@@ -27,11 +27,9 @@ chip soc/intel/skylake
 	# FSP Configuration
 	register "ProbelessTrace" = "0"
 	register "EnableLan" = "0"
-	register "EnableSata" = "1"
-	register "SataSalpSupport" = "1"
+	register "EnableSata" = "0"
+	register "SataSalpSupport" = "0"
 	register "SataMode" = "0"
-	register "SataPortsEnable[1]" = "1"
-	register "SataPortsDevSlp[1]" = "1"
 	register "EnableAzalia" = "1"
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "3"
@@ -284,7 +282,7 @@ chip soc/intel/skylake
 		device pci 16.2 off end # Management Engine IDE-R
 		device pci 16.3 off end # Management Engine KT Redirection
 		device pci 16.4 off end # Management Engine Interface 3
-		device pci 17.0 on  end # SATA
+		device pci 17.0 off  end # SATA
 		device pci 19.0 on  end # UART #2
 		device pci 19.1 off end # I2C #5
 		device pci 19.2 off end # I2C #4

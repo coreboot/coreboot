@@ -39,9 +39,9 @@ chip soc/intel/cannonlake
 		.early_init = 1,
 	}"
 
-	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"
-	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC1)"
-	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC2)"
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC2)"
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC3)"
+	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)"
 	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)"
 	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC_SKIP)"
 	register "usb2_ports[5]" = "USB2_PORT_TYPE_C(OC_SKIP)"
@@ -50,12 +50,8 @@ chip soc/intel/cannonlake
 	register "usb2_ports[8]" = "USB2_PORT_TYPE_C(OC_SKIP)"
 	register "usb2_ports[9]" = "USB2_PORT_TYPE_C(OC_SKIP)"
 
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)"
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC0)"
-	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)"
-	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)"
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC3)"
 
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge

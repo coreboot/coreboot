@@ -72,6 +72,30 @@ u8 spd_ddr2_calc_checksum(u8 *spd, int len)
 }
 
 /**
+ * \brief Calculate the CRC of a DDR2 SPD unique identifier
+ *
+ * @param spd pointer to raw SPD data
+ * @param len length of data in SPD
+ *
+ * @return the CRC of SPD data bytes 64..72 and 93..98, or 0
+ *  when spd data is truncated.
+ */
+u16 spd_ddr2_calc_unique_crc(const u8 *spd, int len)
+{
+	u8 id_bytes[15];
+	int i, j = 0;
+	if (len < 98)
+		/* Not enough bytes available to get the CRC */
+		return 0;
+	for (i = 64; i <= 72; i++)
+		id_bytes[j++] = spd[i];
+	for (i = 93; i <= 98; i++)
+		id_bytes[j++] = spd[i];
+
+	return ddr3_crc16(id_bytes, 15);
+}
+
+/**
  * \brief Return size of SPD.
  *
  * Returns size of SPD. Usually 128 Byte.

@@ -179,5 +179,6 @@ int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2]);
 void dram_print_spd_ddr2(const struct dimm_attr_ddr2_st *dimm);
 void normalize_tck(u32 *tclk);
 u8 spd_get_msbs(u8 c);
+u16 spd_ddr2_calc_unique_crc(const u8 *spd, int len);
 
 #endif /* DEVICE_DRAM_DDR2L_H */

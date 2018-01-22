@@ -46,7 +46,7 @@ int spd_dimm_is_registered_ddr3(enum spd_dimm_type type)
 	return 0;
 }
 
-static u16 crc16(const u8 *ptr, int n_crc)
+u16 ddr3_crc16(const u8 *ptr, int n_crc)
 {
 	int i;
 	u16 crc = 0;
@@ -87,7 +87,7 @@ u16 spd_ddr3_calc_crc(u8 *spd, int len)
 		/* Not enough bytes available to get the CRC */
 		return 0;
 
-	return crc16(spd, n_crc);
+	return ddr3_crc16(spd, n_crc);
 }
 
 /**
@@ -104,7 +104,7 @@ u16 spd_ddr3_calc_unique_crc(u8 *spd, int len)
 		/* Not enough bytes available to get the CRC */
 		return 0;
 
-	return crc16(&spd[117], 11);
+	return ddr3_crc16(&spd[117], 11);
 }
 
 /**

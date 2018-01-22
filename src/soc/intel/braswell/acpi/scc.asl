@@ -77,6 +77,44 @@ Device (EMMC)
 	}
 }
 
+Device (PEMC)
+{
+	Name (_ADR, 0x00100000)  // _ADR: Address
+
+	OperationRegion (SDIO, PCI_Config, 0x84, 0x04)
+	Field (SDIO, WordAcc, NoLock, Preserve)
+	{
+		Offset (0x01),
+		PMEE, 1,
+		, 6,
+		PMES, 1
+	}
+
+	Method (_STA, 0, NotSerialized)
+	{
+		If (LEqual (\C0EN, 1)) {
+			Return (0x0)
+		}
+		Else
+		{
+			Return (0xF)
+		}
+	}
+
+	Method (_DSW, 3, NotSerialized)
+	{
+	}
+
+	Device (CARD)
+	{
+		Name (_ADR, 0x08)
+		Method (_RMV, 0, NotSerialized)
+		{
+			Return (Zero)
+		}
+	}
+}
+
 Device (SDIO)
 {
 	Name (_HID, "INT33BB")

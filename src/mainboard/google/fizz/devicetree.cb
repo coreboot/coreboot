@@ -247,6 +247,17 @@ chip soc/intel/skylake
 		 .early_init = 1,
 	}"
 
+	# audio
+	register "i2c[5]" = "{
+		 .speed = I2C_SPEED_FAST,
+		 .speed_config[0] = {
+			.speed = I2C_SPEED_FAST,
+			.scl_lcnt = 194,
+			.scl_hcnt = 100,
+			.sda_hold = 36,
+		},
+	}"
+
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled,

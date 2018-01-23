@@ -52,6 +52,7 @@ RUN \
 		libyaml-dev \
 		m4 \
 		make \
+		msitools \
 		nasm \
 		openssl \
 		p7zip-full \
@@ -59,6 +60,7 @@ RUN \
 		pkg-config \
 		python \
 		qemu \
+		rsync \
 		shellcheck \
 		subversion \
 		unifont \

@@ -137,4 +137,29 @@ int dw_i2c_transfer(unsigned int bus,
 			const struct i2c_msg *segments,
 			size_t count);
 
+/*
+ * Map an i2c host controller device to a logical bus number.
+ * Return value:
+ * -1 = failure
+ * >=0 = logical bus number
+ */
+int dw_i2c_soc_dev_to_bus(struct device *dev);
+
+/*
+ * Common device_operations implementation to initialize the i2c host
+ * controller.
+ */
+void dw_i2c_dev_init(struct device *dev);
+
+/*
+ * Common device_operations implementation to fill ACPI SSDT table for i2c
+ * host controller.
+ */
+void dw_i2c_acpi_fill_ssdt(struct device *dev);
+
+/*
+ * Common device_operations implementation for i2c host controller ops.
+ */
+extern const struct i2c_bus_operations dw_i2c_bus_ops;
+
 #endif /* __DRIVERS_I2C_DESIGNWARE_I2C_H__ */

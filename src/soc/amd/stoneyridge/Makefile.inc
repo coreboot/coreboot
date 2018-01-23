@@ -41,6 +41,7 @@ bootblock-$(CONFIG_STONEYRIDGE_UART) += uart.c
 bootblock-y += BiosCallOuts.c
 bootblock-y += bootblock/bootblock.c
 bootblock-y += i2c.c
+bootblock-y += monotonic_timer.c
 bootblock-y += pmutil.c
 bootblock-y += reset.c
 bootblock-y += sb_util.c
@@ -53,6 +54,7 @@ romstage-y += romstage.c
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
 romstage-y += gpio.c
 romstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += imc.c
+romstage-y += monotonic_timer.c
 romstage-y += pmutil.c
 romstage-y += reset.c
 romstage-y += sb_util.c
@@ -64,12 +66,14 @@ romstage-y += tsc_freq.c
 romstage-y += southbridge.c
 
 verstage-y += i2c.c
+verstage-y += monotonic_timer.c
 verstage-y += sb_util.c
 verstage-y += pmutil.c
 verstage-y += reset.c
 verstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 verstage-y += tsc_freq.c
 
+postcar-y += monotonic_timer.c
 postcar-$(CONFIG_STONEYRIDGE_UART) += uart.c
 postcar-y += ramtop.c
 
@@ -81,6 +85,7 @@ ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += gpio.c
 ramstage-y += hda.c
+ramstage-y += monotonic_timer.c
 ramstage-y += southbridge.c
 ramstage-y += sb_util.c
 ramstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += imc.c
@@ -100,6 +105,7 @@ ramstage-y += usb.c
 ramstage-y += tsc_freq.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
 
+smm-y += monotonic_timer.c
 smm-y += smihandler.c
 smm-y += smi_util.c
 smm-y += sb_util.c

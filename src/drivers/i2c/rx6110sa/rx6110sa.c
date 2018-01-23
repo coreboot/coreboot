@@ -25,13 +25,13 @@
 /* Function to write a register in the RTC with the given value. */
 static void rx6110sa_write(struct device *dev, uint8_t reg, uint8_t val)
 {
-	i2c_writeb_at(dev, reg, val);
+	i2c_dev_writeb_at(dev, reg, val);
 }
 
 /* Function to read a register in the RTC. */
 static uint8_t rx6110sa_read(struct device *dev, uint8_t reg)
 {
-	return (uint8_t)i2c_readb_at(dev, reg);
+	return (uint8_t)i2c_dev_readb_at(dev, reg);
 }
 
 /* Set RTC date from coreboot build date. */

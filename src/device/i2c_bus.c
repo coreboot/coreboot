@@ -44,7 +44,7 @@ struct bus *i2c_link(struct device *const dev)
 	return link;
 }
 
-int i2c_readb(struct device *const dev)
+int i2c_dev_readb(struct device *const dev)
 {
 	struct device *const busdev = i2c_busdev(dev);
 	if (!busdev)
@@ -74,7 +74,7 @@ int i2c_readb(struct device *const dev)
 	}
 }
 
-int i2c_writeb(struct device *const dev, uint8_t val)
+int i2c_dev_writeb(struct device *const dev, uint8_t val)
 {
 	struct device *const busdev = i2c_busdev(dev);
 	if (!busdev)
@@ -97,7 +97,7 @@ int i2c_writeb(struct device *const dev, uint8_t val)
 	}
 }
 
-int i2c_readb_at(struct device *const dev, uint8_t off)
+int i2c_dev_readb_at(struct device *const dev, uint8_t off)
 {
 	struct device *const busdev = i2c_busdev(dev);
 	if (!busdev)
@@ -135,8 +135,8 @@ int i2c_readb_at(struct device *const dev, uint8_t off)
 	}
 }
 
-int i2c_writeb_at(struct device *const dev,
-		  const uint8_t off, const uint8_t val)
+int i2c_dev_writeb_at(struct device *const dev,
+			const uint8_t off, const uint8_t val)
 {
 	struct device *const busdev = i2c_busdev(dev);
 	if (!busdev)

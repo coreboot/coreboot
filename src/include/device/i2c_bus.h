@@ -39,7 +39,7 @@ struct bus *i2c_link(struct device *);
  *
  * Returns NULL if i2c_link(dev) returns NULL.
  */
-static inline struct device *i2c_busdev(struct device *dev)
+static inline DEVTREE_CONST struct device *i2c_busdev(struct device *dev)
 {
 	struct bus *const link = i2c_link(dev);
 	return link ? link->dev : NULL;
@@ -63,7 +63,7 @@ static inline struct device *i2c_busdev(struct device *dev)
  *
  * Returns the read byte on success, negative `enum cb_err` value on error.
  */
-int i2c_readb(struct device *);
+int i2c_dev_readb(struct device *);
 
 /*
  * Writes the byte `val`.
@@ -71,7 +71,7 @@ int i2c_readb(struct device *);
  *
  * Returns 0 on success, negative `enum cb_err` value on error.
  */
-int i2c_writeb(struct device *, uint8_t val);
+int i2c_dev_writeb(struct device *, uint8_t val);
 
 /*
  * Sends the register offset `off` and reads one byte.
@@ -79,7 +79,7 @@ int i2c_writeb(struct device *, uint8_t val);
  *
  * Returns the read byte on success, negative `enum cb_err` value on error.
  */
-int i2c_readb_at(struct device *, uint8_t off);
+int i2c_dev_readb_at(struct device *, uint8_t off);
 
 /*
  * Sends the register offset `off` followed by the byte `val`.
@@ -87,6 +87,6 @@ int i2c_readb_at(struct device *, uint8_t off);
  *
  * Returns 0 on success, negative `enum cb_err` value on error.
  */
-int i2c_writeb_at(struct device *, uint8_t off, uint8_t val);
+int i2c_dev_writeb_at(struct device *, uint8_t off, uint8_t val);
 
 #endif	/* _DEVICE_I2C_BUS_H_ */

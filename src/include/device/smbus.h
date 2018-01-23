@@ -32,22 +32,22 @@ int smbus_set_link(device_t dev);
 
 static inline int smbus_recv_byte(struct device *const dev)
 {
-	return i2c_readb(dev);
+	return i2c_dev_readb(dev);
 }
 
 static inline int smbus_send_byte(struct device *const dev, u8 byte)
 {
-	return i2c_writeb(dev, byte);
+	return i2c_dev_writeb(dev, byte);
 }
 
 static inline int smbus_read_byte(struct device *const dev, u8 addr)
 {
-	return i2c_readb_at(dev, addr);
+	return i2c_dev_readb_at(dev, addr);
 }
 
 static inline int smbus_write_byte(struct device *const dev, u8 addr, u8 val)
 {
-	return i2c_writeb_at(dev, addr, val);
+	return i2c_dev_writeb_at(dev, addr, val);
 }
 
 int smbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buffer);

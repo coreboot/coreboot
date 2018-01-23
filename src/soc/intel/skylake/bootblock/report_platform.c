@@ -56,6 +56,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_KBL_U_R, "Kabylake-R ULT"},
 	{ PCI_DEVICE_ID_INTEL_KBL_ID_Y, "Kabylake-Y" },
 	{ PCI_DEVICE_ID_INTEL_KBL_ID_H, "Kabylake-H" },
+	{ PCI_DEVICE_ID_INTEL_KBL_ID_DT, "Kabylake DT" },
 };
 
 static struct {
@@ -69,6 +70,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_SPT_H_PREMIUM, "Skylake PCH-H Premium" },
 	{ PCI_DEVICE_ID_INTEL_SPT_H_C236, "Skylake PCH-H C236" },
 	{ PCI_DEVICE_ID_INTEL_SPT_H_QM170, "Skylake PCH-H QM170" },
+	{ PCI_DEVICE_ID_INTEL_KBP_H_Q270, "Kabylake-H Q270" },
 	{ PCI_DEVICE_ID_INTEL_KBP_LP_U_PREMIUM, "Kabylake-U Premium" },
 	{ PCI_DEVICE_ID_INTEL_KBP_LP_Y_PREMIUM, "Kabylake-Y Premium" },
 	{ PCI_DEVICE_ID_INTEL_KBP_LP_SUPER_SKU, "Kabylake Super Sku" },
@@ -94,6 +96,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_KBL_GT2_SULTM, "Kabylake ULT GT2" },
 	{ PCI_DEVICE_ID_INTEL_KBL_GT2_SULTMR, "Kabylake-R ULT GT2"},
 	{ PCI_DEVICE_ID_INTEL_KBL_GT2_SHALM, "Kabylake HALO GT2" },
+	{ PCI_DEVICE_ID_INTEL_KBL_GT2_DT2P2, "Kabylake DT GT2" },
 };
 
 static uint8_t get_dev_revision(device_t dev)

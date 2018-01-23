@@ -27,7 +27,7 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 	struct resource *res;
 
 	/* bus -> devfn */
-	devfn = i2c_soc_bus_to_devfn(bus);
+	devfn = dw_i2c_soc_bus_to_devfn(bus);
 
 	if (devfn < 0)
 		return (uintptr_t)NULL;
@@ -48,7 +48,7 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 static int lpss_i2c_dev_to_bus(struct device *dev)
 {
 	pci_devfn_t devfn = dev->path.pci.devfn;
-	return i2c_soc_devfn_to_bus(devfn);
+	return dw_i2c_soc_devfn_to_bus(devfn);
 }
 
 /*
@@ -98,7 +98,7 @@ static void lpss_i2c_dev_init(struct device *dev)
 	if (bus < 0)
 		return;
 
-	config = i2c_get_soc_cfg(bus, dev);
+	config = dw_i2c_get_soc_cfg(bus, dev);
 
 	if (!config)
 		return;
@@ -132,7 +132,7 @@ static void lpss_i2c_acpi_fill_ssdt(struct device *dev)
 	if (bus < 0)
 		return;
 
-	bcfg = i2c_get_soc_cfg(bus, dev);
+	bcfg = dw_i2c_get_soc_cfg(bus, dev);
 
 	if (!bcfg)
 		return;

@@ -20,7 +20,7 @@
 #include <soc/pci_devs.h>
 #include "chip.h"
 
-const struct dw_i2c_bus_config *i2c_get_soc_cfg(unsigned int bus,
+const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus,
 					const struct device *dev)
 {
 	const struct soc_intel_skylake_config *config;
@@ -35,12 +35,12 @@ const struct dw_i2c_bus_config *i2c_get_soc_cfg(unsigned int bus,
 	return &config->i2c[bus];
 }
 
-uintptr_t i2c_get_soc_early_base(unsigned int bus)
+uintptr_t dw_i2c_get_soc_early_base(unsigned int bus)
 {
 	return EARLY_I2C_BASE(bus);
 }
 
-int i2c_soc_devfn_to_bus(unsigned int devfn)
+int dw_i2c_soc_devfn_to_bus(unsigned int devfn)
 {
 	switch (devfn) {
 	case PCH_DEVFN_I2C0:
@@ -59,7 +59,7 @@ int i2c_soc_devfn_to_bus(unsigned int devfn)
 	return -1;
 }
 
-int i2c_soc_bus_to_devfn(unsigned int bus)
+int dw_i2c_soc_bus_to_devfn(unsigned int bus)
 {
 	switch (bus) {
 	case 0:

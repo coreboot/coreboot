@@ -79,7 +79,7 @@ struct dw_i2c_bus_config {
 /* Functions to be implemented by SoC code */
 
 /* Get base address for early init of I2C controllers. */
-uintptr_t i2c_get_soc_early_base(unsigned int bus);
+uintptr_t dw_i2c_get_soc_early_base(unsigned int bus);
 
 /*
  * Map given I2C bus number to devfn.
@@ -87,7 +87,7 @@ uintptr_t i2c_get_soc_early_base(unsigned int bus);
  * -1 = error
  * otherwise, devfn(>=0) corresponding to I2C bus number.
  */
-int i2c_soc_devfn_to_bus(unsigned int devfn);
+int dw_i2c_soc_devfn_to_bus(unsigned int devfn);
 
 /*
  * Map given bus number to a I2C Controller.
@@ -95,14 +95,14 @@ int i2c_soc_devfn_to_bus(unsigned int devfn);
  * -1 = error
  * otherwise, devfn(>=0) corresponding to I2C bus number.
  */
-int i2c_soc_bus_to_devfn(unsigned int bus);
+int dw_i2c_soc_bus_to_devfn(unsigned int bus);
 
 /*
  * SoC implemented callback for getting I2C bus configuration.
  *
  * Returns NULL if i2c config is not found
  */
-const struct dw_i2c_bus_config *i2c_get_soc_cfg(unsigned int bus,
+const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus,
 						const struct device *dev);
 
 /* Get I2C controller base address */

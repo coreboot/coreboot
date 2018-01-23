@@ -21,7 +21,7 @@
 #include <soc/pci_devs.h>
 #include "chip.h"
 
-const struct dw_i2c_bus_config *i2c_get_soc_cfg(unsigned int bus,
+const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus,
 					const struct device *dev)
 {
 	const struct soc_intel_apollolake_config *config;
@@ -36,13 +36,13 @@ const struct dw_i2c_bus_config *i2c_get_soc_cfg(unsigned int bus,
 	return &config->i2c[bus];
 }
 
-uintptr_t i2c_get_soc_early_base(unsigned int bus)
+uintptr_t dw_i2c_get_soc_early_base(unsigned int bus)
 {
 	return PRERAM_I2C_BASE_ADDRESS(bus);
 }
 
 /* Convert I2C bus number to PCI device and function */
-int i2c_soc_bus_to_devfn(unsigned int bus)
+int dw_i2c_soc_bus_to_devfn(unsigned int bus)
 {
 	if (bus <= 3)
 		return PCI_DEVFN(PCH_DEV_SLOT_SIO1, bus);
@@ -53,7 +53,7 @@ int i2c_soc_bus_to_devfn(unsigned int bus)
 }
 
 /* Convert PCI device and function to I2C bus number */
-int i2c_soc_devfn_to_bus(unsigned int devfn)
+int dw_i2c_soc_devfn_to_bus(unsigned int devfn)
 {
 	if (PCI_SLOT(devfn) == PCH_DEV_SLOT_SIO1)
 		return PCI_FUNC(devfn);

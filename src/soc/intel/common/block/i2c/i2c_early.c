@@ -32,7 +32,7 @@ static int lpss_i2c_early_init_bus(unsigned int bus)
 	uintptr_t base;
 
 	/* Find the PCI device for this bus controller */
-	devfn = i2c_soc_bus_to_devfn(bus);
+	devfn = dw_i2c_soc_bus_to_devfn(bus);
 	if (devfn < 0) {
 		printk(BIOS_ERR, "I2C%u device not found\n", bus);
 		return -1;
@@ -47,14 +47,14 @@ static int lpss_i2c_early_init_bus(unsigned int bus)
 	}
 
 	/* Skip if not enabled for early init */
-	config = i2c_get_soc_cfg(bus, tree_dev);
+	config = dw_i2c_get_soc_cfg(bus, tree_dev);
 	if (!config || !config->early_init) {
 		printk(BIOS_DEBUG, "I2C%u not enabled for early init\n", bus);
 		return -1;
 	}
 
 	/* Prepare early base address for access before memory */
-	base = i2c_get_soc_early_base(bus);
+	base = dw_i2c_get_soc_early_base(bus);
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, base);
 	pci_write_config32(dev, PCI_COMMAND,
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
@@ -78,7 +78,7 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 	uintptr_t base;
 
 	/* Find device+function for this controller */
-	devfn = i2c_soc_bus_to_devfn(bus);
+	devfn = dw_i2c_soc_bus_to_devfn(bus);
 	if (devfn < 0)
 		return (uintptr_t)NULL;
 

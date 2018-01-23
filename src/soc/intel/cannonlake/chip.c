@@ -132,6 +132,9 @@ void soc_init_pre_device(void *chip_info)
 {
 	/* Perform silicon specific init. */
 	fsp_silicon_init(romstage_handoff_is_resume());
+
+	 /* Display FIRMWARE_VERSION_INFO_HOB */
+	fsp_display_fvi_version_hob();
 }
 
 static void pci_domain_set_resources(device_t dev)

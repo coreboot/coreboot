@@ -263,6 +263,9 @@ struct soc_intel_cannonlake_config {
 
 	/* I2C bus configuration */
 	struct dw_i2c_bus_config i2c[CANNONLAKE_I2C_DEV_MAX];
+
+	/* Enable Pch iSCLK */
+	uint8_t pch_isclk;
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

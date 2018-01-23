@@ -37,6 +37,12 @@
 #define PCR_PSFX_T0_SHDW_PCIEN	0x1C
 #define PCR_PSFX_T0_SHDW_PCIEN_FUNDIS	(1 << 8)
 
+#define CAMERA1_CLK		0x8000 /* Camera 1 Clock */
+#define CAMERA2_CLK		0x8080 /* Camera 2 Clock */
+#define CAM_CLK_EN		(1 << 1)
+#define MIPI_CLK		(1 << 0)
+#define HDPLL_CLK		(0 << 0)
+
 static void pch_configure_endpoints(device_t dev, int epmask_id, uint32_t mask)
 {
 	uint32_t reg32;
@@ -65,23 +71,35 @@ static void disable_sideband_access(void)
 
 static void pch_disable_heci(void)
 {
+	pcr_or32(PID_PSF1, PSF_BASE_ADDRESS + PCR_PSFX_T0_SHDW_PCIEN,
+		PCR_PSFX_T0_SHDW_PCIEN_FUNDIS);
+	disable_sideband_access();
+}
+
+static void pch_enable_isclk(void)
+{
+	pcr_or32(PID_ISCLK, CAMERA1_CLK, CAM_CLK_EN | MIPI_CLK);
+	pcr_or32(PID_ISCLK, CAMERA2_CLK, CAM_CLK_EN | MIPI_CLK);
+}
+
+static void pch_handle_sideband(config_t *config)
+{
 	device_t dev = PCH_DEV_P2SB;
 
-	/*
-	 * if p2sb device 1f.1 is not present or hidden in devicetree
-	 * p2sb device becomes NULL
-	 */
 	if (!dev)
+		return;
+
+	if (config->HeciEnabled && !config->pch_isclk)
 		return;
 
 	/* unhide p2sb device */
 	pci_write_config8(dev, PCH_P2SB_E0 + 1, 0);
 
-	/* disable heci#1 */
-	pcr_or32(PID_PSF1, PSF_BASE_ADDRESS + PCR_PSFX_T0_SHDW_PCIEN,
-		PCR_PSFX_T0_SHDW_PCIEN_FUNDIS);
+	if (config->HeciEnabled == 0)
+		pch_disable_heci();
 
-	disable_sideband_access();
+	if (config->pch_isclk)
+		pch_enable_isclk();
 
 	/* hide p2sb device */
 	pci_write_config8(dev, PCH_P2SB_E0 + 1, 1);
@@ -124,9 +142,7 @@ static void pch_finalize(void)
 		write32(pmcbase + CPPMVRIC, reg32);
 	}
 
-	/* we should disable Heci1 based on the devicetree policy */
-	if (config->HeciEnabled == 0)
-		pch_disable_heci();
+	pch_handle_sideband(config);
 }
 
 static void soc_finalize(void *unused)

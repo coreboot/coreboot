@@ -26,6 +26,9 @@
 #include <Base.h>
 #include <FspmUpd.h>
 #include <FspsUpd.h>
+#if IS_ENABLED(CONFIG_DISPLAY_FSP_VERSION_INFO)
+#include <FirmwareVersionInfoHob.h>
+#endif
 
 #pragma pack(pop)
 

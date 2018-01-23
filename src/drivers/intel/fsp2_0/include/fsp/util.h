@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2015-2018 Intel Corp.
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -77,6 +77,7 @@ const void *fsp_find_nv_storage_data(size_t *size);
 const void *fsp_find_smbios_memory_info(size_t *size);
 enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 int fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16]);
+void fsp_display_fvi_version_hob(void);
 int fsp_find_reserved_memory(struct range_entry *re);
 const struct hob_resource *fsp_hob_header_to_resource(
 	const struct hob_header *hob);

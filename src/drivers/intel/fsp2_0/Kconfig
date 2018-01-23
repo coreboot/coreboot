@@ -112,6 +112,11 @@ config RESET_ON_INVALID_RAMSTAGE_CACHE
 	bool "Reset the system on S3 wake when ramstage cache invalid."
 	default n
 
+config DISPLAY_FSP_VERSION_INFO
+	bool "Display Firmware Ingredient Version Information"
+	help
+	  Select this option to display Firmware version information.
+
 config FSP2_0_USES_TPM_MRC_HASH
 	bool
 	default y if HAS_RECOVERY_MRC_CACHE

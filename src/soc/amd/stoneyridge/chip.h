@@ -19,10 +19,15 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <commonlib/helpers.h>
+#include <drivers/i2c/designware/dw_i2c.h>
+#include <soc/gpio.h>
+#include <arch/acpi_device.h>
 
 #define MAX_NODES 1
 #define MAX_DRAM_CH 1
 #define MAX_DIMMS_PER_CH 2
+
+#define STONEY_I2C_DEV_MAX 4
 
 struct soc_amd_stoneyridge_config {
 	u8 spd_addr_lookup[MAX_NODES][MAX_DRAM_CH][MAX_DIMMS_PER_CH];
@@ -44,6 +49,8 @@ struct soc_amd_stoneyridge_config {
 
 	/* Used if UMAMODE_SPECIFIED_SIZE is set. */
 	size_t uma_size;
+
+	struct dw_i2c_bus_config i2c[STONEY_I2C_DEV_MAX];
 };
 
 typedef struct soc_amd_stoneyridge_config config_t;

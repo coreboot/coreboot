@@ -20,6 +20,7 @@
 #include <cpu/cpu.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
@@ -27,6 +28,10 @@
 #include <amdblocks/psp.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
+
+/* Supplied by i2c.c */
+extern struct device_operations stoneyridge_i2c_mmio_ops;
+extern const char *i2c_acpi_name(const struct device *dev);
 
 struct device_operations cpu_bus_ops = {
 	.read_resources	  = DEVICE_NOOP,
@@ -79,6 +84,9 @@ static void enable_dev(device_t dev)
 		dev->ops = &cpu_bus_ops;
 	else if (dev->path.type == DEVICE_PATH_PCI)
 		sb_enable(dev);
+	else if (dev->path.type == DEVICE_PATH_MMIO)
+		if (i2c_acpi_name(dev) != NULL)
+			dev->ops = &stoneyridge_i2c_mmio_ops;
 }
 
 static void soc_init(void *chip_info)

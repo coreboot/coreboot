@@ -207,7 +207,12 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	t->clock_speed = dimm->ddr_frequency;
 	t->speed = dimm->ddr_frequency;
 	t->type = SMBIOS_MEMORY_DEVICE;
-	t->size = dimm->dimm_size;
+	if (dimm->dimm_size < 0x7fff) {
+		t->size = dimm->dimm_size;
+	} else {
+		t->size = 0x7fff;
+		t->extended_size = dimm->dimm_size & 0x7fffffff;
+	}
 	t->data_width = 8 * (1 << (dimm->bus_width & 0x7));
 	t->total_width = t->data_width + 8 * ((dimm->bus_width & 0x18) >> 3);
 

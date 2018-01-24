@@ -18,4 +18,8 @@
 
 #include <baseboard/gpio.h>
 
+/* Nautilus differs from baseboard in the GPIO used for EN_PP3300_DX_CAM. */
+#undef EN_PP3300_DX_CAM
+#define EN_PP3300_DX_CAM	GPP_C8
+
 #endif /* __MAINBOARD_GPIO_H__ */

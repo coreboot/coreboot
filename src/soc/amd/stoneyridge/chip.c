@@ -22,6 +22,7 @@
 #include <device/pci.h>
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
+#include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <amdblocks/psp.h>
 #include <amdblocks/agesawrapper.h>
@@ -35,12 +36,38 @@ struct device_operations cpu_bus_ops = {
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
+static const char *soc_acpi_name(const struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PCI0";
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return NULL;
+
+	switch (dev->path.pci.devfn) {
+	case EHCI1_DEVFN:
+		return "EHC0";
+	case LPC_DEVFN:
+		return "LPCB";
+	case SATA_DEVFN:
+		return "STCR";
+	case SD_DEVFN:
+		return "SDCN";
+	case SMBUS_DEVFN:
+		return "SBUS";
+	case XHCI_DEVFN:
+		return "XHC0";
+	default:
+		return NULL;
+	}
+};
+
 struct device_operations pci_domain_ops = {
 	.read_resources	  = domain_read_resources,
 	.set_resources	  = domain_set_resources,
 	.enable_resources = domain_enable_resources,
 	.scan_bus	  = pci_domain_scan_bus,
 	.ops_pci_bus	  = pci_bus_default_ops,
+	.acpi_name	  = soc_acpi_name,
 };
 
 static void enable_dev(device_t dev)

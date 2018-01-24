@@ -96,3 +96,13 @@ void gpio_output(gpio_t gpio_num, int value)
 	reg |=  GPIO_OUTPUT_ENABLE;
 	write32((void *)(uintptr_t)gpio_num, reg);
 }
+
+const char *gpio_acpi_path(gpio_t gpio)
+{
+	return "\\SB.GPIO";
+}
+
+uint16_t gpio_acpi_pin(gpio_t gpio)
+{
+	return gpio;
+}

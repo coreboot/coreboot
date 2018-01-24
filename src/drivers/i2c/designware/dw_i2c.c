@@ -772,7 +772,7 @@ void dw_i2c_dev_init(struct device *dev)
 	if (bus < 0)
 		return;
 
-	config = dw_i2c_get_soc_cfg(bus, dev);
+	config = dw_i2c_get_soc_cfg(bus);
 
 	if (!config)
 		return;
@@ -806,7 +806,7 @@ void dw_i2c_acpi_fill_ssdt(struct device *dev)
 	if (bus < 0)
 		return;
 
-	bcfg = dw_i2c_get_soc_cfg(bus, dev);
+	bcfg = dw_i2c_get_soc_cfg(bus);
 
 	if (!bcfg)
 		return;

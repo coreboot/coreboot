@@ -47,7 +47,7 @@ static int lpss_i2c_early_init_bus(unsigned int bus)
 	}
 
 	/* Skip if not enabled for early init */
-	config = dw_i2c_get_soc_cfg(bus, tree_dev);
+	config = dw_i2c_get_soc_cfg(bus);
 	if (!config || !config->early_init) {
 		printk(BIOS_DEBUG, "I2C%u not enabled for early init\n", bus);
 		return -1;

@@ -102,8 +102,7 @@ int dw_i2c_soc_bus_to_devfn(unsigned int bus);
  *
  * Returns NULL if i2c config is not found
  */
-const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus,
-						const struct device *dev);
+const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus);
 
 /* Get I2C controller base address */
 uintptr_t dw_i2c_base_address(unsigned int bus);

@@ -22,10 +22,11 @@
 #include <soc/pci_devs.h>
 #include "chip.h"
 
-const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus,
-					const struct device *dev)
+const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 {
 	const struct soc_intel_cannonlake_config *config;
+	const struct device *dev = dev_find_slot(0, SA_DEVFN_ROOT);
+
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "%s: Could not find SoC devicetree config!\n",
 		       __func__);

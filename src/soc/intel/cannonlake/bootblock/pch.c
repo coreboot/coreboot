@@ -17,6 +17,7 @@
 #include <device/device.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
 #include <intelblocks/pmclib.h>
@@ -174,6 +175,9 @@ void pch_early_iorange_init(void)
 	dec_en |= SE_LPC_EN | KBC_LPC_EN | MC1_LPC_EN | GAMEL_LPC_EN;
 	pci_write_config16(PCH_DEV_LPC, LPC_EN, dec_en);
 	pcr_write16(PID_DMI, PCR_DMI_LPCIOE, dec_en);
+
+	/* Program generic IO Decode Range */
+	pch_enable_lpc();
 }
 
 void pch_early_init(void)

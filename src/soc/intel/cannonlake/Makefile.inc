@@ -18,6 +18,7 @@ bootblock-y += gspi.c
 bootblock-y += i2c.c
 bootblock-y += memmap.c
 bootblock-y += spi.c
+bootblock-y += lpc.c
 bootblock-$(CONFIG_UART_DEBUG) += uart.c
 
 romstage-$(CONFIG_SOC_INTEL_CANNONLAKE_LPDDR4_INIT) += cnl_lpddr4_init.c

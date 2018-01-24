@@ -1,0 +1,31 @@
+From 07dec11fe965e73cfef7df38af70c945b6ff21a2 Mon Sep 17 00:00:00 2001
+From: Arthur Heymans <arthur@aheymans.xyz>
+Date: Wed, 24 Jan 2018 10:07:08 +0100
+Subject: [PATCH] CorebootPayloadPkg: Use correct BytesPerScanLine
+
+Fetch BytesPerScanLine from coreboot table to reflect how the actual
+framebuffer is set up instead of guessing it from the horizontal
+resolution.
+
+This fixes a garbled display when HorizontalResolution * (BitsPerPixel
+/ 8) and pFbInfo->BytesPerScanLine don't match.
+
+Contributed-under: TianoCore Contribution Agreement 1.1
+Signed-off-by: Arthur Heymans <arthur@aheymans.xyz>
+
+diff --git a/CorebootPayloadPkg/FbGop/FbGop.c b/CorebootPayloadPkg/FbGop/FbGop.c
+index 37d6def7f7..6790617033 100644
+--- a/CorebootPayloadPkg/FbGop/FbGop.c
++++ b/CorebootPayloadPkg/FbGop/FbGop.c
+@@ -822,7 +822,7 @@ FbGopCheckForVbe (
+   BitsPerPixel         = pFbInfo->BitsPerPixel;
+   HorizontalResolution = pFbInfo->HorizontalResolution;
+   VerticalResolution   = pFbInfo->VerticalResolution;
+-  BytesPerScanLine     = HorizontalResolution * (BitsPerPixel / 8);
++  BytesPerScanLine     = pFbInfo->BytesPerScanLine;
+   
+   ModeBuffer = (FB_VIDEO_MODE_DATA *) AllocatePool (
+ 																						ModeNumber * sizeof (FB_VIDEO_MODE_DATA)
+-- 
+2.16.1
+

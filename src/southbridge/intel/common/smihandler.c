@@ -484,7 +484,11 @@ static smi_handler_t southbridge_smi[32] = {
  * @param node
  * @param state_save
  */
+#if IS_ENABLED(CONFIG_SMM_TSEG)
 void southbridge_smi_handler(void)
+#else
+void cpu_smi_handler(unsigned int node, smm_state_save_area_t *state_save)
+#endif
 {
 	int i, dump = 0;
 	u32 smi_sts;

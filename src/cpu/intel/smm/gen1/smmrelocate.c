@@ -147,7 +147,7 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	/* TSEG base is usually aligned down (to 8MiB). So we can't
 	   derive the TSEG size from the distance to GTT but use the
 	   configuration value instead. */
-	const u32 tseg_size = CONFIG_SMM_TSEG_SIZE;
+	const u32 tseg_size = northbridge_get_tseg_size();
 
 	/* The SMRAM available to the handler is 4MiB
 	   since the IEDRAM lives at TSEGMB + 4MiB. */

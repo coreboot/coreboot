@@ -434,6 +434,7 @@ void gm45_late_init(stepping_t);
 u32 decode_igd_memory_size(u32 gms);
 u32 decode_igd_gtt_size(u32 gsm);
 u32 decode_tseg_size(u8 esmramc);
+uintptr_t smm_region_start(void);
 
 void init_iommu(void);
 

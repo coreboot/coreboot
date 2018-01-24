@@ -180,6 +180,11 @@ u32 northbridge_get_tseg_base(void)
 	return pci_read_config32(dev, TSEG) & ~1;
 }
 
+u32 northbridge_get_tseg_size(void)
+{
+	return CONFIG_SMM_TSEG_SIZE;
+}
+
 static void mc_set_resources(struct device *dev)
 {
 	/* And call the normal set_resources */

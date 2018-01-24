@@ -83,7 +83,7 @@ u32 decode_tseg_size(u8 esmramc)
 	}
 }
 
-static uintptr_t smm_region_start(void)
+uintptr_t smm_region_start(void)
 {
 	const pci_devfn_t dev = PCI_DEV(0, 0, 0);
 
@@ -135,14 +135,12 @@ void platform_enter_postcar(void)
 	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
 	postcar_frame_add_mtrr(&pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
 
-	/* Cache two separate 4 MiB regions below the top of ram, this
-	 * satisfies MTRR alignment requirements. If you modify this to
-	 * cover TSEG, make sure UMA region is not set with WRBACK as it
-	 * causes hard-to-recover boot failures.
+	/* Cache a 8 MiB region below the top of ram and 8 MiB above top of
+	 * ram to cover both cbmem as the TSEG region.
 	 */
 	top_of_ram = (uintptr_t)cbmem_top();
-	postcar_frame_add_mtrr(&pcf, top_of_ram - 4*MiB, 4*MiB, MTRR_TYPE_WRBACK);
-	postcar_frame_add_mtrr(&pcf, top_of_ram - 8*MiB, 4*MiB, MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(&pcf, top_of_ram - 8*MiB, 16*MiB,
+			MTRR_TYPE_WRBACK);
 
 	run_postcar_phase(&pcf);
 

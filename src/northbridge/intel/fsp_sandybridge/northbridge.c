@@ -296,6 +296,11 @@ void northbridge_write_smram(u8 smram)
 	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM, smram);
 }
 
+u32 northbridge_get_tseg_size(void)
+{
+	return CONFIG_SMM_TSEG_SIZE;
+}
+
 static struct pci_operations intel_pci_ops = {
 	.set_subsystem    = intel_set_subsystem,
 };

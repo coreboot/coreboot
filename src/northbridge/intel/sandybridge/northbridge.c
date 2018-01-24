@@ -472,6 +472,11 @@ u32 northbridge_get_tseg_base(void)
 	return northbridge_get_base_reg(dev, TSEG);
 }
 
+u32 northbridge_get_tseg_size(void)
+{
+	return CONFIG_SMM_TSEG_SIZE;
+}
+
 void northbridge_write_smram(u8 smram)
 {
 	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM, smram);

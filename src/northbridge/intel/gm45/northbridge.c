@@ -25,6 +25,7 @@
 #include <boot/tables.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
+#include <cpu/intel/smm/gen1/smi.h>
 #include "chip.h"
 #include "gm45.h"
 #include "arch/acpi.h"
@@ -205,6 +206,43 @@ static const char *northbridge_acpi_name(const struct device *dev)
 	}
 
 	return NULL;
+}
+
+u32 northbridge_get_tseg_base(void)
+{
+	return (u32)smm_region_start();
+}
+
+u32 northbridge_get_tseg_size(void)
+{
+	const u8 esmramc = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)),
+					D0F0_ESMRAMC);
+	return decode_tseg_size(esmramc) << 10;
+}
+
+void northbridge_write_smram(u8 smram)
+{
+	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), D0F0_SMRAM, smram);
+}
+
+/*
+ * Really doesn't belong here but will go away with parallel mp init,
+ * so let it be here for a while...
+ */
+int cpu_get_apic_id_map(int *apic_id_map)
+{
+	unsigned int i;
+
+	/* Logical processors (threads) per core */
+	const struct cpuid_result cpuid1 = cpuid(1);
+	/* Read number of cores. */
+	const char cores = (cpuid1.ebx >> 16) & 0xf;
+
+	/* TODO in parallel MP cpuid(1).ebx */
+	for (i = 0; i < cores; i++)
+		apic_id_map[i] = i;
+
+	return cores;
 }
 
 static struct device_operations pci_domain_ops = {

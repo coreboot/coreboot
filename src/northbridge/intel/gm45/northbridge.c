@@ -119,16 +119,21 @@ static void mch_domain_read_resources(device_t dev)
 
 		/* Graphics memory */
 		const u32 gms_sizek = decode_igd_memory_size((ggc >> 4) & 0xf);
-		printk(BIOS_DEBUG, "%uM UMA", gms_sizek >> 10);
+		printk(BIOS_DEBUG, "%uM UMA, ", gms_sizek >> 10);
 		tomk -= gms_sizek;
 
 		/* GTT Graphics Stolen Memory Size (GGMS) */
 		const u32 gsm_sizek = decode_igd_gtt_size((ggc >> 8) & 0xf);
-		printk(BIOS_DEBUG, " and %uM GTT\n", gsm_sizek >> 10);
+		printk(BIOS_DEBUG, "%uM GTT", gsm_sizek >> 10);
 		tomk -= gsm_sizek;
 
 		uma_sizek = gms_sizek + gsm_sizek;
 	}
+	const u8 esmramc = pci_read_config8(dev, D0F0_ESMRAMC);
+	const u32 tseg_sizek = decode_tseg_size(esmramc);
+	printk(BIOS_DEBUG, " and %uM TSEG\n", tseg_sizek >> 10);
+	tomk -= tseg_sizek;
+	uma_sizek += tseg_sizek;
 
 	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", tomk >> 10);
 

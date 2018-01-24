@@ -76,7 +76,7 @@ static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 	relo_attrs.smbase = (uint32_t)smm_base;
 	relo_attrs.tseg_base = relo_attrs.smbase;
 	relo_attrs.tseg_mask = ALIGN_DOWN(~(smm_size - 1), 128 * KiB);
-	relo_attrs.tseg_mask |= SMM_TSEG_WB | SMM_TSEG_VALID;
+	relo_attrs.tseg_mask |= SMM_TSEG_WB;
 
 	*perm_smbase = (uintptr_t)handler_base;
 	*perm_smsize = handler_size;

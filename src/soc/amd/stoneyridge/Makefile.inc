@@ -106,6 +106,7 @@ ramstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 ramstage-y += usb.c
 ramstage-y += tsc_freq.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
+ramstage-y += finalize.c
 
 smm-y += monotonic_timer.c
 smm-y += smihandler.c

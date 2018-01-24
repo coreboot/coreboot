@@ -34,12 +34,12 @@ static uintptr_t spibar CAR_GLOBAL;
 
 static uintptr_t get_spibase(void)
 {
-	return *(uintptr_t *)car_get_var_ptr(&spibar);
+	return car_get_var(spibar);
 }
 
 static void set_spibar(uintptr_t base)
 {
-	*(uintptr_t *)car_get_var_ptr(&spibar) = base;
+	car_set_var(spibar, base);
 }
 
 static inline uint8_t spi_read8(uint8_t reg)

@@ -73,7 +73,7 @@ void process_layout(void)
 		fprintf(stderr,
 			"%s: CMOS option table not found in coreboot table.  "
 			"Apparently, the coreboot installed on this system was "
-			"built without specifying CONFIG_HAVE_OPTION_TABLE.\n",
+			"built without selecting CONFIG_USE_OPTION_TABLE.\n",
 			prog_name);
 		exit(1);
 	}

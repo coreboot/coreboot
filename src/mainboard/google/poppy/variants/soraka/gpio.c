@@ -127,10 +127,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_C6, 20K_PU, DEEP),
 	/* C7  : SM1DATA ==> NC */
 	PAD_CFG_NC(GPP_C7),
-	/* C8  : UART0_RXD ==> FP_INT */
-	PAD_CFG_GPI_APIC(GPP_C8, NONE, PLTRST),
-	/* C9  : UART0_TXD ==> FP_RST_ODL */
-	PAD_CFG_GPO(GPP_C9, 0, DEEP),
+	/* C8  : UART0_RXD ==> NC */
+	PAD_CFG_NC(GPP_C8),
+	/* C9  : UART0_TXD ==> NC */
+	PAD_CFG_NC(GPP_C9),
 	/* C10 : UART0_RTS# ==> EC_CAM_PMIC_RST_L */
 	PAD_CFG_GPO(GPP_C10, 1, DEEP),
 	/* C11 : UART0_CTS# ==> EN_PP3300_DX_CAM */
@@ -170,10 +170,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_D3),
 	/* D4  : FASHTRIG ==> NC */
 	PAD_CFG_NC(GPP_D4),
-	/* D5  : ISH_I2C0_SDA ==> ISH_I2C_SENSOR_1V8_SDA */
-	PAD_CFG_NF_1V8(GPP_D5, NONE, DEEP, NF1),
-	/* D6  : ISH_I2C0_SCL ==> ISH_I2C_SENSOR_1V8_SCL */
-	PAD_CFG_NF_1V8(GPP_D6, NONE, DEEP, NF1),
+	/* D5  : ISH_I2C0_SDA ==> NC */
+	PAD_CFG_NC(GPP_D5),
+	/* D6  : ISH_I2C0_SCL ==> NC */
+	PAD_CFG_NC(GPP_D6),
 	/* D7  : ISH_I2C1_SDA ==> NC */
 	PAD_CFG_NC(GPP_D7),
 	/* D8  : ISH_I2C1_SCL ==> NC */
@@ -258,7 +258,7 @@ static const struct pad_config gpio_table[] = {
 	/* E23 : DDPD_CTRLDATA ==> NC */
 	PAD_CFG_NC(GPP_E23),
 
-	/* The next 4 pads are for bit banging the amplifiers, default to I2S */
+	/* The next 3 pads are for bit banging the amplifiers, default to I2S */
 	/* F0  : I2S2_SCLK ==> I2S2_SCLK_SPKR_R */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_F0, NONE, DEEP),
 	/* F1  : I2S2_SFRM ==> I2S2_SFRM_SPKR_R */

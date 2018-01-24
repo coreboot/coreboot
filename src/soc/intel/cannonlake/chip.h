@@ -138,6 +138,15 @@ struct soc_intel_cannonlake_config {
 
 	/* Enable/Disable HD Audio Link. Muxed with SSP0/SSP1/SNDW1 */
 	uint8_t PchHdaAudioLinkHda;
+	uint8_t PchHdaAudioLinkDmic0;
+	uint8_t PchHdaAudioLinkDmic1;
+	uint8_t PchHdaAudioLinkSsp0;
+	uint8_t PchHdaAudioLinkSsp1;
+	uint8_t PchHdaAudioLinkSsp2;
+	uint8_t PchHdaAudioLinkSndw1;
+	uint8_t PchHdaAudioLinkSndw2;
+	uint8_t PchHdaAudioLinkSndw3;
+	uint8_t PchHdaAudioLinkSndw4;
 
 	/* PCIe Root Ports */
 	uint8_t PcieRpEnable[CONFIG_MAX_ROOT_PORTS];

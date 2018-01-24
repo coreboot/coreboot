@@ -215,6 +215,15 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Audio */
 	params->PchHdaDspEnable = config->PchHdaDspEnable;
 	params->PchHdaAudioLinkHda = config->PchHdaAudioLinkHda;
+	params->PchHdaAudioLinkDmic0 = config->PchHdaAudioLinkDmic0;
+	params->PchHdaAudioLinkDmic1 = config->PchHdaAudioLinkDmic1;
+	params->PchHdaAudioLinkSsp0 = config->PchHdaAudioLinkSsp0;
+	params->PchHdaAudioLinkSsp1 = config->PchHdaAudioLinkSsp1;
+	params->PchHdaAudioLinkSsp2 = config->PchHdaAudioLinkSsp2;
+	params->PchHdaAudioLinkSndw1 = config->PchHdaAudioLinkSndw1;
+	params->PchHdaAudioLinkSndw2 = config->PchHdaAudioLinkSndw2;
+	params->PchHdaAudioLinkSndw3 = config->PchHdaAudioLinkSndw3;
+	params->PchHdaAudioLinkSndw4 = config->PchHdaAudioLinkSndw4;
 
 	/* USB */
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {

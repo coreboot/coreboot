@@ -19,7 +19,7 @@ config PARALLEL_MP_AP_WORK
 
 config UDELAY_IO
 	bool
-	default y if !UDELAY_LAPIC && !UDELAY_TSC && !UDELAY_TIMER2
+	default y if !UDELAY_LAPIC && !UDELAY_TSC && !UDELAY_TIMER2 && !GENERIC_UDELAY
 	default n
 
 config UDELAY_LAPIC

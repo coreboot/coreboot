@@ -28,6 +28,7 @@
 #include <soc/northbridge.h>
 #include <soc/southbridge.h>
 #include <amdblocks/psp.h>
+#include <timestamp.h>
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
@@ -40,7 +41,8 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 	if (!boot_cpu())
 		bootblock_soc_early_init(); /* APs will not return */
 
-	bootblock_main_with_timestamp(base_timestamp);
+	/* TSC cannot be relied upon. Override the TSC value passed in. */
+	bootblock_main_with_timestamp(timestamp_get());
 }
 
 /* Set the MMIO Configuration Base Address and Bus Range. */

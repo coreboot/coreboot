@@ -285,6 +285,7 @@ intel_gma_init_igd_opregion(igd_opregion_t *opregion)
 	opregion->header.mailboxes = MAILBOXES_MOBILE;
 
 	// TODO Initialize Mailbox 1
+	opregion->mailbox1.clid = 1;
 
 	// TODO Initialize Mailbox 3
 	opregion->mailbox3.bclp = IGD_BACKLIGHT_BRIGHTNESS;

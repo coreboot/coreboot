@@ -58,7 +58,7 @@ enum cb_err init_igd_opregion(igd_opregion_t *opregion)
 
 	/* 8KiB */
 	opregion->header.size = sizeof(igd_opregion_t) / KiB;
-	opregion->header.version = IGD_OPREGION_VERSION;
+	opregion->header.version = IGD_OPREGION_VERSION << 24;
 
 	/* FIXME We just assume we're mobile for now */
 	opregion->header.mailboxes = MAILBOXES_MOBILE;

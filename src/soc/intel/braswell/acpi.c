@@ -480,6 +480,7 @@ static int update_igd_opregion(igd_opregion_t *opregion)
 	struct device *igd;
 
 	/* TODO Initialize Mailbox 1 */
+	opregion->mailbox1.clid = 1;
 
 	/* TODO Initialize Mailbox 3 */
 	opregion->mailbox3.bclp = IGD_BACKLIGHT_BRIGHTNESS;

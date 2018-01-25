@@ -69,6 +69,22 @@ static AGESA_STATUS agesawrapper_readeventlog(UINT8 HeapStatus)
 	return Status;
 }
 
+static AGESA_STATUS create_struct(AMD_INTERFACE_PARAMS *interface_struct)
+{
+	AGESA_STATUS status = AmdCreateStruct(interface_struct);
+	if (status == AGESA_SUCCESS)
+		return status;
+
+	printk(BIOS_ERR, "Error: AmdCreateStruct() for 0x%x returned 0x%x. "
+			"Proper system initialization may not be possible.\n",
+			interface_struct->AgesaFunctionName, status);
+
+	if (!interface_struct->NewStructPtr) /* Avoid NULL pointer usage */
+		die("No AGESA structure created");
+
+	return status;
+}
+
 AGESA_STATUS agesawrapper_amdinitreset(void)
 {
 	AGESA_STATUS status;
@@ -80,7 +96,7 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 		.NewStructPtr = &ResetParams,
 		.StdHeader.CalloutPtr = &GetBiosCallout
 	};
-	AmdCreateStruct(&AmdParamStruct);
+	create_struct(&AmdParamStruct);
 	SetFchResetParams(&ResetParams.FchInterface);
 
 	timestamp_add_now(TS_AGESA_INIT_RESET_START);
@@ -103,7 +119,7 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
 
-	AmdCreateStruct(&AmdParamStruct);
+	create_struct(&AmdParamStruct);
 
 	EarlyParams = (AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr;
 	OemCustomizeInitEarly(EarlyParams);
@@ -164,7 +180,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	};
 	AMD_POST_PARAMS *PostParams;
 
-	AmdCreateStruct(&AmdParamStruct);
+	create_struct(&AmdParamStruct);
 
 	PostParams = (AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr;
 	PostParams->MemConfig.UmaMode = CONFIG_GFXUMA ? UMA_AUTO : UMA_NONE;
@@ -215,7 +231,7 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	};
 	AMD_ENV_PARAMS *EnvParams;
 
-	status = AmdCreateStruct(&AmdParamStruct);
+	status = create_struct(&AmdParamStruct);
 
 	EnvParams = (AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr;
 	SetFchEnvParams(&EnvParams->FchInterface);
@@ -270,7 +286,7 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	/* Enable MMIO on AMD CPU Address Map Controller */
 	amd_initcpuio();
 
-	AmdCreateStruct(&AmdParamStruct);
+	create_struct(&AmdParamStruct);
 
 	MidParams = (AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr;
 	SetFchMidParams(&MidParams->FchInterface);
@@ -301,7 +317,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	 * NOTE: if not call amdcreatestruct, the initializer
 	 * (AmdInitLateInitializer) would not be called.
 	 */
-	AmdCreateStruct(&AmdParamStruct);
+	create_struct(&AmdParamStruct);
 	LateParams = (AMD_LATE_PARAMS *)AmdParamStruct.NewStructPtr;
 
 	timestamp_add_now(TS_AGESA_INIT_LATE_START);

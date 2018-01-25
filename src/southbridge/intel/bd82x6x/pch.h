@@ -68,7 +68,6 @@ int pch_silicon_revision(void);
 int pch_silicon_type(void);
 int pch_silicon_supported(int type, int rev);
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
-void gpi_route_interrupt(u8 gpi, u8 mode);
 #if IS_ENABLED(CONFIG_ELOG)
 void pch_log_state(void);
 #endif
@@ -102,14 +101,6 @@ early_usb_init (const struct southbridge_usb_port *portmap);
 
 /* Return non-zero when RTC failure happened. */
 int rtc_failure(void);
-#endif
-
-#define MAINBOARD_POWER_OFF	0
-#define MAINBOARD_POWER_ON	1
-#define MAINBOARD_POWER_KEEP	2
-
-#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
 
 /* PM I/O Space */

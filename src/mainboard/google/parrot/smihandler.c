@@ -19,6 +19,7 @@
 #include <southbridge/intel/bd82x6x/nvs.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/me.h>
+#include <southbridge/intel/common/pmutil.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
 #include <elog.h>

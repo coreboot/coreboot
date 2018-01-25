@@ -36,4 +36,7 @@ endif
 ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_PIRQ_ACPI_GEN) += acpi_pirq_gen.c
 ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RCBA_PIRQ) += rcba_pirq.c
 
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SMM) += pmutil.c smi.c
+smm-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SMM) += pmutil.c smihandler.c
+
 endif

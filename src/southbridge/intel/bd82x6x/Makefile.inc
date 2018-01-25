@@ -36,7 +36,6 @@ ramstage-y += watchdog.c
 
 ramstage-$(CONFIG_ELOG) += elog.c
 
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c me_8.x.c finalize.c pch.c
 
 romstage-y += early_smbus.c me_status.c

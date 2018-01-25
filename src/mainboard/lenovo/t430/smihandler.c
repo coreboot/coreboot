@@ -22,6 +22,7 @@
 #include <ec/lenovo/h8/h8.h>
 #include <delay.h>
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/common/pmutil.h>
 
 #define GPE_EC_SCI	1
 #define GPE_EC_WAKE	13

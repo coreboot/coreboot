@@ -10,6 +10,7 @@ romstage-y += heapmanager.c
 
 ramstage-y += agesawrapper.c
 ramstage-y += amd_late_init.c
+ramstage-$(CONFIG_HAVE_ACPI_RESUME) += amd_resume_final.c
 ramstage-y += def_callouts.c
 ramstage-y += heapmanager.c
 

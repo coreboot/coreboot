@@ -78,16 +78,15 @@ void smi_write8(uint8_t offset, uint8_t value)
 
 uint8_t biosram_read8(uint8_t offset)
 {
-	outb(offset, BIOSRAM_INDEX);
-	return inb(BIOSRAM_DATA);
+	return read8((void *)(BIOSRAM_MMIO_BASE + offset));
 }
 
 void biosram_write8(uint8_t offset, uint8_t value)
 {
-	outb(offset, BIOSRAM_INDEX);
-	outb(value, BIOSRAM_DATA);
+	write8((void *)(BIOSRAM_MMIO_BASE + offset), value);
 }
 
+/* BiosRam may only be accessed a byte at a time */
 uint16_t biosram_read16(uint8_t offset)
 {
 	int i;

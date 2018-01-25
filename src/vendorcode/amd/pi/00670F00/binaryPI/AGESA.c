@@ -210,6 +210,20 @@ AmdS3LateRestore (
 }
 
 /**********************************************************************
+ * Interface call:  AmdS3FinalRestore
+ **********************************************************************/
+AGESA_STATUS
+AmdS3FinalRestore (
+  IN OUT   AMD_S3FINAL_PARAMS    *S3FinalParams
+  )
+{
+	MODULE_ENTRY Dispatcher = agesa_get_dispatcher();
+	S3FinalParams->StdHeader.Func = AMD_S3FINAL_RESTORE;
+	if (!Dispatcher) return AGESA_UNSUPPORTED;
+	return Dispatcher(S3FinalParams);
+}
+
+/**********************************************************************
  * Interface call:  AmdInitRtb
  **********************************************************************/
 AGESA_STATUS

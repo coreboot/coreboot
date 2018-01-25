@@ -23,10 +23,12 @@
 #include <device/pci.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
+#include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <console/console.h>
+#include <smp/node.h>
 #include "smi.h"
 
 #define SMRR_SUPPORTED (1 << 11)
@@ -291,4 +293,79 @@ void smm_lock(void)
 	printk(BIOS_DEBUG, "Locking SMM.\n");
 
 	northbridge_write_smram(D_LCK | G_SMRAME | C_BASE_SEG);
+}
+
+void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
+		size_t *smm_save_state_size)
+{
+	printk(BIOS_DEBUG, "Setting up SMI for CPU\n");
+
+	fill_in_relocation_params(&smm_reloc_params);
+
+	setup_ied_area(&smm_reloc_params);
+
+	*perm_smbase = smm_reloc_params.smram_base;
+	*perm_smsize = smm_reloc_params.smram_size;
+	*smm_save_state_size = sizeof(em64t101_smm_state_save_area_t);
+}
+
+void smm_initialize(void)
+{
+	/* Clear the SMM state in the southbridge. */
+	southbridge_smm_clear_state();
+
+	/*
+	 * Run the relocation handler for on the BSP to check and set up
+	 * parallel SMM relocation.
+	 */
+	smm_initiate_relocation();
+}
+
+/* The relocation work is actually performed in SMM context, but the code
+ * resides in the ramstage module. This occurs by trampolining from the default
+ * SMRAM entry point to here. */
+void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
+				uintptr_t staggered_smbase)
+{
+	msr_t mtrr_cap;
+	struct smm_relocation_params *relo_params = &smm_reloc_params;
+	em64t101_smm_state_save_area_t *save_state;
+	u32 smbase = staggered_smbase;
+	u32 iedbase = relo_params->ied_base;
+
+	printk(BIOS_DEBUG, "In relocation handler: cpu %d\n", cpu);
+
+	/* Make appropriate changes to the save state map. */
+	printk(BIOS_DEBUG, "New SMBASE=0x%08x IEDBASE=0x%08x\n",
+		smbase, iedbase);
+
+	save_state = (void *)(curr_smbase + SMM_DEFAULT_SIZE -
+			sizeof(*save_state));
+	save_state->smbase = smbase;
+	save_state->iedbase = iedbase;
+
+
+	/* Write EMRR and SMRR MSRs based on indicated support. */
+	mtrr_cap = rdmsr(MTRR_CAP_MSR);
+	if (mtrr_cap.lo & SMRR_SUPPORTED && !IS_ENABLED(CONFIG_HAS_NO_SMRR))
+		write_smrr(relo_params);
+}
+
+/*
+ * The default SMM entry can happen in parallel or serially. If the
+ * default SMM entry is done in parallel the BSP has already setup
+ * the saving state to each CPU's MSRs. At least one save state size
+ * is required for the initial SMM entry for the BSP to determine if
+ * parallel SMM relocation is even feasible.
+ */
+void smm_relocate(void)
+{
+	/*
+	 * If smm_save_state_in_msrs is non-zero then parallel SMM relocation
+	 * shall take place. Run the relocation handler a second time on the
+	 * BSP to do * the final move. For APs, a relocation handler always
+	 * needs to be run.
+	 */
+	if (!boot_cpu())
+		smm_initiate_relocation();
 }

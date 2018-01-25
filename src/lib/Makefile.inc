@@ -177,6 +177,7 @@ ramstage-y += boot_device.c
 smm-y += boot_device.c
 smm-y += fmap.c
 smm-y += cbfs.c memcmp.c
+smm-$(CONFIG_GENERIC_UDELAY) += timer.c
 
 bootblock-y += version.c
 romstage-y += version.c
@@ -238,6 +239,7 @@ postcar-y += prog_loaders.c
 postcar-y += prog_ops.c
 postcar-y += rmodule.c
 postcar-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+postcar-$(CONFIG_GENERIC_UDELAY) += timer.c
 
 # Use program.ld for all the platforms which use C fo the bootblock.
 bootblock-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += program.ld

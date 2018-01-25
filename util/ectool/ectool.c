@@ -62,6 +62,7 @@ void print_usage(const char *name)
 	       "   -v | --version:                   print the version\n"
 	       "   -h | --help:                      print this help\n\n"
 	       "   -V | --verbose:                   print debug information\n"
+	       "   -p | --getports:                  get EC data & cmd ports from /proc/ioports\n"
 	       "   -d | --dump:                      print RAM\n"
 	       "   -i | --idx:                       print IDX RAM & RAM\n"
 	       "   -q | --query:                     print query byte\n"
@@ -71,7 +72,7 @@ void print_usage(const char *name)
 	exit(1);
 }
 
-int verbose = 0, dump_idx = 0, dump_ram = 0, dump_query = 0;
+int verbose = 0, dump_idx = 0, dump_ram = 0, dump_query = 0, get_ports = 0;
 
 int main(int argc, char *argv[])
 {
@@ -85,10 +86,11 @@ int main(int argc, char *argv[])
 		{"verbose", 0, 0, 'V'},
 		{"idx", 0, 0, 'i'},
 		{"query", 0, 0, 'q'},
+		{"getports", 0, 0, 'p'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?Vidqw:z:",
+	while ((opt = getopt_long(argc, argv, "vh?Vidqpw:z:",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
@@ -114,6 +116,9 @@ int main(int argc, char *argv[])
 		case 'q':
 			dump_query = 1;
 			break;
+		case 'p':
+			get_ports = 1;
+			break;
 		case 'h':
 		case '?':
 		default:
@@ -122,6 +127,10 @@ int main(int argc, char *argv[])
 			break;
 		}
 	}
+
+	if (get_ports && get_ec_ports() != 0)
+		fprintf(stderr, "Cannot get EC ports from /proc/ioports, "
+				"fallback to default.");
 
 	if (iopl(3)) {
 		printf("You need to be root.\n");

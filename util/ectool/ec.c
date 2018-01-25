@@ -16,11 +16,15 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #if !(defined __NetBSD__ || defined __OpenBSD__)
 #include <sys/io.h>
 #endif
 #include "ec.h"
+
+static int ec_data = 0x62;
+static int ec_sc = 0x66;
 
 #if defined __NetBSD__ || defined __OpenBSD__
 #include <machine/sysarch.h>
@@ -45,7 +49,7 @@ int send_ec_command(uint8_t command)
 	int timeout;
 
 	timeout = 0x7ff;
-	while ((inb(EC_SC) & EC_IBF) && --timeout) {
+	while ((inb(ec_sc) & EC_IBF) && --timeout) {
 		usleep(10);
 		if ((timeout & 0xff) == 0)
 			debug(".");
@@ -56,7 +60,7 @@ int send_ec_command(uint8_t command)
 		// return -1;
 	}
 
-	outb(command, EC_SC);
+	outb(command, ec_sc);
 	return 0;
 }
 
@@ -65,7 +69,7 @@ int send_ec_data(uint8_t data)
 	int timeout;
 
 	timeout = 0x7ff;
-	while ((inb(EC_SC) & EC_IBF) && --timeout) {	// wait for IBF = 0
+	while ((inb(ec_sc) & EC_IBF) && --timeout) {	// wait for IBF = 0
 		usleep(10);
 		if ((timeout & 0xff) == 0)
 			debug(".");
@@ -75,14 +79,14 @@ int send_ec_data(uint8_t data)
 		// return -1;
 	}
 
-	outb(data, EC_DATA);
+	outb(data, ec_data);
 
 	return 0;
 }
 
 int send_ec_data_nowait(uint8_t data)
 {
-	outb(data, EC_DATA);
+	outb(data, ec_data);
 
 	return 0;
 }
@@ -94,9 +98,9 @@ uint8_t recv_ec_data(void)
 
 	timeout = 0x7fff;
 	while (--timeout) {	// Wait for OBF = 1
-		if (inb(EC_SC) & EC_OBF) {
+		if (inb(ec_sc) & EC_OBF)
 			break;
-		}
+
 		usleep(10);
 		if ((timeout & 0xff) == 0)
 			debug(".");
@@ -106,7 +110,7 @@ uint8_t recv_ec_data(void)
 		// return -1;
 	}
 
-	data = inb(EC_DATA);
+	data = inb(ec_data);
 	debug("recv_ec_data: 0x%02x\n", data);
 
 	return data;
@@ -164,4 +168,33 @@ uint8_t ec_query(void)
 {
 	send_ec_command(QR_EC);
 	return recv_ec_data();
+}
+
+int get_ec_ports(void)
+{
+	FILE *fp = fopen("/proc/ioports", "r");
+	int data = 0, cmd = 0;
+	char line[100];
+
+	if (fp == NULL)
+		return -1;
+
+	while (!feof(fp) && (data == 0 || cmd == 0)) {
+		fgets(line, sizeof(line), fp);
+		if (strstr(line, "EC data") != NULL)
+			data = strtol(line, NULL, 16);
+
+		if (strstr(line, "EC cmd") != NULL)
+			cmd = strtol(line, NULL, 16);
+	}
+
+	fclose(fp);
+	if (data != 0 && cmd != 0) {
+		debug("EC data = 0x%x, EC cmd = 0x%x\n", data, cmd);
+		ec_data = data;
+		ec_sc = cmd;
+	} else {
+		return -1;
+	}
+	return 0;
 }

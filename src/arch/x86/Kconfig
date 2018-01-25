@@ -271,3 +271,18 @@ config ACPI_CPU_STRING
 	  Sets the ACPI name string in the processor scope as written by
 	  the acpigen function. Default is \_PR.CPxx. Note that you need
 	  the \ escape character in the string.
+
+config COLLECT_TIMESTAMPS_NO_TSC
+	bool
+	default n
+	depends on COLLECT_TIMESTAMPS
+	help
+	  Use a non-TSC platform-dependent source for timestamps.
+
+config COLLECT_TIMESTAMPS_TSC
+	bool
+	default y if !COLLECT_TIMESTAMPS_NO_TSC
+	default n
+	depends on COLLECT_TIMESTAMPS
+	help
+	  Use the TSC as the timestamp source.

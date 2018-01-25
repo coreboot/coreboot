@@ -94,7 +94,7 @@ bootblock-y += boot.c
 bootblock-y += cpu_common.c
 bootblock-y += memcpy.c
 bootblock-y += memset.c
-bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+bootblock-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 bootblock-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 
 bootblock-y += id.S
@@ -180,7 +180,7 @@ verstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 # which just calls verstage().
 verstage-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += verstage.c
 
-verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+verstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 
 verstage-libs ?=
 
@@ -211,7 +211,7 @@ romstage-y += memmove.c
 romstage-y += memset.c
 romstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 romstage-y += postcar_loader.c
-romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+romstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 
 ifneq ($(CONFIG_ROMCC),y)
 
@@ -288,7 +288,7 @@ postcar-y += memset.c
 postcar-y += memlayout.ld
 postcar-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 postcar-y += postcar.c
-postcar-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+postcar-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 
 LDFLAGS_postcar += -Map $(objcbfs)/postcar.map
 
@@ -339,7 +339,7 @@ ramstage-$(CONFIG_GENERATE_SMBIOS_TABLES) += smbios.c
 ramstage-y += tables.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S
-ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+ramstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.S
 
 smm-y += memcpy.c

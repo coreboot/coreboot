@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _MAINBOARD_HARCUVAR_FIAMUX_H
-#define _MAINBOARD_HARCUVAR_FIAMUX_H
+#ifndef _DENVERTON_NS_FIAMUX_H
+#define _DENVERTON_NS_FIAMUX_H
 
 #include <fsp/util.h>
 
@@ -27,4 +27,4 @@ void print_fiamux_config_hob(BL_FIA_MUX_CONFIG_HOB *fiamux_hob_data);
 
 size_t mainboard_get_hsio_config(BL_HSIO_INFORMATION **p_hsio_config);
 
-#endif // _MAINBOARD_HARCUVAR_FIAMUX_H
+#endif // _DENVERTON_NS_FIAMUX_H

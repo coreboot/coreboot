@@ -186,12 +186,12 @@ void early_uart_init(void)
 	register int i;
 
 	/* Check: do we have enought elements to init. ? */
-	BUILD_BUG_ON(HARCUVAR_UARTS_TO_INI > ELEM_OF_UART_TAB);
+	BUILD_BUG_ON(DENVERTON_UARTS_TO_INI > ELEM_OF_UART_TAB);
 
 	/* HSUART(B0:D26:0-1) GPIO init. */
 	early_config_gpio();
 
-	for (i = HARCUVAR_UARTS_TO_INI - 1; i >= 0; --i) {
+	for (i = DENVERTON_UARTS_TO_INI - 1; i >= 0; --i) {
 		pci_early_hsuart_device_probe(0, CONFIG_HSUART_DEV, i,
 					      legacy_uart_ioadr_tab[i]);
 	}

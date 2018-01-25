@@ -22,6 +22,7 @@
 /* SandyBridge/IvyBridge bus clock is fixed at 100MHz */
 #define SANDYBRIDGE_BCLK		100
 
+#define CORE_THREAD_COUNT_MSR		0x35
 #define MSR_FEATURE_CONFIG		0x13c
 #define MSR_FLEX_RATIO			0x194
 #define  FLEX_RATIO_LOCK		(1 << 20)
@@ -109,7 +110,6 @@ void intel_model_206ax_finalize_smm(void);
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
-void smm_relocate(void);
 #endif
 int get_platform_id(void);
 

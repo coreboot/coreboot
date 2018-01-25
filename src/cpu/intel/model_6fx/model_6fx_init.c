@@ -133,15 +133,18 @@ static void model_6fx_init(struct device *cpu)
 	x86_enable_cache();
 
 	/* Update the microcode */
-	intel_update_microcode_from_cbfs();
+	if (!IS_ENABLED(CONFIG_PARALLEL_MP))
+		intel_update_microcode_from_cbfs();
 
 	/* Print processor name */
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
 
 	/* Setup MTRRs */
-	x86_setup_mtrrs();
-	x86_mtrr_check();
+	if (!IS_ENABLED(CONFIG_PARALLEL_MP)) {
+		x86_setup_mtrrs();
+		x86_mtrr_check();
+	}
 
 	/* Setup Page Attribute Tables (PAT) */
 	// TODO set up PAT
@@ -162,7 +165,8 @@ static void model_6fx_init(struct device *cpu)
 	configure_pic_thermal_sensors();
 
 	/* Start up my CPU siblings */
-	intel_sibling_init(cpu);
+	if (!IS_ENABLED(CONFIG_PARALLEL_MP))
+		intel_sibling_init(cpu);
 }
 
 static struct device_operations cpu_dev_ops = {

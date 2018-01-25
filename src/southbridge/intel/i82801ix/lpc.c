@@ -393,7 +393,8 @@ static void i82801ix_lock_smm(struct device *dev)
 	/* Don't allow evil boot loaders, kernels, or
 	 * userspace applications to deceive us:
 	 */
-	smm_lock();
+	if (!IS_ENABLED(CONFIG_PARALLEL_MP))
+		smm_lock();
 
 #if TEST_SMM_FLASH_LOCKDOWN
 	/* Now try this: */

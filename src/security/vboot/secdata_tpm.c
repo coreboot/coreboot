@@ -165,45 +165,47 @@ static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
 	return tlcl_write(index, data, length);
 }
 
+static uint32_t set_space(const char *name, uint32_t index, const void *data,
+			  uint32_t length)
+{
+	uint32_t rv;
+
+	rv = tlcl_define_space(index, length);
+	if (rv == TPM_E_NV_DEFINED) {
+		/*
+		 * Continue with writing: it may be defined, but not written
+		 * to. In that case a subsequent tlcl_read() would still return
+		 * TPM_E_BADINDEX on TPM 2.0. The cases when some non-firmware
+		 * space is defined while the firmware space is not there
+		 * should be rare (interrupted initialization), so no big harm
+		 * in writing once again even if it was written already.
+		 */
+		VBDEBUG("%s: %s space already exists\n", __func__, name);
+		rv = TPM_SUCCESS;
+	}
+
+	if (rv != TPM_SUCCESS)
+		return rv;
+
+	return safe_write(index, data, length);
+}
+
 static uint32_t set_firmware_space(const void *firmware_blob)
 {
-	RETURN_ON_FAILURE(tlcl_define_space(FIRMWARE_NV_INDEX,
-					    VB2_SECDATA_SIZE));
-	RETURN_ON_FAILURE(safe_write(FIRMWARE_NV_INDEX, firmware_blob,
-				     VB2_SECDATA_SIZE));
-	return TPM_SUCCESS;
+	return set_space("firmware", FIRMWARE_NV_INDEX, firmware_blob,
+			 VB2_SECDATA_SIZE);
 }
 
 static uint32_t set_kernel_space(const void *kernel_blob)
 {
-	uint32_t rv;
-
-	rv = tlcl_define_space(KERNEL_NV_INDEX, sizeof(secdata_kernel));
-	if (rv == TPM_E_NV_DEFINED) {
-		VBDEBUG("%s: kernel space already exists\n", __func__);
-		return TPM_SUCCESS;
-	}
-
-	if (rv != TPM_SUCCESS)
-		return rv;
-
-	return safe_write(KERNEL_NV_INDEX, kernel_blob, sizeof(secdata_kernel));
+	return set_space("kernel", KERNEL_NV_INDEX, kernel_blob,
+			 sizeof(secdata_kernel));
 }
 
 static uint32_t set_rec_hash_space(const uint8_t *data)
 {
-	uint32_t rv;
-
-	rv = tlcl_define_space(REC_HASH_NV_INDEX, REC_HASH_NV_SIZE);
-	if (rv == TPM_E_NV_DEFINED) {
-		VBDEBUG("%s: MRC Hash space already exists\n", __func__);
-		return TPM_SUCCESS;
-	}
-
-	if (rv != TPM_SUCCESS)
-		return rv;
-
-	return safe_write(REC_HASH_NV_INDEX, data, REC_HASH_NV_SIZE);
+	return set_space("MRC Hash", REC_HASH_NV_INDEX, data,
+			 REC_HASH_NV_SIZE);
 }
 
 static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)

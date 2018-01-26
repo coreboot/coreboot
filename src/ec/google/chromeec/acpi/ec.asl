@@ -365,6 +365,8 @@ Device (EC0)
 		If (CondRefOf (\_SB.DPTF.TPET)) {
 			\_SB.DPTF.TPET()
 		}
+#endif
+#ifdef EC_ENABLE_TBMC_DEVICE
 		Notify (TBMC, 0x80)
 #endif
 	}
@@ -517,7 +519,7 @@ Device (EC0)
 	#include "pd.asl"
 #endif
 
-#ifdef EC_ENABLE_TABLET_EVENT
+#ifdef EC_ENABLE_TBMC_DEVICE
 	#include "tbmc.asl"
 #endif
 }

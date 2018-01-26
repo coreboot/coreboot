@@ -90,7 +90,9 @@ Device (EC0)
 		DEVE, 1,	// EC supports device events
 		// make sure we're within our space envelope
 		Offset (0x0e),
-	}
+		Offset (0x12),
+		BTID, 8,	// Battery index that host wants to read
+}
 
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)
 	OperationRegion (EMEM, EmbeddedControl,
@@ -272,6 +274,11 @@ Device (EC0)
 	{
 		Store ("EC: BATTERY INFO", Debug)
 		Notify (BAT0, 0x81)
+#ifdef EC_ENABLE_SECOND_BATTERY_DEVICE
+		If (CondRefOf (BAT1)) {
+			Notify (BAT1, 0x81)
+		}
+#endif
 	}
 
 	// Thermal Overload Event
@@ -347,6 +354,11 @@ Device (EC0)
 	{
 		Store ("EC: BATTERY STATUS", Debug)
 		Notify (BAT0, 0x80)
+#ifdef EC_ENABLE_SECOND_BATTERY_DEVICE
+		If (CondRefOf (BAT1)) {
+			Notify (BAT1, 0x80)
+		}
+#endif
 	}
 
 	// MKBP interrupt.

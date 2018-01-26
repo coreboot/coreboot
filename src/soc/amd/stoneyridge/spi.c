@@ -18,6 +18,7 @@
 #include <string.h>
 #include <arch/io.h>
 #include <arch/early_variables.h>
+#include <lib.h>
 #include <timer.h>
 #include <console/console.h>
 #include <commonlib/helpers.h>
@@ -29,6 +30,8 @@
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/imc.h>
+
+#define SPI_DEBUG_DRIVER IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 
 static uintptr_t spibar CAR_GLOBAL;
 
@@ -62,46 +65,48 @@ static inline void spi_write32(uint8_t reg, uint32_t val)
 	write32((void *)(get_spibase() + reg), val);
 }
 
-static int reset_internal_fifo_pointer(void)
+static void dump_state(const char *str)
 {
-	uint8_t reg;
+	if (!SPI_DEBUG_DRIVER)
+		return;
+
+	printk(BIOS_DEBUG, "SPI: %s\n", str);
+	printk(BIOS_DEBUG, "Cntrl0: %x\n", spi_read32(SPI_CNTRL0));
+	printk(BIOS_DEBUG, "Status: %x\n", spi_read32(SPI_STATUS));
+	printk(BIOS_DEBUG, "TxByteCount: %x\n", spi_read8(SPI_TX_BYTE_COUNT));
+	printk(BIOS_DEBUG, "RxByteCount: %x\n", spi_read8(SPI_RX_BYTE_COUNT));
+	printk(BIOS_DEBUG, "CmdCode: %x\n", spi_read8(SPI_CMD_CODE));
+	hexdump((void *)(get_spibase() + SPI_FIFO), SPI_FIFO_DEPTH);
+}
+
+static int wait_for_ready(void)
+{
 	const uint32_t timeout_ms = 500;
 	struct stopwatch sw;
 
 	stopwatch_init_msecs_expire(&sw, timeout_ms);
 
 	do {
-		reg = spi_read8(SPI_REG_CNTRL02);
-		reg |= SPI_FIFO_PTR_CLR02;
-		spi_write8(SPI_REG_CNTRL02, reg);
-		/* wait for ptr=0 */
-		if (!(spi_read8(SPI_CNTRL11) & (SPI_FIFO_PTR_MASK11)))
+		if (!(spi_read32(SPI_STATUS) & SPI_BUSY))
 			return 0;
 	} while (!stopwatch_expired(&sw));
 
-	printk(BIOS_DEBUG, "FCH SPI Error: FIFO reset failed\n");
 	return -1;
 }
 
 static int execute_command(void)
 {
-	uint32_t reg;
-	const uint32_t timeout_ms = 500;
-	struct stopwatch sw;
+	dump_state("Before Execute");
 
-	stopwatch_init_msecs_expire(&sw, timeout_ms);
+	spi_write8(SPI_CMD_TRIGGER, SPI_CMD_TRIGGER_EXECUTE);
 
-	reg = spi_read32(SPI_CNTRL0);
-	reg |= EXEC_OPCODE;
-	spi_write32(SPI_CNTRL0, reg);
+	if (wait_for_ready())
+		printk(BIOS_DEBUG,
+			"FCH SPI Error: Timeout executing command\n");
 
-	do {
-		if (!(spi_read32(SPI_CNTRL0) & (EXEC_OPCODE | SPI_BUSY)))
-			return 0;
-	} while (!stopwatch_expired(&sw));
+	dump_state("Transaction finished");
 
-	printk(BIOS_DEBUG, "FCH SPI Error: Timeout executing command\n");
-	return -1;
+	return 0;
 }
 
 void spi_init(void)
@@ -113,45 +118,21 @@ void spi_init(void)
 	set_spibar(bar);
 }
 
-static int do_command(uint8_t cmd, const void *dout,
-		size_t bytesout, uint8_t **din, size_t *bytesin)
-{
-	size_t count;
-	size_t max_in = MIN(*bytesin, SPI_FIFO_DEPTH);
-
-	spi_write8(SPI_EXT_INDEX, SPI_TX_BYTE_COUNT);
-	spi_write8(SPI_EXT_DATA, bytesout);
-	spi_write8(SPI_EXT_INDEX, SPI_RX_BYTE_COUNT);
-	spi_write8(SPI_EXT_DATA, max_in);
-	spi_write8(SPI_CNTRL0, cmd);
-
-	if (reset_internal_fifo_pointer())
-		return -1;
-	for (count = 0; count < bytesout; count++, dout++)
-		spi_write8(SPI_CNTRL1, *(uint8_t *)dout);
-
-	if (execute_command())
-		return -1;
-
-	if (reset_internal_fifo_pointer())
-		return -1;
-	for (count = 0; count < bytesout; count++)
-		spi_read8(SPI_CNTRL1); /* skip the bytes we sent */
-
-	for (count = 0; count < max_in; count++, (*din)++)
-		**din = spi_read8(SPI_CNTRL1);
-
-	*bytesin -= max_in;
-	return 0;
-}
-
 static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		size_t bytesout, void *din, size_t bytesin)
 {
+	size_t count;
 	uint8_t cmd;
+	uint8_t *bufin = din;
+	const uint8_t *bufout = dout;
+
+	if (SPI_DEBUG_DRIVER)
+		printk(BIOS_DEBUG, "%s(%lx, %lx)\n", __func__, bytesout,
+			bytesin);
 
 	/* First byte is cmd which cannot be sent through FIFO */
-	cmd = *(uint8_t *)dout++;
+	cmd = bufout[0];
+	bufout++;
 	bytesout--;
 
 	/*
@@ -161,16 +142,27 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	 * and followed by other SPI commands, and this sequence is controlled
 	 * by the SPI chip driver.
 	 */
-	if (bytesout > SPI_FIFO_DEPTH) {
+	if (bytesout + bytesin > SPI_FIFO_DEPTH) {
 		printk(BIOS_DEBUG, "FCH SPI: Too much to write. Does your SPI"
 				" chip driver use spi_crop_chunk()?\n");
 		return -1;
 	}
 
-	do {
-		if (do_command(cmd, dout, bytesout, (uint8_t **)&din, &bytesin))
-			return -1;
-	} while (bytesin);
+	if (wait_for_ready())
+		return -1;
+
+	spi_write8(SPI_CMD_CODE, cmd);
+	spi_write8(SPI_TX_BYTE_COUNT, bytesout);
+	spi_write8(SPI_RX_BYTE_COUNT, bytesin);
+
+	for (count = 0; count < bytesout; count++)
+		spi_write8(SPI_FIFO + count, bufout[count]);
+
+	if (execute_command())
+		return -1;
+
+	for (count = 0; count < bytesin; count++)
+		bufin[count] = spi_read8(SPI_FIFO + count + bytesout);
 
 	return 0;
 }

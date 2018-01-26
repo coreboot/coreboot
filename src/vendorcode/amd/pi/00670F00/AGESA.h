@@ -13,7 +13,7 @@
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2017, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -1800,6 +1800,14 @@ typedef struct {
 } DEVICE_BLOCK_HEADER;
 
 ///===============================================================================
+/// CPU_VREF_OVERRIDE
+///
+typedef struct _CPU_VREF_OVERRIDE{
+  IN UINT8 VrefOp;     ///< Operater to adjust VrefHspeed
+  IN UINT8 VrefOffset; ///< Offset to adjust VrefHspeed
+} CPU_VREF_OVERRIDE;
+
+///===============================================================================
 /// MEM_PARAMETER_STRUCT
 /// This data structure is used to pass wrapper parameters to the memory configuration code
 ///
@@ -2116,6 +2124,8 @@ typedef struct _MEM_PARAMETER_STRUCT {
                                              ///< @BldCfgItem{BLDCFG_DIMM_TYPE_DDR3_CAPABLE}
   IN     UINT16 CustomVddioSupport;          ///< CustomVddioSupport
                                              ///< @BldCfgItem{BLDCFG_CUSTOM_VDDIO_VOLTAGE}
+  IN     CPU_VREF_OVERRIDE CpuVrefOverride[2][4];     ///< Structure to adjust VrefHspeed
+                                                      ///< PerDct, Per MemPstate
 } MEM_PARAMETER_STRUCT;
 
 
@@ -2858,6 +2868,7 @@ typedef struct {
   IN GPIO_CONTROL     *CfgFchGpioControl;         ///< FCH GPIO Control
   IN BOOLEAN          CfgFchRtcWorkAround;        ///< FCH RTC Workaround
   IN BOOLEAN          CfgFchUsbPortDisWorkAround; ///< FCH USB Workaround
+  IN BOOLEAN          CfgFchAllowSpiInterfaceUpdate;     ///< FchAllowSpiInterfaceUpdate - Fch Allow Spi Interface Update
 } FCH_PLATFORM_POLICY;
 
 
@@ -2993,7 +3004,7 @@ typedef struct {
                                                   ///< Build-time customizable only - @BldCfgItem{BLDCFG_GFX_LVDS_SPREAD_SPECTRUM}
   IN UINT16  CfgLvdsSpreadSpectrumRate;           ///< Lvds Spread Spectrum Rate
                                                   ///< Build-time customizable only - @BldCfgItem{BLDCFG_GFX_LVDS_SPREAD_SPECTRUM_RATE}
-  IN FCH_PLATFORM_POLICY  *FchBldCfg;             ///< FCH platform build configuration policy
+  IN CONST FCH_PLATFORM_POLICY  *FchBldCfg;       ///< FCH platform build configuration policy
 
   IN BOOLEAN    CfgIommuSupport;                  ///< IOMMU support
   IN UINT8      CfgLvdsPowerOnSeqDigonToDe;       ///< Panel initialization timing
@@ -3087,6 +3098,7 @@ typedef struct {
   IN BOOLEAN CfgAcpPowerGating;                   ///< @BldCfgItem{BLDCFG_ACP_POWER_GATING}
   IN BOOLEAN CfgSmuOverclocking;                  ///< @BldCfgItem{BLDCFG_SMU_OVERCLOCKING}
   IN BOOLEAN CfgSmuCPUIdleActivityMonitorEnable;  ///< @BldCfgItem{BLDCFG_CPU_IDLE_ACTIVITY_MONITOR}
+  IN UINT16  CfgBootUpDisplayDevice;              ///< @BldCfgItem{BLDCFG_CFG_BOOT_UP_DISPLAY_DEVICE}
   IN BOOLEAN Reserved;                            ///< reserved...
 } BUILD_OPT_CFG;
 
@@ -3171,6 +3183,9 @@ typedef struct _PLATFORM_CONFIGURATION {
   IN BOOLEAN             AcpPowerGating;              ///< @BldCfgItem{BLDCFG_ACP_POWER_GATING}
   IN BOOLEAN             SmuOverclocking;             ///< @BldCfgItem{BLDCFG_SMU_OVERCLOCKING}
   IN BOOLEAN             SmuCPUIdleActivityMonitorEnable; ///< @BldCfgItem{BLDCFG_CPU_IDLE_ACTIVITY_MONITOR}
+  IN UINT16              BootUpDisplayDevice;         ///< The boot up display device selected.
+                                                      ///< If equal to 0 default setting in VBIOS for boot up display devices
+                                                      ///< @BldCfgItem{BLDCFG_CFG_BOOT_UP_DISPLAY_DEVICE}
 } PLATFORM_CONFIGURATION;
 
 
@@ -3404,6 +3419,7 @@ typedef struct {
   OUT UINT8                     Channel:2;              ///< Channel ID
   OUT UINT8                     Dimm:2;                 ///< DIMM ID
   OUT UINT8                     DimmPresent:1;          ///< Dimm Present
+  OUT BOOLEAN                   Interleaved;            ///< Interleaved;
   OUT UINT32                    StartingAddr;           ///< The physical address, in kilobytes, of a range
                                                         ///< of memory mapped to the referenced Memory Device.
   OUT UINT32                    EndingAddr;             ///< The handle, or instance number, associated with

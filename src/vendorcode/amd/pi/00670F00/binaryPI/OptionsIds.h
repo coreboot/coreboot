@@ -13,7 +13,7 @@
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2015, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2017, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -87,6 +87,8 @@
  *    IDSOPT_PERF_ANALYSIS
  *    IDSOPT_ASSERT_ENABLED
  *    IDS_DEBUG_PORT
+ *    IDS_DEBUG_PORT_SIZE_IN_BYTES
+ *    IDS_DEBUG_TP_PREFIX
  *    IDSOPT_CAR_CORRUPTION_CHECK_ENABLED
  *    IDSOPT_DEBUG_CODE_ENABLED
  *    IDSOPT_IDT_EXCEPTION_TRAP
@@ -94,11 +96,9 @@
  *
  **/
 
-
-
-//#include "Ids.h"
-
 #define IDSOPT_ERROR_TRAP_ENABLED             FALSE
+
+#define IDS_MMAP_SERIAL_PORT
 
 #ifdef DEBUG
 #define IDSOPT_IDS_ENABLED                    TRUE
@@ -109,12 +109,17 @@
 #undef IDS_DEBUG_PRINT_MASK
 #endif
 #define IDS_DEBUG_PRINT_MASK                  (GNB_TRACE_ALL | GFX_MISC | CPU_TRACE_ALL | MEM_STATUS | TOPO_TRACE_ALL | FCH_TRACE_ALL | MAIN_FLOW | IDS_TRACE_DEFAULT | TEST_POINT)
+#ifdef IDS_MMAP_SERIAL_PORT
+#define IDSOPT_SERIAL_PORT                    0xfedc6000
+#else
 #define IDSOPT_SERIAL_PORT                    0x3F8
+#endif
 #define IDSOPT_HEAP_CHECKING                  TRUE
 #define IDSOPT_TRACE_BLD_CFG                  TRUE
 #define IDSOPT_CAR_CORRUPTION_CHECK_ENABLED   FALSE
 #define IDSOPT_DEBUG_CODE_ENABLED             TRUE
 #define IDSOPT_C_OPTIMIZATION_DISABLED        TRUE
+//#define IDSOPT_ASSERT_ENABLED                 TRUE
 #else
 #define IDSOPT_IDS_ENABLED                    FALSE
 //#define IDSOPT_ERROR_TRAP_ENABLED             FALSE

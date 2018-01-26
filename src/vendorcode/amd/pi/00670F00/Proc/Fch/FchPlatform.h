@@ -14,7 +14,7 @@
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2017, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -115,6 +115,6 @@
 #include "FchBiosRamUsage.h"
 #include "AmdFch.h"
 
-extern BUILD_OPT_CFG    UserOptions;
+extern CONST BUILD_OPT_CFG    UserOptions;
 
 #endif // _FCH_PLATFORM_H_

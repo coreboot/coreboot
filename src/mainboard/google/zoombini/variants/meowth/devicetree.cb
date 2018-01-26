@@ -6,6 +6,9 @@ chip soc/intel/cannonlake
 	register "deep_s5_enable_ac" = "1"
 	register "deep_s5_enable_dc" = "1"
 
+	# Debug Option, set to DBC over USB 3.0 port only
+	register "DebugConsent" = "DebugConsent_USB3_DBC"
+
 	# GPE configuration
 	# Note that GPE events called out in ASL code rely on this
 	# route. i.e. If this route changes then the affected GPE

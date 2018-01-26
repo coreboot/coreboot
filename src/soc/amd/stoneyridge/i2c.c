@@ -18,6 +18,7 @@
 #include <console/console.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/iomap.h>
+#include <soc/pci_devs.h>
 #include "chip.h"
 
 #define I2C_BUS_ADDRESS(x) (I2C_BASE_ADDRESS + I2C_DEVICE_SIZE * (x))
@@ -41,10 +42,11 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 	return bus < I2C_DEVICE_COUNT ? i2c_bus_address[bus] : 0;
 }
 
-const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus,
-		const struct device *dev)
+const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 {
 	const struct soc_amd_stoneyridge_config *config;
+	const struct device *dev = dev_find_slot(0, GNB_DEVFN);
+
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "%s: Could not find SoC devicetree config!\n",
 			__func__);

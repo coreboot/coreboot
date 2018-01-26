@@ -25,6 +25,24 @@
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>
 
+/* Decodes TSEG region size to bytes. */
+u32 decode_tseg_size(const u8 esmramc)
+{
+	if (!(esmramc & 1))
+		return 0;
+	switch ((esmramc >> 1) & 3) {
+	case 0:
+		return 1 << 20;
+	case 1:
+		return 2 << 20;
+	case 2:
+		return 8 << 20;
+	case 3:
+	default:
+		die("Bad TSEG setting.\n");
+	}
+}
+
 static uintptr_t smm_region_start(void)
 {
 	uintptr_t tom;
@@ -35,24 +53,8 @@ static uintptr_t smm_region_start(void)
 	else
 		tom = (pci_read_config8(PCI_DEV(0, 0, 0), TOLUD) & 0xf7) << 24;
 
-	/* if TSEG enabled subtract size */
-	switch (pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC) & 0x07) {
-	case 0x01:
-		/* 1MB TSEG */
-		tom -= 0x100000;
-		break;
-	case 0x03:
-		/* 2MB TSEG */
-		tom -= 0x200000;
-		break;
-	case 0x05:
-		/* 8MB TSEG */
-		tom -= 0x800000;
-		break;
-	default:
-		/* TSEG either disabled or invalid */
-		break;
-	}
+	/* subsctract TSEG size */
+	tom -= decode_tseg_size(pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC));
 	return tom;
 }
 

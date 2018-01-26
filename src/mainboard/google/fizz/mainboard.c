@@ -43,7 +43,7 @@
  * For type-C chargers, set PL2 to 90% of max power to account for
  * cable loss and FET Rdson loss in the path from the source.
  */
-#define GET_TYPEC_PL2(w)   (9 * (w) / 10)
+#define SET_PSYSPL2(w)     (9 * (w) / 10)
 
 #define OEM_ID_COUNT	3
 #define SKU_ID_COUNT	7
@@ -108,17 +108,26 @@ static uint8_t board_sku_id(void)
  *
  * Set Pl2 and SysPl2 values based on detected charger.
  * If detected barrel jack, use values below based on SKU.
- * +-------------+-----+---------+-------------------+
- * | sku_id      | PL2 | PsysPL2 | Pmax (Prop = 48W) |
- * +-------------+-----+---------+-------------------+
- * | i7 U42      |  44 |   90    |       119         |
- * | i5 U42      |  44 |   90    |       119         |
- * | i3 U42      |  44 |   90    |       119         |
- * | i7 U22      |  29 |   65    |        91         |
- * | i5 U22      |  29 |   65    |        91         |
- * | i3 U22      |  29 |   65    |        91         |
- * | celeron U22 |  29 |   65    |        91         |
- * +-------------+-----+---------+-------------------+
+ * +-------------+-----+---------+-----+------+------+
+ * | sku_id      | PL2 | PsysPL2 | PL4 | Pmax | Prop |
+ * +-------------+-----+---------+-----+------+------+
+ * | i7 U42      |  44 |   81    | 71  |  120 |  48  |
+ * | i5 U42      |  44 |   81    | 71  |  120 |  48  |
+ * | i3 U42      |  44 |   81    | 71  |  120 |  48  |
+ * | i7 U22      |  29 |   58    | 43  |   91 |  48  |
+ * | i5 U22      |  29 |   58    | 43  |   91 |  48  |
+ * | i3 U22      |  29 |   58    | 43  |   91 |  48  |
+ * | celeron U22 |  29 |   58    | 43  |   91 |  48  |
+ * +-------------+-----+---------+-----+------+------+
+ * For USB C charger:
+ * +-------------+-----+---------+-----+------+------+
+ * | Max Power(W)| PL2 | PsysPL2 | PL4 | Pmax | Prop |
+ * +-------------+-----+---------+-----+------+------+
+ * | 60 (U42)    |  44 |   54    |  54 |  120 |  48  |
+ * | 60 (U22)    |  29 |   54    |  43 |   91 |  48  |
+ * | X  (U42)    |  44 |   .9X   | .9X |  120 |  48  |
+ * | X  (U22)    |  29 |   .9X   | .9X |   91 |  48  |
+ * +-------------+-----+---------+-----+------+------+
  */
 static void mainboard_set_power_limits(u32 *pl2_val, u32 *psyspl2_val)
 {
@@ -131,25 +140,26 @@ static void mainboard_set_power_limits(u32 *pl2_val, u32 *psyspl2_val)
 				  (1 << FIZZ_SKU_ID_I5_U42) |
 				  (1 << FIZZ_SKU_ID_I3_U42);
 
+	/* PL2 value is sku-based, no matter what charger we are using */
+	pl2 = FIZZ_PL2_U22;
+	if ((1 << sku) & u42_mask)
+		pl2 = FIZZ_PL2_U42;
+
 	/* If we can't get charger info or not PD charger, assume barrel jack */
 	if (rv != 0 || type != USB_CHG_TYPE_PD) {
-		/* using the barrel jack, get PL2 based on sku id */
-		pl2 = FIZZ_PL2_U22;
+		/* using the barrel jack, get PsysPL2 based on sku id */
 		psyspl2 = FIZZ_PSYSPL2_U22;
 		/* Running a U42 SKU */
-		if ((1 << sku) & u42_mask) {
-			pl2 = FIZZ_PL2_U42;
+		if ((1 << sku) & u42_mask)
 			psyspl2 = FIZZ_PSYSPL2_U42;
-		}
-
 	} else {
 		/* Base on max value of adapter */
-		pl2 = GET_TYPEC_PL2(watts);
 		psyspl2 = watts;
 	}
 
 	*pl2_val = pl2;
-	*psyspl2_val = psyspl2;
+	/* set psyspl2 to 90% of max adapter power */
+	*psyspl2_val = SET_PSYSPL2(psyspl2);
 }
 
 static uint8_t board_oem_id(void)

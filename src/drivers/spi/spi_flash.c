@@ -113,6 +113,34 @@ static int spi_flash_cmd_read_array(const struct spi_slave *spi, u8 *cmd,
 	return spi_flash_cmd_read(spi, cmd, cmd_len, data, len);
 }
 
+/* Perform the read operation honoring spi controller fifo size, reissuing
+ * the read command until the full request completed. */
+static int spi_flash_cmd_read_array_wrapped(const struct spi_slave *spi,
+				u8 *cmd, size_t cmd_len, u32 offset,
+				size_t len, void *buf)
+{
+	int ret;
+	size_t xfer_len;
+	uint8_t *data = buf;
+
+	while (len) {
+		xfer_len = spi_crop_chunk(spi, cmd_len, len);
+
+		/* Perform the read. */
+		ret = spi_flash_cmd_read_array(spi, cmd, cmd_len,
+						offset, xfer_len, data);
+
+		if (ret)
+			return ret;
+
+		offset += xfer_len;
+		data += xfer_len;
+		len -= xfer_len;
+	}
+
+	return 0;
+}
+
 int spi_flash_cmd_read_fast(const struct spi_flash *flash, u32 offset,
 			size_t len, void *data)
 {
@@ -121,7 +149,7 @@ int spi_flash_cmd_read_fast(const struct spi_flash *flash, u32 offset,
 	cmd[0] = CMD_READ_ARRAY_FAST;
 	cmd[4] = 0x00;
 
-	return spi_flash_cmd_read_array(&flash->spi, cmd, sizeof(cmd),
+	return spi_flash_cmd_read_array_wrapped(&flash->spi, cmd, sizeof(cmd),
 					offset, len, data);
 }
 
@@ -131,7 +159,7 @@ int spi_flash_cmd_read_slow(const struct spi_flash *flash, u32 offset,
 	u8 cmd[4];
 
 	cmd[0] = CMD_READ_ARRAY_SLOW;
-	return spi_flash_cmd_read_array(&flash->spi, cmd, sizeof(cmd),
+	return spi_flash_cmd_read_array_wrapped(&flash->spi, cmd, sizeof(cmd),
 					offset, len, data);
 }
 

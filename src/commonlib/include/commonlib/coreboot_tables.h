@@ -211,6 +211,45 @@ struct lb_forward {
 	uint64_t forward;
 };
 
+/**
+ * coreboot framebuffer
+ *
+ * The coreboot framebuffer uses a very common format usually referred
+ * to as "linear framebuffer":
+ *
+ * The first pixel of the framebuffer is the upper left corner, its
+ * address is given by `physical_address`.
+ *
+ * Each pixel is represented by exactly `bits_per_pixel` bits. If a
+ * pixel (or a color component therein) doesn't fill a whole byte or
+ * doesn't start on a byte boundary, it starts at the least signifi-
+ * cant bit not occupied by the previous pixel (or color component).
+ * Pixels (or color components) that span multiple bytes always start
+ * in the byte with the lowest address.
+ *
+ * The framebuffer provides a visible rectangle of `x_resolution` *
+ * `y_resolution` pixels. However, the lines always start at a byte
+ * boundary given by `bytes_per_line`, which may leave a gap after
+ * each line of pixels. Thus, the data for a pixel with the coordi-
+ * nates (x, y) from the upper left corner always starts at
+ *
+ *   physical_address + y * bytes_per_line + x * bits_per_pixel / 8
+ *
+ * `bytes_per_line` is always big enough to hold `x_resolution`
+ * pixels. It can, however, be arbitrarily higher (e.g. to fulfill
+ * hardware constraints or for optimization purposes). The size of
+ * the framebuffer is always `y_resolution * bytes_per_line`.
+ *
+ * The coreboot framebuffer only supports RGB color formats. The
+ * position and size of each color component are specified indivi-
+ * dually by <color>_mask_pos and <color>_mask_size. To allow byte
+ * or word aligned pixels, a fourth (padding) component may be
+ * specified by `reserved_mask_pos` and `reserved_mask_size`.
+ *
+ * Software utilizing the coreboot framebuffer shall consider all
+ * fields described above. It may, however, only implement a subset
+ * of the possible color formats.
+ */
 #define LB_TAG_FRAMEBUFFER	0x0012
 struct lb_framebuffer {
 	uint32_t tag;

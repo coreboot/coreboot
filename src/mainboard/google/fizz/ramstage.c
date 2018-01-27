@@ -13,11 +13,16 @@
  * GNU General Public License for more details.
  */
 
+#include <bootmode.h>
+#include <ec/google/chromeec/ec.h>
 #include <soc/ramstage.h>
 
 #include "gpio.h"
 
 void mainboard_silicon_init_params(FSP_SIL_UPD *params)
 {
+	if (display_init_required())
+		/* This has to be done before FSP-S runs. */
+		google_chromeec_wait_for_display();
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 }

@@ -98,6 +98,7 @@ help_coreboot help::
 	@echo  '  distclean             - Remove build artifacts and config files'
 	@echo  '  doxygen               - Build doxygen documentation for coreboot'
 	@echo  '  doxyplatform          - Build doxygen documentation for the current platform'
+	@echo  '  filelist              - Show files used in current build'
 	@echo  '  printall              - print makefile info for debugging'
 	@echo  '  gitconfig             - set up git to submit patches to coreboot'
 	@echo  '  ctags / ctags-project - make ctags file for all of coreboot or current board'

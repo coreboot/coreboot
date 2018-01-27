@@ -36,16 +36,4 @@ mrc.bin-file := $(call strip_quotes,$(CONFIG_MRC_FILE))
 mrc.bin-position := 0xfffa0000
 mrc.bin-type := mrc
 
-ifneq ($(CONFIG_CHROMEOS),y)
-$(obj)/mrc.cache: $(obj)/config.h
-	dd if=/dev/zero count=1 \
-	bs=$(shell printf "%d" $(CONFIG_MRC_CACHE_SIZE) ) | \
-	tr '\000' '\377' > $@
-
-cbfs-files-y += mrc.cache
-mrc.cache-file := $(obj)/mrc.cache
-mrc.cache-align := 0x10000
-mrc.cache-type := mrc_cache
-endif
-
 endif

@@ -16,7 +16,7 @@
 config NORTHBRIDGE_INTEL_HASWELL
 	bool
 	select CPU_INTEL_HASWELL
-	select NORTHBRIDGE_INTEL_COMMON_MRC_CACHE
+	select CACHE_MRC_SETTINGS
 	select INTEL_DDI
 	select INTEL_GMA_ACPI
 	select RELOCATABLE_RAMSTAGE
@@ -38,11 +38,6 @@ config VGA_BIOS_ID
 config CACHE_MRC_SIZE_KB
 	int
 	default 512
-
-config MRC_CACHE_SIZE
-	hex
-	depends on !CHROMEOS
-	default 0x10000
 
 config DCACHE_RAM_BASE
 	hex

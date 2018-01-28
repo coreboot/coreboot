@@ -46,7 +46,7 @@ static void model_15_init(device_t dev)
 	//x86_enable_cache();
 	//amd_setup_mtrrs();
 	//x86_mtrr_check();
-	disable_cache ();
+	disable_cache();
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;

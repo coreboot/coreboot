@@ -42,7 +42,7 @@ static void model_14_init(device_t dev)
 #endif
 	printk(BIOS_DEBUG, "Model 14 Init.\n");
 
-	disable_cache ();
+	disable_cache();
 	/*
 	 * AGESA sets the MTRRs main MTRRs. The shadow area needs to be set
 	 * by coreboot. The amd_setup_mtrrs should work, but needs debug on fam14.

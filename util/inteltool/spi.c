@@ -279,7 +279,8 @@ int print_spibar(struct pci_dev *sb) {
 				printf("0x%08x = %s\n", *(uint32_t *)(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
 				break;
 			case 8:
-				printf("0x%08x%08x = %s\n", *(uint32_t *)(rcba + spi_register[i].addr), *(uint32_t *)(rcba + spi_register[i].addr + 4), spi_register[i].name);
+				printf("0x%08x%08x = %s\n",  *(uint32_t *)(rcba + spibaroffset + spi_register[i].addr + 4),
+					*(uint32_t *)(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
 				break;
 		}
 	}

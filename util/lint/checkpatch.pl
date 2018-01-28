@@ -951,6 +951,10 @@ if ($git) {
 my $vname;
 for my $filename (@ARGV) {
 	my $FILE;
+
+	# coreboot: Mark filename as untainted
+	$filename =~ /^(.*)$/s or die; $filename = $1;
+
 	if ($git) {
 		open($FILE, '-|', "git format-patch -M --stdout -1 $filename") ||
 			die "$P: $filename: git format-patch failed - $!\n";

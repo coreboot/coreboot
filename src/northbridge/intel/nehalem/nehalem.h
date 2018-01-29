@@ -195,8 +195,6 @@ typedef struct {
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 
 #define MSAC		0x62	/* Multi Size Aperture Control */
-#define SWSCI		0xe8	/* SWSCI  enable */
-#define ASLS		0xfc	/* OpRegion Base */
 
 /*
  * MCHBAR

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#define DPTF_CPU_PASSIVE		85
+#define DPTF_CPU_PASSIVE		82
 #define DPTF_CPU_CRITICAL		100
 
 #define DPTF_TSR0_SENSOR_ID		1

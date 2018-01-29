@@ -43,7 +43,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
-#include <northbridge/intel/common/mrc_cache.h>
+#include <mrc_cache.h>
 #endif
 
 #if !REAL
@@ -90,6 +90,8 @@ typedef struct {
 	u8 smallest;
 	u8 largest;
 } timing_bounds_t[2][2][2][9];
+
+#define MRC_CACHE_VERSION 1
 
 struct ram_training {
 	/* [TM][CHANNEL][SLOT][RANK][LANE] */
@@ -1741,17 +1743,18 @@ static void save_timings(struct raminfo *info)
 	printk (BIOS_SPEW, "[6e8] = %x\n", train.reg_6e8);
 
 	/* Save the MRC S3 restore data to cbmem */
-	store_current_mrc_cache(&train, sizeof(train));
+	mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION,
+			&train, sizeof(train));
 }
 
 #if REAL
 static const struct ram_training *get_cached_training(void)
 {
-	struct mrc_data_container *cont;
-	cont = find_current_mrc_cache();
-	if (!cont)
+	struct region_device rdev;
+	if (mrc_cache_get_current(MRC_TRAINING_DATA, MRC_CACHE_VERSION,
+					&rdev))
 		return 0;
-	return (void *)cont->mrc_data;
+	return (void *)rdev_mmap_full(&rdev);
 }
 #endif
 

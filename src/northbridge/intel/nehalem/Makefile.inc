@@ -29,14 +29,4 @@ romstage-y += ../../../arch/x86/walkcbfs.S
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
-$(obj)/mrc.cache:
-	dd if=/dev/zero count=1 \
-	bs=$(shell printf "%d" $(CONFIG_MRC_CACHE_SIZE) ) | \
-	tr '\000' '\377' > $@
-
-cbfs-files-y += mrc.cache
-mrc.cache-file := $(obj)/mrc.cache
-mrc.cache-align := 0x10000
-mrc.cache-type := mrc_cache
-
 endif

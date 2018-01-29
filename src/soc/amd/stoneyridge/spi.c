@@ -193,7 +193,7 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.xfer = spi_ctrlr_xfer,
 	.xfer_vector = spi_xfer_two_vectors,
 	.max_xfer_size = SPI_FIFO_DEPTH,
-	.flags = SPI_CNTRLR_DEDUCT_CMD_LEN,
+	.flags = SPI_CNTRLR_DEDUCT_CMD_LEN | SPI_CNTRLR_DEDUCT_OPCODE_LEN,
 };
 
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {

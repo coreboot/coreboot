@@ -121,6 +121,8 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 			sizeof(params->PcieRpClkReqSupport));
 	memcpy(params->PcieRpClkReqNumber, config->PcieRpClkReqNumber,
 			sizeof(params->PcieRpClkReqNumber));
+	memcpy(params->PcieRpHotPlug, config->PcieRpHotPlug,
+			sizeof(params->PcieRpHotPlug));
 
 	params->EnableLan = config->EnableLan;
 	params->Cio2Enable = config->Cio2Enable;

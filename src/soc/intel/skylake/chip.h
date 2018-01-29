@@ -231,6 +231,9 @@ struct soc_intel_skylake_config {
 	 */
 	u8 PcieRpLtrEnable[CONFIG_MAX_ROOT_PORTS];
 
+	/* Enable/Disable HotPlug support for Root Port */
+	u8 PcieRpHotPlug[CONFIG_MAX_ROOT_PORTS];
+
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];
 	struct usb3_port_config usb3_ports[10];

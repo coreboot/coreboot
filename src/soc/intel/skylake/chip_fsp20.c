@@ -170,6 +170,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 			sizeof(params->PcieRpAdvancedErrorReporting));
 	memcpy(params->PcieRpLtrEnable, config->PcieRpLtrEnable,
 	       sizeof(params->PcieRpLtrEnable));
+	memcpy(params->PcieRpHotPlug, config->PcieRpHotPlug,
+	       sizeof(params->PcieRpHotPlug));
 
 	/*
 	 * PcieRpClkSrcNumber UPD is set to clock source number(0-6) for

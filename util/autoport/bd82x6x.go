@@ -334,14 +334,10 @@ void pch_enable_lpc(void)
 
 	sb.WriteString(`}
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
-	/* Disable devices.  */
 `)
-	RestoreRCBA32(sb, inteltool, 0x3414)
-	RestoreRCBA32(sb, inteltool, 0x3418)
-
-	sb.WriteString("\n}\n")
+	sb.WriteString("}\n\n")
 
 	sb.WriteString("const struct southbridge_usb_port mainboard_usb_ports[] = {\n")
 

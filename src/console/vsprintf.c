@@ -34,7 +34,7 @@ static void str_tx_byte(unsigned char byte, void *data)
 	}
 }
 
-static int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
+int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 {
 	int i;
 	struct vsnprintf_context ctx;

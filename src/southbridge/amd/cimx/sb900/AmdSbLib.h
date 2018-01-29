@@ -20,18 +20,7 @@
 #ifndef _AMD_SB_LIB_H_
 #define _AMD_SB_LIB_H_
 
-typedef signed char  *va_list;
-#ifndef _INTSIZEOF
-  #define _INTSIZEOF (n) ( (sizeof(n) + sizeof(UINTN) - 1) & ~(sizeof(UINTN) - 1) )
-#endif
-
-// Also support coding convention rules for var arg macros
-#ifndef va_start
-  #define va_start(ap, v)  ( ap = (va_list)&(v) + _INTSIZEOF (v) )
-#endif
-#define va_arg(ap, t)    ( *(t *) ((ap += _INTSIZEOF (t)) - _INTSIZEOF (t)) )
-#define va_end(ap)      ( ap = (va_list)0 )
-
+#include <console/vtxprintf.h>
 
 #pragma pack (push, 1)
 

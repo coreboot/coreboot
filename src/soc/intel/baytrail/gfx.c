@@ -397,6 +397,13 @@ static void gfx_init(struct device *dev)
 	intel_gma_restore_opregion();
 }
 
+static void gma_generate_ssdt(struct device *dev)
+{
+	const struct soc_intel_baytrail_config *chip = dev->chip_info;
+
+	drivers_intel_gma_displays_ssdt_generate(&chip->gfx);
+}
+
 static unsigned long
 gma_write_acpi_tables(struct device *const dev,
 		      unsigned long current,
@@ -430,6 +437,7 @@ static struct device_operations gfx_device_ops = {
 	.init			= gfx_init,
 	.ops_pci		= &soc_pci_ops,
 	.write_acpi_tables	= gma_write_acpi_tables,
+	.acpi_fill_ssdt		= gma_generate_ssdt,
 };
 
 static const struct pci_driver gfx_driver __pci_driver = {

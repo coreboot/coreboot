@@ -8,6 +8,9 @@ struct drivers_i2c_da7219_config {
 	/* Interrupt configuration */
 	struct acpi_irq irq;
 
+	/* Use GPIO based interrupt instead of PIRQ */
+	struct acpi_gpio irq_gpio;
+
 	/* I2C Bus Frequency in Hertz (default 400kHz) */
 	unsigned bus_speed;
 

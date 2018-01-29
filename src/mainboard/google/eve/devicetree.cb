@@ -146,6 +146,7 @@ chip soc/intel/skylake
 	register "PcieRpClkReqNumber[0]" = "1"
 	register "PcieRpAdvancedErrorReporting[0]" = "1"
 	register "PcieRpLtrEnable[0]" = "1"
+	register "PcieRpHotPlug[0]" = "1"
 	#RP 1 uses CLK SRC 1
 	register "PcieRpClkSrcNumber[0]" = "1"
 

@@ -155,7 +155,7 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.xfer = spi_ctrlr_xfer,
 	.xfer_vector = spi_xfer_two_vectors,
 	.max_xfer_size = AMD_SB_SPI_TX_LEN,
-	.deduct_cmd_len = true,
+	.flags = SPI_CNTRLR_DEDUCT_CMD_LEN,
 };
 
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {

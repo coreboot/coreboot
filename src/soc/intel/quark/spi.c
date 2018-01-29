@@ -290,7 +290,6 @@ BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, spi_init_cb, NULL);
 const struct spi_ctrlr spi_driver = {
 	.xfer = xfer,
 	.max_xfer_size = 64,
-	.deduct_cmd_len = false,
 };
 
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {

@@ -93,15 +93,24 @@ unsigned int spi_crop_chunk(const struct spi_slave *slave, unsigned int cmd_len,
 {
 	const struct spi_ctrlr *ctrlr = slave->ctrlr;
 	unsigned int ctrlr_max;
+	bool deduct_cmd_len;
+	bool deduct_opcode_len;
 
 	if (!ctrlr)
 		return 0;
 
+	deduct_cmd_len = !!(ctrlr->flags & SPI_CNTRLR_DEDUCT_CMD_LEN);
+	deduct_opcode_len = !!(ctrlr->flags & SPI_CNTRLR_DEDUCT_OPCODE_LEN);
 	ctrlr_max = ctrlr->max_xfer_size;
 
 	assert (ctrlr_max != 0);
 
-	if (ctrlr->deduct_cmd_len && (ctrlr_max > cmd_len))
+	/* Assume opcode is always one byte and deduct it from the cmd_len
+	   as the hardware has a separate register for the opcode. */
+	if (deduct_opcode_len)
+		cmd_len--;
+
+	if (deduct_cmd_len && (ctrlr_max > cmd_len))
 		ctrlr_max -= cmd_len;
 
 	return min(ctrlr_max, buf_len);

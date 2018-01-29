@@ -97,6 +97,17 @@ struct spi_cfg {
 
 struct spi_flash;
 
+enum {
+	/* Deduct the command length from the spi_crop_chunk() calculation for
+	   sizing a transaction. */
+	SPI_CNTRLR_DEDUCT_CMD_LEN = 1 << 0,
+	/* Remove the opcode size from the command length used in the
+	   spi_crop_chunk() calculation. Controllers which have a dedicated
+	   register for the command byte would set this flag which would
+	   allow the use of the maximum transfer size. */
+	SPI_CNTRLR_DEDUCT_OPCODE_LEN = 1 << 1,
+};
+
 /*-----------------------------------------------------------------------
  * Representation of a SPI controller.
  *
@@ -108,8 +119,7 @@ struct spi_flash;
  * max_xfer_size:	Maximum transfer size supported by the controller
  *			(0 = invalid,
  *			 SPI_CTRLR_DEFAULT_MAX_XFER_SIZE = unlimited)
- * deduct_cmd_len:	Whether cmd_len should be deducted from max_xfer_size
- *			when calculating max_data_size
+ * flags:		See SPI_CNTRLR_* enums above.
  *
  * Following member is provided by specialized SPI controllers that are
  * actually SPI flash controllers.
@@ -127,7 +137,7 @@ struct spi_ctrlr {
 	int (*xfer_vector)(const struct spi_slave *slave,
 			struct spi_op vectors[], size_t count);
 	uint32_t max_xfer_size;
-	bool deduct_cmd_len;
+	uint32_t flags;
 	int (*flash_probe)(const struct spi_slave *slave,
 				struct spi_flash *flash);
 	int (*flash_protect)(const struct spi_flash *flash,

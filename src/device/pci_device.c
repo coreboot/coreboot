@@ -664,7 +664,6 @@ void pci_dev_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
-#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 static int should_run_oprom(struct device *dev)
 {
 	static int should_run = -1;
@@ -677,10 +676,9 @@ static int should_run_oprom(struct device *dev)
 	 */
 	should_run = display_init_required();
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
-	if (!should_run)
+	if (!should_run && IS_ENABLED(CONFIG_CHROMEOS))
 		should_run = vboot_wants_oprom();
-#endif
+
 	if (!should_run)
 		printk(BIOS_DEBUG, "Not running VGA Option ROM\n");
 	return should_run;
@@ -701,13 +699,14 @@ static int should_load_oprom(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_VGA_ROM_RUN */
 
 /** Default handler: only runs the relevant PCI BIOS. */
 void pci_dev_init(struct device *dev)
 {
-#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 	struct rom_header *rom, *ram;
+
+	if (!IS_ENABLED(CONFIG_VGA_ROM_RUN))
+		return;
 
 	/* Only execute VGA ROMs. */
 	if (((dev->class >> 8) != PCI_CLASS_DISPLAY_VGA))
@@ -730,7 +729,6 @@ void pci_dev_init(struct device *dev)
 	run_bios(dev, (unsigned long)ram);
 	gfx_set_init_done(1);
 	printk(BIOS_DEBUG, "VGA Option ROM was run\n");
-#endif /* CONFIG_VGA_ROM_RUN */
 }
 
 /** Default device operation for PCI devices */

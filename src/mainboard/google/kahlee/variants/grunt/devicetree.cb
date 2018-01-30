@@ -82,6 +82,15 @@ chip soc/amd/stoneyridge
 		device pci 18.4 on  end
 		device pci 18.5 on  end
 	end #domain
+	device mmio 0xfedc4000 on
+		chip drivers/i2c/generic
+			register "hid" = ""ELAN0000""
+			register "desc" = ""ELAN Touchpad""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_5)"
+			# TODO(teravest): Add wake
+			device i2c 15 on end
+		end
+	end
 	device mmio 0xfedc5000 on
 		chip drivers/i2c/generic
 			register "hid" = ""ELAN0001""

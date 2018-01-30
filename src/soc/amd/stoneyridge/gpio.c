@@ -99,7 +99,7 @@ void gpio_output(gpio_t gpio_num, int value)
 
 const char *gpio_acpi_path(gpio_t gpio)
 {
-	return "\\SB.GPIO";
+	return "\\_SB.GPIO";
 }
 
 uint16_t gpio_acpi_pin(gpio_t gpio)

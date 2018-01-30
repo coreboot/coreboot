@@ -82,6 +82,14 @@ chip soc/amd/stoneyridge
 		device pci 18.4 on  end
 		device pci 18.5 on  end
 	end #domain
+	device mmio 0xfedc3000 on
+		chip drivers/i2c/tpm
+			register "hid" = ""GOOG0005""
+			register "desc" = ""Cr50 TPM""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_9)"
+			device i2c 50 on end
+		end
+	end
 	device mmio 0xfedc4000 on
 		chip drivers/i2c/generic
 			register "hid" = ""ELAN0000""

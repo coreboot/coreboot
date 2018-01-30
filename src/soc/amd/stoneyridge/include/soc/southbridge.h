@@ -389,4 +389,7 @@ int sb_set_wideio_range(uint16_t start, uint16_t size);
 int mainboard_get_xhci_oc_map(uint16_t *usb_oc_map);
 int mainboard_get_ehci_oc_map(uint16_t *usb_oc_map);
 
+/* Initialize all the i2c buses that are marked with early init. */
+void i2c_soc_early_init(void);
+
 #endif /* __STONEYRIDGE_H__ */

@@ -130,4 +130,7 @@ void bootblock_soc_init(void)
 	post_code(0x38);
 	/* APs will not exit amdinitearly */
 	do_agesawrapper(agesawrapper_amdinitearly, "amdinitearly");
+
+	/* Initialize any early i2c buses. */
+	i2c_soc_early_init();
 }

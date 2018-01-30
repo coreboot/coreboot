@@ -19,6 +19,7 @@
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
+#include <soc/southbridge.h>
 #include "chip.h"
 
 #define I2C_BUS_ADDRESS(x) (I2C_BASE_ADDRESS + I2C_DEVICE_SIZE * (x))
@@ -42,9 +43,8 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 	return bus < I2C_DEVICE_COUNT ? i2c_bus_address[bus] : 0;
 }
 
-const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
+static const struct soc_amd_stoneyridge_config *get_soc_config(void)
 {
-	const struct soc_amd_stoneyridge_config *config;
 	const struct device *dev = dev_find_slot(0, GNB_DEVFN);
 
 	if (!dev || !dev->chip_info) {
@@ -52,10 +52,21 @@ const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 			__func__);
 		return NULL;
 	}
+
+	return dev->chip_info;
+}
+
+const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
+{
+	const struct soc_amd_stoneyridge_config *config;
+
 	if (bus >= ARRAY_SIZE(i2c_bus_address))
 		return NULL;
 
-	config = dev->chip_info;
+	config = get_soc_config();
+	if (config == NULL)
+		return NULL;
+
 	return &config->i2c[bus];
 }
 
@@ -88,6 +99,27 @@ int dw_i2c_soc_dev_to_bus(struct device *dev)
 		return 3;
 	}
 	return -1;
+}
+
+void i2c_soc_early_init(void)
+{
+	size_t i;
+	const struct soc_amd_stoneyridge_config *config;
+
+	config = get_soc_config();
+
+	if (config == NULL)
+		return;
+
+	for (i = 0; i < ARRAY_SIZE(config->i2c); i++) {
+		const struct dw_i2c_bus_config *cfg  = &config->i2c[i];
+
+		if (!cfg->early_init)
+			continue;
+
+		if (dw_i2c_init(i, cfg))
+			printk(BIOS_ERR, "Failed to init i2c bus %zd\n", i);
+	}
 }
 
 struct device_operations stoneyridge_i2c_mmio_ops = {

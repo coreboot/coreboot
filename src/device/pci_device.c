@@ -671,6 +671,11 @@ static int should_run_oprom(struct device *dev)
 	if (should_run >= 0)
 		return should_run;
 
+	if (IS_ENABLED(CONFIG_ALWAYS_RUN_OPROM)) {
+		should_run = 1;
+		return should_run;
+	}
+
 	/* Don't run VGA option ROMs, unless we have to print
 	 * something on the screen before the kernel is loaded.
 	 */

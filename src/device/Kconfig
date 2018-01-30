@@ -140,6 +140,13 @@ config ALWAYS_LOAD_OPROM
 	  are needed for the kernel's display driver to know how a piece of
 	  hardware is configured to be used.
 
+config ALWAYS_RUN_OPROM
+	def_bool n
+	depends on VGA_ROM_RUN && ALWAYS_LOAD_OPROM
+	help
+	  Always uncondtionally run the option regardless of other
+	  policies.
+
 config ON_DEVICE_ROM_LOAD
 	bool "Load Option ROMs on PCI devices"
 	default n if PAYLOAD_SEABIOS

@@ -186,10 +186,10 @@ const static struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
 	/* GPIO_146 - PCH_I2C_AUDIO_SDA */
 	{ GPIO_146, Function0, INPUT },
 
-	/* GPIO_147 - PCH_I2C_HUB_SCL */
+	/* GPIO_147 - PCH_I2C_H1_TPM_SCL */
 	{ GPIO_147, Function0, INPUT },
 
-	/* GPIO_148 - PCH_I2C_HUB_SDA */
+	/* GPIO_148 - PCH_I2C_H1_TPM_SDA */
 	{ GPIO_148, Function0, INPUT },
 };
 

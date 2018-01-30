@@ -93,6 +93,47 @@ void stage_cache_add(int stage_id, const struct prog *stage)
 	memcpy(c, prog_start(stage), prog_size(stage));
 }
 
+void stage_cache_add_raw(int stage_id, const void *base, const size_t size)
+{
+	struct imd *imd;
+	const struct imd_entry *e;
+	void *c;
+
+	imd = imd_get();
+	e = imd_entry_add(imd, CBMEM_ID_STAGEx_RAW + stage_id, size);
+	if (e == NULL) {
+		printk(BIOS_DEBUG, "Error: Can't add %x raw data to imd\n",
+				CBMEM_ID_STAGEx_RAW + stage_id);
+		return;
+	}
+
+	c = imd_entry_at(imd, e);
+	if (c == NULL) {
+		printk(BIOS_DEBUG, "Error: Can't get %x raw entry in imd\n",
+				CBMEM_ID_STAGEx_RAW + stage_id);
+		return;
+	}
+
+	memcpy(c, base, size);
+}
+
+void stage_cache_get_raw(int stage_id, void **base, size_t *size)
+{
+	struct imd *imd;
+	const struct imd_entry *e;
+
+	imd = imd_get();
+	e = imd_entry_find(imd, CBMEM_ID_STAGEx_RAW + stage_id);
+	if (e == NULL) {
+		printk(BIOS_DEBUG, "Error: Can't find %x raw data to imd\n",
+				CBMEM_ID_STAGEx_RAW + stage_id);
+		return;
+	}
+
+	*base = imd_entry_at(imd, e);
+	*size = imd_entry_size(imd, e);
+}
+
 void stage_cache_load_stage(int stage_id, struct prog *stage)
 {
 	struct imd *imd;

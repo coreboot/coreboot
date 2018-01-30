@@ -40,8 +40,8 @@
 #define C9_POWER	0xc8
 #define C10_POWER	0xc8
 
-/* Common Timer Copy (CTC) frequency - 19.2MHz. */
-#define CTC_FREQ		19200000
+/* Common Timer Copy (CTC) frequency - 24MHz. */
+#define CTC_FREQ		24000000
 
 #define C_STATE_LATENCY_MICRO_SECONDS(limit, base) \
 	(((1 << ((base)*5)) * (limit)) / 1000)

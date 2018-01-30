@@ -68,8 +68,11 @@ void stage_cache_add(int stage_id, const struct prog *stage)
 	imd = imd_get();
 	e = imd_entry_add(imd, CBMEM_ID_STAGEx_META + stage_id, sizeof(*meta));
 
-	if (e == NULL)
+	if (e == NULL) {
+		printk(BIOS_DEBUG, "Error: Can't add %x metadata to imd\n",
+				CBMEM_ID_STAGEx_META + stage_id);
 		return;
+	}
 
 	meta = imd_entry_at(imd, e);
 
@@ -79,8 +82,11 @@ void stage_cache_add(int stage_id, const struct prog *stage)
 	e = imd_entry_add(imd, CBMEM_ID_STAGEx_CACHE + stage_id,
 				prog_size(stage));
 
-	if (e == NULL)
+	if (e == NULL) {
+		printk(BIOS_DEBUG, "Error: Can't add stage_cache %x to imd\n",
+				CBMEM_ID_STAGEx_CACHE + stage_id);
 		return;
+	}
 
 	c = imd_entry_at(imd, e);
 
@@ -97,15 +103,21 @@ void stage_cache_load_stage(int stage_id, struct prog *stage)
 
 	imd = imd_get();
 	e = imd_entry_find(imd, CBMEM_ID_STAGEx_META + stage_id);
-	if (e == NULL)
+	if (e == NULL) {
+		printk(BIOS_DEBUG, "Error: Can't find %x metadata in imd\n",
+				CBMEM_ID_STAGEx_META + stage_id);
 		return;
+	}
 
 	meta = imd_entry_at(imd, e);
 
 	e = imd_entry_find(imd, CBMEM_ID_STAGEx_CACHE + stage_id);
 
-	if (e == NULL)
+	if (e == NULL) {
+		printk(BIOS_DEBUG, "Error: Can't find stage_cache %x in imd\n",
+				CBMEM_ID_STAGEx_CACHE + stage_id);
 		return;
+	}
 
 	c = imd_entry_at(imd, e);
 	size = imd_entry_size(imd, e);

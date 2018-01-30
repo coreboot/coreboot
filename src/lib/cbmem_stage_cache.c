@@ -17,6 +17,7 @@
 #include <cbmem.h>
 #include <stage_cache.h>
 #include <string.h>
+#include <console/console.h>
 
 /* Stage cache uses cbmem. */
 void stage_cache_add(int stage_id, const struct prog *stage)
@@ -25,15 +26,21 @@ void stage_cache_add(int stage_id, const struct prog *stage)
 	void *c;
 
 	meta = cbmem_add(CBMEM_ID_STAGEx_META + stage_id, sizeof(*meta));
-	if (meta == NULL)
+	if (meta == NULL) {
+		printk(BIOS_ERR, "Error: Can't add %x metadata to cbmem\n",
+				CBMEM_ID_STAGEx_META + stage_id);
 		return;
+	}
 	meta->load_addr = (uintptr_t)prog_start(stage);
 	meta->entry_addr = (uintptr_t)prog_entry(stage);
 	meta->arg = (uintptr_t)prog_entry_arg(stage);
 
 	c = cbmem_add(CBMEM_ID_STAGEx_CACHE + stage_id, prog_size(stage));
-	if (c == NULL)
+	if (c == NULL) {
+		printk(BIOS_ERR, "Error: Can't add stage_cache %x to cbmem\n",
+				CBMEM_ID_STAGEx_CACHE + stage_id);
 		return;
+	}
 
 	memcpy(c, prog_start(stage), prog_size(stage));
 }
@@ -49,13 +56,19 @@ void stage_cache_load_stage(int stage_id, struct prog *stage)
 	prog_set_entry(stage, NULL, NULL);
 
 	meta = cbmem_find(CBMEM_ID_STAGEx_META + stage_id);
-	if (meta == NULL)
+	if (meta == NULL) {
+		printk(BIOS_ERR, "Error: Can't find %x metadata in cbmem\n",
+				CBMEM_ID_STAGEx_META + stage_id);
 		return;
+	}
 
 	e = cbmem_entry_find(CBMEM_ID_STAGEx_CACHE + stage_id);
 
-	if (e == NULL)
+	if (e == NULL) {
+		printk(BIOS_ERR, "Error: Can't find stage_cache %x in cbmem\n",
+				CBMEM_ID_STAGEx_CACHE + stage_id);
 		return;
+	}
 
 	c = cbmem_entry_start(e);
 	size = cbmem_entry_size(e);

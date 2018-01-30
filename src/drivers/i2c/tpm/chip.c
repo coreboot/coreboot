@@ -55,7 +55,11 @@ static void i2c_tpm_fill_ssdt(struct device *dev)
 	acpigen_write_name("_CRS");
 	acpigen_write_resourcetemplate_header();
 	acpi_device_write_i2c(&i2c);
-	acpi_device_write_interrupt(&config->irq);
+	if (config->irq_gpio.pin_count)
+		acpi_device_write_gpio(&config->irq_gpio);
+	else
+		acpi_device_write_interrupt(&config->irq);
+
 	acpigen_write_resourcetemplate_footer();
 
 	acpigen_pop_len(); /* Device */

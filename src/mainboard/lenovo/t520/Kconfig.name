@@ -1,2 +1,7 @@
 config BOARD_LENOVO_T520
 	bool "ThinkPad T520"
+	select BOARD_LENOVO_BASEBOARD_T520
+
+config BOARD_LENOVO_W520
+	bool "ThinkPad W520"
+	select BOARD_LENOVO_BASEBOARD_T520

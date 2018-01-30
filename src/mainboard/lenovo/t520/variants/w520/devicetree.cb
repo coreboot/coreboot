@@ -1,0 +1,168 @@
+chip northbridge/intel/sandybridge
+	# IGD Displays
+	register "gfx.ndid" = "3"
+	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
+
+	# Enable DisplayPort Hotplug with 6ms pulse
+	register "gpu_dp_d_hotplug" = "0x06"
+
+	# Enable Panel as LVDS and configure power delays
+	register "gpu_panel_port_select" = "0"			# LVDS
+	register "gpu_panel_power_cycle_delay" = "5"
+	register "gpu_panel_power_up_delay" = "300"		# T1+T2: 30ms
+	register "gpu_panel_power_down_delay" = "300"		# T5+T6: 30ms
+	register "gpu_panel_power_backlight_on_delay" = "2000"	# T3: 200ms
+	register "gpu_panel_power_backlight_off_delay" = "2000"	# T4: 200ms
+	register "gfx.use_spread_spectrum_clock" = "1"
+	register "gfx.link_frequency_270_mhz" = "1"
+	register "gpu_cpu_backlight" = "0x1155"
+	register "gpu_pch_backlight" = "0x06100610"
+
+	device cpu_cluster 0 on
+		chip cpu/intel/socket_rPGA988B
+			device lapic 0 on end
+		end
+		chip cpu/intel/model_206ax
+			# Magic APIC ID to locate this chip
+			device lapic 0xACAC off end
+
+			register "c1_acpower" = "1"	# ACPI(C1) = MWAIT(C1)
+			register "c2_acpower" = "3"	# ACPI(C2) = MWAIT(C3)
+			register "c3_acpower" = "5"	# ACPI(C3) = MWAIT(C7)
+
+			register "c1_battery" = "1"	# ACPI(C1) = MWAIT(C1)
+			register "c2_battery" = "3"	# ACPI(C2) = MWAIT(C3)
+			register "c3_battery" = "5"	# ACPI(C3) = MWAIT(C7)
+		end
+	end
+
+	register "pci_mmio_size" = "2048"
+
+	device domain 0 on
+		device pci 00.0 on end # host bridge
+		device pci 01.0 on end # NVIDIA Corporation GF119M [NVS 4200M]
+		device pci 02.0 on end # vga controller
+
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			# GPI routing
+			#  0 No effect (default)
+			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
+			#  2 SCI (if corresponding GPIO_EN bit is also set)
+			register "alt_gp_smi_en" = "0x0000"
+			register "gpi1_routing" = "2"
+			register "gpi13_routing" = "2"
+
+			# Enable SATA ports 0 (HDD bay) & 1 (ODD bay) & 2 (mSATA) & 3 (eSATA) & 4 (dock)
+			register "sata_port_map" = "0x1f"
+			# Set max SATA speed to 6.0 Gb/s
+			register "sata_interface_speed_support" = "0x3"
+
+			register "gen1_dec" = "0x7c1601"
+			register "gen2_dec" = "0x0c15e1"
+			register "gen4_dec" = "0x0c06a1"
+
+			# Enable zero-based linear PCIe root port functions
+			register "pcie_port_coalesce" = "1"
+
+			register "c2_latency" = "101"  # c2 not supported
+			register "p_cnt_throttling_supported" = "1"
+
+			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
+
+			register "spi_uvscc" = "0x2005"
+			register "spi_lvscc" = "0x2005"
+
+			device pci 16.0 on end # Management Engine Interface 1
+			device pci 16.1 off end
+			device pci 16.2 off end
+			device pci 16.3 off end
+			device pci 19.0 on end # Intel Gigabit Ethernet
+			device pci 1a.0 on end # USB2 EHCI #2
+			device pci 1b.0 on end # High Definition Audio
+			device pci 1c.0 off end # PCIe Port #1
+			device pci 1c.1 on end # PCIe Port #2 Integrated Wireless LAN
+			device pci 1c.2 off end # PCIe Port #3
+			device pci 1c.3 on end # PCIe Port #4 Express Card
+			device pci 1c.4 on end # PCIe Port #5 MMC/SDXC + IEEE1394
+			device pci 1c.5 off end # PCIe Port #6 Intel Ethernet PHY
+			device pci 1c.6 on end # PCIe Port #7 USB 3.0 only W520
+			device pci 1c.7 off end # PCIe Port #8
+			device pci 1d.0 on end # USB2 EHCI #1
+			device pci 1f.0 on #LPC bridge
+				chip ec/lenovo/pmh7
+					device pnp ff.1 on # dummy
+					end
+					register "backlight_enable" = "0x01"
+					register "dock_event_enable" = "0x01"
+				end
+
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
+
+				chip ec/lenovo/h8
+					device pnp ff.2 on # dummy
+						io 0x60 = 0x62
+						io 0x62 = 0x66
+						io 0x64 = 0x1600
+						io 0x66 = 0x1604
+					end
+
+					register "config0" = "0xa7"
+					register "config1" = "0x09"
+					register "config2" = "0xa0"
+					register "config3" = "0xc2"
+
+					register "beepmask0" = "0x00"
+					register "beepmask1" = "0x86"
+					register "has_power_management_beeps" = "0"
+					register "event2_enable" = "0xff"
+					register "event3_enable" = "0xff"
+					register "event4_enable" = "0xd0"
+					register "event5_enable" = "0xfc"
+					register "event6_enable" = "0x00"
+					register "event7_enable" = "0x01"
+					register "event8_enable" = "0x7b"
+					register "event9_enable" = "0xff"
+					register "eventa_enable" = "0x01"
+					register "eventb_enable" = "0x00"
+					register "eventc_enable" = "0xff"
+					register "eventd_enable" = "0xff"
+					register "evente_enable" = "0x0d"
+
+					register "has_bdc_detection" = "1"
+					register "bdc_gpio_num" = "54"
+					register "bdc_gpio_lvl" = "0"
+				end
+				chip drivers/lenovo/hybrid_graphics
+					device pnp ff.f on end # dummy
+
+					register "detect_gpio" = "21"
+
+					register "has_panel_hybrid_gpio" = "1"
+					register "panel_hybrid_gpio" = "52"
+					register "panel_integrated_lvl" = "1"
+
+					register "has_backlight_gpio" = "0"
+					register "has_dgpu_power_gpio" = "0"
+
+					register "has_thinker1" = "1"
+				end
+			end # LPC bridge
+			device pci 1f.2 on end # SATA Controller 1
+			device pci 1f.3 on # SMBUS controller
+			        # eeprom, 8 virtual devices, same chip
+				chip drivers/i2c/at24rf08c
+					device i2c 54 on end
+					device i2c 55 on end
+					device i2c 56 on end
+					device i2c 57 on end
+					device i2c 5c on end
+					device i2c 5d on end
+					device i2c 5e on end
+					device i2c 5f on end
+				end
+			end # SMBus
+		end
+	end
+end

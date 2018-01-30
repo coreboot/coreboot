@@ -84,7 +84,7 @@ void mainboard_rcba_config(void)
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, 0 }, /* P0 left dual conn, OC 0 */
-	{ 1, 1, 1 }, /* P1 system onboard USB port (eSATA), (EHCI debug), OC 1 */
+	{ 1, 1, 1 }, /* P1 system onboard USB (eSATA), (EHCI debug), OC 1 */
 	{ 1, 2, -1 }, /* P2: wimax / WLAN */
 	{ 1, 1, -1 }, /* P3: WWAN, no OC */
 	{ 1, 1, -1 }, /* P4: smartcard, no OC */
@@ -98,11 +98,6 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, -1 }, /* P12: docking, no OC */
 	{ 1, 1, -1 }, /* P13: CAMERA (LCD), no OC */
 };
-
-void mainboard_get_spd(spd_raw_data *spd, bool id_only) {
-	read_spd (&spd[0], 0x50, id_only);
-	read_spd (&spd[2], 0x51, id_only);
-}
 
 void mainboard_early_init(int s3resume)
 {

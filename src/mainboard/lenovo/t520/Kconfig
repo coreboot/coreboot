@@ -1,7 +1,5 @@
-if BOARD_LENOVO_T520
-
-config BOARD_SPECIFIC_OPTIONS # dummy
-	def_bool y
+config BOARD_LENOVO_BASEBOARD_T520
+	def_bool n
 	select SYSTEM_TYPE_LAPTOP
 	select CPU_INTEL_SOCKET_RPGA988B
 	select NORTHBRIDGE_INTEL_SANDYBRIDGE
@@ -23,6 +21,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	# Workaround for EC/KBC IRQ1.
 	select SERIRQ_CONTINUOUS_MODE
 
+if BOARD_LENOVO_BASEBOARD_T520
+
 config HAVE_IFD_BIN
 	bool
 	default n
@@ -31,13 +31,24 @@ config HAVE_ME_BIN
 	bool
 	default n
 
+config VARIANT_DIR
+	string
+	default "t520" if BOARD_LENOVO_T520
+	default "w520" if BOARD_LENOVO_W520
+
 config MAINBOARD_DIR
 	string
 	default lenovo/t520
 
+config DEVICETREE
+	string
+	default "variants/t520/devicetree.cb" if BOARD_LENOVO_T520
+	default "variants/w520/devicetree.cb" if BOARD_LENOVO_W520
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "ThinkPad T520"
+	default "ThinkPad T520" if BOARD_LENOVO_T520
+	default "ThinkPad W520" if BOARD_LENOVO_W520
 
 config MAX_CPUS
 	int
@@ -71,4 +82,4 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-endif # BOARD_LENOVO_T520
+endif

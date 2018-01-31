@@ -39,6 +39,8 @@
 #define FIZZ_PL2_U22        29
 #define FIZZ_PSYSPL2_U22    65
 #define FIZZ_PSYSPL2_U42    90
+#define FIZZ_MAX_TIME_WINDOW 6
+#define FIZZ_MIN_DUTYCYCLE   4
 /*
  * For type-C chargers, set PL2 to 90% of max power to account for
  * cable loss and FET Rdson loss in the path from the source.
@@ -121,28 +123,32 @@ static uint8_t board_sku_id(void)
  *
  * Set Pl2 and SysPl2 values based on detected charger.
  * If detected barrel jack, use values below based on SKU.
- * +-------------+-----+---------+-----+------+------+
- * | sku_id      | PL2 | PsysPL2 | PL4 | Pmax | Prop |
- * +-------------+-----+---------+-----+------+------+
- * | i7 U42      |  44 |   81    | 71  |  120 |  48  |
- * | i5 U42      |  44 |   81    | 71  |  120 |  48  |
- * | i3 U42      |  44 |   81    | 71  |  120 |  48  |
- * | i7 U22      |  29 |   58    | 43  |   91 |  48  |
- * | i5 U22      |  29 |   58    | 43  |   91 |  48  |
- * | i3 U22      |  29 |   58    | 43  |   91 |  48  |
- * | celeron U22 |  29 |   58    | 43  |   91 |  48  |
- * +-------------+-----+---------+-----+------+------+
+ * definitions:
+ * x = no value entered. Use default value in parenthesis.
+ *     will set 0 to anything that shouldn't be set.
+ * n = max value of power adapter.
+ * +-------------+-----+---------+-----------+-------+
+ * | sku_id      | PL2 | PsysPL2 |  PsysPL3  |  PL4  |
+ * +-------------+-----+---------+-----------+-------+
+ * | i7 U42      |  44 |   81    | x(.85PL4) | x(71) |
+ * | i5 U42      |  44 |   81    | x(.85PL4) | x(71) |
+ * | i3 U42      |  44 |   81    | x(.85PL4) | x(71) |
+ * | i7 U22      |  29 |   58    | x(.85PL4) | x(43) |
+ * | i5 U22      |  29 |   58    | x(.85PL4) | x(43) |
+ * | i3 U22      |  29 |   58    | x(.85PL4) | x(43) |
+ * | celeron U22 |  29 |   58    | x(.85PL4) | x(43) |
+ * +-------------+-----+---------+-----------+-------+
  * For USB C charger:
- * +-------------+-----+---------+-----+------+------+
- * | Max Power(W)| PL2 | PsysPL2 | PL4 | Pmax | Prop |
- * +-------------+-----+---------+-----+------+------+
- * | 60 (U42)    |  44 |   54    |  54 |  120 |  48  |
- * | 60 (U22)    |  29 |   54    |  43 |   91 |  48  |
- * | X  (U42)    |  44 |   .9X   | .9X |  120 |  48  |
- * | X  (U22)    |  29 |   .9X   | .9X |   91 |  48  |
- * +-------------+-----+---------+-----+------+------+
+ * +-------------+-----+---------+---------+-------+
+ * | Max Power(W)| PL2 | PsysPL2 | PsysPL3 |  PL4  |
+ * +-------------+-----+---------+---------+-------+
+ * | 60 (U42)    |  44 |   54    |    54   |   54  |
+ * | 60 (U22)    |  29 |   54    |    54   | x(43) |
+ * | n  (U42)    |  44 |   .9n   |   .9n   |  .9n  |
+ * | n  (U22)    |  29 |   .9n   |   .9n   | x(43) |
+ * +-------------+-----+---------+---------+-------+
  */
-static void mainboard_set_power_limits(u32 *pl2_val, u32 *psyspl2_val)
+static void mainboard_set_power_limits(config_t *conf)
 {
 	enum usb_chg_type type;
 	u32 watts;
@@ -157,6 +163,7 @@ static void mainboard_set_power_limits(u32 *pl2_val, u32 *psyspl2_val)
 	pl2 = FIZZ_PL2_U22;
 	if ((1 << sku) & u42_mask)
 		pl2 = FIZZ_PL2_U42;
+	conf->tdp_psyspl3 = conf->tdp_pl4 = 0;
 
 	/* If we can't get charger info or not PD charger, assume barrel jack */
 	if (rv != 0 || type != USB_CHG_TYPE_PD) {
@@ -166,13 +173,20 @@ static void mainboard_set_power_limits(u32 *pl2_val, u32 *psyspl2_val)
 		if ((1 << sku) & u42_mask)
 			psyspl2 = FIZZ_PSYSPL2_U42;
 	} else {
-		/* Base on max value of adapter */
+		/* Detected TypeC.  Base on max value of adapter */
 		psyspl2 = watts;
+		conf->tdp_psyspl3 = SET_PSYSPL2(psyspl2);
+		/* set max possible time window */
+		conf->tdp_psyspl3_time = FIZZ_MAX_TIME_WINDOW;
+		/* set minimum duty cycle */
+		conf->tdp_psyspl3_dutycycle = FIZZ_MIN_DUTYCYCLE;
+		if ((1 << sku) & u42_mask)
+			conf->tdp_pl4 = SET_PSYSPL2(psyspl2);
 	}
 
-	*pl2_val = pl2;
+	conf->tdp_pl2_override = pl2;
 	/* set psyspl2 to 90% of max adapter power */
-	*psyspl2_val = SET_PSYSPL2(psyspl2);
+	conf->tdp_psyspl2 = SET_PSYSPL2(psyspl2);
 }
 
 static uint8_t read_oem_id_from_gpio(void)
@@ -282,7 +296,7 @@ static void mainboard_enable(device_t dev)
 	device_t root = SA_DEV_ROOT;
 	config_t *conf = root->chip_info;
 
-	mainboard_set_power_limits(&conf->tdp_pl2_override, &conf->tdp_psyspl2);
+	mainboard_set_power_limits(conf);
 
 	set_bj_adapter_limit();
 

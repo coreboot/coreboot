@@ -1,5 +1,5 @@
 TAG-$(CONFIG_SEABIOS_MASTER)=origin/master
-TAG-$(CONFIG_SEABIOS_STABLE)=rel-1.11.0.2
+TAG-$(CONFIG_SEABIOS_STABLE)=rel-1.11.0.3
 TAG-$(CONFIG_SEABIOS_REVISION)=$(CONFIG_SEABIOS_REVISION_ID)
 
 project_git_repo=https://github.com/pcengines/seabios.git
@@ -75,6 +75,11 @@ endif
 	echo "# CONFIG_USB_OHCI is not set" >> seabios/.config
 	echo "# CONFIG_USB_XHCI is not set" >> seabios/.config
 	echo "# CONFIG_LPT is not set" >> seabios/.config
+#
+# Enable UDMA to speed up booting
+#
+	echo "CONFIG_ATA_DMA=y" >> seabios/.config
+	echo "CONFIG_ATA_PIO32=y" >> seabios/.config
 
 	# This shows how to force a previously set .config option *off*
 	#echo "# CONFIG_SMBIOS is not set" >> seabios/.config

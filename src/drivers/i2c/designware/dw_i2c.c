@@ -345,16 +345,13 @@ static int dw_i2c_transfer_byte(struct dw_i2c_regs *regs,
 	return 0;
 }
 
-int dw_i2c_transfer(unsigned int bus,
-		      const struct i2c_msg *segments, size_t count)
+static int _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segments,
+				size_t count)
 {
 	struct stopwatch sw;
 	struct dw_i2c_regs *regs;
 	size_t byte;
 	int ret = -1;
-
-	if (count == 0 || !segments)
-		return -1;
 
 	regs = (struct dw_i2c_regs *)dw_i2c_base_address(bus);
 	if (!regs) {
@@ -362,12 +359,14 @@ int dw_i2c_transfer(unsigned int bus,
 		return -1;
 	}
 
-	dw_i2c_enable(regs);
+	/* The assumption is that the host controller is disabled -- either
+	   after running this function or from performing the intialization
+	   sequence in dw_i2c_init(). */
 
-	if (dw_i2c_wait_for_bus_idle(regs)) {
-		printk(BIOS_ERR, "I2C timeout waiting for bus %u idle\n", bus);
-		goto out;
-	}
+	/* Set target slave address */
+	write32(&regs->target_addr, segments->slave);
+
+	dw_i2c_enable(regs);
 
 	/* Process each segment */
 	while (count--) {
@@ -376,13 +375,6 @@ int dw_i2c_transfer(unsigned int bus,
 			       bus, segments->slave,
 			       (segments->flags & I2C_M_RD) ? "R" : "W",
 			       segments->len);
-		}
-
-		/* Set target slave address */
-		if (read32(&regs->target_addr) != segments->slave) {
-			dw_i2c_disable(regs);
-			write32(&regs->target_addr, segments->slave);
-			dw_i2c_enable(regs);
 		}
 
 		/* Read or write each byte in segment */
@@ -446,6 +438,31 @@ out:
 	read32(&regs->clear_intr);
 	dw_i2c_disable(regs);
 	return ret;
+}
+
+int dw_i2c_transfer(unsigned int bus, const struct i2c_msg *msg, size_t count)
+{
+	const struct i2c_msg *orig_msg = msg;
+	size_t i;
+	size_t start;
+	uint16_t addr;
+
+	if (count == 0 || !msg)
+		return -1;
+
+	/* Break up the transfers at the differing slave address boundary. */
+	addr = orig_msg->slave;
+
+	for (i = 0, start = 0; i < count; i++, msg++) {
+		if (addr != msg->slave) {
+			if (_dw_i2c_transfer(bus, &orig_msg[start], i - start))
+				return -1;
+			start = i;
+			addr = msg->slave;
+		}
+	}
+
+	return _dw_i2c_transfer(bus, &orig_msg[start], count - start);
 }
 
 /* Global I2C bus handler, defined in include/device/i2c_simple.h */

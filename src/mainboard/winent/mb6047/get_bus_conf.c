@@ -85,13 +85,12 @@ void get_bus_conf(void)
 	}
 
 	dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(sbdn + 0x0e, 0));
-	if (dev) {
+	if (dev)
 		bus_ck804_5 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-	} else {
+	else
 		printk(BIOS_DEBUG,
 		       "ERROR - could not find PCI 1:%02x.0, using defaults\n",
 		       sbdn + 0x0e);
-	}
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
 	apicid_base = get_apicid_base(1);

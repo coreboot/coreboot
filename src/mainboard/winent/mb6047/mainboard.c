@@ -36,9 +36,8 @@ static void mb6047_hwm_init(void)
 	printk(BIOS_INFO, "setting up hardware monitor at 0x%04x\n", (unsigned int)res->base);
 
 	/* Init hardware monitor. */
-	for (i = 0; i < ARRAY_SIZE(hwmtab); i++) {
+	for (i = 0; i < ARRAY_SIZE(hwmtab); i++)
 		hwm_write(res->base, hwmtab[i].bnk, hwmtab[i].idx, hwmtab[i].dat);
-	}
 }
 
 static void mb6047_mainboard_init(device_t dev)

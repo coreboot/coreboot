@@ -141,9 +141,8 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	sum = pirq->checksum - sum;
 
-	if (sum != pirq->checksum) {
+	if (sum != pirq->checksum)
 		pirq->checksum = sum;
-	}
 
 	printk(BIOS_INFO, "done.\n");
 

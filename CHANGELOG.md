@@ -14,6 +14,16 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 
 ## [Unreleased]
 
+## [v4.6.6] - 2018-01-31
+### Changed
+- Updated SeaBIOS to 1.11.0.3
+
+### Fixed
+- memtest86+ screen refresh for serial
+
+### Added
+- enabled ATA UDMA in SeaBIOS
+
 ## [v4.6.5] - 2017-12-29
 ### Added
 - Apu features default values to `bootorder_def` file
@@ -140,7 +150,8 @@ redundant code which was similar for APU2/3/5 boards.
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.5...coreboot-4.6.x
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.6...coreboot-4.6.x
+[v4.6.6]: https://github.com/pcengines/coreboot/compare/v4.6.5...v4.6.6
 [v4.6.5]: https://github.com/pcengines/coreboot/compare/v4.6.4...v4.6.5
 [v4.6.4]: https://github.com/pcengines/coreboot/compare/v4.6.3...v4.6.4
 [v4.6.3]: https://github.com/pcengines/coreboot/compare/v4.6.2...v4.6.3

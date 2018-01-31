@@ -191,6 +191,38 @@ void set_power_limits(u8 power_limit_1_time)
 		wrmsr(MSR_PLATFORM_POWER_LIMIT, limit);
 	}
 
+	/* Set PsysPl3 */
+	if (conf->tdp_psyspl3) {
+		limit = rdmsr(MSR_PL3_CONTROL);
+		limit.lo = 0;
+		printk(BIOS_DEBUG, "CPU PsysPL3 = %u Watts\n",
+		       conf->tdp_psyspl3);
+		limit.lo |= (conf->tdp_psyspl3 * power_unit) &
+			PKG_POWER_LIMIT_MASK;
+		/* Enable PsysPl3 */
+		limit.lo |= PKG_POWER_LIMIT_EN;
+		/* set PsysPl3 time window */
+		limit.lo |= (conf->tdp_psyspl3_time &
+			     PKG_POWER_LIMIT_TIME_MASK) <<
+			PKG_POWER_LIMIT_TIME_SHIFT;
+		/* set PsysPl3  duty cycle */
+		limit.lo |= (conf->tdp_psyspl3_dutycycle &
+			     PKG_POWER_LIMIT_DUTYCYCLE_MASK) <<
+			PKG_POWER_LIMIT_DUTYCYCLE_SHIFT;
+		wrmsr(MSR_PL3_CONTROL, limit);
+	}
+
+	/* Set Pl4 */
+	if (conf->tdp_pl4) {
+		limit = rdmsr(MSR_VR_CURRENT_CONFIG);
+		limit.lo = 0;
+		printk(BIOS_DEBUG, "CPU PL4 = %u Watts\n",
+		       conf->tdp_pl4);
+		limit.lo |= (conf->tdp_pl4 * power_unit) &
+			PKG_POWER_LIMIT_MASK;
+		wrmsr(MSR_VR_CURRENT_CONFIG, limit);
+	}
+
 	/* Set DDR RAPL power limit by copying from MMIO to MSR */
 	msr.lo = MCHBAR32(MCH_DDR_POWER_LIMIT_LO);
 	msr.hi = MCHBAR32(MCH_DDR_POWER_LIMIT_HI);

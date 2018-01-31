@@ -100,6 +100,16 @@ struct soc_intel_skylake_config {
 	/* SysPL2 Value in Watts */
 	u32 tdp_psyspl2;
 
+	/* SysPL3 Value in Watts */
+	u32 tdp_psyspl3;
+	/* SysPL3 window size */
+	u32 tdp_psyspl3_time;
+	/* SysPL3 duty cycle */
+	u32 tdp_psyspl3_dutycycle;
+
+	/* PL4 Value in Watts */
+	u32 tdp_pl4;
+
 	/*
 	 * The following fields come from FspUpdVpd.h.
 	 * These are configuration values that are passed to FSP during

@@ -87,7 +87,7 @@ config MEMTEST_SECONDARY_PAYLOAD
 
 choice
 	prompt "Memtest86+ version"
-	default MEMTEST_STABLE
+	default MEMTEST_MASTER
 	depends on MEMTEST_SECONDARY_PAYLOAD
 
 config MEMTEST_STABLE

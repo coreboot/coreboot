@@ -2357,7 +2357,7 @@ int command_training(ramctr_timing *ctrl)
 		 */
 		cmdrate = ((ctrl->rankmap[channel] & 0x5) == 0x5);
 
-		for(; cmdrate < 2; cmdrate++) {
+		for (; cmdrate < 2; cmdrate++) {
 			err = try_cmd_stretch(ctrl, channel, cmdrate << 1);
 
 			if (!err)

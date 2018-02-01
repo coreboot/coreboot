@@ -70,7 +70,8 @@ void get_bus_conf(void)
 
 	printk(BIOS_SPEW, "get_bus_conf()\n");
 
-	if(get_bus_conf_done == 1) return; //do it only once
+	if (get_bus_conf_done == 1)
+		return; //do it only once
 
 	get_bus_conf_done = 1;
 
@@ -80,7 +81,7 @@ void get_bus_conf(void)
 	memset(m, 0, sizeof(struct mb_sysconf_t));
 
 	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
-	for(i = 0; i < sysconf.hc_possible_num; i++) {
+	for (i = 0; i < sysconf.hc_possible_num; i++) {
 		sysconf.pci1234[i] = pci1234x[i];
 		sysconf.hcdn[i] = hcdnx[i];
 	}
@@ -99,7 +100,7 @@ void get_bus_conf(void)
 			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n", sysconf.sbdn + 0x06);
 		}
 
-		for(i = 2; i < 8; i++) {
+		for (i = 2; i < 8; i++) {
 			dev = dev_find_slot(m->bus_mcp55[0], PCI_DEVFN(sysconf.sbdn + 0x0a + i - 2 , 0));
 			if (dev) {
 				m->bus_mcp55[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);

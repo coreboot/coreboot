@@ -62,8 +62,8 @@ static const struct pad_config gpio_table[] = {
 	/* A23 : ISH_GP5 ==> CHP1_SPK_PA_EN */
 	PAD_CFG_GPO(GPP_A23, 1, DEEP),
 
-	/* B0  : CORE_VID0 ==> NC(TP721) */
-	PAD_CFG_NC(GPP_B0),
+	/* B0  : CORE_VID0 ==> WLAN_PCIE_WAKE_L */
+	PAD_CFG_GPI_ACPI_SCI(GPP_B0, NONE, DEEP, INVERT),
 	/* B1  : CORE_VID1 ==> NC(TP722) */
 	PAD_CFG_NC(GPP_B1),
 	/* B2  : VRALERT# ==> NC */

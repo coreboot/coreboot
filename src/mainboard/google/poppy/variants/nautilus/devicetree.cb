@@ -381,7 +381,7 @@ chip soc/intel/skylake
 		end # I2C #4
 		device pci 1c.0 on
 			chip drivers/intel/wifi
-				register "wake" = "GPE0_PCI_EXP"
+				register "wake" = "GPE0_DW0_00"
 				device pci 00.0 on end
 			end
 		end # PCI Express Port 1

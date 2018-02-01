@@ -88,17 +88,16 @@ static void *smp_write_config_table(void *v)
 	PCI_INT(0, sbdn+5, 2, 0x15); // 21
 	PCI_INT(0, sbdn+8, 0, 0x16); // 22
 
-	for(j = 7; j >= 2; j--) {
-		if(!bus_sis966[j]) continue;
-		for(i = 0; i < 4; i++) {
+	for (j = 7; j >= 2; j--) {
+		if (!bus_sis966[j])
+			continue;
+		for (i = 0; i < 4; i++)
 			PCI_INT(j, 0x00, i, 0x10 + (2+j+i+4-sbdn%4)%4);
-		}
 	}
 
-	for(j = 0; j < 2; j++)
-		for(i = 0; i < 4; i++) {
+	for (j = 0; j < 2; j++)
+		for (i = 0; i < 4; i++)
 			PCI_INT(1, 0x06+j, i, 0x10 + (2+i+j)%4);
-		}
 
 /*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
 	mptable_lintsrc(mc, bus_isa);

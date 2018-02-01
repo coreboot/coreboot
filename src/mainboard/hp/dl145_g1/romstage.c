@@ -175,12 +175,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	enable_smbus();
 
 	int i;
-	for(i = 0; i < 2; i++) {
+	for (i = 0; i < 2; i++)
 		activate_spd_rom(&sysinfo->ctrl[i]);
-	}
-	for(i = RC0; i <= RC1; i<<=1) {
+	for (i = RC0; i <= RC1; i <<= 1)
 		change_i2c_mux(i);
-	}
 
 	//dump_spd_registers(&sysinfo->ctrl[0]);
 	//dump_spd_registers(&sysinfo->ctrl[1]);

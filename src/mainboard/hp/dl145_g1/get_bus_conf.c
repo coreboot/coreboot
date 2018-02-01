@@ -52,7 +52,8 @@ void get_bus_conf(void)
 	device_t dev;
 	int i;
 
-	if(get_bus_conf_done == 1) return; //do it only once
+	if (get_bus_conf_done == 1)
+		return; //do it only once
 
 	get_bus_conf_done = 1;
 
@@ -60,7 +61,7 @@ void get_bus_conf(void)
 	struct mb_sysconf_t *m = sysconf.mb;
 
 	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
-	for(i = 0; i < sysconf.hc_possible_num; i++) {
+	for (i = 0; i < sysconf.hc_possible_num; i++) {
 		sysconf.pci1234[i] = pci1234x[i];
 		sysconf.hcdn[i] = hcdnx[i];
 	}
@@ -75,30 +76,24 @@ void get_bus_conf(void)
 
 	/* 8111 */
 	dev = dev_find_slot(m->bus_8111_0, PCI_DEVFN(sysconf.sbdn,0));
-	if (dev) {
+	if (dev)
 		m->bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-	}
-	else {
+	else
 		printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:03.0, using defaults\n", m->bus_8111_0);
-	}
 
 	/* 8131-1 */
 	dev = dev_find_slot(m->bus_8131_0, PCI_DEVFN(m->sbdn3,0));
-	if (dev) {
+	if (dev)
 		m->bus_8131_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-	}
-	else {
+	else
 		printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:01.0, using defaults\n", m->bus_8131_0);
-	}
 
 	/* 8131-2 */
 	dev = dev_find_slot(m->bus_8131_0, PCI_DEVFN(m->sbdn3+1,0));
-	if (dev) {
+	if (dev)
 		m->bus_8131_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-	}
-	else {
+	else
 		printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:02.0, using defaults\n", m->bus_8131_0);
-	}
 
 
 /*I/O APICs:	APIC ID	Version	State		Address*/

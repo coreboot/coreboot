@@ -49,24 +49,23 @@ static void *smp_write_config_table(void *v)
 		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(m->sbdn3, 1));
 		if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res) {
+			if (res)
 				smp_write_ioapic(mc, m->apicid_8132_1, 0x11,
 						 res2mmio(res, 0, 0));
-			}
 		}
 		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(m->sbdn3+1, 1));
 		if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res) {
+			if (res)
 				smp_write_ioapic(mc, m->apicid_8132_2, 0x11,
 						 res2mmio(res, 0, 0));
-			}
 		}
 
 		j = 0;
 
-		for(i = 1; i< sysconf.hc_possible_num; i++) {
-			if(!(sysconf.pci1234[i] & 0x1) ) continue;
+		for (i = 1; i < sysconf.hc_possible_num; i++) {
+			if (!(sysconf.pci1234[i] & 0x1))
+				continue;
 
 			switch(sysconf.hcid[i]) {
 			case 1: /* 8132 */
@@ -74,18 +73,16 @@ static void *smp_write_config_table(void *v)
 				dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j], 1));
 				if (dev) {
 					res = find_resource(dev, PCI_BASE_ADDRESS_0);
-					if (res) {
+					if (res)
 						smp_write_ioapic(mc, m->apicid_8132a[j][0], 0x11,
 								 res2mmio(res, 0, 0));
-					}
 				}
 				dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j]+1, 1));
 				if (dev) {
 					res = find_resource(dev, PCI_BASE_ADDRESS_0);
-					if (res) {
+					if (res)
 						smp_write_ioapic(mc, m->apicid_8132a[j][1], 0x11,
 								 res2mmio(res, 0, 0));
-					}
 				}
 				break;
 			}
@@ -104,32 +101,29 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8111_1, (0 << 2)|3, m->apicid_8111, 0x13);
 
 /*Slot 3  PCI 32 */
-	for(i = 0; i < 4; i++) {
+	for (i = 0; i < 4; i++)
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8111_1, (5 << 2)|i, m->apicid_8111, 0x10 + (1+i)%4); /* 16 */
-	}
 
 
 /* Slot 4 PCI 32 */
-	for(i = 0; i < 4; i++) {
+	for (i = 0; i < 4; i++)
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8111_1, (4 << 2)|i, m->apicid_8111, 0x10 + (0+i)%4); /* 16 */
-	}
 
 
 /* Slot 1 PCI-X 133/100/66 */
-	for(i = 0; i < 4; i++) {
+	for (i = 0; i < 4; i++)
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8132_2, (1 << 2)|i, m->apicid_8132_2, (0+i)%4);
-	}
 
 
 /* Slot 2 PCI-X 133/100/66 */
-	for(i = 0; i < 4; i++) {
+	for (i = 0; i < 4; i++)
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8132_1, (1 << 2)|i, m->apicid_8132_1, (1+i)%4); /* 25 */
-	}
 
 	j = 0;
 
-	for(i = 1; i< sysconf.hc_possible_num; i++) {
-		if(!(sysconf.pci1234[i] & 0x1) ) continue;
+	for (i = 1; i < sysconf.hc_possible_num; i++) {
+		if (!(sysconf.pci1234[i] & 0x1))
+			continue;
 		int ii;
 		device_t dev;
 		struct resource *res;
@@ -141,9 +135,8 @@ static void *smp_write_config_table(void *v)
 				res = find_resource(dev, PCI_BASE_ADDRESS_0);
 				if (res) {
 					/* Slot 1 PCI-X 133/100/66 */
-					for(ii = 0; ii < 4; ii++) {
+					for (ii = 0; ii < 4; ii++)
 						smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8132a[j][1], (0 << 2)|ii, m->apicid_8132a[j][0], (0+ii)%4);
-					}
 				}
 			}
 
@@ -152,9 +145,8 @@ static void *smp_write_config_table(void *v)
 				res = find_resource(dev, PCI_BASE_ADDRESS_0);
 				if (res) {
 					/* Slot 2 PCI-X 133/100/66 */
-					for(ii = 0; ii < 4; ii++) {
+					for (ii = 0; ii < 4; ii++)
 						smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8132a[j][2], (0 << 2)|ii, m->apicid_8132a[j][1], (0+ii)%4); /* 25 */
-					}
 				}
 			}
 

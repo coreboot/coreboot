@@ -57,7 +57,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 			res = find_resource(dev, PCI_BASE_ADDRESS_0);
 			if (res) {
 				current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132_1,
-					res->base, gsi_base );
+					res->base, gsi_base);
 				gsi_base+=7;
 
 			}
@@ -67,7 +67,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 			res = find_resource(dev, PCI_BASE_ADDRESS_0);
 			if (res) {
 				current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132_2,
-					res->base, gsi_base );
+					res->base, gsi_base);
 				gsi_base+=7;
 			}
 		}
@@ -75,9 +75,10 @@ unsigned long acpi_fill_madt(unsigned long current)
 		int i;
 		int j = 0;
 
-		for(i = 1; i< sysconf.hc_possible_num; i++) {
+		for (i = 1; i < sysconf.hc_possible_num; i++) {
 			u32 d = 0;
-			if(!(sysconf.pci1234[i] & 0x1) ) continue;
+			if (!(sysconf.pci1234[i] & 0x1))
+				continue;
 			/*  8131 need to use +4 */
 			switch (sysconf.hcid[i]) {
 			case 1:
@@ -95,7 +96,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 					res = find_resource(dev, PCI_BASE_ADDRESS_0);
 					if (res) {
 						current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132a[j][0],
-							res->base, gsi_base );
+							res->base, gsi_base);
 						gsi_base+=d;
 					}
 				}
@@ -104,7 +105,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 					res = find_resource(dev, PCI_BASE_ADDRESS_0);
 					if (res) {
 						current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132a[j][1],
-							res->base, gsi_base );
+							res->base, gsi_base);
 						gsi_base+=d;
 
 					}
@@ -116,7 +117,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	}
 
 	current += acpi_create_madt_irqoverride( (acpi_madt_irqoverride_t *)
-			current, 0, 0, 2, 5 );
+			current, 0, 0, 2, 5);
 		/* 0: mean bus 0--->ISA */
 		/* 0: PIC 0 */
 		/* 2: APIC 2 */
@@ -147,16 +148,15 @@ unsigned long mainboard_write_acpi_tables(device_t dev, unsigned long start, acp
 
 	/* same htio, but different position? We may have to copy, change HCIN, and recalculate the checknum and add_table */
 
-	for(i = 1; i < sysconf.hc_possible_num; i++) {  /*  0: is hc sblink */
+	for (i = 1; i < sysconf.hc_possible_num; i++) {  /*  0: is hc sblink */
 		const char *file_name;
-		if((sysconf.pci1234[i] & 1) != 1 ) continue;
+		if ((sysconf.pci1234[i] & 1) != 1)
+			continue;
 		u8 c;
-		if(i < 7) {
+		if (i < 7)
 			c  = (u8) ('4' + i - 1);
-		}
-		else {
+		else
 			c  = (u8) ('A' + i - 1 - 6);
-		}
 		current = ALIGN(current, 8);
 		printk(BIOS_DEBUG, "ACPI:    * SSDT for PCI%c Aka hcid = %d\n", c, sysconf.hcid[i]); /* pci0 and pci1 are in dsdt */
 		ssdtx = (acpi_header_t *)current;

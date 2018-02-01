@@ -164,6 +164,9 @@ static void mainboard_init(void *chip_info)
 	gpes = get_gpe_table(&num);
 	gpe_configure_sci(gpes, num);
 
+	/* Initialize i2c busses that were not initialized in bootblock */
+	i2c_soc_init();
+
 	/* Set GenIntDisable so that GPIO 90 is configured as a GPIO. */
 	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_KAHLEE))
 		pm_write8(PM_PCIB_CFG,

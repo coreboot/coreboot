@@ -58,7 +58,7 @@ static void *smp_write_config_table(void *v)
 		device_t dev = 0;
 		int i;
 		struct resource *res;
-		for(i = 0; i < 3; i++) {
+		for (i = 0; i < 3; i++) {
 			dev = dev_find_device(0x1166, 0x0235, dev);
 			if (dev) {
 				res = find_resource(dev, PCI_BASE_ADDRESS_0);
@@ -86,7 +86,7 @@ static void *smp_write_config_table(void *v)
 	{
 		device_t dev;
 		dev = dev_find_device(0x1166, 0x0205, 0);
-		if(dev) {
+		if (dev) {
 			uint32_t dword;
 			dword = pci_read_config32(dev, 0x64);
 			dword |= (1 << 30); // GEVENT14-21 used as PCI IRQ0-7
@@ -129,7 +129,7 @@ static void *smp_write_config_table(void *v)
 	{
 		device_t dev;
 		dev = dev_find_device(0x1166, 0x0205, 0);
-		if(dev) {
+		if (dev) {
 			uint32_t dword;
 			dword = pci_read_config32(dev, 0x6c);
 			dword |= (1 << 4); // enable interrupts

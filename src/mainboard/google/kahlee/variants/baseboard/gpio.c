@@ -38,6 +38,9 @@ const static struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
 	/* GPIO_3 - MEM_VOLT_SEL */
 	{ GPIO_3, Function0, FCH_GPIO_PULL_UP_ENABLE | INPUT },
 
+	/* GPIO_4 - EN_PP3300_WLAN */
+	{ GPIO_4, Function0, OUTPUT_H },
+
 	/* GPIO_5 - PCH_TRACKPAD_INT_3V3_ODL, SCI */
 	{ GPIO_5, Function0, FCH_GPIO_PULL_UP_ENABLE | INPUT },
 
@@ -89,6 +92,9 @@ const static struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
 
 	/* GPIO_42 - S5_MUX_CTRL */
 	{ GPIO_42, Function0, OUTPUT_H },
+
+	/* GPIO_70 - WLAN_PE_RST_L */
+	{ GPIO_70, Function0, OUTPUT_H },
 
 	/* GPIO_74 - LPC_CLK0_EC_R */
 	{ GPIO_74, Function0, FCH_GPIO_PULL_DOWN_ENABLE | INPUT },
@@ -197,9 +203,6 @@ const static struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
 	/* GPIO_2 - WLAN_PCIE_WAKE_3V3_ODL */
 	{ GPIO_2, Function0, FCH_GPIO_PULL_UP_ENABLE | INPUT },
 
-	/* GPIO_4 - EN_PP3300_WLAN */
-	{ GPIO_4, Function0, OUTPUT_H },
-
 	/* GPIO_10 - SLP_S0_L (currently not used) */
 	{ GPIO_10, Function0, FCH_GPIO_PULL_UP_ENABLE | INPUT },
 
@@ -220,9 +223,6 @@ const static struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
 
 	/* GPIO_67 - PEN_RESET */
 	{ GPIO_67, Function0, OUTPUT_L },
-
-	/* GPIO_70 - WLAN_PE_RST_L */
-	{ GPIO_70, Function0, OUTPUT_H },
 
 	/* GPIO_75 - Unused (strap) (R139/R130) */
 	{ GPIO_75, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },

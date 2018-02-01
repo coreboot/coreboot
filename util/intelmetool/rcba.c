@@ -22,7 +22,7 @@
 static const int size = 0x4000;
 
 /* Returns the physical RCBA base address or zero on error. */
-static u32 get_rcba_phys(void)
+u32 get_rcba_phys(void)
 {
 	struct pci_access *pacc;
 	struct pci_dev *sb;

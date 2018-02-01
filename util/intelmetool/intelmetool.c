@@ -179,38 +179,45 @@ static int pci_platform_scan(void)
 
 static int activate_me(void)
 {
-	if (read_rcba32(FD2, &fd2)) {
-		printf("Error reading RCBA\n");
-		return 1;
-	}
-	if (write_rcba32(FD2, fd2 & ~0x2)) {
-		printf("Error writing RCBA\n");
-		return 1;
-	}
-	if (debug) {
-		if (fd2 & 0x2)
+	const uint32_t rcba = get_rcba_phys();
+	if (debug)
+		printf("RCBA addr: 0x%08x\n", rcba);
+	if (rcba > 0) {
+		if (read_rcba32(FD2, &fd2)) {
+			printf("Error reading RCBA\n");
+			return 1;
+		}
+		if (write_rcba32(FD2, fd2 & ~0x2)) {
+			printf("Error writing RCBA\n");
+			return 1;
+		}
+		if (debug && (fd2 & 0x2))
 			printf("MEI was hidden on PCI, now unlocked\n");
-		else
+		else if (debug)
 			printf("MEI not hidden on PCI, checking if visible\n");
 	}
+
 	return 0;
 }
 
 static void rehide_me(void)
 {
-	if (fd2 & 0x2) {
-		if (debug)
-			printf("Re-hiding MEI device...");
-		if (read_rcba32(FD2, &fd2)) {
-			printf("Error reading RCBA\n");
-			return;
+	const uint32_t rcba = get_rcba_phys();
+	if (rcba > 0) {
+		if (fd2 & 0x2) {
+			if (debug)
+				printf("Re-hiding MEI device...");
+			if (read_rcba32(FD2, &fd2)) {
+				printf("Error reading RCBA\n");
+				return;
+			}
+			if (write_rcba32(FD2, fd2 | 0x2)) {
+				printf("Error writing RCBA\n");
+				return;
+			}
+			if (debug)
+				printf("done\n");
 		}
-		if (write_rcba32(FD2, fd2 | 0x2)) {
-			printf("Error writing RCBA\n");
-			return;
-		}
-		if (debug)
-			printf("done\n");
 	}
 }
 
@@ -244,7 +251,6 @@ static struct pci_dev *pci_me_interface_scan(const char **name, char *namebuf,
 	if (!me) {
 		rehide_me();
 
-		printf("MEI device not found\n");
 		pci_cleanup(pacc);
 		return NULL;
 	}
@@ -260,14 +266,21 @@ static void dump_me_info(void)
 	const char *name = NULL;
 
 	if (pci_platform_scan())
-		exit(1);
-
-	if (activate_me())
-		exit(1);
+		return;
 
 	dev = pci_me_interface_scan(&name, namebuf, sizeof(namebuf));
-	if (!dev)
-		exit(1);
+	if (!dev) {
+		if (debug)
+			printf("ME PCI device is hidden\n");
+
+		if (activate_me())
+			return;
+		dev = pci_me_interface_scan(&name, namebuf, sizeof(namebuf));
+		if (!dev) {
+			printf("Can't find ME PCI device\n");
+			return;
+		}
+	}
 
 	if (name == NULL)
 		name = "<unknown>";
@@ -314,15 +327,20 @@ static void dump_bootguard_info(void)
 	uint64_t bootguard = 0;
 
 	if (pci_platform_scan())
-		exit(1);
-
-	if (activate_me())
-		exit(1);
+		return;
 
 	dev = pci_me_interface_scan(&name, namebuf, sizeof(namebuf));
 	if (!dev) {
-		printf("Can't access ME PCI device\n");
-		return;
+		if (debug)
+			printf("ME PCI device is hidden\n");
+
+		if (activate_me())
+			return;
+		dev = pci_me_interface_scan(&name, namebuf, sizeof(namebuf));
+		if (!dev) {
+			printf("Can't find ME PCI device\n");
+			return;
+		}
 	}
 
 	if (debug) {

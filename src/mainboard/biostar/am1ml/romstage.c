@@ -153,7 +153,7 @@ void board_BeforeAgesa(struct sysinfo *cb)
 
 	/* On Larne, after LpcClkDrvSth is set, it needs some time to be stable, because of the buffer ICS551M */
 	int i;
-	for(i = 0; i < 200000; i++)
+	for (i = 0; i < 200000; i++)
 		val = inb(0xcd6);
 
 	outb(0xEA, 0xCD6);

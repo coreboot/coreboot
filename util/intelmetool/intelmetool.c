@@ -288,17 +288,21 @@ static void dump_me_info(void)
 		printf("ME: has a broken implementation on your board with"
 		       "this firmware\n");
 
-	intel_mei_setup(dev);
+	if (intel_mei_setup(dev))
+		goto out;
 	usleep(ME_COMMAND_DELAY);
 	mei_reset();
 	usleep(ME_COMMAND_DELAY);
-	mkhi_get_fw_version(&ME_major_ver, &ME_minor_ver);
+	if (mkhi_get_fw_version(&ME_major_ver, &ME_minor_ver))
+		goto out;
 	usleep(ME_COMMAND_DELAY);
 	mei_reset();
 	usleep(ME_COMMAND_DELAY);
-	mkhi_get_fwcaps();
+	if (mkhi_get_fwcaps())
+		goto out;
 	usleep(ME_COMMAND_DELAY);
 
+out:
 	rehide_me();
 }
 

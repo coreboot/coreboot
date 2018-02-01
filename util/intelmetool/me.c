@@ -582,7 +582,8 @@ uint32_t intel_mei_setup(struct pci_dev *dev)
 	mei_mmap = map_physical(pagerounded, 0x2000);
 	mei_mmap += mei_base_address - pagerounded;
 	if (mei_mmap == NULL) {
-		printf("Could not map ME setup memory\n");
+		printf("Could not map ME setup memory.\n"
+		       "Do you have cmdline argument 'iomem=relaxed' set ?\n");
 		return 1;
 	}
 

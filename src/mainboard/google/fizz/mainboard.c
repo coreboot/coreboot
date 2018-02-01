@@ -86,21 +86,34 @@ static const enum bj_adapter bj_adapter_table[OEM_ID_COUNT][SKU_ID_COUNT] = {
 			BJ_90W_19V, BJ_90W_19V, BJ_65W_19V },
 };
 
-static const char *oem_id = "GOOGLE";
-static const char *oem_table_id = "FIZZ";
-
-static uint8_t board_sku_id(void)
+static uint8_t read_sku_id_from_gpio(void)
 {
-	static int id = -1;
 	const gpio_t sku_id_gpios[] = {
 		GPIO_SKU_ID0,
 		GPIO_SKU_ID1,
 		GPIO_SKU_ID2,
 		GPIO_SKU_ID3,
 	};
-	if (id < 0)
-		id = gpio_base2_value(sku_id_gpios, ARRAY_SIZE(sku_id_gpios));
-	return id;
+	return gpio_base2_value(sku_id_gpios, ARRAY_SIZE(sku_id_gpios));
+}
+
+static uint8_t board_sku_id(void)
+{
+	static int sku_id = -1;
+
+	if (sku_id < 0) {
+		uint32_t id;
+		if (google_chromeec_cbi_get_sku_id(&id))
+			/* TODO: Once transition completes, raise error instead
+			   of returning gpio value which could be unintended. */
+			/* Reading from EC may succeed next time but we do not
+			   want to return different values. So, we cache the
+			   value read from GPIOs. */
+			id = read_sku_id_from_gpio();
+		sku_id = id;
+	}
+
+	return sku_id;
 }
 
 /*
@@ -162,17 +175,33 @@ static void mainboard_set_power_limits(u32 *pl2_val, u32 *psyspl2_val)
 	*psyspl2_val = SET_PSYSPL2(psyspl2);
 }
 
-static uint8_t board_oem_id(void)
+static uint8_t read_oem_id_from_gpio(void)
 {
-	static int id = -1;
 	const gpio_t oem_id_gpios[] = {
 		GPIO_OEM_ID1,
 		GPIO_OEM_ID2,
 		GPIO_OEM_ID3,
 	};
-	if (id < 0)
-		id = gpio_base2_value(oem_id_gpios, ARRAY_SIZE(oem_id_gpios));
-	return id;
+	return gpio_base2_value(oem_id_gpios, ARRAY_SIZE(oem_id_gpios));
+}
+
+static uint8_t board_oem_id(void)
+{
+	static int oem_id = -1;
+
+	if (oem_id < 0) {
+		uint32_t id;
+		if (google_chromeec_cbi_get_oem_id(&id))
+			/* TODO: Once transition completes, raise error instead
+			   of returning gpio value which could be unintended. */
+			/* Reading from EC may succeed next time but we do not
+			   want to return different values. So, we cache the
+			   value read from GPIOs. */
+			id = read_oem_id_from_gpio();
+		oem_id = id;
+	}
+
+	return oem_id;
 }
 
 const char *smbios_mainboard_sku(void)
@@ -192,6 +221,8 @@ static void mainboard_init(device_t dev)
 static unsigned long mainboard_write_acpi_tables(
 	device_t device, unsigned long current, acpi_rsdp_t *rsdp)
 {
+	const char *oem_id = "GOOGLE";
+	const char *oem_table_id = "FIZZ";
 	uintptr_t start_addr;
 	uintptr_t end_addr;
 	struct nhlt *nhlt;
@@ -227,8 +258,9 @@ static void set_bj_adapter_limit(void)
 	uint8_t sku = board_sku_id();
 	enum bj_adapter bj;
 
+	printk(BIOS_INFO, "OEM:%u(0x%x) SKU:%u(0x%x)\n", oem, oem, sku, sku);
 	if (oem >= OEM_ID_COUNT || sku >= SKU_ID_COUNT) {
-		printk(BIOS_ERR, "Unrecognized OEM or SKU: %d/%d\n", oem, sku);
+		printk(BIOS_ERR, "Unrecognized OEM or SKU\n");
 		return;
 	}
 

@@ -106,18 +106,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	pc87417_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
-//     dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x200, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE);
-
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
 	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
 
 	setup_ms9185_resource_map();
-#if 0
-	dump_pci_device(PCI_DEV(0, 0x18, 0));
-	dump_pci_device(PCI_DEV(0, 0x19, 0));
-#endif
 
 	printk(BIOS_DEBUG, "bsp_apicid=%02x\n", bsp_apicid);
 
@@ -138,12 +132,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
 
 	bcm5785_early_setup();
-
-#if 0
-	//it your CPU min fid is 1G, you can change HT to 1G and FID to max one time.
-	needs_reset = optimize_link_coherent_ht();
-	needs_reset |= optimize_link_incoherent_ht(sysinfo);
-#endif
 
 #if IS_ENABLED(CONFIG_SET_FIDVID)
 	{
@@ -179,27 +167,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	enable_smbus();
 
-#if 0
-	int i;
-	for(i = 0; i < 2; i++) {
-		activate_spd_rom(sysinfo->ctrl+i);
-		dump_smbus_registers();
-	}
-#endif
-
 	//do we need apci timer, tsc...., only debug need it for better output
 	/* all ap stopped? */
 //        init_timer(); // Need to use TMICT to synchronize FID/VID
 
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
-#if 0
-	print_pci_devices();
-#endif
-
-#if 0
-//        dump_pci_devices();
-	dump_pci_device_index_wait(PCI_DEV(0, 0x18, 2), 0x98);
-	dump_pci_device_index_wait(PCI_DEV(0, 0x19, 2), 0x98);
-#endif
 }

@@ -54,7 +54,7 @@ static void *smp_write_config_table(void *v)
 	{
 		device_t dev = 0;
 		struct resource *res;
-		for(i = 0; i < 3; i++) {
+		for (i = 0; i < 3; i++) {
 			dev = dev_find_device(0x1166, 0x0235, dev);
 			if (dev) {
 				res = find_resource(dev, PCI_BASE_ADDRESS_0);
@@ -72,17 +72,19 @@ static void *smp_write_config_table(void *v)
 //IDE
 	outb(0x02, 0xc00); outb(0x0e, 0xc01);
 
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, m->bus_bcm5785_0, ((1+sysconf.sbdn)<<2)|1, m->apicid_bcm5785[0], 0xe); // IDE
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
+		m->bus_bcm5785_0, ((1+sysconf.sbdn)<<2)|1, m->apicid_bcm5785[0], 0xe); // IDE
 
 //SATA
 	outb(0x07, 0xc00); outb(0x0f, 0xc01);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_1, (0x0e << 2)|0, m->apicid_bcm5785[0], 0xf);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		m->bus_bcm5785_1, (0x0e << 2)|0, m->apicid_bcm5785[0], 0xf);
 
 //USB
 	outb(0x01, 0xc00); outb(0x0a, 0xc01);
-	for(i = 0; i < 3; i++) {
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, ((2+sysconf.sbdn)<<2)|i, m->apicid_bcm5785[0], 0xa); //
-	}
+	for (i = 0; i < 3; i++)
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+			m->bus_bcm5785_0, ((2+sysconf.sbdn)<<2)|i, m->apicid_bcm5785[0], 0xa); //
 
 
 
@@ -91,7 +93,7 @@ static void *smp_write_config_table(void *v)
 	{
 		device_t dev;
 		dev = dev_find_device(0x1166, 0x0205, 0);
-		if(dev) {
+		if (dev) {
 			uint32_t dword;
 			dword = pci_read_config32(dev, 0x6c);
 			dword |= (1 << 4); // enable interrupts
@@ -101,46 +103,47 @@ static void *smp_write_config_table(void *v)
 
 //First pci-x slot (on bcm5785) under bus_bcm5785_1:d.0
 	// AIC 8130 Galileo Technology...
-	for(i = 0; i < 4; i++) {
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_1_1, (6 << 2)|i, m->apicid_bcm5785[1], 2 + (1+i)%4); //
-	}
+	for (i = 0; i < 4; i++)
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+			m->bus_bcm5785_1_1, (6 << 2)|i, m->apicid_bcm5785[1], 2 + (1+i)%4); //
 
 
 //pci slot (on bcm5785)
-	for(i = 0; i < 4; i++) {
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (5 << 2)|i, m->apicid_bcm5785[1], 8+i%4); //
-	}
+	for (i = 0; i < 4; i++)
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+			m->bus_bcm5785_0, (5 << 2)|i, m->apicid_bcm5785[1], 8+i%4); //
 
 
 //onboard ati
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (4 << 2)|0, m->apicid_bcm5785[1], 0x1);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		m->bus_bcm5785_0, (4 << 2)|0, m->apicid_bcm5785[1], 0x1);
 
 //PCI-X on bcm5780
-	for(i = 0; i < 4; i++) {
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5780[1], (4 << 2)|i, m->apicid_bcm5785[1], 2 + (0+i)%4); //
-	}
+	for (i = 0; i < 4; i++)
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+			m->bus_bcm5780[1], (4 << 2)|i, m->apicid_bcm5785[1], 2 + (0+i)%4); //
 
 //onboard Broadcom
-	for(i = 0; i < 2; i++) {
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5780[2], (4 << 2)|i, m->apicid_bcm5785[1], 0xa + (0+i)%4); //
-	}
+	for (i = 0; i < 2; i++)
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+			m->bus_bcm5780[2], (4 << 2)|i, m->apicid_bcm5785[1], 0xa + (0+i)%4); //
 
 
 // First PCI-E x8
-	for(i = 0; i < 4; i++) {
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5780[5], (0 << 2)|i, m->apicid_bcm5785[1], 0xe); //
-	}
+	for (i = 0; i < 4; i++)
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+			m->bus_bcm5780[5], (0 << 2)|i, m->apicid_bcm5785[1], 0xe); //
 
 
 // Second PCI-E x8
-	for(i = 0; i < 4; i++) {
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5780[3], (0 << 2)|i, m->apicid_bcm5785[1], 0xc); //
-	}
+	for (i = 0; i < 4; i++)
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+			m->bus_bcm5780[3], (0 << 2)|i, m->apicid_bcm5785[1], 0xc); //
 
 // Third PCI-E x1
-	for(i = 0; i < 4; i++) {
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5780[4], (0 << 2)|i, m->apicid_bcm5785[1], 0xd); //
-	}
+	for (i = 0; i < 4; i++)
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+			m->bus_bcm5780[4], (0 << 2)|i, m->apicid_bcm5785[1], 0xd); //
 
 /*Local Ints:  Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN#*/
 	mptable_lintsrc(mc, bus_isa);

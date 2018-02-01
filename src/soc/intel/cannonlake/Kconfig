@@ -115,6 +115,10 @@ config IED_REGION_SIZE
 	hex
 	default 0x400000
 
+config HEAP_SIZE
+	hex
+	default 0x8000
+
 config NHLT_DMIC_1CH_16B
 	bool
 	depends on ACPI_NHLT

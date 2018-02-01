@@ -72,7 +72,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 */
 	{
 		int i;
-		for(i = 0; i < 200000; i++) inb(0xCD6);
+		for (i = 0; i < 200000; i++)
+			inb(0xCD6);
 	}
 
 	post_code(0x37);

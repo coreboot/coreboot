@@ -64,6 +64,15 @@ int google_chromeec_vstore_write(int slot, uint8_t *data, size_t size);
    success, < 0 otherwise. */
 int google_chromeec_reboot(int dev_idx, enum ec_reboot_cmd type, uint8_t flags);
 
+/**
+ * Get OEM (or SKU) ID from Cros Board Info
+ *
+ * @param id [OUT] oem/sku id
+ * @return 0 on success or negative integer for errors.
+ */
+int google_chromeec_cbi_get_oem_id(uint32_t *id);
+int google_chromeec_cbi_get_sku_id(uint32_t *id);
+
 /* MEC uses 0x800/0x804 as register/index pair, thus an 8-byte resource. */
 #define MEC_EMI_BASE		0x800
 #define MEC_EMI_SIZE		8

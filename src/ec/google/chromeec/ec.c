@@ -558,6 +558,40 @@ int google_chromeec_reboot(int dev_idx, enum ec_reboot_cmd type, uint8_t flags)
 	return google_chromeec_command(&cec_cmd);
 }
 
+static int cbi_get_uint32(uint32_t *id, uint32_t type)
+{
+	struct chromeec_command cmd;
+	struct ec_params_get_cbi p;
+	uint32_t r;
+	int rv;
+
+	p.type = type;
+
+	cmd.cmd_code = EC_CMD_GET_CROS_BOARD_INFO;
+	cmd.cmd_version = 0;
+	cmd.cmd_data_in = &p;
+	cmd.cmd_data_out = &r;
+	cmd.cmd_size_in = sizeof(p);
+	cmd.cmd_size_out = sizeof(r);
+	cmd.cmd_dev_index = 0;
+
+	rv = google_chromeec_command(&cmd);
+	if (rv < 0)
+		return rv;
+	*id = r;
+	return 0;
+}
+
+int google_chromeec_cbi_get_sku_id(uint32_t *id)
+{
+	return cbi_get_uint32(id, CBI_DATA_SKU_ID);
+}
+
+int google_chromeec_cbi_get_oem_id(uint32_t *id)
+{
+	return cbi_get_uint32(id, CBI_DATA_OEM_ID);
+}
+
 #ifndef __SMM__
 u16 google_chromeec_get_board_version(void)
 {

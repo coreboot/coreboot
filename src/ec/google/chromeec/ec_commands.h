@@ -4363,6 +4363,66 @@ struct __ec_align4 ec_params_rwsig_action {
 	uint32_t action;
 };
 
+/* Run verification on a slot */
+#define EC_CMD_EFS_VERIFY	0x011E
+
+struct __ec_align1 ec_params_efs_verify {
+	uint8_t region;		/* enum ec_flash_region */
+};
+
+/*
+ * Retrieve info from Cros Board Info store. Response is based on the data
+ * type. Integers return a uint32. Strings return a string, using the response
+ * size to determine how big it is.
+ */
+#define EC_CMD_GET_CROS_BOARD_INFO	0x011F
+/*
+ * Write info into Cros Board Info on EEPROM. Write fails if the board has
+ * hardware write-protect enabled.
+ */
+#define EC_CMD_SET_CROS_BOARD_INFO	0x0120
+
+enum cbi_data_type {
+	/* integer types */
+	CBI_DATA_BOARD_VERSION = 0,
+	CBI_DATA_OEM_ID = 1,
+	CBI_DATA_SKU_ID = 2,
+	/* string types */
+	CBI_FIRST_STRING_PARAM = 0x1000,
+	CBI_DATA_COUNT,
+};
+
+/*
+ * Flags to control read operation
+ *
+ * RELOAD:  Invalidate cache and read data from EEPROM. Useful to verify
+ *          write was successful without reboot.
+ */
+#define CBI_GET_RELOAD		(1 << 0)
+
+struct __ec_align4 ec_params_get_cbi {
+	uint32_t type;		/* enum cbi_data_type */
+	uint32_t flag;		/* CBI_GET_* */
+};
+
+/*
+ * Flags to control write behavior.
+ *
+ * NO_SYNC: Makes EC update data in RAM but skip writing to EEPROM. It's
+ *          useful when writing multiple fields in a row.
+ * INIT:    Needs to be set when creating a new CBI from scratch. All fields
+ *          will be initialized to zero first.
+ */
+#define CBI_SET_NO_SYNC		(1 << 0)
+#define CBI_SET_INIT		(1 << 1)
+
+struct __ec_align1 ec_params_set_cbi {
+	uint32_t type;		/* enum cbi_data_type */
+	uint32_t flag;		/* CBI_SET_* */
+	uint32_t data;		/* For numeric value */
+	uint8_t raw[];		/* For string and raw data */
+};
+
 /*****************************************************************************/
 /* The command range 0x200-0x2FF is reserved for Rotor. */
 

@@ -68,7 +68,8 @@ void get_bus_conf(void)
 	int i;
 	struct mb_sysconf_t *m;
 
-	if(get_bus_conf_done == 1) return; //do it only once
+	if (get_bus_conf_done == 1)
+		return; //do it only once
 
 	get_bus_conf_done = 1;
 
@@ -78,7 +79,7 @@ void get_bus_conf(void)
 
 	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
 
-	for(i = 0; i < sysconf.hc_possible_num; i++) {
+	for (i = 0; i < sysconf.hc_possible_num; i++) {
 		sysconf.pci1234[i] = pci1234x[i];
 		sysconf.hcdn[i] = hcdnx[i];
 	}
@@ -100,23 +101,20 @@ void get_bus_conf(void)
 		printk(BIOS_DEBUG, "secondary is %d...\n",m->bus_bcm5785_1);
 		dev = dev_find_slot(m->bus_bcm5785_1, PCI_DEVFN(0xd,0));
 		printk(BIOS_DEBUG, "now found %s...\n",dev_path(dev));
-		if(dev) {
+		if (dev)
 			m->bus_bcm5785_1_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-		}
 	}
 	else {
 		printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_bcm5785_0, sysconf.sbdn);
 	}
 
 		/* bcm5780 */
-	for(i = 1; i < 6; i++) {
+	for (i = 1; i < 6; i++) {
 		dev = dev_find_slot(m->bus_bcm5780[0], PCI_DEVFN(m->sbdn2 + i - 1,0));
-		if(dev) {
+		if (dev)
 			m->bus_bcm5780[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-		}
-		else {
+		else
 			printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_bcm5780[0], m->sbdn2+i-1);
-		}
 	}
 
 
@@ -125,6 +123,6 @@ void get_bus_conf(void)
 		apicid_base = get_apicid_base(3);
 	else
 		apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
-	for(i = 0; i < 3; i++)
+	for (i = 0; i < 3; i++)
 		m->apicid_bcm5785[i] = apicid_base+i;
 }

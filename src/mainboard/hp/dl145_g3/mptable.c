@@ -57,7 +57,7 @@ static void *smp_write_config_table(void *v)
 		device_t dev = 0;
 		int i;
 		struct resource *res;
-		for(i = 0; i < 3; i++) {
+		for (i = 0; i < 3; i++) {
 			dev = dev_find_device(0x1166, 0x0235, dev);
 			if (dev) {
 				res = find_resource(dev, PCI_BASE_ADDRESS_0);

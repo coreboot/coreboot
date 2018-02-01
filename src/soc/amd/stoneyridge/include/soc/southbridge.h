@@ -392,4 +392,7 @@ int mainboard_get_ehci_oc_map(uint16_t *usb_oc_map);
 /* Initialize all the i2c buses that are marked with early init. */
 void i2c_soc_early_init(void);
 
+/* Initialize all the i2c buses that are not marked with early init. */
+void i2c_soc_init(void);
+
 #endif /* __STONEYRIDGE_H__ */

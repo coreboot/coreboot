@@ -101,7 +101,7 @@ int dw_i2c_soc_dev_to_bus(struct device *dev)
 	return -1;
 }
 
-void i2c_soc_early_init(void)
+static void dw_i2c_soc_init(bool is_early_init)
 {
 	size_t i;
 	const struct soc_amd_stoneyridge_config *config;
@@ -114,12 +114,22 @@ void i2c_soc_early_init(void)
 	for (i = 0; i < ARRAY_SIZE(config->i2c); i++) {
 		const struct dw_i2c_bus_config *cfg  = &config->i2c[i];
 
-		if (!cfg->early_init)
+		if (cfg->early_init != is_early_init)
 			continue;
 
 		if (dw_i2c_init(i, cfg))
 			printk(BIOS_ERR, "Failed to init i2c bus %zd\n", i);
 	}
+}
+
+void i2c_soc_early_init(void)
+{
+	dw_i2c_soc_init(true);
+}
+
+void i2c_soc_init(void)
+{
+	dw_i2c_soc_init(false);
 }
 
 struct device_operations stoneyridge_i2c_mmio_ops = {

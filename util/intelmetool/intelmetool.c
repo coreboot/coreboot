@@ -491,7 +491,8 @@ int main(int argc, char *argv[])
 	#ifndef __DARWIN__
 		fd_mem = open("/dev/mem", O_RDWR);
 		if (fd_mem < 0) {
-			perror("Can not open /dev/mem");
+			perror("Can not open /dev/mem. Do you have disabled "
+			       "Secure Boot ?");
 			exit(1);
 		}
 

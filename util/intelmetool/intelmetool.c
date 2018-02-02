@@ -323,7 +323,7 @@ static void dump_bootguard_info(void)
 {
 	struct pci_dev *dev;
 	char namebuf[1024];
-	const char *name;
+	const char *name = NULL;
 	uint64_t bootguard = 0;
 
 	if (pci_platform_scan())
@@ -343,16 +343,10 @@ static void dump_bootguard_info(void)
 		}
 	}
 
-	if (debug) {
-		printf("BootGuard MSR Output: 0x%" PRIx64 "\n", bootguard);
-		bootguard &= ~0xff;
-	}
-
 	/* ME_major_ver is zero on some platforms (Mac) */
 	if (ME_major_ver &&
 	    (ME_major_ver < 9 ||
-	     (ME_major_ver == 9 && ME_minor_ver < 5) ||
-	     !BOOTGUARD_CAPABILITY(bootguard))) {
+	     (ME_major_ver == 9 && ME_minor_ver < 5))) {
 		print_cap("BootGuard                                 ", 0);
 		printf(CGRN "\nYour system isn't bootguard ready. You can "
 		       "flash other firmware!\n" RESET);
@@ -363,7 +357,13 @@ static void dump_bootguard_info(void)
 	if (msr_bootguard(&bootguard, debug) < 0) {
 		printf("ME Capability: %-43s: " CCYN "%s\n" RESET,
 		       "BootGuard Mode", "Unknown");
+		rehide_me();
 		return;
+	}
+
+	if (debug) {
+		printf("BootGuard MSR Output: 0x%" PRIx64 "\n", bootguard);
+		bootguard &= ~0xff;
 	}
 
 	print_cap("BootGuard                                 ", 1);
@@ -372,6 +372,7 @@ static void dump_bootguard_info(void)
 		       "BootGuard keys can be overwritten or wiped, or you are "
 		       "in developer mode.\n"
 		       RESET);
+	rehide_me();
 
 	switch (bootguard) {
 	case BOOTGUARD_DISABLED:
@@ -400,7 +401,6 @@ static void dump_bootguard_info(void)
 		       "firmware.\n" RESET);
 		break;
 	}
-	rehide_me();
 }
 
 static void print_version(void)

@@ -173,8 +173,13 @@
 #define  COLD_BOOT_STS		(1 << 27)
 #define  COLD_RESET_STS		(1 << 26)
 #define  WARM_RESET_STS		(1 << 25)
+#define  GLOBAL_RESET_STS	(1 << 24)
 #define  SRS			(1 << 20)
+#define  MS4V			(1 << 18)
 #define  RPS			(1 << 2)
+#define GEN_PMCON1_CLR1_BITS	(COLD_BOOT_STS | COLD_RESET_STS | \
+				 WARM_RESET_STS | GLOBAL_RESET_STS | \
+				 SRS | MS4V)
 #define GEN_PMCON2		0x1024
 #define GEN_PMCON3		0x1028
 #       define SLP_S3_ASSERT_WIDTH_SHIFT	10

@@ -232,5 +232,21 @@ int soc_get_rtc_failed(void)
 
 int vbnv_cmos_failed(void)
 {
-	return rtc_failed(read32((void *)(read_pmc_mmio_bar() + GEN_PMCON1)));
+	uintptr_t pmc_bar = read_pmc_mmio_bar();
+	uint32_t gen_pmcon1 = read32((void *)(pmc_bar + GEN_PMCON1));
+	int rtc_failure = rtc_failed(gen_pmcon1);
+
+	if (rtc_failure) {
+		printk(BIOS_INFO, "RTC failed!\n");
+
+		/* We do not want to write 1 to clear-1 bits. Set them to 0. */
+		gen_pmcon1 &= ~GEN_PMCON1_CLR1_BITS;
+
+		/* RPS is write 0 to clear. */
+		gen_pmcon1 &= ~RPS;
+
+		write32((void *)(pmc_bar + GEN_PMCON1), gen_pmcon1);
+	}
+
+	return rtc_failure;
 }

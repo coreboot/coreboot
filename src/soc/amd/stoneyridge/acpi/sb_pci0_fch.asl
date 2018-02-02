@@ -130,6 +130,10 @@ Method(_CRS, 0) {
 	Return(CRES) /* note to change the Name buffer */
 } /* end of Method(_SB.PCI0._CRS) */
 
+#if IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM)
+	#include "acpi/AmdImc.asl"
+#endif
+
 /*
  *
  *               FIRST METHOD CALLED UPON BOOT
@@ -156,8 +160,6 @@ Method(_INI, 0) {
 	OSFL()
 
 #if IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM)
-	/* TODO: It is unstable. */
-	#include "acpi/AmdImc.asl"
 #if IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE)
 	ITZE() /* enable IMC Fan Control*/
 #endif

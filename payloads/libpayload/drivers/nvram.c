@@ -160,3 +160,55 @@ void rtc_read_clock(struct tm *time)
 	if (time->tm_year < 80)
 		time->tm_year += 100;
 }
+
+/**
+ * Write the current time and date to the RTC
+ *
+ * @param time A pointer to a broken-down time structure
+ */
+void rtc_write_clock(const struct tm *time)
+{
+	u16 timeout = 10000;
+	u8 statusB;
+	u8 reg8, year;
+
+	while (nvram_updating())
+		if (!timeout--)
+			return;
+
+	statusB = nvram_read(NVRAM_RTC_STATUSB);
+
+	year = time->tm_year;
+	if (year > 100)
+		year -= 100;
+
+	if (!(statusB & NVRAM_RTC_FORMAT_BINARY)) {
+		nvram_write(dec2bcd(time->tm_mon + 1), NVRAM_RTC_MONTH);
+		nvram_write(dec2bcd(time->tm_sec), NVRAM_RTC_SECONDS);
+		nvram_write(dec2bcd(time->tm_min), NVRAM_RTC_MINUTES);
+		nvram_write(dec2bcd(time->tm_mday), NVRAM_RTC_DAY);
+		if (!(statusB & NVRAM_RTC_FORMAT_24HOUR)) {
+			if (time->tm_hour > 12)
+				reg8 = dec2bcd(time->tm_hour - 12) | 0x80;
+			else
+				reg8 = dec2bcd(time->tm_hour);
+		} else
+			reg8 = dec2bcd(time->tm_hour);
+		nvram_write(reg8, NVRAM_RTC_HOURS);
+		nvram_write(dec2bcd(year), NVRAM_RTC_YEAR);
+	} else {
+		nvram_write(time->tm_mon + 1, NVRAM_RTC_MONTH);
+		nvram_write(time->tm_sec, NVRAM_RTC_SECONDS);
+		nvram_write(time->tm_min, NVRAM_RTC_MINUTES);
+		nvram_write(time->tm_mday, NVRAM_RTC_DAY);
+		if (!(statusB & NVRAM_RTC_FORMAT_24HOUR)) {
+			if (time->tm_hour > 12)
+				reg8 = (time->tm_hour - 12) | 0x80;
+			else
+				reg8 = time->tm_hour;
+		} else
+			reg8 = time->tm_hour;
+		nvram_write(reg8, NVRAM_RTC_HOURS);
+		nvram_write(year, NVRAM_RTC_YEAR);
+	}
+}

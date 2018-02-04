@@ -18,8 +18,9 @@
 #include <console/post_codes.h>
 #include <cpu/x86/smm.h>
 #include <southbridge/intel/common/rcba.h>
-#include "pch.h"
 #include <spi-generic.h>
+#include "chip.h"
+#include "pch.h"
 
 void intel_pch_finalize_smm(void)
 {
@@ -37,12 +38,6 @@ void intel_pch_finalize_smm(void)
 		for (i = 0; i < 20; i += 4)
 			RCBA32(0x3874 + i) = RCBA32(0x3854 + i) | lockmask;
 	}
-
-	/* Set SPI opcode menu */
-	RCBA16(0x3894) = SPI_OPPREFIX;
-	RCBA16(0x3896) = SPI_OPTYPE;
-	RCBA32(0x3898) = SPI_OPMENU_LOWER;
-	RCBA32(0x389c) = SPI_OPMENU_UPPER;
 
 	/* Lock SPIBAR */
 	RCBA32_OR(0x3804, (1 << 15));

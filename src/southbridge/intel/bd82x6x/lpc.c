@@ -829,6 +829,34 @@ static void southbridge_fill_ssdt(device_t device)
 
 static void lpc_final(struct device *dev)
 {
+	u16 spi_opprefix	= SPI_OPPREFIX;
+	u16 spi_optype		= SPI_OPTYPE;
+	u32 spi_opmenu[2]	= { SPI_OPMENU_LOWER, SPI_OPMENU_UPPER };
+
+	/* Configure SPI opcode menu; devicetree may override defaults. */
+	const config_t *const config = dev->chip_info;
+	if (config && config->spi.ops[0].op) {
+		unsigned int i;
+
+		spi_opprefix	= 0;
+		spi_optype	= 0;
+		spi_opmenu[0]	= 0;
+		spi_opmenu[1]	= 0;
+		for (i = 0; i < sizeof(spi_opprefix); ++i)
+			spi_opprefix |= config->spi.opprefixes[i] << i * 8;
+		for (i = 0; i < sizeof(spi_opmenu); ++i) {
+			spi_optype |=
+				config->spi.ops[i].is_write << 2 * i |
+				config->spi.ops[i].needs_address << (2 * i + 1);
+			spi_opmenu[i / 4] |=
+				config->spi.ops[i].op << (i % 4) * 8;
+		}
+	}
+	RCBA16(0x3894) = spi_opprefix;
+	RCBA16(0x3896) = spi_optype;
+	RCBA32(0x3898) = spi_opmenu[0];
+	RCBA32(0x389c) = spi_opmenu[1];
+
 	/* Call SMM finalize() handlers before resume */
 	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
 		if (IS_ENABLED(CONFIG_INTEL_CHIPSET_LOCKDOWN) ||

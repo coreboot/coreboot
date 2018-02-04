@@ -95,6 +95,14 @@ struct southbridge_intel_bd82x6x_config {
 
 	uint32_t spi_uvscc;
 	uint32_t spi_lvscc;
+	struct {
+		uint8_t opprefixes[2];
+		struct {
+			uint8_t needs_address;
+			uint8_t is_write;
+			uint8_t op;
+		} ops[8];
+	} spi;
 };
 
 #endif				/* SOUTHBRIDGE_INTEL_BD82X6X_CHIP_H */

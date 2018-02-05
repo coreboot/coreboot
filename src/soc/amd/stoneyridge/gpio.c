@@ -106,3 +106,32 @@ uint16_t gpio_acpi_pin(gpio_t gpio)
 {
 	return gpio;
 }
+
+void gpio_set_interrupt(gpio_t gpio, uint32_t flags)
+{
+	uintptr_t gpio_address = gpio_get_address(gpio);
+	uint32_t reg = read32((void *)gpio_address);
+
+	/* Clear registers that are being updated */
+	reg &= ~(GPIO_TRIGGER_MASK | GPIO_ACTIVE_MASK | GPIO_INTERRUPT_MASK);
+
+	/* Clear any extra bits in the flags */
+	flags &= (GPIO_TRIGGER_MASK | GPIO_ACTIVE_MASK | GPIO_INTERRUPT_MASK);
+
+	write32((void *)gpio_address, reg | flags);
+}
+
+int gpio_interrupt_status(gpio_t gpio)
+{
+	uintptr_t gpio_address = gpio_get_address(gpio);
+	uint32_t reg = read32((void *)gpio_address);
+
+	if (reg & GPIO_INT_STATUS) {
+		/* Clear interrupt status, preserve wake status */
+		reg &= ~GPIO_WAKE_STATUS;
+		write32((void *)gpio_address, reg);
+		return 1;
+	}
+
+	return 0;
+}

@@ -40,6 +40,7 @@ subdirs-y += ../../../cpu/x86/smm
 bootblock-$(CONFIG_STONEYRIDGE_UART) += uart.c
 bootblock-y += BiosCallOuts.c
 bootblock-y += bootblock/bootblock.c
+bootblock-y += gpio.c
 bootblock-y += i2c.c
 bootblock-y += monotonic_timer.c
 bootblock-y += pmutil.c
@@ -66,6 +67,7 @@ romstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 romstage-y += tsc_freq.c
 romstage-y += southbridge.c
 
+verstage-y += gpio.c
 verstage-y += i2c.c
 verstage-y += monotonic_timer.c
 verstage-y += sb_util.c

@@ -23,12 +23,28 @@
 #include <soc/iomap.h>
 #include <types.h>
 
+#define GPIO_EDGEL_TRIG		(0 << 8)
+#define GPIO_LEVEL_TRIG		(1 << 8)
+#define GPIO_TRIGGER_MASK	(1 << 8)
+
+#define GPIO_ACTIVE_HIGH	(0 << 9)
+#define GPIO_ACTIVE_LOW		(1 << 9)
+#define GPIO_ACTIVE_BOTH	(2 << 9)
+#define GPIO_ACTIVE_MASK	(3 << 9)
+
+#define GPIO_INT_STATUS_EN	(1 << 11)
+#define GPIO_INT_DELIVERY_EN	(1 << 12)
+#define GPIO_INTERRUPT_MASK	(3 << 11)
+
 #define GPIO_PIN_STS		(1 << 16)
 #define GPIO_PULLUP_ENABLE	(1 << 20)
 #define GPIO_PULLDOWN_ENABLE	(1 << 21)
 #define GPIO_OUTPUT_SHIFT	22
 #define GPIO_OUTPUT_MASK	(1 << GPIO_OUTPUT_SHIFT)
 #define GPIO_OUTPUT_ENABLE	(1 << 23)
+
+#define GPIO_INT_STATUS		(1 << 28)
+#define GPIO_WAKE_STATUS	(1 << 29)
 
 /*
  * The definitions below should be used to make GPIO arrays compact and
@@ -143,5 +159,12 @@
 #define GPIO_148			148
 
 typedef uint32_t gpio_t;
+
+/* Update interrupt settings for given GPIO */
+void gpio_set_interrupt(gpio_t gpio, uint32_t flags);
+
+/* Return the interrupt status and clear if set. */
+int gpio_interrupt_status(gpio_t gpio);
+
 #endif /* __ACPI__ */
 #endif /* __STONEYRIDGE_GPIO_H__ */

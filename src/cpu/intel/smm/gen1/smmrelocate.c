@@ -132,6 +132,10 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	params->ied_base = tsegmb + params->smram_size;
 	params->ied_size = tseg_size - params->smram_size;
 
+	/* Adjust available SMM handler memory size. */
+	if (IS_ENABLED(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM))
+		params->smram_size -= CONFIG_SMM_RESERVED_SIZE;
+
 	/* SMRR has 32-bits of valid address aligned to 4KiB. */
 	params->smrr_base.lo = (params->smram_base & rmask) | MTRR_TYPE_WRBACK;
 	params->smrr_base.hi = 0;

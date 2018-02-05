@@ -11,6 +11,9 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
+romstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
+ramstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
+
 cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_206ax/microcode.bin
 cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_306ax/microcode.bin
 

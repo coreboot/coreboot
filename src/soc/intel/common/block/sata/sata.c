@@ -22,10 +22,9 @@
 #define SATA_ABAR_PORT_IMPLEMENTED	0x0c
 #define SATA_PCI_CFG_PORT_CTL_STS	0x92
 
-static void *get_ahci_bar(void)
+static void *sata_get_ahci_bar(struct device *dev)
 {
 	uintptr_t bar;
-	device_t dev = PCH_DEV_SATA;
 
 	bar = pci_read_config32(dev, PCI_BASE_ADDRESS_5);
 	return (void *)(bar & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK);
@@ -39,19 +38,23 @@ static void *get_ahci_bar(void)
  * and can detect devices. When disabled, the port is in the off state and
  * can't detect any devices.
  */
-static void sata_final(device_t dev)
+static void sata_final(struct device *dev)
 {
-	void *ahcibar = get_ahci_bar();
+	void *ahcibar = sata_get_ahci_bar(dev);
 	u32 port_impl, temp;
-
-	dev = PCH_DEV_SATA;
 
 	/* Set Bus Master */
 	temp = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, temp | PCI_COMMAND_MASTER);
 
 	/* Read Ports Implemented (GHC_PI) */
-	port_impl = read32(ahcibar + SATA_ABAR_PORT_IMPLEMENTED) & 0x07;
+	port_impl = read32(ahcibar + SATA_ABAR_PORT_IMPLEMENTED);
+
+	if (IS_ENABLED(CONFIG_SOC_AHCI_PORT_IMPLEMENTED_INVERT))
+		port_impl = ~port_impl;
+
+	port_impl &= 0x07; /* bit 0-2 */
+
 	/* Port enable */
 	temp = pci_read_config32(dev, SATA_PCI_CFG_PORT_CTL_STS);
 	temp |= port_impl;

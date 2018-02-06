@@ -24,6 +24,9 @@
 # define MEM_CONFIG2		GPIO_131
 # define MEM_CONFIG3		GPIO_132
 
+/* CR50 interrupt pin */
+#define H1_PCH_INT		GPIO_9
+
 /* SPI Write protect */
 #define CROS_WP_GPIO		GPIO_122
 #define GPIO_EC_IN_RW		GPIO_15

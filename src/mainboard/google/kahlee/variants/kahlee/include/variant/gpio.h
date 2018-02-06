@@ -28,6 +28,9 @@
 #define MEM_CONFIG2	0
 #define MEM_CONFIG3	0
 
+/* CDX03 doesn't have a CR50 interrupt pin */
+#define H1_PCH_INT		0
+
 /* SPI Write protect */
 #define CROS_WP_GPIO		GPIO_142
 #define GPIO_EC_IN_RW		GPIO_15

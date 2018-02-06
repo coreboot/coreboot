@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2017 Google, Inc.
+# Copyright (C) 2018 Google, LLC.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +16,11 @@
 bootblock-y += gpio.c
 bootblock-y += OemCustomize.c
 
+verstage-y += tpm_tis.c
+
 romstage-y += gpio.c
 romstage-y += memory.c
+romstage-y += tpm_tis.c
 
 ramstage-y += gpio.c
+ramstage-y += tpm_tis.c

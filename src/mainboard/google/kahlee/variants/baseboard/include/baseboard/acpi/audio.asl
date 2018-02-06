@@ -54,8 +54,8 @@ Device (DLG7)
 		ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
 		Package ()
 		{
-			Package () { "dlg,micbias_lvl", 2600 },
-			Package () { "dlg,mic_amp_in_sel", "diff" }
+			Package () { "dlg,micbias-lvl", 2600 },
+			Package () { "dlg,mic-amp-in-sel", "diff" }
 		},
 
 		ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),

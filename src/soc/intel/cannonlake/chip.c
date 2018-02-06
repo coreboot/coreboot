@@ -262,6 +262,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* eMMC and SD */
 	params->ScsEmmcEnabled = config->ScsEmmcEnabled;
 	params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
+	params->PchScsEmmcHs400DllDataValid = config->EmmcHs400DllNeed;
+	if (config->EmmcHs400DllNeed == 1) {
+		params->PchScsEmmcHs400RxStrobeDll1 =
+			config->EmmcHs400RxStrobeDll1;
+		params->PchScsEmmcHs400TxDataDll = config->EmmcHs400TxDataDll;
+	}
 	params->ScsSdCardEnabled = config->ScsSdCardEnabled;
 	params->ScsUfsEnabled = config->ScsUfsEnabled;
 

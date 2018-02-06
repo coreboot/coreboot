@@ -155,7 +155,12 @@ struct soc_intel_cannonlake_config {
 	/* eMMC and SD */
 	uint8_t ScsEmmcEnabled;
 	uint8_t ScsEmmcHs400Enabled;
-	uint8_t PchScsEmmcHs400TuningRequired;
+	/* Need to update DLL setting to get Emmc running at HS400 speed */
+	uint8_t EmmcHs400DllNeed;
+	/* 0-39: number of active delay for RX strobe, unit is 125 psec */
+	uint8_t EmmcHs400RxStrobeDll1;
+	/* 0-78: number of active delay for TX data, unit is 125 psec */
+	uint8_t EmmcHs400TxDataDll;
 	uint8_t ScsSdCardEnabled;
 	uint8_t ScsUfsEnabled;
 

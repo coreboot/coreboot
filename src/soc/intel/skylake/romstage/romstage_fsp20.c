@@ -44,6 +44,13 @@
 	0x8d, 0x09, 0x11, 0xcf, 0x8b, 0x9f, 0x03, 0x23	\
 }
 
+/* Memory Channel Present Status */
+enum {
+	CHANNEL_NOT_PRESENT,
+	CHANNEL_DISABLED,
+	CHANNEL_PRESENT
+};
+
 /* Save the DIMM information for SMBIOS table 17 */
 static void save_dimm_info(void)
 {
@@ -56,13 +63,14 @@ static void save_dimm_info(void)
 	struct dimm_info *dest_dimm;
 	struct memory_info *mem_info;
 	const MEMORY_INFO_DATA_HOB *memory_info_hob;
-	const uint8_t smbios_memory_info_guid[16] = FSP_SMBIOS_MEMORY_INFO_GUID;
+	const uint8_t smbios_memory_info_guid[16] =
+			FSP_SMBIOS_MEMORY_INFO_GUID;
 
 	/* Locate the memory info HOB, presence validated by raminit */
 	memory_info_hob =
 		fsp_find_extension_hob_by_guid(smbios_memory_info_guid,
 						&hob_size);
-	if (memory_info_hob == NULL) {
+	if (memory_info_hob == NULL || hob_size == 0) {
 		printk(BIOS_ERR, "SMBIOS MEMORY_INFO_DATA_HOB not found\n");
 		return;
 	}
@@ -84,7 +92,7 @@ static void save_dimm_info(void)
 	ctrlr_info = &memory_info_hob->Controller[0];
 	for (channel = 0; channel < MAX_CH && index < dimm_max; channel++) {
 		channel_info = &ctrlr_info->ChannelInfo[channel];
-		if (channel_info->Status != 2)
+		if (channel_info->Status != CHANNEL_PRESENT)
 			continue;
 		for (dimm = 0; dimm < MAX_DIMM && index < dimm_max; dimm++) {
 			src_dimm = &channel_info->DimmInfo[dimm];

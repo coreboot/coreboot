@@ -229,6 +229,7 @@ chip soc/intel/skylake
 	register "speed_shift_enable" = "1"
 
 	register "tcc_offset" = "10"     # TCC of 90C
+	register "psys_pmax" = "101"
 
 	# Lock Down
 	register "chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"

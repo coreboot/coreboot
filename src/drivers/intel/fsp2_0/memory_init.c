@@ -31,6 +31,7 @@
 #include <string.h>
 #include <symbols.h>
 #include <timestamp.h>
+#include <security/tpm/tis.h>
 #include <security/tpm/tss.h>
 #include <security/vboot/vboot_common.h>
 #include <vb2_api.h>
@@ -146,6 +147,14 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 
 	/* Create romstage handof information */
 	romstage_handoff_init(s3wake);
+
+	/*
+	 * Initialize the TPM, unless the TPM was already initialized
+	 * in verstage and used to verify romstage.
+	 */
+	if (IS_ENABLED(CONFIG_LPC_TPM) &&
+	    !IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
+		init_tpm(s3wake);
 }
 
 static int mrc_cache_verify_tpm_hash(const uint8_t *data, size_t size)

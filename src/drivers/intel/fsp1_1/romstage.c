@@ -172,7 +172,6 @@ void romstage_common(struct romstage_params *params)
 	 * in verstage and used to verify romstage.
 	 */
 	if (IS_ENABLED(CONFIG_LPC_TPM) &&
-	    !IS_ENABLED(CONFIG_RESUME_PATH_SAME_AS_BOOT) &&
 	    !IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
 		init_tpm(params->power_state->prev_sleep_state ==
 			 ACPI_S3);

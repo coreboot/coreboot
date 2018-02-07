@@ -82,6 +82,13 @@ config PAYLOAD_IS_FLAT_BINARY
 	  Add the payload to cbfs as a flat binary type instead of as an
 	  elf payload
 
+config COMPRESS_SECONDARY_PAYLOAD
+	bool "Use LZMA compression for secondary payloads"
+	default y
+	help
+	  In order to reduce the size secondary payloads take up in the
+	  ROM chip they can be compressed using the LZMA algorithm.
+
 menu "Secondary Payloads"
 
 config COREINFO_SECONDARY_PAYLOAD

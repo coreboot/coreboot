@@ -16,10 +16,12 @@
 cbfs-files-$(CONFIG_COREINFO_SECONDARY_PAYLOAD) += img/coreinfo
 img/coreinfo-file := payloads/coreinfo/build/coreinfo.elf
 img/coreinfo-type := payload
+img/coreinfo-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
 
 cbfs-files-$(CONFIG_NVRAMCUI_SECONDARY_PAYLOAD) += img/nvramcui
 img/nvramcui-file := payloads/nvramcui/nvramcui.elf
 img/nvramcui-type := payload
+img/nvramcui-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
 
 PAYLOADS_LIST=\
 payloads/coreinfo \

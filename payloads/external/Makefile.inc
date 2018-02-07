@@ -185,12 +185,14 @@ payloads/external/tint/tint/tint.elf tint:
 cbfs-files-$(CONFIG_TINT_SECONDARY_PAYLOAD) += img/tint
 img/tint-file := payloads/external/tint/tint/tint.elf
 img/tint-type := payload
+img/tint-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
 
 # Memtest86+
 
 cbfs-files-$(CONFIG_MEMTEST_SECONDARY_PAYLOAD) += img/memtest
 img/memtest-file := payloads/external/Memtest86Plus/memtest86plus/memtest
 img/memtest-type := payload
+img/memtest-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
 
 ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO),yy)
 	MEMTEST_SERIAL_OPTIONS=SERIAL_CONSOLE_DEFAULT=1 \

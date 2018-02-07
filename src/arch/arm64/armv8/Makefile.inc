@@ -17,7 +17,13 @@
 
 subdirs-y += lib/
 
-armv8_flags = -march=armv8-a -I$(src)/arch/arm64/include/armv8/ -D__COREBOOT_ARM_ARCH__=8
+ifeq ($(CONFIG_ARCH_ARMV8_EXTENSION),0)
+march = armv8-a
+else
+march = armv8.$(CONFIG_ARCH_ARMV8_EXTENSION)-a
+endif
+
+armv8_flags = -march=$(march) -I$(src)/arch/arm64/include/armv8/ -D__COREBOOT_ARM_ARCH__=8
 
 ################################################################################
 ## bootblock

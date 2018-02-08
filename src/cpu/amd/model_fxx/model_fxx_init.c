@@ -65,7 +65,7 @@ int is_e0_later_in_bsp(int nodeid)
 		return !is_cpu_pre_e0();
 	}
 	// d0 will be treated as e0 with this methods, but the d0 nb_cfg_54 always 0
-	device_t dev;
+	struct device *dev;
 	dev = dev_find_slot(0, PCI_DEVFN(0x18 + nodeid, 2));
 	if (!dev)
 		return 0;
@@ -85,7 +85,7 @@ int is_e0_later_in_bsp(int nodeid)
 int is_cpu_f0_in_bsp(int nodeid)
 {
 	uint32_t dword;
-	device_t dev;
+	struct device *dev;
 
 	if (!IS_ENABLED(CONFIG_K8_REV_F_SUPPORT))
 		return 0;
@@ -243,7 +243,7 @@ static void init_ecc_memory(unsigned node_id)
 	unsigned long basek;
 	struct mtrr_state mtrr_state;
 
-	device_t f1_dev, f2_dev, f3_dev;
+	struct device *f1_dev, *f2_dev, *f3_dev;
 	int enable_scrubbing;
 	uint32_t dcl;
 
@@ -463,7 +463,7 @@ static void k8_errata(void)
 	wrmsr(HWCR_MSR, msr);
 }
 
-static void model_fxx_init(device_t dev)
+static void model_fxx_init(struct device *dev)
 {
 	unsigned long i;
 	msr_t msr;

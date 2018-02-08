@@ -31,7 +31,7 @@
 
 #define MCI_STATUS 0x401
 
-static void model_12_init(device_t dev)
+static void model_12_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Model 12 Init.\n");
 

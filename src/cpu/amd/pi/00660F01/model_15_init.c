@@ -47,7 +47,7 @@ void PSPProgBar3Msr(void *Buffer)
 	LibAmdMsrRead(0xC00110A2, &Tmp64, NULL);
 }
 
-static void model_15_init(device_t dev)
+static void model_15_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Model 15 Init.\n");
 

@@ -33,7 +33,7 @@ static void vsm_end_post_smi(void)
 			  ".byte 0x0f, 0x38\n" "pop %ax\n");
 }
 
-static void geode_lx_init(device_t dev)
+static void geode_lx_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "geode_lx_init\n");
 

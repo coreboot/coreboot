@@ -32,7 +32,7 @@
 
 #define MCI_STATUS 0x401
 
-static void model_14_init(device_t dev)
+static void model_14_init(struct device *dev)
 {
 	u8 i;
 	msr_t msr;

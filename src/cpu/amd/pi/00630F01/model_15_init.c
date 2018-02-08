@@ -31,7 +31,7 @@
 #include <cpu/amd/amdfam15.h>
 #include <arch/acpi.h>
 
-static void model_15_init(device_t dev)
+static void model_15_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Model 15 Init.\n");
 

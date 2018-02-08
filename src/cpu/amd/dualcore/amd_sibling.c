@@ -32,7 +32,7 @@ static int disable_siblings = !CONFIG_LOGICAL_CPUS;
 
 static int get_max_siblings(int nodes)
 {
-	device_t dev;
+	struct device *dev;
 	int nodeid;
 	int siblings=0;
 
@@ -51,7 +51,7 @@ static int get_max_siblings(int nodes)
 
 static void enable_apic_ext_id(int nodes)
 {
-	device_t dev;
+	struct device *dev;
 	int nodeid;
 
 	//enable APIC_EXIT_ID all the nodes
@@ -67,7 +67,7 @@ static void enable_apic_ext_id(int nodes)
 
 unsigned get_apicid_base(unsigned ioapic_num)
 {
-	device_t dev;
+	struct device *dev;
 	int nodes;
 	unsigned apicid_base;
 	int siblings;

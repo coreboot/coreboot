@@ -59,7 +59,7 @@ static inline uint8_t is_gt_rev_d(void)
 
 static volatile uint8_t fam15h_startup_flags[MAX_NODES_SUPPORTED][MAX_CORES_SUPPORTED] = {{ 0 }};
 
-static void model_10xxx_init(device_t dev)
+static void model_10xxx_init(struct device *dev)
 {
 	u8 i;
 	msr_t msr;

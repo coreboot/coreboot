@@ -30,7 +30,7 @@
 #include <arch/acpi.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
-static void model_16_init(device_t dev)
+static void model_16_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Model 16 Init.\n");
 

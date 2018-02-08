@@ -82,8 +82,8 @@ static const struct lpddr4_cfg meowth_lpddr4_cfg = {
 	/* Meowth is a non-interleaved design */
 	.dq_pins_interleaved = 0,
 
-	/* Disable Early Command Training */
-	.ect = 0,
+	/* Enable Early Command Training */
+	.ect = 1,
 };
 
 const struct lpddr4_cfg *variant_lpddr4_config(void)

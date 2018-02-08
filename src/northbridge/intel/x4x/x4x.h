@@ -385,7 +385,8 @@ extern const struct dll_setting default_ddr3_1333_dq[2][TOTAL_BYTELANES];
 
 struct acpi_rsdp;
 #ifndef __SIMPLE_DEVICE__
-unsigned long northbridge_write_acpi_tables(device_t device, unsigned long start, struct acpi_rsdp *rsdp);
+unsigned long northbridge_write_acpi_tables(struct device *device,
+		unsigned long start, struct acpi_rsdp *rsdp);
 #endif /* __SIMPLE_DEVICE__ */
 #endif
 #endif /* __NORTHBRIDGE_INTEL_X4X_H__ */

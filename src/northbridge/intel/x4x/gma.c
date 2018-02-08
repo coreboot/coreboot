@@ -430,7 +430,7 @@ static void gma_func0_disable(struct device *dev)
 	pci_write_config16(dev_host, D0F0_GGC, ggc);
 }
 
-static void gma_set_subsystem(device_t dev, unsigned int vendor,
+static void gma_set_subsystem(struct device *dev, unsigned int vendor,
 			unsigned int device)
 {
 	if (!vendor || !device) {
@@ -446,14 +446,14 @@ static void gma_set_subsystem(device_t dev, unsigned int vendor,
 const struct i915_gpu_controller_info *
 intel_gma_get_controller_info(void)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x2, 0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x2, 0));
 	if (!dev)
 		return NULL;
 	struct northbridge_intel_x4x_config *chip = dev->chip_info;
 	return &chip->gfx;
 }
 
-static void gma_ssdt(device_t device)
+static void gma_ssdt(struct device *device)
 {
 	const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
 	if (!gfx)

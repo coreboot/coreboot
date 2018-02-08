@@ -21,6 +21,12 @@
 #include <soc/meminit.h>
 #include <string.h>
 
+#define FSP_SMBIOS_MEMORY_INFO_GUID	\
+{	\
+	0x8c, 0x10, 0xa1, 0x01, 0xee, 0x9d, 0x84, 0x49,	\
+	0x88, 0xc3, 0xee, 0xe8, 0xc4, 0x9e, 0xfb, 0x89	\
+}
+
 void save_lpddr4_dimm_info(const struct lpddr4_cfg *lp4cfg, size_t mem_sku)
 {
 	int channel, dimm, dimm_max, index, node;
@@ -31,15 +37,20 @@ void save_lpddr4_dimm_info(const struct lpddr4_cfg *lp4cfg, size_t mem_sku)
 	const CHANNEL_INFO *channel_info;
 	const FSP_SMBIOS_MEMORY_INFO *memory_info_hob;
 	const CONTROLLER_INFO *ctrl_info;
+	const uint8_t smbios_memory_info_guid[16] =
+			FSP_SMBIOS_MEMORY_INFO_GUID;
 
 	if (mem_sku >= lp4cfg->num_skus) {
 		printk(BIOS_ERR, "Too few LPDDR4 SKUs: 0x%zx/0x%zx\n",
 				mem_sku, lp4cfg->num_skus);
 		return;
 	}
+	/* Locate the memory info HOB */
+	memory_info_hob = fsp_find_extension_hob_by_guid(
+				smbios_memory_info_guid,
+				&hob_size);
 
-	memory_info_hob = fsp_find_smbios_memory_info(&hob_size);
-	if (memory_info_hob == NULL) {
+	if (memory_info_hob == NULL || hob_size == 0) {
 		printk(BIOS_ERR, "SMBIOS memory info HOB is missing\n");
 		return;
 	}

@@ -92,7 +92,7 @@ void mainboard_devtree_update(struct device *dev)
 	case SKU_BIGDADDY_KBDBKLIGHT:
 	case SKU_BIGDADDY:
 		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
-		cfg->usb2eye[1].Usb20PerPortTxiSet = 7;
+		cfg->usb2eye[1].Usb20PerPortTxiSet = 1;
 		cfg->usb2eye[1].Usb20IUsbTxEmphasisEn = 3;
 		cfg->usb2eye[1].Usb20PerPortTxPeHalf = 0;
 		break;

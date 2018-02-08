@@ -83,6 +83,9 @@ chip soc/amd/stoneyridge
 		device pci 18.5 on  end
 	end #domain
 	device mmio 0xfedc2000 on
+		chip drivers/generic/adau7002
+			device generic 0.0 on end
+		end
 		chip drivers/i2c/da7219
 			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_14)"
 			register "btn_cfg" = "50"

@@ -464,9 +464,9 @@ static void start_other_cpus(struct bus *cpu_bus, struct device *bsp_cpu)
 
 }
 
-static void smm_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
+static void smm_other_cpus(struct bus *cpu_bus, struct device *bsp_cpu)
 {
-	device_t cpu;
+	struct device *cpu;
 	int pre_count = atomic_read(&active_cpus);
 
 	/* Loop through the cpus once to let them run through SMM relocator */

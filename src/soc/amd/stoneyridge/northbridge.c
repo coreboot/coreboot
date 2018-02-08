@@ -40,35 +40,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct dram_base_mask {
-	u32 base; /* [47:27] at [28:8] */
-	u32 mask; /* [47:27] at [28:8] and enable at bit 0 */
-} dram_base_mask_t;
-
-static dram_base_mask_t get_dram_base_mask(void)
-{
-	device_t dev = dev_find_slot(0, ADDR_DEVFN);
-	dram_base_mask_t d;
-	u32 temp;
-
-	/* [39:24] at [31:16] */
-	temp = pci_read_config32(dev, 0x44);
-
-	/* mask out  DramMask [26:24] too */
-	d.mask = ((temp & 0xfff80000) >> (8 + 3));
-
-	/* [47:40] at [7:0] */
-	temp = pci_read_config32(dev, 0x144) & 0xff;
-	d.mask |= temp << 21;
-
-	temp = pci_read_config32(dev, 0x40);
-	d.mask |= (temp & 1); /* enable bit */
-	d.base = ((temp & 0xfff80000) >> (8 + 3));
-	temp = pci_read_config32(dev, 0x140) & 0xff;
-	d.base |= temp << 21;
-	return d;
-}
-
 static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 			u32 io_min, u32 io_max)
 {
@@ -433,109 +404,54 @@ void domain_enable_resources(device_t dev)
 
 void domain_set_resources(device_t dev)
 {
-	unsigned long mmio_basek;
-	u32 pci_tolm;
-	u32 hole;
-	int idx;
-	struct bus *link;
-	void *tseg_base;
-	size_t tseg_size;
+	uint64_t uma_base = get_uma_base();
+	uint32_t uma_size = get_uma_size();
+	uint32_t mem_useable = (uintptr_t)cbmem_top();
+	msr_t tom = rdmsr(TOP_MEM);
+	msr_t high_tom = rdmsr(TOP_MEM2);
+	uint64_t high_mem_useable;
+	int idx = 0x10;
 
-	pci_tolm = 0xffffffffUL;
-	for (link = dev->link_list ; link ; link = link->next)
-		pci_tolm = find_pci_tolm(link);
+	/* 0x0 -> 0x9ffff */
+	ram_resource(dev, idx++, 0, 0xa0000 / KiB);
 
-	/* Start with alignment supportable in variable MTRR */
-	mmio_basek = ALIGN_DOWN(pci_tolm, 4 * KiB) / KiB;
+	/* 0xa0000 -> 0xbffff: legacy VGA */
+	mmio_resource(dev, idx++, 0xa0000 / KiB, 0x20000 / KiB);
 
-	/*
-	 * AGESA may have programmed the memory hole and rounded down to a
-	 * 128MB boundary.  If we find it's valid, adjust mmio_basek downward
-	 * to the hole bottom.  D18F1xF0[DramHoleBase] is granular to 16MB.
-	 */
-	hole = pci_read_config32(dev_find_slot(0, ADDR_DEVFN), D18F1_DRAM_HOLE);
-	if (hole & DRAM_HOLE_VALID)
-		mmio_basek = min(mmio_basek, ALIGN_DOWN(hole, 16 * MiB) / KiB);
-
-	idx = 0x10;
-	dram_base_mask_t d;
-	resource_t basek, limitk, sizek; /* 4 1T */
-
-	d = get_dram_base_mask();
-
-	if ((d.mask & 1)) { /* if enabled... */
-		/*  could overflow, we may lose 6 bit here */
-		basek = ((resource_t)(d.base & 0x1fffff00)) << 9;
-		limitk = ((resource_t)(((d.mask & ~1) + 0x000ff)
-							& 0x1fffff00)) << 9;
-
-		sizek = limitk - basek;
-
-		/* see if we need a hole from 0xa0000 to 0xbffff */
-		if ((basek < ((8 * 64) + (8 * 16))) && (sizek > ((8 * 64) +
-								(16 * 16)))) {
-			ram_resource(dev, idx, basek,
-					((8 * 64) + (8 * 16)) - basek);
-			idx += 0x10;
-			basek = (8 * 64) + (16 * 16);
-			sizek = limitk - ((8 * 64) + (16 * 16));
-
-		}
-
-		/* split the region to accommodate pci memory space */
-		if ((basek < 4 * 1024 * 1024) && (limitk > mmio_basek)) {
-			if (basek <= mmio_basek) {
-				unsigned int pre_sizek;
-				pre_sizek = mmio_basek - basek;
-				if (pre_sizek > 0) {
-					ram_resource(dev, idx, basek,
-								pre_sizek);
-					idx += 0x10;
-					sizek -= pre_sizek;
-				}
-				basek = mmio_basek;
-			}
-			if ((basek + sizek) <= 4 * 1024 * 1024) {
-				sizek = 0;
-			} else {
-				uint64_t topmem2 = bsp_topmem2();
-				basek = 4 * 1024 * 1024;
-				sizek = topmem2 / 1024 - basek;
-			}
-		}
-
-		ram_resource(dev, idx, basek, sizek);
-		printk(BIOS_DEBUG, "node 0: mmio_basek=%08lx, basek=%08llx,"
-				" limitk=%08llx\n", mmio_basek, basek, limitk);
-	}
-
-	/* UMA is not set up yet, but infer the base & size to make cacheable */
-	uint32_t uma_base = restore_top_of_low_cacheable();
-	if (uma_base != bsp_topmem()) {
-		uint32_t uma_size = bsp_topmem() - uma_base;
-		printk(BIOS_INFO, "%s: uma size 0x%08x, memory start 0x%08x\n",
-				__func__, uma_size, uma_base);
-		reserved_ram_resource(dev, 7, uma_base / KiB, uma_size / KiB);
-	}
-
-	for (link = dev->link_list ; link ; link = link->next)
-		if (link->children)
-			assign_resources(link);
+	/* 0xc0000 -> 0xfffff: Option ROM */
+	reserved_ram_resource(dev, idx++, 0xc0000 / KiB, 0x40000 / KiB);
 
 	/*
-	 * Reserve everything between A segment and 1MB:
-	 *
-	 * 0xa0000 - 0xbffff: legacy VGA
-	 * 0xc0000 - 0xfffff: RAM
+	 * 0x100000 (1MiB) -> low top useable RAM
+	 * cbmem_top() accounts for low UMA and TSEG if they are used.
 	 */
-	mmio_resource(dev, 0xa0000, 0xa0000 / KiB, 0x20000 / KiB);
-	reserved_ram_resource(dev, 0xc0000, 0xc0000 / KiB, 0x40000 / KiB);
+	ram_resource(dev, idx++, (1 * MiB) / KiB,
+			(mem_useable - (1 * MiB)) / KiB);
 
-	/* Reserve TSEG */
-	smm_region_info(&tseg_base, &tseg_size);
-	idx += 0x10;
-	reserved_ram_resource(dev, idx, (unsigned long)tseg_base/KiB,
-					tseg_size/KiB);
+	/* Low top useable RAM -> Low top RAM (bottom pci mmio hole) */
+	reserved_ram_resource(dev, idx++, mem_useable / KiB,
+					(tom.lo - mem_useable) / KiB);
+
+	/* If there is memory above 4GiB */
+	if (high_tom.hi) {
+		/* 4GiB -> high top useable */
+		if (uma_base >= (4ull * GiB))
+			high_mem_useable = uma_base;
+		else
+			high_mem_useable = ((uint64_t)high_tom.lo |
+						((uint64_t)high_tom.hi << 32));
+
+		ram_resource(dev, idx++, (4ull * GiB) / KiB,
+				((high_mem_useable - (4ull * GiB)) / KiB));
+
+		/* High top useable RAM -> high top RAM */
+		if (uma_base >= (4ull * GiB)) {
+			reserved_ram_resource(dev, idx++, uma_base / KiB,
+						uma_size / KiB);
+		}
+	}
+
+	assign_resources(dev->link_list);
 }
 
 /*********************************************************************

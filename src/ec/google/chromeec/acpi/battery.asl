@@ -42,6 +42,10 @@ Method (BTSW, 1)
 			Return (One)
 		}
 	}
+#else
+	If (LNotEqual (0, Arg0)) {
+		Return (One)
+	}
 #endif
 	Return (Zero)
 }

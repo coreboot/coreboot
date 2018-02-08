@@ -14,7 +14,7 @@ all: sortbootorder
 
 sortbootorder: download
 	echo "    MAKE       sortbootorder     "
-	$(MAKE) -C sortbootorder VERSION=$(branch_name)
+	$(MAKE) -C sortbootorder VERSION=$(branch_name) APU1=$(TARGET_APU1)
 
 download:
 	test -d sortbootorder || { wget $(project_url); \

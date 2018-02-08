@@ -746,7 +746,7 @@ static void gma_func1_init(struct device *dev)
 		pci_write_config8(dev, 0xf4, 0xff);
 }
 
-static void gma_set_subsystem(device_t dev, unsigned int vendor,
+static void gma_set_subsystem(struct device *dev, unsigned int vendor,
 			unsigned int device)
 {
 	if (!vendor || !device) {
@@ -761,7 +761,7 @@ static void gma_set_subsystem(device_t dev, unsigned int vendor,
 const struct i915_gpu_controller_info *
 intel_gma_get_controller_info(void)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x2, 0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x2, 0));
 	if (!dev)
 		return NULL;
 	struct northbridge_intel_i945_config *chip = dev->chip_info;
@@ -770,7 +770,7 @@ intel_gma_get_controller_info(void)
 	return &chip->gfx;
 }
 
-static void gma_ssdt(device_t device)
+static void gma_ssdt(struct device *device)
 {
 	const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
 	if (!gfx)
@@ -779,7 +779,7 @@ static void gma_ssdt(device_t device)
 	drivers_intel_gma_displays_ssdt_generate(gfx);
 }
 
-static void gma_func0_read_resources(device_t dev)
+static void gma_func0_read_resources(struct device *dev)
 {
 	u8 reg8;
 

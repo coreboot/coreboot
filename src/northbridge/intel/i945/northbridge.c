@@ -28,7 +28,7 @@
 
 static int get_pcie_bar(u32 *base)
 {
-	device_t dev;
+	struct device *dev;
 	u32 pciexbar_reg;
 
 	*base = 0;
@@ -57,7 +57,7 @@ static int get_pcie_bar(u32 *base)
 	return 0;
 }
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	uint32_t pci_tolm;
 	uint8_t tolud, reg8;
@@ -149,7 +149,7 @@ static struct device_operations pci_domain_ops = {
 	.ops_pci_bus	  = pci_bus_default_ops,
 };
 
-static void mc_read_resources(device_t dev)
+static void mc_read_resources(struct device *dev)
 {
 	u32 pcie_config_base;
 	int buses;
@@ -163,7 +163,7 @@ static void mc_read_resources(device_t dev)
 	}
 }
 
-static void intel_set_subsystem(device_t dev, unsigned int vendor,
+static void intel_set_subsystem(struct device *dev, unsigned int vendor,
 				unsigned int device)
 {
 	if (!vendor || !device) {
@@ -199,7 +199,7 @@ static const struct pci_driver mc_driver __pci_driver = {
 	.devices = pci_device_ids,
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }
@@ -212,7 +212,7 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus         = 0,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN)

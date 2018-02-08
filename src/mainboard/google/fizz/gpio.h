@@ -179,9 +179,9 @@ static const struct pad_config gpio_table[] = {
 /* SATAXPCIE2 */	PAD_CFG_NF(GPP_E2, 20K_PU, DEEP,
 				   NF1), /* DB_PCIE_SATA#_DET */
 /* CPU_GP0 */		PAD_CFG_NC(GPP_E3),
-/* SATA_DEVSLP0 */	PAD_CFG_NC(GPP_E4),
-/* SATA_DEVSLP1 */	PAD_CFG_NF(GPP_E5, NONE, DEEP, NF1), /* DEVSLP1_DB */
-/* SATA_DEVSLP2 */	PAD_CFG_NC(GPP_E6), /* TP328 */
+/* SATA_DEVSLP0 */	PAD_CFG_NC(GPP_E4), /* TP103 */
+/* SATA_DEVSLP1 */	PAD_CFG_NF(GPP_E5, NONE, DEEP, NF1), /* DEVSLP1_MB */
+/* SATA_DEVSLP2 */	PAD_CFG_NC(GPP_E6), /* DEVSLP2_DB */
 /* CPU_GP1 */		PAD_CFG_NC(GPP_E7),
 /* SATALED# */		PAD_CFG_NC(GPP_E8), /* TP314 */
 /* USB2_OCO# */		PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1), /* USB-C */
@@ -276,6 +276,9 @@ static const struct pad_config early_gpio_table[] = {
 /* UART2_TXD */		PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1), /* SERVO */
 /* UART2_CTS# */	PAD_CFG_GPI_GPIO_DRIVER(GPP_C23, NONE,
 				    DEEP), /* SCREW_SPI_WP_STATUS */
+/* SATAXPCIE1 */       PAD_CFG_NF(GPP_E1, NONE, DEEP,
+				  NF1), /* MB_PCIE_SATA#_DET */
+/* SATA_DEVSLP1 */     PAD_CFG_NF(GPP_E5, NONE, DEEP, NF1), /* DEVSLP1_MB */
 };
 
 #endif

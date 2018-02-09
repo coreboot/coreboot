@@ -340,6 +340,38 @@ void xhci_pm_write32(uint8_t reg, uint32_t value);
 uint32_t xhci_pm_read32(uint8_t reg);
 void bootblock_fch_early_init(void);
 /**
+ * @brief Save the UMA bize returned by AGESA
+ *
+ * @param size = in bytes
+ *
+ * @return none
+ */
+void save_uma_size(uint32_t size);
+/**
+ * @brief Save the UMA base address returned by AGESA
+ *
+ * @param base = 64bit base address
+ *
+ * @return none
+ */
+void save_uma_base(uint64_t base);
+/**
+ * @brief Get the saved UMA size
+ *
+ * @param none
+ *
+ * @return size in bytes
+ */
+uint32_t get_uma_size(void);
+/**
+ * @brief Get the saved UMA base
+ *
+ * @param none
+ *
+ * @return 64bit base address
+ */
+uint64_t get_uma_base(void);
+/**
  * @brief program a particular set of GPIO
  *
  * @param gpio_ptr = pointer to array of gpio configurations

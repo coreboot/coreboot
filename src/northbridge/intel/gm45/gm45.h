@@ -448,7 +448,7 @@ int get_blc_values(const struct blc_pwm_t **entries);
 #include <device/device.h>
 
 struct acpi_rsdp;
-unsigned long northbridge_write_acpi_tables(device_t device, unsigned long start, struct acpi_rsdp *rsdp);
+unsigned long northbridge_write_acpi_tables(struct device *device, unsigned long start, struct acpi_rsdp *rsdp);
 #endif
 
 #endif /* !__ACPI__ */

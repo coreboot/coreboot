@@ -41,7 +41,7 @@ static int decode_pcie_bar(u32 *const base, u32 *const len)
 	*base = 0;
 	*len = 0;
 
-	const device_t dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!dev)
 		return 0;
 
@@ -68,7 +68,7 @@ static int decode_pcie_bar(u32 *const base, u32 *const len)
 	return 0;
 }
 
-static void mch_domain_read_resources(device_t dev)
+static void mch_domain_read_resources(struct device *dev)
 {
 	u64 tom, touud;
 	u32 tomk, tolud, uma_sizek = 0;
@@ -166,7 +166,7 @@ static void mch_domain_read_resources(device_t dev)
 	}
 }
 
-static void mch_domain_set_resources(device_t dev)
+static void mch_domain_set_resources(struct device *dev)
 {
 	struct resource *resource;
 	int i;
@@ -181,7 +181,7 @@ static void mch_domain_set_resources(device_t dev)
 	assign_resources(dev->link_list);
 }
 
-static void mch_domain_init(device_t dev)
+static void mch_domain_init(struct device *dev)
 {
 	u32 reg32;
 
@@ -203,7 +203,7 @@ static struct device_operations pci_domain_ops = {
 };
 
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }
@@ -216,7 +216,7 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus         = 0,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {

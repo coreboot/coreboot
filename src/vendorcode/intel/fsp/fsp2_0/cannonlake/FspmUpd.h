@@ -474,9 +474,21 @@ typedef struct {
 **/
   UINT8                       CpuTraceHubMemReg1Size;
 
-/** Offset 0x00F6
+/** Offset 0x00F6 - Enable or Disable Peci C10 Reset command
+  Enable or Disable Peci C10 Reset command; <b>0: Disable;</b> 1: Enable.
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace3[6];
+  UINT8                       PeciC10Reset;
+
+/** Offset 0x00F7 - Enable or Disable Peci Sx Reset command
+  Enable or Disable Peci Sx Reset command; <b>0: Disable;</b> 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       PeciSxReset;
+
+/** Offset 0x00F8
+**/
+  UINT8                       UnusedUpdSpace3[4];
 
 /** Offset 0x00FC - Enable Intel HD Audio (Azalia)
   0: Disable, 1: Enable (Default) Azalia controller
@@ -691,9 +703,24 @@ typedef struct {
 **/
   UINT8                       DmiGen3RxCtlePeaking[4];
 
-/** Offset 0x0144
+/** Offset 0x0144 - Thermal Velocity Boost Ratio clipping
+  0(Default): Disabled, 1: Enabled. This service controls Core frequency reduction
+  caused by high package temperatures for processors that implement the Intel Thermal
+  Velocity Boost (TVB) feature
+  0: Disabled, 1: Enabled
 **/
-  UINT8                       UnusedUpdSpace6[4];
+  UINT8                       TvbRatioClipping;
+
+/** Offset 0x0145 - Thermal Velocity Boost voltage optimization
+  0: Disabled, 1: Enabled(Default). This service controls thermal based voltage optimizations
+  for processors that implement the Intel Thermal Velocity Boost (TVB) feature.
+  0: Disabled, 1: Enabled
+**/
+  UINT8                       TvbVoltageOptimization;
+
+/** Offset 0x0146
+**/
+  UINT8                       UnusedUpdSpace6[2];
 
 /** Offset 0x0148 - PEG Gen3 RxCTLEp per-Bundle control
   Range: 0-15, 12 is default for each bundle, must be specified based upon platform design
@@ -1374,8 +1401,8 @@ typedef struct {
 **/
   UINT8                       PchSmbAlertEnable;
 
-/** Offset 0x0463 - ReservedSecurityPreMem
-  Reserved for Security Pre-Mem
+/** Offset 0x0463 - ReservedPchPreMem
+  Reserved for Pch Pre-Mem
   $EN_DIS
 **/
   UINT8                       ReservedPchPreMem[13];
@@ -2428,7 +2455,7 @@ typedef struct {
 **/
   UINT8                       Gen3SwEqEnableVocTest;
 
-/** Offset 0x0537 - PPCIe Rx Compliance Testing Mode
+/** Offset 0x0537 - PCIe Rx Compliance Testing Mode
   Disabled(0x0)(Default): Normal Operation - Disable PCIe Rx Compliance testing, Enabled(0x1):
   PCIe Rx Compliance Test Mode - PEG controller is in Rx Compliance Testing Mode;
   it should only be set when doing PCIe compliance testing
@@ -2522,7 +2549,7 @@ typedef struct {
 
 /** Offset 0x0583 - BdatTestType
   Indicates the type of Memory Training data to populate into the BDAT ACPI table.
-  0:Rank Marign Tool, 1:Margin2D
+  0:Rank Margin Tool, 1:Margin2D
 **/
   UINT8                       BdatTestType;
 
@@ -2542,11 +2569,17 @@ typedef struct {
 **/
   UINT16                      BiosSize;
 
-/** Offset 0x0594 - SecurityTestRsvd
+/** Offset 0x0594 - TxtAcheckRequest
+  Enable/Disable. When Enabled, it will forcing calling TXT Acheck once.
+  $EN_DIS
+**/
+  UINT8                       TxtAcheckRequest;
+
+/** Offset 0x0595 - SecurityTestRsvd
   Reserved for SA Pre-Mem Test
   $EN_DIS
 **/
-  UINT8                       SecurityTestRsvd[4];
+  UINT8                       SecurityTestRsvd[3];
 
 /** Offset 0x0598 - Smbus dynamic power gating
   Disable or Enable Smbus dynamic power gating.

@@ -1093,15 +1093,22 @@ typedef struct {
 **/
   UINT16                      ImonSlope1[5];
 
-/** Offset 0x0324 - ReservedCpuPostMemProduction
+/** Offset 0x0324 - CPU VR Power Delivery Design
+  Used to communicate the power delivery design capability of the board. This value
+  is an enum of the available power delivery segments that are defined in the Platform
+  Design Guide.
+**/
+  UINT32                      VrPowerDeliveryDesign;
+
+/** Offset 0x0328 - ReservedCpuPostMemProduction
   Reserved for CPU Post-Mem Production
   $EN_DIS
 **/
   UINT8                       ReservedCpuPostMemProduction[1];
 
-/** Offset 0x0325
+/** Offset 0x0329
 **/
-  UINT8                       UnusedUpdSpace10[33];
+  UINT8                       UnusedUpdSpace10[29];
 
 /** Offset 0x0346 - Enable DMI ASPM
   Deprecated.
@@ -1869,7 +1876,6 @@ typedef struct {
   0x19: 20kOhm weak pull-up - Enable/disable SerialIo I2C0,I2C1,I2C2,I2C3,I2C4,I2C5
   pads termination respectively. One byte for each controller, byte0 for I2C0, byte1
   for I2C1, and so on.
-  0x1:None, 0x13:1kOhm WPU, 0x15:5kOhm WPU, 0x19:20kOhm WPU
 **/
   UINT8                       PchSerialIoI2cPadsTermination[6];
 
@@ -2283,7 +2289,7 @@ typedef struct {
 **/
   UINT8                       ChapDeviceEnable;
 
-/** Offset 0x07B2 - Skip PAM regsiter lock
+/** Offset 0x07B2 - Skip PAM register lock
   Enable: PAM register will not be locked by RC, platform code should lock it, Disable(Default):
   PAM registers will be locked by RC
   $EN_DIS
@@ -2830,9 +2836,10 @@ typedef struct {
 **/
   UINT16                      PsysPmax;
 
-/** Offset 0x0858
+/** Offset 0x0858 - Interrupt Response Time Limit of C-State LatencyContol0
+  Interrupt Response Time Limit of C-State LatencyContol0.Range of value 0 to 0x3FF
 **/
-  UINT8                       Reserved0[2];
+  UINT16                      CstateLatencyControl0Irtl;
 
 /** Offset 0x085A - Interrupt Response Time Limit of C-State LatencyContol1
   Interrupt Response Time Limit of C-State LatencyContol1.Range of value 0 to 0x3FF
@@ -3074,8 +3081,7 @@ typedef struct {
   UINT8                       PchUnlockGpioPads;
 
 /** Offset 0x08C2 - PCH Unlock SBI access
-  This unlock the SBI lock bit to allow SBI after post time. 0: Lock SBI access; 1:
-  Unlock SBI access.
+  Deprecated
   $EN_DIS
 **/
   UINT8                       PchSbiUnlock;

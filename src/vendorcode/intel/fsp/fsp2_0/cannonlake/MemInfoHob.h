@@ -84,6 +84,19 @@ typedef struct {
 } SiMrcVersion;
 
 //
+// Matches MrcChannelSts enum in MRC
+//
+#ifndef CHANNEL_NOT_PRESENT
+#define CHANNEL_NOT_PRESENT     0  // There is no channel present on the controller.
+#endif
+#ifndef CHANNEL_DISABLED
+#define CHANNEL_DISABLED     1  // There is a channel present but it is disabled.
+#endif
+#ifndef CHANNEL_PRESENT
+#define CHANNEL_PRESENT     2  // There is a channel present and it is enabled.
+#endif
+
+//
 // Matches MrcDimmSts enum in MRC
 //
 #ifndef DIMM_ENABLED

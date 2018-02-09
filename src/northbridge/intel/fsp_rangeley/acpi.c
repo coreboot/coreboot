@@ -30,7 +30,7 @@
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
-	device_t dev;
+	struct device *dev;
 	u32 pciexbar = 0;
 	u32 pciexbar_reg;
 	int max_buses;
@@ -61,7 +61,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-void northbridge_acpi_fill_ssdt_generator(device_t device)
+void northbridge_acpi_fill_ssdt_generator(struct device *device)
 {
 	u32 bmbound;
 	char pscope[] = "\\_SB.PCI0";

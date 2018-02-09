@@ -59,7 +59,7 @@ static const int legacy_hole_size_k = 384;
 
 static int get_pcie_bar(u32 *base)
 {
-	device_t dev;
+	struct device *dev;
 	u32 pciexbar_reg;
 
 	*base = 0;
@@ -94,7 +94,7 @@ static int add_fixed_resources(struct device *dev, int index)
 	return index;
 }
 
-static void mc_add_dram_resources(device_t dev)
+static void mc_add_dram_resources(struct device *dev)
 {
 	u32 tomlow, bmbound, bsmmrrl, bsmmrrh;
 	u64 bmbound_hi;
@@ -139,7 +139,7 @@ static void mc_add_dram_resources(device_t dev)
 	index = add_fixed_resources(dev, index);
 }
 
-static void mc_read_resources(device_t dev)
+static void mc_read_resources(struct device *dev)
 {
 	u32 pcie_config_base;
 	int buses;
@@ -158,7 +158,7 @@ static void mc_read_resources(device_t dev)
 	mc_add_dram_resources(dev);
 }
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	/*
 	 * Assign memory resources for PCI devices
@@ -168,13 +168,13 @@ static void pci_domain_set_resources(device_t dev)
 	assign_resources(dev->link_list);
 }
 
-static void mc_set_resources(device_t dev)
+static void mc_set_resources(struct device *dev)
 {
 	/* Call the normal set_resources */
 	pci_dev_set_resources(dev);
 }
 
-static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void intel_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -189,7 +189,7 @@ static void northbridge_init(struct device *dev)
 {
 }
 
-static void northbridge_enable(device_t dev)
+static void northbridge_enable(struct device *dev)
 {
 }
 
@@ -239,7 +239,7 @@ static const struct pci_driver mc_driver __pci_driver = {
 	.devices = pci_device_ids,
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }
@@ -252,7 +252,7 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus         = 0,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {

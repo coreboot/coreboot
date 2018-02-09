@@ -33,3 +33,11 @@ void variant_nhlt_init(struct nhlt *nhlt)
 		printk(BIOS_ERR, "Couldn't add  Maxim_98357 codec.\n");
 
 }
+
+void variant_nhlt_oem_overrides(const char **oem_id, const char **oem_table_id,
+				uint32_t *oem_revision)
+{
+	*oem_id = "GOOGLE";
+	*oem_table_id = "NAMIMAX";
+	*oem_revision = 0;
+}

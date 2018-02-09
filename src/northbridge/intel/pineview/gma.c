@@ -74,7 +74,7 @@ void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
 static int gtt_setup(u8 *mmiobase)
 {
 	u32 gttbase;
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0,0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0,0));
 
 	gttbase = pci_read_config32(dev, BGSM);
 	printk(BIOS_DEBUG, "gttbase = %08x\n", gttbase);
@@ -298,7 +298,7 @@ static void gma_func0_init(struct device *dev)
 	intel_gma_restore_opregion();
 }
 
-static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void gma_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -312,7 +312,7 @@ static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 
 const struct i915_gpu_controller_info *intel_gma_get_controller_info(void)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x2,0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x2,0));
 	if (!dev) {
 		printk(BIOS_WARNING, "WARNING: Can't find IGD (0,2,0)\n");
 		return NULL;

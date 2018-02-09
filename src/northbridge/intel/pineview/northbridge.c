@@ -35,7 +35,7 @@
  */
 static const int legacy_hole_base_k = 0xa0000 / 1024;
 
-static void add_fixed_resources(device_t dev, int index)
+static void add_fixed_resources(struct device *dev, int index)
 {
 	struct resource *resource;
 
@@ -51,7 +51,7 @@ static void add_fixed_resources(device_t dev, int index)
 			(0x100000 - 0xc0000) >> 10);
 }
 
-static void mch_domain_read_resources(device_t dev)
+static void mch_domain_read_resources(struct device *dev)
 {
 	u64 tom, touud;
 	u32 tomk, tolud, tseg_sizek;
@@ -127,7 +127,7 @@ static void mch_domain_read_resources(device_t dev)
 	add_fixed_resources(dev, index);
 }
 
-static void mch_domain_set_resources(device_t dev)
+static void mch_domain_set_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -137,7 +137,7 @@ static void mch_domain_set_resources(device_t dev)
 	assign_resources(dev->link_list);
 }
 
-static void mch_domain_init(device_t dev)
+static void mch_domain_init(struct device *dev)
 {
 	u32 reg32;
 
@@ -156,7 +156,7 @@ static struct device_operations pci_domain_ops = {
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }
@@ -169,7 +169,7 @@ static struct device_operations cpu_bus_ops = {
 };
 
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {

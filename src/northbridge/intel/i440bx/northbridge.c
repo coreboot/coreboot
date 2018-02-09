@@ -12,7 +12,7 @@
 #include "northbridge.h"
 #include "i440bx.h"
 
-static void northbridge_init(device_t dev)
+static void northbridge_init(struct device *dev)
 {
 	printk(BIOS_SPEW, "Northbridge Init\n");
 }
@@ -32,7 +32,7 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.device = 0x7190,
 };
 
-static void i440bx_domain_set_resources(device_t dev)
+static void i440bx_domain_set_resources(struct device *dev)
 {
 	device_t mc_dev;
 	uint32_t pci_tolm;
@@ -82,7 +82,7 @@ static struct device_operations pci_domain_ops = {
 	.ops_pci_bus		= pci_bus_default_ops,
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }

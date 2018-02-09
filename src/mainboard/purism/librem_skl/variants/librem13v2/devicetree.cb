@@ -194,6 +194,9 @@ chip soc/intel/skylake
                         chip ec/purism/librem
                                 device pnp 0c09.0 on end
                         end
+                        chip drivers/pc80/tpm
+                                device pnp 0c31.0 on end
+                        end
 		end # LPC Interface
 		device pci 1f.1 on  end # P2SB
 		device pci 1f.2 on  end # Power Management Controller

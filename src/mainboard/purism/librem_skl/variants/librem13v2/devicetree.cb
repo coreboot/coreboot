@@ -7,6 +7,9 @@ chip soc/intel/skylake
 	register "deep_s5_enable_dc" = "0"
 	register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN"
 
+	register "eist_enable" = "1"
+	register "VmxEnable" = "1"
+
 	# GPE configuration
 	# Note that GPE events called out in ASL code rely on this
 	# route. i.e. If this route changes then the affected GPE

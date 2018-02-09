@@ -62,7 +62,7 @@ static const int legacy_hole_size_k = 384;
 
 static int get_pcie_bar(u32 *base)
 {
-	device_t dev;
+	struct device *dev;
 	u32 pciexbar_reg;
 
 	*base = 0;
@@ -120,7 +120,7 @@ static void add_fixed_resources(struct device *dev, int index)
 	}
 }
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	uint64_t tom, me_base, touud;
 	uint32_t tseg_base, uma_size, tolud;
@@ -273,7 +273,7 @@ static struct device_operations pci_domain_ops = {
 	.acpi_name        = northbridge_acpi_name,
 };
 
-static void mc_read_resources(device_t dev)
+static void mc_read_resources(struct device *dev)
 {
 	u32 pcie_config_base;
 	int buses;
@@ -287,7 +287,7 @@ static void mc_read_resources(device_t dev)
 	}
 }
 
-static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void intel_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -457,7 +457,7 @@ static void northbridge_init(struct device *dev)
 	MCHBAR32(0x5500) = 0x00100001;
 }
 
-static u32 northbridge_get_base_reg(device_t dev, int reg)
+static u32 northbridge_get_base_reg(struct device *dev, int reg)
 {
 	u32 value;
 
@@ -469,7 +469,7 @@ static u32 northbridge_get_base_reg(device_t dev, int reg)
 
 u32 northbridge_get_tseg_base(void)
 {
-	const device_t dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 
 	return northbridge_get_base_reg(dev, TSEG);
 }
@@ -523,7 +523,7 @@ static const struct pci_driver mc_driver_158 __pci_driver = {
 	.device = 0x0158, /* Ivy bridge */
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }
@@ -536,7 +536,7 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus         = 0,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {

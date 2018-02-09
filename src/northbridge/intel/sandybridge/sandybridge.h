@@ -230,7 +230,7 @@ void perform_raminit(int s3resume);
 #include <device/device.h>
 
 struct acpi_rsdp;
-unsigned long northbridge_write_acpi_tables(device_t device, unsigned long start, struct acpi_rsdp *rsdp);
+unsigned long northbridge_write_acpi_tables(struct device *device, unsigned long start, struct acpi_rsdp *rsdp);
 #endif
 
 #endif

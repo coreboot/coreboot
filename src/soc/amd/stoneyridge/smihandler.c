@@ -99,7 +99,7 @@ static void sb_apmc_smi_handler(void)
 	case APM_CNT_ACPI_DISABLE:
 		reg32 = inl(ACPI_PM1_CNT_BLK);
 		reg32 &= ~(1 << 0);	/* clear SCI_EN */
-		outl(ACPI_PM1_CNT_BLK, reg32);
+		outl(reg32, ACPI_PM1_CNT_BLK);
 		break;
 	case ELOG_GSMI_APM_CNT:
 		if (IS_ENABLED(CONFIG_ELOG_GSMI))

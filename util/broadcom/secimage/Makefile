@@ -36,7 +36,7 @@ test: $(TARGET)
 	@find test -maxdepth 1 -type f -executable \
 		| xargs -I "{}" sh -c "{} $$(realpath $<)"
 
-.PHONY: clean
+.PHONY: clean distclean
 
-clean:
+clean distclean:
 	$(RM) -f $(TARGET) $(OBJS)

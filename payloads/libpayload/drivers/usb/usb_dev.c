@@ -32,8 +32,6 @@
 static void
 usb_nop_destroy (usbdev_t *dev)
 {
-	if (dev->descriptor != 0)
-		free (dev->descriptor);
 	usb_nop_init (dev);
 	dev->address = -1;
 	dev->hub = -1;
@@ -49,7 +47,8 @@ usb_nop_poll (usbdev_t *dev)
 void
 usb_nop_init (usbdev_t *dev)
 {
-	dev->descriptor = 0;
+	dev->descriptor = NULL;
+	dev->configuration = NULL;
 	dev->destroy = usb_nop_destroy;
 	dev->poll = usb_nop_poll;
 }

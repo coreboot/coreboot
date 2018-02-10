@@ -1,0 +1,66 @@
+
+config BOARD_GOOGLE_BASEBOARD_OCTOPUS
+	def_bool n
+	select SOC_INTEL_GLK
+	select BOARD_ROMSIZE_KB_16384
+	select DRIVERS_I2C_GENERIC
+	select DRIVERS_PS2_KEYBOARD
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_BOARDID
+	select EC_GOOGLE_CHROMEEC_LPC
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_TPM2
+	select SOC_ESPI
+
+if BOARD_GOOGLE_BASEBOARD_OCTOPUS
+
+config BASEBOARD_OCTOPUS_LAPTOP
+	def_bool n
+	select SYSTEM_TYPE_LAPTOP
+
+config CHROMEOS
+	bool
+	default y
+	select EC_GOOGLE_CHROMEEC_SWITCHES
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+	select VBOOT_LID_SWITCH
+
+config MAINBOARD_DIR
+	string
+	default google/octopus
+
+config VARIANT_DIR
+	string
+	default "octopus" if BOARD_GOOGLE_OCTOPUS
+
+config DEVICETREE
+	string
+	default "variants/baseboard/devicetree.cb"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "octopus" if BOARD_GOOGLE_OCTOPUS
+
+config MAINBOARD_FAMILY
+	string
+	default "Google_Octopus" if BOARD_GOOGLE_OCTOPUS
+
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "OCTOPUS TEST 6859" if BOARD_GOOGLE_OCTOPUS
+
+config MAX_CPUS
+	int
+	default 4
+
+config UART_FOR_CONSOLE
+	int
+	default 2
+
+config INCLUDE_NHLT_BLOBS
+	bool "Include blobs for audio."
+
+endif # BOARD_GOOGLE_OCTOPUS

@@ -17,7 +17,7 @@
 // Scope (EC0)
 
 /* Mutex for EC battery index interface */
-Mutex (BATM, 1)
+Mutex (BATM, 0)
 
 // Wait for desired battery index to be presented in shared memory
 //   Arg0 = battery index

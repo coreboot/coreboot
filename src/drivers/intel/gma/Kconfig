@@ -47,6 +47,13 @@ config INTEL_GMA_SSC_ALTERNATE_REF
 	  supported platform with a choice seems to be Pineview, where the
 	  alternative is 100MHz vs. the default 96MHz.
 
+config INTEL_GMA_SWSMISCI
+	bool
+	default n
+	help
+	  Select this option for Atom-based platforms which use the SWSMISCI
+	  register (0xe0) rather than the SWSCI register (0xe8).
+
 config GFX_GMA_ANALOG_I2C_HDMI_B
 	bool
 

@@ -25,6 +25,7 @@
 /* IGD PCI Configuration register */
 #define ASLS           0xfc            /* OpRegion Base */
 #define SWSCI          0xe8            /* SWSCI Register */
+#define SWSMISCI       0xe0            /* SWSMISCI Register */
 #define GSSCIE         (1 << 0)        /* SCI Event trigger */
 #define SMISCISEL      (1 << 15)       /* Select SMI or SCI event source */
 

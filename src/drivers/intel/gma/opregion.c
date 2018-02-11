@@ -32,6 +32,7 @@ void intel_gma_opregion_register(uintptr_t opregion)
 {
 	device_t igd;
 	u16 reg16;
+	u16 sci_reg;
 
 	igd = dev_find_slot(0, PCI_DEVFN(0x2, 0));
 	if (!igd || !igd->enabled)
@@ -44,14 +45,23 @@ void intel_gma_opregion_register(uintptr_t opregion)
 	pci_write_config32(igd, ASLS, opregion);
 
 	/*
+	 * Atom-based platforms use a combined SMI/SCI register,
+	 * whereas non-Atom platforms use a separate SCI register.
+	 */
+	if (IS_ENABLED(CONFIG_INTEL_GMA_SWSMISCI))
+		sci_reg = SWSMISCI;
+	else
+		sci_reg = SWSCI;
+
+	/*
 	 * Intel's Windows driver relies on this:
 	 * Intel BIOS Specification
 	 * Chapter 5.4 "ASL Software SCI Handler"
 	 */
-	reg16 = pci_read_config16(igd, SWSCI);
+	reg16 = pci_read_config16(igd, sci_reg);
 	reg16 &= ~GSSCIE;
 	reg16 |= SMISCISEL;
-	pci_write_config16(igd, SWSCI, reg16);
+	pci_write_config16(igd, sci_reg, reg16);
 }
 
 /* Restore ASLS register on S3 resume and prepare SWSCI. */

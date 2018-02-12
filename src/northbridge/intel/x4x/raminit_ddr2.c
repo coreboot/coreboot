@@ -722,23 +722,20 @@ static void dll_ddr2(struct sysinfo *s)
 	}
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
-		if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz) {
-			clkset0(i, &dll_setting_667[CLKSET0]);
-			clkset1(i, &dll_setting_667[CLKSET1]);
-			ctrlset0(i, &dll_setting_667[CTRL0]);
-			ctrlset1(i, &dll_setting_667[CTRL1]);
-			ctrlset2(i, &dll_setting_667[CTRL2]);
-			ctrlset3(i, &dll_setting_667[CTRL3]);
-			cmdset(i, &dll_setting_667[CMD]);
-		} else {
-			clkset0(i, &dll_setting_800[CLKSET0]);
-			clkset1(i, &dll_setting_800[CLKSET1]);
-			ctrlset0(i, &dll_setting_800[CTRL0]);
-			ctrlset1(i, &dll_setting_800[CTRL1]);
-			ctrlset2(i, &dll_setting_800[CTRL2]);
-			ctrlset3(i, &dll_setting_800[CTRL3]);
-			cmdset(i, &dll_setting_800[CMD]);
-		}
+		const struct dll_setting *setting;
+
+		if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz)
+			setting = dll_setting_667;
+		else
+			setting = dll_setting_800;
+
+		clkset0(i, &setting[CLKSET0]);
+		clkset1(i, &setting[CLKSET1]);
+		ctrlset0(i, &setting[CTRL0]);
+		ctrlset1(i, &setting[CTRL1]);
+		ctrlset2(i, &setting[CTRL2]);
+		ctrlset3(i, &setting[CTRL3]);
+		cmdset(i, &setting[CMD]);
 	}
 
 	// XXX if not async mode

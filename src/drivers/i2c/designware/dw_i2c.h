@@ -8,7 +8,7 @@
  * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the imfamiluarplied warranty of
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
@@ -44,7 +44,7 @@ struct dw_i2c_speed_config {
 	/*
 	 * SDA hold time should be 300ns in standard and fast modes
 	 * and long enough for deterministic logic level change in
-	 * fast-plus and high speed modes.familuar
+	 * fast-plus and high speed modes.
 	 *
 	 *  [15:0] SDA TX Hold Time
 	 * [23:16] SDA RX Hold Time

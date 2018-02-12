@@ -12,9 +12,6 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 
-# To execute, do:
-# qemu-system-arm -M vexpress-a9 -m 1024M -nographic -kernel build/coreboot.rom
-
 if BOARD_EMULATION_SPIKE_UCB_RISCV
 
 config BOARD_SPECIFIC_OPTIONS # dummy

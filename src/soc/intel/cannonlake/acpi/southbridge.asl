@@ -23,7 +23,7 @@
 #include "scs.asl"
 
 /* PCR access */
-#include "pcr.asl"
+#include <soc/intel/common/acpi/pcr.asl>
 
 /* GPIO controller */
 #include "gpio.asl"

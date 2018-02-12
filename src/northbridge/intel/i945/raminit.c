@@ -362,7 +362,7 @@ static void gather_common_timing(struct sys_info *sysinfo,
 
 	for (i = 0; i < (2 * DIMM_SOCKETS); i++) {
 		int device = get_dimm_spd_address(sysinfo, i), bytes_read;
-		struct dimm_attr_st dimm_info;
+		struct dimm_attr_ddr2_st dimm_info;
 
 		/* Initialize the socket information with a sane value */
 		sysinfo->dimm[i] = SYSINFO_DIMM_NOT_POPULATED;

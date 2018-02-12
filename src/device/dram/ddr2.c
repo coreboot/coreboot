@@ -38,11 +38,11 @@
  *
  * @param type DIMM type. This is byte[20] of the SPD.
  */
-int spd_dimm_is_registered_ddr2(enum spd_dimm_type type)
+int spd_dimm_is_registered_ddr2(enum spd_dimm_type_ddr2 type)
 {
-	if ((type == SPD_DIMM_TYPE_RDIMM)
-			|| (type == SPD_DIMM_TYPE_72B_SO_RDIMM)
-			|| (type == SPD_DIMM_TYPE_MINI_RDIMM))
+	if ((type == SPD_DDR2_DIMM_TYPE_RDIMM)
+			|| (type == SPD_DDR2_DIMM_TYPE_72B_SO_RDIMM)
+			|| (type == SPD_DDR2_DIMM_TYPE_MINI_RDIMM))
 		return 1;
 
 	return 0;
@@ -297,7 +297,7 @@ static void spd_decode_tRCtRFC_time(u8 *spd_40_41_42, u32 *tRC, u32 *tRFC)
  *         SPD_STATUS_INVALID_FIELD -- A field with an invalid value was
  *             detected.
  */
-int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
+int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 {
 	u8 spd_size, cl, reg8;
 	u16 eeprom_size;
@@ -582,7 +582,7 @@ int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 	}
 	printram("\n");
 
-	dimm->dimm_type = spd[20] & SPD_DIMM_TYPE_MASK;
+	dimm->dimm_type = spd[20] & SPD_DDR2_DIMM_TYPE_MASK;
 	printram("  Dimm type          : %x\n", dimm->dimm_type);
 
 	dimm->flags.is_ecc = !!(spd[11] & 0x3);
@@ -648,7 +648,7 @@ static void print_us(const char *msg, u32 val)
 *
 * @param dimm pointer to already decoded @ref dimm_attr structure
 */
-void dram_print_spd_ddr2(const struct dimm_attr_st *dimm)
+void dram_print_spd_ddr2(const struct dimm_attr_ddr2_st *dimm)
 {
 	char buf[32];
 	int i;

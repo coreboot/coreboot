@@ -30,55 +30,24 @@
 
 #include <stdint.h>
 #include <spd.h>
-
-/**
- * \brief Convenience definitions for TCK values
- *
- * Different values for tCK, representing standard DDR2 frequencies.
- * These values are in 1/256 ns units.
- * @{
- */
-#define TCK_800MHZ      320
-#define TCK_700MHZ      365
-#define TCK_666MHZ      384
-#define TCK_533MHZ      480
-#define TCK_400MHZ      640
-#define TCK_333MHZ      768
-#define TCK_266MHZ      960
-#define TCK_200MHZ      1280
-/** @} */
-
-/**
- * \brief Convenience macro for enabling printk with CONFIG_DEBUG_RAM_SETUP
- *
- * Use this macro instead of printk(); for verbose RAM initialization messages.
- * When CONFIG_DEBUG_RAM_SETUP is not selected, these messages are automatically
- * disabled.
- * @{
- */
-#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
-#define printram(x, ...) printk(BIOS_DEBUG, x, ##__VA_ARGS__)
-#else
-#define printram(x, ...)
-#endif
-/** @} */
+#include <device/dram/common.h>
 
 /*
  * Module type (byte 20, bits 5:0) of SPD
  * This definition is specific to DDR2. DDR3 SPDs have a different structure.
  */
-enum spd_dimm_type {
-	SPD_DIMM_TYPE_UNDEFINED			= 0x00,
-	SPD_DIMM_TYPE_RDIMM			= 0x01,
-	SPD_DIMM_TYPE_UDIMM			= 0x02,
-	SPD_DIMM_TYPE_SO_DIMM			= 0x04,
-	SPD_DIMM_TYPE_72B_SO_CDIMM		= 0x06,
-	SPD_DIMM_TYPE_72B_SO_RDIMM		= 0x07,
-	SPD_DIMM_TYPE_MICRO_DIMM		= 0x08,
-	SPD_DIMM_TYPE_MINI_RDIMM		= 0x10,
-	SPD_DIMM_TYPE_MINI_UDIMM		= 0x20,
+enum spd_dimm_type_ddr2 {
+	SPD_DDR2_DIMM_TYPE_UNDEFINED			= 0x00,
+	SPD_DDR2_DIMM_TYPE_RDIMM			= 0x01,
+	SPD_DDR2_DIMM_TYPE_UDIMM			= 0x02,
+	SPD_DDR2_DIMM_TYPE_SO_DIMM			= 0x04,
+	SPD_DDR2_DIMM_TYPE_72B_SO_CDIMM		= 0x06,
+	SPD_DDR2_DIMM_TYPE_72B_SO_RDIMM		= 0x07,
+	SPD_DDR2_DIMM_TYPE_MICRO_DIMM		= 0x08,
+	SPD_DDR2_DIMM_TYPE_MINI_RDIMM		= 0x10,
+	SPD_DDR2_DIMM_TYPE_MINI_UDIMM		= 0x20,
 	/* Masks to bits 5:0 to give the dimm type */
-	SPD_DIMM_TYPE_MASK			= 0x3f,
+	SPD_DDR2_DIMM_TYPE_MASK			= 0x3f,
 };
 
 /**
@@ -86,7 +55,7 @@ enum spd_dimm_type {
  *
  * Characteristic flags for the DIMM, as presented by the SPD
  */
-union dimm_flags_st {
+union dimm_flags_ddr2_st {
 	/* The whole point of the union/struct construct is to allow us to clear
 	 * all the bits with one line: flags.raw = 0.
 	 * We do not care how these bits are ordered */
@@ -130,9 +99,9 @@ union dimm_flags_st {
  *
  * The characteristics of each DIMM, as presented by the SPD
  */
-struct dimm_attr_st {
+struct dimm_attr_ddr2_st {
 	enum spd_memory_type dram_type;
-	enum spd_dimm_type dimm_type;
+	enum spd_dimm_type_ddr2 dimm_type;
 	/* BCD SPD revision */
 	u8 rev;
 	/* Supported CAS mask, bit 0 == CL0 .. bit7 == CL7 */
@@ -144,7 +113,7 @@ struct dimm_attr_st {
 	 * Fields 0 and 1 are unused. */
 	u32 access_time[8];
 	/* Flags extracted from SPD */
-	union dimm_flags_st flags;
+	union dimm_flags_ddr2_st flags;
 	/* Number of banks */
 	u8 banks;
 	/* SDRAM width */
@@ -199,23 +168,15 @@ struct dimm_attr_st {
 	u32 serial;
 };
 
-/** Result of the SPD decoding process */
-enum spd_status {
-	SPD_STATUS_OK = 0,
-	SPD_STATUS_INVALID,
-	SPD_STATUS_CRC_ERROR,
-	SPD_STATUS_INVALID_FIELD,
-};
-
 /** Maximum SPD size supported */
 #define SPD_SIZE_MAX_DDR2 128
 
-int spd_dimm_is_registered_ddr2(enum spd_dimm_type type);
+int spd_dimm_is_registered_ddr2(enum spd_dimm_type_ddr2 type);
 u8 spd_ddr2_calc_checksum(u8 *spd, int len);
 u32 spd_decode_spd_size_ddr2(u8 byte0);
 u32 spd_decode_eeprom_size_ddr2(u8 byte1);
-int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2]);
-void dram_print_spd_ddr2(const struct dimm_attr_st *dimm);
+int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2]);
+void dram_print_spd_ddr2(const struct dimm_attr_ddr2_st *dimm);
 void normalize_tck(u32 *tclk);
 u8 spd_get_msbs(u8 c);
 

@@ -119,7 +119,7 @@ static void mchinfo_ddr2(struct sysinfo *s)
 static int ddr2_save_dimminfo(u8 dimm_idx, u8 *raw_spd,
 		struct abs_timings *saved_timings, struct sysinfo *s)
 {
-	struct dimm_attr_st decoded_dimm;
+	struct dimm_attr_ddr2_st decoded_dimm;
 	int i;
 
 	if (spd_decode_ddr2(&decoded_dimm, raw_spd) != SPD_STATUS_OK) {

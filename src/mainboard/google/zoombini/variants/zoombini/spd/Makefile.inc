@@ -16,8 +16,8 @@
 SPD_BIN = $(obj)/spd.bin
 
 SPD_SOURCES = Hynix_H9HCNNN8KUMLHR_1GB		# 0b000
-SPD_SOURCES += Micron_MT53B512M32D2_2GB		# 1b001
-SPD_SOURCES += Micron_MT53B1024M32D4_4GB	# 2b010
+SPD_SOURCES += Micron_MT53B512M32D2_2GB		# 0b001
+SPD_SOURCES += Micron_MT53B1024M32D4_4GB	# 0b010
 
 ifeq ($(SPD_SOURCES),)
         SPD_DEPS := $(error SPD_SOURCES is not set. Variant must provide this)

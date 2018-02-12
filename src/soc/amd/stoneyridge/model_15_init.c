@@ -14,6 +14,7 @@
  */
 
 #include <console/console.h>
+#include <cpu/x86/lapic.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/device.h>
@@ -76,6 +77,8 @@ static void model_15_init(device_t dev)
 	msr.hi = 0;
 	for (i = 0 ; i < 6 ; i++)
 		wrmsr(MCI_STATUS + (i * 4), msr);
+
+	setup_lapic();
 }
 
 static struct device_operations cpu_dev_ops = {

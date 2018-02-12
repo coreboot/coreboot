@@ -34,12 +34,12 @@ void systemagent_early_init(void)
 		{ EDRAMBAR, EDRAM_BASE_ADDRESS, EDRAM_BASE_SIZE, "EDRAMBAR" },
 	};
 
-	/* Set Fixed MMIO addresss into PCI configuration space */
+	/* Set Fixed MMIO address into PCI configuration space */
 	sa_set_pci_bar(soc_fixed_pci_resources,
 			ARRAY_SIZE(soc_fixed_pci_resources));
-	/* Set Fixed MMIO addresss into MCH base address */
+	/* Set Fixed MMIO address into MCH base address */
 	sa_set_mch_bar(soc_fixed_mch_resources,
 			ARRAY_SIZE(soc_fixed_mch_resources));
-	/* Enable PAM regisers */
+	/* Enable PAM registers */
 	enable_pam_region();
 }

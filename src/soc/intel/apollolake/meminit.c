@@ -130,10 +130,10 @@ static void enable_logical_chan0(FSP_M_CONFIG *cfg,
 	/*
 	 * CH0_DQB byte lanes in the bit swizzle configuration field are
 	 * not 1:1. The mapping within the swizzling field is:
-	 *   indicies [0:7]   - byte lane 1 (DQS1) DQ[8:15]
-	 *   indicies [8:15]  - byte lane 0 (DQS0) DQ[0:7]
-	 *   indicies [16:23] - byte lane 3 (DQS3) DQ[24:31]
-	 *   indicies [24:31] - byte lane 2 (DQS2) DQ[16:23]
+	 *   indices [0:7]   - byte lane 1 (DQS1) DQ[8:15]
+	 *   indices [8:15]  - byte lane 0 (DQS0) DQ[0:7]
+	 *   indices [16:23] - byte lane 3 (DQS3) DQ[24:31]
+	 *   indices [24:31] - byte lane 2 (DQS2) DQ[16:23]
 	 */
 	chan = &scfg->phys[LP4_PHYS_CH0B];
 	memcpy(&cfg->Ch0_Bit_swizzling[0], &chan->dqs[LP4_DQS1], sz);
@@ -175,10 +175,10 @@ static void enable_logical_chan1(FSP_M_CONFIG *cfg,
 	/*
 	 * CH1_DQB byte lanes in the bit swizzle configuration field are
 	 * not 1:1. The mapping within the swizzling field is:
-	 *   indicies [0:7]   - byte lane 1 (DQS1) DQ[8:15]
-	 *   indicies [8:15]  - byte lane 0 (DQS0) DQ[0:7]
-	 *   indicies [16:23] - byte lane 3 (DQS3) DQ[24:31]
-	 *   indicies [24:31] - byte lane 2 (DQS2) DQ[16:23]
+	 *   indices [0:7]   - byte lane 1 (DQS1) DQ[8:15]
+	 *   indices [8:15]  - byte lane 0 (DQS0) DQ[0:7]
+	 *   indices [16:23] - byte lane 3 (DQS3) DQ[24:31]
+	 *   indices [24:31] - byte lane 2 (DQS2) DQ[16:23]
 	 */
 	chan = &scfg->phys[LP4_PHYS_CH1B];
 	memcpy(&cfg->Ch2_Bit_swizzling[0], &chan->dqs[LP4_DQS1], sz);

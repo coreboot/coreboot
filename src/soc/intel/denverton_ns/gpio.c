@@ -284,7 +284,7 @@ void gpio_configure_pads(const struct pad_config *gpio, size_t num)
 			    (GPIO_CONF_INT_ROUTE_BIT_POS + 1))
 			   << N_PCH_GPIO_RX_NMI_ROUTE);
 
-		// If CFIO is not Working as GPIO mode, Don't move TxDisabe and
+		// If CFIO is not Working as GPIO mode, Don't move TxDisable and
 		// RxDisable
 		if (GpioData->GpioConfig.PadMode == GpioPadModeGpio) {
 			//

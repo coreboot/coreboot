@@ -26,7 +26,7 @@ struct vr_config {
 	 * for that domain. */
 	uint8_t vr_config_enable;
 
-	/* Power State X current cuttof in 1/4 Amp increments
+	/* Power State X current cutoff in 1/4 Amp increments
 	 * Range is 0-128A */
 	uint16_t psi1threshold;
 	uint16_t psi2threshold;

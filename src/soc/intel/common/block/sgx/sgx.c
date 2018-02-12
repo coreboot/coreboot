@@ -193,11 +193,11 @@ static int is_prmrr_approved(void)
 	msr_t msr;
 	msr = rdmsr(PRMRR_PHYS_MASK_MSR);
 	if (msr.lo & PRMRR_PHYS_MASK_VALID) {
-		printk(BIOS_INFO, "SGX: MCHECK aprroved SGX PRMRR\n");
+		printk(BIOS_INFO, "SGX: MCHECK approved SGX PRMRR\n");
 		return 1;
 	}
 
-	printk(BIOS_INFO, "SGX: MCHECK did not aprrove SGX PRMRR\n");
+	printk(BIOS_INFO, "SGX: MCHECK did not approve SGX PRMRR\n");
 	return 0;
 }
 
@@ -226,7 +226,7 @@ void sgx_configure(void)
 	/* Lock the SGX feature */
 	lock_sgx();
 
-	/* Activate the SGX feature, if PRMRR config was aprroved by MCHECK */
+	/* Activate the SGX feature, if PRMRR config was approved by MCHECK */
 	if (is_prmrr_approved())
 		activate_sgx();
 }

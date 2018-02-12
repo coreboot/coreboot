@@ -59,7 +59,7 @@ static inline void check_pcr_offset_align(uint16_t offset, size_t size)
 
 uint32_t pcr_read32(uint8_t pid, uint16_t offset)
 {
-	/* Ensure the PCR offset is corretcly aligned. */
+	/* Ensure the PCR offset is correctly aligned. */
 	assert(IS_ALIGNED(offset, sizeof(uint32_t)));
 
 	return read32(__pcr_reg_address(pid, offset));
@@ -67,7 +67,7 @@ uint32_t pcr_read32(uint8_t pid, uint16_t offset)
 
 uint16_t pcr_read16(uint8_t pid, uint16_t offset)
 {
-	/* Ensure the PCR offset is corretcly aligned. */
+	/* Ensure the PCR offset is correctly aligned. */
 	check_pcr_offset_align(offset, sizeof(uint16_t));
 
 	return read16(__pcr_reg_address(pid, offset));
@@ -75,7 +75,7 @@ uint16_t pcr_read16(uint8_t pid, uint16_t offset)
 
 uint8_t pcr_read8(uint8_t pid, uint16_t offset)
 {
-	/* Ensure the PCR offset is corretcly aligned. */
+	/* Ensure the PCR offset is correctly aligned. */
 	check_pcr_offset_align(offset, sizeof(uint8_t));
 
 	return read8(__pcr_reg_address(pid, offset));
@@ -94,7 +94,7 @@ static inline void write_completion(uint8_t pid, uint16_t offset)
 
 void pcr_write32(uint8_t pid, uint16_t offset, uint32_t indata)
 {
-	/* Ensure the PCR offset is corretcly aligned. */
+	/* Ensure the PCR offset is correctly aligned. */
 	assert(IS_ALIGNED(offset, sizeof(indata)));
 
 	write32(__pcr_reg_address(pid, offset), indata);
@@ -104,7 +104,7 @@ void pcr_write32(uint8_t pid, uint16_t offset, uint32_t indata)
 
 void pcr_write16(uint8_t pid, uint16_t offset, uint16_t indata)
 {
-	/* Ensure the PCR offset is corretcly aligned. */
+	/* Ensure the PCR offset is correctly aligned. */
 	check_pcr_offset_align(offset, sizeof(uint16_t));
 
 	write16(__pcr_reg_address(pid, offset), indata);
@@ -114,7 +114,7 @@ void pcr_write16(uint8_t pid, uint16_t offset, uint16_t indata)
 
 void pcr_write8(uint8_t pid, uint16_t offset, uint8_t indata)
 {
-	/* Ensure the PCR offset is corretcly aligned. */
+	/* Ensure the PCR offset is correctly aligned. */
 	check_pcr_offset_align(offset, sizeof(uint8_t));
 
 	write8(__pcr_reg_address(pid, offset), indata);

@@ -28,7 +28,7 @@
 /*
  * SoC implementation
  *
- * Add all known fixed memory ranges for Host Controller/Mmeory
+ * Add all known fixed memory ranges for Host Controller/Memory
  * controller.
  */
 void soc_add_fixed_mmio_resources(struct device *dev, int *index)

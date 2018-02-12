@@ -24,7 +24,7 @@
 __attribute__((weak)) void graphics_soc_init(struct device *dev)
 {
 	/*
-	 * User needs to implement SoC override incase wishes
+	 * User needs to implement SoC override in case wishes
 	 * to perform certain specific graphics initialization
 	 * along with pci_dev_init(dev)
 	 */

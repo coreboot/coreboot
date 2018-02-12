@@ -60,7 +60,7 @@ void romstage(void)
 	 * Trust Zone needs to be initialized after the DRAM initialization
 	 * because carveout registers are programmed during DRAM init.
 	 * cbmem_initialize() is dependent on the Trust Zone region
-	 * initalization because CBMEM lives right below the Trust Zone which
+	 * initialization because CBMEM lives right below the Trust Zone which
 	 * needs to be properly identified.
 	 */
 	trustzone_region_init();

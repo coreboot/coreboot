@@ -76,7 +76,7 @@ enum {
  * and LOW for ODT_B, choose ODT_AB_HIGH_LOW.
  *
  * Note that the enum values correspond to the interpreted UPD fields
- * witihn Ch[3:0]_OdtConfig parameters.
+ * within Ch[3:0]_OdtConfig parameters.
 */
 enum {
 	ODT_A_B_HIGH_LOW = 0 << 1,

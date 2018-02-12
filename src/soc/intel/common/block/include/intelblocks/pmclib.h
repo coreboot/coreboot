@@ -37,7 +37,7 @@ uint32_t soc_get_smi_status(uint32_t generic_sts);
 /*
  * This function is specific to soc and is defined as weak in common
  * pmclib file. SOC code can implement it for any special condition
- * specific to the soc e.g. in SKL in handles deep S3 scenerio.
+ * specific to the soc e.g. in SKL in handles deep S3 scenario.
  * Return ACPI_SX values to indicate the previous sleep state.
  */
 int soc_prev_sleep_state(const struct chipset_power_state *ps,
@@ -206,7 +206,7 @@ const char * const *soc_std_gpe_sts_array(size_t *a);
 void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2);
 
 /*
- * Reads soc specific power management crtitical registers, fills
+ * Reads soc specific power management critical registers, fills
  * chipset_power_state structure variable and prints.
  */
 void soc_fill_power_state(struct chipset_power_state *ps);

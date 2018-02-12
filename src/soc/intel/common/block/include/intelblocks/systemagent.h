@@ -52,10 +52,10 @@ struct sa_mmio_descriptor {
 	const char *description;
 };
 
-/* API to set Fixed MMIO addresss into PCI configuration space */
+/* API to set Fixed MMIO address into PCI configuration space */
 void sa_set_pci_bar(const struct sa_mmio_descriptor *fixed_set_resources,
 		size_t count);
-/* API to set Fixed MMIO addresss into MCH base address */
+/* API to set Fixed MMIO address into MCH base address */
 void sa_set_mch_bar(const struct sa_mmio_descriptor *fixed_set_resources,
 		size_t count);
 /*
@@ -69,7 +69,7 @@ void sa_add_fixed_mmio_resources(struct device *dev, int *resource_cnt,
  * SoC to provide BIOS_RESET_CPL register offset through soc/systemagent.h
  */
 void enable_bios_reset_cpl(void);
-/* API to enable PAM regisers */
+/* API to enable PAM registers */
 void enable_pam_region(void);
 /* API to enable Power Aware Interrupt Routing through MCHBAR */
 void enable_power_aware_intr(void);

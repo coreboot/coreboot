@@ -75,7 +75,7 @@ void SetFchMidParams(FCH_INTERFACE *params)
 
 /*
  * Table of APIC register index and associated IRQ name. Using IDX_XXX_NAME
- * provides a visible association with the index, therefor helping
+ * provides a visible association with the index, therefore helping
  * maintainability of table. If a new index/name is defined in
  * amd_pci_int_defs.h, just add the pair at the end of this table.
  * Order is not important.

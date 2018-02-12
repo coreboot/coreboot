@@ -185,7 +185,7 @@ void early_uart_init(void)
 {
 	register int i;
 
-	/* Check: do we have enought elements to init. ? */
+	/* Check: do we have enough elements to init. ? */
 	BUILD_BUG_ON(DENVERTON_UARTS_TO_INI > ELEM_OF_UART_TAB);
 
 	/* HSUART(B0:D26:0-1) GPIO init. */

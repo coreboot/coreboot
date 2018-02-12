@@ -39,7 +39,7 @@
 #define PCH_LP_REDIR_ETR 120
 
 /**
- * Set miscellanous static southbridge features.
+ * Set miscellaneous static southbridge features.
  *
  * @param dev PCI device with I/O APIC control registers
  */

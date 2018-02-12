@@ -122,7 +122,7 @@ static size_t get_tracehub_size(uintptr_t dram_base,
 
 	/* GDXC MOT */
 	tracehub_base -= GDXC_MOT_MEMORY_SIZE;
-	/* Round down to natual boundary accroding to PSMI size */
+	/* Round down to natural boundary according to PSMI size */
 	tracehub_base = ALIGN_DOWN(tracehub_base, PSMI_BUFFER_AREA_SIZE);
 	/* GDXC IOT */
 	tracehub_base -= GDXC_IOT_MEMORY_SIZE;

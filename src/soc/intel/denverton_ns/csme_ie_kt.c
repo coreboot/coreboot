@@ -38,7 +38,7 @@ static void pci_read_bases(struct device *dev, unsigned int howmany)
 		struct resource *resource;
 		resource = pci_get_resource(dev, index);
 		/**
-		* Workarond for Denverton-NS silicon (Rev A0/A1 for CSME/IE,
+		* Workaround for Denverton-NS silicon (Rev A0/A1 for CSME/IE,
 		*  Rev B0 for CSME only)
 		*  CSME&IEs KT IO bar must be 16-byte aligned
 		*/
@@ -59,7 +59,7 @@ static void pci_read_bases(struct device *dev, unsigned int howmany)
 static void pci_csme_ie_kt_read_resources(device_t dev)
 {
 	/**
-	* CSME/IE KT has 2 BARs to chec:
+	* CSME/IE KT has 2 BARs to check:
 	*   0x10 - KT IO BAR
 	*   0x14 - KT Memory BAR
 	* CSME/IE KT has no Expansion ROM BAR to check:

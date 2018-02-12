@@ -3,5 +3,5 @@ config SOC_INTEL_COMMON_BLOCK_SGX
 	default n
 	help
 	 Software Guard eXtension(SGX) Feature. Intel SGX is a set of new CPU
-	 instructions that can be used by applications to set aside privat
+	 instructions that can be used by applications to set aside private
 	 regions of code and data.

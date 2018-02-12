@@ -106,7 +106,7 @@ bool uart_is_debug_controller(struct device *dev)
 static bool uart_controller_needs_init(struct device *dev)
 {
 	/*
-	 * If coreboot has CONSOLE_SERIAL enabled, the skip re-initalizing
+	 * If coreboot has CONSOLE_SERIAL enabled, the skip re-initializing
 	 * controller here.
 	 */
 	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL))

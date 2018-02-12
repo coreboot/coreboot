@@ -360,7 +360,7 @@ int soc_prev_sleep_state(const struct chipset_power_state *ps,
 
 /*
  * Returns prev_sleep_state and also prints all power management registers.
- * Calls soc_prev_sleep_state which may be impelmented by SOC.
+ * Calls soc_prev_sleep_state which may be implemented by SOC.
  */
 static int pmc_prev_sleep_state(const struct chipset_power_state *ps)
 {

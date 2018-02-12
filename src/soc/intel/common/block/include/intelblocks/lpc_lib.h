@@ -69,14 +69,14 @@ void lpc_close_pmio_windows(void);
 void lpc_open_mmio_window(uintptr_t base, size_t size);
 /* Returns true if given window is decoded to LPC via a fixed range. */
 bool lpc_fits_fixed_mmio_window(uintptr_t base, size_t size);
-/* Init SoC Spcific LPC features. Common definition will be weak and
+/* Init SoC Specific LPC features. Common definition will be weak and
 each soc will need to define the init. */
 void lpc_soc_init(struct device *dev);
 /* Fill up LPC IO resource structure inside SoC directory */
 void pch_lpc_soc_fill_io_resources(struct device *dev);
 /* Init LPC GPIO pads */
 void lpc_configure_pads(void);
-/* Get SoC speicific MMIO ranges */
+/* Get SoC specific MMIO ranges */
 const struct lpc_mmio_range *soc_get_fixed_mmio_ranges(void);
 /* Set LPC BIOS Control BILD bit. */
 void lpc_set_bios_interface_lock_down(void);
@@ -97,7 +97,7 @@ void lpc_enable_pci_clk_cntl(void);
 void lpc_io_setup_comm_a_b(void);
 /* Enable PCH LPC by setting up generic decode range registers. */
 void pch_enable_lpc(void);
-/* Retrieve and setup SoC speicific PCH LPC interrupt routing. */
+/* Retrieve and setup SoC specific PCH LPC interrupt routing. */
 void soc_pch_pirq_init(const struct device *dev);
 /* Get SoC's generic IO decoder range register settings. */
 void soc_get_gen_io_dec_range(const struct device *dev,

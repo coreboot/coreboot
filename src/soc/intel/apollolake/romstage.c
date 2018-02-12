@@ -87,7 +87,7 @@ static void soc_early_romstage_init(void)
 		{ MCHBAR, MCH_BASE_ADDRESS, MCH_BASE_SIZE, "MCHBAR" },
 	};
 
-	/* Set Fixed MMIO addresss into PCI configuration space */
+	/* Set Fixed MMIO address into PCI configuration space */
 	sa_set_pci_bar(soc_fixed_pci_resources,
 			ARRAY_SIZE(soc_fixed_pci_resources));
 

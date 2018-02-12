@@ -31,7 +31,7 @@
 
 /* Wait up to 15 sec for HECI to get ready */
 #define HECI_DELAY_READY	(15 * 1000)
-/* Wait up to 100 usec between circullar buffer polls */
+/* Wait up to 100 usec between circular buffer polls */
 #define HECI_DELAY		100
 /* Wait up to 5 sec for CSE to chew something we sent */
 #define HECI_SEND_TIMEOUT	(5 * 1000)
@@ -126,7 +126,7 @@ static uint32_t get_cse_bar(void)
 static uint32_t read_bar(uint32_t offset)
 {
 	struct cse_device *cse = car_get_var_ptr(&g_cse);
-	/* Reach PCI config space to get BAR incase CAR global not available */
+	/* Reach PCI config space to get BAR in case CAR global not available */
 	if (!cse->sec_bar)
 		cse->sec_bar = get_cse_bar();
 	return read32((void *)(cse->sec_bar + offset));
@@ -135,7 +135,7 @@ static uint32_t read_bar(uint32_t offset)
 static void write_bar(uint32_t offset, uint32_t val)
 {
 	struct cse_device *cse = car_get_var_ptr(&g_cse);
-	/* Reach PCI config space to get BAR incase CAR global not available */
+	/* Reach PCI config space to get BAR in case CAR global not available */
 	if (!cse->sec_bar)
 		cse->sec_bar = get_cse_bar();
 	return write32((void *)(cse->sec_bar + offset), val);
@@ -341,7 +341,7 @@ heci_send(const void *msg, size_t len, uint8_t host_addr, uint8_t client_addr)
 
 		/*
 		 * Fragment the message into smaller messages not exceeding
-		 * useful circullar buffer length. Mark last message complete.
+		 * useful circular buffer length. Mark last message complete.
 		 */
 		do {
 			hdr = MIN(max_length, remaining)

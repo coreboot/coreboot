@@ -16,13 +16,13 @@
 #ifndef _SOC_DENVERTON_NS_BOOTBLOCK_H_
 #define _SOC_DENVERTON_NS_BOOTBLOCK_H_
 
-/* Bootblock pre console init programing */
+/* Bootblock pre console init programming */
 //void bootblock_cpu_init(void);
 //void bootblock_pch_early_init(void);
 //void bootblock_systemagent_early_init(void);
 void early_uart_init(void);
 
-/* Bootblock post console init programing */
+/* Bootblock post console init programming */
 //void enable_smbus(void);
 //void i2c_early_init(void);
 //void pch_early_init(void);

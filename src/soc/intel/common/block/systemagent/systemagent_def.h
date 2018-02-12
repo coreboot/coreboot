@@ -19,13 +19,13 @@
 
 /* Device 0:0.0 PCI configuration space */
 
-/* GMCH Graphics Comntrol Register */
+/* GMCH Graphics Control Register */
 #define GGC		0x50
 #define  G_GMS_OFFSET	0x8
 #define  G_GMS_MASK	0xff00
 #define  G_GGMS_OFFSET	0x6
 #define  G_GGMS_MASK	0xc0
-/* DPR register incase CONFIG_SA_ENABLE_DPR is selected by SoC */
+/* DPR register in case CONFIG_SA_ENABLE_DPR is selected by SoC */
 #define DPR		0x5c
 #define  DPR_EPM	(1 << 2)
 #define  DPR_PRS	(1 << 1)
@@ -48,7 +48,7 @@
 #define MCH_PAIR	0x5418
 
 /*
- * IMR register incase CONFIG_SA_ENABLE_IMR is selected by SoC.
+ * IMR register in case CONFIG_SA_ENABLE_IMR is selected by SoC.
  *
  * IMR registers are found under MCHBAR.
  */

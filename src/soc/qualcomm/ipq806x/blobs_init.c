@@ -80,7 +80,7 @@ int initialize_dram(void)
 		die("Fail to Initialize DDR\n");
 
 	/*
-	 * Once DDR initializer finished, its verison can be found at a fixed
+	 * Once DDR initializer finished, its version can be found at a fixed
 	 * address in SRAM.
 	 */
 	printk(BIOS_INFO, "DDR version %.*s initialized\n",

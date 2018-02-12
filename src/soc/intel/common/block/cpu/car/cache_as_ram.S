@@ -389,7 +389,7 @@ find_llc_subleaf:
 	 * Maximizing RO cacheability while locking in the CAR to a
 	 * single way since that particular way won't be victim candidate
 	 * for evictions.
-	 * This has been done after programing LLC_WAY_MASK_1 MSR
+	 * This has been done after programming LLC_WAY_MASK_1 MSR
 	 * with desired LLC way as mentioned below.
 	 *
 	 * Hence create Code and Data Size as per request

@@ -44,7 +44,7 @@ unsigned long southbridge_write_acpi_tables(device_t device,
 					    struct acpi_rsdp *rsdp);
 
 /*
- * Craetes acpi gnvs and adds it to the DSDT table.
+ * Creates acpi gnvs and adds it to the DSDT table.
  * GNVS creation is chipset specific and is done in soc specific acpi.c file.
  */
 void southbridge_inject_dsdt(device_t device);
@@ -84,7 +84,7 @@ void generate_t_state_entries(int core, int cores_per_package);
 /*
  * soc specific power states generation. We need this to be defined by soc
  * as the state generations varies in chipsets e.g. APL generates T and P
- * states while SKL generates  * P state only depening on a devicetree config
+ * states while SKL generates  * P state only depending on a devicetree config
  */
 void soc_power_states_generation(int core_id, int cores_per_package);
 

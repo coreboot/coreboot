@@ -141,7 +141,7 @@
 #define V_PCH_GPIO_RX_PAD_STATE_RAW 0x00
 #define V_PCH_GPIO_RX_PAD_STATE_INT 0x01
 
-// RX Raw Overrride to 1
+// RX Raw Override to 1
 #define B_PCH_GPIO_RX_RAW1 (1 << 28)
 #define N_PCH_GPIO_RX_RAW1 28
 #define V_PCH_GPIO_RX_RAW1_DIS 0x00

@@ -80,7 +80,7 @@ enum {
 void smm_region_info(void **start, size_t *size);
 /*
  * Fills in the start and size for the requested SMM subregion. Returns
- * 0 on susccess, < 0 on failure.
+ * 0 on success, < 0 on failure.
  */
 int smm_subregion(int sub, void **start, size_t *size);
 void domain_enable_resources(device_t dev);

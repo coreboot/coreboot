@@ -233,7 +233,7 @@ void soc_irq_settings(FSP_SIL_UPD *params)
 		sizeof(SI_PCH_DEVICE_INTERRUPT_CONFIG));
 
 	params->NumOfDevIntConfig = intdeventry;
-	/* PxRC to IRQ programing */
+	/* PxRC to IRQ programming */
 	for (i = 0; i < PCH_MAX_IRQ_CONFIG; i++) {
 		switch (i) {
 		case PCH_PARC:

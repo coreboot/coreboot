@@ -18,11 +18,11 @@
 
 #include <intelblocks/systemagent.h>
 
-/* Bootblock pre console init programing */
+/* Bootblock pre console init programming */
 void bootblock_cpu_init(void);
 void bootblock_pch_early_init(void);
 
-/* Bootblock post console init programing */
+/* Bootblock post console init programming */
 void pch_early_init(void);
 void pch_early_iorange_init(void);
 void report_platform_info(void);

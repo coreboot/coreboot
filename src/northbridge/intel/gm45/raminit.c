@@ -1804,10 +1804,12 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 	/* Perform receive-enable calibration. */
 	raminit_receive_enable_calibration(timings, dimms);
 	/* Lend clock values from receive-enable calibration. */
-	MCHBAR32(0x1224) = (MCHBAR32(0x1224) & ~(0xf0)) |
-			   ((((MCHBAR32(0x121c) >> 7) - 1) & 0xf) << 4);
-	MCHBAR32(0x1324) = (MCHBAR32(0x1324) & ~(0xf0)) |
-			   ((((MCHBAR32(0x131c) >> 7) - 1) & 0xf) << 4);
+	MCHBAR32(CxDRT5_MCHBAR(0)) =
+		(MCHBAR32(CxDRT5_MCHBAR(0)) & ~(0xf0)) |
+		((((MCHBAR32(CxDRT3_MCHBAR(0)) >> 7) - 1) & 0xf) << 4);
+	MCHBAR32(CxDRT5_MCHBAR(1)) =
+		(MCHBAR32(CxDRT5_MCHBAR(1)) & ~(0xf0)) |
+		((((MCHBAR32(CxDRT3_MCHBAR(1)) >> 7) - 1) & 0xf) << 4);
 
 	/* Perform read/write training for high clock rate. */
 	if (timings->mem_clock == MEM_CLOCK_1067MT) {

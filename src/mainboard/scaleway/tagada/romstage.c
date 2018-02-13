@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2017 Intel Corp.
+ * Copyright (C) 2017 - 2018 Online SAS.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include "harcuvar_boardid.h"
 #include "gpio.h"
 #include <console/console.h>
 #include <fsp/api.h>
@@ -31,21 +31,12 @@ void mainboard_config_gpios(void)
 {
 	size_t num;
 	const struct pad_config *table;
-	uint8_t boardid = board_id();
 
 	/* Configure pads prior to SiliconInit() in case there's any
 	* dependencies during hardware initialization.
 	*/
-	switch (boardid) {
-	case BoardIdHarcuvar:
-		table = harcuvar_gpio_table;
-		num = ARRAY_SIZE(harcuvar_gpio_table);
-		break;
-	default:
-		table = NULL;
-		num = 0;
-		break;
-	}
+	table = tagada_gpio_config;
+	num = ARRAY_SIZE(tagada_gpio_config);
 
 	if ((!table) || (!num)) {
 		printk(BIOS_ERR, "ERROR: No valid GPIO table found!\n");

@@ -39,7 +39,7 @@
 #include "pcie.asl"
 
 /* PCR Access */
-#include "pcr.asl"
+#include <soc/intel/common/acpi/pcr.asl>
 
 /* PMC 0:1f.2 */
 #include "pmc.asl"

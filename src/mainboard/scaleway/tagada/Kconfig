@@ -33,17 +33,4 @@ config MAINBOARD_VENDOR
 	string
 	default "Scaleway"
 
-config ENABLE_FSP_MEMORY_DOWN
-	bool "Enable Memory Down"
-	default n
-	help
-	  Select this option to enable Memory Down function.
-
-config SPD_LOC
-	depends on ENABLE_FSP_MEMORY_DOWN
-	hex "SPD binary location in cbfs"
-	default 0xfffdf000
-	help
-	  Location of SPD binary for memory down function.
-
 endif # BOARD_SCALEWAY_TAGADA

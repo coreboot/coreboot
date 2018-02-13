@@ -16,69 +16,10 @@
 
 #include "harcuvar_boardid.h"
 #include "gpio.h"
-#include "spd/spd.h"
 #include <console/console.h>
 #include <fsp/api.h>
 #include <fsp/soc_binding.h>
 #include <string.h>
-
-#if IS_ENABLED(CONFIG_ENABLE_FSP_MEMORY_DOWN)
-
-/*
- * Define platform specific Memory Down Configure structure.
- *
- * If CONFIG_ENABLE_FSP_MEMORY_DOWN is enabled, the MEMORY_DOWN_CONFIG
- * structure should be customized to match the design.
- *
- * .SlotState indicates the memory down state of the specific channel/DIMM.
- *
- * SlotState options:
- *
- *     STATE_MEMORY_DOWN: Memory down.
- *     STATE_MEMORY_SLOT: Physical memory slot.
- *
- * .SpdDataLen should always be MAX_SPD_BYTES/512.
- *
- * .SpdDataPtr is pointing to the SPD data structure when memory modules
- *             are memory down.
- *
- * SpdDataPtr options:
- *
- *     Non-NULL: Pointing to SPD data structure.
- *     NULL: Physical memory slot, no SPD data used.
- *
- * DIMM Mapping of SlotState & SpdDataPtr:
- *
- *     {{CH0DIMM0, CH0DIMM1}, {CH1DIMM0, CH1DIMM1}}
- *
- * Sample: Channel 0 is memory down and channel 1 is physical slot.
- *
- *	const MEMORY_DOWN_CONFIG mMemoryDownConfig = {
- *		.SlotState = {
- *			{STATE_MEMORY_DOWN, STATE_MEMORY_DOWN},
- *			{STATE_MEMORY_SLOT, STATE_MEMORY_SLOT}
- *		},
- *		.SpdDataLen = MAX_SPD_BYTES,
- *		.SpdDataPtr = {
- *			{(void *)CONFIG_SPD_LOC, (void *)CONFIG_SPD_LOC},
- *			{(void *)NULL, (void *)NULL}
- *		}
- *	}
- */
-
-const MEMORY_DOWN_CONFIG mMemoryDownConfig = {
-	.SlotState = {
-		{STATE_MEMORY_SLOT, STATE_MEMORY_SLOT},
-		{STATE_MEMORY_SLOT, STATE_MEMORY_SLOT}
-	},
-	.SpdDataLen = MAX_SPD_BYTES,
-	.SpdDataPtr = {
-		{(void *)NULL, (void *)NULL},
-		{(void *)NULL, (void *)NULL}
-	}
-};
-
-#endif /* CONFIG_ENABLE_FSP_MEMORY_DOWN */
 
 void mainboard_config_gpios(void);
 void mainboard_memory_init_params(FSPM_UPD *mupd);
@@ -118,27 +59,10 @@ void mainboard_config_gpios(void)
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-#if IS_ENABLED(CONFIG_ENABLE_FSP_MEMORY_DOWN)
-	uint8_t *spd_data_ptr = NULL;
+	mupd->FspmConfig.PcdFspDebugPrintErrorLevel = 3; // Verbose
 
-	/* Get SPD data pointer */
-	spd_data_ptr = mainboard_find_spd_data();
-
-	if (spd_data_ptr != NULL) {
-		printk(BIOS_DEBUG, "Memory Down function is enabled!\n");
-
-		/* Enable Memory Down function, set Memory
-		 * Down Configure structure pointer.
-		 */
-		mupd->FspmConfig.PcdMemoryDown = 1;
-		mupd->FspmConfig.PcdMemoryDownConfigPtr =
-			(uint32_t)&mMemoryDownConfig;
-	} else {
-		printk(BIOS_DEBUG, "Memory Down function is disabled!\n");
-
-		/* Disable Memory Down function */
-		mupd->FspmConfig.PcdMemoryDown = 0;
-		mupd->FspmConfig.PcdMemoryDownConfigPtr = 0;
-	}
-#endif /* CONFIG_ENABLE_FSP_MEMORY_DOWN */
+	// Enable Rmt and Fast Boot by default, RMT will be run only on first
+	// boot or when dimms change
+	mupd->FspmConfig.PcdMrcRmtSupport = 1;
+	mupd->FspmConfig.PcdFastBoot = 1;
 }

@@ -14,8 +14,6 @@
 ## GNU General Public License for more details.
 ##
 
-subdirs-$(CONFIG_ENABLE_FSP_MEMORY_DOWN) += spd
-
 romstage-y += boardid.c
 romstage-y += hsio.c
 

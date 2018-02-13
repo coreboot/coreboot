@@ -53,18 +53,19 @@ chip soc/intel/denverton_ns
 		device pci 04.0 on end # RAS
 		device pci 05.0 on end # RCEC(Root Complex Event Collector)
 		device pci 06.0 on end # Virtual root port 2 (QAT)
-		device pci 09.0 on end # PCI Express Port 0, cluster #0, x8
-		device pci 0e.0 on end # PCI Express Port 4, cluster #1, x4
-		device pci 10.0 on end # PCI Express Port 6, cluster #1, x4
+		device pci 09.0 on end # PCI Express Port 0, cluster #0, x4
+		device pci 10.0 on end # PCI Express Port 6, cluster #1, x2
+		device pci 11.0 on end # PCI Express Port 7, cluster #1, x2
 		device pci 12.0 on end # SMBus Controller 1
+		device pci 13.0 on end # SATA Controller 0
 		device pci 14.0 on end # SATA Controller 1
 		device pci 15.0 on end # XHCI USB Controller
 		device pci 16.0 on end # Virtual root port 0 (10GBE0)
 		device pci 17.0 on end # Virtual root port 1 (10GBE1)
 		device pci 18.0 on end # CSME HECI 1
 		device pci 1a.0 on end # UART 0
-		device pci 1a.1 on end # UART 1
-		device pci 1a.2 on end # UART 2
+		device pci 1a.1 off end # UART 1
+		device pci 1a.2 off end # UART 2
 		device pci 1c.0 on end # eMMC
 		device pci 1f.0 on end # LPC bridge
 		device pci 1f.2 on end # PMC/ACPI

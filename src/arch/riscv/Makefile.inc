@@ -15,13 +15,23 @@
 ##
 ################################################################################
 
-riscv_flags = -I$(src)/arch/riscv/ -mcmodel=medany
-
-riscv_asm_flags =
+################################################################################
+## RISC-V specific options
+################################################################################
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
 check-ramstage-overlap-regions += stack
 endif
+
+riscv_arch = rv64imafd
+
+ifeq ($(CONFIG_ARCH_RISCV_COMPRESSED),y)
+	riscv_arch := $(riscv_arch)c
+endif
+
+riscv_flags = -I$(src)/arch/riscv/ -mcmodel=medany -march=$(riscv_arch)
+
+riscv_asm_flags = -march=$(riscv_arch)
 
 ################################################################################
 ## bootblock

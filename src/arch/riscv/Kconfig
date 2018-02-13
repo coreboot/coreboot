@@ -2,6 +2,13 @@ config ARCH_RISCV
 	bool
 	default n
 
+config ARCH_RISCV_COMPRESSED
+	bool
+	default n
+	help
+	  Enable this option if your RISC-V processor supports compressed
+	  instructions (RVC). Currently, this enables RVC for all stages.
+
 config ARCH_BOOTBLOCK_RISCV
 	bool
 	default n

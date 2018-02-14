@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2011 Google Inc.
- * Copyright (C) 2016 Siemens AG
+ * Copyright (C) 2016-2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
+#include <device/path.h>
 #include <console/console.h>
 #if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
@@ -38,6 +39,7 @@
 #include <bootstate.h>
 #include <timer.h>
 #include <timestamp.h>
+#include <pca9538.h>
 
 #define MAX_PATH_DEPTH		12
 #define MAX_NUM_MAPPINGS	10
@@ -88,6 +90,8 @@
 #define SPI_REG_OPMENU_L	0x98
 #define SPI_REG_OPMENU_H	0x9c
 
+/* Define the slave address for the I/O expander. */
+#define PCA9538_SLAVE_ADR	0x71
 /*
  * mainboard_enable is executed as first thing after enumerate_buses().
  * This is the earliest point to add customization.
@@ -143,6 +147,11 @@ static void mainboard_final(void *chip_info)
 		cmd |= PCI_COMMAND_MASTER;
 		pci_write_config16(dev, PCI_COMMAND, cmd);
 	}
+	/* Show the mainboard version well-visible on console. */
+	printk(BIOS_NOTICE, "***************************\n"
+			    "* Mainboard version: 0x%02x *\n"
+			    "***************************\n",
+			    pca9538_read_input());
 }
 
 /** \brief This function can decide if a given MAC address is valid or not.
@@ -241,6 +250,23 @@ static void wait_for_legacy_dev(void *unused)
 	stopwatch_wait_until_expired(&sw);
 	printk(BIOS_NOTICE, "done!\n");
 }
+
+/*
+ * To access the I/O expander PCA9538 we need to know its device structure.
+ * This function will provide it as mainboard code has the knowledge of the
+ * right I2C slave address for the I/O expander.
+ */
+struct device *pca9538_get_dev(void)
+{
+	struct device *dev = NULL;
+	do {
+		dev = dev_find_path(dev, DEVICE_PATH_I2C);
+		if (dev->path.i2c.device == PCA9538_SLAVE_ADR)
+			break;
+	} while (dev);
+	return dev;
+}
+
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENUMERATE, BS_ON_ENTRY, wait_for_legacy_dev, NULL);
 

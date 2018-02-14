@@ -23,6 +23,13 @@ chip soc/intel/fsp_broadwell_de
 				register "user_weekday" = "4"
 				device i2c 0x32 on end	# RTC RX6110 SA
 			end
+			#Enable I/O expander
+			chip drivers/i2c/pca9538
+				register "in_out" = "0xff"
+				register "invert" = "0x00"
+				register "out_val" = "0x00"
+				device i2c 0x71 on end # I/O expander
+			end
 		end # SMBus Controller
 		device pci 1f.5 on end # SATA Controller
 	end

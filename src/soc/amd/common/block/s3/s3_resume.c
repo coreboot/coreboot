@@ -27,7 +27,11 @@ void get_s3nv_info(void **base, size_t *size)
 {
 	struct region_device rdev;
 
-	mrc_cache_get_current(MRC_TRAINING_DATA, DEFAULT_MRC_VERSION, &rdev);
+	if (mrc_cache_get_current(MRC_TRAINING_DATA, DEFAULT_MRC_VERSION,
+					&rdev)) {
+		printk(BIOS_ERR, "mrc_cache_get_current returned error\n");
+		return;
+	}
 	*base = rdev_mmap_full(&rdev);
 	*size = region_device_sz(&rdev);
 	if (!*base || !*size)

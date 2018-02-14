@@ -29,12 +29,17 @@
 
 static void adau7002_fill_ssdt(struct device *dev)
 {
-	if (!dev->enabled)
+	if (!dev || !dev->enabled)
+		return;
+
+	const char *scope = acpi_device_scope(dev);
+	const char *name = acpi_device_name(dev);
+	if (!scope || !name)
 		return;
 
 	/* Device */
-	acpigen_write_scope(acpi_device_scope(dev));
-	acpigen_write_device(acpi_device_name(dev));
+	acpigen_write_scope(scope);
+	acpigen_write_device(name);
 	acpigen_write_name_string("_HID", ADAU7002_ACPI_HID);
 	acpigen_write_name_integer("_UID", 0);
 	acpigen_write_name_string("_DDN", dev->chip_ops->name);

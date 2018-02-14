@@ -30,6 +30,7 @@ romstage-y += cdp.c
 romstage-y += chromeos.c
 romstage-y += mmu.c
 romstage-y += reset.c
+romstage-y += gsbi.c
 
 ramstage-y += boardid.c
 ramstage-y += cdp.c

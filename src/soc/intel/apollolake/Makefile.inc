@@ -71,6 +71,7 @@ ramstage-y += sd.c
 postcar-y += memmap.c
 postcar-y += mmap_boot.c
 postcar-y += spi.c
+postcar-y += i2c.c
 postcar-$(CONFIG_SOC_UART_DEBUG) += uart.c
 
 postcar-$(CONFIG_FSP_CAR) += exit_car_fsp.S

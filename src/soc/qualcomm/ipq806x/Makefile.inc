@@ -37,6 +37,9 @@ romstage-$(CONFIG_SPI_FLASH) += spi.c
 romstage-y += timer.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
 romstage-y += cbmem.c
+romstage-y += i2c.c
+romstage-y += gsbi.c
+romstage-y += qup.c
 
 ramstage-y += blobs_init.c
 ramstage-y += cbmem.c

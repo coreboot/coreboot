@@ -57,6 +57,7 @@ romstage-y += usb.c
 romstage-y += gpio.c
 romstage-y += saradc.c
 romstage-y += ../common/gpio.c
+romstage-y += ../common/i2c.c
 
 ################################################################################
 

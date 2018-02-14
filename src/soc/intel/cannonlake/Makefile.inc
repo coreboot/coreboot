@@ -65,6 +65,9 @@ smm-$(CONFIG_UART_DEBUG) += uart.c
 
 postcar-y += memmap.c
 postcar-y += pmutil.c
+postcar-y += i2c.c
+postcar-y += gspi.c
+postcar-y += spi.c
 postcar-$(CONFIG_UART_DEBUG) += uart.c
 
 verstage-y += gspi.c

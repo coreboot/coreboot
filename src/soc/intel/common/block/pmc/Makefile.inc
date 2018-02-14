@@ -5,4 +5,5 @@ ramstage-y += pmc.c
 ramstage-y += pmclib.c
 smm-y += pmclib.c
 verstage-y += pmclib.c
+postcar-y += pmclib.c
 endif

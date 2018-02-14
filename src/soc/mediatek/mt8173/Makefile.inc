@@ -50,6 +50,7 @@ romstage-$(CONFIG_SPI_FLASH) += flash_controller.c
 romstage-y += ../common/pll.c pll.c
 romstage-y += ../common/timer.c
 romstage-y += timer.c
+romstage-y += i2c.c
 
 romstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 romstage-y += ../common/cbmem.c

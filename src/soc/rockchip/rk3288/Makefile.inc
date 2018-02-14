@@ -54,6 +54,7 @@ romstage-y += sdram.c
 romstage-y += ../common/rk808.c
 romstage-y += ../common/pwm.c
 romstage-y += tsadc.c
+romstage-y += ../common/i2c.c
 
 ramstage-y += soc.c
 ramstage-y += ../common/cbmem.c

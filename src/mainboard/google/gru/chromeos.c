@@ -21,15 +21,19 @@
 
 #include "board.h"
 
+static const uint32_t wp_polarity = IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET) ?
+				    ACTIVE_LOW : ACTIVE_HIGH;
+
 int get_write_protect_state(void)
 {
-	return gpio_get(GPIO_WP);
+	int raw = gpio_get(GPIO_WP);
+	return wp_polarity == ACTIVE_HIGH ? raw : !raw;
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
-		{GPIO_WP.raw, ACTIVE_HIGH, get_write_protect_state(),
+		{GPIO_WP.raw, wp_polarity, gpio_get(GPIO_WP),
 		 "write protect"},
 		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
 #if IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)
@@ -49,7 +53,10 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 void setup_chromeos_gpios(void)
 {
-	gpio_input_pullup(GPIO_WP);
+	if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
+		gpio_input(GPIO_WP);
+	else
+		gpio_input_pullup(GPIO_WP);
 	gpio_input_pullup(GPIO_EC_IN_RW);
 	gpio_input_pullup(GPIO_EC_IRQ);
 }

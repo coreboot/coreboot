@@ -585,12 +585,12 @@ static int cbi_get_uint32(uint32_t *id, uint32_t type)
 
 int google_chromeec_cbi_get_sku_id(uint32_t *id)
 {
-	return cbi_get_uint32(id, CBI_DATA_SKU_ID);
+	return cbi_get_uint32(id, CBI_TAG_SKU_ID);
 }
 
 int google_chromeec_cbi_get_oem_id(uint32_t *id)
 {
-	return cbi_get_uint32(id, CBI_DATA_OEM_ID);
+	return cbi_get_uint32(id, CBI_TAG_OEM_ID);
 }
 
 #ifndef __SMM__

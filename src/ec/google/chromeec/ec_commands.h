@@ -4382,14 +4382,11 @@ struct __ec_align1 ec_params_efs_verify {
  */
 #define EC_CMD_SET_CROS_BOARD_INFO	0x0120
 
-enum cbi_data_type {
-	/* integer types */
-	CBI_DATA_BOARD_VERSION = 0,
-	CBI_DATA_OEM_ID = 1,
-	CBI_DATA_SKU_ID = 2,
-	/* string types */
-	CBI_FIRST_STRING_PARAM = 0x1000,
-	CBI_DATA_COUNT,
+enum cbi_data_tag {
+	CBI_TAG_BOARD_VERSION = 0, /* uint16_t or uint8_t[] = {minor,major} */
+	CBI_TAG_OEM_ID = 1,        /* uint8_t */
+	CBI_TAG_SKU_ID = 2,        /* uint8_t */
+	CBI_TAG_COUNT,
 };
 
 /*
@@ -4401,7 +4398,7 @@ enum cbi_data_type {
 #define CBI_GET_RELOAD		(1 << 0)
 
 struct __ec_align4 ec_params_get_cbi {
-	uint32_t type;		/* enum cbi_data_type */
+	uint32_t type;		/* enum cbi_data_tag */
 	uint32_t flag;		/* CBI_GET_* */
 };
 
@@ -4417,10 +4414,10 @@ struct __ec_align4 ec_params_get_cbi {
 #define CBI_SET_INIT		(1 << 1)
 
 struct __ec_align1 ec_params_set_cbi {
-	uint32_t type;		/* enum cbi_data_type */
+	uint32_t tag;		/* enum cbi_data_tag */
 	uint32_t flag;		/* CBI_SET_* */
-	uint32_t data;		/* For numeric value */
-	uint8_t raw[];		/* For string and raw data */
+	uint32_t size;		/* Data size */
+	uint8_t data[];		/* For string and raw data */
 };
 
 /*****************************************************************************/

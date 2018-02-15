@@ -61,14 +61,14 @@ Name(APR0, Package(){
 
 	/* Bus 0, Dev 1, Func 0 - PCI Bridge for Internal Graphics(IGP) */
 	/* Bus 0, Dev 1, Func 1 - HDMI Audio Controller */
-	Package(){0x0001FFFF, 0, 0, 16 },
-	Package(){0x0001FFFF, 1, 0, 17 },
+	Package(){0x0001FFFF, 0, 0, 44 },
+	Package(){0x0001FFFF, 1, 0, 45 },
 
 	/* Bus 0, Dev 2 - PCIe Bridges  */
-	Package(){0x0002FFFF, 0, 0, 16 },
-	Package(){0x0002FFFF, 1, 0, 17 },
-	Package(){0x0002FFFF, 2, 0, 18 },
-	Package(){0x0002FFFF, 3, 0, 19 },
+	Package(){0x0002FFFF, 0, 0, 24 },
+	Package(){0x0002FFFF, 1, 0, 25 },
+	Package(){0x0002FFFF, 2, 0, 26 },
+	Package(){0x0002FFFF, 3, 0, 27 },
 
 	/* SB devices in APIC mode */
 	/* Bus 0, Dev 20 - F0:SMBus/ACPI,F2:HDAudio;F3:LPC;F7:SD */
@@ -102,10 +102,10 @@ Name(PS4, Package(){
 	Package(){0x0000FFFF, 3, INTD, 0 },
 })
 Name(APS4, Package(){
-	Package(){0x0000FFFF, 0, 0, 16 },
-	Package(){0x0000FFFF, 1, 0, 17 },
-	Package(){0x0000FFFF, 2, 0, 18 },
-	Package(){0x0000FFFF, 3, 0, 19 },
+	Package(){0x0000FFFF, 0, 0, 24 },
+	Package(){0x0000FFFF, 1, 0, 25 },
+	Package(){0x0000FFFF, 2, 0, 26 },
+	Package(){0x0000FFFF, 3, 0, 27 },
 })
 
 /* GPP 1 - not used */
@@ -158,8 +158,8 @@ Name(PS8, Package(){
 	Package(){0x0000FFFF, 3, INTA, 0 },
 })
 Name(APS8, Package(){
-	Package(){0x0000FFFF, 0, 0, 17 },
-	Package(){0x0000FFFF, 1, 0, 18 },
-	Package(){0x0000FFFF, 2, 0, 19 },
-	Package(){0x0000FFFF, 3, 0, 16 },
+	Package(){0x0000FFFF, 0, 0, 40 },
+	Package(){0x0000FFFF, 1, 0, 41 },
+	Package(){0x0000FFFF, 2, 0, 42 },
+	Package(){0x0000FFFF, 3, 0, 43 },
 })

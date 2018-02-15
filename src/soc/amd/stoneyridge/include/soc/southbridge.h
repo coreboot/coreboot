@@ -340,19 +340,15 @@ void xhci_pm_write32(uint8_t reg, uint32_t value);
 uint32_t xhci_pm_read32(uint8_t reg);
 void bootblock_fch_early_init(void);
 /**
- * @brief get table and table size to program GPIO
- *
- * @param size = pointer to variable where to return table size
- *
- * @return pointer to the desired table
- */
-const struct soc_amd_stoneyridge_gpio *board_get_gpio(size_t *size);
-/**
  * @brief program a particular set of GPIO
+ *
+ * @param gpio_ptr = pointer to array of gpio configurations
+ * @param size = number of entries in array
  *
  * @return none
  */
-void sb_program_gpio(void);
+void sb_program_gpios(const struct soc_amd_stoneyridge_gpio *gpio_ptr,
+		      size_t size);
 /**
  * @brief Find the size of a particular wide IO
  *

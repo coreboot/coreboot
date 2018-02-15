@@ -19,6 +19,8 @@
 #include <stdlib.h>
 #include <soc/gpio.h>
 
+#include "gpio.h"
+
 /*
  * As a rule of thumb, GPIO pins used by coreboot should be initialized at
  * bootblock while GPIO pins used only by the OS should be initialized at
@@ -46,12 +48,14 @@ const struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
 	{GPIO_70, Function0, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
 };
 
-const struct soc_amd_stoneyridge_gpio *board_get_gpio(size_t *size)
+const struct soc_amd_stoneyridge_gpio *early_gpio_table(size_t *size)
 {
-	if (GPIO_TABLE_BOOTBLOCK) {
-		*size = ARRAY_SIZE(gpio_set_stage_reset);
-		return gpio_set_stage_reset;
-	}
+	*size = ARRAY_SIZE(gpio_set_stage_reset);
+	return gpio_set_stage_reset;
+}
+
+const struct soc_amd_stoneyridge_gpio *gpio_table(size_t *size)
+{
 	*size = ARRAY_SIZE(gpio_set_stage_ram);
 	return gpio_set_stage_ram;
 }

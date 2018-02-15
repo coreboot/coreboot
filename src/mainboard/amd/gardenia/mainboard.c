@@ -18,6 +18,9 @@
 #include <arch/acpi.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/amd_pci_util.h>
+#include <soc/southbridge.h>
+
+#include "gpio.h"
 
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
@@ -75,7 +78,13 @@ static void pirq_setup(void)
 	picr_data_ptr = mainboard_picr_data;
 }
 
-
+static void mainboard_init(void *chip_info)
+{
+	size_t num_gpios;
+	const struct soc_amd_stoneyridge_gpio *gpios;
+	gpios = gpio_table(&num_gpios);
+	sb_program_gpios(gpios, num_gpios);
+}
 
 /*************************************************
  * enable the dedicated function in gardenia board.
@@ -90,5 +99,6 @@ static void gardenia_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
+	.init = mainboard_init,
 	.enable_dev = gardenia_enable,
 };

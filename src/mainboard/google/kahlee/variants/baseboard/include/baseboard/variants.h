@@ -19,6 +19,7 @@
 
 #include <stddef.h>
 #include <soc/smi.h>
+#include <soc/southbridge.h>
 #include <amdblocks/agesawrapper.h>
 
 const struct sci_source *get_gpe_table(size_t *num);
@@ -26,5 +27,7 @@ uint8_t variant_memory_sku(void);
 int variant_mainboard_read_spd(uint8_t spdAddress, char *buf, size_t len);
 int variant_get_xhci_oc_map(uint16_t *usb_oc_map);
 int variant_get_ehci_oc_map(uint16_t *usb_oc_map);
+const struct soc_amd_stoneyridge_gpio *variant_early_gpio_table(size_t *size);
+const struct soc_amd_stoneyridge_gpio *variant_gpio_table(size_t *size);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

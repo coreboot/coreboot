@@ -155,15 +155,13 @@ const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
 	return irq_association;
 }
 
-void sb_program_gpio(void)
+void sb_program_gpios(const struct soc_amd_stoneyridge_gpio *gpio_ptr,
+		      size_t size)
 {
 	void *tmp_ptr;
-	const struct soc_amd_stoneyridge_gpio *gpio_ptr;
-	size_t size;
 	uint8_t control, mux, index;
 
 	printk(BIOS_SPEW, "GPIO programming stage %s\n", STR_GPIO_STAGE);
-	gpio_ptr = board_get_gpio(&size);
 	for (index = 0; index < size; index++) {
 		mux = gpio_ptr[index].function;
 		control = gpio_ptr[index].control;
@@ -180,14 +178,6 @@ void sb_program_gpio(void)
 	}
 	printk(BIOS_SPEW, "End GPIO programming\n");
 }
-
-static void sb_program_gpio_ram(void *unused)
-{
-	sb_program_gpio();
-}
-
-BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY,
-			sb_program_gpio_ram, NULL);
 
 /**
  * @brief Find the size of a particular wide IO

@@ -125,8 +125,6 @@ void bootblock_soc_init(void)
 	post_code(0x37);
 	do_agesawrapper(agesawrapper_amdinitreset, "amdinitreset");
 
-	sb_program_gpio();
-
 	post_code(0x38);
 	/* APs will not exit amdinitearly */
 	do_agesawrapper(agesawrapper_amdinitearly, "amdinitearly");

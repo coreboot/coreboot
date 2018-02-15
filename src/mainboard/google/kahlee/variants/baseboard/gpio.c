@@ -258,13 +258,16 @@ const static struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
 	{ GPIO_135, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
 };
 
-const __attribute__((weak)) const struct soc_amd_stoneyridge_gpio
-					*board_get_gpio(size_t *size)
+const __attribute__((weak))
+struct soc_amd_stoneyridge_gpio *variant_early_gpio_table(size_t *size)
 {
-	if (GPIO_TABLE_BOOTBLOCK) {
-		*size = ARRAY_SIZE(gpio_set_stage_reset);
-		return gpio_set_stage_reset;
-	}
+	*size = ARRAY_SIZE(gpio_set_stage_reset);
+	return gpio_set_stage_reset;
+}
+
+const __attribute__((weak))
+struct soc_amd_stoneyridge_gpio *variant_gpio_table(size_t *size)
+{
 	*size = ARRAY_SIZE(gpio_set_stage_ram);
 	return gpio_set_stage_ram;
 }

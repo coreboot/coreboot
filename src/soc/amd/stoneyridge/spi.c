@@ -127,7 +127,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	const uint8_t *bufout = dout;
 
 	if (SPI_DEBUG_DRIVER)
-		printk(BIOS_DEBUG, "%s(%lx, %lx)\n", __func__, bytesout,
+		printk(BIOS_DEBUG, "%s(%zx, %zx)\n", __func__, bytesout,
 			bytesin);
 
 	/* First byte is cmd which cannot be sent through FIFO */

@@ -1,0 +1,2 @@
+config BOARD_SCALEWAY_TAGADA
+	bool "TAGADA"

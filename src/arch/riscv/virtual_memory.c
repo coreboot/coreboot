@@ -32,6 +32,9 @@ static int delegate = 0
 	| (1 << CAUSE_LOAD_ACCESS)
 	| (1 << CAUSE_STORE_ACCESS)
 	| (1 << CAUSE_USER_ECALL)
+	| (1 << CAUSE_FETCH_PAGE_FAULT)
+	| (1 << CAUSE_LOAD_PAGE_FAULT)
+	| (1 << CAUSE_STORE_PAGE_FAULT)
 	;
 
 void mstatus_init(void)

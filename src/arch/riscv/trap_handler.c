@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/encoding.h>
 #include <arch/exception.h>
 #include <console/console.h>
 #include <string.h>
@@ -33,8 +34,12 @@ static const char *const exception_names[] = {
 	"Store access fault",
 	"Environment call from U-mode",
 	"Environment call from S-mode",
-	"Environment call from H-mode",
-	"Environment call from M-mode"
+	"Reserved (10)",
+	"Environment call from M-mode",
+	"Instruction page fault",
+	"Load page fault",
+	"Reserved (14)",
+	"Store page fault",
 };
 
 static const char *mstatus_to_previous_mode(uintptr_t ms)
@@ -119,7 +124,7 @@ static void interrupt_handler(trapframe *tf)
 		// at present, as we only search for
 		// "core{0{0{timecmp" above.
 		ssie = read_csr(sie);
-		if (!(ssie & SIE_STIE))
+		if (!(ssie & SIP_STIP))
 			break;
 
 		if (!timecmp)
@@ -149,11 +154,11 @@ void trap_handler(trapframe *tf)
 
 	switch(tf->cause) {
 		case CAUSE_MISALIGNED_FETCH:
-		case CAUSE_FAULT_FETCH:
+		case CAUSE_FETCH_ACCESS:
 		case CAUSE_ILLEGAL_INSTRUCTION:
 		case CAUSE_BREAKPOINT:
-		case CAUSE_FAULT_LOAD:
-		case CAUSE_FAULT_STORE:
+		case CAUSE_LOAD_ACCESS:
+		case CAUSE_STORE_ACCESS:
 		case CAUSE_USER_ECALL:
 		case CAUSE_SUPERVISOR_ECALL:
 		case CAUSE_HYPERVISOR_ECALL:

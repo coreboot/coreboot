@@ -18,6 +18,8 @@
 /*
  * Port ids
  */
+#define PID_EMMC	0x52
+#define PID_SDX		0x53
 #define PID_GPIOCOM4	0x6a
 #define PID_GPIOCOM3	0x6b
 #define PID_GPIOCOM2	0x6c

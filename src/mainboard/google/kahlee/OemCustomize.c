@@ -39,4 +39,15 @@ void OemPostParams(AMD_POST_PARAMS *PostParams)
 {
 	PostParams->MemConfig.PlatformMemoryConfiguration =
 				(PSO_ENTRY *)DDR4PlatformMemoryConfiguration;
+
+	/*
+	 * Bank interleaving is enabled by default in AGESA. However, from AMD's
+	 * explanation, bank interleaving is really chip select interleave,
+	 * requiring 2 chip select arriving to the DIMM (rank interleaving). As
+	 * both kahlee and grunt are hardware limited to a single chip select
+	 * arriving at the DIMM, interleave will not work. This causes AGESA to
+	 * throw a warning. To avoid the warning, interleaving needs to be
+	 * disabled.
+	 */
+	PostParams->MemConfig.EnableBankIntlv = FALSE;
 }

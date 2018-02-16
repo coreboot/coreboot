@@ -22,7 +22,6 @@ void bootblock_soc_init(void);
 void bootblock_mainboard_init(void);
 
 void bootblock_main(const uint64_t reg_x0,
-		    const uint64_t reg_x1,
 		    const uint64_t reg_pc);
 
 

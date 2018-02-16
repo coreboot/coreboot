@@ -29,7 +29,11 @@ ENTRY(_start)
      */
     ic      ialluis
     fmov    d30, x0     /* Save X0 in FPR for use later */
-    fmov    d31, x1     /* Save X1 in FPR for use later */
+     /**
+      * The BDK stores X1 for later use, but it turns out that we don't need
+      * this "feature". The idea is to hide the devicetree somewhere in
+      * flash, that only the ROM will find it and point to it using X1.
+      */
     adr     x1, _start  /* x1 = _start location based on PC */
     fmov    d29, x1     /* Save PC in FPR for use later */
 
@@ -84,7 +88,7 @@ node_check_done:
     adr     x0, _start
 
     /**
-     * Check if IROM has loaded the code to CONFIG_BOOTROM_OFFSET.
+     * Check if IROM has loaded the code to BOOTROM_OFFSET.
      * In case the offset is wrong, try to relocate.
      * Ideally the following code is never executed.
      * FIXME: Add region overlap check.
@@ -248,8 +252,7 @@ ENTRY(start)
     bl      arm64_init_cpu
 
     fmov    x0, d30 /* The original X0, info from previous image */
-    fmov    x1, d31 /* The original X1, info from previous image */
-    fmov    x2, d29 /* The original PC we were loaded at */
+    fmov    x1, d29 /* The original PC we were loaded at */
 
     /* Call C entry */
     bl      bootblock_main

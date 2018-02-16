@@ -32,7 +32,6 @@ __attribute__((weak)) void bootblock_mainboard_init(void) { /* do nothing */ }
 
 /* C code entry point for the boot block */
 void bootblock_main(const uint64_t reg_x0,
-		    const uint64_t reg_x1,
 		    const uint64_t reg_pc)
 {
 	uint64_t base_timestamp = 0;
@@ -57,8 +56,6 @@ void bootblock_main(const uint64_t reg_x0,
 			printk(BIOS_ERR,
 			       "BOOTBLOCK: RST Boot Failure Code %lld\n",
 			       reg_x0);
-
-		printk(BIOS_DEBUG, "BOOTBLOCK: FDT 0x%llX\n", reg_x1);
 	}
 
 	bootblock_soc_init();

@@ -1,6 +1,6 @@
 Vendor name: CompuLab
 Board name: Intense-PC
-Category: laptop
+Category: sbc
 ROM package: SOIC-16
 ROM protocol: SPI
 ROM socketed: n

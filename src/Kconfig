@@ -975,14 +975,6 @@ config DEBUG_BOOT_STATE
 	  Control debugging of the boot state machine.  When selected displays
 	  the state boundaries in ramstage.
 
-config DEBUG_PRINT_PAGE_TABLES
-	bool "Print the page tables after construction"
-	default n
-	depends on ARCH_RISCV
-	help
-	  After the page tables have been built, print them on the debug
-	  console.
-
 config DEBUG_ADA_CODE
 	bool "Compile debug code in Ada sources"
 	default n

@@ -27,7 +27,6 @@ void arch_prog_run(struct prog *prog)
 
 	if (ENV_RAMSTAGE && prog_type(prog) == PROG_PAYLOAD) {
 		printk(BIOS_SPEW, "Config string: '%s'\n", config);
-		initVirtualMemory();
 		printk(BIOS_SPEW, "OK, let's go\n");
 		riscvpayload(config, doit);
 	}

@@ -32,35 +32,10 @@
 #include <stdint.h>
 #include <arch/encoding.h>
 
-#define SUPERPAGE_SIZE ((uintptr_t)(RISCV_PGSIZE << RISCV_PGLEVEL_BITS))
-#define VM_CHOICE VM_SV39
-#define VA_BITS 39
-#define MEGAPAGE_SIZE (SUPERPAGE_SIZE << RISCV_PGLEVEL_BITS)
-
 #define EXTRACT_FIELD(val, which) (((val) & (which)) / ((which) & ~((which)-1)))
 #define INSERT_FIELD(val, which, fieldval) (((val) & ~(which)) | ((fieldval) * ((which) & ~((which)-1))))
 
-#define supervisor_paddr_valid(start, length) \
-	((uintptr_t)(start) >= current.first_user_vaddr + current.bias \
-	 && (uintptr_t)(start) + (length) < mem_size \
-	 && (uintptr_t)(start) + (length) >= (uintptr_t)(start))
-
-typedef uintptr_t pte_t;
-extern pte_t* root_page_table;
-
-void initVirtualMemory(void);
-
-size_t pte_ppn(pte_t pte);
-pte_t ptd_create(uintptr_t ppn);
-pte_t pte_create(uintptr_t ppn, int prot, int user);
-
-void print_page_table(void);
-
-void init_vm(uintptr_t virtMemStart, uintptr_t physMemStart,
-		pte_t *pageTableStart);
 void mstatus_init(void); // need to setup mstatus so we know we have virtual memory
-
-void flush_tlb(void);
 
 
 #define DEFINE_MPRV_READ(name, type, insn)				\

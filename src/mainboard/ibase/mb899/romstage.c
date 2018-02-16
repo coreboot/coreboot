@@ -66,7 +66,7 @@ static void early_superio_config_w83627ehg(void)
 	dev = DUMMY_DEV;
 	pnp_enter_conf_state(dev);
 
-	pnp_write_config(dev, 0x24, 0xc4); // PNPCSV
+	pnp_write_config(dev, 0x24, 0xc4); // PNPCVS
 
 	pnp_write_config(dev, 0x29, 0x01); // GPIO settings
 	pnp_write_config(dev, 0x2a, 0x40); // GPIO settings should be fc but gets set to 02

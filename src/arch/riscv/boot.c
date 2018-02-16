@@ -15,20 +15,35 @@
 
 #include <program_loading.h>
 #include <vm.h>
+#include <arch/boot.h>
 #include <arch/encoding.h>
 #include <rules.h>
 #include <console/console.h>
 
+/*
+ * A pointer to the Flattened Device Tree passed to coreboot by the boot ROM.
+ * Presumably this FDT is also in ROM.
+ *
+ * This pointer is only used in ramstage!
+ */
+const void *rom_fdt;
+
 void arch_prog_run(struct prog *prog)
 {
 	void (*doit)(void *) = prog_entry(prog);
-	void riscvpayload(const char *configstring, void *payload);
-	const char *config = NULL;
+	void riscvpayload(const void *fdt, void *payload);
 
 	if (ENV_RAMSTAGE && prog_type(prog) == PROG_PAYLOAD) {
-		printk(BIOS_SPEW, "Config string: '%s'\n", config);
+		/*
+		 * FIXME: This is wrong and will crash. Linux can't (in early
+		 * boot) access memory that's before its own loading address.
+		 * We need to copy the FDT to a place where Linux can access it.
+		 */
+		const void *fdt = rom_fdt;
+
+		printk(BIOS_SPEW, "FDT is at %p\n", fdt);
 		printk(BIOS_SPEW, "OK, let's go\n");
-		riscvpayload(config, doit);
+		riscvpayload(fdt, doit);
 	}
 
 	doit(prog_entry_arg(prog));

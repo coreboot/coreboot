@@ -25,7 +25,14 @@
 .globl _start
 _start:
 
-
+	# The boot ROM may pass the following arguments to coreboot:
+	#   a0: the value of mhartid
+	#   a1: a pointer to the flattened devicetree
+	#
+	# Preserve only the FDT pointer. We can query mhartid ourselves at any
+	# time.
+	#
+	csrw mscratch, a1
 
 	# N.B. This only works on low 4G of the address space
 	# and the stack must be page-aligned.

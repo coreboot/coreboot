@@ -37,7 +37,7 @@ bool google_chromeec_is_uhepi_supported(void);
 int google_ec_running_ro(void);
 void google_chromeec_init(void);
 int google_chromeec_pd_get_amode(uint16_t svid);
-void google_chromeec_wait_for_display(void);
+int google_chromeec_wait_for_displayport(long timeout);
 
 /* Device events */
 uint64_t google_chromeec_get_device_enabled_events(void);

@@ -986,25 +986,32 @@ int google_chromeec_pd_get_amode(uint16_t svid)
 	return 0;
 }
 
-const static long wait_for_display_timeout_ms = 2000;
 
 #define USB_SID_DISPLAYPORT 0xff01
 
-void google_chromeec_wait_for_display(void)
+/**
+ * Wait for DisplayPort to be ready
+ *
+ * @param timeout Wait aborts after <timeout> ms.
+ * @return 1: Success or 0: Timeout.
+ */
+int google_chromeec_wait_for_displayport(long timeout)
 {
 	struct stopwatch sw;
 
-	printk(BIOS_INFO, "Waiting for display\n");
-	stopwatch_init_msecs_expire(&sw, wait_for_display_timeout_ms);
+	printk(BIOS_INFO, "Waiting for DisplayPort\n");
+	stopwatch_init_msecs_expire(&sw, timeout);
 	while (google_chromeec_pd_get_amode(USB_SID_DISPLAYPORT) != 1) {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_WARNING,
-			       "Display not ready after %ldms. Abort.\n",
-			       wait_for_display_timeout_ms);
-			return;
+			       "DisplayPort not ready after %ldms. Abort.\n",
+			       timeout);
+			return 0;
 		}
 		mdelay(200);
 	}
-	printk(BIOS_INFO, "Display ready after %lu ms\n",
+	printk(BIOS_INFO, "DisplayPort ready after %lu ms\n",
 	       stopwatch_duration_msecs(&sw));
+
+	return 1;
 }

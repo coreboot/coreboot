@@ -233,6 +233,8 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	       BASE_FREQUENCY * (5 * (pixel_m1 + 2) + (pixel_m2 + 2)) /
 	       (pixel_n + 2) / (pixel_p1 * pixel_p2));
 
+	printk(BIOS_INFO, "VGA mode: %s\n", IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER) ?
+	       "Linear framebuffer" : "text");
 	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		/* Disable panel fitter (we're in native resolution). */
 		write32(mmiobase + PF_CTL(0), 0);

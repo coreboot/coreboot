@@ -259,11 +259,11 @@ static void wait_for_legacy_dev(void *unused)
 struct device *pca9538_get_dev(void)
 {
 	struct device *dev = NULL;
-	do {
-		dev = dev_find_path(dev, DEVICE_PATH_I2C);
+
+	while ((dev = dev_find_path(dev, DEVICE_PATH_I2C))) {
 		if (dev->path.i2c.device == PCA9538_SLAVE_ADR)
 			break;
-	} while (dev);
+	}
 	return dev;
 }
 

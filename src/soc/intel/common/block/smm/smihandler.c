@@ -38,6 +38,12 @@ static struct global_nvs_t *gnvs;
 
 /* SoC overrides. */
 
+/* Specific SOC SMI handler during ramstage finalize phase */
+__attribute__((weak)) void smihandler_soc_at_finalize(void)
+{
+	return;
+}
+
 __attribute__((weak)) int smihandler_soc_disable_busmaster(device_t dev)
 {
 	return 1;
@@ -278,6 +284,9 @@ static void finalize(void)
 	if (IS_ENABLED(CONFIG_SPI_FLASH_SMM))
 		/* Re-init SPI driver to handle locked BAR */
 		fast_spi_init();
+
+	/* Specific SOC SMI handler during ramstage finalize phase */
+	smihandler_soc_at_finalize();
 }
 
 void smihandler_southbridge_apmc(

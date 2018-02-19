@@ -148,6 +148,9 @@ struct global_nvs_t *smm_get_gnvs(void);
 
 /* SoC overrides. */
 
+/* Specific SOC SMI handler during ramstage finalize phase */
+void smihandler_soc_at_finalize(void);
+
 /*
  * This function returns a 1 or 0 depending on whether disable_busmaster
  * needs to be done for the specified device on S5 entry

@@ -26,6 +26,7 @@
 #include <amdblocks/s3_resume.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/BiosCallOuts.h>
+#include <soc/southbridge.h>
 
 void __attribute__((weak)) SetMemParams(AMD_POST_PARAMS *PostParams) {}
 void __attribute__((weak)) OemPostParams(AMD_POST_PARAMS *PostParams) {}
@@ -202,16 +203,23 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	timestamp_add_now(TS_AGESA_INIT_POST_DONE);
 
 	/*
-	 * If UMA is enabled we currently have it below TOP_MEM as well.
-	 * UMA may or may not be cacheable, so Sub4GCacheTop could be
-	 * higher than UmaBase. With UMA_NONE we see UmaBase==0.
+	 * AGESA passes back the base and size of UMA. This is the only
+	 * opportunity to get and save these settings to be used in resource
+	 * allocation. We also need to allocate the top of low memory.
+	 * If UMA is below 4GiB, UMA base is the top of low memory, otherwise
+	 * Sub4GCachetop is the top of low memory.
+	 * With UMA_NONE we see UmaBase==0.
 	 */
 	uintptr_t top;
-	if (PostParams->MemConfig.UmaBase)
+	if (PostParams->MemConfig.UmaBase &&
+			(PostParams->MemConfig.UmaBase < ((4ull * GiB) >> 16)))
 		top = PostParams->MemConfig.UmaBase << 16;
 	else
 		top = PostParams->MemConfig.Sub4GCacheTop;
 	backup_top_of_low_cacheable(top);
+
+	save_uma_size(PostParams->MemConfig.UmaSize * 64 * KiB);
+	save_uma_base((u64)PostParams->MemConfig.UmaBase * 64 * KiB);
 
 	print_init_post_settings(PostParams);
 

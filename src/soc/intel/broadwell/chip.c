@@ -16,6 +16,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <soc/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <soc/intel/broadwell/chip.h>
@@ -26,10 +27,13 @@ static void pci_domain_set_resources(device_t dev)
 }
 
 static struct device_operations pci_domain_ops = {
-	.read_resources   = &pci_domain_read_resources,
-	.set_resources    = &pci_domain_set_resources,
-	.scan_bus         = &pci_domain_scan_bus,
-	.ops_pci_bus      = &pci_bus_default_ops,
+	.read_resources    = &pci_domain_read_resources,
+	.set_resources     = &pci_domain_set_resources,
+	.scan_bus          = &pci_domain_scan_bus,
+	.ops_pci_bus       = &pci_bus_default_ops,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.write_acpi_tables = &northbridge_write_acpi_tables,
+#endif
 };
 
 static struct device_operations cpu_bus_ops = {

@@ -112,4 +112,9 @@
 #define  PCH_DEV_SATA2		_PCH_DEV(LPC, 5)
 #define  PCH_DEV_THERMAL	_PCH_DEV(LPC, 6)
 
+#define PCH_IOAPIC_PCI_BUS	250
+#define PCH_IOAPIC_PCI_SLOT	31
+#define PCH_HPET_PCI_BUS	250
+#define PCH_HPET_PCI_SLOT	15
+
 #endif

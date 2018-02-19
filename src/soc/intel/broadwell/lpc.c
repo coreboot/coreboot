@@ -49,6 +49,10 @@ static void pch_enable_ioapic(struct device *dev)
 {
 	u32 reg32;
 
+	/* Assign unique bus/dev/fn for I/O APIC */
+	pci_write_config16(dev, LPC_IBDF,
+		PCH_IOAPIC_PCI_BUS << 8 | PCH_IOAPIC_PCI_SLOT << 3);
+
 	set_ioapic_id(VIO_APIC_VADDR, 0x02);
 
 	/* affirm full set of redirection table entries ("write once") */
@@ -65,6 +69,16 @@ static void pch_enable_ioapic(struct device *dev)
 	 * use Processor System Bus (0x01) to deliver interrupts.
 	 */
 	io_apic_write(VIO_APIC_VADDR, 0x03, 0x01);
+}
+
+static void enable_hpet(struct device *dev)
+{
+	size_t i;
+
+	/* Assign unique bus/dev/fn for each HPET */
+	for (i = 0; i < 8; ++i)
+		pci_write_config16(dev, LPC_HnBDF(i),
+			PCH_HPET_PCI_BUS << 8 | PCH_HPET_PCI_SLOT << 3 | i);
 }
 
 /* PIRQ[n]_ROUT[3:0] - PIRQ Routing Control
@@ -436,6 +450,7 @@ static void lpc_init(struct device *dev)
 	pch_pirq_init(dev);
 	setup_i8259();
 	i8259_configure_irq_trigger(9, 1);
+	enable_hpet(dev);
 
 	/* Initialize power management */
 	pch_power_options(dev);

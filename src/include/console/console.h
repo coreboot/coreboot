@@ -64,6 +64,18 @@ void do_putchar(unsigned char byte);
 #define printk(LEVEL, fmt, args...) \
 	do { do_printk(LEVEL, fmt, ##args); } while (0)
 
+#if IS_ENABLED(CONFIG_CONSOLE_OVERRIDE_LOGLEVEL)
+/*
+ * This function should be implemented at mainboard level.
+ * The returned value will _replace_ the loglevel value;
+ */
+int get_console_loglevel(void);
+#else
+static inline int get_console_loglevel(void)
+{
+	return CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+}
+#endif
 #else
 static inline void console_init(void) {}
 static inline int console_log_level(int msg_level) { return 0; }

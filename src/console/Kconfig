@@ -298,6 +298,14 @@ config SPI_CONSOLE
 	  This is currently working only in ramstage due to how the spi
 	  drivers are written.
 
+config CONSOLE_OVERRIDE_LOGLEVEL
+	boolean
+	help
+	  Set to "y" when the platform overrides the loglevel by providing
+	  a get_console_loglevel routine.
+
+if !CONSOLE_OVERRIDE_LOGLEVEL
+
 choice
 	prompt "Default console log level"
 	default DEFAULT_CONSOLE_LOGLEVEL_8
@@ -354,6 +362,8 @@ config DEFAULT_CONSOLE_LOGLEVEL
 	default 8 if DEFAULT_CONSOLE_LOGLEVEL_8
 	help
 	  Map the log level config names to an integer.
+
+endif
 
 config NO_POST
 	bool "Don't show any POST codes"

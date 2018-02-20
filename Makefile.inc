@@ -550,6 +550,7 @@ romstage-y+=$(DEVICETREE_STATIC_C)
 verstage-y+=$(DEVICETREE_STATIC_C)
 bootblock-y+=$(DEVICETREE_STATIC_C)
 postcar-y+=$(DEVICETREE_STATIC_C)
+smm-y+=$(DEVICETREE_STATIC_C)
 
 #######################################################################
 # Clean up rules

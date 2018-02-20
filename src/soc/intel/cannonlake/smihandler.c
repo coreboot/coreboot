@@ -15,14 +15,103 @@
  * GNU General Public License for more details.
  */
 
+#include <chip.h>
 #include <console/console.h>
+#include <device/pci_def.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/pcr.h>
 #include <intelblocks/smihandler.h>
+#include <soc/p2sb.h>
+#include <soc/pci_devs.h>
+#include <soc/pcr_ids.h>
 #include <soc/pm.h>
+
+#define CSME0_FBE	0xf
+#define CSME0_BAR	0x0
+#define CSME0_FID	0xb0
 
 const struct smm_save_state_ops *get_smm_save_state_ops(void)
 {
 	return &em64t101_smm_ops;
+}
+
+static void pch_configure_endpoints(device_t dev, int epmask_id, uint32_t mask)
+{
+	uint32_t reg32;
+
+	reg32 = pci_read_config32(dev, PCH_P2SB_EPMASK(epmask_id));
+	pci_write_config32(dev, PCH_P2SB_EPMASK(epmask_id), reg32 | mask);
+}
+
+static void disable_sideband_access(device_t dev)
+{
+	u8 reg8;
+	uint32_t mask;
+
+	/* Remove the host accessing right to PSF register range. */
+	/* Set p2sb PCI offset EPMASK5 [29, 28, 27, 26] to [1, 1, 1, 1] */
+	mask = (1 << 29) | (1 << 28) | (1 << 27)  | (1 << 26);
+	pch_configure_endpoints(dev, 5, mask);
+
+	/* Set the "Endpoint Mask Lock!", P2SB PCI offset E2h bit[1] to 1. */
+	reg8 = pci_read_config8(dev, PCH_P2SB_E0 + 2);
+	pci_write_config8(dev, PCH_P2SB_E0 + 2, reg8 | (1 << 1));
+}
+
+static void pch_disable_heci(void)
+{
+	device_t dev = PCH_DEV_P2SB;
+	struct pcr_sbi_msg msg = {
+		.pid = PID_CSME0,
+		.offset = 0,
+		.opcode = PCR_WRITE,
+		.is_posted = false,
+		.fast_byte_enable = CSME0_FBE,
+		.bar = CSME0_BAR,
+		.fid = CSME0_FID
+	};
+	/* Bit 0: Set to make HECI#1 Function disable */
+	uint32_t data32 = 1;
+	uint8_t response;
+	int status;
+
+	/* unhide p2sb device */
+	pci_write_config8(dev, PCH_P2SB_E0 + 1, 0);
+
+	/* Send SBI command to make HECI#1 function disable */
+	status = pcr_execute_sideband_msg(&msg, &data32, &response);
+	if (status && response)
+		printk(BIOS_ERR, "Fail to make CSME function disable\n");
+
+	/* Ensure to Lock SBI interface after this command */
+	disable_sideband_access(dev);
+
+	/* hide p2sb device */
+	pci_write_config8(dev, PCH_P2SB_E0 + 1, 1);
+}
+
+/*
+ * Specific SOC SMI handler during ramstage finalize phase
+ *
+ * BIOS can't make CSME function disable as is due to POSTBOOT_SAI
+ * restriction in place from CNP chipset. Hence create SMI Handler to
+ * perform CSME function disabling logic during SMM mode.
+ */
+void smihandler_soc_at_finalize(void)
+{
+	const struct soc_intel_cannonlake_config *config;
+	const struct device *dev = dev_find_slot(0, PCH_DEVFN_CSE);
+
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_ERR, "%s: Could not find SoC devicetree config!\n",
+		       __func__);
+		return ;
+	}
+
+	config = dev->chip_info;
+
+	if (config->HeciEnabled == 0)
+		pch_disable_heci();
 }
 
 void smihandler_soc_check_illegal_access(uint32_t tco_sts)

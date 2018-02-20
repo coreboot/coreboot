@@ -25,6 +25,7 @@
 #define PID_GPIOCOM0	0x6e
 #define PID_DMI		0x88
 #define PID_PSTH	0x89
+#define PID_CSME0	0x90
 #define PID_ISCLK	0xad
 #define PID_PSF1	0xba
 #define PID_PSF2	0xbb

@@ -158,6 +158,199 @@
 #define GPIO_147			147
 #define GPIO_148			148
 
+/* IOMUX function names and values generated from BKDG. */
+#define GPIO_0_IOMUX_PWR_BTN_L 0
+#define GPIO_0_IOMUX_GPIOxx 1
+#define GPIO_1_IOMUX_SYS_RESET_L 0
+#define GPIO_1_IOMUX_GPIOxx 1
+#define GPIO_2_IOMUX_WAKE_L 0
+#define GPIO_2_IOMUX_GPIOxx 1
+#define GPIO_3_IOMUX_GPIOxx 0
+#define GPIO_4_IOMUX_GPIOxx 0
+#define GPIO_5_IOMUX_GPIOxx 0
+#define GPIO_5_IOMUX_DEVSLP0_S5 1
+#define GPIO_6_IOMUX_GPIOxx 0
+#define GPIO_6_IOMUX_LDT_RST_L 1
+#define GPIO_7_IOMUX_GPIOxx 0
+#define GPIO_7_IOMUX_LDT_PWROK 1
+#define GPIO_8_IOMUX_GPIOxx 0
+#define GPIO_8_IOMUX_SerPortTX_OUT 1
+#define GPIO_9_IOMUX_GPIOxx 0
+#define GPIO_9_IOMUX_SerPortRX_OUT 1
+#define GPIO_10_IOMUX_S0A3_GPIO 0
+#define GPIO_10_IOMUX_GPIOxx 1
+#define GPIO_11_IOMUX_GPIOxx 0
+#define GPIO_11_IOMUX_USB_OC7_L 1
+#define GPIO_12_IOMUX_IR_LED_L 0
+#define GPIO_12_IOMUX_LLB_L 1
+#define GPIO_12_IOMUX_GPIOxx 2
+#define GPIO_13_IOMUX_USB_OC5_L 0
+#define GPIO_13_IOMUX_GPIOxx 1
+#define GPIO_14_IOMUX_USB_OC6_L 0
+#define GPIO_14_IOMUX_GPIOxx 1
+#define GPIO_15_IOMUX_IR_RX1 0
+#define GPIO_15_IOMUX_GPIOxx 1
+#define GPIO_16_IOMUX_USB_OC0_L 0
+#define GPIO_16_IOMUX_TRST_L 1
+#define GPIO_16_IOMUX_GPIOxx 2
+#define GPIO_17_IOMUX_USB_OC1_L 0
+#define GPIO_17_IOMUX_TDI 1
+#define GPIO_17_IOMUX_GPIOxx 2
+#define GPIO_18_IOMUX_USB_OC2_L 0
+#define GPIO_18_IOMUX_TCK 1
+#define GPIO_18_IOMUX_GPIOxx 2
+#define GPIO_19_IOMUX_SCL1 0
+#define GPIO_19_IOMUX_I2C3_SCL 1
+#define GPIO_19_IOMUX_GPIOxx 2
+#define GPIO_20_IOMUX_SDA1 0
+#define GPIO_20_IOMUX_I2C3_SDA 1
+#define GPIO_20_IOMUX_GPIOxx 2
+#define GPIO_21_IOMUX_LPC_PD_L 0
+#define GPIO_21_IOMUX_GPIOxx 1
+#define GPIO_22_IOMUX_LPC_PME_L 0
+#define GPIO_22_IOMUX_GPIOxx 1
+#define GPIO_23_IOMUX_USB_OC4_L 0
+#define GPIO_23_IOMUX_IR_RX0 1
+#define GPIO_23_IOMUX_GPIOxx 2
+#define GPIO_24_IOMUX_USB_OC3_L 0
+#define GPIO_24_IOMUX_GPIOxx 1
+#define GPIO_25_IOMUX_SD0_CD 0
+#define GPIO_25_IOMUX_GPIOxx 1
+#define GPIO_26_IOMUX_PCIE_RST_L 0
+#define GPIO_26_IOMUX_GPIOxx 1
+#define GPIO_39_IOMUX_VDDGFX_PD 0
+#define GPIO_39_IOMUX_GPIOxx 1
+#define GPIO_40_IOMUX_GPIOxx 0
+#define GPIO_42_IOMUX_S5_MUX_CTRL 0
+#define GPIO_42_IOMUX_GPIOxx 1
+#define GPIO_67_IOMUX_GPIOxx 0
+#define GPIO_67_IOMUX_DEVSLP0 1
+#define GPIO_70_IOMUX_GPIOxx 0
+#define GPIO_70_IOMUX_DEVSLP1 1
+#define GPIO_74_IOMUX_LPCCLK0 0
+#define GPIO_74_IOMUX_GPIOxx 1
+#define GPIO_75_IOMUX_LPCCLK1 0
+#define GPIO_75_IOMUX_GPIOxx 1
+#define GPIO_76_IOMUX_GPIOxx 0
+#define GPIO_76_IOMUX_SPI_TPM_CS_L 1
+#define GPIO_84_IOMUX_FANIN0 0
+#define GPIO_84_IOMUX_GPIOxx 1
+#define GPIO_85_IOMUX_FANOUT0 0
+#define GPIO_85_IOMUX_GPIOxx 1
+#define GPIO_86_IOMUX_GPIOxx 1
+#define GPIO_87_IOMUX_SERIRQ 0
+#define GPIO_87_IOMUX_GPIOxx 1
+#define GPIO_88_IOMUX_LPC_CLKRUN_L 0
+#define GPIO_88_IOMUX_GPIOxx 1
+#define GPIO_90_IOMUX_GPIOxx 0
+#define GPIO_91_IOMUX_SPKR 0
+#define GPIO_91_IOMUX_GPIOxx 1
+#define GPIO_92_IOMUX_CLK_REQ0_L 0
+#define GPIO_92_IOMUX_SATA_IS0_L 1
+#define GPIO_92_IOMUX_SATA_ZP0_L 2
+#define GPIO_92_IOMUX_GPIOxx 3
+#define GPIO_93_IOMUX_SD0_LED 0
+#define GPIO_93_IOMUX_GPIOxx 1
+#define GPIO_95_IOMUX_GPIOxx 0
+#define GPIO_96_IOMUX_GPIOxx 0
+#define GPIO_97_IOMUX_GPIOxx 0
+#define GPIO_98_IOMUX_GPIOxx 0
+#define GPIO_99_IOMUX_GPIOxx 0
+#define GPIO_100_IOMUX_GPIOxx 0
+#define GPIO_101_IOMUX_SD0_WP 0
+#define GPIO_101_IOMUX_GPIOxx 1
+#define GPIO_102_IOMUX_SD0_PWR_CTRL 0
+#define GPIO_102_IOMUX_GPIOxx 1
+#define GPIO_113_IOMUX_SCL0 0
+#define GPIO_113_IOMUX_I2C2_SCL 1
+#define GPIO_113_IOMUX_GPIOxx 2
+#define GPIO_114_IOMUX_SDA0 0
+#define GPIO_114_IOMUX_I2C2_SDA 1
+#define GPIO_114_IOMUX_GPIOxx 2
+#define GPIO_115_IOMUX_CLK_REQ1_L 0
+#define GPIO_115_IOMUX_GPIOxx 1
+#define GPIO_116_IOMUX_CLK_REQ2_L 0
+#define GPIO_116_IOMUX_GPIOxx 1
+#define GPIO_117_IOMUX_ESPI_CLK 0
+#define GPIO_117_IOMUX_GPIOxx 1
+#define GPIO_118_IOMUX_SPI_CS1_L 0
+#define GPIO_118_IOMUX_GPIOxx 1
+#define GPIO_119_IOMUX_SPI_CS2_L 0
+#define GPIO_119_IOMUX_ESPI_CS_L 1
+#define GPIO_119_IOMUX_GPIOxx 2
+#define GPIO_120_IOMUX_ESPI_DAT1 0
+#define GPIO_120_IOMUX_GPIOxx 1
+#define GPIO_121_IOMUX_ESPI_DAT0 0
+#define GPIO_121_IOMUX_GPIOxx 1
+#define GPIO_122_IOMUX_ESPI_DAT2 0
+#define GPIO_122_IOMUX_GPIOxx 1
+#define GPIO_126_IOMUX_GA20IN 0
+#define GPIO_126_IOMUX_GPIOxx 1
+#define GPIO_129_IOMUX_KBRST_L 0
+#define GPIO_129_IOMUX_GPIOxx 1
+#define GPIO_130_IOMUX_SATA_ACT_L 0
+#define GPIO_130_IOMUX_GPIOxx 1
+#define GPIO_131_IOMUX_CLK_REQ3_L 0
+#define GPIO_131_IOMUX_SATA_IS1_L 1
+#define GPIO_131_IOMUX_SATA_ZP1_L 2
+#define GPIO_131_IOMUX_GPIOxx 3
+#define GPIO_132_IOMUX_CLK_REQG_L 0
+#define GPIO_132_IOMUX_OSCIN 1
+#define GPIO_132_IOMUX_GPIOxx 2
+#define GPIO_133_IOMUX_ESPI_DAT3 0
+#define GPIO_133_IOMUX_GPIOxx 1
+#define GPIO_135_IOMUX_UART0_CTS_L 0
+#define GPIO_135_IOMUX_GPIOxx 1
+#define GPIO_136_IOMUX_UART0_RXD 0
+#define GPIO_136_IOMUX_GPIOxx 1
+#define GPIO_137_IOMUX_UART0_RTS_L 0
+#define GPIO_137_IOMUX_GPIOxx 1
+#define GPIO_138_IOMUX_UART0_TXD 0
+#define GPIO_138_IOMUX_GPIOxx 1
+#define GPIO_139_IOMUX_UART0_INTR 0
+#define GPIO_139_IOMUX_GPIOxx 1
+#define GPIO_140_IOMUX_UART1_CTS_L 0
+#define GPIO_140_IOMUX_GPIOxx 1
+#define GPIO_141_IOMUX_UART1_RXD 0
+#define GPIO_141_IOMUX_GPIOxx 1
+#define GPIO_142_IOMUX_UART1_RTS_L 0
+#define GPIO_142_IOMUX_GPIOxx 1
+#define GPIO_143_IOMUX_UART1_TXD 0
+#define GPIO_143_IOMUX_GPIOxx 1
+#define GPIO_144_IOMUX_UART1_INTR 0
+#define GPIO_144_IOMUX_GPIOxx 1
+#define GPIO_145_IOMUX_I2C0_SCL 0
+#define GPIO_145_IOMUX_GPIOxx 1
+#define GPIO_146_IOMUX_I2C0_SDA 0
+#define GPIO_146_IOMUX_GPIOxx 1
+#define GPIO_147_IOMUX_I2C1_SCL 0
+#define GPIO_147_IOMUX_GPIOxx 1
+#define GPIO_148_IOMUX_I2C1_SDA 0
+#define GPIO_148_IOMUX_GPIOxx 1
+
+#define GPIO_OUTPUT_OUT_HIGH (FCH_GPIO_OUTPUT_ENABLE | FCH_GPIO_OUTPUT_VALUE)
+#define GPIO_OUTPUT_OUT_LOW FCH_GPIO_OUTPUT_ENABLE
+
+#define GPIO_PULL_PULL_UP FCH_GPIO_PULL_UP_ENABLE
+#define GPIO_PULL_PULL_DOWN FCH_GPIO_PULL_DOWN_ENABLE
+#define GPIO_PULL_PULL_NONE 0
+
+/* Native function pad configuration */
+#define PAD_NF(pin, func, pull) \
+	{ .gpio = (pin), \
+		.function = pin ## _IOMUX_ ## func, \
+		.control = GPIO_PULL ## _ ## pull }
+/* General purpose input pad configuration */
+#define PAD_GPI(pin, pull) \
+	{ .gpio = (pin), \
+		.function = pin ## _IOMUX_ ## GPIOxx, \
+		.control = GPIO_PULL ## _ ## pull }
+/* General purpose output pad configuration */
+#define PAD_GPO(pin, direction) \
+	{ .gpio = (pin), \
+		.function = pin ## _IOMUX_ ## GPIOxx, \
+		.control = GPIO_OUTPUT ## _OUT_ ## direction }
+
 typedef uint32_t gpio_t;
 
 /* Update interrupt settings for given GPIO */

@@ -163,7 +163,7 @@ void uart_init(int idx)
 {
 	struct am335x_uart *uart = uart_platform_baseptr(idx);
 	uint16_t div = (uint16_t) uart_baudrate_divisor(
-		CONFIG_TTYS0_BAUD, uart_platform_refclk(), 16);
+		get_uart_baudrate(), uart_platform_refclk(), 16);
 	am335x_uart_init(uart, div);
 }
 
@@ -189,7 +189,7 @@ void uart_fill_lb(void *data)
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
-	serial.baud = CONFIG_TTYS0_BAUD;
+	serial.baud = get_uart_baudrate();
 	serial.regwidth = 2;
 	lb_add_serial(&serial, data);
 

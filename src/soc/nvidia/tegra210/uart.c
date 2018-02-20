@@ -123,7 +123,7 @@ void uart_fill_lb(void *data)
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial.baseaddr = CONFIG_CONSOLE_SERIAL_TEGRA210_UART_ADDRESS;
-	serial.baud = CONFIG_TTYS0_BAUD;
+	serial.baud = get_uart_baudrate();
 	serial.regwidth = 4;
 	lb_add_serial(&serial, data);
 

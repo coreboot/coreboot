@@ -124,7 +124,7 @@ void uart_init(int idx)
 		return;
 
 	unsigned int div;
-	div = uart_baudrate_divisor(CONFIG_TTYS0_BAUD,
+	div = uart_baudrate_divisor(get_uart_baudrate(),
 				    uart_platform_refclk(), 16);
 	uart8250_mem_init(base, div);
 }
@@ -150,7 +150,7 @@ void uart_fill_lb(void *data)
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial.baseaddr = CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
-	serial.baud = CONFIG_TTYS0_BAUD;
+	serial.baud = get_uart_baudrate();
 	serial.regwidth = 1 << UART_SHIFT;
 	lb_add_serial(&serial, data);
 

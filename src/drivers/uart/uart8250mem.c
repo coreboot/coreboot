@@ -119,7 +119,7 @@ void uart_init(int idx)
 		return;
 
 	unsigned int div;
-	div = uart_baudrate_divisor(CONFIG_TTYS0_BAUD,
+	div = uart_baudrate_divisor(get_uart_baudrate(),
 		uart_platform_refclk(), uart_input_clock_divider());
 	uart8250_mem_init(base, div);
 }
@@ -156,7 +156,7 @@ void uart_fill_lb(void *data)
 	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
 	if (!serial.baseaddr)
 		return;
-	serial.baud = CONFIG_TTYS0_BAUD;
+	serial.baud = get_uart_baudrate();
 	if (IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM_32))
 		serial.regwidth = sizeof(uint32_t);
 	else

@@ -76,6 +76,14 @@ depends on UART_FOR_CONSOLE = 2
 comment "Serial port base address = 0x2e8"
 depends on UART_FOR_CONSOLE = 3
 
+config UART_OVERRIDE_BAUDRATE
+	boolean
+	help
+	  Set to "y" when the platform overrides the baudrate by providing
+	  a get_uart_baudrate routine.
+
+if !UART_OVERRIDE_BAUDRATE
+
 choice
 	prompt "Baud rate"
 	default CONSOLE_SERIAL_115200
@@ -128,6 +136,8 @@ config TTYS0_BAUD
 	default 9600 if CONSOLE_SERIAL_9600
 	help
 	  Map the Baud rates to an integer.
+
+endif
 
 # TODO: Allow user-friendly selection of settings other than 8n1.
 config TTYS0_LCS

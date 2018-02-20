@@ -61,7 +61,7 @@ static void serial_setbrg_dev(struct s5p_uart *uart)
 
 	// All UARTs share the same clock.
 	uclk = clock_get_periph_rate(PERIPH_ID_UART3);
-	val = uclk / CONFIG_TTYS0_BAUD;
+	val = uclk / get_uart_baudrate();
 
 	write32(&uart->ubrdiv, val / 16 - 1);
 
@@ -182,7 +182,7 @@ void uart_fill_lb(void *data)
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
-	serial.baud = CONFIG_TTYS0_BAUD;
+	serial.baud = get_uart_baudrate();
 	serial.regwidth = 4;
 	serial.input_hertz = uart_platform_refclk();
 	serial.uart_pci_addr = 0;

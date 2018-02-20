@@ -105,7 +105,7 @@ void uart_init(int idx)
 	struct a10_uart *uart_base = uart_platform_baseptr(idx);
 
 	/* Use default 8N1 encoding */
-	a10_uart_configure(uart_base, CONFIG_TTYS0_BAUD,
+	a10_uart_configure(uart_base, get_uart_baudrate(),
 		8, UART_PARITY_NONE, 1);
 	a10_uart_enable_fifos(uart_base);
 }

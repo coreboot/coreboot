@@ -87,7 +87,7 @@ static void mtk_uart_init(void)
 {
 	/* Use a hardcoded divisor for now. */
 	const unsigned uartclk = 26 * MHz;
-	const unsigned baudrate = CONFIG_TTYS0_BAUD;
+	const unsigned baudrate = get_uart_baudrate();
 	const uint8_t line_config = UART8250_LCR_WLS_8;	/* 8n1 */
 	unsigned highspeed, quot, divisor, remainder;
 
@@ -177,7 +177,7 @@ void uart_fill_lb(void *data)
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial.baseaddr = UART0_BASE;
-	serial.baud = CONFIG_TTYS0_BAUD;
+	serial.baud = get_uart_baudrate();
 	serial.regwidth = 4;
 	lb_add_serial(&serial, data);
 

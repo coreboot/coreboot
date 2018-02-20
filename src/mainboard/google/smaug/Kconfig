@@ -84,10 +84,6 @@ config EC_GOOGLE_CHROMEEC_I2C_BUS
 	hex
 	default 0x1
 
-config EC_GOOGLE_CHROMEEC_BOARDNAME
-	string
-	default "ryu"
-
 config GBB_HWID
 	string
 	depends on CHROMEOS

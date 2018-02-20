@@ -49,10 +49,6 @@ config UART_FOR_CONSOLE
 	int
 	default 3
 
-config EC_GOOGLE_CHROMEEC_BOARDNAME
-	string
-	default "pit"
-
 config GBB_HWID
 	string
 	depends on CHROMEOS

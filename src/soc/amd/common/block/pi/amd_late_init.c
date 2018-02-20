@@ -49,8 +49,8 @@ static void transfer_memory_info(TYPE17_DMI_INFO *dmi17, struct dimm_info *dimm)
 	dimm->bus_width = dmi17->DataWidth;
 	dimm->mod_id = dmi17->ManufacturerIdCode;
 	dimm->bank_locator = 0;
-	strncpy((char *)dimm->module_part_number, "NA",
-			sizeof(dimm->module_part_number));
+	strncpy((char *)dimm->module_part_number, dmi17->PartNumber,
+				sizeof(dimm->module_part_number));
 }
 
 static void prepare_dmi_17(void *unused)

@@ -298,7 +298,11 @@ static uint32_t integrate_firmwares(char *base, uint32_t pos, uint32_t *romsig,
 				free(base);
 				exit(1);
 			}
-			fstat(fd, &fd_stat);
+			if (fstat(fd, &fd_stat)) {
+				printf("fstat error: %s\n", strerror(errno));
+				free(base);
+				exit(1);
+			}
 
 			switch (fw_table[i].type) {
 			case AMD_FW_IMC:
@@ -369,7 +373,11 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 				free(base);
 				exit(1);
 			}
-			fstat(fd, &fd_stat);
+			if (fstat(fd, &fd_stat)) {
+				printf("fstat error: %s\n", strerror(errno));
+				free(base);
+				exit(1);
+			}
 			pspdir[4+4*i+1] = (uint32_t)fd_stat.st_size;
 
 			pspdir[4+4*i+2] = pos + rom_base_address;

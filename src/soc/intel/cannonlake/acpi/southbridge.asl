@@ -19,11 +19,11 @@
 /* PCI IRQ assignment */
 #include "pci_irqs.asl"
 
-/* eMMC, SD Card */
-#include "scs.asl"
-
 /* PCR access */
 #include <soc/intel/common/acpi/pcr.asl>
+
+/* eMMC, SD Card */
+#include "scs.asl"
 
 /* GPIO controller */
 #include "gpio.asl"

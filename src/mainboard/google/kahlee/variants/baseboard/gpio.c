@@ -91,7 +91,7 @@ const static struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
 	{ GPIO_40, Function0, OUTPUT_H },
 
 	/* GPIO_42 - S5_MUX_CTRL */
-	{ GPIO_42, Function0, OUTPUT_H },
+	{ GPIO_42, Function0, INPUT },
 
 	/* GPIO_70 - WLAN_PE_RST_L */
 	{ GPIO_70, Function0, OUTPUT_H },

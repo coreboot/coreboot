@@ -20,6 +20,8 @@
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
+	meminit_lpddr4_by_sku(&memupd->FspmConfig,
+		variant_lpddr4_config(), variant_memory_sku());
 }
 
 void mainboard_save_dimm_info(void)

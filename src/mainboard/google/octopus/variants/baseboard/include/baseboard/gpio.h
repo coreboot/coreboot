@@ -33,4 +33,10 @@
 
 #define GPIO_PCH_WP	GPIO_190
 
+/*  Memory SKU GPIOs. */
+#define MEM_CONFIG0	GPIO_68
+#define MEM_CONFIG1	GPIO_69
+#define MEM_CONFIG2	GPIO_70
+#define MEM_CONFIG3	GPIO_71
+
 #endif /* BASEBOARD_GPIO_H */

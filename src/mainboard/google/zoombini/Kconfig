@@ -77,6 +77,10 @@ config INCLUDE_SND_MAX98373_NHLT
 	select NHLT_DMIC_2CH_16B
 	select NHLT_MAX98373
 
+config MAX_CPUS
+	int
+	default 4
+
 config VARIANT_DIR
 	string
 	default "meowth" if BOARD_GOOGLE_MEOWTH

@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <cpuid.h>
+#include <sys/io.h>
 
 #ifdef __NetBSD__
 #include <machine/sysarch.h>

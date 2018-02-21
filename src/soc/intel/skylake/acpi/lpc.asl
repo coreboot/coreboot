@@ -20,20 +20,6 @@ Device (LPCB)
 	Name (_ADR, 0x001f0000)
 	Name (_DDN, "LPC Bus Device")
 
-	Device (DMAC)
-	{
-		Name (_HID, EISAID ("PNP0200"))
-		Name (_DDN, "DMA Controller")
-		Name (_CRS, ResourceTemplate ()
-		{
-			IO (Decode16, 0x00, 0x00, 0x01, 0x20)
-			IO (Decode16, 0x81, 0x81, 0x01, 0x11)
-			IO (Decode16, 0x93, 0x93, 0x01, 0x0d)
-			IO (Decode16, 0xc0, 0xc0, 0x01, 0x20)
-			DMA (Compatibility, NotBusMaster, Transfer8_16) { 4 }
-		})
-	}
-
 	Device (FWH)
 	{
 		Name (_HID, EISAID ("INT0800"))
@@ -82,17 +68,6 @@ Device (LPCB)
 			IO (Decode16, 0xbc, 0xbc, 0x01, 0x02)
 			IO (Decode16, 0x4d0, 0x4d0, 0x01, 0x02)
 			IRQNoFlags () { 2 }
-		})
-	}
-
-	Device (MATH)
-	{
-		Name (_HID, EISAID ("PNP0C04"))
-		Name (_DDN, "Floating Point Unit")
-		Name (_CRS, ResourceTemplate ()
-		{
-			IO (Decode16, 0xf0, 0xf0, 0x01, 0x01)
-			IRQNoFlags () { 13 }
 		})
 	}
 

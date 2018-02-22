@@ -37,6 +37,10 @@ const char *smbios_mainboard_serial_number(void);
 const char *smbios_mainboard_version(void);
 void smbios_mainboard_set_uuid(u8 *uuid);
 const char *smbios_mainboard_bios_version(void);
+const char *smbios_mainboard_asset_tag(void);
+u8 smbios_mainboard_feature_flags(void);
+const char *smbios_mainboard_location_in_chassis(void);
+
 const char *smbios_mainboard_sku(void);
 u8 smbios_mainboard_enclosure_type(void);
 #ifdef CONFIG_MAINBOARD_FAMILY
@@ -267,6 +271,22 @@ struct smbios_type1 {
 	u8 eos[2];
 } __packed;
 
+typedef enum {
+	SMBIOS_BOARD_TYPE_UNKNOWN = 0x01,
+	SMBIOS_BOARD_TYPE_OTHER = 0x02,
+	SMBIOS_BOARD_TYPE_SERVER_BLADE = 0x03,
+	SMBIOS_BOARD_TYPE_CONNECTIVITY_SWITCH = 0x04,
+	SMBIOS_BOARD_TYPE_SYSTEM_MANAGEMENT_MODULE = 0x05,
+	SMBIOS_BOARD_TYPE_PROCESSOR_MODULE = 0x06,
+	SMBIOS_BOARD_TYPE_IO_MODULE = 0x07,
+	SMBIOS_BOARD_TYPE_MEMORY_MODULE = 0x08,
+	SMBIOS_BOARD_TYPE_DAUGHTER_BOARD = 0x09,
+	SMBIOS_BOARD_TYPE_MOTHERBOARD = 0x0a,
+	SMBIOS_BOARD_TYPE_PROCESSOR_MEMORY_MODULE = 0x0b,
+	SMBIOS_BOARD_TYPE_PROCESSOR_IO_MODULE = 0x0c,
+	SMBIOS_BOARD_TYPE_INTERCONNECT_BOARD = 0x0d,
+} smbios_board_type;
+
 struct smbios_type2 {
 	u8 type;
 	u8 length;
@@ -275,6 +295,11 @@ struct smbios_type2 {
 	u8 product_name;
 	u8 version;
 	u8 serial_number;
+	u8 asset_tag;
+	u8 feature_flags;
+	u8 location_in_chassis;
+	u16 chassis_handle;
+	u8 board_type;
 	u8 eos[2];
 } __packed;
 
@@ -509,5 +534,7 @@ struct smbios_type127 {
 
 void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
 	struct smbios_type17 *t);
+
+smbios_board_type smbios_mainboard_board_type(void);
 
 #endif

@@ -381,6 +381,26 @@ void __attribute__((weak)) smbios_mainboard_set_uuid(u8 *uuid)
 }
 #endif
 
+const char *__attribute__((weak)) smbios_mainboard_asset_tag(void)
+{
+	return "";
+}
+
+u8 __attribute__((weak)) smbios_mainboard_feature_flags(void)
+{
+	return 0;
+}
+
+const char *__attribute__((weak)) smbios_mainboard_location_in_chassis(void)
+{
+	return "";
+}
+
+smbios_board_type __attribute__((weak)) smbios_mainboard_board_type(void)
+{
+	return SMBIOS_BOARD_TYPE_UNKNOWN;
+}
+
 const char *__attribute__((weak)) smbios_mainboard_sku(void)
 {
 	return "";
@@ -419,7 +439,8 @@ static int smbios_write_type1(unsigned long *current, int handle)
 	return len;
 }
 
-static int smbios_write_type2(unsigned long *current, int handle)
+static int smbios_write_type2(unsigned long *current, int handle,
+			      const int chassis_handle)
 {
 	struct smbios_type2 *t = (struct smbios_type2 *)*current;
 	int len = sizeof(struct smbios_type2);
@@ -435,6 +456,12 @@ static int smbios_write_type2(unsigned long *current, int handle)
 	t->serial_number = smbios_add_string(t->eos,
 		smbios_mainboard_serial_number());
 	t->version = smbios_add_string(t->eos, smbios_mainboard_version());
+	t->asset_tag = smbios_add_string(t->eos, smbios_mainboard_asset_tag());
+	t->feature_flags = smbios_mainboard_feature_flags();
+	t->location_in_chassis = smbios_add_string(t->eos,
+		smbios_mainboard_location_in_chassis());
+	t->board_type = smbios_mainboard_board_type();
+	t->chassis_handle = chassis_handle;
 	len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
 	return len;
@@ -642,7 +669,8 @@ unsigned long smbios_write_tables(unsigned long current)
 	update_max(len, max_struct_size, smbios_write_type1(&current,
 		handle++));
 	update_max(len, max_struct_size, smbios_write_type2(&current,
-		handle++));
+		handle, handle + 1)); /* The chassis handle is the next one */
+	handle++;
 	update_max(len, max_struct_size, smbios_write_type3(&current,
 		handle++));
 	update_max(len, max_struct_size, smbios_write_type4(&current,

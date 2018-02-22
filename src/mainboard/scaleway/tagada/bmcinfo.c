@@ -20,6 +20,7 @@
 #include <arch/early_variables.h>
 
 #include <console/console.h>
+#include <console/uart.h>
 
 #include "bmcinfo.h"
 
@@ -189,6 +190,15 @@ int bmcinfo_disable_nic1(void)
 }
 
 /* Add override functions below */
+
+/* Override default uart baudrate */
+unsigned int get_uart_baudrate(void)
+{
+	int baudrate = bmcinfo_baudrate();
+	if (baudrate)
+		return baudrate;
+	return 115200;
+}
 
 #if __CONSOLE_ENABLE__
 /* Override default console loglevel */

@@ -195,11 +195,34 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
 	}
 }
 
+/* This function will fill the corresponding part number */
+static void smbios_fill_dimm_part_number(char *part_number,
+	struct smbios_type17 *t)
+{
+	int i, invalid;
+
+	invalid = 0; /* assume valid */
+	for (i = 0; i < DIMM_INFO_PART_NUMBER_SIZE - 1; i++) {
+		if (part_number[i] < ' ') {
+			invalid = 1;
+			part_number[i] = '*';
+		}
+	}
+	if (invalid) {
+		char string_buffer[64];
+
+		snprintf(string_buffer, sizeof(string_buffer), "Invalid (%s)",
+								part_number);
+		t->part_number = smbios_add_string(t->eos, string_buffer);
+	} else
+		t->part_number = smbios_add_string(t->eos, part_number);
+
+}
+
 static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 					 unsigned long *current, int *handle)
 {
 	struct smbios_type17 *t = (struct smbios_type17 *)*current;
-	uint8_t length;
 	char locator[40];
 
 	memset(t, 0, sizeof(struct smbios_type17));
@@ -236,8 +259,7 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 
 	smbios_fill_dimm_manufacturer_from_id(dimm->mod_id, t);
 	/* put '\0' in the end of data */
-	length = sizeof(dimm->serial);
-	dimm->serial[length - 1] = '\0';
+	dimm->serial[DIMM_INFO_SERIAL_SIZE - 1] = '\0';
 	if (dimm->serial[0] == 0)
 		t->serial_number = smbios_add_string(t->eos, "None");
 	else
@@ -252,10 +274,8 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	t->bank_locator = smbios_add_string(t->eos, locator);
 
 	/* put '\0' in the end of data */
-	length = sizeof(dimm->module_part_number);
-	dimm->module_part_number[length - 1] = '\0';
-	t->part_number = smbios_add_string(t->eos,
-				      (const char *)dimm->module_part_number);
+	dimm->module_part_number[DIMM_INFO_PART_NUMBER_SIZE - 1] = '\0';
+	smbios_fill_dimm_part_number((char *)dimm->module_part_number, t);
 
 	/* Synchronous = 1 */
 	t->type_detail = 0x0080;

@@ -19,6 +19,10 @@
 #include <stdint.h>
 #include <compiler.h>
 
+#define DIMM_INFO_SERIAL_SIZE		5
+#define DIMM_INFO_PART_NUMBER_SIZE	19
+#define DIMM_INFO_TOTAL			8	/* Maximum num of dimm is 8 */
+
 /*
  * If this table is filled and put in CBMEM,
  * then these info in CBMEM will be used to generate smbios type 17 table
@@ -31,10 +35,10 @@ struct dimm_info {
 	uint8_t channel_num;
 	uint8_t dimm_num;
 	uint8_t bank_locator;
-	/* The 5th byte is '\0' for the end of string */
-	uint8_t serial[5];
-	/* The 19th byte is '\0' for the end of string */
-	uint8_t module_part_number[19];
+	/* The last byte is '\0' for the end of string */
+	uint8_t serial[DIMM_INFO_SERIAL_SIZE];
+	/* The last byte is '\0' for the end of string */
+	uint8_t module_part_number[DIMM_INFO_PART_NUMBER_SIZE];
 	uint16_t mod_id;
 	uint8_t mod_type;
 	uint8_t bus_width;
@@ -42,8 +46,7 @@ struct dimm_info {
 
 struct memory_info {
 	uint8_t dimm_cnt;
-	/* Maximum num of dimm is 8 */
-	struct dimm_info dimm[8];
+	struct dimm_info dimm[DIMM_INFO_TOTAL];
 } __packed;
 
 #endif

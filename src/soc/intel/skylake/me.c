@@ -14,6 +14,7 @@
  */
 
 #include <arch/io.h>
+#include <bootstate.h>
 #include <commonlib/helpers.h>
 #include <compiler.h>
 #include <console/console.h>
@@ -202,6 +203,79 @@ static const char * const me_progress_bup_values[] = {
 	[ME_HFS2_STATE_BUP_M0_KERN_LOAD] =
 	"M0 kernel load",
 };
+
+static void print_me_version(void *unused)
+{
+	struct mkhi_hdr {
+		uint8_t group_id;
+		uint8_t command:7;
+		uint8_t is_resp:1;
+		uint8_t rsvd;
+		uint8_t result;
+	} __packed;
+
+	struct version {
+		uint16_t minor;
+		uint16_t major;
+		uint16_t build;
+		uint16_t hotfix;
+	} __packed;
+
+	struct fw_ver_resp {
+		struct mkhi_hdr hdr;
+		struct version code;
+		struct version rec;
+		struct version fitc;
+	} __packed;
+
+	const struct mkhi_hdr fw_ver_msg = {
+		.group_id = MKHI_GEN_GROUP_ID,
+		.command = MKHI_GET_FW_VERSION,
+	};
+
+	struct fw_ver_resp resp;
+	size_t resp_size = sizeof(resp);
+	union me_hfs hfs;
+
+	/*
+	 * Print ME version only if UART debugging is enabled. Else, it takes ~1
+	 * second to talk to ME and get this information.
+	 */
+	if (!IS_ENABLED(CONFIG_UART_DEBUG))
+		return;
+
+	hfs.data = me_read_config32(PCI_ME_HFSTS1);
+	/*
+	 * This command can be run only if:
+	 * - Working state is normal and
+	 * - Operation mode is normal.
+	 */
+	if ((hfs.fields.working_state != ME_HFS_CWS_NORMAL) ||
+	    (hfs.fields.operation_mode != ME_HFS_MODE_NORMAL))
+		goto failed;
+
+	if (!heci_send(&fw_ver_msg, sizeof(fw_ver_msg), BIOS_HOST_ADD,
+		       HECI_MKHI_ADD))
+		goto failed;
+
+	if (!heci_receive(&resp, &resp_size))
+		goto failed;
+
+	if (resp.hdr.result)
+		goto failed;
+
+	printk(BIOS_DEBUG, "ME: Version : %d.%d.%d.%d\n", resp.code.major,
+	       resp.code.minor, resp.code.hotfix, resp.code.build);
+	return;
+
+failed:
+	printk(BIOS_DEBUG, "ME: Version : Unavailable\n");
+}
+/*
+ * This can't be put in intel_me_status because by the time control
+ * reaches there, ME doesn't respond to GET_FW_VERSION command.
+ */
+BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_EXIT, print_me_version, NULL);
 
 void intel_me_status(void)
 {

@@ -202,8 +202,12 @@ union me_hfs6 {
 	} __packed fields;
 };
 
+#define MKHI_GEN_GROUP_ID	0xff
+
 /* Reset Request  */
 #define MKHI_GLOBAL_RESET	0x0b
+
+#define MKHI_GET_FW_VERSION	0x02
 
 #define GR_ORIGIN_BIOS_MEM_INIT	0x01
 #define GR_ORIGIN_BIOS_POST	0x02

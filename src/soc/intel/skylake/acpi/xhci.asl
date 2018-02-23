@@ -29,14 +29,20 @@ Method (UPWE, 3, Serialized)
 	/* Map ((XMEM << 16) + Local0 in PSCR */
 	OperationRegion (PSCR, SystemMemory,
 			 Add (ShiftLeft (Arg2, 16), Local0), 0x10)
-	Field (PSCR, AnyAcc, NoLock, Preserve)
+	Field (PSCR, DWordAcc, NoLock, Preserve)
 	{
-		, 25,
-		UPCE, 1,
-		UPDE, 1,
+		PSCT, 32,
 	}
-	Store (One, UPCE)
-	Store (One, UPDE)
+	Store(PSCT, Local0)
+	/*
+	 * And port status/control reg with RO and RWS bits
+	 * RO bits: 0, 2:3, 10:13, 24, 28:30
+	 * RWS bits: 5:9, 14:16, 25:27
+	 */
+	And (Local0, ~0x80FE0012, Local0)
+	/* Set WCE and WDE bits */
+	Or (Local0, 0x6000000, Local0)
+	Store(Local0, PSCT)
 }
 
 /*

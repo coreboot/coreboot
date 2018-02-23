@@ -209,8 +209,10 @@ F:	src/mainboard/intel/stargo2/
 
 INTEL FSP DENVERTON-NS SOC & HARCUVAR CRB
 M:	SweeHeng Wong <swee.heng.wong@intel.com>
+M:	Jeff Daly <jeffrey.daly@intel.com>
 M:	Vanessa Eusebio <vanessa.f.eusebio@intel.com>
-M:	Fei Wang <fei.z.wang@intel.com>
+M:	David Guckian <david.guckian@intel.com>
+M:	Shine Liu <shine.liu@intel.com>
 S:	Supported
 F:	src/mainboard/intel/harcuvar/
 F:	src/soc/intel/denverton_ns/

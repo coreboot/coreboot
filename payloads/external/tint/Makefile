@@ -1,4 +1,4 @@
-project_url=http://http.debian.net/debian/pool/main/t/tint/tint_0.04+nmu1.tar.gz
+project_url=https://mirror.fsf.org/trisquel/pool/main/t/tint/tint_0.04+nmu1.tar.gz
 archive_name=tint_0.04+nmu1.tar.gz
 
 unexport KCONFIG_AUTOHEADER

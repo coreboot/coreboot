@@ -376,7 +376,7 @@ diff -rupN tint-0.04+nmu1/tint.c tint/tint.c
     rand_init ();							/* must be called before engine_init () */
     engine_init (&engine,score_function);	/* must be called before using engine.curshape */
     finished = shownext = FALSE;
-@@ -673,11 +692,20 @@ int main (int argc,char *argv[])
+@@ -673,11 +692,31 @@ int main (int argc,char *argv[])
     /* Restore console settings and exit */
     io_close ();
 +#if 0
@@ -389,9 +389,20 @@ diff -rupN tint-0.04+nmu1/tint.c tint/tint.c
  		savescores (GETSCORE (engine.score));
  	 }
 +#endif
-+   printf("Bye.\n");
++   printf("Press 'q' to reboot...\n");
 +   refresh();
-+   for(;;); //halt();
++   for (;;) {
++   	in_flush ();
++   	while ((ch = in_getch ()) == ERR) ;   /* Wait for a key to be pressed */
++   	if (ch == 'q') { /* reboot */
++   		outb(0x6, 0xcf9);
++   		for(;;); //halt();
++   	}
++   	else {
++   		in_flush ();
++   	}
++   }
++
 +#if 0
     exit (EXIT_SUCCESS);
 +#endif

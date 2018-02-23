@@ -376,7 +376,25 @@ diff -rupN tint-0.04+nmu1/tint.c tint/tint.c
     rand_init ();							/* must be called before engine_init () */
     engine_init (&engine,score_function);	/* must be called before using engine.curshape */
     finished = shownext = FALSE;
-@@ -673,11 +692,31 @@ int main (int argc,char *argv[])
+@@ -632,13 +651,15 @@ int main (int argc,char *argv[])
+ 				  /* pause */
+ 				case 'p':
+ 				  out_setcolor (COLOR_WHITE,COLOR_BLACK);
+-				  out_gotoxy ((out_width () - 34) / 2,out_height () - 2);
++				  out_gotoxy ((out_width () - 34) / 2,out_height () / 2);
+ 				  out_printf ("Paused - Press any key to continue");
++				  refresh ();
+ 				  while ((ch = in_getch ()) == ERR) ;	/* Wait for a key to be pressed */
+ 				  in_flush ();							/* Clear keyboard buffer */
+-				  out_gotoxy ((out_width () - 34) / 2,out_height () - 2);
++				  out_gotoxy ((out_width () - 34) / 2,out_height () / 2);
+ 				  out_printf ("                                  ");
++				  refresh ();
+ 				  break;
+ 				  /* unknown keypress */
+ 				default:
+ 				  out_beep ();
+@@ -673,11 +694,31 @@ int main (int argc,char *argv[])
     /* Restore console settings and exit */
     io_close ();
 +#if 0

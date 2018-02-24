@@ -18,7 +18,7 @@
 #include <string.h>
 
 /* Compilation:  gcc -o spkmodem-recv spkmodem-recv  */
-/* Usage: parecord --channels=1 --rate=48000 --format=s16le | ./spkmodem-recv */
+/* Usage: parec --channels=1 --rate=48000 --format=s16le | ./spkmodem-recv */
 
 #define SAMPLES_PER_TRAME 240
 #define FREQ_SEP_MIN 5

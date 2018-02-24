@@ -272,7 +272,7 @@ static int __unused google_chromeec_set_mask(u8 type, u64 mask)
 
 static int google_chromeec_set_s3_lazy_wake_mask(uint64_t mask)
 {
-	printk(BIOS_DEBUG, "Chrome EC: Set S3 LAZY WAKE mask to 0x%016llx\n\n",
+	printk(BIOS_DEBUG, "Chrome EC: Set S3 LAZY WAKE mask to 0x%016llx\n",
 				mask);
 	return google_chromeec_set_mask
 		(EC_HOST_EVENT_LAZY_WAKE_MASK_S3, mask);
@@ -280,7 +280,7 @@ static int google_chromeec_set_s3_lazy_wake_mask(uint64_t mask)
 
 static int google_chromeec_set_s5_lazy_wake_mask(uint64_t mask)
 {
-	printk(BIOS_DEBUG, "Chrome EC: Set S5 LAZY WAKE mask to 0x%016llx\n\n",
+	printk(BIOS_DEBUG, "Chrome EC: Set S5 LAZY WAKE mask to 0x%016llx\n",
 				mask);
 	return google_chromeec_set_mask
 		(EC_HOST_EVENT_LAZY_WAKE_MASK_S5, mask);
@@ -288,7 +288,7 @@ static int google_chromeec_set_s5_lazy_wake_mask(uint64_t mask)
 
 static int google_chromeec_set_s0ix_lazy_wake_mask(uint64_t mask)
 {
-	printk(BIOS_DEBUG, "Chrome EC: Set S0iX LAZY WAKE mask to 0x%016llx\n\n",
+	printk(BIOS_DEBUG, "Chrome EC: Set S0iX LAZY WAKE mask to 0x%016llx\n",
 				mask);
 	return google_chromeec_set_mask
 		(EC_HOST_EVENT_LAZY_WAKE_MASK_S0IX, mask);

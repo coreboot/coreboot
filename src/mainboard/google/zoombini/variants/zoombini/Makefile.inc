@@ -13,13 +13,6 @@
 ## GNU General Public License for more details.
 ##
 
-SPD_SOURCES = Samsung_K4F8E304HB_1GB		# 0b000
-SPD_SOURCES += Hynix_H9HCNNN8KUMLHR_1GB		# 0b001
-SPD_SOURCES += Samsung_K4F6E3S4HM_2GB		# 0b010
-SPD_SOURCES += Hynix_H9HCNNNCPUMLHR_4GB		# 0b011
-
-bootblock-y += gpio.c
-
-romstage-y += memory.c
-
-ramstage-y += gpio.c
+SPD_SOURCES = Hynix_H9HCNNN8KUMLHR_1GB          # 0b000
+SPD_SOURCES += Micron_MT53B512M32D2_2GB         # 0b001
+SPD_SOURCES += Micron_MT53B1024M32D4_4GB        # 0b010

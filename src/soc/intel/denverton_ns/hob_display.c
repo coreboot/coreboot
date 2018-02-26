@@ -17,6 +17,7 @@
 #include <console/console.h>
 #include <fsp/util.h>
 #include <lib.h>
+#include <soc/hob_mem.h>
 
 static const uint8_t fsp_hob_resource_owner_graphics_guid[16] = {
 	0xa7, 0x3a, 0x7c, 0x9c, 0x32, 0x55, 0x17, 0x49,
@@ -68,4 +69,51 @@ const char *soc_get_guid_name(const uint8_t *guid)
 void soc_display_hob(const struct hob_header *hob)
 {
 	hexdump(hob, hob->length);
+}
+
+void soc_display_fsp_smbios_memory_info_hob(
+		const FSP_SMBIOS_MEMORY_INFO *memory_info_hob)
+{
+	int channel, dimm;
+	const DIMM_INFO *dimm_info;
+	const CHANNEL_INFO *channel_info;
+
+	/* Display the data in the FSP_SMBIOS_MEMORY_INFO HOB */
+	printk(BIOS_DEBUG, "FSP_SMBIOS_MEMORY_INFO HOB\n");
+	printk(BIOS_DEBUG, "    0x%02x: Revision\n",
+		memory_info_hob->Revision);
+	printk(BIOS_DEBUG, "    0x%02x: MemoryType\n",
+		memory_info_hob->MemoryType);
+	printk(BIOS_DEBUG, "    %d: MemoryFrequencyInMHz\n",
+		memory_info_hob->MemoryFrequencyInMHz);
+	printk(BIOS_DEBUG, "    %d: DataWidth in bits\n",
+		memory_info_hob->DataWidth);
+	printk(BIOS_DEBUG, "    0x%02x: ErrorCorrectionType\n",
+		memory_info_hob->ErrorCorrectionType);
+	printk(BIOS_DEBUG, "    0x%02x: ChannelCount\n",
+		memory_info_hob->ChannelCount);
+	for (channel = 0; channel < memory_info_hob->ChannelCount;
+		channel++) {
+		channel_info = &memory_info_hob->ChannelInfo[channel];
+		printk(BIOS_DEBUG, "  Channel %d\n", channel);
+		printk(BIOS_DEBUG, "      0x%02x: ChannelId\n",
+			channel_info->ChannelId);
+		printk(BIOS_DEBUG, "      0x%02x: DimmCount\n",
+			channel_info->DimmCount);
+		for (dimm = 0; dimm < channel_info->DimmCount;
+			dimm++) {
+			dimm_info = &channel_info->DimmInfo[dimm];
+			printk(BIOS_DEBUG, "   DIMM %d\n", dimm);
+			printk(BIOS_DEBUG, "      0x%02x: DimmId\n",
+				dimm_info->DimmId);
+			printk(BIOS_DEBUG, "      %d: SizeInMb\n",
+				dimm_info->SizeInMb);
+			printk(BIOS_DEBUG, "    0x%04x: MfgId\n",
+				dimm_info->MfgId);
+			printk(BIOS_DEBUG, "%*.*s: ModulePartNum\n",
+				(int)sizeof(dimm_info->ModulePartNum),
+				(int)sizeof(dimm_info->ModulePartNum),
+				dimm_info->ModulePartNum);
+		}
+	}
 }

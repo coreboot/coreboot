@@ -28,74 +28,22 @@
 #include <soc/smbus.h>
 #include <soc/smm.h>
 #include <soc/soc_util.h>
+#include <soc/hob_mem.h>
 
 void __weak mainboard_config_gpios(void) {}
-
-#define FSP_SMBIOS_MEMORY_INFO_GUID	\
-{	\
-	0x8c, 0x10, 0xa1, 0x01, 0xee, 0x9d, 0x84, 0x49,	\
-	0x88, 0xc3, 0xee, 0xe8, 0xc4, 0x9e, 0xfb, 0x89	\
-}
 
 #if IS_ENABLED(CONFIG_DISPLAY_HOBS)
 static void display_fsp_smbios_memory_info_hob(void)
 {
-	int channel, dimm;
-	size_t hob_size;
-	const DIMM_INFO *dimm_info;
-	const CHANNEL_INFO *channel_info;
 	const FSP_SMBIOS_MEMORY_INFO *memory_info_hob;
-	const uint8_t smbios_memory_info_guid[16] =
-			FSP_SMBIOS_MEMORY_INFO_GUID;
 
-	/* Locate the memory info HOB */
-	memory_info_hob = fsp_find_extension_hob_by_guid(
-				smbios_memory_info_guid,
-				&hob_size);
+	/* Get the memory info HOB */
+	memory_info_hob = soc_get_fsp_smbios_memory_info_hob();
 
-	if (memory_info_hob == NULL || hob_size == 0) {
-		printk(BIOS_ERR, "SMBIOS MEMORY_INFO_DATA_HOB not found\n");
+	if (memory_info_hob == NULL)
 		return;
-	}
 
-	/* Display the data in the FSP_SMBIOS_MEMORY_INFO HOB */
-	printk(BIOS_DEBUG, "FSP_SMBIOS_MEMORY_INFO HOB\n");
-	printk(BIOS_DEBUG, "    0x%02x: Revision\n",
-		memory_info_hob->Revision);
-	printk(BIOS_DEBUG, "    0x%02x: MemoryType\n",
-		memory_info_hob->MemoryType);
-	printk(BIOS_DEBUG, "    %d: MemoryFrequencyInMHz\n",
-		memory_info_hob->MemoryFrequencyInMHz);
-	printk(BIOS_DEBUG, "    %d: DataWidth in bits\n",
-		memory_info_hob->DataWidth);
-	printk(BIOS_DEBUG, "    0x%02x: ErrorCorrectionType\n",
-		memory_info_hob->ErrorCorrectionType);
-	printk(BIOS_DEBUG, "    0x%02x: ChannelCount\n",
-		memory_info_hob->ChannelCount);
-	for (channel = 0; channel < memory_info_hob->ChannelCount;
-		channel++) {
-		channel_info = &memory_info_hob->ChannelInfo[channel];
-		printk(BIOS_DEBUG, "  Channel %d\n", channel);
-		printk(BIOS_DEBUG, "      0x%02x: ChannelId\n",
-			channel_info->ChannelId);
-		printk(BIOS_DEBUG, "      0x%02x: DimmCount\n",
-			channel_info->DimmCount);
-		for (dimm = 0; dimm < channel_info->DimmCount;
-			dimm++) {
-			dimm_info = &channel_info->DimmInfo[dimm];
-			printk(BIOS_DEBUG, "   DIMM %d\n", dimm);
-			printk(BIOS_DEBUG, "      0x%02x: DimmId\n",
-				dimm_info->DimmId);
-			printk(BIOS_DEBUG, "      %d: SizeInMb\n",
-				dimm_info->SizeInMb);
-			printk(BIOS_DEBUG, "    0x%04x: MfgId\n",
-				dimm_info->MfgId);
-			printk(BIOS_DEBUG, "%*.*s: ModulePartNum\n",
-				(int)sizeof(dimm_info->ModulePartNum),
-				(int)sizeof(dimm_info->ModulePartNum),
-				dimm_info->ModulePartNum);
-		}
-	}
+	soc_display_fsp_smbios_memory_info_hob(memory_info_hob);
 }
 #endif
 

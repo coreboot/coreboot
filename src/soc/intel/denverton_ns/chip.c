@@ -32,6 +32,7 @@
 #include <soc/ramstage.h>
 #include <soc/fiamux.h>
 #include <spi-generic.h>
+#include <soc/hob_mem.h>
 
 static void pci_domain_set_resources(device_t dev)
 {
@@ -64,7 +65,11 @@ static void soc_enable_dev(device_t dev)
 		dev->ops = &cpu_bus_ops;
 }
 
-static void soc_init(void *data) { fsp_silicon_init(false); }
+static void soc_init(void *data)
+{
+	fsp_silicon_init(false);
+	soc_save_dimm_info();
+}
 
 static void soc_final(void *data) {}
 

@@ -19,10 +19,13 @@
 #include <device/device.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <memory_info.h>
 
 void denverton_init_cpus(device_t dev);
 void mainboard_silicon_init_params(FSPS_UPD *params);
 void southcluster_enable_dev(device_t dev);
+void mainboard_add_dimm_info(struct memory_info *mem_info, int channel,
+			     int dimm, int index);
 
 extern struct pci_operations soc_pci_ops;
 

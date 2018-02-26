@@ -63,6 +63,7 @@ ramstage-y += cpu.c
 ramstage-y += tsc_freq.c
 ramstage-y += spi.c
 ramstage-y += fiamux.c
+ramstage-y += hob_mem.c
 ramstage-$(CONFIG_DRIVERS_UART_8250MEM) += uart_debug.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smm.c

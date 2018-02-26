@@ -2941,6 +2941,9 @@
 #define PCI_DEVICE_ID_INTEL_SKL_SD		0x9d2d
 #define PCI_DEVICE_ID_INTEL_CNL_SD		0x9df5
 
+/* Intel EMMC device Ids */
+#define PCI_DEVICE_ID_INTEL_SKL_EMMC		0x9d2b
+
 /* Intel PCH Ids */
 #define PCH_CNL_LP_M_SUPER			0x9d80
 #define PCH_CNL_LP_M_SUPER_UNLOCK		0x9d81

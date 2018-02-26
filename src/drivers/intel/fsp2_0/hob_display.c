@@ -89,7 +89,7 @@ static const struct guid_name_map  guid_names[] = {
 	{ tseg_guid,			"TSEG" },
 };
 
-static const char *resource_name(enum resource_type type)
+static const char *resource_name(uint32_t type)
 {
 	if (type >= ARRAY_SIZE(resource_names))
 		return "UNKNOWN";

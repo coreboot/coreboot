@@ -28,8 +28,13 @@ enum {
 	SKU_3_SANTA = 3,
 	SKU_4_LAVA = 4,
 	SKU_5_LAVA = 5,
+	SKU_6_BLUE = 6,
+	SKU_7_BLUE = 7,
+	SKU_8_BRUCE = 8,
 	SKU_9_LAVA = 9,
 	SKU_10_LAVA = 10,
+	SKU_11_BRUCE = 11,
+	SKU_12_BLUE = 12,
 	SKU_61_ASTRONAUT = 61,
 	SKU_62_ASTRONAUT = 62,
 	SKU_160_NASHER = 160,
@@ -71,25 +76,63 @@ void mainboard_devtree_update(struct device *dev)
 	switch (sku_id) {
         case SKU_0_ASTRONAUT:
         case SKU_1_ASTRONAUT:
-		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
-		cfg->usb2eye[1].Usb20PerPortTxiSet = 2;
-		break;
+        case SKU_61_ASTRONAUT:
+        case SKU_62_ASTRONAUT:
+		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 4;
+		cfg->usb2eye[1].Usb20PerPortTxiSet = 4;
+		cfg->usb2eye[1].Usb20IUsbTxEmphasisEn = 1;
+		cfg->usb2eye[1].Usb20PerPortTxPeHalf = 0;
+		cfg->usb2eye[4].Usb20PerPortPeTxiSet = 7;
+		cfg->usb2eye[4].Usb20PerPortTxiSet = 7;
+		cfg->usb2eye[4].Usb20IUsbTxEmphasisEn = 1;
+		cfg->usb2eye[4].Usb20PerPortTxPeHalf = 0;
+                break;
 	case SKU_2_SANTA:
 	case SKU_3_SANTA:
-		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
-		cfg->usb2eye[1].Usb20PerPortTxiSet = 2;
-		break;
+		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 4;
+		cfg->usb2eye[1].Usb20PerPortTxiSet = 4;
+		cfg->usb2eye[1].Usb20IUsbTxEmphasisEn = 1;
+		cfg->usb2eye[1].Usb20PerPortTxPeHalf = 0;
+		cfg->usb2eye[4].Usb20PerPortPeTxiSet = 7;
+		cfg->usb2eye[4].Usb20PerPortTxiSet = 7;
+		cfg->usb2eye[4].Usb20IUsbTxEmphasisEn = 1;
+		cfg->usb2eye[4].Usb20PerPortTxPeHalf = 0;
+                break;
 	case SKU_4_LAVA:
 	case SKU_5_LAVA:
 	case SKU_9_LAVA:
 	case SKU_10_LAVA:
-		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
-		cfg->usb2eye[1].Usb20PerPortTxiSet = 2;
-		break;
-        case SKU_61_ASTRONAUT:
-        case SKU_62_ASTRONAUT:
-		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
-		cfg->usb2eye[1].Usb20PerPortTxiSet = 5;
+		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 4;
+		cfg->usb2eye[1].Usb20PerPortTxiSet = 4;
+		cfg->usb2eye[1].Usb20IUsbTxEmphasisEn = 1;
+		cfg->usb2eye[1].Usb20PerPortTxPeHalf = 0;
+		cfg->usb2eye[4].Usb20PerPortPeTxiSet = 7;
+		cfg->usb2eye[4].Usb20PerPortTxiSet = 7;
+		cfg->usb2eye[4].Usb20IUsbTxEmphasisEn = 1;
+		cfg->usb2eye[4].Usb20PerPortTxPeHalf = 0;
+                break;
+	case SKU_6_BLUE:
+	case SKU_7_BLUE:
+	case SKU_12_BLUE:
+		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 4;
+		cfg->usb2eye[1].Usb20PerPortTxiSet = 4;
+		cfg->usb2eye[1].Usb20IUsbTxEmphasisEn = 1;
+		cfg->usb2eye[1].Usb20PerPortTxPeHalf = 0;
+		cfg->usb2eye[4].Usb20PerPortPeTxiSet = 7;
+		cfg->usb2eye[4].Usb20PerPortTxiSet = 7;
+		cfg->usb2eye[4].Usb20IUsbTxEmphasisEn = 1;
+		cfg->usb2eye[4].Usb20PerPortTxPeHalf = 0;
+                break;
+	case SKU_8_BRUCE:
+	case SKU_11_BRUCE:
+		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 4;
+		cfg->usb2eye[1].Usb20PerPortTxiSet = 4;
+		cfg->usb2eye[1].Usb20IUsbTxEmphasisEn = 1;
+		cfg->usb2eye[1].Usb20PerPortTxPeHalf = 0;
+		cfg->usb2eye[4].Usb20PerPortPeTxiSet = 7;
+		cfg->usb2eye[4].Usb20PerPortTxiSet = 7;
+		cfg->usb2eye[4].Usb20IUsbTxEmphasisEn = 1;
+		cfg->usb2eye[4].Usb20PerPortTxPeHalf = 0;
                 break;
 	default:
 		break;

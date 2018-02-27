@@ -9,6 +9,7 @@ config SOC_INTEL_GLK
 	select SOC_INTEL_APOLLOLAKE
 	select SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
 	select SOC_INTEL_COMMON_BLOCK_SGX
+	select SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2
 	help
 	  Intel GLK support
 
@@ -373,5 +374,9 @@ config SOC_ESPI
 	default n
 	help
 	  Use eSPI bus instead of LPC
+
+config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
+	int
+	default 3
 
 endif

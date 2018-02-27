@@ -20,6 +20,7 @@
 #define _SOC_APOLLOLAKE_CHIP_H_
 
 #include <commonlib/helpers.h>
+#include <intelblocks/gspi.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 #include <intelblocks/lpc_lib.h>
@@ -39,6 +40,9 @@ enum pnp_settings {
 };
 
 struct soc_intel_apollolake_config {
+	/* GSPI */
+	struct gspi_cfg gspi[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
+
 	/*
 	 * Mapping from PCIe root port to CLKREQ input on the SOC. The SOC has
 	 * four CLKREQ inputs, but six root ports. Root ports without an

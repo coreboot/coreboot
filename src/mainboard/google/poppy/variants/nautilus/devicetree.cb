@@ -77,7 +77,8 @@ chip soc/intel/skylake
 	register "FastPkgCRampDisableSa" = "1"
 	register "SlowSlewRateForIa" = "3"      # Fast/16
 	register "SlowSlewRateForGt" = "3"      # Fast/16
-	register "SlowSlewRateForSa" = "3"      # Fast/16
+	register "SlowSlewRateForSa" = "2"      # Fast/8
+
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-------+-------+-------+-------+
 	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |

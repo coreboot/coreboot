@@ -35,7 +35,7 @@
 #include <timestamp.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
-#include <security/tpm/tis.h>
+#include <security/tpm/tspi.h>
 
 #include "dock.h"
 #include "arch/early_variables.h"
@@ -284,7 +284,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	if (!s3resume)
 		quick_ram_check();
 
-#if IS_ENABLED(CONFIG_LPC_TPM)
-	init_tpm(s3resume);
-#endif
+	if (IS_ENABLED(CONFIG_TPM1) || IS_ENABLED(CONFIG_TPM2))
+		tpm_setup(s3resume);
 }

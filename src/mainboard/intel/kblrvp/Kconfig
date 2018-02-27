@@ -14,32 +14,10 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_USES_FSP2_0
 	select MAINBOARD_HAS_CHROMEOS
 	select GENERIC_SPD_BIN
+	select MAINBOARD_HAS_LPC_TPM
 
 config VBOOT
 	select VBOOT_LID_SWITCH
-
-choice
-	prompt "TPM to USE"
-	default KBLRVP_TPM1_2
-	help
-	  This option allows you to select the TPM to use.
-	  Select whether the board does not have TPM, TPM 1.1 or TPM 2.0
-
-config KBLRVP_NO_TPM
-	bool "No TPM"
-	select VBOOT_MOCK_SECDATA if VBOOT
-
-config KBLRVP_TPM1_2
-	bool "TPM 1.1"
-	select MAINBOARD_HAS_LPC_TPM
-
-config KBLRVP_TPM2_0
-	bool "TPM 2.0"
-	select TPM2
-	select MAINBOARD_HAS_TPM2
-	select MAINBOARD_HAS_LPC_TPM
-
-endchoice
 
 config IRQ_SLOT_COUNT
 	int

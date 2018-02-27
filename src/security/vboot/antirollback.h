@@ -9,7 +9,8 @@
 #ifndef ANTIROLLBACK_H_
 #define ANTIROLLBACK_H_
 
-#include "tss_constants.h"
+#include <types.h>
+#include <security/tpm/tspi.h>
 
 struct vb2_context;
 enum vb2_pcr_digest;
@@ -55,27 +56,11 @@ uint32_t antirollback_write_space_rec_hash(const uint8_t *data, uint32_t size);
 /* Lock down recovery hash space in TPM. */
 uint32_t antirollback_lock_space_rec_hash(void);
 
-/****************************************************************************/
+/* Start of the root of trust */
+uint32_t vboot_setup_tpm(struct vb2_context *ctx);
 
-/*
- * The following functions are internal apis, listed here for use by unit tests
- * only.
- */
-
-/**
- * Ask vboot for a digest and extend a TPM PCR with it.
- */
-uint32_t tpm_extend_pcr(struct vb2_context *ctx, int pcr,
+/* vboot_extend_pcr function for vb2 context */
+uint32_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
 			enum vb2_pcr_digest which_digest);
-
-/**
- * Issue a TPM_Clear and reenable/reactivate the TPM.
- */
-uint32_t tpm_clear_and_reenable(void);
-
-/**
- * Start the TPM and establish the root of trust for the antirollback mechanism.
- */
-uint32_t setup_tpm(struct vb2_context *ctx);
 
 #endif  /* ANTIROLLBACK_H_ */

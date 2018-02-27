@@ -1,6 +1,7 @@
 config SPI_TPM
-	bool "SPI TPM"
-	depends on TPM2
+	bool
+	help
+	  SPI TPM driver is enabled!
 
 config DRIVER_TPM_SPI_BUS
 	hex "SPI bus TPM chip is connected to"
@@ -15,3 +16,6 @@ config DRIVER_TPM_SPI_CHIP
 config MAINBOARD_HAS_SPI_TPM_CR50
 	bool
 	default n
+	select SPI_TPM
+	help
+	  Board has SPI TPM support

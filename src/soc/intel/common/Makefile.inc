@@ -25,10 +25,10 @@ ramstage-$(CONFIG_SOC_INTEL_COMMON_ACPI_WAKE_SOURCE) += acpi_wake_source.c
 ramstage-y += vbt.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_NHLT) += nhlt.c
 
-bootblock-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c
-verstage-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c
-romstage-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c
-ramstage-$(CONFIG_MAINBOARD_HAS_TPM_CR50) += tpm_tis.c
+bootblock-$(CONFIG_TPM_CR50) += tpm_tis.c
+verstage-$(CONFIG_TPM_CR50) += tpm_tis.c
+romstage-$(CONFIG_TPM_CR50) += tpm_tis.c
+ramstage-$(CONFIG_TPM_CR50) += tpm_tis.c
 
 ifeq ($(CONFIG_MMA),y)
 MMA_BLOBS_PATH = $(call strip_quotes,$(CONFIG_MMA_BLOBS_PATH))

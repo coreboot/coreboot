@@ -11,6 +11,7 @@
 #include <string.h>
 
 #include "tss_marshaling.h"
+#include <security/tpm/tss/vendor/cr50/cr50.h>
 
 static uint16_t tpm_tag CAR_GLOBAL;  /* Depends on the command type. */
 

@@ -30,7 +30,7 @@
 #include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>
-#include <security/tpm/tis.h>
+#include <security/tpm/tspi.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
@@ -229,9 +229,8 @@ void romstage_common(struct romstage_params *params)
 
 	romstage_handoff_init(prev_sleep_state == ACPI_S3);
 
-	if (IS_ENABLED(CONFIG_LPC_TPM)) {
-		init_tpm(prev_sleep_state == ACPI_S3);
-	}
+	if (IS_ENABLED(CONFIG_TPM1) || IS_ENABLED(CONFIG_TPM2))
+		tpm_setup(prev_sleep_state == ACPI_S3);
 }
 
 void asmlinkage romstage_after_car(void)

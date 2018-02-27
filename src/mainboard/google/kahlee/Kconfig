@@ -30,7 +30,6 @@ config BOARD_GOOGLE_BASEBOARD_KAHLEE
 	select GFXUMA
 	select GOOGLE_SMBIOS_MAINBOARD_VERSION
 	select MAINBOARD_HAS_CHROMEOS
-	select MAINBOARD_HAS_LPC_TPM if BOARD_GOOGLE_KAHLEE
 	select SERIRQ_CONTINUOUS_MODE
 	select STONEYRIDGE_UART
 	select SOC_AMD_PSP_SELECTABLE_SMU_FW
@@ -108,22 +107,14 @@ config AMD_FWM_POSITION_INDEX
 	int
 	default 1
 
-# Select this option to enable use of cr50 I2C TPM on kahlee
-config KAHLEE_USE_I2C_TPM
-	bool
-	default y if !BOARD_GOOGLE_KAHLEE
-	select I2C_TPM
-	select MAINBOARD_HAS_I2C_TPM_CR50
-	select TPM2
-
 config DRIVER_TPM_I2C_BUS
 	hex
-	depends on KAHLEE_USE_I2C_TPM
+	depends on I2C_TPM
 	default 0x01
 
 config DRIVER_TPM_I2C_ADDR
 	hex
-	depends on KAHLEE_USE_I2C_TPM
+	depends on I2C_TPM
 	default 0x50
 
 config GRUNT_AUDIO
@@ -132,5 +123,17 @@ config GRUNT_AUDIO
 	select DRIVERS_GENERIC_ADAU7002
 	select DRIVERS_GENERIC_MAX98357A
 	select DRIVERS_I2C_DA7219
+
+config GRUNT_TPM
+	bool
+	default y if BOARD_GOOGLE_GRUNT
+	select MAINBOARD_HAS_I2C_TPM_CR50
+	select MAINBOARD_HAS_TPM2
+
+config KAHLEE_TPM
+	bool
+	default y if BOARD_GOOGLE_KAHLEE
+	select MAINBOARD_HAS_LPC_TPM
+	select MAINBOARD_HAS_TPM1
 
 endif # BOARD_GOOGLE_BASEBOARD_KAHLEE

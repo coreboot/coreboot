@@ -1,6 +1,7 @@
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2017 Philipp Deppenwiese, Facebook, Inc.
+## Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+## Copyright (C) 2018 Facebook Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -12,58 +13,84 @@
 ## GNU General Public License for more details.
 ##
 
+source "src/security/tpm/tss/vendor/cr50/Kconfig"
+
 menu "Trusted Platform Module"
 
-config TPM
+config TPM1
 	bool
-	default n
-	select LPC_TPM if MAINBOARD_HAS_LPC_TPM
-	select I2C_TPM if !MAINBOARD_HAS_LPC_TPM && !SPI_TPM
-	help
-	  Enable this option to enable TPM support in coreboot.
-
-	  If unsure, say N.
+	default y if MAINBOARD_HAS_TPM1 || USER_TPM1
+	depends on MAINBOARD_HAS_LPC_TPM || MAINBOARD_HAS_I2C_TPM_GENERIC \
+						 || MAINBOARD_HAS_I2C_TPM_ATMEL
 
 config TPM2
 	bool
-	select LPC_TPM if MAINBOARD_HAS_LPC_TPM
-	select I2C_TPM if !MAINBOARD_HAS_LPC_TPM && !SPI_TPM
-	help
-	  Enable this option to enable TPM2 support in coreboot.
+	default y if MAINBOARD_HAS_TPM2 || USER_TPM2
+	depends on MAINBOARD_HAS_I2C_TPM_GENERIC || MAINBOARD_HAS_LPC_TPM \
+						 || MAINBOARD_HAS_I2C_TPM_ATMEL || MAINBOARD_HAS_I2C_TPM_CR50 \
+						 || MAINBOARD_HAS_SPI_TPM_CR50
 
-	  If unsure, say N.
+config MAINBOARD_HAS_TPM1
+	bool
+
+config MAINBOARD_HAS_TPM2
+	bool
+
+if !MAINBOARD_HAS_TPM1 && !MAINBOARD_HAS_TPM2
+
+choice
+	prompt "Trusted Platform Module"
+	default USER_NO_TPM
+
+config USER_NO_TPM
+	bool "disabled"
+
+config USER_TPM1
+	bool "1.2"
+	depends on MAINBOARD_HAS_LPC_TPM || MAINBOARD_HAS_I2C_TPM_GENERIC \
+						 || MAINBOARD_HAS_I2C_TPM_ATMEL
+	help
+		Enable this option to enable TPM 1.0 - 1.2 support in coreboot.
+
+		If unsure, say N.
+
+config USER_TPM2
+	bool "2.0"
+	depends on MAINBOARD_HAS_I2C_TPM_GENERIC || MAINBOARD_HAS_LPC_TPM \
+						 || MAINBOARD_HAS_I2C_TPM_ATMEL || MAINBOARD_HAS_I2C_TPM_CR50 \
+						 || MAINBOARD_HAS_SPI_TPM_CR50
+	help
+		Enable this option to enable TPM 2.0 support in coreboot.
+
+		If unsure, say N.
+
+endchoice
+
+endif
+
+config TPM_DEACTIVATE
+	bool "Deactivate TPM"
+	default n
+	depends on !VBOOT
+	depends on TPM1
+	help
+	  Deactivate TPM by issuing deactivate command.
 
 config DEBUG_TPM
 	bool "Output verbose TPM debug messages"
 	default n
-	depends on TPM || TPM2
+	select DRIVER_TPM_DISPLAY_TIS_BYTES if I2C_TPM
+	depends on TPM1 || TPM2
 	help
 	  This option enables additional TPM related debug messages.
 
-config MAINBOARD_HAS_TPM_CR50
-	bool
-	default y if MAINBOARD_HAS_SPI_TPM_CR50 || MAINBOARD_HAS_I2C_TPM_CR50
+config TPM_RDRESP_NEED_DELAY
+	bool "Enable Delay Workaround for TPM"
 	default n
-	select MAINBOARD_HAS_TPM2
-	select POWER_OFF_ON_CR50_UPDATE if ARCH_X86
-
-config POWER_OFF_ON_CR50_UPDATE
-	bool
+	depends on LPC_TPM
 	help
-	  Power off machine while waiting for CR50 update to take effect.
-
-config MAINBOARD_HAS_LPC_TPM
-	bool
-	default n
-	help
-	  Board has TPM support
-
-config MAINBOARD_HAS_TPM2
-	bool
-	default n
-	help
-	  There is a TPM device installed on the mainboard, and it is
-	  compliant with version 2 TCG TPM specification. Could be connected
-	  over LPC, SPI or I2C.
+	  Certain TPMs seem to need some delay when reading response
+	  to work around a race-condition-related issue, possibly
+	  caused by ill-programmed TPM firmware.
 
 endmenu # Trusted Platform Module (tpm)

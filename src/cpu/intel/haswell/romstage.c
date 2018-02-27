@@ -42,7 +42,7 @@
 #include "northbridge/intel/haswell/raminit.h"
 #include "southbridge/intel/lynxpoint/pch.h"
 #include "southbridge/intel/lynxpoint/me.h"
-#include <security/tpm/tis.h>
+#include <security/tpm/tspi.h>
 
 static inline void reset_system(void)
 {
@@ -245,8 +245,8 @@ void romstage_common(const struct romstage_params *params)
 	romstage_handoff_init(wake_from_s3);
 
 	post_code(0x3f);
-	if (IS_ENABLED(CONFIG_LPC_TPM))
-		init_tpm(wake_from_s3);
+	if (IS_ENABLED(CONFIG_TPM1) || IS_ENABLED(CONFIG_TPM2))
+		tpm_setup(wake_from_s3);
 }
 
 asmlinkage void romstage_after_car(void)

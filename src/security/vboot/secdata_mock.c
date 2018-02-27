@@ -32,54 +32,50 @@
  * stored in the TPM NVRAM.
  */
 
-#include <security/tpm/antirollback.h>
 #include <stdlib.h>
-#include <security/tpm/tss.h>
+#include <security/tpm/tspi.h>
 #include <vb2_api.h>
 
-uint32_t tpm_extend_pcr(struct vb2_context *ctx, int pcr,
-			enum vb2_pcr_digest which_digest)
+#include "antirollback.h"
+
+int vb2ex_tpm_clear_owner(struct vb2_context *ctx)
 {
-	return TPM_SUCCESS;
+	return VB2_SUCCESS;
 }
 
-uint32_t tpm_clear_and_reenable(void)
+uint32_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
+			enum vb2_pcr_digest which_digest)
 {
-	return TPM_SUCCESS;
+	return VB2_SUCCESS;
 }
 
 uint32_t antirollback_read_space_firmware(struct vb2_context *ctx)
 {
 	vb2api_secdata_create(ctx);
-	return TPM_SUCCESS;
+	return VB2_SUCCESS;
 }
 
 uint32_t antirollback_write_space_firmware(struct vb2_context *ctx)
 {
-	return TPM_SUCCESS;
+	return VB2_SUCCESS;
 }
 
 uint32_t antirollback_lock_space_firmware()
 {
-	return TPM_SUCCESS;
+	return VB2_SUCCESS;
 }
 
 uint32_t antirollback_lock_space_rec_hash(void)
 {
-	return TPM_SUCCESS;
+	return VB2_SUCCESS;
 }
 
 uint32_t antirollback_read_space_rec_hash(uint8_t *data, uint32_t size)
 {
-	return TPM_SUCCESS;
+	return VB2_SUCCESS;
 }
 
 uint32_t antirollback_write_space_rec_hash(const uint8_t *data, uint32_t size)
-{
-	return TPM_SUCCESS;
-}
-
-uint32_t tlcl_lib_init(void)
 {
 	return VB2_SUCCESS;
 }

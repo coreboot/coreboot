@@ -97,6 +97,13 @@ chip soc/intel/apollolake
 		.fall_time_ns = 164,
 	}"
 
+	# Use GSPI0 for cr50 TPM. Early init is required to set up a BAR for TPM
+	# communication before memory is up.
+	register "gspi[0]" = "{
+		.speed_mhz = 1,
+		.early_init = 1,
+	}"
+
 	device domain 0 on
 		device pci 00.0 on  end	# - Host Bridge
 		device pci 00.1 on  end	# - DPTF
@@ -190,7 +197,14 @@ chip soc/intel/apollolake
 		device pci 18.1 off end	# - UART 1
 		device pci 18.2 on  end	# - UART 2
 		device pci 18.3 off end	# - UART 3
-		device pci 19.0 on  end	# - SPI 0
+		device pci 19.0 on
+			chip drivers/spi/acpi
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "compat_string" = ""google,cr50""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPIO_63_IRQ)"
+				device spi 0 on end
+			end
+		end # - GSPI 0
 		device pci 19.1 off end	# - SPI 1
 		device pci 19.2 on  end	# - SPI 2
 		device pci 1a.0 on  end	# - PWM

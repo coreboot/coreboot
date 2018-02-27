@@ -112,6 +112,22 @@ chip soc/intel/apollolake
 	# Minimum SLP S3 assertion width 28ms.
 	register "slp_s3_assertion_width_usecs" = "28000"
 
+	# Override USB2 PER PORT register (PORT 1)
+	register "usb2eye[1]" = "{
+		.Usb20PerPortPeTxiSet = 4,
+		.Usb20PerPortTxiSet = 4,
+		.Usb20IUsbTxEmphasisEn = 1,
+		.Usb20PerPortTxPeHalf = 0,
+	}"
+
+	# Override USB2 PER PORT register (PORT 4)
+	register "usb2eye[4]" = "{
+		.Usb20PerPortPeTxiSet = 7,
+		.Usb20PerPortTxiSet = 7,
+		.Usb20IUsbTxEmphasisEn = 1,
+		.Usb20PerPortTxPeHalf = 0,
+	}"
+
 	device domain 0 on
 		device pci 00.0 on  end	# - Host Bridge
 		device pci 00.1 on  end	# - DPTF

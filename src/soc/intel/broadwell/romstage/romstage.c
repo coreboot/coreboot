@@ -26,7 +26,6 @@
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
 #include <elog.h>
-#include <security/tpm/tspi.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <stage_cache.h>
@@ -110,9 +109,6 @@ void romstage_common(struct romstage_params *params)
 	timestamp_add_now(TS_AFTER_INITRAM);
 
 	romstage_handoff_init(params->power_state->prev_sleep_state == ACPI_S3);
-
-	if (IS_ENABLED(CONFIG_TPM1) || IS_ENABLED(CONFIG_TPM2))
-		tpm_setup(params->power_state->prev_sleep_state == ACPI_S3);
 }
 
 asmlinkage void romstage_after_car(void)

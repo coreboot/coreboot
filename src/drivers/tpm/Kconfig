@@ -1,0 +1,7 @@
+config TPM_INIT
+	bool
+	default y if TPM1 || TPM2
+	depends on !VBOOT
+	help
+	  This driver automatically initializes the TPM if vboot is not used.
+	  The TPM driver init is done during the ramstage chip init phase.

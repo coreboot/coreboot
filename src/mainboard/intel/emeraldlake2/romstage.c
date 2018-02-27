@@ -35,7 +35,6 @@
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
-#include <security/tpm/tspi.h>
 
 #define SIO_PORT 0x164e
 

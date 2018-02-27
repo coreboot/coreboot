@@ -78,6 +78,8 @@ romstage-y += vboot_handoff.c common.c
 ramstage-y += common.c
 postcar-y += common.c
 
+romstage-$(CONFIG_FSP2_0_USES_TPM_MRC_HASH) += mrc_cache_hash_tpm.c
+
 ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
 VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-verstage-y))
 else

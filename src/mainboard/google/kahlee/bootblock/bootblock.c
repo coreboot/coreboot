@@ -20,13 +20,16 @@
 #include <variant/ec.h>
 #include <variant/gpio.h>
 
-void bootblock_mainboard_init(void)
+void bootblock_mainboard_early_init(void)
 {
 	size_t num_gpios;
 	const struct soc_amd_stoneyridge_gpio *gpios;
 	gpios = variant_early_gpio_table(&num_gpios);
 	sb_program_gpios(gpios, num_gpios);
+}
 
+void bootblock_mainboard_init(void)
+{
 	/* Enable the EC as soon as we have visibility */
 	mainboard_ec_init();
 

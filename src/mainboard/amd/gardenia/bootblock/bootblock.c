@@ -18,7 +18,7 @@
 
 #include "../gpio.h"
 
-void bootblock_mainboard_init(void)
+void bootblock_mainboard_early_init(void)
 {
 	size_t num_gpios;
 	const struct soc_amd_stoneyridge_gpio *gpios;

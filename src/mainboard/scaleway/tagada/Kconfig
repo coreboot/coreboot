@@ -2,6 +2,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2014 - 2017 Intel Corporation.
+## Copyright (C) 2017 - 2018 Online SAS
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -32,5 +33,9 @@ config MAINBOARD_PART_NUMBER
 config MAINBOARD_VENDOR
 	string
 	default "Scaleway"
+
+config SMBIOS_ENCLOSURE_TYPE
+	hex
+	default 0x19
 
 endif # BOARD_SCALEWAY_TAGADA

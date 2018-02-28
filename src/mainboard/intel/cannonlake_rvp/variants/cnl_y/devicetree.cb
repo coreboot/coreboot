@@ -32,6 +32,8 @@ chip soc/intel/cannonlake
 
 	register "PchHdaDspEnable" = "1"
 	register "PchHdaAudioLinkHda" = "1"
+	register "PchHdaAudioLinkSsp0" = "1"
+	register "PchHdaAudioLinkSsp1" = "1"
 
 	register "PcieRpEnable[0]" = "1"
 	register "PcieRpEnable[1]" = "1"
@@ -94,6 +96,24 @@ chip soc/intel/cannonlake
 		device pci 15.1 on  end # I2C #1
 		device pci 15.2 off end # I2C #2
 		device pci 15.3 on
+			#if IS_ENABLED(CONFIG_INCLUDE_SND_MAX98373_NHLT)
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "4"
+				register "imon_slot_no" = "5"
+				register "uid" = "0"
+				register "desc" = ""RIGHT SPEAKER AMP""
+				register "name" = ""MAXR""
+				device i2c 31 on end
+			end
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "6"
+				register "imon_slot_no" = "7"
+				register "uid" = "1"
+				register "desc" = ""LEFT SPEAKER AMP""
+				register "name" = ""MAXL""
+				device i2c 32 on end
+			end
+			#elif IS_ENABLED(CONFIG_INCLUDE_SND_MAX98357_DA7219_NHLT)
 			chip drivers/i2c/da7219
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_A20)"
 				register "btn_cfg" = "50"
@@ -111,6 +131,7 @@ chip soc/intel/cannonlake
 				register "mic_amp_in_sel" = ""diff""
 				device i2c 1a on end
 			end
+			#endif
 		end   # I2C #3
 		device pci 16.0 on  end # Management Engine Interface 1
 		device pci 16.1 off end # Management Engine Interface 2
@@ -147,6 +168,7 @@ chip soc/intel/cannonlake
 		end # LPC Interface
 		device pci 1f.1 on  end # P2SB
 		device pci 1f.2 on  end # Power Management Controller
+		#if IS_ENABLED(CONFIG_INCLUDE_SND_MAX98357_DA7219_NHLT)
 		device pci 1f.3 on
 			chip drivers/generic/max98357a
 				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D16)"
@@ -154,6 +176,7 @@ chip soc/intel/cannonlake
 				device generic 0 on end
 			end
 		end # Intel HDA
+		#endif
 		device pci 1f.4 on  end # SMBus
 		device pci 1f.5 on  end # PCH SPI
 		device pci 1f.6 off end # GbE

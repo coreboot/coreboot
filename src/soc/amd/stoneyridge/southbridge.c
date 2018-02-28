@@ -161,7 +161,6 @@ void sb_program_gpios(const struct soc_amd_stoneyridge_gpio *gpio_ptr,
 	void *tmp_ptr;
 	uint8_t control, mux, index;
 
-	printk(BIOS_SPEW, "GPIO programming stage %s\n", STR_GPIO_STAGE);
 	for (index = 0; index < size; index++) {
 		mux = gpio_ptr[index].function;
 		control = gpio_ptr[index].control;
@@ -176,7 +175,6 @@ void sb_program_gpios(const struct soc_amd_stoneyridge_gpio *gpio_ptr,
 					AMD_GPIO_CONTROL + 2);
 		write8(tmp_ptr, control);
 	}
-	printk(BIOS_SPEW, "End GPIO programming\n");
 }
 
 /**

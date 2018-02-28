@@ -288,7 +288,6 @@
 #else
 #define GPIO_TABLE_BOOTBLOCK		0
 #endif
-#define STR_GPIO_STAGE			ENV_STRING
 
 struct soc_amd_stoneyridge_gpio {
 	uint8_t gpio;

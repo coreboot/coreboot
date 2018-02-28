@@ -623,6 +623,16 @@ config MAINBOARD_SMBIOS_PRODUCT_NAME
 	help
 	  Override the default Product name stored in SMBIOS structures.
 
+config SMBIOS_ENCLOSURE_TYPE
+	hex
+	depends on GENERATE_SMBIOS_TABLES
+	default 0x09 if SYSTEM_TYPE_LAPTOP
+	default 0x03
+	help
+	  System Enclosure or Chassis Types as defined in SMBIOS specification.
+	  The default value is SMBIOS_ENCLOSURE_DESKTOP (0x03) or
+	  SMBIOS_ENCLOSURE_LAPTOP (0x09) if SYSTEM_TYPE_LAPTOP is set.
+
 endmenu
 
 source "payloads/Kconfig"

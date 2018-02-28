@@ -454,10 +454,7 @@ static int smbios_write_type3(unsigned long *current, int handle)
 	t->bootup_state = SMBIOS_STATE_SAFE;
 	t->power_supply_state = SMBIOS_STATE_SAFE;
 	t->thermal_state = SMBIOS_STATE_SAFE;
-	if (IS_ENABLED(CONFIG_SYSTEM_TYPE_LAPTOP))
-		t->_type = SMBIOS_ENCLOSURE_LAPTOP;
-	else
-		t->_type = SMBIOS_ENCLOSURE_DESKTOP;
+	t->_type = CONFIG_SMBIOS_ENCLOSURE_TYPE;
 	t->security_status = SMBIOS_STATE_SAFE;
 	len = t->length + smbios_string_table_len(t->eos);
 	*current += len;

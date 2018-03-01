@@ -14,6 +14,11 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 
 ## [Unreleased]
 
+## [v4.6.7] - 2018-03-01
+### Fixed
+- SD cards performance drop
+- SMBIOS part number format
+
 ## [v4.6.6] - 2018-01-31
 ### Changed
 - Updated SeaBIOS to 1.11.0.3
@@ -150,7 +155,8 @@ redundant code which was similar for APU2/3/5 boards.
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.6...coreboot-4.6.x
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.7...coreboot-4.6.x
+[v4.6.7]: https://github.com/pcengines/coreboot/compare/v4.6.6...v4.6.7
 [v4.6.6]: https://github.com/pcengines/coreboot/compare/v4.6.5...v4.6.6
 [v4.6.5]: https://github.com/pcengines/coreboot/compare/v4.6.4...v4.6.5
 [v4.6.4]: https://github.com/pcengines/coreboot/compare/v4.6.3...v4.6.4

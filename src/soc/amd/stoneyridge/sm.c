@@ -123,5 +123,5 @@ static struct device_operations smbus_ops = {
 static const struct pci_driver smbus_driver __pci_driver = {
 	.ops = &smbus_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_SB900_SM,
+	.device = PCI_DEVICE_ID_AMD_CZ_SMBUS,
 };

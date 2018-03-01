@@ -51,10 +51,10 @@ config DEVICETREE
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "PC Engines apu2" if BOARD_PCENGINES_APU2
-	default "PC Engines apu3" if BOARD_PCENGINES_APU3
-	default "PC Engines apu4" if BOARD_PCENGINES_APU4
-	default "PC Engines apu5" if BOARD_PCENGINES_APU5
+	default "apu2" if BOARD_PCENGINES_APU2
+	default "apu3" if BOARD_PCENGINES_APU3
+	default "apu4" if BOARD_PCENGINES_APU4
+	default "apu5" if BOARD_PCENGINES_APU5
 
 config MAX_CPUS
 	int

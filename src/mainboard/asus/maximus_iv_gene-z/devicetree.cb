@@ -1,0 +1,116 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2017–2018 Tristan Corrick <tristan@corrick.kiwi>
+##
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+chip northbridge/intel/sandybridge
+	device cpu_cluster 0 on
+		chip cpu/intel/socket_LGA1155
+			device lapic 0 on end
+		end
+		chip cpu/intel/model_206ax
+			register "c1_acpower" = "1"
+			register "c1_battery" = "1"
+			register "c2_acpower" = "3"
+			register "c2_battery" = "3"
+			register "c3_acpower" = "5"
+			register "c3_battery" = "5"
+			device lapic 0xacac off end
+		end
+	end
+
+	register "pci_mmio_size" = "2048"
+
+	device domain 0 on
+		subsystemid 0x1043 0x844d inherit
+
+		device pci 00.0 on end # Host bridge
+		device pci 01.0 on end # PCIe bridge for discrete graphics
+		device pci 02.0 on end # VGA controller
+
+		chip southbridge/intel/bd82x6x
+			register "c2_latency" = "101"
+			register "gen1_dec" = "0x00000295" # Super I/O HWM
+			register "p_cnt_throttling_supported" = "1"
+			register "sata_port_map" = "0x3f"
+			register "spi_lvscc" = "0x2005"
+			register "spi_uvscc" = "0x2005"
+
+			device pci 16.0 on  end # Management Engine Interface 1
+			device pci 16.1 off end # Management Engine Interface 2
+			device pci 16.2 off end # Management Engine IDE-R
+			device pci 16.3 off end # Management Engine KT
+			device pci 19.0 on      # Intel Gigabit Ethernet
+				subsystemid 0x1043 0x849c
+			end
+			device pci 1a.0 on  end # USB2 EHCI #2
+			device pci 1b.0 on      # HD audio controller
+				subsystemid 0x1043 0x84dc
+			end
+			device pci 1c.0 on  end # PCIe port #1
+			device pci 1c.1 off end # PCIe port #2
+			device pci 1c.2 off end # PCIe port #3
+			device pci 1c.3 off end # PCIe port #4
+			device pci 1c.4 on  end # PCIe port #5
+			device pci 1c.5 on  end # PCIe port #6
+			device pci 1c.6 on  end # PCIe port #7
+			device pci 1c.7 off end # PCIe port #8
+			device pci 1d.0 on  end # USB2 EHCI #1
+			device pci 1e.0 off end # PCI bridge
+			device pci 1f.0 on      # LPC bridge
+				chip superio/nuvoton/nct6776
+					device pnp 2e.0   off end # Floppy
+					device pnp 2e.1   off end # Parallel
+					device pnp 2e.2   off end # UART A
+					device pnp 2e.3   off end # UART B, IR
+					device pnp 2e.5   on      # PS/2 KBC
+						io  0x60 = 0x0060
+						io  0x62 = 0x0064
+						irq 0x70 = 1      # Keyboard
+						irq 0x72 = 12     # Mouse
+					end
+					device pnp 2e.6   off end # CIR
+					device pnp 2e.7   off end # GPIO8
+					device pnp 2e.107 off end # GPIO9
+					device pnp 2e.8   off end # WDT
+					device pnp 2e.108 off end # GPIO0
+					device pnp 2e.208 off end # GPIOA
+					device pnp 2e.308 off end # GPIO base
+					device pnp 2e.109 off end # GPIO1
+					device pnp 2e.209 off end # GPIO2
+					device pnp 2e.309 off end # GPIO3
+					device pnp 2e.409 off end # GPIO4
+					device pnp 2e.509 off end # GPIO5
+					device pnp 2e.609 off end # GPIO6
+					device pnp 2e.709 off end # GPIO7
+					device pnp 2e.a   off end # ACPI
+					device pnp 2e.b   on      # HWM, LED
+						io  0x60 = 0x0290
+						io  0x62 = 0x0200
+					end
+					device pnp 2e.d   off end # VID
+					device pnp 2e.e   off end # CIR wake-up
+					device pnp 2e.f   off end # GPIO PP/OD
+					device pnp 2e.14  off end # SVID
+					device pnp 2e.16  off end # Deep sleep
+					device pnp 2e.17  off end # GPIOA
+				end
+			end
+			device pci 1f.2 on  end # SATA controller 1
+			device pci 1f.3 on  end # SMBus
+			device pci 1f.5 off end # SATA controller 2
+			device pci 1f.6 off end # Thermal
+		end
+	end
+end

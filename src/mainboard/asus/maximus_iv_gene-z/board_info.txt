@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://www.asus.com/ROG-Republic-Of-Gamers/MAXIMUS_IV_GENEZ/
+ROM package: DIP-8
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y
+Release year: 2011

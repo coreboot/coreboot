@@ -73,7 +73,6 @@ endif
 	echo "# CONFIG_PS2PORT is not set" >> seabios/.config
 	echo "# CONFIG_USB_UHCI is not set" >> seabios/.config
 	echo "# CONFIG_USB_OHCI is not set" >> seabios/.config
-	echo "# CONFIG_USB_XHCI is not set" >> seabios/.config
 	echo "# CONFIG_LPT is not set" >> seabios/.config
 #
 # Enable UDMA to speed up booting

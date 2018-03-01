@@ -24,7 +24,7 @@
 #include <soc/iomap.h>
 #include <soc/pcr.h>
 #include <soc/soc_util.h>
-#include <soc/gpio.h>
+#include <soc/gpio_dnv.h>
 
 //         Community               PadOwnOffset                HostOwnOffset
 //         GpiIsOffset
@@ -132,7 +132,7 @@ static void GpioGetPadOwnership(GPIO_PAD GpioPad, GPIO_PAD_OWN *PadOwnVal)
 	*PadOwnVal = (GPIO_PAD_OWN)((PadOwnRegValue & Mask) >> (PadNumber * 4));
 }
 
-void gpio_configure_pads(const struct pad_config *gpio, size_t num)
+void gpio_configure_dnv_pads(const struct dnv_pad_config *gpio, size_t num)
 {
 	/* Return if gpio not valid */
 	if ((gpio == NULL) || (num == 0))
@@ -153,7 +153,7 @@ void gpio_configure_pads(const struct pad_config *gpio, size_t num)
 	GPIO_PAD GpioGroupOffset;
 	uint32_t NumberOfGroups;
 	GPIO_PAD_OWN PadOwnVal;
-	struct pad_config *GpioData;
+	struct dnv_pad_config *GpioData;
 	GPIO_PAD Group;
 	uint32_t GroupIndex;
 	uint32_t PadNumber;
@@ -180,7 +180,7 @@ void gpio_configure_pads(const struct pad_config *gpio, size_t num)
 		Dw1RegMask = 0;
 		Dw1Reg = 0;
 
-		GpioData = (struct pad_config *)&(gpio[Index]);
+		GpioData = (struct dnv_pad_config *)&(gpio[Index]);
 
 		Group = GPIO_GET_GROUP_FROM_PAD(GpioData->GpioPad);
 		GroupIndex = GPIO_GET_GROUP_INDEX_FROM_PAD(GpioData->GpioPad);

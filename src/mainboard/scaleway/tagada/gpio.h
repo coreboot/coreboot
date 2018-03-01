@@ -18,10 +18,10 @@
 #ifndef _MAINBOARD_GPIO_H
 #define _MAINBOARD_GPIO_H
 
-#include <soc/gpio.h>
+#include <soc/gpio_dnv.h>
 
 #ifndef __ACPI__
-const struct pad_config tagada_gpio_config[] = {
+const struct dnv_pad_config tagada_gpio_config[] = {
 	// GBE0_SDP0 (GPIO_14) NC
 /*ME	{ NORTH_ALL_GBE0_SDP0, { GpioPadModeNative1, GpioHostOwnGpio,
           GpioDirInOut, GpioOutDefault, GpioIntDefault, GpioResetPwrGood,

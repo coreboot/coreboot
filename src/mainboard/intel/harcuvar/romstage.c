@@ -89,7 +89,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd);
 void mainboard_config_gpios(void)
 {
 	size_t num;
-	const struct pad_config *table;
+	const struct dnv_pad_config *table;
 	uint8_t boardid = board_id();
 
 	/* Configure pads prior to SiliconInit() in case there's any
@@ -113,7 +113,7 @@ void mainboard_config_gpios(void)
 
 	printk(BIOS_INFO, "GPIO table: 0x%x, entry num:  0x%x!\n",
 	       (uint32_t)table, (uint32_t)num);
-	gpio_configure_pads(table, num);
+	gpio_configure_dnv_pads(table, num);
 }
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)

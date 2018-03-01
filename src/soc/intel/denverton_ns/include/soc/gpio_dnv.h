@@ -297,13 +297,13 @@ typedef enum {
 
 typedef uint32_t GPIO_PAD;
 
-struct pad_config {
+struct dnv_pad_config {
 	GPIO_PAD GpioPad;
 	struct GPIO_CONFIG GpioConfig;
 };
 
 /* Configure GPIOs with mainboard provided settings */
-void gpio_configure_pads(const struct pad_config *gpio, size_t num);
+void gpio_configure_dnv_pads(const struct dnv_pad_config *gpio, size_t num);
 
 #endif /* __ACPI__ */
 #endif /* _DENVERTON_NS_GPIO_H_ */

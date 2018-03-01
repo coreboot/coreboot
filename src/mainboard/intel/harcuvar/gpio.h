@@ -17,10 +17,10 @@
 #ifndef _MAINBOARD_GPIO_H
 #define _MAINBOARD_GPIO_H
 
-#include <soc/gpio.h>
+#include <soc/gpio_dnv.h>
 
 #ifndef __ACPI__
-const struct pad_config harcuvar_gpio_table[] = {
+const struct dnv_pad_config harcuvar_gpio_table[] = {
 	// GBE0_SDP0 (GPIO_14)
 	{NORTH_ALL_GBE0_SDP0,
 	 {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut, GpioOutDefault,

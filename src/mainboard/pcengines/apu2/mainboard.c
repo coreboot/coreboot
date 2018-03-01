@@ -40,7 +40,6 @@
 #define PM_RTC_CONTROL	    0x56
 #define PM_RTC_SHADOW	    0x5B
 #define PM_S_STATE_CONTROL  0xBA
-#define PM_USB_ENABLE       0xEF
 
 #define SEC_REG_SERIAL_ADDR 0x1000
 #define MAX_SERIAL_LEN	    10
@@ -248,17 +247,6 @@ static void mainboard_enable(device_t dev)
 	// Enable power on after power fail
 	//
 	pm_write8 ( PM_RTC_SHADOW, pm_read8( PM_RTC_SHADOW ) | (1 << 0));
-
-
-	//
-	// Set EHCI3 as controller for port 8 and 9 (front USB ports)
-	//
-	pm_write8 ( PM_USB_ENABLE, pm_read8( PM_USB_ENABLE ) & ~(1 << 7));
-
-	//
-	// Enable EHCI3
-	//
-	pm_write8 ( PM_USB_ENABLE, pm_read8( PM_USB_ENABLE ) | (1 << 5));
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();

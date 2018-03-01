@@ -19,6 +19,9 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 - SD cards performance drop
 - SMBIOS part number format
 
+### Changed
+- xHCI has been enabled
+
 ## [v4.6.6] - 2018-01-31
 ### Changed
 - Updated SeaBIOS to 1.11.0.3

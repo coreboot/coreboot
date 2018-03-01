@@ -9,13 +9,13 @@ chip soc/intel/apollolake
 	register "pcie_rp_clkreq_pin[1]" = "3" # wifi/bt
 	register "pcie_rp_clkreq_pin[2]" = "CLKREQ_DISABLED"
 	register "pcie_rp_clkreq_pin[3]" = "CLKREQ_DISABLED"
-	register "pcie_rp_clkreq_pin[4]" = "1"
+	register "pcie_rp_clkreq_pin[4]" = "CLKREQ_DISABLED"
 	register "pcie_rp_clkreq_pin[5]" = "CLKREQ_DISABLED"
 
 	# GPIO for PERST_0
 	# If the Board has PERST_0 signal, assign the GPIO
 	# If the Board does not have PERST_0, assign GPIO_PRT0_UDEF
-	register "prt0_gpio" = "GPIO_PRT0_UDEF"
+	register "prt0_gpio" = "GPIO_163"
 
 	# GPIO for SD card detect
 	register "sdcard_cd_gpio" = "GPIO_186"
@@ -125,9 +125,9 @@ chip soc/intel/apollolake
 		device pci 12.0 on  end	# - SATA
 		device pci 13.0 off end	# - PCIe-A 0 Slot 1
 		device pci 13.1 off end	# - PCIe-A 1
-		device pci 13.2 on  end	# - PCIe-A 2 Onboard Lan
+		device pci 13.2 off end	# - PCIe-A 2 Onboard Lan
 		device pci 13.3 off end	# - PCIe-A 3
-		device pci 14.0 off end # - PCIe-B 0 Slot2
+		device pci 14.0 off  end # - PCIe-B 0 Slot2
 		device pci 14.1 on  end	# - PCIe-B 1 Onboard M2 Slot(Wifi/BT)
 		device pci 15.0 on  end	# - XHCI
 		device pci 15.1 off end # - XDCI

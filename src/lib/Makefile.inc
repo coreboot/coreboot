@@ -175,6 +175,7 @@ romstage-y += boot_device.c
 ramstage-y += boot_device.c
 
 smm-y += boot_device.c
+smm-y += delay.c
 smm-y += fmap.c
 smm-y += cbfs.c memcmp.c
 smm-$(CONFIG_GENERIC_UDELAY) += timer.c

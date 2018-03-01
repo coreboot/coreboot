@@ -19,6 +19,7 @@
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
+#include <delay.h>
 #include <device/pci_def.h>
 #include <elog.h>
 #include <intelblocks/fast_spi.h>
@@ -219,6 +220,23 @@ void smihandler_southbridge_sleep(
 		pmc_soc_restore_power_failure();
 		/* also iterates over all bridges on bus 0 */
 		busmaster_disable_on_bus(0);
+
+		/*
+		 * Some platforms (e.g. Chromebooks) have observed race between
+		 * SLP SMI and PWRBTN SMI because of the way these SMIs are
+		 * triggered on power button press. Allow adding a delay before
+		 * triggering sleep enable for S5, so that power button
+		 * interrupt does not result into immediate wake.
+		 */
+		mdelay(CONFIG_SOC_INTEL_COMMON_BLOCK_SMM_S5_DELAY_MS);
+
+		/*
+		 * Ensure any pending power button status bits are cleared as
+		 * the system is entering S5 and doesn't want to be woken up
+		 * right away from older power button events.
+		 */
+		pmc_clear_pm1_status();
+
 		break;
 	default:
 		printk(BIOS_DEBUG, "SMI#: ERROR: SLP_TYP reserved\n");

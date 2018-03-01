@@ -7,3 +7,12 @@ config SOC_INTEL_COMMON_BLOCK_SMM_IO_TRAP
 	bool
 	help
 	  Intel Processor trap flag if it is supported
+
+config SOC_INTEL_COMMON_BLOCK_SMM_S5_DELAY_MS
+	int
+	default 100 if CHROMEOS
+	default 0
+	help
+	  Time in milliseconds that SLP_SMI for S5 waits for before
+	  enabling sleep. This is required to avoid any race between
+	  SLP_SMI and PWRBTN SMI.

@@ -103,9 +103,9 @@ void mainboard_rcba_config(void)
 	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
 
 	/* Enable IOAPIC (generic) */
-	RCBA16(OIC) = 0x0100;
+	RCBA16(EOIC) = 0x0100;
 	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(OIC);
+	(void) RCBA16(EOIC);
 }
 
 static const uint8_t *locate_spd(void)

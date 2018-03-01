@@ -147,6 +147,7 @@
 #define D20IR		0x3160	/* 16bit */
 #define D19IR		0x3168	/* 16bit */
 
+#define EOIC		0x31fe	/* 16bit */
 #define OIC		0x31ff	/*  8bit */
 
 #define DIR_ROUTE(x, a, b, c, d) \

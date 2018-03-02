@@ -293,9 +293,9 @@ static void configure_misc(void)
 	msr.lo |= (1 << 0);	/* Fast String enable */
 	msr.lo |= (1 << 3);	/* TM1/TM2/EMTTM enable */
 	if (conf->eist_enable)
-		cpu_enable_eist();
+		msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
 	else
-		cpu_disable_eist();
+		msr.lo &= ~(1 << 16);	/* Enhanced SpeedStep Disable */
 	wrmsr(IA32_MISC_ENABLE, msr);
 
 	/* Disable Thermal interrupts */

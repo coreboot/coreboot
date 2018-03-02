@@ -45,6 +45,7 @@ struct memory_params {
 	size_t rcomp_resistor_size;
 	const void *rcomp_target;
 	size_t rcomp_target_size;
+	bool use_sec_spd;
 };
 
 void variant_memory_params(struct memory_params *p);

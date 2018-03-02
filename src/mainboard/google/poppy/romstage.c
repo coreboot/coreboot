@@ -110,20 +110,21 @@ static void mainboard_print_spd_info(const uint8_t *spd, enum memory_type type)
 	}
 }
 
-static uintptr_t mainboard_get_spd_data(enum memory_type type)
+static uintptr_t mainboard_get_spd_data(enum memory_type type, bool use_sec_spd)
 {
 	char *spd_file;
 	size_t spd_file_len;
 	int spd_index;
 	const size_t spd_len = spd_info[type].len;
+	const char *spd_bin = use_sec_spd ? "sec-spd.bin" : "spd.bin";
 
 	spd_index = variant_memory_sku();
 	assert(spd_index >= 0);
 	printk(BIOS_INFO, "SPD index %d\n", spd_index);
 
 	/* Load SPD data from CBFS */
-	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
-		&spd_file_len);
+	spd_file = cbfs_boot_map_with_leak(spd_bin, CBFS_TYPE_SPD,
+					   &spd_file_len);
 	if (!spd_file)
 		die("SPD data not found.");
 
@@ -160,7 +161,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		p.rcomp_resistor_size);
 	memcpy(&mem_cfg->RcompTarget, p.rcomp_target, p.rcomp_target_size);
 
-	mem_cfg->MemorySpdPtr00 = mainboard_get_spd_data(p.type);
+	mem_cfg->MemorySpdPtr00 = mainboard_get_spd_data(p.type, p.use_sec_spd);
 	mem_cfg->MemorySpdPtr10 = mem_cfg->MemorySpdPtr00;
 	mem_cfg->MemorySpdDataLen = spd_info[p.type].len;
 }

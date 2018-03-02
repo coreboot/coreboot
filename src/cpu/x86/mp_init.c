@@ -539,7 +539,12 @@ static int bsp_do_flight_plan(struct mp_params *mp_params)
 {
 	int i;
 	int ret = 0;
-	const int timeout_us = 100000;
+	/*
+	 * Set time-out to wait for APs to a huge value (=1 second) since it
+	 * could take a longer time for APs to check-in as the number of APs
+	 * increases (contention for resources like UART also increases).
+	 */
+	const int timeout_us = 1000000;
 	const int step_us = 100;
 	int num_aps = mp_params->num_cpus - 1;
 

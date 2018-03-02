@@ -304,7 +304,7 @@ chip soc/intel/skylake
 		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
 		[PchSerialIoIndexSpi0]  = PchSerialIoPci,
 		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled,
-		[PchSerialIoIndexUart0] = PchSerialIoPci,
+		[PchSerialIoIndexUart0] = PchSerialIoSkipInit,
 		[PchSerialIoIndexUart1] = PchSerialIoDisabled,
 		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,
 	}"

@@ -89,12 +89,33 @@ void mainboard_devtree_update(struct device *dev)
 	sku_id = variant_board_sku();
 
 	switch (sku_id) {
+	case SKU_ALAN:
+		cfg->usb2eye[2].Usb20PerPortPeTxiSet = 4;
+		cfg->usb2eye[2].Usb20PerPortTxiSet = 4;
+		cfg->usb2eye[2].Usb20IUsbTxEmphasisEn = 1;
+		cfg->usb2eye[2].Usb20PerPortTxPeHalf = 0;
+
+		cfg->usb2eye[4].Usb20PerPortPeTxiSet = 7;
+		cfg->usb2eye[4].Usb20PerPortTxiSet = 7;
+		cfg->usb2eye[4].Usb20IUsbTxEmphasisEn = 1;
+		cfg->usb2eye[4].Usb20PerPortTxPeHalf = 0;
+		break;
 	case SKU_BIGDADDY_KBDBKLIGHT:
 	case SKU_BIGDADDY:
 		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
 		cfg->usb2eye[1].Usb20PerPortTxiSet = 1;
 		cfg->usb2eye[1].Usb20IUsbTxEmphasisEn = 3;
 		cfg->usb2eye[1].Usb20PerPortTxPeHalf = 0;
+
+		cfg->usb2eye[2].Usb20PerPortPeTxiSet = 4;
+		cfg->usb2eye[2].Usb20PerPortTxiSet = 4;
+		cfg->usb2eye[2].Usb20IUsbTxEmphasisEn = 1;
+		cfg->usb2eye[2].Usb20PerPortTxPeHalf = 0;
+
+		cfg->usb2eye[4].Usb20PerPortPeTxiSet = 7;
+		cfg->usb2eye[4].Usb20PerPortTxiSet = 7;
+		cfg->usb2eye[4].Usb20IUsbTxEmphasisEn = 1;
+		cfg->usb2eye[4].Usb20PerPortTxPeHalf = 0;
 		break;
 	default:
 		break;

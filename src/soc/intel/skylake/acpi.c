@@ -210,7 +210,8 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
 	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
-					     MCFG_BASE_ADDRESS, 0, 0, 255);
+					     MCFG_BASE_ADDRESS, 0, 0,
+					     (CONFIG_SA_PCIEX_LENGTH >> 20) - 1);
 	return current;
 }
 

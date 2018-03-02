@@ -33,6 +33,7 @@ config MAINBOARD_DIR
 
 config VARIANT_DIR
 	string
+	default "yorp" if BOARD_GOOGLE_YORP
 	default "octopus" if BOARD_GOOGLE_OCTOPUS
 
 config DEVICETREE
@@ -41,15 +42,17 @@ config DEVICETREE
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "yorp" if BOARD_GOOGLE_YORP
 	default "octopus" if BOARD_GOOGLE_OCTOPUS
 
 config MAINBOARD_FAMILY
 	string
-	default "Google_Octopus" if BOARD_GOOGLE_OCTOPUS
+	default "Google_Octopus"
 
 config GBB_HWID
 	string
 	depends on CHROMEOS
+	default "YORP TEST 7755" if BOARD_GOOGLE_YORP
 	default "OCTOPUS TEST 6859" if BOARD_GOOGLE_OCTOPUS
 
 config MAX_CPUS

@@ -264,6 +264,9 @@ chip soc/intel/skylake
 	# Lock Down
 	register "chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
 
+	# PCH Trip Temperature in degree C
+	register "pch_trip_temp" = "75"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

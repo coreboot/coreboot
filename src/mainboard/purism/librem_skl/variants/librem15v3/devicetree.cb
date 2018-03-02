@@ -10,6 +10,12 @@ chip soc/intel/skylake
 	register "eist_enable" = "1"
 	register "VmxEnable" = "1"
 
+	# Set the Thermal Control Circuit (TCC) activaction value to 95C
+	# even though FSP integration guide says to set it to 100C for SKL-U
+	# (offset at 0), because when the TCC activates at 100C, the CPU
+	# will have already shut itself down from overheating protection.
+	register "tcc_offset" = "5" # TCC of 95C
+
 	# GPE configuration
 	# Note that GPE events called out in ASL code rely on this
 	# route. i.e. If this route changes then the affected GPE

@@ -224,7 +224,7 @@ bool google_chromeec_is_uhepi_supported(void)
 
 	if (!uhepi_support) {
 		uhepi_support = google_chromeec_check_feature
-			(EC_FEATURE_UNIFIED_WAKE_MASKS) ? UHEPI_SUPPORTED :
+			(EC_FEATURE_UNIFIED_WAKE_MASKS) > 0 ? UHEPI_SUPPORTED :
 			UHEPI_NOT_SUPPORTED;
 		printk(BIOS_DEBUG, "Chrome EC: UHEPI %s\n",
 			uhepi_support == UHEPI_SUPPORTED ?

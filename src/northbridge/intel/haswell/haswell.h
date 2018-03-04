@@ -35,6 +35,12 @@
 #endif
 #define DEFAULT_EPBAR		0xfed19000	/* 4 KB */
 
+#define GFXVT_BASE_ADDRESS	0xfed90000ULL
+#define GFXVT_BASE_SIZE		0x1000
+
+#define VTVC0_BASE_ADDRESS	0xfed91000ULL
+#define VTVC0_BASE_SIZE		0x1000
+
 #include <southbridge/intel/lynxpoint/pch.h>
 
 /* Everything below this line is ignored in the DSDT */
@@ -88,6 +94,16 @@
 
 #define SKPAD		0xdc	/* Scratchpad Data */
 
+#define CAPID0_A	0xe4
+#define  VTD_DISABLE	(1 << 23)
+#define ARCHDIS		0xff0	/* DMA Remap Engine Policy Control */
+#define  DMAR_LCKDN	(1 << 31)
+#define  SPCAPCTRL	(1 << 25)
+#define  L3HIT2PEND_DIS	(1 << 20)
+#define  PRSCAPDIS	(1 << 2)
+#define  GLBIOTLBINV	(1 << 1)
+#define  GLBCTXTINV	(1 << 0)
+
 /* Device 0:1.0 PCI configuration space (PCI Express) */
 
 #define BCTRL1		0x3e	/* 16bit */
@@ -107,6 +123,8 @@
 #define MCHBAR32_OR(x, or) MCHBAR32(x) = (MCHBAR32(x) | (or))
 
 #define BIOS_RESET_CPL	0x5da8	/* 8bit */
+#define GFXVTBAR	0x5400
+#define VTVC0BAR	0x5410
 
 /* Some power MSRs are also represented in MCHBAR */
 #define MCH_PKG_POWER_LIMIT_LO	0x59a0

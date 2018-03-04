@@ -290,7 +290,7 @@ static void mc_report_map_entries(device_t dev, uint64_t *values)
 	printk(BIOS_DEBUG, "MC MAP: GGC: 0x%x\n", pci_read_config16(dev, GGC));
 }
 
-static void mc_add_dram_resources(device_t dev)
+static void mc_add_dram_resources(device_t dev, int *resource_cnt)
 {
 	unsigned long base_k, size_k;
 	unsigned long touud_k;
@@ -332,7 +332,7 @@ static void mc_add_dram_resources(device_t dev)
 	 * The resource index starts low and should not meet or exceed
 	 * PCI_BASE_ADDRESS_0.
 	 */
-	index = 0;
+	index = *resource_cnt;
 
 	/* 0 - > 0xa0000 */
 	base_k = 0;
@@ -380,18 +380,31 @@ static void mc_add_dram_resources(device_t dev)
 			CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
 			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
 #endif
+	*resource_cnt = index;
 }
 
 static void mc_read_resources(device_t dev)
 {
+	int index = 0;
+	const bool vtd_capable =
+		!(pci_read_config32(dev, CAPID0_A) & VTD_DISABLE);
+
 	/* Read standard PCI resources. */
 	pci_dev_read_resources(dev);
 
 	/* Add all fixed MMIO resources. */
 	mc_add_fixed_mmio_resources(dev);
 
+	/* Add VT-d MMIO resources if capable */
+	if (vtd_capable) {
+		mmio_resource(dev, index++, GFXVT_BASE_ADDRESS / KiB,
+			GFXVT_BASE_SIZE / KiB);
+		mmio_resource(dev, index++, VTVC0_BASE_ADDRESS / KiB,
+			VTVC0_BASE_SIZE / KiB);
+	}
+
 	/* Calculate and add DRAM resources. */
-	mc_add_dram_resources(dev);
+	mc_add_dram_resources(dev, &index);
 }
 
 static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)

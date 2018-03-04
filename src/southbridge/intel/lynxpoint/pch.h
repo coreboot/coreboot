@@ -282,6 +282,8 @@ void pch_enable_lpc(void);
 #define  LPT_LPC_EN		(1 << 2)  /* LPC_IO_DEC[9:8] */
 #define  COMB_LPC_EN		(1 << 1)  /* LPC_IO_DEC[6:4] */
 #define  COMA_LPC_EN		(1 << 0)  /* LPC_IO_DEC[2:0] */
+#define LPC_IBDF		0x6C /* I/O APIC bus/dev/fn */
+#define LPC_HnBDF(n)		(0x70 + n * 2) /* HPET n bus/dev/fn */
 #define LPC_GEN1_DEC		0x84 /* LPC IF Generic Decode Range 1 */
 #define LPC_GEN2_DEC		0x88 /* LPC IF Generic Decode Range 2 */
 #define LPC_GEN3_DEC		0x8c /* LPC IF Generic Decode Range 3 */
@@ -669,6 +671,11 @@ void pch_enable_lpc(void);
 #define PCH_DISABLE_MEI2	(1 << 2)
 #define PCH_DISABLE_MEI1	(1 << 1)
 #define PCH_ENABLE_DBDF		(1 << 0)
+
+#define PCH_IOAPIC_PCI_BUS	250
+#define PCH_IOAPIC_PCI_SLOT	31
+#define PCH_HPET_PCI_BUS	250
+#define PCH_HPET_PCI_SLOT	15
 
 /* ICH7 PMBASE */
 #define PM1_STS		0x00

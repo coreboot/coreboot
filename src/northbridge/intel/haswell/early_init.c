@@ -94,10 +94,38 @@ static void haswell_setup_graphics(void)
 	MCHBAR32(0x5418) = reg32;
 }
 
+static void haswell_setup_iommu(void)
+{
+	const u32 capid0_a = pci_read_config32(PCI_DEV(0, 0, 0), CAPID0_A);
+
+	if (capid0_a & VTD_DISABLE)
+		return;
+
+	/* setup BARs: zeroize top 32 bits; set enable bit */
+	MCHBAR32(GFXVTBAR + 4) = GFXVT_BASE_ADDRESS >> 32;
+	MCHBAR32(GFXVTBAR) = GFXVT_BASE_ADDRESS | 1;
+	MCHBAR32(VTVC0BAR + 4) = VTVC0_BASE_ADDRESS >> 32;
+	MCHBAR32(VTVC0BAR) = VTVC0_BASE_ADDRESS | 1;
+
+	/* set L3HIT2PEND_DIS, lock GFXVTBAR policy cfg registers */
+	u32 reg32;
+	reg32 = read32((void *)(GFXVT_BASE_ADDRESS + ARCHDIS));
+	write32((void *)(GFXVT_BASE_ADDRESS + ARCHDIS),
+			reg32 | DMAR_LCKDN | L3HIT2PEND_DIS);
+	/* clear SPCAPCTRL */
+	reg32 = read32((void *)(VTVC0_BASE_ADDRESS + ARCHDIS)) & ~SPCAPCTRL;
+	/* set GLBIOTLBINV, GLBCTXTINV; lock VTVC0BAR policy cfg registers */
+	write32((void *)(VTVC0_BASE_ADDRESS + ARCHDIS),
+			reg32 | DMAR_LCKDN | GLBIOTLBINV | GLBCTXTINV);
+}
+
 void haswell_early_initialization(int chipset_type)
 {
 	/* Setup all BARs required for early PCIe and raminit */
 	haswell_setup_bars();
+
+	/* Setup IOMMU BARs */
+	haswell_setup_iommu();
 
 	/* Device Enable: IGD and Mini-HD Audio */
 	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN,

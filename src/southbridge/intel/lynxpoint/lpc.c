@@ -51,6 +51,10 @@ static void pch_enable_ioapic(struct device *dev)
 {
 	u32 reg32;
 
+	/* Assign unique bus/dev/fn for I/O APIC */
+	pci_write_config16(dev, LPC_IBDF,
+		PCH_IOAPIC_PCI_BUS << 8 | PCH_IOAPIC_PCI_SLOT << 3);
+
 	/* Enable ACPI I/O range decode */
 	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
 
@@ -396,9 +400,15 @@ static void lpt_lp_pm_init(struct device *dev)
 	RCBA32_OR(0x33c8, (1 << 15));
 }
 
-static void enable_hpet(void)
+static void enable_hpet(struct device *const dev)
 {
 	u32 reg32;
+	size_t i;
+
+	/* Assign unique bus/dev/fn for each HPET */
+	for (i = 0; i < 8; ++i)
+		pci_write_config16(dev, LPC_HnBDF(i),
+			PCH_HPET_PCI_BUS << 8 | PCH_HPET_PCI_SLOT << 3 | i);
 
 	/* Move HPET to default address 0xfed00000 and enable it */
 	reg32 = RCBA32(HPTC);
@@ -570,7 +580,7 @@ static void lpc_init(struct device *dev)
 	isa_dma_init();
 
 	/* Initialize the High Precision Event Timers, if present. */
-	enable_hpet();
+	enable_hpet(dev);
 
 	setup_i8259();
 

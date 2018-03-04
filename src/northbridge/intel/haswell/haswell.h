@@ -212,6 +212,14 @@ void dump_mem(unsigned start, unsigned end);
 void report_platform_info(void);
 #endif /* !__SMM__ */
 
+#if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
+#include <device/device.h>
+
+struct acpi_rsdp;
+unsigned long northbridge_write_acpi_tables(device_t device,
+		unsigned long start, struct acpi_rsdp *rsdp);
+#endif
+
 #endif
 #endif
 #endif /* __NORTHBRIDGE_INTEL_HASWELL_HASWELL_H__ */

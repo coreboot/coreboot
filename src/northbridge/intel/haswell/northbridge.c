@@ -85,6 +85,7 @@ static struct device_operations pci_domain_ops = {
 	.init             = NULL,
 	.scan_bus         = pci_domain_scan_bus,
 	.ops_pci_bus	  = pci_bus_default_ops,
+	.write_acpi_tables = northbridge_write_acpi_tables,
 };
 
 static int get_bar(device_t dev, unsigned int index, u32 *base, u32 *len)

@@ -29,6 +29,7 @@
 const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
 	{ AGESA_DO_RESET,                 agesa_Reset },
 	{ AGESA_FCH_OEM_CALLOUT,          agesa_fch_initreset },
+	{ AGESA_HALT_THIS_AP,             agesa_HaltThisAp },
 	{ AGESA_GNB_PCIE_SLOT_RESET,      agesa_PcieSlotResetControl }
 };
 #else

@@ -57,6 +57,7 @@ AGESA_STATUS GetBiosCallout(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 AGESA_STATUS agesa_fch_initreset(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
 AGESA_STATUS agesa_fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
+AGESA_STATUS agesa_HaltThisAp(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 void platform_FchParams_reset(FCH_RESET_DATA_BLOCK *FchParams_reset);
 void platform_FchParams_env(FCH_DATA_BLOCK *FchParams_env);

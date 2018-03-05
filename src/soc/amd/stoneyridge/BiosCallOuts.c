@@ -26,6 +26,7 @@
 #include <amdlib.h>
 #include <amdblocks/dimm_spd.h>
 #include "chip.h"
+#include <amdblocks/car.h>
 
 void __attribute__((weak)) platform_FchParams_reset(
 				FCH_RESET_DATA_BLOCK *FchParams_reset) {}
@@ -137,6 +138,24 @@ AGESA_STATUS agesa_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 		return AGESA_ERROR;
 
 	return AGESA_SUCCESS;
+}
+
+AGESA_STATUS agesa_HaltThisAp(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+{
+	AGESA_HALT_THIS_AP_PARAMS *info = ConfigPtr;
+	uint32_t flags = 0;
+
+	if (info->PrimaryCore == TRUE)
+		return AGESA_UNSUPPORTED; /* force normal path */
+	if (info->ExecWbinvd == TRUE)
+		flags |= 1;
+	if (info->CacheEn == TRUE)
+		flags |= 2;
+
+	ap_teardown_car(flags); /* does not return */
+
+	/* Should never reach here */
+	return AGESA_UNSUPPORTED;
 }
 
 /* Allow mainboards to fill the SPD buffer */

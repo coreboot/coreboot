@@ -65,15 +65,6 @@ static void pci_early_hsuart_device_probe(u8 bus, u8 dev, u8 func,
 			     SIZE_OF_HSUART_RES * func + PSR_OFFSET);
 	*psr_reg >>= 1;
 #endif
-
-#if (IS_ENABLED(CONFIG_LEGACY_UART_MODE))
-	/* Hide HSUART on PCI to prevent re-enumeration
-	 * and enable legacy mode.
-	 */
-	pci_write_config32(uart_dev, PCI_FUNC_RDCFG_HIDE,
-			   pci_read_config32(uart_dev, PCI_FUNC_RDCFG_HIDE) |
-			       1);
-#endif
 }
 
 static void early_config_gpio(void)

@@ -239,8 +239,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E13, 20K_PD, DEEP, NF1),
 	/* E14 : DDPC_HPD1 ==> USB_C1_DP_HPD */
 	PAD_CFG_NF(GPP_E14, 20K_PD, DEEP, NF1),
-	/* E15 : DDPD_HPD2 ==> NC */
-	PAD_CFG_NC(GPP_E15),
+	/* E15 : DDPD_HPD2 ==> PCH_MEM_CONFIG4 */
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
         /* E16 : DDPE_HPD3 ==> PCH_GPP_E16 */
         PAD_CFG_GPI_ACPI_SCI(GPP_E16, NONE, DEEP, INVERT),
 	/* E17 : EDP_HPD ==> EDP_HPD */

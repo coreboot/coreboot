@@ -30,6 +30,7 @@
 #define GPIO_MEM_CONFIG_1	GPP_C13
 #define GPIO_MEM_CONFIG_2	GPP_C14
 #define GPIO_MEM_CONFIG_3	GPP_C15
+#define GPIO_MEM_CONFIG_4	GPP_E15
 
 /* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
 #define GPE_EC_WAKE		GPE0_LAN_WAK

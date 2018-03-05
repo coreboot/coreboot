@@ -557,11 +557,16 @@ void southbridge_init(void *chip_info)
 
 void southbridge_final(void *chip_info)
 {
+	uint8_t restored_power = PM_S5_AT_POWER_RECOVERY;
+
 	if (IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM)) {
 		agesawrapper_fchecfancontrolservice();
 		if (!IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE))
 			enable_imc_thermal_zone();
 	}
+	if (IS_ENABLED(CONFIG_MAINBOARD_POWER_RESTORE))
+		restored_power = PM_RESTORE_S0_IF_PREV_S0;
+	pm_write8(PM_RTC_SHADOW, restored_power);
 }
 
 /*

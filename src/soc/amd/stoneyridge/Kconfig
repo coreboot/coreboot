@@ -382,4 +382,12 @@ config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
 	int
 	default 133
 
+config MAINBOARD_POWER_RESTORE
+	def_bool n
+	help
+	  This option determines what state to go to once power is restored
+	  after having been lost in S0.  Select this option to automatically
+	  return to S0.  Otherwise the system will remain in S5 once power
+	  is restored.
+
 endif # SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4

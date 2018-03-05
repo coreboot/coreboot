@@ -27,15 +27,6 @@
 #include <soc/southbridge.h>
 #include <soc/smbus.h>
 
-#define NMI_OFF 0
-
-#define MAINBOARD_POWER_OFF 0
-#define MAINBOARD_POWER_ON 1
-
-#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
-#endif
-
 /*
 * The southbridge enables all USB controllers by default in SMBUS Control.
 * The southbridge enables SATA by default in SMBUS Control.

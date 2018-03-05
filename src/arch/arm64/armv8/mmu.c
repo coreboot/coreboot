@@ -141,6 +141,7 @@ static uint64_t init_xlat_table(uint64_t base_addr,
 				uint64_t size,
 				uint64_t tag)
 {
+	uint64_t l0_index = (base_addr & L0_ADDR_MASK) >> L0_ADDR_SHIFT;
 	uint64_t l1_index = (base_addr & L1_ADDR_MASK) >> L1_ADDR_SHIFT;
 	uint64_t l2_index = (base_addr & L2_ADDR_MASK) >> L2_ADDR_SHIFT;
 	uint64_t l3_index = (base_addr & L3_ADDR_MASK) >> L3_ADDR_SHIFT;
@@ -148,12 +149,12 @@ static uint64_t init_xlat_table(uint64_t base_addr,
 	uint64_t desc;
 	uint64_t attr = get_block_attr(tag);
 
-	/* L1 table lookup
-	 * If VA has bits more than L2 can resolve, lookup starts at L1
-	 * Assumption: we don't need L0 table in coreboot */
-	if (BITS_PER_VA > L1_ADDR_SHIFT) {
-		if ((size >= L1_XLAT_SIZE) &&
-		    IS_ALIGNED(base_addr, (1UL << L1_ADDR_SHIFT))) {
+	/* L0 entry stores a table descriptor (doesn't support blocks) */
+	table = get_next_level_table(&table[l0_index], L1_XLAT_SIZE);
+
+	/* L1 table lookup */
+	if ((size >= L1_XLAT_SIZE) &&
+	    IS_ALIGNED(base_addr, (1UL << L1_ADDR_SHIFT))) {
 			/* If block address is aligned and size is greater than
 			 * or equal to size addressed by each L1 entry, we can
 			 * directly store a block desc */
@@ -161,13 +162,12 @@ static uint64_t init_xlat_table(uint64_t base_addr,
 			table[l1_index] = desc;
 			/* L2 lookup is not required */
 			return L1_XLAT_SIZE;
-		}
-		table = get_next_level_table(&table[l1_index], L2_XLAT_SIZE);
 	}
 
-	/* L2 table lookup
-	 * If lookup was performed at L1, L2 table addr is obtained from L1 desc
-	 * else, lookup starts at ttbr address */
+	/* L1 entry stores a table descriptor */
+	table = get_next_level_table(&table[l1_index], L2_XLAT_SIZE);
+
+	/* L2 table lookup */
 	if ((size >= L2_XLAT_SIZE) &&
 	    IS_ALIGNED(base_addr, (1UL << L2_ADDR_SHIFT))) {
 		/* If block address is aligned and size is greater than
@@ -195,6 +195,7 @@ static void sanity_check(uint64_t addr, uint64_t size)
 {
 	assert(!(addr & GRANULE_SIZE_MASK) &&
 	       !(size & GRANULE_SIZE_MASK) &&
+	       (addr + size < (1UL << BITS_PER_VA)) &&
 	       size >= GRANULE_SIZE);
 }
 
@@ -202,7 +203,7 @@ static void sanity_check(uint64_t addr, uint64_t size)
  * Desc : Returns the page table entry governing a specific address. */
 static uint64_t get_pte(void *addr)
 {
-	int shift = BITS_PER_VA > L1_ADDR_SHIFT ? L1_ADDR_SHIFT : L2_ADDR_SHIFT;
+	int shift = L0_ADDR_SHIFT;
 	uint64_t *pte = (uint64_t *)_ttb;
 
 	while (1) {
@@ -257,8 +258,8 @@ void mmu_init(void)
 	for (; _ettb - (u8 *)table > 0; table += GRANULE_SIZE/sizeof(*table))
 		table[0] = UNUSED_DESC;
 
-	/* Initialize the root table (L1) to be completely unmapped. */
-	uint64_t *root = setup_new_table(INVALID_DESC, L1_XLAT_SIZE);
+	/* Initialize the root table (L0) to be completely unmapped. */
+	uint64_t *root = setup_new_table(INVALID_DESC, L0_XLAT_SIZE);
 	assert((u8 *)root == _ttb);
 
 	/* Initialize TTBR */
@@ -269,7 +270,7 @@ void mmu_init(void)
 
 	/* Initialize TCR flags */
 	raw_write_tcr_el3(TCR_TOSZ | TCR_IRGN0_NM_WBWAC | TCR_ORGN0_NM_WBWAC |
-			  TCR_SH0_IS | TCR_TG0_4KB | TCR_PS_64GB |
+			  TCR_SH0_IS | TCR_TG0_4KB | TCR_PS_256TB |
 			  TCR_TBI_USED);
 }
 

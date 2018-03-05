@@ -14,3 +14,5 @@
 #
 
 subdirs-y += spd
+
+ramstage-y += mainboard.c

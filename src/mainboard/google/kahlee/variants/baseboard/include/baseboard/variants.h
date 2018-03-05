@@ -24,6 +24,8 @@
 
 const struct sci_source *get_gpe_table(size_t *num);
 uint8_t variant_memory_sku(void);
+/* Return board SKU. Limited to uint8_t, so it fits into 3 decimal digits */
+uint8_t variant_board_sku(void);
 int variant_mainboard_read_spd(uint8_t spdAddress, char *buf, size_t len);
 int variant_get_xhci_oc_map(uint16_t *usb_oc_map);
 int variant_get_ehci_oc_map(uint16_t *usb_oc_map);

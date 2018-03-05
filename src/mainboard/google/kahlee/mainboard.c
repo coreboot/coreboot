@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <string.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/acpi.h>
@@ -21,6 +22,7 @@
 #include <cbmem.h>
 #include <baseboard/variants.h>
 #include <boardid.h>
+#include <smbios.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/smi.h>
@@ -221,3 +223,18 @@ struct chip_operations mainboard_ops = {
 	.enable_dev = kahlee_enable,
 	.final = mainboard_final,
 };
+
+/* Variants may override this function so see definitions in variants/ */
+uint8_t __attribute__((weak)) variant_board_sku(void)
+{
+	return 0;
+}
+
+const char *smbios_mainboard_sku(void)
+{
+	static char sku_str[7]; /* sku{0..255} */
+
+	snprintf(sku_str, sizeof(sku_str), "sku%d", variant_board_sku());
+
+	return sku_str;
+}

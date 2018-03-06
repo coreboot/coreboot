@@ -37,7 +37,11 @@
 #define APU_SMI_BASE			0xfed80200
 #define PM_MMIO_BASE			0xfed80300
 #define BIOSRAM_MMIO_BASE		0xfed80500
+#define IOMUX_MMIO_BASE			0xfed80d00
+#define MISC_MMIO_BASE			0xfed80e00
 #define XHCI_ACPI_PM_MMIO_BASE		0xfed81c00
+#define AOAC_MMIO_BASE			0xfed81e00
+
 #define APU_UART0_BASE			0xfedc6000
 #define APU_UART1_BASE			0xfedc8000
 

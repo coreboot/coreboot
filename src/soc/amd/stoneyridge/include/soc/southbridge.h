@@ -289,6 +289,46 @@
 #define GPIO_TABLE_BOOTBLOCK		0
 #endif
 
+/* FCH AOAC Registers 0xfed81e00 */
+#define FCH_AOAC_D3_CONTROL_CLK_GEN	0x40
+#define FCH_AOAC_D3_CONTROL_I2C0	0x4A
+#define FCH_AOAC_D3_CONTROL_I2C1	0x4C
+#define FCH_AOAC_D3_CONTROL_I2C2	0x4E
+#define FCH_AOAC_D3_CONTROL_I2C3	0x50
+#define FCH_AOAC_D3_CONTROL_UART0	0x56
+#define FCH_AOAC_D3_CONTROL_UART1	0x58
+#define FCH_AOAC_D3_CONTROL_AMBA	0x62
+#define FCH_AOAC_D3_CONTROL_USB2	0x64
+#define FCH_AOAC_D3_CONTROL_USB3	0x6E
+/* Bit definitions for all FCH_AOAC_D3_CONTROL_* Registers */
+#define   FCH_AOAC_TARGET_DEVICE_STATE (BIT(0) + BIT(1))
+#define   FCH_AOAC_DEVICE_STATE		BIT(2)
+#define   FCH_AOAC_PWR_ON_DEV		BIT(3)
+#define   FCH_AOAC_SW_PWR_ON_RSTB	BIT(4)
+#define   FCH_AOAC_SW_REF_CLK_OK	BIT(5)
+#define   FCH_AOAC_SW_RST_B		BIT(6)
+#define   FCH_AOAC_IS_SW_CONTROL	BIT(7)
+
+#define FCH_AOAC_D3_STATE_CLK_GEN	0x41
+#define FCH_AOAC_D3_STATE_I2C0		0x4B
+#define FCH_AOAC_D3_STATE_I2C1		0x4D
+#define FCH_AOAC_D3_STATE_I2C2		0x4F
+#define FCH_AOAC_D3_STATE_I2C3		0x51
+#define FCH_AOAC_D3_STATE_UART0		0x57
+#define FCH_AOAC_D3_STATE_UART1		0x59
+#define FCH_AOAC_D3_STATE_AMBA		0x63
+#define FCH_AOAC_D3_STATE_USB2		0x65
+#define FCH_AOAC_D3_STATE_USB3		0x6F
+/* Bit definitions for all FCH_AOAC_D3_STATE_* Registers */
+#define   FCH_AOAC_PWR_RST_STATE	BIT(0)
+#define   FCH_AOAC_RST_CLK_OK_STATE	BIT(1)
+#define   FCH_AOAC_RST_B_STATE		BIT(2)
+#define   FCH_AOAC_DEV_OFF_GATING_STATE	BIT(3)
+#define   FCH_AOAC_D3COLD		BIT(4)
+#define   FCH_AOAC_CLK_OK_STATE		BIT(5)
+#define   FCH_AOAC_STAT0		BIT(6)
+#define   FCH_AOAC_STAT1		BIT(7)
+
 struct soc_amd_stoneyridge_gpio {
 	uint8_t gpio;
 	uint8_t function;

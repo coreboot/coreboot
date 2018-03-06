@@ -272,23 +272,38 @@ int sb_set_wideio_range(uint16_t start, uint16_t size)
 	return index;
 }
 
-void configure_stoneyridge_uart(void)
+static void power_on_aoac_device(int aoac_device_control_register)
 {
-	u8 byte, byte2;
-
-	if (CONFIG_UART_FOR_CONSOLE < 0 || CONFIG_UART_FOR_CONSOLE > 1)
-		return;
+	uint8_t byte;
+	uint8_t *register_pointer = (uint8_t *)(uintptr_t)AOAC_MMIO_BASE
+			+ aoac_device_control_register;
 
 	/* Power on the UART and AMBA devices */
-	byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56
-					+ CONFIG_UART_FOR_CONSOLE * 2);
-	byte |= AOAC_PWR_ON_DEV;
-	write8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56
-					+ CONFIG_UART_FOR_CONSOLE * 2, byte);
+	byte = read8(register_pointer);
+	byte |= FCH_AOAC_PWR_ON_DEV;
+	write8(register_pointer, byte);
+}
 
-	byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62);
-	byte |= AOAC_PWR_ON_DEV;
-	write8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62, byte);
+static bool is_aoac_device_enabled(int aoac_device_status_register)
+{
+	uint8_t byte;
+	byte = read8((uint8_t *)(uintptr_t)AOAC_MMIO_BASE
+			+ aoac_device_status_register);
+	byte &= (FCH_AOAC_PWR_RST_STATE | FCH_AOAC_RST_CLK_OK_STATE);
+	if (byte == (FCH_AOAC_PWR_RST_STATE | FCH_AOAC_RST_CLK_OK_STATE))
+		return true;
+	else
+		return false;
+}
+
+void configure_stoneyridge_uart(void)
+{
+	bool status;
+
+	/* Power on the UART and AMBA devices */
+	power_on_aoac_device(FCH_AOAC_D3_CONTROL_UART0
+			+ CONFIG_UART_FOR_CONSOLE * 2);
+	power_on_aoac_device(FCH_AOAC_D3_CONTROL_AMBA);
 
 	/* Set the GPIO mux to UART */
 	write8((void *)FCH_IOMUXx89_UART0_RTS_L_EGPIO137, 0);
@@ -299,15 +314,10 @@ void configure_stoneyridge_uart(void)
 	/* Wait for the UART and AMBA devices to indicate power and clock OK */
 	do {
 		udelay(100);
-		byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG57
+		status = is_aoac_device_enabled(FCH_AOAC_D3_STATE_UART0
 					+ CONFIG_UART_FOR_CONSOLE * 2);
-		byte &= (A0AC_PWR_RST_STATE | AOAC_RST_CLK_OK_STATE);
-		byte2 = read8((void *)ACPI_MMIO_BASE + AOAC_BASE
-					+ FCH_AOAC_REG63);
-		byte2 &= (A0AC_PWR_RST_STATE | AOAC_RST_CLK_OK_STATE);
-	} while (!((byte == (A0AC_PWR_RST_STATE | AOAC_RST_CLK_OK_STATE)) &&
-		   (byte2 == (A0AC_PWR_RST_STATE | AOAC_RST_CLK_OK_STATE))));
-
+		status &= is_aoac_device_enabled(FCH_AOAC_D3_STATE_AMBA);
+	} while (!status);
 }
 
 void sb_pci_port80(void)

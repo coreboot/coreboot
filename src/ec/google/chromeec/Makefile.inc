@@ -77,7 +77,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/ecrw.hash: $(obj)/mainboard/$(MAINBOARDDIR)/ecr
 
 endif
 
-ifeq ($(EC_GOOGLE_CHROMEEC_PD),y)
+ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC_PD),y)
 
 ifneq ($(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_NONE),y)
 

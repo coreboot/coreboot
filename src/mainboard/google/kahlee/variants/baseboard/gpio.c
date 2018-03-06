@@ -83,8 +83,8 @@ const static struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
 	/* GPIO_26 - APU_PCIE_RST_L */
 	PAD_NF(GPIO_26, PCIE_RST_L, PULL_NONE),
 
-	/* GPIO_40 - EMMC_BRIDGE_RST_L */
-	PAD_GPO(GPIO_40, HIGH),
+	/* GPIO_40 - EMMC_BRIDGE_RST_L - Currently unused */
+	PAD_GPI(GPIO_40, PULL_UP),
 
 	/* GPIO_42 - S5_MUX_CTRL */
 	PAD_NF(GPIO_42, S5_MUX_CTRL, PULL_NONE),

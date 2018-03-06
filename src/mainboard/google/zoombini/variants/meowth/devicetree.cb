@@ -56,9 +56,6 @@ chip soc/intel/cannonlake
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)"
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC3)"
 
-	# Enable Pch iSCLK
-	register "pch_isclk" = "1"
-
 	# Touchscreen Digitizer
 	register "i2c[0]" = "{
 		.speed = I2C_SPEED_FAST_PLUS,

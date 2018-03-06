@@ -247,7 +247,8 @@
 #define SPI100_HOST_PREF_CONFIG		0x2c
 #define   SPI_RD4DW_EN_HOST		BIT(15)
 
-#define FCH_MISC_REG40_OSCOUT1_EN	BIT(2)
+#define MISC_MISC_CLK_CNTL_1		0x40
+#define   OSCOUT1_CLK_OUTPUT_ENB	BIT(2)  /* 0 = Enabled, 1 = Disabled */
 
 /* IO 0xcf9 - Reset control port*/
 #define   FULL_RST			BIT(3)

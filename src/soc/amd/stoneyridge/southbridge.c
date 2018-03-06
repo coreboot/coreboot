@@ -360,16 +360,18 @@ void sb_lpc_decode(void)
 void sb_clk_output_48Mhz(void)
 {
 	u32 ctrl;
+	u32 *misc_clk_cntl_1_ptr = (u32 *)(uintptr_t)(MISC_MMIO_BASE
+				+ MISC_MISC_CLK_CNTL_1);
 
 	/*
 	 * Enable the X14M_25M_48M_OSC pin and leaving it at it's default so
 	 * 48Mhz will be on ball AP13 (FT3b package)
 	 */
-	ctrl = read32((void *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40));
+	ctrl = read32(misc_clk_cntl_1_ptr);
 
 	/* clear the OSCOUT1_ClkOutputEnb to enable the 48 Mhz clock */
-	ctrl &= ~FCH_MISC_REG40_OSCOUT1_EN;
-	write32((void *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40), ctrl);
+	ctrl &= ~OSCOUT1_CLK_OUTPUT_ENB;
+	write32(misc_clk_cntl_1_ptr, ctrl);
 }
 
 static uintptr_t sb_spibase(void)

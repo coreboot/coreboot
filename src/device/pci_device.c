@@ -48,6 +48,7 @@
 #include <device/hypertransport.h>
 #include <pc80/i8259.h>
 #include <security/vboot/vbnv.h>
+#include <timestamp.h>
 
 u8 pci_moving_config8(struct device *dev, unsigned int reg)
 {
@@ -719,6 +720,7 @@ void pci_dev_init(struct device *dev)
 
 	if (!should_load_oprom(dev))
 		return;
+	timestamp_add_now(TS_OPROM_INITIALIZE);
 
 	rom = pci_rom_probe(dev);
 	if (rom == NULL)
@@ -727,6 +729,7 @@ void pci_dev_init(struct device *dev)
 	ram = pci_rom_load(dev, rom);
 	if (ram == NULL)
 		return;
+	timestamp_add_now(TS_OPROM_COPY_END);
 
 	if (!should_run_oprom(dev))
 		return;
@@ -734,6 +737,7 @@ void pci_dev_init(struct device *dev)
 	run_bios(dev, (unsigned long)ram);
 	gfx_set_init_done(1);
 	printk(BIOS_DEBUG, "VGA Option ROM was run\n");
+	timestamp_add_now(TS_OPROM_END);
 }
 
 /** Default device operation for PCI devices */

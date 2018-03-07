@@ -470,8 +470,38 @@ void sb_read_mode(u32 mode)
 					& ~SPI_READ_MODE_MASK) | mode);
 }
 
+/*
+ * Enable FCH to decode TPM associated Memory and IO regions
+ *
+ * Enable decoding of TPM cycles defined in TPM 1.2 spec
+ * Enable decoding of legacy TPM addresses: IO addresses 0x7f-
+ * 0x7e and 0xef-0xee.
+ * This function should be called if TPM is connected in any way to the FCH and
+ * conforms to the regions decoded.
+ * Absent any other routing configuration the TPM cycles will be claimed by the
+ * LPC bus
+ */
+void sb_tpm_decode(void)
+{
+	u32 value;
+
+	value = pci_read_config32(SOC_LPC_DEV, LPC_TRUSTED_PLATFORM_MODULE);
+	value |= TPM_12_EN | TPM_LEGACY_EN;
+	pci_write_config32(SOC_LPC_DEV, LPC_TRUSTED_PLATFORM_MODULE, value);
+}
+
+/*
+ * Enable FCH to decode TPM associated Memory and IO regions to SPI
+ *
+ * This should be used if TPM is connected to SPI bus.
+ * Assumes SPI address space is already configured via a call to sb_spibase().
+ */
 void sb_tpm_decode_spi(void)
 {
+	/* Enable TPM decoding to FCH */
+	sb_tpm_decode();
+
+	/* Route TPM accesses to SPI */
 	u32 spibase = pci_read_config32(SOC_LPC_DEV,
 					SPIROM_BASE_ADDRESS_REGISTER);
 	pci_write_config32(SOC_LPC_DEV, SPIROM_BASE_ADDRESS_REGISTER, spibase

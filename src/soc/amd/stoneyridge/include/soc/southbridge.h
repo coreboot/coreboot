@@ -186,6 +186,10 @@
 #define LPC_MISC_CONTROL_BITS		0x78
 #define   LPC_NOHOG			BIT(0)
 
+#define LPC_TRUSTED_PLATFORM_MODULE	0x7c
+#define   TPM_12_EN			BIT(0)
+#define   TPM_LEGACY_EN			BIT(2)
+
 #define LPC_WIDEIO2_GENERIC_PORT	0x90
 
 /*
@@ -357,6 +361,7 @@ void sb_pci_port80(void);
 void sb_read_mode(u32 mode);
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
 void sb_set_readspeed(u16 norm, u16 fast);
+void sb_tpm_decode(void);
 void sb_tpm_decode_spi(void);
 void lpc_wideio_512_window(uint16_t base);
 void lpc_wideio_16_window(uint16_t base);

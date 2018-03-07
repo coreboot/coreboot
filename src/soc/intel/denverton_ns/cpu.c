@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <cpu/cpu.h>
+#include <cpu/x86/cr.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
@@ -44,6 +45,12 @@ static void dnv_configure_mca(void)
 	   of these banks are core vs package scope. For now every CPU clears
 	   every bank. */
 	mca_configure();
+
+	/* TODO install a fallback MC handler for each core in case OS does
+	   not provide one. Is it really needed? */
+
+	/* Enable the machine check exception */
+	write_cr4(read_cr4() | CR4_MCE);
 }
 
 static void denverton_core_init(struct device *cpu)

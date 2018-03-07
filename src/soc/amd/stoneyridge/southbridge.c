@@ -320,6 +320,26 @@ void configure_stoneyridge_uart(void)
 	} while (!status);
 }
 
+void configure_stoneyridge_i2c(void)
+{
+	bool status;
+
+	/* Power on the I2C devices */
+	power_on_aoac_device(FCH_AOAC_D3_CONTROL_I2C0);
+	power_on_aoac_device(FCH_AOAC_D3_CONTROL_I2C1);
+	power_on_aoac_device(FCH_AOAC_D3_CONTROL_I2C2);
+	power_on_aoac_device(FCH_AOAC_D3_CONTROL_I2C3);
+
+	/* Wait for the I2C devices to indicate power and clock OK */
+	do {
+		udelay(100);
+		status = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C0);
+		status &= is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C1);
+		status &= is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C2);
+		status &= is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C3);
+	} while (!status);
+}
+
 void sb_pci_port80(void)
 {
 	u8 byte;

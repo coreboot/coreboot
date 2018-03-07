@@ -35,11 +35,40 @@
 
 static struct smm_relocation_attrs relo_attrs;
 
+static void dnv_configure_mca(void)
+{
+	msr_t msr;
+	int num_banks;
+	struct cpuid_result cpuid_regs;
+
+	/* Check feature flag in CPUID.(EAX=1):EDX[7]==1  MCE
+	 *                   and CPUID.(EAX=1):EDX[14]==1 MCA*/
+	cpuid_regs = cpuid(1);
+	if ((cpuid_regs.edx & (1<<7 | 1<<14)) != (1<<7 | 1<<14))
+		return;
+
+	msr = rdmsr(IA32_MCG_CAP);
+	num_banks = msr.lo & IA32_MCG_CAP_COUNT_MASK;
+	if (msr.lo & IA32_MCG_CAP_CTL_P_MASK) {
+		/* Enable all error logging */
+		msr.lo = msr.hi = 0xffffffff;
+		wrmsr(IA32_MCG_CTL, msr);
+	}
+
+	/* TODO(adurbin): This should only be done on a cold boot. Also, some
+	   of these banks are core vs package scope. For now every CPU clears
+	   every bank. */
+	mca_configure(NULL);
+}
+
 static void denverton_core_init(struct device *cpu)
 {
 	msr_t msr;
 
 	printk(BIOS_DEBUG, "Init Denverton-NS SoC cores.\n");
+
+	/* Clear out pending MCEs */
+	dnv_configure_mca();
 
 	/* Enable Fast Strings */
 	msr = rdmsr(IA32_MISC_ENABLE);

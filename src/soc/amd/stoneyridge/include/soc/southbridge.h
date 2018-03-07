@@ -32,6 +32,8 @@
 #define  PSP_MAILBOX_BAR_EN		0x10
 
 /* Power management registers:  0xfed80300 or index/data at IO 0xcd6/cd7 */
+#define PM_ISA_CONTROL			0x04
+#define   MMIO_EN			BIT(1)
 #define PM_PCI_CTRL			0x08
 #define   FORCE_SLPSTATE_RETRY		BIT(25)
 #define   FORCE_STPCLK_RETRY		BIT(24)
@@ -349,6 +351,7 @@ void southbridge_final(void *chip_info);
 void southbridge_init(void *chip_info);
 void sb_lpc_port80(void);
 void sb_lpc_decode(void);
+void sb_acpi_mmio_decode(void);
 void sb_pci_port80(void);
 void sb_read_mode(u32 mode);
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);

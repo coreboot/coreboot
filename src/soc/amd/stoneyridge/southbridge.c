@@ -367,6 +367,18 @@ void sb_lpc_decode(void)
 	pci_write_config32(SOC_LPC_DEV, LPC_IO_PORT_DECODE_ENABLE, tmp);
 }
 
+void sb_acpi_mmio_decode(void)
+{
+	uint8_t byte;
+
+	/* Enable ACPI MMIO range 0xfed80000 - 0xfed81fff */
+	outb(PM_ISA_CONTROL, PM_INDEX);
+	byte = inb(PM_DATA);
+	byte |= MMIO_EN;
+	outb(PM_ISA_CONTROL, PM_INDEX);
+	outb(byte, PM_DATA);
+}
+
 void sb_clk_output_48Mhz(void)
 {
 	u32 ctrl;

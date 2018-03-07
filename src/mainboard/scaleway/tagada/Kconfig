@@ -34,6 +34,12 @@ config MAINBOARD_VENDOR
 	string
 	default "Scaleway"
 
+config BMC_INFO_LOC
+	hex "BMC information location in flash"
+	default 0xff802000
+	help
+	  Location of BMC SERIAL information.
+
 config SMBIOS_ENCLOSURE_TYPE
 	hex
 	default 0x19

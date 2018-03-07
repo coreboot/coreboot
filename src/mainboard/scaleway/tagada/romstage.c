@@ -20,6 +20,7 @@
 #include <fsp/api.h>
 #include <fsp/soc_binding.h>
 #include <string.h>
+#include "bmcinfo.h"
 
 void mainboard_config_gpios(void);
 void mainboard_memory_init_params(FSPM_UPD *mupd);
@@ -32,6 +33,7 @@ void mainboard_config_gpios(void)
 	size_t num;
 	const struct pad_config *table;
 
+	printk(BIOS_SPEW, "Board Serial: %s.\n", bmcinfo_serial());
 	/* Configure pads prior to SiliconInit() in case there's any
 	* dependencies during hardware initialization.
 	*/
@@ -50,7 +52,8 @@ void mainboard_config_gpios(void)
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-	mupd->FspmConfig.PcdFspDebugPrintErrorLevel = 3; // Verbose
+	mupd->FspmConfig.PcdFspDebugPrintErrorLevel =
+		bmcinfo_fsp_verbosity_level();
 
 	// Enable Rmt and Fast Boot by default, RMT will be run only on first
 	// boot or when dimms change

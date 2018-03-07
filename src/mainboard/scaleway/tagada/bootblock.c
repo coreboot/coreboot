@@ -1,8 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 - 2017 Intel Corporation
- * Copyright (C) 2017 - 2018 Online SAS.
+ * Copyright (C) 2018 Online SAS.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,17 +14,16 @@
  *
  */
 
+#include <bootblock_common.h>
 #include <console/console.h>
-#include <fsp/api.h>
-#include <soc/ramstage.h>
-
 #include "bmcinfo.h"
 
-void mainboard_silicon_init_params(FSPS_UPD *params)
-{
-	/* Disable eMMC */
-	params->FspsConfig.PcdEnableEmmc = 0;
+/*
+ * Display board serial early
+ */
 
-	if (bmcinfo_disable_nic1())
-		params->FspsConfig.PcdEnableGbE = 2; // disable lan 1 only
+void bootblock_mainboard_init(void)
+{
+	if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
+		printk(BIOS_SPEW, "Board Serial: %s.\n", bmcinfo_serial());
 }

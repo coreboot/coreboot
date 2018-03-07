@@ -493,6 +493,7 @@ static struct panel_init_command kd097d04_init_commands[] = {
 	MIPI_INIT_CMD(0xB4, 0x00),
 	MIPI_INIT_CMD(0xB6, 0x80),
 	/* VCOM disable */
+	MIPI_INIT_CMD(0xB7, 0x02),
 	MIPI_INIT_CMD(0xB8, 0x80),
 	MIPI_INIT_CMD(0xBA, 0x43),
 	/* VCOM setting */
@@ -506,7 +507,7 @@ static struct panel_init_command kd097d04_init_commands[] = {
 	/* VGL setting */
 	MIPI_INIT_CMD(0xBF, 0x1A),
 	MIPI_INIT_CMD(0xF0, 0x39),
-	MIPI_INIT_CMD(0xF1, 0x21),
+	MIPI_INIT_CMD(0xF1, 0x22),
 	/* Gamma setting */
 	MIPI_INIT_CMD(0xB0, 0x02),
 	MIPI_INIT_CMD(0xC0, 0x00),

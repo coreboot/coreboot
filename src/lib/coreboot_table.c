@@ -186,10 +186,10 @@ static void lb_gpios(struct lb_header *header)
 			printk(BIOS_INFO, "     low | ");
 		switch (g->value) {
 		case 0:
-			printk(BIOS_INFO, "     high\n");
+			printk(BIOS_INFO, "      low\n");
 			break;
 		case 1:
-			printk(BIOS_INFO, "      low\n");
+			printk(BIOS_INFO, "     high\n");
 			break;
 		default:
 			printk(BIOS_INFO, "undefined\n");

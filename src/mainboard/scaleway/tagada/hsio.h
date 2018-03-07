@@ -6,7 +6,7 @@
 #include <fsp/util.h>
 
 #ifndef __ACPI__
-const BL_HSIO_INFORMATION tagada_hsio_config[] = {
+DEVTREE_CONST BL_HSIO_INFORMATION tagada_hsio_config[] = {
 	/*
 	 * Supported Lanes:
 	 *    20

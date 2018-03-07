@@ -13,10 +13,15 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cpu.h>
+#include <assert.h>
+#include <baseboard/variants.h>
 #include <chip.h>
 #include <device/device.h>
 #include <ec/google/chromeec/ec.h>
-#include <baseboard/variants.h>
+#include <smbios.h>
+#include <soc/ramstage.h>
+#include <string.h>
 
 #define SKU_UNKNOWN	0xFFFF
 #define SKU_0_NAMI	0x3A7B
@@ -48,4 +53,13 @@ void variant_devtree_update(void)
 	default:
 		break;
 	}
+}
+
+const char *smbios_mainboard_sku(void)
+{
+	static char sku_str[9]; /* sku{0..65535} (basically up to FFFF) */
+
+	snprintf(sku_str, sizeof(sku_str), "sku%d", board_sku_id());
+
+	return sku_str;
 }

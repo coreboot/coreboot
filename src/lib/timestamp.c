@@ -154,6 +154,18 @@ static struct timestamp_table *timestamp_table_get(void)
 	return ts_table;
 }
 
+static const char *timestamp_name(enum timestamp_id id)
+{
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(timestamp_ids); i++) {
+		if (timestamp_ids[i].id == id)
+			return timestamp_ids[i].name;
+	}
+
+	return "Unknown timestamp ID";
+}
+
 static void timestamp_add_table_entry(struct timestamp_table *ts_table,
 				      enum timestamp_id id, uint64_t ts_time)
 {
@@ -165,6 +177,10 @@ static void timestamp_add_table_entry(struct timestamp_table *ts_table,
 	tse = &ts_table->entries[ts_table->num_entries++];
 	tse->entry_id = id;
 	tse->entry_stamp = ts_time - ts_table->base_time;
+
+	if (IS_ENABLED(CONFIG_TIMESTAMPS_ON_CONSOLE))
+		printk(BIOS_SPEW, "Timestamp - %s: %" PRIu64 "\n",
+				timestamp_name(id), ts_time);
 
 	if (ts_table->num_entries == ts_table->max_entries)
 		printk(BIOS_ERR, "ERROR: Timestamp table full\n");

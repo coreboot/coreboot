@@ -185,6 +185,13 @@ config COLLECT_TIMESTAMPS
 	  Make coreboot create a table of timer-ID/timer-value pairs to
 	  allow measuring time spent at different phases of the boot process.
 
+config TIMESTAMPS_ON_CONSOLE
+	bool "Print the timestamp values on the console"
+	default n
+	depends on COLLECT_TIMESTAMPS
+	help
+	  Print the timestamps to the debug console if enabled at level spew.
+
 config USE_BLOBS
 	bool "Allow use of binary-only repository"
 	help

@@ -189,3 +189,11 @@ int bmcinfo_disable_nic1(void)
 }
 
 /* Add override functions below */
+
+#if __CONSOLE_ENABLE__
+/* Override default console loglevel */
+int get_console_loglevel(void)
+{
+	return bmcinfo_coreboot_verbosity_level();
+}
+#endif

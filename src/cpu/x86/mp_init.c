@@ -547,6 +547,9 @@ static int bsp_do_flight_plan(struct mp_params *mp_params)
 	const int timeout_us = 1000000;
 	const int step_us = 100;
 	int num_aps = mp_params->num_cpus - 1;
+	struct stopwatch sw;
+
+	stopwatch_init(&sw);
 
 	for (i = 0; i < mp_params->num_records; i++) {
 		struct mp_flight_record *rec = &mp_params->flight_plan[i];
@@ -566,6 +569,9 @@ static int bsp_do_flight_plan(struct mp_params *mp_params)
 
 		release_barrier(&rec->barrier);
 	}
+
+	printk(BIOS_INFO, "%s done after %ld msecs.\n", __func__,
+	       stopwatch_duration_msecs(&sw));
 	return ret;
 }
 

@@ -3,3 +3,11 @@ config SOC_INTEL_COMMON_BLOCK_LPC
 	help
 	  Use common LPC code for platform. Only soc specific code needs to
 	  be implemented as per requirement.
+
+config SOC_INTEL_COMMON_BLOCK_LPC_COMB_ENABLE
+	depends on SOC_INTEL_COMMON_BLOCK_LPC && DRIVERS_UART_8250IO
+	bool
+	default n
+	help
+	  By default COMA range to LPC is enable. COMB range to LPC is optional
+	  and should select based on platform dedicated selection.

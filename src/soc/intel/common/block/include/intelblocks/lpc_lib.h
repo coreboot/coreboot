@@ -59,8 +59,11 @@ struct lpc_mmio_range {
 	size_t size;
 };
 
-/* Enable fixed IO ranges to LPC. IOE_* macros can be OR'ed together. */
-void lpc_enable_fixed_io_ranges(uint16_t io_enables);
+/*
+ * Enable fixed IO ranges to LPC. IOE_* macros can be OR'ed together.
+ * Output:I/O Enable Bits
+ */
+uint16_t lpc_enable_fixed_io_ranges(uint16_t io_enables);
 /* Open a generic IO window to the LPC bus. Four windows are available. */
 void lpc_open_pmio_window(uint16_t base, uint16_t size);
 /* Close all generic IO windows to the LPC bus. */

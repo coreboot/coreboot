@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corp.
+ * Copyright (C) 2016-2018 Intel Corp.
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,13 +25,15 @@
 #include "lpc_def.h"
 #include <soc/pci_devs.h>
 
-void lpc_enable_fixed_io_ranges(uint16_t io_enables)
+uint16_t lpc_enable_fixed_io_ranges(uint16_t io_enables)
 {
 	uint16_t reg_io_enables;
 
 	reg_io_enables = pci_read_config16(PCH_DEV_LPC, LPC_IO_ENABLES);
 	io_enables |= reg_io_enables;
 	pci_write_config16(PCH_DEV_LPC, LPC_IO_ENABLES, io_enables);
+
+	return io_enables;
 }
 
 /*
@@ -225,15 +227,20 @@ void lpc_set_serirq_mode(enum serirq_mode mode)
 
 void lpc_io_setup_comm_a_b(void)
 {
-	/*
-	* Setup I/O Decode Range Register for LPC
-	* ComA Range 3F8h-3FFh [2:0]
-	* ComB Range 2F8h-2FFh [6:4]
-	*/
-	pci_write_config16(PCH_DEV_LPC, LPC_IO_DECODE,
-			LPC_IOD_COMA_RANGE | LPC_IOD_COMB_RANGE);
+	/* ComA Range 3F8h-3FFh [2:0] */
+	uint16_t com_ranges = LPC_IOD_COMA_RANGE;
+	uint16_t com_enable = LPC_IOE_COMA_EN;
+
+	/* ComB Range 2F8h-2FFh [6:4] */
+	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_LPC_COMB_ENABLE)) {
+		com_ranges |= LPC_IOD_COMB_RANGE;
+		com_enable |= LPC_IOE_COMB_EN;
+	}
+
+	/* Setup I/O Decode Range Register for LPC */
+	pci_write_config16(PCH_DEV_LPC, LPC_IO_DECODE, com_ranges);
 	/* Enable ComA and ComB Port */
-	lpc_enable_fixed_io_ranges(LPC_IOE_COMA_EN | LPC_IOE_COMB_EN);
+	lpc_enable_fixed_io_ranges(com_enable);
 }
 
 static void lpc_set_gen_decode_range(

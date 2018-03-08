@@ -50,6 +50,7 @@ struct memory_params {
 
 void variant_memory_params(struct memory_params *p);
 int variant_memory_sku(void);
+void variant_devtree_update(void);
 
 struct nhlt;
 void variant_nhlt_init(struct nhlt *nhlt);

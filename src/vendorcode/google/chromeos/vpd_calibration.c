@@ -19,7 +19,7 @@
 #include <string.h>
 
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <vendorcode/google/chromeos/cros_vpd.h>
+#include <drivers/vpd/vpd.h>
 
 /*
  * This file provides functions looking in the VPD for WiFi calibration data,
@@ -112,7 +112,7 @@ static size_t fill_up_entries_cache(struct vpd_blob_cache_t *cache,
 			strcpy(cache->key_name, templates[i]);
 			cache->key_name[index_location] = j + '0';
 
-			payload = cros_vpd_find(cache->key_name, &payload_size);
+			payload = vpd_find(cache->key_name, &payload_size, VPD_ANY);
 			if (!payload)
 				continue;
 

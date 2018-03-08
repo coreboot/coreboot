@@ -18,7 +18,9 @@
 #include <types.h>
 #include <string.h>
 #include <wrdd.h>
-#include "cros_vpd.h"
+#include <drivers/vpd/vpd.h>
+
+#define CROS_VPD_REGION_NAME	"region"
 
 /*
  * wrdd_domain_value is ISO 3166-2
@@ -59,8 +61,8 @@ uint16_t wifi_regulatory_domain(void)
 	char *separator;
 
 	/* If not found for any reason fall backto the default value */
-	if (!cros_vpd_gets(wrdd_domain_key, wrdd_domain_code,
-		ARRAY_SIZE(wrdd_domain_code))) {
+	if (!vpd_gets(wrdd_domain_key, wrdd_domain_code,
+		ARRAY_SIZE(wrdd_domain_code), VPD_ANY)) {
 		printk(BIOS_DEBUG,
 		"Error: Could not locate '%s' in VPD\n", wrdd_domain_key);
 		return WRDD_DEFAULT_REGULATORY_DOMAIN;

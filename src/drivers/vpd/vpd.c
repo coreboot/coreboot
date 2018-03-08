@@ -5,14 +5,13 @@
  */
 
 #include <console/console.h>
-
 #include <cbmem.h>
 #include <fmap.h>
 #include <stdlib.h>
 #include <string.h>
 #include <timestamp.h>
 
-#include "cros_vpd.h"
+#include "vpd.h"
 #include "lib_vpd.h"
 #include "vpd_tables.h"
 
@@ -178,7 +177,7 @@ static int vpd_gets_callback(const uint8_t *key, int32_t key_len,
 	return VPD_FAIL;
 }
 
-const void *cros_vpd_find(const char *key, int *size)
+const void *vpd_find(const char *key, int *size, enum vpd_region region)
 {
 	struct vpd_gets_arg arg = {0};
 	int consumed = 0;
@@ -191,10 +190,18 @@ const void *cros_vpd_find(const char *key, int *size)
 	arg.key = (const uint8_t *)key;
 	arg.key_len = strlen(key);
 
-	while (VPD_OK == decodeVpdString(vpd->ro_size, vpd->blob, &consumed,
-					 vpd_gets_callback, &arg)) {
+	if (region == VPD_ANY || region == VPD_RO)
+		while (VPD_OK == decodeVpdString(vpd->ro_size, vpd->blob,
+		       &consumed, vpd_gets_callback, &arg)) {
 		/* Iterate until found or no more entries. */
-	}
+		}
+
+	if (!arg.matched && region != VPD_RO)
+		while (VPD_OK == decodeVpdString(vpd->rw_size,
+		       vpd->blob + vpd->ro_size, &consumed,
+		       vpd_gets_callback, &arg)) {
+		/* Iterate until found or no more entries. */
+		}
 
 	if (!arg.matched)
 		return NULL;
@@ -203,12 +210,12 @@ const void *cros_vpd_find(const char *key, int *size)
 	return arg.value;
 }
 
-char *cros_vpd_gets(const char *key, char *buffer, int size)
+char *vpd_gets(const char *key, char *buffer, int size, enum vpd_region region)
 {
 	const void *string_address;
 	int string_size;
 
-	string_address = cros_vpd_find(key, &string_size);
+	string_address = vpd_find(key, &string_size, region);
 
 	if (!string_address)
 		return NULL;

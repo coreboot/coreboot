@@ -4,12 +4,14 @@
  * found in the LICENSE file.
  */
 
-#ifndef __CROS_VPD_H__
-#define __CROS_VPD_H__
+#ifndef __VPD_H__
+#define __VPD_H__
 
-#define CROS_VPD_REGION_NAME "region"
-#define CROS_VPD_WIFI_SAR_NAME "wifi_sar"
-
+enum vpd_region {
+	VPD_ANY = 0,
+	VPD_RO = 1,
+	VPD_RW = 2
+};
 /*
  * Reads VPD string value by key.
  *
@@ -19,7 +21,7 @@
  *
  * Returns NULL if key is not found, otherwise buffer.
  */
-char *cros_vpd_gets(const char *key, char *buffer, int size);
+char *vpd_gets(const char *key, char *buffer, int size, enum vpd_region region);
 
 /*
  * Find VPD value by key.
@@ -35,6 +37,6 @@ char *cros_vpd_gets(const char *key, char *buffer, int size);
  * Returns NULL if key is not found.
  */
 
-const void *cros_vpd_find(const char *key, int *size);
+const void *vpd_find(const char *key, int *size, enum vpd_region region);
 
-#endif  /* __CROS_VPD_H__ */
+#endif  /* __VPD_H__ */

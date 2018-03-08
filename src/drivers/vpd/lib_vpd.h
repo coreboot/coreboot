@@ -11,25 +11,25 @@
 #include <inttypes.h>
 
 enum {
-  VPD_OK = 0,
-  VPD_FAIL,
+	VPD_OK = 0,
+	VPD_FAIL,
 };
 
 enum {
-  VPD_TYPE_TERMINATOR = 0,
-  VPD_TYPE_STRING,
-  VPD_TYPE_INFO                = 0xfe,
-  VPD_TYPE_IMPLICIT_TERMINATOR = 0xff,
+	VPD_TYPE_TERMINATOR = 0,
+	VPD_TYPE_STRING,
+	VPD_TYPE_INFO                = 0xfe,
+	VPD_TYPE_IMPLICIT_TERMINATOR = 0xff,
 };
 
 enum {
-  VPD_AS_LONG_AS = -1,
+	VPD_AS_LONG_AS = -1,
 };
 
 enum {  /* export_type */
-  VPD_EXPORT_KEY_VALUE = 1,
-  VPD_EXPORT_VALUE,
-  VPD_EXPORT_AS_PARAMETER,
+	VPD_EXPORT_KEY_VALUE = 1,
+	VPD_EXPORT_VALUE,
+	VPD_EXPORT_AS_PARAMETER,
 };
 
 /* Callback for decodeVpdString to invoke. */
@@ -39,15 +39,15 @@ typedef int VpdDecodeCallback(const uint8_t *key, int32_t key_len,
 
 /* Container data types */
 struct StringPair {
-  uint8_t *key;
-  uint8_t *value;
-  int pad_len;
-  int filter_out;  /* TRUE means not exported. */
-  struct StringPair *next;
+	uint8_t *key;
+	uint8_t *value;
+	int pad_len;
+	int filter_out;  /* TRUE means not exported. */
+	struct StringPair *next;
 };
 
 struct PairContainer {
-  struct StringPair *first;
+	struct StringPair *first;
 };
 
 

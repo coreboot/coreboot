@@ -19,9 +19,10 @@
 #include <types.h>
 #include <string.h>
 #include <sar.h>
-#include "cros_vpd.h"
+#include <drivers/vpd/vpd.h>
 
 #define WIFI_SAR_CBFS_FILENAME	"wifi_sar_defaults.hex"
+#define CROS_VPD_WIFI_SAR_NAME	"wifi_sar"
 
 static int load_sar_file_from_cbfs(void *buf, size_t buffer_size)
 {
@@ -55,7 +56,7 @@ For [WGDS_VERSION] 0x00,
 int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
 {
 	const char *wifi_sar_limit_key = CROS_VPD_WIFI_SAR_NAME;
-	/* cros_vpd_gets() reads in one less than size characters from the VPD
+	/* vpd_gets() reads in one less than size characters from the VPD
 	 * with a terminating null byte ('\0') stored as the last character into
 	 * the buffer, thus the increasing by 1 for buffer_size. */
 	const size_t buffer_size = (sizeof(struct wifi_sar_limits) /
@@ -79,8 +80,8 @@ int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
 	}
 
 	/* Try to read the SAR limit entry from VPD */
-	if (!cros_vpd_gets(wifi_sar_limit_key, wifi_sar_limit_str,
-							 buffer_size)) {
+	if (!vpd_gets(wifi_sar_limit_key, wifi_sar_limit_str,
+							 buffer_size, VPD_ANY)) {
 		printk(BIOS_ERR, "Error: Could not locate '%s' in VPD.\n",
 				wifi_sar_limit_key);
 

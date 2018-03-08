@@ -24,6 +24,7 @@ config CHROMEOS
 	select ELOG if BOOT_DEVICE_SUPPORTS_WRITES
 	select COLLECT_TIMESTAMPS
 	select VBOOT
+	select VPD
 	help
 	  Enable ChromeOS specific features like the GPIO sub table in
 	  the coreboot table. NOTE: Enabling this option on an unsupported

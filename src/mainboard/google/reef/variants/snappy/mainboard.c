@@ -16,7 +16,7 @@
 #include <string.h>
 #include <baseboard/variants.h>
 #include <ec/google/chromeec/ec.h>
-#include <vendorcode/google/chromeos/cros_vpd.h>
+#include <drivers/vpd/vpd.h>
 #include <soc/cpu.h>
 #include <soc/intel/apollolake/chip.h>
 
@@ -59,7 +59,7 @@ uint8_t variant_board_sku(void)
 	if (!IS_ENABLED(CONFIG_CHROMEOS))
 		return board_sku_num;
 
-	if (!cros_vpd_gets(vpd_skuid, vpd_buffer, ARRAY_SIZE(vpd_buffer)))
+	if (!vpd_gets(vpd_skuid, vpd_buffer, ARRAY_SIZE(vpd_buffer), VPD_ANY))
 		return board_sku_num;
 
 	vpd_len = strlen(vpd_buffer);

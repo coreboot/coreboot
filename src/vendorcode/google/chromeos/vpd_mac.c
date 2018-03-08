@@ -17,7 +17,7 @@
 #include <console/console.h>
 #include <string.h>
 
-#include <vendorcode/google/chromeos/cros_vpd.h>
+#include <drivers/vpd/vpd.h>
 
 /*
  * Decode string representation of the MAC address (a string of 12 hex
@@ -84,8 +84,8 @@ void lb_table_add_macs_from_vpd(struct lb_header *header)
 			 * If there are no more MAC addresses of this template
 			 * in the VPD - move on.
 			 */
-			if (!cros_vpd_gets(mac_addr_key, mac_addr_str,
-					   sizeof(mac_addr_str)))
+			if (!vpd_gets(mac_addr_key, mac_addr_str,
+					   sizeof(mac_addr_str), VPD_ANY))
 				break;
 
 			if (!macs) {

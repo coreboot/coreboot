@@ -22,6 +22,8 @@
 #define MSR_FLEX_RATIO 0x194
 #define FLEX_RATIO_LOCK (1 << 20)
 #define FLEX_RATIO_EN (1 << 16)
+/*      IA32_MISC_ENABLE 0x1a0 */
+#define  THERMAL_MONITOR_ENABLE_BIT (1 << 3)
 #define MSR_MISC_PWR_MGMT 0x1aa
 #define MISC_PWR_MGMT_EIST_HW_DIS (1 << 0)
 #define MSR_TURBO_RATIO_LIMIT 0x1ad

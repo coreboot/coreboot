@@ -53,6 +53,21 @@ static void dnv_configure_mca(void)
 	write_cr4(read_cr4() | CR4_MCE);
 }
 
+static void configure_thermal_core(void)
+{
+	msr_t msr;
+
+	/* Disable Thermal interrupts */
+	msr.lo = 0;
+	msr.hi = 0;
+	wrmsr(IA32_THERM_INTERRUPT, msr);
+	wrmsr(IA32_PACKAGE_THERM_INTERRUPT, msr);
+
+	msr = rdmsr(IA32_MISC_ENABLE);
+	msr.lo |= THERMAL_MONITOR_ENABLE_BIT;	/* TM1/TM2/EMTTM enable */
+	wrmsr(IA32_MISC_ENABLE, msr);
+}
+
 static void denverton_core_init(struct device *cpu)
 {
 	msr_t msr;
@@ -61,6 +76,9 @@ static void denverton_core_init(struct device *cpu)
 
 	/* Clear out pending MCEs */
 	dnv_configure_mca();
+
+	/* Configure Thermal Sensors */
+	configure_thermal_core();
 
 	/* Enable Fast Strings */
 	msr = rdmsr(IA32_MISC_ENABLE);

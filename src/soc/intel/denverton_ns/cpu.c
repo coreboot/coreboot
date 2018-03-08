@@ -74,6 +74,13 @@ static void denverton_core_init(struct device *cpu)
 	msr.lo |= FAST_STRINGS_ENABLE_BIT;
 	wrmsr(IA32_MISC_ENABLE, msr);
 
+	/* Lock AES-NI only if supported */
+	if (cpuid_ecx(1) & (1 << 25)) {
+		msr = rdmsr(MSR_FEATURE_CONFIG);
+		msr.lo |= FEATURE_CONFIG_LOCK;		/* Lock AES-NI */
+		wrmsr(MSR_FEATURE_CONFIG, msr);
+	}
+
 	/* Enable Turbo */
 	enable_turbo();
 

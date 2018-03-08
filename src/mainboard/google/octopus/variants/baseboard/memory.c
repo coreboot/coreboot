@@ -63,12 +63,67 @@ const struct lpddr4_swizzle_cfg baseboard_lpddr4_swizzle = {
 };
 
 static const struct lpddr4_sku skus[] = {
-	/* K4F8E304HB-MGCH - both logical channels  */
+	/*
+	 * K4F6E304HB-MGCJ - both logical channels While the parts
+	 * are listed at 16Gb there are 2 ranks per channel so indicate
+	 * the density as 8Gb per rank.
+	 */
 	[0] = {
 		.speed = LP4_SPEED_2400,
 		.ch0_rank_density = LP4_8Gb_DENSITY,
 		.ch1_rank_density = LP4_8Gb_DENSITY,
-		.part_num = "K4F8E304HB-MGCH",
+		.ch0_dual_rank = 1,
+		.ch1_dual_rank = 1,
+		.part_num = "K4F6E304HB-MGCJ",
+	},
+	/* K4F8E304HB-MGCJ - both logical channels  */
+	[1] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
+		.part_num = "K4F8E304HB-MGCJ",
+	},
+	/*
+	 * MT53B512M32D2NP-062WT:C - both logical channels. While the parts
+	 * are listed at 16Gb there are 2 ranks per channel so indicate
+	 * the density as 8Gb per rank.
+	 */
+	[2] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
+		.ch0_dual_rank = 1,
+		.ch1_dual_rank = 1,
+		.part_num = "MT53B512M32D2NP",
+		.disable_periodic_retraining = 1,
+	},
+	/* MT53B256M32D1NP-062 WT:C - both logical channels */
+	[3] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
+		.part_num = "MT53B256M32D1NP",
+		.disable_periodic_retraining = 1,
+	},
+	/*
+	 * H9HCNNNBPUMLHR-NLE - both logical channels. While the parts
+	 * are listed at 16Gb there are 2 ranks per channel so indicate the
+	 * density as 8Gb per rank.
+	 */
+	[4] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
+		.ch0_dual_rank = 1,
+		.ch1_dual_rank = 1,
+		.part_num = "H9HCNNNBPUMLHR",
+	},
+	/* H9HCNNN8KUMLHR-NLE - both logical channels */
+	[5] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
+		.part_num = "H9HCNNN8KUMLHR",
 	},
 };
 

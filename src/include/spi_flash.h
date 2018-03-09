@@ -40,6 +40,16 @@ struct spi_flash_ops {
 			const void *buf);
 	int (*erase)(const struct spi_flash *flash, u32 offset, size_t len);
 	int (*status)(const struct spi_flash *flash, u8 *reg);
+	/*
+	 * Returns 1 if the whole region is software write protected.
+	 * Hardware write protection mechanism aren't accounted.
+	 * If the write protection could be changed, due to unlocked status
+	 * register for example, 0 should be returned.
+	 * Returns -1 on error.
+	 */
+	int (*get_write_protection)(const struct spi_flash *flash,
+				    const struct region *region);
+
 };
 
 struct spi_flash {
@@ -51,6 +61,7 @@ struct spi_flash {
 	u8 erase_cmd;
 	u8 status_cmd;
 	const struct spi_flash_ops *ops;
+	const void *driver_private;
 };
 
 void lb_spi_flash(struct lb_header *header);
@@ -93,6 +104,21 @@ int spi_flash_write(const struct spi_flash *flash, u32 offset, size_t len,
 		    const void *buf);
 int spi_flash_erase(const struct spi_flash *flash, u32 offset, size_t len);
 int spi_flash_status(const struct spi_flash *flash, u8 *reg);
+
+/*
+ * Return the vendor dependent SPI flash write protection state.
+ * @param flash : A SPI flash device
+ * @param region: A subregion of the device's region
+ *
+ * Returns:
+ *  -1   on error
+ *   0   if the device doesn't support block protection
+ *   0   if the device doesn't enable block protection
+ *   0   if given range isn't covered by block protection
+ *   1   if given range is covered by block protection
+ */
+int spi_flash_is_write_protected(const struct spi_flash *flash,
+				 const struct region *region);
 /*
  * Some SPI controllers require exclusive access to SPI flash when volatile
  * operations like erase or write are being performed. In such cases,

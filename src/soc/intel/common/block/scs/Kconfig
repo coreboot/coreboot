@@ -2,3 +2,13 @@ config SOC_INTEL_COMMON_BLOCK_SCS
 	bool
 	help
 	  Intel Processor common storage and communication subsystem support
+
+config SOC_INTEL_COMMON_EARLY_MMC_WAKE
+	bool
+	default n
+	select COMMONLIB_STORAGE
+	select COMMONLIB_STORAGE_MMC
+	select SDHCI_CONTROLLER
+	help
+	  Send CMD1 early in romstage to improve boot time. It requires emmc
+	  DLL tuning parameters to be added to devicetree.cb

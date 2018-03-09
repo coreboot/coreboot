@@ -91,7 +91,7 @@ static const struct pad_config gpio_table[] = {
 /* SML0DATA */		PAD_CFG_GPI_APIC(GPP_C4, NONE, DEEP, LEVEL,
 					NONE), /* PCH_SAR0_INT_L */
 /* SML0ALERT# */	PAD_CFG_GPI(GPP_C5, NONE, DEEP), /* GPP_C5_STRAP */
-/* SM1CLK */		PAD_CFG_GPO(GPP_C6, 1, DEEP), /* PCH_SAR_PWR_EN */
+/* SM1CLK */		PAD_NC(GPP_C6, NONE),
 /* SM1DATA */		PAD_NC(GPP_C7, NONE),
 /* UART0_RXD */		PAD_CFG_NF(GPP_C8, NONE, DEEP,
 				   NF1), /* UART_PCH_RX_DEBUG_TX */
@@ -211,10 +211,8 @@ static const struct pad_config gpio_table[] = {
 				   NF3), /* CNV_RF_RESET_L */
 /* I2S2_TXD */		PAD_CFG_NF(GPP_H2, NONE, DEEP, NF3), /* WLAN_CLKREQ0 */
 /* I2S2_RXD */		PAD_NC(GPP_H3, NONE),
-/* I2C2_SDA */		PAD_CFG_NF(GPP_H4, NONE, DEEP,
-				   NF1), /* PCH_BL_I2C2_SDA */
-/* I2C2_SCL */		PAD_CFG_NF(GPP_H5, NONE, DEEP,
-				   NF1), /* PCH_BL_I2C2_SCL */
+/* I2C2_SDA */		PAD_NC(GPP_H4, NONE),
+/* I2C2_SCL */		PAD_NC(GPP_H5, NONE),
 /* I2C3_SDA */		PAD_CFG_NF(GPP_H6, NONE, DEEP,
 				   NF1), /* PCH_AUDIO_I2C3_SDA */
 /* I2C3_SCL */		PAD_CFG_NF(GPP_H7, NONE, DEEP,

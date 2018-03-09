@@ -18,12 +18,13 @@
 #define __SIMPLE_DEVICE__		1
 #endif
 
+#include <arch/early_variables.h>
 #include <assert.h>
 #include <commonlib/sdhci.h>
 #include <device/pci.h>
 #include "sd_mmc.h"
+#include <stdint.h>
 #include "storage.h"
-#include <string.h>
 
 /* Initialize an SDHCI port */
 int sdhci_controller_init(struct sdhci_ctrlr *sdhci_ctrlr, void *ioaddr)
@@ -35,17 +36,22 @@ int sdhci_controller_init(struct sdhci_ctrlr *sdhci_ctrlr, void *ioaddr)
 
 struct sd_mmc_ctrlr *new_mem_sdhci_controller(void *ioaddr)
 {
-	struct sdhci_ctrlr *sdhci_ctrlr;
+	static bool sdhci_init_done CAR_GLOBAL;
+	static struct sdhci_ctrlr sdhci_ctrlr CAR_GLOBAL;
 
-	sdhci_ctrlr = malloc(sizeof(*sdhci_ctrlr));
-	if (sdhci_ctrlr == NULL)
+	if (car_get_var(sdhci_init_done) == true) {
+		sdhc_error("Error: SDHCI is already initialized.\n");
 		return NULL;
-
-	if (sdhci_controller_init(sdhci_ctrlr, ioaddr)) {
-		free(sdhci_ctrlr);
-		sdhci_ctrlr = NULL;
 	}
-	return &sdhci_ctrlr->sd_mmc_ctrlr;
+
+	if (sdhci_controller_init(car_get_var_ptr(&sdhci_ctrlr), ioaddr)) {
+		sdhc_error("Error: SDHCI initialization failed.\n");
+		return NULL;
+	}
+
+	car_set_var(sdhci_init_done, true);
+
+	return car_get_var_ptr(&sdhci_ctrlr.sd_mmc_ctrlr);
 }
 
 struct sd_mmc_ctrlr *new_pci_sdhci_controller(uint32_t dev)

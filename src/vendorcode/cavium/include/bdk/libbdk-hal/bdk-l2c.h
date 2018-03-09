@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_L2C_H__
+#define __CB_BDK_L2C_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -36,6 +38,9 @@
 * QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION. THE ENTIRE  RISK
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
+
+/* FIXME(dhendricks): added */
+#include <libbdk-arch/bdk-numa.h>
 
 /**
  * @file
@@ -177,3 +182,4 @@ int bdk_l2c_get_num_assoc(bdk_node_t node);
 int bdk_l2c_is_locked(bdk_node_t node);
 
 /** @} */
+#endif	/* !__CB_BDK_L2C_H__ */

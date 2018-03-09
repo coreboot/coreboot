@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_GPIO_H__
+#define __CB_BDK_GPIO_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -109,3 +111,4 @@ extern void bdk_gpio_select_pin(bdk_node_t node, int gpio, int pin);
 extern int bdk_gpio_get_num(void);
 
 /** @} */
+#endif	/* !__CB_BDK_GPIO_H__ */

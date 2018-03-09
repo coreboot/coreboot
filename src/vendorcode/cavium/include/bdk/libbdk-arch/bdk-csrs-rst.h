@@ -41,6 +41,8 @@
  * PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
  ***********************license end**************************************/
 
+#include <bdk-minimal.h>
+#include <libbdk-arch/bdk-csr.h>
 
 /**
  * @file

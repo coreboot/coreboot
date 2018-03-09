@@ -1,3 +1,6 @@
+#ifndef __CB_BDK_WARN_H__
+#define __CB_BDK_WARN_H__
+
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -37,6 +40,8 @@
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
 
+#include <console/console.h>
+
 /**
  * @file
  *
@@ -48,11 +53,14 @@
  * @{
  */
 
-extern void __bdk_die(void) __attribute__ ((noreturn));
-extern void bdk_fatal(const char *format, ...) __attribute__ ((noreturn, format(printf, 1, 2)));
-extern void bdk_error(const char *format, ...) __attribute__ ((format(printf, 1, 2)));
-extern void bdk_warn(const char *format, ...) __attribute__ ((format(printf, 1, 2)));
-#define bdk_warn_if(expression, format, ...) if (bdk_unlikely(expression)) bdk_warn(format, ##__VA_ARGS__)
+#define bdk_warn(format, ...)	printk(BIOS_WARNING, format, ##__VA_ARGS__)
+#define bdk_error(format, ...)	printk(BIOS_ERR, format, ##__VA_ARGS__)
+#define bdk_fatal(format, ...)					\
+	do {							\
+		printk(BIOS_CRIT, format, ##__VA_ARGS__);	\
+		while (1)					\
+			;					\
+	} while (0)
 
 /* The following defines control detailed tracing of various parts of the
    BDK. Each one can be enabled(1) or disabled(0) independently. These
@@ -87,18 +95,29 @@ typedef enum
     __BDK_TRACE_ENABLE_LAST,            /* Must always be last value */
 } bdk_trace_enable_t;
 
-/* See bdk-config.c to change the trace level for before config files are loaded */
-extern uint64_t bdk_trace_enables;
-
 /**
  * Macro for low level tracing of BDK functions. When enabled,
  * these translate to printf() calls. The "area" is a string
  * that is appended to "BDK_TRACE_ENABLE_" to figure out which
  * enable macro to use. The macro expects a ';' after it.
  */
-#define BDK_TRACE(area, format, ...) do {                       \
-    if (bdk_trace_enables & (1ull << BDK_TRACE_ENABLE_##area))  \
-        printf(#area ": " format, ##__VA_ARGS__);               \
-} while (0)
+#define BDK_TRACE(area, format, ...) do {                           \
+    if ((BDK_TRACE_ENABLE_INIT == BDK_TRACE_ENABLE_##area &&        \
+        IS_ENABLED(CONFIG_CAVIUM_BDK_VERBOSE_INIT)) ||              \
+        (BDK_TRACE_ENABLE_DRAM == BDK_TRACE_ENABLE_##area &&        \
+         IS_ENABLED(CONFIG_CAVIUM_BDK_VERBOSE_DRAM)) ||             \
+        (BDK_TRACE_ENABLE_DRAM_TEST == BDK_TRACE_ENABLE_##area &&   \
+         IS_ENABLED(CONFIG_CAVIUM_BDK_VERBOSE_DRAM_TEST)) ||        \
+        (BDK_TRACE_ENABLE_QLM == BDK_TRACE_ENABLE_##area &&         \
+         IS_ENABLED(CONFIG_CAVIUM_BDK_VERBOSE_QLM)) ||              \
+        (BDK_TRACE_ENABLE_PCIE_CONFIG == BDK_TRACE_ENABLE_##area && \
+         IS_ENABLED(CONFIG_CAVIUM_BDK_VERBOSE_PCIE_CONFIG)) ||      \
+        (BDK_TRACE_ENABLE_PCIE == BDK_TRACE_ENABLE_##area &&        \
+         IS_ENABLED(CONFIG_CAVIUM_BDK_VERBOSE_PCIE)) ||             \
+        (BDK_TRACE_ENABLE_PHY == BDK_TRACE_ENABLE_##area &&         \
+         IS_ENABLED(CONFIG_CAVIUM_BDK_VERBOSE_PHY)))                \
+        printk(BIOS_DEBUG, #area ": " format, ##__VA_ARGS__);       \
+    } while (0)
 
 /** @} */
+#endif

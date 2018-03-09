@@ -37,8 +37,15 @@
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
 #include <bdk.h>
-#include <ctype.h>
 #include "dram-internal.h"
+
+#include <bdk-minimal.h>
+#include <libbdk-arch/bdk-warn.h>
+#include <libbdk-hal/bdk-config.h>
+#include <libbdk-hal/bdk-twsi.h>
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
 /**
  * Read the entire contents of a DIMM SPD and store it in the device tree. The
@@ -52,8 +59,12 @@
  *
  * @return Zero on success, negative on failure
  */
+static uint8_t spd_bufs[4 * 256];	/* FIXME(dhendrix): storage for SPD buffers, assume DDR4 */
 int read_entire_spd(bdk_node_t node, dram_config_t *cfg, int lmc, int dimm)
 {
+    /* FIXME(dhendrix): hack to get around using allocated mem */
+    assert(dimm < 4);
+
     /* If pointer to data is provided, use it, otherwise read from SPD over twsi */
     if (cfg->config[lmc].dimm_config_table[dimm].spd_ptr)
         return 0;
@@ -69,13 +80,18 @@ int read_entire_spd(bdk_node_t node, dram_config_t *cfg, int lmc, int dimm)
     int64_t dev_type = bdk_twsix_read_ia(node, bus, address, DDR4_SPD_KEY_BYTE_DEVICE_TYPE, 1, 1);
     if (dev_type < 0)
         return -1; /* No DIMM */
-    int spd_size = (dev_type == 0x0c) ? 512 : 256;
+    // FIXME: prudolph: Nobody needs 512 byte SPDs...
+    //int spd_size = (dev_type == 0x0c) ? 512 : 256;
+    int spd_size = 256;
 
-    /* Allocate storage */
-    uint32_t *spd_buf = malloc(spd_size);
-    if (!spd_buf)
-        return -1;
-    uint32_t *ptr = spd_buf;
+    /*
+     * FIXME: Assume DIMM doesn't support
+     * 'Hybrid Module Extended Function Parameters' aka only 256 Byte SPD,
+     * as the code below is broken ...
+     */
+    assert(spd_size == 256);
+    uint8_t *spd_buf = &spd_bufs[dimm * 256];
+    uint32_t *ptr = (uint32_t *)spd_buf;
 
     for (int bank = 0; bank < (spd_size >> 8); bank++)
     {
@@ -104,7 +120,9 @@ int read_entire_spd(bdk_node_t node, dram_config_t *cfg, int lmc, int dimm)
     }
 
     /* Store the SPD in the device tree */
-    bdk_config_set_blob(spd_size, spd_buf, BDK_CONFIG_DDR_SPD_DATA, dimm, lmc, node);
+    /* FIXME(dhendrix): No need for this? cfg gets updated, so the caller
+     * (libdram_config()) has what it needs. */
+//    bdk_config_set_blob(spd_size, spd_buf, BDK_CONFIG_DDR_SPD_DATA, dimm, lmc, node);
     cfg->config[lmc].dimm_config_table[dimm].spd_ptr = (void*)spd_buf;
 
     return 0;
@@ -350,14 +368,14 @@ static uint32_t get_dimm_checksum(bdk_node_t node, const dimm_config_t *dimm_con
 
 static
 void report_common_dimm(bdk_node_t node, const dimm_config_t *dimm_config, int dimm,
-			const char **dimm_types, int ddr_type, char *volt_str,
+			const char **dimm_types, int ddr_type, const char *volt_str,
                         int ddr_interface_num, int num_ranks, int dram_width, int dimm_size_mb)
 {
     int spd_ecc;
     unsigned spd_module_type;
     uint32_t serial_number;
     char part_number[21]; /* 20 bytes plus string terminator is big enough for either */
-    char *sn_str;
+    const char *sn_str;
 
     spd_module_type = get_dimm_module_type(node, dimm_config, ddr_type);
     spd_ecc = get_dimm_ecc(node, dimm_config, ddr_type);
@@ -405,7 +423,7 @@ void report_ddr3_dimm(bdk_node_t node, const dimm_config_t *dimm_config,
                       int dram_width, int dimm_size_mb)
 {
     int spd_voltage;
-    char *volt_str;
+    const char *volt_str;
 
     spd_voltage = read_spd(node, dimm_config, DDR3_SPD_NOMINAL_VOLTAGE);
     if ((spd_voltage == 0) || (spd_voltage & 3))
@@ -445,7 +463,7 @@ void report_ddr4_dimm(bdk_node_t node, const dimm_config_t *dimm_config,
                       int dram_width, int dimm_size_mb)
 {
     int spd_voltage;
-    char *volt_str;
+    const char *volt_str;
 
     spd_voltage = read_spd(node, dimm_config, DDR4_SPD_MODULE_NOMINAL_VOLTAGE);
     if ((spd_voltage == 0x01) || (spd_voltage & 0x02))

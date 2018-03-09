@@ -41,6 +41,7 @@
  * PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
  ***********************license end**************************************/
 
+#include <bdk-minimal.h>	/* FIXME: added by dhendrix */
 
 /**
  * @file

@@ -37,6 +37,8 @@
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
 
+#include <libbdk-hal/device/bdk-device.h>
+
 /**
  * @file
  *

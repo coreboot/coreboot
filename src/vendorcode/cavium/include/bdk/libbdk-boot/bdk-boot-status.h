@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_BOOT_STATUS_H__
+#define __CB_BDK_BOOT_STATUS_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -92,3 +94,4 @@ typedef enum
 extern void bdk_boot_status(bdk_boot_status_t status);
 
 /** @} */
+#endif	/* !__CB_BDK_BOOT_STATUS_H__ */

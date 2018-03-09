@@ -38,6 +38,8 @@
 ***********************license end**************************************/
 #include <bdk.h>
 #include "libbdk-arch/bdk-csrs-mio_tws.h"
+#include "libbdk-boot/bdk-boot-status.h"
+#include <libbdk-hal/bdk-config.h>
 
 /**
  * Report boot status to the BMC or whomever might care. This function

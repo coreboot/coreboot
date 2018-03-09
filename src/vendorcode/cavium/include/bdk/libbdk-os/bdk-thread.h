@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_THREAD_H__
+#define __CB_BDK_THREAD_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -120,3 +122,4 @@ static inline void *bdk_thread_get_id(void)
 }
 
 /** @} */
+#endif	/* !__CB_BDK_THREAD_H__ */

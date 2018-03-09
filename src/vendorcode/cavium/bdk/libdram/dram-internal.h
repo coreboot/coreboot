@@ -46,7 +46,9 @@
  * from the libdram directory
  */
 
-#include "libdram.h"
+/* FIXME(dhendrix): include path */
+//#include "libdram.h"
+#include <libdram/libdram.h>
 #include "lib_octeon_shared.h"
 #include "dram-print.h"
 #include "dram-util.h"

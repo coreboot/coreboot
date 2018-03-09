@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_WATCHDOG_H__
+#define __CB_BDK_WATCHDOG_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -79,3 +81,4 @@ extern void bdk_watchdog_disable(void);
 extern int bdk_watchdog_is_running(void);
 
 /** @} */
+#endif /* !__CB_BDK_WATCHDOG_H__ */

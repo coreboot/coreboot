@@ -69,6 +69,8 @@ extern dram_verbosity_t dram_verbosity;
 #define is_verbosity_special(level) (((int)(dram_verbosity & 0xf0) & (level)) != 0)
 #define dram_is_verbose(level)      (((level) & VBL_SPECIAL) ? is_verbosity_special(level) : is_verbosity_level(level))
 
+/* FIXME(dhendrix): printf... */
+#if 0
 #define VB_PRT(level, format, ...)         \
     do {                                    \
         if (dram_is_verbose(level))         \
@@ -81,6 +83,23 @@ extern dram_verbosity_t dram_verbosity;
 
 #ifdef DEBUG_DEBUG_PRINT
     #define debug_print(format, ...) printf(format, ##__VA_ARGS__)
+#else
+    #define debug_print(format, ...) do {} while (0)
+#endif
+#endif
+#include <console/console.h>
+#define VB_PRT(level, format, ...)         \
+    do {                                    \
+        if (dram_is_verbose(level))         \
+            printk(BIOS_DEBUG, format, ##__VA_ARGS__);  \
+    } while (0)
+
+#define ddr_print(format, ...) VB_PRT(VBL_NORM, format, ##__VA_ARGS__)
+
+#define error_print(format, ...) printk(BIOS_ERR, format, ##__VA_ARGS__)
+
+#ifdef DEBUG_DEBUG_PRINT
+    #define debug_print(format, ...) printk(BIOS_DEBUG, format, ##__VA_ARGS__)
 #else
     #define debug_print(format, ...) do {} while (0)
 #endif

@@ -72,9 +72,9 @@ bdk_dram_address_extract_info(uint64_t address, int *node, int *lmc, int *dimm,
 
     /* LMC number is probably aliased */
     if (l2c_ctl.s.disidxalias)
-	*lmc = EXTRACT(address, 7, xbits);
+        *lmc = EXTRACT(address, 7, xbits);
     else
-	*lmc = EXTRACT(address, 7, xbits) ^ EXTRACT(address, bitno, xbits) ^ EXTRACT(address, 12, xbits);
+        *lmc = EXTRACT(address, 7, xbits) ^ EXTRACT(address, bitno, xbits) ^ EXTRACT(address, 12, xbits);
 
     /* Figure out the bank field width */
     BDK_CSR_INIT(lmcx_config, *node, BDK_LMCX_CONFIG(*lmc));
@@ -176,7 +176,7 @@ bdk_dram_address_construct_info(bdk_node_t node, int lmc, int dimm,
     BDK_CSR_INIT(l2c_ctl, node, BDK_L2C_CTL);
     int new_lmc = lmc;
     if (!l2c_ctl.s.disidxalias)
-	new_lmc ^= EXTRACT(address, bitno, xbits) ^ EXTRACT(address, 12, xbits);
+        new_lmc ^= EXTRACT(address, bitno, xbits) ^ EXTRACT(address, 12, xbits);
     INSERT(address, new_lmc, 7, xbits);
 
     return address;

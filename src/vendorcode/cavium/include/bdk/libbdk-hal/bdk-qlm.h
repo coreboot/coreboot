@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_QLM_H__
+#define __CB_BDK_QLM_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -47,6 +49,8 @@
  * @addtogroup hal
  * @{
  */
+#include <bdk.h>
+#include <libbdk-hal/if/bdk-if.h>
 
 typedef enum
 {
@@ -138,37 +142,6 @@ typedef struct
     uint32_t data[64][128]; /* Error count at location, saturates as max */
 } bdk_qlm_eye_t;
 
-
-/**
- * How to do the various QLM operations changes greatly
- * between chips. Each chip has its specific operations
- * stored in the structure below. The correct structure
- * is chosen based on the chip we're running on.
- */
-typedef struct
-{
-    uint32_t chip_model;
-    void (*init)(bdk_node_t node);
-    int (*get_num)(bdk_node_t node);
-    int (*get_lanes)(bdk_node_t node, int qlm);
-    bdk_qlm_modes_t (*get_mode)(bdk_node_t node, int qlm);
-    int (*set_mode)(bdk_node_t node, int qlm, bdk_qlm_modes_t mode, int baud_mhz, bdk_qlm_mode_flags_t flags);
-    int (*get_gbaud_mhz)(bdk_node_t node, int qlm);
-    int (*measure_refclock)(bdk_node_t node, int qlm);
-    int (*get_qlm_num)(bdk_node_t node, bdk_if_t iftype, int interface, int index);
-    int (*reset)(bdk_node_t node, int qlm);
-    int (*enable_prbs)(bdk_node_t node, int qlm, int prbs, bdk_qlm_direction_t dir);
-    int (*disable_prbs)(bdk_node_t node, int qlm);
-    uint64_t (*get_prbs_errors)(bdk_node_t node, int qlm, int lane, int clear);
-    void (*inject_prbs_error)(bdk_node_t node, int qlm, int lane);
-    int (*enable_loop)(bdk_node_t node, int qlm, bdk_qlm_loop_t loop);
-    int (*auto_config)(bdk_node_t node);
-    int (*dip_auto_config)(bdk_node_t node);    
-    int (*tune_lane_tx)(bdk_node_t node, int qlm, int lane, int tx_swing, int tx_pre, int tx_post, int tx_gain, int tx_vboost);
-    int (*rx_equalization)(bdk_node_t node, int qlm, int lane);
-    int (*eye_capture)(bdk_node_t node, int qlm, int qlm_lane, bdk_qlm_eye_t *eye);
-} bdk_qlm_ops_t;
-
 /**
  * Initialize the QLM layer
  */
@@ -192,6 +165,19 @@ extern int bdk_qlm_get_num(bdk_node_t node);
  * @return Number of lanes on the QLM
  */
 extern int bdk_qlm_get_lanes(bdk_node_t node, int qlm);
+
+/**
+ * Lookup the hardware QLM number for a given interface type and index. This
+ * function will fail with a fatal error if called on invalid interfaces for
+ * a chip. It returns the QLM number for an interface without checking to
+ * see if the QLM is in the correct mode.
+ *
+ * @param iftype    Interface type
+ * @param interface Interface index number
+ *
+ * @return QLM number. Dies on a fatal error on failure.
+ */
+int bdk_qlm_get_qlm_num(bdk_node_t node, bdk_if_t iftype, int interface, int index);
 
 /**
  * Convert a mode into a configuration variable string value
@@ -277,23 +263,6 @@ extern int bdk_qlm_get_gbaud_mhz(bdk_node_t node, int qlm);
  * @return Clock rate in Hz
  */
 extern int bdk_qlm_measure_clock(bdk_node_t node, int qlm);
-
-/**
- * Lookup the hardware QLM number for a given interface type and
- * index. If the associated interface doesn't map to a QLM,
- * returns -1.
- *
- * @param node      Node to use in a Numa setup
- * @param iftype    Interface type
- * @param interface Interface index number
- * @param index     Port on the interface. Most chips use the
- *                  same mode for all ports, but there are
- *                  exceptions. For example, BGX2 on CN83XX
- *                  spans two DLMs.
- *
- * @return QLM number or -1 on failure
- */
-extern int bdk_qlm_get(bdk_node_t node, bdk_if_t iftype, int interface, int index);
 
 /**
  * Reset a QLM to its initial state
@@ -505,4 +474,5 @@ extern int bdk_qlm_margin_rx_restore(bdk_node_t node, int qlm, int qlm_lane, bdk
 
 extern int bdk_qlm_dip_auto_config(bdk_node_t node);
 
+#endif /* __CB_BDK_QLM_H__ */
 /** @} */

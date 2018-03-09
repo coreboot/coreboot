@@ -22,7 +22,8 @@
 *
 * This Software, including technical data, may be subject to U.S. export
 * control laws, including the U.S. Export Administration Act and its
-* associated regulations, and may be subject to export or import
+* associateint bdk_rng_init(bdk_node_t node)
+* d regulations, and may be subject to export or import
 * regulations in other countries.
 *
 * TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
@@ -39,6 +40,10 @@
 #include <bdk.h>
 #include "libbdk-arch/bdk-csrs-pccpf.h"
 #include "libbdk-arch/bdk-csrs-rnm.h"
+
+#include <libbdk-hal/bdk-rng.h>
+#include <libbdk-hal/device/bdk-device.h>
+#define RNG_DEVID ((BDK_PCC_PROD_E_GEN << 24) | BDK_PCC_VENDOR_E_CAVIUM | (BDK_PCC_DEV_IDL_E_RNM << 16))
 
 BDK_REQUIRE_DEFINE(RNM);
 
@@ -84,32 +89,26 @@ uint64_t bdk_rng_get_random64(void)
 }
 
 /**
- * The RNM probe function
- *
- * @param device RNM to probe
- *
- * @return Zero on success, negative on failure
- */
-static int probe(bdk_device_t *device)
-{
-    bdk_device_rename(device, "N%d.RNM%d", device->node, device->instance);
-    return 0;
-}
-
-/**
  * RNM init() function
  *
  * @param device RNM to initialize
  *
  * @return Zero on success, negative on failure
  */
-static int init(bdk_device_t *device)
+int bdk_rng_init(bdk_node_t node)
 {
+    const bdk_device_t *device = bdk_device_lookup(node, RNG_DEVID, 0);
+    if (!device)
+    {
+        bdk_error("RNM: ECAM device not found\n");
+        return -1;
+    }
     BDK_BAR_MODIFY(c, device, BDK_RNM_CTL_STATUS,
         c.s.ent_en = 1;
         c.s.rng_en = 1);
-    /* Read back after enable so we know it is done. Needed on t88 pass 2.0 emulator */
+    /* Read back after enable so we know it is done. Needed on t88 pass 2.0 emulator and t81 real hardware !!!! */
     BDK_BAR_READ(device, BDK_RNM_CTL_STATUS);
+
     /* Errata (RNM-22528) First consecutive reads to RNM_RANDOM return same
        value. Before using the random entropy, read RNM_RANDOM at least once
        and discard the data */
@@ -117,8 +116,3 @@ static int init(bdk_device_t *device)
     return 0;
 }
 
-bdk_driver_t __bdk_driver_rnm = {
-    .id = (BDK_PCC_PROD_E_GEN << 24) | BDK_PCC_VENDOR_E_CAVIUM | (BDK_PCC_DEV_IDL_E_RNM << 16),
-    .probe = probe,
-    .init = init,
-};

@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_ACCESS_H__
+#define __CB_BDK_ACCESS_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -47,87 +49,14 @@
  * @{
 */
 
-#define BDK_FUNCTION static inline
-
-/**
- * Convert a memory pointer (void*) into a hardware compatible
- * memory address (uint64_t). Cavium hardware widgets don't
- * understand logical addresses.
- *
- * @param ptr    C style memory pointer
- * @return Hardware physical address
- */
-BDK_FUNCTION uint64_t bdk_ptr_to_phys(void *ptr);
-
-/**
- * Convert a hardware physical address (uint64_t) into a
- * memory pointer (void *).
- *
- * @param physical_address
- *               Hardware physical address to memory
- * @return Pointer to memory
- */
-BDK_FUNCTION void *bdk_phys_to_ptr(uint64_t physical_address);
-
-BDK_FUNCTION void bdk_write64_int64(uint64_t address, int64_t value);
-BDK_FUNCTION void bdk_write64_uint64(uint64_t address, uint64_t value);
-BDK_FUNCTION void bdk_write64_int32(uint64_t address, int32_t value);
-BDK_FUNCTION void bdk_write64_uint32(uint64_t address, uint32_t value);
-BDK_FUNCTION void bdk_write64_int16(uint64_t address, int16_t value);
-BDK_FUNCTION void bdk_write64_uint16(uint64_t address, uint16_t value);
-BDK_FUNCTION void bdk_write64_int8(uint64_t address, int8_t value);
-BDK_FUNCTION void bdk_write64_uint8(uint64_t address, uint8_t value);
-
-BDK_FUNCTION int64_t bdk_read64_int64(uint64_t address);
-BDK_FUNCTION uint64_t bdk_read64_uint64(uint64_t address);
-BDK_FUNCTION int32_t bdk_read64_int32(uint64_t address);
-BDK_FUNCTION uint32_t bdk_read64_uint32(uint64_t address);
-BDK_FUNCTION int16_t bdk_read64_int16(uint64_t address);
-BDK_FUNCTION uint16_t bdk_read64_uint16(uint64_t address);
-BDK_FUNCTION int8_t bdk_read64_int8(uint64_t address);
-BDK_FUNCTION uint8_t bdk_read64_uint8(uint64_t address);
-
-/**
- * Returns the number of bits set in the provided value.
- * Simple wrapper for POP instruction.
- *
- * @param val    32 bit value to count set bits in
- *
- * @return Number of bits set
- */
-BDK_FUNCTION uint32_t bdk_pop(uint32_t val);
-
-/**
- * Returns the number of bits set in the provided value.
- * Simple wrapper for DPOP instruction.
- *
- * @param val    64 bit value to count set bits in
- *
- * @return Number of bits set
- */
-BDK_FUNCTION int bdk_dpop(uint64_t val);
-
-/**
- * Wait for the specified number of core clock cycles
- *
- * @param cycles
- */
-extern void bdk_wait(uint64_t cycles);
-
-/**
- * Wait for the specified number of micro seconds
- *
- * @param usec   micro seconds to wait
- */
-extern void bdk_wait_usec(uint64_t usec);
+#include <bdk-coreboot.h>
 
 /**
  * Perform a soft reset of the chip
  *
  * @return
  */
-extern void bdk_reset_chip(bdk_node_t node);
-
-#undef BDK_FUNCTION
+void bdk_reset_chip(bdk_node_t node);
 
 /** @} */
+#endif

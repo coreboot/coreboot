@@ -37,6 +37,7 @@
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
 #include "bdk.h"
+#include <libbdk-hal/bdk-utils.h>
 
 /* Used for all memory reads/writes related to the test */
 #define READ64(address) __bdk_dram_read64(address)

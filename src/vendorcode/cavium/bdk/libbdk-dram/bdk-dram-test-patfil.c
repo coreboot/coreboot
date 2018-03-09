@@ -37,6 +37,8 @@
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
 #include "bdk.h"
+#include <libbdk-hal/bdk-rng.h>
+#include <libbdk-hal/bdk-utils.h>
 
 // choose prediction-based algorithms for mem_xor and mem_rows tests
 #define USE_PREDICTION_CODE_VERSIONS 1   // change to 0 to go back to the original versions
@@ -286,7 +288,7 @@ static int test_mem_march_c(uint64_t area, uint64_t max_address, uint64_t patter
     int failures = 0;
 
     /* Pass 1 ascending addresses, fill memory with pattern. */
-    BDK_TRACE(DRAM_TEST, "    [0x%016lx:0x%016lx] Phase1, address incrementing, pattern 0x%016lx\n", area, max_address-1, pattern);
+    BDK_TRACE(DRAM_TEST, "    [0x%016llx:0x%016llx] Phase1, address incrementing, pattern 0x%016llx\n", area, max_address-1, pattern);
     for (uint64_t address = area; address < max_address; address += 8)
         WRITE64(address, pattern);
 
@@ -294,7 +296,7 @@ static int test_mem_march_c(uint64_t area, uint64_t max_address, uint64_t patter
     BDK_DCACHE_INVALIDATE;
 
     /* Pass 2: ascending addresses, read pattern and write ~pattern */
-    BDK_TRACE(DRAM_TEST, "    [0x%016lx:0x%016lx] Phase2, address incrementing, pattern 0x%016lx\n", area, max_address-1, ~pattern);
+    BDK_TRACE(DRAM_TEST, "    [0x%016llx:0x%016llx] Phase2, address incrementing, pattern 0x%016llx\n", area, max_address-1, ~pattern);
     for (uint64_t address = area; address < max_address; address += 8)
     {
         uint64_t data = READ64(address);
@@ -307,7 +309,7 @@ static int test_mem_march_c(uint64_t area, uint64_t max_address, uint64_t patter
     BDK_DCACHE_INVALIDATE;
 
     /* Pass 3: ascending addresses, read ~pattern and write pattern. */
-    BDK_TRACE(DRAM_TEST, "    [0x%016lx:0x%016lx] Phase3, address incrementing, pattern 0x%016lx\n", area, max_address-1, pattern);
+    BDK_TRACE(DRAM_TEST, "    [0x%016llx:0x%016llx] Phase3, address incrementing, pattern 0x%016llx\n", area, max_address-1, pattern);
     for (uint64_t address = area; address < max_address; address += 8)
     {
         uint64_t data = READ64(address);
@@ -320,7 +322,7 @@ static int test_mem_march_c(uint64_t area, uint64_t max_address, uint64_t patter
     BDK_DCACHE_INVALIDATE;
 
     /* Pass 4: descending addresses, read pattern and write ~pattern. */
-    BDK_TRACE(DRAM_TEST, "    [0x%016lx:0x%016lx] Phase4, address decrementing, pattern 0x%016lx\n", area, max_address-1, ~pattern);
+    BDK_TRACE(DRAM_TEST, "    [0x%016llx:0x%016llx] Phase4, address decrementing, pattern 0x%016llx\n", area, max_address-1, ~pattern);
     uint64_t end = max_address - sizeof(uint64_t);
     for (uint64_t address = end; address >= area; address -= 8)
     {
@@ -334,7 +336,7 @@ static int test_mem_march_c(uint64_t area, uint64_t max_address, uint64_t patter
     BDK_DCACHE_INVALIDATE;
 
     /* Pass 5: descending addresses, read ~pattern and write pattern. */
-    BDK_TRACE(DRAM_TEST, "    [0x%016lx:0x%016lx] Phase5, address decrementing, pattern 0x%016lx\n", area, max_address-1, pattern);
+    BDK_TRACE(DRAM_TEST, "    [0x%016llx:0x%016llx] Phase5, address decrementing, pattern 0x%016llx\n", area, max_address-1, pattern);
     for (uint64_t address = end; address >= area; address -= 8)
     {
         uint64_t data = READ64(address);
@@ -347,7 +349,7 @@ static int test_mem_march_c(uint64_t area, uint64_t max_address, uint64_t patter
     BDK_DCACHE_INVALIDATE;
 
     /* Pass 6: ascending addresses, read pattern. */
-    BDK_TRACE(DRAM_TEST, "    [0x%016lx:0x%016lx] Phase6, address incrementing\n", area, max_address-1);
+    BDK_TRACE(DRAM_TEST, "    [0x%016llx:0x%016llx] Phase6, address incrementing\n", area, max_address-1);
     for (uint64_t address = area; address < max_address; address += 8)
     {
         uint64_t data = READ64(address);
@@ -660,7 +662,7 @@ int __bdk_dram_test_mem_xor(uint64_t area, uint64_t max_address, int bursts)
         WRITE64(address1         , p);
         WRITE64(address1 + offset, p);
         address1 += 8;
-	p += pincr;
+        p += pincr;
     }
     __bdk_dram_flush_to_mem_range(area, max_address);
     BDK_DCACHE_INVALIDATE;
@@ -674,7 +676,7 @@ int __bdk_dram_test_mem_xor(uint64_t area, uint64_t max_address, int bursts)
         address1 = area;
 
         this_pattern = bdk_rng_get_random64();
-	pattern2 ^= this_pattern;
+        pattern2 ^= this_pattern;
 
         while (address1 < area2)
         {
@@ -693,13 +695,13 @@ int __bdk_dram_test_mem_xor(uint64_t area, uint64_t max_address, int bursts)
         BDK_DCACHE_INVALIDATE;
 
         /* Look for differences from the expected pattern in both areas.
-	 * If there is a mismatch, reset the appropriate memory location
-	 * with the correct pattern. Failing to do so
+         * If there is a mismatch, reset the appropriate memory location
+         * with the correct pattern. Failing to do so
          * means that on all subsequent passes the erroring locations
-	 * will be out of sync, giving spurious errors.
+         * will be out of sync, giving spurious errors.
          */
         address1 = area;
-	ppred = pbase;
+        ppred = pbase;
 
         while (address1 < area2)
         {
@@ -712,21 +714,21 @@ int __bdk_dram_test_mem_xor(uint64_t area, uint64_t max_address, int bursts)
             d1 = READ64(address1         );
             d2 = READ64(address1 + offset);
 
-	    p = ppred ^ pattern2;
+            p = ppred ^ pattern2;
 
             if (bdk_unlikely(d1 != p)) {
-		failures += __bdk_dram_retry_failure(burst, address1, d1, p);
+                failures += __bdk_dram_retry_failure(burst, address1, d1, p);
                 // Synchronize the area, adjusting for the error.
                 //WRITE64(address1, p); // retries should do this
             }
             if (bdk_unlikely(d2 != p)) {
-		failures += __bdk_dram_retry_failure(burst, address1 + offset, d2, p);
+                failures += __bdk_dram_retry_failure(burst, address1 + offset, d2, p);
                 // Synchronize the area, adjusting for the error.
                 //WRITE64(address1 + offset, p); // retries should do this
             }
 
             address1 += 8;
-	    ppred += pincr;
+            ppred += pincr;
 
         } /* while (address1 < area2) */
     } /* for (int burst = 0; burst < bursts; burst++) */
@@ -761,7 +763,7 @@ int __bdk_dram_test_mem_rows(uint64_t area, uint64_t max_address, int bursts)
         WRITE64(address1         , pattern2);
         WRITE64(address1 + offset, pattern2);
         address1 += 8;
-	pattern2 = ~pattern2; // flip for next slots
+        pattern2 = ~pattern2; // flip for next slots
     }
 
     __bdk_dram_flush_to_mem_range(area, max_address);
@@ -771,7 +773,7 @@ int __bdk_dram_test_mem_rows(uint64_t area, uint64_t max_address, int bursts)
     for (burst = 0; burst < bursts; burst++)
     {
         /* Invert the data, applying the change to both memory areas. Thus on
-	 * alternate passes, the data flips from 0 to 1 and vice versa.
+         * alternate passes, the data flips from 0 to 1 and vice versa.
          */
         address1 = area;
 
@@ -796,8 +798,8 @@ int __bdk_dram_test_mem_rows(uint64_t area, uint64_t max_address, int bursts)
          * out of sync giving spurious errors.
          */
         address1 = area;
-	pattern1 = ~pattern1; // flip the starting pattern to match above loop
-	pattern2 = pattern1;  // slots have been flipped by the above loop
+        pattern1 = ~pattern1; // flip the starting pattern to match above loop
+        pattern2 = pattern1;  // slots have been flipped by the above loop
 
         while (address1 < area2)
         {
@@ -810,18 +812,18 @@ int __bdk_dram_test_mem_rows(uint64_t area, uint64_t max_address, int bursts)
             d2 = READ64(address1 + offset);
 
             if (bdk_unlikely(d1 != pattern2)) {
-		failures += __bdk_dram_retry_failure(burst, address1, d1, pattern2);
+                failures += __bdk_dram_retry_failure(burst, address1, d1, pattern2);
                 // Synchronize the area, adjusting for the error.
                 //WRITE64(address1, pattern2); // retries should do this
             }
             if (bdk_unlikely(d2 != pattern2)) {
-		failures += __bdk_dram_retry_failure(burst, address1 + offset, d2, pattern2);
+                failures += __bdk_dram_retry_failure(burst, address1 + offset, d2, pattern2);
                 // Synchronize the two areas, adjusting for the error.
                 //WRITE64(address1 + offset, pattern2); // retries should do this
             }
 
             address1 += 8;
-	    pattern2 = ~pattern2; // flip for next pair of slots
+            pattern2 = ~pattern2; // flip for next pair of slots
         }
     }
     return failures;

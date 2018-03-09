@@ -1,3 +1,6 @@
+#ifndef __CB_BDK_DRAM_CONFIG_H__
+#define __CB_BDK_DRAM_CONFIG_H__
+
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -47,7 +50,11 @@
  * @defgroup dram DRAM related functions
  * @{
  */
+#if 0
+/* FIXME(dhendrix): this was cavium's #include */
 #include "../libdram/libdram.h"
+#endif
+#include <libdram/libdram.h>
 
 /**
  * Lookup a DRAM configuration by name and intialize dram with it
@@ -116,3 +123,5 @@ extern uint32_t __bdk_dram_get_col_mask(bdk_node_t node, int lmc);
 extern int __bdk_dram_get_num_bank_bits(bdk_node_t node, int lmc);
 
 /** @} */
+
+#endif	/* !__CB_BDK_DRAM_CONFIG_H__ */

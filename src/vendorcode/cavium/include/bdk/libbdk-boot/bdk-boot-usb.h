@@ -1,3 +1,5 @@
+#ifndef __BDK_BOOT_USB_H__
+#define __BDK_BOOT_USB_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -49,6 +51,7 @@
 /**
  * Configure USB on all nodes as part of booting
  */
-extern void bdk_boot_usb(void);
+void bdk_boot_usb(void);
 
 /** @} */
+#endif

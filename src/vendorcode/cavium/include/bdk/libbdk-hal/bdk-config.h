@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_CONFIG_H__
+#define __CB_BDK_CONFIG_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -36,6 +38,9 @@
 * QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION. THE ENTIRE  RISK
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
+
+#include <inttypes.h>
+#include <bdk-devicetree.h>
 
 /**
  * @file
@@ -90,6 +95,7 @@ typedef enum
     BDK_CONFIG_PCIE_PRESET_REQUEST_VECTOR, /* Parameters: Node, Port */
     BDK_CONFIG_PCIE_WIDTH,          /* Parameters: Node, Port */
     BDK_CONFIG_PCIE_PHYSICAL_SLOT,  /* Parameters: Node, Port */
+    BDK_CONFIG_PCIE_SKIP_LINK_TRAIN, /* Parameters: Node, Port */
     BDK_CONFIG_PCIE_FLASH,          /* Parameters: Node, Port */
     BDK_CONFIG_CCPI_LANE_REVERSE,   /* No parameters */
     BDK_CONFIG_CHIP_SKU,            /* Parameter: Node */
@@ -201,21 +207,6 @@ typedef enum
 } bdk_config_t;
 
 /**
- * Internal BDK function to initialize the config system. Must be called before
- * any configuration functions are called
- */
-extern void __bdk_config_init(void);
-
-/**
- * Return a help string for the given configuration parameter
- *
- * @param cfg_item Configuration parameter to get help for
- *
- * @return Help string for the user
- */
-extern const char *bdk_config_get_help(bdk_config_t cfg_item);
-
-/**
  * Get an integer configuration item
  *
  * @param cfg_item  Config item to get. If the item takes parameters (see bdk_config_t), then the
@@ -223,7 +214,17 @@ extern const char *bdk_config_get_help(bdk_config_t cfg_item);
  *
  * @return The value of the configuration item, or def_value if the item is not set
  */
-extern int64_t bdk_config_get_int(bdk_config_t cfg_item, ...);
+int64_t bdk_config_get_int(bdk_config_t cfg_item, ...);
+
+/**
+ * Set an integer configuration item. Note this only sets the item in memory,
+ * persistent storage is not updated.
+ *
+ * @param value    Configuration item value
+ * @param cfg_item Config item to set. If the item takes parameters (see bdk_config_t), then the
+ *                 parameters are listed following cfg_item.
+ */
+void bdk_config_set_int(int64_t value, bdk_config_t cfg_item, ...);
 
 /**
  * Get a string configuration item
@@ -233,105 +234,7 @@ extern int64_t bdk_config_get_int(bdk_config_t cfg_item, ...);
  *
  * @return The value of the configuration item, or def_value if the item is not set
  */
-extern const char *bdk_config_get_str(bdk_config_t cfg_item, ...);
-
-/**
- * Get a binary blob
- *
- * @param blob_size Integer to receive the size of the blob
- * @param cfg_item  Config item to get. If the item takes parameters (see bdk_config_t), then the
- *                  parameters are listed following cfg_item.
- *
- * @return The value of the configuration item, or def_value if the item is not set
- */
-extern const void *bdk_config_get_blob(int *blob_size, bdk_config_t cfg_item, ...);
-
-/**
- * Set an integer configuration item. Note this only sets the item in memory,
- * persistent storage is not updated. The optional parameters for the setting are
- * not supplied, meaning this function only changes the global default.
- *
- * @param value    Configuration item value
- * @param cfg_item Config item to set. If the item takes parameters (see bdk_config_t), then the
- *                 parameters are listed following cfg_item.
- */
-extern void bdk_config_set_int_no_param(int64_t value, bdk_config_t cfg_item);
-
-/**
- * Set an integer configuration item. Note this only sets the item in memory,
- * persistent storage is not updated.
- *
- * @param value    Configuration item value
- * @param cfg_item Config item to set. If the item takes parameters (see bdk_config_t), then the
- *                 parameters are listed following cfg_item.
- */
-extern void bdk_config_set_int(int64_t value, bdk_config_t cfg_item, ...);
-
-/**
- * Set an integer configuration item. Note this only sets the item in memory,
- * persistent storage is not updated.
- *
- * @param value    Configuration item value
- * @param cfg_item Config item to set. If the item takes parameters (see bdk_config_t), then the
- *                 parameters are listed following cfg_item.
- */
-extern void bdk_config_set_str(const char *value, bdk_config_t cfg_item, ...);
-
-/**
- * Set a blob configuration item. Note this only sets the
- * item in memory, persistent storage is not updated. The optional
- * parameters for the setting are not supplied, meaning this function
- * only changes the global default.
- *
- * @param size     Size of the item in bytes. A size of zero removes the device tree field
- * @param value    Configuration item value
- * @param cfg_item Config item to set. If the item takes parameters (see bdk_config_t), then the
- *                 parameters are listed following cfg_item.
- */
-extern void bdk_config_set_blob_no_param(int size, const void *value, bdk_config_t cfg_item);
-
-/**
- * Set a blob configuration item. Note this only sets the
- * item in memory, persistent storage is not updated.
- *
- * @param size     Size of the item in bytes. A size of zero removes the device tree field
- * @param value    Configuration item value
- * @param cfg_item Config item to set. If the item takes parameters (see bdk_config_t), then the
- *                 parameters are listed following cfg_item.
- */
-extern void bdk_config_set_blob(int size, const void *value, bdk_config_t cfg_item, ...);
-
-/**
- * Display the active configuration
- */
-extern void bdk_config_show(void);
-
-/**
- * Display a list of all posssible config items with help text
- */
-extern void bdk_config_help(void);
-
-/**
- * Save the current configuration to flash
- *
- * @return Zero on success, negative on failure
- */
-extern int bdk_config_save(void);
-
-/**
- * Takes the current live device tree and exports it to a memory address suitable
- * for passing to the next binary in register X1.
- *
- * @return Physical address of the device tree, or 0 on failure
- */
-extern uint64_t __bdk_config_export_to_mem(void);
-
-/**
- * Return a pointer to the device tree used for configuration
- *
- * @return FDT or NULL on failure
- */
-extern void* bdk_config_get_fdt(void);
+const char *bdk_config_get_str(bdk_config_t cfg_item, ...);
 
 /**
  * Set the device tree used for configuration
@@ -341,17 +244,26 @@ extern void* bdk_config_get_fdt(void);
  *
  * @return Zero on success, negative on failure
  */
-extern int bdk_config_set_fdt(void *fdt);
+int bdk_config_set_fdt(const struct bdk_devicetree_key_value *fdt);
 
-/**
- * Write all default values to a FDT. Missing config items get defaults in the
- * BDK config, this function adds those defaults to the FDT. This way other code
- * gets the default value without needing special code.
- *
- * @param fdt    FDT structure to fill defaults into
- *
- * @return Zero on success, negative on failure
- */
-extern int bdk_config_expand_defaults(void *fdt);
+typedef enum
+{
+    BDK_CONFIG_TYPE_INT,
+    BDK_CONFIG_TYPE_STR,
+    BDK_CONFIG_TYPE_STR_LIST,
+    BDK_CONFIG_TYPE_BINARY,
+} bdk_config_type_t;
+
+typedef struct
+{
+    const char *format;     /* Printf style format string to create the item name */
+    const bdk_config_type_t ctype;/* Type of this item */
+    int64_t default_value;  /* Default value when no present. String defaults are cast to pointers from this */
+    const int64_t min_value;/* Minimum valid value for INT parameters. Unused for Strings */
+    const int64_t max_value;/* Maximum valid value for INT parameters. Unused for Strings */
+} bdk_config_info_t;
+
+extern bdk_config_info_t config_info[];
 
 /** @} */
+#endif	/* !__CB_BDK_CONFIG_H__ */

@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_PCIE_H__
+#define __CB_BDK_PCIE_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -36,6 +38,9 @@
 * QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION. THE ENTIRE  RISK
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
+
+#include <libbdk-arch/bdk-numa.h>
+#include <libbdk-arch/bdk-require.h>
 
 /**
  * @file
@@ -76,6 +81,15 @@ int bdk_pcie_get_num_ports(bdk_node_t node);
  * @return Zero on success
  */
 int bdk_pcie_rc_initialize(bdk_node_t node, int pcie_port);
+
+/**
+ * Return PCIe state
+ *
+ * @param pcie_port PCIe port to query
+ *
+ * @return True if port is up and running
+ */
+int bdk_pcie_is_running(bdk_node_t node, int pcie_port);
 
 /**
  * Shutdown a PCIe port and put it in reset
@@ -221,16 +235,18 @@ uint64_t bdk_pcie_mem_read64(bdk_node_t node, int pcie_port, uint64_t address);
 void bdk_pcie_mem_write64(bdk_node_t node, int pcie_port, uint64_t address, uint64_t data);
 
 /**
- * These are the operations defined that can vary per chip generation
+ * @INTERNAL
+ * Build a PCIe config space request address for a device
+ *
+ * @param pcie_port PCIe port to access
+ * @param bus       Sub bus
+ * @param dev       Device ID
+ * @param fn        Device sub function
+ * @param reg       Register to access
+ *
+ * @return 64bit IO address
  */
-typedef struct
-{
-    int (*get_num_ports)(bdk_node_t node);
-    int (*rc_initialize)(bdk_node_t node, int pcie_port);
-    int (*rc_shutdown)(bdk_node_t node, int pcie_port);
-    uint64_t (*get_base_address)(bdk_node_t node, int pcie_port, bdk_pcie_mem_t mem_type);
-    uint64_t (*get_base_size)(bdk_node_t node, int pcie_port, bdk_pcie_mem_t mem_type);
-    uint64_t (*build_config_addr)(bdk_node_t node, int pcie_port, int bus, int dev, int fn, int reg);
-} __bdk_pcie_ops_t;
+uint64_t pcie_build_config_addr(bdk_node_t node, int pcie_port, int bus, int dev, int fn, int reg);
 
+#endif /* __CB_BDK_PCIE_H__ */
 /** @} */

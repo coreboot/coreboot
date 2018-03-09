@@ -38,6 +38,8 @@
 ***********************license end**************************************/
 #include "bdk.h"
 
+#include <libbdk-hal/bdk-utils.h>
+
 /* Used for all memory reads/writes related to the test */
 #define READ64(address) __bdk_dram_read64(address)
 #define WRITE64(address, data) __bdk_dram_write64(address, data)
@@ -97,7 +99,7 @@ static int read_data_bus_burst(uint64_t address, int bursts)
  */
 static int write_data_bus_burst(uint64_t address, int bursts)
 {
-    BDK_TRACE(DRAM_TEST, "[0x%016lx:0x%016lx] Writing incrementing digits\n",
+    BDK_TRACE(DRAM_TEST, "[0x%016llx:0x%016llx] Writing incrementing digits\n",
         address, address + 127);
     /* Loop over the burst so people using a scope have time to capture
        traces */
@@ -164,7 +166,7 @@ static int read_data_bus_walk(uint64_t address, int burst, uint64_t pattern)
  */
 static void write_data_bus_walk(uint64_t address, int burst, uint64_t pattern)
 {
-    BDK_TRACE(DRAM_TEST, "[0x%016lx:0x%016lx] Writing walking pattern 0x%016lx\n",
+    BDK_TRACE(DRAM_TEST, "[0x%016llx:0x%016llx] Writing walking pattern 0x%016llx\n",
         address, address + 127, pattern);
 
     uint64_t a = address;

@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_HAL_MDIO_H__
+#define __CB_BDK_HAL_MDIO_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -473,4 +475,7 @@ extern int bdk_mdio_45_read(bdk_node_t node, int bus_id, int phy_id, int device,
 extern int bdk_mdio_45_write(bdk_node_t node, int bus_id, int phy_id, int device, int location,
                                      int val);
 
+int bdk_mdio_init(bdk_node_t node);
+
 /** @} */
+#endif

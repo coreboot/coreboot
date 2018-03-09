@@ -51,19 +51,9 @@
  * @defgroup boot Boot related support functions
  */
 
-#include "bdk-boot-bgx.h"
-#include "bdk-boot-ccpi.h"
-#include "bdk-boot-dram.h"
-#include "bdk-boot-gpio.h"
-#include "bdk-boot-info.h"
-#include "bdk-boot-mdio.h"
-#include "bdk-boot-pcie.h"
-#include "bdk-boot-qlm.h"
 #include "bdk-boot-status.h"
-#include "bdk-boot-twsi.h"
-#include "bdk-boot-usb.h"
-#include "bdk-image.h"
 #include "bdk-watchdog.h"
-#include "bdk-xmodem.h"
+
+void bdk_boot(void);
 
 #endif

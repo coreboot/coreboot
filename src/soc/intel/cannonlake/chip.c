@@ -200,6 +200,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	mainboard_silicon_init_params(params);
 
+	/* Unlock upper 8 bytes of RTC RAM */
+	params->PchLockDownRtcMemoryLock = 0;
+
 	/* SATA */
 	params->SataEnable = config->SataEnable;
 	params->SataMode = config->SataMode;

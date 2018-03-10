@@ -28,7 +28,7 @@ chip soc/intel/cannonlake
 	end
 
 	# FSP configuration
-	register "SaGv" = "3"
+	register "SaGv" = "SaGv_Enabled"
 	register "FspSkipMpInit" = "1"
 	register "SmbusEnable" = "1"
 	register "ScsEmmcEnabled" = "1"

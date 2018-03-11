@@ -3,19 +3,19 @@
 ## Supported platforms
 
 ### Chipset
-For any sandybridge or ivybridge platform generated result should
+For any Sandy Bridge or Ivy Bridge platform the generated result should
 be bootable, possibly with minor fixes.
 
 ### EC
-EC support is likely to work on intel-based thinkpads. Other laptops are
-likely to miss EC support
+EC support is likely to work on Intel-based thinkpads. Other laptops are
+likely to miss EC support.
 
 ## How to use
 
-* Go into BIOS setup on target machine and enable all the devices.
-This will allow autoport to detect as much as possible
+* Go into BIOS setup on the target machine and enable all devices.
+This will allow autoport to detect as much as possible.
 * Boot into target machine under GNU/Linux
-* Make sure that following components are installed:
+* Make sure that the following components are installed:
   * GCC
   * golang
   * lspci
@@ -35,7 +35,7 @@ This will allow autoport to detect as much as possible
 		sudo ./autoport --input_log=logs --make_logs --coreboot_dir=../..
 
 	Note: in case you have problems getting gcc and golang to target machine
-	you can just compile on another machine and transfer binaries
+	you can just compile on another machine and transfer the binaries
 	`autoport`, `inteltool` and `ectool`. You'll still need other prerequisites
 	but you may place them in the same directory as autoport.
 
@@ -48,21 +48,21 @@ then you may want to add relevant PCIIDs to autoport. When rerunning
 you can skip argument `--make_logs` to reuse the same logs
 
 * At this point the new board is added to the tree but don't flash it
-yet as it will brick you machine. Instead keep this new port and logs
-from `util/autoport/logs` somewhere safe
+yet as it will brick your machine. Instead keep this new port and the logs
+from `util/autoport/logs` somewhere safe.
 
 * Disassemble your laptop and locate flash chip <http://flashrom.org/Technology>
-is a great resource. Flash chip is usually in `SOIC-8` (2x4 pins) or `SOIC-16`
+is a great resource. The flash chip is usually in `SOIC-8` (2x4 pins) or `SOIC-16`
 (2x8 chips). You'll probably have several candidates. Look up what's written on
 them and look up what's this chip on the web.
 
-* Once you know what's the chip is, get external flasher and read it. Twice. Compare
+* Once you know what's the chip is, get an external flasher and read it. Twice. Compare
 the results and retry if they differ. Save the result somewhere safe, in preference
-copy to read-only storage as backup.
+copy it to read-only storage as backup.
 
 * Compile coreboot with console enabled (EHCI debug or serial if present are recommended)
 
-* For recent intel chipsets you need to avoid overwriting ME firmware. Recommended procedure is
+* For recent Intel chipsets you need to avoid overwriting ME firmware. Recommended procedure is
 (replace 8 with your flash size in MiB):
 
 		cp backup.rom flash.rom
@@ -113,7 +113,7 @@ up in SPD. Under Linux you can see present SPD addresses with following commands
 	60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 	70: -- -- -- -- -- -- -- --
 
-Make sure to replace `9` with whatever bus is marked as smbus. Here in an example
+Make sure to replace `9` with whatever bus is marked as SMBus. Here in an example
 you see SPD at address `0x50`. Since we've booted with just the module in C0S0, so
 the first entry in SPD map has to be `0x50`. Once you have SPD map your
 `mainboard_get_spd` should look something like:
@@ -129,7 +129,7 @@ You can and should omit lines which correspond to
 slots not present on your machine.
 
 Note: slot labelling may be missing or unreliable. Use `inteltool` to see
-which slot have modules in them.
+which slots have modules in them.
 
 This way works well if your RAM is socketed. For soldered RAM if you see
 its SPD, you're in luck and can proceed the same way although you may have to

@@ -572,11 +572,11 @@ int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 
 	/* SDRAM Supported Burst length */
 	printram("  Burst length       :");
-	if (spd[16] & 0x06) {
+	if (spd[16] & 0x08) {
 		dimm->flags.bl8 = 1;
 		printram(" BL8");
 	}
-	if (spd[22] & 0x04) {
+	if (spd[16] & 0x04) {
 		dimm->flags.bl4 = 1;
 		printram(" BL4");
 	}

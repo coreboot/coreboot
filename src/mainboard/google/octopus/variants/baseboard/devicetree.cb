@@ -60,11 +60,23 @@ chip soc/intel/apollolake
 	# Enable lpss s0ix
 	register "lpss_s0ix_enable" = "1"
 
+	# Enable Audio Clock and Power gating
+	register "hdaudio_clk_gate_enable" = "1"
+	register "hdaudio_pwr_gate_enable" = "1"
+	register "hdaudio_bios_config_lockdown" = "1"
+
 	# digitizer at 400kHz
 	register "i2c[0]" = "{
 		.speed = I2C_SPEED_FAST,
 		.rise_time_ns = 152,
 		.fall_time_ns = 30,
+	}"
+
+	# Enable I2C5 for audio codec at 400kHz
+	register "i2c[5]" = "{
+		.speed = I2C_SPEED_FAST,
+		.rise_time_ns = 104,
+		.fall_time_ns = 52,
 	}"
 
 	# trackpad at 400kHz
@@ -93,7 +105,13 @@ chip soc/intel/apollolake
 		device pci 0d.1 on  end	# - PMC
 		device pci 0d.2 on  end	# - Fast SPI
 		device pci 0d.3 on  end	# - Shared SRAM
-		device pci 0e.0 on  end	# - Audio
+		device pci 0e.0 on
+			chip drivers/generic/max98357a
+				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_91)"
+				register "sdmode_delay" = "5"
+				device generic 0 on end
+			end
+		end	# - Audio
 		device pci 0f.0 on  end	# - Heci1
 		device pci 0f.1 on  end	# - Heci2
 		device pci 0f.2 on  end	# - Heci3
@@ -122,7 +140,25 @@ chip soc/intel/apollolake
 		device pci 16.2 on end	# - I2C 2
 		device pci 16.3 on end	# - I2C 3
 		device pci 17.0 off end	# - I2C 4
-		device pci 17.1 on end	# - I2C 5
+		device pci 17.1 on
+			chip drivers/i2c/da7219
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_137_IRQ)"
+				register "btn_cfg" = "50"
+				register "mic_det_thr" = "500"
+				register "jack_ins_deb" = "20"
+				register "jack_det_rate" = ""32ms_64ms""
+				register "jack_rem_deb" = "1"
+				register "a_d_btn_thr" = "0xa"
+				register "d_b_btn_thr" = "0x16"
+				register "b_c_btn_thr" = "0x21"
+				register "c_mic_btn_thr" = "0x3e"
+				register "btn_avg" = "4"
+				register "adc_1bit_rpt" = "1"
+				register "micbias_lvl" = "2600"
+				register "mic_amp_in_sel" = ""diff""
+				device i2c 1a on end
+			end
+		end	# - I2C 5
 		device pci 17.2 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""

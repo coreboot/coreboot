@@ -19,13 +19,16 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <drivers/intel/gma/opregion.h>
 #include <reg_script.h>
 #include <stdlib.h>
 
 #include <soc/gfx.h>
 #include <soc/iosf.h>
+#include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
+#include <cbmem.h>
 
 #include "chip.h"
 
@@ -362,6 +365,19 @@ static void gfx_panel_setup(device_t dev)
 	}
 }
 
+uintptr_t gma_get_gnvs_aslb(const void *gnvs)
+{
+	const global_nvs_t *gnvs_ptr = gnvs;
+	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
+}
+
+void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
+{
+	global_nvs_t *gnvs_ptr = gnvs;
+	if (gnvs_ptr)
+		gnvs_ptr->aslb = aslb;
+}
+
 static void gfx_init(device_t dev)
 {
 	/* Pre VBIOS Init */
@@ -377,6 +393,35 @@ static void gfx_init(device_t dev)
 
 	/* Post VBIOS Init */
 	gfx_post_vbios_init(dev);
+
+	/* Restore opregion on S3 resume */
+	intel_gma_restore_opregion();
+}
+
+static unsigned long
+gma_write_acpi_tables(struct device *const dev,
+		      unsigned long current,
+		      struct acpi_rsdp *const rsdp)
+{
+	igd_opregion_t *opregion = (igd_opregion_t *)current;
+	global_nvs_t *gnvs;
+
+	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
+		return current;
+
+	current += sizeof(igd_opregion_t);
+
+	/* GNVS has been already set up */
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs) {
+		/* IGD OpRegion Base Address */
+		gma_set_gnvs_aslb(gnvs, (uintptr_t)opregion);
+	} else {
+		printk(BIOS_ERR, "Error: GNVS table not found.\n");
+	}
+
+	current = acpi_align_current(current);
+	return current;
 }
 
 static struct device_operations gfx_device_ops = {
@@ -385,6 +430,7 @@ static struct device_operations gfx_device_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= gfx_init,
 	.ops_pci		= &soc_pci_ops,
+	.write_acpi_tables	= gma_write_acpi_tables,
 };
 
 static const struct pci_driver gfx_driver __pci_driver = {

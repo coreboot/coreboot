@@ -39,6 +39,7 @@ bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += pl011.c
 romstage-y += pl011.c
 postcar-y += pl011.c
 ramstage-y += pl011.c
+verstage-y += pl011.c
 endif
 
 endif

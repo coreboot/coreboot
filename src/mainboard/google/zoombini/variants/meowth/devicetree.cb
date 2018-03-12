@@ -174,7 +174,7 @@ chip soc/intel/cannonlake
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "uid" = "1"
 				register "compat_string" = ""google,cros-ec-spi""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A22_IRQ)"
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_A22_IRQ)"
 				device spi 0 on end
 			end
 		end # GSPI #1

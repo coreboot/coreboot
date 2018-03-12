@@ -106,7 +106,14 @@ struct soc_intel_cannonlake_config {
 	/* System Agent dynamic frequency support. Only effects ULX/ULT CPUs.
 	 * When enabled memory will be training at two different frequencies.
 	 * 0:Disabled, 1:FixedLow, 2:FixedMid, 3:FixedHigh, 4:Enabled */
-	uint8_t SaGv;
+	enum {
+		SaGv_Disabled,
+		SaGv_FixedLow,
+		SaGv_FixedMid,
+		SaGv_FixedHigh,
+		SaGv_Enabled,
+	} SaGv;
+
 
 	/* Rank Margin Tool. 1:Enable, 0:Disable */
 	uint8_t RMT;

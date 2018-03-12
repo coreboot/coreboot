@@ -147,6 +147,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	FSP_M_CONFIG *mem_cfg = &mupd->FspmConfig;
 	struct memory_params p;
 
+	memset(&p, 0, sizeof(p));
 	variant_memory_params(&p);
 
 	assert(p.type < MEMORY_COUNT);

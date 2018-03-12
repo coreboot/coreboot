@@ -82,7 +82,7 @@ static void fill_ddr4_memory_params(struct memory_params *p)
 void variant_memory_params(struct memory_params *p)
 {
 	memset(p, 0, sizeof(*p));
-	gpio_input(GPIO_MEM_CONFIG_4);
+	gpio_input_pulldown(GPIO_MEM_CONFIG_4);
 	if (gpio_get(GPIO_MEM_CONFIG_4))
 		/* set to LPDDR3 */
 		fill_lpddr3_memory_params(p);

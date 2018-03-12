@@ -27,6 +27,25 @@
 struct spi_flash;
 
 /*
+ * SPI write protection is enforced by locking the status register.
+ * The following modes are known. It depends on the flash chip if the
+ * mode is actually supported.
+ *
+ * PRESERVE : Keep the previous status register lock-down setting (noop)
+ * NONE     : Status register isn't locked
+ * PIN      : Status register is locked as long as the ~WP pin is active
+ * REBOOT   : Status register is locked until power failure
+ * PERMANENT: Status register is permanently locked
+ */
+enum spi_flash_status_reg_lockdown {
+	SPI_WRITE_PROTECTION_PRESERVE = -1,
+	SPI_WRITE_PROTECTION_NONE = 0,
+	SPI_WRITE_PROTECTION_PIN,
+	SPI_WRITE_PROTECTION_REBOOT,
+	SPI_WRITE_PROTECTION_PERMANENT
+};
+
+/*
  * Representation of SPI flash operations:
  * read:	Flash read operation.
  * write:	Flash write operation.
@@ -45,10 +64,26 @@ struct spi_flash_ops {
 	 * Hardware write protection mechanism aren't accounted.
 	 * If the write protection could be changed, due to unlocked status
 	 * register for example, 0 should be returned.
-	 * Returns -1 on error.
+	 * Returns 0 on success.
 	 */
 	int (*get_write_protection)(const struct spi_flash *flash,
 				    const struct region *region);
+	/*
+	 * Enable the status register write protection, if supported on the
+	 * requested region, and optionally enable status register lock-down.
+	 * Returns 0 if the whole region was software write protected.
+	 * Hardware write protection mechanism aren't accounted.
+	 * If the status register is locked and the requested configuration
+	 * doesn't match the selected one, return an error.
+	 * Only a single region is supported !
+	 *
+	 * @return 0 on success
+	 */
+	int
+	(*set_write_protection)(const struct spi_flash *flash,
+				const struct region *region,
+				const bool non_volatile,
+				const enum spi_flash_status_reg_lockdown mode);
 
 };
 
@@ -119,6 +154,27 @@ int spi_flash_status(const struct spi_flash *flash, u8 *reg);
  */
 int spi_flash_is_write_protected(const struct spi_flash *flash,
 				 const struct region *region);
+/*
+ * Enable the vendor dependent SPI flash write protection. The region not
+ * covered by write-protection will be set to write-able state.
+ * Only a single write-protected region is supported.
+ * Some flash ICs require the region to be aligned in the block size, sector
+ * size or page size.
+ * Some flash ICs require the region to start at TOP or BOTTOM.
+ *
+ * @param flash : A SPI flash device
+ * @param region: A subregion of the device's region
+ * @param non_volatile: Write status register non-volatile
+ * @param mode: Optional lock-down of status register
+
+ * @return 0 on success
+ */
+int
+spi_flash_set_write_protected(const struct spi_flash *flash,
+			      const struct region *region,
+			      const bool non_volatile,
+			      const enum spi_flash_status_reg_lockdown mode);
+
 /*
  * Some SPI controllers require exclusive access to SPI flash when volatile
  * operations like erase or write are being performed. In such cases,

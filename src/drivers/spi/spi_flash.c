@@ -454,6 +454,55 @@ int spi_flash_is_write_protected(const struct spi_flash *flash,
 	return flash->ops->get_write_protection(flash, region);
 }
 
+int spi_flash_set_write_protected(const struct spi_flash *flash,
+				  const struct region *region,
+				  const bool non_volatile,
+				  const enum spi_flash_status_reg_lockdown mode)
+{
+	struct region flash_region = { 0 };
+	int ret;
+
+	if (!flash)
+		return -1;
+
+	flash_region.size = flash->size;
+
+	if (!region_is_subregion(&flash_region, region))
+		return -1;
+
+	if (!flash->ops->set_write_protection) {
+		printk(BIOS_WARNING, "SPI: Setting write-protection is not "
+		       "implemented for this vendor.\n");
+		return 0;
+	}
+
+	ret = flash->ops->set_write_protection(flash, region, non_volatile,
+					       mode);
+
+	if (ret == 0 && mode != SPI_WRITE_PROTECTION_PRESERVE) {
+		printk(BIOS_INFO, "SPI: SREG lock-down was set to ");
+		switch (mode) {
+		case SPI_WRITE_PROTECTION_NONE:
+			printk(BIOS_INFO, "NEVER\n");
+		break;
+		case SPI_WRITE_PROTECTION_PIN:
+			printk(BIOS_INFO, "WP\n");
+		break;
+		case SPI_WRITE_PROTECTION_REBOOT:
+			printk(BIOS_INFO, "REBOOT\n");
+		break;
+		case SPI_WRITE_PROTECTION_PERMANENT:
+			printk(BIOS_INFO, "PERMANENT\n");
+		break;
+		default:
+			printk(BIOS_INFO, "UNKNOWN\n");
+		break;
+		}
+	}
+
+	return ret;
+}
+
 static uint32_t volatile_group_count CAR_GLOBAL;
 
 int spi_flash_volatile_group_begin(const struct spi_flash *flash)

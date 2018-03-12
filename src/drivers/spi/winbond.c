@@ -10,6 +10,8 @@
 #include <spi-generic.h>
 #include <string.h>
 #include <assert.h>
+#include <delay.h>
+#include <lib.h>
 
 #include "spi_flash_internal.h"
 
@@ -28,6 +30,10 @@
 #define CMD_W25_CE		0xc7	/* Chip Erase */
 #define CMD_W25_DP		0xb9	/* Deep Power-down */
 #define CMD_W25_RES		0xab	/* Release from DP, and Read Signature */
+#define CMD_VOLATILE_SREG_WREN	0x50	/* Write Enable for Volatile SREG */
+
+/* tw: Maximum time to write a flash cell in milliseconds */
+#define WINBOND_FLASH_TIMEOUT 30
 
 struct winbond_spi_flash_params {
 	uint16_t id;
@@ -72,6 +78,27 @@ union status_reg2 {
 		uint8_t   lb : 3;
 		uint8_t  cmp : 1;
 		uint8_t  sus : 1;
+	};
+};
+
+struct status_regs {
+	union {
+		struct {
+#if defined(__BIG_ENDIAN)
+			union status_reg2 reg2;
+			union {
+				union status_reg1_bp3 reg1_bp3;
+				union status_reg1_bp4 reg1_bp4;
+			};
+#else
+			union {
+				union status_reg1_bp3 reg1_bp3;
+				union status_reg1_bp4 reg1_bp4;
+			};
+			union status_reg2 reg2;
+#endif
+		};
+		u16 u;
 	};
 };
 
@@ -351,6 +378,228 @@ static int winbond_get_write_protection(const struct spi_flash *flash,
 	return region_is_subregion(&wp_region, region);
 }
 
+/**
+ * Common method to write some bit of the status register 1 & 2 at the same
+ * time. Only change bits that are one in @mask.
+ * Compare the final result to make sure that the register isn't locked.
+ *
+ * @param mask: The bits that are affected by @val
+ * @param val: The bits to write
+ * @param non_volatile: Make setting permanent
+ *
+ * @return 0 on success
+ */
+static int winbond_flash_cmd_status(const struct spi_flash *flash,
+				    const u16 mask,
+				    const u16 val,
+				    const bool non_volatile)
+{
+	struct {
+		u8 cmd;
+		u16 sreg;
+	} __packed cmdbuf;
+	u8 reg8;
+	int ret;
+
+	if (!flash)
+		return -1;
+
+	ret = spi_flash_cmd(&flash->spi, CMD_W25_RDSR, &reg8, sizeof(reg8));
+	if (ret)
+		return ret;
+
+	cmdbuf.sreg = reg8;
+
+	ret = spi_flash_cmd(&flash->spi, CMD_W25_RDSR2, &reg8, sizeof(reg8));
+	if (ret)
+		return ret;
+
+	cmdbuf.sreg |= reg8 << 8;
+
+	if ((val & mask) == (cmdbuf.sreg & mask))
+		return 0;
+
+	if (non_volatile) {
+		ret = spi_flash_cmd(&flash->spi, CMD_W25_WREN, NULL, 0);
+	} else {
+		ret = spi_flash_cmd(&flash->spi, CMD_VOLATILE_SREG_WREN, NULL,
+				    0);
+	}
+	if (ret)
+		return ret;
+
+	cmdbuf.sreg &= ~mask;
+	cmdbuf.sreg |= val & mask;
+	cmdbuf.cmd = CMD_W25_WRSR;
+
+	/* Legacy method of writing status register 1 & 2 */
+	ret = spi_flash_cmd_write(&flash->spi, (u8 *)&cmdbuf, sizeof(cmdbuf),
+				  NULL, 0);
+	if (ret)
+		return ret;
+
+	if (non_volatile) {
+		/* Wait tw */
+		ret = spi_flash_cmd_wait_ready(flash, WINBOND_FLASH_TIMEOUT);
+		if (ret)
+			return ret;
+	} else {
+		/* Wait tSHSL */
+		udelay(1);
+	}
+
+	/* Now read the status register to make sure it's not locked */
+	ret = spi_flash_cmd(&flash->spi, CMD_W25_RDSR, &reg8, sizeof(reg8));
+	if (ret)
+		return ret;
+
+	cmdbuf.sreg = reg8;
+
+	ret = spi_flash_cmd(&flash->spi, CMD_W25_RDSR2, &reg8, sizeof(reg8));
+	if (ret)
+		return ret;
+
+	cmdbuf.sreg |= reg8 << 8;
+
+	printk(BIOS_DEBUG, "WINBOND: SREG=%02x SREG2=%02x\n",
+	       cmdbuf.sreg & 0xff,
+	       cmdbuf.sreg >> 8);
+
+	/* Compare against expected result */
+	if ((val & mask) != (cmdbuf.sreg & mask)) {
+		printk(BIOS_ERR, "WINBOND: SREG is locked!\n");
+		ret = -1;
+	}
+
+	return ret;
+}
+
+/*
+ * Available on all devices.
+ * Protect a region starting from start of flash or end of flash.
+ * The caller must provide a supported protected region size.
+ * SEC isn't supported and set to zero.
+ * Write block protect bits to Status/Status2 Reg.
+ * Optionally lock the status register if lock_sreg is set with the provided
+ * mode.
+ *
+ * @param flash: The flash to operate on
+ * @param region: The region to write protect
+ * @param non_volatile: Make setting permanent
+ * @param mode: Optional status register lock-down mode
+ *
+ * @return 0 on success
+ */
+static int
+winbond_set_write_protection(const struct spi_flash *flash,
+			     const struct region *region,
+			     const bool non_volatile,
+			     const enum spi_flash_status_reg_lockdown mode)
+{
+	const struct winbond_spi_flash_params *params;
+	struct status_regs mask, val;
+	struct region wp_region;
+	u8 cmp, bp, tb;
+	int ret;
+
+	/* Need to touch TOP or BOTTOM */
+	if (region_offset(region) != 0 &&
+	    (region_offset(region) + region_sz(region)) != flash->size)
+		return -1;
+
+	params = (const struct winbond_spi_flash_params *)flash->driver_private;
+	if (!params)
+		return -1;
+
+	if (params->bp_bits != 3 && params->bp_bits != 4) {
+		/* FIXME: not implemented */
+		return -1;
+	}
+
+	wp_region = *region;
+
+	if (region_offset(&wp_region) == 0)
+		tb = 0;
+	else
+		tb = 1;
+
+	if (region_sz(&wp_region) > flash->size / 2) {
+		cmp = 1;
+		wp_region.offset = tb ? 0 : region_sz(&wp_region);
+		wp_region.size = flash->size - region_sz(&wp_region);
+		tb = !tb;
+	} else {
+		cmp = 0;
+	}
+
+	if (region_sz(&wp_region) == 0) {
+		bp = 0;
+	} else if (IS_POWER_OF_2(region_sz(&wp_region)) &&
+		   (region_sz(&wp_region) >=
+		    (1 << params->protection_granularity_shift))) {
+		bp = log2(region_sz(&wp_region)) -
+			  params->protection_granularity_shift + 1;
+	} else {
+		printk(BIOS_ERR, "WINBOND: ERROR: unsupported region size\n");
+		return -1;
+	}
+
+	/* Write block protection bits */
+
+	if (params->bp_bits == 3) {
+		val.reg1_bp3 = (union status_reg1_bp3) { .bp = bp, .tb = tb,
+							.sec = 0 };
+		mask.reg1_bp3 = (union status_reg1_bp3) { .bp = ~0, .tb = 1,
+							.sec = 1 };
+	} else {
+		val.reg1_bp4 = (union status_reg1_bp4) { .bp = bp, .tb = tb };
+		mask.reg1_bp4 = (union status_reg1_bp4) { .bp = ~0, .tb = 1 };
+	}
+
+	val.reg2 = (union status_reg2) { .cmp = cmp };
+	mask.reg2 = (union status_reg2) { .cmp = 1 };
+
+	if (mode != SPI_WRITE_PROTECTION_PRESERVE) {
+		u8 srp;
+		switch (mode) {
+		case SPI_WRITE_PROTECTION_NONE:
+			srp = 0;
+		break;
+		case SPI_WRITE_PROTECTION_PIN:
+			srp = 1;
+		break;
+		case SPI_WRITE_PROTECTION_REBOOT:
+			srp = 2;
+		break;
+		case SPI_WRITE_PROTECTION_PERMANENT:
+			srp = 3;
+		break;
+		default:
+			return -1;
+		}
+
+		if (params->bp_bits == 3) {
+			val.reg1_bp3.srp0 = !!(srp & 1);
+			mask.reg1_bp3.srp0 = 1;
+		} else {
+			val.reg1_bp4.srp0 = !!(srp & 1);
+			mask.reg1_bp4.srp0 = 1;
+		}
+
+		val.reg2.srp1 = !!(srp & 2);
+		mask.reg2.srp1 = 1;
+	}
+
+	ret = winbond_flash_cmd_status(flash, mask.u, val.u, non_volatile);
+	if (ret)
+		return ret;
+
+	printk(BIOS_DEBUG, "WINBOND: write-protection set to range "
+	       "0x%08zx-0x%08zx\n", region_offset(region),
+	       region_offset(region) + region_sz(region));
+
+	return ret;
+}
 
 static const struct spi_flash_ops spi_flash_ops = {
 	.write = winbond_write,
@@ -362,6 +611,7 @@ static const struct spi_flash_ops spi_flash_ops = {
 	.read = spi_flash_cmd_read_fast,
 #endif
 	.get_write_protection = winbond_get_write_protection,
+	.set_write_protection = winbond_set_write_protection,
 };
 
 int spi_flash_probe_winbond(const struct spi_slave *spi, u8 *idcode,

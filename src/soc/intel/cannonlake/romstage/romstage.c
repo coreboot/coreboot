@@ -169,6 +169,11 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 	/* Disable Cpu Ratio Override temporary. */
 	m_cfg->CpuRatio = 0;
 	m_cfg->PcdSerialIoUartNumber = CONFIG_UART_FOR_CONSOLE;
+	/* Disable Vmx if Vt-d is already disabled */
+	if (config->VtdDisable)
+		m_cfg->VmxEnable = 0;
+	else
+		m_cfg->VmxEnable = config->VmxEnable;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

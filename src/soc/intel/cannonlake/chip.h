@@ -281,6 +281,10 @@ struct soc_intel_cannonlake_config {
 
 	/* Enable Pch iSCLK */
 	uint8_t pch_isclk;
+
+	/* Intel VT configuration */
+	uint8_t VtdDisable;
+	uint8_t VmxEnable;
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

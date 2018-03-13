@@ -218,11 +218,11 @@ Device (EC)
 		 * when the system is charging.
 		 */
 		If (TURB) {
-			Store (Zero, PPCM)
+			Store (PPCM_TURBO, PPCM)
 			PPCN ()
 			Store (One, EDTB)
 		} Else {
-			Store (One, PPCM)
+			Store (PPCM_NOTURBO, PPCM)
 			PPCN ()
 			Store (Zero, EDTB)
 		}

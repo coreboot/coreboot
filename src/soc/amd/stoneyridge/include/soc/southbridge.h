@@ -346,6 +346,12 @@ struct soc_amd_stoneyridge_gpio {
 	uint8_t control;
 };
 
+struct stoneyridge_aoac {
+	int enable;
+	int status;
+};
+
+void enable_aoac_devices(void);
 void sb_enable_rom(void);
 void configure_stoneyridge_uart(void);
 void configure_stoneyridge_i2c(void);

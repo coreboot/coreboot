@@ -32,6 +32,24 @@
 #include <soc/pci_devs.h>
 #include <agesa_headers.h>
 
+/*
+ * Table of devices that need their AOAC registers enabled and waited
+ * upon (usually about .55 milliseconds). Instead of individual delays
+ * waiting for each device to become available, a single delay will be
+ * executed at configure_stoneyridge_uart(). All other devices need only
+ * to verify if their AOAC is already enabled, and do a minimal delay
+ * if needed.
+ */
+const static struct stoneyridge_aoac aoac_devs[] = {
+	{ (FCH_AOAC_D3_CONTROL_UART0 + CONFIG_UART_FOR_CONSOLE * 2),
+		(FCH_AOAC_D3_STATE_UART0 + CONFIG_UART_FOR_CONSOLE * 2) },
+	{ FCH_AOAC_D3_CONTROL_AMBA, FCH_AOAC_D3_STATE_AMBA },
+	{ FCH_AOAC_D3_CONTROL_I2C0, FCH_AOAC_D3_STATE_I2C0 },
+	{ FCH_AOAC_D3_CONTROL_I2C1, FCH_AOAC_D3_STATE_I2C1 },
+	{ FCH_AOAC_D3_CONTROL_I2C2, FCH_AOAC_D3_STATE_I2C2 },
+	{ FCH_AOAC_D3_CONTROL_I2C3, FCH_AOAC_D3_STATE_I2C3 }
+};
+
 static int is_sata_config(void)
 {
 	return !((CONFIG_STONEYRIDGE_SATA_MODE == SataNativeIde)
@@ -296,48 +314,30 @@ static bool is_aoac_device_enabled(int aoac_device_status_register)
 		return false;
 }
 
-void configure_stoneyridge_uart(void)
+void enable_aoac_devices(void)
 {
 	bool status;
+	int i;
 
-	/* Power on the UART and AMBA devices */
-	power_on_aoac_device(FCH_AOAC_D3_CONTROL_UART0
-			+ CONFIG_UART_FOR_CONSOLE * 2);
-	power_on_aoac_device(FCH_AOAC_D3_CONTROL_AMBA);
+	for (i = 0; i < ARRAY_SIZE(aoac_devs); i++)
+		power_on_aoac_device(aoac_devs[i].enable);
 
+	/* Wait for AOAC devices to indicate power and clock OK */
+	do {
+		udelay(100);
+		status = true;
+		for (i = 0; i < ARRAY_SIZE(aoac_devs); i++)
+			status &= is_aoac_device_enabled(aoac_devs[i].status);
+	} while (!status);
+}
+
+void configure_stoneyridge_uart(void)
+{
 	/* Set the GPIO mux to UART */
 	write8((void *)FCH_IOMUXx89_UART0_RTS_L_EGPIO137, 0);
 	write8((void *)FCH_IOMUXx8A_UART0_TXD_EGPIO138, 0);
 	write8((void *)FCH_IOMUXx8E_UART1_RTS_L_EGPIO142, 0);
 	write8((void *)FCH_IOMUXx8F_UART1_TXD_EGPIO143, 0);
-
-	/* Wait for the UART and AMBA devices to indicate power and clock OK */
-	do {
-		udelay(100);
-		status = is_aoac_device_enabled(FCH_AOAC_D3_STATE_UART0
-					+ CONFIG_UART_FOR_CONSOLE * 2);
-		status &= is_aoac_device_enabled(FCH_AOAC_D3_STATE_AMBA);
-	} while (!status);
-}
-
-void configure_stoneyridge_i2c(void)
-{
-	bool status;
-
-	/* Power on the I2C devices */
-	power_on_aoac_device(FCH_AOAC_D3_CONTROL_I2C0);
-	power_on_aoac_device(FCH_AOAC_D3_CONTROL_I2C1);
-	power_on_aoac_device(FCH_AOAC_D3_CONTROL_I2C2);
-	power_on_aoac_device(FCH_AOAC_D3_CONTROL_I2C3);
-
-	/* Wait for the I2C devices to indicate power and clock OK */
-	do {
-		udelay(100);
-		status = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C0);
-		status &= is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C1);
-		status &= is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C2);
-		status &= is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C3);
-	} while (!status);
 }
 
 void sb_pci_port80(void)
@@ -560,6 +560,7 @@ void bootblock_fch_early_init(void)
 	sb_lpc_port80();
 	sb_lpc_decode();
 	sb_acpi_mmio_decode();
+	enable_aoac_devices();
 }
 
 void sb_enable(device_t dev)

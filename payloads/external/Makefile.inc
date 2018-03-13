@@ -33,10 +33,14 @@ $(PAYLOAD_CONFIG): payloads/external/depthcharge/depthcharge/build/depthcharge.e
 endif
 
 ifeq ($(CONFIG_PAYLOAD_LINUXBOOT),y)
-ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUXBOOT_KERNEL_COMMANDLINE))),)
+  ifeq ($(CONFIG_ARCH_X86),y)
+    ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUXBOOT_KERNEL_COMMANDLINE))),)
       ADDITIONAL_PAYLOAD_CONFIG+=-C $(CONFIG_LINUXBOOT_KERNEL_COMMANDLINE)
-endif
-ADDITIONAL_PAYLOAD_CONFIG+=-I $(CONFIG_PAYLOAD_USERSPACE)
+    endif
+    ifneq ($(strip $(call strip_quotes,$(CONFIG_PAYLOAD_USERSPACE))),)
+      ADDITIONAL_PAYLOAD_CONFIG+=-I $(strip $(call strip_quotes,$(CONFIG_PAYLOAD_USERSPACE)))
+    endif
+  endif
 endif
 
 ifeq ($(CONFIG_PAYLOAD_LINUX),y)
@@ -259,16 +263,6 @@ payloads/external/iPXE/ipxe/ipxe.rom ipxe: $(DOTCONFIG)
 
 linuxboot:
 	$(MAKE) -C payloads/external/LinuxBoot \
-		HOSTCC="$(HOSTCC)" \
-		CC="$(HOSTCC)" \
-		GCC_CC_x86_32=$(GCC_CC_x86_32) \
-		GCC_CC_x86_64=$(GCC_CC_x86_64) \
-		GCC_CC_arm=$(GCC_CC_arm) \
-		GCC_CC_arm64=$(GCC_CC_arm64) \
-		OBJCOPY_x86_32=$(OBJCOPY_x86_32) \
-		OBJCOPY_x86_64=$(OBJCOPY_x86_64) \
-		OBJCOPY_arm=$(OBJCOPY_arm) \
-		OBJCOPY_arm64=$(OBJCOPY_arm64) \
 		CPUS=$(CPUS) \
 		CONFIG_LINUXBOOT_KERNEL_VERSION=$(CONFIG_LINUXBOOT_KERNEL_VERSION) \
 		CONFIG_LINUXBOOT_KERNEL_CONFIGFILE=$(CONFIG_LINUXBOOT_KERNEL_CONFIGFILE) \
@@ -277,7 +271,9 @@ linuxboot:
 		CONFIG_LINUXBOOT_UROOT_COMMANDS="$(CONFIG_LINUXBOOT_UROOT_COMMANDS)" \
 		CONFIG_LINUXBOOT_ARCH=$(CONFIG_LINUXBOOT_ARCH) \
 		CONFIG_LINUXBOOT_UROOT=$(CONFIG_LINUXBOOT_UROOT) \
-		CONFIG_LINUXBOOT_UROOT_FILES=$(CONFIG_LINUXBOOT_UROOT_FILES)
+		CONFIG_LINUXBOOT_UROOT_FILES=$(CONFIG_LINUXBOOT_UROOT_FILES) \
+		CONFIG_LINUXBOOT_DTB_FILE=$(CONFIG_LINUXBOOT_DTB_FILE)
+
 
 payloads/external/LinuxBoot/linuxboot/kernel-image: linuxboot
 payloads/external/LinuxBoot/linuxboot/initramfs.cpio.xz: linuxboot

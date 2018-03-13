@@ -52,8 +52,11 @@ checkout: fetch
 		done;,true;) \
 	fi
 
-$(project_dir)/initramfs.cpio.xz: checkout
-	cd $(uroot_dir); GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) go build u-root.go
+$(uroot_dir)/u-root: $(uroot_dir)/u-root.go
+	echo "    GO        u-root"
+	cd $(uroot_dir); GOPATH=$(go_path_dir) go build u-root.go
+
+$(project_dir)/initramfs.cpio.xz: checkout $(uroot_dir)/u-root
 	echo "    MAKE       u-root $(CONFIG_LINUXBOOT_UROOT_VERSION)"
 ifneq ($(CONFIG_LINUXBOOT_UROOT_COMMANDS),)
 ifneq ($(CONFIG_LINUXBOOT_UROOT_FILES),)

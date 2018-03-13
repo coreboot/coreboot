@@ -18,6 +18,10 @@ chip soc/intel/broadwell
 	register "gpu_panel_power_backlight_on_delay" = "2000"	# 200ms
 	register "gpu_panel_power_backlight_off_delay" = "2000"	# 200ms
 
+        # EC host command ranges are in 0x380-0x383 & 0x80-0x8f
+        register "gen1_dec" = "0x00000381"
+        register "gen2_dec" = "0x000c0081"
+
 	# Port 0 is HDD
 	# Port 3 is M.2 NGFF
 	register "sata_port_map" = "0x9"

@@ -29,6 +29,43 @@ uint32_t read_pcr32(const uint8_t port, const uint16_t offset)
 	return *(const uint32_t *)(sbbar + (port << 16) + offset);
 }
 
+static void print_pcr_port(const uint8_t port)
+{
+	size_t i = 0;
+	uint32_t last_reg = 0;
+	bool last_printed = true;
+
+	printf("PCR port offset: 0x%06zx\n\n", (size_t)port << 16);
+
+	for (i = 0; i < PCR_PORT_SIZE; i += 4) {
+		const uint32_t reg = read_pcr32(port, i);
+		const bool rep = i && last_reg == reg;
+		if (!rep) {
+			if (!last_printed)
+				printf("*\n");
+			printf("0x%04zx: 0x%08"PRIx32"\n", i, reg);
+		}
+
+		last_reg = reg;
+		last_printed = !rep;
+	}
+	if (!last_printed)
+		printf("*\n");
+}
+
+void print_pcr_ports(struct pci_dev *const sb,
+		     const uint8_t *const ports, const size_t count)
+{
+	size_t i;
+
+	pcr_init(sb);
+
+	for (i = 0; i < count; ++i) {
+		printf("\n========== PCR 0x%02x ==========\n\n", ports[i]);
+		print_pcr_port(ports[i]);
+	}
+}
+
 void pcr_init(struct pci_dev *const sb)
 {
 	bool error_exit = false;

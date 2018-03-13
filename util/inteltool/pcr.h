@@ -24,6 +24,8 @@
 
 uint32_t read_pcr32(uint8_t port, uint16_t offset);
 
+void print_pcr_ports(struct pci_dev *sb, const uint8_t *ports, size_t count);
+
 void pcr_init(struct pci_dev *sb);
 void pcr_cleanup(void);
 

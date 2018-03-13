@@ -24,12 +24,19 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <errno.h>
 #include "inteltool.h"
 #include "pcr.h"
 
 #ifdef __NetBSD__
 #include <machine/sysarch.h>
 #endif
+
+#define MAX_PCR_PORTS 8 /* how often may `--pcr` be specified */
+
+enum long_only_opts {
+	LONG_OPT_PCR = 0x100,
+};
 
 /*
  * http://pci-ids.ucw.cz/read/PC/8086
@@ -369,7 +376,9 @@ void print_usage(const char *name)
 	     "   -A | --ambs:                      dump AMB registers\n"
 	     "   -x | --sgx:                       dump SGX status\n"
 	     "   -a | --all:                       dump all known (safe) registers\n"
-	     "\n");
+	     "        --pcr=PORT_ID:               dump all registers of a PCR port\n"
+	     "                                     (may be specified max %d times)\n"
+	     "\n", MAX_PCR_PORTS);
 	exit(1);
 }
 
@@ -388,6 +397,8 @@ int main(int argc, char *argv[])
 	int dump_pciexbar = 0, dump_coremsrs = 0, dump_ambs = 0;
 	int dump_spi = 0, dump_gfx = 0, dump_ahci = 0, dump_sgx = 0;
 	int show_gpio_diffs = 0;
+	size_t pcr_count = 0;
+	uint8_t dump_pcr[MAX_PCR_PORTS];
 
 	static struct option long_options[] = {
 		{"version", 0, 0, 'v'},
@@ -408,6 +419,7 @@ int main(int argc, char *argv[])
 		{"gfx", 0, 0, 'f'},
 		{"ahci", 0, 0, 'R'},
 		{"sgx", 0, 0, 'x'},
+		{"pcr", required_argument, 0, LONG_OPT_PCR},
 		{0, 0, 0, 0}
 	};
 
@@ -478,6 +490,21 @@ int main(int argc, char *argv[])
 			break;
 		case 'x':
 			dump_sgx = 1;
+			break;
+		case LONG_OPT_PCR:
+			if (pcr_count < MAX_PCR_PORTS) {
+				errno = 0;
+				const unsigned long int pcr =
+					strtoul(optarg, NULL, 0);
+				if (strlen(optarg) == 0 || errno) {
+					print_usage(argv[0]);
+					exit(1);
+				}
+				dump_pcr[pcr_count++] = (uint8_t)pcr;
+			} else {
+				print_usage(argv[0]);
+				exit(1);
+			}
 			break;
 		case 'h':
 		case '?':
@@ -684,6 +711,9 @@ int main(int argc, char *argv[])
 
 	if (dump_sgx)
 		print_sgx();
+
+	if (pcr_count)
+		print_pcr_ports(sb, dump_pcr, pcr_count);
 
 	/* Clean up */
 	pcr_cleanup();

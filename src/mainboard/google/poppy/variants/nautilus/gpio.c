@@ -253,8 +253,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_E20),
 	/* E21 : DDPC_CTRLDATA ==> NC */
 	PAD_CFG_NC(GPP_E21),
-	/* E22 : DDPD_CTRLCLK ==> NC */
-	PAD_CFG_NC(GPP_E22),
+	/* E22 : DDPD_CTRLCLK ==> CHP1_CABC */
+	PAD_CFG_GPO(GPP_E22, 1, DEEP),
 	/* E23 : DDPD_CTRLDATA ==> NC */
 	PAD_CFG_NC(GPP_E23),
 

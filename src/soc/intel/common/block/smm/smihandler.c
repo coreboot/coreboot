@@ -27,6 +27,7 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smihandler.h>
 #include <intelblocks/uart.h>
+#include <smmstore.h>
 #include <soc/nvs.h>
 #include <soc/pm.h>
 #include <soc/gpio.h>
@@ -294,6 +295,27 @@ static void southbridge_smi_gsmi(
 	save_state_ops->set_reg(io_smi, RAX, ret);
 }
 
+static void southbridge_smi_store(
+	const struct smm_save_state_ops *save_state_ops)
+{
+	u8 sub_command, ret;
+	void *io_smi;
+	uint32_t reg_ebx;
+
+	io_smi = find_save_state(save_state_ops, SMMSTORE_APM_CNT);
+	if (!io_smi)
+		return;
+	/* Command and return value in EAX */
+	sub_command = (save_state_ops->get_reg(io_smi, RAX) >> 8) & 0xff;
+
+	/* Parameter buffer in EBX */
+	reg_ebx = save_state_ops->get_reg(io_smi, RBX);
+
+	/* drivers/smmstore/smi.c */
+	ret = smmstore_exec(sub_command, (void *)reg_ebx);
+	save_state_ops->set_reg(io_smi, RAX, ret);
+}
+
 static void finalize(void)
 {
 	static int finalize_done;
@@ -365,6 +387,10 @@ void smihandler_southbridge_apmc(
 	case ELOG_GSMI_APM_CNT:
 		if (IS_ENABLED(CONFIG_ELOG_GSMI))
 			southbridge_smi_gsmi(save_state_ops);
+		break;
+	case SMMSTORE_APM_CNT:
+		if (IS_ENABLED(CONFIG_SMMSTORE))
+			southbridge_smi_store(save_state_ops);
 		break;
 	case APM_CNT_FINALIZE:
 		finalize();

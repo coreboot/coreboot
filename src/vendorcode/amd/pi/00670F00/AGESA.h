@@ -67,6 +67,7 @@
 #define AGESA_RUNFUNC_ON_ALL_APS                0x00028106ul
 #define AGESA_IDLE_AN_AP                        0x00028107ul
 #define AGESA_WAIT_FOR_ALL_APS                  0x00028108ul
+#define AGESA_HALT_THIS_AP                      0x00028109ul
 
 // AGESA ADVANCED CALLOUTS, Memory
 #define AGESA_READ_SPD                 0x00028140ul
@@ -2514,6 +2515,18 @@ typedef struct {
   IN OUT    MEM_DATA_STRUCT     *MemData;       ///< Location of the MemData structure, for reference
 } AGESA_READ_SPD_PARAMS;
 
+/// Parameters structure for the interface call-out AGESA_HALT_THIS_AP
+typedef struct {
+  IN OUT    AMD_CONFIG_PARAMS StdHeader;   ///< Standard configuration header
+  IN        BOOLEAN           ExecWbinvd;  ///< Indicates whether to execute
+                                           ///  WBINVD
+  IN        BOOLEAN           PrimaryCore; ///< Indicates whether current core
+                                           ///  is the primary core of the
+                                           ///  compute unit
+  IN        BOOLEAN           CacheEn;     ///< Indicates whether cache should
+                                           ///  be enabled
+} AGESA_HALT_THIS_AP_PARAMS;
+
 /// VoltageType values
 typedef enum {
   VTYPE_CPU_VREF,                                    ///< Cpu side Vref
@@ -2623,6 +2636,12 @@ AgesaIdleAnAp (
   IN        UINTN               ApicIdOfCore,
   IN        AMD_CONFIG_PARAMS   *StdHeader
   );
+
+AGESA_STATUS
+AgesaHaltThisAp (
+  IN       UINTN                      FcnData,
+  IN       AGESA_HALT_THIS_AP_PARAMS  *HaltApParams
+);
 
 AGESA_STATUS
 AgesaHookBeforeDramInit (

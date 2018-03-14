@@ -279,9 +279,19 @@ chip soc/intel/skylake
 				register "generic.reset_delay_ms" = "20"
 				register "generic.has_power_resource" = "1"
 				register "generic.disable_gpio_export_in_crs" = "1"
+				register "generic.wake" = "GPE0_DW2_01"
                                 register "hid_desc_reg_offset" = "0x1"
                                 device i2c 0x9 on end
                         end
+			chip drivers/generic/gpio_keys
+				register "name" = ""PENH""
+				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_E8)"
+				register "key.dev_name" = ""EJCT""
+				register "key.linux_code" = "SW_PEN_INSERTED"
+				register "key.linux_input_type" = "EV_SW"
+				register "key.label" = ""pen_eject""
+				device generic 0 on end
+			end
 		end # I2C #2
 		device pci 15.3 on
 			chip drivers/generic/max98357a

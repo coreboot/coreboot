@@ -211,8 +211,8 @@ static const struct pad_config gpio_table[] = {
 
 	/* E0  : SATAXPCI0 ==> H1_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC_INVERT(GPP_E0, NONE, PLTRST),
-	/* E1  : SATAXPCIE1 ==> SATA_GP1 */
-	PAD_CFG_NF(GPP_E1, NONE, DEEP, NF1),
+	/* E1  : SATAXPCIE1 ==> PEN_EJECT_ODL - for wake event */
+	PAD_CFG_GPI_ACPI_SCI(GPP_E1, NONE, DEEP, NONE),
 	/* E2  : SATAXPCIE2 ==> NC(TP916) */
 	PAD_CFG_NC(GPP_E2),
 	/* E3  : CPU_GP0 ==> TRACKPAD_INT# */
@@ -225,8 +225,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_E6),
 	/* E7  : CPU_GP1 ==> TOUCHSCREEN_INT# */
 	PAD_CFG_GPI_APIC(GPP_E7, NONE, PLTRST),
-	/* E8  : SATALED# ==> NC */
-	PAD_CFG_NC(GPP_E8),
+	/* E8  : SATALED# ==> PEN_EJECT_ODL - for notification */
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_E8, NONE, DEEP),
 	/* E9  : USB2_OCO# ==> USB_C0_OC# */
 	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
 	/* E10 : USB2_OC1# ==> USB_C1_OC# */

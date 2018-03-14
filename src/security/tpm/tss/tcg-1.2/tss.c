@@ -238,6 +238,8 @@ uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 	if (result == TPM_SUCCESS && length > 0) {
 		uint8_t *nv_read_cursor = response + kTpmResponseHeaderLength;
 		from_tpm_uint32(nv_read_cursor, &result_length);
+		if (result_length > length)
+			return TPM_E_IOERROR;
 		nv_read_cursor += sizeof(uint32_t);
 		memcpy(data, nv_read_cursor, result_length);
 	}
@@ -300,7 +302,8 @@ uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags)
 	if (result != TPM_SUCCESS)
 		return result;
 	from_tpm_uint32(response + kTpmResponseHeaderLength, &size);
-	assert(size == sizeof(TPM_PERMANENT_FLAGS));
+	if (size != sizeof(TPM_PERMANENT_FLAGS))
+		return TPM_E_IOERROR;
 	memcpy(pflags, response + kTpmResponseHeaderLength + sizeof(size),
 	       sizeof(TPM_PERMANENT_FLAGS));
 	return result;

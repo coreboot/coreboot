@@ -28,6 +28,7 @@
 #include <soc/pm.h>
 #include <soc/usb.h>
 
+#define MAX_PCIE_PORTS			6
 #define CLKREQ_DISABLED		0xf
 #define APOLLOLAKE_I2C_DEV_MAX	8
 
@@ -43,12 +44,7 @@ struct soc_intel_apollolake_config {
 	 * four CLKREQ inputs, but six root ports. Root ports without an
 	 * associated CLKREQ signal must be marked with "CLKREQ_DISABLED"
 	 */
-	uint8_t pcie_rp0_clkreq_pin;
-	uint8_t pcie_rp1_clkreq_pin;
-	uint8_t pcie_rp2_clkreq_pin;
-	uint8_t pcie_rp3_clkreq_pin;
-	uint8_t pcie_rp4_clkreq_pin;
-	uint8_t pcie_rp5_clkreq_pin;
+	uint8_t pcie_rp_clkreq_pin[MAX_PCIE_PORTS];
 
 	/* [14:8] DDR mode Number of dealy elements.Each = 125pSec.
 	 * [6:0] SDR mode Number of dealy elements.Each = 125pSec.

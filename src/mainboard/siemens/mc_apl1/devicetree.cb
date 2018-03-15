@@ -7,12 +7,12 @@ chip soc/intel/apollolake
 	register "sci_irq" = "SCIS_IRQ10"
 
 	# Disable unused clkreq of PCIe root ports
-	register "pcie_rp0_clkreq_pin" = "3" # PCIe-PCI-Bridge
-	register "pcie_rp1_clkreq_pin" = "CLKREQ_DISABLED"
-	register "pcie_rp2_clkreq_pin" = "0" # MACPHY
-	register "pcie_rp3_clkreq_pin" = "1" # MACPHY
-	register "pcie_rp4_clkreq_pin" = "CLKREQ_DISABLED"
-	register "pcie_rp5_clkreq_pin" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[0]" = "3" # PCIe-PCI-Bridge
+	register "pcie_rp_clkreq_pin[1]" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[2]" = "0" # MACPHY
+	register "pcie_rp_clkreq_pin[3]" = "1" # MACPHY
+	register "pcie_rp_clkreq_pin[4]" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[5]" = "CLKREQ_DISABLED"
 
 	# EMMC TX DATA Delay 1
 	# Refer to EDS-Vol2-22.3.

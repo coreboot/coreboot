@@ -4,13 +4,13 @@ chip soc/intel/apollolake
 		device lapic 0 on end
 	end
 
-	register "pcie_rp0_clkreq_pin" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[0]" = "CLKREQ_DISABLED"
 	# Disable unused clkreq of PCIe root ports
-	register "pcie_rp1_clkreq_pin" = "3" # wifi/bt
-	register "pcie_rp2_clkreq_pin" = "CLKREQ_DISABLED"
-	register "pcie_rp3_clkreq_pin" = "CLKREQ_DISABLED"
-	register "pcie_rp4_clkreq_pin" = "1"
-	register "pcie_rp5_clkreq_pin" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[1]" = "3" # wifi/bt
+	register "pcie_rp_clkreq_pin[2]" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[3]" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[4]" = "1"
+	register "pcie_rp_clkreq_pin[5]" = "CLKREQ_DISABLED"
 
 	# GPIO for PERST_0
 	# If the Board has PERST_0 signal, assign the GPIO

@@ -531,12 +531,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	/* Parse device tree and disable unused device*/
 	parse_devicetree(silconfig);
 
-	silconfig->PcieRpClkReqNumber[0] = cfg->pcie_rp0_clkreq_pin;
-	silconfig->PcieRpClkReqNumber[1] = cfg->pcie_rp1_clkreq_pin;
-	silconfig->PcieRpClkReqNumber[2] = cfg->pcie_rp2_clkreq_pin;
-	silconfig->PcieRpClkReqNumber[3] = cfg->pcie_rp3_clkreq_pin;
-	silconfig->PcieRpClkReqNumber[4] = cfg->pcie_rp4_clkreq_pin;
-	silconfig->PcieRpClkReqNumber[5] = cfg->pcie_rp5_clkreq_pin;
+	memcpy(silconfig->PcieRpClkReqNumber, cfg->pcie_rp_clkreq_pin,
+	       sizeof(silconfig->PcieRpClkReqNumber));
 
 	if (cfg->emmc_tx_cmd_cntl != 0)
 		silconfig->EmmcTxCmdCntl = cfg->emmc_tx_cmd_cntl;

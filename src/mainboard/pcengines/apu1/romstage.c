@@ -71,7 +71,8 @@ void board_BeforeAgesa(struct sysinfo *cb)
 
 	if(scon) {
 		// sign of life strings
-		printk(BIOS_ALERT, CONFIG_MAINBOARD_PART_NUMBER "\n");
+		printk(BIOS_ALERT, CONFIG_MAINBOARD_VENDOR " "
+			                   CONFIG_MAINBOARD_PART_NUMBER "\n");
 		printk(BIOS_ALERT, "coreboot build %s\n", COREBOOT_DMI_DATE);
 		printk(BIOS_ALERT, "BIOS version %s\n", COREBOOT_ORIGIN_GIT_TAG);
 	}

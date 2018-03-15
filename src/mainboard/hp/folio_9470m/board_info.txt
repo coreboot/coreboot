@@ -1,0 +1,7 @@
+Category: laptop
+Board URL: https://support.hp.com/us-en/product/hp-elitebook-folio-9470m-ultrabook/5271146/product-info
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: n
+Release year: 2013

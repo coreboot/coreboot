@@ -534,6 +534,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	memcpy(silconfig->PcieRpClkReqNumber, cfg->pcie_rp_clkreq_pin,
 	       sizeof(silconfig->PcieRpClkReqNumber));
 
+	memcpy(silconfig->PcieRpHotPlug, cfg->pcie_rp_hotplug_enable,
+	       sizeof(silconfig->PcieRpHotPlug));
+
 	if (cfg->emmc_tx_cmd_cntl != 0)
 		silconfig->EmmcTxCmdCntl = cfg->emmc_tx_cmd_cntl;
 	if (cfg->emmc_tx_data_cntl1 != 0)

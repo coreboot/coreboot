@@ -46,6 +46,9 @@ struct soc_intel_apollolake_config {
 	 */
 	uint8_t pcie_rp_clkreq_pin[MAX_PCIE_PORTS];
 
+	/* Enable/disable hot-plug for root ports (0 = disable, 1 = enable). */
+	uint8_t pcie_rp_hotplug_enable[MAX_PCIE_PORTS];
+
 	/* [14:8] DDR mode Number of dealy elements.Each = 125pSec.
 	 * [6:0] SDR mode Number of dealy elements.Each = 125pSec.
 	 */

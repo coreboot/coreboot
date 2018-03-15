@@ -502,6 +502,17 @@ static void glk_fsp_silicon_init_params_cb(
 	struct soc_intel_apollolake_config *cfg, FSP_S_CONFIG *silconfig)
 {
 	silconfig->Gmm = 0;
+
+	/* On Geminilake, we need to override the default FSP PCIe de-emphasis
+	 * settings using the device tree settings. This is because PCIe
+	 * de-emphasis is enabled by default and Thunderpeak PCIe WiFi detection
+	 * requires de-emphasis disabled. If we make this change common to both
+	 * Apollolake and Geminilake, then we need to add mainboard device tree
+	 * de-emphasis settings of 1 to Apollolake systems.
+	 */
+	memcpy(silconfig->PcieRpSelectableDeemphasis,
+		cfg->pcie_rp_deemphasis_enable,
+		sizeof(silconfig->PcieRpSelectableDeemphasis));
 }
 
 void __attribute__((weak)) mainboard_devtree_update(struct device *dev)

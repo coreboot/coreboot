@@ -75,8 +75,6 @@ void bootblock_soc_early_init(void)
 	bootblock_fch_early_init();
 
 	post_code(0x90);
-	if (CONFIG_STONEYRIDGE_UART)
-		configure_stoneyridge_uart();
 }
 
 /*

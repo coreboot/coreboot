@@ -53,6 +53,12 @@ const struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
 	/* BD_ID1 */
 	{GPIO_135, Function1, INPUT },
 
+	/* GPIO_136 - UART_FCH_RX_DEBUG_RX */
+	{GPIO_136, Function0, INPUT },
+
+	/* GPIO_138 - UART_FCH_TX_DEBUG_RX */
+	{GPIO_138, Function0, INPUT },
+
 	/* TPM_SERIRQ# */
 	{GPIO_139, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
 

@@ -35,6 +35,16 @@ const struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
 	{GPIO_116, Function1, FCH_GPIO_PULL_DOWN_ENABLE | INPUT },
 	/* SD power */
 	{GPIO_119, Function2, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+	/* GPIO_136 - UART0_FCH_RX_DEBUG_RX */
+	{GPIO_136, Function0, INPUT },
+	/* GPIO_137 - UART0_FCH_DEBUG_RTS */
+	{GPIO_137, Function0, INPUT },
+	/* GPIO_138 - UART0_FCH_TX_DEBUG_RX */
+	{GPIO_138, Function0, INPUT },
+	/* GPIO_142 - UART1_FCH_RTS */
+	{GPIO_142, Function0, INPUT },
+	/* GPIO_143 - UART1_FCH_TX */
+	{GPIO_143, Function0, INPUT },
 };
 
 const struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {

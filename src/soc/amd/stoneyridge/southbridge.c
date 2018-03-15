@@ -36,9 +36,7 @@
  * Table of devices that need their AOAC registers enabled and waited
  * upon (usually about .55 milliseconds). Instead of individual delays
  * waiting for each device to become available, a single delay will be
- * executed at configure_stoneyridge_uart(). All other devices need only
- * to verify if their AOAC is already enabled, and do a minimal delay
- * if needed.
+ * executed.
  */
 const static struct stoneyridge_aoac aoac_devs[] = {
 	{ (FCH_AOAC_D3_CONTROL_UART0 + CONFIG_UART_FOR_CONSOLE * 2),
@@ -329,15 +327,6 @@ void enable_aoac_devices(void)
 		for (i = 0; i < ARRAY_SIZE(aoac_devs); i++)
 			status &= is_aoac_device_enabled(aoac_devs[i].status);
 	} while (!status);
-}
-
-void configure_stoneyridge_uart(void)
-{
-	/* Set the GPIO mux to UART */
-	write8((void *)FCH_IOMUXx89_UART0_RTS_L_EGPIO137, 0);
-	write8((void *)FCH_IOMUXx8A_UART0_TXD_EGPIO138, 0);
-	write8((void *)FCH_IOMUXx8E_UART1_RTS_L_EGPIO142, 0);
-	write8((void *)FCH_IOMUXx8F_UART1_TXD_EGPIO143, 0);
 }
 
 void sb_pci_port80(void)

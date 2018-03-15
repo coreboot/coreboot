@@ -49,7 +49,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		mem_cfg->MemorySpdDataLen = region_device_sz(&spd_rdev);
 		/* Memory leak is ok since we have memory mapped boot media */
 		mem_cfg->MemorySpdPtr00 = (uintptr_t)rdev_mmap_full(&spd_rdev);
-	} else {  /* for CONFIG_BOARD_INTEL_KBLRVP7 */
+	} else { /* CONFIG_BOARD_INTEL_KBLRVP7 and CONFIG_BOARD_INTEL_KBLRVP8 */
 		struct spd_block blk = {
 			.addr_map = { 0x50, 0x51, 0x52, 0x53, },
 		};
@@ -57,9 +57,15 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		mem_cfg->DqPinsInterleaved = 1;
 		get_spd_smbus(&blk);
 		mem_cfg->MemorySpdDataLen = blk.len;
-		mem_cfg->MemorySpdPtr00 = (u32)blk.spd_array[0];
-	}
-	mem_cfg->MemorySpdPtr10 = mem_cfg->MemorySpdPtr00;
+		mem_cfg->MemorySpdPtr00 = (uintptr_t)blk.spd_array[0];
+		mem_cfg->MemorySpdPtr10 = (uintptr_t)blk.spd_array[2];
+		if (IS_ENABLED(CONFIG_BOARD_INTEL_KBLRVP8)) {
+			mem_cfg->MemorySpdPtr01 = (uintptr_t)blk.spd_array[1];
+			mem_cfg->MemorySpdPtr11 = (uintptr_t)blk.spd_array[3];
+		}
 
+	}
 	mupd->FspmTestConfig.DmiVc1 = 1;
+	if (IS_ENABLED(CONFIG_BOARD_INTEL_KBLRVP8))
+		mem_cfg->UserBd = BOARD_TYPE_DESKTOP;
 }

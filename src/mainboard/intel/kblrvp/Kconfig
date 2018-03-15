@@ -98,4 +98,7 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0xd00
 
+config DIMM_SPD_SIZE
+	int
+	default 512 if BOARD_INTEL_KBLRVP8 #DDR4
 endif

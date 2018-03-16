@@ -559,6 +559,7 @@ void bootblock_fch_early_init(void)
 	sb_enable_rom();
 	sb_lpc_port80();
 	sb_lpc_decode();
+	sb_spibase();
 	sb_acpi_mmio_decode();
 	enable_aoac_devices();
 }

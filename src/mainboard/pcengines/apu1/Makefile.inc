@@ -25,7 +25,9 @@ romstage-y += buildOpts.c
 romstage-y += BiosCallOuts.c
 romstage-y += OemCustomize.c
 romstage-y += gpio_ftns.c
+romstage-y += bios_knobs.c
 
+ramstage-y += bios_knobs.c
 ramstage-y += buildOpts.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += OemCustomize.c

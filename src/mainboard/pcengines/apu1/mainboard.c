@@ -32,6 +32,7 @@
 #include <northbridge/amd/agesa/family14/pci_devs.h>
 #include <superio/nuvoton/nct5104d/nct5104d.h>
 #include "gpio_ftns.h"
+#include "bios_knobs.h"
 
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
@@ -142,19 +143,49 @@ static void config_gpio_mux(void)
 {
 	struct device *uart, *gpio;
 
-	uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP3);
-	gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO0);
-	if (uart)
-		uart->enabled = CONFIG_APU1_PINMUX_UART_C;
-	if (gpio)
-		gpio->enabled = CONFIG_APU1_PINMUX_GPIO0;
+	if (check_uartc()) {
+		printk(BIOS_INFO, "UARTC enabled\n");
 
-	uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP4);
-	gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO1);
-	if (uart)
-		uart->enabled = CONFIG_APU1_PINMUX_UART_D;
-	if (gpio)
-		gpio->enabled = CONFIG_APU1_PINMUX_GPIO1;
+		uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP3);
+		if (uart)
+			uart->enabled = 1;
+
+		gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO0);
+		if (gpio)
+			gpio->enabled = 0;
+	} else {
+		printk(BIOS_INFO, "UARTC disabled\n");
+
+		uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP3);
+		if (uart)
+			uart->enabled = 0;
+
+		gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO0);
+		if (gpio)
+			gpio->enabled = 1;
+	}
+
+	if (check_uartd()) {
+		printk(BIOS_INFO, "UARTD enabled\n");
+
+		uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP4);
+		if (uart)
+			uart->enabled = 1;
+
+		gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO1);
+		if (gpio)
+			gpio->enabled = 0;
+	} else {
+		printk(BIOS_INFO, "UARTD disabled\n");
+
+		uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP4);
+		if (uart)
+			uart->enabled = 0;
+
+		gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO1);
+		if (gpio)
+			gpio->enabled = 1;
+	}
 }
 
 static void pnp_raw_resource(struct device *dev, u8 reg, u8 val)

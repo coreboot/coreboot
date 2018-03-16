@@ -23,6 +23,7 @@
 #include "gpio_ftns.h"
 #include "SB800.h"
 #include <build.h>
+#include "bios_knobs.h"
 
 #define SIO_PORT 0x2e
 #define SERIAL_DEV PNP_DEV(SIO_PORT, NCT5104D_SP1)
@@ -66,8 +67,8 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();
-// TODO: read scon from bootorder
-	bool scon = 1;
+
+	bool scon = check_console();
 
 	if(scon) {
 		// sign of life strings

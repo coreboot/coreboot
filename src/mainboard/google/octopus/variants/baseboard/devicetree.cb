@@ -3,6 +3,9 @@ chip soc/intel/apollolake
 		device lapic 0 on end
 	end
 
+	# GPIO for PERST_0 (WLAN_PE_RST)
+	register "prt0_gpio" = "GPIO_164"
+
 	# EMMC TX DATA Delay 1
 	# Refer to EDS-Vol2-16.33.
 	# [14:8] steps of delay for HS400, each 125ps.

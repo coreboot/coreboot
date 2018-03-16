@@ -236,7 +236,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_177, 0, DEEP, NONE, HIZCRx0, DISPUPD), /* SMB_CLK */
 	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_178, 0, DEEP, NONE, HIZCRx0, DISPUPD), /* SMB_DATA */
 	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_189, 0, DEEP, NONE, TxDRxE, DISPUPD), /* OSC_CLK_OUT_0 */
-	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_190, 0, DEEP, NONE, TxDRxE, DISPUPD), /* OSC_CLK_OUT_1 */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_191, NONE, DEEP, NF1), /* CNV_BRI_DT */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_192, UP_20K, DEEP, NF1), /* CNV_BRI_RSP */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_193, NONE, DEEP, NF1), /* CNV_RGI_DT */
@@ -264,6 +263,7 @@ const struct pad_config *__attribute__((weak)) variant_gpio_table(size_t *num)
 
 /* GPIOs needed prior to ramstage. */
 static const struct pad_config early_gpio_table[] = {
+	PAD_CFG_GPI(GPIO_190, NONE, DEEP), /* PCH_WP_OD */
 };
 
 const struct pad_config *__attribute__((weak))

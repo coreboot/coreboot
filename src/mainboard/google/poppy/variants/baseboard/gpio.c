@@ -384,6 +384,14 @@ const struct pad_config * __attribute__((weak))
 	return early_gpio_table;
 }
 
+/* override specific gpio by sku id */
+const struct pad_config * __attribute__((weak))
+	variant_sku_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}
+
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
 	CROS_GPIO_WP_AH(GPIO_PCH_WP, CROS_GPIO_DEVICE_NAME),

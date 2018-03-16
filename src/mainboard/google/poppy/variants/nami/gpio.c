@@ -16,6 +16,7 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
+#include <variant/sku.h>
 
 /* Pad configuration in ramstage */
 /* Leave eSPI pins untouched from default settings */
@@ -194,8 +195,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_D15),
 	/* D16 : ISH_UART0_CTS# ==> NC */
 	PAD_CFG_NC(GPP_D16),
-	/* D17 : DMIC_CLK1 ==> SOC_DMIC_CLK1 */
-	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF1),
 	/* D18 : DMIC_DATA1 ==> SOC_DMIC_DATA1 */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
 	/* D19 : DMIC_CLK0 ==> SOC_DMIC_CLK0 */
@@ -385,4 +384,32 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
+}
+
+static const struct pad_config nami_default_sku_gpio_table[] = {
+	/* D17 : DMIC_CLK1 ==> SOC_DMIC_CLK1 */
+	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF1),
+};
+
+static const struct pad_config vayne_sku_gpio_table[] = {
+	/* D17 : DMIC_CLK1 ==> NC */
+	PAD_CFG_NC(GPP_D17),
+};
+
+const struct pad_config *variant_sku_gpio_table(size_t *num)
+{
+	uint16_t sku_id = variant_board_sku();
+	const struct pad_config *board_gpio_tables;
+	switch (sku_id) {
+	case SKU_1_VAYNE:
+	case SKU_2_VAYNE:
+		*num = ARRAY_SIZE(vayne_sku_gpio_table);
+		board_gpio_tables = vayne_sku_gpio_table;
+		break;
+	default:
+		*num = ARRAY_SIZE(nami_default_sku_gpio_table);
+		board_gpio_tables = nami_default_sku_gpio_table;
+		break;
+	}
+	return board_gpio_tables;
 }

@@ -28,6 +28,8 @@ const struct pad_config *variant_gpio_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
 
 const struct cros_gpio *variant_cros_gpios(size_t *num);
+/* Config gpio by different sku id */
+const struct pad_config *variant_sku_gpio_table(size_t *num);
 
 enum memory_type {
 	MEMORY_LPDDR3,
@@ -51,6 +53,7 @@ struct memory_params {
 void variant_memory_params(struct memory_params *p);
 int variant_memory_sku(void);
 void variant_devtree_update(void);
+uint16_t variant_board_sku(void);
 
 struct nhlt;
 void variant_nhlt_init(struct nhlt *nhlt);

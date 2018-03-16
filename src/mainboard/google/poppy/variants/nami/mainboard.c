@@ -22,13 +22,9 @@
 #include <smbios.h>
 #include <soc/ramstage.h>
 #include <string.h>
+#include <variant/sku.h>
 
-#define SKU_UNKNOWN	0xFFFF
-#define SKU_0_NAMI	0x3A7B
-#define SKU_1_VAYNE	0x3A63
-#define SKU_2_VAYNE	0x3A7F
-
-static uint16_t board_sku_id(void)
+uint16_t variant_board_sku(void)
 {
 	static int sku_id = -1;
 	uint32_t id;
@@ -43,7 +39,7 @@ static uint16_t board_sku_id(void)
 void variant_devtree_update(void)
 {
 	/* Override dev tree settings per board */
-	uint16_t sku_id = board_sku_id();
+	uint16_t sku_id = variant_board_sku();
 	device_t root = SA_DEV_ROOT;
 	config_t *cfg = root->chip_info;
 	switch (sku_id) {
@@ -59,7 +55,7 @@ const char *smbios_mainboard_sku(void)
 {
 	static char sku_str[9]; /* sku{0..65535} (basically up to FFFF) */
 
-	snprintf(sku_str, sizeof(sku_str), "sku%d", board_sku_id());
+	snprintf(sku_str, sizeof(sku_str), "sku%d", variant_board_sku());
 
 	return sku_str;
 }

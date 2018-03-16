@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Google Inc.
+ * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,23 +13,12 @@
  * GNU General Public License for more details.
  */
 
-#include <baseboard/variants.h>
-#include <soc/ramstage.h>
+#ifndef __MAINBOARD_SKU_H__
+#define __MAINBOARD_SKU_H__
 
-#include <variant/gpio.h>
+#define SKU_UNKNOWN	0xFFFF
+#define SKU_0_NAMI	0x3A7B
+#define SKU_1_VAYNE	0x3A63
+#define SKU_2_VAYNE	0x3A7F
 
-void mainboard_silicon_init_params(FSP_SIL_UPD *params)
-{
-	const struct pad_config *pads;
-	size_t num;
-	variant_devtree_update();
-	pads = variant_gpio_table(&num);
-	gpio_configure_pads(pads, num);
-	pads = variant_sku_gpio_table(&num);
-	gpio_configure_pads(pads, num);
-}
-
-void __attribute__((weak)) variant_devtree_update(void)
-{
-	/* Override dev tree settings per board */
-}
+#endif /* __MAINBOARD_SKU_H__ */

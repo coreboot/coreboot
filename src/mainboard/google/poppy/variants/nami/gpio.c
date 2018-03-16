@@ -398,7 +398,7 @@ static const struct pad_config vayne_sku_gpio_table[] = {
 
 const struct pad_config *variant_sku_gpio_table(size_t *num)
 {
-	uint16_t sku_id = variant_board_sku();
+	uint32_t sku_id = variant_board_sku();
 	const struct pad_config *board_gpio_tables;
 	switch (sku_id) {
 	case SKU_1_VAYNE:

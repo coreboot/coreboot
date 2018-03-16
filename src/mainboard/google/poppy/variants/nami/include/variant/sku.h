@@ -16,7 +16,7 @@
 #ifndef __MAINBOARD_SKU_H__
 #define __MAINBOARD_SKU_H__
 
-#define SKU_UNKNOWN	0xFFFF
+#define SKU_UNKNOWN	0xFFFFFFFF
 #define SKU_0_NAMI	0x3A7B
 #define SKU_1_VAYNE	0x3A63
 #define SKU_2_VAYNE	0x3A7F

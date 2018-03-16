@@ -24,22 +24,24 @@
 #include <string.h>
 #include <variant/sku.h>
 
-uint16_t variant_board_sku(void)
+uint32_t variant_board_sku(void)
 {
-	static int sku_id = -1;
+	static uint32_t sku_id = SKU_UNKNOWN;
 	uint32_t id;
-	if (sku_id >= 0)
+
+	if (sku_id != SKU_UNKNOWN)
 		return sku_id;
 	if (google_chromeec_cbi_get_sku_id(&id))
 		return SKU_UNKNOWN;
 	sku_id = id;
+
 	return sku_id;
 }
 
 void variant_devtree_update(void)
 {
 	/* Override dev tree settings per board */
-	uint16_t sku_id = variant_board_sku();
+	uint32_t sku_id = variant_board_sku();
 	device_t root = SA_DEV_ROOT;
 	config_t *cfg = root->chip_info;
 	switch (sku_id) {
@@ -53,9 +55,9 @@ void variant_devtree_update(void)
 
 const char *smbios_mainboard_sku(void)
 {
-	static char sku_str[9]; /* sku{0..65535} (basically up to FFFF) */
+	static char sku_str[14]; /* sku{0..4294967295} */
 
-	snprintf(sku_str, sizeof(sku_str), "sku%d", variant_board_sku());
+	snprintf(sku_str, sizeof(sku_str), "sku%u", variant_board_sku());
 
 	return sku_str;
 }

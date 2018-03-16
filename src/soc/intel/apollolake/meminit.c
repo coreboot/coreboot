@@ -79,29 +79,82 @@ static void set_lpddr4_defaults(FSP_M_CONFIG *cfg)
 	cfg->Ch3_OdtConfig = ODT_A_B_HIGH_HIGH;
 }
 
-void meminit_lpddr4(FSP_M_CONFIG *cfg, int speed)
-{
-	uint8_t profile;
+struct speed_mapping {
+	int logical;
+	int fsp_value;
+};
 
-	switch (speed) {
-	case LP4_SPEED_1600:
-		profile = 0x9;
-		break;
-	case LP4_SPEED_2133:
-		profile = 0xa;
-		break;
-	case LP4_SPEED_2400:
-		profile = 0xb;
-		break;
-	default:
-		printk(BIOS_WARNING, "Invalid LPDDR4 speed: %d\n", speed);
-		/* Set defaults. */
-		speed = LP4_SPEED_1600;
-		profile = 0x9;
+struct fsp_speed_profiles {
+	const struct speed_mapping *mappings;
+	size_t num_mappings;
+};
+
+static const struct speed_mapping apl_mappings[] = {
+	{ .logical = LP4_SPEED_1600, .fsp_value = 0x9 },
+	{ .logical = LP4_SPEED_2133, .fsp_value = 0xa },
+	{ .logical = LP4_SPEED_2400, .fsp_value = 0xb },
+};
+
+static const struct fsp_speed_profiles apl_profile = {
+	.mappings = apl_mappings,
+	.num_mappings = ARRAY_SIZE(apl_mappings),
+};
+
+static const struct speed_mapping glk_mappings[] = {
+	{ .logical = LP4_SPEED_1600, .fsp_value = 0x4 },
+	{ .logical = LP4_SPEED_2133, .fsp_value = 0x6 },
+	{ .logical = LP4_SPEED_2400, .fsp_value = 0x7 },
+};
+
+static const struct fsp_speed_profiles glk_profile = {
+	.mappings = glk_mappings,
+	.num_mappings = ARRAY_SIZE(glk_mappings),
+};
+
+static const struct fsp_speed_profiles *get_fsp_profile(void)
+{
+	if (IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+		return &glk_profile;
+	else
+		return &apl_profile;
+}
+
+static int validate_speed(int speed)
+{
+	const struct fsp_speed_profiles *fsp_profile = get_fsp_profile();
+	size_t i;
+
+	for (i = 0; i < fsp_profile->num_mappings; i++) {
+		/* Mapping exists. */
+		if (fsp_profile->mappings[i].logical == speed)
+			return speed;
 	}
 
+	printk(BIOS_WARNING, "Invalid LPDDR4 speed: %d\n", speed);
+	/* Default to slowest speed */
+	return LP4_SPEED_1600;
+}
+
+static int fsp_memory_profile(int speed)
+{
+	const struct fsp_speed_profiles *fsp_profile = get_fsp_profile();
+	size_t i;
+
+	for (i = 0; i < fsp_profile->num_mappings; i++) {
+		if (fsp_profile->mappings[i].logical == speed)
+			return fsp_profile->mappings[i].fsp_value;
+	}
+
+	/* should never happen. */
+	return -1;
+}
+
+void meminit_lpddr4(FSP_M_CONFIG *cfg, int speed)
+{
+	speed = validate_speed(speed);
+
 	printk(BIOS_INFO, "LP4DDR speed is %dMHz\n", speed);
-	cfg->Profile = profile;
+	cfg->Profile = fsp_memory_profile(speed);
 
 	set_lpddr4_defaults(cfg);
 }

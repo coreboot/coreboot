@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -51,6 +51,9 @@ are permitted provided that the following conditions are met:
 #ifndef MAX_SPD_SAVE
 #define MAX_SPD_SAVE 29
 #endif
+
+#define MRC_DDR_TYPE_LPDDR4   6
+#define MRC_DDR_TYPE_DDR4     7
 
 //
 // MRC version description.
@@ -805,11 +808,9 @@ typedef struct {
 **/
   UINT32                      OemLoadingBase;
 
-/** Offset 0x0120 - OEM File Name to Load
-  Specify a file name to load from CSE file system after memory is available. Empty
-  indicates no file needs to be loaded.
+/** Offset 0x0120
 **/
-  UINT8                       OemFileName[16];
+  UINT8                       Reserved[16];
 
 /** Offset 0x0130
 **/
@@ -962,36 +963,40 @@ typedef struct {
 **/
   VOID*                       VariableNvsBufferPtr;
 
-/** Offset 0x0164
+/** Offset 0x0164 - PERST pin for RootPort 0
+  Address for PERST pin for Rootport 0. For Intel RVP, address of N_GPIO_105. 0x00C507D0(Default).
+**/
+  UINT32                      RootPort0Perst;
+
+/** Offset 0x0168 - PERST pin for RootPort 1
+  Address for PERST pin for Rootport 1. For Intel RVP, address of  A_GPIO_163. 0x00C90670(Default).
+**/
+  UINT32                      RootPort1Perst;
+
+/** Offset 0x016C - PERST pin for RootPort 2
+  Address for PERST pin for Rootport 2. For Intel RVP, address of N_GPIO_137. 0x00C509D0(Default).
+**/
+  UINT32                      RootPort2Perst;
+
+/** Offset 0x0170 - PERST pin for RootPort 3
+  Address for PERST pin for Rootport 3.
+**/
+  UINT32                      RootPort3Perst;
+
+/** Offset 0x0174 - PERST pin for RootPort 4
+  Address for PERST pin for Rootport 4. For Intel RVP, address of  SCC_GPIO_210. 0x00C806D0(Default).
+**/
+  UINT32                      RootPort4Perst;
+
+/** Offset 0x0178 - PERST pin for RootPort 5
+  Address for PERST pin for Rootport 5.
+**/
+  UINT32                      RootPort5Perst;
+
+/** Offset 0x017C
 **/
   UINT8                       ReservedFspmUpd[4];
 } FSP_M_CONFIG;
-
-/** Fsp M Test Configuration
-**/
-typedef struct {
-
-/** Offset 0x0168
-**/
-  UINT32                      Signature;
-
-/** Offset 0x016C
-**/
-  UINT8                       ReservedFspmTestUpd[20];
-} FSP_M_TEST_CONFIG;
-
-/** Fsp M Restricted Configuration
-**/
-typedef struct {
-
-/** Offset 0x0180
-**/
-  UINT32                      Signature;
-
-/** Offset 0x0184
-**/
-  UINT8                       ReservedFspmRestrictedUpd[124];
-} FSP_M_RESTRICTED_CONFIG;
 
 /** Fsp M UPD Configuration
 **/
@@ -1009,17 +1014,9 @@ typedef struct {
 **/
   FSP_M_CONFIG                FspmConfig;
 
-/** Offset 0x0168
-**/
-  FSP_M_TEST_CONFIG           FspmTestConfig;
-
 /** Offset 0x0180
 **/
-  FSP_M_RESTRICTED_CONFIG     FspmRestrictedConfig;
-
-/** Offset 0x0200
-**/
-  UINT8                       UnusedUpdSpace1[6];
+  UINT8                       UnusedUpdSpace1[134];
 
 /** Offset 0x0206
 **/

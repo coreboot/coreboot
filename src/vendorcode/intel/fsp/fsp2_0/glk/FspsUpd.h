@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -1672,73 +1672,39 @@ typedef struct {
 **/
   UINT16                      HgSubSystemId;
 
-/** Offset 0x0388
+/** Offset 0x0388 - USB Per Port HS Preemphasis Bias
+  USB Per Port HS Preemphasis Bias. 000b-0mV, 001b-40.5mV, 010b-60.5mV, 011b-102mV,
+  100b-102mV, 101b-142mV, 110b-162.5mV, 111b-202.5mV. One byte for each port.
 **/
-  UINT8                       ReservedFspsUpd[8];
+  UINT8                       Usb2AfePetxiset[8];
+
+/** Offset 0x0390 - USB Per Port HS Transmitter Bias
+  USB Per Port HS Transmitter Bias. 000b-0mV, 001b-40.5mV, 010b-60.5mV, 011b-102mV,
+  100b-102mV, 101b-142mV, 110b-162.5mV, 111b-202.5mV. One byte for each port.
+**/
+  UINT8                       Usb2AfeTxiset[8];
+
+/** Offset 0x0398 - USB Per Port HS Transmitter Emphasis
+  USB Per Port HS Transmitter Emphasis. 00b - Emphasis OFF, 01b - De-emphasis ON,
+  10b - Pre-emphasis ON, 11b - Pre-emphasis & De-emphasis ON. One byte for each port.
+**/
+  UINT8                       Usb2AfePredeemp[8];
+
+/** Offset 0x03A0 - USB Per Port Half Bit Pre-emphasis
+  USB Per Port Half Bit Pre-emphasis. 1b - half-bit pre-emphasis, 0b - full-bit pre-emphasis.
+  One byte for each port.
+**/
+  UINT8                       Usb2AfePehalfbit[8];
+
+/** Offset 0x03A8 - Intel Processor Trace output Scheme method
+  Intel Processor Trace output Scheme method 0:Single Range Output (Default) 1. ToPA Output
+**/
+  UINT8                       ProcessorTraceOutputScheme;
+
+/** Offset 0x03A9
+**/
+  UINT8                       ReservedFspsUpd[7];
 } FSP_S_CONFIG;
-
-/** Fsp S Test Configuration
-**/
-typedef struct {
-
-/** Offset 0x0390
-**/
-  UINT32                      Signature;
-
-/** Offset 0x0394
-**/
-  UINT8                       ReservedFspsTestUpd[12];
-} FSP_S_TEST_CONFIG;
-
-/** Fsp S Restricted Configuration
-**/
-typedef struct {
-
-/** Offset 0x03A0
-**/
-  UINT32                      Signature;
-
-/** Offset 0x03A4 - Selective enable SGX
-  Selective enable SGX. 0xFFFF(Default).
-**/
-  UINT16                      SelectiveEnableSgx;
-
-/** Offset 0x03A6 - SGX debug mode
-  Select SGX mode. 0:Disable(default), 1:Enable
-  0:Disable(default), 1:Enable
-**/
-  UINT8                       SgxDebugMode;
-
-/** Offset 0x03A7 - SGX Launch Control Policy Mode
-  Select Launch Control Policy Mode. 0:Intel - Default, 1:Per-boot Select mode(default)
-  0:Intel locked , 1:Unlocked mode(default) , 2: Locked mode
-**/
-  UINT8                       SgxLcp;
-
-/** Offset 0x03A8 - LE KeyHash0
-  LE KeyHash0. 0x0(Default).
-**/
-  UINT64                      SgxLePubKeyHash0;
-
-/** Offset 0x03B0 - LE KeyHash1
-  LE KeyHash1. 0x0(Default).
-**/
-  UINT64                      SgxLePubKeyHash1;
-
-/** Offset 0x03B8 - LE KeyHash2
-  LE KeyHash2. 0x0(Default).
-**/
-  UINT64                      SgxLePubKeyHash2;
-
-/** Offset 0x03C0 - LE KeyHash3
-  LE KeyHash3. 0x0(Default).
-**/
-  UINT64                      SgxLePubKeyHash3;
-
-/** Offset 0x03C8
-**/
-  UINT8                       ReservedFspsRestrictedUpd[8];
-} FSP_S_RESTRICTED_CONFIG;
 
 /** Fsp S UPD Configuration
 **/
@@ -1752,19 +1718,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x0390
+/** Offset 0x03B0
 **/
-  FSP_S_TEST_CONFIG           FspsTestConfig;
+  UINT8                       UnusedUpdSpace7[78];
 
-/** Offset 0x03A0
-**/
-  FSP_S_RESTRICTED_CONFIG     FspsRestrictedConfig;
-
-/** Offset 0x03D0
-**/
-  UINT8                       UnusedUpdSpace7[6];
-
-/** Offset 0x03D6
+/** Offset 0x03FE
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

@@ -280,7 +280,7 @@ F:	src/mainboard/asus/kgpe-d16/
 
 PC ENGINES ALL MAINBOARDS
 M:	Piotr Król <piotr.krol@3mdeb.com>
-M:	Kamil Wcisło <kamil.wcislo@3mdeb.com>
+M:	Michał Żygowski <michal.zygowski@3mdeb.com>
 S:	Supported
 F:	src/mainboard/pcengines/
 

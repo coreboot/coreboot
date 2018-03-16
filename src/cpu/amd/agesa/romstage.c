@@ -46,7 +46,6 @@ void * asmlinkage romstage_main(unsigned long bist)
 
 		platform_once(cb);
 
-		console_init();
 	}
 
 	printk(BIOS_DEBUG, "APIC %02d: CPU Family_Model = %08x\n",
@@ -58,6 +57,7 @@ void * asmlinkage romstage_main(unsigned long bist)
 	agesa_main(cb);
 
 	uintptr_t stack_top = CACHE_TMP_RAMTOP;
+
 	if (cb->s3resume) {
 		if (cbmem_recovery(1)) {
 			printk(BIOS_EMERG, "Unable to recover CBMEM\n");

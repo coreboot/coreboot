@@ -24,15 +24,16 @@ void bootblock_mainboard_early_init(void)
 {
 	size_t num_gpios;
 	const struct soc_amd_stoneyridge_gpio *gpios;
+
+	/* Enable the EC as soon as we have visibility */
+	mainboard_ec_init();
+
 	gpios = variant_early_gpio_table(&num_gpios);
 	sb_program_gpios(gpios, num_gpios);
 }
 
 void bootblock_mainboard_init(void)
 {
-	/* Enable the EC as soon as we have visibility */
-	mainboard_ec_init();
-
 	/* Setup TPM decode before verstage */
 	sb_tpm_decode_spi();
 

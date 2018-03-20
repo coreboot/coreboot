@@ -16,6 +16,17 @@
 #include <soc/pcr_ids.h>
 
 Scope (\_SB.PCI0) {
+
+	/*
+	 * Clear register 0x1C20/0x4820
+	 * Arg0 - PCR Port ID
+	 */
+	Method(SCSC, 1, Serialized)
+	{
+		^PCRA (Arg0, 0x1C20, 0x0)
+		^PCRA (Arg0, 0x4820, 0x0)
+	}
+
 	/* EMMC */
 	Device(PEMC) {
 		Name(_ADR, 0x001A0000)
@@ -31,14 +42,18 @@ Scope (\_SB.PCI0) {
 			PGEN, 1,	/* PG_ENABLE */
 		}
 
+		Method(_INI) {
+			/* Clear register 0x1C20/0x4820 */
+			^^SCSC (PID_EMMC)
+		}
+
 		Method(_PS0, 0, Serialized) {
 			Stall (50) // Sleep 50 us
 
 			Store(0, PGEN) // Disable PG
 
 			/* Clear register 0x1C20/0x4820 */
-			^^PCRA (PID_EMMC, 0x1C20, 0x0)
-			^^PCRA (PID_EMMC, 0x4820, 0x0)
+			^^SCSC (PID_EMMC)
 
 			/* Set Power State to D0 */
 			And (PMCR, 0xFFFC, PMCR)
@@ -80,13 +95,18 @@ Scope (\_SB.PCI0) {
 			PGEN, 1,	/* PG_ENABLE */
 		}
 
+		Method(_INI)
+		{
+			/* Clear register 0x1C20/0x4820 */
+			^^SCSC (PID_SDX)
+		}
+
 		Method (_PS0, 0, Serialized)
 		{
 			Store (0, PGEN) /* Disable PG */
 
 			/* Clear register 0x1C20/0x4820 */
-			^^PCRA (PID_SDX, 0x1C20, 0x0)
-			^^PCRA (PID_SDX, 0x4820, 0x0)
+			^^SCSC (PID_SDX)
 
 			/* Set Power State to D0 */
 			And (PMCR, 0xFFFC, PMCR)

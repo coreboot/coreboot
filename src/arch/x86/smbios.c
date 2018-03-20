@@ -195,28 +195,60 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
 	}
 }
 
-/* This function will fill the corresponding part number */
-static void smbios_fill_dimm_part_number(char *part_number,
-	struct smbios_type17 *t)
+static void trim_trailing_whitespace(char *buffer, size_t buffer_size)
 {
-	int i, invalid;
+	size_t len = strnlen(buffer, buffer_size);
+
+	if (len == 0)
+		return;
+
+	for (char *p = buffer + len - 1; p >= buffer; --p) {
+		if (*p == ' ')
+			*p = 0;
+		else
+			break;
+	}
+}
+
+/** This function will fill the corresponding part number */
+static void smbios_fill_dimm_part_number(const char *part_number,
+					 struct smbios_type17 *t)
+{
+	const size_t trimmed_buffer_size = DIMM_INFO_PART_NUMBER_SIZE;
+
+	int invalid;
+	size_t i, len;
+	char trimmed_part_number[trimmed_buffer_size];
+
+	strncpy(trimmed_part_number, part_number, trimmed_buffer_size);
+	trimmed_part_number[trimmed_buffer_size - 1] = '\0';
+
+	/*
+	 * SPD mandates that unused characters be represented with a ' '.
+	 * We don't want to publish the whitespace in the SMBIOS tables.
+	 */
+	trim_trailing_whitespace(trimmed_part_number, trimmed_buffer_size);
+
+	len = strlen(trimmed_part_number);
 
 	invalid = 0; /* assume valid */
-	for (i = 0; i < DIMM_INFO_PART_NUMBER_SIZE - 1; i++) {
-		if (part_number[i] < ' ') {
+	for (i = 0; i < len - 1; i++) {
+		if (trimmed_part_number[i] < ' ') {
 			invalid = 1;
-			part_number[i] = '*';
+			trimmed_part_number[i] = '*';
 		}
 	}
+
 	if (invalid) {
-		char string_buffer[64];
+		char string_buffer[trimmed_buffer_size +
+				   10 /* strlen("Invalid ()") */];
 
 		snprintf(string_buffer, sizeof(string_buffer), "Invalid (%s)",
-								part_number);
+			 trimmed_part_number);
 		t->part_number = smbios_add_string(t->eos, string_buffer);
-	} else
-		t->part_number = smbios_add_string(t->eos, part_number);
-
+	} else {
+		t->part_number = smbios_add_string(t->eos, trimmed_part_number);
+	}
 }
 
 static int create_smbios_type17_for_dimm(struct dimm_info *dimm,

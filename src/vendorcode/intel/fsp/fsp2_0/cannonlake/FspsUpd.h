@@ -2154,9 +2154,17 @@ typedef struct {
 **/
   UINT8                       SataRstCpuAttachedStorage;
 
-/** Offset 0x0752
+/** Offset 0x0752 - Enable 8254 Static Clock Gating On S3
+  This is only applicable when Enable8254ClockGating is disabled. FSP will do the
+  8254 CGE programming on S3 resume when Enable8254ClockGatingOnS3 is enabled. This
+  avoids the SMI requirement for the programming.
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace25[2];
+  UINT8                       Enable8254ClockGatingOnS3;
+
+/** Offset 0x0753
+**/
+  UINT8                       UnusedUpdSpace25;
 
 /** Offset 0x0754 - Pch PCIE device override table pointer
   The PCIe device table is being used to override PCIe device ASPM settings. This
@@ -2472,7 +2480,7 @@ typedef struct {
 
 /** Offset 0x07DA - Tcc Offset Lock
   Tcc Offset Lock for Runtime Average Temperature Limit (RATL) to lock temperature
-  target; 0: Disabled; <b>1: Enabled </b>.
+  target; <b>0: Disabled</b>; 1: Enabled.
   $EN_DIS
 **/
   UINT8                       TccOffsetLock;
@@ -2886,13 +2894,13 @@ typedef struct {
 
 /** Offset 0x0870 - Package PL4 power limit
   Package PL4 power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
-  Range 0 to 4095875 in Step size of 125
+  Range 0 to 1023875 in Step size of 125
 **/
   UINT32                      PowerLimit4;
 
 /** Offset 0x0874 - Tcc Offset Time Window for RATL
   Package PL4 power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
-  Range 0 to 4095875 in Step size of 125
+  Range 0 to 1023875 in Step size of 125
 **/
   UINT32                      TccOffsetTimeWindowForRatl;
 

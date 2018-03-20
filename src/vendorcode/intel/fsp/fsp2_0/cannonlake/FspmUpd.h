@@ -2291,9 +2291,15 @@ typedef struct {
 **/
   UINT8                       PegImrRpSelection;
 
-/** Offset 0x0513
+/** Offset 0x0513 - Memory Test on Warm Boot
+  Run Base Memory Test on Warm Boot
+  0:Disable, 1:Enable
 **/
-  UINT8                       ReservedFspmUpd[12];
+  UINT8                       MemTestOnWarmBoot;
+
+/** Offset 0x0514
+**/
+  UINT8                       ReservedFspmUpd[11];
 } FSP_M_CONFIG;
 
 /** Fsp M Test Configuration

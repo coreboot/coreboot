@@ -70,6 +70,9 @@ chip soc/intel/cannonlake
 	# GPIO for SD card detect
 	register "sdcard_cd_gpio" = "GPP_G5"
 
+	# Enable S0ix
+	register "s0ix_enable" = "1"
+
 	# Audio
 	register "i2c[3]" = "{
 		.speed = I2C_SPEED_STANDARD,

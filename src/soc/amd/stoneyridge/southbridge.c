@@ -23,6 +23,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
+#include <elog.h>
 #include <amdblocks/amd_pci_util.h>
 #include <soc/southbridge.h>
 #include <soc/smi.h>
@@ -604,9 +605,79 @@ static void sb_init_acpi_ports(void)
 				PM_ACPI_TIMER_EN_EN);
 }
 
+static void print_num_status_bits(int num_bits, uint32_t status,
+				  const char *const bit_names[])
+{
+	int i;
+
+	if (!status)
+		return;
+
+	for (i = num_bits - 1; i >= 0; i--) {
+		if (status & (1 << i)) {
+			if (bit_names[i])
+				printk(BIOS_DEBUG, "%s ", bit_names[i]);
+			else
+				printk(BIOS_DEBUG, "BIT%d ", i);
+		}
+	}
+}
+
+static uint16_t reset_pm1_status(void)
+{
+	uint16_t pm1_sts = inw(ACPI_PM_EVT_BLK);
+	outw(pm1_sts, ACPI_PM_EVT_BLK);
+	return pm1_sts;
+}
+
+static uint16_t print_pm1_status(uint16_t pm1_sts)
+{
+	static const char *const pm1_sts_bits[] = {
+		[0] = "TMROF",
+		[4] = "BMSTATUS",
+		[5] = "GBL",
+		[8] = "PWRBTN",
+		[10] = "RTC",
+		[14] = "PCIEXPWAK",
+		[15] = "WAK",
+	};
+
+	if (!pm1_sts)
+		return 0;
+
+	printk(BIOS_SPEW, "PM1_STS: ");
+	print_num_status_bits(ARRAY_SIZE(pm1_sts_bits), pm1_sts, pm1_sts_bits);
+	printk(BIOS_SPEW, "\n");
+
+	return pm1_sts;
+}
+
+static void sb_log_pm1_status(uint16_t pm1_sts)
+{
+	if (!IS_ENABLED(CONFIG_ELOG))
+		return;
+
+	if (pm1_sts & PWRBTN_STS)
+		elog_add_event_wake(ELOG_WAKE_SOURCE_PWRBTN, 0);
+
+	if (pm1_sts & RTC_STS)
+		elog_add_event_wake(ELOG_WAKE_SOURCE_RTC, 0);
+
+	if (pm1_sts & PCIEXPWAK_STS)
+		elog_add_event_wake(ELOG_WAKE_SOURCE_PCIE, 0);
+}
+
+static void sb_clear_pm1_status(void)
+{
+	uint16_t pm1_sts = reset_pm1_status();
+	sb_log_pm1_status(pm1_sts);
+	print_pm1_status(pm1_sts);
+}
+
 void southbridge_init(void *chip_info)
 {
 	sb_init_acpi_ports();
+	sb_clear_pm1_status();
 }
 
 void southbridge_final(void *chip_info)

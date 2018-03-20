@@ -3,6 +3,24 @@ chip soc/intel/apollolake
 		device lapic 0 on end
 	end
 
+	register "pcie_rp_clkreq_pin[0]" = "3"    # wifi/bt
+	# Disable unused clkreq of PCIe root ports
+	register "pcie_rp_clkreq_pin[1]" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[2]" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[3]" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[4]" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[5]" = "CLKREQ_DISABLED"
+
+	# Set de-emphasis to disabled for PCIE WiFI (Thunderpeak)
+	# as it is required for detection
+	register "pcie_rp_deemphasis_enable[0]" = "0"
+	# Set de-emphasis to default (enabled) for remaining ports
+	register "pcie_rp_deemphasis_enable[1]" = "1"
+	register "pcie_rp_deemphasis_enable[2]" = "1"
+	register "pcie_rp_deemphasis_enable[3]" = "1"
+	register "pcie_rp_deemphasis_enable[4]" = "1"
+	register "pcie_rp_deemphasis_enable[5]" = "1"
+
 	# GPIO for PERST_0 (WLAN_PE_RST)
 	register "prt0_gpio" = "GPIO_164"
 

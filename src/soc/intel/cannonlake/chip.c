@@ -228,6 +228,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchHdaAudioLinkSndw3 = config->PchHdaAudioLinkSndw3;
 	params->PchHdaAudioLinkSndw4 = config->PchHdaAudioLinkSndw4;
 
+	/* S0ix */
+	params->PchPmSlpS0Enable = config->s0ix_enable;
+
 	/* USB */
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
 		params->PortUsb20Enable[i] =

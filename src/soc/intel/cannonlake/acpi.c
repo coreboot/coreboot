@@ -187,6 +187,9 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm_tmr_blk.resv = 0;
 	fadt->x_pm_tmr_blk.addrl = pmbase + PM1_TMR;
 	fadt->x_pm_tmr_blk.addrh = 0x0;
+
+	if(config->s0ix_enable)
+		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;
 }
 uint32_t soc_read_sci_irq_select(void)
 {

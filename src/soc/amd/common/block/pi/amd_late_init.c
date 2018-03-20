@@ -53,6 +53,80 @@ static void transfer_memory_info(TYPE17_DMI_INFO *dmi17, struct dimm_info *dimm)
 				sizeof(dimm->module_part_number));
 }
 
+static void print_dimm_info(const struct dimm_info *dimm)
+{
+	printk(RAM_SPEW,
+	       "CBMEM_ID_MEMINFO:\n"
+	       "  dimm_size: %u\n"
+	       "  ddr_type: 0x%hx\n"
+	       "  ddr_frequency: %hu\n"
+	       "  rank_per_dimm: %hhu\n"
+	       "  channel_num: %hhu\n"
+	       "  dimm_num: %hhu\n"
+	       "  bank_locator: %hhu\n"
+	       "  mod_id: %hu\n"
+	       "  mod_type: 0x%hhx\n"
+	       "  bus_width: %hhu\n"
+	       "  serial(%zu): %s\n"
+	       "  module_part_number(%zu): %s\n",
+	       dimm->dimm_size,
+	       dimm->ddr_type,
+	       dimm->ddr_frequency,
+	       dimm->rank_per_dimm,
+	       dimm->channel_num,
+	       dimm->dimm_num,
+	       dimm->bank_locator,
+	       dimm->mod_id,
+	       dimm->mod_type,
+	       dimm->bus_width,
+	       strlen((char *) dimm->serial),
+	       (char *) dimm->serial,
+	       strlen((char *) dimm->module_part_number),
+	       (char *) dimm->module_part_number
+	);
+}
+
+static void print_dmi_info(const TYPE17_DMI_INFO *dmi17)
+{
+	printk(RAM_SPEW,
+	       "AGESA TYPE 17 DMI INFO:\n"
+	       "  Handle: %hu\n"
+	       "  TotalWidth: %hu\n"
+	       "  DataWidth: %hu\n"
+	       "  MemorySize: %hu\n"
+	       "  DeviceSet: %hhu\n"
+	       "  Speed: %hu\n"
+	       "  ManufacturerIdCode: %llu\n"
+	       "  Attributes: %hhu\n"
+	       "  ExtSize: %u\n"
+	       "  ConfigSpeed: %hu\n"
+	       "  MemoryType: 0x%x\n"
+	       "  FormFactor: 0x%x\n"
+	       "  DeviceLocator: %8s\n"
+	       "  BankLocator: %10s\n"
+	       "  SerialNumber(%zu): %9s\n"
+	       "  PartNumber(%zu): %19s\n",
+	       dmi17->Handle,
+	       dmi17->TotalWidth,
+	       dmi17->DataWidth,
+	       dmi17->MemorySize,
+	       dmi17->DeviceSet,
+	       dmi17->Speed,
+	       dmi17->ManufacturerIdCode,
+	       dmi17->Attributes,
+	       dmi17->ExtSize,
+	       dmi17->ConfigSpeed,
+	       dmi17->MemoryType,
+	       dmi17->FormFactor,
+	       dmi17->DeviceLocator,
+	       dmi17->BankLocator,
+	       strlen((char *) dmi17->SerialNumber),
+	       dmi17->SerialNumber,
+	       strlen((char *) dmi17->PartNumber),
+	       dmi17->PartNumber
+	);
+}
+
 static void prepare_dmi_17(void *unused)
 {
 	DMI_INFO *DmiTable;
@@ -77,6 +151,8 @@ static void prepare_dmi_17(void *unused)
 				dimm->channel_num = i;
 				dimm->dimm_num = j;
 				transfer_memory_info(address, dimm);
+				print_dmi_info(address);
+				print_dimm_info(dimm);
 				dimm_cnt++;
 			}
 		}

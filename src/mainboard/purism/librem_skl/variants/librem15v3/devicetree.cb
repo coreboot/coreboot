@@ -31,8 +31,8 @@ chip soc/intel/skylake
 	# Enable "Intel Speed Shift Technology"
 	register "speed_shift_enable" = "1"
 
-	# Enable DPTF
-	register "dptf_enable" = "1"
+	# Disable DPTF
+	register "dptf_enable" = "0"
 
 	# FSP Configuration
 	register "ProbelessTrace" = "0"
@@ -81,19 +81,21 @@ chip soc/intel/skylake
 	register "pirqh_routing" = "PCH_IRQ11"
 
 	# VR Settings Configuration for 4 Domains
-	#+----------------+-------+-------+-------------+-------+
-	#| Domain/Setting |  SA   |  IA   | GT Unsliced |  GT   |
-	#+----------------+-------+-------+-------------+-------+
-	#| Psi1Threshold  | 20A   | 20A   | 20A         | 20A   |
-	#| Psi2Threshold  | 4A    | 5A    | 5A          | 5A    |
-	#| Psi3Threshold  | 1A    | 1A    | 1A          | 1A    |
-	#| Psi3Enable     | 1     | 1     | 1           | 1     |
-	#| Psi4Enable     | 1     | 1     | 1           | 1     |
-	#| ImonSlope      | 0     | 0     | 0           | 0     |
-	#| ImonOffset     | 0     | 0     | 0           | 0     |
-	#| IccMax         | 7A    | 34A   | 35A         | 35A   |
-	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V       | 1.52V |
-	#+----------------+-------+-------+-------------+-------+
+	#+----------------+-----------+-----------+-------------+----------+
+	#| Domain/Setting |     SA    |    IA     | GT Unsliced |    GT    |
+	#+----------------+-----------+-----------+-------------+----------+
+	#| Psi1Threshold  | 20A       | 20A       | 20A         | 20A      |
+	#| Psi2Threshold  | 4A        | 5A        | 5A          | 5A       |
+	#| Psi3Threshold  | 1A        | 1A        | 1A          | 1A       |
+	#| Psi3Enable     | 1         | 1         | 1           | 1        |
+	#| Psi4Enable     | 1         | 1         | 1           | 1        |
+	#| ImonSlope      | 0         | 0         | 0           | 0        |
+	#| ImonOffset     | 0         | 0         | 0           | 0        |
+	#| IccMax         | 7A        | 34A       | 35A         | 35A      |
+	#| VrVoltageLimit | 1.52V     | 1.52V     | 1.52V       | 1.52V    |
+	#| AC LoadLine    | 15 mOhm   | 5.7 mOhm  | 5.2 mOhm    | 5.2 mOhm |
+	#| DC LoadLine    | 14.3 mOhm | 4.83 mOhm | 4.2 mOhm    | 4.2 mOhm |
+	#+----------------+-----------+-----------+-------------+----------+
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
@@ -105,6 +107,8 @@ chip soc/intel/skylake
 		.imon_offset = 0x0,
 		.icc_max = VR_CFG_AMP(7),
 		.voltage_limit = 1520,
+		.ac_loadline = 1500,
+		.dc_loadline = 1430,
 	}"
 
 	register "domain_vr_config[VR_IA_CORE]" = "{
@@ -118,6 +122,8 @@ chip soc/intel/skylake
 		.imon_offset = 0x0,
 		.icc_max = VR_CFG_AMP(34),
 		.voltage_limit = 1520,
+		.ac_loadline = 570,
+		.dc_loadline = 483,
 	}"
 
 	register "domain_vr_config[VR_GT_UNSLICED]" = "{
@@ -131,6 +137,8 @@ chip soc/intel/skylake
 		.imon_offset = 0x0,
 		.icc_max = VR_CFG_AMP(35),
 		.voltage_limit = 1520,
+		.ac_loadline = 520,
+		.dc_loadline = 420,
 	}"
 
 	register "domain_vr_config[VR_GT_SLICED]" = "{
@@ -144,6 +152,8 @@ chip soc/intel/skylake
 		.imon_offset = 0x0,
 		.icc_max = VR_CFG_AMP(35),
 		.voltage_limit = 1520,
+		.ac_loadline = 520,
+		.dc_loadline = 420,
 	}"
 
 	# Enable Root Ports 5 and 9

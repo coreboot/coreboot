@@ -398,7 +398,7 @@ static int _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segments,
 			int j;
 			for (j = 0; j < segments->len; j++)
 				printk(BIOS_DEBUG, "%02x ", segments->buf[j]);
-				printk(BIOS_DEBUG, "\n");
+			printk(BIOS_DEBUG, "\n");
 		}
 
 		segments++;

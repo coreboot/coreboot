@@ -98,6 +98,8 @@ chip soc/intel/apollolake
 	# 0x08000000 - 128MiB
 	register "PrmrrSize" = "128 * MiB"
 
+	register "pnp_settings" = "PNP_PERF_POWER"
+
 	device domain 0 on
 		device pci 00.0 on  end	# - Host Bridge
 		device pci 00.1 on  end	# - DPTF

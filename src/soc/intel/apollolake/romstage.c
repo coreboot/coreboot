@@ -304,6 +304,17 @@ static void soc_memory_init_params(FSPM_UPD *mupd)
 		die("Can not find SoC devicetree\n");
 
 	m_cfg->PrmrrSize = config->PrmrrSize;
+
+	/* FSP performs a PERST# signal deassertion for PCIe ports with
+	 * the GPIO address specified in these UPDs. Over-ride the default
+	 * addresses with 0 to bypass PERST# signal deassertion in FSP.
+	 */
+	m_cfg->RootPort0Perst = 0;
+	m_cfg->RootPort1Perst = 0;
+	m_cfg->RootPort2Perst = 0;
+	m_cfg->RootPort3Perst = 0;
+	m_cfg->RootPort4Perst = 0;
+	m_cfg->RootPort5Perst = 0;
 #endif
 }
 

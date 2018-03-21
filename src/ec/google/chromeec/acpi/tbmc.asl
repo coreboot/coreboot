@@ -26,4 +26,8 @@ Device (TBMC)
 			Return (0x0)
 		}
 	}
+	Method(_STA, 0)
+	{
+		Return (0xB)
+	}
 }

@@ -324,7 +324,7 @@ static void acpi_ssdt_write_cbtable(void)
 	acpigen_write_device("CTBL");
 	acpigen_write_coreboot_hid(COREBOOT_ACPI_ID_CBTABLE);
 	acpigen_write_name_integer("_UID", 0);
-	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
+	acpigen_write_STA(ACPI_STATUS_DEVICE_HIDDEN_ON);
 	acpigen_write_name("_CRS");
 	acpigen_write_resourcetemplate_header();
 	acpigen_write_mem32fixed(0, base, size);

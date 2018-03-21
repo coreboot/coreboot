@@ -35,5 +35,9 @@ Scope (\_SB)
 			Store (\RMOL, RLEN)
 			Return (^RBUF)
 		}
+		Method(_STA, 0)
+		{
+			Return (0xB)
+		}
 	}
 }

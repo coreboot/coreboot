@@ -39,4 +39,8 @@ Device (CREC)
 		Name (_DDN, "EC Base Switch Device")
 	}
 #endif
+	Method(_STA, 0)
+	{
+		Return (0xB)
+	}
 }

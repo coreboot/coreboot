@@ -19,6 +19,7 @@
 #define MSR_CORE_THREAD_COUNT	0x35
 #define IA32_FEATURE_CONTROL	0x3a
 #define  FEATURE_CONTROL_LOCK	(1)
+#define  FEATURE_ENABLE_VMX	(1 << 2)
 #define  CPUID_VMX		(1 << 5)
 #define  CPUID_SMX		(1 << 6)
 #define  SGX_GLOBAL_ENABLE	(1 << 18)

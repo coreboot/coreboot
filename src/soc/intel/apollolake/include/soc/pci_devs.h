@@ -48,6 +48,10 @@
 
 /* PCH Devices */
 
+#define PCH_DEV_SLOT_NPK	0x00
+#define  PCH_DEVFN_NPK		_PCH_DEVFN(NPK, 2)
+#define  PCH_DEV_NPK		_PCH_DEV(NPK,2)
+
 #define PCH_DEV_SLOT_P2SB	0x0d
 #define  PCH_DEVFN_P2SB		_PCH_DEVFN(P2SB, 0)
 #define  PCH_DEVFN_PMC		_PCH_DEVFN(P2SB, 1)

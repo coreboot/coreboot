@@ -319,6 +319,17 @@ static void soc_memory_init_params(FSPM_UPD *mupd)
 #endif
 }
 
+static void parse_devicetree_setting(FSPM_UPD *m_upd)
+{
+#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+	DEVTREE_CONST struct device *dev = dev_find_slot(0, PCH_DEVFN_NPK);
+	if (!dev)
+		return;
+
+	m_upd->FspmConfig.TraceHubEn = dev->enabled;
+#endif
+}
+
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	struct region_device rdev;
@@ -331,6 +342,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		soc_memory_init_params(mupd);
 
 	mainboard_memory_init_params(mupd);
+
+	parse_devicetree_setting(mupd);
 
 	/* Do NOT let FSP do any GPIO pad configuration */
 	mupd->FspmConfig.PreMemGpioTablePtr = (uintptr_t) NULL;

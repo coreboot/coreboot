@@ -39,6 +39,7 @@
 #include <intelblocks/mp_init.h>
 #include <intelblocks/sgx.h>
 #include <intelblocks/smm.h>
+#include <intelblocks/vmx.h>
 #include <pc80/mc146818rtc.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
@@ -476,6 +477,8 @@ static void post_mp_init(void)
 	smm_lock();
 #endif
 
+	mp_run_on_all_cpus(vmx_configure, 2000);
+
 	mp_run_on_all_cpus(sgx_configure, 2000);
 }
 
@@ -550,5 +553,19 @@ int soc_fill_sgx_param(struct sgx_param *sgx_param)
 	}
 
 	sgx_param->enable = conf->sgx_enable;
+	return 0;
+}
+int soc_fill_vmx_param(struct vmx_param *vmx_param)
+{
+	device_t dev = SA_DEV_ROOT;
+	assert(dev != NULL);
+	config_t *conf = dev->chip_info;
+
+	if (!conf) {
+		printk(BIOS_ERR, "Failed to get chip_info for VMX param\n");
+		return -1;
+	}
+
+	vmx_param->enable = conf->VmxEnable;
 	return 0;
 }

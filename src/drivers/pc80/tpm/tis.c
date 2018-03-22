@@ -595,6 +595,14 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 		if (offset == expected_count)
 			break;	/* We got all we need */
 
+		/*
+		 * Certain TPMs seem to need some delay between tis_wait_valid()
+		 * and tis_has_valid_data(), or some race-condition-related
+		 * issue will occur.
+		 */
+		if (IS_ENABLED(CONFIG_TPM_RDRESP_NEED_DELAY))
+			udelay(10);
+
 	} while (tis_has_valid_data(locality));
 
 	/* * Make sure we indeed read all there was. */

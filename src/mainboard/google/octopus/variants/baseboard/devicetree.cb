@@ -33,6 +33,13 @@ chip soc/intel/apollolake
 	register "gpe0_dw2" = "PMC_GPE_N_95_64"
 	register "gpe0_dw3" = "PMC_GPE_NW_31_0"
 
+	# PL1 override 8000 mW: Due to error in the energy calculation for
+	# current VR solution. Experiments show that SoC TDP max (6W) can
+	# be reached when RAPL PL1 is set to 8W.
+	register "tdp_pl1_override_mw" = "8000"
+	# Set RAPL PL2 to 15W.
+	register "tdp_pl2_override_mw" = "15000"
+
 	# Minimum SLP S3 assertion width 28ms.
 	register "slp_s3_assertion_width_usecs" = "28000"
 

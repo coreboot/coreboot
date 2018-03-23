@@ -39,14 +39,7 @@ Scope (\_SB.PCI0.I2C2)
 		Method (PMOF, 0, Serialized) {
 			/* Make Sure all PMIC outputs are off. */
 			If (LEqual (VSIC, Zero)) {
-			/*
-			 * On Nautilus Pre-EVT/EVT, the USB and MIPI share the
-			 * same power source, before HW fix in DVT, temporarily
-			 * disabled turn off 3V3_VDD
-			 */
-#if !IS_ENABLED(CONFIG_BOARD_GOOGLE_NAUTILUS)
 				CTXS(EN_PP3300_DX_CAM)
-#endif
 			}
 		}
 

@@ -124,7 +124,6 @@ struct soc_intel_cannonlake_config {
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];
 	struct usb3_port_config usb3_ports[10];
-	uint8_t XdciEnable;
 	uint8_t SsicPortEnable;
 	/* Wake Enable Bitmap for USB2 ports */
 	uint16_t usb2_wake_enable_bitmap;

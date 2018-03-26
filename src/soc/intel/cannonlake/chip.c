@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <intelblocks/xdci.h>
 #include <romstage_handoff.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>
@@ -180,7 +181,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
 	int i;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
-	const struct device *dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	config_t *config = dev->chip_info;
 
 	/* Parse device tree and enable/disable devices */
@@ -262,7 +263,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		}
 	}
 
-	params->XdciEnable = config->XdciEnable;
+	/* Enable xDCI controller if enabled in devicetree and allowed */
+	dev = dev_find_slot(0, PCH_DEVFN_USBOTG);
+	if (!xdci_can_enable())
+		dev->enabled = 0;
+	params->XdciEnable = dev->enabled;
 
 	/* PCI Express */
 	for (i = 0; i < ARRAY_SIZE(config->PcieClkSrcUsage); i++) {

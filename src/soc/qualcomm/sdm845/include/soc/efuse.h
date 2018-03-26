@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018, The Linux Foundation.  All rights reserved.
+ * Copyright (c) 2018 Qualcomm Technologies
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,19 +13,18 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/stages.h>
-#include <soc/usb.h>
+#ifndef __SOC_QUALCOMM_SDM845_EFUSE_ADDRESS_MAP_H__
+#define __SOC_QUALCOMM_SDM845_EFUSE_ADDRESS_MAP_H__
 
-static void prepare_usb(void)
-{
-	/*
-	 * Do DWC3 core and phy reset. Kick these resets
-	 * off early so they get at least 1ms to settle.
-	 */
-	reset_usb1();
-}
+/**
+ *  USB EFUSE registers
+ */
+struct qfprom_corr {
+	u8 rsvd[0x41E8 - 0x0];
+	u32 qusb_hstx_trim_lsb;
+	u32 qusb_hstx_trim_msb;
+};
 
-void platform_romstage_main(void)
-{
-	prepare_usb();
-}
+check_member(qfprom_corr, qusb_hstx_trim_lsb, 0x41E8);
+check_member(qfprom_corr, qusb_hstx_trim_msb, 0x41EC);
+#endif /* __SOC_QUALCOMM_SDM845_EFUSE_ADDRESS_MAP_H__ */

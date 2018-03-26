@@ -24,6 +24,7 @@ romstage-y += timer.c
 romstage-y += gpio.c
 romstage-y += clock.c
 romstage-$(CONFIG_SDM845_QSPI) += qspi.c
+romstage-y += usb.c
 
 ################################################################################
 ramstage-y += soc.c
@@ -33,6 +34,7 @@ ramstage-y += timer.c
 ramstage-y += gpio.c
 ramstage-y += clock.c
 ramstage-$(CONFIG_SDM845_QSPI) += qspi.c
+ramstage-y += usb.c
 
 ################################################################################
 

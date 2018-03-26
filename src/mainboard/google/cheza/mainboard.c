@@ -16,9 +16,23 @@
 #include <device/device.h>
 #include <bootblock_common.h>
 #include <gpio.h>
+#include <timestamp.h>
+#include <soc/usb.h>
+
+static struct usb_board_data usb1_board_data = {
+	.pll_bias_control_2 = 0x28,
+	.imp_ctrl1 = 0x08,
+	.port_tune1 = 0x20,
+};
 
 static void setup_usb(void)
 {
+	/*
+	 * Primary USB is used only for DP functionality on cheza platform.
+	 * Hence Setting up only Secondary USB DWC3 controller.
+	 */
+	setup_usb_host1(&usb1_board_data);
+
 	gpio_output(GPIO(120), 1);	/* Deassert HUB_RST_L to enable hub. */
 }
 

@@ -74,7 +74,14 @@ struct sdm845_gpll {
 
 struct sdm845_gcc {
 	struct sdm845_gpll gpll0;
-	u8 _res0[0x17000 - 0x1000];
+	u8 _res0[0xf000 - 0x1000];
+	u32 usb30_prim_bcr;
+	u8 _res1[0x10000 - 0xf004];
+	u32 usb30_sec_bcr;
+	u8 _res2[0x12000 - 0x10004];
+	u32 qusb2phy_prim_bcr;
+	u32 qusb2phy_sec_bcr;
+	u8 _res3[0x17000 - 0x12008];
 	u32 qup_wrap0_bcr;
 	u32 qup_wrap0_m_ahb_cbcr;
 	u32 qup_wrap0_s_ahb_cbcr;
@@ -82,9 +89,9 @@ struct sdm845_gcc {
 	u32 qup_wrap0_core_cdivr;
 	u32 qup_wrap0_core_2x_cbcr;
 	struct sdm845_rcg qup_wrap0_core_2x;
-	u8 _res1[0x17030 - 0x17020];
+	u8 _res4[0x17030 - 0x17020];
 	struct sdm845_qupv3_clock qup_wrap0_s[8];
-	u8 _res2[0x18000 - 0x179b0];
+	u8 _res5[0x18000 - 0x179b0];
 	u32 qup_wrap1_bcr;
 	u32 qup_wrap1_core_2x_cbcr;
 	u32 qup_wrap1_core_cbcr;
@@ -92,14 +99,28 @@ struct sdm845_gcc {
 	u32 qup_wrap1_s_ahb_cbcr;
 	struct sdm845_qupv3_clock qup_wrap1_s[8];
 	u32 qup_wrap1_core_cdivr;
-	u8 _res4[0x4B000 - 0x18998];
+	u8 _res6[0x4B000 - 0x18998];
 	u32 qspi_cnoc_ahb_cbcr;
 	u32 qspi_core_cbcr;
 	struct sdm845_rcg qspi_core;
-	u8 _res5[0x5200c-0x4b010];
+	u8 _res7[0x50000-0x4b010];
+	u32 usb3_phy_prim_bcr;
+	u32 usb3phy_phy_prim_bcr;
+	u32 usb3_dp_phy_prim_bcr;
+	u32 usb3_phy_sec_bcr;
+	u32 usb3phy_phy_sec_bcr;
+	u8 _res8[0x5200c-0x50014];
 	u32 apcs_clk_br_en1;
-	u8 _res6[0x1000000-0x52010];
+	u8 _res9[0x1000000-0x52010];
 };
+check_member(sdm845_gcc, usb30_prim_bcr, 0xf000);
+check_member(sdm845_gcc, usb30_sec_bcr, 0x10000);
+check_member(sdm845_gcc, qusb2phy_prim_bcr, 0x12000);
+check_member(sdm845_gcc, qusb2phy_sec_bcr, 0x12004);
+check_member(sdm845_gcc, usb3phy_phy_prim_bcr, 0x50004);
+check_member(sdm845_gcc, usb3_phy_prim_bcr, 0x50000);
+check_member(sdm845_gcc, usb3_phy_sec_bcr, 0x5000c);
+check_member(sdm845_gcc, usb3phy_phy_sec_bcr, 0x50010);
 check_member(sdm845_gcc, apcs_clk_br_en1, 0x5200c);
 
 struct sdm845_aoss {

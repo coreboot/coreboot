@@ -24,48 +24,6 @@ chip soc/intel/apollolake
 	# GPIO for PERST_0 (WLAN_PE_RST)
 	register "prt0_gpio" = "GPIO_164"
 
-	# EMMC TX DATA Delay 1
-	# Refer to EDS-Vol2-16.33.
-	# [14:8] steps of delay for HS400, each 125ps.
-	# [6:0] steps of delay for SDR104/HS200, each 125ps.
-	register "emmc_tx_data_cntl1" = "0x0C3A"
-
-	# EMMC TX DATA Delay 2
-	# Refer to EDS-Vol2-16.34.
-	# [30:24] steps of delay for SDR50, each 125ps.
-	# [22:16] steps of delay for DDR50, each 125ps.
-	# [14:8] steps of delay for SDR25/HS50, each 125ps.
-	# [6:0] steps of delay for SDR12, each 125ps.
-	register "emmc_tx_data_cntl2" = "0x28272929"
-
-	# EMMC RX CMD/DATA Delay 1
-	# Refer to EDS-Vol2-16.35.
-	# [30:24] steps of delay for SDR50, each 125ps.
-	# [22:16] steps of delay for DDR50, each 125ps.
-	# [14:8] steps of delay for SDR25/HS50, each 125ps.
-	# [6:0] steps of delay for SDR12, each 125ps.
-	register "emmc_rx_cmd_data_cntl1" = "0x003B263B"
-
-	# EMMC RX CMD/DATA Delay 2
-	# Refer to EDS-Vol2-16.37.
-	# [17:16] stands for Rx Clock before Output Buffer
-	# [14:8] steps of delay for Auto Tuning Mode, each 125ps.
-	# [6:0] steps of delay for HS200, each 125ps.
-	register "emmc_rx_cmd_data_cntl2" = "0x10008"
-
-	# EMMC RX STROBE Delay
-	# Refer to EDS-Vol2-16.36.
-	# [16] Enable Auto Tuning for HS400 Strobe Path
-	# [14:8] steps of delay for HS400 Mode 1, each 125ps.
-	# [6:0] steps of delay for HS400 Mode 2, each 125ps.
-	register "emmc_rx_strobe_cntl" = "0x0a0a"
-
-	# EMMC TX COMMAND Delay
-	# Refer to EDS-Vol2-16.32.
-	# [14:8] steps of delay for DDR Mode, each 125ps.
-	# [6:0] steps of delay for SDR Mode, each 125ps.
-	register "emmc_tx_cmd_cntl" = "0x1305"
-
 	# GPE configuration
 	# Note that GPE events called out in ASL code rely on this
 	# route, i.e., if this route changes then the affected GPE

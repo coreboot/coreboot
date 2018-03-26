@@ -20,6 +20,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/util.h>
+#include <intelblocks/xdci.h>
 #include <soc/acpi.h>
 #include <soc/interrupt.h>
 #include <soc/irq.h>
@@ -78,7 +79,7 @@ struct chip_operations soc_intel_skylake_ops = {
 /* UPD parameters to be initialized before SiliconInit */
 void soc_silicon_init_params(SILICON_INIT_UPD *params)
 {
-	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
 	const struct soc_intel_skylake_config *config = dev->chip_info;
 	int i;
 
@@ -140,7 +141,6 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->EnableAzalia = config->EnableAzalia;
 	params->IoBufferOwnership = config->IoBufferOwnership;
 	params->DspEnable = config->DspEnable;
-	params->XdciEnable = config->XdciEnable;
 	params->Device4Enable = config->Device4Enable;
 	params->EnableSata = config->EnableSata;
 	params->SataMode = config->SataMode;
@@ -195,6 +195,12 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	/* Show SPI controller if enabled in devicetree.cb */
 	dev = dev_find_slot(0, PCH_DEVFN_SPI);
 	params->ShowSpiController = dev->enabled;
+
+	/* Enable xDCI controller if enabled in devicetree and allowed */
+	dev = dev_find_slot(0, PCH_DEVFN_USBOTG);
+	if (!xdci_can_enable())
+		dev->enabled = 0;
+	params->XdciEnable = dev->enabled;
 
 	params->SendVrMbxCmd = config->SendVrMbxCmd;
 

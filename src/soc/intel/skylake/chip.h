@@ -237,7 +237,6 @@ struct soc_intel_skylake_config {
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];
 	struct usb3_port_config usb3_ports[10];
-	u8 XdciEnable;
 	u8 SsicPortEnable;
 
 	/* SMBus */

@@ -41,7 +41,6 @@ chip soc/intel/skylake
 	register "DspEnable" = "0"
 	register "IoBufferOwnership" = "0"
 	register "EnableTraceHub" = "0"
-	register "XdciEnable" = "0"
 	register "SsicPortEnable" = "0"
 	register "SmbusEnable" = "1"
 	register "Cio2Enable" = "0"

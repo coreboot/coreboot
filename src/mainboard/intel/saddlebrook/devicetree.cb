@@ -170,7 +170,6 @@ chip soc/intel/skylake
 
 	# USB related
 	register "SsicPortEnable" = "1"
-	register "XdciEnable" = "0"
 
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"  # OTG
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC3)"  # Touch Pad

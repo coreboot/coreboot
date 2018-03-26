@@ -30,6 +30,7 @@
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/p2sb.h>
 #include <intelblocks/msr.h>
+#include <intelblocks/xdci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
@@ -585,6 +586,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 		glk_fsp_silicon_init_params_cb(cfg, silconfig);
 	else
 		apl_fsp_silicon_init_params_cb(cfg, silconfig);
+
+	/* Enable xDCI controller if enabled in devicetree and allowed */
+	dev = dev_find_slot(0, PCH_DEVFN_XDCI);
+	if (!xdci_can_enable())
+		dev->enabled = 0;
+	silconfig->UsbOtg = dev->enabled;
 }
 
 struct chip_operations soc_intel_apollolake_ops = {

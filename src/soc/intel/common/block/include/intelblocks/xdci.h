@@ -17,5 +17,6 @@
 #define SOC_INTEL_COMMON_BLOCK_XDCI_H
 
 void soc_xdci_init(struct device *dev);
+int xdci_can_enable(void);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_XDCI_H */

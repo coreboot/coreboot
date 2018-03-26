@@ -1,6 +1,7 @@
 ramstage-y += dmic.c
 ramstage-y += nau88l25.c
 ramstage-y += max98357.c
+ramstage-y += max98373.c
 ramstage-y += ssm4567.c
 ramstage-y += rt5514.c
 ramstage-y += rt5663.c
@@ -20,6 +21,8 @@ DMIC_4CH_48KHZ_16B = dmic-4ch-48khz-16b.bin
 DMIC_4CH_48KHZ_32B = dmic-4ch-48khz-32b.bin
 NAU88L25 = nau88l25-2ch-48khz-24b.bin
 MAX98357_RENDER = max98357-render-2ch-48khz-24b.bin
+MAX98373_RENDER_16B = max98373-render-2ch-48khz-16b.bin
+MAX98373_RENDER_24B = max98373-render-2ch-48khz-24b.bin
 MAX98927_RENDER_24B = max98927-render-2ch-48khz-24b.bin
 MAX98927_RENDER_16B = max98927-render-2ch-48khz-16b.bin
 RT5514_CAPTURE = rt5514-capture-4ch-48khz-16b.bin
@@ -51,6 +54,14 @@ $(NAU88L25)-type := raw
 cbfs-files-$(CONFIG_NHLT_MAX98357) += $(MAX98357_RENDER)
 $(MAX98357_RENDER)-file := $(NHLT_BLOB_PATH)/$(MAX98357_RENDER)
 $(MAX98357_RENDER)-type := raw
+
+cbfs-files-$(CONFIG_NHLT_MAX98373) += $(MAX98373_RENDER_16B)
+$(MAX98373_RENDER_16B)-file := $(NHLT_BLOB_PATH)/$(MAX98373_RENDER_16B)
+$(MAX98373_RENDER_16B)-type := raw
+
+cbfs-files-$(CONFIG_NHLT_MAX98373) += $(MAX98373_RENDER_24B)
+$(MAX98373_RENDER_24B)-file := $(NHLT_BLOB_PATH)/$(MAX98373_RENDER_24B)
+$(MAX98373_RENDER_24B)-type := raw
 
 cbfs-files-$(CONFIG_NHLT_SSM4567) += $(SSM4567_RENDER)
 $(SSM4567_RENDER)-file := $(NHLT_BLOB_PATH)/$(SSM4567_RENDER)

@@ -253,6 +253,12 @@ config NHLT_MAX98357
 	help
 	  Include DSP firmware settings for max98357 amplifier.
 
+config NHLT_MAX98373
+	bool
+	default n
+	help
+	  Include DSP firmware settings for max98373 amplifier.
+
 config NHLT_SSM4567
 	bool
 	default n

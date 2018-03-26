@@ -34,6 +34,10 @@
 #include <spd_bin.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
+#include <boot_device.h>
+#include <cbfs.h>
+#include <commonlib/region.h>
+#include <commonlib/cbfs.h>
 #include "gpio_ftns.h"
 #include "bios_knobs.h"
 
@@ -43,6 +47,8 @@
 
 #define SEC_REG_SERIAL_ADDR 0x1000
 #define MAX_SERIAL_LEN	    10
+
+#define BOOTORDER_FILE "bootorder"
 
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
@@ -259,6 +265,84 @@ static void mainboard_final(void *chip_info)
 	//
 	write_gpio(GPIO_58, 1);
 	write_gpio(GPIO_59, 1);
+
+	if (!check_console()) {
+
+		//
+		// The console is disabled, check if S1 is pressed and enable if so
+		//
+		if (!read_gpio(GPIO_32)) {
+
+			const struct spi_flash *flash = NULL;;
+			struct region_device rdev;
+			const struct region_device *boot_dev;
+			struct cbfs_props props;
+			struct cbfsf fh;
+			size_t fsize;
+			uint32_t ftype = CBFS_TYPE_RAW;
+
+			printk(BIOS_INFO, "S1 PRESSED\n");
+
+			flash = boot_device_spi_flash();
+			if (flash == NULL) {
+				printk(BIOS_WARNING, "Can't get boot flash device\n");
+			}
+
+			if (cbfs_boot_region_properties(&props))
+				printk(BIOS_WARNING, "Can't locate CBFS\n");
+
+			/* All boot CBFS operations are performed using the RO devie. */
+			boot_dev = boot_device_ro();
+
+			if (boot_dev == NULL)
+				printk(BIOS_WARNING, "Can't init CBFS boot device\n");
+
+			if (rdev_chain(&rdev, boot_dev, props.offset, props.size))
+				printk(BIOS_WARNING, "Rdev chain failed\n");
+
+			if (cbfs_locate(&fh, &rdev, BOOTORDER_FILE, &ftype))
+				printk(BIOS_WARNING, "Can't locate file in CBFS\n");
+
+			fsize = region_device_sz(&fh.data);
+
+			printk(BIOS_WARNING, "Bootorder fsize: %lx, region_offset: %lx, region.size %lx\n",
+			 				fsize, rdev.region.offset, rdev.region.size );
+
+			char* bootorder_file = NULL;
+			spi_flash_read(flash, rdev.region.offset, fsize, bootorder_file);
+			if(bootorder_file != NULL)
+				printk(BIOS_WARNING, "%s\n", bootorder_file);
+			else
+				printk(BIOS_WARNING, "Could not read bootorder from flash\n");
+
+			const char* pattern = "scon";
+			char *result = bootorder_file;
+			char *lpattern = (char *) pattern;
+
+			while (*result && *pattern ) {
+				if ( *lpattern == 0)  // the pattern matches return the pointer
+					break;
+				if ( *result == 0) { // We're at the end of the file content but don't have a patter match yet
+					result = NULL;
+					break;
+				}
+				if (*result == *lpattern ) {
+					// The string matches, simply advance
+					result++;
+					lpattern++;
+				} else {
+					// The string doesn't match restart the pattern
+					result++;
+					lpattern = (char *) pattern;
+				}
+			}
+
+			printk(BIOS_WARNING, "%s %d\n", pattern, (unsigned int) *result );
+
+
+
+		}
+	}
 }
 
 /*

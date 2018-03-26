@@ -42,6 +42,8 @@ romstage-$(CONFIG_DRIVERS_UART) += uart.c
 romstage-< += cpu.c
 
 romstage-y += sdram.c
+romstage-y += mmu.c
+
 romstage-y += ../common/cbmem.c
 # BDK coreboot interface
 romstage-y += ../common/bdk-coreboot.c

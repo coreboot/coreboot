@@ -23,6 +23,10 @@
 /* ARM code entry vector */
 #define BOOTROM_OFFSET		0x100000
 
+/* Start of IO space */
+#define IO_SPACE_START		0x800000000000ULL
+#define IO_SPACE_SIZE		0x100000000000ULL
+
 /* L2C */
 #define L2C_PF_BAR0		0x87E080800000ULL
 #define L2C_TAD0_PF_BAR0	(0x87E050000000ULL + 0x10000)

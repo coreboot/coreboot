@@ -11,37 +11,11 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
  */
 
-#include <arch/exception.h>
-#include <cbmem.h>
-#include <romstage_handoff.h>
-#include <soc/sdram.h>
-#include <soc/timer.h>
-#include <soc/mmu.h>
-#include <stdlib.h>
-#include <console/console.h>
-#include <program_loading.h>
-#include <libbdk-hal/bdk-config.h>
-#include <string.h>
+#ifndef __SOC_CAVIUM_CN81XX_INCLUDE_SOC_MMU_H
+#define __SOC_CAVIUM_CN81XX_INCLUDE_SOC_MMU_H
 
-extern const struct bdk_devicetree_key_value devtree[];
+void soc_mmu_init(void);
 
-void main(void)
-{
-	watchdog_poke(0);
-
-	console_init();
-	exception_init();
-
-	bdk_config_set_fdt(devtree);
-
-	sdram_init();
-	soc_mmu_init();
-
-	watchdog_poke(0);
-
-	cbmem_initialize_empty();
-	run_ramstage();
-}
+#endif  /* ! __SOC_CAVIUM_CN81XX_INCLUDE_SOC_MMU_H */

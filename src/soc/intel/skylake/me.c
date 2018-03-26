@@ -254,6 +254,12 @@ static void print_me_version(void *unused)
 	    (hfs.fields.operation_mode != ME_HFS_MODE_NORMAL))
 		goto failed;
 
+	/*
+	 * It is important to do a heci_reset to ensure BIOS and ME are in sync
+	 * before reading firmware version.
+	 */
+	heci_reset();
+
 	if (!heci_send(&fw_ver_msg, sizeof(fw_ver_msg), BIOS_HOST_ADD,
 		       HECI_MKHI_ADD))
 		goto failed;

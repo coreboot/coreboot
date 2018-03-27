@@ -5,6 +5,7 @@ ifeq ($(CONFIG_SOC_QUALCOMM_SDM845),y)
 bootblock-y += bootblock.c
 bootblock-y += timer.c
 bootblock-y += spi.c
+bootblock-y += mmu.c
 
 ################################################################################
 verstage-y += timer.c

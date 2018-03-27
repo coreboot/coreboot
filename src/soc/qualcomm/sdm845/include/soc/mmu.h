@@ -13,10 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <bootblock_common.h>
-#include <soc/mmu.h>
+#ifndef _SOC_QUALCOMM_SDM845_MMU_H__
+#define _SOC_QUALCOMM_SDM845_MMU_H__
 
-void bootblock_soc_init(void)
-{
-	sdm845_mmu_init();
-}
+void sdm845_mmu_init(void);
+
+#endif  // _SOC_QUALCOMM_SDM845_MMU_H_

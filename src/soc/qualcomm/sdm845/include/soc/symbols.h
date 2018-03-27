@@ -13,10 +13,17 @@
  * GNU General Public License for more details.
  */
 
-#include <bootblock_common.h>
-#include <soc/mmu.h>
+#ifndef _SOC_QUALCOMM_SDM845_SYMBOLS_H_
+#define _SOC_QUALCOMM_SDM845_SYMBOLS_H_
 
-void bootblock_soc_init(void)
-{
-	sdm845_mmu_init();
-}
+#include <types.h>
+
+extern u8 _ssram[];
+extern u8 _essram[];
+#define _ssram_size (_essram - _ssram)
+
+extern u8 _bsram[];
+extern u8 _ebsram[];
+#define _bsram_size (_ebsram - _bsram)
+
+#endif // _SOC_QUALCOMM_SDM845_SYMBOLS_H_

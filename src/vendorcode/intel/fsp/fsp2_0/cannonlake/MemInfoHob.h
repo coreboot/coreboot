@@ -202,6 +202,7 @@ typedef struct {
   UINT8            SpdModuleType;           ///< Save SPD ModuleType information needed for SMBIOS structure creation.
   UINT8            SpdModuleMemoryBusWidth; ///< Save SPD ModuleMemoryBusWidth information needed for SMBIOS structure creation.
   UINT8            SpdSave[MAX_SPD_SAVE];   ///< Save SPD Manufacturing information needed for SMBIOS structure creation.
+  UINT16           Speed;                   ///< The maximum capable speed of the device, in MHz.
 } DIMM_INFO;
 
 typedef struct {

@@ -273,74 +273,117 @@ static void mainboard_final(void *chip_info)
 		//
 		if (!read_gpio(GPIO_32)) {
 
-			const struct spi_flash *flash = NULL;;
+			const struct spi_flash *flash = NULL;
 			struct region_device rdev;
 			const struct region_device *boot_dev;
 			struct cbfs_props props;
 			struct cbfsf fh;
-			size_t fsize;
+			size_t fsize, offset;
 			uint32_t ftype = CBFS_TYPE_RAW;
+			const char* bootorder_name = "bootorder";
+			char* bootorder_file = NULL;
 
 			printk(BIOS_INFO, "S1 PRESSED\n");
 
+			/* get SPI flash boot device */
 			flash = boot_device_spi_flash();
 			if (flash == NULL) {
 				printk(BIOS_WARNING, "Can't get boot flash device\n");
+				return;
 			}
 
-			if (cbfs_boot_region_properties(&props))
-				printk(BIOS_WARNING, "Can't locate CBFS\n");
+			/* initialize cbfs region device */
 
-			/* All boot CBFS operations are performed using the RO devie. */
 			boot_dev = boot_device_ro();
 
-			if (boot_dev == NULL)
+			if (boot_dev == NULL) {
 				printk(BIOS_WARNING, "Can't init CBFS boot device\n");
+				return;
+			}
 
-			if (rdev_chain(&rdev, boot_dev, props.offset, props.size))
+			if (cbfs_boot_region_properties(&props)) {
+				printk(BIOS_WARNING, "Can't locate CBFS\n");
+				return;
+			}
+
+			if (rdev_chain(&rdev, boot_dev, props.offset, props.size)) {
 				printk(BIOS_WARNING, "Rdev chain failed\n");
+				return;
+			}
 
-			if (cbfs_locate(&fh, &rdev, BOOTORDER_FILE, &ftype))
+			/* locate bootorder file and calculate its offset */
+
+			if (cbfs_locate(&fh, &rdev, bootorder_name, &ftype)) {
 				printk(BIOS_WARNING, "Can't locate file in CBFS\n");
+				return;
+			}
 
 			fsize = region_device_sz(&fh.data);
+			offset = rdev_relative_offset(boot_dev, &fh.data);
 
-			printk(BIOS_WARNING, "Bootorder fsize: %lx, region_offset: %lx, region.size %lx\n",
-			 				fsize, rdev.region.offset, rdev.region.size );
+			if (fsize & 0xFFF) {
+				printk(BIOS_WARNING,"The bootorder file is not 4k aligned\n");
+				return;
+			}
 
-			char* bootorder_file = NULL;
-			spi_flash_read(flash, rdev.region.offset, fsize, bootorder_file);
-			if(bootorder_file != NULL)
-				printk(BIOS_WARNING, "%s\n", bootorder_file);
-			else
-				printk(BIOS_WARNING, "Could not read bootorder from flash\n");
+			bootorder_file = (char *) rdev_mmap(&fh.data, 0, fsize);
 
+			if (!bootorder_file){
+				printk(BIOS_WARNING, "Could not mmap bootorder\n");
+				return;
+			}
+
+			/* find and modify scon knob */
+
+			int index = 0;
 			const char* pattern = "scon";
-			char *result = bootorder_file;
 			char *lpattern = (char *) pattern;
+			char *bootorder_copy = malloc(fsize);
 
-			while (*result && *pattern ) {
+			bootorder_copy = (char *) memcpy(bootorder_copy, bootorder_file, fsize);
+			rdev_munmap(&rdev, bootorder_file);
+
+			while (*bootorder_copy && *pattern ) {
 				if ( *lpattern == 0)  // the pattern matches return the pointer
 					break;
-				if ( *result == 0) { // We're at the end of the file content but don't have a patter match yet
-					result = NULL;
+				if ( *bootorder_copy == 0) { // We're at the end of the file content but don't have a patter match yet
+					bootorder_copy = NULL;
 					break;
 				}
-				if (*result == *lpattern ) {
+				if (*bootorder_copy == *lpattern ) {
 					// The string matches, simply advance
-					result++;
+					bootorder_copy++;
 					lpattern++;
+					index++;
 				} else {
 					// The string doesn't match restart the pattern
-					result++;
+					bootorder_copy++;
+					index++;
 					lpattern = (char *) pattern;
 				}
 			}
 
-			printk(BIOS_WARNING, "%s %d\n", pattern, (unsigned int) *result );
+			if(bootorder_copy == NULL) {
+				printk(BIOS_WARNING, "scon pattern not found\n");
+				return;
+			}
 
+			*(bootorder_copy) = 0x31;
+			bootorder_copy -= index;
 
+			if (spi_flash_erase(flash, (u32) offset, fsize)) {
+				printk(BIOS_WARNING, "SPI erase failed\n");
+				return;
+			}
 
+			if (spi_flash_write(flash, offset, fsize, bootorder_copy)) {
+				printk(BIOS_WARNING, "SPI write failed\n");
+				return;
+			} else {
+				printk(BIOS_INFO, "Bootorder write successed\n");
+			}
+
+			free(bootorder_copy);
 		}
 	}
 }

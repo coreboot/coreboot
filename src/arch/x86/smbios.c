@@ -232,16 +232,19 @@ static void smbios_fill_dimm_part_number(const char *part_number,
 	len = strlen(trimmed_part_number);
 
 	invalid = 0; /* assume valid */
-	for (i = 0; i < len - 1; i++) {
+	for (i = 0; i < len; i++) {
 		if (trimmed_part_number[i] < ' ') {
 			invalid = 1;
 			trimmed_part_number[i] = '*';
 		}
 	}
 
-	if (invalid) {
+	if (len == 0) {
+		/* Null String in Part Number will have "None" instead. */
+		t->part_number = smbios_add_string(t->eos, "None");
+	} else if (invalid) {
 		char string_buffer[trimmed_buffer_size +
-				   10 /* strlen("Invalid ()") */];
+			   10 /* strlen("Invalid ()") */];
 
 		snprintf(string_buffer, sizeof(string_buffer), "Invalid (%s)",
 			 trimmed_part_number);

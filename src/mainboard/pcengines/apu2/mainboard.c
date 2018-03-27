@@ -266,6 +266,7 @@ static void mainboard_final(void *chip_info)
 	write_gpio(GPIO_58, 1);
 	write_gpio(GPIO_59, 1);
 
+#if CONFIG_BOARD_PCENGINES_APU2 || CONFIG_BOARD_PCENGINES_APU3 || CONFIG_BOARD_PCENGINES_APU4
 	if (!check_console()) {
 
 		//
@@ -386,6 +387,7 @@ static void mainboard_final(void *chip_info)
 			free(bootorder_copy);
 		}
 	}
+#endif
 }
 
 /*

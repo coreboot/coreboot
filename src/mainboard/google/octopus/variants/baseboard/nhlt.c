@@ -24,14 +24,18 @@ void __attribute__((weak)) variant_nhlt_init(struct nhlt *nhlt)
 	if (!nhlt_soc_add_dmic_array(nhlt, 2))
 		printk(BIOS_ERR, "Added 2CH DMIC array.\n");
 
+	/* 4 Channel DMIC array. */
+	if (!nhlt_soc_add_dmic_array(nhlt, 4))
+		printk(BIOS_ERR, "Added 4CH DMIC arrays.\n");
+
 	/* Dialog for Headset codec.
 	 * Headset codec is bi-directional but uses the same configuration
 	 * settings for render and capture endpoints.
 	 */
-	if (!nhlt_soc_add_da7219(nhlt, AUDIO_LINK_SSP1))
+	if (!nhlt_soc_add_da7219(nhlt, AUDIO_LINK_SSP2))
 		printk(BIOS_ERR, "Added Dialog_7219 codec.\n");
 
 	/* MAXIM Smart Amps for left and right speakers. */
-	if (!nhlt_soc_add_max98357(nhlt, AUDIO_LINK_SSP5))
+	if (!nhlt_soc_add_max98357(nhlt, AUDIO_LINK_SSP1))
 		printk(BIOS_ERR, "Added Maxim_98357 codec.\n");
 }

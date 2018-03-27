@@ -109,10 +109,15 @@ int gpio_get(gpio_t gpio)
 	return (read32(&gpio_port[gpio.port]->ext_porta) >> gpio.num) & 0x1;
 }
 
-void gpio_output(gpio_t gpio, int value)
+void gpio_set(gpio_t gpio, int value)
 {
 	clrsetbits_le32(&gpio_port[gpio.port]->swporta_dr, 1 << gpio.num,
 							   !!value << gpio.num);
+}
+
+void gpio_output(gpio_t gpio, int value)
+{
+	gpio_set(gpio, value);
 	gpio_set_dir(gpio, GPIO_OUTPUT);
 	gpio_set_pull(gpio, GPIO_PULLNONE);
 }

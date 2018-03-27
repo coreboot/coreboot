@@ -94,6 +94,8 @@
 	 (0x87E090000000ULL + ((x) << 24)) : 0)
 
 /* PEM */
+#define PEM_PEMX_PF_BAR0(x)	(0x87e0c0000000ULL + 0x1000000ULL * (x))
+
 /* SATA */
 /* USB */
 

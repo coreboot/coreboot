@@ -4,6 +4,7 @@
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
  * Raptor Engineering
  * Copyright (C) 2011 Sven Schnelle <svens@stackframe.org>
+ * Copyright (C) 2018 Patrick Rudolph <siro@das-labor.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -626,6 +627,33 @@ static int smbios_write_type32(unsigned long *current, int handle)
 	t->handle = handle;
 	t->length = len - 2;
 	*current += len;
+	return len;
+}
+
+int smbios_write_type38(unsigned long *current, int *handle,
+			const enum smbios_bmc_interface_type interface_type,
+			const u8 ipmi_rev, const u8 i2c_addr, const u8 nv_addr,
+			const u64 base_addr, const u8 base_modifier,
+			const u8 irq)
+{
+	struct smbios_type38 *t = (struct smbios_type38 *)*current;
+	int len = sizeof(struct smbios_type38);
+
+	memset(t, 0, sizeof(struct smbios_type38));
+	t->type = SMBIOS_IPMI_DEVICE_INFORMATION;
+	t->handle = *handle;
+	t->length = len - 2;
+	t->interface_type = interface_type;
+	t->ipmi_rev = ipmi_rev;
+	t->i2c_slave_addr = i2c_addr;
+	t->nv_storage_addr = nv_addr;
+	t->base_address = base_addr;
+	t->base_address_modifier = base_modifier;
+	t->irq = irq;
+
+	*current += len;
+	*handle += 1;
+
 	return len;
 }
 

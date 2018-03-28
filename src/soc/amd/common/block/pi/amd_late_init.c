@@ -59,9 +59,7 @@ static void transfer_memory_info(TYPE17_DMI_INFO *dmi17,
 	dimm->bank_locator = 0;
 
 	strncpy((char *)dimm->module_part_number, dmi17->PartNumber,
-		sizeof(dimm->module_part_number));
-
-	dimm->module_part_number[sizeof(dimm->module_part_number) - 1] = 0;
+				sizeof(dimm->module_part_number) - 1);
 }
 
 static void print_dimm_info(const struct dimm_info *dimm)

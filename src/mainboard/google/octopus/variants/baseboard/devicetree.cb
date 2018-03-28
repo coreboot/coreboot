@@ -3,20 +3,20 @@ chip soc/intel/apollolake
 		device lapic 0 on end
 	end
 
-	register "pcie_rp_clkreq_pin[0]" = "3"    # wifi/bt
+	register "pcie_rp_clkreq_pin[2]" = "3"    # wifi/bt
 	# Disable unused clkreq of PCIe root ports
+	register "pcie_rp_clkreq_pin[0]" = "CLKREQ_DISABLED"
 	register "pcie_rp_clkreq_pin[1]" = "CLKREQ_DISABLED"
-	register "pcie_rp_clkreq_pin[2]" = "CLKREQ_DISABLED"
 	register "pcie_rp_clkreq_pin[3]" = "CLKREQ_DISABLED"
 	register "pcie_rp_clkreq_pin[4]" = "CLKREQ_DISABLED"
 	register "pcie_rp_clkreq_pin[5]" = "CLKREQ_DISABLED"
 
 	# Set de-emphasis to disabled for PCIE WiFI (Thunderpeak)
 	# as it is required for detection
-	register "pcie_rp_deemphasis_enable[0]" = "0"
+	register "pcie_rp_deemphasis_enable[2]" = "0"
 	# Set de-emphasis to default (enabled) for remaining ports
+	register "pcie_rp_deemphasis_enable[0]" = "1"
 	register "pcie_rp_deemphasis_enable[1]" = "1"
-	register "pcie_rp_deemphasis_enable[2]" = "1"
 	register "pcie_rp_deemphasis_enable[3]" = "1"
 	register "pcie_rp_deemphasis_enable[4]" = "1"
 	register "pcie_rp_deemphasis_enable[5]" = "1"
@@ -105,7 +105,11 @@ chip soc/intel/apollolake
 		device pci 0f.2 on  end	# - Heci3
 		device pci 11.0 off end	# - ISH
 		device pci 12.0 off end	# - SATA
-		device pci 13.0 on  end	# - PCIe-A 0 Onboard M2 Slot(Wifi)
+		device pci 13.0 on
+			chip drivers/intel/wifi
+				device pci 00.0 on end
+			end
+		end	# - PCIe-A 0 Onboard M2 Slot(Wifi)
 		device pci 13.1 off end	# - PCIe-A 1
 		device pci 13.2 off end	# - PCIe-A 2
 		device pci 13.3 off end	# - PCIe-A 3

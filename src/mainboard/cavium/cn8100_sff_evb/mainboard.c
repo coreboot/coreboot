@@ -23,6 +23,59 @@
 #include <soc/gpio.h>
 #include <delay.h>
 #include <soc/uart.h>
+#include <console/console.h>
+#include <soc/clock.h>
+#include <soc/gpio.h>
+#include <soc/timer.h>
+#include <soc/cpu.h>
+#include <soc/sdram.h>
+
+static void mainboard_print_info(void)
+{
+	printk(BIOS_INFO, "MB: trusted boot    : %s\n",
+	       gpio_strap_value(10) ? "yes" : "no");
+
+	const size_t boot_method = gpio_strap_value(0) |
+		(gpio_strap_value(1) << 1) |
+		(gpio_strap_value(2) << 2) |
+		(gpio_strap_value(3) << 3);
+
+	printk(BIOS_INFO, "MB: boot method     : ");
+	switch (boot_method) {
+	case 0x2:
+	case 0x3:
+		printk(BIOS_INFO, "EMMC\n");
+		break;
+	case 0x5:
+	case 0x6:
+		printk(BIOS_INFO, "SPI\n");
+		break;
+	case 0x8:
+		printk(BIOS_INFO, "REMOTE\n");
+		break;
+	case 0xc:
+	case 0xd:
+		printk(BIOS_INFO, "PCIe\n");
+		break;
+	default:
+		printk(BIOS_INFO, "unknown\n");
+	}
+
+	printk(BIOS_INFO, "MB: REFclk          : %llu MHz\n",
+	       thunderx_get_ref_clock() / 1000000ULL);
+
+	printk(BIOS_INFO, "MB: IOclk           : %llu MHz\n",
+	       thunderx_get_io_clock() / 1000000ULL);
+
+	printk(BIOS_INFO, "MB: COREclk         : %llu MHz\n",
+	       thunderx_get_core_clock() / 1000000ULL);
+
+	printk(BIOS_INFO, "MB: #CPU cores      : %zu\n",
+	       cpu_get_num_cores());
+
+	printk(BIOS_INFO, "MB: RAM             : %zu MiB\n",
+		sdram_size_mb());
+}
 
 extern const struct bdk_devicetree_key_value devtree[];
 
@@ -215,6 +268,8 @@ static void mainboard_enable(struct device *dev)
 	gpio_output(10, 0);
 	udelay(100);
 	gpio_output(10, 1);
+
+	mainboard_print_info();
 }
 
 struct chip_operations mainboard_ops = {

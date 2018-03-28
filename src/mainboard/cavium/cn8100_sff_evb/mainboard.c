@@ -22,12 +22,19 @@
 #include <soc/twsi.h>
 #include <soc/gpio.h>
 #include <delay.h>
+#include <soc/uart.h>
 
 extern const struct bdk_devicetree_key_value devtree[];
 
 static void mainboard_init(struct device *dev)
 {
-	/* FIXME: stub */
+	size_t i;
+
+	/* Init UARTs */
+	for (i = 0; i < 4; i++) {
+		if (!uart_is_enabled(i))
+			uart_setup(i, 0);
+	}
 }
 
 static void mainboard_enable(struct device *dev)

@@ -21,10 +21,8 @@
 void bootblock_mainboard_early_init(void)
 {
 	if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)) {
-		if (!uart_is_enabled(0))
-			uart_setup(0, CONFIG_TTYS0_BAUD);
-		if (!uart_is_enabled(1))
-			uart_setup(0, CONFIG_TTYS0_BAUD);
+		if (!uart_is_enabled(CONFIG_UART_FOR_CONSOLE))
+			uart_setup(CONFIG_UART_FOR_CONSOLE, CONFIG_TTYS0_BAUD);
 	}
 }
 

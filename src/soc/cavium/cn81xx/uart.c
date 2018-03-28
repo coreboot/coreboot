@@ -233,6 +233,14 @@ int uart_setup(const size_t bus, int baudrate)
 	write64(&uart->uctl_ctl, ctl.u);
 
 	/**
+	 * Exit here if the UART is not going to be used in coreboot.
+	 * The previous initialization steps are sufficient to make the Linux
+	 * kernel not panic.
+	 */
+	if (!baudrate)
+		return 0;
+
+	/**
 	 * 7. Initialize the integer and fractional baud rate divider registers
 	 * UARTIBRD and UARTFBRD as follows:
 	 * a. Baud Rate Divisor = UARTCLK/(16xBaud Rate) = BRDI + BRDF

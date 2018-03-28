@@ -43,16 +43,16 @@ chip northbridge/intel/x4x		# Northbridge
 
 			device pci 19.0 on end		# GBE
 			device pci 1a.0 on end		# USB
-			device pci 1a.1 on end 		# USB
-			device pci 1a.2 on end 		# USB
-			device pci 1a.7 on end 		# USB
+			device pci 1a.1 on end		# USB
+			device pci 1a.2 on end		# USB
+			device pci 1a.7 on end		# USB
 			device pci 1b.0 on end		# Audio
 			device pci 1c.0 on end		# PCIe 1
 			device pci 1c.1 off end		# PCIe 2
 			device pci 1c.2 on end		# PCIe 3
 			device pci 1c.3 on end		# PCIe 4
-			device pci 1c.4 off end 	# PCIe 5
-			device pci 1c.5 off end 	# PCIe 6
+			device pci 1c.4 off end		# PCIe 5
+			device pci 1c.5 off end		# PCIe 6
 			device pci 1d.0 on end		# USB
 			device pci 1d.1 on end		# USB
 			device pci 1d.2 on end		# USB
@@ -108,7 +108,7 @@ chip northbridge/intel/x4x		# Northbridge
 			device pci 1f.3 on		# SMbus
 				chip drivers/i2c/ck505 # SLG8XP549T
 					register "mask" = "{ 0xff, 0xff, 0xff,
-						 	0xff, 0xff, 0xff, 0xff,
+							0xff, 0xff, 0xff, 0xff,
 							0xff, 0xff, 0xff, 0xff,
 							0xff, 0xff }"
 					register "regs" = "{ 0x11, 0xd9, 0xff,

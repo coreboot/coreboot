@@ -68,6 +68,7 @@
 #define AGESA_IDLE_AN_AP                        0x00028107ul
 #define AGESA_WAIT_FOR_ALL_APS                  0x00028108ul
 #define AGESA_HALT_THIS_AP                      0x00028109ul
+#define AGESA_HEAP_REBASE                       0x0002810aul
 
 // AGESA ADVANCED CALLOUTS, Memory
 #define AGESA_READ_SPD                 0x00028140ul

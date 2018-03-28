@@ -25,6 +25,9 @@
 #define PCR_RTC_CONF_LCMOS_LOCK	(1 << 3)
 #define PCR_RTC_CONF_UCMOS_LOCK	(1 << 4)
 #define PCR_RTC_CONF_RESERVED	(1 << 31)
+/* RTC backed up control register */
+#define PCR_RTC_BUC		0x3414
+#define PCR_RTC_BUC_TOP_SWAP	(1 << 0)
 
 void enable_rtc_upper_bank(void)
 {
@@ -44,3 +47,18 @@ void rtc_init(void)
 
 	cmos_init(soc_get_rtc_failed());
 }
+
+#if IS_ENABLED(CONFIG_INTEL_HAS_TOP_SWAP)
+void configure_rtc_buc_top_swap(enum ts_config ts_state)
+{
+	pcr_rmw32(PID_RTC, PCR_RTC_BUC, ~PCR_RTC_BUC_TOP_SWAP, ts_state);
+}
+
+enum ts_config get_rtc_buc_top_swap_status(void)
+{
+	if (pcr_read32(PID_RTC, PCR_RTC_BUC) & PCR_RTC_BUC_TOP_SWAP)
+		return TS_ENABLE;
+	else
+		return TS_DISABLE;
+}
+#endif

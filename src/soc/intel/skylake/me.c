@@ -346,8 +346,14 @@ void intel_me_status(void)
 	printk(BIOS_DEBUG, "ME: Progress Phase State    : ");
 	switch (hfs2.fields.progress_code) {
 	case ME_HFS2_PHASE_ROM:		/* ROM Phase */
-		printk(BIOS_DEBUG, "%s",
-		       me_progress_rom_values[hfs2.fields.current_state]);
+		if (hfs2.fields.current_state
+			< ARRAY_SIZE(me_progress_rom_values)
+		    && me_progress_rom_values[hfs2.fields.current_state])
+			printk(BIOS_DEBUG, "%s",
+			       me_progress_rom_values[
+						hfs2.fields.current_state]);
+		else
+			printk(BIOS_DEBUG, "0x%02x", hfs2.fields.current_state);
 		break;
 
 	case ME_HFS2_PHASE_UKERNEL:	/* uKernel Phase */

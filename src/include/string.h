@@ -66,6 +66,26 @@ static inline char *strconcat(const char *s1, const char *s2)
 }
 #endif
 
+/**
+ * Find a character in a string.
+ *
+ * @param s The string.
+ * @param c The character.
+ * @return A pointer to the last occurrence of the character in the
+ * string, or NULL if the character was not encountered within the string.
+ */
+static inline char *strrchr(const char *s, int c)
+{
+	char *p = (char *)s + strlen(s);
+
+	for (; p >= s; p--) {
+		if (*p == c)
+			return p;
+	}
+
+	return NULL;
+}
+
 static inline char *strncpy(char *to, const char *from, int count)
 {
 	register char *ret = to;

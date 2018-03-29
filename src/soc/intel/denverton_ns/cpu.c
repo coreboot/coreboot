@@ -24,6 +24,7 @@
 #include <cpu/intel/turbo.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <intelblocks/cpulib.h>
 #include <reg_script.h>
 
 #include <soc/msr.h>
@@ -173,15 +174,6 @@ int get_cpu_count(void)
 		printk(BIOS_DEBUG, "Number of Cores (CPUID): %d.\n", num_cpus);
 	}
 	return num_cpus;
-}
-
-static int cpu_config_tdp_levels(void)
-{
-	msr_t platform_info;
-
-	/* Bits 34:33 indicate how many levels supported */
-	platform_info = rdmsr(MSR_PLATFORM_INFO);
-	return (platform_info.hi >> 1) & 3;
 }
 
 static void set_max_turbo_freq(void)

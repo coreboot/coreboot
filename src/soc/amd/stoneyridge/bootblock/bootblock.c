@@ -25,6 +25,7 @@
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
 #include <soc/pci_devs.h>
+#include <soc/cpu.h>
 #include <soc/northbridge.h>
 #include <soc/southbridge.h>
 #include <amdblocks/psp.h>
@@ -61,7 +62,7 @@ static void amd_initmmio(void)
 	 * todo: AGESA currently writes variable MTRRs.  Once that is
 	 *       corrected, un-hardcode this MTRR.
 	 */
-	mtrr = (mtrr_cap.lo & MTRR_CAP_VCNT) - 2;
+	mtrr = (mtrr_cap.lo & MTRR_CAP_VCNT) - SOC_EARLY_VMTRR_FLASH;
 	set_var_mtrr(mtrr, FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
 }
 

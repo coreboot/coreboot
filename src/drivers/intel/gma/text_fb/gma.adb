@@ -51,12 +51,11 @@ is
             vga_io_init;
             vga_textmode_init;
 
-            configs (Primary).Framebuffer :=
-              (Width    => 640,
-               Height   => 400,
-               BPC      => Auto_BPC,   -- ignored for VGA plane
-               Stride   => 320,        -- ignored
-               Offset   => VGA_PLANE_FRAMEBUFFER_OFFSET);
+            -- override probed framebuffer config
+            configs (Primary).Framebuffer.Width    := 640;
+            configs (Primary).Framebuffer.Height   := 400;
+            configs (Primary).Framebuffer.Offset   :=
+               VGA_PLANE_FRAMEBUFFER_OFFSET;
 
             HW.GFX.GMA.Dump_Configs (configs);
             HW.GFX.GMA.Update_Outputs (configs);

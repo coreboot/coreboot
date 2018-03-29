@@ -79,12 +79,11 @@ is
                min_v := pos16'min (min_v, configs (i).Mode.V_Visible);
             end loop;
 
-            fb :=
-               (Width   => Width_Type (min_h),
-                Height  => Height_Type (min_v),
-                BPC     => 8,
-                Stride  => Div_Round_Up (Width_Type (min_h), 16) * 16,
-                Offset  => 0);
+            fb := configs (Primary).Framebuffer;
+            fb.Width    := Width_Type (min_h);
+            fb.Height   := Height_Type (min_v);
+            fb.Stride   := Div_Round_Up (fb.Width, 16) * 16;
+
             for i in Pipe_Index loop
                exit when configs (i).Port = Disabled;
 

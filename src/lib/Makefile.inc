@@ -110,6 +110,7 @@ ramstage-y += memchr.c
 ramstage-y += memcmp.c
 ramstage-y += malloc.c
 smm-$(CONFIG_SMM_TSEG) += malloc.c
+ramstage-y += dimm_info_util.c
 ramstage-y += delay.c
 ramstage-y += fallback_boot.c
 ramstage-y += compute_ip_checksum.c

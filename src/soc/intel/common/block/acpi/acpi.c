@@ -380,7 +380,7 @@ void generate_p_state_entries(int core, int cores_per_package)
 	acpigen_pop_len();
 }
 
-static acpi_tstate_t *soc_get_tss_table(int *entries)
+__attribute__ ((weak)) acpi_tstate_t *soc_get_tss_table(int *entries)
 {
 	*entries = 0;
 	return NULL;

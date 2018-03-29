@@ -66,6 +66,12 @@ void acpi_create_gnvs(struct global_nvs_t *gnvs);
 acpi_cstate_t *soc_get_cstate_map(size_t *num_entries);
 
 /*
+ * get_tstate_map returns a table of processor specific acpi_tstate_t entries
+ * and number of entries in the table
+ */
+acpi_tstate_t *soc_get_tss_table(int *entries);
+
+/*
  * Chipset specific quirks for the wake enable bits.
  * Returns wake events for the soc.
  */

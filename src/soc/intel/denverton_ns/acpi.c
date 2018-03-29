@@ -248,6 +248,30 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	motherboard_fill_fadt(fadt);
 }
 
+static acpi_tstate_t denverton_tss_table[] = {
+	{ 100, 1000, 0, 0x00, 0 },
+	{ 88, 875, 0, 0x1e, 0 },
+	{ 75, 750, 0, 0x1c, 0 },
+	{ 63, 625, 0, 0x1a, 0 },
+	{ 50, 500, 0, 0x18, 0 },
+	{ 38, 375, 0, 0x16, 0 },
+	{ 25, 250, 0, 0x14, 0 },
+	{ 13, 125, 0, 0x12, 0 },
+};
+
+acpi_tstate_t *soc_get_tss_table(int *entries)
+{
+	*entries = ARRAY_SIZE(denverton_tss_table);
+	return denverton_tss_table;
+}
+
+void soc_power_states_generation(int core_id, int cores_per_package)
+{
+	generate_p_state_entries(core_id, cores_per_package);
+
+	generate_t_state_entries(core_id, cores_per_package);
+}
+
 int soc_madt_sci_irq_polarity(int sci)
 {
 	if (sci >= 20)

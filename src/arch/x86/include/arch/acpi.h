@@ -331,6 +331,15 @@ typedef struct dmar_entry {
 	u64 bar;
 } __packed dmar_entry_t;
 
+typedef struct dmar_rmrr_entry {
+	u16 type;
+	u16 length;
+	u16 reserved;
+	u16 segment;
+	u64 bar;
+	u64 limit;
+} __packed dmar_rmrr_entry_t;
+
 typedef struct dmar_atsr_entry {
 	u16 type;
 	u16 length;
@@ -738,19 +747,22 @@ unsigned long acpi_write_dbg2_pci_uart(acpi_rsdp_t *rsdp, unsigned long current,
 void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 		      unsigned long (*acpi_fill_dmar)(unsigned long));
 unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
-				    u16 segment, u32 bar);
+				    u16 segment, u64 bar);
+unsigned long acpi_create_dmar_rmrr(unsigned long current, u16 segment,
+				    u64 bar, u64 limit);
 unsigned long acpi_create_dmar_atsr(unsigned long current, u8 flags,
 				    u16 segment);
 void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current);
+void acpi_dmar_rmrr_fixup(unsigned long base, unsigned long current);
 void acpi_dmar_atsr_fixup(unsigned long base, unsigned long current);
-unsigned long acpi_create_dmar_drhd_ds_pci_br(unsigned long current,
+unsigned long acpi_create_dmar_ds_pci_br(unsigned long current,
 					   u8 bus, u8 dev, u8 fn);
-unsigned long acpi_create_dmar_drhd_ds_pci(unsigned long current,
+unsigned long acpi_create_dmar_ds_pci(unsigned long current,
 					   u8 bus, u8 dev, u8 fn);
-unsigned long acpi_create_dmar_drhd_ds_ioapic(unsigned long current,
+unsigned long acpi_create_dmar_ds_ioapic(unsigned long current,
 					      u8 enumeration_id,
 					      u8 bus, u8 dev, u8 fn);
-unsigned long acpi_create_dmar_drhd_ds_msi_hpet(unsigned long current,
+unsigned long acpi_create_dmar_ds_msi_hpet(unsigned long current,
 						u8 enumeration_id,
 						u8 bus, u8 dev, u8 fn);
 void acpi_write_hest(acpi_hest_t *hest,

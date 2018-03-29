@@ -557,7 +557,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 		const unsigned long tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, gfx_vtbar);
-		current += acpi_create_dmar_drhd_ds_pci(current, 0, 2, 0);
+		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
 
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
@@ -582,9 +582,9 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 
 		current += acpi_create_dmar_drhd(current,
 				DRHD_INCLUDE_PCI_ALL, 0, vtvc0bar);
-		current += acpi_create_dmar_drhd_ds_ioapic(current,
+		current += acpi_create_dmar_ds_ioapic(current,
 				2, ibdf >> 8, PCI_SLOT(ibdf), PCI_FUNC(ibdf));
-		current += acpi_create_dmar_drhd_ds_msi_hpet(current,
+		current += acpi_create_dmar_ds_msi_hpet(current,
 				0, hbdf >> 8, PCI_SLOT(hbdf), PCI_FUNC(hbdf));
 
 		acpi_dmar_drhd_fixup(tmp, current);

@@ -309,6 +309,5 @@ void arch_bootstate_coreboot_exit(void)
 		return;
 
 	/* APs are waiting for work. Last thing to do is park them. */
-	if (mp_park_aps())
-		printk(BIOS_ERR, "Parking APs failed.\n");
+	mp_park_aps();
 }

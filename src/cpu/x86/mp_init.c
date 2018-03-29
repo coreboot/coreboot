@@ -962,7 +962,24 @@ int mp_run_on_all_cpus(void (*func)(void), long expire_us)
 
 int mp_park_aps(void)
 {
-	return mp_run_on_aps(park_this_cpu, 10 * USECS_PER_MSEC);
+	struct stopwatch sw;
+	int ret;
+	long duration_msecs;
+
+	stopwatch_init(&sw);
+
+	ret = mp_run_on_aps(park_this_cpu, 250 * USECS_PER_MSEC);
+
+	duration_msecs = stopwatch_duration_msecs(&sw);
+
+	if (!ret)
+		printk(BIOS_DEBUG, "%s done after %ld msecs.\n", __func__,
+		       duration_msecs);
+	else
+		printk(BIOS_ERR, "%s failed after %ld msecs.\n", __func__,
+		       duration_msecs);
+
+	return ret;
 }
 
 static struct mp_flight_record mp_steps[] = {

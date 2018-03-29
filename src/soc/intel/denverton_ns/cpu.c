@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015 - 2017 Intel Corp.
+ * Copyright (C) 2018 Online SAS
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +39,11 @@ static void denverton_core_init(struct device *cpu)
 	msr_t msr;
 
 	printk(BIOS_DEBUG, "Init Denverton-NS SoC cores.\n");
+
+	/* Enable Fast Strings */
+	msr = rdmsr(IA32_MISC_ENABLE);
+	msr.lo |= FAST_STRINGS_ENABLE_BIT;
+	wrmsr(IA32_MISC_ENABLE, msr);
 
 	/* Enable Turbo */
 	enable_turbo();

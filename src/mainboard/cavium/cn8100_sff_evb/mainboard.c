@@ -88,6 +88,9 @@ static void mainboard_init(struct device *dev)
 		if (!uart_is_enabled(i))
 			uart_setup(i, 0);
 	}
+
+	/* Init timer */
+	soc_timer_init();
 }
 
 static void mainboard_enable(struct device *dev)

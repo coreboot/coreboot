@@ -25,6 +25,7 @@
 #include <timer.h>
 #include <soc/addressmap.h>
 #include <assert.h>
+#include <arch/clock.h>
 
 /* Global System Timers Unit (GTI) registers */
 struct cn81xx_timer {
@@ -97,6 +98,9 @@ void timer_monotonic_get(struct mono_time *mt)
 	mono_time_set_usecs(mt, timer_raw_value());
 }
 
+/* Setup counter to operate at 1MHz */
+static const size_t tickrate = 1000000;
+
 /**
  * Init Global System Timers Unit (GTI).
  * Configure timer to run at 1MHz tick-rate.
@@ -114,8 +118,6 @@ void init_timer(void)
 	/* Use coprocessor clock source */
 	write32(&gti->cc_imp_ctl, 0);
 
-	/* Setup counter to operate at 1MHz */
-	const size_t tickrate = 1000000;
 	write32(&gti->cc_cntfid0, tickrate);
 	write32(&gti->ctl_cntfrq, tickrate);
 	write32(&gti->cc_cntrate, ((1ULL << 32) * tickrate) / sclk);
@@ -125,6 +127,11 @@ void init_timer(void)
 
 	//u32 u = (CNTPS_CTL_EL1_IMASK | CNTPS_CTL_EL1_EN);
 	//BDK_MSR(CNTPS_CTL_EL1, u);
+}
+
+void soc_timer_init(void)
+{
+	set_cntfrq(tickrate);
 }
 
 /**

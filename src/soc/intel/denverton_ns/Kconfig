@@ -42,10 +42,14 @@ config CPU_SPECIFIC_OPTIONS
 	select CACHE_MRC_SETTINGS
 	select RELOCATABLE_RAMSTAGE     # Build fails if this is not selected
 	select PARALLEL_MP
+	select PCR_COMMON_IOSF_1_0
 	select SMP
 	select SOC_INTEL_COMMON_BLOCK
 #	select SOC_INTEL_COMMON_BLOCK_SA
 	select SOC_INTEL_COMMON_BLOCK_FAST_SPI
+	select SOC_INTEL_COMMON_BLOCK_GPIO
+	select DEBUG_SOC_COMMON_BLOCK_GPIO
+	select SOC_INTEL_COMMON_BLOCK_PCR
 	select TSC_CONSTANT_RATE
 	select TSC_MONOTONIC_TIMER
 	select TSC_SYNC_MFENCE
@@ -85,6 +89,12 @@ config FSP_S_ADDR
 config MAX_CPUS
 	int
 	default 16
+
+config PCR_BASE_ADDRESS
+	hex
+	default 0xfd000000
+	help
+	  This option allows you to select MMIO Base Address of sideband bus.
 
 config DCACHE_RAM_BASE
 	hex

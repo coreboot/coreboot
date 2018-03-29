@@ -18,7 +18,6 @@
 #include <gpio.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/pcr.h>
-#include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <types.h>
 

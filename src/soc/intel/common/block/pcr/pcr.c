@@ -19,7 +19,6 @@
 #include <intelblocks/pcr.h>
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
-#include <soc/pcr_ids.h>
 #include <timer.h>
 
 #if !defined(CONFIG_PCR_BASE_ADDRESS) || (CONFIG_PCR_BASE_ADDRESS == 0)

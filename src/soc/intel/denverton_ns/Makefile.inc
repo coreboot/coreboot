@@ -40,6 +40,7 @@ romstage-y += reset.c
 romstage-y += romstage.c
 romstage-y += tsc_freq.c
 romstage-y += gpio_dnv.c
+romstage-y += gpio.c
 romstage-y += soc_util.c
 romstage-y += spi.c
 romstage-y += fiamux.c

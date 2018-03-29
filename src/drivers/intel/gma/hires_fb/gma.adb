@@ -83,6 +83,7 @@ is
             fb.Width    := Width_Type (min_h);
             fb.Height   := Height_Type (min_v);
             fb.Stride   := Div_Round_Up (fb.Width, 16) * 16;
+            fb.V_Stride := fb.Height;
 
             for i in Pipe_Index loop
                exit when configs (i).Port = Disabled;

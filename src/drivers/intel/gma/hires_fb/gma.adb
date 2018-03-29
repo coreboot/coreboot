@@ -83,7 +83,7 @@ is
                (Width   => Width_Type (min_h),
                 Height  => Height_Type (min_v),
                 BPC     => 8,
-                Stride  => ((Width_Type (min_h) + 63) / 64) * 64,
+                Stride  => Div_Round_Up (Width_Type (min_h), 16) * 16,
                 Offset  => 0);
             for i in Pipe_Index loop
                exit when configs (i).Port = Disabled;

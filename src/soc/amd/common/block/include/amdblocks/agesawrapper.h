@@ -63,6 +63,4 @@ void SetNbEnvParams(GNB_ENV_CONFIGURATION *params);
 void SetFchMidParams(FCH_INTERFACE *params);
 void SetNbMidParams(GNB_MID_CONFIGURATION *params);
 
-void *agesa_heap_base(void);
-
 #endif /* __AGESAWRAPPER_H__ */

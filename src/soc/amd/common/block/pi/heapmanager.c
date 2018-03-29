@@ -19,7 +19,7 @@
 #include <cbmem.h>
 #include <string.h>
 
-void *agesa_heap_base(void)
+static void *agesa_heap_base(void)
 {
 	return cbmem_add(CBMEM_ID_RESUME_SCRATCH, BIOS_HEAP_SIZE);
 }

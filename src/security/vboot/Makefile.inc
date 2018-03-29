@@ -23,6 +23,8 @@ postcar-y += bootmode.c
 
 verstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
 
+ramstage-y += gbb.c
+
 bootblock-y += vbnv.c
 verstage-y += vbnv.c
 romstage-y += vbnv.c

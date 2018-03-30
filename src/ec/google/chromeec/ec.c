@@ -563,7 +563,7 @@ static int cbi_get_uint32(uint32_t *id, uint32_t type)
 {
 	struct chromeec_command cmd;
 	struct ec_params_get_cbi p;
-	uint32_t r;
+	uint32_t r = 0;
 	int rv;
 
 	p.type = type;

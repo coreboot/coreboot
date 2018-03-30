@@ -18,11 +18,34 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
+#include <pc80/mc146818rtc.h>
 #include <superio/ite/common/env_ctrl.h>
 #include <superio/conf_mode.h>
+#include <types.h>
 
 #include "chip.h"
 #include "it8720f.h"
+
+#define MAINBOARD_POWER_OFF	0
+#define MAINBOARD_POWER_ON	1
+#define MAINBOARD_POWER_KEEP	2
+
+static void power_control_init(struct device *dev)
+{
+	int power_on = MAINBOARD_POWER_OFF;
+	u8 addr, value;
+
+	get_option(&power_on, "power_on_after_fail");
+	if (power_on == MAINBOARD_POWER_OFF)
+		return;
+	pnp_enter_conf_mode(dev);
+	pnp_set_logical_device(dev);
+	addr = power_on == MAINBOARD_POWER_KEEP ? 0xf2 : 0xf4;
+	value = pnp_read_config(dev, addr);
+	value |= BIT(5);
+	pnp_write_config(dev, addr, value);
+	pnp_exit_conf_mode(dev);
+}
 
 static void it8720f_init(struct device *dev)
 {
@@ -39,6 +62,7 @@ static void it8720f_init(struct device *dev)
 		if (!conf || !res)
 			break;
 		ite_ec_init(res->base, &conf->ec);
+		power_control_init(dev);
 		break;
 	case IT8720F_KBCK:
 		pc_keyboard_init(NO_AUX_DEVICE);

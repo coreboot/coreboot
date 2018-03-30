@@ -129,6 +129,7 @@ struct sysinfo_t {
 	uint64_t mtc_start;
 	uint32_t mtc_size;
 	void	*chromeos_vpd;
+	int	mmc_early_wake_status;
 };
 
 extern struct sysinfo_t lib_sysinfo;

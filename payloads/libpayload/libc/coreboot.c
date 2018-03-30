@@ -102,6 +102,13 @@ static void cb_parse_vbnv(unsigned char *ptr, struct sysinfo_t *info)
 	info->vbnv_size = vbnv->range_size;
 }
 
+static void cb_parse_mmc_info(unsigned char *ptr, struct sysinfo_t *info)
+{
+	struct cb_mmc_info *mmc_info = (struct cb_mmc_info *)ptr;
+
+	info->mmc_early_wake_status = mmc_info->early_cmd1_status;
+}
+
 static void cb_parse_gpios(unsigned char *ptr, struct sysinfo_t *info)
 {
 	int i;
@@ -398,6 +405,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_SPI_FLASH:
 			cb_parse_spi_flash(ptr, info);
+			break;
+		case CB_TAG_MMC_INFO:
+			cb_parse_mmc_info(ptr, info);
 			break;
 		case CB_TAG_MTC:
 			cb_parse_mtc(ptr, info);

@@ -287,6 +287,21 @@ struct cb_macs {
 	struct mac_address mac_addrs[0];
 };
 
+#define CB_TAG_MMC_INFO		0x0034
+struct cb_mmc_info {
+	uint32_t tag;
+	uint32_t size;
+	/*
+	 * Passes the early mmc status to payload to indicate if firmware
+	 * successfully sent CMD0, CMD1 to the card or not. In case of
+	 * success, the payload can skip the first step of the initialization
+	 * sequence which is to send CMD0, and instead start by sending CMD1
+	 * as described in Jedec Standard JESD83-B1 section 6.4.3.
+	 * passes 1 on success
+	 */
+	int32_t early_cmd1_status;
+};
+
 #define CB_TAG_SERIALNO		0x002a
 #define CB_MAX_SERIALNO_LENGTH	32
 

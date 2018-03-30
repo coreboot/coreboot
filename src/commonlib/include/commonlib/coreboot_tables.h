@@ -385,6 +385,21 @@ struct mac_address {
 	uint8_t pad[2];		/* Pad it to 8 bytes to keep it simple. */
 };
 
+#define LB_TAG_MMC_INFO		0x0034
+struct lb_mmc_info {
+	uint32_t tag;
+	uint32_t size;
+	/*
+	 * Passes the early mmc status to payload to indicate if firmware
+	 * successfully sent CMD0, CMD1 to the card or not. In case of
+	 * success, the payload can skip the first step of the initialization
+	 * sequence which is to send CMD0, and instead start by sending CMD1
+	 * as described in Jedec Standard JESD83-B1 section 6.4.3.
+	 * passes 1 on success
+	 */
+	int32_t early_cmd1_status;
+};
+
 struct lb_macs {
 	uint32_t tag;
 	uint32_t size;

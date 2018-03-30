@@ -321,6 +321,22 @@ static void lb_sku_id(struct lb_header *header)
 	printk(BIOS_INFO, "SKU ID: %d\n", sid);
 }
 
+static void lb_mmc_info(struct lb_header *header)
+{
+	struct lb_mmc_info *rec;
+	int32_t *ms_cbmem;
+
+	ms_cbmem = cbmem_find(CBMEM_ID_MMC_STATUS);
+	if (!ms_cbmem)
+		return;
+
+	rec = (struct lb_mmc_info *)lb_new_record(header);
+
+	rec->tag = LB_TAG_MMC_INFO;
+	rec->size = sizeof(*rec);
+	rec->early_cmd1_status = *ms_cbmem;
+}
+
 static void add_cbmem_pointers(struct lb_header *header)
 {
 	/*
@@ -558,6 +574,9 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	lb_board_id(head);
 	lb_ram_code(head);
 	lb_sku_id(head);
+
+	/* Pass mmc early init status */
+	lb_mmc_info(head);
 
 	/* Add SPI flash description if available */
 	if (CONFIG(BOOT_DEVICE_SPI_FLASH))

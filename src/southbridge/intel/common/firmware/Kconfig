@@ -103,6 +103,11 @@ config USE_ME_CLEANER
 comment "Please test the modified ME/TXE firmware and coreboot in two steps"
 	depends on USE_ME_CLEANER
 
+config ME_CLEANER_ARGS
+	string
+	depends on USE_ME_CLEANER
+	default "-S"
+
 config HAVE_GBE_BIN
 	bool "Add gigabit ethernet firmware"
 	depends on HAVE_IFD_BIN

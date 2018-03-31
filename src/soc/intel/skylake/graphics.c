@@ -45,6 +45,11 @@ void graphics_soc_init(struct device *dev)
 		graphics_gtt_write(DDI_BUF_CTL_A, ddi_buf_ctl);
 	}
 
+	/* IGD needs to Bus Master */
+	u32 reg32 = pci_read_config32(dev, PCI_COMMAND);
+	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
+	pci_write_config32(dev, PCI_COMMAND, reg32);
+
 	/*
 	 * GFX PEIM module inside FSP binary is taking care of graphics
 	 * initialization based on RUN_FSP_GOP Kconfig option and input
@@ -53,15 +58,9 @@ void graphics_soc_init(struct device *dev)
 	 * In case of non-FSP solution, SoC need to select another
 	 * Kconfig to perform GFX initialization.
 	 */
-	if (IS_ENABLED(CONFIG_RUN_FSP_GOP))
-		return;
-
-	/* IGD needs to Bus Master */
-	u32 reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
-
-	if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
+	if (IS_ENABLED(CONFIG_RUN_FSP_GOP)) {
+		/* nothing to do */
+	} else if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
 		if (!acpi_is_wakeup_s3() && display_init_required()) {
 			int lightup_ok;
 			gma_gfxinit(&lightup_ok);

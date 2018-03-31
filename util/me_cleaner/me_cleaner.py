@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-# me_cleaner -  Tool for partial deblobbing of Intel ME/TXE firmware images
-# Copyright (C) 2016, 2017 Nicola Corna <nicola@corna.info>
+# me_cleaner - Tool for partial deblobbing of Intel ME/TXE firmware images
+# Copyright (C) 2016-2018 Nicola Corna <nicola@corna.info>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,12 +14,14 @@
 # GNU General Public License for more details.
 #
 
-import sys
-import itertools
+from __future__ import division, print_function
+
+import argparse
 import binascii
 import hashlib
-import argparse
+import itertools
 import shutil
+import sys
 from struct import pack, unpack
 
 
@@ -27,6 +29,23 @@ min_ftpr_offset = 0x400
 spared_blocks = 4
 unremovable_modules = ("ROMP", "BUP")
 unremovable_modules_me11 = ("rbe", "kernel", "syslib", "bup")
+unremovable_partitions = ("FTPR",)
+
+pubkeys_md5 = {
+    "763e59ebe235e45a197a5b1a378dfa04": ("ME",  ("6.x.x.x",)),
+    "3a98c847d609c253e145bd36512629cb": ("ME",  ("6.0.50.x",)),
+    "0903fc25b0f6bed8c4ed724aca02124c": ("ME",  ("7.x.x.x", "8.x.x.x")),
+    "2011ae6df87c40fba09e3f20459b1ce0": ("ME",  ("9.0.x.x", "9.1.x.x")),
+    "e8427c5691cf8b56bc5cdd82746957ed": ("ME",  ("9.5.x.x", "10.x.x.x")),
+    "986a78e481f185f7d54e4af06eb413f6": ("ME",  ("11.x.x.x",)),
+    "bda0b6bb8ca0bf0cac55ac4c4d55e0f2": ("TXE", ("1.x.x.x",)),
+    "b726a2ab9cd59d4e62fe2bead7cf6997": ("TXE", ("1.x.x.x",)),
+    "0633d7f951a3e7968ae7460861be9cfb": ("TXE", ("2.x.x.x",)),
+    "1d0a36e9f5881540d8e4b382c6612ed8": ("TXE", ("3.x.x.x",)),
+    "be900fef868f770d266b1fc67e887e69": ("SPS", ("2.x.x.x",)),
+    "4622e3f2cb212a89c90a4de3336d88d2": ("SPS", ("3.x.x.x",)),
+    "31ef3d950eac99d18e187375c0764ca4": ("SPS", ("4.x.x.x",))
+}
 
 
 class OutOfRegionException(Exception):
@@ -40,59 +59,71 @@ class RegionFile:
         self.region_end = region_end
 
     def read(self, n):
-        return self.f.read(n)
+        if f.tell() + n <= self.region_end:
+            return self.f.read(n)
+        else:
+            raise OutOfRegionException()
 
     def readinto(self, b):
-        return self.f.readinto(b)
+        if f.tell() + len(b) <= self.region_end:
+            return self.f.readinto(b)
+        else:
+            raise OutOfRegionException()
 
     def seek(self, offset):
-        return self.f.seek(offset)
+        if self.region_start + offset <= self.region_end:
+            return self.f.seek(self.region_start + offset)
+        else:
+            raise OutOfRegionException()
 
     def write_to(self, offset, data):
-        if offset >= self.region_start and \
-           offset + len(data) <= self.region_end:
-            self.f.seek(offset)
+        if self.region_start + offset + len(data) <= self.region_end:
+            self.f.seek(self.region_start + offset)
             return self.f.write(data)
         else:
             raise OutOfRegionException()
 
     def fill_range(self, start, end, fill):
-        if start >= self.region_start and end <= self.region_end:
+        if self.region_start + end <= self.region_end:
             if start < end:
                 block = fill * 4096
-                self.f.seek(start)
+                self.f.seek(self.region_start + start)
                 self.f.writelines(itertools.repeat(block,
                                                    (end - start) // 4096))
                 self.f.write(block[:(end - start) % 4096])
         else:
             raise OutOfRegionException()
 
+    def fill_all(self, fill):
+        self.fill_range(0, self.region_end - self.region_start, fill)
+
     def move_range(self, offset_from, size, offset_to, fill):
-        if offset_from >= self.region_start and \
-           offset_from + size <= self.region_end and \
-           offset_to >= self.region_start and \
-           offset_to + size <= self.region_end:
+        if self.region_start + offset_from + size <= self.region_end and \
+           self.region_start + offset_to + size <= self.region_end:
             for i in range(0, size, 4096):
-                self.f.seek(offset_from + i, 0)
-                block = self.f.read(4096 if size - i >= 4096 else size - i)
-                self.f.seek(offset_from + i, 0)
+                self.f.seek(self.region_start + offset_from + i, 0)
+                block = self.f.read(min(size - i, 4096))
+                self.f.seek(self.region_start + offset_from + i, 0)
                 self.f.write(fill * len(block))
-                self.f.seek(offset_to + i, 0)
+                self.f.seek(self.region_start + offset_to + i, 0)
                 self.f.write(block)
         else:
             raise OutOfRegionException()
 
     def save(self, filename, size):
-        self.f.seek(self.region_start)
-        copyf = open(filename, "w+b")
-        for i in range(0, size, 4096):
-            copyf.write(self.f.read(4096 if size - i >= 4096 else size - i))
-        return copyf
+        if self.region_start + size <= self.region_end:
+            self.f.seek(self.region_start)
+            copyf = open(filename, "w+b")
+            for i in range(0, size, 4096):
+                copyf.write(self.f.read(min(size - i, 4096)))
+            return copyf
+        else:
+            raise OutOfRegionException()
 
 
-def get_chunks_offsets(llut, me_start):
+def get_chunks_offsets(llut):
     chunk_count = unpack("<I", llut[0x04:0x08])[0]
-    huffman_stream_end = sum(unpack("<II", llut[0x10:0x18])) + me_start
+    huffman_stream_end = sum(unpack("<II", llut[0x10:0x18]))
     nonzero_offsets = [huffman_stream_end]
     offsets = []
 
@@ -101,7 +132,7 @@ def get_chunks_offsets(llut, me_start):
         offset = 0
 
         if chunk[3] != 0x80:
-            offset = unpack("<I", chunk[0:3] + b"\x00")[0] + me_start
+            offset = unpack("<I", chunk[0:3] + b"\x00")[0]
 
         offsets.append([offset, 0])
         if offset != 0:
@@ -131,11 +162,11 @@ def remove_modules(f, mod_headers, ftpr_offset, me_end):
         flags = unpack("<I", mod_header[0x50:0x54])[0]
         comp_type = (flags >> 4) & 7
 
-        sys.stdout.write(" {:<16} ({:<7}, ".format(name, comp_str[comp_type]))
+        print(" {:<16} ({:<7}, ".format(name, comp_str[comp_type]), end="")
 
         if comp_type == 0x00 or comp_type == 0x02:
-            sys.stdout.write("0x{:06x} - 0x{:06x}): "
-                             .format(offset, offset + size))
+            print("0x{:06x} - 0x{:06x}       ): "
+                  .format(offset, offset + size), end="")
 
             if name in unremovable_modules:
                 end_addr = max(end_addr, offset + size)
@@ -146,7 +177,6 @@ def remove_modules(f, mod_headers, ftpr_offset, me_end):
                 print("removed")
 
         elif comp_type == 0x01:
-            sys.stdout.write("fragmented data    ): ")
             if not chunks_offsets:
                 f.seek(offset)
                 llut = f.read(4)
@@ -158,16 +188,25 @@ def remove_modules(f, mod_headers, ftpr_offset, me_end):
                     chunk_size = unpack("<I", llut[0x30:0x34])[0]
 
                     llut += f.read(chunk_count * 4)
-                    chunks_offsets = get_chunks_offsets(llut, me_start)
+                    chunks_offsets = get_chunks_offsets(llut)
                 else:
                     sys.exit("Huffman modules found, but LLUT is not present")
 
+            module_base = unpack("<I", mod_header[0x34:0x38])[0]
+            module_size = unpack("<I", mod_header[0x3c:0x40])[0]
+            first_chunk_num = (module_base - base) // chunk_size
+            last_chunk_num = first_chunk_num + module_size // chunk_size
+            huff_size = 0
+
+            for chunk in chunks_offsets[first_chunk_num:last_chunk_num + 1]:
+                huff_size += chunk[1] - chunk[0]
+
+            print("fragmented data, {:<9}): "
+                  .format("~" + str(int(round(huff_size / 1024))) + " KiB"),
+                  end="")
+
             if name in unremovable_modules:
                 print("NOT removed, essential")
-                module_base = unpack("<I", mod_header[0x34:0x38])[0]
-                module_size = unpack("<I", mod_header[0x3c:0x40])[0]
-                first_chunk_num = (module_base - base) // chunk_size
-                last_chunk_num = first_chunk_num + module_size // chunk_size
 
                 unremovable_huff_chunks += \
                     [x for x in chunks_offsets[first_chunk_num:
@@ -176,8 +215,8 @@ def remove_modules(f, mod_headers, ftpr_offset, me_end):
                 print("removed")
 
         else:
-            sys.stdout.write("0x{:06x} - 0x{:06x}): unknown compression, "
-                             "skipping".format(offset, offset + size))
+            print("0x{:06x} - 0x{:06x}): unknown compression, skipping"
+                  .format(offset, offset + size), end="")
 
     if chunks_offsets:
         removable_huff_chunks = []
@@ -228,14 +267,13 @@ def print_check_partition_signature(f, offset):
                  "ME/TXE image valid?")
 
 
-def relocate_partition(f, me_start, me_end, partition_header_offset,
+def relocate_partition(f, me_end, partition_header_offset,
                        new_offset, mod_headers):
 
     f.seek(partition_header_offset)
     name = f.read(4).rstrip(b"\x00").decode("ascii")
     f.seek(partition_header_offset + 0x8)
     old_offset, partition_size = unpack("<II", f.read(0x8))
-    old_offset += me_start
 
     llut_start = 0
     for mod_header in mod_headers:
@@ -251,8 +289,7 @@ def relocate_partition(f, me_start, me_end, partition_header_offset,
         f.seek(llut_start + 0x9)
         lut_start_corr = unpack("<H", f.read(2))[0]
         new_offset = max(new_offset,
-                         lut_start_corr + me_start - llut_start - 0x40 +
-                         old_offset)
+                         lut_start_corr - llut_start - 0x40 + old_offset)
         new_offset = ((new_offset + 0x1f) // 0x20) * 0x20
 
     offset_diff = new_offset - old_offset
@@ -262,15 +299,14 @@ def relocate_partition(f, me_start, me_end, partition_header_offset,
 
     print(" Adjusting FPT entry...")
     f.write_to(partition_header_offset + 0x8,
-               pack("<I", new_offset - me_start))
+               pack("<I", new_offset))
 
     if mod_headers:
         if llut_start != 0:
             f.seek(llut_start)
             if f.read(4) == b"LLUT":
                 print(" Adjusting LUT start offset...")
-                lut_offset = llut_start + offset_diff + 0x40 - \
-                    lut_start_corr - me_start
+                lut_offset = llut_start + offset_diff + 0x40 - lut_start_corr
                 f.write_to(llut_start + 0x0c, pack("<I", lut_offset))
 
                 print(" Adjusting Huffman start offset...")
@@ -303,7 +339,7 @@ def relocate_partition(f, me_start, me_end, partition_header_offset,
     return new_offset
 
 
-def check_and_remove_modules(f, me_start, me_end, offset, min_offset,
+def check_and_remove_modules(f, me_end, offset, min_offset,
                              relocate, keep_modules):
 
     f.seek(offset + 0x20)
@@ -311,29 +347,27 @@ def check_and_remove_modules(f, me_start, me_end, offset, min_offset,
     f.seek(offset + 0x290)
     data = f.read(0x84)
 
-    module_header_size = 0
+    mod_header_size = 0
     if data[0x0:0x4] == b"$MME":
         if data[0x60:0x64] == b"$MME" or num_modules == 1:
-            module_header_size = 0x60
+            mod_header_size = 0x60
         elif data[0x80:0x84] == b"$MME":
-            module_header_size = 0x80
+            mod_header_size = 0x80
 
-    if module_header_size != 0:
+    if mod_header_size != 0:
         f.seek(offset + 0x290)
-        mod_headers = [f.read(module_header_size)
+        data = f.read(mod_header_size * num_modules)
+        mod_headers = [data[i * mod_header_size:(i + 1) * mod_header_size]
                        for i in range(0, num_modules)]
 
         if all(hdr.startswith(b"$MME") for hdr in mod_headers):
             if args.keep_modules:
-                end_addr = offset + ftpr_lenght
+                end_addr = offset + ftpr_length
             else:
-                end_addr = remove_modules(f, mod_headers,
-                                          offset, me_end)
+                end_addr = remove_modules(f, mod_headers, offset, me_end)
 
             if args.relocate:
-                new_offset = relocate_partition(f, me_start, me_end,
-                                                me_start + 0x30,
-                                                min_offset + me_start,
+                new_offset = relocate_partition(f, me_end, 0x30, min_offset,
                                                 mod_headers)
                 end_addr += new_offset - offset
                 offset = new_offset
@@ -350,14 +384,14 @@ def check_and_remove_modules(f, me_start, me_end, offset, min_offset,
     return -1, offset
 
 
-def check_and_remove_modules_me11(f, me_start, me_end, partition_offset,
-                                  partition_lenght, min_offset, relocate,
+def check_and_remove_modules_me11(f, me_end, partition_offset,
+                                  partition_length, min_offset, relocate,
                                   keep_modules):
 
     comp_str = ("LZMA/uncomp.", "Huffman")
 
     if keep_modules:
-        end_data = partition_offset + partition_lenght
+        end_data = partition_offset + partition_length
     else:
         end_data = 0
 
@@ -365,7 +399,7 @@ def check_and_remove_modules_me11(f, me_start, me_end, partition_offset,
         module_count = unpack("<I", f.read(4))[0]
 
         modules = []
-        modules.append(("end", partition_lenght, 0))
+        modules.append(("end", partition_length, 0))
 
         f.seek(partition_offset + 0x10)
         for i in range(0, module_count):
@@ -390,8 +424,8 @@ def check_and_remove_modules_me11(f, me_start, me_end, partition_offset,
             else:
                 compression = comp_str[modules[i][2]]
 
-            sys.stdout.write(" {:<12} ({:<12}, 0x{:06x} - 0x{:06x}): "
-                             .format(name, compression, offset, end))
+            print(" {:<12} ({:<12}, 0x{:06x} - 0x{:06x}): "
+                  .format(name, compression, offset, end), end="")
 
             if name.endswith(".man"):
                 print("NOT removed, partition manif.")
@@ -408,8 +442,7 @@ def check_and_remove_modules_me11(f, me_start, me_end, partition_offset,
                 end_data = max(end_data, end)
 
     if relocate:
-        new_offset = relocate_partition(f, me_start, me_end, me_start + 0x30,
-                                        min_offset + me_start, [])
+        new_offset = relocate_partition(f, me_end, 0x30, min_offset, [])
         end_data += new_offset - partition_offset
         partition_offset = new_offset
 
@@ -436,40 +469,72 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Tool to remove as much code "
                                      "as possible from Intel ME/TXE firmware "
                                      "images")
+    softdis = parser.add_mutually_exclusive_group()
+    bw_list = parser.add_mutually_exclusive_group()
+
+    parser.add_argument("-v", "--version", action="version",
+                        version="%(prog)s 1.2")
+
     parser.add_argument("file", help="ME/TXE image or full dump")
-    parser.add_argument("-O", "--output", help="save the modified image in a "
-                        "separate file, instead of modifying the original "
-                        "file")
+    parser.add_argument("-O", "--output", metavar='output_file', help="save "
+                        "the modified image in a separate file, instead of "
+                        "modifying the original file")
+    softdis.add_argument("-S", "--soft-disable", help="in addition to the "
+                         "usual operations on the ME/TXE firmware, set the "
+                         "MeAltDisable bit or the HAP bit to ask Intel ME/TXE "
+                         "to disable itself after the hardware initialization "
+                         "(requires a full dump)", action="store_true")
+    softdis.add_argument("-s", "--soft-disable-only", help="instead of the "
+                         "usual operations on the ME/TXE firmware, just set "
+                         "the MeAltDisable bit or the HAP bit to ask Intel "
+                         "ME/TXE to disable itself after the hardware "
+                         "initialization (requires a full dump)",
+                         action="store_true")
     parser.add_argument("-r", "--relocate", help="relocate the FTPR partition "
                         "to the top of the ME region to save even more space",
                         action="store_true")
+    parser.add_argument("-t", "--truncate", help="truncate the empty part of "
+                        "the firmware (requires a separated ME/TXE image or "
+                        "--extract-me)", action="store_true")
     parser.add_argument("-k", "--keep-modules", help="don't remove the FTPR "
                         "modules, even when possible", action="store_true")
+    bw_list.add_argument("-w", "--whitelist", metavar="whitelist",
+                         help="Comma separated list of additional partitions "
+                         "to keep in the final image. This can be used to "
+                         "specify the MFS partition for example, which stores "
+                         "PCIe and clock settings.")
+    bw_list.add_argument("-b", "--blacklist", metavar="blacklist",
+                         help="Comma separated list of partitions to remove "
+                         "from the image. This option overrides the default "
+                         "removal list.")
     parser.add_argument("-d", "--descriptor", help="remove the ME/TXE "
                         "Read/Write permissions to the other regions on the "
                         "flash from the Intel Flash Descriptor (requires a "
                         "full dump)", action="store_true")
-    parser.add_argument("-t", "--truncate", help="truncate the empty part of "
-                        "the firmware (requires a separated ME/TXE image or "
-                        "--extract-me)", action="store_true")
+    parser.add_argument("-D", "--extract-descriptor",
+                        metavar='output_descriptor', help="extract the flash "
+                        "descriptor from a full dump; when used with "
+                        "--truncate save a descriptor with adjusted regions "
+                        "start and end")
+    parser.add_argument("-M", "--extract-me", metavar='output_me_image',
+                        help="extract the ME firmware from a full dump; when "
+                        "used with --truncate save a truncated ME/TXE image")
     parser.add_argument("-c", "--check", help="verify the integrity of the "
                         "fundamental parts of the firmware and exit",
                         action="store_true")
-    parser.add_argument("-D", "--extract-descriptor", help="extract the "
-                        "flash descriptor from a full dump; when used with "
-                        "--truncate save a descriptor with adjusted regions "
-                        "start and end")
-    parser.add_argument("-M", "--extract-me", help="extract the ME firmware "
-                        "from a full dump; when used with --truncate save a "
-                        "truncated ME/TXE image")
 
     args = parser.parse_args()
 
-    if args.check:
-        if args.relocate:
-            sys.exit("-c and -r can't be used together")
-        elif args.truncate:
-            sys.exit("-c and -t can't be used together")
+    if args.check and (args.soft_disable_only or args.soft_disable or
+       args.relocate or args.descriptor or args.truncate or args.output):
+        sys.exit("-c can't be used with -S, -s, -r, -d, -t or -O")
+
+    if args.soft_disable_only and (args.relocate or args.truncate):
+        sys.exit("-s can't be used with -r or -t")
+
+    if (args.whitelist or args.blacklist) and args.relocate:
+        sys.exit("Relocation is not yet supported with custom whitelist or "
+                 "blacklist")
 
     f = open(args.file, "rb" if args.check or args.output else "r+b")
     f.seek(0x10)
@@ -478,18 +543,14 @@ if __name__ == "__main__":
     if magic == b"$FPT":
         print("ME/TXE image detected")
 
-        if args.descriptor:
-            sys.exit("-d requires a full dump")
+        if args.descriptor or args.extract_descriptor or args.extract_me or \
+           args.soft_disable or args.soft_disable_only:
+            sys.exit("-d, -D, -M, -S and -s require a full dump")
 
-        if args.extract_descriptor:
-            sys.exit("-D requires a full dump")
-
-        if args.extract_me:
-            sys.exit("-M requires a full dump")
-
-        me_start = 0
         f.seek(0, 2)
+        me_start = 0
         me_end = f.tell()
+        mef = RegionFile(f, me_start, me_end)
 
     elif magic == b"\x5a\xa5\xf0\x0f":
         print("Full image detected")
@@ -501,6 +562,7 @@ if __name__ == "__main__":
         flmap0, flmap1 = unpack("<II", f.read(8))
         frba = flmap0 >> 12 & 0xff0
         fmba = (flmap1 & 0xff) << 4
+        fpsba = flmap1 >> 12 & 0xff0
 
         f.seek(frba)
         flreg = unpack("<III", f.read(12))
@@ -512,8 +574,10 @@ if __name__ == "__main__":
         if me_start >= me_end:
             sys.exit("The ME/TXE region in this image has been disabled")
 
-        f.seek(me_start + 0x10)
-        if f.read(4) != b"$FPT":
+        mef = RegionFile(f, me_start, me_end)
+
+        mef.seek(0x10)
+        if mef.read(4) != b"$FPT":
             sys.exit("The ME/TXE region is corrupted or missing")
 
         print("The ME/TXE region goes from {:#x} to {:#x}"
@@ -521,17 +585,16 @@ if __name__ == "__main__":
     else:
         sys.exit("Unknown image")
 
-    print("Found FPT header at {:#x}".format(me_start + 0x10))
+    end_addr = me_end
 
-    f.seek(me_start + 0x14)
-    entries = unpack("<I", f.read(4))[0]
+    print("Found FPT header at {:#x}".format(mef.region_start + 0x10))
+
+    mef.seek(0x14)
+    entries = unpack("<I", mef.read(4))[0]
     print("Found {} partition(s)".format(entries))
 
-    f.seek(me_start + 0x14)
-    header_len = unpack("B", f.read(1))[0]
-
-    f.seek(me_start + 0x30)
-    partitions = f.read(entries * 0x20)
+    mef.seek(0x30)
+    partitions = mef.read(entries * 0x20)
 
     ftpr_header = b""
 
@@ -543,21 +606,20 @@ if __name__ == "__main__":
     if ftpr_header == b"":
         sys.exit("FTPR header not found, this image doesn't seem to be valid")
 
-    ftpr_offset, ftpr_lenght = unpack("<II", ftpr_header[0x08:0x10])
-    ftpr_offset += me_start
+    ftpr_offset, ftpr_length = unpack("<II", ftpr_header[0x08:0x10])
     print("Found FTPR header: FTPR partition spans from {:#x} to {:#x}"
-          .format(ftpr_offset, ftpr_offset + ftpr_lenght))
+          .format(ftpr_offset, ftpr_offset + ftpr_length))
 
-    f.seek(ftpr_offset)
-    if f.read(4) == b"$CPD":
+    mef.seek(ftpr_offset)
+    if mef.read(4) == b"$CPD":
         me11 = True
-        num_entries = unpack("<I", f.read(4))[0]
+        num_entries = unpack("<I", mef.read(4))[0]
 
-        f.seek(ftpr_offset + 0x10)
+        mef.seek(ftpr_offset + 0x10)
         ftpr_mn2_offset = -1
 
         for i in range(0, num_entries):
-            data = f.read(0x18)
+            data = mef.read(0x18)
             name = data[0x0:0xc].rstrip(b"\x00").decode("ascii")
             offset = unpack("<I", data[0xc:0xf] + b"\x00")[0]
 
@@ -566,94 +628,214 @@ if __name__ == "__main__":
                 break
 
         if ftpr_mn2_offset >= 0:
-            check_mn2_tag(f, ftpr_offset + ftpr_mn2_offset)
+            check_mn2_tag(mef, ftpr_offset + ftpr_mn2_offset)
             print("Found FTPR manifest at {:#x}"
                   .format(ftpr_offset + ftpr_mn2_offset))
         else:
             sys.exit("Can't find the manifest of the FTPR partition")
 
     else:
-        check_mn2_tag(f, ftpr_offset)
+        check_mn2_tag(mef, ftpr_offset)
         me11 = False
         ftpr_mn2_offset = 0
 
-    f.seek(ftpr_offset + ftpr_mn2_offset + 0x24)
-    version = unpack("<HHHH", f.read(0x08))
+    mef.seek(ftpr_offset + ftpr_mn2_offset + 0x24)
+    version = unpack("<HHHH", mef.read(0x08))
     print("ME/TXE firmware version {}"
           .format('.'.join(str(i) for i in version)))
 
+    mef.seek(ftpr_offset + ftpr_mn2_offset + 0x80)
+    pubkey_md5 = hashlib.md5(mef.read(0x104)).hexdigest()
+
+    if pubkey_md5 in pubkeys_md5:
+        variant, pubkey_versions = pubkeys_md5[pubkey_md5]
+        print("Public key match: Intel {}, firmware versions {}"
+              .format(variant, ", ".join(pubkey_versions)))
+    else:
+        if version[0] >= 6:
+            variant = "ME"
+        else:
+            variant = "TXE"
+        print("WARNING Unknown public key {}\n"
+              "        Assuming Intel {}\n"
+              "        Please report this warning to the project's maintainer!"
+              .format(pubkey_md5, variant))
+
+    if not args.check and args.output:
+        f.close()
+        shutil.copy(args.file, args.output)
+        f = open(args.output, "r+b")
+
+    mef = RegionFile(f, me_start, me_end)
+
+    if me_start > 0:
+        fdf = RegionFile(f, fd_start, fd_end)
+
+        if me11:
+            fdf.seek(fpsba)
+            pchstrp0 = unpack("<I", fdf.read(4))[0]
+            print("The HAP bit is " +
+                  ("SET" if pchstrp0 & 1 << 16 else "NOT SET"))
+        else:
+            fdf.seek(fpsba + 0x28)
+            pchstrp10 = unpack("<I", fdf.read(4))[0]
+            print("The AltMeDisable bit is " +
+                  ("SET" if pchstrp10 & 1 << 7 else "NOT SET"))
+
+    # ME 6 Ignition: wipe everything
+    me6_ignition = False
+    if not args.check and not args.soft_disable_only and \
+       variant == "ME" and version[0] == 6:
+        mef.seek(ftpr_offset + 0x20)
+        num_modules = unpack("<I", mef.read(4))[0]
+        mef.seek(ftpr_offset + 0x290 + (num_modules + 1) * 0x60)
+        data = mef.read(0xc)
+
+        if data[0x0:0x4] == b"$SKU" and data[0x8:0xc] == b"\x00\x00\x00\x00":
+            print("ME 6 Ignition firmware detected, removing everything...")
+            mef.fill_all(b"\xff")
+            me6_ignition = True
+
     if not args.check:
-        if args.output:
-            f.close()
-            shutil.copy(args.file, args.output)
-            f = open(args.output, "r+b")
+        if not args.soft_disable_only and not me6_ignition:
+            print("Reading partitions list...")
+            unremovable_part_fpt = b""
+            extra_part_end = 0
+            whitelist = []
+            blacklist = []
 
-        mef = RegionFile(f, me_start, me_end)
+            whitelist += unremovable_partitions
 
-        if args.descriptor or args.extract_descriptor:
-            fdf = RegionFile(f, fd_start, fd_end)
+            if args.blacklist:
+                blacklist = args.blacklist.split(",")
+            elif args.whitelist:
+                whitelist += args.whitelist.split(",")
 
-        print("Removing extra partitions...")
-        mef.fill_range(me_start + 0x30, ftpr_offset, b"\xff")
-        mef.fill_range(ftpr_offset + ftpr_lenght, me_end, b"\xff")
+            for i in range(entries):
+                partition = partitions[i * 0x20:(i + 1) * 0x20]
+                flags = unpack("<I", partition[0x1c:0x20])[0]
 
-        print("Removing extra partition entries in FPT...")
-        mef.write_to(me_start + 0x30, ftpr_header)
-        mef.write_to(me_start + 0x14, pack("<I", 1))
+                try:
+                    part_name = \
+                        partition[0x0:0x4].rstrip(b"\x00").decode("ascii")
+                except UnicodeDecodeError:
+                    part_name = "????"
 
-        print("Removing EFFS presence flag...")
-        mef.seek(me_start + 0x24)
-        flags = unpack("<I", mef.read(4))[0]
-        flags &= ~(0x00000001)
-        mef.write_to(me_start + 0x24, pack("<I", flags))
+                part_start, part_length = unpack("<II", partition[0x08:0x10])
 
-        if me11:
-            mef.seek(me_start + 0x10)
-            header = bytearray(mef.read(0x20))
-            header[0x0b] = 0x00
-        else:
-            mef.seek(me_start)
-            header = bytearray(mef.read(0x30))
-            header[0x1b] = 0x00
-        checksum = (0x100 - sum(header) & 0xff) & 0xff
+                # ME 6: the last partition has 0xffffffff as size
+                if variant == "ME" and version[0] == 6 and \
+                   i == entries - 1 and part_length == 0xffffffff:
+                    part_length = me_end - me_start - part_start
 
-        print("Correcting checksum (0x{:02x})...".format(checksum))
-        # The checksum is just the two's complement of the sum of the first
-        # 0x30 bytes in ME < 11 or bytes 0x10:0x30 in ME >= 11 (except for
-        # 0x1b, the checksum itself). In other words, the sum of those bytes
-        # must be always 0x00.
-        mef.write_to(me_start + 0x1b, pack("B", checksum))
+                part_end = part_start + part_length
 
-        print("Reading FTPR modules list...")
-        if me11:
-            end_addr, ftpr_offset = \
-                check_and_remove_modules_me11(mef, me_start, me_end,
-                                              ftpr_offset, ftpr_lenght,
-                                              min_ftpr_offset, args.relocate,
-                                              args.keep_modules)
-        else:
-            end_addr, ftpr_offset = \
-                check_and_remove_modules(mef, me_start, me_end, ftpr_offset,
-                                         min_ftpr_offset, args.relocate,
-                                         args.keep_modules)
+                if flags & 0x7f == 2:
+                    print(" {:<4} ({:^24}, 0x{:08x} total bytes): nothing to "
+                          "remove"
+                          .format(part_name, "NVRAM partition, no data",
+                                  part_length))
+                elif part_start == 0 or part_length == 0 or part_end > me_end:
+                    print(" {:<4} ({:^24}, 0x{:08x} total bytes): nothing to "
+                          "remove"
+                          .format(part_name, "no data here", part_length))
+                else:
+                    print(" {:<4} (0x{:08x} - 0x{:09x}, 0x{:08x} total bytes): "
+                          .format(part_name, part_start, part_end, part_length),
+                          end="")
+                    if part_name in whitelist or (blacklist and
+                       part_name not in blacklist):
+                        unremovable_part_fpt += partition
+                        if part_name != "FTPR":
+                            extra_part_end = max(extra_part_end, part_end)
+                        print("NOT removed")
+                    else:
+                        mef.fill_range(part_start, part_end, b"\xff")
+                        print("removed")
 
-        if end_addr > 0:
-            end_addr = (end_addr // 0x1000 + 1) * 0x1000
-            end_addr += spared_blocks * 0x1000
+            print("Removing partition entries in FPT...")
+            mef.write_to(0x30, unremovable_part_fpt)
+            mef.write_to(0x14,
+                         pack("<I", len(unremovable_part_fpt) // 0x20))
 
-            print("The ME minimum size should be {0} bytes "
-                  "({0:#x} bytes)".format(end_addr - me_start))
+            mef.fill_range(0x30 + len(unremovable_part_fpt),
+                           0x30 + len(partitions), b"\xff")
 
-            if me_start > 0:
-                print("The ME region can be reduced up to:\n"
-                      " {:08x}:{:08x} me".format(me_start, end_addr - 1))
-            elif args.truncate:
-                print("Truncating file at {:#x}...".format(end_addr))
-                f.truncate(end_addr)
+            if (not blacklist and "EFFS" not in whitelist) or \
+               "EFFS" in blacklist:
+                print("Removing EFFS presence flag...")
+                mef.seek(0x24)
+                flags = unpack("<I", mef.read(4))[0]
+                flags &= ~(0x00000001)
+                mef.write_to(0x24, pack("<I", flags))
+
+            if me11:
+                mef.seek(0x10)
+                header = bytearray(mef.read(0x20))
+                header[0x0b] = 0x00
+            else:
+                mef.seek(0)
+                header = bytearray(mef.read(0x30))
+                header[0x1b] = 0x00
+            checksum = (0x100 - sum(header) & 0xff) & 0xff
+
+            print("Correcting checksum (0x{:02x})...".format(checksum))
+            # The checksum is just the two's complement of the sum of the first
+            # 0x30 bytes in ME < 11 or bytes 0x10:0x30 in ME >= 11 (except for
+            # 0x1b, the checksum itself). In other words, the sum of those
+            # bytes must be always 0x00.
+            mef.write_to(0x1b, pack("B", checksum))
+
+            print("Reading FTPR modules list...")
+            if me11:
+                end_addr, ftpr_offset = \
+                    check_and_remove_modules_me11(mef, me_end,
+                                                  ftpr_offset, ftpr_length,
+                                                  min_ftpr_offset,
+                                                  args.relocate,
+                                                  args.keep_modules)
+            else:
+                end_addr, ftpr_offset = \
+                    check_and_remove_modules(mef, me_end, ftpr_offset,
+                                             min_ftpr_offset, args.relocate,
+                                             args.keep_modules)
+
+            if end_addr > 0:
+                end_addr = max(end_addr, extra_part_end)
+                end_addr = (end_addr // 0x1000 + 1) * 0x1000
+                end_addr += spared_blocks * 0x1000
+
+                print("The ME minimum size should be {0} bytes "
+                      "({0:#x} bytes)".format(end_addr))
+
+                if me_start > 0:
+                    print("The ME region can be reduced up to:\n"
+                          " {:08x}:{:08x} me"
+                          .format(me_start, me_start + end_addr - 1))
+                elif args.truncate:
+                    print("Truncating file at {:#x}...".format(end_addr))
+                    f.truncate(end_addr)
+
+        if args.soft_disable or args.soft_disable_only:
+            if me11:
+                print("Setting the HAP bit in PCHSTRP0 to disable Intel ME...")
+                pchstrp0 |= (1 << 16)
+                fdf.write_to(fpsba, pack("<I", pchstrp0))
+            else:
+                print("Setting the AltMeDisable bit in PCHSTRP10 to disable "
+                      "Intel ME...")
+                pchstrp10 |= (1 << 7)
+                fdf.write_to(fpsba + 0x28, pack("<I", pchstrp10))
 
     if args.descriptor:
         print("Removing ME/TXE R/W access to the other flash regions...")
-        fdf.write_to(fmba + 0x4, pack("<I", 0x04040000))
+        if me11:
+            flmstr2 = 0x00400500
+        else:
+            fdf.seek(fmba + 0x4)
+            flmstr2 = (unpack("<I", fdf.read(4))[0] | 0x04040000) & 0x0404ffff
+
+        fdf.write_to(fmba + 0x4, pack("<I", flmstr2))
 
     if args.extract_descriptor:
         if args.truncate:
@@ -664,12 +846,14 @@ if __name__ == "__main__":
             if bios_start == me_end:
                 print("Modifying the regions of the extracted descriptor...")
                 print(" {:08x}:{:08x} me   --> {:08x}:{:08x} me"
-                      .format(me_start, me_end - 1, me_start, end_addr - 1))
+                      .format(me_start, me_end - 1,
+                              me_start, me_start + end_addr - 1))
                 print(" {:08x}:{:08x} bios --> {:08x}:{:08x} bios"
-                      .format(bios_start, bios_end - 1, end_addr, bios_end - 1))
+                      .format(bios_start, bios_end - 1,
+                              me_start + end_addr, bios_end - 1))
 
-                flreg1 = start_end_to_flreg(end_addr, bios_end)
-                flreg2 = start_end_to_flreg(me_start, end_addr)
+                flreg1 = start_end_to_flreg(me_start + end_addr, bios_end)
+                flreg2 = start_end_to_flreg(me_start, me_start + end_addr)
 
                 fdf_copy.seek(frba + 0x4)
                 fdf_copy.write(pack("<II", flreg1, flreg2))
@@ -678,31 +862,33 @@ if __name__ == "__main__":
                       "isn't equal to the end address of the ME\n region: if "
                       "you want to recover the space from the ME region you "
                       "have to\n manually modify the descriptor.\n")
-
-            fdf_copy.close()
         else:
             print("Extracting the descriptor to \"{}\"..."
                   .format(args.extract_descriptor))
-            fdf.save(args.extract_descriptor, fd_end - fd_start).close()
+            fdf_copy = fdf.save(args.extract_descriptor, fd_end - fd_start)
+
+        fdf_copy.close()
 
     if args.extract_me:
         if args.truncate:
             print("Extracting and truncating the ME image to \"{}\"..."
                   .format(args.extract_me))
-            mef_copy = mef.save(args.extract_me, end_addr - me_start)
+            mef_copy = mef.save(args.extract_me, end_addr)
         else:
             print("Extracting the ME image to \"{}\"..."
                   .format(args.extract_me))
             mef_copy = mef.save(args.extract_me, me_end - me_start)
 
-        sys.stdout.write("Checking the FTPR RSA signature of the extracted ME "
-                         "image... ")
-        print_check_partition_signature(mef_copy, ftpr_offset +
-                                        ftpr_mn2_offset - me_start)
+        if not me6_ignition:
+            print("Checking the FTPR RSA signature of the extracted ME "
+                  "image... ", end="")
+            print_check_partition_signature(mef_copy,
+                                            ftpr_offset + ftpr_mn2_offset)
         mef_copy.close()
 
-    sys.stdout.write("Checking the FTPR RSA signature... ")
-    print_check_partition_signature(f, ftpr_offset + ftpr_mn2_offset)
+    if not me6_ignition:
+        print("Checking the FTPR RSA signature... ", end="")
+        print_check_partition_signature(mef, ftpr_offset + ftpr_mn2_offset)
 
     f.close()
 

@@ -65,7 +65,7 @@ config CHECK_ME
 		NORTHBRIDGE_INTEL_SANDYBRIDGE || \
 		NORTHBRIDGE_INTEL_IVYBRIDGE || NORTHBRIDGE_INTEL_HASWELL || \
 		SOC_INTEL_BROADWELL || SOC_INTEL_SKYLAKE || \
-		SOC_INTEL_BAYTRAIL || SOC_INTEL_BRASWELL)
+		SOC_INTEL_KABYLAKE || SOC_INTEL_BAYTRAIL || SOC_INTEL_BRASWELL)
 	help
 	  Verify the integrity of the supplied Intel ME/TXE firmware before
 	  proceeding with the build, in order to prevent an accidental loading
@@ -76,7 +76,7 @@ config USE_ME_CLEANER
 	depends on HAVE_ME_BIN && (NORTHBRIDGE_INTEL_SANDYBRIDGE || \
 		NORTHBRIDGE_INTEL_IVYBRIDGE || NORTHBRIDGE_INTEL_HASWELL || \
 		SOC_INTEL_BROADWELL || SOC_INTEL_SKYLAKE || \
-		SOC_INTEL_BAYTRAIL || SOC_INTEL_BRASWELL)
+		SOC_INTEL_KABYLAKE || SOC_INTEL_BAYTRAIL || SOC_INTEL_BRASWELL)
 	help
 	  Use me_cleaner to remove all the non-fundamental code from the Intel
 	  ME/TXE firmware.

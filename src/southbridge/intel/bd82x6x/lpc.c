@@ -908,6 +908,12 @@ static void lpc_final(struct device *dev)
 		if (CONFIG(INTEL_CHIPSET_LOCKDOWN) ||
 		    acpi_is_wakeup_s3()) {
 			outb(APM_CNT_FINALIZE, APM_CNT);
+			if (CONFIG(CONSOLE_SPI_FLASH))
+				/* Re-init SPI driver to handle locked BAR.
+				   This prevents flashconsole from hanging.
+				   If other code needs to use SPI during
+				   ramstage, whitelist it here. */
+				spi_init();
 		}
 	}
 }

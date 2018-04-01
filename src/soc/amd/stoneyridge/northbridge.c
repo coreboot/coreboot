@@ -15,6 +15,7 @@
 
 
 #include <arch/io.h>
+#include <arch/ioapic.h>
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <cbmem.h>
@@ -69,12 +70,20 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index,
 
 static void read_resources(device_t dev)
 {
+	struct resource *res;
+
 	/*
 	 * This MMCONF resource must be reserved in the PCI domain.
 	 * It is not honored by the coreboot resource allocator if it is in
 	 * the CPU_CLUSTER.
 	 */
 	mmconf_resource(dev, MMIO_CONF_BASE);
+
+	/* NB IOAPIC2 resource */
+	res = new_resource(dev, IO_APIC2_ADDR); /* IOAPIC2 */
+	res->base = IO_APIC2_ADDR;
+	res->size = 0x00001000;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
 static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
@@ -165,6 +174,7 @@ static void set_resources(device_t dev)
 
 static void northbridge_init(struct device *dev)
 {
+	setup_ioapic((u8 *)IO_APIC2_ADDR, CONFIG_MAX_CPUS+1);
 }
 
 static unsigned long acpi_fill_hest(acpi_hest_t *hest)

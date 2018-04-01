@@ -61,7 +61,7 @@ static void ioapic_init(struct device *dev)
 
 	if (config->enable_virtual_wire) {
 		/* Enable Virtual Wire Mode. */
-		low = ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT;
+		low = INT_ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT;
 		high = bsp_lapicid << (56 - 32);
 
 		io_apic_write(ioapic_base, 0x10, low);
@@ -75,7 +75,7 @@ static void ioapic_init(struct device *dev)
 		printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n", 0,
 			high, low);
 	}
-	low = DISABLED;
+	low = INT_DISABLED;
 	high = NONE;
 
 	for (i = 1; i < ioapic_interrupts; i++) {

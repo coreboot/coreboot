@@ -53,7 +53,7 @@ void clear_ioapic(void *ioapic_base)
 
 	ioapic_interrupts = ioapic_interrupt_count(ioapic_base);
 
-	low = DISABLED;
+	low = INT_DISABLED;
 	high = NONE;
 
 	for (i = 0; i < ioapic_interrupts; i++) {
@@ -118,7 +118,7 @@ static void load_vectors(void *ioapic_base)
 	}
 
 	/* Enable Virtual Wire Mode. */
-	low = ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT;
+	low = INT_ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT;
 	high = bsp_lapicid << (56 - 32);
 
 	io_apic_write(ioapic_base, 0x10, low);
@@ -131,7 +131,7 @@ static void load_vectors(void *ioapic_base)
 
 	printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n",
 	       0, high, low);
-	low = DISABLED;
+	low = INT_DISABLED;
 	high = NONE;
 	for (i = 1; i < ioapic_interrupts; i++) {
 		io_apic_write(ioapic_base, i * 2 + 0x10, low);

@@ -17,11 +17,12 @@
 #include <soc/southbridge.h>
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/vbnv.h>
+#include <pc80/mc146818rtc.h>
 
 int vbnv_cmos_failed(void)
 {
-	/* FIXME: RTC failure checking not supported. */
-	return 0;
+	/* If CMOS power has failed, the century will be set to 0xff */
+	return cmos_read(RTC_CLK_ALTCENTURY) == 0xff;
 }
 
 int vboot_platform_is_resuming(void)

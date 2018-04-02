@@ -72,6 +72,7 @@
 #define  PRMRR_PHYS_MASK_LOCK		(1 << 10)
 #define  PRMRR_PHYS_MASK_VALID		(1 << 11)
 #define MSR_POWER_CTL			0x1fc
+#define MSR_IA32_PAT			0x277
 #define MSR_EVICT_CTL			0x2e0
 #define MSR_SGX_OWNEREPOCH0		0x300
 #define MSR_SGX_OWNEREPOCH1		0x301
@@ -141,5 +142,14 @@
 #define SGX_RESOURCE_ENUM_BIT	(0x1)
 #define SGX_RESOURCE_MASK_LO	(0xfffff000UL)
 #define SGX_RESOURCE_MASK_HI	(0xfffffUL)
+
+/* Intel SDM: Table 2-1
+ * IA-32 architectural MSR: Extended Feature Enable Register
+ */
+#define IA32_EFER	0xC0000080
+#define  EFER_NXE	(1 << 11)
+#define  EFER_LMA	(1 << 10)
+#define  EFER_LME	(1 << 8)
+#define  EFER_SCE	(1 << 0)
 
 #endif	/* SOC_INTEL_COMMON_MSR_H */

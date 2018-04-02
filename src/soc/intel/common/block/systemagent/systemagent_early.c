@@ -144,9 +144,34 @@ static uint16_t sa_get_ggc_reg(void)
 	return pci_read_config16(SA_DEV_ROOT, GGC);
 }
 
+/*
+ * Internal Graphics Pre-allocated Memory - As per Intel FSP UPD Header
+ * definition, size of memory preallocatred for internal graphics can be
+ * configured based on below lists:
+ *
+ * 0x00:0MB, 0x01:32MB, 0x02:64MB, 0x03:96MB, 0x04:128MB, 0x05:160MB,
+ * 0xF0:4MB, 0xF1:8MB, 0xF2:12MB, 0xF3:16MB, 0xF4:20MB, 0xF5:24MB, 0xF6:28MB,
+ * 0xF7:32MB, 0xF8:36MB, 0xF9:40MB, 0xFA:44MB, 0xFB:48MB, 0xFC:52MB, 0xFD:56MB,
+ * 0xFE:60MB
+ *
+ * Today all existing SoCs(except Cannonlake) are supported under intel
+ * common code block design may not need to use any other values than 0x0-0x05
+ * for GFX DSM range. DSM memory ranges between 0xF0-0xF6 are majorly for
+ * early SoC samples and validation requirement. This code block to justify
+ * all differnet possible ranges that FSP may support for a platform.
+ */
 size_t sa_get_dsm_size(void)
 {
-	return (((sa_get_ggc_reg() & G_GMS_MASK) >> G_GMS_OFFSET) * 32*MiB);
+	uint32_t prealloc_memory;
+	uint16_t ggc;
+
+	ggc = sa_get_ggc_reg();
+	prealloc_memory = (ggc & G_GMS_MASK) >> G_GMS_OFFSET;
+
+	if (prealloc_memory < 0xF0)
+		return prealloc_memory * 32*MiB;
+	else
+		return (prealloc_memory - 0xEF) * 4*MiB;
 }
 
 static uintptr_t sa_get_gsm_base(void)

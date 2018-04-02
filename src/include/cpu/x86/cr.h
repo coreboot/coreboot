@@ -59,6 +59,27 @@ static alwaysinline void write_cr0(CRx_TYPE data)
 	);
 }
 
+static alwaysinline CRx_TYPE read_cr3(void)
+{
+	CRx_TYPE value;
+	__asm__ __volatile__ (
+		"mov %%cr3, %0"
+		: CRx_RET(value)
+		:
+		: COMPILER_BARRIER
+	);
+	return value;
+}
+
+static alwaysinline void write_cr3(CRx_TYPE data)
+{
+	__asm__ __volatile__ (
+		"mov %0, %%cr3"
+		:
+		: CRx_IN(data)
+		: COMPILER_BARRIER
+	);
+}
 static alwaysinline CRx_TYPE read_cr4(void)
 {
 	CRx_TYPE value;

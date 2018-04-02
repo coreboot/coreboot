@@ -59,6 +59,8 @@ chip northbridge/intel/sandybridge
 			register "pcie_port_coalesce" = "1"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x33"
+			register "spi.opprefixes" = "{ 0x50, 0x06 }"
+			register "spi.ops" = "{ { 0, 1, 0x01 }, { 1, 1, 0x02 }, { 1, 0, 0x03 }, { 0, 0, 0x05 }, { 1, 1, 0x20 }, { 0, 0, 0x9f }, { 0, 1, 0xad }, { 0, 1, 0x04 } }"
 			device pci 16.0 on # Management Engine Interface 1
 				subsystemid 0x174b 0x1007
 			end

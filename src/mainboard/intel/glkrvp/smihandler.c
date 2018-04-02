@@ -53,5 +53,6 @@ int mainboard_smi_apmc(u8 apmc)
 
 void mainboard_smi_espi_handler(void)
 {
-	chromeec_smi_process_events();
+	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
+		chromeec_smi_process_events();
 }

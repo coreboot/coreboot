@@ -54,3 +54,8 @@ void mainboard_chromeos_acpi_generate(void)
 	gpios = variant_cros_gpios(&num);
 	chromeos_acpi_gpio_generate(gpios, num);
 }
+
+int __attribute__((weak)) get_lid_switch(void)
+{
+	return -1;
+}

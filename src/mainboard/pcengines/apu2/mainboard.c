@@ -204,6 +204,69 @@ static void config_gpio_mux(void)
 	}
 }
 
+static size_t get_bootorder_cbfs_offset(const char *name, uint32_t type)
+{
+	struct region_device rdev;
+	const struct region_device *boot_dev;
+	struct cbfs_props props;
+	struct cbfsf fh;
+
+	boot_dev = boot_device_ro();
+
+	if (boot_dev == NULL) {
+		printk(BIOS_WARNING, "Can't init CBFS boot device\n");
+		return 0;
+	}
+
+	if (cbfs_boot_region_properties(&props)) {
+		printk(BIOS_WARNING, "Can't locate CBFS\n");
+		return 0;
+	}
+
+	if (rdev_chain(&rdev, boot_dev, props.offset, props.size)) {
+		printk(BIOS_WARNING, "Rdev chain failed\n");
+		return 0;
+	}
+
+	/* locate bootorder file and calculate its offset */
+
+	if (cbfs_locate(&fh, &rdev, name, &type)) {
+		printk(BIOS_WARNING, "Can't locate file in CBFS\n");
+		return 0;
+	}
+
+	return (size_t) rdev_relative_offset(boot_dev, &fh.data);
+}
+
+static int find_knob_index(const char *s, const char *pattern)
+{
+
+	int pattern_index = 0;
+	char *result = (char *) s;
+	char *lpattern = (char *) pattern;
+
+	while (*result && *pattern ) {
+		if ( *lpattern == 0)  // the pattern matches return the pointer
+			return pattern_index;
+		if ( *result == 0)  // We're at the end of the file content but don't have a patter match yet
+			return -1;
+		if (*result == *lpattern ) {
+			// The string matches, simply advance
+			result++;
+			pattern_index++;
+			lpattern++;
+		} else {
+			// The string doesn't match restart the pattern
+			result++;
+			pattern_index++;
+			lpattern = (char *) pattern;
+		}
+	}
+
+	return -1;
+
+}
+
 /**********************************************
  * enable the dedicated function in mainboard.
  **********************************************/
@@ -274,111 +337,68 @@ static void mainboard_final(void *chip_info)
 		//
 		if (!read_gpio(GPIO_32)) {
 
-			const struct spi_flash *flash = NULL;
-			struct region_device rdev;
-			const struct region_device *boot_dev;
-			struct cbfs_props props;
-			struct cbfsf fh;
-			size_t fsize, offset;
-			uint32_t ftype = CBFS_TYPE_RAW;
-			const char* bootorder_name = "bootorder";
-			char* bootorder_file = NULL;
-
 			printk(BIOS_INFO, "S1 PRESSED\n");
 
-			/* get SPI flash boot device */
-			flash = boot_device_spi_flash();
-			if (flash == NULL) {
-				printk(BIOS_WARNING, "Can't get boot flash device\n");
+			const struct spi_flash *flash = NULL;
+			size_t fsize, offset;
+			char* bootorder_file = NULL;
+			int knob_index;
+			char *bootorder_copy;
+
+			bootorder_file = cbfs_boot_map_with_leak("bootorder", CBFS_TYPE_RAW, &fsize);
+
+			if (bootorder_file == NULL){
+				printk(BIOS_WARNING, "Could not mmap bootorder\n");
 				return;
 			}
-
-			/* initialize cbfs region device */
-
-			boot_dev = boot_device_ro();
-
-			if (boot_dev == NULL) {
-				printk(BIOS_WARNING, "Can't init CBFS boot device\n");
-				return;
-			}
-
-			if (cbfs_boot_region_properties(&props)) {
-				printk(BIOS_WARNING, "Can't locate CBFS\n");
-				return;
-			}
-
-			if (rdev_chain(&rdev, boot_dev, props.offset, props.size)) {
-				printk(BIOS_WARNING, "Rdev chain failed\n");
-				return;
-			}
-
-			/* locate bootorder file and calculate its offset */
-
-			if (cbfs_locate(&fh, &rdev, bootorder_name, &ftype)) {
-				printk(BIOS_WARNING, "Can't locate file in CBFS\n");
-				return;
-			}
-
-			fsize = region_device_sz(&fh.data);
-			offset = rdev_relative_offset(boot_dev, &fh.data);
 
 			if (fsize & 0xFFF) {
 				printk(BIOS_WARNING,"The bootorder file is not 4k aligned\n");
 				return;
 			}
 
-			bootorder_file = (char *) rdev_mmap(&fh.data, 0, fsize);
+			offset = get_bootorder_cbfs_offset("bootorder", CBFS_TYPE_RAW);
 
-			if (!bootorder_file){
-				printk(BIOS_WARNING, "Could not mmap bootorder\n");
-				return;
-			}
-
-			/* find and modify scon knob */
-
-			int index = 0;
-			const char* pattern = "scon";
-			char *lpattern = (char *) pattern;
-			char *bootorder_copy = malloc(fsize);
-
-			bootorder_copy = (char *) memcpy(bootorder_copy, bootorder_file, fsize);
-			rdev_munmap(&rdev, bootorder_file);
-
-			while (*bootorder_copy && *pattern ) {
-				if ( *lpattern == 0)  // the pattern matches return the pointer
-					break;
-				if ( *bootorder_copy == 0) { // We're at the end of the file content but don't have a patter match yet
-					bootorder_copy = NULL;
-					break;
-				}
-				if (*bootorder_copy == *lpattern ) {
-					// The string matches, simply advance
-					bootorder_copy++;
-					lpattern++;
-					index++;
-				} else {
-					// The string doesn't match restart the pattern
-					bootorder_copy++;
-					index++;
-					lpattern = (char *) pattern;
-				}
-			}
+			bootorder_copy = (char *)malloc(fsize);
 
 			if(bootorder_copy == NULL) {
-				printk(BIOS_WARNING, "scon pattern not found\n");
+				printk(BIOS_WARNING,"Failed to allocate memory for bootorder\n");
 				return;
 			}
 
-			*(bootorder_copy) = 0x31;
-			bootorder_copy -= index;
+			if(memcpy(bootorder_copy, bootorder_file, fsize) == NULL) {
+				printk(BIOS_WARNING,"Copying bootorder failed\n");
+				free(bootorder_copy);
+				return;
+			}
+
+			knob_index = find_knob_index(bootorder_copy, "scon");
+
+			if(knob_index == -1){
+				printk(BIOS_WARNING,"scon knob not found in bootorder\n");
+				free(bootorder_copy);
+				return;
+			}
+
+			*(bootorder_copy + knob_index) = '1';
+
+			flash = boot_device_spi_flash();
+
+			if (flash == NULL) {
+				printk(BIOS_WARNING, "Can't get boot flash device\n");
+				free(bootorder_copy);
+				return;
+			}
 
 			if (spi_flash_erase(flash, (u32) offset, fsize)) {
 				printk(BIOS_WARNING, "SPI erase failed\n");
+				free(bootorder_copy);
 				return;
 			}
 
 			if (spi_flash_write(flash, offset, fsize, bootorder_copy)) {
 				printk(BIOS_WARNING, "SPI write failed\n");
+				free(bootorder_copy);
 				return;
 			} else {
 				printk(BIOS_INFO, "Bootorder write successed\n");

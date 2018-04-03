@@ -228,8 +228,6 @@ static size_t get_bootorder_cbfs_offset(const char *name, uint32_t type)
 		return 0;
 	}
 
-	/* locate bootorder file and calculate its offset */
-
 	if (cbfs_locate(&fh, &rdev, name, &type)) {
 		printk(BIOS_WARNING, "Can't locate file in CBFS\n");
 		return 0;
@@ -358,6 +356,11 @@ static void mainboard_final(void *chip_info)
 			}
 
 			offset = get_bootorder_cbfs_offset("bootorder", CBFS_TYPE_RAW);
+
+			if(offset == -1) {
+				printk(BIOS_WARNING,"Failed to retrieve bootorder file offset\n");
+				return;
+			}
 
 			bootorder_copy = (char *)malloc(fsize);
 

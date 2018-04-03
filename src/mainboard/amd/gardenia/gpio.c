@@ -28,34 +28,34 @@
  */
 const struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
 	/* NFC PU */
-	{GPIO_64, Function0, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+	PAD_GPO(GPIO_64, HIGH),
 	/* PCIe presence detect */
-	{GPIO_69, Function0, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+	PAD_GPI(GPIO_69, PULL_UP),
 	/* MUX for Power Express Eval */
-	{GPIO_116, Function1, FCH_GPIO_PULL_DOWN_ENABLE | INPUT },
+	PAD_GPI(GPIO_116, PULL_DOWN),
 	/* SD power */
-	{GPIO_119, Function2, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+	PAD_GPO(GPIO_119, HIGH),
 	/* GPIO_136 - UART0_FCH_RX_DEBUG_RX */
-	{GPIO_136, Function0, INPUT },
+	PAD_NF(GPIO_136, UART0_RXD, PULL_NONE),
 	/* GPIO_137 - UART0_FCH_DEBUG_RTS */
-	{GPIO_137, Function0, INPUT },
+	PAD_NF(GPIO_137, UART0_RTS_L, PULL_NONE),
 	/* GPIO_138 - UART0_FCH_TX_DEBUG_RX */
-	{GPIO_138, Function0, INPUT },
+	PAD_NF(GPIO_138, UART0_TXD, PULL_NONE),
 	/* GPIO_142 - UART1_FCH_RTS */
-	{GPIO_142, Function0, INPUT },
+	PAD_NF(GPIO_142, UART1_RTS_L, PULL_NONE),
 	/* GPIO_143 - UART1_FCH_TX */
-	{GPIO_143, Function0, INPUT },
+	PAD_NF(GPIO_143, UART1_TXD, PULL_NONE),
 };
 
 const struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
 	/* BT radio disable */
-	{GPIO_14, Function1, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+	PAD_GPO(GPIO_14, HIGH),
 	/* NFC wake */
-	{GPIO_65, Function0, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+	PAD_GPO(GPIO_65, HIGH),
 	/* Webcam */
-	{GPIO_66, Function0, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+	PAD_GPO(GPIO_66, HIGH),
 	/* GPS sleep */
-	{GPIO_70, Function0, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+	PAD_GPO(GPIO_70, HIGH),
 };
 
 const struct soc_amd_stoneyridge_gpio *early_gpio_table(size_t *size)

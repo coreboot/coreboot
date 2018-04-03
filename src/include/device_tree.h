@@ -1,8 +1,8 @@
 /*
  * Copyright 2013 Google Inc.
+ * Copyright 2018-present Facebook, Inc.
  *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * Taken from depthcharge: src/base/device_tree.h
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -15,18 +15,17 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __BASE_DEVICE_TREE_H__
-#define __BASE_DEVICE_TREE_H__
+#ifndef __DEVICE_TREE_H__
+#define __DEVICE_TREE_H__
 
 #include <stdint.h>
-
-#include "base/list.h"
+#include <list.h>
 
 /*
  * Flattened device tree structures/constants.
  */
 
-typedef struct FdtHeader {
+struct fdt_header {
 	uint32_t magic;
 	uint32_t totalsize;
 	uint32_t structure_offset;
@@ -40,21 +39,20 @@ typedef struct FdtHeader {
 
 	uint32_t strings_size;
 	uint32_t structure_size;
-} FdtHeader;
+};
 
-static const uint32_t FdtMagic = 0xd00dfeed;
+#define FDT_HEADER_MAGIC	0xd00dfeed
+#define FDT_TOKEN_BEGIN_NODE	1
+#define FDT_TOKEN_END_NODE	2
+#define FDT_TOKEN_PROPERTY	3
+#define FDT_TOKEN_END		9
 
-static const uint32_t TokenBeginNode = 1;
-static const uint32_t TokenEndNode = 2;
-static const uint32_t TokenProperty = 3;
-static const uint32_t TokenEnd = 9;
-
-typedef struct FdtProperty
+struct fdt_property
 {
 	const char *name;
 	void *data;
 	uint32_t size;
-} FdtProperty;
+};
 
 
 
@@ -62,41 +60,41 @@ typedef struct FdtProperty
  * Unflattened device tree structures.
  */
 
-typedef struct DeviceTreeProperty
+struct device_tree_property
 {
-	FdtProperty prop;
+	struct fdt_property prop;
 
-	ListNode list_node;
-} DeviceTreeProperty;
+	struct list_node list_node;
+};
 
-typedef struct DeviceTreeNode
+struct device_tree_node
 {
 	const char *name;
-	// List of DeviceTreeProperty-s.
-	ListNode properties;
-	// List of DeviceTreeNodes.
-	ListNode children;
+	// List of struct device_tree_property-s.
+	struct list_node properties;
+	// List of struct device_tree_nodes.
+	struct list_node children;
 
-	ListNode list_node;
-} DeviceTreeNode;
+	struct list_node list_node;
+};
 
-typedef struct DeviceTreeReserveMapEntry
+struct device_tree_reserve_map_entry
 {
 	uint64_t start;
 	uint64_t size;
 
-	ListNode list_node;
-} DeviceTreeReserveMapEntry;
+	struct list_node list_node;
+};
 
-typedef struct DeviceTree
+struct device_tree
 {
 	void *header;
 	uint32_t header_size;
 
-	ListNode reserve_map;
+	struct list_node reserve_map;
 
-	DeviceTreeNode *root;
-} DeviceTree;
+	struct device_tree_node *root;
+};
 
 
 
@@ -106,7 +104,7 @@ typedef struct DeviceTree
  */
 
 // Read the property, if any, at offset offset.
-int fdt_next_property(void *blob, uint32_t offset, FdtProperty *prop);
+int fdt_next_property(void *blob, uint32_t offset, struct fdt_property *prop);
 // Read the name of the node, if any, at offset offset.
 int fdt_node_name(void *blob, uint32_t offset, const char **name);
 
@@ -116,7 +114,7 @@ int fdt_skip_node(void *blob, uint32_t offset);
 // Read a flattened device tree into a heirarchical structure which refers to
 // the contents of the flattened tree in place. Modifying the flat tree
 // invalidates the unflattened one.
-DeviceTree *fdt_unflatten(void *blob);
+struct device_tree *fdt_unflatten(void *blob);
 
 
 
@@ -125,95 +123,73 @@ DeviceTree *fdt_unflatten(void *blob);
  */
 
 // Figure out how big a device tree would be if it were flattened.
-uint32_t dt_flat_size(DeviceTree *tree);
+uint32_t dt_flat_size(struct device_tree *tree);
 // Flatten a device tree into the buffer pointed to by dest.
-void dt_flatten(DeviceTree *tree, void *dest);
-void dt_print_node(DeviceTreeNode *node);
+void dt_flatten(struct device_tree *tree, void *dest);
+void dt_print_node(struct device_tree_node *node);
 // Read #address-cells and #size-cells properties from a node.
-void dt_read_cell_props(DeviceTreeNode *node, u32 *addrcp, u32 *sizecp);
+void dt_read_cell_props(struct device_tree_node *node, u32 *addrcp, u32 *sizecp);
 // Look up or create a node relative to a parent node, through its path
 // represented as an array of strings.
-DeviceTreeNode *dt_find_node(DeviceTreeNode *parent, const char **path,
+struct device_tree_node *dt_find_node(struct device_tree_node *parent, const char **path,
 			     u32 *addrcp, u32 *sizecp, int create);
 // Look up or create a node relative to a parent node, through its path
 // represented as a string of '/' separated node names.
-DeviceTreeNode *dt_find_node_by_path(DeviceTreeNode *parent, const char *path,
+struct device_tree_node *dt_find_node_by_path(struct device_tree_node *parent, const char *path,
 				     u32 *addrcp, u32 *sizecp, int create);
 // Look up a node relative to a parent node, through its compatible string.
-DeviceTreeNode *dt_find_compat(DeviceTreeNode *parent, const char *compatible);
+struct device_tree_node *dt_find_compat(struct device_tree_node *parent, const char *compatible);
 // Look up the next child of a parent node, through its compatible string. It
 // uses child pointer as the marker to find next.
-DeviceTreeNode *dt_find_next_compat_child(DeviceTreeNode *parent,
-					  DeviceTreeNode *child,
+struct device_tree_node *dt_find_next_compat_child(struct device_tree_node *parent,
+					  struct device_tree_node *child,
 					  const char *compat);
 // Look up a node relative to a parent node, through its property value.
-DeviceTreeNode *dt_find_prop_value(DeviceTreeNode *parent, const char *name,
+struct device_tree_node *dt_find_prop_value(struct device_tree_node *parent, const char *name,
 				   void *data, size_t size);
 // Write src into *dest as a 'length'-byte big-endian integer.
 void dt_write_int(u8 *dest, u64 src, size_t length);
 // Add different kinds of properties to a node, or update existing ones.
-void dt_add_bin_prop(DeviceTreeNode *node, char *name, void *data, size_t size);
-void dt_add_string_prop(DeviceTreeNode *node, char *name, char *str);
-void dt_add_u32_prop(DeviceTreeNode *node, char *name, u32 val);
-void dt_add_reg_prop(DeviceTreeNode *node, u64 *addrs, u64 *sizes,
+void dt_add_bin_prop(struct device_tree_node *node, const char *name, void *data,
+		     size_t size);
+void dt_add_string_prop(struct device_tree_node *node, const char *name, char *str);
+void dt_add_u32_prop(struct device_tree_node *node, const char *name, u32 val);
+void dt_add_reg_prop(struct device_tree_node *node, u64 *addrs, u64 *sizes,
 		     int count, u32 addr_cells, u32 size_cells);
-int dt_set_bin_prop_by_path(DeviceTree *tree, const char *path,
+int dt_set_bin_prop_by_path(struct device_tree *tree, const char *path,
 			    void *data, size_t size, int create);
 
-void dt_find_bin_prop(DeviceTreeNode *node, const char *name, void **data,
+void dt_find_bin_prop(struct device_tree_node *node, const char *name, void **data,
 		      size_t *size);
-const char *dt_find_string_prop(DeviceTreeNode *node, const char *name);
+const char *dt_find_string_prop(struct device_tree_node *node, const char *name);
 
 /*
  * Fixups to apply to a kernel's device tree before booting it.
  */
 
-typedef struct DeviceTreeFixup
+struct device_tree_fixup
 {
-	// The function which does the fixing.
-	int (*fixup)(struct DeviceTreeFixup *fixup, DeviceTree *tree);
+	/**
+	 * The function which does the fixing.
+	 * 0 on success, non-zero on error.
+	 */
+	int (*fixup)(struct device_tree_fixup *fixup,
+		struct device_tree *tree);
 
-	ListNode list_node;
-} DeviceTreeFixup;
+	struct list_node list_node;
+};
 
-extern ListNode device_tree_fixups;
+extern struct list_node device_tree_fixups;
 
-int dt_apply_fixups(DeviceTree *tree);
-
-/*
- * Structure defining mapping between arbitrary objects and the device tree
- * path to the property corresponding to the object.
+/**
+ * Function to apply fixups.
+ * 0 on success, non-zero on error.
  */
-typedef struct {
-	int force_create; /* If false - do not create a new node. */
-	const char *dt_path;
-	const char *key;
-} DtPathMap;
-
-/*
- * Copy mac addresses from sysinfo table into the device tree. The mapping
- * between the dt_maps entries and sysinfo mac address table elements is
- * implicit, i.e. the device tree node found in the maps entry, gets assinged
- * the mac address found in the sysinfo table, in the same order.
-  */
-int dt_set_mac_addresses(DeviceTree *tree, const DtPathMap *dt_maps);
-
-/*
- * Copy WIFI calibration data from sysinfo table into the device tree. Each
- * WIFI calibration blob stored the sysinfo table contains key and data. The
- * key is used for mapping into the device tree path. The data becomes the
- * contents of the device tree property at that path.
- */
-int dt_set_wifi_calibration(DeviceTree *tree, const DtPathMap *maps);
-
-/*
- * Retrieve Country Code data from VPD and add it into the device tree.
- */
-int dt_set_wifi_country_code(DeviceTree *tree, const DtPathMap *maps);
+int dt_apply_fixups(struct device_tree *tree);
 
 /*
  * Init/retrieve the /reserved-memory/ node.
  */
-DeviceTreeNode *dt_init_reserved_memory_node(DeviceTree *tree);
+struct device_tree_node *dt_init_reserved_memory_node(struct device_tree *tree);
 
-#endif /* __BASE_DEVICE_TREE_H__ */
+#endif /* __DEVICE_TREE_H__ */

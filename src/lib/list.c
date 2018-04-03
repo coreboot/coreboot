@@ -1,8 +1,8 @@
 /*
  * Copyright 2012 Google Inc.
+ * Copyright 2018-present Facebook, Inc.
  *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * Taken from depthcharge: src/base/list.c
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -15,9 +15,9 @@
  * GNU General Public License for more details.
  */
 
-#include "base/list.h"
+#include <list.h>
 
-void list_remove(ListNode *node)
+void list_remove(struct list_node *node)
 {
 	if (node->prev)
 		node->prev->next = node->next;
@@ -25,7 +25,7 @@ void list_remove(ListNode *node)
 		node->next->prev = node->prev;
 }
 
-void list_insert_after(ListNode *node, ListNode *after)
+void list_insert_after(struct list_node *node, struct list_node *after)
 {
 	node->next = after->next;
 	node->prev = after;
@@ -34,7 +34,7 @@ void list_insert_after(ListNode *node, ListNode *after)
 		node->next->prev = node;
 }
 
-void list_insert_before(ListNode *node, ListNode *before)
+void list_insert_before(struct list_node *node, struct list_node *before)
 {
 	node->prev = before->prev;
 	node->next = before;

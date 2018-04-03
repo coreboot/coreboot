@@ -1,8 +1,8 @@
 /*
  * Copyright 2012 Google Inc.
+ * Copyright 2018-present Facebook, Inc.
  *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * Taken from depthcharge: src/base/list.h
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -15,25 +15,23 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __BASE_LIST_H__
-#define __BASE_LIST_H__
+#ifndef __LIST_H__
+#define __LIST_H__
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/container_of.h"
+struct list_node {
+	struct list_node *next;
+	struct list_node *prev;
+};
 
-typedef struct ListNode {
-	struct ListNode *next;
-	struct ListNode *prev;
-} ListNode;
-
-// Remove ListNode node from the doubly linked list it's a part of.
-void list_remove(ListNode *node);
-// Insert ListNode node after ListNode after in a doubly linked list.
-void list_insert_after(ListNode *node, ListNode *after);
-// Insert ListNode node before ListNode before in a doubly linked list.
-void list_insert_before(ListNode *node, ListNode *before);
+// Remove list_node node from the doubly linked list it's a part of.
+void list_remove(struct list_node *node);
+// Insert list_node node after list_node after in a doubly linked list.
+void list_insert_after(struct list_node *node, struct list_node *after);
+// Insert list_node node before list_node before in a doubly linked list.
+void list_insert_before(struct list_node *node, struct list_node *before);
 
 #define list_for_each(ptr, head, member)                                \
 	for ((ptr) = container_of((head).next, typeof(*(ptr)), member); \
@@ -41,4 +39,4 @@ void list_insert_before(ListNode *node, ListNode *before);
 		(ptr) = container_of((ptr)->member.next,                \
 			typeof(*(ptr)), member))
 
-#endif /* __BASE_LIST_H__ */
+#endif /* __LIST_H__ */

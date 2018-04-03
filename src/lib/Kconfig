@@ -17,6 +17,12 @@ config RAMSTAGE_LIBHWBASE
 	help
 	  Selected by features that require `libhwbase` in ramstage.
 
+config FLATTENED_DEVICE_TREE
+	bool
+	help
+	  Selected by features that require to parse and manipulate a flattened
+	  devicetree in ramstage.
+
 if RAMSTAGE_LIBHWBASE
 
 config HWBASE_DYNAMIC_MMIO

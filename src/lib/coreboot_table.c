@@ -524,11 +524,7 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	}
 #endif
 
-	/* Initialize the memory map at boot time. */
-	bootmem_init();
-
-	/* No other memory areas can be added after the memory table has been
-	 * committed as the entries won't show up in the serialize mem table. */
+	/* Serialize resource map into mem table types (LB_MEM_*) */
 	bootmem_write_memory_table(lb_memory(head));
 
 	/* Record our motherboard */

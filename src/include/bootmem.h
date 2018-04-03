@@ -20,20 +20,17 @@
 #include <stdint.h>
 #include <boot/coreboot_tables.h>
 
-/*
- * Initialize the memory address space prior to payload loading. The bootmem
- * serves as the source for the lb_mem table.
- */
-void bootmem_init(void);
+/* Write memory coreboot table. Current resource map is serialized into
+ * memtable (LB_MEM_* types). bootmem library is unusable until this function
+ * is called first in the write tables path before payload is loaded. */
+void bootmem_write_memory_table(struct lb_memory *mem);
 
-/* Architecture hook to add bootmem areas the architecture controls. */
+/* Architecture hook to add bootmem areas the architecture controls when
+ * bootmem_write_memory_table() is called. */
 void bootmem_arch_add_ranges(void);
 
 /* Add a range of a given type to the bootmem address space. */
 void bootmem_add_range(uint64_t start, uint64_t size, uint32_t type);
-
-/* Write memory coreboot table. */
-void bootmem_write_memory_table(struct lb_memory *mem);
 
 /* Print current range map of boot memory. */
 void bootmem_dump_ranges(void);

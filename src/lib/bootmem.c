@@ -21,13 +21,21 @@
 #include <device/resource.h>
 #include <stdlib.h>
 
+static int initialized;
 static struct memranges bootmem;
 
-void bootmem_init(void)
+static int bootmem_is_initialized(void)
+{
+	return initialized;
+}
+
+static void bootmem_init(void)
 {
 	const unsigned long cacheable = IORESOURCE_CACHEABLE;
 	const unsigned long reserved = IORESOURCE_RESERVE;
 	struct memranges *bm = &bootmem;
+
+	initialized = 1;
 
 	/*
 	 * Fill the memory map out. The order of operations is important in
@@ -45,6 +53,11 @@ void bootmem_init(void)
 
 void bootmem_add_range(uint64_t start, uint64_t size, uint32_t type)
 {
+	if (!bootmem_is_initialized()) {
+		printk(BIOS_ERR, "%s: lib unitialized!\n", __func__);
+		return;
+	}
+
 	memranges_insert(&bootmem, start, size, type);
 }
 
@@ -55,6 +68,7 @@ void bootmem_write_memory_table(struct lb_memory *mem)
 
 	lb_r = &mem->map[0];
 
+	bootmem_init();
 	bootmem_dump_ranges();
 
 	memranges_each_entry(r, &bootmem) {
@@ -134,6 +148,11 @@ void *bootmem_allocate_buffer(size_t size)
 	const resource_t max_addr = 1ULL << 32;
 	resource_t begin;
 	resource_t end;
+
+	if (!bootmem_is_initialized()) {
+		printk(BIOS_ERR, "%s: lib unitialized!\n", __func__);
+		return NULL;
+	}
 
 	/* 4KiB alignment. */
 	size = ALIGN(size, 4096);

@@ -25,6 +25,7 @@ RUN \
 		ccache \
 		cmake \
 		curl \
+		device-tree-compiler \
 		dh-autoreconf \
 		diffutils \
 		doxygen \

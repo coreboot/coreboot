@@ -18,6 +18,7 @@ bootblock-y += OemCustomize.c
 
 verstage-y += tpm_tis.c
 
+romstage-y += OemCustomize.c
 romstage-y += gpio.c
 romstage-y += memory.c
 romstage-y += tpm_tis.c

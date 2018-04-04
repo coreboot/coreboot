@@ -35,6 +35,9 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
 #else
 const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
 	/* Required callouts */
+#if ENV_ROMSTAGE
+	{ AGESA_HALT_THIS_AP,             agesa_HaltThisAp },
+#endif
 	{ AGESA_ALLOCATE_BUFFER,          agesa_AllocateBuffer },
 	{ AGESA_DEALLOCATE_BUFFER,        agesa_DeallocateBuffer },
 	{ AGESA_DO_RESET,                 agesa_Reset },

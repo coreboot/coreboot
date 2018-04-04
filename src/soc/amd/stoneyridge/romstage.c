@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <arch/cpu.h>
 #include <arch/acpi.h>
 #include <cpu/x86/msr.h>
@@ -44,6 +45,11 @@ asmlinkage void car_stage_entry(void)
 	int vmtrrs = mtrr_cap.lo & MTRR_CAP_VCNT;
 	int s3_resume = acpi_s3_resume_allowed() && acpi_is_wakeup_s3();
 	int i;
+
+	/*
+	 * When moving AGESA calls to romstage, place the call to
+	 * bsp_agesa_call() here.
+	 */
 
 	console_init();
 

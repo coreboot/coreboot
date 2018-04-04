@@ -30,21 +30,7 @@
 #include <soc/southbridge.h>
 #include <amdblocks/psp.h>
 #include <timestamp.h>
-
-asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
-{
-	/*
-	 * Call lib/bootblock.c main with BSP, shortcut for APs
-	 *  todo: rearchitect AGESA entry points to remove need
-	 *        to run amdinitreset, amdinitearly from bootblock.
-	 *        Remove AP shortcut.
-	 */
-	if (!boot_cpu())
-		bootblock_soc_early_init(); /* APs will not return */
-
-	/* TSC cannot be relied upon. Override the TSC value passed in. */
-	bootblock_main_with_timestamp(timestamp_get());
-}
+#include <halt.h>
 
 /* Set the MMIO Configuration Base Address and Bus Range. */
 static void amd_initmmio(void)
@@ -66,15 +52,48 @@ static void amd_initmmio(void)
 	set_var_mtrr(mtrr, FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
 }
 
-void bootblock_soc_early_init(void)
+/*
+ * To move AGESA calls to romstage, just move agesa_call() and bsp_agesa_call()
+ * to romstage.c. Also move the call to bsp_agesa_call() to the marked location
+ * in romstage.c.
+ */
+static void agesa_call(void)
+{
+	post_code(0x37);
+	do_agesawrapper(agesawrapper_amdinitreset, "amdinitreset");
+
+	post_code(0x38);
+	/* APs will not exit amdinitearly */
+	do_agesawrapper(agesawrapper_amdinitearly, "amdinitearly");
+}
+
+static void bsp_agesa_call(void)
+{
+	set_ap_entry_ptr(agesa_call); /* indicate the path to the AP */
+	agesa_call();
+}
+
+asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
 	amd_initmmio();
+	/*
+	 * Call lib/bootblock.c main with BSP, shortcut for APs
+	 */
+	if (!boot_cpu()) {
+		void (*ap_romstage_entry)(void) =
+				(void (*)(void))get_ap_entry_ptr();
 
-	if (!boot_cpu())
-		bootblock_soc_init(); /* APs will not return */
+		ap_romstage_entry(); /* execution does not return */
+		halt();
+	}
 
+	/* TSC cannot be relied upon. Override the TSC value passed in. */
+	bootblock_main_with_timestamp(timestamp_get());
+}
+
+void bootblock_soc_early_init(void)
+{
 	bootblock_fch_early_init();
-
 	post_code(0x90);
 }
 
@@ -118,15 +137,10 @@ void bootblock_soc_init(void)
 	u32 val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
 
-	if (boot_cpu() && IS_ENABLED(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW))
+	if (IS_ENABLED(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW))
 		load_smu_fw1();
 
-	post_code(0x37);
-	do_agesawrapper(agesawrapper_amdinitreset, "amdinitreset");
-
-	post_code(0x38);
-	/* APs will not exit amdinitearly */
-	do_agesawrapper(agesawrapper_amdinitearly, "amdinitearly");
+	bsp_agesa_call();
 
 	/* Initialize any early i2c buses. */
 	i2c_soc_early_init();

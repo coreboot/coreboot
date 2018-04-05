@@ -20,18 +20,12 @@
 #include <cpu/x86/msr.h>
 #include <intelblocks/msr.h>
 #include <program_loading.h>
+#include <soc/cpu.h>
 
 /*
  * This file supports the necessary hoops one needs to jump through since
  * early FSP component and early stages are running from cache-as-ram.
  */
-
-static void flush_l1d_to_l2(void)
-{
-	msr_t msr = rdmsr(MSR_POWER_MISC);
-	msr.lo |= FLUSH_DL1_L2;
-	wrmsr(MSR_POWER_MISC, msr);
-}
 
 static inline int is_car_addr(uintptr_t addr)
 {

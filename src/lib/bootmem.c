@@ -20,6 +20,7 @@
 #include <cbmem.h>
 #include <device/resource.h>
 #include <stdlib.h>
+#include <assert.h>
 
 static int initialized;
 static struct memranges bootmem;
@@ -27,6 +28,30 @@ static struct memranges bootmem;
 static int bootmem_is_initialized(void)
 {
 	return initialized;
+}
+
+/* Convert bootmem tag to LB_MEM tag */
+static uint32_t bootmem_to_lb_tag(const enum bootmem_type tag)
+{
+	switch (tag) {
+	case BM_MEM_RAM:
+		return LB_MEM_RAM;
+	case BM_MEM_RESERVED:
+		return LB_MEM_RESERVED;
+	case BM_MEM_ACPI:
+		return LB_MEM_ACPI;
+	case BM_MEM_NVS:
+		return LB_MEM_NVS;
+	case BM_MEM_UNUSABLE:
+		return LB_MEM_UNUSABLE;
+	case BM_MEM_VENDOR_RSVD:
+		return LB_MEM_VENDOR_RSVD;
+	case BM_MEM_TABLE:
+		return LB_MEM_TABLE;
+	default:
+		printk(BIOS_ERR, "ERROR: Unsupported tag %u\n", tag);
+		return LB_MEM_RESERVED;
+	}
 }
 
 static void bootmem_init(void)
@@ -42,8 +67,8 @@ static void bootmem_init(void)
 	 * that each overlapping range will take over the next. Therefore,
 	 * add cacheable resources as RAM then add the reserved resources.
 	 */
-	memranges_init(bm, cacheable, cacheable, LB_MEM_RAM);
-	memranges_add_resources(bm, reserved, reserved, LB_MEM_RESERVED);
+	memranges_init(bm, cacheable, cacheable, BM_MEM_RAM);
+	memranges_add_resources(bm, reserved, reserved, BM_MEM_RESERVED);
 
 	/* Add memory used by CBMEM. */
 	cbmem_add_bootmem();
@@ -51,14 +76,13 @@ static void bootmem_init(void)
 	bootmem_arch_add_ranges();
 }
 
-void bootmem_add_range(uint64_t start, uint64_t size, uint32_t type)
+void bootmem_add_range(uint64_t start, uint64_t size,
+		       const enum bootmem_type tag)
 {
-	if (!bootmem_is_initialized()) {
-		printk(BIOS_ERR, "%s: lib unitialized!\n", __func__);
-		return;
-	}
+	assert(tag > BM_MEM_FIRST && tag < BM_MEM_LAST);
+	assert(bootmem_is_initialized());
 
-	memranges_insert(&bootmem, start, size, type);
+	memranges_insert(&bootmem, start, size, tag);
 }
 
 void bootmem_write_memory_table(struct lb_memory *mem)
@@ -74,7 +98,7 @@ void bootmem_write_memory_table(struct lb_memory *mem)
 	memranges_each_entry(r, &bootmem) {
 		lb_r->start = pack_lb64(range_entry_base(r));
 		lb_r->size = pack_lb64(range_entry_size(r));
-		lb_r->type = range_entry_tag(r);
+		lb_r->type = bootmem_to_lb_tag(range_entry_tag(r));
 
 		lb_r++;
 		mem->size += sizeof(struct lb_memory_range);
@@ -82,21 +106,21 @@ void bootmem_write_memory_table(struct lb_memory *mem)
 }
 
 struct range_strings {
-	unsigned long tag;
+	enum bootmem_type tag;
 	const char *str;
 };
 
 static const struct range_strings type_strings[] = {
-	{ LB_MEM_RAM, "RAM" },
-	{ LB_MEM_RESERVED, "RESERVED" },
-	{ LB_MEM_ACPI, "ACPI" },
-	{ LB_MEM_NVS, "NVS" },
-	{ LB_MEM_UNUSABLE, "UNUSABLE" },
-	{ LB_MEM_VENDOR_RSVD, "VENDOR RESERVED" },
-	{ LB_MEM_TABLE, "CONFIGURATION TABLES" },
+	{ BM_MEM_RAM, "RAM" },
+	{ BM_MEM_RESERVED, "RESERVED" },
+	{ BM_MEM_ACPI, "ACPI" },
+	{ BM_MEM_NVS, "NVS" },
+	{ BM_MEM_UNUSABLE, "UNUSABLE" },
+	{ BM_MEM_VENDOR_RSVD, "VENDOR RESERVED" },
+	{ BM_MEM_TABLE, "CONFIGURATION TABLES" },
 };
 
-static const char *bootmem_range_string(unsigned long tag)
+static const char *bootmem_range_string(const enum bootmem_type tag)
 {
 	int i;
 
@@ -133,7 +157,7 @@ int bootmem_region_targets_usable_ram(uint64_t start, uint64_t size)
 			break;
 
 		if (start >= range_entry_base(r) && end <= range_entry_end(r)) {
-			if (range_entry_tag(r) == LB_MEM_RAM)
+			if (range_entry_tag(r) == BM_MEM_RAM)
 				return 1;
 		}
 	}
@@ -161,7 +185,7 @@ void *bootmem_allocate_buffer(size_t size)
 		if (range_entry_size(r) < size)
 			continue;
 
-		if (range_entry_tag(r) != LB_MEM_RAM)
+		if (range_entry_tag(r) != BM_MEM_RAM)
 			continue;
 
 		if (range_entry_base(r) >= max_addr)
@@ -188,7 +212,7 @@ void *bootmem_allocate_buffer(size_t size)
 	begin = end - size;
 
 	/* Mark buffer as unusuable for future buffer use. */
-	bootmem_add_range(begin, size, LB_MEM_UNUSABLE);
+	bootmem_add_range(begin, size, BM_MEM_UNUSABLE);
 
 	return (void *)(uintptr_t)begin;
 }

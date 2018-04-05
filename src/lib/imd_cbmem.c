@@ -300,7 +300,7 @@ void cbmem_add_bootmem(void)
 	size_t size = 0;
 
 	imd_region_used(cbmem_get_imd(), &baseptr, &size);
-	bootmem_add_range((uintptr_t)baseptr, size, LB_MEM_TABLE);
+	bootmem_add_range((uintptr_t)baseptr, size, BM_MEM_TABLE);
 }
 
 #if ENV_RAMSTAGE || (IS_ENABLED(CONFIG_EARLY_CBMEM_LIST) \

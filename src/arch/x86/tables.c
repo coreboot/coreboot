@@ -266,5 +266,5 @@ void bootmem_arch_add_ranges(void)
 	/* Memory from 0 through the forwarding_table is reserved. */
 	const uintptr_t base = 0;
 
-	bootmem_add_range(base, forwarding_table - base, LB_MEM_TABLE);
+	bootmem_add_range(base, forwarding_table - base, BM_MEM_TABLE);
 }

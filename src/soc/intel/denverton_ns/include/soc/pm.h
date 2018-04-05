@@ -24,6 +24,12 @@
 
 #define GPE_MAX 127
 
+/* P-state configuration */
+#define PSS_MAX_ENTRIES		15
+#define PSS_RATIO_STEP		1
+#define PSS_LATENCY_TRANSITION	10
+#define PSS_LATENCY_BUSMASTER	10
+
 struct chipset_power_state {
 	uint16_t pm1_sts;
 	uint16_t pm1_en;

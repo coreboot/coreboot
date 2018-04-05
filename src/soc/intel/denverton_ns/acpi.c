@@ -4,6 +4,7 @@
  * Copyright (C) 2007 - 2009 coresystems GmbH
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2014 - 2017 Intel Corporation.
+ * Copyright (C) 2018 Online SAS
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,11 +26,53 @@
 #include <device/pci.h>
 #include <cbmem.h>
 
+#include <intelblocks/acpi.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/soc_util.h>
 #include <soc/pmc.h>
 #include <soc/systemagent.h>
+
+#define MWAIT_RES(state, sub_state)                         \
+	{                                                   \
+		.addrl = (((state) << 4) | (sub_state)),    \
+		.space_id = ACPI_ADDRESS_SPACE_FIXED,       \
+		.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,    \
+		.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,    \
+		.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD, \
+	}
+
+#define CSTATE_RES(address_space, width, offset, address)		\
+	{								\
+	.space_id = address_space,					\
+	.bit_width = width,						\
+	.bit_offset = offset,						\
+	.addrl = address,						\
+	}
+
+static acpi_cstate_t cstate_map[] = {
+	{
+		/* C1 */
+		.ctype = 1,		/* ACPI C1 */
+		.latency = 2,
+		.power = 1000,
+		.resource = MWAIT_RES(0, 0),
+	},
+	{
+		.ctype = 2,		/* ACPI C2 */
+		.latency = 10,
+		.power = 10,
+		.resource = CSTATE_RES(ACPI_ADDRESS_SPACE_IO, 8, 0,
+				       ACPI_BASE_ADDRESS + 0x14),
+	},
+	{
+		.ctype = 3,		/* ACPI C3 */
+		.latency = 50,
+		.power = 10,
+		.resource = CSTATE_RES(ACPI_ADDRESS_SPACE_IO, 8, 0,
+				       ACPI_BASE_ADDRESS + 0x15),
+	}
+};
 
 void acpi_init_gnvs(global_nvs_t *gnvs)
 {
@@ -53,36 +96,20 @@ void acpi_init_gnvs(global_nvs_t *gnvs)
 	gnvs->tsegl = (u32)(get_top_of_low_memory() - get_tseg_memory());
 }
 
-static int acpi_sci_irq(void)
+uint32_t soc_read_sci_irq_select(void)
 {
-	int scis, sci_irq;
 	struct device *dev = get_pmc_dev();
 
 	if (!dev)
 		return 0;
 
-	/* Determine how SCI is routed. */
-	scis = pci_read_config32(dev, PMC_ACPI_CNT) & PMC_ACPI_CNT_SCIS_MASK;
-	switch (scis) {
-	case PMC_ACPI_CNT_SCIS_IRQ9:
-	case PMC_ACPI_CNT_SCIS_IRQ10:
-	case PMC_ACPI_CNT_SCIS_IRQ11:
-		sci_irq = scis - PMC_ACPI_CNT_SCIS_IRQ9 + 9;
-		break;
-	case PMC_ACPI_CNT_SCIS_IRQ20:
-	case PMC_ACPI_CNT_SCIS_IRQ21:
-	case PMC_ACPI_CNT_SCIS_IRQ22:
-	case PMC_ACPI_CNT_SCIS_IRQ23:
-		sci_irq = scis - PMC_ACPI_CNT_SCIS_IRQ20 + 20;
-		break;
-	default:
-		printk(BIOS_DEBUG, "Invalid SCI route! Defaulting to IRQ9.\n");
-		sci_irq = 9;
-		break;
-	}
+	return pci_read_config32(dev, PMC_ACPI_CNT);
+}
 
-	printk(BIOS_DEBUG, "SCI is IRQ%d\n", sci_irq);
-	return sci_irq;
+acpi_cstate_t *soc_get_cstate_map(size_t *entries)
+{
+	*entries = ARRAY_SIZE(cstate_map);
+	return cstate_map;
 }
 
 unsigned long acpi_fill_mcfg(unsigned long current)
@@ -103,38 +130,27 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-void acpi_fill_in_fadt(acpi_fadt_t *fadt)
+__attribute__ ((weak)) void motherboard_fill_fadt(acpi_fadt_t *fadt)
+{
+}
+
+void soc_fill_fadt(acpi_fadt_t *fadt)
 {
 	u16 pmbase = get_pmbase();
 
 	/* System Management */
-	fadt->sci_int = acpi_sci_irq();
-#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
-	fadt->smi_cmd = APM_CNT;
-	fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
-	fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
-#else
-	fadt->smi_cmd = 0x00;
-	fadt->acpi_enable = 0x00;
-	fadt->acpi_disable = 0x00;
-#endif
+	if (!IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+		fadt->smi_cmd = 0x00;
+		fadt->acpi_enable = 0x00;
+		fadt->acpi_disable = 0x00;
+	}
 
 	/* Power Control */
-	fadt->s4bios_req = 0x0;
-	fadt->pstate_cnt = 0;
-
-	fadt->pm1a_evt_blk = pmbase + PM1_STS;
-	fadt->pm1b_evt_blk = 0x0;
-	fadt->pm1a_cnt_blk = pmbase + PM1_CNT;
-	fadt->pm1b_cnt_blk = 0x0;
 	fadt->pm2_cnt_blk = pmbase + PM2_CNT;
 	fadt->pm_tmr_blk = pmbase + PM1_TMR;
-	fadt->gpe0_blk = pmbase + GPE0_STS(GPE_STD);
 	fadt->gpe1_blk = 0;
 
 	/* Control Registers - Length */
-	fadt->pm1_evt_len = 4;
-	fadt->pm1_cnt_len = 2;
 	fadt->pm2_cnt_len = 1;
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 8;
@@ -228,59 +244,16 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.access_size = 0;
 	fadt->x_gpe1_blk.addrl = fadt->gpe1_blk;
 	fadt->x_gpe1_blk.addrh = 0x00;
+
+	motherboard_fill_fadt(fadt);
 }
 
-void generate_cpu_entries(struct device *device)
+int soc_madt_sci_irq_polarity(int sci)
 {
-	int core;
-	int pcontrol_blk = get_pmbase(), plen = 6;
-	int num_cpus = get_cpu_count();
-
-	for (core = 0; core < num_cpus; core++) {
-		if (core > 0) {
-			pcontrol_blk = 0;
-			plen = 0;
-		}
-
-		/* Generate processor \_PR.CPUx */
-		acpigen_write_processor(core, pcontrol_blk, plen);
-
-		/* Generate  P-state tables */
-
-		/* Generate C-state tables */
-
-		/* Generate T-state tables */
-
-		acpigen_pop_len();
-	}
-	/* PPKG is usually used for thermal management
-	   of the first and only package. */
-	acpigen_write_processor_package("PPKG", 0, num_cpus);
-
-	/* Add a method to notify processor nodes */
-	acpigen_write_processor_cnot(num_cpus);
-}
-
-unsigned long acpi_madt_irq_overrides(unsigned long current)
-{
-	int sci_irq = acpi_sci_irq();
-	acpi_madt_irqoverride_t *irqovr;
-	uint16_t sci_flags = MP_IRQ_TRIGGER_LEVEL;
-
-	/* INT_SRC_OVR */
-	irqovr = (acpi_madt_irqoverride_t *)current;
-	current += acpi_create_madt_irqoverride(irqovr, 0, 0, 2, 0);
-
-	if (sci_irq >= 20)
-		sci_flags |= MP_IRQ_POLARITY_LOW;
+	if (sci >= 20)
+		return MP_IRQ_POLARITY_LOW;
 	else
-		sci_flags |= MP_IRQ_POLARITY_HIGH;
-
-	irqovr = (acpi_madt_irqoverride_t *)current;
-	current += acpi_create_madt_irqoverride(irqovr, 0, (u8)sci_irq, sci_irq,
-						sci_flags);
-
-	return current;
+		return MP_IRQ_POLARITY_HIGH;
 }
 
 unsigned long southcluster_write_acpi_tables(struct device *device,

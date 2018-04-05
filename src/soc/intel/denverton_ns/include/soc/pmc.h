@@ -38,6 +38,17 @@
 #define PMC_ACPI_CNT_SCIS_IRQ21 0x05
 #define PMC_ACPI_CNT_SCIS_IRQ22 0x06
 #define PMC_ACPI_CNT_SCIS_IRQ23 0x07
+
+#define SCI_IRQ_ADJUST		0
+#define SCI_IRQ_SEL		(0x07 << SCI_IRQ_ADJUST)
+#define SCIS_IRQ9		0x00
+#define SCIS_IRQ10		0x01
+#define SCIS_IRQ11		0x02
+#define SCIS_IRQ20		0x04
+#define SCIS_IRQ21		0x05
+#define SCIS_IRQ22		0x06
+#define SCIS_IRQ23		0x07
+
 #define PMC_PWRM_BASE   0x48 /* MEM BAR */
 #define   MASK_PMC_PWRM_BASE    0xfffff000 /* 4K alignment */
 #define PMC_GEN_PMCON_A               0xA0

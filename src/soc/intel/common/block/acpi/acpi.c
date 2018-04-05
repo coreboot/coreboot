@@ -31,7 +31,7 @@
 #include <soc/nvs.h>
 #include <soc/pm.h>
 
-unsigned long acpi_fill_mcfg(unsigned long current)
+__attribute__((weak)) unsigned long acpi_fill_mcfg(unsigned long current)
 {
 	/* PCI Segment Group 0, Start Bus Number 0, End Bus Number is 255 */
 	current += acpi_create_mcfg_mmconfig((void *)current,
@@ -180,6 +180,7 @@ uint32_t acpi_fill_soc_wake(uint32_t generic_pm1_en,
 	return generic_pm1_en;
 }
 
+#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_ACPI_WAKE_SOURCE)
 /*
  * Save wake source information for calculating ACPI _SWS values
  *
@@ -218,6 +219,7 @@ static int acpi_fill_wake(uint32_t *pm1, uint32_t **gpe0)
 
 	return GPE0_REG_MAX;
 }
+#endif
 
 __weak void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {

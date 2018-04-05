@@ -27,7 +27,7 @@
 /* EC SMI */
 #define EC_SMI_GPI	GPIO_41
 
-#define GPE_EC_WAKE	GPE0_DW1_06
+#define GPE_EC_WAKE	GPE0_DW2_01
 
 #define GPIO_EC_IN_RW	GPIO_189
 

@@ -200,7 +200,7 @@ static const struct pad_config gpio_table[] = {
 	// TODO check if it is ok to set to GPIROUTSCI (as in Coral/Reef and others).
 	// Settings here do not match table
 	// Also we may be able to use eSPI WAKE# Virtual Wire instead
-	PAD_CFG_GPI_SCI_IOS(GPIO_141, UP_20K, DEEP, EDGE_SINGLE, INVERT, TxDRxE, DISPUPD),/* GPIO_141 -- EC_PCH_WAKE_ODL */
+	PAD_CFG_GPI_SCI_IOS(GPIO_141, UP_20K, DEEP, EDGE_SINGLE, INVERT, IGNORE, SAME),/* GPIO_141 -- EC_PCH_WAKE_ODL */
 	PAD_CFG_GPI_SCI_LOW(GPIO_142, NONE, DEEP, LEVEL),/* GPIO_142 -- TRACKPAD_INT2_1V8_ODL */
 	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_143, 1, DEEP, UP_20K, HIZCRx1, ENPU),/* GPIO_143 -- LTE_SAR_ODL */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_144, NONE, DEEP, NF5, HIZCRx0, DISPUPD),/* PANEL1_VDDN */

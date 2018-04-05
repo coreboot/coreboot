@@ -16,6 +16,7 @@
 #include <soc/soc_util.h>
 #include <soc/pmc.h>
 #include <soc/systemagent.h>
+#include <soc/pci_devs.h>
 
 #define MWAIT_RES(state, sub_state)                         \
 	{                                                   \
@@ -268,3 +269,54 @@ void southcluster_inject_dsdt(const struct device *device)
 }
 
 __weak void acpi_create_serialio_ssdt(acpi_header_t *ssdt) {}
+
+static unsigned long acpi_fill_dmar(unsigned long current)
+{
+	uint64_t vtbar;
+	unsigned long tmp = current;
+
+	vtbar = read64((void *)(DEFAULT_MCHBAR + MCH_VTBAR_OFFSET)) & MCH_VTBAR_MASK;
+	printk(BIOS_DEBUG, "DEFVTBAR:0x%llx\n", vtbar);
+	if (!vtbar)
+		return current;
+
+	current += acpi_create_dmar_drhd(current,
+			DRHD_INCLUDE_PCI_ALL, 0, vtbar);
+
+	current += acpi_create_dmar_ds_ioapic(current,
+			2, PCH_IOAPIC_PCI_BUS, PCH_IOAPIC_PCI_SLOT, 0);
+	current += acpi_create_dmar_ds_msi_hpet(current,
+			0, PCH_HPET_PCI_BUS, PCH_HPET_PCI_SLOT, 0);
+
+	acpi_dmar_drhd_fixup(tmp, current);
+
+	/* Create RMRR; see "VTD PLATFORM CONFIGURATION" in FSP log */
+	tmp = current;
+	current += acpi_create_dmar_rmrr(current, 0,
+					 RMRR_USB_BASE_ADDRESS,
+					 RMRR_USB_LIMIT_ADDRESS);
+	current += acpi_create_dmar_ds_pci(current,
+			0, XHCI_DEV, XHCI_FUNC);
+	acpi_dmar_rmrr_fixup(tmp, current);
+
+	return current;
+}
+
+unsigned long systemagent_write_acpi_tables(const struct device *dev,
+					    unsigned long current,
+					    struct acpi_rsdp *const rsdp)
+{
+	/* Create DMAR table only if we have VT-d capability. */
+	const u32 capid0_a = pci_read_config32(dev, CAPID0_A);
+	if (capid0_a & VTD_DISABLE)
+		return current;
+
+	acpi_dmar_t *const dmar = (acpi_dmar_t *)current;
+	printk(BIOS_DEBUG, "ACPI:    * DMAR\n");
+	acpi_create_dmar(dmar, DMAR_INTR_REMAP, acpi_fill_dmar);
+	current += dmar->header.length;
+	current = acpi_align_current(current);
+	acpi_add_table(rsdp, dmar);
+
+	return current;
+}

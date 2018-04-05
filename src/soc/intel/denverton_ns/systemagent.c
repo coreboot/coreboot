@@ -15,6 +15,7 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
+#include <soc/acpi.h>
 
 #define _1ms 1
 #define WAITING_STEP 100
@@ -325,6 +326,9 @@ static struct device_operations systemagent_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init = systemagent_init,
 	.ops_pci = &soc_pci_ops,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.write_acpi_tables = systemagent_write_acpi_tables,
+#endif
 };
 
 /* IDs for System Agent device of Intel Denverton SoC */

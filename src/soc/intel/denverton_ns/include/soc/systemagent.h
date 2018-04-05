@@ -31,6 +31,9 @@
 #define TOLUD 0xbc /* Top of Low Used Memory */
 #define MASK_TOLUD 0xFFF00000
 
+#define CAPID0_A	0xe4
+#define  VTD_DISABLE	(1 << 23)
+
 /* SideBand B-UNIT */
 #define B_UNIT 3
 
@@ -56,6 +59,10 @@
 	0x02 /* Bit 1: 1 - reads targeting E-segment are routed to DRAM. */
 #define MCH_BMISC_RESDRAM \
 	0x01 /* Bit 0: 1 - reads targeting E-segment are routed to DRAM. */
+
+#define MCH_VTBAR_OFFSET		0x6c80
+#define  MCH_VTBAR_ENABLE_MASK		0x1
+#define  MCH_VTBAR_MASK			0x7ffffff000
 
 #define MCH_BAR_BIOS_RESET_CPL 0x7078
 #define RST_CPL_BIT (1 << 0)

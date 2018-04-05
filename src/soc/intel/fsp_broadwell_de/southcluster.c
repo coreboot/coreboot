@@ -263,6 +263,16 @@ void southcluster_enable_dev(device_t dev)
 	}
 }
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+static const char *lpc_acpi_name(const struct device *dev)
+{
+	if (dev->path.pci.devfn == LPC_DEV_FUNC)
+		return "LPC0";
+	else
+		return NULL;
+}
+#endif
+
 static struct device_operations device_ops = {
 	.read_resources   = sc_read_resources,
 	.set_resources    = pci_dev_set_resources,
@@ -271,6 +281,9 @@ static struct device_operations device_ops = {
 	.enable           = southcluster_enable_dev,
 	.scan_bus         = scan_lpc_bus,
 	.ops_pci          = &soc_pci_ops,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.acpi_name        = lpc_acpi_name,
+#endif
 };
 
 static const struct pci_driver southcluster __pci_driver = {

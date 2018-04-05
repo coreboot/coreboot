@@ -21,6 +21,22 @@ config FSP_LOC
 	  The Broadwell-DE FSP is built with a preferred base address of
 	  0xffeb0000.
 
+config DCACHE_RAM_BASE
+	hex
+	default 0xfe100000
+	help
+	  This address needs to match the setup performed inside FSP.
+	  On Broadwell-DE the FSP allocates temporary RAM starting at 0xfe100000.
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+	help
+	  The DCACHE is shared between FSP itself and the rest of the coreboot
+	  stages. A size of 0x8000 works fine while providing enough space for
+	  features like VBOOT in verstage. Further increase to a power of two
+	  aligned value leads to errors in FSP.
+
 config FSP_MEMORY_DOWN
 	bool "Enable Memory Down"
 	default n

@@ -14,12 +14,15 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 
 ## [Unreleased]
 
-## [v4.6.8] - 2018-03-22
+## [v4.6.8] - 2018-04-06
 ### Added
 - Full feature and build support for APU1
+- Serial console enable with S1 button feature
 
 ### Changed
 - Updated sortbootorder to v4.6.8
+- Switched from IDE to AHCI mode for SATA controller
+- Updated SeaBIOS to 1.11.0.4
 
 ## [v4.6.7] - 2018-03-01
 ### Fixed

@@ -204,7 +204,7 @@ static void config_gpio_mux(void)
 	}
 }
 
-static size_t get_bootorder_cbfs_offset(const char *name, uint32_t type)
+size_t get_bootorder_cbfs_offset(const char *name, uint32_t type)
 {
 	struct region_device rdev;
 	const struct region_device *boot_dev;
@@ -236,7 +236,7 @@ static size_t get_bootorder_cbfs_offset(const char *name, uint32_t type)
 	return (size_t) rdev_relative_offset(boot_dev, &fh.data);
 }
 
-static int find_knob_index(const char *s, const char *pattern)
+int find_knob_index(const char *s, const char *pattern)
 {
 
 	int pattern_index = 0;

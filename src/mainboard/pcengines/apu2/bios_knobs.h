@@ -26,6 +26,8 @@ bool check_uartc(void);
 bool check_uartd(void);
 bool check_ehci0(void);
 bool check_mpcie2_clk(void);
+int find_knob_index(const char *s, const char *pattern);
+size_t get_bootorder_cbfs_offset(const char *name, uint32_t type);
 
 
 #endif

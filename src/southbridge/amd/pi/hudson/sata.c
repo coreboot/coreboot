@@ -35,6 +35,9 @@ static void sata_init(struct device *dev)
 	#define UNLOCK_BIT (1<<0)
 	#define SATA_CAPABILITIES_REG 0xFC
 	#define CFG_CAP_SPM (1<<12)
+	#define SATA_REV_SUBCLASS_REG 0x08
+	#define SUBCLASS_AHCI_MODE 0x60000
+	#define SATA_PROGRAMIF_AHCI 0x100
 
 	volatile u32 *ahci_ptr =
 		(u32*)(pci_read_config32(dev, AHCI_BASE_ADDRESS_REG) & 0xFFFFFF00);
@@ -47,6 +50,11 @@ static void sata_init(struct device *dev)
 
 	/* set the SATA AHCI mode to allow port expanders */
 	*(ahci_ptr + BYTE_TO_DWORD_OFFSET(SATA_CAPABILITIES_REG)) |= CFG_CAP_SPM;
+
+	/* enable AHCI mode */
+	temp = pci_read_config32(dev, SATA_REV_SUBCLASS_REG);
+	temp = (temp & 0xFF0070FF) | SUBCLASS_AHCI_MODE | SATA_PROGRAMIF_AHCI;
+	pci_write_config32(dev, SATA_REV_SUBCLASS_REG, temp);
 
 	/* lock the write-protect */
 	temp = pci_read_config32(dev, MISC_CONTROL_REG);

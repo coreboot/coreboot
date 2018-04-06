@@ -30,7 +30,7 @@
 #
 
 if [ -z "$1" ] || [ -z "$2" ]; then
-	printf "Usage: %s <output file> \"<microcode .h files>\"\n" "$0"
+	printf "Usage: %s <output file> \"<microcode .h files>\"\\n" "$0"
 fi
 
 OUTFILE=$1
@@ -40,8 +40,24 @@ cat > "${TMPFILE}.c" << EOF
 unsigned int microcode[] = {
 EOF
 
-for UCODE in ${@:2}; do
-	echo "#include \"$UCODE\"" >> "${TMPFILE}.c"
+include_file() {
+    if [ "${1: -4}" == ".inc" ]; then
+        awk '{gsub( /h.*$/, "", $2 ); print "0x" $2 ","; }' "$1" \
+            >> "${TMPFILE}.c"
+    else
+        echo "#include \"$1\"" >> "${TMPFILE}.c"
+    fi
+}
+
+for UCODE in "${@:2}"; do
+    if [ -d "$UCODE" ]; then
+        for f in "$UCODE/"*.inc
+        do
+            include_file "$f"
+        done
+    else
+        include_file "$UCODE"
+    fi
 done
 
 cat >> "${TMPFILE}.c" << EOF

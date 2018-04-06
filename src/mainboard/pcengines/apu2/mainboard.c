@@ -34,6 +34,10 @@
 #include <spd_bin.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
+#include <boot_device.h>
+#include <cbfs.h>
+#include <commonlib/region.h>
+#include <commonlib/cbfs.h>
 #include "gpio_ftns.h"
 #include "bios_knobs.h"
 
@@ -43,6 +47,8 @@
 
 #define SEC_REG_SERIAL_ADDR 0x1000
 #define MAX_SERIAL_LEN	    10
+
+#define BOOTORDER_FILE "bootorder"
 
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
@@ -198,6 +204,67 @@ static void config_gpio_mux(void)
 	}
 }
 
+static size_t get_bootorder_cbfs_offset(const char *name, uint32_t type)
+{
+	struct region_device rdev;
+	const struct region_device *boot_dev;
+	struct cbfs_props props;
+	struct cbfsf fh;
+
+	boot_dev = boot_device_ro();
+
+	if (boot_dev == NULL) {
+		printk(BIOS_WARNING, "Can't init CBFS boot device\n");
+		return 0;
+	}
+
+	if (cbfs_boot_region_properties(&props)) {
+		printk(BIOS_WARNING, "Can't locate CBFS\n");
+		return 0;
+	}
+
+	if (rdev_chain(&rdev, boot_dev, props.offset, props.size)) {
+		printk(BIOS_WARNING, "Rdev chain failed\n");
+		return 0;
+	}
+
+	if (cbfs_locate(&fh, &rdev, name, &type)) {
+		printk(BIOS_WARNING, "Can't locate file in CBFS\n");
+		return 0;
+	}
+
+	return (size_t) rdev_relative_offset(boot_dev, &fh.data);
+}
+
+static int find_knob_index(const char *s, const char *pattern)
+{
+
+	int pattern_index = 0;
+	char *result = (char *) s;
+	char *lpattern = (char *) pattern;
+
+	while (*result && *pattern ) {
+		if ( *lpattern == 0)  // the pattern matches return the pointer
+			return pattern_index;
+		if ( *result == 0)  // We're at the end of the file content but don't have a patter match yet
+			return -1;
+		if (*result == *lpattern ) {
+			// The string matches, simply advance
+			result++;
+			pattern_index++;
+			lpattern++;
+		} else {
+			// The string doesn't match restart the pattern
+			result++;
+			pattern_index++;
+			lpattern = (char *) pattern;
+		}
+	}
+
+	return -1;
+
+}
+
 /**********************************************
  * enable the dedicated function in mainboard.
  **********************************************/
@@ -259,6 +326,91 @@ static void mainboard_final(void *chip_info)
 	//
 	write_gpio(GPIO_58, 1);
 	write_gpio(GPIO_59, 1);
+
+#if CONFIG_BOARD_PCENGINES_APU2 || CONFIG_BOARD_PCENGINES_APU3 || CONFIG_BOARD_PCENGINES_APU4
+	if (!check_console()) {
+
+		//
+		// The console is disabled, check if S1 is pressed and enable if so
+		//
+		if (!read_gpio(GPIO_32)) {
+
+			printk(BIOS_INFO, "S1 PRESSED\n");
+
+			const struct spi_flash *flash = NULL;
+			size_t fsize, offset;
+			char* bootorder_file = NULL;
+			int knob_index;
+			char *bootorder_copy;
+
+			bootorder_file = cbfs_boot_map_with_leak("bootorder", CBFS_TYPE_RAW, &fsize);
+
+			if (bootorder_file == NULL){
+				printk(BIOS_WARNING, "Could not mmap bootorder\n");
+				return;
+			}
+
+			if (fsize & 0xFFF) {
+				printk(BIOS_WARNING,"The bootorder file is not 4k aligned\n");
+				return;
+			}
+
+			offset = get_bootorder_cbfs_offset("bootorder", CBFS_TYPE_RAW);
+
+			if(offset == -1) {
+				printk(BIOS_WARNING,"Failed to retrieve bootorder file offset\n");
+				return;
+			}
+
+			bootorder_copy = (char *)malloc(fsize);
+
+			if(bootorder_copy == NULL) {
+				printk(BIOS_WARNING,"Failed to allocate memory for bootorder\n");
+				return;
+			}
+
+			if(memcpy(bootorder_copy, bootorder_file, fsize) == NULL) {
+				printk(BIOS_WARNING,"Copying bootorder failed\n");
+				free(bootorder_copy);
+				return;
+			}
+
+			knob_index = find_knob_index(bootorder_copy, "scon");
+
+			if(knob_index == -1){
+				printk(BIOS_WARNING,"scon knob not found in bootorder\n");
+				free(bootorder_copy);
+				return;
+			}
+
+			*(bootorder_copy + knob_index) = '1';
+
+			flash = boot_device_spi_flash();
+
+			if (flash == NULL) {
+				printk(BIOS_WARNING, "Can't get boot flash device\n");
+				free(bootorder_copy);
+				return;
+			}
+
+			if (spi_flash_erase(flash, (u32) offset, fsize)) {
+				printk(BIOS_WARNING, "SPI erase failed\n");
+				free(bootorder_copy);
+				return;
+			}
+
+			if (spi_flash_write(flash, offset, fsize, bootorder_copy)) {
+				printk(BIOS_WARNING, "SPI write failed\n");
+				free(bootorder_copy);
+				return;
+			} else {
+				printk(BIOS_INFO, "Bootorder write successed\n");
+			}
+
+			free(bootorder_copy);
+		}
+	}
+#endif
 }
 
 /*

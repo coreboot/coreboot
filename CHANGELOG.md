@@ -14,6 +14,16 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 
 ## [Unreleased]
 
+## [v4.6.8] - 2018-04-06
+### Added
+- Full feature and build support for APU1
+- Serial console enable with S1 button feature
+
+### Changed
+- Updated sortbootorder to v4.6.8
+- Switched from IDE to AHCI mode for SATA controller
+- Updated SeaBIOS to 1.11.0.4
+
 ## [v4.6.7] - 2018-03-01
 ### Fixed
 - SD cards performance drop
@@ -27,10 +37,10 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 - Updated SeaBIOS to 1.11.0.3
 
 ### Fixed
-- memtest86+ screen refresh for serial
+- Memtest86+ screen refresh for serial
 
 ### Added
-- enabled ATA UDMA in SeaBIOS
+- Enabled ATA UDMA in SeaBIOS
 
 ## [v4.6.5] - 2017-12-29
 ### Added
@@ -158,7 +168,8 @@ redundant code which was similar for APU2/3/5 boards.
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.7...coreboot-4.6.x
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.8...coreboot-4.6.x
+[v4.6.8]: https://github.com/pcengines/coreboot/compare/v4.6.7...v4.6.8
 [v4.6.7]: https://github.com/pcengines/coreboot/compare/v4.6.6...v4.6.7
 [v4.6.6]: https://github.com/pcengines/coreboot/compare/v4.6.5...v4.6.6
 [v4.6.5]: https://github.com/pcengines/coreboot/compare/v4.6.4...v4.6.5

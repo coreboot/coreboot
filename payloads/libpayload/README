@@ -14,7 +14,7 @@ See https://www.coreboot.org for details on coreboot.
 Installation
 ------------
 
- $ git clone https://review.coreboot.org/p/coreboot.git
+ $ git clone https://review.coreboot.org/coreboot.git
 
  $ cd coreboot/payloads/libpayload
 

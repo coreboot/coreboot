@@ -18,7 +18,7 @@ for details on coreboot), but it may also be useful for other things.
 Installation
 ------------
 
- $ git clone https://review.coreboot.org/p/coreboot.git
+ $ git clone https://review.coreboot.org/coreboot.git
 
  $ cd coreboot/util/superiotool
 

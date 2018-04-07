@@ -267,12 +267,12 @@
 #define GPIO_GPE_NW_31_0	0
 #define GPIO_GPE_NW_63_32	1
 #define GPIO_GPE_NW_95_63	2
-#define GPIO_GPE_N_31_0		3
-#define GPIO_GPE_N_63_32	4
-#define GPIO_GPE_N_95_64	5
-#define GPIO_GPE_AUDIO_31_0	6
-#define GPIO_GPE_SCC_31_0	7
-#define GPIO_GPE_SCC_63_32	8
+#define GPIO_GPE_N_31_0		4
+#define GPIO_GPE_N_63_32	5
+#define GPIO_GPE_N_95_64	6
+#define GPIO_GPE_AUDIO_31_0	7
+#define GPIO_GPE_SCC_31_0	8
+#define GPIO_GPE_SCC_63_32	9
 
 #define GPIO_MAX_NUM_PER_GROUP	32
 

@@ -168,6 +168,18 @@ const char *arch_to_string(uint32_t a)
 	return ret;
 }
 
+void print_supported_architectures(void)
+{
+	size_t i;
+
+	for (i = 0; i < ARRAY_SIZE(arch_names); i++) {
+		printf(i == 0? "  ":", ");
+		printf("%s", arch_names[i].name);
+	}
+
+	printf("\n");
+}
+
 void print_supported_filetypes(void)
 {
 	int i, number = ARRAY_SIZE(filetypes);

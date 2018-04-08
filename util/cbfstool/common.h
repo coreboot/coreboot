@@ -204,6 +204,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
 				uint32_t *location, const char *ignore_section);
 
+void print_supported_architectures(void);
 void print_supported_filetypes(void);
 
 /* lzma/lzma.c */

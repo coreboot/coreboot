@@ -1350,10 +1350,11 @@ static void usage(char *name)
 	     "  in two possible formats: if their value is greater than\n"
 	     "  0x80000000, they are interpreted as a top-aligned x86 memory\n"
 	     "  address; otherwise, they are treated as an offset into flash.\n"
-	     "ARCHes:\n"
-	     "  arm64, arm, mips, x86\n"
-	     "TYPEs:\n", name, name
+	     "ARCHes:\n", name, name
 	    );
+	print_supported_architectures();
+
+	printf("TYPEs:\n");
 	print_supported_filetypes();
 
 	printf(

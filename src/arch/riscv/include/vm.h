@@ -42,7 +42,7 @@ void mstatus_init(void); // need to setup mstatus so we know we have virtual mem
 	static inline type name(type *p);				\
 	static inline type name(type *p)				\
 	{								\
-		int mprv = MSTATUS_MPRV;				\
+		size_t mprv = MSTATUS_MPRV;				\
 		type value;						\
 		asm (							\
 			"csrs		mstatus, %1\n"			\
@@ -57,7 +57,7 @@ void mstatus_init(void); // need to setup mstatus so we know we have virtual mem
 	static inline void name(type *p, type value);			\
 	static inline void name(type *p, type value)			\
 	{								\
-		int mprv = MSTATUS_MPRV;				\
+		size_t mprv = MSTATUS_MPRV;				\
 		asm (							\
 			"csrs		mstatus, %0\n"			\
 			STRINGIFY(insn) " %1, 0(%2)\n"			\

@@ -23,7 +23,7 @@
 #include <soc/iomap.h>
 #include <types.h>
 
-#define GPIO_EDGEL_TRIG		(0 << 8)
+#define GPIO_EDGE_TRIG		(0 << 8)
 #define GPIO_LEVEL_TRIG		(1 << 8)
 #define GPIO_TRIGGER_MASK	(1 << 8)
 

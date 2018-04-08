@@ -173,9 +173,9 @@ void print_supported_filetypes(void)
 	int i, number = ARRAY_SIZE(filetypes);
 
 	for (i=0; i<number; i++) {
-		LOG(" %s%c", filetypes[i].name, (i==(number-1))?'\n':',');
+		printf(" %s%c", filetypes[i].name, (i==(number-1))?'\n':',');
 		if ((i%8) == 7)
-			LOG("\n");
+			printf("\n");
 	}
 }
 

@@ -1,33 +1,31 @@
-Table of Contents
-=================
+# Timestamps
+
+## Table of Contents
+
 Introduction
-	Transition from cache to cbmem
+- Transition from cache to cbmem
 
 Data structures used
-	cache_state
-	table
-	entries
+- cache_state
+- table
+- entries
 
 Function APIs
-	timestamp_init
-	timestamp_add
-	timestamp_add_now
-	timestamp_sync
+- timestamp_init
+- timestamp_add
+- timestamp_add_now
+- timestamp_sync
 
 Use / Test Cases
-	Case 1: Timestamp Region Exists
-	Case 2: No timestamp region, fresh boot, cbmem_initialize called after
-	timestamp_init
-	Case 3: No timestamp region, fresh boot, cbmem_initialize called before
-	timestamp_init
-	Case 4: No timestamp region, resume, cbmem_initialize called after
-	timestamp_init
-	Case 5: No timestamp region, resume, cbmem_initialize called before
-	timestamp_init
+- Case 1: Timestamp Region Exists
+- Case 2: No timestamp region, fresh boot, cbmem_initialize called after timestamp_init
+- Case 3: No timestamp region, fresh boot, cbmem_initialize called before timestamp_init
+- Case 4: No timestamp region, resume, cbmem_initialize called after timestamp_init
+- Case 5: No timestamp region, resume, cbmem_initialize called before timestamp_init
 
 
-Introduction
-============
+## Introduction
+
 The aim of the timestamp library is to make it easier for different boards
 to  save timestamps in cbmem / stash (until cbmem is brought up) by
 providing a simple API to initialize, add and sync timestamps. In order
@@ -51,8 +49,8 @@ Behind the scenes, the timestamp library takes care of:
 3. Add a new cbmem timestamp area based on whether a reset of the cbmem
    timestamp region is required or not.
 
-Transition from cache to cbmem
-------------------------------
+### Transition from cache to cbmem
+
 To move timestamps from the cache to cbmem (and initialize the cbmem area in
 the first place), we use the CBMEM_INIT_HOOK infrastructure of coreboot.
 
@@ -62,25 +60,30 @@ copies all timestamps to cbmem and disables the cache.
 After such a transition, timestamp_init() must not be run again.
 
 
-Data structures used
-====================
+## Data structures used
+
 The main structure that maintains information about the timestamp cache is:
+
+```
 struct __packed timestamp_cache {
         uint16_t cache_state;
         struct timestamp_table table;
         struct timestamp_entry entries[MAX_TIMESTAMP_CACHE];
 };
+```
 
-cache_state
------------
-The state of the cache is maintained by cache_state attribute which can
+### cache_state
+
+The state of the cache is maintained by `cache_state` attribute which can
 be any one of the following:
 
+```
 enum {
         TIMESTAMP_CACHE_UNINITIALIZED = 0,
         TIMESTAMP_CACHE_INITIALIZED,
         TIMESTAMP_CACHE_NOT_NEEDED,
 };
+```
 
 By default, if the cache is stored in local stash (bss area), then
 it will be reset to uninitialized state. However, if the cache is
@@ -89,112 +92,109 @@ attributes. Thus, if the timestamp region is being used by any board, it is
 initialized to default values by the library.
 
 Once the cache is initialized, its state is set to
-CACHE_INITIALIZED. Henceforth, the calls to cache i.e. timestamp_add
+`CACHE_INITIALIZED`. Henceforth, the calls to cache i.e. `timestamp_add`
 know that the state reflected is valid and timestamps can be directly
 saved in the cache.
 
-Once the cbmem area is up (i.e. call to timestamp_sync_cache_to_cbmem),
+Once the cbmem area is up (i.e. call to `timestamp_sync_cache_to_cbmem`),
 we do not need to store the timestamps in local stash / timestamp area
-anymore. Thus, the cache state is set to CACHE_NOT_NEEDED, which allows
-timestamp_add to store all timestamps directly into the cbmem area.
+anymore. Thus, the cache state is set to `CACHE_NOT_NEEDED`, which allows
+`timestamp_add` to store all timestamps directly into the cbmem area.
 
 
-table
------
+### table
+
 This field is represented by a structure which provides overall
 information about the entries in the timestamp area:
 
+```
 struct timestamp_table {
         uint64_t        base_time;
         uint32_t        max_entries;
         uint32_t        num_entries;
         struct timestamp_entry entries[0]; /* Variable number of entries */
 } __packed;
+```
 
 It indicates the base time for all timestamp entries, maximum number
 of entries that can be stored, total number of entries that currently
 exist and an entry structure to hold variable number of entries.
 
 
-entries
--------
+### entries
+
 This field holds the details of each timestamp entry, upto a maximum
-of MAX_TIMESTAMP_CACHE which is defined as 16 entries. Each entry is
+of `MAX_TIMESTAMP_CACHE` which is defined as 16 entries. Each entry is
 defined by:
 
+```
 struct timestamp_entry {
         uint32_t        entry_id;
         uint64_t        entry_stamp;
 } __packed;
+```
 
-entry_id holds the timestamp id corresponding to this entry and
-entry_stamp holds the actual timestamp.
-
-
-For timestamps stored in the cbmem area, a timestamp_table is allocated
-with space for MAX_TIMESTAMPS equal to 30. Thus, the cbmem area holds
-base_time, max_entries (which is 30), current number of entries and the
-actual entries represented by timestamp_entry.
+`entry_id` holds the timestamp id corresponding to this entry and
+`entry_stamp` holds the actual timestamp.
 
 
-Function APIs
-=============
+For timestamps stored in the cbmem area, a `timestamp_table` is allocated
+with space for `MAX_TIMESTAMPS` equal to 30. Thus, the cbmem area holds
+`base_time`, `max_entries` (which is 30), current number of entries and the
+actual entries represented by `timestamp_entry`.
 
-timestamp_init
---------------
+
+## Function APIs
+
+### timestamp_init
+
 This function initializes the timestamp cache and should be run as early
 as possible. On platforms with SRAM, this might mean in bootblock, on
 x86 with its CAR backed memory in romstage, this means romstage before
 memory init.
 
-timestamp_add
--------------
+### timestamp_add
+
 This function accepts from user a timestamp id and time to record in the
 timestamp table. It stores the entry in the appropriate table in cbmem
-or _timestamp region or local stash.
+or `_timestamp` region or local stash.
 
 
-timestamp_add_now
------------------
-This function calls timestamp_add with user-provided id and current time.
+### timestamp_add_now
+
+This function calls `timestamp_add` with user-provided id and current time.
 
 
-Use / Test Cases
-================
+## Use / Test Cases
 
 The following cases have been considered while designing the timestamp
 library. It is important to ensure that any changes made to this library satisfy
 each of the following use cases:
 
-Case 1: Timestamp Region Exists (Fresh Boot / Resume)
------------------------------------------------------
+### Case 1: Timestamp Region Exists (Fresh Boot / Resume)
 
-In this case, the library needs to call timestamp_init as early as possible to
+In this case, the library needs to call `timestamp_init` as early as possible to
 enable the timestamp cache. Once cbmem is available, the values will be
 transferred automatically.
 
 All regions are automatically reset on initialization.
 
-Case 2: No timestamp region, fresh boot, cbmem_initialize called after timestamp_init
--------------------------------------------------------------------------------------
+### Case 2: No timestamp region, fresh boot, cbmem_initialize called after timestamp_init
 
-timestamp_init will set up a local cache. cbmem must be initialized before that
+`timestamp_init` will set up a local cache. cbmem must be initialized before that
 cache vanishes - as happens when jumping to the next stage.
 
-Case 3: No timestamp region, fresh boot, cbmem_initialize called before timestamp_init
---------------------------------------------------------------------------------------
+### Case 3: No timestamp region, fresh boot, cbmem_initialize called before timestamp_init
 
-This case is not supported right now, just don't call timestamp_init after
-cbmem_initialize. (Patches to make this more robust are welcome.)
+This case is not supported right now, just don't call `timestamp_init` after
+`cbmem_initialize`. (Patches to make this more robust are welcome.)
 
-Case 4: No timestamp region, resume, cbmem_initialize called after timestamp_init
----------------------------------------------------------------------------------
+### Case 4: No timestamp region, resume, cbmem_initialize called after timestamp_init
 
 We always reset the cbmem region before using it, so pre-suspend timestamps
 will be gone.
 
-Case 5: No timestamp region, resume, cbmem_initialize called before timestamp_init
-----------------------------------------------------------------------------------
+### Case 5: No timestamp region, resume, cbmem_initialize called before timestamp_init
 
 We always reset the cbmem region before using it, so pre-suspend timestamps
 will be gone.

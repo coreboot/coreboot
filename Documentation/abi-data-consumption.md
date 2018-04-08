@@ -1,9 +1,11 @@
+# ABI data consumption
+
 This text describes the ABI coreboot presents to downstream users. Such
 users are payloads and/or operating systems. Therefore, this text serves
 at what can be relied on for downstream consumption. Anything not explicitly
 listed as consumable is subject to change without notice.
 
-Background and Usage
+## Background and Usage
 
 coreboot passes information to downstream users using coreboot tables. These
 table definitions can be found in src/include/boot/coreboot_tables.h and

@@ -35,5 +35,4 @@ code for boards that are not yet merged.
 
 = Vendor trees =
 Some vendors have their own coreboot trees/fork, like for instance:
-* [https://mirror.wazo.community/iso/archives/git/xioh/coreboot.git.tar.bz2 xivo's tree]
 * [http://git.chromium.org/gitweb/?p=chromiumos/third_party/coreboot.git;a=summary chrome/chromium's tree]

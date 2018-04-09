@@ -39,6 +39,9 @@ ramstage-y += gpio.c
 ramstage-y += clock.c
 ramstage-$(CONFIG_SDM845_QSPI) += qspi.c
 ramstage-y += usb.c
+ramstage-y += gpio.c
+ramstage-y += clock.c
+ramstage-y += aop_load_reset.c
 
 ################################################################################
 

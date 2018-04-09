@@ -123,11 +123,6 @@ check_member(sdm845_gcc, usb3_phy_sec_bcr, 0x5000c);
 check_member(sdm845_gcc, usb3phy_phy_sec_bcr, 0x50010);
 check_member(sdm845_gcc, apcs_clk_br_en1, 0x5200c);
 
-struct sdm845_aoss {
-	u8 _res[0x2c];
-	u32 aoss_cc_apcs_misc;
-};
-
 enum clk_ctl_gpll_user_ctl {
 	CLK_CTL_GPLL_PLLOUT_EVEN_BMSK	= 0x2,
 	CLK_CTL_GPLL_PLLOUT_MAIN_SHFT	= 0,
@@ -201,7 +196,6 @@ struct clock_config {
 };
 
 static struct sdm845_gcc *const gcc = (void *)GCC_BASE;
-static struct sdm845_aoss *const aoss = (void *)AOSS_CC_BASE;
 
 void clock_init(void);
 void clock_reset_aop(void);

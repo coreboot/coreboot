@@ -13,18 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_QUALCOMM_SDM845_SYMBOLS_H_
-#define _SOC_QUALCOMM_SDM845_SYMBOLS_H_
+#ifndef _SOC_QUALCOMM_SDM845_AOP_H__
+#define _SOC_QUALCOMM_SDM845_AOP_H__
 
-#include <symbols.h>
+void aop_fw_load_reset(void);
 
-DECLARE_REGION(ssram)
-DECLARE_REGION(bsram)
-DECLARE_REGION(dram_reserved)
-DECLARE_REGION(dcb);
-DECLARE_REGION(pmic);
-DECLARE_REGION(limits_cfg);
-DECLARE_REGION(aop);
-DECLARE_REGION(aop_ss_msg_ram_drv15);
-
-#endif // _SOC_QUALCOMM_SDM845_SYMBOLS_H_
+#endif  // _SOC_QUALCOMM_SDM845_AOP_H__

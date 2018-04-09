@@ -17,9 +17,12 @@
 #include <types.h>
 #include <commonlib/helpers.h>
 #include <assert.h>
+#include <soc/symbols.h>
 #include <soc/clock.h>
 
 #define DIV(div) (2*div - 1)
+
+#define AOP_LOADED_SIGNAL_FLAG 0x11223344
 
 struct clock_config qup_cfg[] = {
 	{
@@ -146,9 +149,10 @@ static int clock_enable(void *cbcr_addr)
 
 void clock_reset_aop(void)
 {
-
 	/* Bring AOP out of RESET */
-	clrbits_le32(&aoss->aoss_cc_apcs_misc, BIT(AOP_RESET_SHFT));
+	uint32_t *mailbox;
+	mailbox = (uint32_t *)_aop_ss_msg_ram_drv15;
+	*mailbox = AOP_LOADED_SIGNAL_FLAG;
 }
 
 void clock_configure_qspi(uint32_t hz)

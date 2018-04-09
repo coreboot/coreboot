@@ -13,27 +13,31 @@
  * GNU General Public License for more details.
  */
 
-#include <symbols.h>
-#include <arch/mmu.h>
+#include <string.h>
 #include <arch/cache.h>
+#include <cbfs.h>
+#include <halt.h>
+#include <console/console.h>
+#include <timestamp.h>
 #include <soc/mmu.h>
-#include <soc/mmu_common.h>
-#include <soc/symbols.h>
+#include <soc/aop.h>
+#include <soc/clock.h>
 
-void sdm845_mmu_init(void)
+void aop_fw_load_reset(void)
 {
-	mmu_init();
+	bool aop_fw_entry;
 
-	mmu_config_range((void *)(4 * KiB), ((4UL * GiB) - (4 * KiB)), DEV_MEM);
-	mmu_config_range((void *)_ssram, REGION_SIZE(ssram), CACHED_RAM);
-	mmu_config_range((void *)_bsram, REGION_SIZE(bsram), CACHED_RAM);
-	mmu_config_range((void *)_dma_coherent, REGION_SIZE(dma_coherent),
-			 UNCACHED_RAM);
+	struct prog aop_fw_prog =
+		PROG_INIT(PROG_PAYLOAD, CONFIG_CBFS_PREFIX "/aop");
 
-	mmu_enable();
-}
+	if (prog_locate(&aop_fw_prog))
+		die("SOC image: AOP_FW not found");
 
-void soc_mmu_dram_config_post_dram_init(void)
-{
-	mmu_config_range((void *)_aop, REGION_SIZE(aop), CACHED_RAM);
+	aop_fw_entry = selfload(&aop_fw_prog);
+	if (!aop_fw_entry)
+		die("SOC image: AOP load failed");
+
+	clock_reset_aop();
+
+	printk(BIOS_DEBUG, "\nSOC:AOP brought out of reset.\n");
 }

@@ -92,6 +92,7 @@ functions to return values. This means that the driver code should not
 make any assumptions about the values in Local5, Local6 and Local7
 variables.
 
+```
  **Function**                   **Operation**                **Return**
  acpigen_soc_read_rx_gpio     Generate ACPI AML code to      Error = -1
                               read value of Rx in Local0.    Success = 0
@@ -101,6 +102,7 @@ variables.
                               set Tx to 1.                   Success = 0
  acpigen_soc_clear_tx_gpio    Generate ACPI AML code to      Error = -1
                               set Tx to 0.                   Success = 0
+```
 
 Ideally, the operation column in the above table should use one or
 more functions implemented by the platform in AML code library (like

@@ -111,7 +111,7 @@ static const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_SDIO:
 		return "SDIO";
 	/* PCIe */
-	case PCH_DEVFN_PCIE1:
+	case PCH_DEVFN_PCIE5:
 		return "RP01";
 	}
 

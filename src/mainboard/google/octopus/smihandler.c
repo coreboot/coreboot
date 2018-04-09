@@ -47,3 +47,8 @@ int mainboard_smi_apmc(u8 apmc)
 				MAINBOARD_EC_SMI_EVENTS);
 	return 0;
 }
+
+void mainboard_smi_espi_handler(void)
+{
+	chromeec_smi_process_events();
+}

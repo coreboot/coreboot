@@ -2039,7 +2039,7 @@ static void sdram_mmap_regs(struct sysinfo *s)
 	gttsize = ggc_to_gtt[(ggc & 0x300) >> 8];
 	tom = s->channel_capacity[0];
 
-	tsegsize = 0x1; // 1MB
+	tsegsize = 0x8; // 8MB
 	mmiosize = 0x400; // 1GB
 
 	reclaim = false;
@@ -2073,6 +2073,11 @@ static void sdram_mmap_regs(struct sysinfo *s)
 	pci_write_config32(PCI_DEV(0,0,0), GBSM, gfxbase << 20);
 	pci_write_config32(PCI_DEV(0,0,0), BGSM, gttbase << 20);
 	pci_write_config32(PCI_DEV(0,0,0), TSEG, tsegbase << 20);
+
+	u8 reg8 = pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC);
+	reg8 &= ~0x7;
+	reg8 |= (2 << 1) | (1 << 0); /* 8M and TSEG_Enable */
+	pci_write_config8(PCI_DEV(0, 0, 0), ESMRAMC, reg8);
 
 	printk(BIOS_DEBUG, "GBSM (igd) = verified %08x (written %08x)\n",
 		pci_read_config32(PCI_DEV(0,0,0), GBSM), gfxbase << 20);

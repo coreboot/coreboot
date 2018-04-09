@@ -62,7 +62,7 @@
 #define REMAPBASE	0x98
 #define REMAPLIMIT	0x9a
 #define SMRAM		0x9d	/* System Management RAM Control */
-#define ESMRAM		0x9e	/* Extended System Management RAM Control */
+#define ESMRAMC		0x9e	/* Extended System Management RAM Control */
 
 #define TOM		0xa0
 #define TOUUD		0xa2

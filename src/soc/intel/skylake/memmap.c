@@ -338,7 +338,6 @@ void cbmem_top_init(void)
 void *cbmem_top(void)
 {
 	struct ebda_config ebda_cfg;
-	struct ebda_config *cfg = &ebda_cfg;
 
 	/*
 	 * Check if Tseg has been initialized, we will use this as a flag
@@ -349,7 +348,7 @@ void *cbmem_top(void)
 	if (sa_get_tseg_base() == 0)
 		return NULL;
 
-	retrieve_ebda_object(cfg);
+	retrieve_ebda_object(&ebda_cfg);
 
-	return (void *)(uintptr_t)cfg->tolum_base;
+	return (void *)(uintptr_t)ebda_cfg.tolum_base;
 }

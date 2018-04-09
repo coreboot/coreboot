@@ -40,13 +40,12 @@ static void create_soc_ebda(struct ebda_config *cfg)
 void fill_ebda_area(void)
 {
 	struct ebda_config ebda_cfg;
-	struct ebda_config *cfg = &ebda_cfg;
 
 	/* Initialize EBDA area early during romstage. */
 	setup_default_ebda();
-	create_soc_ebda(cfg);
-	create_mainboard_ebda(cfg);
-	write_ebda_data(cfg, sizeof(*cfg));
+	create_soc_ebda(&ebda_cfg);
+	create_mainboard_ebda(&ebda_cfg);
+	write_ebda_data(&ebda_cfg, sizeof(ebda_cfg));
 }
 
 void retrieve_ebda_object(struct ebda_config *cfg)

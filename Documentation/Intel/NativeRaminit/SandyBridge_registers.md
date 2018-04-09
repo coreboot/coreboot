@@ -966,7 +966,7 @@ Please handle with care !
 
 *Width:* 24 Bit
 
-*Desc:*  TC_DBP - Timming of DDR - Bin Parameter Register,  Channel 0
+*Desc:*  TC_DBP - Timing of DDR - Bin Parameter Register,  Channel 0
 
 |Bit| Description |
 |---|-------------|

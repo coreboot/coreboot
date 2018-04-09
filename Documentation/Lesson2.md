@@ -20,7 +20,7 @@ For the most up-to-date instructions on how to set up SSH keys with Gerrit go to
 <https://gerrit-documentation.storage.googleapis.com/Documentation/2.14.2/user-upload.html#configure_ssh)>
 and follow the instructions there. Then, skip to Part 3.
 
-Additonally, that section of the Web site provides explanation on starting
+Additionally, that section of the Web site provides explanation on starting
 an ssh-agent, which may be particularly helpful for those who anticipate
 frequently uploading changes.
 
@@ -110,7 +110,7 @@ To commit the change, run
 
 	git commit -s
 
-**Note:** The -s adds a signed-off-by line by the commiter. Your commit should be
+**Note:** The -s adds a signed-off-by line by the committer. Your commit should be
 signed off with your name and email (i.e. **Your Name** **<Your Email>**, based on
 what you set with git config earlier).
 
@@ -236,7 +236,7 @@ Run the following two commands in the command line:
     git clone https://github.com/magicmonty/bash-git-prompt.git .bash-git-prompt --depth=1
 
 **Note:** cd will change your directory to your home directory, so the
-git clone commmand will be run there.
+git clone command will be run there.
 
 Finally, open the ~/.bashrc file and append the following two lines:
 

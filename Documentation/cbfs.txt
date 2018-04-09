@@ -36,7 +36,7 @@ CBFS by type (i.e - bayou can ask for all components that are payloads).
 The header on each "file" (or component, as I like to style them) has
 been simplified - We now only store the length, the type, the checksum,
 and the offset to the data.  The name scheme remains the same.  The
-addtional information, which is component specific, has been moved to
+additional information, which is component specific, has been moved to
 the component itself (see below).
 
 The components are arranged in the ROM aligned along the specified
@@ -245,7 +245,7 @@ structure of the header:
 | ...    |
 \--------/  <- start + 'offset' + 'len'
 
-== Searching Alogrithm ==
+== Searching Algorithm ==
 
 To locate a specific component in the ROM, one starts at the 'offset'
 specified in the CBFS master header.  For this example, the offset will
@@ -379,7 +379,7 @@ struct cbfs_payload_segment {
 
 PAYLOAD_SEGMENT_CODE   0x45444F43   The segment contains executable code
 PAYLOAD_SEGMENT_DATA   0x41544144   The segment contains data
-PAYLOAD_SEGMENT_BSS    0x20535342   The memory speicfied by the segment
+PAYLOAD_SEGMENT_BSS    0x20535342   The memory specified by the segment
                                      should be zeroed
 PAYLOAD_SEGMENT_PARAMS 0x41524150   The segment contains information for
                                      the payload

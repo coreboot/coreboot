@@ -14,7 +14,7 @@ as southbridges. Multiple chips of same or different type are supported.
 \section{Goals}
 The goals of the new chip architecture are these:
 \begin{itemize}
-\item seperate implementation details from specification in the Config file
+\item separate implementation details from specification in the Config file
 (translation: no more C code in Config files)
 \item make the specification easier for people to use and understand
 \item remove private details of a given chip to the chip file as much
@@ -223,7 +223,7 @@ struct configuration {
 	const char *value;
 };
 
-These get filled in by the config tool as before. The linuxbios libary can
+These get filled in by the config tool as before. The linuxbios library can
 then provide a generic parsing function for the superios to use.
 
 The remaining question is how should the superio command look in

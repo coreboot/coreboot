@@ -465,7 +465,8 @@ static int gspi_ctrlr_setup(const struct spi_slave *dev)
 	 * Program m/n divider.
 	 * Set m and n to 1, so that this divider acts as a pass-through.
 	 */
-	clocks = (1 << CLOCKS_N_SHIFT) | (1 << CLOCKS_M_SHIFT) | CLOCKS_ENABLE;
+	clocks = (1 << CLOCKS_N_SHIFT) | (1 << CLOCKS_M_SHIFT) | CLOCKS_ENABLE |
+		 CLOCKS_UPDATE;
 	gspi_write_mmio_reg(p, CLOCKS, clocks);
 	udelay(10);
 

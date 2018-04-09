@@ -47,18 +47,18 @@ void *setup_stack_and_mttrs(void)
 	 * of physical address bits. */
 	mtrr_mask_upper = (1 << ((cpuid_eax(0x80000008) & 0xff) - 32)) - 1;
 
-	/* The order for each MTTR is value then base with upper 32-bits of
+	/* The order for each MTRR is value then base with upper 32-bits of
 	 * each value coming before the lower 32-bits. The reasoning for
 	 * this ordering is to create a stack layout like the following:
 	 *   +0: Number of MTRRs
-	 *   +4: MTTR base 0 31:0
-	 *   +8: MTTR base 0 63:32
-	 *  +12: MTTR mask 0 31:0
-	 *  +16: MTTR mask 0 63:32
-	 *  +20: MTTR base 1 31:0
-	 *  +24: MTTR base 1 63:32
-	 *  +28: MTTR mask 1 31:0
-	 *  +32: MTTR mask 1 63:32
+	 *   +4: MTRR base 0 31:0
+	 *   +8: MTRR base 0 63:32
+	 *  +12: MTRR mask 0 31:0
+	 *  +16: MTRR mask 0 63:32
+	 *  +20: MTRR base 1 31:0
+	 *  +24: MTRR base 1 63:32
+	 *  +28: MTRR mask 1 31:0
+	 *  +32: MTRR mask 1 63:32
 	 */
 
 	/* Cache the ROM as WP just below 4GiB. */
@@ -97,7 +97,7 @@ void *setup_stack_and_mttrs(void)
 	slot = stack_push(slot, top_of_ram | MTRR_TYPE_WRBACK);
 	num_mtrrs++;
 
-	/* Save the number of MTTRs to setup. Return the stack location
+	/* Save the number of MTRRs to setup. Return the stack location
 	 * pointing to the number of MTRRs. */
 	slot = stack_push(slot, num_mtrrs);
 

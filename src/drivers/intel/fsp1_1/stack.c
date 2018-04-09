@@ -36,7 +36,7 @@ void *setup_stack_and_mtrrs(void)
 	uint32_t num_mtrrs;
 	uint32_t *slot;
 
-	/* Display the MTTRs */
+	/* Display the MTRRs */
 	soc_display_mtrrs();
 
 	/* Top of stack needs to be aligned to a 8-byte boundary. */

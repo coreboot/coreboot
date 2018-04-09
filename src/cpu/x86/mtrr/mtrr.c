@@ -427,7 +427,7 @@ static void prep_var_mtrr(struct var_mtrr_state *var_state,
 	if (var_state->mtrr_index >= bios_mtrrs)
 		printk(BIOS_WARNING, "Taking a reserved OS MTRR.\n");
 	if (var_state->mtrr_index >= total_mtrrs) {
-		printk(BIOS_ERR, "ERROR: Not enough MTRRs available! MTRR index is %d with %d MTTRs in total.\n",
+		printk(BIOS_ERR, "ERROR: Not enough MTRRs available! MTRR index is %d with %d MTRRs in total.\n",
 		       var_state->mtrr_index, total_mtrrs);
 		return;
 	}

@@ -117,7 +117,7 @@ void set_power_limits(u8 power_limit_1_time)
 	msr_t msr = rdmsr(MSR_PLATFORM_INFO);
 	msr_t limit;
 	unsigned int power_unit;
-	unsigned int tdp, min_power, max_power, max_time, tdp_pl2;
+	unsigned int tdp, min_power, max_power, max_time, tdp_pl2, tdp_pl1;
 	u8 power_limit_1_val;
 	struct device *dev = SA_DEV_ROOT;
 	config_t *conf = dev->chip_info;
@@ -154,7 +154,9 @@ void set_power_limits(u8 power_limit_1_time)
 
 	/* Set long term power limit to TDP */
 	limit.lo = 0;
-	limit.lo |= tdp & PKG_POWER_LIMIT_MASK;
+	tdp_pl1 = ((conf->tdp_pl1_override == 0) ?
+		tdp : (conf->tdp_pl1_override * power_unit));
+	limit.lo |= (tdp_pl1 & PKG_POWER_LIMIT_MASK);
 
 	/* Set PL1 Pkg Power clamp bit */
 	limit.lo |= PKG_POWER_LIMIT_CLAMP;

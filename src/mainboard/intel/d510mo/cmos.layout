@@ -44,7 +44,6 @@ entries
 416        512       s       0        boot_devices
 
 # coreboot config options: cpu
-944          1       e       2        hyper_threading
 #945        7       r       0        unused
 
 # coreboot config options: northbridge

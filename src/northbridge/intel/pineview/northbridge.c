@@ -151,26 +151,6 @@ void northbridge_write_smram(u8 smram)
 	pci_write_config8(dev, SMRAM, smram);
 }
 
-/*
- * Really doesn't belong here but will go away with parallel mp init,
- * so let it be here for a while...
- */
-int cpu_get_apic_id_map(int *apic_id_map)
-{
-	unsigned int i;
-
-	/* Logical processors (threads) per core */
-	const struct cpuid_result cpuid1 = cpuid(1);
-	/* Read number of cores. */
-	const char cores = (cpuid1.ebx >> 16) & 0xf;
-
-	/* TODO in parallel MP cpuid(1).ebx */
-	for (i = 0; i < cores; i++)
-		apic_id_map[i] = i;
-
-	return cores;
-}
-
 static void mch_domain_set_resources(struct device *dev)
 {
 	struct resource *res;
@@ -218,7 +198,7 @@ static struct device_operations pci_domain_ops = {
 
 static void cpu_bus_init(struct device *dev)
 {
-	initialize_cpus(dev->link_list);
+	bsp_init_and_start_aps(dev->link_list);
 }
 
 static struct device_operations cpu_bus_ops = {

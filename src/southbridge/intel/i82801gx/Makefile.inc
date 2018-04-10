@@ -32,8 +32,10 @@ ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 
 ramstage-y += watchdog.c
 
+ifneq ($(CONFIG_SMM_TSEG),y)
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm/smmrelocate.S
+endif
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
 romstage-y += early_smbus.c early_lpc.c

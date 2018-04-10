@@ -24,6 +24,7 @@
 #include <string.h>
 #include <cpu/cpu.h>
 #include <arch/acpi.h>
+#include <cpu/intel/smm/gen1/smi.h>
 #include "i945.h"
 
 static int get_pcie_bar(u32 *base)
@@ -152,6 +153,36 @@ static const char *northbridge_acpi_name(const struct device *dev)
 	}
 
 	return NULL;
+}
+
+void northbridge_write_smram(u8 smram)
+{
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+
+	if (dev == NULL)
+		die("could not find pci 00:00.0!\n");
+
+	pci_write_config8(dev, SMRAM, smram);
+}
+
+/*
+ * Really doesn't belong here but will go away with parallel mp init,
+ * so let it be here for a while...
+ */
+int cpu_get_apic_id_map(int *apic_id_map)
+{
+	unsigned int i;
+
+	/* Logical processors (threads) per core */
+	const struct cpuid_result cpuid1 = cpuid(1);
+	/* Read number of cores. */
+	const char cores = (cpuid1.ebx >> 16) & 0xf;
+
+	/* TODO in parallel MP cpuid(1).ebx */
+	for (i = 0; i < cores; i++)
+		apic_id_map[i] = i;
+
+	return cores;
 }
 
 	/* TODO We could determine how many PCIe busses we need in

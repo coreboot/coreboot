@@ -24,6 +24,7 @@
 #include <cpu/intel/romstage.h>
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>
+#include <cpu/intel/smm/gen1/smi.h>
 
 /* Decodes TSEG region size to bytes. */
 u32 decode_tseg_size(const u8 esmramc)
@@ -43,7 +44,7 @@ u32 decode_tseg_size(const u8 esmramc)
 	}
 }
 
-static uintptr_t smm_region_start(void)
+u32 northbridge_get_tseg_base(void)
 {
 	uintptr_t tom;
 
@@ -58,13 +59,20 @@ static uintptr_t smm_region_start(void)
 	return tom;
 }
 
-/* Depending of UMA and TSEG configuration, TSEG might start at any
+u32 northbridge_get_tseg_size(void)
+{
+	const u8 esmramc = pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC);
+	return decode_tseg_size(esmramc);
+}
+
+/*
+ * Depending of UMA and TSEG configuration, TSEG might start at any
  * 1 MiB alignment. As this may cause very greedy MTRR setup, push
  * CBMEM top downwards to 4 MiB boundary.
  */
 void *cbmem_top(void)
 {
-	uintptr_t top_of_ram = ALIGN_DOWN(smm_region_start(), 4*MiB);
+	uintptr_t top_of_ram = ALIGN_DOWN(northbridge_get_tseg_base(), 4*MiB);
 	return (void *) top_of_ram;
 }
 
@@ -99,14 +107,14 @@ void platform_enter_postcar(void)
 	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
 	postcar_frame_add_mtrr(&pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
 
-	/* Cache two separate 4 MiB regions below the top of ram, this
-	 * satisfies MTRR alignment requirements. If you modify this to
-	 * cover TSEG, make sure UMA region is not set with WRBACK as it
-	 * causes hard-to-recover boot failures.
+	/* Cache 8 MiB region below the top of ram and 2 MiB above top of
+	 * ram to cover both cbmem as the TSEG region.
 	 */
 	top_of_ram = (uintptr_t)cbmem_top();
-	postcar_frame_add_mtrr(&pcf, top_of_ram - 4*MiB, 4*MiB, MTRR_TYPE_WRBACK);
-	postcar_frame_add_mtrr(&pcf, top_of_ram - 8*MiB, 4*MiB, MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(&pcf, top_of_ram - 8*MiB, 8*MiB,
+			MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(&pcf, northbridge_get_tseg_base(),
+			       northbridge_get_tseg_size(), MTRR_TYPE_WRBACK);
 
 	run_postcar_phase(&pcf);
 

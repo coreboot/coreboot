@@ -29,14 +29,15 @@
 #include <northbridge/intel/x4x/iomap.h>
 #include <northbridge/intel/x4x/chip.h>
 #include <northbridge/intel/x4x/x4x.h>
+#include <cpu/intel/smm/gen1/smi.h>
 
 static const int legacy_hole_base_k = 0xa0000 / 1024;
 
 static void mch_domain_read_resources(struct device *dev)
 {
-	u8 index, reg8;
+	u8 index;
 	u64 tom, touud;
-	u32 tomk, tseg_sizek = 0, tolud, delta_cbmem;
+	u32 tomk, tolud, delta_cbmem;
 	u32 pcie_config_base, pcie_config_size;
 	u32 uma_sizek = 0;
 
@@ -82,20 +83,8 @@ static void mch_domain_read_resources(struct device *dev)
 	uma_sizek += gsm_sizek;
 
 	printk(BIOS_DEBUG, "TSEG decoded, subtracting ");
-	reg8 = pci_read_config8(mch, D0F0_ESMRAMC);
-	reg8 >>= 1;
-	reg8 &= 3;
-	switch (reg8) {
-	case 0:
-		tseg_sizek = 1024;
-		break;	/* TSEG = 1M */
-	case 1:
-		tseg_sizek = 2048;
-		break;	/* TSEG = 2M */
-	case 2:
-		tseg_sizek = 8192;
-		break;	/* TSEG = 8M */
-	}
+	const u32 tseg_sizek = decode_tseg_size(
+		pci_read_config8(dev, D0F0_ESMRAMC)) >> 10;
 	uma_sizek += tseg_sizek;
 	tomk -= tseg_sizek;
 
@@ -182,6 +171,36 @@ static const char *northbridge_acpi_name(const struct device *dev)
 	}
 
 	return NULL;
+}
+
+void northbridge_write_smram(u8 smram)
+{
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+
+	if (dev == NULL)
+		die("could not find pci 00:00.0!\n");
+
+	pci_write_config8(dev, D0F0_SMRAM, smram);
+}
+
+/*
+ * Really doesn't belong here but will go away with parallel mp init,
+ * so let it be here for a while...
+ */
+int cpu_get_apic_id_map(int *apic_id_map)
+{
+	unsigned int i;
+
+	/* Logical processors (threads) per core */
+	const struct cpuid_result cpuid1 = cpuid(1);
+	/* Read number of cores. */
+	const char cores = (cpuid1.ebx >> 16) & 0xf;
+
+	/* TODO in parallel MP cpuid(1).ebx */
+	for (i = 0; i < cores; i++)
+		apic_id_map[i] = i;
+
+	return cores;
 }
 
 static struct device_operations pci_domain_ops = {

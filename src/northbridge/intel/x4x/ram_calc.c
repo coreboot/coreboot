@@ -28,6 +28,7 @@
 #include <cpu/x86/mtrr.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <program_loading.h>
+#include <cpu/intel/smm/gen1/smi.h>
 
 /** Decodes used Graphics Mode Select (GMS) to kilobytes. */
 u32 decode_igd_memory_size(const u32 gms)
@@ -50,6 +51,25 @@ u32 decode_igd_gtt_size(const u32 gsm)
 		die("Bad GTT Graphics Memory Size (GGMS) setting.\n");
 
 	return ggc2gtt[gsm] << 10;
+}
+
+/** Decodes used TSEG size to bytes. */
+u32 decode_tseg_size(const u32 esmramc)
+{
+	if (!(esmramc & 1))
+		return 0;
+
+	switch ((esmramc >> 1) & 3) {
+	case 0:
+		return 1 << 20;
+	case 1:
+		return 2 << 20;
+	case 2:
+		return 8 << 20;
+	case 3:
+	default:
+		die("Bad TSEG setting.\n");
+	}
 }
 
 u8 decode_pciebar(u32 *const base, u32 *const len)
@@ -92,14 +112,25 @@ u8 decode_pciebar(u32 *const base, u32 *const len)
 	return 1;
 }
 
+u32 northbridge_get_tseg_size(void)
+{
+	const u8 esmramc = pci_read_config8(PCI_DEV(0, 0, 0), D0F0_ESMRAMC);
+	return decode_tseg_size(esmramc);
+}
+
+u32 northbridge_get_tseg_base(void)
+{
+	return pci_read_config32(PCI_DEV(0, 0, 0), D0F0_TSEG);
+}
+
+
 /* Depending of UMA and TSEG configuration, TSEG might start at any
  * 1 MiB alignment. As this may cause very greedy MTRR setup, push
  * CBMEM top downwards to 4 MiB boundary.
  */
 void *cbmem_top(void)
 {
-	uintptr_t top_of_ram = pci_read_config32(PCI_DEV(0, 0, 0), D0F0_TSEG);
-	top_of_ram = ALIGN_DOWN(top_of_ram, 4*MiB);
+	uintptr_t top_of_ram = ALIGN_DOWN(northbridge_get_tseg_base(), 4*MiB);
 	return (void *) top_of_ram;
 }
 
@@ -122,14 +153,14 @@ void platform_enter_postcar(void)
 	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
 	postcar_frame_add_mtrr(&pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
 
-	/* Cache two separate 4 MiB regions below the top of ram, this
-	 * satisfies MTRR alignment requirements. If you modify this to
-	 * cover TSEG, make sure UMA region is not set with WRBACK as it
-	 * causes hard-to-recover boot failures.
+	/* Cache 8 MiB region below the top of ram and 2 MiB above top of
+	 * ram to cover both cbmem as the TSEG region.
 	 */
 	top_of_ram = (uintptr_t)cbmem_top();
-	postcar_frame_add_mtrr(&pcf, top_of_ram - 4*MiB, 4*MiB, MTRR_TYPE_WRBACK);
-	postcar_frame_add_mtrr(&pcf, top_of_ram - 8*MiB, 4*MiB, MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(&pcf, top_of_ram - 8*MiB, 8*MiB,
+			MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(&pcf, northbridge_get_tseg_base(),
+			       northbridge_get_tseg_size(), MTRR_TYPE_WRBACK);
 
 	run_postcar_phase(&pcf);
 

@@ -28,6 +28,7 @@ config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select CACHE_MRC_SETTINGS
 	select POSTCAR_STAGE
 	select POSTCAR_CONSOLE
+	select SMM_TSEG
 
 config CBFS_SIZE
 	hex

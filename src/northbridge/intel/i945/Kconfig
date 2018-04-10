@@ -31,6 +31,7 @@ config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select POSTCAR_CONSOLE
 	select SMM_TSEG
 	select PARALLEL_MP
+	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 
 config NORTHBRIDGE_INTEL_SUBTYPE_I945GC
 	def_bool n
@@ -89,5 +90,9 @@ config CHECK_SLFRCS_ON_RESUME
 	  a memory channel is not guaranteed to be in self-refresh.
 	  On other boards the check always creates a false positive,
 	  effectively making it impossible to resume.
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x100000
 
 endif

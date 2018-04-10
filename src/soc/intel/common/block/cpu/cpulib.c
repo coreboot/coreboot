@@ -287,7 +287,7 @@ uint32_t cpu_get_power_max(void)
 	msr = rdmsr(MSR_PKG_POWER_SKU_UNIT);
 	power_unit = 2 << ((msr.lo & 0xf) - 1);
 	msr = rdmsr(MSR_PKG_POWER_SKU);
-	return ((msr.lo & 0x7fff) / power_unit) * 1000;
+	return (msr.lo & 0x7fff) * 1000 / power_unit;
 }
 
 uint32_t cpu_get_max_turbo_ratio(void)

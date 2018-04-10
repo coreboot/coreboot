@@ -49,10 +49,6 @@ static struct smm_relocation_attrs relo_attrs;
 static void pre_mp_init(void)
 {
 	x86_setup_mtrrs_with_detect();
-
-	/* The flash is now no longer cacheable. Reset to WP for performance. */
-	mtrr_use_temp_range(FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
-
 	x86_mtrr_check();
 }
 
@@ -113,6 +109,9 @@ void stoney_init_cpus(struct device *dev)
 	/* Clear for take-off */
 	if (mp_init_with_smm(dev->link_list, &mp_ops) < 0)
 		printk(BIOS_ERR, "MP initialization failure.\n");
+
+	/* The flash is now no longer cacheable. Reset to WP for performance. */
+	mtrr_use_temp_range(FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
 }
 
 static void model_15_init(device_t dev)

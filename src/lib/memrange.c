@@ -310,6 +310,22 @@ void memranges_init(struct memranges *ranges,
 	memranges_add_resources(ranges, mask, match, tag);
 }
 
+/* Clone a memrange. The new memrange has the same entries as the old one. */
+void memranges_clone(struct memranges *newranges, struct memranges *oldranges)
+{
+	struct range_entry *r, *cur;
+	struct range_entry **prev_ptr;
+
+	memranges_init_empty(newranges, NULL, 0);
+
+	prev_ptr = &newranges->entries;
+	memranges_each_entry(r, oldranges) {
+		cur = range_list_add(newranges, prev_ptr, r->begin, r->end,
+				     r->tag);
+		prev_ptr = &cur->next;
+	}
+}
+
 void memranges_teardown(struct memranges *ranges)
 {
 	while (ranges->entries != NULL) {

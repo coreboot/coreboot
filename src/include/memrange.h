@@ -98,6 +98,9 @@ void memranges_init(struct memranges *ranges,
 		    unsigned long mask, unsigned long match,
 		    unsigned long tag);
 
+/* Clone a memrange. The new memrange has the same entries as the old one. */
+void memranges_clone(struct memranges *newranges, struct memranges *oldranges);
+
 /* Remove and free all entries within the memranges structure. */
 void memranges_teardown(struct memranges *ranges);
 

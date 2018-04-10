@@ -13,10 +13,7 @@
 
 #include <device/device.h>
 #include <cpu/cpu.h>
-#include <cpu/x86/mtrr.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/intel/microcode.h>
-#include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 
 static void model_f4x_init(struct device *cpu)
@@ -24,21 +21,8 @@ static void model_f4x_init(struct device *cpu)
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
 
-	if (!IS_ENABLED(CONFIG_PARALLEL_MP) && !intel_ht_sibling()) {
-		/* MTRRs are shared between threads */
-		x86_setup_mtrrs();
-		x86_mtrr_check();
-
-		/* Update the microcode */
-		intel_update_microcode_from_cbfs();
-	}
-
 	/* Enable the local CPU APICs */
 	setup_lapic();
-
-	/* Start up my CPU siblings */
-	if (!IS_ENABLED(CONFIG_PARALLEL_MP))
-		intel_sibling_init(cpu);
 };
 
 static struct device_operations cpu_dev_ops = {

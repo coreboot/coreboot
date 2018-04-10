@@ -392,10 +392,6 @@ static void i82801jx_lock_smm(struct device *dev)
 		printk(BIOS_DEBUG, "S3 wakeup, enabling ACPI via APMC\n");
 		outb(APM_CNT_ACPI_ENABLE, APM_CNT);
 	}
-	/* Don't allow evil boot loaders, kernels, or
-	 * userspace applications to deceive us:
-	 */
-	smm_lock();
 
 #if TEST_SMM_FLASH_LOCKDOWN
 	/* Now try this: */

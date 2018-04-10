@@ -18,11 +18,8 @@
 #include <device/device.h>
 #include <string.h>
 #include <cpu/cpu.h>
-#include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/intel/hyperthreading.h>
-#include <cpu/intel/microcode.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
@@ -132,19 +129,9 @@ static void model_6fx_init(struct device *cpu)
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
 
-	/* Update the microcode */
-	if (!IS_ENABLED(CONFIG_PARALLEL_MP))
-		intel_update_microcode_from_cbfs();
-
 	/* Print processor name */
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
-
-	/* Setup MTRRs */
-	if (!IS_ENABLED(CONFIG_PARALLEL_MP)) {
-		x86_setup_mtrrs();
-		x86_mtrr_check();
-	}
 
 	/* Setup Page Attribute Tables (PAT) */
 	// TODO set up PAT
@@ -163,10 +150,6 @@ static void model_6fx_init(struct device *cpu)
 
 	/* PIC thermal sensor control */
 	configure_pic_thermal_sensors();
-
-	/* Start up my CPU siblings */
-	if (!IS_ENABLED(CONFIG_PARALLEL_MP))
-		intel_sibling_init(cpu);
 }
 
 static struct device_operations cpu_dev_ops = {

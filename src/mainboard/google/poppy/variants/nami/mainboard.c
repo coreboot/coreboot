@@ -46,6 +46,7 @@ void variant_devtree_update(void)
 	config_t *cfg = root->chip_info;
 	switch (sku_id) {
 	case SKU_1_VAYNE:
+	case SKU_2_VAYNE:
 		cfg->usb2_ports[5].enable = 0;//rear camera
 		break;
 	default:

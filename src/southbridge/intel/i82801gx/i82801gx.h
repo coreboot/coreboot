@@ -42,7 +42,6 @@
 #if !defined(__SIMPLE_DEVICE__)
 void i82801gx_enable(struct device *dev);
 #endif
-void gpi_route_interrupt(u8 gpi, u8 mode);
 #else
 void enable_smbus(void);
 int smbus_read_byte(unsigned int device, unsigned int address);

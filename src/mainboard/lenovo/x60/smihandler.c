@@ -18,7 +18,7 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <southbridge/intel/i82801gx/nvs.h>
-#include <southbridge/intel/i82801gx/i82801gx.h>
+#include <southbridge/intel/common/pmutil.h>
 #include <ec/acpi/ec.h>
 #include <pc80/mc146818rtc.h>
 #include <ec/lenovo/h8/h8.h>

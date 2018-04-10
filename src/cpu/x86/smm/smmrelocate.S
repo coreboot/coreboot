@@ -21,9 +21,7 @@
 // can it be cleaned up so this include is not required?
 // It's needed right now because we get our DEFAULT_PMBASE from
 // here.
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)
-#include <southbridge/intel/i82801gx/i82801gx.h>
-#elif IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801DX)
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801DX)
 #include <southbridge/intel/i82801dx/i82801dx.h>
 #elif IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801IX)
 #include <southbridge/intel/i82801ix/i82801ix.h>

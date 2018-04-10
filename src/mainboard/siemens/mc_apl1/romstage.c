@@ -14,6 +14,9 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
+#include <hwilib.h>
+#include <lib.h>
 #include <string.h>
 #include <soc/romstage.h>
 #include <fsp/api.h>
@@ -48,67 +51,34 @@ static const uint8_t Ch3_Bit_swizzling[] = {
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
 	const struct pad_config *pads;
+	uint8_t spd[0x80];
 	size_t num;
 
 	/* setup early gpio before memory */
 	pads = brd_early_gpio_table(&num);
 	gpio_configure_pads(pads, num);
 
-	/* DRAM Config settings */
-	memupd->FspmConfig.Package = 0x1;
-	memupd->FspmConfig.Profile = 0x19;
-	memupd->FspmConfig.MemoryDown = 0x5;
-	memupd->FspmConfig.DDR3LPageSize = 0x2;
-	memupd->FspmConfig.DDR3LASR = 0x0;
-	memupd->FspmConfig.ScramblerSupport = 0x0;
-	memupd->FspmConfig.ChannelHashMask = 0x0;
-	memupd->FspmConfig.SliceHashMask = 0x0;
-	memupd->FspmConfig.InterleavedMode = 0x0;
-	memupd->FspmConfig.ChannelsSlicesEnable = 0x0;
-	memupd->FspmConfig.MinRefRate2xEnable = 0x1;
-	memupd->FspmConfig.DualRankSupportEnable = 0x1;
-	memupd->FspmConfig.RmtMode = 0x0;
-	memupd->FspmConfig.MemorySizeLimit = 0x1000;
-	memupd->FspmConfig.LowMemoryMaxValue = 0x0;
-	memupd->FspmConfig.DisableFastBoot = 0x0;
-	memupd->FspmConfig.HighMemoryMaxValue = 0x0;
-	memupd->FspmConfig.DIMM0SPDAddress = 0x0;
-	memupd->FspmConfig.DIMM1SPDAddress = 0x0;
-	memupd->FspmConfig.Ch0_RankEnable = 0x1;
-	memupd->FspmConfig.Ch0_DeviceWidth = 0x1;
-	memupd->FspmConfig.Ch0_DramDensity = 0x0;
-	memupd->FspmConfig.Ch0_Option = 0x3;
-	memupd->FspmConfig.Ch0_OdtConfig = 0x1;
-	memupd->FspmConfig.Ch0_TristateClk1 = 0x0;
-	memupd->FspmConfig.Ch0_Mode2N = 0x0;
-	memupd->FspmConfig.Ch0_OdtLevels = 0x0;
-	memupd->FspmConfig.Ch1_RankEnable = 0x1;
-	memupd->FspmConfig.Ch1_DeviceWidth = 0x1;
-	memupd->FspmConfig.Ch1_DramDensity = 0x0;
-	memupd->FspmConfig.Ch1_Option = 0x3;
-	memupd->FspmConfig.Ch1_OdtConfig = 0x1;
-	memupd->FspmConfig.Ch1_TristateClk1 = 0x0;
-	memupd->FspmConfig.Ch1_Mode2N = 0x0;
-	memupd->FspmConfig.Ch1_OdtLevels = 0x0;
-	memupd->FspmConfig.Ch2_RankEnable = 0x0;
-	memupd->FspmConfig.Ch2_DeviceWidth = 0x1;
-	memupd->FspmConfig.Ch2_DramDensity = 0x0;
-	memupd->FspmConfig.Ch2_Option = 0x3;
-	memupd->FspmConfig.Ch2_OdtConfig = 0x0;
-	memupd->FspmConfig.Ch2_TristateClk1 = 0x0;
-	memupd->FspmConfig.Ch2_Mode2N = 0x0;
-	memupd->FspmConfig.Ch2_OdtLevels = 0x0;
-	memupd->FspmConfig.Ch3_RankEnable = 0x0;
-	memupd->FspmConfig.Ch3_DeviceWidth = 0x1;
-	memupd->FspmConfig.Ch3_DramDensity = 0x0;
-	memupd->FspmConfig.Ch3_Option = 0x3;
-	memupd->FspmConfig.Ch3_OdtConfig = 0x0;
-	memupd->FspmConfig.Ch3_TristateClk1 = 0x0;
-	memupd->FspmConfig.Ch3_Mode2N = 0x0;
-	memupd->FspmConfig.Ch3_OdtLevels = 0x0;
-	memupd->FspmConfig.RmtCheckRun = 0x3;
-	memupd->FspmConfig.MrcDataSaving = 0x0;
-	memupd->FspmConfig.MrcFastBoot   = 0x1;
+	/* Get DRAM configuration data from hwinfo block.
+	 * The configuration data from hwinfo block is a one-to-one
+	 * representation of the FSPM_UPD data starting with parameter
+	 * 'Package' (offset 0x4d) and ending before parameter
+	 * 'Ch0_Bit_swizzling' (offset 0x88).
+	 */
+	if (hwilib_find_blocks("hwinfo.hex")) {
+		printk(BIOS_ERR,
+			"HWInfo not found, use default values for FSP-M.\n");
+		return;
+	}
+
+	if (hwilib_get_field(SPD, spd, sizeof(spd)) != sizeof(spd)) {
+		printk(BIOS_ERR,
+			"SPD not found in HWInfo, use defaults for FSP-M.\n");
+		return;
+	}
+
+	memcpy(&memupd->FspmConfig.Package, &spd,
+			(((uint8_t *)memupd->FspmConfig.Ch0_Bit_swizzling)-
+			(&memupd->FspmConfig.Package)));
 
 	memcpy(memupd->FspmConfig.Ch0_Bit_swizzling, &Ch0_Bit_swizzling,
 		sizeof(Ch0_Bit_swizzling));
@@ -119,6 +89,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memcpy(memupd->FspmConfig.Ch3_Bit_swizzling, &Ch3_Bit_swizzling,
 		sizeof(Ch3_Bit_swizzling));
 
-	memupd->FspmConfig.RmtMarginCheckScaleHighThreshold = 0xC8;
 	memupd->FspmConfig.MsgLevelMask = 0x0;
+	memupd->FspmConfig.MrcDataSaving = 0x0;
+	memupd->FspmConfig.MrcFastBoot   = 0x1;
 }

@@ -180,6 +180,20 @@ void bootmem_dump_ranges(void)
 	}
 }
 
+bool bootmem_walk(range_action_t action, void *arg)
+{
+	const struct range_entry *r;
+
+	assert(bootmem_is_initialized());
+
+	memranges_each_entry(r, &bootmem) {
+		if (!action(r, arg))
+			return true;
+	}
+
+	return false;
+}
+
 int bootmem_region_targets_usable_ram(uint64_t start, uint64_t size)
 {
 	const struct range_entry *r;

@@ -68,6 +68,19 @@ void bootmem_add_range(uint64_t start, uint64_t size,
 /* Print current range map of boot memory. */
 void bootmem_dump_ranges(void);
 
+typedef bool (*range_action_t)(const struct range_entry *r, void *arg);
+
+/**
+ * Walk memory tables and call the provided function, for every region.
+ * The caller has to return false to break out of the loop any time, or
+ * return true to continue.
+ *
+ * @param action The function to call for each memory range.
+ * @param arg Pointer passed to function @action. Set to NULL if unused.
+ * @return true if the function 'action' returned false.
+ */
+bool bootmem_walk(range_action_t action, void *arg);
+
 /* Return 1 if region targets usable RAM, 0 otherwise. */
 int bootmem_region_targets_usable_ram(uint64_t start, uint64_t size);
 

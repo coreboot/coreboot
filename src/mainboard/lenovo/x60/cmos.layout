@@ -69,7 +69,6 @@ entries
 #938         6       r       0        unused
 
 # coreboot config options: cpu
-944          1       e       2        hyper_threading
 #945         4       r       0        unused
 
 # coreboot config options: ec

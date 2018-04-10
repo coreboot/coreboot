@@ -52,7 +52,6 @@ entries
 #399          1       r       0        unused
 
 # coreboot config options: cpu
-400          1       e       2        hyper_threading
 #401          7       r       0        unused
 
 # coreboot config options: southbridge

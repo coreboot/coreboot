@@ -85,15 +85,18 @@ static void model_106cx_init(struct device *cpu)
 	x86_enable_cache();
 
 	/* Update the microcode */
-	intel_update_microcode_from_cbfs();
+	if (!IS_ENABLED(CONFIG_PARALLEL_MP))
+		intel_update_microcode_from_cbfs();
 
 	/* Print processor name */
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
 
 	/* Setup MTRRs */
-	x86_setup_mtrrs();
-	x86_mtrr_check();
+	if (!IS_ENABLED(CONFIG_PARALLEL_MP)) {
+		x86_setup_mtrrs();
+		x86_mtrr_check();
+	}
 
 	/* Enable the local CPU APICs */
 	setup_lapic();
@@ -110,7 +113,8 @@ static void model_106cx_init(struct device *cpu)
 	/* TODO: PIC thermal sensor control */
 
 	/* Start up my CPU siblings */
-	intel_sibling_init(cpu);
+	if (!IS_ENABLED(CONFIG_PARALLEL_MP))
+		intel_sibling_init(cpu);
 }
 
 static struct device_operations cpu_dev_ops = {

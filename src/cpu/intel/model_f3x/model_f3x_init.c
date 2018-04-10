@@ -24,7 +24,7 @@ static void model_f3x_init(struct device *cpu)
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
 
-	if (!intel_ht_sibling()) {
+	if (!IS_ENABLED(CONFIG_PARALLEL_MP) && !intel_ht_sibling()) {
 		/* MTRRs are shared between threads */
 		x86_setup_mtrrs();
 		x86_mtrr_check();
@@ -37,7 +37,8 @@ static void model_f3x_init(struct device *cpu)
 	setup_lapic();
 
 	/* Start up my CPU siblings */
-	intel_sibling_init(cpu);
+	if (!IS_ENABLED(CONFIG_PARALLEL_MP))
+		intel_sibling_init(cpu);
 };
 
 static struct device_operations cpu_dev_ops = {

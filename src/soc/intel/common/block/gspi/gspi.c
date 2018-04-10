@@ -380,7 +380,8 @@ static void gspi_cs_deassert(const struct spi_slave *dev)
 
 static uint32_t gspi_get_clk_div(unsigned int gspi_bus)
 {
-	const uint32_t ref_clk_mhz = CONFIG_SOC_INTEL_COMMON_LPSS_CLOCK_MHZ;
+	const uint32_t ref_clk_mhz =
+		CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_CLOCK_MHZ;
 	const uint32_t gspi_clk_mhz = gspi_get_bus_clk_mhz(gspi_bus);
 
 	assert(gspi_clk_mhz != 0);

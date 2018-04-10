@@ -338,13 +338,13 @@ config NO_FADT_8042
 	help
 	  Choose this option if you want to disable 8042 Keyboard
 
-config SOC_INTEL_COMMON_LPSS_CLOCK_MHZ
+config SOC_INTEL_COMMON_BLOCK_GSPI_CLOCK_MHZ
 	int
 	default 120
 
 config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
 	int
-	default SOC_INTEL_COMMON_LPSS_CLOCK_MHZ
+	default SOC_INTEL_COMMON_BLOCK_GSPI_CLOCK_MHZ
 
 config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 	int

@@ -3,6 +3,14 @@ config SOC_INTEL_COMMON_BLOCK_GSPI
 	help
 	  Intel Processor Common GSPI support
 
+config SOC_INTEL_COMMON_BLOCK_GSPI_CLOCK_MHZ
+	int
+	depends on SOC_INTEL_COMMON_BLOCK_GSPI
+	help
+	  The input clock speed into the SPI controller IP block, in MHz.
+	  No default is set here as this is an SOC-specific value
+	  and must be provided by the SOC.
+
 config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 	int
 	depends on SOC_INTEL_COMMON_BLOCK_GSPI

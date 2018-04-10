@@ -30,13 +30,6 @@ config ACPI_CONSOLE
 	help
 	  Provide a mechanism for serial console based ACPI debug.
 
-config SOC_INTEL_COMMON_LPSS_CLOCK_MHZ
-	int
-	help
-	  The clock speed that the controllers in LPSS(GSPI, I2C) are running
-	  at, in MHz. No default is set here as this is an SOC-specific value
-	  and must be provided by the SOC.
-
 config MMA
 	bool "Enable MMA (Memory Margin Analysis) support for Intel Core"
 	default n

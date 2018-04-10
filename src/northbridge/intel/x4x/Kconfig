@@ -30,6 +30,7 @@ config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select POSTCAR_CONSOLE
 	select SMM_TSEG
 	select PARALLEL_MP
+	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 
 config CBFS_SIZE
 	hex
@@ -46,5 +47,9 @@ config VGA_BIOS_ID
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xe0000000
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x100000
 
 endif

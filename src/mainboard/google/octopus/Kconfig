@@ -45,9 +45,9 @@ config DEVICETREE
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "yorp" if BOARD_GOOGLE_YORP
-	default "bip" if BOARD_GOOGLE_BIP
-	default "octopus" if BOARD_GOOGLE_OCTOPUS
+	default "Yorp" if BOARD_GOOGLE_YORP
+	default "Bip" if BOARD_GOOGLE_BIP
+	default "Octopus" if BOARD_GOOGLE_OCTOPUS
 
 config MAINBOARD_FAMILY
 	string

@@ -30,8 +30,14 @@
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
 #include <soc/northbridge.h>
+#include <soc/romstage.h>
 #include <soc/southbridge.h>
 #include <amdblocks/psp.h>
+
+void __attribute__((weak)) mainboard_romstage_entry(int s3_resume)
+{
+	/* By default, don't do anything */
+}
 
 asmlinkage void car_stage_entry(void)
 {
@@ -52,6 +58,8 @@ asmlinkage void car_stage_entry(void)
 	 */
 
 	console_init();
+
+	mainboard_romstage_entry(s3_resume);
 
 	if (!s3_resume) {
 		post_code(0x40);

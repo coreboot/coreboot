@@ -71,7 +71,7 @@ static void mainboard_print_info(void)
 	       thunderx_get_core_clock() / 1000000ULL);
 
 	printk(BIOS_INFO, "MB: #CPU cores      : %zu\n",
-	       cpu_get_num_cores());
+	       cpu_get_num_available_cores());
 
 	printk(BIOS_INFO, "MB: RAM             : %zu MiB\n",
 		sdram_size_mb());
@@ -91,6 +91,10 @@ static void mainboard_init(struct device *dev)
 
 	/* Init timer */
 	soc_timer_init();
+
+	/* Init CPUs */
+	for (i = 1; i < CONFIG_MAX_CPUS; i++)
+		start_cpu(i, NULL);
 }
 
 static void mainboard_enable(struct device *dev)

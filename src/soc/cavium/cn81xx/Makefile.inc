@@ -62,6 +62,7 @@ ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += sdram.c
 ramstage-y += soc.c
 ramstage-y += cpu.c
+ramstage-y += cpu_secondary.S
 
 # BDK coreboot interface
 ramstage-y += ../common/bdk-coreboot.c

@@ -49,9 +49,12 @@ static void soc_final(device_t dev)
 }
 
 static struct device_operations soc_ops = {
-	.read_resources = soc_read_resources,
-	.init = soc_init,
-	.final = soc_final,
+	.read_resources   = soc_read_resources,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
+	.init             = soc_init,
+	.final            = soc_final,
+	.scan_bus         = NULL,
 };
 
 static void enable_soc_dev(device_t dev)

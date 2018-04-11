@@ -54,6 +54,9 @@ config FMDFILE
 	string
 	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd"
 
+config MAX_CPUS
+	default 4
+
 ##########################################################
 #### Update below when adding a new derivative board. ####
 ##########################################################

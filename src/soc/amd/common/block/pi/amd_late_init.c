@@ -15,17 +15,22 @@
 
 #include <arch/acpi.h>
 #include <bootstate.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <cbmem.h>
+#include <dimm_info_util.h>
 #include <memory_info.h>
 
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
 
-static void transfer_memory_info(TYPE17_DMI_INFO *dmi17, struct dimm_info *dimm)
+/**
+ * Populate dimm_info using AGESA TYPE17_DMI_INFO.
+ */
+static void transfer_memory_info(const TYPE17_DMI_INFO *dmi17,
+				 struct dimm_info *dimm)
 {
 	size_t len, destlen;
 	uint32_t offset;
@@ -41,16 +46,34 @@ static void transfer_memory_info(TYPE17_DMI_INFO *dmi17, struct dimm_info *dimm)
 		offset = 0;
 
 	strncpy((char *)dimm->serial, &dmi17->SerialNumber[offset], len);
-	dimm->dimm_size = dmi17->ExtSize;
+
+	dimm->dimm_size =
+	    smbios_memory_size_to_mib(dmi17->MemorySize, dmi17->ExtSize);
+
 	dimm->ddr_type = dmi17->MemoryType;
-	dimm->ddr_frequency = dmi17->Speed;
+
+	/*
+	 * dimm_info uses ddr_frequency for setting both config speed and max
+	 * speed. Lets use config speed so we don't get the false impression
+	 * that the RAM is running faster than it actually is.
+	 */
+	dimm->ddr_frequency = dmi17->ConfigSpeed;
+
 	dimm->rank_per_dimm = dmi17->Attributes;
-	dimm->mod_type = dmi17->MemoryType;
-	dimm->bus_width = dmi17->DataWidth;
+
+	dimm->mod_type = smbios_form_factor_to_spd_mod_type(dmi17->FormFactor);
+
+	dimm->bus_width =
+	    smbios_bus_width_to_spd_width(dmi17->TotalWidth, dmi17->DataWidth);
+
 	dimm->mod_id = dmi17->ManufacturerIdCode;
+
 	dimm->bank_locator = 0;
+
 	strncpy((char *)dimm->module_part_number, dmi17->PartNumber,
-				sizeof(dimm->module_part_number));
+		sizeof(dimm->module_part_number));
+
+	dimm->module_part_number[sizeof(dimm->module_part_number) - 1] = 0;
 }
 
 static void print_dimm_info(const struct dimm_info *dimm)
@@ -160,8 +183,7 @@ static void prepare_dmi_17(void *unused)
 	mem_info->dimm_cnt = dimm_cnt;
 }
 
-BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY,
-			prepare_dmi_17, NULL);
+BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY, prepare_dmi_17, NULL);
 
 static void agesawrapper_post_device(void *unused)
 {
@@ -176,5 +198,5 @@ static void agesawrapper_post_device(void *unused)
 	do_agesawrapper(agesawrapper_amdinitrtb, "amdinitrtb");
 }
 
-BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT,
-			agesawrapper_post_device, NULL);
+BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT, agesawrapper_post_device,
+		      NULL);

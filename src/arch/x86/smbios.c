@@ -254,6 +254,19 @@ static void smbios_fill_dimm_part_number(const char *part_number,
 	}
 }
 
+/* Encodes the SPD serial number into hex */
+static void smbios_fill_dimm_serial_number(const struct dimm_info *dimm,
+					   struct smbios_type17 *t)
+{
+	char serial[9];
+
+	snprintf(serial, sizeof(serial), "%02hhx%02hhx%02hhx%02hhx",
+		 dimm->serial[0], dimm->serial[1], dimm->serial[2],
+		 dimm->serial[3]);
+
+	t->serial_number = smbios_add_string(t->eos, serial);
+}
+
 static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 					 unsigned long *current, int *handle)
 {
@@ -293,13 +306,7 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	}
 
 	smbios_fill_dimm_manufacturer_from_id(dimm->mod_id, t);
-	/* put '\0' in the end of data */
-	dimm->serial[DIMM_INFO_SERIAL_SIZE - 1] = '\0';
-	if (dimm->serial[0] == 0)
-		t->serial_number = smbios_add_string(t->eos, "None");
-	else
-		t->serial_number = smbios_add_string(t->eos,
-						   (const char *)dimm->serial);
+	smbios_fill_dimm_serial_number(dimm, t);
 
 	snprintf(locator, sizeof(locator), "Channel-%d-DIMM-%d",
 		dimm->channel_num, dimm->dimm_num);

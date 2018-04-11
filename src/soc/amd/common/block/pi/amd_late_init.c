@@ -22,6 +22,7 @@
 #include <device/pci_ops.h>
 #include <dimm_info_util.h>
 #include <memory_info.h>
+#include <lib.h>
 
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
@@ -29,23 +30,10 @@
 /**
  * Populate dimm_info using AGESA TYPE17_DMI_INFO.
  */
-static void transfer_memory_info(const TYPE17_DMI_INFO *dmi17,
+static void transfer_memory_info(TYPE17_DMI_INFO *dmi17,
 				 struct dimm_info *dimm)
 {
-	size_t len, destlen;
-	uint32_t offset;
-
-
-	len = strnlen(dmi17->SerialNumber, sizeof(dmi17->SerialNumber)) + 1;
-	destlen = sizeof(dimm->serial);
-
-	if (len > destlen) {
-		offset = len - destlen;
-		len = destlen;
-	} else
-		offset = 0;
-
-	strncpy((char *)dimm->serial, &dmi17->SerialNumber[offset], len);
+	hexstrtobin(dmi17->SerialNumber, dimm->serial, sizeof(dimm->serial));
 
 	dimm->dimm_size =
 	    smbios_memory_size_to_mib(dmi17->MemorySize, dmi17->ExtSize);
@@ -90,7 +78,7 @@ static void print_dimm_info(const struct dimm_info *dimm)
 	       "  mod_id: %hu\n"
 	       "  mod_type: 0x%hhx\n"
 	       "  bus_width: %hhu\n"
-	       "  serial(%zu): %s\n"
+	       "  serial: %02hhx%02hhx%02hhx%02hhx\n"
 	       "  module_part_number(%zu): %s\n",
 	       dimm->dimm_size,
 	       dimm->ddr_type,
@@ -102,8 +90,10 @@ static void print_dimm_info(const struct dimm_info *dimm)
 	       dimm->mod_id,
 	       dimm->mod_type,
 	       dimm->bus_width,
-	       strlen((char *) dimm->serial),
-	       (char *) dimm->serial,
+	       dimm->serial[0],
+	       dimm->serial[1],
+	       dimm->serial[2],
+	       dimm->serial[3],
 	       strlen((char *) dimm->module_part_number),
 	       (char *) dimm->module_part_number
 	);

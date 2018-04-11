@@ -19,7 +19,7 @@
 #include <stdint.h>
 #include <compiler.h>
 
-#define DIMM_INFO_SERIAL_SIZE		5
+#define DIMM_INFO_SERIAL_SIZE		4
 #define DIMM_INFO_PART_NUMBER_SIZE	19
 #define DIMM_INFO_TOTAL			8	/* Maximum num of dimm is 8 */
 
@@ -46,11 +46,7 @@ struct dimm_info {
 	uint8_t dimm_num;
 	uint8_t bank_locator;
 	/*
-	 * The last byte is '\0' for the end of string.
-	 *
-	 * Even though the SPD spec defines this field as a byte array the value
-	 * is passed directly to SMBIOS as a string, and thus must be printable
-	 * ASCII.
+	 * SPD serial number.
 	 */
 	uint8_t serial[DIMM_INFO_SERIAL_SIZE];
 	/*

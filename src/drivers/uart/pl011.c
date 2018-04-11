@@ -42,7 +42,11 @@ void uart_tx_flush(int idx)
 
 unsigned char uart_rx_byte(int idx)
 {
-	return 0;
+	struct pl011_uart *regs = uart_platform_baseptr(idx);
+
+	while (read32(&regs->fr) & PL011_UARTFR_RXFE)
+		;
+	return read8(&regs->dr);
 }
 
 #ifndef __PRE_RAM__

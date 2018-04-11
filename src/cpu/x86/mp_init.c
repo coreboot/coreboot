@@ -907,7 +907,9 @@ static int run_ap_work(mp_callback_t func, long expire_us)
 	mfence();
 
 	/* Wait for all the APs to signal back that call has been accepted. */
-	stopwatch_init_usecs_expire(&sw, expire_us);
+	if (expire_us > 0)
+		stopwatch_init_usecs_expire(&sw, expire_us);
+
 	do {
 		cpus_accepted = 0;
 
@@ -920,7 +922,7 @@ static int run_ap_work(mp_callback_t func, long expire_us)
 
 		if (cpus_accepted == global_num_aps)
 			return 0;
-	} while (!stopwatch_expired(&sw));
+	} while (expire_us <= 0 || !stopwatch_expired(&sw));
 
 	printk(BIOS_ERR, "AP call expired. %d/%d CPUs accepted.\n",
 		cpus_accepted, global_num_aps);

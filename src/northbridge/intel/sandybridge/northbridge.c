@@ -525,7 +525,7 @@ static const struct pci_driver mc_driver_158 __pci_driver = {
 
 static void cpu_bus_init(device_t dev)
 {
-	bsp_init_and_start_aps(dev->link_list);
+	initialize_cpus(dev->link_list);
 }
 
 static struct device_operations cpu_bus_ops = {

@@ -123,6 +123,5 @@ void southbridge_update_gnvs(u8 apm_cnt, int *smm_done);
 void southbridge_finalize_all(void);
 void southbridge_smi_monitor(void);
 em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u8 cmd);
-void pch_log_state(void);
 
 #endif /*INTEL_COMMON_PMUTIL_H */

@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <assert.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <string.h>
@@ -24,7 +23,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/x86/mp.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
@@ -423,6 +421,83 @@ static void configure_mca(void)
 		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
 }
 
+int cpu_get_apic_id_map(int *apic_id_map)
+{
+	struct cpuid_result result;
+	unsigned int threads_per_package, threads_per_core, i, shift = 0;
+
+	/* Logical processors (threads) per core */
+	result = cpuid_ext(0xb, 0);
+	threads_per_core = result.ebx & 0xffff;
+
+	/* Logical processors (threads) per package */
+	result = cpuid_ext(0xb, 1);
+	threads_per_package = result.ebx & 0xffff;
+
+	if (threads_per_core == 1)
+		shift++;
+
+	for (i = 0; i < threads_per_package && i < CONFIG_MAX_CPUS; i++)
+		apic_id_map[i] = i << shift;
+
+	return threads_per_package;
+}
+
+/*
+ * Initialize any extra cores/threads in this package.
+ */
+static void intel_cores_init(struct device *cpu)
+{
+	struct cpuid_result result;
+	unsigned int threads_per_package, threads_per_core, i;
+
+	/* Logical processors (threads) per core */
+	result = cpuid_ext(0xb, 0);
+	threads_per_core = result.ebx & 0xffff;
+
+	/* Logical processors (threads) per package */
+	result = cpuid_ext(0xb, 1);
+	threads_per_package = result.ebx & 0xffff;
+
+	/* Only initialize extra cores from BSP */
+	if (cpu->path.apic.apic_id)
+		return;
+
+	printk(BIOS_DEBUG, "CPU: %u has %u cores, %u threads per core\n",
+	       cpu->path.apic.apic_id, threads_per_package/threads_per_core,
+	       threads_per_core);
+
+	for (i = 1; i < threads_per_package; ++i) {
+		struct device_path cpu_path;
+		struct device *new;
+
+		/* Build the CPU device path */
+		cpu_path.type = DEVICE_PATH_APIC;
+		cpu_path.apic.apic_id =
+			cpu->path.apic.apic_id + i;
+
+		/* Update APIC ID if no hyperthreading */
+		if (threads_per_core == 1)
+			cpu_path.apic.apic_id <<= 1;
+
+		/* Allocate the new CPU device structure */
+		new = alloc_dev(cpu->bus, &cpu_path);
+		if (!new)
+			continue;
+
+		printk(BIOS_DEBUG, "CPU: %u has core %u\n",
+		       cpu->path.apic.apic_id,
+		       new->path.apic.apic_id);
+
+		/* Start the new CPU */
+		if (is_smp_boot() && !start_cpu(new)) {
+			/* Record the error in cpu? */
+			printk(BIOS_ERR, "CPU %u would not start!\n",
+			       new->path.apic.apic_id);
+		}
+	}
+}
+
 static void model_206ax_init(struct device *cpu)
 {
 	char processor_name[49];
@@ -430,12 +505,18 @@ static void model_206ax_init(struct device *cpu)
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
 
+	intel_update_microcode_from_cbfs();
+
 	/* Clear out pending MCEs */
 	configure_mca();
 
 	/* Print processor name */
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
+
+	/* Setup MTRRs based on physical address size */
+	x86_setup_mtrrs_with_detect();
+	x86_mtrr_check();
 
 	/* Setup Page Attribute Tables (PAT) */
 	// TODO set up PAT
@@ -467,81 +548,9 @@ static void model_206ax_init(struct device *cpu)
 
 	/* Enable Turbo */
 	enable_turbo();
-}
 
-/* MP initialization support. */
-static const void *microcode_patch;
-
-static void pre_mp_init(void)
-{
-	/* Setup MTRRs based on physical address size. */
-	x86_setup_mtrrs_with_detect();
-	x86_mtrr_check();
-}
-
-static int get_cpu_count(void)
-{
-	struct cpuid_result result;
-	unsigned int threads_per_package, threads_per_core;
-
-	/* Logical processors (threads) per core */
-	result = cpuid_ext(0xb, 0);
-	threads_per_core = result.ebx & 0xffff;
-
-	ASSERT(threads_per_core != 0);
-
-	/* Logical processors (threads) per package */
-	result = cpuid_ext(0xb, 1);
-	threads_per_package = result.ebx & 0xffff;
-
-	printk(BIOS_DEBUG, "CPU has %u cores, %u threads enabled.\n",
-	       threads_per_package / threads_per_core, threads_per_package);
-
-	return threads_per_package;
-}
-
-static void get_microcode_info(const void **microcode, int *parallel)
-{
-	microcode_patch = intel_microcode_find();
-	*microcode = microcode_patch;
-	*parallel = 1;
-}
-
-static void per_cpu_smm_trigger(void)
-{
-	/* Relocate the SMM handler. */
-	smm_relocate();
-
-	/* After SMM relocation a 2nd microcode load is required. */
-	intel_microcode_load_unlocked(microcode_patch);
-}
-
-static void post_mp_init(void)
-{
-	/* Now that all APs have been relocated as well as the BSP let SMIs
-	 * start flowing. */
-	southbridge_smm_init();
-
-	/* Lock down the SMRAM space. */
-	smm_lock();
-}
-
-
-static const struct mp_ops mp_ops = {
-	.pre_mp_init = pre_mp_init,
-	.get_cpu_count = get_cpu_count,
-	.get_smm_info = smm_info,
-	.get_microcode_info = get_microcode_info,
-	.pre_mp_smm_init = smm_initialize,
-	.per_cpu_smm_trigger = per_cpu_smm_trigger,
-	.relocation_handler = smm_relocation_handler,
-	.post_mp_init = post_mp_init,
-};
-
-void bsp_init_and_start_aps(struct bus *cpu_bus)
-{
-	if (mp_init_with_smm(cpu_bus, &mp_ops))
-		printk(BIOS_ERR, "MP initialization failure.\n");
+	/* Start up extra cores */
+	intel_cores_init(cpu);
 }
 
 static struct device_operations cpu_dev_ops = {

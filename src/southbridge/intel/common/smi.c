@@ -159,29 +159,3 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 		  "d" (APM_CNT)
 	);
 }
-
-void southbridge_smm_clear_state(void)
-{
-	u32 smi_en;
-
-	if (IS_ENABLED(CONFIG_ELOG))
-	/* Log events from chipset before clearing */
-		pch_log_state();
-
-	printk(BIOS_DEBUG, "Initializing Southbridge SMI...");
-	printk(BIOS_SPEW, " ... pmbase = 0x%04x\n", get_pmbase());
-
-	smi_en = inl(get_pmbase() + SMI_EN);
-	if (smi_en & APMC_EN) {
-		printk(BIOS_INFO, "SMI# handler already enabled?\n");
-		return;
-	}
-
-	printk(BIOS_DEBUG, "\n");
-
-	/* Dump and clear status registers */
-	reset_smi_status();
-	reset_pm1_status();
-	reset_tco_status();
-	reset_gpe0_status();
-}

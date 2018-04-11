@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <elog.h>
-#include <southbridge/intel/common/pmutils.h>
+#include "pch.h"
 
 void pch_log_state(void)
 {

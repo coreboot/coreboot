@@ -143,6 +143,7 @@ config DCACHE_RAM_BASE
 
 config DCACHE_RAM_SIZE
 	hex
+	default 0x100000 if SOC_INTEL_GLK
 	default 0xc0000
 	help
 	  The size of the cache-as-ram region required during bootblock
@@ -334,6 +335,7 @@ config CACHE_QOS_SIZE_PER_BIT
 
 config L2_CACHE_SIZE
 	hex
+	default 0x400000 if SOC_INTEL_GLK
 	default 0x100000
 
 config SPI_FLASH_INCLUDE_ALL_DRIVERS

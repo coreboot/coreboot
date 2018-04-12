@@ -182,12 +182,12 @@ void *cbfs_boot_load_stage_by_name(const char *name)
 	return prog_entry(&stage);
 }
 
-size_t cbfs_boot_load_struct(const char *name, void *buf, size_t buf_size)
+size_t cbfs_boot_load_file(const char *name, void *buf, size_t buf_size,
+			   uint32_t type)
 {
 	struct cbfsf fh;
 	uint32_t compression_algo;
 	size_t decompressed_size;
-	uint32_t type = CBFS_TYPE_STRUCT;
 
 	if (cbfs_boot_locate(&fh, name, &type) < 0)
 		return 0;

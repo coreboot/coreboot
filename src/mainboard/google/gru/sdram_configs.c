@@ -67,8 +67,8 @@ const struct rk3399_sdram_params *get_sdram_config()
 	if (ramcode >= ARRAY_SIZE(sdram_configs) ||
 	    !snprintf(config_file, sizeof(config_file), "%s-%d",
 	    sdram_configs[ramcode], get_sdram_target_mhz()) ||
-	    (cbfs_boot_load_struct(config_file, &params,
-				   sizeof(params)) != sizeof(params)))
+	    (cbfs_boot_load_file(config_file, &params, sizeof(params),
+				 CBFS_TYPE_STRUCT) != sizeof(params)))
 		die("Cannot load SDRAM parameter file!");
 
 	return &params;

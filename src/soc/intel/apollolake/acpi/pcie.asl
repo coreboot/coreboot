@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corporation.
+ * Copyright (C) 2016 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,14 @@ Device (RP01)
 {
 	Name (_ADR, 0x00140000)
 	Name (_DDN, "PCIe-B 0")
+
+	#include "pcie_port.asl"
+}
+
+Device (RP03)
+{
+	Name (_ADR, 0x00130000)
+	Name (_DDN, "PCIe-A 0")
 
 	#include "pcie_port.asl"
 }

@@ -50,7 +50,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_A16),
 	/* A17 : SD_PWR_EN# ==> NC */
 	PAD_CFG_NC(GPP_A17),
-	/* A18 : ISH_GP0 ==> NC */
+	/* A18 : ISH_GP0 ==> EMMC_RST#L_R_SOC (unstuffed) */
 	PAD_CFG_NC(GPP_A18),
 	/* A19 : ISH_GP1 ==> NC */
 	PAD_CFG_NC(GPP_A19),
@@ -91,7 +91,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
 	/* B13 : PLTRST# ==> PLT_RST#_PCH */
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
-	/* B14 : SPKR ==> NC */
+	/* B14 : SPKR ==> EC_GPP_B14 (rsvd for later) */
 	PAD_CFG_NC(GPP_B14),
 	/* B15 : GSPI0_CS# ==> PCH_SPI_H1_3V3_CS# */
 	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),
@@ -109,20 +109,20 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_B21),
 	/* B22 : GSPI1_MOSI ==> NC(TP30) */
 	PAD_CFG_NC(GPP_B22),
-	/* B23 : SM1ALERT# ==> NC */
+	/* B23 : SM1ALERT# ==> SOC_SML1ALERT# (unstuffed) */
 	PAD_CFG_NC(GPP_B23),
 
-	/* C0  : SMBCLK ==> NC */
-	PAD_CFG_NC(GPP_C0),
-	/* C1  : SMBDATA ==> NC */
-	PAD_CFG_NC(GPP_C1),
+	/* C0  : SMBCLK ==> SOC_SMBCLK */
+	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),
+	/* C1  : SMBDATA ==> SOC_SMBDATA */
+	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),
 	/* C2  : SMBALERT# ==> NC(TP917) */
 	PAD_CFG_NC(GPP_C2),
 	/* C3  : SML0CLK ==> TOUCHSCREEN_DIS# */
 	PAD_CFG_GPO(GPP_C3, 0, DEEP),
 	/* C4  : SML0DATA ==> NC */
 	PAD_CFG_NC(GPP_C4),
-	/* C5  : SML0ALERT# ==> NC */
+	/* C5  : SML0ALERT# ==> SOC_SML0ALERT# (unstuffed) */
 	PAD_CFG_NC(GPP_C5),
 	/* C6  : SM1CLK ==> EC_IN_RW_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_C6, 20K_PU, DEEP),
@@ -156,12 +156,12 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
 	/* C21 : UART2_TXD ==> PCHTX_SERVORX_UART */
 	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
-	/* C22 : UART2_RTS# ==> NC */
+	/* C22 : UART2_RTS# ==> NC(TP926) */
 	PAD_CFG_NC(GPP_C22),
 	/* C23 : UART2_CTS# ==> PCH_WP */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_C23, 20K_PU, DEEP),
 
-	/* D0  : SPI1_CS# ==> NC */
+	/* D0  : SPI1_CS# ==> DDR_CHB_EN (for debugging) */
 	PAD_CFG_NC(GPP_D0),
 	/* D1  : SPI1_CLK ==> PEN_IRQ# */
 	PAD_CFG_GPI_APIC(GPP_D1, NONE, PLTRST),
@@ -181,45 +181,45 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_D8),
 	/* D9  : ISH_SPI_CS# ==> HP_IRQ_GPIO */
 	PAD_CFG_GPI_APIC(GPP_D9, NONE, PLTRST),
-	/* D10 : ISH_SPI_CLK ==> NC(TP29) */
+	/* D10 : ISH_SPI_CLK ==> SPKR_RST_L (unstuffed) */
 	PAD_CFG_NC(GPP_D10),
-	/* D11 : ISH_SPI_MISO ==> NC */
+	/* D11 : ISH_SPI_MISO ==> DCI_CLK (debug header) */
 	PAD_CFG_NC(GPP_D11),
-	/* D12 : ISH_SPI_MOSI ==> NC */
+	/* D12 : ISH_SPI_MOSI ==> DCI_DATA (debug header) */
 	PAD_CFG_NC(GPP_D12),
-	/* D13 : ISH_UART0_RXD ==> NC */
+	/* D13 : ISH_UART0_RXD ==> H1_BOOT_UART_RX (unstuffed) */
 	PAD_CFG_NC(GPP_D13),
-	/* D14 : ISH_UART0_TXD ==> NC */
+	/* D14 : ISH_UART0_TXD ==> H1_BOOT_UART_TX (unstuffed) */
 	PAD_CFG_NC(GPP_D14),
 	/* D15 : ISH_UART0_RTS# ==> NC */
 	PAD_CFG_NC(GPP_D15),
 	/* D16 : ISH_UART0_CTS# ==> NC */
 	PAD_CFG_NC(GPP_D16),
-	/* D18 : DMIC_DATA1 ==> SOC_DMIC_DATA1 */
+	/* D18 : DMIC_DATA1 ==> SOC_DMIC_DATA1_R */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
-	/* D19 : DMIC_CLK0 ==> SOC_DMIC_CLK0 */
+	/* D19 : DMIC_CLK0 ==> SOC_DMIC_CLK0_R */
 	PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
-	/* D20 : DMIC_DATA0 ==> SOC_DMIC_DATA0 */
+	/* D20 : DMIC_DATA0 ==> SOC_DMIC_DATA0_R */
 	PAD_CFG_NF(GPP_D20, NONE, DEEP, NF1),
-	/* D21 : SPI1_IO2 ==> NC */
+	/* D21 : SPI1_IO2 ==> DDR_CHA_EN (debugging) */
 	PAD_CFG_NC(GPP_D21),
 	/* D22 : SPI1_IO3 ==> BOOT_BEEP_OVERRIDE */
 	PAD_CFG_GPO(GPP_D22, 1, DEEP),
-	/* D23 : I2S_MCLK ==> NC */
+	/* D23 : I2S_MCLK ==> I2S_1_MCLK */
 	PAD_CFG_NF(GPP_D23, NONE, DEEP, NF1),
 
 	/* E0  : SATAXPCI0 ==> H1_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC_INVERT(GPP_E0, NONE, PLTRST),
 	/* E1  : SATAXPCIE1 ==> PEN_EJECT_ODL - for wake event */
 	PAD_CFG_GPI_ACPI_SCI(GPP_E1, NONE, DEEP, NONE),
-	/* E2  : SATAXPCIE2 ==> NC(TP916) */
-	PAD_CFG_NC(GPP_E2),
+	/* E2  : SATAXPCIE2 ==> WLAN_OFF# */
+	PAD_CFG_GPO(GPP_E2, 1, DEEP),
 	/* E3  : CPU_GP0 ==> TRACKPAD_INT# */
 	PAD_CFG_GPI_APIC(GPP_E3, NONE, PLTRST),
 	/* E4  : SATA_DEVSLP0 ==> NC(TP914) */
 	PAD_CFG_NC(GPP_E4),
-	/* E5  : SATA_DEVSLP1 ==> DEVSLP1 */
-	PAD_CFG_NF(GPP_E5, NONE, DEEP, NF1),
+	/* E5  : SATA_DEVSLP1 ==> NC(TP928) */
+	PAD_CFG_NC(GPP_E5),
 	/* E6  : SATA_DEVSLP2 ==> NC(TP915) */
 	PAD_CFG_NC(GPP_E6),
 	/* E7  : CPU_GP1 ==> TOUCHSCREEN_INT# */
@@ -238,10 +238,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E13, 20K_PD, DEEP, NF1),
 	/* E14 : DDPC_HPD1 ==> USB_C1_DP_HPD */
 	PAD_CFG_NF(GPP_E14, 20K_PD, DEEP, NF1),
-	/* E15 : DDPD_HPD2 ==> PCH_MEM_CONFIG4 */
+	/* E15 : DDPD_HPD2 ==> DDR_SEL */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
-        /* E16 : DDPE_HPD3 ==> PCH_GPP_E16 */
-        PAD_CFG_GPI_ACPI_SCI(GPP_E16, NONE, DEEP, INVERT),
+	/* E16 : DDPE_HPD3 ==> TRACKPAD_INT# */
+	PAD_CFG_GPI_ACPI_SCI(GPP_E16, NONE, DEEP, INVERT),
 	/* E17 : EDP_HPD ==> EDP_HPD */
 	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF1),
 	/* E18 : DDPB_CTRLCLK ==> SOC_DP1_CTRL_CLK */
@@ -254,15 +254,15 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E21, NONE, DEEP, NF1),
 	/* E22 : DDPD_CTRLCLK ==> WLAN_PCIE_WAKE# */
 	PAD_CFG_GPI_ACPI_SCI(GPP_E22, NONE, DEEP, INVERT),
-	/* E23 : DDPD_CTRLDATA ==> NC */
+	/* E23 : DDPD_CTRLDATA ==> NC(TP17)*/
 	PAD_CFG_NC(GPP_E23),
 
 	/* The next 4 pads are for bit banging the amplifiers, default to I2S */
-	/* F0  : I2S2_SCLK ==> I2S2_SCLK_SPKR_R */
+	/* F0  : I2S2_SCLK ==> I2S2_2_BCLK_R */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_F0, NONE, DEEP),
-	/* F1  : I2S2_SFRM ==> I2S2_SFRM_SPKR_R */
+	/* F1  : I2S2_SFRM ==> I2S2_2_FS_LRC */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_F1, NONE, DEEP),
-	/* F2  : I2S2_TXD ==> I2S2_PCH_TX_SPKR_RX_R */
+	/* F2  : I2S2_TXD ==> I2S2_2_TX_DAC */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_F2, NONE, DEEP),
 	/* F3  : I2S2_RXD ==> NC */
 	PAD_CFG_NC(GPP_F3),
@@ -274,35 +274,35 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_1V8(GPP_F6, NONE, DEEP, NF1),
 	/* F7  : I2C3_SCL ==> I2C_3_SCL */
 	PAD_CFG_NF_1V8(GPP_F7, NONE, DEEP, NF1),
-	/* F8  : I2C4_SDA ==> NC */
+	/* F8  : I2C4_SDA ==> I2C_4_SDA (unstuffed) */
 	PAD_CFG_NC(GPP_F8),
-	/* F9  : I2C4_SCL ==> NC */
+	/* F9  : I2C4_SCL ==> I2C_4_SCL (unstuffed) */
 	PAD_CFG_NC(GPP_F9),
 	/* F10 : I2C5_SDA ==> NC */
 	PAD_CFG_NC(GPP_F10),
 	/* F11 : I2C5_SCL ==> NC */
 	PAD_CFG_NC(GPP_F11),
-	/* F12 : EMMC_CMD ==> EMMC_CMD */
+	/* F12 : EMMC_CMD ==> EMMC_1_CMD */
 	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF1),
-	/* F13 : EMMC_DATA0 ==> EMMC_DATA0 */
+	/* F13 : EMMC_DATA0 ==> EMMC_1_D0 */
 	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF1),
-	/* F14 : EMMC_DATA1 ==> EMMC_DATA1 */
+	/* F14 : EMMC_DATA1 ==> EMMC_1_D1 */
 	PAD_CFG_NF(GPP_F14, NONE, DEEP, NF1),
-	/* F15 : EMMC_DATA2 ==> EMMC_DATA2 */
+	/* F15 : EMMC_DATA2 ==> EMMC_1_D2 */
 	PAD_CFG_NF(GPP_F15, NONE, DEEP, NF1),
-	/* F16 : EMMC_DATA3 ==> EMMC_DATA3 */
+	/* F16 : EMMC_DATA3 ==> EMMC_1_D3 */
 	PAD_CFG_NF(GPP_F16, NONE, DEEP, NF1),
-	/* F17 : EMMC_DATA4 ==> EMMC_DATA4 */
+	/* F17 : EMMC_DATA4 ==> EMMC_1_D4 */
 	PAD_CFG_NF(GPP_F17, NONE, DEEP, NF1),
-	/* F18 : EMMC_DATA5 ==> EMMC_DATA5 */
+	/* F18 : EMMC_DATA5 ==> EMMC_1_D5 */
 	PAD_CFG_NF(GPP_F18, NONE, DEEP, NF1),
-	/* F19 : EMMC_DATA6 ==> EMMC_DATA6 */
+	/* F19 : EMMC_DATA6 ==> EMMC_1_D6 */
 	PAD_CFG_NF(GPP_F19, NONE, DEEP, NF1),
-	/* F20 : EMMC_DATA7 ==> EMMC_DATA7 */
+	/* F20 : EMMC_DATA7 ==> EMMC_1_D7 */
 	PAD_CFG_NF(GPP_F20, NONE, DEEP, NF1),
-	/* F21 : EMMC_RCLK ==> EMMC_RCLK */
+	/* F21 : EMMC_RCLK ==> EMMC_1_RCLK */
 	PAD_CFG_NF(GPP_F21, NONE, DEEP, NF1),
-	/* F22 : EMMC_CLK ==> EMMC_CLK */
+	/* F22 : EMMC_CLK ==> EMMC_1_CLK */
 	PAD_CFG_NF(GPP_F22, NONE, DEEP, NF1),
 	/* F23 : RSVD ==> NC */
 	PAD_CFG_NC(GPP_F23),
@@ -321,7 +321,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_G5),
 	/* G6  : SD_CLK ==> NC */
 	PAD_CFG_NC(GPP_G6),
-	/* G7  : SD_WP ==> NC */
+	/* G7  : SD_WP ==> SD_WP (not needed) */
 	PAD_CFG_NC(GPP_G7),
 
 	/* GPD0: BATLOW# ==> PCH_BATLOW# */

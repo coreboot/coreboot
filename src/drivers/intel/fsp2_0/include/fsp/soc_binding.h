@@ -30,6 +30,11 @@
 #include <FirmwareVersionInfoHob.h>
 #endif
 
+#if CONFIG_UDK_VERSION >= CONFIG_UDK_2017_VERSION
+#include <PiPei.h>
+#include <Ppi/MpServices.h>
+#endif
+
 #pragma pack(pop)
 
 #endif

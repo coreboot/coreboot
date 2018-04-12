@@ -20,14 +20,26 @@
 #include <cbmem.h>
 #include <device/resource.h>
 #include <stdlib.h>
+#include <symbols.h>
 #include <assert.h>
 
 static int initialized;
+static int table_written;
 static struct memranges bootmem;
 
 static int bootmem_is_initialized(void)
 {
 	return initialized;
+}
+
+static int bootmem_memory_table_written(void)
+{
+	return table_written;
+}
+
+/* Platform hook to add bootmem areas the platform / board controls. */
+void __attribute__((weak)) bootmem_platform_add_ranges(void)
+{
 }
 
 /* Convert bootmem tag to LB_MEM tag */
@@ -73,7 +85,12 @@ static void bootmem_init(void)
 	/* Add memory used by CBMEM. */
 	cbmem_add_bootmem();
 
+	/* Add memory used by coreboot. */
+	bootmem_add_range((uintptr_t)_stack, _stack_size, BM_MEM_RAMSTAGE);
+	bootmem_add_range((uintptr_t)_program, _program_size, BM_MEM_RAMSTAGE);
+
 	bootmem_arch_add_ranges();
+	bootmem_platform_add_ranges();
 }
 
 void bootmem_add_range(uint64_t start, uint64_t size,
@@ -81,6 +98,8 @@ void bootmem_add_range(uint64_t start, uint64_t size,
 {
 	assert(tag > BM_MEM_FIRST && tag < BM_MEM_LAST);
 	assert(bootmem_is_initialized());
+	assert(!bootmem_memory_table_written() || tag == BM_MEM_RAMSTAGE ||
+		    tag == BM_MEM_PAYLOAD);
 
 	memranges_insert(&bootmem, start, size, tag);
 }
@@ -89,13 +108,22 @@ void bootmem_write_memory_table(struct lb_memory *mem)
 {
 	const struct range_entry *r;
 	struct lb_memory_range *lb_r;
+	struct memranges bm;
 
 	lb_r = &mem->map[0];
 
 	bootmem_init();
 	bootmem_dump_ranges();
 
-	memranges_each_entry(r, &bootmem) {
+	/**
+	 * Convert BM_MEM_RAMSTAGE and BM_MEM_PAYLOAD to BM_MEM_RAM and
+	 * merge ranges. The payload doesn't care about memory used by firmware.
+	 */
+	memranges_clone(&bm, &bootmem);
+	memranges_update_tag(&bm, BM_MEM_RAMSTAGE, BM_MEM_RAM);
+	memranges_update_tag(&bm, BM_MEM_PAYLOAD, BM_MEM_RAM);
+
+	memranges_each_entry(r, &bm) {
 		lb_r->start = pack_lb64(range_entry_base(r));
 		lb_r->size = pack_lb64(range_entry_size(r));
 		lb_r->type = bootmem_to_lb_tag(range_entry_tag(r));
@@ -103,6 +131,10 @@ void bootmem_write_memory_table(struct lb_memory *mem)
 		lb_r++;
 		mem->size += sizeof(struct lb_memory_range);
 	}
+
+	memranges_teardown(&bm);
+
+	table_written = 1;
 }
 
 struct range_strings {
@@ -118,6 +150,8 @@ static const struct range_strings type_strings[] = {
 	{ BM_MEM_UNUSABLE, "UNUSABLE" },
 	{ BM_MEM_VENDOR_RSVD, "VENDOR RESERVED" },
 	{ BM_MEM_TABLE, "CONFIGURATION TABLES" },
+	{ BM_MEM_RAMSTAGE, "RAM, RAMSTAGE" },
+	{ BM_MEM_PAYLOAD, "RAM, PAYLOAD" },
 };
 
 static const char *bootmem_range_string(const enum bootmem_type tag)
@@ -212,7 +246,7 @@ void *bootmem_allocate_buffer(size_t size)
 	begin = end - size;
 
 	/* Mark buffer as unusuable for future buffer use. */
-	bootmem_add_range(begin, size, BM_MEM_UNUSABLE);
+	bootmem_add_range(begin, size, BM_MEM_PAYLOAD);
 
 	return (void *)(uintptr_t)begin;
 }

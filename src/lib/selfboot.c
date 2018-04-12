@@ -381,7 +381,7 @@ static int load_self_segments(struct segment *head, struct prog *payload,
 		 */
 		if (check_regions) {
 			bootmem_add_range(ptr->s_dstaddr, ptr->s_memsz,
-					  BM_MEM_UNUSABLE);
+					  BM_MEM_PAYLOAD);
 		}
 
 		if (!overlaps_coreboot(ptr))

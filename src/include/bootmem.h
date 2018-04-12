@@ -21,7 +21,12 @@
 #include <boot/coreboot_tables.h>
 
 /**
- * Bootmem types match to LB_MEM tags.
+ * Bootmem types match to LB_MEM tags, except for the following:
+ * BM_MEM_RAMSTAGE : Memory where any kind of boot firmware resides and that
+ *                   should not be touched by bootmem (by example: stack,
+ *                   TTB, program, ...).
+ * BM_MEM_PAYLOAD  : Memory where any kind of payload resides and that should
+ *                   not be touched by bootmem.
  * Start at 0x10000 to make sure that the caller doesn't provide LB_MEM tags.
  */
 enum bootmem_type {
@@ -33,17 +38,28 @@ enum bootmem_type {
 	BM_MEM_UNUSABLE,	/* Unusable address space */
 	BM_MEM_VENDOR_RSVD,	/* Vendor Reserved */
 	BM_MEM_TABLE,		/* Ram configuration tables are kept in */
+	BM_MEM_RAMSTAGE,
+	BM_MEM_PAYLOAD,
 	BM_MEM_LAST,		/* Last entry in this list */
 };
 
-/* Write memory coreboot table. Current resource map is serialized into
+/**
+ * Write memory coreboot table. Current resource map is serialized into
  * memtable (LB_MEM_* types). bootmem library is unusable until this function
- * is called first in the write tables path before payload is loaded. */
+ * is called first in the write tables path before payload is loaded.
+ *
+ * Bootmem types match to LB_MEM tags, except for the following:
+ * BM_MEM_RAMSTAGE : Translates to LB_MEM_RAM.
+ * BM_MEM_PAYLOAD  : Translates to LB_MEM_RAM.
+ */
 void bootmem_write_memory_table(struct lb_memory *mem);
 
 /* Architecture hook to add bootmem areas the architecture controls when
  * bootmem_write_memory_table() is called. */
 void bootmem_arch_add_ranges(void);
+
+/* Platform hook to add bootmem areas the platform / board controls. */
+void bootmem_platform_add_ranges(void);
 
 /* Add a range of a given type to the bootmem address space. */
 void bootmem_add_range(uint64_t start, uint64_t size,

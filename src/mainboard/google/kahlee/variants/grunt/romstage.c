@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Advanced Micro Devices, Inc.
+ * Copyright (C) 2018 Google, LLC.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,21 +13,14 @@
  * GNU General Public License for more details.
  */
 
-#include <amdblocks/dimm_spd.h>
 #include <baseboard/variants.h>
-#include <soc/romstage.h>
+#include <ec/google/chromeec/ec.h>
 
-int mainboard_read_spd(uint8_t spdAddress, char *buf, size_t len)
+void variant_romstage_entry(int s3_resume)
 {
-	return variant_mainboard_read_spd(spdAddress, buf, len);
-}
+	uint32_t sku = google_chromeec_get_sku_id();
 
-void __attribute__((weak)) variant_romstage_entry(int s3_resume)
-{
-	/* By default, don't do anything */
-}
-
-void mainboard_romstage_entry(int s3_resume)
-{
-	variant_romstage_entry(s3_resume);
+	/* Based on SKU, turn on keyboard backlight to show system is booting */
+	if (sku <= 6 && !s3_resume)
+		google_chromeec_kbbacklight(75);
 }

@@ -31,5 +31,6 @@ int variant_get_xhci_oc_map(uint16_t *usb_oc_map);
 int variant_get_ehci_oc_map(uint16_t *usb_oc_map);
 const struct soc_amd_stoneyridge_gpio *variant_early_gpio_table(size_t *size);
 const struct soc_amd_stoneyridge_gpio *variant_gpio_table(size_t *size);
+void variant_romstage_entry(int s3_resume);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

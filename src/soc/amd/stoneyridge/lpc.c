@@ -76,11 +76,12 @@ static void lpc_init(device_t dev)
 	pci_write_config8(dev, LPC_MISC_CONTROL_BITS, byte);
 
 	/*
-	 * bit3: Fix SPI_CS# timing issue when running at 66M. TODO:A12.
-	 * todo: verify against BKDG
+	 * IMC is not used, but some of its registers and ports need to be
+	 * programmed/accessed. So enable CPU access to them. This fixes
+	 * SPI_CS# timing issue when running at 66MHz.
 	 */
 	byte = pci_read_config8(dev, LPC_HOST_CONTROL);
-	byte |= SPI_FROM_HOST_PREFETCH_EN | 1 << 3;
+	byte |= IMC_PAGE_FROM_HOST_EN | IMC_PORT_FROM_HOST_EN;
 	pci_write_config8(dev, LPC_HOST_CONTROL, byte);
 
 	cmos_check_update_date();

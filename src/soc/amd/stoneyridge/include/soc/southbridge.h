@@ -107,6 +107,9 @@
 #define   SPI_PRESERVE_BITS		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
 
 #define LPC_PCI_CONTROL			0x40
+#define   IMC_PRESENT			BIT(7)
+#define   IMC_TO_HOST_SEMAPHORE		BIT(6)
+#define   HOST_TO_IMC_SEMAPHORE		BIT(5)
 #define   LEGACY_DMA_EN			BIT(2)
 
 #define LPC_IO_PORT_DECODE_ENABLE	0x44
@@ -149,12 +152,17 @@
 #define   DECODE_IO_PORT_ENABLE6	BIT(23)
 #define   DECODE_IO_PORT_ENABLE5	BIT(22)
 #define   DECODE_IO_PORT_ENABLE4	BIT(21)
+#define   DECODE_MEM_PORT_ENABLE1	BIT(20)
 #define   DECODE_IO_PORT_ENABLE3	BIT(19)
 #define   DECODE_IO_PORT_ENABLE2	BIT(18)
 #define   DECODE_IO_PORT_ENABLE1	BIT(17)
 #define   DECODE_IO_PORT_ENABLE0	BIT(16)
 #define   LPC_SYNC_TIMEOUT_COUNT_ENABLE	BIT(7)
+#define   LPC_DECODE_RTC_IO_ENABLE	BIT(6)
+#define   DECODE_MEM_PORT_ENABLE0	BIT(5)
 #define   LPC_WIDEIO0_ENABLE		BIT(2)
+#define   DECODE_ALTERNATE_SIO_ENABLE	BIT(1)
+#define   DECODE_SIO_ENABLE		BIT(0)
 /* Assuming word access to higher word (register 0x4a) */
 #define LPC_IO_OR_MEM_DEC_EN_HIGH	0x4a
 #define   LPC_WIDEIO2_ENABLE_H		BIT(9)
@@ -166,6 +174,9 @@
 #define   DECODE_IO_PORT_ENABLE2_H	BIT(2)
 #define   DECODE_IO_PORT_ENABLE1_H	BIT(1)
 #define   DECODE_IO_PORT_ENABLE0_H	BIT(0)
+
+#define LPC_MEM_PORT1			0x4c
+#define LPC_MEM_PORT0			0x60
 
 /*
  * Register 0x64 is 32-bit, composed by two 16-bit sub-registers.
@@ -200,7 +211,8 @@
 #define LPC_ROM_DMA_EC_HOST_CONTROL	0xb8
 
 #define LPC_HOST_CONTROL		0xbb
-#define   SPI_FROM_HOST_PREFETCH_EN	BIT(0)
+#define   IMC_PAGE_FROM_HOST_EN		BIT(0)
+#define   IMC_PORT_FROM_HOST_EN		BIT(3)
 
 /* SPI Controller */
 #define SPI_CNTRL0			0x00

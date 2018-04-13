@@ -29,14 +29,6 @@
 static void pch_smbus_init(device_t dev)
 {
 	struct resource *res;
-	uint32_t reg32;
-	device_t lpc_dev = dev_find_slot(0, LPC_DEV_FUNC);
-	void *rcba = (void *)pci_read_config32(lpc_dev, 0xf0);
-
-	/* Enable clock gating */
-	reg32 =read32(rcba + 0x341c);
-	reg32 |= (1 << 5);
-	write32(rcba + 0x341c, reg32);
 
 	/* Set Receive Slave Address */
 	res = find_resource(dev, PCI_BASE_ADDRESS_4);

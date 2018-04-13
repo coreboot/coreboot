@@ -16,6 +16,7 @@ SPD_SOURCES += empty_ddr4			# 0b1011
 SPD_SOURCES += empty_ddr4			# 0b1100
 SPD_SOURCES += empty_ddr4			# 0b1101
 SPD_SOURCES += micron_dimm_MT40A512M16LY-075E	# 0b1110
+SPD_SOURCES += hynix_dimm_H5AN8G6NCJR-VKC	# 0b1111
 
 # Used when PCH_MEM_CONFIG4 = 1 (LPDDR3)
 SEC_SPD_SOURCES += micron_dimm_MT52L512M32D2PF-107 # 0b0000

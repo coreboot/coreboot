@@ -251,7 +251,10 @@ static void dram_timing(ramctr_timing *ctrl)
 	/* DLL_CONFIG_MDLL_W_TIMER */
 	ctrl->reg_5064b0 = (128000 / ctrl->tCK) + 3;
 
-	ctrl->CWL = get_CWL(ctrl->tCK);
+	if (ctrl->tCWL)
+		ctrl->CWL = DIV_ROUND_UP(ctrl->tCWL, ctrl->tCK);
+	else
+		ctrl->CWL = get_CWL(ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected CWL latency   : %uT\n", ctrl->CWL);
 
 	/* Find tRCD */

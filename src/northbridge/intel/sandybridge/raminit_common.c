@@ -160,6 +160,8 @@ void dram_find_common_params(ramctr_timing *ctrl)
 		ctrl->tWTR = MAX(ctrl->tWTR, dimm->tWTR);
 		ctrl->tRTP = MAX(ctrl->tRTP, dimm->tRTP);
 		ctrl->tFAW = MAX(ctrl->tFAW, dimm->tFAW);
+		ctrl->tCWL = MAX(ctrl->tCWL, dimm->tCWL);
+		ctrl->tCMD = MAX(ctrl->tCMD, dimm->tCMD);
 	}
 
 	if (!ctrl->cas_supported)
@@ -2350,12 +2352,16 @@ int command_training(ramctr_timing *ctrl)
 		 *             will fail in write training.
 		 * Workaround: Skip 1T in dual DIMM mode, that's only
 		 *             supported by a few DIMMs.
-		 * TODO: How to detect "1T" DIMMs ?
+		 * Only try 1T mode for XMP DIMMs that request it in dual DIMM
+		 * mode.
 		 *
 		 * Single DIMM per channel:
 		 * Try command rate 1T and 2T
 		 */
 		cmdrate = ((ctrl->rankmap[channel] & 0x5) == 0x5);
+		if (ctrl->tCMD)
+			/* XMP gives the CMD rate in clock ticks, not ns */
+			cmdrate = MIN(DIV_ROUND_UP(ctrl->tCMD, 256) - 1, 1);
 
 		for (; cmdrate < 2; cmdrate++) {
 			err = try_cmd_stretch(ctrl, channel, cmdrate << 1);

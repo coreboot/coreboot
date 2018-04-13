@@ -20,6 +20,10 @@
 #include <arch/io.h>
 #include <device/device.h>
 
+/* D1F1 - HDA Configuration Registers */
+#define HDA_DEV_CTRL_STATUS	0x60
+#define   HDA_NO_SNOOP_EN	BIT(11)
+
 /* D18F0 - HT Configuration Registers */
 #define D18F0_NODE_ID		0x60
 #define D18F0_CPU_CNT		0x62 /* BKDG defines as a field in DWORD 0x60 */

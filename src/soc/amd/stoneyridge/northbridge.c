@@ -363,9 +363,9 @@ void fam15_finalize(void *chip_info)
 
 	/* disable No Snoop */
 	dev = dev_find_slot(0, HDA0_DEVFN);
-	value = pci_read_config32(dev, 0x60);
-	value &= ~(1 << 11);
-	pci_write_config32(dev, 0x60, value);
+	value = pci_read_config32(dev, HDA_DEV_CTRL_STATUS);
+	value &= ~HDA_NO_SNOOP_EN;
+	pci_write_config32(dev, HDA_DEV_CTRL_STATUS, value);
 }
 
 void domain_read_resources(device_t dev)

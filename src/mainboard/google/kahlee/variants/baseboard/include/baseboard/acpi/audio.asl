@@ -21,6 +21,16 @@ Device (I2S)
 	Name (_HID, "AMD7219")
 	Name (_CID, "AMD7219")
 
+	/* Device-Specific Data */
+	Name (_DSD, Package ()
+	{
+		ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+		Package ()
+		{
+			Package () { "bt-pad-enable", 1 },
+		}
+	})
+
 	Method (_CRS, 0x0, NotSerialized) {
 		Name (RBUF, ResourceTemplate () {
 			// Memory resource is for MISC FCH register set.

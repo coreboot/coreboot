@@ -30,6 +30,7 @@
 #include <intelblocks/pcr.h>
 #include <reg_script.h>
 #include <soc/iomap.h>
+#include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 
@@ -68,6 +69,18 @@ void soc_setup_dmi_pcr_io_dec(uint32_t *gen_io_dec)
 }
 
 #if ENV_RAMSTAGE
+static void soc_mirror_dmi_pcr_io_dec(void)
+{
+	uint32_t io_dec_arr[] = {
+		pci_read_config32(PCH_DEV_LPC, LPC_GEN1_DEC),
+		pci_read_config32(PCH_DEV_LPC, LPC_GEN2_DEC),
+		pci_read_config32(PCH_DEV_LPC, LPC_GEN3_DEC),
+		pci_read_config32(PCH_DEV_LPC, LPC_GEN4_DEC),
+	};
+	/* Mirror these same settings in DMI PCR */
+	soc_setup_dmi_pcr_io_dec(&io_dec_arr[0]);
+}
+
 static void pch_enable_ioapic(const struct device *dev)
 {
 	u32 reg32;
@@ -202,6 +215,7 @@ void lpc_soc_init(struct device *dev)
 	setup_i8259();
 	i8259_configure_irq_trigger(9, 1);
 	clock_gate_8254(dev);
+	soc_mirror_dmi_pcr_io_dec();
 }
 
 /* Fill up LPC IO resource structure inside SoC directory */

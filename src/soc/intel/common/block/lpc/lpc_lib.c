@@ -65,7 +65,7 @@ void lpc_close_pmio_windows(void)
 
 void lpc_open_pmio_window(uint16_t base, uint16_t size)
 {
-	int lgir_reg_num;
+	int i, lgir_reg_num;
 	uint32_t lgir_reg_offset, lgir, window_size, alignment;
 	resource_t bridged_size, bridge_base;
 
@@ -76,16 +76,6 @@ void lpc_open_pmio_window(uint16_t base, uint16_t size)
 	bridge_base = base;
 
 	while (bridged_size < size) {
-		lgir_reg_num = find_unused_pmio_window();
-		if (lgir_reg_num < 0) {
-			printk(BIOS_ERR,
-				"LPC: Cannot open IO window: %llx size %llx\n",
-				bridge_base, size - bridged_size);
-			printk(BIOS_ERR, "No more IO windows\n");
-			return;
-		}
-		lgir_reg_offset = LPC_GENERIC_IO_RANGE(lgir_reg_num);
-
 		/* Each IO range register can only open a 256-byte window. */
 		window_size = MIN(size, LPC_LGIR_MAX_WINDOW_SIZE);
 
@@ -96,6 +86,23 @@ void lpc_open_pmio_window(uint16_t base, uint16_t size)
 		/* Address[15:2] in LGIR[15:12] and Mask[7:2] in LGIR[23:18]. */
 		lgir = (bridge_base & LPC_LGIR_ADDR_MASK) | LPC_LGIR_EN;
 		lgir |= ((window_size - 1) << 16) & LPC_LGIR_AMASK_MASK;
+
+		/* Skip programming if same range already programmed. */
+		for (i = 0; i < LPC_NUM_GENERIC_IO_RANGES; i++) {
+			if (lgir == pci_read_config32(PCH_DEV_LPC,
+						LPC_GENERIC_IO_RANGE(i)))
+				return;
+		}
+
+		lgir_reg_num = find_unused_pmio_window();
+		if (lgir_reg_num < 0) {
+			printk(BIOS_ERR,
+				"LPC: Cannot open IO window: %llx size %llx\n",
+				bridge_base, size - bridged_size);
+			printk(BIOS_ERR, "No more IO windows\n");
+			return;
+		}
+		lgir_reg_offset = LPC_GENERIC_IO_RANGE(lgir_reg_num);
 
 		pci_write_config32(PCH_DEV_LPC, lgir_reg_offset, lgir);
 

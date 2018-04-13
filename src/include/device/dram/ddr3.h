@@ -162,6 +162,8 @@ typedef struct dimm_attr_st {
 	u32 tWTR;
 	u32 tRTP;
 	u32 tFAW;
+	u32 tCWL;
+	u16 tCMD;
 
 	u8 reference_card;
 	/* XMP: Module voltage in mV */

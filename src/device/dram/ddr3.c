@@ -295,6 +295,11 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 	dimm->tRTP = spd[27] * mtb;
 	/* Minimum Four Activate Window Delay Time (tFAWmin) */
 	dimm->tFAW = (((spd[28] & 0x0f) << 8) + spd[29]) * mtb;
+	/* Minimum CAS Write Latency Time (tCWLmin)
+	 * - not present in standard SPD */
+	dimm->tCWL = 0;
+	/* System CMD Rate Mode - not present in standard SPD */
+	dimm->tCMD = 0;
 
 	printram("  FTB timings        :");
 	/* FTB is introduced in SPD revision 1.1 */
@@ -484,7 +489,7 @@ int spd_xmp_decode_ddr3(dimm_attr *dimm,
 	/* SDRAM Minimum Cycle Time (tCKmin) */
 	dimm->tCK = xmp[1] * mtb;
 	/* CAS Latencies Supported */
-	dimm->cas_supported = (xmp[9] << 8) + xmp[8];
+	dimm->cas_supported = ((xmp[4] << 8) + xmp[3]) & 0x7fff;
 	/* Minimum CAS Latency Time (tAAmin) */
 	dimm->tAA = xmp[2] * mtb;
 	/* Minimum Write Recovery Time (tWRmin) */
@@ -507,6 +512,10 @@ int spd_xmp_decode_ddr3(dimm_attr *dimm,
 	dimm->tRTP = xmp[16] * mtb;
 	/* Minimum Four Activate Window Delay Time (tFAWmin) */
 	dimm->tFAW = (((xmp[18] & 0x0f) << 8) + xmp[19]) * mtb;
+	/* Minimum CAS Write Latency Time (tCWLmin) */
+	dimm->tCWL = xmp[5] * mtb;
+	/* System CMD Rate Mode */
+	dimm->tCMD = xmp[23] * mtb;
 
 	return ret;
 }
@@ -568,6 +577,12 @@ void dram_print_spd_ddr3(const dimm_attr * dimm)
 	print_ns("  tWTRmin           : ", dimm->tWTR);
 	print_ns("  tRTPmin           : ", dimm->tRTP);
 	print_ns("  tFAWmin           : ", dimm->tFAW);
+	/* Those values are only relevant if an XMP profile sets them */
+	if (dimm->tCWL)
+		print_ns("  tCWLmin           : ", dimm->tCWL);
+	if (dimm->tCMD)
+		printk(BIOS_INFO, "  tCMDmin           : %3u\n",
+		       DIV_ROUND_UP(dimm->tCMD, 256));
 }
 
 /*==============================================================================

@@ -10,6 +10,12 @@ SPD_SOURCES += empty_ddr4			# 0b0101
 SPD_SOURCES += hynix_dimm_H5AN8G6NAFR-UHC	# 0b0110
 SPD_SOURCES += samsung_dimm_K4A4G165WE-BCRC	# 0b0111
 SPD_SOURCES += samsung_dimm_K4A8G165WC-BCTD	# 0b1000
+SPD_SOURCES += empty_ddr4			# 0b1001
+SPD_SOURCES += empty_ddr4			# 0b1010
+SPD_SOURCES += empty_ddr4			# 0b1011
+SPD_SOURCES += empty_ddr4			# 0b1100
+SPD_SOURCES += empty_ddr4			# 0b1101
+SPD_SOURCES += micron_dimm_MT40A512M16LY-075E	# 0b1110
 
 # Used when PCH_MEM_CONFIG4 = 1 (LPDDR3)
 SEC_SPD_SOURCES += micron_dimm_MT52L512M32D2PF-107 # 0b0000

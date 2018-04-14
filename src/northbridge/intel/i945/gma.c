@@ -701,7 +701,11 @@ static void gma_func0_init(struct device *dev)
 		 | PCI_COMMAND_IO | PCI_COMMAND_MEMORY);
 
 	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
-		gma_ngi(dev);
+		if (acpi_is_wakeup_s3())
+			printk(BIOS_INFO,
+				"Skipping native VGA initialization when resuming from ACPI S3.\n");
+		else
+			gma_ngi(dev);
 	} else {
 		/* PCI Init, will run VBIOS */
 		pci_dev_init(dev);

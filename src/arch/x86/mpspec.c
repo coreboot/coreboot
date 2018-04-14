@@ -524,6 +524,22 @@ void *mptable_finalize(struct mp_config_table *mc)
 	return smp_next_mpe_entry(mc);
 }
 
+static const struct device *find_next_ioapic(unsigned int last_ioapic_id)
+{
+	const struct device *dev;
+	const struct device *result = NULL;
+	unsigned int ioapic_id = MAX_APICS;
+
+	for (dev = all_devices; dev; dev = dev->next) {
+		if (dev->path.type == DEVICE_PATH_IOAPIC &&
+		    dev->path.ioapic.ioapic_id > last_ioapic_id &&
+		    dev->path.ioapic.ioapic_id <= ioapic_id) {
+			result = dev;
+		}
+	}
+	return result;
+}
+
 unsigned long __weak write_smp_table(unsigned long addr)
 {
 	struct drivers_generic_ioapic_config *ioapic_config;
@@ -535,6 +551,7 @@ unsigned long __weak write_smp_table(unsigned long addr)
 	void *tmp, *v;
 	int isaioapic = -1, have_fixed_entries;
 	const struct pci_irq_info *pci_irq_info;
+	unsigned int ioapic_id = 0;
 
 	v = smp_write_floating_table(addr, 0);
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
@@ -545,17 +562,17 @@ unsigned long __weak write_smp_table(unsigned long addr)
 
 	mptable_write_buses(mc, NULL, &isa_bus);
 
-	for (dev = all_devices; dev; dev = dev->next) {
-		if (dev->path.type != DEVICE_PATH_IOAPIC)
-			continue;
-
+	while ((dev = find_next_ioapic(ioapic_id))) {
 		ioapic_config = dev->chip_info;
 		if (!ioapic_config) {
 			printk(BIOS_ERR, "%s has no config, ignoring\n",
 				dev_path(dev));
+			ioapic_id++;
 			continue;
 		}
-		smp_write_ioapic(mc, dev->path.ioapic.ioapic_id,
+
+		ioapic_id = dev->path.ioapic.ioapic_id;
+		smp_write_ioapic(mc, ioapic_id,
 				     ioapic_config->version,
 				     ioapic_config->base);
 

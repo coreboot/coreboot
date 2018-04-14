@@ -660,7 +660,7 @@ static void gma_func0_init(struct device *dev)
 
 	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
 		/* This should probably run before post VBIOS init. */
-		printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
+		printk(BIOS_INFO, "Initializing VGA without OPROM.\n");
 		void *mmiobase;
 		u32 iobase, graphics_base;
 		struct northbridge_intel_i945_config *conf = dev->chip_info;

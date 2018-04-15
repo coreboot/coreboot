@@ -158,7 +158,7 @@ config DCACHE_BSP_STACK_SIZE
 
 config CPU_ADDR_BITS
 	int
-	default 36
+	default 39
 
 config SOC_INTEL_COMMON_BLOCK_GSPI_CLOCK_MHZ
 	int

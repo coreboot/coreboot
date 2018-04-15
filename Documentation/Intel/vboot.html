@@ -24,7 +24,7 @@ Google's vboot verifies the firmware and places measurements
 within the TPM.
 
 <hr>
-<h1>Root of Trust</h1>
+<h2>Root of Trust</h2>
 <p>
 When using vboot, the root-of-trust is basically the read-only portion of the
 SPI flash.  The following items factor into the trust equation:
@@ -57,7 +57,7 @@ flash maintains the manufactured state during the system's lifetime.
 </p>
 
 <hr>
-<h1>Firmware Layout</h1>
+<h2>Firmware Layout</h2>
 <p>
 Several sections are added to the firmware layout to support vboot:
 </p>
@@ -71,7 +71,7 @@ Several sections are added to the firmware layout to support vboot:
 The following sections describe the various portions of the flash layout.
 </p>
 
-<h2>Read-Only Section</h2>
+<h3>Read-Only Section</h3>
 <p>
 The read-only section contains a coreboot file system (CBFS) that contains all
 of the boot firmware necessary to perform recovery for the system. This
@@ -87,14 +87,14 @@ size and must cover the entire read-only section which consists of:
   <li>coreboot file system containing read-only recovery firmware</li>
 </ul>
 
-<h2>Google Binary Blob (GBB) Area</h2>
+<h3>Google Binary Blob (GBB) Area</h3>
 <p>
 The GBB area is part of the read-only section.  This area contains a 4096 or
 8192 bit public root RSA key that is used to verify the VBLOCK area to obtain
 the firmware signing key.
 </p>
 
-<h2>Recovery Firmware</h2>
+<h3>Recovery Firmware</h3>
 <p>
 The recovery firmware is contained within a coreboot file system and consists
 of:
@@ -129,7 +129,7 @@ SPI flash device to boot the system.
 </p>
 
 
-<h2>Read/Write Section</h2>
+<h3>Read/Write Section</h3>
 
 <p>
 The read/write sections contain an area which contains the firmware signing
@@ -158,7 +158,7 @@ These files also produce the tables which get passed to the operating system.
 </p>
 
 <hr>
-<h1>Firmware Updates</h1>
+<h2>Firmware Updates</h2>
 <p>
 The read/write sections exist in one of three states:
 </p>
@@ -208,7 +208,7 @@ gets corrupted.
 </p>
 
 <hr>
-<h1>Build Flags</h1>
+<h2>Build Flags</h2>
 <p>
 The following Kconfig values need to be selected to enable vboot:
 </p>
@@ -255,7 +255,7 @@ systems in FW_MAIN_A and FW_MAIN_B.
 </p>
 
 <hr>
-<h1>Signing the coreboot Image</h1>
+<h2>Signing the coreboot Image</h2>
 <p>
 The following command script is an example of how to sign the coreboot image file.
 This script is used on the Intel Galileo board and creates the GBB area and
@@ -341,7 +341,7 @@ gbb_utility                          \
 </code></pre>
 
 <hr>
-<h1>Boot Flow</h1>
+<h2>Boot Flow</h2>
 <p>
 The reset vector exist in the read-only area and points to the bootblock entry
 point.  The only copy of the bootblock exists in the read-only area of the SPI
@@ -367,7 +367,7 @@ not valid vboot falls back to the read-only area to boot into system recovery.
 </p>
 
 <hr>
-<h1>Chromebook Special Features</h1>
+<h2>Chromebook Special Features</h2>
 <p>
 Google's Chromebooks have some special features:
 </p>
@@ -376,7 +376,7 @@ Google's Chromebooks have some special features:
   <li>Write-protect screw</li>
 </ul>
 
-<h2>Developer Mode</h2>
+<h3>Developer Mode</h3>
 <p>
 Developer mode allows the user to use coreboot to boot another operating system.
 This may be a another (beta) version of Chrome OS, or another flavor of
@@ -386,7 +386,7 @@ This prevents someone from entering developer mode to subvert the system
 security to access files on the local system or cloud.
 </p>
 
-<h2>Write Protect Screw</h2>
+<h3>Write Protect Screw</h3>
 <p>
 Chromebooks have a write-protect screw which provides the ground to the
 write-protect pin of the SPI flash.  Google specifically did this to allow

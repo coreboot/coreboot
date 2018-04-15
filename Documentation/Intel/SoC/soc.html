@@ -39,7 +39,7 @@
 
 
 <hr>
-<h1><a name="RequiredFiles">Required Files</a></h1>
+<h2><a name="RequiredFiles">Required Files</a></h2>
 <p>
   Create the directory as src/soc/&lt;Vendor&gt;/&lt;Chip Family&gt;.
 </p>
@@ -69,13 +69,13 @@
 
 
 <hr>
-<h1><a name="Descriptor">Start Booting</a></h1>
+<h2><a name="Descriptor">Start Booting</a></h2>
 <p>
   Some SoC parts require additional firmware components in the flash.
   This section describes how to add those pieces.
 </p>
 
-<h2>Intel Firmware Descriptor</h2>
+<h3>Intel Firmware Descriptor</h3>
 <p>
   The Intel Firmware Descriptor (IFD) is located at the base of the flash part.
   The following command overwrites the base of the flash image with the Intel
@@ -84,7 +84,7 @@
 <pre><code>dd if=descriptor.bin of=build/coreboot.rom conv=notrunc >/dev/null 2>&1</code></pre>
 
 
-<h2><a name="MEB">Management Engine Binary</a></h2>
+<h3><a name="MEB">Management Engine Binary</a></h3>
 <p>
   Some SoC parts contain and require that the Management Engine (ME) be running
   before it is possible to bring the x86 processor out of reset.  A binary file
@@ -96,14 +96,14 @@ mv build/coreboot.rom.new build/coreboot.rom
 </code></pre>
 
 
-<h2><a name="EarlyDebug">Early Debug</a></h2>
+<h3><a name="EarlyDebug">Early Debug</a></h3>
 <p>
   Early debugging between the reset vector and the time the serial port is enabled
   is most easily done by writing values to port 0x80.
 </p>
 
 
-<h2>Success</h2>
+<h3>Success</h3>
 <p>
   When the reset vector is successfully invoked, port 0x80 will output the following value:
 </p>
@@ -118,7 +118,7 @@ mv build/coreboot.rom.new build/coreboot.rom
 
 
 <hr>
-<h1><a name="Bootblock">Bootblock</a></h1>
+<h2><a name="Bootblock">Bootblock</a></h2>
 <p>
   Implement the bootblock using the following steps:
 </p>
@@ -213,7 +213,7 @@ mv build/coreboot.rom.new build/coreboot.rom
 
 
 <hr>
-<h1><a name="TempRamInit">TempRamInit</a></h1>
+<h2><a name="TempRamInit">TempRamInit</a></h2>
 <p>
   Enable the call to TempRamInit in two stages:
 </p>
@@ -223,7 +223,7 @@ mv build/coreboot.rom.new build/coreboot.rom
 </ol>
 
 
-<h2>Find FSP Binary</h2>
+<h3>Find FSP Binary</h3>
 <p>
 Use the following steps to locate the FSP binary:
 </p>
@@ -267,7 +267,7 @@ Use the following steps to locate the FSP binary:
 </ol>
 
 
-<h2>Calling TempRamInit</h2>
+<h3>Calling TempRamInit</h3>
 <p>
 Use the following steps to debug the call to TempRamInit:
 </p>
@@ -301,9 +301,9 @@ Use the following steps to debug the call to TempRamInit:
 
 
 <hr>
-<h1><a name="Romstage">Romstage</a></h1>
+<h2><a name="Romstage">Romstage</a></h2>
 
-<h2><a name="SerialOutput">Serial Output</a></h2>
+<h3><a name="SerialOutput">Serial Output</a></h3>
 <p>
   The following steps add the serial output support for romstage:
 </p>
@@ -339,7 +339,7 @@ Use the following steps to debug the call to TempRamInit:
 </ol>
 
 
-<h2><a name="PreviousSleepState">Determine Previous Sleep State</a></h2>
+<h3><a name="PreviousSleepState">Determine Previous Sleep State</a></h3>
 <p>
   The following steps implement the code to get the previous sleep state:
 </p>
@@ -362,7 +362,7 @@ Use the following steps to debug the call to TempRamInit:
 </ol>
 
 
-<h2><a name="MemoryInit">MemoryInit Support</a></h2>
+<h3><a name="MemoryInit">MemoryInit Support</a></h3>
 <p>
   The following steps implement the code to support the FSP MemoryInit call:
 </p>
@@ -390,7 +390,7 @@ Use the following steps to debug the call to TempRamInit:
 </ol>
 
 
-<h2><a name="DisableShadowRom">Disable Shadow ROM</a></h2>
+<h3><a name="DisableShadowRom">Disable Shadow ROM</a></h3>
 <p>
   A shadow of the SPI flash part is mapped from 0x000e0000 to 0x000fffff.
   This shadow needs to be disabled to allow RAM to properly respond to
@@ -402,9 +402,9 @@ Use the following steps to debug the call to TempRamInit:
 
 
 <hr>
-<h1><a name="Ramstage">Ramstage</a></h1>
+<h2><a name="Ramstage">Ramstage</a></h2>
 
-<h2><a name="DeviceTree">Start Device Tree Processing</a></h2>
+<h3><a name="DeviceTree">Start Device Tree Processing</a></h3>
 <p>
   The src/mainboard/&lt;Vendor&gt;/&lt;Board&gt;/devicetree.cb file drives the
   execution during ramstage.  This file is processed by the util/sconfig utility
@@ -417,7 +417,7 @@ Use the following steps to debug the call to TempRamInit:
   state of the state machine.
 </p>
 
-<h3><a name="ChipOperations">Chip Operations</a></h3>
+<h4><a name="ChipOperations">Chip Operations</a></h4>
 <p>
   Kick-starting the ramstage state machine requires creating the operation table
   for the chip listed in devicetree.cb:
@@ -437,7 +437,7 @@ Use the following steps to debug the call to TempRamInit:
   <li>Edit src/soc/&lt;SoC Vendor&gt;/&lt;SoC Family&gt;/Makefile.inc and add chip.c to ramstage</li>
 </ol>
 
-<h3>Domain Operations</h3>
+<h4>Domain Operations</h4>
 <p>
   coreboot uses the domain operation table to initiate operations on all of the
   devices in the domain.  By default coreboot enables all PCI devices which it
@@ -482,7 +482,7 @@ Use the following steps to debug the call to TempRamInit:
 </ol>
 
 
-<h2><a name="DeviceDrivers">PCI Device Drivers</a></h2>
+<h3><a name="DeviceDrivers">PCI Device Drivers</a></h3>
 <p>
   PCI device drivers consist of a ".c" file which contains a "pci_driver" data
   structure at the end of the file with the attribute tag "__pci_driver".  This
@@ -509,7 +509,7 @@ Use the following steps to debug the call to TempRamInit:
   </li>
 </ol>
 
-<h3><a name="SubsystemIds">Subsystem IDs</a></h3>
+<h4><a name="SubsystemIds">Subsystem IDs</a></h4>
 <p>
   PCI subsystem IDs are assigned during the BS_DEV_ENABLE state.  The device
   driver may use the common mechanism to assign subsystem IDs by adding
@@ -534,7 +534,7 @@ Use the following steps to debug the call to TempRamInit:
 
 
 
-<h2>Set up the <a name="MemoryMap">Memory Map</a></h2>
+<h3>Set up the <a name="MemoryMap">Memory Map</a></h3>
 <p>
   The memory map is built by the various PCI device drivers during the
   BS_DEV_RESOURCES state of ramstage.  The northcluster driver will typically
@@ -571,12 +571,12 @@ Use the following steps to debug the call to TempRamInit:
 
 
 <hr>
-<h1><a name="AcpiTables">ACPI Tables</a></h1>
+<h2><a name="AcpiTables">ACPI Tables</a></h2>
 <p>
   One of the payloads that needs ACPI tables is the EDK2 <a target="_blank" href="quark.html#CorebootPayloadPkg">CorebootPayloadPkg</a>.
 </p>
 
-<h2>FADT</h2>
+<h3>FADT</h3>
 <p>
   The EDK2 module
   CorebootModulePkg/Library/CbParseLib/<a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootModulePkg/Library/CbParseLib/CbParseLib.c#l450">CbParseLib.c</a>
@@ -679,7 +679,7 @@ Use the following steps to debug the call to TempRamInit:
 
 
 <hr>
-<h1><a name="LegacyHardware">Legacy Hardware</a></h1>
+<h2><a name="LegacyHardware">Legacy Hardware</a></h2>
 <p>
   One of the payloads that needs legacy hardare is the EDK2 <a target="_blank" href="quark.html#CorebootPayloadPkg">CorebootPayloadPkg</a>.
 </p>

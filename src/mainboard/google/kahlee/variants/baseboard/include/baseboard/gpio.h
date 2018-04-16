@@ -39,8 +39,8 @@
 
 #endif /* _ACPI__ */
 
-#define EC_SCI_GPI		22
-
-#define EC_SMI_GPI		6
+/* These define the GPE, not the GPIO. */
+#define EC_SCI_GPI		3	/* AGPIO 22 -> GPE  3 */
+#define EC_SMI_GPI		10	/* AGPIO 6  -> GPE 10 */
 
 #endif /* __BASEBOARD_GPIO_H__ */

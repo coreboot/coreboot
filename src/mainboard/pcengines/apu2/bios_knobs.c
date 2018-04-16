@@ -21,6 +21,7 @@
 #include <console/console.h>
 #include <program_loading.h>
 #include <cbfs.h>
+#include <string.h>
 #include <commonlib/cbfs.h>
 #include <commonlib/region.h>
 #include <commonlib/cbfs_serialized.h>
@@ -30,24 +31,12 @@
 
 static char *after_str(const char *s, const char *pattern)
 {
-	char *result = (char *) s;
-	char *lpattern = (char *) pattern;
-
-	while (*result && *pattern ) {
-		if ( *lpattern == 0)  // the pattern matches return the pointer
-			return result;
-		if ( *result == 0)  // We're at the end of the file content but don't have a patter match yet
-			return NULL;
-		if (*result == *lpattern ) {
-			// The string matches, simply advance
-			result++;
-			lpattern++;
-		} else {
-			// The string doesn't match restart the pattern
-			result++;
-			lpattern = (char *) pattern;
-		}
-	}
+    size_t pattern_l = strlen (pattern);
+    while ((s = strchr (s, pattern[0])) != NULL) {
+        if (strncmp (s, pattern, pattern_l) == 0)
+            return (char*)s+pattern_l;
+        s++;
+    }
 
 	return NULL;
 }

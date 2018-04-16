@@ -28,7 +28,7 @@
 
 #define BOOTORDER_FILE "bootorder"
 
-static char * findstr(const char *s, const char *pattern)
+static char *after_str(const char *s, const char *pattern)
 {
 	char *result = (char *) s;
 	char *lpattern = (char *) pattern;
@@ -70,7 +70,7 @@ static u8 check_knob_value(const char *s)
 	if (boot_file == NULL || boot_file_len < 4096)
 		return -1;
 
-	token = findstr( boot_file, s );
+	token = after_str( boot_file, s );
 
 	if (token) {
 		if (*token == '0') return 0;

@@ -13,8 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <amdblocks/agesawrapper.h>
-#include <amdblocks/BiosCallOuts.h>
 #include <soc/southbridge.h>
 #include <stdlib.h>
 #include <soc/gpio.h>

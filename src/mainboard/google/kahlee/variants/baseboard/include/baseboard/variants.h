@@ -20,7 +20,6 @@
 #include <stddef.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>
-#include <amdblocks/agesawrapper.h>
 
 const struct sci_source *get_gpe_table(size_t *num);
 uint8_t variant_memory_sku(void);

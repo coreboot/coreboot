@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <amdblocks/agesawrapper.h>
 #include <baseboard/variants.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>
@@ -27,65 +26,66 @@
  */
 const struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
 	/* AGPIO2, to become event generator */
-	{ GPIO_2, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+	PAD_GPI(GPIO_2, PULL_UP),
 
 	/* SER_TX */
-	{ GPIO_8, Function1, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+	PAD_NF(GPIO_8, SerPortTX_OUT, PULL_UP),
 
 	/* SER RX */
-	{ GPIO_9, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+	PAD_NF(GPIO_9, SerPortRX_OUT, PULL_UP),
 
 	/* EC_IN_RW */
-	{GPIO_15, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+	PAD_GPI(GPIO_15, PULL_UP),
 
 	/* APU_I2C_3_SCL */
-	{GPIO_19, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+	PAD_NF(GPIO_19, I2C3_SCL, PULL_UP),
 
 	/* APU_I2C_3_SDA */
-	{GPIO_20, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+	PAD_NF(GPIO_20, I2C3_SDA, PULL_UP),
 
 	/* AGPIO22 EC_SCI */
-	{GPIO_22, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+	PAD_GPI(GPIO_22, PULL_UP),
 
 	/* SPI_TPM_CS_L */
-	{GPIO_76, Function1, FCH_GPIO_PULL_DOWN_ENABLE | OUTPUT_H },
+	PAD_NF(GPIO_76, SPI_TPM_CS_L, PULL_DOWN),
 
 	/* BD_ID1 */
-	{GPIO_135, Function1, INPUT },
+	PAD_GPI(GPIO_135, PULL_NONE),
 
 	/* GPIO_136 - UART_FCH_RX_DEBUG_RX */
-	{GPIO_136, Function0, INPUT },
+	PAD_NF(GPIO_136, UART0_RXD, PULL_NONE),
 
 	/* GPIO_138 - UART_FCH_TX_DEBUG_RX */
-	{GPIO_138, Function0, INPUT },
+	PAD_NF(GPIO_138, UART0_TXD, PULL_NONE),
 
 	/* TPM_SERIRQ# */
-	{GPIO_139, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+	PAD_GPI(GPIO_139, PULL_UP),
 
 	/* BD_ID2 */
-	{GPIO_140, Function1, INPUT },
+	PAD_GPI(GPIO_140, PULL_NONE),
 
 	/* APU_SPI_WP */
-	{GPIO_142, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+	PAD_GPI(GPIO_142, PULL_UP),
 
 	/* BD_ID3 */
-	{GPIO_144, Function1, INPUT }
+	PAD_GPI(GPIO_144, PULL_NONE),
 };
 
 const struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
 	/* AGPIO 12 */
-	{ GPIO_12, Function2, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+	PAD_GPI(GPIO_12, PULL_UP),
 
 	/* TS_EN_SOC (TouchScreen enable GPIO) */
-	{GPIO_13, Function1, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H},
+	PAD_GPO(GPIO_13, HIGH),
 
 	/* CAM_PWRON (Camera enable GPIO) */
-	{GPIO_14, Function1, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+	PAD_GPO(GPIO_14, HIGH),
+
 	/* APU_BT_ON# */
-	{GPIO_24, Function1, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+	PAD_GPO(GPIO_24, HIGH),
 
 	/* DEVSLP1_SSD */
-	{67, Function1, FCH_GPIO_PULL_UP_ENABLE | INPUT },
+	PAD_NF(GPIO_67, DEVSLP0, PULL_UP),
 
 	/* DEVSLP1_EMMC */
 	/* No Connect for now.
@@ -93,13 +93,13 @@ const struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
 	 */
 
 	/* CAM_LED# */
-	{GPIO_84, Function1, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+	PAD_GPO(GPIO_84, HIGH),
 
 	/* TS_RST#  (TouchScreen Reset) */
-	{GPIO_85, Function1, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+	PAD_GPO(GPIO_85, HIGH),
 
 	/* WLAN_RST#_AUX */
-	{GPIO_119, Function2, FCH_GPIO_PULL_UP_ENABLE | OUTPUT_H },
+	PAD_GPO(GPIO_119, HIGH),
 };
 
 const struct soc_amd_stoneyridge_gpio *variant_early_gpio_table(size_t *size)

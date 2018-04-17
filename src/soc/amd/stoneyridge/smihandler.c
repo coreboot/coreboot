@@ -186,7 +186,7 @@ int southbridge_io_trap_handler(int smif)
  * Table of functions supported in the SMI handler.  Note that SMI source setup
  * in southbridge.c is unrelated to this list.
  */
-struct smi_sources_t smi_sources[] = {
+static const struct smi_sources_t smi_sources[] = {
 	{ .type = SMITYPE_SMI_CMD_PORT, .handler = sb_apmc_smi_handler },
 	{ .type = SMITYPE_SLP_TYP, .handler = sb_slp_typ_handler},
 };

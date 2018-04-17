@@ -144,3 +144,28 @@ void paging_set_pat(uint64_t pat)
 	msr.hi = pat >> 32;
 	wrmsr(MSR_IA32_PAT, msr);
 }
+
+/* PAT encoding used in util/x86/x86_page_tables.go. It matches the linux
+ * kernel settings:
+ *  PTE encoding:
+ *      PAT
+ *      |PCD
+ *      ||PWT  PAT
+ *      |||    slot
+ *      000    0    WB : _PAGE_CACHE_MODE_WB
+ *      001    1    WC : _PAGE_CACHE_MODE_WC
+ *      010    2    UC-: _PAGE_CACHE_MODE_UC_MINUS
+ *      011    3    UC : _PAGE_CACHE_MODE_UC
+ *      100    4    WB : Reserved
+ *      101    5    WP : _PAGE_CACHE_MODE_WP
+ *      110    6    UC-: Reserved
+ *      111    7    WT : _PAGE_CACHE_MODE_WT
+ */
+void paging_set_default_pat(void)
+{
+	uint64_t pat =  PAT_ENCODE(WB, 0) | PAT_ENCODE(WC, 1) |
+			PAT_ENCODE(UC_MINUS, 2) | PAT_ENCODE(UC, 3) |
+			PAT_ENCODE(WB, 4) | PAT_ENCODE(WP, 5) |
+			PAT_ENCODE(UC_MINUS, 6) | PAT_ENCODE(WT, 7);
+	paging_set_pat(pat);
+}

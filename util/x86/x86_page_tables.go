@@ -185,16 +185,25 @@ func (cw *cWriter) WritePageEntry(data interface{}) error {
 	return nil
 }
 
-// This map represents what the IA32_PAT MSR
+// This map represents what the IA32_PAT MSR should be at runtime. The indicies
+// are what the linux kernel uses. Reserved entries are not used.
+//  0    WB : _PAGE_CACHE_MODE_WB
+//  1    WC : _PAGE_CACHE_MODE_WC
+//  2    UC-: _PAGE_CACHE_MODE_UC_MINUS
+//  3    UC : _PAGE_CACHE_MODE_UC
+//  4    WB : Reserved
+//  5    WP : _PAGE_CACHE_MODE_WP
+//  6    UC-: Reserved
+//  7    WT : _PAGE_CACHE_MODE_WT
+// In order to use WP and WC then the IA32_PAT MSR needs to be updated
+// as these are not the power on reset values.
 var patMsrIndexByType = map[uint]uint{
 	PAT_WB:      0,
-	PAT_WT:      1,
+	PAT_WC:      1,
 	PAT_UCMINUS: 2,
 	PAT_UC:      3,
-	// In order to use WP and WC then the IA32_PAT MSR needs to be updated
-	// as these are not the power on reset values.
-	PAT_WP: 6,
-	PAT_WC: 7,
+	PAT_WP:      5,
+	PAT_WT:      7,
 }
 
 type addressRange struct {

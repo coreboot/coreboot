@@ -69,7 +69,7 @@ int write_rcba32(uint32_t addr, uint32_t val)
 	rcba = map_physical((off_t)rcba_phys, size);
 	if (rcba == NULL) {
 		printf("Could not map RCBA\n"
-		       "Do you have cmdline argument 'iomem=relaxed' set ?\n");
+		       "Do you have kernel cmdline argument 'iomem=relaxed' set ?\n");
 		return 1;
 	}
 	*(uint32_t *)(rcba + addr) = val;
@@ -95,7 +95,7 @@ int read_rcba32(uint32_t addr, uint32_t *val)
 	rcba = map_physical((off_t)rcba_phys, size);
 	if (rcba == NULL) {
 		printf("Could not map RCBA\n"
-		       "Do you have cmdline argument 'iomem=relaxed' set ?\n");
+		       "Do you have kernel cmdline argument 'iomem=relaxed' set ?\n");
 		return 1;
 	}
 

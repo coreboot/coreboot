@@ -123,6 +123,7 @@ asmlinkage void car_stage_entry(void)
 	timestamp_add_now(TS_START_ROMSTAGE);
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);
+	pmc_set_disb();
 	if (!s3wake)
 		save_dimm_info();
 	if (postcar_frame_init(&pcf, 1 * KiB))

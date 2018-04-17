@@ -128,6 +128,21 @@ const char *const *soc_std_gpe_sts_array(size_t *a)
 	return gpe_sts_bits;
 }
 
+void pmc_set_disb(void)
+{
+	/* Set the DISB after DRAM init */
+	uint8_t disb_val;
+	/* Only care about bits [23:16] of register GEN_PMCON_A */
+	uint8_t *addr = (void *)(pmc_mmio_regs() + GEN_PMCON_A + 2);
+
+	disb_val = read8(addr);
+	disb_val |= (DISB >> 16);
+
+	/* Don't clear bits that are write-1-to-clear */
+	disb_val &= ~((MS4V | SUS_PWR_FLR) >> 16);
+	write8(addr, disb_val);
+}
+
 /*
  * PMC controller gets hidden from PCI bus
  * during FSP-Silicon init call. Hence PWRMBASE

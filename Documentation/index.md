@@ -19,3 +19,4 @@ Contents:
 * [GPIO toggling in ACPI AML](acpi/gpio.md)
 * [Native Graphics Initialization with libgfxinit](gfx/libgfxinit.md)
 * [Sandy Bridge Raminit](Intel/NativeRaminit/Sandybridge.md)
+* [Mainboard-specific documentation](mainboard/index.md)

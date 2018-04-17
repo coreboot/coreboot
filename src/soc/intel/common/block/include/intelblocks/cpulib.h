@@ -159,9 +159,4 @@ uint32_t cpu_get_max_turbo_ratio(void);
 /* Configure Machine Check Architecture support */
 void mca_configure(void);
 
-/* Set/Clear NXE bit in IA32_EFER MSR */
-void set_nxe(uint8_t enable);
-
-/* Set PAT MSR */
-void set_pat(uint64_t pat);
 #endif	/* SOC_INTEL_COMMON_BLOCK_CPULIB_H */

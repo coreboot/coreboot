@@ -17,6 +17,7 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <arch/cpu.h>
+#include <cpu/x86/msr.h>
 #include <cpu/x86/pae.h>
 #include <rules.h>
 #include <string.h>
@@ -119,3 +120,23 @@ void *map_2M_page(unsigned long page)
 	return result;
 }
 #endif
+
+void paging_set_nxe(int enable)
+{
+	msr_t msr = rdmsr(IA32_EFER);
+
+	if (enable)
+		msr.lo |= EFER_NXE;
+	else
+		msr.lo &= ~EFER_NXE;
+
+	wrmsr(IA32_EFER, msr);
+}
+
+void paging_set_pat(uint64_t pat)
+{
+	msr_t msr;
+	msr.lo = pat;
+	msr.hi = pat >> 32;
+	wrmsr(MSR_IA32_PAT, msr);
+}

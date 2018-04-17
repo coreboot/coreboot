@@ -1,6 +1,18 @@
 #ifndef CPU_X86_MSR_H
 #define CPU_X86_MSR_H
 
+/* Intel SDM: Table 2-1
+ * IA-32 architectural MSR: Extended Feature Enable Register
+ */
+#define IA32_EFER	0xC0000080
+#define  EFER_NXE	(1 << 11)
+#define  EFER_LMA	(1 << 10)
+#define  EFER_LME	(1 << 8)
+#define  EFER_SCE	(1 << 0)
+
+/* Page attribute type MSR */
+#define MSR_IA32_PAT	0x277
+
 #if defined(__ROMCC__)
 
 typedef __builtin_msr_t msr_t;

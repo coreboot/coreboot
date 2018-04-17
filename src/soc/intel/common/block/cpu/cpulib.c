@@ -314,23 +314,3 @@ void mca_configure(void)
 			(msr_t) {.lo = 0xffffffff, .hi = 0xffffffff});
 	}
 }
-
-void set_nxe(uint8_t enable)
-{
-	msr_t msr = rdmsr(IA32_EFER);
-
-	if (enable)
-		msr.lo |= EFER_NXE;
-	else
-		msr.lo &= ~EFER_NXE;
-
-	wrmsr(IA32_EFER, msr);
-}
-
-void set_pat(uint64_t pat)
-{
-	msr_t msr;
-	msr.lo = pat;
-	msr.hi = pat >> 32;
-	wrmsr(MSR_IA32_PAT, msr);
-}

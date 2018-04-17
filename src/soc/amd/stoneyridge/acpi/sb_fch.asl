@@ -14,6 +14,7 @@
  */
 
 #include <soc/gpio.h>
+#include <soc/iomap.h>
 
 Device (AAHB)
 {
@@ -131,6 +132,19 @@ Device (I2CD)
 	Name (_CRS, ResourceTemplate() {
 		IRQ (Edge, ActiveHigh, Exclusive) { 14 }
 		Memory32Fixed(ReadWrite, 0xFEDC5000, 0x1000)
+	})
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (0x0F)
+	}
+}
+
+Device (MISC)
+{
+	Name (_HID, "AMD0040")
+	Name (_UID, 0x3)
+	Name (_CRS, ResourceTemplate() {
+		Memory32Fixed(ReadWrite, MISC_MMIO_BASE, 0x100)
 	})
 	Method (_STA, 0x0, NotSerialized)
 	{

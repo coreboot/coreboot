@@ -6,14 +6,17 @@
  * storage can be used. This will benefit machines without CMOS as well as those
  * without a battery-backed CMOS (e.g. some laptops).
  */
-#if CONFIG_USE_OPTION_TABLE
+
+#if CONFIG_USE_OPTION_TABLE_CMOS
+
 #include <pc80/mc146818rtc.h>
+
+#elif CONFIG_USE_OPTION_TABLE_CBFS
+
+#include <commonlib/option_cbfs.h>
+
 #else
-#include <types.h>
-static inline enum cb_err get_option(void *dest, const char *name)
-{
-	return CB_CMOS_OTABLE_DISABLED;
-}
+
 #endif
 
 #endif /* _OPTION_H_ */

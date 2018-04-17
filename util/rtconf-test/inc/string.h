@@ -66,7 +66,7 @@ static inline char *strconcat(const char *s1, const char *s2)
 }
 #endif
 
-char *strncpy(char *to, const char *from, int count)
+static inline char *strncpy(char *to, const char *from, size_t count)
 {
 	register char *ret = to;
 	register char data;
@@ -108,7 +108,7 @@ static inline int strcmp(const char *s1, const char *s2)
 	return r;
 }
 
-int strncmp(const char *s1, const char *s2, int maxlen)
+static inline int strncmp(const char *s1, const char *s2, size_t maxlen)
 {
 	int i;
 

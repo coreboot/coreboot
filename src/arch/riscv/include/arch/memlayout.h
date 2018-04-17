@@ -19,7 +19,6 @@
 #define __ARCH_MEMLAYOUT_H
 
 #define STACK(addr, size) REGION(stack, addr, size, 4096)
-#define PAGETABLES(addr, size) REGION(pagetables, addr, size, 4096)
 
 /* TODO: Need to add DMA_COHERENT region like on ARM? */
 

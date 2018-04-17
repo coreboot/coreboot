@@ -30,6 +30,66 @@ static void EmptyHeap(int unused)
 	memset(BiosManagerPtr, 0, BIOS_HEAP_SIZE);
 }
 
+/*
+ * Name			FindAllocatedNode
+ * Brief description	Find an allocated node that matches the handle.
+ * Input parameter	The desired handle.
+ * Output parameters
+ *	pointer		Here is returned either the found node or the last
+ *			allocated node if the handle is not found. This is
+ *			intentional, as the field NextNode of this node will
+ *			have to be filled with the offset of the node being
+ *			created in procedure agesa_AllocateBuffer().
+ *	Status		Indicates if the node was or was not found.
+ */
+static AGESA_STATUS FindAllocatedNode(uint32_t handle,
+				BIOS_BUFFER_NODE **last_allocd_or_match)
+{
+	UINT32              AllocNodeOffset;
+	UINT8               *BiosHeapBaseAddr;
+	BIOS_BUFFER_NODE    *AllocNodePtr;
+	BIOS_HEAP_MANAGER   *BiosHeapBasePtr;
+	AGESA_STATUS        Status = AGESA_SUCCESS;
+
+	BiosHeapBaseAddr = agesa_heap_base();
+	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *)BiosHeapBaseAddr;
+
+	AllocNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;
+	AllocNodePtr = (BIOS_BUFFER_NODE *)(BiosHeapBaseAddr + AllocNodeOffset);
+
+	while (handle != AllocNodePtr->BufferHandle) {
+		if (AllocNodePtr->NextNodeOffset == 0) {
+			Status = AGESA_BOUNDS_CHK;
+			break;
+		}
+		AllocNodeOffset = AllocNodePtr->NextNodeOffset;
+		AllocNodePtr = (BIOS_BUFFER_NODE *)(BiosHeapBaseAddr +
+						    AllocNodeOffset);
+	}
+	*last_allocd_or_match = AllocNodePtr;
+	return Status;
+}
+
+/*
+ * Name			ConcatenateNodes
+ * Brief description	Concatenates two adjacent nodes into a single node,
+ *			this procedure is used by agesa_DeallocateBuffer().
+ * Input parameters
+ *	FirstNodePtr	This node is in the front, its header will be
+ *			maintained.
+ *	SecondNodePtr	This node is in the back, its header will be cleared.
+ */
+static void ConcatenateNodes(BIOS_BUFFER_NODE *FirstNodePtr,
+				BIOS_BUFFER_NODE *SecondNodePtr)
+{
+	FirstNodePtr->BufferSize += SecondNodePtr->BufferSize +
+						sizeof(BIOS_BUFFER_NODE);
+	FirstNodePtr->NextNodeOffset = SecondNodePtr->NextNodeOffset;
+
+	/* Zero out the SecondNode header */
+	memset(SecondNodePtr, 0, sizeof(BIOS_BUFFER_NODE));
+}
+
 #if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 #error "Only EARLY_CBMEM_INIT is supported."
 #endif
@@ -37,14 +97,29 @@ ROMSTAGE_CBMEM_INIT_HOOK(EmptyHeap)
 
 AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
+	/*
+	 * Size variables explanation:
+	 * FreedNodeSize	- the size of the buffer node being examined,
+	 *			will be copied to BestFitNodeSize if the node
+	 *			is selected as a possible best fit.
+	 * BestFitNodeSize	- the size qf the buffer of the node currently
+	 *			considered the best fit.
+	 * MinimumSize		- the requested size + sizeof(BIOS_BUFFER_NODE).
+	 *			Its the minimum size for the buffer to be broken
+	 *			down into 2 nodes, once a node is selected as
+	 *			the best fit.
+	 */
 	UINT32              AvailableHeapSize;
 	UINT8               *BiosHeapBaseAddr;
 	UINT32              CurrNodeOffset;
 	UINT32              PrevNodeOffset;
 	UINT32              FreedNodeOffset;
+	UINT32              FreedNodeSize;
 	UINT32              BestFitNodeOffset;
+	UINT32              BestFitNodeSize;
 	UINT32              BestFitPrevNodeOffset;
 	UINT32              NextFreeOffset;
+	UINT32              MinimumSize;
 	BIOS_BUFFER_NODE   *CurrNodePtr;
 	BIOS_BUFFER_NODE   *FreedNodePtr;
 	BIOS_BUFFER_NODE   *BestFitNodePtr;
@@ -52,11 +127,14 @@ AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	BIOS_BUFFER_NODE   *NextFreePtr;
 	BIOS_HEAP_MANAGER  *BiosHeapBasePtr;
 	AGESA_BUFFER_PARAMS *AllocParams;
+	AGESA_STATUS        Status;
 
 	AllocParams = ((AGESA_BUFFER_PARAMS *)ConfigPtr);
 	AllocParams->BufferPointer = NULL;
+	MinimumSize = AllocParams->BufferLength + sizeof(BIOS_BUFFER_NODE);
 
 	AvailableHeapSize = BIOS_HEAP_SIZE - sizeof(BIOS_HEAP_MANAGER);
+	BestFitNodeSize = AvailableHeapSize; /* init with largest possible */
 	BiosHeapBaseAddr = agesa_heap_base();
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *)BiosHeapBaseAddr;
 
@@ -85,37 +163,30 @@ AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 		BiosHeapBasePtr->StartOfAllocatedNodes = CurrNodeOffset;
 		BiosHeapBasePtr->StartOfFreedNodes = FreedNodeOffset;
 	} else {
-		/* Find out whether BufferHandle has been allocated on the heap.
+		/*
+		 * Find out whether BufferHandle has been allocated on the heap.
 		 * If it has, return AGESA_BOUNDS_CHK.
 		 */
-		CurrNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;
-		CurrNodePtr = (BIOS_BUFFER_NODE *)(BiosHeapBaseAddr
-						+ CurrNodeOffset);
+		Status = FindAllocatedNode(AllocParams->BufferHandle,
+						&CurrNodePtr);
+		if (Status == AGESA_SUCCESS)
+			return AGESA_BOUNDS_CHK;
 
-		while (CurrNodeOffset != 0) {
-			CurrNodePtr = (BIOS_BUFFER_NODE *)(BiosHeapBaseAddr
-						+ CurrNodeOffset);
-			if (CurrNodePtr->BufferHandle ==
-						AllocParams->BufferHandle) {
-				return AGESA_BOUNDS_CHK;
-			}
-			CurrNodeOffset = CurrNodePtr->NextNodeOffset;
-			/* If BufferHandle has not been allocated on the heap,
-			 * CurrNodePtr here points to the end of the allocated
-			 * nodes list.
-			 */
-		}
+		/*
+		 * If status ditn't returned AGESA_SUCCESS, CurrNodePtr here
+		 * points to the end of the allocated nodes list.
+		 */
+
 		/* Find the node that best fits the requested buffer size */
 		FreedNodeOffset = BiosHeapBasePtr->StartOfFreedNodes;
 		PrevNodeOffset = FreedNodeOffset;
 		BestFitNodeOffset = 0;
 		BestFitPrevNodeOffset = 0;
-		while (FreedNodeOffset != 0) { /* todo: simplify this */
+		while (FreedNodeOffset != 0) {
 			FreedNodePtr = (BIOS_BUFFER_NODE *)(BiosHeapBaseAddr
 						+ FreedNodeOffset);
-			if (FreedNodePtr->BufferSize >=
-						(AllocParams->BufferLength +
-						sizeof(BIOS_BUFFER_NODE))) {
+			FreedNodeSize = FreedNodePtr->BufferSize;
+			if (FreedNodeSize >= MinimumSize) {
 				if (BestFitNodeOffset == 0) {
 					/*
 					 * First node that fits the requested
@@ -123,21 +194,19 @@ AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 					 */
 					BestFitNodeOffset = FreedNodeOffset;
 					BestFitPrevNodeOffset = PrevNodeOffset;
+					BestFitNodeSize = FreedNodeSize;
 				} else {
 					/*
 					 * Find out whether current node is a
 					 * betterfit than the previous nodes
 					 */
-					BestFitNodePtr = (BIOS_BUFFER_NODE *)
-							 (BiosHeapBaseAddr +
-							  BestFitNodeOffset);
-					if (BestFitNodePtr->BufferSize >
-						FreedNodePtr->BufferSize) {
+					if (BestFitNodeSize > FreedNodeSize) {
 
 						BestFitNodeOffset =
 							FreedNodeOffset;
 						BestFitPrevNodeOffset =
 							PrevNodeOffset;
+						BestFitNodeSize = FreedNodeSize;
 					}
 				}
 			}
@@ -162,22 +231,19 @@ AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 		 * If BestFitNode is larger than the requested buffer,
 		 * fragment the node further
 		 */
-		if (BestFitNodePtr->BufferSize >
-		    (AllocParams->BufferLength + sizeof(BIOS_BUFFER_NODE))) {
-			NextFreeOffset = BestFitNodeOffset +
-					 AllocParams->BufferLength +
-					 sizeof(BIOS_BUFFER_NODE);
+		if (BestFitNodePtr->BufferSize > MinimumSize) {
+			NextFreeOffset = BestFitNodeOffset + MinimumSize;
 			NextFreePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr +
 				       NextFreeOffset);
-			NextFreePtr->BufferSize = BestFitNodePtr->BufferSize -
-						 (AllocParams->BufferLength +
-						  sizeof(BIOS_BUFFER_NODE));
+			NextFreePtr->BufferSize = BestFitNodeSize - MinimumSize;
+
+			/* Remove BestFitNode from list of Freed nodes */
 			NextFreePtr->NextNodeOffset =
 					BestFitNodePtr->NextNodeOffset;
 		} else {
 			/*
-			 * Otherwise, next free node is
-			 * NextNodeOffset of BestFitNode
+			 * Otherwise, next free node is NextNodeOffset of
+			 * BestFitNode. Remove it from list of Freed nodes.
 			 */
 			NextFreeOffset = BestFitNodePtr->NextNodeOffset;
 		}
@@ -197,7 +263,6 @@ AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 		BestFitNodePtr->BufferHandle = AllocParams->BufferHandle;
 		BestFitNodePtr->NextNodeOffset = 0;
 
-		/* Remove BestFitNode from list of Freed nodes */
 		AllocParams->BufferPointer = (UINT8 *)BestFitNodePtr +
 					     sizeof(BIOS_BUFFER_NODE);
 	}
@@ -264,14 +329,7 @@ AGESA_STATUS agesa_DeallocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 			/* If the freed node is adjacent to the first node in
 			 * the list, concatenate both nodes
 			 */
-			AllocNodePtr->BufferSize += FreedNodePtr->BufferSize +
-						sizeof(BIOS_BUFFER_NODE);
-			AllocNodePtr->NextNodeOffset =
-						FreedNodePtr->NextNodeOffset;
-
-			/* Zero out the FreedNode header */
-			memset((UINT8 *)FreedNodePtr, 0,
-						sizeof(BIOS_BUFFER_NODE));
+			ConcatenateNodes(AllocNodePtr, FreedNodePtr);
 		} else {
 			/* Otherwise, add freed node to the start of the list
 			 * Update NextNodeOffset and BufferSize to include the
@@ -302,14 +360,7 @@ AGESA_STATUS agesa_DeallocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 		if (NextNodeOffset == EndNodeOffset) {
 			NextNodePtr = (BIOS_BUFFER_NODE *)(BiosHeapBaseAddr
 						+ NextNodeOffset);
-			AllocNodePtr->BufferSize += NextNodePtr->BufferSize +
-						sizeof(BIOS_BUFFER_NODE);
-			AllocNodePtr->NextNodeOffset =
-						NextNodePtr->NextNodeOffset;
-
-			/* Zero out the NextNode header */
-			memset((UINT8 *)NextNodePtr, 0,
-						sizeof(BIOS_BUFFER_NODE));
+			ConcatenateNodes(AllocNodePtr, NextNodePtr);
 		} else {
 			/*AllocNodePtr->NextNodeOffset =
 			 * 			FreedNodePtr->NextNodeOffset; */
@@ -324,53 +375,30 @@ AGESA_STATUS agesa_DeallocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 		EndNodeOffset = PrevNodeOffset + PrevNodePtr->BufferSize +
 						sizeof(BIOS_BUFFER_NODE);
 
-		if (AllocNodeOffset == EndNodeOffset) {
-			PrevNodePtr->NextNodeOffset =
-						AllocNodePtr->NextNodeOffset;
-			PrevNodePtr->BufferSize += AllocNodePtr->BufferSize +
-						sizeof(BIOS_BUFFER_NODE);
-
-			/* Zero out the AllocNode header */
-			memset((UINT8 *)AllocNodePtr, 0,
-						sizeof(BIOS_BUFFER_NODE));
-		} else {
+		if (AllocNodeOffset == EndNodeOffset)
+			ConcatenateNodes(PrevNodePtr, AllocNodePtr);
+		else
 			PrevNodePtr->NextNodeOffset = AllocNodeOffset;
-		}
 	}
 	return AGESA_SUCCESS;
 }
 
 AGESA_STATUS agesa_LocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
-	UINT32              AllocNodeOffset;
-	UINT8               *BiosHeapBaseAddr;
 	BIOS_BUFFER_NODE    *AllocNodePtr;
-	BIOS_HEAP_MANAGER   *BiosHeapBasePtr;
 	AGESA_BUFFER_PARAMS *AllocParams;
+	AGESA_STATUS        Status;
 
 	AllocParams = (AGESA_BUFFER_PARAMS *)ConfigPtr;
 
-	BiosHeapBaseAddr = agesa_heap_base();
-	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *)BiosHeapBaseAddr;
+	Status = FindAllocatedNode(AllocParams->BufferHandle, &AllocNodePtr);
 
-	AllocNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;
-	AllocNodePtr = (BIOS_BUFFER_NODE *)(BiosHeapBaseAddr + AllocNodeOffset);
-
-	while (AllocParams->BufferHandle != AllocNodePtr->BufferHandle) {
-		if (AllocNodePtr->NextNodeOffset == 0) {
-			AllocParams->BufferPointer = NULL;
-			AllocParams->BufferLength = 0;
-			return AGESA_BOUNDS_CHK;
-		}
-		AllocNodeOffset = AllocNodePtr->NextNodeOffset;
-		AllocNodePtr = (BIOS_BUFFER_NODE *)(BiosHeapBaseAddr +
-						    AllocNodeOffset);
+	if (Status == AGESA_SUCCESS) {
+		AllocParams->BufferPointer = (UINT8 *)((UINT8 *)AllocNodePtr
+						+ sizeof(BIOS_BUFFER_NODE));
+		AllocParams->BufferLength = AllocNodePtr->BufferSize;
 	}
 
-	AllocParams->BufferPointer = (UINT8 *)((UINT8 *)AllocNodePtr
-						+ sizeof(BIOS_BUFFER_NODE));
-	AllocParams->BufferLength = AllocNodePtr->BufferSize;
-
-	return AGESA_SUCCESS;
+	return Status;
 
 }

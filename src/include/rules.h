@@ -253,4 +253,12 @@
 #define __SIMPLE_DEVICE__
 #endif
 
+/* x86 specific. Indicates that the current stage is running with cache-as-ram
+ * enabled from the beginning of the stage in C code. */
+#if defined(__PRE_RAM__)
+#define ENV_CACHE_AS_RAM IS_ENABLED(CONFIG_CACHE_AS_RAM)
+#else
+#define ENV_CACHE_AS_RAM 0
+#endif
+
 #endif /* _RULES_H */

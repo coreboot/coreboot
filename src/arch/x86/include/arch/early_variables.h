@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <rules.h>
 
-#if defined(__PRE_RAM__) && IS_ENABLED(CONFIG_CACHE_AS_RAM)
+#if ENV_CACHE_AS_RAM
 asm(".section .car.global_data,\"w\",@nobits");
 asm(".previous");
 #ifdef __clang__

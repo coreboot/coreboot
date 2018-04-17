@@ -58,6 +58,7 @@ chip soc/intel/skylake
 	register "PmConfigSlpSusMinAssert" = "1"       # 500ms
 	register "PmConfigSlpAMinAssert" = "3"         # 2s
 	register "PmTimerDisabled" = "1"
+	register "VmxEnable" = "1"
 
 	register "pirqa_routing" = "PCH_IRQ11"
 	register "pirqb_routing" = "PCH_IRQ10"

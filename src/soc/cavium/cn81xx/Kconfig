@@ -12,6 +12,8 @@ config SOC_CAVIUM_CN81XX
 	select UART_OVERRIDE_REFCLK
 	select SOC_CAVIUM_COMMON
 	select CAVIUM_BDK_DDR_TUNE_HW_OFFSETS
+	select MMCONF_SUPPORT
+	select PCI
 
 if SOC_CAVIUM_CN81XX
 
@@ -24,5 +26,8 @@ config HEAP_SIZE
 
 config STACK_SIZE
 	default 0x2000
+
+config MMCONF_BASE_ADDRESS
+	default 0x848000000000
 
 endif

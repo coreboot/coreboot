@@ -29,6 +29,7 @@
 #include <string.h>
 #include <symbols.h>
 #include <libbdk-boot/bdk-boot.h>
+#include <soc/ecam0.h>
 
 static void soc_read_resources(device_t dev)
 {
@@ -59,7 +60,12 @@ static struct device_operations soc_ops = {
 
 static void enable_soc_dev(device_t dev)
 {
-	dev->ops = &soc_ops;
+	if (dev->path.type == DEVICE_PATH_DOMAIN &&
+		dev->path.domain.domain == 0) {
+		dev->ops = &pci_domain_ops_ecam0;
+	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+		dev->ops = &soc_ops;
+	}
 }
 
 struct chip_operations soc_cavium_cn81xx_ops = {

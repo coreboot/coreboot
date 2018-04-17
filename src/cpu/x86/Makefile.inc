@@ -4,6 +4,7 @@ romstage-$(CONFIG_CACHE_AS_RAM) += car.c
 endif
 endif
 
+subdirs-y += pae
 subdirs-$(CONFIG_PARALLEL_MP) += name
 ramstage-$(CONFIG_PARALLEL_MP) += mp_init.c
 ramstage-$(CONFIG_MIRROR_PAYLOAD_TO_RAM_BEFORE_LOADING) += mirror_payload.c

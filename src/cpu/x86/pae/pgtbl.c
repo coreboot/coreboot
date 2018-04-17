@@ -16,9 +16,12 @@
 #include <compiler.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
+#include <arch/cpu.h>
 #include <cpu/x86/pae.h>
+#include <rules.h>
 #include <string.h>
 
+#if ENV_RAMSTAGE
 static void paging_off(void)
 {
 	__asm__ __volatile__ (
@@ -115,3 +118,4 @@ void *map_2M_page(unsigned long page)
 		result = (void *)(0x80000000 | ((page & 0x3ff) << 21));
 	return result;
 }
+#endif

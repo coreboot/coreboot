@@ -145,8 +145,9 @@ static void set_dimm_info(uint8_t *spd, struct dimm_info *dimm)
 	}
 	dimm->dimm_size = capmb / 8 * busw / devw * ranks;  /* MiB */
 	dimm->mod_type = spd[3] & 0xf;
-	memcpy((char *)&dimm->module_part_number[0], &spd[0x80],
-		sizeof(dimm->module_part_number) - 1);
+	strncpy((char *)&dimm->module_part_number[0], (char *)&spd[0x80],
+		LPDDR3_SPD_PART_LEN);
+	dimm->module_part_number[LPDDR3_SPD_PART_LEN] = 0;
 	dimm->mod_id = *(uint16_t *)&spd[0x94];
 
 	switch (busw) {

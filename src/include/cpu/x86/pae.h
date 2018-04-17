@@ -3,6 +3,14 @@
 
 #include <stdint.h>
 
+/* Enable paging with cr3 value for page directory pointer table as well as PAE
+   option in cr4. */
+void paging_enable_pae_cr3(uintptr_t cr3);
+/* Enable paging as well as PAE option in cr4. */
+void paging_enable_pae(void);
+/* Disable paging as well as PAE option in cr4. */
+void paging_disable_pae(void);
+
 /* Set/Clear NXE bit in IA32_EFER MSR */
 void paging_set_nxe(int enable);
 

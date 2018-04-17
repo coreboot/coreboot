@@ -17,48 +17,52 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <arch/cpu.h>
+#include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/pae.h>
 #include <rules.h>
 #include <string.h>
 
+void paging_enable_pae_cr3(uintptr_t cr3)
+{
+	/* Load the page table address */
+	write_cr3(cr3);
+	paging_enable_pae();
+}
+
+void paging_enable_pae(void)
+{
+	CRx_TYPE cr0;
+	CRx_TYPE cr4;
+
+	/* Enable PAE */
+	cr4 = read_cr4();
+	cr4 |= CR4_PAE;
+	write_cr4(cr4);
+
+	/* Enable Paging */
+	cr0 = read_cr0();
+	cr0 |= CR0_PG;
+	write_cr0(cr0);
+}
+
+void paging_disable_pae(void)
+{
+	CRx_TYPE cr0;
+	CRx_TYPE cr4;
+
+	/* Disable Paging */
+	cr0 = read_cr0();
+	cr0 &= ~(CRx_TYPE)CR0_PG;
+	write_cr0(cr0);
+
+	/* Disable PAE */
+	cr4 = read_cr4();
+	cr4 &= ~(CRx_TYPE)CR4_PAE;
+	write_cr4(cr4);
+}
+
 #if ENV_RAMSTAGE
-static void paging_off(void)
-{
-	__asm__ __volatile__ (
-		/* Disable paging */
-		"movl	%%cr0, %%eax\n\t"
-		"andl	$0x7FFFFFFF, %%eax\n\t"
-		"movl	%%eax, %%cr0\n\t"
-		/* Disable pae */
-		"movl	%%cr4, %%eax\n\t"
-		"andl	$0xFFFFFFDF, %%eax\n\t"
-		"movl	%%eax, %%cr4\n\t"
-		:
-		:
-		: "eax"
-		);
-}
-
-static void paging_on(void *pdp)
-{
-	__asm__ __volatile__(
-		/* Load the page table address */
-		"movl	%0, %%cr3\n\t"
-		/* Enable pae */
-		"movl	%%cr4, %%eax\n\t"
-		"orl	$0x00000020, %%eax\n\t"
-		"movl	%%eax, %%cr4\n\t"
-		/* Enable paging */
-		"movl	%%cr0, %%eax\n\t"
-		"orl	$0x80000000, %%eax\n\t"
-		"movl	%%eax, %%cr0\n\t"
-		:
-		: "r" (pdp)
-		: "eax"
-		);
-}
-
 void *map_2M_page(unsigned long page)
 {
 	struct pde {
@@ -82,7 +86,7 @@ void *map_2M_page(unsigned long page)
 		return MAPPING_ERROR;
 	window = page >> 10;
 	if (window != mapped_window[index]) {
-		paging_off();
+		paging_disable_pae();
 		if (window > 1) {
 			struct pde *pd, *pdp;
 			/* Point the page directory pointers at the page
@@ -109,7 +113,7 @@ void *map_2M_page(unsigned long page)
 					| ((i & 0x3ff) << 21) | 0xE3;
 				pd[i].addr_hi = (window >> 1);
 			}
-			paging_on(pdp);
+			paging_enable_pae_cr3((uintptr_t)pdp);
 		}
 		mapped_window[index] = window;
 	}

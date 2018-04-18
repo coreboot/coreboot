@@ -286,3 +286,19 @@ config COLLECT_TIMESTAMPS_TSC
 	depends on COLLECT_TIMESTAMPS
 	help
 	  Use the TSC as the timestamp source.
+
+config PAGING_IN_CACHE_AS_RAM
+	bool
+	default n
+	depends on ARCH_X86
+	help
+	  Chipsets scan select this option to preallocate area in cache-as-ram
+	  for storing paging data structures. PAE paging is currently the
+	  only thing being supported.
+
+config NUM_CAR_PAGE_TABLE_PAGES
+	int
+	default 5
+	depends on PAGING_IN_CACHE_AS_RAM
+	help
+	  The number of 4KiB pages that should be pre-allocated for page tables.

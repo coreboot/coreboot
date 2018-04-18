@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cbfs.h>
 #include <compiler.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
@@ -22,6 +23,7 @@
 #include <cpu/x86/pae.h>
 #include <rules.h>
 #include <string.h>
+#include <symbols.h>
 
 void paging_enable_pae_cr3(uintptr_t cr3)
 {
@@ -168,4 +170,49 @@ void paging_set_default_pat(void)
 			PAT_ENCODE(WB, 4) | PAT_ENCODE(WP, 5) |
 			PAT_ENCODE(UC_MINUS, 6) | PAT_ENCODE(WT, 7);
 	paging_set_pat(pat);
+}
+
+static int read_from_cbfs(const char *name, void *buf, size_t size)
+{
+	struct cbfsf fh;
+	struct region_device rdev;
+	size_t rdev_sz;
+
+	if (cbfs_boot_locate(&fh, name, NULL))
+		return -1;
+
+	cbfs_file_data(&rdev, &fh);
+
+	rdev_sz = region_device_sz(&rdev);
+
+	if (size < rdev_sz) {
+		printk(BIOS_ERR, "%s region too small to load: %zx < %zx\n",
+			name, size, rdev_sz);
+		return -1;
+	}
+
+	if (rdev_readat(&rdev, buf, 0, rdev_sz) != rdev_sz)
+		return -1;
+
+	return 0;
+}
+
+int paging_enable_for_car(const char *pdpt_name, const char *pt_name)
+{
+	if (!ENV_CACHE_AS_RAM)
+		return -1;
+
+	if (read_from_cbfs(pdpt_name, _pdpt, _pdpt_size)) {
+		printk(BIOS_ERR, "Couldn't load pdpt\n");
+		return -1;
+	}
+
+	if (read_from_cbfs(pt_name, _pagetables, _pagetables_size)) {
+		printk(BIOS_ERR, "Couldn't load page tables\n");
+		return -1;
+	}
+
+	paging_enable_pae_cr3((uintptr_t)_pdpt);
+
+	return 0;
 }

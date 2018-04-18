@@ -341,6 +341,7 @@ ramstage-y += memset.c
 ramstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 ramstage-$(CONFIG_GENERATE_MP_TABLE) += mpspec.c
 ramstage-y += pci_ops_conf1.c
+ramstage-y += pci_ops.c
 ramstage-$(CONFIG_MMCONF_SUPPORT) += pci_ops_mmconf.c
 ramstage-$(CONFIG_GENERATE_PIRQ_TABLE) += pirq_routing.c
 ramstage-y += rdrand.c

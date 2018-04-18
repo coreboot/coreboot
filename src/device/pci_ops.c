@@ -20,12 +20,11 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
-const struct pci_bus_operations *pci_bus_default_ops(device_t dev)
+/* Overwrite with architecture specific method */
+const struct pci_bus_operations __attribute__((weak))
+*pci_bus_default_ops(struct device *dev)
 {
-	if (IS_ENABLED(CONFIG_NO_MMCONF_SUPPORT))
-		return &pci_cf8_conf1;
-
-	return &pci_ops_mmconf;
+	return NULL;
 }
 
 static const struct pci_bus_operations *pci_bus_ops(struct bus *bus, struct device *dev)

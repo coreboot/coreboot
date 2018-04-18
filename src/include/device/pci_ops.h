@@ -73,4 +73,6 @@ void pci_update_config32(device_t dev, int reg, u32 mask, u32 or)
 	pci_write_config32(dev, reg, reg32);
 }
 
+const struct pci_bus_operations *pci_bus_default_ops(struct device *dev);
+
 #endif /* PCI_OPS_H */

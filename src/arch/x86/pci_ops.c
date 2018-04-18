@@ -1,6 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright 2018 Facebook, Inc.
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -11,14 +13,13 @@
  * GNU General Public License for more details.
  */
 
-#ifndef ARCH_I386_PCI_OPS_H
-#define ARCH_I386_PCI_OPS_H
+#include <device/device.h>
+#include <device/pci_ops.h>
 
-#ifndef __SIMPLE_DEVICE__
+const struct pci_bus_operations *pci_bus_default_ops(struct device *dev)
+{
+	if (IS_ENABLED(CONFIG_NO_MMCONF_SUPPORT))
+		return &pci_cf8_conf1;
 
-extern const struct pci_bus_operations pci_cf8_conf1;
-extern const struct pci_bus_operations pci_ops_mmconf;
-
-#endif
-
-#endif /* ARCH_I386_PCI_OPS_H */
+	return &pci_ops_mmconf;
+}

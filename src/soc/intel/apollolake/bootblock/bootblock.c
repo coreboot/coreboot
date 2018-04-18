@@ -16,6 +16,7 @@
  */
 #include <arch/cpu.h>
 #include <bootblock_common.h>
+#include <cpu/x86/pae.h>
 #include <device/pci.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
@@ -116,4 +117,13 @@ void bootblock_soc_early_init(void)
 	reg = inl(ACPI_BASE_ADDRESS + TCO1_CNT);
 	reg |= TCO_TMR_HLT;
 	outl(reg, ACPI_BASE_ADDRESS + TCO1_CNT);
+
+	/* Use Nx and paging to prevent the frontend from writing back dirty
+	 * cache-as-ram lines to backing store that doesn't exist when the L1I
+	 * speculatively fetches a line that is sitting in the L1D. */
+	if (IS_ENABLED(CONFIG_PAGING_IN_CACHE_AS_RAM)) {
+		paging_set_nxe(1);
+		paging_set_default_pat();
+		paging_enable_for_car("pdpt", "pt");
+	}
 }

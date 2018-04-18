@@ -11,6 +11,7 @@ config SOC_INTEL_GLK
 	select SOC_INTEL_COMMON_BLOCK_SGX
 	select SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2
 	select IDT_IN_EVERY_STAGE
+	select PAGING_IN_CACHE_AS_RAM
 	help
 	  Intel GLK support
 
@@ -382,5 +383,10 @@ config SOC_ESPI
 config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 	int
 	default 3
+
+# Don't include the early page tables in RW_A or RW_B cbfs regions
+config RO_REGION_ONLY
+	string
+	default "pdpt pt"
 
 endif

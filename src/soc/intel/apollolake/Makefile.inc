@@ -107,6 +107,16 @@ endif
 # Since FSP-M runs in CAR we need to relocate it to a specific address
 $(CONFIG_FSP_M_CBFS)-options := -b $(CONFIG_FSP_M_ADDR)
 
+# Handle GLK paging requirements
+ifeq ($(CONFIG_PAGING_IN_CACHE_AS_RAM),y)
+cbfs-files-y += pt
+pt-file := pt.c:struct
+pt-type := raw
+cbfs-files-y += pdpt
+pdpt-file := pdpt.c:struct
+pdpt-type := raw
+endif
+
 ifeq ($(CONFIG_NEED_LBP2),y)
 files_added::
 	$(CBFSTOOL) $(obj)/coreboot.rom write -r $(CONFIG_LBP2_FMAP_NAME) -f $(CONFIG_LBP2_FILE_NAME) --fill-upward

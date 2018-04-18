@@ -20,6 +20,7 @@
 #include <soc/southbridge.h>
 #include <stdlib.h>
 #include <boardid.h>
+#include <variant/gpio.h>
 
 /*
  * As a rule of thumb, GPIO pins used by coreboot should be initialized at
@@ -494,6 +495,14 @@ static const struct sci_source gpe_table[] = {
 	{
 		.scimap = 7,
 		.gpe = 7,
+		.direction = SMI_SCI_LVL_LOW,
+		.level = SMI_SCI_EDG,
+	},
+
+	/* EC_PCH_WAKE_L */
+	{
+		.scimap = EC_WAKE_GPI,
+		.gpe = EC_WAKE_GPI,
 		.direction = SMI_SCI_LVL_LOW,
 		.level = SMI_SCI_EDG,
 	},

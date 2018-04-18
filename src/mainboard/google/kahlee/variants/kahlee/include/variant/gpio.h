@@ -46,5 +46,6 @@
 /* These define the GPE, not the GPIO. */
 #define EC_SCI_GPI		3	/* AGPIO 22 -> GPE  3 */
 #define EC_SMI_GPI		10	/* AGPIO  6 -> GPE 10 */
+#define EC_WAKE_GPI		8	/* AGPIO  2 -> GPE  8 */
 
 #endif /* __VARIANT_GPIO_H__ */

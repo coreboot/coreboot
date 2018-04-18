@@ -123,20 +123,6 @@
 #define ENV_STRING "UNKNOWN"
 #endif
 
-/* For pre-DRAM stages and post-CAR always build with simple device model, ie.
- * PCI, PNP and CPU functions operate without use of devicetree. The reason
- * post-CAR utilizes __SIMPLE_DEVICE__ is for simplicity. Currently there's
- * no known requirement that devicetree would be needed during that stage.
- *
- * For ramstage individual source file may define __SIMPLE_DEVICE__
- * before including any header files to force that particular source
- * be built with simple device model.
- */
-
-#if defined(__PRE_RAM__) || ENV_SMM || ENV_POSTCAR
-#define __SIMPLE_DEVICE__
-#endif
-
 /* Define helpers about the current architecture, based on toolchain.inc. */
 
 #if defined(__ARCH_arm__)
@@ -248,6 +234,23 @@
 #define ENV_X86_32 0
 #define ENV_X86_64 0
 
+#endif
+
+/**
+ * For pre-DRAM stages and post-CAR always build with simple device model, ie.
+ * PCI, PNP and CPU functions operate without use of devicetree. The reason
+ * post-CAR utilizes __SIMPLE_DEVICE__ is for simplicity. Currently there's
+ * no known requirement that devicetree would be needed during that stage.
+ *
+ * For ramstage individual source file may define __SIMPLE_DEVICE__
+ * before including any header files to force that particular source
+ * be built with simple device model.
+ *
+ * For now only x86 is supported.
+ */
+
+#if ENV_X86 && (defined(__PRE_RAM__) || ENV_SMM || ENV_POSTCAR)
+#define __SIMPLE_DEVICE__
 #endif
 
 #endif /* _RULES_H */

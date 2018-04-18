@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cpu.h>
 #include <arch/early_variables.h>
 #include <arch/exception.h>
 #include <commonlib/helpers.h>
@@ -18,6 +19,7 @@
 #include <console/console.h>
 #include <console/streams.h>
 #include <cpu/x86/cr.h>
+#include <cpu/x86/lapic.h>
 #include <rules.h>
 #include <stdint.h>
 #include <string.h>
@@ -502,11 +504,18 @@ void x86_exception(struct eregs *info)
 	}
 #else /* !CONFIG_GDB_STUB */
 #define MDUMP_SIZE 0x80
+	unsigned int logical_processor = 0;
+
+#if ENV_RAMSTAGE
+	logical_processor = cpu_index();
+#endif
 	printk(BIOS_EMERG,
-		"Unexpected Exception: %d @ %02x:%08x - Halting\n"
+		"CPU Index %d - APIC %d Unexpected Exception:"
+		"%d @ %02x:%08x - Halting\n"
 		"Code: %d eflags: %08x cr2: %08x\n"
 		"eax: %08x ebx: %08x ecx: %08x edx: %08x\n"
 		"edi: %08x esi: %08x ebp: %08x esp: %08x\n",
+		logical_processor, (unsigned int)lapicid(),
 		info->vector, info->cs, info->eip,
 		info->error_code, info->eflags, read_cr2(),
 		info->eax, info->ebx, info->ecx, info->edx,

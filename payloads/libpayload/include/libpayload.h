@@ -440,11 +440,6 @@ int getline(char *buffer, int len);
 /* Defined in arch/${ARCH}/selfboot.c */
 void selfboot(void *entry);
 
-/* Enter remote GDB mode. Will initialize connection if not already up. */
-void gdb_enter(void);
-/* Disconnect existing GDB connection if one exists. */
-void gdb_exit(s8 exit_status);
-
 /* look for area "name" in "fmap", setting offset and size to describe it.
    Returns 0 on success, < 0 on error. */
 int fmap_region_by_name(const uint32_t fmap_offset, const char * const name,

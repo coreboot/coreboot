@@ -211,6 +211,11 @@ int rand(void);
 void srand(unsigned int seed);
 /** @} */
 
+/* Enter remote GDB mode. Will initialize connection if not already up. */
+void gdb_enter(void);
+/* Disconnect existing GDB connection if one exists. */
+void gdb_exit(s8 exit_status);
+
 /**
  * Stop execution and halt the processor (this function does not return).
  */

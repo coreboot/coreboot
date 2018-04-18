@@ -172,8 +172,7 @@ const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
 	return irq_association;
 }
 
-void sb_program_gpios(const struct soc_amd_stoneyridge_gpio *gpio_ptr,
-		      size_t size)
+void sb_program_gpios(const struct soc_amd_gpio *gpio_ptr, size_t size)
 {
 	void *tmp_ptr;
 	uint8_t control, mux, index;

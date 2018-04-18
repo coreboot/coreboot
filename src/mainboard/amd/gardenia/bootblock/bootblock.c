@@ -21,7 +21,7 @@
 void bootblock_mainboard_early_init(void)
 {
 	size_t num_gpios;
-	const struct soc_amd_stoneyridge_gpio *gpios;
+	const struct soc_amd_gpio *gpios;
 	gpios = early_gpio_table(&num_gpios);
 	sb_program_gpios(gpios, num_gpios);
 }

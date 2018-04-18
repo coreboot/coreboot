@@ -24,7 +24,7 @@
  * bootblock while GPIO pins used only by the OS should be initialized at
  * ramstage.
  */
-const struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
+static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	/* NFC PU */
 	PAD_GPO(GPIO_64, HIGH),
 	/* PCIe presence detect */
@@ -45,7 +45,7 @@ const struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
 	PAD_NF(GPIO_143, UART1_TXD, PULL_NONE),
 };
 
-const struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
+static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* BT radio disable */
 	PAD_GPO(GPIO_14, HIGH),
 	/* NFC wake */
@@ -56,13 +56,13 @@ const struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_70, HIGH),
 };
 
-const struct soc_amd_stoneyridge_gpio *early_gpio_table(size_t *size)
+const struct soc_amd_gpio *early_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(gpio_set_stage_reset);
 	return gpio_set_stage_reset;
 }
 
-const struct soc_amd_stoneyridge_gpio *gpio_table(size_t *size)
+const struct soc_amd_gpio *gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(gpio_set_stage_ram);
 	return gpio_set_stage_ram;

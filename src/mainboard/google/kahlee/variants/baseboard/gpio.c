@@ -25,7 +25,7 @@
  * bootblock while GPIO pins used only by the OS should be initialized at
  * ramstage.
  */
-const static struct soc_amd_stoneyridge_gpio gpio_set_stage_reset_old[] = {
+static const struct soc_amd_gpio gpio_set_stage_reset_old[] = {
 	/* GPIO_0 - EC_PCH_PWR_BTN_ODL */
 	PAD_NF(GPIO_0, PWR_BTN_L, PULL_UP),
 
@@ -196,7 +196,7 @@ const static struct soc_amd_stoneyridge_gpio gpio_set_stage_reset_old[] = {
 	PAD_NF(GPIO_148, I2C1_SDA, PULL_NONE),
 };
 
-const static struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
+static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	/* GPIO_0 - EC_PCH_PWR_BTN_ODL */
 	PAD_NF(GPIO_0, PWR_BTN_L, PULL_UP),
 
@@ -370,7 +370,7 @@ const static struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
 	PAD_NF(GPIO_148, I2C1_SDA, PULL_NONE),
 };
 
-const static struct soc_amd_stoneyridge_gpio gpio_set_stage_ram_old[] = {
+static const struct soc_amd_gpio gpio_set_stage_ram_old[] = {
 	/* GPIO_2 - WLAN_PCIE_WAKE_3V3_ODL */
 	PAD_NF(GPIO_2, WAKE_L, PULL_UP),
 
@@ -429,7 +429,7 @@ const static struct soc_amd_stoneyridge_gpio gpio_set_stage_ram_old[] = {
 	PAD_GPI(GPIO_135, PULL_UP),
 };
 
-const static struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
+static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* GPIO_2 - WLAN_PCIE_WAKE_3V3_ODL */
 	PAD_NF(GPIO_2, WAKE_L, PULL_UP),
 
@@ -486,7 +486,7 @@ const static struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
 };
 
 const __attribute__((weak))
-struct soc_amd_stoneyridge_gpio *variant_early_gpio_table(size_t *size)
+struct soc_amd_gpio *variant_early_gpio_table(size_t *size)
 {
 	if (board_id() < 2) {
 		*size = ARRAY_SIZE(gpio_set_stage_reset_old);
@@ -498,7 +498,7 @@ struct soc_amd_stoneyridge_gpio *variant_early_gpio_table(size_t *size)
 }
 
 const __attribute__((weak))
-struct soc_amd_stoneyridge_gpio *variant_gpio_table(size_t *size)
+struct soc_amd_gpio *variant_gpio_table(size_t *size)
 {
 	if (board_id() < 2) {
 		*size = ARRAY_SIZE(gpio_set_stage_ram_old);

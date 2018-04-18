@@ -24,7 +24,7 @@
  * bootblock while GPIO pins used only by the OS should be initialized at
  * ramstage.
  */
-const struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
+static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	/* AGPIO2, to become event generator */
 	PAD_GPI(GPIO_2, PULL_UP),
 
@@ -71,7 +71,7 @@ const struct soc_amd_stoneyridge_gpio gpio_set_stage_reset[] = {
 	PAD_GPI(GPIO_144, PULL_NONE),
 };
 
-const struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
+static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* AGPIO 12 */
 	PAD_GPI(GPIO_12, PULL_UP),
 
@@ -102,13 +102,13 @@ const struct soc_amd_stoneyridge_gpio gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_119, HIGH),
 };
 
-const struct soc_amd_stoneyridge_gpio *variant_early_gpio_table(size_t *size)
+const struct soc_amd_gpio *variant_early_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(gpio_set_stage_reset);
 	return gpio_set_stage_reset;
 }
 
-const struct soc_amd_stoneyridge_gpio *variant_gpio_table(size_t *size)
+const struct soc_amd_gpio *variant_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(gpio_set_stage_ram);
 	return gpio_set_stage_ram;

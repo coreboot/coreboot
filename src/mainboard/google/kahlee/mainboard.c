@@ -159,7 +159,7 @@ static void mainboard_init(void *chip_info)
 	size_t num;
 	int boardid = board_id();
 	size_t num_gpios;
-	const struct soc_amd_stoneyridge_gpio *gpios;
+	const struct soc_amd_gpio *gpios;
 
 	printk(BIOS_INFO, "Board ID: %d\n", boardid);
 

@@ -23,7 +23,7 @@
 void bootblock_mainboard_early_init(void)
 {
 	size_t num_gpios;
-	const struct soc_amd_stoneyridge_gpio *gpios;
+	const struct soc_amd_gpio *gpios;
 
 	/* Enable the EC as soon as we have visibility */
 	mainboard_ec_init();

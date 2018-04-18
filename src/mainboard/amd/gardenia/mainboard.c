@@ -81,7 +81,7 @@ static void pirq_setup(void)
 static void mainboard_init(void *chip_info)
 {
 	size_t num_gpios;
-	const struct soc_amd_stoneyridge_gpio *gpios;
+	const struct soc_amd_gpio *gpios;
 	gpios = gpio_table(&num_gpios);
 	sb_program_gpios(gpios, num_gpios);
 }

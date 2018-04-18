@@ -352,7 +352,7 @@
 #define   FCH_AOAC_STAT0		BIT(6)
 #define   FCH_AOAC_STAT1		BIT(7)
 
-struct soc_amd_stoneyridge_gpio {
+struct soc_amd_gpio {
 	uint8_t gpio;
 	uint8_t function;
 	uint8_t control;
@@ -449,8 +449,7 @@ uint64_t get_uma_base(void);
  *
  * @return none
  */
-void sb_program_gpios(const struct soc_amd_stoneyridge_gpio *gpio_ptr,
-		      size_t size);
+void sb_program_gpios(const struct soc_amd_gpio *gpio_ptr, size_t size);
 /**
  * @brief Find the size of a particular wide IO
  *

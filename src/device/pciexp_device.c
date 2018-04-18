@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #include <device/pciexp.h>
 
 unsigned int pciexp_find_extended_cap(device_t dev, unsigned int cap)

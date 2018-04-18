@@ -18,6 +18,7 @@
 #include <timestamp.h>
 #include <cpu/x86/tsc.h>
 #include <device/pci_def.h>
+#include <device/pci_ops.h>
 #include "pch.h"
 #include <arch/acpi.h>
 #include <console/console.h>

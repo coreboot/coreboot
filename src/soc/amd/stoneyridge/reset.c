@@ -18,6 +18,7 @@
 #include <reset.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
+#include <device/pci_ops.h>
 #include <soc/southbridge.h>
 
 /* Clear bits 5, 9 & 10, used to signal the reset type */

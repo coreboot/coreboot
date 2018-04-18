@@ -17,6 +17,7 @@
 #include <assert.h>
 #include <console/console.h>
 #include <intelblocks/pcr.h>
+#include <device/pci_ops.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <timer.h>

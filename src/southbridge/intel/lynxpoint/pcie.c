@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <device/pciexp.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #include "pch.h"
 #include <southbridge/intel/common/gpio.h>
 

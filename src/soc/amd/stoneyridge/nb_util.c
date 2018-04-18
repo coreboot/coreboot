@@ -15,6 +15,7 @@
 
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
+#include <device/pci_ops.h>
 
 uint32_t nb_ioapic_read(unsigned int index)
 {

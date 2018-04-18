@@ -18,6 +18,7 @@
 #include <device/pciexp.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
 
 #define CACHE_LINE_SIZE	0x10
 /* Latency tolerance reporting, max non-snoop latency value 3.14ms */

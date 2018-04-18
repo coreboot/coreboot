@@ -18,6 +18,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/device.h>
+#include <device/pci_ops.h>
 #include <arch/io.h>
 #include <ec/acpi/ec.h>
 #include <northbridge/intel/i945/i945.h>

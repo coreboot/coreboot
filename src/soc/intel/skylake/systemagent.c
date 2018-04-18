@@ -20,6 +20,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
+#include <device/pci_ops.h>
 #include <intelblocks/systemagent.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>

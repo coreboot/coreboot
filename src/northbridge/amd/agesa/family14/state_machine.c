@@ -20,6 +20,7 @@
 #include <cbmem.h>
 #include <device/device.h>
 #include <device/pci_def.h>
+#include <device/pci_ops.h>
 #include <halt.h>
 #include <reset.h>
 #include <smp/node.h>

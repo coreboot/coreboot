@@ -16,6 +16,7 @@
 #include <arch/io.h>
 #include <assert.h>
 #include <device/pci_def.h>
+#include <device/pci_ops.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>

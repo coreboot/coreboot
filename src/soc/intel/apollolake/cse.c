@@ -20,6 +20,7 @@
 #include <fmap.h>
 #include <intelblocks/cse.h>
 #include <soc/pci_devs.h>
+#include <device/pci_ops.h>
 #include <stdint.h>
 #include <compiler.h>
 

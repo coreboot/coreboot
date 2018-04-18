@@ -49,6 +49,7 @@
 #include <types.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <wrdd.h>
+#include <device/pci_ops.h>
 
 /*
  * List of suported C-states in this processor.

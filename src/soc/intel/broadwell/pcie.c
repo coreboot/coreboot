@@ -20,6 +20,7 @@
 #include <device/pciexp.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #include <soc/gpio.h>
 #include <soc/lpc.h>
 #include <soc/iobp.h>

@@ -15,6 +15,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <console/post_codes.h>
 #include "pch.h"
 #include <spi-generic.h>

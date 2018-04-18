@@ -21,6 +21,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/amdfam15.h>
 #include <device/device.h>
+#include <device/pci_ops.h>
 #include <soc/pci_devs.h>
 #include <soc/cpu.h>
 #include <soc/northbridge.h>

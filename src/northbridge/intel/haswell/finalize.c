@@ -16,6 +16,7 @@
 
 #include <arch/io.h>
 #include <stdlib.h>
+#include <device/pci_ops.h>
 #include "haswell.h"
 
 #define PCI_DEV_HSW PCI_DEV(0, 0, 0)

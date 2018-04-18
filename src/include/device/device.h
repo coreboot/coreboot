@@ -19,6 +19,7 @@ struct device;
 #ifndef __SIMPLE_DEVICE__
 typedef struct device *device_t;
 #endif
+#include <arch/io.h>
 
 struct pci_operations;
 struct pci_bus_operations;

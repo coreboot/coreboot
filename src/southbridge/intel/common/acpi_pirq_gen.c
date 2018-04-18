@@ -17,6 +17,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/pci_def.h>
+#include <device/pci_ops.h>
 #include <string.h>
 
 #include "acpi_pirq_gen.h"

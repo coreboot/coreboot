@@ -42,4 +42,11 @@ ramstage-y += pl011.c
 verstage-y += pl011.c
 endif
 
+ifeq ($(CONFIG_DRIVERS_UART_SIFIVE),y)
+bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += sifive.c
+romstage-y += sifive.c
+postcar-y += sifive.c
+ramstage-y += sifive.c
+endif
+
 endif

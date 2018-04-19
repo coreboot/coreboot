@@ -31,6 +31,7 @@
 #include <symbols.h>
 #include <timestamp.h>
 #include <cbfs.h>
+#include <fit_payload.h>
 
 /* Only can represent up to 1 byte less than size_t. */
 const struct mem_region_device addrspace_32bit =
@@ -183,7 +184,19 @@ void payload_load(void)
 
 	mirror_payload(payload);
 
-	selfload(payload, true);
+	switch (prog_cbfs_type(payload)) {
+	case CBFS_TYPE_SELF: /* Simple ELF */
+		selfload(payload, true);
+		break;
+	case CBFS_TYPE_FIT: /* Flattened image tree */
+		if (IS_ENABLED(CONFIG_PAYLOAD_FIT_SUPPORT)) {
+			fit_payload(payload);
+			break;
+		} /* else fall-through */
+	default:
+		die("Unsupported payload type.\n");
+		break;
+	}
 
 out:
 	if (prog_entry(payload) == NULL)

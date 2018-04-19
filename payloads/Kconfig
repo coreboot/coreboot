@@ -8,6 +8,17 @@ choice
 	default PAYLOAD_NONE if NO_DEFAULT_PAYLOAD || !ARCH_X86
 	default PAYLOAD_SEABIOS if ARCH_X86
 
+config PAYLOAD_FIT
+	bool "A FIT payload"
+	select PAYLOAD_FIT_SUPPORT
+	help
+	  Select this option if you have a payload image (a FIT file) which
+	  coreboot should run as soon as the basic hardware initialization
+	  is completed.
+
+	  You will be able to specify the location and file name of the
+	  payload image later.
+
 config PAYLOAD_NONE
 	bool "None"
 	help
@@ -44,8 +55,9 @@ source "payloads/bayou/Kconfig"
 
 config PAYLOAD_FILE
 	string "Payload path and filename"
-	depends on PAYLOAD_ELF
-	default "payload.elf"
+	depends on PAYLOAD_ELF || PAYLOAD_FIT
+	default "payload.elf" if PAYLOAD_ELF
+	default "uImage" if PAYLOAD_FIT
 	help
 	  The path and filename of the ELF executable file to use as payload.
 
@@ -81,6 +93,16 @@ config PAYLOAD_IS_FLAT_BINARY
 	help
 	  Add the payload to cbfs as a flat binary type instead of as an
 	  elf payload
+
+config PAYLOAD_FIT_SUPPORT
+	bool "FIT support"
+	default n
+	default y if PAYLOAD_LINUX && (ARCH_ARM || ARCH_ARM64)
+	select FLATTENED_DEVICE_TREE
+	help
+	  Select this option if your payload is of type FIT.
+	  Enables FIT parser and devicetree patching. The FIT is non
+	  self-extracting and need to have a compatible compression format.
 
 config COMPRESS_SECONDARY_PAYLOAD
 	bool "Use LZMA compression for secondary payloads"

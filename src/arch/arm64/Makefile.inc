@@ -136,6 +136,7 @@ ramstage-y += memcpy.S
 ramstage-y += memmove.S
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += arm_tf.c
 ramstage-y += transition.c transition_asm.S
+ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit_payload.c
 
 rmodules_arm64-y += memset.S
 rmodules_arm64-y += memcpy.S

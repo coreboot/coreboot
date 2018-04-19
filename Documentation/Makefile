@@ -63,7 +63,13 @@ socketfkconfig.tex: ../src/cpu/amd/socket_F/Kconfig
 	grep '^config' $< | awk '{print $2}'  >>$@
 	cat endverbatim.tex  >> $@
 
-clean:
+sphinx:
+	$(MAKE) -f Makefile.sphinx html
+
+clean-sphinx:
+	$(MAKE) -f Makefile.sphinx clean
+
+clean: clean-sphinx
 	rm -f *.aux *.idx *.log *.toc *.out $(FIGS) mainboardkconfig.tex skconfig.tex cpukconfig.tex socketfkconfig.tex
 
 distclean: clean

@@ -253,6 +253,10 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	size_t min_size = 0;
 	int ret;
 
+	/* Driver implementation does not support full duplex. */
+	if (bytes_in && bytes_out)
+		return -1;
+
 	while (bytes_out || bytes_in) {
 		if (bytes_in && bytes_out)
 			min_size = MIN(MIN(bytes_out, bytes_in), MTK_FIFO_DEPTH);
@@ -307,7 +311,6 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.claim_bus = spi_ctrlr_claim_bus,
 	.release_bus = spi_ctrlr_release_bus,
 	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
 	.max_xfer_size = 65535,
 };
 

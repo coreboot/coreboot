@@ -572,7 +572,6 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.claim_bus = spi_ctrlr_claim_bus,
 	.release_bus = spi_ctrlr_release_bus,
 	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
 	.max_xfer_size = IMGTEC_SPI_MAX_TRANSFER_SIZE,
 };
 

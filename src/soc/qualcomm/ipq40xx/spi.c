@@ -611,6 +611,10 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	u8 *rxp = (u8 *)din;
 	int ret;
 
+	/* Driver implementation does not support full duplex. */
+	if (dout && din)
+		return -1;
+
 	ret = config_spi_state(ds, QUP_STATE_RESET);
 	if (ret != SUCCESS)
 		return ret;
@@ -687,7 +691,6 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.claim_bus = spi_ctrlr_claim_bus,
 	.release_bus = spi_ctrlr_release_bus,
 	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
 	.max_xfer_size = MAX_PACKET_COUNT,
 };
 

@@ -75,9 +75,9 @@ vbe_prepare(void)
 	memset(vbe_info_buffer, 0, 512);
 	//set VbeSignature to "VBE2" to indicate VBE 2.0+ request
 	vbe_info_buffer[0] = 'V';
-	vbe_info_buffer[0] = 'B';
-	vbe_info_buffer[0] = 'E';
-	vbe_info_buffer[0] = '2';
+	vbe_info_buffer[1] = 'B';
+	vbe_info_buffer[2] = 'E';
+	vbe_info_buffer[3] = '2';
 	// ES:DI store pointer to buffer in virtual mem see vbe_info_buffer above...
 	M.x86.R_EDI = 0x0;
 	M.x86.R_ES = VBE_SEGMENT;

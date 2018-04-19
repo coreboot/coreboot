@@ -12,6 +12,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+#include <arch/early_variables.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <memory_info.h>
@@ -19,6 +20,54 @@
 #include <stddef.h> /* required for FspmUpd.h */
 #include <fsp/soc_binding.h>
 #include <string.h>
+
+static size_t memory_size_mib CAR_GLOBAL;
+
+size_t memory_in_system_in_mib(void)
+{
+	return car_get_var(memory_size_mib);
+}
+
+static void accumulate_channel_memory(int density, int dual_rank)
+{
+	/* For this platform LPDDR4 memory is 4 DRAM parts that are x32. 2 of
+	   the parts are composed into a x64 memory channel. Thus there are 2
+	   channels composed of 2 DRAMs. */
+	size_t sz;
+
+	/* Per rank density in Gb */
+	switch (density) {
+	case LP4_8Gb_DENSITY:
+		sz = 8;
+		break;
+	case LP4_12Gb_DENSITY:
+		sz = 12;
+		break;
+	case LP4_16Gb_DENSITY:
+		sz = 16;
+		break;
+	default:
+		printk(BIOS_ERR, "Invalid DRAM density: %d\n", density);
+		sz = 0;
+		break;
+	}
+
+	/* Two DRAMs per channel. */
+	sz *= 2;
+
+	/* Two ranks per channel. */
+	if (dual_rank)
+		sz *= 2;
+
+	sz *= GiB / MiB;
+
+	car_set_var(memory_size_mib, car_get_var(memory_size_mib) + sz);
+}
+
+size_t iohole_in_mib(void)
+{
+	return 2 * (GiB / MiB);
+}
 
 static void set_lpddr4_defaults(FSP_M_CONFIG *cfg)
 {
@@ -35,8 +84,8 @@ static void set_lpddr4_defaults(FSP_M_CONFIG *cfg)
 	cfg->DualRankSupportEnable = 1;
 	/* Don't enforce a memory size limit. */
 	cfg->MemorySizeLimit = 0;
-	/* Use a 2GiB I/O hole -- field is in MiB units. */
-	cfg->LowMemoryMaxValue = 2 * (GiB/MiB);
+	/* Field is in MiB units. */
+	cfg->LowMemoryMaxValue = iohole_in_mib();
 	/* No restrictions on memory above 4GiB */
 	cfg->HighMemoryMaxValue = 0;
 
@@ -268,8 +317,9 @@ void meminit_lpddr4_enable_channel(FSP_M_CONFIG *cfg, int logical_chan,
 		break;
 	default:
 		printk(BIOS_ERR, "Invalid logical channel: %d\n", logical_chan);
-		break;
+		return;
 	}
+	accumulate_channel_memory(rank_density, dual_rank);
 }
 
 void meminit_lpddr4_by_sku(FSP_M_CONFIG *cfg,

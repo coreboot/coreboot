@@ -24,6 +24,7 @@
 #include <fsp/api.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
+#include <intelblocks/msr.h>
 #include <intelblocks/smm.h>
 #include <romstage_handoff.h>
 #include <soc/cpu.h>
@@ -118,6 +119,23 @@ static void configure_dca_cap(void)
 	}
 }
 
+static void enable_pm_timer_emulation(void)
+{
+	/* ACPI PM timer emulation */
+	msr_t msr;
+	/*
+	 * The derived frequency is calculated as follows:
+	 * (CTC_FREQ * msr[63:32]) >> 32 = target frequency.
+	 * Back solve the multiplier so the 3.579545MHz ACPI timer
+	 * frequency is used.
+	 */
+	msr.hi = (3579545ULL << 32) / CTC_FREQ;
+	/* Set PM1 timer IO port and enable*/
+	msr.lo = (EMULATE_DELAY_VALUE << EMULATE_DELAY_OFFSET_VALUE) |
+			EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + PM1_TMR);
+	wrmsr(MSR_EMULATE_PM_TIMER, msr);
+}
+
 static void set_energy_perf_bias(u8 policy)
 {
 	msr_t msr;
@@ -189,6 +207,9 @@ void soc_core_init(struct device *cpu)
 
 	/* Configure Intel Speed Shift */
 	configure_isst();
+
+	/* Enable PM timer emulation */
+	enable_pm_timer_emulation();
 
 	/* Enable Direct Cache Access */
 	configure_dca_cap();

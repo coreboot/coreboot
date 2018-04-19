@@ -29,7 +29,7 @@
 #define MBOX_BIOS_CMD_PSP_QUERY    0x05
 #define MBOX_BIOS_CMD_BOOT_DONE    0x06
 #define MBOX_BIOS_CMD_CLEAR_S3_STS 0x07
-#define MBOX_BIOS_CMD_C3_DATA_INFO 0x08
+#define MBOX_BIOS_CMD_S3_DATA_INFO 0x08
 #define MBOX_BIOS_CMD_NOP          0x09
 #define MBOX_BIOS_CMD_SMU_FW       0x19
 #define MBOX_BIOS_CMD_SMU_FW2      0x1a
@@ -64,13 +64,18 @@ struct mbox_buffer_header {
 	u32 status;	/* command status, filled by PSP if applicable */
 } __packed;
 
-/* command-specific buffer definitions:  see NDA document #54267
- *   todo: create new definitions here for additional c2p_mbox_command commands
+/*
+ * command-specific buffer definitions:  see NDA document #54267
+ * The following commands need a buffer definition if they are to be used.
+ * All other commands will work with the default buffer.
+ * MBOX_BIOS_CMD_SMM_INFO		MBOX_BIOS_CMD_PSP_QUERY
+ * MBOX_BIOS_CMD_SX_INFO		MBOX_BIOS_CMD_S3_DATA_INFO
+ * MBOX_BIOS_CMD_RSM_INFO
  */
 
 struct mbox_default_buffer {	/* command-response buffer unused by command */
 	struct mbox_buffer_header header;
-} __attribute__((packed,aligned(32)));
+} __attribute__((packed, aligned(32)));
 
 /* send_psp_command() error codes */
 #define PSPSTS_SUCCESS      0

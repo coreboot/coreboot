@@ -18,12 +18,6 @@
 
 #define VX900_ACPI_IO_BASE		0x0400
 
-#define VX900_NB_IOAPIC_ID		0x2
-#define VX900_NB_IOAPIC_BASE		0xfecc000
-
-#define VX900_SB_IOAPIC_ID		0x1
-#define VX900_SB_IOAPIC_BASE		0xfec0000
-
 #define SMBUS_IO_BASE	0x500
 
 #define VX900_MMCONFIG_MBAR		0xbc

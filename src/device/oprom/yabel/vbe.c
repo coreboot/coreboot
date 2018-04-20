@@ -82,7 +82,7 @@ vbe_prepare(void)
 	M.x86.R_EDI = 0x0;
 	M.x86.R_ES = VBE_SEGMENT;
 
-	return 0;		// successfull init
+	return 0;		// successful init
 }
 
 // VBE Function 00h

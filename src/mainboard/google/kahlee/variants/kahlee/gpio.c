@@ -26,7 +26,7 @@
  */
 static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	/* AGPIO2, to become event generator */
-	PAD_GPI(GPIO_2, PULL_UP),
+	PAD_SCI(GPIO_2, PULL_UP, EDGE_LOW),
 
 	/* SER_TX */
 	PAD_NF(GPIO_8, SerPortTX_OUT, PULL_UP),
@@ -44,7 +44,7 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	PAD_NF(GPIO_20, I2C3_SDA, PULL_UP),
 
 	/* AGPIO22 EC_SCI */
-	PAD_GPI(GPIO_22, PULL_UP),
+	PAD_SCI(GPIO_22, PULL_UP, EDGE_LOW),
 
 	/* SPI_TPM_CS_L */
 	PAD_NF(GPIO_76, SPI_TPM_CS_L, PULL_DOWN),
@@ -119,22 +119,6 @@ const struct soc_amd_gpio *variant_gpio_table(size_t *size)
  *  { gevent, gpe, direction, level }
  */
 static const struct sci_source gpe_table[] = {
-
-	/* EC AGPIO22/Gevent3 -> GPE 3 */
-	{
-		.scimap = 3,
-		.gpe = 3,
-		.direction = SMI_SCI_LVL_LOW,
-		.level = SMI_SCI_EDG,
-	},
-
-	/* PCIE/WLAN AGPIO2/Gevent8 -> GPE8 */
-	{
-		.scimap = 8,
-		.gpe = 8,
-		.direction = SMI_SCI_LVL_LOW,
-		.level = SMI_SCI_LVL,
-	},
 
 	/* EHCI USB_PME -> GPE24 */
 	{

@@ -50,6 +50,7 @@ bootblock-y += tsc_freq.c
 bootblock-y += southbridge.c
 bootblock-y += nb_util.c
 bootblock-$(CONFIG_SPI_FLASH) += spi.c
+bootblock-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 
 romstage-y += BiosCallOuts.c
 romstage-y += i2c.c
@@ -69,6 +70,7 @@ romstage-y += tsc_freq.c
 romstage-y += southbridge.c
 romstage-y += nb_util.c
 romstage-$(CONFIG_SPI_FLASH) += spi.c
+romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 
 verstage-y += gpio.c
 verstage-y += i2c.c

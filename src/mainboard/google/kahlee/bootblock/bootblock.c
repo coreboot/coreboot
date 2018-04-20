@@ -50,11 +50,4 @@ void bootblock_mainboard_init(void)
 
 	/* Setup TPM decode before verstage */
 	sb_tpm_decode_spi();
-
-	/* Configure cr50 interrupt pin for use in polling tpm status */
-	if (IS_ENABLED(CONFIG_MAINBOARD_HAS_TPM_CR50)) {
-		const uint32_t flags = GPIO_EDGE_TRIG | GPIO_ACTIVE_LOW |
-					GPIO_INT_STATUS_EN;
-		gpio_set_interrupt(H1_PCH_INT, flags);
-	}
 }

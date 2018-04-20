@@ -32,16 +32,17 @@ static const struct soc_amd_gpio gpio_set_stage_reset_old[] = {
 	PAD_GPO(GPIO_4, HIGH),
 
 	/* GPIO_6 - APU_RST_L / EC_SMI_ODL, SMI */
-	PAD_GPI(GPIO_6, PULL_UP),
+	PAD_SMI(GPIO_6, PULL_UP, LEVEL_LOW),
 
 	/* GPIO_9 - H1_PCH_INT_ODL, SCI */
-	PAD_GPI(GPIO_9, PULL_UP),
+	PAD_INT(GPIO_9, PULL_UP, EDGE_LOW, STATUS),
+	PAD_SCI(GPIO_9, PULL_UP, EDGE_LOW),
 
 	/* GPIO_15 - EC_IN_RW_OD */
 	PAD_GPI(GPIO_15, PULL_UP),
 
 	/* GPIO_22 - EC_SCI_ODL, SCI */
-	PAD_GPI(GPIO_22, PULL_UP),
+	PAD_SCI(GPIO_22, PULL_UP, EDGE_LOW),
 
 	/* GPIO_26 - APU_PCIE_RST_L */
 	PAD_NF(GPIO_26, PCIE_RST_L, PULL_NONE),
@@ -85,16 +86,17 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	PAD_GPO(GPIO_4, HIGH),
 
 	/* GPIO_6 - APU_RST_L / EC_SMI_ODL, SMI */
-	PAD_GPI(GPIO_6, PULL_UP),
+	PAD_SMI(GPIO_6, PULL_UP, LEVEL_LOW),
 
 	/* GPIO_9 - H1_PCH_INT_ODL, SCI */
-	PAD_GPI(GPIO_9, PULL_UP),
+	PAD_INT(GPIO_9, PULL_UP, EDGE_LOW, STATUS),
+	PAD_SCI(GPIO_9, PULL_UP, EDGE_LOW),
 
 	/* GPIO_15 - EC_IN_RW_OD */
 	PAD_GPI(GPIO_15, PULL_UP),
 
 	/* GPIO_22 - EC_SCI_ODL, SCI */
-	PAD_GPI(GPIO_22, PULL_UP),
+	PAD_SCI(GPIO_22, PULL_UP, EDGE_LOW),
 
 	/* GPIO_24 - EC_PCH_WAKE_L */
 	PAD_GPI(GPIO_24, PULL_UP),
@@ -150,7 +152,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram_old[] = {
 	PAD_GPI(GPIO_3, PULL_UP),
 
 	/* GPIO_5 - PCH_TRACKPAD_INT_3V3_ODL, SCI */
-	PAD_GPI(GPIO_5, PULL_UP),
+	PAD_SCI(GPIO_5, PULL_UP, EDGE_LOW),
 
 	/* GPIO_7 - APU_PWROK_OD (currently not used) */
 	PAD_GPI(GPIO_7, PULL_UP),
@@ -162,7 +164,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram_old[] = {
 	PAD_NF(GPIO_10, S0A3_GPIO, PULL_UP),
 
 	/* GPIO_11 - TOUCHSCREEN_INT_3V3_ODL, SCI */
-	PAD_GPI(GPIO_11, PULL_UP),
+	PAD_SCI(GPIO_11, PULL_UP, EDGE_LOW),
 
 	/* GPIO_12 - Unused (TP126) */
 	PAD_GPI(GPIO_12, PULL_UP),
@@ -171,7 +173,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram_old[] = {
 	PAD_GPI(GPIO_13, PULL_UP),
 
 	/* GPIO_14 - APU_HP_INT_ODL, SCI */
-	PAD_GPI(GPIO_14, PULL_UP),
+	PAD_SCI(GPIO_14, PULL_UP, EDGE_LOW),
 
 	/* GPIO_16 - USB_C0_OC_L */
 	PAD_NF(GPIO_16, USB_OC0_L, PULL_UP),
@@ -189,7 +191,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram_old[] = {
 	PAD_NF(GPIO_20, I2C3_SDA, PULL_UP),
 
 	/* GPIO_21 - APU_PEN_INT_ODL, SCI */
-	PAD_GPI(GPIO_21, PULL_UP),
+	PAD_SCI(GPIO_21, PULL_UP, EDGE_LOW),
 
 	/* GPIO_24 - USB_A1_OC_ODL */
 	PAD_NF(GPIO_24, USB_OC3_L, PULL_UP),
@@ -314,7 +316,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_3, PULL_UP),
 
 	/* GPIO_5 - PCH_TRACKPAD_INT_3V3_ODL, SCI */
-	PAD_GPI(GPIO_5, PULL_UP),
+	PAD_SCI(GPIO_5, PULL_UP, EDGE_LOW),
 
 	/* GPIO_7 - APU_PWROK_OD (currently not used) */
 	PAD_GPI(GPIO_7, PULL_UP),
@@ -326,7 +328,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_10, S0A3_GPIO, PULL_UP),
 
 	/* GPIO_11 - TOUCHSCREEN_INT_3V3_ODL, SCI */
-	PAD_GPI(GPIO_11, PULL_UP),
+	PAD_SCI(GPIO_11, PULL_UP, EDGE_LOW),
 
 	/* GPIO_12 - EN_PP3300_TRACKPAD */
 	PAD_GPO(GPIO_12, HIGH),
@@ -335,7 +337,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_13, PULL_UP),
 
 	/* GPIO_14 - APU_HP_INT_ODL, SCI */
-	PAD_GPI(GPIO_14, PULL_UP),
+	PAD_SCI(GPIO_14, PULL_UP, EDGE_LOW),
 
 	/* GPIO_16 - USB_C0_OC_L */
 	PAD_NF(GPIO_16, USB_OC0_L, PULL_UP),
@@ -353,7 +355,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_20, I2C3_SDA, PULL_UP),
 
 	/* GPIO_21 - APU_PEN_INT_ODL, SCI */
-	PAD_GPI(GPIO_21, PULL_UP),
+	PAD_SCI(GPIO_21, PULL_UP, EDGE_LOW),
 
 	/* GPIO_25 - SD_CD */
 	PAD_NF(GPIO_25, SD0_CD, PULL_UP),
@@ -486,73 +488,15 @@ struct soc_amd_gpio *variant_gpio_table(size_t *size)
 }
 
 /*
- * GPE setup table must match ACPI GPE ASL
- *  { gevent, gpe, direction, level }
+ * This function is still needed for boards that sets gevents above 23
+ * that will generate SCI or SMI, such as kahlee. Normally this function
+ * points to a table of gevents and what needs to be set. The code that
+ * calls it was modified so that when this function returns NULL then the
+ * caller does nothing.
  */
-static const struct sci_source gpe_table[] = {
-
-	/* PCH_TRACKPAD_INT_3V3_ODL */
-	{
-		.scimap = 7,
-		.gpe = 7,
-		.direction = SMI_SCI_LVL_LOW,
-		.level = SMI_SCI_EDG,
-	},
-
-	/* EC_PCH_WAKE_L */
-	{
-		.scimap = EC_WAKE_GPI,
-		.gpe = EC_WAKE_GPI,
-		.direction = SMI_SCI_LVL_LOW,
-		.level = SMI_SCI_EDG,
-	},
-
-	/* H1_PCH_INT_ODL */
-	{
-		.scimap = 22,
-		.gpe = 22,
-		.direction = SMI_SCI_LVL_LOW,
-		.level = SMI_SCI_EDG,
-	},
-
-	/* TOUCHSCREEN_INT_3V3_ODL */
-	{
-		.scimap = 18,
-		.gpe = 18,
-		.direction = SMI_SCI_LVL_LOW,
-		.level = SMI_SCI_EDG,
-	},
-
-
-	/* APU_HP_INT_ODL */
-	{
-		.scimap = 6,
-		.gpe = 6,
-		.direction = SMI_SCI_LVL_LOW,
-		.level = SMI_SCI_EDG,
-	},
-
-	/* APU_PEN_INT_ODL */
-	{
-		.scimap = 5,
-		.gpe = 5,
-		.direction = SMI_SCI_LVL_LOW,
-		.level = SMI_SCI_EDG,
-	},
-
-	/* EC_SCI_ODL */
-	{
-		.scimap = 3,
-		.gpe = 3,
-		.direction = SMI_SCI_LVL_LOW,
-		.level = SMI_SCI_EDG,
-	},
-};
-
 const __weak struct sci_source *get_gpe_table(size_t *num)
 {
-	*num = ARRAY_SIZE(gpe_table);
-	return gpe_table;
+	return NULL;
 }
 
 int __weak variant_get_xhci_oc_map(uint16_t *map)

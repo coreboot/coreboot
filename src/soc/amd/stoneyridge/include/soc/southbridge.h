@@ -306,7 +306,6 @@
 
 #define WIDEIO_RANGE_ERROR		-1
 #define TOTAL_WIDEIO_PORTS		3
-#define AMD_GPIO_MUX_MASK		0x03
 
 #if ENV_BOOTBLOCK
 #define GPIO_TABLE_BOOTBLOCK		1
@@ -353,12 +352,6 @@
 #define   FCH_AOAC_CLK_OK_STATE		BIT(5)
 #define   FCH_AOAC_STAT0		BIT(6)
 #define   FCH_AOAC_STAT1		BIT(7)
-
-struct soc_amd_gpio {
-	uint8_t gpio;
-	uint8_t function;
-	uint8_t control;
-};
 
 struct stoneyridge_aoac {
 	int enable;
@@ -442,15 +435,6 @@ uint32_t get_uma_size(void);
  * @return 64bit base address
  */
 uint64_t get_uma_base(void);
-/**
- * @brief program a particular set of GPIO
- *
- * @param gpio_ptr = pointer to array of gpio configurations
- * @param size = number of entries in array
- *
- * @return none
- */
-void sb_program_gpios(const struct soc_amd_gpio *gpio_ptr, size_t size);
 /**
  * @brief Find the size of a particular wide IO
  *

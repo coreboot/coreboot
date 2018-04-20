@@ -29,7 +29,6 @@ romstage-y += bdk-coreboot.c
 # ramstage
 
 ramstage-y += cbmem.c
-ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += bl31_plat_params.c
 
 CPPFLAGS_common += -Isrc/soc/cavium/common/include
 

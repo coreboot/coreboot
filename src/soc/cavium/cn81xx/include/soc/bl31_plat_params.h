@@ -14,19 +14,11 @@
  *
  */
 
-#include <arm_tf.h>
-#include <assert.h>
-#include <soc/bl31_plat_params.h>
+#ifndef __BL31_PLAT_PARAMS_H__
+#define __BL31_PLAT_PARAMS_H__
 
-static struct bl31_plat_param *plat_params;
+#include <atf/plat_params.h>
 
-void register_bl31_param(struct bl31_plat_param *param)
-{
-	param->next = plat_params;
-	plat_params = param;
-}
+void register_bl31_param(struct bl31_plat_param *param);
 
-void *soc_get_bl31_plat_params(bl31_params_t *bl31_params)
-{
-	return plat_params;
-}
+#endif/* __BL31_PLAT_PARAMS_H__ */

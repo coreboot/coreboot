@@ -14,12 +14,21 @@
  *
  */
 
-#ifndef __BL31_PLAT_PARAMS_H__
-#define __BL31_PLAT_PARAMS_H__
+#include <arm_tf.h>
+#include <assert.h>
+#include <soc/bl31_plat_params.h>
 
-// FIXME: use correct path one ATF is upstream
-#include <arm-trusted-firmware/plat/rockchip/common/include/plat_params.h>
+static struct bl31_plat_param *plat_params;
 
-void register_bl31_param(struct bl31_plat_param *param);
+void register_bl31_param(struct bl31_plat_param *param)
+{
+	ASSERT(param);
 
-#endif/* __BL31_PLAT_PARAMS_H__ */
+	param->next = plat_params;
+	plat_params = param;
+}
+
+void *soc_get_bl31_plat_params(bl31_params_t *bl31_params)
+{
+	return plat_params;
+}

@@ -65,9 +65,12 @@ ramstage-y += cpu.c
 ramstage-y += cpu_secondary.S
 ramstage-y += ecam0.c
 
+ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += bl31_plat_params.c
+
 # BDK coreboot interface
 ramstage-y += ../common/bdk-coreboot.c
 
+BL31_MAKEARGS += PLAT=t81 M0_CROSS_COMPILE="$(CROSS_COMPILE_arm)" ENABLE_SPE_FOR_LOWER_ELS=0
 
 CPPFLAGS_common += -Isrc/soc/cavium/cn81xx/include
 

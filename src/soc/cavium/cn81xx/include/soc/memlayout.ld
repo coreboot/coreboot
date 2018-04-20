@@ -21,8 +21,11 @@
 SECTIONS
 {
 	DRAM_START(0x00000000)
-	/* FIXME: Place BL31 in first 1MiB */
+	/* Secure region 0 - 1MiB */
+	REGION(bl31, 0, 0xe0000, 0x1000)
+	REGION(sff8104, 0xe0000, 0x20000, 0x1000)
 
+	/* Insecure region 1MiB - TOP OF DRAM */
 	/* bootblock-custom.S does setup CAR from SRAM_START to SRAM_END */
 	SRAM_START(BOOTROM_OFFSET)
 	STACK(BOOTROM_OFFSET, 16K)

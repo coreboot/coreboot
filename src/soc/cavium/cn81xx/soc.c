@@ -37,7 +37,10 @@
 #include <libbdk-hal/bdk-qlm.h>
 #include <libbdk-hal/bdk-config.h>
 #include <libbdk-arch/bdk-csrs-bgx.h>
-
+#include <bootmem.h>
+#include <soc/bl31_plat_params.h>
+#include <cbfs.h>
+#include <cbmem.h>
 #include <fit.h>
 
 static const char *QLM_BGX_MODE_MAP[BDK_QLM_MODE_LAST] = {
@@ -289,17 +292,61 @@ static int dt_platform_fixup(struct device_tree_fixup *fixup,
 	return 0;
 }
 
+extern u8 _bl31[];
+extern u8 _ebl31[];
+extern u8 _sff8104[];
+extern u8 _esff8104[];
+
+void bootmem_platform_add_ranges(void)
+{
+	/* ATF reserved */
+	bootmem_add_range((uintptr_t)_bl31,
+			  ((uintptr_t)_ebl31 - (uintptr_t)_bl31),
+			  BM_MEM_RESERVED);
+
+	bootmem_add_range((uintptr_t)_sff8104,
+			  ((uintptr_t)_esff8104 - (uintptr_t)_sff8104),
+			  BM_MEM_RESERVED);
+
+	/* Scratchpad for ATF SATA quirks */
+	bootmem_add_range(sdram_size_mb() * KiB, 1 * MiB, BM_MEM_RESERVED);
+}
+
 static void soc_read_resources(device_t dev)
 {
 	ram_resource(dev, 0, (uintptr_t)_dram / KiB, sdram_size_mb() * KiB);
+}
+
+static void soc_init_atf(void)
+{
+	static struct bl31_fdt_param fdt_param = {
+		.h = { .type = PARAM_FDT, },
+	};
+
+	size_t size = 0;
+
+	void *ptr = cbfs_boot_map_with_leak("sff8104-linux.dtb",
+					    CBFS_TYPE_RAW, &size);
+	if (ptr)
+		memcpy(_sff8104, ptr, size);
+	/* Point to devicetree in secure memory */
+	fdt_param.fdt_ptr = (uintptr_t)_sff8104;
+
+	register_bl31_param(&fdt_param.h);
+
+	static struct bl31_u64_param cbtable_param = {
+		.h = { .type = PARAM_COREBOOT_TABLE, },
+	};
+	/* Point to coreboot tables */
+	cbtable_param.value = (uint64_t)cbmem_find(CBMEM_ID_CBTABLE);
+	if (cbtable_param.value)
+		register_bl31_param(&cbtable_param.h);
 }
 
 static void soc_init(device_t dev)
 {
 	/* Init ECAM, MDIO, PEM, PHY, QLM ... */
 	bdk_boot();
-
-	/* TODO: additional trustzone init */
 
 	if (IS_ENABLED(CONFIG_PAYLOAD_FIT_SUPPORT)) {
 		struct device_tree_fixup *dt_fixup;
@@ -311,6 +358,9 @@ static void soc_init(device_t dev)
 					  &device_tree_fixups);
 		}
 	}
+
+	if (IS_ENABLED(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE))
+		soc_init_atf();
 }
 
 static void soc_final(device_t dev)

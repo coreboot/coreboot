@@ -34,6 +34,12 @@ void bootblock_mainboard_early_init(void)
 
 void bootblock_mainboard_init(void)
 {
+	/* Set SPI speeds before verstage. Needed for TPM */
+	sb_set_spi100(SPI_SPEED_22M,		/* Normal */
+			SPI_SPEED_66M,		/* Fast   */
+			SPI_SPEED_66M,		/* AltIO  */
+			SPI_SPEED_66M);		/* TPM    */
+
 	/* Setup TPM decode before verstage */
 	sb_tpm_decode_spi();
 

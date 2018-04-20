@@ -209,6 +209,8 @@
  * at register 0xbb ().
  */
 #define LPC_ROM_DMA_EC_HOST_CONTROL	0xb8
+#define   SPI_FROM_HOST_PREFETCH_EN	BIT(24)
+#define   SPI_FROM_USB_PREFETCH_EN	BIT(23)
 
 #define LPC_HOST_CONTROL		0xbb
 #define   IMC_PAGE_FROM_HOST_EN		BIT(0)

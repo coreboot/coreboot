@@ -543,12 +543,33 @@ void sb_enable_rom(void)
 	pci_write_config16(SOC_LPC_DEV, ROM_ADDRESS_RANGE2_END, 0xffff);
 }
 
+static void sb_lpc_early_setup(void)
+{
+	uint32_t dword;
+
+	/* Enable SPI prefetch */
+	dword = pci_read_config32(SOC_LPC_DEV, LPC_ROM_DMA_EC_HOST_CONTROL);
+	dword |= SPI_FROM_HOST_PREFETCH_EN | SPI_FROM_USB_PREFETCH_EN;
+	pci_write_config32(SOC_LPC_DEV, LPC_ROM_DMA_EC_HOST_CONTROL, dword);
+
+	if (IS_ENABLED(CONFIG_STONEYRIDGE_LEGACY_FREE)) {
+		/* Decode SIOs at 2E/2F and 4E/4F */
+		dword = pci_read_config32(SOC_LPC_DEV,
+						LPC_IO_OR_MEM_DECODE_ENABLE);
+		dword |= DECODE_ALTERNATE_SIO_ENABLE | DECODE_SIO_ENABLE;
+		pci_write_config32(SOC_LPC_DEV,
+					LPC_IO_OR_MEM_DECODE_ENABLE, dword);
+	}
+}
+
 void bootblock_fch_early_init(void)
 {
 	sb_enable_rom();
 	sb_lpc_port80();
 	sb_lpc_decode();
+	sb_lpc_early_setup();
 	sb_spibase();
+	sb_disable_4dw_burst(); /* Must be disabled on CZ(ST) */
 	sb_acpi_mmio_decode();
 	enable_aoac_devices();
 }

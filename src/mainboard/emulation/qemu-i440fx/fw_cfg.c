@@ -294,7 +294,7 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 			ptr = (uint8_t *)(addrs[dst] + s[i].cksum.offset);
 			cksum_data = (void *)(addrs[dst] + s[i].cksum.start);
 			cksum = acpi_checksum(cksum_data, s[i].cksum.length);
-			write_le32(ptr, cksum);
+			write_le8(ptr, cksum);
 			break;
 
 		default:

@@ -323,6 +323,7 @@ ramstage-y += cpu.c
 ramstage-y += cpu_common.c
 ramstage-y += ebda.c
 ramstage-y += exception.c
+ramstage-y += idt.S
 ramstage-y += gdt.c
 ramstage-$(CONFIG_IOAPIC) += ioapic.c
 ramstage-y += memcpy.c

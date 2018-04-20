@@ -257,9 +257,13 @@ chip soc/intel/skylake
 				register "probed" = "1"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B3)"
 				register "reset_delay_ms" = "20"
+				register "reset_off_delay_ms" = "2"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B4)"
 				register "enable_delay_ms" = "1"
+				register "enable_off_delay_ms" = "100"
 				register "has_power_resource" = "1"
+				register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C3)"
+				register "stop_off_delay_ms" = "2"
 				device i2c 10 on end
 			end
 		end # I2C #0

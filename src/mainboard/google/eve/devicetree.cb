@@ -1,5 +1,8 @@
 chip soc/intel/skylake
 
+	# IGD Displays
+	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
+
 	register "gpu_pp_up_delay_ms"		  = "100"
 	register "gpu_pp_down_delay_ms"		  = "500"
 	register "gpu_pp_cycle_delay_ms"	  = "500"

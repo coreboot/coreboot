@@ -993,7 +993,12 @@ typedef struct {
 **/
   UINT32                      RootPort5Perst;
 
-/** Offset 0x017C
+/** Offset 0x017C - CpuPeiApWakeupBufferAddr
+  Address for CpuPeiApWakeupBuffer.
+**/
+  UINT32                      CpuPeiApWakeupBufferAddr;
+
+/** Offset 0x0180
 **/
   UINT8                       ReservedFspmUpd[4];
 } FSP_M_CONFIG;
@@ -1014,9 +1019,9 @@ typedef struct {
 **/
   FSP_M_CONFIG                FspmConfig;
 
-/** Offset 0x0180
+/** Offset 0x0184
 **/
-  UINT8                       UnusedUpdSpace1[134];
+  UINT8                       UnusedUpdSpace1[130];
 
 /** Offset 0x0206
 **/

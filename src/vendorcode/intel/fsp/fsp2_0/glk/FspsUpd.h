@@ -1701,10 +1701,71 @@ typedef struct {
 **/
   UINT8                       ProcessorTraceOutputScheme;
 
-/** Offset 0x03A9
+/** Offset 0x03A9 - USB PDO Programming
+  Enable/disable PDO programming for USB in PEI phase. Disabling will allow for programming
+  during later phase. 1: enable, 0: disable
+  1: enable, 0: disable
 **/
-  UINT8                       ReservedFspsUpd[7];
+  UINT8                       UsbPdoProgramming;
+
+/** Offset 0x03AA
+**/
+  UINT8                       ReservedFspsUpd[6];
 } FSP_S_CONFIG;
+
+/** Fsp S SGX Configuration
+**/
+typedef struct {
+
+/** Offset 0x03C0
+**/
+  UINT32                      Signature;
+
+/** Offset 0x03C4 - Selective enable SGX
+  Selective enable SGX. 0xFFFF(Default).
+**/
+  UINT16                      SelectiveEnableSgx;
+
+/** Offset 0x03C6 - SGX debug mode
+  Select SGX mode. 0:Disable(default), 1:Enable
+  0:Disable(default), 1:Enable
+**/
+  UINT8                       SgxDebugMode;
+
+/** Offset 0x03C7 - SGX Launch Control Policy Mode
+  Select Launch Control Policy Mode. 0:Intel - Default, 1:Per-boot Select mode(default)
+  0:Intel locked , 1:Unlocked mode(default) , 2: Locked mode
+**/
+  UINT8                       SgxLcp;
+
+/** Offset 0x03C8 - LE KeyHash0
+  LE KeyHash0. 0x0(Default).
+**/
+  UINT64                      SgxLePubKeyHash0;
+
+/** Offset 0x03D0 - LE KeyHash1
+  LE KeyHash1. 0x0(Default).
+**/
+  UINT64                      SgxLePubKeyHash1;
+
+/** Offset 0x03D8 - LE KeyHash2
+  LE KeyHash2. 0x0(Default).
+**/
+  UINT64                      SgxLePubKeyHash2;
+
+/** Offset 0x03E0
+**/
+  UINT8                       UnusedUpdSpace8[16];
+
+/** Offset 0x03F0 - LE KeyHash3
+  LE KeyHash3. 0x0(Default).
+**/
+  UINT64                      SgxLePubKeyHash3;
+
+/** Offset 0x03F8
+**/
+  UINT8                       ReservedFspsSgxUpd[6];
+} FSP_S_SGX_CONFIG;
 
 /** Fsp S UPD Configuration
 **/
@@ -1720,7 +1781,11 @@ typedef struct {
 
 /** Offset 0x03B0
 **/
-  UINT8                       UnusedUpdSpace7[78];
+  UINT8                       UnusedUpdSpace7[16];
+
+/** Offset 0x03C0
+**/
+  FSP_S_SGX_CONFIG            FspsSgxConfig;
 
 /** Offset 0x03FE
 **/

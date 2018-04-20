@@ -26,6 +26,7 @@
 static int initialized;
 static int table_written;
 static struct memranges bootmem;
+static struct memranges bootmem_os;
 
 static int bootmem_is_initialized(void)
 {
@@ -66,6 +67,17 @@ static uint32_t bootmem_to_lb_tag(const enum bootmem_type tag)
 	}
 }
 
+static void bootmem_convert_ranges(void)
+{
+	/**
+	 * Convert BM_MEM_RAMSTAGE and BM_MEM_PAYLOAD to BM_MEM_RAM and
+	 * merge ranges. The payload doesn't care about memory used by firmware.
+	 */
+	memranges_clone(&bootmem_os, &bootmem);
+	memranges_update_tag(&bootmem_os, BM_MEM_RAMSTAGE, BM_MEM_RAM);
+	memranges_update_tag(&bootmem_os, BM_MEM_PAYLOAD, BM_MEM_RAM);
+}
+
 static void bootmem_init(void)
 {
 	const unsigned long cacheable = IORESOURCE_CACHEABLE;
@@ -91,6 +103,8 @@ static void bootmem_init(void)
 
 	bootmem_arch_add_ranges();
 	bootmem_platform_add_ranges();
+
+	bootmem_convert_ranges();
 }
 
 void bootmem_add_range(uint64_t start, uint64_t size,
@@ -108,22 +122,13 @@ void bootmem_write_memory_table(struct lb_memory *mem)
 {
 	const struct range_entry *r;
 	struct lb_memory_range *lb_r;
-	struct memranges bm;
 
 	lb_r = &mem->map[0];
 
 	bootmem_init();
 	bootmem_dump_ranges();
 
-	/**
-	 * Convert BM_MEM_RAMSTAGE and BM_MEM_PAYLOAD to BM_MEM_RAM and
-	 * merge ranges. The payload doesn't care about memory used by firmware.
-	 */
-	memranges_clone(&bm, &bootmem);
-	memranges_update_tag(&bm, BM_MEM_RAMSTAGE, BM_MEM_RAM);
-	memranges_update_tag(&bm, BM_MEM_PAYLOAD, BM_MEM_RAM);
-
-	memranges_each_entry(r, &bm) {
+	memranges_each_entry(r, &bootmem_os) {
 		lb_r->start = pack_lb64(range_entry_base(r));
 		lb_r->size = pack_lb64(range_entry_size(r));
 		lb_r->type = bootmem_to_lb_tag(range_entry_tag(r));
@@ -131,8 +136,6 @@ void bootmem_write_memory_table(struct lb_memory *mem)
 		lb_r++;
 		mem->size += sizeof(struct lb_memory_range);
 	}
-
-	memranges_teardown(&bm);
 
 	table_written = 1;
 }
@@ -178,6 +181,20 @@ void bootmem_dump_ranges(void)
 			bootmem_range_string(range_entry_tag(r)));
 		i++;
 	}
+}
+
+bool bootmem_walk_os_mem(range_action_t action, void *arg)
+{
+	const struct range_entry *r;
+
+	assert(bootmem_is_initialized());
+
+	memranges_each_entry(r, &bootmem_os) {
+		if (!action(r, arg))
+			return true;
+	}
+
+	return false;
 }
 
 bool bootmem_walk(range_action_t action, void *arg)

@@ -71,6 +71,17 @@ void bootmem_dump_ranges(void);
 typedef bool (*range_action_t)(const struct range_entry *r, void *arg);
 
 /**
+ * Walk memory tables from OS point of view and call the provided function,
+ * for every region. The caller has to return false to break out of the loop any
+ * time, or return true to continue.
+ *
+ * @param action The function to call for each memory range.
+ * @param arg Pointer passed to function @action. Set to NULL if unused.
+ * @return true if the function 'action' returned false.
+ */
+bool bootmem_walk_os_mem(range_action_t action, void *arg);
+
+/**
  * Walk memory tables and call the provided function, for every region.
  * The caller has to return false to break out of the loop any time, or
  * return true to continue.

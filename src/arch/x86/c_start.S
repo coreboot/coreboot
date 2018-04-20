@@ -81,28 +81,6 @@ _start:
 	push	$0
 	push	$0
 
-	/* Initialize the Interrupt Descriptor table */
-	leal	_idt, %edi
-	leal	vec0, %ebx
-	movl	$(0x10 << 16), %eax	/* cs selector */
-
-1:	movw	%bx, %ax
-	movl	%ebx, %edx
-	movw	$0x8E00, %dx		/* Interrupt gate - dpl=0, present */
-	movl	%eax, 0(%edi)
-	movl	%edx, 4(%edi)
-	addl	$6, %ebx
-	addl	$8, %edi
-	cmpl	$_idt_end, %edi
-	jne	1b
-
-	/* Load the Interrupt descriptor table */
-#ifndef __x86_64__
-	lidt	idtarg
-#else
-	// FIXME port table to x64 - lidt     idtarg
-#endif
-
 	/*
 	 *	Now we are finished. Memory is up, data is copied and
 	 *	bss is cleared.   Now we call the main routine and
@@ -145,7 +123,7 @@ gdb_stub_breakpoint:
 	jmp	int_hand
 #endif
 
-	.globl gdt, gdt_end, idtarg
+	.globl gdt, gdt_end
 
 gdtaddr:
 	.word	gdt_end - gdt - 1
@@ -226,14 +204,6 @@ gdt:
 	.byte	0x00, 0x9b, 0xaf, 0x00
 #endif
 gdt_end:
-
-idtarg:
-	.word	_idt_end - _idt - 1	/* limit */
-	.long	_idt
-	.word	0
-_idt:
-	.fill	20, 8, 0	# idt is uninitialized
-_idt_end:
 
 	.section ".text._start", "ax", @progbits
 #ifdef __x86_64__

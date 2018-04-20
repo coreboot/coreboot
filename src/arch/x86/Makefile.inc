@@ -92,6 +92,8 @@ ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32)$(CONFIG_ARCH_BOOTBLOCK_X86_64),y)
 
 bootblock-y += boot.c
 bootblock-y += cpu_common.c
+bootblock-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
+bootblock-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 bootblock-y += memcpy.c
 bootblock-y += memset.c
 bootblock-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
@@ -169,6 +171,8 @@ endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32)$(CONFIG_ARCH_VERSTAGE_X86_64),y)
 
 verstage-y += boot.c
+verstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
+verstage-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 
 verstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += cpu_common.c
 verstage-y += memset.c
@@ -206,6 +210,8 @@ romstage-y += cbmem.c
 romstage-y += cbfs_and_run.c
 romstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += cpu_common.c
 romstage-$(CONFIG_EARLY_EBDA_INIT) += ebda.c
+romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
+romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 romstage-y += memcpy.c
 romstage-y += memmove.c
 romstage-y += memset.c
@@ -281,6 +287,8 @@ postcar-y += cbfs_and_run.c
 postcar-y += cbmem.c
 postcar-y += cpu_common.c
 postcar-$(CONFIG_EARLY_EBDA_INIT) += ebda.c
+postcar-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
+postcar-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 postcar-y += exit_car.S
 postcar-y += memcpy.c
 postcar-y += memmove.c
@@ -343,6 +351,8 @@ ramstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.S
 
+smm-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
+smm-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 smm-y += memcpy.c
 smm-y += memmove.c
 smm-y += memset.c

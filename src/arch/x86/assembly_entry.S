@@ -64,6 +64,9 @@ debug_spinloop:
 #endif
 
 	andl	$0xfffffff0, %esp
+#if IS_ENABLED(CONFIG_IDT_IN_EVERY_STAGE)
+	call	exception_init
+#endif
 	call	car_stage_entry
 
 /* This is here for linking purposes. */

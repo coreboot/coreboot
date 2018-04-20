@@ -302,3 +302,10 @@ config NUM_CAR_PAGE_TABLE_PAGES
 	depends on PAGING_IN_CACHE_AS_RAM
 	help
 	  The number of 4KiB pages that should be pre-allocated for page tables.
+
+# Provide the interrupt handlers to every stage. Not all
+# stages may take advantage.
+config IDT_IN_EVERY_STAGE
+	bool
+	default n
+	depends on ARCH_X86

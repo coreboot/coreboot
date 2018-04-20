@@ -109,7 +109,10 @@ enum {
 };
 
 /*-----------------------------------------------------------------------
- * Representation of a SPI controller.
+ * Representation of a SPI controller. Note the xfer() and xfer_vector()
+ * callbacks are meant to process full duplex transactions. If the
+ * controller cannot handle these transactions then return an error when
+ * din and dout are both set. See spi_xfer() below for more details.
  *
  * claim_bus:		Claim SPI bus and prepare for communication.
  * release_bus:	Release SPI bus.
@@ -232,6 +235,10 @@ void spi_release_bus(const struct spi_slave *slave);
  *   din:	Pointer to a string of bytes that will be filled in.
  *   bytesin:	How many bytes to read.
  *
+ * Note that din and dout are transferred simulataneously in a full duplex
+ * transaction. The number of clocks within one transaction is calculated
+ * as: MAX(bytesout*8, bytesin*8).
+ *
  *   Returns: 0 on success, not 0 on failure
  */
 int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytesout,
@@ -280,24 +287,5 @@ static inline int spi_w8r8(const struct spi_slave *slave, unsigned char byte)
 	ret = spi_xfer(slave, dout, 2, din, 2);
 	return ret < 0 ? ret : din[1];
 }
-
-/*
- * Helper function to allow chipsets to combine two vectors if possible. It can
- * only handle upto 2 vectors.
- *
- * This function is provided to support command-response kind of transactions
- * expected by users like flash. Some special SPI flash controllers can handle
- * such command-response operations in a single transaction. For these special
- * controllers, separate command and response vectors can be combined into a
- * single operation.
- *
- * Two vectors are combined if first vector has a non-NULL dout and NULL din and
- * second vector has a non-NULL din and NULL dout. Otherwise, each vector is
- * operated upon one at a time.
- *
- * Returns 0 on success and non-zero on failure.
- */
-int spi_xfer_two_vectors(const struct spi_slave *slave,
-			struct spi_op vectors[], size_t count);
 
 #endif	/* _SPI_GENERIC_H_ */

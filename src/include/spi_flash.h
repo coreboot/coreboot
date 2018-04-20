@@ -125,4 +125,18 @@ const struct spi_flash *boot_device_spi_flash(void);
 int spi_flash_ctrlr_protect_region(const struct spi_flash *flash,
 					const struct region *region);
 
+/*
+ * This function is provided to support spi flash command-response transactions.
+ * Only 2 vectors are supported and the 'func' is called with appropriate
+ * write and read buffers together. This can be used for chipsets that
+ * have specific spi flash controllers that don't conform to the normal
+ * spi xfer API because they are specialized controllers and not generic.
+ *
+ * Returns 0 on success and non-zero on failure.
+ */
+int spi_flash_vector_helper(const struct spi_slave *slave,
+	struct spi_op vectors[], size_t count,
+	int (*func)(const struct spi_slave *slave, const void *dout,
+		    size_t bytesout, void *din, size_t bytesin));
+
 #endif /* _SPI_FLASH_H_ */

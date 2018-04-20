@@ -588,9 +588,14 @@ spi_xfer_exit:
 	return 0;
 }
 
+static int xfer_vectors(const struct spi_slave *slave,
+			struct spi_op vectors[], size_t count)
+{
+	return spi_flash_vector_helper(slave, vectors, count, spi_ctrlr_xfer);
+}
+
 static const struct spi_ctrlr spi_ctrlr = {
-	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
+	.xfer_vector = xfer_vectors,
 	.max_xfer_size = member_size(ich9_spi_regs, fdata),
 };
 

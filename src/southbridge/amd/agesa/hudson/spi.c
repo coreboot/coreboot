@@ -160,9 +160,14 @@ int chipset_volatile_group_end(const struct spi_flash *flash)
 	return 0;
 }
 
+static int xfer_vectors(const struct spi_slave *slave,
+			struct spi_op vectors[], size_t count)
+{
+	return spi_flash_vector_helper(slave, vectors, count, spi_ctrlr_xfer);
+}
+
 static const struct spi_ctrlr spi_ctrlr = {
-	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
+	.xfer_vector = xfer_vectors,
 	.max_xfer_size = AMD_SB_SPI_TX_LEN,
 	.flags = SPI_CNTRLR_DEDUCT_CMD_LEN,
 };

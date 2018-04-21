@@ -17,6 +17,7 @@
 #include <arch/io.h>
 #include <arch/cpu.h>
 #include <arch/acpi.h>
+#include <compiler.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
@@ -34,7 +35,7 @@
 #include <soc/southbridge.h>
 #include <amdblocks/psp.h>
 
-void __attribute__((weak)) mainboard_romstage_entry(int s3_resume)
+void __weak mainboard_romstage_entry(int s3_resume)
 {
 	/* By default, don't do anything */
 }

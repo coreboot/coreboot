@@ -19,6 +19,7 @@
 #include <chip.h>
 #include <cpu/x86/mtrr.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <intelblocks/cse.h>
@@ -194,7 +195,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mainboard_memory_init_params(mupd);
 }
 
-__attribute__((weak)) void mainboard_memory_init_params(FSPM_UPD *mupd)
+__weak void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	/* Do nothing */
 }

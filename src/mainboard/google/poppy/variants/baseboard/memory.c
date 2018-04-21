@@ -14,6 +14,7 @@
  */
 
 #include <baseboard/variants.h>
+#include <compiler.h>
 #include <gpio.h>
 #include <variant/gpio.h>
 
@@ -37,7 +38,7 @@ static const u16 rcomp_resistor[] = { 200, 81, 162 };
 /* Rcomp target */
 static const u16 rcomp_target[] = { 100, 40, 40, 23, 40 };
 
-void __attribute__((weak)) variant_memory_params(struct memory_params *p)
+void __weak variant_memory_params(struct memory_params *p)
 {
 	p->type = MEMORY_LPDDR3;
 	p->dq_map = dq_map;
@@ -50,7 +51,7 @@ void __attribute__((weak)) variant_memory_params(struct memory_params *p)
 	p->rcomp_target_size = sizeof(rcomp_target);
 }
 
-int __attribute__((weak)) variant_memory_sku(void)
+int __weak variant_memory_sku(void)
 {
 	gpio_t spd_gpios[] = {
 		GPIO_MEM_CONFIG_0,

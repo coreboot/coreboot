@@ -22,6 +22,7 @@
 #include <arch/smp/mpspec.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/turbo.h>
@@ -552,6 +553,6 @@ void southcluster_inject_dsdt(device_t device)
 	}
 }
 
-__attribute__((weak)) void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
+__weak void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
 {
 }

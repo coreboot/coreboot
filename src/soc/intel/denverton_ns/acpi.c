@@ -19,6 +19,7 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <arch/smp/mpspec.h>
+#include <compiler.h>
 #include <cpu/x86/smm.h>
 #include <string.h>
 #include <device/pci.h>
@@ -329,4 +330,4 @@ void southcluster_inject_dsdt(device_t device)
 	}
 }
 
-__attribute__((weak)) void acpi_create_serialio_ssdt(acpi_header_t *ssdt) {}
+__weak void acpi_create_serialio_ssdt(acpi_header_t *ssdt) {}

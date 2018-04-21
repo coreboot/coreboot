@@ -361,7 +361,7 @@ ROMSTAGE_CBMEM_INIT_HOOK(timestamp_sync_cache_to_cbmem)
 RAMSTAGE_CBMEM_INIT_HOOK(timestamp_sync_cache_to_cbmem)
 
 /* Provide default timestamp implementation using monotonic timer. */
-uint64_t  __attribute__((weak)) timestamp_get(void)
+uint64_t  __weak timestamp_get(void)
 {
 	struct mono_time t1, t2;
 
@@ -375,7 +375,7 @@ uint64_t  __attribute__((weak)) timestamp_get(void)
 }
 
 /* Like timestamp_get() above this matches up with microsecond granularity. */
-int __attribute__((weak)) timestamp_tick_freq_mhz(void)
+int __weak timestamp_tick_freq_mhz(void)
 {
 	return 1;
 }

@@ -21,6 +21,7 @@
 #include <adainit.h>
 #include <arch/exception.h>
 #include <bootstate.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <console/post_codes.h>
 #include <cbmem.h>
@@ -115,7 +116,7 @@ static struct boot_state boot_states[] = {
 	BS_INIT_ENTRY(BS_PAYLOAD_BOOT, bs_payload_boot),
 };
 
-void __attribute__((weak)) arch_bootstate_coreboot_exit(void) { }
+void __weak arch_bootstate_coreboot_exit(void) { }
 
 static boot_state_t bs_pre_device(void *arg)
 {

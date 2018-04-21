@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
@@ -23,7 +24,7 @@
 #include <soc/ramstage.h>
 #include <soc/reg_access.h>
 
-__attribute__((weak)) void mainboard_gpio_i2c_init(device_t dev)
+__weak void mainboard_gpio_i2c_init(device_t dev)
 {
 	/* Initialize any of the GPIOs or I2C devices */
 	printk(BIOS_SPEW, "WEAK; mainboard_gpio_i2c_init\n");

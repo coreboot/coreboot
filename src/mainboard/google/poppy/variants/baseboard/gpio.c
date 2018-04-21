@@ -16,6 +16,7 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
+#include <compiler.h>
 
 /* Pad configuration in ramstage */
 /* Leave eSPI pins untouched from default settings */
@@ -371,13 +372,13 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI_APIC_INVERT(GPP_E0, NONE, PLTRST),
 };
 
-const struct pad_config * __attribute__((weak)) variant_gpio_table(size_t *num)
+const struct pad_config * __weak variant_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
 }
 
-const struct pad_config * __attribute__((weak))
+const struct pad_config * __weak
 	variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
@@ -385,7 +386,7 @@ const struct pad_config * __attribute__((weak))
 }
 
 /* override specific gpio by sku id */
-const struct pad_config * __attribute__((weak))
+const struct pad_config * __weak
 	variant_sku_gpio_table(size_t *num)
 {
 	*num = 0;
@@ -397,7 +398,7 @@ static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_WP_AH(GPIO_PCH_WP, CROS_GPIO_DEVICE_NAME),
 };
 
-const struct cros_gpio * __attribute__((weak)) variant_cros_gpios(size_t *num)
+const struct cros_gpio * __weak variant_cros_gpios(size_t *num)
 {
 	*num = ARRAY_SIZE(cros_gpios);
 	return cros_gpios;

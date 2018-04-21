@@ -15,6 +15,7 @@
 
 #include <baseboard/variants.h>
 #include <boot/coreboot_tables.h>
+#include <compiler.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -55,7 +56,7 @@ void mainboard_chromeos_acpi_generate(void)
 	chromeos_acpi_gpio_generate(gpios, num);
 }
 
-int __attribute__((weak)) get_lid_switch(void)
+int __weak get_lid_switch(void)
 {
 	return -1;
 }

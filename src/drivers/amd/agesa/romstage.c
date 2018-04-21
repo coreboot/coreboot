@@ -18,6 +18,7 @@
 #include <cbmem.h>
 #include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <halt.h>
 #include <program_loading.h>
@@ -43,7 +44,7 @@ void asmlinkage early_all_cores(void)
 	amd_initmmio();
 }
 
-void __attribute__((weak)) platform_once(struct sysinfo *cb)
+void __weak platform_once(struct sysinfo *cb)
 {
 	board_BeforeAgesa(cb);
 }

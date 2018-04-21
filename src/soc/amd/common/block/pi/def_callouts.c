@@ -15,6 +15,7 @@
  */
 
 #include <cbfs.h>
+#include <compiler.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <timer.h>
@@ -155,7 +156,7 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData,
 	return pVbiosImageInfo->ImagePtr ? AGESA_SUCCESS : AGESA_WARNING;
 }
 
-AGESA_STATUS __attribute__((weak)) platform_PcieSlotResetControl(UINT32 Func,
+AGESA_STATUS __weak platform_PcieSlotResetControl(UINT32 Func,
 	UINTN Data, VOID *ConfigPtr)
 {
 	printk(BIOS_WARNING, "Warning - AGESA callout: %s not supported\n",

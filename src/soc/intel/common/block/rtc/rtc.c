@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
 #include <soc/pcr_ids.h>
@@ -31,7 +32,7 @@ void enable_rtc_upper_bank(void)
 	pcr_or32(PID_RTC, PCR_RTC_CONF, PCR_RTC_CONF_UCMOS_EN);
 }
 
-__attribute__((weak)) int soc_get_rtc_failed(void)
+__weak int soc_get_rtc_failed(void)
 {
 	return 0;
 }

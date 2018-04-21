@@ -20,6 +20,7 @@
 #include <boot_device.h>
 #include <cbfs.h>
 #include <commonlib/compression.h>
+#include <compiler.h>
 #include <endian.h>
 #include <lib.h>
 #include <symbols.h>
@@ -308,7 +309,7 @@ static int cbfs_master_header_props(struct cbfs_props *props)
 /* This struct is marked as weak to allow a particular platform to
  * override the master header logic. This implementation should work for most
  * devices. */
-const struct cbfs_locator __attribute__((weak)) cbfs_master_header_locator = {
+const struct cbfs_locator __weak cbfs_master_header_locator = {
 	.name = "Master Header Locator",
 	.locate = cbfs_master_header_props,
 };

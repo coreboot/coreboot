@@ -15,12 +15,13 @@
  * GNU General Public License for more details.
  */
 #include <console/console.h>
+#include <compiler.h>
 #include <arch/pirq_routing.h>
 #include <string.h>
 #include <device/pci.h>
 #include <arch/pirq_routing.h>
 
-void __attribute__((weak)) pirq_assign_irqs(const unsigned char pirq[CONFIG_MAX_PIRQ_LINKS])
+void __weak pirq_assign_irqs(const unsigned char pirq[CONFIG_MAX_PIRQ_LINKS])
 {
 }
 

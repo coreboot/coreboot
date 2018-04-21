@@ -16,6 +16,7 @@
 
 #include <arch/hlt.h>
 #include <arch/io.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
@@ -40,18 +41,18 @@ static struct global_nvs_t *gnvs;
 /* SoC overrides. */
 
 /* Specific SOC SMI handler during ramstage finalize phase */
-__attribute__((weak)) void smihandler_soc_at_finalize(void)
+__weak void smihandler_soc_at_finalize(void)
 {
 	return;
 }
 
-__attribute__((weak)) int smihandler_soc_disable_busmaster(device_t dev)
+__weak int smihandler_soc_disable_busmaster(device_t dev)
 {
 	return 1;
 }
 
 /* SMI handlers that should be serviced in SCI mode too. */
-__attribute__((weak)) uint32_t smihandler_soc_get_sci_mask(void)
+__weak uint32_t smihandler_soc_get_sci_mask(void)
 {
 	return 0; /* No valid SCI mask for SMI handler */
 }
@@ -60,7 +61,7 @@ __attribute__((weak)) uint32_t smihandler_soc_get_sci_mask(void)
  * Needs to implement the mechanism to know if an illegal attempt
  * has been made to write to the BIOS area.
  */
-__attribute__((weak)) void smihandler_soc_check_illegal_access(
+__weak void smihandler_soc_check_illegal_access(
 	uint32_t tco_sts)
 {
 	return;
@@ -68,13 +69,13 @@ __attribute__((weak)) void smihandler_soc_check_illegal_access(
 
 /* Mainboard overrides. */
 
-__attribute__((weak)) void mainboard_smi_gpi_handler(
+__weak void mainboard_smi_gpi_handler(
 	const struct gpi_status *sts)
 {
 	return;
 }
 
-__attribute__((weak)) void mainboard_smi_espi_handler(void)
+__weak void mainboard_smi_espi_handler(void)
 {
 	return;
 }

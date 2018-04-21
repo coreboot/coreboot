@@ -15,6 +15,7 @@
 
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
@@ -25,7 +26,7 @@
 /* SoC overrides */
 
 /* Fill up PMC resource structure inside SoC directory */
-__attribute__((weak)) int pmc_soc_get_resources(
+__weak int pmc_soc_get_resources(
 		struct pmc_resource_config *cfg)
 {
 	/* no-op */
@@ -33,7 +34,7 @@ __attribute__((weak)) int pmc_soc_get_resources(
 }
 
 /* SoC override PMC initialization */
-__attribute__((weak)) void pmc_soc_init(struct device *dev)
+__weak void pmc_soc_init(struct device *dev)
 {
 	/* no-op */
 }

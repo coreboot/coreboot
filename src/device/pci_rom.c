@@ -19,6 +19,7 @@
 
 #include <console/console.h>
 #include <commonlib/endian.h>
+#include <compiler.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -29,7 +30,7 @@
 #include <arch/acpigen.h>
 
 /* Rmodules don't like weak symbols. */
-u32 __attribute__((weak)) map_oprom_vendev(u32 vendev) { return vendev; }
+u32 __weak map_oprom_vendev(u32 vendev) { return vendev; }
 
 struct rom_header *pci_rom_probe(struct device *dev)
 {

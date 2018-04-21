@@ -18,6 +18,7 @@
 #include <arch/io.h>
 #include <arch/symbols.h>
 #include <assert.h>
+#include <compiler.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cbmem.h>
@@ -295,7 +296,7 @@ void soc_update_memory_params_for_mma(FSP_M_CONFIG *memory_cfg,
 	memory_cfg->SaGv = 0x02;
 }
 
-__attribute__((weak)) void mainboard_memory_init_params(FSPM_UPD *mupd)
+__weak void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	/* Do nothing */
 }

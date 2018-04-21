@@ -15,6 +15,7 @@
 
 #include <arch/cpu.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <main_decl.h>
 #include <program_loading.h>
@@ -24,7 +25,7 @@
  * Systems without a native coreboot cache-as-ram teardown may implement
  * this to use an alternate method.
  */
-__attribute__((weak)) void late_car_teardown(void) { /* do nothing */ }
+__weak void late_car_teardown(void) { /* do nothing */ }
 
 void main(void)
 {

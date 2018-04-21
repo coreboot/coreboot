@@ -21,6 +21,7 @@
 #include <bootstate.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <compiler.h>
 
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
@@ -374,24 +375,24 @@ BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT, amd_bs_post_device,
 #endif /* ENV_RAMSTAGE */
 
 /* Empty stubs for cases board does not need to override anything. */
-void __attribute__((weak))
+void __weak
 board_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset) { }
-void __attribute__((weak))
+void __weak
 board_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *Early) { }
-void __attribute__((weak))
+void __weak
 board_BeforeInitPost(struct sysinfo *cb, AMD_POST_PARAMS *Post) { }
-void __attribute__((weak))
+void __weak
 board_BeforeInitEnv(struct sysinfo *cb, AMD_ENV_PARAMS *Env) { }
-void __attribute__((weak))
+void __weak
 board_BeforeInitMid(struct sysinfo *cb, AMD_MID_PARAMS *Mid) { }
 
-AGESA_STATUS __attribute__((weak))
+AGESA_STATUS __weak
 fchs3earlyrestore(AMD_CONFIG_PARAMS *StdHeader)
 {
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS __attribute__((weak))
+AGESA_STATUS __weak
 fchs3laterestore(AMD_CONFIG_PARAMS *StdHeader)
 {
 	return AGESA_SUCCESS;

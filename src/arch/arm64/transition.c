@@ -17,6 +17,7 @@
 #include <arch/lib_helpers.h>
 #include <arch/transition.h>
 #include <assert.h>
+#include <compiler.h>
 #include <console/console.h>
 
 /* Litte-endian, No XN-forced, Instr cache disabled,
@@ -27,7 +28,7 @@
 		     SCTLR_CACHE_DISABLE | SCTLR_SAE_DISABLE | SCTLR_RES1 | \
 		     SCTLR_ICE_DISABLE | SCTLR_WXN_DISABLE | SCTLR_LITTLE_END)
 
-void __attribute__((weak)) exc_dispatch(struct exc_state *exc_state, uint64_t id)
+void __weak exc_dispatch(struct exc_state *exc_state, uint64_t id)
 {
 	/* Default weak implementation does nothing. */
 }

@@ -157,7 +157,7 @@ const char *fsp_get_guid_name(const uint8_t *guid)
 	return "Unknown GUID";
 }
 
-__attribute__((weak)) const char *soc_get_hob_type_name(
+__weak const char *soc_get_hob_type_name(
 	const struct hob_header *hob)
 {
 	return NULL;
@@ -173,7 +173,7 @@ void fsp_print_guid_extension_hob(const struct hob_header *hob)
 	printk(BIOS_SPEW, ": %s\n", fsp_get_guid_name(res->owner_guid));
 }
 
-__attribute__((weak)) const char *soc_get_guid_name(const uint8_t *guid)
+__weak const char *soc_get_guid_name(const uint8_t *guid)
 {
 	return NULL;
 }
@@ -212,6 +212,6 @@ void fsp_display_hobs(void)
 	}
 }
 
-__attribute__((weak)) void soc_display_hob(const struct hob_header *hob)
+__weak void soc_display_hob(const struct hob_header *hob)
 {
 }

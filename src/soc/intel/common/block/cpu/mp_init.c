@@ -16,6 +16,7 @@
 #include <arch/io.h>
 #include <assert.h>
 #include <bootstate.h>
+#include <compiler.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
@@ -30,12 +31,12 @@
 static const void *microcode_patch;
 
 /* SoC override function */
-__attribute__((weak)) void soc_core_init(device_t dev)
+__weak void soc_core_init(device_t dev)
 {
 	/* no-op */
 }
 
-__attribute__((weak)) void soc_init_cpus(struct bus *cpu_bus)
+__weak void soc_init_cpus(struct bus *cpu_bus)
 {
 	/* no-op */
 }

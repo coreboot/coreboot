@@ -1,8 +1,9 @@
 #include <fallback.h>
+#include <compiler.h>
 #include <watchdog.h>
 
 /* Implement platform specific override. */
-void __attribute__((weak)) set_boot_successful(void) { }
+void __weak set_boot_successful(void) { }
 
 void boot_successful(void)
 {

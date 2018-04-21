@@ -14,6 +14,7 @@
  */
 
 #include <arch/ebda.h>
+#include <compiler.h>
 #include <intelblocks/ebda.h>
 #include <string.h>
 
@@ -24,7 +25,7 @@
  */
 
 /* Fill up EBDA structure inside Mainboard directory */
-__attribute__((weak)) void create_mainboard_ebda(struct ebda_config *cfg)
+__weak void create_mainboard_ebda(struct ebda_config *cfg)
 {
 	/* no-op */
 }

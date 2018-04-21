@@ -16,6 +16,7 @@
 #include <AGESA.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <delay.h>
 #include <cpu/x86/mtrr.h>
 #include <FchPlatform.h>
@@ -25,7 +26,7 @@
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 
-void __attribute__((weak)) OemPostParams(AMD_POST_PARAMS *PostParams) {}
+void __weak OemPostParams(AMD_POST_PARAMS *PostParams) {}
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 

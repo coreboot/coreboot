@@ -14,6 +14,7 @@
  */
 
 #include <arch/cache.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <halt.h>
 #include <reset.h>
@@ -27,10 +28,10 @@ __attribute__((noreturn)) static void __hard_reset(void) {
 }
 
 /* Not all platforms implement all reset types. Fall back to hard_reset. */
-__attribute__((weak)) void do_global_reset(void) { __hard_reset(); }
-__attribute__((weak)) void do_soft_reset(void) { __hard_reset(); }
+__weak void do_global_reset(void) { __hard_reset(); }
+__weak void do_soft_reset(void) { __hard_reset(); }
 
-__attribute__((weak)) void soc_reset_prepare(enum reset_type rt) { /* no-op */ }
+__weak void soc_reset_prepare(enum reset_type rt) { /* no-op */ }
 
 void global_reset(void)
 {

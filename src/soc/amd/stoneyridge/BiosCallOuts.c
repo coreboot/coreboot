@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <amdblocks/BiosCallOuts.h>
@@ -28,7 +29,7 @@
 #include "chip.h"
 #include <amdblocks/car.h>
 
-void __attribute__((weak)) platform_FchParams_reset(
+void __weak platform_FchParams_reset(
 				FCH_RESET_DATA_BLOCK *FchParams_reset) {}
 
 AGESA_STATUS agesa_fch_initreset(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
@@ -159,7 +160,7 @@ AGESA_STATUS agesa_HaltThisAp(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 }
 
 /* Allow mainboards to fill the SPD buffer */
-__attribute__((weak)) int mainboard_read_spd(uint8_t spdAddress, char *buf,
+__weak int mainboard_read_spd(uint8_t spdAddress, char *buf,
 						size_t len)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);

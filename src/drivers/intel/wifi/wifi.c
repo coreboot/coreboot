@@ -64,7 +64,7 @@ static int smbios_write_wifi(struct device *dev, int *handle,
 }
 #endif
 
-__attribute__((weak))
+__weak
 int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
 {
 	return -1;

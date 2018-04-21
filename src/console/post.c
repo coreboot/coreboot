@@ -16,6 +16,7 @@
 
 #include <arch/io.h>
 #include <elog.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <pc80/mc146818rtc.h>
@@ -29,7 +30,7 @@
 /* Some mainboards have very nice features beyond just a simple display.
  * They can override this function.
  */
-void __attribute__((weak)) mainboard_post(uint8_t value)
+void __weak mainboard_post(uint8_t value)
 {
 }
 

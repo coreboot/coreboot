@@ -16,6 +16,7 @@
 
 #include <arch/exception.h>
 #include <bootblock_common.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <delay.h>
 #include <pc80/mc146818rtc.h>
@@ -25,10 +26,10 @@
 
 DECLARE_OPTIONAL_REGION(timestamp);
 
-__attribute__((weak)) void bootblock_mainboard_early_init(void) { /* no-op */ }
-__attribute__((weak)) void bootblock_soc_early_init(void) { /* do nothing */ }
-__attribute__((weak)) void bootblock_soc_init(void) { /* do nothing */ }
-__attribute__((weak)) void bootblock_mainboard_init(void) { /* do nothing */ }
+__weak void bootblock_mainboard_early_init(void) { /* no-op */ }
+__weak void bootblock_soc_early_init(void) { /* do nothing */ }
+__weak void bootblock_soc_init(void) { /* do nothing */ }
+__weak void bootblock_mainboard_init(void) { /* do nothing */ }
 
 asmlinkage void bootblock_main_with_timestamp(uint64_t base_timestamp)
 {

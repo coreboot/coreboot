@@ -21,6 +21,7 @@
 #include <bootstate.h>
 #include <cbmem.h>
 #include "chip.h"
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
@@ -457,7 +458,7 @@ static const struct pci_driver southcluster __pci_driver = {
 	.device		= LPC_DEVID,
 };
 
-int __attribute__((weak)) mainboard_get_spi_config(struct spi_config *cfg)
+int __weak mainboard_get_spi_config(struct spi_config *cfg)
 {
 	printk(BIOS_SPEW, "%s/%s ( 0x%p )\n",
 			__FILE__, __func__, (void *)cfg);

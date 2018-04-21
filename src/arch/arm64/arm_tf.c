@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <program_loading.h>
 
 /*
@@ -36,7 +37,7 @@ static entry_point_info_t bl32_ep_info;
 static entry_point_info_t bl33_ep_info;
 static bl31_params_t bl31_params;
 
-void __attribute__((weak)) *soc_get_bl31_plat_params(bl31_params_t *params)
+void __weak *soc_get_bl31_plat_params(bl31_params_t *params)
 {
 	/* Default weak implementation. */
 	return NULL;

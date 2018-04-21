@@ -20,6 +20,7 @@
 #include <arch/acpi.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mp.h>
@@ -518,7 +519,7 @@ static void glk_fsp_silicon_init_params_cb(
 		sizeof(silconfig->PcieRpSelectableDeemphasis));
 }
 
-void __attribute__((weak)) mainboard_devtree_update(struct device *dev)
+void __weak mainboard_devtree_update(struct device *dev)
 {
        /* Override dev tree settings per board */
 }

@@ -14,6 +14,7 @@
  */
 
 #include <string.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/acpi.h>
@@ -225,7 +226,7 @@ struct chip_operations mainboard_ops = {
 };
 
 /* Variants may override this function so see definitions in variants/ */
-uint8_t __attribute__((weak)) variant_board_sku(void)
+uint8_t __weak variant_board_sku(void)
 {
 	return 0;
 }

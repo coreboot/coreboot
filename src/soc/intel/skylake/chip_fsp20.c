@@ -20,6 +20,7 @@
 #include <fsp/api.h>
 #include <arch/acpi.h>
 #include <chip.h>
+#include <compiler.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -346,7 +347,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 }
 
 /* Mainboard GPIO Configuration */
-__attribute__((weak)) void mainboard_silicon_init_params(FSP_S_CONFIG *params)
+__weak void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }

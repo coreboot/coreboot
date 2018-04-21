@@ -15,6 +15,7 @@
  */
 
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <reset.h>
@@ -28,7 +29,7 @@
 #include <soc/smm.h>
 #include <soc/soc_util.h>
 
-void __attribute__((weak)) mainboard_config_gpios(void) {}
+void __weak mainboard_config_gpios(void) {}
 
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
 {	\
@@ -279,7 +280,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg)
 	}
 }
 
-__attribute__((weak)) void mainboard_memory_init_params(FSPM_UPD *mupd)
+__weak void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	/* Do nothing */
 }

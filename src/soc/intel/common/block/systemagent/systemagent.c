@@ -15,6 +15,7 @@
 
 #include <arch/io.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -25,25 +26,25 @@
 #include "systemagent_def.h"
 
 /* SoC override function */
-__attribute__((weak)) void soc_systemagent_init(struct device *dev)
+__weak void soc_systemagent_init(struct device *dev)
 {
 	/* no-op */
 }
 
-__attribute__((weak)) void soc_add_fixed_mmio_resources(struct device *dev,
+__weak void soc_add_fixed_mmio_resources(struct device *dev,
 		int *resource_cnt)
 {
 	/* no-op */
 }
 
-__attribute__((weak)) int soc_get_uncore_prmmr_base_and_mask(uint64_t *base,
+__weak int soc_get_uncore_prmmr_base_and_mask(uint64_t *base,
 		uint64_t *mask)
 {
 	/* return failure for this dummy API */
 	return -1;
 }
 
-__attribute__((weak)) size_t soc_reserved_mmio_size(void)
+__weak size_t soc_reserved_mmio_size(void)
 {
 	return 0;
 }

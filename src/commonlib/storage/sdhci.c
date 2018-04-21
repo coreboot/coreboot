@@ -23,6 +23,7 @@
 #include <commonlib/sd_mmc_ctrlr.h>
 #include <commonlib/sdhci.h>
 #include <commonlib/storage.h>
+#include <compiler.h>
 #include <delay.h>
 #include <endian.h>
 #include <halt.h>
@@ -38,7 +39,7 @@
 			|| (CONFIG_SDHCI_ADMA_IN_ROMSTAGE && ENV_ROMSTAGE) \
 			|| ENV_POSTCAR || ENV_RAMSTAGE)
 
-__attribute__((weak)) void *dma_malloc(size_t length_in_bytes)
+__weak void *dma_malloc(size_t length_in_bytes)
 {
 	return malloc(length_in_bytes);
 }
@@ -278,20 +279,20 @@ static int sdhci_send_command_bounced(struct sd_mmc_ctrlr *ctrlr,
 	return CARD_COMM_ERR;
 }
 
-__attribute__((weak)) void sdhc_log_command(struct mmc_command *cmd)
+__weak void sdhc_log_command(struct mmc_command *cmd)
 {
 }
 
-__attribute__((weak)) void sdhc_log_command_issued(void)
+__weak void sdhc_log_command_issued(void)
 {
 }
 
-__attribute__((weak)) void sdhc_log_response(uint32_t entries,
+__weak void sdhc_log_response(uint32_t entries,
 	uint32_t *response)
 {
 }
 
-__attribute__((weak)) void sdhc_log_ret(int ret)
+__weak void sdhc_log_ret(int ret)
 {
 }
 
@@ -715,7 +716,7 @@ static int sdhci_pre_init(struct sdhci_ctrlr *sdhci_ctrlr)
 	return 0;
 }
 
-__attribute__((weak)) void soc_sd_mmc_controller_quirks(struct sd_mmc_ctrlr
+__weak void soc_sd_mmc_controller_quirks(struct sd_mmc_ctrlr
 	*ctrlr)
 {
 }

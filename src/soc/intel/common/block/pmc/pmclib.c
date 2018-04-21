@@ -16,6 +16,7 @@
 #include <arch/early_variables.h>
 #include <arch/io.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <halt.h>
 #include <intelblocks/pmclib.h>
@@ -75,7 +76,7 @@ static void print_num_status_bits(int num_bits, uint32_t status,
 	}
 }
 
-__attribute__ ((weak)) uint32_t soc_get_smi_status(uint32_t generic_sts)
+__weak uint32_t soc_get_smi_status(uint32_t generic_sts)
 {
 	return generic_sts;
 }
@@ -84,7 +85,7 @@ __attribute__ ((weak)) uint32_t soc_get_smi_status(uint32_t generic_sts)
  * Set PMC register to know which state system should be after
  * power reapplied
  */
-__attribute__ ((weak)) void pmc_soc_restore_power_failure(void)
+__weak void pmc_soc_restore_power_failure(void)
 {
 	/*
 	 * SoC code should set PMC config register in order to set
@@ -332,7 +333,7 @@ void pmc_clear_all_gpe_status(void)
 	pmc_clear_gpi_gpe_status();
 }
 
-__attribute__ ((weak))
+__weak
 void soc_clear_pm_registers(uintptr_t pmc_bar)
 {
 }
@@ -351,7 +352,7 @@ void pmc_clear_prsts(void)
 	soc_clear_pm_registers(pmc_bar);
 }
 
-__attribute__ ((weak))
+__weak
 int soc_prev_sleep_state(const struct chipset_power_state *ps,
 			      int prev_sleep_state)
 {

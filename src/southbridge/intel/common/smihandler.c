@@ -17,6 +17,7 @@
 #include <types.h>
 #include <arch/io.h>
 #include <arch/acpi.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <device/pci_def.h>
@@ -108,11 +109,11 @@ static void busmaster_disable_on_bus(int bus)
 	}
 }
 
-__attribute__((weak)) void southbridge_gate_memory_reset(void)
+__weak void southbridge_gate_memory_reset(void)
 {
 }
 
-__attribute__((weak)) void southbridge_smm_xhci_sleep(u8 slp_type)
+__weak void southbridge_smm_xhci_sleep(u8 slp_type)
 {
 }
 

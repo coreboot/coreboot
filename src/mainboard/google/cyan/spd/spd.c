@@ -16,6 +16,7 @@
 
 #include <cbfs.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <gpio.h>
 #include <lib.h>
@@ -28,7 +29,7 @@
 #include <spd_bin.h>
 #include "spd_util.h"
 
-__attribute__ ((weak)) uint8_t get_ramid(void)
+__weak uint8_t get_ramid(void)
 {
 	gpio_t spd_gpios[] = {
 		GP_SW_80,	/* SATA_GP3, RAMID0 */

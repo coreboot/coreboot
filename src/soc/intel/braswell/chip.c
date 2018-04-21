@@ -15,6 +15,7 @@
  */
 
 #include <chip.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -81,7 +82,7 @@ static void enable_dev(device_t dev)
 	}
 }
 
-__attribute__((weak)) void board_silicon_USB2_override(SILICON_INIT_UPD *params)
+__weak void board_silicon_USB2_override(SILICON_INIT_UPD *params)
 {
 }
 

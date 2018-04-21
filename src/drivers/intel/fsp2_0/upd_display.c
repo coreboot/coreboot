@@ -10,6 +10,7 @@
  */
 
 #include <arch/cpu.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <lib.h>
@@ -50,7 +51,7 @@ static void fspm_display_arch_params(const FSPM_ARCH_UPD *old,
 }
 
 /* Display the UPD parameters for MemoryInit */
-__attribute__((weak)) void soc_display_fspm_upd_params(
+__weak void soc_display_fspm_upd_params(
 	const FSPM_UPD *fspm_old_upd,
 	const FSPM_UPD *fspm_new_upd)
 {
@@ -67,7 +68,7 @@ void fspm_display_upd_values(const FSPM_UPD *old,
 }
 
 /* Display the UPD parameters for SiliconInit */
-__attribute__((weak)) void soc_display_fsps_upd_params(
+__weak void soc_display_fsps_upd_params(
 	const FSPS_UPD *fsps_old_upd,
 	const FSPS_UPD *fsps_new_upd)
 {

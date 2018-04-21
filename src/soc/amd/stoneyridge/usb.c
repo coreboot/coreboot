@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -42,13 +43,13 @@ static void set_usb_over_current(struct device *dev)
 	}
 }
 
-int __attribute__((weak)) mainboard_get_xhci_oc_map(uint16_t *map)
+int __weak mainboard_get_xhci_oc_map(uint16_t *map)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 	return -1;
 }
 
-int __attribute__((weak)) mainboard_get_ehci_oc_map(uint16_t *map)
+int __weak mainboard_get_ehci_oc_map(uint16_t *map)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 	return -1;

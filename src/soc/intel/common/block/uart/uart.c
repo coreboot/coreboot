@@ -14,6 +14,7 @@
  */
 
 #include <arch/acpi.h>
+#include <compiler.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
@@ -45,7 +46,7 @@ void uart_common_init(device_t dev, uintptr_t baseaddr)
 	uart_lpss_init(baseaddr);
 }
 
-__attribute__((weak)) device_t pch_uart_get_debug_controller(void)
+__weak device_t pch_uart_get_debug_controller(void)
 {
 	/*
 	 * device_t can either be a pointer to struct device (e.g. ramstage) or
@@ -78,12 +79,12 @@ bool uart_debug_controller_is_initialized(void)
 
 #if ENV_RAMSTAGE
 
-__attribute__((weak)) void pch_uart_read_resources(struct device *dev)
+__weak void pch_uart_read_resources(struct device *dev)
 {
 	pci_dev_read_resources(dev);
 }
 
-__attribute__((weak)) bool pch_uart_init_debug_controller_on_resume(void)
+__weak bool pch_uart_init_debug_controller_on_resume(void)
 {
 	/* By default, do not initialize controller. */
 	return false;

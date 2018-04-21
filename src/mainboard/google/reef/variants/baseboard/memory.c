@@ -14,6 +14,7 @@
  */
 
 #include <baseboard/variants.h>
+#include <compiler.h>
 #include <gpio.h>
 #include <soc/meminit.h>
 #include <variant/gpio.h>
@@ -137,12 +138,12 @@ static const struct lpddr4_cfg lp4cfg = {
 	.swizzle_config = &baseboard_lpddr4_swizzle,
 };
 
-const struct lpddr4_cfg * __attribute__((weak)) variant_lpddr4_config(void)
+const struct lpddr4_cfg * __weak variant_lpddr4_config(void)
 {
 	return &lp4cfg;
 }
 
-size_t __attribute__((weak)) variant_memory_sku(void)
+size_t __weak variant_memory_sku(void)
 {
 	gpio_t pads[] = {
 		[3] = MEM_CONFIG3, [2] = MEM_CONFIG2,

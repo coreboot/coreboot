@@ -18,6 +18,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <delay.h>
 #include <rules.h>
 #include <rmodule.h>
@@ -28,8 +29,8 @@
 #include <amdblocks/BiosCallOuts.h>
 #include <soc/southbridge.h>
 
-void __attribute__((weak)) SetMemParams(AMD_POST_PARAMS *PostParams) {}
-void __attribute__((weak)) OemPostParams(AMD_POST_PARAMS *PostParams) {}
+void __weak SetMemParams(AMD_POST_PARAMS *PostParams) {}
+void __weak OemPostParams(AMD_POST_PARAMS *PostParams) {}
 
 /* ACPI table pointers returned by AmdInitLate */
 static void *DmiTable;

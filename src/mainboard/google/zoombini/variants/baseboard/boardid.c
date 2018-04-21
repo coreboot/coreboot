@@ -14,9 +14,10 @@
  */
 
 #include <baseboard/variants.h>
+#include <compiler.h>
 #include <ec/google/chromeec/ec.h>
 
-uint8_t __attribute__((weak)) variant_board_id(void)
+uint8_t __weak variant_board_id(void)
 {
 	return google_chromeec_get_board_version();
 }

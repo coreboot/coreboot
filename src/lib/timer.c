@@ -13,12 +13,13 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <timer.h>
 #include <delay.h>
 #include <thread.h>
 
-__attribute__((weak)) void init_timer(void) { /* do nothing */ }
+__weak void init_timer(void) { /* do nothing */ }
 
 void udelay(unsigned int usec)
 {

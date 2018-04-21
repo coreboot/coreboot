@@ -16,6 +16,7 @@
 #include <arch/acpi.h>
 #include <baseboard/variants.h>
 #include <boardid.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <ec/ec.h>
@@ -30,7 +31,7 @@
 #include <variant/gpio.h>
 
 /* override specific gpio by sku id */
-const struct pad_config __attribute__((weak))
+const struct pad_config __weak
 *variant_sku_gpio_table(size_t *num)
 {
 	*num = 0;
@@ -73,7 +74,7 @@ uint8_t sku_strapping_value(void)
 	return gpio_base3_value(board_sku_gpios, num);
 }
 
-uint8_t __attribute__((weak)) variant_board_sku(void)
+uint8_t __weak variant_board_sku(void)
 {
 	static int board_sku_num = -1;
 
@@ -84,7 +85,7 @@ uint8_t __attribute__((weak)) variant_board_sku(void)
 }
 
 /* Set variant board sku to ec by sku id */
-void __attribute__((weak)) variant_board_ec_set_skuid(void)
+void __weak variant_board_ec_set_skuid(void)
 {
 }
 
@@ -97,7 +98,7 @@ const char *smbios_mainboard_sku(void)
 	return sku_str;
 }
 
-void __attribute__((weak)) variant_nhlt_oem_overrides(const char **oem_id,
+void __weak variant_nhlt_oem_overrides(const char **oem_id,
 						const char **oem_table_id,
 						uint32_t *oem_revision)
 {

@@ -20,6 +20,7 @@
 #include <arch/cbfs.h>
 #include <arch/early_variables.h>
 #include <assert.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/intel/microcode.h>
@@ -185,13 +186,13 @@ void after_cache_as_ram_stage(void)
 }
 
 /* Initialize the power state */
-__attribute__((weak)) struct chipset_power_state *fill_power_state(void)
+__weak struct chipset_power_state *fill_power_state(void)
 {
 	return NULL;
 }
 
 /* Board initialization before and after RAM is enabled */
-__attribute__((weak)) void mainboard_romstage_entry(
+__weak void mainboard_romstage_entry(
 	struct romstage_params *params)
 {
 	post_code(0x31);
@@ -201,7 +202,7 @@ __attribute__((weak)) void mainboard_romstage_entry(
 }
 
 /* Save the DIMM information for SMBIOS table 17 */
-__attribute__((weak)) void mainboard_save_dimm_info(
+__weak void mainboard_save_dimm_info(
 	struct romstage_params *params)
 {
 	int channel;
@@ -330,7 +331,7 @@ __attribute__((weak)) void mainboard_save_dimm_info(
 }
 
 /* Add any mainboard specific information */
-__attribute__((weak)) void mainboard_add_dimm_info(
+__weak void mainboard_add_dimm_info(
 	struct romstage_params *params,
 	struct memory_info *mem_info,
 	int channel, int dimm, int index)
@@ -338,44 +339,44 @@ __attribute__((weak)) void mainboard_add_dimm_info(
 }
 
 /* Get the memory configuration data */
-__attribute__((weak)) int mrc_cache_get_current(int type, uint32_t version,
+__weak int mrc_cache_get_current(int type, uint32_t version,
 				struct region_device *rdev)
 {
 	return -1;
 }
 
 /* Save the memory configuration data */
-__attribute__((weak)) int mrc_cache_stash_data(int type, uint32_t version,
+__weak int mrc_cache_stash_data(int type, uint32_t version,
 					const void *data, size_t size)
 {
 	return -1;
 }
 
 /* Transition RAM from off or self-refresh to active */
-__attribute__((weak)) void raminit(struct romstage_params *params)
+__weak void raminit(struct romstage_params *params)
 {
 	post_code(0x34);
 	die("ERROR - No RAM initialization specified!\n");
 }
 
 /* Display the memory configuration */
-__attribute__((weak)) void report_memory_config(void)
+__weak void report_memory_config(void)
 {
 }
 
 /* Choose top of stack and setup MTRRs */
-__attribute__((weak)) void *setup_stack_and_mtrrs(void)
+__weak void *setup_stack_and_mtrrs(void)
 {
 	die("ERROR - Must specify top of stack!\n");
 	return NULL;
 }
 
 /* SOC initialization after RAM is enabled */
-__attribute__((weak)) void soc_after_ram_init(struct romstage_params *params)
+__weak void soc_after_ram_init(struct romstage_params *params)
 {
 }
 
 /* SOC initialization before RAM is enabled */
-__attribute__((weak)) void soc_pre_ram_init(struct romstage_params *params)
+__weak void soc_pre_ram_init(struct romstage_params *params)
 {
 }

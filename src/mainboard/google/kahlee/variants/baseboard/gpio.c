@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <baseboard/variants.h>
 #include <soc/gpio.h>
 #include <soc/smi.h>
@@ -485,7 +486,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_135, PULL_UP),
 };
 
-const __attribute__((weak))
+const __weak
 struct soc_amd_gpio *variant_early_gpio_table(size_t *size)
 {
 	if (board_id() < 2) {
@@ -497,7 +498,7 @@ struct soc_amd_gpio *variant_early_gpio_table(size_t *size)
 	}
 }
 
-const __attribute__((weak))
+const __weak
 struct soc_amd_gpio *variant_gpio_table(size_t *size)
 {
 	if (board_id() < 2) {
@@ -565,13 +566,13 @@ static const struct sci_source gpe_table[] = {
 	},
 };
 
-const __attribute__((weak)) struct sci_source *get_gpe_table(size_t *num)
+const __weak struct sci_source *get_gpe_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpe_table);
 	return gpe_table;
 }
 
-int __attribute__((weak)) variant_get_xhci_oc_map(uint16_t *map)
+int __weak variant_get_xhci_oc_map(uint16_t *map)
 {
 	*map =  USB_OC0 << OC_PORT0_SHIFT; /* USB-C Port0/4 = OC0 */
 	*map |= USB_OC1 << OC_PORT1_SHIFT; /* USB-C Port1/5 = OC1 */
@@ -580,7 +581,7 @@ int __attribute__((weak)) variant_get_xhci_oc_map(uint16_t *map)
 	return 0;
 }
 
-int __attribute__((weak)) variant_get_ehci_oc_map(uint16_t *map)
+int __weak variant_get_ehci_oc_map(uint16_t *map)
 {
 	*map = USB_OC_DISABLE_ALL;
 	return 0;

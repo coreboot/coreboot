@@ -17,6 +17,7 @@
 #include <string.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <cpu/cpu.h>
 #include <fallback.h>
 #include <timestamp.h>
@@ -218,7 +219,7 @@ static void acpi_jump_to_wakeup(void *vector)
 	acpi_do_wakeup((uintptr_t)vector, source, target, size);
 }
 
-void __attribute__((weak)) mainboard_suspend_resume(void)
+void __weak mainboard_suspend_resume(void)
 {
 }
 

@@ -16,6 +16,7 @@
 
 #include <soc/gpio.h>
 #include <commonlib/helpers.h>
+#include <compiler.h>
 #include "brd_gpio.h"
 
 /*
@@ -363,7 +364,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(SVID0_CLK, UP_20K, DEEP, NF1),	/* SVID0_CLK */
 };
 
-const struct pad_config *__attribute__((weak)) brd_gpio_table(size_t *num)
+const struct pad_config *__weak brd_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
@@ -406,7 +407,7 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(LPC_FRAMEB, UP_20K, DEEP, NF1),	/* LPC_FRAME_N */
 };
 
-const struct pad_config *__attribute__((weak))
+const struct pad_config *__weak
 brd_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);

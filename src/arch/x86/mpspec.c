@@ -17,6 +17,7 @@
 #include <device/path.h>
 #include <device/pci_ids.h>
 #include <cpu/cpu.h>
+#include <compiler.h>
 #include <arch/smp/mpspec.h>
 #include <string.h>
 #include <arch/cpu.h>
@@ -523,7 +524,7 @@ void *mptable_finalize(struct mp_config_table *mc)
 	return smp_next_mpe_entry(mc);
 }
 
-unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
+unsigned long __weak write_smp_table(unsigned long addr)
 {
 	struct drivers_generic_ioapic_config *ioapic_config;
 	struct mp_config_table *mc;

@@ -124,7 +124,7 @@ int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 	return 0;
 }
 
-__attribute__((weak)) uintptr_t fsp_soc_get_igd_bar(void)
+__weak uintptr_t fsp_soc_get_igd_bar(void)
 {
 	return 0;
 }

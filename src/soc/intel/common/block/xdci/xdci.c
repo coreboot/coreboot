@@ -15,13 +15,14 @@
  */
 
 #include <arch/io.h>
+#include <compiler.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <intelblocks/xdci.h>
 #include <security/vboot/vboot_common.h>
 
-__attribute__((weak)) void soc_xdci_init(struct device *dev) { /* no-op */ }
+__weak void soc_xdci_init(struct device *dev) { /* no-op */ }
 
 /* Only allow xDCI controller in developer mode if VBOOT is enabled */
 int xdci_can_enable(void)

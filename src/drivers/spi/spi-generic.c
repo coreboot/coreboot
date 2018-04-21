@@ -15,6 +15,7 @@
  */
 
 #include <assert.h>
+#include <compiler.h>
 #include <spi-generic.h>
 #include <string.h>
 
@@ -116,7 +117,7 @@ unsigned int spi_crop_chunk(const struct spi_slave *slave, unsigned int cmd_len,
 	return min(ctrlr_max, buf_len);
 }
 
-void __attribute__((weak)) spi_init(void)
+void __weak spi_init(void)
 {
 	/* Default weak implementation - do nothing. */
 }

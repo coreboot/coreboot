@@ -15,6 +15,7 @@
  */
 
 #include <arch/io.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <halt.h>
 
@@ -27,7 +28,7 @@
  * EC is capable of controlling LEDs or a buzzer the method can be overwritten
  * in EC directory instead.
  */
-__attribute__ ((weak)) void die_notify(void)
+__weak void die_notify(void)
 {
 }
 

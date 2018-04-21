@@ -15,11 +15,12 @@
 
 #include <arch/exception.h>
 #include <arch/hlt.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <program_loading.h>
 #include <security/vboot/vboot_common.h>
 
-void __attribute__((weak)) verstage_mainboard_init(void)
+void __weak verstage_mainboard_init(void)
 {
 	/* Default empty implementation. */
 }

@@ -14,13 +14,14 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <intelblocks/sram.h>
 #include <soc/iomap.h>
 
-__attribute__((weak)) void soc_sram_init(struct device *dev) { /* no-op */ }
+__weak void soc_sram_init(struct device *dev) { /* no-op */ }
 
 static void sram_read_resources(struct device *dev)
 {

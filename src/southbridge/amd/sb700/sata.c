@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <delay.h>
@@ -66,7 +67,7 @@ static int sata_drive_detect(int portnum, uint16_t iobar)
 }
 
 /* This function can be overloaded in mainboard.c */
-void __attribute__((weak)) sb7xx_51xx_setup_sata_phys(struct device *dev)
+void __weak sb7xx_51xx_setup_sata_phys(struct device *dev)
 {
 	/* RPR7.6.1 Program the PHY Global Control to 0x2C00 */
 	pci_write_config16(dev, 0x86, 0x2c00);
@@ -89,7 +90,7 @@ void __attribute__((weak)) sb7xx_51xx_setup_sata_phys(struct device *dev)
 }
 
 /* This function can be overloaded in mainboard.c */
-void __attribute__((weak)) sb7xx_51xx_setup_sata_port_indication(void *sata_bar5)
+void __weak sb7xx_51xx_setup_sata_port_indication(void *sata_bar5)
 {
 	uint32_t dword;
 

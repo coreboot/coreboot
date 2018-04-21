@@ -12,6 +12,7 @@
 
 #include <arch/cpu.h>
 #include <bootstate.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <soc/intel/common/util.h>
@@ -87,7 +88,7 @@ BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, fsp_notify_dummy,
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, fsp_notify_dummy,
 						(void *) READY_TO_BOOT);
 
-__attribute__((weak)) void platform_fsp_notify_status(
+__weak void platform_fsp_notify_status(
 	enum fsp_notify_phase phase)
 {
 }

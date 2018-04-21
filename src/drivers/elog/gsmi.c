@@ -15,6 +15,7 @@
 
 #include <compiler.h>
 #include <arch/io.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <elog.h>
@@ -48,12 +49,12 @@ struct gsmi_clear_eventlog_param {
 	u32 data_type;
 } __packed;
 
-void __attribute__((weak)) elog_gsmi_cb_platform_log_wake_source(void)
+void __weak elog_gsmi_cb_platform_log_wake_source(void)
 {
 	/* Default weak implementation, does nothing. */
 }
 
-void __attribute__((weak)) elog_gsmi_cb_mainboard_log_wake_source(void)
+void __weak elog_gsmi_cb_mainboard_log_wake_source(void)
 {
 	/* Default weak implementation, does nothing. */
 }

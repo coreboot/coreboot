@@ -17,6 +17,7 @@
 #include <arch/early_variables.h>
 #include <arch/io.h>
 #include <assert.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
@@ -357,7 +358,7 @@ static int gspi_cs_change(const struct spi_slave *dev, enum cs_assert cs_assert)
 	return 0;
 }
 
-int __attribute__((weak)) gspi_get_soc_spi_cfg(unsigned int gspi_bus,
+int __weak gspi_get_soc_spi_cfg(unsigned int gspi_bus,
 						struct spi_cfg *cfg)
 {
 	cfg->clk_phase = SPI_CLOCK_PHASE_FIRST;

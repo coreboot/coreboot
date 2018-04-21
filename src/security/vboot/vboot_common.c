@@ -16,6 +16,7 @@
 #include <boot/coreboot_tables.h>
 #include <boot_device.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/cbmem_console.h>
 #include <console/console.h>
 #include <fmap.h>
@@ -101,7 +102,7 @@ int vboot_handoff_get_recovery_reason(void)
 }
 
 /* ============================ VBOOT REBOOT ============================== */
-void __attribute__((weak)) vboot_platform_prepare_reboot(void)
+void __weak vboot_platform_prepare_reboot(void)
 {
 }
 

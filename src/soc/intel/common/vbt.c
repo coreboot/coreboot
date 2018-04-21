@@ -14,6 +14,7 @@
  */
 
 #include <cbfs.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <bootmode.h>
@@ -23,7 +24,7 @@
 
 #define VBT_SIGNATURE 0x54425624
 
-__attribute__((weak))
+__weak
 const char *mainboard_vbt_filename(void)
 {
 	return "vbt.bin";

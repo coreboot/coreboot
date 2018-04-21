@@ -15,6 +15,7 @@
 
 #include <baseboard/variants.h>
 #include <baseboard/gpio.h>
+#include <compiler.h>
 #include <gpio.h>
 #include <soc/cnl_lpddr4_init.h>
 
@@ -81,12 +82,12 @@ static const struct lpddr4_cfg baseboard_lpddr4_cfg = {
 	.ect = 0,
 };
 
-const struct lpddr4_cfg *__attribute__((weak)) variant_lpddr4_config(void)
+const struct lpddr4_cfg *__weak variant_lpddr4_config(void)
 {
 	return &baseboard_lpddr4_cfg;
 }
 
-size_t __attribute__((weak)) variant_memory_sku(void)
+size_t __weak variant_memory_sku(void)
 {
 	const gpio_t pads[] = {
 		[3] = GPIO_MEM_CONFIG_3, [2] = GPIO_MEM_CONFIG_2,

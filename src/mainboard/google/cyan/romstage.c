@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <soc/romstage.h>
 #include <baseboard/variants.h>
 #include <chip.h>
@@ -47,7 +48,7 @@ void mainboard_memory_init_params(struct romstage_params *params,
 	variant_memory_init_params(memory_params);
 }
 
-__attribute__ ((weak))
+__weak
 void variant_memory_init_params(MEMORY_INIT_UPD *memory_params)
 {
 }

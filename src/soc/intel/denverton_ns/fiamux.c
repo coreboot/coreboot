@@ -15,6 +15,7 @@
  *
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <soc/fiamux.h>
 
@@ -140,7 +141,7 @@ BL_FIA_MUX_CONFIG_HOB *get_fiamux_hob_data(void)
 	return fiamux_hob_data;
 }
 
-__attribute__((weak)) size_t mainboard_get_hsio_config(BL_HSIO_INFORMATION **p_hsio_config)
+__weak size_t mainboard_get_hsio_config(BL_HSIO_INFORMATION **p_hsio_config)
 {
 	*p_hsio_config = NULL;
 	return 0;

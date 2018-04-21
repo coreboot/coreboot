@@ -15,6 +15,7 @@
 
 #include <bootstate.h>
 #include <bootmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <imd.h>
@@ -109,7 +110,7 @@ void cbmem_initialize_empty(void)
 	cbmem_initialize_empty_id_size(0, 0);
 }
 
-void __attribute__((weak)) cbmem_top_init(void)
+void __weak cbmem_top_init(void)
 {
 }
 

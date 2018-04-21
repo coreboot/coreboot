@@ -16,6 +16,7 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
+#include <compiler.h>
 
 /* Pad configuration in ramstage*/
 static const struct pad_config gpio_table[] = {
@@ -297,13 +298,13 @@ static const struct pad_config early_gpio_table[] = {
 
 };
 
-const struct pad_config *__attribute__((weak)) variant_gpio_table(size_t *num)
+const struct pad_config *__weak variant_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
 }
 
-const struct pad_config *__attribute__((weak))
+const struct pad_config *__weak
 	variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
@@ -314,7 +315,7 @@ static const struct cros_gpio cros_gpios[] = {
         CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
 };
 
-const struct cros_gpio * __attribute__((weak)) variant_cros_gpios(size_t *num)
+const struct cros_gpio * __weak variant_cros_gpios(size_t *num)
 {
         *num = ARRAY_SIZE(cros_gpios);
         return cros_gpios;

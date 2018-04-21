@@ -23,6 +23,7 @@
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
 #include <chip.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
@@ -707,7 +708,7 @@ int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 	return GPE0_REG_MAX;
 }
 
-__attribute__((weak)) void acpi_mainboard_gnvs(global_nvs_t *gnvs)
+__weak void acpi_mainboard_gnvs(global_nvs_t *gnvs)
 {
 }
 

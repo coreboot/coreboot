@@ -17,6 +17,7 @@
 #include <bootmode.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <rules.h>
 #include <string.h>
 #include <vb2_api.h>
@@ -141,18 +142,18 @@ int vboot_recovery_mode_enabled(void)
 	return !!vboot_check_recovery_request();
 }
 
-int __attribute__((weak)) clear_recovery_mode_switch(void)
+int __weak clear_recovery_mode_switch(void)
 {
 	// Weak implementation. Nothing to do.
 	return 0;
 }
 
-void __attribute__((weak)) log_recovery_mode_switch(void)
+void __weak log_recovery_mode_switch(void)
 {
 	// Weak implementation. Nothing to do.
 }
 
-int __attribute__((weak)) get_recovery_mode_retrain_switch(void)
+int __weak get_recovery_mode_retrain_switch(void)
 {
 	return 0;
 }
@@ -175,12 +176,12 @@ int vboot_developer_mode_enabled(void)
  * TODO: Create flash protection interface which implements get_write_protect_state.
  * get_recovery_mode_switch should be implemented as default function.
  */
-int __attribute__((weak)) get_write_protect_state(void)
+int __weak get_write_protect_state(void)
 {
 	return 0;
 }
 
-int __attribute__((weak)) get_recovery_mode_switch(void)
+int __weak get_recovery_mode_switch(void)
 {
 	return 0;
 }

@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -21,7 +22,7 @@
 #include <soc/pci_devs.h>
 
 /* SoC Overrides */
-__attribute__((weak)) void graphics_soc_init(struct device *dev)
+__weak void graphics_soc_init(struct device *dev)
 {
 	/*
 	 * User needs to implement SoC override in case wishes

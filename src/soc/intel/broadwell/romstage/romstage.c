@@ -20,6 +20,7 @@
 #include <arch/cbfs.h>
 #include <arch/early_variables.h>
 #include <bootmode.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cbfs.h>
 #include <cbmem.h>
@@ -123,4 +124,4 @@ asmlinkage void romstage_after_car(void)
 		;
 }
 
-void __attribute__((weak)) mainboard_pre_console_init(void) {}
+void __weak mainboard_pre_console_init(void) {}

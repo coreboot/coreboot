@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <cpu/x86/tsc.h>
 #include <timestamp.h>
 
@@ -21,7 +22,7 @@ uint64_t timestamp_get(void)
 	return rdtscll();
 }
 
-unsigned long __attribute__((weak)) tsc_freq_mhz(void)
+unsigned long __weak tsc_freq_mhz(void)
 {
 	/* Default to not knowing TSC frequency. cbmem will have to fallback
 	 * on trying to determine it in userspace. */

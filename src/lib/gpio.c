@@ -15,6 +15,7 @@
 
 #include <assert.h>
 #include <base3.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <delay.h>
 #include <gpio.h>
@@ -168,13 +169,13 @@ int _gpio_base3_value(const gpio_t gpio[], int num_gpio, int binary_first)
 }
 
 /* Default handler for ACPI path is to return NULL */
-__attribute__((weak)) const char *gpio_acpi_path(gpio_t gpio)
+__weak const char *gpio_acpi_path(gpio_t gpio)
 {
 	return NULL;
 }
 
 /* Default handler returns 0 because type of gpio_t is unknown */
-__attribute__((weak)) uint16_t gpio_acpi_pin(gpio_t gpio)
+__weak uint16_t gpio_acpi_pin(gpio_t gpio)
 {
 	return 0;
 }

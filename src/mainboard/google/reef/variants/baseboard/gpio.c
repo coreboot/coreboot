@@ -16,6 +16,7 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
+#include <compiler.h>
 
 /*
  * Pad configuration in ramstage. The order largely follows the 'GPIO Muxing'
@@ -345,7 +346,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_73, UP_20K, DEEP),	 /* GP_CAMERASB11 */
 };
 
-const struct pad_config * __attribute__((weak)) variant_gpio_table(size_t *num)
+const struct pad_config * __weak variant_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
@@ -362,7 +363,7 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPIO_122, 0, DEEP),		 /* SIO_SPI_2_RXD */
 };
 
-const struct pad_config * __attribute__((weak))
+const struct pad_config * __weak
 variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
@@ -375,7 +376,7 @@ static const struct pad_config sleep_gpio_table[] = {
 	PAD_CFG_GPI_APIC_LOW(GPIO_20, NONE, DEEP),	/* NFC_INT_L */
 };
 
-const struct pad_config * __attribute__((weak))
+const struct pad_config * __weak
 variant_sleep_gpio_table(u8 slp_typ, size_t *num)
 {
 	*num = ARRAY_SIZE(sleep_gpio_table);
@@ -388,7 +389,7 @@ static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_PE_AH(PAD_N(GPIO_SHIP_MODE), GPIO_COMM_N_NAME),
 };
 
-const struct cros_gpio * __attribute__((weak)) variant_cros_gpios(size_t *num)
+const struct cros_gpio * __weak variant_cros_gpios(size_t *num)
 {
 	*num = ARRAY_SIZE(cros_gpios);
 	return cros_gpios;

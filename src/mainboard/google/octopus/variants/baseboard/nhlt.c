@@ -14,11 +14,12 @@
  */
 
 #include <baseboard/variants.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <nhlt.h>
 #include <soc/nhlt.h>
 
-void __attribute__((weak)) variant_nhlt_init(struct nhlt *nhlt)
+void __weak variant_nhlt_init(struct nhlt *nhlt)
 {
 	/* 2 Channel DMIC array. */
 	if (!nhlt_soc_add_dmic_array(nhlt, 2))

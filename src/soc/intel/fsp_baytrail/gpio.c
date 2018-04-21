@@ -14,6 +14,7 @@
  */
 
 #include <device/pci.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <soc/gpio.h>
 #include <soc/pmc.h>
@@ -245,7 +246,7 @@ void setup_soc_gpios(struct soc_gpio_config *config)
 
 }
 
-struct soc_gpio_config* __attribute__((weak)) mainboard_get_gpios(void)
+struct soc_gpio_config* __weak mainboard_get_gpios(void)
 {
 	printk(BIOS_DEBUG, "Default/empty GPIO config\n");
 	return NULL;

@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <fallback.h>
 #include <halt.h>
@@ -71,9 +72,9 @@ fail:
 	halt();
 }
 
-void __attribute__((weak)) stage_cache_add(int stage_id,
+void __weak stage_cache_add(int stage_id,
 						const struct prog *stage) {}
-void __attribute__((weak)) stage_cache_load_stage(int stage_id,
+void __weak stage_cache_load_stage(int stage_id,
 							struct prog *stage) {}
 
 static void ramstage_cache_invalid(void)
@@ -164,7 +165,7 @@ fail:
 static struct prog global_payload =
 	PROG_INIT(PROG_PAYLOAD, CONFIG_CBFS_PREFIX "/payload");
 
-void __attribute__((weak)) mirror_payload(struct prog *payload)
+void __weak mirror_payload(struct prog *payload)
 {
 }
 

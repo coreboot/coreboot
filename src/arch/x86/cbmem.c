@@ -14,17 +14,18 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <arch/acpi.h>
 
 #if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 
-void __attribute__((weak)) backup_top_of_low_cacheable(uintptr_t ramtop)
+void __weak backup_top_of_low_cacheable(uintptr_t ramtop)
 {
 	/* Do nothing. Chipset may have implementation to save ramtop in NVRAM.
 	 */
 }
 
-uintptr_t __attribute__((weak)) restore_top_of_low_cacheable(void)
+uintptr_t __weak restore_top_of_low_cacheable(void)
 {
 	return 0;
 }
@@ -43,7 +44,7 @@ void set_late_cbmem_top(uintptr_t ramtop)
 }
 
 /* Top of CBMEM is at highest usable DRAM address below 4GiB. */
-uintptr_t __attribute__((weak)) restore_cbmem_top(void)
+uintptr_t __weak restore_cbmem_top(void)
 {
 	if (IS_ENABLED(CONFIG_LATE_CBMEM_INIT) && ENV_ROMSTAGE)
 		if (!acpi_is_wakeup_s3())

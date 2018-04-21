@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -24,13 +25,13 @@
 /* SoC overrides */
 
 /* Common weak definition, needs to be implemented in each soc LPC driver. */
-__attribute__((weak)) void lpc_soc_init(struct device *dev)
+__weak void lpc_soc_init(struct device *dev)
 {
 	/* no-op */
 }
 
 /* Fill up LPC IO resource structure inside SoC directory */
-__attribute__((weak)) void pch_lpc_soc_fill_io_resources(struct device *dev)
+__weak void pch_lpc_soc_fill_io_resources(struct device *dev)
 {
 	/* no-op */
 }

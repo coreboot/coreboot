@@ -16,6 +16,7 @@
  */
 
 #include <arch/cbconfig.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <console/uart.h>
 #include <ip_checksum.h>
@@ -244,9 +245,9 @@ static inline void lb_vboot_handoff(struct lb_header *header) {}
 #endif /* CONFIG_VBOOT */
 #endif /* CONFIG_CHROMEOS */
 
-__attribute__((weak)) uint32_t board_id(void) { return UNDEFINED_STRAPPING_ID; }
-__attribute__((weak)) uint32_t ram_code(void) { return UNDEFINED_STRAPPING_ID; }
-__attribute__((weak)) uint32_t sku_id(void) { return UNDEFINED_STRAPPING_ID; }
+__weak uint32_t board_id(void) { return UNDEFINED_STRAPPING_ID; }
+__weak uint32_t ram_code(void) { return UNDEFINED_STRAPPING_ID; }
+__weak uint32_t sku_id(void) { return UNDEFINED_STRAPPING_ID; }
 
 static void lb_board_id(struct lb_header *header)
 {
@@ -441,7 +442,7 @@ static void lb_record_version_timestamp(struct lb_header *header)
 	rec->timestamp = coreboot_version_timestamp;
 }
 
-void __attribute__((weak)) lb_board(struct lb_header *header) { /* NOOP */ }
+void __weak lb_board(struct lb_header *header) { /* NOOP */ }
 
 /*
  * It's possible that the system is using a SPI flash as the boot device,
@@ -449,7 +450,7 @@ void __attribute__((weak)) lb_board(struct lb_header *header) { /* NOOP */ }
  * case don't provide any information as the correct information is
  * not known.
  */
-void __attribute__((weak)) lb_spi_flash(struct lb_header *header) { /* NOOP */ }
+void __weak lb_spi_flash(struct lb_header *header) { /* NOOP */ }
 
 static struct lb_forward *lb_forward(struct lb_header *header,
 	struct lb_header *next_header)

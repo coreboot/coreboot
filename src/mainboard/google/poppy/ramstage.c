@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <baseboard/variants.h>
 #include <soc/ramstage.h>
 
@@ -29,7 +30,7 @@ void mainboard_silicon_init_params(FSP_SIL_UPD *params)
 	gpio_configure_pads(pads, num);
 }
 
-void __attribute__((weak)) variant_devtree_update(void)
+void __weak variant_devtree_update(void)
 {
 	/* Override dev tree settings per board */
 }

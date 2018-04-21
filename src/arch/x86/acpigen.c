@@ -28,6 +28,7 @@
 #include <lib.h>
 #include <string.h>
 #include <arch/acpigen.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 
@@ -1504,28 +1505,28 @@ void acpigen_write_rom(void *bios, const size_t length)
 
 
 /* Soc-implemented functions -- weak definitions. */
-int __attribute__((weak)) acpigen_soc_read_rx_gpio(unsigned int gpio_num)
+int __weak acpigen_soc_read_rx_gpio(unsigned int gpio_num)
 {
 	printk(BIOS_ERR, "ERROR: %s not implemented\n", __func__);
 	acpigen_write_debug_string("read_rx_gpio not available");
 	return -1;
 }
 
-int __attribute__((weak)) acpigen_soc_get_tx_gpio(unsigned int gpio_num)
+int __weak acpigen_soc_get_tx_gpio(unsigned int gpio_num)
 {
 	printk(BIOS_ERR, "ERROR: %s not implemented\n", __func__);
 	acpigen_write_debug_string("get_tx_gpio not available");
 	return -1;
 }
 
-int __attribute__((weak)) acpigen_soc_set_tx_gpio(unsigned int gpio_num)
+int __weak acpigen_soc_set_tx_gpio(unsigned int gpio_num)
 {
 	printk(BIOS_ERR, "ERROR: %s not implemented\n", __func__);
 	acpigen_write_debug_string("set_tx_gpio not available");
 	return -1;
 }
 
-int __attribute__((weak)) acpigen_soc_clear_tx_gpio(unsigned int gpio_num)
+int __weak acpigen_soc_clear_tx_gpio(unsigned int gpio_num)
 {
 	printk(BIOS_ERR, "ERROR: %s not implemented\n", __func__);
 	acpigen_write_debug_string("clear_tx_gpio not available");

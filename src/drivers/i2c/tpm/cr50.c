@@ -31,6 +31,7 @@
 
 #include <arch/early_variables.h>
 #include <commonlib/endian.h>
+#include <compiler.h>
 #include <stdint.h>
 #include <string.h>
 #include <types.h>
@@ -58,7 +59,7 @@ struct tpm_inf_dev {
 
 static struct tpm_inf_dev g_tpm_dev CAR_GLOBAL;
 
-__attribute__((weak)) int tis_plat_irq_status(void)
+__weak int tis_plat_irq_status(void)
 {
 	static int warning_displayed CAR_GLOBAL;
 

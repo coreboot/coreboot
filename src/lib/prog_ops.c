@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <program_loading.h>
 
 /* For each segment of a program loaded this function is called*/
@@ -23,13 +24,13 @@ void prog_segment_loaded(uintptr_t start, size_t size, int flags)
 	arch_segment_loaded(start, size, flags);
 }
 
-void __attribute__((weak)) platform_segment_loaded(uintptr_t start,
+void __weak platform_segment_loaded(uintptr_t start,
 							size_t size, int flags)
 {
 	/* do nothing */
 }
 
-void __attribute__((weak)) arch_segment_loaded(uintptr_t start, size_t size,
+void __weak arch_segment_loaded(uintptr_t start, size_t size,
 						int flags)
 {
 	/* do nothing */
@@ -41,7 +42,7 @@ void prog_run(struct prog *prog)
 	arch_prog_run(prog);
 }
 
-void __attribute__((weak)) platform_prog_run(struct prog *prog)
+void __weak platform_prog_run(struct prog *prog)
 {
 	/* do nothing */
 }

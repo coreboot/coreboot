@@ -14,6 +14,7 @@
 
 #include <assert.h>
 #include <bootmode.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/i2c_simple.h>
@@ -74,7 +75,7 @@ void verstage_mainboard_init(void)
 	reg_script_run(script);
 }
 
-void __attribute__((weak)) vboot_platform_prepare_reboot(void)
+void __weak vboot_platform_prepare_reboot(void)
 {
 	const struct reg_script *script;
 

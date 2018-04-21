@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <smbios.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <version.h>
 #include <device/device.h>
@@ -330,7 +331,7 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	return t->length + smbios_string_table_len(t->eos);
 }
 
-const char *__attribute__((weak)) smbios_mainboard_bios_version(void)
+const char *__weak smbios_mainboard_bios_version(void)
 {
 	if (strlen(CONFIG_LOCALVERSION))
 		return CONFIG_LOCALVERSION;
@@ -397,53 +398,53 @@ static int smbios_write_type0(unsigned long *current, int handle)
 
 #if !IS_ENABLED(CONFIG_SMBIOS_PROVIDED_BY_MOBO)
 
-const char *__attribute__((weak)) smbios_mainboard_serial_number(void)
+const char *__weak smbios_mainboard_serial_number(void)
 {
 	return CONFIG_MAINBOARD_SERIAL_NUMBER;
 }
 
-const char *__attribute__((weak)) smbios_mainboard_version(void)
+const char *__weak smbios_mainboard_version(void)
 {
 	return CONFIG_MAINBOARD_VERSION;
 }
 
-const char *__attribute__((weak)) smbios_mainboard_manufacturer(void)
+const char *__weak smbios_mainboard_manufacturer(void)
 {
 	return CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
 }
 
-const char *__attribute__((weak)) smbios_mainboard_product_name(void)
+const char *__weak smbios_mainboard_product_name(void)
 {
 	return CONFIG_MAINBOARD_SMBIOS_PRODUCT_NAME;
 }
 
-void __attribute__((weak)) smbios_mainboard_set_uuid(u8 *uuid)
+void __weak smbios_mainboard_set_uuid(u8 *uuid)
 {
 	/* leave all zero */
 }
 #endif
 
-const char *__attribute__((weak)) smbios_mainboard_asset_tag(void)
+const char *__weak smbios_mainboard_asset_tag(void)
 {
 	return "";
 }
 
-u8 __attribute__((weak)) smbios_mainboard_feature_flags(void)
+u8 __weak smbios_mainboard_feature_flags(void)
 {
 	return 0;
 }
 
-const char *__attribute__((weak)) smbios_mainboard_location_in_chassis(void)
+const char *__weak smbios_mainboard_location_in_chassis(void)
 {
 	return "";
 }
 
-smbios_board_type __attribute__((weak)) smbios_mainboard_board_type(void)
+smbios_board_type __weak smbios_mainboard_board_type(void)
 {
 	return SMBIOS_BOARD_TYPE_UNKNOWN;
 }
 
-const char *__attribute__((weak)) smbios_mainboard_sku(void)
+const char *__weak smbios_mainboard_sku(void)
 {
 	return "";
 }

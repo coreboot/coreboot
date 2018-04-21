@@ -18,6 +18,7 @@
 #include <arch/smp/mpspec.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <cpu/intel/reset.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/msr.h>
@@ -100,7 +101,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return acpi_madt_irq_overrides(current);
 }
 
-__attribute__ ((weak)) void soc_fill_fadt(acpi_fadt_t *fadt)
+__weak void soc_fill_fadt(acpi_fadt_t *fadt)
 {
 }
 
@@ -173,7 +174,7 @@ unsigned long southbridge_write_acpi_tables(device_t device,
 	return acpi_write_hpet(device, current, rsdp);
 }
 
-__attribute__ ((weak))
+__weak
 uint32_t acpi_fill_soc_wake(uint32_t generic_pm1_en,
 			    const struct chipset_power_state *ps)
 {
@@ -219,7 +220,7 @@ static int acpi_fill_wake(uint32_t *pm1, uint32_t **gpe0)
 	return GPE0_REG_MAX;
 }
 
-__attribute__ ((weak)) void acpi_create_gnvs(struct global_nvs_t *gnvs)
+__weak void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {
 }
 
@@ -401,7 +402,7 @@ void generate_t_state_entries(int core, int cores_per_package)
 	acpigen_write_TSS_package(entries, soc_tss_table);
 }
 
-__attribute__ ((weak)) void soc_power_states_generation(int core_id,
+__weak void soc_power_states_generation(int core_id,
 						int cores_per_package)
 {
 }

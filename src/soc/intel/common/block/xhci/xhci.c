@@ -14,13 +14,14 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
 #include <intelblocks/xhci.h>
 
-__attribute__((weak)) void soc_xhci_init(struct device *dev) { /* no-op */ }
+__weak void soc_xhci_init(struct device *dev) { /* no-op */ }
 
 static struct device_operations usb_xhci_ops = {
 	.read_resources		= &pci_dev_read_resources,

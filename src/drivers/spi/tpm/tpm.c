@@ -17,6 +17,7 @@
 
 #include <arch/early_variables.h>
 #include <assert.h>
+#include <compiler.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
 #include <delay.h>
@@ -64,7 +65,7 @@ void tpm2_get_info(struct tpm2_info *info)
 	*info = car_get_var(g_tpm_info);
 }
 
-__attribute__((weak)) int tis_plat_irq_status(void)
+__weak int tis_plat_irq_status(void)
 {
 	static int warning_displayed CAR_GLOBAL;
 

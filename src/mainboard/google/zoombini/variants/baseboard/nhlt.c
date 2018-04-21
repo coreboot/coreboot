@@ -14,11 +14,12 @@
  */
 
 #include <baseboard/variants.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <nhlt.h>
 #include <soc/nhlt.h>
 
-void __attribute__((weak)) variant_nhlt_init(struct nhlt *nhlt)
+void __weak variant_nhlt_init(struct nhlt *nhlt)
 {
 	/* 1-dmic configuration */
 	if (IS_ENABLED(CONFIG_NHLT_DMIC_1CH_16B) &&

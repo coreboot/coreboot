@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <amdblocks/agesawrapper.h>
 #include <variant/gpio.h>
 #include <boardid.h>
@@ -236,7 +237,7 @@ static const PCIe_COMPLEX_DESCRIPTOR PcieNoBayhub = {
  *
  **/
 /*---------------------------------------------------------------------------*/
-VOID __attribute__((weak)) OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly)
+VOID __weak OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly)
 {
 	InitEarly->GnbConfig.PcieComplexList = (void *)&PcieComplex;
 	InitEarly->PlatformConfig.GnbAzI2sBusSelect = GnbAcpI2sBus;

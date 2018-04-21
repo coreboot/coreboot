@@ -62,7 +62,6 @@ vec8:
 	/* error code */
 	push	$8 /* vector */
 	jmp	int_hand
-	.word	0x9090
 
 vec9:
 	push	$0 /* error code */
@@ -73,31 +72,26 @@ vec10:
 	/* error code */
 	push	$10 /* vector */
 	jmp	int_hand
-	.word	0x9090
 
 vec11:
 	/* error code */
 	push	$11 /* vector */
 	jmp	int_hand
-	.word	0x9090
 
 vec12:
 	/* error code */
 	push	$12 /* vector */
 	jmp	int_hand
-	.word	0x9090
 
 vec13:
 	/* error code */
 	push	$13 /* vector */
 	jmp	int_hand
-	.word	0x9090
 
 vec14:
 	/* error code */
 	push	$14 /* vector */
 	jmp	int_hand
-	.word	0x9090
 
 vec15:
 	push	$0 /* error code */
@@ -113,7 +107,6 @@ vec17:
 	/* error code */
 	push	$17 /* vector */
 	jmp	int_hand
-	.word	0x9090
 
 vec18:
 	push	$0 /* error code */

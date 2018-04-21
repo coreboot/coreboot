@@ -172,9 +172,16 @@ int_hand:
 	pushl	%ecx
 	pushl	%eax
 
-	pushl	%esp	/* Pointer to structure on the stack */
+	/* Save pointer to eregs structure */
+	movl	%esp, %ebp
+	/* Align stack to 16 bytes. */
+	andl	$0xfffffff0, %esp
+	/* Save original stack pointer while keeping stack alignment. This
+	   value is also the eregs argument x86_exception(). */
+	sub	$12, %esp
+	pushl	%ebp	/* Pointer to structure on the stack */
 	call	x86_exception
-	pop	%eax	/* Drop the pointer */
+	pop	%esp	/* Unwind the stack alignment and argument passing. */
 
 	popl	%eax
 	popl	%ecx

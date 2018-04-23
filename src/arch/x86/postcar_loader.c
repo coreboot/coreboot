@@ -167,6 +167,9 @@ void run_postcar_phase(struct postcar_frame *pcf)
 	if (!IS_ENABLED(CONFIG_NO_STAGE_CACHE) &&
 				romstage_handoff_is_resume()) {
 		stage_cache_load_stage(STAGE_POSTCAR, &prog);
+		/* This is here to allow platforms to pass different stack
+		   parameters between S3 resume and normal boot. On the
+		   platforms where the values are the same it's a nop. */
 		finalize_load(prog.arg, pcf->stack);
 	} else
 		load_postcar_cbfs(&prog, pcf);

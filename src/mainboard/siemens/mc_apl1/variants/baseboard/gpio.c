@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2016 Google Inc.
- * Copyright (C) 2017 Siemens AG
+ * Copyright (C) 2017-2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,10 +14,9 @@
  * GNU General Public License for more details.
  */
 
-#include <soc/gpio.h>
 #include <commonlib/helpers.h>
 #include <compiler.h>
-#include "brd_gpio.h"
+#include <baseboard/variants.h>
 
 /*
  * Pad configuration in ramstage. The order largely follows the 'GPIO Muxing'
@@ -364,7 +363,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(SVID0_CLK, UP_20K, DEEP, NF1),	/* SVID0_CLK */
 };
 
-const struct pad_config *__weak brd_gpio_table(size_t *num)
+const struct pad_config *__weak variant_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
@@ -408,7 +407,7 @@ static const struct pad_config early_gpio_table[] = {
 };
 
 const struct pad_config *__weak
-brd_early_gpio_table(size_t *num)
+variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;

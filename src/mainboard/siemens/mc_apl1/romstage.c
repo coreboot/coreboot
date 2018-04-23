@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2016 Google Inc.
- * Copyright (C) 2017 Siemens AG
+ * Copyright (C) 2017-2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 #include <soc/romstage.h>
 #include <fsp/api.h>
 #include <FspmUpd.h>
-#include "brd_gpio.h"
+#include <baseboard/variants.h>
 
 static const uint8_t Ch0_Bit_swizzling[] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -55,7 +55,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	size_t num;
 
 	/* setup early gpio before memory */
-	pads = brd_early_gpio_table(&num);
+	pads = variant_early_gpio_table(&num);
 	gpio_configure_pads(pads, num);
 
 	/* Get DRAM configuration data from hwinfo block.

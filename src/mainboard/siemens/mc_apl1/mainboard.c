@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2016 Google Inc.
- * Copyright (C) 2017 Siemens AG
+ * Copyright (C) 2017-2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #include <bootstate.h>
 #include <timer.h>
 #include <timestamp.h>
-#include "brd_gpio.h"
+#include <baseboard/variants.h>
 #include "ptn3460.h"
 
 #define MAX_PATH_DEPTH		12
@@ -194,7 +194,7 @@ static void mainboard_init(void *chip_info)
 	const struct pad_config *pads;
 	size_t num;
 
-	pads = brd_gpio_table(&num);
+	pads = variant_gpio_table(&num);
 	gpio_configure_pads(pads, num);
 
 	config_pmic_imon();

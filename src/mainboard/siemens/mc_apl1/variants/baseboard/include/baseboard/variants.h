@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015-2016 Intel Corporation. All Rights Reserved.
- * Copyright (C) 2017 Siemens AG
+ * Copyright (C) 2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _BRD_GPIO_H_
-#define _BRD_GPIO_H_
+#ifndef _BASEBOARD_VARIANTS_H_
+#define _BASEBOARD_VARIANTS_H_
 
 #include <soc/gpio.h>
 
@@ -23,7 +23,7 @@
  * The next set of functions return the gpio table and fill in the number of
  * entries for each table.
  */
-const struct pad_config *brd_gpio_table(size_t *num);
-const struct pad_config *brd_early_gpio_table(size_t *num);
+const struct pad_config *variant_gpio_table(size_t *num);
+const struct pad_config *variant_early_gpio_table(size_t *num);
 
-#endif /* _BRD_GPIO_H_ */
+#endif /* _BASEBOARD_VARIANTS_H_ */

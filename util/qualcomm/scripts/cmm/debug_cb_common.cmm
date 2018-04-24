@@ -1,0 +1,243 @@
+;============================================================================
+;##
+;## This file is part of the coreboot project.
+;##
+;## Copyright (C) 2018, The Linux Foundation.  All rights reserved.
+;##
+;## This program is free software; you can redistribute it and/or modify
+;## it under the terms of the GNU General Public License version 2 and
+;## only version 2 as published by the Free Software Foundation.
+;##
+;## This program is distributed in the hope that it will be useful,
+;## but WITHOUT ANY WARRANTY; without even the implied warranty of
+;## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;## GNU General Public License for more details.
+;##
+;============================================================================
+;  Name:
+;    debug_cb_common.cmm
+;
+;  Description:
+;     Debug coreboot Environment
+;============================================================================
+
+;============================================================================
+;  CMM script variables
+;============================================================================
+
+LOCAL &BBStage			// Bootblock   Stage stop?
+LOCAL &VERStage			// Verify      Stage stop?
+LOCAL &ROMStage			// Rom         Stage stop?
+LOCAL &QCLStage			// QCL         Stage stop?
+LOCAL &RAMStage			// Ram         Stage stop?
+LOCAL &BL31Stage		// BL31        Stage stop?
+LOCAL &DCStage			// Depthcharge Stage stop?
+
+LOCAL &KernelSyms		// Load Kernel Symbols?
+
+LOCAL &RAMLoad			// T32 Load Code?
+
+;============================================================================
+
+;---------------------------------------------------
+; Entry point
+;---------------------------------------------------
+ENTRY &TargetPkg &srcpath &xblsrcpath &ImageName
+
+  // Parse for RAMLoad first
+  if (STR.CP("&ImageName","RAM,*"))
+  (
+    &RAMLoad=TRUE()
+    &ImageName=STR.CUT("&ImageName",4)
+  )
+  else
+    &RAMLoad=FALSE()
+
+  // Parse &ImageName the easy way
+  if (STR.CP("&ImageName","*ALL*"))
+  (
+    &BBStage=TRUE()
+    &VERStage=TRUE()
+    &ROMStage=TRUE()
+    &QCLStage=TRUE()
+    &RAMStage=TRUE()
+    ;&BL31Stage=TRUE()
+    &DCStage=TRUE()
+    &KernelSyms=STRING.CP("&ImageName", "*KERNEL*")
+  )
+  else
+  (
+    &BBStage=STRING.CP("&ImageName","*BB*")
+    &VERStage=STRING.CP("&ImageName","*VER*")
+    &ROMStage=STRING.CP("&ImageName","*ROM*")
+    &QCLStage=STRING.CP("&ImageName","*QCL*")
+    &RAMStage=STRING.CP("&ImageName","*RAM*")
+    &BL31Stage=STRING.CP("&ImageName","*BL31*")
+    &DCStage=STRING.CP("&ImageName","*DC*")
+    &KernelSyms=STRING.CP("&ImageName", "*KERNEL*")
+  )
+
+  PRINT %String "Debug Script: debug_cb_common.cmm"
+  PRINT %String "Images to debug: &ImageName"
+  PRINT %String "Loading Kernel Symbols: &KernelSyms"
+  PRINT %String "RAMLoad Requested: &RAMLoad"
+  PRINT %String "BootBlock   Entry Addr: &BBEntryAddr"
+  PRINT %String "VerStage    Entry Addr: &VEREntryAddr"
+  PRINT %String "RomStage    Entry Addr: &ROMEntryAddr"
+  PRINT %String "QCLStage    Entry Addr: &QCLEntryAddr"
+  PRINT %String "RamStage    Entry Addr: &RAMEntryAddr"
+  PRINT %String "BL31        Entry Addr: &BL31EntryAddr"
+  PRINT %String "DepthCharge Entry Addr: &DCEntryAddr"
+  PRINT %String "Kernel      Entry Addr: &KernelEntryAddr"
+  PRINT %String "PreRamCbfsCache:        &PreRamCbfsCache"
+  PRINT %String "PreRamConsoleAddr:      &PreRamConsoleAddr"
+  PRINT %String "VBoot2Work:             &VBoot2Work"
+  PRINT %String "Stack:                  &Stack"
+  PRINT %String "Ttb:                    &Ttb"
+  PRINT %String "Timestamp               &Timestamp"
+  PRINT %String "RamConsoleAddr          &RamConsoleAddr"
+  PRINT %String "CbmemTop                &CbmemTop"
+  PRINT %String "PostRamCbfsCache        &PostRamCbfsCache"
+
+  // HW at BB entry, first stop: bootblock
+  ////////////////////////////////////////
+
+  if &BBStage
+  (
+    &imgpath="build\cbfs\fallback\bootblock.elf"
+    if (&RAMLoad)
+      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath
+    else
+      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath /nocode
+
+    ;uncomment b.s if not simulating (CONFIG_SOC_SIMULATE)
+    ;b.s run_romstage /o
+    ;d.set &PreRamConsoleAddr++0x8000 0
+    d.dump &PreRamConsoleAddr /spotlight
+    print %String "Now the control is in BootBlock, press enter after debugging to go to next stage"
+    print %String "Press enter to go to next stage"
+    enter
+  )
+
+  go &VEREntryAddr
+  wait !run()
+
+  if &VERStage
+  (
+    &imgpath="build\cbfs\fallback\verstage.elf"
+    if (&RAMLoad)
+      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath /noclear
+    else
+      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath /nocode /noclear
+
+    print %String "Now the control is in VERStage, press enter after debugging to go to next stage"
+    print %String "Press enter to go to next stage"
+    enter
+  )
+
+  go &ROMEntryAddr
+  wait !run()
+
+  if &ROMStage
+  (
+    &imgpath="build\cbfs\fallback\romstage.elf"
+    if (&RAMLoad)
+      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath
+    else
+      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath /nocode
+
+    print %String "Now the control is in ROMStage, press enter after debugging to go to next stage"
+    print %String "Press enter to go to next stage"
+    enter
+  )
+
+;  go &QCLEntryAddr
+;  wait !run()
+;
+;  if &QCLStage
+;  (
+;    &imgpath="3rdparty\blobs\soc\qualcomm\sdm845\QcLib.elf"
+;    if (&RAMLoad)
+;      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath /noclear
+;    else
+;      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath /nocode /noclear
+;
+;    print %String "Now the control is in QCLStage, press enter after debugging to go to next stage"
+;    print %String "Press enter to go to next stage"
+;    enter
+;  )
+
+  go &RAMEntryAddr
+  wait !run()
+
+  if &RAMStage
+  (
+    &imgpath="build\cbfs\fallback\ramstage.elf"
+    if (&RAMLoad)
+      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath
+    else
+      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath /nocode
+    print %String "Now the control is in RAMStage, press enter after debugging to go to next stage"
+    print %String "Press enter to go to next stage"
+    enter
+  )
+
+; BL31 disabled for now
+; Next block of code commented out
+;  go &BL31EntryAddr
+;  wait !run()
+;
+;  if &BL31Stage
+;  (
+;    &imgpath="build\bl31.elf"
+;    if (&RAMLoad)
+;      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath
+;    else
+;      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath /nocode
+;    y.spath.srd 3rdparty/arm-trusted-firmware
+;    print %String "Now the control is in BL31, press enter after debugging to go to next stage"
+;    print %String "Press enter to go to next stage"
+;    enter
+;  )
+; End of commented out code block: bl31
+
+  go &DCEntryAddr
+  wait !run()
+
+  if &DCStage
+  (
+    &imgpath="payloads\external\depthcharge\depthcharge\build\depthcharge.elf"
+    symbol.sourcepath.setbasedir &srcpath\payloads
+    if (&RAMLoad)
+      d.load.elf &imgpath /strippart "payloads" /sourcepath &srcpath
+    else
+      d.load.elf &imgpath /strippart "payloads" /sourcepath &srcpath /nocode
+    b.d /all
+    b.set main
+    b.set halt
+    b.set &KernelEntryAddr	; kernel entry point
+    y.spath.srd + payloads/external/depthcharge/depthcharge
+    y.spath.srd + 3rdparty\vboot_reference
+    d.dump &RamConsoleAddr /spotlight
+    &CBTablePtr=Register(X0)
+    Data.SAVE.Binary CBTablePtr.bin &CBTablePtr++0x400
+    print %String "Now the control is in Depthcharge, press enter after debugging to run free"
+    ;print %String "Use this command to load kernel symbols:  d.load.elf vmlinux /nocode /strippart kernel"
+    print %String "Press enter when done debugging Depthcharge"
+    enter
+  )
+
+;  go &KernelEntryAddr
+;  wait !run()
+;
+;  if &KernelSyms
+;  (
+;    print %String "Kernel Symbols are being loaded, this requires two files in coreboot root tree:"
+;    print %String "vmlinux needs to be copied from ChromiumOS build tree"
+;    print %String "msm-4.4 needs to be symbolic link to kernel source tree"
+;    d.load.elf vmlinux /strippart "msm-4.4" /nocode
+;    y.spath.srd msm-4.4
+;    print %String "This script now concludes at kernel entry point"
+;  )
+
+  enddo

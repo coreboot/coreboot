@@ -45,6 +45,11 @@ config TIMER_IPQ40XX
 	  This is the timer driver for QCA IPQ40xx based
 	  platforms.
 
+config TIMER_ARM64_ARCH
+	bool "Architecture Timer for ARM64 platforms"
+	help
+	  The cntfrq register needs to have been pre-initialized.
+
 config TIMER_RK3288
 	bool "Timer for Rockchip RK3288"
 

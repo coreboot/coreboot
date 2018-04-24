@@ -28,6 +28,7 @@ config DEVICETREE
 	default "variants/atlas/devicetree.cb" if BOARD_GOOGLE_ATLAS
 	default "variants/nami/devicetree.cb" if BOARD_GOOGLE_NAMI
 	default "variants/nautilus/devicetree.cb" if BOARD_GOOGLE_NAUTILUS
+	default "variants/nocturne/devicetree.cb" if BOARD_GOOGLE_NOCTURNE
 	default "variants/soraka/devicetree.cb" if BOARD_GOOGLE_SORAKA
 	default "variants/baseboard/devicetree.cb"
 
@@ -50,6 +51,7 @@ config GBB_HWID
 	default "POPPY TEST 8294" if BOARD_GOOGLE_POPPY
 	default "NAMI TEST 1669" if BOARD_GOOGLE_NAMI
 	default "NAUTILUS TEST 3013" if BOARD_GOOGLE_NAUTILUS
+	default "NOCTURNE TEST 3421" if BOARD_GOOGLE_NOCTURNE
 	default "SORAKA TEST 1869" if BOARD_GOOGLE_SORAKA
 
 config INCLUDE_NHLT_BLOBS
@@ -77,6 +79,12 @@ config INCLUDE_NHLT_BLOBS_NAMI
 	select NHLT_DMIC_4CH
 	select NHLT_MAX98357
 
+config INCLUDE_NHLT_BLOBS_NOCTURNE
+	bool "Include blobs for nocturne audio."
+	select NHLT_DA7219
+	select NHLT_DMIC_2CH
+	select NHLT_MAX98373
+
 config MAINBOARD_DIR
 	string
 	default "google/poppy"
@@ -87,6 +95,7 @@ config MAINBOARD_FAMILY
 	default "Google_Poppy" if BOARD_GOOGLE_POPPY
 	default "Google_Nami" if BOARD_GOOGLE_NAMI
 	default "Google_Nautilus" if BOARD_GOOGLE_NAUTILUS
+	default "Google_Nocturne" if BOARD_GOOGLE_NOCTURNE
 	default "Google_Soraka" if BOARD_GOOGLE_SORAKA
 
 config MAINBOARD_PART_NUMBER
@@ -95,6 +104,7 @@ config MAINBOARD_PART_NUMBER
 	default "Poppy" if BOARD_GOOGLE_POPPY
 	default "Nami" if BOARD_GOOGLE_NAMI
 	default "Nautilus" if BOARD_GOOGLE_NAUTILUS
+	default "Nocturne" if BOARD_GOOGLE_NOCTURNE
 	default "Soraka" if BOARD_GOOGLE_SORAKA
 
 config MAX_CPUS
@@ -111,6 +121,7 @@ config VARIANT_DIR
 	default "poppy" if BOARD_GOOGLE_POPPY
 	default "nami" if BOARD_GOOGLE_NAMI
 	default "nautilus" if BOARD_GOOGLE_NAUTILUS
+	default "nocturne" if BOARD_GOOGLE_NOCTURNE
 	default "soraka" if BOARD_GOOGLE_SORAKA
 
 # Select this option to enable use of cr50 I2C TPM on the variant.
@@ -168,6 +179,15 @@ config VARIANT_SPECIFIC_OPTIONS_NAUTILUS
 	select DRIVERS_PS2_KEYBOARD
 	select VARIANT_HAS_CAMERA_ACPI
 	select VARIANT_HAS_I2C_TPM if !VBOOT_MOCK_SECDATA
+
+config VARIANT_SPECIFIC_OPTIONS_NOCTURNE
+	def_bool n
+	select CHROMEOS_WIFI_SAR if CHROMEOS
+	select DRIVERS_I2C_MAX98373
+	select DRIVERS_I2C_DA7219
+	select DRIVERS_SPI_ACPI
+	select EXCLUDE_NATIVE_SD_INTERFACE
+	select VARIANT_HAS_SPI_TPM if !VBOOT_MOCK_SECDATA
 
 config VARIANT_SPECIFIC_OPTIONS_SORAKA
 	def_bool n

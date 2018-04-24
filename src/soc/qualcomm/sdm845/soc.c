@@ -13,12 +13,17 @@
  * GNU General Public License for more details.
  */
 
+#include <symbols.h>
 #include <device/device.h>
 #include <timestamp.h>
+#include <soc/mmu.h>
+#include <soc/symbols.h>
 
 static void soc_read_resources(device_t dev)
 {
-
+	ram_resource(dev, 0, (uintptr_t)_dram / KiB, DRAMSIZE4GB / KiB);
+	reserved_ram_resource(dev, 1, (uintptr_t)_dram_reserved / KiB,
+				_dram_reserved_size / KiB);
 }
 
 static void soc_init(device_t dev)

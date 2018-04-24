@@ -26,4 +26,8 @@ extern u8 _bsram[];
 extern u8 _ebsram[];
 #define _bsram_size (_ebsram - _bsram)
 
+extern u8 _dram_reserved[];
+extern u8 _edram_reserved[];
+#define _dram_reserved_size (_edram_reserved - _dram_reserved)
+
 #endif // _SOC_QUALCOMM_SDM845_SYMBOLS_H_

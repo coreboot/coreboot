@@ -45,6 +45,7 @@ $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
 bootblock-y += boot.c
 bootblock-y += eabi_compat.c
+bootblock-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 bootblock-y += transition.c transition_asm.S
 
 bootblock-y += memset.S
@@ -72,6 +73,7 @@ $(objcbfs)/verstage.debug: $$(verstage-objs)
 verstage-y += boot.c
 verstage-y += div0.c
 verstage-y += eabi_compat.c
+verstage-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 verstage-y += memset.S
 verstage-y += memcpy.S
 verstage-y += memmove.S
@@ -89,6 +91,7 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM64),y)
 romstage-y += boot.c
 romstage-y += div0.c
 romstage-y += eabi_compat.c
+romstage-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 romstage-y += memset.S
 romstage-y += memcpy.S
 romstage-y += memmove.S
@@ -115,6 +118,7 @@ ramstage-y += div0.c
 ramstage-y += eabi_compat.c
 ramstage-y += boot.c
 ramstage-y += tables.c
+ramstage-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 ramstage-y += memset.S
 ramstage-y += memcpy.S
 ramstage-y += memmove.S
@@ -125,6 +129,7 @@ rmodules_arm64-y += memset.S
 rmodules_arm64-y += memcpy.S
 rmodules_arm64-y += memmove.S
 rmodules_arm64-y += eabi_compat.c
+rmodules_arm64-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 

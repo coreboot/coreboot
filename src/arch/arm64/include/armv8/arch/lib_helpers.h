@@ -557,6 +557,7 @@ uint64_t raw_read_vbar(uint32_t el);
 void raw_write_vbar(uint64_t vbar, uint32_t el);
 uint32_t raw_read_cntfrq_el0(void);
 void raw_write_cntfrq_el0(uint32_t cntfrq_el0);
+uint64_t raw_read_cntpct_el0(void);
 
 /* Cache maintenance system instructions */
 void dccisw(uint64_t cisw);

@@ -1059,3 +1059,11 @@ void raw_write_cntfrq_el0(uint32_t cntfrq_el0)
 {
 	__asm__ __volatile__("msr CNTFRQ_EL0, %0\n\t" : : "r" ((uint64_t)cntfrq_el0) : "memory");
 }
+
+uint64_t raw_read_cntpct_el0(void)
+{
+	uint64_t cntpct_el0;
+
+	__asm__ __volatile__("mrs %0, CNTPCT_EL0\n\t" : "=r" (cntpct_el0) : : "memory");
+	return cntpct_el0;
+}

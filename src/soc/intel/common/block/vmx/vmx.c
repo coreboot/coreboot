@@ -43,7 +43,7 @@ static int soc_vmx_enabled(void)
 	return vmx_param ? vmx_param->enable : 0;
 }
 
-void vmx_configure(void)
+void vmx_configure(void *unused)
 {
 	msr_t msr;
 	struct cpuid_result regs;

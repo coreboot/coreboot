@@ -219,7 +219,7 @@ void cpu_disable_eist(void)
  * Set Bit 6 (ENABLE_IA_UNTRUSTED_MODE) of MSR 0x120
  * UCODE_PCR_POWER_MISC MSR to enter IA Untrusted Mode.
  */
-void cpu_enable_untrusted_mode(void)
+void cpu_enable_untrusted_mode(void *unused)
 {
 	msr_t msr;
 

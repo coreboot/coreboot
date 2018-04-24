@@ -126,10 +126,10 @@ int mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops);
  *
  * All functions return < 0 on error, 0 on success.
  */
-int mp_run_on_aps(void (*func)(void), long expire_us);
+int mp_run_on_aps(void (*func)(void *), void *arg, long expire_us);
 
 /* Like mp_run_on_aps() but also runs func on BSP. */
-int mp_run_on_all_cpus(void (*func)(void), long expire_us);
+int mp_run_on_all_cpus(void (*func)(void *), void *arg, long expire_us);
 
 /*
  * Park all APs to prepare for OS boot. This is handled automatically

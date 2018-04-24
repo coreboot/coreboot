@@ -201,7 +201,7 @@ static int is_prmrr_approved(void)
 	return 0;
 }
 
-void sgx_configure(void)
+void sgx_configure(void *unused)
 {
 	const void *microcode_patch = intel_mp_current_microcode();
 

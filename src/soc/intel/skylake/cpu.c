@@ -477,9 +477,9 @@ static void post_mp_init(void)
 	smm_lock();
 #endif
 
-	mp_run_on_all_cpus(vmx_configure, 2000);
+	mp_run_on_all_cpus(vmx_configure, NULL, 2000);
 
-	mp_run_on_all_cpus(sgx_configure, 2000);
+	mp_run_on_all_cpus(sgx_configure, NULL, 2000);
 }
 
 static const struct mp_ops mp_ops = {

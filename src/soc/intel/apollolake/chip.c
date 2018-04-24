@@ -607,7 +607,7 @@ struct chip_operations soc_intel_apollolake_ops = {
 static void drop_privilege_all(void)
 {
 	/* Drop privilege level on all the CPUs */
-	if (mp_run_on_all_cpus(&cpu_enable_untrusted_mode, 1000) < 0)
+	if (mp_run_on_all_cpus(&cpu_enable_untrusted_mode, NULL, 1000) < 0)
 		printk(BIOS_ERR, "failed to enable untrusted mode\n");
 }
 

@@ -41,7 +41,8 @@
 #define MAX_APIC_IDS 256
 
 struct mp_callback {
-	void (*func)(void);
+	void (*func)(void *);
+	void *arg;
 };
 
 /*
@@ -191,7 +192,7 @@ static void ap_do_flight_plan(void)
 	}
 }
 
-static void park_this_cpu(void)
+static void park_this_cpu(void *unused)
 {
 	stop_this_cpu();
 }
@@ -222,7 +223,7 @@ static void asmlinkage ap_init(unsigned int cpu)
 	ap_do_flight_plan();
 
 	/* Park the AP. */
-	park_this_cpu();
+	park_this_cpu(NULL);
 }
 
 static void setup_default_sipi_vector_params(struct sipi_params *sp)
@@ -941,21 +942,22 @@ static void ap_wait_for_instruction(void)
 		memcpy(&lcb, cb, sizeof(lcb));
 		mfence();
 		store_callback(per_cpu_slot, NULL);
-		lcb.func();
+		lcb.func(lcb.arg);
 	}
 }
 
-int mp_run_on_aps(void (*func)(void), long expire_us)
+int mp_run_on_aps(void (*func)(void *), void *arg, long expire_us)
 {
-	struct mp_callback lcb = { .func = func };
+	struct mp_callback lcb = { .func = func, .arg = arg };
 	return run_ap_work(&lcb, expire_us);
 }
 
-int mp_run_on_all_cpus(void (*func)(void), long expire_us)
+int mp_run_on_all_cpus(void (*func)(void *), void *arg, long expire_us)
 {
 	/* Run on BSP first. */
-	func();
-	return mp_run_on_aps(func, expire_us);
+	func(arg);
+
+	return mp_run_on_aps(func, arg, expire_us);
 }
 
 int mp_park_aps(void)
@@ -966,7 +968,7 @@ int mp_park_aps(void)
 
 	stopwatch_init(&sw);
 
-	ret = mp_run_on_aps(park_this_cpu, 250 * USECS_PER_MSEC);
+	ret = mp_run_on_aps(park_this_cpu, NULL, 250 * USECS_PER_MSEC);
 
 	duration_msecs = stopwatch_duration_msecs(&sw);
 

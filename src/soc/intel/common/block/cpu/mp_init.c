@@ -130,10 +130,15 @@ static void init_cpus(void *unused)
 	soc_init_cpus(dev->link_list);
 }
 
+static void wrapper_x86_setup_mtrrs(void *unused)
+{
+	x86_setup_mtrrs_with_detect();
+}
+
 /* Ensure to re-program all MTRRs based on DRAM resource settings */
 static void post_cpus_init(void *unused)
 {
-	if (mp_run_on_all_cpus(&x86_setup_mtrrs_with_detect, 1000) < 0)
+	if (mp_run_on_all_cpus(&wrapper_x86_setup_mtrrs, NULL, 1000) < 0)
 		printk(BIOS_ERR, "MTRR programming failure\n");
 
 	x86_mtrr_check();

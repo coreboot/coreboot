@@ -38,7 +38,7 @@ void prmrr_core_configure(void);
 /*
  * Configure SGX.
  */
-void sgx_configure(void);
+void sgx_configure(void *unused);
 
 /* SOC specific API to get SGX params.
  * returns 0, if able to get SGX params; otherwise returns -1 */

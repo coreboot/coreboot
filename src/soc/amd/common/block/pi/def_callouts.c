@@ -192,7 +192,7 @@ static struct agesa_data {
  * BSP deploys APs to callout_ap_entry(), which calls
  * agesawrapper_amdlaterunaptask with the agesadata.
  */
-static void callout_ap_entry(void)
+static void callout_ap_entry(void *unused)
 {
 	AGESA_STATUS Status = AGESA_UNSUPPORTED;
 
@@ -219,7 +219,7 @@ AGESA_STATUS agesa_RunFuncOnAp(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	agesadata.Func = Func;
 	agesadata.Data = Data;
 	agesadata.ConfigPtr = ConfigPtr;
-	mp_run_on_aps(callout_ap_entry, 100 * USECS_PER_MSEC);
+	mp_run_on_aps(callout_ap_entry, NULL, 100 * USECS_PER_MSEC);
 
 	return AGESA_SUCCESS;
 }
@@ -231,7 +231,7 @@ AGESA_STATUS agesa_RunFcnOnAllAps(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	agesadata.Func = Func;
 	agesadata.Data = Data;
 	agesadata.ConfigPtr = ConfigPtr;
-	mp_run_on_aps(callout_ap_entry, 100 * USECS_PER_MSEC);
+	mp_run_on_aps(callout_ap_entry, NULL, 100 * USECS_PER_MSEC);
 
 	return AGESA_SUCCESS;
 }

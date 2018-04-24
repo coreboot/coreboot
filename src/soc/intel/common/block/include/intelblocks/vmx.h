@@ -21,7 +21,7 @@ struct vmx_param {
 /*
  * Configure VMX.
  */
-void vmx_configure(void);
+void vmx_configure(void *unused);
 
 /* SOC specific API to get VMX params.
  * returns 0, if able to get VMX params; otherwise returns -1 */

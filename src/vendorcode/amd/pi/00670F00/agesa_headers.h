@@ -22,7 +22,6 @@
 #include "AGESA.h"
 #include "AMD.h"
 
-#include "Proc/Fch/Fch.h"
 #include "Include/Ids.h"
 #include "Include/PlatformMemoryConfiguration.h"
 #include "Proc/Fch/FchPlatform.h"

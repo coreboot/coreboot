@@ -7,6 +7,7 @@ bootblock-y += spi.c
 bootblock-y += mmu.c
 bootblock-y += timer.c
 bootblock-y += gpio.c
+bootblock-$(CONFIG_DRIVERS_UART) += uart_bitbang.c
 
 ################################################################################
 verstage-y += spi.c

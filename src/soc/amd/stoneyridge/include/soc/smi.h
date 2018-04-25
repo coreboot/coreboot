@@ -201,10 +201,10 @@ enum smi_mode {
 };
 
 enum smi_sci_type {
-	NONE,
-	SCI,
-	SMI,
-	BOTH,
+	INTERRUPT_NONE,
+	INTERRUPT_SCI,
+	INTERRUPT_SMI,
+	INTERRUPT_BOTH,
 };
 
 enum smi_sci_lvl {

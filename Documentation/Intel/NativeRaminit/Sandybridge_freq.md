@@ -15,15 +15,15 @@ This chapter explains the frequency selection done on Sandybride and Ivybridge.
 | XMP     | Extreme Memory Profiles                                           | -          | -            |
 
 ## SPD
-The [SPD](https://de.wikipedia.org/wiki/Serial_Presence_Detect "Serial Presence Detect") 
-located on every DIMM is factory program with various timings. One of them 
-specifies the maximum clock frequency the DIMM should be used with. The 
-operating frequency is stores as fixed point value (tCK), rounded to the next 
-smallest supported operating frequency. Some 
-[SPD](https://de.wikipedia.org/wiki/Serial_Presence_Detect "Serial Presence Detect") 
-contains additional and optional 
-[XMP](https://de.wikipedia.org/wiki/Extreme_Memory_Profile "Extreme Memory Profile") 
-data, that stores so called "performance" modes, that advertises higher clock 
+The [SPD](https://de.wikipedia.org/wiki/Serial_Presence_Detect "Serial Presence Detect")
+located on every DIMM is factory program with various timings. One of them
+specifies the maximum clock frequency the DIMM should be used with. The
+operating frequency is stores as fixed point value (tCK), rounded to the next
+smallest supported operating frequency. Some
+[SPD](https://de.wikipedia.org/wiki/Serial_Presence_Detect "Serial Presence Detect")
+contains additional and optional
+[XMP](https://de.wikipedia.org/wiki/Extreme_Memory_Profile "Extreme Memory Profile")
+data, that stores so called "performance" modes, that advertises higher clock
 frequencies.
 
 ## XMP profiles
@@ -32,51 +32,51 @@ Only **XMP profile 1** is being used in case it advertises:
 * 1.5V operating voltage
 * The channel's installed DIMM count doesn't exceed the XMP coded limit
 
-In case the XMP profile doesn't fullfill those limits, the regular SPD will be 
+In case the XMP profile doesn't fullfill those limits, the regular SPD will be
 used.
 > **Note:** XMP Profiles are supported since coreboot 4.4.
 
 It is possible to ignore the max DIMM count limit set by XMP profiles.
-By activating Kconfig option `NATIVE_RAMINIT_IGNORE_XMP_MAX_DIMMS` it is 
+By activating Kconfig option `NATIVE_RAMINIT_IGNORE_XMP_MAX_DIMMS` it is
 possible to install two DIMMs per channel, even if XMP tells you not to do.
 
 > **Note:** Ignoring XMP Profiles limit is supported since coreboot 4.7.
 
 ## Soft fuses
-Every board manufacturer does program "soft" fuses to indicate the maximum 
-DRAM frequency supported. However, those fuses don't set a limit in hardware 
+Every board manufacturer does program "soft" fuses to indicate the maximum
+DRAM frequency supported. However, those fuses don't set a limit in hardware
 and thus are called "soft" fuses, as it is possible to ignore them.
 
 > **Note:** Ignoring the fuses might cause system instability !
 
-On Sandy Bride *CAPID0_A* is being read, and on Ivybridge *CAPID0_B* is being 
-read. coreboot reads those registers and honors the limit in case the Kconfig 
+On Sandy Bride *CAPID0_A* is being read, and on Ivybridge *CAPID0_B* is being
+read. coreboot reads those registers and honors the limit in case the Kconfig
 option `CONFIG_NATIVE_RAMINIT_IGNORE_MAX_MEM_FUSES` wasn't set.
-Power users that want to let their RAM run at DRAM's "stock" frequency need to 
+Power users that want to let their RAM run at DRAM's "stock" frequency need to
 enable the Kconfig symbol.
 
-It is possible to override the soft fuses limit by using a board-specific 
+It is possible to override the soft fuses limit by using a board-specific
 [devicetree](#devicetree) setting.
 
 > **Note:** Ignoring max mem freq. fuses is supported since coreboot 4.7.
 
 ## <a name="hard_fuses"></a> Hard fuses
-"Hard" fuses are programmed by Intel and limit the maximum frequency that can 
-be used on a given CPU/board/chipset. At time of writing there's no register 
-to read this limit, before trying to set a given DRAM frequency. The memory PLL 
-won't lock, indicating that the chosen memory multiplier isn't available. In 
-this case coreboot tries the next smaller memory multiplier until the PLL will 
+"Hard" fuses are programmed by Intel and limit the maximum frequency that can
+be used on a given CPU/board/chipset. At time of writing there's no register
+to read this limit, before trying to set a given DRAM frequency. The memory PLL
+won't lock, indicating that the chosen memory multiplier isn't available. In
+this case coreboot tries the next smaller memory multiplier until the PLL will
 lock.
 
 ## <a name="devicetree"></a> Devicetree
-The devicetree register ```max_mem_clock_mhz``` overrides the "soft" fuses set 
+The devicetree register ```max_mem_clock_mhz``` overrides the "soft" fuses set
 by the board manufacturer.
 
 By using this register it's possible to force a minimum operating frequency.
 
 ## Reference clock
-While Sandybride supports 133 MHz reference clock (REFCK), Ivy Bridge also 
-supports 100 MHz reference clock. The reference clock is multiplied by the DRAM 
+While Sandybride supports 133 MHz reference clock (REFCK), Ivy Bridge also
+supports 100 MHz reference clock. The reference clock is multiplied by the DRAM
 multiplier to select the DRAM frequency (SCK) by the following formula:
 
  REFCK * MULT = 1 / DCK
@@ -122,11 +122,11 @@ else:
 for i in SPDs:
      freq_max := MIN(freq_max, ddr_spd_max_mhz[i])```
 
-As you can see, by using DIMMs with different maximum DRAM frequencies, the 
+As you can see, by using DIMMs with different maximum DRAM frequencies, the
 slowest DIMMs' frequency will be selected, to prevent over-clocking it.
 
-The selected frequency gives the PLL multiplier to operate at. In case the PLL 
-locks (see Take me to [Hard fuses](#hard_fuses)) the frequency will be used for 
-all DIMMs. At this point it's not possible to change the multiplier again, 
-until the system has been powered off. In case the PLL doesn't lock, the next 
+The selected frequency gives the PLL multiplier to operate at. In case the PLL
+locks (see Take me to [Hard fuses](#hard_fuses)) the frequency will be used for
+all DIMMs. At this point it's not possible to change the multiplier again,
+until the system has been powered off. In case the PLL doesn't lock, the next
 smaller multiplier will be used until a working multiplier will be found.

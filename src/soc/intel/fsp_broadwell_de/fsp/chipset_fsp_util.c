@@ -105,6 +105,17 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 		UpdData->HyperThreading = 1;
 	else
 		UpdData->HyperThreading = 0;
+
+	/* Enable USB */
+	if (IS_ENABLED(CONFIG_FSP_EHCI1_ENABLE))
+		UpdData->Ehci1Enable = 1;
+	else
+		UpdData->Ehci1Enable = 0;
+
+	if (IS_ENABLED(CONFIG_FSP_EHCI2_ENABLE))
+		UpdData->Ehci2Enable = 1;
+	else
+		UpdData->Ehci2Enable = 0;
 }
 
 /* Set up the Broadwell-DE specific structures for the call into the FSP */

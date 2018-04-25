@@ -107,3 +107,15 @@ config FSP_HYPERTHREADING
 	default y
 	help
 	  Enable Intel(r) Hyper-Threading Technology for the Broadwell-DE SoC.
+
+config FSP_EHCI1_ENABLE
+	bool "EHCI1 Enable"
+	default n
+	help
+	  Enable EHCI controller 1
+
+config FSP_EHCI2_ENABLE
+	bool "EHCI2 Enable"
+	default n
+	help
+	  Enable EHCI controller 2

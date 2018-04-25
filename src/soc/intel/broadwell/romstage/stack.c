@@ -30,9 +30,9 @@ static inline uint32_t *stack_push(u32 *stack, u32 value)
 	return stack;
 }
 
-/* setup_stack_and_mttrs() determines the stack to use after
+/* setup_stack_and_mtrrs() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use. */
-void *setup_stack_and_mttrs(void)
+void *setup_stack_and_mtrrs(void)
 {
 	int num_mtrrs;
 	uint32_t *slot;

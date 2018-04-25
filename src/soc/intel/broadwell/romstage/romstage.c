@@ -80,7 +80,7 @@ asmlinkage void *romstage_main(unsigned long bist,
 	/* Call into mainboard. */
 	mainboard_romstage_entry(&rp);
 
-	return setup_stack_and_mttrs();
+	return setup_stack_and_mtrrs();
 }
 
 /* Entry from the mainboard. */

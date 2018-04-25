@@ -54,7 +54,7 @@ struct romstage_params {
  *  16.  src/soc/intel/common/romstage.c/romstage_common - return
  *  17.  src/mainboard/.../romstage.c/mainboard_romstage_entry - return
  *  18.  src/soc/intel/common/romstage.c/romstage_main - return
- *  19.  src/soc/intel/common/stack.c/setup_stack_and_mttrs
+ *  19.  src/soc/intel/common/stack.c/setup_stack_and_mtrrs
  *  20.  src/drivers/intel/fsp1_1/cache_as_ram.inc - return, cleanup
  *       after call to romstage_main
  *  21.  FSP binary/TempRamExit

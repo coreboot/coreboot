@@ -125,7 +125,7 @@ chip soc/amd/stoneyridge
 			register "hid" = ""ELAN0000""
 			register "desc" = ""ELAN Touchpad""
 			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_5)"
-			# TODO(teravest): Add wake
+			register "wake" = "7"
 			device i2c 15 on end
 		end
 	end

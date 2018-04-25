@@ -18,12 +18,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/smbus.h>
-#include <device/pci.h>
-#include <device/pci_ids.h>
-#include <device/pci_ops.h>
-#include <cpu/x86/msr.h>
 #include "chip.h"
-#include <string.h>
 
 #define SMBUS_BLOCK_SIZE 32
 

@@ -529,12 +529,12 @@ unsigned long __weak write_smp_table(unsigned long addr)
 	struct drivers_generic_ioapic_config *ioapic_config;
 	struct mp_config_table *mc;
 	int isa_bus, pin, parentpin;
-	struct device *dev;
-	struct device *parent;
-	struct device *oldparent;
+	const struct device *dev;
+	const struct device *parent;
+	const struct device *oldparent;
 	void *tmp, *v;
 	int isaioapic = -1, have_fixed_entries;
-	struct pci_irq_info *pci_irq_info;
+	const struct pci_irq_info *pci_irq_info;
 
 	v = smp_write_floating_table(addr, 0);
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);

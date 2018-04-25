@@ -66,7 +66,7 @@ struct resource *free_resources = NULL;
  */
 void dev_initialize_chips(void)
 {
-	struct device *dev;
+	const struct device *dev;
 
 	for (dev = all_devices; dev; dev = dev->next) {
 		/* Initialize chip if we haven't yet. */
@@ -88,7 +88,7 @@ void dev_initialize_chips(void)
  */
 void dev_finalize_chips(void)
 {
-	struct device *dev;
+	const struct device *dev;
 
 	for (dev = all_devices; dev; dev = dev->next) {
 		/* Initialize chip if we haven't yet. */
@@ -247,7 +247,7 @@ static void read_resources(struct bus *bus)
 
 struct pick_largest_state {
 	struct resource *last;
-	struct device *result_dev;
+	const struct device *result_dev;
 	struct resource *result;
 	int seen_last;
 };
@@ -283,7 +283,7 @@ static void pick_largest_resource(void *gp, struct device *dev,
 	}
 }
 
-static struct device *largest_resource(struct bus *bus,
+static const struct device *largest_resource(struct bus *bus,
 				       struct resource **result_res,
 				       unsigned long type_mask,
 				       unsigned long type)
@@ -338,7 +338,7 @@ static struct device *largest_resource(struct bus *bus,
 static void compute_resources(struct bus *bus, struct resource *bridge,
 			      unsigned long type_mask, unsigned long type)
 {
-	struct device *dev;
+	const struct device *dev;
 	struct resource *resource;
 	resource_t base;
 	base = round(bridge->base, bridge->align);
@@ -482,7 +482,7 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
 static void allocate_resources(struct bus *bus, struct resource *bridge,
 			       unsigned long type_mask, unsigned long type)
 {
-	struct device *dev;
+	const struct device *dev;
 	struct resource *resource;
 	resource_t base;
 	base = bridge->base;
@@ -640,9 +640,9 @@ static struct resource * resource_limit(struct constraints *limits, struct resou
 	return lim;
 }
 
-static void constrain_resources(struct device *dev, struct constraints* limits)
+static void constrain_resources(const struct device *dev, struct constraints* limits)
 {
-	struct device *child;
+	const struct device *child;
 	struct resource *res;
 	struct resource *lim;
 	struct bus *link;
@@ -696,7 +696,7 @@ static void constrain_resources(struct device *dev, struct constraints* limits)
 	}
 }
 
-static void avoid_fixed_resources(struct device *dev)
+static void avoid_fixed_resources(const struct device *dev)
 {
 	struct constraints limits;
 	struct resource *res;
@@ -1019,8 +1019,8 @@ void dev_enumerate(void)
 void dev_configure(void)
 {
 	struct resource *res;
-	struct device *root;
-	struct device *child;
+	const struct device *root;
+	const struct device *child;
 
 	set_vga_bridge_bits();
 

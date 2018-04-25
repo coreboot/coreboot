@@ -269,7 +269,7 @@ u32 dev_path_encode(struct device *dev)
  * Warning: This function uses a static buffer. Don't call it more than once
  * from the same print statement!
  */
-const char *dev_path(struct device *dev)
+const char *dev_path(const struct device *dev)
 {
 	static char buffer[DEVICE_PATH_MAX];
 
@@ -814,7 +814,7 @@ bool dev_is_active_bridge(struct device *dev)
 	return 0;
 }
 
-static void resource_tree(struct device *root, int debug_level, int depth)
+static void resource_tree(const struct device *root, int debug_level, int depth)
 {
 	int i = 0;
 	struct device *child;
@@ -846,7 +846,7 @@ static void resource_tree(struct device *root, int debug_level, int depth)
 	}
 }
 
-void print_resource_tree(struct device *root, int debug_level, const char *msg)
+void print_resource_tree(const struct device *root, int debug_level, const char *msg)
 {
 	/* Bail if root is null. */
 	if (!root) {
@@ -862,7 +862,7 @@ void print_resource_tree(struct device *root, int debug_level, const char *msg)
 	resource_tree(root, debug_level, 0);
 }
 
-void show_devs_tree(struct device *dev, int debug_level, int depth)
+void show_devs_tree(const struct device *dev, int debug_level, int depth)
 {
 	char depth_str[20];
 	int i;

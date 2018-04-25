@@ -184,7 +184,7 @@ int reset_bus(struct bus *bus);
 void scan_bridges(struct bus *bus);
 void assign_resources(struct bus *bus);
 const char *dev_name(struct device *dev);
-const char *dev_path(struct device *dev);
+const char *dev_path(const struct device *dev);
 u32 dev_path_encode(struct device *dev);
 const char *bus_path(struct bus *bus);
 void dev_set_enabled(struct device *dev, int enable);
@@ -216,9 +216,9 @@ void set_cpu_topology(struct device *cpu, unsigned int node,
 	set_cpu_topology(cpu, 0, package, core, thread)
 
 /* Debug functions */
-void print_resource_tree(struct device *root, int debug_level,
+void print_resource_tree(const struct device *root, int debug_level,
 			 const char *msg);
-void show_devs_tree(struct device *dev, int debug_level, int depth);
+void show_devs_tree(const struct device *dev, int debug_level, int depth);
 void show_devs_subtree(struct device *root, int debug_level, const char *msg);
 void show_all_devs(int debug_level, const char *msg);
 void show_all_devs_tree(int debug_level, const char *msg);

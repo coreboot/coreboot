@@ -106,7 +106,6 @@ chip northbridge/intel/sandybridge
 			device pci 1c.4 on # PCIe Port #5, ASMedia ASM1062 SATA Controller
 				subsystemid 0x1849 0x1e18
 			end
-			register "pcie_aspm_f4" = "0x80" # Disable ASPM for ASMedia SATA controller
 			device pci 1c.5 on # PCIe Port #6, Realtek PCIe GbE Controller
 				subsystemid 0x1849 0x1e1a
 			end

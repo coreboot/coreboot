@@ -148,8 +148,17 @@
 #define TCR_TBI_USED               (0x0 << TCR_TBI_SHIFT)
 #define TCR_TBI_IGNORED            (0x1 << TCR_TBI_SHIFT)
 
+struct mmu_context {
+	uint64_t mair;         /* MAIR attributes */
+	uint64_t tcr;          /* TCR Attributes */
+};
+
 /* Initialize MMU registers and page table memory region. */
 void mmu_init(void);
+/* Desc : Save mmu context (registers and ttbr base/size). */
+void mmu_save_context(struct mmu_context *mmu_context);
+/* Desc : Restore mmu context using input backed-up context */
+void mmu_restore_context(const struct mmu_context *mmu_context);
 /* Change a memory type for a range of bytes at runtime. */
 void mmu_config_range(void *start, size_t size, uint64_t tag);
 /* Enable the MMU (need previous mmu_init() and configured ranges!). */

@@ -274,6 +274,40 @@ void mmu_init(void)
 			  TCR_TBI_USED);
 }
 
+/* Func : mmu_save_context
+ * Desc : Save mmu context (registers and ttbr base).
+ */
+void mmu_save_context(struct mmu_context *mmu_context)
+{
+	assert(mmu_context);
+
+	/* Back-up MAIR_ATTRIBUTES */
+	mmu_context->mair = raw_read_mair_el3();
+
+	/* Back-up TCR value */
+	mmu_context->tcr = raw_read_tcr_el3();
+}
+
+/* Func : mmu_restore_context
+ * Desc : Restore mmu context using input backed-up context
+ */
+void mmu_restore_context(const struct mmu_context *mmu_context)
+{
+	assert(mmu_context);
+
+	/* Restore TTBR */
+	raw_write_ttbr0_el3((uintptr_t)_ttb);
+
+	/* Restore MAIR indices */
+	raw_write_mair_el3(mmu_context->mair);
+
+	/* Restore TCR flags */
+	raw_write_tcr_el3(mmu_context->tcr);
+
+	/* invalidate tlb since ttbr is updated. */
+	tlb_invalidate_all();
+}
+
 void mmu_enable(void)
 {
 	if (((get_pte(_ttb) >> BLOCK_INDEX_SHIFT) & BLOCK_INDEX_MASK)

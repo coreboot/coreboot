@@ -86,6 +86,8 @@ static void da7219_fill_ssdt(struct device *dev)
 	dsd = acpi_dp_new_table("_DSD");
 	acpi_dp_add_integer(dsd, "dlg,micbias-lvl", config->micbias_lvl);
 	acpi_dp_add_string(dsd, "dlg,mic-amp-in-sel", config->mic_amp_in_sel);
+	if (config->mclk_name != NULL)
+		acpi_dp_add_string(dsd, "dlg,mclk-name", config->mclk_name);
 	acpi_dp_add_child(dsd, "da7219_aad", aad);
 
 	/* Write Device Property Hierarchy */

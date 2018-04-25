@@ -106,4 +106,10 @@ struct drivers_i2c_da7219_config {
 	 * [<1>, <2>, <4>, <8>]
 	 */
 	unsigned adc_1bit_rpt;
+
+	/*
+	 * mclk-name : Pass the system clk to da7219
+	 * ["name of mclk" ]
+	 */
+	const char *mclk_name;
 };

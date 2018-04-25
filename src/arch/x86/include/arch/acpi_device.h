@@ -242,6 +242,36 @@ struct acpi_gpio {
 	.pin_count = 1, \
 	.pins = { (gpio) } }
 
+/* Edge Triggered Active High GPIO interrupt with wake */
+#define ACPI_GPIO_IRQ_EDGE_HIGH_WAKE(gpio) { \
+	.type = ACPI_GPIO_TYPE_INTERRUPT, \
+	.pull = ACPI_GPIO_PULL_DEFAULT, \
+	.irq.mode = ACPI_IRQ_EDGE_TRIGGERED, \
+	.irq.polarity = ACPI_IRQ_ACTIVE_HIGH, \
+	.irq.wake = ACPI_IRQ_WAKE, \
+	.pin_count = 1, \
+	.pins = { (gpio) } }
+
+/* Edge Triggered Active Low GPIO interrupt with wake */
+#define ACPI_GPIO_IRQ_EDGE_LOW_WAKE(gpio) { \
+	.type = ACPI_GPIO_TYPE_INTERRUPT, \
+	.pull = ACPI_GPIO_PULL_DEFAULT, \
+	.irq.mode = ACPI_IRQ_EDGE_TRIGGERED, \
+	.irq.polarity = ACPI_IRQ_ACTIVE_LOW, \
+	.irq.wake = ACPI_IRQ_WAKE, \
+	.pin_count = 1, \
+	.pins = { (gpio) } }
+
+/* Edge Triggered Active Both GPIO interrupt with wake */
+#define ACPI_GPIO_IRQ_EDGE_BOTH_WAKE(gpio) { \
+	.type = ACPI_GPIO_TYPE_INTERRUPT, \
+	.pull = ACPI_GPIO_PULL_DEFAULT, \
+	.irq.mode = ACPI_IRQ_EDGE_TRIGGERED, \
+	.irq.polarity = ACPI_IRQ_ACTIVE_BOTH, \
+	.irq.wake = ACPI_IRQ_WAKE, \
+	.pin_count = 1, \
+	.pins = { (gpio) } }
+
 /* Level Triggered Active High GPIO interrupt */
 #define ACPI_GPIO_IRQ_LEVEL_HIGH(gpio) { \
 	.type = ACPI_GPIO_TYPE_INTERRUPT, \

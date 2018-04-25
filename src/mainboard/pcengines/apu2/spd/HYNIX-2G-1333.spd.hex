@@ -44,7 +44,7 @@
 00
 
 #	7 Module Organization
-#    	bits[2:0]: 1 = 8 bits
+#	bits[2:0]: 1 = 8 bits
 #		bits[2:0]: 2 = 16 bits
 #		bits[5:3]: 0 = 1 Rank
 #		bits[7:6]: reserved
@@ -103,7 +103,7 @@
 30
 
 # 20 Minimum Row Precharge Delay Time (tRPmin)
-#    0x6C = 13.5ns -  
+#    0x6C = 13.5ns -
 #    0x69 = 13.125 ns - DDR3-1333
 69
 
@@ -190,7 +190,7 @@
 86
 
 #      42 - 47 (reserved)
-00 00 00 00 00 00 
+00 00 00 00 00 00
 
 #	48 - 55 (reserved)
 00 00 00 00 00 00 00 00
@@ -212,7 +212,7 @@
 #              bits[4:0]: 0 = Reference Raw card A used
 #              bits[6:5]: 0 = revision 0
 #              bit7 : 0 = Reference raw cards A through AL
-# 			   revision B4 
+#			   revision B4
 61
 
 #	63 Address Mapping from Edge Connector to DRAM
@@ -261,4 +261,3 @@
 
 #	126 - 127: Cyclical Redundancy Code
 b6 73
-

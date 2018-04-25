@@ -112,12 +112,12 @@ static void sb_apmc_smi_handler(void)
 
 static void disable_all_smi_status(void)
 {
-	smi_write32(smi_read32(SMI_SCI_STATUS), SMI_SCI_STATUS);
-	smi_write32(smi_read32(SMI_REG_SMISTS0), SMI_REG_SMISTS0);
-	smi_write32(smi_read32(SMI_REG_SMISTS1), SMI_REG_SMISTS1);
-	smi_write32(smi_read32(SMI_REG_SMISTS2), SMI_REG_SMISTS2);
-	smi_write32(smi_read32(SMI_REG_SMISTS3), SMI_REG_SMISTS3);
-	smi_write32(smi_read32(SMI_REG_SMISTS4), SMI_REG_SMISTS4);
+	smi_write32(SMI_SCI_STATUS, smi_read32(SMI_SCI_STATUS));
+	smi_write32(SMI_REG_SMISTS0, smi_read32(SMI_REG_SMISTS0));
+	smi_write32(SMI_REG_SMISTS1, smi_read32(SMI_REG_SMISTS1));
+	smi_write32(SMI_REG_SMISTS2, smi_read32(SMI_REG_SMISTS2));
+	smi_write32(SMI_REG_SMISTS3, smi_read32(SMI_REG_SMISTS3));
+	smi_write32(SMI_REG_SMISTS4, smi_read32(SMI_REG_SMISTS4));
 }
 
 static void sb_slp_typ_handler(void)

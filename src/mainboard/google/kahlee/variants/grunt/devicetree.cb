@@ -109,6 +109,7 @@ chip soc/amd/stoneyridge
 			register "adc_1bit_rpt" = "1"
 			register "micbias_lvl" = "2600"
 			register "mic_amp_in_sel" = ""diff""
+			register "mclk_name" = ""oscout1""
 			device i2c 1a on end
 		end
 		chip drivers/generic/max98357a

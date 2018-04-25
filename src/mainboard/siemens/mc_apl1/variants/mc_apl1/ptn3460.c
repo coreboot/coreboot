@@ -17,7 +17,7 @@
 #include <lib.h>
 #include <hwilib.h>
 #include <device/i2c_simple.h>
-#include "ptn3460.h"
+#include <variant/ptn3460.h>
 
 /**
  * This function sets up the DP2LVDS-converter to be used with the appropriate

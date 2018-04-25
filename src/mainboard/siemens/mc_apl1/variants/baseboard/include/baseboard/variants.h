@@ -26,4 +26,7 @@
 const struct pad_config *variant_gpio_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
 
+/* The following function performs board specific things. */
+void variant_mainboard_final(void);
+
 #endif /* _BASEBOARD_VARIANTS_H_ */

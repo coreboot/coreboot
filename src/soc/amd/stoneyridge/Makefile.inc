@@ -49,6 +49,7 @@ bootblock-y += sb_util.c
 bootblock-y += tsc_freq.c
 bootblock-y += southbridge.c
 bootblock-y += nb_util.c
+bootblock-$(CONFIG_SPI_FLASH) += spi.c
 
 romstage-y += BiosCallOuts.c
 romstage-y += i2c.c
@@ -67,6 +68,7 @@ romstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 romstage-y += tsc_freq.c
 romstage-y += southbridge.c
 romstage-y += nb_util.c
+romstage-$(CONFIG_SPI_FLASH) += spi.c
 
 verstage-y += gpio.c
 verstage-y += i2c.c
@@ -77,6 +79,7 @@ verstage-y += reset.c
 verstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 verstage-y += tsc_freq.c
 verstage-y += nb_util.c
+verstage-$(CONFIG_SPI_FLASH) += spi.c
 
 postcar-y += monotonic_timer.c
 postcar-$(CONFIG_STONEYRIDGE_UART) += uart.c

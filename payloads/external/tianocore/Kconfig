@@ -18,7 +18,7 @@ choice
 config TIANOCORE_STABLE
 	bool "stable"
 	help
-	  Select this option to build the stable tianocore version 
+	  Select this option to build the stable tianocore version
 	  i.e. a version of Tianocore that builds without any errors
 
 config TIANOCORE_MASTER

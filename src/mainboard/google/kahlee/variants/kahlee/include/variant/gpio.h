@@ -43,11 +43,8 @@
 
 #endif /* _ACPI__ */
 
-/* AGPIO22 -> GPE3 */
-#define EC_SCI_GPI		3
-
-/* TODO: Fix this */
-/* GPIO_S5_07 is EC_SMI#, but it is bit 23 in GPE_STS and ALT_GPIO_SMI. */
-#define EC_SMI_GPI		23
+/* These define the GPE, not the GPIO. */
+#define EC_SCI_GPI		3	/* AGPIO 22 -> GPE  3 */
+#define EC_SMI_GPI		10	/* AGPIO  6 -> GPE 10 */
 
 #endif /* __VARIANT_GPIO_H__ */

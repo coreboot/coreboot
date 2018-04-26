@@ -373,7 +373,7 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *setup, int dalen,
 	int first_page = (unsigned long)data / 4096;
 	int last_page = (unsigned long)(data+dalen-1)/4096;
 	if (last_page < first_page) last_page = first_page;
-	int pages = (dalen==0)?0:(last_page - first_page + 1);
+	int pages = (dalen == 0)?0:(last_page - first_page + 1);
 
 	/* First TD. */
 	td_t *const first_td = (td_t *)dma_memalign(sizeof(td_t), sizeof(td_t));
@@ -467,7 +467,7 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *setup, int dalen,
 	OHCI_INST(dev->controller)->opreg->HcCommandStatus = ControlListFilled;
 
 	int result = wait_for_ed(dev, head,
-			(dalen==0)?0:(last_page - first_page + 1));
+			(dalen == 0)?0:(last_page - first_page + 1));
 	/* Wait some frames before and one after disabling list access. */
 	mdelay(4);
 	OHCI_INST(dev->controller)->opreg->HcControl &= ~ControlListEnable;
@@ -509,7 +509,7 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *src, int finalize)
 	int first_page = (unsigned long)data / 4096;
 	int last_page = (unsigned long)(data+dalen-1)/4096;
 	if (last_page < first_page) last_page = first_page;
-	int pages = (dalen==0)?0:(last_page - first_page + 1);
+	int pages = (dalen == 0)?0:(last_page - first_page + 1);
 	int td_count = (pages+1)/2;
 
 	if (finalize && ((dalen % ep->maxpacketsize) == 0)) {
@@ -571,7 +571,7 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *src, int finalize)
 	memset((void*)head, 0, sizeof(*head));
 	head->config = (ep->dev->address << ED_FUNC_SHIFT) |
 		((ep->endpoint & 0xf) << ED_EP_SHIFT) |
-		(((ep->direction==IN)?OHCI_IN:OHCI_OUT) << ED_DIR_SHIFT) |
+		(((ep->direction == IN)?OHCI_IN:OHCI_OUT) << ED_DIR_SHIFT) |
 		(ep->dev->speed?ED_LOWSPEED:0) |
 		(ep->maxpacketsize << ED_MPS_SHIFT);
 	head->tail_pointer = virt_to_phys(cur);
@@ -588,7 +588,7 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *src, int finalize)
 	OHCI_INST(ep->dev->controller)->opreg->HcCommandStatus = BulkListFilled;
 
 	int result = wait_for_ed(ep->dev, head,
-			(dalen==0)?0:(last_page - first_page + 1));
+			(dalen == 0)?0:(last_page - first_page + 1));
 	/* Wait some frames before and one after disabling list access. */
 	mdelay(4);
 	OHCI_INST(ep->dev->controller)->opreg->HcControl &= ~BulkListEnable;

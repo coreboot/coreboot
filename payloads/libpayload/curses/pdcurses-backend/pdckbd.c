@@ -149,14 +149,14 @@ int PDC_get_key(void)
 
 #if IS_ENABLED(CONFIG_LP_PC_KEYBOARD)
     if ((curses_flags & F_ENABLE_CONSOLE) &&
-        keyboard_havechar() && (c==0)) {
+        keyboard_havechar() && (c == 0)) {
         c = keyboard_getchar();
     }
 #endif
 
 #if IS_ENABLED(CONFIG_LP_SERIAL_CONSOLE)
     if ((curses_flags & F_ENABLE_SERIAL) &&
-        serial_havechar() && (c==0)) {
+        serial_havechar() && (c == 0)) {
         c = cook_serial(serial_getchar());
     }
 #endif

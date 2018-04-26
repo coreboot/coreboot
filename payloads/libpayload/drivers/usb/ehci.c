@@ -351,7 +351,7 @@ static int ehci_bulk (endpoint_t *ep, int size, u8 *src, int finalize)
 	u8 *end = src + size;
 	int remaining = size;
 	int endp = ep->endpoint & 0xf;
-	int pid = (ep->direction==IN)?EHCI_IN:EHCI_OUT;
+	int pid = (ep->direction == IN)?EHCI_IN:EHCI_OUT;
 
 	int hubaddr = 0, hubport = 0;
 	if (ep->dev->speed < 2) {

@@ -26,4 +26,5 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 void mainboard_save_dimm_info(void)
 {
+	save_lpddr4_dimm_info(variant_lpddr4_config(), variant_memory_sku());
 }

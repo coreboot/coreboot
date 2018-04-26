@@ -50,7 +50,7 @@
 #include "southbridge/nvidia/mcp55/early_setup_car.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-#define DUMMY_DEV PNP_DEV(0x2e, 0)
+#define SUPERIO_DEV PNP_DEV(0x2e, 0)
 
 void activate_spd_rom(const struct mem_controller *ctrl);
 int spd_read_byte(unsigned device, unsigned address);
@@ -130,7 +130,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x32);
 
-	winbond_set_clksel_48(DUMMY_DEV);
+	winbond_set_clksel_48(SUPERIO_DEV);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();

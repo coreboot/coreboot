@@ -37,7 +37,7 @@
 #include <southbridge/intel/i82801gx/i82801gx.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, W83627EHG_SP1)
-#define DUMMY_DEV PNP_DEV(0x4e, 0)
+#define SUPERIO_DEV PNP_DEV(0x4e, 0)
 
 static void ich7_enable_lpc(void)
 {
@@ -63,7 +63,7 @@ static void early_superio_config_w83627ehg(void)
 {
 	pnp_devfn_t dev;
 
-	dev = DUMMY_DEV;
+	dev = SUPERIO_DEV;
 	pnp_enter_conf_state(dev);
 
 	pnp_write_config(dev, 0x24, 0xc4); // PNPCVS

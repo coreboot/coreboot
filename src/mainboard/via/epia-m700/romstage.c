@@ -41,7 +41,7 @@
 #include <superio/winbond/w83697hf/w83697hf.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)
-#define DUMMY_DEV PNP_DEV(0x2e, 0)
+#define SUPERIO_DEV PNP_DEV(0x2e, 0)
 
 /*
  * This acpi_is_wakeup_early_via_VX800 is from Rudolf's patch on the list:
@@ -378,7 +378,7 @@ void main(unsigned long bist)
 	 */
 	pci_write_config8(PCI_DEV(0, 0, 0), 0x4f, 0x01);
 	/* EmbedComInit(); */
-	winbond_set_clksel_48(DUMMY_DEV);
+	winbond_set_clksel_48(SUPERIO_DEV);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	/* enable_vx800_serial(); */
 

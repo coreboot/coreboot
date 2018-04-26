@@ -36,7 +36,7 @@
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-#define DUMMY_DEV PNP_DEV(0x2e, 0)
+#define SUPERIO_DEV PNP_DEV(0x2e, 0)
 
 unsigned get_sbdn(unsigned bus);
 
@@ -140,7 +140,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
-	winbond_set_clksel_48(DUMMY_DEV);
+	winbond_set_clksel_48(SUPERIO_DEV);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();

@@ -360,6 +360,8 @@ uint64_t raw_read_vbar_current(void);
 void raw_write_vbar_current(uint64_t vbar);
 uint64_t raw_read_vbar(uint32_t el);
 void raw_write_vbar(uint64_t vbar, uint32_t el);
+uint64_t raw_read_cntpct_el0(void);
+uint32_t raw_read_cntfrq_el0(void);
 
 /* Cache maintenance system instructions */
 void dccisw(uint64_t cisw);

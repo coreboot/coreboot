@@ -11,7 +11,7 @@ chip soc/intel/skylake
 	# Note that GPE events called out in ASL code rely on this
 	# route. i.e. If this route changes then the affected GPE
 	# offset bits also need to be changed.
-	register "gpe0_dw0" = "GPP_B"
+	register "gpe0_dw0" = "GPP_A"
 	register "gpe0_dw1" = "GPP_D"
 	register "gpe0_dw2" = "GPP_E"
 
@@ -252,8 +252,7 @@ chip soc/intel/skylake
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A19_IRQ)"
-				# TODO(caveh): fix wake source
-				#register "wake" = "GPE0_DWx_19" not possible?
+				register "wake" = "GPE0_DW0_23" # GPP_A23
 				register "probed" = "1" # may not be present
 				device i2c 0x15 on end
 			end

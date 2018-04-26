@@ -59,8 +59,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_A21),
 	/* A22 : ISH_GP4 */
 	PAD_CFG_NC(GPP_A22),
-	/* A23 : ISH_GP5 */
-	PAD_CFG_NC(GPP_A23),
+	/* A23 : ISH_GP5 ==> TRACKPAD_INT_L */
+	PAD_CFG_GPI_ACPI_SCI(GPP_A23, NONE, DEEP, INVERT),
 
 	/* B0  : CORE_VID0 ==> NC(TP42) */
 	PAD_CFG_NC(GPP_B0),

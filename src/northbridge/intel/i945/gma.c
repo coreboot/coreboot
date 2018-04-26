@@ -641,6 +641,48 @@ static void panel_setup(u8 *mmiobase, struct device *const dev)
 							DEFAULT_BLC_PWM));
 }
 
+static void gma_ngi(struct device *const dev)
+{
+	/* This should probably run before post VBIOS init. */
+	printk(BIOS_INFO, "Initializing VGA without OPROM.\n");
+	void *mmiobase;
+	u32 iobase, graphics_base;
+	struct northbridge_intel_i945_config *conf = dev->chip_info;
+
+	iobase = dev->resource_list[1].base;
+	mmiobase = (void *)(uintptr_t)dev->resource_list[0].base;
+	graphics_base = dev->resource_list[2].base;
+
+	printk(BIOS_SPEW, "GMADR = 0x%08x GTTADR = 0x%08x\n",
+		pci_read_config32(dev, GMADR), pci_read_config32(dev, GTTADR));
+
+	int err;
+
+	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM))
+		panel_setup(mmiobase, dev);
+
+	/* probe if VGA is connected and always run */
+	/* VGA init if no LVDS is connected */
+	if (!probe_edid(mmiobase, GMBUS_PORT_PANEL) ||
+			probe_edid(mmiobase, GMBUS_PORT_VGADDC))
+		err = intel_gma_init_vga(conf,
+				pci_read_config32(dev, 0x5c) & ~0xf,
+				iobase, mmiobase, graphics_base);
+	else
+		err = intel_gma_init_lvds(conf,
+				pci_read_config32(dev, 0x5c) & ~0xf,
+				iobase, mmiobase, graphics_base);
+	if (err == 0)
+		gfx_set_init_done(1);
+	/* Linux relies on VBT for panel info.  */
+	if (CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM) {
+		generate_fake_intel_oprom(&conf->gfx, dev, "$VBT CALISTOGA");
+	}
+	if (CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC) {
+		generate_fake_intel_oprom(&conf->gfx, dev, "$VBT LAKEPORT-G");
+	}
+}
+
 static void gma_func0_init(struct device *dev)
 {
 	u32 reg32;
@@ -659,48 +701,7 @@ static void gma_func0_init(struct device *dev)
 		 | PCI_COMMAND_IO | PCI_COMMAND_MEMORY);
 
 	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
-		/* This should probably run before post VBIOS init. */
-		printk(BIOS_INFO, "Initializing VGA without OPROM.\n");
-		void *mmiobase;
-		u32 iobase, graphics_base;
-		struct northbridge_intel_i945_config *conf = dev->chip_info;
-
-		iobase = dev->resource_list[1].base;
-		mmiobase = (void *)(uintptr_t)dev->resource_list[0].base;
-		graphics_base = dev->resource_list[2].base;
-
-		printk(BIOS_SPEW, "GMADR = 0x%08x GTTADR = 0x%08x\n",
-			pci_read_config32(dev, GMADR),
-			pci_read_config32(dev, GTTADR)
-			);
-
-		int err;
-
-		if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM))
-			panel_setup(mmiobase, dev);
-
-		/* probe if VGA is connected and always run */
-		/* VGA init if no LVDS is connected */
-		if (!probe_edid(mmiobase, GMBUS_PORT_PANEL) ||
-				probe_edid(mmiobase, GMBUS_PORT_VGADDC))
-			err = intel_gma_init_vga(conf,
-				pci_read_config32(dev, 0x5c) & ~0xf,
-				iobase, mmiobase, graphics_base);
-		else
-			err = intel_gma_init_lvds(conf,
-				pci_read_config32(dev, 0x5c) & ~0xf,
-				iobase, mmiobase, graphics_base);
-		if (err == 0)
-			gfx_set_init_done(1);
-		/* Linux relies on VBT for panel info.  */
-		if (CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM) {
-			generate_fake_intel_oprom(&conf->gfx, dev,
-						"$VBT CALISTOGA");
-		}
-		if (CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC) {
-			generate_fake_intel_oprom(&conf->gfx, dev,
-						"$VBT LAKEPORT-G");
-		}
+		gma_ngi(dev);
 	} else {
 		/* PCI Init, will run VBIOS */
 		pci_dev_init(dev);

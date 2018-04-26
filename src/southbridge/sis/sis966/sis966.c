@@ -70,7 +70,7 @@ void sis966_enable(device_t dev)
 	conf = dev->chip_info;
 	int i;
 
-	if (dev->device==0x0000) {
+	if (dev->device == 0x0000) {
 		reg = pci_read_config32(dev, PCI_VENDOR_ID);
 		deviceid = (reg >> 16) & 0xffff;
 		vendorid = reg & 0xffff;

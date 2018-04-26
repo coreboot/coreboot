@@ -631,7 +631,14 @@ static int cbfstool_convert_mkpayload(struct buffer *buffer,
 	/* per default, try and see if payload is an ELF binary */
 	ret = parse_elf_to_payload(buffer, &output, param.compression);
 
-	/* If it's not an ELF, see if it's a UEFI FV */
+	/* If it's not an ELF, see if it's a FIT */
+	if (ret != 0) {
+		ret = parse_fit_to_payload(buffer, &output, param.compression);
+		if (ret == 0)
+			header->type = htonl(CBFS_COMPONENT_FIT);
+	}
+
+	/* If it's not an FIT, see if it's a UEFI FV */
 	if (ret != 0)
 		ret = parse_fv_to_payload(buffer, &output, param.compression);
 

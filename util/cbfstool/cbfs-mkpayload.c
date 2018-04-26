@@ -24,6 +24,7 @@
 #include "cbfs.h"
 #include "fv.h"
 #include "coff.h"
+#include "fdt.h"
 
 /* serialize the seg array into the buffer.
  * The buffer is assumed to be large enough.
@@ -415,4 +416,40 @@ int parse_fv_to_payload(const struct buffer *input, struct buffer *output,
 	xdr_segs(output, segs, 2);
 	return 0;
 
+}
+
+int parse_fit_to_payload(const struct buffer *input, struct buffer *output,
+			 enum comp_algo algo)
+{
+	struct fdt_header *fdt_h;
+
+	DEBUG("start: parse_fit_to_payload\n");
+
+	fdt_h = buffer_get(input);
+	if (be32toh(fdt_h->magic) != FDT_HEADER_MAGIC) {
+		INFO("Not a FIT payload.\n");
+		return -1;
+	}
+
+	/**
+	 * For developers:
+	 * Compress the kernel binary you're sourcing in your its-script
+	 * manually with LZ4 or LZMA and add 'compression = "lz4"' or "lzma" to
+	 * the kernel@1 node in the its-script before assembling the image with
+	 * mkimage.
+	 */
+	if (algo != CBFS_COMPRESS_NONE) {
+		ERROR("FIT images don't support whole-image compression,"
+		      " compress the kernel component instead!\n")
+		return -1;
+	}
+
+	if (buffer_create(output, buffer_size(input), input->name) != 0)
+		return -1;
+
+	memcpy(buffer_get(output), buffer_get(input), buffer_size(input));
+
+	DEBUG("done\n");
+
+	return 0;
 }

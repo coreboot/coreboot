@@ -41,17 +41,23 @@ struct drivers_spi_acpi_config {
 	/* GPIO used to take device out of reset or to put it into reset. */
 	struct acpi_gpio reset_gpio;
 	/* Delay to be inserted after device is taken out of reset. */
-	unsigned reset_delay_ms;
+	unsigned int reset_delay_ms;
+	/* Delay to be inserted after device is put into reset. */
+	unsigned int reset_off_delay_ms;
 
 	/* GPIO used to enable device. */
 	struct acpi_gpio enable_gpio;
 	/* Delay to be inserted after device is enabled. */
-	unsigned enable_delay_ms;
+	unsigned int enable_delay_ms;
+	/* Delay to be inserted after device is disabled. */
+	unsigned int enable_off_delay_ms;
 
 	/* GPIO used to stop operation of device. */
 	struct acpi_gpio stop_gpio;
 	/* Delay to be inserted after disabling stop. */
-	unsigned stop_delay_ms;
+	unsigned int stop_delay_ms;
+	/* Delay to be inserted after enabling stop. */
+	unsigned int stop_off_delay_ms;
 };
 
 #endif /* __SPI_ACPI_CHIP_H__ */

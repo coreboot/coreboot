@@ -469,15 +469,12 @@ void acpi_device_write_spi(const struct acpi_spi *spi)
 }
 
 /* PowerResource() with Enable and/or Reset control */
-void acpi_device_add_power_res(
-	struct acpi_gpio *reset, unsigned int reset_delay_ms,
-	struct acpi_gpio *enable, unsigned int enable_delay_ms,
-	struct acpi_gpio *stop, unsigned int stop_delay_ms)
+void acpi_device_add_power_res(const struct acpi_power_res_params *params)
 {
 	static const char *power_res_dev_states[] = { "_PR0", "_PR3" };
-	unsigned int reset_gpio = reset->pins[0];
-	unsigned int enable_gpio = enable->pins[0];
-	unsigned int stop_gpio = stop->pins[0];
+	unsigned int reset_gpio = params->reset_gpio->pins[0];
+	unsigned int enable_gpio = params->enable_gpio->pins[0];
+	unsigned int stop_gpio = params->stop_gpio->pins[0];
 
 	if (!reset_gpio && !enable_gpio && !stop_gpio)
 		return;
@@ -492,32 +489,41 @@ void acpi_device_add_power_res(
 	/* Method (_ON, 0, Serialized) */
 	acpigen_write_method_serialized("_ON", 0);
 	if (reset_gpio)
-		acpigen_enable_tx_gpio(reset);
+		acpigen_enable_tx_gpio(params->reset_gpio);
 	if (enable_gpio) {
-		acpigen_enable_tx_gpio(enable);
-		if (enable_delay_ms)
-			acpigen_write_sleep(enable_delay_ms);
+		acpigen_enable_tx_gpio(params->enable_gpio);
+		if (params->enable_delay_ms)
+			acpigen_write_sleep(params->enable_delay_ms);
 	}
 	if (reset_gpio) {
-		acpigen_disable_tx_gpio(reset);
-		if (reset_delay_ms)
-			acpigen_write_sleep(reset_delay_ms);
+		acpigen_disable_tx_gpio(params->reset_gpio);
+		if (params->reset_delay_ms)
+			acpigen_write_sleep(params->reset_delay_ms);
 	}
 	if (stop_gpio) {
-		acpigen_disable_tx_gpio(stop);
-		if (stop_delay_ms)
-			acpigen_write_sleep(stop_delay_ms);
+		acpigen_disable_tx_gpio(params->stop_gpio);
+		if (params->stop_delay_ms)
+			acpigen_write_sleep(params->stop_delay_ms);
 	}
 	acpigen_pop_len();		/* _ON method */
 
 	/* Method (_OFF, 0, Serialized) */
 	acpigen_write_method_serialized("_OFF", 0);
-	if (stop_gpio)
-		acpigen_enable_tx_gpio(stop);
-	if (reset_gpio)
-		acpigen_enable_tx_gpio(reset);
-	if (enable_gpio)
-		acpigen_disable_tx_gpio(enable);
+	if (stop_gpio) {
+		acpigen_enable_tx_gpio(params->stop_gpio);
+		if (params->stop_off_delay_ms)
+			acpigen_write_sleep(params->stop_off_delay_ms);
+	}
+	if (reset_gpio) {
+		acpigen_enable_tx_gpio(params->reset_gpio);
+		if (params->reset_off_delay_ms)
+			acpigen_write_sleep(params->reset_off_delay_ms);
+	}
+	if (enable_gpio) {
+		acpigen_disable_tx_gpio(params->enable_gpio);
+		if (params->enable_off_delay_ms)
+			acpigen_write_sleep(params->enable_off_delay_ms);
+	}
 	acpigen_pop_len();		/* _OFF method */
 
 	acpigen_pop_len();		/* PowerResource PRIC */

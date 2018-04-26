@@ -142,11 +142,20 @@ void i2c_generic_fill_ssdt(struct device *dev,
 	}
 
 	/* Power Resource */
-	if (config->has_power_resource)
-		acpi_device_add_power_res(
-			&config->reset_gpio, config->reset_delay_ms,
-			&config->enable_gpio, config->enable_delay_ms,
-			&config->stop_gpio, config->stop_delay_ms);
+	if (config->has_power_resource) {
+		const struct acpi_power_res_params power_res_params = {
+			&config->reset_gpio,
+			config->reset_delay_ms,
+			config->reset_off_delay_ms,
+			&config->enable_gpio,
+			config->enable_delay_ms,
+			config->enable_off_delay_ms,
+			&config->stop_gpio,
+			config->stop_delay_ms,
+			config->stop_off_delay_ms
+		};
+		acpi_device_add_power_res(&power_res_params);
+	}
 
 	/* Callback if any. */
 	if (callback)

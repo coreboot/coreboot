@@ -315,6 +315,40 @@ struct acpi_spi {
 /* Write SPI Bus descriptor to SSDT AML output */
 void acpi_device_write_spi(const struct acpi_spi *spi);
 
+/* GPIO/timing information for the power on/off sequences */
+struct acpi_power_res_params {
+	/* GPIO used to take device out of reset or to put it into reset. */
+	struct acpi_gpio *reset_gpio;
+	/* Delay to be inserted after device is taken out of reset.
+	 * (_ON method delay)
+	 */
+	unsigned int reset_delay_ms;
+	/* Delay to be inserted after device is put into reset.
+	 * (_OFF method delay)
+	 */
+	unsigned int reset_off_delay_ms;
+	/* GPIO used to enable device. */
+	struct acpi_gpio *enable_gpio;
+	/* Delay to be inserted after device is enabled.
+	 * (_ON method delay)
+	 */
+	unsigned int enable_delay_ms;
+	/* Delay to be inserted after device is disabled.
+	 * (_OFF method delay)
+	 */
+	unsigned int enable_off_delay_ms;
+	/* GPIO used to stop operation of device. */
+	struct acpi_gpio *stop_gpio;
+	/* Delay to be inserted after disabling stop.
+	 * (_ON method delay)
+	 */
+	unsigned int stop_delay_ms;
+	/* Delay to be inserted after enabling stop.
+	 * (_OFF method delay)
+	 */
+	unsigned int stop_off_delay_ms;
+};
+
 /*
  * Add a basic PowerResource block for a device that includes
  * GPIOs to control enable, reset and stop operation of the device. Each
@@ -324,10 +358,7 @@ void acpi_device_write_spi(const struct acpi_spi *spi);
  * Enable - Enable / disable power to device.
  * Stop - Stop / start operation of device.
  */
-void acpi_device_add_power_res(
-	struct acpi_gpio *reset, unsigned int reset_delay_ms,
-	struct acpi_gpio *enable, unsigned int enable_delay_ms,
-	struct acpi_gpio *stop, unsigned int stop_delay_ms);
+void acpi_device_add_power_res(const struct acpi_power_res_params *params);
 
 /*
  * Writing Device Properties objects via _DSD

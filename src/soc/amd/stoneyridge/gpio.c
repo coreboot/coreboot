@@ -95,6 +95,7 @@ void gpio_output(gpio_t gpio_num, int value)
 	reg = read32((void *)gpio_address);
 	reg |=  GPIO_OUTPUT_ENABLE;
 	write32((void *)(uintptr_t)gpio_num, reg);
+	gpio_set(gpio_num, value);
 }
 
 const char *gpio_acpi_path(gpio_t gpio)

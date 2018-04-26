@@ -20,11 +20,14 @@
 #include <console/cbmem_console.h>
 #include <console/console.h>
 #include <fmap.h>
+#include <gbb_header.h>
 #include <reset.h>
 #include <rules.h>
 #include <stddef.h>
 #include <string.h>
+#include <security/vboot/gbb.h>
 #include <security/vboot/vboot_common.h>
+#include <security/vboot/vbnv.h>
 
 int vboot_named_region_device(const char *name, struct region_device *rdev)
 {
@@ -34,6 +37,22 @@ int vboot_named_region_device(const char *name, struct region_device *rdev)
 int vboot_named_region_device_rw(const char *name, struct region_device *rdev)
 {
 	return fmap_locate_area_as_rdev_rw(name, rdev);
+}
+
+/* Check if it is okay to enable USB Device Controller (UDC). */
+int vboot_can_enable_udc(void)
+{
+	/* Always disable if not in developer mode */
+	if (!vboot_developer_mode_enabled())
+		return 0;
+	/* Enable if GBB flag is set */
+	if (gbb_is_flag_set(GBB_FLAG_ENABLE_UDC))
+		return 1;
+	/* Enable if VBNV flag is set */
+	if (vbnv_udc_enable_flag())
+		return 1;
+	/* Otherwise disable */
+	return 0;
 }
 
 /* ========================== VBOOT HANDOFF APIs =========================== */

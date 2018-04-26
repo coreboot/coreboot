@@ -229,7 +229,7 @@ static void i82801jx_power_options(device_t dev)
 		reg8 &= ~(1 << 7);	/* Set NMI. */
 	} else {
 		printk(BIOS_INFO, "NMI sources disabled.\n");
-		reg8 |= ( 1 << 7);	/* Can't mask NMI from PCI-E and NMI_NOW */
+		reg8 |= (1 << 7);	/* Can't mask NMI from PCI-E and NMI_NOW */
 	}
 	outb(reg8, 0x70);
 

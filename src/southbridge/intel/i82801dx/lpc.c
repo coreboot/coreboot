@@ -155,7 +155,7 @@ static void i82801dx_power_options(device_t dev)
 		reg8 &= ~(1 << 7);	/* Set NMI. */
 	} else {
 		printk(BIOS_INFO, "NMI sources disabled.\n");
-		reg8 |= ( 1 << 7);	/* Disable NMI. */
+		reg8 |= (1 << 7);	/* Disable NMI. */
 	}
 	outb(reg8, 0x70);
 

@@ -930,7 +930,8 @@ static int cbfs_layout(void)
 			qualifier = "read-only, ";
 		else if (region_is_modern_cbfs((const char *)current->name))
 			qualifier = "CBFS, ";
-		printf(" (%ssize %u)\n", qualifier, current->size);
+		printf(" (%ssize %u, offset %u)\n", qualifier, current->size,
+				current->offset);
 
 		i += lookahead - 1;
 	}

@@ -147,6 +147,13 @@ int vboot_wants_oprom(void)
 	return (vbnv_data(BOOT_OFFSET) & BOOT_OPROM_NEEDED) ? 1 : 0;
 }
 
+/* Read the USB Device Controller(UDC) enable flag from VBNV. */
+int vbnv_udc_enable_flag(void)
+{
+	vbnv_setup();
+	return (vbnv_data(DEV_FLAGS_OFFSET) & DEV_ENABLE_UDC) ? 1 : 0;
+}
+
 void vbnv_init(uint8_t *vbnv_copy)
 {
 	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))

@@ -40,6 +40,7 @@
 #define DEV_FLAGS_OFFSET             4
 #define DEV_BOOT_USB_MASK               0x01
 #define DEV_BOOT_SIGNED_ONLY_MASK       0x02
+#define DEV_ENABLE_UDC                  0x40
 
 #define MISC_FLAGS_OFFSET            8
 #define MISC_FLAGS_BATTERY_CUTOFF_MASK  0x08

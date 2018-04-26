@@ -26,6 +26,10 @@ void regen_vbnv_crc(uint8_t *vbnv_copy);
 int get_recovery_mode_from_vbnv(void);
 void set_recovery_mode_into_vbnv(int recovery_reason);
 int vboot_wants_oprom(void);
+
+/* Read the USB Device Controller(UDC) enable flag from VBNV. */
+int vbnv_udc_enable_flag(void);
+
 /* Initialize and read vbnv. This is used in the main vboot logic path. */
 void vbnv_init(uint8_t *vbnv_copy);
 /* Reset vbnv snapshot to a known state. */

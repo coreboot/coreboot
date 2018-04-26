@@ -45,7 +45,7 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 		smbus_delay();
 
 		val = inb(smbus_io_base + SMBHSTSTAT);
-		if ( (val & 0xff) != 0) {
+		if ((val & 0xff) != 0) {
 			return 0;
 		}
 	} while (--loops);

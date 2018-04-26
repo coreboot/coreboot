@@ -66,10 +66,10 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 
 		val = inb(smbus_io_base + SMBHSTSTAT);
 		val &= 0x1f; // mask off reserved bits
-		if ( val & 0x1c) {
+		if (val & 0x1c) {
 			return -5; // error
 		}
-		if ( val == 0x02) {
+		if (val == 0x02) {
 			outb(val, smbus_io_base + SMBHSTSTAT); // clear status
 			return 0; //
 		}

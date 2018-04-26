@@ -568,12 +568,12 @@ void initialize_cpus(struct bus *cpu_bus)
 	/* Initialize the bootstrap processor */
 	cpu_initialize(0);
 
-	if (is_smp_boot() && !IS_ENABLED(CONFIG_PARALLEL_CPU_INIT)) {
+	if (is_smp_boot() && !IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
 		start_other_cpus(cpu_bus, info->cpu);
 
-		/* Now wait the rest of the cpus stop*/
+	/* Now wait the rest of the cpus stop*/
+	if (is_smp_boot())
 		wait_other_cpus_stop(cpu_bus);
-	}
 
 	if (IS_ENABLED(CONFIG_SERIALIZED_SMM_INITIALIZATION)) {
 		/* At this point, all APs are sleeping:

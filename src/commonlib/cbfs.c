@@ -156,7 +156,7 @@ int cbfsf_decompression_info(struct cbfsf *fh, uint32_t *algo, size_t *size)
 	return 0;
 }
 
-static int cbfsf_file_type(struct cbfsf *fh, uint32_t *ftype)
+int cbfsf_file_type(struct cbfsf *fh, uint32_t *ftype)
 {
 	const size_t sz = sizeof(*ftype);
 

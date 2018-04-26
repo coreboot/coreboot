@@ -111,9 +111,9 @@ static int number(void (*tx_byte)(unsigned char byte, void *data),
 	if (sign)
 		call_tx(sign), count++;
 	if (type & SPECIAL) {
-		if (base==8)
+		if (base == 8)
 			call_tx('0'), count++;
-		else if (base==16) {
+		else if (base == 16) {
 			call_tx('0'), count++;
 			call_tx(digits[33]), count++;
 		}

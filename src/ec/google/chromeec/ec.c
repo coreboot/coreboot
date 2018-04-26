@@ -963,23 +963,26 @@ int google_chromeec_pd_get_amode(uint16_t svid)
 	for (i = 0; i < r.num_ports; i++) {
 		struct ec_params_usb_pd_get_mode_request p;
 		struct ec_params_usb_pd_get_mode_response res;
-
-		p.port = i;
-		p.svid_idx = 0;
-		cmd.cmd_code = EC_CMD_USB_PD_GET_AMODE;
-		cmd.cmd_version = 0;
-		cmd.cmd_data_in = &p;
-		cmd.cmd_size_in = sizeof(p);
-		cmd.cmd_data_out = &res;
-		cmd.cmd_size_out = sizeof(res);
-		cmd.cmd_dev_index = 0;
+		int svid_idx = 0;
 
 		do {
+			/* Reset cmd in each iteration in case
+			   google_chromeec_command changes it. */
+			p.port = i;
+			p.svid_idx = svid_idx;
+			cmd.cmd_code = EC_CMD_USB_PD_GET_AMODE;
+			cmd.cmd_version = 0;
+			cmd.cmd_data_in = &p;
+			cmd.cmd_size_in = sizeof(p);
+			cmd.cmd_data_out = &res;
+			cmd.cmd_size_out = sizeof(res);
+			cmd.cmd_dev_index = 0;
+
 			if (google_chromeec_command(&cmd) < 0)
 				return -1;
 			if (res.svid == svid)
 				return 1;
-			p.svid_idx++;
+			svid_idx++;
 		} while (res.svid);
 	}
 

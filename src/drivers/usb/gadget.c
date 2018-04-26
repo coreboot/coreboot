@@ -154,7 +154,7 @@ debug_dev_retry:
 		USB_REQ_GET_DESCRIPTOR, (USB_DT_DEBUG << 8), 0,
 		&dbgp_desc, sizeof(dbgp_desc));
 	if (ret == sizeof(dbgp_desc)) {
-		if (dbgp_desc.bLength == sizeof(dbgp_desc) && dbgp_desc.bDescriptorType==USB_DT_DEBUG)
+		if (dbgp_desc.bLength == sizeof(dbgp_desc) && dbgp_desc.bDescriptorType == USB_DT_DEBUG)
 			goto debug_dev_found;
 		else
 			dprintk(BIOS_INFO, "Invalid debug device descriptor.\n");

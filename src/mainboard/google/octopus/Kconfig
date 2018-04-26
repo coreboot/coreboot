@@ -41,6 +41,7 @@ config VARIANT_DIR
 	string
 	default "yorp" if BOARD_GOOGLE_YORP
 	default "bip" if BOARD_GOOGLE_BIP
+	default "phaser" if BOARD_GOOGLE_PHASER
 	default "octopus" if BOARD_GOOGLE_OCTOPUS
 
 config DEVICETREE
@@ -51,6 +52,7 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Yorp" if BOARD_GOOGLE_YORP
 	default "Bip" if BOARD_GOOGLE_BIP
+	default "Phaser" if BOARD_GOOGLE_PHASER
 	default "Octopus" if BOARD_GOOGLE_OCTOPUS
 
 config MAINBOARD_FAMILY
@@ -62,6 +64,7 @@ config GBB_HWID
 	depends on CHROMEOS
 	default "YORP TEST 7755" if BOARD_GOOGLE_YORP
 	default "BIP TEST 5732" if BOARD_GOOGLE_BIP
+	default "PHASER TEST 7167" if BOARD_GOOGLE_PHASER
 	default "OCTOPUS TEST 6859" if BOARD_GOOGLE_OCTOPUS
 
 config HAS_TPM

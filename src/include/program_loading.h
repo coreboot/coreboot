@@ -202,10 +202,10 @@ void mirror_payload(struct prog *payload);
 /*
  * Set check_regions to true to check that the payload targets usable memory.
  * With this flag set, if it does not, the load will fail and this function
- * will return NULL.
+ * will return false. On successful payload loading this functions return true.
  *
  * Defined in src/lib/selfboot.c
  */
-void *selfload(struct prog *payload, bool check_regions);
+bool selfload(struct prog *payload, bool check_regions);
 
 #endif /* PROGRAM_LOADING_H */

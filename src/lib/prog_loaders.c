@@ -30,6 +30,7 @@
 #include <stage_cache.h>
 #include <symbols.h>
 #include <timestamp.h>
+#include <cbfs.h>
 
 /* Only can represent up to 1 byte less than size_t. */
 const struct mem_region_device addrspace_32bit =
@@ -182,9 +183,7 @@ void payload_load(void)
 
 	mirror_payload(payload);
 
-	/* Pass cbtables to payload if architecture desires it. */
-	prog_set_entry(payload, selfload(payload, true),
-			cbmem_find(CBMEM_ID_CBTABLE));
+	selfload(payload, true);
 
 out:
 	if (prog_entry(payload) == NULL)

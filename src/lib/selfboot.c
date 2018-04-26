@@ -28,6 +28,7 @@
 #include <bootmem.h>
 #include <program_loading.h>
 #include <timestamp.h>
+#include <cbmem.h>
 
 static const unsigned long lb_start = (unsigned long)&_program;
 static const unsigned long lb_end = (unsigned long)&_eprogram;
@@ -520,7 +521,7 @@ static int load_self_segments(struct segment *head, struct prog *payload,
 	return 1;
 }
 
-void *selfload(struct prog *payload, bool check_regions)
+bool selfload(struct prog *payload, bool check_regions)
 {
 	uintptr_t entry = 0;
 	struct segment head;
@@ -529,7 +530,7 @@ void *selfload(struct prog *payload, bool check_regions)
 	data = rdev_mmap_full(prog_rdev(payload));
 
 	if (data == NULL)
-		return NULL;
+		return false;
 
 	/* Preprocess the self segments */
 	if (!build_self_segment_list(&head, data, &entry))
@@ -546,9 +547,11 @@ void *selfload(struct prog *payload, bool check_regions)
 	/* Update the payload's area with the bounce buffer information. */
 	prog_set_area(payload, (void *)(uintptr_t)bounce_buffer, bounce_size);
 
-	return (void *)entry;
+	/* Pass cbtables to payload if architecture desires it. */
+	prog_set_entry(payload, (void *)entry, cbmem_find(CBMEM_ID_CBTABLE));
 
+	return true;
 out:
 	rdev_munmap(prog_rdev(payload), data);
-	return NULL;
+	return false;
 }

@@ -321,6 +321,7 @@
 #define PAD_SCC(pad)			(pad - SCC_OFFSET)
 
 /* Linux names of the GPIO devices. */
+#define CROS_GPIO_DEVICE_NAME		"INT3453"
 #define GPIO_COMM_NW_NAME		"INT3453:00"
 #define GPIO_COMM_N_NAME		"INT3453:01"
 #define GPIO_COMM_AUDIO_NAME		"INT3453:02"

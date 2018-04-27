@@ -308,6 +308,7 @@ variant_sleep_gpio_table(size_t *num)
 }
 
 static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
 	CROS_GPIO_WP_AH(PAD_SCC(GPIO_PCH_WP), GPIO_COMM_SCC_NAME),
 };
 

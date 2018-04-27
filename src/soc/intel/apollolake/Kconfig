@@ -293,6 +293,13 @@ config NHLT_DA7219
 	help
 	  Include DSP firmware settings for headset codec.
 
+config NHLT_RT5682
+	bool
+	depends on ACPI_NHLT
+	default n
+	help
+	  Include DSP firmware settings for headset codec.
+
 choice
 	prompt "Cache-as-ram implementation"
 	default CAR_CQOS if !SOC_INTEL_GLK

@@ -197,6 +197,53 @@ int nhlt_soc_add_dmic_array(struct nhlt *nhlt, int num_channels)
 	}
 }
 
+/*
+ * The same DSP firmware settings are used for both the capture and
+ * render endpoints.
+*/
+static const struct nhlt_format_config rt5682_formats[] = {
+	/* 48 KHz 24-bits per sample. */
+	{
+		.num_channels = 2,
+		.sample_freq_khz = 48,
+		.container_bits_per_sample = 32,
+		.valid_bits_per_sample = 24,
+		.speaker_mask = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT,
+		.settings_file = "rt5682-2ch-48khz-24b.bin",
+	},
+};
+
+/*
+ * The rt5682 just has headphones and a mic. Both the capture and render
+ * endpoints occupy the same virtual slot.
+*/
+static const struct nhlt_endp_descriptor rt5682_descriptors[] = {
+	/* Render Endpoint */
+	{
+		.link = NHLT_LINK_SSP,
+		.device = NHLT_SSP_DEV_I2S,
+		.direction = NHLT_DIR_RENDER,
+		.vid = NHLT_VID,
+		.did = NHLT_DID_SSP,
+		.cfg = &tdm_config,
+		.cfg_size = sizeof(tdm_config),
+		.formats = rt5682_formats,
+		.num_formats = ARRAY_SIZE(rt5682_formats),
+	},
+	/* Capture Endpoint */
+	{
+		.link = NHLT_LINK_SSP,
+		.device = NHLT_SSP_DEV_I2S,
+		.direction = NHLT_DIR_CAPTURE,
+		.vid = NHLT_VID,
+		.did = NHLT_DID_SSP,
+		.cfg = &tdm_config,
+		.cfg_size = sizeof(tdm_config),
+		.formats = rt5682_formats,
+		.num_formats = ARRAY_SIZE(rt5682_formats),
+	},
+};
+
 int nhlt_soc_add_da7219(struct nhlt *nhlt, int hwlink)
 {
 	/* Virtual bus id of SSP links are the hardware port ids proper. */
@@ -209,4 +256,11 @@ int nhlt_soc_add_max98357(struct nhlt *nhlt, int hwlink)
 	/* Virtual bus id of SSP links are the hardware port ids proper. */
 	return nhlt_add_ssp_endpoints(nhlt, hwlink, max98357_descriptors,
 					ARRAY_SIZE(max98357_descriptors));
+}
+
+int nhlt_soc_add_rt5682(struct nhlt *nhlt, int hwlink)
+{
+        /* Virtual bus id of SSP links are the hardware port ids proper. */
+        return nhlt_add_ssp_endpoints(nhlt, hwlink, rt5682_descriptors,
+                                        ARRAY_SIZE(rt5682_descriptors));
 }

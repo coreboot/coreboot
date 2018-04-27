@@ -25,6 +25,9 @@ SECTIONS
 	STACK(0x4030be00, 4K)
 	RAMSTAGE(0x80200000, 192K)
 
+	/* TODO: Implement MMU support and move TTB to a better location. */
+	TTB(0x81000000, 16K)
+
 #ifdef OMAP_HEADER
 	.header : {
 		*(.header);

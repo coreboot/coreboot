@@ -40,7 +40,6 @@ ramstage-y += sd.c
 ramstage-y += smm.c
 ramstage-y += southcluster.c
 ramstage-y += spi.c
-ramstage-$(CONFIG_ALT_CBFS_LOAD_PAYLOAD) += spi_loading.c
 ramstage-y += tsc_freq.c
 ramstage-y += xhci.c
 

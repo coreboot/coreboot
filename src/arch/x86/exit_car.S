@@ -30,6 +30,9 @@ _start:
 	/* Assume stack alignment doesn't matter here as chipset_teardown_car
 	   is expected to be implemented in assembly. */
 
+	/* Migrate GDT to this text segment */
+	call	gdt_init
+
 	/* chipset_teardown_car() is expected to disable cache-as-ram. */
 	call	chipset_teardown_car
 

@@ -171,6 +171,7 @@ endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32)$(CONFIG_ARCH_VERSTAGE_X86_64),y)
 
 verstage-y += boot.c
+verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += gdt_init.S
 verstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
 verstage-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 
@@ -206,6 +207,9 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
 romstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 romstage-y += boot.c
+# gdt_init.S is included by entry32.inc when romstage is the first C
+# environment.
+romstage-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += gdt_init.S
 romstage-y += cbmem.c
 romstage-y += cbfs_and_run.c
 romstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += cpu_common.c
@@ -283,6 +287,7 @@ postcar-generic-ccopts += -D__POSTCAR__
 
 postcar-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 postcar-y += boot.c
+postcar-y += gdt_init.S
 postcar-y += cbfs_and_run.c
 postcar-y += cbmem.c
 postcar-y += cpu_common.c

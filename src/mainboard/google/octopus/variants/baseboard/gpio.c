@@ -279,6 +279,14 @@ static const struct pad_config early_gpio_table[] = {
 	/* Enable power to wifi early in bootblock and de-assert PERST#. */
 	PAD_CFG_GPO(GPIO_178, 1, DEEP), /* EN_PP3300_WLAN */
 	PAD_CFG_GPO(GPIO_164, 0, DEEP), /* WLAN_PE_RST */
+
+	/*
+	 * ESPI_IO1 acts as ALERT# (which is open-drain) and requies a weak
+	 * pull-up for proper operation. Since there is no external pull present
+	 * on this platform, configure an internal weak pull-up.
+	 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_151, UP_20K, DEEP, NF2, HIZCRx1,
+				    ENPU), /* ESPI_IO1 */
 };
 
 const struct pad_config *__weak

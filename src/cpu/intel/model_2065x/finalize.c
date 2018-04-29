@@ -54,7 +54,4 @@ void intel_model_2065x_finalize_smm(void)
 
 	/* Lock TM interupts - route thermal events to all processors */
 	msr_set_bit(MSR_MISC_PWR_MGMT, 22);
-
-	/* Lock memory configuration to protect SMM */
-	msr_set_bit(MSR_LT_LOCK_MEMORY, 0);
 }

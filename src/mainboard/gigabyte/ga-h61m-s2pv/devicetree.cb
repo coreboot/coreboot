@@ -1,0 +1,117 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2018 Angel Pons <th3fanbus@gmail.com>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+chip northbridge/intel/sandybridge
+	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410 }"
+	register "gfx.link_frequency_270_mhz" = "0"
+	register "gfx.ndid" = "3"
+	register "gfx.use_spread_spectrum_clock" = "0"
+	register "gpu_dp_b_hotplug" = "4"
+	register "gpu_dp_c_hotplug" = "4"
+	register "gpu_dp_d_hotplug" = "4"
+	register "gpu_panel_port_select" = "0"
+	device cpu_cluster 0x0 on
+		chip cpu/intel/socket_LGA1155
+			device lapic 0x0 on
+			end
+		end
+		chip cpu/intel/model_206ax
+			register "c1_acpower" = "1"
+			register "c1_battery" = "1"
+			register "c2_acpower" = "3"
+			register "c2_battery" = "3"
+			register "c3_acpower" = "5"
+			register "c3_battery" = "5"
+			device lapic 0xacac off
+			end
+		end
+	end
+	register "pci_mmio_size" = "2048"
+	device domain 0x0 on
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			register "c2_latency" = "0x0065"
+			register "docking_supported" = "0"
+			register "gen1_dec" = "0x003c0a01"
+			register "p_cnt_throttling_supported" = "0"
+			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"
+			register "pcie_port_coalesce" = "1"
+			register "sata_interface_speed_support" = "0x3"
+			register "sata_port_map" = "0x33"
+			register "spi_lvscc" = "0x2005"
+			register "spi_uvscc" = "0x2005"
+			device pci 16.0 on  end	# Management Engine Interface 1
+			device pci 16.1 off end	# Management Engine Interface 2
+			device pci 16.2 off end	# Management Engine IDE-R
+			device pci 16.3 off end	# Management Engine KT
+			device pci 19.0 off end	# Intel Gigabit Ethernet
+			device pci 1a.0 on  end	# USB2 EHCI #2
+			device pci 1b.0 on  end	# High Definition Audio Audio controller
+			device pci 1c.0 on  end	# PCIe x1 Port (PCIEX1)
+			device pci 1c.1 off end	# Unused PCIe Port
+			device pci 1c.2 off end	# Unused PCIe Port
+			device pci 1c.3 off end	# Unused PCIe Port
+			device pci 1c.4 on  end	# Realtek RTL8111F Ethernet Controller
+			device pci 1c.5 on  end	# ITE IT8892F PCIe to PCI bridge
+			device pci 1c.6 off end	# Unused PCIe Port
+			device pci 1c.7 off end	# Unused PCIe Port
+			device pci 1d.0 on  end	# USB2 EHCI #1
+			device pci 1e.0 on  end	# PCI bridge
+			device pci 1f.0 on	# LPC bridge
+				chip superio/ite/it8728f
+					device pnp 2e.0 off end		# Floppy, not routed.
+					device pnp 2e.1 on		# COM1
+						io 0x60 = 0x03f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.2 off end		# COM2, not routed.
+					device pnp 2e.3 on		# Parallel port
+						io 0x60 = 0x0378
+						irq 0x70 = 7
+						drq 0x74 = 4
+					end
+					device pnp 2e.4 on 		# Environment Controller
+						io 0x60 = 0x0a30
+						irq 0x70 = 9
+						io 0x62 = 0x0a20
+					end
+					device pnp 2e.5 on		# Keyboard
+						io 0x60 = 0x60
+						irq 0x70 = 1
+						io 0x62 = 0x64
+					end
+					device pnp 2e.6 on		# Mouse
+						irq 0x70 = 12
+					end
+					device pnp 2e.7 off		# GPIO
+						io 0x25 = 0x40
+						io 0x27 = 0x10
+						io 0x2c = 0x80
+						io 0x62 = 0x0a00
+						io 0xcb = 0x00
+						io 0xf1 = 0x40
+					end
+					device pnp 2e.a off end		# CIR, not routed.
+				end
+			end
+			device pci 1f.2 on  end	# SATA Controller 1
+			device pci 1f.3 on  end	# SMBus
+			device pci 1f.5 off end	# SATA Controller 2
+			device pci 1f.6 off end	# Thermal
+		end
+		device pci 00.0 on end	# Host bridge
+		device pci 01.0 on end	# PCIe Bridge for discrete graphics (PCIEX16)
+		device pci 02.0 on end	# Internal graphics VGA controller
+	end
+end

@@ -45,7 +45,7 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 	if (cbfs_boot_region_properties(&props))
 		return -1;
 
-	/* All boot CBFS operations are performed using the RO devie. */
+	/* All boot CBFS operations are performed using the RO device. */
 	boot_dev = boot_device_ro();
 
 	if (boot_dev == NULL)

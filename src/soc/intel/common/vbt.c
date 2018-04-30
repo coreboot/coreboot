@@ -30,34 +30,35 @@ const char *mainboard_vbt_filename(void)
 	return "vbt.bin";
 }
 
-static struct region_device vbt_rdev;
-static void *vbt_data;
+static char vbt_data[8 * KiB];
+static int vbt_data_used;
 
 void *locate_vbt(void)
 {
 	uint32_t vbtsig = 0;
-	struct cbfsf file_desc;
 
-	if (vbt_data != NULL)
-		return vbt_data;
+	if (vbt_data_used == 1)
+		return (void *)vbt_data;
 
 	const char *filename = mainboard_vbt_filename();
 
-	if (cbfs_boot_locate(&file_desc, filename, NULL) < 0) {
-		printk(BIOS_ERR, "Could not locate a VBT file in in CBFS\n");
+	size_t file_size = cbfs_boot_load_file(filename,
+		vbt_data, sizeof(vbt_data), CBFS_TYPE_RAW);
+
+	if (file_size == 0)
 		return NULL;
-	}
 
-	cbfs_file_data(&vbt_rdev, &file_desc);
-	rdev_readat(&vbt_rdev, &vbtsig, 0, sizeof(uint32_t));
-
+	memcpy(&vbtsig, vbt_data, sizeof(vbtsig));
 	if (vbtsig != VBT_SIGNATURE) {
 		printk(BIOS_ERR, "Missing/invalid signature in VBT data file!\n");
 		return NULL;
 	}
 
-	vbt_data = rdev_mmap_full(&vbt_rdev);
-	return vbt_data;
+	printk(BIOS_INFO, "Found a VBT of %zu bytes after decompression\n",
+		file_size);
+	vbt_data_used = 1;
+
+	return (void *)vbt_data;
 }
 
 void *vbt_get(void)
@@ -73,11 +74,3 @@ void *vbt_get(void)
 		return NULL;
 	return locate_vbt();
 }
-
-static void unmap_vbt(void *unused)
-{
-	if (vbt_data)
-		rdev_munmap(&vbt_rdev, vbt_data);
-}
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, unmap_vbt, NULL);
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, unmap_vbt, NULL);

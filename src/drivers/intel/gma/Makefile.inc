@@ -24,6 +24,7 @@ ramstage-$(CONFIG_INTEL_GMA_ACPI) += opregion.c
 cbfs-files-$(CONFIG_INTEL_GMA_ADD_VBT_DATA_FILE) += vbt.bin
 vbt.bin-file := $(call strip_quotes,$(CONFIG_INTEL_GMA_VBT_FILE))
 vbt.bin-type := raw
+vbt.bin-compression := lzma
 
 ifeq ($(CONFIG_MAINBOARD_USE_LIBGFXINIT),y)
 

@@ -266,6 +266,18 @@ chip soc/intel/skylake
 				register "stop_off_delay_ms" = "2"
 				device i2c 10 on end
 			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""SYTS7817""
+				register "generic.desc" = ""Synaptics Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B4)"
+				register "generic.enable_delay_ms" = "45"
+				register "generic.has_power_resource" = "1"
+				register "generic.disable_gpio_export_in_crs" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 20 on end
+			end
 		end # I2C #0
 		device pci 15.1 on
 			chip drivers/i2c/generic

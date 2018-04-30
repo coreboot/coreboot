@@ -21,7 +21,6 @@
 
 // Mainboard specific throttle handler
 External (\_TZ.THRT, MethodObj)
-External (\_SB.DPTF.TEVT, MethodObj)
 #ifdef DPTF_ENABLE_CHARGER
 External (\_SB.DPTF.TCHG, DeviceObj)
 #endif
@@ -481,9 +480,9 @@ Device (EC0)
 		/* When sensor ID returns 0xFF then no more events */
 		While (LNotEqual (Local0, EC_TEMP_SENSOR_NOT_PRESENT))
 		{
-			If (CondRefOf (\_SB.DPTF.TEVT)) {
-				\_SB.DPTF.TEVT (Local0)
-			}
+#ifdef HAVE_THERM_EVENT_HANDLER
+			\_SB.DPTF.TEVT (Local0)
+#endif
 
 			/* Keep reaading sensor ID for event */
 			Store (^PATI, Local0)

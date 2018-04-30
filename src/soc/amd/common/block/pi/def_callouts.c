@@ -31,6 +31,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
 	{ AGESA_DO_RESET,                 agesa_Reset },
 	{ AGESA_FCH_OEM_CALLOUT,          agesa_fch_initreset },
 	{ AGESA_HALT_THIS_AP,             agesa_HaltThisAp },
+	{ AGESA_HEAP_REBASE,              agesa_HeapRebase },
 	{ AGESA_GNB_PCIE_SLOT_RESET,      agesa_PcieSlotResetControl }
 };
 #else
@@ -46,6 +47,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
 	{ AGESA_READ_SPD,                 agesa_ReadSpd },
 	{ AGESA_GNB_PCIE_SLOT_RESET,      agesa_PcieSlotResetControl },
 	{ AGESA_GET_TEMP_HEAP_BASE,       agesa_GetTempHeapBase },
+	{ AGESA_HEAP_REBASE,              agesa_HeapRebase },
 #if ENV_RAMSTAGE
 	{ AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
 	{ AGESA_RUNFUNC_ON_ALL_APS,       agesa_RunFcnOnAllAps },

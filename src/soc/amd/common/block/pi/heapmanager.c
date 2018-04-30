@@ -56,6 +56,39 @@ AGESA_STATUS agesa_GetTempHeapBase(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 }
 
 /*
+ * Name			agesa_HeapRebase
+ * Brief description	AGESA may use internal hardcoded locations for its
+ *			heap.  Modern implementations allow the base to be
+ *			overridden by calling agesa_HeapRebase.
+ * Input parameters
+ *	Func		Unused
+ *	Data		Unused
+ *	ConfigPtr	Pointer to type AGESA_REBASE_PARAMS
+ * Output parameters
+ *	Status		Indicates whether HeapAddress was successfully
+ *			set.
+ */
+AGESA_STATUS agesa_HeapRebase(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+{
+	AGESA_REBASE_PARAMS *Rebase;
+
+	Rebase = (AGESA_REBASE_PARAMS *)ConfigPtr;
+	if (ENV_BOOTBLOCK) {
+		Rebase->HeapAddress = CONFIG_PI_AGESA_CAR_HEAP_BASE;
+	} else {
+		/*
+		 * todo: remove the if() above and keep the assignment here
+		 * once all AGESA functions are removed from bootblock.
+		 */
+		Rebase->HeapAddress = (UINTN)agesa_heap_base();
+		if (!Rebase->HeapAddress)
+			Rebase->HeapAddress = CONFIG_PI_AGESA_CAR_HEAP_BASE;
+	}
+
+	return AGESA_SUCCESS;
+}
+
+/*
  * Name			FindAllocatedNode
  * Brief description	Find an allocated node that matches the handle.
  * Input parameter	The desired handle.

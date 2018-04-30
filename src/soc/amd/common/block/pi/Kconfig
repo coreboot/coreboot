@@ -7,6 +7,14 @@ config SOC_AMD_COMMON_BLOCK_PI
 
 if SOC_AMD_COMMON_BLOCK_PI
 
+config PI_AGESA_CAR_HEAP_BASE
+	hex
+	default 0x400000
+	help
+	  The AGESA PI blob may be built to allow an optional callout for
+	  AgesaHeapRebase.  If AGESA calls AgesaHeapRebase, this option
+	  determines the location of the heap prior to DRAM availability.
+
 config PI_AGESA_TEMP_RAM_BASE
 	hex
 	default 0x100000

@@ -349,7 +349,7 @@ get_log_dedupe "ARM" \
 
 get_log_dedupe "RISC-V" \
 	"$(for codedir in $(grep -rl "_RISCV" --include=Kconfig | grep -v 'payloads/\|drivers/\|vendorcode/\|console' ); do dirname "$codedir"; done | grep -v '^src$')" \
-	"riscv\|risc-v\|lowrisc"
+	"riscv\|risc-v\|lowrisc\|sifive"
 
 get_log_dedupe "MIPS" \
 	"$(for codedir in $(grep -rl "_MIPS" --include=Kconfig | \

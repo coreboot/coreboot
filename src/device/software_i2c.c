@@ -29,6 +29,11 @@
 
 #define spew(...) do { if (SPEW) printk(BIOS_SPEW, ##__VA_ARGS__); } while (0)
 
+#define ERR_NACK	-2
+#define ERR_TIMEOUT	-3
+#define ERR_ARB		-4
+#define ERR_WEDGE	-5
+
 struct software_i2c_ops *software_i2c[SOFTWARE_I2C_MAX_BUS];
 
 /*
@@ -71,7 +76,7 @@ static int wait_for_scl(unsigned bus, const char *error_context)
 	if (!__wait(bus, TIMEOUT_US, 1)) {
 		printk(BIOS_ERR, "software_i2c(%d): ERROR: Clock stretching "
 				 "timeout %s!\n", bus, error_context);
-		return -1;
+		return ERR_TIMEOUT;
 	}
 
 	return 0;
@@ -88,13 +93,13 @@ static int start_cond(unsigned bus)
 	/* Might need to wait for clock stretching if repeated start. */
 	software_i2c[bus]->set_scl(bus, 1);
 	if (wait_for_scl(bus, "before start condition"))
-		return -1;
+		return ERR_TIMEOUT;
 	wait(bus);	/* Repeated start setup time, minimum 4.7us */
 
 	if (!software_i2c[bus]->get_sda(bus)) {
 		printk(BIOS_ERR, "software_i2c(%d): Arbitration lost trying "
 			"to send start condition!\n", bus);
-		return -1;
+		return ERR_ARB;
 	}
 
 	/* SCL is high, transition SDA low as first part of start condition. */
@@ -121,7 +126,7 @@ static int stop_cond(unsigned bus)
 	assert(!software_i2c[bus]->get_scl(bus));
 	software_i2c[bus]->set_scl(bus, 1);
 	if (wait_for_scl(bus, "before stop condition"))
-		return -1;
+		return ERR_TIMEOUT;
 	wait(bus);	/* Stop bit setup time, minimum 4us */
 
 	/* SCL is high, transition SDA high to signal stop condition. */
@@ -148,20 +153,20 @@ static int out_bit(unsigned bus, int bit)
 	if (bit && !software_i2c[bus]->get_sda(bus)) {
 		printk(BIOS_ERR, "software_i2c(%d): ERROR: SDA wedged low "
 			"by slave before clock pulse on transmit!\n", bus);
-		return -1;
+		return ERR_WEDGE;
 	}
 
 	/* Clock stretching */
 	assert(!software_i2c[bus]->get_scl(bus));
 	software_i2c[bus]->set_scl(bus, 1);
 	if (wait_for_scl(bus, "on transmit"))
-		return -1;
+		return ERR_TIMEOUT;
 	wait(bus);
 
 	if (bit && !software_i2c[bus]->get_sda(bus)) {
 		printk(BIOS_ERR, "software_i2c(%d): ERROR: SDA wedged low "
 			"by slave after clock pulse on transmit!\n", bus);
-		return -1;
+		return ERR_WEDGE;
 	}
 
 	assert(software_i2c[bus]->get_scl(bus));
@@ -185,7 +190,7 @@ static int in_bit(unsigned bus)
 	assert(!software_i2c[bus]->get_scl(bus));
 	software_i2c[bus]->set_scl(bus, 1);
 	if (wait_for_scl(bus, "on receive"))
-		return -1;
+		return ERR_TIMEOUT;
 
 	/* SCL is high, now data is valid */
 	bit = software_i2c[bus]->get_sda(bus);
@@ -202,11 +207,11 @@ static int in_bit(unsigned bus)
 static int out_byte(unsigned bus, u8 byte)
 {
 	unsigned bit;
-	int nack;
+	int nack, ret;
 
 	for (bit = 0; bit < 8; bit++)
-		if (out_bit(bus, (byte >> (7 - bit)) & 0x1) < 0)
-			return -1;
+		if ((ret = out_bit(bus, (byte >> (7 - bit)) & 0x1)) < 0)
+			return ret;
 
 	nack = in_bit(bus);
 
@@ -214,22 +219,22 @@ static int out_byte(unsigned bus, u8 byte)
 		printk(BIOS_DEBUG, "software_i2c(%d): wrote byte 0x%02x, "
 			"received %s\n", bus, byte, nack ? "NAK" : "ACK");
 
-	return nack;
+	return nack > 0 ? ERR_NACK : nack;
 }
 
 static int in_byte(unsigned bus, int ack)
 {
 	u8 byte = 0;
-	int i;
+	int i, ret;
 	for (i = 0; i < 8; ++i) {
 		int bit = in_bit(bus);
 		if (bit < 0)
-			return -1;
+			return bit;
 		byte = (byte << 1) | bit;
 	}
 
-	if (out_bit(bus, !ack) < 0)
-		return -1;
+	if ((ret = out_bit(bus, !ack)) < 0)
+		return ret;
 
 	if (DEBUG)
 		printk(BIOS_DEBUG, "software_i2c(%d): read byte 0x%02x, "
@@ -240,17 +245,16 @@ static int in_byte(unsigned bus, int ack)
 
 int software_i2c_transfer(unsigned bus, struct i2c_msg *segments, int count)
 {
-	int i;
+	int i, ret;
 	struct i2c_msg *seg;
 
 	for (seg = segments; seg - segments < count; seg++) {
-		if (start_cond(bus) < 0)
-			return -1;
+		if ((ret = start_cond(bus)) < 0)
+			return ret;
 		const u8 addr_dir = seg->slave << 1 | !!(seg->flags & I2C_M_RD);
-		if (out_byte(bus, addr_dir) < 0)
-			return -1;
+		if ((ret = out_byte(bus, addr_dir)) < 0)
+			return ret;
 		for (i = 0; i < seg->len; i++) {
-			int ret;
 			if (seg->flags & I2C_M_RD) {
 				ret = in_byte(bus, i < seg->len - 1);
 				seg->buf[i] = (u8)ret;
@@ -258,11 +262,11 @@ int software_i2c_transfer(unsigned bus, struct i2c_msg *segments, int count)
 				ret = out_byte(bus, seg->buf[i]);
 			}
 			if (ret < 0)
-				return -1;
+				return ret;
 		}
 	}
-	if (stop_cond(bus) < 0)
-		return -1;
+	if ((ret = stop_cond(bus)) < 0)
+		return ret;
 
 	return 0;
 }

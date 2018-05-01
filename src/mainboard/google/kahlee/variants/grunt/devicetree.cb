@@ -62,7 +62,12 @@ chip soc/amd/stoneyridge
 		device pci 2.1 on  end #
 		device pci 2.2 on  end #
 		device pci 2.3 on  end #
-		device pci 2.4 on  end #
+		device pci 2.4 on
+			chip drivers/generic/bayhub
+				register "power_saving" = "1"
+				device pci 00.0 on end
+			end
+		end #
 		device pci 2.5 on  end #
 		device pci 8.0 on  end # PSP
 		device pci 9.0 on  end # PCIe Host Bridge

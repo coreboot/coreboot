@@ -4,7 +4,7 @@ services:
   - docker:dind
 
 variables:
-  RELEASE_DIR: /home/coreboot
+  RELEASE_DIR: /home/coreboot/release
 
 stages:
   - check_dependencies
@@ -36,7 +36,7 @@ check_dependencies:
       - ${RELEASE_DIR}/${PLATFORM}_*
   only:
     - tags   
-      
+
 .test_rom: &test_rom
   variables:
     PLATFORM: 
@@ -44,6 +44,7 @@ check_dependencies:
   tags:
     - docker
   script:
+    - echo "test_rom"
     - ls -la ${RELEASE_DIR}/${PLATFORM}_*.rom
   only:
     - tags
@@ -55,6 +56,7 @@ check_dependencies:
   tags:
     - docker
   script:
+    - echo "sign_rom"
     - for rom in ${RELEASE_DIR}/${PLATFORM}_*.rom; do touch ${rom}_dummy_signature; done
     - ls -la ${RELEASE_DIR}/${PLATFORM}_*.rom
   artifacts:

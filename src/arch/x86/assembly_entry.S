@@ -16,33 +16,21 @@
 
 #include <rules.h>
 
-/*
- *Take the path where CAR_GLOBAL variables just need to be cleared when
- * verstage runs directly after bootblock.
- */
-#define ROMSTAGE_AFTER_VERSTAGE \
-	(IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE) && \
-		IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK) && ENV_ROMSTAGE)
-
-#if IS_ENABLED(CONFIG_C_ENVIRONMENT_BOOTBLOCK) || ROMSTAGE_AFTER_VERSTAGE
+#if IS_ENABLED(CONFIG_C_ENVIRONMENT_BOOTBLOCK)
 
 /*
  * This path is for stages that are post bootblock when employing
- * CONFIG_C_ENVIRONMENT_BOOTBLOCK or any intermediate stage succeeding
- * the first stage to initialize protected mode. There's no need to re-load
- * the gdt, etc as all those settings are cached within the processor. In
- * order to continue with C code execution one needs to set stack pointer and
+ * CONFIG_C_ENVIRONMENT_BOOTBLOCK. There's no need to re-load the gdt,
+ * etc as all those settings are cached within the processor. In order
+ * to continue with C code execution one needs to set stack pointer and
  * clear CAR_GLOBAL variables that are stage specific.
  */
 .section ".text._start", "ax", @progbits
 .global _start
 _start:
 
-/* _car_stack_end symbol is only valid when bootblock does CAR setup. */
-#if IS_ENABLED(CONFIG_C_ENVIRONMENT_BOOTBLOCK)
 	/* reset stack pointer to CAR stack */
 	mov	$_car_stack_end, %esp
-#endif
 
 	/* clear CAR_GLOBAL area as it is not shared */
 	cld

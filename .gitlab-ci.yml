@@ -68,17 +68,20 @@ check_dependencies:
 
 .publish_rom: &publish_rom
   variables:
-    PLATFORM: 
+    PLATFORM:
   stage: publish_rom
   tags:
     - docker
   script:
+    - echo "curl -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -X MKCOL ${UPLOADER_URL}/${PLATFORM}/; curl -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -X MKCOL ${UPLOADER_URL}/${PLATFORM}/releases/"
     - curl -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -X MKCOL "${UPLOADER_URL}/${PLATFORM}/"; curl -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -X MKCOL "${UPLOADER_URL}/${PLATFORM}/releases/"
+    - echo "for file in ${RELEASE_DIR}/${PLATFORM}_*.tar.gz; do curl --fail -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -T ${file} ${UPLOADER_URL}/${PLATFORM}/releases/; done"
     - for file in ${RELEASE_DIR}/${PLATFORM}_*.tar.gz; do curl --fail -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -T ${file} "${UPLOADER_URL}/${PLATFORM}/releases/"; done
+    - ls -al /home/coreboot/release
   only:
     - tags
 
-    
+
 build:apu1:
   <<: *build_rom_apu
   variables:
@@ -88,16 +91,16 @@ build:apu1:
   <<: *test_rom
   variables:
     PLATFORM: apu1
-    
+
 .sign:apu1:
   <<: *sign_rom
   variables:
     PLATFORM: apu1
-    
+
 publish:apu1:
   <<: *publish_rom
   variables:
-    PLATFORM: apu1  
+    PLATFORM: apu1
 
 
 build:apu2:

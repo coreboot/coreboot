@@ -6,7 +6,7 @@
 # GENERAL DESCRIPTION
 #   Concatentates XBL segments into one ELF image
 #
-# Copyright (c) 2016, The Linux Foundation. All rights reserved.
+# Copyright (c) 2016, 2018, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -44,6 +44,7 @@
 #
 # when       who       what, where, why
 # --------   ---       ------------------------------------------------------
+# 03/26/18   tv        Added -e to enable extended MBNV5 support
 # 09/04/15   et        Added -x and -d to embed xbl_sec ELF
 # 02/11/15   ck        Fixed missing elf type check in ZI OOB feature
 # 11/04/14   ck        Updated calls to mbn_tools functions
@@ -205,6 +206,11 @@ def main():
   else:
     zi_oob_enabled = True
 
+  if options.elf_inp_xbl_sec:
+    is_ext_mbn_v5 = True
+  else:
+    is_ext_mbn_v5 = False
+
 
   mbn_type = 'elf'
   header_format = 'reg'
@@ -237,7 +243,8 @@ def main():
 	     is_elf2_64_bit,
        is_elf_xbl_sec_64_bit,
 	     is_out_elf_64_bit,
-	     zi_oob_enabled)
+	     zi_oob_enabled,
+	     is_ext_mbn_v5)
 
 
   # Hash the image if user did not explicitly say not to
@@ -262,6 +269,7 @@ def main():
 				target_hash,
 				target_hash_hd,
                          	image_header_secflag,
+				is_ext_mbn_v5,
 				elf_file_name = source_elf)
     if rv:
        raise RuntimeError, "Failed to create image header for hash segment"
@@ -296,7 +304,8 @@ def merge_elfs(env,
                is_elf2_64_bit,
                is_elf_xbl_sec_64_bit,
 	             is_out_elf_64_bit,
-	             zi_oob_enabled):
+	             zi_oob_enabled,
+	             is_ext_mbn_v5):
 
   [elf_header1, phdr_table1] = \
     mbn_tools.preprocess_elf_file(elf_in_file_name1)
@@ -654,7 +663,12 @@ def merge_elfs(env,
       new_phdr.p_paddr  = phys_virt_addr
       new_phdr.p_filesz = os.path.getsize(elf_in_file_xbl_sec)
       new_phdr.p_memsz  = new_phdr.p_filesz
-      new_phdr.p_flags  = 0x5
+      if is_ext_mbn_v5 == True:
+	new_phdr.p_flags  = (0x5 |
+	  (mbn_tools.MI_PBT_XBL_SEC_SEGMENT <<
+	   mbn_tools.MI_PBT_FLAG_SEGMENT_TYPE_SHIFT));
+      else:
+	new_phdr.p_flags  = 0x5
       new_phdr.p_align  = 0x1000
     else:
       # Converting from 64 to 32 elf requires data size validation
@@ -663,18 +677,23 @@ def merge_elfs(env,
       new_phdr = mbn_tools.Elf32_Phdr('\0' * ELF32_PHDR_SIZE)
       new_phdr.p_type   = 0x1 #
       new_phdr.p_offset = segment_offset
-      new_phdr.p_flags  = 0x5
+      if is_ext_mbn_v5 == True:
+	new_phdr.p_flags  = (0x5 |
+	  (mbn_tools.MI_PBT_XBL_SEC_SEGMENT <<
+	   mbn_tools.MI_PBT_FLAG_SEGMENT_TYPE_SHIFT));
+      else:
+	new_phdr.p_flags  = 0x5
       new_phdr.p_align  = 0x1000
 
       if phys_virt_addr > 0xFFFFFFFF:
         if zi_oob_enabled == False or curr_phdr.p_filesz != 0:
-          print "ERROR: File xbl_sec VAddr or PAddr is too large for conversion."
+          print "ERROR: File xbl_sec VAddr or PAddr is too big for conversion."
           exit()
       new_phdr.p_vaddr  = phys_virt_addr
       new_phdr.p_paddr  = phys_virt_addr
 
       if os.path.getsize(elf_in_file_xbl_sec) > 0xFFFFFFFF:
-        print "ERROR: File xbl_sec Filesz is too large for conversion."
+        print "ERROR: File xbl_sec Filesz is too big for conversion."
         exit()
       new_phdr.p_filesz = os.path.getsize(elf_in_file_xbl_sec)
       new_phdr.p_memsz  = new_phdr.p_filesz

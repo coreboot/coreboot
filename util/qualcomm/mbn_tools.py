@@ -6,7 +6,7 @@
 # GENERAL DESCRIPTION
 #    Contains all MBN Utilities for image generation
 #
-# Copyright (c) 2016, The Linux Foundation. All rights reserved.
+# Copyright (c) 2016, 2018, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -41,6 +41,7 @@
 #
 # when       who     what, where, why
 # --------   ---     ---------------------------------------------------------
+# 03/22/18   thiru   Added support for extended MBNV5.
 # 06/06/13   yliong  CR 497042: Signed and encrypted image is corrupted. MRC features.
 # 03/18/13   dhaval  Add support for hashing elf segments with SHA256 and
 #                    sync up to mpss, adsp mbn-tools
@@ -166,6 +167,7 @@ MI_PBT_HASH_SEGMENT                   = 0x2
 MI_PBT_BOOT_SEGMENT                   = 0x3
 MI_PBT_L4BSP_SEGMENT                  = 0x4
 MI_PBT_SWAPPED_SEGMENT                = 0x5
+MI_PBT_XBL_SEC_SEGMENT                = 0x5
 MI_PBT_SWAP_POOL_SEGMENT              = 0x6
 MI_PBT_PHDR_SEGMENT                   = 0x7
 
@@ -902,6 +904,7 @@ def image_header(env, gen_dict,
                       code_file_name,
                       output_file_name,
                       secure_type,
+                      is_ext_mbn_v5,
                       header_format = 'reg',
                       requires_preamble = False,
                       preamble_file_name = None,
@@ -988,6 +991,12 @@ def image_header(env, gen_dict,
       boot_header.sig_size = signature_size
       boot_header.cert_chain_ptr = image_dest + code_size + signature_size
       boot_header.cert_chain_size = cert_chain_size
+
+      if is_ext_mbn_v5 == True:
+      	# If platform image integrity check is enabled
+	boot_header.flash_parti_ver = 5   # version
+	boot_header.image_src = 0         # sig_size_qc
+	boot_header.image_dest_ptr = 0    # cert_chain_size_qc
 
       # If preamble is required, output the preamble file and update the boot_header
       if requires_preamble is True:
@@ -2051,7 +2060,7 @@ def get_hash_address(elf_file_name):
       curr_phdr = phdr_table[i]
       if curr_phdr.p_paddr > last_paddr:
          # Skip the demand paging segment as it would be outside the physical RAM location
-         if MI_PBT_SEGMENT_TYPE_VALUE(curr_phdr.p_flags) != MI_PBT_SWAPPED_SEGMENT:
+         if MI_PBT_SEGMENT_TYPE_VALUE(curr_phdr.p_flags) != MI_PBT_XBL_SEC_SEGMENT:
             last_paddr = curr_phdr.p_paddr;
             last_paddr_segment = i;
 

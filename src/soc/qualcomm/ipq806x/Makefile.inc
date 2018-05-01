@@ -62,14 +62,14 @@ ifeq ($(CONFIG_USE_BLOBS),y)
 # Add MBN header to allow SBL3 to start coreboot bootblock
 $(objcbfs)/bootblock.mbn: $(objcbfs)/bootblock.raw.bin
 	@printf "    ADD MBN    $(subst $(obj)/,,$(@))\n"
-	./util/ipqheader/ipqheader.py $(call loadaddr,bootblock) $< $@.tmp
+	./util/qualcomm/ipqheader.py $(call loadaddr,bootblock) $< $@.tmp
 	@mv $@.tmp $@
 
 # Create a complete bootblock which will start up the system
 $(objcbfs)/bootblock.bin: $(call strip_quotes,$(CONFIG_SBL_BLOB)) \
 			   $(objcbfs)/bootblock.mbn
 	@printf "    MBNCAT     $(subst $(obj)/,,$(@))\n"
-	@util/ipqheader/mbncat.py -o $@.tmp $^
+	@util/qualcomm/mbncat.py -o $@.tmp $^
 	@mv $@.tmp $@
 
 endif

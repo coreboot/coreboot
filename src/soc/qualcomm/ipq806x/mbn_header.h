@@ -18,7 +18,7 @@
 
 #include <types.h>
 
-/* Qualcomm firmware blob header gleaned from util/ipqheader/ipqheader.py */
+/* Qualcomm firmware blob header gleaned from util/qualcomm/ipqheader.py */
 
 struct mbn_header {
 	u32	mbn_type;

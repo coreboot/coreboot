@@ -47,7 +47,7 @@ config SBL_ELF
 config SBL_UTIL_PATH
 	depends on USE_BLOBS
 	string "Path for utils to combine SBL_ELF and bootblock"
-	default "util/ipqheader"
+	default "util/qualcomm"
 	help
 	  Path for utils to combine SBL_ELF and bootblock
 

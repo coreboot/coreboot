@@ -379,7 +379,6 @@ void sb_acpi_mmio_decode(void);
 void sb_pci_port80(void);
 void sb_read_mode(u32 mode);
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
-void sb_set_readspeed(u16 norm, u16 fast);
 void sb_tpm_decode(void);
 void sb_tpm_decode_spi(void);
 void lpc_wideio_512_window(uint16_t base);

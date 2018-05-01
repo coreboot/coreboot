@@ -442,15 +442,6 @@ void sb_disable_4dw_burst(void)
 					& ~SPI_RD4DW_EN_HOST);
 }
 
-void sb_set_readspeed(u16 norm, u16 fast)
-{
-	uintptr_t base = sb_spibase();
-	write16((void *)base + SPI_CNTRL1, (read16((void *)base + SPI_CNTRL1)
-					& ~SPI_CNTRL1_SPEED_MASK)
-					| (norm << SPI_NORM_SPEED_SH)
-					| (fast << SPI_FAST_SPEED_SH));
-}
-
 void sb_read_mode(u32 mode)
 {
 	uintptr_t base = sb_spibase();

@@ -4,7 +4,7 @@ services:
   - docker:dind
 
 variables:
-  RELEASE_DIR: /home/coreboot/release
+  RELEASE_DIR: ${CI_PROJECT_DIR}
 
 stages:
   - check_dependencies
@@ -30,7 +30,8 @@ check_dependencies:
     - git clone https://github.com/pcengines/pce-fw-builder.git -b additional_scripts /home/coreboot/pce-fw-builder
     - cd /home/coreboot/pce-fw-builder
     - ./build.sh release-CI "${CI_COMMIT_REF_NAME}" "${PLATFORM}"
-    - ls -al ${RELEASE_DIR}/${PLATFORM}_*
+    - cp -v /home/coreboot/release/${PLATFORM}_* ${RELEASE_DIR}
+    - ls -al ${RELEASE_DIR}
   artifacts:
     name: ${PLATFORM}
     paths:
@@ -74,14 +75,11 @@ check_dependencies:
   tags:
     - docker
   script:
-    - ls -al /home/coreboot/release
+    - ls -al ${RELEASE_DIR}
     - echo "curl -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -X MKCOL ${UPLOADER_URL}/${PLATFORM}/; curl -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -X MKCOL ${UPLOADER_URL}/${PLATFORM}/releases/"
     - curl -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -X MKCOL "${UPLOADER_URL}/${PLATFORM}/"; curl -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -X MKCOL "${UPLOADER_URL}/${PLATFORM}/releases/"
     - echo "for file in ${RELEASE_DIR}/${PLATFORM}_*.tar.gz; do curl --fail -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -T ${file} ${UPLOADER_URL}/${PLATFORM}/releases/; done"
     - for file in ${RELEASE_DIR}/${PLATFORM}_*.tar.gz; do curl --fail -u ${UPLOADER_USERNAME}:${UPLOADER_PASSWORD} -T ${file} "${UPLOADER_URL}/${PLATFORM}/releases/"; done
-    - ls -al /home/coreboot/release
-  dependencies:
-    - build_rom_apu
   only:
     - tags
 

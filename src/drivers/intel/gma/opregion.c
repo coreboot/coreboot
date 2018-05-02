@@ -30,7 +30,7 @@
 /* Write ASLS PCI register and prepare SWSCI register. */
 void intel_gma_opregion_register(uintptr_t opregion)
 {
-	device_t igd;
+	struct device *igd;
 	u16 reg16;
 	u16 sci_reg;
 

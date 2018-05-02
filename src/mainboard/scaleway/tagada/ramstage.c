@@ -20,6 +20,7 @@
 #include <fsp/api.h>
 #include <soc/ramstage.h>
 #include <smbios.h>
+#include <spd.h>
 
 #include "bmcinfo.h"
 
@@ -85,4 +86,13 @@ const char *smbios_mainboard_location_in_chassis(void)
 smbios_board_type smbios_mainboard_board_type(void)
 {
 	return SMBIOS_BOARD_TYPE_SERVER_BLADE;
+}
+
+/* Add any mainboard specific information for dimm */
+void mainboard_add_dimm_info(
+	struct memory_info *mem_info,
+	int channel, int dimm, int index)
+{
+	/* Mainboard only has DDR4 DIMM slots */
+	mem_info->dimm[index].mod_type = SPD_UDIMM;
 }

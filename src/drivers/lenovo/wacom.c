@@ -43,7 +43,7 @@ drivers_lenovo_is_wacom_present(void)
 	const char *pn;
 	int i;
 	static int result = -1;
-	device_t superio;
+	struct device *superio;
 	u8 sioid;
 
 	if (result != -1)

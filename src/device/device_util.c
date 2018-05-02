@@ -209,7 +209,7 @@ struct device *dev_find_class(unsigned int class, struct device *from)
  * @param dev The device path to encode.
  * @return Device path encoded into lower 3 bytes of dword.
  */
-u32 dev_path_encode(struct device *dev)
+u32 dev_path_encode(const struct device *dev)
 {
 	u32 ret;
 

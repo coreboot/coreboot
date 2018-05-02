@@ -185,7 +185,7 @@ void scan_bridges(struct bus *bus);
 void assign_resources(struct bus *bus);
 const char *dev_name(struct device *dev);
 const char *dev_path(const struct device *dev);
-u32 dev_path_encode(struct device *dev);
+u32 dev_path_encode(const struct device *dev);
 const char *bus_path(struct bus *bus);
 void dev_set_enabled(struct device *dev, int enable);
 void disable_children(struct bus *bus);

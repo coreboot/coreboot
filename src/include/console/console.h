@@ -31,7 +31,7 @@ void post_code(u8 value);
 #if IS_ENABLED(CONFIG_CMOS_POST_EXTRA)
 void post_log_extra(u32 value);
 struct device;
-void post_log_path(struct device *dev);
+void post_log_path(const struct device *dev);
 void post_log_clear(void);
 #else
 #define post_log_extra(x) do {} while (0)

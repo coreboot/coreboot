@@ -108,7 +108,7 @@ void post_log_extra(u32 value)
 	spin_unlock(&cmos_post_lock);
 }
 
-void post_log_path(struct device *dev)
+void post_log_path(const struct device *dev)
 {
 	if (dev) {
 		/* Encode path into lower 3 bytes */

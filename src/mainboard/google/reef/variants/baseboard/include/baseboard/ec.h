@@ -71,9 +71,6 @@
 #define EC_ENABLE_LID_SWITCH
 #define EC_ENABLE_WAKE_PIN	GPE_EC_WAKE
 
-/* Enable Tablet switch */
-#define EC_ENABLE_TABLET_EVENT
-
 #define EC_ENABLE_TBMC_DEVICE
 
 #define SIO_EC_MEMMAP_ENABLE     /* EC Memory Map Resources */

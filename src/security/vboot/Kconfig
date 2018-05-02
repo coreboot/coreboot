@@ -67,6 +67,7 @@ config VBOOT_VBNV_FLASH
 config VBOOT_STARTS_IN_BOOTBLOCK
 	bool
 	default n
+	depends on C_ENVIRONMENT_BOOTBLOCK
 	help
 	  Firmware verification happens during the end of or right after the
 	  bootblock. This implies that a static VBOOT2_WORK() buffer must be

@@ -20,7 +20,7 @@
 #include <device/device.h>
 #include <device/smbus.h>
 
-struct bus *get_pbus_smbus(device_t dev)
+struct bus *get_pbus_smbus(struct device *dev)
 {
 	struct bus *const pbus = i2c_link(dev);
 	if (!pbus->dev->ops->ops_smbus_bus) {
@@ -40,7 +40,7 @@ struct bus *get_pbus_smbus(device_t dev)
  *
  * @param dev TODO.
  */
-int smbus_set_link(device_t dev)
+int smbus_set_link(struct device *dev)
 {
 	struct bus *pbus_a[4]; // 4 level mux only. Enough?
 	struct bus *pbus = dev->bus;
@@ -75,7 +75,7 @@ int smbus_set_link(device_t dev)
 		return -1;				       \
 	}
 
-int smbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buffer)
+int smbus_block_read(struct device *dev, u8 cmd, u8 bytes, u8 *buffer)
 {
 	CHECK_PRESENCE(block_read);
 
@@ -83,7 +83,7 @@ int smbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buffer)
 							      bytes, buffer);
 }
 
-int smbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buffer)
+int smbus_block_write(struct device *dev, u8 cmd, u8 bytes, const u8 *buffer)
 {
 	CHECK_PRESENCE(block_write);
 

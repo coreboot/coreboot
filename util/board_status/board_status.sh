@@ -378,10 +378,10 @@ elif [ -n "$REMOTE_HOST" ]; then
 else
 	echo "Verifying that CBMEM is available"
 	if [ $(id -u) -ne 0 ]; then
-		sudo command -v "$cbmem_cmd" >/dev/null
+		command -v "$cbmem_cmd" >/dev/null
 		if [ $? -ne 0 ]; then
-			echo "Failed to run $cbmem_cmd using sudo. Check \$PATH or use -c" \
-			"to specify path to cbmem binary."
+			echo "Failed to run $cbmem_cmd. Check \$PATH or" \
+			"use -c to specify path to cbmem binary."
 			exit $EXIT_FAILURE
 		else
 			cbmem_cmd="sudo $cbmem_cmd"

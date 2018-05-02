@@ -43,9 +43,9 @@ const char mainboard_name[] = CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_
  * @param bus Pointer to the device to which the static buses are attached to.
  */
 
-void scan_static_bus(device_t bus)
+void scan_static_bus(struct device *bus)
 {
-	device_t child;
+	struct device *child;
 	struct bus *link;
 
 	for (link = bus->link_list; link; link = link->next) {
@@ -63,7 +63,7 @@ void scan_static_bus(device_t bus)
 	}
 }
 
-void scan_lpc_bus(device_t bus)
+void scan_lpc_bus(struct device *bus)
 {
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
@@ -72,9 +72,9 @@ void scan_lpc_bus(device_t bus)
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
 }
 
-void scan_generic_bus(device_t bus)
+void scan_generic_bus(struct device *bus)
 {
-	device_t child;
+	struct device *child;
 	struct bus *link;
 	static int bus_max = 0;
 
@@ -103,7 +103,7 @@ void scan_generic_bus(device_t bus)
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
 }
 
-void scan_smbus(device_t bus)
+void scan_smbus(struct device *bus)
 {
 	scan_generic_bus(bus);
 }
@@ -115,7 +115,7 @@ void scan_smbus(device_t bus)
  *
  * @param root The root device structure.
  */
-static void root_dev_scan_bus(device_t bus)
+static void root_dev_scan_bus(struct device *bus)
 {
 	struct bus *link;
 

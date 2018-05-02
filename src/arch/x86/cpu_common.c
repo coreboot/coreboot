@@ -15,8 +15,6 @@
 #include <cpu/cpu.h>
 #include <arch/io.h>
 #include <string.h>
-#include <cpu/x86/mtrr.h>
-#include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
 #include <arch/cpu.h>
 #include <device/path.h>

@@ -219,7 +219,7 @@ static void init(struct device *dev)
 	return;
 }
 
-static void set_resources(device_t dev)
+static void set_resources(struct device *dev)
 {
 	pci_dev_set_resources(dev);
 	dev->command |= PCI_COMMAND_MASTER;

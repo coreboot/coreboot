@@ -1,7 +1,8 @@
-diff -urp gcc-6.3.0.bak/gcc/ada/adaint.c gcc-6.3.0/gcc/ada/adaint.c
---- gcc-6.3.0.bak/gcc/ada/adaint.c	2017-12-08 20:39:08.024709803 +0000
-+++ gcc-6.3.0/gcc/ada/adaint.c	2017-12-08 20:06:13.674636566 +0000
-@@ -103,6 +103,15 @@
+diff --git a/gcc/ada/adaint.c b/gcc/ada/adaint.c
+index 3b0aea92c05..998f2c66289 100644
+--- a/gcc/ada/adaint.c
++++ b/gcc/ada/adaint.c
+@@ -107,6 +107,15 @@
  #define xmalloc(S) malloc (S)
  #define xrealloc(V,S) realloc (V,S)
  #else
@@ -17,7 +18,7 @@ diff -urp gcc-6.3.0.bak/gcc/ada/adaint.c gcc-6.3.0/gcc/ada/adaint.c
  #include "config.h"
  #include "system.h"
  #include "version.h"
-@@ -3096,7 +3105,7 @@ __gnat_lwp_self (void)
+@@ -3265,7 +3274,7 @@ __gnat_lwp_self (void)
  
  /* Dynamic cpu sets */
  
@@ -26,7 +27,7 @@ diff -urp gcc-6.3.0.bak/gcc/ada/adaint.c gcc-6.3.0/gcc/ada/adaint.c
  __gnat_cpu_alloc (size_t count)
  {
    return CPU_ALLOC (count);
-@@ -3109,33 +3118,33 @@ __gnat_cpu_alloc_size (size_t count)
+@@ -3278,33 +3287,33 @@ __gnat_cpu_alloc_size (size_t count)
  }
  
  void
@@ -67,7 +68,7 @@ diff -urp gcc-6.3.0.bak/gcc/ada/adaint.c gcc-6.3.0/gcc/ada/adaint.c
  }
  
  size_t
-@@ -3145,23 +3154,23 @@ __gnat_cpu_alloc_size (size_t count ATTR
+@@ -3314,23 +3323,23 @@ __gnat_cpu_alloc_size (size_t count ATTRIBUTE_UNUSED)
  }
  
  void
@@ -95,10 +96,11 @@ diff -urp gcc-6.3.0.bak/gcc/ada/adaint.c gcc-6.3.0/gcc/ada/adaint.c
  }
  #endif /* !CPU_ALLOC */
  #endif /* __linux__ */
-diff -urp gcc-6.3.0.bak/gcc/ada/adaint.h gcc-6.3.0/gcc/ada/adaint.h
---- gcc-6.3.0.bak/gcc/ada/adaint.h	2017-12-08 20:39:08.024709803 +0000
-+++ gcc-6.3.0/gcc/ada/adaint.h	2017-12-08 19:52:31.627939406 +0000
-@@ -287,13 +287,11 @@ extern void   *__gnat_lwp_self			   (voi
+diff --git a/gcc/ada/adaint.h b/gcc/ada/adaint.h
+index 0d12f7e9020..7b3def03fb0 100644
+--- a/gcc/ada/adaint.h
++++ b/gcc/ada/adaint.h
+@@ -316,13 +316,11 @@ extern void   *__gnat_lwp_self			   (void);
  
  /* Routines for interface to required CPU set primitives */
  

@@ -1,6 +1,9 @@
+This enables building on Mac OS and FreeBSD by adding support to their
+variants of the sed utility.
+
 diff -urN gcc-5.2.0.orig/libgcc/config/t-hardfp gcc-5.2.0/libgcc/config/t-hardfp
 --- gcc-5.2.0.orig/libgcc/config/t-hardfp	2015-01-05 04:33:28.000000000 -0800
-+++ gcc-6.1.0/libgcc/config/t-hardfp	2016-04-06 12:04:51.000000000 -0700
++++ gcc-8.1.0/libgcc/config/t-hardfp	2016-04-06 12:04:51.000000000 -0700
 @@ -59,21 +59,52 @@
  
  hardfp_func_list := $(filter-out $(hardfp_exclusions),$(hardfp_func_list))

@@ -24,7 +24,7 @@ External (\_TZ.THRT, MethodObj)
 #ifdef DPTF_ENABLE_CHARGER
 External (\_SB.DPTF.TCHG, DeviceObj)
 #endif
-External (\_SB.DPTF.TPET, MethodObj)
+
 
 Device (EC0)
 {
@@ -373,9 +373,7 @@ Device (EC0)
 		Store ("EC: TABLET mode switch Event", Debug)
 		Notify (CREC, 0x2)
 #ifdef EC_ENABLE_TABLET_EVENT
-		If (CondRefOf (\_SB.DPTF.TPET)) {
-			\_SB.DPTF.TPET()
-		}
+		\_SB.DPTF.TPET()
 #endif
 #ifdef EC_ENABLE_TBMC_DEVICE
 		Notify (TBMC, 0x80)

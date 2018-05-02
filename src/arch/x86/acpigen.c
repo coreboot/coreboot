@@ -1342,6 +1342,10 @@ void acpigen_write_dsm_uuid_arr(struct dsm_uuid *ids, size_t count)
  * Generate ACPI AML code for _ROM method.
  * This function takes as input ROM data and ROM length.
  *
+ * The ACPI spec isn't clear about what should happen at the end of the
+ * ROM. Tests showed that it shouldn't truncate, but fill the remaining
+ * bytes in the returned buffer with zeros.
+ *
  * Arguments passed into _DSM method:
  * Arg0 = Offset in Bytes
  * Arg1 = Bytes to return
@@ -1367,6 +1371,8 @@ void acpigen_write_dsm_uuid_arr(struct dsm_uuid *ids, size_t count)
  *		Store (0x1000, Local1)
  *	}
  *
+ *	Store (Local1, Local3)
+ *
  *	If (LGreater (Local0, 0x10000))
  *	{
  *		Return(Buffer(Local1){0})
@@ -1381,7 +1387,7 @@ void acpigen_write_dsm_uuid_arr(struct dsm_uuid *ids, size_t count)
  *		}
  *	}
  *
- *	Name (ROM1, Buffer (Local1) {0})
+ *	Name (ROM1, Buffer (Local3) {0})
  *
  *	Multiply (Local0, 0x08, Local0)
  *	Multiply (Local1, 0x08, Local1)
@@ -1443,6 +1449,11 @@ void acpigen_write_rom(void *bios, const size_t length)
 	/* Pop if */
 	acpigen_pop_len();
 
+	/* Store (Local1, Local3) */
+	acpigen_write_store();
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_emit_byte(LOCAL3_OP);
+
 	/* If (LGreater (Local0, length)) */
 	acpigen_write_if();
 	acpigen_emit_byte(LGREATER_OP);
@@ -1489,11 +1500,11 @@ void acpigen_write_rom(void *bios, const size_t length)
 	/* Pop if */
 	acpigen_pop_len();
 
-	/* Name (ROM1, Buffer (Local1) {0}) */
+	/* Name (ROM1, Buffer (Local3) {0}) */
 	acpigen_write_name("ROM1");
 	acpigen_emit_byte(BUFFER_OP);
 	acpigen_write_len_f();
-	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_emit_byte(LOCAL3_OP);
 	acpigen_emit_byte(0);
 	acpigen_pop_len();
 

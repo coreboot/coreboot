@@ -68,9 +68,6 @@ AGESA_STATUS agesa_fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 			FchParams_env->Usb.Xhci0Enable = FALSE;
 		FchParams_env->Usb.Xhci1Enable = FALSE;
 
-		/* 8: If USB3 port is unremoveable. */
-		FchParams_env->Usb.USB30PortInit = 8;
-
 		/* SATA configuration */
 		FchParams_env->Sata.SataClass = CONFIG_STONEYRIDGE_SATA_MODE;
 		switch ((SATA_CLASS)CONFIG_STONEYRIDGE_SATA_MODE) {

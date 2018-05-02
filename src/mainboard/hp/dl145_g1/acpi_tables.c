@@ -62,51 +62,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 			}
 		}
 
-		/*
-		int i;
-		int j = 0;
-
-		for(i = 1; i< sysconf.hc_possible_num; i++) {
-			unsigned d = 0;
-			if(!(sysconf.pci1234[i] & 0x1) ) continue;
-			// 8131 need to use +4
-
-			switch (sysconf.hcid[i]) {
-			case 1:
-				d = 7;
-				break;
-			case 3:
-				d = 4;
-				break;
-			}
-			switch (sysconf.hcid[i]) {
-			case 1:
-			case 3:
-				dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j], 1));
-				if (dev) {
-					res = find_resource(dev, PCI_BASE_ADDRESS_0);
-					if (res) {
-						current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132a[j][0],
-							res->base, gsi_base );
-						gsi_base+=d;
-					}
-				}
-				dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j]+1, 1));
-				if (dev) {
-					res = find_resource(dev, PCI_BASE_ADDRESS_0);
-					if (res) {
-						current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132a[j][1],
-							res->base, gsi_base );
-						gsi_base+=d;
-
-					}
-				}
-				break;
-			}
-
-			j++;
-		}
-		*/
 
 	}
 

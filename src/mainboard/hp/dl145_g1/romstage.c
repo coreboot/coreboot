@@ -125,7 +125,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
 
 	setup_dl145g1_resource_map();
-	//setup_default_resource_map();
 
 	setup_coherent_ht_domain();
 	wait_all_core0_started();
@@ -179,10 +178,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		activate_spd_rom(&sysinfo->ctrl[i]);
 	for (i = RC0; i <= RC1; i <<= 1)
 		change_i2c_mux(i);
-
-	//dump_spd_registers(&sysinfo->ctrl[0]);
-	//dump_spd_registers(&sysinfo->ctrl[1]);
-	//dump_smbus_registers();
 
 	allow_all_aps_stop(bsp_apicid);
 

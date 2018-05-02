@@ -171,7 +171,7 @@ struct cbfs_payload {
 #define CBFS_COMPONENT_BOOTBLOCK  0x01
 #define CBFS_COMPONENT_CBFSHEADER 0x02
 #define CBFS_COMPONENT_STAGE      0x10
-#define CBFS_COMPONENT_PAYLOAD    0x20
+#define CBFS_COMPONENT_SELF       0x20
 #define CBFS_COMPONENT_OPTIONROM  0x30
 #define CBFS_COMPONENT_BOOTSPLASH 0x40
 #define CBFS_COMPONENT_RAW        0x50
@@ -204,7 +204,7 @@ static struct typedesc_t filetypes[] unused = {
 	{CBFS_COMPONENT_BOOTBLOCK, "bootblock"},
 	{CBFS_COMPONENT_CBFSHEADER, "cbfs header"},
 	{CBFS_COMPONENT_STAGE, "stage"},
-	{CBFS_COMPONENT_PAYLOAD, "payload"},
+	{CBFS_COMPONENT_SELF, "simple elf"},
 	{CBFS_COMPONENT_OPTIONROM, "optionrom"},
 	{CBFS_COMPONENT_BOOTSPLASH, "bootsplash"},
 	{CBFS_COMPONENT_RAW, "raw"},

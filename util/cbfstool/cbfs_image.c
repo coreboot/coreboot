@@ -1328,7 +1328,7 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 			buffer_delete(&buffer);
 			return -1;
 		}
-	} else if (ntohl(entry->type) == CBFS_COMPONENT_PAYLOAD) {
+	} else if (ntohl(entry->type) == CBFS_COMPONENT_SELF) {
 		if (cbfs_payload_make_elf(&buffer, arch)) {
 			buffer_delete(&buffer);
 			return -1;
@@ -1522,7 +1522,7 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 					      CBFS_SUBHEADER(entry), fp);
 			break;
 
-		case CBFS_COMPONENT_PAYLOAD:
+		case CBFS_COMPONENT_SELF:
 			payload = (struct cbfs_payload_segment *)
 					CBFS_SUBHEADER(entry);
 			while (payload) {

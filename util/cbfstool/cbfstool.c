@@ -410,7 +410,7 @@ static int cbfs_add_component(const char *filename,
 			if (type == CBFS_COMPONENT_STAGE)
 				attrs->position = htonl(offset +
 					sizeof(struct cbfs_stage));
-			else if (type == CBFS_COMPONENT_PAYLOAD)
+			else if (type == CBFS_COMPONENT_SELF)
 				attrs->position = htonl(offset +
 					sizeof(struct cbfs_payload));
 			else
@@ -737,7 +737,7 @@ static int cbfs_add_payload(void)
 {
 	return cbfs_add_component(param.filename,
 				  param.name,
-				  CBFS_COMPONENT_PAYLOAD,
+				  CBFS_COMPONENT_SELF,
 				  param.baseaddress,
 				  param.headeroffset,
 				  cbfstool_convert_mkpayload);
@@ -757,7 +757,7 @@ static int cbfs_add_flat_binary(void)
 	}
 	return cbfs_add_component(param.filename,
 				  param.name,
-				  CBFS_COMPONENT_PAYLOAD,
+				  CBFS_COMPONENT_SELF,
 				  param.baseaddress,
 				  param.headeroffset,
 				  cbfstool_convert_mkflatpayload);

@@ -224,6 +224,12 @@ static const struct timestamp_id_to_name {
 	{ TS_AGESA_INIT_LATE_DONE,	"back from AmdInitLate" },
 	{ TS_AGESA_INIT_RTB_START,	"calling AmdInitRtb/AmdS3Save" },
 	{ TS_AGESA_INIT_RTB_DONE,	"back from AmdInitRtb/AmdS3Save" },
+	{ TS_AGESA_INIT_RESUME_START,	"calling AmdInitResume" },
+	{ TS_AGESA_INIT_RESUME_DONE,	"back from AmdInitResume" },
+	{ TS_AGESA_S3_LATE_START,	"calling AmdS3LateRestore" },
+	{ TS_AGESA_S3_LATE_DONE,	"back from AmdS3LateRestore" },
+	{ TS_AGESA_S3_FINAL_START,	"calling AmdS3FinalRestore" },
+	{ TS_AGESA_S3_FINAL_DONE,	"back from AmdS3FinalRestore" },
 
 	/* Intel ME related timestamps */
 	{ TS_ME_INFORM_DRAM_WAIT,	"waiting for ME acknowledgement of raminit"},

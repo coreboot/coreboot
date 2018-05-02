@@ -303,7 +303,7 @@ chip soc/intel/skylake
 				device i2c 3a on end
 			end
 			chip drivers/i2c/rt5663
-				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D9)"
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH_WAKE(GPP_D9)"
 				register "dc_offset_l_manual" = "0xffd160"
 				register "dc_offset_r_manual" = "0xffd1c0"
 				register "dc_offset_l_manual_mic" = "0xff8a10"

@@ -21,7 +21,7 @@
 #include <console/uart.h>
 #include <arch/io.h>
 
-static void oxford_oxpcie_enable(device_t dev)
+static void oxford_oxpcie_enable(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Initializing Oxford OXPCIe952\n");
 

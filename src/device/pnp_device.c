@@ -28,13 +28,13 @@
 
 /* PNP config mode wrappers */
 
-void pnp_enter_conf_mode(device_t dev)
+void pnp_enter_conf_mode(struct device *dev)
 {
 	if (dev->ops->ops_pnp_mode)
 		dev->ops->ops_pnp_mode->enter_conf_mode(dev);
 }
 
-void pnp_exit_conf_mode(device_t dev)
+void pnp_exit_conf_mode(struct device *dev)
 {
 	if (dev->ops->ops_pnp_mode)
 		dev->ops->ops_pnp_mode->exit_conf_mode(dev);
@@ -42,24 +42,24 @@ void pnp_exit_conf_mode(device_t dev)
 
 /* PNP fundamental operations */
 
-void pnp_write_config(device_t dev, u8 reg, u8 value)
+void pnp_write_config(struct device *dev, u8 reg, u8 value)
 {
 	outb(reg, dev->path.pnp.port);
 	outb(value, dev->path.pnp.port + 1);
 }
 
-u8 pnp_read_config(device_t dev, u8 reg)
+u8 pnp_read_config(struct device *dev, u8 reg)
 {
 	outb(reg, dev->path.pnp.port);
 	return inb(dev->path.pnp.port + 1);
 }
 
-void pnp_set_logical_device(device_t dev)
+void pnp_set_logical_device(struct device *dev)
 {
 	pnp_write_config(dev, 0x07, dev->path.pnp.device & 0xff);
 }
 
-void pnp_set_enable(device_t dev, int enable)
+void pnp_set_enable(struct device *dev, int enable)
 {
 	u8 tmp, bitpos;
 
@@ -76,7 +76,7 @@ void pnp_set_enable(device_t dev, int enable)
 	pnp_write_config(dev, 0x30, tmp);
 }
 
-int pnp_read_enable(device_t dev)
+int pnp_read_enable(struct device *dev)
 {
 	u8 tmp, bitpos;
 
@@ -88,20 +88,20 @@ int pnp_read_enable(device_t dev)
 	return !!(tmp & (1 << bitpos));
 }
 
-void pnp_set_iobase(device_t dev, u8 index, u16 iobase)
+void pnp_set_iobase(struct device *dev, u8 index, u16 iobase)
 {
 	/* Index == 0x60 or 0x62. */
 	pnp_write_config(dev, index + 0, (iobase >> 8) & 0xff);
 	pnp_write_config(dev, index + 1, iobase & 0xff);
 }
 
-void pnp_set_irq(device_t dev, u8 index, u8 irq)
+void pnp_set_irq(struct device *dev, u8 index, u8 irq)
 {
 	/* Index == 0x70 or 0x72. */
 	pnp_write_config(dev, index, irq);
 }
 
-void pnp_set_drq(device_t dev, u8 index, u8 drq)
+void pnp_set_drq(struct device *dev, u8 index, u8 drq)
 {
 	/* Index == 0x74. */
 	pnp_write_config(dev, index, drq & 0xff);
@@ -109,12 +109,12 @@ void pnp_set_drq(device_t dev, u8 index, u8 drq)
 
 /* PNP device operations */
 
-void pnp_read_resources(device_t dev)
+void pnp_read_resources(struct device *dev)
 {
 	return;
 }
 
-static void pnp_set_resource(device_t dev, struct resource *resource)
+static void pnp_set_resource(struct device *dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
 		printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010llx "
@@ -140,7 +140,7 @@ static void pnp_set_resource(device_t dev, struct resource *resource)
 	report_resource_stored(dev, resource, "");
 }
 
-void pnp_set_resources(device_t dev)
+void pnp_set_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -156,7 +156,7 @@ void pnp_set_resources(device_t dev)
 	pnp_exit_conf_mode(dev);
 }
 
-void pnp_enable_resources(device_t dev)
+void pnp_enable_resources(struct device *dev)
 {
 	pnp_enter_conf_mode(dev);
 	pnp_set_logical_device(dev);
@@ -164,7 +164,7 @@ void pnp_enable_resources(device_t dev)
 	pnp_exit_conf_mode(dev);
 }
 
-void pnp_enable(device_t dev)
+void pnp_enable(struct device *dev)
 {
 	if (!dev->enabled) {
 		pnp_enter_conf_mode(dev);
@@ -174,7 +174,7 @@ void pnp_enable(device_t dev)
 	}
 }
 
-void pnp_alt_enable(device_t dev)
+void pnp_alt_enable(struct device *dev)
 {
 	pnp_enter_conf_mode(dev);
 	pnp_set_logical_device(dev);
@@ -191,7 +191,7 @@ struct device_operations pnp_ops = {
 
 /* PNP chip operations */
 
-static void pnp_get_ioresource(device_t dev, u8 index, u16 mask)
+static void pnp_get_ioresource(struct device *dev, u8 index, u16 mask)
 {
 	struct resource *resource;
 	unsigned moving, gran, step;
@@ -242,7 +242,7 @@ static void pnp_get_ioresource(device_t dev, u8 index, u16 mask)
 	resource->size  = 1 << gran;
 }
 
-static void get_resources(device_t dev, struct pnp_info *info)
+static void get_resources(struct device *dev, struct pnp_info *info)
 {
 	struct resource *resource;
 
@@ -363,11 +363,11 @@ static void get_resources(device_t dev, struct pnp_info *info)
 	}
 }
 
-void pnp_enable_devices(device_t base_dev, struct device_operations *ops,
+void pnp_enable_devices(struct device *base_dev, struct device_operations *ops,
 			unsigned int functions, struct pnp_info *info)
 {
 	struct device_path path;
-	device_t dev;
+	struct device *dev;
 	int i;
 
 	path.type = DEVICE_PATH_PNP;

@@ -22,7 +22,7 @@
 #include <device/pci_ops.h>
 #include <device/pciexp.h>
 
-unsigned int pciexp_find_extended_cap(device_t dev, unsigned int cap)
+unsigned int pciexp_find_extended_cap(struct device *dev, unsigned int cap)
 {
 	unsigned int this_cap_offset, next_cap_offset;
 	unsigned int this_cap, cafe;
@@ -49,7 +49,7 @@ unsigned int pciexp_find_extended_cap(device_t dev, unsigned int cap)
  * Re-train a PCIe link
  */
 #define PCIE_TRAIN_RETRY 10000
-static int pciexp_retrain_link(device_t dev, unsigned cap)
+static int pciexp_retrain_link(struct device *dev, unsigned cap)
 {
 	unsigned int try;
 	u16 lnk;
@@ -94,8 +94,8 @@ static int pciexp_retrain_link(device_t dev, unsigned cap)
  * and enable Common Clock Configuration if possible.  If CCC is
  * enabled the link must be retrained.
  */
-static void pciexp_enable_common_clock(device_t root, unsigned root_cap,
-				       device_t endp, unsigned endp_cap)
+static void pciexp_enable_common_clock(struct device *root, unsigned root_cap,
+				       struct device *endp, unsigned endp_cap)
 {
 	u16 root_scc, endp_scc, lnkctl;
 
@@ -126,7 +126,7 @@ static void pciexp_enable_common_clock(device_t root, unsigned root_cap,
 	}
 }
 
-static void pciexp_enable_clock_power_pm(device_t endp, unsigned endp_cap)
+static void pciexp_enable_clock_power_pm(struct device *endp, unsigned endp_cap)
 {
 	/* check if per port clk req is supported in device */
 	u32 endp_ca;
@@ -141,7 +141,7 @@ static void pciexp_enable_clock_power_pm(device_t endp, unsigned endp_cap)
 	pci_write_config16(endp, endp_cap + PCI_EXP_LNKCTL, lnkctl);
 }
 
-static void pciexp_config_max_latency(device_t root, device_t dev)
+static void pciexp_config_max_latency(struct device *root, struct device *dev)
 {
 	unsigned int cap;
 	cap = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_LTR_ID);
@@ -150,7 +150,7 @@ static void pciexp_config_max_latency(device_t root, device_t dev)
 			root->ops->ops_pci->set_L1_ss_latency(dev, cap + 4);
 }
 
-static bool pciexp_is_ltr_supported(device_t dev, unsigned int cap)
+static bool pciexp_is_ltr_supported(struct device *dev, unsigned int cap)
 {
 	unsigned int val;
 
@@ -162,7 +162,7 @@ static bool pciexp_is_ltr_supported(device_t dev, unsigned int cap)
 	return false;
 }
 
-static void pciexp_configure_ltr(device_t dev)
+static void pciexp_configure_ltr(struct device *dev)
 {
 	unsigned int cap;
 
@@ -187,10 +187,10 @@ static void pciexp_configure_ltr(device_t dev)
 	pciexp_config_max_latency(dev->bus->dev, dev);
 }
 
-static void pciexp_enable_ltr(device_t dev)
+static void pciexp_enable_ltr(struct device *dev)
 {
 	struct bus *bus;
-	device_t child;
+	struct device *child;
 
 	for (bus = dev->link_list ; bus ; bus = bus->next) {
 		for (child = bus->children; child; child = child->sibling) {
@@ -201,7 +201,7 @@ static void pciexp_enable_ltr(device_t dev)
 	}
 }
 
-static unsigned char pciexp_L1_substate_cal(device_t dev, unsigned int endp_cap,
+static unsigned char pciexp_L1_substate_cal(struct device *dev, unsigned int endp_cap,
 	unsigned int *data)
 {
 	unsigned char mult[4] = {2, 10, 100, 0};
@@ -236,10 +236,10 @@ static unsigned char pciexp_L1_substate_cal(device_t dev, unsigned int endp_cap,
 	return 1;
 }
 
-static void pciexp_L1_substate_commit(device_t root, device_t dev,
+static void pciexp_L1_substate_commit(struct device *root, struct device *dev,
 	unsigned int root_cap, unsigned int end_cap)
 {
-	device_t dev_t;
+	struct device *dev_t;
 	unsigned char L1_ss_ok;
 	unsigned int rp_L1_support = pci_read_config32(root, root_cap + 4);
 	unsigned int L1SubStateSupport;
@@ -305,7 +305,7 @@ static void pciexp_L1_substate_commit(device_t root, device_t dev,
 	}
 }
 
-static void pciexp_config_L1_sub_state(device_t root, device_t dev)
+static void pciexp_config_L1_sub_state(struct device *root, struct device *dev)
 {
 	unsigned int root_cap, end_cap;
 
@@ -332,8 +332,8 @@ static void pciexp_config_L1_sub_state(device_t root, device_t dev)
  * by checking both root port and endpoint and returning
  * the highest latency value.
  */
-static int pciexp_aspm_latency(device_t root, unsigned root_cap,
-			       device_t endp, unsigned endp_cap,
+static int pciexp_aspm_latency(struct device *root, unsigned root_cap,
+			       struct device *endp, unsigned endp_cap,
 			       enum aspm_type type)
 {
 	int root_lat = 0, endp_lat = 0;
@@ -368,8 +368,8 @@ static int pciexp_aspm_latency(device_t root, unsigned root_cap,
 /*
  * Enable ASPM on PCIe root port and endpoint.
  */
-static void pciexp_enable_aspm(device_t root, unsigned root_cap,
-					 device_t endp, unsigned endp_cap)
+static void pciexp_enable_aspm(struct device *root, unsigned root_cap,
+					 struct device *endp, unsigned endp_cap)
 {
 	const char *aspm_type_str[] = { "None", "L0s", "L1", "L0s and L1" };
 	enum aspm_type apmc = PCIE_ASPM_NONE;
@@ -412,9 +412,9 @@ static void pciexp_enable_aspm(device_t root, unsigned root_cap,
 	printk(BIOS_INFO, "ASPM: Enabled %s\n", aspm_type_str[apmc]);
 }
 
-static void pciexp_tune_dev(device_t dev)
+static void pciexp_tune_dev(struct device *dev)
 {
-	device_t root = dev->bus->dev;
+	struct device *root = dev->bus->dev;
 	unsigned int root_cap, cap;
 
 	cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
@@ -445,7 +445,7 @@ static void pciexp_tune_dev(device_t dev)
 void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 			     unsigned int max_devfn)
 {
-	device_t child;
+	struct device *child;
 	pci_scan_bus(bus, min_devfn, max_devfn);
 
 	for (child = bus->children; child; child = child->sibling) {
@@ -457,7 +457,7 @@ void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 	}
 }
 
-void pciexp_scan_bridge(device_t dev)
+void pciexp_scan_bridge(struct device *dev)
 {
 	do_pci_scan_bridge(dev, pciexp_scan_bus);
 	pciexp_enable_ltr(dev);

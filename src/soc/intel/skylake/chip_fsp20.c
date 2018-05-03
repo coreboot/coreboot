@@ -97,10 +97,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	FSP_S_CONFIG *params = &supd->FspsConfig;
 	FSP_S_TEST_CONFIG *tconfig = &supd->FspsTestConfig;
 	static struct soc_intel_skylake_config *config;
-	uintptr_t vbt_data = 0;
+	uintptr_t vbt_data = (uintptr_t)vbt_get();
 	int i;
-
-	int is_s3_wakeup = acpi_is_wakeup_s3();
 
 	struct device *dev = SA_DEV_ROOT;
 	if (!dev || !dev->chip_info) {
@@ -117,19 +115,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		printk(BIOS_DEBUG, "psys_pmax = %d\n", tconfig->PsysPmax);
 	}
 
-	/* Load VBT */
-	if (is_s3_wakeup) {
-		printk(BIOS_DEBUG, "S3 resume do not pass VBT to GOP\n");
-	} else if (display_init_required() && IS_ENABLED(CONFIG_RUN_FSP_GOP)) {
-		/* Get VBT data */
-		vbt_data = (uintptr_t)locate_vbt();
-		if (vbt_data)
-			printk(BIOS_DEBUG, "Passing VBT to GOP\n");
-		else
-			printk(BIOS_DEBUG, "VBT not found!\n");
-	} else {
-		printk(BIOS_DEBUG, "Not passing VBT to GOP\n");
-	}
 	params->GraphicsConfigPtr = (u32) vbt_data;
 
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {

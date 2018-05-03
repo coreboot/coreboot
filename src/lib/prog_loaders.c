@@ -44,6 +44,8 @@ int prog_locate(struct prog *prog)
 	if (cbfs_boot_locate(&file, prog_name(prog), NULL))
 		return -1;
 
+	cbfsf_file_type(&file, &prog->cbfs_type);
+
 	cbfs_file_data(prog_rdev(prog), &file);
 
 	return 0;

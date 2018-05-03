@@ -116,6 +116,11 @@ struct mp_ops {
  */
 int mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops);
 
+enum {
+	/* Function runs on all cores (both BSP and APs) */
+	MP_RUN_ON_ALL_CPUS,
+	/* Need to specify cores (only on APs) numbers */
+};
 
 /*
  * After APs are up and PARALLEL_MP_AP_WORK is enabled one can issue work
@@ -123,10 +128,13 @@ int mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops);
  * to issue work. i.e. the APs should not call any of these functions.
  *
  * Input parameter expire_us <= 0 to specify an infinite timeout.
+ * logical_cpu_num = MP_RUN_ON_ALL_CPUS to execute function over all cores (BSP
+ * + APs) else specified AP number using logical_cpu_num.
  *
  * All functions return < 0 on error, 0 on success.
  */
-int mp_run_on_aps(void (*func)(void *), void *arg, long expire_us);
+int mp_run_on_aps(void (*func)(void *), void *arg, int logical_cpu_num,
+		long expire_us);
 
 /* Like mp_run_on_aps() but also runs func on BSP. */
 int mp_run_on_all_cpus(void (*func)(void *), void *arg, long expire_us);

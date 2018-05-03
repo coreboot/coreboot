@@ -43,6 +43,7 @@
 struct mp_callback {
 	void (*func)(void *);
 	void *arg;
+	int logical_cpu_number;
 };
 
 /*
@@ -924,11 +925,13 @@ static void ap_wait_for_instruction(void)
 {
 	struct mp_callback lcb;
 	struct mp_callback **per_cpu_slot;
+	int cur_cpu;
 
 	if (!IS_ENABLED(CONFIG_PARALLEL_MP_AP_WORK))
 		return;
 
-	per_cpu_slot = &ap_callbacks[cpu_index()];
+	cur_cpu = cpu_index();
+	per_cpu_slot = &ap_callbacks[cur_cpu];
 
 	while (1) {
 		struct mp_callback *cb = read_callback(per_cpu_slot);
@@ -942,13 +945,19 @@ static void ap_wait_for_instruction(void)
 		memcpy(&lcb, cb, sizeof(lcb));
 		mfence();
 		store_callback(per_cpu_slot, NULL);
-		lcb.func(lcb.arg);
+		if (lcb.logical_cpu_number && (cur_cpu !=
+				lcb.logical_cpu_number))
+			continue;
+		else
+			lcb.func(lcb.arg);
 	}
 }
 
-int mp_run_on_aps(void (*func)(void *), void *arg, long expire_us)
+int mp_run_on_aps(void (*func)(void *), void *arg, int logical_cpu_num,
+		long expire_us)
 {
-	struct mp_callback lcb = { .func = func, .arg = arg };
+	struct mp_callback lcb = { .func = func, .arg = arg,
+				.logical_cpu_number = logical_cpu_num};
 	return run_ap_work(&lcb, expire_us);
 }
 
@@ -957,7 +966,7 @@ int mp_run_on_all_cpus(void (*func)(void *), void *arg, long expire_us)
 	/* Run on BSP first. */
 	func(arg);
 
-	return mp_run_on_aps(func, arg, expire_us);
+	return mp_run_on_aps(func, arg, MP_RUN_ON_ALL_CPUS, expire_us);
 }
 
 int mp_park_aps(void)
@@ -968,7 +977,8 @@ int mp_park_aps(void)
 
 	stopwatch_init(&sw);
 
-	ret = mp_run_on_aps(park_this_cpu, NULL, 250 * USECS_PER_MSEC);
+	ret = mp_run_on_aps(park_this_cpu, NULL, MP_RUN_ON_ALL_CPUS,
+				250 * USECS_PER_MSEC);
 
 	duration_msecs = stopwatch_duration_msecs(&sw);
 

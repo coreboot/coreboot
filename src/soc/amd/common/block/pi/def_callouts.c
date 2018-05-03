@@ -219,7 +219,8 @@ AGESA_STATUS agesa_RunFuncOnAp(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	agesadata.Func = Func;
 	agesadata.Data = Data;
 	agesadata.ConfigPtr = ConfigPtr;
-	mp_run_on_aps(callout_ap_entry, NULL, 100 * USECS_PER_MSEC);
+	mp_run_on_aps(callout_ap_entry, NULL, MP_RUN_ON_ALL_CPUS,
+			100 * USECS_PER_MSEC);
 
 	return AGESA_SUCCESS;
 }
@@ -231,7 +232,8 @@ AGESA_STATUS agesa_RunFcnOnAllAps(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	agesadata.Func = Func;
 	agesadata.Data = Data;
 	agesadata.ConfigPtr = ConfigPtr;
-	mp_run_on_aps(callout_ap_entry, NULL, 100 * USECS_PER_MSEC);
+	mp_run_on_aps(callout_ap_entry, NULL, MP_RUN_ON_ALL_CPUS,
+			100 * USECS_PER_MSEC);
 
 	return AGESA_SUCCESS;
 }

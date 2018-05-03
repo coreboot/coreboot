@@ -106,7 +106,7 @@ static int number(void (*tx_byte)(unsigned char byte, void *data),
 		precision = i;
 	size -= precision;
 	if (!(type&(ZEROPAD+LEFT)))
-		while (size-->0)
+		while (size-- > 0)
 			call_tx(' '), count++;
 	if (sign)
 		call_tx(sign), count++;

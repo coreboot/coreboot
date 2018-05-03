@@ -33,7 +33,7 @@ const char *mainboard_vbt_filename(void)
 static char vbt_data[8 * KiB];
 static int vbt_data_used;
 
-void *locate_vbt(void)
+void *locate_vbt(size_t *vbt_size)
 {
 	uint32_t vbtsig = 0;
 
@@ -47,6 +47,9 @@ void *locate_vbt(void)
 
 	if (file_size == 0)
 		return NULL;
+
+	if (vbt_size)
+		*vbt_size = file_size;
 
 	memcpy(&vbtsig, vbt_data, sizeof(vbtsig));
 	if (vbtsig != VBT_SIGNATURE) {
@@ -72,5 +75,5 @@ void *vbt_get(void)
 		return NULL;
 	if (!display_init_required())
 		return NULL;
-	return locate_vbt();
+	return locate_vbt(NULL);
 }

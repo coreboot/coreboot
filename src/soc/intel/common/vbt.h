@@ -27,8 +27,11 @@
  */
 const char *mainboard_vbt_filename(void);
 
-/* locate vbt.bin file. Returns a pointer to its content. */
-void *locate_vbt(void);
+/*
+ * locate vbt.bin file. Returns a pointer to its content.
+ * If vbt_size is non-NULL, also return the vbt's size.
+ */
+void *locate_vbt(size_t *vbt_size);
 /*
  * Returns VBT pointer and mapping after checking prerequisites for Pre OS
  * Graphics initialization

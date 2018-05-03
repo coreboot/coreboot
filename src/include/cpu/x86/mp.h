@@ -145,15 +145,5 @@ int mp_park_aps(void);
 void smm_initiate_relocation_parallel(void);
 /* Send SMI to self with single execution. */
 void smm_initiate_relocation(void);
-/* Make a CPU wait until the barrier is released */
-void barrier_wait(atomic_t *b);
-/*
- * Make a CPU wait until the barrier is released, or timeout occurs
- * returns 1 if timeout occurs before barier is released.
- * returns 0 if barrier is released before timeout.
- */
-int barrier_wait_timeout(atomic_t *b, uint32_t timeout_ms);
-/* Release a barrier so that other CPUs waiting for that barrier can continue */
-void release_barrier(atomic_t *b);
 
 #endif /* _X86_MP_H_ */

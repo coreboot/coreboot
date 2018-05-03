@@ -114,6 +114,10 @@ config DCACHE_BSP_STACK_SIZE
 	  The amount of anticipated stack usage in CAR by bootblock and
 	  other stages.
 
+config IFD_CHIPSET
+	string
+	default "cnl"
+
 config IED_REGION_SIZE
 	hex
 	default 0x400000

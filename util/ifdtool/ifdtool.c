@@ -126,14 +126,35 @@ static fmsba_t *find_fmsba(char *image, int size)
 }
 
 /*
+ * Some newer platforms have re-defined the FCBA field that was used to
+ * distinguish IFD v1 v/s v2. Define a list of platforms that we know do not
+ * have the required FCBA field, but are IFD v2 and return true if current
+ * platform is one of them.
+ */
+static int is_platform_ifd_2(void)
+{
+	static const int ifd_2_platforms[] = {
+		PLATFORM_GLK,
+		PLATFORM_CNL,
+	};
+	unsigned int i;
+
+	for (i = 0; i < ARRAY_SIZE(ifd_2_platforms); i++) {
+		if (platform == ifd_2_platforms[i])
+			return 1;
+	}
+
+	return 0;
+}
+
+/*
  * There is no version field in the descriptor so to determine
  * if this is a new descriptor format we check the hardcoded SPI
  * read frequency to see if it is fixed at 20MHz or 17MHz.
  */
-static void check_ifd_version(char *image, int size)
+static int get_ifd_version_from_fcba(char *image, int size)
 {
 	int read_freq;
-
 	const fcba_t *fcba = find_fcba(image, size);
 	if (!fcba)
 		exit(EXIT_FAILURE);
@@ -142,19 +163,28 @@ static void check_ifd_version(char *image, int size)
 
 	switch (read_freq) {
 	case SPI_FREQUENCY_20MHZ:
-		ifd_version = IFD_VERSION_1;
-		max_regions = MAX_REGIONS_OLD;
-		break;
+		return IFD_VERSION_1;
 	case SPI_FREQUENCY_17MHZ:
 	case SPI_FREQUENCY_50MHZ_30MHZ:
-		ifd_version = IFD_VERSION_2;
-		max_regions = MAX_REGIONS;
-		break;
+		return IFD_VERSION_2;
 	default:
 		fprintf(stderr, "Unknown descriptor version: %d\n",
 			read_freq);
 		exit(EXIT_FAILURE);
 	}
+}
+
+static void check_ifd_version(char *image, int size)
+{
+	if (is_platform_ifd_2())
+		ifd_version = IFD_VERSION_2;
+	else
+		ifd_version = get_ifd_version_from_fcba(image, size);
+
+	if (ifd_version == IFD_VERSION_1)
+		max_regions = MAX_REGIONS_OLD;
+	else
+		max_regions = MAX_REGIONS;
 }
 
 static region_t get_region(const frba_t *frba, unsigned int region_type)
@@ -816,7 +846,8 @@ static void lock_descriptor(const char *filename, char *image, int size)
 	}
 
 	switch (platform) {
-	case PLATFORM_APOLLOLAKE:
+	case PLATFORM_APL:
+	case PLATFORM_GLK:
 		/* CPU/BIOS can read descriptor and BIOS */
 		fmba->flmstr1 |= 0x3 << rd_shift;
 		/* CPU/BIOS can write BIOS */
@@ -1153,6 +1184,9 @@ static void print_usage(const char *name)
 	       "   -u | --unlock                      Unlock firmware descriptor and ME region\n"
 	       "   -p | --platform                    Add platform-specific quirks\n"
 	       "                                      aplk - Apollo Lake\n"
+	       "                                      cnl - Cannon Lake\n"
+	       "                                      glk - Gemini Lake\n"
+	       "                                      sklkbl - Skylake/Kaby Lake\n"
 	       "   -v | --version:                    print the version\n"
 	       "   -h | --help:                       print this help\n\n"
 	       "<region> is one of Descriptor, BIOS, ME, GbE, Platform\n"
@@ -1342,13 +1376,18 @@ int main(int argc, char *argv[])
 			break;
 		case 'p':
 			if (!strcmp(optarg, "aplk")) {
-				platform = PLATFORM_APOLLOLAKE;
+				platform = PLATFORM_APL;
+			} else if (!strcmp(optarg, "cnl")) {
+				platform = PLATFORM_CNL;
+			} else if (!strcmp(optarg, "glk")) {
+				platform = PLATFORM_GLK;
 			} else if (!strcmp(optarg, "sklkbl")) {
 				platform = PLATFORM_SKLKBL;
 			} else {
 				fprintf(stderr, "Unknown platform: %s\n", optarg);
 				exit(EXIT_FAILURE);
 			}
+			fprintf(stderr, "Platform is: %s\n", optarg);
 			break;
 		case 'v':
 			print_version();

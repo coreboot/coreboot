@@ -350,6 +350,7 @@ config SMM_RESERVED_SIZE
 
 config IFD_CHIPSET
 	string
+	default "glk" if SOC_INTEL_GLK
 	default "aplk"
 
 config CPU_BCLK_MHZ

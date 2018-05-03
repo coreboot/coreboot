@@ -1,9 +1,11 @@
+comment "Zoombini"
+
 config BOARD_GOOGLE_ZOOMBINI
-	bool "Zoombini"
+	bool "->  Zoombini"
 	select BOARD_GOOGLE_BASEBOARD_ZOOMBINI
 	select BASEBOARD_ZOOMBINI_LAPTOP
 
 config BOARD_GOOGLE_MEOWTH
-	bool "Meowth"
+	bool "->  Meowth"
 	select BOARD_GOOGLE_BASEBOARD_ZOOMBINI
 	select BASEBOARD_ZOOMBINI_LAPTOP

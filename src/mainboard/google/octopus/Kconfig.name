@@ -1,16 +1,18 @@
+comment "Octopus"
+
 config BOARD_GOOGLE_OCTOPUS
-	bool "Octopus"
+	bool "->  Octopus"
 	select BOARD_GOOGLE_BASEBOARD_OCTOPUS
 	select BASEBOARD_OCTOPUS_LAPTOP
 config BOARD_GOOGLE_YORP
-	bool "Yorp"
+	bool "->  Yorp"
 	select BOARD_GOOGLE_BASEBOARD_OCTOPUS
 	select BASEBOARD_OCTOPUS_LAPTOP
 config BOARD_GOOGLE_BIP
-	bool "Bip"
+	bool "->  Bip"
 	select BOARD_GOOGLE_BASEBOARD_OCTOPUS
 	select BASEBOARD_OCTOPUS_LAPTOP
 config BOARD_GOOGLE_PHASER
-	bool "Phaser"
+	bool "->  Phaser"
 	select BOARD_GOOGLE_BASEBOARD_OCTOPUS
 	select BASEBOARD_OCTOPUS_LAPTOP

@@ -1,63 +1,65 @@
+comment "Rambi"
+
 config BOARD_GOOGLE_BANJO
-	bool "Banjo (Acer Chromebook 15 (CB3-531))"
+	bool "->  Banjo (Acer Chromebook 15 (CB3-531))"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_CANDY
-	bool "Candy (Dell Chromebook 11 3120)"
+	bool "->  Candy (Dell Chromebook 11 3120)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_CLAPPER
-	bool "Clapper (Lenovo N20 Chromebook)"
+	bool "->  Clapper (Lenovo N20 Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_ENGUARDE
-	bool "Enguarde"
+	bool "->  Enguarde"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_GLIMMER
-	bool "Glimmer (Lenovo ThinkPad 11e Chromebook)"
+	bool "->  Glimmer (Lenovo ThinkPad 11e Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_GNAWTY
-	bool "Gnawty (Acer Chromebook 11 (CB3-111/131,C730/C730E/C735))"
+	bool "->  Gnawty (Acer Chromebook 11 (CB3-111/131,C730/C730E/C735))"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_HELI
-	bool "Heli (Haier Chromebook G2)"
+	bool "->  Heli (Haier Chromebook G2)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_KIP
-	bool "Kip (HP Chromebook 11 G3 / G4 / G4 EE)"
+	bool "->  Kip (HP Chromebook 11 G3 / G4 / G4 EE)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_NINJA
-	bool "Ninja (AOpen Chromebox Commercial)"
+	bool "->  Ninja (AOpen Chromebox Commercial)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_ORCO
-	bool "Orco (Lenovo 100S Chromebook)"
+	bool "->  Orco (Lenovo 100S Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_QUAWKS
-	bool "Quawks (ASUS Chromebook C300)"
+	bool "->  Quawks (ASUS Chromebook C300)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_SQUAWKS
-	bool "Squawks (ASUS Chromebook C200)"
+	bool "->  Squawks (ASUS Chromebook C200)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_RAMBI
-	bool "Rambi"
+	bool "->  Rambi"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_SUMO
-	bool "Sumo (AOpen Chromebase Commercial)"
+	bool "->  Sumo (AOpen Chromebase Commercial)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_SWANKY
-	bool "Swanky (Toshiba Chromebook 2)"
+	bool "->  Swanky (Toshiba Chromebook 2)"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 
 config BOARD_GOOGLE_WINKY
-	bool "Winky (Samsung Chromebook 2 (XE500C12))"
+	bool "->  Winky (Samsung Chromebook 2 (XE500C12))"
 	select BOARD_GOOGLE_BASEBOARD_RAMBI

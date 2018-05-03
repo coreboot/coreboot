@@ -1,23 +1,25 @@
+comment "Gru"
+
 config BOARD_GOOGLE_KEVIN
-	bool "Kevin (Samsung Chromebook Plus)"
+	bool "->  Kevin (Samsung Chromebook Plus)"
 	select BOARD_GOOGLE_GRU_COMMON
 
 config BOARD_GOOGLE_GRU
-	bool "Gru"
+	bool "->  Gru"
 	select BOARD_GOOGLE_GRU_COMMON
 
 config BOARD_GOOGLE_BOB
-	bool "Bob (Asus Chromebook Flip C101PA)"
+	bool "->  Bob (Asus Chromebook Flip C101PA)"
 	select BOARD_GOOGLE_GRU_COMMON
 
 config BOARD_GOOGLE_SCARLET
-	bool "Scarlet"
+	bool "->  Scarlet"
 	select BOARD_GOOGLE_GRU_COMMON
 
 config BOARD_GOOGLE_NEFARIO
-	bool "Nefario"
+	bool "->  Nefario"
 	select BOARD_GOOGLE_GRU_COMMON
 
 config BOARD_GOOGLE_RAINIER
-	bool "Rainier"
+	bool "->  Rainier"
 	select BOARD_GOOGLE_GRU_COMMON

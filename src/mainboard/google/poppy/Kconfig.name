@@ -1,29 +1,31 @@
+comment "Poppy"
+
 config BOARD_GOOGLE_ATLAS
-	bool "Atlas"
+	bool "->  Atlas"
 	select BOARD_GOOGLE_BASEBOARD_POPPY
 	select VARIANT_SPECIFIC_OPTIONS_ATLAS
 
 config BOARD_GOOGLE_POPPY
-	bool "Poppy"
+	bool "->  Poppy"
 	select BOARD_GOOGLE_BASEBOARD_POPPY
 	select VARIANT_SPECIFIC_OPTIONS_POPPY
 
 config BOARD_GOOGLE_NAMI
-	bool "Nami"
+	bool "->  Nami"
 	select BOARD_GOOGLE_BASEBOARD_POPPY
 	select VARIANT_SPECIFIC_OPTIONS_NAMI
 
 config BOARD_GOOGLE_NAUTILUS
-	bool "Nautilus"
+	bool "->  Nautilus"
 	select BOARD_GOOGLE_BASEBOARD_POPPY
 	select VARIANT_SPECIFIC_OPTIONS_NAUTILUS
 
 config BOARD_GOOGLE_NOCTURNE
-	bool "Nocturne"
+	bool "->  Nocturne"
 	select BOARD_GOOGLE_BASEBOARD_POPPY
 	select VARIANT_SPECIFIC_OPTIONS_NOCTURNE
 
 config BOARD_GOOGLE_SORAKA
-	bool "Soraka"
+	bool "->  Soraka"
 	select BOARD_GOOGLE_BASEBOARD_POPPY
 	select VARIANT_SPECIFIC_OPTIONS_SORAKA

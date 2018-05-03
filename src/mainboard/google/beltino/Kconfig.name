@@ -1,19 +1,21 @@
+comment "Beltino"
+
 config BOARD_GOOGLE_MCCLOUD
-	bool "Mccloud (Acer Chromebox CXI)"
+	bool "->  Mccloud (Acer Chromebox CXI)"
 	select BOARD_GOOGLE_BASEBOARD_BELTINO
 
 config BOARD_GOOGLE_MONROE
-	bool "Monroe (LG Chromebase 22CV241 & 22CB25S)"
+	bool "->  Monroe (LG Chromebase 22CV241 & 22CB25S)"
 	select BOARD_GOOGLE_BASEBOARD_BELTINO
 
 config BOARD_GOOGLE_PANTHER
-	bool "Panther (ASUS Chromebox CN60)"
+	bool "->  Panther (ASUS Chromebox CN60)"
 	select BOARD_GOOGLE_BASEBOARD_BELTINO
 
 config BOARD_GOOGLE_TRICKY
-	bool "Tricky (Dell Chromebox 3010)"
+	bool "->  Tricky (Dell Chromebox 3010)"
 	select BOARD_GOOGLE_BASEBOARD_BELTINO
 
 config BOARD_GOOGLE_ZAKO
-	bool "Zako (HP Chromebox G1)"
+	bool "->  Zako (HP Chromebox G1)"
 	select BOARD_GOOGLE_BASEBOARD_BELTINO

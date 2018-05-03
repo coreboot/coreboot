@@ -1,6 +1,8 @@
+comment "Kahlee"
+
 config BOARD_GOOGLE_GRUNT
-	bool "Grunt"
+	bool "->  Grunt"
 	select BOARD_GOOGLE_BASEBOARD_KAHLEE
 config BOARD_GOOGLE_KAHLEE
-	bool "Kahlee"
+	bool "->  Kahlee"
 	select BOARD_GOOGLE_BASEBOARD_KAHLEE

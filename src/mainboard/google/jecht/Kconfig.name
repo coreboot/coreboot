@@ -1,15 +1,17 @@
+comment "Jecht"
+
 config BOARD_GOOGLE_GUADO
-	bool "Guado (ASUS Chromebox CN62)"
+	bool "->  Guado (ASUS Chromebox CN62)"
 	select BOARD_GOOGLE_BASEBOARD_JECHT
 
 config BOARD_GOOGLE_JECHT
-	bool "Jecht"
+	bool "->  Jecht"
 	select BOARD_GOOGLE_BASEBOARD_JECHT
 
 config BOARD_GOOGLE_RIKKU
-	bool "Rikku (Acer Chromebox CXI2)"
+	bool "->  Rikku (Acer Chromebox CXI2)"
 	select BOARD_GOOGLE_BASEBOARD_JECHT
 
 config BOARD_GOOGLE_TIDUS
-	bool "Tidus (Lenovo ThinkCentre Chromebox)"
+	bool "->  Tidus (Lenovo ThinkCentre Chromebox)"
 	select BOARD_GOOGLE_BASEBOARD_JECHT

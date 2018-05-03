@@ -1,15 +1,17 @@
+comment "Slippy"
+
 config BOARD_GOOGLE_FALCO
-	bool "Falco (HP Chromebook 14)"
+	bool "->  Falco (HP Chromebook 14)"
 	select BOARD_GOOGLE_BASEBOARD_SLIPPY
 
 config BOARD_GOOGLE_LEON
-	bool "Leon (Toshiba Chromebook)"
+	bool "->  Leon (Toshiba Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_SLIPPY
 
 config BOARD_GOOGLE_PEPPY
-	bool "Peppy (Acer C720/C720P Chromebook)"
+	bool "->  Peppy (Acer C720/C720P Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_SLIPPY
 
 config BOARD_GOOGLE_WOLF
-	bool "Wolf (Dell Chromebook 11)"
+	bool "->  Wolf (Dell Chromebook 11)"
 	select BOARD_GOOGLE_BASEBOARD_SLIPPY

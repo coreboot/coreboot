@@ -80,7 +80,7 @@ void sis966_enable(device_t dev)
 	}
 
 	devfn = (dev->path.pci.devfn) & ~7;
-	switch(deviceid) {
+	switch (deviceid) {
 		case PCI_DEVICE_ID_SIS_SIS966_USB:
 			devfn -= (1<<3);
 			index = 8;

@@ -816,7 +816,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 		p = &mbp_item_hdr;
 		printk(BIOS_INFO, "ME: MBP item header %8.8x\n", *((u32*)p));
 
-		switch(mbp_item_id) {
+		switch (mbp_item_id) {
 		case 0x101:
 			SET_UP_COPY(fw_version_name);
 

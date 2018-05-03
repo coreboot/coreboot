@@ -1016,7 +1016,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 	for (i = 0; i < mbp->header.mbp_size - 1;) {
 		mbp_item_header *item = (void *)&mbp->data[i];
 
-		switch(MBP_MAKE_IDENT(item->app_id, item->item_id)) {
+		switch (MBP_MAKE_IDENT(item->app_id, item->item_id)) {
 		case MBP_IDENT(KERNEL, FW_VER):
 			ASSIGN_FIELD_PTR(fw_version_name, &mbp->data[i+1]);
 

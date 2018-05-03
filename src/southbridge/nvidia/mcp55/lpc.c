@@ -197,7 +197,7 @@ static void mcp55_lpc_enable_childrens_resources(device_t dev)
 					base = res->base;
 					end = resource_end(res);
 					printk(BIOS_DEBUG, "mcp55 lpc decode:%s, base=0x%08lx, end=0x%08lx\n",dev_path(child),base, end);
-					switch(base) {
+					switch (base) {
 					case 0x3f8: /* COM1 */
 						reg |= (1 << 0);
 						break;

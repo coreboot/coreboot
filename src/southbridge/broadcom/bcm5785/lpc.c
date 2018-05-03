@@ -84,7 +84,7 @@ static void bcm5785_lpc_enable_childrens_resources(device_t dev)
 					base = res->base;
 					end = resource_end(res);
 					printk(BIOS_DEBUG, "bcm5785lpc decode:%s, base=0x%08lx, end=0x%08lx\n",dev_path(child),base, end);
-					switch(base) {
+					switch (base) {
 					case 0x60: //KBC
 					case 0x64:
 						reg |= (1<<29); break;

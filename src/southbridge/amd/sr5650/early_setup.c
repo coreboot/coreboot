@@ -104,7 +104,7 @@ static u8 get_nb_rev(device_t nb_dev)
 {
 	u8 reg;
 	reg = pci_read_config8(nb_dev, 0x8);	/* copy from CIM, can't find in doc */
-	switch(reg & 3)
+	switch (reg & 3)
 	{
 	case 0x00:
 		reg = REV_SR5650_A11;

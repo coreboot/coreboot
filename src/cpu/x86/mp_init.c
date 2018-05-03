@@ -40,7 +40,9 @@
 
 #define MAX_APIC_IDS 256
 
-typedef void (*mp_callback_t)(void);
+struct mp_callback {
+	void (*func)(void);
+};
 
 /*
  * A mp_flight_record details a sequence of calls for the APs to perform
@@ -58,8 +60,8 @@ typedef void (*mp_callback_t)(void);
 struct mp_flight_record {
 	atomic_t barrier;
 	atomic_t cpus_entered;
-	mp_callback_t ap_call;
-	mp_callback_t bsp_call;
+	void (*ap_call)(void);
+	void (*bsp_call)(void);
 } __aligned(CACHELINE_SIZE);
 
 #define _MP_FLIGHT_RECORD(barrier_, ap_func_, bsp_func_) \
@@ -851,19 +853,30 @@ static void trigger_smm_relocation(void)
 	mp_state.ops.per_cpu_smm_trigger();
 }
 
-static mp_callback_t ap_callbacks[CONFIG_MAX_CPUS];
+static struct mp_callback *ap_callbacks[CONFIG_MAX_CPUS];
 
-static mp_callback_t read_callback(mp_callback_t *slot)
+static struct mp_callback *read_callback(struct mp_callback **slot)
 {
-	return *(volatile mp_callback_t *)slot;
+	struct mp_callback *ret;
+
+	asm volatile ("mov	%1, %0\n"
+		: "=r" (ret)
+		: "m" (*slot)
+		: "memory"
+	);
+	return ret;
 }
 
-static void store_callback(mp_callback_t *slot, mp_callback_t value)
+static void store_callback(struct mp_callback **slot, struct mp_callback *val)
 {
-	*(volatile mp_callback_t *)slot = value;
+	asm volatile ("mov	%1, %0\n"
+		: "=m" (*slot)
+		: "r" (val)
+		: "memory"
+	);
 }
 
-static int run_ap_work(mp_callback_t func, long expire_us)
+static int run_ap_work(struct mp_callback *val, long expire_us)
 {
 	int i;
 	int cpus_accepted;
@@ -879,7 +892,7 @@ static int run_ap_work(mp_callback_t func, long expire_us)
 	for (i = 0; i < ARRAY_SIZE(ap_callbacks); i++) {
 		if (cur_cpu == i)
 			continue;
-		store_callback(&ap_callbacks[i], func);
+		store_callback(&ap_callbacks[i], val);
 	}
 	mfence();
 
@@ -908,28 +921,34 @@ static int run_ap_work(mp_callback_t func, long expire_us)
 
 static void ap_wait_for_instruction(void)
 {
-	int cur_cpu = cpu_index();
+	struct mp_callback lcb;
+	struct mp_callback **per_cpu_slot;
 
 	if (!IS_ENABLED(CONFIG_PARALLEL_MP_AP_WORK))
 		return;
 
-	while (1) {
-		mp_callback_t func = read_callback(&ap_callbacks[cur_cpu]);
+	per_cpu_slot = &ap_callbacks[cpu_index()];
 
-		if (func == NULL) {
+	while (1) {
+		struct mp_callback *cb = read_callback(per_cpu_slot);
+
+		if (cb == NULL) {
 			asm ("pause");
 			continue;
 		}
 
-		store_callback(&ap_callbacks[cur_cpu], NULL);
+		/* Copy to local variable before signalling consumption. */
+		memcpy(&lcb, cb, sizeof(lcb));
 		mfence();
-		func();
+		store_callback(per_cpu_slot, NULL);
+		lcb.func();
 	}
 }
 
 int mp_run_on_aps(void (*func)(void), long expire_us)
 {
-	return run_ap_work(func, expire_us);
+	struct mp_callback lcb = { .func = func };
+	return run_ap_work(&lcb, expire_us);
 }
 
 int mp_run_on_all_cpus(void (*func)(void), long expire_us)

@@ -80,7 +80,7 @@ void pci_bus_reset(struct bus *bus);
 struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 				unsigned int devfn);
 
-void do_pci_scan_bridge(device_t bus,
+void do_pci_scan_bridge(struct device *dev,
 	void (*do_scan_bus)(struct bus *bus,
 		unsigned int min_devfn, unsigned int max_devfn));
 

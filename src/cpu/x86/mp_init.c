@@ -60,7 +60,7 @@ struct mp_flight_record {
 	atomic_t cpus_entered;
 	mp_callback_t ap_call;
 	mp_callback_t bsp_call;
-} __attribute__((aligned(CACHELINE_SIZE)));
+} __aligned(CACHELINE_SIZE);
 
 #define _MP_FLIGHT_RECORD(barrier_, ap_func_, bsp_func_) \
 	{							\

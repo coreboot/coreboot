@@ -21,48 +21,7 @@
 #include <bootstate.h>
 
 #include "vbt.h"
-
-#define VBT_SIGNATURE 0x54425624
-
-__weak
-const char *mainboard_vbt_filename(void)
-{
-	return "vbt.bin";
-}
-
-static char vbt_data[8 * KiB];
-static int vbt_data_used;
-
-void *locate_vbt(size_t *vbt_size)
-{
-	uint32_t vbtsig = 0;
-
-	if (vbt_data_used == 1)
-		return (void *)vbt_data;
-
-	const char *filename = mainboard_vbt_filename();
-
-	size_t file_size = cbfs_boot_load_file(filename,
-		vbt_data, sizeof(vbt_data), CBFS_TYPE_RAW);
-
-	if (file_size == 0)
-		return NULL;
-
-	if (vbt_size)
-		*vbt_size = file_size;
-
-	memcpy(&vbtsig, vbt_data, sizeof(vbtsig));
-	if (vbtsig != VBT_SIGNATURE) {
-		printk(BIOS_ERR, "Missing/invalid signature in VBT data file!\n");
-		return NULL;
-	}
-
-	printk(BIOS_INFO, "Found a VBT of %zu bytes after decompression\n",
-		file_size);
-	vbt_data_used = 1;
-
-	return (void *)vbt_data;
-}
+#include <drivers/intel/gma/opregion.h>
 
 void *vbt_get(void)
 {

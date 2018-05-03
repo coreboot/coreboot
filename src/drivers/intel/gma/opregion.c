@@ -27,6 +27,46 @@
 #include "intel_bios.h"
 #include "opregion.h"
 
+__weak
+const char *mainboard_vbt_filename(void)
+{
+	return "vbt.bin";
+}
+
+static char vbt_data[8 * KiB];
+static int vbt_data_used;
+
+void *locate_vbt(size_t *vbt_size)
+{
+	uint32_t vbtsig = 0;
+
+	if (vbt_data_used == 1)
+		return (void *)vbt_data;
+
+	const char *filename = mainboard_vbt_filename();
+
+	size_t file_size = cbfs_boot_load_file(filename,
+		vbt_data, sizeof(vbt_data), CBFS_TYPE_RAW);
+
+	if (file_size == 0)
+		return NULL;
+
+	if (vbt_size)
+		*vbt_size = file_size;
+
+	memcpy(&vbtsig, vbt_data, sizeof(vbtsig));
+	if (vbtsig != VBT_SIGNATURE) {
+		printk(BIOS_ERR, "Missing/invalid signature in VBT data file!\n");
+		return NULL;
+	}
+
+	printk(BIOS_INFO, "Found a VBT of %zu bytes after decompression\n",
+		file_size);
+	vbt_data_used = 1;
+
+	return (void *)vbt_data;
+}
+
 /* Write ASLS PCI register and prepare SWSCI register. */
 void intel_gma_opregion_register(uintptr_t opregion)
 {
@@ -167,16 +207,19 @@ static enum cb_err locate_vbt_vbios(const u8 *vbios, struct region_device *rdev)
 
 static enum cb_err locate_vbt_cbfs(struct region_device *rdev)
 {
-	struct cbfsf file_desc;
+	size_t vbt_data_size;
+	void *vbt = locate_vbt(&vbt_data_size);
 
-	/* try to locate vbt.bin in CBFS */
-	if (cbfs_boot_locate(&file_desc, "vbt.bin", NULL) == CB_SUCCESS) {
-		cbfs_file_data(rdev, &file_desc);
-		printk(BIOS_INFO, "GMA: Found VBT in CBFS\n");
-		return CB_SUCCESS;
-	}
+	if (vbt == NULL)
+		return CB_ERR;
 
-	return CB_ERR;
+	if (rdev_chain(rdev, &addrspace_32bit.rdev, (uintptr_t)vbt,
+	    vbt_data_size))
+		return CB_ERR;
+
+	printk(BIOS_INFO, "GMA: Found VBT in CBFS\n");
+
+	return CB_SUCCESS;
 }
 
 static enum cb_err locate_vbt_vbios_cbfs(struct region_device *rdev)

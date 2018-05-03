@@ -253,4 +253,18 @@ uintptr_t gma_get_gnvs_aslb(const void *gnvs);
 void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb);
 enum cb_err intel_gma_init_igd_opregion(igd_opregion_t *opregion);
 
+/*
+ * Returns the CBFS filename of the VBT blob.
+ *
+ * The default implementation returns "vbt.bin", but other implementations can
+ * override this.
+ */
+const char *mainboard_vbt_filename(void);
+
+/*
+ * locate vbt.bin file. Returns a pointer to its content.
+ * If vbt_size is non-NULL, also return the vbt's size.
+ */
+void *locate_vbt(size_t *vbt_size);
+
 #endif /* _COMMON_GMA_H_ */

@@ -14,11 +14,11 @@
  */
 
 #include <stdint.h>
+#include <drivers/intel/gma/opregion.h>
 #include <ec/google/chromeec/ec.h>
 #include "baseboard/variants.h"
 #include <soc/cpu.h>
 #include <soc/intel/apollolake/chip.h>
-#include <soc/intel/common/vbt.h>
 #include <soc/gpio.h>
 
 enum {

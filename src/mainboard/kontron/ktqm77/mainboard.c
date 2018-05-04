@@ -162,7 +162,7 @@ static int int15_handler(void)
 /* mainboard_enable is executed as first thing after */
 /* enumerate_buses(). */
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 #if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL) || \
 	IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_REALMODE)
@@ -172,7 +172,7 @@ static void mainboard_enable(device_t dev)
 
 	unsigned disable = 0;
 	if ((get_option(&disable, "ethernet1") == CB_SUCCESS) && disable) {
-		device_t nic = dev_find_slot(0, PCI_DEVFN(0x1c, 2));
+		struct device *nic = dev_find_slot(0, PCI_DEVFN(0x1c, 2));
 		if (nic) {
 			printk(BIOS_DEBUG, "DISABLE FIRST NIC!\n");
 			nic->enabled = 0;
@@ -180,7 +180,7 @@ static void mainboard_enable(device_t dev)
 	}
 	disable = 0;
 	if ((get_option(&disable, "ethernet2") == CB_SUCCESS) && disable) {
-		device_t nic = dev_find_slot(0, PCI_DEVFN(0x1c, 3));
+		struct device *nic = dev_find_slot(0, PCI_DEVFN(0x1c, 3));
 		if (nic) {
 			printk(BIOS_DEBUG, "DISABLE SECOND NIC!\n");
 			nic->enabled = 0;

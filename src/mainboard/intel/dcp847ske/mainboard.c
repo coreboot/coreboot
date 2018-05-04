@@ -19,7 +19,7 @@
 #include <drivers/intel/gma/int15.h>
 #include <southbridge/intel/common/gpio.h>
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Memory voltage: %s\n",
 		get_gpio(8) ? "1.35V" : "1.5V");

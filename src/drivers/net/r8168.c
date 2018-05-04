@@ -67,7 +67,7 @@ static size_t search(const char *p, const u8 *a, size_t lengthp,
 	for (j = 0; j <= lengtha - lengthp; j++) {
 		for (i = 0; i < lengthp && p[i] == a[i + j]; i++)
 			;
-		if (i >= lengthp)
+		if (i >= lengthp && a[j - 1] == lengthp)
 			return j;
 	}
 	return lengtha;
@@ -187,13 +187,18 @@ static void program_mac_address(struct device *dev, u16 io_base)
 	/* Default MAC Address of 00:E0:4C:00:C0:B0 */
 	u8 mac[6] = { 0x00, 0xe0, 0x4c, 0x00, 0xc0, 0xb0 };
 	struct drivers_net_config *config = dev->chip_info;
+	bool mac_found = false;
 
 	/* check the VPD for the mac address */
 	if (IS_ENABLED(CONFIG_RT8168_GET_MAC_FROM_VPD)) {
 		/* Current implementation is up to 10 NIC cards */
 		if (config && config->device_index <= MAX_DEVICE_SUPPORT) {
-			if (fetch_mac_string_vpd(macstrbuf, config->device_index)
-				!= CB_SUCCESS)
+			/* check "ethernet_mac" first when the device index is 1 */
+			if (config->device_index == 1 &&
+				fetch_mac_string_vpd(macstrbuf, 0) == CB_SUCCESS)
+				mac_found = true;
+			if (!mac_found && fetch_mac_string_vpd(macstrbuf,
+				config->device_index) != CB_SUCCESS)
 				printk(BIOS_ERR, "r8168: mac address not found in VPD,"
 								 " using default 00:e0:4c:00:c0:b0\n");
 		} else {

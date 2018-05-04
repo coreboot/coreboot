@@ -47,6 +47,10 @@ config PCIEXP_ASPM
 	bool
 	default y
 
+config PCIEXP_AER
+	bool
+	default y
+
 config PCIEXP_COMMON_CLOCK
 	bool
 	default y

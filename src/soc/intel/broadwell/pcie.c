@@ -555,8 +555,12 @@ static void pch_pcie_early(struct device *dev)
 	pci_update_config8(dev, 0xf5, 0x0f, 0);
 
 	/* Set AER Extended Cap ID to 01h and Next Cap Pointer to 200h. */
-	pci_update_config32(dev, 0x100, ~(1 << 29) & ~0xfffff,
-		(1 << 29) | 0x10001);
+	if (IS_ENABLED(CONFIG_PCIEXP_AER))
+		pci_update_config32(dev, 0x100, ~(1 << 29) & ~0xfffff,
+			(1 << 29) | 0x10001);
+	else
+		pci_update_config32(dev, 0x100, ~(1 << 29) & ~0xfffff,
+			(1 << 29));
 
 	/* Set L1 Sub-State Cap ID to 1Eh and Next Cap Pointer to None. */
 	if (IS_ENABLED(CONFIG_PCIEXP_L1_SUB_STATE))

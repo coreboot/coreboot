@@ -26,7 +26,7 @@
 #include "../common/xgi_coreboot.h"
 #include "../common/XGIfb.h"
 
-static void xgi_z9s_set_resources(device_t dev)
+static void xgi_z9s_set_resources(struct device *dev)
 {
 	/* Reserve VGA regions */
 	mmio_resource(dev, 3, 0xa0000 >> 10, 0x1ffff >> 10);

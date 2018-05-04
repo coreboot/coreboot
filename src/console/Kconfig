@@ -308,7 +308,7 @@ if !CONSOLE_OVERRIDE_LOGLEVEL
 
 choice
 	prompt "Default console log level"
-	default DEFAULT_CONSOLE_LOGLEVEL_8
+	default DEFAULT_CONSOLE_LOGLEVEL_7
 
 config DEFAULT_CONSOLE_LOGLEVEL_8
 	bool "8: SPEW"

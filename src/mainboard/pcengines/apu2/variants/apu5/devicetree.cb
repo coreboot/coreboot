@@ -25,7 +25,7 @@ chip northbridge/amd/pi/00730F01/root_complex
 
 			chip northbridge/amd/pi/00730F01 # PCI side of HT root complex
 				device pci 0.0 on  end # Root Complex
-				device pci 0.2 off end # IOMMU
+				device pci 0.2 on end # IOMMU
 				device pci 1.0 off  end # Internal Graphics P2P bridge 0x9804
 				device pci 1.1 off  end # Internal Multimedia
 				device pci 2.0 on  end # PCIe Host Bridge

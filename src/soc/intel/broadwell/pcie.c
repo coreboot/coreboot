@@ -559,7 +559,10 @@ static void pch_pcie_early(struct device *dev)
 		(1 << 29) | 0x10001);
 
 	/* Set L1 Sub-State Cap ID to 1Eh and Next Cap Pointer to None. */
-	pci_update_config32(dev, 0x200, ~0xffff, 0x001e);
+	if (IS_ENABLED(CONFIG_PCIEXP_L1_SUB_STATE))
+		pci_update_config32(dev, 0x200, ~0xfffff, 0x001e);
+	else
+		pci_update_config32(dev, 0x200, ~0xfffff, 0);
 
 	pci_update_config32(dev, 0x320, ~(3 << 20) & ~(7 << 6),
 		(1 << 20) | (3 << 6));

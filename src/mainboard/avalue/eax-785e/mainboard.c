@@ -64,7 +64,7 @@ u8 is_dev3_present(void)
 * enable the dedicated function in EAX-785E board.
 * This function called early than rs780_enable.
 *************************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 

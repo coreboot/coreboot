@@ -196,7 +196,7 @@ static void mainboard_init(void *chip_info)
 static void mainboard_final(void *chip_info)
 {
 	uint16_t cmd = 0;
-	device_t dev = NULL;
+	struct device *dev = NULL;
 
 	/* Do board specific things */
 	variant_mainboard_final();

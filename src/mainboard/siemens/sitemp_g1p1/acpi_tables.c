@@ -44,7 +44,7 @@ typedef struct {
 
 static void acpi_write_gvars(global_vars_t *gvars)
 {
-	device_t dev;
+	struct device *dev;
 	struct resource *res;
 
 	memset((void *)gvars, 0, GLOBAL_VARS_SIZE);
@@ -86,7 +86,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-void mainboard_inject_dsdt(device_t device)
+void mainboard_inject_dsdt(struct device *device)
 {
 	global_vars_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, GLOBAL_VARS_SIZE);
 

@@ -109,7 +109,7 @@ static void pirq_setup(void)
 /**********************************************
  * enable the dedicated function in mainboard.
  **********************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 

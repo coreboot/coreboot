@@ -20,7 +20,7 @@ DefinitionBlock (
 	"DSDT.AML",	/* Output filename */
 	"DSDT",		/* Signature */
 	0x02,		/* DSDT Revision, needs to be 2 for 64bit */
-	"GOOGLE  ",	/* OEMID */
+	"GOOGLE",	/* OEMID */
 	"COREBOOT",	/* TABLE ID */
 	0x00010001	/* OEM Revision */
 	)

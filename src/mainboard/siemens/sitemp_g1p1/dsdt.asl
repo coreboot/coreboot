@@ -18,7 +18,7 @@
 #include <cpu/x86/lapic_def.h>
 #include <southbridge/amd/sb600/sb600.h>
 
-DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
+DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMEN", "SITEMP  ", 0x20101005)
 {
 	/* Data to be patched by the BIOS during POST */
 	/* Memory related values */

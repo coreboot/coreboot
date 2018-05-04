@@ -12,7 +12,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-DefinitionBlock ("SSDT2.aml", "SSDT", 1, "AMD-FAM10", "AMDACPI", 100925440)
+DefinitionBlock ("SSDT2.aml", "SSDT", 1, "AMDF10", "AMDACPI ", 100925440)
 {
 	Scope (_SB)
 	{

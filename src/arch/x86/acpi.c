@@ -640,7 +640,7 @@ void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 	header->checksum = acpi_checksum((void *)ivrs, header->length);
 }
 
-unsigned long acpi_write_hpet(device_t device, unsigned long current,
+unsigned long acpi_write_hpet(struct device *device, unsigned long current,
 	acpi_rsdp_t *rsdp)
 {
 	acpi_hpet_t *hpet;

@@ -693,11 +693,11 @@ void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 
 #if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
 void acpi_create_hpet(acpi_hpet_t *hpet);
-unsigned long acpi_write_hpet(device_t device, unsigned long start,
+unsigned long acpi_write_hpet(struct device *device, unsigned long start,
 			      acpi_rsdp_t *rsdp);
 
 /* cpu/intel/speedstep/acpi.c */
-void generate_cpu_entries(device_t device);
+void generate_cpu_entries(struct device *device);
 #endif
 
 void acpi_create_mcfg(acpi_mcfg_t *mcfg);

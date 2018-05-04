@@ -18,8 +18,5 @@
 
 const struct pci_bus_operations *pci_bus_default_ops(struct device *dev)
 {
-	if (IS_ENABLED(CONFIG_NO_MMCONF_SUPPORT))
-		return &pci_cf8_conf1;
-
-	return &pci_ops_mmconf;
+	return &pci_cf8_conf1;
 }

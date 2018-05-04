@@ -63,7 +63,7 @@ static void pci_mmconf_write_config32(struct bus *pbus, int bus, int devfn,
 	write32(PCI_MMIO_ADDR(bus, devfn, where, 3), value);
 }
 
-const struct pci_bus_operations pci_ops_mmconf = {
+static const struct pci_bus_operations pci_ops_mmconf = {
 	.read8 = pci_mmconf_read_config8,
 	.read16 = pci_mmconf_read_config16,
 	.read32 = pci_mmconf_read_config32,
@@ -71,3 +71,8 @@ const struct pci_bus_operations pci_ops_mmconf = {
 	.write16 = pci_mmconf_write_config16,
 	.write32 = pci_mmconf_write_config32,
 };
+
+const struct pci_bus_operations *pci_bus_default_ops(struct device *dev)
+{
+	return &pci_ops_mmconf;
+}

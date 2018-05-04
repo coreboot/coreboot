@@ -12,6 +12,7 @@ ramstage-$(CONFIG_AZALIA_PLUGIN_SUPPORT) += azalia_device.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += pnp_device.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_64) += pnp_device.c
 ramstage-$(CONFIG_PCI) += pci_ops.c
+ramstage-$(CONFIG_MMCONF_SUPPORT) += pci_ops_mmconf.c
 ramstage-$(CONFIG_PCI) += pci_early.c
 ramstage-$(CONFIG_PCI) += pci_rom.c
 ramstage-y += smbus_ops.c

@@ -723,7 +723,7 @@ static void avoid_fixed_resources(const struct device *dev)
 
 		if (res->base > lim->base)
 			lim->base = res->base;
-		if  (res->limit < lim->limit)
+		if (res->limit < lim->limit)
 			lim->limit = res->limit;
 	}
 

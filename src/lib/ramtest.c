@@ -102,7 +102,7 @@ static int ram_bitset_nodie(unsigned long start)
 
 		failed = (value2 != value);
 		failures |= failed;
-		if  (failed && !verbose) {
+		if (failed && !verbose) {
 			printk(BIOS_ERR, "0x%08lx wr: 0x%08lx rd: 0x%08lx FAIL\n",
 				 start + addr, value, value2);
 		}

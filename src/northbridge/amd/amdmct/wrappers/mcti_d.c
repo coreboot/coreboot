@@ -130,7 +130,7 @@ u16 mctGet_NVbits(u8 index)
 	case NV_BYPMAX:
 #if !IS_ENABLED(CONFIG_GFXUMA)
 		val = 4;
-#elif  IS_ENABLED(CONFIG_GFXUMA)
+#elif IS_ENABLED(CONFIG_GFXUMA)
 		val = 7;
 #endif
 		break;

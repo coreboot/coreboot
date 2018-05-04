@@ -105,7 +105,7 @@ void board_FCH_InitReset(struct sysinfo *cb_NA, FCH_RESET_DATA_BLOCK *FchParams_
 	/* Read SATA speed setting from CMOS */
 	enum cb_err ret;
 	ret = get_option(&FchParams_reset->SataSetMaxGen2, "sata_speed");
-	if  (ret != CB_SUCCESS) {
+	if (ret != CB_SUCCESS) {
 		FchParams_reset->SataSetMaxGen2 = 0;
 		printk(BIOS_DEBUG, "ERROR: cannot read CMOS setting, falling back to default. Error code: %x\n", (int)ret);
 	}

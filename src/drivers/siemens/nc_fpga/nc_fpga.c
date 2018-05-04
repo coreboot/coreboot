@@ -84,7 +84,7 @@ static void init_fan_ctrl (void *base_adr)
 	    (hwilib_get_field(FF_FreezeDis, &freeze_disable, 1) == 1)) {
 		if (!fan_req)
 			mask = 1;
-		else if  (fan_req && !freeze_disable)
+		else if (fan_req && !freeze_disable)
 			mask = 2;
 		else
 			mask = 3;

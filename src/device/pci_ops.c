@@ -20,13 +20,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
-/* Overwrite with architecture specific method */
-const struct pci_bus_operations __attribute__((weak))
-*pci_bus_default_ops(struct device *dev)
-{
-	return NULL;
-}
-
 static const struct pci_bus_operations *pci_bus_ops(struct bus *bus, struct device *dev)
 {
 	const struct pci_bus_operations *bops;

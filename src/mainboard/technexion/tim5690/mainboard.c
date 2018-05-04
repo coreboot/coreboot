@@ -113,7 +113,7 @@ static void set_thermal_config(void)
 {
 	u8 byte;
 	u16 word;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	/* set ADT 7461 */
 	ADT7461_write_byte(0x0B, 0x50);	/* Local Temperature Hight limit */
@@ -218,7 +218,7 @@ static void lcd_panel_id(rs690_vbios_regs *vbios_regs, u8 num_id)
 * enable the dedicated function in tim5690 board.
 * This function called early than rs690_enable.
 *************************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	u16 gpio_base = IT8712F_SIMPLE_IO_BASE;
 #if IS_ENABLED(CONFIG_VGA_ROM_RUN)

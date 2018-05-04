@@ -49,7 +49,7 @@ static void enable_onboard_nic(void)
 {
 
 	u8 byte;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	printk(BIOS_INFO, "enable_onboard_nic.\n");
 
@@ -75,7 +75,7 @@ static void set_thermal_config(void)
 {
 	u8 byte;
 	u16 word;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	/* set ADT 7461 */
 	ADT7461_write_byte(0x0B, 0x50);	/* Local Temperature Hight limit */
@@ -136,7 +136,7 @@ static void set_thermal_config(void)
 * enable the dedicated function in tim8690 board.
 * This function called early than rs690_enable.
 *************************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard tim8690 Enable. dev=0x%p\n", dev);
 

@@ -18,13 +18,13 @@
 #include <ec/acpi/ec.h>
 #include <console/console.h>
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	RCBA32(0x38c8) = 0x00002005;
 	RCBA32(0x38c4) = 0x00800000;
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 

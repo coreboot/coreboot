@@ -298,6 +298,7 @@ struct nhlt_endpoint {
 
 #define MAX_ENDPOINTS 8
 struct nhlt {
+	uint32_t subsystem_id;
 	uint8_t num_endpoints;
 	struct nhlt_endpoint endpoints[MAX_ENDPOINTS];
 	uint8_t current_instance_id[NHLT_MAX_LINK_TYPES];

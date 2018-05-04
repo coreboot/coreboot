@@ -43,6 +43,7 @@ struct nhlt *nhlt_init(void)
 		return NULL;
 
 	memset(nhlt, 0, sizeof(*nhlt));
+	nhlt->subsystem_id = NHLT_SSID;
 
 	return nhlt;
 }
@@ -66,7 +67,7 @@ struct nhlt_endpoint *nhlt_add_endpoint(struct nhlt *nhlt, int link_type,
 	endp->vendor_id = vid;
 	endp->device_id = did;
 	endp->revision_id = NHLT_RID;
-	endp->subsystem_id = NHLT_SSID;
+	endp->subsystem_id = nhlt->subsystem_id;
 	endp->device_type = device_type;
 	endp->direction = dir;
 	endp->virtual_bus_id = DEFAULT_VIRTUAL_BUS_ID;

@@ -50,7 +50,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	/* Write all 8131 IOAPICs */
 	{
-		device_t dev;
+		struct device *dev;
 		struct resource *res;
 		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN((sysconf.hcdn[0]&0xff), 1));
 		if (dev) {
@@ -131,7 +131,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-unsigned long mainboard_write_acpi_tables(device_t dev, unsigned long start, acpi_rsdp_t *rsdp)
+unsigned long mainboard_write_acpi_tables(struct device *dev, unsigned long start, acpi_rsdp_t *rsdp)
 {
 	unsigned long current;
 	acpi_header_t *ssdtx;

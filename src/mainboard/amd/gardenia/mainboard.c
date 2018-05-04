@@ -89,7 +89,7 @@ static void mainboard_init(void *chip_info)
 /*************************************************
  * enable the dedicated function in gardenia board.
  *************************************************/
-static void gardenia_enable(device_t dev)
+static void gardenia_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard "
 				CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");

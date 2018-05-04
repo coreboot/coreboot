@@ -20,7 +20,7 @@
 /*************************************************
  * enable the dedicated function in thatcher board.
  *************************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	msr_t msr;
 

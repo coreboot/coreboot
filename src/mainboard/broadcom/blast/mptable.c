@@ -34,7 +34,7 @@ static void *smp_write_config_table(void *v)
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
 	{
-		device_t dev = 0;
+		struct device *dev = NULL;
 		struct resource *res;
 		for (i = 0; i < 3; i++) {
 			dev = dev_find_device(0x1166, 0x0235, dev);
@@ -71,7 +71,7 @@ static void *smp_write_config_table(void *v)
 	/* enable int */
 	/* why here? must get the BAR and PCI command bit 1 set before enable it ....*/
 	{
-		device_t dev;
+		struct device *dev;
 		dev = dev_find_device(0x1166, 0x0205, 0);
 		if(dev) {
 			uint32_t dword;

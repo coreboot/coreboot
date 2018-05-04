@@ -141,7 +141,7 @@ static int int15_handler(void)
 
 
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	/* Initialize the Embedded Controller */
 	link_ec_init();
@@ -158,7 +158,7 @@ static void mainboard_init(device_t dev)
 	}
 }
 
-static int link_onboard_smbios_data(device_t dev, int *handle,
+static int link_onboard_smbios_data(struct device *dev, int *handle,
 				     unsigned long *current)
 {
 	int len = 0;
@@ -196,7 +196,7 @@ static int link_onboard_smbios_data(device_t dev, int *handle,
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = link_onboard_smbios_data;

@@ -399,7 +399,7 @@ static void sdmmc_vdd(void)
 }
 
 /* this happens after cpu_init where exynos resources are set */
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	/* we'll stick with the crummy u-boot struct for now.*/
 	/* doing this as an auto since the struct has to be writeable */
@@ -456,7 +456,7 @@ static void mainboard_init(device_t dev)
 	setup_usb();
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = &mainboard_init;
 

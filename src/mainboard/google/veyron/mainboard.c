@@ -99,7 +99,7 @@ static void configure_vop(void)
 	write32(&rk3288_grf->iomux_edp_hotplug, IOMUX_EDP_HOTPLUG);
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	gpio_output(GPIO_RESET, 0);
 
@@ -110,7 +110,7 @@ static void mainboard_init(device_t dev)
 	configure_vop();
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = &mainboard_init;
 }

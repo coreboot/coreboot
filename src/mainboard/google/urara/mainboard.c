@@ -21,7 +21,7 @@
 
 #include <vendorcode/google/chromeos/chromeos.h>
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 #if IS_ENABLED(CONFIG_CHROMEOS)
 	/* Copy WIFI calibration data into CBMEM. */
@@ -29,7 +29,7 @@ static void mainboard_init(device_t dev)
 #endif
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Enable Pistachio device...\n");
 	dev->ops->init = &mainboard_init;

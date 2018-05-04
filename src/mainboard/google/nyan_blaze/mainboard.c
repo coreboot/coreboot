@@ -194,7 +194,7 @@ static void setup_ec_spi(void)
 	tegra_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS);
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	set_clock_sources();
 
@@ -242,7 +242,7 @@ static void mainboard_init(device_t dev)
 	setup_ec_spi();
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = &mainboard_init;
 }

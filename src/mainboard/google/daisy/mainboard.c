@@ -252,7 +252,7 @@ static void gpio_init(void)
 }
 
 /* this happens after cpu_init where exynos resources are set */
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	int dp_tries;
 	struct s5p_dp_device dp_device = {
@@ -316,7 +316,7 @@ static void mainboard_init(device_t dev)
 	// gpio_info();
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = &mainboard_init;
 

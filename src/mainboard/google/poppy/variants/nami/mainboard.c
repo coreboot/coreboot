@@ -42,7 +42,7 @@ void variant_devtree_update(void)
 {
 	/* Override dev tree settings per board */
 	uint32_t sku_id = variant_board_sku();
-	device_t root = SA_DEV_ROOT;
+	struct device *root = SA_DEV_ROOT;
 	config_t *cfg = root->chip_info;
 	switch (sku_id) {
 	case SKU_1_VAYNE:

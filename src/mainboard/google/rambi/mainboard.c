@@ -126,7 +126,7 @@ static int int15_handler(void)
 }
 #endif
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
 #if IS_ENABLED(CONFIG_BOARD_GOOGLE_NINJA) || IS_ENABLED(CONFIG_BOARD_GOOGLE_SUMO)
@@ -134,7 +134,7 @@ static void mainboard_init(device_t dev)
 #endif
 }
 
-static int mainboard_smbios_data(device_t dev, int *handle,
+static int mainboard_smbios_data(struct device *dev, int *handle,
 				 unsigned long *current)
 {
 	int len = 0;
@@ -164,7 +164,7 @@ static int mainboard_smbios_data(device_t dev, int *handle,
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = mainboard_smbios_data;

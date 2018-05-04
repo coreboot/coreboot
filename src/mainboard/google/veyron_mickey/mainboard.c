@@ -78,7 +78,7 @@ static void configure_hdmi(void)
 	gpio_output(GPIO(7, B, 3), 1);	/* POWER_HDMI_ON */
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	gpio_output(GPIO_RESET, 0);
 
@@ -89,7 +89,7 @@ static void mainboard_init(device_t dev)
 	configure_hdmi();
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = &mainboard_init;
 }

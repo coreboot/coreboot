@@ -183,7 +183,7 @@ static void powergate_unused_partitions(void)
 		power_gate_partition(partitions[i]);
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	soc_configure_pads(padcfgs, ARRAY_SIZE(padcfgs));
 	soc_configure_funits(funits, ARRAY_SIZE(funits));
@@ -200,12 +200,12 @@ static void mainboard_init(device_t dev)
 	powergate_unused_partitions();
 }
 
-void display_startup(device_t dev)
+void display_startup(struct device *dev)
 {
 	dsi_display_startup(dev);
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = &mainboard_init;
 }

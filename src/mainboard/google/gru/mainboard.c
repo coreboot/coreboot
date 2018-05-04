@@ -333,7 +333,7 @@ static void setup_usb(int port)
 		usb_power_cycle(port);
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	configure_sdmmc();
 	configure_emmc();
@@ -689,7 +689,7 @@ const struct mipi_panel_data *mainboard_get_mipi_mode
 	}
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = &mainboard_init;
 }

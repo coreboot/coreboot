@@ -227,13 +227,13 @@ const char *smbios_mainboard_sku(void)
 	return sku_str;
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
 }
 
 static unsigned long mainboard_write_acpi_tables(
-	device_t device, unsigned long current, acpi_rsdp_t *rsdp)
+	struct device *device, unsigned long current, acpi_rsdp_t *rsdp)
 {
 	const char *oem_id = "GOOGLE";
 	const char *oem_table_id = "FIZZ";
@@ -291,9 +291,9 @@ static void set_bj_adapter_limit(void)
 		printk(BIOS_ERR, "Failed to set BJ limit\n");
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
-	device_t root = SA_DEV_ROOT;
+	struct device *root = SA_DEV_ROOT;
 	config_t *conf = root->chip_info;
 
 	mainboard_set_power_limits(conf);

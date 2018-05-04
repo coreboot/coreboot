@@ -76,7 +76,7 @@ static void assert_sw_reset(void)
 	gpio_set(SW_RESET_GPIO, 1);
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	 /* disable mmu and d-cache before setting up secure world.*/
 	 dcache_mmu_disable();
@@ -104,7 +104,7 @@ static void mainboard_init(device_t dev)
 	audio_clock_config(6144000);
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = &mainboard_init;
 }

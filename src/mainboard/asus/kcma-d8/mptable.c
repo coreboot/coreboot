@@ -36,7 +36,7 @@ static void *smp_write_config_table(void *v)
 	struct mp_config_table *mc;
 	int bus_isa;
 	u32 apicid_sr5650;
-	device_t dev;
+	struct device *dev;
 	uint8_t sp5100_bus_number;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);

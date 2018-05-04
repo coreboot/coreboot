@@ -176,7 +176,7 @@ static void h8_smbios_strings(struct device *dev, struct smbios_type11 *t)
 }
 #endif
 
-static void h8_init(device_t dev)
+static void h8_init(struct device *dev)
 {
 	pc_keyboard_init(NO_AUX_DEVICE);
 }

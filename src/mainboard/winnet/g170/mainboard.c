@@ -24,7 +24,7 @@ static void mainboard_final(void *chip_info)
 {
 	                                       /*  A  B   C  D */
 	static const unsigned char irq_map[4] = { 11, 5, 10, 0 };
-	device_t lpc_dev;
+	struct device *lpc_dev;
 
 	printk(BIOS_INFO, "Setting up G170 IRQ routing...\n");
 

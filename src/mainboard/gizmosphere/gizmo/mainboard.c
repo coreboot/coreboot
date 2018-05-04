@@ -27,7 +27,7 @@
 /**********************************************
  * Enable the dedicated functions of the board.
  **********************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
@@ -49,7 +49,7 @@ static void mainboard_enable(device_t dev)
 
 static void mainboard_final(void *chip_info)
 {
-	device_t ahci_dev;
+	struct device *ahci_dev;
 	uintptr_t ABAR;
 	u8 *memptr;
 

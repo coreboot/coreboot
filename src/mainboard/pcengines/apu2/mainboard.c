@@ -158,7 +158,7 @@ static void config_gpio_mux(void)
  * enable the dedicated function in mainboard.
  **********************************************/
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
@@ -185,7 +185,7 @@ static void mainboard_enable(device_t dev)
 const char *smbios_mainboard_serial_number(void)
 {
 	static char serial[10];
-	device_t nic_dev;
+	struct device *nic_dev;
 	uintptr_t bar10;
 	u32 mac_addr = 0;
 	int i;

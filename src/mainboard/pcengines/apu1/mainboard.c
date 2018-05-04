@@ -176,7 +176,7 @@ static void config_addon_uart(void)
 /**********************************************
  * Enable the dedicated functions of the board.
  **********************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
@@ -206,7 +206,7 @@ static void mainboard_enable(device_t dev)
 const char *smbios_mainboard_serial_number(void)
 {
 	static char serial[10];
-	device_t nic_dev;
+	struct device *nic_dev;
 	uintptr_t bar18;
 	u32 mac_addr = 0;
 	int i;
@@ -255,7 +255,7 @@ const char *smbios_mainboard_serial_number(void)
  */
 static void usb_oc_setup(void)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x12, 0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x12, 0));
 
 	pci_write_config32(dev, 0x58, 0x011f0);
 }

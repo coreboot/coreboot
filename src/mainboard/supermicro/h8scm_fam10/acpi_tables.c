@@ -25,7 +25,7 @@
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	device_t dev;
+	struct device *dev;
 	u32 dword;
 	u32 gsi_base = 0;
 	/* create all subtables for processors */

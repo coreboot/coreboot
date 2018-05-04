@@ -45,7 +45,7 @@ u8 is_dev3_present(void)
  ***/
 void set_pcie_reset(void)
 {
-	device_t pcie_core_dev;
+	struct device *pcie_core_dev;
 
 	pcie_core_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	set_htiu_enable_bits(pcie_core_dev, 0xA8, 0xFFFFFFFF, 0x28282828);
@@ -54,7 +54,7 @@ void set_pcie_reset(void)
 
 void set_pcie_dereset(void)
 {
-	device_t pcie_core_dev;
+	struct device *pcie_core_dev;
 
 	pcie_core_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	set_htiu_enable_bits(pcie_core_dev, 0xA8, 0xFFFFFFFF, 0x6F6F6F6F);
@@ -65,7 +65,7 @@ void set_pcie_dereset(void)
 * enable the dedicated function in h8scm board.
 * This function called early than sr5650_enable.
 *************************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard H8SCM Enable. dev=0x%p\n", dev);
 

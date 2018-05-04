@@ -19,13 +19,13 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/rcba.h>
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	RCBA32(0x38c8) = 0x00002009;
 	RCBA32(0x38c4) = 0x00802009;
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 

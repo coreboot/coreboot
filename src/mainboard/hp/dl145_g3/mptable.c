@@ -54,7 +54,7 @@ static void *smp_write_config_table(void *v)
 
 	/*I/O APICs:   APIC ID Version State           Address*/
 	{
-		device_t dev = 0;
+		struct device *dev = NULL;
 		int i;
 		struct resource *res;
 		for (i = 0; i < 3; i++) {
@@ -87,7 +87,7 @@ static void *smp_write_config_table(void *v)
 	outb(0x0e, 0x4d1);
 
 	{
-		device_t dev;
+		struct device *dev;
 		dev = dev_find_device(0x1166, 0x0205, 0);
 		if(dev) {
 			uint32_t dword;
@@ -103,7 +103,7 @@ static void *smp_write_config_table(void *v)
 
 	// hide XIOAPIC PCI configuration space
 	{
-		device_t dev;
+		struct device *dev;
 		dev = dev_find_device(0x1166, 0x205, 0);
 		if (dev) {
 			uint32_t dword;
@@ -148,7 +148,7 @@ static void *smp_write_config_table(void *v)
 	/* enable int */
 	/* why here? must get the BAR and PCI command bit 1 set before enable it ....*/
 	{
-		device_t dev;
+		struct device *dev;
 		dev = dev_find_device(0x1166, 0x0205, 0);
 		if(dev) {
 			uint32_t dword;

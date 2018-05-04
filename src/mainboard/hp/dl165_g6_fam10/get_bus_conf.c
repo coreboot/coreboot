@@ -65,7 +65,7 @@ void get_bus_conf(void)
 
 	unsigned apicid_base;
 
-	device_t dev;
+	struct device *dev;
 	int i;
 	struct mb_sysconf_t *m;
 

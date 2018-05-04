@@ -31,7 +31,7 @@ static void *smp_write_config_table(void *v)
 /*I/O APICs:	APIC ID	Version	State		Address*/
 	smp_write_ioapic(mc, m->apicid_8111, 0x11, VIO_APIC_VADDR); //8111
 	{
-		device_t dev;
+		struct device *dev;
 		struct resource *res;
 		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(m->sbdn3, 1));
 		if (dev) {
@@ -130,7 +130,7 @@ static void *smp_write_config_table(void *v)
 	for(i = 1; i< sysconf.hc_possible_num; i++) {
 		if(!(sysconf.pci1234[i] & 0x1) ) continue;
 		int ii;
-		device_t dev;
+		struct device *dev;
 		struct resource *res;
 		switch(sysconf.hcid[i]) {
 		case 1:

@@ -75,7 +75,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	slot_num = 0;
 
 	{
-		device_t dev;
+		struct device *dev;
 		dev =
 		    dev_find_slot(m->bus_8111_0,
 				  PCI_DEVFN(sysconf.sbdn + 1, 3));

@@ -7,7 +7,7 @@
 #include <cpu/amd/amdk8_sysconf.h>
 #include "mainboard.h"
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
 }

@@ -230,7 +230,6 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources	= NULL,
 	.init			= NULL,
 	.scan_bus		= pci_domain_scan_bus,
-	.ops_pci_bus	= pci_bus_default_ops,
 #if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
 	.get_smbios_data	= qemu_get_smbios_data,
 #endif

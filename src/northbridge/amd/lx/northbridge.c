@@ -391,7 +391,6 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.scan_bus = pci_domain_scan_bus,
 	.enable = pci_domain_enable,
-	.ops_pci_bus = pci_bus_default_ops,
 };
 
 static void cpu_bus_init(device_t dev)

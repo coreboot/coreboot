@@ -130,7 +130,6 @@ static struct device_operations pci_domain_ops = {
 	.read_resources	= pci_domain_read_resources,
 	.set_resources	= pci_domain_set_resources,
 	.scan_bus	= pci_domain_scan_bus,
-	.ops_pci_bus	= pci_bus_default_ops,
 };
 
 static void chip_enable_dev(device_t dev)

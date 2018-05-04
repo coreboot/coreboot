@@ -268,7 +268,6 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init             = NULL,
 	.scan_bus         = pci_domain_scan_bus,
-	.ops_pci_bus      = pci_bus_default_ops,
 	.write_acpi_tables = northbridge_write_acpi_tables,
 	.acpi_name        = northbridge_acpi_name,
 };

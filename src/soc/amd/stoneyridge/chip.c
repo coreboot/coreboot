@@ -72,7 +72,6 @@ struct device_operations pci_domain_ops = {
 	.set_resources	  = domain_set_resources,
 	.enable_resources = domain_enable_resources,
 	.scan_bus	  = pci_domain_scan_bus,
-	.ops_pci_bus	  = pci_bus_default_ops,
 	.acpi_name	  = soc_acpi_name,
 };
 

@@ -800,7 +800,6 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = domain_enable_resources,
 	.init		  = NULL,
 	.scan_bus	  = pci_domain_scan_bus,
-	.ops_pci_bus	  = pci_bus_default_ops,
 };
 
 static void sysconf_init(device_t dev) // first node

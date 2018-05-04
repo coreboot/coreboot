@@ -15,5 +15,5 @@
 # DESCR: Check for superfluous whitespace in the tree
 
 LC_ALL=C export LC_ALL
-grep -l "[[:space:]][[:space:]]*$" `git ls-files src util |egrep -v "(^3rdparty|^src/vendorcode/|^util/kconfig/|^util/nvidia/cbootimage$|\<COPYING\>|\<LICENSE\>|\<README\>|_shipped$|\.patch$|\.bin$|\.hex$|\.jpg$|\.ttf$|\.woff$|\.png$|\.eot$)"` | \
+grep -l "[[:space:]][[:space:]]*$" `git ls-files src util |egrep -v "(^3rdparty|^src/vendorcode/|^util/kconfig/|^util/nvidia/cbootimage$|\<COPYING\>|\<LICENSE\>|\<README\>|_shipped$|\.patch$|\.bin$|\.hex$|\.jpg$|\.ttf$|\.woff$|\.png$|\.eot$|\.vbt$)"` | \
 	sed -e "s,^.*$,File & has lines ending with whitespace.,"

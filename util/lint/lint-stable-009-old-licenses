@@ -25,6 +25,7 @@ HEADER_EXCLUDED="\
 \.jpg$|\
 \.cksum$|\
 \.bin$|\
+\.vbt$|\
 \.hex$|\
 \.patch$|\
 _shipped$|\

@@ -17,7 +17,7 @@
 LC_ALL=C export LC_ALL
 
 EXCLUDED_DIRS='src/vendorcode/\|util/romcc/\|cbfstool/lzma/\|cbfstool/lz4/\|Documentation/\|build/\|3rdparty/\|\.git/\|coreboot-builds/\|util/nvidia/cbootimage/'
-EXCLUDED_FILES='\.jpg$\|\.cksum$\|\.bin$\|\.hex$\|\.ico$\|\.o$\|\.bz2$\|\.xz$\|^.tmpconfig\|\.pyc$\|_shipped$\|sha256$\|\.png$\|\.patch$'
+EXCLUDED_FILES='\.jpg$\|\.cksum$\|\.bin$\|\.vbt$\|\.hex$\|\.ico$\|\.o$\|\.bz2$\|\.xz$\|^.tmpconfig\|\.pyc$\|_shipped$\|sha256$\|\.png$\|\.patch$'
 
 # Use git ls-files if the code is in a git repo, otherwise use find.
 if [ -n "$(command -v git)" ] && \

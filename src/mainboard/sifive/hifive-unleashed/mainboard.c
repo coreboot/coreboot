@@ -17,7 +17,7 @@
 #include <bootblock_common.h>
 #include <timestamp.h>
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 }
 

@@ -26,7 +26,7 @@
 #include <cpu/amd/model_10xxx_rev.h>
 #include <cpu/amd/amdfam10_sysconf.h>
 
-extern device_t get_node_pci(u32 nodeid, u32 fn);
+extern struct device *get_node_pci(u32 nodeid, u32 fn);
 
 #if 0
 static int first_time = 1;
@@ -36,7 +36,7 @@ static int first_time = 1;
 
 static u32 get_max_siblings(u32 nodes)
 {
-	device_t dev;
+	struct device *dev;
 	u32 nodeid;
 	u32 siblings = 0;
 
@@ -55,7 +55,7 @@ static u32 get_max_siblings(u32 nodes)
 
 static void enable_apic_ext_id(u32 nodes)
 {
-	device_t dev;
+	struct device *dev;
 	u32 nodeid;
 
 	//enable APIC_EXIT_ID all the nodes

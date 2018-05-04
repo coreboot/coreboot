@@ -24,6 +24,9 @@ config DRIVERS_UART_8250IO
 config PCIEXP_L1_SUB_STATE
 	def_bool n
 
+config PCIEXP_AER
+	def_bool n
+
 config HAVE_IFD_BIN
 	bool
 	default n

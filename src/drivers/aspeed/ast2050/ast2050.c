@@ -29,7 +29,7 @@
 #include "../common/aspeed_coreboot.h"
 #include "../common/ast_drv.h"
 
-static void aspeed_ast2050_set_resources(device_t dev)
+static void aspeed_ast2050_set_resources(struct device *dev)
 {
 	/* Reserve VGA regions */
 	mmio_resource(dev, 3, 0xa0000 >> 10, 0x1ffff >> 10);

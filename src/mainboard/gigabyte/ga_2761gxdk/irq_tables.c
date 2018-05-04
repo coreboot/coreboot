@@ -109,7 +109,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	printk(BIOS_INFO, "done.\n");
 
 	{
-		device_t dev;
+		struct device *dev;
 		dev = dev_find_slot(0, PCI_DEVFN(2, 0));
 		if (dev) {
 			/* initialize PCI interupts - these assignments depend

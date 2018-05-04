@@ -33,7 +33,7 @@
 #include <device/pci.h>
 #include <cbfs.h>
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	RCBA32(0x38c8) = 0x00002005;
 	RCBA32(0x38c4) = 0x00802005;
@@ -72,7 +72,7 @@ static void mainboard_init(device_t dev)
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 

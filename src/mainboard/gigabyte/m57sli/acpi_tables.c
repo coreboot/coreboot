@@ -38,7 +38,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	unsigned sbdn;
 	struct resource *res;
-	device_t dev;
+	struct device *dev;
 
 	get_bus_conf();
 	sbdn = sysconf.sbdn;

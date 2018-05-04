@@ -86,6 +86,24 @@ config SEABIOS_BOOTORDER_FILE
 	  If used, a typical value would be:
 	    $(top)/src/mainboard/$(MAINBOARDDIR)/bootorder
 
+config SEABIOS_ADD_SERCON_PORT_FILE
+	prompt "Add SeaBIOS sercon-port file to CBFS"
+	default n
+	bool
+	help
+	  Select this option to enable SeaBIOS' VGA adapter emulation
+	  on serial port.
+
+config SEABIOS_SERCON_PORT_ADDR
+	hex "SeaBIOS sercon-port base address"
+	depends on SEABIOS_ADD_SERCON_PORT_FILE
+	default TTYS0_BASE
+	help
+	  Set this field to the IO address of a serial port for SeaBIOS' VGA
+	  adapter emulation.
+
+	  By default primary console UART defined by TTYS0_BASE is used.
+
 config PAYLOAD_FILE
 	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"
 

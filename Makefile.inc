@@ -1023,6 +1023,10 @@ ifneq ($(CONFIG_UPDATE_IMAGE),y)
 endif
 endif
 endif
+ifeq ($(CONFIG_SEABIOS_ADD_SERCON_PORT_FILE),y)
+	@printf "    SeaBIOS    Add sercon-port file\n"
+	$(CBFSTOOL) $@.tmp add-int -i $(CONFIG_SEABIOS_SERCON_PORT_ADDR) -n etc/sercon-port
+endif
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_HEADER),y)
 	@printf "    UPDATE-FIT\n"

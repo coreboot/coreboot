@@ -178,7 +178,7 @@ static void *smp_write_config_table(void *v)
 	/* on board NIC & Slot PCIE.  */
 
 	/* PCI slots */
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x14, 4));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x14, 4));
 	if (dev && dev->enabled) {
 		u8 bus_pci = dev->link_list->secondary;
 		/* PCI_SLOT 0. */

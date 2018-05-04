@@ -65,7 +65,7 @@ void get_bus_conf(void)
 	unsigned apicid_base;
 	struct mb_sysconf_t *m;
 
-	device_t dev;
+	struct device *dev;
 	int i;
 
 	printk(BIOS_SPEW, "get_bus_conf()\n");

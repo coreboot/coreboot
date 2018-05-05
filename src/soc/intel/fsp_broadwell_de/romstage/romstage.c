@@ -89,7 +89,7 @@ void *asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
 
 /*******************************************************************************
  * The FSP early_init function returns to this function.
- * Memory is setup and the stack is set by the FSP.
+ * Memory is set up and the stack is set by the FSP.
  */
 void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 {

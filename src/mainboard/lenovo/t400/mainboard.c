@@ -16,7 +16,7 @@
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS,
 					GMA_INT15_PANEL_FIT_CENTERING,

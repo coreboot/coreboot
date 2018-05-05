@@ -69,9 +69,9 @@ int get_cst_entries(acpi_cstate_t **entries)
 	return ARRAY_SIZE(cst_entries);
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
-	device_t idedev, sdhci_dev;
+	struct device *idedev, *sdhci_dev;
 
 	ec_clr_bit(0x03, 2);
 
@@ -115,12 +115,12 @@ static void mainboard_init(device_t dev)
 	}
 }
 
-static void fill_ssdt(device_t device)
+static void fill_ssdt(struct device *device)
 {
 	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 1);
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->acpi_fill_ssdt_generator = fill_ssdt;

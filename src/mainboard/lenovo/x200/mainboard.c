@@ -17,12 +17,12 @@
 #include <drivers/intel/gma/int15.h>
 #include <drivers/lenovo/lenovo.h>
 
-static void fill_ssdt(device_t device)
+static void fill_ssdt(struct device *device)
 {
 	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 0);
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS,
 					GMA_INT15_PANEL_FIT_CENTERING,

@@ -29,7 +29,7 @@ static void pavilion_cold_boot_init(void)
 	lenovo_g505s_ec_init();
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 

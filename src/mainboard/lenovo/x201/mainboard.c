@@ -45,7 +45,7 @@ int get_cst_entries(acpi_cstate_t ** entries)
 	return ARRAY_SIZE(cst_entries);
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	printk(BIOS_SPEW, "starting SPI configuration\n");
 
@@ -73,12 +73,12 @@ static void mainboard_init(device_t dev)
 	printk(BIOS_SPEW, "SPI configured\n");
 }
 
-static void fill_ssdt(device_t device)
+static void fill_ssdt(struct device *device)
 {
 	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 0);
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	u16 pmbase;
 

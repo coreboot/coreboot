@@ -39,10 +39,10 @@ int get_cst_entries(acpi_cstate_t **entries)
 	return ARRAY_SIZE(cst_entries);
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	struct southbridge_intel_i82801gx_config *config;
-	device_t idedev;
+	struct device *idedev;
 
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS,
 					GMA_INT15_PANEL_FIT_DEFAULT,
@@ -74,7 +74,7 @@ static void mainboard_init(device_t dev)
 	ec_write(0x0c, inb(0x164c) & 8 ? 0x89 : 0x09);
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 }

@@ -65,7 +65,7 @@ static void mainboard_smbios_strings(
 	       fwvh >> 4, fwvh & 0x0f, fwvl >> 4, 0x41 + (fwvl & 0xf));
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->get_smbios_strings = mainboard_smbios_strings,
 

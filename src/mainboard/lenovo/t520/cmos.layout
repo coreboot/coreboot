@@ -3,6 +3,7 @@
 ##
 ## Copyright (C) 2007-2008 coresystems GmbH
 ## Copyright (C) 2014 Vladimir Serbinenko
+## Copyright (C) 2018 Nico Rikken
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -128,6 +129,7 @@ enumerations
 11    6	    224M
 12    0     Integrated Only
 12    1     Discrete Only
+12    2     Dual Graphics
 13    0     Disable
 13    1     AC and battery
 13    2     AC only

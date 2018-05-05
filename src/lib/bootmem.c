@@ -97,9 +97,15 @@ static void bootmem_init(void)
 	/* Add memory used by CBMEM. */
 	cbmem_add_bootmem();
 
-	/* Add memory used by coreboot. */
-	bootmem_add_range((uintptr_t)_stack, _stack_size, BM_MEM_RAMSTAGE);
-	bootmem_add_range((uintptr_t)_program, _program_size, BM_MEM_RAMSTAGE);
+	/* Add memory used by coreboot -- only if RELOCATABLE_RAMSTAGE is not
+	 * used. When RELOCATABLE_RAMSTAGE is employed ramstage lives in cbmem
+	 * so cbmem_add_bootmem() takes care of that memory region. */
+	if (!IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)) {
+		bootmem_add_range((uintptr_t)_stack, _stack_size,
+				BM_MEM_RAMSTAGE);
+		bootmem_add_range((uintptr_t)_program, _program_size,
+				BM_MEM_RAMSTAGE);
+	}
 
 	bootmem_arch_add_ranges();
 	bootmem_platform_add_ranges();

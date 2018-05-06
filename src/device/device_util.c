@@ -138,8 +138,8 @@ struct device *dev_find_lapic(unsigned apic_id)
  * @param path_type The Device Path Type.
  * @return Pointer to the device structure (if found), 0 otherwise.
  */
-struct device *dev_find_path(device_t prev_match,
-				enum device_path_type path_type)
+struct device *dev_find_path(struct device *prev_match,
+			     enum device_path_type path_type)
 {
 	struct device *dev;
 	struct device *result = NULL;
@@ -857,7 +857,8 @@ static void resource_tree(const struct device *root, int debug_level, int depth)
 	}
 }
 
-void print_resource_tree(const struct device *root, int debug_level, const char *msg)
+void print_resource_tree(const struct device *root, int debug_level,
+			 const char *msg)
 {
 	/* Bail if root is null. */
 	if (!root) {
@@ -957,7 +958,8 @@ void show_all_devs_resources(int debug_level, const char* msg)
 }
 
 void fixed_mem_resource(struct device *dev, unsigned long index,
-		  unsigned long basek, unsigned long sizek, unsigned long type)
+			unsigned long basek, unsigned long sizek,
+			unsigned long type)
 {
 	struct resource *resource;
 

@@ -122,7 +122,7 @@ uint64_t uma_memory_size = 0;
  */
 static device_t __alloc_dev(struct bus *parent, struct device_path *path)
 {
-	device_t dev, child;
+	struct device *dev, *child;
 
 	/* Find the last child of our parent. */
 	for (child = parent->children; child && child->sibling; /* */ )
@@ -156,7 +156,7 @@ static device_t __alloc_dev(struct bus *parent, struct device_path *path)
 
 device_t alloc_dev(struct bus *parent, struct device_path *path)
 {
-	device_t dev;
+	struct device *dev;
 	spin_lock(&dev_lock);
 	dev = __alloc_dev(parent, path);
 	spin_unlock(&dev_lock);
@@ -172,7 +172,7 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
  */
 device_t alloc_find_dev(struct bus *parent, struct device_path *path)
 {
-	device_t child;
+	struct device *child;
 	spin_lock(&dev_lock);
 	child = find_dev_path(parent, path);
 	if (!child)
@@ -627,7 +627,8 @@ struct constraints {
 	struct resource io, mem;
 };
 
-static struct resource * resource_limit(struct constraints *limits, struct resource *res)
+static struct resource *resource_limit(struct constraints *limits,
+				       struct resource *res)
 {
 	struct resource *lim = NULL;
 
@@ -640,7 +641,8 @@ static struct resource * resource_limit(struct constraints *limits, struct resou
 	return lim;
 }
 
-static void constrain_resources(const struct device *dev, struct constraints* limits)
+static void constrain_resources(const struct device *dev,
+				struct constraints* limits)
 {
 	const struct device *child;
 	struct resource *res;
@@ -754,7 +756,7 @@ static void avoid_fixed_resources(const struct device *dev)
 	}
 }
 
-device_t vga_pri = 0;
+struct device *vga_pri = NULL;
 static void set_vga_bridge_bits(void)
 {
 	/*

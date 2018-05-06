@@ -153,7 +153,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 	 */
 	if (PCI_CLASS_DISPLAY_VGA == (dev->class >> 8)) {
 #if !IS_ENABLED(CONFIG_MULTIPLE_VGA_ADAPTERS)
-		extern device_t vga_pri; /* Primary VGA device (device.c). */
+		extern struct device *vga_pri; /* Primary VGA device (device.c). */
 		if (dev != vga_pri) return NULL; /* Only one VGA supported. */
 #endif
 		if ((void *)PCI_VGA_RAM_IMAGE_START != rom_header) {
@@ -202,9 +202,8 @@ static struct rom_header *check_initialized(struct device *dev)
 }
 
 static unsigned long
-pci_rom_acpi_fill_vfct(struct device *device,
-					   struct acpi_vfct *vfct_struct,
-					   unsigned long current)
+pci_rom_acpi_fill_vfct(struct device *device, struct acpi_vfct *vfct_struct,
+		       unsigned long current)
 {
 	struct acpi_vfct_image_hdr *header = &vfct_struct->image_hdr;
 	struct rom_header *rom;
@@ -238,9 +237,8 @@ pci_rom_acpi_fill_vfct(struct device *device,
 }
 
 unsigned long
-pci_rom_write_acpi_tables(struct device *device,
-						  unsigned long current,
-						  struct acpi_rsdp *rsdp)
+pci_rom_write_acpi_tables(struct device *device, unsigned long current,
+			  struct acpi_rsdp *rsdp)
 {
 	struct acpi_vfct *vfct;
 	struct rom_header *rom;

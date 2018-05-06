@@ -24,5 +24,8 @@
  */
 #define EC_ENABLE_WAKE_PIN	0x69
 
+/* Slippy variants have a throttle handler in thermal.asl */
+#define EC_ENABLE_THROTTLING_HANDLER
+
 /* ACPI code for EC functions */
 #include <ec/google/chromeec/acpi/ec.asl>

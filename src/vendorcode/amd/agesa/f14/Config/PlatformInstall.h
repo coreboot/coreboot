@@ -141,7 +141,6 @@ VOLATILE  AMD_MODULE_HEADER mCpuModuleID = {
 #define OPTION_RDIMMS                           FALSE
 #define OPTION_SODIMMS                          FALSE
 #define OPTION_LRDIMMS                          FALSE
-#define OPTION_DDR2                             FALSE
 #define OPTION_DDR3                             FALSE
 #define OPTION_ECC                              FALSE
 #define OPTION_BANK_INTERLEAVE                  FALSE

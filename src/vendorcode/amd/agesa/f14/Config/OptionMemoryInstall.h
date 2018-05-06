@@ -298,23 +298,6 @@ BOOLEAN MemFS3DefConstructorRet (
    *
    *----------------------------------------------------------------------------------
   */
-  #if OPTION_DDR2 == TRUE
-    extern MEM_TECH_CONSTRUCTOR MemConstructTechBlock2;
-    #define MEM_TECH_CONSTRUCTOR_DDR2 MemConstructTechBlock2,
-    #if (OPTION_HW_DRAM_INIT == TRUE)
-      extern MEM_TECH_FEAT MemTDramInitHw;
-      #define MEM_TECH_FEATURE_HW_DRAMINIT  MemTDramInitHw
-    #else
-      #define MEM_TECH_FEATURE_HW_DRAMINIT  MemTFeatDef
-    #endif
-    #if (OPTION_SW_DRAM_INIT == TRUE)
-      #define MEM_TECH_FEATURE_SW_DRAMINIT  MemTFeatDef
-    #else
-      #define MEM_TECH_FEATURE_SW_DRAMINIT  MemTFeatDef
-    #endif
-  #else
-    #define MEM_TECH_CONSTRUCTOR_DDR2
-  #endif
   #if OPTION_DDR3 == TRUE
     extern MEM_TECH_CONSTRUCTOR MemConstructTechBlock3;
     #define MEM_TECH_CONSTRUCTOR_DDR3 MemConstructTechBlock3,
@@ -347,10 +330,6 @@ BOOLEAN MemFS3DefConstructorRet (
    *---------------------------------------------------------------------------------------------------
    */
   #if (OPTION_MEMCTLR_ON == TRUE)
-    #if OPTION_DDR2
-      #undef MEM_TECH_FEATURE_DRAMINIT
-      #define MEM_TECH_FEATURE_DRAMINIT MEM_TECH_FEATURE_HW_DRAMINIT
-    #endif
     #if OPTION_DDR3
       #undef MEM_TECH_FEATURE_DRAMINIT
       #define MEM_TECH_FEATURE_DRAMINIT MEM_TECH_FEATURE_SW_DRAMINIT
@@ -445,20 +424,6 @@ BOOLEAN MemFS3DefConstructorRet (
 
   #if OPTION_MEMCTLR_ON
     extern OPTION_MEM_FEATURE_NB memNEnableTrainSequenceON;
-    #define TECH_TRAIN_ENTER_HW_TRN_DDR2 MemTFeatDef
-    #define TECH_TRAIN_EXIT_HW_TRN_DDR2 MemTFeatDef
-    #define TECH_TRAIN_HW_WL_P1_DDR2 MemTFeatDef
-    #define TECH_TRAIN_HW_WL_P2_DDR2 MemTFeatDef
-    #define TECH_TRAIN_SW_WL_DDR2 MemTFeatDef
-    #define TECH_TRAIN_HW_DQS_REC_EN_P1_DDR2 MemTFeatDef
-    #define TECH_TRAIN_HW_DQS_REC_EN_P2_DDR2 MemTFeatDef
-    #define TECH_TRAIN_NON_OPT_SW_DQS_REC_EN_P1_DDR2 MemTFeatDef
-    #define TECH_TRAIN_OPT_SW_DQS_REC_EN_P1_DDR2 MemTFeatDef
-    #define TECH_TRAIN_NON_OPT_SW_RD_WR_POS_DDR2 MemTFeatDef
-    #define TECH_TRAIN_OPT_SW_RD_WR_POS_DDR2 MemTFeatDef
-    #define TECH_TRAIN_MAX_RD_LAT_DDR2 MemTFeatDef
-    #define NB_TRAIN_FLOW_DDR2    (BOOLEAN (*) (MEM_NB_BLOCK*)) memDefTrue
-    #define MEM_TECH_ENABLE_TRAINING_SEQUENCE_DDR2_ON  { MEM_TECH_TRAIN_SEQUENCE_STRUCT_VERSION, (BOOLEAN (*) (MEM_NB_BLOCK*)) memDefTrue, (BOOLEAN (*) (MEM_NB_BLOCK*)) memDefFalse, 0 },
     #if OPTION_DDR3
       #undef TECH_TRAIN_ENTER_HW_TRN_DDR3
       #define TECH_TRAIN_ENTER_HW_TRN_DDR3   MemTFeatDef
@@ -543,16 +508,10 @@ BOOLEAN MemFS3DefConstructorRet (
       #define MEM_TECH_ENABLE_TRAINING_SEQUENCE_DDR3_ON  { MEM_TECH_TRAIN_SEQUENCE_STRUCT_VERSION, (BOOLEAN (*) (MEM_NB_BLOCK*)) memDefTrue, (BOOLEAN (*) (MEM_NB_BLOCK*)) memDefFalse, 0 },
     #endif
   #else
-    #define MEM_TECH_ENABLE_TRAINING_SEQUENCE_DDR2_ON  { MEM_TECH_TRAIN_SEQUENCE_STRUCT_VERSION, (BOOLEAN (*) (MEM_NB_BLOCK*)) memDefTrue, (BOOLEAN (*) (MEM_NB_BLOCK*)) memDefFalse, 0 },
     #define MEM_TECH_ENABLE_TRAINING_SEQUENCE_DDR3_ON  { MEM_TECH_TRAIN_SEQUENCE_STRUCT_VERSION, (BOOLEAN (*) (MEM_NB_BLOCK*)) memDefTrue, (BOOLEAN (*) (MEM_NB_BLOCK*)) memDefFalse, 0 },
   #endif
 
   #define MEM_TECH_ENABLE_TRAINING_SEQUENCE_END { MEM_NB_SUPPORT_STRUCT_VERSION, 0, 0, 0 }
-
-  MEM_FEAT_TRAIN_SEQ memTrainSequenceDDR2[] = {
-    MEM_TECH_ENABLE_TRAINING_SEQUENCE_DDR2_ON
-    MEM_TECH_ENABLE_TRAINING_SEQUENCE_END
-  };
 
   MEM_FEAT_TRAIN_SEQ memTrainSequenceDDR3[] = {
     MEM_TECH_ENABLE_TRAINING_SEQUENCE_DDR3_ON
@@ -564,6 +523,8 @@ BOOLEAN MemFS3DefConstructorRet (
    *
    *---------------------------------------------------------------------------------------------------
    */
+  #define NB_TRAIN_FLOW_DDR2    (BOOLEAN (*) (MEM_NB_BLOCK*)) memDefTrue
+
   OPTION_MEM_FEATURE_NB* memNTrainFlowControl[] = {    // Training flow control
     NB_TRAIN_FLOW_DDR2,
     NB_TRAIN_FLOW_DDR3,
@@ -575,7 +536,6 @@ BOOLEAN MemFS3DefConstructorRet (
    *---------------------------------------------------------------------------------------------------
    */
   MEM_TECH_CONSTRUCTOR* memTechInstalled[] = {    // Types of technology installed
-    MEM_TECH_CONSTRUCTOR_DDR2
     MEM_TECH_CONSTRUCTOR_DDR3
     NULL
   };
@@ -624,11 +584,6 @@ BOOLEAN MemFS3DefConstructorRet (
 
   #if OPTION_MEMCTLR_ON
     #if OPTION_UDIMMS
-      #if OPTION_DDR2
-        #define PSC_ON_UDIMM_DDR2     //MemAGetPsCfgUON2,
-      #else
-        #define PSC_ON_UDIMM_DDR2
-      #endif
       #if OPTION_DDR3
         #define PSC_ON_UDIMM_DDR3    MemAGetPsCfgUON3,
       #else
@@ -636,11 +591,6 @@ BOOLEAN MemFS3DefConstructorRet (
       #endif
     #endif
     #if OPTION_RDIMMS
-      #if OPTION_DDR2
-        #define PSC_ON_RDIMM_DDR2
-      #else
-        #define PSC_ON_RDIMM_DDR2
-      #endif
       #if OPTION_DDR3
         #define PSC_ON_RDIMM_DDR3    //MemAGetPsCfgRON3,
       #else
@@ -648,11 +598,6 @@ BOOLEAN MemFS3DefConstructorRet (
       #endif
     #endif
     #if OPTION_SODIMMS
-      #if OPTION_DDR2
-        #define PSC_ON_SODIMM_DDR2    //MemAGetPsCfgSON2,
-      #else
-        #define PSC_ON_SODIMM_DDR2
-      #endif
       #if OPTION_DDR3
         #define PSC_ON_SODIMM_DDR3   MemAGetPsCfgSON3,
       #else
@@ -780,14 +725,6 @@ BOOLEAN MemFS3DefConstructorRet (
    *
    *---------------------------------------------------------------------------------------------------
    */
-  #if OPTION_DDR2
-    MEM_TECH_FEAT_BLOCK  memTechTrainingFeatDDR2 = {
-      0
-    };
-    MEM_FEAT_TRAIN_SEQ memTrainSequenceDDR2[] = {
-      { 0 }
-    };
-  #endif
   #if OPTION_DDR3
     MEM_TECH_FEAT_BLOCK  memTechTrainingFeatDDR3 = {
       0

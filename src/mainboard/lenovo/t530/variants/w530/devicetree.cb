@@ -1,0 +1,224 @@
+chip northbridge/intel/sandybridge
+	# IGD Displays
+	register "gfx.ndid" = "3"
+	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410 }"
+
+	# Enable DisplayPort Hotplug with 6ms pulse
+	register "gpu_dp_d_hotplug" = "0x06"
+
+	register "gpu_dp_b_hotplug" = "0"
+	register "gpu_dp_c_hotplug" = "0"
+
+	# Enable Panel as LVDS and configure power delays
+	register "gpu_panel_port_select" = "0"                  # LVDS
+	register "gpu_panel_power_cycle_delay" = "6"            # T7: 500ms
+	register "gpu_panel_power_up_delay" = "100"             # T1+T2: 10ms
+	register "gpu_panel_power_down_delay" = "100"           # T5+T6: 10ms
+	register "gpu_panel_power_backlight_off_delay" = "2000" # T4: 200ms
+	register "gpu_panel_power_backlight_on_delay" = "2000"  # T3: 200ms
+	register "gfx.use_spread_spectrum_clock" = "1"
+	register "gfx.link_frequency_270_mhz" = "1"
+	register "gpu_cpu_backlight" = "0x1155"
+	register "gpu_pch_backlight" = "0x11551155"
+
+	device cpu_cluster 0x0 on
+		chip cpu/intel/socket_rPGA989
+			device lapic 0x0 on
+			end
+		end
+		chip cpu/intel/model_206ax # FIXME: check all registers
+			register "c1_acpower" = "1"
+			register "c1_battery" = "1"
+			register "c2_acpower" = "3"
+			register "c2_battery" = "3"
+			register "c3_acpower" = "5"
+			register "c3_battery" = "5"
+			device lapic 0xacac off
+			end
+		end
+	end
+
+	register "pci_mmio_size" = "2048"
+
+	device domain 0x0 on
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			# GPI routing
+			#  0 No effect (default)
+			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
+			#  2 SCI (if corresponding GPIO_EN bit is also set)
+			register "alt_gp_smi_en" = "0x0000"
+			register "gpi1_routing" = "2"
+			register "gpi13_routing" = "2"
+
+			register "c2_latency" = "0x0065"
+			register "docking_supported" = "1"
+			register "gen1_dec" = "0x007c1601"
+			register "gen2_dec" = "0x000c15e1"
+			register "gen4_dec" = "0x000c06a1"
+			register "p_cnt_throttling_supported" = "1"
+			register "pcie_hotplug_map" = "{ 0, 0, 1, 0, 0, 0, 0, 0 }"
+			register "pcie_port_coalesce" = "1"
+			register "sata_interface_speed_support" = "0x3"
+			register "sata_port_map" = "0x3f"
+			register "spi_uvscc" = "0x2005"
+			register "spi_lvscc" = "0x2005"
+			register "superspeed_capable_ports" = "0x0000000f"
+			register "xhci_overcurrent_mapping" = "0x04000201"
+			register "xhci_switchable_ports" = "0x0000000f"
+			device pci 14.0 on # USB 3.0 Controller
+				subsystemid 0x17aa 0x21f6
+			end
+			device pci 16.0 on # Management Engine Interface 1
+				subsystemid 0x17aa 0x21f6
+			end
+			device pci 16.1 off # Management Engine Interface 2
+			end
+			device pci 16.2 off # Management Engine IDE-R
+			end
+			device pci 16.3 on # Management Engine KT
+				subsystemid 0x17aa 0x21f6
+			end
+			device pci 19.0 on # Intel Gigabit Ethernet
+				subsystemid 0x17aa 0x21f3
+			end
+			device pci 1a.0 on # USB2 EHCI #2
+				subsystemid 0x17aa 0x21f6
+			end
+			device pci 1b.0 on # High Definition Audio Audio controller
+				subsystemid 0x17aa 0x21f6
+			end
+			device pci 1c.0 on # PCIe Port #1
+				subsystemid 0x17aa 0x21f6
+				chip drivers/ricoh/rce822 # Ricoh cardreader
+					register "disable_mask" = "0x83"
+					register "sdwppol" = "1"
+					device pci 00.0 on # Ricoh SD card reader
+						subsystemid 0x17aa 0x21f6
+					end
+				end
+			end
+			device pci 1c.1 on # PCIe Port #2
+				subsystemid 0x17aa 0x21f6
+			end
+			device pci 1c.2 on # PCIe Port #3
+				subsystemid 0x17aa 0x21f6
+			end
+			device pci 1c.3 off # PCIe Port #4
+			end
+			device pci 1c.4 off # PCIe Port #5
+			end
+			device pci 1c.5 off # PCIe Port #6
+			end
+			device pci 1c.6 off # PCIe Port #7
+			end
+			device pci 1c.7 off # PCIe Port #8
+			end
+			device pci 1d.0 on # USB2 EHCI #1
+				subsystemid 0x17aa 0x21f6
+			end
+			device pci 1e.0 off # PCI bridge
+			end
+			device pci 1f.0 on # LPC bridge PCI-LPC bridge
+				subsystemid 0x17aa 0x21f6
+				chip ec/lenovo/pmh7
+					register "backlight_enable" = "0x01"
+					register "dock_event_enable" = "0x01"
+					device pnp ff.1 on # dummy
+					end
+				end
+
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
+
+				chip ec/lenovo/h8
+					register "beepmask0" = "0x00"
+					register "beepmask1" = "0x86"
+
+					register "config0" = "0xa7"
+					register "config1" = "0x01"
+					register "config2" = "0xa0"
+					register "config3" = "0xe2"
+
+					register "event2_enable" = "0xff"
+					register "event3_enable" = "0xff"
+					register "event4_enable" = "0xd0"
+					register "event5_enable" = "0xfc"
+					register "event6_enable" = "0x00"
+					register "event7_enable" = "0x01"
+					register "event8_enable" = "0x7b"
+					register "event9_enable" = "0xff"
+					register "eventa_enable" = "0x01"
+					register "eventb_enable" = "0x00"
+					register "eventc_enable" = "0xff"
+					register "eventd_enable" = "0xff"
+					register "evente_enable" = "0x0d"
+
+					register "has_keyboard_backlight" = "1"
+					register "has_power_management_beeps" = "0"
+					register "has_bdc_detection" = "1"
+					register "bdc_gpio_num" = "54"
+					register "bdc_gpio_lvl" = "0"
+
+					device pnp ff.2 on # dummy
+						io 0x60 = 0x62
+						io 0x62 = 0x66
+						io 0x64 = 0x1600
+						io 0x66 = 0x1604
+					end
+				end
+				chip drivers/lenovo/hybrid_graphics
+					device pnp ff.f on end # dummy
+
+					register "detect_gpio" = "21"
+
+					register "has_panel_hybrid_gpio" = "1"
+					register "panel_hybrid_gpio" = "52"
+					register "panel_integrated_lvl" = "1"
+
+					register "has_backlight_gpio" = "0"
+					register "has_dgpu_power_gpio" = "0"
+
+					register "has_thinker1" = "0"
+				end
+			end
+			device pci 1f.2 on # SATA Controller 1
+				subsystemid 0x17aa 0x21f6
+			end
+			device pci 1f.3 on # SMBus
+				subsystemid 0x17aa 0x21f6
+				chip drivers/i2c/at24rf08c # eeprom, 8 virtual devices, same chip
+					device i2c 54 on
+					end
+					device i2c 55 on
+					end
+					device i2c 56 on
+					end
+					device i2c 57 on
+					end
+					device i2c 5c on
+					end
+					device i2c 5d on
+					end
+					device i2c 5e on
+					end
+					device i2c 5f on
+					end
+				end
+			end
+			device pci 1f.5 off # SATA Controller 2
+			end
+			device pci 1f.6 off # Thermal
+			end
+		end
+		device pci 00.0 on # Host bridge Host bridge
+			subsystemid 0x17aa 0x21f6
+		end
+		device pci 01.0 on # PCIe Bridge for discrete graphics
+			subsystemid 0x17aa 0x21f6
+		end
+		device pci 02.0 on # Internal graphics VGA controller
+			subsystemid 0x17aa 0x21f5
+		end
+	end
+end

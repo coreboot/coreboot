@@ -1,5 +1,5 @@
 Vendor name: Lenovo
-Board name: ThinkPad T530 baseboard
+Board name: ThinkPad W530
 Category: laptop
 ROM package: SOIC-8
 ROM protocol: SPI

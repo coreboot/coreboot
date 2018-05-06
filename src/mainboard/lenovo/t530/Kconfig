@@ -1,7 +1,5 @@
-if BOARD_LENOVO_T530
-
-config BOARD_SPECIFIC_OPTIONS # dummy
-	def_bool y
+config BOARD_LENOVO_BASEBOARD_T530
+	def_bool n
 	select SYSTEM_TYPE_LAPTOP
 	select CPU_INTEL_SOCKET_RPGA989
 	select NORTHBRIDGE_INTEL_IVYBRIDGE
@@ -21,8 +19,13 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_HAS_LPC_TPM
 	select MAINBOARD_HAS_TPM1
 	select DRIVERS_LENOVO_HYBRID_GRAPHICS
+	select MAINBOARD_HAS_LIBGFXINIT
+	select GFX_GMA_INTERNAL_IS_LVDS
+
 	# Workaround for EC/KBC IRQ1.
 	select SERIRQ_CONTINUOUS_MODE
+
+if BOARD_LENOVO_BASEBOARD_T530
 
 config HAVE_IFD_BIN
 	bool
@@ -32,13 +35,24 @@ config HAVE_ME_BIN
 	bool
 	default n
 
+config VARIANT_DIR
+	string
+	default "t530" if BOARD_LENOVO_T530
+	default "w530" if BOARD_LENOVO_W530
+
 config MAINBOARD_DIR
 	string
 	default lenovo/t530
 
+config DEVICETREE
+	string
+	default "variants/t530/devicetree.cb" if BOARD_LENOVO_T530
+	default "variants/w530/devicetree.cb" if BOARD_LENOVO_W530
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "ThinkPad T530"
+	default "ThinkPad T530" if BOARD_LENOVO_T530
+	default "ThinkPad W530" if BOARD_LENOVO_W530
 
 config MAX_CPUS
 	int
@@ -54,7 +68,8 @@ config DRAM_RESET_GATE_GPIO
 
 config VGA_BIOS_FILE
 	string
-	default "pci8086,0106.rom"
+	default "pci8086,0106.rom" if BOARD_LENOVO_T530
+	default "pci8086,0166.rom" if BOARD_LENOVO_W530
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
@@ -68,4 +83,4 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-endif # BOARD_LENOVO_T530
+endif

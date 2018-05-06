@@ -47,8 +47,6 @@ External (\_PR.CP00._TPC, MethodObj)
 External (\_PR.CP00._PTC, PkgObj)
 External (\_PR.CP00._TSD, PkgObj)
 External (\_PR.CP00._PSS, MethodObj)
-External (\_SB.DPTF.CTOK, MethodObj)
-External (\_SB.GPID, MethodObj)
 
 Device (B0DB)
 {

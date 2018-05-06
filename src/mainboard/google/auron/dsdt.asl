@@ -26,6 +26,9 @@ DefinitionBlock(
 	// Some generic macros
 	#include <soc/intel/broadwell/acpi/platform.asl>
 
+	// Thermal handler
+	#include "acpi/thermal.asl"
+
 	// global NVS and variables
 	#include <soc/intel/broadwell/acpi/globalnvs.asl>
 
@@ -42,9 +45,6 @@ DefinitionBlock(
 			#include <soc/intel/broadwell/acpi/pch.asl>
 		}
 	}
-
-	// Thermal handler
-	#include "acpi/thermal.asl"
 
 	// Chrome OS specific
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>

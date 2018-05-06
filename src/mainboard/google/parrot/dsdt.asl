@@ -28,13 +28,14 @@ DefinitionBlock(
 	// Some generic macros
 	#include "acpi/platform.asl"
 
+	// Thermal handler
+	#include "acpi/thermal.asl"
+
 	// global NVS and variables
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
 
 	// General Purpose Events
 	//#include "acpi/gpe.asl"
-
-	#include "acpi/thermal.asl"
 
 	#include <cpu/intel/model_206ax/acpi/cpu.asl>
 

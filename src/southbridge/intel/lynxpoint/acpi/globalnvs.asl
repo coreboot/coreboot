@@ -216,15 +216,16 @@ Method (S3GD)
 	Store (Zero, \S33G)
 }
 
-External (\_TZ.THRM)
 External (\_TZ.SKIN)
 
 Method (TZUP)
 {
+#ifdef HAVE_THERMALZONE
 	/* Update Primary Thermal Zone */
 	If (CondRefOf (\_TZ.THRM)) {
 		Notify (\_TZ.THRM, 0x81)
 	}
+#endif
 
 	/* Update Secondary Thermal Zone */
 	If (CondRefOf (\_TZ.SKIN)) {

@@ -26,6 +26,9 @@ DefinitionBlock(
 	// Some generic macros
 	#include "acpi/platform.asl"
 
+	// Thermal handler
+	#include "acpi/thermal.asl"
+
 	// global NVS and variables
 	#include <southbridge/intel/lynxpoint/acpi/globalnvs.asl>
 
@@ -55,9 +58,6 @@ DefinitionBlock(
 
 	// Mainboard specific
 	#include "acpi/mainboard.asl"
-
-	// Thermal handler
-	#include "acpi/thermal.asl"
 
 	// Chrome OS specific
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>

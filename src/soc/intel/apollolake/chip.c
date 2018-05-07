@@ -34,6 +34,7 @@
 #include <intelblocks/xdci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/pmclib.h>
@@ -50,10 +51,43 @@
 
 #include "chip.h"
 
-static const char *soc_acpi_name(const struct device *dev)
+const char *soc_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		return "PCI0";
+
+	if (dev->path.type == DEVICE_PATH_USB) {
+		switch (dev->path.usb.port_type) {
+		case 0:
+			/* Root Hub */
+			return "RHUB";
+		case 2:
+			/* USB2 ports */
+			switch (dev->path.usb.port_id) {
+			case 0: return "HS01";
+			case 1: return "HS02";
+			case 2: return "HS03";
+			case 3: return "HS04";
+			case 4: return "HS05";
+			case 5: return "HS06";
+			case 6: return "HS07";
+			case 7: return "HS08";
+			}
+			break;
+		case 3:
+			/* USB3 ports */
+			switch (dev->path.usb.port_id) {
+			case 0: return "SS01";
+			case 1: return "SS02";
+			case 2: return "SS03";
+			case 3: return "SS04";
+			case 4: return "SS05";
+			case 5: return "SS06";
+			}
+			break;
+		}
+		return NULL;
+	}
 
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return NULL;

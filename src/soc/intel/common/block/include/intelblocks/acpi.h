@@ -29,6 +29,9 @@ struct chipset_power_state;
 /* Forward  declare the global nvs structure here */
 struct global_nvs_t;
 
+/* Return ACPI name for this device */
+const char *soc_acpi_name(const struct device *dev);
+
 /* Read the scis from soc specific register. Returns int scis value */
 uint32_t soc_read_sci_irq_select(void);
 

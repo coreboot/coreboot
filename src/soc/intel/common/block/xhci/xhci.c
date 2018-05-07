@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/xhci.h>
 
 __weak void soc_xhci_init(struct device *dev) { /* no-op */ }
@@ -29,6 +30,8 @@ static struct device_operations usb_xhci_ops = {
 	.enable_resources	= &pci_dev_enable_resources,
 	.init			= soc_xhci_init,
 	.ops_pci		= &pci_dev_ops_pci,
+	.scan_bus		= &scan_usb_bus,
+	.acpi_name		= &soc_acpi_name,
 };
 
 static const unsigned short pci_device_ids[] = {

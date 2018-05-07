@@ -55,6 +55,9 @@ static void acpi_device_fill_len(void *ptr)
 /* Locate and return the ACPI name for this device */
 const char *acpi_device_name(struct device *dev)
 {
+	struct device *pdev = dev;
+	const char *name = NULL;
+
 	if (!dev)
 		return NULL;
 
@@ -62,30 +65,44 @@ const char *acpi_device_name(struct device *dev)
 	if (dev->ops->acpi_name)
 		return dev->ops->acpi_name(dev);
 
-	/* Check parent device in case it has a global handler */
-	if (dev->bus && dev->bus->dev->ops->acpi_name)
-		return dev->bus->dev->ops->acpi_name(dev);
+	/* Walk up the tree to find if any parent can identify this device */
+	while (pdev->bus) {
+		pdev = pdev->bus->dev;
+		if (!pdev)
+			break;
+		if (pdev->path.type == DEVICE_PATH_ROOT)
+			break;
+		if (pdev->ops && pdev->ops->acpi_name)
+			name = pdev->ops->acpi_name(dev);
+		if (name)
+			return name;
+	}
 
 	return NULL;
 }
 
 /* Recursive function to find the root device and print a path from there */
-static size_t acpi_device_path_fill(struct device *dev, char *buf,
-				    size_t buf_len, size_t cur)
+static ssize_t acpi_device_path_fill(struct device *dev, char *buf,
+				     size_t buf_len, size_t cur)
 {
 	const char *name = acpi_device_name(dev);
-	size_t next = 0;
+	ssize_t next = 0;
+
+	if (!name)
+		return -1;
 
 	/*
 	 * Make sure this name segment will fit, including the path segment
 	 * separator and possible NUL terminator if this is the last segment.
 	 */
-	if (!dev || !name || (cur + strlen(name) + 2) > buf_len)
+	if (!dev || (cur + strlen(name) + 2) > buf_len)
 		return cur;
 
 	/* Walk up the tree to the root device */
 	if (dev->path.type != DEVICE_PATH_ROOT && dev->bus && dev->bus->dev)
 		next = acpi_device_path_fill(dev->bus->dev, buf, buf_len, cur);
+	if (next < 0)
+		return next;
 
 	/* Fill in the path from the root device */
 	next += snprintf(buf + next, buf_len - next, "%s%s",

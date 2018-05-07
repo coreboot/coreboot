@@ -25,7 +25,9 @@
  *
  *  todo: Revisit this once AGESA no longer programs MTRRs.
  */
-#define SOC_EARLY_VMTRR_FLASH 2
+#define SOC_EARLY_VMTRR_FLASH 1
+#define SOC_EARLY_VMTRR_CAR_HEAP 2
+#define SOC_EARLY_VMTRR_TEMPRAM 3
 
 void stoney_init_cpus(struct device *dev);
 

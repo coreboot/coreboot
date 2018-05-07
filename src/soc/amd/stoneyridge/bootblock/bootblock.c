@@ -32,7 +32,14 @@
 #include <timestamp.h>
 #include <halt.h>
 
-/* Set the MMIO Configuration Base Address and Bus Range. */
+#if CONFIG_PI_AGESA_TEMP_RAM_BASE < 0x100000
+#error "Error: CONFIG_PI_AGESA_TEMP_RAM_BASE must be >= 1MB"
+#endif
+#if CONFIG_PI_AGESA_CAR_HEAP_BASE < 0x100000
+#error "Error: CONFIG_PI_AGESA_CAR_HEAP_BASE must be >= 1MB"
+#endif
+
+/* Set the MMIO Configuration Base Address, Bus Range, and misc MTRRs. */
 static void amd_initmmio(void)
 {
 	msr_t mmconf;
@@ -47,9 +54,23 @@ static void amd_initmmio(void)
 	/*
 	 * todo: AGESA currently writes variable MTRRs.  Once that is
 	 *       corrected, un-hardcode this MTRR.
+	 *
+	 *       Be careful not to use get_free_var_mtrr/set_var_mtrr pairs
+	 *       where all cores execute the path.  Both cores within a compute
+	 *       unit share MTRRs.  Programming core0 has the appearance of
+	 *       modifying core1 too.  Using the pair again will create
+	 *       duplicate copies.
 	 */
 	mtrr = (mtrr_cap.lo & MTRR_CAP_VCNT) - SOC_EARLY_VMTRR_FLASH;
 	set_var_mtrr(mtrr, FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
+
+	mtrr = (mtrr_cap.lo & MTRR_CAP_VCNT) - SOC_EARLY_VMTRR_CAR_HEAP;
+	set_var_mtrr(mtrr, CONFIG_PI_AGESA_CAR_HEAP_BASE,
+			CONFIG_PI_AGESA_HEAP_SIZE, MTRR_TYPE_WRBACK);
+
+	mtrr = (mtrr_cap.lo & MTRR_CAP_VCNT) - SOC_EARLY_VMTRR_TEMPRAM;
+	set_var_mtrr(mtrr, CONFIG_PI_AGESA_TEMP_RAM_BASE,
+			CONFIG_PI_AGESA_HEAP_SIZE, MTRR_TYPE_UNCACHEABLE);
 }
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)

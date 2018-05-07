@@ -35,4 +35,6 @@ unsigned long southbridge_write_acpi_tables(device_t device,
 
 void southbridge_inject_dsdt(device_t device);
 
+const char *soc_acpi_name(const struct device *dev);
+
 #endif /* __SOC_STONEYRIDGE_ACPI_H__ */

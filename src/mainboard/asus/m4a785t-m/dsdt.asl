@@ -924,7 +924,7 @@ DefinitionBlock (
 		*	Store(Arg0, Index(WKST,1))
 		* }
 		*/
-		\_SB.PCI0.SIOW (Arg0)
+		\_SB.PCI0.SIOW ()
 		Return(WKST)
 	} /* End Method(\_WAK) */
 
@@ -1475,7 +1475,7 @@ DefinitionBlock (
 					XPNP()
 				}
 			}
-			Method (SIOW, 1)
+			Method (SIOW, 0)
 			{
 				EPNP()
 				Store (0x4, LDN)

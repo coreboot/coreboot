@@ -76,12 +76,3 @@ Method (SIOS, 1)
 		XPNP()
 	}
 }
-Method (SIOW, 1)
-{
-	EPNP()
-	Store (0x4, LDN)
-	Store (Zero, APC0) /* disable keyboard PME */
-	Store (0x4, LDN)
-	Store (0xFF, APC1) /* clear keyboard PME status */
-	XPNP()
-}

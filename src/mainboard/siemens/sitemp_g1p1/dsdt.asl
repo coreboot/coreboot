@@ -1132,7 +1132,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMEN", "SITEMP  ", 0x20101005)
 					XPNP()
 				}
 			}
-			Method (SIOW, 1)
+			Method (SIOW, 0)
 			{
 				EPNP()
 				Store (0x4, LDN)

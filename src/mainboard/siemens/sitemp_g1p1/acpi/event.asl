@@ -140,7 +140,7 @@ Method(\_WAK, 1) {
 	*	Store(Arg0, Index(WKST,1))
 	* }
 	*/
-	\_SB.PCI0.SIOW (Arg0)
+	\_SB.PCI0.SIOW ()
 	Return(WKST)
 } /* End Method(\_WAK) */
 

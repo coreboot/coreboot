@@ -111,6 +111,10 @@ config MAX_CPUS
 	int
 	default 8
 
+config OEM_BIN_FILE
+	string "OEM ID table"
+	default ""
+
 config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 64  # GPE0_DW2_00 (GPP_E0)

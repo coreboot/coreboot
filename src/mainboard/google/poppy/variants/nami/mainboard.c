@@ -16,7 +16,10 @@
 #include <arch/cpu.h>
 #include <assert.h>
 #include <baseboard/variants.h>
+#include <cbfs.h>
 #include <chip.h>
+#include <commonlib/cbfs_serialized.h>
+#include <compiler.h>
 #include <device/device.h>
 #include <ec/google/chromeec/ec.h>
 #include <smbios.h>
@@ -61,4 +64,78 @@ const char *smbios_mainboard_sku(void)
 	snprintf(sku_str, sizeof(sku_str), "sku%u", variant_board_sku());
 
 	return sku_str;
+}
+
+#define OEM_UNKNOWN	0xff
+
+/*
+ * Read OEM ID from EC using cbi commands.
+ * Return value:
+ * Success = OEM ID read from EC
+ * Failure = OEM_UNKNOWN (0xff)
+ */
+static uint8_t read_oem_id(void)
+{
+	static uint8_t oem_id = OEM_UNKNOWN;
+	uint32_t id;
+
+	if (oem_id != OEM_UNKNOWN)
+		return oem_id;
+
+	if (google_chromeec_cbi_get_oem_id(&id))
+		return OEM_UNKNOWN;
+
+	if (id > OEM_UNKNOWN) {
+		printk(BIOS_ERR, "%s: OEM ID too big %u!\n", __func__, id);
+		return OEM_UNKNOWN;
+	}
+
+	oem_id = id;
+	printk(BIOS_DEBUG, "%s: OEM ID=%d\n", __func__, oem_id);
+
+	return oem_id;
+}
+
+/* "oem.bin" in cbfs contains array of records using the following structure. */
+struct oem_mapping {
+	uint8_t oem_id;
+	char oem_name[10];
+} __packed;
+
+/* Local buffer to read "oem.bin" */
+static char oem_bin_data[200];
+
+const char *smbios_mainboard_manufacturer(void)
+{
+	uint8_t oem_id = read_oem_id();
+	const struct oem_mapping *oem_entry = (void *)&oem_bin_data;
+	size_t oem_data_size;
+	size_t curr = 0;
+	static const char *manuf;
+
+	if (manuf)
+		return manuf;
+
+	/* If OEM ID cannot be determined, return default manuf string. */
+	if (oem_id == OEM_UNKNOWN)
+		return CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
+
+	oem_data_size = cbfs_boot_load_file("oem.bin", oem_bin_data,
+					    sizeof(oem_bin_data),
+					    CBFS_TYPE_RAW);
+
+	while ((curr < oem_data_size) &&
+	       ((oem_data_size - curr) >= sizeof(*oem_entry))) {
+		if (oem_id == oem_entry->oem_id) {
+			manuf = oem_entry->oem_name;
+			break;
+		}
+		curr += sizeof(*oem_entry);
+		oem_entry++;
+	}
+
+	if (manuf == NULL)
+		manuf = CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
+
+	return manuf;
 }

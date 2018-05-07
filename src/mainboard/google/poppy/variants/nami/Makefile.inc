@@ -33,3 +33,8 @@ ramstage-y += gpio.c
 ramstage-y += nhlt.c
 ramstage-y += pl2.c
 ramstage-y += mainboard.c
+
+# Add OEM ID table
+cbfs-files-y += oem.bin
+oem.bin-file := $(call strip_quotes,$(CONFIG_OEM_BIN_FILE))
+oem.bin-type := raw

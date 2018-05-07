@@ -1236,6 +1236,17 @@ void acpigen_write_upc(enum acpi_upc_type type)
 	acpigen_pop_len();
 }
 
+void acpigen_write_pld(const struct acpi_pld *pld)
+{
+	uint8_t buf[20];
+
+	if (acpi_pld_to_buffer(pld, buf, ARRAY_SIZE(buf)) < 0)
+		return;
+
+	acpigen_write_name("_PLD");
+	acpigen_write_byte_buffer(buf, ARRAY_SIZE(buf));
+}
+
 void acpigen_write_dsm(const char *uuid, void (**callbacks)(void *),
 		       size_t count, void *arg)
 {

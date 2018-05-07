@@ -21,6 +21,8 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/nhlt.h>
 
+#define SUBSYSTEM_ID 0x006B
+
 static const char *oem_id_maxim = "GOOGLE";
 static const char *oem_table_id_maxim = "EVEMAX";
 
@@ -41,6 +43,8 @@ static unsigned long mainboard_write_acpi_tables(
 	nhlt = nhlt_init();
 	if (!nhlt)
 		return start_addr;
+
+	nhlt->subsystem_id = SUBSYSTEM_ID;
 
 	/* 4 Channel DMIC array */
 	if (nhlt_soc_add_rt5514(nhlt, AUDIO_LINK_SSP0, 4))

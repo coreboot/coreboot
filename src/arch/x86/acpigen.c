@@ -1221,6 +1221,21 @@ void acpigen_write_return_string(const char *arg)
 	acpigen_write_string(arg);
 }
 
+void acpigen_write_upc(enum acpi_upc_type type)
+{
+	acpigen_write_name("_UPC");
+	acpigen_write_package(4);
+	/* Connectable */
+	acpigen_write_byte(type == UPC_TYPE_UNUSED ? 0 : 0xff);
+	/* Type */
+	acpigen_write_byte(type);
+	/* Reserved0 */
+	acpigen_write_zero();
+	/* Reserved1 */
+	acpigen_write_zero();
+	acpigen_pop_len();
+}
+
 void acpigen_write_dsm(const char *uuid, void (**callbacks)(void *),
 		       size_t count, void *arg)
 {

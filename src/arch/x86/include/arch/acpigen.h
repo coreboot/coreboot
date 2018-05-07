@@ -255,6 +255,7 @@ void acpigen_write_byte_buffer(uint8_t *arr, size_t size);
 void acpigen_write_return_byte_buffer(uint8_t *arr, size_t size);
 void acpigen_write_return_singleton_buffer(uint8_t arg);
 void acpigen_write_return_byte(uint8_t arg);
+void acpigen_write_upc(enum acpi_upc_type type);
 /*
  * Generate ACPI AML code for _DSM method.
  * This function takes as input uuid for the device, set of callbacks and

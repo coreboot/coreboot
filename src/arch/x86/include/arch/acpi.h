@@ -636,6 +636,30 @@ typedef struct acpi_tstate {
 	u32 status;
 } __packed acpi_tstate_t;
 
+/* Port types for ACPI _UPC object */
+enum acpi_upc_type {
+	/* These types are defined in ACPI 6.2 section 9.14 */
+	UPC_TYPE_A,
+	UPC_TYPE_MINI_AB,
+	UPC_TYPE_EXPRESSCARD,
+	UPC_TYPE_USB3_A,
+	UPC_TYPE_USB3_B,
+	UPC_TYPE_USB3_MICRO_B,
+	UPC_TYPE_USB3_MICRO_AB,
+	UPC_TYPE_USB3_POWER_B,
+	UPC_TYPE_C_USB2_ONLY,
+	UPC_TYPE_C_USB2_SS_SWITCH,
+	UPC_TYPE_C_USB2_SS,
+	UPC_TYPE_PROPRIETARY = 0xff,
+	/*
+	 * The following types are not directly defined in the ACPI
+	 * spec but are used by coreboot to identify a USB device type.
+	 */
+	UPC_TYPE_INTERNAL = 0xff,
+	UPC_TYPE_UNUSED,
+	UPC_TYPE_HUB
+};
+
 unsigned long fw_cfg_acpi_tables(unsigned long start);
 
 /* These are implemented by the target port or north/southbridge. */

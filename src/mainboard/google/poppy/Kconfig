@@ -81,8 +81,7 @@ config INCLUDE_NHLT_BLOBS_NAMI
 
 config INCLUDE_NHLT_BLOBS_NOCTURNE
 	bool "Include blobs for nocturne audio."
-	select NHLT_DA7219
-	select NHLT_DMIC_2CH
+	select NHLT_DMIC_4CH
 	select NHLT_MAX98373
 
 config MAINBOARD_DIR

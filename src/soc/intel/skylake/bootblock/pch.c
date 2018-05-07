@@ -22,9 +22,10 @@
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
+#include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
-#include <intelblocks/rtc.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/rtc.h>
 #include <intelblocks/smbus.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
@@ -44,29 +45,11 @@
 #define PCR_DMI_PMBASEC		0x27B0
 #define PCR_DMI_TCOBASE		0x2778
 
-static void enable_p2sbbar(void)
-{
-	pci_devfn_t dev = PCH_DEV_P2SB;
-
-	/* Enable PCR Base address in PCH */
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0, CONFIG_PCR_BASE_ADDRESS);
-
-	/* Enable P2SB MSE */
-	pci_write_config8(dev, PCI_COMMAND,
-			  PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-	/*
-	 * Enable decoding for HPET memory address range.
-	 * HPTC_OFFSET(0x60) bit 7, when set the P2SB will decode
-	 * the High Performance Timer memory address range
-	 * selected by bits 1:0
-	 */
-	pci_write_config8(dev, HPTC_OFFSET, HPTC_ADDR_ENABLE_BIT);
-}
-
 void bootblock_pch_early_init(void)
 {
 	fast_spi_early_init(SPI_BASE_ADDRESS);
-	enable_p2sbbar();
+	p2sb_enable_bar();
+	p2sb_configure_hpet();
 }
 
 static void soc_config_acpibase(void)

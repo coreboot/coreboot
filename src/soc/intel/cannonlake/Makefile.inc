@@ -19,6 +19,7 @@ bootblock-y += i2c.c
 bootblock-y += memmap.c
 bootblock-y += spi.c
 bootblock-y += lpc.c
+bootblock-y += p2sb.c
 bootblock-$(CONFIG_UART_DEBUG) += uart.c
 
 romstage-$(CONFIG_SOC_INTEL_CANNONLAKE_LPDDR4_INIT) += cnl_lpddr4_init.c
@@ -45,6 +46,7 @@ ramstage-y += lockdown.c
 ramstage-y += lpc.c
 ramstage-y += memmap.c
 ramstage-y += nhlt.c
+ramstage-y += p2sb.c
 ramstage-y += pmc.c
 ramstage-y += pmutil.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
@@ -56,6 +58,7 @@ ramstage-y += vr_config.c
 ramstage-y += sd.c
 
 smm-y += gpio.c
+smm-y += p2sb.c
 smm-y += pmutil.c
 smm-y += smihandler.c
 smm-$(CONFIG_UART_DEBUG) += uart.c

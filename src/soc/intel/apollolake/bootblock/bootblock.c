@@ -20,6 +20,7 @@
 #include <device/pci.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
 #include <intelblocks/systemagent.h>
@@ -54,12 +55,8 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 
 	bootblock_systemagent_early_init();
 
-	dev = PCH_DEV_P2SB;
-	/* BAR and MMIO enable for PCR-Space, so that GPIOs can be configured */
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0, CONFIG_PCR_BASE_ADDRESS);
-	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0);
-	pci_write_config16(dev, PCI_COMMAND,
-				PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+	p2sb_enable_bar();
+	p2sb_configure_hpet();
 
 	/* Decode the ACPI I/O port range for early firmware verification.*/
 	dev = PCH_DEV_PMC;

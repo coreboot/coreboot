@@ -40,40 +40,9 @@
 #define PCR_PSFX_T0_SHDW_PCIEN	0x1C
 #define PCR_PSFX_T0_SHDW_PCIEN_FUNDIS	(1 << 8)
 
-static void pch_configure_endpoints(struct device *dev, int epmask_id,
-	uint32_t mask)
+static void disable_sideband_access(void)
 {
-	uint32_t reg32;
-
-	reg32 = pci_read_config32(dev, PCH_P2SB_EPMASK(epmask_id));
-	pci_write_config32(dev, PCH_P2SB_EPMASK(epmask_id), reg32 | mask);
-}
-
-static void disable_sideband_access(struct device *dev)
-{
-	u8 reg8;
-	uint32_t mask;
-
-	/*
-	 * Set p2sb PCI offset EPMASK5 C4h [29, 28, 27, 26] to disable Sideband
-	 * access for PCI Root Bridge.
-	 * Set p2sb PCI offset EPMASK5 C4h [17, 16,10, 1] to disable Sideband
-	 * access for MIPI controller.
-	 */
-	mask = (1 << 29) | (1 << 28) | (1 << 27) | (1 << 26) | (1 << 17) |
-			 (1 << 16) | (1 << 10) | (1 << 1);
-	pch_configure_endpoints(dev, 5, mask);
-
-	/*
-	 * Set p2sb PCI offset EPMASK7 CCh ports E6, E5 (bits 6, 5)
-	 * to disable Sideband access for XHCI controller.
-	 */
-	mask = (1 << 6) | (1 << 5);
-	pch_configure_endpoints(dev, 7, mask);
-
-	/* Set the "Endpoint Mask Lock!", P2SB PCI offset E2h bit[1] to 1. */
-	reg8 = pci_read_config8(dev, PCH_P2SB_E0 + 2);
-	pci_write_config8(dev, PCH_P2SB_E0 + 2, reg8 | (1 << 1));
+	p2sb_disable_sideband_access();
 
 	/* hide p2sb device */
 	p2sb_hide();
@@ -81,15 +50,6 @@ static void disable_sideband_access(struct device *dev)
 
 static void pch_disable_heci(void)
 {
-	struct device *dev = PCH_DEV_P2SB;
-
-	/*
-	 * if p2sb device 1f.1 is not present or hidden in devicetree
-	 * p2sb device becomes NULL
-	 */
-	if (!dev)
-		return;
-
 	/* unhide p2sb device */
 	p2sb_unhide();
 
@@ -97,7 +57,7 @@ static void pch_disable_heci(void)
 	pcr_or32(PID_PSF1, PSF_BASE_ADDRESS + PCR_PSFX_T0_SHDW_PCIEN,
 		PCR_PSFX_T0_SHDW_PCIEN_FUNDIS);
 
-	disable_sideband_access(dev);
+	disable_sideband_access();
 }
 
 static void pch_finalize_script(struct device *dev)

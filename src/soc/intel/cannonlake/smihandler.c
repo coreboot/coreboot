@@ -19,6 +19,7 @@
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/smihandler.h>
 #include <soc/p2sb.h>
@@ -35,33 +36,8 @@ const struct smm_save_state_ops *get_smm_save_state_ops(void)
 	return &em64t101_smm_ops;
 }
 
-static void pch_configure_endpoints(pci_devfn_t dev, int epmask_id,
-				    uint32_t mask)
-{
-	uint32_t reg32;
-
-	reg32 = pci_read_config32(dev, PCH_P2SB_EPMASK(epmask_id));
-	pci_write_config32(dev, PCH_P2SB_EPMASK(epmask_id), reg32 | mask);
-}
-
-static void disable_sideband_access(pci_devfn_t dev)
-{
-	u8 reg8;
-	uint32_t mask;
-
-	/* Remove the host accessing right to PSF register range. */
-	/* Set p2sb PCI offset EPMASK5 [29, 28, 27, 26] to [1, 1, 1, 1] */
-	mask = (1 << 29) | (1 << 28) | (1 << 27)  | (1 << 26);
-	pch_configure_endpoints(dev, 5, mask);
-
-	/* Set the "Endpoint Mask Lock!", P2SB PCI offset E2h bit[1] to 1. */
-	reg8 = pci_read_config8(dev, PCH_P2SB_E0 + 2);
-	pci_write_config8(dev, PCH_P2SB_E0 + 2, reg8 | (1 << 1));
-}
-
 static void pch_disable_heci(void)
 {
-	pci_devfn_t dev = PCH_DEV_P2SB;
 	struct pcr_sbi_msg msg = {
 		.pid = PID_CSME0,
 		.offset = 0,
@@ -77,7 +53,7 @@ static void pch_disable_heci(void)
 	int status;
 
 	/* unhide p2sb device */
-	pci_write_config8(dev, PCH_P2SB_E0 + 1, 0);
+	p2sb_unhide();
 
 	/* Send SBI command to make HECI#1 function disable */
 	status = pcr_execute_sideband_msg(&msg, &data32, &response);
@@ -85,10 +61,10 @@ static void pch_disable_heci(void)
 		printk(BIOS_ERR, "Fail to make CSME function disable\n");
 
 	/* Ensure to Lock SBI interface after this command */
-	disable_sideband_access(dev);
+	p2sb_disable_sideband_access();
 
 	/* hide p2sb device */
-	pci_write_config8(dev, PCH_P2SB_E0 + 1, 1);
+	p2sb_hide();
 }
 
 /*

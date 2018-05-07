@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Intel Corporation.
+ * Copyright (C) 2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,12 +13,13 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_CANNONLAKE_P2SB_H_
-#define _SOC_CANNONLAKE_P2SB_H_
+#ifndef _SOC_P2SB_H_
+#define _SOC_P2SB_H_
 
-#define HPTC_OFFSET			0x60
-#define HPTC_ADDR_ENABLE_BIT		(1 << 7)
+/* PCI config space registers */
+#define HPTC_OFFSET		0x60
+#define HPTC_ADDR_ENABLE_BIT	(1 << 7)
 
-#define PCH_P2SB_EPMASK0		0x220
+#define PCH_P2SB_EPMASK0	0xB0
 
-#endif
+#endif /* _SOC_P2SB_H_ */

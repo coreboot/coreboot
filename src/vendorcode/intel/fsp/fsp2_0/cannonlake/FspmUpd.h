@@ -182,9 +182,15 @@ typedef struct {
 **/
   UINT8                       ProbelessTrace;
 
-/** Offset 0x00A3
+/** Offset 0x00A3 - GDXC IOT SIZE
+  Size of IOT and MOT is in 8 MB chunks
 **/
-  UINT8                       UnusedUpdSpace0[2];
+  UINT8                       GdxcIotSize;
+
+/** Offset 0x00A4 - GDXC MOT SIZE
+  Size of IOT and MOT is in 8 MB chunks
+**/
+  UINT8                       GdxcMotSize;
 
 /** Offset 0x00A5 - Enable SMBus
   Enable/disable SMBus controller.
@@ -244,9 +250,7 @@ typedef struct {
 
 /** Offset 0x00B8 - Internal Graphics Pre-allocated Memory
   Size of memory preallocated for internal graphics.
-  0x00:0MB, 0x01:32MB, 0x02:64MB, 0xF0:4MB, 0xF1:8MB, 0xF2:12MB, 0xF3:16MB, 0xF4:20MB,
-  0xF5:24MB, 0xF6:28MB, 0xF7:32MB, 0xF8:36MB, 0xF9:40MB, 0xFA:44MB, 0xFB:48MB, 0xFC:52MB,
-  0xFD:56MB, 0xFE:60MB
+  0x00:0 MB, 0x01:32 MB, 0x02:64 MB
 **/
   UINT8                       IgdDvmt50PreAlloc;
 
@@ -272,14 +276,14 @@ typedef struct {
 /** Offset 0x00BC - SA GV
   System Agent dynamic frequency support and when enabled memory will be training
   at two different frequencies. Only effects ULX/ULT CPUs. 0=Disabled, 1=FixedLow,
-  2=FixedMid, 3=FixedHigh, and 4=Enabled.
-  0:Disabled, 1:FixedLow, 2:FixedMid, 3:FixedHigh, 4:Enabled
+  2=FixedHigh, and 3=Enabled.
+  0:Disabled, 1:FixedLow, 2:FixedHigh, 3:Enabled
 **/
   UINT8                       SaGv;
 
 /** Offset 0x00BD
 **/
-  UINT8                       UnusedUpdSpace1;
+  UINT8                       UnusedUpdSpace0;
 
 /** Offset 0x00BE - DDR Frequency Limit
   Maximum Memory Frequency Selections in Mhz. Valid values should match the refclk,
@@ -329,7 +333,7 @@ typedef struct {
 
 /** Offset 0x00C8
 **/
-  UINT8                       UnusedUpdSpace2[16];
+  UINT8                       UnusedUpdSpace1[16];
 
 /** Offset 0x00D8 - SPD Profile Selected
   Select DIMM timing profile. Options are 0=Default profile, 1=Custom profile, 2=XMP
@@ -488,7 +492,7 @@ typedef struct {
 
 /** Offset 0x00F8
 **/
-  UINT8                       UnusedUpdSpace3[4];
+  UINT8                       UnusedUpdSpace2[4];
 
 /** Offset 0x00FC - Enable Intel HD Audio (Azalia)
   0: Disable, 1: Enable (Default) Azalia controller
@@ -510,7 +514,7 @@ typedef struct {
 
 /** Offset 0x00FF
 **/
-  UINT8                       UnusedUpdSpace4;
+  UINT8                       UnusedUpdSpace3;
 
 /** Offset 0x0100 - HECI1 BAR address
   BAR address of HECI1
@@ -681,7 +685,7 @@ typedef struct {
 
 /** Offset 0x0125
 **/
-  UINT8                       UnusedUpdSpace5[3];
+  UINT8                       UnusedUpdSpace4[3];
 
 /** Offset 0x0128 - DMI Gen3 Root port preset values per lane
   Used for programming DMI Gen3 preset values per lane. Range: 0-9, 8 is default for each lane
@@ -720,7 +724,7 @@ typedef struct {
 
 /** Offset 0x0146
 **/
-  UINT8                       UnusedUpdSpace6[2];
+  UINT8                       UnusedUpdSpace5[2];
 
 /** Offset 0x0148 - PEG Gen3 RxCTLEp per-Bundle control
   Range: 0-15, 12 is default for each bundle, must be specified based upon platform design
@@ -957,7 +961,7 @@ typedef struct {
 
 /** Offset 0x0207
 **/
-  UINT8                       UnusedUpdSpace7;
+  UINT8                       UnusedUpdSpace6;
 
 /** Offset 0x0208 - Maximum clr turbo ratio override
   Maximum clr turbo ratio override allows to increase CPU clr frequency beyond the
@@ -2275,21 +2279,18 @@ typedef struct {
 **/
   UINT8                       EnBER;
 
-/** Offset 0x050F - PEG IMR support
-  This option configures the IMR support for PEG.(def=Disable)
+/** Offset 0x050F - Dual Dimm Per-Channel Board Type
+  Option to indicate if Board Layout includes One/Two DIMMs per channel. This is used
+  to limit maximum frequency for some SKUs.
+  0:1DPC, 1:2DPC
+**/
+  UINT8                       DualDimmPerChannelBoardType;
+
+/** Offset 0x0510 - CFL Reserved
+  Reserved FspmConfig CFL
   $EN_DIS
 **/
-  UINT8                       PegImrEnable;
-
-/** Offset 0x0510 - PEG IMR size
-  The size of IMR to be allocated for PEG EndPoint device
-**/
-  UINT16                      PegImrSize;
-
-/** Offset 0x0512 - PEG Root Port Selection
-  The Root Port for which the IMR to be allocated
-**/
-  UINT8                       PegImrRpSelection;
+  UINT8                       ReservedFspmUpdCfl[3];
 
 /** Offset 0x0513 - Memory Test on Warm Boot
   Run Base Memory Test on Warm Boot
@@ -2524,7 +2525,7 @@ typedef struct {
 
 /** Offset 0x0579
 **/
-  UINT8                       UnusedUpdSpace10;
+  UINT8                       UnusedUpdSpace9;
 
 /** Offset 0x057A - Jitter Dwell Time for PCIe Gen3 Software Equalization
   Range: 0-65535, default is 1000. @warning Do not change from the default
@@ -2799,7 +2800,7 @@ typedef struct {
 
 /** Offset 0x051F
 **/
-  UINT8                       UnusedUpdSpace9;
+  UINT8                       UnusedUpdSpace8;
 
 /** Offset 0x0520
 **/

@@ -717,8 +717,8 @@ typedef struct {
   UINT8                       PavpEnable;
 
 /** Offset 0x0217 - CdClock Frequency selection
-  0=168 Mhz, 1=336 Mhz, 2(Default)=528 Mhz
-  0: 168 Mhz, 1: 336 Mhz, 2: 528 Mhz
+  0=168 Mhz, 1=336 Mhz, 2=528 Mhz, 3(Default)=675 Mhz
+  0: 168 Mhz, 1: 336 Mhz, 2: 528 Mhz, 3: 675 Mhz
 **/
   UINT8                       CdClock;
 
@@ -907,7 +907,9 @@ typedef struct {
   UINT8                       PsysOffset;
 
 /** Offset 0x02A2 - Acoustic Noise Mitigation feature
-  Enable or Disable Acoustic Noise Mitigation feature. <b>0: Disabled</b>; 1: Enabled
+  Enable or Disable Acoustic Noise Mitigation feature. This has to be enabled to program
+  slew rate configuration for all VR domains, Pre Wake, Ramp Up and, Ramp Down times.<b>0:
+  Disabled</b>; 1: Enabled
   $EN_DIS
 **/
   UINT8                       AcousticNoiseMitigation;
@@ -1100,15 +1102,32 @@ typedef struct {
 **/
   UINT32                      VrPowerDeliveryDesign;
 
-/** Offset 0x0328 - ReservedCpuPostMemProduction
+/** Offset 0x0328 - Pre Wake Randomization time
+  PCODE MMIO Mailbox: Acoustic Migitation Range.Defines the maximum pre-wake randomization
+  time in micro ticks.This can be programmed only if AcousticNoiseMigitation is enabled.
+  Range 0-255 <b>0</b>.
+**/
+  UINT8                       PreWake;
+
+/** Offset 0x0329 - Ramp Up Randomization time
+  PCODE MMIO Mailbox: Acoustic Migitation Range.Defines the maximum Ramp Up randomization
+  time in micro ticks.This can be programmed only if AcousticNoiseMigitation is enabled.Range
+  0-255 <b>0</b>.
+**/
+  UINT8                       RampUp;
+
+/** Offset 0x032A - Ramp Down Randomization time
+  PCODE MMIO Mailbox: Acoustic Migitation Range.Defines the maximum Ramp Down randomization
+  time in micro ticks.This can be programmed only if AcousticNoiseMigitation is enabled.Range
+  0-255 <b>0</b>.
+**/
+  UINT8                       RampDown;
+
+/** Offset 0x032B - ReservedCpuPostMemProduction
   Reserved for CPU Post-Mem Production
   $EN_DIS
 **/
-  UINT8                       ReservedCpuPostMemProduction[1];
-
-/** Offset 0x0329
-**/
-  UINT8                       UnusedUpdSpace10[29];
+  UINT8                       ReservedCpuPostMemProduction[27];
 
 /** Offset 0x0346 - Enable DMI ASPM
   Deprecated.
@@ -1151,7 +1170,7 @@ typedef struct {
 
 /** Offset 0x0367
 **/
-  UINT8                       UnusedUpdSpace11;
+  UINT8                       UnusedUpdSpace10;
 
 /** Offset 0x0368 - VC Type
   Virtual Channel Type Select: 0: VC0, 1: VC1.
@@ -1192,7 +1211,7 @@ typedef struct {
 
 /** Offset 0x036E
 **/
-  UINT8                       UnusedUpdSpace12[15];
+  UINT8                       UnusedUpdSpace11[15];
 
 /** Offset 0x037D - Enable PCH Io Apic Entry 24-119
   0: Disable; 1: Enable.
@@ -1207,7 +1226,7 @@ typedef struct {
 
 /** Offset 0x037F
 **/
-  UINT8                       UnusedUpdSpace13;
+  UINT8                       UnusedUpdSpace12;
 
 /** Offset 0x0380 - Enable PCH ISH SPI GPIO pins assigned
   0: Disable; 1: Enable.
@@ -1307,7 +1326,7 @@ typedef struct {
 
 /** Offset 0x0390
 **/
-  UINT8                       UnusedUpdSpace14[3];
+  UINT8                       UnusedUpdSpace13[3];
 
 /** Offset 0x0393 - Enable LOCKDOWN BIOS LOCK
   Enable the BIOS Lock feature and set EISS bit (D31:F5:RegDCh[5]) for the BIOS region
@@ -1401,7 +1420,7 @@ typedef struct {
 
 /** Offset 0x04E6
 **/
-  UINT8                       UnusedUpdSpace15[24];
+  UINT8                       UnusedUpdSpace14[24];
 
 /** Offset 0x04FE - PCIE RP Pcie Speed
   Determines each PCIE Port speed capability. 0: Auto; 1: Gen1; 2: Gen2; 3: Gen3 (see:
@@ -1427,7 +1446,7 @@ typedef struct {
 
 /** Offset 0x055E
 **/
-  UINT8                       UnusedUpdSpace16[106];
+  UINT8                       UnusedUpdSpace15[106];
 
 /** Offset 0x05C8 - PCIE RP Aspm
   The ASPM configuration of the root port (see: PCH_PCIE_ASPM_CONTROL). Default is
@@ -1486,7 +1505,7 @@ typedef struct {
 
 /** Offset 0x0664
 **/
-  UINT8                       UnusedUpdSpace17;
+  UINT8                       UnusedUpdSpace16;
 
 /** Offset 0x0665 - PCIE Compliance Test Mode
   Compliance Test Mode shall be enabled when using Compliance Load Board.
@@ -1503,7 +1522,7 @@ typedef struct {
 
 /** Offset 0x0667
 **/
-  UINT8                       UnusedUpdSpace18[2];
+  UINT8                       UnusedUpdSpace17[2];
 
 /** Offset 0x0669 - PCH Pm PME_B0_S5_DIS
   When cleared (default), wake events from PME_B0_STS are allowed in S5 if PME_B0_EN = 1.
@@ -1529,7 +1548,7 @@ typedef struct {
 
 /** Offset 0x066F
 **/
-  UINT8                       UnusedUpdSpace19;
+  UINT8                       UnusedUpdSpace18;
 
 /** Offset 0x0670 - PCH Pm Wol Enable Override
   Corresponds to the WOL Enable Override bit in the General PM Configuration B (GEN_PMCON_B) register.
@@ -1618,7 +1637,7 @@ typedef struct {
 
 /** Offset 0x067D
 **/
-  UINT8                       UnusedUpdSpace20[3];
+  UINT8                       UnusedUpdSpace19[3];
 
 /** Offset 0x0680 - PCH Pm Lpc Clock Run
   This member describes whether or not the LPC ClockRun feature of PCH should be enabled.
@@ -1652,7 +1671,7 @@ typedef struct {
 
 /** Offset 0x0685
 **/
-  UINT8                       UnusedUpdSpace21;
+  UINT8                       UnusedUpdSpace20;
 
 /** Offset 0x0686 - PCH Pm Disable Native Power Button
   Power button native mode disable.
@@ -1692,7 +1711,7 @@ typedef struct {
 
 /** Offset 0x068C
 **/
-  UINT8                       UnusedUpdSpace22;
+  UINT8                       UnusedUpdSpace21;
 
 /** Offset 0x068D - PCH Sata Pwr Opt Enable
   SATA Power Optimizer on PCH side.
@@ -1881,7 +1900,7 @@ typedef struct {
 
 /** Offset 0x0700
 **/
-  UINT8                       UnusedUpdSpace23;
+  UINT8                       UnusedUpdSpace22;
 
 /** Offset 0x0701 - PcdSerialIoUart0PinMuxing
   Select SerialIo Uart0 pin muxing. Setting applicable only if SerialIO UART0 is enabled.
@@ -1891,7 +1910,7 @@ typedef struct {
 
 /** Offset 0x0702
 **/
-  UINT8                       UnusedUpdSpace24[1];
+  UINT8                       UnusedUpdSpace23[1];
 
 /** Offset 0x0703 - Enables UART hardware flow control, CTS and RTS lines
   Enables UART hardware flow control, CTS and RTS linesh.
@@ -2164,7 +2183,7 @@ typedef struct {
 
 /** Offset 0x0753
 **/
-  UINT8                       UnusedUpdSpace25;
+  UINT8                       UnusedUpdSpace24;
 
 /** Offset 0x0754 - Pch PCIE device override table pointer
   The PCIe device table is being used to override PCIe device ASPM settings. This
@@ -2343,7 +2362,7 @@ typedef struct {
   UINT8                       PmSupport;
 
 /** Offset 0x07BC - Enable/Disable CdynmaxClamp
-  Enable: Enable CdynmaxClamp, Disable(Default): Disable CdynmaxClamp
+  Enable(Default): Enable CdynmaxClamp, Disable: Disable CdynmaxClamp
   $EN_DIS
 **/
   UINT8                       CdynmaxClampEnable;
@@ -2465,7 +2484,7 @@ typedef struct {
 /** Offset 0x07D8 - TCC Activation Offset
   TCC Activation Offset. Offset from factory set TCC activation temperature at which
   the Thermal Control Circuit must be activated. TCC will be activated at TCC Activation
-  Temperature, in volts.For Y SKU, the recommended default for this policy is  <b>10</b>,
+  Temperature, in volts.For Y SKU, the recommended default for this policy is  <b>15</b>,
   For all other SKUs the recommended default are <b>0</b>
 **/
   UINT8                       TccActivationOffset;
@@ -2792,8 +2811,8 @@ typedef struct {
   UINT8                       CstateLatencyControl5TimeUnit;
 
 /** Offset 0x0819 - Interrupt Redirection Mode Select
-  Interrupt Redirection Mode Select.0: Fixed priority; 1: Round robin;2: Hash vector;7:
-  No change.
+  Interrupt Redirection Mode Select.0: Fixed priority; 1: Round robin;2: Hash vector;4:
+  PAIR with fixed priority;5: PAIR with round robin;6: PAIR with hash vector;7: No change.
 **/
   UINT8                       PpmIrmSetting;
 
@@ -3040,11 +3059,23 @@ typedef struct {
 **/
   UINT8                       MaxRingRatioLimit;
 
-/** Offset 0x08A5 - ReservedCpuPostMemTest
+/** Offset 0x08A5 - Enable or Disable C3 Cstate Demotion
+  Enable or Disable C3 Cstate Demotion. Disable; <b>1: Enable</b>
+  $EN_DIS
+**/
+  UINT8                       C3StateAutoDemotion;
+
+/** Offset 0x08A6 - Enable or Disable C3 Cstate UnDemotion
+  Enable or Disable C3 Cstate UnDemotion. Disable; <b>1: Enable</b>
+  $EN_DIS
+**/
+  UINT8                       C3StateUnDemotion;
+
+/** Offset 0x08A7 - ReservedCpuPostMemTest
   Reserved for CPU Post-Mem Test
   $EN_DIS
 **/
-  UINT8                       ReservedCpuPostMemTest[21];
+  UINT8                       ReservedCpuPostMemTest[19];
 
 /** Offset 0x08BA - SgxSinitDataFromTpm
   SgxSinitDataFromTpm default values
@@ -3194,7 +3225,7 @@ typedef struct {
 
 /** Offset 0x0A61
 **/
-  UINT8                       UnusedUpdSpace26[17];
+  UINT8                       UnusedUpdSpace25[17];
 
 /** Offset 0x0A72 - Skip POSTBOOT SAI
   Deprecated

@@ -140,13 +140,18 @@ Device (XHC)
 
 	Name (_PRW, Package(){ 13, 4 }) // Power Resources for Wake
 
-	Method(POSC,3,Serialized)
+	Method(POSC,2,Serialized)
 	{
+	/*
+	 * Arg0 - An Integer containing a count of entries in Arg3
+	 * Arg1 - A Buffer containing a list of DWORD capabilities
+	 */
+
 		// Create DWord field from the Capabilities Buffer
-		CreateDWordField(Arg2,0,CDW1)
+		CreateDWordField(Arg1,0,CDW1)
 
 		// Check revision
-		If(LNotEqual(Arg1,One)) {
+		If(LNotEqual(Arg0,One)) {
 			// Set unknown revision bit
 			Or(CDW1,0x8,CDW1)
 		}
@@ -179,7 +184,7 @@ Device (XHC)
 			And(X2PR, 0xFFFFFFF0, Local0)
 			Or(Local0, Local1, X2PR)
 		}
-		Return(Arg2)
+		Return(Arg1)
 	}
 
 	// Leave USB ports on for to allow Wake from USB

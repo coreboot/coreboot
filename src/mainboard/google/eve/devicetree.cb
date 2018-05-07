@@ -240,7 +240,49 @@ chip soc/intel/skylake
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
-		device pci 14.0 on  end # USB xHCI
+		device pci 14.0 on
+			chip drivers/usb/acpi
+				register "desc" = ""Root Hub""
+				register "type" = "UPC_TYPE_HUB"
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Left""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device usb 2.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Right""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device usb 2.4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 H1 TPM""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Left""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device usb 3.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Right""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device usb 3.1 on end
+					end
+				end
+			end
+		end # USB xHCI
 		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.2 on  end # Thermal Subsystem
 		device pci 15.0 on

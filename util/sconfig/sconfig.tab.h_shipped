@@ -73,7 +73,8 @@ extern int yydebug;
     PCIINT = 283,
     GENERIC = 284,
     SPI = 285,
-    MMIO = 286
+    USB = 286,
+    MMIO = 287
   };
 #endif
 

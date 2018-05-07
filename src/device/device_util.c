@@ -256,6 +256,9 @@ u32 dev_path_encode(const struct device *dev)
 	case DEVICE_PATH_SPI:
 		ret |= dev->path.spi.cs;
 		break;
+	case DEVICE_PATH_USB:
+		ret |= dev->path.usb.port_type << 8 || dev->path.usb.port_id;
+		break;
 	case DEVICE_PATH_NONE:
 	case DEVICE_PATH_MMIO:  /* don't care */
 	default:
@@ -332,6 +335,10 @@ const char *dev_path(const struct device *dev)
 		case DEVICE_PATH_SPI:
 			snprintf(buffer, sizeof (buffer), "SPI: %02x",
 				 dev->path.spi.cs);
+			break;
+		case DEVICE_PATH_USB:
+			snprintf(buffer, sizeof (buffer), "USB%u port %u",
+				 dev->path.usb.port_type, dev->path.usb.port_id);
 			break;
 		case DEVICE_PATH_MMIO:
 			snprintf(buffer, sizeof (buffer), "MMIO: %08x",
@@ -410,6 +417,10 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 		break;
 	case DEVICE_PATH_SPI:
 		equal = (path1->spi.cs == path2->spi.cs);
+		break;
+	case DEVICE_PATH_USB:
+		equal = (path1->usb.port_type == path2->usb.port_type) &&
+			(path1->usb.port_id == path2->usb.port_id);
 		break;
 	case DEVICE_PATH_MMIO:
 		equal = (path1->mmio.addr == path2->mmio.addr);

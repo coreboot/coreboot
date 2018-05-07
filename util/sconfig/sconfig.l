@@ -40,6 +40,7 @@ domain		{yylval.number=DOMAIN; return(BUS);}
 generic		{yylval.number=GENERIC; return(BUS);}
 mmio		{yylval.number=MMIO; return(BUS);}
 spi		{yylval.number=SPI; return(BUS);}
+usb		{yylval.number=USB; return(BUS);}
 irq		{yylval.number=IRQ; return(RESOURCE);}
 drq		{yylval.number=DRQ; return(RESOURCE);}
 io		{yylval.number=IO; return(RESOURCE);}

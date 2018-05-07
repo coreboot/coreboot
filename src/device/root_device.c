@@ -72,6 +72,21 @@ void scan_lpc_bus(struct device *bus)
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
 }
 
+void scan_usb_bus(struct device *bus)
+{
+	struct bus *link;
+
+	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
+
+	scan_static_bus(bus);
+
+	/* Scan bridges in case this device is a hub */
+	for (link = bus->link_list; link; link = link->next)
+		scan_bridges(link);
+
+	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
+}
+
 void scan_generic_bus(struct device *bus)
 {
 	struct device *child;

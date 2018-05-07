@@ -15,6 +15,7 @@ enum device_path_type {
 	DEVICE_PATH_IOAPIC,
 	DEVICE_PATH_GENERIC,
 	DEVICE_PATH_SPI,
+	DEVICE_PATH_USB,
 	DEVICE_PATH_MMIO,
 
 	/*
@@ -37,6 +38,7 @@ enum device_path_type {
 		"DEVICE_PATH_IOAPIC",		\
 		"DEVICE_PATH_GENERIC",		\
 		"DEVICE_PATH_SPI",		\
+		"DEVICE_PATH_USB",		\
 		"DEVICE_PATH_MMIO",		\
 }
 
@@ -91,6 +93,11 @@ struct generic_path {
 	unsigned int subid;
 };
 
+struct usb_path {
+	unsigned int port_type;
+	unsigned int port_id;
+};
+
 struct mmio_path {
 	uintptr_t addr;
 };
@@ -109,6 +116,7 @@ struct device_path {
 		struct cpu_bus_path	cpu_bus;
 		struct generic_path	generic;
 		struct spi_path		spi;
+		struct usb_path		usb;
 		struct mmio_path	mmio;
 	};
 };

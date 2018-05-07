@@ -51,6 +51,7 @@
 #define EARLY_GSPI_BASE_ADDRESS		0xfe011000
 
 /* Temporary BAR for early I2C bus access */
-#define PRERAM_I2C_BASE_ADDRESS(x)	(0xfe020000 + (0x1000 * (x)))
+#define EARLY_I2C_BASE_ADDRESS		0xfe020000
+#define EARLY_I2C_BASE(x)	(EARLY_I2C_BASE_ADDRESS + (0x1000 * (x)))
 
 #endif /* _SOC_APOLLOLAKE_IOMAP_H_ */

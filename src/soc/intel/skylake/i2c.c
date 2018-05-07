@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2016 Google Inc.
+ * Copyright (C) 2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,26 +14,10 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <device/device.h>
 #include <intelblocks/chip.h>
 #include <drivers/i2c/designware/dw_i2c.h>
-#include <soc/iomap.h>
 #include <soc/pci_devs.h>
-#include "chip.h"
-
-const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
-{
-	const struct soc_intel_common_config *common_config;
-	common_config = chip_get_common_soc_structure();
-
-	return &common_config->i2c[bus];
-}
-
-uintptr_t dw_i2c_get_soc_early_base(unsigned int bus)
-{
-	return EARLY_I2C_BASE(bus);
-}
 
 int dw_i2c_soc_devfn_to_bus(unsigned int devfn)
 {

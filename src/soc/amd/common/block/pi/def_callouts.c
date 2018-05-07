@@ -45,6 +45,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
 	{ AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
 	{ AGESA_READ_SPD,                 agesa_ReadSpd },
 	{ AGESA_GNB_PCIE_SLOT_RESET,      agesa_PcieSlotResetControl },
+	{ AGESA_GET_TEMP_HEAP_BASE,       agesa_GetTempHeapBase },
 #if ENV_RAMSTAGE
 	{ AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
 	{ AGESA_RUNFUNC_ON_ALL_APS,       agesa_RunFcnOnAllAps },

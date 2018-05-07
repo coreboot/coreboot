@@ -33,6 +33,8 @@ typedef struct _BIOS_BUFFER_NODE {
 	UINT32 NextNodeOffset;
 } BIOS_BUFFER_NODE;
 
+AGESA_STATUS agesa_GetTempHeapBase(UINT32 Func, UINTN Data, VOID *ConfigPtr);
+
 AGESA_STATUS agesa_AllocateBuffer(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_DeallocateBuffer(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_LocateBuffer(UINT32 Func, UINTN Data, VOID *ConfigPtr);

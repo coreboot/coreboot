@@ -31,6 +31,31 @@ static void EmptyHeap(int unused)
 }
 
 /*
+ * Name			agesa_GetTempHeapBase
+ * Brief description	Get the location for TempRam, the target location in
+ *			memory where AmdInitPost copies the heap prior to CAR
+ *			teardown.  AmdInitEnv calls this function after
+ *			teardown for the source address when relocation the
+ *			heap to its final location.
+ * Input parameters
+ *	Func		Unused
+ *	Data		Unused
+ *	ConfigPtr	Pointer to type AGESA_TEMP_HEAP_BASE_PARAMS
+ * Output parameters
+ *	Status		Indicates whether TempHeapAddress was successfully
+ *			set.
+ */
+AGESA_STATUS agesa_GetTempHeapBase(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+{
+	AGESA_TEMP_HEAP_BASE_PARAMS *pTempHeapBase;
+
+	pTempHeapBase = (AGESA_TEMP_HEAP_BASE_PARAMS *)ConfigPtr;
+	pTempHeapBase->TempHeapAddress = CONFIG_PI_AGESA_TEMP_RAM_BASE;
+
+	return AGESA_SUCCESS;
+}
+
+/*
  * Name			FindAllocatedNode
  * Brief description	Find an allocated node that matches the handle.
  * Input parameter	The desired handle.

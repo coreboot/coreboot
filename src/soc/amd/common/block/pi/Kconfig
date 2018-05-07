@@ -4,3 +4,23 @@ config SOC_AMD_COMMON_BLOCK_PI
 	default n
 	help
 	  This option builds functions that interface AMD's AGESA.
+
+if SOC_AMD_COMMON_BLOCK_PI
+
+config PI_AGESA_TEMP_RAM_BASE
+	hex
+	default 0x100000
+	help
+	  During a boot from S5, AGESA copies its CAR-based heap to a temporary
+	  location in DRAM.  Once coreboot has established cbmem, the heap
+	  is moved again.  This symbol determines the temporary location for
+	  the heap.
+
+config PI_AGESA_HEAP_SIZE
+	hex
+	default 0x20000
+	help
+	  This option determines the amount of space allowed for AGESA heap
+	  prior to DRAM availability.
+
+endif

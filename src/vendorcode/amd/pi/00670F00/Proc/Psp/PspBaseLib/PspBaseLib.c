@@ -48,7 +48,10 @@
  */
 #include "AGESA.h"
 #include "Filecode.h"
-#include "Fch.h"
+ /*
+  * Header removed for coreboot.
+  * #include  "Fch.h"
+  */
 #include "PspBaseLib.h"
 
 #define FILECODE PROC_PSP_PSPBASELIB_PSPBASELIB_FILECODE

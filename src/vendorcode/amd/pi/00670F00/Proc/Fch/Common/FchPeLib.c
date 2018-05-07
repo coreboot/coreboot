@@ -43,10 +43,13 @@
 
 #include "FchPlatform.h"
 #include  "cpuFamilyTranslation.h"
-//#include  "Porting.h"
-//#include  "AMD.h"
-//#include  "amdlib.h"
-#include  "heapManager.h"
+ /*
+  * Headers removed for coreboot.
+  * #include  "Porting.h"
+  * #include  "AMD.h"
+  * #include  "amdlib.h"
+  * #include  "heapManager.h"
+  */
 #define FILECODE PROC_FCH_COMMON_FCHPELIB_FILECODE
 
 /*----------------------------------------------------------------------------------------*/

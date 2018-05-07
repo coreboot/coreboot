@@ -45,8 +45,6 @@
 
 #include <AGESA.h>
 #include <cpuRegisters.h>
-#include <Ids.h>
-#include <Porting.h>
 #include "amdlib.h"
 CODE_GROUP (G1_PEICC)
 RDATA_GROUP (G1_PEICC)

@@ -39,12 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***************************************************************************/
-// TODO This list needs to be pruned of anything that is not API
-#include "AGESA.h"
 #include <amdblocks/agesawrapper.h>
-#include "cbfs.h"
-#include <console/console.h>
-#include <commonlib/loglevel.h>
 
 CONST UINT32 ImageSignature = IMAGE_SIGNATURE;
 CONST UINT32 ModuleSignature = MODULE_SIGNATURE;

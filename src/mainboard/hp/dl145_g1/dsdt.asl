@@ -205,8 +205,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 
 	#include <southbridge/amd/amd8111/acpi/sleepstates.asl>
 
-	Method (WAK, 1, NotSerialized) {}
-
 	Name (WAKP, Package (0x02) { 0x00, 0x00 })
 	// Status
 	//  0: 0  Wake was signaled but failed due to lack of power.
@@ -220,7 +218,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 	// Arg0: The value of the sleeping state from which woken (1=S1, ...)
 	// Result: (2 DWORD package)
 		ShiftLeft (Arg0, 0x04, DBG8)
-		WAK (Arg0)
 		Store (0xFF, KSBI) // Clear 0xFF in CMOS RAM
 		Store (0x00, KSBD)
 		If (LEqual (Arg0, 0x01)) { // Wake from S1 state

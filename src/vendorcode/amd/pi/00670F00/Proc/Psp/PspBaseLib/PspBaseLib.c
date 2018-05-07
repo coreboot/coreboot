@@ -223,6 +223,7 @@ GetPspDirBase (
   return (FALSE);
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /**
  * Get specific PSP Entry information, this routine will auto detect the processor for loading
  * correct PSP Directory
@@ -329,6 +330,7 @@ UpdataPspDirCheckSum (
     PspDir->Header.Checksum = Fletcher32 ((UINT16 *) &PspDir->Header.TotalEntries, \
       (sizeof (PSP_DIRECTORY_HEADER) - OFFSET_OF (PSP_DIRECTORY_HEADER, TotalEntries) + PspDir->Header.TotalEntries * sizeof (PSP_DIRECTORY_ENTRY)) / 2);
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 
 /**
   Check if PSP device is present
@@ -351,6 +353,7 @@ CheckPspDevicePresent (
   return (FALSE);
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /**
   Check PSP Platform Seucre Enable State
   HVB & Secure S3 (Resume vector set to Dram, & core content will restore by uCode)
@@ -418,6 +421,7 @@ GetPspMboxStatus (
 
   return (TRUE);
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 
 BOOLEAN
 PspBarInitEarly ()
@@ -454,6 +458,7 @@ PspBarInitEarly ()
   return (TRUE);
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /**
   Return the PspMMIO MMIO location
 
@@ -478,6 +483,7 @@ GetPspBar1Addr (
 
   return (TRUE);
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 
 /**
   Return the PspMMIO MMIO location
@@ -513,6 +519,7 @@ GetPspBar3Addr (
 
   return (TRUE);
 }
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /**
  * Acquire the Mutex for access PSP,X86 co-accessed register
  * Call this routine before access SMIx98 & SMIxA8
@@ -679,4 +686,5 @@ IsS3Resume (
 
   return ((SleepType == 3) ? TRUE : FALSE);
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 

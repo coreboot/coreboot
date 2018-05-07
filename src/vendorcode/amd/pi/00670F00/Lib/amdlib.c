@@ -274,6 +274,7 @@ Write64Mem32 (
   }
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 AMDLIB_OPTIMIZE
 VOID
 LibAmdReadCpuReg (
@@ -388,6 +389,7 @@ LibAmdBitScanReverse (
 
   return 0xFF; /* Error code indicating no bit found */
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 
 AMDLIB_OPTIMIZE
 VOID
@@ -414,6 +416,7 @@ LibAmdMsrWrite (
   __writemsr (MsrAddress, *Value);
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 AMDLIB_OPTIMIZE
 void LibAmdCpuidRead (
   IN       UINT32 CpuidFcnAddress,
@@ -499,6 +502,7 @@ LibAmdFinit(
 	/* TODO: finit */
 	__asm__ volatile ("finit");
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 /*---------------------------------------------------------------------------------------*/
 /**
  * Read IO port
@@ -605,6 +609,7 @@ LibAmdIoRMW (
   LibAmdIoWrite (AccessWidth, IoAddress, &Value, NULL);
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /*---------------------------------------------------------------------------------------*/
 /**
  * Poll IO register
@@ -637,6 +642,7 @@ LibAmdIoPoll (
     LibAmdIoRead (AccessWidth, IoAddress, &Value, NULL);
   } while (TempData != (Value & TempMask));
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 
 /*---------------------------------------------------------------------------------------*/
 /**
@@ -744,6 +750,7 @@ LibAmdMemRMW (
   LibAmdMemWrite (AccessWidth, MemAddress, &Value, NULL);
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /*---------------------------------------------------------------------------------------*/
 /**
  * Poll Mmio
@@ -776,6 +783,7 @@ LibAmdMemPoll (
     LibAmdMemRead (AccessWidth, MemAddress, &Value, NULL);
   } while (TempData != (Value & TempMask));
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 
 /*---------------------------------------------------------------------------------------*/
 /**
@@ -913,6 +921,7 @@ LibAmdPciRMW (
   LibAmdPciWrite (AccessWidth, PciAddress, &Value, NULL);
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /*---------------------------------------------------------------------------------------*/
 /**
  * Poll PCI config space register
@@ -945,6 +954,7 @@ LibAmdPciPoll (
     LibAmdPciRead (AccessWidth, PciAddress, &Value, NULL);
   } while (TempData != (Value & TempMask));
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 
 /*---------------------------------------------------------------------------------------*/
 /**
@@ -979,6 +989,7 @@ GetPciMmioAddress (
   return MmioIsEnabled;
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /*---------------------------------------------------------------------------------------*/
 /**
  * Read field of PCI config register.
@@ -1177,6 +1188,7 @@ LibAmdMemCopy (
     *Dest++ = *SourcePtr++;
   }
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 
 /*---------------------------------------------------------------------------------------*/
 /**
@@ -1261,6 +1273,7 @@ LibAmdLocateImage (
   return NULL;
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /*---------------------------------------------------------------------------------------*/
 /**
  * Returns the package type mask for the processor
@@ -1282,6 +1295,7 @@ LibAmdGetPackageType (
   ProcessorPackageType = (UINT32) (CpuId.EBX_Reg >> 28) & 0xF; // bit 31:28
   return (UINT32) (1 << ProcessorPackageType);
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 
 /*---------------------------------------------------------------------------------------*/
 /**
@@ -1327,6 +1341,7 @@ LibAmdGetDataFromPtr (
   }
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /*---------------------------------------------------------------------------------------*/
 /**
  * Returns the package type mask for the processor
@@ -1388,6 +1403,7 @@ ReadNumberOfCpuCores(
   CpuidRead (0x80000008, &Value);
   return   Value.ECX_Reg & 0xff;
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 
 BOOLEAN
 IdsErrorStop (

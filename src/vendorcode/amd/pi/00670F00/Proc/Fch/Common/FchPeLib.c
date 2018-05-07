@@ -52,6 +52,7 @@
   */
 #define FILECODE PROC_FCH_COMMON_FCHPELIB_FILECODE
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /*----------------------------------------------------------------------------------------*/
 /**
  * ProgramPciByteTable - Program PCI register by table (8 bits data)
@@ -218,6 +219,7 @@ ProgramFchSataPhyTbl (
     }
   }
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 
 /**
  * GetChipSysMode - Get Chip status
@@ -260,7 +262,7 @@ IsImcEnabled (
   }
 }
 
-
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /**
  * GetEfuseStatue - Get Efuse status
  *
@@ -582,3 +584,4 @@ FchGetScratchFuse (
 
   return TempData64;
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */

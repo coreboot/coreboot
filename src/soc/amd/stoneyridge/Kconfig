@@ -393,4 +393,11 @@ config MAINBOARD_POWER_RESTORE
 	  return to S0.  Otherwise the system will remain in S5 once power
 	  is restored.
 
+config VENDORCODE_FULL_SUPPORT
+	def_bool n
+	help
+	  This option determines if all files under
+	  vendorcode/amd/pi/00670F00/ will be compiled or only
+	  selected procedures of source files (minimum required).
+
 endif # SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4

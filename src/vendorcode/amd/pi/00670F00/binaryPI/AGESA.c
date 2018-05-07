@@ -157,6 +157,7 @@ AmdInitLate (
 	return Dispatcher(LateParams);
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /**********************************************************************
  * Interface call:  AmdInitRecovery
  **********************************************************************/
@@ -170,6 +171,7 @@ AmdInitRecovery (
 	if (!Dispatcher) return AGESA_UNSUPPORTED;
 	return Dispatcher(RecoveryParams);
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 
 /**********************************************************************
  * Interface call:  AmdInitResume
@@ -241,6 +243,7 @@ AmdLateRunApTask (
 	return Dispatcher(AmdApExeParams);
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /**********************************************************************
  * Interface service call:  AmdGetApicId
  **********************************************************************/
@@ -282,6 +285,7 @@ AmdIdentifyCore (
 	if (!Dispatcher) return AGESA_UNSUPPORTED;
 	return Dispatcher(AmdParamIdentify);
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 
 /**********************************************************************
  * Interface service call:  AmdReadEventLog
@@ -297,6 +301,7 @@ AmdReadEventLog (
 	return Dispatcher(Event);
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /**********************************************************************
  * Interface service call:  AmdIdentifyDimm
  **********************************************************************/
@@ -333,3 +338,4 @@ AmdGet2DDataEye (
 	if (!Dispatcher) return AGESA_UNSUPPORTED;
 	return Dispatcher(AmdGetDataEye);
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */

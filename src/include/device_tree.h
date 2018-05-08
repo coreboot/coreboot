@@ -147,6 +147,8 @@ struct device_tree_node *dt_find_next_compat_child(struct device_tree_node *pare
 // Look up a node relative to a parent node, through its property value.
 struct device_tree_node *dt_find_prop_value(struct device_tree_node *parent, const char *name,
 				   void *data, size_t size);
+// Return the phandle
+uint32_t dt_get_phandle(struct device_tree_node *node);
 // Write src into *dest as a 'length'-byte big-endian integer.
 void dt_write_int(u8 *dest, u64 src, size_t length);
 // Add different kinds of properties to a node, or update existing ones.

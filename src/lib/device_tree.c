@@ -725,6 +725,28 @@ struct device_tree_node *dt_find_prop_value(struct device_tree_node *parent,
 	return NULL;
 }
 
+/**
+ * Find the phandle of a node.
+ *
+ * @param node Pointer to node containing the phandle
+ * @return Zero on error, the phandle on success
+ */
+uint32_t dt_get_phandle(struct device_tree_node *node)
+{
+	uint32_t *phandle;
+	size_t len;
+
+	dt_find_bin_prop(node, "phandle", (void **)&phandle, &len);
+	if (phandle != NULL && len == sizeof(*phandle))
+		return be32_to_cpu(*phandle);
+
+	dt_find_bin_prop(node, "linux,phandle", (void **)&phandle, &len);
+	if (phandle != NULL && len == sizeof(*phandle))
+		return be32_to_cpu(*phandle);
+
+	return 0;
+}
+
 /*
  * Write an arbitrary sized big-endian integer into a pointer.
  *

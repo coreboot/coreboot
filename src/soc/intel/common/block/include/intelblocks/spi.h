@@ -28,10 +28,4 @@
  */
 int spi_soc_devfn_to_bus(unsigned int devfn);
 
-/* Function to convert input bus number to device function
- * Input: Bus number
- * Output: -1 translate to Error, >=0 is function number
- */
-int spi_soc_bus_to_devfn(unsigned int bus);
-
 #endif	/* SOC_INTEL_COMMON_BLOCK_SPI_H */

@@ -23,7 +23,11 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
+#include <intelblocks/chip.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/spi.h>
+#include <soc/iomap.h>
+#include <soc/pci_devs.h>
 #include <string.h>
 #include <timer.h>
 
@@ -109,6 +113,21 @@
 #define GSPI_DATA_BIT_LENGTH		(8)
 #define GSPI_BUS_BASE(bar, bus)	((bar) + (bus) * 4 * KiB)
 
+/* Get base address for early init of GSPI controllers. */
+static uintptr_t gspi_get_early_base(void)
+{
+	return EARLY_GSPI_BASE_ADDRESS;
+}
+
+/* Get gspi_config array from devicetree. Returns NULL in case of error. */
+static const struct gspi_cfg *gspi_get_cfg(void)
+{
+	const struct soc_intel_common_config *common_config;
+	common_config = chip_get_common_soc_structure();
+
+	return &common_config->gspi[0];
+}
+
 #if defined(__SIMPLE_DEVICE__)
 
 static uintptr_t gspi_get_base_addr(int devfn,
@@ -131,7 +150,7 @@ void gspi_early_bar_init(void)
 {
 	unsigned int gspi_bus;
 	const unsigned int gspi_max = CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX;
-	const struct gspi_cfg *cfg = gspi_get_soc_cfg();
+	const struct gspi_cfg *cfg = gspi_get_cfg();
 	int devfn;
 	uintptr_t gspi_base_addr;
 
@@ -142,7 +161,7 @@ void gspi_early_bar_init(void)
 		return;
 	}
 
-	gspi_base_addr = gspi_get_soc_early_base();
+	gspi_base_addr = gspi_get_early_base();
 	if (!gspi_base_addr) {
 		printk(BIOS_ERR, "%s: GSPI base address provided is NULL!\n",
 		       __func__);
@@ -174,6 +193,41 @@ static void gspi_set_base_addr(int devfn, struct device *dev, uintptr_t base)
 
 #endif
 
+static int gspi_read_bus_range(unsigned int *start, unsigned int *end)
+{
+	size_t i;
+	const struct spi_ctrlr_buses *desc;
+
+	for (i = 0; i < spi_ctrlr_bus_map_count; i++) {
+		desc = &spi_ctrlr_bus_map[i];
+
+		if (desc->ctrlr != &gspi_ctrlr)
+			continue;
+
+		*start = desc->bus_start;
+		*end = desc->bus_end;
+
+		return 0;
+	}
+	return -1;
+}
+
+static int gspi_spi_to_gspi_bus(unsigned int spi_bus, unsigned int *gspi_bus)
+{
+	unsigned int start;
+	unsigned int end;
+	int ret;
+
+	ret = gspi_read_bus_range(&start, &end);
+
+	if (ret != 0 || (spi_bus < start) || (spi_bus > end))
+		return -1;
+
+	*gspi_bus = spi_bus - start;
+
+	return 0;
+}
+
 static uintptr_t gspi_calc_base_addr(unsigned int gspi_bus)
 {
 	uintptr_t bus_base, gspi_base_addr;
@@ -191,7 +245,7 @@ static uintptr_t gspi_calc_base_addr(unsigned int gspi_bus)
 	if (bus_base)
 		return bus_base;
 
-	gspi_base_addr = gspi_get_soc_early_base();
+	gspi_base_addr = gspi_get_early_base();
 	if (!gspi_base_addr)
 		return 0;
 
@@ -203,7 +257,7 @@ static uintptr_t gspi_calc_base_addr(unsigned int gspi_bus)
 
 static uint32_t gspi_get_bus_clk_mhz(unsigned int gspi_bus)
 {
-	const struct gspi_cfg *cfg = gspi_get_soc_cfg();
+	const struct gspi_cfg *cfg = gspi_get_cfg();
 	if (!cfg)
 		return 0;
 	return cfg[gspi_bus].speed_mhz;
@@ -249,7 +303,7 @@ static int gspi_ctrlr_params_init(struct gspi_ctrlr_params *p,
 {
 	memset(p, 0, sizeof(*p));
 
-	if (gspi_soc_spi_to_gspi_bus(spi_bus, &p->gspi_bus)) {
+	if (gspi_spi_to_gspi_bus(spi_bus, &p->gspi_bus)) {
 		printk(BIOS_ERR, "%s: No GSPI bus available for SPI bus %u.\n",
 		       __func__, spi_bus);
 		return -1;

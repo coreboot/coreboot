@@ -73,7 +73,7 @@ Method(GTTM, 1) /* get total time*/
 Device(PRID)
 {
 	Name (_ADR, Zero)
-	Method(_GTM, 0)
+	Method(_GTM, 0, Serialized)
 	{
 		NAME(OTBF, Buffer(20) { /* out buffer */
 			0xFF, 0xFF, 0xFF, 0xFF,
@@ -118,7 +118,7 @@ Device(PRID)
 		Return(OTBF) /* out buffer */
 	}				/* End Method(_GTM) */
 
-	Method(_STM, 3, NotSerialized)
+	Method(_STM, 3, Serialized)
 	{
 		NAME(INBF, Buffer(20) { /* in buffer */
 			0xFF, 0xFF, 0xFF, 0xFF,
@@ -169,7 +169,7 @@ Device(PRID)
 	Device(MST)
 	{
 		Name(_ADR, 0)
-		Method(_GTF) {
+		Method(_GTF, 0, Serialized) {
 			Name(CMBF, Buffer(21) {
 				0x03, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xEF,
 				0x03, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xEF,
@@ -205,7 +205,7 @@ Device(PRID)
 	Device(SLAV)
 	{
 		Name(_ADR, 1)
-		Method(_GTF) {
+		Method(_GTF, 0, Serialized) {
 			Name(CMBF, Buffer(21) {
 				0x03, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xEF,
 				0x03, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xEF,

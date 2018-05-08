@@ -28,7 +28,7 @@ Scope (\_SB)
 
 Scope (\_SB.GPNC)
 {
-	Method (_AEI, 0, NotSerialized)  // _AEI: ACPI Event Interrupts
+	Method (_AEI, 0, Serialized)  // _AEI: ACPI Event Interrupts
 	{
 		Name (RBUF, ResourceTemplate ()
 		{

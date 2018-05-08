@@ -35,7 +35,7 @@ Scope (\_SB.PCI0.I2C1)
 		Name (_UID, 4)
 		Name (ISTP, 0) /* TouchScreen */
 
-		Method(_CRS, 0x0, NotSerialized)
+		Method(_CRS, 0x0, Serialized)
 		{
 			Name (BUF0, ResourceTemplate ()
 			{
@@ -195,7 +195,7 @@ Scope (\_SB.PCI0.LPEA)
 
 Scope (\_SB.GPNC)
 {
-	Method (_AEI, 0, NotSerialized)  // _AEI: ACPI Event Interrupts
+	Method (_AEI, 0, Serialized)  // _AEI: ACPI Event Interrupts
 	{
 		Name (RBUF, ResourceTemplate ()
 		{

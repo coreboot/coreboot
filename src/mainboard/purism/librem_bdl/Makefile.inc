@@ -13,5 +13,5 @@
 ## GNU General Public License for more details.
 ##
 
-romstage-y += pei_data.c
-ramstage-y += pei_data.c
+romstage-y += variants/$(VARIANT_DIR)/pei_data.c
+ramstage-y += variants/$(VARIANT_DIR)/pei_data.c

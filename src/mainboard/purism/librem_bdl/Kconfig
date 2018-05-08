@@ -1,7 +1,5 @@
-if BOARD_PURISM_LIBREM13_V1
-
-config BOARD_SPECIFIC_OPTIONS # dummy
-	def_bool y
+config BOARD_PURISM_BASEBOARD_LIBREM_BDL
+	def_bool n
 	select SYSTEM_TYPE_LAPTOP
 	select BOARD_ROMSIZE_KB_8192
 	select EC_PURISM_LIBREM
@@ -9,6 +7,16 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_ACPI_TABLES
 	select INTEL_INT15
 	select SOC_INTEL_BROADWELL
+
+if BOARD_PURISM_BASEBOARD_LIBREM_BDL
+
+config VARIANT_DIR
+	string
+	default "librem13v1" if BOARD_PURISM_LIBREM13_V1
+
+config DEVICETREE
+	string
+	default "variants/librem13v1/devicetree.cb" if BOARD_PURISM_LIBREM13_V1
 
 config DRIVERS_PS2_KEYBOARD
 	def_bool y
@@ -37,11 +45,23 @@ config HAVE_ME_BIN
 
 config MAINBOARD_DIR
 	string
-	default purism/librem13v1
+	default purism/librem_bdl
+
+config MAINBOARD_VENDOR
+	string
+	default "Purism"
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Librem 13 v1"
+	default "Librem 13 v1" if BOARD_PURISM_LIBREM13_V1
+
+config MAINBOARD_FAMILY
+	string
+	default "Librem 13" if BOARD_PURISM_LIBREM13_V1
+
+config MAINBOARD_VERSION
+	string
+	default "1.0" if BOARD_PURISM_LIBREM13_V1
 
 config MAX_CPUS
 	int

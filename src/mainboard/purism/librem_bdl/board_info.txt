@@ -1,0 +1,8 @@
+Category: laptop
+Vendor name: Purism
+Board name: Librem Broadwell baseboard
+ROM package: SOIC8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y
+Release year: 2015

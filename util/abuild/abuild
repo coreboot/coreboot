@@ -250,24 +250,32 @@ function update_config
 	if [ "$PAYLOAD" = "none" ]; then
 		{
 			echo "CONFIG_PAYLOAD_NONE=y"
-			echo "# CONFIG_PAYLOAD_SEABIOS is not set"
 			echo "# CONFIG_PAYLOAD_ELF is not set"
-			echo "# CONFIG_PAYLOAD_BAYOU is not set"
-			echo "# CONFIG_PAYLOAD_FILO is not set"
-			echo "# CONFIG_PAYLOAD_GRUB2 is not set"
-			echo "# CONFIG_PAYLOAD_OPENBIOS is not set"
-			echo "# CONFIG_PAYLOAD_DEPTHCHARGE is not set"
-			echo "# CONFIG_PAYLOAD_UBOOT is not set"
-			echo "# CONFIG_PAYLOAD_TIANOCORE is not set"
 		} >> "${config_file}"
 	elif [ "$PAYLOAD" != "/dev/null" ]; then
 		{
 			echo "# CONFIG_PAYLOAD_NONE is not set"
-			echo "# CONFIG_PAYLOAD_SEABIOS is not set"
 			echo "CONFIG_PAYLOAD_ELF=y"
 			echo "CONFIG_PAYLOAD_FILE=\"$PAYLOAD\""
 		} >> "${config_file}"
 	fi
+	# Disable all other payload config options
+	{
+		echo "# CONFIG_PAYLOAD_SEABIOS is not set"
+		echo "# CONFIG_PAYLOAD_BAYOU is not set"
+		echo "# CONFIG_PAYLOAD_FILO is not set"
+		echo "# CONFIG_PAYLOAD_GRUB2 is not set"
+		echo "# CONFIG_PAYLOAD_OPENBIOS is not set"
+		echo "# CONFIG_PAYLOAD_DEPTHCHARGE is not set"
+		echo "# CONFIG_PAYLOAD_UBOOT is not set"
+		echo "# CONFIG_PAYLOAD_TIANOCORE is not set"
+		echo "# CONFIG_PXE is not set"
+		echo "# CONFIG_BUILD_IPXE is not set"
+		echo "# CONFIG_MEMTEST_SECONDARY_PAYLOAD is not set"
+		echo "# CONFIG_COREINFO_SECONDARY_PAYLOAD is not set"
+		echo "# CONFIG_NVRAMCUI_SECONDARY_PAYLOAD is not set"
+		echo "# CONFIG_TINT_SECONDARY_PAYLOAD is not set"
+	} >> "${config_file}"
 
 	if [ "$quiet" == "false" ]; then echo "    $MAINBOARD ($customizing)"; fi
 	# shellcheck disable=SC2059

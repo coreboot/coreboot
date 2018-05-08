@@ -1,5 +1,8 @@
-ramstage-y += microcode.c
-romstage-y += microcode.c
+romstage-$(CONFIG_CPU_MICROCODE_MULTIPLE_FILES) += microcode.c
+ramstage-$(CONFIG_CPU_MICROCODE_MULTIPLE_FILES) += microcode.c
+
+romstage-$(CONFIG_CPU_AMD_FAM16H_MICROCODE) += microcode_fam16h.c
+ramstage-$(CONFIG_CPU_AMD_FAM16H_MICROCODE) += microcode_fam16h.c
 
 # Microcode for Family 16h
 cbfs-files-$(CONFIG_CPU_AMD_FAM16H_MICROCODE) += microcode_amd.bin

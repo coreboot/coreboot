@@ -13,10 +13,12 @@ if BOARD_PURISM_BASEBOARD_LIBREM_BDL
 config VARIANT_DIR
 	string
 	default "librem13v1" if BOARD_PURISM_LIBREM13_V1
+	default "librem15v2" if BOARD_PURISM_LIBREM15_V2
 
 config DEVICETREE
 	string
 	default "variants/librem13v1/devicetree.cb" if BOARD_PURISM_LIBREM13_V1
+	default "variants/librem15v2/devicetree.cb" if BOARD_PURISM_LIBREM15_V2
 
 config DRIVERS_PS2_KEYBOARD
 	def_bool y
@@ -54,14 +56,17 @@ config MAINBOARD_VENDOR
 config MAINBOARD_PART_NUMBER
 	string
 	default "Librem 13 v1" if BOARD_PURISM_LIBREM13_V1
+	default "Librem 15 v2" if BOARD_PURISM_LIBREM15_V2
 
 config MAINBOARD_FAMILY
 	string
 	default "Librem 13" if BOARD_PURISM_LIBREM13_V1
+	default "Librem 15" if BOARD_PURISM_LIBREM15_V2
 
 config MAINBOARD_VERSION
 	string
 	default "1.0" if BOARD_PURISM_LIBREM13_V1
+	default "2.0" if BOARD_PURISM_LIBREM15_V2
 
 config MAX_CPUS
 	int
@@ -79,6 +84,8 @@ config PRE_GRAPHICS_DELAY
 
 config VGA_BIOS_ID
 	string
-	default "8086,1616"
+	default "8086,1616" if BOARD_PURISM_LIBREM13_V1
+	default "8086,162b" if BOARD_PURISM_LIBREM15_V2
+
 
 endif

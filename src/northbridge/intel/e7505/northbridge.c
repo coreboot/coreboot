@@ -16,9 +16,9 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
-	device_t mc_dev;
+	struct device *mc_dev;
 	uint32_t pci_tolm;
 
 	pci_tolm = find_pci_tolm(dev->link_list);
@@ -97,7 +97,8 @@ static void pci_domain_set_resources(device_t dev)
 	assign_resources(dev->link_list);
 }
 
-static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void intel_set_subsystem(struct device *dev,
+				unsigned vendor, unsigned device)
 {
 	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
@@ -116,7 +117,7 @@ static struct device_operations pci_domain_ops = {
 	.ops_pci          = &intel_pci_ops,
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }

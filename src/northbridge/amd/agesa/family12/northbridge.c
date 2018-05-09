@@ -38,13 +38,13 @@
 
 #define FX_DEVS 1
 
-static device_t __f0_dev[FX_DEVS];
-static device_t __f1_dev[FX_DEVS];
-static device_t __f2_dev[FX_DEVS];
-static device_t __f4_dev[FX_DEVS];
+static struct device *__f0_dev[FX_DEVS];
+static struct device *__f1_dev[FX_DEVS];
+static struct device *__f2_dev[FX_DEVS];
+static struct device *__f4_dev[FX_DEVS];
 static unsigned fx_devs = 0;
 
-static device_t get_node_pci(u32 nodeid, u32 fn)
+static struct device *get_node_pci(u32 nodeid, u32 fn)
 {
 	if ((CONFIG_CDB + nodeid) < 32) {
 		return dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB + nodeid, fn));
@@ -83,14 +83,14 @@ static void f1_write_config32(unsigned reg, u32 value)
 	if (fx_devs == 0)
 		get_fx_devs();
 	for (i = 0; i < fx_devs; i++) {
-		device_t dev = __f1_dev[i];
+		struct device *dev = __f1_dev[i];
 		if (dev && dev->enabled) {
 			pci_write_config32(dev, reg, value);
 		}
 	}
 }
 
-static u32 amdfam12_nodeid(device_t dev)
+static u32 amdfam12_nodeid(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s\n",__func__);
 	return (dev->path.pci.devfn >> 3) - CONFIG_CDB;
@@ -98,7 +98,7 @@ static u32 amdfam12_nodeid(device_t dev)
 
 #include "amdfam12_conf.c"
 
-static void northbridge_init(device_t dev)
+static void northbridge_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Northbridge init\n");
 }
@@ -118,8 +118,8 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 }
 
 
-static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
-            unsigned goal_link)
+static int reg_useable(unsigned reg, struct device *goal_dev,
+		       unsigned goal_nodeid, unsigned goal_link)
 {
 	struct resource *res;
 	unsigned nodeid, link = 0;
@@ -127,7 +127,7 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
 	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 	res = 0;
 	for (nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
-		device_t dev = __f0_dev[nodeid];
+		struct device *dev = __f0_dev[nodeid];
 		if (!dev)
 			continue;
 		for (link = 0; !res && (link < 8); link++) {
@@ -147,7 +147,8 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
 	return result;
 }
 
-static struct resource *amdfam12_find_iopair(device_t dev, unsigned nodeid, unsigned link)
+static struct resource *amdfam12_find_iopair(struct device *dev,
+					     unsigned nodeid, unsigned link)
 {
 	struct resource *resource;
 	u32 result, reg;
@@ -171,7 +172,8 @@ static struct resource *amdfam12_find_iopair(device_t dev, unsigned nodeid, unsi
 	return resource;
 }
 
-static struct resource *amdfam12_find_mempair(device_t dev, u32 nodeid, u32 link)
+static struct resource *amdfam12_find_mempair(struct device *dev, u32 nodeid,
+					      u32 link)
 {
 	struct resource *resource;
 	u32 free_reg, reg;
@@ -207,7 +209,7 @@ static struct resource *amdfam12_find_mempair(device_t dev, u32 nodeid, u32 link
 }
 
 
-static void amdfam12_link_read_bases(device_t dev, u32 nodeid, u32 link)
+static void amdfam12_link_read_bases(struct device *dev, u32 nodeid, u32 link)
 {
 	struct resource *resource;
 
@@ -289,7 +291,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 }
 #endif
 
-static void read_resources(device_t dev)
+static void read_resources(struct device *dev)
 {
 	u32 nodeid;
 	struct bus *link;
@@ -314,7 +316,8 @@ static void read_resources(device_t dev)
 }
 
 
-static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
+static void set_resource(struct device *dev, struct resource *resource,
+			 u32 nodeid)
 {
 	resource_t rbase, rend;
 	unsigned reg, link_num;
@@ -364,10 +367,10 @@ static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
 
 
 #if IS_ENABLED(CONFIG_CONSOLE_VGA_MULTI)
-extern device_t vga_pri;    // the primary vga device, defined in device.c
+extern struct device *vga_pri;    // the primary vga device, defined in device.c
 #endif
 
-static void create_vga_resource(device_t dev, unsigned nodeid)
+static void create_vga_resource(struct device *dev, unsigned nodeid)
 {
 struct bus *link;
 
@@ -398,7 +401,7 @@ printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 }
 
 
-static void set_resources(device_t dev)
+static void set_resources(struct device *dev)
 {
 	unsigned nodeid;
 	struct bus *bus;
@@ -425,7 +428,7 @@ static void set_resources(device_t dev)
 
 /* Domain/Root Complex related code */
 
-static void domain_read_resources(device_t dev)
+static void domain_read_resources(struct device *dev)
 {
 	unsigned reg;
 
@@ -440,7 +443,7 @@ static void domain_read_resources(device_t dev)
 		/* Is this register allocated? */
 		if ((base & 3) != 0) {
 			unsigned nodeid, reg_link;
-			device_t reg_dev;
+			struct device *reg_dev;
 			if (reg < 0xc0) { // mmio
 				nodeid = (limit & 0xf) + (base&0x30);
 			} else { // io
@@ -480,7 +483,7 @@ static void domain_read_resources(device_t dev)
 }
 
 
-static void domain_set_resources(device_t dev)
+static void domain_set_resources(struct device *dev)
 {
 	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 	printk(BIOS_DEBUG, "  amsr - incoming dev = %p\n", dev);
@@ -598,7 +601,7 @@ static void domain_set_resources(device_t dev)
 
 /* Bus related code */
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 	initialize_cpus(dev->link_list);
@@ -629,7 +632,7 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	return (unsigned long)current;
 }
 
-static void northbridge_fill_ssdt_generator(device_t device)
+static void northbridge_fill_ssdt_generator(struct device *device)
 {
 	msr_t msr;
 	char pscope[] = "\\_SB.PCI0";
@@ -650,7 +653,7 @@ static void northbridge_fill_ssdt_generator(device_t device)
 	acpigen_pop_len();
 }
 
-static unsigned long agesa_write_acpi_tables(device_t device,
+static unsigned long agesa_write_acpi_tables(struct device *device,
 					     unsigned long current,
 					     acpi_rsdp_t *rsdp)
 {

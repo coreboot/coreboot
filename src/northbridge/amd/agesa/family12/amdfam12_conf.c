@@ -24,7 +24,7 @@ struct dram_base_mask_t {
 
 static struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
 {
-	device_t dev;
+	struct device *dev;
 	struct dram_base_mask_t d;
 #if defined(__PRE_RAM__)
 	dev = PCI_DEV(CONFIG_CBB, CONFIG_CDB, 1);
@@ -50,7 +50,7 @@ static void set_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 {
 	u32 i;
 	u32 tempreg;
-	device_t dev;
+	struct device *dev;
 
 	/* io range allocation */
 	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn << 4) |  ((io_max&0xf0)<<(12-4)); //limit
@@ -70,7 +70,7 @@ static void clear_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 					u32 io_min, u32 io_max, u32 nodes)
 {
 	u32 i;
-	device_t dev;
+	struct device *dev;
 
 	 /* io range allocation */
 	for (i = 0; i < nodes; i++) {
@@ -92,8 +92,8 @@ static u32 get_mmio_addr_index(u32 nodeid, u32 linkn)
 	return	 0;
 }
 
-static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
-				u32 io_min, u32 io_max)
+static void set_io_addr_reg(struct device *dev, u32 nodeid, u32 linkn, u32 reg,
+			    u32 io_min, u32 io_max)
 {
 
 	u32 tempreg;

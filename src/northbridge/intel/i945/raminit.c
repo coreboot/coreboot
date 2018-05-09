@@ -504,14 +504,12 @@ static void gather_common_timing(struct sys_info *sysinfo,
 		}
 		dimm_mask |= (1 << i);
 	}
-	if (!dimm_mask) {
+	if (!dimm_mask)
 		die("No memory installed.\n");
-	}
 
-	if (!(dimm_mask & ((1 << DIMM_SOCKETS) - 1))) {
+	if (!(dimm_mask & ((1 << DIMM_SOCKETS) - 1)))
 		/* Possibly does not boot in this case */
 		printk(BIOS_INFO, "Channel 0 has no memory populated.\n");
-	}
 }
 
 static void choose_tclk(struct sys_info *sysinfo,

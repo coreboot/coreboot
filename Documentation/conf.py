@@ -177,6 +177,7 @@ def setup(app):
     app.add_config_value('recommonmark_config', {
         'enable_auto_toc_tree': True,
         'enable_auto_doc_ref': True,
+        'enable_eval_rst': True,
         'url_resolver': lambda url: '/' + url
     }, True)
     app.add_transform(AutoStructify)

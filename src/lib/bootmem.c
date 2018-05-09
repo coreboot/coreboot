@@ -67,17 +67,6 @@ static uint32_t bootmem_to_lb_tag(const enum bootmem_type tag)
 	}
 }
 
-static void bootmem_convert_ranges(void)
-{
-	/**
-	 * Convert BM_MEM_RAMSTAGE and BM_MEM_PAYLOAD to BM_MEM_RAM and
-	 * merge ranges. The payload doesn't care about memory used by firmware.
-	 */
-	memranges_clone(&bootmem_os, &bootmem);
-	memranges_update_tag(&bootmem_os, BM_MEM_RAMSTAGE, BM_MEM_RAM);
-	memranges_update_tag(&bootmem_os, BM_MEM_PAYLOAD, BM_MEM_RAM);
-}
-
 static void bootmem_init(void)
 {
 	const unsigned long cacheable = IORESOURCE_CACHEABLE;
@@ -93,24 +82,16 @@ static void bootmem_init(void)
 	 */
 	memranges_init(bm, cacheable, cacheable, BM_MEM_RAM);
 	memranges_add_resources(bm, reserved, reserved, BM_MEM_RESERVED);
+	memranges_clone(&bootmem_os, bm);
 
 	/* Add memory used by CBMEM. */
 	cbmem_add_bootmem();
 
-	/* Add memory used by coreboot -- only if RELOCATABLE_RAMSTAGE is not
-	 * used. When RELOCATABLE_RAMSTAGE is employed ramstage lives in cbmem
-	 * so cbmem_add_bootmem() takes care of that memory region. */
-	if (!IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)) {
-		bootmem_add_range((uintptr_t)_stack, _stack_size,
-				BM_MEM_RAMSTAGE);
-		bootmem_add_range((uintptr_t)_program, _program_size,
-				BM_MEM_RAMSTAGE);
-	}
+	bootmem_add_range((uintptr_t)_stack, _stack_size, BM_MEM_RAMSTAGE);
+	bootmem_add_range((uintptr_t)_program, _program_size, BM_MEM_RAMSTAGE);
 
 	bootmem_arch_add_ranges();
 	bootmem_platform_add_ranges();
-
-	bootmem_convert_ranges();
 }
 
 void bootmem_add_range(uint64_t start, uint64_t size,
@@ -118,10 +99,13 @@ void bootmem_add_range(uint64_t start, uint64_t size,
 {
 	assert(tag > BM_MEM_FIRST && tag < BM_MEM_LAST);
 	assert(bootmem_is_initialized());
-	assert(!bootmem_memory_table_written() || tag == BM_MEM_RAMSTAGE ||
-		    tag == BM_MEM_PAYLOAD);
 
 	memranges_insert(&bootmem, start, size, tag);
+	if (tag <= BM_MEM_OS_CUTOFF) {
+		/* Can't change OS tables anymore after they are written out. */
+		assert(!bootmem_memory_table_written());
+		memranges_insert(&bootmem_os, start, size, tag);
+	};
 }
 
 void bootmem_write_memory_table(struct lb_memory *mem)
@@ -159,8 +143,8 @@ static const struct range_strings type_strings[] = {
 	{ BM_MEM_UNUSABLE, "UNUSABLE" },
 	{ BM_MEM_VENDOR_RSVD, "VENDOR RESERVED" },
 	{ BM_MEM_TABLE, "CONFIGURATION TABLES" },
-	{ BM_MEM_RAMSTAGE, "RAM, RAMSTAGE" },
-	{ BM_MEM_PAYLOAD, "RAM, PAYLOAD" },
+	{ BM_MEM_RAMSTAGE, "RAMSTAGE" },
+	{ BM_MEM_PAYLOAD, "PAYLOAD" },
 };
 
 static const char *bootmem_range_string(const enum bootmem_type tag)

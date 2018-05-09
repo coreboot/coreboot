@@ -34,7 +34,7 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 
 static void i440bx_domain_set_resources(struct device *dev)
 {
-	device_t mc_dev;
+	struct device *mc_dev;
 	uint32_t pci_tolm;
 
 	pci_tolm = find_pci_tolm(dev->link_list);

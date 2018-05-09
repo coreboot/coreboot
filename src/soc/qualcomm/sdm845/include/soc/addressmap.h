@@ -22,5 +22,7 @@
 #define TLMM_EAST_TILE_BASE             0x03500000
 #define TLMM_NORTH_TILE_BASE            0x03900000
 #define TLMM_SOUTH_TILE_BASE            0x03D00000
+#define GCC_BASE			0x00100000
+#define AOSS_CC_BASE			0x0C2F0000
 
 #endif /*  __SOC_QUALCOMM_SDM845_ADDRESS_MAP_H__ */

@@ -234,7 +234,7 @@ void report_platform_info(void);
 #include <device/device.h>
 
 struct acpi_rsdp;
-unsigned long northbridge_write_acpi_tables(device_t device,
+unsigned long northbridge_write_acpi_tables(struct device *device,
 		unsigned long start, struct acpi_rsdp *rsdp);
 #endif
 

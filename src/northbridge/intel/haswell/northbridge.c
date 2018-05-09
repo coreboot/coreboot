@@ -33,7 +33,8 @@
 #include "chip.h"
 #include "haswell.h"
 
-static int get_pcie_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
+static int get_pcie_bar(struct device *dev, unsigned int index, u32 *base,
+			u32 *len)
 {
 	u32 pciexbar_reg;
 	u32 mask;
@@ -69,7 +70,7 @@ static int get_pcie_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
 	return 0;
 }
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
@@ -87,7 +88,7 @@ static struct device_operations pci_domain_ops = {
 	.write_acpi_tables = northbridge_write_acpi_tables,
 };
 
-static int get_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
+static int get_bar(struct device *dev, unsigned int index, u32 *base, u32 *len)
 {
 	u32 bar;
 
@@ -106,7 +107,8 @@ static int get_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
 /* There are special BARs that actually are programmed in the MCHBAR. These
  * Intel special features, but they do consume resources that need to be
  * accounted for. */
-static int get_bar_in_mchbar(device_t dev, unsigned int index, u32 *base, u32 *len)
+static int get_bar_in_mchbar(struct device *dev, unsigned int index,
+			     u32 *base, u32 *len)
 {
 	u32 bar;
 
@@ -125,7 +127,7 @@ static int get_bar_in_mchbar(device_t dev, unsigned int index, u32 *base, u32 *l
 struct fixed_mmio_descriptor {
 	unsigned int index;
 	u32 size;
-	int (*get_resource)(device_t dev, unsigned int index,
+	int (*get_resource)(struct device *dev, unsigned int index,
 			    u32 *base, u32 *size);
 	const char *description;
 };
@@ -145,7 +147,7 @@ struct fixed_mmio_descriptor mc_fixed_resources[] = {
  * Add all known fixed MMIO ranges that hang off the host bridge/memory
  * controller device.
  */
-static void mc_add_fixed_mmio_resources(device_t dev)
+static void mc_add_fixed_mmio_resources(struct device *dev)
 {
 	int i;
 
@@ -202,7 +204,8 @@ struct map_entry {
 	const char *description;
 };
 
-static void read_map_entry(device_t dev, struct map_entry *entry, uint64_t *result)
+static void read_map_entry(struct device *dev, struct map_entry *entry,
+			   uint64_t *result)
 {
 	uint64_t value;
 	uint64_t mask;
@@ -270,7 +273,7 @@ static struct map_entry memory_map[NUM_MAP_ENTRIES] = {
 	[TSEG_REG] = MAP_ENTRY_BASE_32(TSEG, "TESGMB"),
 };
 
-static void mc_read_map_entries(device_t dev, uint64_t *values)
+static void mc_read_map_entries(struct device *dev, uint64_t *values)
 {
 	int i;
 	for (i = 0; i < NUM_MAP_ENTRIES; i++) {
@@ -278,7 +281,7 @@ static void mc_read_map_entries(device_t dev, uint64_t *values)
 	}
 }
 
-static void mc_report_map_entries(device_t dev, uint64_t *values)
+static void mc_report_map_entries(struct device *dev, uint64_t *values)
 {
 	int i;
 	for (i = 0; i < NUM_MAP_ENTRIES; i++) {
@@ -289,7 +292,7 @@ static void mc_report_map_entries(device_t dev, uint64_t *values)
 	printk(BIOS_DEBUG, "MC MAP: GGC: 0x%x\n", pci_read_config16(dev, GGC));
 }
 
-static void mc_add_dram_resources(device_t dev, int *resource_cnt)
+static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 {
 	unsigned long base_k, size_k;
 	unsigned long touud_k;
@@ -382,7 +385,7 @@ static void mc_add_dram_resources(device_t dev, int *resource_cnt)
 	*resource_cnt = index;
 }
 
-static void mc_read_resources(device_t dev)
+static void mc_read_resources(struct device *dev)
 {
 	int index = 0;
 	const bool vtd_capable =
@@ -406,7 +409,8 @@ static void mc_read_resources(device_t dev)
 	mc_add_dram_resources(dev, &index);
 }
 
-static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void intel_set_subsystem(struct device *dev, unsigned vendor,
+				unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -470,7 +474,7 @@ static const struct pci_driver mc_driver_hsw_ult __pci_driver = {
 	.device = PCI_DEVICE_ID_HSW_ULT,
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	bsp_init_and_start_aps(dev->link_list);
 }
@@ -483,7 +487,7 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus         = 0,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {

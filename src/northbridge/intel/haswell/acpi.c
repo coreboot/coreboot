@@ -26,7 +26,7 @@
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
-	device_t dev;
+	struct device *dev;
 	u32 pciexbar = 0;
 	u32 pciexbar_reg;
 	int max_buses;

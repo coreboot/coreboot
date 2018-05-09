@@ -25,11 +25,20 @@ chip soc/intel/cannonlake
 	register "ScsEmmcHs400Enabled" = "1"
 	register "ScsSdCardEnabled" = "1"
 
-	# Use GSPI0 for cr50 TPM. Early init is required to set up a BAR for TPM
-	# communication before memory is up.
-	register "gspi[0]" = "{
-		.speed_mhz = 1,
-		.early_init = 1,
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
 	}"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"

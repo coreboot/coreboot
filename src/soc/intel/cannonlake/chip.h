@@ -18,6 +18,7 @@
 #ifndef _SOC_CHIP_H_
 #define _SOC_CHIP_H_
 
+#include <intelblocks/chip.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/gspi.h>
 #include <stdint.h>
@@ -30,11 +31,10 @@
 #include <soc/usb.h>
 #include <soc/vr_config.h>
 
-#define CANNONLAKE_I2C_DEV_MAX	6
-
 struct soc_intel_cannonlake_config {
-	/* GSPI */
-	struct gspi_cfg gspi[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
+
+	/* Common struct containing soc config data required by common code */
+	struct soc_intel_common_config common_soc_config;
 
 	/* Interrupt Routing configuration.
 	 * If bit7 is 1, the interrupt is disabled. */
@@ -201,11 +201,6 @@ struct soc_intel_cannonlake_config {
 	uint8_t TcoIrqSelect;
 	uint8_t TcoIrqEnable;
 
-	enum {
-		CHIPSET_LOCKDOWN_FSP = 0, /* FSP handles locking per UPDs */
-		CHIPSET_LOCKDOWN_COREBOOT, /* coreboot handles locking */
-	} chipset_lockdown;
-
 	/*
 	 * Option for mainboard to skip coreboot MP initialization
 	 * 0 = Make use of coreboot MP Init
@@ -280,9 +275,6 @@ struct soc_intel_cannonlake_config {
 
 	/* GPIO SD card detect pin */
 	unsigned int sdcard_cd_gpio;
-
-	/* I2C bus configuration */
-	struct dw_i2c_bus_config i2c[CANNONLAKE_I2C_DEV_MAX];
 
 	/* Enable Pch iSCLK */
 	uint8_t pch_isclk;

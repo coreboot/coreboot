@@ -184,7 +184,9 @@ chip soc/intel/skylake
 	register "SendVrMbxCmd" = "2"
 
 	# Lock Down
-	register "chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+	}"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end

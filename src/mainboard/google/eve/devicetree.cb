@@ -169,46 +169,60 @@ chip soc/intel/skylake
 	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Empty
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Empty
 
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
+	#| I2C0              | Touchscreen               |
+	#| I2C1              | Early TPM access          |
+	#| I2C2              | Touchpad                  |
+	#| I2C4              | Audio                     |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST_PLUS,
+			.rise_time_ns = 98,
+			.fall_time_ns = 38,
+		},
+		.i2c[1] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 112,
+			.fall_time_ns = 34,
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 186,
+				.scl_hcnt = 93,
+				.sda_hold = 36,
+			}
+		},
+		.i2c[4] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 176,
+				.scl_hcnt = 95,
+				.sda_hold = 36,
+			}
+		},
+	}"
+
 	# Touchscreen
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"
-	register "i2c[0]" = "{
-		.speed = I2C_SPEED_FAST_PLUS,
-		.rise_time_ns = 98,
-		.fall_time_ns = 38,
-	}"
 
 	# Enable I2C1 bus early for TPM access
 	register "i2c_voltage[1]" = "I2C_VOLTAGE_3V3"
-	register "i2c[1]" = "{
-		.early_init = 1,
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 112,
-		.fall_time_ns = 34,
-	}"
 
 	# Touchpad
 	register "i2c_voltage[2]" = "I2C_VOLTAGE_1V8"
-	register "i2c[2]" = "{
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 186,
-			.scl_hcnt = 93,
-			.sda_hold = 36,
-		}
-	}"
 
 	# Audio
 	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"
-	register "i2c[4]" = "{
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 176,
-			.scl_hcnt = 95,
-			.sda_hold = 36,
-		}
-	}"
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{
@@ -229,9 +243,6 @@ chip soc/intel/skylake
 	register "dptf_enable" = "1"
 	register "tdp_pl2_override" = "15"
 	register "tcc_offset" = "10"
-
-	# Lock Down
-	register "chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end

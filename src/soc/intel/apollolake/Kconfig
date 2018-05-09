@@ -70,6 +70,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	select SOC_INTEL_COMMON_BLOCK
 	select SOC_INTEL_COMMON_BLOCK_ACPI
+	select SOC_INTEL_COMMON_BLOCK_CHIP_CONFIG
 	select SOC_INTEL_COMMON_BLOCK_CPU
 	select SOC_INTEL_COMMON_BLOCK_DSP
 	select SOC_INTEL_COMMON_BLOCK_FAST_SPI
@@ -391,6 +392,10 @@ config SOC_ESPI
 config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 	int
 	default 3
+
+config SOC_INTEL_I2C_DEV_MAX
+	int
+	default 8
 
 # Don't include the early page tables in RW_A or RW_B cbfs regions
 config RO_REGION_ONLY

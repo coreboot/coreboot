@@ -16,6 +16,7 @@
 
 #include <assert.h>
 #include <device/device.h>
+#include <intelblocks/chip.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/spi.h>
 #include <soc/iomap.h>
@@ -24,19 +25,10 @@
 
 const struct gspi_cfg *gspi_get_soc_cfg(void)
 {
-	DEVTREE_CONST struct soc_intel_cannonlake_config *config;
-	int devfn = SA_DEVFN_ROOT;
-	DEVTREE_CONST struct device *dev = dev_find_slot(0, devfn);
+	const struct soc_intel_common_config *common_config;
+	common_config = chip_get_common_soc_structure();
 
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "%s: Could not find SoC devicetree config!\n",
-		       __func__);
-		return NULL;
-	}
-
-	config = dev->chip_info;
-
-	return &config->gspi[0];
+	return &common_config->gspi[0];
 }
 
 uintptr_t gspi_get_soc_early_base(void)

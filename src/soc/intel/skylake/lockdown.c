@@ -16,6 +16,7 @@
 #include <arch/io.h>
 #include <bootstate.h>
 #include <chip.h>
+#include <intelblocks/chip.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
@@ -27,7 +28,7 @@
 #define PCR_DMI_GCS		0x274C
 #define PCR_DMI_GCS_BILD	(1 << 0)
 
-static void lpc_lockdown_config(const struct soc_intel_skylake_config *config)
+static void lpc_lockdown_config(const struct soc_intel_common_config *config)
 {
 	/* Set Bios Interface Lock, Bios Lock */
 	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
@@ -63,7 +64,8 @@ static void dmi_lockdown_config(void)
 	pcr_or8(PID_DMI, PCR_DMI_GCS, PCR_DMI_GCS_BILD);
 }
 
-static void spi_lockdown_config(const struct soc_intel_skylake_config *config)
+static void fast_spi_lockdown_config(const
+	struct soc_intel_common_config *config)
 {
 	/* Set FAST_SPI opcode menu */
 	fast_spi_set_opcode_menu();
@@ -86,21 +88,14 @@ static void spi_lockdown_config(const struct soc_intel_skylake_config *config)
 
 static void platform_lockdown_config(void *unused)
 {
-	struct soc_intel_skylake_config *config;
-	struct device *dev;
-
-	dev = PCH_DEV_SPI;
-	/* Check if device is valid, else return */
-	if (dev == NULL || dev->chip_info == NULL)
-		return;
-
-	config = dev->chip_info;
+	const struct soc_intel_common_config *common_config;
+	common_config = chip_get_common_soc_structure();
 
 	/* LPC lock down configuration */
-	lpc_lockdown_config(config);
+	lpc_lockdown_config(common_config);
 
 	/* SPI lock down configuration */
-	spi_lockdown_config(config);
+	fast_spi_lockdown_config(common_config);
 
 	/* DMI lock down configuration */
 	dmi_lockdown_config();

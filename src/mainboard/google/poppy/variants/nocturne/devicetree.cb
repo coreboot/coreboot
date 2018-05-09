@@ -66,7 +66,6 @@ chip soc/intel/skylake
 	register "psys_pmax" = "45"
 	register "tcc_offset" = "10"
 	register "pch_trip_temp" = "75"
-	register "chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
 
 	register "pirqa_routing" = "PCH_IRQ11"
 	register "pirqb_routing" = "PCH_IRQ10"
@@ -176,59 +175,75 @@ chip soc/intel/skylake
 	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Empty
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Empty
 
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#| I2C0              | Touchscreen               |
+	#| I2C1              | Trackpad                  |
+	#| I2C3              | Camera                    |
+	#| I2C4              | Audio                     |
+	#| I2C5              | Rear Camera & SAR         |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 98,
+			.fall_time_ns = 38,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 186,
+				.scl_hcnt = 93,
+				.sda_hold = 36,
+			},
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 98,
+			.fall_time_ns = 38,
+		},
+		.i2c[4] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 176,
+				.scl_hcnt = 95,
+				.sda_hold = 36,
+			}
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 98,
+			.fall_time_ns = 38,
+		},
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+	}"
 	# Touchscreen
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"
-	register "i2c[0]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 98,
-		.fall_time_ns = 38,
-	}"
 
 	# Trackpad
 	register "i2c_voltage[1]" = "I2C_VOLTAGE_1V8"
-	register "i2c[1]" = "{
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 186,
-			.scl_hcnt = 93,
-			.sda_hold = 36,
-		},
-	}"
 
 	# Front Camera
 	register "i2c_voltage[3]" = "I2C_VOLTAGE_1V8"
-	register "i2c[3]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 98,
-		.fall_time_ns = 38,
-	}"
 
 	# Audio
 	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"
-	register "i2c[4]" = "{
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 176,
-			.scl_hcnt = 95,
-			.sda_hold = 36,
-		}
-	}"
 
 	# Rear Camera & SAR
 	register "i2c_voltage[5]" = "I2C_VOLTAGE_1V8"
-	register "i2c[5]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 98,
-		.fall_time_ns = 38,
-	}"
-
-	# GSPI0 for cr50 TPM
-	register "gspi[0]" = "{
-		 .speed_mhz = 1,
-		 .early_init = 1,
-	}"
 
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,

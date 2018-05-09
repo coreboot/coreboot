@@ -41,6 +41,7 @@ ramstage-y += graphics.c
 ramstage-y += gspi.c
 ramstage-y += gpio.c
 ramstage-y += i2c.c
+ramstage-y += lockdown.c
 ramstage-y += lpc.c
 ramstage-y += memmap.c
 ramstage-y += nhlt.c

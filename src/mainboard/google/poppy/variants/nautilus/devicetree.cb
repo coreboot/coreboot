@@ -179,80 +179,97 @@ chip soc/intel/skylake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-A Port
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Empty
 
-	# Touchscreen
-	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"
-	register "i2c[0]" = "{
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
+	#| I2C0              | Touchscreen               |
+	#| I2C1              | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#| I2C2              | Trackpad                  |
+	#| I2C3              | Pen                       |
+	#| I2C4              | Camera                    |
+	#| I2C5              | Audio                     |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 180,
-			.scl_hcnt = 90,
-			.sda_hold = 36,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 180,
+				.scl_hcnt = 90,
+				.sda_hold = 36,
+			},
+		},
+		.i2c[1] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 185,
+				.scl_hcnt = 90,
+				.sda_hold = 36,
+			},
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 190,
+				.scl_hcnt = 100,
+				.sda_hold = 36,
+			},
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 185,
+				.scl_hcnt = 90,
+				.sda_hold = 36,
+			},
+		},
+		.i2c[4] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 190,
+				.scl_hcnt = 100,
+				.sda_hold = 36,
+			},
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 190,
+				.scl_hcnt = 100,
+				.sda_hold = 36,
+			},
 		},
 	}"
+
+	# Touch Screen
+	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"
 
 	# H1
 	register "i2c_voltage[1]" = "I2C_VOLTAGE_3V3"
-	# Configure I2C1 for cr50 TPM. Early init is required to set up a BAR
-	# for TPM communication before memory is up.
-	register "i2c[1]" = "{
-		.early_init = 1,
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 185,
-			.scl_hcnt = 90,
-			.sda_hold = 36,
-		},
-	}"
 
 	# Trackpad
 	register "i2c_voltage[2]" = "I2C_VOLTAGE_1V8"
-	register "i2c[2]" = "{
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 190,
-			.scl_hcnt = 100,
-			.sda_hold = 36,
-		},
-	}"
 
 	# Pen
 	register "i2c_voltage[3]" = "I2C_VOLTAGE_1V8"
-	register "i2c[3]" = "{
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 185,
-			.scl_hcnt = 90,
-			.sda_hold = 36,
-		},
-	}"
 
 	# Camera
 	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"
-	register "i2c[4]" = "{
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 190,
-			.scl_hcnt = 100,
-			.sda_hold = 36,
-		},
-	}"
 
 	# Audio
 	register "i2c_voltage[5]" = "I2C_VOLTAGE_1V8"
-	register "i2c[5]" = "{
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 190,
-			.scl_hcnt = 100,
-			.sda_hold = 36,
-		},
-	}"
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{
@@ -277,9 +294,6 @@ chip soc/intel/skylake
 
 	# Use default SD card detect GPIO configuration
 	register "sdcard_cd_gpio_default" = "GPP_E15"
-
-	# Lock Down
-	register "chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
 
 	# PCH Trip Temperature in degree C
 	register "pch_trip_temp" = "75"

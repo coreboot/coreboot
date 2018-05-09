@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2007-2008 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include <arch/acpi_device.h>
 #include <device/i2c_simple.h>
 #include <drivers/i2c/designware/dw_i2c.h>
+#include <intelblocks/chip.h>
 #include <intelblocks/gspi.h>
 #include <stdint.h>
 #include <soc/gpe.h>
@@ -33,14 +34,16 @@
 #include <soc/usb.h>
 #include <soc/vr_config.h>
 
-#define SKYLAKE_I2C_DEV_MAX 6
-
 enum skylake_i2c_voltage {
 	I2C_VOLTAGE_3V3,
 	I2C_VOLTAGE_1V8
 };
 
 struct soc_intel_skylake_config {
+
+	/* Common struct containing soc config data required by common code */
+	struct soc_intel_common_config common_soc_config;
+
 	/*
 	 * Interrupt Routing configuration
 	 * If bit7 is 1, the interrupt is disabled.
@@ -273,11 +276,7 @@ struct soc_intel_skylake_config {
 
 	/* I2C */
 	/* Bus voltage level, default is 3.3V */
-	enum skylake_i2c_voltage i2c_voltage[SKYLAKE_I2C_DEV_MAX];
-	struct dw_i2c_bus_config i2c[SKYLAKE_I2C_DEV_MAX];
-
-	/* GSPI */
-	struct gspi_cfg gspi[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
+	enum skylake_i2c_voltage i2c_voltage[CONFIG_SOC_INTEL_I2C_DEV_MAX];
 
 	/* Camera */
 	u8 Cio2Enable;
@@ -544,16 +543,6 @@ struct soc_intel_skylake_config {
 	 * 0b - Disabled
 	 */
 	u8 eist_enable;
-	/* Chipset (LPC and SPI)  Lock Down
-	 * 1b - coreboot to handle lockdown
-	 * 0b - FSP to handle lockdown
-	 */
-	enum {
-		/* lock according to binary UPD settings */
-		CHIPSET_LOCKDOWN_FSP,
-		/* coreboot handles locking */
-		CHIPSET_LOCKDOWN_COREBOOT,
-	} chipset_lockdown;
 
 	/*
 	 * Activates VR mailbox command for Intersil VR C-state issues.

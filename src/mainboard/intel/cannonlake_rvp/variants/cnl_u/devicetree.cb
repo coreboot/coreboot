@@ -72,11 +72,20 @@ chip soc/intel/cannonlake
 	# Enable S0ix
 	register "s0ix_enable" = "1"
 
-	# Audio
-	register "i2c[3]" = "{
-		.speed = I2C_SPEED_STANDARD,
-		.rise_time_ns = 104,
-		.fall_time_ns = 52,
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
+	#| I2C3              | Audio                     |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.i2c[3] = {
+			.speed = I2C_SPEED_STANDARD,
+			.rise_time_ns = 104,
+			.fall_time_ns = 52,
+		},
 	}"
 
 	device domain 0 on

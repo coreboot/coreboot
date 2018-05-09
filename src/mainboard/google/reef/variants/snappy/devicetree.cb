@@ -76,40 +76,43 @@ chip soc/intel/apollolake
 	register "gpe0_dw2" = "PMC_GPE_N_63_32"
 	register "gpe0_dw3" = "PMC_GPE_SW_31_0"
 
-	# Enable I2C0 for audio codec at 400kHz
-	register "i2c[0]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 44,
-		.fall_time_ns = 22,
-	}"
-
-	# Enable I2C2 bus early for TPM at 400kHz
-	register "i2c[2]" = "{
-		.early_init = 1,
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 40,
-		.fall_time_ns = 20,
-	}"
-
-	# touchscreen at 400kHz
-	register "i2c[3]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 70,
-		.fall_time_ns = 164,
-	}"
-
-	# trackpad at 400kHz
-	register "i2c[4]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 20,
-		.fall_time_ns = 164,
-	}"
-
-	# digitizer at 400kHz
-	register "i2c[5]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 152,
-		.fall_time_ns = 30,
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| I2C0              | Audio                     |
+	#| I2C2              | TPM                       |
+	#| I2C3              | Touchscreen               |
+	#| I2C4              | Trackpad                  |
+	#| I2C5              | Digitizer                 |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 44,
+			.fall_time_ns = 22,
+		},
+		.i2c[2] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 40,
+			.fall_time_ns = 20,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 70,
+			.fall_time_ns = 164,
+		},
+		.i2c[4] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 20,
+			.fall_time_ns = 164,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 152,
+			.fall_time_ns = 30,
+		},
 	}"
 
 	# Minimum SLP S3 assertion width 28ms.

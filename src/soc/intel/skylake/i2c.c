@@ -15,6 +15,7 @@
 
 #include <console/console.h>
 #include <device/device.h>
+#include <intelblocks/chip.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -22,18 +23,10 @@
 
 const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 {
-	const struct soc_intel_skylake_config *config;
-	const struct device *dev = dev_find_slot(0, SA_DEVFN_ROOT);
+	const struct soc_intel_common_config *common_config;
+	common_config = chip_get_common_soc_structure();
 
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "%s: Could not find SoC devicetree config!\n",
-		       __func__);
-		return NULL;
-	}
-
-	config = dev->chip_info;
-
-	return &config->i2c[bus];
+	return &common_config->i2c[bus];
 }
 
 uintptr_t dw_i2c_get_soc_early_base(unsigned int bus)

@@ -16,6 +16,7 @@
 #include <arch/io.h>
 #include <bootstate.h>
 #include <chip.h>
+#include <intelblocks/chip.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
@@ -27,15 +28,15 @@
 #define PCR_DMI_GCS		0x274C
 #define PCR_DMI_GCS_BILD	(1 << 0)
 
-static void pmc_lockdown_cfg(const struct soc_intel_cannonlake_config *config)
+static void pmc_lockdown_cfg(const struct soc_intel_common_config *config)
 {
-	uint8_t *pmcbase;
+	uint8_t *pmcbase, reg8;
 	uint32_t reg32, pmsyncreg;
 
 	/* PMSYNC */
 	pmcbase = pmc_mmio_regs();
 	pmsyncreg = read32(pmcbase + PMSYNC_TPR_CFG);
-	pmsyncreg |= PMSYNC_LOCK;
+	pmsyncreg |= PCH2CPU_TPR_CFG_LOCK;
 	write32(pmcbase + PMSYNC_TPR_CFG, pmsyncreg);
 
 	/* Lock down ABASE and sleep stretching policy */
@@ -66,7 +67,7 @@ static void dmi_lockdown_cfg(void)
 	pcr_or8(PID_DMI, PCR_DMI_GCS, PCR_DMI_GCS_BILD);
 }
 
-static void spi_lockdown_cfg(const struct soc_intel_cannonlake_config *config)
+static void fast_spi_lockdown_cfg(const struct soc_intel_common_config *config)
 {
 	/* Set FAST_SPI opcode menu */
 	fast_spi_set_opcode_menu();
@@ -89,24 +90,17 @@ static void spi_lockdown_cfg(const struct soc_intel_cannonlake_config *config)
 
 static void platform_lockdown_config(void *unused)
 {
-	struct soc_intel_cannonlake_config *config;
-	struct device *dev;
-
-	dev = PCH_DEV_SPI;
-	/* Check if device is valid, else return */
-	if (dev == NULL || dev->chip_info == NULL)
-		return;
-
-	config = dev->chip_info;
+	const struct soc_intel_common_config *common_config;
+	common_config = chip_get_common_soc_structure();
 
 	/* SPI lock down configuration */
-	spi_lockdown_cfg(config);
+	fast_spi_lockdown_cfg(common_config);
 
 	/* DMI lock down configuration */
 	dmi_lockdown_cfg();
 
 	/* PMC lock down configuration */
-	pmc_lockdown_cfg(config);
+	pmc_lockdown_cfg(common_config);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_EXIT, platform_lockdown_config,

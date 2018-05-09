@@ -69,6 +69,14 @@ static void soc_enable(struct device *dev)
 		dev->ops = &cpu_bus_ops;
 }
 
+static int get_lockdown_config(void)
+{
+	const struct soc_intel_common_config *soc_config;
+	soc_config = chip_get_common_soc_structure();
+
+	return soc_config->chipset_lockdown;
+}
+
 struct chip_operations soc_intel_skylake_ops = {
 	CHIP_NAME("Intel Skylake")
 	.enable_dev = &soc_enable,
@@ -145,7 +153,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->SataMode = config->SataMode;
 	params->LockDownConfigGlobalSmi = config->LockDownConfigGlobalSmi;
 	params->LockDownConfigRtcLock = config->LockDownConfigRtcLock;
-	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
+	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {
 		params->LockDownConfigBiosInterface = 0;
 		params->LockDownConfigBiosLock = 0;
 		params->LockDownConfigSpiEiss = 0;
@@ -173,7 +181,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 
 	params->SkipMpInit = !config->use_fsp_mp_init;
 
-	for (i = 0; i < ARRAY_SIZE(config->i2c); i++)
+	for (i = 0; i < ARRAY_SIZE(config->i2c_voltage); i++)
 		params->SerialIoI2cVoltage[i] = config->i2c_voltage[i];
 
 	/*

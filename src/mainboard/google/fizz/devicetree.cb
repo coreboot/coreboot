@@ -275,21 +275,32 @@ chip soc/intel/skylake
 	register "i2c_voltage[2]" = "I2C_VOLTAGE_3V3"		# Debug
 	register "i2c_voltage[5]" = "I2C_VOLTAGE_1V8"		# Audio
 
-	# Use GSPI0 for cr50 TPM. Early init is required to set up a BAR for TPM
-	# communication before memory is up.
-	register "gspi[0]" = "{
-		 .speed_mhz = 1,
-		 .early_init = 1,
-	}"
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#| I2C5              | Audio                     |
+	#+-------------------+---------------------------+
 
-	# audio
-	register "i2c[5]" = "{
-		 .speed = I2C_SPEED_FAST,
-		 .speed_config[0] = {
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+		.i2c[5] = {
 			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 194,
-			.scl_hcnt = 100,
-			.sda_hold = 36,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 194,
+				.scl_hcnt = 100,
+				.sda_hold = 36,
+			},
 		},
 	}"
 
@@ -315,9 +326,6 @@ chip soc/intel/skylake
 
 	# Use default SD card detect GPIO configuration
 	register "sdcard_cd_gpio_default" = "GPP_A7"
-
-	# Lock Down
-	register "chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end

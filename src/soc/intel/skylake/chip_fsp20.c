@@ -211,6 +211,14 @@ static void soc_enable(struct device *dev)
 		dev->ops = &cpu_bus_ops;
 }
 
+static int get_lockdown_config(void)
+{
+	const struct soc_intel_common_config *soc_config;
+	soc_config = chip_get_common_soc_structure();
+
+	return soc_config->chipset_lockdown;
+}
+
 struct chip_operations soc_intel_skylake_ops = {
 	CHIP_NAME("Intel 6th Gen")
 	.enable_dev	= &soc_enable,
@@ -352,7 +360,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 * do the changes and then lock it back in coreboot during finalize.
 	 */
 	tconfig->PchSbAccessUnlock = (config->HeciEnabled == 0) ? 1 : 0;
-	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
+	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {
 		tconfig->PchLockDownBiosInterface = 0;
 		params->PchLockDownBiosLock = 0;
 		params->PchLockDownSpiEiss = 0;
@@ -389,7 +397,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	params->CpuConfig.Bits.SkipMpInit = !config->use_fsp_mp_init;
 
-	for (i = 0; i < ARRAY_SIZE(config->i2c); i++)
+	for (i = 0; i < ARRAY_SIZE(config->i2c_voltage); i++)
 		params->SerialIoI2cVoltage[i] = config->i2c_voltage[i];
 
 	for (i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++)

@@ -54,40 +54,45 @@ chip soc/intel/apollolake
 	register "hdaudio_pwr_gate_enable" = "1"
 	register "hdaudio_bios_config_lockdown" = "1"
 
-	# digitizer at 400kHz
-	register "i2c[0]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 152,
-		.fall_time_ns = 30,
-	}"
-
-	# Enable I2C5 for audio codec at 400kHz
-	register "i2c[5]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 104,
-		.fall_time_ns = 52,
-	}"
-
-	# trackpad at 400kHz
-	register "i2c[6]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 114,
-		.fall_time_ns = 164,
-		.data_hold_time_ns = 350,
-	}"
-
-	# touchscreen at 400kHz
-	register "i2c[7]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 76,
-		.fall_time_ns = 164,
-	}"
-
-	# Use GSPI0 for cr50 TPM. Early init is required to set up a BAR for TPM
-	# communication before memory is up.
-	register "gspi[0]" = "{
-		.speed_mhz = 1,
-		.early_init = 1,
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#| I2C0              | Digitizer                 |
+	#| I2C5              | Audio                     |
+	#| I2C6              | Trackpad                  |
+	#| I2C7              | Touchscreen               |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 152,
+			.fall_time_ns = 30,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 104,
+			.fall_time_ns = 52,
+		},
+		.i2c[6] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 114,
+			.fall_time_ns = 164,
+			.data_hold_time_ns = 350,
+		},
+		.i2c[7] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 76,
+			.fall_time_ns = 164,
+		},
 	}"
 
 	register "pnp_settings" = "PNP_PERF_POWER"

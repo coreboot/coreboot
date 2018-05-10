@@ -113,8 +113,7 @@ static void amd_update_microcode(const void *ucode,  size_t ucode_len,
 }
 
 static const char *microcode_cbfs_file[] = {
-	"microcode_amd.bin",
-	"microcode_amd_fam16h.bin",
+	"cpu_microcode_blob.bin",
 };
 
 void amd_update_microcode_from_cbfs(uint32_t equivalent_processor_rev_id)

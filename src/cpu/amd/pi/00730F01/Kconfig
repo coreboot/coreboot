@@ -40,10 +40,4 @@ config HIGH_SCRATCH_MEMORY_SIZE
 	# Assume the maximum size of stack as (0xA0000 - 0x30000 + 0x1000)
 	default 0xA1000
 
-config CPU_AMD_FAM16H_MICROCODE
-	bool "AMD family 16h microcode"
-	default n
-	help
-	  Include microcode binary in CBFS
-
 endif

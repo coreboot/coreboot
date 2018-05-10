@@ -29,12 +29,21 @@ void __weak variant_nhlt_init(struct nhlt *nhlt)
 	if (!nhlt_soc_add_dmic_array(nhlt, 4))
 		printk(BIOS_ERR, "Added 4CH DMIC arrays.\n");
 
-	/* Dialog for Headset codec.
+	/*
 	 * Headset codec is bi-directional but uses the same configuration
 	 * settings for render and capture endpoints.
 	 */
-	if (!nhlt_soc_add_da7219(nhlt, AUDIO_LINK_SSP2))
-		printk(BIOS_ERR, "Added Dialog_7219 codec.\n");
+	if (IS_ENABLED(CONFIG_NHLT_DA7219)) {
+		/* Dialog for Headset codec */
+		if (!nhlt_soc_add_da7219(nhlt, AUDIO_LINK_SSP2))
+			printk(BIOS_ERR, "Added Dialog_7219 codec.\n");
+	}
+
+	if (IS_ENABLED(CONFIG_NHLT_RT5682)) {
+		/* Realtek for Headset codec */
+		if (!nhlt_soc_add_rt5682(nhlt, AUDIO_LINK_SSP2))
+			printk(BIOS_ERR, "Added ALC5682 codec.\n");
+	}
 
 	/* MAXIM Smart Amps for left and right speakers. */
 	if (!nhlt_soc_add_max98357(nhlt, AUDIO_LINK_SSP1))

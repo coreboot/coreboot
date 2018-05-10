@@ -30,6 +30,10 @@ enum {
 	SKU_5_LAVA = 5,
 	SKU_9_LAVA = 9,
 	SKU_10_LAVA = 10,
+	SKU_13_EPAULETTE = 13,
+	SKU_14_EPAULETTE = 14,
+	SKU_15_EPAULETTE = 15,
+	SKU_16_EPAULETTE = 16,
 	SKU_61_ASTRONAUT = 61,
 	SKU_62_ASTRONAUT = 62,
 	SKU_160_NASHER = 160,
@@ -108,6 +112,12 @@ const char *mainboard_vbt_filename(void)
 	case SKU_2_SANTA:
 	case SKU_3_SANTA:
 		return "vbt-santa.bin";
+		break;
+	case SKU_13_EPAULETTE:
+	case SKU_14_EPAULETTE:
+	case SKU_15_EPAULETTE:
+	case SKU_16_EPAULETTE:
+		return "vbt-epaulette.bin";
 		break;
 	case SKU_160_NASHER:
 	case SKU_161_NASHER:

@@ -113,15 +113,28 @@ config UTIL_GENPARSER
 	  Otherwise, say N to use the provided pregenerated scanner/parser.
 
 config USE_OPTION_TABLE
-	bool "Use CMOS for configuration values"
+	bool "Use option table for configuration values"
 	depends on HAVE_OPTION_TABLE
 	help
 	  Enable this option if coreboot shall read options from the "CMOS"
 	  NVRAM instead of using hard-coded values.
 
+choice
+	prompt "Option table backend"
+	default OPTION_TABLE_CMOS
+	depends on USE_OPTION_TABLE
+
+config OPTION_TABLE_CMOS
+	bool "CMOS"
+
+config OPTION_TABLE_CBFS
+	bool "CBFS"
+
+endchoice
+
 config STATIC_OPTION_TABLE
 	bool "Load default configuration values into CMOS on each boot"
-	depends on USE_OPTION_TABLE
+	depends on OPTION_TABLE_CMOS
 	help
 	  Enable this option to reset "CMOS" NVRAM values to default on
 	  every boot.  Use this if you want the NVRAM configuration to

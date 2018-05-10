@@ -182,10 +182,14 @@ static inline void cmos_write32(u8 offset, u32 value)
 void cmos_init(bool invalid);
 void cmos_check_update_date(void);
 
-enum cb_err set_option(const char *name, void *val);
-enum cb_err get_option(void *dest, const char *name);
+#if IS_ENABLED(CONFIG_OPTION_TABLE_CMOS)
+
+#include <option.h>
 unsigned int read_option_lowlevel(unsigned int start, unsigned int size,
 	unsigned int def);
+
+
+#endif /* CONFIG_OPTION_TABLE_CMOS */
 
 #else /* defined(__ROMCC__) */
 #include <drivers/pc80/rtc/mc146818rtc_romcc.c>
@@ -254,11 +258,11 @@ static inline void cmos_post_log(void) {}
 static inline void cmos_post_init(void) {}
 #endif /* CONFIG_CMOS_POST */
 
-#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
+#if IS_ENABLED(CONFIG_OPTION_TABLE_CMOS)
 void sanitize_cmos(void);
 #else
 static inline void sanitize_cmos(void) {}
-#endif /* CONFIG_USE_OPTION_TABLE */
+#endif /* CONFIG_OPTION_TABLE_CMOS */
 
 #else /* !CONFIG_ARCH_X86 */
 static inline void cmos_post_init(void) {}

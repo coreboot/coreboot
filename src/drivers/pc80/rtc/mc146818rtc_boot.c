@@ -34,7 +34,7 @@ int cmos_error(void)
 int cmos_chksum_valid(void);
 int cmos_chksum_valid(void)
 {
-#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
+#if IS_ENABLED(CONFIG_OPTION_TABLE_CMOS)
 	unsigned char addr;
 	u16 sum, old_sum;
 
@@ -53,7 +53,7 @@ int cmos_chksum_valid(void)
 #endif
 }
 
-#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
+#if IS_ENABLED(CONFIG_OPTION_TABLE_CMOS)
 void sanitize_cmos(void)
 {
 	if (cmos_error() || !cmos_chksum_valid() ||

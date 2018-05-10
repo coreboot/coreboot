@@ -25,8 +25,8 @@ struct id_mapping {
 static u16 get_equivalent_processor_rev_id(u32 orig_id) {
 	static const struct id_mapping id_mapping_table[] = {
 		/* Family 16h */
-                
-// TODO This equivalent processor revisions ID needs verification
+
+/* TODO This equivalent processor revisions ID needs verification */
                 { 0x730f01, 0x7301 },
 
 		/* Array terminator */

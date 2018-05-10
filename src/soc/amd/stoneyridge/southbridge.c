@@ -32,6 +32,7 @@
 #include <delay.h>
 #include <soc/pci_devs.h>
 #include <agesa_headers.h>
+#include <soc/nvs.h>
 
 /*
  * Table of devices that need their AOAC registers enabled and waited
@@ -678,12 +679,49 @@ static void sb_log_pm1_status(uint16_t pm1_sts)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PCIE, 0);
 }
 
+struct soc_amd_sws {
+	uint32_t pm1i;
+	uint32_t gevent;
+};
+
+static struct soc_amd_sws sws;
+
+static void sb_save_sws(uint32_t pm1_status)
+{
+	uint32_t reg32;
+
+	sws.pm1i = pm1_status;
+	reg32 = inl(ACPI_GPE0_BLK);
+	outl(ACPI_GPE0_BLK, reg32);
+	reg32 &= inl(ACPI_GPE0_BLK + sizeof(uint32_t));
+	sws.gevent = reg32;
+}
+
 static void sb_clear_pm1_status(void)
 {
 	uint16_t pm1_sts = reset_pm1_status();
+
+	sb_save_sws(pm1_sts);
 	sb_log_pm1_status(pm1_sts);
 	print_pm1_status(pm1_sts);
 }
+
+static void set_nvs_sws(void *unused)
+{
+	struct global_nvs_t *gnvs;
+
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs == NULL)
+		return;
+
+	gnvs->pm1i = sws.pm1i;
+	gnvs->gpei = sws.gevent;
+
+	printk(BIOS_DEBUG, "Loaded _SWS parameters PM1 0x%08x, EVENT 0x%08x into nvs\n",
+				sws.pm1i, sws.gevent);
+}
+
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, set_nvs_sws, NULL);
 
 void southbridge_init(void *chip_info)
 {

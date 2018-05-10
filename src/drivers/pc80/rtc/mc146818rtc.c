@@ -204,6 +204,8 @@ void cmos_init(bool invalid)
 #endif	/* __SMM__ */
 
 
+#if IS_ENABLED(CONFIG_OPTION_TABLE_CMOS)
+
 /*
  * This routine returns the value of the requested bits.
  * input bit = bit count from the beginning of the cmos image
@@ -393,6 +395,8 @@ enum cb_err set_option(const char *name, void *value)
 
 	return CB_SUCCESS;
 }
+
+#endif /* CONFIG_OPTION_TABLE_CMOS */
 
 /*
  * If the CMOS is cleared, the rtc_reg has the invalid date. That

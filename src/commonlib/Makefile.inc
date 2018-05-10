@@ -35,3 +35,5 @@ verstage-y += lz4_wrapper.c
 romstage-y += lz4_wrapper.c
 ramstage-y += lz4_wrapper.c
 postcar-y += lz4_wrapper.c
+
+ramstage-$(CONFIG_OPTION_TABLE_CBFS) += option.c

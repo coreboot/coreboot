@@ -177,6 +177,10 @@ config SMM_TSEG_SIZE
 	hex
 	default 0x800000
 
+config SMM_RESERVED_SIZE
+	hex
+	default 0x200000
+
 config PCR_BASE_ADDRESS
 	hex
 	default 0xfd000000

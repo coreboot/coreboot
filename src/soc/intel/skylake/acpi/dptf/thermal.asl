@@ -263,6 +263,39 @@ Device (TSR1)
 	{
 		\_SB.PCI0.LPCB.EC0.PATD (TMPI)
 	}
+
+#ifdef DPTF_ENABLE_FAN_CONTROL
+#ifdef DPTF_TSR1_ACTIVE_AC0
+        Method (_AC0)
+        {
+                Return (\_SB.DPTF.CTOK (DPTF_TSR1_ACTIVE_AC0))
+        }
+#endif
+#ifdef DPTF_TSR1_ACTIVE_AC1
+        Method (_AC1)
+        {
+                Return (\_SB.DPTF.CTOK (DPTF_TSR1_ACTIVE_AC1))
+        }
+#endif
+#ifdef DPTF_TSR1_ACTIVE_AC2
+        Method (_AC2)
+        {
+                Return (\_SB.DPTF.CTOK (DPTF_TSR1_ACTIVE_AC2))
+        }
+#endif
+#ifdef DPTF_TSR1_ACTIVE_AC3
+        Method (_AC3)
+        {
+                Return (\_SB.DPTF.CTOK (DPTF_TSR1_ACTIVE_AC3))
+        }
+#endif
+#ifdef DPTF_TSR1_ACTIVE_AC4
+        Method (_AC4)
+        {
+                Return (\_SB.DPTF.CTOK (DPTF_TSR1_ACTIVE_AC4))
+        }
+#endif
+#endif
 }
 #endif
 

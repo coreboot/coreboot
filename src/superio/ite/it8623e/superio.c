@@ -22,17 +22,25 @@
 #include <arch/io.h>
 #include <stdlib.h>
 #include <superio/conf_mode.h>
+#include <superio/ite/common/env_ctrl.h>
 
+#include "chip.h"
 #include "it8623e.h"
 
 static void it8623e_init(struct device *dev)
 {
+	const struct superio_ite_it8623e_config *conf = dev->chip_info;
+	const struct resource *res;
 
 	if (!dev->enabled)
 		return;
 
 	switch (dev->path.pnp.device) {
 	case IT8623E_EC:
+		res = find_resource(dev, PNP_IDX_IO0);
+		if (!conf || !res)
+			break;
+		ite_ec_init(res->base, &conf->ec);
 		break;
 	case IT8623E_KBCK:
 		pc_keyboard_init(NO_AUX_DEVICE);

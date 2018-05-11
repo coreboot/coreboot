@@ -4,6 +4,7 @@
 ## Copyright (C) 2009 Ronald G. Minnich
 ## Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
 ## Copyright (C) 2017 Gergely Kiss <mail.gery@gmail.com>
+## Copyright (C) 2018 Kevin Cody-Little <kcodyjr@gmail.com>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -18,3 +19,7 @@
 config SUPERIO_ITE_IT8623E
 	bool
 	select SUPERIO_ITE_COMMON_ROMSTAGE
+	select SUPERIO_ITE_ENV_CTRL
+	select SUPERIO_ITE_ENV_CTRL_PWM_FREQ2
+	select SUPERIO_ITE_ENV_CTRL_FAN16_CONFIG
+	select SUPERIO_ITE_ENV_CTRL_8BIT_PWM

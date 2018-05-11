@@ -21,6 +21,7 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 
 ### Fixed
 - Building is now possible with official coreboot-sdk container
+- Retrieving board serial number
 
 ## [v4.6.8] - 2018-04-06
 ### Added

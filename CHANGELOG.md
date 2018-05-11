@@ -14,6 +14,15 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 
 ## [Unreleased]
 
+## [v4.6.9] - 2018-05-11
+### Added
+- Infrastructure to include microcode update
+- Support for new building system pce-fw-builder
+
+### Fixed
+- Building is now possible with official coreboot-sdk container
+- Retrieving board serial number
+
 ## [v4.6.8] - 2018-04-06
 ### Added
 - Full feature and build support for APU1
@@ -168,7 +177,8 @@ redundant code which was similar for APU2/3/5 boards.
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.8...coreboot-4.6.x
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.9...coreboot-4.6.x
+[v4.6.9]: https://github.com/pcengines/coreboot/compare/v4.6.8...v4.6.9
 [v4.6.8]: https://github.com/pcengines/coreboot/compare/v4.6.7...v4.6.8
 [v4.6.7]: https://github.com/pcengines/coreboot/compare/v4.6.6...v4.6.7
 [v4.6.6]: https://github.com/pcengines/coreboot/compare/v4.6.5...v4.6.6

@@ -584,11 +584,20 @@ uint64_t timestamp_print_entry(uint32_t id, uint64_t stamp, uint64_t prev_stamp)
 	return step_time;
 }
 
+static int compare_timestamp_entries(const void *a, const void *b)
+{
+	const struct timestamp_entry *tse_a = (struct timestamp_entry *)a;
+	const struct timestamp_entry *tse_b = (struct timestamp_entry *)b;
+
+	return tse_a->entry_stamp - tse_b->entry_stamp;
+}
+
 /* dump the timestamp table */
 static void dump_timestamps(int mach_readable)
 {
 	int i;
 	const struct timestamp_table *tst_p;
+	struct timestamp_table *sorted_tst_p;
 	size_t size;
 	uint64_t prev_stamp;
 	uint64_t total_time;
@@ -625,13 +634,21 @@ static void dump_timestamps(int mach_readable)
 		timestamp_print_entry(0,  tst_p->base_time, prev_stamp);
 	prev_stamp = tst_p->base_time;
 
+	sorted_tst_p = malloc(size);
+	if (!sorted_tst_p)
+		die("Failed to allocate memory");
+	memcpy(sorted_tst_p, tst_p, size);
+
+	qsort(&sorted_tst_p->entries[0], sorted_tst_p->num_entries,
+	      sizeof(struct timestamp_entry), compare_timestamp_entries);
+
 	total_time = 0;
-	for (i = 0; i < tst_p->num_entries; i++) {
+	for (i = 0; i < sorted_tst_p->num_entries; i++) {
 		uint64_t stamp;
-		const struct timestamp_entry *tse = &tst_p->entries[i];
+		const struct timestamp_entry *tse = &sorted_tst_p->entries[i];
 
 		/* Make all timestamps absolute. */
-		stamp = tse->entry_stamp + tst_p->base_time;
+		stamp = tse->entry_stamp + sorted_tst_p->base_time;
 		if (mach_readable)
 			total_time +=
 				timestamp_print_parseable_entry(tse->entry_id,
@@ -649,6 +666,7 @@ static void dump_timestamps(int mach_readable)
 	}
 
 	unmap_memory(&timestamp_mapping);
+	free(sorted_tst_p);
 }
 
 struct cbmem_console {

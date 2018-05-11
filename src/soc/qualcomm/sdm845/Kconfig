@@ -19,4 +19,14 @@ config VBOOT
 	select VBOOT_RETURN_FROM_VERSTAGE
 	select VBOOT_OPROM_MATTERS
 	select VBOOT_STARTS_IN_BOOTBLOCK
+
+config SDM845_QSPI
+	bool
+	default y if COMMON_CBFS_SPI_WRAPPER
+	prompt "Build Flash Using SPI-NOR"
+
+config BOOT_DEVICE_SPI_FLASH_BUS
+	int
+	default 16
+
 endif

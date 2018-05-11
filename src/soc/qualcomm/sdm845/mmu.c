@@ -19,14 +19,19 @@
 #include <soc/mmu.h>
 #include <soc/symbols.h>
 
-void sdm845_mmu_init()
+#define   CACHED_RAM (MA_MEM | MA_S | MA_RW)
+#define UNCACHED_RAM (MA_MEM | MA_S | MA_RW | MA_MEM_NC)
+#define      DEV_MEM (MA_DEV | MA_S | MA_RW)
+
+void sdm845_mmu_init(void)
 {
 	mmu_init();
 
-	mmu_config_range((void *)(4 * KiB), ((4UL * GiB) - (4 * KiB)),
-			MA_DEV | MA_S | MA_RW);
-	mmu_config_range((void *)_ssram, _ssram_size, MA_MEM | MA_S | MA_RW);
-	mmu_config_range((void *)_bsram, _bsram_size, MA_MEM | MA_S | MA_RW);
+	mmu_config_range((void *)(4 * KiB), ((4UL * GiB) - (4 * KiB)), DEV_MEM);
+	mmu_config_range((void *)_ssram, _ssram_size, CACHED_RAM);
+	mmu_config_range((void *)_bsram, _bsram_size, CACHED_RAM);
+	mmu_config_range((void *)_dma_coherent, _dma_coherent_size,
+			 UNCACHED_RAM);
 
 	mmu_enable();
 }

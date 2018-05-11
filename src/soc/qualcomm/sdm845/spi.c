@@ -15,35 +15,20 @@
 
 #include <spi-generic.h>
 #include <spi_flash.h>
-
-static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
-{
-	return 0;
-}
-
-static void spi_ctrlr_release_bus(const struct spi_slave *slave)
-{
-
-}
-
-static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
-			  size_t bytes_out, void *din, size_t bytes_in)
-{
-	return 0;
-}
+#include <soc/qspi.h>
 
 static const struct spi_ctrlr spi_ctrlr = {
-	.claim_bus = spi_ctrlr_claim_bus,
-	.release_bus = spi_ctrlr_release_bus,
-	.xfer = spi_ctrlr_xfer,
-	.max_xfer_size = 65535,
+	.claim_bus = sdm845_claim_bus,
+	.release_bus = sdm845_release_bus,
+	.xfer = sdm845_xfer,
+	.max_xfer_size = QSPI_MAX_PACKET_COUNT,
 };
 
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
 	{
 		.ctrlr = &spi_ctrlr,
-		.bus_start = 0,
-		.bus_end = 0,
+		.bus_start = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS,
+		.bus_end = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS,
 	},
 };
 

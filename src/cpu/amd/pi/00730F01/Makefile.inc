@@ -14,10 +14,14 @@
 #
 
 romstage-y += fixme.c
+romstage-y += update_microcode.c
+romstage-y += microcode_fam16h.c
 
 ramstage-y += fixme.c
 ramstage-y += chip_name.c
 ramstage-y += model_16_init.c
+ramstage-y += update_microcode.c
+ramstage-y += microcode_fam16h.c
 
 subdirs-y += ../../mtrr
 subdirs-y += ../../../x86/tsc

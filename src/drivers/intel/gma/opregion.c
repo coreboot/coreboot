@@ -34,14 +34,17 @@ const char *mainboard_vbt_filename(void)
 }
 
 static char vbt_data[8 * KiB];
-static int vbt_data_used;
+static size_t vbt_data_sz;
 
 void *locate_vbt(size_t *vbt_size)
 {
 	uint32_t vbtsig = 0;
 
-	if (vbt_data_used == 1)
+	if (vbt_data_sz != 0) {
+		if (vbt_size)
+			*vbt_size = vbt_data_sz;
 		return (void *)vbt_data;
+	}
 
 	const char *filename = mainboard_vbt_filename();
 
@@ -62,7 +65,7 @@ void *locate_vbt(size_t *vbt_size)
 
 	printk(BIOS_INFO, "Found a VBT of %zu bytes after decompression\n",
 		file_size);
-	vbt_data_used = 1;
+	vbt_data_sz = file_size;
 
 	return (void *)vbt_data;
 }

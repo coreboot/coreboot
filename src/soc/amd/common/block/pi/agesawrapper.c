@@ -22,6 +22,7 @@
 #include <delay.h>
 #include <rules.h>
 #include <rmodule.h>
+#include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>
 #include <amdblocks/s3_resume.h>
@@ -559,10 +560,22 @@ static int agesa_locate_stage_file_ramstage(const char *name,
 		.prog = &prog,
 	};
 
-	if (prog_locate(&prog))
-		return -1;
-	if (rmodule_stage_load(&rmod_agesa) < 0)
-		return -1;
+	if (acpi_is_wakeup_s3() && !IS_ENABLED(CONFIG_NO_STAGE_CACHE)) {
+		printk(BIOS_INFO, "AGESA: Loading stage from cache\n");
+		// There is no way to tell if this succeeded.
+		stage_cache_load_stage(STAGE_REFCODE, &prog);
+	} else {
+		if (prog_locate(&prog))
+			return -1;
+
+		if (rmodule_stage_load(&rmod_agesa) < 0)
+			return -1;
+
+		if (!IS_ENABLED(CONFIG_NO_STAGE_CACHE)) {
+			printk(BIOS_INFO, "AGESA: Saving stage to cache\n");
+			stage_cache_add(STAGE_REFCODE, &prog);
+		}
+	}
 
 	return rdev_chain(rdev, prog_rdev(&prog), 0,
 		region_device_sz(prog_rdev(&prog)));

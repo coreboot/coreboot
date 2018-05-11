@@ -21,6 +21,7 @@
 #include <commonlib/cbfs_serialized.h>
 #include <compiler.h>
 #include <device/device.h>
+#include <drivers/intel/gma/opregion.h>
 #include <ec/google/chromeec/ec.h>
 #include <smbios.h>
 #include <soc/ramstage.h>
@@ -138,4 +139,15 @@ const char *smbios_mainboard_manufacturer(void)
 		manuf = CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
 
 	return manuf;
+}
+
+const char *mainboard_vbt_filename(void)
+{
+	uint32_t sku_id = variant_board_sku();
+
+	switch (sku_id) {
+	default:
+		return "vbt.bin";
+		break;
+	}
 }

@@ -1,4 +1,4 @@
-config BOARD_PURISM_BASEBOARD_LIBREM_BDL
+config BOARD_PURISM_BASEBOARD_LIBREM_BDW
 	def_bool n
 	select SYSTEM_TYPE_LAPTOP
 	select BOARD_ROMSIZE_KB_8192
@@ -8,7 +8,7 @@ config BOARD_PURISM_BASEBOARD_LIBREM_BDL
 	select INTEL_INT15
 	select SOC_INTEL_BROADWELL
 
-if BOARD_PURISM_BASEBOARD_LIBREM_BDL
+if BOARD_PURISM_BASEBOARD_LIBREM_BDW
 
 config VARIANT_DIR
 	string
@@ -47,7 +47,7 @@ config HAVE_ME_BIN
 
 config MAINBOARD_DIR
 	string
-	default purism/librem_bdl
+	default purism/librem_bdw
 
 config MAINBOARD_VENDOR
 	string

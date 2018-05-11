@@ -403,6 +403,7 @@ void verstage_main(void)
 		vboot_reboot();
 	}
 
+	timestamp_add_now(TS_START_TPMPCR);
 	rv = extend_pcrs(&ctx);
 	if (rv) {
 		printk(BIOS_WARNING, "Failed to extend TPM PCRs (%#x)\n", rv);
@@ -410,8 +411,11 @@ void verstage_main(void)
 		save_if_needed(&ctx);
 		vboot_reboot();
 	}
+	timestamp_add_now(TS_END_TPMPCR);
 
 	/* Lock TPM */
+
+	timestamp_add_now(TS_START_TPMLOCK);
 	rv = antirollback_lock_space_firmware();
 	if (rv) {
 		printk(BIOS_INFO, "Failed to lock TPM (%x)\n", rv);
@@ -419,6 +423,7 @@ void verstage_main(void)
 		save_if_needed(&ctx);
 		vboot_reboot();
 	}
+	timestamp_add_now(TS_END_TPMLOCK);
 
 	/* Lock rec hash space if available. */
 	if (IS_ENABLED(CONFIG_VBOOT_HAS_REC_HASH_SPACE)) {

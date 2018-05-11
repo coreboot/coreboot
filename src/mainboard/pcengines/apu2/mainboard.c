@@ -462,7 +462,8 @@ const char *smbios_mainboard_serial_number(void)
 	int ret;
 
 	ret = read_serial_from_flash(serial, sizeof(serial)-1);
-	if (ret || (serial[0] == 0) || (serial[0] == 0xff)) {
+
+	if (ret || ((serial[0] & 0xff) == 0x00) || ((serial[0] & 0xff) == 0xff)) {
 		ret = read_serial_from_nic(serial, sizeof(serial)-1);
 		if (ret) {
 			serial[0] = '0';

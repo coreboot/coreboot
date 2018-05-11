@@ -27,7 +27,7 @@
 #include <rules.h>
 #include <smp/node.h>
 
-#define MAX_TIMESTAMPS 84
+#define MAX_TIMESTAMPS 192
 
 /* When changing this number, adjust TIMESTAMP() size ASSERT() in memlayout.h */
 #define MAX_BSS_TIMESTAMP_CACHE 16

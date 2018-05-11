@@ -27,8 +27,9 @@ check_dependencies:
   tags: 
     - docker
   script:
-    - git clone https://github.com/pcengines/pce-fw-builder.git -b rel_v1.0.0 /home/coreboot/pce-fw-builder
+    - git clone https://github.com/pcengines/pce-fw-builder.git /home/coreboot/pce-fw-builder
     - cd /home/coreboot/pce-fw-builder
+    - git checkout `git describe --tags --abbrev=0`
     - ./build.sh release-CI "${CI_COMMIT_REF_NAME}" "${PLATFORM}"
     - cp -v /home/coreboot/release/${PLATFORM}_* ${RELEASE_DIR}
     - ls -al ${RELEASE_DIR}

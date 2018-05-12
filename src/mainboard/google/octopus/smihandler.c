@@ -34,7 +34,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 	const struct pad_config *pads;
 	size_t num;
 
-	pads = variant_sleep_gpio_table(&num);
+	pads = variant_sleep_gpio_table(&num, slp_typ);
 	gpio_configure_pads(pads, num);
 
 	chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS,

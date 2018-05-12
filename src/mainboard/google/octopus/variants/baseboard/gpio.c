@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
@@ -300,9 +301,20 @@ variant_early_gpio_table(size_t *num)
 static const struct pad_config sleep_gpio_table[] = {
 };
 
+/* GPIO settings before entering slp_s5. */
+static const struct pad_config sleep_s5_gpio_table[] = {
+	/* BT_DISABLE_L */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_109, 0, DEEP, NONE, Tx0RXDCRx1, SAME),
+};
+
 const struct pad_config *__weak
-variant_sleep_gpio_table(size_t *num)
+variant_sleep_gpio_table(size_t *num, int slp_typ)
 {
+	if (slp_typ == ACPI_S5) {
+		*num = ARRAY_SIZE(sleep_s5_gpio_table);
+		return sleep_s5_gpio_table;
+	}
+
 	*num = ARRAY_SIZE(sleep_gpio_table);
 	return sleep_gpio_table;
 }

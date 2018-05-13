@@ -34,6 +34,7 @@
 #include <regex.h>
 #include <commonlib/cbmem_id.h>
 #include <commonlib/timestamp_serialized.h>
+#include <commonlib/tcpa_log_serialized.h>
 #include <commonlib/coreboot_tables.h>
 
 #ifdef __OpenBSD__
@@ -264,6 +265,7 @@ static int find_cbmem_entry(uint32_t id, uint64_t *addr, size_t *size)
 
 static struct lb_cbmem_ref timestamps;
 static struct lb_cbmem_ref console;
+static struct lb_cbmem_ref tcpa_log;
 static struct lb_memory_range cbmem;
 
 /* This is a work-around for a nasty problem introduced by initially having
@@ -308,7 +310,7 @@ static void parse_memory_tags(const struct lb_memory *mem)
 static int parse_cbtable_entries(const struct mapping *table_mapping)
 {
 	size_t i;
-	const struct lb_record* lbr_p;
+	const struct lb_record *lbr_p;
 	size_t table_size = mapping_size(table_mapping);
 	const void *lbtable = mapping_virt(table_mapping);
 	int forwarding_table_found = 0;
@@ -323,12 +325,19 @@ static int parse_cbtable_entries(const struct mapping *table_mapping)
 			continue;
 		case LB_TAG_TIMESTAMPS: {
 			debug("    Found timestamp table.\n");
-			timestamps = parse_cbmem_ref((struct lb_cbmem_ref *) lbr_p);
+			timestamps =
+			    parse_cbmem_ref((struct lb_cbmem_ref *)lbr_p);
 			continue;
 		}
 		case LB_TAG_CBMEM_CONSOLE: {
 			debug("    Found cbmem console.\n");
-			console = parse_cbmem_ref((struct lb_cbmem_ref *) lbr_p);
+			console = parse_cbmem_ref((struct lb_cbmem_ref *)lbr_p);
+			continue;
+		}
+		case LB_TAG_TCPA_LOG: {
+			debug("    Found tcpa log table.\n");
+			tcpa_log =
+			    parse_cbmem_ref((struct lb_cbmem_ref *)lbr_p);
 			continue;
 		}
 		case LB_TAG_FORWARD: {
@@ -338,7 +347,7 @@ static int parse_cbtable_entries(const struct mapping *table_mapping)
 			 * search at the new address.
 			 */
 			struct lb_forward lbf_p =
-				*(const struct lb_forward *) lbr_p;
+			    *(const struct lb_forward *)lbr_p;
 			debug("    Found forwarding entry.\n");
 			ret = parse_cbtable(lbf_p.forward, 0);
 
@@ -672,6 +681,51 @@ static void dump_timestamps(int mach_readable)
 
 	unmap_memory(&timestamp_mapping);
 	free(sorted_tst_p);
+}
+
+/* dump the tcpa log table */
+static void dump_tcpa_log(void)
+{
+	int i, j;
+	const struct tcpa_table *tclt_p;
+	size_t size;
+	struct mapping tcpa_mapping;
+	char log_string[TCPA_LOG_STRING_LENGTH];
+	char hash[TCPA_FORMAT_HASH_LENGTH];
+
+	if (tcpa_log.tag != LB_TAG_TCPA_LOG) {
+		fprintf(stderr, "No tcpa log found in coreboot table.\n");
+		return;
+	}
+
+	size = sizeof(*tclt_p);
+	tclt_p = map_memory(&tcpa_mapping, tcpa_log.cbmem_addr, size);
+	if (!tclt_p)
+		die("Unable to map tcpa log header\n");
+
+	size += tclt_p->num_entries * sizeof(tclt_p->entries[0]);
+
+	unmap_memory(&tcpa_mapping);
+
+	tclt_p = map_memory(&tcpa_mapping, tcpa_log.cbmem_addr, size);
+	if (!tclt_p)
+		die("Unable to map full tcpa log table\n");
+
+	printf("coreboot TCPA log:\n\n");
+
+	for (i = 0; i < tclt_p->num_entries; i++) {
+		const struct tcpa_entry *tce = &tclt_p->entries[i];
+
+		memset(log_string, 0, TCPA_LOG_STRING_LENGTH);
+		for (j = 0; j < tce->digest_length; j++)
+			sprintf((char *)&(hash[j * 2]), "%02x", tce->digest[j]);
+
+		snprintf(log_string, TCPA_LOG_STRING_LENGTH, "%u %s 00 [%s]\n",
+			 tce->pcr, hash, tce->name);
+		printf("%s", log_string);
+	}
+
+	unmap_memory(&tcpa_mapping);
 }
 
 struct cbmem_console {
@@ -1051,7 +1105,7 @@ static void print_version(void)
 
 static void print_usage(const char *name, int exit_code)
 {
-	printf("usage: %s [-cCltTxVvh?]\n", name);
+	printf("usage: %s [-cCltTLxVvh?]\n", name);
 	printf("\n"
 	     "   -c | --console:                   print cbmem console\n"
 	     "   -1 | --oneboot:                   print cbmem console for last boot only\n"
@@ -1061,6 +1115,7 @@ static void print_usage(const char *name, int exit_code)
 	     "   -r | --rawdump ID:                print rawdump of specific ID (in hex) of cbtable\n"
 	     "   -t | --timestamps:                print timestamp information\n"
 	     "   -T | --parseable-timestamps:      print parseable timestamps\n"
+	     "   -L | --tcpa-log                   print TCPA log\n"
 	     "   -V | --verbose:                   verbose (debugging) output\n"
 	     "   -v | --version:                   print the version\n"
 	     "   -h | --help:                      print this help\n"
@@ -1192,6 +1247,7 @@ int main(int argc, char** argv)
 	int print_hexdump = 0;
 	int print_rawdump = 0;
 	int print_timestamps = 0;
+	int print_tcpa_log = 0;
 	int machine_readable_timestamps = 0;
 	int one_boot_only = 0;
 	unsigned int rawdump_id = 0;
@@ -1202,6 +1258,7 @@ int main(int argc, char** argv)
 		{"oneboot", 0, 0, '1'},
 		{"coverage", 0, 0, 'C'},
 		{"list", 0, 0, 'l'},
+		{"tcpa-log", 0, 0, 'L'},
 		{"timestamps", 0, 0, 't'},
 		{"parseable-timestamps", 0, 0, 'T'},
 		{"hexdump", 0, 0, 'x'},
@@ -1211,7 +1268,7 @@ int main(int argc, char** argv)
 		{"help", 0, 0, 'h'},
 		{0, 0, 0, 0}
 	};
-	while ((opt = getopt_long(argc, argv, "c1CltTxVvh?r:",
+	while ((opt = getopt_long(argc, argv, "c1CltTLxVvh?r:",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'c':
@@ -1229,6 +1286,10 @@ int main(int argc, char** argv)
 			break;
 		case 'l':
 			print_list = 1;
+			print_defaults = 0;
+			break;
+		case 'L':
+			print_tcpa_log = 1;
 			print_defaults = 0;
 			break;
 		case 'x':
@@ -1356,6 +1417,9 @@ int main(int argc, char** argv)
 
 	if (print_defaults || print_timestamps)
 		dump_timestamps(machine_readable_timestamps);
+
+	if (print_tcpa_log)
+		dump_tcpa_log();
 
 	unmap_memory(&lbtable_mapping);
 

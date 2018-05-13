@@ -94,7 +94,8 @@ static void pci_init(struct device *dev)
 	}
 }
 
-static void pcie_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void pcie_set_subsystem(struct device *dev, unsigned vendor,
+			       unsigned device)
 {
 	/* NOTE: 0x94 is not the default position! */
 	if (!vendor || !device) {
@@ -106,7 +107,7 @@ static void pcie_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
-static void pch_pciexp_scan_bridge(device_t dev)
+static void pch_pciexp_scan_bridge(struct device *dev)
 {
 	struct southbridge_intel_i82801ix_config *config = dev->chip_info;
 

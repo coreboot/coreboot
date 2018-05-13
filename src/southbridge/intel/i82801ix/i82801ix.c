@@ -25,7 +25,7 @@
 
 typedef struct southbridge_intel_i82801ix_config config_t;
 
-static void i82801ix_enable_device(device_t dev)
+static void i82801ix_enable_device(struct device *dev)
 {
 	u32 reg32;
 
@@ -51,7 +51,7 @@ static void i82801ix_early_settings(const config_t *const info)
 
 static void i82801ix_pcie_init(const config_t *const info)
 {
-	device_t pciePort[6];
+	struct device *pciePort[6];
 	int i, slot_number = 1; /* Reserve slot number 0 for nb's PEG. */
 	u32 reg32;
 
@@ -86,7 +86,7 @@ static void i82801ix_pcie_init(const config_t *const info)
 
 	/* Set slot implemented, slot number and slot power limits. */
 	for (i = 0; i < 6; ++i) {
-		const device_t dev = pciePort[i];
+		struct device *const dev = pciePort[i];
 		u32 xcap = pci_read_config32(dev, D28Fx_XCAP);
 		if (info->pcie_slot_implemented & (1 << i))
 			xcap |=  PCI_EXP_FLAGS_SLOT;
@@ -115,10 +115,10 @@ static void i82801ix_pcie_init(const config_t *const info)
 
 static void i82801ix_ehci_init(void)
 {
-	const device_t pciEHCI1 = dev_find_slot(0, PCI_DEVFN(0x1d, 7));
+	struct device *const pciEHCI1 = dev_find_slot(0, PCI_DEVFN(0x1d, 7));
 	if (!pciEHCI1)
 		die("EHCI controller (00:1d.7) not listed in devicetree.\n");
-	const device_t pciEHCI2 = dev_find_slot(0, PCI_DEVFN(0x1a, 7));
+	struct device *const pciEHCI2 = dev_find_slot(0, PCI_DEVFN(0x1a, 7));
 	if (!pciEHCI2)
 		die("EHCI controller (00:1a.7) not listed in devicetree.\n");
 

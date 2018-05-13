@@ -25,7 +25,7 @@
 #include <southbridge/intel/common/smbus.h>
 #include "soc.h"
 
-static int lsmbus_read_byte(device_t dev, u8 address)
+static int lsmbus_read_byte(struct device *dev, u8 address)
 {
 	u16 device;
 	struct resource *res;
@@ -42,7 +42,8 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte	= lsmbus_read_byte,
 };
 
-static void smbus_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void smbus_set_subsystem(struct device *dev, unsigned vendor,
+				unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -57,7 +58,7 @@ static struct pci_operations smbus_pci_ops = {
 	.set_subsystem    = smbus_set_subsystem,
 };
 
-static void rangeley_smbus_read_resources(device_t dev)
+static void rangeley_smbus_read_resources(struct device *dev)
 {
 	struct resource *res;
 

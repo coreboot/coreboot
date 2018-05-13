@@ -343,7 +343,7 @@ void spi_init(void)
 {
 	int ich_version = 0;
 	uint8_t bios_cntl;
-	device_t dev;
+	struct device *dev;
 	uint32_t ids;
 	uint16_t vendor_id, device_id;
 

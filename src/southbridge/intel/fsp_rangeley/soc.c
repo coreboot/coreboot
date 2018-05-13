@@ -66,7 +66,7 @@ static void soc_hide_devfn(unsigned devfn)
 
 
 
-void soc_enable(device_t dev)
+void soc_enable(struct device *dev)
 {
 	u32 reg32;
 

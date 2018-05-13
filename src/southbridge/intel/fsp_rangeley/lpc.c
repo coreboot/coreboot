@@ -114,8 +114,8 @@ static void soc_enable_serial_irqs(struct device *dev)
  */
 static void write_pci_config_irqs(void)
 {
-	device_t irq_dev;
-	device_t targ_dev;
+	struct device *irq_dev;
+	struct device *targ_dev;
 	uint8_t int_line = 0;
 	uint8_t original_int_pin = 0;
 	uint8_t new_int_pin = 0;
@@ -198,7 +198,7 @@ static void write_pci_config_irqs(void)
 	printk(BIOS_DEBUG, "PCI_CFG IRQ: Finished writing PCI config space IRQ assignments\n");
 }
 
-static void soc_pirq_init(device_t dev)
+static void soc_pirq_init(struct device *dev)
 {
 	int i, j;
 	int pirq;
@@ -243,7 +243,7 @@ static void soc_pirq_init(device_t dev)
 	write_pci_config_irqs();
 }
 
-static void soc_power_options(device_t dev)
+static void soc_power_options(struct device *dev)
 {
 	u8 reg8;
 	u16 pmbase;
@@ -345,7 +345,7 @@ static void lpc_init(struct device *dev)
 	soc_disable_smm_only_flashing(dev);
 }
 
-static void soc_lpc_read_resources(device_t dev)
+static void soc_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 	config_t *config = dev->chip_info;
@@ -406,17 +406,17 @@ static void soc_lpc_read_resources(device_t dev)
 	}
 }
 
-static void soc_lpc_enable_resources(device_t dev)
+static void soc_lpc_enable_resources(struct device *dev)
 {
 	return pci_dev_enable_resources(dev);
 }
 
-static void soc_lpc_enable(device_t dev)
+static void soc_lpc_enable(struct device *dev)
 {
 	soc_enable(dev);
 }
 
-static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -427,7 +427,7 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
-static void southbridge_inject_dsdt(device_t dev)
+static void southbridge_inject_dsdt(struct device *dev)
 {
 	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 

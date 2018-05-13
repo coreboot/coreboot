@@ -11,7 +11,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'coreboot'
-copyright = u'the coreboot project'
+copyright = u'CC-by 4.0 the coreboot project'
 author = u'the coreboot project'
 
 # The version info for the project you're documenting, acts as replacement for

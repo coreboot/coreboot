@@ -25,7 +25,7 @@
 #include <southbridge/intel/common/smbus.h>
 #include "i82801jx.h"
 
-static void pch_smbus_init(device_t dev)
+static void pch_smbus_init(struct device *dev)
 {
 	u16 reg16;
 
@@ -35,7 +35,7 @@ static void pch_smbus_init(device_t dev)
 	pci_write_config16(dev, 0x80, reg16);
 }
 
-static int lsmbus_read_byte(device_t dev, u8 address)
+static int lsmbus_read_byte(struct device *dev, u8 address)
 {
 	u16 device;
 	struct resource *res;
@@ -48,7 +48,7 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
-static int lsmbus_write_byte(device_t dev, u8 address, u8 val)
+static int lsmbus_write_byte(struct device *dev, u8 address, u8 val)
 {
 	u16 device;
 	struct resource *res;
@@ -61,7 +61,8 @@ static int lsmbus_write_byte(device_t dev, u8 address, u8 val)
 	return do_smbus_write_byte(res->base, device, address, val);
 }
 
-static int lsmbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buf)
+static int lsmbus_block_write(struct device *dev, u8 cmd, u8 bytes,
+			      const u8 *buf)
 {
 	u16 device;
 	struct resource *res;
@@ -73,7 +74,7 @@ static int lsmbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buf)
 	return do_smbus_block_write(res->base, device, cmd, bytes, buf);
 }
 
-static int lsmbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buf)
+static int lsmbus_block_read(struct device *dev, u8 cmd, u8 bytes, u8 *buf)
 {
 	u16 device;
 	struct resource *res;
@@ -92,7 +93,8 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.block_write    = lsmbus_block_write,
 };
 
-static void smbus_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void smbus_set_subsystem(struct device *dev, unsigned vendor,
+				unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -107,7 +109,7 @@ static struct pci_operations smbus_pci_ops = {
 	.set_subsystem    = smbus_set_subsystem,
 };
 
-static void smbus_read_resources(device_t dev)
+static void smbus_read_resources(struct device *dev)
 {
 	struct resource *res = new_resource(dev, PCI_BASE_ADDRESS_4);
 	res->base = SMBUS_IO_BASE;

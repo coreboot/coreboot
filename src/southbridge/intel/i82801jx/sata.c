@@ -208,7 +208,8 @@ static void sata_init(struct device *const dev)
 	pci_write_config32(dev, 0x94, sclkcg);
 
 	if (is_mobile && config->sata_traffic_monitor) {
-		const device_t lpc_dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+		struct device *const lpc_dev = dev_find_slot(0,
+							    PCI_DEVFN(0x1f, 0));
 		if (((pci_read_config8(lpc_dev, D31F0_CxSTATE_CNF)
 							>> 3) & 3) == 3) {
 			u8 reg8 = pci_read_config8(dev, 0x9c);
@@ -224,7 +225,7 @@ static void sata_init(struct device *const dev)
 	sata_program_indexed(dev, is_mobile);
 }
 
-static void sata_enable(device_t dev)
+static void sata_enable(struct device *dev)
 {
 	/* Get the chip configuration */
 	const config_t *const config = dev->chip_info;
@@ -251,7 +252,8 @@ static void sata_enable(device_t dev)
 	pci_write_config16(dev, 0x90, map);
 }
 
-static void sata_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void sata_set_subsystem(struct device *dev, unsigned vendor,
+			       unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

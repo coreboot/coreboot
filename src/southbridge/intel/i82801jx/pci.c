@@ -43,7 +43,7 @@ static void pci_init(struct device *dev)
 	pci_write_config16(dev, PCI_SEC_STATUS, reg16);
 }
 
-static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 {
 	/* NOTE: 0x54 is not the default position! */
 	if (!vendor || !device) {

@@ -112,9 +112,9 @@ static void pch_enable_serial_irqs(struct device *dev)
  * 0x80 - The PIRQ is not routed.
  */
 
-static void pch_pirq_init(device_t dev)
+static void pch_pirq_init(struct device *dev)
 {
-	device_t irq_dev;
+	struct device *irq_dev;
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
@@ -154,7 +154,7 @@ static void pch_pirq_init(device_t dev)
 	}
 }
 
-static void pch_gpi_routing(device_t dev)
+static void pch_gpi_routing(struct device *dev)
 {
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
@@ -183,7 +183,7 @@ static void pch_gpi_routing(device_t dev)
 	pci_write_config32(dev, GPIO_ROUT, reg32);
 }
 
-static void pch_power_options(device_t dev)
+static void pch_power_options(struct device *dev)
 {
 	u8 reg8;
 	u16 reg16, pmbase;
@@ -503,7 +503,7 @@ static void lpc_init(struct device *dev)
 	pch_fixups(dev);
 }
 
-static void pch_lpc_read_resources(device_t dev)
+static void pch_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 	config_t *config = dev->chip_info;
@@ -564,18 +564,18 @@ static void pch_lpc_read_resources(device_t dev)
 	}
 }
 
-static void pch_lpc_enable_resources(device_t dev)
+static void pch_lpc_enable_resources(struct device *dev)
 {
 	pch_decode_init(dev);
 	return pci_dev_enable_resources(dev);
 }
 
-static void pch_lpc_enable(device_t dev)
+static void pch_lpc_enable(struct device *dev)
 {
 	pch_enable(dev);
 }
 
-static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -586,7 +586,7 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
-static void southbridge_inject_dsdt(device_t dev)
+static void southbridge_inject_dsdt(struct device *dev)
 {
 	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 
@@ -612,7 +612,7 @@ static void southbridge_inject_dsdt(device_t dev)
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
 	config_t *chip = dev->chip_info;
 	u16 pmbase = pci_read_config16(dev, 0x40) & 0xfffe;
 	int c2_latency;

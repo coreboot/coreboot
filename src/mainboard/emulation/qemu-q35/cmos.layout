@@ -1,0 +1,28 @@
+entries
+
+0          384       r       0        reserved_memory
+384          1       e       4        boot_option
+388          4       h       0        reboot_counter
+#392          3       r       0        unused
+400          1       e       1        power_on_after_fail
+412          4       e       6        debug_level
+456          1       e       1        ECC_memory
+1008         16      h       0        check_sum
+
+enumerations
+
+#ID value   text
+1     0     Disable
+1     1     Enable
+2     0     Enable
+2     1     Disable
+4     0     Fallback
+4     1     Normal
+6     5     Notice
+6     6     Info
+6     7     Debug
+6     8     Spew
+
+checksums
+
+checksum 392 1007 1008

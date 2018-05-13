@@ -1,0 +1,4 @@
+boot_option = Fallback
+power_on_after_fail = Enable
+debug_level = Spew
+ECC_memory = Disable

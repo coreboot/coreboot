@@ -21,10 +21,10 @@
 #include <device/pci.h>
 #include "i82801bx.h"
 
-void i82801bx_enable(device_t dev)
+void i82801bx_enable(struct device *dev)
 {
 	u16 reg16, index;
-	device_t lpc_dev;
+	struct device *lpc_dev;
 
 	/* Search for the 82801BA/BAM LPC device (D31:F0) on PCI bus 0. */
 	lpc_dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));

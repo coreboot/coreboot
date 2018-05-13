@@ -24,7 +24,7 @@
 
 void watchdog_off(void)
 {
-	device_t dev;
+	struct device *dev;
 	unsigned long value, base;
 
 	/* Turn off the ICH5 watchdog. */

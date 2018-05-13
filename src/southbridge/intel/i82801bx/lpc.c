@@ -119,7 +119,7 @@ static void i82801bx_enable_serial_irqs(struct device *dev)
 	/* TODO: Explain/#define the real meaning of these magic numbers. */
 }
 
-static void i82801bx_pirq_init(device_t dev, uint16_t ich_model)
+static void i82801bx_pirq_init(struct device *dev, uint16_t ich_model)
 {
 	u8 reg8;
 	config_t *config = dev->chip_info;
@@ -150,7 +150,7 @@ static void i82801bx_pirq_init(device_t dev, uint16_t ich_model)
 	pci_write_config8(dev, PIRQH_ROUT, reg8);
 }
 
-static void i82801bx_power_options(device_t dev)
+static void i82801bx_power_options(struct device *dev)
 {
 	uint8_t byte;
 	int pwr_on = -1;
@@ -180,7 +180,7 @@ static void i82801bx_power_options(device_t dev)
 	}
 }
 
-static void gpio_init(device_t dev)
+static void gpio_init(struct device *dev)
 {
 	/* Set the value for GPIO base address register and enable GPIO. */
 	pci_write_config32(dev, GPIO_BASE, (GPIO_BASE_ADDR | 1));
@@ -222,7 +222,7 @@ static void i82801bx_lpc_route_dma(struct device *dev, uint8_t mask)
 	pci_write_config16(dev, PCI_DMA_CFG, reg16);
 }
 
-static void i82801bx_lpc_decode_en(device_t dev, uint16_t ich_model)
+static void i82801bx_lpc_decode_en(struct device *dev, uint16_t ich_model)
 {
 	/* Decode 0x3F8-0x3FF (COM1) for COMA port, 0x2F8-0x2FF (COM2) for COMB.
 	 * LPT decode defaults to 0x378-0x37F and 0x778-0x77F.
@@ -269,7 +269,7 @@ static void lpc_init(struct device *dev)
 	i82801bx_lpc_decode_en(dev, ich_model);
 }
 
-static void i82801bx_lpc_read_resources(device_t dev)
+static void i82801bx_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 

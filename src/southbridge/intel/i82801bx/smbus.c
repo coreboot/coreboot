@@ -22,7 +22,7 @@
 #include <southbridge/intel/common/smbus.h>
 #include "i82801bx.h"
 
-static int lsmbus_read_byte(device_t dev, u8 address)
+static int lsmbus_read_byte(struct device *dev, u8 address)
 {
 	u16 device;
 	struct resource *res;

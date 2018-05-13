@@ -19,7 +19,7 @@
 
 #if !defined(__PRE_RAM__)
 #include "chip.h"
-extern void i82801bx_enable(device_t dev);
+extern void i82801bx_enable(struct device *dev);
 #endif
 
 #if defined(__PRE_RAM__)

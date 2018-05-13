@@ -176,13 +176,13 @@ const struct msrdef intel_atom_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x400, MSRTYPE_RDWR, MSR2(0,0), "IA32_MCO_CTL", "", {
+	{0x400, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC0_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x401, MSRTYPE_RDWR, MSR2(0,0), "IA32_MCO_STATUS", "", {
+	{0x401, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC0_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x402, MSRTYPE_RDWR, MSR2(0,0), "IA32_MCO_ADDR", "", {
+	{0x402, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC0_ADDR", "", {
 		{ BITS_EOT }
 	}},
 	{0x404, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC1_CTL", "", {

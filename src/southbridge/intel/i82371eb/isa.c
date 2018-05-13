@@ -36,7 +36,7 @@ static void enable_intel_82093aa_ioapic(void)
 	u8 ioapic_id = 2;
 	volatile u32 *ioapic_index = (volatile u32 *)(IO_APIC_ADDR);
 	volatile u32 *ioapic_data = (volatile u32 *)(IO_APIC_ADDR + 0x10);
-	device_t dev;
+	struct device *dev;
 
 	dev = dev_find_device(PCI_VENDOR_ID_INTEL,
 			      PCI_DEVICE_ID_INTEL_82371AB_ISA, 0);
@@ -125,7 +125,7 @@ static void sb_read_resources(struct device *dev)
 }
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-static void southbridge_acpi_fill_ssdt_generator(device_t device)
+static void southbridge_acpi_fill_ssdt_generator(struct device *device)
 {
 	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
 	generate_cpu_entries(device);

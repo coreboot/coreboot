@@ -23,7 +23,7 @@
 #include <device/device.h>
 #include "chip.h"
 
-void i82371eb_enable(device_t dev);
+void i82371eb_enable(struct device *dev);
 void i82371eb_hard_reset(void);
 #else
 void enable_smbus(void);

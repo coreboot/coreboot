@@ -25,7 +25,7 @@
 #include <southbridge/intel/common/smbus.h>
 #include "i82801gx.h"
 
-static int lsmbus_read_byte(device_t dev, u8 address)
+static int lsmbus_read_byte(struct device *dev, u8 address)
 {
 	u16 device;
 	struct resource *res;
@@ -38,7 +38,7 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
-static int lsmbus_write_byte(device_t dev, u8 address, u8 data)
+static int lsmbus_write_byte(struct device *dev, u8 address, u8 data)
 {
 	u16 device;
 	struct resource *res;
@@ -50,7 +50,8 @@ static int lsmbus_write_byte(device_t dev, u8 address, u8 data)
 	return do_smbus_write_byte(res->base, device, address, data);
 }
 
-static int lsmbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buf)
+static int lsmbus_block_write(struct device *dev, u8 cmd, u8 bytes,
+			      const u8 *buf)
 {
 	u16 device;
 	struct resource *res;
@@ -62,7 +63,7 @@ static int lsmbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buf)
 	return do_smbus_block_write(res->base, device, cmd, bytes, buf);
 }
 
-static int lsmbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buf)
+static int lsmbus_block_read(struct device *dev, u8 cmd, u8 bytes, u8 *buf)
 {
 	u16 device;
 	struct resource *res;
@@ -82,7 +83,8 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.block_write    = lsmbus_block_write,
 };
 
-static void smbus_set_subsystem(device_t dev, unsigned int vendor, unsigned int device)
+static void smbus_set_subsystem(struct device *dev, unsigned int vendor,
+				unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -97,7 +99,7 @@ static struct pci_operations smbus_pci_ops = {
 	.set_subsystem    = smbus_set_subsystem,
 };
 
-static void smbus_read_resources(device_t dev)
+static void smbus_read_resources(struct device *dev)
 {
 	struct resource *res = new_resource(dev, PCI_BASE_ADDRESS_4);
 	res->base = SMBUS_IO_BASE;

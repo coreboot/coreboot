@@ -246,8 +246,8 @@ static void ac97_modem_init(struct device *dev)
 	}
 }
 
-static void ac97_set_subsystem(device_t dev, unsigned int vendor,
-			unsigned int device)
+static void ac97_set_subsystem(struct device *dev, unsigned int vendor,
+			       unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

@@ -44,7 +44,7 @@
 #if !defined(__PRE_RAM__)
 #include "chip.h"
 #if !defined(__SIMPLE_DEVICE__)
-void i82801gx_enable(device_t dev);
+void i82801gx_enable(struct device *dev);
 #endif
 void gpi_route_interrupt(u8 gpi, u8 mode);
 #else

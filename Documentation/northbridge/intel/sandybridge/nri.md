@@ -41,13 +41,13 @@ The memory initialization code has to take care of lots of duties:
 ```
 
 ## (Inoffical) register documentation
-- [Sandy Bride - Register documentation](SandyBridge_registers.md)
+- [Sandy Bride - Register documentation](nri_registers.md)
 
 ## Frequency selection
-- [Sandy Bride - Frequency selection](Sandybridge_freq.md)
+- [Sandy Bride - Frequency selection](nri_freq.md)
 
 ## Read training
-- [Sandy Bride - Read training](Sandybridge_read.md)
+- [Sandy Bride - Read training](nri_read.md)
 
 ### SMBIOS type 17
 The SMBIOS specification allows to report the memory configuration in use.

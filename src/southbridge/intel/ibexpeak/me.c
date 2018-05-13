@@ -115,7 +115,8 @@ static inline void mei_write_dword_ptr(void *ptr, int offset)
 }
 
 #ifndef __SMM__
-static inline void pci_read_dword_ptr(device_t dev, void *ptr, int offset)
+static inline void pci_read_dword_ptr(struct device *dev,void *ptr,
+				      int offset)
 {
 	u32 dword = pci_read_config32(dev, offset);
 	memcpy(ptr, &dword, sizeof(dword));
@@ -425,7 +426,7 @@ void intel_me_finalize_smm(void)
 #else /* !__SMM__ */
 
 /* Determine the path that we should take based on ME status */
-static me_bios_path intel_me_path(device_t dev)
+static me_bios_path intel_me_path(struct device *dev)
 {
 	me_bios_path path = ME_DISABLE_BIOS_PATH;
 	struct me_hfs hfs;
@@ -492,7 +493,7 @@ static me_bios_path intel_me_path(device_t dev)
 }
 
 /* Prepare ME for MEI messages */
-static int intel_mei_setup(device_t dev)
+static int intel_mei_setup(struct device *dev)
 {
 	struct resource *res;
 	struct mei_csr host;
@@ -522,7 +523,7 @@ static int intel_mei_setup(device_t dev)
 }
 
 /* Read the Extend register hash of ME firmware */
-static int intel_me_extend_valid(device_t dev)
+static int intel_me_extend_valid(struct device *dev)
 {
 	struct me_heres status;
 	u32 extend[8] = {0};
@@ -569,14 +570,14 @@ static int intel_me_extend_valid(device_t dev)
 }
 
 /* Hide the ME virtual PCI devices */
-static void intel_me_hide(device_t dev)
+static void intel_me_hide(struct device *dev)
 {
 	dev->enabled = 0;
 	pch_enable(dev);
 }
 
 /* Check whether ME is present and do basic init */
-static void intel_me_init(device_t dev)
+static void intel_me_init(struct device *dev)
 {
 	me_bios_path path = intel_me_path(dev);
 
@@ -611,7 +612,8 @@ static void intel_me_init(device_t dev)
 	}
 }
 
-static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void set_subsystem(struct device *dev, unsigned vendor,
+			  unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

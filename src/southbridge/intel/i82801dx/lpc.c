@@ -81,7 +81,7 @@ static void i82801dx_enable_serial_irqs(struct device *dev)
 			  (1 << 7) | (0 << 6) | ((21 - 17) << 2) | (0 << 0));
 }
 
-static void i82801dx_pirq_init(device_t dev)
+static void i82801dx_pirq_init(struct device *dev)
 {
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
@@ -96,7 +96,7 @@ static void i82801dx_pirq_init(device_t dev)
 	pci_write_config8(dev, PIRQH_ROUT, config->pirqh_routing);
 }
 
-static void i82801dx_power_options(device_t dev)
+static void i82801dx_power_options(struct device *dev)
 {
 	u8 reg8;
 	u16 reg16, pmbase;
@@ -175,7 +175,7 @@ static void i82801dx_power_options(device_t dev)
 	outl(reg32, pmbase + 0x04);
 }
 
-static void gpio_init(device_t dev)
+static void gpio_init(struct device *dev)
 {
 	/* This should be done in romstage.c already */
 	pci_write_config32(dev, GPIO_BASE, (GPIOBASE_ADDR | 1));
@@ -217,7 +217,7 @@ static void i82801dx_lpc_route_dma(struct device *dev, u8 mask)
 	pci_write_config16(dev, PCI_DMA_CFG, reg16);
 }
 
-static void i82801dx_lpc_decode_en(device_t dev)
+static void i82801dx_lpc_decode_en(struct device *dev)
 {
 	/* Decode 0x3F8-0x3FF (COM1) for COMA port, 0x2F8-0x2FF (COM2) for COMB.
 	 * LPT decode defaults to 0x378-0x37F and 0x778-0x77F.
@@ -301,7 +301,7 @@ static void lpc_init(struct device *dev)
 	enable_hpet(dev);
 }
 
-static void i82801dx_lpc_read_resources(device_t dev)
+static void i82801dx_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 

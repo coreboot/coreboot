@@ -32,7 +32,7 @@
 #if !defined(__ASSEMBLER__)
 #if !defined(__SIMPLE_DEVICE__)
 #include "chip.h"
-extern void i82801dx_enable(device_t dev);
+extern void i82801dx_enable(struct device *dev);
 #else
 void enable_smbus(void);
 int smbus_read_byte(unsigned device, unsigned address);

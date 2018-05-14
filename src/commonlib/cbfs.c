@@ -212,12 +212,18 @@ int cbfs_locate(struct cbfsf *fh, const struct region_device *cbfs,
 			if (cbfsf_file_type(fh, &ftype))
 				break;
 
-			if (*type != ftype) {
+			if (*type != 0 && *type != ftype) {
 				DEBUG(" Unmatched type %x at %zx\n", ftype,
 					rdev_relative_offset(cbfs,
 							&fh->metadata));
 				continue;
 			}
+			// *type being 0 means we want to know ftype.
+			// We could just do a blind assignment but
+			// if type is pointing to read-only memory
+			// that might be bad.
+			if (*type == 0)
+				*type = ftype;
 		}
 
 		LOG("Found @ offset %zx size %zx\n",

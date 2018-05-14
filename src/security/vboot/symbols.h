@@ -20,9 +20,4 @@ extern u8 _vboot2_work[];
 extern u8 _evboot2_work[];
 #define _vboot2_work_size (_evboot2_work - _vboot2_work)
 
-/* Careful: _e<stage> and _<stage>_size only defined for the current stage! */
-extern u8 _verstage[];
-extern u8 _everstage[];
-#define _verstage_size (_everstage - _verstage)
-
 #endif /* __VBOOT_SYMBOLS_H__ */

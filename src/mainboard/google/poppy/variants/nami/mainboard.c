@@ -146,6 +146,9 @@ const char *mainboard_vbt_filename(void)
 	uint32_t sku_id = variant_board_sku();
 
 	switch (sku_id) {
+	case SKU_0_PANTHEON:
+	case SKU_1_PANTHEON:
+		return "vbt-pantheon.bin";
 	default:
 		return "vbt.bin";
 		break;

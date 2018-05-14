@@ -20,5 +20,7 @@
 #define SKU_0_NAMI	0x3A7B
 #define SKU_1_VAYNE	0x3A63
 #define SKU_2_VAYNE	0x3A7F
+#define SKU_0_PANTHEON	0x3F63
+#define SKU_1_PANTHEON	0x3F67
 
 #endif /* __MAINBOARD_SKU_H__ */

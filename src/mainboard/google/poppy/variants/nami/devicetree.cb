@@ -197,15 +197,52 @@ chip soc/intel/skylake
 
 	# Touchscreen
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"
+	register "i2c[0]" = "{
+		.speed = I2C_SPEED_FAST,
+		.speed_config[0] = {
+			.speed = I2C_SPEED_FAST,
+			.scl_lcnt = 185,
+			.scl_hcnt = 90,
+			.sda_hold = 36,
+		},
+	}"
 
 	# Trackpad
 	register "i2c_voltage[1]" = "I2C_VOLTAGE_3V3"
+	register "i2c[1]" = "{
+		.early_init = 1,
+		.speed = I2C_SPEED_FAST,
+		.speed_config[0] = {
+			.speed = I2C_SPEED_FAST,
+			.scl_lcnt = 185,
+			.scl_hcnt = 90,
+			.sda_hold = 36,
+		},
+	}"
 
 	# Pen
 	register "i2c_voltage[2]" = "I2C_VOLTAGE_1V8"
+	register "i2c[2]" = "{
+		.speed = I2C_SPEED_FAST,
+		.speed_config[0] = {
+			.speed = I2C_SPEED_FAST,
+			.scl_lcnt = 185,
+			.scl_hcnt = 100,
+			.sda_hold = 36,
+		},
+	}"
 
 	# Audio
 	register "i2c_voltage[3]" = "I2C_VOLTAGE_1V8"
+	register "i2c[3]" = "{
+		.speed = I2C_SPEED_FAST,
+		.speed_config[0] = {
+			.speed = I2C_SPEED_FAST,
+			.scl_lcnt = 195,
+			.scl_hcnt = 90,
+			.sda_hold = 36,
+		},
+	}"
 
 	# Use GSPI0 for cr50 TPM. Early init is required to set up a BAR for TPM
 	# communication before memory is up.

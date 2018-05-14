@@ -15,6 +15,8 @@
 
 subdirs-y += sdram_params/
 
+decompressor-y += memlayout.ld
+
 bootblock-y += bootblock.c
 bootblock-y += chromeos.c
 bootblock-y += memlayout.ld

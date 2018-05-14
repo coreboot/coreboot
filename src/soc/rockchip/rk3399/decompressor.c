@@ -21,7 +21,7 @@
 #include <soc/mmu_operations.h>
 #include <symbols.h>
 
-void rockchip_mmu_init(void)
+void decompressor_soc_init(void)
 {
 	mmu_init();
 

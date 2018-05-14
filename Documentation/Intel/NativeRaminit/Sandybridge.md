@@ -18,16 +18,27 @@ The memory initialization code has to take care of lots of duties:
 * Error handling
 
 ## Definitions
+```eval_rst
++---------+-------------------------------------------------------------------+------------+--------------+
 | Symbol  | Description                                                       | Units      | Valid region |
-|---------|-------------------------------------------------------------------|------------|--------------|
-| SCK     | DRAM system clock cycle time                                      | s          | -            |
-| tCK     | DRAM system clock cycle time                                      | 1/256th ns | -            |
-| DCK     | Data clock cycle time: The time between two SCK clock edges       | s          | -            |
++=========+===================================================================+============+==============+
+| SCK     | DRAM system clock cycle time                                      | s          |              |
++---------+-------------------------------------------------------------------+------------+--------------+
+| tCK     | DRAM system clock cycle time                                      | 1/256th ns |              |
++---------+-------------------------------------------------------------------+------------+--------------+
+| DCK     | Data clock cycle time: The time between two SCK clock edges       | s          |              |
++---------+-------------------------------------------------------------------+------------+--------------+
 | timA    | IO phase: The phase delay of the IO signals                       | 1/64th DCK | [0-512)      |
-| SPD     | Manufacturer set memory timings located on an EEPROM on every DIMM| bytes      | -            |
++---------+-------------------------------------------------------------------+------------+--------------+
+| SPD     | Manufacturer set memory timings located on an EEPROM on every DIMM| bytes      |              |
++---------+-------------------------------------------------------------------+------------+--------------+
 | REFCK   | Reference clock, either 100 or 133                                | Mhz        | 100, 133     |
-| MULT    | DRAM PLL multiplier                                               | -          | [3-12]       |
-| XMP     | Extreme Memory Profiles                                           | -          | -            |
++---------+-------------------------------------------------------------------+------------+--------------+
+| MULT    | DRAM PLL multiplier                                               |            | [3-12]       |
++---------+-------------------------------------------------------------------+------------+--------------+
+| XMP     | Extreme Memory Profiles                                           |            |              |
++---------+-------------------------------------------------------------------+------------+--------------+
+```
 
 ## (Inoffical) register documentation
 - [Sandy Bride - Register documentation](SandyBridge_registers.md)

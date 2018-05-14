@@ -23,18 +23,29 @@ actual delay of every lane can be measured.
 The values programmed in read training effect DRAM-to-MC transfers only !
 
 ## Definitions
+```eval_rst
++---------+-------------------------------------------------------------------+------------+--------------+
 | Symbol  | Description                                                       | Units      | Valid region |
-|---------|-------------------------------------------------------------------|------------|--------------|
-| SCK     | DRAM system clock cycle time                                      | s          | -            |
-| tCK     | DRAM system clock cycle time                                      | 1/256th ns | -            |
-| DCK     | Data clock cycle time: The time between two SCK clock edges       | s          | -            |
++=========+===================================================================+============+==============+
+| SCK     | DRAM system clock cycle time                                      | s          |              |
++---------+-------------------------------------------------------------------+------------+--------------+
+| tCK     | DRAM system clock cycle time                                      | 1/256th ns |              |
++---------+-------------------------------------------------------------------+------------+--------------+
+| DCK     | Data clock cycle time: The time between two SCK clock edges       | s          |              |
++---------+-------------------------------------------------------------------+------------+--------------+
 | timA    | IO phase: The phase delay of the IO signals                       | 1/64th DCK | [0-512)      |
-| SPD     | Manufacturer set memory timings located on an EEPROM on every DIMM| bytes      | -            |
-| REFCK   | Reference clock, either 100 or 133                                | Mhz        | 100, 133     |
-| MULT    | DRAM PLL multiplier                                               | -          | [3-12]       |
-| XMP     | Extreme Memory Profiles                                           | -          | -            |
-| DQS     | Data Strobe signal used to sample all lane's DQ signals           | -          | -            |
-
++---------+-------------------------------------------------------------------+------------+--------------+
+| SPD     | Manufacturer set memory timings located on an EEPROM on every DIMM| bytes      |              |
++---------+-------------------------------------------------------------------+------------+--------------+
+| REFCK   | Reference clock, either 100 or 133                                | MHz        | 100, 133     |
++---------+-------------------------------------------------------------------+------------+--------------+
+| MULT    | DRAM PLL multiplier                                               |            | [3-12]       |
++---------+-------------------------------------------------------------------+------------+--------------+
+| XMP     | Extreme Memory Profiles                                           |            |              |
++---------+-------------------------------------------------------------------+------------+--------------+
+| DQS     | Data Strobe signal used to sample all lane's DQ signals           |            |              |
++---------+-------------------------------------------------------------------+------------+--------------+
+```
 ## Hardware
 The hardware does have delay logic blocks that can delay the DQ / DQS of a
 lane/rank by one or multiple clock cylces and it does have delay logic blocks
@@ -66,18 +77,18 @@ The picture was generated from 16 IO delay values times 64 timA values.
 The highest IO delay was set on the right-hand side, while the last block
 on the left-hand side has zero IO delay.
 
-** roundtrip 55 DCKs **
+#### roundtrip 55 DCKs
 ![alt text][timA_lane0-3_rt55]
 
 [timA_lane0-3_rt55]: timA_lane0-3_rt55.png "timA for lane0 - lane3, roundtrip 55"
 
-** roundtrip 54 DCKs **
+#### roundtrip 54 DCKs
 ![alt text][timA_lane0-3_rt54]
 
 [timA_lane0-3_rt54]: timA_lane0-3_rt54.png "timA for lane0 - lane3, roundtrip 54"
 
 
-** roundtrip 53 DCKs **
+#### roundtrip 53 DCKs
 ![alt text][timA_lane0-3_rt53]
 
 [timA_lane0-3_rt53]: timA_lane0-3_rt53.png "timA for lane0 - lane3, roundtrip 53"

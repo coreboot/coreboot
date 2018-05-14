@@ -11,9 +11,14 @@ Please handle with care !
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 0
 
-|Bit| Description |
-|---|-------------|
-| 0:63|  Training result, each bit corresponds to one of the 64 settings of IO delay |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:63| Training result, each bit corresponds to one of the 64 settings  |
+|           | of IO delay                                                      |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x10**
 
@@ -21,12 +26,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 0
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x14**
 
@@ -34,12 +46,19 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 0
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x18**
 
@@ -47,12 +66,19 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 0
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x1c**
 
@@ -60,12 +86,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 0
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x20**
 
@@ -73,12 +106,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 0
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x24**
 
@@ -86,12 +126,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 0
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x28**
 
@@ -99,12 +146,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 0
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x2c**
 
@@ -112,12 +166,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 0
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x204**
 
@@ -125,9 +186,14 @@ Please handle with care !
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 1
 
-|Bit| Description |
-|---|-------------|
-| 0:63|  Training result, each bit corresponds to one of the 64 settings of IO delay |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:63|  Training result, each bit corresponds to one of the 64 settings |
+|           |  of IO delay                                                     |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x210**
 
@@ -135,12 +201,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 1
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x214**
 
@@ -148,12 +221,19 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 1
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x218**
 
@@ -161,12 +241,19 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 1
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x21c**
 
@@ -174,12 +261,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 1
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x220**
 
@@ -187,12 +281,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 1
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x224**
 
@@ -200,12 +301,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 1
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x228**
 
@@ -213,12 +321,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 1
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x22c**
 
@@ -226,12 +341,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 1
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x404**
 
@@ -239,9 +361,14 @@ Please handle with care !
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 2
 
-|Bit| Description |
-|---|-------------|
-| 0:63|  Training result, each bit corresponds to one of the 64 settings of IO delay |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:63|  Training result, each bit corresponds to one of the 64 settings |
+|           |  of IO delay                                                     |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x410**
 
@@ -249,12 +376,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 2
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x414**
 
@@ -262,12 +396,19 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 2
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x418**
 
@@ -275,12 +416,19 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 2
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x41c**
 
@@ -288,12 +436,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 2
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x420**
 
@@ -301,12 +456,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 2
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x424**
 
@@ -314,12 +476,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 2
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x428**
 
@@ -327,12 +496,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 2
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x42c**
 
@@ -340,12 +516,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 2
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x604**
 
@@ -353,9 +536,14 @@ Please handle with care !
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 3
 
-|Bit| Description |
-|---|-------------|
-| 0:63|  Training result, each bit corresponds to one of the 64 settings of IO delay |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:63|  Training result, each bit corresponds to one of the 64 settings |
+|           |  of IO delay                                                     |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x610**
 
@@ -363,12 +551,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 3
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x614**
 
@@ -376,12 +571,19 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 3
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x618**
 
@@ -389,12 +591,19 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 3
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x61c**
 
@@ -402,12 +611,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 3
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x620**
 
@@ -415,12 +631,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 3
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x624**
 
@@ -428,12 +651,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 3
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x628**
 
@@ -441,12 +671,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 3
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x62c**
 
@@ -454,12 +691,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 3
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x804**
 
@@ -467,9 +711,14 @@ Please handle with care !
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 4
 
-|Bit| Description |
-|---|-------------|
-| 0:63|  Training result, each bit corresponds to one of the 64 settings of IO delay |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:63|  Training result, each bit corresponds to one of the 64 settings |
+|           |  of IO delay                                                     |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x810**
 
@@ -477,12 +726,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 4
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x814**
 
@@ -490,12 +746,19 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 4
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x818**
 
@@ -503,12 +766,19 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 4
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x81c**
 
@@ -516,12 +786,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 4
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x820**
 
@@ -529,12 +806,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 4
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x824**
 
@@ -542,12 +826,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 4
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x828**
 
@@ -555,12 +846,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 4
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x82c**
 
@@ -568,12 +866,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 4
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xa04**
 
@@ -581,9 +886,14 @@ Please handle with care !
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 5
 
-|Bit| Description |
-|---|-------------|
-| 0:63|  Training result, each bit corresponds to one of the 64 settings of IO delay |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:63|  Training result, each bit corresponds to one of the 64 settings |
+|           |  of IO delay                                                     |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xa10**
 
@@ -591,12 +901,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 5
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xa14**
 
@@ -604,12 +921,19 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 5
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xa18**
 
@@ -617,12 +941,19 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 5
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xa1c**
 
@@ -630,12 +961,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 5
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xa20**
 
@@ -643,12 +981,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 5
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xa24**
 
@@ -656,12 +1001,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 5
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xa28**
 
@@ -669,12 +1021,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 5
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xa2c**
 
@@ -682,12 +1041,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 5
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xc04**
 
@@ -695,9 +1061,14 @@ Please handle with care !
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 6
 
-|Bit| Description |
-|---|-------------|
-| 0:63|  Training result, each bit corresponds to one of the 64 settings of IO delay |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:63|  Training result, each bit corresponds to one of the 64 settings |
+|           |  of IO delay                                                     |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xc10**
 
@@ -705,12 +1076,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 6
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xc14**
 
@@ -718,17 +1096,29 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 6
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
-| 0:5|  Rank 0 CLK phase shift, low |
-| 6:11|  Rank 1 CLK phase shift, low |
-| 12:17|  Rank 2 CLK phase shift, low |
-| 18:23|  Rank 3 CLK phase shift, low |
-| 24:27|  Rankmap to enable clock crossover on |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|        0:5|                                      Rank 0 CLK phase shift, low |
++-----------+------------------------------------------------------------------+
+|       6:11|                                      Rank 1 CLK phase shift, low |
++-----------+------------------------------------------------------------------+
+|      12:17|                                      Rank 2 CLK phase shift, low |
++-----------+------------------------------------------------------------------+
+|      18:23|                                      Rank 3 CLK phase shift, low |
++-----------+------------------------------------------------------------------+
+|      24:27|                             Rankmap to enable clock crossover on |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xc18**
 
@@ -736,16 +1126,27 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 6
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
-| 0 |  Rank 0 CLK phase shift, high |
-| 1 |  Rank 1 CLK phase shift, high |
-| 2 |  Rank 2 CLK phase shift, high |
-| 3 |  Rank 3 CLK phase shift, high |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|         0 |                                     Rank 0 CLK phase shift, high |
++-----------+------------------------------------------------------------------+
+|         1 |                                     Rank 1 CLK phase shift, high |
++-----------+------------------------------------------------------------------+
+|         2 |                                     Rank 2 CLK phase shift, high |
++-----------+------------------------------------------------------------------+
+|         3 |                                     Rank 3 CLK phase shift, high |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xc1c**
 
@@ -753,12 +1154,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 6
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xc20**
 
@@ -766,12 +1174,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 6
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xc24**
 
@@ -779,12 +1194,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 6
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xc28**
 
@@ -792,12 +1214,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 6
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xc2c**
 
@@ -805,12 +1234,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 6
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xe04**
 
@@ -818,9 +1254,14 @@ Please handle with care !
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 7
 
-|Bit| Description |
-|---|-------------|
-| 0:63|  Training result, each bit corresponds to one of the 64 settings of IO delay |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:63|  Training result, each bit corresponds to one of the 64 settings |
+|           |  of IO delay                                                     |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xe10**
 
@@ -828,12 +1269,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 7
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xe14**
 
@@ -841,12 +1289,19 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 7
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xe18**
 
@@ -854,12 +1309,19 @@ Please handle with care !
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 7
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xe1c**
 
@@ -867,12 +1329,19 @@ Please handle with care !
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 7
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  IO phase shift in 1/64th DCKs |
-| 6:11|  DQS phase shift on rising edge in 1/64 DCKs |
-| 16:18|  IO delay in DCKs |
-| 20:25|  DQS phase shift on falling edge in 1/64 DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                    IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       6:11|                      DQS phase shift on rising edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+|      16:18|                                                 IO delay in DCKs |
++-----------+------------------------------------------------------------------+
+|      20:25|                     DQS phase shift on falling edge in 1/64 DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xe20**
 
@@ -880,12 +1349,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 7
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xe24**
 
@@ -893,12 +1369,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 7
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xe28**
 
@@ -906,12 +1389,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 7
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0xe2c**
 
@@ -919,12 +1409,19 @@ Please handle with care !
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 7
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  DQ IO phase shift in 1/64th DCKs |
-| 8:13|  DQS IO phase shift in 1/64th DCKs |
-| 15:17|  DQS IO phase shift in DCKs |
-| 20 |  DQ IO phase shift in DCKs |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                 DQ IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|       8:13|                                DQS IO phase shift in 1/64th DCKs |
++-----------+------------------------------------------------------------------+
+|      15:17|                                       DQS IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+|        20 |                                        DQ IO phase shift in DCKs |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x1810**
 
@@ -932,11 +1429,17 @@ Please handle with care !
 
 *Desc:*  COMP1 Register,  Channel 0
 
-|Bit| Description |
-|---|-------------|
-| 9:11|  ODT |
-| 21:23|  CLK drive up |
-| 27:29|  CTRL drive up |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       9:11|                                                              ODT |
++-----------+------------------------------------------------------------------+
+|      21:23|                                                     CLK drive up |
++-----------+------------------------------------------------------------------+
+|      27:29|                                                    CTRL drive up |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x320c**
 
@@ -944,13 +1447,21 @@ Please handle with care !
 
 *Desc:*  Command crossover enable Register,  Channel 0
 
-|Bit| Description |
-|---|-------------|
-| 0:5|  CLK phase, low |
-| 12 |  CLK phase, high |
-| 14 |  Enable hardware |
-| 17 |  Enable on slot 1 |
-| 27 |  Enable on slot 2 |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:5|                                                   CLK phase, low |
++-----------+------------------------------------------------------------------+
+|        12 |                                                  CLK phase, high |
++-----------+------------------------------------------------------------------+
+|        14 |                                                  Enable hardware |
++-----------+------------------------------------------------------------------+
+|        17 |                                                 Enable on slot 1 |
++-----------+------------------------------------------------------------------+
+|        27 |                                                 Enable on slot 2 |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x3714**
 
@@ -958,9 +1469,13 @@ Please handle with care !
 
 *Desc:*  COMP2 Register
 
-|Bit| Description |
-|---|-------------|
-| 0:31|  COMP2 value |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:31|                                                      COMP2 value |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4000**
 
@@ -968,13 +1483,21 @@ Please handle with care !
 
 *Desc:*  TC_DBP - Timing of DDR - Bin Parameter Register,  Channel 0
 
-|Bit| Description |
-|---|-------------|
-| 0:3|  tRCD |
-| 4:7|  tRP |
-| 8:11|  CAS |
-| 12:15|  CWL |
-| 16:19|  tRAS |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:3|                                                             tRCD |
++-----------+------------------------------------------------------------------+
+|        4:7|                                                              tRP |
++-----------+------------------------------------------------------------------+
+|       8:11|                                                              CAS |
++-----------+------------------------------------------------------------------+
+|      12:15|                                                              CWL |
++-----------+------------------------------------------------------------------+
+|      16:19|                                                             tRAS |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4004**
 
@@ -982,16 +1505,32 @@ Please handle with care !
 
 *Desc:*  TC_RAP - Timing of DDR - Regular Access Parameters Register,  Channel 0
 
-|Bit| Description |
-|---|-------------|
-| 0:3|  tRRD |
-| 4:7|  tRTP |
-| 8:11|  CKE |
-| 12:15|  WTR |
-| 16:19|  tFAW |
-| 24:27|  tWR |
-| 29 |  Command 3-state options, 0: Drive when channel is active, tri-state when inactive, 1: Always drive command bus |
-| 30:31|  CMD stretch, 00: 1N, 10: 2N, 11: 3N |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:3|                                                             tRRD |
++-----------+------------------------------------------------------------------+
+|        4:7|                                                             tRTP |
++-----------+------------------------------------------------------------------+
+|       8:11|                                                              CKE |
++-----------+------------------------------------------------------------------+
+|      12:15|                                                              WTR |
++-----------+------------------------------------------------------------------+
+|      16:19|                                                             tFAW |
++-----------+------------------------------------------------------------------+
+|      24:27|                                                              tWR |
++-----------+------------------------------------------------------------------+
+|        29 |  Command 3-state options                                         |
+|           | - 0: Drive when channel is active, tri-state when inactive,      |
+|           | - 1: Always drive command bus                                    |
++-----------+------------------------------------------------------------------+
+|      30:31|  CMD stretch,                                                    |
+|           | - 00b: 1N,                                                       |
+|           | - 10b: 2N,                                                       |
+|           | - 11b: 3N                                                        |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x400c**
 
@@ -999,12 +1538,19 @@ Please handle with care !
 
 *Desc:*  OTHP ODT control Register,  Channel 0
 
-|Bit| Description |
-|---|-------------|
-| 0:3|  tXPDLL ? |
-| 5:7|  tXP ? |
-| 16:17|  ODT stretch |
-| 18:19|  ODT stretch |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:3|                                                         tXPDLL ? |
++-----------+------------------------------------------------------------------+
+|        5:7|                                                            tXP ? |
++-----------+------------------------------------------------------------------+
+|      16:17|                                                      ODT stretch |
++-----------+------------------------------------------------------------------+
+|      18:19|                                                      ODT stretch |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x401c**
 
@@ -1012,10 +1558,15 @@ Please handle with care !
 
 *Desc:*  OTHP Workaround (SandyBridge only) Register,  Channel 0
 
-|Bit| Description |
-|---|-------------|
-| 12:13|  ODT stretch |
-| 14:15|  ODT stretch |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|      12:13|                                                      ODT stretch |
++-----------+------------------------------------------------------------------+
+|      14:15|                                                      ODT stretch |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4024**
 
@@ -1023,12 +1574,19 @@ Please handle with care !
 
 *Desc:*  Rounttrip time Register,  Channel 0
 
-|Bit| Description |
-|---|-------------|
-| 0:7|  RTT Rank 0 DIMM 0 |
-| 8:15|  RTT Rank 1 DIMM 0 |
-| 16:23|  RTT Rank 0 DIMM 1 |
-| 24:31|  RTT Rank 1 DIMM 1 |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:7|                                                RTT Rank 0 DIMM 0 |
++-----------+------------------------------------------------------------------+
+|       8:15|                                                RTT Rank 1 DIMM 0 |
++-----------+------------------------------------------------------------------+
+|      16:23|                                                RTT Rank 0 DIMM 1 |
++-----------+------------------------------------------------------------------+
+|      24:31|                                                RTT Rank 1 DIMM 1 |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4028**
 
@@ -1036,13 +1594,21 @@ Please handle with care !
 
 *Desc:*  SC_IO_LATENCY Register,  Channel 0
 
-|Bit| Description |
-|---|-------------|
-| 0:3|  IO latency Rank 0 DIMM 0 |
-| 4:7|  IO latency Rank 1 DIMM 0 |
-| 8:11|  IO latency Rank 0 DIMM 1 |
-| 12:15|  IO latency Rank 1 DIMM 1 |
-| 16:21|  Rount trip  - I/O compensation |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:3|                                         IO latency Rank 0 DIMM 0 |
++-----------+------------------------------------------------------------------+
+|        4:7|                                         IO latency Rank 1 DIMM 0 |
++-----------+------------------------------------------------------------------+
+|       8:11|                                         IO latency Rank 0 DIMM 1 |
++-----------+------------------------------------------------------------------+
+|      12:15|                                         IO latency Rank 1 DIMM 1 |
++-----------+------------------------------------------------------------------+
+|      16:21|                                   Rount trip  - I/O compensation |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4200**
 
@@ -1050,11 +1616,17 @@ Please handle with care !
 
 *Desc:*  RAM training queue, address Register,  Channel 0,  queue idx 0
 
-|Bit| Description |
-|---|-------------|
-| 0:15|  Address |
-| 20:22|  Bank address |
-| 24:25|  Slotrank |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:15|                                                          Address |
++-----------+------------------------------------------------------------------+
+|      20:22|                                                     Bank address |
++-----------+------------------------------------------------------------------+
+|      24:25|                                                         Slotrank |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4204**
 
@@ -1062,11 +1634,17 @@ Please handle with care !
 
 *Desc:*  RAM training queue, address Register,  Channel 0,  queue idx 1
 
-|Bit| Description |
-|---|-------------|
-| 0:15|  Address |
-| 20:22|  Bank address |
-| 24:25|  Slotrank |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:15|                                                          Address |
++-----------+------------------------------------------------------------------+
+|      20:22|                                                     Bank address |
++-----------+------------------------------------------------------------------+
+|      24:25|                                                         Slotrank |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4208**
 
@@ -1074,11 +1652,17 @@ Please handle with care !
 
 *Desc:*  RAM training queue, address Register,  Channel 0,  queue idx 2
 
-|Bit| Description |
-|---|-------------|
-| 0:15|  Address |
-| 20:22|  Bank address |
-| 24:25|  Slotrank |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:15|                                                          Address |
++-----------+------------------------------------------------------------------+
+|      20:22|                                                     Bank address |
++-----------+------------------------------------------------------------------+
+|      24:25|                                                         Slotrank |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x420c**
 
@@ -1086,11 +1670,17 @@ Please handle with care !
 
 *Desc:*  RAM training queue, address Register,  Channel 0,  queue idx 3
 
-|Bit| Description |
-|---|-------------|
-| 0:15|  Address |
-| 20:22|  Bank address |
-| 24:25|  Slotrank |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:15|                                                          Address |
++-----------+------------------------------------------------------------------+
+|      20:22|                                                     Bank address |
++-----------+------------------------------------------------------------------+
+|      24:25|                                                         Slotrank |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4220**
 
@@ -1098,11 +1688,17 @@ Please handle with care !
 
 *Desc:*  RAM training queue, command IO Register,  Channel 0,  queue idx 0
 
-|Bit| Description |
-|---|-------------|
-| 0 |  !RAS |
-| 1 |  !CAS |
-| 2 |  !WE |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|         0 |                                                             !RAS |
++-----------+------------------------------------------------------------------+
+|         1 |                                                             !CAS |
++-----------+------------------------------------------------------------------+
+|         2 |                                                              !WE |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4224**
 
@@ -1110,11 +1706,17 @@ Please handle with care !
 
 *Desc:*  RAM training queue, command IO Register,  Channel 0,  queue idx 1
 
-|Bit| Description |
-|---|-------------|
-| 0 |  !RAS |
-| 1 |  !CAS |
-| 2 |  !WE |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|         0 |                                                             !RAS |
++-----------+------------------------------------------------------------------+
+|         1 |                                                             !CAS |
++-----------+------------------------------------------------------------------+
+|         2 |                                                              !WE |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4228**
 
@@ -1122,11 +1724,17 @@ Please handle with care !
 
 *Desc:*  RAM training queue, command IO Register,  Channel 0,  queue idx 2
 
-|Bit| Description |
-|---|-------------|
-| 0 |  !RAS |
-| 1 |  !CAS |
-| 2 |  !WE |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|         0 |                                                             !RAS |
++-----------+------------------------------------------------------------------+
+|         1 |                                                             !CAS |
++-----------+------------------------------------------------------------------+
+|         2 |                                                              !WE |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x422c**
 
@@ -1134,11 +1742,17 @@ Please handle with care !
 
 *Desc:*  RAM training queue, command IO Register,  Channel 0,  queue idx 3
 
-|Bit| Description |
-|---|-------------|
-| 0 |  !RAS |
-| 1 |  !CAS |
-| 2 |  !WE |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|         0 |                                                             !RAS |
++-----------+------------------------------------------------------------------+
+|         1 |                                                             !CAS |
++-----------+------------------------------------------------------------------+
+|         2 |                                                              !WE |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4230**
 
@@ -1146,9 +1760,13 @@ Please handle with care !
 
 *Desc:*  RAM training queue, cooldown Register,  Channel 0,  queue idx 0
 
-|Bit| Description |
-|---|-------------|
-| 16:31|  Clock cycles to wait after command |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|      16:31|                               Clock cycles to wait after command |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4234**
 
@@ -1156,9 +1774,13 @@ Please handle with care !
 
 *Desc:*  RAM training queue, cooldown Register,  Channel 0,  queue idx 1
 
-|Bit| Description |
-|---|-------------|
-| 16:31|  Clock cycles to wait after command |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|      16:31|                               Clock cycles to wait after command |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4238**
 
@@ -1166,9 +1788,13 @@ Please handle with care !
 
 *Desc:*  RAM training queue, cooldown Register,  Channel 0,  queue idx 2
 
-|Bit| Description |
-|---|-------------|
-| 16:31|  Clock cycles to wait after command |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|      16:31|                               Clock cycles to wait after command |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x423c**
 
@@ -1176,9 +1802,13 @@ Please handle with care !
 
 *Desc:*  RAM training queue, cooldown Register,  Channel 0,  queue idx 3
 
-|Bit| Description |
-|---|-------------|
-| 16:31|  Clock cycles to wait after command |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|      16:31|                               Clock cycles to wait after command |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4284**
 
@@ -1186,10 +1816,15 @@ Please handle with care !
 
 *Desc:*  RAM training queue, cooldown Register,  Channel 0
 
-|Bit| Description |
-|---|-------------|
-| 0 |  Start executing DRAM command queue |
-| 16:19|  (Number of queued commands - 1) * 4 |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|         0 |                               Start executing DRAM command queue |
++-----------+------------------------------------------------------------------+
+|      16:19|                              (Number of queued commands - 1) * 4 |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4298**
 
@@ -1197,11 +1832,19 @@ Please handle with care !
 
 *Desc:*  TC - Refresh parameters Register,  Channel 0
 
-|Bit| Description |
-|---|-------------|
-| 0:15|  tREFI, average period between refresh in DCLK cycles |
-| 16:24|  tRFC, Time of refresh, from beginning of refresh until next ACT or refresh is allowed in DCLK cycles |
-| 25:32|  tREFIx9, Maximum time allowed between refreshes to a rank. Should be programmed to 8.9 * tREFI / 1024 |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:15|             tREFI, average period between refresh in DCLK cycles |
++-----------+------------------------------------------------------------------+
+|      16:24|  tRFC, Time of refresh, from beginning of refresh until next ACT |
+|           |  or refresh is allowed in DCLK cycles                            |
++-----------+------------------------------------------------------------------+
+|      25:32|  tREFIx9, Maximum time allowed between refreshes to a rank.      |
+|           |  Should be programmed to 8.9 * tREFI / 1024                      |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x42a4**
 
@@ -1209,12 +1852,19 @@ Please handle with care !
 
 *Desc:*  SRFTP Register,  Channel 0
 
-|Bit| Description |
-|---|-------------|
-| 0:11|  tXSDLL |
-| 12:15|  tXS_offset |
-| 16:25|  tZQOPER |
-| 28:31|  tMOD |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:11|                                                           tXSDLL |
++-----------+------------------------------------------------------------------+
+|      12:15|                                                       tXS_offset |
++-----------+------------------------------------------------------------------+
+|      16:25|                                                          tZQOPER |
++-----------+------------------------------------------------------------------+
+|      28:31|                                                             tMOD |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4c20**
 
@@ -1222,9 +1872,13 @@ Please handle with care !
 
 *Desc:*  Scheduler parameters Register
 
-|Bit| Description |
-|---|-------------|
-| 0:31|  scheduler parameters |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:31|                                             scheduler parameters |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4cb0**
 
@@ -1232,10 +1886,26 @@ Please handle with care !
 
 *Desc:*  PM - Power-down configuration, Broadcast Register
 
-|Bit| Description |
-|---|-------------|
-| 0:7|  PDWN_idle_counter, This defines the rank indle period in DCLK cycles that causes power-down entrance. The minimum value should be greater then or equal to the worst roundtrip time plus burst length. |
-| 8:10|  PDWN_mode, selects the mode of power-down: 0x0: No power down, 0x1: APD, 0x2: PPD, 0x3: APD+PPD, 0x4: Reserved, 0x5: Reserved, 0x6: PPD-DLLoff, 0x7: APD+PPD+DLLof |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:7|  PDWN_idle_counter, This defines the rank indle period in DCLK   |
+|           |  cycles that causes power-down entrance. The minimum value       |
+|           |  should be greater then or equal to the worst roundtrip time     |
+|           |  plus burst length.                                              |
++-----------+------------------------------------------------------------------+
+|       8:10|  PDWN_mode, selects the mode of power-down:                      |
+|           | - 0x0: No power down,                                            |
+|           | - 0x1: APD,                                                      |
+|           | - 0x2: PPD,                                                      |
+|           | - 0x3: APD+PPD,                                                  |
+|           | - 0x4: Reserved,                                                 |
+|           | - 0x5: Reserved,                                                 |
+|           | - 0x6: PPD-DLLoff,                                               |
+|           | - 0x7: APD+PPD+DLLof                                             |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4e80**
 
@@ -1243,9 +1913,13 @@ Please handle with care !
 
 *Desc:*  Power mode preset Register
 
-|Bit| Description |
-|---|-------------|
-| 0:31|  Power mode preset |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:31|                                                Power mode preset |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4e94**
 
@@ -1253,11 +1927,20 @@ Please handle with care !
 
 *Desc:*  TC - Refresh parameters Register
 
-|Bit| Description |
-|---|-------------|
-| 0:7|  OREF_RI, Rank idle period that defines an oppertunity for refresh |
-| 8:11|  Refresh_HP_WM, tREFI count level that turns the refresh priority to high |
-| 12:15|  Refresh_panic_WM, tREFI count level in which the refresh priority is panic |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:7|  OREF_RI, Rank idle period that defines an oppertunity for       |
+|           |  refresh                                                         |
++-----------+------------------------------------------------------------------+
+|       8:11|  Refresh_HP_WM, tREFI count level that turns the refresh         |
+|           |  priority to high                                                |
++-----------+------------------------------------------------------------------+
+|      12:15|  Refresh_panic_WM, tREFI count level in which the refresh        |
+|           |  priority is panic                                               |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x4e98**
 
@@ -1265,11 +1948,19 @@ Please handle with care !
 
 *Desc:*  TC - Refresh parameters Register
 
-|Bit| Description |
-|---|-------------|
-| 0:15|  tREFI, average period between refresh in DCLK cycles |
-| 16:24|  tRFC, Time of refresh, from beginning of refresh until next ACT or refresh is allowed in DCLK cycles |
-| 25:32|  tREFIx9, Maximum time allowed between refreshes to a rank. Should be programmed to 8.9 * tREFI / 1024 |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:15|             tREFI, average period between refresh in DCLK cycles |
++-----------+------------------------------------------------------------------+
+|      16:24|  tRFC, Time of refresh, from beginning of refresh until next ACT |
+|           |  or refresh is allowed in DCLK cycles                            |
++-----------+------------------------------------------------------------------+
+|      25:32|  tREFIx9, Maximum time allowed between refreshes to a rank.      |
+|           |  Should be programmed to 8.9 * tREFI / 1024                      |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x5000**
 
@@ -1277,11 +1968,26 @@ Please handle with care !
 
 *Desc:*  Global channel size control Register
 
-|Bit| Description |
-|---|-------------|
-| 0:1|  CH_A, defines the largest channel. 00: Channel 0, 01: Channel 1, 10: Channel 2 |
-| 2:3|  CH_B, defines the mid-size channel. 00: Channel 0, 01: Channel 1, 10: Channel 2 |
-| 2:3|  CH_C, defines the smallest channel. 00: Channel 0, 01: Channel 1, 10: Channel 2, CH_C is 10 if only 2 channels are supported |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:1|  CH_A, defines the largest channel.                              |
+|           | - 00b: Channel 0,                                                |
+|           | - 01b: Channel 1,                                                |
+|           | - 10b: Channel 2                                                 |
++-----------+------------------------------------------------------------------+
+|        2:3|  CH_B, defines the mid-size channel.                             |
+|           | - 00b: Channel 0,                                                |
+|           | - 01b: Channel 1,                                                |
+|           | - 10b: Channel 2                                                 |
++-----------+------------------------------------------------------------------+
+|        2:3|  CH_C, defines the smallest channel.                             |
+|           | - 00b: Channel 0,                                                |
+|           | - 01b: Channel 1,                                                |
+|           | - 10b: Channel 2, CH_C is 10 if only 2 channels are supported    |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x5004**
 
@@ -1289,20 +1995,41 @@ Please handle with care !
 
 *Desc:*  Address Decode Register,  Channel 0
 
-|Bit| Description |
-|---|-------------|
-| 0:7|  DIMMA size in 256 MB multiples |
-| 16 |  DIMM A select (DAS) Slot to DIMM mapping, 0: DIMMA, DIMMB, 1: DIMMB, DIMMA |
-| 17 |  DIMM A number of ranks |
-| 19 |  DIMM A DRAM width x8 / x16 |
-| 8:15|  DIMM B size in 256 MB multiples |
-| 18 |  DIMM B number of ranks |
-| 20 |  DIMM B DRAM width in 8x / x16 |
-| 21 |  Rank interleave enable |
-| 22 |  Enhanced interleave enable |
-| 26 |  High order Rank interleave enable |
-| 27:29|  High Order Rank interleave Address. Selects on of address bits 20-27 to use for high rank interleave |
-| 24:25|  ECC, 00: No ECC active, 01: ECC is active on IO, 11: ECC is active on both IO and ECC logic |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:7|                                   DIMMA size in 256 MB multiples |
++-----------+------------------------------------------------------------------+
+|        16 |  DIMM A select (DAS) Slot to DIMM mapping,                       |
+|           | - 0: DIMMA, DIMMB,                                               |
+|           | - 1: DIMMB, DIMMA                                                |
++-----------+------------------------------------------------------------------+
+|        17 |                                           DIMM A number of ranks |
++-----------+------------------------------------------------------------------+
+|        19 |                                       DIMM A DRAM width x8 / x16 |
++-----------+------------------------------------------------------------------+
+|       8:15|                                  DIMM B size in 256 MB multiples |
++-----------+------------------------------------------------------------------+
+|        18 |                                           DIMM B number of ranks |
++-----------+------------------------------------------------------------------+
+|        20 |                                    DIMM B DRAM width in 8x / x16 |
++-----------+------------------------------------------------------------------+
+|        21 |                                           Rank interleave enable |
++-----------+------------------------------------------------------------------+
+|        22 |                                       Enhanced interleave enable |
++-----------+------------------------------------------------------------------+
+|        26 |                                High order Rank interleave enable |
++-----------+------------------------------------------------------------------+
+|      27:29|  High Order Rank interleave Address. Selects on of address bits  |
+|           |  20-27 to use for high rank interleave                           |
++-----------+------------------------------------------------------------------+
+|      24:25|  ECC,                                                            |
+|           | - 00b: No ECC active,                                            |
+|           | - 01b: ECC is active on IO,                                      |
+|           | - 11b: ECC is active on both IO and ECC logic                    |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x5030**
 
@@ -1310,11 +2037,17 @@ Please handle with care !
 
 *Desc:*  Global DDR3 control Register
 
-|Bit| Description |
-|---|-------------|
-| 1 |  DDR reset |
-| 2 |  DCLK enable |
-| 5 |  IO reset |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|         1 |                                                        DDR reset |
++-----------+------------------------------------------------------------------+
+|         2 |                                                      DCLK enable |
++-----------+------------------------------------------------------------------+
+|         5 |                                                         IO reset |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x5034**
 
@@ -1322,9 +2055,13 @@ Please handle with care !
 
 *Desc:*  Version Register
 
-|Bit| Description |
-|---|-------------|
-| 0:31|  MRC version |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:31|                                                      MRC version |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x5060**
 
@@ -1332,10 +2069,18 @@ Please handle with care !
 
 *Desc:*  PM - Self refresh config Register
 
-|Bit| Description |
-|---|-------------|
-| 0:15|  Idle_timer, The value is used when the SREF_enable field is set and defines the # of cycles that there should not be any transaction in order to enter self-refresh. |
-| 16 |  SR_Enable, enable self-refresh mechanism. Clear SREF_en and SREF_exit first.  |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:15|  Idle_timer, The value is used when the SREF_enable field is set |
+|           |  and defines the # of cycles that there should not be any        |
+|           |  transaction in order to enter self-refresh.                     |
++-----------+------------------------------------------------------------------+
+|        16 |  SR_Enable, enable self-refresh mechanism. Clear SREF_en and     |
+|           |  SREF_exit first.                                                |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x5084**
 
@@ -1343,9 +2088,13 @@ Please handle with care !
 
 *Desc:*  RCOMP status Register
 
-|Bit| Description |
-|---|-------------|
-| 16 |  Busy |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        16 |                                                             Busy |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x5090**
 
@@ -1353,9 +2102,13 @@ Please handle with care !
 
 *Desc:*  ECC - Address compare for ECC error injection Register
 
-|Bit| Description |
-|---|-------------|
-| 0:31|  Inject error when ECC_Inj_Addr_Compare[31:0] = ADDR[37:6] |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:31|        Inject error when ECC_Inj_Addr_Compare[31:0] = ADDR[37:6] |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x5094**
 
@@ -1363,9 +2116,14 @@ Please handle with care !
 
 *Desc:*  ECC - Address mask for ECC error injection Register
 
-|Bit| Description |
-|---|-------------|
-| 0:31|  Inject error when ECC_inj_Addr_Compare[31:0] = ADDR[37:6] && ECC_Inj_Addr_Mask[31:0] |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|       0:31|                   Inject error when ECC_inj_Addr_Compare[31:0] = |
+|           |  ADDR[37:6] && ECC_Inj_Addr_Mask[31:0]                           |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x5e00**
 
@@ -1373,11 +2131,18 @@ Please handle with care !
 
 *Desc:*  MC_BIOS_REQ Register
 
-|Bit| Description |
-|---|-------------|
-| 0:7|  Selected multiplier: 100Mhz [7,12], 133Mhz [3,19] |
-| 8 |  1: 100Mhz reference clock, 0: 133Mhz reference clock (IvyBridge only) |
-| 31 |  PLL busy |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:7|                Selected multiplier: 100Mhz [7,12], 133Mhz [3,19] |
++-----------+------------------------------------------------------------------+
+|         8 | - 1: 100Mhz reference clock                                      |
+|           | - 0: 133Mhz reference clock (IvyBridge only)                     |
++-----------+------------------------------------------------------------------+
+|        31 |                                                         PLL busy |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x5e04**
 
@@ -1385,9 +2150,15 @@ Please handle with care !
 
 *Desc:*  MC_BIOS_DATA Register
 
-|Bit| Description |
-|---|-------------|
-| 0:7|  Active multiplier: 100Mhz [7,12], 133Mhz [3,19] |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|        0:7|  Active multiplier:                                              |
+|           | - 100Mhz [7,12],                                                 |
+|           | - 133Mhz [3,19]                                                  |
++-----------+------------------------------------------------------------------+
+```
 
 **MCHBAR + 0x5f08**
 
@@ -1395,6 +2166,9 @@ Please handle with care !
 
 *Desc:*  RCOMP control Register
 
-|Bit| Description |
-|---|-------------|
-| 8 |  Force RCOMP |
+```eval_rst
++-----------+------------------------------------------------------------------+
+| Bit       | Description                                                      |
++===========+==================================================================+
+|         8 |                                                      Force RCOMP |
++-----------+------------------------------------------------------------------+

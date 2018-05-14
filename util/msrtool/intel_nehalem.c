@@ -1657,28 +1657,28 @@ const struct msrdef intel_nehalem_msrs[] = {
 	{0x40b, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC2_MISC", "", {
 		{ BITS_EOT }
 	}},
-	{0x40c, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_CTL", "", {
+	{0x40c, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x40d, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_STATUS", "", {
+	{0x40d, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x40e, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_ADDR", "", {
+	{0x40e, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_ADDR", "", {
 		{ BITS_EOT }
 	}},
-	{0x40f, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_MISC", "", {
+	{0x40f, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_MISC", "", {
 		{ BITS_EOT }
 	}},
-	{0x410, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_CTL", "", {
+	{0x410, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x411, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_STATUS", "", {
+	{0x411, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x412, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_ADDR", "", {
+	{0x412, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_ADDR", "", {
 		{ BITS_EOT }
 	}},
-	{0x413, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_MISC", "", {
+	{0x413, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_MISC", "", {
 		{ BITS_EOT }
 	}},
 	{0x414, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC5_CTL", "", {

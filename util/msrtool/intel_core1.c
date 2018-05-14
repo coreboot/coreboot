@@ -70,13 +70,13 @@ const struct msrdef intel_core1_msrs[] = {
 	{0x402, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC0_ADDR", "", {
 		{ BITS_EOT }
 	}},
-	{0x40c, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_CTL", "", {
+	{0x40c, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x40d, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_STATUS", "", {
+	{0x40d, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x40e, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_ADDR", "", {
+	{0x40e, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_ADDR", "", {
 		{ BITS_EOT }
 	}},
 	{0x10, MSRTYPE_RDWR, MSR2(0,0), "IA32_TIME_STAMP_COUNTER", "", {

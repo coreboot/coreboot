@@ -19,7 +19,7 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <southbridge/intel/ibexpeak/nvs.h>
-#include <southbridge/intel/ibexpeak/pch.h>
+#include <southbridge/intel/common/pmutil.h>
 #include <southbridge/intel/ibexpeak/me.h>
 #include <southbridge/intel/common/finalize.h>
 #include <northbridge/intel/nehalem/nehalem.h>

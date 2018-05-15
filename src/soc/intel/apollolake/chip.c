@@ -538,6 +538,7 @@ static void apl_fsp_silicon_init_params_cb(struct soc_intel_apollolake_config
 static void glk_fsp_silicon_init_params_cb(
 	struct soc_intel_apollolake_config *cfg, FSP_S_CONFIG *silconfig)
 {
+#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
 	silconfig->Gmm = 0;
 
 	/* On Geminilake, we need to override the default FSP PCIe de-emphasis
@@ -550,6 +551,13 @@ static void glk_fsp_silicon_init_params_cb(
 	memcpy(silconfig->PcieRpSelectableDeemphasis,
 		cfg->pcie_rp_deemphasis_enable,
 		sizeof(silconfig->PcieRpSelectableDeemphasis));
+	/*
+	 * FSP does not know what the clock requirements are for the
+	 * device on SPI bus, hence it should not modify what coreboot
+	 * has set up. Hence skipping in FSP.
+	 */
+	silconfig->SkipSpiPCP = 1;
+#endif
 }
 
 void __weak mainboard_devtree_update(struct device *dev)

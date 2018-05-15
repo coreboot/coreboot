@@ -315,16 +315,20 @@ static void soc_memory_init_params(FSPM_UPD *mupd)
 
 	m_cfg->PrmrrSize = config->PrmrrSize;
 
-	/* FSP performs a PERST# signal deassertion for PCIe ports with
-	 * the GPIO address specified in these UPDs. Over-ride the default
-	 * addresses with 0 to bypass PERST# signal deassertion in FSP.
+	/*
+	 * CpuMemoryTest in FSP tests 0 to 1M of the RAM after MRC init.
+	 * With PAGING_IN_CACHE_AS_RAM enabled for GLK, there was no page
+	 * table entry for this range which caused a page fault. Since this
+	 * test is anyway not exhaustive, skipping the memory test in FSP.
 	 */
-	m_cfg->RootPort0Perst = 0;
-	m_cfg->RootPort1Perst = 0;
-	m_cfg->RootPort2Perst = 0;
-	m_cfg->RootPort3Perst = 0;
-	m_cfg->RootPort4Perst = 0;
-	m_cfg->RootPort5Perst = 0;
+	m_cfg->SkipMemoryTestUpd = 1;
+
+	/*
+	 * PCIe power sequence can be done from within FSP when provided
+	 * with the GPIOs used for PERST to FSP. Since this is done in
+	 * coreboot, skipping the PCIe power sequence done by FSP.
+	 */
+	m_cfg->SkipPciePowerSequence = 1;
 #endif
 }
 

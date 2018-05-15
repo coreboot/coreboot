@@ -1708,9 +1708,16 @@ typedef struct {
 **/
   UINT8                       UsbPdoProgramming;
 
-/** Offset 0x03AA
+/** Offset 0x03AA - Skip LPSS SPI Private Clock Parameter Programming
+  When this is skipped, boot loader must program LPSS SPI PCP. 0: Initialize(Default),
+  <b>1: Skip
+  $EN_DIS
 **/
-  UINT8                       ReservedFspsUpd[6];
+  UINT8                       SkipSpiPCP;
+
+/** Offset 0x03AB
+**/
+  UINT8                       ReservedFspsUpd[5];
 } FSP_S_CONFIG;
 
 /** Fsp S SGX Configuration
@@ -1764,7 +1771,7 @@ typedef struct {
 
 /** Offset 0x03F8
 **/
-  UINT8                       ReservedFspsSgxUpd[6];
+  UINT8                       ReservedFspsSgxUpd[8];
 } FSP_S_SGX_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -1787,7 +1794,11 @@ typedef struct {
 **/
   FSP_S_SGX_CONFIG            FspsSgxConfig;
 
-/** Offset 0x03FE
+/** Offset 0x0400
+**/
+  UINT8                       UnusedUpdSpace9[6];
+
+/** Offset 0x0406
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

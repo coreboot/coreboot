@@ -998,9 +998,23 @@ typedef struct {
 **/
   UINT32                      CpuPeiApWakeupBufferAddr;
 
-/** Offset 0x0180
+/** Offset 0x0180 - SkipPciePowerSequence
+  UPD To Skip PciePowerSequence, 0: Initialize(Default), 1: Skip
 **/
-  UINT8                       ReservedFspmUpd[4];
+  UINT8                       SkipPciePowerSequence;
+
+/** Offset 0x0181
+**/
+  UINT8                       RevAligmentFspmUpd[7];
+
+/** Offset 0x0188 - SkipMemoryTestUpd
+  UPD To Skip CpuMemoryTest, 0: Initialize(Default), 1: Skip
+**/
+  UINT8                       SkipMemoryTestUpd;
+
+/** Offset 0x0189
+**/
+  UINT8                       ReservedFspmUpd[7];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration
@@ -1019,9 +1033,9 @@ typedef struct {
 **/
   FSP_M_CONFIG                FspmConfig;
 
-/** Offset 0x0184
+/** Offset 0x0190
 **/
-  UINT8                       UnusedUpdSpace1[130];
+  UINT8                       UnusedUpdSpace1[118];
 
 /** Offset 0x0206
 **/

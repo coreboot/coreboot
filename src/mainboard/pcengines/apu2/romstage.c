@@ -182,6 +182,10 @@ static void early_lpc_init(void)
 	//
 	// Configure output disabled, value low, pull up/down disabled
 	//
+#if CONFIG_BOARD_PCENGINES_APU5
+	configure_gpio(IOMUX_GPIO_22, Function0, GPIO_22, setting);
+#endif
+
 #if CONFIG_BOARD_PCENGINES_APU2 || CONFIG_BOARD_PCENGINES_APU3 || CONFIG_BOARD_PCENGINES_APU4
 	configure_gpio(IOMUX_GPIO_32, Function0, GPIO_32, setting);
 #endif

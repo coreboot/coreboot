@@ -319,13 +319,12 @@ static void mainboard_final(void *chip_info)
 	write_gpio(GPIO_58, 1);
 	write_gpio(GPIO_59, 1);
 
-#if CONFIG_BOARD_PCENGINES_APU2 || CONFIG_BOARD_PCENGINES_APU3 || CONFIG_BOARD_PCENGINES_APU4
 	if (!check_console()) {
 
 		//
 		// The console is disabled, check if S1 is pressed and enable if so
 		//
-		if (!read_gpio(GPIO_32)) {
+		if (!read_gpio(GPIO_32) || (IS_ENABLED(CONFIG_BOARD_PCENGINES_APU5) && !read_gpio(GPIO_22))) {
 
 			printk(BIOS_INFO, "S1 PRESSED\n");
 
@@ -402,7 +401,6 @@ static void mainboard_final(void *chip_info)
 			free(bootorder_copy);
 		}
 	}
-#endif
 }
 
 /*

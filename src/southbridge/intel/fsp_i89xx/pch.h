@@ -64,7 +64,7 @@ void intel_pch_finalize_smm(void);
 int pch_silicon_revision(void);
 int pch_silicon_type(void);
 int pch_silicon_supported(int type, int rev);
-void pch_enable(device_t dev);
+void pch_enable(struct device *dev);
 #if IS_ENABLED(CONFIG_ELOG)
 void pch_log_state(void);
 #endif

@@ -50,7 +50,7 @@ static inline void reset_system(void)
 
 static void pch_enable_lpc(void)
 {
-	device_t dev = PCH_LPC_DEV;
+	pci_devfn_t dev = PCH_LPC_DEV;
 
 	/* Set COM1/COM2 decode range */
 	pci_write_config16(dev, LPC_IO_DEC, 0x0010);

@@ -18,6 +18,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/pci_ids.h>
+#include <device/pci_def.h>
 #include <halt.h>
 #include <string.h>
 #include <timestamp.h>
@@ -45,11 +46,17 @@ void intel_early_me_status(void)
 {
 	struct me_hfs hfs;
 	struct me_gmes gmes;
+	u32 id = pci_read_config32(PCH_ME_DEV, PCI_VENDOR_ID);
 
-	pci_read_dword_ptr(&hfs, PCI_ME_HFS);
-	pci_read_dword_ptr(&gmes, PCI_ME_GMES);
+	if ((id == 0xffffffff) || (id == 0x00000000) ||
+	    (id == 0x0000ffff) || (id == 0xffff0000)) {
+		printk(BIOS_DEBUG, "Missing Intel ME PCI device.\n");
+	} else {
+		pci_read_dword_ptr(&hfs, PCI_ME_HFS);
+		pci_read_dword_ptr(&gmes, PCI_ME_GMES);
 
-	intel_me_status(&hfs, &gmes);
+		intel_me_status(&hfs, &gmes);
+	}
 }
 
 int intel_early_me_init(void)

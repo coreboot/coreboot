@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include <rmodule.h>
 #include <arch/cpu.h>
+#include <commonlib/helpers.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
@@ -229,11 +230,11 @@ static void asmlinkage ap_init(unsigned int cpu)
 
 static void setup_default_sipi_vector_params(struct sipi_params *sp)
 {
-	sp->gdt = (uint32_t)&gdt;
-	sp->gdtlimit = (uint32_t)&gdt_end - (u32)&gdt - 1;
-	sp->idt_ptr = (uint32_t)&idtarg;
+	sp->gdt = (uintptr_t)&gdt;
+	sp->gdtlimit = (uintptr_t)&gdt_end - (uintptr_t)&gdt - 1;
+	sp->idt_ptr = (uintptr_t)&idtarg;
 	sp->stack_size = CONFIG_STACK_SIZE;
-	sp->stack_top = (uint32_t)&_estack;
+	sp->stack_top = ALIGN_DOWN((uintptr_t)&_estack, CONFIG_STACK_SIZE);
 	/* Adjust the stack top to take into account cpu_info. */
 	sp->stack_top -= sizeof(struct cpu_info);
 }

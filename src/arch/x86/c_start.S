@@ -19,9 +19,11 @@
 .global _stack
 .global _estack
 
+/* Stack alignment is not enforced with rmodule loader, reserve one
+ * extra CPU such that alignment can be enforced on entry. */
 .align CONFIG_STACK_SIZE
 _stack:
-.space CONFIG_MAX_CPUS*CONFIG_STACK_SIZE
+.space (CONFIG_MAX_CPUS+1)*CONFIG_STACK_SIZE
 _estack:
 #if IS_ENABLED(CONFIG_COOP_MULTITASKING)
 .global thread_stacks
@@ -70,8 +72,9 @@ _start:
 	rep
 	stosl
 
-	/* set new stack */
+	/* Set new stack with enforced alignment. */
 	movl	$_estack, %esp
+	andl	$(~(CONFIG_STACK_SIZE-1)), %esp
 
 #if IS_ENABLED(CONFIG_COOP_MULTITASKING)
 	/* Push the thread pointer. */

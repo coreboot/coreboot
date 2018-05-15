@@ -263,8 +263,8 @@ volatile unsigned int secondary_cpu_index;
 int start_cpu(struct device *cpu)
 {
 	struct cpu_info *info;
-	unsigned long stack_end;
-	unsigned long stack_base;
+	uintptr_t stack_top;
+	uintptr_t stack_base;
 	unsigned long apicid;
 	unsigned int index;
 	unsigned long count;
@@ -278,23 +278,23 @@ int start_cpu(struct device *cpu)
 	/* Get an index for the new processor */
 	index = ++last_cpu_index;
 
-	/* Find end of the new processor's stack */
-	stack_end = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*index) -
-			sizeof(struct cpu_info);
-
-	stack_base = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*(index+1));
-	printk(BIOS_SPEW, "CPU%d: stack_base %p, stack_end %p\n", index,
-		(void *)stack_base, (void *)stack_end);
+	/* Find boundaries of the new processor's stack */
+	stack_top = ALIGN_DOWN((uintptr_t)_estack, CONFIG_STACK_SIZE);
+	stack_top -= (CONFIG_STACK_SIZE*index);
+	stack_base = stack_top - CONFIG_STACK_SIZE;
+	stack_top -= sizeof(struct cpu_info);
+	printk(BIOS_SPEW, "CPU%d: stack_base %p, stack_top %p\n", index,
+		(void *)stack_base, (void *)stack_top);
 	stacks[index] = (void *)stack_base;
 
 	/* Record the index and which CPU structure we are using */
-	info = (struct cpu_info *)stack_end;
+	info = (struct cpu_info *)stack_top;
 	info->index = index;
 	info->cpu   = cpu;
 	thread_init_cpu_info_non_bsp(info);
 
 	/* Advertise the new stack and index to start_cpu */
-	secondary_stack = stack_end;
+	secondary_stack = stack_top;
 	secondary_cpu_index = index;
 
 	/* Until the CPU starts up report the CPU is not enabled */

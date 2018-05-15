@@ -19,6 +19,10 @@ ramstage-y += acpi.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
+romstage-y += stage_cache.c
+ramstage-y += stage_cache.c
+postcar-y += stage_cache.c
+
 cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_2065x/microcode.bin
 
 cpu_incs-y += $(src)/cpu/intel/car/non-evict/cache_as_ram.S

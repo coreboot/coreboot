@@ -23,6 +23,7 @@
 #include <cpu/intel/romstage.h>
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>
+#include <cpu/intel/smm/gen1/smi.h>
 #include "nehalem.h"
 
 static uintptr_t smm_region_start(void)
@@ -30,6 +31,11 @@ static uintptr_t smm_region_start(void)
 	/* Base of TSEG is top of usable DRAM */
 	uintptr_t tom = pci_read_config32(PCI_DEV(0,0,0), TSEG);
 	return tom;
+}
+
+u32 northbridge_get_tseg_base(void)
+{
+	return (u32)smm_region_start & ~1;
 }
 
 void *cbmem_top(void)

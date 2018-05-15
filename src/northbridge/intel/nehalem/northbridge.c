@@ -171,13 +171,6 @@ static void mc_read_resources(struct device *dev)
 	add_fixed_resources(dev, 10);
 }
 
-u32 northbridge_get_tseg_base(void)
-{
-	struct device *dev = pcidev_on_root(0, 0);
-
-	return pci_read_config32(dev, TSEG) & ~1;
-}
-
 u32 northbridge_get_tseg_size(void)
 {
 	return CONFIG_SMM_TSEG_SIZE;

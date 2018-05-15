@@ -22,7 +22,7 @@ PREFIX  = @PREFIX@
 CFLAGS  = @CFLAGS@
 LDFLAGS = @LDFLAGS@
 
-TARGETS = geodegx2.o geodelx.o cs5536.o k8.o via_c7.o intel_pentium3_early.o intel_pentium3.o intel_pentium4_early.o intel_pentium4_later.o intel_core1.o intel_core2_early.o intel_core2_later.o intel_nehalem.o intel_atom.o
+TARGETS = geodegx2.o geodelx.o cs5536.o k8.o via_c7.o intel_pentium3_early.o intel_pentium3.o intel_pentium4_early.o intel_pentium4_later.o intel_pentium_d.o intel_core1.o intel_core2_early.o intel_core2_later.o intel_nehalem.o intel_atom.o
 SYSTEMS = linux.o darwin.o freebsd.o
 OBJS    = $(PROGRAM).o msrutils.o sys.o $(SYSTEMS) $(TARGETS)
 

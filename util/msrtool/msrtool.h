@@ -249,6 +249,10 @@ extern const struct msrdef intel_pentium4_early_msrs[];
 extern int intel_pentium4_later_probe(const struct targetdef *t, const struct cpuid_t *id);
 extern const struct msrdef intel_pentium4_later_msrs[];
 
+/* intel_pentium_d.c */
+extern int intel_pentium_d_probe(const struct targetdef *t, const struct cpuid_t *id);
+extern const struct msrdef intel_pentium_d_msrs[];
+
 /* intel_nehalem.c */
 extern int intel_nehalem_probe(const struct targetdef *t, const struct cpuid_t *id);
 extern const struct msrdef intel_nehalem_msrs[];

@@ -48,6 +48,7 @@
 #include <soc/ramstage.h>
 #include <soc/smm.h>
 #include <soc/systemagent.h>
+#include <timer.h>
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
@@ -477,9 +478,9 @@ static void post_mp_init(void)
 	smm_lock();
 #endif
 
-	mp_run_on_all_cpus(vmx_configure, NULL, 2000);
+	mp_run_on_all_cpus(vmx_configure, NULL, 2 * USECS_PER_MSEC);
 
-	mp_run_on_all_cpus(sgx_configure, NULL, 2000);
+	mp_run_on_all_cpus(sgx_configure, NULL, 14 * USECS_PER_MSEC);
 }
 
 static const struct mp_ops mp_ops = {

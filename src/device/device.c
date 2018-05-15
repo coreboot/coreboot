@@ -51,8 +51,6 @@
 #endif
 #include <timer.h>
 
-/** Linked list of ALL devices */
-struct device *all_devices = &dev_root;
 /** Pointer to the last device */
 extern struct device *last_dev;
 /** Linked list of free resources */

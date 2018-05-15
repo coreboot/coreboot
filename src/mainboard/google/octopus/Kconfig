@@ -46,6 +46,7 @@ config VARIANT_DIR
 
 config DEVICETREE
 	string
+	default "variants/bip/devicetree.cb" if BOARD_GOOGLE_BIP
 	default "variants/baseboard/devicetree.cb"
 
 config MAINBOARD_PART_NUMBER

@@ -65,33 +65,6 @@ struct device *dev_find_lapic(unsigned apic_id)
 }
 
 /**
- * Given a Device Path Type, find the device structure.
- *
- * @param prev_match The previously matched device instance.
- * @param path_type The Device Path Type.
- * @return Pointer to the device structure (if found), 0 otherwise.
- */
-struct device *dev_find_path(struct device *prev_match,
-			     enum device_path_type path_type)
-{
-	struct device *dev;
-	struct device *result = NULL;
-
-	if (prev_match == NULL)
-		prev_match = all_devices;
-	else
-		prev_match = prev_match->next;
-
-	for (dev = prev_match; dev; dev = dev->next) {
-		if (dev->path.type == path_type) {
-			result = dev;
-			break;
-		}
-	}
-	return result;
-}
-
-/**
  * Find a device of a given vendor and type.
  *
  * @param vendor A PCI vendor ID (e.g. 0x8086 for Intel).

@@ -200,8 +200,9 @@ struct device *find_dev_path(struct bus *parent, struct device_path *path);
 struct device *alloc_find_dev(struct bus *parent, struct device_path *path);
 struct device *dev_find_device(u16 vendor, u16 device, struct device *from);
 struct device *dev_find_class(unsigned int class, struct device *from);
-struct device *dev_find_path(struct device *prev_match,
-				enum device_path_type path_type);
+DEVTREE_CONST struct device *dev_find_path(
+		DEVTREE_CONST struct device *prev_match,
+		enum device_path_type path_type);
 struct device *dev_find_lapic(unsigned int apic_id);
 int dev_count_cpu(void);
 

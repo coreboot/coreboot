@@ -51,6 +51,33 @@ DEVTREE_CONST struct device *dev_find_slot(unsigned int bus,
 }
 
 /**
+ * Given a Device Path Type, find the device structure.
+ *
+ * @param prev_match The previously matched device instance.
+ * @param path_type The Device Path Type.
+ * @return Pointer to the device structure (if found), 0 otherwise.
+ */
+DEVTREE_CONST struct device *dev_find_path(
+		DEVTREE_CONST struct device *prev_match,
+		enum device_path_type path_type)
+{
+	DEVTREE_CONST struct device *dev, *result = NULL;
+
+	if (prev_match == NULL)
+		prev_match = all_devices;
+	else
+		prev_match = prev_match->next;
+
+	for (dev = prev_match; dev; dev = dev->next) {
+		if (dev->path.type == path_type) {
+			result = dev;
+			break;
+		}
+	}
+	return result;
+}
+
+/**
  * Given a device pointer, find the next PCI device.
  *
  * @param previous_dev A pointer to a PCI device structure.
@@ -59,19 +86,7 @@ DEVTREE_CONST struct device *dev_find_slot(unsigned int bus,
 DEVTREE_CONST struct device *dev_find_next_pci_device(
 		DEVTREE_CONST struct device *previous_dev)
 {
-	DEVTREE_CONST struct device *dev, *result;
-
-	if (previous_dev == NULL)
-		previous_dev = all_devices;
-
-	result = 0;
-	for (dev = previous_dev->next; dev; dev = dev->next) {
-		if (dev->path.type == DEVICE_PATH_PCI) {
-			result = dev;
-			break;
-		}
-	}
-	return result;
+	return dev_find_path(previous_dev, DEVICE_PATH_PCI);
 }
 
 /**

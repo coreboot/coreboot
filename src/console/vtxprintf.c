@@ -31,7 +31,7 @@
 
 static int skip_atoi(const char **s)
 {
-	int i=0;
+	int i = 0;
 
 	while (is_digit(**s))
 		i = i*10 + *((*s)++) - '0';
@@ -50,8 +50,8 @@ static int number(void (*tx_byte)(unsigned char byte, void *data),
 	unsigned long long inum, int base, int size, int precision, int type,
 	void *data)
 {
-	char c,sign,tmp[66];
-	const char *digits="0123456789abcdefghijklmnopqrstuvwxyz";
+	char c, sign, tmp[66];
+	const char *digits = "0123456789abcdefghijklmnopqrstuvwxyz";
 	int i;
 	int count = 0;
 #ifdef SUPPORT_64BIT_INTS
@@ -95,20 +95,25 @@ static int number(void (*tx_byte)(unsigned char byte, void *data),
 			size--;
 	}
 	i = 0;
-	if (num == 0)
-		tmp[i++]='0';
-	else while (num != 0){
-		tmp[i++] = digits[num % base];
-		num /= base;
+	if (num == 0) {
+		tmp[i++] = '0';
+	} else {
+		while (num != 0) {
+			tmp[i++] = digits[num % base];
+			num /= base;
+		}
 	}
-	if (i > precision)
+	if (i > precision) {
 		precision = i;
+	}
 	size -= precision;
-	if (!(type&(ZEROPAD+LEFT)))
+	if (!(type&(ZEROPAD+LEFT))) {
 		while (size-- > 0)
 			call_tx(' '), count++;
-	if (sign)
+	}
+	if (sign) {
 		call_tx(sign), count++;
+	}
 	if (type & SPECIAL) {
 		if (base == 8)
 			call_tx('0'), count++;
@@ -117,9 +122,10 @@ static int number(void (*tx_byte)(unsigned char byte, void *data),
 			call_tx(digits[33]), count++;
 		}
 	}
-	if (!(type & LEFT))
+	if (!(type & LEFT)) {
 		while (size-- > 0)
 			call_tx(c), count++;
+	}
 	while (i < precision--)
 		call_tx('0'), count++;
 	while (i-- > 0)
@@ -147,7 +153,7 @@ int vtxprintf(void (*tx_byte)(unsigned char byte, void *data),
 
 	int count;
 
-	for (count=0; *fmt ; ++fmt) {
+	for (count = 0; *fmt ; ++fmt) {
 		if (*fmt != '%') {
 			call_tx(*fmt), count++;
 			continue;
@@ -167,9 +173,9 @@ repeat:
 
 		/* get field width */
 		field_width = -1;
-		if (is_digit(*fmt))
+		if (is_digit(*fmt)) {
 			field_width = skip_atoi(&fmt);
-		else if (*fmt == '*') {
+		} else if (*fmt == '*') {
 			++fmt;
 			/* it's the next argument */
 			field_width = va_arg(args, int);
@@ -183,15 +189,16 @@ repeat:
 		precision = -1;
 		if (*fmt == '.') {
 			++fmt;
-			if (is_digit(*fmt))
+			if (is_digit(*fmt)) {
 				precision = skip_atoi(&fmt);
-			else if (*fmt == '*') {
+			} else if (*fmt == '*') {
 				++fmt;
 				/* it's the next argument */
 				precision = va_arg(args, int);
 			}
-			if (precision < 0)
+			if (precision < 0) {
 				precision = 0;
+			}
 		}
 
 		/* get the conversion qualifier */
@@ -229,9 +236,10 @@ repeat:
 
 			len = strnlen(s, (size_t)precision);
 
-			if (!(flags & LEFT))
+			if (!(flags & LEFT)) {
 				while (len < field_width--)
 					call_tx(' '), count++;
+			}
 			for (i = 0; i < len; ++i)
 				call_tx(*s++), count++;
 			while (len < field_width--)
@@ -253,10 +261,10 @@ repeat:
 				long long *ip = va_arg(args, long long *);
 				*ip = count;
 			} else if (qualifier == 'l') {
-				long * ip = va_arg(args, long *);
+				long *ip = va_arg(args, long *);
 				*ip = count;
 			} else {
-				int * ip = va_arg(args, int *);
+				int *ip = va_arg(args, int *);
 				*ip = count;
 			}
 			continue;

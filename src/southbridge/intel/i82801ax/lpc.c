@@ -118,7 +118,7 @@ static void i82801ax_enable_serial_irqs(struct device *dev)
 	/* TODO: Explain/#define the real meaning of these magic numbers. */
 }
 
-static void i82801ax_pirq_init(device_t dev)
+static void i82801ax_pirq_init(struct device *dev)
 {
 	u8 reg8;
 	config_t *config = dev->chip_info;
@@ -136,7 +136,7 @@ static void i82801ax_pirq_init(device_t dev)
 	pci_write_config8(dev, PIRQD_ROUT, reg8);
 }
 
-static void i82801ax_power_options(device_t dev)
+static void i82801ax_power_options(struct device *dev)
 {
 	uint8_t byte;
 	int pwr_on = -1;
@@ -166,7 +166,7 @@ static void i82801ax_power_options(device_t dev)
 	}
 }
 
-static void gpio_init(device_t dev)
+static void gpio_init(struct device *dev)
 {
 	pci_write_config32(dev, GPIO_BASE, (GPIO_BASE_ADDR | 1));
 	pci_write_config8(dev, GPIO_CNTL, GPIO_EN);
@@ -207,7 +207,7 @@ static void i82801ax_lpc_route_dma(struct device *dev, uint8_t mask)
 	pci_write_config16(dev, PCI_DMA_CFG, reg16);
 }
 
-static void i82801ax_lpc_decode_en(device_t dev)
+static void i82801ax_lpc_decode_en(struct device *dev)
 {
 	/* Decode 0x3F8-0x3FF (COM1) for COMA port, 0x2F8-0x2FF (COM2) for COMB.
 	 * LPT decode defaults to 0x378-0x37F and 0x778-0x77F.
@@ -251,7 +251,7 @@ static void lpc_init(struct device *dev)
 	i82801ax_lpc_decode_en(dev);
 }
 
-static void i82801ax_lpc_read_resources(device_t dev)
+static void i82801ax_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 

@@ -19,7 +19,7 @@
 
 #if !defined(__PRE_RAM__)
 #include "chip.h"
-void i82801ax_enable(device_t dev);
+void i82801ax_enable(struct device *dev);
 #else
 void enable_smbus(void);
 int smbus_read_byte(u8 device, u8 address);

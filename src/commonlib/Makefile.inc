@@ -30,6 +30,7 @@ ramstage-y += cbfs.c
 smm-y += cbfs.c
 postcar-y += cbfs.c
 
+decompressor-y += lz4_wrapper.c
 bootblock-y += lz4_wrapper.c
 verstage-y += lz4_wrapper.c
 romstage-y += lz4_wrapper.c

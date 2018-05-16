@@ -28,18 +28,27 @@ armv7-r_asm_flags = $(armv7-r_flags) $(armv7_asm_flags)
 ###############################################################################
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV7),y)
+decompressor-generic-ccopts += $(armv7-a_flags)
+decompressor-S-ccopts += $(armv7_asm_flags)
 bootblock-generic-ccopts += $(armv7-a_flags)
 bootblock-S-ccopts += $(armv7_asm_flags)
 
 ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
+decompressor-y += bootblock.S
+ifneq ($(CONFIG_COMPRESS_BOOTBLOCK),y)
 bootblock-y += bootblock.S
 endif
+endif
 
+decompressor-y += cache.c
 bootblock-y += cache.c
+decompressor-y += cpu.S
 bootblock-y += cpu.S
+decompressor-y += mmu.c
+bootblock-y += mmu.c
+
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += exception.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += exception_asm.S
-bootblock-y += mmu.c
 
 else ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV7_M),y)
 bootblock-generic-ccopts += $(armv7-m_flags)

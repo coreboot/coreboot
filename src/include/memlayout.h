@@ -102,6 +102,26 @@
 #endif
 
 /* Careful: 'INCLUDE <filename>' must always be at the end of the output line */
+#if ENV_DECOMPRESSOR
+	#define DECOMPRESSOR(addr, sz) \
+		SYMBOL(decompressor, addr) \
+		_edecompressor = _decompressor + sz; \
+		_ = ASSERT(_eprogram - _program <= sz, \
+			STR(decompressor exceeded its allotted size! (sz))); \
+		INCLUDE "decompressor/lib/program.ld"
+
+	#define OVERLAP_DECOMPRESSOR_ROMSTAGE(addr, sz) DECOMPRESSOR(addr, sz)
+	#define OVERLAP_DECOMPRESSOR_VERSTAGE_ROMSTAGE(addr, sz) \
+		DECOMPRESSOR(addr, sz)
+#else
+	#define DECOMPRESSOR(addr, sz) \
+		REGION(decompressor, addr, sz, 1)
+
+	#define OVERLAP_DECOMPRESSOR_ROMSTAGE(addr, sz) ROMSTAGE(addr, sz)
+	#define OVERLAP_DECOMPRESSOR_VERSTAGE_ROMSTAGE(addr, sz) \
+		OVERLAP_VERSTAGE_ROMSTAGE(addr, sz)
+#endif
+
 #if ENV_BOOTBLOCK
 	#define BOOTBLOCK(addr, sz) \
 		SYMBOL(bootblock, addr) \

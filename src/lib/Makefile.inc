@@ -19,6 +19,19 @@ ramstage-y += ubsan.c
 CFLAGS_ramstage += -fsanitize=undefined
 endif
 
+decompressor-y += decompressor.c
+$(call src-to-obj,decompressor,$(dir)/decompressor.c): $(objcbfs)/bootblock.lz4
+$(call src-to-obj,decompressor,$(dir)/decompressor.c): CCACHE_EXTRAFILES=$(objcbfs)/bootblock.lz4
+# Must reset CCACHE_EXTRAFILES or make applies it transitively to dependencies.
+$(objcbfs)/bootblock.lz4: CCACHE_EXTRAFILES=
+
+decompressor-y += delay.c
+decompressor-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
+decompressor-y += memchr.c
+decompressor-y += memcmp.c
+decompressor-y += prog_ops.c
+decompressor-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+
 ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
 bootblock-y += bootblock.c
 endif
@@ -216,11 +229,13 @@ romstage-y += bootmode.c
 ramstage-y += bootmode.c
 verstage-y += bootmode.c
 
+decompressor-y += halt.c
 bootblock-y += halt.c
 romstage-y += halt.c
 ramstage-y += halt.c
 smm-y += halt.c
 
+decompressor-y += reset.c
 bootblock-y += reset.c
 verstage-y += reset.c
 romstage-y += reset.c
@@ -248,6 +263,7 @@ postcar-$(CONFIG_GENERIC_UDELAY) += timer.c
 # Use program.ld for all the platforms which use C fo the bootblock.
 bootblock-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += program.ld
 
+decompressor-y += program.ld
 postcar-y += program.ld
 romstage-y += program.ld
 ramstage-y += program.ld

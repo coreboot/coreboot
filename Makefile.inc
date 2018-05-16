@@ -104,7 +104,7 @@ subdirs-y += util/checklist util/testing
 
 #######################################################################
 # Add source classes and their build options
-classes-y := ramstage romstage bootblock postcar smm smmstub cpu_microcode verstage
+classes-y := ramstage romstage bootblock decompressor postcar smm smmstub cpu_microcode verstage
 
 # Add dynamic classes for rmodules
 $(foreach supported_arch,$(ARCH_SUPPORTED), \
@@ -186,6 +186,7 @@ ramstage-postprocess=$$(eval DEPENDENCIES+=$$(addsuffix .d,$$(basename $(1)))) \
 	$(eval $(d)ramstage.a: $(call files-in-dir,$(d),$(filter-out %.ld,$(1))); rm -f $$@ && $(AR_ramstage) rcsT $$@ $$^ ) \
 	$(eval ramstage-objs:=$(d)ramstage.a $(filter-out $(filter-out %.ld, $(call files-in-dir,$(d),$(1))),$(ramstage-objs))))
 
+decompressor-generic-ccopts += -D__PRE_RAM__ -D__DECOMPRESSOR__
 bootblock-generic-ccopts += -D__PRE_RAM__ -D__BOOTBLOCK__
 romstage-generic-ccopts += -D__PRE_RAM__ -D__ROMSTAGE__
 ramstage-generic-ccopts += -D__RAMSTAGE__
@@ -631,9 +632,29 @@ find-class = $(if $(filter $(1),$(basename $(1))),$(if $(CC_$(1)), $(1), $(call 
 # the linker marked it NOBITS automatically because there are only zeroes in it.
 preserve-bss-flags := --set-section-flags .bss=load,alloc,data --set-section-flags .data=load,alloc,data
 
+ifeq ($(CONFIG_COMPRESS_BOOTBLOCK),y)
+
+$(objcbfs)/bootblock.lz4: $(objcbfs)/bootblock.elf $(objutil)/cbfstool/cbfs-compression-tool
+	@printf "    LZ4        $(subst $(obj)/,,$(@))\n"
+	$(OBJCOPY_bootblock) $(preserve-bss-flags) $< $@.tmp
+	$(OBJCOPY_bootblock) -O binary $@.tmp
+	$(objutil)/cbfstool/cbfs-compression-tool rawcompress $@.tmp $@.tmp2 lz4
+	rm -f $@.tmp
+	mv $@.tmp2 $@
+
+# Put assembled decompressor+bootblock into bootblock.raw.elf so that SoC
+# Makefiles wrapping the bootblock in a header can always key off the same file.
+$(objcbfs)/bootblock.raw.elf: $(objcbfs)/decompressor.elf
+	@printf "    OBJCOPY    $(notdir $(@))\n"
+	$(OBJCOPY_bootblock) $(preserve-bss-flags) $< $@
+
+else	# CONFIG_COMPRESS_BOOTBLOCK
+
 $(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
 	@printf "    OBJCOPY    $(notdir $(@))\n"
 	$(OBJCOPY_bootblock) $(preserve-bss-flags) $< $@
+
+endif	# CONFIG_COMPRESS_BOOTBLOCK
 
 $(objcbfs)/bootblock.raw.bin: $(objcbfs)/bootblock.raw.elf
 	@printf "    OBJCOPY    $(notdir $(@))\n"
@@ -650,6 +671,7 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 	$(OBJCOPY_$(class)) --strip-debug $@.tmp
 	$(OBJCOPY_$(class)) --add-gnu-debuglink=$< $@.tmp
 	mv $@.tmp $@
+
 
 ###########################################################################
 # Build the final rom image

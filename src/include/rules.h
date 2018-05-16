@@ -19,7 +19,20 @@
  * romstage, ramstage or SMM.
  */
 
-#if defined(__BOOTBLOCK__)
+#if defined(__DECOMPRESSOR__)
+#define ENV_DECOMPRESSOR 1
+#define ENV_BOOTBLOCK 0
+#define ENV_ROMSTAGE 0
+#define ENV_RAMSTAGE 0
+#define ENV_SMM 0
+#define ENV_VERSTAGE 0
+#define ENV_RMODULE 0
+#define ENV_POSTCAR 0
+#define ENV_LIBAGESA 0
+#define ENV_STRING "decompressor"
+
+#elif defined(__BOOTBLOCK__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 1
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
@@ -31,6 +44,7 @@
 #define ENV_STRING "bootblock"
 
 #elif defined(__ROMSTAGE__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 1
 #define ENV_RAMSTAGE 0
@@ -42,6 +56,7 @@
 #define ENV_STRING "romstage"
 
 #elif defined(__SMM__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
@@ -53,6 +68,7 @@
 #define ENV_STRING "smm"
 
 #elif defined(__VERSTAGE__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
@@ -64,6 +80,7 @@
 #define ENV_STRING "verstage"
 
 #elif defined(__RAMSTAGE__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 1
@@ -75,6 +92,7 @@
 #define ENV_STRING "ramstage"
 
 #elif defined(__RMODULE__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
@@ -86,6 +104,7 @@
 #define ENV_STRING "rmodule"
 
 #elif defined(__POSTCAR__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
@@ -97,6 +116,7 @@
 #define ENV_STRING "postcar"
 
 #elif defined(__LIBAGESA__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
@@ -112,6 +132,7 @@
  * Default case of nothing set for random blob generation using
  * create_class_compiler that isn't bound to a stage.
  */
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0

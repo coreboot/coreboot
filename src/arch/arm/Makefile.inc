@@ -44,21 +44,34 @@ endif # CONFIG_ARCH_ARM
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARM),y)
 
+decompressor-y += id.S
 bootblock-y += id.S
+$(call src-to-obj,decompressor,$(dir)/id.S): $(obj)/build.h
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
+decompressor-y += boot.c
 bootblock-y += boot.c
-bootblock-y += stages.c
-bootblock-y += eabi_compat.c
-bootblock-y += memset.S
-bootblock-y += memcpy.S
-bootblock-y += memmove.S
+decompressor-y += div0.c
 bootblock-y += div0.c
+decompressor-y += eabi_compat.c
+bootblock-y += eabi_compat.c
+decompressor-y += memset.S
+bootblock-y += memset.S
+decompressor-y += memcpy.S
+bootblock-y += memcpy.S
+decompressor-y += memmove.S
+bootblock-y += memmove.S
+
 bootblock-y += clock.c
+bootblock-y += stages.c
 
 $(objcbfs)/bootblock.debug: $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_bootblock) $(LDFLAGS_bootblock) -o $@ -L$(obj) -T $(call src-to-obj,bootblock,src/mainboard/$(MAINBOARDDIR)/memlayout.ld) --whole-archive --start-group $(filter-out %.ld,$(bootblock-objs)) --end-group
+
+$(objcbfs)/decompressor.debug: $$(decompressor-objs)
+	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+	$(LD_bootblock) $(LDFLAGS_bootblock) -o $@ -L$(obj) -T $(call src-to-obj,decompressor,src/mainboard/$(MAINBOARDDIR)/memlayout.ld) --whole-archive --start-group $(filter-out %.ld,$(decompressor-objs)) --end-group
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARM
 

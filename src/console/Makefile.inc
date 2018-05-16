@@ -32,3 +32,5 @@ bootblock-y += vtxprintf.c vsprintf.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += init.c console.c
 bootblock-y += post.c
 bootblock-y += die.c
+
+decompressor-y += die.c

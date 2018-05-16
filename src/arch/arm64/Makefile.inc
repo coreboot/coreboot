@@ -39,17 +39,25 @@ endif
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARM64),y)
 
+decompressor-y += boot.c
+bootblock-y += boot.c
+decompressor-y += div0.c
 bootblock-y += div0.c
+decompressor-y += eabi_compat.c
+bootblock-y += eabi_compat.c
+decompressor-y += id.S
 bootblock-y += id.S
+$(call src-to-obj,decompressor,$(dir)/id.S): $(obj)/build.h
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
-bootblock-y += boot.c
-bootblock-y += eabi_compat.c
 bootblock-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 bootblock-y += transition.c transition_asm.S
 
+decompressor-y += memset.S
 bootblock-y += memset.S
+decompressor-y += memcpy.S
 bootblock-y += memcpy.S
+decompressor-y += memmove.S
 bootblock-y += memmove.S
 
 # Build the bootblock
@@ -57,6 +65,10 @@ bootblock-y += memmove.S
 $(objcbfs)/bootblock.debug: $$(bootblock-objs) $(obj)/config.h
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_bootblock) $(LDFLAGS_bootblock) -o $@ -L$(obj) --whole-archive --start-group $(filter-out %.ld,$(bootblock-objs)) --end-group -T $(call src-to-obj,bootblock,src/mainboard/$(MAINBOARDDIR)/memlayout.ld)
+
+$(objcbfs)/decompressor.debug: $$(decompressor-objs) $(obj)/config.h
+	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+	$(LD_bootblock) $(LDFLAGS_bootblock) -o $@ -L$(obj) --whole-archive --start-group $(filter-out %.ld,$(decompressor-objs)) --end-group -T $(call src-to-obj,decompressor,src/mainboard/$(MAINBOARDDIR)/memlayout.ld)
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARM64
 

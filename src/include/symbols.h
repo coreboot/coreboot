@@ -68,6 +68,10 @@ extern u8 _eprogram[];
 
 /* _<stage>_size is always the maximum amount allocated in memlayout, whereas
  * _program_size gives the actual memory footprint *used* by current stage. */
+extern u8 _decompressor[];
+extern u8 _edecompressor[];
+#define _decompressor_size (_edecompressor - _decompressor)
+
 extern u8 _bootblock[];
 extern u8 _ebootblock[];
 #define _bootblock_size (_ebootblock - _bootblock)

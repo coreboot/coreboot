@@ -146,6 +146,18 @@ config COMPRESS_PRERAM_STAGES
 	  time spent decompressing. Doesn't work for XIP stages (assume all
 	  ARCH_X86 for now) for obvious reasons.
 
+config COMPRESS_BOOTBLOCK
+	bool
+	help
+	  This option can be used to compress the bootblock with LZ4 and attach
+	  a small self-decompression stub to its front. This can drastically
+	  reduce boot time on platforms where the bootblock is loaded over a
+	  very slow connection and bootblock size trumps all other factors for
+	  speed. Since this using this option usually requires changes to the
+	  SoC memlayout and possibly extra support code, it should not be
+	  user-selectable. (There's no real point in offering this to the user
+	  anyway... if it works and saves boot time, you would always want it.)
+
 config INCLUDE_CONFIG_FILE
 	bool "Include the coreboot .config file into the ROM image"
 	# Default value set at the end of the file

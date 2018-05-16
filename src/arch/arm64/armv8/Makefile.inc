@@ -31,19 +31,27 @@ armv8_flags = -march=$(march) -I$(src)/arch/arm64/include/armv8/ -D__COREBOOT_AR
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV8_64),y)
 
 ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
+decompressor-y += bootblock.S
+ifneq ($(CONFIG_COMPRESS_BOOTBLOCK),y)
 bootblock-y += bootblock.S
 endif
-bootblock-y += cache.c
+endif
+decompressor-y += cpu.S
 bootblock-y += cpu.S
+decompressor-y += cache.c
+bootblock-y += cache.c
+decompressor-y += mmu.c
 bootblock-y += mmu.c
 
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += exception.c
 
+decompressor-generic-ccopts += $(armv8_flags)
 bootblock-generic-ccopts += $(armv8_flags)
 
 # Required to access unaligned timestamp struct members before MMU is active
 # (TODO: Maybe use explicit unaligned accesses in timestamp code instead, or
 # evaluate redesigning timestamp data structures to avoid misaligned members.)
+decompressor-c-ccopts += -mstrict-align
 bootblock-c-ccopts += -mstrict-align
 
 endif

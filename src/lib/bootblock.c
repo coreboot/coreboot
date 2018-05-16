@@ -70,3 +70,20 @@ void main(void)
 
 	bootblock_main_with_timestamp(base_timestamp, NULL, 0);
 }
+
+#if IS_ENABLED(CONFIG_COMPRESS_BOOTBLOCK)
+/*
+ * This is the bootblock entry point when it is run after a decompressor stage.
+ * For non-decompressor builds, _start is generally defined in architecture-
+ * specific assembly code. In decompressor builds that architecture
+ * initialization code already ran in the decompressor, so the bootblock can
+ * start straight into common code with a C environment.
+ */
+void _start(struct bootblock_arg *arg);
+void _start(struct bootblock_arg *arg)
+{
+	bootblock_main_with_timestamp(arg->base_timestamp, arg->timestamps,
+				      arg->num_timestamps);
+}
+
+#endif

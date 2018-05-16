@@ -685,8 +685,8 @@ define cbfs-add-cmd-for-region
 		$(filter flat-binary,$(call extract_nth,3,$(1))),-flat-binary) \
 	-f $(call extract_nth,1,$(1)) \
 	-n $(call extract_nth,2,$(1)) \
-	$(if $(filter-out flat-binary,$(filter-out stage,$(call \
-		extract_nth,3,$(1)))),-t $(call extract_nth,3,$(1))) \
+	$(if $(filter-out flat-binary payload stage,$(call \
+		extract_nth,3,$(1))),-t $(call extract_nth,3,$(1))) \
 	$(if $(call extract_nth,4,$(1)),-c $(call extract_nth,4,$(1))) \
 	$(cbfs-autogen-attributes) \
 	-r $(2) \

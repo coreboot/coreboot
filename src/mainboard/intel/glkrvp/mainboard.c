@@ -42,7 +42,7 @@ static void mainboard_init(void *chip_info)
 }
 
 static unsigned long mainboard_write_acpi_tables(
-	device_t device, unsigned long current, acpi_rsdp_t *rsdp)
+	struct device *device, unsigned long current, acpi_rsdp_t *rsdp)
 {
 	uintptr_t start_addr;
 	uintptr_t end_addr;
@@ -65,7 +65,7 @@ static unsigned long mainboard_write_acpi_tables(
 	return end_addr;
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;

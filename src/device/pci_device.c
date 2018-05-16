@@ -338,6 +338,74 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 }
 
 /**
+ * Given a device, read the size of the MSI-X table.
+ *
+ * @param dev Pointer to the device structure.
+ * @return MSI-X table size or 0 if not MSI-X capable device
+ */
+size_t pci_msix_table_size(struct device *dev)
+{
+	const size_t pos = pci_find_capability(dev, PCI_CAP_ID_MSIX);
+	if (!pos)
+		return 0;
+
+	const u16 control = pci_read_config16(dev, pos + PCI_MSIX_FLAGS);
+	return (control & PCI_MSIX_FLAGS_QSIZE) + 1;
+}
+
+/**
+ * Given a device, return the table offset and bar the MSI-X tables resides in.
+ *
+ * @param dev Pointer to the device structure.
+ * @param offset Returned value gives the offset in bytes inside the PCI BAR.
+ * @param idx The returned value is the index of the PCI_BASE_ADDRESS register
+ *            the MSI-X table is located in.
+ * @return Zero on success
+ */
+int pci_msix_table_bar(struct device *dev, u32 *offset, u8 *idx)
+{
+	const size_t pos = pci_find_capability(dev, PCI_CAP_ID_MSIX);
+	if (!pos || !offset || !idx)
+		return 1;
+
+	*offset = pci_read_config32(dev, pos + PCI_MSIX_TABLE);
+	*idx = (u8)(*offset & PCI_MSIX_PBA_BIR);
+	*offset &= PCI_MSIX_PBA_OFFSET;
+
+	return 0;
+}
+
+/**
+ * Given a device, return a msix_entry pointer or NULL if no table was found.
+ *
+ * @param dev Pointer to the device structure.
+ *
+ * @return NULL on error
+ */
+struct msix_entry *pci_msix_get_table(struct device *dev)
+{
+	struct resource *res;
+	u32 offset;
+	u8 idx;
+
+	if (pci_msix_table_bar(dev, &offset, &idx))
+		return NULL;
+
+	if (idx > 5)
+		return NULL;
+
+	res = probe_resource(dev, idx * 4 + PCI_BASE_ADDRESS_0);
+	if (!res || !res->base || offset >= res->size)
+		return NULL;
+
+	if ((res->flags & IORESOURCE_PCI64) &&
+	    (uintptr_t)res->base != res->base)
+		return NULL;
+
+	return (struct msix_entry *)((uintptr_t)res->base + offset);
+}
+
+/**
  * Read the base address registers for a given device.
  *
  * @param dev Pointer to the dev structure.

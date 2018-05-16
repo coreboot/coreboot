@@ -56,6 +56,20 @@ struct pci_driver {
 	const unsigned short *devices;
 };
 
+struct msix_entry {
+	union {
+		struct {
+			u32 lower_addr;
+			u32 upper_addr;
+		};
+		struct {
+			u64 addr;
+		};
+	};
+	u32 data;
+	u32 vec_control;
+};
+
 #ifdef __SIMPLE_DEVICE__
 #define __pci_driver __attribute__((unused))
 #else
@@ -103,6 +117,10 @@ void pci_assign_irqs(unsigned int bus, unsigned int slot,
 		     const unsigned char pIntAtoD[4]);
 const char *get_pci_class_name(struct device *dev);
 const char *get_pci_subclass_name(struct device *dev);
+
+size_t pci_msix_table_size(struct device *dev);
+int pci_msix_table_bar(struct device *dev, u32 *offset, u8 *idx);
+struct msix_entry *pci_msix_get_table(struct device *dev);
 
 #define PCI_IO_BRIDGE_ALIGN 4096
 #define PCI_MEM_BRIDGE_ALIGN (1024*1024)

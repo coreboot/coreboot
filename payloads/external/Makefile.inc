@@ -48,7 +48,7 @@ $(CONFIG_CBFS_PREFIX)/payload-file := $(CONFIG_PAYLOAD_FILE)
 ifeq ($(CONFIG_PAYLOAD_IS_FLAT_BINARY),y)
 $(CONFIG_CBFS_PREFIX)/payload-type := flat-binary
 else
-$(CONFIG_CBFS_PREFIX)/payload-type := simple_elf
+$(CONFIG_CBFS_PREFIX)/payload-type := payload
 endif
 $(CONFIG_CBFS_PREFIX)/payload-compression := $(CBFS_PAYLOAD_COMPRESS_FLAG)
 $(CONFIG_CBFS_PREFIX)/payload-options := $(ADDITIONAL_PAYLOAD_CONFIG)
@@ -184,14 +184,14 @@ payloads/external/tint/tint/tint.elf tint:
 
 cbfs-files-$(CONFIG_TINT_SECONDARY_PAYLOAD) += img/tint
 img/tint-file := payloads/external/tint/tint/tint.elf
-img/tint-type := simple_elf
+img/tint-type := payload
 img/tint-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
 
 # Memtest86+
 
 cbfs-files-$(CONFIG_MEMTEST_SECONDARY_PAYLOAD) += img/memtest
 img/memtest-file := payloads/external/Memtest86Plus/memtest86plus/memtest
-img/memtest-type := simple_elf
+img/memtest-type := payload
 img/memtest-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
 
 ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO),yy)

@@ -188,7 +188,7 @@ static int cbfs_module_redraw(WINDOW * win)
 		mvwprintw(win, row++, 38, "stage");
 		break;
 	case COMPONENT_SELF:
-		mvwprintw(win, row++, 38, "simple_elf");
+		mvwprintw(win, row++, 38, "simple ELF");
 		break;
 	case COMPONENT_OPTIONROM:
 		mvwprintw(win, row++, 38, "optionrom");

@@ -204,7 +204,7 @@ static struct typedesc_t filetypes[] unused = {
 	{CBFS_COMPONENT_BOOTBLOCK, "bootblock"},
 	{CBFS_COMPONENT_CBFSHEADER, "cbfs header"},
 	{CBFS_COMPONENT_STAGE, "stage"},
-	{CBFS_COMPONENT_SELF, "simple_elf"},
+	{CBFS_COMPONENT_SELF, "simple elf"},
 	{CBFS_COMPONENT_OPTIONROM, "optionrom"},
 	{CBFS_COMPONENT_BOOTSPLASH, "bootsplash"},
 	{CBFS_COMPONENT_RAW, "raw"},

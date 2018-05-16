@@ -20,10 +20,6 @@
 
 #include "common.h"
 
-void usage(void);
-int benchmark(void);
-int compress(char *infile, char *outfile, char *algoname);
-
 const char *usage_text = "cbfs-compression-tool benchmark\n"
 	"  runs benchmarks for all implemented algorithms\n"
 	"cbfs-compression-tool compress inFile outFile algo\n"
@@ -34,12 +30,12 @@ const char *usage_text = "cbfs-compression-tool benchmark\n"
 	" 4 bytes little endian: uncompressed size\n"
 	" ...: compressed data stream\n";
 
-void usage()
+static void usage(void)
 {
 	puts(usage_text);
 }
 
-int benchmark()
+static int benchmark(void)
 {
 	const int bufsize = 10*1024*1024;
 	char *data = malloc(bufsize);
@@ -88,7 +84,8 @@ int benchmark()
 	return 0;
 }
 
-int compress(char *infile, char *outfile, char *algoname)
+static int compress(char *infile, char *outfile, char *algoname,
+		    int write_header)
 {
 	int err = 1;
 	FILE *fin = NULL;
@@ -163,18 +160,20 @@ int compress(char *infile, char *outfile, char *algoname)
 		algo = &types_cbfs_compression[0];
 	}
 
-	char header[8];
-	header[0] = algo->type & 0xff;
-	header[1] = (algo->type >> 8) & 0xff;
-	header[2] = (algo->type >> 16) & 0xff;
-	header[3] = (algo->type >> 24) & 0xff;
-	header[4] = insize & 0xff;
-	header[5] = (insize >> 8) & 0xff;
-	header[6] = (insize >> 16) & 0xff;
-	header[7] = (insize >> 24) & 0xff;
-	if (fwrite(header, 8, 1, fout) != 1) {
-		fprintf(stderr, "failed writing header\n");
-		goto out;
+	if (write_header) {
+		char header[8];
+		header[0] = algo->type & 0xff;
+		header[1] = (algo->type >> 8) & 0xff;
+		header[2] = (algo->type >> 16) & 0xff;
+		header[3] = (algo->type >> 24) & 0xff;
+		header[4] = insize & 0xff;
+		header[5] = (insize >> 8) & 0xff;
+		header[6] = (insize >> 16) & 0xff;
+		header[7] = (insize >> 24) & 0xff;
+		if (fwrite(header, 8, 1, fout) != 1) {
+			fprintf(stderr, "failed writing header\n");
+			goto out;
+		}
 	}
 	if (fwrite(outdata, outsize, 1, fout) != 1) {
 		fprintf(stderr, "failed writing compressed data\n");
@@ -194,7 +193,9 @@ int main(int argc, char **argv)
 	if ((argc == 2) && (strcmp(argv[1], "benchmark") == 0))
 		return benchmark();
 	if ((argc == 5) && (strcmp(argv[1], "compress") == 0))
-		return compress(argv[2], argv[3], argv[4]);
+		return compress(argv[2], argv[3], argv[4], 1);
+	if ((argc == 5) && (strcmp(argv[1], "rawcompress") == 0))
+		return compress(argv[2], argv[3], argv[4], 0);
 	usage();
 	return 1;
 }

@@ -197,7 +197,7 @@ chip soc/intel/skylake
 		},
 	}"
 
-	# Camera
+	# Front Camera
 	register "i2c_voltage[3]" = "I2C_VOLTAGE_1V8"
 	register "i2c[3]" = "{
 		.speed = I2C_SPEED_FAST,
@@ -217,6 +217,14 @@ chip soc/intel/skylake
 		}
 	}"
 
+	# Rear Camera & SAR
+	register "i2c_voltage[5]" = "I2C_VOLTAGE_1V8"
+	register "i2c[5]" = "{
+		.speed = I2C_SPEED_FAST,
+		.rise_time_ns = 98,
+		.fall_time_ns = 38,
+	}"
+
 	# GSPI0 for cr50 TPM
 	register "gspi[0]" = "{
 		 .speed_mhz = 1,
@@ -229,7 +237,7 @@ chip soc/intel/skylake
 		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
 		[PchSerialIoIndexSpi0]  = PchSerialIoPci,
 		[PchSerialIoIndexSpi1]  = PchSerialIoPci,
 		[PchSerialIoIndexUart0] = PchSerialIoSkipInit,
@@ -272,7 +280,7 @@ chip soc/intel/skylake
 		device pci 16.4 off end # Management Engine Interface 3
 		device pci 17.0 off end # SATA
 		device pci 19.0 on  end # UART #2
-		device pci 19.1 off end # I2C #5
+		device pci 19.1 on  end # I2C #5
 		device pci 19.2 on
 			chip drivers/i2c/max98373
 				register "vmon_slot_no" = "4"

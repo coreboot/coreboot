@@ -623,11 +623,16 @@ find-class = $(if $(filter $(1),$(basename $(1))),$(if $(CC_$(1)), $(1), $(call 
 # include the bss section in the binary so the BootROM clears the bss on
 # loading of the bootblock stage. Achieve this by marking the bss section
 # loadable,allocatable, and data. Do the same for the .data section in case
-# it's marked as NOBITS.
-$(objcbfs)/bootblock.raw.bin: $(objcbfs)/bootblock.elf
+# the linker marked it NOBITS automatically because there are only zeroes in it.
+preserve-bss-flags := --set-section-flags .bss=load,alloc,data --set-section-flags .data=load,alloc,data
+
+$(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
 	@printf "    OBJCOPY    $(notdir $(@))\n"
-	$(OBJCOPY_bootblock) --set-section-flags .bss=load,alloc,data --set-section-flags .data=load,alloc,data $< $<.tmp
-	$(OBJCOPY_bootblock) -O binary $<.tmp $@
+	$(OBJCOPY_bootblock) $(preserve-bss-flags) $< $@
+
+$(objcbfs)/bootblock.raw.bin: $(objcbfs)/bootblock.raw.elf
+	@printf "    OBJCOPY    $(notdir $(@))\n"
+	$(OBJCOPY_bootblock) -O binary $< $@
 
 $(objcbfs)/%.bin: $(objcbfs)/%.raw.bin
 	cp $< $@

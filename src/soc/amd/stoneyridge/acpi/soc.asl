@@ -26,3 +26,6 @@ Device(PCI0) {
 
 /* Describe the devices in the Southbridge */
 #include "sb_fch.asl"
+
+/* Add GPIO library */
+#include <gpio_lib.asl>

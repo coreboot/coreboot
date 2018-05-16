@@ -39,6 +39,7 @@
 #define BIOSRAM_MMIO_BASE		0xfed80500
 #define IOMUX_MMIO_BASE			0xfed80d00
 #define MISC_MMIO_BASE			0xfed80e00
+#define GPIO_CONTROL_BASE		0xfed81500
 #define XHCI_ACPI_PM_MMIO_BASE		0xfed81c00
 #define AOAC_MMIO_BASE			0xfed81e00
 

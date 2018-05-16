@@ -1170,7 +1170,7 @@ static const struct command commands[] = {
 	{"add", "H:r:f:n:t:c:b:a:p:yvA:gh?", cbfs_add, true, true},
 	{"add-flat-binary", "H:r:f:n:l:e:c:b:p:vA:gh?", cbfs_add_flat_binary,
 				true, true},
-	{"add-payload", "H:r:f:n:t:c:b:C:I:p:vA:gh?", cbfs_add_payload,
+	{"add-payload", "H:r:f:n:c:b:C:I:p:vA:gh?", cbfs_add_payload,
 				true, true},
 	{"add-stage", "a:H:r:f:n:t:c:b:P:S:p:yvA:gh?", cbfs_add_stage,
 				true, true},

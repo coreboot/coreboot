@@ -167,7 +167,8 @@ chip soc/intel/skylake
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"		# Empty
 	register "usb2_ports[2]" = "USB2_PORT_SHORT(OC_SKIP)"	# Bluetooth
 	register "usb2_ports[4]" = "USB2_PORT_LONG(OC1)"	# Type-C Port 2
-	register "usb2_ports[6]" = "USB2_PORT_EMPTY"		# Empty
+	register "usb2_ports[6]" = "USB2_PORT_LONG(OC_SKIP)"	# pogo port
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"		# Empty
 	register "usb2_ports[8]" = "USB2_PORT_EMPTY"		# Empty
 
 	# USB 3.0

@@ -53,7 +53,7 @@ static const struct pad_config gpio_table[] = {
 	/* A18 : ISH_GP0 ==> ISH_GP0 */
 	PAD_CFG_NC(GPP_A18),
 	/* A19 : SPKR_RST_L */
-	PAD_CFG_GPO(GPP_A19, 0, PLTRST),
+	PAD_CFG_GPO(GPP_A19, 1, PLTRST),
 	/* A20 : ISH_GP2 ==> ISH_UART0_RXD */
 	PAD_CFG_NC(GPP_A20),
 	/* A21 : ISH_GP3 */

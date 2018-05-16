@@ -288,60 +288,60 @@ const char *dev_path(const struct device *dev)
 			memcpy(buffer, "Root Device", 12);
 			break;
 		case DEVICE_PATH_PCI:
-			snprintf(buffer, sizeof (buffer),
+			snprintf(buffer, sizeof(buffer),
 				 "PCI: %02x:%02x.%01x",
 				 dev->bus->secondary,
 				 PCI_SLOT(dev->path.pci.devfn),
 				 PCI_FUNC(dev->path.pci.devfn));
 			break;
 		case DEVICE_PATH_PNP:
-			snprintf(buffer, sizeof (buffer), "PNP: %04x.%01x",
+			snprintf(buffer, sizeof(buffer), "PNP: %04x.%01x",
 				 dev->path.pnp.port, dev->path.pnp.device);
 			break;
 		case DEVICE_PATH_I2C:
-			snprintf(buffer, sizeof (buffer), "I2C: %02x:%02x",
+			snprintf(buffer, sizeof(buffer), "I2C: %02x:%02x",
 				 dev->bus->secondary,
 				 dev->path.i2c.device);
 			break;
 		case DEVICE_PATH_APIC:
-			snprintf(buffer, sizeof (buffer), "APIC: %02x",
+			snprintf(buffer, sizeof(buffer), "APIC: %02x",
 				 dev->path.apic.apic_id);
 			break;
 		case DEVICE_PATH_IOAPIC:
-			snprintf(buffer, sizeof (buffer), "IOAPIC: %02x",
+			snprintf(buffer, sizeof(buffer), "IOAPIC: %02x",
 				 dev->path.ioapic.ioapic_id);
 			break;
 		case DEVICE_PATH_DOMAIN:
-			snprintf(buffer, sizeof (buffer), "DOMAIN: %04x",
+			snprintf(buffer, sizeof(buffer), "DOMAIN: %04x",
 				dev->path.domain.domain);
 			break;
 		case DEVICE_PATH_CPU_CLUSTER:
-			snprintf(buffer, sizeof (buffer), "CPU_CLUSTER: %01x",
+			snprintf(buffer, sizeof(buffer), "CPU_CLUSTER: %01x",
 				dev->path.cpu_cluster.cluster);
 			break;
 		case DEVICE_PATH_CPU:
-			snprintf(buffer, sizeof (buffer),
+			snprintf(buffer, sizeof(buffer),
 				 "CPU: %02x", dev->path.cpu.id);
 			break;
 		case DEVICE_PATH_CPU_BUS:
-			snprintf(buffer, sizeof (buffer),
+			snprintf(buffer, sizeof(buffer),
 				 "CPU_BUS: %02x", dev->path.cpu_bus.id);
 			break;
 		case DEVICE_PATH_GENERIC:
-			snprintf(buffer, sizeof (buffer),
+			snprintf(buffer, sizeof(buffer),
 				 "GENERIC: %d.%d", dev->path.generic.id,
 				 dev->path.generic.subid);
 			break;
 		case DEVICE_PATH_SPI:
-			snprintf(buffer, sizeof (buffer), "SPI: %02x",
+			snprintf(buffer, sizeof(buffer), "SPI: %02x",
 				 dev->path.spi.cs);
 			break;
 		case DEVICE_PATH_USB:
-			snprintf(buffer, sizeof (buffer), "USB%u port %u",
+			snprintf(buffer, sizeof(buffer), "USB%u port %u",
 				 dev->path.usb.port_type, dev->path.usb.port_id);
 			break;
 		case DEVICE_PATH_MMIO:
-			snprintf(buffer, sizeof (buffer), "MMIO: %08x",
+			snprintf(buffer, sizeof(buffer), "MMIO: %08x",
 				 dev->path.mmio.addr);
 			break;
 		default:
@@ -366,7 +366,7 @@ const char *dev_name(struct device *dev)
 const char *bus_path(struct bus *bus)
 {
 	static char buffer[BUS_PATH_MAX];
-	snprintf(buffer, sizeof (buffer),
+	snprintf(buffer, sizeof(buffer),
 		 "%s,%d", dev_path(bus->dev), bus->link_num);
 	return buffer;
 }
@@ -670,7 +670,7 @@ resource_t resource_max(struct resource *resource)
 const char *resource_type(struct resource *resource)
 {
 	static char buffer[RESOURCE_TYPE_MAX];
-	snprintf(buffer, sizeof (buffer), "%s%s%s%s",
+	snprintf(buffer, sizeof(buffer), "%s%s%s%s",
 		 ((resource->flags & IORESOURCE_READONLY) ? "ro" : ""),
 		 ((resource->flags & IORESOURCE_PREFETCH) ? "pref" : ""),
 		 ((resource->flags == 0) ? "unused" :
@@ -703,7 +703,7 @@ void report_resource_stored(struct device *dev, struct resource *resource,
 	buf[0] = '\0';
 
 	if (resource->flags & IORESOURCE_PCI_BRIDGE) {
-		snprintf(buf, sizeof (buf),
+		snprintf(buf, sizeof(buf),
 			 "bus %02x ", dev->link_list->secondary);
 	}
 	printk(BIOS_DEBUG, "%s %02lx <- [0x%010llx - 0x%010llx] size 0x%08llx "

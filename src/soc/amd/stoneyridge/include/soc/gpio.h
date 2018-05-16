@@ -36,6 +36,10 @@ struct soc_amd_event {
 	uint8_t event;
 };
 
+#define GPIO_TOTAL_PINS		149
+#define GPIO_PIN_IN		(1 << 0)	/* for byte access */
+#define GPIO_PIN_OUT		(1 << 6)	/* for byte access */
+
 #define GPIO_EDGE_TRIG		(0 << 8)
 #define GPIO_LEVEL_TRIG		(1 << 8)
 #define GPIO_TRIGGER_MASK	(1 << 8)
@@ -555,6 +559,8 @@ enum {
 		.flags = GPIO_FLAG_DEBOUNCE }
 
 typedef uint32_t gpio_t;
+/* Get the address of the control register of a particular pin */
+uintptr_t gpio_get_address(gpio_t gpio_num);
 
 /**
  * @brief program a particular set of GPIO

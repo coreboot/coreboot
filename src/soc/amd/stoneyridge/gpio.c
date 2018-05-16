@@ -130,7 +130,7 @@ static void get_sci_config_bits(uint32_t flag, uint32_t *edge, uint32_t *level)
 	}
 }
 
-static uintptr_t gpio_get_address(gpio_t gpio_num)
+uintptr_t gpio_get_address(gpio_t gpio_num)
 {
 	uintptr_t gpio_address;
 

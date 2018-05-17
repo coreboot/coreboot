@@ -4,3 +4,11 @@ config SOC_INTEL_COMMON_BLOCK_CSE
 	help
 	  Driver for communication with Converged Security Engine (CSE)
 	  over Host Embedded Controller Interface (HECI)
+
+config SOC_INTEL_COMMON_BLOCK_HECI_DISABLE_IN_SMM
+	bool
+	default y if HECI_DISABLE_USING_SMM
+	select SOC_INTEL_COMMON_BLOCK_P2SB
+	help
+	  Use this config to include common CSE block to make HECI function
+	  disable in SMM mode

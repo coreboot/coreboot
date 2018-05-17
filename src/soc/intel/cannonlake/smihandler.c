@@ -18,48 +18,10 @@
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <intelblocks/cse.h>
-#include <intelblocks/p2sb.h>
-#include <intelblocks/pcr.h>
 #include <intelblocks/smihandler.h>
 #include <soc/soc_chip.h>
 #include <soc/pci_devs.h>
-#include <soc/pcr_ids.h>
 #include <soc/pm.h>
-
-#define CSME0_FBE	0xf
-#define CSME0_BAR	0x0
-#define CSME0_FID	0xb0
-
-static void pch_disable_heci(void)
-{
-	struct pcr_sbi_msg msg = {
-		.pid = PID_CSME0,
-		.offset = 0,
-		.opcode = PCR_WRITE,
-		.is_posted = false,
-		.fast_byte_enable = CSME0_FBE,
-		.bar = CSME0_BAR,
-		.fid = CSME0_FID
-	};
-	/* Bit 0: Set to make HECI#1 Function disable */
-	uint32_t data32 = 1;
-	uint8_t response;
-	int status;
-
-	/* unhide p2sb device */
-	p2sb_unhide();
-
-	/* Send SBI command to make HECI#1 function disable */
-	status = pcr_execute_sideband_msg(&msg, &data32, &response);
-	if (status && response)
-		printk(BIOS_ERR, "Fail to make CSME function disable\n");
-
-	/* Ensure to Lock SBI interface after this command */
-	p2sb_disable_sideband_access();
-
-	/* hide p2sb device */
-	p2sb_hide();
-}
 
 /*
  * Specific SOC SMI handler during ramstage finalize phase
@@ -75,7 +37,7 @@ void smihandler_soc_at_finalize(void)
 	config = config_of_soc();
 
 	if (!config->HeciEnabled && CONFIG(HECI_DISABLE_USING_SMM))
-		pch_disable_heci();
+		heci_disable();
 }
 
 const smi_handler_t southbridge_smi[SMI_STS_BITS] = {

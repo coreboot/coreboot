@@ -97,6 +97,8 @@ int heci_send_receive(const void *snd_msg, size_t snd_sz, void *rcv_msg, size_t 
  * Returns 0 on failure and 1 on success.
  */
 int heci_reset(void);
+/* Disable HECI using Sideband interface communication */
+void heci_disable(void);
 
 /* Reads config value from a specified offset in the CSE PCI Config space. */
 uint32_t me_read_config32(int offset);

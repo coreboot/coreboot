@@ -13,6 +13,10 @@ subdirs-y += ../microcode
 subdirs-y += ../hyperthreading
 subdirs-y += ../speedstep
 
+ifneq ($(CONFIG_POSTCAR_STAGE),y)
 cpu_incs-y += $(src)/cpu/intel/car/cache_as_ram_ht.inc
-romstage-y += ../car/romstage.c
+else
+cpu_incs-y += $(src)/cpu/intel/car/p4-netburst/cache_as_ram.S
+postcar-y += ../car/p4-netburst/exit_car.S
+endif
 romstage-y += ../car/romstage.c

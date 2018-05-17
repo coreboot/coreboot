@@ -23,7 +23,6 @@
 asmlinkage void *romstage_main(unsigned long bist)
 {
 	int i;
-	void *romstage_stack_after_car;
 	const int num_guards = 4;
 	const u32 stack_guard = 0xdeadbeef;
 	u32 *stack_base;
@@ -52,10 +51,13 @@ asmlinkage void *romstage_main(unsigned long bist)
 		printk(BIOS_DEBUG, "Smashed stack detected in romstage!\n");
 	}
 
-	/* Get the stack to use after cache-as-ram is torn down. */
-	romstage_stack_after_car = setup_stack_and_mtrrs();
+	if (!IS_ENABLED(CONFIG_POSTCAR_STAGE))
+		return setup_stack_and_mtrrs();
 
-	return romstage_stack_after_car;
+	platform_enter_postcar();
+
+	/* We do not return. */
+	return NULL;
 }
 
 asmlinkage void romstage_after_car(void)

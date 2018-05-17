@@ -68,9 +68,10 @@ Definitions:
 #define E7501_SDRAM_MODE	(SDRAM_BURST_INTERLEAVED | SDRAM_BURST_4)
 #define SPD_ERROR		"Error reading SPD info\n"
 
-#define MCHDEV		PCI_DEV(0,0,0)
-#define RASDEV		PCI_DEV(0,0,1)
-#define D060DEV		PCI_DEV(0,6,0)
+#define MCHDEV		PCI_DEV(0, 0, 0)
+#define RASDEV		PCI_DEV(0, 0, 1)
+#define AGPDEV		PCI_DEV(0, 1, 0)
+#define D060DEV		PCI_DEV(0, 6, 0)
 
 // NOTE: This used to be 0x100000.
 //       That doesn't work on systems where A20M# is asserted, because
@@ -853,6 +854,9 @@ static void configure_e7501_ram_addresses(const struct mem_controller
 	uint64_t tolm, tom;
 	uint16_t reg;
 
+	/* FIXME: Is there standard presence detect bit somewhere. */
+	const int agp_slot_disabled = 1;
+
 	/* Start with disabled remap range. */
 	uint16_t remapbase_r = 0x3ff;
 	uint16_t remaplimit_r = 0;
@@ -888,7 +892,15 @@ static void configure_e7501_ram_addresses(const struct mem_controller
 	tom = total_dram_64M_multiple * 64ULL * MiB;
 
 	/* Reserve MMIO space. */
-	tolm = 4ULL * GiB - 1 * GiB;
+	tolm = 4ULL * GiB - 512 * MiB;
+	if (agp_slot_disabled) {
+		/* Reduce apertures to 2 x 4 MiB. */
+		pci_write_config8(MCHDEV, APSIZE, 0x3F);
+		pci_write_config16(AGPDEV, APSIZE1, 0x3F);
+	} else {
+		/* Add MMIO reserve for 2 x 256 MiB apertures. */
+		tolm -= 512 * MiB;
+	}
 	tolm = MIN(tolm, tom);
 
 	/* The PCI memory hole overlaps memory setup the remap window. */

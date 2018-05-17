@@ -589,7 +589,12 @@ static int compare_timestamp_entries(const void *a, const void *b)
 	const struct timestamp_entry *tse_a = (struct timestamp_entry *)a;
 	const struct timestamp_entry *tse_b = (struct timestamp_entry *)b;
 
-	return tse_a->entry_stamp - tse_b->entry_stamp;
+	if (tse_a->entry_stamp > tse_b->entry_stamp)
+		return 1;
+	else if (tse_a->entry_stamp < tse_b->entry_stamp)
+		return -1;
+
+	return 0;
 }
 
 /* dump the timestamp table */

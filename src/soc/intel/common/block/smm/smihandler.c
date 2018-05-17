@@ -31,6 +31,7 @@
 #include <soc/pm.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
+#include <soc/smbus.h>
 #include <spi-generic.h>
 #include <stdint.h>
 #include <stdlib.h>

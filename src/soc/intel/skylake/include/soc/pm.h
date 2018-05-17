@@ -183,9 +183,6 @@ int acpi_sci_irq(void);
 /* Get base address PMC memory mapped registers. */
 uint8_t *pmc_mmio_regs(void);
 
-/* Get base address of TCO I/O registers. */
-uint16_t smbus_tco_regs(void);
-
 /* Set the DISB after DRAM init */
 void pmc_set_disb(void);
 

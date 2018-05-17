@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2017 Intel Corporation.
+ * Copyright (C) 2017-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
 #include <intelblocks/smbus.h>
+#include <intelblocks/tco.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
@@ -52,8 +53,6 @@
 #define PCR_DMI_ACPIBDID	0x27B8
 #define PCR_DMI_PMBASEA		0x27AC
 #define PCR_DMI_PMBASEC		0x27B0
-#define PCR_DMI_TCOBASE		0x2778
-#define  TCOEN			(1 << 1)	/* Enable TCO I/O range decode. */
 
 #define PCR_DMI_LPCIOD		0x2770
 #define PCR_DMI_LPCIOE		0x2774
@@ -141,35 +140,6 @@ static void soc_config_acpibase(void)
 	}
 }
 
-static void soc_config_tco(void)
-{
-	uint32_t reg32;
-	uint16_t tcobase;
-	uint16_t tcocnt;
-
-	/* Disable TCO in SMBUS Device first before changing Base Address */
-	reg32 = pci_read_config32(PCH_DEV_SMBUS, TCOCTL);
-	reg32 &= ~TCO_BASE_EN;
-	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32);
-
-	/* Program TCO Base */
-	tcobase = TCO_BASE_ADDRESS;
-	pci_write_config32(PCH_DEV_SMBUS, TCOBASE, tcobase);
-
-	/* Enable TCO in SMBUS */
-	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32 | TCO_BASE_EN);
-
-	/*
-	 * Program "TCO Base Address" PCR[DMI] + 2778h[15:5, 1]
-	 */
-	pcr_write32(PID_DMI, PCR_DMI_TCOBASE, tcobase | TCOEN);
-
-	/* Program TCO timer halt */
-	tcocnt = inw(tcobase + TCO1_CNT);
-	tcocnt |= TCO_TMR_HLT;
-	outw(tcocnt, tcobase + TCO1_CNT);
-}
-
 static int pch_check_decode_enable(void)
 {
 	uint32_t dmi_control;
@@ -216,7 +186,7 @@ void pch_early_init(void)
 	soc_config_acpibase();
 
 	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
-	soc_config_tco();
+	tco_configure();
 
 	/* Program SMBUS_BASE_ADDRESS and Enable it */
 	smbus_common_init();

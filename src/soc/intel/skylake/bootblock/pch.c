@@ -2,8 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
- * Copyright (C) 2016 Intel Corporation.
+ * Copyright (C) 2015-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +26,7 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
 #include <intelblocks/smbus.h>
+#include <intelblocks/tco.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
 #include <soc/p2sb.h>
@@ -43,7 +43,6 @@
 #define PCR_DMI_ACPIBDID	0x27B8
 #define PCR_DMI_PMBASEA		0x27AC
 #define PCR_DMI_PMBASEC		0x27B0
-#define PCR_DMI_TCOBASE		0x2778
 
 void bootblock_pch_early_init(void)
 {
@@ -112,37 +111,6 @@ static void soc_config_pwrmbase(void)
 		pcr_write32(PID_DMI, PCR_DMI_PMBASEC, 0x800023a0);
 }
 
-static void soc_config_tco(void)
-{
-	uint32_t reg32 = 0;
-	uint16_t tcobase;
-	uint16_t tcocnt;
-
-	/* Disable TCO in SMBUS Device first before changing Base Address */
-	reg32 = pci_read_config32(PCH_DEV_SMBUS, TCOCTL);
-	reg32 &= ~TCO_EN;
-	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32);
-
-	/* Program TCO Base */
-	pci_write_config32(PCH_DEV_SMBUS, TCOBASE, TCO_BASE_ADDRESS);
-
-	/* Enable TCO in SMBUS */
-	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32 | TCO_EN);
-
-	/*
-	 * Program "TCO Base Address" PCR[DMI] + 2778h[15:5, 1]
-	 * to [SMBUS PCI offset 50h[15:5], 1].
-	 */
-	pcr_write32(PID_DMI, PCR_DMI_TCOBASE, TCO_BASE_ADDRESS | (1 << 1));
-
-	/* Program TCO timer halt */
-	tcobase = pci_read_config16(PCH_DEV_SMBUS, TCOBASE);
-	tcobase &= ~0x1f;
-	tcocnt = inw(tcobase + TCO1_CNT);
-	tcocnt |= TCO_TMR_HLT;
-	outw(tcocnt, tcobase + TCO1_CNT);
-}
-
 static int pch_check_decode_enable(void)
 {
 	uint32_t dmi_control;
@@ -196,7 +164,7 @@ void pch_early_init(void)
 	soc_config_pwrmbase();
 
 	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
-	soc_config_tco();
+	tco_configure();
 
 	/* Program SMBUS_BASE_ADDRESS and Enable it */
 	smbus_common_init();

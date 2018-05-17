@@ -29,6 +29,9 @@
 #define ACPI_BASE_SIZE			0x100
 #define R_ACPI_PM1_TMR			0x8
 
+#define TCO_BASE_ADDRESS	(ACPI_BASE_ADDRESS + 0x60)
+#define TCO_BASE_SIZE		0x20
+
 /* CST Range (R/W) IO port block size */
 #define PMG_IO_BASE_CST_RNG_BLK_SIZE	0x5
 /* ACPI PMIO Offset to C-state register*/

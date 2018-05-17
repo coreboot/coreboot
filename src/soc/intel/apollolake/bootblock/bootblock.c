@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corp.
+ * Copyright (C) 2016-2018 Intel Corp.
  * (Written by Andrey Petrov <andrey.petrov@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
 #include <intelblocks/rtc.h>
 #include <intelblocks/systemagent.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/tco.h>
 #include <intelblocks/uart.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
@@ -87,8 +88,6 @@ static void enable_pmcbar(void)
 
 void bootblock_soc_early_init(void)
 {
-	uint32_t reg;
-
 	enable_pmcbar();
 
 	/* Clear global reset promotion bit */
@@ -110,10 +109,8 @@ void bootblock_soc_early_init(void)
 	/* Initialize GPE for use as interrupt status */
 	pmc_gpe_init();
 
-	/* Stop TCO timer */
-	reg = inl(ACPI_BASE_ADDRESS + TCO1_CNT);
-	reg |= TCO_TMR_HLT;
-	outl(reg, ACPI_BASE_ADDRESS + TCO1_CNT);
+	/* Program TCO Timer Halt */
+	tco_configure();
 
 	/* Use Nx and paging to prevent the frontend from writing back dirty
 	 * cache-as-ram lines to backing store that doesn't exist when the L1I

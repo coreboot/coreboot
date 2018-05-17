@@ -19,6 +19,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/tco.h>
 #include <string.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
@@ -66,13 +67,10 @@ int soc_prev_sleep_state(const struct chipset_power_state *ps,
 
 void soc_fill_power_state(struct chipset_power_state *ps)
 {
-	uint16_t tcobase;
 	uint8_t *pmc;
 
-	tcobase = smbus_tco_regs();
-
-	ps->tco1_sts = inw(tcobase + TCO1_STS);
-	ps->tco2_sts = inw(tcobase + TCO2_STS);
+	ps->tco1_sts = tco_read_reg(TCO1_STS);
+	ps->tco2_sts = tco_read_reg(TCO2_STS);
 
 	printk(BIOS_DEBUG, "TCO_STS:   %04x %04x\n",
 	ps->tco1_sts, ps->tco2_sts);

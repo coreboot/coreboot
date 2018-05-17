@@ -131,10 +131,6 @@
 
 #define GPE_CNTL		0x50
 #define DEVACT_STS		0x4c
-#define TCO_STS			0x64
-#define   TCO_TIMEOUT		(1 << 3)
-#define TCO1_CNT		0x68
-#define   TCO_TMR_HLT		(1 << 11)
 
 #define GPE0_REG_MAX		4
 #define GPE0_REG_SIZE		32
@@ -240,7 +236,8 @@ struct chipset_power_state {
 	uint32_t pm1_cnt;
 	uint32_t gpe0_sts[GPE0_REG_MAX];
 	uint32_t gpe0_en[GPE0_REG_MAX];
-	uint32_t tco_sts;
+	uint16_t tco1_sts;
+	uint16_t tco2_sts;
 	uint32_t prsts;
 	uint32_t gen_pmcon1;
 	uint32_t gen_pmcon2;

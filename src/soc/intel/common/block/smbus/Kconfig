@@ -2,3 +2,14 @@ config SOC_INTEL_COMMON_BLOCK_SMBUS
 	bool
 	help
 	  Intel Processor common SMBus support
+
+config SOC_INTEL_COMMON_BLOCK_TCO
+	bool
+	help
+	  Intel Processor common TCO support
+
+config SOC_INTEL_COMMON_BLOCK_TCO_ENABLE_THROUGH_SMBUS
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_TCO
+	help
+	  Select this config to enable TCO BAR through SMBUS

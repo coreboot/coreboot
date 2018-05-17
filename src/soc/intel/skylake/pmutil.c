@@ -28,6 +28,7 @@
 #include <intelblocks/pmclib.h>
 #include <halt.h>
 #include <intelblocks/lpc_lib.h>
+#include <intelblocks/tco.h>
 #include <rules.h>
 #include <stdlib.h>
 #include <soc/gpe.h>
@@ -168,40 +169,6 @@ uint8_t *pmc_mmio_regs(void)
 	return (void *)(uintptr_t) reg32;
 }
 
-uint16_t smbus_tco_regs(void)
-{
-	uint16_t reg16;
-
-	reg16 = pci_read_config16(PCH_DEV_SMBUS, TCOBASE);
-
-	reg16 &= ~0x1f;
-
-	return reg16;
-}
-
-uint32_t soc_reset_tco_status(void)
-{
-	u16 tco1_sts;
-	u16 tco2_sts;
-	u16 tcobase;
-
-	tcobase = smbus_tco_regs();
-
-	/* TCO Status 2 register */
-	tco2_sts = inw(tcobase + TCO2_STS);
-	tco2_sts |= (TCO2_STS_SECOND_TO | TCO2_STS_BOOT);
-	outw(tco2_sts, tcobase + TCO2_STS);
-
-	/* TCO Status 1 register */
-	tco1_sts = inw(tcobase + TCO1_STS);
-
-	/* Clear SECOND_TO_STS bit */
-	if (tco2_sts & TCO2_STS_SECOND_TO)
-		outw(tco2_sts & ~TCO2_STS_SECOND_TO, tcobase + TCO2_STS);
-
-	return (tco2_sts << 16) | tco1_sts;
-}
-
 uintptr_t soc_read_pmc_base(void)
 {
 	return (uintptr_t) (pmc_mmio_regs());
@@ -285,13 +252,10 @@ int soc_prev_sleep_state(const struct chipset_power_state *ps,
 
 void soc_fill_power_state(struct chipset_power_state *ps)
 {
-	uint16_t tcobase;
 	uint8_t *pmc;
 
-	tcobase = smbus_tco_regs();
-
-	ps->tco1_sts = inw(tcobase + TCO1_STS);
-	ps->tco2_sts = inw(tcobase + TCO2_STS);
+	ps->tco1_sts = tco_read_reg(TCO1_STS);
+	ps->tco2_sts = tco_read_reg(TCO2_STS);
 
 	printk(BIOS_DEBUG, "TCO_STS:   %04x %04x\n",
 	       ps->tco1_sts, ps->tco2_sts);

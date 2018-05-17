@@ -22,6 +22,7 @@
 #include <device/pci.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
+#include <intelblocks/tco.h>
 #include <reg_script.h>
 #include <spi-generic.h>
 #include <soc/p2sb.h>
@@ -54,16 +55,12 @@ static void pch_finalize(void)
 {
 	struct device *dev;
 	uint32_t reg32;
-	uint16_t tcobase, tcocnt;
 	uint8_t *pmcbase;
 	config_t *config;
 	uint8_t reg8;
 
 	/* TCO Lock down */
-	tcobase = smbus_tco_regs();
-	tcocnt = inw(tcobase + TCO1_CNT);
-	tcocnt |= TCO_LOCK;
-	outw(tcocnt, tcobase + TCO1_CNT);
+	tco_lockdown();
 
 	/*
 	 * Disable ACPI PM timer based on dt policy

@@ -28,11 +28,13 @@
 #include <intelblocks/msr.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
+#include <intelblocks/tco.h>
 #include <rules.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
+#include <soc/smbus.h>
 #include <timer.h>
 #include <security/vboot/vbnv.h>
 #include "chip.h"
@@ -133,15 +135,6 @@ const char *const *soc_std_gpe_sts_array(size_t *a)
 	return gpe_sts_bits;
 }
 
-uint32_t soc_reset_tco_status(void)
-{
-	uint32_t tco_sts = inl(ACPI_BASE_ADDRESS + TCO_STS);
-	uint32_t tco_en = inl(ACPI_BASE_ADDRESS + TCO1_CNT);
-
-	outl(tco_sts, ACPI_BASE_ADDRESS + TCO_STS);
-	return tco_sts & tco_en;
-}
-
 void soc_clear_pm_registers(uintptr_t pmc_bar)
 {
 	uint32_t gen_pmcon1;
@@ -173,14 +166,18 @@ void soc_fill_power_state(struct chipset_power_state *ps)
 {
 	uintptr_t pmc_bar0 = read_pmc_mmio_bar();
 
-	ps->tco_sts = inl(ACPI_BASE_ADDRESS + TCO_STS);
+	ps->tco1_sts = tco_read_reg(TCO1_STS);
+	ps->tco2_sts = tco_read_reg(TCO2_STS);
+
 	ps->prsts = read32((void *)(pmc_bar0 + PRSTS));
 	ps->gen_pmcon1 = read32((void *)(pmc_bar0 + GEN_PMCON1));
 	ps->gen_pmcon2 = read32((void *)(pmc_bar0 + GEN_PMCON2));
 	ps->gen_pmcon3 = read32((void *)(pmc_bar0 + GEN_PMCON3));
 
-	printk(BIOS_DEBUG, "prsts: %08x tco_sts: %08x\n",
-	       ps->prsts, ps->tco_sts);
+	printk(BIOS_DEBUG, "prsts: %08x\n",
+	       ps->prsts);
+	printk(BIOS_DEBUG, "tco_sts:   %04x %04x\n",
+	       ps->tco1_sts, ps->tco2_sts);
 	printk(BIOS_DEBUG,
 	       "gen_pmcon1: %08x gen_pmcon2: %08x gen_pmcon3: %08x\n",
 	       ps->gen_pmcon1, ps->gen_pmcon2, ps->gen_pmcon3);

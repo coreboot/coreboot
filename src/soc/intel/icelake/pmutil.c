@@ -28,6 +28,7 @@
 #include <console/console.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
+#include <intelblocks/tco.h>
 #include <halt.h>
 #include <rules.h>
 #include <stdlib.h>
@@ -151,38 +152,6 @@ void pmc_set_disb(void)
 uint8_t *pmc_mmio_regs(void)
 {
 	return (void *)(uintptr_t)PCH_PWRM_BASE_ADDRESS;
-}
-
-uint16_t smbus_tco_regs(void)
-{
-	uint16_t reg16;
-
-	reg16 = pci_read_config16(PCH_DEV_SMBUS, TCOBASE);
-
-	return ALIGN_DOWN(reg16, 0x20);
-}
-
-uint32_t soc_reset_tco_status(void)
-{
-	u16 tco1_sts;
-	u16 tco2_sts;
-	u16 tcobase;
-
-	tcobase = smbus_tco_regs();
-
-	/* TCO Status 2 register */
-	tco2_sts = inw(tcobase + TCO2_STS);
-	tco2_sts |= TCO2_STS_SECOND_TO;
-	outw(tco2_sts, tcobase + TCO2_STS);
-
-	/* TCO Status 1 register */
-	tco1_sts = inw(tcobase + TCO1_STS);
-
-	/* Clear SECOND_TO_STS bit */
-	if (tco2_sts & TCO2_STS_SECOND_TO)
-		outw(tco2_sts & ~TCO2_STS_SECOND_TO, tcobase + TCO2_STS);
-
-	return (tco2_sts << 16) | tco1_sts;
 }
 
 uintptr_t soc_read_pmc_base(void)

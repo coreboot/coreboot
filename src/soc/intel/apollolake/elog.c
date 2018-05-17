@@ -21,6 +21,7 @@
 #include <intelblocks/pmclib.h>
 #include <soc/pm.h>
 #include <soc/pci_devs.h>
+#include <soc/smbus.h>
 #include <stdint.h>
 
 static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
@@ -80,7 +81,7 @@ static void pch_log_power_and_resets(struct chipset_power_state *ps)
 
 	/* TCO Timeout */
 	if (ps->prev_sleep_state != ACPI_S3 &&
-	    ps->tco_sts & TCO_TIMEOUT)
+	    ps->tco1_sts & TCO_TIMEOUT)
 		elog_add_event(ELOG_TYPE_TCO_RESET);
 
 	/* Power Button Override */

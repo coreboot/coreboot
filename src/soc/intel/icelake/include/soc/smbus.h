@@ -16,11 +16,6 @@
 #ifndef _SOC_ICELAKE_SMBUS_H_
 #define _SOC_ICELAKE_SMBUS_H_
 
-/* PCI registers */
-#define TCOBASE				0x50		/* TCO base address. */
-#define TCOCTL				0x54
-#define  TCO_BASE_EN			(1 << 8)	/* TCO base enable. */
-
 /* IO and MMIO registers under primary BAR */
 /* Set address for PCH as SMBus slave role */
 #define SMB_RCV_SLVA			0x09
@@ -29,10 +24,10 @@
 #define TCO1_STS			0x04
 #define  TCO_TIMEOUT			(1 << 3)
 #define TCO2_STS			0x06
-#define  TCO2_STS_SECOND_TO		(1 << 1)
+#define  TCO_STS_SECOND_TO		(1 << 1)
 #define TCO1_CNT			0x08
-#define TCO_LOCK			(1 << 12)
-#define TCO_TMR_HLT			(1 << 11)
+#define  TCO_LOCK			(1 << 12)
+#define  TCO_TMR_HLT			(1 << 11)
 
 /*
  * Default slave address value for PCH. This value is set to match default

@@ -20,6 +20,7 @@
 #include <halt.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/gpio.h>
+#include <intelblocks/tco.h>
 #include <soc/pm.h>
 #include <string.h>
 #include <timer.h>
@@ -260,7 +261,7 @@ static uint32_t print_tco_status(uint32_t tco_sts)
 
 uint32_t pmc_clear_tco_status(void)
 {
-	return print_tco_status(soc_reset_tco_status());
+	return print_tco_status(tco_reset_status());
 }
 
 /* GPE */

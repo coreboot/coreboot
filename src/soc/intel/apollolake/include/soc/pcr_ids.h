@@ -40,5 +40,6 @@
 #define PID_TUNIT	0x52
 
 #define PID_PSF3	0xC6
+#define PID_DMI	0x00 /* Reserved */
 
 #endif	/* SOC_INTEL_APL_PCR_H */

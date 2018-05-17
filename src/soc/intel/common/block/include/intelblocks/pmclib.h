@@ -93,13 +93,6 @@ uint32_t pmc_clear_tco_status(void);
  */
 const char *const *soc_tco_sts_array(size_t *a);
 
-/*
- * Resets the tco status registers. This function clears the tco_sts register
- * and returns the sts and enable bits set.
- */
-uint32_t soc_reset_tco_status(void);
-
-
 /* GPE */
 
 /*

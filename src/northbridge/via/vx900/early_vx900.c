@@ -18,12 +18,6 @@
 #include <arch/io.h>
 #include <console/console.h>
 
-uintptr_t restore_top_of_low_cacheable(void)
-{
-	u8 reg_tom = pci_read_config8(MCU, 0x88);
-	return (reg_tom << 24) - 256 * MiB;
-}
-
 /**
  * \brief Enable accessing of PCI configuration space for all devices.
  *

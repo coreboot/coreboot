@@ -8,6 +8,9 @@ if SOC_INTEL_COMMON
 comment "Intel SoC Common Code"
 source "src/soc/intel/common/block/Kconfig"
 
+comment "Intel SoC Common PCH Code"
+source "src/soc/intel/common/pch/Kconfig"
+
 config DISPLAY_MTRRS
 	bool "MTRRs: Display the MTRR settings"
 	default n

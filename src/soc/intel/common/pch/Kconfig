@@ -1,0 +1,45 @@
+config SOC_INTEL_COMMON_PCH_BASE
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK
+	help
+	  All common PCH code blocks between Gen-6 till latest-PCH should be
+	  part of this directory. A SoC Kconfig might select this option to include
+	  base PCH package while building new SOC block. Currently majority of
+	  common IP code blocks are part of soc/intel/common/block/ and
+	  SoC Kconfig just select those Kconfig option. Addition to that SoC
+	  code now having option to select required base PCH block to include
+	  common IP block.
+
+if SOC_INTEL_COMMON_PCH_BASE
+
+comment "Intel SoC Common PCH Code"
+source "src/soc/intel/common/pch/*/Kconfig"
+
+config PCH_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_INTEL_COMMON_BLOCK_CHIP_CONFIG
+	select SOC_INTEL_COMMON_BLOCK_CSE
+	select SOC_INTEL_COMMON_BLOCK_DSP
+	select SOC_INTEL_COMMON_BLOCK_EBDA
+	select SOC_INTEL_COMMON_BLOCK_FAST_SPI
+	select SOC_INTEL_COMMON_BLOCK_GPIO
+	select SOC_INTEL_COMMON_BLOCK_GRAPHICS
+	select SOC_INTEL_COMMON_BLOCK_ITSS
+	select SOC_INTEL_COMMON_BLOCK_I2C
+	select SOC_INTEL_COMMON_BLOCK_LPC
+	select SOC_INTEL_COMMON_BLOCK_LPSS
+	select SOC_INTEL_COMMON_BLOCK_P2SB
+	select SOC_INTEL_COMMON_BLOCK_PCIE
+	select SOC_INTEL_COMMON_BLOCK_PCR
+	select SOC_INTEL_COMMON_BLOCK_PMC
+	select SOC_INTEL_COMMON_BLOCK_RTC
+	select SOC_INTEL_COMMON_BLOCK_SATA
+	select SOC_INTEL_COMMON_BLOCK_SCS
+	select SOC_INTEL_COMMON_BLOCK_SMBUS
+	select SOC_INTEL_COMMON_BLOCK_SPI
+	select SOC_INTEL_COMMON_BLOCK_TIMER
+	select SOC_INTEL_COMMON_BLOCK_UART
+	select SOC_INTEL_COMMON_BLOCK_XDCI
+	select SOC_INTEL_COMMON_BLOCK_XHCI
+
+endif

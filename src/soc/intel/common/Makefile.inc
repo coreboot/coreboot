@@ -2,6 +2,7 @@ ifeq ($(CONFIG_SOC_INTEL_COMMON),y)
 
 subdirs-y += basecode/
 subdirs-y += block/
+subdirs-y += pch/
 
 bootblock-y += util.c
 

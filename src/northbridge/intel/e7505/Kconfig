@@ -22,6 +22,7 @@ config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select NO_MMCONF_SUPPORT
 	select HAVE_DEBUG_RAM_SETUP
+	select RELOCATABLE_RAMSTAGE
 
 config HW_SCRUBBER
 	bool

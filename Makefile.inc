@@ -241,6 +241,15 @@ endef
 # Add handler to compile ACPI's ASL
 # arg1: base file name
 # arg2: y or n for including in cbfs. defaults to y
+
+# Empty resource templates were marked as a warning in IASL with the comment
+# "This would appear to be worthless in real-world ASL code.", which is
+# possibly true in many cases.  In other cases it seems that an empty
+# ResourceTemplate is the correct code.
+# As it's valid ASL, disable the warning.
+EMPTY_RESOURCE_TEMPLATE_WARNING = 3150
+IGNORED_IASL_WARNINGS = -vw $(EMPTY_RESOURCE_TEMPLATE_WARNING)
+
 define asl_template
 $(CONFIG_CBFS_PREFIX)/$(1).aml-file = $(obj)/$(1).aml
 $(CONFIG_CBFS_PREFIX)/$(1).aml-type = raw
@@ -250,7 +259,7 @@ cbfs-files-$(if $(2),$(2),y) += $(CONFIG_CBFS_PREFIX)/$(1).aml
 $(obj)/$(1).aml: $(src)/mainboard/$(MAINBOARDDIR)/$(1).asl $(obj)/config.h
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
 	$(CC_ramstage) -x assembler-with-cpp -E -MMD -MT $$(@) $$(CPPFLAGS_ramstage) -D__ACPI__ -P -include $(src)/include/kconfig.h -I$(obj) -I$(src) -I$(src)/include -I$(src)/arch/$(ARCHDIR-$(ARCH-ramstage-y))/include -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$@
-	cd $$(dir $$@); $(IASL) -we -p $$(notdir $$@) $$(notdir $$@)
+	cd $$(dir $$@); $(IASL) $(IGNORED_IASL_WARNINGS) -we -p $$(notdir $$@) $$(notdir $$@)
 	if [ -z "$$$$($(IASL) -d $$@ 2>&1 | grep 'ACPI Warning')" ]; then echo "    IASL       $$@ disassembled correctly."; true; else echo "Error: Could not correctly disassemble $$@"; $(IASL) -d $$@; false; fi
 endef
 

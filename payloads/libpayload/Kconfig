@@ -338,6 +338,7 @@ config PC_I8042
 
 config PC_MOUSE
 	bool "Allow input from a PC mouse"
+	default n if CHROMEOS
 	default y if ARCH_X86 # uses IO
 	default n
 	help

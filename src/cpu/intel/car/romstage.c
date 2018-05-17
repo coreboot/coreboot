@@ -63,26 +63,3 @@ asmlinkage void romstage_after_car(void)
 	/* Load the ramstage. */
 	run_ramstage();
 }
-
-#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
-/* setup_stack_and_mtrrs() determines the stack to use after
- * cache-as-ram is torn down as well as the MTRR settings to use. */
-void *setup_stack_and_mtrrs(void)
-{
-	struct postcar_frame pcf;
-
-	postcar_frame_init_lowmem(&pcf);
-
-	/* Cache the ROM as WP just below 4GiB. */
-	postcar_frame_add_mtrr(&pcf, CACHE_ROM_BASE, CACHE_ROM_SIZE,
-		MTRR_TYPE_WRPROT);
-
-	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
-	postcar_frame_add_mtrr(&pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
-
-	/* Save the number of MTRRs to setup. Return the stack location
-	 * pointing to the number of MTRRs.
-	 */
-	return postcar_commit_mtrrs(&pcf);
-}
-#endif /* CONFIG_LATE_CBMEM_INIT */

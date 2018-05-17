@@ -18,6 +18,7 @@
 #include <arch/io.h>
 #include <arch/cpu.h>
 #include <stdlib.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
@@ -77,4 +78,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	}
 
 	printk(BIOS_DEBUG, "SDRAM is up.\n");
+
+	cbmem_recovery(0);
 }

@@ -30,8 +30,8 @@
 #include <arch/cpu.h>
 #include <lib.h>
 #include <stdlib.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
-
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
@@ -850,6 +850,12 @@ static void configure_e7501_ram_addresses(const struct mem_controller
 {
 	int i;
 	uint8_t total_dram_64M_multiple = 0;
+	uint64_t tolm, tom;
+	uint16_t reg;
+
+	/* Start with disabled remap range. */
+	uint16_t remapbase_r = 0x3ff;
+	uint16_t remaplimit_r = 0;
 
 	// Configure the E7501's DRAM row boundaries
 	// Start by zeroing out the temporary initial configuration
@@ -879,71 +885,37 @@ static void configure_e7501_ram_addresses(const struct mem_controller
 		    configure_dimm_row_boundaries(sz, total_dram_64M_multiple, i);
 	}
 
-	// Configure the Top Of Low Memory (TOLM) in the E7501
-	// This address must be a multiple of 128 MB that is less than 4 GB.
-	// NOTE: 16-bit wide TOLM register stores only the highest 5 bits of a 32-bit address
-	//               in the highest 5 bits.
+	tom = total_dram_64M_multiple * 64ULL * MiB;
 
-	// We set TOLM to the smaller of 0xC0000000 (3 GB) or the total DRAM in the system.
-	// This reserves addresses from 0xC0000000 - 0xFFFFFFFF for non-DRAM purposes
-	// such as flash and memory-mapped I/O.
+	/* Reserve MMIO space. */
+	tolm = 4ULL * GiB - 1 * GiB;
+	tolm = MIN(tolm, tom);
 
-	// If there is more than 3 GB of DRAM, we define a remap window which
-	// makes the DRAM "behind" the reserved region available above the top of physical
-	// memory.
+	/* The PCI memory hole overlaps memory setup the remap window. */
+	if (tolm < tom) {
+		uint64_t remapbase = MAX(tom, 4ULL * GiB);
+		uint64_t remaplimit = remapbase + (4ULL * GiB - tolm);
 
-	// NOTE: 0xC0000000 / (64 MB) == 0x30
+		remapbase_r = remapbase / (64 * MiB);
+		remaplimit_r = remaplimit / (64 * MiB);
 
-	if (total_dram_64M_multiple <= 0x30) {
-
-		// <= 3 GB total RAM
-
-		/* I should really adjust all of this in C after I have resources
-		 * to all of the pci devices.
-		 */
-
-		// Round up to 128MB granularity
-		// SJM: Is "missing" 64 MB of memory a potential issue? Should this round down?
-
-		uint8_t total_dram_128M_multiple =
-		    (total_dram_64M_multiple + 1) >> 1;
-
-		// Convert to high 16 bits of address
-		uint16_t top_of_low_memory =
-		    total_dram_128M_multiple << 11;
-
-		pci_write_config16(MCHDEV, TOLM,
-				   top_of_low_memory);
-
-	} else {
-
-		// > 3 GB total RAM
-
-		// Set defaults for > 4 GB DRAM, i.e. remap a 1 GB (= 0x10 * 64 MB) range of memory
-		uint16_t remap_base = total_dram_64M_multiple;	// A[25:0] == 0
-		uint16_t remap_limit = total_dram_64M_multiple + 0x10 - 1;	// A[25:0] == 0xF
-
-		// Put TOLM at 3 GB
-
-		pci_write_config16(MCHDEV, TOLM, 0xc000);
-
-		// Define a remap window to make the RAM that would appear from 3 GB - 4 GB
-		// visible just beyond 4 GB or the end of physical memory, whichever is larger
-		// NOTE: 16-bit wide REMAP registers store only the highest 10 bits of a 36-bit address,
-		//               (i.e. a multiple of 64 MB) in the lowest 10 bits.
-		// NOTE: 0x100000000 / (64 MB) == 0x40
-
-		if (total_dram_64M_multiple < 0x40) {
-			remap_base = 0x40;	// 0x100000000
-			remap_limit =
-			    0x40 + (total_dram_64M_multiple - 0x30) - 1;
-		}
-
-		pci_write_config16(MCHDEV, REMAPBASE,
-				   remap_base);
-		pci_write_config16(MCHDEV, REMAPLIMIT,
-				   remap_limit);
+		/* Limit register is inclusive. */
+		remaplimit_r -= 1;
 	}
+
+	/* Write the RAM configuration registers,
+	   preserving the reserved bits. */
+	reg = pci_read_config16(MCHDEV, TOLM) & 0x7ff;
+	reg |= (tolm / (128 * MiB)) << 11;
+	pci_write_config16(MCHDEV, TOLM, reg);
+
+	reg = pci_read_config16(MCHDEV, REMAPBASE) & 0xfc00;
+	reg |= remapbase_r;
+	pci_write_config16(MCHDEV, REMAPBASE, reg);
+
+	reg = pci_read_config16(MCHDEV, REMAPLIMIT) & 0xfc00;
+	reg |= remaplimit_r;
+	pci_write_config16(MCHDEV, REMAPLIMIT, reg);
 }
 
 /**
@@ -1902,12 +1874,6 @@ void e7505_mch_init(const struct mem_controller *memctrl)
 	sdram_set_registers(memctrl);
 	sdram_set_spd_registers(memctrl);
 	sdram_enable(memctrl);
-}
-
-uintptr_t restore_top_of_low_cacheable(void)
-{
-	u32 tolm = (pci_read_config16(MCHDEV, TOLM) & ~0x7ff) << 16;
-	return tolm;
 }
 
 /**

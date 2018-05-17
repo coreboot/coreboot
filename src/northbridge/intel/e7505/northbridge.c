@@ -31,84 +31,43 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 static void mch_domain_read_resources(struct device *dev)
 {
+	int idx;
+	unsigned long tomk, tolmk;
+	unsigned long remapbasek, remaplimitk;
+	const unsigned long basek_4G = 4 * (GiB / KiB);
 	struct device *mc_dev;
-	uint32_t pci_tolm;
 
 	pci_domain_read_resources(dev);
 
-	pci_tolm = find_pci_tolm(dev->link_list);
-	mc_dev = dev->link_list->children;
-	if (mc_dev) {
-		/* Figure out which areas are/should be occupied by RAM.
-		 * This is all computed in kilobytes and converted to/from
-		 * the memory controller right at the edges.
-		 * Having different variables in different units is
-		 * too confusing to get right.  Kilobytes are good up to
-		 * 4 Terabytes of RAM...
-		 */
-		uint16_t tolm_r, remapbase_r, remaplimit_r;
-		unsigned long tomk, tolmk;
-		unsigned long remapbasek, remaplimitk;
-		int idx;
+	mc_dev = dev_find_slot(0, PCI_DEVFN(0x0, 0));
+	if (!mc_dev)
+		die("Could not find MCH device\n");
 
-		/* Get the value of the highest DRB. This tells the end of
-		 * the physical memory.  The units are ticks of 64MB
-		 * i.e. 1 means 64MB.
-		 */
-		tomk = ((unsigned long)pci_read_config8(mc_dev, DRB_ROW_7)) << 16;
-		/* Compute the top of Low memory */
-		tolmk = pci_tolm >> 10;
-		if (tolmk >= tomk) {
-			/* The PCI hole does not overlap memory
-			 * we won't use the remap window.
-			 */
-			tolmk = tomk;
-			remapbasek   = 0x3ff << 16;
-			remaplimitk  = 0 << 16;
-		}
-		else {
-			/* The PCI memory hole overlaps memory
-			 * setup the remap window.
-			 */
-			/* Find the bottom of the remap window
-			 * is it above 4G?
-			 */
-			remapbasek = 4*1024*1024;
-			if (tomk > remapbasek) {
-				remapbasek = tomk;
-			}
-			/* Find the limit of the remap window */
-			remaplimitk = (remapbasek + (4*1024*1024 - tolmk) - (1 << 16));
-		}
-		/* Write the RAM configuration registers,
-		 * preserving the reserved bits.
-		 */
-		tolm_r = pci_read_config16(mc_dev, TOLM);
-		tolm_r = ((tolmk >> 17) << 11) | (tolm_r & 0x7ff);
-		pci_write_config16(mc_dev, TOLM, tolm_r);
+	tolmk = pci_read_config16(mc_dev, TOLM) >> 11;
+	tolmk <<= 17;
 
-		remapbase_r = pci_read_config16(mc_dev, REMAPBASE);
-		remapbase_r = (remapbasek >> 16) | (remapbase_r & 0xfc00);
-		pci_write_config16(mc_dev, REMAPBASE, remapbase_r);
+	tomk = pci_read_config8(mc_dev, DRB_ROW_7);
+	tomk <<= 16;
 
-		remaplimit_r = pci_read_config16(mc_dev, REMAPLIMIT);
-		remaplimit_r = (remaplimitk >> 16) | (remaplimit_r & 0xfc00);
-		pci_write_config16(mc_dev, REMAPLIMIT, remaplimit_r);
+	/* Remapped region with a 64 MiB granularity in register
+	   definition. Limit is inclusive, so add one. */
+	remapbasek = pci_read_config16(mc_dev, REMAPBASE) & 0x3ff;
+	remapbasek <<= 16;
 
-		/* Report the memory regions */
-		idx = 10;
-		ram_resource(dev, idx++, 0, 640);
-		ram_resource(dev, idx++, 768, tolmk - 768);
-		if (tomk > 4*1024*1024) {
-			ram_resource(dev, idx++, 4096*1024, tomk - 4*1024*1024);
-		}
-		if (remaplimitk >= remapbasek) {
-			ram_resource(dev, idx++, remapbasek,
-				(remaplimitk + 64*1024) - remapbasek);
-		}
+	remaplimitk = pci_read_config16(mc_dev, REMAPLIMIT) & 0x3ff;
+	remaplimitk += 1;
+	remaplimitk <<= 16;
 
-		set_late_cbmem_top(tolmk * 1024);
-	}
+	/* Report the memory regions */
+	idx = 10;
+	ram_resource(dev, idx++, 0, 640);
+	ram_resource(dev, idx++, 768, tolmk - 768);
+
+	if (tomk > basek_4G)
+		ram_resource(dev, idx++, basek_4G, tomk - basek_4G);
+
+	if (remaplimitk > remapbasek)
+		ram_resource(dev, idx++, remapbasek, remaplimitk - remapbasek);
 }
 
 static void mch_domain_set_resources(struct device *dev)

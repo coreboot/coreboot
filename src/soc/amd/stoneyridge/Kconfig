@@ -300,7 +300,7 @@ config SMM_TSEG_SIZE
 
 config SMM_RESERVED_SIZE
 	hex
-	default 0x140000
+	default 0x150000
 
 config ACPI_CPU_STRING
 	string

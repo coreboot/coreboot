@@ -44,6 +44,7 @@
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
 #include <mrc_cache.h>
+#include <arch/early_variables.h>
 #endif
 
 #if !REAL
@@ -281,6 +282,9 @@ struct raminfo {
 
 	const struct ram_training *cached_training;
 };
+
+/* Global allocation of timings_car */
+timing_bounds_t timings_car[64] CAR_GLOBAL;
 
 static void
 write_500(struct raminfo *info, int channel, u32 val, u16 addr, int bits,
@@ -3128,7 +3132,7 @@ static void do_ram_training(struct raminfo *info)
 	u8 reg_178;
 	int niter;
 
-	timing_bounds_t timings[64];
+	timing_bounds_t *timings = timings_car;
 	int lane, rank, slot, channel;
 	u8 reg178_center;
 

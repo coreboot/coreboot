@@ -20,7 +20,7 @@ chip soc/amd/stoneyridge
 	}"
 	register "dram_clear_on_reset" = "DRAM_CONTENTS_KEEP"
 	register "uma_mode" = "UMAMODE_SPECIFIED_SIZE"
-	register "uma_size" = "128 * MiB"
+	register "uma_size" = "32 * MiB"
 
 	device cpu_cluster 0 on
 		device lapic 10 on end

@@ -39,9 +39,9 @@ static const struct nhlt_format_config max98373_render_formats[] = {
 static const struct nhlt_format_config max98373_capture_formats[] = {
 	/* 48 KHz 16-bits per sample. */
 	{
-		.num_channels = 2,
+		.num_channels = 4,
 		.sample_freq_khz = 48,
-		.container_bits_per_sample = 16,
+		.container_bits_per_sample = 32,
 		.valid_bits_per_sample = 16,
 		.speaker_mask = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT,
 		.settings_file = "max98373-render-2ch-48khz-16b.bin",

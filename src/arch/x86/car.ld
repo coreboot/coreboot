@@ -60,7 +60,7 @@
 	 * backing store once cbmem comes online. Therefore, this data needs
 	 * to reside in the migrated area (between _car_relocatable_data_start
 	 * and _car_relocatable_data_end). */
-	TIMESTAMP(., 0x100)
+	TIMESTAMP(., 0x200)
 #if IS_ENABLED(CONFIG_COMMONLIB_STORAGE)
 	_car_drivers_storage_start = .;
 	. += 256;

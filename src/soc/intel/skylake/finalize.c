@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,10 @@
 #include <chip.h>
 #include <console/console.h>
 #include <console/post_codes.h>
+#include <cpu/x86/mp.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
+#include <intelblocks/cpulib.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
@@ -35,6 +37,7 @@
 #include <soc/systemagent.h>
 #include <soc/thermal.h>
 #include <stdlib.h>
+#include <timer.h>
 
 #define PSF_BASE_ADDRESS	0xA00
 #define PCR_PSFX_T0_SHDW_PCIEN	0x1C
@@ -135,6 +138,9 @@ static void soc_finalize(void *unused)
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
 
 	pch_finalize_script(dev);
+
+	printk(BIOS_DEBUG, "Clearing MCA.\n");
+	mp_run_on_all_cpus(mca_configure, NULL, 17 * USECS_PER_SEC);
 
 	soc_lockdown(dev);
 

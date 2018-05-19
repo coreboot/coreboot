@@ -53,7 +53,7 @@
 #define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
 
-static void lpc_common_init(device_t dev, int master)
+static void lpc_common_init(struct device *dev, int master)
 {
 	u8 byte;
 	void *ioapic_base;
@@ -70,7 +70,7 @@ static void lpc_common_init(device_t dev, int master)
 		clear_ioapic(ioapic_base);
 }
 
-static void lpc_slave_init(device_t dev)
+static void lpc_slave_init(struct device *dev)
 {
 	lpc_common_init(dev, 0);
 }
@@ -84,7 +84,7 @@ static void enable_hpet(struct device *dev)
 	printk(BIOS_DEBUG, "enabling HPET @0x%lx\n", hpet_address);
 }
 
-static void lpc_init(device_t dev)
+static void lpc_init(struct device *dev)
 {
 	u8 byte, byte_old;
 	int on, nmi_option;
@@ -145,7 +145,7 @@ static void lpc_init(device_t dev)
 	enable_hpet(dev);
 }
 
-static void mcp55_lpc_read_resources(device_t dev)
+static void mcp55_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -177,7 +177,7 @@ static void mcp55_lpc_read_resources(device_t dev)
  *
  * @param dev The device whose children's resources are to be enabled.
  */
-static void mcp55_lpc_enable_childrens_resources(device_t dev)
+static void mcp55_lpc_enable_childrens_resources(struct device *dev)
 {
 	u32 reg, reg_var[4];
 	int i, var_num = 0;
@@ -186,7 +186,7 @@ static void mcp55_lpc_enable_childrens_resources(device_t dev)
 	reg = pci_read_config32(dev, 0xa0);
 
 	for (link = dev->link_list; link; link = link->next) {
-		device_t child;
+		struct device *child;
 		for (child = link->children; child; child = child->sibling) {
 			if (child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
 				struct resource *res;
@@ -234,14 +234,14 @@ static void mcp55_lpc_enable_childrens_resources(device_t dev)
 		pci_write_config32(dev, 0xa8 + i * 4, reg_var[i]);
 }
 
-static void mcp55_lpc_enable_resources(device_t dev)
+static void mcp55_lpc_enable_resources(struct device *dev)
 {
 	pci_dev_enable_resources(dev);
 	mcp55_lpc_enable_childrens_resources(dev);
 }
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-static void southbridge_acpi_fill_ssdt_generator(device_t device)
+static void southbridge_acpi_fill_ssdt_generator(struct device *device)
 {
 	amd_generate_powernow(0, 0, 0);
 }

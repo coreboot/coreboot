@@ -27,7 +27,7 @@
 #include "mcp55.h"
 #include "smbus.h"
 
-static int lsmbus_recv_byte(device_t dev)
+static int lsmbus_recv_byte(struct device *dev)
 {
 	unsigned device;
 	struct resource *res;
@@ -41,7 +41,7 @@ static int lsmbus_recv_byte(device_t dev)
 	return do_smbus_recv_byte(res->base, device);
 }
 
-static int lsmbus_send_byte(device_t dev, u8 val)
+static int lsmbus_send_byte(struct device *dev, u8 val)
 {
 	unsigned device;
 	struct resource *res;
@@ -55,7 +55,7 @@ static int lsmbus_send_byte(device_t dev, u8 val)
 	return do_smbus_send_byte(res->base, device, val);
 }
 
-static int lsmbus_read_byte(device_t dev, u8 address)
+static int lsmbus_read_byte(struct device *dev, u8 address)
 {
 	unsigned device;
 	struct resource *res;
@@ -69,7 +69,7 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
-static int lsmbus_write_byte(device_t dev, u8 address, u8 val)
+static int lsmbus_write_byte(struct device *dev, u8 address, u8 val)
 {
 	unsigned device;
 	struct resource *res;
@@ -93,7 +93,7 @@ static struct smbus_bus_operations lops_smbus_bus = {
 unsigned pm_base;
 #endif
 
-static void mcp55_sm_read_resources(device_t dev)
+static void mcp55_sm_read_resources(struct device *dev)
 {
 	unsigned long index;
 
@@ -106,7 +106,7 @@ static void mcp55_sm_read_resources(device_t dev)
 	compact_resources(dev);
 }
 
-static void mcp55_sm_init(device_t dev)
+static void mcp55_sm_init(struct device *dev)
 {
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	struct resource *res;

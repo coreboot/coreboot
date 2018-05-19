@@ -39,7 +39,8 @@ static void ti_pci1x2y_init(struct device *dev)
 	pci_write_config8(dev, 0x92, pci_read_config8(dev, 0x92) | 0x02);
 }
 
-static void ti_pci1x2y_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void ti_pci1x2y_set_subsystem(struct device *dev, unsigned vendor,
+				     unsigned device)
 {
 	/*
 	 * Enable change sub-vendor ID. Clear the bit 5 to enable to write

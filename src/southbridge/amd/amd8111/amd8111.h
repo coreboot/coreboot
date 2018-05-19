@@ -4,7 +4,7 @@
 #include "chip.h"
 
 #ifndef __SIMPLE_DEVICE__
-void amd8111_enable(device_t dev);
+void amd8111_enable(struct device *dev);
 #endif
 
 #ifdef __PRE_RAM__

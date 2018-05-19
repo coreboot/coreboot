@@ -86,7 +86,7 @@ static void lpc_init(struct device *dev)
 	enable_hpet(dev);
 }
 
-static void amd8111_lpc_read_resources(device_t dev)
+static void amd8111_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -112,7 +112,8 @@ static void amd8111_lpc_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void lpci_set_subsystem(struct device *dev, unsigned vendor,
+			       unsigned device)
 {
 	pci_write_config32(dev, 0x70,
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));
@@ -128,7 +129,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-static void southbridge_acpi_fill_ssdt_generator(device_t device) {
+static void southbridge_acpi_fill_ssdt_generator(struct device *device) {
 #if IS_ENABLED(CONFIG_SET_FIDVID)
 	amd_generate_powernow(pm_base + 0x10, 6, 1);
 	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");

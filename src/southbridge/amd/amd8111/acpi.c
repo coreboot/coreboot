@@ -21,7 +21,7 @@
 #endif
 
 
-static int lsmbus_recv_byte(device_t dev)
+static int lsmbus_recv_byte(struct device *dev)
 {
 	unsigned device;
 	struct resource *res;
@@ -32,7 +32,7 @@ static int lsmbus_recv_byte(device_t dev)
 	return do_smbus_recv_byte(res->base, device);
 }
 
-static int lsmbus_send_byte(device_t dev, uint8_t val)
+static int lsmbus_send_byte(struct device *dev, uint8_t val)
 {
 	unsigned device;
 	struct resource *res;
@@ -44,7 +44,7 @@ static int lsmbus_send_byte(device_t dev, uint8_t val)
 }
 
 
-static int lsmbus_read_byte(device_t dev, uint8_t address)
+static int lsmbus_read_byte(struct device *dev, uint8_t address)
 {
 	unsigned device;
 	struct resource *res;
@@ -55,7 +55,7 @@ static int lsmbus_read_byte(device_t dev, uint8_t address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
-static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
+static int lsmbus_write_byte(struct device *dev, uint8_t address, uint8_t val)
 {
 	unsigned device;
 	struct resource *res;
@@ -66,7 +66,8 @@ static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
 	return do_smbus_write_byte(res->base, device, address, val);
 }
 
-static int lsmbus_block_read(device_t dev, uint8_t cmd, u8 bytes, u8 *buffer)
+static int lsmbus_block_read(struct device *dev, uint8_t cmd, u8 bytes,
+			     u8 *buffer)
 {
 	unsigned device;
 	struct resource *res;
@@ -77,7 +78,8 @@ static int lsmbus_block_read(device_t dev, uint8_t cmd, u8 bytes, u8 *buffer)
 	return do_smbus_block_read(res->base, device, cmd, bytes, buffer);
 }
 
-static int lsmbus_block_write(device_t dev, uint8_t cmd, u8 bytes, const u8 *buffer)
+static int lsmbus_block_write(struct device *dev, uint8_t cmd, u8 bytes,
+			      const u8 *buffer)
 {
 	unsigned device;
 	struct resource *res;
@@ -168,7 +170,7 @@ static void acpi_init(struct device *dev)
 
 }
 
-static void acpi_read_resources(device_t dev)
+static void acpi_read_resources(struct device *dev)
 {
 	struct resource *resource;
 
@@ -186,7 +188,7 @@ static void acpi_read_resources(device_t dev)
 	resource->index = 0x58;
 }
 
-static void acpi_enable_resources(device_t dev)
+static void acpi_enable_resources(struct device *dev)
 {
 	uint8_t byte;
 	/* Enable the generic pci resources */
@@ -202,7 +204,8 @@ static void acpi_enable_resources(device_t dev)
 
 }
 
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void lpci_set_subsystem(struct device *dev, unsigned vendor,
+			       unsigned device)
 {
 	pci_write_config32(dev, 0x7c,
 		((device & 0xffff) << 16) | (vendor & 0xffff));

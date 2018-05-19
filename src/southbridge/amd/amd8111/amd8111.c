@@ -4,10 +4,10 @@
 #include <device/pci_ids.h>
 #include "amd8111.h"
 
-void amd8111_enable(device_t dev)
+void amd8111_enable(struct device *dev)
 {
-	device_t lpc_dev;
-	device_t bus_dev;
+	struct device *lpc_dev;
+	struct device *bus_dev;
 	unsigned index;
 	unsigned reg_old, reg;
 

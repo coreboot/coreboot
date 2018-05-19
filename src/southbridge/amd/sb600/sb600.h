@@ -36,8 +36,9 @@ extern void pm2_iowrite(u8 reg, u8 value);
 extern u8 pm2_ioread(u8 reg);
 
 #ifndef __SIMPLE_DEVICE__
-extern void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
-void sb600_enable(device_t dev);
+extern void set_sm_enable_bits(struct device *sm_dev, u32 reg_pos, u32 mask,
+			       u32 val);
+void sb600_enable(struct device *dev);
 #endif
 
 void sb600_lpc_port80(void);

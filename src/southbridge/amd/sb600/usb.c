@@ -33,7 +33,7 @@ static void usb_init(struct device *dev)
 	u32 dword;
 
 	/* Enable OHCI0-4 and EHCI Controllers */
-	device_t sm_dev;
+	struct device *sm_dev;
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 	byte = pci_read_config8(sm_dev, 0x68);
 	byte |= 0x3F;

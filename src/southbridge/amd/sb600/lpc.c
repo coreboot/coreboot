@@ -31,11 +31,11 @@
 #include <cpu/amd/powernow.h>
 #include "sb600.h"
 
-static void lpc_init(device_t dev)
+static void lpc_init(struct device *dev)
 {
 	u8 byte;
 	u32 dword;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	/* Enable the LPC Controller */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
@@ -67,7 +67,7 @@ static void lpc_init(device_t dev)
 	setup_i8254(); /* Initialize i8254 timers */
 }
 
-static void sb600_lpc_read_resources(device_t dev)
+static void sb600_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -103,7 +103,7 @@ static void sb600_lpc_read_resources(device_t dev)
  * @param dev the device whose children's resources are to be enabled
  *
  */
-static void sb600_lpc_enable_childrens_resources(device_t dev)
+static void sb600_lpc_enable_childrens_resources(struct device *dev)
 {
 	struct bus *link;
 	u32 reg, reg_x;
@@ -115,7 +115,7 @@ static void sb600_lpc_enable_childrens_resources(device_t dev)
 	reg_x = pci_read_config32(dev, 0x48);
 
 	for (link = dev->link_list; link; link = link->next) {
-		device_t child;
+		struct device *child;
 		for (child = link->children; child;
 		     child = child->sibling) {
 			if (child->enabled
@@ -214,7 +214,7 @@ static void sb600_lpc_enable_childrens_resources(device_t dev)
 	pci_write_config8(dev, 0x74, wiosize);
 }
 
-static void sb600_lpc_enable_resources(device_t dev)
+static void sb600_lpc_enable_resources(struct device *dev)
 {
 	pci_dev_enable_resources(dev);
 	sb600_lpc_enable_childrens_resources(dev);
@@ -224,7 +224,7 @@ static void sb600_lpc_enable_resources(device_t dev)
 
 extern u16 pm_base;
 
-static void southbridge_acpi_fill_ssdt_generator(device_t device) {
+static void southbridge_acpi_fill_ssdt_generator(struct device *device) {
 	amd_generate_powernow(pm_base + 8, 6, 1);
 }
 

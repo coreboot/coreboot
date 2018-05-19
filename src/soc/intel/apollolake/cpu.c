@@ -73,7 +73,7 @@ void soc_core_init(struct device *cpu)
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some
 	 * of these banks are core vs package scope. For now every CPU clears
 	 * every bank. */
-	mca_configure();
+	mca_configure(NULL);
 
 	/* Set core MSRs */
 	reg_script_run(core_msr_script);

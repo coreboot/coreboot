@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -297,7 +297,7 @@ uint32_t cpu_get_max_turbo_ratio(void)
 	return msr.lo & 0xff;
 }
 
-void mca_configure(void)
+void mca_configure(void *unused)
 {
 	msr_t msr;
 	int i;
@@ -306,6 +306,7 @@ void mca_configure(void)
 	msr = rdmsr(IA32_MCG_CAP);
 	num_banks = msr.lo & 0xff;
 	msr.lo = msr.hi = 0;
+
 	for (i = 0; i < num_banks; i++) {
 		/* Clear the machine check status */
 		wrmsr(IA32_MC0_STATUS + (i * 4), msr);

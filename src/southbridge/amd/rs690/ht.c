@@ -22,11 +22,11 @@
 #include <arch/acpi.h>
 #include "rs690.h"
 
-static void ht_dev_set_resources(device_t dev)
+static void ht_dev_set_resources(struct device *dev)
 {
 #if IS_ENABLED(CONFIG_EXT_CONF_SUPPORT)
 	unsigned reg;
-	device_t k8_f1;
+	struct device *k8_f1;
 	resource_t rbase, rend;
 	u32 base, limit;
 	struct resource *resource;
@@ -59,7 +59,8 @@ static void ht_dev_set_resources(device_t dev)
 		}
 		if ( !(base & 3) ) {
 			u32 sblk;
-			device_t k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+			struct device *k8_f0 =
+				dev_find_slot(0, PCI_DEVFN(0x18, 0));
 			/* Remember this resource has been stored. */
 			resource->flags |= IORESOURCE_STORED;
 			report_resource_stored(dev, resource, " <mmconfig>");
@@ -87,7 +88,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	struct resource *res;
 	resource_t mmconf_base = EXT_CONF_BASE_ADDRESS; // default
 
-	device_t dev = dev_find_slot(0,PCI_DEVFN(0,0));
+	struct device *dev = dev_find_slot(0,PCI_DEVFN(0,0));
 	// we report mmconf base
 	res = probe_resource(dev, 0x1C);
 	if ( res )
@@ -98,7 +99,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-static void ht_dev_read_resources(device_t dev)
+static void ht_dev_read_resources(struct device *dev)
 {
 #if IS_ENABLED(CONFIG_EXT_CONF_SUPPORT)
 	struct resource *res;
@@ -125,9 +126,9 @@ static void ht_dev_read_resources(device_t dev)
 }
 
 /* for UMA internal graphics */
-void avoid_lpc_dma_deadlock(device_t nb_dev, device_t sb_dev)
+void avoid_lpc_dma_deadlock(struct device *nb_dev, struct device *sb_dev)
 {
-	device_t k8_f0;
+	struct device *k8_f0;
 	u8 reg;
 
 	k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
@@ -170,7 +171,8 @@ static void pcie_init(struct device *dev)
 	pci_write_config32(dev, 0x4C, dword);
 }
 
-static void ht_dev_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
+static void ht_dev_set_subsystem(struct device *dev, unsigned vendor,
+				 unsigned device)
 {
 	pci_write_config32(dev, 0x50,  ((device & 0xffff) << 16) | (vendor & 0xffff));
 }

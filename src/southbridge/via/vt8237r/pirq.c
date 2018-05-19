@@ -24,7 +24,7 @@
 #if IS_ENABLED(CONFIG_PIRQ_ROUTE) && IS_ENABLED(CONFIG_GENERATE_PIRQ_TABLE)
 void pirq_assign_irqs(const unsigned char route[4])
 {
-	device_t pdev;
+	struct device *pdev;
 
 	pdev = dev_find_device(PCI_VENDOR_ID_VIA,
 				PCI_DEVICE_ID_VIA_VT8237R_LPC, 0);

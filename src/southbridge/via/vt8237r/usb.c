@@ -154,7 +154,8 @@ static void vt8237_usb_ii_read_resources(struct device *dev)
 	return;
 }
 
-static void vt8237_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void vt8237_set_subsystem(struct device *dev, unsigned vendor,
+				 unsigned device)
 {
 	pci_write_config32(dev, 0x42, pci_read_config32(dev, 0x42) | 0x10);
 	pci_write_config16(dev, 0x2c, vendor);

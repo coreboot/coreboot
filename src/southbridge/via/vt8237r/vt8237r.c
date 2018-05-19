@@ -44,7 +44,7 @@ void writeback(struct device *dev, u16 where, u8 what)
 }
 #endif
 
-void dump_south(device_t dev)
+void dump_south(struct device *dev)
 {
 	int i, j;
 

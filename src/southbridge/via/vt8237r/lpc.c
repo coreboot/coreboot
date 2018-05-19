@@ -62,7 +62,7 @@ static unsigned char *pin_to_irq(const unsigned char *pin)
 static void pci_routing_fixup(struct device *dev)
 {
 #if IS_ENABLED(CONFIG_EPIA_VT8237R_INIT)
-	device_t pdev;
+	struct device *pdev;
 #endif
 
 	/* PCI PNP Interrupt Routing INTE/F - disable */
@@ -144,7 +144,7 @@ static void pci_routing_fixup(struct device *dev)
  * This avoids having to handle any System Management Interrupts (SMIs).
  */
 
-static void setup_pm(device_t dev)
+static void setup_pm(struct device *dev)
 {
 	u16 tmp;
 	struct southbridge_via_vt8237r_config *cfg;
@@ -567,7 +567,7 @@ static void vt8237_common_init(struct device *dev)
 	cmos_init(0);
 }
 
-static void vt8237r_read_resources(device_t dev)
+static void vt8237r_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -639,7 +639,8 @@ static void southbridge_init_common(struct device *dev)
 }
 
 
-static void vt8237_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void vt8237_set_subsystem(struct device *dev, unsigned vendor,
+				 unsigned device)
 {
 	pci_write_config16(dev, 0x70, vendor);
 	pci_write_config16(dev, 0x72, device);

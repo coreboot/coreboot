@@ -144,9 +144,9 @@ void enable_rom_decode(void);
 void vt8237_early_spi_init(void);
 int vt8237_early_network_init(struct vt8237_network_rom *rom);
 #else
-void writeback(device_t dev, u16 where, u8 what);
-void dump_south(device_t dev);
-u32 vt8237_ide_80pin_detect(device_t dev);
+void writeback(struct device *dev, u16 where, u8 what);
+void dump_south(struct device *dev);
+u32 vt8237_ide_80pin_detect(struct device *dev);
 #endif
 
 #endif

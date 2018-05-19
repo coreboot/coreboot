@@ -20,7 +20,7 @@
 #include "chip.h"
 
 #ifndef __PRE_RAM__
-void bcm5785_enable(device_t dev);
+void bcm5785_enable(struct device *dev);
 #else
 void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn);
 #endif

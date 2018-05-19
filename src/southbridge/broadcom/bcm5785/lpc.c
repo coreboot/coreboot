@@ -26,7 +26,7 @@
 #include <arch/ioapic.h>
 #include "bcm5785.h"
 
-static void lpc_init(device_t dev)
+static void lpc_init(struct device *dev)
 {
 	/* Initialize the real time clock */
 	cmos_init(0);
@@ -35,7 +35,7 @@ static void lpc_init(device_t dev)
 	isa_dma_init();
 }
 
-static void bcm5785_lpc_read_resources(device_t dev)
+static void bcm5785_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -66,7 +66,7 @@ static void bcm5785_lpc_read_resources(device_t dev)
  *
  * @param dev The device whos children's resources are to be enabled.
  */
-static void bcm5785_lpc_enable_childrens_resources(device_t dev)
+static void bcm5785_lpc_enable_childrens_resources(struct device *dev)
 {
 	struct bus *link;
 	uint32_t reg;
@@ -74,7 +74,7 @@ static void bcm5785_lpc_enable_childrens_resources(device_t dev)
 	reg = pci_read_config8(dev, 0x44);
 
 	for (link = dev->link_list; link; link = link->next) {
-		device_t child;
+		struct device *child;
 		for (child = link->children; child; child = child->sibling) {
 			if (child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
 				struct resource *res;
@@ -110,13 +110,14 @@ static void bcm5785_lpc_enable_childrens_resources(device_t dev)
 
 }
 
-static void bcm5785_lpc_enable_resources(device_t dev)
+static void bcm5785_lpc_enable_resources(struct device *dev)
 {
 	pci_dev_enable_resources(dev);
 	bcm5785_lpc_enable_childrens_resources(dev);
 }
 
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void lpci_set_subsystem(struct device *dev, unsigned vendor,
+			       unsigned device)
 {
 	pci_write_config32(dev, 0x40,
 		((device & 0xffff) << 16) | (vendor & 0xffff));

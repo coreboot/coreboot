@@ -20,10 +20,10 @@
 #include <device/pci_ids.h>
 #include "bcm5785.h"
 
-void bcm5785_enable(device_t dev)
+void bcm5785_enable(struct device *dev)
 {
-	device_t sb_pci_main_dev;
-	device_t bus_dev;
+	struct device *sb_pci_main_dev;
+	struct device *bus_dev;
 	// unsigned index;
 
 	/* See if we are on the behind the pcix bridge */

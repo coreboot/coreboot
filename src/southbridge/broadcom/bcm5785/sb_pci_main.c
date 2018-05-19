@@ -29,7 +29,7 @@
 
 #define NMI_OFF 0
 
-static void sb_init(device_t dev)
+static void sb_init(struct device *dev)
 {
 	uint8_t byte;
 	uint8_t byte_old;
@@ -52,7 +52,7 @@ static void sb_init(device_t dev)
 
 }
 
-static void bcm5785_sb_read_resources(device_t dev)
+static void bcm5785_sb_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -72,7 +72,7 @@ static void bcm5785_sb_read_resources(device_t dev)
 
 }
 
-static int lsmbus_recv_byte(device_t dev)
+static int lsmbus_recv_byte(struct device *dev)
 {
 	unsigned device;
 	struct resource *res;
@@ -86,7 +86,7 @@ static int lsmbus_recv_byte(device_t dev)
 	return do_smbus_recv_byte(res->base, device);
 }
 
-static int lsmbus_send_byte(device_t dev, uint8_t val)
+static int lsmbus_send_byte(struct device *dev, uint8_t val)
 {
 	unsigned device;
 	struct resource *res;
@@ -100,7 +100,7 @@ static int lsmbus_send_byte(device_t dev, uint8_t val)
 	return do_smbus_send_byte(res->base, device, val);
 }
 
-static int lsmbus_read_byte(device_t dev, uint8_t address)
+static int lsmbus_read_byte(struct device *dev, uint8_t address)
 {
 	unsigned device;
 	struct resource *res;
@@ -114,7 +114,7 @@ static int lsmbus_read_byte(device_t dev, uint8_t address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
-static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
+static int lsmbus_write_byte(struct device *dev, uint8_t address, uint8_t val)
 {
 	unsigned device;
 	struct resource *res;
@@ -135,7 +135,8 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.write_byte = lsmbus_write_byte,
 };
 
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void lpci_set_subsystem(struct device *dev, unsigned vendor,
+			       unsigned device)
 {
 	pci_write_config32(dev, 0x2c,
 		((device & 0xffff) << 16) | (vendor & 0xffff));

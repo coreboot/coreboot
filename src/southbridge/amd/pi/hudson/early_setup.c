@@ -276,7 +276,7 @@ void hudson_clk_output_48Mhz(void)
 static uintptr_t hudson_spibase(void)
 {
 	/* Make sure the base address is predictable */
-	device_t dev = PCI_DEV(0, 0x14, 3);
+	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
 
 	u32 base = pci_read_config32(dev, SPIROM_BASE_ADDRESS_REGISTER)
 							& 0xfffffff0;
@@ -328,7 +328,7 @@ void hudson_read_mode(u32 mode)
 
 void hudson_tpm_decode_spi(void)
 {
-	device_t dev = PCI_DEV(0, 0x14, 3);	/* LPC device */
+	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);	/* LPC device */
 
 	u32 spibase = pci_read_config32(dev, SPIROM_BASE_ADDRESS_REGISTER);
 	pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER, spibase

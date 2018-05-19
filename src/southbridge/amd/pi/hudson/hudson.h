@@ -197,7 +197,7 @@ void configure_hudson_uart(void);
 #endif
 
 #else
-void hudson_enable(device_t dev);
+void hudson_enable(struct device *dev);
 void s3_resume_init_data(void *FchParams);
 
 #endif /* __PRE_RAM__ */

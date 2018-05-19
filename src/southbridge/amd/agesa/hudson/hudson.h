@@ -79,7 +79,7 @@ int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 
 #else
-void hudson_enable(device_t dev);
+void hudson_enable(struct device *dev);
 
 #endif /* __PRE_RAM__ */
 #endif /* __SMM__ */

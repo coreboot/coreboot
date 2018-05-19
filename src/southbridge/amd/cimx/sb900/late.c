@@ -14,7 +14,7 @@
  */
 
 
-#include <device/device.h>	/* device_t */
+#include <device/device.h>
 #include <device/pci.h>		/* device_operations */
 #include <device/pci_ids.h>
 #include <device/smbus.h>	/* smbus_bus_operations */
@@ -73,7 +73,7 @@ static struct pci_operations lops_pci = {
 	.set_subsystem = 0,
 };
 
-static void lpc_enable_resources(device_t dev)
+static void lpc_enable_resources(struct device *dev)
 {
 
 	printk(BIOS_DEBUG, "SB900 - Late.c - lpc_enable_resources - Start.\n");
@@ -82,7 +82,7 @@ static void lpc_enable_resources(device_t dev)
 	printk(BIOS_DEBUG, "SB900 - Late.c - lpc_enable_resources - End.\n");
 }
 
-static void lpc_init(device_t dev)
+static void lpc_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "SB900 - Late.c - lpc_init - Start.\n");
 	/* SB Configure HPET base and enable bit */
@@ -266,7 +266,7 @@ static const struct pci_driver gec_driver __pci_driver = {
 };
 
 
-static void pcie_init(device_t dev)
+static void pcie_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "SB900 - Late.c - pcie_init - Start.\n");
 //-	sbPcieGppLateInit(sb_config);
@@ -333,7 +333,7 @@ static const struct pci_driver PORTD_driver __pci_driver = {
 /**
  * @brief SB Cimx entry point sbBeforePciInit wrapper
  */
-static void sb900_enable(device_t dev)
+static void sb900_enable(struct device *dev)
 {
 	u8 gpp_port = 0;
 	struct southbridge_amd_cimx_sb900_config *sb_chip =

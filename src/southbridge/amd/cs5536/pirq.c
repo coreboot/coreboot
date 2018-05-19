@@ -22,7 +22,7 @@
 #if IS_ENABLED(CONFIG_PIRQ_ROUTE) && IS_ENABLED(CONFIG_GENERATE_PIRQ_TABLE)
 void pirq_assign_irqs(const unsigned char pIntAtoD[4])
 {
-	device_t pdev;
+	struct device *pdev;
 
 	pdev = dev_find_device(PCI_VENDOR_ID_AMD,
 			       PCI_DEVICE_ID_AMD_CS5536_ISA, 0);

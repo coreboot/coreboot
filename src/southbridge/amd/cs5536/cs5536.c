@@ -260,7 +260,7 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 	msr_t msr;
 	u16 addr = 0;
 	u32 gpio_addr;
-	device_t dev;
+	struct device *dev;
 
 	dev = dev_find_device(PCI_VENDOR_ID_AMD,
 			PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
@@ -427,7 +427,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 {
 	void *bar;
 	msr_t msr;
-	device_t dev;
+	struct device *dev;
 
 	dev = dev_find_device(PCI_VENDOR_ID_AMD,
 			PCI_DEVICE_ID_AMD_CS5536_EHCI, 0);
@@ -521,7 +521,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
  ****************************************************************************/
 void chipsetinit(void)
 {
-	device_t dev;
+	struct device *dev;
 	msr_t msr;
 	u32 msrnum;
 	struct southbridge_amd_cs5536_config *sb;
@@ -643,7 +643,7 @@ static void southbridge_init(struct device *dev)
 	}
 }
 
-static void cs5536_read_resources(device_t dev)
+static void cs5536_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -667,7 +667,7 @@ static void southbridge_enable(struct device *dev)
 
 }
 
-static int lsmbus_read_byte(device_t dev, u8 address)
+static int lsmbus_read_byte(struct device *dev, u8 address)
 {
 	u16 device;
 	struct resource *res;
@@ -684,7 +684,7 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte  = lsmbus_read_byte,
 };
 
-static void scan_lpc_smbus(device_t dev)
+static void scan_lpc_smbus(struct device *dev)
 {
 	/* FIXME. Do we have mixed LPC/SMBus device node here. */
 	scan_smbus(dev);

@@ -94,8 +94,8 @@ void write_pci_int_table (void)
  */
 void write_pci_cfg_irqs(void)
 {
-	device_t dev = NULL;		/* Our current device to route IRQs to */
-	device_t target_dev = NULL;	/* The bridge that a device may be connected to */
+	struct device *dev = NULL;		/* Our current device to route IRQs to */
+	struct device *target_dev = NULL;	/* The bridge that a device may be connected to */
 	u16 int_pin = 0;	/* Value of the INT_PIN register 0x3D */
 	u16 target_pin = 0;	/* Pin we will search our tables for */
 	u16 int_line = 0;	/* IRQ number read from PCI_INTR table and programmed to INT_LINE reg 0x3C */

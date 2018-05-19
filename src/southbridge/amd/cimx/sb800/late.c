@@ -15,7 +15,7 @@
  */
 
 
-#include <device/device.h>	/* device_t */
+#include <device/device.h>
 #include <device/pci.h>		/* device_operations */
 #include <device/pci_ids.h>
 #include <bootstate.h>
@@ -118,7 +118,7 @@ static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
 
-static void lpc_init(device_t dev)
+static void lpc_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "SB800 - Late.c - lpc_init - Start.\n");
 
@@ -344,7 +344,7 @@ BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, set_pci_irqs, NULL);
 /**
  * @brief SB Cimx entry point sbBeforePciInit wrapper
  */
-static void sb800_enable(device_t dev)
+static void sb800_enable(struct device *dev)
 {
 	struct southbridge_amd_cimx_sb800_config *sb_chip =
 		(struct southbridge_amd_cimx_sb800_config *)(dev->chip_info);
@@ -427,7 +427,7 @@ static void sb800_enable(device_t dev)
 
 	case (0x15 << 3) | 0: /* 0:15:0 PCIe PortA */
 		{
-			device_t device;
+			struct device *device;
 			for (device = dev; device; device = device->sibling) {
 				if ((device->path.pci.devfn & ~3) != PCI_DEVFN(0x15,0)) break;
 				sb_config->PORTCONFIG[device->path.pci.devfn & 3].PortCfg.PortPresent = device->enabled;

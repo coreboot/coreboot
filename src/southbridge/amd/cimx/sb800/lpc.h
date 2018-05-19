@@ -21,8 +21,8 @@
 #define SPI_ROM_ENABLE                0x02
 #define SPI_BASE_ADDRESS              0xFEC10000
 
-void lpc_read_resources(device_t dev);
-void lpc_set_resources(device_t dev);
-void lpc_enable_childrens_resources(device_t dev);
+void lpc_read_resources(struct device *dev);
+void lpc_set_resources(struct device *dev);
+void lpc_enable_childrens_resources(struct device *dev);
 
 #endif

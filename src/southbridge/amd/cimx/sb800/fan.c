@@ -14,14 +14,14 @@
  */
 
 #include <southbridge/amd/cimx/cimx_util.h>
-#include <device/device.h>	/* device_t */
+#include <device/device.h>
 #include <device/pci.h>		/* device_operations */
 #include "SBPLATFORM.h"
 #include "sb_cimx.h"
 #include "chip.h"		/* struct southbridge_amd_cimx_sb800_config */
 #include "fan.h"
 
-void init_sb800_MANUAL_fans(device_t dev)
+void init_sb800_MANUAL_fans(struct device *dev)
 {
 	int i;
 	struct southbridge_amd_cimx_sb800_config *sb_chip =
@@ -54,7 +54,7 @@ void init_sb800_MANUAL_fans(device_t dev)
 
 }
 
-void init_sb800_IMC_fans(device_t dev)
+void init_sb800_IMC_fans(struct device *dev)
 {
 
 	AMDSBCFG sb_config;

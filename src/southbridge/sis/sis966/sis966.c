@@ -31,10 +31,10 @@
 
 static uint32_t final_reg;
 
-static device_t find_lpc_dev( device_t dev,  unsigned devfn)
+static struct device *find_lpc_dev( struct device *dev,  unsigned devfn)
 {
 
-	device_t lpc_dev;
+	struct device *lpc_dev;
 
 	lpc_dev = dev_find_slot(dev->bus->secondary, devfn);
 
@@ -54,10 +54,10 @@ if ((lpc_dev->vendor != PCI_VENDOR_ID_SIS) || (
 	return lpc_dev;
 }
 
-void sis966_enable(device_t dev)
+void sis966_enable(struct device *dev)
 {
-	device_t lpc_dev = 0;
-	device_t sm_dev = 0;
+	struct device *lpc_dev = NULL;
+	struct device *sm_dev = NULL;
 	uint16_t index = 0;
 	uint16_t index2 = 0;
 	uint32_t reg_old, reg;

@@ -52,7 +52,7 @@
 
 #undef SLAVE_INIT
 
-static void lpc_common_init(device_t dev)
+static void lpc_common_init(struct device *dev)
 {
 	uint8_t byte;
 	void *ioapic_base;
@@ -67,13 +67,13 @@ static void lpc_common_init(device_t dev)
 }
 
 #ifdef SLAVE_INIT
-static void lpc_slave_init(device_t dev)
+static void lpc_slave_init(struct device *dev)
 {
 	lpc_common_init(dev);
 }
 #endif
 
-static void lpc_usb_legacy_init(device_t dev)
+static void lpc_usb_legacy_init(struct device *dev)
 {
 	uint16_t acpi_base;
 
@@ -83,7 +83,7 @@ static void lpc_usb_legacy_init(device_t dev)
 	outb(inb(acpi_base + 0xba) |0x80, acpi_base + 0xba);
 }
 
-static void lpc_init(device_t dev)
+static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
 	uint8_t byte_old;
@@ -152,7 +152,7 @@ static void lpc_init(device_t dev)
 	printk(BIOS_DEBUG, "LPC_INIT <--------\n");
 }
 
-static void sis966_lpc_read_resources(device_t dev)
+static void sis966_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -183,7 +183,7 @@ static void sis966_lpc_read_resources(device_t dev)
  *
  * @param dev The device whose children's resources are to be enabled.
  */
-static void sis966_lpc_enable_childrens_resources(device_t dev)
+static void sis966_lpc_enable_childrens_resources(struct device *dev)
 {
 	struct bus *link;
 	uint32_t reg, reg_var[4];
@@ -193,7 +193,7 @@ static void sis966_lpc_enable_childrens_resources(device_t dev)
 	reg = pci_read_config32(dev, 0xa0);
 
 	for (link = dev->link_list; link; link = link->next) {
-		device_t child;
+		struct device *child;
 		for (child = link->children; child; child = child->sibling) {
 			if (child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
 				struct resource *res;
@@ -234,13 +234,14 @@ static void sis966_lpc_enable_childrens_resources(device_t dev)
 
 }
 
-static void sis966_lpc_enable_resources(device_t dev)
+static void sis966_lpc_enable_resources(struct device *dev)
 {
 	pci_dev_enable_resources(dev);
 	sis966_lpc_enable_childrens_resources(dev);
 }
 
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void lpci_set_subsystem(struct device *dev, unsigned vendor,
+			       unsigned device)
 {
 	pci_write_config32(dev, 0x40,
 		((device & 0xffff) << 16) | (vendor & 0xffff));

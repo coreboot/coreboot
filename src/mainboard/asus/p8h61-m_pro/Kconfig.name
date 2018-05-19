@@ -1,0 +1,2 @@
+config BOARD_ASUS_P8H61_M_PRO
+	bool "P8H61-M PRO"

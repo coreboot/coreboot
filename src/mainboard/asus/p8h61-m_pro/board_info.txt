@@ -1,0 +1,6 @@
+Category: desktop
+Board URL: https://www.asus.com/Motherboards/P8H61M_PRO
+ROM package: DIP-8
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

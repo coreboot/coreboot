@@ -23,30 +23,40 @@ test-help help::
 	@echo  '  test-cleanup           - basic: Cleans coreboot directories'
 
 # junit.xml is a helper target to wrap builds that don't create junit.xml output
-# BLD = Subdirectory the build lives in - The name of the build
+# BLD = The name of the build
 # BLD_DIR = Top path from coreboot to the build subdirectory
 # MAKETARGET = target to build
 junit.xml:
 	echo "Building $(BLD)"
 	echo '<?xml version="1.0" encoding="utf-8"?><testsuite>' > $@.tmp
 	echo "<testcase classname='$(BLD)' name='$(BLD)'>" >> $@.tmp
-	-$(MAKE) -j $(CPUS) -C "$(BLD_DIR)$(BLD)" clean distclean > $@.tmp.2 2>&1
-	$(MAKE) -j $(CPUS) -C "$(BLD_DIR)$(BLD)" $(MAKETARGET) >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
-	cat $@.tmp.2; \
-	if [ "$$type" = "failure" ]; then \
-		echo "<failure type='buildFailed'>" >> $@.tmp; \
-		echo "Building $(BLD) Failed"; \
-	else \
-		echo "<$$type>" >> $@.tmp; \
-		echo "Building $(BLD) Succeeded"; \
-	fi; \
-	echo '<![CDATA[' >> $@.tmp; \
-	cat $@.tmp.2 >> $@.tmp; \
-	echo "]]></$$type>" >>$@.tmp
-	rm -f $@.tmp.2
-	echo "</testcase>" >> $@.tmp
-	echo "</testsuite>" >> $@.tmp
-	mv $@.tmp "$(BLD_DIR)$(BLD)/$@"
+	-if [ -z "$(BLD_DIR)" ]; then                                          \
+		projdir="";                                                    \
+		xmlfile=junit_$(BLD).xml;                                      \
+	else                                                                   \
+		projdir="-C $(BLD_DIR)";                                       \
+		xmlfile="$(BLD_DIR)/$@";                                       \
+	fi;                                                                    \
+	if [ -z "$(SKIP_DISTCLEAN)" ]; then                                    \
+		$(MAKE) -j $(CPUS) $$projdir clean distclean > $@.tmp.2 2>&1 ; \
+	fi;                                                                    \
+	if $(MAKE) -j $(CPUS) $$projdir $(MAKETARGET) >> $@.tmp.2 2>&1; then   \
+		type="system-out";                                             \
+		echo "<$$type>" >> $@.tmp;                                     \
+		echo "Building $(BLD) Succeeded";                              \
+	else                                                                   \
+		type="failure";                                                \
+		echo "<failure type='buildFailed'>" >> $@.tmp;                 \
+		echo "Building $(BLD) Failed";                                 \
+	fi;                                                                    \
+	cat $@.tmp.2;                                                          \
+	echo '<![CDATA[' >> $@.tmp;                                            \
+	cat $@.tmp.2 >> $@.tmp;                                                \
+	echo "]]></$$type>" >>$@.tmp;                                          \
+	rm -f $@.tmp.2;                                                        \
+	echo "</testcase>" >> $@.tmp;                                          \
+	echo "</testsuite>" >> $@.tmp;                                         \
+	mv $@.tmp "$$xmlfile"
 	echo
 
 TOOLLIST= \
@@ -77,10 +87,10 @@ what-jenkins-does:
 	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c $(CPUS) -z -p $(JENKINS_PAYLOAD) -x -X $(top)/abuild-chromeos.xml
 	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c $(CPUS) -z -p $(JENKINS_PAYLOAD)
 	(cd payloads/libpayload; unset COREBOOT_BUILD_DIR; $(MAKE) $(if $(JENKINS_NOCCACHE),,CONFIG_LP_CCACHE=y) V=$(V) Q=$(Q) junit.xml)
-	$(foreach tool, $(TOOLLIST), $(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=util/ BLD="$(tool)" MFLAGS= MAKEFLAGS= MAKETARGET= junit.xml; )
-	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/ BLD=nvramcui MFLAGS= MAKEFLAGS= MAKETARGET=all junit.xml
-	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/ BLD=coreinfo MFLAGS= MAKEFLAGS= MAKETARGET=defaultbuild junit.xml
-	$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=util/ BLD=romcc MFLAGS= MAKEFLAGS= MAKETARGET=test junit.xml
+	$(foreach tool, $(TOOLLIST), $(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR="util/$(tool)" BLD="$(tool)" MFLAGS= MAKEFLAGS= MAKETARGET= junit.xml; )
+	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/nvramcui BLD=nvramcui MFLAGS= MAKEFLAGS= MAKETARGET=all junit.xml
+	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/coreinfo BLD=coreinfo MFLAGS= MAKEFLAGS= MAKETARGET=defaultbuild junit.xml
+	$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=util/romcc BLD=romcc MFLAGS= MAKEFLAGS= MAKETARGET=test junit.xml
 	$(MAKE) -C src/soc/nvidia/tegra124/lp0 all clean
 	$(MAKE) -C src/soc/nvidia/tegra210/lp0 all clean
 

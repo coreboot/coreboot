@@ -58,7 +58,7 @@ static const char* power_mode_names[] = {
 * SB700 enables all USB controllers by default in SMBUS Control.
 * SB700 enables SATA by default in SMBUS Control.
 */
-static void sm_init(device_t dev)
+static void sm_init(struct device *dev)
 {
 	u8 byte;
 	u8 byte_old;
@@ -352,7 +352,7 @@ static void sm_init(device_t dev)
 	abcfg_reg(0x50, 1 << 3, 1 << 3);
 }
 
-static int lsmbus_recv_byte(device_t dev)
+static int lsmbus_recv_byte(struct device *dev)
 {
 	u32 device;
 	struct resource *res;
@@ -369,7 +369,7 @@ static int lsmbus_recv_byte(device_t dev)
 	return do_smbus_recv_byte(res->base, device);
 }
 
-static int lsmbus_send_byte(device_t dev, u8 val)
+static int lsmbus_send_byte(struct device *dev, u8 val)
 {
 	u32 device;
 	struct resource *res;
@@ -386,7 +386,7 @@ static int lsmbus_send_byte(device_t dev, u8 val)
 	return do_smbus_send_byte(res->base, device, val);
 }
 
-static int lsmbus_read_byte(device_t dev, u8 address)
+static int lsmbus_read_byte(struct device *dev, u8 address)
 {
 	u32 device;
 	struct resource *res;
@@ -403,7 +403,7 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
-static int lsmbus_write_byte(device_t dev, u8 address, u8 val)
+static int lsmbus_write_byte(struct device *dev, u8 address, u8 val)
 {
 	u32 device;
 	struct resource *res;
@@ -427,7 +427,7 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.write_byte = lsmbus_write_byte,
 };
 
-static void sb700_sm_read_resources(device_t dev)
+static void sb700_sm_read_resources(struct device *dev)
 {
 	struct resource *res;
 

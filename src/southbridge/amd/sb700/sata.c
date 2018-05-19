@@ -133,7 +133,7 @@ static void sata_init(struct device *dev)
 	if (get_option(&nvram, "sata_alpm") == CB_SUCCESS)
 		sata_alpm_enable = !!nvram;
 
-	device_t sm_dev;
+	struct device *sm_dev;
 	/* SATA SMBus Disable */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 
@@ -170,7 +170,7 @@ static void sata_init(struct device *dev)
 	byte |= (1 << 3);
 	pci_write_config8(sm_dev, 0xad, byte);
 
-	device_t ide_dev;
+	struct device *ide_dev;
 	/* IDE Device */
 	ide_dev = dev_find_slot(0, PCI_DEVFN(0x14, 1));
 

@@ -97,11 +97,12 @@ int compress(char *infile, char *outfile, char *algoname)
 
 	const struct typedesc_t *algo = &types_cbfs_compression[0];
 	while (algo->name != NULL) {
-		if (strcmp(algo->name, algoname) == 0) break;
+		if (strcasecmp(algo->name, algoname) == 0) break;
 		algo++;
 	}
 	if (algo->name == NULL) {
 		fprintf(stderr, "algo '%s' is not supported.\n", algoname);
+		return 1;
 	}
 
 	comp_func_ptr comp = compression_function(algo->type);

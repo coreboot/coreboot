@@ -35,12 +35,12 @@ RUN \
 		gcc \
 		git \
 		gnat-6 \
+		graphviz \
 		libelf-dev \
 		libfreetype6-dev \
 		libftdi-dev \
 		libftdi1-dev \
 		libglib2.0-dev \
-		libgmp-dev \
 		libgmp-dev \
 		libisl-dev \
 		liblzma-dev \
@@ -57,7 +57,6 @@ RUN \
 		msitools \
 		nasm \
 		openssl \
-		p7zip-full \
 		patch \
 		pkg-config \
 		python \
@@ -66,7 +65,6 @@ RUN \
 		shellcheck \
 		subversion \
 		unifont \
-		unrar-free \
 		uuid-dev \
 		vim-common \
 		wget \

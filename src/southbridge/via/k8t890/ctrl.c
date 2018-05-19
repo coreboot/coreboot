@@ -162,8 +162,9 @@ static void ctrl_init(struct device *dev)
 
 	/* VT8237R specific configuration  other SB are done in their own directories */
 
-	device_t devsb = dev_find_device(PCI_VENDOR_ID_VIA,
-					 PCI_DEVICE_ID_VIA_VT8237R_LPC, 0);
+	struct device *devsb = dev_find_device(PCI_VENDOR_ID_VIA,
+					       PCI_DEVICE_ID_VIA_VT8237R_LPC,
+					       0);
 	if (devsb) {
 		vt8237r_vlink_init(dev);
 		k8x8xx_vt8237r_cfg(dev, devsb);

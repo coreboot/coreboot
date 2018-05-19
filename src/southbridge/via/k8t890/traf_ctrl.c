@@ -23,7 +23,7 @@
 #include <lib.h>
 #include "k8t890.h"
 
-static void mmconfig_set_resources(device_t dev)
+static void mmconfig_set_resources(struct device *dev)
 {
 	struct resource *resource;
 	u8 reg;
@@ -44,7 +44,7 @@ static void mmconfig_set_resources(device_t dev)
 	pci_dev_set_resources(dev);
 }
 
-static void apic_mmconfig_read_resources(device_t dev)
+static void apic_mmconfig_read_resources(struct device *dev)
 {
 	struct resource *res;
 	pci_dev_read_resources(dev);
@@ -122,7 +122,7 @@ static void traf_ctrl_enable_k8t890(struct device *dev)
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 
-static void southbridge_acpi_fill_ssdt_generator(device_t dev) {
+static void southbridge_acpi_fill_ssdt_generator(struct device *dev) {
 	amd_generate_powernow(0, 0, 0);
 	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
 }
@@ -156,7 +156,7 @@ static const struct device_operations traf_ctrl_ops_t = {
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
-	device_t dev;
+	struct device *dev;
 	struct resource *res;
 
 	dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_K8T890CE_5, 0);

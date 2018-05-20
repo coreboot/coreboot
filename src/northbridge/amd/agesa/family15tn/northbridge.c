@@ -49,15 +49,15 @@ typedef struct dram_base_mask {
 
 static unsigned node_nums;
 static unsigned sblink;
-static device_t __f0_dev[MAX_NODE_NUMS];
-static device_t __f1_dev[MAX_NODE_NUMS];
-static device_t __f2_dev[MAX_NODE_NUMS];
-static device_t __f4_dev[MAX_NODE_NUMS];
+static struct device *__f0_dev[MAX_NODE_NUMS];
+static struct device *__f1_dev[MAX_NODE_NUMS];
+static struct device *__f2_dev[MAX_NODE_NUMS];
+static struct device *__f4_dev[MAX_NODE_NUMS];
 static unsigned fx_devs = 0;
 
 static dram_base_mask_t get_dram_base_mask(u32 nodeid)
 {
-	device_t dev;
+	struct device *dev;
 	dram_base_mask_t d;
 	dev = __f1_dev[0];
 	u32 temp;
@@ -73,7 +73,7 @@ static dram_base_mask_t get_dram_base_mask(u32 nodeid)
 	return d;
 }
 
-static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
+static void set_io_addr_reg(struct device *dev, u32 nodeid, u32 linkn, u32 reg,
 			u32 io_min, u32 io_max)
 {
 	u32 i;
@@ -100,7 +100,7 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 		pci_write_config32(__f1_dev[i], reg, tempreg);
 }
 
-static device_t get_node_pci(u32 nodeid, u32 fn)
+static struct device *get_node_pci(u32 nodeid, u32 fn)
 {
 #if MAX_NODE_NUMS + CONFIG_CDB >= 32
 	if ((CONFIG_CDB + nodeid) < 32) {
@@ -143,7 +143,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 	if (fx_devs == 0)
 		get_fx_devs();
 	for (i = 0; i < fx_devs; i++) {
-		device_t dev;
+		struct device *dev;
 		dev = __f1_dev[i];
 		if (dev && dev->enabled) {
 			pci_write_config32(dev, reg, value);
@@ -451,7 +451,7 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	return (unsigned long)current;
 }
 
-static void northbridge_fill_ssdt_generator(device_t device)
+static void northbridge_fill_ssdt_generator(struct device *device)
 {
 	msr_t msr;
 	char pscope[] = "\\_SB.PCI0";
@@ -472,7 +472,7 @@ static void northbridge_fill_ssdt_generator(device_t device)
 	acpigen_pop_len();
 }
 
-static unsigned long agesa_write_acpi_tables(device_t device,
+static unsigned long agesa_write_acpi_tables(struct device *device,
 					     unsigned long current,
 					     acpi_rsdp_t *rsdp)
 {
@@ -604,7 +604,7 @@ static void domain_read_resources(struct device *dev)
 		/* Is this register allocated? */
 		if ((base & 3) != 0) {
 			unsigned nodeid, reg_link;
-			device_t reg_dev;
+			struct device *reg_dev;
 			if (reg < 0xc0) { // mmio
 				nodeid = (limit & 0xf) + (base&0x30);
 			} else { // io
@@ -786,7 +786,7 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus	  = pci_domain_scan_bus,
 };
 
-static void sysconf_init(device_t dev) // first node
+static void sysconf_init(struct device *dev) // first node
 {
 	sblink = (pci_read_config32(dev, 0x64)>>8) & 7; // don't forget sublink1
 	node_nums = ((pci_read_config32(dev, 0x60)>>4) & 7) + 1; //NodeCnt[2:0]
@@ -828,12 +828,12 @@ static void add_more_links(struct device *dev, unsigned total_links)
 	last->next = NULL;
 }
 
-static void cpu_bus_scan(device_t dev)
+static void cpu_bus_scan(struct device *dev)
 {
 	struct bus *cpu_bus;
-	device_t dev_mc;
+	struct device *dev_mc;
 #if CONFIG_CBB
-	device_t pci_domain;
+	struct device *pci_domain;
 #endif
 	int i,j;
 	int coreid_bits;
@@ -913,7 +913,7 @@ static void cpu_bus_scan(device_t dev)
 	/* Find which cpus are present */
 	cpu_bus = dev->link_list;
 	for (i = 0; i < node_nums; i++) {
-		device_t cdb_dev;
+		struct device *cdb_dev;
 		unsigned busn, devn;
 		struct bus *pbus;
 
@@ -997,7 +997,7 @@ static void cpu_bus_scan(device_t dev)
 			printk(BIOS_SPEW, "node 0x%x core 0x%x apicid=0x%x\n",
 					i, j, apic_id);
 
-			device_t cpu = add_cpu_device(cpu_bus, apic_id, enable_node);
+			struct device *cpu = add_cpu_device(cpu_bus, apic_id, enable_node);
 			if (cpu)
 				amd_cpu_topology(cpu, i, j);
 		} //j

@@ -38,13 +38,13 @@
 
 #define FX_DEVS 1
 
-static device_t __f0_dev[FX_DEVS];
-static device_t __f1_dev[FX_DEVS];
-static device_t __f2_dev[FX_DEVS];
-static device_t __f4_dev[FX_DEVS];
+static struct device *__f0_dev[FX_DEVS];
+static struct device *__f1_dev[FX_DEVS];
+static struct device *__f2_dev[FX_DEVS];
+static struct device *__f4_dev[FX_DEVS];
 static unsigned fx_devs = 0;
 
-static device_t get_node_pci(u32 nodeid, u32 fn)
+static struct device *get_node_pci(u32 nodeid, u32 fn)
 {
 	if ((CONFIG_CDB + nodeid) < 32) {
 		return dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB + nodeid, fn));
@@ -355,7 +355,7 @@ static void set_resource(struct device *dev, struct resource *resource,
 }
 
 #if IS_ENABLED(CONFIG_CONSOLE_VGA_MULTI)
-extern device_t vga_pri;	// the primary vga device, defined in device.c
+extern struct device *vga_pri;	// the primary vga device, defined in device.c
 #endif
 
 static void create_vga_resource(struct device *dev, unsigned nodeid)
@@ -618,7 +618,7 @@ static void cpu_bus_init(struct device *dev)
 
 /* North Bridge Structures */
 
-static void northbridge_fill_ssdt_generator(device_t device)
+static void northbridge_fill_ssdt_generator(struct device *device)
 {
 	msr_t msr;
 	char pscope[] = "\\_SB.PCI0";
@@ -659,7 +659,7 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	return (unsigned long)current;
 }
 
-static unsigned long agesa_write_acpi_tables(device_t device,
+static unsigned long agesa_write_acpi_tables(struct device *device,
 					     unsigned long current,
 					     acpi_rsdp_t *rsdp)
 {

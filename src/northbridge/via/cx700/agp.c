@@ -21,10 +21,10 @@
 
 /* This is the AGP 3.0 "bridge" @ Bus 0 Device 1 Func 0 */
 
-static void agp_bridge_init(device_t dev)
+static void agp_bridge_init(struct device *dev)
 {
 
-	device_t north_dev;
+	struct device *north_dev;
 	u8 reg8;
 	north_dev = dev_find_device(PCI_VENDOR_ID_VIA, 0x3324, 0);
 

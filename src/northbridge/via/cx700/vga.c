@@ -127,7 +127,7 @@ static int via_cx700_int15_handler(void)
 #ifdef UNUSED_CODE
 static void write_protect_vgabios(void)
 {
-	device_t dev;
+	struct device *dev;
 
 	printk(BIOS_DEBUG, "write_protect_vgabios\n");
 
@@ -154,7 +154,7 @@ static void vga_enable_console(void)
 #endif
 }
 
-static void vga_init(device_t dev)
+static void vga_init(struct device *dev)
 {
 	u8 reg8;
 

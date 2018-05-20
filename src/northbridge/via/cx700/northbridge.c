@@ -27,9 +27,9 @@
 #include <cbmem.h>
 #include <arch/acpi.h>
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
-	device_t mc_dev;
+	struct device *mc_dev;
 	u32 pci_tolm;
 	unsigned char reg;
 	unsigned long tomk, tolmk;
@@ -78,7 +78,7 @@ static void pci_domain_set_resources(device_t dev)
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
-	device_t dev;
+	struct device *dev;
 	u64 mmcfg;
 
 	dev = dev_find_device(0x1106, 0x324b, 0);	// 0:0x13.0
@@ -107,7 +107,7 @@ static struct device_operations pci_domain_ops = {
 	.write_acpi_tables = acpi_write_hpet,
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }

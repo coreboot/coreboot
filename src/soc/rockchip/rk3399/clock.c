@@ -344,12 +344,12 @@ static void rkclk_set_pll(u32 *pll_con, const struct pll_div *div)
 /*
  * Configure the DPLL spread spectrum feature on memory clock.
  * Configure sequence:
- * 1. PLL been configured as frac mode, and DACPD should be set to 1’b0.
+ * 1. PLL been configured as frac mode, and DACPD should be set to 1'b0.
  * 2. Configure DOWNSPERAD, SPREAD, DIVVAL(option: configure xPLL_CON5 with
  *    extern wave table).
- * 3. set ssmod_disable_sscg = 1’b0, and set ssmod_bp = 1’b0.
- * 4. Assert RESET = 1’b1 to SSMOD.
- * 5. RESET = 1’b0 on SSMOD.
+ * 3. set ssmod_disable_sscg = 1'b0, and set ssmod_bp = 1'b0.
+ * 4. Assert RESET = 1'b1 to SSMOD.
+ * 5. RESET = 1'b0 on SSMOD.
  * 6. Adjust SPREAD/DIVVAL/DOWNSPREAD.
  */
 static void rkclk_set_dpllssc(struct pll_div *dpll_cfg)
@@ -385,13 +385,13 @@ static void rkclk_set_dpllssc(struct pll_div *dpll_cfg)
 	 * value of SPREAD.
 	 * SPREAD[4:0]	Center Spread	Down Spread
 	 *	0	0		0
-	 *	1	±0.1%		-0.10%
-	 *	2	±0.2%		-0.20%
-	 *	3	±0.3%		-0.30%
-	 *	4	±0.4%		-0.40%
-	 *	5	±0.5%		-0.50%
+	 *	1	+/-0.1%		-0.10%
+	 *	2	+/-0.2%		-0.20%
+	 *	3	+/-0.3%		-0.30%
+	 *	4	+/-0.4%		-0.40%
+	 *	5	+/-0.5%		-0.50%
 	 *	...
-	 *	31	±3.1%		-3.10%
+	 *	31	+/-3.1%		-3.10%
 	 */
 	write32(&cru_ptr->dpll_con[4],
 		RK_CLRSETBITS(PLL_SSMOD_DIVVAL_MASK << PLL_SSMOD_DIVVAL_SHIFT,

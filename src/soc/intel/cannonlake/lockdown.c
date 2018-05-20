@@ -60,8 +60,8 @@ static void dmi_lockdown_cfg(void)
 	 * GCS.BBS: (Boot BIOS Strap) This field determines the destination
 	 * of accesses to the BIOS memory range.
 	 *	Bits Description
-	 *	“0b”: SPI
-	 *	“1b”: LPC/eSPI
+	 *	"0b": SPI
+	 *	"1b": LPC/eSPI
 	 */
 	pcr_or8(PID_DMI, PCR_DMI_GCS, PCR_DMI_GCS_BILD);
 }

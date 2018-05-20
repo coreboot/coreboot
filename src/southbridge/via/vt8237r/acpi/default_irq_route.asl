@@ -71,7 +71,7 @@ Method (_PRT, 0) {
 			Package (4) { 0x0010ffff, 2, 0x00, 21 },
 			Package (4) { 0x0010ffff, 3, 0x00, 21 },
 
-			/* AC’97 / MC’97 IRQ and INTG => IRQ22 */
+			/* AC'97 / MC'97 IRQ and INTG => IRQ22 */
 			Package (4) { 0x0011ffff, 0, 0x00, 22 },
 			Package (4) { 0x0011ffff, 1, 0x00, 22 },
 			Package (4) { 0x0011ffff, 2, 0x00, 22 },

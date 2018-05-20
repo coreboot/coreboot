@@ -72,7 +72,7 @@ enum {
 /*
  * ODT settings :
  * If ODT PIN to LP4 DRAM is pulled HIGH for ODT_A, and HIGH for ODT_B,
- * choose ODT_AB_HIGH_HIGH. If ODT PIN to LP4 DRAM is pulled HIGH for ODT_A,
+ * choose ODT_AB_HIGH_HIGH. If ODT PIN to LP4 DRAM is pulled HIGH for ODT_A,
  * and LOW for ODT_B, choose ODT_AB_HIGH_LOW.
  *
  * Note that the enum values correspond to the interpreted UPD fields

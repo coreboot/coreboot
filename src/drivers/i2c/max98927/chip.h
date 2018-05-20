@@ -19,7 +19,7 @@
 struct drivers_i2c_max98927_config {
 	/* I2C Bus Frequency in Hertz (default 400kHz) */
 	unsigned int bus_speed;
-	/* Set ‘1’ if I2S channel size is not 32bit. */
+	/* Set '1' if I2S channel size is not 32bit. */
 	bool interleave_mode;
 	/* Identifier for chips */
 	unsigned int uid;

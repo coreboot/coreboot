@@ -22,6 +22,7 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <device/resource.h>
 
 /** Linked list of ALL devices */
@@ -170,6 +171,31 @@ DEVTREE_CONST struct device *find_dev_path(
 			break;
 	}
 	return child;
+}
+
+DEVTREE_CONST struct device *pcidev_path_behind(
+	const struct bus *parent, pci_devfn_t devfn)
+{
+	const struct device_path path = {
+		.type = DEVICE_PATH_PCI,
+		.pci.devfn = devfn,
+	};
+	return find_dev_path(parent, &path);
+}
+
+DEVTREE_CONST struct device *pcidev_path_on_root(pci_devfn_t devfn)
+{
+	DEVTREE_CONST struct device *pci_domain;
+
+	pci_domain = dev_find_path(NULL, DEVICE_PATH_DOMAIN);
+	if (!pci_domain)
+		return NULL;
+	return pcidev_path_behind(pci_domain->link_list, devfn);
+}
+
+DEVTREE_CONST struct device *pcidev_on_root(uint8_t dev, uint8_t fn)
+{
+	return pcidev_path_on_root(PCI_DEVFN(dev, fn));
 }
 
 /**

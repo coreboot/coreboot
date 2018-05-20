@@ -276,6 +276,11 @@ DEVTREE_CONST struct device *dev_find_slot_pnp(u16 port, u16 device);
 DEVTREE_CONST struct device *dev_bus_each_child(const struct bus *parent,
 				DEVTREE_CONST struct device *prev_child);
 
+DEVTREE_CONST struct device *pcidev_path_behind(const struct bus *parent,
+		pci_devfn_t devfn);
+DEVTREE_CONST struct device *pcidev_path_on_root(pci_devfn_t devfn);
+DEVTREE_CONST struct device *pcidev_on_root(uint8_t dev, uint8_t fn);
+
 void scan_smbus(struct device *bus);
 void scan_generic_bus(struct device *bus);
 void scan_static_bus(struct device *bus);

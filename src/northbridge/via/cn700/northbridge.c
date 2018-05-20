@@ -30,9 +30,9 @@
 #include "northbridge.h"
 #include "cn700.h"
 
-static void memctrl_init(device_t dev)
+static void memctrl_init(struct device *dev)
 {
-	device_t vlink_dev;
+	struct device *vlink_dev;
 	u16 reg16;
 	u8 ranks, pagec, paged, pagee, pagef, shadowreg;
 
@@ -93,11 +93,11 @@ static const struct pci_driver memctrl_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_VIA_CN700_MEMCTRL,
 };
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	/* The order is important to find the correct RAM size. */
 	static const u8 ramregs[] = { 0x43, 0x42, 0x41, 0x40 };
-	device_t mc_dev;
+	struct device *mc_dev;
 	u32 pci_tolm;
 
 	printk(BIOS_SPEW, "Entering cn700 pci_domain_set_resources.\n");
@@ -151,7 +151,7 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus         = pci_domain_scan_bus,
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }

@@ -196,7 +196,9 @@ bool dev_is_active_bridge(struct device *dev);
 void run_bios(struct device *dev, unsigned long addr);
 
 /* Helper functions */
-struct device *find_dev_path(struct bus *parent, struct device_path *path);
+DEVTREE_CONST struct device *find_dev_path(
+		const struct bus *parent,
+		const struct device_path *path);
 struct device *alloc_find_dev(struct bus *parent, struct device_path *path);
 struct device *dev_find_device(u16 vendor, u16 device, struct device *from);
 struct device *dev_find_class(unsigned int class, struct device *from);

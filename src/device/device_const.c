@@ -18,6 +18,7 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <device/pci.h>
@@ -87,6 +88,88 @@ DEVTREE_CONST struct device *dev_find_next_pci_device(
 		DEVTREE_CONST struct device *previous_dev)
 {
 	return dev_find_path(previous_dev, DEVICE_PATH_PCI);
+}
+
+static int path_eq(const struct device_path *path1,
+		const struct device_path *path2)
+{
+	int equal = 0;
+
+	if (path1->type != path2->type)
+		return 0;
+
+	switch (path1->type) {
+	case DEVICE_PATH_NONE:
+		break;
+	case DEVICE_PATH_ROOT:
+		equal = 1;
+		break;
+	case DEVICE_PATH_PCI:
+		equal = (path1->pci.devfn == path2->pci.devfn);
+		break;
+	case DEVICE_PATH_PNP:
+		equal = (path1->pnp.port == path2->pnp.port) &&
+			(path1->pnp.device == path2->pnp.device);
+		break;
+	case DEVICE_PATH_I2C:
+		equal = (path1->i2c.device == path2->i2c.device) &&
+			(path1->i2c.mode_10bit == path2->i2c.mode_10bit);
+		break;
+	case DEVICE_PATH_APIC:
+		equal = (path1->apic.apic_id == path2->apic.apic_id);
+		break;
+	case DEVICE_PATH_DOMAIN:
+		equal = (path1->domain.domain == path2->domain.domain);
+		break;
+	case DEVICE_PATH_CPU_CLUSTER:
+		equal = (path1->cpu_cluster.cluster
+			 == path2->cpu_cluster.cluster);
+		break;
+	case DEVICE_PATH_CPU:
+		equal = (path1->cpu.id == path2->cpu.id);
+		break;
+	case DEVICE_PATH_CPU_BUS:
+		equal = (path1->cpu_bus.id == path2->cpu_bus.id);
+		break;
+	case DEVICE_PATH_GENERIC:
+		equal = (path1->generic.id == path2->generic.id) &&
+			(path1->generic.subid == path2->generic.subid);
+		break;
+	case DEVICE_PATH_SPI:
+		equal = (path1->spi.cs == path2->spi.cs);
+		break;
+	case DEVICE_PATH_USB:
+		equal = (path1->usb.port_type == path2->usb.port_type) &&
+			(path1->usb.port_id == path2->usb.port_id);
+		break;
+	case DEVICE_PATH_MMIO:
+		equal = (path1->mmio.addr == path2->mmio.addr);
+		break;
+	default:
+		printk(BIOS_ERR, "Unknown device type: %d\n", path1->type);
+		break;
+	}
+
+	return equal;
+}
+
+/**
+ * See if a device structure exists for path.
+ *
+ * @param parent The bus to find the device on.
+ * @param path The relative path from the bus to the appropriate device.
+ * @return Pointer to a device structure for the device on bus at path
+ *         or 0/NULL if no device is found.
+ */
+DEVTREE_CONST struct device *find_dev_path(
+	const struct bus *parent, const struct device_path *path)
+{
+	DEVTREE_CONST struct device *child;
+	for (child = parent->children; child; child = child->sibling) {
+		if (path_eq(path, &child->path))
+			break;
+	}
+	return child;
 }
 
 /**

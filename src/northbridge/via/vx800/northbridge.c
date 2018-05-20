@@ -33,7 +33,7 @@
 /* !!FIXME!!  I declared this to fix the build. */
 u8 acpi_sleep_type = 0;
 
-static void memctrl_init(device_t dev)
+static void memctrl_init(struct device *dev)
 {
 /*
   set VGA in uma_ram_setting.c, not in this function.
@@ -51,13 +51,13 @@ static const struct pci_driver memctrl_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_VIA_VX855_MEMCTRL,
 };
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	/*
 	 * the order is important to find the correct RAM size.
 	 */
 	u8 ramregs[] = { 0x43, 0x42, 0x41, 0x40 };
-	device_t mc_dev;
+	struct device *mc_dev;
 	u32 pci_tolm;
 	u8 reg;
 
@@ -124,7 +124,7 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus = pci_domain_scan_bus,
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }

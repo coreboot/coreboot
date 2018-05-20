@@ -72,7 +72,7 @@ static int via_vx800_int15_handler(void)
 		 * N:  Frame Buffer Size 2^N  MB
 		 */
 		u8 i;
-		device_t dev;
+		struct device *dev;
 		dev = dev_find_slot(0, PCI_DEVFN(0, 3));
 		i = pci_read_config8(dev, 0xa1);
 		i = (i & 0x70);
@@ -124,7 +124,7 @@ static int via_vx800_int15_handler(void)
 #ifdef UNUSED_CODE
 static void write_protect_vgabios(void)
 {
-	device_t dev;
+	struct device *dev;
 
 	printk(BIOS_INFO, "write_protect_vgabios\n");
 	/* there are two possible devices. Just do both. */
@@ -149,7 +149,7 @@ static void vga_enable_console(void)
 }
 
 extern u8 acpi_sleep_type;
-static void vga_init(device_t dev)
+static void vga_init(struct device *dev)
 {
 	uint8_t reg8;
 

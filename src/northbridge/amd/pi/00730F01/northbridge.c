@@ -43,7 +43,7 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 
-#define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)
+#define MAX_NODE_NUMS MAX_NODES
 
 typedef struct dram_base_mask {
 	u32 base; //[47:27] at [28:8]
@@ -105,15 +105,7 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 
 static struct device *get_node_pci(u32 nodeid, u32 fn)
 {
-#if MAX_NODE_NUMS + CONFIG_CDB >= 32
-	if ((CONFIG_CDB + nodeid) < 32) {
-		return dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB + nodeid, fn));
-	} else {
-		return dev_find_slot(CONFIG_CBB-1, PCI_DEVFN(CONFIG_CDB + nodeid - 32, fn));
-	}
-#else
 	return dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB + nodeid, fn));
-#endif
 }
 
 static void get_fx_devs(void)
@@ -156,18 +148,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 
 static u32 amdfam16_nodeid(struct device *dev)
 {
-#if MAX_NODE_NUMS == 64
-	unsigned busn;
-	busn = dev->bus->secondary;
-	if (busn != CONFIG_CBB) {
-		return (dev->path.pci.devfn >> 3) - CONFIG_CDB + 32;
-	} else {
-		return (dev->path.pci.devfn >> 3) - CONFIG_CDB;
-	}
-
-#else
 	return (dev->path.pci.devfn >> 3) - CONFIG_CDB;
-#endif
 }
 
 static void set_vga_enable_reg(u32 nodeid, u32 linkn)

@@ -44,7 +44,7 @@
 #include <arch/acpigen.h>
 #include <assert.h>
 
-#define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)
+#define MAX_NODE_NUMS MAX_NODES
 
 #if IS_ENABLED(CONFIG_EXT_CONF_SUPPORT)
 #error CONFIG_EXT_CONF_SUPPORT == 1 not support anymore!
@@ -110,11 +110,7 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 
 static struct device *get_node_pci(u32 nodeid, u32 fn)
 {
-	if (((CONFIG_CDB + nodeid) < 32) || (MAX_NODE_NUMS + CONFIG_CDB < 32)) {
-		return dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB + nodeid, fn));
-	} else {
-		return dev_find_slot(CONFIG_CBB-1, PCI_DEVFN(CONFIG_CDB + nodeid - 32, fn));
-	}
+	return dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB + nodeid, fn));
 }
 
 static void get_fx_devs(void)
@@ -157,14 +153,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 
 static u32 amdfam15_nodeid(struct device *dev)
 {
-	unsigned busn;
-	busn = dev->bus->secondary;
-
-	if ((busn != CONFIG_CBB) && (MAX_NODE_NUMS == 64)) {
-		return (dev->path.pci.devfn >> 3) - CONFIG_CDB + 32;
-	} else {
-		return (dev->path.pci.devfn >> 3) - CONFIG_CDB;
-	}
+	return (dev->path.pci.devfn >> 3) - CONFIG_CDB;
 }
 
 static void set_vga_enable_reg(u32 nodeid, u32 linkn)

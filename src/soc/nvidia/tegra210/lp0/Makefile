@@ -53,6 +53,6 @@ tegra_lp0_resume.fw: tegra_lp0_resume.elf
 	@# Copy the signed binary to the target file name.
 	$(MV) $@.nosig $@
 
-clean:
+distclean clean:
 	$(RM) -f tegra_lp0_resume.fw tegra_lp0_resume.fw.sig
 	$(RM) -f tegra_lp0_resume.fw.tosig tegra_lp0_resume.elf

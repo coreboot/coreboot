@@ -20,6 +20,7 @@
 
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
@@ -83,7 +84,7 @@ void hudson_enable(struct device *dev)
 	switch (dev->path.pci.devfn) {
 	case PCI_DEVFN(0x14, 5):
 		if (dev->enabled == 0) {
-			u32 usb_device_id = pci_read_config32(dev, 0) >> 16;
+			u32 usb_device_id = pci_read_config16(dev, PCI_DEVICE_ID);
 			u8 reg8;
 			if (usb_device_id == PCI_DEVICE_ID_AMD_SB900_USB_20_5) {
 				/* turn off and remove device 0:14.5 from PCI space */
@@ -96,7 +97,7 @@ void hudson_enable(struct device *dev)
 
 	case PCI_DEVFN(0x14, 7):
 		if (dev->enabled == 0) {
-			u32 sd_device_id = pci_read_config32(dev, 0) >> 16;
+			u32 sd_device_id = pci_read_config16(dev, PCI_DEVICE_ID);
 			/* turn off the SDHC controller in the PM reg */
 			u8 reg8;
 			if (sd_device_id == PCI_DEVICE_ID_AMD_HUDSON_SD) {

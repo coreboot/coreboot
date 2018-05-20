@@ -813,9 +813,6 @@ static void cpu_bus_scan(struct device *dev)
 {
 	struct bus *cpu_bus;
 	struct device *dev_mc;
-#if CONFIG_CBB
-	struct device *pci_domain;
-#endif
 	int i,j;
 	int coreid_bits;
 	int core_max = 0;
@@ -824,61 +821,12 @@ static void cpu_bus_scan(struct device *dev)
 	int siblings = 0;
 	unsigned int family;
 
-#if CONFIG_CBB
-	dev_mc = dev_find_slot(0, PCI_DEVFN(CONFIG_CDB, 0)); //0x00
-	if (dev_mc && dev_mc->bus) {
-		printk(BIOS_DEBUG, "%s found", dev_path(dev_mc));
-		pci_domain = dev_mc->bus->dev;
-		if (pci_domain && (pci_domain->path.type == DEVICE_PATH_DOMAIN)) {
-			printk(BIOS_DEBUG, "\n%s move to ",dev_path(dev_mc));
-			dev_mc->bus->secondary = CONFIG_CBB; // move to 0xff
-			printk(BIOS_DEBUG, "%s",dev_path(dev_mc));
-		} else {
-			printk(BIOS_DEBUG, " but it is not under pci_domain directly ");
-		}
-		printk(BIOS_DEBUG, "\n");
-	}
-	dev_mc = dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB, 0));
-	if (!dev_mc) {
-		dev_mc = dev_find_slot(0, PCI_DEVFN(0x18, 0));
-		if (dev_mc && dev_mc->bus) {
-			printk(BIOS_DEBUG, "%s found\n", dev_path(dev_mc));
-			pci_domain = dev_mc->bus->dev;
-			if (pci_domain && (pci_domain->path.type == DEVICE_PATH_DOMAIN)) {
-				if ((pci_domain->link_list) && (pci_domain->link_list->children == dev_mc)) {
-					printk(BIOS_DEBUG, "%s move to ",dev_path(dev_mc));
-					dev_mc->bus->secondary = CONFIG_CBB; // move to 0xff
-					printk(BIOS_DEBUG, "%s\n",dev_path(dev_mc));
-					while (dev_mc) {
-						printk(BIOS_DEBUG, "%s move to ",dev_path(dev_mc));
-						dev_mc->path.pci.devfn -= PCI_DEVFN(0x18,0);
-						printk(BIOS_DEBUG, "%s\n",dev_path(dev_mc));
-						dev_mc = dev_mc->sibling;
-					}
-				}
-			}
-		}
-	}
-#endif
 	dev_mc = dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB, 0));
 	if (!dev_mc) {
 		printk(BIOS_ERR, "%02x:%02x.0 not found", CONFIG_CBB, CONFIG_CDB);
 		die("");
 	}
 	sysconf_init(dev_mc);
-#if CONFIG_CBB && (MAX_NODE_NUMS > 32)
-	if (node_nums > 32) { // need to put node 32 to node 63 to bus 0xfe
-		if (pci_domain->link_list && !pci_domain->link_list->next) {
-			struct bus *new_link = new_link(pci_domain);
-			pci_domain->link_list->next = new_link;
-			new_link->link_num = 1;
-			new_link->dev = pci_domain;
-			new_link->children = 0;
-			printk(BIOS_DEBUG, "%s links now 2\n", dev_path(pci_domain));
-		}
-		pci_domain->link_list->next->secondary = CONFIG_CBB - 1;
-	}
-#endif
 
 	/* Get Max Number of cores(MNC) */
 	coreid_bits = (cpuid_ecx(0x80000008) & 0x0000F000) >> 12;
@@ -895,22 +843,14 @@ static void cpu_bus_scan(struct device *dev)
 	cpu_bus = dev->link_list;
 	for (i = 0; i < node_nums; i++) {
 		struct device *cdb_dev;
-		unsigned busn, devn;
+		unsigned devn;
 		struct bus *pbus;
 
-		busn = CONFIG_CBB;
 		devn = CONFIG_CDB + i;
 		pbus = dev_mc->bus;
-#if CONFIG_CBB && (MAX_NODE_NUMS > 32)
-		if (i >= 32) {
-			busn--;
-			devn -= 32;
-			pbus = pci_domain->link_list->next;
-		}
-#endif
 
 		/* Find the cpu's pci device */
-		cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 0));
+		cdb_dev = dev_find_slot(CONFIG_CBB, PCI_DEVFN(devn, 0));
 		if (!cdb_dev) {
 			/* If I am probing things in a weird order
 			 * ensure all of the cpu's pci devices are found.
@@ -920,7 +860,7 @@ static void cpu_bus_scan(struct device *dev)
 				cdb_dev = pci_probe_dev(NULL, pbus,
 							PCI_DEVFN(devn, fn));
 			}
-			cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 0));
+			cdb_dev = dev_find_slot(CONFIG_CBB, PCI_DEVFN(devn, 0));
 		} else {
 			/* Ok, We need to set the links for that device.
 			 * otherwise the device under it will not be scanned
@@ -932,11 +872,11 @@ static void cpu_bus_scan(struct device *dev)
 		family = (family >> 20) & 0xFF;
 		if (family == 1) { //f10
 			u32 dword;
-			cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 3));
+			cdb_dev = dev_find_slot(CONFIG_CBB, PCI_DEVFN(devn, 3));
 			dword = pci_read_config32(cdb_dev, 0xe8);
 			siblings = ((dword & BIT15) >> 13) | ((dword & (BIT13 | BIT12)) >> 12);
 		} else if (family == 6) {//f15
-			cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 5));
+			cdb_dev = dev_find_slot(CONFIG_CBB, PCI_DEVFN(devn, 5));
 			if (cdb_dev && cdb_dev->enabled) {
 				siblings = pci_read_config32(cdb_dev, 0x84);
 				siblings &= 0xFF;

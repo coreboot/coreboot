@@ -40,8 +40,8 @@
 struct amdk8_sysconf_t sysconf;
 
 #define MAX_FX_DEVS 8
-static device_t __f0_dev[MAX_FX_DEVS];
-static device_t __f1_dev[MAX_FX_DEVS];
+static struct device *__f0_dev[MAX_FX_DEVS];
+static struct device *__f1_dev[MAX_FX_DEVS];
 static unsigned fx_devs = 0;
 
 static void get_fx_devs(void)
@@ -71,7 +71,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 	if (fx_devs == 0)
 		get_fx_devs();
 	for (i = 0; i < fx_devs; i++) {
-		device_t dev;
+		struct device *dev;
 		dev = __f1_dev[i];
 		if (dev && dev->enabled) {
 			pci_write_config32(dev, reg, value);
@@ -127,7 +127,7 @@ static void ht_route_link(struct bus *link, scan_state mode)
 	}
 }
 
-static u32 amdk8_nodeid(device_t dev)
+static u32 amdk8_nodeid(struct device *dev)
 {
 	return (dev->path.pci.devfn >> 3) - 0x18;
 }
@@ -245,7 +245,7 @@ static void trim_ht_chain(struct device *dev)
 	}
 }
 
-static void amdk8_scan_chains(device_t dev)
+static void amdk8_scan_chains(struct device *dev)
 {
 	struct bus *link;
 
@@ -258,15 +258,15 @@ static void amdk8_scan_chains(device_t dev)
 }
 
 
-static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
-			unsigned goal_link)
+static int reg_useable(unsigned reg, struct device *goal_dev,
+		       unsigned goal_nodeid, unsigned goal_link)
 {
 	struct resource *res;
 	unsigned nodeid, link = 0;
 	int result;
 	res = 0;
 	for (nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
-		device_t dev;
+		struct device *dev;
 		dev = __f0_dev[nodeid];
 		if (!dev)
 			continue;
@@ -286,8 +286,8 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
 	return result;
 }
 
-static unsigned amdk8_find_reg(device_t dev, unsigned nodeid, unsigned link,
-			       unsigned min, unsigned max)
+static unsigned amdk8_find_reg(struct device *dev, unsigned nodeid,
+			       unsigned link, unsigned min, unsigned max)
 {
 	unsigned resource;
 	unsigned free_reg, reg;
@@ -314,17 +314,20 @@ static unsigned amdk8_find_reg(device_t dev, unsigned nodeid, unsigned link,
 	return resource;
 }
 
-static unsigned amdk8_find_iopair(device_t dev, unsigned nodeid, unsigned link)
+static unsigned amdk8_find_iopair(struct device *dev, unsigned nodeid,
+				  unsigned link)
 {
 	return amdk8_find_reg(dev, nodeid, link, 0xc0, 0xd8);
 }
 
-static unsigned amdk8_find_mempair(device_t dev, unsigned nodeid, unsigned link)
+static unsigned amdk8_find_mempair(struct device *dev, unsigned nodeid,
+				   unsigned link)
 {
 	return amdk8_find_reg(dev, nodeid, link, 0x80, 0xb8);
 }
 
-static void amdk8_link_read_bases(device_t dev, unsigned nodeid, unsigned link)
+static void amdk8_link_read_bases(struct device *dev, unsigned nodeid,
+				  unsigned link)
 {
 	struct resource *resource;
 
@@ -363,9 +366,9 @@ static void amdk8_link_read_bases(device_t dev, unsigned nodeid, unsigned link)
 	}
 }
 
-static void amdk8_create_vga_resource(device_t dev, unsigned nodeid);
+static void amdk8_create_vga_resource(struct device *dev, unsigned nodeid);
 
-static void amdk8_read_resources(device_t dev)
+static void amdk8_read_resources(struct device *dev)
 {
 	unsigned nodeid;
 	struct bus *link;
@@ -378,7 +381,8 @@ static void amdk8_read_resources(device_t dev)
 	amdk8_create_vga_resource(dev, nodeid);
 }
 
-static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned nodeid)
+static void amdk8_set_resource(struct device *dev, struct resource *resource,
+			       unsigned nodeid)
 {
 	struct bus *link;
 	resource_t rbase, rend;
@@ -475,7 +479,7 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 	report_resource_stored(dev, resource, buf);
 }
 
-static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
+static void amdk8_create_vga_resource(struct device *dev, unsigned nodeid)
 {
 	struct resource *resource;
 	struct bus *link;
@@ -485,7 +489,7 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
 #if IS_ENABLED(CONFIG_MULTIPLE_VGA_ADAPTERS)
-			extern device_t vga_pri; // the primary vga device, defined in device.c
+			extern struct device *vga_pri; // the primary vga device, defined in device.c
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d link bus range [%d,%d]\n", vga_pri->bus->secondary,
 				link->secondary,link->subordinate);
 			/* We need to make sure the vga_pri is under the link */
@@ -516,7 +520,7 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 			  IORESOURCE_ASSIGNED;
 }
 
-static void amdk8_set_resources(device_t dev)
+static void amdk8_set_resources(struct device *dev)
 {
 	unsigned nodeid;
 	struct bus *bus;
@@ -597,7 +601,7 @@ struct chip_operations northbridge_amd_amdk8_ops = {
 	.init = amdk8_nb_init,
 };
 
-static void amdk8_domain_read_resources(device_t dev)
+static void amdk8_domain_read_resources(struct device *dev)
 {
 	unsigned reg;
 
@@ -610,7 +614,7 @@ static void amdk8_domain_read_resources(device_t dev)
 		/* Is this register allocated? */
 		if ((base & 3) != 0) {
 			unsigned nodeid, reg_link;
-			device_t reg_dev;
+			struct device *reg_dev;
 			nodeid = limit & 7;
 			reg_link = (limit >> 4) & 3;
 			reg_dev = __f0_dev[nodeid];
@@ -717,7 +721,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 static void disable_hoist_memory(unsigned long hole_startk, int node_id)
 {
 	int i;
-	device_t dev;
+	struct device *dev;
 	u32 base, limit;
 	u32 hoist;
 	u32 hole_sizek;
@@ -762,7 +766,7 @@ static u32 hoist_memory(unsigned long hole_startk, int node_id)
 {
 	int i;
 	u32 carry_over;
-	device_t dev;
+	struct device *dev;
 	u32 base, limit;
 	u32 basek;
 	u32 hoist;
@@ -857,7 +861,7 @@ static void setup_uma_memory(void)
 #endif
 }
 
-static void amdk8_domain_set_resources(device_t dev)
+static void amdk8_domain_set_resources(struct device *dev)
 {
 	unsigned long mmio_basek;
 	u32 pci_tolm;
@@ -1009,7 +1013,7 @@ static void amdk8_domain_set_resources(device_t dev)
 
 }
 
-static void amdk8_domain_scan_bus(device_t dev)
+static void amdk8_domain_scan_bus(struct device *dev)
 {
 	u32 reg;
 	int i;
@@ -1029,7 +1033,7 @@ static void amdk8_domain_scan_bus(device_t dev)
 	 */
 	get_fx_devs();
 	for (i = 0; i < fx_devs; i++) {
-		device_t f0_dev;
+		struct device *f0_dev;
 		f0_dev = __f0_dev[i];
 		if (f0_dev && f0_dev->enabled) {
 			u32 httc;
@@ -1055,7 +1059,7 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus	  = amdk8_domain_scan_bus,
 };
 
-static void add_more_links(device_t dev, unsigned total_links)
+static void add_more_links(struct device *dev, unsigned total_links)
 {
 	struct bus *link, *last = NULL;
 	int link_num = -1;
@@ -1095,7 +1099,7 @@ static void add_more_links(device_t dev, unsigned total_links)
 static void remap_bsp_lapic(struct bus *cpu_bus)
 {
 	struct device_path cpu_path;
-	device_t cpu;
+	struct device *cpu;
 	u32 bsp_lapic_id = lapicid();
 
 	if (bsp_lapic_id) {
@@ -1107,10 +1111,10 @@ static void remap_bsp_lapic(struct bus *cpu_bus)
 	}
 }
 
-static void cpu_bus_scan(device_t dev)
+static void cpu_bus_scan(struct device *dev)
 {
 	struct bus *cpu_bus;
-	device_t dev_mc;
+	struct device *dev_mc;
 	int bsp_apicid;
 	int i,j;
 	unsigned nb_cfg_54;
@@ -1165,7 +1169,7 @@ static void cpu_bus_scan(device_t dev)
 	remap_bsp_lapic(cpu_bus);
 
 	for (i = 0; i < sysconf.nodes; i++) {
-		device_t cpu_dev;
+		struct device *cpu_dev;
 
 		/* Find the cpu's pci device */
 		cpu_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
@@ -1174,7 +1178,7 @@ static void cpu_bus_scan(device_t dev)
 			 * ensure all of the cpu's pci devices are found.
 			 */
 			int local_j;
-			device_t dev_f0;
+			struct device *dev_f0;
 			for (local_j = 0; local_j <= 3; local_j++) {
 				cpu_dev = pci_probe_dev(NULL, dev_mc->bus,
 					PCI_DEVFN(0x18 + i, local_j));
@@ -1241,14 +1245,15 @@ static void cpu_bus_scan(device_t dev)
 				}
 			}
 
-			device_t cpu = add_cpu_device(cpu_bus, apic_id, enable_node);
+			struct device *cpu = add_cpu_device(cpu_bus, apic_id,
+					     enable_node);
 			if (cpu)
 				amd_cpu_topology(cpu, i, j);
 		} //j
 	}
 }
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 #if IS_ENABLED(CONFIG_WAIT_BEFORE_CPUS_INIT)
 	cpus_ready_for_init();

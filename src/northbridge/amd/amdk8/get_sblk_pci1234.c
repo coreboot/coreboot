@@ -142,7 +142,7 @@
 void get_sblk_pci1234(void)
 {
 
-	device_t dev;
+	struct device *dev;
 	int i,j;
 	uint32_t dword;
 

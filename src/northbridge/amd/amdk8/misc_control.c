@@ -35,7 +35,7 @@
  * implemented in a way to NOT DOING legacy VGA resource allocation on
  * purpose :-(.
  */
-static void mcf3_read_resources(device_t dev)
+static void mcf3_read_resources(struct device *dev)
 {
 	struct resource *resource;
 	unsigned char iommu;
@@ -61,13 +61,13 @@ static void mcf3_read_resources(device_t dev)
 	}
 }
 
-static void set_agp_aperture(device_t dev)
+static void set_agp_aperture(struct device *dev)
 {
 	struct resource *resource;
 
 	resource = probe_resource(dev, 0x94);
 	if (resource) {
-		device_t pdev;
+		struct device *pdev;
 		uint32_t gart_base, gart_acr;
 
 		/* Remember this resource has been stored */
@@ -97,7 +97,7 @@ static void set_agp_aperture(device_t dev)
 	}
 }
 
-static void mcf3_set_resources(device_t dev)
+static void mcf3_set_resources(struct device *dev)
 {
 	/* Set the gart apeture */
 	set_agp_aperture(dev);

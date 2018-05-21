@@ -25,7 +25,7 @@ static void sd_init(struct device *dev)
 {
 	u32 stepping;
 
-	stepping = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xFC);
+	stepping = pci_read_config32(pcidev_on_root(0x18, 3), 0xFC);
 
 	struct southbridge_amd_agesa_hudson_config *sd_chip =
 		(struct southbridge_amd_agesa_hudson_config *)(dev->chip_info);

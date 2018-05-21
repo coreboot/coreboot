@@ -43,7 +43,7 @@ static unsigned fx_devs = 0;
 
 static struct device *get_node_pci(u32 nodeid, u32 fn)
 {
-	return dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB + nodeid, fn));
+	return pcidev_on_root(CONFIG_CDB + nodeid, fn);
 }
 
 static void get_fx_devs(void)
@@ -590,11 +590,12 @@ static void cpu_bus_scan(struct device *dev)
 	int apic_id, cores_found;
 
 	/* There is only one node for fam14, but there may be multiple cores. */
-	cpu = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+	cpu = pcidev_on_root(0x18, 0);
 	if (!cpu)
 		printk(BIOS_ERR, "ERROR: %02x:%02x.0 not found", 0, 0x18);
 
-	cores_found = (pci_read_config32(dev_find_slot(0,PCI_DEVFN(0x18,0x3)), 0xe8) >> 12) & 3;
+	cores_found = (pci_read_config32(pcidev_on_root(0x18, 0x3),
+					0xe8) >> 12) & 3;
 	printk(BIOS_DEBUG, "  AP siblings=%d\n", cores_found);
 
 	for (apic_id = 0; apic_id <= cores_found; apic_id++) {

@@ -40,7 +40,7 @@ void platform_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 #ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev = PCI_DEV(0, 0x18, 2);
 #else
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	struct device *dev = pcidev_on_root(0x18, 2);
 #endif
 	if (boot_cpu()) {
 		u32 mct_cfg_lo = pci_read_config32(dev, 0x118);

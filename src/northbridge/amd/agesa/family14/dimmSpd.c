@@ -33,7 +33,7 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINTN unused2, AGESA_READ_SPD_PAR
 {
 	UINT8 spdAddress;
 
-	DEVTREE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	DEVTREE_CONST struct device *dev = pcidev_on_root(0x18, 2);
 	if (dev == NULL)
 		return AGESA_ERROR;
 

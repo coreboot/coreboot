@@ -46,7 +46,7 @@ static unsigned fx_devs = 0;
 
 static struct device *get_node_pci(u32 nodeid, u32 fn)
 {
-	return dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB + nodeid, fn));
+	return pcidev_on_root(CONFIG_CDB + nodeid, fn);
 }
 
 static void get_fx_devs(void)

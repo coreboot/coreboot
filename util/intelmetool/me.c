@@ -417,7 +417,7 @@ int mkhi_get_fw_version(int *major, int *minor)
 		printf("ME: GET FW VERSION message failed\n");
 		return -1;
 	}
-	printf("ME: Firmware Version %u.%u (code)\n\n"
+	printf("ME: Firmware Version %u.%u (code)\n\n",
 	       version.code_major, version.code_minor);
 #endif
 	if (major)

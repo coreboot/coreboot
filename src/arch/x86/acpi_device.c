@@ -55,9 +55,6 @@ static void acpi_device_fill_len(void *ptr)
 /* Locate and return the ACPI name for this device */
 const char *acpi_device_name(struct device *dev)
 {
-	struct device *pdev = dev;
-	const char *name;
-
 	if (!dev)
 		return NULL;
 
@@ -65,16 +62,9 @@ const char *acpi_device_name(struct device *dev)
 	if (dev->ops->acpi_name)
 		return dev->ops->acpi_name(dev);
 
-	/* Walk up the tree to find if any parent can identify this device */
-	while (pdev->bus) {
-		if (pdev->path.type == DEVICE_PATH_ROOT)
-			break;
-		if (pdev->bus->dev->ops && pdev->bus->dev->ops->acpi_name)
-			name = pdev->bus->dev->ops->acpi_name(dev);
-		if (name)
-			return name;
-		pdev = pdev->bus->dev;
-	}
+	/* Check parent device in case it has a global handler */
+	if (dev->bus && dev->bus->dev->ops->acpi_name)
+		return dev->bus->dev->ops->acpi_name(dev);
 
 	return NULL;
 }

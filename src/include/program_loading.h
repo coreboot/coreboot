@@ -26,22 +26,15 @@ enum {
 	SEG_FINAL = 1 << 0,
 };
 
-// The prog_type is a bit mask, so that in searches one can find, e.g.,
-// a file with a given name that is either a payload or a ramstage.
-// The PROG_UNKNOWN should not have any bits set that match a valid
-// type, and for the sake of sanity, let's keep the high order bit out of it.
-// The current value allows for 16 file types. This is a change from before,
-// where we could have 2^32-1 different types. On a guess, it seems 16 should
-// be enough. We started with 3 and are up to 6 twelve years later.
 enum prog_type {
-	PROG_UNKNOWN = 0x7bba0000,
-	PROG_VERSTAGE = 1 << 0,
-	PROG_ROMSTAGE = 1 << 1,
-	PROG_RAMSTAGE = 1 << 2,
-	PROG_REFCODE = 1 << 3,
-	PROG_PAYLOAD = 1 << 4,
-	PROG_BL31 = 1 << 5,
-	PROG_BL32 = 1 << 6,
+	PROG_UNKNOWN,
+	PROG_VERSTAGE,
+	PROG_ROMSTAGE,
+	PROG_RAMSTAGE,
+	PROG_REFCODE,
+	PROG_PAYLOAD,
+	PROG_BL31,
+	PROG_BL32,
 };
 
 /*

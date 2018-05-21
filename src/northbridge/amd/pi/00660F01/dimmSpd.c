@@ -26,7 +26,7 @@
 AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINTN unused2, AGESA_READ_SPD_PARAMS *info)
 {
 	int spdAddress;
-	DEVTREE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	DEVTREE_CONST struct device *dev = pcidev_on_root(0x18, 2);
 	DEVTREE_CONST struct northbridge_amd_pi_00660F01_config *config = dev->chip_info;
 
 	if ((dev == 0) || (config == 0))

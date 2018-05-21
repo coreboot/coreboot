@@ -106,7 +106,7 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 
 static struct device *get_node_pci(u32 nodeid, u32 fn)
 {
-	return dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB + nodeid, fn));
+	return pcidev_on_root(CONFIG_CDB + nodeid, fn);
 }
 
 static void get_fx_devs(void)
@@ -556,12 +556,12 @@ static void fam15_finalize(void *chip_info)
 {
 	struct device *dev;
 	u32 value;
-	dev = dev_find_slot(0, PCI_DEVFN(0, 0)); /* clear IoapicSbFeatureEn */
+	dev = pcidev_on_root(0, 0); /* clear IoapicSbFeatureEn */
 	pci_write_config32(dev, 0xF8, 0);
 	pci_write_config32(dev, 0xFC, 5); /* TODO: move it to dsdt.asl */
 
 	/* disable No Snoop */
-	dev = dev_find_slot(0, PCI_DEVFN(1, 1));
+	dev = pcidev_on_root(1, 1);
 	value = pci_read_config32(dev, 0x60);
 	value &= ~(1 << 11);
 	pci_write_config32(dev, 0x60, value);
@@ -848,7 +848,7 @@ static void cpu_bus_scan(struct device *dev)
 	ioapic_count = (int)options->CfgPlatNumIoApics;
 	ASSERT(ioapic_count > 0);
 
-	dev_mc = dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB, 0));
+	dev_mc = pcidev_on_root(CONFIG_CDB, 0);
 	if (!dev_mc) {
 		printk(BIOS_ERR, "%02x:%02x.0 not found", CONFIG_CBB, CONFIG_CDB);
 		die("");
@@ -877,7 +877,7 @@ static void cpu_bus_scan(struct device *dev)
 		pbus = dev_mc->bus;
 
 		/* Find the cpu's pci device */
-		cdb_dev = dev_find_slot(CONFIG_CBB, PCI_DEVFN(devn, 0));
+		cdb_dev = pcidev_on_root(devn, 0);
 		if (!cdb_dev) {
 			/* If I am probing things in a weird order
 			 * ensure all of the cpu's pci devices are found.
@@ -887,7 +887,7 @@ static void cpu_bus_scan(struct device *dev)
 				cdb_dev = pci_probe_dev(NULL, pbus,
 							PCI_DEVFN(devn, fn));
 			}
-			cdb_dev = dev_find_slot(CONFIG_CBB, PCI_DEVFN(devn, 0));
+			cdb_dev = pcidev_on_root(devn, 0);
 		} else {
 			/* Ok, We need to set the links for that device.
 			 * otherwise the device under it will not be scanned
@@ -899,7 +899,7 @@ static void cpu_bus_scan(struct device *dev)
 		family = (family >> 20) & 0xFF;
 		if (family == 6 || family == 7) {
 			/* f15 and f16 */
-			cdb_dev = dev_find_slot(CONFIG_CBB, PCI_DEVFN(devn, 5));
+			cdb_dev = pcidev_on_root(devn, 5);
 			if (cdb_dev && cdb_dev->enabled) {
 				siblings = pci_read_config32(cdb_dev, 0x84);
 				siblings &= 0xFF;

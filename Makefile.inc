@@ -60,6 +60,10 @@ COREBOOT_EXPORTS += objcbfs
 objgenerated := $(obj)/generated
 COREBOOT_EXPORTS += objgenerated
 
+## CCACHE_EXTRAFILES can be set by individual rules to help CCACHE
+## discover dependencies it might not notice on its own (e.g. asm (".incbin")).
+COREBOOT_EXPORTS += CCACHE_EXTRAFILES
+
 #######################################################################
 # root rule to resolve if in build mode (ie. configuration exists)
 real-target: $(obj)/config.h coreboot files_added
@@ -380,6 +384,7 @@ VBOOT_SOURCE ?= 3rdparty/vboot
 CPPFLAGS_common += -I$(VBOOT_SOURCE)/firmware/include
 CPPFLAGS_common += -include $(src)/include/kconfig.h
 CPPFLAGS_common += -I3rdparty
+CPPFLAGS_common += -D__BUILD_DIR__=\"$(obj)\"
 
 CFLAGS_common += -pipe -g -nostdinc -std=gnu11
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes

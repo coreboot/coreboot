@@ -61,13 +61,13 @@
 struct amdfam10_sysconf_t sysconf;
 
 #define FX_DEVS NODE_NUMS
-static device_t __f0_dev[FX_DEVS];
-device_t __f1_dev[FX_DEVS];
-static device_t __f2_dev[FX_DEVS];
-static device_t __f4_dev[FX_DEVS];
+static struct device *__f0_dev[FX_DEVS];
+struct device *__f1_dev[FX_DEVS];
+static struct device *__f2_dev[FX_DEVS];
+static struct device *__f4_dev[FX_DEVS];
 static unsigned fx_devs = 0;
 
-device_t get_node_pci(u32 nodeid, u32 fn)
+struct device *get_node_pci(u32 nodeid, u32 fn)
 {
 #if NODE_NUMS + CONFIG_CDB >= 32
 	if ((CONFIG_CDB + nodeid) < 32) {
@@ -110,7 +110,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 	if (fx_devs == 0)
 		get_fx_devs();
 	for (i = 0; i < fx_devs; i++) {
-		device_t dev;
+		struct device *dev;
 		dev = __f1_dev[i];
 		if (dev && dev->enabled) {
 			pci_write_config32(dev, reg, value);
@@ -118,7 +118,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 	}
 }
 
-u32 amdfam10_nodeid(device_t dev)
+u32 amdfam10_nodeid(struct device *dev)
 {
 #if NODE_NUMS == 64
 	unsigned busn;
@@ -188,7 +188,7 @@ static void ht_route_link(struct bus *link, scan_state mode)
 	}
 }
 
-static void amd_g34_fixup(struct bus *link, device_t dev)
+static void amd_g34_fixup(struct bus *link, struct device *dev)
 {
 	uint32_t nodeid = amdfam10_nodeid(dev);
 	uint8_t rev_gte_d = 0;
@@ -316,7 +316,7 @@ static void trim_ht_chain(struct device *dev)
 	}
 }
 
-static void amdfam10_scan_chains(device_t dev)
+static void amdfam10_scan_chains(struct device *dev)
 {
 	struct bus *link;
 
@@ -373,7 +373,7 @@ static void amdfam10_scan_chains(device_t dev)
 }
 
 
-static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
+static int reg_useable(unsigned reg, struct device *goal_dev, unsigned goal_nodeid,
 			unsigned goal_link)
 {
 	struct resource *res;
@@ -381,7 +381,7 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
 	int result;
 	res = 0;
 	for (nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
-		device_t dev;
+		struct device *dev;
 		dev = __f0_dev[nodeid];
 		if (!dev)
 			continue;
@@ -401,7 +401,7 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
 	return result;
 }
 
-static struct resource *amdfam10_find_iopair(device_t dev, unsigned nodeid, unsigned link)
+static struct resource *amdfam10_find_iopair(struct device *dev, unsigned nodeid, unsigned link)
 {
 	struct resource *resource;
 	u32 free_reg, reg;
@@ -434,7 +434,7 @@ static struct resource *amdfam10_find_iopair(device_t dev, unsigned nodeid, unsi
 	return resource;
 }
 
-static struct resource *amdfam10_find_mempair(device_t dev, u32 nodeid, u32 link)
+static struct resource *amdfam10_find_mempair(struct device *dev, u32 nodeid, u32 link)
 {
 	struct resource *resource;
 	u32 free_reg, reg;
@@ -469,7 +469,7 @@ static struct resource *amdfam10_find_mempair(device_t dev, u32 nodeid, u32 link
 }
 
 
-static void amdfam10_link_read_bases(device_t dev, u32 nodeid, u32 link)
+static void amdfam10_link_read_bases(struct device *dev, u32 nodeid, u32 link)
 {
 	struct resource *resource;
 
@@ -510,7 +510,7 @@ static void amdfam10_link_read_bases(device_t dev, u32 nodeid, u32 link)
 	}
 }
 
-static void amdfam10_read_resources(device_t dev)
+static void amdfam10_read_resources(struct device *dev)
 {
 	u32 nodeid;
 	struct bus *link;
@@ -522,7 +522,7 @@ static void amdfam10_read_resources(device_t dev)
 	}
 }
 
-static void amdfam10_set_resource(device_t dev, struct resource *resource,
+static void amdfam10_set_resource(struct device *dev, struct resource *resource,
 				u32 nodeid)
 {
 	resource_t rbase, rend;
@@ -576,7 +576,7 @@ static void amdfam10_set_resource(device_t dev, struct resource *resource,
  * but it is too difficult to deal with the resource allocation magic.
  */
 
-static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
+static void amdfam10_create_vga_resource(struct device *dev, unsigned nodeid)
 {
 	struct bus *link;
 	struct resource *res;
@@ -586,7 +586,7 @@ static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
 #if IS_ENABLED(CONFIG_MULTIPLE_VGA_ADAPTERS)
-			extern device_t vga_pri; // the primary vga device, defined in device.c
+			extern struct device *vga_pri; // the primary vga device, defined in device.c
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 				link->secondary,link->subordinate);
 			/* We need to make sure the vga_pri is under the link */
@@ -617,7 +617,7 @@ static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 	amdfam10_set_resource(dev, res, nodeid);
 }
 
-static void amdfam10_set_resources(device_t dev)
+static void amdfam10_set_resources(struct device *dev)
 {
 	unsigned nodeid;
 	struct bus *bus;
@@ -695,7 +695,7 @@ struct chip_operations northbridge_amd_amdfam10_ops = {
 	.init = amdfam10_nb_init,
 };
 
-static void amdfam10_domain_read_resources(device_t dev)
+static void amdfam10_domain_read_resources(struct device *dev)
 {
 	unsigned reg;
 	uint8_t nvram;
@@ -710,7 +710,7 @@ static void amdfam10_domain_read_resources(device_t dev)
 		/* Is this register allocated? */
 		if ((base & 3) != 0) {
 			unsigned nodeid, reg_link;
-			device_t reg_dev;
+			struct device *reg_dev;
 			if (reg < 0xc0) { // mmio
 				nodeid = (limit & 0xf) + (base&0x30);
 			} else { // io
@@ -762,7 +762,7 @@ static void amdfam10_domain_read_resources(device_t dev)
 			max_range = -1;
 			interleaved = 0;
 			max_range_limit = 0;
-			device_t node_dev;
+			struct device *node_dev;
 			for (node = 0; node < FX_DEVS; node++) {
 				node_dev = get_node_pci(node, 0);
 				/* Test for node presence */
@@ -899,7 +899,7 @@ static void setup_uma_memory(void)
 #endif
 }
 
-static void amdfam10_domain_set_resources(device_t dev)
+static void amdfam10_domain_set_resources(struct device *dev)
 {
 	unsigned long mmio_basek;
 	u32 pci_tolm;
@@ -1000,7 +1000,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 	}
 }
 
-static void amdfam10_domain_scan_bus(device_t dev)
+static void amdfam10_domain_scan_bus(struct device *dev)
 {
 	u32 reg;
 	int i;
@@ -1021,7 +1021,7 @@ static void amdfam10_domain_scan_bus(device_t dev)
 	 */
 	get_fx_devs();
 	for (i = 0; i < fx_devs; i++) {
-		device_t f0_dev;
+		struct device *f0_dev;
 		f0_dev = __f0_dev[i];
 		if (f0_dev && f0_dev->enabled) {
 			u32 httc;
@@ -1299,7 +1299,7 @@ static int amdfam10_get_smbios_data17(int* count, int handle, int parent_handle,
 	return len;
 }
 
-static int amdfam10_get_smbios_data(device_t dev, int *handle, unsigned long *current)
+static int amdfam10_get_smbios_data(struct device *dev, int *handle, unsigned long *current)
 {
 	int len;
 	int count = 0;
@@ -1334,7 +1334,7 @@ static struct device_operations pci_domain_ops = {
 #endif
 };
 
-static void sysconf_init(device_t dev) // first node
+static void sysconf_init(struct device *dev) // first node
 {
 	sysconf.sblk = (pci_read_config32(dev, 0x64)>>8) & 7; // don't forget sublink1
 	sysconf.segbit = 0;
@@ -1376,7 +1376,7 @@ static void sysconf_init(device_t dev) // first node
 #endif
 }
 
-static void add_more_links(device_t dev, unsigned total_links)
+static void add_more_links(struct device *dev, unsigned total_links)
 {
 	struct bus *link, *last = NULL;
 	int link_num = -1;
@@ -1415,7 +1415,7 @@ static void add_more_links(device_t dev, unsigned total_links)
 static void remap_bsp_lapic(struct bus *cpu_bus)
 {
 	struct device_path cpu_path;
-	device_t cpu;
+	struct device *cpu;
 	u32 bsp_lapic_id = lapicid();
 
 	if (bsp_lapic_id) {
@@ -1427,12 +1427,12 @@ static void remap_bsp_lapic(struct bus *cpu_bus)
 	}
 }
 
-static void cpu_bus_scan(device_t dev)
+static void cpu_bus_scan(struct device *dev)
 {
 	struct bus *cpu_bus;
-	device_t dev_mc;
+	struct device *dev_mc;
 #if CONFIG_CBB
-	device_t pci_domain;
+	struct device *pci_domain;
 #endif
 	int nvram = 0;
 	int i,j;
@@ -1535,7 +1535,7 @@ static void cpu_bus_scan(device_t dev)
 		printk(BIOS_DEBUG, "Disabling siblings on each compute unit as requested\n");
 
 	for (i = 0; i < nodes; i++) {
-		device_t cdb_dev;
+		struct device *cdb_dev;
 		unsigned busn, devn;
 		struct bus *pbus;
 
@@ -1668,14 +1668,14 @@ static void cpu_bus_scan(device_t dev)
 			if (disable_cu_siblings && (j & 0x1))
 				continue;
 
-			device_t cpu = add_cpu_device(cpu_bus, apic_id, enable_node);
+			struct device *cpu = add_cpu_device(cpu_bus, apic_id, enable_node);
 			if (cpu)
 				amd_cpu_topology(cpu, i, j);
 		}
 	}
 }
 
-static void detect_and_enable_probe_filter(device_t dev)
+static void detect_and_enable_probe_filter(struct device *dev)
 {
 	uint32_t dword;
 
@@ -1721,8 +1721,8 @@ static void detect_and_enable_probe_filter(device_t dev)
 
 		/* Disable L3 and DRAM scrubbers and configure system for probe filter support */
 		for (i = 0; i < sysconf.nodes; i++) {
-			device_t f2x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 2));
-			device_t f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
+			struct device *f2x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 2));
+			struct device *f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
 
 			f3x58[i] = pci_read_config32(f3x_dev, 0x58);
 			f3x5c[i] = pci_read_config32(f3x_dev, 0x5c);
@@ -1791,7 +1791,7 @@ static void detect_and_enable_probe_filter(device_t dev)
 
 		/* Enable probe filter */
 		for (i = 0; i < sysconf.nodes; i++) {
-			device_t f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
+			struct device *f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
 
 			dword = pci_read_config32(f3x_dev, 0x1c4);
 			dword |= (0x1 << 31);	/* L3TagInit = 1 */
@@ -1812,8 +1812,8 @@ static void detect_and_enable_probe_filter(device_t dev)
 
 			/* Enable ATM mode */
 			for (i = 0; i < sysconf.nodes; i++) {
-				device_t f0x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 0));
-				device_t f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
+				struct device *f0x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 0));
+				struct device *f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
 
 				dword = pci_read_config32(f0x_dev, 0x68);
 				dword |= (0x1 << 12);	/* ATMModeEn = 1 */
@@ -1829,7 +1829,7 @@ static void detect_and_enable_probe_filter(device_t dev)
 
 		/* Reenable L3 and DRAM scrubbers */
 		for (i = 0; i < sysconf.nodes; i++) {
-			device_t f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
+			struct device *f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
 
 			pci_write_config32(f3x_dev, 0x58, f3x58[i]);
 			pci_write_config32(f3x_dev, 0x5c, f3x5c[i]);
@@ -1838,7 +1838,7 @@ static void detect_and_enable_probe_filter(device_t dev)
 	}
 }
 
-static void detect_and_enable_cache_partitioning(device_t dev)
+static void detect_and_enable_cache_partitioning(struct device *dev)
 {
 	uint8_t i;
 	uint32_t dword;
@@ -1865,9 +1865,9 @@ static void detect_and_enable_cache_partitioning(device_t dev)
 		uint8_t dual_node = 0;
 
 		for (i = 0; i < sysconf.nodes; i++) {
-			device_t f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
-			device_t f4x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 4));
-			device_t f5x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 5));
+			struct device *f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
+			struct device *f4x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 4));
+			struct device *f5x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 5));
 
 			f3xe8 = pci_read_config32(f3x_dev, 0xe8);
 
@@ -1942,7 +1942,7 @@ static void detect_and_enable_cache_partitioning(device_t dev)
 	}
 }
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	detect_and_enable_probe_filter(dev);
 	detect_and_enable_cache_partitioning(dev);

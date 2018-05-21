@@ -447,8 +447,8 @@ static void EnableLclkGating(struct device *dev)
 	u32 reg = 0;
 	u32 mask = 0;
 	u32 value = 0;
-	struct device *nb_dev = dev_find_slot(0, 0);
-	struct device *clk_f1= dev_find_slot(0, 1);
+	struct device *nb_dev = pcidev_on_root(0x0, 0);
+	struct device *clk_f1 = pcidev_on_root(0x0, 1);
 
 	reg = 0xE8;
 	port = dev->path.pci.devfn >> 3;

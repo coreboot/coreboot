@@ -53,7 +53,7 @@ static void cpu_pci_domain_set_resources(struct device *dev)
 
 static void cpu_pci_domain_read_resources(struct device *dev)
 {
-	u16 nbid   = pci_read_config16(dev_find_slot(0, 0), PCI_DEVICE_ID);
+	u16 nbid   = pci_read_config16(pcidev_on_root(0x0, 0), PCI_DEVICE_ID);
 	int i440fx = (nbid == 0x1237);
 	int q35    = (nbid == 0x29c0);
 	struct resource *res;

@@ -289,7 +289,7 @@ static void gm45_init(void *const chip_info)
 {
 	int dev, fn, bit_base;
 
-	struct device *const d0f0 = dev_find_slot(0, 0);
+	struct device *const d0f0 = pcidev_on_root(0x0, 0);
 
 	/* Hide internal functions based on devicetree info. */
 	for (dev = 3; dev > 0; --dev) {

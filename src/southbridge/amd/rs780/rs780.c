@@ -27,7 +27,7 @@
 /*****************************************
 * rs780_config_misc_clk()
 *****************************************/
-void static rs780_config_misc_clk(device_t nb_dev)
+void static rs780_config_misc_clk(struct device *nb_dev)
 {
 	u32 reg;
 	u16 word;
@@ -104,12 +104,12 @@ void static rs780_config_misc_clk(device_t nb_dev)
 	set_htiu_enable_bits(nb_dev, 0x05, 7 << 8, 7 << 8);
 }
 
-static u32 get_vid_did(device_t dev)
+static u32 get_vid_did(struct device *dev)
 {
 	return pci_read_config32(dev, 0);
 }
 
-static void rs780_nb_pci_table(device_t nb_dev)
+static void rs780_nb_pci_table(struct device *nb_dev)
 {	/* NBPOR_InitPOR function. */
 	u8 temp8;
 	u16 temp16;
@@ -183,7 +183,7 @@ static void rs780_nb_pci_table(device_t nb_dev)
 #endif
 }
 
-static void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
+static void rs780_nb_gfx_dev_table(struct device *nb_dev, struct device *dev)
 {
 	/* NB_InitGFXStraps */
 	u32 MMIOBase, apc04, apc18, apc24, romstrap2;
@@ -265,9 +265,9 @@ static void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
 * case 0 will be called twice, one is by CPU in hypertransport.c line458,
 * the other is by rs780.
 ***********************************************/
-void rs780_enable(device_t dev)
+void rs780_enable(struct device *dev)
 {
-	device_t nb_dev = 0, sb_dev = 0;
+	struct device *nb_dev = NULL, *sb_dev = NULL;
 	int dev_ind;
 
 	printk(BIOS_INFO, "rs780_enable: dev=%p, VID_DID=0x%x\n", dev, get_vid_did(dev));

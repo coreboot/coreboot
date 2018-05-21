@@ -21,9 +21,9 @@
 #include "rs780.h"
 
 /* for UMA internal graphics */
-void avoid_lpc_dma_deadlock(device_t nb_dev, device_t sb_dev)
+void avoid_lpc_dma_deadlock(struct device *nb_dev, struct device *sb_dev)
 {
-	device_t cpu_f0;
+	struct device *cpu_f0;
 	u8 reg;
 
 	cpu_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));

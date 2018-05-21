@@ -27,20 +27,20 @@
 #include <cpu/cpu.h>
 #include "rs780.h"
 
-static u32 nb_read_index(device_t dev, u32 index_reg, u32 index)
+static u32 nb_read_index(struct device *dev, u32 index_reg, u32 index)
 {
 	pci_write_config32(dev, index_reg, index);
 	return pci_read_config32(dev, index_reg + 0x4);
 }
 
-static void nb_write_index(device_t dev, u32 index_reg, u32 index, u32 data)
+static void nb_write_index(struct device *dev, u32 index_reg, u32 index, u32 data)
 {
 	pci_write_config32(dev, index_reg, index);
 	pci_write_config32(dev, index_reg + 0x4, data);
 }
 
 /* extension registers */
-u32 pci_ext_read_config32(device_t nb_dev, device_t dev, u32 reg)
+u32 pci_ext_read_config32(struct device *nb_dev, struct device *dev, u32 reg)
 {
 	/* get BAR3 base address for nbcfg0x1c */
 	u32 addr = pci_read_config32(nb_dev, 0x1c) & ~0xF;
@@ -51,7 +51,7 @@ u32 pci_ext_read_config32(device_t nb_dev, device_t dev, u32 reg)
 	return *((u32 *) addr);
 }
 
-void pci_ext_write_config32(device_t nb_dev, device_t dev, u32 reg_pos, u32 mask, u32 val)
+void pci_ext_write_config32(struct device *nb_dev, struct device *dev, u32 reg_pos, u32 mask, u32 val)
 {
 	u32 reg_old, reg;
 
@@ -70,57 +70,57 @@ void pci_ext_write_config32(device_t nb_dev, device_t dev, u32 reg_pos, u32 mask
 	}
 }
 
-u32 nbmisc_read_index(device_t nb_dev, u32 index)
+u32 nbmisc_read_index(struct device *nb_dev, u32 index)
 {
 	return nb_read_index((nb_dev), NBMISC_INDEX, (index));
 }
 
-void nbmisc_write_index(device_t nb_dev, u32 index, u32 data)
+void nbmisc_write_index(struct device *nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBMISC_INDEX, ((index) | 0x80), (data));
 }
 
-u32 nbpcie_p_read_index(device_t dev, u32 index)
+u32 nbpcie_p_read_index(struct device *dev, u32 index)
 {
 	return nb_read_index((dev), NBPCIE_INDEX, (index));
 }
 
-void nbpcie_p_write_index(device_t dev, u32 index, u32 data)
+void nbpcie_p_write_index(struct device *dev, u32 index, u32 data)
 {
 	nb_write_index((dev), NBPCIE_INDEX, (index), (data));
 }
 
-u32 nbpcie_ind_read_index(device_t nb_dev, u32 index)
+u32 nbpcie_ind_read_index(struct device *nb_dev, u32 index)
 {
 	return nb_read_index((nb_dev), NBPCIE_INDEX, (index));
 }
 
-void nbpcie_ind_write_index(device_t nb_dev, u32 index, u32 data)
+void nbpcie_ind_write_index(struct device *nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBPCIE_INDEX, (index), (data));
 }
 
-u32 htiu_read_index(device_t nb_dev, u32 index)
+u32 htiu_read_index(struct device *nb_dev, u32 index)
 {
 	return nb_read_index((nb_dev), NBHTIU_INDEX, (index));
 }
 
-void htiu_write_index(device_t nb_dev, u32 index, u32 data)
+void htiu_write_index(struct device *nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBHTIU_INDEX, ((index) | 0x100), (data));
 }
 
-u32 nbmc_read_index(device_t nb_dev, u32 index)
+u32 nbmc_read_index(struct device *nb_dev, u32 index)
 {
 	return nb_read_index((nb_dev), NBMC_INDEX, (index));
 }
 
-void nbmc_write_index(device_t nb_dev, u32 index, u32 data)
+void nbmc_write_index(struct device *nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBMC_INDEX, ((index) | 1 << 9), (data));
 }
 
-void set_nbcfg_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask, u32 val)
+void set_nbcfg_enable_bits(struct device *nb_dev, u32 reg_pos, u32 mask, u32 val)
 {
 	u32 reg_old, reg;
 	reg = reg_old = pci_read_config32(nb_dev, reg_pos);
@@ -131,7 +131,7 @@ void set_nbcfg_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask, u32 val)
 	}
 }
 
-void set_nbcfg_enable_bits_8(device_t nb_dev, u32 reg_pos, u8 mask, u8 val)
+void set_nbcfg_enable_bits_8(struct device *nb_dev, u32 reg_pos, u8 mask, u8 val)
 {
 	u8 reg_old, reg;
 	reg = reg_old = pci_read_config8(nb_dev, reg_pos);
@@ -142,7 +142,7 @@ void set_nbcfg_enable_bits_8(device_t nb_dev, u32 reg_pos, u8 mask, u8 val)
 	}
 }
 
-void set_nbmc_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask, u32 val)
+void set_nbmc_enable_bits(struct device *nb_dev, u32 reg_pos, u32 mask, u32 val)
 {
 	u32 reg_old, reg;
 	reg = reg_old = nbmc_read_index(nb_dev, reg_pos);
@@ -153,7 +153,7 @@ void set_nbmc_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask, u32 val)
 	}
 }
 
-void set_htiu_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask, u32 val)
+void set_htiu_enable_bits(struct device *nb_dev, u32 reg_pos, u32 mask, u32 val)
 {
 	u32 reg_old, reg;
 	reg = reg_old = htiu_read_index(nb_dev, reg_pos);
@@ -164,7 +164,7 @@ void set_htiu_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask, u32 val)
 	}
 }
 
-void set_nbmisc_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask, u32 val)
+void set_nbmisc_enable_bits(struct device *nb_dev, u32 reg_pos, u32 mask, u32 val)
 {
 	u32 reg_old, reg;
 	reg = reg_old = nbmisc_read_index(nb_dev, reg_pos);
@@ -175,7 +175,7 @@ void set_nbmisc_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask, u32 val)
 	}
 }
 
-void set_pcie_enable_bits(device_t dev, u32 reg_pos, u32 mask, u32 val)
+void set_pcie_enable_bits(struct device *dev, u32 reg_pos, u32 mask, u32 val)
 {
 	u32 reg_old, reg;
 	reg = reg_old = nb_read_index(dev, NBPCIE_INDEX, reg_pos);
@@ -195,8 +195,8 @@ void set_pcie_enable_bits(device_t dev, u32 reg_pos, u32 mask, u32 val)
 void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add)
 {
 	/* K8 Function1 is address map */
-	device_t k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
-	device_t k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+	struct device *k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
+	struct device *k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
 
 	if (in_out) {
 		u32 dword, sblk;
@@ -222,7 +222,7 @@ void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add)
 	}
 }
 
-void PcieReleasePortTraining(device_t nb_dev, device_t dev, u32 port)
+void PcieReleasePortTraining(struct device *nb_dev, struct device *dev, u32 port)
 {
 	switch (port) {
 	case 2:		/* GFX, bit4-5 */
@@ -250,7 +250,7 @@ void PcieReleasePortTraining(device_t nb_dev, device_t dev, u32 port)
  *	0: no device is present.
  *	1: device is present and is trained.
  */
-u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
+u8 PcieTrainPort(struct device *nb_dev, struct device *dev, u32 port)
 {
 	u16 count = 5000;
 	u32 lc_state, reg, current_link_width, lane_mask;
@@ -346,7 +346,7 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
  * Compliant with CIM_33's ATINB_SetToms.
  * Set Top Of Memory below and above 4G.
  */
-void rs780_set_tom(device_t nb_dev)
+void rs780_set_tom(struct device *nb_dev)
 {
 	/* set TOM */
 #if IS_ENABLED(CONFIG_GFXUMA)

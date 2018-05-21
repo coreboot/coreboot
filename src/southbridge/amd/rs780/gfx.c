@@ -50,7 +50,7 @@ void set_pcie_dereset(void);
 ATOM_INTEGRATED_SYSTEM_INFO_V2 vgainfo;
 
 #ifdef UNUSED_CODE
-static u32 clkind_read(device_t dev, u32 index)
+static u32 clkind_read(struct device *dev, u32 index)
 {
 	u32	gfx_bar2 = pci_read_config32(dev, 0x18) & ~0xF;
 
@@ -59,7 +59,7 @@ static u32 clkind_read(device_t dev, u32 index)
 }
 #endif
 
-static void clkind_write(device_t dev, u32 index, u32 data)
+static void clkind_write(struct device *dev, u32 index, u32 data)
 {
 	u32	gfx_bar2 = pci_read_config32(dev, 0x18) & ~0xF;
 	/* printk(BIOS_DEBUG, "gfx bar 2 %02x\n", gfx_bar2); */
@@ -72,7 +72,7 @@ static void clkind_write(device_t dev, u32 index, u32 data)
 * pci_dev_read_resources thinks it is a IO type.
 * We have to force it to mem type.
 */
-static void rs780_gfx_read_resources(device_t dev)
+static void rs780_gfx_read_resources(struct device *dev)
 {
 	printk(BIOS_DEBUG, "rs780_gfx_read_resources.\n");
 
@@ -177,8 +177,8 @@ static CIM_STATUS GetCreativeMMIO(MMIORANGE *pMMIO)
 	CIM_STATUS Status = CIM_UNSUPPORTED;
 	u8 Bus, Dev, Reg, BusStart, BusEnd;
 	u32	Value;
-	device_t dev0x14 = dev_find_slot(0, PCI_DEVFN(0x14, 4));
-	device_t tempdev;
+	struct device *dev0x14 = dev_find_slot(0, PCI_DEVFN(0x14, 4));
+	struct device *tempdev;
 	Value = pci_read_config32(dev0x14, 0x18);
 	BusStart = (Value >> 8) & 0xFF;
 	BusEnd = (Value >> 16) & 0xFF;
@@ -235,7 +235,7 @@ static CIM_STATUS GetCreativeMMIO(MMIORANGE *pMMIO)
 static void ProgramMMIO(MMIORANGE *pMMIO, u8 LinkID, u8 Attribute)
 {
 	int i, j, n = 7;
-	device_t k8_f1;
+	struct device *k8_f1;
 
 	k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
 
@@ -294,7 +294,7 @@ static void ProgramMMIO(MMIORANGE *pMMIO, u8 LinkID, u8 Attribute)
  * Lanes 12-13  Bit 14           Bit 6
  * Lanes 14-15  Bit 15           Bit 7
  */
-static void poweron_ddi_lanes(device_t nb_dev)
+static void poweron_ddi_lanes(struct device *nb_dev)
 {
 	u8 i;
 	u32 gfx_cfg = 0;
@@ -321,9 +321,9 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	u16 command;
 	u32 value;
 	u16 deviceid, vendorid;
-	device_t nb_dev = dev_find_slot(0, 0);
-	device_t k8_f2 = dev_find_slot(0, PCI_DEVFN(0x18, 2));
-	device_t k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+	struct device *nb_dev = dev_find_slot(0, 0);
+	struct device *k8_f2 = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	struct device *k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
 	static const u8 ht_freq_lookup [] = {2, 0, 4, 0, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 0, 0, 28, 30, 32};
 	static const u8 ht_width_lookup [] = {8, 16, 0, 0, 2, 4, 0, 0};
 	static const u16 memclk_lookup_fam0F [] = {100, 0, 133, 0, 0, 166, 0, 200};
@@ -732,10 +732,10 @@ static void internal_gfx_pci_dev_init(struct device *dev)
  * Set registers in RS780 and CPU to disable the internal GFX.
  * Please refer to `rs780_internal_gfx_enable()`.
  */
-static void rs780_internal_gfx_disable(device_t dev)
+static void rs780_internal_gfx_disable(struct device *dev)
 {
 	u32 l_dword;
-	device_t nb_dev = dev_find_slot(0, 0);
+	struct device *nb_dev = dev_find_slot(0, 0);
 
 	/* Disable internal GFX and enable external GFX. */
 	l_dword = pci_read_config32(nb_dev, 0x8c);
@@ -751,11 +751,11 @@ static void rs780_internal_gfx_disable(device_t dev)
 * Please refer to CIM source code and BKDG.
 */
 
-static void rs780_internal_gfx_enable(device_t dev)
+static void rs780_internal_gfx_enable(struct device *dev)
 {
 	u32 l_dword;
 	int i;
-	device_t nb_dev = dev_find_slot(0, 0);
+	struct device *nb_dev = dev_find_slot(0, 0);
 	msr_t sysmem;
 
 #if !IS_ENABLED(CONFIG_GFXUMA)
@@ -789,7 +789,7 @@ static void rs780_internal_gfx_enable(device_t dev)
 
 	/* LPC DMA Deadlock workaround? */
 	/* GFX_InitCommon*/
-	device_t k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+	struct device *k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
 	l_dword = pci_read_config32(k8_f0, 0x68);
 	l_dword &= ~(3 << 21);
 	l_dword |= (1 << 21);
@@ -804,9 +804,9 @@ static void rs780_internal_gfx_enable(device_t dev)
 #if IS_ENABLED(CONFIG_GFXUMA)
 	/* GFX_InitUMA. */
 	/* Copy CPU DDR Controller to NB MC. */
-	device_t k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
-	device_t k8_f2 = dev_find_slot(0, PCI_DEVFN(0x18, 2));
-	device_t k8_f4 = dev_find_slot(0, PCI_DEVFN(0x18, 4));
+	struct device *k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
+	struct device *k8_f2 = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	struct device *k8_f4 = dev_find_slot(0, PCI_DEVFN(0x18, 4));
 	for (i = 0; i < 12; i++) {
 		l_dword = pci_read_config32(k8_f2, 0x40 + i * 4);
 		nbmc_write_index(nb_dev, 0x30 + i, l_dword);
@@ -1007,7 +1007,7 @@ static const struct pci_driver pcie_driver_780 __pci_driver = {
 };
 
 /* step 12 ~ step 14 from rpr */
-static void single_port_configuration(device_t nb_dev, device_t dev)
+static void single_port_configuration(struct device *nb_dev, struct device *dev)
 {
 	u8 result, width;
 	u32 reg32;
@@ -1064,7 +1064,7 @@ static void single_port_configuration(device_t nb_dev, device_t dev)
 	printk(BIOS_DEBUG, "rs780_gfx_init single_port_configuration step14.\n");
 }
 
-static void dual_port_configuration(device_t nb_dev, device_t dev)
+static void dual_port_configuration(struct device *nb_dev, struct device *dev)
 {
 	u8 result, width;
 	u32 reg32, dev_ind = dev->path.pci.devfn >> 3;
@@ -1120,10 +1120,10 @@ static void dual_port_configuration(device_t nb_dev, device_t dev)
 *	101 = x12 (not supported)
 *	110 = x16
 */
-static void dynamic_link_width_control(device_t nb_dev, device_t dev, u8 width)
+static void dynamic_link_width_control(struct device *nb_dev, struct device *dev, u8 width)
 {
 	u32 reg32;
-	device_t sb_dev;
+	struct device *sb_dev;
 	struct southbridge_amd_rs780_config *cfg =
 	    (struct southbridge_amd_rs780_config *)nb_dev->chip_info;
 
@@ -1166,7 +1166,7 @@ static void dynamic_link_width_control(device_t nb_dev, device_t dev, u8 width)
 /*
 * GFX Core initialization, dev2, dev3
 */
-void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
+void rs780_gfx_init(struct device *nb_dev, struct device *dev, u32 port)
 {
 	u32 reg32;
 	struct southbridge_amd_rs780_config *cfg =

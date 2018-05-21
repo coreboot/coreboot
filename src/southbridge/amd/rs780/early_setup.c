@@ -38,37 +38,37 @@ static void nb_write_index(pci_devfn_t dev, u32 index_reg, u32 index, u32 data)
 	pci_write_config32(dev, index_reg + 0x4, data);
 }
 
-u32 nbmisc_read_index(pci_devfn_t nb_dev, u32 index)
+static u32 nbmisc_read_index(pci_devfn_t nb_dev, u32 index)
 {
 	return nb_read_index((nb_dev), NBMISC_INDEX, (index));
 }
 
-void nbmisc_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
+static void nbmisc_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBMISC_INDEX, ((index) | 0x80), (data));
 }
 
-u32 htiu_read_index(pci_devfn_t nb_dev, u32 index)
+static u32 htiu_read_index(pci_devfn_t nb_dev, u32 index)
 {
 	return nb_read_index((nb_dev), NBHTIU_INDEX, (index));
 }
 
-void htiu_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
+static void htiu_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBHTIU_INDEX, ((index) | 0x100), (data));
 }
 
-u32 nbmc_read_index(pci_devfn_t nb_dev, u32 index)
+static u32 nbmc_read_index(pci_devfn_t nb_dev, u32 index)
 {
 	return nb_read_index((nb_dev), NBMC_INDEX, (index));
 }
 
-void nbmc_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
+static void nbmc_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBMC_INDEX, ((index) | 1 << 9), (data));
 }
 
-void set_htiu_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
+static void set_htiu_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 				 u32 val)
 {
 	u32 reg_old, reg;
@@ -80,7 +80,7 @@ void set_htiu_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 	}
 }
 
-void set_nbmisc_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
+static void set_nbmisc_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 				   u32 val)
 {
 	u32 reg_old, reg;
@@ -92,7 +92,7 @@ void set_nbmisc_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 	}
 }
 
-void set_nbcfg_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
+static void set_nbcfg_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 				  u32 val)
 {
 	u32 reg_old, reg;
@@ -121,7 +121,7 @@ static void set_fam10_ext_cfg_enable_bits(pci_devfn_t fam10_dev, u32 reg_pos,
 #endif
 
 
-void set_nbcfg_enable_bits_8(pci_devfn_t nb_dev, u32 reg_pos, u8 mask,
+static void set_nbcfg_enable_bits_8(pci_devfn_t nb_dev, u32 reg_pos, u8 mask,
 				    u8 val)
 {
 	u8 reg_old, reg;
@@ -133,7 +133,7 @@ void set_nbcfg_enable_bits_8(pci_devfn_t nb_dev, u32 reg_pos, u8 mask,
 	}
 }
 
-void set_nbmc_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
+static void set_nbmc_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 				 u32 val)
 {
 	u32 reg_old, reg;

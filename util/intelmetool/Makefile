@@ -38,6 +38,9 @@ endif
 
 all: pciutils dep $(PROGRAM)
 
+oldarc: CFLAGS += -DOLDARC
+oldarc: all
+
 $(PROGRAM): $(OBJS)
 	$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJS) $(LDFLAGS)
 
@@ -83,6 +86,6 @@ install: $(PROGRAM)
 	mkdir -p $(DESTDIR)$(PREFIX)/sbin
 	$(INSTALL) $(PROGRAM) $(DESTDIR)$(PREFIX)/sbin
 
-.PHONY: all clean distclean dep pciutils
+.PHONY: all clean distclean dep pciutils oldarc
 
 -include .dependencies

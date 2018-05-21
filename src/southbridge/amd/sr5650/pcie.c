@@ -46,9 +46,9 @@ PCIE_CFG AtiPcieCfg = {
 	0			/* GppPwr */
 };
 
-static void ValidatePortEn(device_t nb_dev);
+static void ValidatePortEn(struct device *nb_dev);
 
-static void ValidatePortEn(device_t nb_dev)
+static void ValidatePortEn(struct device *nb_dev)
 {
 }
 
@@ -56,7 +56,7 @@ static void ValidatePortEn(device_t nb_dev)
 * Compliant with CIM_33's PCIEPowerOffGppPorts
 * Power off unused GPP lines
 *****************************************************************/
-static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port)
+static void PciePowerOffGppPorts(struct device *nb_dev, struct device *dev, u32 port)
 {
 	printk(BIOS_DEBUG, "PciePowerOffGppPorts() port %d\n", port);
 	u32 reg;
@@ -124,7 +124,7 @@ static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port)
 
 /**********************************************************************
 **********************************************************************/
-static void switching_gpp1_configurations(device_t nb_dev, device_t sb_dev)
+static void switching_gpp1_configurations(struct device *nb_dev, struct device *sb_dev)
 {
 	u32 reg;
 	struct southbridge_amd_sr5650_config *cfg =
@@ -165,7 +165,7 @@ static void switching_gpp1_configurations(device_t nb_dev, device_t sb_dev)
 
 /**********************************************************************
 **********************************************************************/
-static void switching_gpp2_configurations(device_t nb_dev, device_t sb_dev)
+static void switching_gpp2_configurations(struct device *nb_dev, struct device *sb_dev)
 {
 	u32 reg;
 	struct southbridge_amd_sr5650_config *cfg =
@@ -203,7 +203,7 @@ static void switching_gpp2_configurations(device_t nb_dev, device_t sb_dev)
 	/* Follow the procedure for PCIE-GPP2 common initialization and
 	 * link training sequence. */
 }
-static void switching_gpp3a_configurations(device_t nb_dev, device_t sb_dev)
+static void switching_gpp3a_configurations(struct device *nb_dev, struct device *sb_dev)
 {
 	u32 reg;
 	struct southbridge_amd_sr5650_config *cfg =
@@ -263,7 +263,7 @@ static void switching_gpp3a_configurations(device_t nb_dev, device_t sb_dev)
 * The sr5650 uses NBCONFIG:0x1c (BAR3) to map the PCIE Extended Configuration
 * Space to a 256MB range within the first 4GB of addressable memory.
 *****************************************************************/
-void enable_pcie_bar3(device_t nb_dev)
+void enable_pcie_bar3(struct device *nb_dev)
 {
 	printk(BIOS_DEBUG, "%s\n", __func__);
 	set_nbcfg_enable_bits(nb_dev, 0x7C, 1 << 30, 1 << 30);	/* Enables writes to the BAR3 register. */
@@ -279,7 +279,7 @@ void enable_pcie_bar3(device_t nb_dev)
 * We should disable bar3 when we want to exit sr5650_enable, because bar3 will be
 * remapped in set_resource later.
 *****************************************************************/
-void disable_pcie_bar3(device_t nb_dev)
+void disable_pcie_bar3(struct device *nb_dev)
 {
 	printk(BIOS_DEBUG, "%s\n", __func__);
 	pci_write_config32(nb_dev, 0x1C, 0);	/* clear BAR3 address */
@@ -290,7 +290,7 @@ void disable_pcie_bar3(device_t nb_dev)
 /*
  * GEN2 Software Compliance
  */
-void init_gen2(device_t nb_dev, device_t dev, u8 port)
+void init_gen2(struct device *nb_dev, struct device *dev, u8 port)
 {
 	u32 reg, val;
 
@@ -358,7 +358,7 @@ const u8 pGpp111111[] = {0x0E, 0x0E, 0x0E, 0x0E, 0, 0x0E, 0x0E};
  * Enabling Dynamic Slave CPL Buffer Allocation Feature for PCIE-GPP3a Ports
  * PcieLibCplBufferAllocation
  */
-static void gpp3a_cpl_buf_alloc(device_t nb_dev, device_t dev)
+static void gpp3a_cpl_buf_alloc(struct device *nb_dev, struct device *dev)
 {
 	u8 dev_index;
 	u8 *slave_cpl;
@@ -406,7 +406,7 @@ static void gpp3a_cpl_buf_alloc(device_t nb_dev, device_t dev)
  * Enabling Dynamic Slave CPL Buffer Allocation Feature for PCIE-GPP1/PCIE-GPP2 Ports
  * PcieLibCplBufferAllocation
  */
-static void gpp12_cpl_buf_alloc(device_t nb_dev, device_t dev)
+static void gpp12_cpl_buf_alloc(struct device *nb_dev, struct device *dev)
 {
 	u8 gpp_cfg;
 	u8 value;
@@ -442,14 +442,14 @@ static void gpp12_cpl_buf_alloc(device_t nb_dev, device_t dev)
 /*
  * Enable LCLK clock gating
  */
-static void EnableLclkGating(device_t dev)
+static void EnableLclkGating(struct device *dev)
 {
 	u8 port;
 	u32 reg = 0;
 	u32 mask = 0;
 	u32 value = 0;
-	device_t nb_dev = dev_find_slot(0, 0);
-	device_t clk_f1= dev_find_slot(0, 1);
+	struct device *nb_dev = dev_find_slot(0, 0);
+	struct device *clk_f1= dev_find_slot(0, 1);
 
 	reg = 0xE8;
 	port = dev->path.pci.devfn >> 3;
@@ -502,7 +502,7 @@ static void EnableLclkGating(device_t dev)
 * port:
 *	p2p bridge number, 4-10
 *****************************************/
-void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
+void sr5650_gpp_sb_init(struct device *nb_dev, struct device *dev, u32 port)
 {
 	uint8_t training_ok = 1;
 
@@ -829,7 +829,7 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
  * Step 21: Register Locking
  * Lock HWInit Register of each pcie core
  */
-static void lock_hwinitreg(device_t nb_dev)
+static void lock_hwinitreg(struct device *nb_dev)
 {
 	/* Step 21: Register Locking, Lock HWInit Register */
 	set_pcie_enable_bits(nb_dev, 0x10 | PCIE_CORE_INDEX_GPP1, 1 << 0, 1 << 0);
@@ -844,7 +844,7 @@ static void lock_hwinitreg(device_t nb_dev)
  */
 void sr56x0_lock_hwinitreg(void)
 {
-	device_t nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 
 	/* Lock HWInit Register */
 	lock_hwinitreg(nb_dev);
@@ -859,7 +859,7 @@ void sr56x0_lock_hwinitreg(void)
 /*****************************************
 * Compliant with CIM_33's PCIEConfigureGPPCore
 *****************************************/
-void config_gpp_core(device_t nb_dev, device_t sb_dev)
+void config_gpp_core(struct device *nb_dev, struct device *sb_dev)
 {
 	u32 reg;
 
@@ -886,7 +886,7 @@ void config_gpp_core(device_t nb_dev, device_t sb_dev)
 /*****************************************
 * Compliant with CIM_33's PCIEMiscClkProg
 *****************************************/
-void pcie_config_misc_clk(device_t nb_dev)
+void pcie_config_misc_clk(struct device *nb_dev)
 {
 	u32 reg;
 	//struct bus pbus; /* fake bus for dev0 fun1 */

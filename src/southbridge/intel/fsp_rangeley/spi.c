@@ -341,14 +341,13 @@ void spi_init(void)
 {
 	int ich_version = 0;
 	uint8_t bios_cntl;
-	struct device *dev;
 	uint32_t ids;
 	uint16_t vendor_id, device_id;
 
 #ifdef __SMM__
-	dev = PCI_DEV(0, 31, 0);
+	pci_devfn_t dev = PCI_DEV(0, 31, 0);
 #else
-	dev = dev_find_slot(0, PCI_DEVFN(31, 0));
+	struct device *dev = pcidev_on_root(31, 0);
 #endif
 	pci_read_config_dword(dev, 0, &ids);
 	vendor_id = ids;

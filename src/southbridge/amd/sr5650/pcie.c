@@ -843,7 +843,7 @@ static void lock_hwinitreg(struct device *nb_dev)
  */
 void sr56x0_lock_hwinitreg(void)
 {
-	struct device *nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *nb_dev = pcidev_on_root(0, 0);
 
 	/* Lock HWInit Register */
 	lock_hwinitreg(nb_dev);

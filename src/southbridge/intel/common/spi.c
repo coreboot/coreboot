@@ -306,7 +306,7 @@ void spi_init(void)
 #ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev = PCI_DEV(0, 31, 0);
 #else
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(31, 0));
+	struct device *dev = pcidev_on_root(31, 0);
 #endif
 
 	pci_read_config_dword(dev, 0xf0, &rcba);

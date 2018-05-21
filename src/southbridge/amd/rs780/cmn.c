@@ -192,8 +192,8 @@ void set_pcie_enable_bits(struct device *dev, u32 reg_pos, u32 mask, u32 val)
 void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add)
 {
 	/* K8 Function1 is address map */
-	struct device *k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
-	struct device *k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+	struct device *k8_f1 = pcidev_on_root(0x18, 1);
+	struct device *k8_f0 = pcidev_on_root(0x18, 0);
 
 	if (in_out) {
 		u32 dword, sblk;

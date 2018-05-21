@@ -24,7 +24,7 @@
 
 static void thermal_init(struct device *dev)
 {
-	if (LPC_IS_MOBILE(dev_find_slot(0, PCI_DEVFN(0x1f, 0))))
+	if (LPC_IS_MOBILE(pcidev_on_root(0x1f, 0)))
 		return;
 
 	u8 reg8;

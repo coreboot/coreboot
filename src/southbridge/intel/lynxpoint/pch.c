@@ -31,7 +31,7 @@ static pci_devfn_t pch_get_lpc_device(void)
 #else
 static struct device *pch_get_lpc_device(void)
 {
-	return dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	return pcidev_on_root(0x1f, 0);
 }
 #endif
 

@@ -40,7 +40,7 @@ void set_pcie_dereset(void)
 	pm_iowrite(0x94, byte);
 
 	/* set the GPIO65 output enable and the value is 1 */
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = pcidev_on_root(0x14, 0);
 	word = pci_read_config16(sm_dev, 0x7e);
 	word |= (1 << 0);
 	word &= ~(1 << 4);
@@ -66,7 +66,7 @@ void set_pcie_reset(void)
 	pm_iowrite(0x94, byte);
 
 	/* set the GPIO65 output enable and the value is 0 */
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = pcidev_on_root(0x14, 0);
 	word = pci_read_config16(sm_dev, 0x7e);
 	word &= ~(1 << 0);
 	word &= ~(1 << 4);
@@ -84,7 +84,7 @@ int is_dev3_present(void)
 	struct device *sm_dev;
 
 	/* access the smbus extended register */
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = pcidev_on_root(0x14, 0);
 
 	/* put the GPIO68 output to tristate */
 	word = pci_read_config16(sm_dev, 0x7e);

@@ -103,7 +103,7 @@ static void mainboard_enable(struct device *dev)
 static void mainboard_init(void *chip_info)
 {
 	uint8_t actl = 0;
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	struct device *dev = pcidev_on_root(LPC_DEV, LPC_FUNC);
 
 	/* Route SCI to IRQ 10 to free IRQ 9 slot. */
 	actl = pci_read_config8(dev, ACPI_CNTL_OFFSET);
@@ -120,7 +120,7 @@ static void mainboard_final(void *chip_info)
 {
 	void *spi_base = NULL;
 	uint32_t rcba = 0;
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	struct device *dev = pcidev_on_root(LPC_DEV, LPC_FUNC);
 
 	/* Get address of SPI controller. */
 	rcba = (pci_read_config32(dev, 0xf0) & 0xffffc000);

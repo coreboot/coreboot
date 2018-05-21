@@ -77,7 +77,7 @@ void intel_gma_opregion_register(uintptr_t opregion)
 	u16 reg16;
 	u16 sci_reg;
 
-	igd = dev_find_slot(0, PCI_DEVFN(0x2, 0));
+	igd = pcidev_on_root(0x2, 0);
 	if (!igd || !igd->enabled)
 		return;
 
@@ -228,7 +228,7 @@ static enum cb_err locate_vbt_cbfs(struct region_device *rdev)
 static enum cb_err locate_vbt_vbios_cbfs(struct region_device *rdev)
 {
 	const u8 *oprom =
-		(const u8 *)pci_rom_probe(dev_find_slot(0, PCI_DEVFN(0x2, 0)));
+		(const u8 *)pci_rom_probe(pcidev_on_root(0x2, 0));
 	if (oprom == NULL)
 		return CB_ERR;
 

@@ -99,7 +99,7 @@ static int sleep_type_s3(void)
 
 void pch_enable_lpc(void)
 {
-	const struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	const struct device *dev = pcidev_on_root(0x1f, 0);
 	const struct southbridge_intel_lynxpoint_config *config = NULL;
 
 	/* Set COM1/COM2 decode range */

@@ -134,7 +134,7 @@ static void sata_init(struct device *dev)
 
 	struct device *sm_dev;
 	/* SATA SMBus Disable */
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = pcidev_on_root(0x14, 0);
 
 	/* WARNING
 	 * Enabling the SATA link latency enhancement (SMBUS 0xAD bit 5)
@@ -171,7 +171,7 @@ static void sata_init(struct device *dev)
 
 	struct device *ide_dev;
 	/* IDE Device */
-	ide_dev = dev_find_slot(0, PCI_DEVFN(0x14, 1));
+	ide_dev = pcidev_on_root(0x14, 1);
 
 	/* Disable legacy IDE mode (enable PATA_BAR0/2) */
 	byte = pci_read_config8(ide_dev, 0x09);

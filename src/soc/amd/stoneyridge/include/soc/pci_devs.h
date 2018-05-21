@@ -21,7 +21,7 @@
 
 #if !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
-#define _SOC_DEV(slot, func)	dev_find_slot(0, PCI_DEVFN(slot, func))
+#define _SOC_DEV(slot, func)	pcidev_on_root(slot, func)
 #else
 #include <arch/io.h>
 #define _SOC_DEV(slot, func)	PCI_DEV(0, slot, func)

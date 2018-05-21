@@ -45,7 +45,7 @@ static void mch_domain_read_resources(struct device *dev)
 
 	pci_domain_read_resources(dev);
 
-	struct device *mch = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *mch = pcidev_on_root(0, 0);
 
 	/* Top of Upper Usable DRAM, including remap */
 	touud = pci_read_config16(mch, D0F0_TOUUD);
@@ -174,7 +174,7 @@ static const char *northbridge_acpi_name(const struct device *dev)
 
 void northbridge_write_smram(u8 smram)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *dev = pcidev_on_root(0, 0);
 
 	if (dev == NULL)
 		die("could not find pci 00:00.0!\n");
@@ -266,7 +266,7 @@ static void x4x_init(void *const chip_info)
 		}
 		for (; fn >= 0; --fn) {
 			const struct device *const d =
-				dev_find_slot(0, PCI_DEVFN(dev, fn));
+				pcidev_on_root(dev, fn);
 			if (!d || d->enabled)
 				continue;
 			const u32 deven = pci_read_config32(d0f0, D0F0_DEVEN);

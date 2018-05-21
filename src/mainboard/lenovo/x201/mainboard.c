@@ -82,7 +82,7 @@ static void mainboard_enable(struct device *dev)
 	dev->ops->init = mainboard_init;
 	dev->ops->acpi_fill_ssdt_generator = fill_ssdt;
 
-	pmbase = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x1f, 0)),
+	pmbase = pci_read_config32(pcidev_on_root(0x1f, 0),
 				   PMBASE) & 0xff80;
 
 	printk(BIOS_SPEW, " ... pmbase = 0x%04x\n", pmbase);
@@ -90,9 +90,9 @@ static void mainboard_enable(struct device *dev)
 	outl(0, pmbase + SMI_EN);
 
 	enable_lapic();
-	pci_write_config32(dev_find_slot(0, PCI_DEVFN(0x1f, 0)), GPIO_BASE,
+	pci_write_config32(pcidev_on_root(0x1f, 0), GPIO_BASE,
 			   DEFAULT_GPIOBASE | 1);
-	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0x1f, 0)), GPIO_CNTL,
+	pci_write_config8(pcidev_on_root(0x1f, 0), GPIO_CNTL,
 			  0x10);
 
 	/* If we're resuming from suspend, blink suspend LED */

@@ -44,7 +44,7 @@ static struct device *pcu_dev;
 static struct device *get_pcu_dev(void)
 {
 	if (pcu_dev == NULL)
-		pcu_dev = dev_find_slot(0, PCI_DEVFN(PCU_DEV, 0));
+		pcu_dev = pcidev_on_root(PCU_DEV, 0);
 	return pcu_dev;
 }
 #endif /* ENV_SMM */

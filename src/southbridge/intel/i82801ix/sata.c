@@ -213,8 +213,7 @@ static void sata_init(struct device *const dev)
 	pci_write_config32(dev, 0x94, sclkcg);
 
 	if (is_mobile && config->sata_traffic_monitor) {
-		struct device *const lpc_dev = dev_find_slot(0,
-							    PCI_DEVFN(0x1f, 0));
+		struct device *const lpc_dev = pcidev_on_root(0x1f, 0);
 		if (((pci_read_config8(lpc_dev, D31F0_CxSTATE_CNF)
 							>> 3) & 3) == 3) {
 			u8 reg8 = pci_read_config8(dev, 0x9c);

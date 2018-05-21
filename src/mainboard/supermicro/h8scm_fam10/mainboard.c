@@ -36,7 +36,7 @@ void set_pcie_reset(void)
 {
 	struct device *pcie_core_dev;
 
-	pcie_core_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	pcie_core_dev = pcidev_on_root(0, 0);
 	set_htiu_enable_bits(pcie_core_dev, 0xA8, 0xFFFFFFFF, 0x28282828);
 	set_htiu_enable_bits(pcie_core_dev, 0xA9, 0x000000FF, 0x00000028);
 }
@@ -45,7 +45,7 @@ void set_pcie_dereset(void)
 {
 	struct device *pcie_core_dev;
 
-	pcie_core_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	pcie_core_dev = pcidev_on_root(0, 0);
 	set_htiu_enable_bits(pcie_core_dev, 0xA8, 0xFFFFFFFF, 0x6F6F6F6F);
 	set_htiu_enable_bits(pcie_core_dev, 0xA9, 0x000000FF, 0x0000006F);
 }

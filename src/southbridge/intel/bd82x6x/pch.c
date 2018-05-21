@@ -32,11 +32,9 @@ int pch_silicon_revision(void)
 	static int pch_revision_id = -1;
 
 #ifdef __SIMPLE_DEVICE__
-	pci_devfn_t dev;
-	dev = PCI_DEV(0, 0x1f, 0);
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
 #else
-	struct device *dev;
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	struct device *dev = pcidev_on_root(0x1f, 0);
 #endif
 
 	if (pch_revision_id < 0)
@@ -49,11 +47,9 @@ int pch_silicon_type(void)
 	static int pch_type = -1;
 
 #ifdef __SIMPLE_DEVICE__
-	pci_devfn_t dev;
-	dev = PCI_DEV(0, 0x1f, 0);
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
 #else
-	struct device *dev;
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	struct device *dev = pcidev_on_root(0x1f, 0);
 #endif
 
 	if (pch_type < 0)

@@ -566,7 +566,7 @@ static const char *lpc_acpi_name(const struct device *dev)
 
 static void southbridge_fill_ssdt(struct device *device)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
+	struct device *dev = pcidev_on_root(0x1f, 0);
 	config_t *chip = dev->chip_info;
 
 	intel_acpi_pcie_hotplug_generator(chip->pcie_hotplug_map, 8);

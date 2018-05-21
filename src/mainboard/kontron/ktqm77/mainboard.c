@@ -172,7 +172,7 @@ static void mainboard_enable(struct device *dev)
 
 	unsigned disable = 0;
 	if ((get_option(&disable, "ethernet1") == CB_SUCCESS) && disable) {
-		struct device *nic = dev_find_slot(0, PCI_DEVFN(0x1c, 2));
+		struct device *nic = pcidev_on_root(0x1c, 2);
 		if (nic) {
 			printk(BIOS_DEBUG, "DISABLE FIRST NIC!\n");
 			nic->enabled = 0;
@@ -180,7 +180,7 @@ static void mainboard_enable(struct device *dev)
 	}
 	disable = 0;
 	if ((get_option(&disable, "ethernet2") == CB_SUCCESS) && disable) {
-		struct device *nic = dev_find_slot(0, PCI_DEVFN(0x1c, 3));
+		struct device *nic = pcidev_on_root(0x1c, 3);
 		if (nic) {
 			printk(BIOS_DEBUG, "DISABLE SECOND NIC!\n");
 			nic->enabled = 0;

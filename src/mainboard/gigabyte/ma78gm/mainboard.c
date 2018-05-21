@@ -32,7 +32,7 @@ void set_pcie_dereset(void)
 	u16 word;
 	struct device *sm_dev;
 	/* GPIO 6 reset PCIe slot, GPIO 4 reset GFX PCIe */
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = pcidev_on_root(0x14, 0);
 
 	word = pci_read_config16(sm_dev, 0xA8);
 	word |= (1 << 0) | (1 << 2);	/* Set Gpio6,4 as output */
@@ -45,7 +45,7 @@ void set_pcie_reset(void)
 	u16 word;
 	struct device *sm_dev;
 	/* GPIO 6 reset PCIe slot, GPIO 4 reset GFX PCIe */
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = pcidev_on_root(0x14, 0);
 
 	word = pci_read_config16(sm_dev, 0xA8);
 	word &= ~((1 << 0) | (1 << 2));	/* Set Gpio6,4 as output */

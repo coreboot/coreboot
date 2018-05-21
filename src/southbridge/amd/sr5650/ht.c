@@ -187,8 +187,8 @@ static void sr5690_set_resources(struct device *dev)
 		printk(BIOS_DEBUG,"%s %s\n", dev_path(dev), __func__);
 
 		/* Find requisite AMD CPU devices */
-		amd_ht_cfg_dev = dev_find_slot(0, PCI_DEVFN(0x18, 0));
-		amd_addr_map_dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
+		amd_ht_cfg_dev = pcidev_on_root(0x18, 0);
+		amd_addr_map_dev = pcidev_on_root(0x18, 1);
 
 		if (!amd_ht_cfg_dev || !amd_addr_map_dev) {
 			printk(BIOS_WARNING, "%s: %s Unable to locate CPU control devices\n", __func__, dev_path(dev));

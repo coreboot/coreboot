@@ -31,7 +31,7 @@ static uint32_t get_spi_bar(void)
 {
 	struct device *dev;
 
-	dev = dev_find_slot(0, PCI_DEVFN(0x14, 3));
+	dev = pcidev_on_root(0x14, 3);
 	return pci_read_config32(dev, 0xa0) & ~0x1f;
 }
 

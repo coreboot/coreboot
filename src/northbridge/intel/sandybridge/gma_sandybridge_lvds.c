@@ -469,7 +469,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	}
 
 	/* Linux relies on VBT for panel info.  */
-	generate_fake_intel_oprom(info, dev_find_slot(0, PCI_DEVFN(2, 0)),
+	generate_fake_intel_oprom(info, pcidev_on_root(2, 0),
 				  "$VBT SNB/IVB-MOBILE");
 
 	return 1;

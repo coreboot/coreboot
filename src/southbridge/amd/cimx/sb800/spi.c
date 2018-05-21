@@ -50,7 +50,7 @@ void spi_init()
 {
 	struct device *dev;
 
-	dev = dev_find_slot(0, PCI_DEVFN(0x14, 3));
+	dev = pcidev_on_root(0x14, 3);
 	spibar = pci_read_config32(dev, 0xA0) & ~0x1F;
 }
 

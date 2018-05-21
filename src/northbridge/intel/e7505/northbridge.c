@@ -38,7 +38,7 @@ static void mch_domain_read_resources(struct device *dev)
 
 	pci_domain_read_resources(dev);
 
-	mc_dev = dev_find_slot(0, PCI_DEVFN(0x0, 0));
+	mc_dev = pcidev_on_root(0, 0);
 	if (!mc_dev)
 		die("Could not find MCH device\n");
 

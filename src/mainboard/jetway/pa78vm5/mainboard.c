@@ -32,7 +32,7 @@ void set_pcie_dereset(void)
 	u16 word;
 	struct device *sm_dev;
 	/* GPIO 6 reset PCIe slot, GPIO 4 reset GFX PCIe */
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = pcidev_on_root(0x14, 0);
 
 	word = pci_read_config16(sm_dev, 0xA8);
 	word |= (1 << 0) | (1 << 2);	/* Set Gpio6,4 as output */
@@ -45,7 +45,7 @@ void set_pcie_reset(void)
 	u16 word;
 	struct device *sm_dev;
 	/* GPIO 6 reset PCIe slot, GPIO 4 reset GFX PCIe */
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = pcidev_on_root(0x14, 0);
 
 	word = pci_read_config16(sm_dev, 0xA8);
 	word &= ~((1 << 0) | (1 << 2));	/* Set Gpio6,4 as output */
@@ -65,13 +65,13 @@ static void get_ide_dma66(void)
 	/*u32 sm_dev, ide_dev; */
 	struct device *sm_dev, ide_dev;
 
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = pcidev_on_root(0x14, 0);
 
 	byte = pci_read_config8(sm_dev, 0xA9);
 	byte |= (1 << 5);	/* Set Gpio9 as input */
 	pci_write_config8(sm_dev, 0xA9, byte);
 
-	ide_dev = dev_find_slot(0, PCI_DEVFN(0x14, 1));
+	ide_dev = pcidev_on_root(0x14, 1);
 	byte = pci_read_config8(ide_dev, 0x56);
 	byte &= ~(7 << 0);
 	if ((1 << 5) & pci_read_config8(sm_dev, 0xAA))

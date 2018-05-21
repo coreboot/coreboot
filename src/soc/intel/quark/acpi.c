@@ -31,9 +31,8 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 void acpi_fill_in_fadt(acpi_fadt_t *fadt)
 {
-	struct device *dev = dev_find_slot(0,
-		PCI_DEVFN(PCI_DEVICE_NUMBER_QNC_LPC,
-		PCI_FUNCTION_NUMBER_QNC_LPC));
+	struct device *dev = pcidev_on_root(PCI_DEVICE_NUMBER_QNC_LPC,
+			PCI_FUNCTION_NUMBER_QNC_LPC);
 	uint32_t gpe0_base = pci_read_config32(dev, R_QNC_LPC_GPE0BLK)
 		& B_QNC_LPC_GPE0BLK_MASK;
 	uint32_t pmbase = pci_read_config32(dev, R_QNC_LPC_PM1BLK)

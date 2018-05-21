@@ -265,7 +265,7 @@ static void pch_lpc_interrupt_init(void)
 {
 	const struct device *dev;
 
-	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
+	dev = pcidev_on_root(PCH_DEV_SLOT_LPC, 0);
 	if (!dev || !dev->chip_info)
 		return;
 
@@ -278,7 +278,7 @@ void pch_enable_lpc(void)
 	const struct device *dev;
 	uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES];
 
-	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
+	dev = pcidev_on_root(PCH_DEV_SLOT_LPC, 0);
 	if (!dev || !dev->chip_info)
 		return;
 

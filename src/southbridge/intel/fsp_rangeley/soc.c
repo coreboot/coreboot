@@ -29,7 +29,7 @@ int soc_silicon_revision(void)
 {
 	if (soc_revision_id < 0)
 		soc_revision_id = pci_read_config8(
-			dev_find_slot(0, PCI_DEVFN(0x1f, 0)),
+			pcidev_on_root(0x1f, 0),
 			PCI_REVISION_ID);
 	return soc_revision_id;
 }
@@ -38,7 +38,7 @@ int soc_silicon_type(void)
 {
 	if (soc_type < 0)
 		soc_type = pci_read_config8(
-			dev_find_slot(0, PCI_DEVFN(0x1f, 0)),
+			pcidev_on_root(0x1f, 0),
 			PCI_DEVICE_ID + 1);
 	return soc_type;
 }

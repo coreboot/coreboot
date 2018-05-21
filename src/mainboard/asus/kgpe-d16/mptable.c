@@ -102,7 +102,7 @@ static void *smp_write_config_table(void *v)
 			 * 00:14.6: INTB MCI
 			 */
 		}
-		dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+		dev = pcidev_on_root(0, 0);
 		if (dev) {
 			pci_write_config32(dev, 0xF8, 0x1);
 			dword_ptr = (u32 *)(pci_read_config32(dev, 0xFC) & 0xfffffff0);
@@ -126,37 +126,37 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((12)<<2)|(0)), apicid_sr5650, 30);	/* Device 12 (LNKG, APIC pin 30) */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((13)<<2)|(0)), apicid_sr5650, 30);	/* Device 13 (LNKG, APIC pin 30)) */
 
-	dev = dev_find_slot(0, PCI_DEVFN(0x2, 0));
+	dev = pcidev_on_root(0x2, 0);
 	if (dev && dev->enabled) {
 		uint8_t bus_pci = dev->link_list->secondary;
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_pci, (((0)<<0x2)|(0)), apicid_sr5650, 0);	/* card behind dev2 */
 	}
-	dev = dev_find_slot(0, PCI_DEVFN(0x4, 0));
+	dev = pcidev_on_root(0x4, 0);
 	if (dev && dev->enabled) {
 		uint8_t bus_pci = dev->link_list->secondary;
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_pci, (((0)<<0x4)|(0)), apicid_sr5650, 0);	/* PIKE */
 	}
-	dev = dev_find_slot(0, PCI_DEVFN(0x9, 0));
+	dev = pcidev_on_root(0x9, 0);
 	if (dev && dev->enabled) {
 		uint8_t bus_pci = dev->link_list->secondary;
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_pci, (((0)<<0x9)|(0)), apicid_sr5650, 23);	/* NIC A */
 	}
-	dev = dev_find_slot(0, PCI_DEVFN(0xa, 0));
+	dev = pcidev_on_root(0xa, 0);
 	if (dev && dev->enabled) {
 		uint8_t bus_pci = dev->link_list->secondary;
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_pci, (((0)<<0xa)|(0)), apicid_sr5650, 24);	/* NIC B */
 	}
-	dev = dev_find_slot(0, PCI_DEVFN(0xb, 0));
+	dev = pcidev_on_root(0xb, 0);
 	if (dev && dev->enabled) {
 		uint8_t bus_pci = dev->link_list->secondary;
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_pci, (((0)<<0xb)|(0)), apicid_sr5650, 0);	/* card behind dev11 */
 	}
-	dev = dev_find_slot(0, PCI_DEVFN(0xc, 0));
+	dev = pcidev_on_root(0xc, 0);
 	if (dev && dev->enabled) {
 		uint8_t bus_pci = dev->link_list->secondary;
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_pci, (((0)<<0xc)|(0)), apicid_sr5650, 0);	/* card behind dev12 */
 	}
-	dev = dev_find_slot(0, PCI_DEVFN(0xd, 0));
+	dev = pcidev_on_root(0xd, 0);
 	if (dev && dev->enabled) {
 		uint8_t bus_pci = dev->link_list->secondary;
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_pci, (((0)<<0xd)|(0)), apicid_sr5650, 0);	/* card behind dev13 */
@@ -183,7 +183,7 @@ static void *smp_write_config_table(void *v)
 	PCI_INT(sp5100_bus_number, 0x11, 0x0, 0x16); /* 6, INTG */
 
 	/* PCI slots */
-	dev = dev_find_slot(0, PCI_DEVFN(0x14, 4));
+	dev = pcidev_on_root(0x14, 4);
 	if (dev && dev->enabled) {
 		u8 bus_pci = dev->link_list->secondary;
 

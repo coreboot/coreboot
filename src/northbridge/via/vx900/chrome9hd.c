@@ -117,7 +117,7 @@ u8 vx900_int15_get_5f18_bl(void)
 	 * Bit[3:0]
 	 * N:  Frame Buffer Size 2^N  MB
 	 */
-	dev = dev_find_slot(0, PCI_DEVFN(0, 3));
+	dev = pcidev_on_root(0, 3);
 	reg8 = pci_read_config8(dev, 0xa1);
 	ret = (u32) ((reg8 & 0x70) >> 4) + 2;
 	reg8 = pci_read_config8(dev, 0x90);

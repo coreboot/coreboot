@@ -41,7 +41,7 @@ static void early_graphics_setup(void)
 	u16 reg16;
 	u32 reg32;
 
-	const struct device *d0f0 = dev_find_slot(0, PCI_DEVFN(0,0));
+	const struct device *d0f0 = pcidev_on_root(0, 0);
 	const struct northbridge_intel_pineview_config *config = d0f0->chip_info;
 
 	pci_write_config8(D0F0, DEVEN, BOARD_DEVEN);

@@ -50,7 +50,8 @@ static void smm_relocate(void)
 
 	printk(BIOS_DEBUG, "Initializing SMM handler...");
 
-	pmbase = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x1f, 0)), D31F0_PMBASE) & 0xfffc;
+	pmbase = pci_read_config16(pcidev_on_root(0x1f, 0), D31F0_PMBASE) &
+									0xfffc;
 	printk(BIOS_SPEW, " ... pmbase = 0x%04x\n", pmbase);
 
 	smi_en = inl(pmbase + SMI_EN);
@@ -138,7 +139,7 @@ static void smm_install(void)
 
 	if (!acpi_is_wakeup_s3()) {
 		/* enable the SMM memory window */
-		pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM,
+		pci_write_config8(pcidev_on_root(0, 0), SMRAM,
 					D_OPEN | G_SMRAME | C_BASE_SEG);
 
 		/* copy the real SMM handler */
@@ -148,7 +149,7 @@ static void smm_install(void)
 	}
 
 	/* close the SMM memory window and enable normal SMM */
-	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM,
+	pci_write_config8(pcidev_on_root(0, 0), SMRAM,
 			G_SMRAME | C_BASE_SEG);
 }
 
@@ -176,6 +177,6 @@ void smm_lock(void)
 	 * make the SMM registers writable again.
 	 */
 	printk(BIOS_DEBUG, "Locking SMM.\n");
-	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM,
+	pci_write_config8(pcidev_on_root(0, 0), SMRAM,
 			D_LCK | G_SMRAME | C_BASE_SEG);
 }

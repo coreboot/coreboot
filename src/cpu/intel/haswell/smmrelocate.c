@@ -308,7 +308,7 @@ static void setup_ied_area(struct smm_relocation_params *params)
 void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 				size_t *smm_save_state_size)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *dev = pcidev_on_root(0, 0);
 
 	printk(BIOS_DEBUG, "Setting up SMI for CPU\n");
 
@@ -362,6 +362,6 @@ void smm_lock(void)
 	 * make the SMM registers writable again.
 	 */
 	printk(BIOS_DEBUG, "Locking SMM.\n");
-	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM,
+	pci_write_config8(pcidev_on_root(0, 0), SMRAM,
 			D_LCK | G_SMRAME | C_BASE_SEG);
 }

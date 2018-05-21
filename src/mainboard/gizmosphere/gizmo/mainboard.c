@@ -52,7 +52,7 @@ static void mainboard_final(void *chip_info)
 	uintptr_t ABAR;
 	u8 *memptr;
 
-	ahci_dev = dev_find_slot(0, PCI_DEVFN(0x11, 0));
+	ahci_dev = pcidev_on_root(0x11, 0);
 	ABAR = pci_read_config32(ahci_dev, 0x24);
 	ABAR &= 0xFFFFFC00;
 	memptr = (u8 *)(ABAR + 0x100 + 0x80 + 0x2C); /* we're on the 2nd port */

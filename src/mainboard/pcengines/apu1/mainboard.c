@@ -255,7 +255,7 @@ const char *smbios_mainboard_serial_number(void)
  */
 static void usb_oc_setup(void)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x12, 0));
+	struct device *dev = pcidev_on_root(0x12, 0);
 
 	pci_write_config32(dev, 0x58, 0x011f0);
 }

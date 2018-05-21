@@ -73,7 +73,7 @@ static int gtt_setup(u8 *mmiobase)
 	/*
 	 * The Video BIOS places the GTT right below top of memory.
 	 */
-	tom = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), TOLUD) << 24;
+	tom = pci_read_config8(pcidev_on_root(0, 0), TOLUD) << 24;
 	PGETBL_save = tom - 256 * KiB;
 	PGETBL_save |= PGETBL_ENABLED;
 	PGETBL_save |= 2; /* set GTT to 256kb */
@@ -357,7 +357,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 
 	/* Setup GTT.  */
 
-	reg16 = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0, 0)), GGC);
+	reg16 = pci_read_config16(pcidev_on_root(0, 0), GGC);
 	uma_size = 0;
 	if (!(reg16 & 2)) {
 		uma_size = decode_igd_memory_size((reg16 >> 4) & 7);
@@ -536,7 +536,7 @@ static int intel_gma_init_vga(struct northbridge_intel_i945_config *conf,
 
 	/* Set up GTT.  */
 
-	reg16 = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0, 0)), GGC);
+	reg16 = pci_read_config16(pcidev_on_root(0, 0), GGC);
 	uma_size = 0;
 	if (!(reg16 & 2)) {
 		uma_size = decode_igd_memory_size((reg16 >> 4) & 7);
@@ -725,7 +725,7 @@ static void gma_func0_init(struct device *dev)
    be re-enabled later. */
 static void gma_func0_disable(struct device *dev)
 {
-	struct device *dev_host = dev_find_slot(0, PCI_DEVFN(0x0, 0));
+	struct device *dev_host = pcidev_on_root(0x0, 0);
 
 	pci_write_config16(dev, GCFC, 0xa00);
 	pci_write_config16(dev_host, GGC, (1 << 1));
@@ -768,7 +768,7 @@ static void gma_set_subsystem(struct device *dev, unsigned int vendor,
 const struct i915_gpu_controller_info *
 intel_gma_get_controller_info(void)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x2, 0));
+	struct device *dev = pcidev_on_root(0x2, 0);
 	if (!dev)
 		return NULL;
 	struct northbridge_intel_i945_config *chip = dev->chip_info;

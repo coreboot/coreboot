@@ -29,7 +29,7 @@ void watchdog_off(void)
 	u32 value, abase;
 
 	/* Turn off the watchdog. */
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	dev = pcidev_on_root(0x1f, 0);
 
 	/* Enable I/O space. */
 	value = pci_read_config16(dev, 0x04);

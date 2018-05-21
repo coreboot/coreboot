@@ -35,7 +35,7 @@ static void usb_init(struct device *dev)
 
 	/* 6.1 Enable OHCI0-4 and EHCI Controllers */
 	struct device *sm_dev;
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = pcidev_on_root(0x14, 0);
 	byte = pci_read_config8(sm_dev, 0x68);
 	byte |= 0xFF;
 	pci_write_config8(sm_dev, 0x68, byte);
@@ -88,7 +88,7 @@ static void usb_init2(struct device *dev)
 	if (get_option(&nvram, "ehci_async_data_cache") == CB_SUCCESS)
 		ehci_async_data_cache = !!nvram;
 
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = pcidev_on_root(0x14, 0);
 	rev = get_sb700_revision(sm_dev);
 
 	/* dword = pci_read_config32(dev, 0xf8); */

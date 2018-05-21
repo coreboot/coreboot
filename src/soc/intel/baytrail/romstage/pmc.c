@@ -44,7 +44,7 @@ void punit_init(void)
 	const struct soc_intel_baytrail_config *cfg = NULL;
 
 	rid = pci_read_config8(IOSF_PCI_DEV, REVID);
-	dev = dev_find_slot(0, PCI_DEVFN(SOC_DEV, SOC_FUNC));
+	dev = pcidev_on_root(SOC_DEV, SOC_FUNC);
 
 	if (dev)
 		cfg = dev->chip_info;

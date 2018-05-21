@@ -26,7 +26,7 @@ void watchdog_off(void)
 	unsigned long value, base;
 
 	/* Turn off the ICH7 watchdog. */
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	dev = pcidev_on_root(0x1f, 0);
 
 	/* Enable I/O space. */
 	value = pci_read_config16(dev, 0x04);

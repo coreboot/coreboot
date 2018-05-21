@@ -487,7 +487,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	struct device *dev = pcidev_on_root(0x1f, 0);
 	config_t *chip = dev->chip_info;
 	u16 pmbase = pci_read_config16(dev, 0x40) & 0xfffe;
 

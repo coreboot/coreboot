@@ -51,7 +51,7 @@ static void mainboard_init(struct device *dev)
 	if (acpi_is_wakeup_s3())
 		ec_write(0x0c, 0xc7);
 
-	idedev = dev_find_slot(0, PCI_DEVFN(0x1f,1));
+	idedev = pcidev_on_root(0x1f, 1);
 
 	if (!(inb(DEFAULT_GPIOBASE + 0x0c) & 0x40)) {
 		/* legacy I/O connected */

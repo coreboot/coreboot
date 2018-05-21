@@ -151,7 +151,7 @@ static void mainboard_init(struct device *dev)
 		/* If running on proto1 - enable reversion of gpio11. */
 		u32 gpio_inv;
 		u16 gpio_base = pci_read_config16
-			(dev_find_slot(0, PCI_DEVFN(0x1f, 0)), GPIO_BASE) &
+			(pcidev_on_root(0x1f, 0), GPIO_BASE) &
 			0xfffc;
 		u16 gpio_inv_addr = gpio_base + GPI_INV;
 		gpio_inv = inl(gpio_inv_addr);

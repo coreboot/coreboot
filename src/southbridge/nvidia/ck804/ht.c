@@ -29,7 +29,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	struct device *dev;
 	unsigned long mcfg_base;
 
-	dev = dev_find_slot(0x0, PCI_DEVFN(0x0,0));
+	dev = pcidev_on_root(0x0, 0);
 	if (!dev)
 		return current;
 

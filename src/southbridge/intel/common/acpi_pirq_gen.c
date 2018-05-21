@@ -32,7 +32,7 @@ static int create_pirq_matrix(char matrix[32][4])
 	struct device *dev;
 	int num_devs = 0;
 
-	for (dev = dev_find_slot(0, PCI_DEVFN(0, 0)); dev; dev = dev->sibling) {
+	for (dev = pcidev_on_root(0, 0); dev; dev = dev->sibling) {
 		u8 pci_dev;
 		u8 int_pin;
 

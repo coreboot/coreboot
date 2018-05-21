@@ -42,7 +42,7 @@ int bridge_silicon_revision(void)
 	if (bridge_revision_id < 0) {
 		uint8_t stepping = cpuid_eax(1) & 0xf;
 		uint8_t bridge_id = pci_read_config16(
-			dev_find_slot(0, PCI_DEVFN(0, 0)),
+			pcidev_on_root(0, 0),
 			PCI_DEVICE_ID) & 0xf0;
 		bridge_revision_id = bridge_id | stepping;
 	}
@@ -65,7 +65,7 @@ static int get_pcie_bar(u32 *base)
 
 	*base = 0;
 
-	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	dev = pcidev_on_root(0, 0);
 	if (!dev)
 		return 0;
 
@@ -151,7 +151,7 @@ static void pci_domain_set_resources(struct device *dev)
 	 * 14fe00000   5368MB TOUUD
 	 */
 
-	struct device *mch = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *mch = pcidev_on_root(0, 0);
 
 	/* Top of Upper Usable DRAM, including remap */
 	touud = pci_read_config32(mch, TOUUD+4);
@@ -351,46 +351,46 @@ static void disable_peg(void)
 	struct device *dev;
 	u32 reg;
 
-	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	dev = pcidev_on_root(0, 0);
 	reg = pci_read_config32(dev, DEVEN);
 
-	dev = dev_find_slot(0, PCI_DEVFN(1, 2));
+	dev = pcidev_on_root(1, 2);
 	if (!dev || !dev->enabled) {
 		printk(BIOS_DEBUG, "Disabling PEG12.\n");
 		reg &= ~DEVEN_PEG12;
 	}
-	dev = dev_find_slot(0, PCI_DEVFN(1, 1));
+	dev = pcidev_on_root(1, 1);
 	if (!dev || !dev->enabled) {
 		printk(BIOS_DEBUG, "Disabling PEG11.\n");
 		reg &= ~DEVEN_PEG11;
 	}
-	dev = dev_find_slot(0, PCI_DEVFN(1, 0));
+	dev = pcidev_on_root(1, 0);
 	if (!dev || !dev->enabled) {
 		printk(BIOS_DEBUG, "Disabling PEG10.\n");
 		reg &= ~DEVEN_PEG10;
 	}
-	dev = dev_find_slot(0, PCI_DEVFN(2, 0));
+	dev = pcidev_on_root(2, 0);
 	if (!dev || !dev->enabled) {
 		printk(BIOS_DEBUG, "Disabling IGD.\n");
 		reg &= ~DEVEN_IGD;
 	}
-	dev = dev_find_slot(0, PCI_DEVFN(4, 0));
+	dev = pcidev_on_root(4, 0);
 	if (!dev || !dev->enabled) {
 		printk(BIOS_DEBUG, "Disabling Device 4.\n");
 		reg &= ~DEVEN_D4EN;
 	}
-	dev = dev_find_slot(0, PCI_DEVFN(6, 0));
+	dev = pcidev_on_root(6, 0);
 	if (!dev || !dev->enabled) {
 		printk(BIOS_DEBUG, "Disabling PEG60.\n");
 		reg &= ~DEVEN_PEG60;
 	}
-	dev = dev_find_slot(0, PCI_DEVFN(7, 0));
+	dev = pcidev_on_root(7, 0);
 	if (!dev || !dev->enabled) {
 		printk(BIOS_DEBUG, "Disabling Device 7.\n");
 		reg &= ~DEVEN_D7EN;
 	}
 
-	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	dev = pcidev_on_root(0, 0);
 	pci_write_config32(dev, DEVEN, reg);
 	if (!(reg & (DEVEN_PEG60 | DEVEN_PEG10 | DEVEN_PEG11 | DEVEN_PEG12))) {
 		/* Set the PEG clock gating bit.
@@ -469,7 +469,7 @@ static u32 northbridge_get_base_reg(struct device *dev, int reg)
 
 u32 northbridge_get_tseg_base(void)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *dev = pcidev_on_root(0, 0);
 
 	return northbridge_get_base_reg(dev, TSEG);
 }
@@ -481,7 +481,7 @@ u32 northbridge_get_tseg_size(void)
 
 void northbridge_write_smram(u8 smram)
 {
-	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM, smram);
+	pci_write_config8(pcidev_on_root(0, 0), SMRAM, smram);
 }
 
 static struct pci_operations intel_pci_ops = {

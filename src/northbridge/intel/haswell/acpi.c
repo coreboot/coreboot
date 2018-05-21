@@ -31,7 +31,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	int max_buses;
 	u32 mask;
 
-	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	dev = pcidev_on_root(0, 0);
 	if (!dev)
 		return current;
 
@@ -72,7 +72,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 static unsigned long acpi_fill_dmar(unsigned long current)
 {
-	struct device *const igfx_dev = dev_find_slot(0, PCI_DEVFN(2, 0));
+	struct device *const igfx_dev = pcidev_on_root(2, 0);
 	const u32 gfxvtbar = MCHBAR32(GFXVTBAR) & ~0xfff;
 	const u32 vtvc0bar = MCHBAR32(VTVC0BAR) & ~0xfff;
 	const bool gfxvten = MCHBAR32(GFXVTBAR) & 0x1;

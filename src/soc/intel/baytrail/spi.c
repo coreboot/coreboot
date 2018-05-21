@@ -267,7 +267,7 @@ static ich9_spi_regs *spi_regs(void)
 #ifdef __SMM__
 	pci_devfn_t dev = PCI_DEV(0, LPC_DEV, LPC_FUNC);
 #else
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	struct device *dev = pcidev_on_root(LPC_DEV, LPC_FUNC);
 #endif
 	pci_read_config_dword(dev, SBASE, &sbase);
 	sbase &= ~0x1ff;

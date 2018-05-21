@@ -92,7 +92,7 @@ static int get_pcie_bar(u32 *base)
 
 	*base = 0;
 
-	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	dev = pcidev_on_root(0, 0);
 	if (!dev)
 		return 0;
 

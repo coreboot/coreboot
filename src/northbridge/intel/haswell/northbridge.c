@@ -449,7 +449,7 @@ static void disable_devices(void)
 		{ PCI_DEVFN(7, 0), DEVEN_D7EN, "\"device 7\"" },
 	};
 
-	struct device *host_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *host_dev = pcidev_on_root(0x0, 0);
 	u32 deven;
 	size_t i;
 

@@ -271,14 +271,14 @@ void rs780_enable(struct device *dev)
 
 	printk(BIOS_INFO, "rs780_enable: dev=%p, VID_DID=0x%x\n", dev, get_vid_did(dev));
 
-	nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	nb_dev = pcidev_on_root(0, 0);
 	if (!nb_dev) {
 		die("rs780_enable: CAN NOT FIND RS780 DEVICE, HALT!\n");
 		/* NOT REACHED */
 	}
 
 	/* sb_dev (dev 8) is a bridge that links to southbridge. */
-	sb_dev = dev_find_slot(0, PCI_DEVFN(8, 0));
+	sb_dev = pcidev_on_root(8, 0);
 	if (!sb_dev) {
 		die("rs780_enable: CAN NOT FIND SB bridge, HALT!\n");
 		/* NOT REACHED */

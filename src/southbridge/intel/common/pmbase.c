@@ -33,7 +33,7 @@
 #if defined(__SIMPLE_DEVICE__)
 #define PCH_LPC_DEV	PCI_DEV(0, 0x1f, 0)
 #else
-#define PCH_LPC_DEV	dev_find_slot(0, PCI_DEVFN(0x1f, 0))
+#define PCH_LPC_DEV	pcidev_on_root(0x1f, 0)
 #endif
 
 u16 lpc_get_pmbase(void)

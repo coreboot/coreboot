@@ -59,16 +59,16 @@ static void pcie_limit_power(void)
 
 	struct device *dev;
 
-	dev = dev_find_slot(0, PCI_DEVFN(28,0));
+	dev = pcidev_on_root(28, 0);
 	if (dev) pci_write_config32(dev, 0x54, 0x0010a0e0);
 
-	dev = dev_find_slot(0, PCI_DEVFN(28,1));
+	dev = pcidev_on_root(28, 1);
 	if (dev) pci_write_config32(dev, 0x54, 0x0018a0e0);
 
-	dev = dev_find_slot(0, PCI_DEVFN(28,2));
+	dev = pcidev_on_root(28, 2);
 	if (dev) pci_write_config32(dev, 0x54, 0x0020a0e0);
 
-	dev = dev_find_slot(0, PCI_DEVFN(28,3));
+	dev = pcidev_on_root(28, 3);
 	if (dev) pci_write_config32(dev, 0x54, 0x0028a0e0);
 #endif
 }

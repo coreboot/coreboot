@@ -57,7 +57,7 @@ static void usb_init2(struct device *dev)
 	void *usb2_bar0;
 	struct device *sm_dev;
 
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = pcidev_on_root(0x14, 0);
 	//rev = get_sb800_revision(sm_dev);
 
 	/* dword = pci_read_config32(dev, 0xf8); */

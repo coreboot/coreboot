@@ -207,7 +207,7 @@ const char *smbios_mainboard_serial_number(void)
 	 * Read secondary bus number from the PCIe bridge where the first NIC is
 	 * connected.
 	 */
-	dev = dev_find_slot(0, PCI_DEVFN(2, 2));
+	dev = pcidev_on_root(2, 2);
 	if ((serial[0] != 0) || !dev)
 		return serial;
 

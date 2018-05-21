@@ -37,8 +37,7 @@ void sandybridge_init_iommu(void)
 	/* lock policies */
 	write32((void *)(IOMMU_BASE1 + 0xff0), 0x80000000);
 
-	const struct device *const azalia =
-		dev_find_slot(0x00, PCI_DEVFN(0x1b, 0));
+	const struct device *const azalia = pcidev_on_root(0x1b, 0);
 	if (azalia && azalia->enabled) {
 		write32((void *)(IOMMU_BASE2 + 0xff0), 0x20000000);
 		write32((void *)(IOMMU_BASE2 + 0xff0), 0xa0000000);

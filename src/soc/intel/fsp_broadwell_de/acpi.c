@@ -81,7 +81,7 @@ static int acpi_sci_irq(void)
 {
 	uint8_t actl = 0;
 	static uint8_t sci_irq = 0;
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	struct device *dev = pcidev_on_root(LPC_DEV, LPC_FUNC);
 
 	/* If this function was already called, just return the stored value. */
 	if (sci_irq)

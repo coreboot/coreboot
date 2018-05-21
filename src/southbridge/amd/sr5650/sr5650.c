@@ -129,8 +129,8 @@ void l1cfg_ind_write_index(struct device *nb_dev, uint32_t index, uint32_t data)
 void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add)
 {
 	/* K8 Function1 is address map */
-	struct device *k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
-	struct device *k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+	struct device *k8_f1 = pcidev_on_root(0x18, 1);
+	struct device *k8_f0 = pcidev_on_root(0x18, 0);
 
 	if (in_out) {
 		u32 dword, sblk;
@@ -331,7 +331,7 @@ void detect_and_enable_iommu(struct device *iommu_dev) {
 	if (iommu) {
 		printk(BIOS_DEBUG, "Initializing IOMMU\n");
 
-		struct device *nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+		struct device *nb_dev = pcidev_on_root(0, 0);
 
 		if (!nb_dev) {
 			printk(BIOS_WARNING, "Unable to find SR5690 device!  IOMMU NOT initialized\n");
@@ -616,7 +616,7 @@ void sr5650_enable(struct device *dev)
 	struct southbridge_amd_sr5650_config *cfg;
 
 	printk(BIOS_INFO, "sr5650_enable: dev=%p, VID_DID=0x%x\n", dev, get_vid_did(dev));
-	nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	nb_dev = pcidev_on_root(0, 0);
 	if (!nb_dev) {
 		die("sr5650_enable: CAN NOT FIND SR5650 DEVICE, HALT!\n");
 		/* NOT REACHED */
@@ -624,7 +624,7 @@ void sr5650_enable(struct device *dev)
 	cfg = (struct southbridge_amd_sr5650_config *)nb_dev->chip_info;
 
 	/* sb_dev (dev 8) is a bridge that links to southbridge. */
-	sb_dev = dev_find_slot(0, PCI_DEVFN(8, 0));
+	sb_dev = pcidev_on_root(8, 0);
 	if (!sb_dev) {
 		die("sr5650_enable: CAN NOT FIND SB bridge, HALT!\n");
 		/* NOT REACHED */
@@ -823,14 +823,14 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 {
 	uint8_t *p;
 
-	struct device *nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *nb_dev = pcidev_on_root(0, 0);
 	if (!nb_dev) {
 		printk(BIOS_WARNING, "acpi_fill_ivrs: Unable to locate SR5650 "
 				"device!  IVRS table not generated...\n");
 		return (unsigned long)ivrs;
 	}
 
-	struct device *iommu_dev = dev_find_slot(0, PCI_DEVFN(0, 2));
+	struct device *iommu_dev = pcidev_on_root(0, 2);
 	if (!iommu_dev) {
 		printk(BIOS_WARNING, "acpi_fill_ivrs: Unable to locate SR5650 "
 				"IOMMU device!  IVRS table not generated...\n");

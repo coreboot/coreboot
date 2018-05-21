@@ -30,7 +30,7 @@ void pch_log_state(void)
 	u32 gpe0_sts, gpe0_en;
 	u8 gen_pmcon_2;
 	int i;
-	struct device *lpc = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	struct device *lpc = pcidev_on_root(0x1f, 0);
 	if (!lpc)
 		return;
 

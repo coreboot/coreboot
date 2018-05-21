@@ -80,7 +80,7 @@ static uint32_t read_config32_dct(struct device *dev, uint8_t node, uint8_t dct,
 #ifdef __PRE_RAM__
 		pci_devfn_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
 #else
-		struct device *dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
+		struct device *dev_fn1 = pcidev_on_root(0x18 + node, 1);
 #endif
 
 		/* Select DCT */
@@ -109,7 +109,7 @@ static void write_config32_dct(struct device *dev, uint8_t node, uint8_t dct,
 #ifdef __PRE_RAM__
 		pci_devfn_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
 #else
-		struct device *dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
+		struct device *dev_fn1 = pcidev_on_root(0x18 + node, 1);
 #endif
 
 		/* Select DCT */
@@ -159,7 +159,7 @@ static uint32_t read_amd_dct_index_register_dct(struct device *dev,
 #ifdef __PRE_RAM__
 		pci_devfn_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
 #else
-		struct device *dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
+		struct device *dev_fn1 = pcidev_on_root(0x18 + node, 1);
 #endif
 
 		/* Select DCT */
@@ -280,7 +280,7 @@ static uint32_t read_config32_dct_nbpstate(struct device *dev, uint8_t node,
 					   uint32_t reg)
 {
 	uint32_t dword;
-	struct device *dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
+	struct device *dev_fn1 = pcidev_on_root(0x18 + node, 1);
 
 	/* Select DCT */
 	dword = pci_read_config32(dev_fn1, 0x10c);
@@ -343,9 +343,9 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data *persistent_da
 
 	/* Load data from DCTs into data structure */
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
-		struct device *dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
-		struct device *dev_fn2 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 2));
-		struct device *dev_fn3 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 3));
+		struct device *dev_fn1 = pcidev_on_root(0x18 + node, 1);
+		struct device *dev_fn2 = pcidev_on_root(0x18 + node, 2);
+		struct device *dev_fn3 = pcidev_on_root(0x18 + node, 3);
 		/* Test for node presence */
 		if ((!dev_fn1) || (pci_read_config32(dev_fn1, PCI_VENDOR_ID) == 0xffffffff)) {
 			persistent_data->node[node].node_present = 0;

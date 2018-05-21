@@ -69,10 +69,10 @@ static void gma_func0_init(struct device *dev)
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
 	/* configure GMBUSFREQ */
-	reg16 = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x2, 0)), 0xcc);
+	reg16 = pci_read_config16(pcidev_on_root(0x2, 0), 0xcc);
 	reg16 &= ~0x1ff;
 	reg16 |= 0xbc;
-	pci_write_config16(dev_find_slot(0, PCI_DEVFN(0x2, 0)), 0xcc, reg16);
+	pci_write_config16(pcidev_on_root(0x2, 0), 0xcc, reg16);
 
 	int vga_disable = (pci_read_config16(dev, D0F0_GGC) & 2) >> 1;
 
@@ -93,7 +93,7 @@ static void gma_func0_init(struct device *dev)
 
 static void gma_func0_disable(struct device *dev)
 {
-	struct device *dev_host = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *dev_host = pcidev_on_root(0, 0);
 	u16 ggc;
 
 	ggc = pci_read_config16(dev_host, D0F0_GGC);
@@ -117,7 +117,7 @@ static void gma_set_subsystem(struct device *dev, unsigned int vendor,
 const struct i915_gpu_controller_info *
 intel_gma_get_controller_info(void)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x2, 0));
+	struct device *dev = pcidev_on_root(0x2, 0);
 	if (!dev)
 		return NULL;
 	struct northbridge_intel_x4x_config *chip = dev->chip_info;

@@ -233,16 +233,17 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	fam15h = !!(mctGetLogicalCPUID(0) & AMD_FAM15_ALL);
 	/* Get number of cores */
 	if (fam15h) {
-		cmp_cap = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 5)), 0x84) & 0xff;
+		cmp_cap = pci_read_config32(pcidev_on_root(0x18, 5), 0x84) &
+									  0xff;
 	} else {
-		dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xe8);
+		dtemp = pci_read_config32(pcidev_on_root(0x18, 3), 0xe8);
 		cmp_cap = (dtemp & 0x3000) >> 12;
 		if (mctGetLogicalCPUID(0) & (AMD_FAM10_REV_D | AMD_FAM15_ALL))	/* revision D or higher */
 			cmp_cap |= (dtemp & 0x8000) >> 13;
 	}
 
 	/* Get number of nodes */
-	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 0)), 0x60);
+	dtemp = pci_read_config32(pcidev_on_root(0x18, 0), 0x60);
 	node_count = ((dtemp & 0x70) >> 4) + 1;
 	cores_per_node = cmp_cap + 1;
 
@@ -251,7 +252,7 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 
 	/* Get number of boost states */
 	uint8_t boost_count = 0;
-	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 4)), 0x15c);
+	dtemp = pci_read_config32(pcidev_on_root(0x18, 4), 0x15c);
 	if (fam10h_rev_e)
 		boost_count = (dtemp >> 2) & 0x1;
 	else if (mctGetLogicalCPUID(0) & AMD_FAM15_ALL)
@@ -289,7 +290,7 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	uint8_t single_link;
 
 	/* Determine if this is a PVI or SVI system */
-	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xA0);
+	dtemp = pci_read_config32(pcidev_on_root(0x18, 3), 0xA0);
 
 	if (dtemp & PVI_MODE)
 		pviModeFlag = 1;
@@ -361,10 +362,10 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		core_power = (core_voltage * cpuidd) / (expanded_cpuidv * 10);
 
 		/* Calculate transition latency */
-		dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xD4);
+		dtemp = pci_read_config32(pcidev_on_root(0x18, 3), 0xD4);
 		power_step_up = (dtemp & 0xf000000) >> 24;
 		power_step_down = (dtemp & 0xf00000) >> 20;
-		dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xA0);
+		dtemp = pci_read_config32(pcidev_on_root(0x18, 3), 0xA0);
 		pll_lock_time = (dtemp & 0x3800) >> 11;
 		if (all_enabled_cores_have_same_cpufid)
 			core_latency = ((12 * power_step_down) + power_step_up) / 1000;
@@ -396,7 +397,7 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	for (index = 0; index < total_core_count; index++) {
 		/* Determine if this is a single-link processor */
 		node_index = 0x18 + (index / cores_per_node);
-		dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(node_index, 0)), 0x80);
+		dtemp = pci_read_config32(pcidev_on_root(node_index, 0), 0x80);
 		single_link = !!(((dtemp & 0xff00) >> 8) == 0);
 
 		/* Enter processor core scope */

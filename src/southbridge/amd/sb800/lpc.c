@@ -35,7 +35,7 @@ static void lpc_init(struct device *dev)
 	struct device *sm_dev;
 
 	/* Enable the LPC Controller */
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	sm_dev = pcidev_on_root(0x14, 0);
 	dword = pci_read_config32(sm_dev, 0x64);
 	dword |= 1 << 20;
 	pci_write_config32(sm_dev, 0x64, dword);

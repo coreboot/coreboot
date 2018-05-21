@@ -84,7 +84,7 @@ static void fill_in_pattrs(void)
 	struct pattrs *attrs = (struct pattrs *)pattrs_get();
 
 	attrs->cpuid = cpuid_eax(1);
-	dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	dev = pcidev_on_root(LPC_DEV, LPC_FUNC);
 	attrs->revid = pci_read_config8(dev, REVID);
 	/* The revision to stepping IDs have two values per metal stepping. */
     if (attrs->revid >= RID_D_STEPPING_START) {

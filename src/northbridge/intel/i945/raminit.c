@@ -1219,7 +1219,7 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 	tom = tolud >> 3;
 
 	/* Limit the value of TOLUD to leave some space for PCI memory. */
-	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	dev = pcidev_on_root(0, 0);
 	if (dev)
 		cfg = dev->chip_info;
 

@@ -28,7 +28,7 @@ static u8 get_ich7_sata_ports(void)
 {
 	struct device *lpc;
 
-	lpc = dev_find_slot(0, PCI_DEVFN(31, 0));
+	lpc = pcidev_on_root(31, 0);
 
 	switch (pci_read_config16(lpc, PCI_DEVICE_ID)) {
 	case 0x27b0:

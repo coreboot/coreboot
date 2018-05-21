@@ -236,7 +236,7 @@ static ich9_spi_regs *spi_regs(void)
 #if ENV_SMM
 	pci_devfn_t dev = PCI_DEV(0, LPC_DEV, LPC_FUNC);
 #else
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	struct device *dev = pcidev_on_root(LPC_DEV, LPC_FUNC);
 #endif
 	if (!dev) {
 		printk(BIOS_ERR, "%s: PCI device not found", __func__);

@@ -29,7 +29,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	u32 pciexbar_reg;
 	int max_buses;
 
-	struct device *const dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *const dev = pcidev_on_root(0, 0);
 
 	if (!dev)
 		return current;
@@ -68,7 +68,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 static unsigned long acpi_fill_dmar(unsigned long current)
 {
-	const struct device *const igfx = dev_find_slot(0, PCI_DEVFN(2, 0));
+	const struct device *const igfx = pcidev_on_root(2, 0);
 
 	if (igfx && igfx->enabled) {
 		const unsigned long tmp = current;

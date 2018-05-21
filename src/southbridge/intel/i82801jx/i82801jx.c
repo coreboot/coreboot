@@ -57,7 +57,7 @@ static void i82801jx_pcie_init(const config_t *const info)
 
 	/* PCIe - BIOS must program... */
 	for (i = 0; i < 6; ++i) {
-		pciePort[i] = dev_find_slot(0, PCI_DEVFN(0x1c, i));
+		pciePort[i] = pcidev_on_root(0x1c, i);
 		if (!pciePort[i]) {
 			printk(BIOS_EMERG, "PCIe port 00:1c.%x", i);
 			die(" is not listed in devicetree.\n");
@@ -67,7 +67,7 @@ static void i82801jx_pcie_init(const config_t *const info)
 		pci_write_config8(pciePort[i], 0x324, 0x40);
 	}
 
-	if (LPC_IS_MOBILE(dev_find_slot(0, PCI_DEVFN(0x1f, 0)))) {
+	if (LPC_IS_MOBILE(pcidev_on_root(0x1f, 0))) {
 		for (i = 0; i < 6; ++i) {
 			if (pciePort[i]->enabled) {
 				reg32 = pci_read_config32(pciePort[i], 0xe8);
@@ -115,10 +115,10 @@ static void i82801jx_pcie_init(const config_t *const info)
 
 static void i82801jx_ehci_init(void)
 {
-	struct device *const pciEHCI1 = dev_find_slot(0, PCI_DEVFN(0x1d, 7));
+	struct device *const pciEHCI1 = pcidev_on_root(0x1d, 7);
 	if (!pciEHCI1)
 		die("EHCI controller (00:1d.7) not listed in devicetree.\n");
-	struct device *const pciEHCI2 = dev_find_slot(0, PCI_DEVFN(0x1a, 7));
+	struct device *const pciEHCI2 = pcidev_on_root(0x1a, 7);
 	if (!pciEHCI2)
 		die("EHCI controller (00:1a.7) not listed in devicetree.\n");
 

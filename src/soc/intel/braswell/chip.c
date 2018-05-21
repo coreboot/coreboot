@@ -86,7 +86,7 @@ __weak void board_silicon_USB2_override(SILICON_INIT_UPD *params)
 
 void soc_silicon_init_params(SILICON_INIT_UPD *params)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	struct device *dev = pcidev_on_root(LPC_DEV, LPC_FUNC);
 	struct soc_intel_braswell_config *config;
 
 	if (!dev) {
@@ -406,7 +406,7 @@ struct pci_operations soc_pci_ops = {
 **/
 int SocStepping(void)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	struct device *dev = pcidev_on_root(LPC_DEV, LPC_FUNC);
 	u8 revid = pci_read_config8(dev, 0x8);
 
 	switch (revid & B_PCH_LPC_RID_STEPPING_MASK) {

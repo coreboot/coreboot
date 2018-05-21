@@ -38,7 +38,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current = acpi_create_madt_lapics(current);
 
 	/* Write NVIDIA CK804 IOAPIC. */
-	dev = dev_find_slot(0x0, PCI_DEVFN(sysconf.sbdn + 0x1, 0));
+	dev = pcidev_on_root(sysconf.sbdn + 0x1, 0);
 	ASSERT(dev != NULL);
 
 	res = find_resource(dev, PCI_BASE_ADDRESS_1);

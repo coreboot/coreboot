@@ -216,7 +216,7 @@ void soc_memory_init_params(struct romstage_params *params,
 	const struct soc_intel_braswell_config *config;
 
 	/* Set the parameters for MemoryInit */
-	dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	dev = pcidev_on_root(LPC_DEV, LPC_FUNC);
 
 	if (!dev) {
 		printk(BIOS_ERR,

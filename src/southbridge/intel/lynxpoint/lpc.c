@@ -456,7 +456,7 @@ static void enable_lp_clock_gating(struct device *dev)
 	RCBA32_AND_OR(0x2614, 0x8bffffff, 0x0a206500);
 
 	/* Check for LPT-LP B2 stepping and 0:31.0@0xFA > 4 */
-	if (pci_read_config8(dev_find_slot(0, PCI_DEVFN(2, 0)), 0x8) >= 0x0b)
+	if (pci_read_config8(pcidev_on_root(2, 0), 0x8) >= 0x0b)
 		RCBA32_OR(0x2614, (1 << 26));
 
 	RCBA32_OR(0x900, 0x0000031f);
@@ -775,7 +775,7 @@ static void southbridge_inject_dsdt(struct device *dev)
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	struct device *dev = pcidev_on_root(0x1f, 0);
 	struct southbridge_intel_lynxpoint_config *cfg = dev->chip_info;
 	u16 pmbase = get_pmbase();
 

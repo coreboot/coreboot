@@ -34,7 +34,7 @@ void watchdog_off(void)
 	struct device *dev;
 
 	/* Get LPC device. */
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	dev = pcidev_on_root(0x1f, 0);
 
 	/* Disable interrupt. */
 	value = pci_read_config16(dev, PCI_COMMAND);

@@ -39,7 +39,7 @@ void pch_enable_lpc(void)
 	const struct device *lpc;
 	const struct southbridge_intel_bd82x6x_config *config = NULL;
 
-	lpc = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	lpc = pcidev_on_root(0x1f, 0);
 	if (!lpc)
 		return;
 	if (lpc->chip_info)

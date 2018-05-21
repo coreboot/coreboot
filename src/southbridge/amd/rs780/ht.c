@@ -26,7 +26,7 @@ void avoid_lpc_dma_deadlock(struct device *nb_dev, struct device *sb_dev)
 	struct device *cpu_f0;
 	u8 reg;
 
-	cpu_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+	cpu_f0 = pcidev_on_root(0x18, 0);
 	set_nbcfg_enable_bits(cpu_f0, 0x68, 3 << 21, 1 << 21);
 
 	reg = nbpcie_p_read_index(sb_dev, 0x10);

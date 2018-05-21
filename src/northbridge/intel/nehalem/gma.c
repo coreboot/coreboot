@@ -658,7 +658,7 @@ static void gma_read_resources(struct device *dev)
 const struct i915_gpu_controller_info *
 intel_gma_get_controller_info(void)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x2,0));
+	struct device *dev = pcidev_on_root(0x2, 0);
 	if (!dev) {
 		return NULL;
 	}

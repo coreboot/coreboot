@@ -47,7 +47,7 @@ static void qemu_reserve_ports(struct device *dev, unsigned int idx,
 		IORESOURCE_ASSIGNED;
 }
 
-static void cpu_pci_domain_set_resources(device_t dev)
+static void cpu_pci_domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
@@ -210,7 +210,7 @@ static int qemu_get_smbios_data17(int handle, int parent_handle, unsigned long *
 	return len;
 }
 
-static int qemu_get_smbios_data(device_t dev, int *handle, unsigned long *current)
+static int qemu_get_smbios_data(struct device *dev, int *handle, unsigned long *current)
 {
 	int len;
 
@@ -235,15 +235,15 @@ static struct device_operations pci_domain_ops = {
 #endif
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }
 
-static void cpu_bus_scan(device_t bus)
+static void cpu_bus_scan(struct device *bus)
 {
 	int max_cpus = fw_cfg_max_cpus();
-	device_t cpu;
+	struct device *cpu;
 	int i;
 
 	if (max_cpus < 0)

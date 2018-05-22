@@ -15,7 +15,7 @@
 
 Scope(\_TZ)
 {
-#if defined (EC_LENOVO_H8_ME_WORKAROUND)
+#if defined(EC_LENOVO_H8_ME_WORKAROUND)
 	Name (MEB1, 0)
 	Name (MEB2, 0)
 #endif
@@ -85,7 +85,7 @@ External (\PPKG, MethodObj)
 		}
 
 		Method(_TMP) {
-#if defined (EC_LENOVO_H8_ME_WORKAROUND)
+#if defined(EC_LENOVO_H8_ME_WORKAROUND)
 			/* Avoid tripping alarm if ME isn't booted at all yet */
 			If (LAnd (LNot (MEB1), LEqual (\_SB.PCI0.LPCB.EC.TMP0, 128))) {
 				Return (C2K(40))
@@ -172,7 +172,7 @@ External (\PPKG, MethodObj)
 		}
 
 		Method(_TMP) {
-#if defined (EC_LENOVO_H8_ME_WORKAROUND)
+#if defined(EC_LENOVO_H8_ME_WORKAROUND)
 			/* Avoid tripping alarm if ME isn't booted at all yet */
 			If (LAnd (LNot (MEB2), LEqual (\_SB.PCI0.LPCB.EC.TMP1, 128))) {
 				Return (C2K(40))

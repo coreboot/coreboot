@@ -713,7 +713,7 @@ static int write_shmoo_to_flash(void *buf, int length)
 	return ret;
 }
 
-#elif defined (CONFIG_SPI_FLASH) && defined(CONFIG_ENV_IS_IN_SPI_FLASH) && CONFIG_ENV_IS_IN_SPI_FLASH
+#elif defined(CONFIG_SPI_FLASH) && defined(CONFIG_ENV_IS_IN_SPI_FLASH) && CONFIG_ENV_IS_IN_SPI_FLASH
 
 static int write_shmoo_to_flash(void *buf, int length)
 {
@@ -761,7 +761,7 @@ static int write_shmoo_to_flash(void *buf, int length)
 	return ret;
 }
 
-#elif defined (CONFIG_ENV_IS_IN_FLASH)
+#elif defined(CONFIG_ENV_IS_IN_FLASH)
 
 static int write_shmoo_to_flash(void *buf, int length)
 {
@@ -841,7 +841,7 @@ static volatile uint32_t *validate_flash_shmoo_values(struct shmoo_signature *ps
 	/* Read SHMOO data from NAND */
 	flptr = (volatile uint32_t *)(IPROC_NAND_MEM_BASE + CONFIG_SHMOO_REUSE_NAND_OFFSET);
 	offset = (CONFIG_SHMOO_REUSE_NAND_RANGE - 1) / SHMOO_MIN_BLOCK_SIZE * SHMOO_MIN_BLOCK_SIZE;
-#elif defined (CONFIG_ENV_IS_IN_FLASH)
+#elif defined(CONFIG_ENV_IS_IN_FLASH)
 	/* Read SHMOO data from NOR */
 	flptr = (volatile uint32_t *)(IPROC_NOR_MEM_BASE + CONFIG_SHMOO_REUSE_NOR_OFFSET);
 	offset = 0;

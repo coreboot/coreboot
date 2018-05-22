@@ -265,11 +265,9 @@ int start_cpu(struct device *cpu)
 	struct cpu_info *info;
 	unsigned long stack_end;
 	unsigned long stack_base;
-	unsigned long *stack;
 	unsigned long apicid;
 	unsigned int index;
 	unsigned long count;
-	int i;
 	int result;
 
 	spin_lock(&start_cpu_lock);
@@ -287,10 +285,8 @@ int start_cpu(struct device *cpu)
 	stack_base = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*(index+1));
 	printk(BIOS_SPEW, "CPU%d: stack_base %p, stack_end %p\n", index,
 		(void *)stack_base, (void *)stack_end);
-	/* poison the stack */
-	for (stack = (void *)stack_base, i = 0; i < CONFIG_STACK_SIZE; i++)
-		stack[i/sizeof(*stack)] = 0xDEADBEEF;
-	stacks[index] = stack;
+	stacks[index] = (void *)stack_base;
+
 	/* Record the index and which CPU structure we are using */
 	info = (struct cpu_info *)stack_end;
 	info->index = index;

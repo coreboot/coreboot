@@ -756,7 +756,7 @@ DefinitionBlock (
 		Store(PEWS, Local0)
 		Store(Local0, PEWS)
 
-		/* if(DeRefOf(Index(WKST,0))) {
+		/* if (DeRefOf(Index(WKST,0))) {
 		*	Store(0, Index(WKST,1))
 		* } else {
 		*	Store(Arg0, Index(WKST,1))

@@ -908,7 +908,7 @@ DefinitionBlock (
 		Store(PWST, Local1)
 		Store(Local1, PWST)
 
-		/* if(DeRefOf(Index(WKST,0))) {
+		/* if (DeRefOf(Index(WKST,0))) {
 		*	Store(0, Index(WKST,1))
 		* } else {
 		*	Store(Arg0, Index(WKST,1))

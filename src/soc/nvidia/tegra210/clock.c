@@ -646,7 +646,7 @@ void clock_init(void)
 	graphics_pll();
 }
 
-void clock_grp_enable_clear_reset(u32 val, u32* clk_enb_set_reg,
+void clock_grp_enable_clear_reset(u32 val, u32 *clk_enb_set_reg,
 				  u32 *rst_dev_clr_reg)
 {
 	write32(clk_enb_set_reg, val);

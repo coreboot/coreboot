@@ -118,7 +118,8 @@ static const unsigned int ctrl_conf_enable_msi_mapping[] = {
 	RES_PCI_IO, PCI_ADDR(0, 0, 0, 0xe0), ~(0x00000000), 0x00010000,	/* Enable MSI mapping on host bridge -- without this Linux cannot use the network device MSI interrupts! */
 };
 
-static void ck804_control(const unsigned int* values, u32 size, uint8_t bus_unit_id)
+static void ck804_control(const unsigned int *values, u32 size,
+			  uint8_t bus_unit_id)
 {
 	unsigned busn[4], io_base[4];
 	int i, ck804_num = 0;

@@ -48,7 +48,7 @@ enum power_mode {
 #define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL POWER_MODE_ON
 #endif
 
-static const char* power_mode_names[] = {
+static const char *power_mode_names[] = {
 	[POWER_MODE_OFF] = "off",
 	[POWER_MODE_ON] = "on",
 	[POWER_MODE_LAST] = "last",

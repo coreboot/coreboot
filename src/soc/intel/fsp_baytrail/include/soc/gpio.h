@@ -342,7 +342,7 @@ struct soc_gpio_config {
 /* Description of GPIO 'bank' ex. {ncore, score. ssus} */
 struct gpio_bank {
 	const int gpio_count;
-	const u8* gpio_to_pad;
+	const u8 *gpio_to_pad;
 	const int legacy_base;
 	const unsigned long pad_base;
 	const u8 has_wake_en :1;

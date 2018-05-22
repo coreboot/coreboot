@@ -1040,7 +1040,8 @@ static void amdfam10_domain_scan_bus(struct device *dev)
 }
 
 #if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
-static int amdfam10_get_smbios_data16(int* count, int handle, unsigned long *current)
+static int amdfam10_get_smbios_data16(int *count, int handle,
+				      unsigned long *current)
 {
 	struct amdmct_memory_info *mem_info;
 	mem_info = cbmem_find(CBMEM_ID_AMDMCT_MEMINFO);
@@ -1145,7 +1146,8 @@ static uint16_t amdmct_mct_speed_enum_to_mhz(uint8_t speed)
 	}
 }
 
-static int amdfam10_get_smbios_data17(int* count, int handle, int parent_handle, unsigned long *current)
+static int amdfam10_get_smbios_data17(int *count, int handle, int parent_handle,
+				      unsigned long *current)
 {
 	struct amdmct_memory_info *mem_info;
 	mem_info = cbmem_find(CBMEM_ID_AMDMCT_MEMINFO);

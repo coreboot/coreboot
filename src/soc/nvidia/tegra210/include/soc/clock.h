@@ -433,7 +433,8 @@ void clock_disable_regs(u32 bits[DEV_CONFIG_BLOCKS]);
 void clock_set_reset_regs(u32 bits[DEV_CONFIG_BLOCKS]);
 void clock_clr_reset_regs(u32 bits[DEV_CONFIG_BLOCKS]);
 void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x, u32 y);
-void clock_grp_enable_clear_reset(u32 val, u32* clk_enb_set_reg, u32* rst_dev_clr_reg);
+void clock_grp_enable_clear_reset(u32 val, u32 *clk_enb_set_reg,
+				  u32 *rst_dev_clr_reg);
 void clock_reset_l(u32 l);
 void clock_reset_h(u32 h);
 void clock_reset_u(u32 u);

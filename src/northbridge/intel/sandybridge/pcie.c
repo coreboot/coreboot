@@ -48,7 +48,7 @@ static const char *pcie_acpi_name(const struct device *dev)
 			return "PEG6";
 		};
 
-	const device_t port = dev->bus->dev;
+	struct device *const port = dev->bus->dev;
 	assert(port);
 	assert(port->bus);
 

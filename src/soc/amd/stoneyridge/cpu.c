@@ -55,7 +55,7 @@ static void pre_mp_init(void)
 
 static int get_cpu_count(void)
 {
-	device_t nb = dev_find_slot(0, HT_DEVFN);
+	struct device *nb = dev_find_slot(0, HT_DEVFN);
 	return (pci_read_config16(nb, D18F0_CPU_CNT) & CPU_CNT_MASK) + 1;
 }
 
@@ -115,7 +115,7 @@ void stoney_init_cpus(struct device *dev)
 	mtrr_use_temp_range(FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
 }
 
-static void model_15_init(device_t dev)
+static void model_15_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Model 15 Init.\n");
 

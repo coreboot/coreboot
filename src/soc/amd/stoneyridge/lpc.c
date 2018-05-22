@@ -34,11 +34,11 @@
 #include <soc/southbridge.h>
 #include <soc/nvs.h>
 
-static void lpc_init(device_t dev)
+static void lpc_init(struct device *dev)
 {
 	u8 byte;
 	u32 dword;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	/*
 	 * Enable the LPC Controller
@@ -108,7 +108,7 @@ static void lpc_init(device_t dev)
 	pm_write8(PM_SERIRQ_CONF, byte);
 }
 
-static void lpc_read_resources(device_t dev)
+static void lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 	global_nvs_t *gnvs;
@@ -165,7 +165,7 @@ static void lpc_set_resources(struct device *dev)
 	pci_dev_set_resources(dev);
 }
 
-static void set_child_resource(device_t child,
+static void set_child_resource(struct device *child,
 				u32 *reg,
 				u32 *reg_x)
 {
@@ -299,7 +299,7 @@ static void set_child_resource(device_t child,
  * @param dev the device whose children's resources are to be enabled
  *
  */
-static void lpc_enable_childrens_resources(device_t dev)
+static void lpc_enable_childrens_resources(struct device *dev)
 {
 	struct bus *link;
 	u32 reg, reg_x;
@@ -308,7 +308,7 @@ static void lpc_enable_childrens_resources(device_t dev)
 	reg_x = pci_read_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE);
 
 	for (link = dev->link_list; link; link = link->next) {
-		device_t child;
+		struct device *child;
 		for (child = link->children; child;
 		     child = child->sibling) {
 			if (child->enabled
@@ -323,7 +323,7 @@ static void lpc_enable_childrens_resources(device_t dev)
 	pci_write_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE, reg_x);
 }
 
-static void lpc_enable_resources(device_t dev)
+static void lpc_enable_resources(struct device *dev)
 {
 	pci_dev_enable_resources(dev);
 	lpc_enable_childrens_resources(dev);

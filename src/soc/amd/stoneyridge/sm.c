@@ -32,12 +32,12 @@
 * The southbridge enables SATA by default in SMBUS Control.
 */
 
-static void sm_init(device_t dev)
+static void sm_init(struct device *dev)
 {
 	setup_ioapic(VIO_APIC_VADDR, CONFIG_MAX_CPUS);
 }
 
-static int lsmbus_recv_byte(device_t dev)
+static int lsmbus_recv_byte(struct device *dev)
 {
 	u8 device;
 	struct resource *res;
@@ -51,7 +51,7 @@ static int lsmbus_recv_byte(device_t dev)
 	return do_smbus_recv_byte(res->base, device);
 }
 
-static int lsmbus_send_byte(device_t dev, u8 val)
+static int lsmbus_send_byte(struct device *dev, u8 val)
 {
 	u8 device;
 	struct resource *res;
@@ -65,7 +65,7 @@ static int lsmbus_send_byte(device_t dev, u8 val)
 	return do_smbus_send_byte(res->base, device, val);
 }
 
-static int lsmbus_read_byte(device_t dev, u8 address)
+static int lsmbus_read_byte(struct device *dev, u8 address)
 {
 	u8 device;
 	struct resource *res;
@@ -79,7 +79,7 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
-static int lsmbus_write_byte(device_t dev, u8 address, u8 val)
+static int lsmbus_write_byte(struct device *dev, u8 address, u8 val)
 {
 	u8 device;
 	struct resource *res;

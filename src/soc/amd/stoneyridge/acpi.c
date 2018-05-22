@@ -233,11 +233,11 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	header->checksum = acpi_checksum((void *)fadt, sizeof(acpi_fadt_t));
 }
 
-void generate_cpu_entries(device_t device)
+void generate_cpu_entries(struct device *device)
 {
 	int cores, cpu, plen = 6;
 	u32 pcontrol_blk = ACPI_GPE0_BLK;
-	device_t cdb_dev;
+	struct device *cdb_dev;
 
 	/* Stoney Ridge is single node, just report # of cores */
 	cdb_dev = dev_find_slot(0, NB_DEVFN);
@@ -258,7 +258,7 @@ void generate_cpu_entries(device_t device)
 	}
 }
 
-unsigned long southbridge_write_acpi_tables(device_t device,
+unsigned long southbridge_write_acpi_tables(struct device *device,
 		unsigned long current,
 		struct acpi_rsdp *rsdp)
 {
@@ -286,7 +286,7 @@ static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 	gnvs->pcnt = dev_count_cpu();
 }
 
-void southbridge_inject_dsdt(device_t device)
+void southbridge_inject_dsdt(struct device *device)
 {
 	struct global_nvs_t *gnvs;
 

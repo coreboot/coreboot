@@ -41,11 +41,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
+static void set_io_addr_reg(struct device *dev, u32 nodeid, u32 linkn, u32 reg,
 			u32 io_min, u32 io_max)
 {
 	u32 tempreg;
-	device_t addr_map = dev_find_slot(0, ADDR_DEVFN);
+	struct device *addr_map = dev_find_slot(0, ADDR_DEVFN);
 
 	/* io range allocation.  Limit */
 	tempreg = (nodeid & 0xf) | ((nodeid & 0x30) << (8 - 4)) | (linkn << 4)
@@ -59,7 +59,7 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index,
 						u32 mmio_min, u32 mmio_max)
 {
 	u32 tempreg;
-	device_t addr_map = dev_find_slot(0, ADDR_DEVFN);
+	struct device *addr_map = dev_find_slot(0, ADDR_DEVFN);
 
 	/* io range allocation.  Limit */
 	tempreg = (nodeid & 0xf) | (linkn << 4) | (mmio_max & 0xffffff00);
@@ -68,7 +68,7 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index,
 		pci_write_config32(addr_map, reg, tempreg);
 }
 
-static void read_resources(device_t dev)
+static void read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -86,7 +86,7 @@ static void read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
+static void set_resource(struct device *dev, struct resource *resource, u32 nodeid)
 {
 	resource_t rbase, rend;
 	unsigned int reg, link_num;
@@ -135,7 +135,7 @@ static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
  * but it is too difficult to deal with the resource allocation magic.
  */
 
-static void create_vga_resource(device_t dev)
+static void create_vga_resource(struct device *dev)
 {
 	struct bus *link;
 
@@ -154,7 +154,7 @@ static void create_vga_resource(device_t dev)
 	pci_write_config32(dev_find_slot(0, ADDR_DEVFN), 0xf4, 1);
 }
 
-static void set_resources(device_t dev)
+static void set_resources(struct device *dev)
 {
 	struct bus *bus;
 	struct resource *res;
@@ -197,7 +197,7 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	return (unsigned long)current;
 }
 
-static void northbridge_fill_ssdt_generator(device_t device)
+static void northbridge_fill_ssdt_generator(struct device *device)
 {
 	msr_t msr;
 	char pscope[] = "\\_SB.PCI0";
@@ -218,7 +218,7 @@ static void northbridge_fill_ssdt_generator(device_t device)
 	acpigen_pop_len();
 }
 
-static unsigned long agesa_write_acpi_tables(device_t device,
+static unsigned long agesa_write_acpi_tables(struct device *device,
 					     unsigned long current,
 					     acpi_rsdp_t *rsdp)
 {
@@ -355,7 +355,7 @@ void amd_initcpuio(void)
 
 void fam15_finalize(void *chip_info)
 {
-	device_t dev;
+	struct device *dev;
 	u32 value;
 	dev = dev_find_slot(0, GNB_DEVFN); /* clear IoapicSbFeatureEn */
 	pci_write_config32(dev, 0xf8, 0);
@@ -368,10 +368,10 @@ void fam15_finalize(void *chip_info)
 	pci_write_config32(dev, HDA_DEV_CTRL_STATUS, value);
 }
 
-void domain_read_resources(device_t dev)
+void domain_read_resources(struct device *dev)
 {
 	unsigned int reg;
-	device_t addr_map = dev_find_slot(0, ADDR_DEVFN);
+	struct device *addr_map = dev_find_slot(0, ADDR_DEVFN);
 
 	/* Find the already assigned resource pairs */
 	for (reg = 0x80 ; reg <= 0xd8 ; reg += 0x08) {
@@ -381,7 +381,7 @@ void domain_read_resources(device_t dev)
 		/* Is this register allocated? */
 		if ((base & 3) != 0) {
 			unsigned int nodeid, reg_link;
-			device_t reg_dev = dev_find_slot(0, HT_DEVFN);
+			struct device *reg_dev = dev_find_slot(0, HT_DEVFN);
 			if (reg < 0xc0) /* mmio */
 				nodeid = (limit & 0xf) + (base & 0x30);
 			else /* io */
@@ -405,14 +405,14 @@ void domain_read_resources(device_t dev)
 	pci_domain_read_resources(dev);
 }
 
-void domain_enable_resources(device_t dev)
+void domain_enable_resources(struct device *dev)
 {
 	/* Must be called after PCI enumeration and resource allocation */
 	if (!romstage_handoff_is_resume())
 		do_agesawrapper(agesawrapper_amdinitmid, "amdinitmid");
 }
 
-void domain_set_resources(device_t dev)
+void domain_set_resources(struct device *dev)
 {
 	uint64_t uma_base = get_uma_base();
 	uint32_t uma_size = get_uma_size();

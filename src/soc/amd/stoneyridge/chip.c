@@ -107,7 +107,7 @@ struct device_operations pci_domain_ops = {
 	.acpi_name	  = soc_acpi_name,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN)

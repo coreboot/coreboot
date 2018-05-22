@@ -30,10 +30,10 @@
 	#define FADT_PM_PROFILE PM_UNSPECIFIED
 #endif
 
-unsigned long southbridge_write_acpi_tables(device_t device,
+unsigned long southbridge_write_acpi_tables(struct device *device,
 		unsigned long current, struct acpi_rsdp *rsdp);
 
-void southbridge_inject_dsdt(device_t device);
+void southbridge_inject_dsdt(struct device *device);
 
 const char *soc_acpi_name(const struct device *dev);
 

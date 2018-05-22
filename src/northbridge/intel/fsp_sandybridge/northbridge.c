@@ -287,7 +287,7 @@ static u32 northbridge_get_base_reg(struct device *dev, int reg)
 
 u32 northbridge_get_tseg_base(void)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *const dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 
 	return northbridge_get_base_reg(dev, TSEG);
 }

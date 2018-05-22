@@ -45,7 +45,6 @@ chip soc/intel/skylake
 	register "ScsEmmcEnabled" = "1"
 	register "ScsEmmcHs400Enabled" = "1"
 	register "ScsSdCardEnabled" = "0"
-	register "IshEnable" = "0"		# FIXME: enable once ISH is ready
 	register "PttSwitch" = "0"
 	register "InternalGfx" = "1"
 	register "SkipExtGfxScan" = "1"
@@ -255,6 +254,7 @@ chip soc/intel/skylake
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
+		device pci 13.0 off end # Integrated Sensor Hub
 		device pci 14.0 on  end # USB xHCI
 		device pci 14.1 on  end # USB xDCI (OTG)
 		device pci 14.2 on  end # Thermal Subsystem

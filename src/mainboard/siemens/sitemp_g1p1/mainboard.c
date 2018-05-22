@@ -378,7 +378,7 @@ static void pm_init( void )
 {
 	u16 word;
 	u8 byte;
-	device_t sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+	struct device *sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 
 	/* set SB600 GPIO 64 to GPIO with pull-up */
 	byte = pm2_ioread(0x42);
@@ -420,7 +420,7 @@ static void set_thermal_config(void)
 {
 	u8 byte, byte2;
 	u8 cpu_pwm_conf, case_pwm_conf;
-	device_t sm_dev;
+	struct device *sm_dev;
 	struct fan_control cpu_fan_control, case_fan_control;
 	const char *name = NULL;
 
@@ -596,8 +596,8 @@ static void patch_mmio_nonposted( void )
 	resource_t rbase, rend;
 	u32 base, limit;
 	struct resource *resource;
-	device_t dev;
-	device_t k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18,1));
+	struct device *dev;
+	struct device *k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18,1));
 
 	printk(BIOS_DEBUG,"%s ...\n", __func__);
 
@@ -644,7 +644,7 @@ struct {
 
 unsigned int plx_present = 0;
 
-static void update_subsystemid( device_t dev )
+static void update_subsystemid( struct device *dev )
 {
 	int i;
 
@@ -656,7 +656,7 @@ static void update_subsystemid( device_t dev )
 	}
 	printk(BIOS_INFO, "%s [%x/%x]\n", dev_name(dev), dev->subsystem_vendor, dev->subsystem_device );
 	for( i = 0; slot[i].bus < 255; i++) {
-		device_t d;
+		struct device *d;
 		d = dev_find_slot(slot[i].bus,slot[i].devfn);
 		if( d ) {
 			printk(BIOS_DEBUG,"%s subsystem <- %x/%x\n", dev_path(d), dev->subsystem_vendor, dev->subsystem_device);
@@ -665,10 +665,10 @@ static void update_subsystemid( device_t dev )
 	}
 }
 
-static void detect_hw_variant( device_t dev )
+static void detect_hw_variant( struct device *dev )
 {
 
-	device_t nb_dev =0, dev2 = 0;
+	struct device *nb_dev = NULL, *dev2 = NULL;
 	struct southbridge_amd_rs690_config *cfg;
 	u32 lc_state, id = 0;
 
@@ -777,7 +777,7 @@ void smm_lock(void)
  * @param dev - the root device
  */
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 #if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_REALMODE)
 	INT15_function_extensions int15_func;
@@ -803,7 +803,7 @@ static void mainboard_init(device_t dev)
 * enable the dedicated function in sina board.
 * This function called early than rs690_enable.
 *************************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 
 	printk(BIOS_INFO, "%s %s[%x/%x] %s\n",

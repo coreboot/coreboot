@@ -83,7 +83,7 @@ void baytrail_init_scc(void)
 	reg_script_run(scc_after_dll);
 }
 
-void scc_enable_acpi_mode(device_t dev, int iosf_reg, int nvs_index)
+void scc_enable_acpi_mode(struct device *dev, int iosf_reg, int nvs_index)
 {
 	struct reg_script ops[] = {
 		/* Disable PCI interrupt, enable Memory and Bus Master */

@@ -75,7 +75,7 @@ uint32_t nc_read_top_of_low_memory(void)
 	return tolm;
 }
 
-static void nc_read_resources(device_t dev)
+static void nc_read_resources(struct device *dev)
 {
 	unsigned long mmconf;
 	unsigned long bmbound;

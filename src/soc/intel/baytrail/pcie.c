@@ -30,12 +30,12 @@
 static int pll_en_off;
 static uint32_t strpfusecfg;
 
-static inline int root_port_offset(device_t dev)
+static inline int root_port_offset(struct device *dev)
 {
 	return PCI_FUNC(dev->path.pci.devfn);
 }
 
-static inline int is_first_port(device_t dev)
+static inline int is_first_port(struct device *dev)
 {
 	return root_port_offset(dev) == PCIE_PORT1_FUNC;
 }
@@ -84,7 +84,7 @@ static const struct reg_script init_static_after_exit_latency[] = {
 	REG_SCRIPT_END,
 };
 
-static void byt_pcie_init(device_t dev)
+static void byt_pcie_init(struct device *dev)
 {
 	struct reg_script init_script[] = {
 		REG_SCRIPT_NEXT(init_static_before_exit_latency),
@@ -125,7 +125,7 @@ static const struct reg_script no_dev_behind_port[] = {
 	REG_SCRIPT_END,
 };
 
-static void check_port_enabled(device_t dev)
+static void check_port_enabled(struct device *dev)
 {
 	int rp_config = (strpfusecfg & LANECFG_MASK) >> LANECFG_SHIFT;
 
@@ -151,7 +151,7 @@ static void check_port_enabled(device_t dev)
 	}
 }
 
-static u8 all_ports_no_dev_present(device_t dev)
+static u8 all_ports_no_dev_present(struct device *dev)
 {
 	u8 func;
 	u8 temp = dev->path.pci.devfn;
@@ -180,7 +180,7 @@ static u8 all_ports_no_dev_present(device_t dev)
 	return device_not_present;
 }
 
-static void check_device_present(device_t dev)
+static void check_device_present(struct device *dev)
 {
 	/* Set slot implemented. */
 	pci_write_config32(dev, XCAP, pci_read_config32(dev, XCAP) | SI);
@@ -204,7 +204,7 @@ static void check_device_present(device_t dev)
 	}
 }
 
-static void byt_pcie_enable(device_t dev)
+static void byt_pcie_enable(struct device *dev)
 {
 	if (is_first_port(dev)) {
 		struct soc_intel_baytrail_config *config = dev->chip_info;
@@ -226,7 +226,7 @@ static void byt_pcie_enable(device_t dev)
 	southcluster_enable_dev(dev);
 }
 
-static void byt_pciexp_scan_bridge(device_t dev)
+static void byt_pciexp_scan_bridge(struct device *dev)
 {
 	static const struct reg_script wait_for_link_active[] = {
 		REG_PCI_POLL32(LCTL, (1 << 29) , (1 << 29), 50000),
@@ -239,7 +239,8 @@ static void byt_pciexp_scan_bridge(device_t dev)
 	do_pci_scan_bridge(dev, pciexp_scan_bus);
 }
 
-static void pcie_root_set_subsystem(device_t dev, unsigned vid, unsigned did)
+static void pcie_root_set_subsystem(struct device *dev, unsigned vid,
+				    unsigned did)
 {
 	uint32_t didvid = ((did & 0xffff) << 16) | (vid & 0xffff);
 

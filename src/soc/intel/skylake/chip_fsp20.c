@@ -335,7 +335,14 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->ScsEmmcEnabled = config->ScsEmmcEnabled;
 	params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
 	params->ScsSdCardEnabled = config->ScsSdCardEnabled;
-	params->PchIshEnable = config->IshEnable;
+
+	/* If ISH is enabled, enable ISH elements */
+	dev = dev_find_slot(0, PCH_DEVFN_ISH);
+	if (dev)
+		params->PchIshEnable = dev->enabled;
+	else
+		params->PchIshEnable = 0;
+
 	params->PchHdaEnable = config->EnableAzalia;
 	params->PchHdaIoBufferOwnership = config->IoBufferOwnership;
 	params->PchHdaDspEnable = config->DspEnable;

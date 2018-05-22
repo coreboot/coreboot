@@ -360,7 +360,7 @@ static void EmbedComInit(void)
 	outb(0x00, ComBase + 4);
 
 	/* SOutput("Embedded COM output\n"); */
-	/* while(1); */
+	/* while (1); */
 }
 #endif
 

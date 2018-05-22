@@ -307,7 +307,7 @@
 		break;					\
 	}						\
 	return var;					\
-	} while(0)
+	} while (0)
 
 #define SWITCH_CASE_WRITE(func, var, el)	do {	\
 	switch(el) {					\
@@ -321,7 +321,7 @@
 		func##_el3(var);			\
 		break;					\
 	}						\
-	} while(0)
+	} while (0)
 
 #define SWITCH_CASE_TLBI(func, el) do {		\
 	switch(el) {				\
@@ -335,7 +335,7 @@
 		func##_el3();			\
 			break;			\
 	}					\
-	} while(0)
+	} while (0)
 
 /* PSTATE and special purpose register access functions */
 uint32_t raw_read_current_el(void);

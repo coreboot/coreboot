@@ -20,6 +20,7 @@
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/xdci.h>
 #include <romstage_handoff.h>
 #include <soc/intel/common/vbt.h>
@@ -28,7 +29,7 @@
 #include <string.h>
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-static const char *soc_acpi_name(const struct device *dev)
+const char *soc_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		return "PCI0";

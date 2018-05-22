@@ -31,7 +31,9 @@ static struct device_operations usb_xhci_ops = {
 	.init			= soc_xhci_init,
 	.ops_pci		= &pci_dev_ops_pci,
 	.scan_bus		= &scan_usb_bus,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	.acpi_name		= &soc_acpi_name,
+#endif
 };
 
 static const unsigned short pci_device_ids[] = {

@@ -11,6 +11,13 @@ config EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
 	  not defined, the memmap data is instead accessed on 900h-9ffh via
 	  the LPC bus.
 
+config EC_GOOGLE_CHROMEEC_ACPI_USB_PORT_POWER
+	depends on EC_GOOGLE_CHROMEEC
+	def_bool n
+	help
+	  Expose methods for enabling and disabling port power on individual USB
+	  ports through the EC.
+
 config EC_GOOGLE_CHROMEEC_BOARDID
 	depends on EC_GOOGLE_CHROMEEC
 	def_bool n

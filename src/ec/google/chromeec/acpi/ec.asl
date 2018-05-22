@@ -91,6 +91,7 @@ Device (EC0)
 		Offset (0x0e),
 		Offset (0x12),
 		BTID, 8,	// Battery index that host wants to read
+		USPP, 8,	// USB Port Power
 }
 
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)
@@ -511,6 +512,26 @@ Device (EC0)
 	{
 		Return (^TBMD)
 	}
+
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_ACPI_USB_PORT_POWER)
+	/*
+	 * Enable USB Port Power
+	 *   Arg0 = USB port ID
+	 */
+	Method (UPPS, 1, Serialized)
+	{
+		Or (USPP, ShiftLeft (1, Arg0), USPP)
+	}
+
+	/*
+	 * Disable USB Port Power
+	 *   Arg0 = USB port ID
+	 */
+	Method (UPPC, 1, Serialized)
+	{
+		And (USPP, Not (ShiftLeft (1, Arg0)), USPP)
+	}
+#endif
 
 	#include "ac.asl"
 	#include "battery.asl"

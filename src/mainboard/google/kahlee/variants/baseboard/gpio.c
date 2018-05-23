@@ -58,6 +58,9 @@ static const struct soc_amd_gpio gpio_set_stage_reset_old[] = {
 	/* GPIO_92 - WLAN_PCIE_CLKREQ_3V3_ODL */
 	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_UP),
 
+	/* GPIO_122 - APU_BIOS_FLASH_WP_L */
+	PAD_GPI(GPIO_122, PULL_NONE),
+
 	/* GPIO_131 - CONFIG_STRAP3 */
 	PAD_GPI(GPIO_131, PULL_NONE),
 
@@ -110,6 +113,9 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 
 	/* GPIO_92 - WLAN_PCIE_CLKREQ_3V3_ODL */
 	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_UP),
+
+	/* GPIO_122 - APU_BIOS_FLASH_WP_L */
+	PAD_GPI(GPIO_122, PULL_NONE),
 
 	/* GPIO_131 - CONFIG_STRAP3 */
 	PAD_GPI(GPIO_131, PULL_NONE),
@@ -250,9 +256,6 @@ static const struct soc_amd_gpio gpio_set_stage_ram_old[] = {
 
 	/* GPIO_119 - SPK_PA_EN */
 	PAD_GPO(GPIO_119, HIGH),
-
-	/* GPIO_122 - APU_BIOS_FLASH_WP_L */
-	PAD_GPI(GPIO_122, PULL_NONE),
 
 	/* GPIO_126 - DMIC_CLK2_EN */
 	PAD_GPO(GPIO_126, HIGH),
@@ -414,9 +417,6 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 
 	/* GPIO_119 - SPK_PA_EN */
 	PAD_GPO(GPIO_119, HIGH),
-
-	/* GPIO_122 - APU_BIOS_FLASH_WP_L */
-	PAD_GPI(GPIO_122, PULL_NONE),
 
 	/* GPIO_126 - DMIC_CLK2_EN */
 	PAD_GPO(GPIO_126, HIGH),

@@ -18,6 +18,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/acpi.h>
+#include <arch/io.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/amd_pci_util.h>
 #include <cbmem.h>
@@ -143,6 +144,12 @@ static void mainboard_init(void *chip_info)
 
 	/* Set GenIntDisable so that GPIO 90 is configured as a GPIO. */
 	pm_write8(PM_PCIB_CFG, pm_read8(PM_PCIB_CFG) | PM_GENINT_DISABLE);
+
+	/* Set low-power mode for BayHub eMMC bridge's PCIe clock. */
+	clrsetbits_le32((uint32_t *)(MISC_MMIO_BASE + GPP_CLK_CNTRL),
+			GPP_CLK2_CLOCK_REQ_MAP_MASK,
+			GPP_CLK2_CLOCK_REQ_MAP_CLK_REQ2 <<
+			GPP_CLK2_CLOCK_REQ_MAP_SHIFT);
 }
 
 /*************************************************

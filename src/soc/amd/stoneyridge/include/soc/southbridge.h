@@ -356,6 +356,12 @@
 #define PM1_LIMIT			16
 #define GPE0_LIMIT			28
 
+/* Bit definitions for MISC_MMIO_BASE register GPPClkCntrl */
+#define GPP_CLK_CNTRL			0
+#define GPP_CLK2_CLOCK_REQ_MAP_SHIFT	8
+#define GPP_CLK2_CLOCK_REQ_MAP_MASK	(0xf << GPP_CLK2_CLOCK_REQ_MAP_SHIFT)
+#define GPP_CLK2_CLOCK_REQ_MAP_CLK_REQ2	3
+
 struct stoneyridge_aoac {
 	int enable;
 	int status;

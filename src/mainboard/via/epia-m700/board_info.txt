@@ -1,7 +1,0 @@
-Category: mini
-Board URL: http://www.viaembedded.com/en/products/boards/670/1/EPIA-M700_%28EOL%29.html
-ROM package: SOIC8
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: y
-Release year: 2008

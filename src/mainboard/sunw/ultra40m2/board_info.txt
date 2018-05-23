@@ -1,6 +1,0 @@
-Board URL: http://docs.oracle.com/cd/E19127-01/ultra40.ws/820-0123-13/intro.html
-Board name: Ultra 40 M2
-Category: desktop
-ROM package: PLCC
-ROM protocol: LPC
-ROM socketed: y

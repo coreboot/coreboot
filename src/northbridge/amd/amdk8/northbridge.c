@@ -829,9 +829,6 @@ static void setup_uma_memory(void)
 #if IS_ENABLED(CONFIG_GFXUMA)
 	uint32_t topmem = (uint32_t) bsp_topmem();
 
-#if !IS_ENABLED(CONFIG_BOARD_ASROCK_939A785GMH) && \
-	!IS_ENABLED(CONFIG_BOARD_AMD_MAHOGANY)
-
 	switch (topmem) {
 	case 0x10000000:	/* 256M system memory */
 		uma_memory_size = 0x2000000;	/* 32M recommended UMA */
@@ -849,22 +846,6 @@ static void setup_uma_memory(void)
 		uma_memory_size = 0x8000000;	/* 128M recommended UMA */
 		break;
 	}
-#else
-	/* refer to UMA Size Consideration in 780 BDG. */
-	switch (topmem) {
-	case 0x10000000:	/* 256M system memory */
-		uma_memory_size = 0x4000000;	/* 64M recommended UMA */
-		break;
-
-	case 0x20000000:	/* 512M system memory */
-		uma_memory_size = 0x8000000;	/* 128M recommended UMA */
-		break;
-
-	default:		/* 1GB and above system memory */
-		uma_memory_size = 0x10000000;	/* 256M recommended UMA */
-		break;
-	}
-#endif
 
 	uma_memory_base = topmem - uma_memory_size;	/* TOP_MEM1 */
 	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",

@@ -1,2 +1,0 @@
-config BOARD_MSI_MS7260
-	bool "MS-7260 (K9N Neo)"

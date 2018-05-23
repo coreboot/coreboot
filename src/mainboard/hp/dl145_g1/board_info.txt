@@ -1,7 +1,0 @@
-Category: server
-Board URL: http://h20000.www2.hp.com/bizsupport/TechSupport/Document.jsp?lang=en&cc=us&objectID=c00346784&prodTypeId=15351&prodSeriesId=3219755
-ROM package: PLCC
-ROM protocol: LPC
-ROM socketed: y
-Flashrom support: y
-Release year: 2004

@@ -1,2 +1,0 @@
-config BOARD_ASUS_A8V_E_SE
-	bool "A8V-E SE"

@@ -1,2 +1,0 @@
-config BOARD_AMD_SERENGETI_CHEETAH
-	bool "Serengeti Cheetah"

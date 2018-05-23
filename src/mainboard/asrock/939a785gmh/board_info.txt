@@ -1,6 +1,0 @@
-Board name: 939A785GMH/128M
-Category: desktop
-Board URL: http://www.asrock.com/mb/overview.asp?Model=939A785GMH/128M&s=939
-ROM package: DIP8
-ROM protocol: SPI
-Release year: 2009

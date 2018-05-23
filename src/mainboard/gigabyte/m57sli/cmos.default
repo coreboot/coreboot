@@ -1,9 +1,0 @@
-debug_level = Spew
-multi_core = Enable
-slow_cpu = off
-max_mem_clock = 200Mhz
-ECC_memory = Enable
-hw_scrubber = Enable
-interleave_chip_selects = Enable
-power_on_after_fail = Disable
-boot_option = Fallback

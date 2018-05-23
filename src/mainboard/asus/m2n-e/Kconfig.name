@@ -1,2 +1,0 @@
-config BOARD_ASUS_M2N_E
-	bool "M2N-E"

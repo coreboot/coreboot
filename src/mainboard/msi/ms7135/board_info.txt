@@ -1,8 +1,0 @@
-Board name: MS-7135 (K8N Neo3)
-Category: desktop
-Board URL: http://no.msi.com/product/mb/K8N-Neo3.html
-ROM package: PLCC
-ROM protocol: LPC
-ROM socketed: variable
-Flashrom support: y
-Release year: 2005

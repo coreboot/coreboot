@@ -1,2 +1,0 @@
-config BOARD_ASUS_A8N_SLI
-	bool "A8N-SLI"

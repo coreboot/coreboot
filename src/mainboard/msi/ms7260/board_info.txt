@@ -1,7 +1,0 @@
-Board name: MS-7260 (K9N Neo)
-Category: desktop
-Board URL: http://no.msi.com/product/mb/K9N-Neo--PCB-1-0-.html
-ROM package: PLCC
-ROM socketed: y
-Flashrom support: coreboot-only
-Release year: 2007

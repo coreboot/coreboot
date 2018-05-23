@@ -1,2 +1,0 @@
-config BOARD_ASUS_M2V_MX_SE
-	bool "M2V-MX SE"

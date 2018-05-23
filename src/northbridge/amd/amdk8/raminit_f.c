@@ -2348,7 +2348,7 @@ static void set_ecc(const struct mem_controller *ctrl,
 		dcl &= ~DCL_DimmEccEn;
 	}
 #else // CMOS_VSTART_ECC_memory not defined
-#if !IS_ENABLED(CONFIG_ECC_MEMORY)
+#if 1 // was !IS_ENABLED CONFIG_ECC_MEMORY
 	dcl &= ~DCL_DimmEccEn;
 #endif
 #endif

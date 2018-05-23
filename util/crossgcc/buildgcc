@@ -751,12 +751,12 @@ build_cross_GCC() {
 		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
 		--with-mpc=$DESTDIR$TARGETDIR \
 		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE" \
-		|| touch .failed
-	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-gcc || touch .failed
+		&& \
+	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-gcc && \
 	$MAKE install-gcc DESTDIR=$DESTDIR || touch .failed
 
-	if [ "$(echo $TARGETARCH | grep -c -- -mingw32)" -eq 0 ]; then
-		$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libgcc || touch .failed
+	if [ ! -f .failed -a "$(echo $TARGETARCH | grep -c -- -mingw32)" -eq 0 ]; then
+		$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libgcc && \
 		$MAKE install-target-libgcc DESTDIR=$DESTDIR || touch .failed
 	fi
 }

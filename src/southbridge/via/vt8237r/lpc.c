@@ -319,21 +319,11 @@ static void vt8237r_init(struct device *dev)
 	 */
 	pci_write_config8(dev, 0x48, 0x0c);
 #else
-
-  #if IS_ENABLED(CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800) || \
-	IS_ENABLED(CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD)
-	/* It seems that when we pair with the K8T800, we need to disable
-	 * the A2 mask
-	 */
-	pci_write_config8(dev, 0x48, 0x0c);
-  #else
 	/*
 	 * Set Read Pass Write Control Enable
 	 * (force A2 from APIC FSB to low).
 	 */
 	pci_write_config8(dev, 0x48, 0x8c);
-  #endif
-
 #endif
 
 	southbridge_init_common(dev);

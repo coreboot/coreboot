@@ -20,8 +20,6 @@
 #include <arch/early_variables.h>
 #if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700)
 #include <southbridge/amd/sb700/sb700.h>
-#else /* IS_ENABLED(CONFIG_SOUTHBRIDGE_VIA_K8T890) */
-#include <southbridge/via/k8t890/k8t890.h>
 #endif
 
 //0: mean no debug info

@@ -24,7 +24,6 @@ static void pci7xx1_enable(struct device *const dev)
 {
 	printk(BIOS_DEBUG, "%s: TI PCI7xx1 media controller\n", __func__);
 	if (PCI_FUNC(dev->path.pci.devfn) == 0) {
-		const uint16_t secondary = dev->bus->secondary;
 		const unsigned slot = PCI_SLOT(dev->path.pci.devfn);
 
 		int fn;
@@ -33,7 +32,7 @@ static void pci7xx1_enable(struct device *const dev)
 		u16 gcr = pci_read_config16(dev, 0x86);
 		for (fn = 5; fn > 0; --fn) {
 			const struct device *const d =
-				dev_find_slot(secondary, PCI_DEVFN(slot, fn));
+				pcidev_path_behind(dev->bus, PCI_DEVFN(slot, fn));
 			if (!d || d->enabled) continue;
 			printk(BIOS_DEBUG,
 				"%s: Hiding function #%d.\n", __func__, fn);

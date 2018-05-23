@@ -28,7 +28,7 @@ static struct device *find_sm_dev(struct device *dev, u32 devfn)
 {
 	struct device *sm_dev;
 
-	sm_dev = dev_find_slot(dev->bus->secondary, devfn);
+	sm_dev = pcidev_path_behind(dev->bus, devfn);
 	if (!sm_dev)
 		return sm_dev;
 

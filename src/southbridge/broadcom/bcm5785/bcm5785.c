@@ -32,14 +32,15 @@ void bcm5785_enable(struct device *dev)
 	{
 		unsigned devfn;
 		devfn = bus_dev->path.pci.devfn + (1 << 3);
-		sb_pci_main_dev = dev_find_slot(bus_dev->bus->secondary, devfn);
+		sb_pci_main_dev = pcidev_path_behind(bus_dev->bus, devfn);
 		// index = ((dev->path.pci.devfn & ~7) >> 3) + 8;
 	} else if ((bus_dev->vendor == PCI_VENDOR_ID_SERVERWORKS) &&
 		(bus_dev->device == 0x0104)) // device under PCI Bridge (under PCI-X)
 	{
 		unsigned devfn;
 		devfn = bus_dev->bus->dev->path.pci.devfn + (1 << 3);
-		sb_pci_main_dev = dev_find_slot(bus_dev->bus->dev->bus->secondary, devfn);
+		sb_pci_main_dev = pcidev_path_behind(bus_dev->bus->dev->bus,
+						devfn);
 		// index = ((dev->path.pci.devfn & ~7) >> 3) + 8;
 	}
 	else { // same bus
@@ -51,7 +52,7 @@ void bcm5785_enable(struct device *dev)
 			else if (dev->device == 0x0223) // USB
 			{ devfn -= (1<<3); }
 		}
-		sb_pci_main_dev = dev_find_slot(dev->bus->secondary, devfn);
+		sb_pci_main_dev = pcidev_path_behind(dev->bus, devfn);
 		// index = dev->path.pci.devfn & 7;
 	}
 	if (!sb_pci_main_dev) {

@@ -30,7 +30,7 @@ void amd8111_enable(struct device *dev)
 	{
 		unsigned devfn;
 		devfn = bus_dev->path.pci.devfn + (1 << 3);
-		lpc_dev = dev_find_slot(bus_dev->bus->secondary, devfn);
+		lpc_dev = pcidev_path_behind(bus_dev->bus, devfn);
 		index = ((dev->path.pci.devfn & ~7) >> 3) + 8;
 		if (dev->path.pci.devfn == 2) { /* EHCI */
 			index = 16;
@@ -38,7 +38,7 @@ void amd8111_enable(struct device *dev)
 	} else {
 		unsigned devfn;
 		devfn = (dev->path.pci.devfn) & ~7;
-		lpc_dev = dev_find_slot(dev->bus->secondary, devfn);
+		lpc_dev = pcidev_path_behind(dev->bus, devfn);
 		index = dev->path.pci.devfn & 7;
 	}
 	if ((!lpc_dev) || (index >= 17)) {

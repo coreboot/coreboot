@@ -27,7 +27,7 @@ static struct device *find_lpc_dev(struct device *dev, unsigned devfn)
 {
 	struct device *lpc_dev;
 
-	lpc_dev = dev_find_slot(dev->bus->secondary, devfn);
+	lpc_dev = pcidev_path_behind(dev->bus, devfn);
 	if (!lpc_dev)
 		return lpc_dev;
 

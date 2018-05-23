@@ -30,7 +30,7 @@ static struct device *find_lpc_dev(struct device *dev, unsigned devfn)
 {
 	struct device *lpc_dev;
 
-	lpc_dev = dev_find_slot(dev->bus->secondary, devfn);
+	lpc_dev = pcidev_path_behind(dev->bus, devfn);
 
 	if (!lpc_dev)
 		return lpc_dev;
@@ -158,7 +158,7 @@ void mcp55_enable(struct device *dev)
 		return;
 
 	if (index2 != 0) {
-		sm_dev = dev_find_slot(dev->bus->secondary, devfn + 1);
+		sm_dev = pcidev_path_behind(dev->bus, devfn + 1);
 		if (!sm_dev)
 			return;
 		if (sm_dev) {
@@ -187,7 +187,7 @@ void mcp55_enable(struct device *dev)
 	}
 
 	if (index == 16) {
-		sm_dev = dev_find_slot(dev->bus->secondary, devfn + 1);
+		sm_dev = pcidev_path_behind(dev->bus, devfn + 1);
 		if (!sm_dev)
 			return;
 
@@ -211,7 +211,7 @@ void mcp55_enable(struct device *dev)
 
 	/* NIC1 is the final, we need update final reg to 0xe8. */
 	if (index == 9) {
-		sm_dev = dev_find_slot(dev->bus->secondary, devfn + 1);
+		sm_dev = pcidev_path_behind(dev->bus, devfn + 1);
 		if (!sm_dev)
 			return;
 		reg_old = pci_read_config32(sm_dev, 0xe8);

@@ -1,18 +1,11 @@
-source src/cpu/amd/socket_754/Kconfig
-source src/cpu/amd/socket_939/Kconfig
-source src/cpu/amd/socket_940/Kconfig
-source src/cpu/amd/socket_AM2/Kconfig
 source src/cpu/amd/socket_AM2r2/Kconfig
 source src/cpu/amd/socket_AM3/Kconfig
 source src/cpu/amd/socket_C32/Kconfig
 source src/cpu/amd/socket_FM2/Kconfig
 source src/cpu/amd/socket_G34/Kconfig
 source src/cpu/amd/socket_ASB2/Kconfig
-source src/cpu/amd/socket_F/Kconfig
 source src/cpu/amd/socket_F_1207/Kconfig
-source src/cpu/amd/socket_S1G1/Kconfig
 
-source src/cpu/amd/model_fxx/Kconfig
 source src/cpu/amd/family_10h-family_15h/Kconfig
 source src/cpu/amd/geode_lx/Kconfig
 

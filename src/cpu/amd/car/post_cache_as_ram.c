@@ -31,11 +31,7 @@
 #include "cpu/amd/car/disable_cache_as_ram.c"
 
 // For set_sysinfo_in_ram()
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDK8)
-#include "northbridge/amd/amdk8/raminit.h"
-#else
 #include "northbridge/amd/amdfam10/raminit.h"
-#endif
 
 #if CONFIG_RAMTOP <= 0x100000
 	#error "You need to set CONFIG_RAMTOP greater than 1M"

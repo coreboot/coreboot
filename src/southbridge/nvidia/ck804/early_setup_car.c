@@ -18,10 +18,8 @@
 
 #include "ck804.h"
 
-#if !IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDK8)
 /* Someone messed up and snuck in some K8-specific code */
 static int  set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned vendorid, unsigned val) { return 0; /* stub */};
-#endif
 
 static int set_ht_link_ck804(u8 ht_c_num)
 {
@@ -138,7 +136,7 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 		CK804_MB_SETUP
 #endif
 
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10) || (IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDK8) && IS_ENABLED(CONFIG_CPU_AMD_SOCKET_F))
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
 		/*
 		 * Avoid crash (complete with severe memory corruption!) during initial CAR boot
 		 * in ck804_early_setup_x() on Fam10h systems by not touching 0x78.

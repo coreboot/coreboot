@@ -1,5 +1,0 @@
-config BOARD_WINNET_G170
-	bool "WinNET G170 (Neoware CA19, IGEL 2110)"
-	help
-	  G170 is a board manufactured by WinNET, used in thin clients including
-	  HP Neoware CA19 and IGEL 2110.

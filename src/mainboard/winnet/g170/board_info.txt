@@ -1,9 +1,0 @@
-Category: mini
-Vendor name: WinNET
-Board name: G170
-ROM package: PLCC
-ROM protocol: Parallel
-ROM socketed: y
-Flashrom support: y
-Release year: 2006
-Clone of: bcom/winnetp680

@@ -51,7 +51,7 @@ int get_cst_entries(acpi_cstate_t ** entries)
 
 
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	u16 pmbase;
 

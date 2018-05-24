@@ -14,6 +14,7 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <commonlib/fsp.h>
+#include <commonlib/stdlib.h>
 #include <console/console.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
@@ -26,7 +27,7 @@ struct fsp_header fsps_hdr;
 
 static void do_silicon_init(struct fsp_header *hdr)
 {
-	FSPS_UPD upd, *supd;
+	FSPS_UPD *upd, *supd;
 	fsp_silicon_init_fn silicon_init;
 	uint32_t status;
 
@@ -35,19 +36,21 @@ static void do_silicon_init(struct fsp_header *hdr)
 	if (supd->FspUpdHeader.Signature != FSPS_UPD_SIGNATURE)
 		die("Invalid FSPS signature\n");
 
-	memcpy(&upd, supd, sizeof(upd));
+	upd = xmalloc(sizeof(FSPS_UPD));
+
+	memcpy(upd, supd, sizeof(FSPS_UPD));
 
 	/* Give SoC/mainboard a chance to populate entries */
-	platform_fsp_silicon_init_params_cb(&upd);
+	platform_fsp_silicon_init_params_cb(upd);
 
 	/* Call SiliconInit */
 	silicon_init = (void *) (hdr->image_base +
 				 hdr->silicon_init_entry_offset);
-	fsp_debug_before_silicon_init(silicon_init, supd, &upd);
+	fsp_debug_before_silicon_init(silicon_init, supd, upd);
 
 	timestamp_add_now(TS_FSP_SILICON_INIT_START);
 	post_code(POST_FSP_SILICON_INIT);
-	status = silicon_init(&upd);
+	status = silicon_init(upd);
 	timestamp_add_now(TS_FSP_SILICON_INIT_END);
 	post_code(POST_FSP_SILICON_EXIT);
 

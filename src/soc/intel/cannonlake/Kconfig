@@ -231,10 +231,6 @@ config C_ENV_BOOTBLOCK_SIZE
 	hex
 	default 0x8000
 
-config STACK_SIZE
-	hex
-	default 0x2000
-
 choice
 	prompt "Cache-as-ram implementation"
 	default USE_CANNONLAKE_CAR_NEM_ENHANCED if MAINBOARD_HAS_CHROMEOS

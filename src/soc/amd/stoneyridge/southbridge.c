@@ -669,6 +669,10 @@ static void sb_log_pm1_status(uint16_t pm1_sts)
 	if (!IS_ENABLED(CONFIG_ELOG))
 		return;
 
+	if (pm1_sts & WAK_STS)
+		elog_add_event_byte(ELOG_TYPE_ACPI_WAKE,
+				    acpi_is_wakeup_s3() ? ACPI_S3 : ACPI_S5);
+
 	if (pm1_sts & PWRBTN_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PWRBTN, 0);
 

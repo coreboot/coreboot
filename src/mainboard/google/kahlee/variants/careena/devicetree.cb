@@ -1,0 +1,164 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2015-2017 Advanced Micro Devices, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+chip soc/amd/stoneyridge
+	register "spd_addr_lookup" = "
+	{
+		{ {0xA0, 0x00} }, // socket 0 - Channel 0, slot 0
+	}"
+	register "dram_clear_on_reset" = "DRAM_CONTENTS_KEEP"
+	register "uma_mode" = "UMAMODE_SPECIFIED_SIZE"
+	register "uma_size" = "32 * MiB"
+
+	# Enable I2C0 for audio, USB3 hub at 400kHz
+	register "i2c[0]" = "{
+		.speed = I2C_SPEED_FAST,
+		.rise_time_ns = 95,
+		.fall_time_ns = 3,
+	}"
+
+	# Enable I2C1 for H1 at 400kHz
+	register "i2c[1]" = "{
+		.early_init = 1,
+		.speed = I2C_SPEED_FAST,
+		.rise_time_ns = 84,
+		.fall_time_ns = 4,
+	}"
+
+	# Enable I2C2 for trackpad, pen at 400kHz
+	register "i2c[2]" = "{
+		.speed = I2C_SPEED_FAST,
+		.rise_time_ns = 117,
+		.fall_time_ns = 113,
+	}"
+
+	# Enable I2C3 for touchscreen at 400kHz
+	register "i2c[3]" = "{
+		.speed = I2C_SPEED_FAST,
+		.rise_time_ns = 82,
+		.fall_time_ns = 67,
+	}"
+
+	device cpu_cluster 0 on
+		device lapic 10 on end
+	end
+	device domain 0 on
+		subsystemid 0x1022 0x1410 inherit
+		device pci 0.0 on  end # Root Complex
+		device pci 1.0 on  end # Internal Graphics P2P bridge 0x98e4
+		device pci 1.1 on  end # Internal Multimedia
+		device pci 2.0 on  end # PCIe Host Bridge
+		device pci 2.1 on  end #
+		device pci 2.2 on  end #
+		device pci 2.3 on  end #
+		device pci 2.4 on
+			chip drivers/generic/bayhub
+				register "power_saving" = "1"
+				device pci 00.0 on end
+			end
+		end #
+		device pci 2.5 on  end #
+		device pci 8.0 on  end # PSP
+		device pci 9.0 on  end # PCIe Host Bridge
+		device pci 9.2 on  end # HDA
+		device pci 10.0 on  end # xHCI
+		device pci 11.0 on  end # SATA
+		device pci 12.0 on  end # EHCI
+		device pci 14.0 on      # SMbus
+		end # SMbus
+		device pci 14.3 on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on end
+			end
+		end # LPC
+		device pci 14.7 on  end # SD
+		device pci 18.0 on  end
+		device pci 18.1 on  end
+		device pci 18.2 on  end
+		device pci 18.3 on  end
+		device pci 18.4 on  end
+		device pci 18.5 on  end
+	end #domain
+	device mmio 0xfedc2000 on
+		chip drivers/generic/adau7002
+			device generic 0.0 on end
+		end
+		chip drivers/i2c/da7219
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_14)"
+			register "btn_cfg" = "50"
+			register "mic_det_thr" = "500"
+			register "jack_ins_deb" = "20"
+			register "jack_det_rate" = ""32ms_64ms""
+			register "jack_rem_deb" = "1"
+			register "a_d_btn_thr" = "0xa"
+			register "d_b_btn_thr" = "0x16"
+			register "b_c_btn_thr" = "0x21"
+			register "c_mic_btn_thr" = "0x3e"
+			register "btn_avg" = "4"
+			register "adc_1bit_rpt" = "1"
+			register "micbias_lvl" = "2600"
+			register "mic_amp_in_sel" = ""diff""
+			register "mclk_name" = ""oscout1""
+			device i2c 1a on end
+		end
+		chip drivers/generic/max98357a
+			register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_119)"
+			register "sdmode_delay" = "5"
+			device generic 0.1 on end
+		end
+	end
+	device mmio 0xfedc3000 on
+		chip drivers/i2c/tpm
+			register "hid" = ""GOOG0005""
+			register "desc" = ""Cr50 TPM""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_9)"
+			device i2c 50 on end
+		end
+	end
+	device mmio 0xfedc4000 on
+		chip drivers/i2c/generic
+			register "hid" = ""ELAN0000""
+			register "desc" = ""ELAN Touchpad""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_5)"
+			register "wake" = "7"
+			device i2c 15 on end
+		end
+	end
+	device mmio 0xfedc5000 on
+		chip drivers/i2c/generic
+			register "hid" = ""RAYD0001""
+			register "desc" = ""Raydium Touchscreen""
+			register "probed" = "1"
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_11)"
+			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_85)"
+			register "reset_delay_ms" = "20"
+			register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_76)"
+			register "enable_delay_ms" = "1"
+			register "has_power_resource" = "1"
+			device i2c 39 on end
+		end
+		chip drivers/i2c/generic
+			register "hid" = ""ELAN0001""
+			register "desc" = ""ELAN Touchscreen""
+			register "probed" = "1"
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_11)"
+			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_85)"
+			register "reset_delay_ms" = "20"
+			register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_76)"
+			register "enable_delay_ms" = "1"
+			register "has_power_resource" = "1"
+			device i2c 10 on end
+		end
+	end
+end	#chip soc/amd/stoneyridge

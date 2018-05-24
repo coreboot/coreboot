@@ -89,7 +89,6 @@ int spd_read_byte(unsigned int device, unsigned int address)
 }
 
 #include "northbridge/amd/lx/pll_reset.c"
-#include "lib/generic_sdram.c"
 #include "cpu/amd/geode_lx/cpureginit.c"
 #include "cpu/amd/geode_lx/syspreinit.c"
 #include "cpu/amd/geode_lx/msrinit.c"

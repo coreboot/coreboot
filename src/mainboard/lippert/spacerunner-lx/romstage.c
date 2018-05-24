@@ -109,7 +109,6 @@ static int smc_send_config(unsigned char config_data)
 }
 
 #include "northbridge/amd/lx/pll_reset.c"
-#include "lib/generic_sdram.c"
 #include "cpu/amd/geode_lx/cpureginit.c"
 #include "cpu/amd/geode_lx/syspreinit.c"
 #include "cpu/amd/geode_lx/msrinit.c"

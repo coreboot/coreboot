@@ -5,5 +5,6 @@ ramstage-y += northbridgeinit.c
 ramstage-y += grphinit.c
 
 romstage-y += raminit.c
+romstage-y += generic_sdram.c
 
 endif

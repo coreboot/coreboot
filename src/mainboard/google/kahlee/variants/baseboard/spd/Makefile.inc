@@ -14,7 +14,7 @@
 ## GNU General Public License for more details.
 ##
 
-LIB_SPD_DEPS = $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/spd/$(f).spd.hex)
+LIB_SPD_DEPS = $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/variants/baseboard/spd/$(f).spd.hex)
 
 SPD_SOURCES =  hynix-H5AN8G6NAFR-UH		# 0b0000
 SPD_SOURCES += hynix-H5ANAG6NAMR-UH		# 0b0001

@@ -13,7 +13,7 @@
 # GNU General Public License for more details.
 #
 
-subdirs-y += spd
+subdirs-y += ../baseboard/spd
 
 romstage-y += romstage.c
 

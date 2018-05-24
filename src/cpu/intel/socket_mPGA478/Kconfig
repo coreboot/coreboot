@@ -1,4 +1,0 @@
-config CPU_INTEL_SOCKET_MPGA478
-	bool
-	select CPU_INTEL_MODEL_69X
-	select CPU_INTEL_MODEL_6DX

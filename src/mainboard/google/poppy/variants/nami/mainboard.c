@@ -23,10 +23,22 @@
 #include <device/device.h>
 #include <drivers/intel/gma/opregion.h>
 #include <ec/google/chromeec/ec.h>
+#include <intelblocks/mp_init.h>
 #include <smbios.h>
 #include <soc/ramstage.h>
 #include <string.h>
 #include <variant/sku.h>
+
+#define PL2_I7_SKU	44
+#define PL2_DEFAULT	29
+
+static uint32_t get_pl2(void)
+{
+	if (cpuid_eax(1) == CPUID_KABYLAKE_Y0)
+		return PL2_I7_SKU;
+
+	return PL2_DEFAULT;
+}
 
 uint32_t variant_board_sku(void)
 {
@@ -42,16 +54,21 @@ uint32_t variant_board_sku(void)
 	return sku_id;
 }
 
+/* Override dev tree settings per board */
 void variant_devtree_update(void)
 {
-	/* Override dev tree settings per board */
 	uint32_t sku_id = variant_board_sku();
 	struct device *root = SA_DEV_ROOT;
 	config_t *cfg = root->chip_info;
+
+	/* Update PL2 based on SKU. */
+	cfg->tdp_pl2_override = get_pl2();
+
 	switch (sku_id) {
 	case SKU_1_VAYNE:
 	case SKU_2_VAYNE:
-		cfg->usb2_ports[5].enable = 0;//rear camera
+		/* Disable unused port USB port */
+		cfg->usb2_ports[5].enable = 0;
 		break;
 	default:
 		break;

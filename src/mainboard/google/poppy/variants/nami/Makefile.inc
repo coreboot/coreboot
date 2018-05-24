@@ -33,7 +33,6 @@ romstage-y += memory.c
 
 ramstage-y += gpio.c
 ramstage-y += nhlt.c
-ramstage-y += pl2.c
 ramstage-y += mainboard.c
 
 # Add OEM ID table

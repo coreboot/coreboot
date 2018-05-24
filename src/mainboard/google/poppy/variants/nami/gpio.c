@@ -216,8 +216,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_E2, 1, DEEP),
 	/* E3  : CPU_GP0 ==> TRACKPAD_INT# */
 	PAD_CFG_GPI_APIC(GPP_E3, NONE, PLTRST),
-	/* E4  : SATA_DEVSLP0 ==> NC(TP914) */
-	PAD_CFG_NC(GPP_E4),
+	/* E4  : SATA_DEVSLP0 ==> BT_OFF# */
+	PAD_CFG_GPO(GPP_E4, 1, DEEP),
 	/* E5  : SATA_DEVSLP1 ==> NC(TP928) */
 	PAD_CFG_NC(GPP_E5),
 	/* E6  : SATA_DEVSLP2 ==> NC(TP915) */

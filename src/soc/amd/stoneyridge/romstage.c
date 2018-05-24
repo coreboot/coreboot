@@ -28,6 +28,7 @@
 #include <chip.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
+#include <elog.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
 #include <soc/northbridge.h>
@@ -94,6 +95,8 @@ asmlinkage void car_stage_entry(void)
 		msr_t sys_cfg = rdmsr(SYSCFG_MSR);
 		sys_cfg.lo &= ~SYSCFG_MSR_TOM2WB;
 		wrmsr(SYSCFG_MSR, sys_cfg);
+		if (IS_ENABLED(CONFIG_ELOG_BOOT_COUNT))
+			boot_count_increment();
 	} else {
 		printk(BIOS_INFO, "S3 detected\n");
 		post_code(0x60);

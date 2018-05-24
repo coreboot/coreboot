@@ -155,7 +155,7 @@ const char *soc_acpi_name(const struct device *dev)
 	return NULL;
 }
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
@@ -178,7 +178,7 @@ static struct device_operations cpu_bus_ops = {
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -196,7 +196,7 @@ static void enable_dev(device_t dev)
  */
 static void pcie_update_device_tree(unsigned int devfn0, int num_funcs)
 {
-	device_t func0;
+	struct device *func0;
 	unsigned int devfn;
 	int i;
 	unsigned int inc = PCI_DEVFN(0, 1);
@@ -217,7 +217,7 @@ static void pcie_update_device_tree(unsigned int devfn0, int num_funcs)
 	 * as that port was move to func0.
 	 */
 	for (i = 1; i < num_funcs; i++, devfn += inc) {
-		device_t dev = dev_find_slot(0, devfn);
+		struct device *dev = dev_find_slot(0, devfn);
 		if (dev == NULL)
 			continue;
 

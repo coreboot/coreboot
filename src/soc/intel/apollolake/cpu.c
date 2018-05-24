@@ -67,7 +67,7 @@ static const struct reg_script core_msr_script[] = {
 	REG_SCRIPT_END
 };
 
-void soc_core_init(device_t cpu)
+void soc_core_init(struct device *cpu)
 {
 	/* Clear out pending MCEs */
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some
@@ -96,7 +96,7 @@ void soc_core_init(device_t cpu)
 }
 
 #if !IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)
-static void soc_init_core(device_t cpu)
+static void soc_init_core(struct device *cpu)
 {
 	soc_core_init(cpu);
 }
@@ -283,7 +283,7 @@ void cpu_lock_sgx_memory(void)
 
 int soc_fill_sgx_param(struct sgx_param *sgx_param)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	assert(dev != NULL);
 	config_t *conf = dev->chip_info;
 

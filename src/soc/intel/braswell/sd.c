@@ -31,7 +31,7 @@
 #define CAP_OVERRIDE_HIGH 0xa4
 # define USE_CAP_OVERRIDES (1 << 31)
 
-static void sd_init(device_t dev)
+static void sd_init(struct device *dev)
 {
 	struct soc_intel_braswell_config *config = dev->chip_info;
 

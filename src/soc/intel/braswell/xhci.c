@@ -32,7 +32,7 @@
 
 #include "chip.h"
 
-static void xhci_init(device_t dev)
+static void xhci_init(struct device *dev)
 {
 	struct soc_intel_braswell_config *config = dev->chip_info;
 

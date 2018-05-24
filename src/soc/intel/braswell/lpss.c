@@ -30,7 +30,8 @@
 
 #include "chip.h"
 
-static void dev_enable_acpi_mode(device_t dev, int iosf_reg, int nvs_index)
+static void dev_enable_acpi_mode(struct device *dev,
+				 int iosf_reg, int nvs_index)
 {
 	struct reg_script ops[] = {
 		/* Disable PCI interrupt, enable Memory and Bus Master */
@@ -67,7 +68,7 @@ static void dev_enable_acpi_mode(device_t dev, int iosf_reg, int nvs_index)
 	reg_script_run_on_dev(dev, ops);
 }
 
-static void dev_ctl_reg(device_t dev, int *iosf_reg, int *nvs_index)
+static void dev_ctl_reg(struct device *dev, int *iosf_reg, int *nvs_index)
 {
 	*iosf_reg = -1;
 	*nvs_index = -1;
@@ -110,7 +111,7 @@ static void dev_ctl_reg(device_t dev, int *iosf_reg, int *nvs_index)
 	}
 }
 
-static void i2c_disable_resets(device_t dev)
+static void i2c_disable_resets(struct device *dev)
 {
 	/* Release the I2C devices from reset. */
 	static const struct reg_script ops[] = {
@@ -137,7 +138,7 @@ static void i2c_disable_resets(device_t dev)
 	}
 }
 
-static void lpss_init(device_t dev)
+static void lpss_init(struct device *dev)
 {
 	struct soc_intel_braswell_config *config = dev->chip_info;
 	int iosf_reg, nvs_index;

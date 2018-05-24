@@ -287,9 +287,6 @@ struct soc_intel_skylake_config {
 	u8 ScsEmmcHs400Enabled;
 	u8 ScsSdCardEnabled;
 
-	/* Integrated Sensor */
-	u8 IshEnable;
-
 	u8 PttSwitch;
 	u8 HeciTimeouts;
 	u8 HsioMessaging;

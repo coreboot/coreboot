@@ -15,6 +15,7 @@
 
 #include <bootblock_common.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/uart.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
 #include <soc/pch.h>
@@ -31,8 +32,8 @@ void bootblock_soc_early_init(void)
 	bootblock_pch_early_init();
 	bootblock_cpu_init();
 	pch_early_iorange_init();
-	if (IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM))
-		pch_uart_init();
+	if (IS_ENABLED(CONFIG_UART_DEBUG))
+		uart_bootblock_init();
 }
 
 void bootblock_soc_init(void)

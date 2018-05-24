@@ -17,7 +17,7 @@ bootblock-y += lpc.c
 bootblock-y += mmap_boot.c
 bootblock-y += pmutil.c
 bootblock-y += spi.c
-bootblock-$(CONFIG_SOC_UART_DEBUG) += uart.c
+bootblock-$(CONFIG_UART_DEBUG) += uart.c
 bootblock-$(CONFIG_FSP_CAR) += bootblock/cache_as_ram_fsp.S
 
 romstage-y += car.c
@@ -25,7 +25,7 @@ romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += romstage.c
 romstage-y += gspi.c
 romstage-y += heci.c
 romstage-y += i2c.c
-romstage-$(CONFIG_SOC_UART_DEBUG) += uart.c
+romstage-$(CONFIG_UART_DEBUG) += uart.c
 romstage-y += memmap.c
 romstage-y += meminit.c
 ifeq ($(CONFIG_SOC_INTEL_GLK),y)
@@ -42,7 +42,7 @@ smm-y += mmap_boot.c
 smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += spi.c
-smm-$(CONFIG_SOC_UART_DEBUG) += uart.c
+smm-$(CONFIG_UART_DEBUG) += uart.c
 smm-y += elog.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
@@ -57,7 +57,7 @@ ramstage-y += i2c.c
 ramstage-y += lpc.c
 ramstage-y += memmap.c
 ramstage-y += mmap_boot.c
-ramstage-$(CONFIG_SOC_UART_DEBUG) += uart.c
+ramstage-$(CONFIG_UART_DEBUG) += uart.c
 ramstage-y += nhlt.c
 ramstage-y += spi.c
 ramstage-y += systemagent.c
@@ -72,7 +72,7 @@ postcar-y += memmap.c
 postcar-y += mmap_boot.c
 postcar-y += spi.c
 postcar-y += i2c.c
-postcar-$(CONFIG_SOC_UART_DEBUG) += uart.c
+postcar-$(CONFIG_UART_DEBUG) += uart.c
 
 postcar-$(CONFIG_FSP_CAR) += exit_car_fsp.S
 
@@ -82,7 +82,7 @@ verstage-y += gspi.c
 verstage-y += heci.c
 verstage-y += memmap.c
 verstage-y += mmap_boot.c
-verstage-$(CONFIG_SOC_UART_DEBUG) += uart.c
+verstage-$(CONFIG_UART_DEBUG) += uart.c
 verstage-y += pmutil.c
 verstage-y += reset.c
 verstage-y += spi.c

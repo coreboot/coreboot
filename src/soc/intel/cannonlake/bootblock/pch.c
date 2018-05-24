@@ -80,6 +80,7 @@ void bootblock_pch_early_init(void)
 	gspi_early_bar_init();
 	p2sb_enable_bar();
 	p2sb_configure_hpet();
+
 	/*
 	 * Enabling PWRM Base for accessing
 	 * Global Reset Cause Register.

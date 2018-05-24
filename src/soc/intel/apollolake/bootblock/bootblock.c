@@ -25,13 +25,13 @@
 #include <intelblocks/rtc.h>
 #include <intelblocks/systemagent.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/uart.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/gpio.h>
 #include <soc/systemagent.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
-#include <soc/uart.h>
 #include <spi-generic.h>
 #include <timestamp.h>
 
@@ -95,8 +95,8 @@ void bootblock_soc_early_init(void)
 	pmc_global_reset_enable(0);
 
 	/* Prepare UART for serial console. */
-	if (IS_ENABLED(CONFIG_SOC_UART_DEBUG))
-		pch_uart_init();
+	if (IS_ENABLED(CONFIG_UART_DEBUG))
+		uart_bootblock_init();
 
 	if (IS_ENABLED(CONFIG_TPM_ON_FAST_SPI))
 		tpm_enable();

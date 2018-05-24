@@ -29,6 +29,5 @@
 #define PCIE_CLK_FREE			0x80
 
 void pch_log_state(void);
-void pch_uart_init(void);
 
 #endif

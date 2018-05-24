@@ -208,7 +208,7 @@ void smihandler_southbridge_sleep(
 	case ACPI_S3:
 		printk(BIOS_DEBUG, "SMI#: Entering S3 (Suspend-To-RAM)\n");
 
-		gnvs->uior = uart_debug_controller_is_initialized();
+		gnvs->uior = uart_is_controller_initialized();
 
 		/* Invalidate the cache before going to S3 */
 		wbinvd();

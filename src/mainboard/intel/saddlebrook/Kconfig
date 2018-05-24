@@ -33,7 +33,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SADDLEBROOK_USES_FSP1_1
 	select HAVE_CMOS_DEFAULT
 
-
 config SADDLEBROOK_USES_FSP1_1
 	bool "FSP driver 1.1"
 

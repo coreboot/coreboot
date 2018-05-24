@@ -169,7 +169,7 @@ unsigned long southbridge_write_acpi_tables(struct device *device,
 					    struct acpi_rsdp *rsdp)
 {
 	current = acpi_write_dbg2_pci_uart(rsdp, current,
-					   pch_uart_get_debug_controller(),
+					   uart_get_device(),
 					   ACPI_ACCESS_SIZE_DWORD_ACCESS);
 	return acpi_write_hpet(device, current, rsdp);
 }

@@ -54,4 +54,12 @@
 #define EARLY_I2C_BASE_ADDRESS		0xfe020000
 #define EARLY_I2C_BASE(x)	(EARLY_I2C_BASE_ADDRESS + (0x1000 * (x)))
 
+#define UART_BASE_SIZE			0x1000
+
+#define UART_BASE_0_ADDRESS		0xddffc000
+/* UART BARs are 4KB in size */
+#define UART_BASE_0_ADDR(x)	(UART_BASE_0_ADDRESS + (2 * \
+					UART_BASE_SIZE * (x)))
+#define UART_BASE(x)		UART_BASE_0_ADDR(x)
+
 #endif /* _SOC_APOLLOLAKE_IOMAP_H_ */

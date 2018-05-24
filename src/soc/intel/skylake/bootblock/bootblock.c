@@ -16,6 +16,7 @@
 #include <bootblock_common.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/uart.h>
 #include <soc/bootblock.h>
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
@@ -32,7 +33,7 @@ void bootblock_soc_early_init(void)
 	pch_early_iorange_init();
 
 	if (IS_ENABLED(CONFIG_UART_DEBUG))
-		pch_uart_init();
+		uart_bootblock_init();
 }
 
 void bootblock_soc_init(void)

@@ -47,7 +47,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
-#include <soc/uart.h>
 #include <spi_flash.h>
 #include <string.h>
 #include <timestamp.h>
@@ -252,7 +251,7 @@ asmlinkage void car_stage_entry(void)
 static void fill_console_params(FSPM_UPD *mupd)
 {
 	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL)) {
-		if (IS_ENABLED(CONFIG_SOC_UART_DEBUG)) {
+		if (IS_ENABLED(CONFIG_UART_DEBUG)) {
 			mupd->FspmConfig.SerialDebugPortDevice =
 					CONFIG_UART_FOR_CONSOLE;
 			/* use MMIO port type */

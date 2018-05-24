@@ -5,6 +5,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_INTEL_APOLLOLAKE
 	select BOARD_ROMSIZE_KB_16384
 	select HAVE_ACPI_TABLES
+	select UART_DEBUG
 
 config MAINBOARD_DIR
 	string
@@ -53,10 +54,6 @@ config IFD_BIN_PATH
 config HAVE_IFD_BIN
 	bool
 	depends on NEED_IFWI
-	default y
-
-config SOC_UART_DEBUG
-	bool "use serial port debugging"
 	default y
 
 config ADD_FSP_BINARIES

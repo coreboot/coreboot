@@ -170,12 +170,7 @@ config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
 	int
 	default 133
 
-config CONSOLE_UART_BASE_ADDRESS
-	depends on CONSOLE_SERIAL
-	hex
-	default 0xde000000
-
-config SOC_UART_DEBUG
+config UART_DEBUG
 	bool "Enable SoC UART debug port selected by UART_FOR_CONSOLE."
 	default n
 	select CONSOLE_SERIAL

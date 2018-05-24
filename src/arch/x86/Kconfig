@@ -193,6 +193,9 @@ config IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS
 	bool
 	default n
 
+config HPET_ADDRESS_OVERRIDE
+	def_bool n
+
 config HPET_ADDRESS
 	hex
 	default 0xfed00000 if !HPET_ADDRESS_OVERRIDE

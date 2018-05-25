@@ -119,7 +119,7 @@ void set_power_limits(u8 power_limit_1_time)
 	unsigned int power_unit;
 	unsigned int tdp, min_power, max_power, max_time, tdp_pl2;
 	u8 power_limit_1_val;
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	config_t *conf = dev->chip_info;
 
 	if (power_limit_1_time > ARRAY_SIZE(power_limit_time_sec_to_msr))
@@ -241,7 +241,7 @@ void set_power_limits(u8 power_limit_1_time)
 
 static void configure_thermal_target(void)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	config_t *conf = dev->chip_info;
 	msr_t msr;
 
@@ -261,7 +261,7 @@ static void configure_thermal_target(void)
 
 static void configure_isst(void)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	config_t *conf = dev->chip_info;
 	msr_t msr;
 
@@ -287,7 +287,7 @@ static void configure_isst(void)
 
 static void configure_misc(void)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	config_t *conf = dev->chip_info;
 	msr_t msr;
 
@@ -419,7 +419,7 @@ static void enable_pm_timer_emulation(void)
 }
 
 /* All CPUs including BSP will run the following function. */
-void soc_core_init(device_t cpu)
+void soc_core_init(struct device *cpu)
 {
 	/* Clear out pending MCEs */
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some
@@ -544,7 +544,7 @@ void cpu_lock_sgx_memory(void)
 
 int soc_fill_sgx_param(struct sgx_param *sgx_param)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	assert(dev != NULL);
 	config_t *conf = dev->chip_info;
 
@@ -558,7 +558,7 @@ int soc_fill_sgx_param(struct sgx_param *sgx_param)
 }
 int soc_fill_vmx_param(struct vmx_param *vmx_param)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	assert(dev != NULL);
 	config_t *conf = dev->chip_info;
 

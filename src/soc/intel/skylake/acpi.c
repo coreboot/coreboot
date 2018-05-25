@@ -495,13 +495,13 @@ static void generate_p_state_entries(int core, int cores_per_package)
 	acpigen_pop_len();
 }
 
-void generate_cpu_entries(device_t device)
+void generate_cpu_entries(struct device *device)
 {
 	int core_id, cpu_id, pcontrol_blk = ACPI_BASE_ADDRESS, plen = 6;
 	int totalcores = dev_count_cpu();
 	int cores_per_package = get_cores_per_package();
 	int numcpus = totalcores/cores_per_package;
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	config_t *config = dev->chip_info;
 	int is_s0ix_enable = config->s0ix_enable;
 	int max_c_state;
@@ -629,7 +629,7 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 	return current;
 }
 
-unsigned long southbridge_write_acpi_tables(device_t device,
+unsigned long southbridge_write_acpi_tables(struct device *device,
 					     unsigned long current,
 					     struct acpi_rsdp *rsdp)
 {
@@ -640,7 +640,7 @@ unsigned long southbridge_write_acpi_tables(device_t device,
 	return acpi_align_current(current);
 }
 
-void southbridge_inject_dsdt(device_t device)
+void southbridge_inject_dsdt(struct device *device)
 {
 	global_nvs_t *gnvs;
 

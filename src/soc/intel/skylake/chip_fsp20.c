@@ -50,7 +50,7 @@ void soc_fsp_load(void)
 	fsps_load(romstage_handoff_is_resume());
 }
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
@@ -75,7 +75,7 @@ static struct device_operations cpu_bus_ops = {
 #endif
 };
 
-static void soc_enable(device_t dev)
+static void soc_enable(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN)

@@ -27,12 +27,12 @@
 #include <symbols.h>
 #include <arm-trusted-firmware/plat/rockchip/rk3399/include/shared/bl31_param.h>
 
-static void soc_read_resources(device_t dev)
+static void soc_read_resources(struct device *dev)
 {
 	ram_resource(dev, 0, (uintptr_t)_dram / KiB, sdram_size_mb() * KiB);
 }
 
-static void soc_init(device_t dev)
+static void soc_init(struct device *dev)
 {
 	/*
 	 * Reserve the whole TZRAM area because it will be marked as secure-only
@@ -54,7 +54,7 @@ static struct device_operations soc_ops = {
 	.init = soc_init,
 };
 
-static void enable_soc_dev(device_t dev)
+static void enable_soc_dev(struct device *dev)
 {
 	dev->ops = &soc_ops;
 }

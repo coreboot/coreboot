@@ -21,7 +21,7 @@
 
 #define REF_CLK_24M (0x1 << 0)
 
-void rk_display_init(device_t dev);
+void rk_display_init(struct device *dev);
 void mainboard_power_on_backlight(void);
 const struct mipi_panel_data *mainboard_get_mipi_mode
 				(struct edid_mode *edid_mode);

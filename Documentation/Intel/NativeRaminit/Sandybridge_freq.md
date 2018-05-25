@@ -69,7 +69,7 @@ It is possible to override the soft fuses limit by using a board-specific
 
 > **Note:** Ignoring max mem freq. fuses is supported since coreboot 4.7.
 
-## <a name="hard_fuses"></a> Hard fuses
+## Hard fuses
 "Hard" fuses are programmed by Intel and limit the maximum frequency that can
 be used on a given CPU/board/chipset. At time of writing there's no register
 to read this limit, before trying to set a given DRAM frequency. The memory PLL
@@ -77,8 +77,8 @@ won't lock, indicating that the chosen memory multiplier isn't available. In
 this case coreboot tries the next smaller memory multiplier until the PLL will
 lock.
 
-## <a name="devicetree"></a> Devicetree
-The devicetree register ```max_mem_clock_mhz``` overrides the "soft" fuses set
+## Devicetree
+The devicetree register `max_mem_clock_mhz` overrides the "soft" fuses set
 by the board manufacturer.
 
 By using this register it's possible to force a minimum operating frequency.

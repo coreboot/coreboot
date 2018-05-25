@@ -10,15 +10,15 @@ Today coreboot is capable enough to handle multi-processor initialization on IA 
 
 The multi-processor initialization code has to take care of lots of duties:
 
-1 Bringing all cores out of reset
-2 Load latest microcode on all cores
-3 Sync latest MTRR snapshot between BSP and APs
-4 Perform sets of CPU feature programming
-  * CPU Power & Thermal Management
-  * Overclocking
-  * Intel Trusted Execution Technology
-  * Intel Software Guard Extensions
-  * Intel Processor Trace etc.
+1. Bringing all cores out of reset
+2. Load latest microcode on all cores
+3. Sync latest MTRR snapshot between BSP and APs
+4. Perform sets of CPU feature programming
+   * CPU Power & Thermal Management
+   * Overclocking
+   * Intel Trusted Execution Technology
+   * Intel Software Guard Extensions
+   * Intel Processor Trace etc.
 
 This above CPU feature programming lists are expected to grow with current and future
 CPU complexity and there might be some cases where certain feature programming mightbe
@@ -39,30 +39,39 @@ programming using coreboot published APIs.
 Due to the fact that FSP is using EFI infrastructure and need to relying on install/locate
 PPI to perform certain API call, hence coreboot has to created MP services APIs known as
 EFI_MP_SERVICES_PPI as per PI specification volume 1, section 8.3.9.
-More details here: http://www.uefi.org/sites/default/files/resources/PI_Spec_1_6.pdf
+More details here: [PI_Spec_1_6]
 
 ### coreboot to publish EFI_MP_SERVICES_PPI APIs
-| API                          | Description                                                      |
-|------------------------------|------------------------------------------------------------------|
-| PeiGetNumberOfProcessors     | Get the number of CPU's.                                         |
-| PeiGetProcessorInfo          | Get information on a specific CPU.                               |
-| PeiStartupAllAPs             | Activate all of the application processors.                      |
-| PeiStartupThisAP             | Activate a specific application processor.                       |
-| PeiSwitchBSP                 | Switch the boot strap processor.                                 |
-| PeiEnableDisableAP           | Enable or disable an application processor.                      |
-| PeiWhoAmI                    | Identify the currently executing processor.                      |
-|------------------------------|------------------------------------------------------------------|
 
+```eval_rst
++------------------------------+------------------------------------------------------------------+
+| API                          | Description                                                      |
++==============================+==================================================================+
+| PeiGetNumberOfProcessors     | Get the number of CPU's.                                         |
++------------------------------+------------------------------------------------------------------+
+| PeiGetProcessorInfo          | Get information on a specific CPU.                               |
++------------------------------+------------------------------------------------------------------+
+| PeiStartupAllAPs             | Activate all of the application processors.                      |
++------------------------------+------------------------------------------------------------------+
+| PeiStartupThisAP             | Activate a specific application processor.                       |
++------------------------------+------------------------------------------------------------------+
+| PeiSwitchBSP                 | Switch the boot strap processor.                                 |
++------------------------------+------------------------------------------------------------------+
+| PeiEnableDisableAP           | Enable or disable an application processor.                      |
++------------------------------+------------------------------------------------------------------+
+| PeiWhoAmI                    | Identify the currently executing processor.                      |
++------------------------------+------------------------------------------------------------------+
+```
 
 ## Code Flow
 
 Here is proposed design flow with coreboot has implemented EFI_MP_SERVICES_PPI API and FSP will make
 use of the same to perform some CPU feature programming.
 
-** coreboot-FSP MP init flow **
-![alt text][coreboot_publish_mp_service_api]
+**coreboot-FSP MP init flow**
+![coreboot-fsp mp init flow][coreboot_publish_mp_service_api]
 
-[coreboot_publish_mp_service_api]: coreboot_publish_mp_service_api.png "coreboot-fsp mp init flow"
+[coreboot_publish_mp_service_api]: coreboot_publish_mp_service_api.png
 
 ## Benefits
 1. coreboot was using SkipMpInit=1 which will skip entire FSP CPU feature programming.
@@ -72,3 +81,5 @@ Silicon recommended CPU programming.
 coreboot interfaces to execute those programming.
 3. coreboot will have more control over running those feature programming as API optimization
 handled by coreboot.
+
+[PI_Spec_1_6]: http://www.uefi.org/sites/default/files/resources/PI_Spec_1_6.pdf

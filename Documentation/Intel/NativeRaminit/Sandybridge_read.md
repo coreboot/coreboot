@@ -78,20 +78,20 @@ The highest IO delay was set on the right-hand side, while the last block
 on the left-hand side has zero IO delay.
 
 #### roundtrip 55 DCKs
-![alt text][timA_lane0-3_rt55]
+![timA for lane0 - lane3, roundtrip 55][timA_lane0-3_rt55]
 
-[timA_lane0-3_rt55]: timA_lane0-3_rt55.png "timA for lane0 - lane3, roundtrip 55"
+[timA_lane0-3_rt55]: timA_lane0-3_rt55.png
 
 #### roundtrip 54 DCKs
-![alt text][timA_lane0-3_rt54]
+![timA for lane0 - lane3, roundtrip 54][timA_lane0-3_rt54]
 
-[timA_lane0-3_rt54]: timA_lane0-3_rt54.png "timA for lane0 - lane3, roundtrip 54"
+[timA_lane0-3_rt54]: timA_lane0-3_rt54.png
 
 
 #### roundtrip 53 DCKs
-![alt text][timA_lane0-3_rt53]
+![timA for lane0 - lane3, roundtrip 53][timA_lane0-3_rt53]
 
-[timA_lane0-3_rt53]: timA_lane0-3_rt53.png "timA for lane0 - lane3, roundtrip 53"
+[timA_lane0-3_rt53]: timA_lane0-3_rt53.png
 
 As you can see the signal has some jitter as every sample was taken in a
 different loop iteration. The result register only contains a single bit per
@@ -128,13 +128,13 @@ If it's "high" we have found the preamble.
 The roundtrip time and IO delay will be adjusted until all lanes are aligned.
 The resulting IO delay is visible in the picture below.
 
-** roundtrip time: 49 DCKs, IO delay (at blue point): 6 DCKs **
-![alt text][timA_lane0-3_discover_420x]
+**roundtrip time: 49 DCKs, IO delay (at blue point): 6 DCKs**
+![timA for lane0 - lane3, finding minimum roundtrip time][timA_lane0-3_discover_420x]
 
-[timA_lane0-3_discover_420x]: timA_lane0-3_discover_420x.png "timA for lane0 - lane3, finding minimum roundtrip time"
+[timA_lane0-3_discover_420x]: timA_lane0-3_discover_420x.png
 
-** Note: The sampled data has been shifted by timA. The preamble is now
-in phase. **
+**Note: The sampled data has been shifted by timA. The preamble is now
+in phase.**
 
 ## Fine adjustment
 
@@ -146,8 +146,8 @@ times. The fine adjustment finds the middle of each rising edge (it's actual
 the falling edge of the preamble) to get the final IO phase. You can see the
 result in the picture below.
 
-![alt text][timA_lane0-3_adjust_fine]
+![timA for lane0 - lane3, fine adjustment][timA_lane0-3_adjust_fine]
 
-[timA_lane0-3_adjust_fine]: timA_lane0-3_adjust_fine.png "timA for lane0 - lane3, fine adjustment"
+[timA_lane0-3_adjust_fine]: timA_lane0-3_adjust_fine.png
 
 Lanes 0 - 2 will be adjusted by a phase of -10, while lane 3 is already correct.

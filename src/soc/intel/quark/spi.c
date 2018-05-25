@@ -232,7 +232,7 @@ void spi_init(void)
 	uint32_t bios_control;
 	struct spi_context *context;
 	volatile struct flash_ctrlr *ctrlr;
-	device_t dev;
+	struct device *dev;
 	uint32_t rcba;
 
 	/* Determine the base address of the SPI flash controller */

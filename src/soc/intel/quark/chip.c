@@ -121,7 +121,7 @@ static void chip_init(void *chip_info)
 	fsp_silicon_init(romstage_handoff_is_resume());
 }
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
@@ -132,7 +132,7 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus	= pci_domain_scan_bus,
 };
 
-static void chip_enable_dev(device_t dev)
+static void chip_enable_dev(struct device *dev)
 {
 
 	/* Set the operations if it is a special bus type */

@@ -24,7 +24,7 @@
 #include <soc/ramstage.h>
 #include <soc/reg_access.h>
 
-__weak void mainboard_gpio_i2c_init(device_t dev)
+__weak void mainboard_gpio_i2c_init(struct device *dev)
 {
 	/* Initialize any of the GPIOs or I2C devices */
 	printk(BIOS_SPEW, "WEAK; mainboard_gpio_i2c_init\n");

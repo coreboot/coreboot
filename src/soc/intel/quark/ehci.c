@@ -107,7 +107,7 @@ static const struct reg_script usb_device_port_init_script[] = {
 	REG_SCRIPT_END
 };
 
-static void init(device_t dev)
+static void init(struct device *dev)
 {
 	if ((dev->path.pci.devfn & 7) == EHCI_FUNC) {
 		printk(BIOS_INFO, "Initializing USB PLLs\n");

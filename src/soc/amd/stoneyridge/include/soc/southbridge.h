@@ -353,6 +353,9 @@
 #define   FCH_AOAC_STAT0		BIT(6)
 #define   FCH_AOAC_STAT1		BIT(7)
 
+#define PM1_LIMIT			16
+#define GPE0_LIMIT			28
+
 struct stoneyridge_aoac {
 	int enable;
 	int status;

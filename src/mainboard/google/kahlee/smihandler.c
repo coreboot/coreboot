@@ -20,6 +20,13 @@
 #include <soc/smi.h>
 #include <variant/ec.h>
 
+void mainboard_smi_gpi(u32 gpi_sts)
+{
+	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
+		if (gpi_sts & (1 << EC_SMI_GPI))
+			chromeec_smi_process_events();
+}
+
 void mainboard_smi_sleep(u8 slp_typ)
 {
 	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))

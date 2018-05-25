@@ -43,8 +43,8 @@ enum {
 struct soc_nvidia_tegra210_config;
 struct display_controller;
 
-void dsi_display_startup(device_t dev);
-void dp_display_startup(device_t dev);
+void dsi_display_startup(struct device *dev);
+void dp_display_startup(struct device *dev);
 
 int tegra_dc_init(struct display_controller *disp_ctrl);
 int update_display_mode(struct display_controller *disp_ctrl,

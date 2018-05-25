@@ -1570,7 +1570,7 @@ error_enable:
 	return;
 }
 
-void dp_display_startup(device_t dev)
+void dp_display_startup(struct device *dev)
 {
 	struct soc_nvidia_tegra210_config *config = dev->chip_info;
 	struct display_controller *disp_ctrl =

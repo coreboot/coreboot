@@ -20,13 +20,13 @@
 #include <stdlib.h>
 #include <symbols.h>
 
-static void soc_init(device_t dev)
+static void soc_init(struct device *dev)
 {
 	ram_resource(dev, 0, (uintptr_t)_dram/KiB, sdram_size_mb()*(MiB/KiB));
 	usb_init();
 }
 
-static void soc_noop(device_t dev)
+static void soc_noop(struct device *dev)
 {
 }
 
@@ -38,7 +38,7 @@ static struct device_operations soc_ops = {
 	.scan_bus         = 0,
 };
 
-static void enable_cygnus_dev(device_t dev)
+static void enable_cygnus_dev(struct device *dev)
 {
 	dev->ops = &soc_ops;
 }

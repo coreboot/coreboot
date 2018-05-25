@@ -250,7 +250,14 @@ static inline int elog_smbios_write_type15(unsigned long *current,
 
 extern u32 gsmi_exec(u8 command, u32 *param);
 
+#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
 u32 boot_count_read(void);
+#else
+static inline u32 boot_count_read(void)
+{
+	return 0;
+}
+#endif
 u32 boot_count_increment(void);
 
 /*

@@ -19,11 +19,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
-#include <cpu/x86/lapic_def.h>
-
-/* Macro to access Local APIC registers at default base. */
-#define LAPIC(x)		$(LAPIC_DEFAULT_BASE | LAPIC_ ## x)
-#define START_IPI_VECTOR	((CONFIG_AP_SIPI_VECTOR >> 12) & 0xff)
 
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
@@ -34,14 +29,7 @@
 cache_as_ram:
 	post_code(0x20)
 
-	movl	$LAPIC_BASE_MSR, %ecx
-	rdmsr
-	andl	$LAPIC_BASE_MSR_BOOTSTRAP_PROCESSOR, %eax
-	jz	ap_init
-
-	/* Zero out all fixed range and variable range MTRRs.
-	 * For hyper-threaded CPUs these are shared.
-	 */
+	/* Zero out all fixed range and variable range MTRRs. */
 	movl	$mtrr_table, %esi
 	movl	$((mtrr_table_end - mtrr_table) >> 1), %edi
 	xorl	%eax, %eax
@@ -64,22 +52,7 @@ clear_mtrrs:
 
 	post_code(0x22)
 
-	/* Determine CPU_ADDR_BITS and load PHYSMASK high
-	 * word to %edx.
-	 */
-	movl	$0x80000000, %eax
-	cpuid
-	cmpl	$0x80000008, %eax
-	jc	addrsize_no_MSR
-	movl	$0x80000008, %eax
-	cpuid
-	movb	%al, %cl
-	sub	$32, %cl
-	movl	$1, %edx
-	shl	%cl, %edx
-	subl	$1, %edx
-	jmp	addrsize_set_high
-addrsize_no_MSR:
+	/* Determine CPU_ADDR_BITS and load PHYSMASK high word to %edx. */
 	movl	$1, %eax
 	cpuid
 	andl	$(1 << 6 | 1 << 17), %edx	/* PAE or PSE36 */
@@ -87,141 +60,13 @@ addrsize_no_MSR:
 	movl	$0x0f, %edx
 
 	/* Preload high word of address mask (in %edx) for Variable
-	 * MTRRs 0 and 1 and enable local APIC at default base.
-	 */
+	   MTRRs 0 and 1. */
 addrsize_set_high:
 	xorl	%eax, %eax
 	movl	$MTRR_PHYS_MASK(0), %ecx
 	wrmsr
 	movl	$MTRR_PHYS_MASK(1), %ecx
 	wrmsr
-	movl	$LAPIC_BASE_MSR, %ecx
-	not	%edx
-	movl	%edx, %ebx
-	rdmsr
-	andl	%ebx, %edx
-	andl	$(~LAPIC_BASE_MSR_ADDR_MASK), %eax
-	orl	$(LAPIC_DEFAULT_BASE | LAPIC_BASE_MSR_ENABLE), %eax
-	wrmsr
-
-bsp_init:
-
-	post_code(0x23)
-
-	/* Send INIT IPI to all excluding ourself. */
-	movl	LAPIC(ICR), %edi
-	movl	$(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_INIT), %eax
-1:	movl	%eax, (%edi)
-	movl	$0x30, %ecx
-2:	pause
-	dec	%ecx
-	jnz	2b
-	movl	(%edi), %ecx
-	andl	$LAPIC_ICR_BUSY, %ecx
-	jnz	1b
-
-	post_code(0x24)
-
-	movl	$1, %eax
-	cpuid
-	btl	$28, %edx
-	jnc	sipi_complete
-	bswapl	%ebx
-	movzx	%bh, %edi
-	cmpb	$1, %bh
-	jbe	sipi_complete	/* only one LAPIC ID in package */
-
-	movl	$0, %eax
-	cpuid
-	movb	$1, %bl
-	cmpl	$4, %eax
-	jb	cores_counted
-	movl	$4, %eax
-	movl	$0, %ecx
-	cpuid
-	shr	$26, %eax
-	movb	%al, %bl
-	inc	%bl
-
-cores_counted:
-	movl	%edi, %eax
-	divb	%bl
-	cmpb	$1, %al
-	jbe	sipi_complete	/* only LAPIC ID of a core */
-
-	/* For a hyper-threading processor, cache must not be disabled
-	 * on an AP on the same physical package with the BSP.
-	 */
-
-hyper_threading_cpu:
-
-	/* delay 10 ms */
-	movl	$10000, %ecx
-1:	inb	$0x80, %al
-	dec	%ecx
-	jnz	1b
-
-	post_code(0x25)
-
-	/* Send Start IPI to all excluding ourself. */
-	movl	LAPIC(ICR), %edi
-	movl	$(LAPIC_DEST_ALLBUT | LAPIC_DM_STARTUP | START_IPI_VECTOR), %eax
-1:	movl	%eax, (%edi)
-	movl	$0x30, %ecx
-2:	pause
-	dec	%ecx
-	jnz	2b
-	movl	(%edi), %ecx
-	andl	$LAPIC_ICR_BUSY, %ecx
-	jnz	1b
-
-	/* delay 250 us */
-	movl	$250, %ecx
-1:	inb	$0x80, %al
-	dec	%ecx
-	jnz	1b
-
-	post_code(0x26)
-
-	/* Wait for sibling CPU to start. */
-1:	movl	$(MTRR_PHYS_BASE(0)), %ecx
-	rdmsr
-	andl	%eax, %eax
-	jnz	sipi_complete
-
-	movl	$0x30, %ecx
-2:	pause
-	dec	%ecx
-	jnz	2b
-	jmp	1b
-
-
-ap_init:
-	post_code(0x27)
-
-	/* Do not disable cache (so BSP can enable it). */
-	movl	%cr0, %eax
-	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
-	movl	%eax, %cr0
-
-	post_code(0x28)
-
-	/* MTRR registers are shared between HT siblings. */
-	movl	$(MTRR_PHYS_BASE(0)), %ecx
-	movl	$(1 << 12), %eax
-	xorl	%edx, %edx
-	wrmsr
-
-	post_code(0x29)
-
-ap_halt:
-	cli
-1:	hlt
-	jmp	1b
-
-
-
-sipi_complete:
 
 	post_code(0x2a)
 
@@ -245,41 +90,6 @@ sipi_complete:
 	orl	$MTRR_DEF_TYPE_EN, %eax
 	wrmsr
 
-	/* Enable L2 cache Write-Back (WBINVD and FLUSH#).
-	 *
-	 * MSR is set when DisplayFamily_DisplayModel is one of:
-	 * 06_0x, 06_17, 06_1C
-	 *
-	 * Description says this bit enables use of WBINVD and FLUSH#.
-	 * Should this be set only after the system bus and/or memory
-	 * controller can successfully handle write cycles?
-	 */
-
-#define EAX_FAMILY(a)	(a << 8)	/* for family <= 0fH */
-#define EAX_MODEL(a)	(((a & 0xf0) << 12) | ((a & 0xf) << 4))
-
-	movl	$1, %eax
-	cpuid
-	movl	%eax, %ebx
-	andl	$EAX_FAMILY(0x0f), %eax
-	cmpl	$EAX_FAMILY(0x06), %eax
-	jne	no_msr_11e
-	movl	%ebx, %eax
-	andl	$EAX_MODEL(0xff), %eax
-	cmpl	$EAX_MODEL(0x17), %eax
-	je	has_msr_11e
-	cmpl	$EAX_MODEL(0x1c), %eax
-	je	has_msr_11e
-	andl	$EAX_MODEL(0xf0), %eax
-	cmpl	$EAX_MODEL(0x00), %eax
-	jne	no_msr_11e
-has_msr_11e:
-	movl	$0x11e, %ecx
-	rdmsr
-	orl	$(1 << 8), %eax
-	wrmsr
-no_msr_11e:
-
 	post_code(0x2c)
 
 	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
@@ -288,11 +98,16 @@ no_msr_11e:
 	invd
 	movl	%eax, %cr0
 
-	/* Clear the cache memory region. This will also fill up the cache. */
+	/* Read then clear the CAR region. This will also fill up the cache.
+	 * IMPORTANT: The read is mandatory.
+	 */
+	movl	$CACHE_AS_RAM_BASE, %esi
+	movl	%esi, %edi
 	cld
-	xorl	%eax, %eax
-	movl	$CACHE_AS_RAM_BASE, %edi
 	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
+	rep	lodsl
+	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
+	xorl	%eax, %eax
 	rep	stosl
 
 	post_code(0x2d)

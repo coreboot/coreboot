@@ -71,7 +71,7 @@ static void vx900_print_sata_errors(u32 flags)
 		printk(BIOS_DEBUG, "\tUNRECOGNIZED FIS type\n");
 }
 
-static void vx900_dbg_sata_errors(device_t dev)
+static void vx900_dbg_sata_errors(struct device *dev)
 {
 	/* Port 0 */
 	if (pci_read_config8(dev, 0xa0) & (1 << 0)) {
@@ -100,7 +100,7 @@ static sata_phy_config reference_ephy = {
 	0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-static u32 sata_phy_read32(device_t dev, u8 index)
+static u32 sata_phy_read32(struct device *dev, u8 index)
 {
 	/* The SATA PHY control registers are accessed by a funny index/value
 	 * scheme. Each byte (0,1,2,3) has its own 4-bit index */
@@ -112,7 +112,7 @@ static u32 sata_phy_read32(device_t dev, u8 index)
 	return pci_read_config32(dev, 0x64);
 }
 
-static void sata_phy_write32(device_t dev, u8 index, u32 val)
+static void sata_phy_write32(struct device *dev, u8 index, u32 val)
 {
 	/* The SATA PHY control registers are accessed by a funny index/value
 	 * scheme. Each byte (0,1,2,3) has its own 4-bit index */
@@ -124,7 +124,7 @@ static void sata_phy_write32(device_t dev, u8 index, u32 val)
 	pci_write_config32(dev, 0x64, val);
 }
 
-static void vx900_sata_read_phy_config(device_t dev, sata_phy_config cfg)
+static void vx900_sata_read_phy_config(struct device *dev, sata_phy_config cfg)
 {
 	size_t i;
 	u32 *data = (u32 *) cfg;
@@ -133,7 +133,7 @@ static void vx900_sata_read_phy_config(device_t dev, sata_phy_config cfg)
 	}
 }
 
-static void vx900_sata_write_phy_config(device_t dev, sata_phy_config cfg)
+static void vx900_sata_write_phy_config(struct device *dev, sata_phy_config cfg)
 {
 	size_t i;
 	u32 *data = (u32 *) cfg;
@@ -175,7 +175,7 @@ static void vx900_sata_dump_phy_config(sata_phy_config cfg)
  * Our only option is to operate in IDE mode. We choose native IDE so that we
  * can freely assign an IRQ, and are not forced to use IRQ14
  */
-static void vx900_native_ide_mode(device_t dev)
+static void vx900_native_ide_mode(struct device *dev)
 {
 	/* Disable subclass write protect */
 	pci_mod_config8(dev, 0x45, 1 << 7, 0);
@@ -187,7 +187,7 @@ static void vx900_native_ide_mode(device_t dev)
 	pci_write_config8(dev, PCI_CLASS_PROG, 0x8f);
 }
 
-static void vx900_sata_init(device_t dev)
+static void vx900_sata_init(struct device *dev)
 {
 	/* Enable SATA primary channel IO access */
 	pci_mod_config8(dev, 0x40, 0, 1 << 1);
@@ -255,7 +255,7 @@ static void vx900_sata_init(device_t dev)
 	vx900_dbg_sata_errors(dev);
 }
 
-static void vx900_sata_read_resources(device_t dev)
+static void vx900_sata_read_resources(struct device *dev)
 {
 	pci_dev_read_resources(dev);
 }

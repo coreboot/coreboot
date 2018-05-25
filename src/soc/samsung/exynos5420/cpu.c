@@ -69,7 +69,7 @@ static void set_cpu_id(void)
  * involving lots of machine and callbacks, is hard to debug and
  * verify.
  */
-static void exynos_displayport_init(device_t dev, u32 lcdbase,
+static void exynos_displayport_init(struct device *dev, u32 lcdbase,
 		unsigned long fb_size)
 {
 	struct soc_samsung_exynos5420_config *conf = dev->chip_info;
@@ -129,7 +129,7 @@ static void tps65090_thru_ec_fet_disable(int index)
 	}
 }
 
-static void cpu_enable(device_t dev)
+static void cpu_enable(struct device *dev)
 {
 	unsigned long fb_size = FB_SIZE_KB * KiB;
 	u32 lcdbase = get_fb_base_kb() * KiB;
@@ -150,7 +150,7 @@ static void cpu_enable(device_t dev)
 	set_cpu_id();
 }
 
-static void cpu_init(device_t dev)
+static void cpu_init(struct device *dev)
 {
 	printk(BIOS_INFO, "CPU:   S5P%X @ %ldMHz\n",
 			cpu_id, get_arm_clk() / 1000000);
@@ -164,7 +164,7 @@ static struct device_operations cpu_ops = {
 	.scan_bus         = 0,
 };
 
-static void enable_exynos5420_dev(device_t dev)
+static void enable_exynos5420_dev(struct device *dev)
 {
 	dev->ops = &cpu_ops;
 }

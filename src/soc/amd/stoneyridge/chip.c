@@ -82,6 +82,18 @@ const char *soc_acpi_name(const struct device *dev)
 		return NULL;
 
 	switch (dev->path.pci.devfn) {
+	case PCIE0_DEVFN:
+		return "PBR4";
+	case PCIE1_DEVFN:
+		return "PBR5";
+	case PCIE2_DEVFN:
+		return "PBR6";
+	case PCIE3_DEVFN:
+		return "PBR7";
+	case PCIE4_DEVFN:
+		return "PBR8";
+	case HDA1_DEVFN:
+		return "AZHD";
 	case EHCI1_DEVFN:
 		return "EHC0";
 	case LPC_DEVFN:

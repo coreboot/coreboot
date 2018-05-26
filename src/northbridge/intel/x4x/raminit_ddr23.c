@@ -1815,6 +1815,7 @@ static void configure_mmap(struct sysinfo *s)
 static void set_enhanced_mode(struct sysinfo *s)
 {
 	u8 ch, reg8;
+	u32 reg32;
 
 	MCHBAR32(0xfb0) = 0x1000d024;
 	MCHBAR32(0xfb4) = 0xc842;
@@ -1825,7 +1826,7 @@ static void set_enhanced_mode(struct sysinfo *s)
 	if (s->selected_timings.mem_clk <= MEM_CLOCK_800MHz)
 		MCHBAR8(0x12f) = MCHBAR8(0x12f) | 0x2;
 	else
-		MCHBAR8(0x12f) = MCHBAR8(0x12f) & 0x2;
+		MCHBAR8(0x12f) = MCHBAR8(0x12f) & ~0x2;
 	MCHBAR8(0x6c0) = (MCHBAR8(0x6c0) & ~0xf0) | 0xa0;
 	MCHBAR32(0xfa8) = 0x30d400;
 
@@ -1843,15 +1844,48 @@ static void set_enhanced_mode(struct sysinfo *s)
 
 	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf0);
 	pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 | 1);
-	MCHBAR32(0xfa0) = (MCHBAR32(0xfa0) & ~0x20002) | 0x2;
-	MCHBAR32(0xfa4) = (MCHBAR32(0xfa4) & ~0x219100c3) | 0x219100c2;
-	MCHBAR32(0x2c) = 0x44a53;
+	MCHBAR32(0xfa0) = (MCHBAR32(0xfa0) & ~0x20002) | 0x2
+			| (s->selected_timings.fsb_clk == FSB_CLOCK_1333MHz
+			? 0x20000 : 0);
+	reg32 = 0x219100c2;
+	if (s->selected_timings.fsb_clk == FSB_CLOCK_1333MHz) {
+		reg32 |= 1;
+		if (s->selected_timings.mem_clk == MEM_CLOCK_1066MHz)
+			reg32 &= ~0x10000;
+	} else if (s->selected_timings.fsb_clk == FSB_CLOCK_1066MHz) {
+		reg32 &= ~0x10000;
+	}
+	MCHBAR32(0xfa4) = (MCHBAR32(0xfa4) & ~0x219100c3) | reg32;
+	reg32 = 0x44a00;
+	switch (s->selected_timings.fsb_clk) {
+	case FSB_CLOCK_1333MHz:
+		reg32 |= 0x62;
+		break;
+	case FSB_CLOCK_1066MHz:
+		reg32 |= 0x5a;
+		break;
+	default:
+	case FSB_CLOCK_800MHz:
+		reg32 |= 0x53;
+		break;
+	}
+
+	MCHBAR32(0x2c) = reg32;
 	MCHBAR32(0x30) = 0x1f5a86;
 	MCHBAR32(0x34) = 0x1902810;
 	MCHBAR32(0x38) = 0xf7000000;
-	MCHBAR32(0x3c) = 0x23014410;
-	MCHBAR32(0x40) = (MCHBAR32(0x40) & ~0x8f038000) | 0x8f038000;
-	MCHBAR32(0x20) = 0x33001;
+	reg32 = 0x23014410;
+	if (s->selected_timings.fsb_clk > FSB_CLOCK_800MHz)
+		reg32 = (reg32 & ~0x2000000) | 0x44000000;
+	MCHBAR32(0x3c) = reg32;
+	reg32 = 0x8f038000;
+	if (s->selected_timings.fsb_clk == FSB_CLOCK_1333MHz)
+		reg32 &= ~0x4000000;
+	MCHBAR32(0x40) = (MCHBAR32(0x40) & ~0x8f038000) | reg32;
+	reg32 = 0x00013001;
+	if (s->selected_timings.fsb_clk < FSB_CLOCK_1333MHz)
+		reg32 |= 0x20000;
+	MCHBAR32(0x20) = reg32;
 	pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 & ~1);
 }
 
@@ -1920,7 +1954,7 @@ static void power_settings(struct sysinfo *s)
 		MCHBAR32(0x14) = 0x0010691f;
 	MCHBAR32(0x18) = 0xdf6437f7;
 	MCHBAR32(0x1c) = 0x0;
-	MCHBAR32(0x24) = (MCHBAR32(0x24) & ~0xe0000000) | 0x30000000;
+	MCHBAR32(0x24) = (MCHBAR32(0x24) & ~0xe0000000) | 0x60000000;
 	MCHBAR32(0x44) = (MCHBAR32(0x44) & ~0x1fef0000) | 0x6b0000;
 	MCHBAR16(0x115) = (u16) reg1;
 	MCHBAR32(0x117) = (MCHBAR32(0x117) & ~0xffffff) | reg2;
@@ -1943,8 +1977,8 @@ static void power_settings(struct sysinfo *s)
 	MCHBAR32(0x300) = 0xc0b0a08;
 	MCHBAR32(0x304) = 0x6040201;
 	MCHBAR32(0x30c) = (MCHBAR32(0x30c) & ~0x43c0f) | 0x41405;
-	MCHBAR16(0x610) = 0x232;
-	MCHBAR16(0x612) = 0x2864;
+	MCHBAR16(0x610) = reg3;
+	MCHBAR16(0x612) = reg4;
 	MCHBAR32(0x62c) = (MCHBAR32(0x62c) & ~0xc000000) | 0x4000000;
 	MCHBAR32(0xae4) = 0;
 	MCHBAR32(0xc00) = (MCHBAR32(0xc00) & ~0xf0000) | 0x10000;

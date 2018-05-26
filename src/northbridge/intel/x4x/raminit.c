@@ -352,6 +352,26 @@ static void select_cas_dramfreq_ddr3(struct sysinfo *s,
 	}
 }
 
+/* With DDR3 and 533MHz mem clock and an enabled internal gfx device the display
+   is not usable in non stacked mode, so select stacked mode accordingly */
+static void workaround_stacked_mode(struct sysinfo *s)
+{
+	u32 deven;
+	/* Only a problem on DDR3 */
+	if (s->spd_type == DDR2)
+		return;
+	/* Does not matter if only one channel is populated */
+	if (!CHANNEL_IS_POPULATED(s->dimms, 0)
+		|| !CHANNEL_IS_POPULATED(s->dimms, 1))
+		return;
+	if (s->selected_timings.mem_clk != MEM_CLOCK_1066MHz)
+		return;
+	/* IGD0EN gets disabled if not present before this code runs */
+	deven = pci_read_config32(PCI_DEV(0, 0, 0), D0F0_DEVEN);
+	if (deven & IGD0EN)
+		s->stacked_mode = 1;
+}
+
 static int ddr3_save_dimminfo(u8 dimm_idx, u8 *raw_spd,
 		struct abs_timings *saved_timings, struct sysinfo *s)
 {
@@ -544,6 +564,7 @@ static void decode_spd_select_timings(struct sysinfo *s)
 	else
 		select_cas_dramfreq_ddr3(s, &saved_timings);
 	select_discrete_timings(s, &saved_timings);
+	workaround_stacked_mode(s);
 }
 
 static void find_dimm_config(struct sysinfo *s)

@@ -44,10 +44,6 @@ config MAX_CPUS
 	int
 	default 16
 
-config CACHE_ROM_SIZE_OVERRIDE
-	hex
-	default 0x1000000
-
 config CBFS_SIZE
 	hex
 	default 0x00e00000

@@ -516,10 +516,6 @@ config IOAPIC
 	bool
 	default n
 
-config CACHE_ROM_SIZE_OVERRIDE
-	hex
-	default 0x0
-
 config USE_WATCHDOG_ON_BOOT
 	bool
 	default n

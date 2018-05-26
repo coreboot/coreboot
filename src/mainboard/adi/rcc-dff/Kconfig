@@ -37,10 +37,6 @@ config MAX_CPUS
 	int
 	default 16
 
-config CACHE_ROM_SIZE_OVERRIDE
-	hex
-	default 0x800000
-
 config FSP_FILE
 	string
 	default "../intel/fsp/rangeley/FvFsp.bin"

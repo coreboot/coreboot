@@ -118,12 +118,15 @@ static inline unsigned int fls(unsigned int x)
 }
 #endif /* !defined(__ASSEMBLER__) && !defined(__ROMCC__) */
 
-/* Align up to next power of 2, suitable for ROMCC and assembler too.
- * Range of result 256kB to 128MB is good enough here.
- */
+/* Align up/down to next power of 2, suitable for ROMCC and assembler
+   too. Range of result 256kB to 128MB is good enough here. */
 #define _POW2_MASK(x)	((x>>1)|(x>>2)|(x>>3)|(x>>4)|(x>>5)| \
 					(x>>6)|(x>>7)|(x>>8)|((1<<18)-1))
 #define _ALIGN_UP_POW2(x)	((x + _POW2_MASK(x)) & ~_POW2_MASK(x))
+#define _ALIGN_DOWN_POW2(x)	((x) & ~_POW2_MASK(x))
+
+/* Calculate `4GiB - x` (e.g. absolute address for offset from 4GiB) */
+#define _FROM_4G_TOP(x) (((1 << 20) - ((x) >> 12)) << 12)
 
 /* At the end of romstage, low RAM 0..CACHE_TM_RAMTOP may be set
  * as write-back cacheable to speed up ramstage decompression.
@@ -135,29 +138,29 @@ static inline unsigned int fls(unsigned int x)
 # error "CONFIG_XIP_ROM_SIZE is not a power of 2"
 #endif
 
-/* Select CACHE_ROM_SIZE to use with MTRR setup. For most cases this
- * resolves to a suitable CONFIG_ROM_SIZE but some odd cases need to
- * use CONFIG_CACHE_ROM_SIZE_OVERRIDE in the mainboard Kconfig.
- */
-#if (CONFIG_CACHE_ROM_SIZE_OVERRIDE != 0)
-# define CACHE_ROM_SIZE	CONFIG_CACHE_ROM_SIZE_OVERRIDE
+/* For ROM caching, generally, try to use the next power of 2. */
+#define OPTIMAL_CACHE_ROM_SIZE _ALIGN_UP_POW2(CONFIG_ROM_SIZE)
+#define OPTIMAL_CACHE_ROM_BASE _FROM_4G_TOP(OPTIMAL_CACHE_ROM_SIZE)
+#if (OPTIMAL_CACHE_ROM_SIZE < CONFIG_ROM_SIZE) || \
+    (OPTIMAL_CACHE_ROM_SIZE >= (2 * CONFIG_ROM_SIZE))
+# error "Optimal CACHE_ROM_SIZE can't be derived, _POW2_MASK needs refinement."
+#endif
+
+/* Make sure it doesn't overlap CAR, though. If the gap between
+   CAR and 4GiB is too small, make it at most the size of this
+   gap. As we can't align up (might overlap again), align down
+   to get a power of 2 again, for a single MTRR. */
+#define CAR_END (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)
+#if CAR_END > OPTIMAL_CACHE_ROM_BASE
+# define CACHE_ROM_SIZE _ALIGN_DOWN_POW2(_FROM_4G_TOP(CAR_END))
 #else
-# if ((CONFIG_ROM_SIZE & (CONFIG_ROM_SIZE-1)) == 0)
-#  define CACHE_ROM_SIZE CONFIG_ROM_SIZE
-# else
-#  define CACHE_ROM_SIZE _ALIGN_UP_POW2(CONFIG_ROM_SIZE)
-#  if (CACHE_ROM_SIZE < CONFIG_ROM_SIZE) || (CACHE_ROM_SIZE >= \
-	(2 * CONFIG_ROM_SIZE))
-#   error "CACHE_ROM_SIZE is not optimal."
-#  endif
-# endif
+# define CACHE_ROM_SIZE OPTIMAL_CACHE_ROM_SIZE
+#endif
+#if ((CACHE_ROM_SIZE & (CACHE_ROM_SIZE - 1)) != 0)
+# error "CACHE_ROM_SIZE is not a power of 2, _POW2_MASK needs refinement."
 #endif
 
-#if ((CACHE_ROM_SIZE & (CACHE_ROM_SIZE-1)) != 0)
-# error "CACHE_ROM_SIZE is not a power of 2."
-#endif
-
-#define CACHE_ROM_BASE	(((1<<20) - (CACHE_ROM_SIZE>>12))<<12)
+#define CACHE_ROM_BASE _FROM_4G_TOP(CACHE_ROM_SIZE)
 
 #if (IS_ENABLED(CONFIG_SOC_SETS_MSRS) && !defined(__ASSEMBLER__) \
 	&& !defined(__ROMCC__))

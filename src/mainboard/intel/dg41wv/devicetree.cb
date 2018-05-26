@@ -95,8 +95,8 @@ chip northbridge/intel/x4x		# Northbridge
 				subsystemid 0x8086 0x5756
 			end
 			device pci 1e.0 on end		# PCI bridge
-			device pci 1e.2 off end		# AC ’97 Audio Controller
-			device pci 1e.3 off end		# AC ’97 Modem Controller
+			device pci 1e.2 off end		# AC'97 Audio Controller
+			device pci 1e.3 off end		# AC'97 Modem Controller
 			device pci 1f.0 on		# ISA bridge
 				subsystemid 0x8086 0x5756
 				chip superio/winbond/w83627dhg

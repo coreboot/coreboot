@@ -1,6 +1,8 @@
 #ifndef CPU_X86_MTRR_H
 #define CPU_X86_MTRR_H
 
+#include <commonlib/helpers.h>
+
 /*  These are the region types  */
 #define MTRR_TYPE_UNCACHEABLE		0
 #define MTRR_TYPE_WRCOMB		1
@@ -152,12 +154,20 @@ static inline unsigned int fls(unsigned int x)
    to get a power of 2 again, for a single MTRR. */
 #define CAR_END (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)
 #if CAR_END > OPTIMAL_CACHE_ROM_BASE
-# define CACHE_ROM_SIZE _ALIGN_DOWN_POW2(_FROM_4G_TOP(CAR_END))
+# define CAR_CACHE_ROM_SIZE _ALIGN_DOWN_POW2(_FROM_4G_TOP(CAR_END))
 #else
-# define CACHE_ROM_SIZE OPTIMAL_CACHE_ROM_SIZE
+# define CAR_CACHE_ROM_SIZE OPTIMAL_CACHE_ROM_SIZE
 #endif
-#if ((CACHE_ROM_SIZE & (CACHE_ROM_SIZE - 1)) != 0)
-# error "CACHE_ROM_SIZE is not a power of 2, _POW2_MASK needs refinement."
+#if ((CAR_CACHE_ROM_SIZE & (CAR_CACHE_ROM_SIZE - 1)) != 0)
+# error "CAR CACHE_ROM_SIZE is not a power of 2, _POW2_MASK needs refinement."
+#endif
+
+/* Last but not least, most (if not all) chipsets have MMIO
+   between 0xfe000000 and 0xff000000, so limit to 16MiB. */
+#if CAR_CACHE_ROM_SIZE >= 16 * MiB
+# define CACHE_ROM_SIZE (16 * MiB)
+#else
+# define CACHE_ROM_SIZE CAR_CACHE_ROM_SIZE
 #endif
 
 #define CACHE_ROM_BASE _FROM_4G_TOP(CACHE_ROM_SIZE)

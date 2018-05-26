@@ -1320,10 +1320,8 @@ static void pre_jedec_memory_map(void)
 	MCHBAR16(C1DRB0) = 0x0002;
 	MCHBAR16(C1DRB1) = 0x0004;
 	MCHBAR16(C1DRB2) = 0x0006;
-	/*
-	 * For some reason the boundary needs to be 0x10 instead of 0x8 here.
-	 * Vendor does this too...
-	 */
+	/* In stacked mode the last present rank on ch1 needs to have its
+	   size doubled in c1drbx */
 	MCHBAR16(C1DRB3) = 0x0010;
 	MCHBAR8(0x111) = MCHBAR8(0x111) | STACKED_MEM;
 	MCHBAR32(0x104) = 0;
@@ -1550,7 +1548,7 @@ static void sdram_program_receive_enable(struct sysinfo *s, int fast_boot)
 
 static void set_dradrb(struct sysinfo *s)
 {
-	u8 map, i, ch, r, rankpop0, rankpop1;
+	u8 map, i, ch, r, rankpop0, rankpop1, lastrank_ch1;
 	u32 c0dra = 0;
 	u32 c1dra = 0;
 	u32 c0drb = 0;
@@ -1632,6 +1630,7 @@ static void set_dradrb(struct sysinfo *s)
 		MCHBAR8(0x660) = MCHBAR8(0x660) | 1;
 
 	// DRB
+	lastrank_ch1 = 0;
 	FOR_EACH_RANK(ch, r) {
 		if (ch == 0) {
 			if (RANK_IS_POPULATED(s->dimms, ch, r)) {
@@ -1641,6 +1640,7 @@ static void set_dradrb(struct sysinfo *s)
 			MCHBAR16(0x200 + 2*r) = c0drb;
 		} else {
 			if (RANK_IS_POPULATED(s->dimms, ch, r)) {
+				lastrank_ch1 = r;
 				dra1 = (c1dra >> (8*r)) & 0x7f;
 				c1drb = (u16)(c1drb + drbtab[dra1]);
 			}
@@ -1650,6 +1650,17 @@ static void set_dradrb(struct sysinfo *s)
 
 	s->channel_capacity[0] = c0drb << 6;
 	s->channel_capacity[1] = c1drb << 6;
+
+	/*
+	 * In stacked mode the last present rank on ch1 needs to have its
+	 * size doubled in c1drbx. All subsequent ranks need the same setting
+	 * according to: "Intel 4 Series Chipset Family Datasheet"
+	 */
+	if (s->stacked_mode) {
+		for (r = lastrank_ch1; r < 4; r++)
+			MCHBAR16(0x600 + 2*r) = 2 * c1drb;
+	}
+
 	totalmemorymb = s->channel_capacity[0] + s->channel_capacity[1];
 	printk(BIOS_DEBUG, "Total memory: %d + %d = %dMiB\n",
 		s->channel_capacity[0], s->channel_capacity[1], totalmemorymb);
@@ -1659,10 +1670,16 @@ static void set_dradrb(struct sysinfo *s)
 	size_ch1 = s->channel_capacity[1];
 	size_me = ME_UMA_SIZEMB;
 
-	MCHBAR8(0x111) = MCHBAR8(0x111) & ~0x2;
-	MCHBAR8(0x111) = MCHBAR8(0x111) | (1 << 4);
+	if (s->stacked_mode) {
+		MCHBAR8(0x111) = MCHBAR8(0x111) | STACKED_MEM;
+	} else {
+		MCHBAR8(0x111) = MCHBAR8(0x111) & ~STACKED_MEM;
+		MCHBAR8(0x111) = MCHBAR8(0x111) | (1 << 4);
+	}
 
-	if (size_me == 0) {
+	if (s->stacked_mode) {
+		dual_channel_size = 0;
+	} else if (size_me == 0) {
 		dual_channel_size = MIN(size_ch0, size_ch1) * 2;
 	} else {
 		if (size_ch0 == 0) {
@@ -1677,6 +1694,7 @@ static void set_dradrb(struct sysinfo *s)
 		}
 		dual_channel_size = MIN(size_ch0 - size_me, size_ch1) * 2;
 	}
+
 	MCHBAR16(0x104) = dual_channel_size;
 	single_channel_size = size_ch0 + size_ch1 - dual_channel_size;
 	MCHBAR16(0x102) = single_channel_size;
@@ -1693,11 +1711,13 @@ static void set_dradrb(struct sysinfo *s)
 		map |= 0x18;
 	/* Enable flex mode, we hardcode this everywhere */
 	if (size_me == 0) {
-		map |= 0x04;
-		if (size_ch0 <= size_ch1)
-			map |= 0x01;
+		if (!(s->stacked_mode && size_ch0 != 0 && size_ch1 != 0)) {
+			map |= 0x04;
+			if (size_ch0 <= size_ch1)
+				map |= 0x01;
+		}
 	} else {
-		if (size_ch0 - size_me < size_ch1)
+		if (s->stacked_mode == 0 && size_ch0 - size_me < size_ch1)
 			map |= 0x04;
 	}
 
@@ -1711,7 +1731,9 @@ static void set_dradrb(struct sysinfo *s)
 	 * memory on ch0s end and MCHBAR16(0x108) is the limit of the single
 	 * channel size on ch0.
 	 */
-	if (size_me == 0) {
+	if (s->stacked_mode && size_ch1 != 0) {
+		single_channel_offset = 0;
+	} else if (size_me == 0) {
 		if (size_ch0 > size_ch1)
 			single_channel_offset = dual_channel_size / 2
 				+ single_channel_size;

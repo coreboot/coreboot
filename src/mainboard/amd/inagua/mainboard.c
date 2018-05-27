@@ -17,7 +17,7 @@
 #include <device/device.h>
 
 #include <southbridge/amd/sb800/sb800.h>
-#include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
+#include "SBPLATFORM.h"	/* Platform Specific Definitions */
 
 static void init_gpios(void)
 {

@@ -74,24 +74,24 @@ static const struct reg_script gfx_post_vbios_script[] = {
 	REG_SCRIPT_END
 };
 
-static inline void gfx_run_script(device_t dev, const struct reg_script *ops)
+static inline void gfx_run_script(struct device *dev, const struct reg_script *ops)
 {
 	reg_script_run_on_dev(dev, ops);
 }
 
-static void gfx_pre_vbios_init(device_t dev)
+static void gfx_pre_vbios_init(struct device *dev)
 {
 	printk(BIOS_INFO, "GFX: Pre VBIOS Init\n");
 	gfx_run_script(dev, gpu_pre_vbios_script);
 }
 
-static void gfx_post_vbios_init(device_t dev)
+static void gfx_post_vbios_init(struct device *dev)
 {
 	printk(BIOS_INFO, "GFX: Post VBIOS Init\n");
 	gfx_run_script(dev, gfx_post_vbios_script);
 }
 
-static void gfx_init(device_t dev)
+static void gfx_init(struct device *dev)
 {
 	/* Pre VBIOS Init */
 	gfx_pre_vbios_init(dev);

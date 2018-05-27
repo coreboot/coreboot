@@ -56,7 +56,7 @@ void rangeley_early_initialization(void);
 int soc_silicon_revision(void);
 int soc_silicon_type(void);
 int soc_silicon_supported(int type, int rev);
-void soc_enable(device_t dev);
+void soc_enable(struct device *dev);
 
 /* debugging functions */
 void print_pci_devices(void);

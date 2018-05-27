@@ -28,10 +28,10 @@ unsigned long acpi_madt_irq_overrides(unsigned long current);
 void acpi_init_gnvs(global_nvs_t *gnvs);
 
 #ifndef __SIMPLE_DEVICE__
-unsigned long southcluster_write_acpi_tables(device_t device,
+unsigned long southcluster_write_acpi_tables(struct device *device,
 					     unsigned long current,
 					     struct acpi_rsdp *rsdp);
-void southcluster_inject_dsdt(device_t device);
+void southcluster_inject_dsdt(struct device *device);
 #endif
 
 #endif /* _BAYTRAIL_ACPI_H_ */

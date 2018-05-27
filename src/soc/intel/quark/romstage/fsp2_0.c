@@ -80,8 +80,8 @@ asmlinkage void *car_stage_c_entry(void)
 	postcar_frame_add_mtrr(&pcf, 0x80000000, 0x80000, MTRR_TYPE_WRBACK);
 
 	/* Cache SPI flash - Write protect not supported */
-	postcar_frame_add_mtrr(&pcf, (uint32_t)(-CONFIG_ROM_SIZE),
-		CONFIG_ROM_SIZE, MTRR_TYPE_WRTHROUGH);
+	postcar_frame_add_mtrr(&pcf, CACHE_ROM_BASE, CACHE_ROM_SIZE,
+			       MTRR_TYPE_WRTHROUGH);
 
 	run_postcar_phase(&pcf);
 	return NULL;

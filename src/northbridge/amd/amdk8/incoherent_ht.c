@@ -1,8 +1,19 @@
 /*
- 	This should be done by Eric
-	2004.12 yhlu add multi ht chain dynamically support
-	2005.11 yhlu add let real sb to use small unitid
-*/
+ * This file is part of the coreboot project.
+ *
+ * 2004.12 yhlu add multi ht chain dynamically support
+ * 2005.11 yhlu add let real sb to use small unitid
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/hypertransport_def.h>

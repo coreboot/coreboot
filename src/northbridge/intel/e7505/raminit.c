@@ -1,3 +1,18 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * converted to C 6/2004 yhlu
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 /* This was originally for the e7500, modified for e7501
  * The primary differences are that 7501 apparently can
  * support single channel RAM (i haven't tested),
@@ -8,9 +23,6 @@
  * comparison w/ OEM BIOS values.
  * Steven James 02/06/2003
  */
-
-/* converted to C 6/2004 yhlu */
-
 
 #include <stdint.h>
 #include <device/pci_def.h>

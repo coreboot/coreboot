@@ -53,7 +53,7 @@ static void pch_handle_sideband(config_t *config)
 
 static void pch_finalize(void)
 {
-	device_t dev;
+	struct device *dev;
 	uint32_t reg32;
 	uint16_t tcobase, tcocnt;
 	uint8_t *pmcbase;

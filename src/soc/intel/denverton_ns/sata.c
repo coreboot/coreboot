@@ -68,7 +68,7 @@ static void sata_init(struct device *dev)
 	write32((void *)(abar + 0x04), reg32);
 }
 
-static void sata_enable(device_t dev) { /* TODO */ }
+static void sata_enable(struct device *dev) { /* TODO */ }
 
 static struct device_operations sata_ops = {
 	.read_resources = pci_dev_read_resources,

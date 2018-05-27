@@ -23,14 +23,14 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 
-static void npk_init(device_t dev)
+static void npk_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "pch: npk_init\n");
 
 	/* TODO */
 }
 
-static void pci_npk_read_resources(device_t dev)
+static void pci_npk_read_resources(struct device *dev)
 {
 	/* Skip NorthPeak enumeration. */
 }

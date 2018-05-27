@@ -172,9 +172,8 @@ asmlinkage void car_stage_entry(void)
 			       MTRR_TYPE_WRBACK);
 
 	/* Cache the memory-mapped boot media. */
-	if (IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED))
-		postcar_frame_add_mtrr(&pcf, CACHE_ROM_BASE, CACHE_ROM_SIZE,
-				       MTRR_TYPE_WRPROT);
+	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);
+
 #if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 	/*
 	 * Cache the TSEG region at the top of ram. This region is

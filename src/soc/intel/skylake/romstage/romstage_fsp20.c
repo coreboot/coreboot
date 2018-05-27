@@ -186,8 +186,7 @@ asmlinkage void car_stage_entry(void)
 	}
 
 	/* Cache the ROM as WP just below 4GiB. */
-	postcar_frame_add_mtrr(&pcf, CACHE_ROM_BASE, CACHE_ROM_SIZE,
-			       MTRR_TYPE_WRPROT);
+	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);
 
 	run_postcar_phase(&pcf);
 }

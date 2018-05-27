@@ -283,6 +283,11 @@ void postcar_frame_add_mtrr(struct postcar_frame *pcf,
 				uintptr_t addr, size_t size, int type);
 
 /*
+ * Add variable MTRR covering the memory-mapped ROM with given MTRR type.
+ */
+void postcar_frame_add_romcache(struct postcar_frame *pcf, int type);
+
+/*
  * Push used MTRR and Max MTRRs on to the stack
  * and return pointer to stack top.
  */

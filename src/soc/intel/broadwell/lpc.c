@@ -102,9 +102,9 @@ static void enable_hpet(struct device *dev)
  * 0x80 - The PIRQ is not routed.
  */
 
-static void pch_pirq_init(device_t dev)
+static void pch_pirq_init(struct device *dev)
 {
-	device_t irq_dev;
+	struct device *irq_dev;
 	config_t *config = dev->chip_info;
 
 	pci_write_config8(dev, PIRQA_ROUT, config->pirqa_routing);
@@ -147,7 +147,7 @@ static void pch_pirq_init(device_t dev)
 	}
 }
 
-static void pch_power_options(device_t dev)
+static void pch_power_options(struct device *dev)
 {
 	u16 reg16;
 	const char *state;
@@ -362,7 +362,7 @@ static void pch_pm_init(struct device *dev)
 
 }
 
-static void pch_cg_init(device_t dev)
+static void pch_cg_init(struct device *dev)
 {
 	u32 reg32;
 	u16 reg16;
@@ -460,7 +460,7 @@ static void lpc_init(struct device *dev)
 	pch_set_acpi_mode();
 }
 
-static void pch_lpc_add_mmio_resources(device_t dev)
+static void pch_lpc_add_mmio_resources(struct device *dev)
 {
 	u32 reg;
 	struct resource *res;
@@ -522,7 +522,8 @@ static inline int pch_io_range_in_default(u16 base, u16 size)
  * Note: this function assumes there is no overlap with the default LPC device's
  * claimed range: LPC_DEFAULT_IO_RANGE_LOWER -> LPC_DEFAULT_IO_RANGE_UPPER.
  */
-static void pch_lpc_add_io_resource(device_t dev, u16 base, u16 size, int index)
+static void pch_lpc_add_io_resource(struct device *dev, u16 base, u16 size,
+				    int index)
 {
 	struct resource *res;
 
@@ -535,7 +536,8 @@ static void pch_lpc_add_io_resource(device_t dev, u16 base, u16 size, int index)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void pch_lpc_add_gen_io_resources(device_t dev, int reg_value, int index)
+static void pch_lpc_add_gen_io_resources(struct device *dev, int reg_value,
+					 int index)
 {
 	/*
 	 * Check if the register is enabled. If so and the base exceeds the
@@ -548,7 +550,7 @@ static void pch_lpc_add_gen_io_resources(device_t dev, int reg_value, int index)
 	}
 }
 
-static void pch_lpc_add_io_resources(device_t dev)
+static void pch_lpc_add_io_resources(struct device *dev)
 {
 	struct resource *res;
 	config_t *config = dev->chip_info;
@@ -573,7 +575,7 @@ static void pch_lpc_add_io_resources(device_t dev)
 	pch_lpc_add_gen_io_resources(dev, config->gen4_dec, LPC_GEN4_DEC);
 }
 
-static void pch_lpc_read_resources(device_t dev)
+static void pch_lpc_read_resources(struct device *dev)
 {
 	global_nvs_t *gnvs;
 
@@ -592,7 +594,7 @@ static void pch_lpc_read_resources(device_t dev)
 		memset(gnvs, 0, sizeof(global_nvs_t));
 }
 
-static void southcluster_inject_dsdt(device_t device)
+static void southcluster_inject_dsdt(struct device *device)
 {
 	global_nvs_t *gnvs;
 
@@ -616,7 +618,7 @@ static void southcluster_inject_dsdt(device_t device)
 	}
 }
 
-static unsigned long broadwell_write_acpi_tables(device_t device,
+static unsigned long broadwell_write_acpi_tables(struct device *device,
 						 unsigned long current,
 						 struct acpi_rsdp *rsdp)
 {

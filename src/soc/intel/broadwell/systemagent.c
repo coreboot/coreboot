@@ -37,7 +37,8 @@ u8 systemagent_revision(void)
 	return pci_read_config8(SA_DEV_ROOT, PCI_REVISION_ID);
 }
 
-static int get_pcie_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
+static int get_pcie_bar(struct device *dev, unsigned int index, u32 *base,
+			u32 *len)
 {
 	u32 pciexbar_reg;
 
@@ -70,7 +71,7 @@ static int get_pcie_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
 	return 0;
 }
 
-static int get_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
+static int get_bar(struct device *dev, unsigned int index, u32 *base, u32 *len)
 {
 	u32 bar;
 
@@ -89,7 +90,7 @@ static int get_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
 /* There are special BARs that actually are programmed in the MCHBAR. These
  * Intel special features, but they do consume resources that need to be
  * accounted for. */
-static int get_bar_in_mchbar(device_t dev, unsigned int index, u32 *base,
+static int get_bar_in_mchbar(struct device *dev, unsigned int index, u32 *base,
 			     u32 *len)
 {
 	u32 bar;
@@ -109,7 +110,7 @@ static int get_bar_in_mchbar(device_t dev, unsigned int index, u32 *base,
 struct fixed_mmio_descriptor {
 	unsigned int index;
 	u32 size;
-	int (*get_resource)(device_t dev, unsigned int index,
+	int (*get_resource)(struct device *dev, unsigned int index,
 			    u32 *base, u32 *size);
 	const char *description;
 };
@@ -127,7 +128,7 @@ struct fixed_mmio_descriptor mc_fixed_resources[] = {
  * Add all known fixed MMIO ranges that hang off the host bridge/memory
  * controller device.
  */
-static void mc_add_fixed_mmio_resources(device_t dev)
+static void mc_add_fixed_mmio_resources(struct device *dev)
 {
 	int i;
 
@@ -184,7 +185,7 @@ struct map_entry {
 	const char *description;
 };
 
-static void read_map_entry(device_t dev, struct map_entry *entry,
+static void read_map_entry(struct device *dev, struct map_entry *entry,
 			   uint64_t *result)
 {
 	uint64_t value;
@@ -253,14 +254,14 @@ static struct map_entry memory_map[NUM_MAP_ENTRIES] = {
 	[TSEG_REG] = MAP_ENTRY_BASE_32(TSEG, "TESGMB"),
 };
 
-static void mc_read_map_entries(device_t dev, uint64_t *values)
+static void mc_read_map_entries(struct device *dev, uint64_t *values)
 {
 	int i;
 	for (i = 0; i < NUM_MAP_ENTRIES; i++)
 		read_map_entry(dev, &memory_map[i], &values[i]);
 }
 
-static void mc_report_map_entries(device_t dev, uint64_t *values)
+static void mc_report_map_entries(struct device *dev, uint64_t *values)
 {
 	int i;
 	for (i = 0; i < NUM_MAP_ENTRIES; i++) {
@@ -271,7 +272,7 @@ static void mc_report_map_entries(device_t dev, uint64_t *values)
 	printk(BIOS_DEBUG, "MC MAP: GGC: 0x%x\n", pci_read_config16(dev, GGC));
 }
 
-static void mc_add_dram_resources(device_t dev, int *resource_cnt)
+static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 {
 	unsigned long base_k, size_k;
 	unsigned long touud_k;
@@ -377,7 +378,7 @@ static void mc_add_dram_resources(device_t dev, int *resource_cnt)
 	*resource_cnt = index;
 }
 
-static void systemagent_read_resources(device_t dev)
+static void systemagent_read_resources(struct device *dev)
 {
 	int index = 0;
 	const bool vtd_capable =

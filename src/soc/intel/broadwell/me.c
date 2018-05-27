@@ -110,7 +110,7 @@ static inline void mei_write_dword_ptr(void *ptr, int offset)
 	mei_dump(ptr, dword, offset, "WRITE");
 }
 
-static inline void pci_read_dword_ptr(device_t dev, void *ptr, int offset)
+static inline void pci_read_dword_ptr(struct device *dev, void *ptr, int offset)
 {
 	u32 dword = pci_read_config32(dev, offset);
 	memcpy(ptr, &dword, sizeof(dword));
@@ -433,7 +433,7 @@ static inline int mei_sendrecv_icc(struct icc_header *icc,
  * mbp give up routine. This path is taken if hfs.mpb_rdy is 0 or the read
  * state machine on the BIOS end doesn't match the ME's state machine.
  */
-static void intel_me_mbp_give_up(device_t dev)
+static void intel_me_mbp_give_up(struct device *dev)
 {
 	struct mei_csr csr;
 
@@ -449,7 +449,7 @@ static void intel_me_mbp_give_up(device_t dev)
  * mbp clear routine. This will wait for the ME to indicate that
  * the MBP has been read and cleared.
  */
-static void intel_me_mbp_clear(device_t dev)
+static void intel_me_mbp_clear(struct device *dev)
 {
 	int count;
 	struct me_hfs2 hfs2;
@@ -611,7 +611,7 @@ static int mkhi_hmrfpo_lock_noack(void)
 	return 0;
 }
 
-static void intel_me_finalize(device_t dev)
+static void intel_me_finalize(struct device *dev)
 {
 	u32 reg32;
 
@@ -653,7 +653,7 @@ static int me_icc_set_clock_enables(u32 mask)
 }
 
 /* Determine the path that we should take based on ME status */
-static me_bios_path intel_me_path(device_t dev)
+static me_bios_path intel_me_path(struct device *dev)
 {
 	me_bios_path path = ME_DISABLE_BIOS_PATH;
 	struct me_hfs hfs;
@@ -723,7 +723,7 @@ static me_bios_path intel_me_path(device_t dev)
 }
 
 /* Prepare ME for MEI messages */
-static int intel_mei_setup(device_t dev)
+static int intel_mei_setup(struct device *dev)
 {
 	struct resource *res;
 	struct mei_csr host;
@@ -753,7 +753,7 @@ static int intel_mei_setup(device_t dev)
 }
 
 /* Read the Extend register hash of ME firmware */
-static int intel_me_extend_valid(device_t dev)
+static int intel_me_extend_valid(struct device *dev)
 {
 	struct me_heres status;
 	u32 extend[8] = {0};
@@ -839,7 +839,7 @@ struct mbp_payload {
  * Return 0 to indicate success (send LOCK+EOP)
  * Return 1 to indicate success (send LOCK+EOP with NOACK)
  */
-static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
+static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
 {
 	mbp_header mbp_hdr;
 	u32 me2host_pending;
@@ -968,7 +968,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 }
 
 /* Check whether ME is present and do basic init */
-static void intel_me_init(device_t dev)
+static void intel_me_init(struct device *dev)
 {
 	config_t *config = dev->chip_info;
 	me_bios_path path = intel_me_path(dev);
@@ -1045,7 +1045,7 @@ static void intel_me_init(device_t dev)
 	}
 }
 
-static void intel_me_enable(device_t dev)
+static void intel_me_enable(struct device *dev)
 {
 	/* Avoid talking to the device in S3 path */
 	if (acpi_is_wakeup_s3()) {

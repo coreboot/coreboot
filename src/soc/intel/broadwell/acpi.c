@@ -387,7 +387,7 @@ static void generate_T_state_entries(int core, int cores_per_package)
 
 static void generate_C_state_entries(void)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	config_t *config = dev->chip_info;
 	acpi_cstate_t map[3];
 	int *set;
@@ -534,7 +534,7 @@ static void generate_P_state_entries(int core, int cores_per_package)
 	acpigen_pop_len();
 }
 
-void generate_cpu_entries(device_t device)
+void generate_cpu_entries(struct device *device)
 {
 	int coreID, cpuID, pcontrol_blk = ACPI_BASE_ADDRESS, plen = 6;
 	int totalcores = dev_count_cpu();

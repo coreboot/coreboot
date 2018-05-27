@@ -179,7 +179,7 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 	}
 }
 
-static u32 northbridge_get_base_reg(device_t dev, int reg)
+static u32 northbridge_get_base_reg(struct device *dev, int reg)
 {
 	u32 value;
 
@@ -189,7 +189,7 @@ static u32 northbridge_get_base_reg(device_t dev, int reg)
 	return value;
 }
 
-static void fill_in_relocation_params(device_t dev,
+static void fill_in_relocation_params(struct device *dev,
 				      struct smm_relocation_params *params)
 {
 	u32 tseg_size;
@@ -270,7 +270,7 @@ static void setup_ied_area(struct smm_relocation_params *params)
 void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 				size_t *smm_save_state_size)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 
 	printk(BIOS_DEBUG, "Setting up SMI for CPU\n");
 

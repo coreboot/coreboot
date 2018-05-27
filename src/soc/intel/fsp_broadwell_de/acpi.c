@@ -82,7 +82,7 @@ static int acpi_sci_irq(void)
 {
 	uint8_t actl = 0;
 	static uint8_t sci_irq = 0;
-	device_t dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
 
 	/* If this function was already called, just return the stored value. */
 	if (sci_irq)
@@ -395,7 +395,7 @@ unsigned long northcluster_write_acpi_tables(struct device *const dev,
 					     struct acpi_rsdp *const rsdp)
 {
 	acpi_dmar_t *const dmar = (acpi_dmar_t *)current;
-	device_t vtdev = dev_find_slot(0, PCI_DEVFN(5, 0));
+	struct device *vtdev = dev_find_slot(0, PCI_DEVFN(5, 0));
 
 	/* Create DMAR table only if virtualization is enabled */
 	if (!(pci_read_config32(vtdev, 0x180) & 0x01))
@@ -523,7 +523,7 @@ static void generate_P_state_entries(int core, int cores_per_package)
 	acpigen_pop_len();
 }
 
-void generate_cpu_entries(device_t device)
+void generate_cpu_entries(struct device *device)
 {
 	int core;
 	int pcontrol_blk = get_pmbase(), plen = 6;

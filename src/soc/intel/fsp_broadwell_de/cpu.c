@@ -116,7 +116,7 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = post_mp_init
 };
 
-void broadwell_de_init_cpus(device_t dev)
+void broadwell_de_init_cpus(struct device *dev)
 {
 	struct bus *cpu_bus = dev->link_list;
 
@@ -150,7 +150,7 @@ static void configure_mca(void)
 		wrmsr(MSR_IA32_MC0_STATUS + (i * 4), msr);
 }
 
-static void broadwell_de_core_init(device_t cpu)
+static void broadwell_de_core_init(struct device *cpu)
 {
 	printk(BIOS_DEBUG, "Init Broadwell-DE core.\n");
 	configure_mca();

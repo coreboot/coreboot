@@ -44,7 +44,7 @@ MODULE_ID("$Id: m_userptr.c,v 1.17 2010/01/23 21:20:10 tom Exp $")
 |   Function      :  int set_menu_userptr(MENU *menu, void *userptr)
 |
 |   Description   :  Set the pointer that is reserved in any menu to store
-|                    application relevant informations.
+|                    application relevant information.
 |
 |   Return Values :  E_OK         - success
 +--------------------------------------------------------------------------*/
@@ -61,7 +61,7 @@ set_menu_userptr(MENU * menu, void *userptr)
 |   Function      :  void *menu_userptr(const MENU *menu)
 |
 |   Description   :  Return the pointer that is reserved in any menu to
-|                    store application relevant informations.
+|                    store application relevant information.
 |
 |   Return Values :  Value of the pointer. If no such pointer has been set,
 |                    NULL is returned

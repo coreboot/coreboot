@@ -87,6 +87,8 @@ static void fifo_push(struct fifo *fifo, u8 c)
  */
 static int fifo_is_empty(struct fifo *fifo)
 {
+	if (!fifo)
+		return 1;
 	return fifo->tx == fifo->rx;
 }
 
@@ -332,6 +334,8 @@ static void i8042_data_poll(void)
  */
 u8 i8042_data_ready_ps2(void)
 {
+	if (!initialized)
+		return 0;
 	i8042_data_poll();
 	return !fifo_is_empty(ps2_fifo);
 }
@@ -341,6 +345,8 @@ u8 i8042_data_ready_ps2(void)
  */
 u8 i8042_data_ready_aux(void)
 {
+	if (!initialized)
+		return 0;
 	i8042_data_poll();
 	return !fifo_is_empty(aux_fifo);
 }

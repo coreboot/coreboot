@@ -324,6 +324,9 @@ void keyboard_disconnect(void)
 	if (inb(0x64) == 0xFF)
 		return;
 
+	if (!i8042_has_ps2())
+		return;
+
 	/* Empty keyboard buffer */
 	while (keyboard_havechar())
 		keyboard_getchar();

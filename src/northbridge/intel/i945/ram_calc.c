@@ -91,7 +91,7 @@ void *setup_stack_and_mtrrs(void)
 		die("Unable to initialize postcar frame.\n");
 
 	/* Cache the ROM as WP just below 4GiB. */
-	postcar_frame_add_mtrr(&pcf, -CACHE_ROM_SIZE, CACHE_ROM_SIZE,
+	postcar_frame_add_mtrr(&pcf, CACHE_ROM_BASE, CACHE_ROM_SIZE,
 		MTRR_TYPE_WRPROT);
 
 	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */

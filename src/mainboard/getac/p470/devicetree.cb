@@ -63,19 +63,19 @@ chip northbridge/intel/i945
 			register "docking_supported" = "1"
 			register "p_cnt_throttling_supported" = "1"
 
-                	device pci 1b.0 on end # High Definition Audio
-                	device pci 1c.0 on end # PCIe port 1
-                	device pci 1c.1 on end # PCIe port 2
-                	device pci 1c.2 on end # PCIe port 3
+			device pci 1b.0 on end # High Definition Audio
+			device pci 1c.0 on end # PCIe port 1
+			device pci 1c.1 on end # PCIe port 2
+			device pci 1c.2 on end # PCIe port 3
 			device pci 1c.3 on end # PCIe port 4
 			#device pci 1c.4 off end # PCIe port 5
 			#device pci 1c.5 off end # PCIe port 6
-                	device pci 1d.0 on end # USB UHCI
-                	device pci 1d.1 on end # USB UHCI
-                	device pci 1d.2 on end # USB UHCI
-                	device pci 1d.3 on end # USB UHCI
-                	device pci 1d.7 on end # USB2 EHCI
-                	device pci 1e.0 on
+			device pci 1d.0 on end # USB UHCI
+			device pci 1d.1 on end # USB UHCI
+			device pci 1d.2 on end # USB UHCI
+			device pci 1d.3 on end # USB UHCI
+			device pci 1d.7 on end # USB2 EHCI
+			device pci 1e.0 on
 				chip southbridge/ti/pcixx12
 
 				end

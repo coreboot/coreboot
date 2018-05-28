@@ -30,7 +30,7 @@
 /* Any GEVENT pin can be mapped to any GPE. We try to keep the mapping 1:1, but
  * we make the distinction between GEVENT pin and SCI.
  */
-#define EC_SCI_GPE 		EC_SCI_GEVENT
+#define EC_SCI_GPE		EC_SCI_GEVENT
 #define EC_LID_GPE		EC_LID_GEVENT
 #define PME_GPE			0x0b
 #define PCIE_GPE		0x18

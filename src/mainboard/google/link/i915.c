@@ -305,7 +305,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	auxout[0] = 1 << 31 /* dp */|0x0 << 28/*W*/|DP_TRAINING_PATTERN_SET << 8|0x0;
 	auxout[1] = 0x21000000;
 	/* DP_TRAINING_PATTERN_1 | DP_LINK_SCRAMBLING_DISABLE |
-	 * 	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000021*/
+	 *	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000021*/
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 5, auxin, 0);
 	index = run(index);
 	auxout[0] = 1 << 31 /* dp */|0x0 << 28/*W*/|DP_TRAINING_LANE0_SET << 8|0x3;
@@ -319,7 +319,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	auxout[0] = 1 << 31 /* dp */|0x0 << 28/*W*/|DP_TRAINING_PATTERN_SET << 8|0x0;
 	auxout[1] = 0x22000000;
 	/* DP_TRAINING_PATTERN_2 | DP_LINK_SCRAMBLING_DISABLE |
-	 * 	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000022*/
+	 *	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000022*/
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 5, auxin, 0);
 	index = run(index);
 	auxout[0] = 1 << 31 /* dp */|0x0 << 28/*W*/|DP_TRAINING_LANE0_SET << 8|0x3;
@@ -333,7 +333,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	auxout[0] = 1 << 31 /* dp */|0x0 << 28/*W*/|DP_TRAINING_PATTERN_SET << 8|0x0;
 	auxout[1] = 0x00000000;
 	/* DP_TRAINING_PATTERN_DISABLE | DP_LINK_QUAL_PATTERN_DISABLE |
-	 * 	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000000*/
+	 *	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000000*/
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 5, auxin, 0);
 	index = run(index);
 

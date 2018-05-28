@@ -180,7 +180,7 @@ chip soc/intel/apollolake
 				register "has_power_resource" = "1"
 				device i2c 10 on end
 			end
-		end 	# - I2C 7
+		end	# - I2C 7
 		device pci 18.0 on  end	# - UART 0
 		device pci 18.1 off end	# - UART 1
 		device pci 18.2 on  end	# - UART 2

@@ -30,7 +30,7 @@ chip northbridge/via/vx900		# Northbridge
 		device pci 0.2  on end		# [2410] CPU Bus Control
 		device pci 0.3  on end		# [3410] DRAM Bus Control
 		device pci 0.4  on end		# [4410] Power Management
-		device pci 0.5  on 		# [5410] APIC+Traffic Control
+		device pci 0.5  on		# [5410] APIC+Traffic Control
 			chip drivers/generic/ioapic
 				register "have_isa_interrupts" = "0"
 				register "irq_on_fsb" = "1"

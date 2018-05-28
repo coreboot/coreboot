@@ -28,8 +28,8 @@
 #include <cpu/allwinner/a10/clock.h>
 #include <cpu/allwinner/a10/dramc.h>
 
-#define CPU_AHB_APB0_DEFAULT 		\
-	 CPU_CLK_SRC_OSC24M	 	\
+#define CPU_AHB_APB0_DEFAULT		\
+	 CPU_CLK_SRC_OSC24M		\
 	 | APB0_DIV_1			\
 	 | AHB_DIV_2			\
 	 | AXI_DIV_1

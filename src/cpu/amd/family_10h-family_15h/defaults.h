@@ -523,7 +523,7 @@ static const struct {
 	/* Errata 281 Workaround */
 	{ 3, 0x144, ( AMD_DR_B0 | AMD_DR_B1),
 	 AMD_PTYPE_SVR, 0x00000001, 0x0000000F },
-	 	/* [3:0] RspTok = 0001b */
+		/* [3:0] RspTok = 0001b */
 
 	{ 3, 0x144, AMD_FAM15_ALL, AMD_PTYPE_ALL,
 	  0x00000028, 0x000000ff },
@@ -758,7 +758,7 @@ static const struct {
 	  0x0000006d, 0x000000ff },	/* HT_PHY_HT1_FIFO_PTR_OPT_VALUE */
 
 	{ 0xDF, AMD_FAM10_ALL, AMD_PTYPE_ALL,  HTPHY_LINKTYPE_HT1,
-	  0x0000006d, 0x000000ff }, 	/* HT_PHY_HT1_FIFO_PTR_OPT_VALUE */
+	  0x0000006d, 0x000000ff },	/* HT_PHY_HT1_FIFO_PTR_OPT_VALUE */
 
 	/* Link Phy Receiver Loop Filter Registers */
 	{ 0xD1, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
@@ -782,28 +782,28 @@ static const struct {
 					  [20:16] RttIndex = 04h */
 
 	{ 0xCF, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
-	  0x00000a2a, 0x000000ff }, 	/* P0RcvRdPtr = 0xa,
-	  				   P0XmtRdPtr = 0x2
-	  				   P1RcvRdPtr = 0xa
-	  				   P1XmtRdPtr = 0x0 */
+	  0x00000a2a, 0x000000ff },	/* P0RcvRdPtr = 0xa,
+					   P0XmtRdPtr = 0x2
+					   P1RcvRdPtr = 0xa
+					   P1XmtRdPtr = 0x0 */
 
 	{ 0xDF, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
-	  0x00000a2a, 0x000000ff }, 	/* P0RcvRdPtr = 0xa,
-	  				   P0XmtRdPtr = 0x2
-	  				   P1RcvRdPtr = 0xa
-	  				   P1XmtRdPtr = 0x0 */
+	  0x00000a2a, 0x000000ff },	/* P0RcvRdPtr = 0xa,
+					   P0XmtRdPtr = 0x2
+					   P1RcvRdPtr = 0xa
+					   P1XmtRdPtr = 0x0 */
 
 	{ 0xCF, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
-	  0x00000d4d, 0x000000ff }, 	/* P0RcvRdPtr = 0xd,
-	  				   P0XmtRdPtr = 0x4
-	  				   P1RcvRdPtr = 0xd
-	  				   P1XmtRdPtr = 0x0 */
+	  0x00000d4d, 0x000000ff },	/* P0RcvRdPtr = 0xd,
+					   P0XmtRdPtr = 0x4
+					   P1RcvRdPtr = 0xd
+					   P1XmtRdPtr = 0x0 */
 
 	{ 0xDF, AMD_FAM15_ALL, AMD_PTYPE_ALL,  HTPHY_LINKTYPE_HT1,
-	  0x00000d4d, 0x000000ff }, 	/* P0RcvRdPtr = 0xd,
-	  				   P0XmtRdPtr = 0x4
-	  				   P1RcvRdPtr = 0xd
-	  				   P1XmtRdPtr = 0x0 */
+	  0x00000d4d, 0x000000ff },	/* P0RcvRdPtr = 0xd,
+					   P0XmtRdPtr = 0x4
+					   P1RcvRdPtr = 0xd
+					   P1XmtRdPtr = 0x0 */
 
 	/* Link Phy Receiver Loop Filter Registers */
 	{ 0xD1, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,

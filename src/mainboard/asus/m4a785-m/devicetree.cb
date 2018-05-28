@@ -9,7 +9,7 @@ chip northbridge/amd/amdfam10/root_complex
 		chip northbridge/amd/amdfam10
 			device pci 18.0 on #  northbridge
 				chip southbridge/amd/rs780
-					device pci 0.0 on end # HT  	0x9600
+					device pci 0.0 on end # HT	0x9600
 					device pci 1.0 on end # Internal Graphics P2P bridge 0x9602
 					device pci 2.0 off end # PCIE P2P bridge (external graphics) 0x9603
 					device pci 3.0 off end # PCIE P2P bridge	0x960b
@@ -40,7 +40,7 @@ chip northbridge/amd/amdfam10/root_complex
 					device pci 13.0 on end # USB
 					device pci 13.1 on end # USB
 					device pci 13.2 on end # USB
-	 				device pci 14.0 on # SM
+					device pci 14.0 on # SM
 						chip drivers/generic/generic #dimm 0-0-0
 							device i2c 50 on end
 						end

@@ -546,7 +546,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 */
 	if (IS_ENABLED(CONFIG_DEBUG_SMBUS)) {
 	        dump_spd_registers(&cpu[0]);
-        	dump_smbus_registers();
+		dump_smbus_registers();
 	}
 #endif
 

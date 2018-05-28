@@ -363,7 +363,7 @@ AGESA_STATUS agesa_DeallocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 			ConcatenateNodes(AllocNodePtr, NextNodePtr);
 		} else {
 			/*AllocNodePtr->NextNodeOffset =
-			 * 			FreedNodePtr->NextNodeOffset; */
+			 *			FreedNodePtr->NextNodeOffset; */
 			AllocNodePtr->NextNodeOffset = NextNodeOffset;
 		}
 		/*

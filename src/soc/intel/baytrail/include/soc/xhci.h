@@ -33,7 +33,7 @@
 # define  XHCI_USB3_PORTSC_WOE	  (1 << 27)  /* Wake on Overcurrent */
 # define  XHCI_USB3_PORTSC_WRC	  (1 << 19)  /* Warm Reset Complete */
 # define  XHCI_USB3_PORTSC_LWS	  (1 << 16)  /* Link Write Strobe */
-# define  XHCI_USB3_PORTSC_PED 	  (1 << 1)   /* Port Enabled/Disabled */
+# define  XHCI_USB3_PORTSC_PED	  (1 << 1)   /* Port Enabled/Disabled */
 # define  XHCI_USB3_PORTSC_WPR	  (1 << 31)  /* Warm Port Reset */
 # define  XHCI_USB3_PORTSC_PLS	  (0xf << 5) /* Port Link State */
 # define   XHCI_PLSR_DISABLED	  (4 << 5)   /* Port is disabled */

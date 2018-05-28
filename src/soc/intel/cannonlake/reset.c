@@ -69,7 +69,7 @@ static int send_heci_reset_message(void)
 	reply_size = sizeof(reply);
 	memset(&reply, 0, reply_size);
 	if (!heci_receive(&reply, &reply_size))
-        	return -1;
+		return -1;
 	if (reply.result != MKHI_STATUS_SUCCESS) {
 		printk(BIOS_DEBUG, "Returned Mkhi Status is not success!\n");
 		return -1;

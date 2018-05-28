@@ -25,7 +25,7 @@
 #include <string.h>
 
 #define PCR_DMI_GCS		0x274C
-#define PCR_DMI_GCS_BILD  	(1 << 0)
+#define PCR_DMI_GCS_BILD	(1 << 0)
 
 static void lpc_lockdown_config(const struct soc_intel_skylake_config *config)
 {
@@ -56,9 +56,9 @@ static void dmi_lockdown_config(void)
 	 * When set, prevents GCS.BBS from being changed
 	 * GCS.BBS: (Boot BIOS Strap) This field determines the destination
 	 * of accesses to the BIOS memory range.
-	 * 	Bits Description
-	 * 	"0b": SPI
-	 * 	"1b": LPC/eSPI
+	 *	Bits Description
+	 *	"0b": SPI
+	 *	"1b": LPC/eSPI
 	 */
 	pcr_or8(PID_DMI, PCR_DMI_GCS, PCR_DMI_GCS_BILD);
 }

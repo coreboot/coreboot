@@ -233,7 +233,7 @@ check_member(rk_mipi_regs, dsi_int_msk1, 0xc8);
 #define THS_PRE_PROGRAM_EN	BIT(7)
 #define THS_ZERO_PROGRAM_EN	BIT(6)
 
-#define PLL_BIAS_CUR_SEL_CAP_VCO_CONTROL 		0x10
+#define PLL_BIAS_CUR_SEL_CAP_VCO_CONTROL		0x10
 #define PLL_CP_CONTROL_PLL_LOCK_BYPASS			0x11
 #define PLL_LPF_AND_CP_CONTROL				0x12
 #define PLL_INPUT_DIVIDER_RATIO				0x17

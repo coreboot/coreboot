@@ -39,7 +39,7 @@
 #define   SUS_PWR_FLR			(1 << 16)
 #define   PME_B0_S5_DIS			(1 << 15)
 #define   PWR_FLR			(1 << 14)
-#define   ALLOW_L1LOW_BCLKREQ_ON 	(1 << 13)
+#define   ALLOW_L1LOW_BCLKREQ_ON	(1 << 13)
 #define   DIS_SLP_X_STRCH_SUS_UP	(1 << 12)
 #define   SLP_S3_MIN_ASST_WDTH_MASK	(3 << 10)
 #define     SLP_S3_MIN_ASST_WDTH_60USEC	(0 << 10)

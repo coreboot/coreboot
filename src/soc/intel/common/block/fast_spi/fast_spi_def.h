@@ -22,7 +22,7 @@
 #define SPIBAR_BIOS_CONTROL		0xdc
 
 /* Bit definitions for BIOS_CONTROL */
-#define SPIBAR_BIOS_CONTROL_WPD 	(1 << 0)
+#define SPIBAR_BIOS_CONTROL_WPD		(1 << 0)
 #define SPIBAR_BIOS_CONTROL_LOCK_ENABLE	(1 << 1)
 #define SPIBAR_BIOS_CONTROL_CACHE_DISABLE	(1 << 2)
 #define SPIBAR_BIOS_CONTROL_PREFETCH_ENABLE	(1 << 3)
@@ -113,21 +113,21 @@
 #define SPIBAR_FPR_MAX			5
 
 /* Programmable values for OPMENU_LOWER(0xA8) & OPMENU_UPPER(0xAC) register */
-#define SPI_OPMENU_0 			0x01 /* WRSR: Write Status Register */
-#define SPI_OPTYPE_0 			0x01 /* Write, no address */
-#define SPI_OPMENU_1 			0x02 /* BYPR: Byte Program */
-#define SPI_OPTYPE_1 			0x03 /* Write, address required */
-#define SPI_OPMENU_2 			0x03 /* READ: Read Data */
-#define SPI_OPTYPE_2 			0x02 /* Read, address required */
-#define SPI_OPMENU_3 			0x05 /* RDSR: Read Status Register */
-#define SPI_OPTYPE_3 			0x00 /* Read, no address */
-#define SPI_OPMENU_4 			0x20 /* SE20: Sector Erase 0x20 */
-#define SPI_OPTYPE_4 			0x03 /* Write, address required */
-#define SPI_OPMENU_5 			0x9f /* RDID: Read ID */
-#define SPI_OPTYPE_5 			0x00 /* Read, no address */
-#define SPI_OPMENU_6 			0xd8 /* BED8: Block Erase 0xd8 */
-#define SPI_OPTYPE_6 			0x03 /* Write, address required */
-#define SPI_OPMENU_7 			0x0b /* FAST: Fast Read */
+#define SPI_OPMENU_0			0x01 /* WRSR: Write Status Register */
+#define SPI_OPTYPE_0			0x01 /* Write, no address */
+#define SPI_OPMENU_1			0x02 /* BYPR: Byte Program */
+#define SPI_OPTYPE_1			0x03 /* Write, address required */
+#define SPI_OPMENU_2			0x03 /* READ: Read Data */
+#define SPI_OPTYPE_2			0x02 /* Read, address required */
+#define SPI_OPMENU_3			0x05 /* RDSR: Read Status Register */
+#define SPI_OPTYPE_3			0x00 /* Read, no address */
+#define SPI_OPMENU_4			0x20 /* SE20: Sector Erase 0x20 */
+#define SPI_OPTYPE_4			0x03 /* Write, address required */
+#define SPI_OPMENU_5			0x9f /* RDID: Read ID */
+#define SPI_OPTYPE_5			0x00 /* Read, no address */
+#define SPI_OPMENU_6			0xd8 /* BED8: Block Erase 0xd8 */
+#define SPI_OPTYPE_6			0x03 /* Write, address required */
+#define SPI_OPMENU_7			0x0b /* FAST: Fast Read */
 #define SPI_OPTYPE_7			0x02 /* Read, address required */
 #define SPI_OPMENU_UPPER ((SPI_OPMENU_7 << 24) | (SPI_OPMENU_6 << 16) | \
 			  (SPI_OPMENU_5 << 8) | SPI_OPMENU_4)

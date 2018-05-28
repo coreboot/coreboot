@@ -606,8 +606,8 @@ static void dump_sor_reg(struct tegra_dc_sor_data *sor)
 static void tegra_dc_sor_config_panel(struct tegra_dc_sor_data *sor,
 	int is_lvds)
 {
-	const struct tegra_dc 			*dc = sor->dc;
-	const struct tegra_dc_dp_data 		*dp = dc->out;
+	const struct tegra_dc			*dc = sor->dc;
+	const struct tegra_dc_dp_data		*dp = dc->out;
 	const struct tegra_dc_dp_link_config *link_cfg = &dp->link_cfg;
 	const struct soc_nvidia_tegra124_config *config = dc->config;
 

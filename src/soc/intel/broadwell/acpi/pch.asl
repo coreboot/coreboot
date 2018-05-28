@@ -31,7 +31,7 @@ Scope (\)
 	Field (RCRB, DWordAcc, Lock, Preserve)
 	{
 		Offset (0x3404), // High Performance Timer Configuration
-		HPAS, 2, 	// Address Select
+		HPAS, 2,	// Address Select
 		, 5,
 		HPTE, 1,	// Address Enable
 	}

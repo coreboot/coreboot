@@ -56,8 +56,8 @@
 #define GPSSUS_COUNT		44
 
 /* GPIO legacy IO register settings */
-#define GPIO_USE_MMIO 		0
-#define GPIO_USE_LEGACY 	1
+#define GPIO_USE_MMIO		0
+#define GPIO_USE_LEGACY		1
 
 #define GPIO_DIR_OUTPUT		0
 #define GPIO_DIR_INPUT		1
@@ -291,12 +291,12 @@
 	{  .pad_conf0 = GPIO_LIST_END }
 
 /* Common default GPIO settings */
-#define GPIO_INPUT 	GPIO_INPUT_NOPU
+#define GPIO_INPUT	GPIO_INPUT_NOPU
 #define GPIO_INPUT_LEGACY	GPIO_INPUT_LEGACY_NOPU
 #define GPIO_INPUT_PU	GPIO_INPUT_PU_20K
-#define GPIO_INPUT_PD 	GPIO_INPUT_PD_20K
+#define GPIO_INPUT_PD	GPIO_INPUT_PD_20K
 #define GPIO_NC			GPIO_INPUT_PU_20K
-#define GPIO_DEFAULT 	GPIO_FUNC0
+#define GPIO_DEFAULT	GPIO_FUNC0
 
 /* 16 DirectIRQs per supported bank */
 #define GPIO_MAX_DIRQS	16

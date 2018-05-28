@@ -21,12 +21,12 @@ Method(_PRT)
 {
 	If (PICM) {
 		Return (Package() {
-			/* PEG 					0:01.0 */
+			/* PEG					0:01.0 */
 			Package() { 0x0001ffff, 0, 0, 0x10 },
 			Package() { 0x0001ffff, 1, 0, 0x11 },
 			Package() { 0x0001ffff, 2, 0, 0x12 },
 			Package() { 0x0001ffff, 3, 0, 0x13 },
-			/* Internal GFX 			0:02.0 */
+			/* Internal GFX			0:02.0 */
 			Package() { 0x0002ffff, 0, 0, 0x10 },
 			/* High Definition Audio		0:1b.0 */
 			Package() { 0x001bffff, 0, 0, 0x10 },
@@ -49,12 +49,12 @@ Method(_PRT)
 		})
 	} Else {
 		Return (Package() {
-			/* PEG 					0:01.0 */
+			/* PEG					0:01.0 */
 			Package() { 0x0001ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
 			Package() { 0x0001ffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
 			Package() { 0x0001ffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
 			Package() { 0x0001ffff, 3, \_SB.PCI0.LPCB.LNKD, 0 },
-			/* Internal GFX 			0:02.0 */
+			/* Internal GFX			0:02.0 */
 			Package() { 0x0002ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
 			/* High Definition Audio		0:1b.0 */
 			Package() { 0x001bffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },

@@ -234,9 +234,9 @@ DefinitionBlock (
 		PWMK, 1,
 		PWNS, 1,
 
-		/* 	Offset(0x61), */	/*  Options_1 */
-		/* 		,7,  */
-		/* 		R617,1, */
+		/*	Offset(0x61), */	/*  Options_1 */
+		/*		,7,  */
+		/*		R617,1, */
 
 		Offset(0x65),	/* UsbPMControl */
 		, 4,
@@ -832,7 +832,7 @@ DefinitionBlock (
 
 		/* On older chips, clear PciExpWakeDisEn */
 		/*if (LLessEqual(\_SB.SBRI, 0x13)) {
-		*    	Store(0,\_SB.PWDE)
+		*	Store(0,\_SB.PWDE)
 		*}
 		*/
 
@@ -847,13 +847,13 @@ DefinitionBlock (
 	*  used, so it could be removed.
 	*
 	*
-	*  	\_GTS OEM Going To Sleep method
+	*	\_GTS OEM Going To Sleep method
 	*
-	*  	Entry:
-	*  		Arg0=The value of the sleeping state S1=1, S2=2
+	*	Entry:
+	*		Arg0=The value of the sleeping state S1=1, S2=2
 	*
-	*  	Exit:
-	*  		-none-
+	*	Exit:
+	*		-none-
 	*
 	*  Method(\_GTS, 1) {
 	*  DBGO("\\_GTS\n")
@@ -1020,7 +1020,7 @@ DefinitionBlock (
 
 		/*  PCIe HotPlug event  */
 		/* Method(_L0F) {
-		* 	DBGO("\\_GPE\\_L0F\n")
+		*	DBGO("\\_GPE\\_L0F\n")
 		* }
 		*/
 
@@ -1043,19 +1043,19 @@ DefinitionBlock (
 
 		/*  GPM0 SCI event - Moved to USB.asl */
 		/* Method(_L13) {
-		* 	DBGO("\\_GPE\\_L13\n")
+		*	DBGO("\\_GPE\\_L13\n")
 		* }
 		*/
 
 		/*  GPM1 SCI event - Moved to USB.asl */
 		/* Method(_L14) {
-		* 	DBGO("\\_GPE\\_L14\n")
+		*	DBGO("\\_GPE\\_L14\n")
 		* }
 		*/
 
 		/*  GPM2 SCI event - Moved to USB.asl */
 		/* Method(_L15) {
-		* 	DBGO("\\_GPE\\_L15\n")
+		*	DBGO("\\_GPE\\_L15\n")
 		* }
 		*/
 
@@ -1067,7 +1067,7 @@ DefinitionBlock (
 
 		/*  GPM8 SCI event - Moved to USB.asl */
 		/* Method(_L17) {
-		* 	DBGO("\\_GPE\\_L17\n")
+		*	DBGO("\\_GPE\\_L17\n")
 		* }
 		*/
 
@@ -1084,7 +1084,7 @@ DefinitionBlock (
 
 		/*  GPM4 SCI event - Moved to USB.asl */
 		/* Method(_L19) {
-		* 	DBGO("\\_GPE\\_L19\n")
+		*	DBGO("\\_GPE\\_L19\n")
 		* }
 		*/
 
@@ -1115,7 +1115,7 @@ DefinitionBlock (
 
 		/*  GPIO2 or GPIO66 SCI event  */
 		/* Method(_L1E) {
-		* 	DBGO("\\_GPE\\_L1E\n")
+		*	DBGO("\\_GPE\\_L1E\n")
 		* }
 		*/
 
@@ -1125,7 +1125,7 @@ DefinitionBlock (
 		* }
 		*/
 
-	} 	/* End Scope GPE */
+	}	/* End Scope GPE */
 
 	#include "acpi/usb.asl"
 
@@ -1471,7 +1471,7 @@ DefinitionBlock (
 				)
 #if 0
 				Memory32Fixed(READWRITE, 0, 0xA0000, BSMM)
-				Memory32Fixed(READONLY, 0x000A0000, 0x00020000, VGAM) 	/* VGA memory space */
+				Memory32Fixed(READONLY, 0x000A0000, 0x00020000, VGAM)	/* VGA memory space */
 				Memory32Fixed(READONLY, 0x000C0000, 0x00020000, EMM1)	/* Assume C0000-E0000 empty */
 				Memory32Fixed(READONLY, 0x000E0000, 0x00020000, RDBS)   /* BIOS ROM area */
 
@@ -1601,7 +1601,7 @@ DefinitionBlock (
 
 				/* On older chips, clear PciExpWakeDisEn */
 				/*if (LLessEqual(\SBRI, 0x13)) {
-				*    	Store(0,\PWDE)
+				*	Store(0,\PWDE)
 				* }
 				*/
 			} /* End Method(_SB._INI) */

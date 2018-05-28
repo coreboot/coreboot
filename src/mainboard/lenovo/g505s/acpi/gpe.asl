@@ -73,4 +73,4 @@ Scope(\_GPE) {	/* Start Scope GPE */
 		Notify(\_SB.PCI0.AZHD, 0x02) /* NOTIFY_DEVICE_WAKE */
 		Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
 	}
-} 	/* End Scope GPE */
+}	/* End Scope GPE */

@@ -57,7 +57,7 @@ chip northbridge/amd/lx
 					device pnp 2e.7 off end	# GAME_MIDI_GIPO1
 					device pnp 2e.8 off end	# GPIO2
 					device pnp 2e.9 off end	# GPIO3
-					device pnp 2e.a on  	# ACPI
+					device pnp 2e.a on	# ACPI
 						irq 0x70 = 9
 					end
 					device pnp 2e.b on	# HW Monitor

@@ -42,7 +42,7 @@
  * * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: 	Thomas Winischhofer <thomas@winischhofer.net>
+ * Author:	Thomas Winischhofer <thomas@winischhofer.net>
  *
  */
 
@@ -80,7 +80,7 @@
 #define VB_SIS307T		0x0080
 #define VB_SIS307LV		0x0100
 #define VB_UMC			0x4000
-#define VB_NoLCD        	0x8000
+#define VB_NoLCD		0x8000
 #define VB_SIS30xB		(VB_SIS301B | VB_SIS301C | VB_SIS302B | VB_SIS307T)
 #define VB_SIS30xC		(VB_SIS301C | VB_SIS307T)
 #define VB_SISTMDS		(VB_SIS301 | VB_SIS301B | VB_SIS301C | VB_SIS302B | VB_SIS307T)
@@ -110,10 +110,10 @@
 #define SetCRT2ToSCART          0x0010
 #define SetCRT2ToLCD            0x0020
 #define SetCRT2ToRAMDAC         0x0040
-#define SetCRT2ToHiVision       0x0080   		/* for SiS bridge */
-#define SetCRT2ToCHYPbPr       	SetCRT2ToHiVision	/* for Chrontel   */
+#define SetCRT2ToHiVision       0x0080		/* for SiS bridge */
+#define SetCRT2ToCHYPbPr	SetCRT2ToHiVision	/* for Chrontel   */
 #define SetNTSCTV               0x0000   /* CR 31 */
-#define SetPALTV                0x0100   		/* Deprecated here, now in TVMode */
+#define SetPALTV                0x0100		/* Deprecated here, now in TVMode */
 #define SetInSlaveMode          0x0200
 #define SetNotSimuMode          0x0400
 #define SetNotSimuTVMode        SetNotSimuMode
@@ -128,7 +128,7 @@
 /* v-- Needs change in sis_vga.c if changed (GPIO) --v */
 #define SetCRT2ToTV             (SetCRT2ToYPbPr525750|SetCRT2ToHiVision|SetCRT2ToSCART|SetCRT2ToSVIDEO|SetCRT2ToAVIDEO)
 #define SetCRT2ToTVNoYPbPrHiVision (SetCRT2ToSCART | SetCRT2ToSVIDEO | SetCRT2ToAVIDEO)
-#define SetCRT2ToTVNoHiVision  	(SetCRT2ToYPbPr525750 | SetCRT2ToSCART | SetCRT2ToSVIDEO | SetCRT2ToAVIDEO)
+#define SetCRT2ToTVNoHiVision	(SetCRT2ToYPbPr525750 | SetCRT2ToSCART | SetCRT2ToSVIDEO | SetCRT2ToAVIDEO)
 
 /* SiS_ModeType */
 #define ModeText                0x00
@@ -159,7 +159,7 @@
 /* Infoflag */
 #define SupportTV               0x0008
 #define SupportTV1024           0x0800
-#define SupportCHTV 		0x0800
+#define SupportCHTV		0x0800
 #define Support64048060Hz       0x0800  /* Special for 640x480 LCD */
 #define SupportHiVision         0x0010
 #define SupportYPbPr750p        0x1000
@@ -297,7 +297,7 @@
 #define LCDSyncShift               6
 
 /* CR38 (315 series) */
-#define EnableDualEdge 		0x01
+#define EnableDualEdge		0x01
 #define SetToLCDA		0x02   /* LCD channel A (301C/302B/30x(E)LV and 650+LVDS only) */
 #define EnableCHScart           0x04   /* Scart on Ch7019 (unofficial definition - TW) */
 #define EnableCHYPbPr           0x08   /* YPbPr on Ch7019 (480i HDTV); only on 650/Ch7019 systems */
@@ -605,7 +605,7 @@
 #define _PanelType0E             0x70
 #define _PanelType0F             0x78
 
-#define PRIMARY_VGA       	0     /* 1: SiS is primary vga 0:SiS is secondary vga */
+#define PRIMARY_VGA	0     /* 1: SiS is primary vga 0:SiS is secondary vga */
 
 #define BIOSIDCodeAddr          0x235  /* Offsets to ptrs in BIOS image */
 #define OEMUtilIDCodeAddr       0x237
@@ -650,7 +650,7 @@
 
 /*
   =============================================================
-   		  for 315 series (old data layout)
+		  for 315 series (old data layout)
   =============================================================
 */
 #define SoftDRAMType        0x80

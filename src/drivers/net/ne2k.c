@@ -437,7 +437,7 @@ static void read_resources(struct device *dev)
 	res->gran = 5;
 	res->limit = res->base + res->size - 1;
 	res->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_STORED |
-		     		IORESOURCE_ASSIGNED;
+				IORESOURCE_ASSIGNED;
 	return;
 }
 

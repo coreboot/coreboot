@@ -49,63 +49,63 @@
 #define SyncNN			(NVSync | NHSync)
 
 /* DCLK Index */
-#define VCLK25_175     		0x00
-#define VCLK28_322     		0x01
-#define VCLK31_5       		0x02
-#define VCLK36         		0x03
-#define VCLK40         		0x04
-#define VCLK49_5       		0x05
-#define VCLK50         		0x06
-#define VCLK56_25      		0x07
-#define VCLK65		 	0x08
-#define VCLK75	        	0x09
-#define VCLK78_75      		0x0A
-#define VCLK94_5       		0x0B
-#define VCLK108        		0x0C
-#define VCLK135        		0x0D
-#define VCLK157_5      		0x0E
-#define VCLK162        		0x0F
-/* #define VCLK193_25     		0x10 */
-#define VCLK154     		0x10
-#define VCLK83_5    		0x11
-#define VCLK106_5   		0x12
-#define VCLK146_25  		0x13
-#define VCLK148_5   		0x14
-#define VCLK71      		0x15
-#define VCLK88_75   		0x16
-#define VCLK119     		0x17
-#define VCLK85_5     		0x18
-#define VCLK97_75     		0x19
-#define VCLK118_25			0x1A
+#define VCLK25_175		0x00
+#define VCLK28_322		0x01
+#define VCLK31_5		0x02
+#define VCLK36			0x03
+#define VCLK40			0x04
+#define VCLK49_5		0x05
+#define VCLK50			0x06
+#define VCLK56_25		0x07
+#define VCLK65			0x08
+#define VCLK75			0x09
+#define VCLK78_75		0x0A
+#define VCLK94_5		0x0B
+#define VCLK108			0x0C
+#define VCLK135			0x0D
+#define VCLK157_5		0x0E
+#define VCLK162			0x0F
+/* #define VCLK193_25		0x10 */
+#define VCLK154			0x10
+#define VCLK83_5		0x11
+#define VCLK106_5		0x12
+#define VCLK146_25		0x13
+#define VCLK148_5		0x14
+#define VCLK71			0x15
+#define VCLK88_75		0x16
+#define VCLK119			0x17
+#define VCLK85_5		0x18
+#define VCLK97_75		0x19
+#define VCLK118_25		0x1A
 
 static struct ast_vbios_dclk_info dclk_table[] = {
-	{0x2C, 0xE7, 0x03},					/* 00: VCLK25_175	*/
-	{0x95, 0x62, 0x03},				        /* 01: VCLK28_322	*/
-	{0x67, 0x63, 0x01},				        /* 02: VCLK31_5         */
-	{0x76, 0x63, 0x01},				        /* 03: VCLK36         	*/
-	{0xEE, 0x67, 0x01},				        /* 04: VCLK40          	*/
-	{0x82, 0x62, 0x01}, 			        /* 05: VCLK49_5        	*/
-	{0xC6, 0x64, 0x01},                        	        /* 06: VCLK50          	*/
-	{0x94, 0x62, 0x01},                        	        /* 07: VCLK56_25       	*/
-	{0x80, 0x64, 0x00},                        	        /* 08: VCLK65		*/
-	{0x7B, 0x63, 0x00},                        	        /* 09: VCLK75	        */
-	{0x67, 0x62, 0x00},				        /* 0A: VCLK78_75       	*/
-	{0x7C, 0x62, 0x00},                        	        /* 0B: VCLK94_5        	*/
-	{0x8E, 0x62, 0x00},                        	        /* 0C: VCLK108         	*/
-	{0x85, 0x24, 0x00},                        	        /* 0D: VCLK135         	*/
-	{0x67, 0x22, 0x00},                        	        /* 0E: VCLK157_5       	*/
-	{0x6A, 0x22, 0x00},				        /* 0F: VCLK162         	*/
-	{0x4d, 0x4c, 0x80},				        /* 10: VCLK154      	*/
-	{0xa7, 0x78, 0x80},					/* 11: VCLK83.5         */
-	{0x28, 0x49, 0x80},					/* 12: VCLK106.5        */
-	{0x37, 0x49, 0x80},					/* 13: VCLK146.25       */
-	{0x1f, 0x45, 0x80},					/* 14: VCLK148.5        */
-	{0x47, 0x6c, 0x80},					/* 15: VCLK71       */
-	{0x25, 0x65, 0x80},					/* 16: VCLK88.75    */
-	{0x77, 0x58, 0x80},					/* 17: VCLK119      */
-	{0x32, 0x67, 0x80},				    /* 18: VCLK85_5     */
-	{0x6a, 0x6d, 0x80},					/* 19: VCLK97_75	*/
-	{0x3b, 0x2c, 0x81},					/* 1A: VCLK118_25	*/
+	{0x2C, 0xE7, 0x03},		/* 00: VCLK25_175 */
+	{0x95, 0x62, 0x03},		/* 01: VCLK28_322 */
+	{0x67, 0x63, 0x01},		/* 02: VCLK31_5 */
+	{0x76, 0x63, 0x01},		/* 03: VCLK36 */
+	{0xEE, 0x67, 0x01},		/* 04: VCLK40 */
+	{0x82, 0x62, 0x01},		/* 05: VCLK49_5 */
+	{0xC6, 0x64, 0x01},		/* 06: VCLK50 */
+	{0x94, 0x62, 0x01},		/* 07: VCLK56_25 */
+	{0x80, 0x64, 0x00},		/* 08: VCLK65 */
+	{0x7B, 0x63, 0x00},		/* 09: VCLK75 */
+	{0x67, 0x62, 0x00},		/* 0A: VCLK78_75 */
+	{0x7C, 0x62, 0x00},		/* 0B: VCLK94_5 */
+	{0x8E, 0x62, 0x00},		/* 0C: VCLK108 */
+	{0x85, 0x24, 0x00},		/* 0D: VCLK135 */
+	{0x67, 0x22, 0x00},		/* 0E: VCLK157_5 */
+	{0x6A, 0x22, 0x00},		/* 0F: VCLK162 */
+	{0x4d, 0x4c, 0x80},		/* 10: VCLK154 */
+	{0xa7, 0x78, 0x80},		/* 11: VCLK83.5 */
+	{0x28, 0x49, 0x80},		/* 12: VCLK106.5 */
+	{0x37, 0x49, 0x80},		/* 13: VCLK146.25 */
+	{0x1f, 0x45, 0x80},		/* 14: VCLK148.5 */
+	{0x47, 0x6c, 0x80},		/* 15: VCLK71 */
+	{0x25, 0x65, 0x80},		/* 16: VCLK88.75 */
+	{0x77, 0x58, 0x80},		/* 17: VCLK119 */
+	{0x32, 0x67, 0x80},		/* 18: VCLK85_5 */
+	{0x6a, 0x6d, 0x80},		/* 19: VCLK97_75 */
+	{0x3b, 0x2c, 0x81},		/* 1A: VCLK118_25 */
 };
 
 static struct ast_vbios_stdtable vbios_stdtable[] = {
@@ -188,14 +188,14 @@ static struct ast_vbios_enhtable res_640x480[] = {
 	  (SyncNN | HBorder | VBorder | Charx8Dot), 72, 2, 0x2E  },
 	{ 840, 640, 16, 64, 500, 480, 1, 3, VCLK31_5,	/* 75Hz */
 	  (SyncNN | Charx8Dot) , 75, 3, 0x2E },
-	{ 832, 640, 56, 56, 509, 480, 1, 3, VCLK36,		/* 85Hz */
+	{ 832, 640, 56, 56, 509, 480, 1, 3, VCLK36,	/* 85Hz */
 	  (SyncNN | Charx8Dot) , 85, 4, 0x2E },
-	{ 832, 640, 56, 56, 509, 480, 1, 3, VCLK36,		/* end */
+	{ 832, 640, 56, 56, 509, 480, 1, 3, VCLK36,	/* end */
 	  (SyncNN | Charx8Dot) , 0xFF, 4, 0x2E },
 };
 
 static struct ast_vbios_enhtable res_800x600[] = {
-	{1024, 800, 24, 72, 625, 600, 1, 2, VCLK36,		/* 56Hz */
+	{1024, 800, 24, 72, 625, 600, 1, 2, VCLK36,	/* 56Hz */
 	 (SyncPP | Charx8Dot), 56, 1, 0x30 },
 	{1056, 800, 40, 128, 628, 600, 1, 4, VCLK40,	/* 60Hz */
 	 (SyncPP | Charx8Dot), 60, 2, 0x30 },
@@ -268,7 +268,7 @@ static struct ast_vbios_enhtable res_1920x1080[] = {
 
 /* 16:10 */
 static struct ast_vbios_enhtable res_1280x800[] = {
-	{1440, 1280, 48, 32,  823,  800, 3, 6, VCLK71,	/* 60Hz RB */
+	{1440, 1280, 48, 32,  823,  800, 3, 6, VCLK71,		/* 60Hz RB */
 	 (SyncNP | Charx8Dot | LineCompareOff | WideScreenMode | NewModeInfo), 60, 1, 0x35 },
 	{1680, 1280, 72,128,  831,  800, 3, 6, VCLK83_5,	/* 60Hz */
 	 (SyncPN | Charx8Dot | LineCompareOff | WideScreenMode | NewModeInfo), 60, 2, 0x35 },
@@ -287,7 +287,7 @@ static struct ast_vbios_enhtable res_1440x900[] = {
 };
 
 static struct ast_vbios_enhtable res_1680x1050[] = {
-	{1840, 1680, 48, 32, 1080, 1050, 3, 6, VCLK119,	/* 60Hz RB */
+	{1840, 1680, 48, 32, 1080, 1050, 3, 6, VCLK119,		/* 60Hz RB */
 	 (SyncNP | Charx8Dot | LineCompareOff | WideScreenMode | NewModeInfo), 60, 1, 0x37 },
 	{2240, 1680,104,176, 1089, 1050, 3, 6, VCLK146_25,	/* 60Hz */
 	 (SyncPN | Charx8Dot | LineCompareOff | WideScreenMode | NewModeInfo), 60, 2, 0x37 },
@@ -296,7 +296,7 @@ static struct ast_vbios_enhtable res_1680x1050[] = {
 };
 
 static struct ast_vbios_enhtable res_1920x1200[] = {
-	{2080, 1920, 48, 32, 1235, 1200, 3, 6, VCLK154,	/* 60Hz RB*/
+	{2080, 1920, 48, 32, 1235, 1200, 3, 6, VCLK154,		/* 60Hz RB*/
 	 (SyncNP | Charx8Dot | LineCompareOff | WideScreenMode | NewModeInfo), 60, 1, 0x34 },
 	{2080, 1920, 48, 32, 1235, 1200, 3, 6, VCLK154,	/* 60Hz RB */
 	 (SyncNP | Charx8Dot | LineCompareOff | WideScreenMode | NewModeInfo), 0xFF, 1, 0x34 },

@@ -45,7 +45,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 	0x100b,					/* Vendor */
 	0x2b,					/* Device */
 	0,					/* Miniport */
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 	/* u8 rfu[11] */
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },	/* u8 rfu[11] */
 	0x20,					/* Checksum (has to be set to some value that
 						 * would give 0 after the sum of all bytes
 						 * for this structure (including checksum).

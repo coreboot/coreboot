@@ -32,7 +32,7 @@ Method(_PRT)
 			/* ?? */
 			Package() { 0x0016ffff, 0, 0, 0x12 },
 			Package() { 0x0016ffff, 1, 0, 0x13 },
-			/* GBE 	    		        0:19.0 */
+			/* GBE			        0:19.0 */
 			Package() { 0x0019ffff, 0, 0, 0x10 },
 			/* USB and EHCI */
 			Package() { 0x001affff, 0, 0, 0x10 },

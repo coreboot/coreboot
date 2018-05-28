@@ -14,9 +14,6 @@
 */
 
 #include <arch/pirq_routing.h>
-#include <console/console.h>
-#include <arch/io.h>
-#include "southbridge/amd/cs5536/cs5536.h"
 
 /* Platform IRQs */
 #define PIRQA 11
@@ -53,15 +50,15 @@
  *
  * The only devices that interrupt are:
  *
- * What         Device  IRQ     PIN     PIN WIRED TO
+ * What		Device  IRQ	PIN	PIN WIRED TO
  * -------------------------------------------------
- * AES          00:01.2 0a      01      A       A
- * 3VPCI        00:0c.0 0a      01      A       A
- * eth0 	00:0d.0 0b      01      A       B
- * mpci 	00:0e.0 0a      01      A       A
- * usb          00:0f.3 0b      02      B       B
- * usb          00:0f.4 0b      04      D       D
- * usb          00:0f.5 0b      04      D       D
+ * AES		00:01.2 0a	01	A	A
+ * 3VPCI	00:0c.0 0a	01	A	A
+ * eth0		00:0d.0 0b	01	A	B
+ * mpci		00:0e.0 0a	01	A	A
+ * usb		00:0f.3 0b	02	B	B
+ * usb		00:0f.4 0b	04	D	D
+ * usb		00:0f.5 0b	04	D	D
  *
  * The only swizzled interrupt is eth0, where INTA is wired to interrupt controller line B.
  */
@@ -71,7 +68,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_VERSION,
 	32 + 16 * CONFIG_IRQ_SLOT_COUNT,/* Max. number of devices on the bus */
 	0x00,			/* Where the interrupt router lies (bus) */
-	(0x0F << 3) | 0x0,      /* Where the interrupt router lies (dev) */
+	(0x0F << 3) | 0x0,	/* Where the interrupt router lies (dev) */
 	0x00,			/* IRQs devoted exclusively to PCI usage */
 	0x100B,			/* Vendor */
 	0x002B,			/* Device */

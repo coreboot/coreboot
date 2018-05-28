@@ -1,6 +1,6 @@
 chip northbridge/amd/lx
 	device domain 0 on
-	device pci 1.0 on end
+		device pci 1.0 on end
 		device pci 1.1 on end
 		chip southbridge/amd/cs5536
 			# IRQ 12 and 1 unmasked,  Keyboard and Mouse IRQs. OK
@@ -25,7 +25,7 @@ chip northbridge/amd/lx
 			register "com2_address" = "0x2F8"
 			register "com2_irq" = "3"
 			register "unwanted_vpci[0]" = "0"	# End of list has a zero
-				device pci f.0 on	# ISA Bridge
+			device pci f.0 on	# ISA Bridge
 				chip superio/winbond/w83627hf
 					device pnp 2e.0 off #  Floppy
 						io 0x60 = 0x3f0

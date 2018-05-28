@@ -14,94 +14,59 @@
  */
 
 #include <arch/io.h>
-#include <bootstate.h>
-#include <chip.h>
 #include <intelblocks/chip.h>
-#include <intelblocks/fast_spi.h>
-#include <intelblocks/lpc_lib.h>
-#include <intelblocks/pcr.h>
-#include <soc/pci_devs.h>
-#include <soc/pcr_ids.h>
+#include <intelpch/lockdown.h>
 #include <soc/pm.h>
-#include <string.h>
 
-#define PCR_DMI_GCS		0x274C
-#define PCR_DMI_GCS_BILD	(1 << 0)
-
-static void pmc_lockdown_cfg(const struct soc_intel_common_config *config)
+static void pmc_lock_pmsync(void)
 {
-	uint8_t *pmcbase, reg8;
-	uint32_t reg32, pmsyncreg;
+	uint8_t *pmcbase;
+	uint32_t pmsyncreg;
 
-	/* PMSYNC */
 	pmcbase = pmc_mmio_regs();
+
 	pmsyncreg = read32(pmcbase + PMSYNC_TPR_CFG);
 	pmsyncreg |= PCH2CPU_TPR_CFG_LOCK;
 	write32(pmcbase + PMSYNC_TPR_CFG, pmsyncreg);
+}
 
-	/* Lock down ABASE and sleep stretching policy */
+static void pmc_lock_abase(void)
+{
+	uint8_t *pmcbase;
+	uint32_t reg32;
+
+	pmcbase = pmc_mmio_regs();
+
 	reg32 = read32(pmcbase + GEN_PMCON_B);
 	reg32 |= (SLP_STR_POL_LOCK | ACPI_BASE_LOCK);
 	write32(pmcbase + GEN_PMCON_B, reg32);
-
-	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
-		pmcbase = pmc_mmio_regs();
-		reg8 = read8(pmcbase + GEN_PMCON_B);
-		reg8 |= SMI_LOCK;
-		write8(pmcbase + GEN_PMCON_B, reg8);
-	}
 }
 
-static void dmi_lockdown_cfg(void)
+static void pmc_lock_smi(void)
 {
-	/*
-	 * GCS reg of DMI
-	 *
-	 * When set, prevents GCS.BBS from being changed
-	 * GCS.BBS: (Boot BIOS Strap) This field determines the destination
-	 * of accesses to the BIOS memory range.
-	 *	Bits Description
-	 *	"0b": SPI
-	 *	"1b": LPC/eSPI
-	 */
-	pcr_or8(PID_DMI, PCR_DMI_GCS, PCR_DMI_GCS_BILD);
+	uint8_t *pmcbase;
+	uint8_t reg8;
+
+	pmcbase = pmc_mmio_regs();
+
+	reg8 = read8(pmcbase + GEN_PMCON_B);
+	reg8 |= SMI_LOCK;
+	write8(pmcbase + GEN_PMCON_B, reg8);
 }
 
-static void fast_spi_lockdown_cfg(const struct soc_intel_common_config *config)
+static void pmc_lockdown_cfg(int chipset_lockdown)
 {
-	/* Set FAST_SPI opcode menu */
-	fast_spi_set_opcode_menu();
+	/* PMSYNC */
+	pmc_lock_pmsync();
+	/* Lock down ABASE and sleep stretching policy */
+	pmc_lock_abase();
 
-	/* Discrete Lock Flash PR registers */
-	fast_spi_pr_dlock();
-
-	/* Lock FAST_SPIBAR */
-	fast_spi_lock_bar();
-
-	/* Set Bios Interface Lock, Bios Lock */
-	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
-		/* Bios Interface Lock */
-		fast_spi_set_bios_interface_lock_down();
-
-		/* Bios Lock */
-		fast_spi_set_lock_enable();
-	}
+	if (chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT)
+		pmc_lock_smi();
 }
 
-static void platform_lockdown_config(void *unused)
+void soc_lockdown_config(int chipset_lockdown)
 {
-	const struct soc_intel_common_config *common_config;
-	common_config = chip_get_common_soc_structure();
-
-	/* SPI lock down configuration */
-	fast_spi_lockdown_cfg(common_config);
-
-	/* DMI lock down configuration */
-	dmi_lockdown_cfg();
-
 	/* PMC lock down configuration */
-	pmc_lockdown_cfg(common_config);
+	pmc_lockdown_cfg(chipset_lockdown);
 }
-
-BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_EXIT, platform_lockdown_config,
-				NULL);

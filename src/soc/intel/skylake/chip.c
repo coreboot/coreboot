@@ -21,6 +21,7 @@
 #include <device/pci.h>
 #include <fsp/util.h>
 #include <intelblocks/xdci.h>
+#include <intelpch/lockdown.h>
 #include <soc/acpi.h>
 #include <soc/interrupt.h>
 #include <soc/irq.h>
@@ -67,14 +68,6 @@ static void soc_enable(struct device *dev)
 		dev->ops = &pci_domain_ops;
 	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &cpu_bus_ops;
-}
-
-static int get_lockdown_config(void)
-{
-	const struct soc_intel_common_config *soc_config;
-	soc_config = chip_get_common_soc_structure();
-
-	return soc_config->chipset_lockdown;
 }
 
 struct chip_operations soc_intel_skylake_ops = {

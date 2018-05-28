@@ -1,0 +1,7 @@
+config SOC_INTEL_COMMON_PCH_LOCKDOWN
+	bool
+	default n
+	help
+	  This option allows to have chipset lockdown for DMI, FAST_SPI and
+	  soc_lockdown_config() to implement any additional lockdown as PMC,
+	  LPC for supported PCH.

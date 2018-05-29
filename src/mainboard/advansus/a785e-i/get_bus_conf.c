@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <cpu/amd/multicore.h>
 #include <cpu/amd/amdfam10_sysconf.h>
-#if CONFIG_AMD_SB_CIMX
+#if IS_ENABLED(CONFIG_AMD_SB_CIMX)
 #include <sb_cimx.h>
 #endif
 
@@ -61,7 +61,7 @@ static u32 get_bus_conf_done = 0;
 void get_bus_conf(void)
 {
 	u32 apicid_base;
-	device_t dev;
+	struct device *dev;
 	int i;
 
 	if (get_bus_conf_done == 1)
@@ -128,7 +128,7 @@ void get_bus_conf(void)
 		apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 	apicid_sb800 = apicid_base + 0;
 
-#if CONFIG_AMD_SB_CIMX
+#if IS_ENABLED(CONFIG_AMD_SB_CIMX)
 	sb_Late_Post();
 #endif
 }

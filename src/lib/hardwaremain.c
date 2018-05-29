@@ -21,6 +21,7 @@
 #include <adainit.h>
 #include <arch/exception.h>
 #include <bootstate.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <console/post_codes.h>
 #include <cbmem.h>
@@ -33,7 +34,7 @@
 #include <boot/tables.h>
 #include <program_loading.h>
 #include <lib.h>
-#if CONFIG_HAVE_ACPI_RESUME
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 #include <arch/acpi.h>
 #endif
 #include <timer.h>
@@ -82,7 +83,7 @@ struct boot_state {
 	boot_state_t (*run_state)(void *arg);
 	void *arg;
 	int complete : 1;
-#if CONFIG_HAVE_MONOTONIC_TIMER
+#if IS_ENABLED(CONFIG_HAVE_MONOTONIC_TIMER)
 	struct boot_state_times times;
 #endif
 };
@@ -115,7 +116,7 @@ static struct boot_state boot_states[] = {
 	BS_INIT_ENTRY(BS_PAYLOAD_BOOT, bs_payload_boot),
 };
 
-void __attribute__((weak)) arch_bootstate_coreboot_exit(void) { }
+void __weak arch_bootstate_coreboot_exit(void) { }
 
 static boot_state_t bs_pre_device(void *arg)
 {
@@ -180,7 +181,7 @@ static boot_state_t bs_post_device(void *arg)
 
 static boot_state_t bs_os_resume_check(void *arg)
 {
-#if CONFIG_HAVE_ACPI_RESUME
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 	void *wake_vector;
 
 	wake_vector = acpi_find_wakeup_vector();
@@ -199,7 +200,7 @@ static boot_state_t bs_os_resume_check(void *arg)
 
 static boot_state_t bs_os_resume(void *wake_vector)
 {
-#if CONFIG_HAVE_ACPI_RESUME
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 	arch_bootstate_coreboot_exit();
 	acpi_resume(wake_vector);
 #endif
@@ -239,7 +240,7 @@ static boot_state_t bs_payload_boot(void *arg)
 	return BS_PAYLOAD_BOOT;
 }
 
-#if CONFIG_HAVE_MONOTONIC_TIMER
+#if IS_ENABLED(CONFIG_HAVE_MONOTONIC_TIMER)
 static void bs_sample_time(struct boot_state *state)
 {
 	struct mono_time *mt;
@@ -268,7 +269,7 @@ static inline void bs_sample_time(struct boot_state *state) {}
 static inline void bs_report_time(struct boot_state *state) {}
 #endif
 
-#if CONFIG_TIMER_QUEUE
+#if IS_ENABLED(CONFIG_TIMER_QUEUE)
 static void bs_run_timers(int drain)
 {
 	/* Drain all timer callbacks until none are left, if directed.
@@ -473,7 +474,7 @@ void main(void)
 	post_code(POST_ENTRY_RAMSTAGE);
 
 	/* Handoff sleep type from romstage. */
-#if CONFIG_HAVE_ACPI_RESUME
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 	acpi_is_wakeup();
 #endif
 

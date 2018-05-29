@@ -1,0 +1,4 @@
+config DRIVERS_I2C_RT5663
+	bool
+	default n
+	depends on HAVE_ACPI_TABLES

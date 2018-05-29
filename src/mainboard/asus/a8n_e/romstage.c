@@ -38,6 +38,7 @@
 #include <northbridge/amd/amdk8/raminit.h>
 #include <delay.h>
 
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "cpu/amd/dualcore/dualcore.c"
@@ -114,7 +115,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	needs_reset = setup_coherent_ht_domain();
 
 	wait_all_core0_started();
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	/* It is said that we should start core1 after all core0 launched. */
 	start_other_cores();
 	wait_all_other_cores_started(bsp_apicid);
@@ -146,6 +147,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	print_pci_devices();
 	dump_pci_devices();
 #endif
-
-	post_cache_as_ram();
 }

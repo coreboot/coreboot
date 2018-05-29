@@ -14,9 +14,12 @@
  * GNU General Public License for more details.
  */
 
+#include <commonlib/helpers.h>
+#include <compiler.h>
 #include <stdint.h>
 #include "vendorcode/google/chromeos/gnvs.h"
-typedef struct {
+
+typedef struct global_nvs_t {
 	/* Miscellaneous */
 	u16	osys; /* 0x00 - Operating System */
 	u8	smif; /* 0x02 - SMI function call ("TRAP") */
@@ -145,11 +148,13 @@ typedef struct {
 	u8	alfp; /* 0xf2 - active lfp */
 	u8	imon; /* 0xf3 - current graphics turbo imon value */
 	u8	mmio; /* 0xf4 - 64bit mmio support */
-	u8	rsvd13[11]; /* 0xf5 - rsvd */
+	u8	tpiq; /* 0xf5 - trackpad IRQ value */
+	u8	rsvd13[10]; /* 0xf6 - rsvd */
 
 	/* ChromeOS specific (starts at 0x100)*/
 	chromeos_acpi_t chromeos;
-} __attribute__((packed)) global_nvs_t;
+} __packed global_nvs_t;
+check_member(global_nvs_t, chromeos, 0x100);
 
 #ifdef __SMM__
 /* Used in SMM to find the ACPI GNVS address */

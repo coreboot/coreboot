@@ -17,6 +17,8 @@
 #ifndef USB_CH9_H
 #define USB_CH9_H
 
+#include <compiler.h>
+
 #define USB_DIR_OUT                     0               /* to device */
 #define USB_DIR_IN                      0x80            /* to host */
 
@@ -106,20 +108,20 @@
 #define USB_PID_DATA_TOGGLE	0x88
 
 struct usb_ctrlrequest {
-        u8  bRequestType;
-        u8  bRequest;
-        u16 wValue;
-        u16 wIndex;
-        u16 wLength;
-} __attribute__ ((packed));
+	u8  bRequestType;
+	u8  bRequest;
+	u16 wValue;
+	u16 wIndex;
+	u16 wLength;
+} __packed;
 
 struct usb_debug_descriptor {
-        u8  bLength;
-        u8  bDescriptorType;
+	u8  bLength;
+	u8  bDescriptorType;
 
-        /* bulk endpoints with 8 byte maxpacket */
-        u8  bDebugInEndpoint;
-        u8  bDebugOutEndpoint;
+	/* bulk endpoints with 8 byte maxpacket */
+	u8  bDebugInEndpoint;
+	u8  bDebugOutEndpoint;
 };
 
 #endif

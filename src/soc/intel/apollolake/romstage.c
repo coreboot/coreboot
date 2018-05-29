@@ -24,18 +24,25 @@
 #include <bootmode.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/pae.h>
 #include <device/pci_def.h>
 #include <device/resource.h>
+#include <intelblocks/lpc_lib.h>
 #include <fsp/api.h>
 #include <fsp/memmap.h>
 #include <fsp/util.h>
+#include <intelblocks/cpulib.h>
+#include <intelblocks/smm.h>
+#include <intelblocks/systemagent.h>
+#include <intelblocks/pmclib.h>
+#include <mrc_cache.h>
 #include <reset.h>
 #include <soc/cpu.h>
-#include <soc/flash_ctrlr.h>
-#include <soc/intel/common/mrc_cache.h>
 #include <soc/iomap.h>
+#include <soc/meminit.h>
 #include <soc/systemagent.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
@@ -46,9 +53,8 @@
 #include <timestamp.h>
 #include <timer.h>
 #include <delay.h>
+#include <compiler.h>
 #include "chip.h"
-
-static struct chipset_power_state power_state CAR_GLOBAL;
 
 static const uint8_t hob_variable_guid[16] = {
 	0x7d, 0x14, 0x34, 0xa0, 0x0c, 0x69, 0x54, 0x41,
@@ -80,39 +86,21 @@ static uint32_t fsp_version CAR_GLOBAL;
  */
 static void soc_early_romstage_init(void)
 {
-	/* Set MCH base address and enable bit */
-	pci_write_config32(SA_DEV_ROOT, MCHBAR, MCH_BASE_ADDR | 1);
+	static const struct sa_mmio_descriptor soc_fixed_pci_resources[] = {
+		{ MCHBAR, MCH_BASE_ADDRESS, MCH_BASE_SIZE, "MCHBAR" },
+	};
+
+	/* Set Fixed MMIO address into PCI configuration space */
+	sa_set_pci_bar(soc_fixed_pci_resources,
+			ARRAY_SIZE(soc_fixed_pci_resources));
 
 	/* Enable decoding for HPET. Needed for FSP global pointer storage */
 	pci_write_config8(PCH_DEV_P2SB, P2SB_HPTC, P2SB_HPTC_ADDRESS_SELECT_0 |
 						P2SB_HPTC_ADDRESS_ENABLE);
+
+	if (IS_ENABLED(CONFIG_DRIVERS_UART_8250IO))
+		lpc_io_setup_comm_a_b();
 }
-
-static void disable_watchdog(void)
-{
-	uint32_t reg;
-
-	/* Stop TCO timer */
-	reg = inl(ACPI_PMIO_BASE + TCO1_CNT);
-	reg |= TCO_TMR_HLT;
-	outl(reg, ACPI_PMIO_BASE + TCO1_CNT);
-}
-
-static void migrate_power_state(int is_recovery)
-{
-	struct chipset_power_state *ps_cbmem;
-	struct chipset_power_state *ps_car;
-
-	ps_car = car_get_var_ptr(&power_state);
-	ps_cbmem = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*ps_cbmem));
-
-	if (ps_cbmem == NULL) {
-		printk(BIOS_DEBUG, "Unable to add power state to cbmem!\n");
-		return;
-	}
-	memcpy(ps_cbmem, ps_car, sizeof(*ps_cbmem));
-}
-ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state);
 
 /*
  * Punit Initialization code. This all isn't documented, but
@@ -128,13 +116,10 @@ static bool punit_init(void)
 	 * Software Core Disable Mask (P_CR_CORE_DISABLE_MASK_0_0_0_MCHBAR).
 	 * Enable all cores here.
 	 */
-	write32((void *)(MCH_BASE_ADDR + P_CR_CORE_DISABLE_MASK_0_0_0_MCHBAR),
-		0x0);
+	MCHBAR32(CORE_DISABLE_MASK) = 0x0;
 
-	void *bios_rest_cpl = (void *)(MCH_BASE_ADDR +
-				       P_CR_BIOS_RESET_CPL_0_0_0_MCHBAR);
 	/* P-Unit bring up */
-	reg = read32(bios_rest_cpl);
+	reg = MCHBAR32(BIOS_RESET_CPL);
 	if (reg == 0xffffffff) {
 		/* P-unit not found */
 		printk(BIOS_DEBUG, "Punit MMIO not available\n");
@@ -144,32 +129,56 @@ static bool punit_init(void)
 	pci_write_config8(SA_DEV_PUNIT, PCI_INTERRUPT_PIN, 0x2);
 
 	/* Set PUINT IRQ to 24 and INTPIN LOCK */
-	write32((void *)(MCH_BASE_ADDR + PUNIT_THERMAL_DEVICE_IRQ),
-		PUINT_THERMAL_DEVICE_IRQ_VEC_NUMBER |
-		PUINT_THERMAL_DEVICE_IRQ_LOCK);
+	MCHBAR32(PUNIT_THERMAL_DEVICE_IRQ) =
+			PUINT_THERMAL_DEVICE_IRQ_VEC_NUMBER |
+			PUINT_THERMAL_DEVICE_IRQ_LOCK;
 
-	data = read32((void *)(MCH_BASE_ADDR + 0x7818));
-	data &= 0xFFFFE01F;
-	data |= 0x20 | 0x200;
-	write32((void *)(MCH_BASE_ADDR + 0x7818), data);
+	if (!IS_ENABLED(CONFIG_SOC_INTEL_GLK)) {
+		data = MCHBAR32(0x7818);
+		data &= 0xFFFFE01F;
+		data |= 0x20 | 0x200;
+		MCHBAR32(0x7818) = data;
+	}
 
 	/* Stage0 BIOS Reset Complete (RST_CPL) */
-	write32(bios_rest_cpl, 0x1);
+	enable_bios_reset_cpl();
 
 	/*
-	 * Poll for bit 8 in same reg (RST_CPL).
+	 * Poll for bit 8 to check if PCODE has completed its action
+	 * in reponse to BIOS Reset complete.
 	 * We wait here till 1 ms for the bit to get set.
 	 */
 	stopwatch_init_msecs_expire(&sw, 1);
-	while (!(read32(bios_rest_cpl) & 0x100)) {
+	while (!(MCHBAR32(BIOS_RESET_CPL) & PCODE_INIT_DONE)) {
 		if (stopwatch_expired(&sw)) {
-			printk(BIOS_DEBUG,
-			       "Failed to set RST_CPL bit\n");
+			printk(BIOS_DEBUG, "PCODE Init Done Failure\n");
 			return false;
 		}
 		udelay(100);
 	}
+
 	return true;
+}
+
+void set_max_freq(void)
+{
+	if (cpu_get_burst_mode_state() == BURST_MODE_UNAVAILABLE) {
+		/* Burst Mode has been factory configured as disabled
+		 * and is not available in this physical processor
+		 * package.
+		 */
+		printk(BIOS_DEBUG, "Burst Mode is factory disabled\n");
+		return;
+	}
+
+	/* Enable burst mode */
+	cpu_enable_burst_mode();
+
+	/* Enable speed step. */
+	cpu_enable_eist();
+
+	/* Set P-State ratio */
+	cpu_set_p_state_to_turbo_ratio();
 }
 
 asmlinkage void car_stage_entry(void)
@@ -177,7 +186,7 @@ asmlinkage void car_stage_entry(void)
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
 	bool s3wake;
-	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
+	struct chipset_power_state *ps = pmc_get_power_state();
 	void *smm_base;
 	size_t smm_size, var_size;
 	const void *new_var_data;
@@ -186,11 +195,10 @@ asmlinkage void car_stage_entry(void)
 	timestamp_add_now(TS_START_ROMSTAGE);
 
 	soc_early_romstage_init();
-	disable_watchdog();
 
 	console_init();
 
-	s3wake = fill_power_state(ps) == ACPI_S3;
+	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);
 
 	if (punit_init())
@@ -236,9 +244,16 @@ asmlinkage void car_stage_entry(void)
 	* when relocating the SMM handler as well as using the TSEG
 	* region for other purposes.
 	*/
-	smm_region(&smm_base, &smm_size);
+	smm_region_info(&smm_base, &smm_size);
 	tseg_base = (uintptr_t)smm_base;
 	postcar_frame_add_mtrr(&pcf, tseg_base, smm_size, MTRR_TYPE_WRBACK);
+
+	/* Ensure TSEG has mappings. */
+	if (IS_ENABLED(CONFIG_PAGING_IN_CACHE_AS_RAM)) {
+		if (paging_identity_map_addr(tseg_base, smm_size, PAT_WB))
+			printk(BIOS_ERR, "Unable to map TSEG: %lx--%lx\n",
+				tseg_base, tseg_base + smm_size);
+	}
 
 	run_postcar_phase(&pcf);
 }
@@ -246,14 +261,26 @@ asmlinkage void car_stage_entry(void)
 static void fill_console_params(FSPM_UPD *mupd)
 {
 	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL)) {
-		mupd->FspmConfig.SerialDebugPortDevice =
-			CONFIG_UART_FOR_CONSOLE;
-		/* use MMIO port type */
-		mupd->FspmConfig.SerialDebugPortType = 2;
-		/* use 4 byte register stride */
-		mupd->FspmConfig.SerialDebugPortStrideSize = 2;
-		/* used only for port type set to external */
-		mupd->FspmConfig.SerialDebugPortAddress = 0;
+		if (IS_ENABLED(CONFIG_SOC_UART_DEBUG)) {
+			mupd->FspmConfig.SerialDebugPortDevice =
+					CONFIG_UART_FOR_CONSOLE;
+			/* use MMIO port type */
+			mupd->FspmConfig.SerialDebugPortType = 2;
+			/* use 4 byte register stride */
+			mupd->FspmConfig.SerialDebugPortStrideSize = 2;
+			/* used only for port type set to external */
+			mupd->FspmConfig.SerialDebugPortAddress = 0;
+		} else if (IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)) {
+			/* use external UART for debug */
+			mupd->FspmConfig.SerialDebugPortDevice = 3;
+			/* use I/O port type */
+			mupd->FspmConfig.SerialDebugPortType = 1;
+			/* use 1 byte register stride */
+			mupd->FspmConfig.SerialDebugPortStrideSize = 0;
+			/* used only for port type set to external */
+			mupd->FspmConfig.SerialDebugPortAddress =
+					CONFIG_TTYS0_BASE;
+		}
 	} else {
 		mupd->FspmConfig.SerialDebugPortType = 0;
 	}
@@ -266,12 +293,88 @@ static void check_full_retrain(const FSPM_UPD *mupd)
 	if (mupd->FspmArchUpd.BootMode != FSP_BOOT_WITH_FULL_CONFIGURATION)
 		return;
 
-	ps = car_get_var_ptr(&power_state);
+	ps = pmc_get_power_state();
 
 	if (ps->gen_pmcon1 & WARM_RESET_STS) {
 		printk(BIOS_INFO, "Full retrain unsupported on warm reboot.\n");
 		hard_reset();
 	}
+}
+
+static void soc_memory_init_params(FSPM_UPD *mupd)
+{
+#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+	/* Only for GLK */
+	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	assert(dev != NULL);
+	const config_t *config = dev->chip_info;
+	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
+
+	if (!config)
+		die("Can not find SoC devicetree\n");
+
+	m_cfg->PrmrrSize = config->PrmrrSize;
+
+	/*
+	 * CpuMemoryTest in FSP tests 0 to 1M of the RAM after MRC init.
+	 * With PAGING_IN_CACHE_AS_RAM enabled for GLK, there was no page
+	 * table entry for this range which caused a page fault. Since this
+	 * test is anyway not exhaustive, skipping the memory test in FSP.
+	 */
+	m_cfg->SkipMemoryTestUpd = 1;
+
+	/*
+	 * PCIe power sequence can be done from within FSP when provided
+	 * with the GPIOs used for PERST to FSP. Since this is done in
+	 * coreboot, skipping the PCIe power sequence done by FSP.
+	 */
+	m_cfg->SkipPciePowerSequence = 1;
+#endif
+}
+
+static void parse_devicetree_setting(FSPM_UPD *m_upd)
+{
+#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+	DEVTREE_CONST struct device *dev = dev_find_slot(0, PCH_DEVFN_NPK);
+	if (!dev)
+		return;
+
+	m_upd->FspmConfig.TraceHubEn = dev->enabled;
+#endif
+}
+
+static void prepare_fspm_pages(void)
+{
+	const size_t mib128 = 128 * MiB;
+	uintptr_t base;
+	/* All in units of MiB */
+	size_t mem_sz;
+	size_t iohole_sz;
+	size_t low_mem_sz;
+
+	mem_sz = memory_in_system_in_mib();
+
+	if (!mem_sz) {
+		printk(BIOS_ERR, "No memory in system! FSP will hang...\n");
+		return;
+	}
+
+	iohole_sz = iohole_in_mib();
+
+	/* Mark pages as WB where FSP will write. One region will be in cbmem,
+	   but it's not clear what else FSP is writing to. Try to make the best
+	   calculation. */
+	low_mem_sz = 4 * (GiB / MiB) - iohole_sz;
+
+	if (low_mem_sz > mem_sz)
+		low_mem_sz = mem_sz;
+
+	/* Assume all accesses are within 128MiB of the crude low memory
+	   calculation above. */
+	base = low_mem_sz * MiB - mib128;
+	if (paging_identity_map_addr(base, mib128, PAT_WB))
+		printk(BIOS_ERR, "Unable to map %lx--%lx\n", base,
+			base + mib128);
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
@@ -281,7 +384,13 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	check_full_retrain(mupd);
 
 	fill_console_params(mupd);
+
+	if (IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+		soc_memory_init_params(mupd);
+
 	mainboard_memory_init_params(mupd);
+
+	parse_devicetree_setting(mupd);
 
 	/* Do NOT let FSP do any GPIO pad configuration */
 	mupd->FspmConfig.PreMemGpioTablePtr = (uintptr_t) NULL;
@@ -320,29 +429,19 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	}
 
 	car_set_var(fsp_version, version);
+
+	if (IS_ENABLED(CONFIG_PAGING_IN_CACHE_AS_RAM))
+		prepare_fspm_pages();
 }
 
-__attribute__ ((weak))
+__weak
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
-__attribute__ ((weak))
+__weak
 void mainboard_save_dimm_info(void)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
-}
-
-int get_sw_write_protect_state(void)
-{
-	uint8_t status;
-	const struct spi_flash *flash;
-
-	flash = boot_device_spi_flash();
-	if (!flash)
-		return 0;
-
-	/* Return unprotected status if status read fails. */
-	return spi_flash_status(flash, &status) ? 0 : !!(status & 0x80);
 }

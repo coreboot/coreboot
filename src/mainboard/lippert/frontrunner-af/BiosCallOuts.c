@@ -14,11 +14,9 @@
  */
 
 #include "AGESA.h"
-#include "amdlib.h"
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "SB800.h"
 #include <southbridge/amd/cimx/sb800/gpio_oem.h>
-#include "heapManager.h"
 #include <stdlib.h>
 
 /* Should AGESA_GNB_PCIE_SLOT_RESET use agesa_NoopSuccess?

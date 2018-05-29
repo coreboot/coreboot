@@ -21,6 +21,7 @@
 #include <soc/clk_rst.h>
 #include <soc/clock.h>
 #include <soc/clst_clk.h>
+#include <soc/console_uart.h>
 #include <soc/flow.h>
 #include <soc/maincpu.h>
 #include <soc/pmc.h>
@@ -489,12 +490,15 @@ u32 clock_configure_plld(u32 frequency)
  */
 void clock_early_uart(void)
 {
-	write32(CLK_RST_REG(clk_src_uarta),
-		CLK_SRC_DEV_ID(UARTA, PLLP) << CLK_SOURCE_SHIFT |
+	if (console_uart_get_id() == UART_ID_NONE)
+		return;
+
+	write32(console_uart_clk_rst_reg(),
+		console_uart_clk_src_dev_id() << CLK_SOURCE_SHIFT |
 		CLK_UART_DIV_OVERRIDE |
 		CLK_DIVIDER(TEGRA_PLLP_KHZ, 1843));
 
-	clock_enable_clear_reset_l(CLK_L_UARTA);
+	console_uart_clock_enable_clear_reset();
 }
 
 /* Enable output clock (CLK1~3) for external peripherals. */

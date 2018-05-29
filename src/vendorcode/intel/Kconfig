@@ -2,6 +2,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2013 Sage Electronic Engineering, LLC.
+## Copyright (C) 2018 Intel Corp.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -26,3 +27,26 @@ config UEFI_2_4_BINDING
 
 config UDK_2015_BINDING
 	def_bool n
+
+config UDK_2017_BINDING
+	def_bool n
+
+config UDK_2013_VERSION
+	int
+	default 2013
+
+config UDK_2015_VERSION
+	int
+	default 2015
+
+config UDK_2017_VERSION
+	int
+	default 2017
+
+config UDK_VERSION
+	int
+	default UDK_2017_VERSION if UDK_2017_BINDING
+	default UDK_2015_VERSION if UDK_2015_BINDING
+	default UDK_2013_VERSION
+	help
+	  UEFI Development Kit version for Platform

@@ -1,6 +1,7 @@
 package main
 
 import "fmt"
+import "os"
 
 var supportedPCIDevices map[uint32]PCIDevice = map[uint32]PCIDevice{}
 var PCIMap map[PCIAddr]PCIDevData = map[PCIAddr]PCIDevData{}
@@ -25,6 +26,10 @@ func ScanRoot(ctx Context) {
 				pciDev.PCIVenID, pciDev.PCIDevID)}
 		}
 		dev.Scan(ctx, pciDev)
+	}
+	if SouthBridge == nil {
+		fmt.Println("Could not detect southbridge. Aborting!")
+		os.Exit(1)
 	}
 	dmi := ctx.InfoSource.GetDMI()
 	if !dmi.IsLaptop {

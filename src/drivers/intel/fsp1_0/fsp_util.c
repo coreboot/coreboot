@@ -66,7 +66,7 @@ void FspNotify (u32 Phase)
  * Call the FSP to do memory init. The FSP doesn't return to this function.
  * The FSP returns to the romstage_main_continue().
  */
-void __attribute__ ((noreturn)) fsp_early_init (FSP_INFO_HEADER *fsp_ptr)
+void __attribute__((noreturn)) fsp_early_init (FSP_INFO_HEADER *fsp_ptr)
 {
 	FSP_FSP_INIT FspInitApi;
 	FSP_INIT_PARAMS FspInitParams;
@@ -108,8 +108,8 @@ volatile u8 * find_fsp ()
 
 	/* Entry point for CAR assembly routine */
 	__asm__ __volatile__ (
-		".global find_fsp\n\t"
-		"find_fsp:\n\t"
+		".global find_fsp_bypass_prologue\n\t"
+		"find_fsp_bypass_prologue:\n\t"
 	);
 #else
 	volatile u8 *fsp_ptr;

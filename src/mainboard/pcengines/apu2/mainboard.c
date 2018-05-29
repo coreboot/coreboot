@@ -19,8 +19,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
-#include <northbridge/amd/pi/BiosCallOuts.h>
-#include <northbridge/amd/pi/agesawrapper.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <southbridge/amd/pi/hudson/pci_devs.h>
 #include <southbridge/amd/pi/hudson/amd_pci_int_defs.h>
@@ -29,6 +27,7 @@
 #include <superio/nuvoton/nct5104d/nct5104d.h>
 #include <smbios.h>
 #include <string.h>
+<<<<<<< HEAD
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <spd_bin.h>
@@ -38,6 +37,8 @@
 #include <cbfs.h>
 #include <commonlib/region.h>
 #include <commonlib/cbfs.h>
+=======
+>>>>>>> master
 #include "gpio_ftns.h"
 #include "bios_knobs.h"
 
@@ -62,9 +63,7 @@
  * MP Tables.  TODO: Make ACPI use these values too.
  */
 static const u8 mainboard_picr_data[FCH_INT_TABLE_SIZE] = {
-#if defined(__GNUC__)
 	[0 ... FCH_INT_TABLE_SIZE-1] = 0x1F,
-#endif
 	/* INTA# - INTH# */
 	[0x00] = 0x03,0x03,0x05,0x07,0x0B,0x0A,0x1F,0x1F,
 	/* Misc-nil,0,1,2, INT from Serial irq */
@@ -87,9 +86,7 @@ static const u8 mainboard_picr_data[FCH_INT_TABLE_SIZE] = {
 };
 
 static const u8 mainboard_intr_data[FCH_INT_TABLE_SIZE] = {
-#if defined(__GNUC__)
 	[0 ... FCH_INT_TABLE_SIZE-1] = 0x1F,
-#endif
 	/* INTA# - INTH# */
 	[0x00] = 0x10,0x10,0x12,0x13,0x14,0x15,0x1F,0x1F,
 	/* Misc-nil,0,1,2, INT from Serial irq */
@@ -269,7 +266,7 @@ int find_knob_index(const char *s, const char *pattern)
  * enable the dedicated function in mainboard.
  **********************************************/
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	bool scon = check_console();
 

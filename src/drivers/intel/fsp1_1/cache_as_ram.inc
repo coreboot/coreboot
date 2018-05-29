@@ -137,7 +137,7 @@ CAR_init_done:
 	/* Save FSP_INFO_HEADER location in ebx */
 	mov	%ebp, %ebx
 
-	/* Coreboot assumes stack/heap region will be zero */
+	/* coreboot assumes stack/heap region will be zero */
 	cld
 	movl	%ecx, %edi
 	neg	%ecx

@@ -28,5 +28,6 @@ void ddr_ram_setup(const struct mem_controller *ctrl);
 
 /* mainboard specific */
 int spd_read_byte(unsigned device, unsigned address);
+void main(unsigned long bist);
 
 #endif

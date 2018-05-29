@@ -1,7 +1,17 @@
-/* Copyright 2003-2004 Tyan Computer
- *  Yinghai Lu yhlu@tyan.com
+/*
+ * This file is part of the coreboot project.
  *
+ * Copyright (C) 2003-2004 Tyan Computer - Yinghai Lu <yhlu@tyan.com>
  * Copyright (C) 2010 Rudolf Marek <r.marek@assembler.cz>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
 #include <delay.h>
@@ -41,9 +51,9 @@ static struct device_operations si_sata_ops  = {
 };
 
 static const struct pci_driver si_sata_driver __pci_driver = {
-        .ops    = &si_sata_ops,
-        .vendor = 0x1095,
-        .device = 0x3114,
+	.ops    = &si_sata_ops,
+	.vendor = 0x1095,
+	.device = 0x3114,
 };
 
 static const struct pci_driver si_sata_driver_2 __pci_driver = {

@@ -23,20 +23,6 @@
 /* CPU types */
 #define SKYLAKE_FAMILY_ULT	0x406e0
 
-/* Supported CPUIDs */
-#define CPUID_SKYLAKE_C0	0x406e2
-#define CPUID_SKYLAKE_D0	0x406e3
-#define CPUID_SKYLAKE_HQ0	0x506e1
-#define CPUID_SKYLAKE_HR0	0x506e3
-#define CPUID_KABYLAKE_G0	0x406e8
-#define CPUID_KABYLAKE_H0	0x806e9
-#define CPUID_KABYLAKE_Y0	0x806ea
-#define CPUID_KABYLAKE_HA0	0x506e8
-#define CPUID_KABYLAKE_HB0	0x906e9
-
-/* CPU bus clock is fixed at 100MHz */
-#define CPU_BCLK		100
-
 /* Latency times in units of 1024ns. */
 #define C_STATE_LATENCY_CONTROL_0_LIMIT	0x4e
 #define C_STATE_LATENCY_CONTROL_1_LIMIT	0x76
@@ -54,6 +40,9 @@
 #define C9_POWER	0xc8
 #define C10_POWER	0xc8
 
+/* Common Timer Copy (CTC) frequency - 24MHz. */
+#define CTC_FREQ		24000000
+
 #define C_STATE_LATENCY_MICRO_SECONDS(limit, base) \
 	(((1 << ((base)*5)) * (limit)) / 1000)
 #define C_STATE_LATENCY_FROM_LAT_REG(reg) \
@@ -62,13 +51,10 @@
 
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);
-int cpu_config_tdp_levels(void);
 
 /* CPU identification */
 u32 cpu_family_model(void);
 u32 cpu_stepping(void);
 int cpu_is_ult(void);
-int is_secondary_thread(void);
-void configure_sgx(const void *microcode_patch);
 
 #endif

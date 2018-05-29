@@ -18,26 +18,21 @@
 #ifndef _SOC_APOLLOLAKE_CPU_H_
 #define _SOC_APOLLOLAKE_CPU_H_
 
-#include <intelblocks/msr.h>
-
-#ifndef __ASSEMBLER__
 #include <cpu/x86/msr.h>
-#include <device/device.h>
-
-void apollolake_init_cpus(struct device *dev);
-void set_max_freq(void);
-void enable_untrusted_mode(void);
-#endif
-
-#define CPUID_APOLLOLAKE_A0	0x506c8
-#define CPUID_APOLLOLAKE_B0	0x506c9
-
-#define BASE_CLOCK_MHZ		100
+#include <intelblocks/msr.h>
 
 /* Common Timer Copy (CTC) frequency - 19.2MHz. */
 #define CTC_FREQ		19200000
 
-/* This is burst mode BIT 38 in MSR_IA32_MISC_ENABLES MSR at offset 1A0h */
-#define APL_BURST_MODE_DISABLE		0x40
+struct device;
+void apollolake_init_cpus(struct device *dev);
+void mainboard_devtree_update(struct device *dev);
 
+/* Flush L1D to L2 */
+static inline void flush_l1d_to_l2(void)
+{
+	msr_t msr = rdmsr(MSR_POWER_MISC);
+	msr.lo |= FLUSH_DL1_L2;
+	wrmsr(MSR_POWER_MISC, msr);
+}
 #endif /* _SOC_APOLLOLAKE_CPU_H_ */

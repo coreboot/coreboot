@@ -27,5 +27,3 @@ romstage-y += OemCustomize.c
 ramstage-y += buildOpts.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += OemCustomize.c
-
-ramstage-y += broadcom.c

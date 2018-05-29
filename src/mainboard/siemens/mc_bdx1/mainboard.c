@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2011 Google Inc.
- * Copyright (C) 2016 Siemens AG
+ * Copyright (C) 2016-2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,10 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
+#include <device/pci_ids.h>
+#include <device/path.h>
 #include <console/console.h>
-#if CONFIG_VGA_ROM_RUN
+#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
 #include <pc80/mc146818rtc.h>
@@ -34,6 +36,10 @@
 #include <soc/pci_devs.h>
 #include <soc/irq.h>
 #include <soc/lpc.h>
+#include <bootstate.h>
+#include <timer.h>
+#include <timestamp.h>
+#include <pca9538.h>
 
 #define MAX_PATH_DEPTH		12
 #define MAX_NUM_MAPPINGS	10
@@ -84,11 +90,13 @@
 #define SPI_REG_OPMENU_L	0x98
 #define SPI_REG_OPMENU_H	0x9c
 
+/* Define the slave address for the I/O expander. */
+#define PCA9538_SLAVE_ADR	0x71
 /*
  * mainboard_enable is executed as first thing after enumerate_buses().
  * This is the earliest point to add customization.
  */
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 
 }
@@ -96,7 +104,7 @@ static void mainboard_enable(device_t dev)
 static void mainboard_init(void *chip_info)
 {
 	uint8_t actl = 0;
-	device_t dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
 
 	/* Route SCI to IRQ 10 to free IRQ 9 slot. */
 	actl = pci_read_config8(dev, ACPI_CNTL_OFFSET);
@@ -113,7 +121,7 @@ static void mainboard_final(void *chip_info)
 {
 	void *spi_base = NULL;
 	uint32_t rcba = 0;
-	device_t dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
 
 	/* Get address of SPI controller. */
 	rcba = (pci_read_config32(dev, 0xf0) & 0xffffc000);
@@ -125,6 +133,25 @@ static void mainboard_final(void *chip_info)
 	write16((spi_base + SPI_REG_OPTYPE), SPI_OPTYPE);
 	write32((spi_base + SPI_REG_OPMENU_L), SPI_OPMENU_LOWER);
 	write32((spi_base + SPI_REG_OPMENU_H), SPI_OPMENU_UPPER);
+
+	/* Set Master Enable for on-board PCI devices. */
+	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403e, 0);
+	if (dev) {
+		uint16_t cmd = pci_read_config16(dev, PCI_COMMAND);
+		cmd |= PCI_COMMAND_MASTER;
+		pci_write_config16(dev, PCI_COMMAND, cmd);
+	}
+	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403f, 0);
+	if (dev) {
+		uint16_t cmd = pci_read_config16(dev, PCI_COMMAND);
+		cmd |= PCI_COMMAND_MASTER;
+		pci_write_config16(dev, PCI_COMMAND, cmd);
+	}
+	/* Show the mainboard version well-visible on console. */
+	printk(BIOS_NOTICE, "***************************\n"
+			    "* Mainboard version: 0x%02x *\n"
+			    "***************************\n",
+			    pca9538_read_input());
 }
 
 /** \brief This function can decide if a given MAC address is valid or not.
@@ -198,6 +225,50 @@ enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[6])
 	/* No MAC address found for */
 	return CB_ERR;
 }
+
+static void wait_for_legacy_dev(void *unused)
+{
+	uint32_t legacy_delay, us_since_boot;
+	struct stopwatch sw;
+
+	/* Open main hwinfo block. */
+	if (hwilib_find_blocks("hwinfo.hex") != CB_SUCCESS)
+		return;
+
+	/* Get legacy delay parameter from hwinfo. */
+	if (hwilib_get_field(LegacyDelay, (uint8_t *) &legacy_delay,
+			      sizeof(legacy_delay)) != sizeof(legacy_delay))
+		return;
+
+	us_since_boot = get_us_since_boot();
+	/* No need to wait if the time since boot is already long enough.*/
+	if (us_since_boot > legacy_delay)
+		return;
+	stopwatch_init_msecs_expire(&sw, (legacy_delay - us_since_boot) / 1000);
+	printk(BIOS_NOTICE, "Wait remaining %d of %d us for legacy devices...",
+			legacy_delay - us_since_boot, legacy_delay);
+	stopwatch_wait_until_expired(&sw);
+	printk(BIOS_NOTICE, "done!\n");
+}
+
+/*
+ * To access the I/O expander PCA9538 we need to know its device structure.
+ * This function will provide it as mainboard code has the knowledge of the
+ * right I2C slave address for the I/O expander.
+ */
+struct device *pca9538_get_dev(void)
+{
+	struct device *dev = NULL;
+
+	while ((dev = dev_find_path(dev, DEVICE_PATH_I2C))) {
+		if (dev->path.i2c.device == PCA9538_SLAVE_ADR)
+			break;
+	}
+	return dev;
+}
+
+
+BOOT_STATE_INIT_ENTRY(BS_DEV_ENUMERATE, BS_ON_ENTRY, wait_for_legacy_dev, NULL);
 
 struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,

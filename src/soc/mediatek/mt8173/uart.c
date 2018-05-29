@@ -19,6 +19,7 @@
 #include <console/uart.h>
 #include <drivers/uart/uart8250reg.h>
 #include <stdint.h>
+#include <compiler.h>
 
 #include <soc/addressmap.h>
 
@@ -56,7 +57,7 @@ struct mtk_uart {
 	};
 	uint32_t autobaud_en;	/* Enable auto baudrate. */
 	uint32_t highspeed;	/* High speed UART. */
-} __attribute__ ((packed));
+} __packed;
 
 /* Peripheral Reset and Power Down registers */
 struct mtk_peri_globalcon {
@@ -75,7 +76,7 @@ struct mtk_peri_globalcon {
 	uint32_t pdn_md1_sta;
 	uint32_t pdn_md2_sta;
 	uint32_t pdn_md_mask;
-} __attribute__ ((packed));
+} __packed;
 
 static struct mtk_uart *const uart_ptr = (void *)UART0_BASE;
 
@@ -86,7 +87,7 @@ static void mtk_uart_init(void)
 {
 	/* Use a hardcoded divisor for now. */
 	const unsigned uartclk = 26 * MHz;
-	const unsigned baudrate = CONFIG_TTYS0_BAUD;
+	const unsigned baudrate = get_uart_baudrate();
 	const uint8_t line_config = UART8250_LCR_WLS_8;	/* 8n1 */
 	unsigned highspeed, quot, divisor, remainder;
 
@@ -176,7 +177,7 @@ void uart_fill_lb(void *data)
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial.baseaddr = UART0_BASE;
-	serial.baud = default_baudrate();
+	serial.baud = get_uart_baudrate();
 	serial.regwidth = 4;
 	lb_add_serial(&serial, data);
 

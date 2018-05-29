@@ -54,7 +54,7 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 void mainboard_pre_console_init(void)
 {
 	/* Early SuperIO setup */
-	it8772f_ac_resume_southbridge(IT8772F_DUMMY_DEV);
+	it8772f_ac_resume_southbridge(IT8772F_SUPERIO_DEV);
 	ite_kill_watchdog(IT8772F_GPIO_DEV);
 	ite_enable_serial(IT8772F_SERIAL_DEV, CONFIG_TTYS0_BASE);
 

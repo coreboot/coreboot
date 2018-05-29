@@ -46,7 +46,7 @@
 #ifndef __VENDORCODE_AMD_CIMX_SB800_AMDSBLIB_H__
 #define __VENDORCODE_AMD_CIMX_SB800_AMDSBLIB_H__
 
-#include <cpu/amd/common/cbtypes.h>
+#include "cbtypes.h"
 
 //AMDSBLIB Routines
 

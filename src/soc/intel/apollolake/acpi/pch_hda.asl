@@ -34,6 +34,9 @@ Device (HDAS)
 		}
 	)
 
+	/* can wake up from S3 state */
+	Name (_PRW, Package() { GPE0A_AVS_PME_STS, 3 })
+
 	/*
 	 * Device Specific Method
 	 * Arg0 - UUID

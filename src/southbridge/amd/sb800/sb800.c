@@ -24,9 +24,9 @@
 #include "sb800.h"
 #include "smbus.h"
 
-static device_t find_sm_dev(device_t dev, u32 devfn)
+static struct device *find_sm_dev(struct device *dev, u32 devfn)
 {
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	sm_dev = dev_find_slot(dev->bus->secondary, devfn);
 	if (!sm_dev)
@@ -46,7 +46,7 @@ static device_t find_sm_dev(device_t dev, u32 devfn)
 	return sm_dev;
 }
 
-void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val)
+void set_sm_enable_bits(struct device *sm_dev, u32 reg_pos, u32 mask, u32 val)
 {
 	u32 reg_old, reg;
 	reg = reg_old = pci_read_config32(sm_dev, reg_pos);
@@ -140,7 +140,7 @@ u16 rx_convert_table[] = {
 
 /* PCIe General Purpose Ports */
 /* v:1814, d:3090. cp421A */
-static void set_sb800_gpp(device_t dev)
+static void set_sb800_gpp(struct device *dev)
 {
 	struct southbridge_amd_sb800_config *conf;
 	u32 imp_rb, lc_status;
@@ -224,10 +224,10 @@ static void set_sb800_gpp(device_t dev)
 	printk(BIOS_DEBUG, "lc_status=%x\n", lc_status);
 }
 
-void sb800_enable(device_t dev)
+void sb800_enable(struct device *dev)
 {
-	device_t sm_dev = 0;
-	device_t bus_dev = 0;
+	struct device *sm_dev = NULL;
+	struct device *bus_dev = NULL;
 	int index = -1;
 	u32 deviceid;
 	u32 vendorid;

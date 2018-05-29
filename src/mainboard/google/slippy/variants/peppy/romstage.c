@@ -77,6 +77,7 @@ static void copy_spd(struct pei_data *peid)
 	int spd_index = get_gpios(gpio_vector);
 	char *spd_file;
 	size_t spd_file_len;
+	size_t spd_len = sizeof(peid->spd_data[0]);
 
 	printk(BIOS_DEBUG, "SPD index %d\n", spd_index);
 	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
@@ -84,11 +85,24 @@ static void copy_spd(struct pei_data *peid)
 	if (!spd_file)
 		die("SPD data not found.");
 
+	if (spd_file_len < ((spd_index + 1) * sizeof(peid->spd_data[0]))) {
+		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
+		spd_index = 0;
+	}
+
+	if (spd_file_len < spd_len)
+		die("Missing SPD data.");
+
+	memcpy(peid->spd_data[0], spd_file + (spd_index * spd_len), spd_len);
+
 	switch (google_chromeec_get_board_version()) {
 	case PEPPY_BOARD_VERSION_PROTO:
 		/* Index 0 is 2GB config with CH0 only. */
 		if (spd_index == 0)
 			peid->dimm_channel1_disabled = 3;
+		else
+			memcpy(peid->spd_data[1],
+				spd_file + (spd_index * spd_len), spd_len);
 		break;
 
 	case PEPPY_BOARD_VERSION_EVT:
@@ -97,22 +111,11 @@ static void copy_spd(struct pei_data *peid)
 		 * Index 4-6 are 2GB config with CH0 only. */
 		if (spd_index > 3)
 			peid->dimm_channel1_disabled = 3;
+		else
+			memcpy(peid->spd_data[1],
+				spd_file + (spd_index * spd_len), spd_len);
 		break;
 	}
-
-	if (spd_file_len <
-	    ((spd_index + 1) * sizeof(peid->spd_data[0]))) {
-		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
-		spd_index = 0;
-	}
-
-	if (spd_file_len < sizeof(peid->spd_data[0]))
-		die("Missing SPD data.");
-
-	memcpy(peid->spd_data[0],
-	       spd_file +
-	       spd_index * sizeof(peid->spd_data[0]),
-	       sizeof(peid->spd_data[0]));
 }
 
 void variant_romstage_entry(unsigned long bist)

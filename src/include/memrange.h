@@ -21,7 +21,7 @@
  * is exposed so that a memranges can be used on the stack if needed. */
 struct memranges {
 	struct range_entry *entries;
-	/* Coreboot doesn't have a free() function. Therefore, keep a cache of
+	/* coreboot doesn't have a free() function. Therefore, keep a cache of
 	 * free'd entries.  */
 	struct range_entry *free_list;
 };
@@ -97,6 +97,9 @@ void memranges_init_empty(struct memranges *ranges, struct range_entry *free,
 void memranges_init(struct memranges *ranges,
 		    unsigned long mask, unsigned long match,
 		    unsigned long tag);
+
+/* Clone a memrange. The new memrange has the same entries as the old one. */
+void memranges_clone(struct memranges *newranges, struct memranges *oldranges);
 
 /* Remove and free all entries within the memranges structure. */
 void memranges_teardown(struct memranges *ranges);

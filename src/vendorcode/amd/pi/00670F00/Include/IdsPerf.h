@@ -39,6 +39,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***************************************************************************/
+
+#include <check_for_wrapper.h>
+
 #ifndef _IDS_PERFORMANCE_DATA_POINT
 
   #define _IDS_PERFORMANCE_DATA_POINT

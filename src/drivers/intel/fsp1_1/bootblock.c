@@ -35,6 +35,11 @@ void bootblock_fsp_temp_ram_init(void)
 	/* Locate the FSP header */
 	fih = find_fsp(CONFIG_FSP_LOC);
 	/* Check the FSP header */
+	if (((uintptr_t)fih >= ERROR_NO_FV_SIG) &&
+	    ((uintptr_t)fih <= ERROR_FSP_REV_MISMATCH)) {
+		printk(BIOS_ERR, "FSP header error %p, ", fih);
+		fih = NULL;
+	}
 	if (fih == NULL)
 		die("FSP_INFO_HEADER not set!\n");
 

@@ -16,6 +16,8 @@
 #ifndef EDID_H
 #define EDID_H
 
+#include <stdint.h>
+
 enum edid_modes {
 	EDID_MODE_640x480_60Hz,
 	EDID_MODE_720x480_60Hz,
@@ -53,6 +55,8 @@ struct edid_mode {
  * unsigned int. We can move more into into this struct as needed.
  */
 
+#define EDID_ASCII_STRING_LENGTH 13
+
 struct edid {
 	/* These next three things used to all be called bpp.
 	 * Merriment ensued. The identifier
@@ -89,6 +93,13 @@ struct edid {
 	u32 bytes_per_line;
 
 	int hdmi_monitor_detected;
+	char ascii_string[EDID_ASCII_STRING_LENGTH + 1];
+};
+
+enum edid_status {
+	EDID_CONFORMANT,
+	EDID_NOT_CONFORMANT,
+	EDID_ABSENT,
 };
 
 /* Defined in src/lib/edid.c */

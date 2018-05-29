@@ -1,3 +1,0 @@
-Board name: EP80579 devkit (Truxton)
-Category: eval
-Release year: 2009

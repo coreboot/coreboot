@@ -14,6 +14,7 @@
  */
 
 #include <arch/io.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <bootmode.h>
 #include <delay.h>
@@ -22,14 +23,17 @@
 #include <device/pci_ids.h>
 #include <drivers/intel/gma/i915_reg.h>
 #include <drivers/intel/gma/i915.h>
+#include <drivers/intel/gma/libgfxinit.h>
 #include <cpu/intel/haswell/haswell.h>
+#include <drivers/intel/gma/opregion.h>
+#include <southbridge/intel/lynxpoint/nvs.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "chip.h"
 #include "haswell.h"
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vendorcode/google/chromeos/chromeos.h>
 #endif
 
@@ -212,6 +216,19 @@ int gtt_poll(u32 reg, u32 mask, u32 value)
 	return 0;
 }
 
+uintptr_t gma_get_gnvs_aslb(const void *gnvs)
+{
+	const global_nvs_t *gnvs_ptr = gnvs;
+	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
+}
+
+void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
+{
+	global_nvs_t *gnvs_ptr = gnvs;
+	if (gnvs_ptr)
+		gnvs_ptr->aslb = aslb;
+}
+
 static void power_well_enable(void)
 {
 	gtt_write(HSW_PWR_WELL_CTL1, HSW_PWR_WELL_ENABLE);
@@ -249,13 +266,13 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	gtt_write_regs(haswell_gt_setup);
 
 	/* Wait for Mailbox Ready */
-	gtt_poll(0x138124, (1 << 31), (0 << 31));
+	gtt_poll(0x138124, (1UL << 31), (0UL << 31));
 	/* Mailbox Data - RC6 VIDS */
 	gtt_write(0x138128, 0x00000000);
 	/* Mailbox Command */
 	gtt_write(0x138124, 0x80000004);
 	/* Wait for Mailbox Ready */
-	gtt_poll(0x138124, (1 << 31), (0 << 31));
+	gtt_poll(0x138124, (1UL << 31), (0UL << 31));
 
 	/* Enable PM Interrupts */
 	gtt_write(GEN6_PMIER, GEN6_PM_MBOX_EVENT | GEN6_PM_THERMAL_EVENT |
@@ -421,16 +438,24 @@ static void gma_pm_init_post_vbios(struct device *dev)
 	gtt_write(0x0a188, 0x00000001);
 }
 
+/* Enable SCI to ACPI _GPE._L06 */
+static void gma_enable_swsci(void)
+{
+	u16 reg16;
+
+	/* clear DMISCI status */
+	reg16 = inw(get_pmbase() + TCO1_STS);
+	reg16 &= DMISCI_STS;
+	outw(get_pmbase() + TCO1_STS, reg16);
+
+	/* clear and enable ACPI TCO SCI */
+	enable_tco_sci();
+}
+
 static void gma_func0_init(struct device *dev)
 {
 	int lightup_ok = 0;
 	u32 reg32;
-	u64 physbase;
-	const struct resource *const linearfb_res =
-		find_resource(dev, PCI_BASE_ADDRESS_2);
-
-	if (!linearfb_res || !linearfb_res->base)
-        	return;
 
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
@@ -443,11 +468,9 @@ static void gma_func0_init(struct device *dev)
 	/* Pre panel init */
 	gma_setup_panel(dev);
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+	if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
 		printk(BIOS_SPEW, "NATIVE graphics, run native enable\n");
-		physbase = pci_read_config32(dev, 0x5c) & ~0xf;
-		gma_gfxinit(gtt_res->base, linearfb_res->base,
-			physbase, &lightup_ok);
+		gma_gfxinit(&lightup_ok);
 		gfx_set_init_done(1);
 	}
 
@@ -459,9 +482,13 @@ static void gma_func0_init(struct device *dev)
 
 	/* Post panel init */
 	gma_pm_init_post_vbios(dev);
+
+	gma_enable_swsci();
+	intel_gma_restore_opregion();
 }
 
-static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void gma_set_subsystem(struct device *dev, unsigned vendor,
+			      unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -475,7 +502,7 @@ static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 const struct i915_gpu_controller_info *
 intel_gma_get_controller_info(void)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x2,0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x2,0));
 	if (!dev) {
 		return NULL;
 	}
@@ -483,7 +510,7 @@ intel_gma_get_controller_info(void)
 	return &chip->gfx;
 }
 
-static void gma_ssdt(device_t device)
+static void gma_ssdt(struct device *device)
 {
 	const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
 	if (!gfx) {
@@ -491,6 +518,31 @@ static void gma_ssdt(device_t device)
 	}
 
 	drivers_intel_gma_displays_ssdt_generate(gfx);
+}
+
+static unsigned long
+gma_write_acpi_tables(struct device *const dev, unsigned long current,
+		      struct acpi_rsdp *const rsdp)
+{
+	igd_opregion_t *opregion = (igd_opregion_t *)current;
+	global_nvs_t *gnvs;
+
+	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
+		return current;
+
+	current += sizeof(igd_opregion_t);
+
+	/* GNVS has been already set up */
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs) {
+		/* IGD OpRegion Base Address */
+		gma_set_gnvs_aslb(gnvs, (uintptr_t)opregion);
+	} else {
+		printk(BIOS_ERR, "Error: GNVS table not found.\n");
+	}
+
+	current = acpi_align_current(current);
+	return current;
 }
 
 static struct pci_operations gma_pci_ops = {
@@ -506,6 +558,7 @@ static struct device_operations gma_func0_ops = {
 	.scan_bus		= 0,
 	.enable			= 0,
 	.ops_pci		= &gma_pci_ops,
+	.write_acpi_tables	= gma_write_acpi_tables,
 };
 
 static const unsigned short pci_device_ids[] = {

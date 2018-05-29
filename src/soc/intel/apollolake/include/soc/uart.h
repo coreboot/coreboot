@@ -18,13 +18,6 @@
 #ifndef _SOC_APOLLOLAKE_UART_H_
 #define _SOC_APOLLOLAKE_UART_H_
 
-/*
-* M and N divisor values for clock frequency configuration.
-* These values get us a 1.836 MHz clock (ideally we want 1.843 MHz)
-*/
-#define CLK_M_VAL	0x025a
-#define CLK_N_VAL	0x7fff
-
 /* Initialize the console UART including the pads for the configured UART. */
 void pch_uart_init(void);
 

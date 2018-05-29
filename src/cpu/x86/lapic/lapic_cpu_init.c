@@ -36,7 +36,6 @@
 #include <cpu/intel/speedstep.h>
 #include <thread.h>
 
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 /* This is a lot more paranoid now, since Linux can NOT handle
  * being told there is a CPU when none exists. So any errors
  * will return 0, meaning no CPU.
@@ -148,8 +147,9 @@ static int lapic_start_cpu(unsigned long apicid)
 		}
 		return 0;
 	}
-#if !CONFIG_CPU_AMD_MODEL_10XXX && !CONFIG_CPU_INTEL_MODEL_206AX \
-	&& !CONFIG_CPU_INTEL_MODEL_2065X
+#if !IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX) \
+	&& !IS_ENABLED(CONFIG_CPU_INTEL_MODEL_206AX) \
+	&& !IS_ENABLED(CONFIG_CPU_INTEL_MODEL_2065X)
 	mdelay(10);
 #endif
 
@@ -254,7 +254,7 @@ static atomic_t active_cpus = ATOMIC_INIT(1);
  * start_cpu returns.
  */
 
-static spinlock_t start_cpu_lock = SPIN_LOCK_UNLOCKED;
+DECLARE_SPIN_LOCK(start_cpu_lock);
 static unsigned int last_cpu_index = 0;
 static void *stacks[CONFIG_MAX_CPUS];
 volatile unsigned long secondary_stack;
@@ -324,7 +324,7 @@ int start_cpu(struct device *cpu)
 	return result;
 }
 
-#if CONFIG_AP_IN_SIPI_WAIT
+#if IS_ENABLED(CONFIG_AP_IN_SIPI_WAIT)
 
 /**
  * Sending INIT IPI to self is equivalent of asserting #INIT with a bit of
@@ -351,7 +351,7 @@ void stop_this_cpu(void)
 	unsigned long send_status;
 	unsigned long id;
 
-	id = lapic_read(LAPIC_ID) >> 24;
+	id = lapicid();
 
 	printk(BIOS_DEBUG, "CPU %ld going down...\n", id);
 
@@ -464,9 +464,9 @@ static void start_other_cpus(struct bus *cpu_bus, struct device *bsp_cpu)
 
 }
 
-static void smm_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
+static void smm_other_cpus(struct bus *cpu_bus, struct device *bsp_cpu)
 {
-	device_t cpu;
+	struct device *cpu;
 	int pre_count = atomic_read(&active_cpus);
 
 	/* Loop through the cpus once to let them run through SMM relocator */
@@ -526,11 +526,9 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 	}
 	printk(BIOS_DEBUG, "All AP CPUs stopped (%ld loops)\n", loopcount);
 	checkstack(_estack, 0);
-	for (i = 1; i <= last_cpu_index; i++)
+	for (i = 1; i < CONFIG_MAX_CPUS && i <= last_cpu_index; i++)
 		checkstack((void *)stacks[i] + CONFIG_STACK_SIZE, i);
 }
-
-#endif /* CONFIG_SMP */
 
 void initialize_cpus(struct bus *cpu_bus)
 {
@@ -540,61 +538,68 @@ void initialize_cpus(struct bus *cpu_bus)
 	/* Find the info struct for this CPU */
 	info = cpu_info();
 
-#if NEED_LAPIC == 1
-	/* Ensure the local APIC is enabled */
-	enable_lapic();
+	if (need_lapic_init()) {
+		/* Ensure the local APIC is enabled */
+		enable_lapic();
 
-	/* Get the device path of the boot CPU */
-	cpu_path.type           = DEVICE_PATH_APIC;
-	cpu_path.apic.apic_id = lapicid();
-#else
-	/* Get the device path of the boot CPU */
-	cpu_path.type           = DEVICE_PATH_CPU;
-	cpu_path.cpu.id       = 0;
-#endif
+		/* Get the device path of the boot CPU */
+		cpu_path.type           = DEVICE_PATH_APIC;
+		cpu_path.apic.apic_id = lapicid();
+	} else {
+		/* Get the device path of the boot CPU */
+		cpu_path.type = DEVICE_PATH_CPU;
+		cpu_path.cpu.id       = 0;
+	}
 
 	/* Find the device structure for the boot CPU */
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
 
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 	// why here? In case some day we can start core1 in amd_sibling_init
-	copy_secondary_start_to_lowest_1M();
-#endif
+	if (is_smp_boot())
+		copy_secondary_start_to_lowest_1M();
 
-#if CONFIG_HAVE_SMI_HANDLER
 	if (!IS_ENABLED(CONFIG_SERIALIZED_SMM_INITIALIZATION))
 		smm_init();
-#endif
 
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 	/* start all aps at first, so we can init ECC all together */
-	if (IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
+	if (is_smp_boot() && IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
 		start_other_cpus(cpu_bus, info->cpu);
-#endif
 
 	/* Initialize the bootstrap processor */
 	cpu_initialize(0);
 
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
-	if (!IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
+	if (is_smp_boot() && !IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
 		start_other_cpus(cpu_bus, info->cpu);
 
 	/* Now wait the rest of the cpus stop*/
-	wait_other_cpus_stop(cpu_bus);
-#endif
+	if (is_smp_boot())
+		wait_other_cpus_stop(cpu_bus);
 
 	if (IS_ENABLED(CONFIG_SERIALIZED_SMM_INITIALIZATION)) {
 		/* At this point, all APs are sleeping:
 		 * smm_init() will queue a pending SMI on all cpus
 		 * and smm_other_cpus() will start them one by one */
 		smm_init();
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
-		last_cpu_index = 0;
-		smm_other_cpus(cpu_bus, info->cpu);
-#endif
+
+		if (is_smp_boot()) {
+			last_cpu_index = 0;
+			smm_other_cpus(cpu_bus, info->cpu);
+		}
 	}
 
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
-	recover_lowest_1M();
-#endif
+	smm_init_completion();
+
+	if (is_smp_boot())
+		recover_lowest_1M();
 }
+
+#if !IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
+/* Empty stubs for platforms without SMI handlers. */
+void smm_init(void)
+{
+}
+
+void smm_init_completion(void)
+{
+}
+#endif

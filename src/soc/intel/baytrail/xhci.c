@@ -146,7 +146,7 @@ const struct reg_script xhci_clock_gating_script[] = {
 };
 
 /* Warm Reset a USB3 port */
-static void xhci_reset_port_usb3(device_t dev, int port)
+static void xhci_reset_port_usb3(struct device *dev, int port)
 {
 	struct reg_script reset_port_usb3_script[] = {
 		/* Issue Warm Port Rest to the port */
@@ -165,7 +165,7 @@ static void xhci_reset_port_usb3(device_t dev, int port)
 }
 
 /* Prepare ports to be routed to EHCI or XHCI */
-static void xhci_route_all(device_t dev)
+static void xhci_route_all(struct device *dev)
 {
 	static const struct reg_script xhci_route_all_script[] = {
 		/* USB3 SuperSpeed Enable */
@@ -194,7 +194,7 @@ static void xhci_route_all(device_t dev)
 	}
 }
 
-static void xhci_init(device_t dev)
+static void xhci_init(struct device *dev)
 {
 	struct soc_intel_baytrail_config *config = dev->chip_info;
 	struct reg_script xhci_hc_init[] = {

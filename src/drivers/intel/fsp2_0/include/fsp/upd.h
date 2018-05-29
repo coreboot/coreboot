@@ -12,6 +12,8 @@
 #ifndef _FSP2_0_UPD_H_
 #define _FSP2_0_UPD_H_
 
+#include <compiler.h>
+
 struct FSP_UPD_HEADER {
 	///
 	/// UPD Region Signature. This signature will be
@@ -26,7 +28,7 @@ struct FSP_UPD_HEADER {
 	///
 	uint8_t                       Revision;
 	uint8_t                       Reserved[23];
-} __attribute__((packed));
+} __packed;
 
 struct FSPM_ARCH_UPD {
 	///
@@ -59,6 +61,6 @@ struct FSPM_ARCH_UPD {
 	///
 	uint32_t                      BootMode;
 	uint8_t                       Reserved1[8];
-} __attribute__((packed));
+} __packed;
 
 #endif /* _FSP2_0_UPD_H_ */

@@ -317,7 +317,7 @@ static int find_tx_fifo(struct usbdev_ctrl *this, uint32_t mps)
 	int i, val;
 
 	for (i = 1; i < MAX_EPS_CHANNELS - 1; i++) {
-		if (p->fifo_map & (1<<i))
+		if (p->fifo_map & (1 << i))
 			continue;
 		gtxfsiz.d32 = readl(&p->regs->core.dptxfsiz_dieptxf[i]);
 		val = gtxfsiz.txfdep * 4;

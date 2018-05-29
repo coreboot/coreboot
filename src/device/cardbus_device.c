@@ -34,7 +34,7 @@
 #define CARDBUS_IO_SIZE		4096
 #define CARDBUS_MEM_SIZE	(32 * 1024 * 1024)
 
-static void cardbus_record_bridge_resource(device_t dev, resource_t moving,
+static void cardbus_record_bridge_resource(struct device *dev, resource_t moving,
 		resource_t min_size, unsigned int index, unsigned long type)
 {
 	struct resource *resource;
@@ -66,7 +66,7 @@ static void cardbus_record_bridge_resource(device_t dev, resource_t moving,
 	resource->size = min_size;
 }
 
-static void cardbus_size_bridge_resource(device_t dev, unsigned int index)
+static void cardbus_size_bridge_resource(struct device *dev, unsigned int index)
 {
 	struct resource *resource;
 	resource_t min_size;
@@ -83,7 +83,7 @@ static void cardbus_size_bridge_resource(device_t dev, unsigned int index)
 	}
 }
 
-void cardbus_read_resources(device_t dev)
+void cardbus_read_resources(struct device *dev)
 {
 	resource_t moving_base, moving_limit, moving;
 	unsigned long type;
@@ -149,7 +149,7 @@ void cardbus_read_resources(device_t dev)
 	compact_resources(dev);
 }
 
-void cardbus_enable_resources(device_t dev)
+void cardbus_enable_resources(struct device *dev)
 {
 	u16 ctrl;
 

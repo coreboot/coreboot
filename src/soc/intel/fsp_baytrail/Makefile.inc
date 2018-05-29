@@ -33,7 +33,6 @@ romstage-y += memmap.c
 ramstage-y += tsc_freq.c
 romstage-y += tsc_freq.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c
-ramstage-$(CONFIG_CACHE_MRC_SETTINGS) += nvm.c
 ramstage-y += spi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += spi.c
 ramstage-y += chip.c

@@ -21,7 +21,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#if CONFIG_VGA_ROM_RUN
+#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
 #include <pc80/mc146818rtc.h>
@@ -34,7 +34,7 @@
  * mainboard_enable is executed as first thing after enumerate_buses().
  * This is the earliest point to add customization.
  */
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 
 }

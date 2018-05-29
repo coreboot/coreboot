@@ -44,6 +44,7 @@ struct timeval {
 	suseconds_t tv_usec; /**< Microseconds */
 };
 
+time_t time(time_t *tp);
 int gettimeofday(struct timeval *tv, void *tz);
 /** @} */
 

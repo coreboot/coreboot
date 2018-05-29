@@ -16,9 +16,6 @@
 #ifndef _EC_H
 #define _EC_H
 
-#define EC_DATA		0x62
-#define EC_SC		0x66
-
 /* EC_SC input */
 #define   EC_SMI_EVT	(1 << 6)	// 1: SMI event pending
 #define   EC_SCI_EVT	(1 << 5)	// 1: SCI event pending
@@ -47,4 +44,5 @@ uint8_t ec_ext_read(uint16_t addr);
 int ec_ext_write(uint16_t addr, uint8_t data);
 uint8_t ec_idx_read(uint16_t addr);
 uint8_t ec_query(void);
+int get_ec_ports(void);
 #endif

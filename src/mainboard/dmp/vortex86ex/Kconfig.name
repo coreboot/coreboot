@@ -1,2 +1,0 @@
-config BOARD_DMP_EX
-	bool "Vortex86EX"

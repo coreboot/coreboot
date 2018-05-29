@@ -288,7 +288,7 @@ int init_ddr2(void)
 	 */
 	write32(DDR_PCTL + DDR_PCTL_TRAS_OFFSET, 0x00000012);
 	/*
-	 * TRC : Min. ROW cylce time
+	 * TRC : Min. ROW cycle time
 	 * Range 11 to 31: 57.5ns / 2.5ns = 23d Playing safe 24
 	 */
 	write32(DDR_PCTL + DDR_PCTL_TRC_OFFSET, 0x00000018);

@@ -46,13 +46,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <smp/spinlock.h>
-#if CONFIG_ARCH_X86
+#if IS_ENABLED(CONFIG_ARCH_X86)
 #include <arch/ebda.h>
 #endif
 #include <timer.h>
 
-/** Linked list of ALL devices */
-struct device *all_devices = &dev_root;
 /** Pointer to the last device */
 extern struct device *last_dev;
 /** Linked list of free resources */
@@ -66,7 +64,7 @@ struct resource *free_resources = NULL;
  */
 void dev_initialize_chips(void)
 {
-	struct device *dev;
+	const struct device *dev;
 
 	for (dev = all_devices; dev; dev = dev->next) {
 		/* Initialize chip if we haven't yet. */
@@ -88,7 +86,7 @@ void dev_initialize_chips(void)
  */
 void dev_finalize_chips(void)
 {
-	struct device *dev;
+	const struct device *dev;
 
 	for (dev = all_devices; dev; dev = dev->next) {
 		/* Initialize chip if we haven't yet. */
@@ -102,7 +100,7 @@ void dev_finalize_chips(void)
 
 DECLARE_SPIN_LOCK(dev_lock)
 
-#if CONFIG_GFXUMA
+#if IS_ENABLED(CONFIG_GFXUMA)
 /* IGD UMA memory */
 uint64_t uma_memory_base = 0;
 uint64_t uma_memory_size = 0;
@@ -122,7 +120,7 @@ uint64_t uma_memory_size = 0;
  */
 static device_t __alloc_dev(struct bus *parent, struct device_path *path)
 {
-	device_t dev, child;
+	struct device *dev, *child;
 
 	/* Find the last child of our parent. */
 	for (child = parent->children; child && child->sibling; /* */ )
@@ -156,7 +154,7 @@ static device_t __alloc_dev(struct bus *parent, struct device_path *path)
 
 device_t alloc_dev(struct bus *parent, struct device_path *path)
 {
-	device_t dev;
+	struct device *dev;
 	spin_lock(&dev_lock);
 	dev = __alloc_dev(parent, path);
 	spin_unlock(&dev_lock);
@@ -172,7 +170,7 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
  */
 device_t alloc_find_dev(struct bus *parent, struct device_path *path)
 {
-	device_t child;
+	struct device *child;
 	spin_lock(&dev_lock);
 	child = find_dev_path(parent, path);
 	if (!child)
@@ -247,7 +245,7 @@ static void read_resources(struct bus *bus)
 
 struct pick_largest_state {
 	struct resource *last;
-	struct device *result_dev;
+	const struct device *result_dev;
 	struct resource *result;
 	int seen_last;
 };
@@ -283,7 +281,7 @@ static void pick_largest_resource(void *gp, struct device *dev,
 	}
 }
 
-static struct device *largest_resource(struct bus *bus,
+static const struct device *largest_resource(struct bus *bus,
 				       struct resource **result_res,
 				       unsigned long type_mask,
 				       unsigned long type)
@@ -338,7 +336,7 @@ static struct device *largest_resource(struct bus *bus,
 static void compute_resources(struct bus *bus, struct resource *bridge,
 			      unsigned long type_mask, unsigned long type)
 {
-	struct device *dev;
+	const struct device *dev;
 	struct resource *resource;
 	resource_t base;
 	base = round(bridge->base, bridge->align);
@@ -482,7 +480,7 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
 static void allocate_resources(struct bus *bus, struct resource *bridge,
 			       unsigned long type_mask, unsigned long type)
 {
-	struct device *dev;
+	const struct device *dev;
 	struct resource *resource;
 	resource_t base;
 	base = bridge->base;
@@ -627,7 +625,8 @@ struct constraints {
 	struct resource io, mem;
 };
 
-static struct resource * resource_limit(struct constraints *limits, struct resource *res)
+static struct resource *resource_limit(struct constraints *limits,
+				       struct resource *res)
 {
 	struct resource *lim = NULL;
 
@@ -640,9 +639,10 @@ static struct resource * resource_limit(struct constraints *limits, struct resou
 	return lim;
 }
 
-static void constrain_resources(struct device *dev, struct constraints* limits)
+static void constrain_resources(const struct device *dev,
+				struct constraints* limits)
 {
-	struct device *child;
+	const struct device *child;
 	struct resource *res;
 	struct resource *lim;
 	struct bus *link;
@@ -696,7 +696,7 @@ static void constrain_resources(struct device *dev, struct constraints* limits)
 	}
 }
 
-static void avoid_fixed_resources(struct device *dev)
+static void avoid_fixed_resources(const struct device *dev)
 {
 	struct constraints limits;
 	struct resource *res;
@@ -723,7 +723,7 @@ static void avoid_fixed_resources(struct device *dev)
 
 		if (res->base > lim->base)
 			lim->base = res->base;
-		if  (res->limit < lim->limit)
+		if (res->limit < lim->limit)
 			lim->limit = res->limit;
 	}
 
@@ -754,7 +754,7 @@ static void avoid_fixed_resources(struct device *dev)
 	}
 }
 
-device_t vga_pri = 0;
+struct device *vga_pri = NULL;
 static void set_vga_bridge_bits(void)
 {
 	/*
@@ -1019,8 +1019,8 @@ void dev_enumerate(void)
 void dev_configure(void)
 {
 	struct resource *res;
-	struct device *root;
-	struct device *child;
+	const struct device *root;
+	const struct device *child;
 
 	set_vga_bridge_bits();
 
@@ -1130,7 +1130,7 @@ static void init_dev(struct device *dev)
 		return;
 
 	if (!dev->initialized && dev->ops && dev->ops->init) {
-#if CONFIG_HAVE_MONOTONIC_TIMER
+#if IS_ENABLED(CONFIG_HAVE_MONOTONIC_TIMER)
 		struct stopwatch sw;
 		stopwatch_init(&sw);
 #endif
@@ -1142,7 +1142,7 @@ static void init_dev(struct device *dev)
 		printk(BIOS_DEBUG, "%s init ...\n", dev_path(dev));
 		dev->initialized = 1;
 		dev->ops->init(dev);
-#if CONFIG_HAVE_MONOTONIC_TIMER
+#if IS_ENABLED(CONFIG_HAVE_MONOTONIC_TIMER)
 		printk(BIOS_DEBUG, "%s init finished in %ld usecs\n", dev_path(dev),
 			stopwatch_duration_usecs(&sw));
 #endif
@@ -1178,9 +1178,14 @@ void dev_initialize(void)
 
 	printk(BIOS_INFO, "Initializing devices...\n");
 
-#if CONFIG_ARCH_X86
-	/* Ensure EBDA is prepared before Option ROMs. */
-	setup_default_ebda();
+#if IS_ENABLED(CONFIG_ARCH_X86)
+	/*
+	 * Initialize EBDA area in ramstage if early
+	 * initialization is not done.
+	 */
+	if (!IS_ENABLED(CONFIG_EARLY_EBDA_INIT))
+		/* Ensure EBDA is prepared before Option ROMs. */
+		setup_default_ebda();
 #endif
 
 	/* First call the mainboard init. */

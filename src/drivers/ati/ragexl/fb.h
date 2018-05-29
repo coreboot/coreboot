@@ -12,7 +12,7 @@
 #define FB_MAX			32	/* sufficient for now */
 
 /* ioctls
-   0x46 is 'F'								*/
+ * 0x46 is 'F'								*/
 #define FBIOGET_VSCREENINFO	0x4600
 #define FBIOPUT_VSCREENINFO	0x4601
 #define FBIOGET_FSCREENINFO	0x4602
@@ -271,9 +271,9 @@ struct fb_vblank {
 
 
 
-   /*
-    *    Hardware Cursor
-    */
+/*
+ *    Hardware Cursor
+ */
 
 #define FBIOGET_FCURSORINFO     0x4607
 #define FBIOGET_VCURSORINFO     0x4608
@@ -307,38 +307,38 @@ struct fb_cursorstate {
 
 
 struct fb_info {
-   char modename[40];                   /* default video mode */
+	char modename[40];                   /* default video mode */
 //   kdev_t node;
-   int flags;
-   int open;                            /* Has this been open already ? */
-   struct fb_var_screeninfo var;        /* Current var */
+	int flags;
+	int open;                            /* Has this been open already ? */
+	struct fb_var_screeninfo var;        /* Current var */
 #if 0
-   struct fb_fix_screeninfo fix;        /* Current fix */
+	struct fb_fix_screeninfo fix;        /* Current fix */
 #endif
-   struct fb_monspecs monspecs;         /* Current Monitor specs */
-   struct fb_cmap cmap;                 /* Current cmap */
+	struct fb_monspecs monspecs;         /* Current Monitor specs */
+	struct fb_cmap cmap;                 /* Current cmap */
 //   struct fb_ops *fbops;
-   char *screen_base;                   /* Virtual address */
-   struct display *disp;                /* initial display variable */
+	char *screen_base;                   /* Virtual address */
+	struct display *disp;                /* initial display variable */
 //   struct vc_data *display_fg;          /* Console visible on this display */
-   char fontname[40];                   /* default font name */
+	char fontname[40];                   /* default font name */
 #if 0
-   devfs_handle_t devfs_handle;         /* Devfs handle for new name         */
-   devfs_handle_t devfs_lhandle;        /* Devfs handle for compat. symlink  */
-   int (*changevar)(int);               /* tell console var has changed */
-   int (*switch_con)(int, struct fb_info*);
+	devfs_handle_t devfs_handle;         /* Devfs handle for new name         */
+	devfs_handle_t devfs_lhandle;        /* Devfs handle for compat. symlink  */
+	int (*changevar)(int);               /* tell console var has changed */
+	int (*switch_con)(int, struct fb_info*);
                                         /* tell fb to switch consoles */
-   int (*updatevar)(int, struct fb_info*);
+	int (*updatevar)(int, struct fb_info*);
                                         /* tell fb to update the vars */
-   void (*blank)(int, struct fb_info*); /* tell fb to (un)blank the screen */
+	void (*blank)(int, struct fb_info*); /* tell fb to (un)blank the screen */
                                         /* arg = 0: unblank */
                                         /* arg > 0: VESA level (arg-1) */
 #endif
-   void *pseudo_palette;                /* Fake palette of 16 colors and
+	void *pseudo_palette;                /* Fake palette of 16 colors and
                                            the cursor's color for non
                                            palette mode */
-   /* From here on everything is device dependent */
-   void *par;
+/* From here on everything is device dependent */
+	void *par;
 };
 
 #endif /* _LINUX_FB_H */

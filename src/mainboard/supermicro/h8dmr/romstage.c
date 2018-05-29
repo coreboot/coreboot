@@ -33,12 +33,13 @@
 #include <cpu/x86/lapic.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-#define DUMMY_DEV PNP_DEV(0x2e, 0)
+#define SUPERIO_DEV PNP_DEV(0x2e, 0)
 
 unsigned get_sbdn(unsigned bus);
 
@@ -119,7 +120,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
-	w83627hf_set_clksel_48(DUMMY_DEV);
+	winbond_set_clksel_48(SUPERIO_DEV);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();
@@ -137,7 +138,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	setup_coherent_ht_domain(); // routing table and start other core0
 
 	wait_all_core0_started();
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	// It is said that we should start core1 after all core0 launched
 	/* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain,
 	 * So here need to make sure last core0 is started, esp for two way system,
@@ -150,7 +151,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* it will set up chains and store link pair for optimization later */
 	ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
 
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 	{
 		msr_t msr;
 		msr = rdmsr(0xc0010042);
@@ -189,6 +190,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* all ap stopped? */
 
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
-
-	post_cache_as_ram(); // bsp swtich stack to RAM and copy sysinfo RAM now
 }

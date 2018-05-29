@@ -31,7 +31,7 @@ entries
 #386          1       r       1        unused
 387          1       e       16       cmos_defaults_loaded
 388          4       h       0        reboot_counter
-392          3       e       5        baud_rate
+#392          3       r       0        unused
 #395          1       r       1        unused
 #396          1       r       1        unused
 #397          2       r       8        unused
@@ -80,14 +80,6 @@ enumerations
 2     1     Disable
 4     0     Fallback
 4     1     Normal
-5     0     115200
-5     1     57600
-5     2     38400
-5     3     19200
-5     4     9600
-5     5     4800
-5     6     2400
-5     7     1200
 6     4     Warning
 6     5     Notice
 6     6     Info

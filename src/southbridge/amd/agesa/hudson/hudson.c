@@ -20,6 +20,7 @@
 
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
@@ -77,15 +78,13 @@ static void hudson_disable_usb(u8 disable)
 	pm_write8(PM_REG_USB_ENABLE, reg8);
 }
 
-void hudson_enable(device_t dev)
+void hudson_enable(struct device *dev)
 {
 	printk(BIOS_DEBUG, "hudson_enable()\n");
 	switch (dev->path.pci.devfn) {
 	case PCI_DEVFN(0x14, 5):
 		if (dev->enabled == 0) {
-			// read the VENDEV ID
-			device_t usb_dev = dev_find_slot( 0, PCI_DEVFN( 0x14, 5));
-			u32 usb_device_id = pci_read_config32(usb_dev, 0) >> 16;
+			u32 usb_device_id = pci_read_config16(dev, PCI_DEVICE_ID);
 			u8 reg8;
 			if (usb_device_id == PCI_DEVICE_ID_AMD_SB900_USB_20_5) {
 				/* turn off and remove device 0:14.5 from PCI space */
@@ -98,9 +97,7 @@ void hudson_enable(device_t dev)
 
 	case PCI_DEVFN(0x14, 7):
 		if (dev->enabled == 0) {
-			// read the VENDEV ID
-			device_t sd_dev = dev_find_slot( 0, PCI_DEVFN( 0x14, 7));
-			u32 sd_device_id = pci_read_config32( sd_dev, 0) >> 16;
+			u32 sd_device_id = pci_read_config16(dev, PCI_DEVICE_ID);
 			/* turn off the SDHC controller in the PM reg */
 			u8 reg8;
 			if (sd_device_id == PCI_DEVICE_ID_AMD_HUDSON_SD) {
@@ -181,12 +178,10 @@ static void hudson_init(void *chip_info)
 
 static void hudson_final(void *chip_info)
 {
-#if !CONFIG_ACPI_ENABLE_THERMAL_ZONE
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
 	/* AMD AGESA does not enable thermal zone, so we enable it here. */
-	enable_imc_thermal_zone();
-#endif
-#endif
+	if (IS_ENABLED(CONFIG_HUDSON_IMC_FWM) &&
+			!IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE))
+		enable_imc_thermal_zone();
 }
 
 struct chip_operations southbridge_amd_agesa_hudson_ops = {

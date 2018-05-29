@@ -37,4 +37,25 @@
 
 #define assert(statement)	ASSERT(statement)
 
+/*
+ * These macros can be used to assert that a certain branch of code is dead and
+ * will be compile-time eliminated. This differs from _Static_assert(), which
+ * will generate a compiler error even if the scope it was called from is dead
+ * code. This may be useful to double-check things like constants that are only
+ * valid if a certain Kconfig option is set.
+ */
+#define __dead_code(message, line) do { \
+	__attribute__((error(#message " in " __FILE__ ":" #line))) \
+	extern void dead_code_assertion_failed_##line(void); \
+	dead_code_assertion_failed_##line(); \
+} while (0)
+#define _dead_code(message, line) __dead_code(message, line)
+#define dead_code(message) _dead_code(message, __LINE__)
+
+/* This can be used in the context of an expression of type 'type'. */
+#define dead_code_t(type, message) ({ \
+	dead_code(message); \
+	*(type *)(uintptr_t)0; \
+})
+
 #endif // __ASSERT_H__

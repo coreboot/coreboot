@@ -115,7 +115,7 @@ static void set_thermal_config(void)
 {
 	u8 byte;
 	u16 word;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	/* set ADT 7461 */
 	ADT7461_write_byte(0x0B, 0x50);	/* Local Temperature Hight limit */
@@ -176,7 +176,7 @@ static void set_thermal_config(void)
 * enable the dedicated function in dbm690t board.
 * This function called early than rs690_enable.
 *************************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard KT690 Enable. dev=0x%p\n", dev);
 

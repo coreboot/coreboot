@@ -46,30 +46,30 @@ void kbc1100_early_serial(pnp_devfn_t dev, u16 iobase)
 
 void kbc1100_early_init(u16 port)
 {
-  pnp_devfn_t dev;
-  dev = PNP_DEV (port, KBC1100_KBC);
-  pnp_enter_conf_state(dev);
+	pnp_devfn_t dev;
+	dev = PNP_DEV(port, KBC1100_KBC);
+	pnp_enter_conf_state(dev);
 
-  /* Serial IRQ enabled */
-  outb(0x25, port);
-  outb(0x04, port + 1);
+	/* Serial IRQ enabled */
+	outb(0x25, port);
+	outb(0x04, port + 1);
 
-  /* Enable keyboard */
-  pnp_set_logical_device(dev);
-  pnp_set_enable(dev, 0);
-  pnp_set_iobase(dev, PNP_IDX_IO0, 0x60);
-  pnp_set_iobase(dev, PNP_IDX_IO1, 0x64);
-  pnp_set_irq(dev, 0x70, 1);   /* IRQ 1 */
-  pnp_set_irq(dev, 0x72, 12);   /* IRQ 12 */
-  pnp_set_enable(dev, 1);
+	/* Enable keyboard */
+	pnp_set_logical_device(dev);
+	pnp_set_enable(dev, 0);
+	pnp_set_iobase(dev, PNP_IDX_IO0, 0x60);
+	pnp_set_iobase(dev, PNP_IDX_IO1, 0x64);
+	pnp_set_irq(dev, 0x70, 1);   /* IRQ 1 */
+	pnp_set_irq(dev, 0x72, 12);   /* IRQ 12 */
+	pnp_set_enable(dev, 1);
 
-  /* Enable EC Channel 0 */
-  dev = PNP_DEV (port, KBC1100_EC0);
-  pnp_set_logical_device(dev);
-  pnp_set_enable(dev, 1);
+	/* Enable EC Channel 0 */
+	dev = PNP_DEV(port, KBC1100_EC0);
+	pnp_set_logical_device(dev);
+	pnp_set_enable(dev, 1);
 
-  pnp_exit_conf_state(dev);
+	pnp_exit_conf_state(dev);
 
-  /* disable the 1s timer */
-  outb(0xE7, 0x64);
+	/* disable the 1s timer */
+	outb(0xE7, 0x64);
 }

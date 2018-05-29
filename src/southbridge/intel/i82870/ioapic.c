@@ -9,7 +9,7 @@
 
 static int num_p64h2_ioapics = 0;
 
-static void p64h2_ioapic_enable(device_t dev)
+static void p64h2_ioapic_enable(struct device *dev)
 {
 	/* We have to enable MEM and Bus Master for IOAPIC */
 	uint16_t command = PCI_COMMAND_SERR | PCI_COMMAND_PARITY | PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
@@ -26,7 +26,7 @@ static void p64h2_ioapic_enable(device_t dev)
  * @param dev PCI bus/device/function of P64H2 IOAPIC.
  *            NOTE: There are two IOAPICs per P64H2, at D28:F0 and D30:F0.
  */
-static void p64h2_ioapic_init(device_t dev)
+static void p64h2_ioapic_init(struct device *dev)
 {
 	uint32_t memoryBase;
 	int apic_index, apic_id;
@@ -68,9 +68,9 @@ static void p64h2_ioapic_init(device_t dev)
 	apic_id <<= 24;             // Convert ID to bitmask
 
 	*pIndexRegister = 0;        // Select APIC ID register
-	*pWindowRegister = (*pWindowRegister & ~(0xF<<24)) | apic_id;   // Set the ID
+	*pWindowRegister = (*pWindowRegister & ~(0x0f << 24)) | apic_id;   // Set the ID
 
-	if ((*pWindowRegister & (0xF<<24)) != apic_id)
+	if ((*pWindowRegister & (0x0f << 24)) != apic_id)
 		die("p64h2_ioapic_init failed");
 
 	*pIndexRegister  = 3;   // Select Boot Configuration register

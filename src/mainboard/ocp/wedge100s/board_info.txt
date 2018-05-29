@@ -1,0 +1,5 @@
+Board name: Wedge 100S
+Category: server
+ROM protocol: SPI
+ROM socketed: yes
+Release year: 2017

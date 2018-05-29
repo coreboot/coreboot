@@ -131,7 +131,7 @@ $(objutil)/cbfstool/%.o: $(top)/src/commonlib/%.c
 
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lz4/lib/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
+	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -include $(top)/util/cbfstool/compiler.h -c -o $@ $<
 
 $(objutil)/cbfstool/cbfstool: $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"

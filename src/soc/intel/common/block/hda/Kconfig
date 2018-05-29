@@ -1,0 +1,4 @@
+config SOC_INTEL_COMMON_BLOCK_HDA
+	bool
+	help
+	  Intel Processor common High Definition Audio driver support

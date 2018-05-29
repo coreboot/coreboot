@@ -3,6 +3,18 @@ config SOC_INTEL_APOLLOLAKE
 	help
 	  Intel Apollolake support
 
+config SOC_INTEL_GLK
+	bool
+	default n
+	select SOC_INTEL_APOLLOLAKE
+	select SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
+	select SOC_INTEL_COMMON_BLOCK_SGX
+	select SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2
+	select IDT_IN_EVERY_STAGE
+	select PAGING_IN_CACHE_AS_RAM
+	help
+	  Intel GLK support
+
 if SOC_INTEL_APOLLOLAKE
 
 config CPU_SPECIFIC_OPTIONS
@@ -27,6 +39,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_NHLT
 	# Misc options
 	select C_ENVIRONMENT_BOOTBLOCK
+	select CACHE_MRC_SETTINGS
 	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM if RELOCATABLE_RAMSTAGE
 	select COLLECT_TIMESTAMPS
 	select COMMON_FADT
@@ -35,6 +48,7 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_INTEL_FIRMWARE
 	select HAVE_SMI_HANDLER
 	select MRC_SETTINGS_PROTECT
+	select MRC_SETTINGS_VARIABLE_DATA
 	select NO_FIXED_XIP_ROM_SIZE
 	select NO_XIP_EARLY_STAGES
 	select PARALLEL_MP
@@ -46,35 +60,55 @@ config CPU_SPECIFIC_OPTIONS
 	select PCIEX_LENGTH_256MB
 	select POSTCAR_CONSOLE
 	select POSTCAR_STAGE
+	select PMC_INVALID_READ_AFTER_WRITE
 	select REG_SCRIPT
 	select RELOCATABLE_RAMSTAGE	# Build fails if this is not selected
 	select RTC
 	select SMM_TSEG
+	select SA_ENABLE_IMR
 	select SOC_INTEL_COMMON
-	select SOC_INTEL_COMMON_ACPI
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	select SOC_INTEL_COMMON_BLOCK
+	select SOC_INTEL_COMMON_BLOCK_ACPI
+	select SOC_INTEL_COMMON_BLOCK_CPU
+	select SOC_INTEL_COMMON_BLOCK_DSP
+	select SOC_INTEL_COMMON_BLOCK_FAST_SPI
+	select SOC_INTEL_COMMON_BLOCK_GPIO
+	select SOC_INTEL_COMMON_BLOCK_GPIO_MULTI_ACPI_DEVICES
+	select SOC_INTEL_COMMON_BLOCK_GPIO_ITSS_POL_CFG
+	select SOC_INTEL_COMMON_BLOCK_GPIO_IOSTANDBY
+	select SOC_INTEL_COMMON_BLOCK_GRAPHICS
 	select SOC_INTEL_COMMON_BLOCK_ITSS
+	select SOC_INTEL_COMMON_BLOCK_I2C
+	select SOC_INTEL_COMMON_BLOCK_LPC
 	select SOC_INTEL_COMMON_BLOCK_LPSS
 	select SOC_INTEL_COMMON_BLOCK_PCR
-	select SOC_INTEL_COMMON_BLOCK_SA
+	select SOC_INTEL_COMMON_BLOCK_P2SB
+	select SOC_INTEL_COMMON_BLOCK_PMC
+	select SOC_INTEL_COMMON_BLOCK_SRAM
 	select SOC_INTEL_COMMON_BLOCK_RTC
 	select SOC_INTEL_COMMON_BLOCK_SA
+	select SOC_INTEL_COMMON_BLOCK_SCS
+	select SOC_INTEL_COMMON_BLOCK_TIMER
 	select SOC_INTEL_COMMON_BLOCK_UART
-	select SOC_INTEL_COMMON_LPSS_I2C
-	select SOC_INTEL_COMMON_SMI
-	select SOC_INTEL_COMMON_SPI_FLASH_PROTECT
+	select SOC_INTEL_COMMON_BLOCK_XDCI
+	select SOC_INTEL_COMMON_BLOCK_XHCI
+	select SOC_INTEL_COMMON_BLOCK_SMM
+	select SOC_INTEL_COMMON_BLOCK_SPI
+	select SOC_INTEL_COMMON_BLOCK_CSE
 	select UDELAY_TSC
 	select TSC_CONSTANT_RATE
 	select TSC_MONOTONIC_TIMER
 	select HAVE_MONOTONIC_TIMER
 	select PLATFORM_USES_FSP2_0
+	select UDK_2015_BINDING if !SOC_INTEL_GLK
+	select UDK_2017_BINDING if SOC_INTEL_GLK
 	select HAVE_HARD_RESET
-	select SOC_INTEL_COMMON
-	select SOC_INTEL_COMMON_GFX_OPREGION
-	select SOC_INTEL_COMMON_BLOCK
-	select SOC_INTEL_COMMON_BLOCK_CSE
-	select ADD_VBT_DATA_FILE
+	select INTEL_GMA_ADD_VBT_DATA_FILE if RUN_FSP_GOP
+	select HAVE_FSP_GOP
+	select NO_UART_ON_SUPERIO
+	select INTEL_GMA_ACPI
+	select INTEL_GMA_SWSMISCI
 
 config CHROMEOS
 	select CHROMEOS_RAMOOPS_DYNAMIC
@@ -106,11 +140,12 @@ config PCR_BASE_ADDRESS
 	  This option allows you to select MMIO Base Address of sideband bus.
 
 config DCACHE_RAM_BASE
-	hex "Base address of cache-as-RAM"
+	hex
 	default 0xfef00000
 
 config DCACHE_RAM_SIZE
-	hex "Length in bytes of cache-as-RAM"
+	hex
+	default 0x100000 if SOC_INTEL_GLK
 	default 0xc0000
 	help
 	  The size of the cache-as-ram region required during bootblock
@@ -125,15 +160,19 @@ config DCACHE_BSP_STACK_SIZE
 
 config CPU_ADDR_BITS
 	int
-	default 36
+	default 39
 
-config SOC_INTEL_COMMON_LPSS_CLOCK_MHZ
+config SOC_INTEL_COMMON_BLOCK_GSPI_CLOCK_MHZ
+	int
+	default 100
+
+config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
 	int
 	default 133
 
 config CONSOLE_UART_BASE_ADDRESS
 	depends on CONSOLE_SERIAL
-	hex "MMIO base address for UART"
+	hex
 	default 0xde000000
 
 config SOC_UART_DEBUG
@@ -166,14 +205,6 @@ config VERSTAGE_ADDR
 	default 0xfef40000
 	help
 	  The base address (in CAR) where verstage should be linked
-
-config CACHE_MRC_SETTINGS
-	bool
-	default y
-
-config MRC_SETTINGS_VARIABLE_DATA
-	bool
-	default y
 
 config FSP_M_ADDR
 	hex
@@ -262,9 +293,17 @@ config NHLT_DA7219
 	help
 	  Include DSP firmware settings for headset codec.
 
+config NHLT_RT5682
+	bool
+	depends on ACPI_NHLT
+	default n
+	help
+	  Include DSP firmware settings for headset codec.
+
 choice
 	prompt "Cache-as-ram implementation"
-	default CAR_CQOS
+	default CAR_CQOS if !SOC_INTEL_GLK
+	default CAR_NEM
 	help
 	  This option allows you to select how cache-as-ram (CAR) is set up.
 
@@ -305,6 +344,7 @@ config CACHE_QOS_SIZE_PER_BIT
 
 config L2_CACHE_SIZE
 	hex
+	default 0x400000 if SOC_INTEL_GLK
 	default 0x100000
 
 config SPI_FLASH_INCLUDE_ALL_DRIVERS
@@ -317,6 +357,44 @@ config SMM_RESERVED_SIZE
 
 config IFD_CHIPSET
 	string
+	default "glk" if SOC_INTEL_GLK
 	default "aplk"
+
+config CPU_BCLK_MHZ
+	int
+	default 100
+
+config APL_SKIP_SET_POWER_LIMITS
+	bool
+	default n
+	help
+	  Some Apollo Lake mainboards do not need the Running Average Power
+	  Limits (RAPL) algorithm for a constant power management.
+	  Set this config option to skip the RAPL configuration.
+
+# M and N divisor values for clock frequency configuration.
+# These values get us a 1.836 MHz clock (ideally we want 1.843 MHz)
+config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
+	hex
+	default 0x25a
+
+config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
+	hex
+	default 0x7fff
+
+config SOC_ESPI
+	bool
+	default n
+	help
+	  Use eSPI bus instead of LPC
+
+config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
+	int
+	default 3
+
+# Don't include the early page tables in RW_A or RW_B cbfs regions
+config RO_REGION_ONLY
+	string
+	default "pdpt pt"
 
 endif

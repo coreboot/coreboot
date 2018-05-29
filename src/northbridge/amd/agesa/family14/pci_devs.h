@@ -16,6 +16,8 @@
 #ifndef _AMD_FAM14_PCI_DEVS_H_
 #define _AMD_FAM14_PCI_DEVS_H_
 
+#include <device/pci_def.h>
+
 #define BUS0 0
 
 /* Graphics and Display */

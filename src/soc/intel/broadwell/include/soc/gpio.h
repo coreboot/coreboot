@@ -17,6 +17,7 @@
 #define _BROADWELL_GPIO_H_
 
 #include <stdint.h>
+#include <compiler.h>
 
 #define CROS_GPIO_DEVICE_NAME		"PCH-LP"
 #define CROS_GPIO_ACPI_DEVICE_NAME	"INT3437:00"
@@ -167,7 +168,7 @@ struct gpio_config {
 	u8 reset;
 	u8 blink;
 	u8 pirq;
-} __attribute__ ((packed));
+} __packed;
 
 /* Configure GPIOs with mainboard provided settings */
 void init_one_gpio(int gpio_num, struct gpio_config *config);

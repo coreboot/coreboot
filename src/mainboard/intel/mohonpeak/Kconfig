@@ -71,6 +71,7 @@ config UART_FOR_CONSOLE
 
 config PAYLOAD_CONFIGFILE
 	string
+	depends on PAYLOAD_SEABIOS
 	default "$(top)/src/mainboard/$(MAINBOARDDIR)/config_seabios"
 	help
 	  The Avoton/Rangeley chip does not allow devices to write into the 0xe000

@@ -21,7 +21,7 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
-#if CONFIG_EC_GOOGLE_CHROMEEC
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 #include <ec/google/chromeec/ec.h>
 #endif
 #include <elog.h>
@@ -30,7 +30,7 @@
 #include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>
-#include <tpm.h>
+#include <security/tpm/tis.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
@@ -50,7 +50,7 @@
  * Because we can't use global variables the stack is used for allocations --
  * thus the need to call back and forth. */
 
-static void *setup_stack_and_mttrs(void);
+static void *setup_stack_and_mtrrs(void);
 
 static void program_base_addresses(void)
 {
@@ -128,15 +128,10 @@ void * asmlinkage romstage_main(unsigned long bist,
 
 	gfx_init();
 
-#if CONFIG_EC_GOOGLE_CHROMEEC
-	/* Ensure the EC is in the right mode for recovery */
-	google_chromeec_early_init();
-#endif
-
 	/* Call into mainboard. */
 	mainboard_romstage_entry(&rp);
 
-	return setup_stack_and_mttrs();
+	return setup_stack_and_mtrrs();
 }
 
 static struct chipset_power_state power_state CAR_GLOBAL;
@@ -221,7 +216,7 @@ void romstage_common(struct romstage_params *params)
 
 	printk(BIOS_DEBUG, "prev_sleep_state = S%d\n", prev_sleep_state);
 
-#if CONFIG_ELOG_BOOT_COUNT
+#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
 	if (prev_sleep_state != ACPI_S3)
 		boot_count_increment();
 #endif
@@ -253,9 +248,9 @@ static inline uint32_t *stack_push(u32 *stack, u32 value)
 	return stack;
 }
 
-/* setup_stack_and_mttrs() determines the stack to use after
+/* setup_stack_and_mtrrs() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use. */
-static void *setup_stack_and_mttrs(void)
+static void *setup_stack_and_mtrrs(void)
 {
 	int num_mtrrs;
 	uint32_t *slot;
@@ -325,11 +320,4 @@ static void *setup_stack_and_mttrs(void)
 	slot = stack_push(slot, num_mtrrs);
 
 	return slot;
-}
-
-int get_sw_write_protect_state(void)
-{
-	u8 status;
-	/* Return unprotected status if status read fails. */
-	return (early_spi_read_wpsr(&status) ? 0 : !!(status & 0x80));
 }

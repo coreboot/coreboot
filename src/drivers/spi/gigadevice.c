@@ -49,18 +49,6 @@ struct gigadevice_spi_flash_params {
 	const char	*name;
 };
 
-/* spi_flash needs to be first so upper layers can free() it */
-struct gigadevice_spi_flash {
-	struct spi_flash flash;
-	const struct gigadevice_spi_flash_params *params;
-};
-
-static inline struct gigadevice_spi_flash *
-to_gigadevice_spi_flash(const struct spi_flash *flash)
-{
-	return container_of(flash, struct gigadevice_spi_flash, flash);
-}
-
 static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 	{
 		.id			= 0x4014,
@@ -123,7 +111,6 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 static int gigadevice_write(const struct spi_flash *flash, u32 offset,
 			size_t len, const void *buf)
 {
-	struct gigadevice_spi_flash *stm = to_gigadevice_spi_flash(flash);
 	unsigned long byte_addr;
 	unsigned long page_size;
 	size_t chunk_len;
@@ -131,12 +118,12 @@ static int gigadevice_write(const struct spi_flash *flash, u32 offset,
 	int ret = 0;
 	u8 cmd[4];
 
-	page_size = 1 << stm->params->l2_page_size;
+	page_size = flash->page_size;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		byte_addr = offset % page_size;
 		chunk_len = min(len - actual, page_size - byte_addr);
-		chunk_len = spi_crop_chunk(sizeof(cmd), chunk_len);
+		chunk_len = spi_crop_chunk(&flash->spi, sizeof(cmd), chunk_len);
 
 		ret = spi_flash_cmd(&flash->spi, CMD_GD25_WREN, NULL, 0);
 		if (ret < 0) {
@@ -149,7 +136,7 @@ static int gigadevice_write(const struct spi_flash *flash, u32 offset,
 		cmd[1] = (offset >> 16) & 0xff;
 		cmd[2] = (offset >> 8) & 0xff;
 		cmd[3] = offset & 0xff;
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 		printk(BIOS_SPEW,
 		       "PP gigadevice.c: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
 		       " chunk_len = %zu\n", buf + actual,
@@ -171,7 +158,7 @@ static int gigadevice_write(const struct spi_flash *flash, u32 offset,
 		offset += chunk_len;
 	}
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 	printk(BIOS_SPEW,
 	       "SF gigadevice.c: Successfully programmed %zu bytes @ %#x\n",
 	       len, (unsigned int)(offset - len));
@@ -183,12 +170,21 @@ out:
 	return ret;
 }
 
-static struct gigadevice_spi_flash stm;
+static const struct spi_flash_ops spi_flash_ops = {
+	.write = gigadevice_write,
+	.erase = spi_flash_cmd_erase,
+	.status = spi_flash_cmd_status,
+#if IS_ENABLED(CONFIG_SPI_FLASH_NO_FAST_READ)
+	.read = spi_flash_cmd_read_slow,
+#else
+	.read = spi_flash_cmd_read_fast,
+#endif
+};
 
-struct spi_flash *spi_flash_probe_gigadevice(struct spi_slave *spi, u8 *idcode)
+int spi_flash_probe_gigadevice(const struct spi_slave *spi, u8 *idcode,
+				struct spi_flash *flash)
 {
 	const struct gigadevice_spi_flash_params *params;
-	unsigned page_size;
 	unsigned int i;
 
 	for (i = 0; i < ARRAY_SIZE(gigadevice_spi_flash_table); i++) {
@@ -201,31 +197,21 @@ struct spi_flash *spi_flash_probe_gigadevice(struct spi_slave *spi, u8 *idcode)
 		printk(BIOS_WARNING,
 		       "SF gigadevice.c: Unsupported ID %#02x%02x\n",
 		       idcode[1], idcode[2]);
-		return NULL;
+		return -1;
 	}
 
-	stm.params = params;
-	memcpy(&stm.flash.spi, spi, sizeof(*spi));
-	stm.flash.name = params->name;
+	memcpy(&flash->spi, spi, sizeof(*spi));
+	flash->name = params->name;
 
 	/* Assuming power-of-two page size initially. */
-	page_size = 1 << params->l2_page_size;
+	flash->page_size = 1 << params->l2_page_size;
+	flash->sector_size = flash->page_size * params->pages_per_sector;
+	flash->size = flash->sector_size * params->sectors_per_block *
+			params->nr_blocks;
+	flash->erase_cmd = CMD_GD25_SE;
+	flash->status_cmd = CMD_GD25_RDSR;
 
-	stm.flash.internal_write = gigadevice_write;
-	stm.flash.internal_erase = spi_flash_cmd_erase;
-	stm.flash.internal_status = spi_flash_cmd_status;
-#if CONFIG_SPI_FLASH_NO_FAST_READ
-	stm.flash.internal_read = spi_flash_cmd_read_slow;
-#else
-	stm.flash.internal_read = spi_flash_cmd_read_fast;
-#endif
-	stm.flash.sector_size = (1 << stm.params->l2_page_size) *
-		stm.params->pages_per_sector;
-	stm.flash.size = page_size * params->pages_per_sector
-				* params->sectors_per_block
-				* params->nr_blocks;
-	stm.flash.erase_cmd = CMD_GD25_SE;
-	stm.flash.status_cmd = CMD_GD25_RDSR;
+	flash->ops = &spi_flash_ops;
 
-	return &stm.flash;
+	return 0;
 }

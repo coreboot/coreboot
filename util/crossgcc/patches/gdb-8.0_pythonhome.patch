@@ -1,0 +1,19 @@
+diff -urN gdb-8.0.orig/gdb/python/python.c gdb-8.0/gdb/python/python.c
+--- gdb-8.0.orig/gdb/python/python.c	2016-02-09 19:19:39.000000000 -0800
++++ gdb-8.0/gdb/python/python.c	2016-04-21 17:45:39.119833428 -0700
+@@ -1748,6 +1748,15 @@
+ #endif
+ #endif
+ 
++  char readlinkbuffer[BUFSIZ];
++  int readlinks = readlink("/proc/self/exe", readlinkbuffer, BUFSIZ - 1);
++  readlinkbuffer[readlinks] = 0;
++  char *executeablepath = dirname(readlinkbuffer);
++  char *pythonhome = malloc(strlen(executeablepath) + strlen("/../") + 2);
++  strcpy(pythonhome, executeablepath);
++  strcat(pythonhome, "/../");
++  setenv("PYTHONHOME", pythonhome, 1);
++
+   Py_Initialize ();
+   PyEval_InitThreads ();
+ 

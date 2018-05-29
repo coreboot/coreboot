@@ -31,7 +31,7 @@
 
 static void setup_usb(void)
 {
-#if !CONFIG_BOARD_VARIANT_AP148
+#if !IS_ENABLED(CONFIG_BOARD_VARIANT_AP148)
 	gpio_tlmm_config_set(USB_ENABLE_GPIO, FUNC_SEL_GPIO,
 			     GPIO_PULL_UP, GPIO_10MA, GPIO_ENABLE);
 	gpio_set(USB_ENABLE_GPIO, 1);
@@ -76,7 +76,7 @@ static void assert_sw_reset(void)
 	gpio_set(SW_RESET_GPIO, 1);
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	 /* disable mmu and d-cache before setting up secure world.*/
 	 dcache_mmu_disable();
@@ -104,7 +104,7 @@ static void mainboard_init(device_t dev)
 	audio_clock_config(6144000);
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = &mainboard_init;
 }
@@ -125,7 +125,7 @@ void lb_board(struct lb_header *header)
 	dma->range_size = _dma_coherent_size;
 
 #if IS_ENABLED(CONFIG_CHROMEOS)
-	/* Retrieve the switch interface MAC addressses. */
+	/* Retrieve the switch interface MAC addresses. */
 	lb_table_add_macs_from_vpd(header);
 #endif
 }

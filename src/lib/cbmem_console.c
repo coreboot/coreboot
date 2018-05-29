@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <console/cbmem_console.h>
 #include <console/uart.h>
@@ -43,11 +44,11 @@ struct cbmem_console {
 	u32 size;
 	u32 cursor;
 	u8  body[0];
-}  __attribute__ ((__packed__));
+}  __packed;
 
 #define MAX_SIZE (1 << 28)	/* can't be changed without breaking readers! */
 #define CURSOR_MASK (MAX_SIZE - 1)	/* bits 31-28 are reserved for flags */
-#define OVERFLOW (1 << 31)		/* set if in ring-buffer mode */
+#define OVERFLOW (1UL << 31)		/* set if in ring-buffer mode */
 _Static_assert(CONFIG_CONSOLE_CBMEM_BUFFER_SIZE <= MAX_SIZE,
 	"cbmem_console format cannot support buffers larger than 256MB!");
 
@@ -156,8 +157,8 @@ static void copy_console_buffer(struct cbmem_console *src_cons_p)
 		return;
 
 	if (src_cons_p->cursor & OVERFLOW) {
-		const char overflow_warning[] = "\n*** Pre-CBMEM console "
-			"overflowed, log truncated ***\n";
+		const char overflow_warning[] = "\n*** Pre-CBMEM " ENV_STRING
+			" console overflowed, log truncated! ***\n";
 		for (c = 0; c < sizeof(overflow_warning) - 1; c++)
 			cbmemc_tx_byte(overflow_warning[c]);
 		for (c = src_cons_p->cursor & CURSOR_MASK;

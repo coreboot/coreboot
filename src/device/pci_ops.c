@@ -20,14 +20,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
-const struct pci_bus_operations *pci_bus_default_ops(device_t dev)
-{
-	if (IS_ENABLED(CONFIG_NO_MMCONF_SUPPORT))
-		return &pci_cf8_conf1;
-
-	return &pci_ops_mmconf;
-}
-
 static const struct pci_bus_operations *pci_bus_ops(struct bus *bus, struct device *dev)
 {
 	const struct pci_bus_operations *bops;

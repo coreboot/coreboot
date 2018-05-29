@@ -1,0 +1,2 @@
+config DRIVERS_GENERIC_BH720
+	bool

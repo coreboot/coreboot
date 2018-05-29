@@ -18,6 +18,7 @@
 #ifndef CPU_SAMSUNG_EXYNOS5420_POWER_H
 #define CPU_SAMSUNG_EXYNOS5420_POWER_H
 
+#include <compiler.h>
 #include <soc/cpu.h>
 
 /* Enable HW thermal trip with PS_HOLD_CONTROL register ENABLE_HW_TRIP bit */
@@ -72,7 +73,7 @@ struct exynos5_power {
 	uint32_t	padret_dram_cblk_opt;	/* 0x31e8 */
 	uint8_t         reservedC[0x120];
 	uint32_t	ps_hold_ctrl;		/* 0x330c */
-} __attribute__ ((__packed__));
+} __packed;
 check_member(exynos5_power, ps_hold_ctrl, 0x330c);
 
 static struct exynos5_power * const exynos_power = (void*)EXYNOS5_POWER_BASE;

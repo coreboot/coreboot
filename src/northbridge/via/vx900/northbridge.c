@@ -43,7 +43,7 @@ static uint64_t uma_memory_size = 0;
  * remapping mechanism will overflow, the effects of which are unknown.
  */
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	outb((1 << 2) | (1 << 1), 0xcf9);
 }
@@ -120,6 +120,7 @@ static u64 vx900_remap_above_4g(device_t mcu, u32 tolm)
 	 */
 	if (tolm >= vx900_get_top_of_ram(mcu)) {
 		printk(BIOS_DEBUG, "Nothing to remap\n");
+		return 0;
 	}
 
 	/* This is how the Vendor BIOS. Keep it for comparison for now */
@@ -244,7 +245,7 @@ static void vx900_set_resources(device_t dev)
 	printk(BIOS_SPEW, "Found top of memory at      %dMB\n", tomk >> 10);
 
 	/* Do the same for top of low RAM */
-	vx900_tolm = (pci_read_config16(mcu, 0x84) & 0xfff0) >> 4;
+	vx900_tolm = vx900_get_tolm();
 	full_tolmk = vx900_tolm << (20 - 10);
 	/* Remap above 4G if needed */
 	full_tolmk = MIN(full_tolmk, pci_tolm >> 10);
@@ -252,7 +253,7 @@ static void vx900_set_resources(device_t dev)
 	       full_tolmk >> 10);
 
 	/* What about the framebuffer for the integrated GPU? */
-	fbufk = chrome9hd_fb_size() >> 10;
+	fbufk = vx900_get_chrome9hd_fb_size() << (20 - 10);
 	printk(BIOS_SPEW, "Integrated graphics buffer: %dMB\n", fbufk >> 10);
 
 	/* Can't use the framebuffer as system RAM, sorry */
@@ -275,9 +276,8 @@ static void vx900_set_resources(device_t dev)
 	       uma_memory_size >> 20);
 	/* FIXME: How do we handle remapping above 4G? */
 	u64 tor = vx900_remap_above_4g(mcu, pci_tolm);
-	ram_resource(dev, idx++, RAM_4GB >> 10, (tor - RAM_4GB) >> 10);
-
-	set_top_of_ram(tolmk << 10);
+	if (tor)
+		ram_resource(dev, idx++, RAM_4GB >> 10, (tor - RAM_4GB) >> 10);
 
 	printk(BIOS_DEBUG, "======================================================\n");
 	assign_resources(dev->link_list);
@@ -308,7 +308,6 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init = NULL,
 	.scan_bus = pci_domain_scan_bus,
-	.ops_pci_bus = pci_bus_default_ops,
 };
 
 static void cpu_bus_init(device_t dev)

@@ -14,8 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stddef.h>
-#include <stdint.h>
 #include <arch/cpu.h>
 #include <arch/io.h>
 #include <arch/cbfs.h>
@@ -30,6 +28,8 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <elog.h>
+#include <intelblocks/fast_spi.h>
+#include <intelblocks/pmclib.h>
 #include <reset.h>
 #include <romstage_handoff.h>
 #include <soc/pci_devs.h>
@@ -38,8 +38,9 @@
 #include <soc/pmc.h>
 #include <soc/serialio.h>
 #include <soc/romstage.h>
-#include <soc/spi.h>
 #include <stage_cache.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <timestamp.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
@@ -51,14 +52,6 @@ void soc_pre_ram_init(struct romstage_params *params)
 
 	/* Prepare to initialize memory */
 	soc_fill_pei_data(params->pei_data);
-}
-
-int get_sw_write_protect_state(void)
-{
-	u8 status;
-
-	/* Return unprotected status if status read fails. */
-	return early_spi_read_wpsr(&status) ? 0 : !!(status & 0x80);
 }
 
 /* UPD parameters to be initialized before MemoryInit */
@@ -263,4 +256,14 @@ void soc_after_ram_init(struct romstage_params *params)
 	 * init and MRC cache is saved.
 	 */
 	pmc_set_disb();
+}
+
+struct chipset_power_state *fill_power_state(void)
+{
+	struct chipset_power_state *ps;
+
+	ps = pmc_get_power_state();
+	pmc_fill_power_state(ps);
+
+	return ps;
 }

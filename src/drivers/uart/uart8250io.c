@@ -62,7 +62,8 @@ static int uart8250_can_rx_byte(unsigned base_port)
 static unsigned char uart8250_rx_byte(unsigned base_port)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
-	while (i-- && !uart8250_can_rx_byte(base_port));
+	while (i && !uart8250_can_rx_byte(base_port))
+		i--;
 
 	if (i)
 		return inb(base_port + UART8250_RBR);
@@ -106,7 +107,7 @@ void uart_init(int idx)
 {
 	if (!IS_ENABLED(CONFIG_DRIVERS_UART_8250IO_SKIP_INIT)) {
 		unsigned int div;
-		div = uart_baudrate_divisor(default_baudrate(),
+		div = uart_baudrate_divisor(get_uart_baudrate(),
 			uart_platform_refclk(), uart_input_clock_divider());
 		uart8250_init(uart_platform_base(idx), div);
 	}
@@ -133,7 +134,7 @@ void uart_fill_lb(void *data)
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_IO_MAPPED;
 	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
-	serial.baud = default_baudrate();
+	serial.baud = get_uart_baudrate();
 	serial.regwidth = 1;
 	serial.input_hertz = uart_platform_refclk();
 	serial.uart_pci_addr = CONFIG_UART_PCI_ADDR;

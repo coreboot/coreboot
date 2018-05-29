@@ -19,11 +19,9 @@
 #include <commonlib/region.h>
 #include <types.h>
 
-/* locate .vbt file */
-enum cb_err locate_vbt(struct region_device *rdev);
 /*
  * Returns VBT pointer and mapping after checking prerequisites for Pre OS
  * Graphics initialization
  */
-void *vbt_get(struct region_device *rdev);
+void *vbt_get(void);
 #endif

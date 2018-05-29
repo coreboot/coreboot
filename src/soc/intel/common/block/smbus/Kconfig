@@ -1,0 +1,4 @@
+config SOC_INTEL_COMMON_BLOCK_SMBUS
+	bool
+	help
+	  Intel Processor common SMBus support

@@ -21,7 +21,7 @@
 
 void print_debug_addr(const char *str, void *val)
 {
-#if CONFIG_DEBUG_CAR
+#if IS_ENABLED(CONFIG_DEBUG_CAR)
 		printk(BIOS_DEBUG, "------Address debug: %s%p------\n", str, val);
 #endif
 }
@@ -205,7 +205,7 @@ void dump_pci_devices_on_bus(u32 busn)
 	}
 }
 
-#if CONFIG_DEBUG_SMBUS
+#if IS_ENABLED(CONFIG_DEBUG_SMBUS)
 void dump_spd_registers(const struct mem_controller *ctrl)
 {
 	int i;
@@ -315,14 +315,14 @@ void dump_mem(u32 start, u32 end)
 #if IS_ENABLED(CONFIG_DIMM_DDR2)
 void print_tx(const char *strval, u32 val)
 {
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 	printk(BIOS_DEBUG, "%s%08x\n", strval, val);
 #endif
 }
 
 void print_t(const char *strval)
 {
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 	printk(BIOS_DEBUG, "%s", strval);
 #endif
 }
@@ -330,7 +330,7 @@ void print_t(const char *strval)
 
 void print_tf(const char *func, const char *strval)
 {
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 	printk(BIOS_DEBUG, "%s: %s", func, strval);
 #endif
 }

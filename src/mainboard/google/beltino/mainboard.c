@@ -40,7 +40,7 @@ void mainboard_suspend_resume(void)
 
 
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	lan_init();
 }
@@ -48,7 +48,7 @@ static void mainboard_init(device_t dev)
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;

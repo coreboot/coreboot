@@ -11,7 +11,8 @@
  * (at your option) any later version.
  */
 
-#include <antirollback.h>
+#include <compiler.h>
+#include <security/tpm/antirollback.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
 #include <arch/symbols.h>
@@ -23,15 +24,16 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <memrange.h>
+#include <mrc_cache.h>
 #include <program_loading.h>
 #include <reset.h>
 #include <romstage_handoff.h>
-#include <soc/intel/common/mrc_cache.h>
 #include <string.h>
 #include <symbols.h>
 #include <timestamp.h>
-#include <tpm_lite/tlcl.h>
-#include <vboot/vboot_common.h>
+#include <security/tpm/tis.h>
+#include <security/tpm/tss.h>
+#include <security/vboot/vboot_common.h>
 #include <vb2_api.h>
 
 static void mrc_cache_update_tpm_hash(const uint8_t *data, size_t size)
@@ -145,6 +147,14 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 
 	/* Create romstage handof information */
 	romstage_handoff_init(s3wake);
+
+	/*
+	 * Initialize the TPM, unless the TPM was already initialized
+	 * in verstage and used to verify romstage.
+	 */
+	if (IS_ENABLED(CONFIG_LPC_TPM) &&
+	    !IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
+		init_tpm(s3wake);
 }
 
 static int mrc_cache_verify_tpm_hash(const uint8_t *data, size_t size)
@@ -189,8 +199,7 @@ static int mrc_cache_verify_tpm_hash(const uint8_t *data, size_t size)
 	return 1;
 }
 
-static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, bool s3wake,
-				uint32_t fsp_version)
+static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t fsp_version)
 {
 	struct region_device rdev;
 	void *data;
@@ -227,11 +236,9 @@ static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, bool s3wake,
 
 	/* MRC cache found */
 	arch_upd->NvsBufferPtr = data;
-	arch_upd->BootMode = s3wake ?
-		FSP_BOOT_ON_S3_RESUME :
-		FSP_BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
-	printk(BIOS_SPEW, "MRC cache found, size %zx bootmode:%d\n",
-				region_device_sz(&rdev), arch_upd->BootMode);
+
+	printk(BIOS_SPEW, "MRC cache found, size %zx\n",
+			region_device_sz(&rdev));
 }
 
 static enum cb_err check_region_overlap(const struct memranges *ranges,
@@ -274,20 +281,39 @@ static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
 
 	arch_upd->StackBase = (void *)stack_begin;
 
-	arch_upd->BootMode = FSP_BOOT_WITH_FULL_CONFIGURATION;
+	fsp_fill_mrc_cache(arch_upd, fsp_version);
 
-	fsp_fill_mrc_cache(arch_upd, s3wake, fsp_version);
+	/* Configure bootmode */
+	if (s3wake) {
+		/*
+		 * For S3 resume case, if valid mrc cache data is not found or
+		 * RECOVERY_MRC_CACHE hash verification fails, the S3 data
+		 * pointer would be null and S3 resume fails with fsp-m
+		 * returning error. Invoking a reset here saves time.
+		 */
+		if (!arch_upd->NvsBufferPtr)
+			hard_reset();
+		arch_upd->BootMode = FSP_BOOT_ON_S3_RESUME;
+	} else {
+		if (arch_upd->NvsBufferPtr)
+			arch_upd->BootMode =
+				FSP_BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
+		else
+			arch_upd->BootMode = FSP_BOOT_WITH_FULL_CONFIGURATION;
+	}
+
+	printk(BIOS_SPEW, "bootmode is set to :%d\n", arch_upd->BootMode);
 
 	return CB_SUCCESS;
 }
 
-__attribute__ ((weak))
+__weak
 uint8_t fsp_memory_mainboard_version(void)
 {
 	return 0;
 }
 
-__attribute__ ((weak))
+__weak
 uint8_t fsp_memory_soc_version(void)
 {
 	return 0;
@@ -360,7 +386,7 @@ static void do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 	post_code(POST_FSP_MEMORY_INIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_START);
 	status = fsp_raminit(&fspm_upd, fsp_get_hob_list_ptr());
-	post_code(POST_FSP_MEMORY_INIT);
+	post_code(POST_FSP_MEMORY_EXIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_END);
 
 	fsp_debug_after_memory_init(status);

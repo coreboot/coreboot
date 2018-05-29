@@ -33,7 +33,7 @@ struct cbmem_console {
 	u32 size;
 	u32 cursor;
 	u8 body[0];
-} __attribute__ ((__packed__));
+} __packed;
 
 #define CURSOR_MASK ((1 << 28) - 1)
 #define OVERFLOW (1 << 31)
@@ -170,7 +170,7 @@ err_free:
 
 static int bootlog_module_redraw(WINDOW *win)
 {
-	print_module_title(win, "Coreboot Bootlog");
+	print_module_title(win, "coreboot Bootlog");
 
 	if (!g_buf) {
 		return -1;

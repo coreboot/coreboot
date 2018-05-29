@@ -181,7 +181,7 @@ static void program_keyboard_type(u32 search_address, u32 search_length)
 	ec_mem_write(EC_KBID_REG, kbd_type);
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	u32 search_address = 0x0;
 	size_t search_length = -1;
@@ -254,7 +254,7 @@ static void mainboard_init(device_t dev)
 	}
 }
 
-static int butterfly_onboard_smbios_data(device_t dev, int *handle,
+static int butterfly_onboard_smbios_data(struct device *dev, int *handle,
 					 unsigned long *current)
 {
 	int len = 0;
@@ -274,7 +274,7 @@ static int butterfly_onboard_smbios_data(device_t dev, int *handle,
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = butterfly_onboard_smbios_data;

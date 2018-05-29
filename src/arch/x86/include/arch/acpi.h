@@ -28,23 +28,33 @@
 
 #define HIGH_MEMORY_SAVE	(CONFIG_RAMTOP - CONFIG_RAMBASE)
 
-#if IS_ENABLED(CONFIG_ACPI_INTEL_HARDWARE_SLEEP_VALUES)
 /*
  * The type and enable fields are common in ACPI, but the
- * values themselves are hardware implementation idefiend.
+ * values themselves are hardware implementation defined.
  */
-#define SLP_EN		(1 << 13)
-#define SLP_TYP_SHIFT	10
-#define SLP_TYP		(7 << SLP_TYP_SHIFT)
-#define  SLP_TYP_S0	0
-#define  SLP_TYP_S1	1
-#define  SLP_TYP_S3	5
-#define  SLP_TYP_S4	6
-#define  SLP_TYP_S5	7
+#if IS_ENABLED(CONFIG_ACPI_INTEL_HARDWARE_SLEEP_VALUES)
+ #define SLP_EN		(1 << 13)
+ #define SLP_TYP_SHIFT	10
+ #define SLP_TYP	(7 << SLP_TYP_SHIFT)
+ #define  SLP_TYP_S0	0
+ #define  SLP_TYP_S1	1
+ #define  SLP_TYP_S3	5
+ #define  SLP_TYP_S4	6
+ #define  SLP_TYP_S5	7
+#elif IS_ENABLED(CONFIG_ACPI_AMD_HARDWARE_SLEEP_VALUES)
+ #define SLP_EN		(1 << 13)
+ #define SLP_TYP_SHIFT	10
+ #define SLP_TYP	(7 << SLP_TYP_SHIFT)
+ #define  SLP_TYP_S0	0
+ #define  SLP_TYP_S1	1
+ #define  SLP_TYP_S3	3
+ #define  SLP_TYP_S4	4
+ #define  SLP_TYP_S5	5
 #endif
 
 #if !defined(__ASSEMBLER__) && !defined(__ACPI__) && !defined(__ROMCC__)
 #include <stdint.h>
+#include <compiler.h>
 #include <rules.h>
 #include <commonlib/helpers.h>
 #include <device/device.h>
@@ -77,7 +87,7 @@ typedef struct acpi_rsdp {
 	u64   xsdt_address;	/* Physical address of XSDT (64 bits) */
 	u8    ext_checksum;	/* Checksum of the whole table */
 	u8    reserved[3];
-} __attribute__ ((packed)) acpi_rsdp_t;
+} __packed acpi_rsdp_t;
 /* Note: ACPI 1.0 didn't have length, xsdt_address, and ext_checksum. */
 
 /* GAS (Generic Address Structure) */
@@ -92,7 +102,7 @@ typedef struct acpi_gen_regaddr {
 	};
 	u32 addrl;		/* Register address, low 32 bits */
 	u32 addrh;		/* Register address, high 32 bits */
-} __attribute__ ((packed)) acpi_addr_t;
+} __packed acpi_addr_t;
 
 #define ACPI_ADDRESS_SPACE_MEMORY	   0	/* System memory */
 #define ACPI_ADDRESS_SPACE_IO		   1	/* System I/O */
@@ -128,7 +138,7 @@ typedef struct acpi_table_header {
 	u32  oem_revision;           /* OEM revision number */
 	char asl_compiler_id[4];     /* ASL compiler vendor ID */
 	u32  asl_compiler_revision;  /* ASL compiler revision number */
-} __attribute__ ((packed)) acpi_header_t;
+} __packed acpi_header_t;
 
 /* A maximum number of 32 ACPI tables ought to be enough for now. */
 #define MAX_ACPI_TABLES 32
@@ -137,13 +147,13 @@ typedef struct acpi_table_header {
 typedef struct acpi_rsdt {
 	struct acpi_table_header header;
 	u32 entry[MAX_ACPI_TABLES];
-} __attribute__ ((packed)) acpi_rsdt_t;
+} __packed acpi_rsdt_t;
 
 /* XSDT (Extended System Description Table) */
 typedef struct acpi_xsdt {
 	struct acpi_table_header header;
 	u64 entry[MAX_ACPI_TABLES];
-} __attribute__ ((packed)) acpi_xsdt_t;
+} __packed acpi_xsdt_t;
 
 /* HPET timers */
 typedef struct acpi_hpet {
@@ -153,20 +163,20 @@ typedef struct acpi_hpet {
 	u8 number;
 	u16 min_tick;
 	u8 attributes;
-} __attribute__ ((packed)) acpi_hpet_t;
+} __packed acpi_hpet_t;
 
 /* MCFG (PCI Express MMIO config space BAR description table) */
 typedef struct acpi_mcfg {
 	struct acpi_table_header header;
 	u8 reserved[8];
-} __attribute__ ((packed)) acpi_mcfg_t;
+} __packed acpi_mcfg_t;
 
 typedef struct acpi_tcpa {
 	struct acpi_table_header header;
 	u16 platform_class;
 	u32 laml;
 	u64 lasa;
-} __attribute__ ((packed)) acpi_tcpa_t;
+} __packed acpi_tcpa_t;
 
 typedef struct acpi_mcfg_mmconfig {
 	u32 base_address;
@@ -175,7 +185,7 @@ typedef struct acpi_mcfg_mmconfig {
 	u8 start_bus_number;
 	u8 end_bus_number;
 	u8 reserved[4];
-} __attribute__ ((packed)) acpi_mcfg_mmconfig_t;
+} __packed acpi_mcfg_mmconfig_t;
 
 /* SRAT (System Resource Affinity Table) */
 typedef struct acpi_srat {
@@ -183,7 +193,7 @@ typedef struct acpi_srat {
 	u32 resv;
 	u64 resv1;
 	/* Followed by static resource allocation structure[n] */
-} __attribute__ ((packed)) acpi_srat_t;
+} __packed acpi_srat_t;
 
 /* SRAT: Processor Local APIC/SAPIC Affinity Structure */
 typedef struct acpi_srat_lapic {
@@ -195,7 +205,7 @@ typedef struct acpi_srat_lapic {
 	u8 local_sapic_eid;		/* Local SAPIC EID */
 	u8 proximity_domain_31_8[3];	/* Proximity domain bits[31:8] */
 	u32 resv;			/* TODO: Clock domain in ACPI 4.0. */
-} __attribute__ ((packed)) acpi_srat_lapic_t;
+} __packed acpi_srat_lapic_t;
 
 /* SRAT: Memory Affinity Structure */
 typedef struct acpi_srat_mem {
@@ -212,20 +222,20 @@ typedef struct acpi_srat_mem {
 		    * other bits reserved to 0
 		    */
 	u32 resv2[2];
-} __attribute__ ((packed)) acpi_srat_mem_t;
+} __packed acpi_srat_mem_t;
 
 /* SLIT (System Locality Distance Information Table) */
 typedef struct acpi_slit {
 	struct acpi_table_header header;
 	/* Followed by static resource allocation 8+byte[num*num] */
-} __attribute__ ((packed)) acpi_slit_t;
+} __packed acpi_slit_t;
 
 /* MADT (Multiple APIC Description Table) */
 typedef struct acpi_madt {
 	struct acpi_table_header header;
 	u32 lapic_addr;			/* Local APIC address */
 	u32 flags;			/* Multiple APIC flags */
-} __attribute__ ((packed)) acpi_madt_t;
+} __packed acpi_madt_t;
 
 /* VFCT image header */
 struct acpi_vfct_image_hdr {
@@ -239,7 +249,7 @@ struct acpi_vfct_image_hdr {
 	u32 Revision;
 	u32 ImageLength;
 	u8  VbiosContent;	// dummy - copy VBIOS here
-} __attribute__ ((packed));
+} __packed;
 
 /* VFCT (VBIOS Fetch Table) */
 struct acpi_vfct {
@@ -249,10 +259,10 @@ struct acpi_vfct {
 	u32 Lib1ImageOffset;
 	u32 Reserved[4];
 	struct acpi_vfct_image_hdr image_hdr;
-} __attribute__ ((packed));
+} __packed;
 
 typedef struct acpi_ivrs_info {
-} __attribute__ ((packed)) acpi_ivrs_info_t;
+} __packed acpi_ivrs_info_t;
 
 /* IVRS IVHD (I/O Virtualization Hardware Definition Block) Type 10h */
 typedef struct acpi_ivrs_ivhd {
@@ -267,7 +277,7 @@ typedef struct acpi_ivrs_ivhd {
 	uint16_t iommu_info;
 	uint32_t iommu_feature_info;
 	uint8_t entry[0];
-} __attribute__ ((packed)) acpi_ivrs_ivhd_t;
+} __packed acpi_ivrs_ivhd_t;
 
 /* IVRS (I/O Virtualization Reporting Structure) Type 10h */
 typedef struct acpi_ivrs {
@@ -275,7 +285,7 @@ typedef struct acpi_ivrs {
 	uint32_t iv_info;
 	uint32_t reserved[2];
 	struct acpi_ivrs_ivhd ivhd;
-} __attribute__ ((packed)) acpi_ivrs_t;
+} __packed acpi_ivrs_t;
 
 enum dev_scope_type {
 	SCOPE_PCI_ENDPOINT = 1,
@@ -293,8 +303,8 @@ typedef struct dev_scope {
 	struct {
 		u8 dev;
 		u8 fn;
-	} __attribute__((packed)) path[0];
-} __attribute__ ((packed)) dev_scope_t;
+	} __packed path[0];
+} __packed dev_scope_t;
 
 enum dmar_type {
 	DMAR_DRHD = 0,
@@ -319,7 +329,7 @@ typedef struct dmar_entry {
 	u8 reserved;
 	u16 segment;
 	u64 bar;
-} __attribute__ ((packed)) dmar_entry_t;
+} __packed dmar_entry_t;
 
 typedef struct dmar_atsr_entry {
 	u16 type;
@@ -327,7 +337,7 @@ typedef struct dmar_atsr_entry {
 	u8 flags;
 	u8 reserved;
 	u16 segment;
-} __attribute__ ((packed)) dmar_atsr_entry_t;
+} __packed dmar_atsr_entry_t;
 
 /* DMAR (DMA Remapping Reporting Structure) */
 typedef struct acpi_dmar {
@@ -336,7 +346,7 @@ typedef struct acpi_dmar {
 	u8 flags;
 	u8 reserved[10];
 	dmar_entry_t structure[0];
-} __attribute__ ((packed)) acpi_dmar_t;
+} __packed acpi_dmar_t;
 
 /* MADT: APIC Structure Types */
 /* TODO: Convert to ALLCAPS. */
@@ -363,7 +373,7 @@ typedef struct acpi_madt_lapic {
 	u8 processor_id;		/* ACPI processor ID */
 	u8 apic_id;			/* Local APIC ID */
 	u32 flags;			/* Local APIC flags */
-} __attribute__ ((packed)) acpi_madt_lapic_t;
+} __packed acpi_madt_lapic_t;
 
 /* MADT: Local APIC NMI Structure */
 typedef struct acpi_madt_lapic_nmi {
@@ -372,7 +382,7 @@ typedef struct acpi_madt_lapic_nmi {
 	u8 processor_id;		/* ACPI processor ID */
 	u16 flags;			/* MPS INTI flags */
 	u8 lint;			/* Local APIC LINT# */
-} __attribute__ ((packed)) acpi_madt_lapic_nmi_t;
+} __packed acpi_madt_lapic_nmi_t;
 
 /* MADT: I/O APIC Structure */
 typedef struct acpi_madt_ioapic {
@@ -382,7 +392,7 @@ typedef struct acpi_madt_ioapic {
 	u8 reserved;
 	u32 ioapic_addr;		/* I/O APIC address */
 	u32 gsi_base;			/* Global system interrupt base */
-} __attribute__ ((packed)) acpi_madt_ioapic_t;
+} __packed acpi_madt_ioapic_t;
 
 /* MADT: Interrupt Source Override Structure */
 typedef struct acpi_madt_irqoverride {
@@ -392,7 +402,44 @@ typedef struct acpi_madt_irqoverride {
 	u8 source;			/* Bus-relative int. source (IRQ) */
 	u32 gsirq;			/* Global system interrupt */
 	u16 flags;			/* MPS INTI flags */
-} __attribute__ ((packed)) acpi_madt_irqoverride_t;
+} __packed acpi_madt_irqoverride_t;
+
+#define ACPI_DBG2_PORT_SERIAL			0x8000
+#define  ACPI_DBG2_PORT_SERIAL_16550		0x0000
+#define  ACPI_DBG2_PORT_SERIAL_16550_DBGP	0x0001
+#define  ACPI_DBG2_PORT_SERIAL_ARM_PL011	0x0003
+#define  ACPI_DBG2_PORT_SERIAL_ARM_SBSA		0x000e
+#define  ACPI_DBG2_PORT_SERIAL_ARM_DDC		0x000f
+#define  ACPI_DBG2_PORT_SERIAL_BCM2835		0x0010
+#define ACPI_DBG2_PORT_IEEE1394			0x8001
+#define  ACPI_DBG2_PORT_IEEE1394_STANDARD	0x0000
+#define ACPI_DBG2_PORT_USB			0x8002
+#define  ACPI_DBG2_PORT_USB_XHCI		0x0000
+#define  ACPI_DBG2_PORT_USB_EHCI		0x0001
+#define ACPI_DBG2_PORT_NET			0x8003
+
+/* DBG2: Microsoft Debug Port Table 2 header */
+typedef struct acpi_dbg2_header {
+	struct acpi_table_header header;
+	uint32_t devices_offset;
+	uint32_t devices_count;
+} __attribute__ ((packed)) acpi_dbg2_header_t;
+
+/* DBG2: Microsoft Debug Port Table 2 device entry */
+typedef struct acpi_dbg2_device {
+	uint8_t  revision;
+	uint16_t length;
+	uint8_t  address_count;
+	uint16_t namespace_string_length;
+	uint16_t namespace_string_offset;
+	uint16_t oem_data_length;
+	uint16_t oem_data_offset;
+	uint16_t port_type;
+	uint16_t port_subtype;
+	uint8_t  reserved[2];
+	uint16_t base_address_offset;
+	uint16_t address_size_offset;
+} __attribute__ ((packed)) acpi_dbg2_device_t;
 
 /* FADT (Fixed ACPI Description Table) */
 typedef struct acpi_fadt {
@@ -452,7 +499,7 @@ typedef struct acpi_fadt {
 	struct acpi_gen_regaddr x_pm_tmr_blk;
 	struct acpi_gen_regaddr x_gpe0_blk;
 	struct acpi_gen_regaddr x_gpe1_blk;
-} __attribute__ ((packed)) acpi_fadt_t;
+} __packed acpi_fadt_t;
 
 /* FADT TABLE Revision values */
 #define ACPI_FADT_REV_ACPI_1_0		1
@@ -524,7 +571,7 @@ typedef struct acpi_facs {
 	u32 x_firmware_waking_vector_h;		/* X FW waking vector, high */
 	u8 version;				/* ACPI 4.0: 2 */
 	u8 resv[31];				/* FIXME: 4.0: ospm_flags */
-} __attribute__ ((packed)) acpi_facs_t;
+} __packed acpi_facs_t;
 
 /* FACS flags */
 #define ACPI_FACS_S4BIOS_F	(1 << 0)
@@ -539,14 +586,14 @@ typedef struct acpi_ecdt {
 	u32 uid;				/* UID */
 	u8 gpe_bit;				/* GPE bit */
 	u8 ec_id[];				/* EC ID  */
-} __attribute__ ((packed)) acpi_ecdt_t;
+} __packed acpi_ecdt_t;
 
 /* HEST (Hardware Error Source Table) */
 typedef struct acpi_hest {
 	struct acpi_table_header header;
 	u32 error_source_count;
 	/* error_source_struct(s) */
-} __attribute__ ((packed)) acpi_hest_t;
+} __packed acpi_hest_t;
 
 /* Error Source Descriptors */
 typedef struct acpi_hest_esd {
@@ -559,7 +606,7 @@ typedef struct acpi_hest_esd {
 					 * pre-allocate for this error source.
 					 */
 	u32 max_section_per_record;
-} __attribute__ ((packed)) acpi_hest_esd_t;
+} __packed acpi_hest_esd_t;
 
 /* Hardware Error Notification */
 typedef struct acpi_hest_hen {
@@ -572,14 +619,14 @@ typedef struct acpi_hest_hen {
 	u32 sw2poll_threshold_win;
 	u32 error_threshold_val;
 	u32 error_threshold_win;
-} __attribute__ ((packed)) acpi_hest_hen_t;
+} __packed acpi_hest_hen_t;
 
 typedef struct acpi_cstate {
 	u8  ctype;
 	u16 latency;
 	u32 power;
 	acpi_addr_t resource;
-} __attribute__ ((packed)) acpi_cstate_t;
+} __packed acpi_cstate_t;
 
 typedef struct acpi_tstate {
 	u32 percent;
@@ -587,7 +634,31 @@ typedef struct acpi_tstate {
 	u32 latency;
 	u32 control;
 	u32 status;
-} __attribute__ ((packed)) acpi_tstate_t;
+} __packed acpi_tstate_t;
+
+/* Port types for ACPI _UPC object */
+enum acpi_upc_type {
+	/* These types are defined in ACPI 6.2 section 9.14 */
+	UPC_TYPE_A,
+	UPC_TYPE_MINI_AB,
+	UPC_TYPE_EXPRESSCARD,
+	UPC_TYPE_USB3_A,
+	UPC_TYPE_USB3_B,
+	UPC_TYPE_USB3_MICRO_B,
+	UPC_TYPE_USB3_MICRO_AB,
+	UPC_TYPE_USB3_POWER_B,
+	UPC_TYPE_C_USB2_ONLY,
+	UPC_TYPE_C_USB2_SS_SWITCH,
+	UPC_TYPE_C_USB2_SS,
+	UPC_TYPE_PROPRIETARY = 0xff,
+	/*
+	 * The following types are not directly defined in the ACPI
+	 * spec but are used by coreboot to identify a USB device type.
+	 */
+	UPC_TYPE_INTERNAL = 0xff,
+	UPC_TYPE_UNUSED,
+	UPC_TYPE_HUB
+};
 
 unsigned long fw_cfg_acpi_tables(unsigned long start);
 
@@ -646,17 +717,24 @@ void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 
 #if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
 void acpi_create_hpet(acpi_hpet_t *hpet);
-unsigned long acpi_write_hpet(device_t device, unsigned long start,
+unsigned long acpi_write_hpet(struct device *device, unsigned long start,
 			      acpi_rsdp_t *rsdp);
 
 /* cpu/intel/speedstep/acpi.c */
-void generate_cpu_entries(device_t device);
+void generate_cpu_entries(struct device *device);
 #endif
 
 void acpi_create_mcfg(acpi_mcfg_t *mcfg);
 
 void acpi_create_facs(acpi_facs_t *facs);
 
+void acpi_create_dbg2(acpi_dbg2_header_t *dbg2_header,
+		      int port_type, int port_subtype,
+		      acpi_addr_t *address, uint32_t address_size,
+		      const char *device_path);
+
+unsigned long acpi_write_dbg2_pci_uart(acpi_rsdp_t *rsdp, unsigned long current,
+				       struct device *dev, uint8_t access_size);
 void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 		      unsigned long (*acpi_fill_dmar)(unsigned long));
 unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
@@ -699,7 +777,8 @@ enum {
 	ACPI_S5,
 };
 
-#if IS_ENABLED(CONFIG_ACPI_INTEL_HARDWARE_SLEEP_VALUES)
+#if IS_ENABLED(CONFIG_ACPI_INTEL_HARDWARE_SLEEP_VALUES) \
+		|| IS_ENABLED(CONFIG_ACPI_AMD_HARDWARE_SLEEP_VALUES)
 /* Given the provided PM1 control register return the ACPI sleep type. */
 static inline int acpi_sleep_from_pm1(uint32_t pm1_cnt)
 {
@@ -744,13 +823,11 @@ int acpi_is_wakeup(void);
 int acpi_is_wakeup_s3(void);
 int acpi_is_wakeup_s4(void);
 #endif
-void acpi_prepare_for_resume(void);
 
 #else
 static inline int acpi_is_wakeup(void) { return 0; }
 static inline int acpi_is_wakeup_s3(void) { return 0; }
 static inline int acpi_is_wakeup_s4(void) { return 0; }
-static inline void acpi_prepare_for_resume(void) { }
 #endif
 
 static inline uintptr_t acpi_align_current(uintptr_t current)

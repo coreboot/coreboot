@@ -27,7 +27,7 @@
 #include <arch/interrupt.h>
 #include "registers.h"
 #include <x86emu/regs.h>
-#if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_REALMODE)
 #include <device/oprom/realmode/x86.h>
 #endif
 
@@ -127,7 +127,7 @@ static int via_cx700_int15_handler(void)
 #ifdef UNUSED_CODE
 static void write_protect_vgabios(void)
 {
-	device_t dev;
+	struct device *dev;
 
 	printk(BIOS_DEBUG, "write_protect_vgabios\n");
 
@@ -143,7 +143,7 @@ static void write_protect_vgabios(void)
 
 static void vga_enable_console(void)
 {
-#if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_REALMODE)
 	/* Call VGA BIOS int10 function 0x4f14 to enable main console
 	 * Epia-M does not always autosense the main console so forcing
 	 * it on is good.
@@ -154,7 +154,7 @@ static void vga_enable_console(void)
 #endif
 }
 
-static void vga_init(device_t dev)
+static void vga_init(struct device *dev)
 {
 	u8 reg8;
 

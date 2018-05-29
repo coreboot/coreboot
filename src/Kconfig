@@ -78,7 +78,6 @@ endchoice
 config ANY_TOOLCHAIN
 	bool "Allow building with any toolchain"
 	default n
-	depends on COMPILER_GCC
 	help
 	  Many toolchains break when building coreboot since it uses quite
 	  unusual linker features. Unless developers explicitely request it,
@@ -105,11 +104,11 @@ config FMD_GENPARSER
 	  Otherwise, say N to use the provided pregenerated scanner/parser.
 
 config UTIL_GENPARSER
-	bool "Generate SCONFIG & BLOBTOOL parser using flex and bison"
+	bool "Generate SCONFIG & BINCFG parser using flex and bison"
 	default n
 	help
 	  Enable this option if you are working on the sconfig device tree
-	  parser or blobtool and made changes to the .l or .y files.
+	  parser or bincfg and made changes to the .l or .y files.
 
 	  Otherwise, say N to use the provided pregenerated scanner/parser.
 
@@ -146,6 +145,18 @@ config COMPRESS_PRERAM_STAGES
 	  (and in the vboot case verifying it) is usually much greater than the
 	  time spent decompressing. Doesn't work for XIP stages (assume all
 	  ARCH_X86 for now) for obvious reasons.
+
+config COMPRESS_BOOTBLOCK
+	bool
+	help
+	  This option can be used to compress the bootblock with LZ4 and attach
+	  a small self-decompression stub to its front. This can drastically
+	  reduce boot time on platforms where the bootblock is loaded over a
+	  very slow connection and bootblock size trumps all other factors for
+	  speed. Since this using this option usually requires changes to the
+	  SoC memlayout and possibly extra support code, it should not be
+	  user-selectable. (There's no real point in offering this to the user
+	  anyway... if it works and saves boot time, you would always want it.)
 
 config INCLUDE_CONFIG_FILE
 	bool "Include the coreboot .config file into the ROM image"
@@ -186,6 +197,13 @@ config COLLECT_TIMESTAMPS
 	  Make coreboot create a table of timer-ID/timer-value pairs to
 	  allow measuring time spent at different phases of the boot process.
 
+config TIMESTAMPS_ON_CONSOLE
+	bool "Print the timestamp values on the console"
+	default n
+	depends on COLLECT_TIMESTAMPS
+	help
+	  Print the timestamps to the debug console if enabled at level spew.
+
 config USE_BLOBS
 	bool "Allow use of binary-only repository"
 	help
@@ -200,6 +218,14 @@ config COVERAGE
 	  Add code coverage support for coreboot. This will store code
 	  coverage information in CBMEM for extraction from user space.
 	  If unsure, say N.
+
+config UBSAN
+	bool "Undefined behavior sanitizer support"
+	default n
+	help
+	  Instrument the code with checks for undefined behavior. If unsure,
+	  say N because it adds a small performance penalty and may abort
+	  on code that happens to work in spite of the UB.
 
 config RELOCATABLE_RAMSTAGE
 	depends on EARLY_CBMEM_INIT
@@ -228,20 +254,6 @@ config UPDATE_IMAGE
 	  The bootblock will not be modified.
 
 	  If unsure, select 'N'
-
-config BOARD_ID_STRING
-	string "Board ID"
-	# Default value set at the end of the file
-	depends on BOARD_ID_MANUAL
-	help
-	  This string is placed in the 'board_id' CBFS file for indicating
-	  board type.
-
-config RAM_CODE_SUPPORT
-	bool
-	help
-	  If enabled, coreboot discovers RAM configuration (value obtained by
-	  reading board straps) and stores it in coreboot table.
 
 config BOOTSPLASH_IMAGE
 	bool "Add a bootsplash image"
@@ -298,14 +310,6 @@ config FMDFILE
 	  but in some cases more complex setups are required.
 	  When an fmd is specified, it overrides the default format.
 
-config MAINBOARD_HAS_TPM2
-	bool
-	default n
-	help
-	  There is a TPM device installed on the mainboard, and it is
-	  compliant with version 2 TCG TPM specification. Could be connected
-	  over LPC, SPI or I2C.
-
 endmenu
 
 # load site-local kconfig to allow user specific defaults and overrides
@@ -326,7 +330,7 @@ config CBFS_AUTOGEN_ATTRIBUTES
 menu "Chipset"
 
 comment "SoC"
-source "src/soc/*/*/Kconfig"
+source "src/soc/*/Kconfig"
 comment "CPU"
 source "src/cpu/Kconfig"
 comment "Northbridge"
@@ -342,7 +346,6 @@ source "src/ec/*/*/Kconfig"
 source "src/drivers/intel/fsp1_0/Kconfig"
 
 source "src/southbridge/intel/common/firmware/Kconfig"
-source "src/vboot/Kconfig"
 source "src/vendorcode/*/Kconfig"
 
 source "src/arch/*/Kconfig"
@@ -354,6 +357,13 @@ source "src/device/Kconfig"
 menu "Generic Drivers"
 source "src/drivers/*/Kconfig"
 source "src/drivers/*/*/Kconfig"
+source "src/commonlib/storage/Kconfig"
+endmenu
+
+menu "Security"
+
+source "src/security/Kconfig"
+
 endmenu
 
 source "src/acpi/Kconfig"
@@ -387,31 +397,6 @@ config BOOT_DEVICE_SUPPORTS_WRITES
 config RTC
 	bool
 	default n
-
-config TPM
-	bool
-	default n
-	select LPC_TPM if MAINBOARD_HAS_LPC_TPM
-	select I2C_TPM if !MAINBOARD_HAS_LPC_TPM && !SPI_TPM
-	help
-	  Enable this option to enable TPM support in coreboot.
-
-	  If unsure, say N.
-
-config TPM2
-	bool
-	select LPC_TPM if MAINBOARD_HAS_LPC_TPM
-	select I2C_TPM if !MAINBOARD_HAS_LPC_TPM && !SPI_TPM
-	help
-	  Enable this option to enable TPM2 support in coreboot.
-
-	  If unsure, say N.
-
-config MAINBOARD_HAS_TPM_CR50
-	bool
-	default y if MAINBOARD_HAS_SPI_TPM_CR50 || MAINBOARD_HAS_I2C_TPM_CR50
-	default n
-	select MAINBOARD_HAS_TPM2
 
 config HEAP_SIZE
 	hex
@@ -535,20 +520,9 @@ config CACHE_ROM_SIZE_OVERRIDE
 	hex
 	default 0x0
 
-# TODO: Can probably be removed once all chipsets have kconfig options for it.
-config VIDEO_MB
-	int
-	default 0
-
 config USE_WATCHDOG_ON_BOOT
 	bool
 	default n
-
-config VGA
-	bool
-	default n
-	help
-	  Build board-specific VGA code.
 
 config GFXUMA
 	bool
@@ -667,6 +641,16 @@ config MAINBOARD_SMBIOS_PRODUCT_NAME
 	default MAINBOARD_PART_NUMBER
 	help
 	  Override the default Product name stored in SMBIOS structures.
+
+config SMBIOS_ENCLOSURE_TYPE
+	hex
+	depends on GENERATE_SMBIOS_TABLES
+	default 0x09 if SYSTEM_TYPE_LAPTOP
+	default 0x03
+	help
+	  System Enclosure or Chassis Types as defined in SMBIOS specification.
+	  The default value is SMBIOS_ENCLOSURE_DESKTOP (0x03) or
+	  SMBIOS_ENCLOSURE_LAPTOP (0x09) if SYSTEM_TYPE_LAPTOP is set.
 
 endmenu
 
@@ -968,13 +952,6 @@ config X86EMU_DEBUG_TIMINGS
 
 	  If unsure, say N.
 
-config DEBUG_TPM
-	bool "Output verbose TPM debug messages"
-	default n
-	depends on TPM || TPM2
-	help
-	  This option enables additional TPM related debug messages.
-
 config DEBUG_SPI_FLASH
 	bool "Output verbose SPI flash debug messages"
 	default n
@@ -1027,14 +1004,6 @@ config DEBUG_BOOT_STATE
 	  Control debugging of the boot state machine.  When selected displays
 	  the state boundaries in ramstage.
 
-config DEBUG_PRINT_PAGE_TABLES
-	bool "Print the page tables after construction"
-	default n
-	depends on ARCH_RISCV
-	help
-	  After the page tables have been built, print them on the debug
-	  console.
-
 config DEBUG_ADA_CODE
 	bool "Compile debug code in Ada sources"
 	default n
@@ -1048,6 +1017,9 @@ endmenu
 ###############################################################################
 # Set variables with no prompt - these can be set anywhere, and putting at
 # the end of this file gives the most flexibility.
+
+source "src/lib/Kconfig"
+
 config ENABLE_APIC_EXT_ID
 	bool
 	default n
@@ -1139,20 +1111,6 @@ config CHECKLIST_DATA_FILE_LOCATION
 	  required and not implemented if a weak implementation is found in the
 	  resulting image.
 
-config RAMSTAGE_ADA
-	def_bool n
-	help
-	  Selected by features that use Ada code in ramstage.
-
-config RAMSTAGE_LIBHWBASE
-	def_bool n
-	select RAMSTAGE_ADA
-	help
-	  Selected by features that require `libhwbase` in ramstage.
-
-config HWBASE_DYNAMIC_MMIO
-	def_bool y
-
 config UNCOMPRESSED_RAMSTAGE
 	bool
 
@@ -1215,22 +1173,8 @@ config DIMM_SPD_SIZE
 	  Total SPD size that will be used for DIMM.
 	  Ex: DDR3 256, DDR4 512.
 
-config BOARD_ID_AUTO
+config SPD_READ_BY_WORD
 	bool
-	default n
-	help
-	  Mainboards that can read a board ID from the hardware straps
-	  (ie. GPIO) select this configuration option.
-
-config BOARD_ID_MANUAL
-	bool
-	default n
-	depends on !BOARD_ID_AUTO
-	help
-	  If you want to maintain a board ID, but the hardware does not
-	  have straps to automatically determine the ID, you can say Y
-	  here and add a file named 'board_id' to CBFS. If you don't know
-	  what this is about, say N.
 
 config BOOTBLOCK_CUSTOM
 	# To be selected by arch, SoC or mainboard if it does not want use the normal
@@ -1255,10 +1199,6 @@ config COMPRESS_PRERAM_STAGES
 
 config INCLUDE_CONFIG_FILE
 	default y
-
-config BOARD_ID_STRING
-	default "(none)"
-	depends on BOARD_ID_MANUAL
 
 config BOOTSPLASH_FILE
 	depends on BOOTSPLASH_IMAGE

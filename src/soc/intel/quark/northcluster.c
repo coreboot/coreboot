@@ -24,7 +24,7 @@
 
 #define RES_IN_KIB(r) ((r) >> 10)
 
-static void nc_read_resources(device_t dev)
+static void nc_read_resources(struct device *dev)
 {
 	unsigned long base_k;
 	int index = 0;

@@ -36,7 +36,7 @@ static void ec_setup(void)
 	send_ec_command(0xad); /* Set_Thml_Value */
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	ec_setup();
 	/* LCD panel type is SIO GPIO40-43.

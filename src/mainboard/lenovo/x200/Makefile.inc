@@ -15,3 +15,4 @@
 
 ramstage-y += dock.c
 ramstage-y += cstates.c
+ramstage-y += blc.c

@@ -16,7 +16,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <elog.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 #include <arch/acpi.h>

@@ -43,7 +43,7 @@ static const char *me_opstate_values[] = {
 /* HFS[19:16] Current Operation Mode Values */
 static const char *me_opmode_values[] = {
 	[ME_HFS_MODE_NORMAL]	= "Normal",
-	[ME_HFS_MODE_DEBUG]	= "Debug",
+	[ME_HFS_MODE_DEBUG]	= "Debug or Disabled by AltDisableBit",
 	[ME_HFS_MODE_DIS]	= "Soft Temporary Disable",
 	[ME_HFS_MODE_OVER_JMPR]	= "Security Override via Jumper",
 	[ME_HFS_MODE_OVER_MEI]	= "Security Override via MEI Message"

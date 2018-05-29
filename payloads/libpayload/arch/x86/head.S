@@ -74,7 +74,7 @@ _init:
 	movl %ebx, loader_ebx
 
 	/* Copy argv[] and argc as demanded by the Payload API,
-	 * see http://www.coreboot.org/Payload_API and exec.S.
+	 * see https://www.coreboot.org/Payload_API and exec.S.
 	 */
 	cmpl $CB_MAGIC_VALUE, CB_MAGIC(%esp)
 	jne 1f

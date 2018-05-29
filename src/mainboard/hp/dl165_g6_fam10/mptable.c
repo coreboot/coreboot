@@ -29,7 +29,7 @@
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 #include <cpu/amd/multicore.h>
 #endif
 #include <cpu/amd/amdfam10_sysconf.h>
@@ -55,10 +55,10 @@ static void *smp_write_config_table(void *v)
 
 	/*I/O APICs:   APIC ID Version State           Address*/
 	{
-		device_t dev = 0;
+		struct device *dev = NULL;
 		int i;
 		struct resource *res;
-		for(i = 0; i < 3; i++) {
+		for (i = 0; i < 3; i++) {
 			dev = dev_find_device(0x1166, 0x0235, dev);
 			if (dev) {
 				res = find_resource(dev, PCI_BASE_ADDRESS_0);
@@ -84,9 +84,9 @@ static void *smp_write_config_table(void *v)
 	outb(0x0e, 0x4d1);
 
 	{
-		device_t dev;
+		struct device *dev;
 		dev = dev_find_device(0x1166, 0x0205, 0);
-		if(dev) {
+		if (dev) {
 			uint32_t dword;
 			dword = pci_read_config32(dev, 0x64);
 			dword |= (1 << 30); // GEVENT14-21 used as PCI IRQ0-7
@@ -100,7 +100,7 @@ static void *smp_write_config_table(void *v)
 
 	// hide XIOAPIC PCI configuration space
 	{
-		device_t dev;
+		struct device *dev;
 		dev = dev_find_device(0x1166, 0x205, 0);
 		if (dev) {
 			uint32_t dword;
@@ -127,9 +127,9 @@ static void *smp_write_config_table(void *v)
 	/* enable int */
 	/* why here? must get the BAR and PCI command bit 1 set before enable it ....*/
 	{
-		device_t dev;
+		struct device *dev;
 		dev = dev_find_device(0x1166, 0x0205, 0);
-		if(dev) {
+		if (dev) {
 			uint32_t dword;
 			dword = pci_read_config32(dev, 0x6c);
 			dword |= (1 << 4); // enable interrupts

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Siemens AG.
+ * Copyright (C) 2014 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -143,14 +143,17 @@ static const struct param_info params[] = {
 		.pos[0] = {.blk_type = BLK_HIB, .offset = 0xe0, .len = 0x80},
 		.get_field = hwilib_read_bytes },
 	[FF_FreezeDis] = {
-		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1b8, .len = 4},
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1b8, .len = 1},
 		.mask = 0x10,
 		.mask_offset = 4,
 		.get_field = hwilib_read_bytes },
 	[FF_FanReq] = {
-		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1b8, .len = 4},
-		.mask = 0x400,
-		.mask_offset = 10,
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1b9, .len = 1},
+		.mask = 0x04,
+		.mask_offset = 2,
+		.get_field = hwilib_read_bytes },
+	[NvramVirtTimeDsaveReset] = {
+		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1be, .len = 2},
 		.get_field = hwilib_read_bytes },
 	[BiosFlags] = {
 		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1c0, .len = 4},
@@ -169,6 +172,12 @@ static const struct param_info params[] = {
 		.get_field = hwilib_read_bytes },
 	[RTCType] = {
 		.pos[0] = {.blk_type = BLK_HIB, .offset = 0x1e8, .len = 1},
+		.get_field = hwilib_read_bytes },
+	[BL_Brightness] = {
+		.pos[0] = {.blk_type = BLK_SIB, .offset = 0xd8, .len = 1},
+		.get_field = hwilib_read_bytes },
+	[PF_PwmFreq] = {
+		.pos[0] = {.blk_type = BLK_SIB, .offset = 0xe7, .len = 1},
 		.get_field = hwilib_read_bytes },
 	[PF_Color_Depth] = {
 		.pos[0] = {.blk_type = BLK_SIB, .offset = 0xea, .len = 1},
@@ -340,7 +349,7 @@ static const struct param_info params[] = {
 	[FANMaxSpeed] = {
 		.pos[0] = {.blk_type = BLK_XIB, .offset = 0x40, .len = 2},
 		.get_field = hwilib_read_bytes },
-	[FANStartpeed] = {
+	[FANStartSpeed] = {
 		.pos[0] = {.blk_type = BLK_XIB, .offset = 0x42, .len = 2},
 		.get_field = hwilib_read_bytes },
 	[FANSensorDelay] = {
@@ -376,7 +385,9 @@ static const struct param_info params[] = {
 	[FANSensorCfg7] = {
 		.pos[0] = {.blk_type = BLK_XIB, .offset = 0xd8, .len = 20},
 		.get_field = hwilib_read_bytes },
-
+	[LegacyDelay] = {
+		.pos[0] = {.blk_type = BLK_XIB, .offset = 0x20c, .len = 4},
+		.get_field = hwilib_read_bytes },
 };
 
 /** \brief This functions reads the given field from the first valid hwinfo

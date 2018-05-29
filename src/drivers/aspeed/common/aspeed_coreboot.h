@@ -78,30 +78,6 @@ static inline void *kzalloc(size_t size, int flags) {
 	return ptr;
 }
 
-static inline void writel(u32 val, volatile void *addr) {
-	*(u32*)addr = val;
-}
-
-static inline u32 readl(const volatile void *addr) {
-	return *(u32*)addr;
-}
-
-static inline void writew(u16 val, volatile void *addr) {
-	*(u16*)addr = val;
-}
-
-static inline u16 readw(const volatile void *addr) {
-	return *(u16*)addr;
-}
-
-static inline void writeb(u8 val, volatile void *addr) {
-	*(u8*)addr = val;
-}
-
-static inline u8 readb(const volatile void *addr) {
-	return *(u8*)addr;
-}
-
 static inline int pci_read_config_dword(struct pci_dev *dev, int where,
 	u32 *val)
 {
@@ -152,27 +128,27 @@ static inline resource_t pci_resource_start(struct pci_dev *dev, u8 bar) {
 }
 
 static inline unsigned int ioread32(void __iomem *p) {
-	return readl(p);
+	return read32(p);
 }
 
 static inline void iowrite32(u32 val, void __iomem *p) {
-	writel(val, p);
+	write32(p, val);
 }
 
 static inline unsigned int ioread16(void __iomem *p) {
-	return readw(p);
+	return read16(p);
 }
 
 static inline void iowrite16(u16 val, void __iomem *p) {
-	writew(val, p);
+	write16(p, val);
 }
 
 static inline unsigned int ioread8(void __iomem *p) {
-	return readb(p);
+	return read8(p);
 }
 
 static inline void iowrite8(u8 val, void __iomem *p) {
-	writeb(val, p);
+	write8(p, val);
 }
 
 static inline unsigned int ioread_cbio32(void __iomem *p) {

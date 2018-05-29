@@ -17,6 +17,7 @@
  /* rl5c476 routines and defines*/
 
 
+#include <compiler.h>
 #include <stdint.h>
 
 
@@ -87,4 +88,4 @@ typedef struct pc16reg  {
 	u8 resv8;
 	u8 resv9;
 	u8 smpga0;
-} __attribute__ ((packed)) pc16reg_t;
+} __packed pc16reg_t;

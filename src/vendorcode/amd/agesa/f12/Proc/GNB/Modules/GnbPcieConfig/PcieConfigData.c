@@ -133,7 +133,14 @@ PcieConfigurationInit (
   PCIe_COMPLEX_DESCRIPTOR     *PcieComplexList;
   AGESA_STATUS                Status;
   EarlyParamsPtr = (AMD_EARLY_PARAMS *) StdHeader;
-  PcieComplexList = PcieConfigProcessUserConfig (EarlyParamsPtr->GnbConfig.PcieComplexList, StdHeader);
+
+  /* FIXME: Intentionally discard qualifier const of
+   * GnbConfig.PcieComplexList here.
+   */
+  PcieComplexList = PcieConfigProcessUserConfig (
+    (PCIe_COMPLEX_DESCRIPTOR *)EarlyParamsPtr->GnbConfig.PcieComplexList,
+    StdHeader);
+
   if (PcieComplexList == NULL) {
     return AGESA_FATAL;
   }

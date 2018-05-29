@@ -5,9 +5,9 @@ config DRIVERS_UART
 
 config DRIVERS_UART_8250IO
 	bool "Serial port on SuperIO"
-	depends on !ARCH_ARM
+	depends on ARCH_X86
 	default n if NO_UART_ON_SUPERIO
-	default y if ARCH_X86
+	default y
 
 config DRIVERS_UART_8250IO_SKIP_INIT
 	def_bool n
@@ -60,6 +60,11 @@ config DRIVERS_UART_PL011
 	bool
 	default n
 	select HAVE_UART_SPECIAL
+
+config DRIVERS_UART_SIFIVE
+	bool
+	select HAVE_UART_SPECIAL
+	select UART_OVERRIDE_INPUT_CLOCK_DIVIDER
 
 config UART_USE_REFCLK_AS_INPUT_CLOCK
 	bool

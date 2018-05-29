@@ -303,7 +303,7 @@ int init_ddr3(void)
 	write32(DDR_PCTL + DDR_PCTL_TCWL_OFFSET, 0x00000005);
 	/* TRAS : Activate to Precharge cmd time  15 45ns / 2.5ns = 18d */
 	write32(DDR_PCTL + DDR_PCTL_TRAS_OFFSET, 0x0000000F);
-	/* TRC : Min. ROW cylce time  21
+	/* TRC : Min. ROW cycle time  21
 	 * 57.5ns / 2.5ns = 23d Playing safe 24
 	 */
 	write32(DDR_PCTL + DDR_PCTL_TRC_OFFSET, 0x00000015);
@@ -428,7 +428,7 @@ int init_ddr3(void)
 	 */
 	write32(DDR_PCTL + DDR_PCTL_DFIODTCFG1_OFFSET, 0x060600000);
 
-	/* Memory initilization */
+	/* Memory initialization */
 	/* MCMD : PREA, Addr 0 Bank 0 Rank 0 Del 0
 	 * 3:0 cmd_opcode PREA 00001
 	 * 16:4 cmd_addr 0

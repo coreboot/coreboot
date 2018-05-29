@@ -20,18 +20,23 @@
 #include <fsp/api.h>
 #include <arch/acpi.h>
 #include <chip.h>
+#include <compiler.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <intelblocks/xdci.h>
 #include <romstage_handoff.h>
 #include <soc/acpi.h>
+#include <soc/intel/common/vbt.h>
 #include <soc/interrupt.h>
+#include <soc/iomap.h>
 #include <soc/irq.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
+#include <soc/systemagent.h>
 #include <string.h>
 
 void soc_init_pre_device(void *chip_info)
@@ -54,9 +59,9 @@ static struct device_operations pci_domain_ops = {
 	.read_resources   = &pci_domain_read_resources,
 	.set_resources    = &pci_domain_set_resources,
 	.scan_bus         = &pci_domain_scan_bus,
-	.ops_pci_bus      = &pci_bus_default_ops,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	.acpi_name        = &soc_acpi_name,
+	.write_acpi_tables	= &northbridge_write_acpi_tables,
+	.acpi_name		= &soc_acpi_name,
 #endif
 };
 
@@ -73,17 +78,10 @@ static struct device_operations cpu_bus_ops = {
 static void soc_enable(device_t dev)
 {
 	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		dev->ops = &pci_domain_ops;
-	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &cpu_bus_ops;
-	} else if (dev->path.type == DEVICE_PATH_PCI) {
-		/* Handle PCH device enable */
-		if (PCI_SLOT(dev->path.pci.devfn) > SA_DEV_SLOT_IGD &&
-		    (dev->ops == NULL || dev->ops->enable == NULL)) {
-			pch_enable_dev(dev);
-		}
-	}
 }
 
 struct chip_operations soc_intel_skylake_ops = {
@@ -98,11 +96,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	FSP_S_CONFIG *params = &supd->FspsConfig;
 	FSP_S_TEST_CONFIG *tconfig = &supd->FspsTestConfig;
 	static struct soc_intel_skylake_config *config;
-	uintptr_t vbt_data = 0;
-
+	uintptr_t vbt_data = (uintptr_t)vbt_get();
 	int i;
-
-	int is_s3_wakeup = acpi_is_wakeup_s3();
 
 	struct device *dev = SA_DEV_ROOT;
 	if (!dev || !dev->chip_info) {
@@ -112,20 +107,13 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	config = dev->chip_info;
 
 	mainboard_silicon_init_params(params);
-
-	/* Load VBT */
-	if (is_s3_wakeup) {
-		printk(BIOS_DEBUG, "S3 resume do not pass VBT to GOP\n");
-	} else if (display_init_required()) {
-		/* Get VBT data */
-		vbt_data = fsp_load_vbt();
-		if (vbt_data)
-			printk(BIOS_DEBUG, "Passing VBT to GOP\n");
-		else
-			printk(BIOS_DEBUG, "VBT not found!\n");
-	} else {
-		printk(BIOS_DEBUG, "Not passing VBT to GOP\n");
+	/* Set PsysPmax if it is available from DT */
+	if (config->psys_pmax) {
+		/* PsysPmax is in unit of 1/8 Watt */
+		tconfig->PsysPmax = config->psys_pmax * 8;
+		printk(BIOS_DEBUG, "psys_pmax = %d\n", tconfig->PsysPmax);
 	}
+
 	params->GraphicsConfigPtr = (u32) vbt_data;
 
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
@@ -166,6 +154,26 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	       sizeof(params->PcieRpClkReqSupport));
 	memcpy(params->PcieRpClkReqNumber, config->PcieRpClkReqNumber,
 	       sizeof(params->PcieRpClkReqNumber));
+	memcpy(params->PcieRpAdvancedErrorReporting,
+		config->PcieRpAdvancedErrorReporting,
+			sizeof(params->PcieRpAdvancedErrorReporting));
+	memcpy(params->PcieRpLtrEnable, config->PcieRpLtrEnable,
+	       sizeof(params->PcieRpLtrEnable));
+	memcpy(params->PcieRpHotPlug, config->PcieRpHotPlug,
+	       sizeof(params->PcieRpHotPlug));
+
+	/*
+	 * PcieRpClkSrcNumber UPD is set to clock source number(0-6) for
+	 * all the enabled PCIe root ports, invalid(0x1F) is set for
+	 * disabled PCIe root ports.
+	 */
+	for (i = 0; i < CONFIG_MAX_ROOT_PORTS; i++) {
+		if (config->PcieRpClkReqSupport[i])
+			params->PcieRpClkSrcNumber[i] =
+				config->PcieRpClkSrcNumber[i];
+		else
+			params->PcieRpClkSrcNumber[i] = 0x1F;
+	}
 
 	/* disable Legacy PME */
 	memset(params->PcieRpPmSci, 0, sizeof(params->PcieRpPmSci));
@@ -187,6 +195,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchPmLanWakeFromDeepSx = config->WakeConfigPcieWakeFromDeepSx;
 
 	params->PchLanEnable = config->EnableLan;
+	if (config->EnableLan) {
+		params->PchLanLtrEnable = config->EnableLanLtr;
+		params->PchLanK1OffEnable = config->EnableLanK1Off;
+		params->PchLanClkReqSupported = config->LanClkReqSupported;
+		params->PchLanClkReqNumber = config->LanClkReqNumber;
+	}
 	params->SataSalpSupport = config->SataSalpSupport;
 	params->SsicPortEnable = config->SsicPortEnable;
 	params->ScsEmmcEnabled = config->ScsEmmcEnabled;
@@ -196,15 +210,34 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchHdaEnable = config->EnableAzalia;
 	params->PchHdaIoBufferOwnership = config->IoBufferOwnership;
 	params->PchHdaDspEnable = config->DspEnable;
-	params->XdciEnable = config->XdciEnable;
 	params->Device4Enable = config->Device4Enable;
 	params->SataEnable = config->EnableSata;
 	params->SataMode = config->SataMode;
+	params->SataSpeedLimit = config->SataSpeedLimit;
+	params->SataPwrOptEnable = config->SataPwrOptEnable;
+
 	tconfig->PchLockDownGlobalSmi = config->LockDownConfigGlobalSmi;
-	tconfig->PchLockDownBiosInterface = config->LockDownConfigBiosInterface;
 	tconfig->PchLockDownRtcLock = config->LockDownConfigRtcLock;
-	params->PchLockDownBiosLock = config->LockDownConfigBiosLock;
-	params->PchLockDownSpiEiss = config->LockDownConfigSpiEiss;
+	/*
+	 * To disable HECI, the Psf needs to be left unlocked
+	 * by FSP till end of post sequence. Based on the devicetree
+	 * setting, we set the appropriate PsfUnlock policy in FSP,
+	 * do the changes and then lock it back in coreboot during finalize.
+	 */
+	tconfig->PchSbAccessUnlock = (config->HeciEnabled == 0) ? 1 : 0;
+	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
+		tconfig->PchLockDownBiosInterface = 0;
+		params->PchLockDownBiosLock = 0;
+		params->PchLockDownSpiEiss = 0;
+		/*
+		 * Skip Spi Flash Lockdown from inside FSP.
+		 * Making this config "0" means FSP won't set the FLOCKDN bit
+		 * of SPIBAR + 0x04 (i.e., Bit 15 of BIOS_HSFSTS_CTL).
+		 * So, it becomes coreboot's responsibility to set this bit
+		 * before end of POST for security concerns.
+		 */
+		params->SpiFlashCfgLockDown = 0;
+	}
 	params->PchSubSystemVendorId = config->PchConfigSubSystemVendorId;
 	params->PchSubSystemId = config->PchConfigSubSystemId;
 	params->PchPmWolEnableOverride = config->WakeConfigWolEnableOverride;
@@ -239,6 +272,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	dev = dev_find_slot(0, PCH_DEVFN_SPI);
 	params->ShowSpiController = dev->enabled;
 
+	/* Enable xDCI controller if enabled in devicetree and allowed */
+	dev = dev_find_slot(0, PCH_DEVFN_USBOTG);
+	if (!xdci_can_enable())
+		dev->enabled = 0;
+	params->XdciEnable = dev->enabled;
+
 	/*
 	 * Send VR specific mailbox commands:
 	 * 000b - no VR specific command sent
@@ -248,6 +287,14 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 * 100b - VR specific command sent for MPS VR decay issue
 	 */
 	params->SendVrMbxCmd1 = config->SendVrMbxCmd;
+
+	/*
+	 * Activates VR mailbox command for Intersil VR C-state issues.
+	 * 0 - no mailbox command sent.
+	 * 1 - VR mailbox command sent for IA/GT rails only.
+	 * 2 - VR mailbox command sent for IA/GT/SA rails.
+	 */
+	params->IslVrCmd = config->IslVrCmd;
 
 	/* Acoustic Noise Mitigation */
 	params->AcousticNoiseMitigation = config->AcousticNoiseMitigation;
@@ -261,15 +308,30 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Enable PMC XRAM read */
 	tconfig->PchPmPmcReadDisable = config->PchPmPmcReadDisable;
 
+	/* Enable/Disable EIST */
+	tconfig->Eist = config->eist_enable;
+
+	/* Set TccActivationOffset */
+	tconfig->TccActivationOffset = config->tcc_offset;
+
+	/* Enable VT-d and X2APIC */
+	if (!config->ignore_vtd && soc_is_vtd_capable()) {
+		params->VtdBaseAddress[0] = GFXVT_BASE_ADDRESS;
+		params->VtdBaseAddress[1] = VTVC0_BASE_ADDRESS;
+		params->X2ApicOptOut = 0;
+		tconfig->VtdDisable = 0;
+
+		params->PchIoApicBdfValid = 1;
+		params->PchIoApicBusNumber = 250;
+		params->PchIoApicDeviceNumber = 31;
+		params->PchIoApicFunctionNumber = 0;
+	}
+
 	soc_irq_settings(params);
 }
 
-struct pci_operations soc_pci_ops = {
-	.set_subsystem = &pci_dev_set_subsystem
-};
-
 /* Mainboard GPIO Configuration */
-__attribute__((weak)) void mainboard_silicon_init_params(FSP_S_CONFIG *params)
+__weak void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }

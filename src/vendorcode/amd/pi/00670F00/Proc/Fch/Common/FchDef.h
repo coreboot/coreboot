@@ -14,7 +14,7 @@
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2017, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***************************************************************************/
+
+#include <check_for_wrapper.h>
+
 #ifndef _FCH_DEF_H_
 #define _FCH_DEF_H_
 
@@ -78,6 +81,7 @@ BOOLEAN       FchCheckST (IN AMD_CONFIG_PARAMS *StdHeader);
 BOOLEAN       FchCheckCZ (IN AMD_CONFIG_PARAMS *StdHeader);
 BOOLEAN       FchCheckPackageAM4 (IN AMD_CONFIG_PARAMS *StdHeader);
 UINT64        FchGetScratchFuse (IN AMD_CONFIG_PARAMS *StdHeader);
+VOID          FchInitResetRequest (IN AMD_CONFIG_PARAMS *StdHeader);
 
 ///
 /// Fch Ab Routines

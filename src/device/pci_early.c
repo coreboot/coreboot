@@ -71,7 +71,7 @@ unsigned pci_find_capability(pci_devfn_t dev, unsigned cap)
 #endif /* __PRE_RAM__ */
 
 
-#if CONFIG_EARLY_PCI_BRIDGE
+#if IS_ENABLED(CONFIG_EARLY_PCI_BRIDGE)
 
 static void pci_bridge_reset_secondary(device_t p2p_bridge)
 {

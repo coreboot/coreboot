@@ -9,6 +9,11 @@ enum aspm_type {
 	PCIE_ASPM_BOTH = 3,
 };
 
+#define ASPM_LTR_L12_THRESHOLD_VALUE_OFFSET 16
+#define ASPM_LTR_L12_THRESHOLD_VALUE_MASK (0x3ff << ASPM_LTR_L12_THRESHOLD_VALUE_OFFSET)
+#define ASPM_LTR_L12_THRESHOLD_SCALE_OFFSET 29
+#define ASPM_LTR_L12_THRESHOLD_SCALE_MASK (0x7 << ASPM_LTR_L12_THRESHOLD_SCALE_OFFSET)
+
 void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 			     unsigned int max_devfn);
 

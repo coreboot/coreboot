@@ -21,18 +21,18 @@
 #include <console/console.h>
 #include <device/cardbus.h>
 
-static void pcixx12_init(device_t dev)
+static void pcixx12_init(struct device *dev)
 {
 	/* cardbus controller function 1 for CF Socket */
 	printk(BIOS_DEBUG, "TI PCIxx12 init\n");
 }
 
-static void pcixx12_read_resources(device_t dev)
+static void pcixx12_read_resources(struct device *dev)
 {
 	cardbus_read_resources(dev);
 }
 
-static void pcixx12_set_resources(device_t dev)
+static void pcixx12_set_resources(struct device *dev)
 {
 	printk(BIOS_DEBUG, "%s In set resources\n",dev_path(dev));
 
@@ -55,7 +55,7 @@ static const struct pci_driver ti_pcixx12_driver __pci_driver = {
 	.device = 0x8039,
 };
 
-static void southbridge_init(device_t dev)
+static void southbridge_init(struct device *dev)
 {
 }
 

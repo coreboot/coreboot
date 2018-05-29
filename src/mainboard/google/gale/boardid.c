@@ -37,7 +37,7 @@ static uint8_t get_board_id(void)
 	return bid;
 }
 
-uint8_t board_id(void)
+uint32_t board_id(void)
 {
 	if (board_id_value < 0)
 		board_id_value = get_board_id();

@@ -22,7 +22,7 @@
 
 
 <hr>
-<h1><a name="RequiredFiles">Required Files</a></h1>
+<h2><a name="RequiredFiles">Required Files</a></h2>
 <p>
   Create the board directory as src/mainboard/&lt;Vendor&gt;/&lt;Board&gt;.
 </p>
@@ -72,7 +72,6 @@
       <li>Set the CPU_MICROCODE_CBFS_LOC</li>
       <li>Set the FSP_IMAGE_ID_STRING</li>
       <li>Set the FSP_LOC</li>
-      <li>Disable GOP_SUPPORT</li>
       <li>No payload</li>
       <li>Choose the default value for all other options</li>
     </ol>
@@ -81,7 +80,7 @@
 
 
 <hr>
-<h1><a name="SerialOutput">Enable Serial Output</a></h1>
+<h2><a name="SerialOutput">Enable Serial Output</a></h2>
 <p>
   Use the following steps to enable serial output:
 </p>
@@ -104,7 +103,7 @@
 
 
 <hr>
-<h1><a name="SpdData">Memory Timing Data</a></h1>
+<h2><a name="SpdData">Memory Timing Data</a></h2>
 <p>
   Memory timing data is located in the flash.  This data is in the format of
   <a target="_blank" href="https://en.wikipedia.org/wiki/Serial_presence_detect">serial presence detect</a>
@@ -161,20 +160,20 @@
     <ol type="A">
       <li>0x34:
         - Just after entering
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l67">raminit</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l67">raminit</a>
       </li>
       <li>0x36:
         - Just before displaying the
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l106">UPD parameters</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l106">UPD parameters</a>
         for FSP MemoryInit
       </li>
-      <li>0x92: <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l219">POST_FSP_MEMORY_INIT</a>
+      <li>0x92: <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l219">POST_FSP_MEMORY_INIT</a>
         - Just before calling FSP
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l125">MemoryInit</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l125">MemoryInit</a>
       </li>
       <li>0x37:
         - Just after returning from FSP
-        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l127">MemoryInit</a>
+        <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l127">MemoryInit</a>
       </li>
     </ol>
   </li>
@@ -184,7 +183,7 @@
 
 
 <hr>
-<h1><a name="DisablePciDevices">Disable PCI Devices</a></h1>
+<h2><a name="DisablePciDevices">Disable PCI Devices</a></h2>
 <p>
   Ramstage's BS_DEV_ENUMERATE state displays the PCI vendor and device IDs for all
   of the devices in the system.  Edit the devicetree.cb file:
@@ -210,7 +209,7 @@
 
 
 <hr>
-<h1><a name="AcpiTables">ACPI Tables</a></h1>
+<h2><a name="AcpiTables">ACPI Tables</a></h2>
 <ol>
   <li>Edit Kconfig
     <ol type="A">

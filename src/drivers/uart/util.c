@@ -13,28 +13,8 @@
 
 #include <console/console.h>
 #include <console/uart.h>
-#if CONFIG_USE_OPTION_TABLE
-#include <option.h>
-#include "option_table.h"
-#endif
-
-unsigned int default_baudrate(void)
-{
-#if !defined(__SMM__) && CONFIG_USE_OPTION_TABLE
-	static const unsigned baud[8] =
-		{ 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1200 };
-	unsigned b_index = 0;
-#if defined(__PRE_RAM__)
-	b_index = read_option(baud_rate, 0xff);
-#else
-	if (get_option(&b_index, "baud_rate") != CB_SUCCESS)
-		b_index = 0xff;
-#endif
-	if (b_index < 8)
-		return baud[b_index];
-#endif
-	return CONFIG_TTYS0_BAUD;
-}
+#include <types.h>
+#include <timer.h>
 
 /* Calculate divisor. Do not floor but round to nearest integer. */
 unsigned int uart_baudrate_divisor(unsigned int baudrate,
@@ -75,3 +55,30 @@ unsigned int uart_platform_refclk(void)
 	return 115200 * 16;
 }
 #endif
+
+/* Helper function to allow bitbanging an 8n1 UART. */
+void uart_bitbang_tx_byte(unsigned char data, void (*set_tx)(int line_state))
+{
+	const int baud_rate = get_uart_baudrate();
+	int i;
+	struct stopwatch sw;
+	stopwatch_init(&sw);
+
+	/* Send start bit */
+	set_tx(0);
+	while (stopwatch_duration_usecs(&sw) < MHz / baud_rate)
+		stopwatch_tick(&sw);
+
+	/* 'i' counts the total bits sent at the end of the loop */
+	for (i = 2; i < 10; i++) {
+		set_tx(data & 1);
+		data >>= 1;
+		while (stopwatch_duration_usecs(&sw) < i * MHz / baud_rate)
+			stopwatch_tick(&sw);
+	}
+
+	/* Send stop bit */
+	set_tx(1);
+	while (stopwatch_duration_usecs(&sw) < i * MHz / baud_rate)
+		stopwatch_tick(&sw);
+}

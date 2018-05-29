@@ -29,6 +29,7 @@
 #include <soc/ramstage.h>
 #include <soc/smm.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <stddef.h>
 
 /*
  * Host Memory Map:
@@ -70,7 +71,14 @@
 
 uint32_t nc_read_top_of_low_memory(void)
 {
-	return iosf_bunit_read(BUNIT_BMBOUND) & ~((1 << 27) - 1);
+	MAYBE_STATIC uint32_t tolm = 0;
+
+	if (tolm)
+		return tolm;
+
+	tolm = iosf_bunit_read(BUNIT_BMBOUND) & ~((1 << 27) - 1);
+
+	return tolm;
 }
 
 static void nc_read_resources(device_t dev)

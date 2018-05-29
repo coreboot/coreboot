@@ -28,11 +28,14 @@
 #
 #*****************************************************************************
 
-ifeq ($(CONFIG_CPU_AMD_PI_00630F01)$(CONFIG_CPU_AMD_PI_00730F01)$(CONFIG_CPU_AMD_PI_00670F00_FP4)$(CONFIG_CPU_AMD_PI_00670F00_FT4)$(CONFIG_CPU_AMD_PI_00660F01),y)
+subdirs-y += 00670F00
+
+ifeq ($(CONFIG_CPU_AMD_PI_00630F01)$(CONFIG_CPU_AMD_PI_00730F01)$(CONFIG_CPU_AMD_PI_00660F01),y)
 # AGESA V5 Files
+
 AGESA_ROOT = $(call strip_quotes,$(CONFIG_AGESA_BINARY_PI_VENDORCODE_PATH))
 
-AGESA_INC = -I$(obj)
+AGESA_INC = -I$(obj) -I$(src)/vendorcode/amd/include
 
 AGESA_INC += -I$(src)/mainboard/$(MAINBOARDDIR)
 AGESA_INC += -I$(AGESA_ROOT)/binaryPI
@@ -48,10 +51,7 @@ AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family
 AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Feature
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Common
-ifeq ($(CONFIG_CPU_AMD_PI_00670F00_FP4)$(CONFIG_CPU_AMD_PI_00670F00_FT4),y)
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Kern
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Psp/PspBaseLib
-endif
+
 ifeq ($(CONFIG_CPU_AMD_PI_00660F01),y)
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Kern
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Psp/PspBaseLib
@@ -68,7 +68,8 @@ AGESA_INC += -I$(src)/include
 AGESA_INC += -I$(src)/commonlib/include
 AGESA_INC += -I$(VBOOT_SOURCE)/firmware/include
 
-AGESA_CFLAGS += -march=amdfam10 -mno-3dnow -fno-zero-initialized-in-bss -fno-strict-aliasing
+AGESA_CFLAGS += -march=amdfam10 -mno-3dnow -fno-zero-initialized-in-bss
+AGESA_CFLAGS += -fno-strict-aliasing -D__LIBAGESA__
 CFLAGS_x86_32 += $(AGESA_CFLAGS)
 CFLAGS_x86_64 += $(AGESA_CFLAGS)
 
@@ -78,7 +79,9 @@ export AGESA_CFLAGS  := $(AGESA_CFLAGS)
 
 CC_bootblock := $(CC_bootblock) $(AGESA_INC) $(AGESA_CFLAGS)
 CC_romstage := $(CC_romstage) $(AGESA_INC) $(AGESA_CFLAGS)
+CC_postcar:= $(CC_postcar) -I$(AGESA_ROOT)/binaryPI
 CC_ramstage := $(CC_ramstage) $(AGESA_INC) $(AGESA_CFLAGS)
+
 CC_x86_32 := $(CC_x86_32) $(AGESA_INC) $(AGESA_CFLAGS)
 CC_x86_64 := $(CC_x86_64) $(AGESA_INC) $(AGESA_CFLAGS)
 
@@ -104,12 +107,11 @@ $(call src-to-obj,libagesa,$1): $(agesa_src_path)/$(notdir $1) $(obj)/config.h $
 endef
 
 agesa_raw_files += $(wildcard $(src)/vendorcode/amd/pi/Lib/*.[cS])
+
+ifeq ($(CONFIG_BINARYPI_LEGACY_WRAPPER),y)
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/binaryPI/*.[cS])
-ifeq ($(CONFIG_CPU_AMD_PI_00670F00_FP4)$(CONFIG_CPU_AMD_PI_00670F00_FT4),y)
-agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Kern/KernImc/*.[cS])
-agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Common/*.[cS])
-agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Psp/PspBaseLib/*.[cS])
 endif
+
 ifeq ($(CONFIG_CPU_AMD_PI_00660F01),y)
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Kern/KernImc/*.[cS])
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Common/*.[cS])
@@ -128,25 +130,27 @@ $(eval $(call create_class_compiler,libagesa,x86_64))
 endif
 
 agesa_src_files := $(strip $(sort $(foreach file,$(strip $(agesa_raw_files)),$(call strip_quotes,$(file)))))
-agesa_src_path := $(strip $(obj)/agesa)
+agesa_output_path := $(obj)/libagesa
+agesa_src_path := $(agesa_output_path)
 agesa_dirs := $(sort $(abspath $(dir $(call src-to-obj,libagesa,$(agesa_src_files)))))
 
 additional-dirs += $(agesa_src_path) $(agesa_dirs)
 
 $(foreach file,$(strip $(agesa_src_files)),$(eval $(call create_agesa_cp_template,$(file))))
 
-$(obj)/agesa/libagesa.a: $(call src-to-obj,libagesa,$(agesa_src_files))
+$(agesa_output_path)/libagesa.a: $(call src-to-obj,libagesa,$(agesa_src_files))
 	@printf "    AGESA      $(subst $(obj)/,,$(@))\n"
-	ar rcs $@ $+
+	$(AR_libagesa) rcsDT $@ $+
 
-romstage-libs += $(obj)/agesa/libagesa.a
-ramstage-libs += $(obj)/agesa/libagesa.a
+bootblock-libs += $(agesa_output_path)/libagesa.a
+romstage-libs += $(agesa_output_path)/libagesa.a
+ramstage-libs += $(agesa_output_path)/libagesa.a
 
 #######################################################################
 
-cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += AGESA
-AGESA-file := $(CONFIG_AGESA_BINARY_PI_FILE)
-AGESA-type := raw
-AGESA-position := $(CONFIG_AGESA_BINARY_PI_LOCATION)
+cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += $(CONFIG_AGESA_CBFS_NAME)
+$(CONFIG_AGESA_CBFS_NAME)-file := $(CONFIG_AGESA_BINARY_PI_FILE)
+$(CONFIG_AGESA_CBFS_NAME)-type := raw
+$(CONFIG_AGESA_CBFS_NAME)-position := $(CONFIG_AGESA_BINARY_PI_LOCATION)
 
 endif

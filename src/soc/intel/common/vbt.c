@@ -14,38 +14,19 @@
  */
 
 #include <cbfs.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <bootmode.h>
+#include <bootstate.h>
 
 #include "vbt.h"
+#include <drivers/intel/gma/opregion.h>
 
-#define VBT_SIGNATURE 0x54425624
-
-enum cb_err locate_vbt(struct region_device *rdev)
+void *vbt_get(void)
 {
-	uint32_t vbtsig = 0;
-	struct cbfsf file_desc;
-
-	if (cbfs_boot_locate(&file_desc, "vbt.bin", NULL) < 0) {
-		printk(BIOS_ERR, "Could not locate a VBT file in in CBFS\n");
-		return CB_ERR;
-	}
-
-	cbfs_file_data(rdev, &file_desc);
-	rdev_readat(rdev, &vbtsig, 0, sizeof(uint32_t));
-
-	if (vbtsig != VBT_SIGNATURE) {
-		printk(BIOS_ERR, "Missing/invalid signature in VBT data file!\n");
-		return CB_ERR;
-	}
-
-	return CB_SUCCESS;
-}
-
-void *vbt_get(struct region_device *rdev)
-{
-	void *vbt_data;
+	if (!IS_ENABLED(CONFIG_RUN_FSP_GOP))
+		return NULL;
 
 	/* Normal mode and S3 resume path PEIM GFX init is not needed.
 	 * Passing NULL as VBT will not make PEIM GFX to execute. */
@@ -53,10 +34,5 @@ void *vbt_get(struct region_device *rdev)
 		return NULL;
 	if (!display_init_required())
 		return NULL;
-	if (locate_vbt(rdev) != CB_ERR) {
-		vbt_data = rdev_mmap_full(rdev);
-		return vbt_data;
-	} else {
-		return NULL;
-	}
+	return locate_vbt(NULL);
 }

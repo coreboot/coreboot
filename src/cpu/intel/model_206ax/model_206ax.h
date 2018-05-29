@@ -92,6 +92,28 @@
 #define PSS_LATENCY_TRANSITION		10
 #define PSS_LATENCY_BUSMASTER		10
 
+/*
+ * Region of SMM space is reserved for multipurpose use. It falls below
+ * the IED region and above the SMM handler.
+ */
+#define RESERVED_SMM_SIZE CONFIG_SMM_RESERVED_SIZE
+#define RESERVED_SMM_OFFSET \
+	(CONFIG_SMM_TSEG_SIZE - CONFIG_IED_REGION_SIZE - RESERVED_SMM_SIZE)
+
+/* Sanity check config options. */
+#if (CONFIG_SMM_TSEG_SIZE <= (CONFIG_IED_REGION_SIZE + RESERVED_SMM_SIZE))
+# error "CONFIG_SMM_TSEG_SIZE <= (CONFIG_IED_REGION_SIZE + RESERVED_SMM_SIZE)"
+#endif
+#if (CONFIG_SMM_TSEG_SIZE < 0x800000)
+# error "CONFIG_SMM_TSEG_SIZE must at least be 8MiB"
+#endif
+#if ((CONFIG_SMM_TSEG_SIZE & (CONFIG_SMM_TSEG_SIZE - 1)) != 0)
+# error "CONFIG_SMM_TSEG_SIZE is not a power of 2"
+#endif
+#if ((CONFIG_IED_REGION_SIZE & (CONFIG_IED_REGION_SIZE - 1)) != 0)
+# error "CONFIG_IED_REGION_SIZE is not a power of 2"
+#endif
+
 #ifdef __SMM__
 /* Lock MSRs */
 void intel_model_206ax_finalize_smm(void);

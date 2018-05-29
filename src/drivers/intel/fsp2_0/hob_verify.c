@@ -28,7 +28,7 @@ void fsp_verify_memory_init_hobs(void)
 		die("9.3: FSP_BOOTLOADER_TOLUM_HOB missing!\n");
 	if (range_entry_size(&tolum) < cbmem_overhead_size()) {
 		printk(BIOS_CRIT,
-			"FSP_BOOTLOADER_TOLUM_SIZE: 0x%08llx < 0x%08lx\n",
+			"FSP_BOOTLOADER_TOLUM_SIZE: 0x%08llx < 0x%08zx\n",
 			range_entry_size(&tolum), cbmem_overhead_size());
 		die("FSP_BOOTLOADER_TOLUM_HOB too small!\n");
 	}

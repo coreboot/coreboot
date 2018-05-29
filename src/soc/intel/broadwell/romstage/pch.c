@@ -17,6 +17,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci_def.h>
+#include <device/pci_ops.h>
 #include <reg_script.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>

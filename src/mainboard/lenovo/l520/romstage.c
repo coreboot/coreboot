@@ -20,26 +20,22 @@
 #include <device/pnp_def.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 
 void pch_enable_lpc(void)
 {
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x3c0f);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x3c0c);
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x84, 0x007c1611);
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x00040069);
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x8c, 0x000c0701);
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x90, 0x00000000);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0010);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xac, 0x80000000);
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
-	/* Disable devices.  */
 	RCBA32(0x3414) = 0x00000000;
-	RCBA32(0x3418) = 0x00000000;
-
 }
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, -1 },

@@ -22,88 +22,10 @@
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/post_code.h>
 
-#define CacheSize		CONFIG_DCACHE_RAM_SIZE
-#define CacheBase		(0xd0000 - CacheSize)
-
 	/* Save the BIST result. */
 	movl	%eax, %ebp
 
 CacheAsRam:
-	/* Check whether the processor has HT capability. */
-	movl	$01, %eax
-	cpuid
-	btl	$28, %edx
-	jnc	NotHtProcessor
-	bswapl	%ebx
-	cmpb	$01, %bh
-	jbe	NotHtProcessor
-
-	/*
-	 * It is a HT processor. Send SIPI to the other logical processor
-	 * within this processor so that the CAR related common system
-	 * registers are programmed accordingly.
-	 */
-
-	/*
-	 * Use some register that is common to both logical processors
-	 * as semaphore. Refer Appendix B, Vol.3.
-	 */
-	xorl	%eax, %eax
-	xorl	%edx, %edx
-	movl	$MTRR_FIX_64K_00000, %ecx
-	wrmsr
-
-	/*
-	 * Figure out the logical AP's APIC ID; the following logic will
-	 * work only for processors with 2 threads.
-	 * Refer to Vol 3. Table 7-1 for details about this logic.
-	 */
-	movl	$0xFEE00020, %esi
-	movl	(%esi), %ebx
-	andl	$0xFF000000, %ebx
-	bswapl	%ebx
-	btl	$0, %ebx
-	jnc	LogicalAP0
-	andb	$0xFE, %bl
-	jmp	Send_SIPI
-LogicalAP0:
-	orb	$0x01, %bl
-Send_SIPI:
-	bswapl	%ebx	/* EBX - logical AP's APIC ID. */
-
-	/*
-	 * Fill up the IPI command registers in the Local APIC mapped to
-	 * default address and issue SIPI to the other logical processor
-	 * within this processor die.
-	 */
-Retry_SIPI:
-	movl	%ebx, %eax
-	movl	$0xFEE00310, %esi
-	movl	%eax, (%esi)
-
-	/* SIPI vector - F900:0000 */
-	movl	$0x000006F9, %eax
-	movl	$0xFEE00300, %esi
-	movl	%eax, (%esi)
-
-	movl	$0x30, %ecx
-SIPI_Delay:
-	pause
-	decl	%ecx
-	jnz	SIPI_Delay
-
-	movl	(%esi), %eax
-	andl	$0x00001000, %eax
-	jnz	Retry_SIPI
-
-	/* Wait for the Logical AP to complete initialization. */
-LogicalAP_SIPINotdone:
-	movl	$MTRR_FIX_64K_00000, %ecx
-	rdmsr
-	orl	%eax, %eax
-	jz	LogicalAP_SIPINotdone
-
-NotHtProcessor:
 	/* Set the default memory type and enable fixed and variable MTRRs. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	xorl	%edx, %edx
@@ -203,41 +125,38 @@ clear_fixed_var_mtrr_out:
 	 */
 .endm
 
-#if CacheSize > 0x10000
+#if CONFIG_DCACHE_RAM_SIZE > 0x10000
 #error Invalid CAR size, must be at most 64k.
 #endif
-#if CacheSize < 0x1000
+#if CONFIG_DCACHE_RAM_SIZE < 0x1000
 #error Invalid CAR size, must be at least 4k. This is a processor limitation.
 #endif
-#if (CacheSize & (0x1000 - 1))
+#if (CONFIG_DCACHE_RAM_SIZE & (0x1000 - 1))
 #error Invalid CAR size, is not a multiple of 4k. This is a processor limitation.
 #endif
 
-#if CacheSize > 0x8000
+#if CONFIG_DCACHE_RAM_SIZE > 0x8000
 	/* Enable caching for 32K-64K using fixed MTRR. */
 	movl	$MTRR_FIX_4K_C0000, %ecx
-	simplemask CacheSize, 0x8000
+	simplemask CONFIG_DCACHE_RAM_SIZE, 0x8000
 	wrmsr
 #endif
 
 	/* Enable caching for 0-32K using fixed MTRR. */
 	movl	$MTRR_FIX_4K_C8000, %ecx
-	simplemask CacheSize, 0
+	simplemask CONFIG_DCACHE_RAM_SIZE, 0
 	wrmsr
 
-	/*
-	 * Enable write base caching so we can do execute in place (XIP)
-	 * on the flash ROM.
-	 */
+	/* Enable cache for our code in Flash because we do XIP here. */
 	movl	$MTRR_PHYS_BASE(1), %ecx
 	xorl	%edx, %edx
 	/*
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
-	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
+	 * https://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
 	movl	$copy_and_run, %eax
 	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
-	orl	$MTRR_TYPE_WRBACK, %eax
+	orl	$MTRR_TYPE_WRPROT, %eax
 	wrmsr
 
 	movl	$MTRR_PHYS_MASK(1), %ecx
@@ -250,77 +169,31 @@ clear_fixed_var_mtrr_out:
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
 
-	/* Read the range with lodsl. */
-	movl	$CacheBase, %esi
+	/* Read the CAR region. This will also fill up the cache.
+	 * IMPORTANT: This step is mandatory.
+	 */
+	movl	$CONFIG_DCACHE_RAM_BASE, %esi
 	cld
-	movl	$(CacheSize >> 2), %ecx
+	movl	$(CONFIG_DCACHE_RAM_SIZE >> 2), %ecx
 	rep	lodsl
 
-	/* Clear the range. */
-	movl	$CacheBase, %edi
-	movl	$(CacheSize >> 2), %ecx
+	/* Clear the CAR region. */
+	movl	$CONFIG_DCACHE_RAM_BASE, %edi
+	movl	$(CONFIG_DCACHE_RAM_SIZE >> 2), %ecx
 	xorl	%eax, %eax
 	rep	stosl
 
-#if 0
-	/* Check the cache as ram. */
-	movl	$CacheBase, %esi
-	movl	$(CacheSize >> 2), %ecx
-.xin1:
-	movl	%esi, %eax
-	movl	%eax, (%esi)
-	decl	%ecx
-	je	.xout1
-	add	$4, %esi
-	jmp	.xin1
-.xout1:
-
-	movl	$CacheBase, %esi
-	// movl	$(CacheSize >> 2), %ecx
-	movl	$4, %ecx
-.xin1x:
-	movl	%esi, %eax
-
-	movl	$0x4000, %edx
-	movb	%ah, %al
-.testx1:
-	outb	%al, $0x80
-	decl	%edx
-	jnz	.testx1
-
-	movl	(%esi), %eax
-	cmpb	0xff, %al
-	je	.xin2	/* Don't show. */
-
-	movl	$0x4000, %edx
-.testx2:
-	outb	%al, $0x80
-	decl	%edx
-	jnz	.testx2
-
-.xin2:
-	decl	%ecx
-	je	.xout1x
-	add	$4, %esi
-	jmp	.xin1x
-.xout1x:
-#endif
-
-	movl	$(CacheBase + CacheSize - 4), %eax
+	movl	$(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE), %eax
 	movl	%eax, %esp
 lout:
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
 
-	/* We need to set EBP? No need. */
-	movl	%esp, %ebp
 	pushl	%eax  /* BIST */
 	call	romstage_main
 
-	/* Save return value from romstage_main. It contains the stack to use
-	 * after cache-as-ram is torn down.
-	 */
-	movl	%eax, %ebx
+	/* Setup stack as indicated by return value from romstage_main(). */
+	movl	%eax, %esp
 
 	/* We don't need CAR from now on. */
 
@@ -329,7 +202,7 @@ lout:
 	orl	$CR0_CacheDisable, %eax
 	movl	%eax, %cr0
 
-	/* Clear sth. */
+	/* Clear the fixed MTRR we used. */
 	movl	$MTRR_FIX_4K_C8000, %ecx
 	xorl	%edx, %edx
 	xorl	%eax, %eax
@@ -341,12 +214,12 @@ lout:
 #endif
 
 	/*
-	 * Set the default memory type and disable fixed
-	 * and enable variable MTRRs.
+	 * Enable variable and disable fixed MTRRs.
+	 * Default memory type will be UC.
 	 */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	xorl	%edx, %edx
-	movl	$MTRR_DEF_TYPE_EN, %eax /* Enable variable and disable fixed MTRRs. */
+	movl	$MTRR_DEF_TYPE_EN, %eax
 	wrmsr
 
 	/* Enable cache. */
@@ -357,10 +230,6 @@ lout:
 __main:
 	post_code(POST_PREPARE_RAMSTAGE)
 	cld			/* Clear direction flag. */
-
-	/* Setup stack as indicated by return value from romstage_main(). */
-	movl	%ebx, %esp
-	movl	%esp, %ebp
 	call	copy_and_run
 
 .Lhlt:

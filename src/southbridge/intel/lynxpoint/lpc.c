@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
 #include <pc80/i8259.h>
@@ -51,6 +52,10 @@ static void pch_enable_ioapic(struct device *dev)
 {
 	u32 reg32;
 
+	/* Assign unique bus/dev/fn for I/O APIC */
+	pci_write_config16(dev, LPC_IBDF,
+		PCH_IOAPIC_PCI_BUS << 8 | PCH_IOAPIC_PCI_SLOT << 3);
+
 	/* Enable ACPI I/O range decode */
 	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
 
@@ -77,7 +82,7 @@ static void pch_enable_serial_irqs(struct device *dev)
 	/* Set packet length and toggle silent mode bit for one frame. */
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (1 << 6) | ((21 - 17) << 2) | (0 << 0));
-#if !CONFIG_SERIRQ_CONTINUOUS_MODE
+#if !IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE)
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (0 << 6) | ((21 - 17) << 2) | (0 << 0));
 #endif
@@ -242,7 +247,7 @@ static void pch_power_options(device_t dev)
 		reg8 &= ~(1 << 7);	/* Set NMI. */
 	} else {
 		printk(BIOS_INFO, "NMI sources disabled.\n");
-		reg8 |= ( 1 << 7);	/* Can't mask NMI from PCI-E and NMI_NOW */
+		reg8 |= (1 << 7);	/* Can't mask NMI from PCI-E and NMI_NOW */
 	}
 	outb(reg8, 0x70);
 
@@ -277,25 +282,21 @@ static void pch_power_options(device_t dev)
 	reg32 |= (1 << 4)|(1 << 5)|(1 << 0);
 	RCBA32(0x3310) = reg32;
 
-	reg32 = RCBA32(0x3f02);
-	reg32 &= ~0xf;
-	RCBA32(0x3f02) = reg32;
+	reg16 = RCBA16(0x3f02);
+	reg16 &= ~0xf;
+	RCBA16(0x3f02) = reg16;
 }
 
 static void pch_rtc_init(struct device *dev)
 {
-	u8 reg8;
-	int rtc_failed;
+	int rtc_failed = rtc_failure();
 
-	reg8 = pci_read_config8(dev, GEN_PMCON_3);
-	rtc_failed = reg8 & RTC_BATTERY_DEAD;
 	if (rtc_failed) {
-		reg8 &= ~RTC_BATTERY_DEAD;
-		pci_write_config8(dev, GEN_PMCON_3, reg8);
-#if CONFIG_ELOG
-		elog_add_event(ELOG_TYPE_RTC_RESET);
-#endif
+		if (IS_ENABLED(CONFIG_ELOG))
+			elog_add_event(ELOG_TYPE_RTC_RESET);
+		pci_update_config8(dev, GEN_PMCON_3, ~RTC_BATTERY_DEAD, 0);
 	}
+
 	printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
 
 	cmos_init(rtc_failed);
@@ -371,7 +372,7 @@ static void lpt_lp_pm_init(struct device *dev)
 	pci_write_config32(dev, 0xac,
 		pci_read_config32(dev, 0xac) | (1 << 21));
 
-	pch_iobp_update(0xED00015C, ~(1<<11), 0x00003700);
+	pch_iobp_update(0xED00015C, ~(1 << 11), 0x00003700);
 	pch_iobp_update(0xED000118, ~0UL, 0x00c00000);
 	pch_iobp_update(0xED000120, ~0UL, 0x00240000);
 	pch_iobp_update(0xCA000000, ~0UL, 0x00000009);
@@ -400,9 +401,15 @@ static void lpt_lp_pm_init(struct device *dev)
 	RCBA32_OR(0x33c8, (1 << 15));
 }
 
-static void enable_hpet(void)
+static void enable_hpet(struct device *const dev)
 {
 	u32 reg32;
+	size_t i;
+
+	/* Assign unique bus/dev/fn for each HPET */
+	for (i = 0; i < 8; ++i)
+		pci_write_config16(dev, LPC_HnBDF(i),
+			PCH_HPET_PCI_BUS << 8 | PCH_HPET_PCI_SLOT << 3 | i);
 
 	/* Move HPET to default address 0xfed00000 and enable it */
 	reg32 = RCBA32(HPTC);
@@ -429,7 +436,7 @@ static void enable_clock_gating(device_t dev)
 
 	reg32 = RCBA32(CG);
 	reg32 |= (1 << 22); // HDA Dynamic
-	reg32 |= (1 << 31); // LPC Dynamic
+	reg32 |= (1UL << 31); // LPC Dynamic
 	reg32 |= (1 << 16); // PCIe Dynamic
 	reg32 |= (1 << 27); // HPET Dynamic
 	reg32 |= (1 << 28); // GPIO Dynamic
@@ -466,7 +473,7 @@ static void enable_lp_clock_gating(device_t dev)
 
 	/* Check for LPT-LP B2 stepping and 0:31.0@0xFA > 4 */
 	if (pci_read_config8(dev_find_slot(0, PCI_DEVFN(2, 0)), 0x8) >= 0x0b)
-		RCBA32_OR(0x2614, (1<<26));
+		RCBA32_OR(0x2614, (1 << 26));
 
 	RCBA32_OR(0x900, 0x0000031f);
 
@@ -475,7 +482,7 @@ static void enable_lp_clock_gating(device_t dev)
 		reg32 &= ~(1 << 29); // LPC Dynamic
 	else
 		reg32 |= (1 << 29); // LPC Dynamic
-	reg32 |= (1 << 31); // LP LPC
+	reg32 |= (1UL << 31); // LP LPC
 	reg32 |= (1 << 30); // LP BLA
 	reg32 |= (1 << 28); // GPIO Dynamic
 	reg32 |= (1 << 27); // HPET Dynamic
@@ -498,7 +505,7 @@ static void enable_lp_clock_gating(device_t dev)
 
 static void pch_set_acpi_mode(void)
 {
-#if CONFIG_HAVE_SMI_HANDLER
+#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 	if (!acpi_is_wakeup_s3()) {
 #if ENABLE_ACPI_MODE_IN_COREBOOT
 		printk(BIOS_DEBUG, "Enabling ACPI via APMC:\n");
@@ -574,7 +581,7 @@ static void lpc_init(struct device *dev)
 	isa_dma_init();
 
 	/* Initialize the High Precision Event Timers, if present. */
-	enable_hpet();
+	enable_hpet(dev);
 
 	setup_i8259();
 
@@ -760,7 +767,7 @@ static void southbridge_inject_dsdt(device_t dev)
 		gnvs->mpen = 1; /* Enable Multi Processing */
 		gnvs->pcnt = dev_count_cpu();
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 		chromeos_init_vboot(&(gnvs->chromeos));
 #endif
 

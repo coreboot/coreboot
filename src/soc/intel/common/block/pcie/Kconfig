@@ -1,0 +1,11 @@
+config SOC_INTEL_COMMON_BLOCK_PCIE
+	bool
+	help
+	  Intel Processor common PCIE support
+
+config PCIE_DEBUG_INFO
+	bool
+	help
+	  Enable debug logs in PCIe module. Allows debug information on memory
+	  base and limit, prefetchable memory base and limit, prefetchable memory
+	  base upper 32 bits and prefetchable memory limit upper 32 bits.

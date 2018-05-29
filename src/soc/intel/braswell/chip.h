@@ -161,6 +161,18 @@ struct soc_intel_braswell_config {
 	UINT8  ISPEnable;
 	UINT8  ISPPciDevConfig;
 	UINT8  PcdSdDetectChk; /*Enable\Disable SD Card Detect Simulation*/
+	UINT8  I2C0Frequency;  /* 0 - 100Khz, 1 - 400Khz, 2 - 1Mhz */
+	UINT8  I2C1Frequency;
+	UINT8  I2C2Frequency;
+	UINT8  I2C3Frequency;
+	UINT8  I2C4Frequency;
+	UINT8  I2C5Frequency;
+	UINT8  I2C6Frequency;
+	UINT8  D0Usb2Port0PerPortRXISet; /*setting for D0 stepping SOC*/
+	UINT8  D0Usb2Port1PerPortRXISet; /*setting for D0 stepping SOC*/
+	UINT8  D0Usb2Port2PerPortRXISet; /*setting for D0 stepping SOC*/
+	UINT8  D0Usb2Port3PerPortRXISet; /*setting for D0 stepping SOC*/
+	UINT8  D0Usb2Port4PerPortRXISet; /*setting for D0 stepping SOC*/
 };
 
 extern struct chip_operations soc_intel_braswell_ops;

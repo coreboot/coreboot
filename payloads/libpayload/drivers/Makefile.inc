@@ -38,9 +38,13 @@ libc-$(CONFIG_LP_S5P_SERIAL_CONSOLE) += serial/s5p.c serial/serial.c
 libc-$(CONFIG_LP_IPQ806X_SERIAL_CONSOLE) += serial/ipq806x.c serial/serial.c
 libc-$(CONFIG_LP_IPQ40XX_SERIAL_CONSOLE) += serial/ipq40xx.c serial/serial.c
 libc-$(CONFIG_LP_BG4CD_SERIAL_CONSOLE) += serial/bg4cd.c serial/serial.c
-libc-$(CONFIG_LP_PC_KEYBOARD) += keyboard.c
+libc-$(CONFIG_LP_PC_KEYBOARD) += i8042/keyboard.c
+libc-$(CONFIG_LP_PC_MOUSE) += i8042/mouse.c
+libc-$(CONFIG_LP_PC_I8042) += i8042/i8042.c
 
 libc-$(CONFIG_LP_CBMEM_CONSOLE) += cbmem_console.c
+
+libc-$(CONFIG_LP_MOUSE_CURSOR) += mouse_cursor.c
 
 libc-$(CONFIG_LP_NVRAM) += nvram.c
 libc-$(CONFIG_LP_NVRAM) += options.c
@@ -53,6 +57,7 @@ libc-$(CONFIG_LP_TIMER_RDTSC) += timer/rdtsc.c
 libc-$(CONFIG_LP_TIMER_IMG_PISTACHIO) += timer/img_pistachio.c
 libc-$(CONFIG_LP_TIMER_ARMADA38X) += timer/armada38x.c
 libc-$(CONFIG_LP_TIMER_MVMAP2315) += timer/mvmap2315.c
+libc-$(CONFIG_LP_TIMER_ARM64_ARCH) += timer/arm64_arch_timer.c
 
 # Video console drivers
 libc-$(CONFIG_LP_VIDEO_CONSOLE) += video/video.c
@@ -61,10 +66,12 @@ libc-$(CONFIG_LP_VGA_VIDEO_CONSOLE) += video/vga.c
 # Geode LX console drivers
 libc-$(CONFIG_LP_GEODELX_VIDEO_CONSOLE) += video/geodelx.c
 libc-$(CONFIG_LP_GEODELX_VIDEO_CONSOLE) += video/font8x16.c
+libc-$(CONFIG_LP_GEODELX_VIDEO_CONSOLE) += video/font.c
 
 # coreboot generic framebuffer driver
 libc-$(CONFIG_LP_COREBOOT_VIDEO_CONSOLE) += video/corebootfb.c
 libc-$(CONFIG_LP_COREBOOT_VIDEO_CONSOLE) += video/font8x16.c
+libc-$(CONFIG_LP_COREBOOT_VIDEO_CONSOLE) += video/font.c
 
 # cbgfx: coreboot graphics library
 libc-y += video/graphics.c

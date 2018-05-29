@@ -136,7 +136,7 @@ void udelay(unsigned int us)
 	}
 }
 
-#if CONFIG_TSC_MONOTONIC_TIMER
+#if IS_ENABLED(CONFIG_TSC_MONOTONIC_TIMER)
 #include <timer.h>
 
 static struct monotonic_counter {

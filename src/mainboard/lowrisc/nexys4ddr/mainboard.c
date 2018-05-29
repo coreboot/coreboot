@@ -14,7 +14,6 @@
  */
 
 #include <cbmem.h>
-#include <commonlib/configstring.h>
 #include <device/device.h>
 #include <symbols.h>
 
@@ -23,7 +22,9 @@ static void mainboard_enable(device_t dev)
 	uintptr_t ram_base;
 	size_t ram_size;
 
-	query_mem(configstring(), &ram_base, &ram_size);
+	/* FIXME: These values shouldn't necessarily be hardcoded */
+	ram_base = 0x80000000;
+	ram_size = 128 * MiB;
 	ram_resource(dev, 0, ram_base / KiB, ram_size / KiB);
 
 	cbmem_initialize_empty();

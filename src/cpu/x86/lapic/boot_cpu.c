@@ -14,7 +14,7 @@
 #include <smp/node.h>
 #include <cpu/x86/msr.h>
 
-#if CONFIG_SMP
+#if IS_ENABLED(CONFIG_SMP)
 int boot_cpu(void)
 {
 	int bsp;

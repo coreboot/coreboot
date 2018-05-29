@@ -16,17 +16,17 @@
  */
 #include <arch/cpu.h>
 #include <bootblock_common.h>
-#include <cpu/x86/mtrr.h>
+#include <cpu/x86/pae.h>
 #include <device/pci.h>
+#include <intelblocks/cpulib.h>
+#include <intelblocks/fast_spi.h>
 #include <intelblocks/pcr.h>
-#include <intelblocks/systemagent.h>
 #include <intelblocks/rtc.h>
-#include <lib.h>
+#include <intelblocks/systemagent.h>
+#include <intelblocks/pmclib.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
-#include <soc/flash_ctrlr.h>
 #include <soc/gpio.h>
-#include <soc/mmap_boot.h>
 #include <soc/systemagent.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
@@ -35,7 +35,11 @@
 #include <timestamp.h>
 
 static const struct pad_config tpm_spi_configs[] = {
+#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+	PAD_CFG_NF(GPIO_81, NATIVE, DEEP, NF3),	/* FST_SPI_CS2_N */
+#else
 	PAD_CFG_NF(GPIO_106, NATIVE, DEEP, NF3),	/* FST_SPI_CS2_N */
+#endif
 };
 
 static void tpm_enable(void)
@@ -59,66 +63,14 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 
 	/* Decode the ACPI I/O port range for early firmware verification.*/
 	dev = PCH_DEV_PMC;
-	pci_write_config16(dev, PCI_BASE_ADDRESS_4, ACPI_PMIO_BASE);
+	pci_write_config16(dev, PCI_BASE_ADDRESS_4, ACPI_BASE_ADDRESS);
 	pci_write_config16(dev, PCI_COMMAND,
 				PCI_COMMAND_IO | PCI_COMMAND_MASTER);
 
 	enable_rtc_upper_bank();
 
 	/* Call lib/bootblock.c main */
-	bootblock_main_with_timestamp(base_timestamp);
-}
-
-static void cache_bios_region(void)
-{
-	int mtrr;
-	size_t rom_size;
-	uint32_t alignment;
-
-	mtrr = get_free_var_mtrr();
-
-	if (mtrr == -1)
-		return;
-
-	/* Only the IFD BIOS region is memory mapped (at top of 4G) */
-	rom_size = get_bios_size();
-
-	if (!rom_size)
-		return;
-
-	/* Round to power of two */
-	alignment = 1 << (log2_ceil(rom_size));
-	rom_size = ALIGN_UP(rom_size, alignment);
-	set_var_mtrr(mtrr, 4ULL*GiB - rom_size, rom_size, MTRR_TYPE_WRPROT);
-}
-
-/*
- * Program temporary BAR for SPI in case any of the stages before ramstage need
- * to access SPI MMIO regs. Ramstage will assign a new BAR during PCI
- * enumeration.
- */
-static void enable_spibar(void)
-{
-	device_t dev = PCH_DEV_SPI;
-	uint8_t val;
-
-	/* Disable Bus Master and MMIO space. */
-	val = pci_read_config8(dev, PCI_COMMAND);
-	val &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-	pci_write_config8(dev, PCI_COMMAND, val);
-
-	/* Program Temporary BAR for SPI */
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0,
-			   PRERAM_SPI_BASE_ADDRESS |
-			   PCI_BASE_ADDRESS_SPACE_MEMORY);
-
-	/* Enable Bus Master and MMIO Space */
-	val = pci_read_config8(dev, PCI_COMMAND);
-	val |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_config8(dev, PCI_COMMAND, val);
-
-	/* Initialize SPI to allow BIOS to write/erase on flash. */
-	spi_flash_init();
+	bootblock_main_with_timestamp(base_timestamp, NULL, 0);
 }
 
 static void enable_pmcbar(void)
@@ -130,7 +82,7 @@ static void enable_pmcbar(void)
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_1, 0);	/* 64-bit BAR */
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_2, PMC_BAR1);
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_3, 0);	/* 64-bit BAR */
-	pci_write_config16(pmc, PCI_BASE_ADDRESS_4, ACPI_PMIO_BASE);
+	pci_write_config16(pmc, PCI_BASE_ADDRESS_4, ACPI_BASE_ADDRESS);
 	pci_write_config16(pmc, PCI_COMMAND,
 				PCI_COMMAND_IO | PCI_COMMAND_MEMORY |
 				PCI_COMMAND_MASTER);
@@ -138,10 +90,12 @@ static void enable_pmcbar(void)
 
 void bootblock_soc_early_init(void)
 {
+	uint32_t reg;
+
 	enable_pmcbar();
 
 	/* Clear global reset promotion bit */
-	global_reset_enable(0);
+	pmc_global_reset_enable(0);
 
 	/* Prepare UART for serial console. */
 	if (IS_ENABLED(CONFIG_SOC_UART_DEBUG))
@@ -152,10 +106,24 @@ void bootblock_soc_early_init(void)
 
 	enable_pm_timer_emulation();
 
-	enable_spibar();
+	fast_spi_early_init(PRERAM_SPI_BASE_ADDRESS);
 
-	cache_bios_region();
+	fast_spi_cache_bios_region();
 
 	/* Initialize GPE for use as interrupt status */
 	pmc_gpe_init();
+
+	/* Stop TCO timer */
+	reg = inl(ACPI_BASE_ADDRESS + TCO1_CNT);
+	reg |= TCO_TMR_HLT;
+	outl(reg, ACPI_BASE_ADDRESS + TCO1_CNT);
+
+	/* Use Nx and paging to prevent the frontend from writing back dirty
+	 * cache-as-ram lines to backing store that doesn't exist when the L1I
+	 * speculatively fetches a line that is sitting in the L1D. */
+	if (IS_ENABLED(CONFIG_PAGING_IN_CACHE_AS_RAM)) {
+		paging_set_nxe(1);
+		paging_set_default_pat();
+		paging_enable_for_car("pdpt", "pt");
+	}
 }

@@ -86,12 +86,38 @@
 #define   ITE_EC_FAN_CTL_TEMPIN_MASK		(3 << 0)
 #define   ITE_EC_FAN_CTL_TEMPIN(x)		(((x)-1) & 3)
 
+#define ITE_EC_HIGH_TEMP_LIMIT(x)		(0x40 + ((x-1) * 2))
+#define ITE_EC_LOW_TEMP_LIMIT(x)		(0x41 + ((x-1) * 2))
+
 #define ITE_EC_ADC_VOLTAGE_CHANNEL_ENABLE	0x50
 #define ITE_EC_ADC_TEMP_CHANNEL_ENABLE		0x51
+#define   ITE_EC_ADC_TEMP_EXT_REPORTS_TO_MASK	(3 << 6)
 #define   ITE_EC_ADC_TEMP_EXT_REPORTS_TO(x)	(((x) & 3) << 6)
 #define   ITE_EC_ADC_TEMP_RESISTOR_MODE(x)	(1 << ((x)+2))
 #define   ITE_EC_ADC_TEMP_DIODE_MODE(x)		(1 << ((x)-1))
 #define ITE_EC_ADC_TEMP_EXTRA_CHANNEL_ENABLE	0x55
+
+/* Matches length of ITE_EC_TMPIN_CNT */
+static const u8 ITE_EC_TEMP_ADJUST[] = { 0x56, 0x57, 0x59 };
+
+#define ITE_EC_BEEP_ENABLE			0x5C
+#define   ITE_EC_TEMP_ADJUST_WRITE_ENABLE	(1 << 7)
+#define   ITE_EC_ADC_CLOCK_1MHZ			(6 << 4)
+#define   ITE_EC_ADC_CLOCK_2MHZ			(7 << 4)
+#define   ITE_EC_ADC_CLOCK_24MHZ		(5 << 4)
+#define   ITE_EC_ADC_CLOCK_31KHZ		(4 << 4)
+#define   ITE_EC_ADC_CLOCK_62KHZ		(3 << 4)
+#define   ITE_EC_ADC_CLOCK_125KHZ		(2 << 4)
+#define   ITE_EC_ADC_CLOCK_250KHZ		(1 << 4)
+#define   ITE_EC_ADC_CLOCK_500KHZ		(0 << 4)
+#define   ITE_EC_BEEP_ON_TMP_LIMIT		(1 << 2)
+#define   ITE_EC_BEEP_ON_VIN_LIMIT		(1 << 1)
+#define   ITE_EC_BEEP_ON_FAN_LIMIT		(1 << 0)
+#define ITE_EC_BEEP_FREQ_DIV_OF_FAN		0x5D
+#define ITE_EC_BEEP_FREQ_DIV_OF_VIN		0x5E
+#define ITE_EC_BEEP_FREQ_DIV_OF_TMPIN		0x5F
+#define   ITE_EC_BEEP_TONE_DIVISOR(x)		(((x) & 0x0f) << 4)
+#define   ITE_EC_BEEP_FREQ_DIVISOR(x)		(((x) & 0x0f) << 0)
 
 #define ITE_EC_FAN_CTL_TEMP_LIMIT_OFF(x)	(0x60 + ((x)-1) * 8)
 #define ITE_EC_FAN_CTL_TEMP_LIMIT_START(x)	(0x61 + ((x)-1) * 8)

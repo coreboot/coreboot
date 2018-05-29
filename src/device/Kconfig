@@ -16,47 +16,68 @@
 
 menu "Devices"
 
-# Only set this in the mainboard
-config MAINBOARD_HAS_NATIVE_VGA_INIT
+config HAVE_VGA_TEXT_FRAMEBUFFER
 	bool
-	default n
-
-# FIXME Ugly hack to allow Z9s driver native framebuffer configuration
-config NATIVE_VGA_INIT_USE_EDID
-	bool
-	default n if DRIVERS_XGI_Z9S || MAINBOARD_USE_LIBGFXINIT
-	default y if !DRIVERS_XGI_Z9S
-
-config MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
-	bool
-	default n
-
-config MAINBOARD_DO_NATIVE_VGA_INIT
-	bool "Use native graphics initialization"
-	depends on MAINBOARD_HAS_NATIVE_VGA_INIT
-	default n
 	help
-	  Some mainboards, such as the Google Link, allow initializing the display
-	  without the need of a binary only VGA OPROM. Enabling this option may be
-	  faster, but also lacks flexibility in setting modes.
+	  Selected by graphics drivers that support legacy VGA text mode.
 
-	  If unsure, say N.
+config HAVE_VBE_LINEAR_FRAMEBUFFER
+	bool
+	help
+	  Selected by graphics drivers that can set up a VBE linear-framebuffer
+	  mode.
+
+config HAVE_LINEAR_FRAMEBUFFER
+	bool
+	help
+	  Selected by graphics drivers that can set up a generic linear
+	  framebuffer.
+
+config HAVE_FSP_GOP
+	bool
+	help
+	  Selected by drivers that support to run a blob that implements
+	  the Graphics Output Protocol (GOP).
+
+config MAINBOARD_HAS_NATIVE_VGA_INIT
+	def_bool n
+	help
+	  Selected by mainboards / drivers that provide native graphics
+	  init within coreboot.
+
+config MAINBOARD_FORCE_NATIVE_VGA_INIT
+	def_bool n
+	depends on MAINBOARD_HAS_NATIVE_VGA_INIT || MAINBOARD_HAS_LIBGFXINIT
+	help
+	  Selected by mainboards / chipsets whose graphics driver can't or
+	  shouldn't be disabled.
 
 config MAINBOARD_HAS_LIBGFXINIT
 	def_bool n
-	select MAINBOARD_HAS_NATIVE_VGA_INIT
 	help
 	  Selected by mainboards that implement support for `libgfxinit`.
 	  Usually this requires a list of ports to be probed for displays.
 
+choice
+	prompt "Graphics initialization"
+	default NO_GFX_INIT if VGA_BIOS && PAYLOAD_SEABIOS
+	default VGA_ROM_RUN if VGA_BIOS
+
+config MAINBOARD_DO_NATIVE_VGA_INIT
+	bool "Use native graphics init"
+	depends on MAINBOARD_HAS_NATIVE_VGA_INIT
+	help
+	  Some mainboards, such as the Google Link, allow initializing the
+	  display without the need of a binary only VGA OPROM. Enabling this
+	  option may be faster, but also lacks flexibility in setting modes.
+
 config MAINBOARD_USE_LIBGFXINIT
-	bool "Use libgfxinit for native graphics initialization"
-	depends on MAINBOARD_DO_NATIVE_VGA_INIT
+	bool "Use libgfxinit"
 	depends on MAINBOARD_HAS_LIBGFXINIT
-	select MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
+	select HAVE_VGA_TEXT_FRAMEBUFFER
+	select HAVE_LINEAR_FRAMEBUFFER
 	select RAMSTAGE_LIBHWBASE
-	select VGA if !FRAMEBUFFER_KEEP_VESA_MODE
-	default n
+	select VGA if VGA_TEXT_FRAMEBUFFER
 	help
 	  Use the SPARK library `libgfxinit` for the native graphics
 	  initialization. This requires an Ada toolchain.
@@ -64,11 +85,10 @@ config MAINBOARD_USE_LIBGFXINIT
 # TODO: Explain differences (if any) for onboard cards.
 config VGA_ROM_RUN
 	bool "Run VGA Option ROMs"
-	default n if PAYLOAD_SEABIOS
-	default y if !PAYLOAD_SEABIOS
-	depends on PCI && !MAINBOARD_DO_NATIVE_VGA_INIT
+	depends on PCI && !MAINBOARD_FORCE_NATIVE_VGA_INIT
+	select HAVE_VGA_TEXT_FRAMEBUFFER
 	help
-	  Execute VGA Option ROMs in coreboot if found. This is required
+	  Execute VGA Option ROMs in coreboot if found. This can be used
 	  to enable PCI/AGP/PCI-E video cards when not using a SeaBIOS
 	  payload.
 
@@ -76,7 +96,24 @@ config VGA_ROM_RUN
 	  more complete BIOS interrupt services available than coreboot,
 	  which some option ROMs require in order to function correctly.
 
-	  If unsure, say N when using SeaBIOS as payload, Y otherwise.
+config RUN_FSP_GOP
+	bool "Run a GOP driver"
+	depends on HAVE_FSP_GOP
+	select HAVE_LINEAR_FRAMEBUFFER
+	help
+	  Some platforms (e.g. Intel Braswell and Skylake/Kaby Lake) support
+	  to run a GOP blob. This option enables graphics initialization with
+	  such a blob.
+
+config NO_GFX_INIT
+	bool "None"
+	depends on !MAINBOARD_FORCE_NATIVE_VGA_INIT
+	help
+	  Select this to not perform any graphics initialization in
+	  coreboot. This is useful if the payload (e.g. SeaBIOS) can
+	  initialize graphics or if pre-boot graphics are not required.
+
+endchoice
 
 config S3_VGA_ROM_RUN
 	bool "Re-run VGA Option ROMs on S3 resume"
@@ -103,13 +140,20 @@ config ALWAYS_LOAD_OPROM
 	  are needed for the kernel's display driver to know how a piece of
 	  hardware is configured to be used.
 
+config ALWAYS_RUN_OPROM
+	def_bool n
+	depends on VGA_ROM_RUN && ALWAYS_LOAD_OPROM
+	help
+	  Always uncondtionally run the option regardless of other
+	  policies.
+
 config ON_DEVICE_ROM_LOAD
 	bool "Load Option ROMs on PCI devices"
 	default n if PAYLOAD_SEABIOS
 	default y if !PAYLOAD_SEABIOS
-	depends on PCI
+	depends on VGA_ROM_RUN
 	help
-	  Load Option ROMs stored on PCI/PCIe/AGP devices in coreboot.
+	  Load Option ROMs stored on PCI/PCIe/AGP VGA devices in coreboot.
 
 	  If disabled, only Option ROMs stored in CBFS will be executed by
 	  coreboot. If you are concerned about security, you might want to
@@ -206,6 +250,203 @@ config YABEL_DIRECTHW
 config MULTIPLE_VGA_ADAPTERS
 	bool
 	default n
+
+menu "Display"
+	depends on HAVE_VGA_TEXT_FRAMEBUFFER || HAVE_LINEAR_FRAMEBUFFER
+
+config FRAMEBUFFER_SET_VESA_MODE
+	prompt "Set framebuffer graphics resolution"
+	bool
+	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
+	select HAVE_VBE_LINEAR_FRAMEBUFFER
+	help
+	  Set VESA/native framebuffer mode (needed for bootsplash and graphical framebuffer console)
+
+if FRAMEBUFFER_SET_VESA_MODE
+
+choice
+	prompt "framebuffer graphics resolution"
+	default FRAMEBUFFER_VESA_MODE_117
+	help
+	  This option sets the resolution used for the coreboot framebuffer (and
+	  bootsplash screen).
+
+config FRAMEBUFFER_VESA_MODE_100
+	bool "640x400 256-color"
+
+config FRAMEBUFFER_VESA_MODE_101
+	bool "640x480 256-color"
+
+config FRAMEBUFFER_VESA_MODE_102
+	bool "800x600 16-color"
+
+config FRAMEBUFFER_VESA_MODE_103
+	bool "800x600 256-color"
+
+config FRAMEBUFFER_VESA_MODE_104
+	bool "1024x768 16-color"
+
+config FRAMEBUFFER_VESA_MODE_105
+	bool "1024x768 256-color"
+
+config FRAMEBUFFER_VESA_MODE_106
+	bool "1280x1024 16-color"
+
+config FRAMEBUFFER_VESA_MODE_107
+	bool "1280x1024 256-color"
+
+config FRAMEBUFFER_VESA_MODE_108
+	bool "80x60 text"
+
+config FRAMEBUFFER_VESA_MODE_109
+	bool "132x25 text"
+
+config FRAMEBUFFER_VESA_MODE_10A
+	bool "132x43 text"
+
+config FRAMEBUFFER_VESA_MODE_10B
+	bool "132x50 text"
+
+config FRAMEBUFFER_VESA_MODE_10C
+	bool "132x60 text"
+
+config FRAMEBUFFER_VESA_MODE_10D
+	bool "320x200 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_10E
+	bool "320x200 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_10F
+	bool "320x200 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_110
+	bool "640x480 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_111
+	bool "640x480 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_112
+	bool "640x480 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_113
+	bool "800x600 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_114
+	bool "800x600 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_115
+	bool "800x600 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_116
+	bool "1024x768 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_117
+	bool "1024x768 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_118
+	bool "1024x768 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_119
+	bool "1280x1024 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_11A
+	bool "1280x1024 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_11B
+	bool "1280x1024 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_USER
+	bool "Manually select VESA mode"
+
+endchoice
+
+# Map the config names to an integer (KB).
+config FRAMEBUFFER_VESA_MODE
+	prompt "VESA mode" if FRAMEBUFFER_VESA_MODE_USER
+	hex
+	default 0x100 if FRAMEBUFFER_VESA_MODE_100
+	default 0x101 if FRAMEBUFFER_VESA_MODE_101
+	default 0x102 if FRAMEBUFFER_VESA_MODE_102
+	default 0x103 if FRAMEBUFFER_VESA_MODE_103
+	default 0x104 if FRAMEBUFFER_VESA_MODE_104
+	default 0x105 if FRAMEBUFFER_VESA_MODE_105
+	default 0x106 if FRAMEBUFFER_VESA_MODE_106
+	default 0x107 if FRAMEBUFFER_VESA_MODE_107
+	default 0x108 if FRAMEBUFFER_VESA_MODE_108
+	default 0x109 if FRAMEBUFFER_VESA_MODE_109
+	default 0x10A if FRAMEBUFFER_VESA_MODE_10A
+	default 0x10B if FRAMEBUFFER_VESA_MODE_10B
+	default 0x10C if FRAMEBUFFER_VESA_MODE_10C
+	default 0x10D if FRAMEBUFFER_VESA_MODE_10D
+	default 0x10E if FRAMEBUFFER_VESA_MODE_10E
+	default 0x10F if FRAMEBUFFER_VESA_MODE_10F
+	default 0x110 if FRAMEBUFFER_VESA_MODE_110
+	default 0x111 if FRAMEBUFFER_VESA_MODE_111
+	default 0x112 if FRAMEBUFFER_VESA_MODE_112
+	default 0x113 if FRAMEBUFFER_VESA_MODE_113
+	default 0x114 if FRAMEBUFFER_VESA_MODE_114
+	default 0x115 if FRAMEBUFFER_VESA_MODE_115
+	default 0x116 if FRAMEBUFFER_VESA_MODE_116
+	default 0x117 if FRAMEBUFFER_VESA_MODE_117
+	default 0x118 if FRAMEBUFFER_VESA_MODE_118
+	default 0x119 if FRAMEBUFFER_VESA_MODE_119
+	default 0x11A if FRAMEBUFFER_VESA_MODE_11A
+	default 0x11B if FRAMEBUFFER_VESA_MODE_11B
+	default 0x117 if FRAMEBUFFER_VESA_MODE_USER
+
+config BOOTSPLASH
+	prompt "Show graphical bootsplash"
+	bool
+	help
+	  This option shows a graphical bootsplash screen. The graphics are
+	  loaded from the CBFS file bootsplash.jpg.
+
+	  You can either specify the location and file name of the
+	  image in the 'General' section or add it manually to CBFS, using,
+	  for example, cbfstool.
+
+endif # FRAMEBUFFER_SET_VESA_MODE
+
+choice
+	prompt "Framebuffer mode"
+	default VGA_TEXT_FRAMEBUFFER
+
+config VGA_TEXT_FRAMEBUFFER
+	bool "Legacy VGA text mode"
+	depends on HAVE_VGA_TEXT_FRAMEBUFFER
+	help
+	  If this option is enabled, coreboot will initialize graphics in
+	  legacy VGA text mode or, if a VGA BIOS is used and a VESA mode set,
+	  switch to text mode before handing control to a payload.
+
+config VBE_LINEAR_FRAMEBUFFER
+	bool "VESA framebuffer"
+	depends on HAVE_VBE_LINEAR_FRAMEBUFFER
+	help
+	  This option keeps the framebuffer mode set after coreboot finishes
+	  execution. If this option is enabled, coreboot will pass a
+	  framebuffer entry in its coreboot table and the payload will need a
+	  compatible driver.
+
+config GENERIC_LINEAR_FRAMEBUFFER
+	bool "Linear \"high-resolution\" framebuffer"
+	depends on HAVE_LINEAR_FRAMEBUFFER
+	help
+	  This option enables a high-resolution, linear framebuffer. If this
+	  option is enabled, coreboot will pass a framebuffer entry in its
+	  coreboot table and the payload will need a compatible driver.
+
+endchoice
+
+# Workaround to have LINEAR_FRAMEBUFFER set in both cases
+# VBE_LINEAR_FRAMEBUFFER and GENERIC_LINEAR_FRAMEBUFFER.
+# `kconfig_lint` doesn't let us use the same name with
+# different texts in the choice above.
+config LINEAR_FRAMEBUFFER
+	def_bool y
+	depends on VBE_LINEAR_FRAMEBUFFER || GENERIC_LINEAR_FRAMEBUFFER
+
+endmenu # "Display"
 
 config SMBUS_HAS_AUX_CHANNELS
 	bool
@@ -357,22 +598,20 @@ config VGA_BIOS_ID
 
 	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
 
-config INTEL_MBI
-	bool "Add an MBI image"
-	depends on NORTHBRIDGE_INTEL_I82830
+config INTEL_GMA_ADD_VBT_DATA_FILE
+	depends on SOC_INTEL_COMMON || CPU_INTEL_COMMON
+	bool "Add a Video Bios Table (VBT) binary to CBFS"
 	help
-	  Select this option if you have an Intel MBI image that you would
-	  like to add to your ROM.
+	  Add a VBT data file to CBFS. The VBT describes the integrated
+	  GPU and connections, and is needed by the GOP driver integrated into
+	  FSP and the OS driver in order to initialize the display.
 
-	  You will be able to specify the location and file name of the
-	  image later.
-
-config MBI_FILE
-	string "Intel MBI path and filename"
-	depends on INTEL_MBI
-	default "mbi.bin"
+config INTEL_GMA_VBT_FILE
+	string "VBT binary path and filename"
+	depends on INTEL_GMA_ADD_VBT_DATA_FILE
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/vbt.bin"
 	help
-	  The path and filename of the file to use as VGA BIOS.
+	  The path and filename of the VBT binary.
 
 config SOFTWARE_I2C
 	bool "Enable I2C controller emulation in software"
@@ -383,172 +622,5 @@ config SOFTWARE_I2C
 	  be useful for debugging or on platforms where a driver for the real
 	  I2C controller is not (yet) available. The platform code needs to
 	  provide bindings to manually toggle I2C lines.
-
-endmenu
-
-menu "Display"
-	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE || MAINBOARD_DO_NATIVE_VGA_INIT
-
-config FRAMEBUFFER_SET_VESA_MODE
-	prompt "Set framebuffer graphics resolution"
-	bool
-	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
-	help
-	  Set VESA/native framebuffer mode (needed for bootsplash and graphical framebuffer console)
-
-choice
-	prompt "framebuffer graphics resolution"
-	default FRAMEBUFFER_VESA_MODE_117
-	depends on FRAMEBUFFER_SET_VESA_MODE
-	help
-	  This option sets the resolution used for the coreboot framebuffer (and
-	  bootsplash screen).
-
-config FRAMEBUFFER_VESA_MODE_100
-	bool "640x400 256-color"
-
-config FRAMEBUFFER_VESA_MODE_101
-	bool "640x480 256-color"
-
-config FRAMEBUFFER_VESA_MODE_102
-	bool "800x600 16-color"
-
-config FRAMEBUFFER_VESA_MODE_103
-	bool "800x600 256-color"
-
-config FRAMEBUFFER_VESA_MODE_104
-	bool "1024x768 16-color"
-
-config FRAMEBUFFER_VESA_MODE_105
-	bool "1024x768 256-color"
-
-config FRAMEBUFFER_VESA_MODE_106
-	bool "1280x1024 16-color"
-
-config FRAMEBUFFER_VESA_MODE_107
-	bool "1280x1024 256-color"
-
-config FRAMEBUFFER_VESA_MODE_108
-	bool "80x60 text"
-
-config FRAMEBUFFER_VESA_MODE_109
-	bool "132x25 text"
-
-config FRAMEBUFFER_VESA_MODE_10A
-	bool "132x43 text"
-
-config FRAMEBUFFER_VESA_MODE_10B
-	bool "132x50 text"
-
-config FRAMEBUFFER_VESA_MODE_10C
-	bool "132x60 text"
-
-config FRAMEBUFFER_VESA_MODE_10D
-	bool "320x200 32k-color (1:5:5:5)"
-
-config FRAMEBUFFER_VESA_MODE_10E
-	bool "320x200 64k-color (5:6:5)"
-
-config FRAMEBUFFER_VESA_MODE_10F
-	bool "320x200 16.8M-color (8:8:8)"
-
-config FRAMEBUFFER_VESA_MODE_110
-	bool "640x480 32k-color (1:5:5:5)"
-
-config FRAMEBUFFER_VESA_MODE_111
-	bool "640x480 64k-color (5:6:5)"
-
-config FRAMEBUFFER_VESA_MODE_112
-	bool "640x480 16.8M-color (8:8:8)"
-
-config FRAMEBUFFER_VESA_MODE_113
-	bool "800x600 32k-color (1:5:5:5)"
-
-config FRAMEBUFFER_VESA_MODE_114
-	bool "800x600 64k-color (5:6:5)"
-
-config FRAMEBUFFER_VESA_MODE_115
-	bool "800x600 16.8M-color (8:8:8)"
-
-config FRAMEBUFFER_VESA_MODE_116
-	bool "1024x768 32k-color (1:5:5:5)"
-
-config FRAMEBUFFER_VESA_MODE_117
-	bool "1024x768 64k-color (5:6:5)"
-
-config FRAMEBUFFER_VESA_MODE_118
-	bool "1024x768 16.8M-color (8:8:8)"
-
-config FRAMEBUFFER_VESA_MODE_119
-	bool "1280x1024 32k-color (1:5:5:5)"
-
-config FRAMEBUFFER_VESA_MODE_11A
-	bool "1280x1024 64k-color (5:6:5)"
-
-config FRAMEBUFFER_VESA_MODE_11B
-	bool "1280x1024 16.8M-color (8:8:8)"
-
-config FRAMEBUFFER_VESA_MODE_USER
-	bool "Manually select VESA mode"
-	depends on !MAINBOARD_DO_NATIVE_VGA_INIT
-
-endchoice
-
-# Map the config names to an integer (KB).
-config FRAMEBUFFER_VESA_MODE
-	prompt "VESA mode" if FRAMEBUFFER_VESA_MODE_USER
-	hex
-	default 0x100 if FRAMEBUFFER_VESA_MODE_100
-	default 0x101 if FRAMEBUFFER_VESA_MODE_101
-	default 0x102 if FRAMEBUFFER_VESA_MODE_102
-	default 0x103 if FRAMEBUFFER_VESA_MODE_103
-	default 0x104 if FRAMEBUFFER_VESA_MODE_104
-	default 0x105 if FRAMEBUFFER_VESA_MODE_105
-	default 0x106 if FRAMEBUFFER_VESA_MODE_106
-	default 0x107 if FRAMEBUFFER_VESA_MODE_107
-	default 0x108 if FRAMEBUFFER_VESA_MODE_108
-	default 0x109 if FRAMEBUFFER_VESA_MODE_109
-	default 0x10A if FRAMEBUFFER_VESA_MODE_10A
-	default 0x10B if FRAMEBUFFER_VESA_MODE_10B
-	default 0x10C if FRAMEBUFFER_VESA_MODE_10C
-	default 0x10D if FRAMEBUFFER_VESA_MODE_10D
-	default 0x10E if FRAMEBUFFER_VESA_MODE_10E
-	default 0x10F if FRAMEBUFFER_VESA_MODE_10F
-	default 0x110 if FRAMEBUFFER_VESA_MODE_110
-	default 0x111 if FRAMEBUFFER_VESA_MODE_111
-	default 0x112 if FRAMEBUFFER_VESA_MODE_112
-	default 0x113 if FRAMEBUFFER_VESA_MODE_113
-	default 0x114 if FRAMEBUFFER_VESA_MODE_114
-	default 0x115 if FRAMEBUFFER_VESA_MODE_115
-	default 0x116 if FRAMEBUFFER_VESA_MODE_116
-	default 0x117 if FRAMEBUFFER_VESA_MODE_117
-	default 0x118 if FRAMEBUFFER_VESA_MODE_118
-	default 0x119 if FRAMEBUFFER_VESA_MODE_119
-	default 0x11A if FRAMEBUFFER_VESA_MODE_11A
-	default 0x11B if FRAMEBUFFER_VESA_MODE_11B
-	default 0x117 if FRAMEBUFFER_VESA_MODE_USER
-
-config FRAMEBUFFER_KEEP_VESA_MODE
-	prompt "Keep VESA framebuffer"
-	bool
-	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE || (MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG && MAINBOARD_DO_NATIVE_VGA_INIT)
-	help
-	  This option keeps the framebuffer mode set after coreboot finishes
-	  execution. If this option is enabled, coreboot will pass a
-	  framebuffer entry in its coreboot table and the payload will need a
-	  framebuffer driver. If this option is disabled, coreboot will switch
-	  back to text mode before handing control to a payload.
-
-config BOOTSPLASH
-	prompt "Show graphical bootsplash"
-	bool
-	depends on FRAMEBUFFER_SET_VESA_MODE
-	help
-	  This option shows a graphical bootsplash screen. The graphics are
-	  loaded from the CBFS file bootsplash.jpg.
-
-	  You can either specify the location and file name of the
-	  image in the 'General' section or add it manually to CBFS, using,
-	  for example, cbfstool.
 
 endmenu

@@ -16,16 +16,17 @@
 # DESCR: Check that files have license headers
 
 # Top level
-util/lint/lint-000-license-headers "src/acpi src/arch src/commonlib src/console src/device src/ec src/superio"
+util/lint/lint-000-license-headers "src/acpi src/arch src/commonlib src/console \
+	src/cpu src/device src/ec src/superio src/vboot"
 
 # CPU
 util/lint/lint-000-license-headers "src/cpu/allwinner src/cpu/armltd src/cpu/dmp src/cpu/qemu-power8 \
 	src/cpu/qemu-x86 src/cpu/ti"
 
 # src/drivers
-util/lint/lint-000-license-headers "src/drivers/ams src/drivers/dec src/drivers/elog src/drivers/gic \
-	src/drivers/ics src/drivers/ipmi src/drivers/maxim src/drivers/parade src/drivers/ricoh \
-	src/drivers/ti src/drivers/usb src/drivers/xgi"
+util/lint/lint-000-license-headers "src/drivers/ams src/drivers/aspeed src/drivers/dec src/drivers/elog \
+	src/drivers/emulation src/drivers/gic src/drivers/ics src/drivers/ipmi src/drivers/maxim \
+	src/drivers/parade src/drivers/ricoh src/drivers/sil src/drivers/ti src/drivers/usb src/drivers/xgi"
 
 # src/include
 util/lint/lint-000-license-headers "src/device/superio"
@@ -34,7 +35,8 @@ util/lint/lint-000-license-headers "src/device/superio"
 util/lint/lint-000-license-headers "src/mainboard/aaeon src/mainboard/abit src/mainboard/adlink src/mainboard/advansus \
 	src/mainboard/amd src/mainboard/aopen src/mainboard/apple src/mainboard/atrend src/mainboard/avalue \
 	src/mainboard/azza src/mainboard/bachmann src/mainboard/bap src/mainboard/bcom src/mainboard/bifferos"
-util/lint/lint-000-license-headers "src/mainboard/biostar src/mainboard/compaq src/mainboard/dmp src/mainboard/ecs \
+util/lint/lint-000-license-headers "src/mainboard/biostar src/mainboard/compaq src/mainboard/digitallogic \
+        src/mainboard/dmp src/mainboard/ecs \
 	src/mainboard/esd src/mainboard/gizmosphere src/mainboard/google src/mainboard/iei \
 	src/mainboard/intel src/mainboard/jetway src/mainboard/lanner src/mainboard/lintop \
 	src/mainboard/mitac src/mainboard/nec src/mainboard/nokia src/mainboard/nvidia"

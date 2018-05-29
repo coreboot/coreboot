@@ -248,9 +248,9 @@ static u32 reset_tco_status(void)
 
 	reg32 = inl(tcobase + 0x04);
 	/* set status bits are cleared by writing 1 to them */
-	outl(reg32 & ~(1<<18), tcobase + 0x04); //  Don't clear BOOT_STS before SECOND_TO_STS
+	outl(reg32 & ~(1 << 18), tcobase + 0x04); //  Don't clear BOOT_STS before SECOND_TO_STS
 	if (reg32 & (1 << 18))
-		outl(reg32 & (1<<18), tcobase + 0x04); // clear BOOT_STS
+		outl(reg32 & (1 << 18), tcobase + 0x04); // clear BOOT_STS
 
 	return reg32;
 }
@@ -414,7 +414,7 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 		printk(BIOS_DEBUG, "SMI#: ERROR: SLP_TYP reserved\n"); break;
 	}
 
-#if !CONFIG_SMM_TSEG
+#if !IS_ENABLED(CONFIG_SMM_TSEG)
 	/* Unlock the SMI semaphore. We're currently in SMM, and the semaphore
 	 * will never be unlocked because the next outl will switch off the CPU.
 	 * This might open a small race between the smi_release_lock() and the outl()

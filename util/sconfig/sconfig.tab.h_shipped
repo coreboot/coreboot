@@ -30,8 +30,8 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_YY_SCONFIG_TAB_H_SHIPPED_INCLUDED
-# define YY_YY_SCONFIG_TAB_H_SHIPPED_INCLUDED
+#ifndef YY_YY_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
+# define YY_YY_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -72,7 +72,9 @@ extern int yydebug;
     IOAPIC = 282,
     PCIINT = 283,
     GENERIC = 284,
-    SPI = 285
+    SPI = 285,
+    USB = 286,
+    MMIO = 287
   };
 #endif
 
@@ -100,4 +102,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_SCONFIG_TAB_H_SHIPPED_INCLUDED  */
+#endif /* !YY_YY_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED  */

@@ -38,7 +38,7 @@ DefinitionBlock(
 	// Thermal Zone
 	//#include "acpi/thermal.asl"
 
-	#include <cpu/intel/common/acpi/cpu.asl>
+	#include <cpu/intel/speedstep/acpi/cpu.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)

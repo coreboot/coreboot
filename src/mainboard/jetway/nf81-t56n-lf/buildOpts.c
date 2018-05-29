@@ -41,7 +41,6 @@
 #include <vendorcode/amd/agesa/f14/Proc/Mem/mm.h>
 #include <vendorcode/amd/agesa/f14/Proc/Mem/mn.h>
 
-#define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
 /* Select the CPU family. */
 #define INSTALL_FAMILY_10_SUPPORT FALSE
@@ -298,4 +297,4 @@ const AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 
 /* AGESA nonsense: this header depends on the definitions above */
 /* Instantiate all solution relevant data. */
-#include <vendorcode/amd/agesa/f14/Include/PlatformInstall.h>
+#include <PlatformInstall.h>

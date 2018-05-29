@@ -20,6 +20,30 @@
 #include <stdint.h>
 #include <spi-generic.h>
 
+enum acpi_dp_type {
+	ACPI_DP_TYPE_UNKNOWN,
+	ACPI_DP_TYPE_INTEGER,
+	ACPI_DP_TYPE_STRING,
+	ACPI_DP_TYPE_REFERENCE,
+	ACPI_DP_TYPE_TABLE,
+	ACPI_DP_TYPE_ARRAY,
+	ACPI_DP_TYPE_CHILD,
+};
+
+struct acpi_dp {
+	enum acpi_dp_type type;
+	const char *name;
+	struct acpi_dp *next;
+	union {
+		struct acpi_dp *child;
+		struct acpi_dp *array;
+	};
+	union {
+		uint64_t integer;
+		const char *string;
+	};
+};
+
 #define ACPI_DESCRIPTOR_LARGE		(1 << 7)
 #define ACPI_DESCRIPTOR_INTERRUPT	(ACPI_DESCRIPTOR_LARGE | 9)
 #define ACPI_DESCRIPTOR_GPIO		(ACPI_DESCRIPTOR_LARGE | 12)
@@ -175,10 +199,19 @@ struct acpi_gpio {
 	.pins = { (gpio) } }
 
 /* Basic input GPIO with default pull settings */
-#define ACPI_GPIO_INPUT(gpio) { \
+#define ACPI_GPIO_INPUT_ACTIVE_HIGH(gpio) {   \
 	.type = ACPI_GPIO_TYPE_IO, \
 	.pull = ACPI_GPIO_PULL_DEFAULT, \
 	.io_restrict = ACPI_GPIO_IO_RESTRICT_INPUT, \
+	.polarity = ACPI_GPIO_ACTIVE_HIGH,     \
+	.pin_count = 1, \
+	.pins = { (gpio) } }
+
+#define ACPI_GPIO_INPUT_ACTIVE_LOW(gpio) {   \
+	.type = ACPI_GPIO_TYPE_IO, \
+	.pull = ACPI_GPIO_PULL_DEFAULT, \
+	.io_restrict = ACPI_GPIO_IO_RESTRICT_INPUT, \
+	.polarity = ACPI_GPIO_ACTIVE_LOW,     \
 	.pin_count = 1, \
 	.pins = { (gpio) } }
 
@@ -206,6 +239,36 @@ struct acpi_gpio {
 	.pull = ACPI_GPIO_PULL_DEFAULT, \
 	.irq.mode = ACPI_IRQ_EDGE_TRIGGERED, \
 	.irq.polarity = ACPI_IRQ_ACTIVE_BOTH, \
+	.pin_count = 1, \
+	.pins = { (gpio) } }
+
+/* Edge Triggered Active High GPIO interrupt with wake */
+#define ACPI_GPIO_IRQ_EDGE_HIGH_WAKE(gpio) { \
+	.type = ACPI_GPIO_TYPE_INTERRUPT, \
+	.pull = ACPI_GPIO_PULL_DEFAULT, \
+	.irq.mode = ACPI_IRQ_EDGE_TRIGGERED, \
+	.irq.polarity = ACPI_IRQ_ACTIVE_HIGH, \
+	.irq.wake = ACPI_IRQ_WAKE, \
+	.pin_count = 1, \
+	.pins = { (gpio) } }
+
+/* Edge Triggered Active Low GPIO interrupt with wake */
+#define ACPI_GPIO_IRQ_EDGE_LOW_WAKE(gpio) { \
+	.type = ACPI_GPIO_TYPE_INTERRUPT, \
+	.pull = ACPI_GPIO_PULL_DEFAULT, \
+	.irq.mode = ACPI_IRQ_EDGE_TRIGGERED, \
+	.irq.polarity = ACPI_IRQ_ACTIVE_LOW, \
+	.irq.wake = ACPI_IRQ_WAKE, \
+	.pin_count = 1, \
+	.pins = { (gpio) } }
+
+/* Edge Triggered Active Both GPIO interrupt with wake */
+#define ACPI_GPIO_IRQ_EDGE_BOTH_WAKE(gpio) { \
+	.type = ACPI_GPIO_TYPE_INTERRUPT, \
+	.pull = ACPI_GPIO_PULL_DEFAULT, \
+	.irq.mode = ACPI_IRQ_EDGE_TRIGGERED, \
+	.irq.polarity = ACPI_IRQ_ACTIVE_BOTH, \
+	.irq.wake = ACPI_IRQ_WAKE, \
 	.pin_count = 1, \
 	.pins = { (gpio) } }
 
@@ -282,14 +345,50 @@ struct acpi_spi {
 /* Write SPI Bus descriptor to SSDT AML output */
 void acpi_device_write_spi(const struct acpi_spi *spi);
 
+/* GPIO/timing information for the power on/off sequences */
+struct acpi_power_res_params {
+	/* GPIO used to take device out of reset or to put it into reset. */
+	struct acpi_gpio *reset_gpio;
+	/* Delay to be inserted after device is taken out of reset.
+	 * (_ON method delay)
+	 */
+	unsigned int reset_delay_ms;
+	/* Delay to be inserted after device is put into reset.
+	 * (_OFF method delay)
+	 */
+	unsigned int reset_off_delay_ms;
+	/* GPIO used to enable device. */
+	struct acpi_gpio *enable_gpio;
+	/* Delay to be inserted after device is enabled.
+	 * (_ON method delay)
+	 */
+	unsigned int enable_delay_ms;
+	/* Delay to be inserted after device is disabled.
+	 * (_OFF method delay)
+	 */
+	unsigned int enable_off_delay_ms;
+	/* GPIO used to stop operation of device. */
+	struct acpi_gpio *stop_gpio;
+	/* Delay to be inserted after disabling stop.
+	 * (_ON method delay)
+	 */
+	unsigned int stop_delay_ms;
+	/* Delay to be inserted after enabling stop.
+	 * (_OFF method delay)
+	 */
+	unsigned int stop_off_delay_ms;
+};
+
 /*
  * Add a basic PowerResource block for a device that includes
- * GPIOs for enable and/or reset control of the device.  Each
+ * GPIOs to control enable, reset and stop operation of the device. Each
  * GPIO is optional, but at least one must be provided.
+ *
+ * Reset - Put the device into / take the device out of reset.
+ * Enable - Enable / disable power to device.
+ * Stop - Stop / start operation of device.
  */
-void acpi_device_add_power_res(
-	struct acpi_gpio *reset, unsigned int reset_delay_ms,
-	struct acpi_gpio *enable, unsigned int enable_delay_ms);
+void acpi_device_add_power_res(const struct acpi_power_res_params *params);
 
 /*
  * Writing Device Properties objects via _DSD
@@ -337,8 +436,6 @@ void acpi_device_add_power_res(
  * }
  */
 
-struct acpi_dp;
-
 /* Start a new Device Property table with provided ACPI reference */
 struct acpi_dp *acpi_dp_new_table(const char *ref);
 
@@ -369,6 +466,11 @@ struct acpi_dp *acpi_dp_add_gpio(struct acpi_dp *dp, const char *name,
 /* Add a child table of Device Properties */
 struct acpi_dp *acpi_dp_add_child(struct acpi_dp *dp, const char *name,
 				  struct acpi_dp *child);
+
+/* Add a list of Device Properties, returns the number of properties added */
+size_t acpi_dp_add_property_list(struct acpi_dp *dp,
+				 const struct acpi_dp *property_list,
+				 size_t property_count);
 
 /* Write Device Property hierarchy and clean up resources */
 void acpi_dp_write(struct acpi_dp *table);

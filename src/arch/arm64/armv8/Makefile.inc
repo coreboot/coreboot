@@ -17,7 +17,13 @@
 
 subdirs-y += lib/
 
-armv8_flags = -march=armv8-a -I$(src)/arch/arm64/include/armv8/ -D__COREBOOT_ARM_ARCH__=8
+ifeq ($(CONFIG_ARCH_ARMV8_EXTENSION),0)
+march = armv8-a
+else
+march = armv8.$(CONFIG_ARCH_ARMV8_EXTENSION)-a
+endif
+
+armv8_flags = -march=$(march) -I$(src)/arch/arm64/include/armv8/ -D__COREBOOT_ARM_ARCH__=8
 
 ################################################################################
 ## bootblock
@@ -25,20 +31,27 @@ armv8_flags = -march=armv8-a -I$(src)/arch/arm64/include/armv8/ -D__COREBOOT_ARM
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV8_64),y)
 
 ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
+decompressor-y += bootblock.S
+ifneq ($(CONFIG_COMPRESS_BOOTBLOCK),y)
 bootblock-y += bootblock.S
 endif
-bootblock-y += cache.c
-bootblock-y += cache_helpers.S
+endif
+decompressor-y += cpu.S
 bootblock-y += cpu.S
+decompressor-y += cache.c
+bootblock-y += cache.c
+decompressor-y += mmu.c
 bootblock-y += mmu.c
 
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += exception.c
 
+decompressor-generic-ccopts += $(armv8_flags)
 bootblock-generic-ccopts += $(armv8_flags)
 
 # Required to access unaligned timestamp struct members before MMU is active
 # (TODO: Maybe use explicit unaligned accesses in timestamp code instead, or
 # evaluate redesigning timestamp data structures to avoid misaligned members.)
+decompressor-c-ccopts += -mstrict-align
 bootblock-c-ccopts += -mstrict-align
 
 endif
@@ -50,7 +63,6 @@ ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV8_64),y)
 
 verstage-y += cache.c
 verstage-y += cpu.S
-verstage-y += cache_helpers.S
 verstage-y += exception.c
 
 verstage-generic-ccopts += $(armv8_flags)
@@ -63,7 +75,6 @@ endif
 ifeq ($(CONFIG_ARCH_ROMSTAGE_ARMV8_64),y)
 
 romstage-y += cache.c
-romstage-y += cache_helpers.S
 romstage-y += cpu.S
 romstage-y += exception.c
 romstage-y += mmu.c
@@ -80,7 +91,6 @@ endif
 ifeq ($(CONFIG_ARCH_RAMSTAGE_ARMV8_64),y)
 
 ramstage-y += cache.c
-ramstage-y += cache_helpers.S
 ramstage-y += cpu.S
 ramstage-y += exception.c
 ramstage-y += mmu.c

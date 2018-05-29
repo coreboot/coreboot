@@ -20,13 +20,13 @@
 
 #include <intelblocks/systemagent.h>
 
-/* IMR registers are found under MCHBAR. */
-#define MCHBAR_IMR0BASE		0x6870
-#define MCHBAR_IMR0MASK		0x6874
-#define MCH_IMR_PITCH		0x20
-#define MCH_NUM_IMRS		20
-
 /* RAPL Package Power Limit register under MCHBAR. */
+#define PUNIT_THERMAL_DEVICE_IRQ		0x700C
+#define PUINT_THERMAL_DEVICE_IRQ_VEC_NUMBER	0x18
+#define PUINT_THERMAL_DEVICE_IRQ_LOCK		0x80000000
+#define BIOS_RESET_CPL		0x7078
+#define   PCODE_INIT_DONE	(1 << 8)
 #define MCHBAR_RAPL_PPL		0x70A8
+#define CORE_DISABLE_MASK	0x7168
 
 #endif /* SOC_APOLLOLAKE_SYSTEMAGENT_H */

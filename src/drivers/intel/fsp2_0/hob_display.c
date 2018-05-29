@@ -9,13 +9,14 @@
  * (at your option) any later version.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <fsp/util.h>
 
 struct hob_type_name {
 	uint16_t type;
 	const char *name;
-} __attribute__((packed));
+} __packed;
 
 static const struct hob_type_name hob_type_names[] = {
 	{ HOB_TYPE_HANDOFF, "HOB_TYPE_HANDOFF" },
@@ -88,7 +89,7 @@ static const struct guid_name_map  guid_names[] = {
 	{ tseg_guid,			"TSEG" },
 };
 
-static const char *resource_name(enum resource_type type)
+static const char *resource_name(uint32_t type)
 {
 	if (type >= ARRAY_SIZE(resource_names))
 		return "UNKNOWN";
@@ -156,7 +157,7 @@ const char *fsp_get_guid_name(const uint8_t *guid)
 	return "Unknown GUID";
 }
 
-__attribute__((weak)) const char *soc_get_hob_type_name(
+__weak const char *soc_get_hob_type_name(
 	const struct hob_header *hob)
 {
 	return NULL;
@@ -172,7 +173,7 @@ void fsp_print_guid_extension_hob(const struct hob_header *hob)
 	printk(BIOS_SPEW, ": %s\n", fsp_get_guid_name(res->owner_guid));
 }
 
-__attribute__((weak)) const char *soc_get_guid_name(const uint8_t *guid)
+__weak const char *soc_get_guid_name(const uint8_t *guid)
 {
 	return NULL;
 }
@@ -211,6 +212,6 @@ void fsp_display_hobs(void)
 	}
 }
 
-__attribute__((weak)) void soc_display_hob(const struct hob_header *hob)
+__weak void soc_display_hob(const struct hob_header *hob)
 {
 }

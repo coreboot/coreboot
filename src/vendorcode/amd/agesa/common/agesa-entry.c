@@ -22,15 +22,6 @@ CONST FUNCTION_PARAMS_INFO ROMDATA FuncParamsInfo[] =
     },
   #endif
 
-  #if AGESA_ENTRY_INIT_RECOVERY == TRUE
-    { AMD_INIT_RECOVERY,
-      sizeof (AMD_RECOVERY_PARAMS),
-      (PF_AGESA_FUNCTION) AmdInitRecoveryInitializer,
-      (PF_AGESA_DESTRUCTOR) CommonReturnAgesaSuccess,
-      AMD_INIT_POST_HANDLE
-    },
-  #endif
-
   #if AGESA_ENTRY_INIT_EARLY == TRUE
     { AMD_INIT_EARLY,
       sizeof (AMD_EARLY_PARAMS),
@@ -125,10 +116,6 @@ CONST DISPATCH_TABLE ROMDATA DispatchTable[] =
     { AMD_INIT_RESET, (IMAGE_ENTRY)AmdInitReset },
   #endif
 
-  #if AGESA_ENTRY_INIT_RECOVERY == TRUE
-    { AMD_INIT_RECOVERY, (IMAGE_ENTRY)AmdInitRecovery },
-  #endif
-
   #if AGESA_ENTRY_INIT_EARLY == TRUE
     { AMD_INIT_EARLY, (IMAGE_ENTRY)AmdInitEarly },
   #endif
@@ -161,11 +148,12 @@ CONST DISPATCH_TABLE ROMDATA DispatchTable[] =
     { AMD_S3LATE_RESTORE, (IMAGE_ENTRY)AmdS3LateRestore },
   #endif
 
+    { AMD_READ_EVENT_LOG, (IMAGE_ENTRY)AmdReadEventLog },
+
   #if AGESA_ENTRY_INIT_GENERAL_SERVICES == TRUE
     { AMD_GET_APIC_ID, (IMAGE_ENTRY)AmdGetApicId },
     { AMD_GET_PCI_ADDRESS, (IMAGE_ENTRY)AmdGetPciAddress },
     { AMD_IDENTIFY_CORE, (IMAGE_ENTRY)AmdIdentifyCore },
-    { AMD_READ_EVENT_LOG, (IMAGE_ENTRY)AmdReadEventLog },
     { AMD_IDENTIFY_DIMMS, (IMAGE_ENTRY)AmdIdentifyDimm },
     { AMD_GET_EXECACHE_SIZE, (IMAGE_ENTRY)AmdGetAvailableExeCacheSize },
   #endif

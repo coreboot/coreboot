@@ -4,7 +4,7 @@
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * File taken from the Linux xgifb driver (v3.18.5)
- * Coreboot-specific includes added at top
+ * coreboot-specific includes added at top
  * XGINew_SetDRAMSize_340 slightly modified for coreboot text mode
  *
  * This program is free software; you can redistribute it and/or modify
@@ -853,7 +853,7 @@ static void XGINew_SetDRAMSize_340(struct xgifb_video_info *xgifb_info,
 
 	pVBInfo->FBAddr = HwDeviceExtension->pjVideoMemoryAddress;
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER))
 		XGISetModeNew(xgifb_info, HwDeviceExtension, 0x2e);
 
 	data = xgifb_reg_get(pVBInfo->P3c4, 0x21);

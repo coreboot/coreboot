@@ -13,9 +13,15 @@
 # GNU General Public License for more details.
 #
 
+bootblock-y += bootblock/bootblock.c
+bootblock-y += bootblock/OemCustomize.c
+bootblock-y += gpio.c
+
 romstage-y += BiosCallOuts.c
+romstage-y += bootblock/OemCustomize.c
 romstage-y += OemCustomize.c
 
 ramstage-y += BiosCallOuts.c
+ramstage-y += gpio.c
 ramstage-y += OemCustomize.c
-ramstage-$(CONFIG_HUDSON_IMC_FWM) += fchec.c
+ramstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += fchec.c

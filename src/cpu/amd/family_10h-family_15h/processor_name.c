@@ -236,7 +236,7 @@ int init_processor_name(void)
 	if (fam15h) {
 		/* Family 15h or later */
 		uint32_t dword;
-		device_t cpu_fn5_dev = dev_find_slot(0, PCI_DEVFN(0x18, 5));
+		struct device *cpu_fn5_dev = dev_find_slot(0, PCI_DEVFN(0x18, 5));
 		pci_write_config32(cpu_fn5_dev, 0x194, 0);
 		dword = pci_read_config32(cpu_fn5_dev, 0x198);
 		if (dword == 0) {

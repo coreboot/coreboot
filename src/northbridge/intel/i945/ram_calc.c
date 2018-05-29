@@ -36,7 +36,7 @@ static uintptr_t smm_region_start(void)
 		tom = (pci_read_config8(PCI_DEV(0, 0, 0), TOLUD) & 0xf7) << 24;
 
 	/* if TSEG enabled subtract size */
-	switch (pci_read_config8(PCI_DEV(0, 0, 0), ESMRAM) & 0x07) {
+	switch (pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC) & 0x07) {
 	case 0x01:
 		/* 1MB TSEG */
 		tom -= 0x100000;

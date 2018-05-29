@@ -6,4 +6,4 @@ config PAYLOAD_SEABIOS
 	  with a SeaBIOS payload. If you don't know what this is
 	  about, just leave it enabled.
 
-	  See http://coreboot.org/Payloads for more information.
+	  See https://coreboot.org/Payloads for more information.

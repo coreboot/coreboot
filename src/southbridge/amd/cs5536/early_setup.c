@@ -19,6 +19,12 @@
  *	AMD Geode GX Processor CS5536 Companion Device GeodeROM Porting Guide.
  */
 
+#include <arch/io.h>
+#include <cpu/x86/bist.h>
+#include <cpu/x86/msr.h>
+#include <cpu/amd/lxdef.h>
+#include "cs5536.h"
+
 /**
  * @brief Setup PCI IDSEL for CS5536
  */
@@ -88,7 +94,7 @@ static void cs5536_setup_iobase(void)
 
 static void cs5536_setup_power_button(void)
 {
-#if CONFIG_ENABLE_POWER_BUTTON
+#if IS_ENABLED(CONFIG_ENABLE_POWER_BUTTON)
 	outl(0x40020000, PMS_IO_BASE + 0x40);
 #endif
 
@@ -244,7 +250,7 @@ void cs5536_setup_onchipuart(int uart)
  * and we don't want to hang on serial, so they are
  * commented out
  */
-static void cs5536_early_setup(void)
+void cs5536_early_setup(void)
 {
 	msr_t msr;
 

@@ -17,6 +17,8 @@
 #ifndef INTEL_I89XX_GPIO_H
 #define INTEL_I89XX_GPIO_H
 
+#include <compiler.h>
+
 #define GPIO_MODE_NATIVE	0
 #define GPIO_MODE_GPIO		1
 #define GPIO_MODE_NONE		1
@@ -69,7 +71,7 @@ struct pch_gpio_set1 {
 	u32 gpio29 : 1;
 	u32 gpio30 : 1;
 	u32 gpio31 : 1;
-} __attribute__ ((packed));
+} __packed;
 
 struct pch_gpio_set2 {
 	u32 gpio32 : 1;
@@ -104,7 +106,7 @@ struct pch_gpio_set2 {
 	u32 gpio61 : 1;
 	u32 gpio62 : 1;
 	u32 gpio63 : 1;
-} __attribute__ ((packed));
+} __packed;
 
 struct pch_gpio_set3 {
 	u32 gpio64 : 1;
@@ -120,7 +122,7 @@ struct pch_gpio_set3 {
 	u32 gpio74 : 1;
 	u32 gpio75 : 1;
 	u32 fill_bitfield : 20;
-} __attribute__ ((packed));
+} __packed;
 
 struct pch_gpio_map {
 	union {

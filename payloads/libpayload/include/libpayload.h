@@ -44,6 +44,7 @@
 #define _LIBPAYLOAD_H
 
 #include <libpayload-config.h>
+#include <compiler.h>
 #include <cbgfx.h>
 #include <ctype.h>
 #include <die.h>
@@ -161,6 +162,54 @@ int keyboard_havechar(void);
 unsigned char keyboard_get_scancode(void);
 int keyboard_getchar(void);
 int keyboard_set_layout(char *country);
+/** @} */
+
+/**
+ * @defgroup mouse Mouse cursor functions
+ * @ingroup input
+ * @{
+ */
+void mouse_cursor_poll(void);
+void mouse_cursor_get_rel(int *x, int *y, int *z);
+u32 mouse_cursor_get_buttons(void);
+void mouse_cursor_set_speed(u32 val);
+u32 mouse_cursor_get_speed(void);
+void mouse_cursor_set_acceleration(u8 val);
+u8 mouse_cursor_get_acceleration(void);
+/** @} */
+
+/**
+ * @defgroup i8042 controller functions
+ * @ingroup input
+ * @{
+ */
+size_t i8042_has_ps2(void);
+size_t i8042_has_aux(void);
+
+u8 i8042_probe(void);
+void i8042_close(void);
+
+int i8042_cmd(u8 cmd);
+void i8042_write_data(u8 data);
+
+u8 i8042_data_ready_ps2(void);
+u8 i8042_data_ready_aux(void);
+
+u8 i8042_read_data_ps2(void);
+u8 i8042_read_data_aux(void);
+
+int i8042_wait_read_ps2(void);
+int i8042_wait_read_aux(void);
+
+/** @} */
+
+/**
+ * @defgroup i8042 PS2 Mouse functions
+ * @ingroup input
+ * @{
+ */
+void i8042_mouse_init(void);
+void i8042_mouse_disconnect(void);
 /** @} */
 
 /**
@@ -304,6 +353,29 @@ int console_remove_output_driver(void *function);
 #define havechar havekey
 /** @} */
 
+/**
+ * @defgroup mouse_cursor Mouse cursor functions
+ * @{
+ */
+typedef enum {
+	CURSOR_INPUT_TYPE_UNKNOWN = 0,
+	CURSOR_INPUT_TYPE_USB,
+	CURSOR_INPUT_TYPE_PS2,
+} cursor_input_type;
+
+void mouse_cursor_init(void);
+
+struct mouse_cursor_input_driver;
+struct mouse_cursor_input_driver {
+	struct mouse_cursor_input_driver *next;
+	/* X,Y,Z axis and buttons */
+	void (*get_state)(int *, int *, int *, u32 *);
+	cursor_input_type input_type;
+};
+
+void mouse_cursor_add_input_driver(struct mouse_cursor_input_driver *in);
+
+/** @} */
 
 /**
  * @defgroup exec Execution functions
@@ -324,7 +396,7 @@ long long int llabs(long long int j);
 u8 bin2hex(u8 b);
 u8 hex2bin(u8 h);
 void hexdump(const void *memory, size_t length);
-void fatal(const char *msg) __attribute__ ((noreturn));
+void fatal(const char *msg) __attribute__((noreturn));
 
 /* Count Leading Zeroes: clz(0) == 32, clz(0xf) == 28, clz(1 << 31) == 0 */
 static inline int clz(u32 x) { return x ? __builtin_clz(x) : sizeof(x) * 8; }
@@ -401,11 +473,6 @@ int getline(char *buffer, int len);
 
 /* Defined in arch/${ARCH}/selfboot.c */
 void selfboot(void *entry);
-
-/* Enter remote GDB mode. Will initialize connection if not already up. */
-void gdb_enter(void);
-/* Disconnect existing GDB connection if one exists. */
-void gdb_exit(s8 exit_status);
 
 /* look for area "name" in "fmap", setting offset and size to describe it.
    Returns 0 on success, < 0 on error. */

@@ -82,7 +82,7 @@ Device (SIO) {
 			    EC_HOST_CMD_REGION0, EC_HOST_CMD_REGION0, 0x08,
 			    EC_HOST_CMD_REGION_SIZE)
 			IO (Decode16,
-			    EC_HOST_CMD_REGION1, EC_HOST_CMD_REGION0, 0x08,
+			    EC_HOST_CMD_REGION1, EC_HOST_CMD_REGION1, 0x08,
 			    EC_HOST_CMD_REGION_SIZE)
 		})
 
@@ -151,7 +151,7 @@ Device (SIO) {
 #ifdef SIO_EC_PS2K_IRQ
 			SIO_EC_PS2K_IRQ
 #else
-			IRQ (Edge, ActiveHigh, ExclusiveAndWake) {1}
+			IRQ (Edge, ActiveHigh, Exclusive) {1}
 #endif
 		})
 
@@ -163,7 +163,7 @@ Device (SIO) {
 #ifdef SIO_EC_PS2K_IRQ
 				SIO_EC_PS2K_IRQ
 #else
-				IRQ (Edge, ActiveHigh, ExclusiveAndWake) {1}
+				IRQ (Edge, ActiveHigh, Exclusive) {1}
 #endif
 			}
 			EndDependentFn ()

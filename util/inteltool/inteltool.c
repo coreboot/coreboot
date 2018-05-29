@@ -4,6 +4,7 @@
  * Copyright (C) 2008-2010 by coresystems GmbH
  *  written by Stefan Reinauer <stepan@coresystems.de>
  * Copyright (C) 2009 Carl-Daniel Hailfinger
+ * Copyright (C) 2017 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +18,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <inttypes.h>
 #include <getopt.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
 #include "inteltool.h"
+#include "pcr.h"
 
 #ifdef __NetBSD__
 #include <machine/sysarch.h>
@@ -110,6 +113,14 @@ static const struct {
 	  "4th generation (Haswell family) Core Processor ULT" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_5TH_GEN_U,
 	  "5th generation (Broadwell family) Core Processor ULT" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_M,
+	  "6th generation (Skylake-H family) Core Processor (Mobile)" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_WST,
+	  "6th generation (Skylake-S/H family) Core Processor (Workstation)" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_D,
+	  "6th generation (Skylake-S family) Core Processor (Desktop)" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_D2,
+	  "6th generation (Skylake-S family) Core Processor (Desktop)" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BAYTRAIL, "Bay Trail" },
 	/* Southbridges (LPC controllers) */
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371XX, "371AB/EB/MB" },
@@ -198,6 +209,103 @@ static const struct {
 	  "Wildcat Point Low Power SKU" },
 	{ PCI_VENDOR_ID_INTEL, 0x2310, "DH89xxCC" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BAYTRAIL_LPC, "Bay Trail" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_SUNRISEPOINT_PRE,
+	  "Sunrise Point Desktop Engineering Sample" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_H110, "H110" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_H170, "H170" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_Z170, "Z170" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_Q170, "Q170" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_Q150, "Q150" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_B150, "B150" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_C236, "C236" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_C232, "C232" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_QM170, "QM170" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HM170, "HM170" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CM236, "CM236" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HM175, "HM175" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_QM175, "QM175" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CM238, "CM238" },
+	/* Intel GPUs */
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_G35_EXPRESS,
+	  "Intel(R) G35 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_G35_EXPRESS_1,
+	  "Intel(R) G35 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_965_EXPRESS,
+	  "Mobile Intel(R) 965 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_965_EXPRESS_1,
+	  "Mobile Intel(R) 965 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_965_EXPRESS_2,
+	  "Mobile Intel(R) 965 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_965_EXPRESS_3,
+	  "Mobile Intel(R) 965 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_4_SERIES,
+	  "Mobile Intel(R) 4 Series Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_4_SERIES_1,
+	  "Mobile Intel(R) 4 Series Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_G45,
+	  "Intel(R) G45/G43 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_G45_1,
+	  "Intel(R) G45/G43 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_Q45,
+	  "Intel(R) Q45/Q43 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_Q45_1,
+	  "Intel(R) Q45/Q43 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_G41,
+	  "Intel(R) G41 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_G41_1,
+	  "Intel(R) G41 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_B43,
+	  "Intel(R) B43 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_B43_1,
+	  "Intel(R) B43 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_B43_2,
+	  "Intel(R) B43 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_B43_3,
+	  "Intel(R) B43 Express Chipset Family" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_GRAPHICS,
+	  "Intel(R) HD Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_GRAPHICS_1,
+	  "Intel(R) HD Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_GRAPHICS_2,
+	  "Intel(R) HD Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_2000,
+	  "Intel(R) HD 2000 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_2000_1,
+	  "Intel(R) HD 2000 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_3000,
+	  "Intel(R) HD 3000 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_3000_1,
+	  "Intel(R) HD 3000 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_3000_2,
+	  "Intel(R) HD 3000 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_3000_3,
+	  "Intel(R) HD 3000 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_3000_4,
+	  "Intel(R) HD 3000 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_3000_5,
+	  "Intel(R) HD 3000 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_2500,
+	  "Intel(R) HD 2500 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_2500_1,
+	  "Intel(R) HD 2500 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_2500_2,
+	  "Intel(R) HD 2500 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_4000,
+	  "Intel(R) HD 4000 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_4000_1,
+	  "Intel(R) HD 4000 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_4000_2,
+	  "Intel(R) HD 4000 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_4600,
+	  "Intel(R) HD 4600 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_4600_1,
+	  "Intel(R) HD 4600 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_5000,
+	  "Intel(R) HD 5000 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_5000_1,
+	  "Intel(R) HD 5000 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_5000_2,
+	  "Intel(R) HD 5000 Graphics" },
 };
 
 #ifndef __DARWIN__
@@ -241,7 +349,7 @@ void print_version(void)
 
 void print_usage(const char *name)
 {
-	printf("usage: %s [-vh?gGrpmedPMaAsfSR]\n", name);
+	printf("usage: %s [-vh?gGrpmedPMaAsfSRx]\n", name);
 	printf("\n"
 	     "   -v | --version:                   print the version\n"
 	     "   -h | --help:                      print this help\n\n"
@@ -259,6 +367,7 @@ void print_usage(const char *name)
 	     "   -P | --pciexpress:                dump northbridge PCIEXBAR registers\n\n"
 	     "   -M | --msrs:                      dump CPU MSRs\n"
 	     "   -A | --ambs:                      dump AMB registers\n"
+	     "   -x | --sgx:                       dump SGX status\n"
 	     "   -a | --all:                       dump all known (safe) registers\n"
 	     "\n");
 	exit(1);
@@ -269,15 +378,15 @@ int main(int argc, char *argv[])
 	struct pci_access *pacc;
 	struct pci_dev *sb = NULL, *nb, *gfx = NULL, *ahci = NULL, *dev;
 	const char *dump_spd_file = NULL;
-	int i, opt, option_index = 0;
-	unsigned int id;
+	int opt, option_index = 0;
+	unsigned int id, i;
 
 	char *sbname = "unknown", *nbname = "unknown", *gfxname = "unknown";
 
 	int dump_gpios = 0, dump_mchbar = 0, dump_rcba = 0;
 	int dump_pmbase = 0, dump_epbar = 0, dump_dmibar = 0;
 	int dump_pciexbar = 0, dump_coremsrs = 0, dump_ambs = 0;
-	int dump_spi = 0, dump_gfx = 0, dump_ahci = 0;
+	int dump_spi = 0, dump_gfx = 0, dump_ahci = 0, dump_sgx = 0;
 	int show_gpio_diffs = 0;
 
 	static struct option long_options[] = {
@@ -298,10 +407,11 @@ int main(int argc, char *argv[])
 		{"all", 0, 0, 'a'},
 		{"gfx", 0, 0, 'f'},
 		{"ahci", 0, 0, 'R'},
+		{"sgx", 0, 0, 'x'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaAsfRS:",
+	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaAsfRS:x",
                                   long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
@@ -358,12 +468,16 @@ int main(int argc, char *argv[])
 			dump_ambs = 1;
 			dump_spi = 1;
 			dump_ahci = 1;
+			dump_sgx = 1;
 			break;
 		case 'A':
 			dump_ambs = 1;
 			break;
 		case 's':
 			dump_spi = 1;
+			break;
+		case 'x':
+			dump_sgx = 1;
 			break;
 		case 'h':
 		case '?':
@@ -401,6 +515,7 @@ int main(int argc, char *argv[])
 #endif
 
 	pacc = pci_alloc();
+	pacc->method = PCI_ACCESS_I386_TYPE1;
 	pci_init(pacc);
 	pci_scan_bus(pacc);
 
@@ -425,7 +540,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	pci_fill_info(sb, PCI_FILL_IDENT|PCI_FILL_BASES|PCI_FILL_SIZES|PCI_FILL_CLASS);
+	pci_fill_info(sb, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_CLASS);
 
 	if (sb->vendor_id != PCI_VENDOR_ID_INTEL) {
 		printf("Not an Intel(R) southbridge.\n");
@@ -438,7 +553,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	pci_fill_info(nb, PCI_FILL_IDENT|PCI_FILL_BASES|PCI_FILL_SIZES|PCI_FILL_CLASS);
+	pci_fill_info(nb, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_CLASS);
 
 	if (nb->vendor_id != PCI_VENDOR_ID_INTEL) {
 		printf("Not an Intel(R) northbridge.\n");
@@ -448,22 +563,31 @@ int main(int argc, char *argv[])
 	gfx = pci_get_dev(pacc, 0, 0, 0x02, 0);
 
 	if (gfx) {
-		pci_fill_info(gfx, PCI_FILL_IDENT|PCI_FILL_BASES|PCI_FILL_SIZES|PCI_FILL_CLASS);
+		pci_fill_info(gfx, PCI_FILL_IDENT | PCI_FILL_BASES |
+				   PCI_FILL_CLASS);
 
 		if (gfx->vendor_id != PCI_VENDOR_ID_INTEL)
 			gfx = 0;
 	}
 
-	if (sb->device_id == PCI_DEVICE_ID_INTEL_BAYTRAIL_LPC)
+	if (sb->device_id == PCI_DEVICE_ID_INTEL_BAYTRAIL_LPC) {
 		ahci = pci_get_dev(pacc, 0, 0, 0x13, 0);
-	else
+	} else {
 		ahci = pci_get_dev(pacc, 0, 0, 0x1f, 2);
+		if (ahci) {
+			pci_fill_info(ahci, PCI_FILL_CLASS);
+			if (ahci->device_class != PCI_CLASS_STORAGE_SATA)
+				ahci = pci_get_dev(pacc, 0, 0, 0x17, 0);
+		}
+	}
 
 	if (ahci) {
-		pci_fill_info(ahci, PCI_FILL_IDENT|PCI_FILL_BASES|PCI_FILL_SIZES|PCI_FILL_CLASS);
+		pci_fill_info(ahci, PCI_FILL_IDENT | PCI_FILL_BASES |
+				    PCI_FILL_CLASS);
 
-		if (ahci->vendor_id != PCI_VENDOR_ID_INTEL)
-			ahci = 0;
+		if (ahci->vendor_id != PCI_VENDOR_ID_INTEL ||
+		    ahci->device_class != PCI_CLASS_STORAGE_SATA)
+			ahci = NULL;
 	}
 
 	id = cpuid(1);
@@ -497,10 +621,9 @@ int main(int argc, char *argv[])
 	printf("Southbridge: %04x:%04x (%s)\n",
 		sb->vendor_id, sb->device_id, sbname);
 
-	if (gfx) {
+	if (gfx)
 		printf("IGD: %04x:%04x (%s)\n",
 		       gfx->vendor_id, gfx->device_id, gfxname);
-	}
 
 	/* Now do the deed */
 
@@ -547,25 +670,29 @@ int main(int argc, char *argv[])
 		printf("\n\n");
 	}
 
-	if (dump_ambs) {
+	if (dump_ambs)
 		print_ambs(nb, pacc);
-	}
 
-	if (dump_spi) {
+	if (dump_spi)
 		print_spi(sb);
-	}
 
-	if (dump_gfx) {
+	if (dump_gfx)
 		print_gfx(gfx);
-	}
 
-	if (dump_ahci) {
+	if (dump_ahci)
 		print_ahci(ahci);
-	}
+
+	if (dump_sgx)
+		print_sgx();
 
 	/* Clean up */
+	pcr_cleanup();
+	if (ahci)
+		pci_free_dev(ahci);
+	if (gfx)
+		pci_free_dev(gfx);
 	pci_free_dev(nb);
-	// pci_free_dev(sb); // TODO: glibc detected "double free or corruption"
+	/* `sb` wasn't allocated by pci_get_dev() */
 	pci_cleanup(pacc);
 
 	return 0;

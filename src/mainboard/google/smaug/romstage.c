@@ -15,7 +15,7 @@
 
 #include <delay.h>
 #include <soc/addressmap.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <soc/clock.h>
 #include <soc/funitcfg.h>
 #include <soc/nvidia/tegra/i2c.h>

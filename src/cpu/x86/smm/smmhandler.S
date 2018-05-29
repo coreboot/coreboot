@@ -110,7 +110,7 @@ smm_handler_start:
 untampered_lapic:
 #endif
 	movw    $(smm_gdtptr16 - smm_handler_start + SMM_HANDLER_OFFSET), %bx
-	data32  lgdt %cs:(%bx)
+	lgdtl	%cs:(%bx)
 
 	movl    %cr0, %eax
 	andl    $0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
@@ -118,7 +118,7 @@ untampered_lapic:
 	movl    %eax, %cr0
 
 	/* Enable protected mode */
-	data32  ljmp    $0x08, $1f
+	ljmpl	$0x08, $1f
 
 .code32
 1:
@@ -141,8 +141,7 @@ untampered_lapic:
 	/* This is an ugly hack, and we should find a way to read the CPU index
 	 * without relying on the LAPIC ID.
 	 */
-#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_FAMILY15_TN) \
-	|| IS_ENABLED(CONFIG_CPU_AMD_AGESA_FAMILY15_RL)
+#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_FAMILY15_TN)
 	/* LAPIC IDs start from 0x10; map that to the proper core index */
 	subl $0x10, %ecx
 #endif

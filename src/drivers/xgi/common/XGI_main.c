@@ -590,8 +590,6 @@ check_memory:
 
 /* --------------------- SetMode routines ------------------------- */
 
-#if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
-
 static void XGIfb_pre_setmode(struct xgifb_video_info *xgifb_info)
 {
 	u8 cr30 = 0, cr31 = 0;
@@ -863,5 +861,3 @@ static void XGIfb_post_setmode(struct xgifb_video_info *xgifb_info)
 		}
 	}
 }
-
-#endif

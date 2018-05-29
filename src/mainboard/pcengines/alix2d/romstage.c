@@ -30,11 +30,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-/* The ALIX.2D has no SMBus; the setup is hard-wired. */
-static void cs5536_enable_smbus(void) { }
-
-#include "southbridge/amd/cs5536/early_setup.c"
-
 /* The part is a Hynix hy5du121622ctp-d43.
  *
  * HY 5D U 12 16 2 2 C <blank> T <blank> P D43
@@ -91,7 +86,6 @@ int spd_read_byte(unsigned int device, unsigned int address)
 }
 
 #include "northbridge/amd/lx/pll_reset.c"
-#include "lib/generic_sdram.c"
 #include "cpu/amd/geode_lx/cpureginit.c"
 #include "cpu/amd/geode_lx/syspreinit.c"
 #include "cpu/amd/geode_lx/msrinit.c"
@@ -105,7 +99,7 @@ static void mb_gpio_init(void)
 	 * Info: GPIO_IO_BASE, 0x6100, is only valid before PCI init, so it
 	 *       may be used here, but not after PCI Init.
 	 * Note: Prior to a certain release, Linux used a hardwired 0x6100 in the
-	 *       leds-alix2.c driver. Coreboot dynamically assigns this space,
+	 *       leds-alix2.c driver. coreboot dynamically assigns this space,
 	 *       so the driver does not work anymore.
 	 *       Good workaround: use the newer driver
 	 *       Ugly workaround: $ wrmsr 0x5140000C 0xf00100006100

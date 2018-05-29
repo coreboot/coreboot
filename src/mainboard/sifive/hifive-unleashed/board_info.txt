@@ -1,0 +1,6 @@
+Category: eval
+ROM package: SOIC-16
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: n
+Board URL: https://www.crowdsupply.com/sifive/hifive-unleashed

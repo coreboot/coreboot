@@ -88,11 +88,20 @@ F_OPTION_HT_INIT_RESET (
 
 typedef F_OPTION_HT_INIT_RESET *PF_OPTION_HT_INIT_RESET;
 
+typedef AGESA_STATUS
+F_OPTION_HT_RESET_CONSTRUCTOR (
+  IN       AMD_CONFIG_PARAMS         *StdHeader,
+  IN       AMD_HT_RESET_INTERFACE    *AmdHtResetInterface
+  );
+
+typedef F_OPTION_HT_RESET_CONSTRUCTOR *PF_OPTION_HT_RESET_CONSTRUCTOR;
+
 /**
  * Provide HT reset initialization build option results
  */
 typedef struct {
-  PF_OPTION_HT_INIT_RESET HtInitReset;  ///< Method: HT reset initialization.
+  PF_OPTION_HT_INIT_RESET HtInitReset;               ///< Method: HT reset initialization.
+  PF_OPTION_HT_RESET_CONSTRUCTOR HtResetConstructor; ///< Method: HT reset initialization.
 } OPTION_HT_INIT_RESET;
 
 /*----------------------------------------------------------------------------------------

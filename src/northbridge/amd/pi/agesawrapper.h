@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,26 +16,11 @@
 #ifndef _AGESAWRAPPER_H_
 #define _AGESAWRAPPER_H_
 
+#if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
+
 #include <stdint.h>
 #include "Porting.h"
 #include "AGESA.h"
-
-/* TODO: Add a kconfig option to name the AGESA ROM file in CBFS */
-#ifndef CONFIG_CBFS_AGESA_NAME
-#define CONFIG_CBFS_AGESA_NAME "AGESA"
-#endif
-
-enum {
-	PICK_DMI,       /* DMI Interface */
-	PICK_PSTATE,    /* Acpi Pstate SSDT Table */
-	PICK_SRAT,      /* SRAT Table */
-	PICK_SLIT,      /* SLIT Table */
-	PICK_WHEA_MCE,  /* WHEA MCE table */
-	PICK_WHEA_CMC,  /* WHEA CMV table */
-	PICK_ALIB,      /* SACPI SSDT table with ALIB implementation */
-	PICK_IVRS,      /* IOMMU ACPI IVRS(I/O Virtualization Reporting Structure) table */
-	PICK_CRAT,
-};
 
 AGESA_STATUS agesawrapper_amdinitreset(void);
 AGESA_STATUS agesawrapper_amdinitearly(void);
@@ -43,21 +28,34 @@ AGESA_STATUS agesawrapper_amdinitenv(void);
 AGESA_STATUS agesawrapper_amdinitlate(void);
 AGESA_STATUS agesawrapper_amdinitpost(void);
 AGESA_STATUS agesawrapper_amdinitmid(void);
-AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus);
-void *agesawrapper_getlateinitptr(int pick);
-AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINT32 Data, void *ConfigPtr);
-AGESA_STATUS agesawrapper_amdS3Save(void);
+
 AGESA_STATUS agesawrapper_amdinitresume(void);
+AGESA_STATUS agesawrapper_amdS3Save(void);
 AGESA_STATUS agesawrapper_amds3laterestore(void);
 
 AGESA_STATUS agesawrapper_fchs3earlyrestore(void);
 AGESA_STATUS agesawrapper_fchs3laterestore(void);
 
-VOID OemCustomizeInitEarly (IN	OUT AMD_EARLY_PARAMS *InitEarly);
-VOID amd_initcpuio(void);
-VOID amd_initmmio(void);
+#define AGESA_EVENTLOG(status, stdheader) \
+	agesawrapper_trace(status, stdheader, __func__)
+
+#else
+
+/* Defined to make unused agesa_main() build. */
+static inline int agesawrapper_amdinitreset(void) { return -1; }
+static inline int agesawrapper_amdinitearly(void) { return -1; }
+static inline int agesawrapper_amdinitenv(void) { return -1; }
+static inline int agesawrapper_amdinitpost(void) { return -1; }
+static inline int agesawrapper_amdinitresume(void) { return -1; }
+static inline int agesawrapper_amds3laterestore(void) { return -1; }
+
+#endif
+
+#if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
 const void *agesawrapper_locate_module (const CHAR8 name[8]);
 
+VOID OemCustomizeInitEarly (IN OUT AMD_EARLY_PARAMS *InitEarly);
 void OemPostParams(AMD_POST_PARAMS *PostParams);
+#endif
 
 #endif /* _AGESAWRAPPER_H_ */

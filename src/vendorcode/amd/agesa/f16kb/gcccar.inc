@@ -42,7 +42,12 @@ BSP_STACK_SIZE          =       0x10000         /* 64KB for BSP core            
 CORE0_STACK_BASE_ADDR   =       0x80000         /* Base address for primary cores stack   */
 CORE0_STACK_SIZE        =       0x4000          /* 16KB for primary cores                 */
 CORE1_STACK_BASE_ADDR   =       0x40000         /* Base address for AP cores              */
+
+#ifdef __x86_64__
+CORE1_STACK_SIZE        =       0x2000          /* 8KB for each AP cores                  */
+#else
 CORE1_STACK_SIZE        =       0x1000          /* 4KB for each AP cores                  */
+#endif
 
 APIC_BASE_ADDRESS       =       0x0000001B
   APIC_BSC              =       8               /* Boot Strap Core  */
@@ -597,8 +602,7 @@ fam16_disable_stack_remote_read_exit:
     _RDMSR
     btr     $INVD_WBINVD, %eax            # Disable INVD -> WBINVD conversion
     _WRMSR
-    wbinvd                                # Clear the cache tag RAMs
-    #invd
+    invd                                # Clear the cache tag RAMs
 
     #Do Standard Family 16 work
     mov     $HWCR, %ecx                    # MSR:C001_0015h
@@ -857,7 +861,7 @@ node_core_f16_exit:
 * AMD_ENABLE_STACK:  Setup a stack
 *
 *   In:
-*       EBX  = Return address (preserved)
+*       No inputs
 *
 *   Out:
 *       SS:ESP - Our new private stack location
@@ -868,11 +872,8 @@ node_core_f16_exit:
 *
 *   Requirements:
 *       * This routine presently is limited to a max of 64 processor cores
-*   Preserved:
-*       ebx ebp
 *   Destroyed:
-*       eax, ecx, edx, edi, esi, ds, es, ss, esp
-*       mmx0, mmx1
+*       EBX, EDX, EDI, ESI, EBP, DS, ES
 *
 *   Description:
 * Fixed MTRR address allocation to cores:
@@ -932,8 +933,6 @@ node_core_f16_exit:
 #   Note that SS:ESP will be default stack.  Note that this stack
 #   routine will not be used after memory has been initialized.  Because
 #   of its limited lifetime, it will not conflict with typical PCI devices.
-    movd    %ebx, %mm0                    # Put return address in a safe place
-    movd    %ebp, %mm1                    # Save some other user registers
 
     # get node id and core id of current executing core
     GET_NODE_ID_CORE_ID                 # Sets ESI[23:16]=Shared core## SI[15,8]= Node## SI[7,0]= core# (relative to node)
@@ -1245,9 +1244,6 @@ ClearTheStack:                          # Stack base is in SS, stack pointer is 
         or      $0x40000000, %eax          # eax = AGESA_WARNING (Stack has already been set up)
     #.endif
     0:
-
-    movd        %mm0, %ebx                # Restore return address
-    movd        %mm1, %ebp
 .endm
 
 /*****************************************************************************
@@ -1258,16 +1254,14 @@ ClearTheStack:                          # Stack base is in SS, stack pointer is 
 *       none
 *
 *   Out:
-*       EAX = AGESA_SUCCESS
+*       none
 *
 *   Preserved:
-*       ebx
+*       ESP
 *   Destroyed:
-*       eax, ecx, edx, esp
+*       EAX, EBX, ECX, EDX, EDI, ESI
 *****************************************************************************/
 .macro  AMD_DISABLE_STACK
-
-    mov     %ebx, %esp                    # Save return address
 
     # get node/core/flags of current executing core
     GET_NODE_ID_CORE_ID                 # Sets ESI[15,8]= Node#; ESI[7,0]= core# (relative to node)
@@ -1294,8 +1288,4 @@ ClearTheStack:                          # Stack base is in SS, stack pointer is 
 
     AMD_DISABLE_STACK_FAMILY_HOOK       # Re-Enable 'normal' cache operations
 
-    mov     %esp, %ebx
-    xor     %eax, %eax
-
 .endm
-

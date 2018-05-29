@@ -29,7 +29,7 @@
 #include "../common/aspeed_coreboot.h"
 #include "../common/ast_drv.h"
 
-static void aspeed_ast2050_set_resources(device_t dev)
+static void aspeed_ast2050_set_resources(struct device *dev)
 {
 	/* Reserve VGA regions */
 	mmio_resource(dev, 3, 0xa0000 >> 10, 0x1ffff >> 10);
@@ -73,7 +73,7 @@ static struct device_operations aspeed_ast2050_ops  = {
 };
 
 static const struct pci_driver aspeed_ast2050_driver __pci_driver = {
-        .ops    = &aspeed_ast2050_ops,
-        .vendor = PCI_VENDOR_ID_ASPEED,
-        .device = PCI_DEVICE_ID_ASPEED_AST2050_VGA,
+	.ops    = &aspeed_ast2050_ops,
+	.vendor = PCI_VENDOR_ID_ASPEED,
+	.device = PCI_DEVICE_ID_ASPEED_AST2050_VGA,
 };

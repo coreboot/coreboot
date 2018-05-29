@@ -14,9 +14,10 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <wrdd.h>
 
-uint16_t __attribute__((weak)) wifi_regulatory_domain(void)
+uint16_t __weak wifi_regulatory_domain(void)
 {
 	return WRDD_DEFAULT_REGULATORY_DOMAIN;
 }

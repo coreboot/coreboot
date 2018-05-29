@@ -65,18 +65,18 @@ enum {
 /* LPDDR4 module density in bits. */
 enum {
 	LP4_8Gb_DENSITY = 2,
-	LP4_12Gb_DESNITY,
+	LP4_12Gb_DENSITY,
 	LP4_16Gb_DENSITY,
 };
 
 /*
  * ODT settings :
  * If ODT PIN to LP4 DRAM is pulled HIGH for ODT_A, and HIGH for ODT_B,
- * choose ODT_AB_HIGH_HIGH. If ODT PIN to LP4 DRAM is pulled HIGH for ODT_A,
+ * choose ODT_AB_HIGH_HIGH. If ODT PIN to LP4 DRAM is pulled HIGH for ODT_A,
  * and LOW for ODT_B, choose ODT_AB_HIGH_LOW.
  *
  * Note that the enum values correspond to the interpreted UPD fields
- * witihn Ch[3:0]_OdtConfig parameters.
+ * within Ch[3:0]_OdtConfig parameters.
 */
 enum {
 	ODT_A_B_HIGH_LOW = 0 << 1,
@@ -131,5 +131,11 @@ struct lpddr4_cfg {
 void meminit_lpddr4_by_sku(FSP_M_CONFIG *cfg,
 				const struct lpddr4_cfg *lpcfg, size_t sku_id);
 void save_lpddr4_dimm_info(const struct lpddr4_cfg *lpcfg, size_t mem_sku);
+
+/* Retrieve the amount of memory configured in the system in MiB. It's only
+ * valid during romstage. */
+size_t memory_in_system_in_mib(void);
+/* Retrieve the requested i/o hole in MiB. Only valid in romstage. */
+size_t iohole_in_mib(void);
 
 #endif /* _SOC_APOLLOLAKE_MEMINIT_H_ */

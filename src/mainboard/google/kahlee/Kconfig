@@ -1,0 +1,132 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2015-2017 Advanced Micro Devices, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+config BOARD_GOOGLE_BASEBOARD_KAHLEE
+	bool
+	select SOC_AMD_STONEYRIDGE_FT4
+	select ALWAYS_LOAD_OPROM
+	select ALWAYS_RUN_OPROM
+	select BOARD_ROMSIZE_KB_16384 if BOARD_GOOGLE_GRUNT
+	select BOARD_ROMSIZE_KB_8192 if BOARD_GOOGLE_KAHLEE
+	select DRIVERS_I2C_GENERIC
+	select DRIVERS_PS2_KEYBOARD
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_BOARDID
+	select EC_GOOGLE_CHROMEEC_LPC
+	select HAVE_ACPI_TABLES
+	select GENERIC_SPD_BIN
+	select GFXUMA
+	select GOOGLE_SMBIOS_MAINBOARD_VERSION
+	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_LPC_TPM if BOARD_GOOGLE_KAHLEE
+	select SERIRQ_CONTINUOUS_MODE
+	select STONEYRIDGE_UART
+	select SOC_AMD_PSP_SELECTABLE_SMU_FW
+	select SOC_AMD_SMU_FANLESS
+	select HAVE_ACPI_RESUME
+	select DRIVERS_GENERIC_BH720 if BOARD_GOOGLE_GRUNT
+
+if BOARD_GOOGLE_BASEBOARD_KAHLEE
+
+config MAINBOARD_DIR
+	string
+	default google/kahlee
+
+config VARIANT_DIR
+	string
+	default "grunt" if BOARD_GOOGLE_GRUNT
+	default "kahlee" if BOARD_GOOGLE_KAHLEE
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Grunt" if BOARD_GOOGLE_GRUNT
+	default "Kahlee" if BOARD_GOOGLE_KAHLEE
+
+config DEVICETREE
+	string
+	default "variants/${CONFIG_VARIANT_DIR}/devicetree.cb"
+
+config MAINBOARD_FAMILY
+	string
+	default "Google_Kahlee"
+
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/variants/$(CONFIG_VARIANT_DIR)/chromeos.fmd" if CHROMEOS
+	default ""
+	help
+	  The build system creates a default FMAP from ROM_SIZE and CBFS_SIZE,
+	  but in some cases more complex setups are required.
+	  When an fmd is specified, it overrides the default format.
+
+config MAX_CPUS
+	int
+	default 4
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
+config VBOOT
+	select EC_GOOGLE_CHROMEEC_SWITCHES
+	select VBOOT_LID_SWITCH
+
+config VBOOT_VBNV_OFFSET
+	hex
+	default 0x2A
+
+config CHROMEOS
+	select LP_DEFCONFIG_OVERRIDE if PAYLOAD_DEPTHCHARGE
+
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "GRUNT TEST 8296" if BOARD_GOOGLE_GRUNT
+	default "KAHLEE TEST 6421" if BOARD_GOOGLE_KAHLEE
+
+config AMD_FWM_POSITION_INDEX
+	int
+	default 1
+
+# Select this option to enable use of cr50 I2C TPM on kahlee
+config KAHLEE_USE_I2C_TPM
+	bool
+	default y if !BOARD_GOOGLE_KAHLEE
+	select I2C_TPM
+	select MAINBOARD_HAS_I2C_TPM_CR50
+	select TPM2
+
+config DRIVER_TPM_I2C_BUS
+	hex
+	depends on KAHLEE_USE_I2C_TPM
+	default 0x01
+
+config DRIVER_TPM_I2C_ADDR
+	hex
+	depends on KAHLEE_USE_I2C_TPM
+	default 0x50
+
+config GRUNT_AUDIO
+	bool
+	default y if !BOARD_GOOGLE_KAHLEE
+	select DRIVERS_GENERIC_ADAU7002
+	select DRIVERS_GENERIC_MAX98357A
+	select DRIVERS_I2C_DA7219
+
+endif # BOARD_GOOGLE_BASEBOARD_KAHLEE

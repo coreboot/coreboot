@@ -18,12 +18,6 @@
 #include <arch/io.h>
 #include <console/console.h>
 
-unsigned long get_top_of_ram(void)
-{
-	u16 reg_tom = pci_read_config8(MCU, 0x88);
-	return (((unsigned long)reg_tom) << 24) - (256 << 20);
-}
-
 /**
  * \brief Enable accessing of PCI configuration space for all devices.
  *
@@ -102,7 +96,7 @@ void vx900_disable_auto_reboot(void)
  * \brief Disables 'shadowing' of system ROM
  *
  * Disable unnecessary shadowing of the ROM in the first 1MB of address space.
- * Coreboot runs in 32-bit mode from the start. Shadowing only gets in the way.
+ * coreboot runs in 32-bit mode from the start. Shadowing only gets in the way.
  * This function frees the entire 640k-1M range for DRAM. VGA may still use
  * the 640k-768k range, if enabled later.
  */

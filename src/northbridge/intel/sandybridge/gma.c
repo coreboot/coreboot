@@ -24,6 +24,10 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <drivers/intel/gma/libgfxinit.h>
+#include <southbridge/intel/bd82x6x/nvs.h>
+#include <drivers/intel/gma/opregion.h>
+#include <cbmem.h>
 
 #include "chip.h"
 #include "sandybridge.h"
@@ -255,18 +259,21 @@ static const struct gt_powermeter ivb_pm_gt2_35w[] = {
 
 u32 map_oprom_vendev(u32 vendev)
 {
-	u32 new_vendev=vendev;
+	u32 new_vendev = vendev;
 
 	switch (vendev) {
-	case 0x80860102:		/* GT1 Desktop */
-	case 0x8086010a:		/* GT1 Server */
-	case 0x80860112:		/* GT2 Desktop */
-	case 0x80860116:		/* GT2 Mobile */
-	case 0x80860122:		/* GT2 Desktop >=1.3GHz */
-	case 0x80860126:		/* GT2 Mobile >=1.3GHz */
-	case 0x80860156:                /* IVB */
-	case 0x80860166:                /* IVB */
-		new_vendev=0x80860106;	/* GT1 Mobile */
+	case 0x80860102:		/* SNB GT1 Desktop */
+	case 0x8086010a:		/* SNB GT1 Server */
+	case 0x80860112:		/* SNB GT2 Desktop */
+	case 0x80860116:		/* SNB GT2 Mobile */
+	case 0x80860122:		/* SNB GT2 Desktop >=1.3GHz */
+	case 0x80860126:		/* SNB GT2 Mobile >=1.3GHz */
+	case 0x80860152:		/* IVB GT1 Desktop */
+	case 0x80860156:		/* IVB GT1 Mobile */
+	case 0x80860162:		/* IVB GT2 Desktop */
+	case 0x80860166:		/* IVB GT2 Mobile */
+	case 0x8086016a:		/* IVB GT2 Server */
+		new_vendev = 0x80860106;/* SNB GT1 Mobile */
 		break;
 	}
 
@@ -306,6 +313,19 @@ int gtt_poll(u32 reg, u32 mask, u32 value)
 
 	printk(BIOS_ERR, "GT init timeout\n");
 	return 0;
+}
+
+uintptr_t gma_get_gnvs_aslb(const void *gnvs)
+{
+	const global_nvs_t *gnvs_ptr = gnvs;
+	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
+}
+
+void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
+{
+	global_nvs_t *gnvs_ptr = gnvs;
+	if (gnvs_ptr)
+		gnvs_ptr->aslb = aslb;
 }
 
 static void gma_pm_init_pre_vbios(struct device *dev)
@@ -478,10 +498,11 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	}
 
 	/* 12: Normal Frequency Request */
-	/* RPNFREQ_VAL comes from MCHBAR 0x5998 23:16 (8 bits!? use 7) */
+	/* RPNFREQ_VAL comes from MCHBAR 0x5998 23:16 */
+	/* only the lower 7 bits are used and shifted left by 25 */
 	reg32 = MCHBAR32(0x5998);
 	reg32 >>= 16;
-	reg32 &= 0xef;
+	reg32 &= 0x7f;
 	reg32 <<= 25;
 	gtt_write(0xa008, reg32);
 
@@ -574,6 +595,25 @@ static void gma_pm_init_post_vbios(struct device *dev)
 	}
 }
 
+/* Enable SCI to ACPI _GPE._L06 */
+static void gma_enable_swsci(void)
+{
+	u16 reg16;
+
+	/* clear DMISCI status */
+	reg16 = inw(DEFAULT_PMBASE + TCO1_STS);
+	reg16 &= DMISCI_STS;
+	outw(DEFAULT_PMBASE + TCO1_STS, reg16);
+
+	/* clear acpi tco status */
+	outl(DEFAULT_PMBASE + GPE0_STS, TCOSCI_STS);
+
+	/* enable acpi tco scis */
+	reg16 = inw(DEFAULT_PMBASE + GPE0_EN);
+	reg16 |= TCOSCI_EN;
+	outw(DEFAULT_PMBASE + GPE0_EN, reg16);
+}
+
 static void gma_func0_init(struct device *dev)
 {
 	u32 reg32;
@@ -593,7 +633,10 @@ static void gma_func0_init(struct device *dev)
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev);
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+	/* Running graphics init on S3 breaks Linux drm driver. */
+	if (!acpi_is_wakeup_s3() &&
+	    (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) ||
+	    IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT))) {
 		/* This should probably run before post VBIOS init. */
 		printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
 		u8 *mmiobase;
@@ -606,8 +649,7 @@ static void gma_func0_init(struct device *dev)
 
 		int lightup_ok;
 		if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
-			gma_gfxinit((uintptr_t)mmiobase, graphics_base,
-				    physbase, &lightup_ok);
+			gma_gfxinit(&lightup_ok);
 		} else {
 			lightup_ok = i915lightup_sandy(&conf->gfx, physbase,
 					iobase, mmiobase, graphics_base);
@@ -615,9 +657,12 @@ static void gma_func0_init(struct device *dev)
 		if (lightup_ok)
 			gfx_set_init_done(1);
 	}
+
+	gma_enable_swsci();
+	intel_gma_restore_opregion();
 }
 
-static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void gma_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -631,7 +676,7 @@ static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 const struct i915_gpu_controller_info *
 intel_gma_get_controller_info(void)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x2,0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x2,0));
 	if (!dev) {
 		return NULL;
 	}
@@ -639,7 +684,7 @@ intel_gma_get_controller_info(void)
 	return &chip->gfx;
 }
 
-static void gma_ssdt(device_t device)
+static void gma_ssdt(struct device *device)
 {
 	const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
 	if (!gfx) {
@@ -649,11 +694,42 @@ static void gma_ssdt(device_t device)
 	drivers_intel_gma_displays_ssdt_generate(gfx);
 }
 
+static unsigned long
+gma_write_acpi_tables(struct device *const dev,
+		      unsigned long current,
+		      struct acpi_rsdp *const rsdp)
+{
+	igd_opregion_t *opregion = (igd_opregion_t *)current;
+	global_nvs_t *gnvs;
+
+	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
+		return current;
+
+	current += sizeof(igd_opregion_t);
+
+	/* GNVS has been already set up */
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs) {
+		/* IGD OpRegion Base Address */
+		gma_set_gnvs_aslb(gnvs, (uintptr_t)opregion);
+	} else {
+		printk(BIOS_ERR, "Error: GNVS table not found.\n");
+	}
+
+	current = acpi_align_current(current);
+	return current;
+}
+
+static const char *gma_acpi_name(const struct device *dev)
+{
+	return "GFX0";
+}
+
 /* called by pci set_vga_bridge function */
 static void gma_func0_disable(struct device *dev)
 {
 	u16 reg16;
-	device_t dev_host = dev_find_slot(0, PCI_DEVFN(0,0));
+	struct device *dev_host = dev_find_slot(0, PCI_DEVFN(0,0));
 
 	reg16 = pci_read_config16(dev_host, GGC);
 	reg16 |= (1 << 1); /* disable VGA decode */
@@ -676,11 +752,13 @@ static struct device_operations gma_func0_ops = {
 	.enable			= 0,
 	.disable		= gma_func0_disable,
 	.ops_pci		= &gma_pci_ops,
+	.acpi_name		= gma_acpi_name,
+	.write_acpi_tables	= gma_write_acpi_tables,
 };
 
 static const unsigned short pci_device_ids[] = { 0x0102, 0x0106, 0x010a, 0x0112,
 						 0x0116, 0x0122, 0x0126, 0x0156,
-						 0x0166, 0x0162, 0x0152,
+						 0x0166, 0x0162, 0x016a, 0x0152,
 						 0 };
 
 static const struct pci_driver gma __pci_driver = {

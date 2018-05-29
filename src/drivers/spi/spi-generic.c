@@ -15,6 +15,7 @@
  */
 
 #include <assert.h>
+#include <compiler.h>
 #include <spi-generic.h>
 #include <string.h>
 
@@ -88,16 +89,40 @@ int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytesout,
 	return -1;
 }
 
-void __attribute__((weak)) spi_init(void)
+unsigned int spi_crop_chunk(const struct spi_slave *slave, unsigned int cmd_len,
+			unsigned int buf_len)
+{
+	const struct spi_ctrlr *ctrlr = slave->ctrlr;
+	unsigned int ctrlr_max;
+	bool deduct_cmd_len;
+	bool deduct_opcode_len;
+
+	if (!ctrlr)
+		return 0;
+
+	deduct_cmd_len = !!(ctrlr->flags & SPI_CNTRLR_DEDUCT_CMD_LEN);
+	deduct_opcode_len = !!(ctrlr->flags & SPI_CNTRLR_DEDUCT_OPCODE_LEN);
+	ctrlr_max = ctrlr->max_xfer_size;
+
+	assert (ctrlr_max != 0);
+
+	/* Assume opcode is always one byte and deduct it from the cmd_len
+	   as the hardware has a separate register for the opcode. */
+	if (deduct_opcode_len)
+		cmd_len--;
+
+	if (deduct_cmd_len && (ctrlr_max > cmd_len))
+		ctrlr_max -= cmd_len;
+
+	return min(ctrlr_max, buf_len);
+}
+
+void __weak spi_init(void)
 {
 	/* Default weak implementation - do nothing. */
 }
 
-const struct spi_ctrlr_buses spi_ctrlr_bus_map[0] __attribute__((weak));
-const size_t spi_ctrlr_bus_map_count __attribute__((weak));
-
-int __attribute__((weak)) spi_setup_slave(unsigned int bus, unsigned int cs,
-					  struct spi_slave *slave)
+int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 {
 	size_t i;
 
@@ -121,57 +146,4 @@ int __attribute__((weak)) spi_setup_slave(unsigned int bus, unsigned int cs,
 		return slave->ctrlr->setup(slave);
 
 	return 0;
-}
-
-static int spi_xfer_combine_two_vectors(const struct spi_slave *slave,
-					struct spi_op *v1, struct spi_op *v2)
-{
-	struct spi_op op = {
-		.dout = v1->dout, .bytesout = v1->bytesout,
-		.din = v2->din, .bytesin = v2->bytesin,
-	};
-	int ret;
-
-	/*
-	 * Combine two vectors only if:
-	 * v1 has non-NULL dout and NULL din and
-	 * v2 has non-NULL din and NULL dout and
-	 *
-	 * In all other cases, do not combine the two vectors.
-	 */
-	if ((!v1->dout || v1->din) || (v2->dout || !v2->din))
-		return -1;
-
-	ret = spi_xfer_single_op(slave, &op);
-	v1->status = v2->status = op.status;
-
-	return ret;
-}
-
-/*
- * Helper function to allow chipsets to combine two vectors if possible. This
- * function can only handle upto 2 vectors.
- *
- * Two vectors are combined if first vector has a non-NULL dout and NULL din and
- * second vector has a non-NULL din and NULL dout. Otherwise, each vector is
- * operated upon one at a time.
- *
- * Returns 0 on success and non-zero on failure.
- */
-int spi_xfer_two_vectors(const struct spi_slave *slave,
-			struct spi_op vectors[], size_t count)
-{
-	int ret;
-
-	assert (count <= 2);
-
-	if (count == 2) {
-		ret = spi_xfer_combine_two_vectors(slave, &vectors[0],
-						&vectors[1]);
-
-		if (!ret || (vectors[0].status != SPI_OP_NOT_EXECUTED))
-			return ret;
-	}
-
-	return spi_xfer_vector_default(slave, vectors, count);
 }

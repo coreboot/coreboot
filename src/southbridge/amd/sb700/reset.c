@@ -44,7 +44,7 @@ static void set_bios_reset(void)
 	}
 }
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	set_bios_reset();
 
@@ -56,7 +56,7 @@ void hard_reset(void)
 	outb((0 << 3) | (1 << 2) | (1 << 1), 0xcf9);
 }
 
-void soft_reset(void)
+void do_soft_reset(void)
 {
 	set_bios_reset();
 	/* link reset */

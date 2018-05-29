@@ -15,7 +15,7 @@
 
 SPD_BIN = $(obj)/spd.bin
 
-# Order matters for SPD sources. The following indicies
+# Order matters for SPD sources. The following indices
 # define the SPD data to use.
 # 0b0000 - 4GiB total - 2 x 2GiB Micron  MT41K256M16HA-125:E 1600MHz
 # 0b0001 - 4GiB total - 2 x 2GiB Hynix   H5TC4G63AFR-PBA 1600MHz

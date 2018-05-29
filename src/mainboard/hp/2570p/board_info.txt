@@ -1,0 +1,7 @@
+Category: laptop
+Board URL: https://support.hp.com/us-en/product/HP-EliteBook-2570p-Notebook-PC/5259393
+ROM protocol: SPI
+ROM package: SOIC-16
+ROM socketed: n
+Flashrom support: n
+Release year: 2012

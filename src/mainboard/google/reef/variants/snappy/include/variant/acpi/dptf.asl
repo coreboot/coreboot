@@ -16,11 +16,6 @@
 
 #define DPTF_CPU_PASSIVE	100
 #define DPTF_CPU_CRITICAL	105
-#define DPTF_CPU_ACTIVE_AC0	90
-#define DPTF_CPU_ACTIVE_AC1	80
-#define DPTF_CPU_ACTIVE_AC2	70
-#define DPTF_CPU_ACTIVE_AC3	60
-#define DPTF_CPU_ACTIVE_AC4	50
 
 #define DPTF_TSR0_SENSOR_ID	0
 #define DPTF_TSR0_SENSOR_NAME	"Battery"
@@ -70,7 +65,7 @@ Name (MPPC, Package ()
 	0x2,		/* Revision */
 	Package () {	/* Power Limit 1 */
 		0,	/* PowerLimitIndex, 0 for Power Limit 1 */
-		4000,	/* PowerLimitMinimum */
+		4500,	/* PowerLimitMinimum */
 		12000,	/* PowerLimitMaximum */
 		1000,	/* TimeWindowMinimum */
 		1000,	/* TimeWindowMaximum */

@@ -23,6 +23,7 @@
 #define DQS_TRAIN_DEBUG 0
 
 #include <inttypes.h>
+#include <compiler.h>
 #include "mct_d_gcc.h"
 #include <console/console.h>
 #include <northbridge/amd/amdfam10/debug.h>
@@ -275,7 +276,7 @@ struct MCTStatStruc {
 				      of sub 4GB dram hole for HW remapping.*/
 	u32 Sub4GCacheTop;	/* If not zero, the 32-bit top of cacheable memory.*/
 	u32 SysLimit;		/* LIMIT[39:8] (system address)*/
-} __attribute__((packed));
+} __packed;
 
 /*=============================================================================
 	Global MCT Configuration Status Word (GStatus)
@@ -321,7 +322,7 @@ struct DCTPersistentStatStruc {
 		/* CHB DIMM 0 - 4 Check Byte Receiver Enable Delay*/
 	u16 HostBiosSrvc1;	/* Word sized general purpose field for use by host BIOS.  Scratch space.*/
 	u32 HostBiosSrvc2;	/* Dword sized general purpose field for use by host BIOS.  Scratch space.*/
-} __attribute__((packed));
+} __packed;
 
 
 struct DCTStatStruc {		/* A per Node structure*/
@@ -549,7 +550,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 
 	/* NOTE: This must remain the last entry in this structure */
 	struct DCTPersistentStatStruc persistentData;
-} __attribute__((packed));
+} __packed;
 
 /*===============================================================================
 	Local Error Status Codes (DCTStatStruc.ErrCode)
@@ -717,7 +718,7 @@ struct amdmct_memory_info {
 	struct DCTStatStruc dct_stat[MAX_NODES_SUPPORTED];
 	uint16_t ecc_enabled;
 	uint16_t ecc_scrub_rate;
-} __attribute__((packed));
+} __packed;
 
 u32 Get_NB32(u32 dev, u32 reg);
 void Set_NB32(u32 dev, u32 reg, u32 val);

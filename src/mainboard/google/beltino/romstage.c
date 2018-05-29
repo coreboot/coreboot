@@ -137,7 +137,7 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	/* Early SuperIO setup */
 	ite_kill_watchdog(IT8772F_GPIO_DEV);
-	it8772f_ac_resume_southbridge(IT8772F_DUMMY_DEV);
+	it8772f_ac_resume_southbridge(IT8772F_SUPERIO_DEV);
 	pch_enable_lpc();
 	ite_enable_serial(IT8772F_SERIAL_DEV, CONFIG_TTYS0_BASE);
 

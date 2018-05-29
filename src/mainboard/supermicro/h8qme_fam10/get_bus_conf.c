@@ -68,7 +68,7 @@ void get_bus_conf(void)
 	unsigned apicid_base;
 	struct mb_sysconf_t *m;
 
-	device_t dev;
+	struct device *dev;
 	int i;
 
 	if(get_bus_conf_done == 1) return; //do it only once

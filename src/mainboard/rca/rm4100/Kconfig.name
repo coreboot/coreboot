@@ -1,2 +1,0 @@
-config BOARD_RCA_RM4100
-	bool "RM4100"

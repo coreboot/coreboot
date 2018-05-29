@@ -22,10 +22,10 @@ struct gdb_regs
 	struct fp_reg
 	{
 		u8 byte[12];
-	} __attribute__((packed)) f[8];
+	} __packed f[8];
 	u32 fps;
 	u32 cpsr;
-} __attribute__((packed));
+} __packed;
 
 static const u8 type_to_signal[] = {
 	[EXC_UNDEF]  = GDB_SIGILL,

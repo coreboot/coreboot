@@ -26,7 +26,7 @@ Device (LPEA)
 	{
 		Memory32Fixed (ReadWrite, 0, 0x00200000, BAR0)
 		Memory32Fixed (ReadWrite, 0, 0x00001000, BAR1)
-		Memory32Fixed (ReadWrite, 0, 0x00100000, BAR2)
+		Memory32Fixed (ReadWrite, 0, 0x00200000, BAR2)
 		Interrupt (ResourceConsumer, Level, ActiveLow, Exclusive,,,)
 		{
 			LPE_DMA0_IRQ

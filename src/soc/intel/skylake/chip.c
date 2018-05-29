@@ -20,6 +20,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/util.h>
+#include <intelblocks/xdci.h>
 #include <soc/acpi.h>
 #include <soc/interrupt.h>
 #include <soc/irq.h>
@@ -47,7 +48,6 @@ static struct device_operations pci_domain_ops = {
 	.read_resources   = &pci_domain_read_resources,
 	.set_resources    = &pci_domain_set_resources,
 	.scan_bus         = &pci_domain_scan_bus,
-	.ops_pci_bus      = &pci_bus_default_ops,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	.acpi_name        = &soc_acpi_name,
 #endif
@@ -63,17 +63,10 @@ static struct device_operations cpu_bus_ops = {
 static void soc_enable(device_t dev)
 {
 	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		dev->ops = &pci_domain_ops;
-	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &cpu_bus_ops;
-	} else if (dev->path.type == DEVICE_PATH_PCI) {
-		/* Handle PCH device enable */
-		if (PCI_SLOT(dev->path.pci.devfn) > SA_DEV_SLOT_IGD &&
-		    (dev->ops == NULL || dev->ops->enable == NULL)) {
-			pch_enable_dev(dev);
-		}
-	}
 }
 
 struct chip_operations soc_intel_skylake_ops = {
@@ -85,7 +78,7 @@ struct chip_operations soc_intel_skylake_ops = {
 /* UPD parameters to be initialized before SiliconInit */
 void soc_silicon_init_params(SILICON_INIT_UPD *params)
 {
-	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
 	const struct soc_intel_skylake_config *config = dev->chip_info;
 	int i;
 
@@ -128,11 +121,16 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 			sizeof(params->PcieRpClkReqSupport));
 	memcpy(params->PcieRpClkReqNumber, config->PcieRpClkReqNumber,
 			sizeof(params->PcieRpClkReqNumber));
+	memcpy(params->PcieRpHotPlug, config->PcieRpHotPlug,
+			sizeof(params->PcieRpHotPlug));
 
 	params->EnableLan = config->EnableLan;
 	params->Cio2Enable = config->Cio2Enable;
 	params->SataSalpSupport = config->SataSalpSupport;
-	params->SataPortsEnable[0] = config->SataPortsEnable[0];
+	memcpy(params->SataPortsEnable, config->SataPortsEnable,
+			sizeof(params->SataPortsEnable));
+	memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
+			sizeof(params->SataPortsDevSlp));
 	params->SsicPortEnable = config->SsicPortEnable;
 	params->SmbusEnable = config->SmbusEnable;
 	params->ScsEmmcEnabled = config->ScsEmmcEnabled;
@@ -142,16 +140,16 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->EnableAzalia = config->EnableAzalia;
 	params->IoBufferOwnership = config->IoBufferOwnership;
 	params->DspEnable = config->DspEnable;
-	params->XdciEnable = config->XdciEnable;
 	params->Device4Enable = config->Device4Enable;
 	params->EnableSata = config->EnableSata;
 	params->SataMode = config->SataMode;
 	params->LockDownConfigGlobalSmi = config->LockDownConfigGlobalSmi;
-	params->LockDownConfigBiosInterface =
-		config->LockDownConfigBiosInterface;
 	params->LockDownConfigRtcLock = config->LockDownConfigRtcLock;
-	params->LockDownConfigBiosLock = config->LockDownConfigBiosLock;
-	params->LockDownConfigSpiEiss = config->LockDownConfigSpiEiss;
+	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
+		params->LockDownConfigBiosInterface = 0;
+		params->LockDownConfigBiosLock = 0;
+		params->LockDownConfigSpiEiss = 0;
+	}
 	params->PchConfigSubSystemVendorId = config->PchConfigSubSystemVendorId;
 	params->PchConfigSubSystemId = config->PchConfigSubSystemId;
 	params->WakeConfigWolEnableOverride =
@@ -182,7 +180,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	 * To disable Heci, the Psf needs to be left unlocked
 	 * by FSP after end of post sequence. Based on the devicetree
 	 * setting, we set the appropriate PsfUnlock policy in Fsp,
-	 * do the changes and then lock it back in Coreboot
+	 * do the changes and then lock it back in coreboot
 	 *
 	 */
 	if (config->HeciEnabled == 0)
@@ -197,7 +195,20 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	dev = dev_find_slot(0, PCH_DEVFN_SPI);
 	params->ShowSpiController = dev->enabled;
 
+	/* Enable xDCI controller if enabled in devicetree and allowed */
+	dev = dev_find_slot(0, PCH_DEVFN_USBOTG);
+	if (!xdci_can_enable())
+		dev->enabled = 0;
+	params->XdciEnable = dev->enabled;
+
 	params->SendVrMbxCmd = config->SendVrMbxCmd;
+
+	/* Acoustic Noise Mitigation */
+	params->AcousticNoiseMitigation = config->AcousticNoiseMitigation;
+	params->SlowSlewRateForIa = config->SlowSlewRateForIa;
+	params->SlowSlewRateForGt = config->SlowSlewRateForGt;
+	params->SlowSlewRateForSa = config->SlowSlewRateForSa;
+	params->FastPkgCRampDisable = config->FastPkgCRampDisable;
 
 	soc_irq_settings(params);
 }
@@ -804,19 +815,19 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 	fsp_display_upd_value("SendVrMbxCmd", 1,
 		original->SendVrMbxCmd,
 		params->SendVrMbxCmd);
+	fsp_display_upd_value("AcousticNoiseMitigation", 1,
+		original->AcousticNoiseMitigation,
+		params->AcousticNoiseMitigation);
+	fsp_display_upd_value("SlowSlewRateForIa", 1,
+		original->SlowSlewRateForIa,
+		params->SlowSlewRateForIa);
+	fsp_display_upd_value("SlowSlewRateForGt", 1,
+		original->SlowSlewRateForGt,
+		params->SlowSlewRateForGt);
+	fsp_display_upd_value("SlowSlewRateForSa", 1,
+		original->SlowSlewRateForSa,
+		params->SlowSlewRateForSa);
+	fsp_display_upd_value("FastPkgCRampDisable", 1,
+		original->FastPkgCRampDisable,
+		params->FastPkgCRampDisable);
 }
-
-static void pci_set_subsystem(device_t dev, unsigned int vendor,
-	unsigned int device)
-{
-	if (!vendor || !device)
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				   pci_read_config32(dev, PCI_VENDOR_ID));
-	else
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				   (device << 16) | vendor);
-}
-
-struct pci_operations soc_pci_ops = {
-	.set_subsystem = &pci_set_subsystem
-};

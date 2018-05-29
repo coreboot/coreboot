@@ -30,24 +30,31 @@
 ## SUCH DAMAGE.
 ##
 
-export top := $(CURDIR)
-export src := src
-export srck := $(top)/util/kconfig
+top := $(CURDIR)
+src := src
+srck := $(top)/util/kconfig
 obj ?= build
 override obj := $(subst $(top)/,,$(abspath $(obj)))
-export obj
-export objutil ?= $(obj)/util
-export objk := $(objutil)/kconfig
+objutil ?= $(obj)/util
+objk := $(objutil)/kconfig
 absobj := $(abspath $(obj))
 
+COREBOOT_EXPORTS := COREBOOT_EXPORTS
+COREBOOT_EXPORTS += top src srck obj objutil objk
 
-export KCONFIG_AUTOHEADER := $(obj)/config.h
-export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
-export KCONFIG_DEPENDENCIES := $(obj)/auto.conf.cmd
-export KCONFIG_SPLITCONFIG := $(obj)/config
-export KCONFIG_TRISTATE := $(obj)/tristate.conf
-export KCONFIG_NEGATIVES := 1
-export KCONFIG_STRICT := 1
+DOTCONFIG ?= $(top)/.config
+KCONFIG_CONFIG = $(DOTCONFIG)
+KCONFIG_AUTOHEADER := $(obj)/config.h
+KCONFIG_AUTOCONFIG := $(obj)/auto.conf
+KCONFIG_DEPENDENCIES := $(obj)/auto.conf.cmd
+KCONFIG_SPLITCONFIG := $(obj)/config
+KCONFIG_TRISTATE := $(obj)/tristate.conf
+KCONFIG_NEGATIVES := 1
+KCONFIG_STRICT := 1
+
+COREBOOT_EXPORTS += KCONFIG_CONFIG KCONFIG_AUTOHEADER KCONFIG_AUTOCONFIG
+COREBOOT_EXPORTS += KCONFIG_DEPENDENCIES KCONFIG_SPLITCONFIG KCONFIG_TRISTATE
+COREBOOT_EXPORTS += KCONFIG_NEGATIVES KCONFIG_STRICT
 
 # directory containing the toplevel Makefile.inc
 TOPLEVEL := .
@@ -55,9 +62,6 @@ TOPLEVEL := .
 CONFIG_SHELL := sh
 KBUILD_DEFCONFIG := configs/defconfig
 UNAME_RELEASE := $(shell uname -r)
-DOTCONFIG ?= $(top)/.config
-KCONFIG_CONFIG = $(DOTCONFIG)
-export KCONFIG_CONFIG
 HAVE_DOTCONFIG := $(wildcard $(DOTCONFIG))
 MAKEFLAGS += -rR --no-print-directory
 
@@ -82,6 +86,8 @@ PREPROCESS_ONLY := -E -P -x assembler-with-cpp -undef -I .
 DOXYGEN := doxygen
 DOXYGEN_OUTPUT_DIR := doxygen
 
+export $(COREBOOT_EXPORTS)
+
 all: real-all
 
 help_coreboot help::
@@ -92,9 +98,8 @@ help_coreboot help::
 	@echo  '  distclean             - Remove build artifacts and config files'
 	@echo  '  doxygen               - Build doxygen documentation for coreboot'
 	@echo  '  doxyplatform          - Build doxygen documentation for the current platform'
-	@echo  '  what-jenkins-does     - Run platform build tests (Use CPUS=# for more cores)'
+	@echo  '  filelist              - Show files used in current build'
 	@echo  '  printall              - print makefile info for debugging'
-	@echo  '  lint / lint-stable    - run coreboot lint tools (all / minimal)'
 	@echo  '  gitconfig             - set up git to submit patches to coreboot'
 	@echo  '  ctags / ctags-project - make ctags file for all of coreboot or current board'
 	@echo  '  cscope / cscope-project - make cscope.out file for coreboot or current board'
@@ -124,6 +129,8 @@ endif
 ifeq ($(NOCOMPILE),1)
 include $(TOPLEVEL)/Makefile.inc
 include $(TOPLEVEL)/payloads/Makefile.inc
+include $(TOPLEVEL)/util/testing/Makefile.inc
+-include $(TOPLEVEL)/site-local/Makefile.inc
 real-all:
 	@echo "Error: Expected config file ($(DOTCONFIG)) not present." >&2
 	@echo "Please specify a config file or run 'make menuconfig' to" >&2
@@ -230,7 +237,7 @@ includemakefiles= \
 			$$(abspath $$(subst $(dir $(1))/,/,$$(addprefix $(dir $(1)),$$($(class)-y)))))))) \
 	$(foreach special,$(special-classes), \
 		$(foreach item,$($(special)-y), $(call $(special)-handler,$(dir $(1)),$(item)))) \
-	$(eval subdirs+=$$(subst $(CURDIR)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
+	$(eval subdirs+=$$(subst $(CURDIR)/,,$$(wildcard $$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y))))))
 
 # For each path in $(subdirs) call includemakefiles
 # Repeat until subdirs is empty
@@ -302,13 +309,19 @@ define create_cc_template
 # $4 additional dependencies
 ifn$(EMPTY)def $(1)-objs_$(2)_template
 de$(EMPTY)fine $(1)-objs_$(2)_template
+ifn$(EMPTY)eq ($(filter ads adb,$(2)),)
 $$(call src-to-obj,$1,$$(1).$2): $$(1).$2 $$(call create_ada_deps,$1,$$(call src-to-ali,$1,$$(1).$2)) $(KCONFIG_AUTOHEADER) $(4)
+	@printf "    GCC        $$$$(subst $$$$(obj)/,,$$$$(@))\n"
+	$(GCC_$(1)) \
+		$$$$(ADAFLAGS_$(1)) $$$$(addprefix -I,$$$$($(1)-ada-dirs)) \
+		$(3) -c -o $$$$@ $$$$<
+el$(EMPTY)se
+$$(call src-to-obj,$1,$$(1).$2): $$(1).$2 $(KCONFIG_AUTOHEADER) $(4)
 	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$(CC_$(1)) \
-		$$(if $$(filter-out ads adb,$(2)), \
-		   -MMD $$$$(CPPFLAGS_$(1)) $$$$(CFLAGS_$(1)) -MT $$$$(@), \
-		   $$$$(ADAFLAGS_$(1)) $$$$(addprefix -I,$$$$($(1)-ada-dirs))) \
+		-MMD $$$$(CPPFLAGS_$(1)) $$$$(CFLAGS_$(1)) -MT $$$$(@) \
 		$(3) -c -o $$$$@ $$$$<
+end$(EMPTY)if
 en$(EMPTY)def
 end$(EMPTY)if
 endef
@@ -339,8 +352,8 @@ $$(obj)/$(1)/b__$(1).adb: $$$$(filter-out $$(obj)/$(1)/b__$(1).ali,$$$$($(1)-ali
 			-L$(1)_ada -o $$(notdir $$@) \
 			$$(subst $$(dir $$@),,$$^)
 $$(obj)/$(1)/b__$(1).o: $$(obj)/$(1)/b__$(1).adb
-	@printf "    CC         $$(subst $$(obj)/,,$$@)\n"
-	$(CC_$(1)) $$(ADAFLAGS_$(1)) -c -o $$@ $$<
+	@printf "    GCC        $$(subst $$(obj)/,,$$@)\n"
+	$(GCC_$(1)) $$(ADAFLAGS_$(1)) -c -o $$@ $$<
 $(1)-objs += $$(obj)/$(1)/b__$(1).o
 $($(1)-alis): %.ali: %.o ;
 endef
@@ -363,10 +376,18 @@ ifndef NOMKDIR
 $(shell mkdir -p $(KCONFIG_SPLITCONFIG) $(objk)/lxdialog $(additional-dirs) $(alldirs))
 endif
 
-$(obj)/project_filelist.txt: all
-	find $(obj) -name "*.d" -exec cat {} \; | \
-	  sed 's/[:\\]/ /g' | sed 's/ /\n/g' | sort | uniq | \
+$(obj)/project_filelist.txt:
+	if [ -z "$(wildcard $(obj)/coreboot.rom)" ]; then \
+		echo "*** Error: Project must be built before generating file list ***"; \
+		exit 1; \
+	fi
+	find $(obj) -path "$(obj)/util" -prune -o -name "*.d" -exec cat {} \; | \
+	  sed "s|$(top)/||" | sed 's/[:\\]/ /g' | sed 's/ /\n/g' | sort | uniq | \
 	  grep -v '\.o$$' > $(obj)/project_filelist.txt
+
+filelist: $(obj)/project_filelist.txt
+	printf "\nFiles used in build:\n"
+	cat $(obj)/project_filelist.txt
 
 #works with either exuberant ctags or ctags.emacs
 ctags-project: clean-ctags $(obj)/project_filelist.txt
@@ -402,7 +423,7 @@ doxygen-clean:
 clean-for-update: doxygen-clean clean-for-update-target
 	rm -rf $(obj) .xcompile
 
-clean: clean-for-update clean-target
+clean: clean-for-update clean-target clean-utils
 	rm -f .ccwrap
 
 clean-cscope:
@@ -411,8 +432,19 @@ clean-cscope:
 clean-ctags:
 	rm -f tags
 
-distclean: clean clean-ctags clean-cscope distclean-payloads
+clean-utils:
+	$(foreach tool, $(TOOLLIST), \
+		$(MAKE) -C util/$(tool) clean MFLAGS= MAKEFLAGS= ;)
+
+distclean-utils:
+	$(foreach tool, $(TOOLLIST), \
+		$(MAKE) -C util/$(tool) distclean MFLAGS= MAKEFLAGS= ; \
+		rm -f /util/$(tool)/junit.xml;)
+
+distclean: clean clean-ctags clean-cscope distclean-payloads distclean-utils
 	rm -f .config .config.old ..config.tmp* .kconfig.d .tmpconfig* .ccwrap .xcompile
+	rm -rf coreboot-builds coreboot-builds-chromeos
+	rm -f abuild*.xml junit.xml* util/lint/junit.xml
 
 .PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean doxygen doxy doxygen_simple
 .PHONY: ctags-project cscope-project clean-ctags

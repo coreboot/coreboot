@@ -1,2 +1,0 @@
-config BOARD_HP_E_VECTRA_P2706T
-	bool "e-Vectra P2706T"

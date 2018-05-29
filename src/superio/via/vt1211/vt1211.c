@@ -112,7 +112,7 @@ static void vt1211_pnp_set_resources(struct device *dev)
 {
 	struct resource *res;
 
-#if CONFIG_CONSOLE_SERIAL && CONFIG_DRIVERS_UART_8250IO
+#if IS_ENABLED(CONFIG_CONSOLE_SERIAL) && IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)
 	/* TODO: Do the same for SP2? */
 	if (dev->path.pnp.device == VT1211_SP1) {
 		for (res = dev->resource_list; res; res = res->next) {
@@ -167,17 +167,17 @@ struct device_operations ops = {
 
 /* TODO: Check if 0x07f8 is correct for FDC/PP/SP1/SP2, the rest is correct. */
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, VT1211_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
-	{ &ops, VT1211_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
-	{ &ops, VT1211_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, VT1211_SP2,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, VT1211_MIDI, PNP_IO0 | PNP_IRQ0, {0xfffc, 0}, },
-	{ &ops, VT1211_GAME, PNP_IO0, {0xfff8, 0}, },
-	{ &ops, VT1211_GPIO, PNP_IO0 | PNP_IRQ0, {0xfff0, 0}, },
-	{ &ops, VT1211_WDG,  PNP_IO0 | PNP_IRQ0, {0xfff0, 0}, },
-	{ &ops, VT1211_WUC,  PNP_IO0 | PNP_IRQ0, {0xfff0, 0}, },
-	{ &ops, VT1211_HWM,  PNP_IO0 | PNP_IRQ0, {0xff00, 0}, },
-	{ &ops, VT1211_FIR,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0xff00, 0}, },
+	{ &ops, VT1211_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ &ops, VT1211_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ &ops, VT1211_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ &ops, VT1211_SP2,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ &ops, VT1211_MIDI, PNP_IO0 | PNP_IRQ0, 0xfffc, },
+	{ &ops, VT1211_GAME, PNP_IO0, 0xfff8, },
+	{ &ops, VT1211_GPIO, PNP_IO0 | PNP_IRQ0, 0xfff0, },
+	{ &ops, VT1211_WDG,  PNP_IO0 | PNP_IRQ0, 0xfff0, },
+	{ &ops, VT1211_WUC,  PNP_IO0 | PNP_IRQ0, 0xfff0, },
+	{ &ops, VT1211_HWM,  PNP_IO0 | PNP_IRQ0, 0xff00, },
+	{ &ops, VT1211_FIR,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0xff00, },
 	{ &ops, VT1211_ROM, },
 };
 

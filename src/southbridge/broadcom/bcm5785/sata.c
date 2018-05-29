@@ -42,13 +42,13 @@ static void sata_init(struct device *dev)
 
 		write32(mmio_base + 0x10f0, 0x40000001);
 		write32(mmio_base + 0x8c, 0x00ff2007);
-		mdelay( 10 );
+		mdelay(10);
 		write32(mmio_base + 0x8c, 0x78592009);
-		mdelay( 10 );
+		mdelay(10);
 		write32(mmio_base + 0x8c, 0x00082004);
-		mdelay( 10 );
+		mdelay(10);
 		write32(mmio_base + 0x8c, 0x00002004);
-		mdelay( 10 );
+		mdelay(10);
 
 		//init PHY
 
@@ -68,7 +68,8 @@ static void sata_init(struct device *dev)
 	}
 }
 
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void lpci_set_subsystem(struct device *dev, unsigned vendor,
+			       unsigned device)
 {
 	pci_write_config32(dev, 0x40,
 		((device & 0xffff) << 16) | (vendor & 0xffff));

@@ -44,13 +44,12 @@ int do_printk(int msg_level, const char *fmt, ...)
 	va_list args;
 	int i;
 
-	if (!console_log_level(msg_level))
+	if (IS_ENABLED(CONFIG_SQUELCH_EARLY_SMP) && ENV_CACHE_AS_RAM &&
+		!boot_cpu())
 		return 0;
 
-#if IS_ENABLED (CONFIG_SQUELCH_EARLY_SMP) && defined(__PRE_RAM__)
-	if (!boot_cpu())
+	if (!console_log_level(msg_level))
 		return 0;
-#endif
 
 	DISABLE_TRACE;
 #ifdef __PRE_RAM__

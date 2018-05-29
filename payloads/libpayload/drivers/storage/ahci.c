@@ -34,6 +34,7 @@
 #include <string.h>
 #include <libpayload.h>
 #include <pci.h>
+#include <pci/pci.h>
 #include <storage/ata.h>
 #include <storage/ahci.h>
 
@@ -222,6 +223,7 @@ static u32 working_controllers[] = {
 	0x8086 | 0x2929 << 16, /* Mobile ICH9 */
 	0x8086 | 0x1c03 << 16, /* Mobile Cougar Point PCH */
 	0x8086 | 0x1e03 << 16, /* Mobile Panther Point PCH */
+	0x8086 | 0xa102 << 16, /* Desktop / Mobile-Wks  Sunrise Point PCH */
 };
 #endif
 static void ahci_init_pci(pcidev_t dev)
@@ -257,7 +259,9 @@ static void ahci_init_pci(pcidev_t dev)
 	/* Reset host controller. */
 	ctrl->global_ctrl |= HBA_CTRL_RESET;
 	/* Reset has to be finished after 1s. */
-	delay(1);
+	int timeout = 10 * 1000; /* Time out after 10,000 * 100us == 1s. */
+	while (ctrl->global_ctrl & HBA_CTRL_RESET && timeout--)
+		udelay(100);
 	if (ctrl->global_ctrl & HBA_CTRL_RESET) {
 		printf("ahci: ERROR: "
 			"Controller reset didn't finish within 1s.\n");
@@ -266,6 +270,10 @@ static void ahci_init_pci(pcidev_t dev)
 
 	/* Set AHCI access mode. */
 	ctrl->global_ctrl |= HBA_CTRL_AHCI_EN;
+
+	/* Enable bus mastering. */
+	const u16 command = pci_read_config16(dev, PCI_COMMAND);
+	pci_write_config16(dev, PCI_COMMAND, command | PCI_COMMAND_MASTER);
 
 	/* Probe for devices. */
 	for (i = 0; i < 32; ++i) {

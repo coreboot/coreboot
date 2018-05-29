@@ -17,6 +17,7 @@
 #define _AGESA_HELPER_H_
 
 #include <stddef.h>
+#include <arch/cpu.h>
 
 enum {
 	PICK_DMI,       /* DMI Interface */
@@ -27,8 +28,11 @@ enum {
 	PICK_WHEA_CMC,  /* WHEA CMV table */
 	PICK_ALIB,      /* SACPI SSDT table with ALIB implementation */
 	PICK_IVRS,      /* IOMMU ACPI IVRS(I/O Virtualization Reporting Structure) table */
+	PICK_CRAT,      /* Component Resource Affinity Table table */
+	PICK_CDIT,      /* Component Locality Distance Information table */
 };
 
+void agesawrapper_setlateinitptr (void *Late);
 void *agesawrapper_getlateinitptr (int pick);
 
 void amd_initcpuio(void);
@@ -50,5 +54,11 @@ void EmptyHeap(void);
 
 #define HIGH_MEMORY_SCRATCH		0x30000
 
+void fixup_cbmem_to_UC(int s3resume);
+void recover_postcar_frame(struct postcar_frame *pcf, int s3resume);
+
+void restore_mtrr(void);
+void backup_mtrr(void *mtrr_store, u32 *mtrr_store_size);
+const void *OemS3Saved_MTRR_Storage(void);
 
 #endif /* _AGESA_HELPER_H_ */

@@ -97,7 +97,7 @@
 	}
 
 	/* Device Set State */
-	Method(XDSS, 2)
+	Method(XDSS, 1)
 	{
 		/* If Parameter Arg0 is (1 << 31) | (1 << 30), the
 		 * display switch was completed

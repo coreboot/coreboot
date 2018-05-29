@@ -181,29 +181,29 @@ permissions described in the GCC Runtime Library Exception, version
 /* About the target */
 
 #if BITS_PER_UNIT == 8
-typedef unsigned int gcov_unsigned_t __attribute__ ((mode(SI)));
-typedef unsigned int gcov_position_t __attribute__ ((mode(SI)));
+typedef unsigned int gcov_unsigned_t __attribute__((mode(SI)));
+typedef unsigned int gcov_position_t __attribute__((mode(SI)));
 #if LONG_LONG_TYPE_SIZE > 32
-typedef signed gcov_type __attribute__ ((mode(DI)));
+typedef signed gcov_type __attribute__((mode(DI)));
 #else
-typedef signed gcov_type __attribute__ ((mode(SI)));
+typedef signed gcov_type __attribute__((mode(SI)));
 #endif
 #else
 #if BITS_PER_UNIT == 16
-typedef unsigned int gcov_unsigned_t __attribute__ ((mode(HI)));
-typedef unsigned int gcov_position_t __attribute__ ((mode(HI)));
+typedef unsigned int gcov_unsigned_t __attribute__((mode(HI)));
+typedef unsigned int gcov_position_t __attribute__((mode(HI)));
 #if LONG_LONG_TYPE_SIZE > 32
-typedef signed gcov_type __attribute__ ((mode(SI)));
+typedef signed gcov_type __attribute__((mode(SI)));
 #else
-typedef signed gcov_type __attribute__ ((mode(HI)));
+typedef signed gcov_type __attribute__((mode(HI)));
 #endif
 #else
-typedef unsigned int gcov_unsigned_t __attribute__ ((mode(QI)));
-typedef unsigned int gcov_position_t __attribute__ ((mode(QI)));
+typedef unsigned int gcov_unsigned_t __attribute__((mode(QI)));
+typedef unsigned int gcov_position_t __attribute__((mode(QI)));
 #if LONG_LONG_TYPE_SIZE > 32
-typedef signed gcov_type __attribute__ ((mode(HI)));
+typedef signed gcov_type __attribute__((mode(HI)));
 #else
-typedef signed gcov_type __attribute__ ((mode(QI)));
+typedef signed gcov_type __attribute__((mode(QI)));
 #endif
 #endif
 #endif
@@ -270,7 +270,7 @@ typedef HOST_WIDEST_INT gcov_type;
 #pragma GCC poison gcov_read_string gcov_sync gcov_time gcov_magic
 
 #ifdef HAVE_GAS_HIDDEN
-#define ATTRIBUTE_HIDDEN  __attribute__ ((__visibility__("hidden")))
+#define ATTRIBUTE_HIDDEN  __attribute__((__visibility__("hidden")))
 #else
 #define ATTRIBUTE_HIDDEN
 #endif

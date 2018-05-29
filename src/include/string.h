@@ -4,6 +4,10 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#if !defined(__ROMCC__)
+#include <console/vtxprintf.h>
+#endif
+
 /* Stringify a token */
 #ifndef STRINGIFY
 #define _STRINGIFY(x)	#x
@@ -17,6 +21,7 @@ int memcmp(const void *s1, const void *s2, size_t n);
 void *memchr(const void *s, int c, size_t n);
 #if !defined(__ROMCC__)
 int snprintf(char *buf, size_t size, const char *fmt, ...);
+int vsnprintf(char *buf, size_t size, const char *fmt, va_list args);
 #endif
 
 // simple string functions
@@ -65,6 +70,26 @@ static inline char *strconcat(const char *s1, const char *s2)
 	return d;
 }
 #endif
+
+/**
+ * Find a character in a string.
+ *
+ * @param s The string.
+ * @param c The character.
+ * @return A pointer to the last occurrence of the character in the
+ * string, or NULL if the character was not encountered within the string.
+ */
+static inline char *strrchr(const char *s, int c)
+{
+	char *p = (char *)s + strlen(s);
+
+	for (; p >= s; p--) {
+		if (*p == c)
+			return p;
+	}
+
+	return NULL;
+}
 
 static inline char *strncpy(char *to, const char *from, int count)
 {

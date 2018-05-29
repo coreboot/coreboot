@@ -15,6 +15,7 @@
 
 #include <bootstate.h>
 #include <bootmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <imd.h>
@@ -22,29 +23,32 @@
 #include <string.h>
 #include <stdlib.h>
 #include <arch/early_variables.h>
-#if IS_ENABLED(CONFIG_ARCH_X86) && !IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
-#include <arch/acpi.h>
-#endif
 
 /*
- * We need special handling on x86 before ramstage because we cannot use global
- * variables (we're executing in-place from flash so we don't have a writable
- * data segment, and we cannot use CAR_GLOBAL here since that mechanism itself
- * is dependent on CBMEM). Therefore, we have to always try to partially recover
- * CBMEM from cbmem_top() whenever we try to access it. In other environments
- * we're not so constrained and just keep the backing imd struct in a global.
- * This also means that we can easily tell whether CBMEM has explicitly been
- * initialized or recovered yet on those platforms, and don't need to put the
- * burden on board or chipset code to tell us by returning NULL from cbmem_top()
- * before that point.
+ * We need special handling on x86 where CAR global migration is employed. One
+ * cannot use true globals in that circumstance because CAR is where the globals
+ * are backed -- creating a circular dependency. For non CAR platforms globals
+ * are free to be used as well as any stages that are purely executing out of
+ * RAM. For CAR platforms that don't migrate globals the as-linked globals can
+ * be used, but they need special decoration using CAR_GLOBAL. That ensures
+ * proper object placement in conjunction with the linker.
+ *
+ * For the CAR global migration platforms we have to always try to partially
+ * recover CBMEM from cbmem_top() whenever we try to access it. In other
+ * environments we're not so constrained and just keep the backing imd struct
+ * in a global. This also means that we can easily tell whether CBMEM has
+ * explicitly been initialized or recovered yet on those platforms, and don't
+ * need to put the burden on board or chipset code to tell us by returning
+ * NULL from cbmem_top() before that point.
  */
 #define CAN_USE_GLOBALS \
-	(!IS_ENABLED(CONFIG_ARCH_X86) || ENV_RAMSTAGE || ENV_POSTCAR)
+	(!IS_ENABLED(CONFIG_ARCH_X86) || ENV_RAMSTAGE || ENV_POSTCAR || \
+	 IS_ENABLED(CONFIG_NO_CAR_GLOBAL_MIGRATION))
 
 static inline struct imd *cbmem_get_imd(void)
 {
 	if (CAN_USE_GLOBALS) {
-		static struct imd imd_cbmem;
+		static struct imd imd_cbmem CAR_GLOBAL;
 		return &imd_cbmem;
 	}
 	return NULL;
@@ -106,11 +110,30 @@ void cbmem_initialize_empty(void)
 	cbmem_initialize_empty_id_size(0, 0);
 }
 
+void __weak cbmem_top_init(void)
+{
+}
+
+static void cbmem_top_init_once(void)
+{
+	/* Call one-time hook on expected cbmem init during boot. This sequence
+	   assumes first init call is in romstage for early cbmem init and
+	   ramstage for late cbmem init. */
+	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT) && !ENV_ROMSTAGE)
+		return;
+	if (IS_ENABLED(CONFIG_LATE_CBMEM_INIT) && !ENV_RAMSTAGE)
+		return;
+
+	cbmem_top_init();
+}
+
 void cbmem_initialize_empty_id_size(u32 id, u64 size)
 {
 	struct imd *imd;
 	struct imd imd_backing;
 	const int no_recovery = 0;
+
+	cbmem_top_init_once();
 
 	imd = imd_init_backing(&imd_backing);
 	imd_handle_init(imd, cbmem_top());
@@ -131,13 +154,6 @@ void cbmem_initialize_empty_id_size(u32 id, u64 size)
 	cbmem_run_init_hooks(no_recovery);
 }
 
-static inline int cbmem_fail_recovery(void)
-{
-	cbmem_initialize_empty();
-	cbmem_fail_resume();
-	return 1;
-}
-
 int cbmem_initialize(void)
 {
 	return cbmem_initialize_id_size(0, 0);
@@ -148,6 +164,8 @@ int cbmem_initialize_id_size(u32 id, u64 size)
 	struct imd *imd;
 	struct imd imd_backing;
 	const int recovery = 1;
+
+	cbmem_top_init_once();
 
 	imd = imd_init_backing(&imd_backing);
 	imd_handle_init(imd, cbmem_top());
@@ -276,20 +294,13 @@ void *cbmem_entry_start(const struct cbmem_entry *entry)
 	return imd_entry_at(imd, cbmem_to_imd(entry));
 }
 
-void cbmem_region_used(uintptr_t *base, size_t *size)
-{
-	void *baseptr;
-	imd_region_used(cbmem_get_imd(), &baseptr, size);
-	*base = (uintptr_t)baseptr;
-}
-
 void cbmem_add_bootmem(void)
 {
-	uintptr_t base = 0;
+	void *baseptr = NULL;
 	size_t size = 0;
 
-	cbmem_region_used(&base, &size);
-	bootmem_add_range(base, size, LB_MEM_TABLE);
+	imd_region_used(cbmem_get_imd(), &baseptr, &size);
+	bootmem_add_range((uintptr_t)baseptr, size, BM_MEM_TABLE);
 }
 
 #if ENV_RAMSTAGE || (IS_ENABLED(CONFIG_EARLY_CBMEM_LIST) \

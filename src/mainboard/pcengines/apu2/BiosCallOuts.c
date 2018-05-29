@@ -14,30 +14,21 @@
  */
 
 #include "AGESA.h"
-#include "amdlib.h"
 #include <spd_bin.h>
-#include <northbridge/amd/pi/BiosCallOuts.h>
-#include "Ids.h"
-#include "OptionsIds.h"
-#include "heapManager.h"
+#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "FchPlatform.h"
 #include "cbfs.h"
 #include "gpio_ftns.h"
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
 #include "imc.h"
-#endif
 #include "hudson.h"
 #include <stdlib.h>
 #include "bios_knobs.h"
 
-static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
+static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
 static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
-	{AGESA_ALLOCATE_BUFFER,          agesa_AllocateBuffer },
-	{AGESA_DEALLOCATE_BUFFER,        agesa_DeallocateBuffer },
-	{AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
 	{AGESA_READ_SPD,                 board_ReadSpd_from_cbfs },
 	{AGESA_DO_RESET,                 agesa_Reset },
 	{AGESA_READ_SPD_RECOVERY,        agesa_NoopUnsupported },
@@ -72,7 +63,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
  *  Configure platform specific Hudson device,
  *   such Azalia, SATA, IMC etc.
  */
-static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
+static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = (AMD_CONFIG_PARAMS *)ConfigPtr;
 	if (StdHeader->Func == AMD_INIT_RESET) {
@@ -101,9 +92,17 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		/* EHCI configuration */
 		FchParams->Usb.Ehci3Enable = !IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
 
+		if (IS_ENABLED(CONFIG_BOARD_PCENGINES_APU2)) {
+			// Disable EHCI 0 (port 0 to 3)
+			FchParams->Usb.Ehci1Enable = FALSE;
+		} else {
+			// Enable EHCI 0 (port 0 to 3)
+			FchParams->Usb.Ehci1Enable = check_ehci0();
+		}
 
-		FchParams->Usb.Ehci1Enable = check_ehci0();	// Enable EHCI 0 (port 0 to 3)
-		FchParams->Usb.Ehci2Enable = TRUE;	// Enable EHCI 1 ( port 4 to 7) port 4 and 5 to EHCI header port 6 and 7 to PCIe slot.
+		// Enable EHCI 1 ( port 4 to 7)
+		// port 4 and 5 to EHCI header port 6 and 7 to PCIe slot.
+		FchParams->Usb.Ehci2Enable = TRUE;
 
 		/* sata configuration */
 		FchParams->Sata.SataDevSlpPort0 = 0;	// Disable DEVSLP0 and 1 to make sure GPIO55 and 59 are not used by DEVSLP
@@ -129,7 +128,7 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status = AGESA_UNSUPPORTED;
 #ifdef __PRE_RAM__

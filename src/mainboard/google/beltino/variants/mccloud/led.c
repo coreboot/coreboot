@@ -22,7 +22,7 @@ void set_power_led(int state)
 	it8772f_gpio_led(IT8772F_GPIO_DEV,
 		1, 					/* set */
 		0x01, 					/* select */
-		state == LED_OFF ? 0x00 : 0x01,		/* polarity */
+		state == LED_BLINK ? 0x01 : 0x00,	/* polarity */
 		state == LED_BLINK ? 0x01 : 0x00,	/* pullup/pulldown */
 		0x01, 					/* output */
 		state == LED_BLINK ? 0x00 : 0x01,	/* I/O function */

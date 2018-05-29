@@ -72,8 +72,8 @@ chip soc/intel/baytrail
 		device pci 18.2 on  end # I2C2
 		device pci 18.3 off end # I2C3
 		device pci 18.4 off end # I2C4
-		device pci 18.5 off  end # I2C5
-		device pci 18.6 off  end # I2C6
+		device pci 18.5 off end # I2C5
+		device pci 18.6 off end # I2C6
 		device pci 18.7 off end # I2C7
 		device pci 1a.0 on  end # TXE
 		device pci 1b.0 on  end # HDA

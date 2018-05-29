@@ -180,7 +180,7 @@ _nc_Match_Next_Character_In_Item_Name
          or PREV_PATTERN scan this means, that there was no additional match.
          If we searched with an expanded new pattern, we should never reach
          this point, because if the expanded pattern matches also the actual
-         item we will find it in the first attempt (passed==FALSE) and we
+         item we will find it in the first attempt (passed == FALSE) and we
          will never cycle through the whole item array.
        */
       assert(ch == 0 || ch == BS);

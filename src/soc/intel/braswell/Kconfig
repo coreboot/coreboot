@@ -23,6 +23,7 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_HARD_RESET
 	select NO_FIXED_XIP_ROM_SIZE
 	select RELOCATABLE_MODULES
+	select RELOCATABLE_RAMSTAGE
 	select PARALLEL_MP
 	select PCIEXP_ASPM
 	select PCIEXP_CLK_PM
@@ -45,6 +46,10 @@ config CPU_SPECIFIC_OPTIONS
 	select USE_GENERIC_FSP_CAR_INC
 	select HAVE_INTEL_FIRMWARE
 	select HAVE_SPI_CONSOLE_SUPPORT
+	select HAVE_FSP_GOP
+	select GENERIC_GPIO_LIB
+	select INTEL_GMA_ACPI
+	select INTEL_GMA_SWSMISCI
 
 config VBOOT
 	select VBOOT_STARTS_IN_ROMSTAGE
@@ -54,7 +59,7 @@ config BOOTBLOCK_CPU_INIT
 	default "soc/intel/braswell/bootblock/bootblock.c"
 
 config MMCONF_BASE_ADDRESS
-	hex "PCIe CFG Base Address"
+	hex
 	default 0xe0000000
 
 config MAX_CPUS
@@ -87,11 +92,11 @@ config SMM_RESERVED_SIZE
 #
 
 config DCACHE_RAM_BASE
-	hex "Temporary RAM Base Address"
+	hex
 	default 0xfef00000
 
 config DCACHE_RAM_SIZE
-	hex "Temporary RAM Size"
+	hex
 	default 0x4000
 	help
 	  The size of the cache-as-ram region required during bootblock

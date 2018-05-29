@@ -1,2 +1,0 @@
-config BOARD_WYSE_S50
-	bool "S50"

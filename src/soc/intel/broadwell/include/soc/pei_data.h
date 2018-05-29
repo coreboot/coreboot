@@ -30,6 +30,7 @@
 #define PEI_DATA_H
 
 #include <types.h>
+#include <compiler.h>
 #include <memory_info.h>
 
 #define PEI_VERSION 22
@@ -74,7 +75,7 @@ struct usb2_port_setting {
 	uint8_t enable;
 	uint8_t oc_pin;
 	uint8_t location;
-} __attribute__((packed));
+} __packed;
 
 struct usb3_port_setting {
 	uint8_t enable;
@@ -84,7 +85,7 @@ struct usb3_port_setting {
 	 * Set to 1 if trace length is <= 5 inches
 	 */
 	uint8_t fixed_eq;
-} __attribute__((packed));
+} __packed;
 
 struct pei_data {
 	uint32_t pei_version;
@@ -191,7 +192,7 @@ struct pei_data {
 	void *data_to_save;
 	int data_to_save_size;
 	struct memory_info meminfo;
-} __attribute__((packed));
+} __packed;
 
 typedef struct pei_data PEI_DATA;
 

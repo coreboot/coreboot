@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <delay.h>
@@ -66,7 +67,7 @@ static int sata_drive_detect(int portnum, uint16_t iobar)
 }
 
 /* This function can be overloaded in mainboard.c */
-void __attribute__((weak)) sb7xx_51xx_setup_sata_phys(struct device *dev)
+void __weak sb7xx_51xx_setup_sata_phys(struct device *dev)
 {
 	/* RPR7.6.1 Program the PHY Global Control to 0x2C00 */
 	pci_write_config16(dev, 0x86, 0x2c00);
@@ -89,7 +90,7 @@ void __attribute__((weak)) sb7xx_51xx_setup_sata_phys(struct device *dev)
 }
 
 /* This function can be overloaded in mainboard.c */
-void __attribute__((weak)) sb7xx_51xx_setup_sata_port_indication(void *sata_bar5)
+void __weak sb7xx_51xx_setup_sata_port_indication(void *sata_bar5)
 {
 	uint32_t dword;
 
@@ -132,7 +133,7 @@ static void sata_init(struct device *dev)
 	if (get_option(&nvram, "sata_alpm") == CB_SUCCESS)
 		sata_alpm_enable = !!nvram;
 
-	device_t sm_dev;
+	struct device *sm_dev;
 	/* SATA SMBus Disable */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 
@@ -169,7 +170,7 @@ static void sata_init(struct device *dev)
 	byte |= (1 << 3);
 	pci_write_config8(sm_dev, 0xad, byte);
 
-	device_t ide_dev;
+	struct device *ide_dev;
 	/* IDE Device */
 	ide_dev = dev_find_slot(0, PCI_DEVFN(0x14, 1));
 
@@ -350,7 +351,7 @@ static void sata_init(struct device *dev)
 	byte |= 7 << 0;
 	pci_write_config8(dev, 0x4, byte);
 
-#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 	/* Master Latency Timer */
 	pci_write_config32(dev, 0xC, 0x00004000);
 #endif

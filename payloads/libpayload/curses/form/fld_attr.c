@@ -43,7 +43,7 @@ NCURSES_IMPEXP int NCURSES_API set_field_ ## name (FIELD * field, chtype attr)\
 {\
    int res = E_BAD_ARGUMENT;\
    T((T_CALLED("set_field_" #name "(%p,%s)"), field, _traceattr(attr)));\
-   if ( attr==A_NORMAL || ((attr & A_ATTRIBUTES)==attr) )\
+   if ( attr == A_NORMAL || ((attr & A_ATTRIBUTES) == attr) )\
      {\
        Normalize_Field( field );\
        if (field != 0) \

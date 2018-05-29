@@ -52,7 +52,7 @@
 #include <device/device.h>
 #include "compat/rtas.h"
 
-#if CONFIG_X86EMU_DEBUG_TIMINGS
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_TIMINGS)
 struct mono_time zero;
 #endif
 
@@ -87,44 +87,44 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 {
 	u8 *rom_image;
 	int i = 0;
-#if CONFIG_X86EMU_DEBUG
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG)
 	debug_flags = 0;
-#if CONFIG_X86EMU_DEBUG_JMP
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_JMP)
 	debug_flags |= DEBUG_JMP;
 #endif
-#if CONFIG_X86EMU_DEBUG_TRACE
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_TRACE)
 	debug_flags |= DEBUG_TRACE_X86EMU;
 #endif
-#if CONFIG_X86EMU_DEBUG_PNP
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_PNP)
 	debug_flags |= DEBUG_PNP;
 #endif
-#if CONFIG_X86EMU_DEBUG_DISK
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_DISK)
 	debug_flags |= DEBUG_DISK;
 #endif
-#if CONFIG_X86EMU_DEBUG_PMM
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_PMM)
 	debug_flags |= DEBUG_PMM;
 #endif
-#if CONFIG_X86EMU_DEBUG_VBE
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_VBE)
 	debug_flags |= DEBUG_VBE;
 #endif
-#if CONFIG_X86EMU_DEBUG_INT10
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_INT10)
 	debug_flags |= DEBUG_PRINT_INT10;
 #endif
-#if CONFIG_X86EMU_DEBUG_INTERRUPTS
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_INTERRUPTS)
 	debug_flags |= DEBUG_INTR;
 #endif
-#if CONFIG_X86EMU_DEBUG_CHECK_VMEM_ACCESS
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_CHECK_VMEM_ACCESS)
 	debug_flags |= DEBUG_CHECK_VMEM_ACCESS;
 #endif
-#if CONFIG_X86EMU_DEBUG_MEM
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_MEM)
 	debug_flags |= DEBUG_MEM;
 #endif
-#if CONFIG_X86EMU_DEBUG_IO
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_IO)
 	debug_flags |= DEBUG_IO;
 #endif
 
 #endif
-#if CONFIG_X86EMU_DEBUG_TIMINGS
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_TIMINGS)
 	/* required for i915tool compatible output */
 	zero.microseconds = 0;
 #endif
@@ -345,7 +345,7 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	 * some boot device status in AX (see PNP BIOS Spec Section 3.3
 	 */
 	DEBUG_PRINTF_CS_IP("Option ROM Exit Status: %04x\n", M.x86.R_AX);
-#if CONFIG_X86EMU_DEBUG
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG)
 	DEBUG_PRINTF("Exit Status Decode:\n");
 	if (M.x86.R_AX & 0x100) {	// bit 8
 		DEBUG_PRINTF

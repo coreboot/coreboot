@@ -21,7 +21,7 @@
 #include <device/pci_ops.h>
 #include "bcm5785.h"
 
-static void bcm5785_ide_read_resources(device_t dev)
+static void bcm5785_ide_read_resources(struct device *dev)
 {
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);
@@ -36,7 +36,8 @@ static void ide_init(struct device *dev)
 {
 }
 
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void lpci_set_subsystem(struct device *dev, unsigned vendor,
+			       unsigned device)
 {
 	pci_write_config32(dev, 0x40,
 		((device & 0xffff) << 16) | (vendor & 0xffff));

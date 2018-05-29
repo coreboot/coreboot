@@ -296,8 +296,9 @@ int LzmaDecode(CLzmaDecoderState *vs,
 							previousByte;
 
 						continue;
-					} else
+					} else {
 						UpdateBit1(prob);
+					}
 				} else {
 					UInt32 distance;
 					UpdateBit1(prob);

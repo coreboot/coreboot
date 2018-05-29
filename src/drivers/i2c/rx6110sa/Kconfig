@@ -1,0 +1,5 @@
+config DRIVERS_I2C_RX6110SA
+	bool
+	default n
+	help
+	  Enable support for external RTC chip RX6110 SA.

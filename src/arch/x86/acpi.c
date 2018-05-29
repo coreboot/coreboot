@@ -8,7 +8,7 @@
  * Copyright (C) 2005-2009 coresystems GmbH
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
  * Raptor Engineering
- * Copyright (C) 2016 Siemens AG
+ * Copyright (C) 2016-2017 Siemens AG
  *
  * ACPI FADT, FACS, and DSDT table support added by
  * Nick Barker <nick.barker9@btinternet.com>, and those portions
@@ -44,6 +44,7 @@
 #include <arch/acpigen.h>
 #include <device/pci.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/cpu.h>
 #include <cbfs.h>
@@ -639,7 +640,7 @@ void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 	header->checksum = acpi_checksum((void *)ivrs, header->length);
 }
 
-unsigned long acpi_write_hpet(device_t device, unsigned long current,
+unsigned long acpi_write_hpet(struct device *device, unsigned long current,
 	acpi_rsdp_t *rsdp)
 {
 	acpi_hpet_t *hpet;
@@ -654,6 +655,122 @@ unsigned long acpi_write_hpet(device_t device, unsigned long current,
 	current = ALIGN(current, 16);
 	acpi_create_hpet(hpet);
 	acpi_add_table(rsdp, hpet);
+
+	return current;
+}
+
+void acpi_create_dbg2(acpi_dbg2_header_t *dbg2,
+		      int port_type, int port_subtype,
+		      acpi_addr_t *address, uint32_t address_size,
+		      const char *device_path)
+{
+	uintptr_t current;
+	acpi_dbg2_device_t *device;
+	uint32_t *dbg2_addr_size;
+	acpi_header_t *header;
+	size_t path_len;
+	const char *path;
+	char *namespace;
+
+	/* Fill out header fields. */
+	current = (uintptr_t)dbg2;
+	memset(dbg2, 0, sizeof(acpi_dbg2_header_t));
+	header = &(dbg2->header);
+	header->revision = 0;
+	memcpy(header->signature, "DBG2", 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+
+	/* One debug device defined */
+	dbg2->devices_offset = sizeof(acpi_dbg2_header_t);
+	dbg2->devices_count = 1;
+	current += sizeof(acpi_dbg2_header_t);
+
+	/* Device comes after the header */
+	device = (acpi_dbg2_device_t *)current;
+	memset(device, 0, sizeof(acpi_dbg2_device_t));
+	current += sizeof(acpi_dbg2_device_t);
+
+	device->revision = 0;
+	device->address_count = 1;
+	device->port_type = port_type;
+	device->port_subtype = port_subtype;
+
+	/* Base Address comes after device structure */
+	memcpy((void *)current, address, sizeof(acpi_addr_t));
+	device->base_address_offset = current - (uintptr_t)device;
+	current += sizeof(acpi_addr_t);
+
+	/* Address Size comes after address structure */
+	dbg2_addr_size = (uint32_t *)current;
+	device->address_size_offset = current - (uintptr_t)device;
+	*dbg2_addr_size = address_size;
+	current += sizeof(uint32_t);
+
+	/* Namespace string comes last, use '.' if not provided */
+	path = device_path ? : ".";
+	/* Namespace string length includes NULL terminator */
+	path_len = strlen(path) + 1;
+	namespace = (char *)current;
+	device->namespace_string_length = path_len;
+	device->namespace_string_offset = current - (uintptr_t)device;
+	strncpy(namespace, path, path_len);
+	current += path_len;
+
+	/* Update structure lengths and checksum */
+	device->length = current - (uintptr_t)device;
+	header->length = current - (uintptr_t)dbg2;
+	header->checksum = acpi_checksum((uint8_t *)dbg2, header->length);
+}
+
+unsigned long acpi_write_dbg2_pci_uart(acpi_rsdp_t *rsdp, unsigned long current,
+				       struct device *dev, uint8_t access_size)
+{
+	acpi_dbg2_header_t *dbg2 = (acpi_dbg2_header_t *)current;
+	struct resource *res;
+	acpi_addr_t address;
+
+	if (!dev) {
+		printk(BIOS_ERR, "%s: Device not found\n", __func__);
+		return current;
+	}
+	if (!dev->enabled) {
+		printk(BIOS_INFO, "%s: Device not enabled\n", __func__);
+		return current;
+	}
+	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	if (!res) {
+		printk(BIOS_ERR, "%s: Unable to find resource for %s\n",
+		       __func__, dev_path(dev));
+		return current;
+	}
+
+	memset(&address, 0, sizeof(address));
+	if (res->flags & IORESOURCE_IO)
+		address.space_id = ACPI_ADDRESS_SPACE_IO;
+	else if (res->flags & IORESOURCE_MEM)
+		address.space_id = ACPI_ADDRESS_SPACE_MEMORY;
+	else {
+		printk(BIOS_ERR, "%s: Unknown address space type\n", __func__);
+		return current;
+	}
+
+	address.addrl = (uint32_t)res->base;
+	address.addrh = (uint32_t)((res->base >> 32) & 0xffffffff);
+	address.access_size = access_size;
+
+	acpi_create_dbg2(dbg2,
+			 ACPI_DBG2_PORT_SERIAL,
+			 ACPI_DBG2_PORT_SERIAL_16550,
+			 &address, res->size,
+			 acpi_device_path(dev));
+
+	if (dbg2->header.length) {
+		current += dbg2->header.length;
+		current = acpi_align_current(current);
+		acpi_add_table(rsdp, dbg2);
+	}
 
 	return current;
 }
@@ -855,7 +972,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 }
 #endif
 
-unsigned long __attribute__ ((weak)) fw_cfg_acpi_tables(unsigned long start)
+unsigned long __weak fw_cfg_acpi_tables(unsigned long start)
 {
 	return 0;
 }
@@ -1122,7 +1239,7 @@ void acpi_save_gnvs(u32 gnvs_address)
 		*gnvs = gnvs_address;
 }
 
-__attribute__ ((weak)) int acpi_get_gpe(int gpe)
+__weak int acpi_get_gpe(int gpe)
 {
 	return -1; /* implemented by SOC */
 }

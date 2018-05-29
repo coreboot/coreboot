@@ -439,11 +439,7 @@ usb_hid_init (usbdev_t *dev)
 			boot_protos[interface->bInterfaceProtocol]);
 		switch (interface->bInterfaceProtocol) {
 		case hid_boot_proto_keyboard:
-			dev->data = malloc (sizeof (usbhid_inst_t));
-			if (!dev->data)
-				fatal("Not enough memory for USB HID device.\n");
-			memset(&HID_INST(dev)->previous, 0x00,
-			       sizeof(HID_INST(dev)->previous));
+			dev->data = xzalloc (sizeof (usbhid_inst_t));
 			usb_debug ("  configuring...\n");
 			usb_hid_set_protocol(dev, interface, hid_proto_boot);
 			usb_hid_set_idle(dev, interface, KEYBOARD_REPEAT_MS);

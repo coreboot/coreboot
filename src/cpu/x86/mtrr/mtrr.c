@@ -36,8 +36,8 @@
 #include <arch/cpu.h>
 #include <arch/acpi.h>
 #include <memrange.h>
-#if CONFIG_X86_AMD_FIXED_MTRRS
 #include <cpu/amd/mtrr.h>
+#if IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS)
 #define MTRR_FIXED_WRBACK_BITS (MTRR_READ_MEM | MTRR_WRITE_MEM)
 #else
 #define MTRR_FIXED_WRBACK_BITS 0
@@ -83,6 +83,30 @@ void enable_fixed_mtrr(void)
 	wrmsr(MTRR_DEF_TYPE_MSR, msr);
 }
 
+void fixed_mtrrs_expose_amd_rwdram(void)
+{
+	msr_t syscfg;
+
+	if (!IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS))
+		return;
+
+	syscfg = rdmsr(SYSCFG_MSR);
+	syscfg.lo |= SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, syscfg);
+}
+
+void fixed_mtrrs_hide_amd_rwdram(void)
+{
+	msr_t syscfg;
+
+	if (!IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS))
+		return;
+
+	syscfg = rdmsr(SYSCFG_MSR);
+	syscfg.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, syscfg);
+}
+
 static void enable_var_mtrr(unsigned char deftype)
 {
 	msr_t msr;
@@ -105,26 +129,12 @@ static void enable_var_mtrr(unsigned char deftype)
 #define RANGE_TO_PHYS_ADDR(x) (((resource_t)(x)) << RANGE_SHIFT)
 #define NUM_FIXED_MTRRS (NUM_FIXED_RANGES / RANGES_PER_FIXED_MTRR)
 
-/* The minimum alignment while handling variable MTRR ranges is 64MiB. */
-#define MTRR_MIN_ALIGN PHYS_TO_RANGE_ADDR(64 << 20)
 /* Helpful constants. */
 #define RANGE_1MB PHYS_TO_RANGE_ADDR(1 << 20)
 #define RANGE_4GB (1 << (ADDR_SHIFT_TO_RANGE_SHIFT(32)))
 
-/*
- * The default MTRR type selection uses 3 approaches for selecting the
- * optimal number of variable MTRRs.  For each range do 3 calculations:
- *   1. UC as default type with no holes at top of range.
- *   2. UC as default using holes at top of range.
- *   3. WB as default.
- * If using holes is optimal for a range when UC is the default type the
- * tag is updated to direct the commit routine to use a hole at the top
- * of a range.
- */
 #define MTRR_ALGO_SHIFT (8)
 #define MTRR_TAG_MASK ((1 << MTRR_ALGO_SHIFT) - 1)
-/* If the default type is UC use the hole carving algorithm for a range. */
-#define MTRR_RANGE_UC_USE_HOLE (1 << MTRR_ALGO_SHIFT)
 
 static inline uint32_t range_entry_base_mtrr_addr(struct range_entry *r)
 {
@@ -310,6 +320,8 @@ static void commit_fixed_mtrrs(void)
 	msr_t fixed_msrs[NUM_FIXED_MTRRS];
 	unsigned long msr_index[NUM_FIXED_MTRRS];
 
+	fixed_mtrrs_expose_amd_rwdram();
+
 	memset(&fixed_msrs, 0, sizeof(fixed_msrs));
 
 	msr_num = 0;
@@ -351,6 +363,8 @@ static void commit_fixed_mtrrs(void)
 	for (i = 0; i < ARRAY_SIZE(fixed_msrs); i++)
 		wrmsr(msr_index[i], fixed_msrs[i]);
 	enable_cache();
+	fixed_mtrrs_hide_amd_rwdram();
+
 }
 
 void x86_setup_fixed_mtrrs_no_enable(void)
@@ -413,8 +427,7 @@ static void prep_var_mtrr(struct var_mtrr_state *var_state,
 	if (var_state->mtrr_index >= bios_mtrrs)
 		printk(BIOS_WARNING, "Taking a reserved OS MTRR.\n");
 	if (var_state->mtrr_index >= total_mtrrs) {
-		printk(BIOS_ERR, "ERROR: Not enough MTRRs available! MTRR index"
-		       "is %d with %d MTTRs in total.\n",
+		printk(BIOS_ERR, "ERROR: Not enough MTRRs available! MTRR index is %d with %d MTRRs in total.\n",
 		       var_state->mtrr_index, total_mtrrs);
 		return;
 	}
@@ -471,22 +484,77 @@ static void calc_var_mtrr_range(struct var_mtrr_state *var_state,
 	}
 }
 
+static uint32_t optimize_var_mtrr_hole(const uint32_t base,
+				       const uint32_t hole,
+				       const uint64_t limit,
+				       const int carve_hole)
+{
+	/*
+	 * With default type UC, we can potentially optimize a WB
+	 * range with unaligned upper end, by aligning it up and
+	 * carving the added "hole" out again.
+	 *
+	 * To optimize the upper end of the hole, we will test
+	 * how many MTRRs calc_var_mtrr_range() will spend for any
+	 * alignment of the hole's upper end.
+	 *
+	 * We take four parameters, the lower end of the WB range
+	 * `base`, upper end of the WB range as start of the `hole`,
+	 * a `limit` how far we may align the upper end of the hole
+	 * up and a flag `carve_hole` whether we should count MTRRs
+	 * for carving the hole out. We return the optimal upper end
+	 * for the hole (which may be the same as the end of the WB
+	 * range in case we don't gain anything by aligning up).
+	 */
+
+	const int dont_care = 0;
+	struct var_mtrr_state var_state = { 0, };
+
+	unsigned int align, best_count;
+	uint32_t best_end = hole;
+
+	/* calculate MTRR count for the WB range alone (w/o a hole) */
+	calc_var_mtrr_range(&var_state, base, hole - base, dont_care);
+	best_count = var_state.mtrr_index;
+	var_state.mtrr_index = 0;
+
+	for (align = fls(hole) + 1; align <= fms(hole); ++align) {
+		const uint64_t hole_end = ALIGN_UP((uint64_t)hole, 1 << align);
+		if (hole_end > limit)
+			break;
+
+		/* calculate MTRR count for this alignment */
+		calc_var_mtrr_range(
+			&var_state, base, hole_end - base, dont_care);
+		if (carve_hole)
+			calc_var_mtrr_range(
+				&var_state, hole, hole_end - hole, dont_care);
+
+		if (var_state.mtrr_index < best_count) {
+			best_count = var_state.mtrr_index;
+			best_end = hole_end;
+		}
+		var_state.mtrr_index = 0;
+	}
+
+	return best_end;
+}
+
 static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
 				     struct range_entry *r)
 {
 	uint32_t a1, a2, b1, b2;
-	int mtrr_type;
-	struct range_entry *next;
+	int mtrr_type, carve_hole;
 
 	/*
 	 * Determine MTRRs based on the following algorithm for the given entry:
 	 * +------------------+ b2 = ALIGN_UP(end)
 	 * |  0 or more bytes | <-- hole is carved out between b1 and b2
-	 * +------------------+ a2 = b1 = end
+	 * +------------------+ a2 = b1 = original end
 	 * |                  |
 	 * +------------------+ a1 = begin
 	 *
-	 * Thus, there are 3 sub-ranges to configure variable MTRRs for.
+	 * Thus, there are up to 2 sub-ranges to configure variable MTRRs for.
 	 */
 	mtrr_type = range_entry_mtrr_type(r);
 
@@ -513,99 +581,57 @@ static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
 	if (!var_state->above4gb && a2 > RANGE_4GB)
 		a2 = RANGE_4GB;
 
-	next = memranges_next_entry(var_state->addr_space, r);
-
 	b1 = a2;
+	b2 = a2;
+	carve_hole = 0;
 
-	/* First check if a1 is >= 4GiB and the current entry is the last
-	 * entry. If so perform an optimization of covering a larger range
-	 * defined by the base address' alignment. */
-	if (a1 >= RANGE_4GB && next == NULL) {
-		uint32_t addr_lsb;
-
-		addr_lsb = fls(a1);
-		b2 = (1 << addr_lsb) + a1;
-		if (b2 >= a2) {
-			calc_var_mtrr_range(var_state, a1, b2 - a1, mtrr_type);
-			return;
+	/* We only consider WB type ranges for hole-carving. */
+	if (mtrr_type == MTRR_TYPE_WRBACK) {
+		struct range_entry *next;
+		uint64_t b2_limit;
+		/*
+		 * Depending on the type of the next range, there are three
+		 * different situations to handle:
+		 *
+		 * 1. WB range is last in address space:
+		 *    Aligning up, up to the next power of 2, may gain us
+		 *    something.
+		 *
+		 * 2. The next range is of type UC:
+		 *    We may align up, up to the _end_ of the next range. If
+		 *    there is a gap between the current and the next range,
+		 *    it would have been covered by the default type UC anyway.
+		 *
+		 * 3. The next range is not of type UC:
+		 *    We may align up, up to the _base_ of the next range. This
+		 *    may either be the end of the current range (if the next
+		 *    range follows immediately) or the end of the gap between
+		 *    the ranges.
+		 */
+		next = memranges_next_entry(var_state->addr_space, r);
+		if (next == NULL) {
+			b2_limit = ALIGN_UP((uint64_t)b1, 1 << fms(b1));
+			/* If it's the last range above 4GiB, we won't carve
+			   the hole out. If an OS wanted to move MMIO there,
+			   it would have to override the MTRR setting using
+			   PAT just like it would with WB as default type. */
+			carve_hole = a1 < RANGE_4GB;
+		} else if (range_entry_mtrr_type(next)
+				== MTRR_TYPE_UNCACHEABLE) {
+			b2_limit = range_entry_end_mtrr_addr(next);
+			carve_hole = 1;
+		} else {
+			b2_limit = range_entry_base_mtrr_addr(next);
+			carve_hole = 1;
 		}
-	}
-
-	/* Handle the min alignment roundup case. */
-	b2 = ALIGN_UP(a2, MTRR_MIN_ALIGN);
-
-	/* Check against the next range. If the current range_entry is the
-	 * last entry then carving a hole is no problem. If the current entry
-	 * isn't the last entry then check that the last entry covers the
-	 * entire hole range with the default mtrr type. */
-	if (next != NULL &&
-	    (range_entry_mtrr_type(next) != var_state->def_mtrr_type ||
-	     range_entry_end_mtrr_addr(next) < b2)) {
-		calc_var_mtrr_range(var_state, a1, a2 - a1, mtrr_type);
-		return;
+		b2 = optimize_var_mtrr_hole(a1, b1, b2_limit, carve_hole);
 	}
 
 	calc_var_mtrr_range(var_state, a1, b2 - a1, mtrr_type);
-	calc_var_mtrr_range(var_state, b1, b2 - b1, var_state->def_mtrr_type);
-}
-
-static void calc_var_mtrrs_without_hole(struct var_mtrr_state *var_state,
-					struct range_entry *r)
-{
-	uint32_t a1, a2, b1, b2, c1, c2;
-	int mtrr_type;
-
-	/*
-	 * For each range that meets the non-default type process it in the
-	 * following manner:
-	 * +------------------+ c2 = end
-	 * |  0 or more bytes |
-	 * +------------------+ b2 = c1 = ALIGN_DOWN(end)
-	 * |                  |
-	 * +------------------+ b1 = a2 = ALIGN_UP(begin)
-	 * |  0 or more bytes |
-	 * +------------------+ a1 = begin
-	 *
-	 * Thus, there are 3 sub-ranges to configure variable MTRRs for.
-	 */
-	mtrr_type = range_entry_mtrr_type(r);
-
-	a1 = range_entry_base_mtrr_addr(r);
-	c2 = range_entry_end_mtrr_addr(r);
-
-	/* The end address is within the first 1MiB. The fixed MTRRs take
-	 * precedence over the variable ones. Therefore this range
-	 * can be ignored. */
-	if (c2 <= RANGE_1MB)
-		return;
-
-	/* Again, the fixed MTRRs take precedence so the beginning
-	 * of the range can be set to 0 if it starts at or below 1MiB. */
-	if (a1 <= RANGE_1MB)
-		a1 = 0;
-
-	/* If the range starts above 4GiB the processing is done. */
-	if (!var_state->above4gb && a1 >= RANGE_4GB)
-		return;
-
-	/* Clip the upper address to 4GiB if addresses above 4GiB
-	 * are not being processed. */
-	if (!var_state->above4gb && c2 > RANGE_4GB)
-		c2 = RANGE_4GB;
-
-	/* Don't align up or down on the range if it is smaller
-	 * than the minimum granularity. */
-	if ((c2 - a1) < MTRR_MIN_ALIGN) {
-		calc_var_mtrr_range(var_state, a1, c2 - a1, mtrr_type);
-		return;
+	if (carve_hole && b2 != b1) {
+		calc_var_mtrr_range(var_state, b1, b2 - b1,
+				    MTRR_TYPE_UNCACHEABLE);
 	}
-
-	b1 = a2 = ALIGN_UP(a1, MTRR_MIN_ALIGN);
-	b2 = c1 = ALIGN_DOWN(c2, MTRR_MIN_ALIGN);
-
-	calc_var_mtrr_range(var_state, a1, a2 - a1, mtrr_type);
-	calc_var_mtrr_range(var_state, b1, b2 - b1, mtrr_type);
-	calc_var_mtrr_range(var_state, c1, c2 - c1, mtrr_type);
 }
 
 static void __calc_var_mtrrs(struct memranges *addr_space,
@@ -629,16 +655,14 @@ static void __calc_var_mtrrs(struct memranges *addr_space,
 	uc_deftype_count = 0;
 
 	/*
-	 * For each range do 3 calculations:
-	 *   1. UC as default type with no holes at top of range.
-	 *   2. UC as default using holes at top of range.
-	 *   3. WB as default.
+	 * For each range do 2 calculations:
+	 *   1. UC as default type with possible holes at top of range.
+	 *   2. WB as default.
 	 * The lowest count is then used as default after totaling all
-	 * MTRRs. Note that the optimal algorithm for UC default is marked in
-	 * the tag of each range regardless of final decision.  UC takes
-	 * precedence in the MTRR architecture. Therefore, only holes can be
-	 * used when the type of the region is MTRR_TYPE_WRBACK with
-	 * MTRR_TYPE_UNCACHEABLE as the default type.
+	 * MTRRs. UC takes precedence in the MTRR architecture. There-
+	 * fore, only holes can be used when the type of the region is
+	 * MTRR_TYPE_WRBACK with MTRR_TYPE_UNCACHEABLE as the default
+	 * type.
 	 */
 	memranges_each_entry(r, var_state.addr_space) {
 		int mtrr_type;
@@ -646,43 +670,16 @@ static void __calc_var_mtrrs(struct memranges *addr_space,
 		mtrr_type = range_entry_mtrr_type(r);
 
 		if (mtrr_type != MTRR_TYPE_UNCACHEABLE) {
-			int uc_hole_count;
-			int uc_no_hole_count;
-
-			var_state.def_mtrr_type = MTRR_TYPE_UNCACHEABLE;
 			var_state.mtrr_index = 0;
-
-			/* No hole calculation. */
-			calc_var_mtrrs_without_hole(&var_state, r);
-			uc_no_hole_count = var_state.mtrr_index;
-
-			/* Hole calculation only if type is WB. The 64 number
-			 * is a count that is unachievable, thus making it
-			 * a default large number in the case of not doing
-			 * the hole calculation. */
-			uc_hole_count = 64;
-			if (mtrr_type == MTRR_TYPE_WRBACK) {
-				var_state.mtrr_index = 0;
-				calc_var_mtrrs_with_hole(&var_state, r);
-				uc_hole_count = var_state.mtrr_index;
-			}
-
-			/* Mark the entry with the optimal algorithm. */
-			if (uc_no_hole_count < uc_hole_count) {
-				uc_deftype_count += uc_no_hole_count;
-			} else {
-				unsigned long new_tag;
-
-				new_tag = mtrr_type | MTRR_RANGE_UC_USE_HOLE;
-				range_entry_update_tag(r, new_tag);
-				uc_deftype_count += uc_hole_count;
-			}
+			var_state.def_mtrr_type = MTRR_TYPE_UNCACHEABLE;
+			calc_var_mtrrs_with_hole(&var_state, r);
+			uc_deftype_count += var_state.mtrr_index;
 		}
 
 		if (mtrr_type != MTRR_TYPE_WRBACK) {
 			var_state.mtrr_index = 0;
 			var_state.def_mtrr_type = MTRR_TYPE_WRBACK;
-			calc_var_mtrrs_without_hole(&var_state, r);
+			calc_var_mtrrs_with_hole(&var_state, r);
 			wb_deftype_count += var_state.mtrr_index;
 		}
 	}
@@ -739,21 +736,22 @@ static void prepare_var_mtrrs(struct memranges *addr_space, int def_type,
 	memranges_each_entry(r, var_state.addr_space) {
 		if (range_entry_mtrr_type(r) == def_type)
 			continue;
-
-		if (def_type == MTRR_TYPE_UNCACHEABLE &&
-		    (range_entry_tag(r) & MTRR_RANGE_UC_USE_HOLE))
-			calc_var_mtrrs_with_hole(&var_state, r);
-		else
-			calc_var_mtrrs_without_hole(&var_state, r);
+		calc_var_mtrrs_with_hole(&var_state, r);
 	}
 
 	/* Update the solution. */
 	sol->num_used = var_state.mtrr_index;
 }
 
-static void commit_var_mtrrs(const struct var_mtrr_solution *sol)
+static int commit_var_mtrrs(const struct var_mtrr_solution *sol)
 {
 	int i;
+
+	if (sol->num_used > total_mtrrs) {
+		printk(BIOS_WARNING, "Not enough MTRRs: %d vs %d\n",
+			sol->num_used, total_mtrrs);
+		return -1;
+	}
 
 	/* Write out the variable MTRRs. */
 	disable_cache();
@@ -767,6 +765,7 @@ static void commit_var_mtrrs(const struct var_mtrr_solution *sol)
 	enable_var_mtrr(sol->mtrr_default_type);
 	enable_cache();
 
+	return 0;
 }
 
 void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
@@ -848,9 +847,6 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 	memranges_each_entry(r, orig) {
 		unsigned long tag = range_entry_tag(r);
 
-		/* Remove any special tags from original solution. */
-		tag &= ~MTRR_RANGE_UC_USE_HOLE;
-
 		/* Remove any write combining MTRRs from the temporary
 		 * solution as it just fragments the address space. */
 		if (tag == MTRR_TYPE_WRCOMB)
@@ -872,10 +868,15 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 		calc_var_mtrrs(&addr_space, above4gb, address_bits);
 	prepare_var_mtrrs(&addr_space, sol.mtrr_default_type,
 				above4gb, address_bits, &sol);
-	commit_var_mtrrs(&sol);
+
+	if (commit_var_mtrrs(&sol) < 0)
+		printk(BIOS_WARNING, "Unable to insert temporary MTRR range: 0x%016llx - 0x%016llx size 0x%08llx type %d\n",
+			(long long)begin, (long long)begin + size,
+			(long long)size, type);
+	else
+		put_back_original_solution = true;
 
 	memranges_teardown(&addr_space);
-	put_back_original_solution = true;
 }
 
 static void remove_temp_solution(void *unused)

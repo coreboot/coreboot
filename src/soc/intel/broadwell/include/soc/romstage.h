@@ -33,7 +33,7 @@ asmlinkage void *romstage_main(unsigned long bist, uint32_t tsc_lo,
 			       uint32_t tsc_high);
 asmlinkage void romstage_after_car(void);
 void raminit(struct pei_data *pei_data);
-void *setup_stack_and_mttrs(void);
+void *setup_stack_and_mtrrs(void);
 
 struct chipset_power_state;
 struct chipset_power_state *fill_power_state(void);

@@ -20,7 +20,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
-static void agp3bridge_init(device_t dev)
+static void agp3bridge_init(struct device *dev)
 {
 	uint8_t byte;
 
@@ -46,7 +46,7 @@ static const struct pci_driver agp3bridge_driver __pci_driver = {
 	.device = 0x7455, // AGP Bridge
 };
 
-static void agp3dev_enable(device_t dev)
+static void agp3dev_enable(struct device *dev)
 {
 	uint32_t value;
 

@@ -9,11 +9,11 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  Includes
- * @e \$Revision: 309090 $   @e \$Date: 2014-12-09 12:28:05 -0600 (Tue, 09 Dec 2014) $
+ * @e \$Revision: 44324 $   @e \$Date: 2010-12-22 03:16:51 -0600 (Wed, 22 Dec 2010) $
  */
 /*****************************************************************************
  *
- * Copyright 2008 - 2015 ADVANCED MICRO DEVICES, INC.  All Rights Reserved.
+ * Copyright (c) 2008 - 2013, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***************************************************************************/
+
+#include <check_for_wrapper.h>
 
 #ifndef _PORTING_H_
 #define _PORTING_H_
@@ -101,6 +103,10 @@
     #define CALLCONV __pascal
     #define ROMDATA __based( __segname( "_CODE" ) )
     #define _16BYTE_ALIGN   __declspec(align(16))
+    #define _8BYTE_ALIGN   __declspec(align(8))
+    #define _4BYTE_ALIGN   __declspec(align(4))
+    #define _2BYTE_ALIGN   __declspec(align(2))
+    #define _1BYTE_ALIGN   __declspec(align(1))
 
     // Force tight packing of structures
     // Note: Entire AGESA (Project / Solution) will be using pragma pack 1
@@ -168,7 +174,15 @@
       #define VOLATILE volatile
       #define CALLCONV
       #define ROMDATA
-      #define _16BYTE_ALIGN __declspec(align(64))
+      #define _16BYTE_ALIGN   __declspec(align(64))
+      #define _8BYTE_ALIGN   __declspec(align(8))
+      #define _4BYTE_ALIGN   __declspec(align(4))
+      #define _2BYTE_ALIGN   __declspec(align(2))
+      #define _1BYTE_ALIGN   __declspec(align(1))
+      //Support for variadic macros was introduced in Visual C++ 2005.
+      #if _MSC_VER >= 1400
+        #define VA_ARGS_SUPPORTED
+      #endif
       // 64 bit of compiler
     #else
       #pragma warning (disable: 4100 4276 4214 4001 4142 4305 4306 4366)
@@ -199,7 +213,11 @@
         #define FALSE 0
       #endif
       typedef unsigned char BOOLEAN;
-
+      #define _16BYTE_ALIGN   __declspec(align(16))
+      #define _8BYTE_ALIGN   __declspec(align(8))
+      #define _4BYTE_ALIGN   __declspec(align(4))
+      #define _2BYTE_ALIGN   __declspec(align(2))
+      #define _1BYTE_ALIGN   __declspec(align(1))
       // Force tight packing of structures
       // Note: Entire AGESA (Project / Solution) will be using pragma pack 1
       #pragma pack(1)
@@ -216,53 +234,53 @@
 
 #elif defined __GNUC__
 
+  #include <stdint.h>
+
   #define IN
   #define OUT
   #define STATIC static
   #define VOLATILE volatile
   #define TRUE 1
   #define FALSE 0
-//  #undef CONST
   #define CONST const
   #define ROMDATA
   #define CALLCONV
-  #define _16BYTE_ALIGN __attribute__ ((aligned (16)))
-  #define _8BYTE_ALIGN __attribute__ ((aligned (8)))
-  #define _4BYTE_ALIGN __attribute__ ((aligned (4)))
-  #define _2BYTE_ALIGN __attribute__ ((aligned (2)))
-  #define _1BYTE_ALIGN __attribute__ ((aligned (1)))
+  #define _16BYTE_ALIGN __attribute__((aligned (16)))
+  #define _8BYTE_ALIGN __attribute__((aligned (8)))
+  #define _4BYTE_ALIGN __attribute__((aligned (4)))
+  #define _2BYTE_ALIGN __attribute__((aligned (2)))
+  #define _1BYTE_ALIGN __attribute__((aligned (1)))
 
+  typedef uintptr_t      UINTN;
+  typedef int64_t        INT64;
+  typedef uint64_t       UINT64;
+  typedef int32_t        INT32;
+  typedef uint32_t       UINT32;
+  typedef int16_t        INT16;
+  typedef uint16_t       UINT16;
+  typedef int8_t         INT8;
+  typedef uint8_t        UINT8;
+  typedef char           CHAR8;
+  typedef unsigned short CHAR16;
   typedef unsigned char  BOOLEAN;
-  typedef   signed char  INT8;
-  typedef   signed short INT16;
-  typedef   signed long  INT32;
-  typedef          char  CHAR8;
-  typedef unsigned char  UINT8;
-  typedef unsigned short UINT16;
-  typedef unsigned long  UINT32;
-  typedef unsigned long  UINTN;
-  typedef unsigned long  long UINT64;
-  typedef long  long INT64;
   typedef void VOID;
-  //typedef unsigned long  size_t;
-
-  //#include <intrin.h>                   // MingW-w64 library header
-#pragma pack(1)
 
 #define CODE_GROUP(arg)
 #define RDATA_GROUP(arg)
 
+#pragma pack(1)
+
 #define FUNC_ATTRIBUTE(arg) __attribute__((arg))
 #define MAKE_AS_A_STRING(arg) #arg
 #include <stddef.h>
-#include "gcc-intrin.h"
+#include <gcc-intrin.h>
 
 #include <assert.h>
-#include <console/console.h>
-#include <commonlib/loglevel.h>
+//#include <console/console.h>
+//#include <commonlib/loglevel.h>
 
 #ifndef NULL
-  #define NULL              (void *)0
+  #define NULL              ((void *)0)
 #endif
 
 #else

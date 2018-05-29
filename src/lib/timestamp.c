@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 The ChromiumOS Authors.  All rights reserved.
+ * Copyright (C) 2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +17,7 @@
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <symbols.h>
@@ -25,12 +27,12 @@
 #include <rules.h>
 #include <smp/node.h>
 
-#define MAX_TIMESTAMPS 84
+#define MAX_TIMESTAMPS 192
 
 /* When changing this number, adjust TIMESTAMP() size ASSERT() in memlayout.h */
 #define MAX_BSS_TIMESTAMP_CACHE 16
 
-struct __attribute__((__packed__)) timestamp_cache {
+struct __packed timestamp_cache {
 	uint32_t cache_state;
 	struct timestamp_table table;
 	/* The struct timestamp_table has a 0 length array as its last field.
@@ -152,6 +154,18 @@ static struct timestamp_table *timestamp_table_get(void)
 	return ts_table;
 }
 
+static const char *timestamp_name(enum timestamp_id id)
+{
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(timestamp_ids); i++) {
+		if (timestamp_ids[i].id == id)
+			return timestamp_ids[i].name;
+	}
+
+	return "Unknown timestamp ID";
+}
+
 static void timestamp_add_table_entry(struct timestamp_table *ts_table,
 				      enum timestamp_id id, uint64_t ts_time)
 {
@@ -163,6 +177,10 @@ static void timestamp_add_table_entry(struct timestamp_table *ts_table,
 	tse = &ts_table->entries[ts_table->num_entries++];
 	tse->entry_id = id;
 	tse->entry_stamp = ts_time - ts_table->base_time;
+
+	if (IS_ENABLED(CONFIG_TIMESTAMPS_ON_CONSOLE))
+		printk(BIOS_SPEW, "Timestamp - %s: %" PRIu64 "\n",
+				timestamp_name(id), ts_time);
 
 	if (ts_table->num_entries == ts_table->max_entries)
 		printk(BIOS_ERR, "ERROR: Timestamp table full\n");
@@ -298,11 +316,52 @@ static void timestamp_sync_cache_to_cbmem(int is_recovery)
 	ts_cache->cache_state = TIMESTAMP_CACHE_NOT_NEEDED;
 }
 
+void timestamp_rescale_table(uint16_t N, uint16_t M)
+{
+	uint32_t i;
+	struct timestamp_table *ts_table;
+
+	if (!timestamp_should_run())
+		return;
+
+	if (N == 0 || M == 0)
+		return;
+
+	ts_table = timestamp_table_get();
+
+	/* No timestamp table found */
+	if (ts_table == NULL) {
+		printk(BIOS_ERR, "ERROR: No timestamp table found\n");
+		return;
+	}
+
+	ts_table->base_time /= M;
+	ts_table->base_time *= N;
+	for (i = 0; i < ts_table->num_entries; i++) {
+		struct timestamp_entry *tse = &ts_table->entries[i];
+		tse->entry_stamp /= M;
+		tse->entry_stamp *= N;
+	}
+}
+
+/*
+ * Get the time in microseconds since boot (or more precise: since timestamp
+ * table was initialized).
+ */
+uint32_t get_us_since_boot(void)
+{
+	struct timestamp_table *ts = timestamp_table_get();
+
+	if (ts == NULL || ts->tick_freq_mhz == 0)
+		return 0;
+	return (timestamp_get() - ts->base_time) / ts->tick_freq_mhz;
+}
+
 ROMSTAGE_CBMEM_INIT_HOOK(timestamp_sync_cache_to_cbmem)
 RAMSTAGE_CBMEM_INIT_HOOK(timestamp_sync_cache_to_cbmem)
 
 /* Provide default timestamp implementation using monotonic timer. */
-uint64_t  __attribute__((weak)) timestamp_get(void)
+uint64_t  __weak timestamp_get(void)
 {
 	struct mono_time t1, t2;
 
@@ -316,7 +375,7 @@ uint64_t  __attribute__((weak)) timestamp_get(void)
 }
 
 /* Like timestamp_get() above this matches up with microsecond granularity. */
-int __attribute__((weak)) timestamp_tick_freq_mhz(void)
+int __weak timestamp_tick_freq_mhz(void)
 {
 	return 1;
 }

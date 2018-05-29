@@ -8,6 +8,9 @@ struct drivers_i2c_da7219_config {
 	/* Interrupt configuration */
 	struct acpi_irq irq;
 
+	/* Use GPIO based interrupt instead of PIRQ */
+	struct acpi_gpio irq_gpio;
+
 	/* I2C Bus Frequency in Hertz (default 400kHz) */
 	unsigned bus_speed;
 
@@ -103,4 +106,10 @@ struct drivers_i2c_da7219_config {
 	 * [<1>, <2>, <4>, <8>]
 	 */
 	unsigned adc_1bit_rpt;
+
+	/*
+	 * mclk-name : Pass the system clk to da7219
+	 * ["name of mclk" ]
+	 */
+	const char *mclk_name;
 };

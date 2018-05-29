@@ -31,11 +31,9 @@
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
 
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 static int width  = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_XRES;
 static int height = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_YRES;
 static u32 addr   = 0;
-#endif
 
 enum
   {
@@ -194,7 +192,6 @@ enum
 #define CIRRUS_SR_EXTENDED_MODE_32BPP      0x08
 #define CIRRUS_HIDDEN_DAC_888COLOR 0xc5
 
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 static void
 write_hidden_dac (uint8_t data)
 {
@@ -205,11 +202,9 @@ write_hidden_dac (uint8_t data)
 	inb (0x3c6);
 	outb (data, 0x3c6);
 }
-#endif
 
-static void cirrus_init(struct device *dev)
+static void cirrus_init_linear_fb(struct device *dev)
 {
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 	uint8_t cr_ext, cr_overlay;
 	unsigned pitch = (width * 4) / VGA_CR_PITCH_DIVISOR;
 	uint8_t sr_ext = 0, hidden_dac = 0;
@@ -334,11 +329,20 @@ static void cirrus_init(struct device *dev)
 	edid.panel_bits_per_pixel = 24;
 	edid_set_framebuffer_bits_per_pixel(&edid, 32, 0);
 	set_vbe_mode_info_valid(&edid, addr);
-#else
-	vga_misc_write(0x1);
+}
 
+static void cirrus_init_text_mode(struct device *dev)
+{
+	vga_misc_write(0x1);
 	vga_textmode_init();
-#endif
+}
+
+static void cirrus_init(struct device *dev)
+{
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER))
+		cirrus_init_linear_fb(dev);
+	else if (IS_ENABLED(CONFIG_VGA_TEXT_FRAMEBUFFER))
+		cirrus_init_text_mode(dev);
 }
 
 static struct device_operations qemu_cirrus_graph_ops = {

@@ -30,10 +30,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-/* The ALIX1.C has no SMBus; the setup is hard-wired. */
-static void cs5536_enable_smbus(void) { }
-
-#include "southbridge/amd/cs5536/early_setup.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
 
@@ -93,7 +89,6 @@ int spd_read_byte(unsigned int device, unsigned int address)
 }
 
 #include "northbridge/amd/lx/pll_reset.c"
-#include "lib/generic_sdram.c"
 #include "cpu/amd/geode_lx/cpureginit.c"
 #include "cpu/amd/geode_lx/syspreinit.c"
 #include "cpu/amd/geode_lx/msrinit.c"

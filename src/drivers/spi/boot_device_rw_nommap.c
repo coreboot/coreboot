@@ -17,13 +17,15 @@
 #include <boot_device.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
+#include <stdint.h>
 
-static struct spi_flash *sfg CAR_GLOBAL;
+static struct spi_flash sfg CAR_GLOBAL;
+static bool sfg_init_done CAR_GLOBAL;
 
 static ssize_t spi_readat(const struct region_device *rd, void *b,
 				size_t offset, size_t size)
 {
-	struct spi_flash *sf = car_get_var(sfg);
+	struct spi_flash *sf = car_get_var_ptr(&sfg);
 
 	if (sf == NULL)
 		return -1;
@@ -37,7 +39,7 @@ static ssize_t spi_readat(const struct region_device *rd, void *b,
 static ssize_t spi_writeat(const struct region_device *rd, const void *b,
 				size_t offset, size_t size)
 {
-	struct spi_flash *sf = car_get_var(sfg);
+	struct spi_flash *sf = car_get_var_ptr(&sfg);
 
 	if (sf == NULL)
 		return -1;
@@ -51,7 +53,7 @@ static ssize_t spi_writeat(const struct region_device *rd, const void *b,
 static ssize_t spi_eraseat(const struct region_device *rd,
 				size_t offset, size_t size)
 {
-	struct spi_flash *sf = car_get_var(sfg);
+	struct spi_flash *sf = car_get_var_ptr(&sfg);
 
 	if (sf == NULL)
 		return -1;
@@ -76,13 +78,14 @@ static void boot_device_rw_init(void)
 	const int bus = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS;
 	const int cs = 0;
 
-	if (car_get_var(sfg) != NULL)
+	if (car_get_var(sfg_init_done) == true)
 		return;
 
 	/* Ensure any necessary setup is performed by the drivers. */
 	spi_init();
 
-	car_set_var(sfg, spi_flash_probe(bus, cs));
+	if (!spi_flash_probe(bus, cs, car_get_var_ptr(&sfg)))
+		car_set_var(sfg_init_done, true);
 }
 
 const struct region_device *boot_device_rw(void)
@@ -90,7 +93,7 @@ const struct region_device *boot_device_rw(void)
 	/* Probe for the SPI flash device if not already done. */
 	boot_device_rw_init();
 
-	if (car_get_var(sfg) == NULL)
+	if (car_get_var(sfg_init_done) != true)
 		return NULL;
 
 	return &spi_rw;
@@ -99,5 +102,9 @@ const struct region_device *boot_device_rw(void)
 const struct spi_flash *boot_device_spi_flash(void)
 {
 	boot_device_rw_init();
-	return car_get_var(sfg);
+
+	if (car_get_var(sfg_init_done) != true)
+		return NULL;
+
+	return car_get_var_ptr(&sfg);
 }

@@ -24,9 +24,20 @@
  * linker script.
  */
 
+#include <arch/boot.h>
+#include <arch/encoding.h>
 #include <arch/stages.h>
+#include <rules.h>
 
 void stage_entry(void)
 {
+	/*
+	 * Save the FDT pointer before entering ramstage, because mscratch
+	 * might be overwritten in the trap handler, and there is code in
+	 * ramstage that generates misaligned access faults.
+	 */
+	if (ENV_RAMSTAGE)
+		rom_fdt = (const void *)read_csr(mscratch);
+
 	main();
 }

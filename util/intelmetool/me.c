@@ -22,9 +22,9 @@
 #include <assert.h>
 #include <unistd.h>
 
+#include "intelmetool.h"
 #include "me.h"
 #include "mmap.h"
-#include "intelmetool.h"
 
 #define read32(addr, off) ( *((uint32_t *) (addr + off)) )
 #define write32(addr, off, val) ( *((uint32_t *) (addr + off)) = val)
@@ -47,25 +47,28 @@ static uint8_t* mei_mmap;
 
 static void mei_dump(void *ptr, int dword, int offset, const char *type)
 {
-	struct mei_csr *csr;
+	/* struct mei_csr *csr; */
 
 
 	switch (offset) {
 	case MEI_H_CSR:
 	case MEI_ME_CSR_HA:
+/*
 		csr = ptr;
-/*		if (!csr) {
+		if (!csr) {
 		printf("%-9s[%02x] : ", type, offset);
 			printf("ERROR: 0x%08x\n", dword);
 			break;
 		}
 		printf("%-9s[%02x] : ", type, offset);
 		printf("depth=%u read=%02u write=%02u ready=%u "
-		       "reset=%u intgen=%u intstatus=%u intenable=%u\n", csr->buffer_depth,
-		       csr->buffer_read_ptr, csr->buffer_write_ptr,
-		       csr->ready, csr->reset, csr->interrupt_generate,
-		       csr->interrupt_status, csr->interrupt_enable);
-*/		break;
+		       "reset=%u intgen=%u intstatus=%u intenable=%u\n",
+		       csr->buffer_depth, csr->buffer_read_ptr,
+		       csr->buffer_write_ptr, csr->ready, csr->reset,
+		       csr->interrupt_generate, csr->interrupt_status,
+		       csr->interrupt_enable);
+*/
+		break;
 	case MEI_ME_CB_RW:
 	case MEI_H_CB_WW:
 		printf("%-9s[%02x] : ", type, offset);
@@ -375,7 +378,7 @@ static int mkhi_end_of_post(void)
 */
 
 /* Get ME firmware version */
-int mkhi_get_fw_version(void)
+int mkhi_get_fw_version(int *major, int *minor)
 {
 	uint32_t data = 0;
 	struct me_fw_version version = {0};
@@ -414,16 +417,14 @@ int mkhi_get_fw_version(void)
 		printf("ME: GET FW VERSION message failed\n");
 		return -1;
 	}
-	printf("ME: Firmware Version %u.%u (code)\n\n"
+	printf("ME: Firmware Version %u.%u (code)\n\n",
 	       version.code_major, version.code_minor);
 #endif
+	if (major)
+		*major = version.code_major;
+	if (minor)
+		*minor = version.code_minor;
 	return 0;
-}
-
-static inline void print_cap(const char *name, int state)
-{
-	printf("ME Capability: %-30s : %s\n",
-	       name, state ? "ON" : "OFF");
 }
 
 /* Get ME Firmware Capabilities */
@@ -463,12 +464,10 @@ int mkhi_get_fwcaps(void)
 	print_cap("Small business technology                 ", fwcaps.cap.caps_sku.small_business);
 	print_cap("Level III manageability                   ", fwcaps.cap.caps_sku.l3manageability);
 	print_cap("IntelR Anti-Theft (AT)                    ", fwcaps.cap.caps_sku.intel_at);
-	print_cap("IntelR Capability Licensing Service (CLS) ",
-		  fwcaps.cap.caps_sku.intel_cls);
-	print_cap("IntelR Power Sharing Technology (MPC)     ",
-		  fwcaps.cap.caps_sku.intel_mpc);
+	print_cap("IntelR Capability Licensing Service (CLS) ", fwcaps.cap.caps_sku.intel_cls);
+	print_cap("IntelR Power Sharing Technology (MPC)     ", fwcaps.cap.caps_sku.intel_mpc);
 	print_cap("ICC Over Clocking                         ", fwcaps.cap.caps_sku.icc_over_clocking);
-        print_cap("Protected Audio Video Path (PAVP)         ", fwcaps.cap.caps_sku.pavp);
+	print_cap("Protected Audio Video Path (PAVP)         ", fwcaps.cap.caps_sku.pavp);
 	print_cap("IPV6                                      ", fwcaps.cap.caps_sku.ipv6);
 	print_cap("KVM Remote Control (KVM)                  ", fwcaps.cap.caps_sku.kvm);
 	print_cap("Outbreak Containment Heuristic (OCH)      ", fwcaps.cap.caps_sku.och);
@@ -580,7 +579,13 @@ uint32_t intel_mei_setup(struct pci_dev *dev)
 
 	mei_base_address = dev->base_addr[0] & ~0xf;
 	pagerounded = mei_base_address & ~0xfff;
-	mei_mmap = map_physical(pagerounded, 0x2000) + mei_base_address - pagerounded;
+	mei_mmap = map_physical(pagerounded, 0x2000);
+	mei_mmap += mei_base_address - pagerounded;
+	if (mei_mmap == NULL) {
+		printf("Could not map ME setup memory.\n"
+		       "Do you have kernel cmdline argument 'iomem=relaxed' set ?\n");
+		return 1;
+	}
 
 	/* Ensure Memory and Bus Master bits are set */
 	reg32 = pci_read_long(dev, PCI_COMMAND);

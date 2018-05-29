@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2015-2018 Intel Corp.
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -13,6 +13,7 @@
 #ifndef _FSP2_0_UTIL_H_
 #define _FSP2_0_UTIL_H_
 
+#include <compiler.h>
 #include <boot/coreboot_tables.h>
 #include <commonlib/region.h>
 #include <arch/cpu.h>
@@ -23,7 +24,7 @@
 struct hob_header {
 	uint16_t type;
 	uint16_t length;
-} __attribute__((packed));
+} __packed;
 
 struct fsp_notify_params {
 	enum fsp_notify_phase phase;
@@ -35,8 +36,9 @@ struct hob_resource {
 	uint32_t attribute_type;
 	uint64_t addr;
 	uint64_t length;
-} __attribute__((packed));
+} __packed;
 
+#if CONFIG_UDK_VERSION < CONFIG_UDK_2017_VERSION
 enum resource_type {
 	EFI_RESOURCE_SYSTEM_MEMORY		= 0,
 	EFI_RESOURCE_MEMORY_MAPPED_IO		= 1,
@@ -47,6 +49,7 @@ enum resource_type {
 	EFI_RESOURCE_IO_RESERVED		= 6,
 	EFI_RESOURCE_MAX_MEMORY_TYPE		= 7,
 };
+#endif
 
 enum hob_type {
 	HOB_TYPE_HANDOFF			= 0x0001,
@@ -71,9 +74,9 @@ const void *fsp_get_hob_list(void);
 void *fsp_get_hob_list_ptr(void);
 const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size);
 const void *fsp_find_nv_storage_data(size_t *size);
-const void *fsp_find_smbios_memory_info(size_t *size);
 enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 int fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16]);
+void fsp_display_fvi_version_hob(void);
 int fsp_find_reserved_memory(struct range_entry *re);
 const struct hob_resource *fsp_hob_header_to_resource(
 	const struct hob_header *hob);
@@ -83,9 +86,6 @@ bool fsp_guid_compare(const uint8_t guid1[16], const uint8_t guid2[16]);
 /* Fill in header and validate sanity of component within region device. */
 enum cb_err fsp_validate_component(struct fsp_header *hdr,
 					const struct region_device *rdev);
-
-/* Load a vbt.bin file for graphics. Returns 0 if a valid VBT is not found. */
-uintptr_t fsp_load_vbt(void);
 
 /* Get igd framebuffer bar from SoC */
 uintptr_t fsp_soc_get_igd_bar(void);

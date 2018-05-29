@@ -43,7 +43,7 @@
 #define MTRR_FIX_4K_F0000		0x26e
 #define MTRR_FIX_4K_F8000		0x26f
 
-#if !defined(__ASSEMBLER__) && !defined(__PRE_RAM__)
+#if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
 
 #include <stdint.h>
 #include <stddef.h>
@@ -76,6 +76,10 @@ void x86_setup_mtrrs_with_detect(void);
  */
 void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb);
 void enable_fixed_mtrr(void);
+/* Unhide Rd/WrDram bits and allow modification for AMD. */
+void fixed_mtrrs_expose_amd_rwdram(void);
+/* Hide Rd/WrDram bits and allow modification for AMD. */
+void fixed_mtrrs_hide_amd_rwdram(void);
 void x86_setup_fixed_mtrrs(void);
 /* Set up fixed MTRRs but do not enable them. */
 void x86_setup_fixed_mtrrs_no_enable(void);
@@ -84,15 +88,10 @@ void x86_mtrr_check(void);
 /* Insert a temporary MTRR range for the duration of coreboot's runtime.
  * This function needs to be called after the first MTRR solution is derived. */
 void mtrr_use_temp_range(uintptr_t begin, size_t size, int type);
-#endif
 
-#if !defined(__ASSEMBLER__) && defined(__PRE_RAM__) && !defined(__ROMCC__)
 void set_var_mtrr(unsigned int reg, unsigned int base, unsigned int size,
 	unsigned int type);
 int get_free_var_mtrr(void);
-#endif
-
-#if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
 
 /* fms: find most significant bit set, stolen from Linux Kernel Source. */
 static inline unsigned int fms(unsigned int x)
@@ -102,7 +101,7 @@ static inline unsigned int fms(unsigned int x)
 	__asm__("bsrl %1,%0\n\t"
 		"jnz 1f\n\t"
 		"movl $0,%0\n"
-		"1:" : "=r" (r) : "g" (x));
+		"1:" : "=r" (r) : "mr" (x));
 	return r;
 }
 
@@ -114,10 +113,10 @@ static inline unsigned int fls(unsigned int x)
 	__asm__("bsfl %1,%0\n\t"
 		"jnz 1f\n\t"
 		"movl $32,%0\n"
-		"1:" : "=r" (r) : "g" (x));
+		"1:" : "=r" (r) : "mr" (x));
 	return r;
 }
-#endif
+#endif /* !defined(__ASSEMBLER__) && !defined(__ROMCC__) */
 
 /* Align up to next power of 2, suitable for ROMCC and assembler too.
  * Range of result 256kB to 128MB is good enough here.

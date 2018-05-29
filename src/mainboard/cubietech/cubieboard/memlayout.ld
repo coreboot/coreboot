@@ -28,4 +28,7 @@ SECTIONS
 	DRAM_START(0x40000000)
 	RAMSTAGE(0x40000000, 16M)
 	ROMSTAGE(0x41000000, 108K)
+
+	/* TODO: Implement MMU support and move TTB to a better location. */
+	TTB(0x42000000, 16K)
 }

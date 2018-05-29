@@ -13,7 +13,7 @@
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2017, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***************************************************************************/
+
+#include <check_for_wrapper.h>
 
 #ifndef _CPU_FAMILY_TRANSLATION_H_
 #define _CPU_FAMILY_TRANSLATION_H_
@@ -162,7 +164,7 @@ AGESA_FORWARD_DECLARATION (CPU_SPECIFIC_SERVICES);
  *
  */
 typedef AGESA_STATUS F_CPU_DISABLE_PSTATE (
-  IN       CPU_SPECIFIC_SERVICES *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES *FamilySpecificServices,
   IN       UINT8 StateNumber,
   IN       AMD_CONFIG_PARAMS *StdHeader
   );
@@ -183,7 +185,7 @@ typedef F_CPU_DISABLE_PSTATE *PF_CPU_DISABLE_PSTATE;
  *
  */
 typedef AGESA_STATUS F_CPU_TRANSITION_PSTATE (
-  IN       CPU_SPECIFIC_SERVICES *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES *FamilySpecificServices,
   IN       UINT8 StateNumber,
   IN       BOOLEAN WaitForChange,
   IN       AMD_CONFIG_PARAMS *StdHeader
@@ -208,7 +210,7 @@ typedef F_CPU_TRANSITION_PSTATE *PF_CPU_TRANSITION_PSTATE;
  *
  */
 typedef BOOLEAN F_CPU_GET_IDD_MAX (
-  IN       CPU_SPECIFIC_SERVICES *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES *FamilySpecificServices,
   IN       UINT8 StateNumber,
      OUT   UINT32 *ProcIddMax,
   IN       AMD_CONFIG_PARAMS *StdHeader
@@ -229,7 +231,7 @@ typedef F_CPU_GET_IDD_MAX *PF_CPU_GET_IDD_MAX;
  *
  */
 typedef AGESA_STATUS F_CPU_GET_TSC_RATE (
-  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  * FamilySpecificServices,
      OUT   UINT32 *FreqInMHz,
   IN       AMD_CONFIG_PARAMS *StdHeader
   );
@@ -250,7 +252,7 @@ typedef F_CPU_GET_TSC_RATE *PF_CPU_GET_TSC_RATE;
  *  @retval        AGESA_SUCCESS           FreqInMHz is valid.
  */
 typedef AGESA_STATUS F_CPU_GET_NB_FREQ (
-  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
      OUT   UINT32 *FreqInMHz,
   IN       AMD_CONFIG_PARAMS *StdHeader
   );
@@ -274,7 +276,7 @@ typedef F_CPU_GET_NB_FREQ *PF_CPU_GET_NB_FREQ;
  *  @retval        AGESA_STATUS            Northbridge frequency is valid
  */
 typedef AGESA_STATUS F_CPU_GET_MIN_MAX_NB_FREQ (
-  IN       CPU_SPECIFIC_SERVICES *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES *FamilySpecificServices,
   IN       PLATFORM_CONFIGURATION *PlatformConfig,
   IN       PCI_ADDR *PciAddress,
      OUT   UINT32 *MinFreqInMHz,
@@ -304,7 +306,7 @@ typedef F_CPU_GET_MIN_MAX_NB_FREQ *PF_CPU_GET_MIN_MAX_NB_FREQ;
  *  @retval        FALSE                   NbPstate is disabled or invalid
  */
 typedef BOOLEAN F_CPU_GET_NB_PSTATE_INFO (
-  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
   IN       PLATFORM_CONFIGURATION *PlatformConfig,
   IN       PCI_ADDR *PciAddress,
   IN       UINT32 NbPstate,
@@ -331,7 +333,7 @@ typedef F_CPU_GET_NB_PSTATE_INFO *PF_CPU_GET_NB_PSTATE_INFO;
  *
  */
 typedef BOOLEAN F_CPU_IS_NBCOF_INIT_NEEDED (
-  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
   IN       PCI_ADDR *PciAddress,
      OUT   BOOLEAN *NbVidUpdateAll,
   IN       AMD_CONFIG_PARAMS *StdHeader
@@ -356,7 +358,7 @@ typedef F_CPU_IS_NBCOF_INIT_NEEDED *PF_CPU_IS_NBCOF_INIT_NEEDED;
  *
  */
 typedef BOOLEAN F_CPU_GET_NB_IDD_MAX (
-  IN       CPU_SPECIFIC_SERVICES *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES *FamilySpecificServices,
   IN       UINT8 StateNumber,
      OUT   UINT32 *NbIddMax,
   IN       AMD_CONFIG_PARAMS *StdHeader
@@ -379,7 +381,7 @@ typedef F_CPU_GET_NB_IDD_MAX *PF_CPU_GET_NB_IDD_MAX;
  *  @retval        FALSE                   The core was previously launched, or has a problem.
  */
 typedef BOOLEAN F_CPU_AP_INITIAL_LAUNCH (
-  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
   IN       UINT32 CoreNumber,
   IN       AMD_CONFIG_PARAMS *StdHeader
   );
@@ -399,7 +401,7 @@ typedef F_CPU_AP_INITIAL_LAUNCH *PF_CPU_AP_INITIAL_LAUNCH;
  *  @return        One-based number of physical cores on current processor
  */
 typedef UINT8 F_CPU_NUMBER_OF_PHYSICAL_CORES (
-  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
   IN       AMD_CONFIG_PARAMS *StdHeader
   );
 
@@ -418,7 +420,7 @@ typedef F_CPU_NUMBER_OF_PHYSICAL_CORES *PF_CPU_NUMBER_OF_PHYSICAL_CORES;
  *  @return        The AP's unique core number
  */
 typedef UINT32 (F_CPU_GET_AP_CORE_NUMBER) (
-  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
   IN       AMD_CONFIG_PARAMS      *StdHeader
   );
 
@@ -447,7 +449,7 @@ typedef enum {
  * @retval        CoreIdPositionOne       Core Id is low
  */
 typedef CORE_ID_POSITION F_CORE_ID_POSITION_IN_INITIAL_APIC_ID (
-  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
   IN       AMD_CONFIG_PARAMS      *StdHeader
   );
 
@@ -466,7 +468,7 @@ typedef F_CORE_ID_POSITION_IN_INITIAL_APIC_ID *PF_CORE_ID_POSITION_IN_INITIAL_AP
  *
  */
 typedef VOID (F_CPU_SET_WARM_RESET_FLAG) (
-  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
   IN       AMD_CONFIG_PARAMS *StdHeader,
   IN       WARM_RESET_REQUEST *Request
   );
@@ -486,7 +488,7 @@ typedef F_CPU_SET_WARM_RESET_FLAG *PF_CPU_SET_WARM_RESET_FLAG;
  *
  */
 typedef VOID (F_CPU_GET_WARM_RESET_FLAG) (
-  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
   IN       AMD_CONFIG_PARAMS *StdHeader,
      OUT   WARM_RESET_REQUEST *Request
   );
@@ -507,7 +509,7 @@ typedef F_CPU_GET_WARM_RESET_FLAG *PF_CPU_GET_WARM_RESET_FLAG;
  *
  */
 typedef VOID F_CPU_GET_FAMILY_SPECIFIC_ARRAY (
-  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
      OUT   CONST VOID **FamilySpecificArray,
      OUT   UINT8 *NumberOfElements,
   IN       AMD_CONFIG_PARAMS *StdHeader
@@ -528,7 +530,7 @@ typedef F_CPU_GET_FAMILY_SPECIFIC_ARRAY *PF_CPU_GET_FAMILY_SPECIFIC_ARRAY;
  *
  */
 typedef AGESA_STATUS F_CPU_GET_PLATFORM_TYPE_SPECIFIC_INFO (
-  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
   IN OUT   PLATFORM_FEATS         *FeaturesUnion,
   IN       AMD_CONFIG_PARAMS      *StdHeader
   );
@@ -550,7 +552,7 @@ typedef F_CPU_GET_PLATFORM_TYPE_SPECIFIC_INFO *PF_CPU_GET_PLATFORM_TYPE_SPECIFIC
  * @retval         FALSE                          The NB PState feature is not enabled.
  */
 typedef BOOLEAN F_IS_NB_PSTATE_ENABLED (
-  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
   IN       PLATFORM_CONFIGURATION *PlatformConfig,
   IN       AMD_CONFIG_PARAMS      *StdHeader
   );
@@ -569,7 +571,7 @@ typedef F_IS_NB_PSTATE_ENABLED *PF_IS_NB_PSTATE_ENABLED;
  *
  */
 typedef REGISTER_TABLE_AT_GIVEN_TP *F_GET_REGISTER_TABLE_LIST (
-  IN       CPU_SPECIFIC_SERVICES                *FamilyServices,
+  IN       CONST CPU_SPECIFIC_SERVICES          *FamilyServices,
   IN       AMD_CONFIG_PARAMS                    *StdHeader
   );
 /// Reference to a Method.
@@ -588,7 +590,7 @@ typedef F_GET_REGISTER_TABLE_LIST *PF_GET_REGISTER_TABLE_LIST;
  *
  */
 typedef F_FAM_SPECIFIC_WORKAROUND **F_GET_WORKAROUND_TABLE (
-  IN       CPU_SPECIFIC_SERVICES                *FamilyServices,
+  IN       CONST CPU_SPECIFIC_SERVICES                *FamilyServices,
      OUT   UINT16                               *NumberOfWorkaroundTableEntries,
   IN       AMD_CONFIG_PARAMS                    *StdHeader
   );
@@ -612,7 +614,7 @@ typedef enum {
  *
  */
 typedef VOID F_PERFORM_EARLY_INIT_ON_CORE (
-  IN       CPU_SPECIFIC_SERVICES  *FamilyServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  *FamilyServices,
   IN       AMD_CPU_EARLY_PARAMS   *EarlyParams,
   IN       AMD_CONFIG_PARAMS      *StdHeader
   );
@@ -642,7 +644,7 @@ typedef struct _S_PERFORM_EARLY_INIT_ON_CORE {
  *
  */
 typedef VOID F_GET_EARLY_INIT_TABLE (
-  IN       CPU_SPECIFIC_SERVICES                *FamilyServices,
+  IN       CONST CPU_SPECIFIC_SERVICES                *FamilyServices,
      OUT   CONST S_PERFORM_EARLY_INIT_ON_CORE   **Table,
   IN       AMD_CPU_EARLY_PARAMS                 *EarlyParams,
   IN       AMD_CONFIG_PARAMS                    *StdHeader
@@ -851,7 +853,7 @@ GetFeatureServicesFromLogicalId (
  */
 VOID
 GetEmptyArray (
-  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       CONST CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
      OUT   CONST VOID **Empty,
      OUT   UINT8 *NumberOfElements,
   IN       AMD_CONFIG_PARAMS *StdHeader

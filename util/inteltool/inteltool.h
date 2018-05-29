@@ -14,13 +14,18 @@
  * GNU General Public License for more details.
  */
 
+#ifndef INTELTOOL_H
+#define INTELTOOL_H 1
+
+#include <commonlib/helpers.h>
+
 #include <stdint.h>
 
 #if defined(__GLIBC__)
 #include <sys/io.h>
 #endif
 #if (defined(__MACH__) && defined(__APPLE__))
-/* DirectHW is available here: http://www.coreboot.org/DirectHW */
+/* DirectHW is available here: https://www.coreboot.org/DirectHW */
 #define __DARWIN__
 #include <DirectHW/DirectHW.h>
 #endif
@@ -136,6 +141,23 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_BASE	0x9c45
 #define PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP_PREM	0x9cc3
 #define PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP	0x9cc5
+#define PCI_DEVICE_ID_INTEL_SUNRISEPOINT_SATA	0xa102
+#define PCI_DEVICE_ID_INTEL_SUNRISEPOINT_P2SB	0xa120
+#define PCI_DEVICE_ID_INTEL_SUNRISEPOINT_PRE	0xa141
+#define PCI_DEVICE_ID_INTEL_H110		0xa143
+#define PCI_DEVICE_ID_INTEL_H170		0xa144
+#define PCI_DEVICE_ID_INTEL_Z170		0xa145
+#define PCI_DEVICE_ID_INTEL_Q170		0xa146
+#define PCI_DEVICE_ID_INTEL_Q150		0xa147
+#define PCI_DEVICE_ID_INTEL_B150		0xa148
+#define PCI_DEVICE_ID_INTEL_C236		0xa149
+#define PCI_DEVICE_ID_INTEL_C232		0xa14a
+#define PCI_DEVICE_ID_INTEL_QM170		0xa14d
+#define PCI_DEVICE_ID_INTEL_HM170		0xa14e
+#define PCI_DEVICE_ID_INTEL_CM236		0xa150
+#define PCI_DEVICE_ID_INTEL_HM175		0xa152
+#define PCI_DEVICE_ID_INTEL_QM175		0xa153
+#define PCI_DEVICE_ID_INTEL_CM238		0xa154
 #define PCI_DEVICE_ID_INTEL_82810		0x7120
 #define PCI_DEVICE_ID_INTEL_82810_DC	0x7122
 #define PCI_DEVICE_ID_INTEL_82810E_DC	0x7124
@@ -204,8 +226,52 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_E3	0x0c08 /* Haswell (Xeon E3 v3) */
 #define PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_U	0x0a04 /* Haswell-ULT */
 #define PCI_DEVICE_ID_INTEL_CORE_5TH_GEN_U	0x1604 /* Broadwell-ULT */
+#define PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_D2	0x190f /* Skylake (Desktop) */
+#define PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_M	0x1910 /* Skylake (Mobile) */
+#define PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_WST	0x1918 /* Skylake (Workstation) */
+#define PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_D	0x191f /* Skylake (Desktop) */
 
-#define ARRAY_SIZE(a) ((int)(sizeof(a) / sizeof((a)[0])))
+/* Intel GPUs */
+#define PCI_DEVICE_ID_INTEL_G35_EXPRESS		0x2982
+#define PCI_DEVICE_ID_INTEL_G35_EXPRESS_1	0x2983
+#define PCI_DEVICE_ID_INTEL_965_EXPRESS		0x2a02
+#define PCI_DEVICE_ID_INTEL_965_EXPRESS_1	0x2a03
+#define PCI_DEVICE_ID_INTEL_965_EXPRESS_2	0x2a12
+#define PCI_DEVICE_ID_INTEL_965_EXPRESS_3	0x2a13
+#define PCI_DEVICE_ID_INTEL_4_SERIES		0x2a42
+#define PCI_DEVICE_ID_INTEL_4_SERIES_1		0x2a43
+#define PCI_DEVICE_ID_INTEL_G45			0x2e22
+#define PCI_DEVICE_ID_INTEL_G45_1		0x2e23
+#define PCI_DEVICE_ID_INTEL_Q45			0x2e12
+#define PCI_DEVICE_ID_INTEL_Q45_1		0x2e13
+#define PCI_DEVICE_ID_INTEL_G41			0x2e32
+#define PCI_DEVICE_ID_INTEL_G41_1		0x2e33
+#define PCI_DEVICE_ID_INTEL_B43			0x2e42
+#define PCI_DEVICE_ID_INTEL_B43_1		0x2e43
+#define PCI_DEVICE_ID_INTEL_B43_2		0x2e92
+#define PCI_DEVICE_ID_INTEL_B43_3		0x2e93
+#define PCI_DEVICE_ID_INTEL_HD_GRAPHICS		0x0046
+#define PCI_DEVICE_ID_INTEL_HD_GRAPHICS_1	0x0042
+#define PCI_DEVICE_ID_INTEL_HD_GRAPHICS_2	0x0106
+#define PCI_DEVICE_ID_INTEL_HD_2000		0x0102
+#define PCI_DEVICE_ID_INTEL_HD_2000_1		0x0106
+#define PCI_DEVICE_ID_INTEL_HD_3000		0x0116
+#define PCI_DEVICE_ID_INTEL_HD_3000_1		0x0112
+#define PCI_DEVICE_ID_INTEL_HD_3000_2		0x0116
+#define PCI_DEVICE_ID_INTEL_HD_3000_3		0x0122
+#define PCI_DEVICE_ID_INTEL_HD_3000_4		0x0126
+#define PCI_DEVICE_ID_INTEL_HD_3000_5		0x0116
+#define PCI_DEVICE_ID_INTEL_HD_2500		0x0152
+#define PCI_DEVICE_ID_INTEL_HD_2500_1		0x0156
+#define PCI_DEVICE_ID_INTEL_HD_2500_2		0x015A
+#define PCI_DEVICE_ID_INTEL_HD_4000		0x0162
+#define PCI_DEVICE_ID_INTEL_HD_4000_1		0x0166
+#define PCI_DEVICE_ID_INTEL_HD_4000_2		0x016A
+#define PCI_DEVICE_ID_INTEL_HD_4600		0x0412
+#define PCI_DEVICE_ID_INTEL_HD_4600_1		0x0416
+#define PCI_DEVICE_ID_INTEL_HD_5000		0x0422
+#define PCI_DEVICE_ID_INTEL_HD_5000_1		0x0426
+#define PCI_DEVICE_ID_INTEL_HD_5000_2		0x042A
 
 #if !defined(__DARWIN__) && !defined(__FreeBSD__)
 typedef struct { uint32_t hi, lo; } msr_t;
@@ -221,6 +287,12 @@ msr_t freebsd_rdmsr(int addr);
 int freebsd_wrmsr(int addr, msr_t msr);
 #endif
 typedef struct { uint16_t addr; int size; char *name; } io_register_t;
+typedef struct {
+	uint32_t eax;
+	uint32_t ebx;
+	uint32_t ecx;
+	uint32_t edx;
+} cpuid_result_t;
 
 void *map_physical(uint64_t phys_addr, size_t len);
 void unmap_physical(void *virt_addr, size_t len);
@@ -231,6 +303,7 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 int print_pmbase(struct pci_dev *sb, struct pci_access *pacc);
 int print_rcba(struct pci_dev *sb);
 int print_gpios(struct pci_dev *sb, int show_all, int show_diffs);
+void print_gpio_groups(struct pci_dev *sb);
 int print_epbar(struct pci_dev *nb);
 int print_dmibar(struct pci_dev *nb);
 int print_pciexbar(struct pci_dev *nb);
@@ -238,4 +311,7 @@ int print_ambs(struct pci_dev *nb, struct pci_access *pacc);
 int print_spi(struct pci_dev *sb);
 int print_gfx(struct pci_dev *gfx);
 int print_ahci(struct pci_dev *ahci);
+int print_sgx(void);
 void ivybridge_dump_timings(const char *dump_spd_file);
+
+#endif

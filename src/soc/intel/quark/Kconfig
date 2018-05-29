@@ -36,6 +36,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON
 	select SOC_INTEL_COMMON_RESET
 	select SOC_SETS_MSRS
+	select SPI_FLASH
 	select TSC_CONSTANT_RATE
 	select UART_OVERRIDE_REFCLK
 	select UDELAY_TSC
@@ -222,14 +223,6 @@ config FSP_FILE
 	help
 	  The path and filename of the Intel FSP binary for this platform.
 
-config FSP_IMAGE_ID_STRING
-	string "8 byte platform string identifying the FSP platform"
-	default "QUK-FSP0"
-	depends on PLATFORM_USES_FSP1_1
-	help
-	  8 ASCII character byte signature string that will help match the FSP
-	  binary to a supported hardware configuration.
-
 config FSP_LOC
 	hex
 	default 0xfff80000
@@ -303,5 +296,34 @@ config DCACHE_BSP_STACK_SIZE
 config C_ENV_BOOTBLOCK_SIZE
 	hex
 	default 0x8000
+
+#####
+# Test support
+#####
+
+config STORAGE_TEST
+	bool "Test SD/MMC/eMMC card or device access"
+	default n
+	select COMMONLIB_STORAGE
+	select SDHCI_CONTROLLER
+	help
+	  Read block 0 from each parition of the storage device.  User
+	  must also enable one or both of COMMONLIB_STORAGE_SD or
+	  COMMONLIB_STORAGE_MMC.
+
+config STORAGE_LOG
+	bool "Log and display SD/MMC commands"
+	default n
+	depends on STORAGE_TEST
+
+#####
+# I2C debug support
+#####
+
+config I2C_DEBUG
+	bool "Enable I2C debugging"
+	default n
+	help
+	  Display the I2C segments and controller errors
 
 endif # SOC_INTEL_QUARK

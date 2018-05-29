@@ -19,7 +19,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <edid.h>
 #include <soc/addressmap.h>
 #include <soc/nvidia/tegra/i2c.h>
@@ -1322,7 +1322,7 @@ static void tegra_dp_update_config(struct tegra_dc_dp_data *dp,
 		return;
 	}
 
-	if (decode_edid(buf, sizeof(buf), &edid)) {
+	if (decode_edid(buf, sizeof(buf), &edid) != EDID_CONFORMANT) {
 		printk(BIOS_ERR, "%s: Failed to decode EDID. Use defaults.\n",
 		       __func__);
 		return;

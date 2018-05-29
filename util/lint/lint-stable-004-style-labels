@@ -18,7 +18,9 @@
 LC_ALL=C export LC_ALL
 
 # Use git ls-files if the code is in a git repo, otherwise use find.
-if [ -n "$(command -v git)" ] && [ -d .git ]; then
+if [ -n "$(command -v git)" ] && \
+	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
+then
 	FIND_FILES="git ls-files"
 else
 	FIND_FILES="find src"

@@ -43,8 +43,8 @@
  * ----------------------------------------------------------------------------
  */
 
-#define MSG_OPCODE_READ  0x10 << 24
-#define MSG_OPCODE_WRITE 0x11 << 24
+#define MSG_OPCODE_READ  (0x10 << 24)
+#define MSG_OPCODE_WRITE (0x11 << 24)
 
 #define MCR 0xD0
 #define MDR 0xD4

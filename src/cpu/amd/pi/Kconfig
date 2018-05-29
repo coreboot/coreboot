@@ -17,20 +17,23 @@ config CPU_AMD_PI
 	bool
 	default y if CPU_AMD_PI_00630F01
 	default y if CPU_AMD_PI_00730F01
-	default y if CPU_AMD_PI_00670F00_FP4
-	default y if CPU_AMD_PI_00670F00_FT4
 	default y if CPU_AMD_PI_00660F01
 	default n
 	select ARCH_BOOTBLOCK_X86_32
 	select ARCH_VERSTAGE_X86_32
 	select ARCH_ROMSTAGE_X86_32
 	select ARCH_RAMSTAGE_X86_32
+	select DRIVERS_AMD_PI
 	select TSC_SYNC_LFENCE
 	select UDELAY_LAPIC
 	select LAPIC_MONOTONIC_TIMER
 	select SPI_FLASH if HAVE_ACPI_RESUME
+	select POSTCAR_STAGE if !BINARYPI_LEGACY_WRAPPER
 
 if CPU_AMD_PI
+
+config BINARYPI_LEGACY_WRAPPER
+	def_bool n
 
 config XIP_ROM_SIZE
 	hex
@@ -71,5 +74,4 @@ endif # CPU_AMD_PI
 
 source src/cpu/amd/pi/00630F01/Kconfig
 source src/cpu/amd/pi/00730F01/Kconfig
-source src/cpu/amd/pi/00670F00/Kconfig
 source src/cpu/amd/pi/00660F01/Kconfig

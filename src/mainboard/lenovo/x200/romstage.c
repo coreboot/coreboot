@@ -32,6 +32,7 @@
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <northbridge/intel/gm45/gm45.h>
 #include "gpio.h"
+#include <timestamp.h>
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 #define MCH_DEV PCI_DEV(0, 0, 0)
@@ -57,6 +58,9 @@ void mainboard_romstage_entry(unsigned long bist)
 	int s3resume = 0;
 	int cbmem_initted;
 	u16 reg16;
+
+	timestamp_init(get_initial_timestamp());
+	timestamp_add_now(TS_START_ROMSTAGE);
 
 	/* basic northbridge setup, including MMCONF BAR */
 	gm45_early_init();
@@ -85,16 +89,16 @@ void mainboard_romstage_entry(unsigned long bist)
 	/* Check for S3 resume. */
 	const u32 pm1_cnt = inl(DEFAULT_PMBASE + 0x04);
 	if (((pm1_cnt >> 10) & 7) == 5) {
-#if CONFIG_HAVE_ACPI_RESUME
-		printk(BIOS_DEBUG, "Resume from S3 detected.\n");
-		s3resume = 1;
-		/* Clear SLP_TYPE. This will break stage2 but
-		 * we care for that when we get there.
-		 */
-		outl(pm1_cnt & ~(7 << 10), DEFAULT_PMBASE + 0x04);
-#else
-		printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
-#endif
+		if (acpi_s3_resume_allowed()) {
+			printk(BIOS_DEBUG, "Resume from S3 detected.\n");
+			s3resume = 1;
+			/* Clear SLP_TYPE. This will break stage2 but
+			 * we care for that when we get there.
+			 */
+			outl(pm1_cnt & ~(7 << 10), DEFAULT_PMBASE + 0x04);
+		} else {
+			printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
+		}
 	}
 
 	/* RAM initialization */

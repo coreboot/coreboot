@@ -31,11 +31,31 @@
 #ifndef ARCH_CACHE_H
 #define ARCH_CACHE_H
 
+#include <arch/early_variables.h>
+#include <cpu/x86/cache.h>
+
 /*
  * For the purposes of the currently executing CPU loading code that will be
  * run there aren't any cache coherency operations required. This just provides
  * symmetry between architectures.
  */
 static inline void cache_sync_instructions(void) {}
+
+/* Executing WBINVD when running out of CAR would not be good, prevent that. */
+static inline void dcache_clean_invalidate_all(void)
+{
+	if (!car_active())
+		wbinvd();
+}
+static inline void dcache_clean_all(void)
+{
+	/* x86 doesn't have a "clean without invalidate", fall back to both. */
+	dcache_clean_invalidate_all();
+}
+static inline void dcache_invalidate_all(void)
+{
+	if (!car_active())
+		invd();
+}
 
 #endif /* ARCH_CACHE_H */

@@ -16,6 +16,20 @@
 #ifndef ARCH_ARM_PCI_OPS_H
 #define ARCH_ARM_PCI_OPS_H
 
-/* Empty stub until PCI includes are properly fixed. */
+#include <stdint.h>
+
+typedef u32 pci_devfn_t;
+
+#ifdef __SIMPLE_DEVICE__
+// FIXME: Use of device_t is deprecated
+typedef pci_devfn_t device_t;
+
+u8 pci_read_config8(pci_devfn_t dev, unsigned int where);
+u16 pci_read_config16(pci_devfn_t dev, unsigned int where);
+u32 pci_read_config32(pci_devfn_t dev, unsigned int where);
+void pci_write_config8(pci_devfn_t dev, unsigned int where, u8 val);
+void pci_write_config16(pci_devfn_t dev, unsigned int where, u16 val);
+void pci_write_config32(pci_devfn_t dev, unsigned int where, u32 val);
+#endif
 
 #endif

@@ -22,6 +22,9 @@
 #define EC_LENOVO_PMH7_ADDR (EC_LENOVO_PMH7_BASE + 0x0c)
 #define EC_LENOVO_PMH7_DATA (EC_LENOVO_PMH7_BASE + 0x0e)
 
+#define EC_LENOVO_PMH7_REG_ID		0xc2
+#define EC_LENOVO_PMH7_REG_REV		0xc3
+
 void pmh7_register_set_bit(int reg, int bit);
 void pmh7_register_clear_bit(int reg, int bit);
 char pmh7_register_read(int reg);

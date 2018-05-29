@@ -23,13 +23,13 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
 }
 
 static unsigned long mainboard_write_acpi_tables(
-	device_t device, unsigned long current, acpi_rsdp_t *rsdp)
+	struct device *device, unsigned long current, acpi_rsdp_t *rsdp)
 {
 	uintptr_t start_addr;
 	uintptr_t end_addr;
@@ -66,7 +66,7 @@ static unsigned long mainboard_write_acpi_tables(
  * mainboard_enable is executed as first thing after
  * enumerate_buses().
  */
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;

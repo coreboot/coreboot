@@ -20,6 +20,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/bist.h>
 #include <cpu/amd/car.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
@@ -27,9 +28,6 @@
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
-
-	/* Must come first to enable PCI MMCONF. */
-	amd_initmmio();
 
 	hudson_lpc_port80();
 
@@ -62,18 +60,15 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x40);
 	AGESAWRAPPER(amdinitpost);
+}
+
+void agesa_postcar(struct sysinfo *cb)
+{
 	post_code(0x41);
 	AGESAWRAPPER(amdinitenv);
-	/* TODO: Disable cache is not ok. */
-	disable_cache_as_ram();
 
 	if (acpi_is_wakeup_s4()) {
 		outb(0xEE, PM_INDEX);
 		outb(0x8, PM_DATA);
 	}
-
-	post_code(0x50);
-	copy_and_run();
-
-	post_code(0x54);  /* Should never see this post code. */
 }

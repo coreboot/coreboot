@@ -1043,3 +1043,19 @@ void raw_write_vbar(uint64_t vbar, uint32_t el)
 {
 	SWITCH_CASE_WRITE(raw_write_vbar, vbar, el);
 }
+
+uint32_t raw_read_cntfrq_el0(void)
+{
+	uint64_t cntfrq_el0;
+
+	__asm__ __volatile__("mrs %0, CNTFRQ_EL0\n\t" : "=r" (cntfrq_el0) : : "memory");
+	return cntfrq_el0;
+}
+
+uint64_t raw_read_cntpct_el0(void)
+{
+	uint64_t cntpct_el0;
+
+	__asm__ __volatile__("mrs %0, CNTPCT_EL0\n\t" : "=r" (cntpct_el0) : : "memory");
+	return cntpct_el0;
+}

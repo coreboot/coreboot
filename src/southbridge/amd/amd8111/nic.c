@@ -63,7 +63,8 @@ static void nic_init(struct device *dev)
 	printk(BIOS_DEBUG, "Done\n");
 }
 
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void lpci_set_subsystem(struct device *dev, unsigned vendor,
+			       unsigned device)
 {
 	pci_write_config32(dev, 0xc8,
 		((device & 0xffff) << 16) | (vendor & 0xffff));

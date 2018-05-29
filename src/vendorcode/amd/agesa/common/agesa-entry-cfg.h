@@ -8,20 +8,18 @@
 #define AGESA_ENTRY_INIT_EARLY		TRUE
 #define AGESA_ENTRY_INIT_POST		TRUE
 
-/* Not implemented in coreboot romstage. */
-#define AGESA_ENTRY_INIT_RECOVERY	FALSE
-
 #define AGESA_ENTRY_INIT_RESUME		IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
-#define AGESA_ENTRY_INIT_LATE_RESTORE	IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
-
-/* Move to ramstage? */
-#define AGESA_ENTRY_INIT_ENV		TRUE
 
 #else
 
+#define AGESA_ENTRY_INIT_ENV		TRUE
+#define AGESA_ENTRY_INIT_LATE_RESTORE	IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+
 #define AGESA_ENTRY_INIT_MID		TRUE
 #define AGESA_ENTRY_INIT_LATE		TRUE
-#define AGESA_ENTRY_INIT_S3SAVE 	IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#define AGESA_ENTRY_INIT_S3SAVE \
+		(IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) || \
+		 IS_ENABLED(CONFIG_ENABLE_MRC_CACHE))
 
 #endif
 
@@ -31,16 +29,14 @@
 /* Required for any multi-core. */
 #define AGESA_ENTRY_LATE_RUN_AP_TASK    TRUE
 
+/* Deprecated, reference source is removed from the tree. */
+#define AGESA_ENTRY_INIT_RECOVERY                    FALSE
 
 /* Defaults below. */
 
 /*  Process user desired AGESA entry points  */
 #ifndef AGESA_ENTRY_INIT_RESET
   #define AGESA_ENTRY_INIT_RESET                     FALSE
-#endif
-
-#ifndef AGESA_ENTRY_INIT_RECOVERY
-  #define AGESA_ENTRY_INIT_RECOVERY                  FALSE
 #endif
 
 #ifndef AGESA_ENTRY_INIT_EARLY

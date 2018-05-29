@@ -1,0 +1,64 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2017 Intel Corporation.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+if BOARD_INTEL_SKLSDLBRK
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select BOARD_ROMSIZE_KB_4096
+	select CONSOLE_SERIAL
+	select DRIVERS_UART
+	select GENERIC_SPD_BIN
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_SMI_HANDLER
+	select SERIRQ_CONTINUOUS_MODE
+	select SKYLAKE_SOC_PCH_H
+	select SOC_INTEL_SKYLAKE
+	select SUPERIO_NUVOTON_NCT6776
+	select SUPERIO_NUVOTON_NCT6776_COM_A
+	select SADDLEBROOK_USES_FSP1_1
+	select HAVE_CMOS_DEFAULT
+
+
+config SADDLEBROOK_USES_FSP1_1
+	bool "FSP driver 1.1"
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAINBOARD_DIR
+	string
+	default "intel/saddlebrook"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Skylake Saddle Brook"
+
+config MAINBOARD_FAMILY
+	string
+	default "Intel_SaddleBrook"
+
+config MAX_CPUS
+	int
+	default 8
+
+config TPM_PIRQ
+	hex
+	default 0x18  # GPP_E0_IRQ
+
+endif

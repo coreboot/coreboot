@@ -20,7 +20,7 @@
 #include <device/pci_ids.h>
 #include <device/pcix.h>
 
-static void pcix_tune_dev(device_t dev)
+static void pcix_tune_dev(struct device *dev)
 {
 	u32 status;
 	u16 orig_cmd, cmd;
@@ -61,7 +61,7 @@ static void pcix_tune_dev(device_t dev)
 
 static void pcix_tune_bus(struct bus *bus)
 {
-	device_t child;
+	struct device *child;
 
 	for (child = bus->children; child; child = child->sibling)
 		pcix_tune_dev(child);
@@ -108,7 +108,7 @@ const char *pcix_speed(u16 sstatus)
 	return result;
 }
 
-void pcix_scan_bridge(device_t dev)
+void pcix_scan_bridge(struct device *dev)
 {
 	unsigned int pos;
 	u16 sstatus;

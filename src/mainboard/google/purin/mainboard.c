@@ -17,11 +17,11 @@
 #include <boot/coreboot_tables.h>
 #include <symbols.h>
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = &mainboard_init;
 }

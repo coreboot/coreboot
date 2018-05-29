@@ -15,6 +15,10 @@
 #define COMMONLIB_HELPERS_H
 /* This file is for helpers for both coreboot firmware and its utilities. */
 
+#ifndef __ASSEMBLER__
+#include <stddef.h>
+#endif
+
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 #endif

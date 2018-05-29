@@ -15,7 +15,7 @@
 
 #include <bootstate.h>
 #include <console/console.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <soc/ramstage.h>
 #include <variant/gpio.h>
 

@@ -36,6 +36,7 @@
 #define DEVICE_LIB_H
 
 #include <types.h>
+#include <compiler.h>
 #include <endian.h>
 #include "compat/of.h"
 #include "debug.h"
@@ -62,7 +63,7 @@ typedef struct {
 	u16 bev;		// Bootstrap Entry Vector
 	u16 reserved_2;
 	u16 sriv;		// Static Resource Information Vector
-} __attribute__ ((__packed__)) exp_header_struct_t;
+} __packed exp_header_struct_t;
 
 // a PCI Data Struct as defined in PCI 2.3 Spec Chapter 6.3.1.2
 typedef struct {
@@ -78,7 +79,7 @@ typedef struct {
 	u8 code_type;
 	u8 indicator;
 	u16 reserved_2;
-} __attribute__ ((__packed__)) pci_data_struct_t;
+} __packed pci_data_struct_t;
 
 typedef struct {
 	u8 bus;
@@ -105,7 +106,7 @@ typedef struct {
 } biosemu_device_t;
 
 typedef struct {
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 	unsigned long info;
 #else
 	u8 info;
@@ -116,7 +117,7 @@ typedef struct {
 	u64 address;
 	u64 address_offset;
 	u64 size;
-} __attribute__ ((__packed__)) translate_address_t;
+} __packed translate_address_t;
 
 // array to store address translations for this
 // device. Needed for faster address translation, so
@@ -149,7 +150,7 @@ u8 biosemu_dev_translate_address(int type, unsigned long * addr);
 static inline void
 out32le(void *addr, u32 val)
 {
-#if CONFIG_ARCH_X86 || CONFIG_ARCH_ARM
+#if IS_ENABLED(CONFIG_ARCH_X86) || IS_ENABLED(CONFIG_ARCH_ARM)
 	*((u32*) addr) = cpu_to_le32(val);
 #else
 	asm volatile ("stwbrx  %0, 0, %1"::"r" (val), "r"(addr));
@@ -160,7 +161,7 @@ static inline u32
 in32le(void *addr)
 {
 	u32 val;
-#if CONFIG_ARCH_X86 || CONFIG_ARCH_ARM
+#if IS_ENABLED(CONFIG_ARCH_X86) || IS_ENABLED(CONFIG_ARCH_ARM)
 	val = cpu_to_le32(*((u32 *) addr));
 #else
 	asm volatile ("lwbrx  %0, 0, %1":"=r" (val):"r"(addr));
@@ -171,7 +172,7 @@ in32le(void *addr)
 static inline void
 out16le(void *addr, u16 val)
 {
-#if CONFIG_ARCH_X86 || CONFIG_ARCH_ARM
+#if IS_ENABLED(CONFIG_ARCH_X86) || IS_ENABLED(CONFIG_ARCH_ARM)
 	*((u16*) addr) = cpu_to_le16(val);
 #else
 	asm volatile ("sthbrx  %0, 0, %1"::"r" (val), "r"(addr));
@@ -182,7 +183,7 @@ static inline u16
 in16le(void *addr)
 {
 	u16 val;
-#if CONFIG_ARCH_X86 || CONFIG_ARCH_ARM
+#if IS_ENABLED(CONFIG_ARCH_X86) || IS_ENABLED(CONFIG_ARCH_ARM)
 	val = cpu_to_le16(*((u16*) addr));
 #else
 	asm volatile ("lhbrx %0, 0, %1":"=r" (val):"r"(addr));

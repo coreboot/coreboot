@@ -18,7 +18,7 @@
 #include <assert.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <soc/pci_devs.h>
 #include <soc/reg_access.h>
 #include "reg_access.h"

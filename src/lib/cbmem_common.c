@@ -14,6 +14,7 @@
  */
 #include <console/console.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <bootstate.h>
 #include <rules.h>
 #include <symbols.h>
@@ -37,7 +38,7 @@ void cbmem_run_init_hooks(int is_recovery)
 	}
 }
 
-void __attribute__((weak)) cbmem_fail_resume(void)
+void __weak cbmem_fail_resume(void)
 {
 }
 

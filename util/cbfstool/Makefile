@@ -4,6 +4,9 @@ objutil ?= $(top)/util
 CONFIG_FMD_GENPARSER ?= n
 
 HOSTCC ?= $(CC)
+PREFIX ?= /usr/local
+BINDIR ?= $(PREFIX)/bin
+INSTALL ?= /usr/bin/install
 OBJCOPY ?= objcopy
 
 VBOOT_SOURCE ?= $(top)/3rdparty/vboot
@@ -38,6 +41,15 @@ linux_trampoline.c: linux_trampoline.S
 	xxd -c 16 -i trampoline >> trampoline.c
 	mv trampoline.c linux_trampoline.c
 	rm linux_trampoline trampoline
+
+.PHONY: install
+install: all
+	mkdir -p $(DESTDIR)$(BINDIR)
+	$(INSTALL) cbfstool $(DESTDIR)$(BINDIR)
+	$(INSTALL) fmaptool $(DESTDIR)$(BINDIR)
+	$(INSTALL) rmodtool $(DESTDIR)$(BINDIR)
+	$(INSTALL) ifwitool $(DESTDIR)$(BINDIR)
+	$(INSTALL) cbfs-compression-tool $(DESTDIR)$(BINDIR)
 
 .SILENT:
 

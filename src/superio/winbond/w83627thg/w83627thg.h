@@ -19,6 +19,8 @@
 #ifndef SUPERIO_WINBOND_W83627THG_W83627THG_H
 #define SUPERIO_WINBOND_W83627THG_W83627THG_H
 
+#include <arch/io.h>
+
 #define W83627THG_FDC              0   /* Floppy */
 #define W83627THG_PP               1   /* Parallel port */
 #define W83627THG_SP1              2   /* Com1 */

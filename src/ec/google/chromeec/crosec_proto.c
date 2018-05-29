@@ -14,6 +14,7 @@
  */
 
 #include <arch/io.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <delay.h>
 #include <stdint.h>
@@ -23,7 +24,7 @@
 #include "ec_message.h"
 
 /* Common utilities */
-void * __attribute__((weak)) crosec_get_buffer(size_t size, int req)
+void * __weak crosec_get_buffer(size_t size, int req)
 {
 	printk(BIOS_DEBUG, "crosec_get_buffer() implementation required.\n");
 	return NULL;

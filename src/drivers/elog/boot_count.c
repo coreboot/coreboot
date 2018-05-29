@@ -18,6 +18,7 @@
 #include <pc80/mc146818rtc.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <compiler.h>
 #include <elog.h>
 
 /*
@@ -26,7 +27,7 @@
  * This can either be declared as part of the option
  * table or statically defined in the board config.
  */
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 # include "option_table.h"
 # define BOOT_COUNT_CMOS_OFFSET (CMOS_VSTART_boot_count_offset >> 3)
 #else
@@ -43,7 +44,7 @@ struct boot_count {
 	u16 signature;
 	u32 count;
 	u16 checksum;
-} __attribute__ ((packed));
+} __packed;
 
 /* Read and validate boot count structure from CMOS */
 static int boot_count_cmos_read(struct boot_count *bc)

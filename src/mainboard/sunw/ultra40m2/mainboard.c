@@ -159,7 +159,7 @@ fail:
 	printk(BIOS_WARNING, "failed to initialize EMC6D103\n");
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	emc6d103_init();
 	dme1737_runtime_init();
@@ -168,7 +168,7 @@ static void mainboard_init(device_t dev)
 	printk(BIOS_DEBUG, "%s done\n", __func__);
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 }

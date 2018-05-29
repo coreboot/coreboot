@@ -29,14 +29,20 @@ Method (UPWE, 3, Serialized)
 	/* Map ((XMEM << 16) + Local0 in PSCR */
 	OperationRegion (PSCR, SystemMemory,
 			 Add (ShiftLeft (Arg2, 16), Local0), 0x10)
-	Field (PSCR, AnyAcc, NoLock, Preserve)
+	Field (PSCR, DWordAcc, NoLock, Preserve)
 	{
-		, 25,
-		UPCE, 1,
-		UPDE, 1,
+		PSCT, 32,
 	}
-	Store (One, UPCE)
-	Store (One, UPDE)
+	Store(PSCT, Local0)
+	/*
+	 * And port status/control reg with RO and RWS bits
+	 * RO bits: 0, 2:3, 10:13, 24, 28:30
+	 * RWS bits: 5:9, 14:16, 25:27
+	 */
+	And (Local0, ~0x80FE0012, Local0)
+	/* Set WCE and WDE bits */
+	Or (Local0, 0x6000000, Local0)
+	Store(Local0, PSCT)
 }
 
 /*
@@ -222,6 +228,26 @@ Device (XHCI)
 	Device (RHUB)
 	{
 		Name (_ADR, Zero)
+
+		// GPLD: Generate Port Location Data (PLD)
+		Method (GPLD, 1, Serialized)
+		 {
+
+			Name (PCKG, Package (0x01)
+			{
+				Buffer (0x10) {}
+			})
+
+			// REV: Revision 0x02 for ACPI 5.0
+			CreateField (DerefOf (Index (PCKG, Zero)), Zero, 0x07, REV)
+			Store (0x02, REV)
+
+			// VISI: Port visibility to user per port
+			CreateField (DerefOf (Index (PCKG, Zero)), 0x40, One, VISI)
+			Store (Arg0, VISI)
+
+			Return (PCKG)
+		}
 
 		/* USB2 */
 		Device (HS01) { Name (_ADR, 1) }

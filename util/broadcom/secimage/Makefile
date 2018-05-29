@@ -31,7 +31,12 @@ install:
 	install -d $(DESTDIR)/usr/bin
 	install $(TARGET) $(DESTDIR)/usr/bin
 
-.PHONY: clean
+.PHONY: test
+test: $(TARGET)
+	@find test -maxdepth 1 -type f -executable \
+		| xargs -I "{}" sh -c "{} $$(realpath $<)"
 
-clean:
+.PHONY: clean distclean
+
+clean distclean:
 	$(RM) -f $(TARGET) $(OBJS)

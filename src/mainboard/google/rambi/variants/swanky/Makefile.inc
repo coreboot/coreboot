@@ -15,7 +15,7 @@
 
 SPD_BIN = $(obj)/spd.bin
 
-# Order matters for SPD sources. The following indicies
+# Order matters for SPD sources. The following indices
 # define the SPD data to use.
 # 0b000 - 2GiB total - 1 x 2GiB Samsung K4B4G1646Q-HYK0 1600MHz
 # 0b001 - 2GiB total - 1 x 2GiB Hynix  H5TC4G63AFR-PBA 1600MHz

@@ -15,38 +15,54 @@
  * GNU General Public License for more details.
  */
 
-#include <stdlib.h>
-#include <arch/io.h>
-#include <device/pci_def.h>
-#include <reg_script.h>
+#include <device/device.h>
+#include <intelblocks/systemagent.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
 #include <soc/systemagent.h>
+#include "chip.h"
 
-static const struct reg_script systemagent_early_init_script[] = {
-	REG_PCI_WRITE32(MCHBAR, MCH_BASE_ADDRESS | 1),
-	REG_PCI_WRITE32(DMIBAR, DMI_BASE_ADDRESS | 1),
-	REG_PCI_WRITE32(EPBAR, EP_BASE_ADDRESS | 1),
-	REG_MMIO_WRITE32(MCH_BASE_ADDRESS + EDRAMBAR, EDRAM_BASE_ADDRESS | 1),
-	REG_MMIO_WRITE32(MCH_BASE_ADDRESS + GDXCBAR, GDXC_BASE_ADDRESS | 1),
+static void systemagent_vtd_init(void)
+{
+	const struct device *const dev = dev_find_slot(0, SA_DEVFN_ROOT);
+	const struct soc_intel_skylake_config *config = NULL;
 
-	/* Set C0000-FFFFF to access RAM on both reads and writes */
-	REG_PCI_WRITE8(PAM0, 0x30),
-	REG_PCI_WRITE8(PAM1, 0x33),
-	REG_PCI_WRITE8(PAM2, 0x33),
-	REG_PCI_WRITE8(PAM3, 0x33),
-	REG_PCI_WRITE8(PAM4, 0x33),
-	REG_PCI_WRITE8(PAM5, 0x33),
-	REG_PCI_WRITE8(PAM6, 0x33),
+	if (dev)
+		config = dev->chip_info;
+	if (config && config->ignore_vtd)
+		return;
 
-	/* Device enable: IGD and Mini-HD */
-	REG_PCI_WRITE32(DEVEN, DEVEN_D0EN | DEVEN_D2EN | DEVEN_D3EN),
+	const bool vtd_capable =
+		!(pci_read_config32(SA_DEV_ROOT, CAPID0_A) & VTD_DISABLE);
+	if (!vtd_capable)
+		return;
 
-	REG_SCRIPT_END
-};
+	sa_set_mch_bar(soc_vtd_resources, ARRAY_SIZE(soc_vtd_resources));
+}
 
 void systemagent_early_init(void)
 {
-	reg_script_run_on_dev(SA_DEV_ROOT, systemagent_early_init_script);
+	static const struct sa_mmio_descriptor soc_fixed_pci_resources[] = {
+		{ MCHBAR, MCH_BASE_ADDRESS, MCH_BASE_SIZE, "MCHBAR" },
+		{ DMIBAR, DMI_BASE_ADDRESS, DMI_BASE_SIZE, "DMIBAR" },
+		{ EPBAR, EP_BASE_ADDRESS, EP_BASE_SIZE, "EPBAR" },
+	};
+
+	static const struct sa_mmio_descriptor soc_fixed_mch_resources[] = {
+		{ GDXCBAR, GDXC_BASE_ADDRESS, GDXC_BASE_SIZE, "GDXCBAR" },
+		{ EDRAMBAR, EDRAM_BASE_ADDRESS, EDRAM_BASE_SIZE, "EDRAMBAR" },
+	};
+
+	/* Set Fixed MMIO address into PCI configuration space */
+	sa_set_pci_bar(soc_fixed_pci_resources,
+			ARRAY_SIZE(soc_fixed_pci_resources));
+	/* Set Fixed MMIO address into MCH base address */
+	sa_set_mch_bar(soc_fixed_mch_resources,
+			ARRAY_SIZE(soc_fixed_mch_resources));
+
+	systemagent_vtd_init();
+
+	/* Enable PAM registers */
+	enable_pam_region();
 }

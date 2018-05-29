@@ -24,41 +24,67 @@
 #define SPI_OPCODE_WREN 0x06
 #define SPI_OPCODE_FAST_READ 0x0b
 
+struct spi_flash;
+
+/*
+ * Representation of SPI flash operations:
+ * read:	Flash read operation.
+ * write:	Flash write operation.
+ * erase:	Flash erase operation.
+ * status:	Read flash status register.
+ */
+struct spi_flash_ops {
+	int (*read)(const struct spi_flash *flash, u32 offset, size_t len,
+			void *buf);
+	int (*write)(const struct spi_flash *flash, u32 offset, size_t len,
+			const void *buf);
+	int (*erase)(const struct spi_flash *flash, u32 offset, size_t len);
+	int (*status)(const struct spi_flash *flash, u8 *reg);
+};
+
 struct spi_flash {
 	struct spi_slave spi;
 	const char *name;
 	u32 size;
 	u32 sector_size;
+	u32 page_size;
 	u8 erase_cmd;
 	u8 status_cmd;
-	/*
-	 * Internal functions are expected to be called ONLY by spi flash
-	 * driver. External components should only use the public API calls
-	 * spi_flash_{read,write,erase,status,volatile_group_begin,
-	 * volatile_group_end}.
-	 */
-	int (*internal_read)(const struct spi_flash *flash, u32 offset,
-				size_t len, void *buf);
-	int (*internal_write)(const struct spi_flash *flash, u32 offset,
-				size_t len, const void *buf);
-	int (*internal_erase)(const struct spi_flash *flash, u32 offset,
-				size_t len);
-	int (*internal_status)(const struct spi_flash *flash, u8 *reg);
-	int (*internal_read_sec)(const struct spi_flash *flash, u32 offset,
-				size_t len, void *buf);
+	const struct spi_flash_ops *ops;
 };
 
 void lb_spi_flash(struct lb_header *header);
 
 /* SPI Flash Driver Public API */
-struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs);
+
 /*
- * Specialized probing performed by platform. This is a weak function which can
- * be overriden by platform driver.
- * spi   = Pointer to spi_slave structure.
- * force = Indicates if the platform driver can skip specialized probing.
+ * Probe for SPI flash chip on given SPI bus and chip select and fill info in
+ * spi_flash structure.
+ *
+ * Params:
+ * bus   = SPI Bus # for the flash chip
+ * cs    = Chip select # for the flash chip
+ * flash = Pointer to spi flash structure that needs to be filled
+ *
+ * Return value:
+ * 0 = success
+ * non-zero = error
  */
-struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force);
+int spi_flash_probe(unsigned int bus, unsigned int cs, struct spi_flash *flash);
+
+/*
+ * Generic probing for SPI flash chip based on the different flashes provided.
+ *
+ * Params:
+ * spi   = Pointer to spi_slave structure
+ * flash = Pointer to spi_flash structure that needs to be filled.
+ *
+ * Return value:
+ * 0        = success
+ * non-zero = error
+ */
+int spi_flash_generic_probe(const struct spi_slave *slave,
+				struct spi_flash *flash);
 
 /* All the following functions return 0 on success and non-zero on error. */
 int spi_flash_read(const struct spi_flash *flash, u32 offset, size_t len,
@@ -67,8 +93,6 @@ int spi_flash_write(const struct spi_flash *flash, u32 offset, size_t len,
 		    const void *buf);
 int spi_flash_erase(const struct spi_flash *flash, u32 offset, size_t len);
 int spi_flash_status(const struct spi_flash *flash, u8 *reg);
-int spi_flash_read_sec(const struct spi_flash * flash, u32 offset, size_t len,
-		       void *buf);
 /*
  * Some SPI controllers require exclusive access to SPI flash when volatile
  * operations like erase or write are being performed. In such cases,
@@ -95,5 +119,24 @@ int chipset_volatile_group_end(const struct spi_flash *flash);
 /* Return spi_flash object reference for the boot device. This is only valid
  * if CONFIG_BOOT_DEVICE_SPI_FLASH is enabled. */
 const struct spi_flash *boot_device_spi_flash(void);
+
+/* Protect a region of spi flash using its controller, if available. Returns
+ * < 0 on error, else 0 on success. */
+int spi_flash_ctrlr_protect_region(const struct spi_flash *flash,
+					const struct region *region);
+
+/*
+ * This function is provided to support spi flash command-response transactions.
+ * Only 2 vectors are supported and the 'func' is called with appropriate
+ * write and read buffers together. This can be used for chipsets that
+ * have specific spi flash controllers that don't conform to the normal
+ * spi xfer API because they are specialized controllers and not generic.
+ *
+ * Returns 0 on success and non-zero on failure.
+ */
+int spi_flash_vector_helper(const struct spi_slave *slave,
+	struct spi_op vectors[], size_t count,
+	int (*func)(const struct spi_slave *slave, const void *dout,
+		    size_t bytesout, void *din, size_t bytesin));
 
 #endif /* _SPI_FLASH_H_ */

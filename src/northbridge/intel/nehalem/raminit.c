@@ -22,6 +22,7 @@
 
 #if REAL
 #include <stdlib.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <string.h>
 #include <arch/io.h>
@@ -42,7 +43,8 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
-#include <northbridge/intel/common/mrc_cache.h>
+#include <mrc_cache.h>
+#include <arch/early_variables.h>
 #endif
 
 #if !REAL
@@ -54,6 +56,7 @@ typedef u32 device_t;
 
 #include "nehalem.h"
 
+#include <southbridge/intel/common/rcba.h>
 #include "southbridge/intel/ibexpeak/me.h"
 
 #if REAL
@@ -88,6 +91,8 @@ typedef struct {
 	u8 smallest;
 	u8 largest;
 } timing_bounds_t[2][2][2][9];
+
+#define MRC_CACHE_VERSION 1
 
 struct ram_training {
 	/* [TM][CHANNEL][SLOT][RANK][LANE] */
@@ -277,6 +282,9 @@ struct raminfo {
 
 	const struct ram_training *cached_training;
 };
+
+/* Global allocation of timings_car */
+timing_bounds_t timings_car[64] CAR_GLOBAL;
 
 static void
 write_500(struct raminfo *info, int channel, u32 val, u16 addr, int bits,
@@ -1739,17 +1747,18 @@ static void save_timings(struct raminfo *info)
 	printk (BIOS_SPEW, "[6e8] = %x\n", train.reg_6e8);
 
 	/* Save the MRC S3 restore data to cbmem */
-	store_current_mrc_cache(&train, sizeof(train));
+	mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION,
+			&train, sizeof(train));
 }
 
 #if REAL
 static const struct ram_training *get_cached_training(void)
 {
-	struct mrc_data_container *cont;
-	cont = find_current_mrc_cache();
-	if (!cont)
+	struct region_device rdev;
+	if (mrc_cache_get_current(MRC_TRAINING_DATA, MRC_CACHE_VERSION,
+					&rdev))
 		return 0;
-	return (void *)cont->mrc_data;
+	return (void *)rdev_mmap_full(&rdev);
 }
 #endif
 
@@ -1906,7 +1915,7 @@ static void send_heci_uma_message(struct raminfo *info)
 		u8 result;
 		u8 field2;
 		u8 unk3[0x48 - 4 - 1];
-	} __attribute__ ((packed)) reply;
+	} __packed reply;
 	struct uma_message {
 		u8 group_id;
 		u8 cmd;
@@ -1916,7 +1925,7 @@ static void send_heci_uma_message(struct raminfo *info)
 		u64 heci_uma_addr;
 		u32 memory_reserved_for_heci_mb;
 		u16 c3;
-	} __attribute__ ((packed)) msg = {
+	} __packed msg = {
 	0, MKHI_SET_UMA, 0, 0,
 		    0x82,
 		    info->heci_uma_addr, info->memory_reserved_for_heci_mb, 0};
@@ -3123,7 +3132,7 @@ static void do_ram_training(struct raminfo *info)
 	u8 reg_178;
 	int niter;
 
-	timing_bounds_t timings[64];
+	timing_bounds_t *timings = timings_car;
 	int lane, rank, slot, channel;
 	u8 reg178_center;
 

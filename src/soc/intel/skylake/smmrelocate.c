@@ -26,6 +26,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <console/console.h>
+#include <intelblocks/smm.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -50,8 +51,8 @@ static inline void write_uncore_emrr(struct smm_relocation_params *relo_params)
 	       "Writing UNCORE_EMRR. base = 0x%08x, mask=0x%08x\n",
 	       relo_params->uncore_emrr_base.lo,
 	       relo_params->uncore_emrr_mask.lo);
-	wrmsr(UNCORE_PRMRR_PHYS_BASE_MSR, relo_params->uncore_emrr_base);
-	wrmsr(UNCORE_PRMRR_PHYS_MASK_MSR, relo_params->uncore_emrr_mask);
+	wrmsr(MSR_UNCORE_PRMRR_PHYS_BASE, relo_params->uncore_emrr_base);
+	wrmsr(MSR_UNCORE_PRMRR_PHYS_MASK, relo_params->uncore_emrr_mask);
 }
 
 static void update_save_state(int cpu, uintptr_t curr_smbase,
@@ -281,7 +282,7 @@ void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 void smm_initialize(void)
 {
 	/* Clear the SMM state in the southbridge. */
-	southbridge_smm_clear_state();
+	smm_southbridge_clear_state();
 
 	/*
 	 * Run the relocation handler for on the BSP to check and set up

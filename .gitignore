@@ -17,6 +17,7 @@ payloads/external/depthcharge/depthcharge/
 payloads/external/FILO/filo/
 payloads/external/GRUB2/grub2/
 payloads/external/SeaBIOS/seabios/
+payloads/external/tianocore/tianocore/
 payloads/external/tint/tint/
 payloads/external/U-Boot/u-boot/
 payloads/external/Memtest86Plus/memtest86plus/
@@ -61,6 +62,7 @@ site-local
 *.pyc
 *.sw[po]
 /*.rom
+coreboot-builds*/
 
 # Development friendly files
 tags
@@ -85,7 +87,9 @@ util/*/.test
 util/amdfwtool/amdfwtool
 util/archive/archive
 util/bimgtool/bimgtool
+util/bincfg/bincfg
 util/board_status/board-status
+util/cbfstool/cbfs-compression-tool
 util/cbfstool/cbfstool
 util/cbfstool/fmaptool
 util/cbfstool/ifwitool
@@ -118,6 +122,8 @@ util/superiotool/superiotool
 util/vgabios/testbios
 util/viatool/viatool
 util/autoport/autoport
+util/kbc1126/kbc1126_ec_dump
+util/kbc1126/kbc1126_ec_insert
 
 documentation/*.aux
 documentation/*.idx
@@ -129,5 +135,6 @@ documentation/cpukconfig.tex
 documentation/mainboardkconfig.tex
 documentation/skconfig.tex
 documentation/socketfkconfig.tex
+Documentation/_build
 
 doxygen/*

@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2015-2016 Intel Corp.
+# Copyright (C) 2015-2018 Intel Corp.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 
 config PLATFORM_USES_FSP2_0
 	bool
-	select UDK_2015_BINDING
+	default n
 	help
 	  Include FSP 2.0 wrappers and functionality
 
@@ -111,6 +111,11 @@ config CHECKLIST_DATA_FILE_LOCATION
 config RESET_ON_INVALID_RAMSTAGE_CACHE
 	bool "Reset the system on S3 wake when ramstage cache invalid."
 	default n
+
+config DISPLAY_FSP_VERSION_INFO
+	bool "Display Firmware Ingredient Version Information"
+	help
+	  Select this option to display Firmware version information.
 
 config FSP2_0_USES_TPM_MRC_HASH
 	bool

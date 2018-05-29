@@ -34,7 +34,7 @@ static void usb_init(struct device *dev)
 	u32 dword;
 
 	/* 6.1 Enable OHCI0-4 and EHCI Controllers */
-	device_t sm_dev;
+	struct device *sm_dev;
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 	byte = pci_read_config8(sm_dev, 0x68);
 	byte |= 0xFF;
@@ -79,7 +79,7 @@ static void usb_init2(struct device *dev)
 {
 	uint32_t dword;
 	void *usb2_bar0;
-	device_t sm_dev;
+	struct device *sm_dev;
 	uint8_t rev;
 	uint8_t ehci_async_data_cache;
 	uint8_t nvram;
@@ -181,7 +181,7 @@ static void usb_init2(struct device *dev)
 		dword |= 1 << 8;
 		dword &= ~(1 << 27); /* 6.23 */
 	}
-#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 	/* SP5100 Erratum 36 */
 	dword &= ~(1 << 26);
 	if (!ehci_async_data_cache)

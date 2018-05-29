@@ -2090,7 +2090,7 @@ static u16 CompareDQSTestPattern_D(struct MCTStatStruc *pMCTstat, struct DCTStat
 
 			if (pDCTstat->Direction == DQS_READDIR) {
 				if (BeatCnt != 0) {
-					if  (((value_r >> j) & 0xff) != ((value_r_test >> j) & 0xff)) {
+					if (((value_r >> j) & 0xff) != ((value_r_test >> j) & 0xff)) {
 						MEn1Results &= ~(1 << bytelane);
 					}
 				}

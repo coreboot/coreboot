@@ -40,6 +40,8 @@
  *
  ***************************************************************************/
 
+#include <check_for_wrapper.h>
+
   /* Macros to aid debugging */
   /* These definitions expand to zero (0) bytes of code when disabled */
 

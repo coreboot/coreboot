@@ -29,12 +29,13 @@
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
 #include "hudson.h"
+#include "pci_devs.h"
 
-static void lpc_init(device_t dev)
+static void lpc_init(struct device *dev)
 {
 	u8 byte;
 	u32 dword;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	/* Enable the LPC Controller */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
@@ -85,7 +86,7 @@ static void lpc_init(device_t dev)
 	setup_i8254 ();
 }
 
-static void hudson_lpc_read_resources(device_t dev)
+static void hudson_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -133,7 +134,7 @@ static void hudson_lpc_set_resources(struct device *dev)
  * @param dev the device whose children's resources are to be enabled
  *
  */
-static void hudson_lpc_enable_childrens_resources(device_t dev)
+static void hudson_lpc_enable_childrens_resources(struct device *dev)
 {
 	struct bus *link;
 	u32 reg, reg_x;
@@ -173,7 +174,7 @@ static void hudson_lpc_enable_childrens_resources(device_t dev)
 	reg_var[0] = pci_read_config16(dev, 0x64);
 
 	for (link = dev->link_list; link; link = link->next) {
-		device_t child;
+		struct device *child;
 		for (child = link->children; child;
 		     child = child->sibling) {
 			if (child->enabled
@@ -312,10 +313,21 @@ static void hudson_lpc_enable_childrens_resources(device_t dev)
 	pci_write_config8(dev, 0x74, wiosize);
 }
 
-static void hudson_lpc_enable_resources(device_t dev)
+static void hudson_lpc_enable_resources(struct device *dev)
 {
 	pci_dev_enable_resources(dev);
 	hudson_lpc_enable_childrens_resources(dev);
+}
+
+static const char *lpc_acpi_name(const struct device *dev)
+{
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return NULL;
+
+	if (dev->path.pci.devfn == LPC_DEVFN)
+		return "LIBR";
+
+	return NULL;
 }
 
 unsigned long acpi_fill_mcfg(unsigned long current)
@@ -338,6 +350,7 @@ static struct device_operations lpc_ops = {
 	.init = lpc_init,
 	.scan_bus = scan_lpc_bus,
 	.ops_pci = &lops_pci,
+	.acpi_name = lpc_acpi_name,
 };
 static const struct pci_driver lpc_driver __pci_driver = {
 	.ops = &lpc_ops,

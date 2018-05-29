@@ -14,63 +14,14 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/encoding.h>
 #include <arch/exception.h>
-#include <arch/sbi.h>
 #include <console/console.h>
-#include <mcall.h>
 #include <string.h>
 #include <vm.h>
-#include <commonlib/configstring.h>
 
 static uint64_t *time;
 static uint64_t *timecmp;
-
-void handle_supervisor_call(trapframe *tf) {
-	uintptr_t call = tf->gpr[17]; /* a7 */
-	uintptr_t arg0 = tf->gpr[10]; /* a0 */
-	uintptr_t arg1 = tf->gpr[11]; /* a1 */
-	uintptr_t returnValue;
-	switch(call) {
-		case MCALL_HART_ID:
-			printk(BIOS_DEBUG, "Getting hart id...\n");
-			returnValue = read_csr(0xf14);//mhartid);
-			break;
-		case MCALL_NUM_HARTS:
-			/* TODO: parse the hardware-supplied config string and
-			   return the correct value */
-			returnValue = 1;
-			break;
-		case MCALL_CONSOLE_PUTCHAR:
-			returnValue = mcall_console_putchar(arg0);
-			break;
-		case MCALL_SEND_IPI:
-			printk(BIOS_DEBUG, "Sending IPI...\n");
-			returnValue = mcall_send_ipi(arg0);
-			break;
-		case MCALL_CLEAR_IPI:
-			printk(BIOS_DEBUG, "Clearing IPI...\n");
-			returnValue = mcall_clear_ipi();
-			break;
-		case MCALL_SHUTDOWN:
-			printk(BIOS_DEBUG, "Shutting down...\n");
-			returnValue = mcall_shutdown();
-			break;
-		case MCALL_SET_TIMER:
-			returnValue = mcall_set_timer(arg0);
-			break;
-		case MCALL_QUERY_MEMORY:
-			printk(BIOS_DEBUG, "Querying memory, CPU #%lld...\n", arg0);
-			returnValue = mcall_query_memory(arg0, (memory_block_info*) arg1);
-			break;
-		default:
-			printk(BIOS_DEBUG, "ERROR! Unrecognized SBI call\n");
-			returnValue = 0;
-			break; // note: system call we do not know how to handle
-	}
-	tf->gpr[10] = returnValue;
-	write_csr(mepc, read_csr(mepc) + 4);
-	asm volatile("j supervisor_call_return");
-}
 
 static const char *const exception_names[] = {
 	"Instruction address misaligned",
@@ -83,8 +34,12 @@ static const char *const exception_names[] = {
 	"Store access fault",
 	"Environment call from U-mode",
 	"Environment call from S-mode",
-	"Environment call from H-mode",
-	"Environment call from M-mode"
+	"Reserved (10)",
+	"Environment call from M-mode",
+	"Instruction page fault",
+	"Load page fault",
+	"Reserved (14)",
+	"Store page fault",
 };
 
 static const char *mstatus_to_previous_mode(uintptr_t ms)
@@ -125,17 +80,19 @@ static void print_trap_information(const trapframe *tf)
 
 static void gettimer(void)
 {
-	query_result res;
-	const char *config;
+	/*
+	 * FIXME: This hard-coded value (currently) works on spike, but we
+	 * should really read it from the device tree.
+	 */
+	uintptr_t clint = 0x02000000;
 
-	config = configstring();
-	query_rtc(config, (uintptr_t *)&time);
+	time    = (void *)(clint + 0xbff8);
+	timecmp = (void *)(clint + 0x4000);
+
 	if (!time)
 		die("Got timer interrupt but found no timer.");
-	res = query_config_string(config, "core{0{0{timecmp");
-	timecmp = (void *)get_uint(res);
 	if (!timecmp)
-		die("Got a timer interrupt but found no timecmp.");
+		die("Got timer interrupt but found no timecmp.");
 }
 
 static void interrupt_handler(trapframe *tf)
@@ -167,7 +124,7 @@ static void interrupt_handler(trapframe *tf)
 		// at present, as we only search for
 		// "core{0{0{timecmp" above.
 		ssie = read_csr(sie);
-		if (!(ssie & SIE_STIE))
+		if (!(ssie & SIP_STIP))
 			break;
 
 		if (!timecmp)
@@ -180,7 +137,7 @@ static void interrupt_handler(trapframe *tf)
 		break;
 	default:
 		printk(BIOS_EMERG, "======================================\n");
-		printk(BIOS_EMERG, "Coreboot: Unknown machine interrupt: 0x%llx\n",
+		printk(BIOS_EMERG, "coreboot: Unknown machine interrupt: 0x%llx\n",
 		       cause);
 		printk(BIOS_EMERG, "======================================\n");
 		print_trap_information(tf);
@@ -197,12 +154,13 @@ void trap_handler(trapframe *tf)
 
 	switch(tf->cause) {
 		case CAUSE_MISALIGNED_FETCH:
-		case CAUSE_FAULT_FETCH:
+		case CAUSE_FETCH_ACCESS:
 		case CAUSE_ILLEGAL_INSTRUCTION:
 		case CAUSE_BREAKPOINT:
-		case CAUSE_FAULT_LOAD:
-		case CAUSE_FAULT_STORE:
+		case CAUSE_LOAD_ACCESS:
+		case CAUSE_STORE_ACCESS:
 		case CAUSE_USER_ECALL:
+		case CAUSE_SUPERVISOR_ECALL:
 		case CAUSE_HYPERVISOR_ECALL:
 		case CAUSE_MACHINE_ECALL:
 			print_trap_information(tf);
@@ -210,19 +168,14 @@ void trap_handler(trapframe *tf)
 		case CAUSE_MISALIGNED_LOAD:
 			print_trap_information(tf);
 			handle_misaligned_load(tf);
-			break;
+			return;
 		case CAUSE_MISALIGNED_STORE:
 			print_trap_information(tf);
 			handle_misaligned_store(tf);
-			break;
-		case CAUSE_SUPERVISOR_ECALL:
-			/* Don't print so we make console putchar calls look
-			   the way they should */
-			handle_supervisor_call(tf);
-			break;
+			return;
 		default:
 			printk(BIOS_EMERG, "================================\n");
-			printk(BIOS_EMERG, "Coreboot: can not handle a trap:\n");
+			printk(BIOS_EMERG, "coreboot: can not handle a trap:\n");
 			printk(BIOS_EMERG, "================================\n");
 			print_trap_information(tf);
 			break;
@@ -245,7 +198,7 @@ void handle_misaligned_load(trapframe *tf) {
 	insn_t memWidth = (faultingInstruction & widthMask) >> 12;
 	insn_t destMask = 0xF80;
 	insn_t destRegister = (faultingInstruction & destMask) >> 7;
-	printk(BIOS_DEBUG, "Width: 0x%x\n", memWidth);
+	printk(BIOS_DEBUG, "Width:              %d bits\n", (1 << memWidth) * 8);
 	if (memWidth == 3) {
 		// load double, handle the issue
 		void* badAddress = (void*) tf->badvaddr;
@@ -262,7 +215,6 @@ void handle_misaligned_load(trapframe *tf) {
 
 	// return to where we came from
 	write_csr(mepc, read_csr(mepc) + 4);
-	asm volatile("j machine_call_return");
 }
 
 void handle_misaligned_store(trapframe *tf) {
@@ -274,7 +226,7 @@ void handle_misaligned_store(trapframe *tf) {
 	insn_t memWidth = (faultingInstruction & widthMask) >> 12;
 	insn_t srcMask = 0x1F00000;
 	insn_t srcRegister = (faultingInstruction & srcMask) >> 20;
-	printk(BIOS_DEBUG, "Width: 0x%x\n", memWidth);
+	printk(BIOS_DEBUG, "Width:              %d bits\n", (1 << memWidth) * 8);
 	if (memWidth == 3) {
 		// store double, handle the issue
 		void* badAddress = (void*) tf->badvaddr;
@@ -290,5 +242,4 @@ void handle_misaligned_store(trapframe *tf) {
 
 	// return to where we came from
 	write_csr(mepc, read_csr(mepc) + 4);
-	asm volatile("j machine_call_return");
 }

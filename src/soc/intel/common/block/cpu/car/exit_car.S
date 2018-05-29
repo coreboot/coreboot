@@ -22,6 +22,21 @@
 .global chipset_teardown_car
 chipset_teardown_car:
 
+#if IS_ENABLED(CONFIG_PAGING_IN_CACHE_AS_RAM)
+	/*
+	 * Since Page table is located in CAR, disable paging before CAR
+	 * teardown. Also clear CR3 and CR4.PAE.
+	 */
+	mov	%cr0, %eax
+	and	$(~(CR0_PG)), %eax
+	mov	%eax, %cr0
+	xor	%eax, %eax
+	mov	%eax, %cr3
+	mov	%cr4, %eax
+	and	$(~(CR4_PAE)), %eax
+	mov	%eax, %cr4
+#endif
+
 	/*
 	 * Retrieve return address from stack as it will get trashed below if
 	 * execution is utilizing the cache-as-ram stack.

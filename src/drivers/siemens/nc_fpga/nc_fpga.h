@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Siemens AG.
+ * Copyright (C) 2016-2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,14 +16,23 @@
 #ifndef _SIEMENS_NC_FPGA_H_
 #define _SIEMENS_NC_FPGA_H_
 
-#define NC_MAGIC_OFFSET		0x020
-#define  NC_FPGA_MAGIC		0x4E433746
-#define NC_CAP1_OFFSET		0x080
-#define  NC_CAP1_FAN_CTRL	0x080
-#define  NC_CAP1_TEMP_MON	0x100
-#define NC_FANMON_CTRL_OFFSET	0x400
+#include <compiler.h>
 
-#define MAX_NUM_SENSORS		4
+#define NC_MAGIC_OFFSET			0x020
+#define  NC_FPGA_MAGIC			0x4E433746
+#define NC_CAP1_OFFSET			0x080
+#define  NC_CAP1_DSAVE_NMI_DELAY	0x008
+#define  NC_CAP1_BL_BRIGHTNESS_CTRL	0x010
+#define  NC_CAP1_FAN_CTRL		0x080
+#define  NC_CAP1_TEMP_MON		0x100
+#define NC_DSAVE_OFFSET			0x58
+#define NC_DIAG_CTRL_OFFSET		0x60
+#define  NC_DIAG_FW_DONE		0x10000
+#define NC_BL_BRIGHTNESS_OFFSET		0x88
+#define NC_BL_PWM_OFFSET		0x8C
+#define NC_FANMON_CTRL_OFFSET		0x400
+
+#define MAX_NUM_SENSORS			8
 
 typedef struct {
 	uint16_t	rmin;
@@ -53,12 +62,13 @@ typedef struct {
 	uint16_t	kp;
 	uint16_t	ki;
 	uint16_t	kd;
-	uint16_t	res8[2];
+	uint16_t	fanmin;
+	uint16_t	res8;
 	uint16_t	fanmax;
 	uint16_t	hystval;
 	uint16_t	hystthreshold;
 	uint16_t	res9[4];
 	uint32_t	fanmon;
-} __attribute__ ((packed)) fan_ctrl_t;
+} __packed fan_ctrl_t;
 
 #endif /* _SIEMENS_NC_FPGA_H_ */

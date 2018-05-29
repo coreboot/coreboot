@@ -18,6 +18,7 @@
 #define _GMA_H_
 
 #include <types.h>
+#include <compiler.h>
 
 /* IGD PCI Configuration register */
 #define ASLS		0xfc		/* OpRegion Base */
@@ -35,7 +36,7 @@ typedef struct {
 	u8	driver_version[16];
 	u32	mailboxes;
 	u8	reserved[164];
-} __attribute__((packed)) opregion_header_t;
+} __packed opregion_header_t;
 
 #define IGD_OPREGION_SIGNATURE "IntelGraphicsMem"
 #define IGD_OPREGION_VERSION  2
@@ -72,7 +73,7 @@ typedef struct {
 	u32	cnot;
 	u32	nrdy;
 	u8	reserved2[60];
-} __attribute__((packed)) opregion_mailbox1_t;
+} __packed opregion_mailbox1_t;
 
 /* mailbox 2: software sci interface */
 typedef struct {
@@ -80,7 +81,7 @@ typedef struct {
 	u32	parm;
 	u32	dslp;
 	u8	reserved[244];
-} __attribute__((packed)) opregion_mailbox2_t;
+} __packed opregion_mailbox2_t;
 
 /* mailbox 3: power conservation */
 typedef struct {
@@ -99,7 +100,7 @@ typedef struct {
 	u32	ccdv;
 	u32	pcft;
 	u8	reserved[94];
-} __attribute__((packed)) opregion_mailbox3_t;
+} __packed opregion_mailbox3_t;
 
 #define IGD_BACKLIGHT_BRIGHTNESS 0xff
 #define IGD_INITIAL_BRIGHTNESS 0x64
@@ -111,7 +112,7 @@ typedef struct {
 /* mailbox 4: vbt */
 typedef struct {
 	u8 gvd1[7168];
-} __attribute__((packed)) opregion_vbt_t;
+} __packed opregion_vbt_t;
 
 /* IGD OpRegion */
 typedef struct {
@@ -120,7 +121,7 @@ typedef struct {
 	opregion_mailbox2_t mailbox2;
 	opregion_mailbox3_t mailbox3;
 	opregion_vbt_t vbt;
-} __attribute__((packed)) igd_opregion_t;
+} __packed igd_opregion_t;
 
 /* Intel Video BIOS (Option ROM) */
 typedef struct {
@@ -129,7 +130,7 @@ typedef struct {
 	u8	reserved[21];
 	u16	pcir_offset;
 	u16	vbt_offset;
-} __attribute__((packed)) optionrom_header_t;
+} __packed optionrom_header_t;
 
 #define OPROM_SIGNATURE 0xaa55
 
@@ -146,7 +147,7 @@ typedef struct {
 	u8  codetype;
 	u8  indicator;
 	u16 reserved2;
-} __attribute__((packed)) optionrom_pcir_t;
+} __packed optionrom_pcir_t;
 
 typedef struct {
 	u8  hdr_signature[20];
@@ -170,7 +171,7 @@ typedef struct {
 	u8  coreblock_integratedhw;
 	u8  coreblock_biosbuild[4];
 	u8  coreblock_biossignon[155];
-} __attribute__((packed)) optionrom_vbt_t;
+} __packed optionrom_vbt_t;
 
 #define VBT_SIGNATURE 0x54425624
 

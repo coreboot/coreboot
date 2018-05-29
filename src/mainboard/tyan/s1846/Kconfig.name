@@ -1,2 +1,0 @@
-config BOARD_TYAN_S1846
-	bool "S1846 (Tsunami ATX)"

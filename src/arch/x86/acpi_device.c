@@ -18,7 +18,6 @@
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
 #include <device/device.h>
-#include <device/i2c.h>
 #include <device/path.h>
 #if IS_ENABLED(CONFIG_GENERIC_GPIO_LIB)
 #include <gpio.h>
@@ -26,29 +25,6 @@
 
 #define ACPI_DP_UUID		"daffd814-6eba-4d8c-8a91-bc9bbf4aa301"
 #define ACPI_DP_CHILD_UUID	"dbb8e3e6-5886-4ba6-8795-1319f52a966b"
-
-enum acpi_dp_type {
-	ACPI_DP_TYPE_INTEGER,
-	ACPI_DP_TYPE_STRING,
-	ACPI_DP_TYPE_REFERENCE,
-	ACPI_DP_TYPE_TABLE,
-	ACPI_DP_TYPE_ARRAY,
-	ACPI_DP_TYPE_CHILD,
-};
-
-struct acpi_dp {
-	enum acpi_dp_type type;
-	const char *name;
-	struct acpi_dp *next;
-	union {
-		struct acpi_dp *child;
-		struct acpi_dp *array;
-	};
-	union {
-		uint64_t integer;
-		const char *string;
-	};
-};
 
 /* Write empty word value and return pointer to it */
 static void *acpi_device_write_zero_len(void)
@@ -79,6 +55,9 @@ static void acpi_device_fill_len(void *ptr)
 /* Locate and return the ACPI name for this device */
 const char *acpi_device_name(struct device *dev)
 {
+	struct device *pdev = dev;
+	const char *name = NULL;
+
 	if (!dev)
 		return NULL;
 
@@ -86,30 +65,44 @@ const char *acpi_device_name(struct device *dev)
 	if (dev->ops->acpi_name)
 		return dev->ops->acpi_name(dev);
 
-	/* Check parent device in case it has a global handler */
-	if (dev->bus && dev->bus->dev->ops->acpi_name)
-		return dev->bus->dev->ops->acpi_name(dev);
+	/* Walk up the tree to find if any parent can identify this device */
+	while (pdev->bus) {
+		pdev = pdev->bus->dev;
+		if (!pdev)
+			break;
+		if (pdev->path.type == DEVICE_PATH_ROOT)
+			break;
+		if (pdev->ops && pdev->ops->acpi_name)
+			name = pdev->ops->acpi_name(dev);
+		if (name)
+			return name;
+	}
 
 	return NULL;
 }
 
 /* Recursive function to find the root device and print a path from there */
-static size_t acpi_device_path_fill(struct device *dev, char *buf,
-				    size_t buf_len, size_t cur)
+static ssize_t acpi_device_path_fill(struct device *dev, char *buf,
+				     size_t buf_len, size_t cur)
 {
 	const char *name = acpi_device_name(dev);
-	size_t next = 0;
+	ssize_t next = 0;
+
+	if (!name)
+		return -1;
 
 	/*
 	 * Make sure this name segment will fit, including the path segment
 	 * separator and possible NUL terminator if this is the last segment.
 	 */
-	if (!dev || !name || (cur + strlen(name) + 2) > buf_len)
+	if (!dev || (cur + strlen(name) + 2) > buf_len)
 		return cur;
 
 	/* Walk up the tree to the root device */
 	if (dev->path.type != DEVICE_PATH_ROOT && dev->bus && dev->bus->dev)
 		next = acpi_device_path_fill(dev->bus->dev, buf, buf_len, cur);
+	if (next < 0)
+		return next;
 
 	/* Fill in the path from the root device */
 	next += snprintf(buf + next, buf_len - next, "%s%s",
@@ -493,15 +486,14 @@ void acpi_device_write_spi(const struct acpi_spi *spi)
 }
 
 /* PowerResource() with Enable and/or Reset control */
-void acpi_device_add_power_res(
-	struct acpi_gpio *reset, unsigned int reset_delay_ms,
-	struct acpi_gpio *enable, unsigned int enable_delay_ms)
+void acpi_device_add_power_res(const struct acpi_power_res_params *params)
 {
 	static const char *power_res_dev_states[] = { "_PR0", "_PR3" };
-	unsigned int reset_gpio = reset->pins[0];
-	unsigned int enable_gpio = enable->pins[0];
+	unsigned int reset_gpio = params->reset_gpio->pins[0];
+	unsigned int enable_gpio = params->enable_gpio->pins[0];
+	unsigned int stop_gpio = params->stop_gpio->pins[0];
 
-	if (!reset_gpio && !enable_gpio)
+	if (!reset_gpio && !enable_gpio && !stop_gpio)
 		return;
 
 	/* PowerResource (PRIC, 0, 0) */
@@ -514,25 +506,41 @@ void acpi_device_add_power_res(
 	/* Method (_ON, 0, Serialized) */
 	acpigen_write_method_serialized("_ON", 0);
 	if (reset_gpio)
-		acpigen_enable_tx_gpio(reset);
+		acpigen_enable_tx_gpio(params->reset_gpio);
 	if (enable_gpio) {
-		acpigen_enable_tx_gpio(enable);
-		if (enable_delay_ms)
-			acpigen_write_sleep(enable_delay_ms);
+		acpigen_enable_tx_gpio(params->enable_gpio);
+		if (params->enable_delay_ms)
+			acpigen_write_sleep(params->enable_delay_ms);
 	}
 	if (reset_gpio) {
-		acpigen_disable_tx_gpio(reset);
-		if (reset_delay_ms)
-			acpigen_write_sleep(reset_delay_ms);
+		acpigen_disable_tx_gpio(params->reset_gpio);
+		if (params->reset_delay_ms)
+			acpigen_write_sleep(params->reset_delay_ms);
+	}
+	if (stop_gpio) {
+		acpigen_disable_tx_gpio(params->stop_gpio);
+		if (params->stop_delay_ms)
+			acpigen_write_sleep(params->stop_delay_ms);
 	}
 	acpigen_pop_len();		/* _ON method */
 
 	/* Method (_OFF, 0, Serialized) */
 	acpigen_write_method_serialized("_OFF", 0);
-	if (reset_gpio)
-		acpigen_enable_tx_gpio(reset);
-	if (enable_gpio)
-		acpigen_disable_tx_gpio(enable);
+	if (stop_gpio) {
+		acpigen_enable_tx_gpio(params->stop_gpio);
+		if (params->stop_off_delay_ms)
+			acpigen_write_sleep(params->stop_off_delay_ms);
+	}
+	if (reset_gpio) {
+		acpigen_enable_tx_gpio(params->reset_gpio);
+		if (params->reset_off_delay_ms)
+			acpigen_write_sleep(params->reset_off_delay_ms);
+	}
+	if (enable_gpio) {
+		acpigen_disable_tx_gpio(params->enable_gpio);
+		if (params->enable_off_delay_ms)
+			acpigen_write_sleep(params->enable_off_delay_ms);
+	}
 	acpigen_pop_len();		/* _OFF method */
 
 	acpigen_pop_len();		/* PowerResource PRIC */
@@ -704,6 +712,45 @@ static struct acpi_dp *acpi_dp_new(struct acpi_dp *dp, enum acpi_dp_type type,
 struct acpi_dp *acpi_dp_new_table(const char *name)
 {
 	return acpi_dp_new(NULL, ACPI_DP_TYPE_TABLE, name);
+}
+
+size_t acpi_dp_add_property_list(struct acpi_dp *dp,
+				 const struct acpi_dp *property_list,
+				 size_t property_count)
+{
+	const struct acpi_dp *prop;
+	size_t i, properties_added = 0;
+
+	for (i = 0; i < property_count; i++) {
+		prop = &property_list[i];
+
+		if (prop->type == ACPI_DP_TYPE_UNKNOWN || !prop->name)
+			continue;
+
+		switch (prop->type) {
+		case ACPI_DP_TYPE_INTEGER:
+			acpi_dp_add_integer(dp, prop->name, prop->integer);
+			break;
+		case ACPI_DP_TYPE_STRING:
+			acpi_dp_add_string(dp, prop->name, prop->string);
+			break;
+		case ACPI_DP_TYPE_REFERENCE:
+			acpi_dp_add_reference(dp, prop->name, prop->string);
+			break;
+		case ACPI_DP_TYPE_ARRAY:
+			acpi_dp_add_array(dp, prop->array);
+			break;
+		case ACPI_DP_TYPE_CHILD:
+			acpi_dp_add_child(dp, prop->name, prop->child);
+			break;
+		default:
+			continue;
+		}
+
+		++properties_added;
+	}
+
+	return properties_added;
 }
 
 struct acpi_dp *acpi_dp_add_integer(struct acpi_dp *dp, const char *name,

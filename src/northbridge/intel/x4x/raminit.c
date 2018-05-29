@@ -23,117 +23,532 @@
 #include <halt.h>
 #include <lib.h>
 #include "iomap.h"
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)
 #include <southbridge/intel/i82801gx/i82801gx.h> /* smbus_read_byte */
+#else
+#include <southbridge/intel/i82801jx/i82801jx.h> /* smbus_read_byte */
+#endif
 #include "x4x.h"
 #include <pc80/mc146818rtc.h>
 #include <spd.h>
 #include <string.h>
+#include <device/dram/ddr2.h>
+#include <device/dram/ddr3.h>
+#include <mrc_cache.h>
+
+#define MRC_CACHE_VERSION 0
 
 static inline int spd_read_byte(unsigned int device, unsigned int address)
 {
 	return smbus_read_byte(device, address);
 }
 
-static void sdram_read_spds(struct sysinfo *s)
+static u16 ddr2_get_crc(u8 device, u8 len)
 {
-	u8 i, j, chan;
-	int status = 0;
+	u8 raw_spd[128] = {};
+	i2c_block_read(device, 64, 9, &raw_spd[64]);
+	i2c_block_read(device, 93, 6, &raw_spd[93]);
+	return spd_ddr2_calc_unique_crc(raw_spd, len);
+}
+
+static u16 ddr3_get_crc(u8 device, u8 len)
+{
+	u8 raw_spd[256] = {};
+	i2c_block_read(device, 117, 11, &raw_spd[117]);
+	return spd_ddr3_calc_unique_crc(raw_spd, len);
+}
+
+static enum cb_err verify_spds(const u8 *spd_map,
+			const struct sysinfo *ctrl_cached)
+{
+	int i;
+	u16 crc;
+
+	for (i = 0; i < TOTAL_DIMMS; i++) {
+		if (!(spd_map[i]))
+			continue;
+		int len = smbus_read_byte(spd_map[i], 0);
+		if (len < 0 && ctrl_cached->dimms[i].card_type
+				== RAW_CARD_UNPOPULATED)
+			continue;
+		if (len > 0 && ctrl_cached->dimms[i].card_type
+				== RAW_CARD_UNPOPULATED)
+			return CB_ERR;
+
+		if (ctrl_cached->spd_type == DDR2)
+			crc = ddr2_get_crc(spd_map[i], len);
+		else
+			crc = ddr3_get_crc(spd_map[i], len);
+
+		if (crc != ctrl_cached->dimms[i].spd_crc)
+			return CB_ERR;
+	}
+	return CB_SUCCESS;
+}
+
+struct abs_timings {
+	u32 min_tclk;
+	u32 min_tRAS;
+	u32 min_tRP;
+	u32 min_tRCD;
+	u32 min_tWR;
+	u32 min_tRFC;
+	u32 min_tWTR;
+	u32 min_tRRD;
+	u32 min_tRTP;
+	u32 min_tAA;
+	u32 min_tCLK_cas[8];
+	u32 cas_supported;
+};
+
+#define CTRL_MIN_TCLK_DDR2 TCK_400MHZ
+
+static void select_cas_dramfreq_ddr2(struct sysinfo *s,
+				const struct abs_timings *saved_timings)
+{
+	u8 try_cas;
+	/* Currently only these CAS are supported */
+	u8 cas_mask = SPD_CAS_LATENCY_DDR2_5 | SPD_CAS_LATENCY_DDR2_6;
+
+	cas_mask &= saved_timings->cas_supported;
+	try_cas = spd_get_msbs(cas_mask);
+
+	while (cas_mask & (1 << try_cas) && try_cas > 0) {
+		s->selected_timings.CAS = try_cas;
+		s->selected_timings.tclk = saved_timings->min_tCLK_cas[try_cas];
+		if (s->selected_timings.tclk >= CTRL_MIN_TCLK_DDR2 &&
+				saved_timings->min_tCLK_cas[try_cas] !=
+				saved_timings->min_tCLK_cas[try_cas - 1])
+			break;
+		try_cas--;
+	}
+
+
+	if ((s->selected_timings.CAS < 3) || (s->selected_timings.tclk == 0))
+		die("Could not find common memory frequency and CAS\n");
+
+	switch (s->selected_timings.tclk) {
+	case TCK_200MHZ:
+	case TCK_266MHZ:
+		/* FIXME: this works on vendor BIOS */
+		die("Selected dram frequency not supported\n");
+	case TCK_333MHZ:
+		s->selected_timings.mem_clk = MEM_CLOCK_667MHz;
+		break;
+	case TCK_400MHZ:
+		s->selected_timings.mem_clk = MEM_CLOCK_800MHz;
+		break;
+	}
+}
+
+static void mchinfo_ddr2(struct sysinfo *s)
+{
+	const u32 eax = cpuid_ext(0x04, 0).eax;
+	printk(BIOS_WARNING, "%d CPU cores\n", ((eax >> 26) & 0x3f) + 1);
+
+	u32 capid = pci_read_config16(PCI_DEV(0, 0, 0), 0xe8);
+	if (!(capid & (1<<(79-64))))
+		printk(BIOS_WARNING, "iTPM enabled\n");
+
+	capid = pci_read_config32(PCI_DEV(0, 0, 0), 0xe4);
+	if (!(capid & (1<<(57-32))))
+		printk(BIOS_WARNING, "ME enabled\n");
+
+	if (!(capid & (1<<(56-32))))
+		printk(BIOS_WARNING, "AMT enabled\n");
+
+	if (!(capid & (1<<(48-32))))
+		printk(BIOS_WARNING, "VT-d enabled\n");
+}
+
+static int ddr2_save_dimminfo(u8 dimm_idx, u8 *raw_spd,
+		struct abs_timings *saved_timings, struct sysinfo *s)
+{
+	struct dimm_attr_ddr2_st decoded_dimm;
+	int i;
+
+	if (spd_decode_ddr2(&decoded_dimm, raw_spd) != SPD_STATUS_OK) {
+		printk(BIOS_DEBUG, "Problems decoding SPD\n");
+		return CB_ERR;
+	}
+
+	if (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP))
+		dram_print_spd_ddr2(&decoded_dimm);
+
+	if (!(decoded_dimm.width & (0x08 | 0x10))) {
+
+		printk(BIOS_ERR,
+			"DIMM%d Unsupported width: x%d. Disabling dimm\n",
+			dimm_idx, s->dimms[dimm_idx].width);
+		return CB_ERR;
+	}
+	s->dimms[dimm_idx].width = (decoded_dimm.width >> 3) - 1;
+	/*
+	 * This boils down to:
+	 * "Except for the x16 configuration, all DDR2 devices have a
+	 * 1KB page size. For the x16 configuration, the page size is 2KB
+	 * for all densities except the 256Mb device, which has a 1KB page
+	 * size." Micron, 'TN-47-16 Designing for High-Density DDR2 Memory'
+	 * The formula is pagesize in KiB = width * 2^col_bits / 8.
+	 */
+	s->dimms[dimm_idx].page_size = decoded_dimm.width *
+		 (1 << decoded_dimm.col_bits) / 8;
+
+	switch (decoded_dimm.banks) {
+	case 4:
+		s->dimms[dimm_idx].n_banks = N_BANKS_4;
+		break;
+	case 8:
+		s->dimms[dimm_idx].n_banks = N_BANKS_8;
+		break;
+	default:
+		printk(BIOS_ERR,
+			"DIMM%d Unsupported #banks: x%d. Disabling dimm\n",
+			 dimm_idx, decoded_dimm.banks);
+		return CB_ERR;
+	}
+
+	s->dimms[dimm_idx].ranks = decoded_dimm.ranks;
+	s->dimms[dimm_idx].rows = decoded_dimm.row_bits;
+	s->dimms[dimm_idx].cols = decoded_dimm.col_bits;
+
+	saved_timings->cas_supported &= decoded_dimm.cas_supported;
+
+	saved_timings->min_tRAS =
+		MAX(saved_timings->min_tRAS, decoded_dimm.tRAS);
+	saved_timings->min_tRP =
+		MAX(saved_timings->min_tRP, decoded_dimm.tRP);
+	saved_timings->min_tRCD =
+		MAX(saved_timings->min_tRCD, decoded_dimm.tRCD);
+	saved_timings->min_tWR =
+		MAX(saved_timings->min_tWR, decoded_dimm.tWR);
+	saved_timings->min_tRFC =
+		MAX(saved_timings->min_tRFC, decoded_dimm.tRFC);
+	saved_timings->min_tWTR =
+		MAX(saved_timings->min_tWTR, decoded_dimm.tWTR);
+	saved_timings->min_tRRD =
+		MAX(saved_timings->min_tRRD, decoded_dimm.tRRD);
+	saved_timings->min_tRTP =
+		MAX(saved_timings->min_tRTP, decoded_dimm.tRTP);
+	for (i = 0; i < 8; i++) {
+		if (!(saved_timings->cas_supported & (1 << i)))
+			saved_timings->min_tCLK_cas[i] = 0;
+		else
+			saved_timings->min_tCLK_cas[i] =
+				MAX(saved_timings->min_tCLK_cas[i],
+					decoded_dimm.cycle_time[i]);
+	}
+
+	s->dimms[dimm_idx].spd_crc = spd_ddr2_calc_unique_crc(raw_spd,
+					spd_decode_spd_size_ddr2(raw_spd[0]));
+	return CB_SUCCESS;
+}
+
+static void normalize_tCLK(u32 *tCLK)
+{
+	if (*tCLK <= TCK_666MHZ)
+		*tCLK = TCK_666MHZ;
+	else if (*tCLK <= TCK_533MHZ)
+		*tCLK = TCK_533MHZ;
+	else if (*tCLK <= TCK_400MHZ)
+		*tCLK = TCK_400MHZ;
+	else
+		*tCLK = 0;
+}
+
+static void select_cas_dramfreq_ddr3(struct sysinfo *s,
+			struct abs_timings *saved_timings)
+{
+	/*
+	 * various constraints must be fulfilled:
+	 *  CAS * tCK < 20ns == 160MTB
+	 * tCK_max >= tCK >= tCK_min
+	 * CAS >= roundup(tAA_min/tCK)
+	 * CAS supported
+	 * AND BTW: Clock(MT) = 2000 / tCK(ns) - intel uses MTs but calls them MHz
+	 */
+
+	u32 min_tCLK;
+	u8 try_CAS;
+	u16 capid = (pci_read_config16(PCI_DEV(0, 0, 0), 0xea) >> 4) & 0x3f;
+
+	switch (s->max_fsb) {
+	default:
+	case FSB_CLOCK_800MHz:
+		min_tCLK = TCK_400MHZ;
+		break;
+	case FSB_CLOCK_1066MHz:
+		min_tCLK = TCK_533MHZ;
+		break;
+	case FSB_CLOCK_1333MHz:
+		min_tCLK = TCK_666MHZ;
+		break;
+	}
+
+	switch (capid >> 3) {
+	default: /* Should not happen */
+		min_tCLK = TCK_400MHZ;
+		break;
+	case 1:
+		min_tCLK = MAX(min_tCLK, TCK_400MHZ);
+		break;
+	case 2:
+		min_tCLK = MAX(min_tCLK, TCK_533MHZ);
+		break;
+	case 3: /* Only on P45 */
+		min_tCLK = MAX(min_tCLK, TCK_666MHZ);
+		break;
+	}
+
+	min_tCLK = MAX(min_tCLK, saved_timings->min_tclk);
+	if (min_tCLK == 0) {
+		printk(BIOS_ERR, "DRAM frequency is under lowest supported "
+			"frequency (400 MHz). Increasing to 400 MHz"
+			"as last resort");
+		min_tCLK = TCK_400MHZ;
+	}
+
+	while (1) {
+		normalize_tCLK(&min_tCLK);
+		if (min_tCLK == 0)
+			die("Couldn't find compatible clock / CAS settings.\n");
+		try_CAS = DIV_ROUND_UP(saved_timings->min_tAA, min_tCLK);
+		printk(BIOS_SPEW, "Trying CAS %u, tCK %u.\n", try_CAS, min_tCLK);
+		for (; try_CAS <= DDR3_MAX_CAS; try_CAS++) {
+			/*
+			 * cas_supported is encoded like the SPD which starts
+			 * at CAS=4.
+			 */
+			if ((saved_timings->cas_supported << 4) & (1 << try_CAS))
+				break;
+		}
+		if ((try_CAS <= DDR3_MAX_CAS) && (try_CAS * min_tCLK < 20 * 256)) {
+			/* Found good CAS. */
+			printk(BIOS_SPEW, "Found compatible tCLK / CAS pair: %u / %u.\n",
+				min_tCLK, try_CAS);
+			break;
+		}
+		/*
+		 * If no valid tCLK / CAS pair could be found for a tCLK
+		 * increase it after which it gets normalised. This means
+		 * that a lower frequency gets tried.
+		 */
+		min_tCLK++;
+	}
+
+	s->selected_timings.tclk = min_tCLK;
+	s->selected_timings.CAS = try_CAS;
+
+	switch (s->selected_timings.tclk) {
+	case TCK_400MHZ:
+		s->selected_timings.mem_clk = MEM_CLOCK_800MHz;
+		break;
+	case TCK_533MHZ:
+		s->selected_timings.mem_clk = MEM_CLOCK_1066MHz;
+		break;
+	case TCK_666MHZ:
+		s->selected_timings.mem_clk = MEM_CLOCK_1333MHz;
+		break;
+	}
+}
+
+static int ddr3_save_dimminfo(u8 dimm_idx, u8 *raw_spd,
+		struct abs_timings *saved_timings, struct sysinfo *s)
+{
+	struct dimm_attr_st decoded_dimm;
+
+	if (spd_decode_ddr3(&decoded_dimm, raw_spd) != SPD_STATUS_OK)
+		return CB_ERR;
+
+	if (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP))
+		dram_print_spd_ddr3(&decoded_dimm);
+
+	/* x4 DIMMs are not supported (true for both ddr2 and ddr3) */
+	if (!(decoded_dimm.width & (0x8 | 0x10))) {
+		printk(BIOS_ERR, "DIMM%d Unsupported width: x%d. Disabling dimm\n",
+			dimm_idx, s->dimms[dimm_idx].width);
+		return CB_ERR;
+	}
+	s->dimms[dimm_idx].width = (decoded_dimm.width >> 3) - 1;
+	/*
+	 * This boils down to:
+	 * "Except for the x16 configuration, all DDR3 devices have a
+	 * 1KB page size. For the x16 configuration, the page size is 2KB
+	 * for all densities except the 256Mb device, which has a 1KB page size."
+	 * Micron, 'TN-47-16 Designing for High-Density DDR2 Memory'
+	*/
+	s->dimms[dimm_idx].page_size = decoded_dimm.width *
+		(1 << decoded_dimm.col_bits) / 8;
+
+	s->dimms[dimm_idx].n_banks = N_BANKS_8; /* Always 8 banks on ddr3?? */
+
+	s->dimms[dimm_idx].ranks = decoded_dimm.ranks;
+	s->dimms[dimm_idx].rows = decoded_dimm.row_bits;
+	s->dimms[dimm_idx].cols = decoded_dimm.col_bits;
+
+	saved_timings->min_tRAS =
+		MAX(saved_timings->min_tRAS, decoded_dimm.tRAS);
+	saved_timings->min_tRP =
+		MAX(saved_timings->min_tRP, decoded_dimm.tRP);
+	saved_timings->min_tRCD =
+		MAX(saved_timings->min_tRCD, decoded_dimm.tRCD);
+	saved_timings->min_tWR =
+		MAX(saved_timings->min_tWR, decoded_dimm.tWR);
+	saved_timings->min_tRFC =
+		MAX(saved_timings->min_tRFC, decoded_dimm.tRFC);
+	saved_timings->min_tWTR =
+		MAX(saved_timings->min_tWTR, decoded_dimm.tWTR);
+	saved_timings->min_tRRD =
+		MAX(saved_timings->min_tRRD, decoded_dimm.tRRD);
+	saved_timings->min_tRTP =
+		MAX(saved_timings->min_tRTP, decoded_dimm.tRTP);
+	saved_timings->min_tAA =
+		MAX(saved_timings->min_tAA, decoded_dimm.tAA);
+	saved_timings->cas_supported &= decoded_dimm.cas_supported;
+
+	s->dimms[dimm_idx].spd_crc = spd_ddr3_calc_unique_crc(raw_spd,
+							raw_spd[0]);
+
+	s->dimms[dimm_idx].mirrored = decoded_dimm.flags.pins_mirrored;
+
+	return CB_SUCCESS;
+}
+
+
+static void select_discrete_timings(struct sysinfo *s,
+				const struct abs_timings *timings)
+{
+	s->selected_timings.tRAS = DIV_ROUND_UP(timings->min_tRAS,
+						s->selected_timings.tclk);
+	s->selected_timings.tRP = DIV_ROUND_UP(timings->min_tRP,
+						s->selected_timings.tclk);
+	s->selected_timings.tRCD = DIV_ROUND_UP(timings->min_tRCD,
+						s->selected_timings.tclk);
+	s->selected_timings.tWR = DIV_ROUND_UP(timings->min_tWR,
+						s->selected_timings.tclk);
+	s->selected_timings.tRFC = DIV_ROUND_UP(timings->min_tRFC,
+						s->selected_timings.tclk);
+	s->selected_timings.tWTR = DIV_ROUND_UP(timings->min_tWTR,
+						s->selected_timings.tclk);
+	s->selected_timings.tRRD = DIV_ROUND_UP(timings->min_tRRD,
+						s->selected_timings.tclk);
+	s->selected_timings.tRTP = DIV_ROUND_UP(timings->min_tRTP,
+						s->selected_timings.tclk);
+}
+static void print_selected_timings(struct sysinfo *s)
+{
+	printk(BIOS_DEBUG, "Selected timings:\n");
+	printk(BIOS_DEBUG, "\tFSB:  %dMHz\n",
+		fsb2mhz(s->selected_timings.fsb_clk));
+	printk(BIOS_DEBUG, "\tDDR:  %dMHz\n",
+		ddr2mhz(s->selected_timings.mem_clk));
+
+	printk(BIOS_DEBUG, "\tCAS:  %d\n", s->selected_timings.CAS);
+	printk(BIOS_DEBUG, "\ttRAS: %d\n", s->selected_timings.tRAS);
+	printk(BIOS_DEBUG, "\ttRP:  %d\n", s->selected_timings.tRP);
+	printk(BIOS_DEBUG, "\ttRCD: %d\n", s->selected_timings.tRCD);
+	printk(BIOS_DEBUG, "\ttWR:  %d\n", s->selected_timings.tWR);
+	printk(BIOS_DEBUG, "\ttRFC: %d\n", s->selected_timings.tRFC);
+	printk(BIOS_DEBUG, "\ttWTR: %d\n", s->selected_timings.tWTR);
+	printk(BIOS_DEBUG, "\ttRRD: %d\n", s->selected_timings.tRRD);
+	printk(BIOS_DEBUG, "\ttRTP: %d\n", s->selected_timings.tRTP);
+}
+
+static void find_fsb_speed(struct sysinfo *s)
+{
+	switch (MCHBAR32(0xc00) & 0x7) {
+	case 0x0:
+		s->max_fsb = FSB_CLOCK_1066MHz;
+		break;
+	case 0x2:
+		s->max_fsb = FSB_CLOCK_800MHz;
+		break;
+	case 0x4:
+		s->max_fsb = FSB_CLOCK_1333MHz;
+		break;
+	default:
+		s->max_fsb = FSB_CLOCK_800MHz;
+		printk(BIOS_WARNING, "Can't detect FSB, setting 800MHz\n");
+		break;
+	}
+	s->selected_timings.fsb_clk = s->max_fsb;
+}
+
+static void decode_spd_select_timings(struct sysinfo *s)
+{
+	unsigned int device;
+	u8 dram_type_mask = (1 << DDR2) | (1 << DDR3);
+	u8 dimm_mask = 0;
+	u8 raw_spd[256];
+	int i, j;
+	struct abs_timings saved_timings;
+	memset(&saved_timings, 0, sizeof(saved_timings));
+	saved_timings.cas_supported = UINT32_MAX;
+
 	FOR_EACH_DIMM(i) {
-		if (s->spd_map[i] == 0) {
-			/* Non-existent SPD address */
+		s->dimms[i].card_type = RAW_CARD_POPULATED;
+		device = s->spd_map[i];
+		if (!device) {
 			s->dimms[i].card_type = RAW_CARD_UNPOPULATED;
 			continue;
 		}
-		for (j = 0; j < 64; j++) {
-			status = spd_read_byte(s->spd_map[i], j);
-			if (status < 0) {
-				/* No SPD here */
-				s->dimms[i].card_type = RAW_CARD_UNPOPULATED;
-				break;
-			}
-			s->dimms[i].spd_data[j] = (u8) status;
-			if (j == 62)
-				s->dimms[i].card_type = ((u8) status) & 0x1f;
-		}
-		if (status >= 0)
-			hexdump(s->dimms[i].spd_data, 64);
-	}
-
-	s->spd_type = 0;
-	int fail = 1;
-	FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-		switch ((enum ddrxspd) s->dimms[i].spd_data[2]) {
+		switch (spd_read_byte(s->spd_map[i], SPD_MEMORY_TYPE)) {
 		case DDR2SPD:
-			if (s->spd_type == 0)
-				s->spd_type = DDR2;
-			else if (s->spd_type == DDR3)
-				die("DIMM type mismatch\n");
+			dram_type_mask &= 1 << DDR2;
+			s->spd_type = DDR2;
 			break;
 		case DDR3SPD:
-		default:
-			if (s->spd_type == 0)
-				s->spd_type = DDR3;
-			else if (s->spd_type == DDR2)
-				die("DIMM type mismatch\n");
+			dram_type_mask &= 1 << DDR3;
+			s->spd_type = DDR3;
 			break;
+		default:
+			s->dimms[i].card_type = RAW_CARD_UNPOPULATED;
+			continue;
 		}
-	}
-	if (s->spd_type == DDR3) {
-		FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-			s->dimms[i].sides = (s->dimms[i].spd_data[5] & 0x0f) + 1;
-			s->dimms[i].ranks = ((s->dimms[i].spd_data[7] >> 3) & 0x7) + 1;
-			s->dimms[i].chip_capacity = (s->dimms[i].spd_data[4] & 0xf);
-			s->dimms[i].banks = 8;
-			s->dimms[i].rows = ((s->dimms[i].spd_data[5] >> 3) & 0x7) + 12;
-			s->dimms[i].cols = (s->dimms[i].spd_data[5] & 0x7) + 9;
-			s->dimms[i].cas_latencies = 0xfe;
-			s->dimms[i].cas_latencies &= (s->dimms[i].spd_data[14] << 1);
-			if (s->dimms[i].cas_latencies == 0)
-				s->dimms[i].cas_latencies = 0x40;
-			s->dimms[i].tAAmin = s->dimms[i].spd_data[16];
-			s->dimms[i].tCKmin = s->dimms[i].spd_data[12];
-			s->dimms[i].width = s->dimms[i].spd_data[7] & 0x7;
-			s->dimms[i].page_size = s->dimms[i].width * (1 << s->dimms[i].cols); // Bytes
-			s->dimms[i].tRAS = ((s->dimms[i].spd_data[21] & 0xf) << 8) |
-				s->dimms[i].spd_data[22];
-			s->dimms[i].tRP = s->dimms[i].spd_data[20];
-			s->dimms[i].tRCD = s->dimms[i].spd_data[18];
-			s->dimms[i].tWR = s->dimms[i].spd_data[17];
-			fail = 0;
-		}
-	} else if (s->spd_type == DDR2) {
-		FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-			s->dimms[i].sides = (s->dimms[i].spd_data[5] & 0x7) + 1;
-			s->dimms[i].banks = (s->dimms[i].spd_data[17] >> 2) - 1;
-			s->dimms[i].chip_capacity = s->dimms[i].banks;
-			s->dimms[i].rows = s->dimms[i].spd_data[3];// - 12;
-			s->dimms[i].cols = s->dimms[i].spd_data[4];// - 9;
-			s->dimms[i].cas_latencies = s->dimms[i].spd_data[18];
-			if (s->dimms[i].cas_latencies == 0)
-				s->dimms[i].cas_latencies = 0x60; // 6,5 CL
-			s->dimms[i].tAAmin = s->dimms[i].spd_data[26];
-			s->dimms[i].tCKmin = s->dimms[i].spd_data[25];
-			s->dimms[i].width = (s->dimms[i].spd_data[13] >> 3) - 1;
-			s->dimms[i].page_size = (s->dimms[i].width+1) * (1 << s->dimms[i].cols); // Bytes
-			s->dimms[i].tRAS = s->dimms[i].spd_data[30];
-			s->dimms[i].tRP = s->dimms[i].spd_data[27];
-			s->dimms[i].tRCD = s->dimms[i].spd_data[29];
-			s->dimms[i].tWR = s->dimms[i].spd_data[36];
-			s->dimms[i].ranks = s->dimms[i].sides; // XXX
+		if (!dram_type_mask)
+			die("Mixing up dimm types is not supported!\n");
 
-			printk(BIOS_DEBUG, "DIMM %d\n", i);
-			printk(BIOS_DEBUG, "  Sides     : %d\n", s->dimms[i].sides);
-			printk(BIOS_DEBUG, "  Banks     : %d\n", s->dimms[i].banks);
-			printk(BIOS_DEBUG, "  Ranks     : %d\n", s->dimms[i].ranks);
-			printk(BIOS_DEBUG, "  Rows      : %d\n", s->dimms[i].rows);
-			printk(BIOS_DEBUG, "  Cols      : %d\n", s->dimms[i].cols);
-			printk(BIOS_DEBUG, "  Page size : %d\n", s->dimms[i].page_size);
-			printk(BIOS_DEBUG, "  Width     : %d\n", (s->dimms[i].width+1)*8);
-			fail = 0;
+		printk(BIOS_DEBUG, "Decoding dimm %d\n", i);
+		if (i2c_block_read(device, 0, 128, raw_spd) != 128) {
+			printk(BIOS_DEBUG, "i2c block operation failed,"
+				" trying smbus byte operation.\n");
+			for (j = 0; j < 128; j++)
+				raw_spd[j] = spd_read_byte(device, j);
 		}
+
+		if (s->spd_type == DDR2){
+			if (ddr2_save_dimminfo(i, raw_spd, &saved_timings, s)) {
+				printk(BIOS_WARNING,
+					"Encountered problems with SPD, "
+					"skipping this DIMM.\n");
+				s->dimms[i].card_type = RAW_CARD_UNPOPULATED;
+				continue;
+			}
+		} else { /* DDR3 */
+			if (ddr3_save_dimminfo(i, raw_spd, &saved_timings, s)) {
+				printk(BIOS_WARNING,
+					"Encountered problems with SPD, "
+					"skipping this DIMM.\n");
+				/* something in decoded SPD was unsupported */
+				s->dimms[i].card_type = RAW_CARD_UNPOPULATED;
+				continue;
+			}
+		}
+		dimm_mask |= (1 << i);
 	}
-	if (fail)
-		die("No memory dimms, halt\n");
+	if (!dimm_mask)
+		die("No memory installed.\n");
+
+	if (s->spd_type == DDR2)
+		select_cas_dramfreq_ddr2(s, &saved_timings);
+	else
+		select_cas_dramfreq_ddr3(s, &saved_timings);
+	select_discrete_timings(s, &saved_timings);
+}
+
+static void find_dimm_config(struct sysinfo *s)
+{
+	int chan, i;
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, chan) {
 		FOR_EACH_POPULATED_DIMM_IN_CHANNEL(s->dimms, chan, i) {
@@ -152,154 +567,10 @@ static void sdram_read_spds(struct sysinfo *s)
 			s->dimm_config[chan] |=
 				dimm_config << (i % DIMMS_PER_CHANNEL) * 2;
 		}
-		printk(BIOS_DEBUG, "  Config[CH%d] : %d\n", chan, s->dimm_config[chan]);
-	}
-}
-
-static u8 msbpos(u8 val) //Reverse
-{
-	u8 i;
-	for (i = 7; (i >= 0) && ((val & (1 << i)) == 0); i--)
-		;
-	return i;
-}
-
-static void mchinfo_ddr2(struct sysinfo *s)
-{
-	const u32 eax = cpuid_ext(0x04, 0).eax;
-	s->cores = ((eax >> 26) & 0x3f) + 1;
-	printk(BIOS_WARNING, "%d CPU cores\n", s->cores);
-
-	u32 capid = pci_read_config16(PCI_DEV(0, 0, 0), 0xe8);
-	if (!(capid & (1<<(79-64))))
-		printk(BIOS_WARNING, "iTPM enabled\n");
-
-	capid = pci_read_config32(PCI_DEV(0, 0, 0), 0xe4);
-	if (!(capid & (1<<(57-32))))
-		printk(BIOS_WARNING, "ME enabled\n");
-
-	if (!(capid & (1<<(56-32))))
-		printk(BIOS_WARNING, "AMT enabled\n");
-
-	s->max_ddr2_mhz = 800; // All chipsets in x4x support up to 800MHz DDR2
-	printk(BIOS_WARNING, "Capable of DDR2 of %d MHz or lower\n", s->max_ddr2_mhz);
-
-	if (!(capid & (1<<(48-32))))
-		printk(BIOS_WARNING, "VT-d enabled\n");
-}
-
-static void sdram_detect_ram_speed(struct sysinfo *s)
-{
-	u8 i;
-	u8 commoncas = 0;
-	u8 currcas;
-	u8 currfreq;
-	u8 maxfreq;
-	u8 freq = 0;
-
-	// spdidx,cycletime @CAS				 5	   6
-	u8 idx800[7][2] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {23, 0x30},
-			   {9, 0x25} };
-	int found = 0;
-
-	// Find max FSB speed
-	switch (MCHBAR32(0xc00) & 0x7) {
-	case 0x0:
-		s->max_fsb = FSB_CLOCK_1066MHz;
-		break;
-	case 0x2:
-		s->max_fsb = FSB_CLOCK_800MHz;
-		break;
-	case 0x4:
-		s->max_fsb = FSB_CLOCK_1333MHz;
-		break;
-	default:
-		s->max_fsb = FSB_CLOCK_800MHz;
-		printk(BIOS_WARNING, "Can't detect FSB, setting 800MHz\n");
-		break;
+		printk(BIOS_DEBUG, "  Config[CH%d] : %d\n", chan,
+			s->dimm_config[chan]);
 	}
 
-	// Max RAM speed
-	if (s->spd_type == DDR2) {
-
-		maxfreq = MEM_CLOCK_800MHz;
-
-		// Choose common CAS latency from {6,5}, 4 does not work
-		commoncas = 0x60;
-
-		FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-			commoncas &= s->dimms[i].cas_latencies;
-		}
-		if (commoncas == 0)
-			die("No common CAS among dimms\n");
-
-		// Working from fastest to slowest,
-		// fast->slow 5@800 6@800 5@667
-		found = 0;
-		for (currcas = 5; currcas <= msbpos(commoncas); currcas++) {
-			currfreq = maxfreq;
-			if (currfreq == MEM_CLOCK_800MHz) {
-				found = 1;
-				FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-					if (s->dimms[i].spd_data[idx800[currcas][0]] > idx800[currcas][1]) {
-						// this is too fast
-						found = 0;
-					}
-				}
-				if (found)
-					break;
-			}
-		}
-
-		if (!found) {
-			currcas = 5;
-			currfreq = MEM_CLOCK_667MHz;
-			found = 1;
-			FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-				if (s->dimms[i].spd_data[9] > 0x30) {
-					// this is too fast
-					found = 0;
-				}
-			}
-		}
-
-		if (!found)
-			die("No valid CAS/frequencies detected\n");
-
-		s->selected_timings.mem_clk = currfreq;
-		s->selected_timings.CAS = currcas;
-
-	} else { // DDR3
-		// Limit frequency for MCH
-		maxfreq = (s->max_ddr2_mhz == 800) ? MEM_CLOCK_800MHz : MEM_CLOCK_667MHz;
-		maxfreq >>= 3;
-		freq = MEM_CLOCK_1333MHz;
-		if (maxfreq)
-			freq = maxfreq + 2;
-		if (freq > MEM_CLOCK_1333MHz)
-			freq = MEM_CLOCK_1333MHz;
-
-		// Limit DDR speed to FSB speed
-		switch (s->max_fsb) {
-		case FSB_CLOCK_800MHz:
-			if (freq > MEM_CLOCK_800MHz)
-				freq = MEM_CLOCK_800MHz;
-			break;
-		case FSB_CLOCK_1066MHz:
-			if (freq > MEM_CLOCK_1066MHz)
-				freq = MEM_CLOCK_1066MHz;
-			break;
-		case FSB_CLOCK_1333MHz:
-			if (freq > MEM_CLOCK_1333MHz)
-				freq = MEM_CLOCK_1333MHz;
-			break;
-		default:
-			die("Invalid FSB\n");
-			break;
-		}
-
-		// TODO: CAS detection for DDR3
-	}
 }
 
 static void checkreset_ddr2(int boot_path)
@@ -330,7 +601,7 @@ static void checkreset_ddr2(int boot_path)
 		pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 |  (1 << 2));
 
 		printk(BIOS_DEBUG, "Reset...\n");
-		outb(0x6, 0xcf9);
+		outb(0xe, 0xcf9);
 		asm ("hlt");
 	}
 	pmcon2 |= 0x80;
@@ -342,8 +613,10 @@ static void checkreset_ddr2(int boot_path)
  */
 void sdram_initialize(int boot_path, const u8 *spd_map)
 {
-	struct sysinfo s;
+	struct sysinfo s, *ctrl_cached;
 	u8 reg8;
+	int fast_boot, cbmem_was_inited, cache_not_found;
+	struct region_device rdev;
 
 	printk(BIOS_DEBUG, "Setting up RAM controller.\n");
 
@@ -351,40 +624,60 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 
 	memset(&s, 0, sizeof(struct sysinfo));
 
-	s.boot_path = boot_path;
-	s.spd_map[0] = spd_map[0];
-	s.spd_map[1] = spd_map[1];
-	s.spd_map[2] = spd_map[2];
-	s.spd_map[3] = spd_map[3];
+	cache_not_found = mrc_cache_get_current(MRC_TRAINING_DATA,
+						MRC_CACHE_VERSION, &rdev);
 
-	checkreset_ddr2(s.boot_path);
-
-	/* Detect dimms per channel */
-	s.dimms_per_ch = 2;
-	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xe9);
-	if (reg8 & 0x10)
-		s.dimms_per_ch = 1;
-
-	printk(BIOS_DEBUG, "Dimms per channel: %d\n", s.dimms_per_ch);
-
-	mchinfo_ddr2(&s);
-
-	sdram_read_spds(&s);
-
-	/* Choose Common Frequency */
-	sdram_detect_ram_speed(&s);
-
-	switch (s.spd_type) {
-	case DDR2:
-		raminit_ddr2(&s);
-		break;
-	case DDR3:
-		// FIXME Add: raminit_ddr3(&s);
-		break;
-	default:
-		die("Unknown DDR type\n");
-		break;
+	if (cache_not_found || (region_device_sz(&rdev) < sizeof(s))) {
+		if (boot_path == BOOT_PATH_RESUME) {
+			/* Failed S3 resume, reset to come up cleanly */
+			outb(0x6, 0xcf9);
+			halt();
+		}
+		ctrl_cached = NULL;
+	} else {
+		ctrl_cached = rdev_mmap_full(&rdev);
 	}
+
+	/* verify MRC cache for fast boot */
+	if (boot_path != BOOT_PATH_RESUME && ctrl_cached) {
+		/* check SPD checksum to make sure the DIMMs haven't been
+		 * replaced */
+		fast_boot = verify_spds(spd_map, ctrl_cached) == CB_SUCCESS;
+		if (!fast_boot)
+			printk(BIOS_DEBUG, "SPD checksums don't match,"
+				" dimm's have been replaced\n");
+	} else {
+		fast_boot = boot_path == BOOT_PATH_RESUME;
+	}
+
+	if (fast_boot) {
+		printk(BIOS_DEBUG, "Using cached raminit settings\n");
+		memcpy(&s, ctrl_cached, sizeof(s));
+		s.boot_path = boot_path;
+		mchinfo_ddr2(&s);
+		print_selected_timings(&s);
+	} else {
+		s.boot_path = boot_path;
+		s.spd_map[0] = spd_map[0];
+		s.spd_map[1] = spd_map[1];
+		s.spd_map[2] = spd_map[2];
+		s.spd_map[3] = spd_map[3];
+		checkreset_ddr2(s.boot_path);
+
+		/* Detect dimms per channel */
+		reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xe9);
+		printk(BIOS_DEBUG, "Dimms per channel: %d\n",
+			(reg8 & 0x10) ? 1 : 2);
+
+		mchinfo_ddr2(&s);
+
+		find_fsb_speed(&s);
+		decode_spd_select_timings(&s);
+		print_selected_timings(&s);
+		find_dimm_config(&s);
+	}
+
+	do_raminit(&s, fast_boot);
 
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8 & ~0x80);
@@ -392,4 +685,14 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf4);
 	pci_write_config8(PCI_DEV(0, 0, 0), 0xf4, reg8 | 1);
 	printk(BIOS_DEBUG, "RAM initialization finished.\n");
+
+	cbmem_was_inited = !cbmem_recovery(s.boot_path == BOOT_PATH_RESUME);
+	if (!fast_boot)
+		mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION,
+					&s, sizeof(s));
+	if (s.boot_path == BOOT_PATH_RESUME && !cbmem_was_inited) {
+		/* Failed S3 resume, reset to come up cleanly */
+		outb(0x6, 0xcf9);
+		halt();
+	}
 }

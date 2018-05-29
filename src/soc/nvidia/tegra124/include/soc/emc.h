@@ -17,6 +17,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <compiler.h>
 
 enum {
 	EMC_PIN_RESET_MASK = 1 << 8,
@@ -313,7 +314,7 @@ struct tegra_emc_regs {
 	uint32_t puterm_width;		/* 0x56c */
 	uint32_t bgbias_ctl0;		/* 0x570 */
 	uint32_t puterm_adj;		/* 0x574 */
-} __attribute__((packed));
+} __packed;
 
 check_member(tegra_emc_regs, puterm_adj, 0x574);
 

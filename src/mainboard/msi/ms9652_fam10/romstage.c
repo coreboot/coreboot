@@ -129,11 +129,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x32);
 
-	pnp_enter_ext_func_mode(SERIAL_DEV);
+	pnp_enter_conf_state(SERIAL_DEV);
 	/* We have 24MHz input. */
 	reg = pnp_read_config(SERIAL_DEV, 0x24);
 	pnp_write_config(SERIAL_DEV, 0x24, (reg & 0xbf));
-	pnp_exit_ext_func_mode(SERIAL_DEV);
+	pnp_exit_conf_state(SERIAL_DEV);
 
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
@@ -178,7 +178,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 */
 	wait_all_core0_started();
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	/* Core0 on each node is configured. Now setup any additional cores. */
 	printk(BIOS_DEBUG, "start_other_cores()\n");
 	start_other_cores(bsp_apicid);
@@ -189,7 +189,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x38);
 
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 	msr = rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 
@@ -219,7 +219,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (!warm_reset_detect(0)) {
 		printk(BIOS_INFO, "...WARM RESET...\n\n\n");
 		soft_reset();
-		die("After soft_reset_x - shouldn't see this message!!!\n");
+		die("After soft_reset - shouldn't see this message!!!\n");
 	}
 
 	if (wants_reset)
@@ -246,9 +246,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x41);
 
 	amdmct_cbmem_store_info(sysinfo);
-
-	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
-	post_code(0x43);	// Should never see this post code.
 }
 
 /**

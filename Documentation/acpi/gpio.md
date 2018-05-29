@@ -1,13 +1,13 @@
-# GPIO toggling in ACPI AML for coreboot #
+# GPIO toggling in ACPI AML for coreboot
 
-# Table of contents #
+## Table of contents
 - Introduction
 - Platform Interface
 - Helper routines
 - Implementation details
 - Arguments and Local Variables Management
 
-# Introduction #
+## Introduction
 
 ACPI provides platform-independent interfaces enabling the operating
 system to perform power management for devices as well as the entire
@@ -25,7 +25,7 @@ depend upon platform to do the required work. This document presents a
 simple interface that can be used by any coreboot driver to generate
 ACPI AML code for reading or toggling platform GPIOs.
 
-# Platform Interface #
+## Platform Interface
 
 All platforms that use drivers requiring ACPI AML code for GPIO
 interactions need to be implement the following functions:
@@ -56,7 +56,7 @@ adding them as AML code callbacks for the following reasons:
 3. Allows GPIO AML methods to be present under any device scope and
    gives SoC the flexibility to call them without any restrictions.
 
-# Helper routines #
+## Helper routines
 
 In order to relieve drivers of the task of implementing the same code
 for enabling/disabling Tx GPIOs based on the GPIO polarity, helper
@@ -73,7 +73,7 @@ calling the platform specific acpigen_soc_{set,clear}_tx_gpio
 functions internally. Thus, all the ACPI AML calling conventions for
 the platform functions apply to these helper functions as well.
 
-# Implementation Details #
+## Implementation Details
 
 ACPI library in coreboot will provide weak definitions for all the
 above functions with error messages indicating that these functions
@@ -92,6 +92,7 @@ functions to return values. This means that the driver code should not
 make any assumptions about the values in Local5, Local6 and Local7
 variables.
 
+```
  **Function**                   **Operation**                **Return**
  acpigen_soc_read_rx_gpio     Generate ACPI AML code to      Error = -1
                               read value of Rx in Local0.    Success = 0
@@ -101,6 +102,7 @@ variables.
                               set Tx to 1.                   Success = 0
  acpigen_soc_clear_tx_gpio    Generate ACPI AML code to      Error = -1
                               set Tx to 0.                   Success = 0
+```
 
 Ideally, the operation column in the above table should use one or
 more functions implemented by the platform in AML code library (like
@@ -157,13 +159,13 @@ for the GPIO.
 
 
 These are reference implementations and the platforms are free to
-implement these functions in any way they like. Coreboot driver can
+implement these functions in any way they like. coreboot driver can
 then simply call into these functions to generate ACPI AML code to
 get/set/clear any GPIO. In order to decide whether GPIO operations are
 required, driver code can rely either on some config option or read
 device-tree to use any user-provided GPIOs.
 
-# Arguments and Local Variables Management #
+## Arguments and Local Variables Management
 
 Platform-defined functions can call methods using the same calling
 conventions provided by AML code. However, use of Local Variables is

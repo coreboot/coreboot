@@ -112,6 +112,9 @@ void region_device_init(struct region_device *rdev,
 			const struct region_device_ops *ops, size_t offset,
 			size_t size);
 
+/* Return 1 if child is subregion of parent, else 0. */
+int region_is_subregion(const struct region *p, const struct region *c);
+
 static inline size_t region_offset(const struct region *r)
 {
 	return r->offset;

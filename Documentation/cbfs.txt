@@ -19,7 +19,7 @@ scheme.  Over time, the scheme evolved slightly, but I think you'll find
 that it remains true to the original idea.  Below is the beginnings of
 an architecture document - I did it in text form, but if met with
 aclaim, it should be wikified.  This presents what I call CBFS - the
-next generation LAR for next generation Coreboot.  Its easier to
+next generation LAR for next generation coreboot.  Its easier to
 describe what it is by describing what changed:
 
 A header has been added somewhere in the bootblock similar to Carl
@@ -36,7 +36,7 @@ CBFS by type (i.e - bayou can ask for all components that are payloads).
 The header on each "file" (or component, as I like to style them) has
 been simplified - We now only store the length, the type, the checksum,
 and the offset to the data.  The name scheme remains the same.  The
-addtional information, which is component specific, has been moved to
+additional information, which is component specific, has been moved to
 the component itself (see below).
 
 The components are arranged in the ROM aligned along the specified
@@ -73,7 +73,7 @@ bucks, will you?
 
 Jordan
 
-Coreboot CBFS Specification
+coreboot CBFS Specification
 Jordan Crouse <jordan@cosmicpenguin.net>
 
 = Introduction =
@@ -152,7 +152,7 @@ struct cbfs_header {
         u32 offset;
         u32 architecture;
         u32 pad[1];
-} __attribute__((packed));
+} __packed;
 
 The meaning of each member is as follows:
 
@@ -163,7 +163,7 @@ number is 0x4F524243, which is 'ORBC' in ASCII.
 'version' is a version number for CBFS header. cbfs_header structure may be
 different if version is not matched.
 
-'romsize' is the size of the ROM in bytes.  Coreboot will subtract 'size' from
+'romsize' is the size of the ROM in bytes.  coreboot will subtract 'size' from
 0xFFFFFFFF to locate the beginning of the ROM in memory.
 
 'bootblocksize' is the size of bootblock reserved in firmware image.
@@ -245,7 +245,7 @@ structure of the header:
 | ...    |
 \--------/  <- start + 'offset' + 'len'
 
-== Searching Alogrithm ==
+== Searching Algorithm ==
 
 To locate a specific component in the ROM, one starts at the 'offset'
 specified in the CBFS master header.  For this example, the offset will
@@ -379,7 +379,7 @@ struct cbfs_payload_segment {
 
 PAYLOAD_SEGMENT_CODE   0x45444F43   The segment contains executable code
 PAYLOAD_SEGMENT_DATA   0x41544144   The segment contains data
-PAYLOAD_SEGMENT_BSS    0x20535342   The memory speicfied by the segment
+PAYLOAD_SEGMENT_BSS    0x20535342   The memory specified by the segment
                                      should be zeroed
 PAYLOAD_SEGMENT_PARAMS 0x41524150   The segment contains information for
                                      the payload

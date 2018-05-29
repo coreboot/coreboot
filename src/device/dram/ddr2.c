@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2017 Patrick Rudolph <siro@das-labor.org>
+ * Copyright (C) 2017 Arthur Heymans <arthur@aheymans.xyz>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +24,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/dram/ddr2.h>
+#include <lib.h>
 #include <string.h>
 
 /*==============================================================================
@@ -36,10 +38,11 @@
  *
  * @param type DIMM type. This is byte[20] of the SPD.
  */
-int spd_dimm_is_registered_ddr2(enum spd_dimm_type type)
+int spd_dimm_is_registered_ddr2(enum spd_dimm_type_ddr2 type)
 {
-	if ((type == SPD_DIMM_TYPE_RDIMM)
-	    | (type == SPD_DIMM_TYPE_72B_SO_RDIMM))
+	if ((type == SPD_DDR2_DIMM_TYPE_RDIMM)
+			|| (type == SPD_DDR2_DIMM_TYPE_72B_SO_RDIMM)
+			|| (type == SPD_DDR2_DIMM_TYPE_MINI_RDIMM))
 		return 1;
 
 	return 0;
@@ -66,6 +69,30 @@ u8 spd_ddr2_calc_checksum(u8 *spd, int len)
 		c += spd[i];
 
 	return c;
+}
+
+/**
+ * \brief Calculate the CRC of a DDR2 SPD unique identifier
+ *
+ * @param spd pointer to raw SPD data
+ * @param len length of data in SPD
+ *
+ * @return the CRC of SPD data bytes 64..72 and 93..98, or 0
+ *  when spd data is truncated.
+ */
+u16 spd_ddr2_calc_unique_crc(const u8 *spd, int len)
+{
+	u8 id_bytes[15];
+	int i, j = 0;
+	if (len < 98)
+		/* Not enough bytes available to get the CRC */
+		return 0;
+	for (i = 64; i <= 72; i++)
+		id_bytes[j++] = spd[i];
+	for (i = 93; i <= 98; i++)
+		id_bytes[j++] = spd[i];
+
+	return ddr3_crc16(id_bytes, 15);
 }
 
 /**
@@ -99,14 +126,9 @@ u32 spd_decode_eeprom_size_ddr2(u8 byte1)
  *
  * Returns the index fof MSB set.
  */
-static u8 spd_get_msbs(u8 c)
+u8 spd_get_msbs(u8 c)
 {
-	int i;
-	for (i = 7; i >= 0; i--)
-		if (c & (1 << i))
-			return i;
-
-	return 0;
+	return log2(c);
 }
 
 /**
@@ -115,7 +137,7 @@ static u8 spd_get_msbs(u8 c)
  * Decodes a raw SPD data from a DDR2 DIMM.
  * Returns cycle time in 1/256th ns.
  */
-static u32 spd_decode_tck_time(u8 c)
+static int spd_decode_tck_time(u32 *tck, u8 c)
 {
 	u8 high, low;
 
@@ -134,11 +156,17 @@ static u32 spd_decode_tck_time(u8 c)
 	case 0xd:
 		low = 75;
 		break;
+	case 0xe:
+	case 0xf:
+		printk(BIOS_WARNING, "Invalid tck setting. "
+			"lower nibble is 0x%x\n", c & 0xf);
+		return CB_ERR;
 	default:
 		low = (c & 0xf) * 10;
 	}
 
-	return ((high * 100 + low) << 8) / 100;
+	*tck = ((high * 100 + low) << 8) / 100;
+	return CB_SUCCESS;
 }
 
 /**
@@ -147,14 +175,17 @@ static u32 spd_decode_tck_time(u8 c)
  * Decodes a raw SPD data from a DDR2 DIMM.
  * Returns cycle time in 1/256th ns.
  */
-static u32 spd_decode_bcd_time(u8 c)
+static int spd_decode_bcd_time(u32 *bcd, u8 c)
 {
 	u8 high, low;
 
 	high = c >> 4;
 	low = c & 0xf;
+	if (high >= 10 || low >= 10)
+		return CB_ERR;
 
-	return ((high * 10 + low) << 8) / 100;
+	*bcd = ((high * 10 + low) << 8) / 100;
+	return CB_SUCCESS;
 }
 
 /**
@@ -179,23 +210,32 @@ static u32 spd_decode_quarter_time(u8 c)
  * Decodes a raw SPD data from a DDR2 DIMM.
  * Returns cycle time in 1/256th us.
  */
-static u32 spd_decode_tRR_time(u8 c)
+static int spd_decode_tRR_time(u32 *tRR, u8 c)
 {
-	switch (c) {
+	switch (c & ~0x80) {
 	default:
-	case 0:
-		return 15625 << 8;
-	case 1:
-		return 15625 << 6;
-	case 2:
-		return 15625 << 7;
-	case 3:
-		return 15625 << 9;
-	case 4:
-		return 15625 << 10;
-	case 5:
-		return 15625 << 11;
+		printk(BIOS_WARNING, "Invalid tRR value 0x%x\n", c);
+		return CB_ERR;
+	case 0x0:
+		*tRR = 15625 << 8;
+		break;
+	case 0x1:
+		*tRR = 15625 << 6;
+		break;
+	case 0x2:
+		*tRR = 15625 << 7;
+		break;
+	case 0x3:
+		*tRR = 15625 << 9;
+		break;
+	case 0x4:
+		*tRR = 15625 << 10;
+		break;
+	case 0x5:
+		*tRR = 15625 << 11;
+		break;
 	}
+	return CB_SUCCESS;
 }
 
 /**
@@ -281,7 +321,7 @@ static void spd_decode_tRCtRFC_time(u8 *spd_40_41_42, u32 *tRC, u32 *tRFC)
  *         SPD_STATUS_INVALID_FIELD -- A field with an invalid value was
  *             detected.
  */
-int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
+int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 {
 	u8 spd_size, cl, reg8;
 	u16 eeprom_size;
@@ -296,21 +336,23 @@ int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 	printram("SPD contains 0x%02x bytes\n", spd_size);
 
 	if (spd_size < 64 || eeprom_size < 64) {
-		printram("ERROR: SPD to small\n");
+		printk(BIOS_WARNING, "ERROR: SPD to small\n");
 		dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
 		return SPD_STATUS_INVALID;
 	}
 
 	if (spd_ddr2_calc_checksum(spd, spd_size) != spd[63]) {
-		printram("ERROR: SPD checksum error\n");
+		printk(BIOS_WARNING, "ERROR: SPD checksum error\n");
 		dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
 		return SPD_STATUS_CRC_ERROR;
 	}
+	dimm->checksum = spd[63];
 
 	reg8 = spd[62];
 	if ((reg8 & 0xf0) != 0x10) {
-		printram("ERROR: Unsupported SPD revision %01x.%01x\n",
-				reg8 >> 4, reg8 & 0xf);
+		printk(BIOS_WARNING,
+			"ERROR: Unsupported SPD revision %01x.%01x\n",
+			reg8 >> 4, reg8 & 0xf);
 		dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
 		return SPD_STATUS_INVALID;
 	}
@@ -320,7 +362,7 @@ int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 	reg8 = spd[2];
 	printram("  Type               : 0x%02x\n", reg8);
 	if (reg8 != 0x08) {
-		printram("ERROR: Unsupported SPD type %x\n", reg8);
+		printk(BIOS_WARNING, "ERROR: Unsupported SPD type %x\n", reg8);
 		dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
 		return SPD_STATUS_INVALID;
 	}
@@ -330,14 +372,16 @@ int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 	printram("  Rows               : %u\n", dimm->row_bits);
 	if ((dimm->row_bits > 31) ||
 	    ((dimm->row_bits > 15) && (dimm->rev < 0x13))) {
-		printram("  Invalid number of memory rows\n");
+		printk(BIOS_WARNING,
+			"SPD decode: invalid number of memory rows\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 
 	dimm->col_bits = spd[4];
 	printram("  Columns            : %u\n", dimm->col_bits);
 	if (dimm->col_bits > 15) {
-		printram("  Invalid number of memory columns\n");
+		printk(BIOS_WARNING,
+			"SPD decode: invalid number of memory columns\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 
@@ -347,21 +391,22 @@ int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 	dimm->mod_width = spd[6];
 	printram("  Module data width  : x%u\n", dimm->mod_width);
 	if (!dimm->mod_width) {
-		printram("  Invalid module data width\n");
+		printk(BIOS_WARNING, "SPD decode: invalid module data width\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 
 	dimm->width = spd[13];
 	printram("  SDRAM width        : x%u\n", dimm->width);
 	if (!dimm->width) {
-		printram("  Invalid SDRAM width\n");
+		printk(BIOS_WARNING, "SPD decode: invalid SDRAM width\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 
 	dimm->banks = spd[17];
 	printram("  Banks              : %u\n", dimm->banks);
 	if (!dimm->banks) {
-		printram("  Invalid module banks count\n");
+		printk(BIOS_WARNING,
+			"SPD decode: invalid module banks count\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 
@@ -391,23 +436,26 @@ int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 		printram("  Voltage            : 1.8V\n");
 		break;
 	default:
-		printram("  Unknown voltage level.\n");
+		printk(BIOS_WARNING, "SPD decode: unknown voltage level.\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 
 	dimm->cas_supported = spd[18];
 	if ((dimm->cas_supported & 0x3) || !dimm->cas_supported) {
-		printram("  Invalid CAS support advertised.\n");
+		printk(BIOS_WARNING,
+			"SPD decode: invalid CAS support advertised.\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 	printram("  Supported CAS mask : 0x%x\n", dimm->cas_supported);
 
 	if ((dimm->rev < 0x13) && (dimm->cas_supported & 0x80)) {
-		printram("  Invalid CAS support advertised.\n");
+		printk(BIOS_WARNING,
+			"SPD decode: invalid CAS support advertised.\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 	if ((dimm->rev < 0x12) && (dimm->cas_supported & 0x40)) {
-		printram("  Invalid CAS support advertised.\n");
+		printk(BIOS_WARNING,
+			"SPD decode: invalid CAS support advertised.\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 
@@ -415,26 +463,60 @@ int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 	cl = spd_get_msbs(dimm->cas_supported);
 
 	/* SDRAM Cycle time at Maximum Supported CAS Latency (CL), CL=X */
-	dimm->cycle_time[cl] = spd_decode_tck_time(spd[9]);
+	if (spd_decode_tck_time(&dimm->cycle_time[cl], spd[9]) != CB_SUCCESS) {
+		printk(BIOS_WARNING,
+			"SPD decode: invalid min tCL for CAS%d\n", cl);
+		ret = SPD_STATUS_INVALID_FIELD;
+	}
 	/* SDRAM Access from Clock */
-	dimm->access_time[cl] = spd_decode_bcd_time(spd[10]);
+	if (spd_decode_bcd_time(&dimm->access_time[cl], spd[10])
+			!= CB_SUCCESS) {
+		printk(BIOS_WARNING,
+			"SPD decode: invalid min tAC for CAS%d\n", cl);
+		ret = SPD_STATUS_INVALID_FIELD;
+	}
 
 	if (dimm->cas_supported & (1 << (cl - 1))) {
 		/* Minimum Clock Cycle at CLX-1 */
-		dimm->cycle_time[cl - 1] = spd_decode_tck_time(spd[23]);
+		if (spd_decode_tck_time(&dimm->cycle_time[cl - 1], spd[23])
+				!= CB_SUCCESS) {
+			printk(BIOS_WARNING,
+				"SPD decode: invalid min tCL for CAS%d\n",
+				cl - 1);
+			ret = SPD_STATUS_INVALID_FIELD;
+		}
 		/* Maximum Data Access Time (tAC) from Clock at CLX-1 */
-		dimm->access_time[cl - 1] = spd_decode_bcd_time(spd[24]);
+		if (spd_decode_bcd_time(&dimm->access_time[cl - 1], spd[24])
+				!= CB_SUCCESS) {
+			printk(BIOS_WARNING,
+				"SPD decode: invalid min tAC for CAS%d\n",
+				cl - 1);
+			ret = SPD_STATUS_INVALID_FIELD;
+		}
 	}
 	if (dimm->cas_supported & (1 << (cl - 2))) {
 		/* Minimum Clock Cycle at CLX-2 */
-		dimm->cycle_time[cl - 2] = spd_decode_tck_time(spd[25]);
+		if (spd_decode_tck_time(&dimm->cycle_time[cl - 2], spd[25])
+				!= CB_SUCCESS) {
+			printk(BIOS_WARNING,
+				"SPD decode: invalid min tCL for CAS%d\n",
+				cl - 2);
+			ret = SPD_STATUS_INVALID_FIELD;
+		}
 		/* Maximum Data Access Time (tAC) from Clock at CLX-2 */
-		dimm->access_time[cl - 2] = spd_decode_bcd_time(spd[26]);
+		if (spd_decode_bcd_time(&dimm->access_time[cl - 2], spd[26])
+				!= CB_SUCCESS) {
+			printk(BIOS_WARNING,
+				"SPD decode: invalid min tAC for CAS%d\n",
+				cl - 2);
+			ret = SPD_STATUS_INVALID_FIELD;
+		}
 	}
 
 	reg8 = (spd[31] >> 5) | (spd[31] << 3);
 	if (!reg8) {
-		printram("  Invalid rank density.\n");
+		printk(BIOS_WARNING,
+			"SPD decode: invalid rank density.\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 
@@ -448,7 +530,10 @@ int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 		printram("  Capacity           : %u GB\n", dimm->size_mb >> 10);
 
 	/* SDRAM Maximum Cycle Time (tCKmax) */
-	dimm->tCK = spd_decode_tck_time(spd[43]);
+	if (spd_decode_bcd_time(&dimm->tCK, spd[43]) != CB_SUCCESS) {
+		printk(BIOS_WARNING, "SPD decode: invalid Max tCK\n");
+		ret = SPD_STATUS_INVALID_FIELD;
+	}
 	/* Minimum Write Recovery Time (tWRmin) */
 	dimm->tWR = spd_decode_quarter_time(spd[36]);
 	/* Minimum RAS# to CAS# Delay Time (tRCDmin) */
@@ -467,9 +552,15 @@ int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 	/* Minimum Internal Read to Precharge Command Delay Time (tRTPmin) */
 	dimm->tRTP = spd_decode_quarter_time(spd[38]);
 	/* Data Input Setup Time Before Strobe */
-	dimm->tDS = spd_decode_bcd_time(spd[34]);
+	if (spd_decode_bcd_time(&dimm->tDS, spd[34]) != CB_SUCCESS) {
+		printk(BIOS_WARNING, "SPD decode: invalid tDS\n");
+		ret = SPD_STATUS_INVALID_FIELD;
+	}
 	/* Data Input Hold Time After Strobe */
-	dimm->tDH = spd_decode_bcd_time(spd[35]);
+	if (spd_decode_bcd_time(&dimm->tDH, spd[35]) != CB_SUCCESS) {
+		printk(BIOS_WARNING, "SPD decode: invalid tDH\n");
+		ret = SPD_STATUS_INVALID_FIELD;
+	}
 	/* SDRAM Device DQS-DQ Skew for DQS and associated DQ signals */
 	dimm->tDQSQ = (spd[44] << 8) / 100;
 	/* SDRAM Device Maximum Read Data Hold Skew Factor */
@@ -477,7 +568,11 @@ int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 	/* PLL Relock Time in us */
 	dimm->tPLL = spd[46] << 8;
 	/* Refresh rate in us */
-	dimm->tRR = spd_decode_tRR_time(spd[12]);
+	if (spd_decode_tRR_time(&dimm->tRR, spd[12]) != CB_SUCCESS)
+		ret = SPD_STATUS_INVALID_FIELD;
+	dimm->flags.self_refresh = (spd[12] >> 7) & 1;
+	printram("The assembly supports self refresh: %s\n",
+		 dimm->flags.self_refresh ? "true" : "false");
 
 	/* Number of PLLs on DIMM */
 	if (dimm->rev >= 0x11)
@@ -501,17 +596,17 @@ int spd_decode_ddr2(struct dimm_attr_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 
 	/* SDRAM Supported Burst length */
 	printram("  Burst length       :");
-	if (spd[16] & 0x06) {
+	if (spd[16] & 0x08) {
 		dimm->flags.bl8 = 1;
 		printram(" BL8");
 	}
-	if (spd[22] & 0x04) {
+	if (spd[16] & 0x04) {
 		dimm->flags.bl4 = 1;
 		printram(" BL4");
 	}
 	printram("\n");
 
-	dimm->dimm_type = spd[20] & SPD_DIMM_TYPE_MASK;
+	dimm->dimm_type = spd[20] & SPD_DDR2_DIMM_TYPE_MASK;
 	printram("  Dimm type          : %x\n", dimm->dimm_type);
 
 	dimm->flags.is_ecc = !!(spd[11] & 0x3);
@@ -577,7 +672,7 @@ static void print_us(const char *msg, u32 val)
 *
 * @param dimm pointer to already decoded @ref dimm_attr structure
 */
-void dram_print_spd_ddr2(const struct dimm_attr_st *dimm)
+void dram_print_spd_ddr2(const struct dimm_attr_ddr2_st *dimm)
 {
 	char buf[32];
 	int i;
@@ -627,4 +722,26 @@ void dram_print_spd_ddr2(const struct dimm_attr_st *dimm)
 	print_ns("  tQHSmax           : ", dimm->tQHS);
 	print_us("  tPLL              : ", dimm->tPLL);
 	print_us("  tRR               : ", dimm->tRR);
+}
+
+void normalize_tck(u32 *tclk)
+{
+	if (*tclk <= TCK_800MHZ) {
+		*tclk = TCK_800MHZ;
+	} else if (*tclk <= TCK_666MHZ) {
+		*tclk = TCK_666MHZ;
+	} else if (*tclk <= TCK_533MHZ) {
+		*tclk = TCK_533MHZ;
+	} else if (*tclk <= TCK_400MHZ) {
+		*tclk = TCK_400MHZ;
+	} else if (*tclk <= TCK_333MHZ) {
+		*tclk = TCK_333MHZ;
+	} else if (*tclk <= TCK_266MHZ) {
+		*tclk = TCK_266MHZ;
+	} else if (*tclk <= TCK_200MHZ) {
+		*tclk = TCK_200MHZ;
+	} else {
+		*tclk = 0;
+		printk(BIOS_ERR, "Too slow common tCLK found\n");
+	}
 }

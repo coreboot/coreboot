@@ -41,6 +41,8 @@
  *
  ***************************************************************************/
 
+#include <check_for_wrapper.h>
+
 #ifndef _PLATFORM_MEMORY_CONFIGURATION_H_
 #define _PLATFORM_MEMORY_CONFIGURATION_H_
 

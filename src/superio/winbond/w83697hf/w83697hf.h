@@ -17,8 +17,6 @@
 #ifndef SUPERIO_WINBOND_W83697HF_H
 #define SUPERIO_WINBOND_W83697HF_H
 
-#include <arch/io.h>
-
 #define W83697HF_FDC            0    /* Floppy */
 #define W83697HF_PP             1    /* Parallel port */
 #define W83697HF_SP1            2    /* Com1 */
@@ -29,10 +27,5 @@
 #define W83697HF_GPIO234        9    /* GPIO 2, 3, 4 */
 #define W83697HF_ACPI           10   /* ACPI */
 #define W83697HF_HWM            11   /* Hardware monitor */
-
-void w83697hf_set_clksel_48(pnp_devfn_t);
-
-/* Depreciated, use winbond_enable_serial() */
-void w83697hf_enable_serial(pnp_devfn_t dev, u16 iobase);
 
 #endif /* SUPERIO_WINBOND_W83697HF_H */

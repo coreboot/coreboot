@@ -1,2 +1,2 @@
 config BOARD_GOOGLE_DAISY
-	bool "Daisy"
+	bool "Daisy (Samsung Chromebook (2012))"

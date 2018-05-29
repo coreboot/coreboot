@@ -25,6 +25,8 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <commonlib/helpers.h>
+#include <cbmem.h>
+#include <southbridge/intel/i82801ix/nvs.h>
 
 #include "drivers/intel/gma/i915_reg.h"
 #include "chip.h"
@@ -32,6 +34,7 @@
 #include <drivers/intel/gma/intel_bios.h>
 #include <drivers/intel/gma/edid.h>
 #include <drivers/intel/gma/i915.h>
+#include <drivers/intel/gma/opregion.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
 
@@ -49,13 +52,24 @@ void gtt_write(u32 reg, u32 data)
 	write32(res2mmio(gtt_res, reg, 0), data);
 }
 
-static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
-			   u8 *mmio, u32 physbase, u16 piobase, u32 lfb)
+uintptr_t gma_get_gnvs_aslb(const void *gnvs)
 {
+	const global_nvs_t *gnvs_ptr = gnvs;
+	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
+}
 
+void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
+{
+	global_nvs_t *gnvs_ptr = gnvs;
+	if (gnvs_ptr)
+		gnvs_ptr->aslb = aslb;
+}
+
+static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
+			u8 *mmio, u32 physbase, u16 piobase, u32 lfb,
+			struct edid *edid)
+{
 	int i;
-	u8 edid_data[128];
-	struct edid edid;
 	struct edid_mode *mode;
 	u32 hactive, vactive, right_border, bottom_border;
 	int hpolarity, vpolarity;
@@ -93,17 +107,13 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	for (i = 0; i <= 0x18; i++)
 		vga_cr_write(i, cr[i]);
 
-	intel_gmbus_read_edid(mmio + GMBUS0, 3, 0x50, edid_data,
-			sizeof(edid_data));
-	decode_edid(edid_data,
-		    sizeof(edid_data), &edid);
-	mode = &edid.mode;
-
 	/* Disable screen memory to prevent garbage from appearing. */
 	vga_sr_write(1, vga_sr_read(1) | 0x20);
 
-	hactive = edid.x_resolution;
-	vactive = edid.y_resolution;
+	mode = &edid->mode;
+
+	hactive = edid->x_resolution;
+	vactive = edid->y_resolution;
 	right_border = mode->hborder;
 	bottom_border = mode->vborder;
 	hpolarity = (mode->phsync == '-');
@@ -115,7 +125,7 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	hfront_porch = mode->hso;
 	vfront_porch = mode->vso;
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		vga_sr_write(1, 1);
 		vga_sr_write(0x2, 0xf);
 		vga_sr_write(0x3, 0x0);
@@ -131,11 +141,11 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 		vga_gr_write(0x10, 0x1);
 		vga_gr_write(0x11, 0);
 
-		edid.bytes_per_line = (edid.bytes_per_line + 63) & ~63;
+		edid->bytes_per_line = (edid->bytes_per_line + 63) & ~63;
 
 		write32(mmio + DSPCNTR(0), DISPPLANE_BGRX888);
 		write32(mmio + DSPADDR(0), 0);
-		write32(mmio + DSPSTRIDE(0), edid.bytes_per_line);
+		write32(mmio + DSPSTRIDE(0), edid->bytes_per_line);
 		write32(mmio + DSPSURF(0), 0);
 		for (i = 0; i < 0x100; i++)
 			write32(mmio + LGC_PALETTE(0) + 4 * i, i * 0x010101);
@@ -269,7 +279,7 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + PIPECONF(0), PIPECONF_DISABLE);
 
 	write32(mmio + PF_WIN_POS(0), 0);
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		write32(mmio + PIPESRC(0), ((hactive - 1) << 16)
 			| (vactive - 1));
 		write32(mmio + PF_CTL(0), 0);
@@ -287,7 +297,7 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + PIPECONF(0), PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 	write32(mmio + PIPECONF(0), PIPECONF_ENABLE | PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		write32(mmio + VGACNTRL, VGA_DISP_DISABLE);
 		write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE
 			| DISPPLANE_BGRX888);
@@ -313,20 +323,19 @@ static void gma_init_lvds(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + DEIIR, 0xffffffff);
 	write32(mmio + SDEIIR, 0xffffffff);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		memset((void *) lfb, 0,
-		       edid.x_resolution * edid.y_resolution * 4);
-		set_vbe_mode_info_valid(&edid, lfb);
+		       edid->x_resolution * edid->y_resolution * 4);
+		set_vbe_mode_info_valid(edid, lfb);
 	}
 }
 
 static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
-			 u8 *mmio, u32 physbase, u16 piobase, u32 lfb)
+			u8 *mmio, u32 physbase, u16 piobase, u32 lfb,
+			struct edid *edid)
 {
 
 	int i;
-	u8 edid_data[128];
-	struct edid edid;
 	struct edid_mode *mode;
 	u32 hactive, vactive, right_border, bottom_border;
 	int hpolarity, vpolarity;
@@ -378,19 +387,13 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 
 	udelay(1);
 
-	intel_gmbus_read_edid(mmio + GMBUS0, 2, 0x50, edid_data,
-			sizeof(edid_data));
-	intel_gmbus_stop(mmio + GMBUS0);
-	decode_edid(edid_data,
-		    sizeof(edid_data), &edid);
-	mode = &edid.mode;
-
-
 	/* Disable screen memory to prevent garbage from appearing.  */
 	vga_sr_write(1, vga_sr_read(1) | 0x20);
 
-	hactive = edid.x_resolution;
-	vactive = edid.y_resolution;
+	mode = &edid->mode;
+
+	hactive = edid->x_resolution;
+	vactive = edid->y_resolution;
 	right_border = mode->hborder;
 	bottom_border = mode->vborder;
 	hpolarity = (mode->phsync == '-');
@@ -403,7 +406,7 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 	vfront_porch = mode->vso;
 	target_frequency = mode->pixel_clock;
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		vga_sr_write(1, 1);
 		vga_sr_write(0x2, 0xf);
 		vga_sr_write(0x3, 0x0);
@@ -419,12 +422,12 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 		vga_gr_write(0x10, 0x1);
 		vga_gr_write(0x11, 0);
 
-		edid.bytes_per_line = (edid.bytes_per_line + 63) & ~63;
+		edid->bytes_per_line = (edid->bytes_per_line + 63) & ~63;
 
 		write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE
 			| DISPPLANE_BGRX888);
 		write32(mmio + DSPADDR(0), 0);
-		write32(mmio + DSPSTRIDE(0), edid.bytes_per_line);
+		write32(mmio + DSPSTRIDE(0), edid->bytes_per_line);
 		write32(mmio + DSPSURF(0), 0);
 		for (i = 0; i < 0x100; i++)
 			write32(mmio + LGC_PALETTE(0) + 4 * i, i * 0x010101);
@@ -533,7 +536,7 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + PIPECONF(0), PIPECONF_DISABLE);
 
 	write32(mmio + PF_WIN_POS(0), 0);
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		write32(mmio + PIPESRC(0), ((hactive - 1) << 16)
 			| (vactive - 1));
 		write32(mmio + PF_CTL(0), 0);
@@ -552,7 +555,7 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + PIPECONF(0), PIPECONF_ENABLE
 			| PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		write32(mmio + VGACNTRL, VGA_DISP_DISABLE);
 		write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE
 			| DISPPLANE_BGRX888);
@@ -582,32 +585,57 @@ static void gma_init_vga(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + DEIIR, 0xffffffff);
 	write32(mmio + SDEIIR, 0xffffffff);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		memset((void *) lfb, 0,
-			edid.x_resolution * edid.y_resolution * 4);
-		set_vbe_mode_info_valid(&edid, lfb);
+			edid->x_resolution * edid->y_resolution * 4);
+		set_vbe_mode_info_valid(edid, lfb);
 	}
 
 
 }
 
-/* compare the header of the vga edid header */
-/* if vga is not connected it should not have a correct header */
-static u8 vga_connected(u8 *mmio)
+static void gma_ngi(struct device *const dev, struct edid *edid_lvds)
 {
-	u8 vga_edid[128];
-	u8 header[8] = {0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00};
-	intel_gmbus_read_edid(mmio + GMBUS0, 2, 0x50, vga_edid,
-			sizeof(vga_edid));
+	u8 edid_data_vga[128];
+	struct edid edid_vga;
+	int vga_edid_status;
+	u8 *mmio;
+	struct northbridge_intel_gm45_config *conf = dev->chip_info;
+
+	mmio = res2mmio(gtt_res, 0, 0);
+	printk(BIOS_DEBUG, "VGA EDID\n");
+	intel_gmbus_read_edid(mmio + GMBUS0, GMBUS_PORT_VGADDC, 0x50,
+			edid_data_vga, sizeof(edid_data_vga));
 	intel_gmbus_stop(mmio + GMBUS0);
-	for (int i = 0; i < 8; i++) {
-		if (vga_edid[i] != header[i]) {
-			printk(BIOS_DEBUG, "VGA not connected. Using LVDS display\n");
-			return 0;
-		}
+	vga_edid_status = decode_edid(edid_data_vga,
+				sizeof(edid_data_vga), &edid_vga);
+
+	u32 physbase;
+	struct resource *lfb_res;
+	struct resource *pio_res;
+
+	lfb_res = find_resource(dev, PCI_BASE_ADDRESS_2);
+	pio_res = find_resource(dev, PCI_BASE_ADDRESS_4);
+
+	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
+
+	if (!(physbase && pio_res && pio_res->base && lfb_res && lfb_res->base))
+		return;
+
+	printk(BIOS_SPEW, "Initializing display without OPROM. MMIO 0x%llx\n",
+		gtt_res->base);
+	if (vga_edid_status != EDID_ABSENT) {
+		printk(BIOS_DEBUG, "Initialising display on VGA output\n");
+		gma_init_vga(conf, mmio, physbase, pio_res->base, lfb_res->base,
+			&edid_vga);
+	} else {
+		printk(BIOS_DEBUG, "Initialising display on LVDS output\n");
+		gma_init_lvds(conf, mmio, physbase, pio_res->base,
+			lfb_res->base, edid_lvds);
 	}
-	printk(BIOS_SPEW, "VGA display connected\n");
-	return 1;
+
+	/* Linux relies on VBT for panel info.  */
+	generate_fake_intel_oprom(&conf->gfx, dev, "$VBT CANTIGA");
 }
 
 static u32 get_cdclk(struct device *const dev)
@@ -641,12 +669,16 @@ static u32 freq_to_blc_pwm_ctl(struct device *const dev,
 		return (blc_mod << 16) | blc_mod;
 }
 
-static void gma_pm_init_post_vbios(struct device *const dev)
+static void gma_pm_init_post_vbios(struct device *const dev,
+				const char *edid_ascii_string)
 {
 	const struct northbridge_intel_gm45_config *const conf = dev->chip_info;
 
 	u32 reg32;
 	u8 reg8;
+	const struct blc_pwm_t *blc_pwm;
+	int blc_array_len, i;
+	u16 pwm_freq = 0;
 
 	/* Setup Panel Power On Delays */
 	reg32 = gtt_read(PP_ON_DELAYS);
@@ -677,64 +709,76 @@ static void gma_pm_init_post_vbios(struct device *const dev)
 	reg8 = 100;
 	if (conf->duty_cycle != 0)
 		reg8 = conf->duty_cycle;
-	if (conf->pwm_freq == 0)
+	blc_array_len = get_blc_values(&blc_pwm);
+	if (conf->default_pwm_freq != 0)
+		pwm_freq = conf->default_pwm_freq;
+
+	/* Find EDID string and pwm freq in lookup table */
+	for (i = 0; i < blc_array_len; i++) {
+		if (!strncmp(blc_pwm[i].ascii_string, edid_ascii_string,
+				strlen(blc_pwm[i].ascii_string))) {
+			pwm_freq = blc_pwm[i].pwm_freq;
+			printk(BIOS_DEBUG, "Found EDID string: %s in lookup table, pwm: %dHz\n",
+				blc_pwm[i].ascii_string, pwm_freq);
+			break;
+		}
+	}
+
+	if (i == blc_array_len)
+		printk(BIOS_NOTICE, "Your panels EDID `%s` wasn't found in the"
+			"lookup table.\n You may have issues with your panels"
+			"backlight.\n If you want to help improving coreboot"
+			"please report: this EDID string\n and the result"
+			"of `intel_read read BLC_PWM_CTL`"
+			"(from intel-gpu-tools)\n while running vendor BIOS\n",
+			edid_ascii_string);
+
+	if (pwm_freq == 0)
 		gtt_write(BLC_PWM_CTL, 0x06100610);
 	else
-		gtt_write(BLC_PWM_CTL, freq_to_blc_pwm_ctl(dev,
-						conf->pwm_freq,	reg8));
+		gtt_write(BLC_PWM_CTL, freq_to_blc_pwm_ctl(dev, pwm_freq,
+								reg8));
 }
 
 static void gma_func0_init(struct device *dev)
 {
 	u32 reg32;
+	u8 *mmio;
+	u8 edid_data_lvds[128];
+	struct edid edid_lvds;
 
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
-	/* Init graphics power management */
 	gtt_res = find_resource(dev, PCI_BASE_ADDRESS_0);
-
-	struct northbridge_intel_gm45_config *conf = dev->chip_info;
+	if (gtt_res == NULL)
+		return;
+	mmio = res2mmio(gtt_res, 0, 0);
 
 	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
 		/* PCI Init, will run VBIOS */
+		printk(BIOS_DEBUG, "Initialising IGD using VBIOS\n");
 		pci_dev_init(dev);
 	}
 
+	printk(BIOS_DEBUG, "LVDS EDID\n");
+	intel_gmbus_read_edid(mmio + GMBUS0, GMBUS_PORT_PANEL, 0x50,
+			edid_data_lvds, sizeof(edid_data_lvds));
+	intel_gmbus_stop(mmio + GMBUS0);
+	decode_edid(edid_data_lvds, sizeof(edid_data_lvds), &edid_lvds);
+
 	/* Post VBIOS init */
-	gma_pm_init_post_vbios(dev);
+	gma_pm_init_post_vbios(dev, edid_lvds.ascii_string);
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
-		u32 physbase;
-		struct resource *lfb_res;
-		struct resource *pio_res;
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+		gma_ngi(dev, &edid_lvds);
 
-		lfb_res = find_resource(dev, PCI_BASE_ADDRESS_2);
-		pio_res = find_resource(dev, PCI_BASE_ADDRESS_4);
-
-		physbase = pci_read_config32(dev, 0x5c) & ~0xf;
-
-		if (gtt_res && gtt_res->base && physbase && pio_res
-		    && pio_res->base && lfb_res && lfb_res->base) {
-			printk(BIOS_SPEW,
-			       "Initializing VGA without OPROM. MMIO 0x%llx\n",
-			       gtt_res->base);
-			if (vga_connected(res2mmio(gtt_res, 0, 0)))
-				gma_init_vga(conf, res2mmio(gtt_res, 0, 0),
-					physbase, pio_res->base, lfb_res->base);
-			else
-				gma_init_lvds(conf, res2mmio(gtt_res, 0, 0),
-					physbase, pio_res->base, lfb_res->base);
-		}
-
-		/* Linux relies on VBT for panel info.  */
-		generate_fake_intel_oprom(&conf->gfx, dev, "$VBT CANTIGA");
-	}
+	intel_gma_restore_opregion();
 }
 
-static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void gma_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -749,7 +793,7 @@ static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 const struct i915_gpu_controller_info *
 intel_gma_get_controller_info(void)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x2,0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x2,0));
 	if (!dev) {
 		return NULL;
 	}
@@ -757,7 +801,7 @@ intel_gma_get_controller_info(void)
 	return &chip->gfx;
 }
 
-static void gma_ssdt(device_t device)
+static void gma_ssdt(struct device *device)
 {
 	const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
 	if (!gfx) {
@@ -765,6 +809,37 @@ static void gma_ssdt(device_t device)
 	}
 
 	drivers_intel_gma_displays_ssdt_generate(gfx);
+}
+
+static unsigned long
+gma_write_acpi_tables(struct device *const dev,
+		      unsigned long current,
+		      struct acpi_rsdp *const rsdp)
+{
+	igd_opregion_t *opregion = (igd_opregion_t *)current;
+	global_nvs_t *gnvs;
+
+	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
+		return current;
+
+	current += sizeof(igd_opregion_t);
+
+	/* GNVS has been already set up */
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs) {
+		/* IGD OpRegion Base Address */
+		gma_set_gnvs_aslb(gnvs, (uintptr_t)opregion);
+	} else {
+		printk(BIOS_ERR, "Error: GNVS table not found.\n");
+	}
+
+	current = acpi_align_current(current);
+	return current;
+}
+
+static const char *gma_acpi_name(const struct device *dev)
+{
+	return "GFX0";
 }
 
 static struct pci_operations gma_pci_ops = {
@@ -780,6 +855,8 @@ static struct device_operations gma_func0_ops = {
 	.scan_bus = 0,
 	.enable = 0,
 	.ops_pci = &gma_pci_ops,
+	.acpi_name = gma_acpi_name,
+	.write_acpi_tables = gma_write_acpi_tables,
 };
 
 static const unsigned short pci_device_ids[] =

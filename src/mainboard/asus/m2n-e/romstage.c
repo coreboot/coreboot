@@ -34,6 +34,7 @@
 #include <cpu/x86/lapic.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8716f/it8716f.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"
@@ -134,7 +135,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	setup_coherent_ht_domain(); /* Routing table and start other core0. */
 	wait_all_core0_started();
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	/*
 	 * It is said that we should start core1 after all core0 launched
 	 * becase optimize_link_coherent_ht is moved out from
@@ -173,6 +174,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
-	/* BSP switch stack to RAM and copy sysinfo RAM now. */
-	post_cache_as_ram();
 }

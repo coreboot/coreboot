@@ -1,0 +1,2 @@
+config BOARD_LENOVO_X131E
+	bool "ThinkPad X131e"

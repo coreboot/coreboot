@@ -1,0 +1,86 @@
+From 760f1cafdd689beedc8418ab89e856b54296389c Mon Sep 17 00:00:00 2001
+From: CoolStar <coolstarorganization@gmail.com>
+Date: Sun, 4 Dec 2016 12:07:30 -0800
+Subject: [PATCH] CorebootBdsLib: Call End of DXE event to allow booting 3rd
+ party efi binaries.
+
+---
+ .../Library/CorebootBdsLib/BdsPlatform.c           | 42 ++++++++++++++++++++++
+ .../Library/CorebootBdsLib/PlatformBds.inf         |  1 +
+ 2 files changed, 43 insertions(+)
+
+diff --git a/CorebootModulePkg/Library/CorebootBdsLib/BdsPlatform.c b/CorebootModulePkg/Library/CorebootBdsLib/BdsPlatform.c
+index b6253a17f8..cf3e5320cb 100644
+--- a/CorebootModulePkg/Library/CorebootBdsLib/BdsPlatform.c
++++ b/CorebootModulePkg/Library/CorebootBdsLib/BdsPlatform.c
+@@ -1129,6 +1129,46 @@ Returns:
+   Status = BaseMemoryTest (MemoryTestLevel);
+ }
+ 
++VOID
++EFIAPI
++InternalBdsEmptyCallbackFuntion (
++  IN EFI_EVENT                Event,
++  IN VOID                     *Context
++  )
++{
++  return;
++}
++
++VOID
++InstallReadyToLock (
++  VOID
++  )
++{
++  EFI_STATUS                            Status;
++  EFI_EVENT                             EndOfDxeEvent;
++
++  DEBUG((DEBUG_INFO,"InstallReadyToLock  entering......\n"));
++  //
++  // Inform the SMM infrastructure that we're entering BDS and may run 3rd party code hereafter
++  // Since PI1.2.1, we need signal EndOfDxe as ExitPmAuth
++  //
++  Status = gBS->CreateEventEx (
++                  EVT_NOTIFY_SIGNAL,
++                  TPL_CALLBACK,
++                  InternalBdsEmptyCallbackFuntion,
++                  NULL,
++                  &gEfiEndOfDxeEventGroupGuid,
++                  &EndOfDxeEvent
++                  );
++  ASSERT_EFI_ERROR (Status);
++  gBS->SignalEvent (EndOfDxeEvent);
++  gBS->CloseEvent (EndOfDxeEvent);
++  DEBUG((DEBUG_INFO,"All EndOfDxe callbacks have returned successfully\n"));
++
++  DEBUG((DEBUG_INFO,"InstallReadyToLock  end\n"));
++  return;
++}
++
+ VOID
+ EFIAPI
+ PlatformBdsPolicyBehavior (
+@@ -1164,6 +1204,8 @@ Returns:
+   EFI_INPUT_KEY                      Key;
+   EFI_BOOT_MODE                      BootMode;
+ 
++  InstallReadyToLock();
++
+   //
+   // Init the time out value
+   //
+diff --git a/CorebootModulePkg/Library/CorebootBdsLib/PlatformBds.inf b/CorebootModulePkg/Library/CorebootBdsLib/PlatformBds.inf
+index 578c74afae..992bd846bd 100644
+--- a/CorebootModulePkg/Library/CorebootBdsLib/PlatformBds.inf
++++ b/CorebootModulePkg/Library/CorebootBdsLib/PlatformBds.inf
+@@ -58,6 +58,7 @@
+   gEfiSmbiosTableGuid
+   gEfiAcpiTableGuid
+   gLdrMemoryDescriptorGuid
++  gEfiEndOfDxeEventGroupGuid
+ 
+ [Pcd]
+   gEfiMdePkgTokenSpaceGuid.PcdPlatformBootTimeOut
+-- 
+2.13.2.725.g09c95d1e9-goog
+

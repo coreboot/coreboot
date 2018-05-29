@@ -14,6 +14,7 @@
  */
 
 #include <arch/early_variables.h>
+#include <assert.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <delay.h>
@@ -21,17 +22,16 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <intelblocks/cse.h>
+#include <soc/iomap.h>
 #include <soc/pci_devs.h>
-#include <soc/pci_ids.h>
 #include <string.h>
 #include <timer.h>
 
-/* default window for early boot, must be at least 12 bytes in size */
-#define HECI1_BASE_ADDRESS	0xfed1a000
+#define MAX_HECI_MESSAGE_RETRY_COUNT 5
 
 /* Wait up to 15 sec for HECI to get ready */
 #define HECI_DELAY_READY	(15 * 1000)
-/* Wait up to 100 usec between circullar buffer polls */
+/* Wait up to 100 usec between circular buffer polls */
 #define HECI_DELAY		100
 /* Wait up to 5 sec for CSE to chew something we sent */
 #define HECI_SEND_TIMEOUT	(5 * 1000)
@@ -109,15 +109,35 @@ void heci_init(uintptr_t tempbar)
 	cse->sec_bar = tempbar;
 }
 
+/* Get HECI BAR 0 from PCI configuration space */
+static uint32_t get_cse_bar(void)
+{
+	uintptr_t bar;
+
+	bar = pci_read_config32(PCH_DEV_CSE, PCI_BASE_ADDRESS_0);
+	assert(bar != 0);
+	/*
+	 * Bits 31-12 are the base address as per EDS for SPI,
+	 * Don't care about 0-11 bit
+	 */
+	return bar & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+}
+
 static uint32_t read_bar(uint32_t offset)
 {
 	struct cse_device *cse = car_get_var_ptr(&g_cse);
+	/* Reach PCI config space to get BAR in case CAR global not available */
+	if (!cse->sec_bar)
+		cse->sec_bar = get_cse_bar();
 	return read32((void *)(cse->sec_bar + offset));
 }
 
 static void write_bar(uint32_t offset, uint32_t val)
 {
 	struct cse_device *cse = car_get_var_ptr(&g_cse);
+	/* Reach PCI config space to get BAR in case CAR global not available */
+	if (!cse->sec_bar)
+		cse->sec_bar = get_cse_bar();
 	return write32((void *)(cse->sec_bar + offset), val);
 }
 
@@ -291,45 +311,54 @@ send_one_message(uint32_t hdr, const void *buff)
 int
 heci_send(const void *msg, size_t len, uint8_t host_addr, uint8_t client_addr)
 {
+	uint8_t retry;
 	uint32_t csr, hdr;
-	size_t sent = 0, remaining, cb_size, max_length;
-	uint8_t *p = (uint8_t *) msg;
+	size_t sent, remaining, cb_size, max_length;
+	const uint8_t *p;
 
 	if (!msg || !len)
 		return 0;
 
 	clear_int();
 
-	if (!wait_heci_ready()) {
-		printk(BIOS_ERR, "HECI: not ready\n");
-		return 0;
-	}
+	for (retry = 0; retry < MAX_HECI_MESSAGE_RETRY_COUNT; retry++) {
+		p = msg;
 
-	csr = read_cse_csr();
-	cb_size = ((csr & CSR_CBD) >> CSR_CBD_START) * SLOT_SIZE;
-	/*
-	 * Reserve one slot for the header. Limit max message length by 9
-	 * bits that are available in the header.
-	 */
-	max_length = MIN(cb_size, (1 << MEI_HDR_LENGTH_SIZE) - 1) - SLOT_SIZE;
-	remaining = len;
+		if (!wait_heci_ready()) {
+			printk(BIOS_ERR, "HECI: not ready\n");
+			continue;
+		}
 
-	/*
-	 * Fragment the message into smaller messages not exceeding useful
-	 * circullar buffer length. Mark last message complete.
-	 */
-	do {
-		hdr = MIN(max_length, remaining) << MEI_HDR_LENGTH_START;
-		hdr |= client_addr << MEI_HDR_CSE_ADDR_START;
-		hdr |= host_addr << MEI_HDR_HOST_ADDR_START;
-		hdr |= (MIN(max_length, remaining) == remaining) ?
+		csr = read_host_csr();
+		cb_size = ((csr & CSR_CBD) >> CSR_CBD_START) * SLOT_SIZE;
+		/*
+		 * Reserve one slot for the header. Limit max message
+		 * length by 9 bits that are available in the header.
+		 */
+		max_length = MIN(cb_size, (1 << MEI_HDR_LENGTH_SIZE) - 1)
+				- SLOT_SIZE;
+		remaining = len;
+
+		/*
+		 * Fragment the message into smaller messages not exceeding
+		 * useful circular buffer length. Mark last message complete.
+		 */
+		do {
+			hdr = MIN(max_length, remaining)
+				<< MEI_HDR_LENGTH_START;
+			hdr |= client_addr << MEI_HDR_CSE_ADDR_START;
+			hdr |= host_addr << MEI_HDR_HOST_ADDR_START;
+			hdr |= (MIN(max_length, remaining) == remaining) ?
 						MEI_HDR_IS_COMPLETE : 0;
-		sent = send_one_message(hdr, p);
-		p += sent;
-		remaining -= sent;
-	} while (remaining > 0 && sent != 0);
+			sent = send_one_message(hdr, p);
+			p += sent;
+			remaining -= sent;
+		} while (remaining > 0 && sent != 0);
 
-	return remaining == 0;
+		if (!remaining)
+			return 1;
+	}
+	return 0;
 }
 
 static size_t
@@ -365,6 +394,13 @@ recv_one_message(uint32_t *hdr, void *buff, size_t maxlen)
 		i += SLOT_SIZE;
 	}
 
+	/*
+	 * If ME is not ready, something went wrong and
+	 * we received junk
+	 */
+	if (!cse_ready())
+		return 0;
+
 	remainder = recv_len % SLOT_SIZE;
 
 	if (remainder) {
@@ -377,42 +413,48 @@ recv_one_message(uint32_t *hdr, void *buff, size_t maxlen)
 
 int heci_receive(void *buff, size_t *maxlen)
 {
+	uint8_t retry;
 	size_t left, received;
 	uint32_t hdr = 0;
-	uint8_t *p = buff;
+	uint8_t *p;
 
 	if (!buff || !maxlen || !*maxlen)
 		return 0;
 
-	left = *maxlen;
-
 	clear_int();
 
-	if (!wait_heci_ready()) {
-		printk(BIOS_ERR, "HECI: not ready\n");
-		return 0;
+	for (retry = 0; retry < MAX_HECI_MESSAGE_RETRY_COUNT; retry++) {
+		p = buff;
+		left = *maxlen;
+
+		if (!wait_heci_ready()) {
+			printk(BIOS_ERR, "HECI: not ready\n");
+			continue;
+		}
+
+		/*
+		 * Receive multiple packets until we meet one marked
+		 * complete or we run out of space in caller-provided buffer.
+		 */
+		do {
+			received = recv_one_message(&hdr, p, left);
+			if (!received) {
+				printk(BIOS_ERR, "HECI: Failed to recieve!\n");
+				return 0;
+			}
+			left -= received;
+			p += received;
+			/* If we read out everything ping to send more */
+			if (!(hdr & MEI_HDR_IS_COMPLETE) && !cse_filled_slots())
+				host_gen_interrupt();
+		} while (received && !(hdr & MEI_HDR_IS_COMPLETE) && left > 0);
+
+		if ((hdr & MEI_HDR_IS_COMPLETE) && received) {
+			*maxlen = p - (uint8_t *) buff;
+			return 1;
+		}
 	}
-
-	/*
-	 * Receive multiple packets until we meet one marked complete or we run
-	 * out of space in caller-provided buffer.
-	 */
-	do {
-		received = recv_one_message(&hdr, p, left);
-		left -= received;
-		p += received;
-		/* If we read out everything ping to send more */
-		if (!(hdr & MEI_HDR_IS_COMPLETE) && !cse_filled_slots())
-			host_gen_interrupt();
-	} while (received && !(hdr & MEI_HDR_IS_COMPLETE) && left > 0);
-
-	*maxlen = p - (uint8_t *) buff;
-
-	/* If ME is not ready, something went wrong and we received junk */
-	if (!cse_ready())
-		return 0;
-
-	return !!((hdr & MEI_HDR_IS_COMPLETE) && received);
+	return 0;
 }
 
 /*
@@ -464,14 +506,22 @@ static struct device_operations cse_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= pci_dev_init,
-	.enable_resources	= pci_dev_enable_resources
+	.ops_pci		= &pci_dev_ops_pci,
+};
+
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_INTEL_APL_CSE0,
+	PCI_DEVICE_ID_INTEL_GLK_CSE0,
+	PCI_DEVICE_ID_INTEL_CNL_CSE0,
+	PCI_DEVICE_ID_INTEL_SKL_CSE0,
+	0,
 };
 
 static const struct pci_driver cse_driver __pci_driver = {
 	.ops			= &cse_ops,
 	.vendor			= PCI_VENDOR_ID_INTEL,
 	/* SoC/chipset needs to provide PCI device ID */
-	.device			= PCI_DEVICE_ID_HECI1
+	.devices		= pci_device_ids
 };
 
 #endif

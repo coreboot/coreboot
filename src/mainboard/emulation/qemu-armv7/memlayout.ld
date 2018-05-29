@@ -47,4 +47,7 @@ SECTIONS
 	STACK(0x60000000, 64K)
 	ROMSTAGE(0x60010000, 128K)
 	RAMSTAGE(0x60030000, 16M)
+
+	/* TODO: Implement MMU support and move TTB to a better location. */
+	TTB(0x61030000, 16K)
 }

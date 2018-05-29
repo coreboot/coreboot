@@ -35,10 +35,7 @@ ramstage-y += reset.c
 ramstage-y += watchdog.c
 
 ramstage-$(CONFIG_ELOG) += elog.c
-ramstage-y += ../common/spi.c
-smm-$(CONFIG_SPI_FLASH_SMM) += ../common/spi.c
 
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c me_8.x.c finalize.c pch.c
 
 romstage-y += early_smbus.c me_status.c
@@ -52,6 +49,6 @@ else
 romstage-y += early_me_mrc.c early_usb_mrc.c
 endif
 
-ramstage-y += madt.c
+ramstage-y += madt.c early_pch_common.c
 
 endif

@@ -1,0 +1,2 @@
+config BOARD_SIFIVE_HIFIVE_UNLEASHED
+	bool "HiFive Unleashed"

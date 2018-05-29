@@ -435,7 +435,8 @@ symtab_read(const struct buffer *in, struct parsed_elf *pelf,
 {
 	Elf64_Ehdr *ehdr;
 	Elf64_Shdr *shdr;
-	Elf64_Half i;
+	Elf64_Half shnum;
+	Elf64_Xword i;
 	Elf64_Xword nsyms;
 	Elf64_Sym *sym;
 	struct buffer b;
@@ -443,17 +444,17 @@ symtab_read(const struct buffer *in, struct parsed_elf *pelf,
 	ehdr = &pelf->ehdr;
 
 	shdr = NULL;
-	for (i = 0; i < ehdr->e_shnum; i++) {
-		if (pelf->shdr[i].sh_type != SHT_SYMTAB)
+	for (shnum = 0; shnum < ehdr->e_shnum; shnum++) {
+		if (pelf->shdr[shnum].sh_type != SHT_SYMTAB)
 			continue;
 
 		if (shdr != NULL) {
 			ERROR("Multiple symbol sections found. %u and %u\n",
-			      (unsigned int)(shdr - pelf->shdr), i);
+			      (unsigned int)(shdr - pelf->shdr), shnum);
 			return -1;
 		}
 
-		shdr = &pelf->shdr[i];
+		shdr = &pelf->shdr[shnum];
 	}
 
 	if (shdr == NULL) {
@@ -503,7 +504,7 @@ int parse_elf(const struct buffer *pinput, struct parsed_elf *pelf, int flags)
 	memset(pelf, 0, sizeof(*pelf));
 
 	if (!iself(buffer_get(pinput))) {
-		ERROR("The stage file is not in ELF format!\n");
+		DEBUG("The stage file is not in ELF format!\n");
 		return -1;
 	}
 
@@ -1438,4 +1439,27 @@ int elf_writer_add_rel(struct elf_writer *ew, const char *sym, Elf64_Addr addr)
 		return -1;
 
 	return add_rel(rel_sec, &rel);
+}
+
+int elf_program_file_size(const struct buffer *input, size_t *file_size)
+{
+	Elf64_Ehdr ehdr;
+	Elf64_Phdr *phdr;
+	int i;
+	size_t loadable_file_size = 0;
+
+	if (elf_headers(input, &ehdr, &phdr, NULL))
+		return -1;
+
+	for (i = 0; i < ehdr.e_phnum; i++) {
+		if (phdr[i].p_type != PT_LOAD)
+			continue;
+		loadable_file_size += phdr[i].p_filesz;
+	}
+
+	*file_size = loadable_file_size;
+
+	free(phdr);
+
+	return 0;
 }

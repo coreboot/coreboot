@@ -142,7 +142,8 @@ void set_gpio(int gpio_num, int value)
 
 	config = inl(gpio_base + gpio_reg_offsets[index]);
 	config &= ~(1 << bit);
-	config |= value << bit;
+	if (value != 0)
+		config |= (1 << bit);
 	outl(config, gpio_base + gpio_reg_offsets[index]);
 }
 

@@ -13,6 +13,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef __VIA_CX700_REGISTERS_H__
+#define __VIA_CX700_REGISTERS_H__
+
 /* CX700 has 48 bytes of scratch registers in D0F4 starting at Reg. 0xd0 */
 #define	SCRATCH_REG_BASE		0xd0
 #define	SCRATCH_RANK_0			0xd0
@@ -38,3 +41,5 @@
 #define DDRII_333	0x2
 #define DDRII_266	0x1
 #define DDRII_200	0x0
+
+#endif

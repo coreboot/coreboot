@@ -1,0 +1,14 @@
+
+if BOARD_SIEMENS_MC_APL1
+
+config BOARD_SIEMENS_MC_APL1_VAR
+	def_bool y
+	select DRIVER_INTEL_I210
+	select DRIVERS_I2C_RX6110SA
+	select DRIVERS_UART_8250IO
+
+config DEVICETREE
+	string
+	default "variants/mc_apl1/devicetree.cb"
+
+endif # BOARD_SIEMENS_MC_APL1

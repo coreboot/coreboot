@@ -56,7 +56,7 @@ void udelay(u32 us)
 		break;
 	}
 
-	msr = rdmsr(0x198);
+	msr = rdmsr(IA32_PERF_STATUS);
 	divisor = (msr.hi >> 8) & 0x1f;
 
 	d = (fsb * divisor) / 4;	/* CPU clock is always a quarter. */

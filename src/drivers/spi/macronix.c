@@ -54,17 +54,6 @@ struct macronix_spi_flash_params {
 	const char *name;
 };
 
-struct macronix_spi_flash {
-	struct spi_flash flash;
-	const struct macronix_spi_flash_params *params;
-};
-
-static inline
-struct macronix_spi_flash *to_macronix_spi_flash(const struct spi_flash *flash)
-{
-	return container_of(flash, struct macronix_spi_flash, flash);
-}
-
 static const struct macronix_spi_flash_params macronix_spi_flash_table[] = {
 	{
 		.idcode = 0x2015,
@@ -151,7 +140,6 @@ static const struct macronix_spi_flash_params macronix_spi_flash_table[] = {
 static int macronix_write(const struct spi_flash *flash, u32 offset, size_t len,
 			const void *buf)
 {
-	struct macronix_spi_flash *mcx = to_macronix_spi_flash(flash);
 	unsigned long byte_addr;
 	unsigned long page_size;
 	size_t chunk_len;
@@ -159,18 +147,18 @@ static int macronix_write(const struct spi_flash *flash, u32 offset, size_t len,
 	int ret = 0;
 	u8 cmd[4];
 
-	page_size = mcx->params->page_size;
+	page_size = flash->page_size;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		byte_addr = offset % page_size;
 		chunk_len = min(len - actual, page_size - byte_addr);
-		chunk_len = spi_crop_chunk(sizeof(cmd), chunk_len);
+		chunk_len = spi_crop_chunk(&flash->spi, sizeof(cmd), chunk_len);
 
 		cmd[0] = CMD_MX25XX_PP;
 		cmd[1] = (offset >> 16) & 0xff;
 		cmd[2] = (offset >> 8) & 0xff;
 		cmd[3] = offset & 0xff;
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 		printk(BIOS_SPEW, "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
 		     " chunk_len = %zu\n",
 		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
@@ -196,7 +184,7 @@ static int macronix_write(const struct spi_flash *flash, u32 offset, size_t len,
 		offset += chunk_len;
 	}
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 	printk(BIOS_SPEW, "SF: Macronix: Successfully programmed %zu bytes @"
 	      " 0x%lx\n", len, (unsigned long)(offset - len));
 #endif
@@ -204,9 +192,19 @@ static int macronix_write(const struct spi_flash *flash, u32 offset, size_t len,
 	return ret;
 }
 
-static struct macronix_spi_flash mcx;
+static const struct spi_flash_ops spi_flash_ops = {
+	.write = macronix_write,
+	.erase = spi_flash_cmd_erase,
+	.status = spi_flash_cmd_status,
+#if IS_ENABLED(CONFIG_SPI_FLASH_NO_FAST_READ)
+	.read = spi_flash_cmd_read_slow,
+#else
+	.read = spi_flash_cmd_read_fast,
+#endif
+};
 
-struct spi_flash *spi_flash_probe_macronix(struct spi_slave *spi, u8 *idcode)
+int spi_flash_probe_macronix(const struct spi_slave *spi, u8 *idcode,
+			     struct spi_flash *flash)
 {
 	const struct macronix_spi_flash_params *params;
 	unsigned int i;
@@ -220,26 +218,19 @@ struct spi_flash *spi_flash_probe_macronix(struct spi_slave *spi, u8 *idcode)
 
 	if (i == ARRAY_SIZE(macronix_spi_flash_table)) {
 		printk(BIOS_WARNING, "SF: Unsupported Macronix ID %04x\n", id);
-		return NULL;
+		return -1;
 	}
 
-	mcx.params = params;
-	memcpy(&mcx.flash.spi, spi, sizeof(*spi));
-	mcx.flash.name = params->name;
+	memcpy(&flash->spi, spi, sizeof(*spi));
+	flash->name = params->name;
+	flash->page_size = params->page_size;
+	flash->sector_size = params->page_size * params->pages_per_sector;
+	flash->size = flash->sector_size * params->sectors_per_block *
+			params->nr_blocks;
+	flash->erase_cmd = CMD_MX25XX_SE;
+	flash->status_cmd = CMD_MX25XX_RDSR;
 
-	mcx.flash.internal_write = macronix_write;
-	mcx.flash.internal_erase = spi_flash_cmd_erase;
-	mcx.flash.internal_status = spi_flash_cmd_status;
-#if CONFIG_SPI_FLASH_NO_FAST_READ
-	mcx.flash.internal_read = spi_flash_cmd_read_slow;
-#else
-	mcx.flash.internal_read = spi_flash_cmd_read_fast;
-#endif
-	mcx.flash.sector_size = params->page_size * params->pages_per_sector;
-	mcx.flash.size = mcx.flash.sector_size * params->sectors_per_block *
-		params->nr_blocks;
-	mcx.flash.erase_cmd = CMD_MX25XX_SE;
-	mcx.flash.status_cmd = CMD_MX25XX_RDSR;
+	flash->ops = &spi_flash_ops;
 
-	return &mcx.flash;
+	return 0;
 }

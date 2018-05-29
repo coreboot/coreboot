@@ -80,7 +80,7 @@ static void pirq_setup(void)
 /*************************************************
  * enable the dedicated function in bettong board.
  *************************************************/
-static void bettong_enable(device_t dev)
+static void bettong_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 

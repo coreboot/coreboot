@@ -19,7 +19,7 @@
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 #include <cpu/amd/multicore.h>
 #endif
 #include <cpu/amd/amdfam10_sysconf.h>
@@ -46,7 +46,7 @@ static void *smp_write_config_table(void *v)
 	/* I/O APICs:	APIC ID	Version	State	Address*/
 	smp_write_ioapic(mc, m->apicid_8111, 0x11, VIO_APIC_VADDR); /* 8111 */
 	{
-		device_t dev;
+		struct device *dev;
 		struct resource *res;
 		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(m->sbdn3, 1));
 		if (dev) {
@@ -134,7 +134,7 @@ static void *smp_write_config_table(void *v)
 		if(!(sysconf.pci1234[i] & 0x1) ) continue;
 		int ii;
 		int jj;
-		device_t dev;
+		struct device *dev;
 		struct resource *res;
 		switch(sysconf.hcid[i]) {
 		case 1:

@@ -14,6 +14,7 @@
  */
 
 #include <arch/early_variables.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <fsp/car.h>
 #include <fsp/util.h>
@@ -100,18 +101,18 @@ asmlinkage void after_cache_as_ram(void *chipset_context)
 	after_cache_as_ram_stage();
 }
 
-void __attribute__((weak)) car_mainboard_pre_console_init(void)
+void __weak car_mainboard_pre_console_init(void)
 {
 }
 
-void __attribute__((weak)) car_soc_pre_console_init(void)
+void __weak car_soc_pre_console_init(void)
 {
 }
 
-void __attribute__((weak)) car_mainboard_post_console_init(void)
+void __weak car_mainboard_post_console_init(void)
 {
 }
 
-void __attribute__((weak)) car_soc_post_console_init(void)
+void __weak car_soc_post_console_init(void)
 {
 }

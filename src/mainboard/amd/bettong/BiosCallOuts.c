@@ -16,31 +16,23 @@
 #include <device/pci_def.h>
 #include <device/device.h>
 #include "AGESA.h"
-#include "amdlib.h"
-#include <northbridge/amd/pi/BiosCallOuts.h>
+#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <northbridge/amd/pi/00660F01/chip.h>
-#include "Ids.h"
-#include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
 #include "imc.h"
-#endif
 #include "hudson.h"
 #include <stdlib.h>
-#include "BiosCallOuts.h"
+#include <string.h>
 #include "northbridge/amd/pi/dimmSpd.h"
 #include "northbridge/amd/pi/agesawrapper.h"
 #include <boardid.h>
 
-static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
+static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
 static AGESA_STATUS board_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
-	{AGESA_ALLOCATE_BUFFER,          agesa_AllocateBuffer },
-	{AGESA_DEALLOCATE_BUFFER,        agesa_DeallocateBuffer },
-	{AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
 	{AGESA_READ_SPD,                 board_ReadSpd },
 	{AGESA_DO_RESET,                 agesa_Reset },
 	{AGESA_READ_SPD_RECOVERY,        agesa_NoopUnsupported },
@@ -58,13 +50,32 @@ static const GPIO_CONTROL oem_bettong_gpio[] = {
 	{64, Function1, FCH_GPIO_PULL_UP_ENABLE | FCH_GPIO_OUTPUT_VALUE | FCH_GPIO_OUTPUT_ENABLE | DrvStrengthSel_12mA},
 	{-1}
 };
+
+/* Bettong Hardware Monitor Fan Control
+ * Hardware limitation:
+ *  HWM will fail to read the input temperature via I2C if other
+ *  software switches the I2C address.  AMD recommends using IMC
+ *  to control fans, instead of HWM.
+ */
+static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
+{
+	/* Enable IMC fan control. the recommand way */
+	imc_reg_init();
+
+	FchParams->Imc.ImcEnable = TRUE;
+	FchParams->Hwm.HwmControl = 1; /* 1 IMC, 0 HWM */
+	FchParams->Imc.ImcEnableOverWrite = 1; /* 2 disable IMC, 1 enable IMC, 0 following hw strap setting */
+
+	memset(&FchParams->Imc.EcStruct, 0, sizeof(FCH_EC));
+}
+
 /**
  * Fch Oem setting callback
  *
  *  Configure platform specific Hudson device,
  *   such as Azalia, SATA, IMC etc.
  */
-AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
+AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
 
@@ -78,16 +89,16 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 	} else if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
-		oem_fan_control(FchParams_env);
-#endif
+
+		if (IS_ENABLED(CONFIG_HUDSON_IMC_FWM))
+			oem_fan_control(FchParams_env);
 
 		/* XHCI configuration */
-#if CONFIG_HUDSON_XHCI_ENABLE
-		FchParams_env->Usb.Xhci0Enable = TRUE;
-#else
-		FchParams_env->Usb.Xhci0Enable = FALSE;
-#endif
+		if (IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE))
+			FchParams_env->Usb.Xhci0Enable = TRUE;
+		else
+			FchParams_env->Usb.Xhci0Enable = FALSE;
+
 		FchParams_env->Usb.Xhci1Enable = FALSE;
 		FchParams_env->Usb.USB30PortInit = 8; /* 8: If USB3 port is unremoveable. */
 

@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: http://www.asrock.com/mb/Intel/B75%20Pro3-M/
+ROM protocol: SPI
+Flashrom support: n
+ROM package: DIP-8
+ROM socketed: y
+Release year: 2012

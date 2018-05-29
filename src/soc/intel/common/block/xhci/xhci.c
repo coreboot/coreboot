@@ -14,26 +14,35 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/xhci.h>
 
-__attribute__((weak)) void soc_xhci_init(struct device *dev) { /* no-op */ }
+__weak void soc_xhci_init(struct device *dev) { /* no-op */ }
 
 static struct device_operations usb_xhci_ops = {
 	.read_resources		= &pci_dev_read_resources,
 	.set_resources		= &pci_dev_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
 	.init			= soc_xhci_init,
+	.ops_pci		= &pci_dev_ops_pci,
+	.scan_bus		= &scan_usb_bus,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.acpi_name		= &soc_acpi_name,
+#endif
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x5aa8, /* ApolloLake */
-	0x31a8, /* GLK */
-	0x9d2f, /* SunRisePoint LP */
-	0xa12f, /* KBL-H*/
+	PCI_DEVICE_ID_INTEL_APL_XHCI,
+	PCI_DEVICE_ID_INTEL_CNL_LP_XHCI,
+	PCI_DEVICE_ID_INTEL_GLK_XHCI,
+	PCI_DEVICE_ID_INTEL_SPT_LP_XHCI,
+	PCI_DEVICE_ID_INTEL_SPT_H_XHCI,
+	PCI_DEVICE_ID_INTEL_KBP_H_XHCI,
 	0
 };
 

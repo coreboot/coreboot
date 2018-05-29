@@ -27,15 +27,3 @@ config DIGITIZER_ABSENT
 endchoice
 
 endif
-
-config DRIVERS_LENOVO_HYBRID_GRAPHICS
-	bool
-	default n
-
-config HYBRID_GRAPHICS_GPIO_NUM
-	depends on DRIVERS_LENOVO_HYBRID_GRAPHICS
-	int
-	default 52
-	help
-	  Set a default GPIO that sets the panel LVDS signal routing to
-	  integrated or discrete GPU.

@@ -44,7 +44,7 @@ const struct reg_script core_msr_script[] = {
 	REG_SCRIPT_END
 };
 
-static void baytrail_core_init(device_t cpu)
+static void baytrail_core_init(struct device *cpu)
 {
 	printk(BIOS_DEBUG, "Init BayTrail core.\n");
 
@@ -66,7 +66,7 @@ static struct device_operations cpu_dev_ops = {
 	.init = baytrail_core_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x30673 },
 	{ X86_VENDOR_INTEL, 0x30678 },
 	{ 0, 0 },
@@ -151,12 +151,6 @@ static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 	*smm_save_state_size = sizeof(em64t100_smm_state_save_area_t);
 }
 
-/* The APIC id space on Bay Trail is sparse. Each id is separated by 2. */
-static int adjust_apic_id(int index, int apic_id)
-{
-	return 2 * index;
-}
-
 static void get_microcode_info(const void **microcode, int *parallel)
 {
 	const struct pattrs *pattrs = pattrs_get();
@@ -199,14 +193,13 @@ static const struct mp_ops mp_ops = {
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = get_smm_info,
 	.get_microcode_info = get_microcode_info,
-	.adjust_cpu_apic_entry = adjust_apic_id,
 	.pre_mp_smm_init = southcluster_smm_clear_state,
 	.per_cpu_smm_trigger = per_cpu_smm_trigger,
 	.relocation_handler = relocation_handler,
 	.post_mp_init = southcluster_smm_enable_smi,
 };
 
-void baytrail_init_cpus(device_t dev)
+void baytrail_init_cpus(struct device *dev)
 {
 	struct bus *cpu_bus = dev->link_list;
 

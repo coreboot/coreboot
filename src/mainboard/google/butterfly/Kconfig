@@ -28,10 +28,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Butterfly"
 
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf8000000 if USE_NATIVE_RAMINIT
-
 config MAX_CPUS
 	int
 	default 8

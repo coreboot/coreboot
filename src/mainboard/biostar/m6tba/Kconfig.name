@@ -1,2 +1,0 @@
-config BOARD_BIOSTAR_M6TBA
-	bool "M6TBA"

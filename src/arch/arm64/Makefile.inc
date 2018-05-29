@@ -39,16 +39,25 @@ endif
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARM64),y)
 
+decompressor-y += boot.c
+bootblock-y += boot.c
+decompressor-y += div0.c
 bootblock-y += div0.c
+decompressor-y += eabi_compat.c
+bootblock-y += eabi_compat.c
+decompressor-y += id.S
 bootblock-y += id.S
+$(call src-to-obj,decompressor,$(dir)/id.S): $(obj)/build.h
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
-bootblock-y += boot.c
-bootblock-y += eabi_compat.c
+bootblock-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 bootblock-y += transition.c transition_asm.S
 
+decompressor-y += memset.S
 bootblock-y += memset.S
+decompressor-y += memcpy.S
 bootblock-y += memcpy.S
+decompressor-y += memmove.S
 bootblock-y += memmove.S
 
 # Build the bootblock
@@ -56,6 +65,10 @@ bootblock-y += memmove.S
 $(objcbfs)/bootblock.debug: $$(bootblock-objs) $(obj)/config.h
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_bootblock) $(LDFLAGS_bootblock) -o $@ -L$(obj) --whole-archive --start-group $(filter-out %.ld,$(bootblock-objs)) --end-group -T $(call src-to-obj,bootblock,src/mainboard/$(MAINBOARDDIR)/memlayout.ld)
+
+$(objcbfs)/decompressor.debug: $$(decompressor-objs) $(obj)/config.h
+	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+	$(LD_bootblock) $(LDFLAGS_bootblock) -o $@ -L$(obj) --whole-archive --start-group $(filter-out %.ld,$(decompressor-objs)) --end-group -T $(call src-to-obj,decompressor,src/mainboard/$(MAINBOARDDIR)/memlayout.ld)
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARM64
 
@@ -72,6 +85,7 @@ $(objcbfs)/verstage.debug: $$(verstage-objs)
 verstage-y += boot.c
 verstage-y += div0.c
 verstage-y += eabi_compat.c
+verstage-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 verstage-y += memset.S
 verstage-y += memcpy.S
 verstage-y += memmove.S
@@ -89,6 +103,7 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM64),y)
 romstage-y += boot.c
 romstage-y += div0.c
 romstage-y += eabi_compat.c
+romstage-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 romstage-y += memset.S
 romstage-y += memcpy.S
 romstage-y += memmove.S
@@ -115,6 +130,7 @@ ramstage-y += div0.c
 ramstage-y += eabi_compat.c
 ramstage-y += boot.c
 ramstage-y += tables.c
+ramstage-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 ramstage-y += memset.S
 ramstage-y += memcpy.S
 ramstage-y += memmove.S
@@ -125,6 +141,7 @@ rmodules_arm64-y += memset.S
 rmodules_arm64-y += memcpy.S
 rmodules_arm64-y += memmove.S
 rmodules_arm64-y += eabi_compat.c
+rmodules_arm64-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 
@@ -146,13 +163,19 @@ ifeq ($(V),1)
 BL31_MAKEARGS += V=1
 endif
 
-# Build ARM TF in debug mode (with serial output) if coreboot uses serial
-ifeq ($(CONFIG_CONSOLE_SERIAL),y)
+# Build ARM TF in debug mode (with assertions) if coreboot has hard assertions
+ifeq ($(CONFIG_FATAL_ASSERTS),y)
 BL31_MAKEARGS += DEBUG=1
-else
-# Turn off NOTICE messages from BL31 if coreboot does not use serial
-BL31_MAKEARGS += LOG_LEVEL=0
 endif # CONFIG_CONSOLE_SERIAL
+
+# ARM TF's VERBOSE (50) is *very* spammy, so default to INFO (40)
+BL31_MAKEARGS += LOG_LEVEL=40
+
+# Always enable crash reporting, even on a release build
+BL31_MAKEARGS += CRASH_REPORTING=1
+
+# Enable coreboot-specific features like CBMEM console support
+BL31_MAKEARGS += COREBOOT=1
 
 # Avoid build/release|build/debug distinction by overriding BUILD_PLAT directly
 BL31_MAKEARGS += BUILD_PLAT="$(BL31_BUILD)"
@@ -166,7 +189,7 @@ BL31_MAKEARGS += IS_ANYTHING_TO_BUILD=1
 # multi line string.
 BL31_MAKEARGS += BUILD_MESSAGE_TIMESTAMP='"$(shell grep "\#define COREBOOT_BUILD\>" $(obj)/build.h |cut -d\" -f2 \# \")"'
 
-BL31_CFLAGS := -fno-pic -fno-stack-protector -Wno-deprecated-declarations
+BL31_CFLAGS := -fno-pic -fno-stack-protector -Wno-deprecated-declarations -Wno-unused-function
 BL31_LDFLAGS := --emit-relocs
 
 BL31 := $(obj)/bl31.elf

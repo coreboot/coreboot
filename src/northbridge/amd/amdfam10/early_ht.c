@@ -22,7 +22,7 @@
 // mmconf is not ready yet
 void set_bsp_node_CHtExtNodeCfgEn(void)
 {
-#if CONFIG_EXT_RT_TBL_SUPPORT
+#if IS_ENABLED(CONFIG_EXT_RT_TBL_SUPPORT)
 	u32 dword;
 	dword = pci_io_read_config32(PCI_DEV(0, 0x18, 0), 0x68);
 	dword |= (1<<27) | (1<<25);

@@ -34,6 +34,4 @@ void bootblock_soc_init(void)
 
 	/* glb_slv_secure_bypass */
 	write32(&rk3399_pmusgrf->pmu_slv_con0, 1 << 16 | 1);
-
-	rockchip_mmu_init();
 }

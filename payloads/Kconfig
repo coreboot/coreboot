@@ -1,8 +1,11 @@
 menu "Payload"
 
+config NO_DEFAULT_PAYLOAD
+	bool
+
 choice
 	prompt "Add a payload"
-	default PAYLOAD_NONE if !ARCH_X86
+	default PAYLOAD_NONE if NO_DEFAULT_PAYLOAD || !ARCH_X86
 	default PAYLOAD_SEABIOS if ARCH_X86
 
 config PAYLOAD_NONE
@@ -46,14 +49,26 @@ config PAYLOAD_FILE
 	help
 	  The path and filename of the ELF executable file to use as payload.
 
-# TODO: Defined if no payload? Breaks build?
+choice
+	prompt "Payload compression algorithm"
+	default COMPRESSED_PAYLOAD_LZMA
+	depends on !PAYLOAD_NONE && !PAYLOAD_LINUX
+	help
+	  Choose the compression algorithm for the chosen payloads.
+	  You can choose between LZMA and LZ4.
+
 config COMPRESSED_PAYLOAD_LZMA
 	bool "Use LZMA compression for payloads"
-	default y
-	depends on !PAYLOAD_NONE && !PAYLOAD_LINUX
 	help
 	  In order to reduce the size payloads take up in the ROM chip
 	  coreboot can compress them using the LZMA algorithm.
+
+config COMPRESSED_PAYLOAD_LZ4
+	bool "Use LZ4 compression for payloads"
+	help
+	  In order to reduce the size payloads take up in the ROM chip
+	  coreboot can compress them using the LZ4 algorithm.
+endchoice
 
 config PAYLOAD_OPTIONS
 	string
@@ -66,6 +81,13 @@ config PAYLOAD_IS_FLAT_BINARY
 	help
 	  Add the payload to cbfs as a flat binary type instead of as an
 	  elf payload
+
+config COMPRESS_SECONDARY_PAYLOAD
+	bool "Use LZMA compression for secondary payloads"
+	default y
+	help
+	  In order to reduce the size secondary payloads take up in the
+	  ROM chip they can be compressed using the LZMA algorithm.
 
 menu "Secondary Payloads"
 

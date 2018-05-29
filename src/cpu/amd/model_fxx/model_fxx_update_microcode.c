@@ -26,7 +26,7 @@ struct id_mapping {
 
 static u16 get_equivalent_processor_rev_id(u32 orig_id) {
 	static const struct id_mapping id_mapping_table[] = {
-	#if !CONFIG_K8_REV_F_SUPPORT
+	#if !IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 		{ 0x0f48, 0x0048 },
 		{ 0x0f58, 0x0048 },
 
@@ -49,7 +49,7 @@ static u16 get_equivalent_processor_rev_id(u32 orig_id) {
 		{ 0x20fb1, 0x0210 },
 	#endif
 
-	#if CONFIG_K8_REV_F_SUPPORT
+	#if IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 		/* FIXME
 		 * Microcode files for CPU revision 0xf do
 		 * not seem to be available...

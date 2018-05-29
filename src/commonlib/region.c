@@ -22,7 +22,7 @@ static inline size_t region_end(const struct region *r)
 	return region_sz(r) + region_offset(r);
 }
 
-static int is_subregion(const struct region *p, const struct region *c)
+int region_is_subregion(const struct region *p, const struct region *c)
 {
 	if (region_offset(c) < region_offset(p))
 		return 0;
@@ -39,7 +39,7 @@ static int is_subregion(const struct region *p, const struct region *c)
 static int normalize_and_ok(const struct region *outer, struct region *inner)
 {
 	inner->offset += region_offset(outer);
-	return is_subregion(outer, inner);
+	return region_is_subregion(outer, inner);
 }
 
 static const struct region_device *rdev_root(const struct region_device *rdev)
@@ -55,7 +55,7 @@ ssize_t rdev_relative_offset(const struct region_device *p,
 	if (rdev_root(p) != rdev_root(c))
 		return -1;
 
-	if (!is_subregion(&p->region, &c->region))
+	if (!region_is_subregion(&p->region, &c->region))
 		return -1;
 
 	return region_device_offset(c) - region_device_offset(p);
@@ -350,7 +350,7 @@ static void *xlate_mmap(const struct region_device *rd, size_t offset,
 
 	xldev = container_of(rd, __typeof__(*xldev), rdev);
 
-	if (!is_subregion(&xldev->sub_region, &req))
+	if (!region_is_subregion(&xldev->sub_region, &req))
 		return NULL;
 
 	offset -= region_offset(&xldev->sub_region);
@@ -378,7 +378,7 @@ static ssize_t xlate_readat(const struct region_device *rd, void *b,
 
 	xldev = container_of(rd, __typeof__(*xldev), rdev);
 
-	if (!is_subregion(&xldev->sub_region, &req))
+	if (!region_is_subregion(&xldev->sub_region, &req))
 		return -1;
 
 	offset -= region_offset(&xldev->sub_region);
@@ -397,7 +397,7 @@ static ssize_t xlate_writeat(const struct region_device *rd, const void *b,
 
 	xldev = container_of(rd, __typeof__(*xldev), rdev);
 
-	if (!is_subregion(&xldev->sub_region, &req))
+	if (!region_is_subregion(&xldev->sub_region, &req))
 		return -1;
 
 	offset -= region_offset(&xldev->sub_region);
@@ -416,7 +416,7 @@ static ssize_t xlate_eraseat(const struct region_device *rd,
 
 	xldev = container_of(rd, __typeof__(*xldev), rdev);
 
-	if (!is_subregion(&xldev->sub_region, &req))
+	if (!region_is_subregion(&xldev->sub_region, &req))
 		return -1;
 
 	offset -= region_offset(&xldev->sub_region);

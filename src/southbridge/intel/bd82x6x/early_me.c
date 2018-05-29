@@ -18,8 +18,10 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/pci_ids.h>
+#include <device/pci_def.h>
 #include <halt.h>
 #include <string.h>
+#include <timestamp.h>
 #include "me.h"
 #include "pch.h"
 
@@ -44,11 +46,17 @@ void intel_early_me_status(void)
 {
 	struct me_hfs hfs;
 	struct me_gmes gmes;
+	u32 id = pci_read_config32(PCH_ME_DEV, PCI_VENDOR_ID);
 
-	pci_read_dword_ptr(&hfs, PCI_ME_HFS);
-	pci_read_dword_ptr(&gmes, PCI_ME_GMES);
+	if ((id == 0xffffffff) || (id == 0x00000000) ||
+	    (id == 0x0000ffff) || (id == 0xffff0000)) {
+		printk(BIOS_DEBUG, "Missing Intel ME PCI device.\n");
+	} else {
+		pci_read_dword_ptr(&hfs, PCI_ME_HFS);
+		pci_read_dword_ptr(&gmes, PCI_ME_GMES);
 
-	intel_me_status(&hfs, &gmes);
+		intel_me_status(&hfs, &gmes);
+	}
 }
 
 int intel_early_me_init(void)
@@ -190,16 +198,26 @@ int intel_early_me_init_done(u8 status)
 	meDID = did.uma_base | (1 << 28);// | (1 << 23);
 	pci_write_config32(PCI_DEV(0, 0x16, 0), PCI_ME_H_GS, meDID);
 
-	udelay(1100);
-
 	/* Must wait for ME acknowledgement */
-	millisec = 0;
-	hfs = (pci_read_config32(PCI_DEV(0, 0x16, 0), PCI_ME_HFS) & 0xfe000000) >> 24;
-	while ((((hfs & 0xf0) >> 4) != ME_HFS_BIOS_DRAM_ACK) && (millisec < 5000)) {
-		udelay(1000);
-		hfs = (pci_read_config32(PCI_DEV(0, 0x16, 0), PCI_ME_HFS) & 0xfe000000) >> 24;
-		millisec++;
+	if (opmode == ME_HFS_MODE_DEBUG) {
+		printk(BIOS_NOTICE,
+			"ME: ME is reporting as disabled, "
+			"so not waiting for a response.\n");
+	} else {
+		timestamp_add_now(TS_ME_INFORM_DRAM_WAIT);
+		udelay(100);
+		millisec = 0;
+		do {
+			udelay(1000);
+			hfs = (pci_read_config32(
+				PCI_DEV(0, 0x16, 0), PCI_ME_HFS) & 0xfe000000)
+				>> 24;
+			millisec++;
+		} while ((((hfs & 0xf0) >> 4) != ME_HFS_BIOS_DRAM_ACK)
+			&& (millisec <= 5000));
+		timestamp_add_now(TS_ME_INFORM_DRAM_DONE);
 	}
+
 
 	me_fws2 = pci_read_config32(PCI_DEV(0, 0x16, 0), 0x48);
 	printk(BIOS_NOTICE, "ME: FWS2: 0x%x\n", me_fws2);

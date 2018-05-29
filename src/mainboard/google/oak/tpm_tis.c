@@ -14,7 +14,7 @@
  */
 
 #include <gpio.h>
-#include <tpm.h>
+#include <security/tpm/tis.h>
 
 #include "gpio.h"
 

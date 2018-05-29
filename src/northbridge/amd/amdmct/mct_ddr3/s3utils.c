@@ -1100,7 +1100,7 @@ int8_t save_mct_information_to_nvram(void)
 
 	printk(BIOS_DEBUG, "Writing AMD DCT configuration to Flash\n");
 
-	struct spi_flash *flash;
+	struct spi_flash flash;
 	ssize_t s3nv_offset;
 	struct amd_s3_persistent_data *persistent_data;
 
@@ -1140,23 +1140,22 @@ int8_t save_mct_information_to_nvram(void)
 
 	/* Initialize SPI and detect devices */
 	spi_init();
-	flash = spi_flash_probe(0, 0);
-	if (!flash) {
+	if (spi_flash_probe(0, 0, &flash)) {
 		printk(BIOS_DEBUG, "Could not find SPI device\n");
 		return -1;
 	}
 
-	spi_flash_volatile_group_begin(flash);
+	spi_flash_volatile_group_begin(&flash);
 
 	/* Erase and write data structure */
-	spi_flash_erase(flash, s3nv_offset, CONFIG_S3_DATA_SIZE);
-	spi_flash_write(flash, s3nv_offset,
+	spi_flash_erase(&flash, s3nv_offset, CONFIG_S3_DATA_SIZE);
+	spi_flash_write(&flash, s3nv_offset,
 			sizeof(struct amd_s3_persistent_data), persistent_data);
 
 	/* Deallocate temporary data structures */
 	free(persistent_data);
 
-	spi_flash_volatile_group_end(flash);
+	spi_flash_volatile_group_end(&flash);
 
 	/* Allow training bypass if DIMM configuration is unchanged on next boot */
 	nvram = 1;

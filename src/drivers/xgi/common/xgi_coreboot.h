@@ -176,30 +176,30 @@
 #define VB_VIDEOBRIDGE		(VB_SISBRIDGE | VB_LVDS | VB_CHRONTEL | VB_CONEXANT)
 
 enum _SIS_LCD_TYPE {
-    LCD_INVALID = 0,
-    LCD_800x600,
-    LCD_1024x768,
-    LCD_1280x1024,
-    LCD_1280x960,
-    LCD_640x480,
-    LCD_1600x1200,
-    LCD_1920x1440,
-    LCD_2048x1536,
-    LCD_320x240,	/* FSTN */
-    LCD_1400x1050,
-    LCD_1152x864,
-    LCD_1152x768,
-    LCD_1280x768,
-    LCD_1024x600,
-    LCD_320x240_2,	/* DSTN */
-    LCD_320x240_3,	/* DSTN */
-    LCD_848x480,
-    LCD_1280x800,
-    LCD_1680x1050,
-    LCD_1280x720,
-    LCD_1280x854,
-    LCD_CUSTOM,
-    LCD_UNKNOWN
+	LCD_INVALID = 0,
+	LCD_800x600,
+	LCD_1024x768,
+	LCD_1280x1024,
+	LCD_1280x960,
+	LCD_640x480,
+	LCD_1600x1200,
+	LCD_1920x1440,
+	LCD_2048x1536,
+	LCD_320x240,	/* FSTN */
+	LCD_1400x1050,
+	LCD_1152x864,
+	LCD_1152x768,
+	LCD_1280x768,
+	LCD_1024x600,
+	LCD_320x240_2,	/* DSTN */
+	LCD_320x240_3,	/* DSTN */
+	LCD_848x480,
+	LCD_1280x800,
+	LCD_1680x1050,
+	LCD_1280x720,
+	LCD_1280x854,
+	LCD_CUSTOM,
+	LCD_UNKNOWN
 };
 
 /* End code taken from Linux kernel 3.18.5 */
@@ -227,14 +227,6 @@ typedef u64 phys_addr_t;
 #define pr_info(format, arg...) printk(BIOS_INFO, "XGI VGA: " format, ##arg)
 #define pr_debug(format, arg...) printk(BIOS_INFO, "XGI VGA: " format, ##arg)
 #define pr_err(format, arg...) printk(BIOS_ERR, "XGI VGA: " format, ##arg)
-
-static inline void writel(u32 val, volatile void *addr) {
-	*(u32*)addr = val;
-}
-
-static inline u32 readl(const volatile void *addr) {
-	return *(u32*)addr;
-}
 
 static inline int pci_read_config_dword(struct pci_dev *dev, int where,
 	u32 *val)

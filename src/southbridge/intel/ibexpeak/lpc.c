@@ -35,6 +35,8 @@
 #include "pch.h"
 #include "nvs.h"
 #include <southbridge/intel/common/pciehp.h>
+#include <southbridge/intel/common/acpi_pirq_gen.h>
+#include <southbridge/intel/common/rcba.h>
 
 #define NMI_OFF	0
 
@@ -71,7 +73,7 @@ static void pch_enable_serial_irqs(struct device *dev)
 	/* Set packet length and toggle silent mode bit for one frame. */
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (1 << 6) | ((21 - 17) << 2) | (0 << 0));
-#if !CONFIG_SERIRQ_CONTINUOUS_MODE
+#if !IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE)
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (0 << 6) | ((21 - 17) << 2) | (0 << 0));
 #endif
@@ -98,9 +100,9 @@ static void pch_enable_serial_irqs(struct device *dev)
  * 0x80 - The PIRQ is not routed.
  */
 
-static void pch_pirq_init(device_t dev)
+static void pch_pirq_init(struct device *dev)
 {
-	device_t irq_dev;
+	struct device *irq_dev;
 	/* Interrupt 11 is not used by legacy devices and so can always be used for
 	   PCI interrupts. Full legacy IRQ routing is complicated and hard to
 	   get right. Fortunately all modern OS use MSI and so it's not that big of
@@ -135,7 +137,7 @@ static void pch_pirq_init(device_t dev)
 	}
 }
 
-static void pch_gpi_routing(device_t dev)
+static void pch_gpi_routing(struct device *dev)
 {
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
@@ -164,7 +166,7 @@ static void pch_gpi_routing(device_t dev)
 	pci_write_config32(dev, GPIO_ROUT, reg32);
 }
 
-static void pch_power_options(device_t dev)
+static void pch_power_options(struct device *dev)
 {
 	u8 reg8;
 	u16 reg16, pmbase;
@@ -230,7 +232,7 @@ static void pch_power_options(device_t dev)
 		reg8 &= ~(1 << 7);	/* Set NMI. */
 	} else {
 		printk(BIOS_INFO, "NMI sources disabled.\n");
-		reg8 |= ( 1 << 7);	/* Can't mask NMI from PCI-E and NMI_NOW */
+		reg8 |= (1 << 7);	/* Can't mask NMI from PCI-E and NMI_NOW */
 	}
 	outb(reg8, 0x70);
 
@@ -280,7 +282,7 @@ static void pch_rtc_init(struct device *dev)
 	if (rtc_failed) {
 		reg8 &= ~RTC_BATTERY_DEAD;
 		pci_write_config8(dev, GEN_PMCON_3, reg8);
-#if CONFIG_ELOG
+#if IS_ENABLED(CONFIG_ELOG)
 		elog_add_event(ELOG_TYPE_RTC_RESET);
 #endif
 	}
@@ -392,7 +394,7 @@ static void enable_hpet(void)
 	write32((u32 *)0xfed00010, read32((u32 *)0xfed00010) | 1);
 }
 
-static void enable_clock_gating(device_t dev)
+static void enable_clock_gating(struct device *dev)
 {
 	u32 reg32;
 	u16 reg16;
@@ -530,7 +532,7 @@ static void lpc_init(struct device *dev)
 	pch_fixups(dev);
 }
 
-static void pch_lpc_read_resources(device_t dev)
+static void pch_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 	config_t *config = dev->chip_info;
@@ -591,13 +593,13 @@ static void pch_lpc_read_resources(device_t dev)
 	}
 }
 
-static void pch_lpc_enable_resources(device_t dev)
+static void pch_lpc_enable_resources(struct device *dev)
 {
 	pch_decode_init(dev);
 	return pci_dev_enable_resources(dev);
 }
 
-static void pch_lpc_enable(device_t dev)
+static void pch_lpc_enable(struct device *dev)
 {
 	/* Enable PCH Display Port */
 	RCBA16(DISPBDF) = 0x0010;
@@ -606,7 +608,8 @@ static void pch_lpc_enable(device_t dev)
 	pch_enable(dev);
 }
 
-static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void set_subsystem(struct device *dev, unsigned vendor,
+			  unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -617,13 +620,9 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
-static void southbridge_inject_dsdt(device_t dev)
+static void southbridge_inject_dsdt(struct device *dev)
 {
 	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
-	void *opregion;
-
-	/* Calling northbridge code as gnvs contains opregion address.  */
-	opregion = igd_make_opregion();
 
 	if (gnvs) {
 		const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
@@ -637,8 +636,6 @@ static void southbridge_inject_dsdt(device_t dev)
 		gnvs->ndid = gfx->ndid;
 		memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
 
-		/* IGD OpRegion Base Address */
-		gnvs->aslb = (u32)opregion;
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);
 
@@ -651,7 +648,7 @@ static void southbridge_inject_dsdt(device_t dev)
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
 	config_t *chip = dev->chip_info;
 	u16 pmbase = pci_read_config16(dev, 0x40) & 0xfffe;
 	int c2_latency;
@@ -780,12 +777,29 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.addrh = 0x0;
 }
 
-static void southbridge_fill_ssdt(device_t device)
+static const char *lpc_acpi_name(const struct device *dev)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
+	return "LPCB";
+}
+
+static void southbridge_fill_ssdt(struct device *device)
+{
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
 	config_t *chip = dev->chip_info;
 
 	intel_acpi_pcie_hotplug_generator(chip->pcie_hotplug_map, 8);
+	intel_acpi_gen_def_acpi_pirq(dev);
+}
+
+static void lpc_final(struct device *dev)
+{
+	/* Call SMM finalize() handlers before resume */
+	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+		if (IS_ENABLED(CONFIG_INTEL_CHIPSET_LOCKDOWN) ||
+		    acpi_is_wakeup_s3()) {
+			outb(APM_CNT_FINALIZE, APM_CNT);
+		}
+	}
 }
 
 static struct pci_operations pci_ops = {
@@ -798,8 +812,10 @@ static struct device_operations device_ops = {
 	.enable_resources	= pch_lpc_enable_resources,
 	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.acpi_fill_ssdt_generator = southbridge_fill_ssdt,
+	.acpi_name		= lpc_acpi_name,
 	.write_acpi_tables      = acpi_write_hpet,
 	.init			= lpc_init,
+	.final			= lpc_final,
 	.enable			= pch_lpc_enable,
 	.scan_bus		= scan_lpc_bus,
 	.ops_pci		= &pci_ops,

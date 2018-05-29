@@ -9,102 +9,113 @@ subdirs-y += ../../../cpu/x86/tsc
 subdirs-y += ../../../cpu/x86/cache
 
 bootblock-y += bootblock/bootblock.c
-bootblock-y += bootblock/bootblock.c
 bootblock-y += car.c
-bootblock-y += flash_ctrlr.c
-bootblock-y += gpio.c
 bootblock-y += heci.c
-bootblock-y += lpc_lib.c
+bootblock-y += gspi.c
+bootblock-y += i2c.c
+bootblock-y += lpc.c
 bootblock-y += mmap_boot.c
 bootblock-y += pmutil.c
 bootblock-y += spi.c
-bootblock-y += tsc_freq.c
-bootblock-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
+bootblock-$(CONFIG_SOC_UART_DEBUG) += uart.c
 bootblock-$(CONFIG_FSP_CAR) += bootblock/cache_as_ram_fsp.S
 
 romstage-y += car.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += romstage.c
-romstage-y += flash_ctrlr.c
-romstage-y += gpio.c
+romstage-y += gspi.c
 romstage-y += heci.c
-romstage-y += i2c_early.c
-romstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
-romstage-y += lpc_lib.c
+romstage-y += i2c.c
+romstage-$(CONFIG_SOC_UART_DEBUG) += uart.c
 romstage-y += memmap.c
 romstage-y += meminit.c
+ifeq ($(CONFIG_SOC_INTEL_GLK),y)
+romstage-y += meminit_util_glk.c
+else
+romstage-y += meminit_util_apl.c
+endif
 romstage-y += mmap_boot.c
-romstage-y += tsc_freq.c
 romstage-y += pmutil.c
 romstage-y += reset.c
 romstage-y += spi.c
 
-smm-y += flash_ctrlr.c
 smm-y += mmap_boot.c
 smm-y += pmutil.c
-smm-y += gpio.c
 smm-y += smihandler.c
 smm-y += spi.c
-smm-y += tsc_freq.c
-smm-y += uart_early.c
+smm-$(CONFIG_SOC_UART_DEBUG) += uart.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += cpu.c
 ramstage-y += chip.c
 ramstage-y += cse.c
 ramstage-y += elog.c
-ramstage-y += flash_ctrlr.c
-ramstage-y += dsp.c
-ramstage-y += gpio.c
 ramstage-y += graphics.c
+ramstage-y += gspi.c
 ramstage-y += heci.c
 ramstage-y += i2c.c
-ramstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 ramstage-y += lpc.c
-ramstage-y += lpc_lib.c
 ramstage-y += memmap.c
 ramstage-y += mmap_boot.c
-ramstage-y += p2sb.c
-ramstage-y += uart.c
+ramstage-$(CONFIG_SOC_UART_DEBUG) += uart.c
 ramstage-y += nhlt.c
-ramstage-y += northbridge.c
 ramstage-y += spi.c
-ramstage-y += tsc_freq.c
+ramstage-y += systemagent.c
 ramstage-y += pmutil.c
+ramstage-y += pnpconfig.c
 ramstage-y += pmc.c
 ramstage-y += reset.c
-ramstage-y += smi.c
-ramstage-y += sram.c
-ramstage-y += spi.c
 ramstage-y += xdci.c
-ramstage-y += xhci.c
 ramstage-y += sd.c
 
-postcar-y += flash_ctrlr.c
 postcar-y += memmap.c
 postcar-y += mmap_boot.c
 postcar-y += spi.c
-postcar-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
-postcar-y += tsc_freq.c
+postcar-$(CONFIG_SOC_UART_DEBUG) += uart.c
 
 postcar-$(CONFIG_FSP_CAR) += exit_car_fsp.S
 
 verstage-y += car.c
-verstage-y += flash_ctrlr.c
-verstage-y += i2c_early.c
+verstage-y += i2c.c
+verstage-y += gspi.c
 verstage-y += heci.c
 verstage-y += memmap.c
 verstage-y += mmap_boot.c
-verstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
-verstage-y += tsc_freq.c
+verstage-$(CONFIG_SOC_UART_DEBUG) += uart.c
 verstage-y += pmutil.c
 verstage-y += reset.c
 verstage-y += spi.c
 
+ifeq ($(CONFIG_SOC_INTEL_GLK),y)
+bootblock-y += gpio_glk.c
+romstage-y += gpio_glk.c
+smm-y += gpio_glk.c
+ramstage-y += gpio_glk.c
+else
+bootblock-y += gpio_apl.c
+romstage-y += gpio_apl.c
+smm-y += gpio_apl.c
+ramstage-y += gpio_apl.c
+endif
+
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include
+ifeq ($(CONFIG_SOC_INTEL_GLK),y)
+CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/glk
+else
 CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/apollolake
+endif
 
 # Since FSP-M runs in CAR we need to relocate it to a specific address
 $(CONFIG_FSP_M_CBFS)-options := -b $(CONFIG_FSP_M_ADDR)
+
+# Handle GLK paging requirements
+ifeq ($(CONFIG_PAGING_IN_CACHE_AS_RAM),y)
+cbfs-files-y += pt
+pt-file := pt.c:struct
+pt-type := raw
+cbfs-files-y += pdpt
+pdpt-file := pdpt.c:struct
+pdpt-type := raw
+endif
 
 ifeq ($(CONFIG_NEED_LBP2),y)
 files_added::
@@ -130,12 +141,17 @@ files_added:: $(IFWITOOL)
 endif
 
 # DSP firmware settings files.
+ifeq ($(CONFIG_SOC_INTEL_GLK),y)
+NHLT_BLOB_PATH = 3rdparty/blobs/soc/intel/glk/nhlt-blobs
+else
 NHLT_BLOB_PATH = 3rdparty/blobs/soc/intel/apollolake/nhlt-blobs
+endif
 DMIC_1CH_48KHZ_16B = dmic-1ch-48khz-16b.bin
 DMIC_2CH_48KHZ_16B = dmic-2ch-48khz-16b.bin
 DMIC_4CH_48KHZ_16B = dmic-4ch-48khz-16b.bin
 MAX98357_RENDER = max98357-render-2ch-48khz-24b.bin
 DA7219_RENDER_CAPTURE = dialog-2ch-48khz-24b.bin
+RT5682_RENDER_CAPTURE = rt5682-2ch-48khz-24b.bin
 
 cbfs-files-$(CONFIG_NHLT_DMIC_1CH_16B) += $(DMIC_1CH_48KHZ_16B)
 $(DMIC_1CH_48KHZ_16B)-file := $(NHLT_BLOB_PATH)/$(DMIC_1CH_48KHZ_16B)
@@ -156,5 +172,9 @@ $(MAX98357_RENDER)-type := raw
 cbfs-files-$(CONFIG_NHLT_DA7219) += $(DA7219_RENDER_CAPTURE)
 $(DA7219_RENDER_CAPTURE)-file := $(NHLT_BLOB_PATH)/$(DA7219_RENDER_CAPTURE)
 $(DA7219_RENDER_CAPTURE)-type := raw
+
+cbfs-files-$(CONFIG_NHLT_RT5682) += $(RT5682_RENDER_CAPTURE)
+$(RT5682_RENDER_CAPTURE)-file := $(NHLT_BLOB_PATH)/$(RT5682_RENDER_CAPTURE)
+$(RT5682_RENDER_CAPTURE)-type := raw
 
 endif

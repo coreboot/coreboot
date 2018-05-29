@@ -3,5 +3,5 @@ config DRIVERS_SIL_3114
 	default n
 	depends on PCI
 	help
-	It sets PCI class to IDE compatible native mode, allowing
-	SeaBIOS, FILO etc... to boot from it.
+	  It sets PCI class to IDE compatible native mode, allowing
+	  SeaBIOS, FILO etc... to boot from it.

@@ -26,6 +26,7 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
+#include <romstage_handoff.h>
 #include <timestamp.h>
 #include <lib.h>
 #include <spd.h>
@@ -45,7 +46,7 @@
 #include <cpu/amd/family_10h-family_15h/init_cpus.h>
 #include <arch/early_variables.h>
 #include <cbmem.h>
-#include <tpm.h>
+#include <security/tpm/tis.h>
 
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
@@ -130,7 +131,7 @@ void activate_spd_rom(const struct mem_controller *ctrl) {
 }
 
 /* Voltages are specified by index
- * Valid indicies for this platform are:
+ * Valid indices for this platform are:
  * 0: 1.5V
  * 1: 1.35V
  * 2: 1.25V
@@ -548,7 +549,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (!warm_reset_detect(0)) {
 		printk(BIOS_INFO, "...WARM RESET...\n\n\n");
 		soft_reset();
-		die("After soft_reset_x - shouldn't see this message!!!\n");
+		die("After soft_reset - shouldn't see this message!!!\n");
 	}
 
 	sr5650_htinit_dect_and_enable_isochronous_link();
@@ -606,6 +607,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		cbmem_initialize();
 	else
 		cbmem_initialize_empty();
+
+	romstage_handoff_init(s3resume);
+
 	post_code(0x41);
 
 	amdmct_cbmem_store_info(sysinfo);
@@ -625,9 +629,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	if (IS_ENABLED(CONFIG_LPC_TPM))
 		init_tpm(s3resume);
-
-	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
-	post_code(0x43);	// Should never see this post code.
 }
 
 /**

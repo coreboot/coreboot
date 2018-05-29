@@ -124,4 +124,10 @@ int elf_writer_add_rel(struct elf_writer *ew, const char *sym, Elf64_Addr addr);
  */
 int elf_writer_serialize(struct elf_writer *ew, struct buffer *out);
 
+/*
+ * Calculate the loadable program's file size footprint. Returns < 0 on error,
+ * 0 on success.
+ */
+int elf_program_file_size(const struct buffer *input, size_t *file_size);
+
 #endif /* ELFPARSING_H */

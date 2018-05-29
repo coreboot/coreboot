@@ -76,7 +76,7 @@ static void pci_routing_fixup(struct device *dev)
  * can't figure out how to do !!!!
  */
 
-static void setup_pm(device_t dev)
+static void setup_pm(struct device *dev)
 {
 	/* Debounce LID and PWRBTN# Inputs for 16ms. */
 	pci_write_config8(dev, 0x80, 0x20);
@@ -226,7 +226,7 @@ static void cx700_set_lpc_registers(struct device *dev)
 
 }
 
-static void cx700_read_resources(device_t dev)
+static void cx700_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -248,7 +248,7 @@ static void cx700_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void cx700_set_resources(device_t dev)
+static void cx700_set_resources(struct device *dev)
 {
 	struct resource *resource;
 	resource = find_resource(dev, 1);
@@ -256,7 +256,7 @@ static void cx700_set_resources(device_t dev)
 	pci_dev_set_resources(dev);
 }
 
-static void cx700_enable_resources(device_t dev)
+static void cx700_enable_resources(struct device *dev)
 {
 	/* Enable SuperIO decoding */
 	pci_dev_enable_resources(dev);
@@ -266,7 +266,7 @@ static void cx700_lpc_init(struct device *dev)
 {
 	cx700_set_lpc_registers(dev);
 
-#if CONFIG_IOAPIC
+#if IS_ENABLED(CONFIG_IOAPIC)
 #define IO_APIC_ID 2
 	setup_ioapic(VIO_APIC_VADDR, IO_APIC_ID);
 #endif

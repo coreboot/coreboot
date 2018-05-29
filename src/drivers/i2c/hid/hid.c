@@ -37,7 +37,7 @@ static void i2c_hid_fill_ssdt_generator(struct device *dev)
 	i2c_generic_fill_ssdt(dev, &i2c_hid_fill_dsm, &config->generic);
 }
 
-static const char *i2c_hid_acpi_name(struct device *dev)
+static const char *i2c_hid_acpi_name(const struct device *dev)
 {
 	static char name[5];
 	snprintf(name, sizeof(name), "H%03.3X", dev->path.i2c.device);

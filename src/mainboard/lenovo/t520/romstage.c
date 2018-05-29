@@ -30,40 +30,61 @@
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cbfs.h>
+#include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
+#include <device/device.h>
+#include <device/pci.h>
+
+static void hybrid_graphics_init(void)
+{
+	bool peg, igd;
+	u32 reg32;
+
+	early_hybrid_graphics(&igd, &peg);
+
+	/* Hide disabled devices */
+	reg32 = pci_read_config32(PCI_DEV(0, 0, 0), DEVEN);
+	reg32 &= ~(DEVEN_PEG10 | DEVEN_IGD);
+
+	if (peg)
+		reg32 |= DEVEN_PEG10;
+
+	if (igd)
+		reg32 |= DEVEN_IGD;
+	else
+		/* Disable IGD VGA decode, no GTT or GFX stolen */
+		pci_write_config16(PCI_DEV(0, 0, 0), GGC, 2);
+
+	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, reg32);
+}
 
 void pch_enable_lpc(void)
 {
 	/* T520 EC Decode Range Port60/64, Port62/66 */
 	/* Enable EC, PS/2 Keyboard/Mouse */
 	pci_write_config16(PCH_LPC_DEV, LPC_EN,
-			   CNF2_LPC_EN | CNF1_LPC_EN | MC_LPC_EN | KBC_LPC_EN |
-			   COMA_LPC_EN);
+			   CNF2_LPC_EN | CNF1_LPC_EN | MC_LPC_EN | KBC_LPC_EN);
 
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, 0x7c1601);
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN2_DEC, 0xc15e1);
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN4_DEC, 0x0c06a1);
 
-	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x10);
-
-	pci_write_config32(PCH_LPC_DEV, 0xac,
-			   0x80010000);
+	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
-	/* Disable unused devices (board specific) */
-	RCBA32(FD) = 0x1ee51fe3;
 	RCBA32(BUC) = 0;
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, 0 }, /* P0 left dual conn, OC 0 */
-	{ 1, 1, 1 }, /* P1 system onboard USB port (eSATA), (EHCI debug), OC 1 */
+	{ 1, 1, 1 }, /* P1 system onboard USB (eSATA), (EHCI debug), OC 1 */
 	{ 1, 2, -1 }, /* P2: wimax / WLAN */
 	{ 1, 1, -1 }, /* P3: WWAN, no OC */
 	{ 1, 1, -1 }, /* P4: smartcard, no OC */
@@ -78,12 +99,9 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, -1 }, /* P13: CAMERA (LCD), no OC */
 };
 
-void mainboard_get_spd(spd_raw_data *spd, bool id_only) {
-	read_spd (&spd[0], 0x50, id_only);
-	read_spd (&spd[2], 0x51, id_only);
-}
-
-void mainboard_early_init(int s3resume) {
+void mainboard_early_init(int s3resume)
+{
+	hybrid_graphics_init();
 }
 
 void mainboard_config_superio(void)

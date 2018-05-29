@@ -115,14 +115,12 @@ static void intel_cores_init(struct device *cpu)
 		       cpu->path.apic.apic_id,
 		       new->path.apic.apic_id);
 
-#if IS_ENABLED(CONFIG_SMP) && CONFIG_MAX_CPUS > 1
 		/* Start the new CPU */
-		if (!start_cpu(new)) {
+		if (is_smp_boot() && !start_cpu(new)) {
 			/* Record the error in cpu? */
 			printk(BIOS_ERR, "CPU %u would not start!\n",
 			       new->path.apic.apic_id);
 		}
-#endif
 	}
 }
 
@@ -163,7 +161,7 @@ static struct device_operations cpu_dev_ops = {
 	.init     = model_406dx_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x406d0 }, /* Intel Avoton/Rangeley A1 */
 	{ X86_VENDOR_INTEL, 0x406d8 }, /* Intel Avoton/Rangeley B0 */
 	{ 0, 0 },

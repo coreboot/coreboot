@@ -86,7 +86,7 @@ Device(EC0)
 		ODDS,	  1
 	}
 
-	Method (_CRS, 0)
+	Method (_CRS, 0, Serialized)
 	{
 		Name (ECMD, ResourceTemplate()
 		{
@@ -547,7 +547,7 @@ Scope(\_SB)
 		}
 
 		/* Set DKD */
-		Method(SDKD, 1, Serialized)
+		Method(SDKD, 0, Serialized)
 		{
 			TRAP(0xda)
 			Return (0)

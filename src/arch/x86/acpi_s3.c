@@ -17,6 +17,7 @@
 #include <string.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <cpu/cpu.h>
 #include <fallback.h>
 #include <timestamp.h>
@@ -25,27 +26,22 @@
 #include <rules.h>
 #include <symbols.h>
 
-#if ENV_RAMSTAGE
+#if ENV_RAMSTAGE || ENV_POSTCAR
 
 /* This is filled with acpi_is_wakeup() call early in ramstage. */
 static int acpi_slp_type = -1;
 
-#if IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
-int acpi_get_sleep_type(void)
-{
-	if (romstage_handoff_is_resume()) {
-		printk(BIOS_DEBUG, "S3 Resume.\n");
-		return ACPI_S3;
-	}
-	printk(BIOS_DEBUG, "Normal boot.\n");
-	return ACPI_S0;
-}
-#endif
-
 static void acpi_handoff_wakeup(void)
 {
-	if (acpi_slp_type < 0)
-		acpi_slp_type = acpi_get_sleep_type();
+	if (acpi_slp_type < 0) {
+		if (romstage_handoff_is_resume()) {
+			printk(BIOS_DEBUG, "S3 Resume.\n");
+			acpi_slp_type = ACPI_S3;
+		} else {
+			printk(BIOS_DEBUG, "Normal boot.\n");
+			acpi_slp_type = ACPI_S0;
+		}
+	}
 }
 
 int acpi_is_wakeup(void)
@@ -164,24 +160,6 @@ void backup_ramstage_section(uintptr_t base, size_t size)
 	backup_mem->valid = 1;
 }
 
-/* Make backup of low-memory region, relying on the base and size
- * of the ramstage that was loaded before entry to ACPI S3.
- *
- * DEPRECATED
- */
-void acpi_prepare_for_resume(void)
-{
-	struct resume_backup *backup_mem = cbmem_find(CBMEM_ID_RESUME);
-	if (!backup_mem)
-		return;
-
-	/* Back up the OS-controlled memory where ramstage will be loaded. */
-	memcpy((void *)(uintptr_t)backup_mem->cbmem,
-		(void *)(uintptr_t)backup_mem->lowmem,
-		(size_t)backup_mem->size);
-	backup_mem->valid = 1;
-}
-
 /* Let's prepare the ACPI S3 Resume area now already, so we can rely on
  * it being there during reboot time. If this fails, ACPI resume will
  * be disabled. We assume that ramstage does not change while in suspend,
@@ -241,22 +219,22 @@ static void acpi_jump_to_wakeup(void *vector)
 	acpi_do_wakeup((uintptr_t)vector, source, target, size);
 }
 
-void __attribute__((weak)) mainboard_suspend_resume(void)
+void __weak mainboard_suspend_resume(void)
 {
 }
 
 void acpi_resume(void *wake_vec)
 {
-#if CONFIG_HAVE_SMI_HANDLER
-	u32 *gnvs_address = cbmem_find(CBMEM_ID_ACPI_GNVS_PTR);
+	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+		u32 *gnvs_address = cbmem_find(CBMEM_ID_ACPI_GNVS_PTR);
 
-	/* Restore GNVS pointer in SMM if found */
-	if (gnvs_address && *gnvs_address) {
-		printk(BIOS_DEBUG, "Restore GNVS pointer to 0x%08x\n",
-		       *gnvs_address);
-		smm_setup_structures((void *)*gnvs_address, NULL, NULL);
+		/* Restore GNVS pointer in SMM if found */
+		if (gnvs_address && *gnvs_address) {
+			printk(BIOS_DEBUG, "Restore GNVS pointer to 0x%08x\n",
+			       *gnvs_address);
+			smm_setup_structures((void *)*gnvs_address, NULL, NULL);
+		}
 	}
-#endif
 
 	/* Call mainboard resume handler first, if defined. */
 	mainboard_suspend_resume();

@@ -47,5 +47,26 @@ static const struct reg_script systemagent_early_init_script[] = {
 
 void systemagent_early_init(void)
 {
+	const bool vtd_capable =
+		!(pci_read_config32(SA_DEV_ROOT, CAPID0_A) & VTD_DISABLE);
+
 	reg_script_run_on_dev(SA_DEV_ROOT, systemagent_early_init_script);
+
+	if (vtd_capable) {
+		/* setup BARs: zeroize top 32 bits; set enable bit */
+		MCHBAR32(GFXVTBAR + 4) = GFXVT_BASE_ADDRESS >> 32;
+		MCHBAR32(GFXVTBAR) = GFXVT_BASE_ADDRESS | 1;
+		MCHBAR32(VTVC0BAR + 4) = VTVC0_BASE_ADDRESS >> 32;
+		MCHBAR32(VTVC0BAR) = VTVC0_BASE_ADDRESS | 1;
+
+		/* set PRSCAPDIS, lock GFXVTBAR policy cfg registers */
+		u32 reg32;
+		reg32 = read32((void *)(GFXVT_BASE_ADDRESS + ARCHDIS));
+		write32((void *)(GFXVT_BASE_ADDRESS + ARCHDIS),
+				reg32 | DMAR_LCKDN | PRSCAPDIS);
+		/* lock VTVC0BAR policy cfg registers */
+		reg32 = read32((void *)(VTVC0_BASE_ADDRESS + ARCHDIS));
+		write32((void *)(VTVC0_BASE_ADDRESS + ARCHDIS),
+				reg32 | DMAR_LCKDN);
+	}
 }

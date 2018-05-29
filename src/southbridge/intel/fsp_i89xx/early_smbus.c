@@ -19,12 +19,12 @@
 #include <console/console.h>
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
+#include <southbridge/intel/common/smbus.h>
 #include "pch.h"
-#include "smbus.h"
 
 void enable_smbus(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* Set the SMBus device statically. */
 	dev = PCI_DEV(0x0, 0x1f, 0x3);

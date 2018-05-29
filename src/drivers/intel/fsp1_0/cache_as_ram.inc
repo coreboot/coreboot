@@ -32,7 +32,7 @@ cache_as_ram:
 	 * Make a fake stack that has the return value back to this code.
 	 */
 	lea   fake_fsp_stack, %esp
-	jmp   find_fsp
+	jmp   find_fsp_bypass_prologue
 find_fsp_ret:
 	/* Save the FSP location */
 	mov   %eax,   %ebp

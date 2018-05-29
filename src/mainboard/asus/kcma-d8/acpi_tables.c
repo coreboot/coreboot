@@ -26,7 +26,7 @@
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	device_t dev;
+	struct device *dev;
 	u32 dword;
 	u32 gsi_base = 0;
 	uint32_t apicid_sp5100;

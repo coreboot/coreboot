@@ -22,13 +22,22 @@
 #define ME_PRESENT_CAN_DISABLE 4
 #define ME_PRESENT_CANNOT_DISABLE 5
 
-#define INTELMETOOL_VERSION "1.0"
+#define INTELMETOOL_VERSION "1.1"
+
+#define GPLV2COPYRIGHT \
+"This program is free software: you can redistribute it and/or modify\n" \
+"it under the terms of the GNU General Public License as published by\n" \
+"the Free Software Foundation, version 2 of the License.\n\n" \
+"This program is distributed in the hope that it will be useful,\n" \
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n" \
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n" \
+"GNU General Public License for more details.\n\n"
 
 #if defined(__GLIBC__)
 #include <sys/io.h>
 #endif
 #if (defined(__MACH__) && defined(__APPLE__))
-/* DirectHW is available here: http://www.coreboot.org/DirectHW */
+/* DirectHW is available here: https://www.coreboot.org/DirectHW */
 #define __DARWIN__
 #include <DirectHW/DirectHW.h>
 #endif
@@ -48,7 +57,19 @@
 #define CWHT  "\x1B[37m"
 #define RESET "\033[0m"
 
+#define CPU_ID_SIZE 13
+#define FD2 0x3428
+#define ME_COMMAND_DELAY 10000
+#define ME_MESSAGE_LEN 256
+
 extern int debug;
+static inline void print_cap(const char *name, int state)
+{
+	printf("ME Capability: %-30s : %s\n",
+	       name, state ? CRED "ON" RESET : CGRN "OFF" RESET);
+}
+
+#define PCI_VENDOR_ID_INTEL 0x8086
 
 // Definitely has ME and can be disabled
 #define PCI_DEVICE_ID_INTEL_ICH8ME		0x2811
@@ -56,9 +77,9 @@ extern int debug;
 #define PCI_DEVICE_ID_INTEL_ICH9M		0x2919
 
 #define PCI_DEV_HAS_ME_DISABLE(x) ( \
-	( (x) == PCI_DEVICE_ID_INTEL_ICH8ME ) || \
-	( (x) == PCI_DEVICE_ID_INTEL_ICH9ME ) || \
-	( (x) == PCI_DEVICE_ID_INTEL_ICH9M  ))
+	((x) == PCI_DEVICE_ID_INTEL_ICH8ME) || \
+	((x) == PCI_DEVICE_ID_INTEL_ICH9ME) || \
+	((x) == PCI_DEVICE_ID_INTEL_ICH9M  ))
 
 // Definitely has ME and is very difficult to remove
 #define PCI_DEVICE_ID_INTEL_ICH10R		0x3a16
@@ -118,61 +139,61 @@ extern int debug;
 #define PCI_DEVICE_ID_INTEL_X99			0x8d47
 
 #define PCI_DEV_HAS_ME_DIFFICULT(x) ( \
-	( (x) == PCI_DEVICE_ID_INTEL_ICH10R ) || \
-	( (x) == PCI_DEVICE_ID_INTEL_3400_DESKTOP ) || \
-	( (x) == PCI_DEVICE_ID_INTEL_3400_MOBILE ) || \
-	( (x) == PCI_DEVICE_ID_INTEL_P55	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_PM55	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_H55	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_QM57	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_H57	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_HM55	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_Q57	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_HM57	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_3400_MOBILE_SFF ) || \
-	( (x) == PCI_DEVICE_ID_INTEL_B55_A	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_QS57	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_3400	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_3420	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_3450	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_B55_B	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_Z68	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_P67	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_UM67	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_HM65	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_H67	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_HM67	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_Q65	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_QS67	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_Q67	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_QM67	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_B65	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_C202	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_C204	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_C206	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_H61	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_Z77	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_Z75	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_Q77	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_Q75	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_B75	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_H77	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_C216	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_QM77	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_QS77	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_HM77	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_UM77	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_HM76	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_HM75	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_HM70	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_NM70	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_QM87	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_DH89XXCC	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_FULL	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_PREM	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_BASE	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_X99	))
+	((x) == PCI_DEVICE_ID_INTEL_ICH10R) || \
+	((x) == PCI_DEVICE_ID_INTEL_3400_DESKTOP) || \
+	((x) == PCI_DEVICE_ID_INTEL_3400_MOBILE) || \
+	((x) == PCI_DEVICE_ID_INTEL_P55	) || \
+	((x) == PCI_DEVICE_ID_INTEL_PM55	) || \
+	((x) == PCI_DEVICE_ID_INTEL_H55	) || \
+	((x) == PCI_DEVICE_ID_INTEL_QM57	) || \
+	((x) == PCI_DEVICE_ID_INTEL_H57	) || \
+	((x) == PCI_DEVICE_ID_INTEL_HM55	) || \
+	((x) == PCI_DEVICE_ID_INTEL_Q57	) || \
+	((x) == PCI_DEVICE_ID_INTEL_HM57	) || \
+	((x) == PCI_DEVICE_ID_INTEL_3400_MOBILE_SFF) || \
+	((x) == PCI_DEVICE_ID_INTEL_B55_A	) || \
+	((x) == PCI_DEVICE_ID_INTEL_QS57	) || \
+	((x) == PCI_DEVICE_ID_INTEL_3400	) || \
+	((x) == PCI_DEVICE_ID_INTEL_3420	) || \
+	((x) == PCI_DEVICE_ID_INTEL_3450	) || \
+	((x) == PCI_DEVICE_ID_INTEL_B55_B	) || \
+	((x) == PCI_DEVICE_ID_INTEL_Z68	) || \
+	((x) == PCI_DEVICE_ID_INTEL_P67	) || \
+	((x) == PCI_DEVICE_ID_INTEL_UM67	) || \
+	((x) == PCI_DEVICE_ID_INTEL_HM65	) || \
+	((x) == PCI_DEVICE_ID_INTEL_H67	) || \
+	((x) == PCI_DEVICE_ID_INTEL_HM67	) || \
+	((x) == PCI_DEVICE_ID_INTEL_Q65	) || \
+	((x) == PCI_DEVICE_ID_INTEL_QS67	) || \
+	((x) == PCI_DEVICE_ID_INTEL_Q67	) || \
+	((x) == PCI_DEVICE_ID_INTEL_QM67	) || \
+	((x) == PCI_DEVICE_ID_INTEL_B65	) || \
+	((x) == PCI_DEVICE_ID_INTEL_C202	) || \
+	((x) == PCI_DEVICE_ID_INTEL_C204	) || \
+	((x) == PCI_DEVICE_ID_INTEL_C206	) || \
+	((x) == PCI_DEVICE_ID_INTEL_H61	) || \
+	((x) == PCI_DEVICE_ID_INTEL_Z77	) || \
+	((x) == PCI_DEVICE_ID_INTEL_Z75	) || \
+	((x) == PCI_DEVICE_ID_INTEL_Q77	) || \
+	((x) == PCI_DEVICE_ID_INTEL_Q75	) || \
+	((x) == PCI_DEVICE_ID_INTEL_B75	) || \
+	((x) == PCI_DEVICE_ID_INTEL_H77	) || \
+	((x) == PCI_DEVICE_ID_INTEL_C216	) || \
+	((x) == PCI_DEVICE_ID_INTEL_QM77	) || \
+	((x) == PCI_DEVICE_ID_INTEL_QS77	) || \
+	((x) == PCI_DEVICE_ID_INTEL_HM77	) || \
+	((x) == PCI_DEVICE_ID_INTEL_UM77	) || \
+	((x) == PCI_DEVICE_ID_INTEL_HM76	) || \
+	((x) == PCI_DEVICE_ID_INTEL_HM75	) || \
+	((x) == PCI_DEVICE_ID_INTEL_HM70	) || \
+	((x) == PCI_DEVICE_ID_INTEL_NM70	) || \
+	((x) == PCI_DEVICE_ID_INTEL_QM87	) || \
+	((x) == PCI_DEVICE_ID_INTEL_DH89XXCC	) || \
+	((x) == PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_FULL	) || \
+	((x) == PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_PREM	) || \
+	((x) == PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_BASE	) || \
+	((x) == PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP	) || \
+	((x) == PCI_DEVICE_ID_INTEL_X99	))
 
 // Not sure if ME present, but should be able to disable it easily
 #define PCI_DEVICE_ID_INTEL_ICH8		0x2810
@@ -183,20 +204,20 @@ extern int debug;
 #define PCI_DEVICE_ID_INTEL_ICH9		0x2918
 
 #define PCI_DEV_CAN_DISABLE_ME_IF_PRESENT(x) ( \
-	( (x) == PCI_DEVICE_ID_INTEL_ICH8	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_ICH8M	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_ICH9DH	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_ICH9DO	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_ICH9R	) || \
-	( (x) == PCI_DEVICE_ID_INTEL_ICH9	))
+	((x) == PCI_DEVICE_ID_INTEL_ICH8	) || \
+	((x) == PCI_DEVICE_ID_INTEL_ICH8M	) || \
+	((x) == PCI_DEVICE_ID_INTEL_ICH9DH	) || \
+	((x) == PCI_DEVICE_ID_INTEL_ICH9DO	) || \
+	((x) == PCI_DEVICE_ID_INTEL_ICH9R	) || \
+	((x) == PCI_DEVICE_ID_INTEL_ICH9	))
 
 // Not sure at all
 #define PCI_DEVICE_ID_INTEL_SCH_POULSBO_LPC	0x8119
 #define PCI_DEVICE_ID_INTEL_SCH_POULSBO		0x8100
 
 #define PCI_DEV_ME_NOT_SURE(x) ( \
-	( (x) == PCI_DEVICE_ID_INTEL_SCH_POULSBO_LPC ) || \
-	( (x) == PCI_DEVICE_ID_INTEL_SCH_POULSBO))
+	((x) == PCI_DEVICE_ID_INTEL_SCH_POULSBO_LPC) || \
+	((x) == PCI_DEVICE_ID_INTEL_SCH_POULSBO))
 
 #define PCI_DEVICE_ID_INTEL_COUGARPOINT_1	0x1C3A /* Cougar Point */
 #define PCI_DEVICE_ID_INTEL_PATSBURG_1	0x1D3A /* C600/X79 Patsburg */
@@ -237,44 +258,60 @@ extern int debug;
 #define PCI_DEVICE_ID_INTEL_LYNXPOINT_4 0x9C3A /* Lynx Point LP */
 #define PCI_DEVICE_ID_INTEL_WILDCAT_1 0x9CBA /* Wildcat Point LP */
 #define PCI_DEVICE_ID_INTEL_WILDCAT_2 0x9CBB /* Wildcat Point LP 2 */
+#define PCI_DEVICE_ID_INTEL_SUNRISE_H1 0xa13a /* SUNRISE Point-H 1 */
+#define PCI_DEVICE_ID_INTEL_SUNRISE_H2 0xa13b /* SUNRISE Point-H 2 */
+#define PCI_DEVICE_ID_INTEL_SUNRISE_LP 0x9d3a /* SUNRISE Point-LP */
 
 #define PCI_DEV_HAS_SUPPORTED_ME(x) ( \
-	( (x) ==  PCI_DEVICE_ID_INTEL_COUGARPOINT_1 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_PATSBURG_1 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_PANTHERPOINT_1 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_PANTHERPOINT_2 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_PANTHERPOINT_3 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_CAVECREEK ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_BEARLAKE_1 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_BEARLAKE_2 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_BEARLAKE_3 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_BEARLAKE_4 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_BEARLAKE_5 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_82946GZ ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_82G35 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_82Q963 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_82P965 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_82Q35 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_82G33 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_82Q33 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_82X38 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_3200 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_PM965 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_GME965 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_CANTIGA_1 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_CANTIGA_2 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_CANTIGA_3 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_CANTIGA_4 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_CANTIGA_5 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_EAGLELAKE_1 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_EAGLELAKE_2 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_EAGLELAKE_3 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_EAGLELAKE_4 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_CALPELLA_1 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_CALPELLA_2 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_LYNXPOINT_1 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_LYNXPOINT_2 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_LYNXPOINT_3 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_LYNXPOINT_4 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_WILDCAT_1 ) || \
-	( (x) ==  PCI_DEVICE_ID_INTEL_WILDCAT_2))
+	((x) ==  PCI_DEVICE_ID_INTEL_COUGARPOINT_1) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_PATSBURG_1) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_PANTHERPOINT_1) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_PANTHERPOINT_2) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_PANTHERPOINT_3) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_CAVECREEK) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_BEARLAKE_1) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_BEARLAKE_2) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_BEARLAKE_3) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_BEARLAKE_4) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_BEARLAKE_5) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_82946GZ) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_82G35) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_82Q963) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_82P965) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_82Q35) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_82G33) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_82Q33) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_82X38) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_3200) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_PM965) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_GME965) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_CANTIGA_1) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_CANTIGA_2) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_CANTIGA_3) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_CANTIGA_4) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_CANTIGA_5) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_EAGLELAKE_1) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_EAGLELAKE_2) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_EAGLELAKE_3) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_EAGLELAKE_4) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_CALPELLA_1) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_CALPELLA_2) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_LYNXPOINT_1) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_LYNXPOINT_2) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_LYNXPOINT_3) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_LYNXPOINT_4) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_WILDCAT_1) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_WILDCAT_2) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_SUNRISE_H1) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_SUNRISE_H2) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_SUNRISE_LP))
+
+#define BOOTGUARD_DISABLED 0x400000000
+#define BOOTGUARD_ENABLED_VERIFIED_MODE 0x100000000
+#define BOOTGUARD_ENABLED_MEASUREMENT_MODE 0x200000000
+#define BOOTGUARD_ENABLED_COMBI_MODE 0x300000000
+#define BOOTGUARD_CAPABILITY(x) ( \
+		((x) == BOOTGUARD_DISABLED) || \
+		((x) == BOOTGUARD_ENABLED_VERIFIED_MODE) || \
+		((x) == BOOTGUARD_ENABLED_MEASUREMENT_MODE) || \
+		((x) == BOOTGUARD_ENABLED_COMBI_MODE))

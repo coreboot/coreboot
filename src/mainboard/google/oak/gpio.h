@@ -21,6 +21,11 @@
 	: ((board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 7) ? PAD_EINT12 \
 	: PAD_SPI_CK))
 
+#define RAM_ID_1 ((IS_ENABLED(CONFIG_BOARD_GOOGLE_ROWAN)) ? PAD_DSI_TE \
+	: PAD_RCN_A)
+
+#define RAM_ID_2 ((IS_ENABLED(CONFIG_BOARD_GOOGLE_ROWAN)) ? PAD_RDP1_A \
+	: PAD_RCP_A)
 
 enum {
 	/* Board ID related GPIOS. */
@@ -29,8 +34,6 @@ enum {
 	BOARD_ID_2	= PAD_RDN2_A,
 	/* RAM ID related GPIOS. */
 	RAM_ID_0	= PAD_RDP2_A,
-	RAM_ID_1	= PAD_RCN_A,
-	RAM_ID_2	= PAD_RCP_A,
 	RAM_ID_3	= PAD_RDN1_A,
 	/* Write Protect */
 	WRITE_PROTECT	= PAD_EINT4,

@@ -14,7 +14,7 @@
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2017, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***************************************************************************/
+
+#include <check_for_wrapper.h>
 
 #ifndef _CPU_TABLE_H_
 #define _CPU_TABLE_H_
@@ -654,7 +656,7 @@ typedef struct {
  */
 typedef struct {
   REGISTER_TABLE_TIME_POINT TimePoint;               ///< Time point
-  CONST REGISTER_TABLE**    TableList;               ///< The table list.
+  CONST REGISTER_TABLE* CONST * CONST TableList;     ///< The table list.
 } REGISTER_TABLE_AT_GIVEN_TP;
 /*------------------------------------------------------------------------------------------*/
 /*

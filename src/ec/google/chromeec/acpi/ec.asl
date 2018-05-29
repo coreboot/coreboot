@@ -21,11 +21,10 @@
 
 // Mainboard specific throttle handler
 External (\_TZ.THRT, MethodObj)
-External (\_SB.DPTF.TEVT, MethodObj)
 #ifdef DPTF_ENABLE_CHARGER
 External (\_SB.DPTF.TCHG, DeviceObj)
 #endif
-External (\_SB.DPTF.TPET, MethodObj)
+
 
 Device (EC0)
 {
@@ -47,16 +46,55 @@ Device (EC0)
 		RAMV, 8,	// EC RAM Version
 		TSTB, 8,	// Test Byte
 		TSTC, 8,	// Complement of Test Byte
-		KBLV, 8,	// Keyboard Backlight
+		KBLV, 8,	// Keyboard Backlight value
 		FAND, 8,	// Set Fan Duty Cycle
 		PATI, 8,	// Programmable Auxiliary Trip Sensor ID
 		PATT, 8,	// Programmable Auxiliary Trip Threshold
 		PATC, 8,	// Programmable Auxiliary Trip Commit
 		CHGL, 8,	// Charger Current Limit
 		TBMD, 1,	// Tablet mode
-	}
+		// DFUD must be 0 for the other 31 values to be valid
+		Offset (0x0a),
+		DFUD, 1,	// Device Features Undefined
+		FLSH, 1,	// Flash commands present
+		PFAN, 1,	// PWM Fan control present
+		KBLE, 1,	// Keyboard Backlight present
+		LTBR, 1,	// Lightbar present
+		LEDC, 1,	// LED control
+		MTNS, 1,	// Motion sensors present
+		KEYB, 1,	// EC is keyboard controller
+		PSTR, 1,	// Persistent storage
+		P80P, 1,	// EC serves I/O Port 80h
+		THRM, 1,	// EC supports thermal management
+		SBKL, 1,	// Screen backlight switch present
+		WIFI, 1,	// WIFI switch present
+		HOST, 1,	// EC monitors host events (eg SCI, SMI)
+		GPIO, 1,	// EC provides GPIO commands
+		I2CB, 1,	// EC provides I2C controller access
+		CHRG, 1,	// EC provides commands for charger control
+		BATT, 1,	// Simply Battery support
+		SBAT, 1,	// Smart Battery support
+		HANG, 1,	// EC can detect host hang
+		PMUI, 1,	// Power Information
+		DSEC, 1,	// another EC exists downstream
+		UPDC, 1,	// supports USB Power Delivery
+		UMUX, 1,	// supports USB Mux
+		MSFF, 1,	// Motion Sense has FIFO
+		TVST, 1,	// supports temporary secure vstore
+		TCMV, 1,	// USB Type C Muxing is virtual (host assisted)
+		RTCD, 1,	// EC provides an RTC device
+		FPRD, 1,	// EC provides a fingerprint reader device
+		TPAD, 1,	// EC provides a touchpad device
+		RWSG, 1,	// EC has RWSIG task enabled
+		DEVE, 1,	// EC supports device events
+		// make sure we're within our space envelope
+		Offset (0x0e),
+		Offset (0x12),
+		BTID, 8,	// Battery index that host wants to read
+		USPP, 8,	// USB Port Power
+}
 
-#if CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)
 	OperationRegion (EMEM, EmbeddedControl,
 			 EC_ACPI_MEM_MAPPED_BEGIN, EC_ACPI_MEM_MAPPED_SIZE)
 	Field (EMEM, ByteAcc, Lock, Preserve)
@@ -176,6 +214,7 @@ Device (EC0)
 	{
 		Store ("EC: LID OPEN", Debug)
 		Store (LIDS, \LIDS)
+		Notify (CREC, 0x2)
 #ifdef EC_ENABLE_LID_SWITCH
 		Notify (LID0, 0x80)
 #endif
@@ -235,6 +274,11 @@ Device (EC0)
 	{
 		Store ("EC: BATTERY INFO", Debug)
 		Notify (BAT0, 0x81)
+#ifdef EC_ENABLE_SECOND_BATTERY_DEVICE
+		If (CondRefOf (BAT1)) {
+			Notify (BAT1, 0x81)
+		}
+#endif
 	}
 
 	// Thermal Overload Event
@@ -261,6 +305,7 @@ Device (EC0)
 	Method (_Q0D, 0, NotSerialized)
 	{
 		Store ("EC: KEY PRESSED", Debug)
+		Notify (CREC, 0x2)
 	}
 
 	// Thermal Shutdown Imminent
@@ -309,6 +354,11 @@ Device (EC0)
 	{
 		Store ("EC: BATTERY STATUS", Debug)
 		Notify (BAT0, 0x80)
+#ifdef EC_ENABLE_SECOND_BATTERY_DEVICE
+		If (CondRefOf (BAT1)) {
+			Notify (BAT1, 0x80)
+		}
+#endif
 	}
 
 	// MKBP interrupt.
@@ -318,17 +368,18 @@ Device (EC0)
 		Notify (CREC, 0x80)
 	}
 
-#ifdef EC_ENABLE_TABLET_EVENT
 	// TABLET mode switch Event
 	Method (_Q1D, 0, NotSerialized)
 	{
 		Store ("EC: TABLET mode switch Event", Debug)
-		If (CondRefOf (\_SB.DPTF.TPET)) {
-			\_SB.DPTF.TPET()
-		}
-		Notify (TBMC, 0x80)
-	}
+		Notify (CREC, 0x2)
+#ifdef EC_ENABLE_TABLET_EVENT
+		\_SB.DPTF.TPET()
 #endif
+#ifdef EC_ENABLE_TBMC_DEVICE
+		Notify (TBMC, 0x80)
+#endif
+	}
 
 	/*
 	 * Dynamic Platform Thermal Framework support
@@ -428,9 +479,9 @@ Device (EC0)
 		/* When sensor ID returns 0xFF then no more events */
 		While (LNotEqual (Local0, EC_TEMP_SENSOR_NOT_PRESENT))
 		{
-			If (CondRefOf (\_SB.DPTF.TEVT)) {
-				\_SB.DPTF.TEVT (Local0)
-			}
+#ifdef HAVE_THERM_EVENT_HANDLER
+			\_SB.DPTF.TEVT (Local0)
+#endif
 
 			/* Keep reaading sensor ID for event */
 			Store (^PATI, Local0)
@@ -462,6 +513,26 @@ Device (EC0)
 		Return (^TBMD)
 	}
 
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_ACPI_USB_PORT_POWER)
+	/*
+	 * Enable USB Port Power
+	 *   Arg0 = USB port ID
+	 */
+	Method (UPPS, 1, Serialized)
+	{
+		Or (USPP, ShiftLeft (1, Arg0), USPP)
+	}
+
+	/*
+	 * Disable USB Port Power
+	 *   Arg0 = USB port ID
+	 */
+	Method (UPPC, 1, Serialized)
+	{
+		And (USPP, Not (ShiftLeft (1, Arg0)), USPP)
+	}
+#endif
+
 	#include "ac.asl"
 	#include "battery.asl"
 	#include "cros_ec.asl"
@@ -478,7 +549,7 @@ Device (EC0)
 	#include "pd.asl"
 #endif
 
-#ifdef EC_ENABLE_TABLET_EVENT
+#ifdef EC_ENABLE_TBMC_DEVICE
 	#include "tbmc.asl"
 #endif
 }

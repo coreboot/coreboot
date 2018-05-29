@@ -18,6 +18,7 @@
 #include <arch/io.h>
 #include <arch/symbols.h>
 #include <assert.h>
+#include <compiler.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cbmem.h>
@@ -26,7 +27,9 @@
 #include <device/pci_def.h>
 #include <fsp/util.h>
 #include <fsp/memmap.h>
+#include <intelblocks/pmclib.h>
 #include <memory_info.h>
+#include <smbios.h>
 #include <soc/intel/common/smbios.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -34,13 +37,7 @@
 #include <soc/romstage.h>
 #include <string.h>
 #include <timestamp.h>
-#include <vboot/vboot_common.h>
-
-/*
- * Romstage needs some stack for decompressing ramstage images, since the lzma
- * lib keeps its state on the stack during romstage.
- */
-#define ROMSTAGE_RAM_STACK_SIZE 0x5000
+#include <security/vboot/vboot_common.h>
 
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
 {	\
@@ -48,24 +45,33 @@
 	0x8d, 0x09, 0x11, 0xcf, 0x8b, 0x9f, 0x03, 0x23	\
 }
 
+/* Memory Channel Present Status */
+enum {
+	CHANNEL_NOT_PRESENT,
+	CHANNEL_DISABLED,
+	CHANNEL_PRESENT
+};
+
 /* Save the DIMM information for SMBIOS table 17 */
 static void save_dimm_info(void)
 {
 	int channel, dimm, dimm_max, index;
 	size_t hob_size;
+	uint8_t ddr_type;
 	const CONTROLLER_INFO *ctrlr_info;
 	const CHANNEL_INFO *channel_info;
 	const DIMM_INFO *src_dimm;
 	struct dimm_info *dest_dimm;
 	struct memory_info *mem_info;
 	const MEMORY_INFO_DATA_HOB *memory_info_hob;
-	const uint8_t smbios_memory_info_guid[16] = FSP_SMBIOS_MEMORY_INFO_GUID;
+	const uint8_t smbios_memory_info_guid[16] =
+			FSP_SMBIOS_MEMORY_INFO_GUID;
 
 	/* Locate the memory info HOB, presence validated by raminit */
 	memory_info_hob =
 		fsp_find_extension_hob_by_guid(smbios_memory_info_guid,
 						&hob_size);
-	if (memory_info_hob == NULL) {
+	if (memory_info_hob == NULL || hob_size == 0) {
 		printk(BIOS_ERR, "SMBIOS MEMORY_INFO_DATA_HOB not found\n");
 		return;
 	}
@@ -85,24 +91,37 @@ static void save_dimm_info(void)
 	index = 0;
 	dimm_max = ARRAY_SIZE(mem_info->dimm);
 	ctrlr_info = &memory_info_hob->Controller[0];
-	for (channel = 0; channel < ctrlr_info->ChannelCount; channel++) {
-		if (index >= dimm_max)
-			break;
-		channel_info = &ctrlr_info->Channel[channel];
-		for (dimm = 0; dimm < channel_info->DimmCount; dimm++) {
-			if (index >= dimm_max)
-				break;
-			src_dimm = &channel_info->Dimm[dimm];
+	for (channel = 0; channel < MAX_CH && index < dimm_max; channel++) {
+		channel_info = &ctrlr_info->ChannelInfo[channel];
+		if (channel_info->Status != CHANNEL_PRESENT)
+			continue;
+		for (dimm = 0; dimm < MAX_DIMM && index < dimm_max; dimm++) {
+			src_dimm = &channel_info->DimmInfo[dimm];
 			dest_dimm = &mem_info->dimm[index];
 
-			if (!src_dimm->DimmCapacity)
+			if (src_dimm->Status != DIMM_PRESENT)
 				continue;
+
+			switch(memory_info_hob->MemoryType) {
+			case MRC_DDR_TYPE_DDR4:
+				ddr_type = MEMORY_DEVICE_DDR4;
+				break;
+			case MRC_DDR_TYPE_DDR3:
+				ddr_type = MEMORY_DEVICE_DDR3;
+				break;
+			case MRC_DDR_TYPE_LPDDR3:
+				ddr_type = MEMORY_DEVICE_LPDDR3;
+				break;
+			default:
+				ddr_type = MEMORY_DEVICE_UNKNOWN;
+				break;
+			}
 
 			/* Populate the DIMM information */
 			dimm_info_fill(dest_dimm,
 				src_dimm->DimmCapacity,
-				memory_info_hob->DdrType,
-				memory_info_hob->Frequency,
+				ddr_type,
+				memory_info_hob->ConfiguredMemoryClockSpeed,
 				channel_info->ChannelId,
 				src_dimm->DimmId,
 				(const char *)src_dimm->ModulePartNum,
@@ -127,14 +146,14 @@ asmlinkage void car_stage_entry(void)
 	/* Program MCHBAR, DMIBAR, GDXBAR and EDRAMBAR */
 	systemagent_early_init();
 
-	ps = fill_power_state();
+	ps = pmc_get_power_state();
 	timestamp_add_now(TS_START_ROMSTAGE);
-	s3wake = ps->prev_sleep_state == ACPI_S3;
+	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);
 	pmc_set_disb();
 	if (!s3wake)
 		save_dimm_info();
-	if (postcar_frame_init(&pcf, ROMSTAGE_RAM_STACK_SIZE))
+	if (postcar_frame_init(&pcf, 1*KiB))
 		die("Unable to initialize postcar frame.\n");
 
 	/*
@@ -203,10 +222,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	m_cfg->IedSize = CONFIG_IED_REGION_SIZE;
 	m_cfg->ProbelessTrace = config->ProbelessTrace;
-	if (vboot_recovery_mode_enabled())
-		m_cfg->SaGv = 0; /* Disable SaGv in recovery mode. */
-	else
-		m_cfg->SaGv = config->SaGv;
+	m_cfg->SaGv = config->SaGv;
 	m_cfg->UserBd = BOARD_TYPE_ULT_ULX;
 	m_cfg->RMT = config->Rmt;
 	m_cfg->DdrFreqLimit = config->DdrFreqLimit;
@@ -219,6 +235,13 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->PcieRpEnableMask = mask;
 
 	cpu_flex_override(m_cfg);
+
+	if (!config->ignore_vtd) {
+		m_cfg->PchHpetBdfValid = 1;
+		m_cfg->PchHpetBusNumber = 250;
+		m_cfg->PchHpetDeviceNumber = 15;
+		m_cfg->PchHpetFunctionNumber = 0;
+	}
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
@@ -233,6 +256,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	soc_memory_init_params(m_cfg, config);
 
+	/* Skip creating Management Engine MBP HOB */
+	m_t_cfg->SkipMbpHob = 0x01;
+
 	/* Enable DMI Virtual Channel for ME */
 	m_t_cfg->DmiVcm = 0x01;
 
@@ -245,6 +271,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	m_cfg->EnableTraceHub = config->EnableTraceHub;
 	m_cfg->TraceHubMemReg0Size = config->TraceHubMemReg0Size;
 	m_cfg->TraceHubMemReg1Size = config->TraceHubMemReg1Size;
+
+	/* Enable SMBus controller based on config */
+	m_cfg->SmbusEnable = config->SmbusEnable;
 
 	mainboard_memory_init_params(mupd);
 }
@@ -267,7 +296,7 @@ void soc_update_memory_params_for_mma(FSP_M_CONFIG *memory_cfg,
 	memory_cfg->SaGv = 0x02;
 }
 
-__attribute__((weak)) void mainboard_memory_init_params(FSPM_UPD *mupd)
+__weak void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	/* Do nothing */
 }

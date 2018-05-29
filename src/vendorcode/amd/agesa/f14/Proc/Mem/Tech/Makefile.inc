@@ -1,0 +1,9 @@
+libagesa-y += mt.c
+libagesa-y += mthdi.c
+libagesa-y += mttEdgeDetect.c
+libagesa-y += mttdimbt.c
+libagesa-y += mttecc.c
+libagesa-y += mtthrc.c
+libagesa-y += mttml.c
+libagesa-y += mttoptsrc.c
+libagesa-y += mttsrc.c

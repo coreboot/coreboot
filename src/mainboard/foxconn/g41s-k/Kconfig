@@ -1,0 +1,50 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2015 Damien Zammit <damien@zamaudio.com>
+## Copyright (C) 2017 Samuel Holland <samuel@sholland.org>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+if BOARD_FOXCONN_G41S_K
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_LGA775
+	select NORTHBRIDGE_INTEL_X4X
+	select SOUTHBRIDGE_INTEL_I82801GX
+	select SUPERIO_ITE_IT8720F
+	select BOARD_ROMSIZE_KB_1024
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select INTEL_EDID
+	select MAINBOARD_HAS_LPC_TPM
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	select PCIEXP_ASPM
+	select PCIEXP_CLK_PM
+	select PCIEXP_L1_SUB_STATE
+
+config MAINBOARD_DIR
+	string
+	default "foxconn/g41s-k"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "G41S-K"
+
+config MAX_CPUS
+	int
+	default 4
+
+endif # BOARD_FOXCONN_G41S_K

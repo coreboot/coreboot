@@ -1,8 +1,9 @@
 config PAYLOAD_GRUB2
 	bool "GRUB2"
+	depends on ARCH_X86 || ARCH_ARM
 	help
 	  Select this option if you want to build a coreboot image
 	  with a GRUB2 payload. If you don't know what this is
 	  about, just leave it enabled.
 
-	  See http://coreboot.org/Payloads for more information.
+	  See https://coreboot.org/Payloads for more information.

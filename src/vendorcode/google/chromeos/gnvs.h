@@ -16,6 +16,8 @@
 #ifndef __VENDORCODE_GOOGLE_CHROMEOS_GNVS_H
 #define __VENDORCODE_GOOGLE_CHROMEOS_GNVS_H
 
+#include <compiler.h>
+
 #define BOOT_REASON_OTHER	0
 #define BOOT_REASON_S3DIAG	9
 
@@ -57,7 +59,7 @@ typedef struct {
 	u32	ramoops_base;	// dbe ramoops base address
 	u32	ramoops_len;	// dc2 ramoops length
 	u8	pad[314];	// dc6-eff
-} __attribute__((packed)) chromeos_acpi_t;
+} __packed chromeos_acpi_t;
 
 extern chromeos_acpi_t *vboot_data;
 void chromeos_init_vboot(chromeos_acpi_t *chromeos);

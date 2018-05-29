@@ -111,18 +111,38 @@ config ROMCC
 	bool
 	default n
 
-config LATE_CBMEM_INIT
+config CBMEM_TOP_BACKUP
 	def_bool n
 	help
+	  Platform implements non-volatile storage to cache cbmem_top()
+	  over stage transitions and optionally also over S3 suspend.
+
+config LATE_CBMEM_INIT
+	def_bool n
+	select CBMEM_TOP_BACKUP
+	help
 	  Enable this in chipset's Kconfig if northbridge does not implement
-	  early get_top_of_ram() call for romstage. CBMEM tables will be
-	  allocated late in ramstage, after PCI devices resources are known.
+	  early cbmem_top() call for romstage. CBMEM tables will be allocated
+	  late in ramstage, after PCI devices resources are known.
+
+	  WARNING: Late CBMEM initialization is deprecated. Platforms that
+	  don't support early CBMEM initialization will be removed after
+	  the release of coreboot 4.7.
 
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0xc00
 	help
 	  Increase this value if preram cbmem console is getting truncated
+
+config EARLY_EBDA_INIT
+	bool
+	default n
+	help
+	  Initialize BIOS EBDA area early in romstage to allow bootloader to
+	  use this region for storing data which can be available across
+	  various stages. If user is selecting this option then its users
+	  responsibility to perform EBDA initialization call during romstage.
 
 config PC80_SYSTEM
 	bool
@@ -173,6 +193,9 @@ config IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS
 	bool
 	default n
 
+config HPET_ADDRESS_OVERRIDE
+	def_bool n
+
 config HPET_ADDRESS
 	hex
 	default 0xfed00000 if !HPET_ADDRESS_OVERRIDE
@@ -201,6 +224,7 @@ config VERSTAGE_ADDR
 config POSTCAR_STAGE
 	def_bool n
 	select NO_CAR_GLOBAL_MIGRATION
+	select RELOCATABLE_MODULES
 
 config VERSTAGE_DEBUG_SPINLOOP
 	bool
@@ -241,3 +265,50 @@ config SKIP_MAX_REBOOT_CNT_CLEAR
 	  Set to allow the payload to control normal/fallback image recovery.
 	  Note that it is the responsibility of the payload to reset the
 	  normal boot bit to 1 after each successsful boot.
+
+config ACPI_CPU_STRING
+	string
+	default "\\_PR.CP%02d"
+	depends on HAVE_ACPI_TABLES
+	help
+	  Sets the ACPI name string in the processor scope as written by
+	  the acpigen function. Default is \_PR.CPxx. Note that you need
+	  the \ escape character in the string.
+
+config COLLECT_TIMESTAMPS_NO_TSC
+	bool
+	default n
+	depends on COLLECT_TIMESTAMPS
+	help
+	  Use a non-TSC platform-dependent source for timestamps.
+
+config COLLECT_TIMESTAMPS_TSC
+	bool
+	default y if !COLLECT_TIMESTAMPS_NO_TSC
+	default n
+	depends on COLLECT_TIMESTAMPS
+	help
+	  Use the TSC as the timestamp source.
+
+config PAGING_IN_CACHE_AS_RAM
+	bool
+	default n
+	depends on ARCH_X86
+	help
+	  Chipsets scan select this option to preallocate area in cache-as-ram
+	  for storing paging data structures. PAE paging is currently the
+	  only thing being supported.
+
+config NUM_CAR_PAGE_TABLE_PAGES
+	int
+	default 5
+	depends on PAGING_IN_CACHE_AS_RAM
+	help
+	  The number of 4KiB pages that should be pre-allocated for page tables.
+
+# Provide the interrupt handlers to every stage. Not all
+# stages may take advantage.
+config IDT_IN_EVERY_STAGE
+	bool
+	default n
+	depends on ARCH_X86

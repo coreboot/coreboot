@@ -1,7 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2015 - 2017 Intel Corp.
+ * Copyright (C) 2017 Siemens AG
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  * (Written by Andrey Petrov <andrey.petrov@intel.com> for Intel Corp.)
  *
@@ -19,36 +20,74 @@
 #include <arch/acpi.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mp.h>
+#include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <intelblocks/acpi.h>
+#include <intelblocks/fast_spi.h>
+#include <intelblocks/p2sb.h>
+#include <intelblocks/msr.h>
+#include <intelblocks/xdci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <intelblocks/acpi.h>
+#include <intelblocks/cpulib.h>
 #include <intelblocks/itss.h>
+#include <intelblocks/pmclib.h>
 #include <romstage_handoff.h>
 #include <soc/iomap.h>
 #include <soc/itss.h>
-#include <soc/cpu.h>
-#include <soc/flash_ctrlr.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <spi-generic.h>
+#include <soc/cpu.h>
 #include <soc/pm.h>
-#include <soc/p2sb.h>
 #include <soc/systemagent.h>
 
 #include "chip.h"
 
-static void *vbt;
-static struct region_device vbt_rdev;
-
-static const char *soc_acpi_name(struct device *dev)
+const char *soc_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		return "PCI0";
+
+	if (dev->path.type == DEVICE_PATH_USB) {
+		switch (dev->path.usb.port_type) {
+		case 0:
+			/* Root Hub */
+			return "RHUB";
+		case 2:
+			/* USB2 ports */
+			switch (dev->path.usb.port_id) {
+			case 0: return "HS01";
+			case 1: return "HS02";
+			case 2: return "HS03";
+			case 3: return "HS04";
+			case 4: return "HS05";
+			case 5: return "HS06";
+			case 6: return "HS07";
+			case 7: return "HS08";
+			}
+			break;
+		case 3:
+			/* USB3 ports */
+			switch (dev->path.usb.port_id) {
+			case 0: return "SS01";
+			case 1: return "SS02";
+			case 2: return "SS03";
+			case 3: return "SS04";
+			case 4: return "SS05";
+			case 5: return "SS06";
+			}
+			break;
+		}
+		return NULL;
+	}
 
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return NULL;
@@ -108,25 +147,13 @@ static const char *soc_acpi_name(struct device *dev)
 		return "SDIO";
 	/* PCIe */
 	case PCH_DEVFN_PCIE1:
+		return "RP03";
+	case PCH_DEVFN_PCIE5:
 		return "RP01";
 	}
 
 	return NULL;
 }
-
-static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
-{
-	if (!vendor || !device)
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				pci_read_config32(dev, PCI_VENDOR_ID));
-	else
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				(device << 16) | vendor);
-}
-
-struct pci_operations soc_pci_ops = {
-	.set_subsystem = &pci_set_subsystem
-};
 
 static void pci_domain_set_resources(device_t dev)
 {
@@ -139,7 +166,6 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init = NULL,
 	.scan_bus = pci_domain_scan_bus,
-	.ops_pci_bus = pci_bus_default_ops,
 	.acpi_name = &soc_acpi_name,
 };
 
@@ -219,7 +245,11 @@ static void set_power_limits(void)
 	uint32_t power_unit;
 	uint32_t tdp, min_power, max_power;
 	uint32_t pl2_val;
-	uint32_t *rapl_mmio_reg;
+
+	if (IS_ENABLED(CONFIG_APL_SKIP_SET_POWER_LIMITS)) {
+		printk(BIOS_INFO, "Skip the RAPL settings.\n");
+		return;
+	}
 
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
@@ -272,22 +302,39 @@ static void set_power_limits(void)
 	printk(BIOS_INFO, "RAPL PL2 %d.%dW\n", pl2_val / power_unit,
 				100 * (pl2_val % power_unit) / power_unit);
 
-	/* Get the MMIO address */
-	rapl_mmio_reg = (void *)(uintptr_t) (MCH_BASE_ADDR + MCHBAR_RAPL_PPL);
-
 	/* Setting RAPL MMIO register for Power limits.
 	* RAPL driver is using MSR instead of MMIO.
 	* So, disabled LIMIT_EN bit for MMIO. */
-	write32(rapl_mmio_reg, limit.lo & ~(PKG_POWER_LIMIT_EN));
-	write32(rapl_mmio_reg + 1, limit.hi & ~(PKG_POWER_LIMIT_EN));
+	MCHBAR32(MCHBAR_RAPL_PPL) = limit.lo & ~PKG_POWER_LIMIT_EN;
+	MCHBAR32(MCHBAR_RAPL_PPL + 4) =  limit.hi & ~PKG_POWER_LIMIT_EN;
+}
+
+/* Overwrites the SCI IRQ if another IRQ number is given by device tree. */
+static void set_sci_irq(void)
+{
+	static struct soc_intel_apollolake_config *cfg;
+	struct device *dev = SA_DEV_ROOT;
+	uint32_t scis;
+
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
+		return;
+	}
+
+	cfg = dev->chip_info;
+
+	/* Change only if a device tree entry exists. */
+	if (cfg->sci_irq) {
+		scis = soc_read_sci_irq_select();
+		scis &= ~SCI_IRQ_SEL;
+		scis |= (cfg->sci_irq << SCI_IRQ_ADJUST) & SCI_IRQ_SEL;
+		soc_write_sci_irq_select(scis);
+	}
 }
 
 static void soc_init(void *data)
 {
 	struct global_nvs_t *gnvs;
-
-	/* Save VBT info and mapping */
-	vbt = vbt_get(&vbt_rdev);
 
 	/* Snapshot the current GPIO IRQ polarities. FSP is setting a
 	 * default policy that doesn't honor boards' requirements. */
@@ -314,17 +361,20 @@ static void soc_init(void *data)
 
 	/* Set RAPL MSR for Package power limits*/
 	set_power_limits();
+
+	/*
+	* FSP-S routes SCI to IRQ 9. With the help of this function you can
+	* select another IRQ for SCI.
+	*/
+	set_sci_irq();
 }
 
 static void soc_final(void *data)
 {
-	if (vbt)
-		rdev_munmap(&vbt_rdev, vbt);
-
 	/* Disable global reset, just in case */
-	global_reset_enable(0);
+	pmc_global_reset_enable(0);
 	/* Make sure payload/OS can't trigger global reset */
-	global_reset_lock();
+	pmc_global_reset_lock();
 }
 
 static void disable_dev(struct device *dev, FSP_S_CONFIG *silconfig)
@@ -446,69 +496,13 @@ static void parse_devicetree(FSP_S_CONFIG *silconfig)
 	}
 }
 
-void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
+static void apl_fsp_silicon_init_params_cb(struct soc_intel_apollolake_config
+	*cfg, FSP_S_CONFIG *silconfig)
 {
-	FSP_S_CONFIG *silconfig = &silupd->FspsConfig;
-	static struct soc_intel_apollolake_config *cfg;
+#if !IS_ENABLED(CONFIG_SOC_INTEL_GLK) /* GLK FSP does not have these
+					 fields in FspsUpd.h yet */
 	uint8_t port;
 
-	/* Load VBT before devicetree-specific config. */
-	silconfig->GraphicsConfigPtr = (uintptr_t)vbt;
-
-	struct device *dev = SA_DEV_ROOT;
-
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
-		return;
-	}
-
-	cfg = dev->chip_info;
-
-	/* Parse device tree and disable unused device*/
-	parse_devicetree(silconfig);
-
-	silconfig->PcieRpClkReqNumber[0] = cfg->pcie_rp0_clkreq_pin;
-	silconfig->PcieRpClkReqNumber[1] = cfg->pcie_rp1_clkreq_pin;
-	silconfig->PcieRpClkReqNumber[2] = cfg->pcie_rp2_clkreq_pin;
-	silconfig->PcieRpClkReqNumber[3] = cfg->pcie_rp3_clkreq_pin;
-	silconfig->PcieRpClkReqNumber[4] = cfg->pcie_rp4_clkreq_pin;
-	silconfig->PcieRpClkReqNumber[5] = cfg->pcie_rp5_clkreq_pin;
-
-	if (cfg->emmc_tx_cmd_cntl != 0)
-		silconfig->EmmcTxCmdCntl = cfg->emmc_tx_cmd_cntl;
-	if (cfg->emmc_tx_data_cntl1 != 0)
-		silconfig->EmmcTxDataCntl1 = cfg->emmc_tx_data_cntl1;
-	if (cfg->emmc_tx_data_cntl2 != 0)
-		silconfig->EmmcTxDataCntl2 = cfg->emmc_tx_data_cntl2;
-	if (cfg->emmc_rx_cmd_data_cntl1 != 0)
-		silconfig->EmmcRxCmdDataCntl1 = cfg->emmc_rx_cmd_data_cntl1;
-	if (cfg->emmc_rx_strobe_cntl != 0)
-		silconfig->EmmcRxStrobeCntl = cfg->emmc_rx_strobe_cntl;
-	if (cfg->emmc_rx_cmd_data_cntl2 != 0)
-		silconfig->EmmcRxCmdDataCntl2 = cfg->emmc_rx_cmd_data_cntl2;
-
-	silconfig->LPSS_S0ixEnable = cfg->lpss_s0ix_enable;
-
-	/* Disable monitor mwait since it is broken due to a hardware bug
-	 * without a fix
-	 */
-	silconfig->MonitorMwaitEnable = 0;
-
-	silconfig->SkipMpInit = 1;
-
-	/* Disable setting of EISS bit in FSP. */
-	silconfig->SpiEiss = 0;
-
-	/* Disable FSP from locking access to the RTC NVRAM */
-	silconfig->RtcLock = 0;
-
-	/* Enable Audio clk gate and power gate */
-	silconfig->HDAudioClkGate = cfg->hdaudio_clk_gate_enable;
-	silconfig->HDAudioPwrGate = cfg->hdaudio_pwr_gate_enable;
-	/* Bios config lockdown Audio clk and power gate */
-	silconfig->BiosCfgLockDown = cfg->hdaudio_bios_config_lockdown;
-
-	/* USB2 eye diagram settings per port */
 	for (port = 0; port < APOLLOLAKE_USB2_PORT_MAX; port++) {
 		if (cfg->usb2eye[port].Usb20PerPortTxPeHalf != 0)
 			silconfig->PortUsb20PerPortTxPeHalf[port] =
@@ -538,7 +532,111 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 			silconfig->PortUsb20HsNpreDrvSel[port] =
 				cfg->usb2eye[port].Usb20HsNpreDrvSel;
 	}
+#endif
+}
 
+static void glk_fsp_silicon_init_params_cb(
+	struct soc_intel_apollolake_config *cfg, FSP_S_CONFIG *silconfig)
+{
+#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+	silconfig->Gmm = 0;
+
+	/* On Geminilake, we need to override the default FSP PCIe de-emphasis
+	 * settings using the device tree settings. This is because PCIe
+	 * de-emphasis is enabled by default and Thunderpeak PCIe WiFi detection
+	 * requires de-emphasis disabled. If we make this change common to both
+	 * Apollolake and Geminilake, then we need to add mainboard device tree
+	 * de-emphasis settings of 1 to Apollolake systems.
+	 */
+	memcpy(silconfig->PcieRpSelectableDeemphasis,
+		cfg->pcie_rp_deemphasis_enable,
+		sizeof(silconfig->PcieRpSelectableDeemphasis));
+	/*
+	 * FSP does not know what the clock requirements are for the
+	 * device on SPI bus, hence it should not modify what coreboot
+	 * has set up. Hence skipping in FSP.
+	 */
+	silconfig->SkipSpiPCP = 1;
+#endif
+}
+
+void __weak mainboard_devtree_update(struct device *dev)
+{
+       /* Override dev tree settings per board */
+}
+
+void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
+{
+	FSP_S_CONFIG *silconfig = &silupd->FspsConfig;
+	static struct soc_intel_apollolake_config *cfg;
+
+	/* Load VBT before devicetree-specific config. */
+	silconfig->GraphicsConfigPtr = (uintptr_t)vbt_get();
+
+	struct device *dev = SA_DEV_ROOT;
+
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
+		return;
+	}
+
+	mainboard_devtree_update(dev);
+
+	cfg = dev->chip_info;
+
+	/* Parse device tree and disable unused device*/
+	parse_devicetree(silconfig);
+
+	memcpy(silconfig->PcieRpClkReqNumber, cfg->pcie_rp_clkreq_pin,
+	       sizeof(silconfig->PcieRpClkReqNumber));
+
+	memcpy(silconfig->PcieRpHotPlug, cfg->pcie_rp_hotplug_enable,
+	       sizeof(silconfig->PcieRpHotPlug));
+
+	if (cfg->emmc_tx_cmd_cntl != 0)
+		silconfig->EmmcTxCmdCntl = cfg->emmc_tx_cmd_cntl;
+	if (cfg->emmc_tx_data_cntl1 != 0)
+		silconfig->EmmcTxDataCntl1 = cfg->emmc_tx_data_cntl1;
+	if (cfg->emmc_tx_data_cntl2 != 0)
+		silconfig->EmmcTxDataCntl2 = cfg->emmc_tx_data_cntl2;
+	if (cfg->emmc_rx_cmd_data_cntl1 != 0)
+		silconfig->EmmcRxCmdDataCntl1 = cfg->emmc_rx_cmd_data_cntl1;
+	if (cfg->emmc_rx_strobe_cntl != 0)
+		silconfig->EmmcRxStrobeCntl = cfg->emmc_rx_strobe_cntl;
+	if (cfg->emmc_rx_cmd_data_cntl2 != 0)
+		silconfig->EmmcRxCmdDataCntl2 = cfg->emmc_rx_cmd_data_cntl2;
+
+	silconfig->LPSS_S0ixEnable = cfg->lpss_s0ix_enable;
+
+	/* Disable monitor mwait since it is broken due to a hardware bug
+	 * without a fix. Specific to Apollolake.
+	 */
+	if (!IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+		silconfig->MonitorMwaitEnable = 0;
+
+	silconfig->SkipMpInit = 1;
+
+	/* Disable setting of EISS bit in FSP. */
+	silconfig->SpiEiss = 0;
+
+	/* Disable FSP from locking access to the RTC NVRAM */
+	silconfig->RtcLock = 0;
+
+	/* Enable Audio clk gate and power gate */
+	silconfig->HDAudioClkGate = cfg->hdaudio_clk_gate_enable;
+	silconfig->HDAudioPwrGate = cfg->hdaudio_pwr_gate_enable;
+	/* Bios config lockdown Audio clk and power gate */
+	silconfig->BiosCfgLockDown = cfg->hdaudio_bios_config_lockdown;
+	if (IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+		glk_fsp_silicon_init_params_cb(cfg, silconfig);
+	else
+		apl_fsp_silicon_init_params_cb(cfg, silconfig);
+
+	/* Enable xDCI controller if enabled in devicetree and allowed */
+	dev = dev_find_slot(0, PCH_DEVFN_XDCI);
+	if (!xdci_can_enable())
+		dev->enabled = 0;
+	silconfig->UsbOtg = dev->enabled;
 }
 
 struct chip_operations soc_intel_apollolake_ops = {
@@ -551,7 +649,7 @@ struct chip_operations soc_intel_apollolake_ops = {
 static void drop_privilege_all(void)
 {
 	/* Drop privilege level on all the CPUs */
-	if (mp_run_on_all_cpus(&enable_untrusted_mode, 1000) < 0)
+	if (mp_run_on_all_cpus(&cpu_enable_untrusted_mode, NULL, 1000) < 0)
 		printk(BIOS_ERR, "failed to enable untrusted mode\n");
 }
 
@@ -578,7 +676,7 @@ void platform_fsp_notify_status(enum fsp_notify_phase phase)
  */
 static void spi_flash_init_cb(void *unused)
 {
-	spi_flash_init();
+	fast_spi_init();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, spi_flash_init_cb, NULL);

@@ -34,7 +34,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-pragma Restrictions (No_Exception_Propagation);
 pragma Restrictions (No_Exception_Registration);
 
 pragma Restrictions (No_Implicit_Dynamic_Code);

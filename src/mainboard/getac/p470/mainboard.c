@@ -58,7 +58,7 @@ static void pcie_limit_power(void)
 	// machine. It should set the slot numbers and enable power
 	// limitation for the PCIe slots.
 
-	device_t dev;
+	struct device *dev;
 
 	dev = dev_find_slot(0, PCI_DEVFN(28,0));
 	if (dev) pci_write_config32(dev, 0x54, 0x0010a0e0);
@@ -75,7 +75,7 @@ static void pcie_limit_power(void)
 }
 
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	ec_enable();
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_TXT_STRETCH, 0, 3);
@@ -83,7 +83,7 @@ static void mainboard_init(device_t dev)
 
 // mainboard_enable is executed as first thing after
 // enumerate_buses(). Is there no mainboard_init()?
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;

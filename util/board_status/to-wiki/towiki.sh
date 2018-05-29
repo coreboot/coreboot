@@ -19,7 +19,7 @@ while read line; do
 		commit=`echo $i | cut -d/ -f3`
 		datetime_path=`echo $i | cut -d/ -f4`
 		datetime=`echo $datetime_path | tr _ :`
-		datetime_human=`LC_ALL=C TZ=UTC date --date="$datetime"`
+		datetime_human=`LC_ALL=C TZ=UTC0 date --date="$datetime"`
 		upstream=`grep "^Upstream revision:" $vendor_board/$commit/$datetime_path/revision.txt |cut -d: -f2-`
 		upstream=`git log -1 --format=%H $upstream`
 		if ! echo "$have"| grep  "^$vendor_board:" > /dev/null; then
@@ -434,7 +434,7 @@ EOF
 				lastgood_diff_hex="0${lastgood_diff_hex}"
 			fi
 			cell_bgcolor="#${lastgood_diff_hex}ff00"
-			echo "| style=\"background:${cell_bgcolor}\" | [[#$vendor/$board|$lastgood]]"
+			echo "| style=\"background:${cell_bgcolor}\" | [[#$venboard|$lastgood]]"
 		fi
 
 		echo "| $northbridge_nice"

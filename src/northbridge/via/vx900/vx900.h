@@ -18,13 +18,9 @@
 
 #define VX900_ACPI_IO_BASE		0x0400
 
-#define VX900_NB_IOAPIC_ID		0x2
-#define VX900_NB_IOAPIC_BASE		0xfecc000
-
-#define VX900_SB_IOAPIC_ID		0x1
-#define VX900_SB_IOAPIC_BASE		0xfec0000
-
 #define SMBUS_IO_BASE	0x500
+
+#define VX900_MMCONFIG_MBAR		0xbc
 
 /* The maximum number of DIMM slots that the VX900 supports */
 #define VX900_MAX_DIMM_SLOTS 2
@@ -35,7 +31,10 @@
 
 #include <console/console.h>
 
-u32 chrome9hd_fb_size(void);
+u32 vx900_get_tolm(void);
+void vx900_set_chrome9hd_fb_size(u32 size_mb);
+u8 vx900_get_chrome9hd_fb_pow(void);
+u32 vx900_get_chrome9hd_fb_size(void);
 u8 vx900_int15_get_5f18_bl(void);
 uint64_t get_uma_memory_base(void);
 

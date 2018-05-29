@@ -102,7 +102,10 @@ int printk(int msg_level, const char *fmt, ...)
 	va_list args;
 	int i;
 
-	printf ("<%d> ", msg_level);
+	putchar('<');
+	putchar('0' + msg_level);
+	putchar('>');
+	putchar(' ');
 	va_start(args, fmt);
 	i = vprintf(fmt, args);
 	va_end(args);

@@ -47,7 +47,8 @@ HOSTCXX:=CCC_CXX="$(HOSTCXX)" $(CXX)
 ROMCC=CCC_CC="$(ROMCC_BIN)" $(CC)
 endif
 
-COREBOOT_STANDARD_STAGES := bootblock verstage romstage ramstage
+COREBOOT_STANDARD_STAGES := decompressor bootblock verstage romstage ramstage
+MAP-decompressor := bootblock
 
 ARCHDIR-i386	:= x86
 ARCHDIR-x86_32	:= x86
@@ -79,11 +80,13 @@ CFLAGS_power8	+=
 # for an example).
 # (If you absolutely need a larger stack frame and are 100% sure it cannot
 # cause problems, you can whitelist it with #pragma diagnostic.)
+ifeq ($(CONFIG_COMPILER_GCC),y)
 CFLAGS_arm	+= -Wstack-usage=1536
 CFLAGS_arm64	+= -Wstack-usage=1536
 CFLAGS_mips	+= -Wstack-usage=1536
 CFLAGS_riscv	+= -Wstack-usage=1536
 CFLAGS_power8	+= -Wstack-usage=1536
+endif
 
 toolchain_to_dir = \
 	$(foreach arch,$(ARCH_SUPPORTED),\
@@ -118,6 +121,7 @@ define create_class_compiler
 $(if $(2),,$(warning *** The toolchain architecture for $(1) is unknown.) \
 	$(error Check your .config file for CONFIG_ARCH_$(1)_* settings))
 CC_$(1) := $(CC_$(2))
+GCC_$(1) := $(GCC_CC_$(2))
 LD_$(1) := $(LD_$(2))
 NM_$(1) := $(NM_$(2))
 AR_$(1) := $(AR_$(2))
@@ -127,7 +131,7 @@ OBJDUMP_$(1) := $(OBJDUMP_$(2))
 STRIP_$(1) := $(STRIP_$(2))
 READELF_$(1) := $(READELF_$(2))
 CFLAGS_$(1) = $$(CFLAGS_common) $$(CFLAGS_$(2))
-ADAFLAGS_$(1) = --RTS=$$(obj)/libgnat-$(2)/ $$(ADAFLAGS_common) $$(ADAFLAGS_$(2))
+ADAFLAGS_$(1) = --RTS=$$(obj)/libgnat-$(2)/ $$(ADAFLAGS_common) $$(GCC_CFLAGS_$(2))
 CPPFLAGS_$(1) = $$(CPPFLAGS_common) $$(CPPFLAGS_$(2)) -D__ARCH_$(2)__
 COMPILER_RT_$(1) := $$(COMPILER_RT_$(2))
 COMPILER_RT_FLAGS_$(1) := $$(COMPILER_RT_FLAGS_$(2))

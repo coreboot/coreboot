@@ -80,17 +80,35 @@ static void add_fixed_resources(struct device *dev, int index)
 	reserved_ram_resource(dev, index++, 0xc0000 >> 10,
 			      (0x100000 - 0xc0000) >> 10);
 
-#if CONFIG_CHROMEOS_RAMOOPS
+#if IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS)
 	reserved_ram_resource(dev, index++,
 			      CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
 			      CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
 #endif
 }
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
+
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+static const char *northbridge_acpi_name(const struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PCI0";
+
+	if (dev->path.type != DEVICE_PATH_PCI || dev->bus->secondary != 0)
+		return NULL;
+
+	switch (dev->path.pci.devfn) {
+	case PCI_DEVFN(0, 0):
+		return "MCHC";
+	}
+
+	return NULL;
+}
+#endif
 
 static struct device_operations pci_domain_ops = {
 	.read_resources = pci_domain_read_resources,
@@ -98,10 +116,12 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init = NULL,
 	.scan_bus = pci_domain_scan_bus,
-	.ops_pci_bus = pci_bus_default_ops,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.acpi_name = northbridge_acpi_name,
+#endif
 };
 
-static void mc_read_resources(device_t dev)
+static void mc_read_resources(struct device *dev)
 {
 	uint32_t tseg_base;
 	uint64_t TOUUD;
@@ -156,18 +176,18 @@ static void mc_read_resources(device_t dev)
 
 u32 northbridge_get_tseg_base(void)
 {
-	const device_t dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 
 	return pci_read_config32(dev, TSEG) & ~1;
 }
 
-static void mc_set_resources(device_t dev)
+static void mc_set_resources(struct device *dev)
 {
 	/* And call the normal set_resources */
 	pci_dev_set_resources(dev);
 }
 
-static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void intel_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -299,7 +319,7 @@ static const struct pci_driver mc_driver_44 __pci_driver = {
 	.device = 0x0044,	/* Nehalem */
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }
@@ -312,7 +332,7 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus = 0,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {

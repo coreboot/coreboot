@@ -94,6 +94,8 @@ typedef struct ramctr_timing_st {
 	u32 tWTR;
 	u32 tRTP;
 	u32 tFAW;
+	u32 tCWL;
+	u32 tCMD;
 	/* Latencies in terms of clock cycles
 	 * They are saved separately as they are needed for DRAM MRS commands*/
 	u8 CAS;			/* CAS read latency */

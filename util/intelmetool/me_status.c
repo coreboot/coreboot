@@ -142,42 +142,41 @@ void intel_me_status(uint32_t hfs, uint32_t gmes)
 {
 	/* Check Current States */
 	printf("ME: FW Partition Table      : %s\n",
-	       ((hfs & 0x20) >> 5) ? "BAD" : "OK");
+		((hfs & 0x20) >> 5) ? "BAD" : "OK");
 	printf("ME: Bringup Loader Failure  : %s\n",
-	       ((hfs & 0x400) >> 10) ? "YES" : "NO");
+		((hfs & 0x400) >> 10) ? "YES" : "NO");
 	printf("ME: Firmware Init Complete  : %s\n",
-	       ((hfs & 0x200) >> 9) ? "YES" : "NO");
+		((hfs & 0x200) >> 9) ? "YES" : "NO");
 	printf("ME: Manufacturing Mode      : %s\n",
-	       ((hfs & 0x10) >> 4) ? "YES" : "NO");
+		((hfs & 0x10) >> 4) ? "YES" : "NO");
 	printf("ME: Boot Options Present    : %s\n",
-	       ((hfs & 0x1000000) >> 24) ? "YES" : "NO");
+		((hfs & 0x1000000) >> 24) ? "YES" : "NO");
 	printf("ME: Update In Progress      : %s\n",
-	       ((hfs & 0x800) >> 11) ? "YES" : "NO");
+		((hfs & 0x800) >> 11) ? "YES" : "NO");
 	printf("ME: Current Working State   : %s\n",
-	       me_cws_values[hfs & 0xf]);
+		me_cws_values[hfs & 0xf]);
 	printf("ME: Current Operation State : %s\n",
-	       me_opstate_values[(hfs & 0x1c0) >> 6]);
+		me_opstate_values[(hfs & 0x1c0) >> 6]);
 	printf("ME: Current Operation Mode  : %s\n",
-	       me_opmode_values[(hfs & 0xf0000) >> 16]);
+		me_opmode_values[(hfs & 0xf0000) >> 16]);
 	printf("ME: Error Code              : %s\n",
-	       me_error_values[(hfs & 0xf000) >> 12]);
+		me_error_values[(hfs & 0xf000) >> 12]);
 	printf("ME: Progress Phase          : %s\n",
-	       me_progress_values[(gmes & 0xf0000000) >> 28]);
+		me_progress_values[(gmes & 0xf0000000) >> 28]);
 	printf("ME: Power Management Event  : %s\n",
-	       me_pmevent_values[(gmes & 0xf000000) >> 24]);
+		me_pmevent_values[(gmes & 0xf000000) >> 24]);
 
 	printf("ME: Progress Phase State    : ");
 	switch ((gmes & 0xf0000000) >> 28) {
 	case ME_GMES_PHASE_ROM:		/* ROM Phase */
-		printf("%s",
-		       me_progress_rom_values[(gmes & 0xff0000) >> 16]);
+		printf("%s", me_progress_rom_values[(gmes & 0xff0000) >> 16]);
 		break;
 
 	case ME_GMES_PHASE_BUP:		/* Bringup Phase */
 		if ((gmes & 0xff0000) >> 16 < ARRAY_SIZE(me_progress_bup_values)
 		    && me_progress_bup_values[(gmes & 0xff0000) >> 16])
 			printf("%s",
-			       me_progress_bup_values[(gmes & 0xff0000) >> 16]);
+			    me_progress_bup_values[(gmes & 0xff0000) >> 16]);
 		else
 			printf("0x%02x", (gmes & 0xff0000) >> 16);
 		break;
@@ -186,7 +185,7 @@ void intel_me_status(uint32_t hfs, uint32_t gmes)
 		if ((gmes & 0xff0000) >> 16 < ARRAY_SIZE(me_progress_policy_values)
 		    && me_progress_policy_values[(gmes & 0xff0000) >> 16])
 			printf("%s",
-			       me_progress_policy_values[(gmes & 0xff0000) >> 16]);
+			    me_progress_policy_values[(gmes & 0xff0000) >> 16]);
 		else
 			printf("0x%02x", (gmes & 0xff0000) >> 16);
 		break;

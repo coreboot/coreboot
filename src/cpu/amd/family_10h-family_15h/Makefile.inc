@@ -1,4 +1,5 @@
 romstage-y += ../../x86/mtrr/earlymtrr.c
+romstage-y += ../car/post_cache_as_ram.c
 
 romstage-y += init_cpus.c
 

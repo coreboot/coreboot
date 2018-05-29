@@ -212,7 +212,7 @@ int int1a_handler(void)
 			break;
 		}
 
-#if CONFIG_REALMODE_DEBUG
+#if IS_ENABLED(CONFIG_REALMODE_DEBUG)
 		printk(BIOS_DEBUG, "0x%x: bus %d devfn 0x%x reg 0x%x val 0x%x\n",
 			     func, bus, devfn, reg, X86_ECX);
 #endif

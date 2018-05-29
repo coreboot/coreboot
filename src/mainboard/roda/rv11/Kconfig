@@ -35,10 +35,6 @@ config MAINBOARD_PART_NUMBER
 	default "Lizard RW11" if BOARD_RODA_RW11
 	default "Lizard RV11"
 
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf8000000 if USE_NATIVE_RAMINIT
-
 config MAX_CPUS
 	int
 	default 8

@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 /* Note: The contents of this file were borrowed from the coreboot source
- *       code which may be obtained from http://www.coreboot.org/.
+ *       code which may be obtained from https://www.coreboot.org/.
  *       Specifically, this code was obtained from LinuxBIOS version 1.1.8.
  */
 

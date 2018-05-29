@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * File taken from the Linux ast driver (v3.18.5)
- * Coreboot-specific includes added at top and/or contents modified
+ * coreboot-specific includes added at top and/or contents modified
  * as needed to function within the coreboot environment.
  *
  * This program is free software; you can redistribute it and/or modify

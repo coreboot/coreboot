@@ -1,2 +1,2 @@
 config BOARD_LENOVO_X201
-	bool "ThinkPad X201 / X201s / X201t"
+	bool "ThinkPad X201 / X201i / X201s / X201t"

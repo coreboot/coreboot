@@ -9030,9 +9030,9 @@ index c9e43fb80e3..5359a4e6ee5 100755
  # version to the per-target configury.
  case "$cpu_type" in
    aarch64 | alpha | arm | avr | bfin | cris | i386 | m32c | m68k | microblaze \
--  | mips | nios2 | pa | rs6000 | score | sparc | spu | tilegx | tilepro \
+-  | mips | nds32 | nios2 | pa | rs6000 | score | sparc | spu | tilegx | tilepro \
 -  | visium | xstormy16 | xtensa)
-+  | mips | nios2 | pa | riscv | rs6000 | score | sparc | spu | tilegx \
++  | mips | nds32 | nios2 | pa | riscv | rs6000 | score | sparc | spu | tilegx \
 +  | tilepro | visium | xstormy16 | xtensa)
      insn="nop"
      ;;
@@ -9063,9 +9063,9 @@ index 33f9a0ecdc6..673fb1bb891 100644
  # version to the per-target configury.
  case "$cpu_type" in
    aarch64 | alpha | arm | avr | bfin | cris | i386 | m32c | m68k | microblaze \
--  | mips | nios2 | pa | rs6000 | score | sparc | spu | tilegx | tilepro \
+-  | mips | nds32 | nios2 | pa | rs6000 | score | sparc | spu | tilegx | tilepro \
 -  | visium | xstormy16 | xtensa)
-+  | mips | nios2 | pa | riscv | rs6000 | score | sparc | spu | tilegx \
++  | mips | nds32 | nios2 | pa | riscv | rs6000 | score | sparc | spu | tilegx \
 +  | tilepro | visium | xstormy16 | xtensa)
      insn="nop"
      ;;

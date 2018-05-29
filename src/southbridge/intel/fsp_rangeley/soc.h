@@ -50,7 +50,7 @@
 #ifndef __ACPI__
 #define DEBUG_PERIODIC_SMIS 0
 
-#if defined (__SMM__) && !defined(__ASSEMBLER__)
+#if defined(__SMM__) && !defined(__ASSEMBLER__)
 void intel_soc_finalize_smm(void);
 #endif
 
@@ -60,12 +60,12 @@ void intel_soc_finalize_smm(void);
 int soc_silicon_revision(void);
 int soc_silicon_type(void);
 int soc_silicon_supported(int type, int rev);
-void soc_enable(device_t dev);
+void soc_enable(struct device *dev);
 
 #include <arch/acpi.h>
 void acpi_fill_in_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt);
 
-#if CONFIG_ELOG
+#if IS_ENABLED(CONFIG_ELOG)
 void soc_log_state(void);
 #endif
 #else
@@ -175,21 +175,6 @@ void rangeley_sb_early_initialization(void);
 #define I2C_EN			(1 << 2)
 #define SMB_SMI_EN		(1 << 1)
 #define HST_EN			(1 << 0)
-
-/* SMBus I/O bits. */
-#define SMBHSTSTAT		0x0
-#define SMBHSTCTL		0x2
-#define SMBHSTCMD		0x3
-#define SMBXMITADD		0x4
-#define SMBHSTDAT0		0x5
-#define SMBHSTDAT1		0x6
-#define SMBBLKDAT		0x7
-#define SMBTRNSADD		0x9
-#define SMBSLVDATA		0xa
-#define SMLINK_PIN_CTL		0xe
-#define SMBUS_PIN_CTL		0xf
-
-#define SMBUS_TIMEOUT		(10 * 1000 * 100)
 
 /* Root Complex Register Block */
 #define RCBA		0xf0

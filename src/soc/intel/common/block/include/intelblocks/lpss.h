@@ -22,9 +22,15 @@
 void lpss_reset_release(uintptr_t base);
 
 /*
- * Update clock divider parameters. Clock frequency is
- * configured as SOC_INTEL_COMMON_LPSS_CLOCK_MHZ * (M / N)
+ * Update clock divider parameters. Clock frequency is dependent on source
+ * clock frequency of each IP block. Resulting clock will be src_freq * (M / N).
  */
 void lpss_clk_update(uintptr_t base, uint32_t clk_m_val, uint32_t clk_n_val);
+
+/* Check if controller is in reset. */
+bool lpss_is_controller_in_reset(uintptr_t base);
+
+/* Read LPSS CLK register */
+uint32_t lpss_clk_read(uintptr_t base);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_LPSS_H */

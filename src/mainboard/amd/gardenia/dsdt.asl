@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015-2017 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,10 @@ DefinitionBlock (
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */
-	/* #include <arch/x86/acpi/debug.asl> */	/* Include global debug methods if needed */
+	/* #include <arch/x86/acpi/debug.asl> */	/* as needed */
+
+	/* global NVS and variables */
+	#include <globalnvs.asl>
 
 	/* Globals for the platform */
 	#include "acpi/mainboard.asl"
@@ -32,23 +35,23 @@ DefinitionBlock (
 	#include "acpi/usb_oc.asl"
 
 	/* PCI IRQ mapping for the Southbridge */
-	#include <southbridge/amd/pi/hudson/acpi/pcie.asl>
+	#include <pcie.asl>
 
 	/* Describe the processor tree (\_PR) */
-	#include <cpu/amd/pi/00670F00/acpi/cpu.asl>
+	#include <cpu.asl>
 
 	/* Contains the supported sleep states for this chipset */
-	#include <southbridge/amd/pi/hudson/acpi/sleepstates.asl>
+	#include <sleepstates.asl>
 
 	/* Contains the Sleep methods (WAK, PTS, GTS, etc.) */
 	#include "acpi/sleep.asl"
 
 	/* System Bus */
 	Scope(\_SB) { /* Start \_SB scope */
-	 	/* global utility methods expected within the \_SB scope */
+		/* global utility methods expected within the \_SB scope */
 		#include <arch/x86/acpi/globutil.asl>
 
-		/* Describe IRQ Routing mapping for this platform (within the \_SB scope) */
+		/* IRQ Routing mapping for this platform (in \_SB scope) */
 		#include "acpi/routing.asl"
 
 		Device(PWRB) {
@@ -58,24 +61,13 @@ DefinitionBlock (
 			Name(_STA, 0x0B)
 		}
 
-		Device(PCI0) {
-			/* Describe the AMD Northbridge */
-			#include <northbridge/amd/pi/00670F00/acpi/northbridge.asl>
-
-			/* Describe the AMD Fusion Controller Hub Southbridge */
-			#include <southbridge/amd/pi/hudson/acpi/fch.asl>
-		}
-
-		/* Describe PCI INT[A-H] for the Southbridge */
-		#include <southbridge/amd/pi/hudson/acpi/pci_int.asl>
-
-		/* Describe the devices in the Southbridge */
-		#include "acpi/carrizo_fch.asl"
+		/* Describe the SOC */
+		#include <soc.asl>
 
 	} /* End \_SB scope */
 
 	/* Describe SMBUS for the Southbridge */
-	#include <southbridge/amd/pi/hudson/acpi/smbus.asl>
+	#include <smbus.asl>
 
 	/* Define the General Purpose Events for the platform */
 	#include "acpi/gpe.asl"

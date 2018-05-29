@@ -41,7 +41,7 @@ project you're submitting the changes to. If you’re submitting code that
 you wrote that might be owned by your employer, make sure that your
 employer is aware and you are authorized to submit the code. For
 clarification, see the Developer's Certificate of Origin in the coreboot
-[Signed-off-by policy](http://www.coreboot.org/Development_Guidelines#Sign-off_Procedure).
+[Signed-off-by policy](https://www.coreboot.org/Development_Guidelines#Sign-off_Procedure).
 
 * Let non-trivial patches sit in a review state for at least 24 hours
 before submission. Remember that there are coreboot developers in timezones
@@ -205,7 +205,7 @@ would be a good reviewer, look in the MAINTAINERS file or git history of
 the files that you’ve changed, and add those people.
 
 * Familiarize yourself with the coreboot [commit message
-guidelines](http://www.coreboot.org/Git#Commit_messages), before pushing
+guidelines](https://www.coreboot.org/Git#Commit_messages), before pushing
 patches. This will help to keep annoying requests to fix your commit
 message to a minimum.
 

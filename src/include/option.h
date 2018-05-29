@@ -6,7 +6,7 @@
  * storage can be used. This will benefit machines without CMOS as well as those
  * without a battery-backed CMOS (e.g. some laptops).
  */
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 #include <pc80/mc146818rtc.h>
 #else
 #include <types.h>

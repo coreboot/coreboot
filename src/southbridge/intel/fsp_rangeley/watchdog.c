@@ -25,7 +25,7 @@
 
 void watchdog_off(void)
 {
-	device_t dev;
+	struct device *dev;
 	u32 value, abase;
 
 	/* Turn off the watchdog. */

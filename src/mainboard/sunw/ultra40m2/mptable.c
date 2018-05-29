@@ -45,7 +45,7 @@ static void *smp_write_config_table(void *v)
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
 	{
-		device_t dev;
+		struct device *dev;
 		struct resource *res;
 		uint32_t dword;
 
@@ -115,7 +115,7 @@ static void *smp_write_config_table(void *v)
 
 //Slot PCIE
 	for (j = 2; j < 8; j++) {
-		device_t dev;
+		struct device *dev;
 		dev = dev_find_slot(m->bus_mcp55, PCI_DEVFN(sbdn + 0x0a + j - 2 , 0));
 		if (!dev || !dev->enabled)
 			continue;
@@ -126,7 +126,7 @@ static void *smp_write_config_table(void *v)
 
 //Slot PCI 32
 	{
-		device_t dev;
+		struct device *dev;
 		dev = dev_find_slot(m->bus_mcp55, PCI_DEVFN(sbdn + 6 , 0));
 		if (dev && dev->enabled) {
 			for (i = 0; i < 4; i++)
@@ -146,7 +146,7 @@ static void *smp_write_config_table(void *v)
 
 	//Slot  PCIE
 		for (j = 2; j < 8; j++) {
-			device_t dev;
+			struct device *dev;
 			dev = dev_find_slot(m->bus_mcp55b, PCI_DEVFN(m->sbdnb + 0x0a + j - 2 , 0));
 			if (!dev || !dev->enabled)
 				continue;

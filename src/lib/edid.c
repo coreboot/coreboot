@@ -66,7 +66,7 @@ struct edid_context {
 	int seen_non_detailed_descriptor;
 	int warning_excessive_dotclock_correction;
 	int warning_zero_preferred_refresh;
-	int conformant;
+	enum edid_status conformant;
 };
 
 /* Stuff that isn't used anywhere but is nice to pretty-print while
@@ -93,9 +93,6 @@ static struct {
 } extra_info;
 
 static struct edid tmp_edid;
-
-static int vbe_valid;
-static struct lb_framebuffer edid_fb;
 
 static char *manufacturer_name(unsigned char *x)
 {
@@ -470,9 +467,11 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 			 * slots, seems to be specified by SPWG:
 			 * http://www.spwg.org/
 			 */
+			strcpy(result_edid->ascii_string, extract_string(x + 5,
+				&c->has_valid_string_termination,
+						EDID_ASCII_STRING_LENGTH));
 			printk(BIOS_SPEW, "ASCII string: %s\n",
-			       extract_string(x + 5,
-			       &c->has_valid_string_termination, 13));
+				result_edid->ascii_string);
 			return 1;
 		case 0xFF:
 			printk(BIOS_SPEW, "Serial number: %s\n",
@@ -1134,7 +1133,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	    .has_valid_range_descriptor = 1,
 	    .has_valid_max_dotclock = 1,
 	    .has_valid_string_termination = 1,
-	    .conformant = 1,
+	    .conformant = EDID_CONFORMANT,
 	};
 
 	dump_breakdown(edid);
@@ -1143,7 +1142,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 
 	if (!edid || memcmp(edid, "\x00\xFF\xFF\xFF\xFF\xFF\xFF\x00", 8)) {
 		printk(BIOS_SPEW, "No header found\n");
-		return 1;
+		return EDID_ABSENT;
 	}
 
 	if (manufacturer_name(edid + 0x08))
@@ -1485,11 +1484,12 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		if (c.nonconformant_digital_display ||
 		    !c.has_valid_string_termination ||
 		    !c.has_valid_descriptor_pad ||
-		    !c.has_preferred_timing)
-			c.conformant = 0;
-		if (!c.conformant)
+			!c.has_preferred_timing) {
+			c.conformant = EDID_NOT_CONFORMANT;
 			printk(BIOS_ERR,
 				"EDID block does NOT conform to EDID 1.4!\n");
+		}
+
 		if (c.nonconformant_digital_display)
 			printk(BIOS_ERR,
 			       "\tDigital display field contains garbage: %x\n",
@@ -1507,7 +1507,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		    !c.has_valid_string_termination ||
 		    !c.has_valid_descriptor_pad ||
 		    !c.has_preferred_timing) {
-			c.conformant = 0;
+			c.conformant = EDID_NOT_CONFORMANT;
 		}
 		/**
 		 * According to E-EDID (EDIDv1.3), has_name_descriptor and
@@ -1516,7 +1516,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		 * don't have them. As a workaround, we only print warning
 		 * messages.
 		 */
-		if (!c.conformant)
+		if (c.conformant == EDID_NOT_CONFORMANT)
 			printk(BIOS_ERR,
 				"EDID block does NOT conform to EDID 1.3!\n");
 		else if (!c.has_name_descriptor || !c.has_range_descriptor)
@@ -1542,11 +1542,11 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			   "\tDetailed block string not properly terminated\n");
 	} else if (c.claims_one_point_two) {
 		if (c.nonconformant_digital_display ||
-		    !c.has_valid_string_termination)
-			c.conformant = 0;
-		if (!c.conformant)
+			!c.has_valid_string_termination) {
+			c.conformant = EDID_NOT_CONFORMANT;
 			printk(BIOS_ERR,
 				"EDID block does NOT conform to EDID 1.2!\n");
+		}
 		if (c.nonconformant_digital_display)
 			printk(BIOS_ERR,
 			       "\tDigital display field contains garbage: %x\n",
@@ -1555,11 +1555,11 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			printk(BIOS_ERR,
 			   "\tDetailed block string not properly terminated\n");
 	} else if (c.claims_one_point_oh) {
-		if (c.seen_non_detailed_descriptor)
-			c.conformant = 0;
-		if (!c.conformant)
+		if (c.seen_non_detailed_descriptor) {
+			c.conformant = EDID_NOT_CONFORMANT;
 			printk(BIOS_ERR,
 				"EDID block does NOT conform to EDID 1.0!\n");
+		}
 		if (c.seen_non_detailed_descriptor)
 			printk(BIOS_ERR,
 				"\tHas descriptor blocks other than detailed timings\n");
@@ -1576,7 +1576,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	    !c.has_valid_descriptor_ordering ||
 	    !c.has_valid_range_descriptor ||
 	    !c.manufacturer_name_well_formed) {
-		c.conformant = 0;
+		c.conformant = EDID_NOT_CONFORMANT;
 		printk(BIOS_ERR, "EDID block does not conform at all!\n");
 		if (c.nonconformant_extension)
 			printk(BIOS_ERR,
@@ -1618,7 +1618,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	if (c.warning_zero_preferred_refresh)
 		printk(BIOS_ERR,
 		       "Warning: CVT block does not set preferred refresh rate\n");
-	return !c.conformant;
+	return c.conformant;
 }
 
 /*
@@ -1690,70 +1690,3 @@ void edid_set_framebuffer_bits_per_pixel(struct edid *edid, int fb_bpp,
 	edid->x_resolution = edid->bytes_per_line / (fb_bpp / 8);
 	edid->y_resolution = edid->mode.va;
 }
-
-/*
- * Take an edid, and create a framebuffer. Set vbe_valid to 1.
- */
-
-void set_vbe_mode_info_valid(const struct edid *edid, uintptr_t fb_addr)
-{
-	edid_fb.physical_address = fb_addr;
-	edid_fb.x_resolution = edid->x_resolution;
-	edid_fb.y_resolution = edid->y_resolution;
-	edid_fb.bytes_per_line = edid->bytes_per_line;
-	/* In the case of (e.g.) 24 framebuffer bits per pixel, the convention
-	 * nowadays seems to be to round it up to the nearest reasonable
-	 * boundary, because otherwise the byte-packing is hideous.
-	 * So, for example, in RGB with no alpha, the bytes are still
-	 * packed into 32-bit words, the so-called 32bpp-no-alpha mode.
-	 * Or, in 5:6:5 mode, the bytes are also packed into 32-bit words,
-	 * and in 4:4:4 mode, they are packed into 16-bit words.
-	 * Good call on the hardware guys part.
-	 * It's not clear we're covering all cases here, but
-	 * I'm not sure with grahpics you ever can.
-	 */
-	edid_fb.bits_per_pixel = edid->framebuffer_bits_per_pixel;
-	edid_fb.reserved_mask_pos = 0;
-	edid_fb.reserved_mask_size = 0;
-	switch (edid->framebuffer_bits_per_pixel) {
-	case 32:
-	case 24:
-		/* packed into 4-byte words */
-		edid_fb.reserved_mask_pos = 24;
-		edid_fb.reserved_mask_size = 8;
-		edid_fb.red_mask_pos = 16;
-		edid_fb.red_mask_size = 8;
-		edid_fb.green_mask_pos = 8;
-		edid_fb.green_mask_size = 8;
-		edid_fb.blue_mask_pos = 0;
-		edid_fb.blue_mask_size = 8;
-		break;
-	case 16:
-		/* packed into 2-byte words */
-		edid_fb.red_mask_pos = 11;
-		edid_fb.red_mask_size = 5;
-		edid_fb.green_mask_pos = 5;
-		edid_fb.green_mask_size = 6;
-		edid_fb.blue_mask_pos = 0;
-		edid_fb.blue_mask_size = 5;
-		break;
-	default:
-		printk(BIOS_SPEW, "%s: unsupported BPP %d\n", __func__,
-		       edid->framebuffer_bits_per_pixel);
-		return;
-	}
-
-	vbe_valid = 1;
-}
-
-#if IS_ENABLED(CONFIG_NATIVE_VGA_INIT_USE_EDID)
-int vbe_mode_info_valid(void)
-{
-	return vbe_valid;
-}
-
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
-{
-	*framebuffer = edid_fb;
-}
-#endif

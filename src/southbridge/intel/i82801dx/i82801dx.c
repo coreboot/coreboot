@@ -20,7 +20,7 @@
 #include <device/pci_ids.h>
 #include "i82801dx.h"
 
-void i82801dx_enable(device_t dev)
+void i82801dx_enable(struct device *dev)
 {
 	unsigned int index = 0;
 	uint8_t bHasDisableBit = 0;
@@ -28,7 +28,7 @@ void i82801dx_enable(device_t dev)
 
 //      all 82801dbm devices are in bus 0
 	unsigned int devfn = PCI_DEVFN(0x1f, 0);	// lpc
-	device_t lpc_dev = dev_find_slot(0, devfn);	// 0
+	struct device *lpc_dev = dev_find_slot(0, devfn);	// 0
 	if (!lpc_dev)
 		return;
 

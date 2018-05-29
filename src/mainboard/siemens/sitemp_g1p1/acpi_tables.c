@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
@@ -39,11 +40,11 @@ typedef struct {
 	u32	pcba;
 	u8  mpen;
 	u8 reserv[247];
-} __attribute__((packed)) global_vars_t;
+} __packed global_vars_t;
 
 static void acpi_write_gvars(global_vars_t *gvars)
 {
-	device_t dev;
+	struct device *dev;
 	struct resource *res;
 
 	memset((void *)gvars, 0, GLOBAL_VARS_SIZE);
@@ -65,7 +66,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	/* Write SB600 IOAPIC, only one */
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, 2,
 					   IO_APIC_ADDR, 0);
-#if !CONFIG_LINT01_CONVERSION
+#if !IS_ENABLED(CONFIG_LINT01_CONVERSION)
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
 						current, 0, 0, 2, 0);
 
@@ -85,7 +86,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-void mainboard_inject_dsdt(device_t device)
+void mainboard_inject_dsdt(struct device *device)
 {
 	global_vars_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, GLOBAL_VARS_SIZE);
 

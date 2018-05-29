@@ -183,6 +183,11 @@ Device (BAT)
 		} Else {
 			And (Local1, 0x7FFF, Local0)
 		}
+		If(LLess(Local0, 0x0352))
+		{
+			Store(0x0352, Local0)
+		}
+		Store (Local0, Index (PBST, 1))
 
 		/*
 		 * 2: BATTERY REMAINING CAPACITY

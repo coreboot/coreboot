@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2015-2018 Intel Corp.
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 #include <cbmem.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <fsp/api.h>
 #include <fsp/util.h>
 #include <inttypes.h>
 #include <lib.h>
@@ -38,9 +39,9 @@ const uint8_t fsp_nv_storage_guid[16] = {
 	0xb3, 0xdc, 0x27, 0x0b, 0x7b, 0xa9, 0xe4, 0xb0
 };
 
-const uint8_t smbios_memory_info_guid[16] = {
-	0x8c, 0x10, 0xa1, 0x01, 0xee, 0x9d, 0x84, 0x49,
-	0x88, 0xc3, 0xee, 0xe8, 0xc4, 0x9e, 0xfb, 0x89
+static const uint8_t uuid_fv_info[16] = {
+	0x2e, 0x72, 0x8e, 0x79, 0xb2, 0x15, 0x13, 0x4e,
+	0x8a, 0xe9, 0x6b, 0xa3, 0x0f, 0xf7, 0xf1, 0x67
 };
 
 /*
@@ -105,10 +106,14 @@ static void *fsp_hob_list_ptr CAR_GLOBAL;
 static void save_hob_list(int is_recovery)
 {
 	uint32_t *cbmem_loc;
+	const void *hob_list;
 	cbmem_loc = cbmem_add(CBMEM_ID_FSP_RUNTIME, sizeof(*cbmem_loc));
 	if (cbmem_loc == NULL)
 		die("Error: Could not add cbmem area for hob list.\n");
-	*cbmem_loc = (uintptr_t)fsp_get_hob_list();
+	hob_list = fsp_get_hob_list();
+	if (!hob_list)
+		die("Error: Could not locate hob list pointer.\n");
+	*cbmem_loc = (uintptr_t)hob_list;
 }
 
 ROMSTAGE_CBMEM_INIT_HOOK(save_hob_list);
@@ -167,6 +172,9 @@ int fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16])
 	const struct hob_resource *fsp_mem;
 	const void *hob_list = fsp_get_hob_list();
 
+	if (!hob_list)
+		return -1;
+
 	range_entry_init(re, 0, 0, 0);
 
 	fsp_mem = find_resource_hob_by_guid(hob_list, guid);
@@ -210,12 +218,84 @@ const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size)
 	return NULL;
 }
 
+static void display_fsp_version_info_hob(const void *hob, size_t size)
+{
+#if IS_ENABLED(CONFIG_DISPLAY_FSP_VERSION_INFO)
+	const FIRMWARE_VERSION_INFO *fvi;
+	const FIRMWARE_VERSION_INFO_HOB *fvih =
+			(FIRMWARE_VERSION_INFO_HOB *)hob;
+	int index, cnt;
+	char *str_ptr;
+
+	fvi = (void *)&fvih[1];
+	str_ptr = (char *)((uintptr_t)fvi +
+			 (fvih->Count * sizeof (FIRMWARE_VERSION_INFO)));
+	size -= sizeof(SMBIOS_STRUCTURE);
+
+	printk(BIOS_DEBUG, "Display FSP Version Info HOB \n");
+	for (index = 0; index < fvih->Count; index++) {
+		cnt = strlen(str_ptr);
+
+		/*  Don't show ingredient name and version if its all 0xFF */
+		if (fvi[index].Version.MajorVersion == 0xFF &&
+			fvi[index].Version.MajorVersion == 0xFF &&
+			fvi[index].Version.MajorVersion == 0xFF &&
+			fvi[index].Version.MajorVersion == 0xFF &&
+			fvi[index].VersionStringIndex == 0) {
+			str_ptr = (char *)((uintptr_t)str_ptr + cnt +
+					sizeof(uint8_t));
+			continue;
+		}
+		/*
+		 * Firmware Version String is consist of 2 informations
+		 * 1. Component Name: string type data holds FW type name.
+		 * 2. Version Information : Either a string type data or
+		 * numeric field holds FW version information.
+		 */
+		printk(BIOS_DEBUG, "%s = ", str_ptr);
+
+		if (!fvi[index].VersionStringIndex)
+			printk(BIOS_DEBUG, "%x.%x.%x.%x\n",
+					fvi[index].Version.MajorVersion,
+					fvi[index].Version.MinorVersion,
+					fvi[index].Version.Revision,
+					fvi[index].Version.BuildNumber);
+		else {
+			str_ptr = (char *)((uintptr_t)str_ptr + cnt +
+					sizeof(uint8_t));
+			cnt = strlen(str_ptr);
+			printk(BIOS_DEBUG, "%s\n", str_ptr);
+		}
+		str_ptr = (char *)((uintptr_t)str_ptr + cnt +
+				sizeof(uint8_t));
+	}
+#endif
+}
+
+void fsp_display_fvi_version_hob(void)
+{
+	const uint8_t *hob_uuid;
+	const struct hob_header *hob = fsp_get_hob_list();
+	size_t size;
+
+	if (!hob)
+		return;
+
+	for ( ; hob->type != HOB_TYPE_END_OF_HOB_LIST;
+			hob = fsp_next_hob(hob)) {
+		if (hob->type != HOB_TYPE_GUID_EXTENSION)
+			continue;
+
+		hob_uuid = hob_header_to_struct(hob);
+
+		if (fsp_guid_compare(hob_uuid, uuid_fv_info)) {
+			size = hob->length - (HOB_HEADER_LEN + 16);
+			display_fsp_version_info_hob(hob, size);
+		}
+	}
+}
+
 const void *fsp_find_nv_storage_data(size_t *size)
 {
 	return fsp_find_extension_hob_by_guid(fsp_nv_storage_guid, size);
-}
-
-const void *fsp_find_smbios_memory_info(size_t *size)
-{
-	return fsp_find_extension_hob_by_guid(smbios_memory_info_guid, size);
 }

@@ -17,6 +17,6 @@
 #ifndef NORTHBRIDGE_VIA_CN700_H
 #define NORTHBRIDGE_VIA_CN700_H
 
-extern unsigned int cn700_scan_root_bus(device_t root, unsigned int max);
+extern unsigned int cn700_scan_root_bus(struct device *root, unsigned int max);
 
 #endif /* NORTHBRIDGE_VIA_CN700_H */

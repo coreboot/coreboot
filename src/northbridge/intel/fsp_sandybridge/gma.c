@@ -19,6 +19,11 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <southbridge/intel/fsp_bd82x6x/nvs.h>
+#include <drivers/intel/gma/opregion.h>
+#include <drivers/intel/gma/intel_bios.h>
+
+#include <cbmem.h>
 
 #include "chip.h"
 #include "northbridge.h"
@@ -48,7 +53,21 @@ u32 map_oprom_vendev(u32 vendev)
 	return new_vendev;
 }
 
-static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+uintptr_t gma_get_gnvs_aslb(const void *gnvs)
+{
+	const global_nvs_t *gnvs_ptr = gnvs;
+	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
+}
+
+void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
+{
+	global_nvs_t *gnvs_ptr = gnvs;
+	if (gnvs_ptr)
+		gnvs_ptr->aslb = aslb;
+}
+
+static void gma_set_subsystem(struct device *dev, unsigned vendor,
+				unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -62,7 +81,7 @@ static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 const struct i915_gpu_controller_info *
 intel_gma_get_controller_info(void)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x2,0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x2,0));
 	if (!dev) {
 		return NULL;
 	}
@@ -70,7 +89,7 @@ intel_gma_get_controller_info(void)
 	return &chip->gfx;
 }
 
-static void gma_ssdt(device_t device)
+static void gma_ssdt(struct device *device)
 {
 	const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
 	if (!gfx) {
@@ -78,6 +97,59 @@ static void gma_ssdt(device_t device)
 	}
 
 	drivers_intel_gma_displays_ssdt_generate(gfx);
+}
+
+/* Enable SCI to ACPI _GPE._L06 */
+static void gma_enable_swsci(void)
+{
+	u16 reg16;
+
+	/* clear DMISCI status */
+	reg16 = inw(DEFAULT_PMBASE + TCO1_STS);
+	reg16 &= DMISCI_STS;
+	outw(DEFAULT_PMBASE + TCO1_STS, reg16);
+
+	/* clear acpi tco status */
+	outl(DEFAULT_PMBASE + GPE0_STS, TCOSCI_STS);
+
+	/* enable acpi tco scis */
+	reg16 = inw(DEFAULT_PMBASE + GPE0_EN);
+	reg16 |= TCOSCI_EN;
+	outw(DEFAULT_PMBASE + GPE0_EN, reg16);
+}
+
+static void gma_init(struct device *dev)
+{
+	pci_dev_init(dev);
+
+	gma_enable_swsci();
+	intel_gma_restore_opregion();
+}
+
+static unsigned long
+gma_write_acpi_tables(struct device *const dev,
+		      unsigned long current,
+		      struct acpi_rsdp *const rsdp)
+{
+	igd_opregion_t *opregion = (igd_opregion_t *)current;
+	global_nvs_t *gnvs;
+
+	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
+		return current;
+
+	current += sizeof(igd_opregion_t);
+
+	/* GNVS has been already set up */
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs) {
+		/* IGD OpRegion Base Address */
+		gma_set_gnvs_aslb(gnvs, (uintptr_t)opregion);
+	} else {
+		printk(BIOS_ERR, "Error: GNVS table not found.\n");
+	}
+
+	current = acpi_align_current(current);
+	return current;
 }
 
 static struct pci_operations gma_pci_ops = {
@@ -89,10 +161,11 @@ static struct device_operations gma_func0_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.acpi_fill_ssdt_generator = gma_ssdt,
-	.init			= pci_dev_init,
+	.init			= gma_init,
 	.scan_bus		= 0,
 	.enable			= 0,
 	.ops_pci		= &gma_pci_ops,
+	.write_acpi_tables	= gma_write_acpi_tables,
 };
 
 static const unsigned short gma_ids[] = {

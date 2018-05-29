@@ -76,6 +76,8 @@ chip northbridge/amd/agesa/family15tn/root_complex
 						register "hwm_fan1_seg2_speed_count" = "0x0e"
 						register "hwm_fan1_seg3_speed_count" = "0x07"
 						register "hwm_fan1_temp_map_sel" = "0x8c"
+						register "hwm_temp_sensor_type" = "0x08"
+
 						device pnp 4e.00 off end
 						device pnp 4e.01 on	# COM1
 							io 0x60 = 0x3f8
@@ -92,7 +94,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 							irq 0xf0 = 0x44 # PRT Mode Select Register
 						end
 						device pnp 4e.04 on	# Hardware Monitor
-							io 0x60 = 0x600
+							io 0x60 = 0x225	# Fintek datasheet says 0x295.
 							irq 0x70 = 0
 						end
 						device pnp 4e.05 on     # KBC

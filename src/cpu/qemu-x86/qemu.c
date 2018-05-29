@@ -25,7 +25,7 @@ static struct device_operations cpu_dev_ops = {
 	.init = qemu_cpu_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_ANY, 0 },
 	{ 0, 0 },
 };

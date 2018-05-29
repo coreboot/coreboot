@@ -10,15 +10,14 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 
-config TIMER_RDTSC
-	bool
-	default y
-	depends on ARCH_X86
-
 choice
 	prompt "Timer driver"
-	default TIMER_NONE
-	depends on !ARCH_X86
+	default TIMER_NONE if !ARCH_X86
+	default TIMER_RDTSC if ARCH_X86
+
+config TIMER_RDTSC
+	bool "x86 rdtsc"
+	depends on ARCH_X86
 
 config TIMER_NONE
 	bool "None"
@@ -45,6 +44,11 @@ config TIMER_IPQ40XX
 	help
 	  This is the timer driver for QCA IPQ40xx based
 	  platforms.
+
+config TIMER_ARM64_ARCH
+	bool "Architecture Timer for ARM64 platforms"
+	help
+	  The cntfrq register needs to have been pre-initialized.
 
 config TIMER_RK3288
 	bool "Timer for Rockchip RK3288"

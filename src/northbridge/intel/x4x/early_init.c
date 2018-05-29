@@ -17,7 +17,11 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include "iomap.h"
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)
 #include <southbridge/intel/i82801gx/i82801gx.h> /* DEFAULT_PMBASE */
+#else
+#include <southbridge/intel/i82801jx/i82801jx.h> /* DEFAULT_PMBASE */
+#endif
 #include <pc80/mc146818rtc.h>
 #include "x4x.h"
 #include <cbmem.h>
@@ -54,16 +58,31 @@ void x4x_early_init(void)
 	pci_write_config8(d0f0, D0F0_PAM(5), 0x33);
 	pci_write_config8(d0f0, D0F0_PAM(6), 0x33);
 
-	/* Enable internal GFX */
-	pci_write_config32(d0f0, D0F0_DEVEN, BOARD_DEVEN);
-	/* Set preallocated IGD size from cmos */
-	u8 gfxsize;
+	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
+	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
+	outw(1 << 11, DEFAULT_PMBASE + 0x60 + 0x08);	/* halt timer */
+	outw(1 <<  3, DEFAULT_PMBASE + 0x60 + 0x04);	/* clear timeout */
+	outw(1 <<  1, DEFAULT_PMBASE + 0x60 + 0x06);	/* clear 2nd timeout */
+	printk(BIOS_DEBUG, " done.\n");
 
-	if (get_option(&gfxsize, "gfx_uma_size") != CB_SUCCESS) {
-		/* 6 for 64MB, default if not set in cmos */
-		gfxsize = 6;
+	if (!(pci_read_config32(d0f0, D0F0_CAPID0 + 4) & (1 << (46 - 32)))) {
+		/* Enable internal GFX */
+		pci_write_config32(d0f0, D0F0_DEVEN, BOARD_DEVEN);
+
+		/* Set preallocated IGD size from cmos */
+		u8 gfxsize = 6; /* 6 for 64MiB, default if not set in cmos */
+		get_option(&gfxsize, "gfx_uma_size");
+		if (gfxsize > 12)
+			gfxsize = 6;
+		/* Need at least 4M for cbmem_top alignment */
+		else if (gfxsize < 1)
+			gfxsize = 1;
+		/* Set GTT size to 2+2M */
+		pci_write_config16(d0f0, D0F0_GGC, 0x0b00 | (gfxsize + 1) << 4);
+	} else { /* Does not feature internal graphics */
+		pci_write_config32(d0f0, D0F0_DEVEN, D0EN | D1EN | PEG1EN);
+		pci_write_config16(d0f0, D0F0_GGC, (1 << 1));
 	}
-	pci_write_config16(d0f0, D0F0_GGC, 0x0100 | ((gfxsize + 1) << 4));
 }
 
 static void init_egress(void)
@@ -227,15 +246,6 @@ static void init_dmi(void)
 
 static void x4x_prepare_resume(int s3resume)
 {
-	int cbmem_recovered;
-
-	cbmem_recovered = !cbmem_recovery(s3resume);
-	if (!cbmem_recovered && s3resume) {
-		/* Failed S3 resume, reset to come up cleanly */
-		outb(0x6, 0xcf9);
-		halt();
-	}
-
 	romstage_handoff_init(s3resume);
 }
 

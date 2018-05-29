@@ -39,22 +39,23 @@
 static void ich7_enable_lpc(void)
 {
 	int lpt_en = 0;
-	if (read_option(lpt, 0) != 0) {
-	       lpt_en = 1 << 2; /* enable LPT */
-	}
+	if (read_option(lpt, 0) != 0)
+		lpt_en = LPT_LPC_EN; /* enable LPT */
+
 	/* Enable Serial IRQ */
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0xd0);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0xd0);
 	/* decode range */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0007);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0007);
 	/* decode range */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x3f0b | lpt_en);
-	/* Enable 0x02e0 */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x84, 0x02e1);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x86, 0x001c);
-	/* COM3 decode */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x00fc0601);
-	/* COM4 decode */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x8c, 0x00040069);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF2_LPC_EN | CNF1_LPC_EN
+			| MC_LPC_EN | KBC_LPC_EN | GAMEH_LPC_EN | GAMEL_LPC_EN
+			| FDD_LPC_EN | lpt_en | COMB_LPC_EN | COMA_LPC_EN);
+	/* COM3 and COM4 decode? */
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x1c02e1);
+	/* ??decode?? */
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN2_DEC, 0x00fc0601);
+	/* EC decode? */
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN3_DEC, 0x00040069);
 }
 
 /* This box has two superios, so enabling serial becomes slightly excessive.
@@ -121,24 +122,22 @@ static void rcba_config(void)
 	/* Set up virtual channel 0 */
 
 	/* Device 1f interrupt pin register */
-	RCBA32(0x3100) = 0x00042220;
-	/* Device 1d interrupt pin register */
-	RCBA32(0x310c) = 0x00214321;
+	RCBA32(D31IP) = 0x00042220;
 
 	/* dev irq route register */
-	RCBA16(0x3140) = 0x0232;
-	RCBA16(0x3142) = 0x3246;
-	RCBA16(0x3144) = 0x0237;
-	RCBA16(0x3146) = 0x3201;
-	RCBA16(0x3148) = 0x3216;
+	RCBA16(D31IR) = 0x0232;
+	RCBA16(D30IR) = 0x3246;
+	RCBA16(D29IR) = 0x0237;
+	RCBA16(D28IR) = 0x3201;
+	RCBA16(D27IR) = 0x3216;
 
 	/* Enable IOAPIC */
-	RCBA8(0x31ff) = 0x03;
+	RCBA8(OIC) = 0x03;
 
 	/* Disable unused devices */
-	RCBA32(0x3418) = FD_PCIE6 | FD_PCIE5 | FD_PCIE3 | FD_PCIE2 |
+	RCBA32(FD) = FD_PCIE6 | FD_PCIE5 | FD_PCIE3 | FD_PCIE2 |
 			 FD_INTLAN | FD_ACMOD | FD_HDAUD | FD_PATA;
-	RCBA32(0x3418) |= (1 << 0); /* Required. */
+	RCBA32(FD) |= (1 << 0); /* Required. */
 
 	/* This should probably go into the ACPI OS Init trap */
 
@@ -183,14 +182,14 @@ static void early_ich7_init(void)
 	RCBA32(0x0214) = 0x10030549;
 	RCBA32(0x0218) = 0x00020504;
 	RCBA8(0x0220) = 0xc5;
-	reg32 = RCBA32(0x3410);
+	reg32 = RCBA32(GCS);
 	reg32 |= (1 << 6);
-	RCBA32(0x3410) = reg32;
+	RCBA32(GCS) = reg32;
 	reg32 = RCBA32(0x3430);
 	reg32 &= ~(3 << 0);
 	reg32 |= (1 << 0);
 	RCBA32(0x3430) = reg32;
-	RCBA32(0x3418) |= (1 << 0);
+	RCBA32(FD) |= (1 << 0);
 	RCBA16(0x0200) = 0x2008;
 	RCBA8(0x2027) = 0x0d;
 	RCBA16(0x3e08) |= (1 << 7);

@@ -14,25 +14,15 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/hlt.h>
 #include <arch/io.h>
-#include <console/console.h>
-#include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
-#include <device/pci_def.h>
-#include <elog.h>
-#include <soc/nvs.h>
-#include <soc/pm.h>
+#include <intelblocks/smihandler.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
-#include <soc/intel/common/smi.h>
-#include <spi-generic.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <soc/smm.h>
+#include <soc/pm.h>
 
-int smm_disable_busmaster(device_t dev)
+int smihandler_soc_disable_busmaster(device_t dev)
 {
 	if (dev == PCH_DEV_PMC)
 		return 0;
@@ -44,25 +34,24 @@ const struct smm_save_state_ops *get_smm_save_state_ops(void)
 	return &em64t100_smm_ops;
 }
 
-void __attribute__((weak))
-mainboard_smi_gpi_handler(const struct gpi_status *sts) { }
-
-static void southbridge_smi_gpi(const struct smm_save_state_ops *save_state_ops)
+/* SMI handlers that should be serviced in SCI mode too. */
+uint32_t smihandler_soc_get_sci_mask(void)
 {
-	struct gpi_status smi_sts;
+	uint32_t sci_mask =
+		SMI_HANDLER_SCI_EN(APM_SMI_STS) |
+		SMI_HANDLER_SCI_EN(SLP_SMI_STS);
 
-	gpi_clear_get_smi_status(&smi_sts);
-	mainboard_smi_gpi_handler(&smi_sts);
-
-	/* Clear again after mainboard handler */
-	gpi_clear_get_smi_status(&smi_sts);
+	return sci_mask;
 }
 
 const smi_handler_t southbridge_smi[32] = {
-	[SLP_SMI_STS] = southbridge_smi_sleep,
-	[APM_SMI_STS] = southbridge_smi_apmc,
-	[FAKE_PM1_SMI_STS] = southbridge_smi_pm1,
-	[GPIO_SMI_STS] = southbridge_smi_gpi,
-	[TCO_SMI_STS] = southbridge_smi_tco,
-	[PERIODIC_SMI_STS] = southbridge_smi_periodic,
+	[SLP_SMI_STS] = smihandler_southbridge_sleep,
+	[APM_SMI_STS] = smihandler_southbridge_apmc,
+	[FAKE_PM1_SMI_STS] = smihandler_southbridge_pm1,
+	[GPIO_SMI_STS] = smihandler_southbridge_gpi,
+	[TCO_SMI_STS] = smihandler_southbridge_tco,
+	[PERIODIC_SMI_STS] = smihandler_southbridge_periodic,
+#if IS_ENABLED(CONFIG_SOC_ESPI)
+	[ESPI_SMI_STS_BIT] = smihandler_southbridge_espi,
+#endif
 };

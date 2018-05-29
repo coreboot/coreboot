@@ -195,7 +195,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
-	device_t dev;
+	struct device *dev;
 	u32 reg;
 
 	dev = dev_find_device(0x8086, 0x29c0, 0);

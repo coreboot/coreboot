@@ -1,0 +1,50 @@
+if BOARD_OCP_WEDGE100S
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_INTEL_FSP_BROADWELL_DE
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select TSC_MONOTONIC_TIMER
+	select HAVE_FSP_BIN if FSP_PACKAGE_DEFAULT
+	select SERIRQ_CONTINUOUS_MODE
+	select SUPERIO_ITE_COMMON_ROMSTAGE
+	select FSP_EHCI1_ENABLE
+
+config MAINBOARD_DIR
+	string
+	default "ocp/wedge100s"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Wedge 100S"
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config CACHE_ROM_SIZE_OVERRIDE
+	hex
+	default 0x800000
+
+config CBFS_SIZE
+	hex
+	default 0x00200000
+
+config VIRTUAL_ROM_SIZE
+	hex
+	default 0x1000000
+
+config DRIVERS_UART_8250IO
+	def_bool n
+
+config FSP_PACKAGE_DEFAULT
+	bool "Configure defaults for the Intel FSP package"
+	default n
+
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+endif # BOARD_OCP_WEDGE100S

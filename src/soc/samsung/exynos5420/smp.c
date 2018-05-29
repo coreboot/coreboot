@@ -182,7 +182,7 @@ static void core_start_execution(void)
 
 	if (cpu_state & CORE_STATE_RESET) {
 		/* For Reset, U-Boot jumps to its starting address;
-		 * on Coreboot, seems ok to ignore for now. */
+		 * on coreboot, seems ok to ignore for now. */
 	}
 	wait_and_jump(&exynos_cpu_states->hotplug_address);
 	/* never returns. */

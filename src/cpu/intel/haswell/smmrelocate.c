@@ -17,6 +17,7 @@
 #include <string.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/lapic.h>
@@ -42,8 +43,8 @@
 #define SMBASE_MSR 0xc20
 #define IEDBASE_MSR 0xc22
 
-#define SMRR_SUPPORTED (1<<11)
-#define EMRR_SUPPORTED (1<<12)
+#define SMRR_SUPPORTED (1 << 11)
+#define EMRR_SUPPORTED (1 << 12)
 
 struct smm_relocation_params {
 	u32 smram_base;
@@ -308,7 +309,7 @@ static void setup_ied_area(struct smm_relocation_params *params)
 void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 				size_t *smm_save_state_size)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 
 	printk(BIOS_DEBUG, "Setting up SMI for CPU\n");
 

@@ -57,7 +57,7 @@ typedef struct {
 	u32 token;
 #define TD_PID_MASK 0xff
 #define TD_DEVADDR_SHIFT 8
-#define TD_DEVADDR_MASK (((1<<7)-1) << TD_DEVADDR_SHIFT)
+#define TD_DEVADDR_MASK (((1 << 7)-1) << TD_DEVADDR_SHIFT)
 #define TD_EP_SHIFT 15
 #define TD_EP_MASK (0xf << TD_EP_SHIFT)
 #define TD_TOGGLE_SHIFT 19
@@ -67,13 +67,13 @@ typedef struct {
 
 	u32 bufptr;
 
-} __attribute__ ((packed))
+} __packed
      td_t;
 
      typedef struct {
 	     flistp_t headlinkptr;
 	     volatile flistp_t elementlinkptr;
-     } __attribute__ ((packed))
+     } __packed
      qh_t;
 
      typedef enum { USBCMD = 0, USBSTS = 2, USBINTR = 4, FRNUM =

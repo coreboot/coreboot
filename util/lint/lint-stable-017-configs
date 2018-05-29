@@ -19,7 +19,9 @@ LC_ALL=C export LC_ALL
 SYMBOLS='CONFIG_ARCH_\|CONFIG_MAINBOARD_HAS_'
 
 # Use git grep if the code is in a git repo, otherwise use grep.
-if [ -n "$(command -v git)" ] && [ -d .git ]; then
+if [ -n "$(command -v git)" ] && \
+	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
+then
 	GREP="git grep -l"
 else
 	GREP="grep -rl"

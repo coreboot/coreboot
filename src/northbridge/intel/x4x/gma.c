@@ -26,6 +26,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <commonlib/helpers.h>
+#include <cbmem.h>
 
 #include "drivers/intel/gma/i915_reg.h"
 #include "chip.h"
@@ -33,10 +34,30 @@
 #include <drivers/intel/gma/intel_bios.h>
 #include <drivers/intel/gma/edid.h>
 #include <drivers/intel/gma/i915.h>
+#include <drivers/intel/gma/opregion.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
 
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801JX)
+#include <southbridge/intel/i82801jx/nvs.h>
+#elif IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)
+#include <southbridge/intel/i82801gx/nvs.h>
+#endif
+
 #define BASE_FREQUENCY 96000
+
+uintptr_t gma_get_gnvs_aslb(const void *gnvs)
+{
+	const global_nvs_t *gnvs_ptr = gnvs;
+	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
+}
+
+void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
+{
+	global_nvs_t *gnvs_ptr = gnvs;
+	if (gnvs_ptr)
+		gnvs_ptr->aslb = aslb;
+}
 
 static u8 edid_is_present(u8 *edid, u32 edid_size)
 {
@@ -73,6 +94,15 @@ static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
 	u32 pixel_n = 1;
 	u32 pixel_m1 = 1;
 	u32 pixel_m2 = 1;
+
+	u8 vga_gmbus = GMBUS_PORT_VGADDC;
+
+	if (IS_ENABLED(CONFIG_GFX_GMA_ANALOG_I2C_HDMI_B))
+		vga_gmbus = GMBUS_PORT_DPB;
+	else if (IS_ENABLED(CONFIG_GFX_GMA_ANALOG_I2C_HDMI_C))
+		vga_gmbus = GMBUS_PORT_DPC;
+	else if (IS_ENABLED(CONFIG_GFX_GMA_ANALOG_I2C_HDMI_D))
+		vga_gmbus = GMBUS_PORT_DPD;
 
 	vga_gr_write(0x18, 0);
 
@@ -113,7 +143,11 @@ static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
 
 	udelay(1);
 
-	intel_gmbus_read_edid(mmio + GMBUS0, 2, 0x50, edid_data,
+	/*
+	 * TODO: check if it is actually an analog display.
+	 * No harm is done but the console output could be confusing.
+	 */
+	intel_gmbus_read_edid(mmio + GMBUS0, vga_gmbus, 0x50, edid_data,
 			sizeof(edid_data));
 	intel_gmbus_stop(mmio + GMBUS0);
 	decode_edid(edid_data,
@@ -143,7 +177,7 @@ static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
 	} else
 		printk(BIOS_DEBUG, "EDID is null, using 640 x 480 @ 60Hz mode");
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		vga_sr_write(1, 1);
 		vga_sr_write(0x2, 0xf);
 		vga_sr_write(0x3, 0x0);
@@ -274,7 +308,7 @@ static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
 	write32(mmio + PIPECONF(0), PIPECONF_DISABLE);
 
 	write32(mmio + PF_WIN_POS(0), 0);
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		write32(mmio + PIPESRC(0), ((hactive - 1) << 16)
 			| (vactive - 1));
 		write32(mmio + PF_CTL(0), 0);
@@ -293,7 +327,7 @@ static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
 	write32(mmio + PIPECONF(0), PIPECONF_ENABLE
 			| PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		write32(mmio + VGACNTRL, VGA_DISP_DISABLE);
 		write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE
 			| DISPPLANE_BGRX888);
@@ -323,7 +357,7 @@ static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
 	write32(mmio + DEIIR, 0xffffffff);
 	write32(mmio + SDEIIR, 0xffffffff);
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		memset((void *) lfb, 0,
 			hactive * vactive * 4);
 		set_vbe_mode_info_valid(&edid, lfb);
@@ -356,7 +390,7 @@ static void native_init(struct device *dev)
 
 static void gma_func0_init(struct device *dev)
 {
-	u16 reg16;
+	u16 reg16, ggc;
 	u32 reg32;
 
 	/* IGD needs to be Bus Master */
@@ -370,13 +404,33 @@ static void gma_func0_init(struct device *dev)
 	reg16 |= 0xbc;
 	pci_write_config16(dev_find_slot(0, PCI_DEVFN(0x2, 0)), 0xcc, reg16);
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+	ggc = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0, 0)), D0F0_GGC);
+
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+		if (ggc & (1 << 1)) {
+			printk(BIOS_DEBUG, "VGA cycles not assigned to IGD. "
+				"Not running native graphic init.\n");
+			return;
+		}
 		native_init(dev);
-	else
+	} else {
 		pci_dev_init(dev);
+	}
+
+	intel_gma_restore_opregion();
 }
 
-static void gma_set_subsystem(device_t dev, unsigned int vendor,
+static void gma_func0_disable(struct device *dev)
+{
+	struct device *dev_host = dev_find_slot(0, PCI_DEVFN(0, 0));
+	u16 ggc;
+
+	ggc = pci_read_config16(dev_host, D0F0_GGC);
+	ggc |= (1 << 1); /* VGA cycles to discrete GPU */
+	pci_write_config16(dev_host, D0F0_GGC, ggc);
+}
+
+static void gma_set_subsystem(struct device *dev, unsigned int vendor,
 			unsigned int device)
 {
 	if (!vendor || !device) {
@@ -392,20 +446,51 @@ static void gma_set_subsystem(device_t dev, unsigned int vendor,
 const struct i915_gpu_controller_info *
 intel_gma_get_controller_info(void)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x2, 0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x2, 0));
 	if (!dev)
 		return NULL;
 	struct northbridge_intel_x4x_config *chip = dev->chip_info;
 	return &chip->gfx;
 }
 
-static void gma_ssdt(device_t device)
+static void gma_ssdt(struct device *device)
 {
 	const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
 	if (!gfx)
 		return;
 
 	drivers_intel_gma_displays_ssdt_generate(gfx);
+}
+
+static unsigned long
+gma_write_acpi_tables(struct device *const dev,
+		      unsigned long current,
+		      struct acpi_rsdp *const rsdp)
+{
+	igd_opregion_t *opregion = (igd_opregion_t *)current;
+	global_nvs_t *gnvs;
+
+	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
+		return current;
+
+	current += sizeof(igd_opregion_t);
+
+	/* GNVS has been already set up */
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs) {
+		/* IGD OpRegion Base Address */
+		gma_set_gnvs_aslb(gnvs, (uintptr_t)opregion);
+	} else {
+		printk(BIOS_ERR, "Error: GNVS table not found.\n");
+	}
+
+	current = acpi_align_current(current);
+	return current;
+}
+
+static const char *gma_acpi_name(const struct device *dev)
+{
+	return "GFX0";
 }
 
 static struct pci_operations gma_pci_ops = {
@@ -419,6 +504,9 @@ static struct device_operations gma_func0_ops = {
 	.acpi_fill_ssdt_generator = gma_ssdt,
 	.init = gma_func0_init,
 	.ops_pci = &gma_pci_ops,
+	.disable = gma_func0_disable,
+	.acpi_name = gma_acpi_name,
+	.write_acpi_tables = gma_write_acpi_tables,
 };
 
 static const unsigned short pci_device_ids[] = {

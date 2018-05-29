@@ -15,7 +15,7 @@ static void hwm_write(u16 base, u8 bank, u8 reg, u8 value)
 
 static void mb6047_hwm_init(void)
 {
-	device_t dev;
+	struct device *dev;
 	struct resource *res;
 	size_t i;
 
@@ -36,17 +36,16 @@ static void mb6047_hwm_init(void)
 	printk(BIOS_INFO, "setting up hardware monitor at 0x%04x\n", (unsigned int)res->base);
 
 	/* Init hardware monitor. */
-	for (i = 0; i < ARRAY_SIZE(hwmtab); i++) {
+	for (i = 0; i < ARRAY_SIZE(hwmtab); i++)
 		hwm_write(res->base, hwmtab[i].bnk, hwmtab[i].idx, hwmtab[i].dat);
-	}
 }
 
-static void mb6047_mainboard_init(device_t dev)
+static void mb6047_mainboard_init(struct device *dev)
 {
 	mb6047_hwm_init();
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mb6047_mainboard_init;
 }

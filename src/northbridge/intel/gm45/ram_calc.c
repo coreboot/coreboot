@@ -65,6 +65,24 @@ u32 decode_igd_gtt_size(const u32 gsm)
 	}
 }
 
+/* Decodes TSEG region size to kilobytes. */
+u32 decode_tseg_size(u8 esmramc)
+{
+	if (!(esmramc & 1))
+		return 0;
+	switch ((esmramc >> 1) & 3) {
+	case 0:
+		return 1 << 10;
+	case 1:
+		return 2 << 10;
+	case 2:
+		return 8 << 10;
+	case 3:
+	default:
+		die("Bad TSEG setting.\n");
+	}
+}
+
 static uintptr_t smm_region_start(void)
 {
 	const pci_devfn_t dev = PCI_DEV(0, 0, 0);
@@ -76,12 +94,15 @@ static uintptr_t smm_region_start(void)
 
 	/* Graphics memory comes next */
 	const u32 ggc = pci_read_config16(dev, D0F0_GGC);
+	const u8 esmramc = pci_read_config8(dev, D0F0_ESMRAMC);
 	if (!(ggc & 2)) {
 		/* Graphics memory */
 		tor -= decode_igd_memory_size((ggc >> 4) & 0xf) << 10;
 		/* GTT Graphics Stolen Memory Size (GGMS) */
 		tor -= decode_igd_gtt_size((ggc >> 8) & 0xf) << 10;
 	}
+	/* TSEG size */
+	tor -= decode_tseg_size(esmramc) << 10;
 	return tor;
 }
 

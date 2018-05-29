@@ -2,7 +2,7 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 
-#if CONFIG_DEBUG_MALLOC
+#if IS_ENABLED(CONFIG_DEBUG_MALLOC)
 #define MALLOCDBG(x...) printk(BIOS_SPEW, x)
 #else
 #define MALLOCDBG(x...)

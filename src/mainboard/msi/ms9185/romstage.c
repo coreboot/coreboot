@@ -36,6 +36,7 @@
 #include <cpu/x86/lapic.h>
 
 #include <superio/nsc/pc87417/pc87417.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
@@ -105,25 +106,19 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	pc87417_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
-//     dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x200, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE);
-
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
 	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
 
 	setup_ms9185_resource_map();
-#if 0
-	dump_pci_device(PCI_DEV(0, 0x18, 0));
-	dump_pci_device(PCI_DEV(0, 0x19, 0));
-#endif
 
 	printk(BIOS_DEBUG, "bsp_apicid=%02x\n", bsp_apicid);
 
 	setup_coherent_ht_domain();
 
 	wait_all_core0_started();
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	// It is said that we should start core1 after all core0 launched
 	/* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain,
 	* So here need to make sure last core0 is started, esp for two way system,
@@ -138,13 +133,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	bcm5785_early_setup();
 
-#if 0
-	//it your CPU min fid is 1G, you can change HT to 1G and FID to max one time.
-	needs_reset = optimize_link_coherent_ht();
-	needs_reset |= optimize_link_incoherent_ht(sysinfo);
-#endif
-
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 	{
 		msr_t msr;
 		msr = rdmsr(0xc0010042);
@@ -178,29 +167,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	enable_smbus();
 
-#if 0
-	int i;
-	for(i = 0; i < 2; i++) {
-		activate_spd_rom(sysinfo->ctrl+i);
-		dump_smbus_registers();
-	}
-#endif
-
 	//do we need apci timer, tsc...., only debug need it for better output
 	/* all ap stopped? */
 //        init_timer(); // Need to use TMICT to synchronize FID/VID
 
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
-#if 0
-	print_pci_devices();
-#endif
-
-#if 0
-//        dump_pci_devices();
-	dump_pci_device_index_wait(PCI_DEV(0, 0x18, 2), 0x98);
-	dump_pci_device_index_wait(PCI_DEV(0, 0x19, 2), 0x98);
-#endif
-
-	post_cache_as_ram();
 }

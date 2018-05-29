@@ -18,6 +18,7 @@
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
+#include <superio/conf_mode.h>
 #include "it8671f.h"
 
 static void init(struct device *dev)
@@ -45,13 +46,14 @@ static struct device_operations ops = {
 	.enable_resources = pnp_enable_resources,
 	.enable           = pnp_enable,
 	.init             = init,
+	.ops_pnp_mode     = &pnp_conf_mode_870155_aa,
 };
 
 /* TODO: FDC, PP, KBCM. */
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, IT8671F_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, IT8671F_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, {0x07f8, 0}, },
-	{ &ops, IT8671F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x07f8, 0}, {0x07f8, 4}, },
+	{ &ops, IT8671F_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ &ops, IT8671F_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, 0x07f8, },
+	{ &ops, IT8671F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07f8, 0x07f8, },
 };
 
 static void enable_dev(struct device *dev)

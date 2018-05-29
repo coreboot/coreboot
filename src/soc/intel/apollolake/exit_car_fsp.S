@@ -16,7 +16,6 @@
 
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cr.h>
-#include <soc/cpu.h>
 
 /*
  * This path for CAR teardown is taken when CONFIG_FSP_CAR is employed.

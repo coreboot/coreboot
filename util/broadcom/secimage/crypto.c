@@ -25,19 +25,16 @@
  *---------------------------------------------------------------------*/
 int HmacSha256Hash(uint8_t *data, uint32_t len, uint8_t *hash, uint8_t *key)
 {
-	HMAC_CTX hctx;
+	unsigned int hash_len = 0;
 
-	HMAC_CTX_init(&hctx);
-	HMAC_Init_ex(&hctx, key, 32, EVP_sha256(), NULL);
+	if (!HMAC(EVP_sha256(), key, 32, data, len, hash, &hash_len)) {
+		printf("HMAC failed\n");
+		return -1;
+	} else if (hash_len != 32) {
+		printf("HMAC reported unexpected md_len of %u\n", hash_len);
+		return -2;
+	}
 
-	/* FIXME: why we need this? NULL means to use whatever there is?
-	 * if removed, result is different
-	 */
-	HMAC_Init_ex(&hctx, NULL, 0, NULL, NULL);
-	HMAC_Update(&hctx, data, len);
-	HMAC_Final(&hctx, hash, NULL);
-
-	HMAC_CTX_cleanup(&hctx);
 	return 0;
 }
 

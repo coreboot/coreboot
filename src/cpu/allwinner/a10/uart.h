@@ -26,6 +26,7 @@
 #define CPU_ALLWINNER_A10_UART_H
 
 #include <types.h>
+#include <compiler.h>
 
 struct a10_uart {
 	union {
@@ -71,7 +72,7 @@ struct a10_uart {
 	u8 reserved_0xa0[4];
 	u32 halt;		/* Halt register */
 
-} __attribute__ ((packed));
+} __packed;
 
 enum uart_parity {
 	UART_PARITY_NONE,

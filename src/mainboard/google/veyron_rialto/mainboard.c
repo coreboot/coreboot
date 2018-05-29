@@ -19,7 +19,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <edid.h>
 #include <elog.h>
 #include <gpio.h>
@@ -34,7 +34,7 @@
 #include <symbols.h>
 #include <vbe.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 #include "board.h"
 
@@ -75,7 +75,7 @@ static void configure_3g(void)
 	gpio_output(GPIO(4, D, 2), 0);	/* 3G_ON_OFF */
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	gpio_output(GPIO_RESET, 0);
 
@@ -94,7 +94,7 @@ static void mainboard_init(device_t dev)
 	}
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = &mainboard_init;
 }

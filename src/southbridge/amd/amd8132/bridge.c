@@ -29,9 +29,9 @@
 #define NPUMB 0xD8	/* Non prefetchable upper memory base */
 
 static void amd8132_walk_children(struct bus *bus,
-	void (*visit)(device_t dev, void *ptr), void *ptr)
+	void (*visit)(struct device *dev, void *ptr), void *ptr)
 {
-	device_t child;
+	struct device *child;
 	for (child = bus->children; child; child = child->sibling) {
 		if (child->path.type != DEVICE_PATH_PCI) {
 			continue;
@@ -50,7 +50,7 @@ struct amd8132_bus_info {
 	int max_func;
 };
 
-static void amd8132_count_dev(device_t dev, void *ptr)
+static void amd8132_count_dev(struct device *dev, void *ptr)
 {
 	struct amd8132_bus_info *info = ptr;
 	/* Don't count pci bridges */
@@ -63,7 +63,7 @@ static void amd8132_count_dev(device_t dev, void *ptr)
 }
 
 
-static void amd8132_pcix_tune_dev(device_t dev, void *ptr)
+static void amd8132_pcix_tune_dev(struct device *dev, void *ptr)
 {
 	struct amd8132_bus_info *info = ptr;
 	unsigned cap;
@@ -189,13 +189,13 @@ static void amd8132_scan_bus(struct bus *bus,
 	amd8132_walk_children(bus, amd8132_pcix_tune_dev, &info);
 }
 
-static void amd8132_scan_bridge(device_t dev)
+static void amd8132_scan_bridge(struct device *dev)
 {
 	do_pci_scan_bridge(dev, amd8132_scan_bus);
 }
 
 
-static void amd8132_pcix_init(device_t dev)
+static void amd8132_pcix_init(struct device *dev)
 {
 	uint32_t dword;
 	uint8_t byte;
@@ -354,7 +354,7 @@ static const struct pci_driver pcix_driver __pci_driver = {
 	.device = 0x7458,
 };
 
-static void ioapic_enable(device_t dev)
+static void ioapic_enable(struct device *dev)
 {
 	uint32_t value;
 
@@ -366,7 +366,7 @@ static void ioapic_enable(device_t dev)
 	}
 	pci_write_config32(dev, 0x44, value);
 }
-static void amd8132_ioapic_init(device_t dev)
+static void amd8132_ioapic_init(struct device *dev)
 {
 	uint32_t dword;
 	unsigned chip_rev;

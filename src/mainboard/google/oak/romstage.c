@@ -55,8 +55,7 @@ void main(void)
 	/* init memory */
 	mt_mem_init(get_sdram_config());
 
-	while (!stopwatch_expired(&sw))
-		;
+	stopwatch_wait_until_expired(&sw);
 
 	/* Set to maximum frequency */
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 5)

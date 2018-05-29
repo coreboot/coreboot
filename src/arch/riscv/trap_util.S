@@ -107,16 +107,9 @@
 
 .globl estack
   .text
-  .global  supervisor_trap_entry
-supervisor_trap_entry:
-    csrw mscratch, sp
-    # load in the top of the machine stack
-    la	sp, _estack
-    addi sp,sp,-MENTRY_FRAME_SIZE
-    save_tf
-    move  a0,sp
-    jal trap_handler
+
     .global  trap_entry
+    .align 2	# four byte alignment, as required by mtvec
 trap_entry:
   csrw mscratch, sp
 
@@ -128,23 +121,21 @@ trap_entry:
 .Lsmp_hang:
   bnez sp, .Lsmp_hang
 
-  # TODO: Use the old stack pointer (plus an offset) for exceptions in machine
-  # mode, to avoid overwriting stack data.
-    la	sp, _estack
-    addi sp,sp,-MENTRY_FRAME_SIZE
+  # Use a different stack than in the main context, to to avoid overwriting
+  # stack data.
+  # TODO: Maybe use the old stack pointer (plus an offset) instead. But only if
+  # the previous mode was M, because it would be a very bad idea to use a stack
+  # pointer provided by unprivileged code!
+  la	sp, _estack
+  addi	sp, sp, -2048	# 2 KiB is half of the stack space
+  addi	sp, sp, -MENTRY_FRAME_SIZE
 
   save_tf
   move  a0,sp
   jal trap_handler
-  .global supervisor_call_return
-supervisor_call_return:
-  csrr a0, mscratch
-  restore_regs
-  # go back into supervisor call
-  .word 0x30200073 # mret
-  .global machine_call_return
-machine_call_return:
-    csrr a0, mscratch
-    restore_regs
-    # go back into machine call
-    .word 0x30200073 # mret
+
+trap_return:
+	csrr	a0, mscratch
+	restore_regs
+	# go back to the previous mode
+	mret

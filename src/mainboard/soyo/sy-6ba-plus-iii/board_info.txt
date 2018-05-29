@@ -1,5 +1,0 @@
-Category: desktop
-ROM package: DIP32
-ROM protocol: Parallel
-ROM socketed: y
-Flashrom support: y

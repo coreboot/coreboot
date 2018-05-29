@@ -1,5 +1,9 @@
 ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC),y)
 
+bootblock-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c
+romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c
+ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c
+
 bootblock-y += ec.c
 bootblock-$(CONFIG_EC_GOOGLE_CHROMEEC_LPC) += ec_lpc.c
 bootblock-$(CONFIG_EC_GOOGLE_CHROMEEC_MEC) += ec_mec.c
@@ -74,7 +78,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/ecrw.hash: $(obj)/mainboard/$(MAINBOARDDIR)/ecr
 
 endif
 
-ifeq ($(EC_GOOGLE_CHROMEEC_PD),y)
+ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC_PD),y)
 
 ifneq ($(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_NONE),y)
 

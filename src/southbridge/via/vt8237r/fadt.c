@@ -28,7 +28,7 @@
 void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
-	device_t dev;
+	struct device *dev;
 	int is_vt8237s = 0;
 
 	/* Power management controller */

@@ -1,2 +1,2 @@
 config BOARD_GOOGLE_NYAN_BIG
-	bool "Nyan Big"
+	bool "Nyan Big (Acer Chromebook 13 (CB5-311))"

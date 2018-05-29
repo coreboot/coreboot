@@ -16,6 +16,7 @@
 #ifndef FSP_UTIL_H
 #define FSP_UTIL_H
 
+#include <compiler.h>
 #include <chipset_fsp_util.h>
 #include "fsp_values.h"
 
@@ -24,7 +25,7 @@ int save_mrc_data(void *hob_start);
 void * find_and_set_fastboot_cache(void);
 #endif
 
-volatile u8 * find_fsp (void);
+volatile u8 * find_fsp(void);
 void fsp_early_init(FSP_INFO_HEADER *fsp_info);
 void FspNotify(u32 Phase);
 void FspNotifyReturnPoint(EFI_STATUS Status, VOID *HobListPtr);
@@ -71,7 +72,7 @@ struct mrc_data_container {
 	u32	mrc_checksum;	// IP style checksum
 	u32	reserved;		// For header alignment
 	u8	mrc_data[0];	// Variable size, platform/run time dependent.
-} __attribute__ ((packed));
+} __packed;
 
 struct mrc_data_container *find_current_mrc_cache(void);
 

@@ -101,37 +101,44 @@ typedef enum _NB_REVISION_ {
 extern PCIE_CFG AtiPcieCfg;
 
 /* ----------------- export functions ----------------- */
-u32 nbmisc_read_index(device_t nb_dev, u32 index);
-void nbmisc_write_index(device_t nb_dev, u32 index, u32 data);
-u32 nbpcie_p_read_index(device_t dev, u32 index);
-void nbpcie_p_write_index(device_t dev, u32 index, u32 data);
-u32 nbpcie_ind_read_index(device_t nb_dev, u32 index);
-void nbpcie_ind_write_index(device_t nb_dev, u32 index, u32 data);
-u32 htiu_read_index(device_t nb_dev, u32 index);
-void htiu_write_index(device_t nb_dev, u32 index, u32 data);
-u32 nbmc_read_index(device_t nb_dev, u32 index);
-void nbmc_write_index(device_t nb_dev, u32 index, u32 data);
+u32 nbmisc_read_index(struct device *nb_dev, u32 index);
+void nbmisc_write_index(struct device *nb_dev, u32 index, u32 data);
+u32 nbpcie_p_read_index(struct device *dev, u32 index);
+void nbpcie_p_write_index(struct device *dev, u32 index, u32 data);
+u32 nbpcie_ind_read_index(struct device *nb_dev, u32 index);
+void nbpcie_ind_write_index(struct device *nb_dev, u32 index, u32 data);
+u32 htiu_read_index(struct device *nb_dev, u32 index);
+void htiu_write_index(struct device *nb_dev, u32 index, u32 data);
+u32 nbmc_read_index(struct device *nb_dev, u32 index);
+void nbmc_write_index(struct device *nb_dev, u32 index, u32 data);
 
-u32 pci_ext_read_config32(device_t nb_dev, device_t dev, u32 reg);
-void pci_ext_write_config32(device_t nb_dev, device_t dev, u32 reg, u32 mask, u32 val);
+u32 pci_ext_read_config32(struct device *nb_dev, struct device *dev, u32 reg);
+void pci_ext_write_config32(struct device *nb_dev, struct device *dev, u32 reg,
+			    u32 mask, u32 val);
 
-void set_nbcfg_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask, u32 val);
-void set_nbcfg_enable_bits_8(device_t nb_dev, u32 reg_pos, u8 mask, u8 val);
-void set_nbmc_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask, u32 val);
-void set_htiu_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask, u32 val);
-void set_nbmisc_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask, u32 val);
-void set_pcie_enable_bits(device_t dev, u32 reg_pos, u32 mask, u32 val);
-void rs690_set_tom(device_t nb_dev);
+void set_nbcfg_enable_bits(struct device *nb_dev, u32 reg_pos, u32 mask,
+			   u32 val);
+void set_nbcfg_enable_bits_8(struct device *nb_dev, u32 reg_pos, u8 mask,
+			     u8 val);
+void set_nbmc_enable_bits(struct device *nb_dev, u32 reg_pos, u32 mask,
+			  u32 val);
+void set_htiu_enable_bits(struct device *nb_dev, u32 reg_pos, u32 mask,
+			  u32 val);
+void set_nbmisc_enable_bits(struct device *nb_dev, u32 reg_pos, u32 mask,
+			    u32 val);
+void set_pcie_enable_bits(struct device *dev, u32 reg_pos, u32 mask, u32 val);
+void rs690_set_tom(struct device *nb_dev);
 
 void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add);
-void enable_pcie_bar3(device_t nb_dev);
-void disable_pcie_bar3(device_t nb_dev);
+void enable_pcie_bar3(struct device *nb_dev);
+void disable_pcie_bar3(struct device *nb_dev);
 
-void rs690_enable(device_t dev);
-void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port);
-void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port);
-void avoid_lpc_dma_deadlock(device_t nb_dev, device_t sb_dev);
-void config_gpp_core(device_t nb_dev, device_t sb_dev);
-void PcieReleasePortTraining(device_t nb_dev, device_t dev, u32 port);
-u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port);
+void rs690_enable(struct device *dev);
+void rs690_gpp_sb_init(struct device *nb_dev, struct device *dev, u32 port);
+void rs690_gfx_init(struct device *nb_dev, struct device *dev, u32 port);
+void avoid_lpc_dma_deadlock(struct device *nb_dev, struct device *sb_dev);
+void config_gpp_core(struct device *nb_dev, struct device *sb_dev);
+void PcieReleasePortTraining(struct device *nb_dev, struct device *dev,
+			     u32 port);
+u8 PcieTrainPort(struct device *nb_dev, struct device *dev, u32 port);
 #endif /* __RS690_H__ */

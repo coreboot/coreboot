@@ -19,7 +19,7 @@
 /* APIC */
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	device_t dev;
+	struct device *dev;
 	struct resource *res;
 
 	get_bus_conf();

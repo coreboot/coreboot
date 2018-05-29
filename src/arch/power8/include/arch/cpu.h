@@ -23,7 +23,7 @@
 
 struct cpu_driver {
 	struct device_operations *ops;
-	struct cpu_device_id *id_table;
+	const struct cpu_device_id *id_table;
 };
 
 struct thread;
@@ -31,7 +31,7 @@ struct thread;
 struct cpu_info {
 	device_t cpu;
 	unsigned long index;
-#if CONFIG_COOP_MULTITASKING
+#if IS_ENABLED(CONFIG_COOP_MULTITASKING)
 	struct thread *thread;
 #endif
 };

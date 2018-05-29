@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://support.hp.com/de-de/product/HP-Compaq-8200-Elite-Small-Form-Factor-PC/5037931
+ROM IC: MX25L6405
+ROM package: SOIC-8
+ROM socketed: no
+Flashrom support: yes
+Release year: 2013

@@ -73,7 +73,7 @@ void dump_mem(unsigned start, unsigned end);
 void report_platform_info(void);
 
 #ifndef __SIMPLE_DEVICE__
-void northbridge_acpi_fill_ssdt_generator(device_t device);
+void northbridge_acpi_fill_ssdt_generator(struct device *device);
 #endif
 
 #endif /* #ifndef __ASSEMBLER__ */

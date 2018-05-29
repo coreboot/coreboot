@@ -67,7 +67,7 @@ static unsigned get_hcid(unsigned i)
 
 	unsigned devn = sysconf.hcdn[i] & 0xff;
 
-	device_t dev;
+	struct device *dev;
 
 	dev = dev_find_slot(busn, PCI_DEVFN(devn,0));
 

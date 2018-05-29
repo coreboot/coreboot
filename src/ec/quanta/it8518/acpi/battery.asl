@@ -185,7 +185,7 @@ Device (BATX)
 		//
 		//  Battery Type - Device Chemistry
 		//
-		Store (ToString (SBCH), Index (PBIF, 11))
+		Store (ToString (Concatenate(SBCH, 0x00)), Index (PBIF, 11))
 
 		//
 		// Information ID 5 -
@@ -196,7 +196,7 @@ Device (BATX)
 		//
 		// OEM Information - Manufacturer Name
 		//
-		Store (ToString (SBMN), Index (PBIF, 12))
+		Store (ToString (Concatenate(SBMN, 0x00)), Index (PBIF, 12))
 
 		//
 		// Information ID 6 -
@@ -207,7 +207,7 @@ Device (BATX)
 		//
 		// Model Number - Device Name
 		//
-		Store (ToString (SBDN), Index (PBIF, 9))
+		Store (ToString (Concatenate(SBDN, 0x00)), Index (PBIF, 9))
 
 		Return (PBIF)
 	}

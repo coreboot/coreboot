@@ -16,6 +16,7 @@
 #ifndef __ASM_MPSPEC_H
 #define __ASM_MPSPEC_H
 
+#include <compiler.h>
 #include <device/device.h>
 #include <cpu/x86/lapic_def.h>
 
@@ -52,7 +53,7 @@ struct intel_mp_floating {
 	u8 mpf_feature3;	/* Unused (0) */
 	u8 mpf_feature4;	/* Unused (0) */
 	u8 mpf_feature5;	/* Unused (0) */
-} __attribute__((packed));
+} __packed;
 
 struct mp_config_table {
 	char mpc_signature[4];
@@ -69,7 +70,7 @@ struct mp_config_table {
 	u16 mpe_length;	/* Extended Table size */
 	u8 mpe_checksum;	/* Extended Table checksum */
 	u8 reserved;
-} __attribute__((packed));
+} __packed;
 
 /* Followed by entries */
 
@@ -92,13 +93,13 @@ struct mpc_config_processor {
 #define MPC_CPU_FAMILY_MASK	0xF00
 	u32 mpc_featureflag;	/* CPUID feature value */
 	u32 mpc_reserved[2];
-} __attribute__((packed));
+} __packed;
 
 struct mpc_config_bus {
 	u8 mpc_type;
 	u8 mpc_busid;
 	u8 mpc_bustype[6];
-} __attribute__((packed));
+} __packed;
 
 #define BUSTYPE_EISA	"EISA"
 #define BUSTYPE_ISA	"ISA"
@@ -115,7 +116,7 @@ struct mpc_config_ioapic {
 	u8 mpc_flags;
 #define MPC_APIC_USABLE		0x01
 	void *mpc_apicaddr;
-} __attribute__((packed));
+} __packed;
 
 struct mpc_config_intsrc {
 	u8 mpc_type;
@@ -125,7 +126,7 @@ struct mpc_config_intsrc {
 	u8 mpc_srcbusirq;
 	u8 mpc_dstapic;
 	u8 mpc_dstirq;
-} __attribute__((packed));
+} __packed;
 
 enum mp_irq_source_types {
 	mp_INT = 0,
@@ -153,7 +154,7 @@ struct mpc_config_lintsrc {
 	u8 mpc_destapic;
 #define MP_APIC_ALL	0xFF
 	u8 mpc_destapiclint;
-} __attribute__((packed));
+} __packed;
 
 /*
  *	Default configurations
@@ -185,7 +186,7 @@ enum mp_bustype {
 struct mp_exten_config {
 	u8 mpe_type;
 	u8 mpe_length;
-} __attribute__((packed));
+} __packed;
 
 typedef struct mp_exten_config *mpe_t;
 
@@ -201,7 +202,7 @@ struct mp_exten_system_address_space {
 	u32 mpe_address_base_high;
 	u32 mpe_address_length_low;
 	u32 mpe_address_length_high;
-} __attribute__((packed));
+} __packed;
 
 struct mp_exten_bus_hierarchy {
 	u8 mpe_type;
@@ -211,7 +212,7 @@ struct mp_exten_bus_hierarchy {
 #define BUS_SUBTRACTIVE_DECODE 1
 	u8 mpe_parent_busid;
 	u8 reserved[3];
-} __attribute__((packed));
+} __packed;
 
 struct mp_exten_compatibility_address_space {
 	u8 mpe_type;
@@ -237,7 +238,7 @@ struct mp_exten_compatibility_address_space {
 	 * XFB0 - XFBB
 	 * XFC0 - XCDF
 	 */
-} __attribute__((packed));
+} __packed;
 
 void mptable_init(struct mp_config_table *mc, u32 lapic_addr);
 void *smp_next_mpc_entry(struct mp_config_table *mc);

@@ -14,16 +14,10 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_CMOS_DEFAULT
 	select HAVE_ACPI_RESUME
 	select MAINBOARD_HAS_LIBGFXINIT
-	select MAINBOARD_USE_LIBGFXINIT if MAINBOARD_DO_NATIVE_VGA_INIT
 	select INTEL_INT15
-	select UDELAY_TSC
-	select SERIRQ_CONTINUOUS_MODE
+	select NO_UART_ON_SUPERIO
 
 config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
 	bool
 	default n
 
@@ -51,10 +45,6 @@ config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x174b
 
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf0000000
-
 config DRAM_RESET_GATE_GPIO
 	int
 	default 60
@@ -63,7 +53,4 @@ config MAX_CPUS
 	int
 	default 8
 
-config USBDEBUG_HCD_INDEX	#USB port on the back under the Bluetooth module
-	int
-	default 4
 endif

@@ -294,7 +294,7 @@
 #define INCHIP_USB_CINFIG          0x7F
 #define INCHIP_USB_OHCI1_CINFIG    0x01
 #define INCHIP_USB_OHCI2_CINFIG    0x01
-#if CONFIG_ONBOARD_USB30
+#if IS_ENABLED(CONFIG_ONBOARD_USB30)
 #define INCHIP_USB_OHCI3_CINFIG    0x00
 #else
 #define INCHIP_USB_OHCI3_CINFIG    0x01
@@ -962,7 +962,7 @@
  *    @li <b>0</b> - Disable
  *    @li <b>1</b> - Enable
  */
-#if CONFIG_ONBOARD_USB30
+#if IS_ENABLED(CONFIG_ONBOARD_USB30)
 	#define SB_XHCI_SWITCH 0
 #else
 #define SB_XHCI_SWITCH 1

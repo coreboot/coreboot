@@ -22,6 +22,10 @@ config ARCH_RAMSTAGE_ARM64
 
 source src/arch/arm64/armv8/Kconfig
 
+config ARM64_USE_ARCH_TIMER
+	bool
+	default n
+
 config ARM64_USE_ARM_TRUSTED_FIRMWARE
 	bool
 	default n

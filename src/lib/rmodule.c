@@ -294,10 +294,11 @@ int rmodule_stage_load(struct rmod_stage_load *rsl)
 
 	prog_set_area(rsl->prog, rmod_stage.location,
 			rmodule_memory_size(&rmod_stage));
-	prog_set_entry(rsl->prog, rmodule_entry(&rmod_stage), NULL);
 
 	/* Allow caller to pick up parameters, if available. */
 	rsl->params = rmodule_parameters(&rmod_stage);
+
+	prog_set_entry(rsl->prog, rmodule_entry(&rmod_stage), rsl->params);
 
 	return 0;
 }

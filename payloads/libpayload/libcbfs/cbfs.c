@@ -158,7 +158,7 @@ int cbfs_execute_stage(struct cbfs_media *media, const char *name)
 void *cbfs_load_payload(struct cbfs_media *media, const char *name)
 {
 	return (struct cbfs_payload *)cbfs_get_file_content(
-		media, name, CBFS_TYPE_PAYLOAD, NULL);
+		media, name, CBFS_TYPE_SELF, NULL);
 }
 
 struct cbfs_file *cbfs_find(const char *name) {

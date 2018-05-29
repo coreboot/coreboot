@@ -98,7 +98,7 @@ struct lz4_frame_header {
 	};
 	/* + uint64_t content_size iff has_content_size is set */
 	/* + uint8_t header_checksum */
-} __attribute__((packed));
+} __packed;
 
 struct lz4_block_header {
 	union {
@@ -110,7 +110,7 @@ struct lz4_block_header {
 	};
 	/* + size bytes of data */
 	/* + uint32_t block_checksum iff has_block_checksum is set */
-} __attribute__((packed));
+} __packed;
 
 size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 {

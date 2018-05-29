@@ -31,20 +31,20 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/mtrr.h>
 
-#include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
 #include <sb_cimx.h>
 
 #define FX_DEVS 1
 
-static device_t __f0_dev[FX_DEVS];
-static device_t __f1_dev[FX_DEVS];
-static device_t __f2_dev[FX_DEVS];
-static device_t __f4_dev[FX_DEVS];
+static struct device *__f0_dev[FX_DEVS];
+static struct device *__f1_dev[FX_DEVS];
+static struct device *__f2_dev[FX_DEVS];
+static struct device *__f4_dev[FX_DEVS];
 static unsigned fx_devs = 0;
 
-static device_t get_node_pci(u32 nodeid, u32 fn)
+static struct device *get_node_pci(u32 nodeid, u32 fn)
 {
 	if ((CONFIG_CDB + nodeid) < 32) {
 		return dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB + nodeid, fn));
@@ -82,7 +82,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 	if (fx_devs == 0)
 		get_fx_devs();
 	for (i = 0; i < fx_devs; i++) {
-		device_t dev;
+		struct device *dev;
 		dev = __f1_dev[i];
 		if (dev && dev->enabled) {
 			pci_write_config32(dev, reg, value);
@@ -90,14 +90,14 @@ static void f1_write_config32(unsigned reg, u32 value)
 	}
 }
 
-static u32 amdfam14_nodeid(device_t dev)
+static u32 amdfam14_nodeid(struct device *dev)
 {
 	return (dev->path.pci.devfn >> 3) - CONFIG_CDB;
 }
 
 #include "amdfam14_conf.c"
 
-static void northbridge_init(device_t dev)
+static void northbridge_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Northbridge init\n");
 }
@@ -113,15 +113,15 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 
 }
 
-static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
-		       unsigned goal_link)
+static int reg_useable(unsigned reg, struct device *goal_dev,
+		       unsigned goal_nodeid, unsigned goal_link)
 {
 	struct resource *res;
 	unsigned nodeid, link = 0;
 	int result;
 	res = 0;
 	for (nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
-		device_t dev;
+		struct device *dev;
 		dev = __f0_dev[nodeid];
 		if (!dev)
 			continue;
@@ -140,8 +140,8 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
 	return result;
 }
 
-static struct resource *amdfam14_find_iopair(device_t dev, unsigned nodeid,
-					     unsigned link)
+static struct resource *amdfam14_find_iopair(struct device *dev,
+					     unsigned nodeid, unsigned link)
 {
 	struct resource *resource;
 	u32 result, reg;
@@ -167,7 +167,7 @@ static struct resource *amdfam14_find_iopair(device_t dev, unsigned nodeid,
 	return resource;
 }
 
-static struct resource *amdfam14_find_mempair(device_t dev, u32 nodeid,
+static struct resource *amdfam14_find_mempair(struct device *dev, u32 nodeid,
 					      u32 link)
 {
 	struct resource *resource;
@@ -202,7 +202,7 @@ static struct resource *amdfam14_find_mempair(device_t dev, u32 nodeid,
 	return resource;
 }
 
-static void amdfam14_link_read_bases(device_t dev, u32 nodeid, u32 link)
+static void amdfam14_link_read_bases(struct device *dev, u32 nodeid, u32 link)
 {
 	struct resource *resource;
 
@@ -283,7 +283,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 }
 #endif
 
-static void nb_read_resources(device_t dev)
+static void nb_read_resources(struct device *dev)
 {
 	u32 nodeid;
 	struct bus *link;
@@ -305,7 +305,8 @@ static void nb_read_resources(device_t dev)
 	mmconf_resource(dev, 0xc0010058);
 }
 
-static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
+static void set_resource(struct device *dev, struct resource *resource,
+			 u32 nodeid)
 {
 	resource_t rbase, rend;
 	unsigned reg, link_num;
@@ -353,11 +354,11 @@ static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
 	report_resource_stored(dev, resource, buf);
 }
 
-#if CONFIG_CONSOLE_VGA_MULTI
-extern device_t vga_pri;	// the primary vga device, defined in device.c
+#if IS_ENABLED(CONFIG_CONSOLE_VGA_MULTI)
+extern struct device *vga_pri;	// the primary vga device, defined in device.c
 #endif
 
-static void create_vga_resource(device_t dev, unsigned nodeid)
+static void create_vga_resource(struct device *dev, unsigned nodeid)
 {
 	struct bus *link;
 
@@ -367,7 +368,7 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG_CONSOLE_VGA_MULTI
+#if IS_ENABLED(CONFIG_CONSOLE_VGA_MULTI)
 			printk(BIOS_DEBUG,
 				"VGA: vga_pri bus num = %d bus range [%d,%d]\n",
 				 vga_pri->bus->secondary, link->secondary,
@@ -389,7 +390,7 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 	set_vga_enable_reg(nodeid, link->link_num);
 }
 
-static void nb_set_resources(device_t dev)
+static void nb_set_resources(struct device *dev)
 {
 	unsigned nodeid;
 	struct bus *bus;
@@ -416,7 +417,7 @@ static void nb_set_resources(device_t dev)
 
 /* Domain/Root Complex related code */
 
-static void domain_read_resources(device_t dev)
+static void domain_read_resources(struct device *dev)
 {
 	unsigned reg;
 
@@ -431,7 +432,7 @@ static void domain_read_resources(device_t dev)
 		/* Is this register allocated? */
 		if ((base & 3) != 0) {
 			unsigned nodeid, reg_link;
-			device_t reg_dev;
+			struct device *reg_dev;
 			if (reg < 0xc0) {	// mmio
 				nodeid = (limit & 0xf) + (base & 0x30);
 			} else {	// io
@@ -458,39 +459,13 @@ static void domain_read_resources(device_t dev)
 	pci_domain_read_resources(dev);
 }
 
-static void setup_uma_memory(void)
-{
-#if CONFIG_GFXUMA
-	uint32_t topmem = (uint32_t) bsp_topmem();
-	uint32_t sys_mem;
-
-	/* refer to UMA Size Consideration in Family14h BKDG. */
-	sys_mem = topmem + 0x1000000; // Ignore 16MB allocated for C6 when finding UMA size, refer MemNGetUmaSizeON()
-	if ((bsp_topmem2()>>32) || (sys_mem >= 0x80000000)) {
-		uma_memory_size = 0x18000000;	/* >= 2G memory, 384M recommended UMA */
-	}
-	else {
-		if (sys_mem >= 0x40000000) {
-			uma_memory_size = 0x10000000;	/* >= 1G memory, 256M recommended UMA */
-		} else {
-			uma_memory_size = 0x4000000;	/* <1G memory, 64M recommended UMA */
-		}
-	}
-
-	uma_memory_base = topmem - uma_memory_size;	/* TOP_MEM1 */
-	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
-			__func__, uma_memory_size, uma_memory_base);
-#endif
-}
-
-static void domain_set_resources(device_t dev)
+static void domain_set_resources(struct device *dev)
 {
 	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
 	printk(BIOS_DEBUG, "  amsr - incoming dev = %p\n", dev);
 
 	unsigned long mmio_basek;
 	u32 pci_tolm;
-	u64 ramtop = 0;
 	int idx;
 	struct bus *link;
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
@@ -576,8 +551,6 @@ static void domain_set_resources(device_t dev)
 						     pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
-					if (!ramtop)
-						ramtop = mmio_basek * 1024;
 				}
 				basek = mmio_basek;
 			}
@@ -594,17 +567,10 @@ static void domain_set_resources(device_t dev)
 		printk(BIOS_DEBUG,
 			"%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n", 0,
 			 mmio_basek, basek, limitk);
-		if (!ramtop)
-			ramtop = limitk * 1024;
 	}
 	printk(BIOS_DEBUG, "  adsr - mmio_basek = %lx.\n", mmio_basek);
 
-#if CONFIG_GFXUMA
-	set_top_of_ram(uma_memory_base);
-	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);
-#else
-	set_top_of_ram(ramtop);
-#endif
+	add_uma_resource_below_tolm(dev, 7);
 
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->children) {
@@ -614,31 +580,7 @@ static void domain_set_resources(device_t dev)
 	printk(BIOS_DEBUG, "  adsr - leaving this lovely routine.\n");
 }
 
-static void domain_enable_resources(device_t dev)
-{
-#if CONFIG_AMD_SB_CIMX
-	if (!acpi_is_wakeup_s3()) {
-		sb_After_Pci_Init();
-		sb_Mid_Post_Init();
-	} else {
-		sb_After_Pci_Restore_Init();
-	}
-#endif
-
-	/* Must be called after PCI enumeration and resource allocation */
-	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
-
-	if (!acpi_is_wakeup_s3()) {
-		/* Enable MMIO on AMD CPU Address Map Controller */
-		amd_initcpuio();
-
-		agesawrapper_amdinitmid();
-	}
-
-	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
-}
-
-static const char *domain_acpi_name(struct device *dev)
+static const char *domain_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		return "PCI0";
@@ -651,7 +593,7 @@ static const char *domain_acpi_name(struct device *dev)
 static void cpu_bus_scan(struct device *dev)
 {
 	struct bus *cpu_bus = dev->link_list;
-	device_t cpu;
+	struct device *cpu;
 	int apic_id, cores_found;
 
 	/* There is only one node for fam14, but there may be multiple cores. */
@@ -669,14 +611,14 @@ static void cpu_bus_scan(struct device *dev)
 	}
 }
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }
 
 /* North Bridge Structures */
 
-static void northbridge_fill_ssdt_generator(device_t device)
+static void northbridge_fill_ssdt_generator(struct device *device)
 {
 	msr_t msr;
 	char pscope[] = "\\_SB.PCI0";
@@ -717,7 +659,7 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	return (unsigned long)current;
 }
 
-static unsigned long agesa_write_acpi_tables(device_t device,
+static unsigned long agesa_write_acpi_tables(struct device *device,
 					     unsigned long current,
 					     acpi_rsdp_t *rsdp)
 {
@@ -818,7 +760,6 @@ struct chip_operations northbridge_amd_agesa_family14_ops = {
 static struct device_operations pci_domain_ops = {
 	.read_resources = domain_read_resources,
 	.set_resources = domain_set_resources,
-	.enable_resources = domain_enable_resources,
 	.init = DEVICE_NOOP,
 	.scan_bus = pci_domain_scan_bus,
 	.acpi_name = domain_acpi_name,
@@ -836,11 +777,8 @@ static void root_complex_enable_dev(struct device *dev)
 {
 	static int done = 0;
 
-	/* Do not delay UMA setup, as a device on the PCI bus may evaluate
-	   the global uma_memory variables already in its enable function. */
 	if (!done) {
 		setup_bsp_ramtop();
-		setup_uma_memory();
 		done = 1;
 	}
 

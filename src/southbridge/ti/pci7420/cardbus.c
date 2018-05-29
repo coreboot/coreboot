@@ -28,7 +28,7 @@
 static int cardbus_count = 0;
 #endif
 
-static void pci7420_cardbus_init(device_t dev)
+static void pci7420_cardbus_init(struct device *dev)
 {
 	u8 reg8;
 	u16 reg16;
@@ -79,12 +79,12 @@ static void pci7420_cardbus_init(device_t dev)
 #endif
 }
 
-static void pci7420_cardbus_read_resources(device_t dev)
+static void pci7420_cardbus_read_resources(struct device *dev)
 {
 	cardbus_read_resources(dev);
 }
 
-static void pci7420_cardbus_set_resources(device_t dev)
+static void pci7420_cardbus_set_resources(struct device *dev)
 {
 	printk(BIOS_DEBUG, "%s In set resources\n",dev_path(dev));
 
@@ -113,7 +113,7 @@ static const struct pci_driver ti_pci7620_driver __pci_driver = {
 	.device = 0xac8d,
 };
 
-static void ti_pci7420_enable_dev(device_t dev)
+static void ti_pci7420_enable_dev(struct device *dev)
 {
 	/* Nothing here yet */
 }

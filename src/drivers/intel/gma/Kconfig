@@ -14,12 +14,6 @@
 ## GNU General Public License for more details.
 ##
 
-config INTEL_DP
-	bool
-	default n
-	help
-	  helper functions for intel display port operations
-
 config INTEL_DDI
 	bool
 	default n
@@ -53,6 +47,21 @@ config INTEL_GMA_SSC_ALTERNATE_REF
 	  supported platform with a choice seems to be Pineview, where the
 	  alternative is 100MHz vs. the default 96MHz.
 
+config INTEL_GMA_SWSMISCI
+	bool
+	default n
+	help
+	  Select this option for Atom-based platforms which use the SWSMISCI
+	  register (0xe0) rather than the SWSCI register (0xe8).
+
+config GFX_GMA_ANALOG_I2C_HDMI_B
+	bool
+
+config GFX_GMA_ANALOG_I2C_HDMI_C
+	bool
+
+config GFX_GMA_ANALOG_I2C_HDMI_D
+	bool
 
 config GFX_GMA
 	def_bool y
@@ -90,18 +99,6 @@ config GFX_GMA_INTERNAL_PORT
 	string
 	default "DP" if GFX_GMA_INTERNAL_IS_EDP
 	default "LVDS"
-
-config GFX_GMA_ANALOG_I2C_HDMI_B
-	bool
-	default n
-
-config GFX_GMA_ANALOG_I2C_HDMI_C
-	bool
-	default n
-
-config GFX_GMA_ANALOG_I2C_HDMI_D
-	bool
-	default n
 
 config GFX_GMA_ANALOG_I2C_PORT
 	string

@@ -1,0 +1,6 @@
+boot_option=Fallback
+debug_level=Spew
+power_on_after_fail=Disable
+nmi=Enable
+volume=0x3
+gfx_uma_size=32M

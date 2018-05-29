@@ -1,0 +1,75 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2018 Angel Pons <th3fanbus@gmail.com>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+if BOARD_GIGABYTE_GA_H61M_S2PV
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_X86
+	select BOARD_ROMSIZE_KB_4096
+	select CPU_INTEL_SOCKET_LGA1155
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_INT15
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_BD82X6X
+	select USE_NATIVE_RAMINIT
+	select SUPERIO_ITE_IT8728F
+	select MAINBOARD_HAS_LIBGFXINIT
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+
+config HAVE_IFD_BIN
+	bool
+	default n
+
+config HAVE_ME_BIN
+	bool
+	default n
+
+config MAINBOARD_DIR
+	string
+	default "gigabyte/ga-h61m-s2pv"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "GA-H61M-S2PV"
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0102.rom"
+
+config VGA_BIOS_ID
+	string
+	default "8086,0102"
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x5001
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1458
+
+config MAX_CPUS
+	int
+	default 8
+
+config USBDEBUG_HCD_INDEX # FIXME: check this
+	int
+	default 2
+
+endif # BOARD_GIGABYTE_GA_H61M_S2PV

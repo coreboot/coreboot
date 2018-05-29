@@ -18,6 +18,7 @@
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
 void pch_enable_lpc(void)

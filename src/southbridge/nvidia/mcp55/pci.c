@@ -29,7 +29,7 @@ static void pci_init(struct device *dev)
 {
 	u32 dword;
 	u16 word;
-	device_t pci_domain_dev;
+	struct device *pci_domain_dev;
 	struct resource *mem, *pref;
 
 	/* System error enable */

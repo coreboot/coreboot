@@ -51,7 +51,7 @@
 #define PM_YANG_SD_FLASH_CTRL		0xE8
 #define PM_PCIB_CFG			0xEA
 
-#define HUDSON_ACPI_IO_BASE		0x800
+#define HUDSON_ACPI_IO_BASE		CONFIG_HUDSON_ACPI_IO_BASE
 #define ACPI_PM_EVT_BLK		(HUDSON_ACPI_IO_BASE + 0x00) /* 4 bytes */
 #define ACPI_PM1_CNT_BLK	(HUDSON_ACPI_IO_BASE + 0x04) /* 2 bytes */
 #define ACPI_PM_TMR_BLK		(HUDSON_ACPI_IO_BASE + 0x18) /* 4 bytes */
@@ -197,7 +197,7 @@ void configure_hudson_uart(void);
 #endif
 
 #else
-void hudson_enable(device_t dev);
+void hudson_enable(struct device *dev);
 void s3_resume_init_data(void *FchParams);
 
 #endif /* __PRE_RAM__ */

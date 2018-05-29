@@ -119,7 +119,11 @@ void dcache_invalidate_by_mva(void const *addr, size_t len)
 
 void cache_sync_instructions(void)
 {
-	dcache_clean_all();	/* includes trailing DSB (in assembly) */
+	uint32_t sctlr = raw_read_sctlr_current();
+	if (sctlr & SCTLR_C)
+		dcache_clean_all();	/* includes trailing DSB (assembly) */
+	else if (sctlr & SCTLR_I)
+		dcache_clean_invalidate_all();
 	icache_invalidate_all(); /* includes leading DSB and trailing ISB */
 }
 

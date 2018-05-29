@@ -26,7 +26,7 @@
 #define BIT(x)				(1ul << (x))
 
 /**
- * Coreboot error codes
+ * coreboot error codes
  *
  * When building functions that return a status or an error code, use cb_err as
  * the return type. When failure reason needs to be communicated by the return
@@ -47,7 +47,14 @@ enum cb_err {
 
 	/* Keyboard test failures */
 	CB_KBD_CONTROLLER_FAILURE = -200,
-	CB_KBD_INTERFACE_FAILURE = -201
+	CB_KBD_INTERFACE_FAILURE = -201,
+
+	/* I2C controller failures */
+	CB_I2C_NO_DEVICE	= -300,	/**< Device is not responding */
+	CB_I2C_BUSY		= -301,	/**< Device tells it's busy */
+	CB_I2C_PROTOCOL_ERROR	= -302,	/**< Data lost or spurious slave
+					     device response, try again? */
+	CB_I2C_TIMEOUT		= -303, /**< Transmission timed out */
 };
 
 #endif /* __TYPES_H */

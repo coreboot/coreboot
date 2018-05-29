@@ -24,9 +24,9 @@
 
 static u32 final_reg;
 
-static device_t find_lpc_dev(device_t dev, unsigned devfn)
+static struct device *find_lpc_dev(struct device *dev, unsigned devfn)
 {
-	device_t lpc_dev;
+	struct device *lpc_dev;
 
 	lpc_dev = dev_find_slot(dev->bus->secondary, devfn);
 	if (!lpc_dev)
@@ -53,9 +53,9 @@ static device_t find_lpc_dev(device_t dev, unsigned devfn)
 	return lpc_dev;
 }
 
-static void ck804_enable(device_t dev)
+static void ck804_enable(struct device *dev)
 {
-	device_t lpc_dev;
+	struct device *lpc_dev;
 	unsigned index = 0, index2 = 0, deviceid, vendorid, devfn;
 	u32 reg_old, reg;
 	u8 byte;
@@ -184,7 +184,8 @@ static void ck804_enable(device_t dev)
 	}
 }
 
-static void ck804_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void ck804_set_subsystem(struct device *dev, unsigned vendor,
+				unsigned device)
 {
 	pci_write_config32(dev, 0x40,
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));

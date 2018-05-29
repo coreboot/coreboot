@@ -311,7 +311,7 @@ static void display_startup(void)
 	set_vbe_mode_info_valid(&edid, (uintptr_t)0);
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	/* TP_SHIFT_EN: Enables the level shifter for I2C bus 4 (TPAD), which
 	 * also contains the PS8640 eDP brige and the USB hub.
@@ -346,7 +346,7 @@ static void mainboard_init(device_t dev)
 	configure_touchscreen();
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = &mainboard_init;
 }

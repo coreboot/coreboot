@@ -1,2 +1,0 @@
-config NORTHBRIDGE_INTEL_COMMON_MRC_CACHE
-	def_bool n

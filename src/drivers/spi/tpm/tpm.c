@@ -17,13 +17,14 @@
 
 #include <arch/early_variables.h>
 #include <assert.h>
+#include <compiler.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
 #include <delay.h>
 #include <endian.h>
 #include <string.h>
 #include <timer.h>
-#include <tpm.h>
+#include <security/tpm/tis.h>
 
 #include "tpm.h"
 
@@ -36,6 +37,8 @@
 #define TPM_DID_VID_REG   (TPM_LOCALITY_0_SPI_BASE + 0xf00)
 #define TPM_RID_REG       (TPM_LOCALITY_0_SPI_BASE + 0xf04)
 #define TPM_FW_VER	  (TPM_LOCALITY_0_SPI_BASE + 0xf90)
+
+#define CR50_TIMEOUT_INIT_MS 30000 /* Very long timeout for TPM init */
 
 /* SPI slave structure for TPM device. */
 static struct spi_slave g_spi_slave CAR_GLOBAL;
@@ -62,7 +65,7 @@ void tpm2_get_info(struct tpm2_info *info)
 	*info = car_get_var(g_tpm_info);
 }
 
-__attribute__((weak)) int tis_plat_irq_status(void)
+__weak int tis_plat_irq_status(void)
 {
 	static int warning_displayed CAR_GLOBAL;
 
@@ -108,19 +111,43 @@ static int start_transaction(int read_write, size_t bytes, unsigned addr)
 	int i;
 	struct stopwatch sw;
 	static int tpm_sync_needed CAR_GLOBAL;
+	static struct stopwatch wake_up_sw CAR_GLOBAL;
 	struct spi_slave *spi_slave = car_get_var_ptr(&g_spi_slave);
+	/*
+	 * First Cr50 access in each coreboot stage where TPM is used will be
+	 * prepended by a wake up pulse on the CS line.
+	 */
+	int wakeup_needed = 1;
 
 	/* Wait for tpm to finish previous transaction if needed */
-	if (car_get_var(tpm_sync_needed))
+	if (car_get_var(tpm_sync_needed)) {
 		tpm_sync();
-	else
+		/*
+		 * During the first invocation of this function on each stage
+		 * this if () clause code does not run (as tpm_sync_needed
+		 * value is zero), during all following invocations the
+		 * stopwatch below is guaranteed to be started.
+		 */
+		if (!stopwatch_expired(car_get_var_ptr(&wake_up_sw)))
+			wakeup_needed = 0;
+	} else {
 		car_set_var(tpm_sync_needed, 1);
+	}
 
-	/* Try to wake cr50 if it is asleep. */
-	spi_claim_bus(spi_slave);
-	udelay(1);
-	spi_release_bus(spi_slave);
-	udelay(100);
+	if (wakeup_needed) {
+		/* Just in case Cr50 is asleep. */
+		spi_claim_bus(spi_slave);
+		udelay(1);
+		spi_release_bus(spi_slave);
+		udelay(100);
+	}
+
+	/*
+	 * The Cr50 on H1 does not go to sleep for 1 second after any
+	 * SPI slave activity, let's be conservative and limit the
+	 * window to 900 ms.
+	 */
+	stopwatch_init_msecs_expire(car_get_var_ptr(&wake_up_sw), 900);
 
 	/*
 	 * The first byte of the frame header encodes the transaction type
@@ -280,7 +307,8 @@ static int tpm2_write_reg(unsigned reg_number, const void *buffer, size_t bytes)
  * To read a register, start transaction, transfer data from the TPM, deassert
  * CS when done.
  *
- * Returns one to indicate success, zero to indicate failure.
+ * Returns one to indicate success, zero to indicate failure. In case of
+ * failure zero out the user buffer.
  */
 static int tpm2_read_reg(unsigned reg_number, void *buffer, size_t bytes)
 {
@@ -341,52 +369,109 @@ static void tpm2_write_access_reg(uint8_t cmd)
 static int tpm2_claim_locality(void)
 {
 	uint8_t access;
+	struct stopwatch sw;
 
-	access = tpm2_read_access_reg();
 	/*
-	 * If active locality is set (maybe reset line is not connected?),
-	 * release the locality and try again.
+	 * Locality is released by TPM reset.
+	 *
+	 * If locality is taken at this point, this could be due to the fact
+	 * that the TPM is performing a long operation and has not processed
+	 * reset request yet. We'll wait up to CR50_TIMEOUT_INIT_MS and see if
+	 * it releases locality when reset is processed.
 	 */
-	if (access & TPM_ACCESS_ACTIVE_LOCALITY) {
-		tpm2_write_access_reg(TPM_ACCESS_ACTIVE_LOCALITY);
+	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_INIT_MS);
+	do {
 		access = tpm2_read_access_reg();
-	}
+		if (access & TPM_ACCESS_ACTIVE_LOCALITY) {
+			/*
+			 * Don't bombard the chip with traffic, let it keep
+			 * processing the command.
+			 */
+			mdelay(2);
+			continue;
+		}
 
-	if (access != TPM_ACCESS_VALID) {
-		printk(BIOS_ERR, "Invalid reset status: %#x\n", access);
-		return 0;
-	}
+		/*
+		 * Ok, the locality is free, TPM must be reset, let's claim
+		 * it.
+		 */
 
-	tpm2_write_access_reg(TPM_ACCESS_REQUEST_USE);
-	access = tpm2_read_access_reg();
-	if (access != (TPM_ACCESS_VALID | TPM_ACCESS_ACTIVE_LOCALITY)) {
-		printk(BIOS_ERR, "Failed to claim locality 0, status: %#x\n",
-		       access);
-		return 0;
-	}
+		tpm2_write_access_reg(TPM_ACCESS_REQUEST_USE);
+		access = tpm2_read_access_reg();
+		if (access != (TPM_ACCESS_VALID | TPM_ACCESS_ACTIVE_LOCALITY)) {
+			break;
+		}
 
-	return 1;
+		printk(BIOS_INFO, "TPM ready after %ld ms\n",
+		       stopwatch_duration_msecs(&sw));
+
+		return 1;
+	} while (!stopwatch_expired(&sw));
+
+	printk(BIOS_ERR,
+	       "Failed to claim locality 0 after %ld ms, status: %#x\n",
+	       stopwatch_duration_msecs(&sw), access);
+
+	return 0;
 }
+
+/* Device/vendor ID values of the TPM devices this driver supports. */
+static const uint32_t supported_did_vids[] = {
+	0x00281ae0  /* H1 based Cr50 security chip. */
+};
 
 int tpm2_init(struct spi_slave *spi_if)
 {
 	uint32_t did_vid, status;
 	uint8_t cmd;
+	int retries;
 	struct tpm2_info *tpm_info = car_get_var_ptr(&g_tpm_info);
 	struct spi_slave *spi_slave = car_get_var_ptr(&g_spi_slave);
 
 	memcpy(spi_slave, spi_if, sizeof(*spi_if));
 
-	/*
-	 * It is enough to check the first register read error status to bail
-	 * out in case of malfunctioning TPM.
-	 */
-	if (!tpm2_read_reg(TPM_DID_VID_REG, &did_vid, sizeof(did_vid)))
-		return -1;
+	/* clear any pending irqs */
+	tis_plat_irq_status();
 
-	/* Claim locality 0. */
-	if (!tpm2_claim_locality())
+	/*
+	 * 150 ms should be enough to synchronize with the TPM even under the
+	 * worst nested reset request conditions. In vast majority of cases
+	 * there would be no wait at all.
+	 */
+	printk(BIOS_INFO, "Probing TPM: ");
+	for (retries = 15; retries > 0; retries--) {
+		int i;
+
+		/* In case of falure to read div_vid is set to zero. */
+		tpm2_read_reg(TPM_DID_VID_REG, &did_vid, sizeof(did_vid));
+
+		for (i = 0; i < ARRAY_SIZE(supported_did_vids); i++)
+			if (did_vid == supported_did_vids[i])
+				break; /* Tpm is up and ready. */
+
+		if (i < ARRAY_SIZE(supported_did_vids))
+			break;
+
+		/* TPM might be resetting, let's retry in a bit. */
+		mdelay(10);
+		printk(BIOS_INFO, ".");
+	}
+
+	if (!retries) {
+		printk(BIOS_ERR, "\n%s: Failed to connect to the TPM\n",
+		       __func__);
 		return -1;
+	}
+
+	printk(BIOS_INFO, " done!\n");
+
+	if (ENV_VERSTAGE || ENV_BOOTBLOCK)
+		/*
+		 * Claim locality 0, do it only during the first
+		 * initialization after reset.
+		 */
+		if (!tpm2_claim_locality())
+			return -1;
 
 	read_tpm_sts(&status);
 	if ((status & TPM_STS_FAMILY_MASK) != TPM_STS_FAMILY_TPM_2_0) {

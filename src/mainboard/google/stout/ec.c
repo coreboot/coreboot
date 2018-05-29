@@ -76,7 +76,7 @@ void stout_ec_finalize_smm(void)
 	if (ec_reg & 0x8) {
 		printk(BIOS_ERR, "  EC Fan Error\n");
 		critical_shutdown = 1;
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 		elog_add_event_word(EC_EVENT_BATTERY_CRITICAL, EC_EVENT_FAN_ERROR);
 #endif
 	}
@@ -86,7 +86,7 @@ void stout_ec_finalize_smm(void)
 	if (ec_reg & 0x80) {
 		printk(BIOS_ERR, "  EC Thermal Device Error\n");
 		critical_shutdown = 1;
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 		elog_add_event_word(EC_EVENT_BATTERY_CRITICAL, EC_EVENT_THERMAL);
 #endif
 	}
@@ -98,14 +98,14 @@ void stout_ec_finalize_smm(void)
 	if ((ec_reg & 0xCF) == 0xC0) {
 		printk(BIOS_ERR, "  EC Critical Battery Error\n");
 		critical_shutdown = 1;
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 		elog_add_event_word(ELOG_TYPE_EC_EVENT, EC_EVENT_BATTERY_CRITICAL);
 #endif
 	}
 
 	if ((ec_reg & 0x8F) == 0x8F) {
 		printk(BIOS_ERR, "  EC Read Battery Error\n");
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 		elog_add_event_word(ELOG_TYPE_EC_EVENT, EC_EVENT_BATTERY);
 #endif
 	}

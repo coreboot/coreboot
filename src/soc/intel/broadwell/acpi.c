@@ -19,7 +19,7 @@
 #include <arch/io.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
-#include <console/console.h>
+#include <device/pci_ops.h>
 #include <cpu/x86/smm.h>
 #include <console/console.h>
 #include <types.h>
@@ -37,6 +37,7 @@
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
+#include <soc/systemagent.h>
 #include <soc/intel/broadwell/chip.h>
 
 /*
@@ -169,15 +170,15 @@ void acpi_init_gnvs(global_nvs_t *gnvs)
 	/* CPU core count */
 	gnvs->pcnt = dev_count_cpu();
 
-#if CONFIG_CONSOLE_CBMEM
+#if IS_ENABLED(CONFIG_CONSOLE_CBMEM)
 	/* Update the mem console pointer. */
 	gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
 #endif
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 	/* Initialize Verified Boot data */
 	chromeos_init_vboot(&(gnvs->chromeos));
-#if CONFIG_EC_GOOGLE_CHROMEEC
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
 		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
 #endif
@@ -569,6 +570,62 @@ void generate_cpu_entries(device_t device)
 			acpigen_pop_len();
 		}
 	}
+}
+
+static unsigned long acpi_fill_dmar(unsigned long current)
+{
+	struct device *const igfx_dev = dev_find_slot(0, SA_DEVFN_IGD);
+	const u32 gfxvtbar = MCHBAR32(GFXVTBAR) & ~0xfff;
+	const u32 vtvc0bar = MCHBAR32(VTVC0BAR) & ~0xfff;
+	const bool gfxvten = MCHBAR32(GFXVTBAR) & 0x1;
+	const bool vtvc0en = MCHBAR32(VTVC0BAR) & 0x1;
+
+	/* iGFX has to be enabled; GFXVTBAR set, enabled, in 32-bit space */
+	if (igfx_dev && igfx_dev->enabled && gfxvtbar
+			&& gfxvten && !MCHBAR32(GFXVTBAR + 4)) {
+		const unsigned long tmp = current;
+
+		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);
+		current += acpi_create_dmar_drhd_ds_pci(current, 0, 2, 0);
+
+		acpi_dmar_drhd_fixup(tmp, current);
+	}
+
+	/* VTVC0BAR has to be set, enabled, and in 32-bit space */
+	if (vtvc0bar && vtvc0en && !MCHBAR32(VTVC0BAR + 4)) {
+		const unsigned long tmp = current;
+		current += acpi_create_dmar_drhd(current,
+				DRHD_INCLUDE_PCI_ALL, 0, vtvc0bar);
+		current += acpi_create_dmar_drhd_ds_ioapic(current,
+				2, PCH_IOAPIC_PCI_BUS, PCH_IOAPIC_PCI_SLOT, 0);
+		size_t i;
+		for (i = 0; i < 8; ++i)
+			current += acpi_create_dmar_drhd_ds_msi_hpet(current,
+					0, PCH_HPET_PCI_BUS,
+					PCH_HPET_PCI_SLOT, i);
+		acpi_dmar_drhd_fixup(tmp, current);
+	}
+
+	return current;
+}
+
+unsigned long northbridge_write_acpi_tables(struct device *const dev,
+					    unsigned long current,
+					    struct acpi_rsdp *const rsdp)
+{
+	/* Create DMAR table only if we have VT-d capability. */
+	const u32 capid0_a = pci_read_config32(dev, CAPID0_A);
+	if (capid0_a & VTD_DISABLE)
+		return current;
+
+	acpi_dmar_t *const dmar = (acpi_dmar_t *)current;
+	printk(BIOS_DEBUG, "ACPI:    * DMAR\n");
+	acpi_create_dmar(dmar, DMAR_INTR_REMAP, acpi_fill_dmar);
+	current += dmar->header.length;
+	current = acpi_align_current(current);
+	acpi_add_table(rsdp, dmar);
+
+	return current;
 }
 
 unsigned long acpi_madt_irq_overrides(unsigned long current)

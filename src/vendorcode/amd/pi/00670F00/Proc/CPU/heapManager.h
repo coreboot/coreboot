@@ -41,6 +41,8 @@
  *
  ***************************************************************************/
 
+#include <check_for_wrapper.h>
+
 #ifndef _HEAP_MANAGER_H_
 #define _HEAP_MANAGER_H_
 

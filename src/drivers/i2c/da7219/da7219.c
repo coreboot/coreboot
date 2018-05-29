@@ -17,7 +17,7 @@
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
 #include <console/console.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <stdint.h>
@@ -57,7 +57,11 @@ static void da7219_fill_ssdt(struct device *dev)
 	acpigen_write_name("_CRS");
 	acpigen_write_resourcetemplate_header();
 	acpi_device_write_i2c(&i2c);
-	acpi_device_write_interrupt(&config->irq);
+	/* Use either Interrupt() or GpioInt() */
+	if (config->irq_gpio.pin_count)
+		acpi_device_write_gpio(&config->irq_gpio);
+	else
+		acpi_device_write_interrupt(&config->irq);
 	acpigen_write_resourcetemplate_footer();
 
 	/* AAD Child Device Properties */
@@ -82,6 +86,8 @@ static void da7219_fill_ssdt(struct device *dev)
 	dsd = acpi_dp_new_table("_DSD");
 	acpi_dp_add_integer(dsd, "dlg,micbias-lvl", config->micbias_lvl);
 	acpi_dp_add_string(dsd, "dlg,mic-amp-in-sel", config->mic_amp_in_sel);
+	if (config->mclk_name != NULL)
+		acpi_dp_add_string(dsd, "dlg,mclk-name", config->mclk_name);
 	acpi_dp_add_child(dsd, "da7219_aad", aad);
 
 	/* Write Device Property Hierarchy */
@@ -95,7 +101,7 @@ static void da7219_fill_ssdt(struct device *dev)
 	       dev->path.i2c.device, config->irq.pin);
 }
 
-static const char *da7219_acpi_name(struct device *dev)
+static const char *da7219_acpi_name(const struct device *dev)
 {
 	return DA7219_ACPI_NAME;
 }

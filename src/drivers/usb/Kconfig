@@ -25,7 +25,7 @@ config USBDEBUG
 	  It also requires a USB2 controller which supports the EHCI
 	  Debug Port capability.
 
-	  See http://www.coreboot.org/EHCI_Debug_Port for an up-to-date list
+	  See https://www.coreboot.org/EHCI_Debug_Port for an up-to-date list
 	  of supported controllers.
 
 	  If unsure, say N.
@@ -77,17 +77,15 @@ choice
 	default USBDEBUG_DONGLE_STD
 
 config USBDEBUG_DONGLE_STD
-	bool "Net20DC or compatible"
+	bool "USB gadget driver or Net20DC"
+	help
+	  Net20DC, BeagleBone Black, Raspberry Pi Zero W
 
 config USBDEBUG_DONGLE_BEAGLEBONE
 	bool "BeagleBone"
 	help
 	  Use this to configure the USB hub on BeagleBone board.
-
-config USBDEBUG_DONGLE_BEAGLEBONE_BLACK
-	bool "BeagleBone Black"
-	help
-	  Use this with BeagleBone Black.
+	  Do NOT select this for the BeagleBone Black.
 
 config USBDEBUG_DONGLE_FTDI_FT232H
 	bool "FTDI FT232H UART"

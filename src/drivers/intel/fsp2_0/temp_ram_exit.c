@@ -47,3 +47,8 @@ void fsp_temp_ram_exit(void)
 		die("TempRamExit returned an error!\n");
 	}
 }
+
+void late_car_teardown(void)
+{
+	fsp_temp_ram_exit();
+}

@@ -28,6 +28,8 @@
 #ifndef _MRC_WRAPPER_H_
 #define _MRC_WRAPPER_H_
 
+#include <compiler.h>
+
 #define MRC_PARAMS_VER  5
 
 #define NUM_CHANNELS 2
@@ -76,7 +78,7 @@ struct mrc_mainboard_params {
 	int dram_odt_value;
 	int spd_addrs[NUM_CHANNELS];
 	void *dram_data[NUM_CHANNELS]; /* SPD or Timing specific data. */
-} __attribute__((packed));
+} __packed;
 
 struct mrc_params {
 	/* Mainboard Inputs */
@@ -99,7 +101,7 @@ struct mrc_params {
 	void *txe_base_address;
 	int data_to_save_size;
 	void *data_to_save;
-} __attribute__((packed));
+} __packed;
 
 /* Call into wrapper. */
 typedef int ABI_X86 (*mrc_wrapper_entry_t)(struct mrc_params *);

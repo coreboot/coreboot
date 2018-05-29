@@ -72,7 +72,7 @@ static void set_thermal_config(void)
 	u8 byte, byte2;
 	u16 word;
 	u32 dword;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	/* set adt7475 */
 	ADT7475_write_byte(0x40, 0x04);
@@ -246,7 +246,7 @@ static void set_thermal_config(void)
 * enable the dedicated function in pistachio board.
 * This function called early than rs690_enable.
 *************************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard Pistachio Enable. dev=0x%p\n", dev);
 

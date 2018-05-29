@@ -21,22 +21,20 @@
 #include <console/post_codes.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <reg_script.h>
 #include <spi-generic.h>
-#include <stdlib.h>
-#include <soc/lpc.h>
 #include <soc/me.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <soc/smbus.h>
-#include <soc/spi.h>
 #include <soc/systemagent.h>
+#include <soc/thermal.h>
+#include <stdlib.h>
 
-#define PCR_DMI_GCS		0x274C
-#define PCR_DMI_GCS_BILD  	(1 << 0)
 #define PSF_BASE_ADDRESS	0xA00
 #define PCR_PSFX_T0_SHDW_PCIEN	0x1C
 #define PCR_PSFX_T0_SHDW_PCIEN_FUNDIS	(1 << 8)
@@ -49,13 +47,42 @@ static void pch_configure_endpoints(device_t dev, int epmask_id, uint32_t mask)
 	pci_write_config32(dev, PCH_P2SB_EPMASK(epmask_id), reg32 | mask);
 }
 
-static void pch_disable_heci(void)
+static void disable_sideband_access(void)
 {
 	device_t dev;
 	u8 reg8;
 	uint32_t mask;
 
 	dev = PCH_DEV_P2SB;
+
+	/*
+	 * Set p2sb PCI offset EPMASK5 C4h [29, 28, 27, 26] to disable Sideband
+	 * access for PCI Root Bridge.
+	 * Set p2sb PCI offset EPMASK5 C4h [17, 16,10, 1] to disable Sideband
+	 * access for MIPI controller.
+	 */
+	mask = (1 << 29) | (1 << 28) | (1 << 27) | (1 << 26) | (1 << 17) |
+			 (1 << 16) | (1 << 10) | (1 << 1);
+	pch_configure_endpoints(dev, 5, mask);
+
+	/*
+	 * Set p2sb PCI offset EPMASK7 CCh ports E6, E5 (bits 6, 5)
+	 * to disable Sideband access for XHCI controller.
+	 */
+	mask = (1 << 6) | (1 << 5);
+	pch_configure_endpoints(dev, 7, mask);
+
+	/* Set the "Endpoint Mask Lock!", P2SB PCI offset E2h bit[1] to 1. */
+	reg8 = pci_read_config8(dev, PCH_P2SB_E0 + 2);
+	pci_write_config8(dev, PCH_P2SB_E0 + 2, reg8 | (1 << 1));
+
+	/* hide p2sb device */
+	pci_write_config8(dev, PCH_P2SB_E0 + 1, 1);
+}
+
+static void pch_disable_heci(void)
+{
+	device_t dev = PCH_DEV_P2SB;
 
 	/*
 	 * if p2sb device 1f.1 is not present or hidden in devicetree
@@ -71,64 +98,32 @@ static void pch_disable_heci(void)
 	pcr_or32(PID_PSF1, PSF_BASE_ADDRESS + PCR_PSFX_T0_SHDW_PCIEN,
 		PCR_PSFX_T0_SHDW_PCIEN_FUNDIS);
 
-	/* Remove the host accessing right to PSF register range. */
-	/* Set p2sb PCI offset EPMASK5 C4h [29, 28, 27, 26] to [1, 1, 1, 1] */
-	mask = (1 << 29) | (1 << 28) | (1 << 27)  | (1 << 26);
-	pch_configure_endpoints(dev, 5, mask);
-
-	/* Set the "Endpoint Mask Lock!", P2SB PCI offset E2h bit[1] to 1. */
-	reg8 = pci_read_config8(dev, PCH_P2SB_E0 + 2);
-	pci_write_config8(dev, PCH_P2SB_E0 + 2, reg8 | (1 << 1));
-
-	/* hide p2sb device */
-	pci_write_config8(dev, PCH_P2SB_E0 + 1, 1);
+	disable_sideband_access();
 }
 
 static void pch_finalize_script(void)
 {
 	device_t dev;
-	uint32_t reg32, hsfs;
-	void *spibar = get_spi_bar();
-	u16 tcobase;
-	u16 tcocnt;
+	uint32_t reg32;
 	uint8_t *pmcbase;
 	config_t *config;
-	u32 pmsyncreg;
 	u8 reg8;
-
-	/* Set SPI opcode menu */
-	write16(spibar + SPIBAR_PREOP, SPI_OPPREFIX);
-	write16(spibar + SPIBAR_OPTYPE, SPI_OPTYPE);
-	write32(spibar + SPIBAR_OPMENU_LOWER, SPI_OPMENU_LOWER);
-	write32(spibar + SPIBAR_OPMENU_UPPER, SPI_OPMENU_UPPER);
-	/* Lock SPIBAR */
-	hsfs = read32(spibar + SPIBAR_HSFS);
-	hsfs |= SPIBAR_HSFS_FLOCKDN;
-	write32(spibar + SPIBAR_HSFS, hsfs);
-
-	/*TCO Lock down */
-	tcobase = smbus_tco_regs();
-	tcocnt = inw(tcobase + TCO1_CNT);
-	tcocnt |= TCO_LOCK;
-	outw(tcocnt, tcobase + TCO1_CNT);
-
-	/* Lock down ABASE and sleep stretching policy */
-	dev = PCH_DEV_PMC;
-	reg32 = pci_read_config32(dev, GEN_PMCON_B);
-	reg32 |= (SLP_STR_POL_LOCK | ACPI_BASE_LOCK);
-	pci_write_config32(dev, GEN_PMCON_B, reg32);
-
-	/* PMSYNC */
-	pmcbase = pmc_mmio_regs();
-	pmsyncreg = read32(pmcbase + PMSYNC_TPR_CFG);
-	pmsyncreg |= PMSYNC_LOCK;
-	write32(pmcbase + PMSYNC_TPR_CFG, pmsyncreg);
 
 	/* Display me status before we hide it */
 	intel_me_status();
 
-	/* we should disable Heci1 based on the devicetree policy */
+	dev = PCH_DEV_PMC;
+	pmcbase = pmc_mmio_regs();
 	config = dev->chip_info;
+
+	/*
+	 * Set low maximum temp value used for dynamic thermal sensor
+	 * shutdown consideration.
+	 *
+	 * If Dynamic Thermal Shutdown is enabled then PMC logic shuts down the
+	 * thermal sensor when CPU is in a C-state and DTS Temp <= LTT.
+	 */
+	pch_thermal_configuration();
 
 	/*
 	 * Disable ACPI PM timer based on dt policy
@@ -143,6 +138,13 @@ static void pch_finalize_script(void)
 		write8(pmcbase + PCH_PWRM_ACPI_TMR_CTL, reg8);
 	}
 
+	/* Disable XTAL shutdown qualification for low power idle. */
+	if (config->s0ix_enable) {
+		reg32 = read32(pmcbase + CIR31C);
+		reg32 |= XTALSDQDIS;
+		write32(pmcbase + CIR31C, reg32);
+	}
+
 	/* we should disable Heci1 based on the devicetree policy */
 	if (config->HeciEnabled == 0)
 		pch_disable_heci();
@@ -150,55 +152,23 @@ static void pch_finalize_script(void)
 
 static void soc_lockdown(void)
 {
+	struct soc_intel_skylake_config *config;
+	struct device *dev;
 	u8 reg8;
-	device_t dev;
-	const struct device *dev1 = dev_find_slot(0, PCH_DEVFN_LPC);
-	const struct soc_intel_skylake_config *config = dev1->chip_info;
+
+	dev = PCH_DEV_PMC;
+
+	/* Check if PMC is enabled, else return */
+	if (dev == NULL || dev->chip_info == NULL)
+		return;
+
+	config = dev->chip_info;
 
 	/* Global SMI Lock */
 	if (config->LockDownConfigGlobalSmi == 0) {
-		dev = PCH_DEV_PMC;
 		reg8 = pci_read_config8(dev, GEN_PMCON_A);
 		reg8 |= SMI_LOCK;
 		pci_write_config8(dev, GEN_PMCON_A, reg8);
-	}
-
-	/* Bios Interface Lock */
-	if (config->LockDownConfigBiosInterface == 0) {
-		pci_write_config8(PCH_DEV_LPC, BIOS_CNTL,
-				  pci_read_config8(PCH_DEV_LPC,
-						   BIOS_CNTL) | LPC_BC_BILD);
-		/* Reads back for posted write to take effect */
-		pci_read_config8(PCH_DEV_LPC, BIOS_CNTL);
-		pci_write_config32(PCH_DEV_SPI, SPIBAR_BIOS_CNTL,
-				   pci_read_config32(PCH_DEV_SPI,
-						     SPIBAR_BIOS_CNTL) |
-				   SPIBAR_BC_BILD);
-		/* Reads back for posted write to take effect */
-		pci_read_config32(PCH_DEV_SPI, SPIBAR_BIOS_CNTL);
-		/* GCS reg of DMI */
-		pcr_or8(PID_DMI, PCR_DMI_GCS, PCR_DMI_GCS_BILD);
-	}
-
-	/* Bios Lock */
-	if (config->LockDownConfigBiosLock == 0) {
-		pci_write_config8(PCH_DEV_LPC, BIOS_CNTL,
-				  pci_read_config8(PCH_DEV_LPC,
-						   BIOS_CNTL) | LPC_BC_LE);
-		pci_write_config8(PCH_DEV_SPI, BIOS_CNTL,
-				  pci_read_config8(PCH_DEV_SPI,
-						   BIOS_CNTL) | SPIBAR_BC_LE);
-	}
-
-	/* SPIEiss */
-	if (config->LockDownConfigSpiEiss == 0) {
-		pci_write_config8(PCH_DEV_LPC, BIOS_CNTL,
-				  pci_read_config8(PCH_DEV_LPC,
-						   BIOS_CNTL) | LPC_BC_EISS);
-		pci_write_config8(PCH_DEV_SPI, BIOS_CNTL,
-				  pci_read_config8(PCH_DEV_SPI,
-						   SPIBAR_BIOS_CNTL) |
-				  SPIBAR_BC_EISS);
 	}
 }
 

@@ -19,14 +19,12 @@
 
 #include <stdint.h>
 #include <option.h>
-#include <arch/acpi.h>
 #include <arch/cpu.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 
 #include <reset.h>
-#include <cbmem.h>
 #include "sb700.h"
 #include "smbus.h"
 
@@ -152,7 +150,7 @@ void sb7xx_51xx_lpc_init(void)
 	reg32 |= 1 << 20;
 	pci_write_config32(dev, 0x64, reg32);
 
-#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 	post_code(0x66);
 	dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);     /* LPC Controller */
 	reg8 = pci_read_config8(dev, 0xBB);
@@ -166,7 +164,7 @@ void sb7xx_51xx_lpc_init(void)
 	// XXX Serial port decode on LPC is hardcoded to 0x3f8
 	reg8 = pci_read_config8(dev, 0x44);
 	reg8 |= 1 << 6;
-#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 #if CONFIG_TTYS0_BASE == 0x2f8
 	reg8 |= 1 << 7;
 #endif
@@ -532,7 +530,7 @@ static void sb700_devices_por_init(void)
 	pci_write_config8(dev, 0x50, 0x01);
 
 	if (!sata_ahci_mode){
-#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 		/* SP5100 default SATA mode is RAID5 MODE */
 		dev = pci_locate_device(PCI_ID(0x1002, 0x4392), 0);
 
@@ -688,7 +686,7 @@ static void sb700_pmio_por_init(void)
 	byte |= 0xc0;
 	pmio_write(0xbb, byte);
 
-#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 	/* RPR 2.26 Alter CPU reset timing */
 	byte = pmio_read(0xb2);
 	byte |= 0x1 << 2;	/* Enable CPU reset timing option */
@@ -841,13 +839,6 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 	return nvram_pos;
 }
 
-int acpi_get_sleep_type(void)
-{
-	u16 tmp;
-	tmp = inw(ACPI_PM1_CNT_BLK);
-	return ((tmp & (7 << 10)) >> 10);
-}
-
 void set_lpc_sticky_ctl(bool enable)
 {
 	uint8_t byte;
@@ -859,22 +850,5 @@ void set_lpc_sticky_ctl(bool enable)
 		byte &= ~0x20;
 	pmio_write(0xbb, byte);
 }
-
-#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
-unsigned long get_top_of_ram(void)
-{
-	uint32_t xdata = 0;
-	int xnvram_pos = 0xfc, xi;
-	if (acpi_get_sleep_type() != 3)
-		return 0;
-	for (xi = 0; xi < 4; xi++) {
-		outb(xnvram_pos, BIOSRAM_INDEX);
-		xdata &= ~(0xff << (xi * 8));
-		xdata |= inb(BIOSRAM_DATA) << (xi *8);
-		xnvram_pos++;
-	}
-	return (unsigned long) xdata;
-}
-#endif
 
 #endif

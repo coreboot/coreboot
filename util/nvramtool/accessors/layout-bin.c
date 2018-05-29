@@ -16,7 +16,7 @@
  *
  *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
- *  For details, see http://coreboot.org/nvramtool.
+ *  For details, see https://coreboot.org/nvramtool.
  *
  *  Please also read the file DISCLAIMER which is included in this software
  *  distribution.
@@ -73,7 +73,7 @@ void process_layout(void)
 		fprintf(stderr,
 			"%s: CMOS option table not found in coreboot table.  "
 			"Apparently, the coreboot installed on this system was "
-			"built without specifying CONFIG_HAVE_OPTION_TABLE.\n",
+			"built without selecting CONFIG_USE_OPTION_TABLE.\n",
 			prog_name);
 		exit(1);
 	}
@@ -480,6 +480,12 @@ static void try_add_cmos_table_entry(cmos_entry_t * cmos_entry)
 		 * reasonable manner just to be safe.
 		 */
 		return;
+
+	case LAYOUT_MULTIBYTE_ENTRY_NOT_ALIGNED:
+		fprintf(stderr,
+			"%s: Unaligned CMOS option table entry %s "
+			"spans multiple bytes.\n", prog_name, cmos_entry->name);
+		break;
 
 	default:
 		BUG();

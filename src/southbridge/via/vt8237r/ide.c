@@ -15,6 +15,7 @@
 
 /* Based on other VIA SB code. */
 
+#include <compiler.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -25,7 +26,7 @@
 /**
  * Cable type detect function, weak so it can be overloaded in mainboard.c
  */
-u32 __attribute__((weak)) vt8237_ide_80pin_detect(struct device *dev)
+u32 __weak vt8237_ide_80pin_detect(struct device *dev)
 {
 	struct southbridge_via_vt8237r_config *sb =
 	    (struct southbridge_via_vt8237r_config *)dev->chip_info;
@@ -101,8 +102,8 @@ static void ide_init(struct device *dev)
 	cablesel |= vt8237_ide_80pin_detect(dev);
 	pci_write_config32(dev, IDE_UDMA, cablesel);
 
-#if CONFIG_EPIA_VT8237R_INIT
-	device_t lpc_dev;
+#if IS_ENABLED(CONFIG_EPIA_VT8237R_INIT)
+	struct device *lpc_dev;
 
 	/* Set PATA Output Drive Strength */
 	lpc_dev = dev_find_device(PCI_VENDOR_ID_VIA,

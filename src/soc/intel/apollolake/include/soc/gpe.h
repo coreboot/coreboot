@@ -33,6 +33,8 @@
 #define GPE0A_GPIO_TIER1_SCI_STS	15
 #define GPE0A_SMB_WAK_STS		16
 #define GPE0A_SATA_PME_STS		17
+#define GPE0A_CNVI_PME_STS	        18
+#define GPE0A_ESPI_SCI_STS		20 /* Present in GLK */
 
 /* Group DW0 is reserved in Apollolake */
 
@@ -136,4 +138,5 @@
 #define GPE0_DW3_30		126
 #define GPE0_DW3_31		127
 
+#define GPE_MAX			GPE0_DW3_31
 #endif

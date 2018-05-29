@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 The ChromiumOS Authors.  All rights reserved.
+ * Copyright (C) 2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +19,7 @@
 
 #include <commonlib/timestamp_serialized.h>
 
-#if CONFIG_COLLECT_TIMESTAMPS && (CONFIG_EARLY_CBMEM_INIT \
+#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS) && (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT) \
 	|| !defined(__PRE_RAM__))
 /*
  * timestamp_init() needs to be called once for each of these cases:
@@ -36,14 +37,38 @@ void timestamp_init(uint64_t base);
 void timestamp_add(enum timestamp_id id, uint64_t ts_time);
 /* Calls timestamp_add with current timestamp. */
 void timestamp_add_now(enum timestamp_id id);
+
+/* Apply a factor of N/M to all timestamps recorded so far. */
+void timestamp_rescale_table(uint16_t N, uint16_t M);
+
+/*
+ * Get the time since boot scaled in microseconds. Therefore use the base time
+ * of the timestamps to get the initial value which is subtracted from
+ * current timestamp at call time. This will provide a more reliable value even
+ * if the TSC is not reset on soft reset or warm start.
+ */
+uint32_t get_us_since_boot(void);
+
 #else
 #define timestamp_init(base)
 #define timestamp_add(id, time)
 #define timestamp_add_now(id)
+#define timestamp_rescale_table(N, M)
+#define get_us_since_boot() 0
 #endif
 
+/**
+ * Workaround for guard combination above.
+ * Looks like CONFIG_EARLY_CBMEM_INIT selects
+ * timestamp.c to be build.
+ */
+#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
 /* Implemented by the architecture code */
 uint64_t timestamp_get(void);
+#else
+#define timestamp_get() 0
+#endif
+
 uint64_t get_initial_timestamp(void);
 /* Returns timestamp tick frequency in MHz. */
 int timestamp_tick_freq_mhz(void);

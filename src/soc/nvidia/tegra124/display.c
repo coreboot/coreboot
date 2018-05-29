@@ -212,7 +212,7 @@ uint32_t fb_base_mb(void)
 /* this is really aimed at the lcd panel. That said, there are two display
  * devices on this part and we may someday want to extend it for other boards.
  */
-void display_startup(device_t dev)
+void display_startup(struct device *dev)
 {
 	struct soc_nvidia_tegra124_config *config = dev->chip_info;
 	struct display_controller *disp_ctrl = (void *)config->display_controller;

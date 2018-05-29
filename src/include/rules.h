@@ -19,7 +19,20 @@
  * romstage, ramstage or SMM.
  */
 
-#if defined(__BOOTBLOCK__)
+#if defined(__DECOMPRESSOR__)
+#define ENV_DECOMPRESSOR 1
+#define ENV_BOOTBLOCK 0
+#define ENV_ROMSTAGE 0
+#define ENV_RAMSTAGE 0
+#define ENV_SMM 0
+#define ENV_VERSTAGE 0
+#define ENV_RMODULE 0
+#define ENV_POSTCAR 0
+#define ENV_LIBAGESA 0
+#define ENV_STRING "decompressor"
+
+#elif defined(__BOOTBLOCK__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 1
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
@@ -31,6 +44,7 @@
 #define ENV_STRING "bootblock"
 
 #elif defined(__ROMSTAGE__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 1
 #define ENV_RAMSTAGE 0
@@ -42,6 +56,7 @@
 #define ENV_STRING "romstage"
 
 #elif defined(__SMM__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
@@ -53,6 +68,7 @@
 #define ENV_STRING "smm"
 
 #elif defined(__VERSTAGE__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
@@ -64,6 +80,7 @@
 #define ENV_STRING "verstage"
 
 #elif defined(__RAMSTAGE__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 1
@@ -75,6 +92,7 @@
 #define ENV_STRING "ramstage"
 
 #elif defined(__RMODULE__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
@@ -86,6 +104,7 @@
 #define ENV_STRING "rmodule"
 
 #elif defined(__POSTCAR__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
@@ -97,6 +116,7 @@
 #define ENV_STRING "postcar"
 
 #elif defined(__LIBAGESA__)
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
@@ -112,6 +132,7 @@
  * Default case of nothing set for random blob generation using
  * create_class_compiler that isn't bound to a stage.
  */
+#define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
@@ -121,20 +142,6 @@
 #define ENV_POSTCAR 0
 #define ENV_LIBAGESA 0
 #define ENV_STRING "UNKNOWN"
-#endif
-
-/* For pre-DRAM stages and post-CAR always build with simple device model, ie.
- * PCI, PNP and CPU functions operate without use of devicetree. The reason
- * post-CAR utilizes __SIMPLE_DEVICE__ is for simplicity. Currently there's
- * no known requirement that devicetree would be needed during that stage.
- *
- * For ramstage individual source file may define __SIMPLE_DEVICE__
- * before including any header files to force that particular source
- * be built with simple device model.
- */
-
-#if defined(__PRE_RAM__) || ENV_SMM || ENV_POSTCAR
-#define __SIMPLE_DEVICE__
 #endif
 
 /* Define helpers about the current architecture, based on toolchain.inc. */
@@ -248,6 +255,31 @@
 #define ENV_X86_32 0
 #define ENV_X86_64 0
 
+#endif
+
+/**
+ * For pre-DRAM stages and post-CAR always build with simple device model, ie.
+ * PCI, PNP and CPU functions operate without use of devicetree. The reason
+ * post-CAR utilizes __SIMPLE_DEVICE__ is for simplicity. Currently there's
+ * no known requirement that devicetree would be needed during that stage.
+ *
+ * For ramstage individual source file may define __SIMPLE_DEVICE__
+ * before including any header files to force that particular source
+ * be built with simple device model.
+ *
+ * For now only x86 is supported.
+ */
+
+#if ENV_X86 && (defined(__PRE_RAM__) || ENV_SMM || ENV_POSTCAR)
+#define __SIMPLE_DEVICE__
+#endif
+
+/* x86 specific. Indicates that the current stage is running with cache-as-ram
+ * enabled from the beginning of the stage in C code. */
+#if defined(__PRE_RAM__)
+#define ENV_CACHE_AS_RAM IS_ENABLED(CONFIG_CACHE_AS_RAM)
+#else
+#define ENV_CACHE_AS_RAM 0
 #endif
 
 #endif /* _RULES_H */

@@ -73,7 +73,8 @@ Scope (\_SB)
 		Store (0, Local1)
 		Or( Or (ShiftLeft (Arg0, 16), CONFIG_PCR_BASE_ADDRESS),
 					Local1, Local1)
-		Or( Add (PAD_CFG_BASE, Multiply (Arg1, 8)), Local1, Local1)
+		Or( Add (PAD_CFG_BASE, Multiply (Arg1, Multiply (
+			GPIO_NUM_PAD_CFG_REGS, 4))), Local1, Local1)
 		Return (Local1)
 	}
 
@@ -81,7 +82,7 @@ Scope (\_SB)
 	Method (CHSA, 0x1, Serialized)
 	{
 		/* Arg0 - GPIO pad offset relative to the community */
-		Add (HOSTSW_OWN_REG_BASE, Multiply (Divide (Arg0, 32), 4), Local1)
+		Add (HOSTSW_OWN_REG_0, Multiply (Divide (Arg0, 32), 4), Local1)
 		Return (Local1)
 	}
 

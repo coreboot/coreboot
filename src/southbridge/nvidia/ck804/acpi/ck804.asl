@@ -54,7 +54,7 @@ Method (SRSA, 1, Serialized) {
 
 /* set "B", external (PCI) APIC interrupts */
 Name (PRSB, ResourceTemplate () {
-	Interrupt (ResourceConsumer, Level, ActiveLow, Shared, ,, ) {
+	Interrupt (ResourceConsumer, Level, ActiveLow, Shared, ,,) {
 		16, 17, 18, 19,
 	}
 })
@@ -93,7 +93,7 @@ Method (SRSB, 1, Serialized) {
 
 /* set "C", southbridge APIC interrupts */
 Name (PRSC, ResourceTemplate () {
-	Interrupt (ResourceConsumer, Level, ActiveLow, Shared, ,, ) {
+	Interrupt (ResourceConsumer, Level, ActiveLow, Shared, ,,) {
 		20, 21, 22, 23,
 	}
 })

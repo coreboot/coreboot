@@ -289,7 +289,7 @@ enum spd_memory_type {
 #define RC62 62
 #define RC63 63
 
-/* Byte 20: DIMM type information */
+/* Byte 3: Module type information */
 #define SPD_UNDEFINED 0x00
 #define SPD_RDIMM 0x01
 #define SPD_UDIMM 0x02
@@ -299,5 +299,7 @@ enum spd_memory_type {
 #define SPD_MICRO_DIMM 0x08
 #define SPD_MINI_RDIMM 0x10
 #define SPD_MINI_UDIMM 0x20
+
+#define SPD_ECC_8BIT (1<<3)
 
 #endif

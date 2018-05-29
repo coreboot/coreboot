@@ -15,24 +15,16 @@
  * GNU General Public License for more details.
  */
 
-#include <northbridge/amd/agesa/BiosCallOuts.h>
 
-#include <arch/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include <cpu/x86/msr.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_def.h>
 
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 #include <southbridge/amd/cimx/sb800/pci_devs.h>
 #include <southbridge/amd/cimx/cimx_util.h>
 #include <northbridge/amd/agesa/family14/pci_devs.h>
-
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
 
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
@@ -128,27 +120,10 @@ static void pirq_setup(void)
 	picr_data_ptr = mainboard_picr_data;
 }
 
-/**
- * TODO
- * SB CIMx callback
- */
-void set_pcie_reset(void)
-{
-}
-
-/**
- * TODO
- * mainboard specific SB CIMx callback
- */
-void set_pcie_dereset(void)
-{
-}
-
-
 /**********************************************
  * Enable the dedicated functions of the board.
  **********************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 

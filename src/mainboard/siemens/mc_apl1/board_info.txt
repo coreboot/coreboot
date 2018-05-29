@@ -1,4 +1,6 @@
+Vendor name: Siemens
 Board name: MC APL1
 Category: misc
 ROM protocol: SPI
 ROM socketed: no
+Flashrom support: yes

@@ -25,7 +25,7 @@
 #include "ehci_debug.h"
 #include "ehci.h"
 
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
+#if ENV_RAMSTAGE
 static struct device_operations *ehci_drv_ops;
 static struct device_operations ehci_dbg_ops;
 #endif
@@ -33,12 +33,25 @@ static struct device_operations ehci_dbg_ops;
 int ehci_debug_hw_enable(unsigned int *base, unsigned int *dbg_offset)
 {
 	pci_devfn_t dbg_dev = pci_ehci_dbg_dev(CONFIG_USBDEBUG_HCD_INDEX);
-	pci_ehci_dbg_enable(dbg_dev, CONFIG_EHCI_BAR);
+
 #ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev = dbg_dev;
 #else
 	device_t dev = dev_find_slot(PCI_DEV2SEGBUS(dbg_dev), PCI_DEV2DEVFN(dbg_dev));
 #endif
+
+	u32 class = pci_read_config32(dev, PCI_CLASS_REVISION) >> 8;
+	if (class != PCI_EHCI_CLASSCODE)
+		return -1;
+
+	u8 pm_cap = pci_find_capability(dev, PCI_CAP_ID_PM);
+	if (pm_cap) {
+		u16 pm_ctrl = pci_read_config16(dev, pm_cap + PCI_PM_CTRL);
+		/* Set to D0 and disable PM events. */
+		pm_ctrl &= ~PCI_PM_CTRL_PME_ENABLE;
+		pm_ctrl &= ~PCI_PM_CTRL_STATE_MASK;
+		pci_write_config16(dev, pm_cap + PCI_PM_CTRL, pm_ctrl);
+	}
 
 	u8 pos = pci_find_capability(dev, PCI_CAP_ID_EHCI_DEBUG);
 	if (!pos)
@@ -47,12 +60,18 @@ int ehci_debug_hw_enable(unsigned int *base, unsigned int *dbg_offset)
 	u32 cap = pci_read_config32(dev, pos);
 
 	/* FIXME: We should remove static EHCI_BAR_INDEX. */
-	u8 dbg_bar = 0x10 + 4 * ((cap >> 29) - 1);
-	if (dbg_bar != EHCI_BAR_INDEX)
+	u8 ehci_bar = 0x10 + 4 * ((cap >> 29) - 1);
+	if (ehci_bar != EHCI_BAR_INDEX)
 		return -1;
+
+	pci_write_config32(dev, ehci_bar, CONFIG_EHCI_BAR);
+
+	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY |
+		PCI_COMMAND_MASTER);
 
 	*base = CONFIG_EHCI_BAR;
 	*dbg_offset = (cap>>16) & 0x1ffc;
+
 	return 0;
 }
 
@@ -62,7 +81,7 @@ void ehci_debug_select_port(unsigned int port)
 	pci_ehci_dbg_set_port(dbg_dev, port);
 }
 
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
+#if ENV_RAMSTAGE
 static void pci_ehci_set_resources(struct device *dev)
 {
 	struct resource *res;

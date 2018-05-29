@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <reg_script.h>
 
-#if CONFIG_ARCH_X86
+#if IS_ENABLED(CONFIG_ARCH_X86)
 #include <cpu/x86/msr.h>
 #endif
 
@@ -369,11 +369,10 @@ static void reg_script_write_iosf(struct reg_script_context *ctx)
 
 static uint64_t reg_script_read_msr(struct reg_script_context *ctx)
 {
-#if CONFIG_ARCH_X86
+#if IS_ENABLED(CONFIG_ARCH_X86)
 	const struct reg_script *step = reg_script_get_step(ctx);
 	msr_t msr = rdmsr(step->reg);
 	uint64_t value = msr.hi;
-	value = msr.hi;
 	value <<= 32;
 	value |= msr.lo;
 	return value;
@@ -382,7 +381,7 @@ static uint64_t reg_script_read_msr(struct reg_script_context *ctx)
 
 static void reg_script_write_msr(struct reg_script_context *ctx)
 {
-#if CONFIG_ARCH_X86
+#if IS_ENABLED(CONFIG_ARCH_X86)
 	const struct reg_script *step = reg_script_get_step(ctx);
 	msr_t msr;
 	msr.hi = step->value >> 32;

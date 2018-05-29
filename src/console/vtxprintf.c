@@ -21,7 +21,7 @@
 
 #define call_tx(x) tx_byte(x, data)
 
-#if !CONFIG_ARCH_MIPS
+#if !IS_ENABLED(CONFIG_ARCH_MIPS)
 #define SUPPORT_64BIT_INTS
 #endif
 
@@ -106,14 +106,14 @@ static int number(void (*tx_byte)(unsigned char byte, void *data),
 		precision = i;
 	size -= precision;
 	if (!(type&(ZEROPAD+LEFT)))
-		while (size-->0)
+		while (size-- > 0)
 			call_tx(' '), count++;
 	if (sign)
 		call_tx(sign), count++;
 	if (type & SPECIAL) {
-		if (base==8)
+		if (base == 8)
 			call_tx('0'), count++;
-		else if (base==16) {
+		else if (base == 16) {
 			call_tx('0'), count++;
 			call_tx(digits[33]), count++;
 		}

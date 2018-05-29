@@ -218,7 +218,7 @@
 #define DDR34_CORE_PHY_BYTE_LANE_0_RD_EN_DLY_CYC 0x000004a0 /* Read enable bit-clock cycle delay control register */
 #define DDR34_CORE_PHY_BYTE_LANE_0_WR_CHAN_DLY_CYC 0x000004a4 /* Write leveling bit-clock cycle delay control register */
 #define DDR34_CORE_PHY_BYTE_LANE_0_READ_CONTROL  0x000004b0 /* Read channel datapath control register */
-#define DDR34_CORE_PHY_BYTE_LANE_0_READ_FIFO_ADDR 0x000004b4 /* Read fifo addresss pointer register */
+#define DDR34_CORE_PHY_BYTE_LANE_0_READ_FIFO_ADDR 0x000004b4 /* Read fifo address pointer register */
 #define DDR34_CORE_PHY_BYTE_LANE_0_READ_FIFO_DATA 0x000004b8 /* Read fifo data register */
 #define DDR34_CORE_PHY_BYTE_LANE_0_READ_FIFO_DM_DBI 0x000004bc /* Read fifo dm/dbi register */
 #define DDR34_CORE_PHY_BYTE_LANE_0_READ_FIFO_STATUS 0x000004c0 /* Read fifo status register */
@@ -284,7 +284,7 @@
 #define DDR34_CORE_PHY_BYTE_LANE_1_RD_EN_DLY_CYC 0x000006a0 /* Read enable bit-clock cycle delay control register */
 #define DDR34_CORE_PHY_BYTE_LANE_1_WR_CHAN_DLY_CYC 0x000006a4 /* Write leveling bit-clock cycle delay control register */
 #define DDR34_CORE_PHY_BYTE_LANE_1_READ_CONTROL  0x000006b0 /* Read channel datapath control register */
-#define DDR34_CORE_PHY_BYTE_LANE_1_READ_FIFO_ADDR 0x000006b4 /* Read fifo addresss pointer register */
+#define DDR34_CORE_PHY_BYTE_LANE_1_READ_FIFO_ADDR 0x000006b4 /* Read fifo address pointer register */
 #define DDR34_CORE_PHY_BYTE_LANE_1_READ_FIFO_DATA 0x000006b8 /* Read fifo data register */
 #define DDR34_CORE_PHY_BYTE_LANE_1_READ_FIFO_DM_DBI 0x000006bc /* Read fifo dm/dbi register */
 #define DDR34_CORE_PHY_BYTE_LANE_1_READ_FIFO_STATUS 0x000006c0 /* Read fifo status register */
@@ -7729,7 +7729,7 @@
 #define DDR34_CORE_PHY_BYTE_LANE_0_READ_CONTROL_RD_DATA_DLY_DEFAULT 0x00000007
 
 /***************************************************************************
- *READ_FIFO_ADDR - Read fifo addresss pointer register
+ *READ_FIFO_ADDR - Read fifo address pointer register
  ***************************************************************************/
 /* DDR34_CORE_PHY_BYTE_LANE_0 :: READ_FIFO_ADDR :: reserved0 [31:03] */
 #define DDR34_CORE_PHY_BYTE_LANE_0_READ_FIFO_ADDR_reserved0_MASK   0xfffffff8
@@ -10483,7 +10483,7 @@
 #define DDR34_CORE_PHY_BYTE_LANE_1_READ_CONTROL_RD_DATA_DLY_DEFAULT 0x00000007
 
 /***************************************************************************
- *READ_FIFO_ADDR - Read fifo addresss pointer register
+ *READ_FIFO_ADDR - Read fifo address pointer register
  ***************************************************************************/
 /* DDR34_CORE_PHY_BYTE_LANE_1 :: READ_FIFO_ADDR :: reserved0 [31:03] */
 #define DDR34_CORE_PHY_BYTE_LANE_1_READ_FIFO_ADDR_reserved0_MASK   0xfffffff8

@@ -26,7 +26,6 @@
 
 #include "ram_calc.h"
 
-#if !IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 static inline uint8_t is_fam15h(void)
 {
 	uint8_t fam15h = 0;
@@ -73,7 +72,7 @@ uint64_t get_cc6_memory_size()
 		if (pci_read_config32(PCI_DEV(0, 0x18, 2), 0x118) & (0x1 << 18))
 			enable_cc6 = 1;
 #else
-		device_t dct_dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+		struct device *dct_dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
 		if (pci_read_config32(dct_dev, 0x118) & (0x1 << 18))
 			enable_cc6 = 1;
 #endif
@@ -96,4 +95,3 @@ void *cbmem_top(void)
 
 	return (void *) topmem - get_uma_memory_size(topmem) - get_cc6_memory_size();
 }
-#endif

@@ -16,7 +16,7 @@
 #include <arch/io.h>
 #include <reset.h>
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	outb((1 << 2) | (1 << 1), 0xcf9);
 }

@@ -16,6 +16,7 @@
 #define __CPU_TI_AM335X_GPIO_H__
 
 #include <stdint.h>
+#include <compiler.h>
 
 enum {
 	AM335X_GPIO_BITS_PER_BANK = 32
@@ -53,7 +54,7 @@ struct am335x_gpio_regs {
 	uint8_t _rsv4[0x38];		// 0x158-0x18f
 	uint32_t cleardataout;		// 0x190
 	uint32_t setdataout;		// 0x194
-} __attribute__((packed));
+} __packed;
 
 static struct am335x_gpio_regs * const am335x_gpio_banks[] = {
 	(void *)0x44e07000, (void *)0x4804c000,

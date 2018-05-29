@@ -18,8 +18,6 @@
 #include <arch/io.h>
 #include <string.h>
 #include <cpu/x86/mp.h>
-#include <cpu/x86/mtrr.h>
-#include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/tsc.h>
 #include <arch/cpu.h>
@@ -203,7 +201,7 @@ struct cpu_driver *find_cpu_driver(struct device *cpu)
 {
 	struct cpu_driver *driver;
 	for (driver = _cpu_drivers; driver < _ecpu_drivers; driver++) {
-		struct cpu_device_id *id;
+		const struct cpu_device_id *id;
 		for (id = driver->id_table;
 		     id->vendor != X86_VENDOR_INVALID; id++) {
 			if ((cpu->vendor == id->vendor) &&
@@ -309,6 +307,5 @@ void arch_bootstate_coreboot_exit(void)
 		return;
 
 	/* APs are waiting for work. Last thing to do is park them. */
-	if (mp_park_aps())
-		printk(BIOS_ERR, "Parking APs failed.\n");
+	mp_park_aps();
 }

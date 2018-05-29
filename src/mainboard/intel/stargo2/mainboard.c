@@ -40,7 +40,7 @@ void mainboard_suspend_resume(void)
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 }
 

@@ -21,27 +21,17 @@
 
 void mainboard_ec_init(void)
 {
+	const struct google_chromeec_event_info info = {
+		.log_events = MAINBOARD_EC_LOG_EVENTS,
+		.sci_events = MAINBOARD_EC_SCI_EVENTS,
+		.s3_wake_events = MAINBOARD_EC_S3_WAKE_EVENTS,
+		.s5_wake_events = MAINBOARD_EC_S5_WAKE_EVENTS,
+	};
+
 	printk(BIOS_DEBUG, "mainboard_ec_init\n");
 	post_code(0xf0);
 
-	/* Restore SCI event mask on resume. */
-	if (acpi_is_wakeup_s3()) {
-		google_chromeec_log_events(MAINBOARD_EC_LOG_EVENTS |
-					   MAINBOARD_EC_S3_WAKE_EVENTS);
-
-		/* Disable SMI and wake events */
-		google_chromeec_set_smi_mask(0);
-
-		/* Clear pending events */
-		while (google_chromeec_get_event() != 0);
-		google_chromeec_set_sci_mask(MAINBOARD_EC_SCI_EVENTS);
-	} else {
-		google_chromeec_log_events(MAINBOARD_EC_LOG_EVENTS |
-					   MAINBOARD_EC_S5_WAKE_EVENTS);
-	}
-
-	/* Clear wake events, these are enabled on entry to sleep */
-	google_chromeec_set_wake_mask(0);
+	google_chromeec_events_init(&info, acpi_is_wakeup_s3());
 
 	post_code(0xf1);
 }

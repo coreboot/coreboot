@@ -135,7 +135,7 @@ void technexion_post_code(uint8_t udata8)
 	pci_devfn_t dev = 0;
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB600_SM), 0);
 #else
-	device_t dev = 0;
+	struct device *dev = NULL;
 	dev = dev_find_device(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB600_SM, 0);
 #endif
 

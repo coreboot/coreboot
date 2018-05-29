@@ -47,7 +47,8 @@
 #include <device/pciexp.h>
 #include <device/hypertransport.h>
 #include <pc80/i8259.h>
-#include <vboot/vbnv.h>
+#include <security/vboot/vbnv.h>
+#include <timestamp.h>
 
 u8 pci_moving_config8(struct device *dev, unsigned int reg)
 {
@@ -162,7 +163,7 @@ unsigned pci_find_next_capability(struct device *dev, unsigned cap,
  * @param cap PCI_CAP_LIST_ID of the PCI capability we're looking for.
  * @return The next matching capability.
  */
-unsigned pci_find_capability(device_t dev, unsigned cap)
+unsigned int pci_find_capability(struct device *dev, unsigned int cap)
 {
 	return pci_find_next_capability(dev, cap, 0);
 }
@@ -664,7 +665,6 @@ void pci_dev_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
-#if CONFIG_VGA_ROM_RUN
 static int should_run_oprom(struct device *dev)
 {
 	static int should_run = -1;
@@ -672,15 +672,19 @@ static int should_run_oprom(struct device *dev)
 	if (should_run >= 0)
 		return should_run;
 
+	if (IS_ENABLED(CONFIG_ALWAYS_RUN_OPROM)) {
+		should_run = 1;
+		return should_run;
+	}
+
 	/* Don't run VGA option ROMs, unless we have to print
 	 * something on the screen before the kernel is loaded.
 	 */
 	should_run = display_init_required();
 
-#if CONFIG_CHROMEOS
-	if (!should_run)
+	if (!should_run && IS_ENABLED(CONFIG_CHROMEOS))
 		should_run = vboot_wants_oprom();
-#endif
+
 	if (!should_run)
 		printk(BIOS_DEBUG, "Not running VGA Option ROM\n");
 	return should_run;
@@ -701,13 +705,14 @@ static int should_load_oprom(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_VGA_ROM_RUN */
 
 /** Default handler: only runs the relevant PCI BIOS. */
 void pci_dev_init(struct device *dev)
 {
-#if CONFIG_VGA_ROM_RUN
 	struct rom_header *rom, *ram;
+
+	if (!IS_ENABLED(CONFIG_VGA_ROM_RUN))
+		return;
 
 	/* Only execute VGA ROMs. */
 	if (((dev->class >> 8) != PCI_CLASS_DISPLAY_VGA))
@@ -715,6 +720,7 @@ void pci_dev_init(struct device *dev)
 
 	if (!should_load_oprom(dev))
 		return;
+	timestamp_add_now(TS_OPROM_INITIALIZE);
 
 	rom = pci_rom_probe(dev);
 	if (rom == NULL)
@@ -723,6 +729,7 @@ void pci_dev_init(struct device *dev)
 	ram = pci_rom_load(dev, rom);
 	if (ram == NULL)
 		return;
+	timestamp_add_now(TS_OPROM_COPY_END);
 
 	if (!should_run_oprom(dev))
 		return;
@@ -730,11 +737,11 @@ void pci_dev_init(struct device *dev)
 	run_bios(dev, (unsigned long)ram);
 	gfx_set_init_done(1);
 	printk(BIOS_DEBUG, "VGA Option ROM was run\n");
-#endif /* CONFIG_VGA_ROM_RUN */
+	timestamp_add_now(TS_OPROM_END);
 }
 
 /** Default device operation for PCI devices */
-static struct pci_operations pci_dev_ops_pci = {
+struct pci_operations pci_dev_ops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
 
@@ -744,6 +751,7 @@ struct device_operations default_pci_ops_dev = {
 	.enable_resources = pci_dev_enable_resources,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	.write_acpi_tables = pci_rom_write_acpi_tables,
+	.acpi_fill_ssdt_generator = pci_rom_ssdt,
 #endif
 	.init             = pci_dev_init,
 	.scan_bus         = 0,
@@ -781,9 +789,9 @@ struct device_operations default_pci_ops_bus = {
  * @param dev Pointer to the device structure of the bridge.
  * @return Appropriate bridge operations.
  */
-static struct device_operations *get_pci_bridge_ops(device_t dev)
+static struct device_operations *get_pci_bridge_ops(struct device *dev)
 {
-#if CONFIG_PCIX_PLUGIN_SUPPORT
+#if IS_ENABLED(CONFIG_PCIX_PLUGIN_SUPPORT)
 	unsigned int pcixpos;
 	pcixpos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
 	if (pcixpos) {
@@ -791,7 +799,7 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 		return &default_pcix_ops_bus;
 	}
 #endif
-#if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT
+#if IS_ENABLED(CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT)
 	unsigned int htpos = 0;
 	while ((htpos = pci_find_next_capability(dev, PCI_CAP_ID_HT, htpos))) {
 		u16 flags;
@@ -804,7 +812,7 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 		}
 	}
 #endif
-#if CONFIG_PCIEXP_PLUGIN_SUPPORT
+#if IS_ENABLED(CONFIG_PCIEXP_PLUGIN_SUPPORT)
 	unsigned int pciexpos;
 	pciexpos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
 	if (pciexpos) {
@@ -894,7 +902,7 @@ static void set_pci_ops(struct device *dev)
 			goto bad;
 		dev->ops = get_pci_bridge_ops(dev);
 		break;
-#if CONFIG_CARDBUS_PLUGIN_SUPPORT
+#if IS_ENABLED(CONFIG_CARDBUS_PLUGIN_SUPPORT)
 	case PCI_HEADER_TYPE_CARDBUS:
 		dev->ops = &default_cardbus_ops_bus;
 		break;
@@ -976,7 +984,8 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
  * @param devfn A device/function number to look at.
  * @return The device structure for the device (if found), NULL otherwise.
  */
-device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
+struct device *pci_probe_dev(struct device *dev, struct bus *bus,
+				unsigned int devfn)
 {
 	u32 id, class;
 	u8 hdr_type;
@@ -1083,7 +1092,7 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
  * @param sdev Simple device model identifier, created with PCI_DEV().
  * @return Non-zero if bus:dev.fn of device matches.
  */
-unsigned int pci_match_simple_dev(device_t dev, pci_devfn_t sdev)
+unsigned int pci_match_simple_dev(struct device *dev, pci_devfn_t sdev)
 {
 	return dev->bus->secondary == PCI_DEV2SEGBUS(sdev) &&
 			dev->path.pci.devfn == PCI_DEV2DEVFN(sdev);
@@ -1152,7 +1161,7 @@ void pci_scan_bus(struct bus *bus, unsigned min_devfn,
 	 * There's probably a problem in devicetree.cb.
 	 */
 	if (old_devices) {
-		device_t left;
+		struct device *left;
 		printk(BIOS_WARNING, "PCI: Left over static devices:\n");
 		for (left = old_devices; left; left = left->sibling)
 			printk(BIOS_WARNING, "%s\n", dev_path(left));
@@ -1289,7 +1298,7 @@ void pci_scan_bridge(struct device *dev)
  *
  * @param dev Pointer to the domain.
  */
-void pci_domain_scan_bus(device_t dev)
+void pci_domain_scan_bus(struct device *dev)
 {
 	struct bus *link = dev->link_list;
 	pci_scan_bus(link, PCI_DEVFN(0, 0), 0xff);
@@ -1335,10 +1344,10 @@ const char *pin_to_str(int pin)
  * @return The interrupt pin number (1 - 4) that 'dev' will
  *         trigger when generating an interrupt
  */
-static int swizzle_irq_pins(device_t dev, device_t *parent_bridge)
+static int swizzle_irq_pins(struct device *dev, struct device **parent_bridge)
 {
-	device_t parent;	/* Our current device's parent device */
-	device_t child;		/* The child device of the parent */
+	struct device *parent;	/* Our current device's parent device */
+	struct device *child;		/* The child device of the parent */
 	uint8_t parent_bus = 0;		/* Parent Bus number */
 	uint16_t parent_devfn = 0;	/* Parent Device and Function number */
 	uint16_t child_devfn = 0;	/* Child Device and Function number */
@@ -1403,7 +1412,7 @@ static int swizzle_irq_pins(device_t dev, device_t *parent_bridge)
  *         Errors: -1 is returned if the device is not enabled
  *                 -2 is returned if a parent bridge could not be found.
  */
-int get_pci_irq_pins(device_t dev, device_t *parent_bdg)
+int get_pci_irq_pins(struct device *dev, struct device **parent_bdg)
 {
 	uint8_t bus = 0;	/* The bus this device is on */
 	uint16_t devfn = 0;	/* This device's device and function numbers */
@@ -1445,7 +1454,7 @@ int get_pci_irq_pins(device_t dev, device_t *parent_bdg)
 	return target_pin;
 }
 
-#if CONFIG_PC80_SYSTEM
+#if IS_ENABLED(CONFIG_PC80_SYSTEM)
 /**
  * Assign IRQ numbers.
  *
@@ -1465,7 +1474,7 @@ void pci_assign_irqs(unsigned bus, unsigned slot,
 		     const unsigned char pIntAtoD[4])
 {
 	unsigned int funct;
-	device_t pdev;
+	struct device *pdev;
 	u8 line, irq;
 
 	/* Each slot may contain up to eight functions. */
@@ -1494,7 +1503,7 @@ void pci_assign_irqs(unsigned bus, unsigned slot,
 		printk(BIOS_DEBUG, "  Readback = %d\n", irq);
 #endif
 
-#if CONFIG_PC80_SYSTEM
+#if IS_ENABLED(CONFIG_PC80_SYSTEM)
 		/* Change to level triggered. */
 		i8259_configure_irq_trigger(pIntAtoD[line - 1],
 					    IRQ_LEVEL_TRIGGERED);

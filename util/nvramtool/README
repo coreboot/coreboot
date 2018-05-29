@@ -10,7 +10,7 @@ contains various system information such as the type of mainboard in use.  It
 specifies locations in the CMOS (nonvolatile RAM) where the coreboot
 parameters are stored.
 
-For information about coreboot, see http://www.coreboot.org/.
+For information about coreboot, see https://www.coreboot.org/.
 
 Ideas for Future Improvements
 -----------------------------

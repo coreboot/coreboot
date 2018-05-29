@@ -21,6 +21,9 @@
 #include <arch/acpi.h>
 
 /* LPC Interface Bridge PCI Configuration Registers */
+#define GPIO_BASE_ADR_OFFSET	0x48
+#define GPIO_CTRL_OFFSET	0x4c
+#define   GPIO_DECODE_ENABLE	(1 << 4)
 #define REVID			0x08
 #define PIRQ_RCR1		0x60
 #define SIRQ_CNTL		0x64

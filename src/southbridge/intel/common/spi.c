@@ -18,7 +18,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <compiler.h>
 #include <bootstate.h>
+#include <commonlib/helpers.h>
 #include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
@@ -81,7 +83,7 @@ typedef struct ich7_spi_regs {
 	uint16_t preop;
 	uint16_t optype;
 	uint8_t opmenu[8];
-} __attribute__((packed)) ich7_spi_regs;
+} __packed ich7_spi_regs;
 
 typedef struct ich9_spi_regs {
 	uint32_t bfpr;
@@ -114,7 +116,7 @@ typedef struct ich9_spi_regs {
 	uint32_t srdl;
 	uint32_t srdc;
 	uint32_t srd;
-} __attribute__((packed)) ich9_spi_regs;
+} __packed ich9_spi_regs;
 
 typedef struct ich_spi_controller {
 	int locked;
@@ -186,7 +188,7 @@ enum {
 	SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS =	3
 };
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 
 static u8 readb_(const void *addr)
 {
@@ -292,6 +294,7 @@ void spi_init(void)
 	uint8_t bios_cntl;
 	device_t dev;
 	ich9_spi_regs *ich9_spi;
+	ich7_spi_regs *ich7_spi;
 	uint16_t hsfs;
 
 #ifdef __SMM__
@@ -303,26 +306,40 @@ void spi_init(void)
 	pci_read_config_dword(dev, 0xf0, &rcba);
 	/* Bits 31-14 are the base address, 13-1 are reserved, 0 is enable. */
 	rcrb = (uint8_t *)(rcba & 0xffffc000);
-	ich9_spi = (ich9_spi_regs *)(rcrb + 0x3800);
-	cntlr.ich9_spi = ich9_spi;
-	hsfs = readw_(&ich9_spi->hsfs);
-	ichspi_lock = hsfs & HSFS_FLOCKDN;
-	cntlr.hsfs = hsfs;
-	cntlr.opmenu = ich9_spi->opmenu;
-	cntlr.menubytes = sizeof(ich9_spi->opmenu);
-	cntlr.optype = &ich9_spi->optype;
-	cntlr.addr = &ich9_spi->faddr;
-	cntlr.data = (uint8_t *)ich9_spi->fdata;
-	cntlr.databytes = sizeof(ich9_spi->fdata);
-	cntlr.status = &ich9_spi->ssfs;
-	cntlr.control = (uint16_t *)ich9_spi->ssfc;
-	cntlr.bbar = &ich9_spi->bbar;
-	cntlr.preop = &ich9_spi->preop;
+	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)) {
+		ich7_spi = (ich7_spi_regs *)(rcrb + 0x3020);
+		cntlr.opmenu = ich7_spi->opmenu;
+		cntlr.menubytes = sizeof(ich7_spi->opmenu);
+		cntlr.optype = &ich7_spi->optype;
+		cntlr.addr = &ich7_spi->spia;
+		cntlr.data = (uint8_t *)ich7_spi->spid;
+		cntlr.databytes = sizeof(ich7_spi->spid);
+		cntlr.status = (uint8_t *)&ich7_spi->spis;
+		ichspi_lock = readw_(&ich7_spi->spis) & HSFS_FLOCKDN;
+		cntlr.control = &ich7_spi->spic;
+		cntlr.bbar = &ich7_spi->bbar;
+		cntlr.preop = &ich7_spi->preop;
+	} else {
+		ich9_spi = (ich9_spi_regs *)(rcrb + 0x3800);
+		cntlr.ich9_spi = ich9_spi;
+		hsfs = readw_(&ich9_spi->hsfs);
+		ichspi_lock = hsfs & HSFS_FLOCKDN;
+		cntlr.hsfs = hsfs;
+		cntlr.opmenu = ich9_spi->opmenu;
+		cntlr.menubytes = sizeof(ich9_spi->opmenu);
+		cntlr.optype = &ich9_spi->optype;
+		cntlr.addr = &ich9_spi->faddr;
+		cntlr.data = (uint8_t *)ich9_spi->fdata;
+		cntlr.databytes = sizeof(ich9_spi->fdata);
+		cntlr.status = &ich9_spi->ssfs;
+		cntlr.control = (uint16_t *)ich9_spi->ssfc;
+		cntlr.bbar = &ich9_spi->bbar;
+		cntlr.preop = &ich9_spi->preop;
 
-	if (cntlr.hsfs & HSFS_FDV)
-	{
-		writel_ (4, &ich9_spi->fdoc);
-		cntlr.flmap0 = readl_(&ich9_spi->fdod);
+		if (cntlr.hsfs & HSFS_FDV) {
+			writel_ (4, &ich9_spi->fdoc);
+			cntlr.flmap0 = readl_(&ich9_spi->fdod);
+		}
 	}
 
 	ich_set_bbar(0);
@@ -504,11 +521,6 @@ static int spi_is_multichip (void)
 	return !!((cntlr.flmap0 >> 8) & 3);
 }
 
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
-{
-	return min(cntlr.databytes, buf_len);
-}
-
 static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		size_t bytesout, void *din, size_t bytesin)
 {
@@ -654,19 +666,6 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	/* Clear atomic preop now that xfer is done */
 	writew_(0, cntlr.preop);
 
-	return 0;
-}
-
-static const struct spi_ctrlr spi_ctrlr = {
-	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
-};
-
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	slave->bus = bus;
-	slave->cs = cs;
-	slave->ctrlr = &spi_ctrlr;
 	return 0;
 }
 
@@ -902,32 +901,27 @@ static int ich_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
 	return 0;
 }
 
+static const struct spi_flash_ops spi_flash_ops = {
+	.read = ich_hwseq_read,
+	.write = ich_hwseq_write,
+	.erase = ich_hwseq_erase,
+};
 
-struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
+static int spi_flash_programmer_probe(const struct spi_slave *spi,
+					struct spi_flash *flash)
 {
-	struct spi_flash *flash = NULL;
 	uint32_t flcomp;
 
-	/*
-	 * Perform SPI flash probing only if:
-	 * 1. spi_is_multichip returns 1 or
-	 * 2. Specialized probing is forced by SPI flash driver.
-	 */
-	if (!spi_is_multichip() && !force)
-		return NULL;
+	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX))
+		return spi_flash_generic_probe(spi, flash);
 
-	flash = malloc(sizeof(*flash));
-	if (!flash) {
-		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
-		return NULL;
-	}
+	/* Try generic probing first if spi_is_multichip returns 0. */
+	if (!spi_is_multichip() && !spi_flash_generic_probe(spi, flash))
+		return 0;
 
 	memcpy(&flash->spi, spi, sizeof(*spi));
 	flash->name = "Opaque HW-sequencing";
 
-	flash->internal_write = ich_hwseq_write;
-	flash->internal_erase = ich_hwseq_erase;
-	flash->internal_read = ich_hwseq_read;
 	ich_hwseq_set_addr (0);
 	switch ((cntlr.hsfs >> 3) & 3)
 	{
@@ -950,9 +944,33 @@ struct spi_flash *spi_flash_programmer_probe(struct spi_slave *spi, int force)
 
 	flash->size = 1 << (19 + (flcomp & 7));
 
+	flash->ops = &spi_flash_ops;
+
 	if ((cntlr.hsfs & HSFS_FDV) && ((cntlr.flmap0 >> 8) & 3))
 		flash->size += 1 << (19 + ((flcomp >> 3) & 7));
 	printk (BIOS_DEBUG, "flash size 0x%x bytes\n", flash->size);
 
-	return flash;
+	return 0;
 }
+
+static int xfer_vectors(const struct spi_slave *slave,
+			struct spi_op vectors[], size_t count)
+{
+	return spi_flash_vector_helper(slave, vectors, count, spi_ctrlr_xfer);
+}
+
+static const struct spi_ctrlr spi_ctrlr = {
+	.xfer_vector = xfer_vectors,
+	.max_xfer_size = member_size(ich9_spi_regs, fdata),
+	.flash_probe = spi_flash_programmer_probe,
+};
+
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = 0,
+		.bus_end = 0,
+	},
+};
+
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

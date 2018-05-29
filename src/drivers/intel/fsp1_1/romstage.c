@@ -20,7 +20,7 @@
 #include <arch/cbfs.h>
 #include <arch/early_variables.h>
 #include <assert.h>
-#include <boardid.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/intel/microcode.h>
@@ -29,15 +29,15 @@
 #include <ec/google/chromeec/ec_commands.h>
 #include <elog.h>
 #include <fsp/romstage.h>
+#include <mrc_cache.h>
 #include <reset.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <smbios.h>
-#include <soc/intel/common/mrc_cache.h>
 #include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>
-#include <tpm.h>
+#include <security/tpm/tis.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)
@@ -74,13 +74,6 @@ asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)
 	/* Get power state */
 	params.power_state = fill_power_state();
 
-	/*
-	 * Read and print board version.  Done after SOC romstage
-	 * in case PCH needs to be configured to talk to the EC.
-	 */
-	if (IS_ENABLED(CONFIG_BOARD_ID_AUTO))
-		printk(BIOS_INFO, "MLB: board version %d\n", board_id());
-
 	/* Call into mainboard. */
 	mainboard_romstage_entry(&params);
 	soc_after_ram_init(&params);
@@ -101,6 +94,7 @@ void *cache_as_ram_stage_main(FSP_INFO_HEADER *fih)
 /* Entry from the mainboard. */
 void romstage_common(struct romstage_params *params)
 {
+	bool s3wake;
 	struct region_device rdev;
 	struct pei_data *pei_data;
 
@@ -110,11 +104,10 @@ void romstage_common(struct romstage_params *params)
 
 	pei_data = params->pei_data;
 	pei_data->boot_mode = params->power_state->prev_sleep_state;
+	s3wake = params->power_state->prev_sleep_state == ACPI_S3;
 
-#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
-	if (params->power_state->prev_sleep_state != ACPI_S3)
+	if (IS_ENABLED(CONFIG_ELOG_BOOT_COUNT) && !s3wake)
 		boot_count_increment();
-#endif
 
 	/* Perform remaining SOC initialization */
 	soc_pre_ram_init(params);
@@ -146,7 +139,6 @@ void romstage_common(struct romstage_params *params)
 			hard_reset();
 		} else {
 			printk(BIOS_DEBUG, "No MRC cache found.\n");
-			mainboard_check_ec_image(params);
 		}
 	}
 
@@ -168,7 +160,8 @@ void romstage_common(struct romstage_params *params)
 	}
 
 	/* Save DIMM information */
-	mainboard_save_dimm_info(params);
+	if (!s3wake)
+		mainboard_save_dimm_info(params);
 
 	/* Create romstage handof information */
 	if (romstage_handoff_init(
@@ -180,7 +173,6 @@ void romstage_common(struct romstage_params *params)
 	 * in verstage and used to verify romstage.
 	 */
 	if (IS_ENABLED(CONFIG_LPC_TPM) &&
-	    !IS_ENABLED(CONFIG_RESUME_PATH_SAME_AS_BOOT) &&
 	    !IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
 		init_tpm(params->power_state->prev_sleep_state ==
 			 ACPI_S3);
@@ -194,27 +186,13 @@ void after_cache_as_ram_stage(void)
 }
 
 /* Initialize the power state */
-__attribute__((weak)) struct chipset_power_state *fill_power_state(void)
+__weak struct chipset_power_state *fill_power_state(void)
 {
 	return NULL;
 }
 
-__attribute__((weak)) void mainboard_check_ec_image(
-	struct romstage_params *params)
-{
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
-	struct pei_data *pei_data;
-
-	pei_data = params->pei_data;
-	if (params->pei_data->boot_mode == ACPI_S0) {
-		/* Ensure EC is running RO firmware. */
-		google_chromeec_check_ec_image(EC_IMAGE_RO);
-	}
-#endif
-}
-
 /* Board initialization before and after RAM is enabled */
-__attribute__((weak)) void mainboard_romstage_entry(
+__weak void mainboard_romstage_entry(
 	struct romstage_params *params)
 {
 	post_code(0x31);
@@ -224,7 +202,7 @@ __attribute__((weak)) void mainboard_romstage_entry(
 }
 
 /* Save the DIMM information for SMBIOS table 17 */
-__attribute__((weak)) void mainboard_save_dimm_info(
+__weak void mainboard_save_dimm_info(
 	struct romstage_params *params)
 {
 	int channel;
@@ -353,7 +331,7 @@ __attribute__((weak)) void mainboard_save_dimm_info(
 }
 
 /* Add any mainboard specific information */
-__attribute__((weak)) void mainboard_add_dimm_info(
+__weak void mainboard_add_dimm_info(
 	struct romstage_params *params,
 	struct memory_info *mem_info,
 	int channel, int dimm, int index)
@@ -361,44 +339,44 @@ __attribute__((weak)) void mainboard_add_dimm_info(
 }
 
 /* Get the memory configuration data */
-__attribute__((weak)) int mrc_cache_get_current(int type, uint32_t version,
+__weak int mrc_cache_get_current(int type, uint32_t version,
 				struct region_device *rdev)
 {
 	return -1;
 }
 
 /* Save the memory configuration data */
-__attribute__((weak)) int mrc_cache_stash_data(int type, uint32_t version,
+__weak int mrc_cache_stash_data(int type, uint32_t version,
 					const void *data, size_t size)
 {
 	return -1;
 }
 
 /* Transition RAM from off or self-refresh to active */
-__attribute__((weak)) void raminit(struct romstage_params *params)
+__weak void raminit(struct romstage_params *params)
 {
 	post_code(0x34);
 	die("ERROR - No RAM initialization specified!\n");
 }
 
 /* Display the memory configuration */
-__attribute__((weak)) void report_memory_config(void)
+__weak void report_memory_config(void)
 {
 }
 
 /* Choose top of stack and setup MTRRs */
-__attribute__((weak)) void *setup_stack_and_mtrrs(void)
+__weak void *setup_stack_and_mtrrs(void)
 {
 	die("ERROR - Must specify top of stack!\n");
 	return NULL;
 }
 
 /* SOC initialization after RAM is enabled */
-__attribute__((weak)) void soc_after_ram_init(struct romstage_params *params)
+__weak void soc_after_ram_init(struct romstage_params *params)
 {
 }
 
 /* SOC initialization before RAM is enabled */
-__attribute__((weak)) void soc_pre_ram_init(struct romstage_params *params)
+__weak void soc_pre_ram_init(struct romstage_params *params)
 {
 }

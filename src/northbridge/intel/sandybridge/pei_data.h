@@ -30,6 +30,8 @@
 #ifndef PEI_DATA_H
 #define PEI_DATA_H
 
+#include <compiler.h>
+
 typedef struct {
 	uint16_t mode;                // 0: Disable, 1: Enable, 2: Auto, 3: Smart Auto
 	uint16_t hs_port_switch_mask; // 4 bit mask, 1: switchable, 0: not switchable
@@ -129,6 +131,6 @@ struct pei_data
 	 * 2 Always enable double rate
 	 */
 	int ddr_refresh_rate_config;
-} __attribute__((packed));
+} __packed;
 
 #endif

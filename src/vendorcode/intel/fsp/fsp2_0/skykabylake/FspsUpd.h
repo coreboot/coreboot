@@ -165,9 +165,16 @@ typedef struct {
 **/
   UINT8                       ShowSpiController;
 
-/** Offset 0x0036
+/** Offset 0x0036 - Flash Configuration Lock Down
+  Enable/disable flash lock down. If platform decides to skip this programming, it
+  must lock SPI flash register DLOCK, FLOCKDN, and WRSDIS before end of post.
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace0[2];
+  UINT8                       SpiFlashCfgLockDown;
+
+/** Offset 0x0037
+**/
+  UINT8                       UnusedUpdSpace0;
 
 /** Offset 0x0038 - MicrocodeRegionBase
   Memory Base of Microcode Updates
@@ -221,7 +228,7 @@ typedef struct {
 **/
   UINT8                       XdciEnable;
 
-/** Offset 0x006D - Enable XHCI SSIC Eanble
+/** Offset 0x006D - Enable XHCI SSIC Enable
   Enable/disable XHCI SSIC port.
   $EN_DIS
 **/
@@ -444,9 +451,16 @@ typedef struct {
 **/
   UINT8                       AmtSolEnabled;
 
-/** Offset 0x015D
+/** Offset 0x015D - Configure CLKSRC Number
+  Configure Root Port CLKSRC Number. Each value in arrary can be between 0-6 for valid
+  clock numbers or 0x1F for an invalid number. One byte for each port, byte0 for
+  port1, byte1 for port2, and so on.
 **/
-  UINT8                       UnusedUpdSpace6[163];
+  UINT8                       PcieRpClkSrcNumber[24];
+
+/** Offset 0x0175
+**/
+  UINT8                       UnusedUpdSpace6[139];
 
 /** Offset 0x0200 - Subsystem Vendor ID for SA devices
   Subsystem ID that will be programmed to SA devices: Default SubSystemVendorId=0x8086
@@ -477,7 +491,7 @@ typedef struct {
 
 /** Offset 0x020C - PCIe DeEmphasis control per root port
   0: -6dB, 1(Default): -3.5dB
-  0:Disable, 2:L1
+  0:-6dB, 1:-3.5dB
 **/
   UINT8                       PegDeEmphasis[3];
 
@@ -1520,8 +1534,9 @@ typedef struct {
 **/
   UINT8                       UnusedUpdSpace18;
 
-/** Offset 0x065C - PCH Pm WOL_OVR_WK_STS
-  Clear the WOL_OVR_WK_STS bit in the Power and Reset Status (PRSTS) register.
+/** Offset 0x065C - PCH Port 61h Config Enable/Disable
+  Used for the emulation feature for Port61h read. The port is trapped and the SMI
+  handler will toggle bit4 according to the handler's internal state.
   $EN_DIS
 **/
   UINT8                       PchPort61hEnable;
@@ -1959,9 +1974,15 @@ typedef struct {
 **/
   UINT8                       Early8254ClockGatingEnable;
 
-/** Offset 0x0720
+/** Offset 0x0720 - PCH Sata Rst Optane Memory
+  Optane Memory
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace19[4];
+  UINT8                       SataRstOptaneMemory;
+
+/** Offset 0x0721
+**/
+  UINT8                       UnusedUpdSpace19[3];
 
 /** Offset 0x0724 - Pch PCIE device override table pointer
   The PCIe device table is being used to override PCIe device ASPM settings. This
@@ -2046,9 +2067,15 @@ typedef struct {
 **/
   UINT8                       MeUnconfigIsValid;
 
-/** Offset 0x077A
+/** Offset 0x077A - Activates VR mailbox command for Intersil VR C-state issues.
+  Intersil VR mailbox command. <b>0 - no mailbox command sent.</b>  1 - VR mailbox
+  command sent for IA/GT rails only. 2 - VR mailbox command sent for IA/GT/SA rails.
 **/
-  UINT8                       ReservedFspsUpd[6];
+  UINT8                       IslVrCmd;
+
+/** Offset 0x077B
+**/
+  UINT8                       ReservedFspsUpd[5];
 } FSP_S_CONFIG;
 
 /** Fsp S Test Configuration
@@ -2065,7 +2092,7 @@ typedef struct {
 **/
   UINT8                       ChapDeviceEnable;
 
-/** Offset 0x0785 - Skip PAM regsiter lock
+/** Offset 0x0785 - Skip PAM register lock
   Enable: PAM register will not be locked by RC, platform code should lock it, Disable(Default):
   PAM registers will be locked by RC
   $EN_DIS
@@ -2093,7 +2120,7 @@ typedef struct {
   UINT8                       DmiIot;
 
 /** Offset 0x0789 - PEG Max Payload size per root port
-  0xFF(Default):Auto, 0x1: Force 128B, 0X2: Force 256B
+  0xFF(Default):Auto, 0x1: Force 128B, 0x2: Force 256B
   0xFF: Auto, 0x1: Force 128B, 0x2: Force 256B
 **/
   UINT8                       PegMaxPayload[3];
@@ -2145,7 +2172,8 @@ typedef struct {
 /** Offset 0x079C - 1-Core Ratio Limit
   1-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
   1-Core Ratio Limit + OC Bins.This 1-Core Ratio Limit Must be greater than or equal
-  to 2-Core Ratio Limit, 3-Core Ratio Limit, 4-Core Ratio Limit. Range is 0 to 83
+  to 2-Core Ratio Limit, 3-Core Ratio Limit, 4-Core Ratio Limit, 5-Core Ratio Limit,
+  6-Core Ratio Limit, 7-Core Ratio Limit, 8-Core Ratio Limit. Range is 0 to 83
 **/
   UINT8                       OneCoreRatioLimit;
 
@@ -2505,25 +2533,25 @@ typedef struct {
 /** Offset 0x07DA - Enable or Disable Package C-State Demotion
   Enable or Disable Package C-State Demotion. 0: Disable; 1: Enable; <b>2: Auto</b>
   (Auto: Enabled for Skylake; Disabled for Kabylake)
-  $EN_DIS
+  0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       PkgCStateDemotion;
 
 /** Offset 0x07DB - Enable or Disable Package C-State UnDemotion
   Enable or Disable Package C-State UnDemotion. 0: Disable; 1: Enable; <b>2: Auto</b>
   (Auto: Enabled for Skylake; Disabled for Kabylake)
-  $EN_DIS
+  0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       PkgCStateUnDemotion;
 
 /** Offset 0x07DC - Enable or Disable CState-Pre wake
-  Enable or Disable CState-Pre wake. Disable; <b>1: Enable</b>
+  Enable or Disable CState-Pre wake. 0: Disable; <b>1: Enable</b>
   $EN_DIS
 **/
   UINT8                       CStatePreWake;
 
 /** Offset 0x07DD - Enable or Disable TimedMwait Support.
-  Enable or Disable TimedMwait Support. <b>Disable</b>; 1: Enable
+  Enable or Disable TimedMwait Support. <b>0: Disable</b>; 1: Enable
   $EN_DIS
 **/
   UINT8                       TimedMwait;
@@ -2591,7 +2619,7 @@ typedef struct {
 
 /** Offset 0x07E8 - Configuration for boot TDP selection
   Configuration for boot TDP selection; <b>0: TDP Nominal</b>; 1: TDP Down; 2: TDP
-  Up;0xFF : Deactivate
+  Up; 0xFF: Deactivate
   0:TDP Nominal, 1:TDP Down, 2:TDP Up, 0xFF:Deactivate
 **/
   UINT8                       ConfigTdpLevel;
@@ -2617,12 +2645,14 @@ typedef struct {
   UINT16                      StateRatio[40];
 
 /** Offset 0x083C - Interrupt Response Time Limit of C-State LatencyContol0
-  Interrupt Response Time Limit of C-State LatencyContol0. Range of value 0 to 0x3FF
+  Interrupt Response Time Limit of C-State LatencyContol0.Range of value 0 to 0x3FF,
+  Default is 0x4E, Server Platform is 0x4B
 **/
   UINT16                      CstateLatencyControl0Irtl;
 
 /** Offset 0x083E - Interrupt Response Time Limit of C-State LatencyContol1
-  Interrupt Response Time Limit of C-State LatencyContol1.Range of value 0 to 0x3FF
+  Interrupt Response Time Limit of C-State LatencyContol1.Range of value 0 to 0x3FF,
+  Default is 0x76, Server Platform is 0x6B
 **/
   UINT16                      CstateLatencyControl1Irtl;
 
@@ -2740,11 +2770,46 @@ typedef struct {
 **/
   UINT32                      CpuS3ResumeData;
 
-/** Offset 0x0884 - ReservedCpuPostMemTest
+/** Offset 0x0884 - 5-Core Ratio Limit
+  5-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
+  5-Core Ratio Limit + OC Bins.This 5-Core Ratio Limit Must be Less than or equal
+  to 1-Core Ratio Limit.Range is 0 to 83
+**/
+  UINT8                       FiveCoreRatioLimit;
+
+/** Offset 0x0885 - 6-Core Ratio Limit
+  6-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
+  6-Core Ratio Limit + OC Bins.This 6-Core Ratio Limit Must be Less than or equal
+  to 1-Core Ratio Limit.Range is 0 to 83
+**/
+  UINT8                       SixCoreRatioLimit;
+
+/** Offset 0x0886 - 7-Core Ratio Limit
+  7-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
+  7-Core Ratio Limit + OC Bins.This 7-Core Ratio Limit Must be Less than or equal
+  to 1-Core Ratio Limit.Range is 0 to 83
+**/
+  UINT8                       SevenCoreRatioLimit;
+
+/** Offset 0x0887 - 8-Core Ratio Limit
+  8-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
+  8-Core Ratio Limit + OC Bins.This 8-Core Ratio Limit Must be Less than or equal
+  to 1-Core Ratio Limit.Range is 0 to 83
+**/
+  UINT8                       EightCoreRatioLimit;
+
+/** Offset 0x0888 - Set Three Strike Counter Disable
+  False (default): Three Strike counter will be incremented and True: Prevents Three
+  Strike counter from incrementing; <b>0: False</b>; 1: True.
+  0: False, 1: True
+**/
+  UINT8                       ThreeStrikeCounterDisable;
+
+/** Offset 0x0889 - ReservedCpuPostMemTest
   Reserved for CPU Post-Mem Test
   $EN_DIS
 **/
-  UINT8                       ReservedCpuPostMemTest[6];
+  UINT8                       ReservedCpuPostMemTest[1];
 
 /** Offset 0x088A - SgxSinitDataFromTpm
   SgxSinitDataFromTpm default values
@@ -2880,7 +2945,7 @@ typedef struct {
   UINT8                       PchPmDisableEnergyReport;
 
 /** Offset 0x0A2F - PCH Pm Pmc Read Disable
-  When set to true, this bit disallows host reads to PMC XRAM.
+  Deprecated
   $EN_DIS
 **/
   UINT8                       PchPmPmcReadDisable;

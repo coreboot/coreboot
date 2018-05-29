@@ -118,7 +118,7 @@ static struct device_operations cpu_dev_ops = {
 	.init     = model_106cx_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x106c0 }, /* Intel Atom 230 */
 	{ X86_VENDOR_INTEL, 0x106ca }, /* Intel Atom D5xx */
 	{ 0, 0 },

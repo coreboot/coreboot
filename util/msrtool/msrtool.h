@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #if (defined(__MACH__) && defined(__APPLE__))
-/* DirectHW is available here: http://www.coreboot.org/DirectHW */
+/* DirectHW is available here: https://www.coreboot.org/DirectHW */
 #define __DARWIN__
 #include <DirectHW/DirectHW.h>
 #endif
@@ -45,7 +45,8 @@ enum {
 	PRESENT_BIN,
 	PRESENT_OCT,
 	PRESENT_HEX,
-	PRESENT_HEXDEC
+	PRESENT_HEXDEC,
+	PRESENT_STR,
 } PresentTypes;
 
 struct msr {
@@ -94,8 +95,9 @@ struct msrdef {
 #define MAX_CORES 8
 
 typedef enum {
-	VENDOR_INTEL = 1,
-	VENDOR_AMD = 2,
+	VENDOR_INTEL = 0x756e6547,
+	VENDOR_AMD = 0x68747541,
+	VENDOR_CENTAUR = 0x746e6543,
 } vendor_t;
 
 struct cpuid_t {
@@ -162,6 +164,7 @@ struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device);
 
 /* msrutils.c */
 void hexprint(FILE *f, const struct msr val, const uint8_t bits);
+void strprint(FILE *f, const struct msr val, const uint8_t bits);
 int msr_eq(const struct msr a, const struct msr b);
 struct msr msr_shl(const struct msr a, const uint8_t bits);
 struct msr msr_shr(const struct msr a, const uint8_t bits);
@@ -213,6 +216,10 @@ extern const struct msrdef cs5536_msrs[];
 /* k8.c */
 extern int k8_probe(const struct targetdef *t, const struct cpuid_t *id);
 extern const struct msrdef k8_msrs[];
+
+/* via_c7.c */
+extern int via_c7_probe(const struct targetdef *t, const struct cpuid_t *id);
+extern const struct msrdef via_c7_msrs[];
 
 /* intel_pentium3_early.c */
 extern int intel_pentium3_early_probe(const struct targetdef *t, const struct cpuid_t *id);

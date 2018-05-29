@@ -21,20 +21,26 @@
 #include <console/console.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
+#include <superio/ite/common/env_ctrl.h>
 
 #include "chip.h"
 #include "it8728f.h"
-#include "it8728f_internal.h"
 
 static void it8728f_init(struct device *dev)
 {
+	const struct superio_ite_it8728f_config *conf = dev->chip_info;
+	const struct resource *res;
+
 	if (!dev->enabled)
 		return;
 
 	switch(dev->path.pnp.device) {
-	/* TODO: Might potentially need code for HWM or FDC etc. */
+	/* TODO: Might potentially need code for FDC etc. */
 	case IT8728F_EC:
-		it8728f_hwm_ec_init(dev);
+		res = find_resource(dev, PNP_IDX_IO0);
+		if (!conf || !res)
+			break;
+		ite_ec_init(res->base, &conf->ec);
 		break;
 	case IT8728F_KBCK:
 		set_kbc_ps2_mode();
@@ -53,15 +59,15 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, IT8728F_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x0ff8, 0}, },
-	{ &ops, IT8728F_SP1, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
-	{ &ops, IT8728F_SP2, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
-	{ &ops, IT8728F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x0ffc, 0}, },
-	{ &ops, IT8728F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x0ff8, 0}, {0x0ff8, 4}, },
-	{ &ops, IT8728F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x0fff, 0}, {0x0fff, 4}, },
+	{ &ops, IT8728F_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x0ff8, },
+	{ &ops, IT8728F_SP1, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ &ops, IT8728F_SP2, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ &ops, IT8728F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x0ffc, },
+	{ &ops, IT8728F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x0ff8, 0x0ff8, },
+	{ &ops, IT8728F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x0fff, 0x0fff, },
 	{ &ops, IT8728F_KBCM, PNP_IRQ0, },
-	{ &ops, IT8728F_GPIO, PNP_IO0 | PNP_IO1 | PNP_IO2 | PNP_IRQ0, {0x0fff, 0}, {0x0ff8, 0}, {0x0ff8, 0}, },
-	{ &ops, IT8728F_IR, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
+	{ &ops, IT8728F_GPIO, PNP_IO0 | PNP_IO1 | PNP_IO2 | PNP_IRQ0, 0x0fff, 0x0ff8, 0x0ff8, },
+	{ &ops, IT8728F_IR, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
 };
 
 static void enable_dev(struct device *dev)

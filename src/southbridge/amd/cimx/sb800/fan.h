@@ -17,8 +17,8 @@
 #define _SB800_FAN_H_
 
 #ifndef __PRE_RAM__
-void init_sb800_IMC_fans(device_t dev);
-void init_sb800_MANUAL_fans(device_t dev);
+void init_sb800_IMC_fans(struct device *dev);
+void init_sb800_MANUAL_fans(struct device *dev);
 #endif
 
 /* Fan Register Definitions */

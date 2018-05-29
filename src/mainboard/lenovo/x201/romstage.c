@@ -35,10 +35,11 @@
 #include <timestamp.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
-#include <tpm.h>
+#include <security/tpm/tis.h>
 
 #include "dock.h"
 #include "arch/early_variables.h"
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <northbridge/intel/nehalem/nehalem.h>
@@ -278,15 +279,12 @@ void mainboard_romstage_entry(unsigned long bist)
 		outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
 	}
 
-
 	romstage_handoff_init(s3resume);
 
-	if (s3resume)
-		acpi_prepare_for_resume();
-	else
+	if (!s3resume)
 		quick_ram_check();
 
-#if CONFIG_LPC_TPM
+#if IS_ENABLED(CONFIG_LPC_TPM)
 	init_tpm(s3resume);
 #endif
 }

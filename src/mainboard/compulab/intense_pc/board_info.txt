@@ -1,0 +1,7 @@
+Vendor name: CompuLab
+Board name: Intense-PC
+Category: sbc
+ROM package: SOIC-16
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: n

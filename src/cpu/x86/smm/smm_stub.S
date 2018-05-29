@@ -23,6 +23,8 @@
  * found in smm.h.
  */
 
+#include <cpu/x86/cr.h>
+
 .code32
 .section ".module_parameters", "aw", @progbits
 stub_entry_params:
@@ -33,6 +35,10 @@ stack_top:
 c_handler:
 .long 0
 c_handler_arg:
+.long 0
+fxsave_area:
+.long 0
+fxsave_area_size:
 .long 0
 /* struct smm_runtime begins here. */
 smm_runtime:
@@ -53,20 +59,24 @@ fallback_stack_bottom:
 .skip 128
 fallback_stack_top:
 
+#define CR0_CLEAR_FLAGS \
+	(CR0_CD | CR0_NW | CR0_PG | CR0_AM | CR0_WP | \
+	 CR0_NE | CR0_TS | CR0_EM | CR0_MP)
+
 .text
 .code16
 .global _start
 _start:
 	movl	$(smm_relocate_gdt), %ebx
-	data32	lgdt (%ebx)
+	lgdtl	(%ebx)
 
 	movl	%cr0, %eax
-	andl	$0x1FFAFFD1, %eax /* CD,NW,PG,AM,WP,NE,TS,EM,MP = 0 */
-	orl	$0x1, %eax        /* PE = 1 */
+	andl	$~CR0_CLEAR_FLAGS, %eax
+	orl	$CR0_PE, %eax
 	movl	%eax, %cr0
 
 	/* Enable protected mode */
-	data32	ljmp $0x8, $smm_trampoline32
+	ljmpl	$0x8, $smm_trampoline32
 
 .align 4
 smm_relocate_gdt:
@@ -116,6 +126,8 @@ smm_trampoline32:
 	 * not be assigned. Use the fallback stack and check this condition in
 	 * C handler. */
 	movl	$(fallback_stack_top), %esp
+	/* Clear fxsave location as there will be no saving/restoring. */
+	xor	%edi, %edi
 	jmp	2f
 1:
 	movl	stack_size, %eax
@@ -124,7 +136,33 @@ smm_trampoline32:
 	subl	%eax, %edx
 	mov	%edx, %esp
 
+	/* calculate fxsave location */
+	mov	fxsave_area, %edi
+	test	%edi, %edi
+	jz	2f
+	movl	fxsave_area_size, %eax
+	mul	%ecx
+	add	%eax, %edi
+
 2:
+	/* Save location of fxsave area. */
+	push	%edi
+	mov	%esp, %ebp
+	test	%edi, %edi
+	jz	1f
+
+	/* Enable sse instructions. */
+	mov	%cr4, %eax
+	orl	$(CR4_OSFXSR | CR4_OSXMMEXCPT), %eax
+	mov	%eax, %cr4
+
+	/* Save FP state. */
+	fxsave	(%edi)
+
+1:
+	/* Align stack to 16 bytes. Another 16 bytes are pushed below. */
+	andl	$0xfffffff0, %esp
+
 	/* Call into the c-based SMM relocation function with the platform
 	 * parameters. Equivalent to:
 	 *   struct arg = { c_handler_params, cpu_num, smm_runtime {;
@@ -137,5 +175,16 @@ smm_trampoline32:
 	mov	c_handler, %eax
 	call	*%eax
 
+	/* Restore stack from call frame */
+	mov	%ebp, %esp
+	/* Retrieve fxsave location. */
+	pop	%edi
+	test	%edi, %edi
+	jz	1f
+
+	/* Restore FP state. */
+	fxrstor	(%edi)
+
+1:
 	/* Exit from SM mode. */
 	rsm

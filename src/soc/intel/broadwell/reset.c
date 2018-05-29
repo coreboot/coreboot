@@ -28,12 +28,12 @@
  * with ETR[20] set.
  */
 
-void soft_reset(void)
+void do_soft_reset(void)
 {
 	outb(0x04, 0xcf9);
 }
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	outb(0x06, 0xcf9);
 }

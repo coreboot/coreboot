@@ -60,12 +60,12 @@ config ME_BIN_PATH
 
 config CHECK_ME
 	bool "Verify the integrity of the supplied ME/TXE firmware"
-	default y
+	default n
 	depends on HAVE_ME_BIN && (NORTHBRIDGE_INTEL_NEHALEM || \
 		NORTHBRIDGE_INTEL_SANDYBRIDGE || \
 		NORTHBRIDGE_INTEL_IVYBRIDGE || NORTHBRIDGE_INTEL_HASWELL || \
 		SOC_INTEL_BROADWELL || SOC_INTEL_SKYLAKE || \
-		SOC_INTEL_BAYTRAIL || SOC_INTEL_BRASWELL)
+		SOC_INTEL_KABYLAKE || SOC_INTEL_BAYTRAIL || SOC_INTEL_BRASWELL)
 	help
 	  Verify the integrity of the supplied Intel ME/TXE firmware before
 	  proceeding with the build, in order to prevent an accidental loading
@@ -76,7 +76,7 @@ config USE_ME_CLEANER
 	depends on HAVE_ME_BIN && (NORTHBRIDGE_INTEL_SANDYBRIDGE || \
 		NORTHBRIDGE_INTEL_IVYBRIDGE || NORTHBRIDGE_INTEL_HASWELL || \
 		SOC_INTEL_BROADWELL || SOC_INTEL_SKYLAKE || \
-		SOC_INTEL_BAYTRAIL || SOC_INTEL_BRASWELL)
+		SOC_INTEL_KABYLAKE || SOC_INTEL_BAYTRAIL || SOC_INTEL_BRASWELL)
 	help
 	  Use me_cleaner to remove all the non-fundamental code from the Intel
 	  ME/TXE firmware.
@@ -91,10 +91,11 @@ config USE_ME_CLEANER
 	           only on reverse engineering and trial & error.
 
 	  See the project's page
-	  https://github.com/corna/me_cleaner
+	   https://github.com/corna/me_cleaner
 	  or the wiki
-	  https://github.com/corna/me_cleaner/wiki/How-does-it-work%3F
-	  https://github.com/corna/me_cleaner/wiki/me_cleaner-status
+	   https://github.com/corna/me_cleaner/wiki/How-to-apply-me_cleaner
+	   https://github.com/corna/me_cleaner/wiki/How-does-it-work%3F
+	   https://github.com/corna/me_cleaner/wiki/me_cleaner-status
 	  for more info about this tool
 
 	  If unsure, say N.
@@ -114,6 +115,21 @@ config GBE_BIN_PATH
 	string "Path to gigabit ethernet firmware"
 	depends on HAVE_GBE_BIN
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/gbe.bin"
+
+config HAVE_EC_BIN
+	bool "Add EC firmware"
+	depends on HAVE_IFD_BIN
+	help
+	  The embedded controller needs a firmware file.
+
+	  Select this if you are going to use the PCH integrated controller
+	  and have the EC firmware. EC firmware will be added to final image
+	  through ifdtool.
+
+config EC_BIN_PATH
+	string "Path to EC firmware"
+	depends on HAVE_EC_BIN
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/ec.bin"
 
 ##### Fake IFD #####
 

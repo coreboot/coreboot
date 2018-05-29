@@ -1,0 +1,66 @@
+if BOARD_COMPULAB_INTENSE_PC
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select CPU_INTEL_SOCKET_FCBGA1023
+	select EC_ACPI
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_INT15
+	select NORTHBRIDGE_INTEL_IVYBRIDGE
+	select SANDYBRIDGE_IVYBRIDGE_LVDS
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_C216
+	select SYSTEM_TYPE_LAPTOP
+	select USE_NATIVE_RAMINIT
+	select SUPERIO_SMSC_SIO1007
+
+config HAVE_IFD_BIN
+	bool
+	default n
+
+config HAVE_ME_BIN
+	bool
+	default n
+
+config HAVE_GBE_BIN
+	bool
+	default n
+
+config MAINBOARD_DIR
+	string
+	default compulab/intense_pc
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Intense-PC"
+
+config VGA_BIOS_ID
+	string
+	default "8086,0166"
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x7270
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x8086
+
+config DRAM_RESET_GATE_GPIO # FIXME: check this
+	int
+	default 60
+
+config MAX_CPUS
+	int
+	default 8
+
+config USBDEBUG_HCD_INDEX # FIXME: check this
+	int
+	default 2
+
+config ENABLE_MSATA # enable mSATA instead of mPCIe on full height slot
+	bool "Use full-height mini-PCIe for mSATA"
+	default n
+endif

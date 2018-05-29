@@ -170,10 +170,12 @@ static void i945_setup_bars(void)
 	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
 	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
 	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
+	outw((1 <<  3), DEFAULT_PMBASE | 0x60 | 0x04);	/* clear timeout */
+	outw((1 <<  1), DEFAULT_PMBASE | 0x60 | 0x06);	/* clear 2nd timeout */
 	printk(BIOS_DEBUG, " done.\n");
 
 	/* Enable upper 128bytes of CMOS */
-	RCBA32(0x3400) = (1 << 2);
+	RCBA32(RC) = (1 << 2);
 
 	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
 	/* Set up all hardcoded northbridge BARs */
@@ -944,9 +946,9 @@ void i945_late_initialization(int s3resume)
 
 	i945_setup_root_complex_topology();
 
-#if !CONFIG_HAVE_ACPI_RESUME
+#if !IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 #if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
-#if CONFIG_DEBUG_RAM_SETUP
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 	sdram_dump_mchbar_registers();
 
 	{

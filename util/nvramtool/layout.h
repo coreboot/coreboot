@@ -9,7 +9,7 @@
  *
  *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
- *  For details, see http://coreboot.org/nvramtool.
+ *  For details, see https://coreboot.org/nvramtool.
  *
  *  Please also read the file DISCLAIMER which is included in this software
  *  distribution.
@@ -40,6 +40,7 @@
 #define LAYOUT_CHECKSUM_OVERLAPS_SUMMED_AREA (LAYOUT_RESULT_START + 7)
 #define LAYOUT_SUMMED_AREA_OUT_OF_RANGE (LAYOUT_RESULT_START + 8)
 #define LAYOUT_CHECKSUM_LOCATION_OUT_OF_RANGE (LAYOUT_RESULT_START + 9)
+#define LAYOUT_MULTIBYTE_ENTRY_NOT_ALIGNED (LAYOUT_RESULT_START + 10)
 
 typedef enum {
 	CMOS_ENTRY_ENUM = 'e',

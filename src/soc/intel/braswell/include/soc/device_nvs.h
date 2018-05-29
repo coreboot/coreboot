@@ -18,6 +18,7 @@
 #define _SOC_DEVICE_NVS_H_
 
 #include <stdint.h>
+#include <compiler.h>
 
 /* Offset in Global NVS where this structure lives */
 #define DEVICE_NVS_OFFSET	0x1000
@@ -59,6 +60,6 @@ typedef struct {
 
 	/* Extra */
 	u32	lpe_fw; /* LPE Firmware */
-} __attribute__((packed)) device_nvs_t;
+} __packed device_nvs_t;
 
 #endif	/* _SOC_DEVICE_NVS_H_ */

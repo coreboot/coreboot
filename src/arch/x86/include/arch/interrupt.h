@@ -21,9 +21,9 @@
 #include "registers.h"
 
 /* setup interrupt handlers for mainboard */
-#if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_REALMODE)
 extern void mainboard_interrupt_handlers(int intXX, int (*intXX_func)(void));
-#elif CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#elif IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 #include <device/oprom/yabel/biosemu.h>
 #else
 static inline void mainboard_interrupt_handlers(int intXX,

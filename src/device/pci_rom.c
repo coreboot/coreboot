@@ -19,15 +19,18 @@
 
 #include <console/console.h>
 #include <commonlib/endian.h>
+#include <compiler.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <string.h>
 #include <cbfs.h>
+#include <cbmem.h>
+#include <arch/acpigen.h>
 
 /* Rmodules don't like weak symbols. */
-u32 __attribute__((weak)) map_oprom_vendev(u32 vendev) { return vendev; }
+u32 __weak map_oprom_vendev(u32 vendev) { return vendev; }
 
 struct rom_header *pci_rom_probe(struct device *dev)
 {
@@ -63,7 +66,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 		rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
 
 		if (rom_address == 0x00000000 || rom_address == 0xffffffff) {
-#if CONFIG_BOARD_EMULATION_QEMU_X86
+#if IS_ENABLED(CONFIG_BOARD_EMULATION_QEMU_X86)
 			if ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA)
 				rom_address = 0xc0000;
 			else
@@ -148,9 +151,9 @@ struct rom_header *pci_rom_load(struct device *dev,
 	 * whether the ROM image is for a VGA device because some
 	 * devices have a mismatch between the hardware and the ROM.
 	 */
- 	if (PCI_CLASS_DISPLAY_VGA == (dev->class >> 8)) {
-#if !CONFIG_MULTIPLE_VGA_ADAPTERS
-		extern device_t vga_pri; /* Primary VGA device (device.c). */
+	if (PCI_CLASS_DISPLAY_VGA == (dev->class >> 8)) {
+#if !IS_ENABLED(CONFIG_MULTIPLE_VGA_ADAPTERS)
+		extern struct device *vga_pri; /* Primary VGA device (device.c). */
 		if (dev != vga_pri) return NULL; /* Only one VGA supported. */
 #endif
 		if ((void *)PCI_VGA_RAM_IMAGE_START != rom_header) {
@@ -199,9 +202,8 @@ static struct rom_header *check_initialized(struct device *dev)
 }
 
 static unsigned long
-pci_rom_acpi_fill_vfct(struct device *device,
-					   struct acpi_vfct *vfct_struct,
-					   unsigned long current)
+pci_rom_acpi_fill_vfct(struct device *device, struct acpi_vfct *vfct_struct,
+		       unsigned long current)
 {
 	struct acpi_vfct_image_hdr *header = &vfct_struct->image_hdr;
 	struct rom_header *rom;
@@ -235,9 +237,8 @@ pci_rom_acpi_fill_vfct(struct device *device,
 }
 
 unsigned long
-pci_rom_write_acpi_tables(struct device *device,
-						  unsigned long current,
-						  struct acpi_rsdp *rsdp)
+pci_rom_write_acpi_tables(struct device *device, unsigned long current,
+			  struct acpi_rsdp *rsdp)
 {
 	struct acpi_vfct *vfct;
 	struct rom_header *rom;
@@ -266,5 +267,62 @@ pci_rom_write_acpi_tables(struct device *device,
 	}
 
 	return current;
+}
+
+void pci_rom_ssdt(struct device *device)
+{
+	static size_t ngfx;
+
+	/* Only handle VGA devices */
+	if ((device->class >> 8) != PCI_CLASS_DISPLAY_VGA)
+		return;
+
+	/* Only handle enabled devices */
+	if (!device->enabled)
+		return;
+
+	/* Probe for option rom */
+	const struct rom_header *rom = pci_rom_probe(device);
+	if (!rom || !rom->size) {
+		printk(BIOS_WARNING, "%s: Missing PCI Option ROM\n",
+		       dev_path(device));
+		return;
+	}
+
+	const char *scope = acpi_device_path(device);
+	if (!scope) {
+		printk(BIOS_ERR, "%s: Missing ACPI scope\n", dev_path(device));
+		return;
+	}
+
+	/* Supports up to four devices. */
+	if ((CBMEM_ID_ROM0 + ngfx) > CBMEM_ID_ROM3) {
+		printk(BIOS_ERR, "%s: Out of CBMEM IDs.\n", dev_path(device));
+		return;
+	}
+
+	/* Prepare memory */
+	const size_t cbrom_length = rom->size * 512;
+	if (!cbrom_length) {
+		printk(BIOS_ERR, "%s: ROM has zero length!\n",
+		       dev_path(device));
+		return;
+	}
+
+	void *cbrom = cbmem_add(CBMEM_ID_ROM0 + ngfx, cbrom_length);
+	if (!cbrom) {
+		printk(BIOS_ERR, "%s: Failed to allocate CBMEM.\n",
+		       dev_path(device));
+		return;
+	}
+	/* Increment CBMEM id for next device */
+	ngfx++;
+
+	memcpy(cbrom, rom, cbrom_length);
+
+	/* write _ROM method */
+	acpigen_write_scope(scope);
+	acpigen_write_rom(cbrom, cbrom_length);
+	acpigen_pop_len(); /* pop scope */
 }
 #endif

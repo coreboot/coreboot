@@ -8,9 +8,12 @@ config SOC_ROCKCHIP_RK3399
 	select ARM64_USE_ARM_TRUSTED_FIRMWARE
 	select BOOTBLOCK_CONSOLE
 	select DRIVERS_UART_8250MEM_32
+	select GENERIC_GPIO_LIB
 	select GENERIC_UDELAY
 	select HAVE_MONOTONIC_TIMER
 	select UART_OVERRIDE_REFCLK
+	select HAVE_LINEAR_FRAMEBUFFER if MAINBOARD_DO_NATIVE_VGA_INIT
+	select COMPRESS_BOOTBLOCK
 
 if SOC_ROCKCHIP_RK3399
 
@@ -23,5 +26,13 @@ config VBOOT
 config PMIC_BUS
 	int
 	default -1
+
+config RK3399_SPREAD_SPECTRUM_DDR
+	bool "Spread-spectrum DDR clock"
+	default n
+	help
+	  Select Spread Spectrum Modulator (SSMOD) is a fully-digital circuit
+	  used to modulate the frequency of the Silicon Creations' Fractional
+	  PLL in order to reduce EMI.
 
 endif

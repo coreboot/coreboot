@@ -147,11 +147,11 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, NCT5104D_FDC,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, NCT5104D_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, NCT5104D_SP2,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, NCT5104D_SP3,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, NCT5104D_SP4,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, NCT5104D_FDC,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ &ops, NCT5104D_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ &ops, NCT5104D_SP2,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ &ops, NCT5104D_SP3,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ &ops, NCT5104D_SP4,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
 	{ &ops, NCT5104D_GPIO_WDT},
 	{ &ops, NCT5104D_GPIO_PP_OD},
 	{ &ops, NCT5104D_GPIO0},

@@ -24,7 +24,7 @@
 
 #include "../../../northbridge/amd/amdk8/reset_test.c"
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	set_bios_reset();
 	/* Try rebooting through port 0xcf9 */

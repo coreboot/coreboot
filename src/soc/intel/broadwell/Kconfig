@@ -27,10 +27,6 @@ config CPU_SPECIFIC_OPTIONS
 	select RELOCATABLE_RAMSTAGE
 	select REG_SCRIPT
 	select PARALLEL_MP
-	select PCIEXP_ASPM
-	select PCIEXP_COMMON_CLOCK
-	select PCIEXP_CLK_PM
-	select PCIEXP_L1_SUB_STATE
 	select RTC
 	select SMM_TSEG
 	select SMP
@@ -45,6 +41,27 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	select HAVE_SPI_CONSOLE_SUPPORT
 	select CPU_INTEL_COMMON
+	select INTEL_GMA_ACPI
+
+config PCIEXP_ASPM
+	bool
+	default y
+
+config PCIEXP_AER
+	bool
+	default y
+
+config PCIEXP_COMMON_CLOCK
+	bool
+	default y
+
+config PCIEXP_CLK_PM
+	bool
+	default y
+
+config PCIEXP_L1_SUB_STATE
+	bool
+	default y
 
 config VBOOT
 	select VBOOT_STARTS_IN_ROMSTAGE
@@ -128,10 +145,6 @@ config MRC_BIN_ADDRESS
 	hex
 	default 0xfffa0000
 
-config CACHE_MRC_SETTINGS
-	bool "Save cached MRC settings"
-	default y
-
 endif # HAVE_MRC
 
 config PRE_GRAPHICS_DELAY
@@ -172,10 +185,6 @@ config TTYS0_BASE
 config EHCI_BAR
 	hex
 	default 0xd8000000
-
-config EHCI_DEBUG_OFFSET
-	hex
-	default 0xa0
 
 config SERIRQ_CONTINUOUS_MODE
 	bool

@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <gpio.h>
 #include <soc/pinmux.h>
 

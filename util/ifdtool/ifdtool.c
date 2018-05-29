@@ -21,27 +21,39 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <commonlib/helpers.h>
 #include "ifdtool.h"
 
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
 
+/**
+ * PTR_IN_RANGE - examine whether a pointer falls in [base, base + limit)
+ * @param ptr:    the non-void* pointer to a single arbitrary-sized object.
+ * @param base:   base address represented with char* type.
+ * @param limit:  upper limit of the legal address.
+ *
+ */
+#define PTR_IN_RANGE(ptr, base, limit)			\
+	((const char *)(ptr) >= (base) &&		\
+	 (const char *)&(ptr)[1] <= (base) + (limit))
+
 static int ifd_version;
-static int max_regions = 0;
+static unsigned int max_regions = 0;
 static int selected_chip = 0;
 static int platform = -1;
 
 static const struct region_name region_names[MAX_REGIONS] = {
-	{ "Flash Descriptor", "fd" },
-	{ "BIOS", "bios" },
-	{ "Intel ME", "me" },
-	{ "GbE", "gbe" },
-	{ "Platform Data", "pd" },
-	{ "Reserved", "res1" },
-	{ "Reserved", "res2" },
-	{ "Reserved", "res3" },
-	{ "EC", "ec" },
+	{ "Flash Descriptor", "fd", "flashregion_0_flashdescriptor.bin" },
+	{ "BIOS", "bios", "flashregion_1_bios.bin" },
+	{ "Intel ME", "me", "flashregion_2_intel_me.bin" },
+	{ "GbE", "gbe", "flashregion_3_gbe.bin" },
+	{ "Platform Data", "pd", "flashregion_4_platform_data.bin" },
+	{ "Reserved", "res1", "flashregion_5_reserved.bin" },
+	{ "Reserved", "res2", "flashregion_6_reserved.bin" },
+	{ "Reserved", "res3", "flashregion_7_reserved.bin" },
+	{ "EC", "ec", "flashregion_8_ec.bin" },
 };
 
 static fdbar_t *find_fd(char *image, int size)
@@ -61,7 +73,78 @@ static fdbar_t *find_fd(char *image, int size)
 		return NULL;
 	}
 
-	return (fdbar_t *) (image + i);
+	fdbar_t *fdb = (fdbar_t *) (image + i);
+	return PTR_IN_RANGE(fdb, image, size) ? fdb : NULL;
+}
+
+static fcba_t *find_fcba(char *image, int size)
+{
+	fdbar_t *fdb = find_fd(image, size);
+	if (!fdb)
+		return NULL;
+	fcba_t *fcba = (fcba_t *) (image + ((fdb->flmap0 & 0xff) << 4));
+	return PTR_IN_RANGE(fcba, image, size) ? fcba : NULL;
+
+}
+
+static fmba_t *find_fmba(char *image, int size)
+{
+	fdbar_t *fdb = find_fd(image, size);
+	if (!fdb)
+		return NULL;
+	fmba_t *fmba = (fmba_t *) (image + ((fdb->flmap1 & 0xff) << 4));
+	return PTR_IN_RANGE(fmba, image, size) ? fmba : NULL;
+}
+
+static frba_t *find_frba(char *image, int size)
+{
+	fdbar_t *fdb = find_fd(image, size);
+	if (!fdb)
+		return NULL;
+	frba_t *frba =
+		(frba_t *) (image + (((fdb->flmap0 >> 16) & 0xff) << 4));
+	return PTR_IN_RANGE(frba, image, size) ? frba : NULL;
+}
+
+static fpsba_t *find_fpsba(char *image, int size)
+{
+	fdbar_t *fdb = find_fd(image, size);
+	if (!fdb)
+		return NULL;
+	fpsba_t *fpsba =
+		(fpsba_t *) (image + (((fdb->flmap1 >> 16) & 0xff) << 4));
+	return PTR_IN_RANGE(fpsba, image, size) ? fpsba : NULL;
+}
+
+static fmsba_t *find_fmsba(char *image, int size)
+{
+	fdbar_t *fdb = find_fd(image, size);
+	if (!fdb)
+		return NULL;
+	fmsba_t *fmsba = (fmsba_t *) (image + ((fdb->flmap2 & 0xff) << 4));
+	return PTR_IN_RANGE(fmsba, image, size) ? fmsba : NULL;
+}
+
+/*
+ * Some newer platforms have re-defined the FCBA field that was used to
+ * distinguish IFD v1 v/s v2. Define a list of platforms that we know do not
+ * have the required FCBA field, but are IFD v2 and return true if current
+ * platform is one of them.
+ */
+static int is_platform_ifd_2(void)
+{
+	static const int ifd_2_platforms[] = {
+		PLATFORM_GLK,
+		PLATFORM_CNL,
+	};
+	unsigned int i;
+
+	for (i = 0; i < ARRAY_SIZE(ifd_2_platforms); i++) {
+		if (platform == ifd_2_platforms[i])
+			return 1;
+	}
+
+	return 0;
 }
 
 /*
@@ -69,16 +152,10 @@ static fdbar_t *find_fd(char *image, int size)
  * if this is a new descriptor format we check the hardcoded SPI
  * read frequency to see if it is fixed at 20MHz or 17MHz.
  */
-static void check_ifd_version(char *image, int size)
+static int get_ifd_version_from_fcba(char *image, int size)
 {
-	fdbar_t *fdb = find_fd(image, size);
-	fcba_t *fcba;
 	int read_freq;
-
-	if (!fdb)
-		exit(EXIT_FAILURE);
-
-	fcba = (fcba_t *) (image + (((fdb->flmap0) & 0xff) << 4));
+	const fcba_t *fcba = find_fcba(image, size);
 	if (!fcba)
 		exit(EXIT_FAILURE);
 
@@ -86,14 +163,10 @@ static void check_ifd_version(char *image, int size)
 
 	switch (read_freq) {
 	case SPI_FREQUENCY_20MHZ:
-		ifd_version = IFD_VERSION_1;
-		max_regions = MAX_REGIONS_OLD;
-		break;
+		return IFD_VERSION_1;
 	case SPI_FREQUENCY_17MHZ:
 	case SPI_FREQUENCY_50MHZ_30MHZ:
-		ifd_version = IFD_VERSION_2;
-		max_regions = MAX_REGIONS;
-		break;
+		return IFD_VERSION_2;
 	default:
 		fprintf(stderr, "Unknown descriptor version: %d\n",
 			read_freq);
@@ -101,11 +174,24 @@ static void check_ifd_version(char *image, int size)
 	}
 }
 
-static region_t get_region(frba_t *frba, int region_type)
+static void check_ifd_version(char *image, int size)
+{
+	if (is_platform_ifd_2())
+		ifd_version = IFD_VERSION_2;
+	else
+		ifd_version = get_ifd_version_from_fcba(image, size);
+
+	if (ifd_version == IFD_VERSION_1)
+		max_regions = MAX_REGIONS_OLD;
+	else
+		max_regions = MAX_REGIONS;
+}
+
+static region_t get_region(const frba_t *frba, unsigned int region_type)
 {
 	int base_mask;
 	int limit_mask;
-	uint32_t *flreg;
+	uint32_t flreg;
 	region_t region;
 
 	if (ifd_version >= IFD_VERSION_2)
@@ -115,41 +201,14 @@ static region_t get_region(frba_t *frba, int region_type)
 
 	limit_mask = base_mask << 16;
 
-	switch (region_type) {
-	case 0:
-		flreg = &frba->flreg0;
-		break;
-	case 1:
-		flreg = &frba->flreg1;
-		break;
-	case 2:
-		flreg = &frba->flreg2;
-		break;
-	case 3:
-		flreg = &frba->flreg3;
-		break;
-	case 4:
-		flreg = &frba->flreg4;
-		break;
-	case 5:
-		flreg = &frba->flreg5;
-		break;
-	case 6:
-		flreg = &frba->flreg6;
-		break;
-	case 7:
-		flreg = &frba->flreg7;
-		break;
-	case 8:
-		flreg = &frba->flreg8;
-		break;
-	default:
+	if (region_type >= max_regions) {
 		fprintf(stderr, "Invalid region type %d.\n", region_type);
 		exit (EXIT_FAILURE);
 	}
 
-	region.base = (*flreg & base_mask) << 12;
-	region.limit = ((*flreg & limit_mask) >> 4) | 0xfff;
+	flreg = frba->flreg[region_type];
+	region.base = (flreg & base_mask) << 12;
+	region.limit = ((flreg & limit_mask) >> 4) | 0xfff;
 	region.size = region.limit - region.base + 1;
 
 	if (region.size < 0)
@@ -158,38 +217,22 @@ static region_t get_region(frba_t *frba, int region_type)
 	return region;
 }
 
-static void set_region(frba_t *frba, int region_type, region_t region)
+static void set_region(frba_t *frba, unsigned int region_type,
+		       const region_t *region)
 {
-	switch (region_type) {
-	case 0:
-		frba->flreg0 = (((region.limit >> 12) & 0x7fff) << 16)
-			| ((region.base >> 12) & 0x7fff);
-		break;
-	case 1:
-		frba->flreg1 = (((region.limit >> 12) & 0x7fff) << 16)
-			| ((region.base >> 12) & 0x7fff);
-		break;
-	case 2:
-		frba->flreg2 = (((region.limit >> 12) & 0x7fff) << 16)
-			| ((region.base >> 12) & 0x7fff);
-		break;
-	case 3:
-		frba->flreg3 = (((region.limit >> 12) & 0x7fff) << 16)
-			| ((region.base >> 12) & 0x7fff);
-		break;
-	case 4:
-		frba->flreg4 = (((region.limit >> 12) & 0x7fff) << 16)
-			| ((region.base >> 12) & 0x7fff);
-		break;
-	default:
-		fprintf(stderr, "Invalid region type.\n");
+	if (region_type >= max_regions) {
+		fprintf(stderr, "Invalid region type %u.\n", region_type);
 		exit (EXIT_FAILURE);
 	}
+
+	frba->flreg[region_type] =
+		(((region->limit >> 12) & 0x7fff) << 16) |
+		((region->base >> 12) & 0x7fff);
 }
 
-static const char *region_name(int region_type)
+static const char *region_name(unsigned int region_type)
 {
-	if (region_type < 0 || region_type >= max_regions) {
+	if (region_type >= max_regions) {
 		fprintf(stderr, "Invalid region type.\n");
 		exit (EXIT_FAILURE);
 	}
@@ -197,9 +240,9 @@ static const char *region_name(int region_type)
 	return region_names[region_type].pretty;
 }
 
-static const char *region_name_short(int region_type)
+static const char *region_name_short(unsigned int region_type)
 {
-	if (region_type < 0 || region_type >= max_regions) {
+	if (region_type >= max_regions) {
 		fprintf(stderr, "Invalid region type.\n");
 		exit (EXIT_FAILURE);
 	}
@@ -209,7 +252,7 @@ static const char *region_name_short(int region_type)
 
 static int region_num(const char *name)
 {
-	int i;
+	unsigned int i;
 
 	for (i = 0; i < max_regions; i++) {
 		if (strcasecmp(name, region_names[i].pretty) == 0)
@@ -221,29 +264,17 @@ static int region_num(const char *name)
 	return -1;
 }
 
-static const char *region_filename(int region_type)
+static const char *region_filename(unsigned int region_type)
 {
-	static const char *region_filenames[MAX_REGIONS] = {
-		"flashregion_0_flashdescriptor.bin",
-		"flashregion_1_bios.bin",
-		"flashregion_2_intel_me.bin",
-		"flashregion_3_gbe.bin",
-		"flashregion_4_platform_data.bin",
-		"flashregion_5_reserved.bin",
-		"flashregion_6_reserved.bin",
-		"flashregion_7_reserved.bin",
-		"flashregion_8_ec.bin",
-	};
-
-	if (region_type < 0 || region_type >= max_regions) {
+	if (region_type >= max_regions) {
 		fprintf(stderr, "Invalid region type %d.\n", region_type);
 		exit (EXIT_FAILURE);
 	}
 
-	return region_filenames[region_type];
+	return region_names[region_type].filename;
 }
 
-static void dump_region(int num, frba_t *frba)
+static void dump_region(unsigned int num, const frba_t *frba)
 {
 	region_t region = get_region(frba, num);
 	printf("  Flash Region %d (%s): %08x - %08x %s\n",
@@ -251,44 +282,29 @@ static void dump_region(int num, frba_t *frba)
 		       region.size < 1 ? "(unused)" : "");
 }
 
-static void dump_region_layout(char *buf, size_t bufsize, int num, frba_t *frba)
+static void dump_region_layout(char *buf, size_t bufsize, unsigned int num,
+			       const frba_t *frba)
 {
 	region_t region = get_region(frba, num);
 	snprintf(buf, bufsize, "%08x:%08x %s\n",
 		region.base, region.limit, region_name_short(num));
 }
 
-static void dump_frba(frba_t * frba)
+static void dump_frba(const frba_t *frba)
 {
+	unsigned int i;
 	printf("Found Region Section\n");
-	printf("FLREG0:    0x%08x\n", frba->flreg0);
-	dump_region(0, frba);
-	printf("FLREG1:    0x%08x\n", frba->flreg1);
-	dump_region(1, frba);
-	printf("FLREG2:    0x%08x\n", frba->flreg2);
-	dump_region(2, frba);
-	printf("FLREG3:    0x%08x\n", frba->flreg3);
-	dump_region(3, frba);
-	printf("FLREG4:    0x%08x\n", frba->flreg4);
-	dump_region(4, frba);
-
-	if (ifd_version >= IFD_VERSION_2) {
-		printf("FLREG5:    0x%08x\n", frba->flreg5);
-		dump_region(5, frba);
-		printf("FLREG6:    0x%08x\n", frba->flreg6);
-		dump_region(6, frba);
-		printf("FLREG7:    0x%08x\n", frba->flreg7);
-		dump_region(7, frba);
-		printf("FLREG8:    0x%08x\n", frba->flreg8);
-		dump_region(8, frba);
+	for (i = 0; i < max_regions; i++) {
+		printf("FLREG%u:    0x%08x\n", i, frba->flreg[i]);
+		dump_region(i, frba);
 	}
 }
 
-static void dump_frba_layout(frba_t * frba, char *layout_fname)
+static void dump_frba_layout(const frba_t *frba, const char *layout_fname)
 {
 	char buf[LAYOUT_LINELEN];
 	size_t bufsize = LAYOUT_LINELEN;
-	int i;
+	unsigned int i;
 
 	int layout_fd = open(layout_fname, O_WRONLY | O_CREAT | O_TRUNC,
 			S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
@@ -378,7 +394,7 @@ static void decode_component_density(unsigned int density)
 	}
 }
 
-static void dump_fcba(fcba_t * fcba)
+static void dump_fcba(const fcba_t *fcba)
 {
 	printf("\nFound Component Section\n");
 	printf("FLCOMP     0x%08x\n", fcba->flcomp);
@@ -425,27 +441,14 @@ static void dump_fcba(fcba_t * fcba)
 		(fcba->flpb & 0xfff) << 12);
 }
 
-static void dump_fpsba(fpsba_t * fpsba)
+static void dump_fpsba(const fpsba_t *fpsba)
 {
+	unsigned int i;
 	printf("Found PCH Strap Section\n");
-	printf("PCHSTRP0:  0x%08x\n", fpsba->pchstrp0);
-	printf("PCHSTRP1:  0x%08x\n", fpsba->pchstrp1);
-	printf("PCHSTRP2:  0x%08x\n", fpsba->pchstrp2);
-	printf("PCHSTRP3:  0x%08x\n", fpsba->pchstrp3);
-	printf("PCHSTRP4:  0x%08x\n", fpsba->pchstrp4);
-	printf("PCHSTRP5:  0x%08x\n", fpsba->pchstrp5);
-	printf("PCHSTRP6:  0x%08x\n", fpsba->pchstrp6);
-	printf("PCHSTRP7:  0x%08x\n", fpsba->pchstrp7);
-	printf("PCHSTRP8:  0x%08x\n", fpsba->pchstrp8);
-	printf("PCHSTRP9:  0x%08x\n", fpsba->pchstrp9);
-	printf("PCHSTRP10: 0x%08x\n", fpsba->pchstrp10);
-	printf("PCHSTRP11: 0x%08x\n", fpsba->pchstrp11);
-	printf("PCHSTRP12: 0x%08x\n", fpsba->pchstrp12);
-	printf("PCHSTRP13: 0x%08x\n", fpsba->pchstrp13);
-	printf("PCHSTRP14: 0x%08x\n", fpsba->pchstrp14);
-	printf("PCHSTRP15: 0x%08x\n", fpsba->pchstrp15);
-	printf("PCHSTRP16: 0x%08x\n", fpsba->pchstrp16);
-	printf("PCHSTRP17: 0x%08x\n\n", fpsba->pchstrp17);
+	for (i = 0; i < ARRAY_SIZE(fpsba->pchstrp); i++)
+		printf("PCHSTRP%u:%s 0x%08x\n", i,
+		       i < 10 ? " " : "", fpsba->pchstrp[i]);
+	printf("\n");
 }
 
 static void decode_flmstr(uint32_t flmstr)
@@ -496,7 +499,7 @@ static void decode_flmstr(uint32_t flmstr)
 			flmstr & 0xffff);
 }
 
-static void dump_fmba(fmba_t * fmba)
+static void dump_fmba(const fmba_t *fmba)
 {
 	printf("Found Master Section\n");
 	printf("FLMSTR1:   0x%08x (Host CPU/BIOS)\n", fmba->flmstr1);
@@ -511,13 +514,12 @@ static void dump_fmba(fmba_t * fmba)
 	}
 }
 
-static void dump_fmsba(fmsba_t * fmsba)
+static void dump_fmsba(const fmsba_t *fmsba)
 {
+	unsigned int i;
 	printf("Found Processor Strap Section\n");
-	printf("????:      0x%08x\n", fmsba->data[0]);
-	printf("????:      0x%08x\n", fmsba->data[1]);
-	printf("????:      0x%08x\n", fmsba->data[2]);
-	printf("????:      0x%08x\n", fmsba->data[3]);
+	for (i = 0; i < ARRAY_SIZE(fmsba->data); i++)
+		printf("????:      0x%08x\n", fmsba->data[i]);
 }
 
 static void dump_jid(uint32_t jid)
@@ -581,7 +583,7 @@ static void dump_vscc(uint32_t vscc)
 	}
 }
 
-static void dump_vtba(vtba_t *vtba, int vtl)
+static void dump_vtba(const vtba_t *vtba, int vtl)
 {
 	int i;
 	int num = (vtl >> 1) < 8 ? (vtl >> 1) : 8;
@@ -596,7 +598,7 @@ static void dump_vtba(vtba_t *vtba, int vtl)
 	printf("\n");
 }
 
-static void dump_oem(uint8_t *oem)
+static void dump_oem(const uint8_t *oem)
 {
 	int i, j;
 	printf("OEM Section:\n");
@@ -611,7 +613,7 @@ static void dump_oem(uint8_t *oem)
 
 static void dump_fd(char *image, int size)
 {
-	fdbar_t *fdb = find_fd(image, size);
+	const fdbar_t *fdb = find_fd(image, size);
 	if (!fdb)
 		exit(EXIT_FAILURE);
 
@@ -639,37 +641,41 @@ static void dump_fd(char *image, int size)
 	dump_vtba((vtba_t *)
 			(image + ((fdb->flumap1 & 0xff) << 4)),
 			(fdb->flumap1 >> 8) & 0xff);
-	dump_oem((uint8_t *)image + 0xf00);
-	dump_frba((frba_t *)
-			(image + (((fdb->flmap0 >> 16) & 0xff) << 4)));
-	dump_fcba((fcba_t *) (image + (((fdb->flmap0) & 0xff) << 4)));
-	dump_fpsba((fpsba_t *)
-			(image + (((fdb->flmap1 >> 16) & 0xff) << 4)));
-	dump_fmba((fmba_t *) (image + (((fdb->flmap1) & 0xff) << 4)));
-	dump_fmsba((fmsba_t *) (image + (((fdb->flmap2) & 0xff) << 4)));
+	dump_oem((const uint8_t *)image + 0xf00);
+
+	const frba_t *frba = find_frba(image, size);
+	const fcba_t *fcba = find_fcba(image, size);
+	const fpsba_t *fpsba = find_fpsba(image, size);
+	const fmba_t *fmba = find_fmba(image, size);
+	const fmsba_t *fmsba = find_fmsba(image, size);
+
+	if (frba && fcba && fpsba && fmba && fmsba) {
+		dump_frba(frba);
+		dump_fcba(fcba);
+		dump_fpsba(fpsba);
+		dump_fmba(fmba);
+		dump_fmsba(fmsba);
+	} else {
+		printf("FD is corrupted!\n");
+	}
 }
 
-static void dump_layout(char *image, int size, char *layout_fname)
+static void dump_layout(char *image, int size, const char *layout_fname)
 {
-	fdbar_t *fdb = find_fd(image, size);
-	if (!fdb)
+	const frba_t *frba = find_frba(image, size);
+	if (!frba)
 		exit(EXIT_FAILURE);
 
-	dump_frba_layout((frba_t *)
-			(image + (((fdb->flmap0 >> 16) & 0xff) << 4)),
-			layout_fname);
+	dump_frba_layout(frba, layout_fname);
 }
 
 static void write_regions(char *image, int size)
 {
-	int i;
+	unsigned int i;
+	const frba_t *frba = find_frba(image, size);
 
-	fdbar_t *fdb = find_fd(image, size);
-	if (!fdb)
+	if (!frba)
 		exit(EXIT_FAILURE);
-
-	frba_t *frba =
-	    (frba_t *) (image + (((fdb->flmap0 >> 16) & 0xff) << 4));
 
 	for (i = 0; i < max_regions; i++) {
 		region_t region = get_region(frba, i);
@@ -690,7 +696,7 @@ static void write_regions(char *image, int size)
 	}
 }
 
-static void write_image(char *filename, char *image, int size)
+static void write_image(const char *filename, char *image, int size)
 {
 	char new_filename[FILENAME_MAX]; // allow long file names
 	int new_fd;
@@ -714,11 +720,12 @@ static void write_image(char *filename, char *image, int size)
 	close(new_fd);
 }
 
-static void set_spi_frequency(char *filename, char *image, int size,
+static void set_spi_frequency(const char *filename, char *image, int size,
 			      enum spi_frequency freq)
 {
-	fdbar_t *fdb = find_fd(image, size);
-	fcba_t *fcba = (fcba_t *) (image + (((fdb->flmap0) & 0xff) << 4));
+	fcba_t *fcba = find_fcba(image, size);
+	if (!fcba)
+		exit(EXIT_FAILURE);
 
 	/* clear bits 21-29 */
 	fcba->flcomp &= ~0x3fe00000;
@@ -732,10 +739,12 @@ static void set_spi_frequency(char *filename, char *image, int size,
 	write_image(filename, image, size);
 }
 
-static void set_em100_mode(char *filename, char *image, int size)
+static void set_em100_mode(const char *filename, char *image, int size)
 {
-	fdbar_t *fdb = find_fd(image, size);
-	fcba_t *fcba = (fcba_t *) (image + (((fdb->flmap0) & 0xff) << 4));
+	fcba_t *fcba = find_fcba(image, size);
+	if (!fcba)
+		exit(EXIT_FAILURE);
+
 	int freq;
 
 	switch (ifd_version) {
@@ -754,11 +763,12 @@ static void set_em100_mode(char *filename, char *image, int size)
 	set_spi_frequency(filename, image, size, freq);
 }
 
-static void set_chipdensity(char *filename, char *image, int size,
+static void set_chipdensity(const char *filename, char *image, int size,
                             unsigned int density)
 {
-	fdbar_t *fdb = find_fd(image, size);
-	fcba_t *fcba = (fcba_t *) (image + (((fdb->flmap0) & 0xff) << 4));
+	fcba_t *fcba = find_fcba(image, size);
+	if (!fcba)
+		exit(EXIT_FAILURE);
 
 	printf("Setting chip density to ");
 	decode_component_density(density);
@@ -807,11 +817,12 @@ static void set_chipdensity(char *filename, char *image, int size,
 	write_image(filename, image, size);
 }
 
-static void lock_descriptor(char *filename, char *image, int size)
+static void lock_descriptor(const char *filename, char *image, int size)
 {
 	int wr_shift, rd_shift;
-	fdbar_t *fdb = find_fd(image, size);
-	fmba_t *fmba = (fmba_t *) (image + (((fdb->flmap1) & 0xff) << 4));
+	fmba_t *fmba = find_fmba(image, size);
+	if (!fmba)
+		exit(EXIT_FAILURE);
 	/* TODO: Dynamically take Platform Data Region and GbE Region
 	 * into regard.
 	 */
@@ -835,7 +846,8 @@ static void lock_descriptor(char *filename, char *image, int size)
 	}
 
 	switch (platform) {
-	case PLATFORM_APOLLOLAKE:
+	case PLATFORM_APL:
+	case PLATFORM_GLK:
 		/* CPU/BIOS can read descriptor and BIOS */
 		fmba->flmstr1 |= 0x3 << rd_shift;
 		/* CPU/BIOS can write BIOS */
@@ -844,6 +856,24 @@ static void lock_descriptor(char *filename, char *image, int size)
 		fmba->flmstr2 |= 0x23 << rd_shift;
 		/* TXE can only write Device Expansion */
 		fmba->flmstr2 |= 0x20 << wr_shift;
+		break;
+	case PLATFORM_SKLKBL:
+		/* CPU/BIOS can read descriptor, BIOS and GbE. */
+		fmba->flmstr1 |= 0xb << rd_shift;
+		/* CPU/BIOS can write BIOS and Gbe. */
+		fmba->flmstr1 |= 0xa << wr_shift;
+		/* ME can read descriptor, ME and GbE. */
+		fmba->flmstr2 |= 0xd << rd_shift;
+		/* ME can write ME. */
+		fmba->flmstr2 |= 0x4 << wr_shift;
+		/* GbE can read GbE and descriptor. */
+		fmba->flmstr3 |= 0x9 << rd_shift;
+		/* GbE can write GbE. */
+		fmba->flmstr3 |= 0x8 << wr_shift;
+		/* EC can read EC and descriptor. */
+		fmba->flmstr5 |= 0x101 << rd_shift;
+		/* EC can write EC region. */
+		fmba->flmstr5 |= 0x100 << wr_shift;
 		break;
 	default:
 		/* CPU/BIOS can read descriptor, BIOS, and GbE. */
@@ -864,10 +894,11 @@ static void lock_descriptor(char *filename, char *image, int size)
 	write_image(filename, image, size);
 }
 
-static void unlock_descriptor(char *filename, char *image, int size)
+static void unlock_descriptor(const char *filename, char *image, int size)
 {
-	fdbar_t *fdb = find_fd(image, size);
-	fmba_t *fmba = (fmba_t *) (image + (((fdb->flmap1) & 0xff) << 4));
+	fmba_t *fmba = find_fmba(image, size);
+	if (!fmba)
+		exit(EXIT_FAILURE);
 
 	if (ifd_version >= IFD_VERSION_2) {
 		/* Access bits for each region are read: 19:8 write: 31:20 */
@@ -884,14 +915,12 @@ static void unlock_descriptor(char *filename, char *image, int size)
 	write_image(filename, image, size);
 }
 
-void inject_region(char *filename, char *image, int size, int region_type,
-		   char *region_fname)
+void inject_region(const char *filename, char *image, int size,
+		   unsigned int region_type, const char *region_fname)
 {
-	fdbar_t *fdb = find_fd(image, size);
-	if (!fdb)
+	frba_t *frba = find_frba(image, size);
+	if (!frba)
 		exit(EXIT_FAILURE);
-	frba_t *frba =
-	    (frba_t *) (image + (((fdb->flmap0 >> 16) & 0xff) << 4));
 
 	region_t region = get_region(frba, region_type);
 	if (region.size <= 0xfff) {
@@ -970,24 +999,25 @@ unsigned int next_pow2(unsigned int x)
  * @return 0 if the two regions are seperate
  * @return 1 if the two regions overlap
  */
-static int regions_collide(region_t r1, region_t r2)
+static int regions_collide(const region_t *r1, const region_t *r2)
 {
-	if ((r1.size == 0) || (r2.size == 0))
+	if ((r1->size == 0) || (r2->size == 0))
 		return 0;
 
-	if ( ((r1.base >= r2.base) && (r1.base <= r2.limit)) ||
-	     ((r1.limit >= r2.base) && (r1.limit <= r2.limit)) )
+	if ( ((r1->base >= r2->base) && (r1->base <= r2->limit)) ||
+	     ((r1->limit >= r2->base) && (r1->limit <= r2->limit)) )
 		return 1;
 
 	return 0;
 }
 
-void new_layout(char *filename, char *image, int size, char *layout_fname)
+void new_layout(const char *filename, char *image, int size,
+		const char *layout_fname)
 {
 	FILE *romlayout;
 	char tempstr[256];
 	char layout_region_name[256];
-	int i, j;
+	unsigned int i, j;
 	int region_number;
 	region_t current_regions[MAX_REGIONS];
 	region_t new_regions[MAX_REGIONS];
@@ -995,12 +1025,9 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 	char *new_image;
 
 	/* load current descriptor map and regions */
-	fdbar_t *fdb = find_fd(image, size);
-	if (!fdb)
+	frba_t *frba = find_frba(image, size);
+	if (!frba)
 		exit(EXIT_FAILURE);
-
-	frba_t *frba =
-	    (frba_t *) (image + (((fdb->flmap0 >> 16) & 0xff) << 4));
 
 	for (i = 0; i < max_regions; i++) {
 		current_regions[i] = get_region(frba, i);
@@ -1058,7 +1085,7 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 		}
 
 		for (j = i + 1; j < max_regions; j++) {
-			if (regions_collide(new_regions[i], new_regions[j])) {
+			if (regions_collide(&new_regions[i], &new_regions[j])) {
 				fprintf(stderr, "Regions would overlap.\n");
 				exit(EXIT_FAILURE);
 			}
@@ -1082,44 +1109,42 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 	for (i = 0; i < max_regions; i++) {
 		int copy_size = new_regions[i].size;
 		int offset_current = 0, offset_new = 0;
-		region_t current = current_regions[i];
-		region_t new = new_regions[i];
+		const region_t *current = &current_regions[i];
+		const region_t *new = &new_regions[i];
 
-		if (new.size == 0)
+		if (new->size == 0)
 			continue;
 
-		if (new.size > current.size) {
+		if (new->size > current->size) {
 			/* copy from the end of the current region */
-			copy_size = current.size;
-			offset_new = new.size - current.size;
+			copy_size = current->size;
+			offset_new = new->size - current->size;
 		}
 
-		if (new.size < current.size) {
+		if (new->size < current->size) {
 			/* copy to the end of the new region */
-			offset_current = current.size - new.size;
+			offset_current = current->size - new->size;
 		}
 
 		printf("Copy Descriptor %d (%s) (%d bytes)\n", i,
 				region_name(i), copy_size);
-		printf("   from %08x+%08x:%08x (%10d)\n", current.base,
-				offset_current, current.limit, current.size);
-		printf("     to %08x+%08x:%08x (%10d)\n", new.base,
-				offset_new, new.limit, new.size);
+		printf("   from %08x+%08x:%08x (%10d)\n", current->base,
+				offset_current, current->limit, current->size);
+		printf("     to %08x+%08x:%08x (%10d)\n", new->base,
+				offset_new, new->limit, new->size);
 
-		memcpy(new_image + new.base + offset_new,
-				image + current.base + offset_current,
+		memcpy(new_image + new->base + offset_new,
+				image + current->base + offset_current,
 				copy_size);
 	}
 
 	/* update new descriptor regions */
-	fdb = find_fd(new_image, new_extent);
-	if (!fdb)
+	frba = find_frba(new_image, new_extent);
+	if (!frba)
 		exit(EXIT_FAILURE);
 
-	frba = (frba_t *) (new_image + (((fdb->flmap0 >> 16) & 0xff) << 4));
-	for (i = 1; i < max_regions; i++) {
-		set_region(frba, i, new_regions[i]);
-	}
+	for (i = 1; i < max_regions; i++)
+		set_region(frba, i, &new_regions[i]);
 
 	write_image(filename, new_image, new_extent);
 	free(new_image);
@@ -1159,6 +1184,9 @@ static void print_usage(const char *name)
 	       "   -u | --unlock                      Unlock firmware descriptor and ME region\n"
 	       "   -p | --platform                    Add platform-specific quirks\n"
 	       "                                      aplk - Apollo Lake\n"
+	       "                                      cnl - Cannon Lake\n"
+	       "                                      glk - Gemini Lake\n"
+	       "                                      sklkbl - Skylake/Kaby Lake\n"
 	       "   -v | --version:                    print the version\n"
 	       "   -h | --help:                       print this help\n\n"
 	       "<region> is one of Descriptor, BIOS, ME, GbE, Platform\n"
@@ -1171,12 +1199,13 @@ int main(int argc, char *argv[])
 	int mode_dump = 0, mode_extract = 0, mode_inject = 0, mode_spifreq = 0;
 	int mode_em100 = 0, mode_locked = 0, mode_unlocked = 0;
 	int mode_layout = 0, mode_newlayout = 0, mode_density = 0;
-	char *region_type_string = NULL, *region_fname = NULL, *layout_fname = NULL;
+	char *region_type_string = NULL, *region_fname = NULL;
+	const char *layout_fname = NULL;
 	int region_type = -1, inputfreq = 0;
 	unsigned int new_density = 0;
 	enum spi_frequency spifreq = SPI_FREQUENCY_20MHZ;
 
-	static struct option long_options[] = {
+	static const struct option long_options[] = {
 		{"dump", 0, NULL, 'd'},
 		{"layout", 1, NULL, 'f'},
 		{"extract", 0, NULL, 'x'},
@@ -1347,11 +1376,18 @@ int main(int argc, char *argv[])
 			break;
 		case 'p':
 			if (!strcmp(optarg, "aplk")) {
-				platform = PLATFORM_APOLLOLAKE;
+				platform = PLATFORM_APL;
+			} else if (!strcmp(optarg, "cnl")) {
+				platform = PLATFORM_CNL;
+			} else if (!strcmp(optarg, "glk")) {
+				platform = PLATFORM_GLK;
+			} else if (!strcmp(optarg, "sklkbl")) {
+				platform = PLATFORM_SKLKBL;
 			} else {
 				fprintf(stderr, "Unknown platform: %s\n", optarg);
 				exit(EXIT_FAILURE);
 			}
+			fprintf(stderr, "Platform is: %s\n", optarg);
 			break;
 		case 'v':
 			print_version();

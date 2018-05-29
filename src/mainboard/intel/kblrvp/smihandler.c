@@ -49,6 +49,9 @@ int mainboard_io_trap_handler(int smif)
 
 void mainboard_smi_gpi_handler(const struct gpi_status *sts)
 {
+	if (IS_ENABLED(CONFIG_BOARD_INTEL_KBLRVP8))
+		return;
+
 	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
 		if (gpi_status_get(sts, EC_SMI_GPI))
 			chromeec_smi_process_events();

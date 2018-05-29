@@ -64,6 +64,11 @@ int cbmem_initialize_id_size(u32 id, u64 size);
 void cbmem_initialize_empty(void);
 void cbmem_initialize_empty_id_size(u32 id, u64 size);
 
+/* Optional hook for platforms to initialize cbmem_top() value. When employed
+ * it's called a single time during boot at cbmem initialization/recovery
+ * time. */
+void cbmem_top_init(void);
+
 /* Return the top address for dynamic cbmem. The address returned needs to
  * be consistent across romstage and ramstage, and it is required to be
  * below 4GiB.
@@ -97,8 +102,6 @@ int cbmem_recovery(int s3resume);
 void *cbmem_add(u32 id, u64 size);
 /* Find a cbmem entry of a given id. These return NULL on failure. */
 void *cbmem_find(u32 id);
-/* Get location and size of CBMEM region in memory */
-void cbmem_region_used(uintptr_t *base, size_t *size);
 
 /* Indicate to each hook if cbmem is being recovered or not. */
 typedef void (* const cbmem_init_hook_t)(int is_recovery);
@@ -145,17 +148,21 @@ void cbmem_add_records_to_cbtable(struct lb_header *header);
 #endif /* ENV_RAMSTAGE */
 
 
-/* These are for compatibility with old boards only. Any new chipset and board
- * must implement cbmem_top() for both romstage and ramstage to support
- * early features like COLLECT_TIMESTAMPS and CBMEM_CONSOLE.
+/* Any new chipset and board must implement cbmem_top() for both
+ * romstage and ramstage to support early features like COLLECT_TIMESTAMPS
+ * and CBMEM_CONSOLE. Sometimes it is necessary to have cbmem_top()
+ * value stored in nvram to enable early recovery on S3 path.
  */
-#if IS_ENABLED(CONFIG_ARCH_X86) && IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
-/* Note that many of the current providers of get_top_of_ram() conditionally
- * return 0 when the sleep type is non S3. i.e. cold and warm boots would
- * return 0 from get_top_of_ram(). */
-unsigned long get_top_of_ram(void);
-void set_top_of_ram(uint64_t ramtop);
-void backup_top_of_ram(uint64_t ramtop);
+#if IS_ENABLED(CONFIG_ARCH_X86)
+/* Note that with LATE_CBMEM_INIT, restore_top_of_low_cacheable()
+ * may conditionally return 0 when the sleep type is non S3,
+ * i.e. cold and warm boots would return NULL also for cbmem_top. */
+void backup_top_of_low_cacheable(uintptr_t ramtop);
+uintptr_t restore_top_of_low_cacheable(void);
+uintptr_t restore_cbmem_top(void);
+
+/* Deprecated, only use with LATE_CBMEM_INIT. */
+void set_late_cbmem_top(uintptr_t ramtop);
 #endif
 
 /*

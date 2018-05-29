@@ -16,6 +16,7 @@
  */
 
 #include <arch/cbconfig.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <console/uart.h>
 #include <ip_checksum.h>
@@ -32,18 +33,18 @@
 #include <cbmem.h>
 #include <bootmem.h>
 #include <spi_flash.h>
-#include <vboot/vbnv_layout.h>
-#if CONFIG_USE_OPTION_TABLE
+#include <security/vboot/vbnv_layout.h>
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 #include <option_table.h>
 #endif
-#if CONFIG_CHROMEOS
-#if CONFIG_HAVE_ACPI_TABLES
+#if IS_ENABLED(CONFIG_CHROMEOS)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 #include <arch/acpi.h>
 #endif
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
-#if CONFIG_ARCH_X86
+#if IS_ENABLED(CONFIG_ARCH_X86)
 #include <cpu/x86/mtrr.h>
 #endif
 #include <commonlib/helpers.h>
@@ -135,22 +136,18 @@ void lb_add_console(uint16_t consoletype, void *data)
 	console->type = consoletype;
 }
 
-void __attribute__((weak)) lb_framebuffer(struct lb_header *header)
+static void lb_framebuffer(struct lb_header *header)
 {
-#if CONFIG_FRAMEBUFFER_KEEP_VESA_MODE || CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
-	void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
-	int vbe_mode_info_valid(void);
-
-	// If there isn't any mode info to put in the table, don't ask for it
-	// to be filled with junk.
-	if (!vbe_mode_info_valid())
-		return;
 	struct lb_framebuffer *framebuffer;
+	struct lb_framebuffer fb = {0};
+
+	if (!IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER) || fill_lb_framebuffer(&fb))
+		return;
+
 	framebuffer = (struct lb_framebuffer *)lb_new_record(header);
-	fill_lb_framebuffer(framebuffer);
+	memcpy(framebuffer, &fb, sizeof(*framebuffer));
 	framebuffer->tag = LB_TAG_FRAMEBUFFER;
 	framebuffer->size = sizeof(*framebuffer);
-#endif
 }
 
 void lb_add_gpios(struct lb_gpios *gpios, const struct lb_gpio *gpio_table,
@@ -163,7 +160,7 @@ void lb_add_gpios(struct lb_gpios *gpios, const struct lb_gpio *gpio_table,
 	gpios->size += table_size;
 }
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 static void lb_gpios(struct lb_header *header)
 {
 	struct lb_gpios *gpios;
@@ -190,10 +187,10 @@ static void lb_gpios(struct lb_header *header)
 			printk(BIOS_INFO, "     low | ");
 		switch (g->value) {
 		case 0:
-			printk(BIOS_INFO, "     high\n");
+			printk(BIOS_INFO, "      low\n");
 			break;
 		case 1:
-			printk(BIOS_INFO, "      low\n");
+			printk(BIOS_INFO, "     high\n");
 			break;
 		default:
 			printk(BIOS_INFO, "undefined\n");
@@ -204,7 +201,7 @@ static void lb_gpios(struct lb_header *header)
 
 static void lb_vdat(struct lb_header *header)
 {
-#if CONFIG_HAVE_ACPI_TABLES
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	struct lb_range *vdat;
 
 	vdat = (struct lb_range *)lb_new_record(header);
@@ -216,7 +213,7 @@ static void lb_vdat(struct lb_header *header)
 
 static void lb_vbnv(struct lb_header *header)
 {
-#if CONFIG_PC80_SYSTEM
+#if IS_ENABLED(CONFIG_PC80_SYSTEM)
 	struct lb_range *vbnv;
 
 	vbnv = (struct lb_range *)lb_new_record(header);
@@ -227,7 +224,7 @@ static void lb_vbnv(struct lb_header *header)
 #endif
 }
 
-#if CONFIG_VBOOT
+#if IS_ENABLED(CONFIG_VBOOT)
 static void lb_vboot_handoff(struct lb_header *header)
 {
 	void *addr;
@@ -248,17 +245,25 @@ static inline void lb_vboot_handoff(struct lb_header *header) {}
 #endif /* CONFIG_VBOOT */
 #endif /* CONFIG_CHROMEOS */
 
+__weak uint32_t board_id(void) { return UNDEFINED_STRAPPING_ID; }
+__weak uint32_t ram_code(void) { return UNDEFINED_STRAPPING_ID; }
+__weak uint32_t sku_id(void) { return UNDEFINED_STRAPPING_ID; }
+
 static void lb_board_id(struct lb_header *header)
 {
-#if CONFIG_BOARD_ID_AUTO || CONFIG_BOARD_ID_MANUAL
-	struct lb_board_id  *bid;
+	struct lb_strapping_id  *rec;
+	uint32_t bid = board_id();
 
-	bid = (struct lb_board_id *)lb_new_record(header);
+	if (bid == UNDEFINED_STRAPPING_ID)
+		return;
 
-	bid->tag = LB_TAG_BOARD_ID;
-	bid->size = sizeof(*bid);
-	bid->board_id = board_id();
-#endif
+	rec = (struct lb_strapping_id *)lb_new_record(header);
+
+	rec->tag = LB_TAG_BOARD_ID;
+	rec->size = sizeof(*rec);
+	rec->id_code = bid;
+
+	printk(BIOS_INFO, "Board ID: %d\n", bid);
 }
 
 static void lb_boot_media_params(struct lb_header *header)
@@ -292,15 +297,36 @@ static void lb_boot_media_params(struct lb_header *header)
 
 static void lb_ram_code(struct lb_header *header)
 {
-#if IS_ENABLED(CONFIG_RAM_CODE_SUPPORT)
-	struct lb_ram_code *code;
+	struct lb_strapping_id *rec;
+	uint32_t code = ram_code();
 
-	code = (struct lb_ram_code *)lb_new_record(header);
+	if (code == UNDEFINED_STRAPPING_ID)
+		return;
 
-	code->tag = LB_TAG_RAM_CODE;
-	code->size = sizeof(*code);
-	code->ram_code = ram_code();
-#endif
+	rec = (struct lb_strapping_id *)lb_new_record(header);
+
+	rec->tag = LB_TAG_RAM_CODE;
+	rec->size = sizeof(*rec);
+	rec->id_code = code;
+
+	printk(BIOS_INFO, "RAM code: %d\n", code);
+}
+
+static void lb_sku_id(struct lb_header *header)
+{
+	struct lb_strapping_id *rec;
+	uint32_t sid = sku_id();
+
+	if (sid == UNDEFINED_STRAPPING_ID)
+		return;
+
+	rec = (struct lb_strapping_id *)lb_new_record(header);
+
+	rec->tag = LB_TAG_SKU_ID;
+	rec->size = sizeof(*rec);
+	rec->id_code = sid;
+
+	printk(BIOS_INFO, "SKU ID: %d\n", sid);
 }
 
 static void add_cbmem_pointers(struct lb_header *header)
@@ -363,7 +389,7 @@ static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 	return mainboard;
 }
 
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 static struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 {
 	struct lb_record *rec;
@@ -416,7 +442,7 @@ static void lb_record_version_timestamp(struct lb_header *header)
 	rec->timestamp = coreboot_version_timestamp;
 }
 
-void __attribute__((weak)) lb_board(struct lb_header *header) { /* NOOP */ }
+void __weak lb_board(struct lb_header *header) { /* NOOP */ }
 
 /*
  * It's possible that the system is using a SPI flash as the boot device,
@@ -424,7 +450,7 @@ void __attribute__((weak)) lb_board(struct lb_header *header) { /* NOOP */ }
  * case don't provide any information as the correct information is
  * not known.
  */
-void __attribute__((weak)) lb_spi_flash(struct lb_header *header) { /* NOOP */ }
+void __weak lb_spi_flash(struct lb_header *header) { /* NOOP */ }
 
 static struct lb_forward *lb_forward(struct lb_header *header,
 	struct lb_header *next_header)
@@ -479,7 +505,7 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 
 	head = lb_table_init(rom_table_end);
 
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 	{
 		struct cmos_option_table *option_table =
 			cbfs_boot_map_with_leak("cmos_layout.bin",
@@ -499,21 +525,17 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	}
 #endif
 
-	/* Initialize the memory map at boot time. */
-	bootmem_init();
-
-	/* No other memory areas can be added after the memory table has been
-	 * committed as the entries won't show up in the serialize mem table. */
+	/* Serialize resource map into mem table types (LB_MEM_*) */
 	bootmem_write_memory_table(lb_memory(head));
 
 	/* Record our motherboard */
 	lb_mainboard(head);
 
 	/* Record the serial ports and consoles */
-#if CONFIG_CONSOLE_SERIAL
+#if IS_ENABLED(CONFIG_CONSOLE_SERIAL)
 	uart_fill_lb(head);
 #endif
-#if CONFIG_CONSOLE_USB
+#if IS_ENABLED(CONFIG_CONSOLE_USB)
 	lb_add_console(LB_TAG_CONSOLE_EHCI, head);
 #endif
 
@@ -523,7 +545,7 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	/* Record our framebuffer */
 	lb_framebuffer(head);
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 	/* Record our GPIO settings (ChromeOS specific) */
 	lb_gpios(head);
 
@@ -537,11 +559,10 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	lb_vboot_handoff(head);
 #endif
 
-	/* Add board ID if available */
+	/* Add strapping IDs if available */
 	lb_board_id(head);
-
-	/* Add RAM config if available */
 	lb_ram_code(head);
+	lb_sku_id(head);
 
 	/* Add SPI flash description if available */
 	if (IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))

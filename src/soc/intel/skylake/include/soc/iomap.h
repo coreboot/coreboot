@@ -17,14 +17,19 @@
 #ifndef _SOC_IOMAP_H_
 #define _SOC_IOMAP_H_
 
+#include <commonlib/helpers.h>
+
 /*
  * Memory-mapped I/O registers.
  */
-#define MCFG_BASE_ADDRESS	CONFIG_MMCONF_BASE_ADDRESS
-#define MCFG_BASE_SIZE		0x4000000
+#define PCH_PRESERVED_BASE_ADDRESS      0xfc800000
+#define PCH_PRESERVED_BASE_SIZE 0x02000000
 
-#define UART_DEBUG_BASE_ADDRESS	0xfe034000
-#define UART_DEBUG_BASE_SIZE	0x1000
+#define UART_DEBUG_BASE_0_SIZE	0x1000
+#define UART_BASE_0_ADDRESS	0xfe030000
+/* Both UART BAR 0 and 1 are 4KB in size */
+#define UART_BASE_0_ADDR(x)	(UART_BASE_0_ADDRESS + (2 * \
+					UART_DEBUG_BASE_0_SIZE * (x)))
 
 #define EARLY_I2C_BASE_ADDRESS	0xfe040000
 #define EARLY_I2C_BASE(x)	(EARLY_I2C_BASE_ADDRESS + (0x1000 * (x)))
@@ -44,6 +49,12 @@
 #define GDXC_BASE_ADDRESS	0xfed84000
 #define GDXC_BASE_SIZE		0x1000
 
+#define GFXVT_BASE_ADDRESS	0xfed90000
+#define GFXVT_BASE_SIZE		0x1000
+
+#define VTVC0_BASE_ADDRESS	0xfed91000
+#define VTVC0_BASE_SIZE		0x1000
+
 #define HPET_BASE_ADDRESS	0xfed00000
 
 #define PCH_PWRM_BASE_ADDRESS	0xfe000000
@@ -56,8 +67,16 @@
 
 #define HECI1_BASE_ADDRESS	0xfed1a000
 
+#define THERMAL_BASE_ADDRESS	0xfe600000
+
 /* CPU Trace reserved memory size */
-#define TRACE_MEMORY_SIZE	0x8000000	/* 128MiB */
+#define GDXC_MOT_MEMORY_SIZE	(96*MiB)
+#define GDXC_IOT_MEMORY_SIZE	(32*MiB)
+#define PSMI_BUFFER_AREA_SIZE	(64*MiB)
+
+/* PTT registers */
+#define PTT_TXT_BASE_ADDRESS	0xfed30800
+#define PTT_PRESENT		0x00070000
 
 /*
  * I/O port address space

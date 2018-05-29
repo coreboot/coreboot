@@ -18,12 +18,10 @@
 
 #include <stdint.h>
 
-struct board_hw {
-	uint8_t i2c_interface;
-};
+#define UNDEFINED_STRAPPING_ID (~0)
 
-const struct board_hw *board_get_hw(void);
-uint8_t board_id(void);
-uint32_t ram_code(void);
+uint32_t board_id(void);	/* differentiates revisions */
+uint32_t ram_code(void);	/* identifies installed DRAM modules */
+uint32_t sku_id(void);		/* differentiates other optional components */
 
 #endif /* __INCLUDE_BOARDID_H__ */

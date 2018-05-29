@@ -13,13 +13,13 @@
  * GNU General Public License for more details.
  */
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 #include <arch/acpi.h>
 #endif
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
-#if CONFIG_ARCH_X86
+#if IS_ENABLED(CONFIG_ARCH_X86)
 #include <pc80/mc146818rtc.h>
 #endif
 #include <bcd.h>
@@ -324,8 +324,8 @@ static void elog_nv_write(size_t offset, size_t size)
 
 	address = rdev_mmap(rdev, offset, size);
 
-	elog_debug("%s(address=0x%p offset=0x%08x size=%u)\n", __func__,
-		   address, offset, size);
+	elog_debug("%s(address=0x%p offset=0x%08zx size=%zu)\n", __func__,
+		 address, offset, size);
 
 	if (address == NULL)
 		return;
@@ -737,6 +737,21 @@ static int elog_sync_to_nv(void)
 }
 
 /*
+ * Do not log boot count events in S3 resume or SMM.
+ */
+static bool elog_do_add_boot_count(void)
+{
+	if (ENV_SMM)
+		return false;
+
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+	return !acpi_is_wakeup_s3();
+#else
+	return true;
+#endif
+}
+
+/*
  * Event log main entry point
  */
 int elog_init(void)
@@ -784,25 +799,15 @@ int elog_init(void)
 	       " shrink size %d\n", region_device_sz(&nv_dev),
 		full_threshold, shrink_size);
 
-#if !defined(__SMM__)
-	/* Log boot count event except in S3 resume */
-#if CONFIG_ELOG_BOOT_COUNT == 1
-#if CONFIG_HAVE_ACPI_RESUME == 1
-		if (!acpi_is_wakeup_s3())
-#endif
+	if (elog_do_add_boot_count()) {
 		elog_add_event_dword(ELOG_TYPE_BOOT, boot_count_read());
-#else
-		/* If boot count is not implemented, fake it. */
-		elog_add_event_dword(ELOG_TYPE_BOOT, 0);
-#endif
 
-#if CONFIG_ARCH_X86
-	/* Check and log POST codes from previous boot */
-	if (CONFIG_CMOS_POST)
-		cmos_post_log();
+#if IS_ENABLED(CONFIG_ARCH_X86)
+		/* Check and log POST codes from previous boot */
+		if (IS_ENABLED(CONFIG_CMOS_POST))
+			cmos_post_log();
 #endif
-#endif
-
+	}
 	return 0;
 }
 

@@ -41,7 +41,7 @@ static int decode_pcie_bar(u32 *const base, u32 *const len)
 	*base = 0;
 	*len = 0;
 
-	const device_t dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!dev)
 		return 0;
 
@@ -68,10 +68,10 @@ static int decode_pcie_bar(u32 *const base, u32 *const len)
 	return 0;
 }
 
-static void mch_domain_read_resources(device_t dev)
+static void mch_domain_read_resources(struct device *dev)
 {
 	u64 tom, touud;
-	u32 tomk, tolud, uma_sizek = 0, usable_tomk;
+	u32 tomk, tolud, uma_sizek = 0;
 	u32 pcie_config_base, pcie_config_size;
 
 	/* Total Memory 2GB example:
@@ -119,27 +119,28 @@ static void mch_domain_read_resources(device_t dev)
 
 		/* Graphics memory */
 		const u32 gms_sizek = decode_igd_memory_size((ggc >> 4) & 0xf);
-		printk(BIOS_DEBUG, "%uM UMA", gms_sizek >> 10);
+		printk(BIOS_DEBUG, "%uM UMA, ", gms_sizek >> 10);
 		tomk -= gms_sizek;
 
 		/* GTT Graphics Stolen Memory Size (GGMS) */
 		const u32 gsm_sizek = decode_igd_gtt_size((ggc >> 8) & 0xf);
-		printk(BIOS_DEBUG, " and %uM GTT\n", gsm_sizek >> 10);
+		printk(BIOS_DEBUG, "%uM GTT", gsm_sizek >> 10);
 		tomk -= gsm_sizek;
 
 		uma_sizek = gms_sizek + gsm_sizek;
 	}
+	const u8 esmramc = pci_read_config8(dev, D0F0_ESMRAMC);
+	const u32 tseg_sizek = decode_tseg_size(esmramc);
+	printk(BIOS_DEBUG, " and %uM TSEG\n", tseg_sizek >> 10);
+	tomk -= tseg_sizek;
+	uma_sizek += tseg_sizek;
 
-	usable_tomk = ALIGN_DOWN(tomk, 64 << 10);
-	if (tomk - usable_tomk > (16 << 10))
-		usable_tomk = tomk;
-
-	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", usable_tomk >> 10);
+	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", tomk >> 10);
 
 	/* Report the memory regions */
 	ram_resource(dev, 3, 0, legacy_hole_base_k);
 	ram_resource(dev, 4, legacy_hole_base_k + legacy_hole_size_k,
-		     (usable_tomk - (legacy_hole_base_k + legacy_hole_size_k)));
+		     (tomk - (legacy_hole_base_k + legacy_hole_size_k)));
 
 	/*
 	 * If >= 4GB installed then memory from TOLUD to 4GB
@@ -165,7 +166,7 @@ static void mch_domain_read_resources(device_t dev)
 	}
 }
 
-static void mch_domain_set_resources(device_t dev)
+static void mch_domain_set_resources(struct device *dev)
 {
 	struct resource *resource;
 	int i;
@@ -180,7 +181,7 @@ static void mch_domain_set_resources(device_t dev)
 	assign_resources(dev->link_list);
 }
 
-static void mch_domain_init(device_t dev)
+static void mch_domain_init(struct device *dev)
 {
 	u32 reg32;
 
@@ -196,13 +197,12 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init             = mch_domain_init,
 	.scan_bus         = pci_domain_scan_bus,
-	.ops_pci_bus	  = pci_bus_default_ops,
 	.write_acpi_tables = northbridge_write_acpi_tables,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }
@@ -215,7 +215,7 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus         = 0,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {

@@ -42,7 +42,10 @@ void scc_enable_acpi_mode(device_t dev, int iosf_reg, int nvs_index)
 	/* Save BAR0 and BAR1 to ACPI NVS */
 	bar = find_resource(dev, PCI_BASE_ADDRESS_0);
 	if (bar)
-		gnvs->dev.scc_bar0[nvs_index] = (u32)bar->base;
+		gnvs->dev.scc_bar0[nvs_index] = bar->base;
+	bar = find_resource(dev, PCI_BASE_ADDRESS_2);
+	if (bar)
+		gnvs->dev.scc_bar1[nvs_index] = bar->base;
 
 	/* Device is enabled in ACPI mode */
 	gnvs->dev.scc_en[nvs_index] = 1;

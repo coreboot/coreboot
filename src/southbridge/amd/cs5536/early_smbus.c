@@ -13,12 +13,16 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include "cs5536.h"
 #include "smbus.h"
 
 /* initialization for SMBus Controller */
-static void cs5536_enable_smbus(void)
+void cs5536_enable_smbus(void)
 {
+
+	if (IS_ENABLED(CONFIG_NO_EARLY_SMBUS))
+		return;
 
 	/* Set SCL freq and enable SMB controller */
 	/*outb((0x20 << 1) | SMB_CTRL2_ENABLE, smbus_io_base + SMB_CTRL2); */
@@ -29,7 +33,7 @@ static void cs5536_enable_smbus(void)
 
 }
 
-static inline int smbus_read_byte(unsigned device, unsigned address)
+int smbus_read_byte(unsigned device, unsigned address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }

@@ -25,7 +25,7 @@
 #include <device/pci_ids.h>
 
 /* Bit0 turns off the Live LED, bit1 switches Com1 to RS485, bit2 same for Com2. */
-#if CONFIG_ONBOARD_UARTS_RS485
+#if IS_ENABLED(CONFIG_ONBOARD_UARTS_RS485)
 	#define SIO_GP1X_CONFIG 0x07
 #else
 	#define SIO_GP1X_CONFIG 0x01

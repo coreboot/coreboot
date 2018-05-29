@@ -51,7 +51,8 @@ const MAXPROMPTRETRY = 3
 
 func PromptUser(prompt string, opts []string) (match string, err error) {
 	for i := 1; i < MAXPROMPTRETRY; i++ {
-		fmt.Println("%s. (%s) Default:%s", prompt, strings.Join(opts, "/"), opts[0])
+		fmt.Printf("%s. (%s) Default:%s\n", prompt,
+		           strings.Join(opts, "/"), opts[0])
 		var usrInput string
 		fmt.Scanln(&usrInput)
 
@@ -93,7 +94,7 @@ func MakeLogs(outDir string) {
 	}
 
 	RunAndSave(outDir+"/inteltool.log", "../inteltool/inteltool", inteltoolArgs)
-	RunAndSave(outDir+"/ectool.log", "../ectool/ectool", "-d")
+	RunAndSave(outDir+"/ectool.log", "../ectool/ectool", "-pd")
 	RunAndSave(outDir+"/superiotool.log", "../superiotool/superiotool", "-ade")
 
 	SysDir := "/sys/class/sound/card0/"

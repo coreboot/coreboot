@@ -17,12 +17,12 @@
 
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
-	0x10134210,	// Codec Vendor / Device ID: Realtek ALC262
-	0x144db082,	// Subsystem ID
+	0x10134210,	// Codec Vendor / Device ID: Cirrus Logic CS4210
+	0x152D0924,	// Subsystem ID
 	0x00000007,	// Number of jacks
 
-	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x144dc0c2 */
-	AZALIA_SUBVENDOR(0x0, 0x144db082),
+	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x152D0924 */
+	AZALIA_SUBVENDOR(0x0, 0x152D0924),
 
 	0x00170500,
 

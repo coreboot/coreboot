@@ -13,6 +13,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef __AMDFAM10_HT_CONFIG_H__
+#define __AMDFAM10_HT_CONFIG_H__
+
 typedef struct amdfam10_sysconf_t sys_info_conf_t;
 
 /* FIXME */
@@ -47,3 +50,5 @@ void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 				u32 io_min, u32 io_max);
 
 void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmio_min, u32 mmio_max, u32 nodes);
+
+#endif

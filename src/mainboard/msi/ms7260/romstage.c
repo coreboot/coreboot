@@ -34,6 +34,7 @@
 #include <cpu/x86/lapic.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627ehg/w83627ehg.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"
@@ -125,11 +126,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
 	/* FIXME: This should be part of the Super I/O code/config. */
-	pnp_enter_ext_func_mode(SERIAL_DEV);
+	pnp_enter_conf_state(SERIAL_DEV);
 	/* Switch CLKSEL to 24MHz (default is 48MHz). Needed for serial! */
 	pnp_write_config(SERIAL_DEV, 0x24, 0);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	pnp_exit_ext_func_mode(SERIAL_DEV);
+	pnp_exit_conf_state(SERIAL_DEV);
 
 	setup_mb_resource_map();
 	console_init();
@@ -144,7 +145,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	setup_coherent_ht_domain(); /* Routing table and start other core0. */
 	wait_all_core0_started();
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	/* It is said that we should start core1 after all core0 launched
 	 * becase optimize_link_coherent_ht is moved out from
 	 * setup_coherent_ht_domain, so here need to make sure last core0 is
@@ -158,7 +159,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Set up chains and store link pair for optimization later. */
 	ht_setup_chains_x(sysinfo); /* Init sblnk and sbbusn, nodes, sbdn. */
 
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 	{
 		msr_t msr = rdmsr(0xc0010042);
 		printk(BIOS_DEBUG, "begin msr fid, vid %08x%08x\n", msr.hi, msr.lo);
@@ -194,6 +195,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
-	/* bsp switch stack to RAM and copy sysinfo RAM now. */
-	post_cache_as_ram();
 }

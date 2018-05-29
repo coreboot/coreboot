@@ -16,11 +16,9 @@
 #include "AGESA.h"
 #include "amdlib.h"
 #include <northbridge/amd/agesa/BiosCallOuts.h>
-#include "Ids.h"
-#include "heapManager.h"
 #include "Hudson-2.h"
 #include <stdlib.h>
-#include <southbridge/amd/cimx/sb700/gpio_oem.h>
+#include <southbridge/amd/cimx/sb900/gpio_oem.h>
 
 static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigPtr);
 static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *ConfigPtr);

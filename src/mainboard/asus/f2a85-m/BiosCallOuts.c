@@ -15,12 +15,11 @@
 
 #include "AGESA.h"
 #include <northbridge/amd/agesa/BiosCallOuts.h>
+#include <northbridge/amd/agesa/state_machine.h>
 
 #include <cbfs.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/Fch/FchPlatform.h>
 #include <stdlib.h>
-
-static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -31,7 +30,6 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_GET_IDS_INIT_DATA,        agesa_EmptyIdsInitData },
 	{AGESA_HOOKBEFORE_DQS_TRAINING,  agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF, agesa_NoopSuccess },
-	{AGESA_FCH_OEM_CALLOUT,          Fch_Oem_config },
 	{AGESA_GNB_GFX_GET_VBIOS_IMAGE,  agesa_GfxGetVbiosImage }
 };
 const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
@@ -86,38 +84,18 @@ static const CODEC_TBL_LIST CodecTableList[] =
 	{(UINT32)0x0FFFFFFFF, (CODEC_ENTRY*)0x0FFFFFFFFUL}
 };
 
-/**
- * Fch Oem setting callback
- *
- *  Configure platform specific Hudson device,
- *   such Azalia, SATA, GEC, IMC etc.
- */
-static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
+void board_FCH_InitReset(struct sysinfo *cb_NA, FCH_RESET_DATA_BLOCK *FchParams_reset)
 {
-	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
+	FchParams_reset->LegacyFree = IS_ENABLED(CONFIG_HUDSON_LEGACY_FREE);
+}
 
-	if (StdHeader->Func == AMD_INIT_RESET) {
-		FCH_RESET_DATA_BLOCK *FchParams_reset = (FCH_RESET_DATA_BLOCK *)FchData;
-		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
-		FchParams_reset->LegacyFree = IS_ENABLED(CONFIG_HUDSON_LEGACY_FREE);
-		FchParams_reset->FchReset.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
-		FchParams_reset->FchReset.Xhci1Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
-	} else if (StdHeader->Func == AMD_INIT_ENV) {
-		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
-		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
+void board_FCH_InitEnv(struct sysinfo *cb_NA, FCH_DATA_BLOCK *FchParams_env)
+{
+	/* Azalia Controller OEM Codec Table Pointer */
+	FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST *)(&CodecTableList[0]);
 
-		/* Azalia Controller OEM Codec Table Pointer */
-		FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST *)(&CodecTableList[0]);
-		/* Azalia Controller Front Panel OEM Table Pointer */
-		FchParams_env->Imc.ImcEnable = FALSE;
-		FchParams_env->Hwm.HwMonitorEnable = FALSE;
-		FchParams_env->Hwm.HwmFchtsiAutoPoll = FALSE;/* 1 enable, 0 disable TSI Auto Polling */
-
-		/* XHCI configuration */
-		FchParams_env->Usb.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
-		FchParams_env->Usb.Xhci1Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
-	}
-	printk(BIOS_DEBUG, "Done\n");
-
-	return AGESA_SUCCESS;
+	/* Fan Control */
+	FchParams_env->Imc.ImcEnable = FALSE;
+	FchParams_env->Hwm.HwMonitorEnable = FALSE;
+	FchParams_env->Hwm.HwmFchtsiAutoPoll = FALSE;/* 1 enable, 0 disable TSI Auto Polling */
 }

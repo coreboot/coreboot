@@ -1,6 +1,8 @@
 #ifndef RAMINIT_H
 #define RAMINIT_H
 
+#include <arch/io.h>
+
 #define NODE_ID		0x60
 #define HT_INIT_CONTROL	0x6c
 
@@ -26,13 +28,15 @@ void set_sysinfo_in_ram(unsigned int val);
 
 #define TIMEOUT_LOOPS 300000
 
-#if defined(__PRE_RAM__) && CONFIG_RAMINIT_SYSINFO
+#if defined(__PRE_RAM__) && IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
 void sdram_initialize(int controllers, const struct mem_controller *ctrl, void *sysinfo);
 void sdram_enable(int controllers, const struct mem_controller *ctrl,
 		struct sys_info *sysinfo);
 void sdram_set_registers(const struct mem_controller *ctrl, struct sys_info *sysinfo);
 void sdram_set_spd_registers(const struct mem_controller *ctrl,
 			struct sys_info *sysinfo);
+void dump_spd_registers(const struct mem_controller *ctrl);
+void dump_smbus_registers(void);
 #else
 void sdram_set_registers(const struct mem_controller *ctrl);
 void sdram_set_spd_registers(const struct mem_controller *ctrl);

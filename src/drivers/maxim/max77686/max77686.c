@@ -15,7 +15,7 @@
 
 #include <console/console.h>
 #include <arch/io.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 
 #include "max77686.h"
 

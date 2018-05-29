@@ -30,7 +30,7 @@
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
-	device_t dev;
+	struct device *dev;
 	u32 pciexbar = 0;
 	u32 length = 0;
 
@@ -44,7 +44,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-unsigned long northbridge_write_acpi_tables(device_t device,
+unsigned long northbridge_write_acpi_tables(struct device *device,
 					    unsigned long start,
 					    struct acpi_rsdp *rsdp)
 {

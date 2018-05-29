@@ -29,7 +29,7 @@ void dump_spd_info(struct spd_block *blk)
 
 	for (i = 0; i < CONFIG_DIMM_MAX; i++)
 		if (blk->spd_array[i] != NULL && blk->spd_array[i][0] != 0) {
-			printk(BIOS_DEBUG, "SPD @ 0x%02X\n", 0xA0|(i << 1));
+			printk(BIOS_DEBUG, "SPD @ 0x%02X\n", blk->addr_map[i]);
 			print_spd_info(blk->spd_array[i]);
 		}
 }
@@ -125,28 +125,40 @@ int get_spd_cbfs_rdev(struct region_device *spd_rdev, u8 spd_index)
 							CONFIG_DIMM_SPD_SIZE);
 }
 
-static void get_spd(u8 *spd, u8 addr)
+static void smbus_read_spd(u8 *spd, u8 addr)
 {
 	u16 i;
-	/* Assuming addr is 8 bit address, make it 7 bit */
-	addr = addr >> 1;
-	if (smbus_read_byte(0, addr, 0)  == 0xff) {
+	u8 step = 1;
+
+	if (IS_ENABLED(CONFIG_SPD_READ_BY_WORD))
+		step = sizeof(uint16_t);
+
+	for (i = 0; i < SPD_PAGE_LEN; i += step) {
+		if (IS_ENABLED(CONFIG_SPD_READ_BY_WORD))
+			((u16*)spd)[i / sizeof(uint16_t)] =
+				 smbus_read_word(0, addr, i);
+		else
+			spd[i] = smbus_read_byte(0, addr, i);
+	}
+}
+
+static void get_spd(u8 *spd, u8 addr)
+{
+	if (smbus_read_byte(0, addr, 0) == 0xff) {
 		printk(BIOS_INFO, "No memory dimm at address %02X\n",
 			addr << 1);
 		/* Make sure spd is zeroed if dimm doesn't exist. */
 		memset(spd, 0, CONFIG_DIMM_SPD_SIZE);
 		return;
 	}
+	smbus_read_spd(spd, addr);
 
-	for (i = 0; i < SPD_PAGE_LEN; i++)
-		spd[i] = smbus_read_byte(0, addr, i);
 	/* Check if module is DDR4, DDR4 spd is 512 byte. */
 	if (spd[SPD_DRAM_TYPE] == SPD_DRAM_DDR4 &&
-		CONFIG_DIMM_SPD_SIZE >= SPD_DRAM_DDR4) {
+		CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
 		/* Switch to page 1 */
 		smbus_write_byte(0, SPD_PAGE_1, 0, 0);
-		for (i = 0; i < SPD_PAGE_LEN; i++)
-			spd[i+SPD_PAGE_LEN] = smbus_read_byte(0, addr, i);
+		smbus_read_spd(spd + SPD_PAGE_LEN, addr);
 		/* Restore to page 0 */
 		smbus_write_byte(0, SPD_PAGE_0, 0, 0);
 	}
@@ -159,7 +171,7 @@ void get_spd_smbus(struct spd_block *blk)
 
 	for (i = 0 ; i < CONFIG_DIMM_MAX; i++) {
 		get_spd(spd_data_ptr + i * CONFIG_DIMM_SPD_SIZE,
-			0xA0 + (i << 1));
+			blk->addr_map[i]);
 		blk->spd_array[i] = spd_data_ptr + i * CONFIG_DIMM_SPD_SIZE;
 	}
 

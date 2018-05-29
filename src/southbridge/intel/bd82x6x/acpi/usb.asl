@@ -40,6 +40,27 @@ Device (EHC1)
 	{
 		Name (_ADR, 0x00000000)
 
+
+		// GPLD: Generate Port Location Data (PLD)
+		Method (GPLD, 1, Serialized)
+		 {
+
+			Name (PCKG, Package (0x01)
+			{
+				Buffer (0x10) {}
+			})
+
+			// REV: Revision 0x02 for ACPI 5.0
+			CreateField (DerefOf (Index (PCKG, Zero)), Zero, 0x07, REV)
+			Store (0x02, REV)
+
+			// VISI: Port visibility to user per port
+			CreateField (DerefOf (Index (PCKG, Zero)), 0x40, One, VISI)
+			Store (Arg0, VISI)
+
+			Return (PCKG)
+                }
+
 		// How many are there?
 		Device (PRT1) { Name (_ADR, 1) } // USB Port 0
 		Device (PRT2) { Name (_ADR, 2) } // USB Port 1
@@ -73,6 +94,25 @@ Device (EHC2)
 	Device (HUB7)
 	{
 		Name (_ADR, 0x00000000)
+
+		// GPLD: Generate Port Location Data (PLD)
+		Method (GPLD, 1, Serialized)
+		 {
+			Name (PCKG, Package (0x01)
+			{
+				Buffer (0x10) {}
+			})
+
+			// REV: Revision 0x02 for ACPI 5.0
+			CreateField (DerefOf (Index (PCKG, Zero)), Zero, 0x07, REV)
+			Store (0x02, REV)
+
+			// VISI: Port visibility to user per port
+			CreateField (DerefOf (Index (PCKG, Zero)), 0x40, One, VISI)
+			Store (Arg0, VISI)
+
+			Return (PCKG)
+                }
 
 		// How many are there?
 		Device (PRT1) { Name (_ADR, 1) } // USB Port 0

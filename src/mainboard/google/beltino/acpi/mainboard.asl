@@ -67,3 +67,6 @@ Scope (\_SB.PCI0.RP02)
 		}
 	}
 }
+
+/* USB port entries */
+#include "acpi/usb.asl"

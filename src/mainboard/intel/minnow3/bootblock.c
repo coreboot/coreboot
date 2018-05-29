@@ -14,7 +14,7 @@
  */
 
 #include <bootblock_common.h>
-#include <soc/lpc.h>
+#include <intelblocks/lpc_lib.h>
 #include "gpio.h"
 
 void bootblock_mainboard_init(void)

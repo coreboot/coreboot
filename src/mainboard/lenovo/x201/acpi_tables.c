@@ -29,4 +29,7 @@
 
 void acpi_create_gnvs(global_nvs_t * gnvs)
 {
+	/* Set thermal levels */
+	gnvs->tcrt = 100;
+	gnvs->tpsv = 90;
 }

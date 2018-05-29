@@ -42,17 +42,13 @@ void pch_enable_lpc(void)
 	/* X230 EC Decode Range Port60/64, Port62/66 */
 	/* Enable EC, PS/2 Keyboard/Mouse */
 	pci_write_config16(PCH_LPC_DEV, LPC_EN,
-			   CNF2_LPC_EN | CNF1_LPC_EN | MC_LPC_EN | KBC_LPC_EN |
-			   COMA_LPC_EN);
+			   CNF2_LPC_EN | CNF1_LPC_EN | MC_LPC_EN | KBC_LPC_EN);
 
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, 0x7c1601);
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN2_DEC, 0xc15e1);
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN4_DEC, 0x0c06a1);
 
-	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x10);
-
-	pci_write_config32(PCH_LPC_DEV, 0xac,
-			   0x80010000);
+	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
@@ -90,7 +86,7 @@ static uint8_t *get_spd_data(int spd_index)
 	return spd_file + spd_index * 256;
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
 }
 
@@ -112,8 +108,9 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 	 * 1      1       reserved
 	 */
 
-	/* we only support elpida. Because the spd data is missing */
-	if (spd_index != 0)
+	/* We only support elpida and samsung.
+           Because the spd data is missing. */
+	if (spd_index != 0 && spd_index != 2)
 		die("Unsupported Memory. Please add your SPD dump to coreboot.");
 
 	memory = get_spd_data(spd_index);

@@ -17,11 +17,12 @@
 #define __TIMESTAMP_SERIALIZED_H__
 
 #include <stdint.h>
+#include <compiler.h>
 
 struct timestamp_entry {
 	uint32_t	entry_id;
 	uint64_t	entry_stamp;
-} __attribute__((packed));
+} __packed;
 
 struct timestamp_table {
 	uint64_t	base_time;
@@ -29,7 +30,7 @@ struct timestamp_table {
 	uint16_t	tick_freq_mhz;
 	uint32_t	num_entries;
 	struct timestamp_entry entries[0]; /* Variable number of entries */
-} __attribute__((packed));
+} __packed;
 
 enum timestamp_id {
 	TS_START_ROMSTAGE = 1,
@@ -53,6 +54,9 @@ enum timestamp_id {
 	TS_DEVICE_CONFIGURE = 40,
 	TS_DEVICE_ENABLE = 50,
 	TS_DEVICE_INITIALIZE = 60,
+	TS_OPROM_INITIALIZE = 65,
+	TS_OPROM_COPY_END = 66,
+	TS_OPROM_END = 67,
 	TS_DEVICE_DONE = 70,
 	TS_CBMEM_POST = 75,
 	TS_WRITE_TABLES = 80,
@@ -72,9 +76,39 @@ enum timestamp_id {
 	TS_DONE_LOADING = 508,
 	TS_DONE_HASHING = 509,
 	TS_END_HASH_BODY = 510,
+	TS_START_TPMPCR = 511,
+	TS_END_TPMPCR = 512,
+	TS_START_TPMLOCK = 513,
+	TS_END_TPMLOCK = 514,
 	TS_START_COPYVPD = 550,
 	TS_END_COPYVPD_RO = 551,
 	TS_END_COPYVPD_RW = 552,
+
+	/* 900-920 reserved for vendorcode extensions (900-940: AMD AGESA) */
+	TS_AGESA_INIT_RESET_START = 900,
+	TS_AGESA_INIT_RESET_DONE = 901,
+	TS_AGESA_INIT_EARLY_START = 902,
+	TS_AGESA_INIT_EARLY_DONE = 903,
+	TS_AGESA_INIT_POST_START = 904,
+	TS_AGESA_INIT_POST_DONE = 905,
+	TS_AGESA_INIT_ENV_START = 906,
+	TS_AGESA_INIT_ENV_DONE = 907,
+	TS_AGESA_INIT_MID_START = 908,
+	TS_AGESA_INIT_MID_DONE = 909,
+	TS_AGESA_INIT_LATE_START = 910,
+	TS_AGESA_INIT_LATE_DONE = 911,
+	TS_AGESA_INIT_RTB_START = 912,
+	TS_AGESA_INIT_RTB_DONE = 913,
+	TS_AGESA_INIT_RESUME_START = 914,
+	TS_AGESA_INIT_RESUME_DONE = 915,
+	TS_AGESA_S3_LATE_START = 916,
+	TS_AGESA_S3_LATE_DONE = 917,
+	TS_AGESA_S3_FINAL_START = 918,
+	TS_AGESA_S3_FINAL_DONE = 919,
+
+	/* 940-950 reserved for vendorcode extensions (940-950: Intel ME) */
+	TS_ME_INFORM_DRAM_WAIT = 940,
+	TS_ME_INFORM_DRAM_DONE = 941,
 
 	/* 950+ reserved for vendorcode extensions (950-999: intel/fsp) */
 	TS_FSP_MEMORY_INIT_START = 950,
@@ -118,7 +152,7 @@ static const struct timestamp_id_to_name {
 } timestamp_ids[] = {
 	/* Marker to report base_time. */
 	{ 0,			"1st timestamp" },
-	{ TS_START_ROMSTAGE,	"start of rom stage" },
+	{ TS_START_ROMSTAGE,	"start of romstage" },
 	{ TS_BEFORE_INITRAM,	"before ram initialization" },
 	{ TS_AFTER_INITRAM,	"after ram initialization" },
 	{ TS_END_ROMSTAGE,	"end of romstage" },
@@ -139,6 +173,9 @@ static const struct timestamp_id_to_name {
 	{ TS_DEVICE_CONFIGURE,	"device configuration" },
 	{ TS_DEVICE_ENABLE,	"device enable" },
 	{ TS_DEVICE_INITIALIZE,	"device initialization" },
+	{ TS_OPROM_INITIALIZE,	"Option ROM initialization" },
+	{ TS_OPROM_COPY_END,	"Option ROM copy done" },
+	{ TS_OPROM_END,		"Option ROM run done"   },
 	{ TS_DEVICE_DONE,	"device setup done" },
 	{ TS_CBMEM_POST,	"cbmem post" },
 	{ TS_WRITE_TABLES,	"write tables" },
@@ -157,6 +194,10 @@ static const struct timestamp_id_to_name {
 	{ TS_DONE_LOADING,	"finished loading body (ignore for x86)" },
 	{ TS_DONE_HASHING,	"finished calculating body hash (SHA2)" },
 	{ TS_END_HASH_BODY,	"finished verifying body signature (RSA)" },
+	{ TS_START_TPMPCR,	"starting TPM PCR extend" },
+	{ TS_END_TPMPCR,	"finished TPM PCR extend" },
+	{ TS_START_TPMLOCK,	"starting locking TPM" },
+	{ TS_END_TPMLOCK,	"finished locking TPM" },
 
 	{ TS_START_COPYVPD,	"starting to load Chrome OS VPD" },
 	{ TS_END_COPYVPD_RO,	"finished loading Chrome OS VPD (RO)" },
@@ -175,6 +216,32 @@ static const struct timestamp_id_to_name {
 	{ TS_VB_VBOOT_DONE,	"finished vboot kernel verification" },
 	{ TS_KERNEL_DECOMPRESSION, "starting kernel decompression/relocation" },
 	{ TS_START_KERNEL,	"jumping to kernel" },
+
+	/* AMD AGESA related timestamps */
+	{ TS_AGESA_INIT_RESET_START,	"calling AmdInitReset" },
+	{ TS_AGESA_INIT_RESET_DONE,	"back from AmdInitReset" },
+	{ TS_AGESA_INIT_EARLY_START,	"calling AmdInitEarly" },
+	{ TS_AGESA_INIT_EARLY_DONE,	"back from AmdInitEarly" },
+	{ TS_AGESA_INIT_POST_START,	"calling AmdInitPost" },
+	{ TS_AGESA_INIT_POST_DONE,	"back from AmdInitPost" },
+	{ TS_AGESA_INIT_ENV_START,	"calling AmdInitEnv" },
+	{ TS_AGESA_INIT_ENV_DONE,	"back from AmdInitEnv" },
+	{ TS_AGESA_INIT_MID_START,	"calling AmdInitMid" },
+	{ TS_AGESA_INIT_MID_DONE,	"back from AmdInitMid" },
+	{ TS_AGESA_INIT_LATE_START,	"calling AmdInitLate" },
+	{ TS_AGESA_INIT_LATE_DONE,	"back from AmdInitLate" },
+	{ TS_AGESA_INIT_RTB_START,	"calling AmdInitRtb/AmdS3Save" },
+	{ TS_AGESA_INIT_RTB_DONE,	"back from AmdInitRtb/AmdS3Save" },
+	{ TS_AGESA_INIT_RESUME_START,	"calling AmdInitResume" },
+	{ TS_AGESA_INIT_RESUME_DONE,	"back from AmdInitResume" },
+	{ TS_AGESA_S3_LATE_START,	"calling AmdS3LateRestore" },
+	{ TS_AGESA_S3_LATE_DONE,	"back from AmdS3LateRestore" },
+	{ TS_AGESA_S3_FINAL_START,	"calling AmdS3FinalRestore" },
+	{ TS_AGESA_S3_FINAL_DONE,	"back from AmdS3FinalRestore" },
+
+	/* Intel ME related timestamps */
+	{ TS_ME_INFORM_DRAM_WAIT,	"waiting for ME acknowledgement of raminit"},
+	{ TS_ME_INFORM_DRAM_DONE,	"finished waiting for ME response"},
 
 	/* FSP related timestamps */
 	{ TS_FSP_MEMORY_INIT_START, "calling FspMemoryInit" },

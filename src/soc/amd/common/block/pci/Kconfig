@@ -1,0 +1,6 @@
+config SOC_AMD_COMMON_BLOCK_PCI
+	bool
+	default n
+	help
+	  This option builds functions used to program PCI interrupt
+	  routing, both PIC and APIC modes.

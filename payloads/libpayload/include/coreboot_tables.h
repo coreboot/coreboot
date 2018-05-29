@@ -225,14 +225,6 @@ struct cb_cbmem_tab {
 	uint64_t cbmem_tab;
 };
 
-#define CB_TAG_BOARD_ID		0x0025
-struct cb_board_id {
-	uint32_t tag;
-	uint32_t size;
-	/* Board ID as retrieved from the board revision GPIOs. */
-	uint32_t board_id;
-};
-
 #define CB_TAG_X86_ROM_MTRR	0x0021
 struct cb_x86_rom_mtrr {
 	uint32_t tag;
@@ -244,24 +236,14 @@ struct cb_x86_rom_mtrr {
 	uint32_t index;
 };
 
-#define CB_TAG_MAC_ADDRS       0x0026
-struct mac_address {
-	uint8_t mac_addr[6];
-	uint8_t pad[2];         /* Pad it to 8 bytes to keep it simple. */
-};
 
-struct cb_macs {
-	uint32_t tag;
-	uint32_t size;
-	uint32_t count;
-	struct mac_address mac_addrs[0];
-};
-
+#define CB_TAG_BOARD_ID		0x0025
 #define CB_TAG_RAM_CODE		0x0028
-struct cb_ram_code {
+#define CB_TAG_SKU_ID		0x002d
+struct cb_strapping_id {
 	uint32_t tag;
 	uint32_t size;
-	uint32_t ram_code;
+	uint32_t id_code;
 };
 
 #define CB_TAG_SPI_FLASH	0x0029
@@ -290,6 +272,19 @@ struct cb_tsc_info {
 	uint32_t size;
 
 	uint32_t freq_khz;
+};
+
+#define CB_TAG_MAC_ADDRS       0x0033
+struct mac_address {
+	uint8_t mac_addr[6];
+	uint8_t pad[2];         /* Pad it to 8 bytes to keep it simple. */
+};
+
+struct cb_macs {
+	uint32_t tag;
+	uint32_t size;
+	uint32_t count;
+	struct mac_address mac_addrs[0];
 };
 
 #define CB_TAG_SERIALNO		0x002a

@@ -40,6 +40,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***************************************************************************/
+
+#include <check_for_wrapper.h>
+
 #define FCH_REVISION       "0.0.5.0"
 #define FCH_ID             "FCH_A05"
 #define FCH_VERSION        0x0000

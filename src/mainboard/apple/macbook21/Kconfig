@@ -18,9 +18,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_ACPI_TABLES
 	select HAVE_ACPI_RESUME
 	select USE_OPTION_TABLE
-	select MAINBOARD_HAS_NATIVE_VGA_INIT
-	select MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
-	select VGA
+	select I945_LVDS
 
 config MAINBOARD_DIR
 	string
@@ -31,10 +29,6 @@ config MAINBOARD_PART_NUMBER
 	default "Macbook1,1" if BOARD_APPLE_MACBOOK11
 	default "MacBook2,1" if BOARD_APPLE_MACBOOK21
 	default "iMac5,2" if BOARD_APPLE_IMAC52
-
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf0000000
 
 config MAX_CPUS
 	int

@@ -64,13 +64,10 @@ static void extemp_force_idle_status(const u16 base)
 }
 
 /*
- * Setup External Temperature to read via PECI into TMPINx register
+ * Setup PECI interface
  */
-static void enable_peci(const u16 base, const u8 tmpin)
+static void enable_peci(const u16 base)
 {
-	if (tmpin == 0 || tmpin > ITE_EC_TMPIN_CNT)
-		return;
-
 	/* Enable PECI interface */
 	ite_ec_write(base, ITE_EC_INTERFACE_SELECT,
 			   ITE_EC_INTERFACE_SEL_PECI |
@@ -88,24 +85,28 @@ static void enable_peci(const u16 base, const u8 tmpin)
 	ite_ec_write(base, ITE_EC_EXTEMP_CONTROL,
 			   ITE_EC_EXTEMP_CTRL_AUTO_4HZ |
 			   ITE_EC_EXTEMP_CTRL_AUTO_START);
-
-	/* External Temperature reported in TMPINx register */
-	ite_ec_write(base, ITE_EC_ADC_TEMP_CHANNEL_ENABLE,
-			   (tmpin & 3) << 6);
 }
 
 /*
- * Set up External Temperature to read via thermal diode/resistor
+ * Set up External Temperature to read via PECI or thermal diode/resistor
  * into TMPINx register
  */
-static void enable_tmpin(const u16 base, const int tmpin,
-			 const enum ite_ec_thermal_mode mode)
+static void enable_tmpin(const u16 base, const u8 tmpin,
+			 const struct ite_ec_thermal_config *const conf)
 {
 	u8 reg;
 
 	reg = ite_ec_read(base, ITE_EC_ADC_TEMP_CHANNEL_ENABLE);
 
-	switch (mode) {
+	switch (conf->mode) {
+	case THERMAL_PECI:
+		if (reg & ITE_EC_ADC_TEMP_EXT_REPORTS_TO_MASK) {
+			printk(BIOS_WARNING, "PECI specified for multiple TMPIN\n");
+			return;
+		}
+		enable_peci(base);
+		reg |= ITE_EC_ADC_TEMP_EXT_REPORTS_TO(tmpin);
+		break;
 	case THERMAL_DIODE:
 		reg |= ITE_EC_ADC_TEMP_DIODE_MODE(tmpin);
 		break;
@@ -115,11 +116,25 @@ static void enable_tmpin(const u16 base, const int tmpin,
 	default:
 		printk(BIOS_WARNING,
 		       "Unsupported thermal mode 0x%x on TMPIN%d\n",
-		       mode, tmpin);
+		       conf->mode, tmpin);
 		return;
 	}
 
 	ite_ec_write(base, ITE_EC_ADC_TEMP_CHANNEL_ENABLE, reg);
+
+	/* Set temperature offsets */
+	if (conf->mode != THERMAL_RESISTOR) {
+		reg = ite_ec_read(base, ITE_EC_BEEP_ENABLE);
+		reg |= ITE_EC_TEMP_ADJUST_WRITE_ENABLE;
+		ite_ec_write(base, ITE_EC_BEEP_ENABLE, reg);
+		ite_ec_write(base, ITE_EC_TEMP_ADJUST[tmpin-1], conf->offset);
+	}
+
+	/* Set temperature limits */
+	u8 max = conf->max;
+	ite_ec_write(base, ITE_EC_HIGH_TEMP_LIMIT(tmpin),
+		     max ? max : 127);
+	ite_ec_write(base, ITE_EC_LOW_TEMP_LIMIT(tmpin), conf->min);
 
 	/* Enable the startup of monitoring operation */
 	reg = ite_ec_read(base, ITE_EC_CONFIGURATION);
@@ -217,6 +232,30 @@ static void enable_fan(const u16 base, const u8 fan,
 	ite_ec_write(base, ITE_EC_FAN_MAIN_CTL, reg);
 }
 
+static void enable_beeps(const u16 base, const struct ite_ec_config *const conf)
+{
+	u8 reg = 0;
+	u8 freq = ITE_EC_BEEP_TONE_DIVISOR(10) | ITE_EC_BEEP_FREQ_DIVISOR(10);
+
+	if (conf->tmpin_beep) {
+		reg |= ITE_EC_BEEP_ON_TMP_LIMIT;
+		ite_ec_write(base, ITE_EC_BEEP_FREQ_DIV_OF_TMPIN, freq);
+	}
+	if (conf->fan_beep) {
+		reg |= ITE_EC_BEEP_ON_FAN_LIMIT;
+		ite_ec_write(base, ITE_EC_BEEP_FREQ_DIV_OF_FAN, freq);
+	}
+	if (conf->vin_beep) {
+		reg |= ITE_EC_BEEP_ON_VIN_LIMIT;
+		ite_ec_write(base, ITE_EC_BEEP_FREQ_DIV_OF_VIN, freq);
+	}
+
+	if (reg) {
+		reg |= ite_ec_read(base, ITE_EC_BEEP_ENABLE);
+		ite_ec_write(base, ITE_EC_BEEP_ENABLE, reg);
+	}
+}
+
 void ite_ec_init(const u16 base, const struct ite_ec_config *const conf)
 {
 	size_t i;
@@ -228,12 +267,9 @@ void ite_ec_init(const u16 base, const struct ite_ec_config *const conf)
 	fan_ctl |= ITE_EC_FAN_CTL_POLARITY_HIGH;
 	ite_ec_write(base, ITE_EC_FAN_CTL_MODE, fan_ctl);
 
-	/* Enable PECI if configured */
-	enable_peci(base, conf->peci_tmpin);
-
 	/* Enable HWM if configured */
 	for (i = 0; i < ITE_EC_TMPIN_CNT; ++i)
-		enable_tmpin(base, i + 1, conf->tmpin_mode[i]);
+		enable_tmpin(base, i + 1, &conf->tmpin[i]);
 
 	/* Enable reading of voltage pins */
 	ite_ec_write(base, ITE_EC_ADC_VOLTAGE_CHANNEL_ENABLE, conf->vin_mask);
@@ -242,11 +278,15 @@ void ite_ec_init(const u16 base, const struct ite_ec_config *const conf)
 	for (i = 0; i < ITE_EC_FAN_CNT; ++i)
 		enable_fan(base, i + 1, &conf->fan[i]);
 
+	/* Enable beeps if configured */
+	enable_beeps(base, conf);
+
 	/*
 	 * System may get wrong temperature data when SIO is in
 	 * busy state. Therefore, check the status and terminate
 	 * processes if needed.
 	 */
-	if (conf->peci_tmpin != 0)
-		extemp_force_idle_status(base);
+	for (i = 0; i < ITE_EC_TMPIN_CNT; ++i)
+		if (conf->tmpin[i].mode == THERMAL_PECI)
+			extemp_force_idle_status(base);
 }

@@ -1,0 +1,7 @@
+Category: laptop
+Board URL: https://support.hp.com/us-en/product/hp-elitebook-2760p-tablet-pc/5071191
+ROM protocol: SPI
+ROM package: SOIC-8
+ROM socketed: y
+Flashrom support: n
+Release year: 2011

@@ -17,9 +17,6 @@
 #ifndef __SIMPLE_DEVICE__
 
 extern const struct pci_bus_operations pci_cf8_conf1;
-extern const struct pci_bus_operations pci_ops_mmconf;
-
-const struct pci_bus_operations *pci_bus_default_ops(device_t dev);
 
 #endif
 

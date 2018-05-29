@@ -165,7 +165,7 @@ static void hda_init(struct device *dev)
 	void *base;
 	struct resource *res;
 	u32 codec_mask;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	/* Enable azalia - PM_io 0x59[3], no ac97 in sb700. */
 	byte = pm_ioread(0x59);

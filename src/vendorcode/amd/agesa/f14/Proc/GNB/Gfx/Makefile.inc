@@ -1,0 +1,9 @@
+libagesa-y += GfxConfigData.c
+libagesa-y += GfxGmcInit.c
+libagesa-y += GfxInitAtEnvPost.c
+libagesa-y += GfxInitAtMidPost.c
+libagesa-y += GfxInitAtPost.c
+libagesa-y += GfxIntegratedInfoTableInit.c
+libagesa-y += GfxLib.c
+libagesa-y += GfxRegisterAcc.c
+libagesa-y += GfxStrapsInit.c

@@ -16,6 +16,7 @@
 #include <cpu/x86/lapic.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include <northbridge/amd/amdk8/pre_f.h>
@@ -37,7 +38,7 @@ int spd_read_byte(unsigned device, unsigned address)
 #include <southbridge/nvidia/ck804/early_setup_ss.h>
 #include "southbridge/nvidia/ck804/early_setup_car.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 #include "cpu/amd/model_fxx/fidvid.c"
 #endif
 #include "northbridge/amd/amdk8/early_ht.c"
@@ -100,7 +101,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	start_other_cores();
 	wait_all_other_cores_started(bsp_apicid);
 
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 	/* Check to see if processor is capable of changing FIDVID  */
 	/* otherwise it will throw a GP# when reading FIDVID_STATUS */
 	if ((cpuid_edx(0x80000007) & 0x6) == 0x6) {
@@ -143,6 +144,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	print_pci_devices();
 	dump_pci_devices();
 #endif
-
-	post_cache_as_ram();
 }

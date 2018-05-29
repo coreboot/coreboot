@@ -14,7 +14,7 @@
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2017, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***************************************************************************/
+
+#include <check_for_wrapper.h>
+
 #ifndef _FCH_COMMON_CFG_H_
 #define _FCH_COMMON_CFG_H_
 
@@ -934,6 +937,7 @@ typedef struct {
   UINT32                FchCpuId;                       ///< Saving CpuId for FCH Module.
   BOOLEAN               NoneSioKbcSupport;              ///< NoneSioKbcSupport - No KBC/SIO controller ( Turn on Inchip KBC emulation function )
   FCH_CS                FchCsSupport;                   ///< FCH Cs function structure
+  BOOLEAN               FchAllowSpiInterfaceUpdate;     ///< FchAllowSpiInterfaceUpdate - Fch Allow Spi Interface Update
 } FCH_MISC;
 
 
@@ -1402,7 +1406,7 @@ UINT8		  USB30Gen1PreEmLe;			///< PTUSB30PCS_B3 genI pre-emphasis level
 ///PTUSBTxStructure
 typedef struct {
 PT_USB31Tx    USB31Tx[2];                   ///< USB31Tx setting
-PT_USB30Tx    USB30Tx[3];                   ///< USB30Tx setting
+PT_USB30Tx    USB30Tx[6];                   ///< USB30Tx setting
 UINT8		  USB20B2Tx00;			        ///< USB2.0 TX driving current, 7: largest By USB_HSDP/N[0]
 UINT8		  USB20B2Tx05;			        ///< USB2.0 TX driving current, 7: largest By USB_HSDP/N[5]
 UINT8		  USB20B3Tx1113;			    ///< USB2.0 TX driving current, 7: largest By USB_HSDP/N[13][11]

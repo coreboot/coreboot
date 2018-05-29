@@ -16,6 +16,7 @@
 
 #include <arch/io.h>
 #include <rules.h>
+#include <gpio.h>
 #include <soc/gpio.h>
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -23,6 +24,8 @@
 /* The WP status pin lives on MF_ISH_GPIO_4 */
 #define WP_STATUS_PAD_CFG0	0x4838
 #define WP_STATUS_PAD_CFG1	0x483C
+
+#define WP_GPIO			GP_E_22
 
 #if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>
@@ -52,15 +55,23 @@ int get_write_protect_state(void)
 	 * in the reading.
 	 */
 #if ENV_ROMSTAGE
-	write32((void *)(COMMUNITY_GPEAST_BASE + WP_STATUS_PAD_CFG0),
-	(PAD_PULL_UP_20K | PAD_GPIO_ENABLE | PAD_CONFIG0_GPI_DEFAULT));
-	write32((void *)(COMMUNITY_GPEAST_BASE + WP_STATUS_PAD_CFG1),
-		PAD_CONFIG1_DEFAULT0);
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_CYAN)) {
+		write32((void *)(COMMUNITY_GPEAST_BASE + WP_STATUS_PAD_CFG0),
+			(PAD_PULL_UP_20K | PAD_GPIO_ENABLE | PAD_CONFIG0_GPI_DEFAULT));
+		write32((void *)(COMMUNITY_GPEAST_BASE + WP_STATUS_PAD_CFG1),
+			PAD_CONFIG1_DEFAULT0);
+	} else {
+		gpio_input_pullup(WP_GPIO);
+	}
 #endif
 
 	/* WP is enabled when the pin is reading high. */
-	return (read32((void *)(COMMUNITY_GPEAST_BASE + WP_STATUS_PAD_CFG0))
-		& PAD_VAL_HIGH);
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_CYAN)) {
+		return (read32((void *)(COMMUNITY_GPEAST_BASE + WP_STATUS_PAD_CFG0))
+			& PAD_VAL_HIGH);
+	} else {
+		return !!gpio_get(WP_GPIO);
+	}
 }
 
 static const struct cros_gpio cros_gpios[] = {

@@ -24,7 +24,7 @@
 #include "cn700.h"
 
 /* This is the main AGP device, and only one used when configured for AGP 2.0 */
-static void agp_init(device_t dev)
+static void agp_init(struct device *dev)
 {
 	u32 reg32;
 
@@ -117,7 +117,7 @@ static const struct pci_driver agp_driver __pci_driver = {
  * This is the AGP 3.0 "bridge" @Bus 0 Device 1 Func 0. When using AGP 3.0, the
  * config in this device takes presidence. We configure both just to be safe.
  */
-static void agp_bridge_init(device_t dev)
+static void agp_bridge_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Setting up AGP bridge device\n");
 
@@ -152,7 +152,7 @@ static void agp_bridge_init(device_t dev)
 	pci_write_config8(dev, 0x45, 0x72);
 }
 
-static void agp_bridge_read_resources(device_t dev)
+static void agp_bridge_read_resources(struct device *dev)
 {
 	struct resource *resource;
 

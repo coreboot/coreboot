@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 
-DefinitionBlock ("SSDT5.aml", "SSDT", 1, "AMD-FAM10", "AMDACPI", 100925440)
+DefinitionBlock ("SSDT5.aml", "SSDT", 1, "AMDF10", "AMDACPI ", 100925440)
 {
 	Scope (_SB)
 	{

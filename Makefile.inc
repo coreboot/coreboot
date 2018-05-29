@@ -14,7 +14,8 @@
 ##
 
 ifneq ($(NOCOMPILE),1)
-GIT:=$(shell [ -e "$(top)/.git" ] && command -v git)
+GIT:=$(shell git -C "$(top)" rev-parse --git-dir 1>/dev/null 2>&1 \
+	&& command -v git)
 else
 GIT:=
 endif
@@ -29,33 +30,39 @@ CONFIG_DEVICETREE:=$(call strip_quotes, $(CONFIG_DEVICETREE))
 # misleadingly named, this is the coreboot version
 ifeq ($(KERNELVERSION),)
 ifeq ($(BUILD_TIMELESS),1)
-export KERNELVERSION := TIMELESS
+KERNELVERSION := TIMELESS
 else
-export KERNELVERSION := $(strip $(if $(GIT),\
+KERNELVERSION := $(strip $(if $(GIT),\
 	$(shell git describe --dirty --always || git describe),\
 	$(if $(wildcard $(top)/.coreboot-version),\
 		$(shell cat $(top)/.coreboot-version),\
 		coreboot-unknown$(KERNELREVISION))))
 endif
 endif
+COREBOOT_EXPORTS += KERNELVERSION
 
 #######################################################################
 # Basic component discovery
 MAINBOARDDIR=$(call strip_quotes,$(CONFIG_MAINBOARD_DIR))
 VARIANT_DIR:=$(call strip_quotes,$(CONFIG_VARIANT_DIR))
-export MAINBOARDDIR
-export VARIANT_DIR
+COREBOOT_EXPORTS += MAINBOARDDIR VARIANT_DIR
 
 ## Final build results, which CBFSTOOL uses to create the final
 ## rom image file, are placed under $(objcbfs).
 ## These typically have suffixes .debug .elf .bin and .map
-export objcbfs := $(obj)/cbfs/$(CONFIG_CBFS_PREFIX)
+objcbfs := $(obj)/cbfs/$(CONFIG_CBFS_PREFIX)
+COREBOOT_EXPORTS += objcbfs
 
 ## Based on the active configuration, Makefile conditionally collects
 ## the required assembly includes and saves them in a file.
 ## Such files that do not have a clear one-to-one relation to a source
 ## file under src/ are placed and built under $(objgenerated)
-export objgenerated := $(obj)/generated
+objgenerated := $(obj)/generated
+COREBOOT_EXPORTS += objgenerated
+
+## CCACHE_EXTRAFILES can be set by individual rules to help CCACHE
+## discover dependencies it might not notice on its own (e.g. asm (".incbin")).
+COREBOOT_EXPORTS += CCACHE_EXTRAFILES
 
 #######################################################################
 # root rule to resolve if in build mode (ie. configuration exists)
@@ -75,7 +82,7 @@ files_added:: build_complete
 
 #######################################################################
 # our phony targets
-PHONY+= clean-abuild coreboot lint lint-stable build-dirs build_complete
+PHONY+= clean-abuild coreboot build-dirs build_complete
 
 #######################################################################
 # root source directories of coreboot
@@ -86,18 +93,18 @@ subdirs-y += src/superio
 subdirs-y += $(wildcard src/drivers/*) $(wildcard src/drivers/*/*)
 subdirs-y += src/cpu src/vendorcode
 subdirs-y += util/cbfstool util/sconfig util/nvramtool util/broadcom
-subdirs-y += util/futility util/marvell util/blobtool
+subdirs-y += util/futility util/marvell util/bincfg
 subdirs-y += $(wildcard src/arch/*)
 subdirs-y += src/mainboard/$(MAINBOARDDIR)
-subdirs-y += src/vboot
+subdirs-y += src/security
 subdirs-y += payloads payloads/external
 
 subdirs-y += site-local
-subdirs-y += util/checklist
+subdirs-y += util/checklist util/testing
 
 #######################################################################
 # Add source classes and their build options
-classes-y := ramstage romstage bootblock postcar smm smmstub cpu_microcode verstage
+classes-y := ramstage romstage bootblock decompressor postcar smm smmstub cpu_microcode verstage
 
 # Add dynamic classes for rmodules
 $(foreach supported_arch,$(ARCH_SUPPORTED), \
@@ -111,19 +118,20 @@ $(foreach supported_arch,$(ARCH_SUPPORTED), \
 # macros work on all formats understood by printf(1)
 # values are space separated if using more than one value
 #
-# int-add:       adds an arbitrary length list of integers
-# int-subtract:  subtracts the the second of two integers from the first
-# int-multiply:  multiplies an arbitrary length list of integers
-# int-divide:    divides the first integer by the second
-# int-remainder: arithmetic remainder of the first number divided by the second
-# int-lt:        1 if the first value is less than the second.  0 otherwise
-# int-gt:        1 if the first values is greater than the second.  0 otherwise
-# int-eq:        1 if the two values are equal.  0 otherwise
-# int-align:     align $1 to $2 units
-# file-size:     returns the filesize of the given file
-# tolower:       returns the value in all lowercase
-# toupper:       returns the value in all uppercase
-# ws_to_under:   returns the value with any whitespace changed to underscores
+# int-add:        adds an arbitrary length list of integers
+# int-subtract:   subtracts the the second of two integers from the first
+# int-multiply:   multiplies an arbitrary length list of integers
+# int-divide:     divides the first integer by the second
+# int-remainder:  arithmetic remainder of the first number divided by the second
+# int-shift-left: Shift $1 left by $2 bits
+# int-lt:         1 if the first value is less than the second.  0 otherwise
+# int-gt:         1 if the first values is greater than the second.  0 otherwise
+# int-eq:         1 if the two values are equal.  0 otherwise
+# int-align:      align $1 to $2 units
+# file-size:      returns the filesize of the given file
+# tolower:        returns the value in all lowercase
+# toupper:        returns the value in all uppercase
+# ws_to_under:    returns the value with any whitespace changed to underscores
 _toint=$(shell printf "%d" $1)
 _int-add2=$(shell expr $(call _toint,$1) + $(call _toint,$2))
 int-add=$(if $(filter 1,$(words $1)),$(strip $1),$(call int-add,$(call _int-add2,$(word 1,$1),$(word 2,$1)) $(wordlist 3,$(words $1),$1)))
@@ -132,6 +140,7 @@ _int-multiply2=$(shell expr $(call _toint,$1) \* $(call _toint,$2))
 int-multiply=$(if $(filter 1,$(words $1)),$(strip $1),$(call int-multiply,$(call _int-multiply2,$(word 1,$1),$(word 2,$1)) $(wordlist 3,$(words $1),$1)))
 int-divide=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) / $(call _toint,$(word 2,$1))))
 int-remainder=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) % $(call _toint,$(word 2,$1))))
+int-shift-left=$(shell echo "$(call _toint,$(word 1, $1)) * (2 ^ $(call _toint,$(word 2, $1)))" | bc)
 int-lt=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) \< $(call _toint,$(word 2,$1))))
 int-gt=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) \> $(call _toint,$(word 2,$1))))
 int-eq=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) = $(call _toint,$(word 2,$1))))
@@ -177,6 +186,7 @@ ramstage-postprocess=$$(eval DEPENDENCIES+=$$(addsuffix .d,$$(basename $(1)))) \
 	$(eval $(d)ramstage.a: $(call files-in-dir,$(d),$(filter-out %.ld,$(1))); rm -f $$@ && $(AR_ramstage) rcsT $$@ $$^ ) \
 	$(eval ramstage-objs:=$(d)ramstage.a $(filter-out $(filter-out %.ld, $(call files-in-dir,$(d),$(1))),$(ramstage-objs))))
 
+decompressor-generic-ccopts += -D__PRE_RAM__ -D__DECOMPRESSOR__
 bootblock-generic-ccopts += -D__PRE_RAM__ -D__BOOTBLOCK__
 romstage-generic-ccopts += -D__PRE_RAM__ -D__ROMSTAGE__
 ramstage-generic-ccopts += -D__RAMSTAGE__
@@ -195,9 +205,11 @@ ifeq ($(CONFIG_USE_BLOBS),y)
 # unless explicitly requested and enabled through --checkout
 forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty/blobs))
 endif
-export UPDATED_SUBMODULES:=1
+UPDATED_SUBMODULES:=1
+COREBOOT_EXPORTS += UPDATED_SUBMODULES
 endif
 
+postcar-c-deps:=$$(OPTION_TABLE_H)
 ramstage-c-deps:=$$(OPTION_TABLE_H)
 romstage-c-deps:=$$(OPTION_TABLE_H)
 verstage-c-deps:=$$(OPTION_TABLE_H)
@@ -234,6 +246,15 @@ endef
 # Add handler to compile ACPI's ASL
 # arg1: base file name
 # arg2: y or n for including in cbfs. defaults to y
+
+# Empty resource templates were marked as a warning in IASL with the comment
+# "This would appear to be worthless in real-world ASL code.", which is
+# possibly true in many cases.  In other cases it seems that an empty
+# ResourceTemplate is the correct code.
+# As it's valid ASL, disable the warning.
+EMPTY_RESOURCE_TEMPLATE_WARNING = 3150
+IGNORED_IASL_WARNINGS = -vw $(EMPTY_RESOURCE_TEMPLATE_WARNING)
+
 define asl_template
 $(CONFIG_CBFS_PREFIX)/$(1).aml-file = $(obj)/$(1).aml
 $(CONFIG_CBFS_PREFIX)/$(1).aml-type = raw
@@ -243,7 +264,7 @@ cbfs-files-$(if $(2),$(2),y) += $(CONFIG_CBFS_PREFIX)/$(1).aml
 $(obj)/$(1).aml: $(src)/mainboard/$(MAINBOARDDIR)/$(1).asl $(obj)/config.h
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
 	$(CC_ramstage) -x assembler-with-cpp -E -MMD -MT $$(@) $$(CPPFLAGS_ramstage) -D__ACPI__ -P -include $(src)/include/kconfig.h -I$(obj) -I$(src) -I$(src)/include -I$(src)/arch/$(ARCHDIR-$(ARCH-ramstage-y))/include -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$@
-	cd $$(dir $$@); $(IASL) -we -p $$(notdir $$@) $$(notdir $$@)
+	cd $$(dir $$@); $(IASL) $(IGNORED_IASL_WARNINGS) -we -p $$(notdir $$@) $$(notdir $$@)
 	if [ -z "$$$$($(IASL) -d $$@ 2>&1 | grep 'ACPI Warning')" ]; then echo "    IASL       $$@ disassembled correctly."; true; else echo "Error: Could not correctly disassemble $$@"; $(IASL) -d $$@; false; fi
 endef
 
@@ -339,6 +360,14 @@ CBFS_PAYLOAD_COMPRESS_FLAG:=none
 ifeq ($(CONFIG_COMPRESSED_PAYLOAD_LZMA),y)
 CBFS_PAYLOAD_COMPRESS_FLAG:=LZMA
 endif
+ifeq ($(CONFIG_COMPRESSED_PAYLOAD_LZ4),y)
+CBFS_PAYLOAD_COMPRESS_FLAG:=LZ4
+endif
+
+CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG:=none
+ifeq ($(CONFIG_COMPRESS_SECONDARY_PAYLOAD),y)
+CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG:=LZMA
+endif
 
 CBFS_PRERAM_COMPRESS_FLAG:=none
 ifeq ($(CONFIG_COMPRESS_PRERAM_STAGES),y)
@@ -346,7 +375,8 @@ CBFS_PRERAM_COMPRESS_FLAG:=LZ4
 endif
 
 ifneq ($(CONFIG_LOCALVERSION),"")
-export COREBOOT_EXTRA_VERSION := -$(call strip_quotes,$(CONFIG_LOCALVERSION))
+COREBOOT_EXTRA_VERSION := -$(call strip_quotes,$(CONFIG_LOCALVERSION))
+COREBOOT_EXPORTS += COREBOOT_EXTRA_VERSION
 endif
 
 CPPFLAGS_common := -Isrc -Isrc/include -Isrc/commonlib/include -I$(obj)
@@ -355,15 +385,20 @@ VBOOT_SOURCE ?= 3rdparty/vboot
 CPPFLAGS_common += -I$(VBOOT_SOURCE)/firmware/include
 CPPFLAGS_common += -include $(src)/include/kconfig.h
 CPPFLAGS_common += -I3rdparty
+CPPFLAGS_common += -D__BUILD_DIR__=\"$(obj)\"
 
 CFLAGS_common += -pipe -g -nostdinc -std=gnu11
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS_common += -Wstrict-aliasing -Wshadow -Wdate-time
+CFLAGS_common += -Wno-packed-not-aligned
 CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 CFLAGS_common += -ffunction-sections -fdata-sections -fno-pie
+ifeq ($(CONFIG_COMPILER_GCC),y)
+CFLAGS_common += -fno-delete-null-pointer-checks -fconserve-stack
+endif
 
-ADAFLAGS_common += -gnatg -gnatp
+ADAFLAGS_common += -gnatp
 ADAFLAGS_common += -Wuninitialized -Wall -Werror
 ADAFLAGS_common += -pipe -g -nostdinc
 ADAFLAGS_common += -Wstrict-aliasing -Wshadow
@@ -433,6 +468,8 @@ additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool \
 		   $(objutil)/ifdfake $(objutil)/options $(objutil)/amdfwtool \
 		   $(objutil)/cbootimage $(objutil)/bimgtool
 
+export $(COREBOOT_EXPORTS)
+
 #######################################################################
 # generate build support files
 $(obj)/build.h: .xcompile
@@ -479,8 +516,10 @@ ROMCC?=$(ROMCC_BIN)
 $(ROMCC_BIN): $(top)/util/romcc/romcc.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@)) (this may take a while)\n"
 	@# Note: Adding -O2 here might cause problems. For details see:
-	@# http://www.coreboot.org/pipermail/coreboot/2010-February/055825.html
+	@# https://www.coreboot.org/pipermail/coreboot/2010-February/055825.html
 	$(HOSTCC) -g $(STACK) -Wall -o $@ $<
+
+BINCFG:=$(objutil)/bincfg/bincfg
 
 IFDTOOL:=$(objutil)/ifdtool/ifdtool
 $(IFDTOOL):
@@ -527,6 +566,7 @@ romstage-y+=$(DEVICETREE_STATIC_C)
 verstage-y+=$(DEVICETREE_STATIC_C)
 bootblock-y+=$(DEVICETREE_STATIC_C)
 postcar-y+=$(DEVICETREE_STATIC_C)
+smm-y+=$(DEVICETREE_STATIC_C)
 
 #######################################################################
 # Clean up rules
@@ -555,43 +595,13 @@ printcrt0s:
 update:
 	dongle.py -c /dev/term/1 $(obj)/coreboot.rom EOF
 
-lint lint-stable:
-	util/lint/lint $@
-
 gitconfig:
-	[ -d .git ]
-	mkdir -p .git/hooks
-	for hook in commit-msg pre-commit ; do                       \
-		if [ util/gitconfig/$$hook -nt .git/hooks/$$hook -o  \
-		! -x .git/hooks/$$hook ]; then			     \
-			sed -e "s,%MAKE%,$(MAKE),g" util/gitconfig/$$hook > .git/hooks/$$hook;  \
-			chmod +x .git/hooks/$$hook;		     \
-		fi;						     \
-	done
-	# Now set up thehooks for 3rdparty/
-	for hooks in .git/modules/{3rdparty/blobs,libhwbase,libgfxinit}/hooks; do			\
-		if [ -d $$hooks -a									\
-		\( util/gitconfig/commit-msg -nt $$hooks/commit-msg -o					\
-			! -x $$hooks/commit-msg \) ]; then						\
-			sed -e "s,%MAKE%,$(MAKE),g" util/gitconfig/commit-msg > $$hooks/commit-msg;	\
-			chmod +x $$hooks/commit-msg;							\
-		fi											\
-	done
-	for d in 3rdparty/{blobs,libhwbase,libgfxinit}; do			\
-		if [ -d $$d ]; then						\
-			(cd $$d;						\
-			 git config remote.origin.push HEAD:refs/for/master);	\
-		fi;								\
-	done
-	git config remote.origin.push HEAD:refs/for/master
-	git config alias.sup '!git submodule update --remote --rebase && git submodule update --init --checkout'
-	git config alias.sup-destroy '!git submodule deinit --force "$$(git rev-parse --show-toplevel)"; git submodule init && git submodule update --checkout'
-	(git config --global --includes user.name >/dev/null && git config --global --includes user.email >/dev/null) || (printf 'Please configure your name and email in git:\n\n git config --global user.name "Your Name Comes Here"\n git config --global user.email your.email@example.com\n'; exit 1)
+	util/gitconfig/gitconfig.sh "$(MAKE)"
 
 include util/crossgcc/Makefile.inc
 
 .PHONY: tools
-tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY) $(objutil)/blobtool/blobtool
+tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY) $(BINCFG)
 
 ###########################################################################
 # Common recipes for all stages
@@ -619,11 +629,36 @@ find-class = $(if $(filter $(1),$(basename $(1))),$(if $(CC_$(1)), $(1), $(call 
 # include the bss section in the binary so the BootROM clears the bss on
 # loading of the bootblock stage. Achieve this by marking the bss section
 # loadable,allocatable, and data. Do the same for the .data section in case
-# it's marked as NOBITS.
-$(objcbfs)/bootblock.raw.bin: $(objcbfs)/bootblock.elf
+# the linker marked it NOBITS automatically because there are only zeroes in it.
+preserve-bss-flags := --set-section-flags .bss=load,alloc,data --set-section-flags .data=load,alloc,data
+
+ifeq ($(CONFIG_COMPRESS_BOOTBLOCK),y)
+
+$(objcbfs)/bootblock.lz4: $(objcbfs)/bootblock.elf $(objutil)/cbfstool/cbfs-compression-tool
+	@printf "    LZ4        $(subst $(obj)/,,$(@))\n"
+	$(OBJCOPY_bootblock) $(preserve-bss-flags) $< $@.tmp
+	$(OBJCOPY_bootblock) -O binary $@.tmp
+	$(objutil)/cbfstool/cbfs-compression-tool rawcompress $@.tmp $@.tmp2 lz4
+	rm -f $@.tmp
+	mv $@.tmp2 $@
+
+# Put assembled decompressor+bootblock into bootblock.raw.elf so that SoC
+# Makefiles wrapping the bootblock in a header can always key off the same file.
+$(objcbfs)/bootblock.raw.elf: $(objcbfs)/decompressor.elf
 	@printf "    OBJCOPY    $(notdir $(@))\n"
-	$(OBJCOPY_bootblock) --set-section-flags .bss=load,alloc,data --set-section-flags .data=load,alloc,data $< $<.tmp
-	$(OBJCOPY_bootblock) -O binary $<.tmp $@
+	$(OBJCOPY_bootblock) $(preserve-bss-flags) $< $@
+
+else	# CONFIG_COMPRESS_BOOTBLOCK
+
+$(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
+	@printf "    OBJCOPY    $(notdir $(@))\n"
+	$(OBJCOPY_bootblock) $(preserve-bss-flags) $< $@
+
+endif	# CONFIG_COMPRESS_BOOTBLOCK
+
+$(objcbfs)/bootblock.raw.bin: $(objcbfs)/bootblock.raw.elf
+	@printf "    OBJCOPY    $(notdir $(@))\n"
+	$(OBJCOPY_bootblock) -O binary $< $@
 
 $(objcbfs)/%.bin: $(objcbfs)/%.raw.bin
 	cp $< $@
@@ -636,6 +671,7 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 	$(OBJCOPY_$(class)) --strip-debug $@.tmp
 	$(OBJCOPY_$(class)) --add-gnu-debuglink=$< $@.tmp
 	mv $@.tmp $@
+
 
 ###########################################################################
 # Build the final rom image
@@ -691,8 +727,8 @@ define cbfs-add-cmd-for-region
 		$(filter flat-binary,$(call extract_nth,3,$(1))),-flat-binary) \
 	-f $(call extract_nth,1,$(1)) \
 	-n $(call extract_nth,2,$(1)) \
-	$(if $(filter-out flat-binary,$(filter-out stage,$(call \
-		extract_nth,3,$(1)))),-t $(call extract_nth,3,$(1))) \
+	$(if $(filter-out flat-binary payload stage,$(call \
+		extract_nth,3,$(1))),-t $(call extract_nth,3,$(1))) \
 	$(if $(call extract_nth,4,$(1)),-c $(call extract_nth,4,$(1))) \
 	$(cbfs-autogen-attributes) \
 	-r $(2) \
@@ -789,10 +825,52 @@ FMAP_BIOS_BASE := $(call int-subtract, $(CONFIG_ROM_SIZE) $(CONFIG_CBFS_SIZE))
 FMAP_BIOS_SIZE := $(shell echo $(CONFIG_CBFS_SIZE) | tr A-F a-f)
 # position and size of flashmap, relative to BIOS_BASE
 FMAP_FMAP_BASE := 0
-FMAP_FMAP_SIZE := 0x100
+FMAP_FMAP_SIZE := 0x200
+
+#
+# X86 CONSOLE FMAP region
+#
+# position, size and entry line of CONSOLE relative to BIOS_BASE, if enabled
+ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+FMAP_CONSOLE_BASE := $(call int-add, $(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE))
+FMAP_CONSOLE_SIZE := $(CONFIG_CONSOLE_SPI_FLASH_BUFFER_SIZE)
+FMAP_CONSOLE_ENTRY := CONSOLE@$(FMAP_CONSOLE_BASE) $(FMAP_CONSOLE_SIZE)
+else # ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+FMAP_CONSOLE_BASE := 0
+FMAP_CONSOLE_SIZE := 0
+FMAP_CONSOLE_ENTRY :=
+endif # ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+
+#
+# X86 RW_MRC_CACHE FMAP region
+#
+# position, size and entry line of MRC_CACHE relative to BIOS_BASE, if enabled
+ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
+ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+FMAP_MRC_CACHE_BASE := $(call int-align, $(call int-add, $(FMAP_CONSOLE_BASE) \
+	$(FMAP_CONSOLE_SIZE)), 0x10000)
+else
+FMAP_MRC_CACHE_BASE := $(call int-align, $(call int-add, $(FMAP_FMAP_BASE) \
+	$(FMAP_FMAP_SIZE)), 0x10000)
+endif
+FMAP_MRC_CACHE_SIZE := $(CONFIG_MRC_SETTINGS_CACHE_SIZE)
+FMAP_MRC_CACHE_ENTRY := RW_MRC_CACHE@$(FMAP_MRC_CACHE_BASE) $(FMAP_MRC_CACHE_SIZE)
+else # ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
+FMAP_MRC_CACHE_BASE := 0
+FMAP_MRC_CACHE_SIZE := 0
+FMAP_MRC_CACHE_ENTRY :=
+endif # ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
+
+#
+# X86 COREBOOT default cbfs FMAP region
+#
 # position and size of CBFS, relative to BIOS_BASE
-FMAP_CBFS_BASE := $(FMAP_FMAP_SIZE)
-FMAP_CBFS_SIZE := $(call int-subtract, $(FMAP_BIOS_SIZE) $(FMAP_FMAP_SIZE))
+ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
+FMAP_CBFS_BASE := $(call int-add, $(FMAP_MRC_CACHE_BASE) $(FMAP_MRC_CACHE_SIZE))
+else
+FMAP_CBFS_BASE := $(call int-add, $(FMAP_CONSOLE_SIZE) $(FMAP_FMAP_SIZE))
+endif
+FMAP_CBFS_SIZE := $(call int-subtract, $(FMAP_BIOS_SIZE) $(FMAP_CBFS_BASE))
 else # ifeq ($(CONFIG_ARCH_X86),y)
 DEFAULT_FLASHMAP:=$(top)/util/cbfstool/default.fmd
 # entire flash
@@ -805,8 +883,47 @@ FMAP_BIOS_SIZE := $(CONFIG_CBFS_SIZE)
 # position and size of flashmap, relative to BIOS_BASE
 FMAP_FMAP_BASE := 0x20000
 FMAP_FMAP_SIZE := 0x100
+
+#
+# NON-X86 CONSOLE FMAP region
+#
+# position, size and entry line of CONSOLE relative to BIOS_BASE, if enabled
+ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+FMAP_CONSOLE_BASE := $(call int-add, $(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE))
+FMAP_CONSOLE_SIZE := $(CONFIG_CONSOLE_SPI_FLASH_BUFFER_SIZE)
+FMAP_CONSOLE_ENTRY := CONSOLE@$(FMAP_CONSOLE_BASE) $(FMAP_CONSOLE_SIZE)
+else # ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+FMAP_CONSOLE_BASE := 0
+FMAP_CONSOLE_SIZE := 0
+FMAP_CONSOLE_ENTRY :=
+endif # ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+
+#
+# NON-X86 RW_MRC_CACHE FMAP region
+#
+# position, size and entry line of MRC_CACHE relative to BIOS_BASE, if enabled
+ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
+ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+FMAP_MRC_CACHE_BASE := $(call int-align, $(call int-add, $(FMAP_CONSOLE_BASE) \
+	$(FMAP_CONSOLE_SIZE)), 0x10000)
+else
+FMAP_MRC_CACHE_BASE := $(call int-align, $(call int-add, $(FMAP_FMAP_BASE) \
+	$(FMAP_FMAP_SIZE)), 0x10000)
+endif
+FMAP_MRC_CACHE_SIZE := $(CONFIG_MRC_SETTINGS_CACHE_SIZE)
+FMAP_MRC_CACHE_ENTRY := RW_MRC_CACHE@$(FMAP_MRC_CACHE_BASE) $(FMAP_MRC_CACHE_SIZE)
+else # ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
+FMAP_MRC_CACHE_BASE := 0
+FMAP_MRC_CACHE_SIZE := 0
+FMAP_MRC_CACHE_ENTRY :=
+endif # ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
+
+#
+# NON-X86 COREBOOT default cbfs FMAP region
+#
 # position and size of CBFS, relative to BIOS_BASE
-FMAP_CBFS_BASE := $(call int-add,$(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE))
+FMAP_CBFS_BASE := $(call int-add,$(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE) $(FMAP_CONSOLE_SIZE) \
+	$(FMAP_MRC_CACHE_SIZE))
 FMAP_CBFS_SIZE := $(call int-subtract,$(FMAP_BIOS_SIZE) $(FMAP_CBFS_BASE))
 endif # ifeq ($(CONFIG_ARCH_X86),y)
 
@@ -817,6 +934,8 @@ $(obj)/fmap.fmd: $(top)/Makefile.inc $(DEFAULT_FLASHMAP) $(obj)/config.h
 	    -e "s,##BIOS_SIZE##,$(FMAP_BIOS_SIZE)," \
 	    -e "s,##FMAP_BASE##,$(FMAP_FMAP_BASE)," \
 	    -e "s,##FMAP_SIZE##,$(FMAP_FMAP_SIZE)," \
+	    -e "s,##CONSOLE_ENTRY##,$(FMAP_CONSOLE_ENTRY)," \
+	    -e "s,##MRC_CACHE_ENTRY##,$(FMAP_MRC_CACHE_ENTRY)," \
 	    -e "s,##CBFS_BASE##,$(FMAP_CBFS_BASE)," \
 	    -e "s,##CBFS_SIZE##,$(FMAP_CBFS_SIZE)," \
 		$(DEFAULT_FLASHMAP) > $@.tmp
@@ -904,6 +1023,8 @@ ifeq ($(CONFIG_CPU_MICROCODE_CBFS_GENERATE),y)
 endif
 endif
 	mv $@.tmp $@
+	@printf "    CBFSLAYOUT  $(subst $(obj)/,,$(@))\n\n"
+	$(CBFSTOOL) $@ layout
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $@ print -r $(subst $(spc),$(comma),$(all-regions))
 
@@ -967,13 +1088,6 @@ cbfs-files-$(CONFIG_BOOTSPLASH_IMAGE) += bootsplash$(BOOTSPLASH_SUFFIX)
 bootsplash$(BOOTSPLASH_SUFFIX)-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))
 bootsplash$(BOOTSPLASH_SUFFIX)-type := bootsplash
 
-cbfs-files-$(CONFIG_BOARD_ID_MANUAL) += board_id
-board_id-file := $(obj)/board_id
-board_id-type := raw
-
-$(obj)/board_id:
-	printf $(CONFIG_BOARD_ID_STRING) > $@
-
 # Ensure that no payload segment overlaps with memory regions used by ramstage
 # (not for x86 since it can relocate itself in that case)
 ifneq ($(CONFIG_ARCH_X86),y)
@@ -1019,47 +1133,3 @@ check-ramstage-overlaps: $(obj)/coreboot.pre
 INTERMEDIATE+=check-ramstage-overlaps
 PHONY+=check-ramstage-overlaps
 endif
-
-junit.xml:
-	echo "Building $(BLD)"
-	echo '<?xml version="1.0" encoding="utf-8"?><testsuite>' > $@.tmp
-	echo "<testcase classname='$(BLD)' name='$(BLD)'>" >> $@.tmp
-	-$(MAKE) -j $(CPUS) -C "$(BLD_DIR)$(BLD)" clean distclean > $@.tmp.2 2>&1
-	$(MAKE) -j $(CPUS) -C "$(BLD_DIR)$(BLD)" $(MAKETARGET) >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
-	cat $@.tmp.2; \
-	if [ "$$type" = "failure" ]; then \
-		echo "<failure type='buildFailed'>" >> $@.tmp; \
-		echo "Building $(BLD) Failed"; \
-	else \
-		echo "<$$type>" >> $@.tmp; \
-		echo "Building $(BLD) Succeeded"; \
-	fi; \
-	echo '<![CDATA[' >> $@.tmp; \
-	cat $@.tmp.2 >> $@.tmp; \
-	echo "]]></$$type>" >>$@.tmp
-	rm -f $@.tmp.2
-	echo "</testcase>" >> $@.tmp
-	echo "</testsuite>" >> $@.tmp
-	mv $@.tmp "$(BLD_DIR)$(BLD)/$@"
-	echo
-
-TOOLLIST= \
-	cbmem \
-	ectool \
-	futility \
-	inteltool \
-	intelvbttool \
-	nvramtool \
-	superiotool \
-	viatool
-JENKINS_PAYLOAD?=none
-CPUS?=4
-what-jenkins-does:
-	util/lint/lint lint-stable --junit
-	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c $(CPUS) -z -p $(JENKINS_PAYLOAD) -x -X $(top)/abuild-chromeos.xml
-	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c $(CPUS) -z -p $(JENKINS_PAYLOAD)
-	(cd payloads/libpayload; unset COREBOOT_BUILD_DIR; $(MAKE) $(if $(JENKINS_NOCCACHE),,CONFIG_LP_CCACHE=y) V=$(V) Q=$(Q) junit.xml)
-	$(foreach tool, $(TOOLLIST), $(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=util/ BLD="$(tool)" MFLAGS= MAKEFLAGS= MAKETARGET= junit.xml; )
-	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/ BLD=nvramcui MFLAGS= MAKEFLAGS= MAKETARGET=all junit.xml
-	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/ BLD=coreinfo MFLAGS= MAKEFLAGS= MAKETARGET=defaultbuild junit.xml
-	$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=util/ BLD=romcc MFLAGS= MAKEFLAGS= MAKETARGET=test junit.xml

@@ -121,6 +121,10 @@ static void enable_dev(struct device *dev)
 	if (get_option(&val, "trackpoint") != CB_SUCCESS)
 		val = 1;
 	pmh7_trackpoint_enable(val);
+
+	printk(BIOS_INFO, "PMH7: ID %02x Revision %02x\n",
+	       pmh7_register_read(EC_LENOVO_PMH7_REG_ID),
+	       pmh7_register_read(EC_LENOVO_PMH7_REG_REV));
 }
 
 struct chip_operations ec_lenovo_pmh7_ops = {

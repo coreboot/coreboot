@@ -26,128 +26,19 @@
 #include <string.h>
 
 /**
- * See if a device structure exists for path.
- *
- * @param parent The bus to find the device on.
- * @param path The relative path from the bus to the appropriate device.
- * @return Pointer to a device structure for the device on bus at path
- *         or 0/NULL if no device is found.
- */
-device_t find_dev_path(struct bus *parent, struct device_path *path)
-{
-	device_t child;
-	for (child = parent->children; child; child = child->sibling) {
-		if (path_eq(path, &child->path))
-			break;
-	}
-	return child;
-}
-
-/**
- * Given a PCI bus and a devfn number, find the device structure.
- *
- * @param bus The bus number.
- * @param devfn A device/function number.
- * @return Pointer to the device structure (if found), 0 otherwise.
- */
-struct device *dev_find_slot(unsigned int bus, unsigned int devfn)
-{
-	struct device *dev, *result;
-
-	result = 0;
-	for (dev = all_devices; dev; dev = dev->next) {
-		if ((dev->path.type == DEVICE_PATH_PCI) &&
-		    (dev->bus->secondary == bus) &&
-		    (dev->path.pci.devfn == devfn)) {
-			result = dev;
-			break;
-		}
-	}
-	return result;
-}
-
-/**
- * Given an SMBus bus and a device number, find the device structure.
- *
- * @param bus The bus number.
- * @param addr A device number.
- * @return Pointer to the device structure (if found), 0 otherwise.
- */
-struct device *dev_find_slot_on_smbus(unsigned int bus, unsigned int addr)
-{
-	struct device *dev, *result;
-
-	result = 0;
-	for (dev = all_devices; dev; dev = dev->next) {
-		if ((dev->path.type == DEVICE_PATH_I2C) &&
-		    (dev->bus->secondary == bus) &&
-		    (dev->path.i2c.device == addr)) {
-			result = dev;
-			break;
-		}
-	}
-	return result;
-}
-
-/**
- * Given a PnP port and a device number, find the device structure.
- *
- * @param port The I/O port.
- * @param device Logical device number.
- * @return Pointer to the device structure (if found), 0 otherwise.
- */
-struct device *dev_find_slot_pnp(u16 port, u16 device)
-{
-	struct device *dev;
-
-	for (dev = all_devices; dev; dev = dev->next) {
-		if ((dev->path.type == DEVICE_PATH_PNP) &&
-		    (dev->path.pnp.port == port) &&
-		    (dev->path.pnp.device == device)) {
-			return dev;
-		}
-	}
-	return 0;
-}
-
-/**
  * Given a Local APIC ID, find the device structure.
  *
  * @param apic_id The Local APIC ID number.
  * @return Pointer to the device structure (if found), 0 otherwise.
  */
-device_t dev_find_lapic(unsigned apic_id)
+struct device *dev_find_lapic(unsigned apic_id)
 {
-	device_t dev, result = NULL;
+	struct device *dev;
+	struct device *result = NULL;
 
 	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->path.type == DEVICE_PATH_APIC &&
 		    dev->path.apic.apic_id == apic_id) {
-			result = dev;
-			break;
-		}
-	}
-	return result;
-}
-
-/**
- * Given a Device Path Type, find the device structure.
- *
- * @param prev_match The previously matched device instance.
- * @param path_type The Device Path Type.
- * @return Pointer to the device structure (if found), 0 otherwise.
- */
-device_t dev_find_path(device_t prev_match, enum device_path_type path_type)
-{
-	device_t dev, result = NULL;
-
-	if (prev_match == NULL)
-		prev_match = all_devices;
-	else
-		prev_match = prev_match->next;
-
-	for (dev = prev_match; dev; dev = dev->next) {
-		if (dev->path.type == path_type) {
 			result = dev;
 			break;
 		}
@@ -206,7 +97,7 @@ struct device *dev_find_class(unsigned int class, struct device *from)
  * @param dev The device path to encode.
  * @return Device path encoded into lower 3 bytes of dword.
  */
-u32 dev_path_encode(device_t dev)
+u32 dev_path_encode(const struct device *dev)
 {
 	u32 ret;
 
@@ -253,7 +144,11 @@ u32 dev_path_encode(device_t dev)
 	case DEVICE_PATH_SPI:
 		ret |= dev->path.spi.cs;
 		break;
+	case DEVICE_PATH_USB:
+		ret |= dev->path.usb.port_type << 8 || dev->path.usb.port_id;
+		break;
 	case DEVICE_PATH_NONE:
+	case DEVICE_PATH_MMIO:  /* don't care */
 	default:
 		break;
 	}
@@ -265,7 +160,7 @@ u32 dev_path_encode(device_t dev)
  * Warning: This function uses a static buffer. Don't call it more than once
  * from the same print statement!
  */
-const char *dev_path(device_t dev)
+const char *dev_path(const struct device *dev)
 {
 	static char buffer[DEVICE_PATH_MAX];
 
@@ -274,57 +169,68 @@ const char *dev_path(device_t dev)
 		memcpy(buffer, "<null>", 7);
 	} else {
 		switch(dev->path.type) {
+		case DEVICE_PATH_NONE:
+			memcpy(buffer, "NONE", 5);
+			break;
 		case DEVICE_PATH_ROOT:
 			memcpy(buffer, "Root Device", 12);
 			break;
 		case DEVICE_PATH_PCI:
-			snprintf(buffer, sizeof (buffer),
+			snprintf(buffer, sizeof(buffer),
 				 "PCI: %02x:%02x.%01x",
 				 dev->bus->secondary,
 				 PCI_SLOT(dev->path.pci.devfn),
 				 PCI_FUNC(dev->path.pci.devfn));
 			break;
 		case DEVICE_PATH_PNP:
-			snprintf(buffer, sizeof (buffer), "PNP: %04x.%01x",
+			snprintf(buffer, sizeof(buffer), "PNP: %04x.%01x",
 				 dev->path.pnp.port, dev->path.pnp.device);
 			break;
 		case DEVICE_PATH_I2C:
-			snprintf(buffer, sizeof (buffer), "I2C: %02x:%02x",
+			snprintf(buffer, sizeof(buffer), "I2C: %02x:%02x",
 				 dev->bus->secondary,
 				 dev->path.i2c.device);
 			break;
 		case DEVICE_PATH_APIC:
-			snprintf(buffer, sizeof (buffer), "APIC: %02x",
+			snprintf(buffer, sizeof(buffer), "APIC: %02x",
 				 dev->path.apic.apic_id);
 			break;
 		case DEVICE_PATH_IOAPIC:
-			snprintf(buffer, sizeof (buffer), "IOAPIC: %02x",
+			snprintf(buffer, sizeof(buffer), "IOAPIC: %02x",
 				 dev->path.ioapic.ioapic_id);
 			break;
 		case DEVICE_PATH_DOMAIN:
-			snprintf(buffer, sizeof (buffer), "DOMAIN: %04x",
+			snprintf(buffer, sizeof(buffer), "DOMAIN: %04x",
 				dev->path.domain.domain);
 			break;
 		case DEVICE_PATH_CPU_CLUSTER:
-			snprintf(buffer, sizeof (buffer), "CPU_CLUSTER: %01x",
+			snprintf(buffer, sizeof(buffer), "CPU_CLUSTER: %01x",
 				dev->path.cpu_cluster.cluster);
 			break;
 		case DEVICE_PATH_CPU:
-			snprintf(buffer, sizeof (buffer),
+			snprintf(buffer, sizeof(buffer),
 				 "CPU: %02x", dev->path.cpu.id);
 			break;
 		case DEVICE_PATH_CPU_BUS:
-			snprintf(buffer, sizeof (buffer),
+			snprintf(buffer, sizeof(buffer),
 				 "CPU_BUS: %02x", dev->path.cpu_bus.id);
 			break;
 		case DEVICE_PATH_GENERIC:
-			snprintf(buffer, sizeof (buffer),
+			snprintf(buffer, sizeof(buffer),
 				 "GENERIC: %d.%d", dev->path.generic.id,
 				 dev->path.generic.subid);
 			break;
 		case DEVICE_PATH_SPI:
-			snprintf(buffer, sizeof (buffer), "SPI: %02x",
+			snprintf(buffer, sizeof(buffer), "SPI: %02x",
 				 dev->path.spi.cs);
+			break;
+		case DEVICE_PATH_USB:
+			snprintf(buffer, sizeof(buffer), "USB%u port %u",
+				 dev->path.usb.port_type, dev->path.usb.port_id);
+			break;
+		case DEVICE_PATH_MMIO:
+			snprintf(buffer, sizeof(buffer), "MMIO: %08x",
+				 dev->path.mmio.addr);
 			break;
 		default:
 			printk(BIOS_ERR, "Unknown device path type: %d\n",
@@ -335,7 +241,7 @@ const char *dev_path(device_t dev)
 	return buffer;
 }
 
-const char *dev_name(device_t dev)
+const char *dev_name(struct device *dev)
 {
 	if (dev->name)
 		return dev->name;
@@ -348,64 +254,9 @@ const char *dev_name(device_t dev)
 const char *bus_path(struct bus *bus)
 {
 	static char buffer[BUS_PATH_MAX];
-	snprintf(buffer, sizeof (buffer),
+	snprintf(buffer, sizeof(buffer),
 		 "%s,%d", dev_path(bus->dev), bus->link_num);
 	return buffer;
-}
-
-int path_eq(struct device_path *path1, struct device_path *path2)
-{
-	int equal = 0;
-
-	if (path1->type != path2->type)
-		return 0;
-
-	switch (path1->type) {
-	case DEVICE_PATH_NONE:
-		break;
-	case DEVICE_PATH_ROOT:
-		equal = 1;
-		break;
-	case DEVICE_PATH_PCI:
-		equal = (path1->pci.devfn == path2->pci.devfn);
-		break;
-	case DEVICE_PATH_PNP:
-		equal = (path1->pnp.port == path2->pnp.port) &&
-			(path1->pnp.device == path2->pnp.device);
-		break;
-	case DEVICE_PATH_I2C:
-		equal = (path1->i2c.device == path2->i2c.device) &&
-			(path1->i2c.mode_10bit == path2->i2c.mode_10bit);
-		break;
-	case DEVICE_PATH_APIC:
-		equal = (path1->apic.apic_id == path2->apic.apic_id);
-		break;
-	case DEVICE_PATH_DOMAIN:
-		equal = (path1->domain.domain == path2->domain.domain);
-		break;
-	case DEVICE_PATH_CPU_CLUSTER:
-		equal = (path1->cpu_cluster.cluster
-			 == path2->cpu_cluster.cluster);
-		break;
-	case DEVICE_PATH_CPU:
-		equal = (path1->cpu.id == path2->cpu.id);
-		break;
-	case DEVICE_PATH_CPU_BUS:
-		equal = (path1->cpu_bus.id == path2->cpu_bus.id);
-		break;
-	case DEVICE_PATH_GENERIC:
-		equal = (path1->generic.id == path2->generic.id) &&
-			(path1->generic.subid == path2->generic.subid);
-		break;
-	case DEVICE_PATH_SPI:
-		equal = (path1->spi.cs == path2->spi.cs);
-		break;
-	default:
-		printk(BIOS_ERR, "Unknown device type: %d\n", path1->type);
-		break;
-	}
-
-	return equal;
 }
 
 /**
@@ -440,7 +291,7 @@ static int allocate_more_resources(void)
  * @param prev TODO
  * @return TODO.
  */
-static void free_resource(device_t dev, struct resource *res,
+static void free_resource(struct device *dev, struct resource *res,
 			  struct resource *prev)
 {
 	if (prev)
@@ -459,7 +310,7 @@ static void free_resource(device_t dev, struct resource *res,
  *
  * @param dev The device to find the resource on.
  */
-void compact_resources(device_t dev)
+void compact_resources(struct device *dev)
 {
 	struct resource *res, *next, *prev = NULL;
 
@@ -480,7 +331,7 @@ void compact_resources(device_t dev)
  * @param index The index of the resource on the device.
  * @return The resource, if it already exists.
  */
-struct resource *probe_resource(device_t dev, unsigned index)
+struct resource *probe_resource(struct device *dev, unsigned index)
 {
 	struct resource *res;
 
@@ -503,7 +354,7 @@ struct resource *probe_resource(device_t dev, unsigned index)
  * @param index The index of the resource on the device.
  * @return TODO.
  */
-struct resource *new_resource(device_t dev, unsigned index)
+struct resource *new_resource(struct device *dev, unsigned index)
 {
 	struct resource *resource, *tail;
 
@@ -550,7 +401,7 @@ struct resource *new_resource(device_t dev, unsigned index)
  * @param index The index of the resource on the device.
  * return TODO.
  */
-struct resource *find_resource(device_t dev, unsigned index)
+struct resource *find_resource(struct device *dev, unsigned index)
 {
 	struct resource *resource;
 
@@ -645,7 +496,7 @@ resource_t resource_max(struct resource *resource)
 const char *resource_type(struct resource *resource)
 {
 	static char buffer[RESOURCE_TYPE_MAX];
-	snprintf(buffer, sizeof (buffer), "%s%s%s%s",
+	snprintf(buffer, sizeof(buffer), "%s%s%s%s",
 		 ((resource->flags & IORESOURCE_READONLY) ? "ro" : ""),
 		 ((resource->flags & IORESOURCE_PREFETCH) ? "pref" : ""),
 		 ((resource->flags == 0) ? "unused" :
@@ -664,7 +515,7 @@ const char *resource_type(struct resource *resource)
  * @param resource The resource that was just stored.
  * @param comment TODO
  */
-void report_resource_stored(device_t dev, struct resource *resource,
+void report_resource_stored(struct device *dev, struct resource *resource,
 			    const char *comment)
 {
 	char buf[10];
@@ -678,7 +529,7 @@ void report_resource_stored(device_t dev, struct resource *resource,
 	buf[0] = '\0';
 
 	if (resource->flags & IORESOURCE_PCI_BRIDGE) {
-		snprintf(buf, sizeof (buf),
+		snprintf(buf, sizeof(buf),
 			 "bus %02x ", dev->link_list->secondary);
 	}
 	printk(BIOS_DEBUG, "%s %02lx <- [0x%010llx - 0x%010llx] size 0x%08llx "
@@ -750,7 +601,7 @@ void search_global_resources(unsigned long type_mask, unsigned long type,
 	}
 }
 
-void dev_set_enabled(device_t dev, int enable)
+void dev_set_enabled(struct device *dev, int enable)
 {
 	if (dev->enabled == enable)
 		return;
@@ -765,7 +616,7 @@ void dev_set_enabled(device_t dev, int enable)
 
 void disable_children(struct bus *bus)
 {
-	device_t child;
+	struct device *child;
 
 	for (child = bus->children; child; child = child->sibling) {
 		struct bus *link;
@@ -775,7 +626,32 @@ void disable_children(struct bus *bus)
 	}
 }
 
-static void resource_tree(struct device *root, int debug_level, int depth)
+/*
+ * Returns true if the device is an enabled bridge that has at least
+ * one enabled device on its secondary bus.
+ */
+bool dev_is_active_bridge(struct device *dev)
+{
+	struct bus *link;
+	struct device *child;
+
+	if (!dev || !dev->enabled)
+		return 0;
+
+	if (!dev->link_list || !dev->link_list->children)
+		return 0;
+
+	for (link = dev->link_list; link; link = link->next) {
+		for (child = link->children; child; child = child->sibling) {
+			if (child->enabled)
+				return 1;
+		}
+	}
+
+	return 0;
+}
+
+static void resource_tree(const struct device *root, int debug_level, int depth)
 {
 	int i = 0;
 	struct device *child;
@@ -787,11 +663,11 @@ static void resource_tree(struct device *root, int debug_level, int depth)
 		indent[i] = ' ';
 	indent[i] = '\0';
 
- 	do_printk(BIOS_DEBUG, "%s%s", indent, dev_path(root));
- 	if (root->link_list && root->link_list->children)
- 		do_printk(BIOS_DEBUG, " child on link 0 %s",
- 			  dev_path(root->link_list->children));
- 	do_printk(BIOS_DEBUG, "\n");
+	do_printk(BIOS_DEBUG, "%s%s", indent, dev_path(root));
+	if (root->link_list && root->link_list->children)
+		do_printk(BIOS_DEBUG, " child on link 0 %s",
+			  dev_path(root->link_list->children));
+	do_printk(BIOS_DEBUG, "\n");
 
 	for (res = root->resource_list; res; res = res->next) {
 		do_printk(debug_level, "%s%s resource base %llx size %llx "
@@ -807,7 +683,8 @@ static void resource_tree(struct device *root, int debug_level, int depth)
 	}
 }
 
-void print_resource_tree(struct device *root, int debug_level, const char *msg)
+void print_resource_tree(const struct device *root, int debug_level,
+			 const char *msg)
 {
 	/* Bail if root is null. */
 	if (!root) {
@@ -823,7 +700,7 @@ void print_resource_tree(struct device *root, int debug_level, const char *msg)
 	resource_tree(root, debug_level, 0);
 }
 
-void show_devs_tree(struct device *dev, int debug_level, int depth)
+void show_devs_tree(const struct device *dev, int debug_level, int depth)
 {
 	char depth_str[20];
 	int i;
@@ -906,8 +783,9 @@ void show_all_devs_resources(int debug_level, const char* msg)
 	}
 }
 
-void fixed_mem_resource(device_t dev, unsigned long index,
-		  unsigned long basek, unsigned long sizek, unsigned long type)
+void fixed_mem_resource(struct device *dev, unsigned long index,
+			unsigned long basek, unsigned long sizek,
+			unsigned long type)
 {
 	struct resource *resource;
 
@@ -975,7 +853,7 @@ u32 find_pci_tolm(struct bus *bus)
 /* Count of enabled CPUs */
 int dev_count_cpu(void)
 {
-	device_t cpu;
+	struct device *cpu;
 	int count = 0;
 
 	for (cpu = all_devices; cpu; cpu = cpu->next) {

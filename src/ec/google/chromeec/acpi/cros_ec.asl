@@ -18,6 +18,9 @@ Device (CREC)
 	Name (_HID, "GOOG0004")
 	Name (_UID, 1)
 	Name (_DDN, "EC Command Device")
+#ifdef EC_ENABLE_WAKE_PIN
+	Name (_PRW, Package () { EC_ENABLE_WAKE_PIN, 0x5 })
+#endif
 
 #ifdef EC_ENABLE_MKBP_DEVICE
 	Device (CKSC)

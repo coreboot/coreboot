@@ -132,8 +132,8 @@ static inline void bebitenc(void *pp, uint32_t u, uint8_t b)
 	uint8_t *p = (uint8_t *)pp;
 	int i;
 
-	for (i = (b - 1); i >= 0; i++)
-		p[i] = (u >> i*8) & 0xFF;
+	for (i = 0; i < b; i++)
+		p[(b - 1) - i] = (u >> i*8) & 0xFF;
 }
 
 static inline void be16enc(void *pp, uint16_t u)

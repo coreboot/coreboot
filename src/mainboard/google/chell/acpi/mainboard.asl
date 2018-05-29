@@ -22,3 +22,6 @@ Scope (\_SB)
 		Name (_HID, EisaId ("PNP0C0C"))
 	}
 }
+
+/* USB port entries */
+#include "usb.asl"

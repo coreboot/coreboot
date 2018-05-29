@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-
+#include <compiler.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <soc/gpio.h>
@@ -305,7 +305,7 @@ void setup_soc_gpios(struct soc_gpio_config *config, u8 enable_xdp_tap)
 		printk(BIOS_DEBUG, "Tri-state TDO and TMS\n");
 }
 
-__attribute__((weak)) struct soc_gpio_config *mainboard_get_gpios(void)
+__weak struct soc_gpio_config *mainboard_get_gpios(void)
 {
 	printk(BIOS_DEBUG, "Default/empty GPIO config\n");
 	return NULL;

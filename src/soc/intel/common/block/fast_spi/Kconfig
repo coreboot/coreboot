@@ -1,0 +1,12 @@
+config SOC_INTEL_COMMON_BLOCK_FAST_SPI
+	bool
+	help
+	  Intel Processor common FAST_SPI support
+
+config FAST_SPI_DISABLE_WRITE_STATUS
+	bool "Disable write status SPI opcode"
+	depends on SOC_INTEL_COMMON_BLOCK_FAST_SPI
+	default n if CHROMEOS
+	default y
+	help
+	  Disable the write status SPI opcode in Intel Fast SPI block.

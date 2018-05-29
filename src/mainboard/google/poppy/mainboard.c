@@ -17,15 +17,16 @@
 #include <baseboard/variants.h>
 #include <device/device.h>
 #include <ec/ec.h>
+#include <soc/pci_devs.h>
 #include <soc/nhlt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
 }
 
-static unsigned long mainboard_write_acpi_tables(device_t device,
+static unsigned long mainboard_write_acpi_tables(struct device *device,
 	unsigned long current, acpi_rsdp_t *rsdp)
 {
 	uintptr_t start_addr;
@@ -54,7 +55,7 @@ static unsigned long mainboard_write_acpi_tables(device_t device,
 	return end_addr;
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;

@@ -22,7 +22,7 @@
 #include <arch/io.h>
 #include <cbmem.h>
 
-void lpc_read_resources(device_t dev)
+void lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -76,7 +76,7 @@ void lpc_set_resources(struct device *dev)
  * @param dev the device whose children's resources are to be enabled
  *
  */
-void lpc_enable_childrens_resources(device_t dev)
+void lpc_enable_childrens_resources(struct device *dev)
 {
 	struct bus *link;
 	u32 reg, reg_x;
@@ -88,21 +88,22 @@ void lpc_enable_childrens_resources(device_t dev)
 	reg_x = pci_read_config32(dev, 0x48);
 
 	for (link = dev->link_list; link; link = link->next) {
-		device_t child;
+		struct device *child;
 		for (child = link->children; child;
 		     child = child->sibling) {
 			if (child->enabled
 			    && (child->path.type == DEVICE_PATH_PNP)) {
 				struct resource *res;
 				for (res = child->resource_list; res; res = res->next) {
-					u32 base, end;	/*  don't need long long */
+					u32 base; /* don't need long long */
 					if (!(res->flags & IORESOURCE_IO))
 						continue;
 					base = res->base;
-					end = resource_end(res);
 /*
-					printk(BIOS_DEBUG, "sb800 lpc decode:%s, base=0x%08x, end=0x%08x\n",
-					     dev_path(child), base, end);
+					printk(BIOS_DEBUG, "sb800 lpc decode:%s,
+					       base=0x%08x, end=0x%08x\n",
+					       dev_path(child), base,
+					       resource_end(res));
 */
 					switch (base) {
 					case 0x60:	/*  KB */

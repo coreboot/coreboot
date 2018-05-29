@@ -78,7 +78,7 @@ typedef struct {
   IN OUT   UINT8                HtcCapable;                  ///< Htc capable
   IN OUT   UINT8                LocalApicId;                 ///< Local Apic Id
   IN OUT   UINT8                NumberOfBoostedStates;       ///< Number of boost P-states
-  IN OUT   S_PSTATE_VALUES      PStateStruct[1];             ///< P state struc
+  IN OUT   S_PSTATE_VALUES      PStateStruct[];              ///< P state struc
 } S_PSTATE;
 
 /// P-state structure for each node

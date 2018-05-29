@@ -17,7 +17,7 @@
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
 #include <console/console.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <stdint.h>
@@ -92,7 +92,7 @@ static void nau8825_fill_ssdt(struct device *dev)
 	       dev->path.i2c.device, config->irq.pin);
 }
 
-static const char *nau8825_acpi_name(struct device *dev)
+static const char *nau8825_acpi_name(const struct device *dev)
 {
 	return NAU8825_ACPI_NAME;
 }

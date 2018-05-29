@@ -12,15 +12,62 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <cbmem.h>
+#include <arch/early_variables.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <memory_info.h>
-#include <soc/intel/common/smbios.h>
 #include <soc/meminit.h>
 #include <stddef.h> /* required for FspmUpd.h */
 #include <fsp/soc_binding.h>
 #include <string.h>
+
+static size_t memory_size_mib CAR_GLOBAL;
+
+size_t memory_in_system_in_mib(void)
+{
+	return car_get_var(memory_size_mib);
+}
+
+static void accumulate_channel_memory(int density, int dual_rank)
+{
+	/* For this platform LPDDR4 memory is 4 DRAM parts that are x32. 2 of
+	   the parts are composed into a x64 memory channel. Thus there are 2
+	   channels composed of 2 DRAMs. */
+	size_t sz;
+
+	/* Per rank density in Gb */
+	switch (density) {
+	case LP4_8Gb_DENSITY:
+		sz = 8;
+		break;
+	case LP4_12Gb_DENSITY:
+		sz = 12;
+		break;
+	case LP4_16Gb_DENSITY:
+		sz = 16;
+		break;
+	default:
+		printk(BIOS_ERR, "Invalid DRAM density: %d\n", density);
+		sz = 0;
+		break;
+	}
+
+	/* Two DRAMs per channel. */
+	sz *= 2;
+
+	/* Two ranks per channel. */
+	if (dual_rank)
+		sz *= 2;
+
+	sz *= GiB / MiB;
+
+	car_set_var(memory_size_mib, car_get_var(memory_size_mib) + sz);
+}
+
+size_t iohole_in_mib(void)
+{
+	return 2 * (GiB / MiB);
+}
 
 static void set_lpddr4_defaults(FSP_M_CONFIG *cfg)
 {
@@ -37,8 +84,8 @@ static void set_lpddr4_defaults(FSP_M_CONFIG *cfg)
 	cfg->DualRankSupportEnable = 1;
 	/* Don't enforce a memory size limit. */
 	cfg->MemorySizeLimit = 0;
-	/* Use a 2GiB I/O hole -- field is in MiB units. */
-	cfg->LowMemoryMaxValue = 2 * (GiB/MiB);
+	/* Field is in MiB units. */
+	cfg->LowMemoryMaxValue = iohole_in_mib();
 	/* No restrictions on memory above 4GiB */
 	cfg->HighMemoryMaxValue = 0;
 
@@ -81,29 +128,82 @@ static void set_lpddr4_defaults(FSP_M_CONFIG *cfg)
 	cfg->Ch3_OdtConfig = ODT_A_B_HIGH_HIGH;
 }
 
-void meminit_lpddr4(FSP_M_CONFIG *cfg, int speed)
-{
-	uint8_t profile;
+struct speed_mapping {
+	int logical;
+	int fsp_value;
+};
 
-	switch (speed) {
-	case LP4_SPEED_1600:
-		profile = 0x9;
-		break;
-	case LP4_SPEED_2133:
-		profile = 0xa;
-		break;
-	case LP4_SPEED_2400:
-		profile = 0xb;
-		break;
-	default:
-		printk(BIOS_WARNING, "Invalid LPDDR4 speed: %d\n", speed);
-		/* Set defaults. */
-		speed = LP4_SPEED_1600;
-		profile = 0x9;
+struct fsp_speed_profiles {
+	const struct speed_mapping *mappings;
+	size_t num_mappings;
+};
+
+static const struct speed_mapping apl_mappings[] = {
+	{ .logical = LP4_SPEED_1600, .fsp_value = 0x9 },
+	{ .logical = LP4_SPEED_2133, .fsp_value = 0xa },
+	{ .logical = LP4_SPEED_2400, .fsp_value = 0xb },
+};
+
+static const struct fsp_speed_profiles apl_profile = {
+	.mappings = apl_mappings,
+	.num_mappings = ARRAY_SIZE(apl_mappings),
+};
+
+static const struct speed_mapping glk_mappings[] = {
+	{ .logical = LP4_SPEED_1600, .fsp_value = 0x4 },
+	{ .logical = LP4_SPEED_2133, .fsp_value = 0x6 },
+	{ .logical = LP4_SPEED_2400, .fsp_value = 0x7 },
+};
+
+static const struct fsp_speed_profiles glk_profile = {
+	.mappings = glk_mappings,
+	.num_mappings = ARRAY_SIZE(glk_mappings),
+};
+
+static const struct fsp_speed_profiles *get_fsp_profile(void)
+{
+	if (IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+		return &glk_profile;
+	else
+		return &apl_profile;
+}
+
+static int validate_speed(int speed)
+{
+	const struct fsp_speed_profiles *fsp_profile = get_fsp_profile();
+	size_t i;
+
+	for (i = 0; i < fsp_profile->num_mappings; i++) {
+		/* Mapping exists. */
+		if (fsp_profile->mappings[i].logical == speed)
+			return speed;
 	}
 
+	printk(BIOS_WARNING, "Invalid LPDDR4 speed: %d\n", speed);
+	/* Default to slowest speed */
+	return LP4_SPEED_1600;
+}
+
+static int fsp_memory_profile(int speed)
+{
+	const struct fsp_speed_profiles *fsp_profile = get_fsp_profile();
+	size_t i;
+
+	for (i = 0; i < fsp_profile->num_mappings; i++) {
+		if (fsp_profile->mappings[i].logical == speed)
+			return fsp_profile->mappings[i].fsp_value;
+	}
+
+	/* should never happen. */
+	return -1;
+}
+
+void meminit_lpddr4(FSP_M_CONFIG *cfg, int speed)
+{
+	speed = validate_speed(speed);
+
 	printk(BIOS_INFO, "LP4DDR speed is %dMHz\n", speed);
-	cfg->Profile = profile;
+	cfg->Profile = fsp_memory_profile(speed);
 
 	set_lpddr4_defaults(cfg);
 }
@@ -132,10 +232,10 @@ static void enable_logical_chan0(FSP_M_CONFIG *cfg,
 	/*
 	 * CH0_DQB byte lanes in the bit swizzle configuration field are
 	 * not 1:1. The mapping within the swizzling field is:
-	 *   indicies [0:7]   - byte lane 1 (DQS1) DQ[8:15]
-	 *   indicies [8:15]  - byte lane 0 (DQS0) DQ[0:7]
-	 *   indicies [16:23] - byte lane 3 (DQS3) DQ[24:31]
-	 *   indicies [24:31] - byte lane 2 (DQS2) DQ[16:23]
+	 *   indices [0:7]   - byte lane 1 (DQS1) DQ[8:15]
+	 *   indices [8:15]  - byte lane 0 (DQS0) DQ[0:7]
+	 *   indices [16:23] - byte lane 3 (DQS3) DQ[24:31]
+	 *   indices [24:31] - byte lane 2 (DQS2) DQ[16:23]
 	 */
 	chan = &scfg->phys[LP4_PHYS_CH0B];
 	memcpy(&cfg->Ch0_Bit_swizzling[0], &chan->dqs[LP4_DQS1], sz);
@@ -177,10 +277,10 @@ static void enable_logical_chan1(FSP_M_CONFIG *cfg,
 	/*
 	 * CH1_DQB byte lanes in the bit swizzle configuration field are
 	 * not 1:1. The mapping within the swizzling field is:
-	 *   indicies [0:7]   - byte lane 1 (DQS1) DQ[8:15]
-	 *   indicies [8:15]  - byte lane 0 (DQS0) DQ[0:7]
-	 *   indicies [16:23] - byte lane 3 (DQS3) DQ[24:31]
-	 *   indicies [24:31] - byte lane 2 (DQS2) DQ[16:23]
+	 *   indices [0:7]   - byte lane 1 (DQS1) DQ[8:15]
+	 *   indices [8:15]  - byte lane 0 (DQS0) DQ[0:7]
+	 *   indices [16:23] - byte lane 3 (DQS3) DQ[24:31]
+	 *   indices [24:31] - byte lane 2 (DQS2) DQ[16:23]
 	 */
 	chan = &scfg->phys[LP4_PHYS_CH1B];
 	memcpy(&cfg->Ch2_Bit_swizzling[0], &chan->dqs[LP4_DQS1], sz);
@@ -217,8 +317,9 @@ void meminit_lpddr4_enable_channel(FSP_M_CONFIG *cfg, int logical_chan,
 		break;
 	default:
 		printk(BIOS_ERR, "Invalid logical channel: %d\n", logical_chan);
-		break;
+		return;
 	}
+	accumulate_channel_memory(rank_density, dual_rank);
 }
 
 void meminit_lpddr4_by_sku(FSP_M_CONFIG *cfg,
@@ -257,68 +358,6 @@ void meminit_lpddr4_by_sku(FSP_M_CONFIG *cfg,
 	}
 
 	cfg->PeriodicRetrainingDisable = sku->disable_periodic_retraining;
-}
-
-void save_lpddr4_dimm_info(const struct lpddr4_cfg *lp4cfg, size_t mem_sku)
-{
-	int channel, dimm, dimm_max, index;
-	size_t hob_size;
-	const DIMM_INFO *src_dimm;
-	struct dimm_info *dest_dimm;
-	struct memory_info *mem_info;
-	const CHANNEL_INFO *channel_info;
-	const FSP_SMBIOS_MEMORY_INFO *memory_info_hob;
-
-	if (mem_sku >= lp4cfg->num_skus) {
-		printk(BIOS_ERR, "Too few LPDDR4 SKUs: 0x%zx/0x%zx\n",
-				mem_sku, lp4cfg->num_skus);
-		return;
-	}
-
-	memory_info_hob = fsp_find_smbios_memory_info(&hob_size);
-
-	/*
-	 * Allocate CBMEM area for DIMM information used to populate SMBIOS
-	 * table 17
-	 */
-	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(*mem_info));
-	if (mem_info == NULL) {
-		printk(BIOS_ERR, "CBMEM entry for DIMM info missing\n");
-		return;
-	}
-	memset(mem_info, 0, sizeof(*mem_info));
-
-	/* Describe the first N DIMMs in the system */
-	index = 0;
-	dimm_max = ARRAY_SIZE(mem_info->dimm);
-	for (channel = 0; channel < memory_info_hob->ChannelCount; channel++) {
-		if (index >= dimm_max)
-			break;
-		channel_info = &memory_info_hob->ChannelInfo[channel];
-		for (dimm = 0; dimm < channel_info->DimmCount; dimm++) {
-			if (index >= dimm_max)
-				break;
-			src_dimm = &channel_info->DimmInfo[dimm];
-			dest_dimm = &mem_info->dimm[index];
-
-			if (!src_dimm->SizeInMb)
-				continue;
-
-			/* Populate the DIMM information */
-			dimm_info_fill(dest_dimm,
-				src_dimm->SizeInMb,
-				memory_info_hob->MemoryType,
-				memory_info_hob->MemoryFrequencyInMHz,
-				channel_info->ChannelId,
-				src_dimm->DimmId,
-				lp4cfg->skus[mem_sku].part_num,
-				strlen(lp4cfg->skus[mem_sku].part_num),
-				memory_info_hob->DataWidth);
-			index++;
-		}
-	}
-	mem_info->dimm_cnt = index;
-	printk(BIOS_DEBUG, "%d DIMMs found\n", mem_info->dimm_cnt);
 }
 
 uint8_t fsp_memory_soc_version(void)

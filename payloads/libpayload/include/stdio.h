@@ -43,13 +43,13 @@ extern FILE *stdout, *stdin, *stderr;
  * @{
  */
 int snprintf(char *str, size_t size, const char *fmt, ...)
-	__attribute__ ((format (printf, 3, 4)));
+	__attribute__((format (printf, 3, 4)));
 int sprintf(char *str, const char *fmt, ...)
-	__attribute__ ((format (printf, 2, 3)));
+	__attribute__((format (printf, 2, 3)));
 int printf(const char *fmt, ...)
-	__attribute__ ((format (printf, 1, 2)));
+	__attribute__((format (printf, 1, 2)));
 int fprintf(FILE *file, const char *fmt, ...)
-	__attribute__ ((format (printf, 2, 3)));
+	__attribute__((format (printf, 2, 3)));
 /** @} */
 
 void perror(const char *s);

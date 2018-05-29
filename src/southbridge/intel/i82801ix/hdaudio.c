@@ -287,7 +287,8 @@ static void azalia_init(struct device *dev)
 	}
 }
 
-static void azalia_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void azalia_set_subsystem(struct device *dev, unsigned vendor,
+				 unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

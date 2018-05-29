@@ -73,7 +73,7 @@ static void segment_insert_after(struct segment *seg, struct segment *new)
  *
  * Benefits:
  * - Nearly arbitrary standalone executables can be loaded.
- * - Coreboot is preserved, so it can be returned to.
+ * - coreboot is preserved, so it can be returned to.
  * - The implementation is still relatively simple,
  *   and much simpler than the general case implemented in kexec.
  */
@@ -381,7 +381,7 @@ static int load_self_segments(struct segment *head, struct prog *payload,
 		 */
 		if (check_regions) {
 			bootmem_add_range(ptr->s_dstaddr, ptr->s_memsz,
-					  LB_MEM_UNUSABLE);
+					  BM_MEM_PAYLOAD);
 		}
 
 		if (!overlaps_coreboot(ptr))

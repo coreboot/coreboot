@@ -14,7 +14,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/lapic_def.h>
 
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 	.text
 	.globl _secondary_start, _secondary_start_end, _secondary_gdt_addr
 	.balign 4096
@@ -32,7 +31,7 @@ _secondary_start:
 	movw	%cs, %ax
 	movw	%ax, %ds
 
-	data32	lgdt	gdtaddr  - _secondary_start
+	lgdtl	gdtaddr  - _secondary_start
 
 	movl	%cr0, %eax
 	andl	$0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
@@ -69,6 +68,8 @@ __ap_protected_start:
 	/* Set the stack pointer, and flag that we are done */
 	xorl	%eax, %eax
 	movl	secondary_stack, %esp
+	andl	$0xfffffff0, %esp
+	sub	$12, %esp /* maintain 16-byte alignment for the call below */
 	movl	secondary_cpu_index, %edi
 	pushl	%edi
 	movl	%eax, secondary_stack
@@ -78,4 +79,3 @@ __ap_protected_start:
 	jmp	1b
 
 .code32
-#endif

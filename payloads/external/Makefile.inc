@@ -27,6 +27,7 @@ PAYLOAD_VERSION=payloads/external/FILO/filo/build/version.h
 endif
 ifeq ($(CONFIG_PAYLOAD_DEPTHCHARGE),y)
 PAYLOAD_CONFIG=payloads/external/depthcharge/depthcharge/.config
+$(PAYLOAD_CONFIG): payloads/external/depthcharge/depthcharge/build/depthcharge.elf
 #TODO: Figure out version
 endif
 
@@ -89,7 +90,10 @@ payloads/external/SeaBIOS/seabios/out/bios.bin.elf seabios: $(DOTCONFIG)
 			CONFIG_HUDSON_UART=$(CONFIG_HUDSON_UART) \
 			CONFIG_CONSOLE_SERIAL=$(CONFIG_CONSOLE_SERIAL) \
 			CONFIG_TTYS0_BASE=$(CONFIG_TTYS0_BASE) \
-			CONFIG_SEABIOS_DEBUG_LEVEL=$(CONFIG_SEABIOS_DEBUG_LEVEL)
+			CONFIG_SEABIOS_DEBUG_LEVEL=$(CONFIG_SEABIOS_DEBUG_LEVEL) \
+			CONFIG_DRIVERS_UART_8250MEM_32=$(CONFIG_DRIVERS_UART_8250MEM_32) \
+			CONFIG_ENABLE_HSUART=$(CONFIG_ENABLE_HSUART) \
+			CONFIG_CONSOLE_UART_BASE_ADDRESS=$(CONFIG_CONSOLE_UART_BASE_ADDRESS)
 
 payloads/external/SeaBIOS/seabios/out/vgabios.bin: seabios
 payloads/external/SeaBIOS/seabios/.config: payloads/external/SeaBIOS/seabios/out/bios.bin.elf
@@ -158,6 +162,28 @@ payloads/external/depthcharge/depthcharge/build/depthcharge.elf depthcharge: $(D
 		DEPTHCHARGE_REVISION_ID=$(CONFIG_DEPTHCHARGE_REVISION_ID) \
 		OVERRIDE_DEFCONFIG=$(CONFIG_LP_DEFCONFIG_OVERRIDE)
 
+# Tianocore
+
+payloads/external/tianocore/tianocore/Build/UEFIPAYLOAD.fd tianocore: $(DOTCONFIG)
+	$(MAKE) -C payloads/external/tianocore all \
+		HOSTCC="$(HOSTCC)" \
+		CC="$(HOSTCC)" \
+		CONFIG_TIANOCORE_MASTER=$(CONFIG_TIANOCORE_MASTER) \
+		CONFIG_TIANOCORE_STABLE=$(CONFIG_TIANOCORE_STABLE) \
+		CONFIG_TIANOCORE_REVISION=$(CONFIG_TIANOCORE_REVISION) \
+		CONFIG_TIANOCORE_REVISION_ID=$(CONFIG_TIANOCORE_REVISION_ID) \
+		CONFIG_TIANOCORE_DEBUG=$(CONFIG_TIANOCORE_DEBUG) \
+		CONFIG_TIANOCORE_TARGET_IA32=$(CONFIG_TIANOCORE_TARGET_IA32) \
+		GCC_CC_x86_32=$(GCC_CC_x86_32) \
+		GCC_CC_x86_64=$(GCC_CC_x86_64) \
+		GCC_CC_arm=$(GCC_CC_arm) \
+		GCC_CC_arm64=$(GCC_CC_arm64) \
+		OBJCOPY_x86_32=$(OBJCOPY_x86_32) \
+		OBJCOPY_x86_64=$(OBJCOPY_x86_64) \
+		OBJCOPY_arm=$(OBJCOPY_arm) \
+		OBJCOPY_arm64=$(OBJCOPY_arm64) \
+		MFLAGS= MAKEFLAGS=
+
 # FILO
 
 filo:
@@ -174,11 +200,13 @@ payloads/external/FILO/filo/build/version.h: filo
 
 # Grub
 
-grub2:
+grub2: $(obj)/config.h
 	$(MAKE) -C payloads/external/GRUB2 \
 			HOSTCC="$(HOSTCC)" \
-			CC="$(CC_x86_32)" LD="$(LD_x86_32)" OBJDUMP="$(OBJDUMP_x86_32)" \
+			CC="$(CC_x86_32)" LD="$(LD_x86_32)" \
 			OBJCOPY="$(OBJCOPY_x86_32)" STRIP="$(STRIP_x86_32)" \
+			CONFIG_DEP="$(abspath $(obj)/config.h)" \
+			CONFIG_GRUB2_STABLE=$(CONFIG_GRUB2_STABLE) \
 			CONFIG_GRUB2_MASTER=$(CONFIG_GRUB2_MASTER) \
 			CONFIG_GRUB2_REVISION=$(CONFIG_GRUB2_REVISION) \
 			CONFIG_GRUB2_REVISION_ID=$(CONFIG_GRUB2_REVISION_ID) \
@@ -201,12 +229,14 @@ payloads/external/tint/tint/tint.elf tint:
 cbfs-files-$(CONFIG_TINT_SECONDARY_PAYLOAD) += img/tint
 img/tint-file := payloads/external/tint/tint/tint.elf
 img/tint-type := payload
+img/tint-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
 
 # Memtest86+
 
 cbfs-files-$(CONFIG_MEMTEST_SECONDARY_PAYLOAD) += img/memtest
 img/memtest-file := payloads/external/Memtest86Plus/memtest86plus/memtest
 img/memtest-type := payload
+img/memtest-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
 
 ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO),yy)
 	MEMTEST_SERIAL_OPTIONS=SERIAL_CONSOLE_DEFAULT=1 \

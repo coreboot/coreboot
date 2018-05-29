@@ -15,6 +15,7 @@
 #include <console/console.h>
 #include <cpu/intel/romstage.h>
 #include <cpu/x86/mtrr.h>
+#include <arch/symbols.h>
 #include <program_loading.h>
 
 #define DCACHE_RAM_ROMSTAGE_STACK_SIZE 0x2000
@@ -25,9 +26,19 @@ asmlinkage void *romstage_main(unsigned long bist)
 	void *romstage_stack_after_car;
 	const int num_guards = 4;
 	const u32 stack_guard = 0xdeadbeef;
-	u32 *stack_base = (void *)(CONFIG_DCACHE_RAM_BASE +
-				   CONFIG_DCACHE_RAM_SIZE -
-				   DCACHE_RAM_ROMSTAGE_STACK_SIZE);
+	u32 *stack_base;
+	u32 size;
+
+	/* Size of unallocated CAR. */
+	size = _car_region_end - _car_relocatable_data_end;
+	size = ALIGN_DOWN(size, 16);
+
+	size = MIN(size, DCACHE_RAM_ROMSTAGE_STACK_SIZE);
+	if (size < DCACHE_RAM_ROMSTAGE_STACK_SIZE)
+		printk(BIOS_DEBUG, "Romstage stack size limited to 0x%x!\n",
+			size);
+
+	stack_base = (u32 *) (_car_region_end - size);
 
 	for (i = 0; i < num_guards; i++)
 		stack_base[i] = stack_guard;

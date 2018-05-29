@@ -27,16 +27,16 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <smbios.h>
 #include <device/pci.h>
 #include <cbfs.h>
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	RCBA32(0x38c8) = 0x00002005;
 	RCBA32(0x38c4) = 0x00802005;
-	RCBA32(0x38c0) = 0x00000007;
 	RCBA32(0x2240) = 0x00330e71;
 	RCBA32(0x2244) = 0x003f0eb1;
 	RCBA32(0x2248) = 0x002102cd;
@@ -72,7 +72,7 @@ static void mainboard_init(device_t dev)
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 

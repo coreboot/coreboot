@@ -16,7 +16,7 @@
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
 #include <console/console.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <gpio.h>
@@ -116,7 +116,8 @@ void i2c_generic_fill_ssdt(struct device *dev,
 	}
 
 	/* DSD */
-	if (config->probed || (reset_gpio_index != -1) ||
+	if (config->probed || config->property_count ||
+	    (reset_gpio_index != -1) ||
 	    (enable_gpio_index != -1) || (irq_gpio_index != -1)) {
 		dsd = acpi_dp_new_table("_DSD");
 		if (config->probed)
@@ -134,14 +135,27 @@ void i2c_generic_fill_ssdt(struct device *dev,
 			acpi_dp_add_gpio(dsd, "enable-gpios", path,
 					enable_gpio_index, 0,
 					config->enable_gpio.polarity);
+		/* Add generic property list */
+		acpi_dp_add_property_list(dsd, config->property_list,
+					  config->property_count);
 		acpi_dp_write(dsd);
 	}
 
 	/* Power Resource */
-	if (config->has_power_resource)
-		acpi_device_add_power_res(
-			&config->reset_gpio, config->reset_delay_ms,
-			&config->enable_gpio, config->enable_delay_ms);
+	if (config->has_power_resource) {
+		const struct acpi_power_res_params power_res_params = {
+			&config->reset_gpio,
+			config->reset_delay_ms,
+			config->reset_off_delay_ms,
+			&config->enable_gpio,
+			config->enable_delay_ms,
+			config->enable_off_delay_ms,
+			&config->stop_gpio,
+			config->stop_delay_ms,
+			config->stop_off_delay_ms
+		};
+		acpi_device_add_power_res(&power_res_params);
+	}
 
 	/* Callback if any. */
 	if (callback)
@@ -160,7 +174,7 @@ static void i2c_generic_fill_ssdt_generator(struct device *dev)
 }
 
 /* Use name specified in config or build one from I2C address */
-static const char *i2c_generic_acpi_name(struct device *dev)
+static const char *i2c_generic_acpi_name(const struct device *dev)
 {
 	struct drivers_i2c_generic_config *config = dev->chip_info;
 	static char name[5];

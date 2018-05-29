@@ -130,11 +130,14 @@ int clear_screen(const struct rgb_color *rgb);
  * @param[in] bitmap	Pointer to the bitmap data, starting from file header
  * @param[in] size	Size of the bitmap data
  * @param[in] pos_rel	Coordinate of the pivot relative to the canvas
- * @param[in] pivot	Pivot position. Use PIVOT_H_* and PIVOT_V_* flags.
  * @param[in] dim_rel	Width and height of the image relative to the canvas
  *                      width and height. They must not exceed 1 (=100%). If one
  *                      is zero, it's derived from the other to keep the aspect
  *                      ratio.
+ * @param[in] flags     lower 8 bits is Pivot position. Use PIVOT_H_* and
+ *                      PIVOT_V_* flags.
+ *                      Bit 9 is bit to indicate if we invert the rendering.
+ *                      0 = render image as is, 1 = invert image.
  *
  * @return CBGFX_* error codes
  *
@@ -143,8 +146,8 @@ int clear_screen(const struct rgb_color *rgb);
  * positioned so that pos_rel matches the center of the image.
  */
 int draw_bitmap(const void *bitmap, size_t size,
-		const struct scale *pos_rel, uint8_t pivot,
-		const struct scale *dim_rel);
+		const struct scale *pos_rel, const struct scale *dim_rel,
+		uint32_t flags);
 
 /* Pivot flags. See the draw_bitmap description. */
 #define PIVOT_H_LEFT	(1 << 0)
@@ -153,6 +156,11 @@ int draw_bitmap(const void *bitmap, size_t size,
 #define PIVOT_V_TOP	(1 << 3)
 #define PIVOT_V_CENTER	(1 << 4)
 #define PIVOT_V_BOTTOM	(1 << 5)
+#define PIVOT_MASK      0x000000ff
+
+/* invert flag */
+#define INVERT_SHIFT    8
+#define INVERT_COLORS   (1 << INVERT_SHIFT)
 
 /**
  * Draw a bitmap image at screen coordinate with no scaling

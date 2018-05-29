@@ -27,8 +27,6 @@
 
 #include <stdlib.h>
 #include "AGESA.h"
-#include "Filecode.h"
-#define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
 
 /*  Select the CPU family.  */
@@ -292,4 +290,4 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 #define DFLT_VRM_SLEW_RATE              (5000)
 
 // Instantiate all solution relevant data.
-#include "PlatformInstall.h"
+#include <PlatformInstall.h>

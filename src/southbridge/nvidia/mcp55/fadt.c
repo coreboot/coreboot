@@ -29,7 +29,7 @@ extern unsigned pm_base;
 void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
-	device_t dev;
+	struct device *dev;
 	int is_mcp55 = 0;
 	dev = dev_find_device(PCI_VENDOR_ID_NVIDIA,
 		PCI_DEVICE_ID_NVIDIA_MCP55_LPC, 0);

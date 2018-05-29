@@ -1,5 +1,5 @@
 #include <arch/acpi_device.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 
 struct drivers_i2c_tpm_config {
 	const char *hid;	/* ACPI _HID (required) */
@@ -7,4 +7,5 @@ struct drivers_i2c_tpm_config {
 	unsigned int uid;	/* ACPI _UID */
 	enum i2c_speed speed;	/* Bus speed in Hz, default is I2C_SPEED_FAST */
 	struct acpi_irq irq;	/* Interrupt */
+	struct acpi_gpio irq_gpio;	/* GPIO interrupt */
 };

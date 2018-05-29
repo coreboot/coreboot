@@ -82,9 +82,10 @@ chip northbridge/intel/x4x		# Northbridge
       device pci 1f.0 on		# ISA bridge
         subsystemid 0x1458 0x5001
         chip superio/ite/it8718f	# Super I/O
-          register "TMPIN1" = "THERMAL_RESISTOR"
-          register "TMPIN2" = "THERMAL_RESISTOR"
-          register "TMPIN3" = "THERMAL_DIODE"
+          register "TMPIN1.mode" = "THERMAL_RESISTOR"
+          register "TMPIN2.mode" = "THERMAL_RESISTOR"
+          register "TMPIN3.mode" = "THERMAL_DIODE"
+	  register "TMPIN3.offset" = "0"
           register "ec.vin_mask" = "VIN7 | VIN4 | VIN3 | VIN2 | VIN1 | VIN0"
 
           register "FAN1.mode" = "FAN_SMART_AUTOMATIC"

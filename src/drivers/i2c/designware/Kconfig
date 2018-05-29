@@ -1,0 +1,15 @@
+config DRIVERS_I2C_DESIGNWARE
+	bool
+	help
+	  Designware I2C support
+
+config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
+	int
+	depends on DRIVERS_I2C_DESIGNWARE
+	help
+	  The i2c ip block's clock.
+
+config DRIVERS_I2C_DESIGNWARE_DEBUG
+	bool
+	default n
+	depends on DRIVERS_I2C_DESIGNWARE

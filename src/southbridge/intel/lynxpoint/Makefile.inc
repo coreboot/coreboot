@@ -41,15 +41,13 @@ ramstage-y += watchdog.c
 ramstage-y += acpi.c
 
 ramstage-$(CONFIG_ELOG) += elog.c
-ramstage-y += ../common/spi.c
-smm-$(CONFIG_SPI_FLASH_SMM) += ../common/spi.c
 
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c pmutil.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me_9.x.c finalize.c pch.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += pmutil.c usb_ehci.c usb_xhci.c
 
 romstage-y += early_usb.c early_smbus.c early_me.c me_status.c early_pch.c
-romstage-y += reset.c early_spi.c rcba.c
+romstage-y += reset.c early_spi.c rcba.c pmutil.c
 
 ifeq ($(CONFIG_INTEL_LYNXPOINT_LP),y)
 romstage-y += lp_gpio.c

@@ -1,0 +1,14 @@
+boot_option=Fallback
+debug_level=Spew
+power_on_after_fail=Disable
+nmi=Enable
+volume=0x3
+bluetooth=Enable
+wwan=Enable
+wlan=Enable
+touchpad=Enable
+sata_mode=AHCI
+fn_ctrl_swap=Disable
+sticky_fn=Disable
+trackpoint=Enable
+usb_always_on=Disable

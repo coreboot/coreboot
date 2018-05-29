@@ -23,10 +23,13 @@
 #include <edid.h>
 #include <drivers/intel/gma/edid.h>
 #include <drivers/intel/gma/i915.h>
+#include <drivers/intel/gma/opregion.h>
 #include <string.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
 #include <commonlib/helpers.h>
+#include <cbmem.h>
+#include <southbridge/intel/i82801gx/nvs.h>
 
 #include "i945.h"
 #include "chip.h"
@@ -37,10 +40,10 @@
 #define  LVDS_CLOCK_A_POWERUP_ALL	(3 << 8)
 #define  LVDS_CLOCK_B_POWERUP_ALL	(3 << 4)
 #define  LVDS_CLOCK_BOTH_POWERUP_ALL	(3 << 2)
-#define   DISPPLANE_BGRX888			(0x6<<26)
+
 #define   DPLLB_LVDS_P2_CLOCK_DIV_7	(1 << 24) /* i915 */
 
-#define   DPLL_INTEGRATED_CRI_CLK_VLV	(1<<14)
+#define   DPLL_INTEGRATED_CRI_CLK_VLV	(1 << 14)
 
 #define PGETBL_CTL	0x2020
 #define PGETBL_ENABLED	0x00000001
@@ -48,6 +51,19 @@
 #define BASE_FREQUENCY 100000
 
 #define DEFAULT_BLC_PWM 180
+
+uintptr_t gma_get_gnvs_aslb(const void *gnvs)
+{
+	const global_nvs_t *gnvs_ptr = gnvs;
+	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
+}
+
+void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
+{
+	global_nvs_t *gnvs_ptr = gnvs;
+	if (gnvs_ptr)
+		gnvs_ptr->aslb = aslb;
+}
 
 static int gtt_setup(u8 *mmiobase)
 {
@@ -104,8 +120,8 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	       "i915lightup: graphics %p mmio %p addrport %04x physbase %08x\n",
 	       (void *)pgfx, mmiobase, piobase, pphysbase);
 
-	intel_gmbus_read_edid(mmiobase + GMBUS0, 3, 0x50, edid_data,
-			sizeof(edid_data));
+	intel_gmbus_read_edid(mmiobase + GMBUS0, GMBUS_PORT_PANEL, 0x50,
+			edid_data, sizeof(edid_data));
 	decode_edid(edid_data, sizeof(edid_data), &edid);
 	mode = &edid.mode;
 
@@ -217,7 +233,9 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	       BASE_FREQUENCY * (5 * (pixel_m1 + 2) + (pixel_m2 + 2)) /
 	       (pixel_n + 2) / (pixel_p1 * pixel_p2));
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	printk(BIOS_INFO, "VGA mode: %s\n", IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER) ?
+	       "Linear framebuffer" : "text");
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		/* Disable panel fitter (we're in native resolution). */
 		write32(mmiobase + PF_CTL(0), 0);
 		write32(mmiobase + PF_WIN_SZ(0), 0);
@@ -280,7 +298,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 		((vactive + bottom_border + vfront_porch + vsync - 1) << 16)
 		| (vactive + bottom_border + vfront_porch - 1));
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		write32(mmiobase + PIPESRC(1), ((hactive - 1) << 16)
 			| (vactive - 1));
 	} else {
@@ -359,7 +377,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	else
 		printk(BIOS_ERR, "ERROR: GTT is still Disabled!!!\n");
 
-	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
 		printk(BIOS_SPEW, "memset %p to 0x00 for %d bytes\n",
 			(void *)pgfx, hactive * vactive * 4);
 		memset((void *)pgfx, 0x00, hactive * vactive * 4);
@@ -623,6 +641,48 @@ static void panel_setup(u8 *mmiobase, struct device *const dev)
 							DEFAULT_BLC_PWM));
 }
 
+static void gma_ngi(struct device *const dev)
+{
+	/* This should probably run before post VBIOS init. */
+	printk(BIOS_INFO, "Initializing VGA without OPROM.\n");
+	void *mmiobase;
+	u32 iobase, graphics_base;
+	struct northbridge_intel_i945_config *conf = dev->chip_info;
+
+	iobase = dev->resource_list[1].base;
+	mmiobase = (void *)(uintptr_t)dev->resource_list[0].base;
+	graphics_base = dev->resource_list[2].base;
+
+	printk(BIOS_SPEW, "GMADR = 0x%08x GTTADR = 0x%08x\n",
+		pci_read_config32(dev, GMADR), pci_read_config32(dev, GTTADR));
+
+	int err;
+
+	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM))
+		panel_setup(mmiobase, dev);
+
+	/* probe if VGA is connected and always run */
+	/* VGA init if no LVDS is connected */
+	if (!probe_edid(mmiobase, GMBUS_PORT_PANEL) ||
+			probe_edid(mmiobase, GMBUS_PORT_VGADDC))
+		err = intel_gma_init_vga(conf,
+				pci_read_config32(dev, 0x5c) & ~0xf,
+				iobase, mmiobase, graphics_base);
+	else
+		err = intel_gma_init_lvds(conf,
+				pci_read_config32(dev, 0x5c) & ~0xf,
+				iobase, mmiobase, graphics_base);
+	if (err == 0)
+		gfx_set_init_done(1);
+	/* Linux relies on VBT for panel info.  */
+	if (CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM) {
+		generate_fake_intel_oprom(&conf->gfx, dev, "$VBT CALISTOGA");
+	}
+	if (CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC) {
+		generate_fake_intel_oprom(&conf->gfx, dev, "$VBT LAKEPORT-G");
+	}
+}
+
 static void gma_func0_init(struct device *dev)
 {
 	u32 reg32;
@@ -641,51 +701,17 @@ static void gma_func0_init(struct device *dev)
 		 | PCI_COMMAND_IO | PCI_COMMAND_MEMORY);
 
 	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
-		/* This should probably run before post VBIOS init. */
-		printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
-		void *mmiobase;
-		u32 iobase, graphics_base;
-		struct northbridge_intel_i945_config *conf = dev->chip_info;
-
-		iobase = dev->resource_list[1].base;
-		mmiobase = (void *)(uintptr_t)dev->resource_list[0].base;
-		graphics_base = dev->resource_list[2].base;
-
-		printk(BIOS_SPEW, "GMADR = 0x%08x GTTADR = 0x%08x\n",
-			pci_read_config32(dev, GMADR),
-			pci_read_config32(dev, GTTADR)
-			);
-
-		int err;
-
-		if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM))
-			panel_setup(mmiobase, dev);
-
-		/* probe if VGA is connected and always run */
-		/* VGA init if no LVDS is connected */
-		if (!probe_edid(mmiobase, 3) || probe_edid(mmiobase, 2))
-			err = intel_gma_init_vga(conf,
-				pci_read_config32(dev, 0x5c) & ~0xf,
-				iobase, mmiobase, graphics_base);
+		if (acpi_is_wakeup_s3())
+			printk(BIOS_INFO,
+				"Skipping native VGA initialization when resuming from ACPI S3.\n");
 		else
-			err = intel_gma_init_lvds(conf,
-				pci_read_config32(dev, 0x5c) & ~0xf,
-				iobase, mmiobase, graphics_base);
-		if (err == 0)
-			gfx_set_init_done(1);
-		/* Linux relies on VBT for panel info.  */
-		if (CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM) {
-			generate_fake_intel_oprom(&conf->gfx, dev,
-						"$VBT CALISTOGA");
-		}
-		if (CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC) {
-			generate_fake_intel_oprom(&conf->gfx, dev,
-						"$VBT LAKEPORT-G");
-		}
+			gma_ngi(dev);
 	} else {
 		/* PCI Init, will run VBIOS */
 		pci_dev_init(dev);
 	}
+
+	intel_gma_restore_opregion();
 }
 
 /* This doesn't reclaim stolen UMA memory, but IGD could still
@@ -720,7 +746,7 @@ static void gma_func1_init(struct device *dev)
 		pci_write_config8(dev, 0xf4, 0xff);
 }
 
-static void gma_set_subsystem(device_t dev, unsigned int vendor,
+static void gma_set_subsystem(struct device *dev, unsigned int vendor,
 			unsigned int device)
 {
 	if (!vendor || !device) {
@@ -735,7 +761,7 @@ static void gma_set_subsystem(device_t dev, unsigned int vendor,
 const struct i915_gpu_controller_info *
 intel_gma_get_controller_info(void)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x2, 0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x2, 0));
 	if (!dev)
 		return NULL;
 	struct northbridge_intel_i945_config *chip = dev->chip_info;
@@ -744,7 +770,7 @@ intel_gma_get_controller_info(void)
 	return &chip->gfx;
 }
 
-static void gma_ssdt(device_t device)
+static void gma_ssdt(struct device *device)
 {
 	const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
 	if (!gfx)
@@ -753,7 +779,7 @@ static void gma_ssdt(device_t device)
 	drivers_intel_gma_displays_ssdt_generate(gfx);
 }
 
-static void gma_func0_read_resources(device_t dev)
+static void gma_func0_read_resources(struct device *dev)
 {
 	u8 reg8;
 
@@ -764,6 +790,37 @@ static void gma_func0_read_resources(device_t dev)
 	pci_write_config8(dev, MSAC, reg8);
 
 	pci_dev_read_resources(dev);
+}
+
+static unsigned long
+gma_write_acpi_tables(struct device *const dev,
+		      unsigned long current,
+		      struct acpi_rsdp *const rsdp)
+{
+	igd_opregion_t *opregion = (igd_opregion_t *)current;
+	global_nvs_t *gnvs;
+
+	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
+		return current;
+
+	current += sizeof(igd_opregion_t);
+
+	/* GNVS has been already set up */
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs) {
+		/* IGD OpRegion Base Address */
+		gma_set_gnvs_aslb(gnvs, (uintptr_t)opregion);
+	} else {
+		printk(BIOS_ERR, "Error: GNVS table not found.\n");
+	}
+
+	current = acpi_align_current(current);
+	return current;
+}
+
+static const char *gma_acpi_name(const struct device *dev)
+{
+	return "GFX0";
 }
 
 static struct pci_operations gma_pci_ops = {
@@ -780,6 +837,8 @@ static struct device_operations gma_func0_ops = {
 	.enable			= 0,
 	.disable		= gma_func0_disable,
 	.ops_pci		= &gma_pci_ops,
+	.acpi_name		= gma_acpi_name,
+	.write_acpi_tables	= gma_write_acpi_tables,
 };
 
 
@@ -806,13 +865,13 @@ static const unsigned short i945_gma_func1_ids[] = {
 };
 
 static const struct pci_driver i945_gma_func0_driver __pci_driver = {
-	.ops	= &gma_func0_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
+	.ops		= &gma_func0_ops,
+	.vendor		= PCI_VENDOR_ID_INTEL,
 	.devices	= i945_gma_func0_ids,
 };
 
 static const struct pci_driver i945_gma_func1_driver __pci_driver = {
-	.ops	= &gma_func1_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
+	.ops		= &gma_func1_ops,
+	.vendor		= PCI_VENDOR_ID_INTEL,
 	.devices	= i945_gma_func1_ids,
 };

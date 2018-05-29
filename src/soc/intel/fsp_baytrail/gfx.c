@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2013 Google Inc.
- * Copyright 2016 Siemens AG
+ * Copyright (C) 2016 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

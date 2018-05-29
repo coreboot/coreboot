@@ -25,7 +25,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <ec/acpi/ec.h>
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 

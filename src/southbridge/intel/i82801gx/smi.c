@@ -232,9 +232,9 @@ static u32 reset_tco_status(void)
 
 	reg32 = inl(tcobase + 0x04);
 	/* set status bits are cleared by writing 1 to them */
-	outl(reg32 & ~(1<<18), tcobase + 0x04); //  Don't clear BOOT_STS before SECOND_TO_STS
+	outl(reg32 & ~(1 << 18), tcobase + 0x04); //  Don't clear BOOT_STS before SECOND_TO_STS
 	if (reg32 & (1 << 18))
-		outl(reg32 & (1<<18), tcobase + 0x04); // clear BOOT_STS
+		outl(reg32 & (1 << 18), tcobase + 0x04); // clear BOOT_STS
 
 	return reg32;
 }
@@ -287,6 +287,7 @@ static void smi_set_eos(void)
 }
 
 extern uint8_t smm_relocation_start, smm_relocation_end;
+static void *default_smm_area = NULL;
 
 static void smm_relocate(void)
 {
@@ -303,6 +304,8 @@ static void smm_relocate(void)
 		printk(BIOS_INFO, "SMI# handler already enabled?\n");
 		return;
 	}
+
+	default_smm_area = backup_default_smm_area();
 
 	/* copy the SMM relocation code */
 	memcpy((void *)0x38000, &smm_relocation_start,
@@ -410,6 +413,11 @@ void smm_init(void)
 
 	/* We're done. Make sure SMIs can happen! */
 	smi_set_eos();
+}
+
+void smm_init_completion(void)
+{
+	restore_default_smm_area(default_smm_area);
 }
 
 void smm_lock(void)

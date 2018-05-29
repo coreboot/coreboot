@@ -410,13 +410,6 @@ static int spim_io(const struct spi_slave *slave, struct spim_buffer *first,
 	return SPIM_OK;
 }
 
-/* Initialization, must be called once on start up */
-void spi_init(void)
-{
-	/* Clear everything just in case */
-	memset(img_spi_slaves, 0, sizeof(img_spi_slaves));
-}
-
 /* Claim the bus and prepare it for communication */
 static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
 {
@@ -533,21 +526,13 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	return SPIM_OK;
 }
 
-static const struct spi_ctrlr spi_ctrlr = {
-	.claim_bus = spi_ctrlr_claim_bus,
-	.release_bus = spi_ctrlr_release_bus,
-	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
-};
-
-/* Set up communications parameters for a SPI slave. */
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
+static int spi_ctrlr_setup(const struct spi_slave *slave)
 {
 	struct img_spi_slave *img_slave = NULL;
 	struct spim_device_parameters *device_parameters;
 	u32 base;
 
-	switch (bus) {
+	switch (slave->bus) {
 	case 0:
 		base = IMG_SPIM0_BASE_ADDRESS;
 		break;
@@ -559,15 +544,11 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 				__func__);
 		return -1;
 	}
-	if (cs > SPIM_DEVICE4) {
+	if (slave->cs > SPIM_DEVICE4) {
 		printk(BIOS_ERR, "%s: Error: unsupported chipselect.\n",
 				__func__);
 		return -1;
 	}
-
-	slave->bus = bus;
-	slave->cs = cs;
-	slave->ctrlr = &spi_ctrlr;
 
 	img_slave = get_img_slave(slave);
 	device_parameters = &(img_slave->device_parameters);
@@ -586,7 +567,20 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 	return 0;
 }
 
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
-{
-	return min(IMGTEC_SPI_MAX_TRANSFER_SIZE, buf_len);
-}
+static const struct spi_ctrlr spi_ctrlr = {
+	.setup = spi_ctrlr_setup,
+	.claim_bus = spi_ctrlr_claim_bus,
+	.release_bus = spi_ctrlr_release_bus,
+	.xfer = spi_ctrlr_xfer,
+	.max_xfer_size = IMGTEC_SPI_MAX_TRANSFER_SIZE,
+};
+
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = 0,
+		.bus_end = 1,
+	},
+};
+
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

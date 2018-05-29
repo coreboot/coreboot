@@ -10,9 +10,11 @@
  * (at your option) any later version.
  */
 
+#include <compiler.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <fsp/util.h>
+#include <soc/intel/common/vbt.h>
 
 enum pixel_format {
 	pixel_rgbx_8bpc = 0,
@@ -37,7 +39,7 @@ struct hob_graphics_info {
 	uint32_t blue_mask;
 	uint32_t reserved_mask;
 	uint32_t pixels_per_scanline;
-} __attribute__((packed));
+} __packed;
 
 struct pixel {
 	uint8_t pos;
@@ -88,26 +90,13 @@ enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 	framebuffer->blue_mask_size = fbinfo->blue.size;
 	framebuffer->reserved_mask_pos = fbinfo->rsvd.pos;
 	framebuffer->reserved_mask_size = fbinfo->rsvd.pos;
-	framebuffer->tag = LB_TAG_FRAMEBUFFER;
-	framebuffer->size = sizeof(*framebuffer);
+
 	return CB_SUCCESS;
 }
 
-uintptr_t fsp_load_vbt(void)
-{
-	void *vbt;
-
-	vbt = cbfs_boot_map_with_leak("vbt.bin", CBFS_TYPE_RAW, NULL);
-	if (!vbt)
-		printk(BIOS_NOTICE, "Could not locate a VBT file in CBFS\n");
-
-	return (uintptr_t)vbt;
-}
-
-void lb_framebuffer(struct lb_header *header)
+int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 {
 	enum cb_err ret;
-	struct lb_framebuffer *framebuffer;
 	uintptr_t framebuffer_bar;
 
 	/* Pci enumeration happens after silicon init.
@@ -118,23 +107,24 @@ void lb_framebuffer(struct lb_header *header)
 
 	if (!framebuffer_bar) {
 		printk(BIOS_ALERT, "Framebuffer BAR invalid\n");
-		return;
+		return -1;
 	}
 
-	framebuffer = (void *)lb_new_record(header);
 	ret = fsp_fill_lb_framebuffer(framebuffer);
 	if (ret != CB_SUCCESS) {
 		printk(BIOS_ALERT, "FSP did not return a valid framebuffer\n");
-		return;
+		return -1;
 	}
 
 	/* Resource allocator can move the BAR around after FSP configures it */
 	framebuffer->physical_address = framebuffer_bar;
 	printk(BIOS_DEBUG, "Graphics framebuffer located at 0x%llx\n",
 		framebuffer->physical_address);
+
+	return 0;
 }
 
-__attribute__((weak)) uintptr_t fsp_soc_get_igd_bar(void)
+__weak uintptr_t fsp_soc_get_igd_bar(void)
 {
 	return 0;
 }

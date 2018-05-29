@@ -14,17 +14,22 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <elog.h>
 #include <sar.h>
 #include <smbios.h>
 #include <string.h>
 #include <wrdd.h>
 #include "chip.h"
+
+#define PMCS_DR 0xcc
+#define PME_STS (1 << 15)
 
 #if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
 static int smbios_write_wifi(struct device *dev, int *handle,
@@ -35,8 +40,8 @@ static int smbios_write_wifi(struct device *dev, int *handle,
 		u8 length;
 		u16 handle;
 		u8 str;
-		char eos[2];
-	} __attribute__((packed));
+		u8 eos[2];
+	} __packed;
 
 	struct smbios_type_intel_wifi *t =
 		(struct smbios_type_intel_wifi *)*current;
@@ -58,6 +63,12 @@ static int smbios_write_wifi(struct device *dev, int *handle,
 	return len;
 }
 #endif
+
+__weak
+int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
+{
+	return -1;
+}
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 static void emit_sar_acpi_structures(void)
@@ -139,7 +150,8 @@ static void intel_wifi_fill_ssdt(struct device *dev)
 	acpigen_write_scope(path);
 	acpigen_write_device(acpi_device_name(dev));
 	acpigen_write_name_integer("_UID", 0);
-	acpigen_write_name_string("_DDN", dev->chip_ops->name);
+	if (dev->chip_ops)
+		acpigen_write_name_string("_DDN", dev->chip_ops->name);
 
 	/* Address */
 	address = PCI_SLOT(dev->path.pci.devfn) & 0xffff;
@@ -180,14 +192,26 @@ static void intel_wifi_fill_ssdt(struct device *dev)
 	acpigen_pop_len(); /* Scope */
 
 	printk(BIOS_INFO, "%s.%s: %s %s\n", path, acpi_device_name(dev),
-	       dev->chip_ops->name, dev_path(dev));
+	       dev->chip_ops ? dev->chip_ops->name : "", dev_path(dev));
 }
 
-static const char *intel_wifi_acpi_name(struct device *dev)
+static const char *intel_wifi_acpi_name(const struct device *dev)
 {
 	return "WIFI";
 }
 #endif
+
+static void wifi_pci_dev_init(struct device *dev)
+{
+	pci_dev_init(dev);
+
+	if (IS_ENABLED(CONFIG_ELOG)) {
+		uint32_t val;
+		val = pci_read_config16(dev, PMCS_DR);
+		if (val & PME_STS)
+			elog_add_event_wake(ELOG_WAKE_SOURCE_PME_WIFI, 0);
+        }
+}
 
 static struct pci_operations pci_ops = {
 	.set_subsystem = pci_dev_set_subsystem,
@@ -197,7 +221,7 @@ struct device_operations device_ops = {
 	.read_resources           = pci_dev_read_resources,
 	.set_resources            = pci_dev_set_resources,
 	.enable_resources         = pci_dev_enable_resources,
-	.init                     = pci_dev_init,
+	.init                     = wifi_pci_dev_init,
 #if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
 	.get_smbios_data          = smbios_write_wifi,
 #endif
@@ -209,11 +233,37 @@ struct device_operations device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x0084, 0x0085, 0x0089, 0x008b, 0x008e, 0x0090,
-	0x0886, 0x0888, 0x0891, 0x0893, 0x0895, 0x088f,
-	0x4236, 0x4237, 0x4238, 0x4239, 0x423b, 0x423d,
-	0x08b1, 0x08b2, /* Wilkins Peak 2 */
-	0x095a, 0x095b, /* Stone Peak 2 */
+	PCI_DEVICE_ID_1000_SERIES_WIFI,
+	PCI_DEVICE_ID_6005_SERIES_WIFI,
+	PCI_DEVICE_ID_6005_I_SERIES_WIFI,
+	PCI_DEVICE_ID_1030_SERIES_WIFI,
+	PCI_DEVICE_ID_6030_I_SERIES_WIFI,
+	PCI_DEVICE_ID_6030_SERIES_WIFI,
+	PCI_DEVICE_ID_6150_SERIES_WIFI,
+	PCI_DEVICE_ID_2030_SERIES_WIFI,
+	PCI_DEVICE_ID_2000_SERIES_WIFI,
+	PCI_DEVICE_ID_0135_SERIES_WIFI,
+	PCI_DEVICE_ID_0105_SERIES_WIFI,
+	PCI_DEVICE_ID_6035_SERIES_WIFI,
+	PCI_DEVICE_ID_5300_SERIES_WIFI,
+	PCI_DEVICE_ID_5100_SERIES_WIFI,
+	PCI_DEVICE_ID_6000_SERIES_WIFI,
+	PCI_DEVICE_ID_6000_I_SERIES_WIFI,
+	PCI_DEVICE_ID_5350_SERIES_WIFI,
+	PCI_DEVICE_ID_5150_SERIES_WIFI,
+	/* Wilkins Peak 2 */
+	PCI_DEVICE_ID_WP_7260_SERIES_1_WIFI,
+	PCI_DEVICE_ID_WP_7260_SERIES_2_WIFI,
+	/* Stone Peak 2 */
+	PCI_DEVICE_ID_SP_7265_SERIES_1_WIFI,
+	PCI_DEVICE_ID_SP_7265_SERIES_2_WIFI,
+	/* Jefferson Peak */
+	PCI_DEVICE_ID_JP_9000_SERIES_1_WIFI,
+	PCI_DEVICE_ID_JP_9000_SERIES_2_WIFI,
+	PCI_DEVICE_ID_JP_9000_SERIES_3_WIFI,
+	/* Harrison Peak */
+	PCI_DEVICE_ID_HrP_9560_SERIES_1_WIFI,
+	PCI_DEVICE_ID_HrP_9560_SERIES_2_WIFI,
 	0
 };
 

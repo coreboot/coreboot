@@ -475,7 +475,7 @@ int is_ddr_32bit(void)
 {
 	int ddr32 = 0;
 
-#if (CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT)
+#if IS_ENABLED(CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT)
 	ddr32=1;
 #endif /* (CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT) */
 
@@ -713,11 +713,11 @@ static int write_shmoo_to_flash(void *buf, int length)
 	return ret;
 }
 
-#elif defined (CONFIG_SPI_FLASH) && defined(CONFIG_ENV_IS_IN_SPI_FLASH) && CONFIG_ENV_IS_IN_SPI_FLASH
+#elif defined(CONFIG_SPI_FLASH) && defined(CONFIG_ENV_IS_IN_SPI_FLASH) && CONFIG_ENV_IS_IN_SPI_FLASH
 
 static int write_shmoo_to_flash(void *buf, int length)
 {
-	struct spi_flash *flash;
+	struct spi_flash flash;
 	int erase = 0;
 	volatile uint32_t *flptr;
 	int i, j, ret = 0;
@@ -734,13 +734,7 @@ static int write_shmoo_to_flash(void *buf, int length)
 	}
 
 	/* Probe flash */
-	flash = spi_flash_probe(
-		CONFIG_ENV_SPI_BUS,
-		CONFIG_ENV_SPI_CS,
-		CONFIG_ENV_SPI_MAX_HZ,
-		CONFIG_ENV_SPI_MODE
-		);
-	if (!flash) {
+	if (spi_flash_probe(CONFIG_ENV_SPI_BUS, CONFIG_ENV_SPI_CS, &flash)) {
 		printk(BIOS_ERR, "Failed to initialize SPI flash for saving Shmoo values!\n");
 		return -1;
 	}
@@ -748,30 +742,26 @@ static int write_shmoo_to_flash(void *buf, int length)
 	/* Erase if necessary */
 	if (erase) {
 		ret = spi_flash_erase(
-			flash,
+			&flash,
 			offset / flash->sector_size * flash->sector_size,
 			flash->sector_size
 			);
 		if (ret) {
 			printk(BIOS_ERR, "SPI flash erase failed, error=%d\n", ret);
-			spi_flash_free(flash);
 			return ret;
 		}
 	}
 
 	/* Write data */
-	ret = spi_flash_write(flash, offset, length, buf);
+	ret = spi_flash_write(&flash, offset, length, buf);
 	if (ret) {
 		printk(BIOS_ERR, "SPI flash write failed, error=%d\n", ret);
 	}
 
-	/* Free flash instance */
-	spi_flash_free(flash);
-
 	return ret;
 }
 
-#elif defined (CONFIG_ENV_IS_IN_FLASH)
+#elif defined(CONFIG_ENV_IS_IN_FLASH)
 
 static int write_shmoo_to_flash(void *buf, int length)
 {
@@ -851,7 +841,7 @@ static volatile uint32_t *validate_flash_shmoo_values(struct shmoo_signature *ps
 	/* Read SHMOO data from NAND */
 	flptr = (volatile uint32_t *)(IPROC_NAND_MEM_BASE + CONFIG_SHMOO_REUSE_NAND_OFFSET);
 	offset = (CONFIG_SHMOO_REUSE_NAND_RANGE - 1) / SHMOO_MIN_BLOCK_SIZE * SHMOO_MIN_BLOCK_SIZE;
-#elif defined (CONFIG_ENV_IS_IN_FLASH)
+#elif defined(CONFIG_ENV_IS_IN_FLASH)
 	/* Read SHMOO data from NOR */
 	flptr = (volatile uint32_t *)(IPROC_NOR_MEM_BASE + CONFIG_SHMOO_REUSE_NOR_OFFSET);
 	offset = 0;
@@ -976,7 +966,7 @@ static int try_restore_shmoo(void)
         reg = (uint32_t *)(*flptr++);
         val = (uint32_t *)(*flptr++);
 	if ( (((uint32_t)reg >= DDR_PHY_WORD_LANE_0_VDL_OVRIDE_BYTE_RD_EN) && ((uint32_t)reg <= (DDR_PHY_WORD_LANE_0_VDL_OVRIDE_BYTE_RD_EN + 0x114)))
-#if (CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT || defined(CONFIG_NS_PLUS))
+#if IS_ENABLED(CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT) || defined(CONFIG_NS_PLUS)
 		|| (((uint32_t)reg >= DDR_PHY_WORD_LANE_1_VDL_OVRIDE_BYTE_RD_EN) && ((uint32_t)reg <= (DDR_PHY_WORD_LANE_1_VDL_OVRIDE_BYTE_RD_EN + 0x114)))
 #endif
 #ifdef CONFIG_IPROC_DDR_ECC
@@ -1078,7 +1068,7 @@ void iproc_save_shmoo_values(void)
 	*ptr++ = val;
         chksum += val;
     }
-#if (CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT || defined(CONFIG_NS_PLUS))
+#if IS_ENABLED(CONFIG_CYGNUS_SHMOO_REUSE_DDR_32BIT) || defined(CONFIG_NS_PLUS)
 	if (is_ddr_32bit()) {
 	    for (i=0; i<sizeof(ddr_phy_wl_regs) / sizeof(ddr_phy_wl_regs[0]); i++) {
 	        reg = (uint32_t)DDR_PHY_WORD_LANE_1_VDL_OVRIDE_BYTE_RD_EN + ddr_phy_wl_regs[i];
@@ -1489,7 +1479,7 @@ void ddr_init2(void)
 		}
 	}
 
-#if CONFIG_CYGNUS_DDR_AUTO_SELF_REFRESH_ENABLE
+#if IS_ENABLED(CONFIG_CYGNUS_DDR_AUTO_SELF_REFRESH_ENABLE)
 #if (DDR_AUTO_SELF_REFRESH_IDLE_COUNT > 0) & (DDR_AUTO_SELF_REFRESH_IDLE_COUNT <= 0xff)
 	/* Enable auto self-refresh */
 	reg32_set_bits((unsigned int *)DDR_DENALI_CTL_57,

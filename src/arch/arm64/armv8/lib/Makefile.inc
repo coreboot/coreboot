@@ -18,6 +18,7 @@
 lib_access = pstate.c sysctrl.c cache.c tlb.c clock.c
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV8_64),y)
+decompressor-y += $(lib_access)
 bootblock-y += $(lib_access)
 endif
 

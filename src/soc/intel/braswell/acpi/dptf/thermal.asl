@@ -13,6 +13,7 @@
  */
 
 /* Thermal Threshold Event Handler */
+#define HAVE_THERM_EVENT_HANDLER
 Method (TEVT, 1, NotSerialized)
 {
 	Store (ToInteger (Arg0), Local0)

@@ -16,38 +16,9 @@
 #include <arch/rom_segs.h>
 #include <cpu/x86/post_code.h>
 #include <rules.h>
+#include <arch/x86/gdt_init.S>
 
 	.code32
-
-
-	/* This is the GDT for the ROM stage part of coreboot. It
-	 * is different from the RAM stage GDT which is defined in
-	 * c_start.S
-	 */
-
-	.align	4
-.globl gdtptr
-gdt:
-gdtptr:
-	.word	gdt_end - gdt -1 /* compute the table limit */
-	.long	gdt		 /* we know the offset */
-	.word	0
-
-	/* selgdt 0x08, flat code segment */
-	.word	0xffff, 0x0000
-	.byte	0x00, 0x9b, 0xcf, 0x00 /* G=1 and 0x0f, So we get 4Gbytes for limit */
-
-	/* selgdt 0x10,flat data segment */
-	.word	0xffff, 0x0000
-	.byte	0x00, 0x93, 0xcf, 0x00
-
-	/* selgdt 0x18, flat code segment (64-bit) */
-	.word   0xffff, 0x0000
-	.byte   0x00, 0x9b, 0xaf, 0x00
-
-gdt_end:
-
-
 /*
  *	When we come here we are in protected mode. We expand
  *	the stack and copies the data segment from ROM to the

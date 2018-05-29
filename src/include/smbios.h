@@ -19,10 +19,11 @@
 #define SMBIOS_H
 
 #include <types.h>
+#include <compiler.h>
 
 unsigned long smbios_write_tables(unsigned long start);
-int smbios_add_string(char *start, const char *str);
-int smbios_string_table_len(char *start);
+int smbios_add_string(u8 *start, const char *str);
+int smbios_string_table_len(u8 *start);
 
 /* Used by mainboard to add an on-board device */
 int smbios_write_type41(unsigned long *current, int *handle,
@@ -36,6 +37,10 @@ const char *smbios_mainboard_serial_number(void);
 const char *smbios_mainboard_version(void);
 void smbios_mainboard_set_uuid(u8 *uuid);
 const char *smbios_mainboard_bios_version(void);
+const char *smbios_mainboard_asset_tag(void);
+u8 smbios_mainboard_feature_flags(void);
+const char *smbios_mainboard_location_in_chassis(void);
+
 const char *smbios_mainboard_sku(void);
 u8 smbios_mainboard_enclosure_type(void);
 #ifdef CONFIG_MAINBOARD_FAMILY
@@ -230,7 +235,7 @@ struct smbios_entry {
 	u32 struct_table_address;
 	u16 struct_count;
 	u8 smbios_bcd_revision;
-} __attribute__((packed));
+} __packed;
 
 struct smbios_type0 {
 	u8 type;
@@ -248,8 +253,8 @@ struct smbios_type0 {
 	u8 system_bios_minor_release;
 	u8 ec_major_release;
 	u8 ec_minor_release;
-	char eos[2];
-} __attribute__((packed));
+	u8 eos[2];
+} __packed;
 
 struct smbios_type1 {
 	u8 type;
@@ -263,8 +268,24 @@ struct smbios_type1 {
 	u8 wakeup_type;
 	u8 sku;
 	u8 family;
-	char eos[2];
-} __attribute__((packed));
+	u8 eos[2];
+} __packed;
+
+typedef enum {
+	SMBIOS_BOARD_TYPE_UNKNOWN = 0x01,
+	SMBIOS_BOARD_TYPE_OTHER = 0x02,
+	SMBIOS_BOARD_TYPE_SERVER_BLADE = 0x03,
+	SMBIOS_BOARD_TYPE_CONNECTIVITY_SWITCH = 0x04,
+	SMBIOS_BOARD_TYPE_SYSTEM_MANAGEMENT_MODULE = 0x05,
+	SMBIOS_BOARD_TYPE_PROCESSOR_MODULE = 0x06,
+	SMBIOS_BOARD_TYPE_IO_MODULE = 0x07,
+	SMBIOS_BOARD_TYPE_MEMORY_MODULE = 0x08,
+	SMBIOS_BOARD_TYPE_DAUGHTER_BOARD = 0x09,
+	SMBIOS_BOARD_TYPE_MOTHERBOARD = 0x0a,
+	SMBIOS_BOARD_TYPE_PROCESSOR_MEMORY_MODULE = 0x0b,
+	SMBIOS_BOARD_TYPE_PROCESSOR_IO_MODULE = 0x0c,
+	SMBIOS_BOARD_TYPE_INTERCONNECT_BOARD = 0x0d,
+} smbios_board_type;
 
 struct smbios_type2 {
 	u8 type;
@@ -274,12 +295,51 @@ struct smbios_type2 {
 	u8 product_name;
 	u8 version;
 	u8 serial_number;
-	char eos[2];
-} __attribute__((packed));
+	u8 asset_tag;
+	u8 feature_flags;
+	u8 location_in_chassis;
+	u16 chassis_handle;
+	u8 board_type;
+	u8 eos[2];
+} __packed;
 
 enum {
-	SMBIOS_ENCLOSURE_DESKTOP = 3,
-	SMBIOS_ENCLOSURE_NOTEBOOK = 9,
+	SMBIOS_ENCLOSURE_OTHER = 0x01,
+	SMBIOS_ENCLOSURE_UNKNOWN = 0x02,
+	SMBIOS_ENCLOSURE_DESKTOP = 0x03,
+	SMBIOS_ENCLOSURE_LOW_PROFILE_DESKTOP = 0x04,
+	SMBIOS_ENCLOSURE_PIZZA_BOX = 0x05,
+	SMBIOS_ENCLOSURE_MINI_TOWER = 0x06,
+	SMBIOS_ENCLOSURE_TOWER = 0x07,
+	SMBIOS_ENCLOSURE_PORTABLE = 0x08,
+	SMBIOS_ENCLOSURE_LAPTOP = 0x09,
+	SMBIOS_ENCLOSURE_NOTEBOOK = 0x0a,
+	SMBIOS_ENCLOSURE_HAND_HELD = 0x0b,
+	SMBIOS_ENCLOSURE_DOCKING_STATION = 0x0c,
+	SMBIOS_ENCLOSURE_ALL_IN_ONE = 0x0d,
+	SMBIOS_ENCLOSURE_SUB_NOTEBOOK = 0x0e,
+	SMBIOS_ENCLOSURE_SPACE_SAVING = 0x0f,
+	SMBIOS_ENCLOSURE_LUNCH_BOX = 0x10,
+	SMBIOS_ENCLOSURE_MAIN_SERVER_CHASSIS = 0x11,
+	SMBIOS_ENCLOSURE_EXPANSION_CHASSIS = 0x12,
+	SMBIOS_ENCLOSURE_SUBCHASSIS = 0x13,
+	SMBIOS_ENCLOSURE_BUS_EXPANSION_CHASSIS = 0x14,
+	SMBIOS_ENCLOSURE_PERIPHERAL_CHASSIS = 0x15,
+	SMBIOS_ENCLOSURE_RAID_CHASSIS = 0x16,
+	SMBIOS_ENCLOSURE_RACK_MOUNT_CHASSIS = 0x17,
+	SMBIOS_ENCLOSURE_SEALED_CASE_PC = 0x18,
+	SMBIOS_ENCLOSURE_MULTI_SYSTEM_CHASSIS = 0x19,
+	SMBIOS_ENCLOSURE_COMPACT_PCI = 0x1a,
+	SMBIOS_ENCLOSURE_ADVANCED_TCA = 0x1b,
+	SMBIOS_ENCLOSURE_BLADE = 0x1c,
+	SMBIOS_ENCLOSURE_BLADE_ENCLOSURE = 0x1d,
+	SMBIOS_ENCLOSURE_TABLET = 0x1e,
+	SMBIOS_ENCLOSURE_CONVERTIBLE = 0x1f,
+	SMBIOS_ENCLOSURE_DETACHABLE = 0x20,
+	SMBIOS_ENCLOSURE_IOT_GATEWAY = 0x21,
+	SMBIOS_ENCLOSURE_EMBEDDED_PC = 0x22,
+	SMBIOS_ENCLOSURE_MINI_PC = 0x23,
+	SMBIOS_ENCLOSURE_STICK_PC = 0x24,
 };
 
 struct smbios_type3 {
@@ -301,8 +361,8 @@ struct smbios_type3 {
 	u8 element_count;
 	u8 element_record_length;
 	u8 sku_number;
-	char eos[2];
-} __attribute__((packed));
+	u8 eos[2];
+} __packed;
 
 struct smbios_type4 {
 	u8 type;
@@ -331,16 +391,16 @@ struct smbios_type4 {
 	u8 thread_count;
 	u16 processor_characteristics;
 	u16 processor_family2;
-	char eos[2];
-} __attribute__((packed));
+	u8 eos[2];
+} __packed;
 
 struct smbios_type11 {
 	u8 type;
 	u8 length;
 	u16 handle;
 	u8 count;
-	char eos[2];
-} __attribute__((packed));
+	u8 eos[2];
+} __packed;
 
 struct smbios_type15 {
 	u8 type;
@@ -356,8 +416,8 @@ struct smbios_type15 {
 	u8 header_format;
 	u8 log_type_descriptors;
 	u8 log_type_descriptor_length;
-	char eos[2];
-} __attribute__((packed));
+	u8 eos[2];
+} __packed;
 
 enum {
 	SMBIOS_EVENTLOG_ACCESS_METHOD_IO8 = 0,
@@ -383,8 +443,8 @@ struct smbios_type16 {
 	u16 memory_error_information_handle;
 	u16 number_of_memory_devices;
 	u64 extended_maximum_capacity;
-	char eos[2];
-} __attribute__((packed));
+	u8 eos[2];
+} __packed;
 
 struct smbios_type17 {
 	u8 type;
@@ -412,8 +472,8 @@ struct smbios_type17 {
 	u16 minimum_voltage;
 	u16 maximum_voltage;
 	u16 configured_voltage;
-	char eos[2];
-} __attribute__((packed));
+	u8 eos[2];
+} __packed;
 
 struct smbios_type32 {
 	u8 type;
@@ -422,7 +482,7 @@ struct smbios_type32 {
 	u8 reserved[6];
 	u8 boot_status;
 	u8 eos[2];
-} __attribute__((packed));
+} __packed;
 
 struct smbios_type38 {
 	u8 type;
@@ -435,7 +495,7 @@ struct smbios_type38 {
 	u64 base_address;
 	u8 base_address_modifier;
 	u8 irq;
-} __attribute__((packed));
+} __packed;
 
 typedef enum {
 	SMBIOS_DEVICE_TYPE_OTHER = 0x01,
@@ -462,17 +522,19 @@ struct smbios_type41 {
 	u8 bus_number;
 	u8 function_number: 3;
 	u8 device_number: 5;
-	char eos[2];
-} __attribute__((packed));
+	u8 eos[2];
+} __packed;
 
 struct smbios_type127 {
 	u8 type;
 	u8 length;
 	u16 handle;
 	u8 eos[2];
-} __attribute__((packed));
+} __packed;
 
 void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
 	struct smbios_type17 *t);
+
+smbios_board_type smbios_mainboard_board_type(void);
 
 #endif

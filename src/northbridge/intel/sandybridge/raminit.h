@@ -16,6 +16,7 @@
 #ifndef RAMINIT_H
 #define RAMINIT_H
 
+#include <compiler.h>
 #include "pei_data.h"
 
 struct sys_info {
@@ -23,7 +24,7 @@ struct sys_info {
 #define BOOT_PATH_NORMAL	0
 #define BOOT_PATH_RESET		1
 #define BOOT_PATH_RESUME	2
-} __attribute__ ((packed));
+} __packed;
 
 void sdram_initialize(struct pei_data *pei_data);
 void save_mrc_data(struct pei_data *pei_data);

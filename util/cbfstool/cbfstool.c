@@ -687,7 +687,7 @@ static int cbfs_add(void)
 	/* Set the alignment to 4KiB minimum for FSP blobs when no base address
 	 * is provided so that relocation can occur. */
 	if (param.type == CBFS_COMPONENT_FSP) {
-	 	if (!param.baseaddress_assigned)
+		if (!param.baseaddress_assigned)
 			param.alignment = 4*1024;
 		convert = cbfstool_convert_fsp;
 	} else if (param.stage_xip) {

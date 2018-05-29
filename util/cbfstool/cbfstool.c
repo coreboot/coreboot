@@ -32,6 +32,7 @@
 #include "partitioned_file.h"
 #include <commonlib/fsp.h>
 #include <commonlib/endian.h>
+#include <commonlib/helpers.h>
 
 #define SECTION_WITH_FIT_TABLE	"BOOTBLOCK"
 
@@ -73,6 +74,7 @@ static struct param {
 	uint32_t cbfsoffset_assigned;
 	uint32_t arch;
 	uint32_t padding;
+	uint32_t topswap_size;
 	bool u64val_assigned;
 	bool fill_partial_upward;
 	bool fill_partial_downward;
@@ -261,6 +263,56 @@ done:
 	return ret;
 }
 
+static int is_valid_topswap(void)
+{
+	switch (param.topswap_size) {
+	case (64 * KiB):
+	case (128 * KiB):
+	case (256 * KiB):
+	case (512 * KiB):
+	case (1 * MiB):
+		break;
+	default:
+		ERROR("Invalid topswap_size %d, topswap can be 64K|128K|256K|512K|1M\n",
+							param.topswap_size);
+		return 0;
+	}
+	return 1;
+}
+
+static void fill_header_offset(void *location, uint32_t offset)
+{
+	// TODO: when we have a BE target, we'll need to store this as BE
+	write_le32(location, offset);
+}
+
+static int update_master_header_loc_topswap(struct cbfs_image *image,
+				void *h_loc, uint32_t header_offset)
+{
+	struct cbfs_file *entry;
+	void *ts_h_loc = h_loc;
+
+	entry = cbfs_get_entry(image, "bootblock");
+	if (entry == NULL) {
+		ERROR("Bootblock not in ROM image?!?\n");
+		return 1;
+	}
+
+	/*
+	 * Check if the existing topswap boundary matches with
+	 * the one provided.
+	 */
+	if (param.topswap_size != ntohl(entry->len)/2) {
+		ERROR("Top swap boundary does not match\n");
+		return 1;
+	}
+
+	ts_h_loc -= param.topswap_size;
+	fill_header_offset(ts_h_loc, header_offset);
+
+	return 0;
+}
+
 static int cbfs_add_master_header(void)
 {
 	const char * const name = "cbfs master header";
@@ -270,6 +322,7 @@ static int cbfs_add_master_header(void)
 	int ret = 1;
 	size_t offset;
 	size_t size;
+	void *h_loc;
 
 	if (cbfs_image_from_buffer(&image, param.image_region,
 		param.headeroffset)) {
@@ -326,10 +379,18 @@ static int cbfs_add_master_header(void)
 		buffer_get(&image.buffer);
 	header_offset = -(buffer_size(&image.buffer) - header_offset);
 
-	// TODO: when we have a BE target, we'll need to store this as BE
-	*(uint32_t *)(buffer_get(&image.buffer) +
-		buffer_size(&image.buffer) - 4) =
-		swab32(htonl(header_offset));
+	h_loc = (void *)(buffer_get(&image.buffer) +
+				buffer_size(&image.buffer) - 4);
+	fill_header_offset(h_loc, header_offset);
+	/*
+	 * if top swap present, update the header
+	 * location in secondary bootblock
+	 */
+	if (param.topswap_size) {
+		if (update_master_header_loc_topswap(&image, h_loc,
+							header_offset))
+			return 1;
+	}
 
 	ret = 0;
 
@@ -337,6 +398,47 @@ done:
 	free(header);
 	buffer_delete(&buffer);
 	return ret;
+}
+
+static int add_topswap_bootblock(struct buffer *buffer, uint32_t *offset)
+{
+	size_t bb_buf_size = buffer_size(buffer);
+
+	if (bb_buf_size > param.topswap_size) {
+		ERROR("Bootblock bigger than the topswap boundary\n");
+		ERROR("size = %zd, ts = %d\n", bb_buf_size,
+							param.topswap_size);
+		return 1;
+	}
+
+	/*
+	 * allocate topswap_size*2 bytes for bootblock to
+	 * accommodate the second bootblock.
+	 */
+	struct buffer new_bootblock, bb1, bb2;
+	if (buffer_create(&new_bootblock, 2 * param.topswap_size,
+							buffer->name))
+		return 1;
+
+	buffer_splice(&bb1, &new_bootblock, param.topswap_size - bb_buf_size,
+							bb_buf_size);
+	buffer_splice(&bb2, &new_bootblock,
+				buffer_size(&new_bootblock) - bb_buf_size,
+							bb_buf_size);
+
+	/* copy to first bootblock */
+	memcpy(buffer_get(&bb1), buffer_get(buffer), bb_buf_size);
+	/* copy to second bootblock */
+	memcpy(buffer_get(&bb2), buffer_get(buffer), bb_buf_size);
+
+	buffer_delete(buffer);
+	buffer_clone(buffer, &new_bootblock);
+
+	 /* update the location (offset) of bootblock in the region */
+	*offset = convert_to_from_top_aligned(param.image_region,
+							buffer_size(buffer));
+
+	return 0;
 }
 
 static int cbfs_add_component(const char *filename,
@@ -375,6 +477,14 @@ static int cbfs_add_component(const char *filename,
 		ERROR("Could not load file '%s'.\n", filename);
 		return 1;
 	}
+
+	/*
+	 * Check if Intel CPU topswap is specified this will require a
+	 * second bootblock to be added.
+	 */
+	if (type == CBFS_COMPONENT_BOOTBLOCK && param.topswap_size)
+		if (add_topswap_bootblock(&buffer, &offset))
+			return 1;
 
 	struct cbfs_file *header =
 		cbfs_create_file_header(type, buffer.size, name);
@@ -444,7 +554,6 @@ static int cbfs_add_component(const char *filename,
 	if (IS_TOP_ALIGNED_ADDRESS(offset))
 		offset = convert_to_from_top_aligned(param.image_region,
 								-offset);
-
 	if (cbfs_add_entry(&image, &buffer, offset, header) != 0) {
 		ERROR("Failed to add '%s' into ROM image.\n", filename);
 		free(header);
@@ -1174,7 +1283,7 @@ static int cbfs_truncate(void)
 }
 
 static const struct command commands[] = {
-	{"add", "H:r:f:n:t:c:b:a:p:yvA:gh?", cbfs_add, true, true},
+	{"add", "H:r:f:n:t:c:b:a:p:yvA:j:gh?", cbfs_add, true, true},
 	{"add-flat-binary", "H:r:f:n:l:e:c:b:p:vA:gh?", cbfs_add_flat_binary,
 				true, true},
 	{"add-payload", "H:r:f:n:c:b:C:I:p:vA:gh?", cbfs_add_payload,
@@ -1182,7 +1291,7 @@ static const struct command commands[] = {
 	{"add-stage", "a:H:r:f:n:t:c:b:P:S:p:yvA:gh?", cbfs_add_stage,
 				true, true},
 	{"add-int", "H:r:i:n:b:vgh?", cbfs_add_integer, true, true},
-	{"add-master-header", "H:r:vh?", cbfs_add_master_header, true, true},
+	{"add-master-header", "H:r:vh?j:", cbfs_add_master_header, true, true},
 	{"compact", "r:h?", cbfs_compact, true, true},
 	{"copy", "r:R:h?", cbfs_copy, true, true},
 	{"create", "M:r:s:B:b:H:o:m:vh?", cbfs_create, true, true},
@@ -1203,6 +1312,7 @@ static struct option long_options[] = {
 	{"bootblock",     required_argument, 0, 'B' },
 	{"cmdline",       required_argument, 0, 'C' },
 	{"compression",   required_argument, 0, 'c' },
+	{"topswap-size",  required_argument, 0, 'j' },
 	{"empty-fits",    required_argument, 0, 'x' },
 	{"entry-point",   required_argument, 0, 'e' },
 	{"file",          required_argument, 0, 'f' },
@@ -1303,8 +1413,11 @@ static void usage(char *name)
 	     "COMMANDs:\n"
 	     " add [-r image,regions] -f FILE -n NAME -t TYPE [-A hash] \\\n"
 	     "        [-c compression] [-b base-address | -a alignment] \\\n"
-	     "        [-p padding size] [-y|--xip if TYPE is FSP]           "
+	     "        [-p padding size] [-y|--xip if TYPE is FSP]       \\\n"
+	     "        [-j topswap-size] (Intel CPUs only)                   "
 			"Add a component\n"
+	     "                                                         "
+	     "    -j valid size: 0x10000 0x20000 0x40000 0x80000 0x100000 \n"
 	     " add-payload [-r image,regions] -f FILE -n NAME [-A hash] \\\n"
 	     "        [-c compression] [-b base-address] \\\n"
 	     "        (linux specific: [-C cmdline] [-I initrd])           "
@@ -1319,7 +1432,8 @@ static void usage(char *name)
 			"Add a 32bit flat mode binary\n"
 	     " add-int [-r image,regions] -i INTEGER -n NAME [-b base]     "
 			"Add a raw 64-bit integer value\n"
-	     " add-master-header [-r image,regions]                        "
+	     " add-master-header [-r image,regions] \\                   \n"
+	     "        [-j topswap-size] (Intel CPUs only)                  "
 			"Add a legacy CBFS master header\n"
 	     " remove [-r image,regions] -n NAME                           "
 			"Remove a component\n"
@@ -1364,7 +1478,6 @@ static void usage(char *name)
 
 	printf("TYPEs:\n");
 	print_supported_filetypes();
-
 	printf(
 	     "\n* Note that these actions and switches are only valid when\n"
 	     "  working with legacy images whose structure is described\n"
@@ -1599,6 +1712,11 @@ int main(int argc, char **argv)
 						"'%s'.\n", optarg);
 					return 1;
 				}
+				break;
+			case 'j':
+				param.topswap_size = strtol(optarg, NULL, 0);
+				if (!is_valid_topswap())
+					return 1;
 				break;
 			case 'v':
 				verbose++;

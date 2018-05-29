@@ -32,6 +32,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select USE_BLOBS
 	select GENERIC_SPD_BIN
 	select PXE
+	select SPI_FLASH
+	select SPI_FLASH_WINBOND
 	select TPM
 	select MAINBOARD_HAS_LPC_TPM
 

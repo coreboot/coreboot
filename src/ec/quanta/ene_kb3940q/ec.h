@@ -123,10 +123,10 @@ void ec_mem_write(u8 addr, u8 data);
 
 #define EC_CPU_TMP					0x78
 #define EC_GPU_TMP					0x79
-#define EC_LOCAL_TMP1 				0x7A
-#define EC_LOCAL_TMP2 				0x7B
-#define EC_FAN_TACH_LO  			0x7C
-#define EC_FAN_TACH_HI  			0x7D
+#define EC_LOCAL_TMP1				0x7A
+#define EC_LOCAL_TMP2				0x7B
+#define EC_FAN_TACH_LO				0x7C
+#define EC_FAN_TACH_HI				0x7D
 #define EC_FAN_DBG_RPM_LO			0x7E
 #define EC_FAN_DBG_RPM_HI			0x7F
 

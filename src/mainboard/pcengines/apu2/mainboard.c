@@ -30,6 +30,12 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <spd_bin.h>
+#include <spi_flash.h>
+#include <spi-generic.h>
+#include <boot_device.h>
+#include <cbfs.h>
+#include <commonlib/region.h>
+#include <commonlib/cbfs.h>
 #include "gpio_ftns.h"
 #include "bios_knobs.h"
 

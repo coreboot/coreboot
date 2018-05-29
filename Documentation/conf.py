@@ -119,7 +119,7 @@ latex_documents = [
 #
 # latex_appendices = []
 
-# It false, will not define \strong, \code, 	itleref, \crossref ... but only
+# If false, will not define \strong, \code,	itleref, \crossref ... but only
 # \sphinxstrong, ..., \sphinxtitleref, ... To help avoid clash with user added
 # packages.
 #

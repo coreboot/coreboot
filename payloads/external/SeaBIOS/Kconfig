@@ -6,6 +6,7 @@ choice
 
 config SEABIOS_STABLE
 	bool "1.11.0.4"
+	help
 	  Stable SeaBIOS version
 config SEABIOS_MASTER
 	bool "master"

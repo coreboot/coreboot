@@ -49,9 +49,8 @@ fi
 
 #run all scripts of the requested type
 for script in "$(dirname "$0")/${1}-"*; do
-	printf "\n%s\n" "$(basename "$script")"
-	grep "^# DESCR:" "$script" | sed "s,.*DESCR: *,,"
-	echo "========"
+	printf "%s " "$(grep '^# DESCR:' "$script" | sed 's,.*DESCR: *,,')"
+	printf "(%s): " "$(basename "$script")"
 	junit_write "	<testcase classname='lint' name='$(basename "$script")'>"
 	$script | tee "$LINTLOG"
 
@@ -67,7 +66,6 @@ for script in "$(dirname "$0")/${1}-"*; do
 		rm -f "$LINTLOG"
 		FAILED=$(( FAILED + 1 ))
 	fi
-	echo "========"
 	junit_write '	</testcase>'
 done
 

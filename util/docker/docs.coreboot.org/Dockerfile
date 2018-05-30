@@ -1,4 +1,4 @@
-FROM debian:sid
+FROM debian:stable
 RUN apt-get update && apt-get install -y make python-sphinx python-recommonmark python-sphinx-rtd-theme
 USER nobody
 VOLUME /data-in /data-out

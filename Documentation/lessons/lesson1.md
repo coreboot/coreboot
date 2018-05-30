@@ -29,7 +29,7 @@ to use your system toolchain.
 
 ### Step 5 - Configure the build
 
-* ##### Configure your mainboard
+##### Configure your mainboard
     $ make menuconfig
        select 'Mainboard' menu
        Beside 'Mainboard vendor' should be '(Emulation)'
@@ -38,12 +38,12 @@ to use your system toolchain.
 These should be the default selections, so if anything else was set, run
 `make distclean` to remove your old config file and start over.
 
-* ##### Optionally use your system toolchain (Again, not recommended)
+##### Optionally use your system toolchain (Again, not recommended)
        select 'General Setup' menu
        select 'Allow building with any toolchain'
        select < Exit >
 
-* ##### Select the payload
+##### Select the payload
        select 'Payload' menu
        select 'Add a Payload'
        choose 'An Elf executable payload'

@@ -19,7 +19,18 @@
 #include <arch/io.h>
 #include <reset.h>
 
-#include <northbridge/amd/amdk8/reset_test.c>
+#define HT_INIT_CONTROL     0x6c
+#define HTIC_ColdR_Detect  (1<<4)
+#define HTIC_BIOSR_Detect  (1<<5)
+#define HTIC_INIT_Detect   (1<<6)
+
+static void set_bios_reset(void)
+{
+	u32 htic;
+	htic = pci_io_read_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL);
+	htic &= ~HTIC_BIOSR_Detect;
+	pci_io_write_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL, htic);
+}
 
 void do_hard_reset(void)
 {

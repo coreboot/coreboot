@@ -474,14 +474,16 @@ void google_chromeec_events_init(const struct google_chromeec_event_info *info,
 		google_chromeec_set_sci_mask(info->sci_events);
 
 	} else {
+		google_chromeec_set_smi_mask(info->smi_events);
+
 		google_chromeec_log_events(info->log_events |
 						info->s5_wake_events);
+
 		if (google_chromeec_is_uhepi_supported())
 			google_chromeec_set_lazy_wake_masks
 					(info->s5_wake_events,
 					info->s3_wake_events,
 					info->s0ix_wake_events);
-
 	}
 
 	/* Clear wake event mask. */

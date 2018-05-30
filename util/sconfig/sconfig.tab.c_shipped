@@ -86,6 +86,7 @@ int yylex();
 void yyerror(const char *s);
 
 static struct device *cur_parent, *cur_bus;
+static struct chip *cur_chip;
 
 
 
@@ -164,6 +165,7 @@ union YYSTYPE
 
 
 	struct device *device;
+	struct chip *chip;
 	char *string;
 	int number;
 
@@ -484,9 +486,9 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    34,    34,    34,    36,    36,    36,    36,    38,    38,
-      38,    38,    38,    38,    40,    40,    50,    50,    62,    65,
-      68,    71,    74
+       0,    36,    36,    36,    38,    38,    38,    38,    40,    40,
+      40,    40,    40,    40,    42,    42,    52,    52,    64,    67,
+      70,    73,    76
 };
 #endif
 
@@ -1298,8 +1300,9 @@ yyreduce:
   case 14:
 
     {
-	(yyval.device) = new_chip(cur_parent, cur_bus, (yyvsp[0].string));
-	cur_parent = (yyval.device);
+	(yyval.chip) = new_chip((yyvsp[0].string));
+	chip_enqueue_tail(cur_chip);
+	cur_chip = (yyval.chip);
 }
 
     break;
@@ -1307,9 +1310,8 @@ yyreduce:
   case 15:
 
     {
-	cur_parent = (yyvsp[-2].device)->parent;
-	fold_in((yyvsp[-2].device));
-	add_header((yyvsp[-2].device));
+	cur_chip = chip_dequeue_tail();
+	add_header((yyvsp[-2].chip));
 }
 
     break;
@@ -1317,7 +1319,7 @@ yyreduce:
   case 16:
 
     {
-	(yyval.device) = new_device(cur_parent, cur_bus, (yyvsp[-2].number), (yyvsp[-1].string), (yyvsp[0].number));
+	(yyval.device) = new_device(cur_parent, cur_bus, cur_chip, (yyvsp[-2].number), (yyvsp[-1].string), (yyvsp[0].number));
 	cur_parent = (yyval.device);
 	cur_bus = (yyval.device);
 }
@@ -1343,7 +1345,7 @@ yyreduce:
 
   case 19:
 
-    { add_register(cur_parent, (yyvsp[-2].string), (yyvsp[0].string)); }
+    { add_register(cur_chip, (yyvsp[-2].string), (yyvsp[0].string)); }
 
     break;
 

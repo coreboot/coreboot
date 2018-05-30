@@ -86,6 +86,7 @@ union YYSTYPE
 
 
 	struct device *device;
+	struct chip *chip;
 	char *string;
 	int number;
 

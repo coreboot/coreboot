@@ -24,7 +24,13 @@ struct device *head, *lastdev;
 
 struct header headers;
 
-static int devcount = 0;
+static struct chip *chip_head;
+
+/*
+ * This is intentionally shared between chip and device structure ids because it
+ * is easier to track the order of parsing for chip and device.
+ */
+static int count = 0;
 
 typedef enum {
 	UNSLASH,
@@ -34,22 +40,15 @@ typedef enum {
 } translate_t;
 
 static struct device root;
-static struct device mainboard = {
+static struct chip mainboard = {
 	.name = "mainboard",
 	.name_underscore = "mainboard",
-	.id = 0,
-	.chip = &mainboard,
-	.type = chip,
-	.chiph_exists = 0,
-	.children = &root
 };
 
 static struct device root = {
 	.name = "dev_root",
-	.name_underscore = "dev_root",
 	.id = 0,
 	.chip = &mainboard,
-	.type = device,
 	.path = " .type = DEVICE_PATH_ROOT ",
 	.ops = "&default_dev_ops_root",
 	.parent = &root,
@@ -57,11 +56,64 @@ static struct device root = {
 	.enabled = 1
 };
 
+static struct queue {
+	void *data;
+	struct queue *next;
+	struct queue *prev;
+} *q;
+
+struct queue *new_queue_entry(void *data)
+{
+	struct queue *e = malloc(sizeof(*e));
+
+	if (!e) {
+		fprintf(stderr, "%s: malloc failure!\n", __func__);
+		exit(1);
+	}
+
+	e->data = data;
+	e->next = e->prev = e;
+	return e;
+}
+
+void chip_enqueue_tail(void *data)
+{
+	struct queue *tmp = new_queue_entry(data);
+
+	if (!q) {
+		q = tmp;
+		return;
+	}
+
+	q->prev->next = tmp;
+	tmp->prev = q->prev;
+	q->prev = tmp;
+	tmp->next = q;
+}
+
+void *chip_dequeue_tail(void)
+{
+	struct queue *tmp = q->prev;
+	void *data;
+
+	if (tmp == q)
+		q = NULL;
+	else {
+		tmp->prev->next = q;
+		q->prev = tmp->prev;
+	}
+
+	data = tmp->data;
+	free(tmp);
+
+	return data;
+}
+
 static struct device *new_dev(struct device *parent, struct device *bus)
 {
 	struct device *dev = malloc(sizeof(struct device));
 	memset(dev, 0, sizeof(struct device));
-	dev->id = ++devcount;
+	dev->id = ++count;
 	dev->parent = parent;
 	dev->bus = bus;
 	dev->subsystem_vendor = -1;
@@ -109,22 +161,18 @@ void yyerror(char const *str)
 void postprocess_devtree(void)
 {
 	root.next_sibling = root.children;
-	root.next_sibling->next_sibling = root.next_sibling->children;
+
+	/*
+	 * Since root is statically created we need to call fold_in explicitly
+	 * here to have the next_sibling and latestchild setup correctly.
+	 */
+	fold_in(&root);
 
 	struct device *dev = &root;
 	while (dev) {
-		/* skip "chip" elements in children chain */
-		while (dev->children && (dev->children->type == chip))
-			dev->children = dev->children->children;
-		/* skip "chip" elements and functions of the same device in sibling chain */
+		/* skip functions of the same device in sibling chain */
 		while (dev->sibling && dev->sibling->used)
 			dev->sibling = dev->sibling->sibling;
-		/* If end of chain, and parent is a chip, move on */
-		if (!dev->sibling && (dev->parent->type == chip))
-			dev->sibling = dev->parent->sibling;
-		/* skip chips */
-		while (dev->sibling && dev->sibling->type == chip)
-			dev->sibling = dev->sibling->children;
 		/* skip duplicate function elements in nextdev chain */
 		while (dev->nextdev && dev->nextdev->used)
 			dev->nextdev = dev->nextdev->nextdev;
@@ -154,14 +202,20 @@ char *translate_name(const char *str, translate_t mode)
 	return b;
 }
 
-struct device *new_chip(struct device *parent, struct device *bus, char *path)
+struct chip *new_chip(char *path)
 {
-	struct device *new_chip = new_dev(parent, bus);
+	struct chip *new_chip = malloc(sizeof(*new_chip));
+	if (!new_chip) {
+		fprintf(stderr, "%s: malloc failure!\n", __func__);
+		exit(1);
+	}
+
+	memset(new_chip, 0, sizeof(*new_chip));
+
+	new_chip->id = ++count;
 	new_chip->chiph_exists = 1;
 	new_chip->name = path;
 	new_chip->name_underscore = translate_name(new_chip->name, UNSLASH);
-	new_chip->type = chip;
-	new_chip->chip = new_chip;
 
 	struct stat st;
 	char *chip_h = malloc(strlen(path) + 18);
@@ -182,23 +236,20 @@ struct device *new_chip(struct device *parent, struct device *bus, char *path)
 	if ((stat(chip_h, &st) == -1) && (errno == ENOENT))
 		new_chip->chiph_exists = 0;
 
-	if (parent->latestchild) {
-		parent->latestchild->next_sibling = new_chip;
-		parent->latestchild->sibling = new_chip;
-	}
-	parent->latestchild = new_chip;
-	if (!parent->children)
-		parent->children = new_chip;
 	free(chip_h);
+
+	new_chip->next = chip_head;
+	chip_head = new_chip;
+
 	return new_chip;
 }
 
-void add_header(struct device *dev)
+void add_header(struct chip *chip)
 {
 	int include_exists = 0;
 	struct header *h = &headers;
 	while (h->next) {
-		int result = strcmp(dev->name, h->next->name);
+		int result = strcmp(chip->name, h->next->name);
 		if (result == 0) {
 			include_exists = 1;
 			break;
@@ -211,14 +262,15 @@ void add_header(struct device *dev)
 		struct header *tmp = h->next;
 		h->next = malloc(sizeof(struct header));
 		memset(h->next, 0, sizeof(struct header));
-		h->next->chiph_exists = dev->chiph_exists;
-		h->next->name = dev->name;
+		h->next->chiph_exists = chip->chiph_exists;
+		h->next->name = chip->name;
 		h->next->next = tmp;
 	}
 }
 
 struct device *new_device(struct device *parent, struct device *busdev,
-			  const int bus, const char *devnum, int enabled)
+			  struct chip *chip, const int bus, const char *devnum,
+			  int enabled)
 {
 	struct device *new_d = new_dev(parent, busdev);
 	new_d->bustype = bus;
@@ -233,10 +285,9 @@ struct device *new_device(struct device *parent, struct device *busdev,
 	char *name = malloc(10);
 	sprintf(name, "_dev%d", new_d->id);
 	new_d->name = name;
-	new_d->name_underscore = name;	// shouldn't be necessary, but avoid 0-ptr
-	new_d->type = device;
+
 	new_d->enabled = enabled;
-	new_d->chip = new_d->parent->chip;
+	new_d->chip = chip;
 
 	if (parent->latestchild) {
 		parent->latestchild->next_sibling = new_d;
@@ -309,7 +360,7 @@ void alias_siblings(struct device *d)
 		struct device *cmp = d->next_sibling;
 		while (cmp && (cmp->bus == d->bus) && (cmp->path_a == d->path_a)
 		       && (cmp->path_b == d->path_b)) {
-			if (cmp->type == device && !cmp->used) {
+			if (!cmp->used) {
 				if (device_match(d, cmp)) {
 					d->multidev = 1;
 
@@ -343,14 +394,14 @@ void add_resource(struct device *dev, int type, int index, int base)
 	dev->rescnt++;
 }
 
-void add_register(struct device *dev, char *name, char *val)
+void add_register(struct chip *chip, char *name, char *val)
 {
 	struct reg *r = malloc(sizeof(struct reg));
 	memset(r, 0, sizeof(struct reg));
 	r->key = name;
 	r->value = val;
-	if (dev->reg) {
-		struct reg *head = dev->reg;
+	if (chip->reg) {
+		struct reg *head = chip->reg;
 		// sorting to be equal to sconfig's behaviour
 		int sort = strcmp(r->key, head->key);
 		if (sort == 0) {
@@ -359,7 +410,7 @@ void add_register(struct device *dev, char *name, char *val)
 		}
 		if (sort < 0) {
 			r->next = head;
-			dev->reg = r;
+			chip->reg = r;
 		} else {
 			while ((head->next)
 			       && (strcmp(head->next->key, r->key) < 0))
@@ -368,7 +419,7 @@ void add_register(struct device *dev, char *name, char *val)
 			head->next = r;
 		}
 	} else {
-		dev->reg = r;
+		chip->reg = r;
 	}
 }
 
@@ -412,13 +463,13 @@ void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin,
 	dev->pci_irq_info[srcpin].ioapic_dst_id = apicid;
 }
 
-static void pass0(FILE * fil, struct device *ptr)
+static void pass0(FILE *fil, struct device *ptr)
 {
-	if (ptr->type == device && ptr->id == 0)
+	if (ptr->id == 0)
 		fprintf(fil, "DEVTREE_CONST struct bus %s_links[];\n",
 			ptr->name);
 
-	if ((ptr->type == device) && (ptr->id != 0) && (!ptr->used)) {
+	if ((ptr->id != 0) && (!ptr->used)) {
 		fprintf(fil, "DEVTREE_CONST static struct device %s;\n",
 			ptr->name);
 		if (ptr->rescnt > 0)
@@ -431,10 +482,11 @@ static void pass0(FILE * fil, struct device *ptr)
 	}
 }
 
-static void pass1(FILE * fil, struct device *ptr)
+static void pass1(FILE *fil, struct device *ptr)
 {
 	int pin;
-	if (!ptr->used && (ptr->type == device)) {
+
+	if (!ptr->used) {
 		if (ptr->id != 0)
 			fprintf(fil, "static ");
 		fprintf(fil, "DEVTREE_CONST struct device %s = {\n",
@@ -481,7 +533,7 @@ static void pass1(FILE * fil, struct device *ptr)
 		fprintf(fil, "#if !DEVTREE_EARLY\n");
 		fprintf(fil, "\t.chip_ops = &%s_ops,\n",
 			ptr->chip->name_underscore);
-		if (ptr->chip->chip == &mainboard)
+		if (ptr->chip == &mainboard)
 			fprintf(fil, "\t.name = mainboard_name,\n");
 		fprintf(fil, "#endif\n");
 		if (ptr->chip->chiph_exists)
@@ -516,8 +568,7 @@ static void pass1(FILE * fil, struct device *ptr)
 		}
 		fprintf(fil, "\t };\n");
 	}
-	if (!ptr->used && ptr->type == device
-	    && (ptr->children || ptr->multidev)) {
+	if (!ptr->used && (ptr->children || ptr->multidev)) {
 		fprintf(fil, "DEVTREE_CONST struct bus %s_links[] = {\n",
 			ptr->name);
 		if (ptr->multidev) {
@@ -559,29 +610,10 @@ static void pass1(FILE * fil, struct device *ptr)
 		}
 		fprintf(fil, "\t};\n");
 	}
-	if ((ptr->type == chip) && (ptr->chiph_exists)) {
-		if (ptr->reg) {
-			fprintf(fil,
-				"DEVTREE_CONST struct %s_config %s_info_%d = {\n",
-				ptr->name_underscore, ptr->name_underscore,
-				ptr->id);
-			struct reg *r = ptr->reg;
-			while (r) {
-				fprintf(fil, "\t.%s = %s,\n", r->key, r->value);
-				r = r->next;
-			}
-			fprintf(fil, "};\n\n");
-		} else {
-			fprintf(fil,
-				"DEVTREE_CONST struct %s_config %s_info_%d = { };\n",
-				ptr->name_underscore, ptr->name_underscore,
-				ptr->id);
-		}
-	}
 }
 
-static void walk_device_tree(FILE * fil, struct device *ptr,
-			     void (*func) (FILE *, struct device *),
+static void walk_device_tree(FILE *fil, struct device *ptr,
+			     void (*func)(FILE *, struct device *),
 			     struct device *chips)
 {
 	do {
@@ -590,7 +622,35 @@ static void walk_device_tree(FILE * fil, struct device *ptr,
 	} while (ptr);
 }
 
-static void inherit_subsystem_ids(FILE * file, struct device *dev)
+static void emit_chips(FILE *fil)
+{
+	struct chip *chip;
+
+	for (chip = chip_head; chip; chip = chip->next) {
+		if (!chip->chiph_exists)
+			continue;
+
+		if (chip->reg) {
+			fprintf(fil,
+				"DEVTREE_CONST struct %s_config %s_info_%d = {\n",
+				chip->name_underscore, chip->name_underscore,
+				chip->id);
+			struct reg *r = chip->reg;
+			while (r) {
+				fprintf(fil, "\t.%s = %s,\n", r->key, r->value);
+				r = r->next;
+			}
+			fprintf(fil, "};\n\n");
+		} else {
+			fprintf(fil,
+				"DEVTREE_CONST struct %s_config %s_info_%d = { };\n",
+				chip->name_underscore, chip->name_underscore,
+				chip->id);
+		}
+	}
+}
+
+static void inherit_subsystem_ids(FILE *file, struct device *dev)
 {
 	struct device *p;
 
@@ -649,13 +709,6 @@ int main(int argc, char **argv)
 
 	fclose(filec);
 
-	if ((head->type == chip) && (!head->chiph_exists)) {
-		struct device *tmp = head;
-		head = &root;
-		while (head->next != tmp)
-			head = head->next;
-	}
-
 	FILE *autogen = fopen(outputc, "w");
 	if (!autogen) {
 		fprintf(stderr, "Could not open file '%s' for writing: ",
@@ -686,6 +739,8 @@ int main(int argc, char **argv)
 		free(name_underscore);
 	}
 	fprintf(autogen, "#endif\n");
+
+	emit_chips(autogen);
 
 	walk_device_tree(autogen, &root, inherit_subsystem_ids, NULL);
 	fprintf(autogen, "\n/* pass 0 */\n");

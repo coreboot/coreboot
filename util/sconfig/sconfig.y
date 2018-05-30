@@ -21,10 +21,12 @@ int yylex();
 void yyerror(const char *s);
 
 static struct device *cur_parent, *cur_bus;
+static struct chip *cur_chip;
 
 %}
 %union {
 	struct device *device;
+	struct chip *chip;
 	char *string;
 	int number;
 }
@@ -38,17 +40,17 @@ chipchildren: chipchildren device | chipchildren chip | chipchildren registers |
 devicechildren: devicechildren device | devicechildren chip | devicechildren resource | devicechildren subsystemid | devicechildren ioapic_irq | /* empty */ ;
 
 chip: CHIP STRING /* == path */ {
-	$<device>$ = new_chip(cur_parent, cur_bus, $<string>2);
-	cur_parent = $<device>$;
+	$<chip>$ = new_chip($<string>2);
+	chip_enqueue_tail(cur_chip);
+	cur_chip = $<chip>$;
 }
 	chipchildren END {
-	cur_parent = $<device>3->parent;
-	fold_in($<device>3);
-	add_header($<device>3);
+	cur_chip = chip_dequeue_tail();
+	add_header($<chip>3);
 };
 
 device: DEVICE BUS NUMBER /* == devnum */ BOOL {
-	$<device>$ = new_device(cur_parent, cur_bus, $<number>2, $<string>3, $<number>4);
+	$<device>$ = new_device(cur_parent, cur_bus, cur_chip, $<number>2, $<string>3, $<number>4);
 	cur_parent = $<device>$;
 	cur_bus = $<device>$;
 }
@@ -63,7 +65,7 @@ resource: RESOURCE NUMBER /* == resnum */ EQUALS NUMBER /* == resval */
 	{ add_resource(cur_parent, $<number>1, strtol($<string>2, NULL, 0), strtol($<string>4, NULL, 0)); } ;
 
 registers: REGISTER STRING /* == regname */ EQUALS STRING /* == regval */
-	{ add_register(cur_parent, $<string>2, $<string>4); } ;
+	{ add_register(cur_chip, $<string>2, $<string>4); } ;
 
 subsystemid: SUBSYSTEMID NUMBER NUMBER
 	{ add_pci_subsystem_ids(cur_parent, strtol($<string>2, NULL, 16), strtol($<string>3, NULL, 16), 0); };

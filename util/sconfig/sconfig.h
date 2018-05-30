@@ -22,8 +22,6 @@
 #include <unistd.h>
 #include <errno.h>
 
-enum devtype { chip, device };
-
 struct resource;
 struct resource {
 	int type;
@@ -43,6 +41,30 @@ struct pci_irq_info {
 	int ioapic_irq_pin;
 	int ioapic_dst_id;
 };
+
+struct chip {
+	/*
+	 * Monotonically increasing ID for each newly allocated
+	 * node(chip/device).
+	 */
+	int id;
+
+	/* Indicates if chip header exists for this chip. */
+	int chiph_exists;
+
+	/* Name of current chip. */
+	char *name;
+
+	/* Name of current chip normalized to _. */
+	char *name_underscore;
+
+	/* Pointer to registers for this chip. */
+	struct reg *reg;
+
+	/* Pointer to next chip. */
+	struct chip *next;
+};
+
 struct device;
 struct device {
 	int id;
@@ -51,19 +73,17 @@ struct device {
 	int multidev;
 	int link;
 	int rescnt;
-	int chiph_exists;
 	int subsystem_vendor;
 	int subsystem_device;
 	int inherit_subsystem;
 	char *ops;
 	char *name;
-	char *name_underscore;
 	char *path;
 	int path_a;
 	int path_b;
 	int bustype;
 	struct pci_irq_info pci_irq_info[4];
-	enum devtype type;
+
 	struct device *parent;
 	struct device *bus;
 	struct device *next;
@@ -72,12 +92,12 @@ struct device {
 	struct device *latestchild;
 	struct device *next_sibling;
 	struct device *sibling;
-	struct device *chip;
 	struct resource *res;
-	struct reg *reg;
+
+	struct chip *chip;
 };
 
-struct device *head;
+extern struct device *head;
 
 struct header;
 struct header {
@@ -89,16 +109,23 @@ struct header {
 void fold_in(struct device *parent);
 
 void postprocess_devtree(void);
-struct device *new_chip(struct device *parent, struct device *bus, char *path);
-void add_header(struct device *dev);
+struct chip *new_chip(char *path);
+void add_header(struct chip *chip);
 struct device *new_device(struct device *parent, struct device *busdev,
-			  const int bus, const char *devnum, int enabled);
+			  struct chip *chip, const int bus, const char *devnum,
+			  int enabled);
 void alias_siblings(struct device *d);
 void add_resource(struct device *dev, int type, int index, int base);
-void add_register(struct device *dev, char *name, char *val);
+void add_register(struct chip *chip, char *name, char *val);
 void add_pci_subsystem_ids(struct device *dev, int vendor, int device,
 			   int inherit);
 void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin,
 		     int irqpin);
 
 void yyrestart(FILE *input_file);
+
+/* Add chip data to tail of queue. */
+void chip_enqueue_tail(void *data);
+
+/* Retrieve chip data from tail of queue. */
+void *chip_dequeue_tail(void);

@@ -763,6 +763,24 @@ void dt_write_int(u8 *dest, u64 src, size_t length)
 }
 
 /*
+ * Delete a property by name in a given node if it exists.
+ *
+ * @param node		The device tree node to operate on.
+ * @param name		The name of the property to delete.
+ */
+void dt_delete_prop(struct device_tree_node *node, const char *name)
+{
+	struct device_tree_property *prop;
+
+	list_for_each(prop, node->properties, list_node) {
+		if (!strcmp(prop->prop.name, name)) {
+			list_remove(&prop->list_node);
+			return;
+		}
+	}
+}
+
+/*
  * Add an arbitrary property to a node, or update it if it already exists.
  *
  * @param node		The device tree node to add to.

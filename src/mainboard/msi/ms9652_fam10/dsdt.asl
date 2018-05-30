@@ -19,7 +19,7 @@
 
 DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 {
-	#include <northbridge/amd/amdk8/util.asl>
+	#include "acpi/util.asl"
 
 	/* For now only define 2 power states:
 	 *  - S0 which is fully on

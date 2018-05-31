@@ -17,7 +17,6 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
-#include <cpu/x86/mtrr.h>
 #include <delay.h>
 #include <halt.h>
 #include <lib.h>

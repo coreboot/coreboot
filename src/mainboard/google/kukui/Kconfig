@@ -1,0 +1,23 @@
+if BOARD_GOOGLE_KUKUI
+
+config VBOOT
+	select VBOOT_MOCK_SECDATA
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_MEDIATEK_MT8183
+	select BOARD_ROMSIZE_KB_4096
+	select MAINBOARD_HAS_CHROMEOS
+	select COMMON_CBFS_SPI_WRAPPER
+	select SPI_FLASH
+	select FATAL_ASSERTS
+
+config MAINBOARD_DIR
+	string
+	default google/kukui
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Kukui"
+
+endif

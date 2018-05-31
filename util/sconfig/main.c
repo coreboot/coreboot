@@ -59,14 +59,21 @@ static struct queue {
 	struct queue *prev;
 } *q;
 
-struct queue *new_queue_entry(void *data)
-{
-	struct queue *e = malloc(sizeof(*e));
+#define S_ALLOC(_s)	s_alloc(__func__, _s)
 
-	if (!e) {
-		fprintf(stderr, "%s: malloc failure!\n", __func__);
+static void *s_alloc(const char *f, size_t s)
+{
+	void *data = calloc(1, s);
+	if (!data) {
+		fprintf(stderr, "%s: Failed to alloc mem!\n", f, s);
 		exit(1);
 	}
+	return data;
+}
+
+struct queue *new_queue_entry(void *data)
+{
+	struct queue *e = S_ALLOC(sizeof(*e));
 
 	e->data = data;
 	e->next = e->prev = e;
@@ -108,8 +115,8 @@ void *chip_dequeue_tail(void)
 
 static struct device *new_dev(struct device *parent)
 {
-	struct device *dev = malloc(sizeof(struct device));
-	memset(dev, 0, sizeof(struct device));
+	struct device *dev = S_ALLOC(sizeof(struct device));
+
 	dev->id = ++count;
 	dev->parent = parent;
 	dev->subsystem_vendor = -1;
@@ -200,13 +207,7 @@ char *translate_name(const char *str, translate_t mode)
 
 struct chip *new_chip(char *path)
 {
-	struct chip *new_chip = malloc(sizeof(*new_chip));
-	if (!new_chip) {
-		fprintf(stderr, "%s: malloc failure!\n", __func__);
-		exit(1);
-	}
-
-	memset(new_chip, 0, sizeof(*new_chip));
+	struct chip *new_chip = S_ALLOC(sizeof(*new_chip));
 
 	new_chip->id = ++count;
 	new_chip->chiph_exists = 1;
@@ -214,7 +215,7 @@ struct chip *new_chip(char *path)
 	new_chip->name_underscore = translate_name(new_chip->name, UNSLASH);
 
 	struct stat st;
-	char *chip_h = malloc(strlen(path) + 18);
+	char *chip_h = S_ALLOC(strlen(path) + 18);
 	sprintf(chip_h, "src/%s", path);
 	if ((stat(chip_h, &st) == -1) && (errno == ENOENT)) {
 		/* root_complex gets away without a separate directory, but
@@ -254,7 +255,7 @@ struct device *new_device(struct device *parent, struct chip *chip,
 		new_d->path_b = strtol(tmp, NULL, 16);
 	}
 
-	char *name = malloc(10);
+	char *name = S_ALLOC(10);
 	sprintf(name, "_dev%d", new_d->id);
 	new_d->name = name;
 
@@ -350,8 +351,8 @@ void alias_siblings(struct device *d)
 
 void add_resource(struct device *dev, int type, int index, int base)
 {
-	struct resource *r = malloc(sizeof(struct resource));
-	memset(r, 0, sizeof(struct resource));
+	struct resource *r = S_ALLOC(sizeof(struct resource));
+
 	r->type = type;
 	r->index = index;
 	r->base = base;
@@ -368,8 +369,8 @@ void add_resource(struct device *dev, int type, int index, int base)
 
 void add_register(struct chip *chip, char *name, char *val)
 {
-	struct reg *r = malloc(sizeof(struct reg));
-	memset(r, 0, sizeof(struct reg));
+	struct reg *r = S_ALLOC(sizeof(struct reg));
+
 	r->key = name;
 	r->value = val;
 	if (chip->reg) {
@@ -611,8 +612,8 @@ static void add_header(struct chip *chip, struct header *h)
 
 	if (!include_exists) {
 		struct header *tmp = h->next;
-		h->next = malloc(sizeof(struct header));
-		memset(h->next, 0, sizeof(struct header));
+		h->next = S_ALLOC(sizeof(struct header));
+
 		h->next->chiph_exists = chip->chiph_exists;
 		h->next->name = chip->name;
 		h->next->next = tmp;

@@ -46,6 +46,8 @@ struct mp_callback {
 	int logical_cpu_number;
 };
 
+static char processor_name[49];
+
 /*
  * A mp_flight_record details a sequence of calls for the APs to perform
  * along with the BSP to coordinate sequencing. Each flight record either
@@ -403,6 +405,7 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 			printk(BIOS_CRIT, "Could not allocate CPU device\n");
 			max_cpus--;
 		}
+		new->name = processor_name;
 		cpus[i].dev = new;
 	}
 
@@ -560,7 +563,6 @@ static void init_bsp(struct bus *cpu_bus)
 {
 	struct device_path cpu_path;
 	struct cpu_info *info;
-	char processor_name[49];
 
 	/* Print processor name */
 	fill_processor_name(processor_name);
@@ -576,6 +578,7 @@ static void init_bsp(struct bus *cpu_bus)
 	/* Find the device structure for the boot CPU. */
 	info = cpu_info();
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
+	info->cpu->name = processor_name;
 
 	if (info->index != 0)
 		printk(BIOS_CRIT, "BSP index(%d) != 0!\n", info->index);

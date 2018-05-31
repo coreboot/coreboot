@@ -90,13 +90,13 @@ config PXE_ROM_ID
 
 config PXE_CUSTOM_GENERAL_H
 	string "iPXE custom general.h file"
-	default "../../../../apu2-documentation/ipxe/general.h"
+	default "general.h"
 	help
 	  This option allows user to customize feature set built-in into iPXE ROM.
 
 config PXE_CUSTOM_BOOTMENU_FILE
 	string "iPXE custom menu.ipxe file"
-	default "../../../../apu2-documentation/ipxe/menu.ipxe"
+	default "menu.ipxe"
 	help
 	  This option allows user to customize boot menu for iPXE ROM.
 

@@ -16,7 +16,6 @@
 
 /* This code should work for all ICH* southbridges with a NIC. */
 
-#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

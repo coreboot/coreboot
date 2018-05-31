@@ -98,7 +98,6 @@ struct device {
 
 	struct device *parent;
 	struct device *next;
-	struct device *nextdev;
 	struct device *children;
 	struct device *latestchild;
 	struct device *next_sibling;

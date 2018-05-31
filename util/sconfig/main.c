@@ -20,7 +20,7 @@
 
 extern int linenum;
 
-struct device *head, *lastdev;
+struct device *head, *lastnode;
 
 static struct chip chip_header;
 
@@ -185,9 +185,9 @@ void postprocess_devtree(void)
 		/* skip functions of the same device in sibling chain */
 		while (dev->sibling && dev->sibling->used)
 			dev->sibling = dev->sibling->sibling;
-		/* skip duplicate function elements in nextdev chain */
-		while (dev->nextdev && dev->nextdev->used)
-			dev->nextdev = dev->nextdev->nextdev;
+		/* skip duplicate function elements in next chain */
+		while (dev->next && dev->next->used)
+			dev->next = dev->next->next;
 		dev = dev->next_sibling;
 	}
 }
@@ -304,8 +304,8 @@ struct device *new_device(struct device *parent,
 	if (!parent->children)
 		parent->children = new_d;
 
-	lastdev->nextdev = new_d;
-	lastdev = new_d;
+	lastnode->next = new_d;
+	lastnode = new_d;
 
 	switch (bustype) {
 	case PCI:
@@ -547,8 +547,8 @@ static void pass1(FILE *fil, struct device *ptr)
 		if (chip_ins->chip->chiph_exists)
 			fprintf(fil, "\t.chip_info = &%s_info_%d,\n",
 				chip_ins->chip->name_underscore, chip_ins->id);
-		if (ptr->nextdev)
-			fprintf(fil, "\t.next=&%s\n", ptr->nextdev->name);
+		if (ptr->next)
+			fprintf(fil, "\t.next=&%s\n", ptr->next->name);
 		fprintf(fil, "};\n");
 	}
 	if (ptr->rescnt > 0) {
@@ -744,7 +744,7 @@ int main(int argc, char **argv)
 
 	yyrestart(filec);
 
-	lastdev = head = &root;
+	lastnode = head = &root;
 
 	yyparse();
 
@@ -765,7 +765,7 @@ int main(int argc, char **argv)
 	walk_device_tree(autogen, &root, pass0, NULL);
 	fprintf(autogen, "\n/* pass 1 */\n"
 		"DEVTREE_CONST struct device * DEVTREE_CONST last_dev = &%s;\n",
-		lastdev->name);
+		lastnode->name);
 	walk_device_tree(autogen, &root, pass1, NULL);
 
 	fclose(autogen);

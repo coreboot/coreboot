@@ -42,13 +42,25 @@ struct pci_irq_info {
 	int ioapic_dst_id;
 };
 
-struct chip {
+struct chip;
+struct chip_instance {
 	/*
 	 * Monotonically increasing ID for each newly allocated
 	 * node(chip/device).
 	 */
 	int id;
 
+	/* Pointer to registers for this chip. */
+	struct reg *reg;
+
+	/* Pointer to chip of which this is instance. */
+	struct chip *chip;
+
+	/* Pointer to next instance of the same chip. */
+	struct chip_instance *next;
+};
+
+struct chip {
 	/* Indicates if chip header exists for this chip. */
 	int chiph_exists;
 
@@ -58,8 +70,8 @@ struct chip {
 	/* Name of current chip normalized to _. */
 	char *name_underscore;
 
-	/* Pointer to registers for this chip. */
-	struct reg *reg;
+	/* Pointer to first instance of this chip. */
+	struct chip_instance *instance;
 
 	/* Pointer to next chip. */
 	struct chip *next;
@@ -93,28 +105,21 @@ struct device {
 	struct device *sibling;
 	struct resource *res;
 
-	struct chip *chip;
+	struct chip_instance *chip_instance;
 };
 
 extern struct device *head;
 
-struct header;
-struct header {
-	char *name;
-	int chiph_exists;
-	struct header *next;
-};
-
 void fold_in(struct device *parent);
 
 void postprocess_devtree(void);
-struct chip *new_chip(char *path);
-struct device *new_device(struct device *parent, struct chip *chip,
+
+struct device *new_device(struct device *parent,
+			  struct chip_instance *chip_instance,
 			  const int bustype, const char *devnum,
 			  int enabled);
 void alias_siblings(struct device *d);
 void add_resource(struct device *dev, int type, int index, int base);
-void add_register(struct chip *chip, char *name, char *val);
 void add_pci_subsystem_ids(struct device *dev, int vendor, int device,
 			   int inherit);
 void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin,
@@ -127,3 +132,6 @@ void chip_enqueue_tail(void *data);
 
 /* Retrieve chip data from tail of queue. */
 void *chip_dequeue_tail(void);
+
+struct chip_instance *new_chip_instance(char *path);
+void add_register(struct chip_instance *chip, char *name, char *val);

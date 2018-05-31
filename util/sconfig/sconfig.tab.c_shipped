@@ -86,7 +86,7 @@ int yylex();
 void yyerror(const char *s);
 
 static struct device *cur_parent;
-static struct chip *cur_chip;
+static struct chip_instance *cur_chip_instance;
 
 
 
@@ -165,7 +165,7 @@ union YYSTYPE
 
 
 	struct device *device;
-	struct chip *chip;
+	struct chip_instance *chip_instance;
 	char *string;
 	int number;
 
@@ -1300,9 +1300,9 @@ yyreduce:
   case 14:
 
     {
-	(yyval.chip) = new_chip((yyvsp[0].string));
-	chip_enqueue_tail(cur_chip);
-	cur_chip = (yyval.chip);
+	(yyval.chip_instance) = new_chip_instance((yyvsp[0].string));
+	chip_enqueue_tail(cur_chip_instance);
+	cur_chip_instance = (yyval.chip_instance);
 }
 
     break;
@@ -1310,7 +1310,7 @@ yyreduce:
   case 15:
 
     {
-	cur_chip = chip_dequeue_tail();
+	cur_chip_instance = chip_dequeue_tail();
 }
 
     break;
@@ -1318,7 +1318,7 @@ yyreduce:
   case 16:
 
     {
-	(yyval.device) = new_device(cur_parent, cur_chip, (yyvsp[-2].number), (yyvsp[-1].string), (yyvsp[0].number));
+	(yyval.device) = new_device(cur_parent, cur_chip_instance, (yyvsp[-2].number), (yyvsp[-1].string), (yyvsp[0].number));
 	cur_parent = (yyval.device);
 }
 
@@ -1342,7 +1342,7 @@ yyreduce:
 
   case 19:
 
-    { add_register(cur_chip, (yyvsp[-2].string), (yyvsp[0].string)); }
+    { add_register(cur_chip_instance, (yyvsp[-2].string), (yyvsp[0].string)); }
 
     break;
 

@@ -50,7 +50,6 @@ static struct device root = {
 	.path = " .type = DEVICE_PATH_ROOT ",
 	.ops = "&default_dev_ops_root",
 	.parent = &root,
-	.bus = &root,
 	.enabled = 1
 };
 
@@ -107,13 +106,12 @@ void *chip_dequeue_tail(void)
 	return data;
 }
 
-static struct device *new_dev(struct device *parent, struct device *bus)
+static struct device *new_dev(struct device *parent)
 {
 	struct device *dev = malloc(sizeof(struct device));
 	memset(dev, 0, sizeof(struct device));
 	dev->id = ++count;
 	dev->parent = parent;
-	dev->bus = bus;
 	dev->subsystem_vendor = -1;
 	dev->subsystem_device = -1;
 	head->next = dev;
@@ -123,7 +121,7 @@ static struct device *new_dev(struct device *parent, struct device *bus)
 
 static int device_match(struct device *a, struct device *b)
 {
-	if ((a->bustype == b->bustype) && (a->bus == b->bus)
+	if ((a->bustype == b->bustype) && (a->parent == b->parent)
 	    && (a->path_a == b->path_a) && (a->path_b == b->path_b))
 		return 1;
 	return 0;
@@ -242,12 +240,12 @@ struct chip *new_chip(char *path)
 	return new_chip;
 }
 
-struct device *new_device(struct device *parent, struct device *busdev,
-			  struct chip *chip, const int bus, const char *devnum,
+struct device *new_device(struct device *parent, struct chip *chip,
+			  const int bustype, const char *devnum,
 			  int enabled)
 {
-	struct device *new_d = new_dev(parent, busdev);
-	new_d->bustype = bus;
+	struct device *new_d = new_dev(parent);
+	new_d->bustype = bustype;
 
 	char *tmp;
 	new_d->path_a = strtol(devnum, &tmp, 16);
@@ -274,7 +272,7 @@ struct device *new_device(struct device *parent, struct device *busdev,
 	lastdev->nextdev = new_d;
 	lastdev = new_d;
 
-	switch (bus) {
+	switch (bustype) {
 	case PCI:
 		new_d->path = ".type=DEVICE_PATH_PCI,{.pci={ .devfn = PCI_DEVFN(0x%x,%d)}}";
 		break;
@@ -332,7 +330,7 @@ void alias_siblings(struct device *d)
 	while (d) {
 		int link = 0;
 		struct device *cmp = d->next_sibling;
-		while (cmp && (cmp->bus == d->bus) && (cmp->path_a == d->path_a)
+		while (cmp && (cmp->parent == d->parent) && (cmp->path_a == d->path_a)
 		       && (cmp->path_b == d->path_b)) {
 			if (!cmp->used) {
 				if (device_match(d, cmp)) {
@@ -468,8 +466,8 @@ static void pass1(FILE *fil, struct device *ptr)
 		fprintf(fil, "#if !DEVTREE_EARLY\n");
 		fprintf(fil, "\t.ops = %s,\n", (ptr->ops) ? (ptr->ops) : "0");
 		fprintf(fil, "#endif\n");
-		fprintf(fil, "\t.bus = &%s_links[%d],\n", ptr->bus->name,
-			ptr->bus->link);
+		fprintf(fil, "\t.bus = &%s_links[%d],\n", ptr->parent->name,
+			ptr->parent->link);
 		fprintf(fil, "\t.path = {");
 		fprintf(fil, ptr->path, ptr->path_a, ptr->path_b);
 		fprintf(fil, "},\n");

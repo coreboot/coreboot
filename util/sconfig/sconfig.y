@@ -20,7 +20,7 @@
 int yylex();
 void yyerror(const char *s);
 
-static struct device *cur_parent, *cur_bus;
+static struct device *cur_parent;
 static struct chip *cur_chip;
 
 %}
@@ -33,7 +33,7 @@ static struct chip *cur_chip;
 
 %token CHIP DEVICE REGISTER BOOL BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC CPU_CLUSTER CPU DOMAIN IRQ DRQ IO NUMBER SUBSYSTEMID INHERIT IOAPIC_IRQ IOAPIC PCIINT GENERIC SPI USB MMIO
 %%
-devtree: { cur_parent = cur_bus = head; } chip { postprocess_devtree(); } ;
+devtree: { cur_parent = head; } chip { postprocess_devtree(); } ;
 
 chipchildren: chipchildren device | chipchildren chip | chipchildren registers | /* empty */ ;
 
@@ -49,13 +49,11 @@ chip: CHIP STRING /* == path */ {
 };
 
 device: DEVICE BUS NUMBER /* == devnum */ BOOL {
-	$<device>$ = new_device(cur_parent, cur_bus, cur_chip, $<number>2, $<string>3, $<number>4);
+	$<device>$ = new_device(cur_parent, cur_chip, $<number>2, $<string>3, $<number>4);
 	cur_parent = $<device>$;
-	cur_bus = $<device>$;
 }
 	devicechildren END {
 	cur_parent = $<device>5->parent;
-	cur_bus = $<device>5->bus;
 	fold_in($<device>5);
 	alias_siblings($<device>5->children);
 };

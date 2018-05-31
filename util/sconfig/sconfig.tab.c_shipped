@@ -85,7 +85,7 @@
 int yylex();
 void yyerror(const char *s);
 
-static struct device *cur_parent, *cur_bus;
+static struct device *cur_parent;
 static struct chip *cur_chip;
 
 
@@ -487,8 +487,8 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    36,    36,    36,    38,    38,    38,    38,    40,    40,
-      40,    40,    40,    40,    42,    42,    51,    51,    63,    66,
-      69,    72,    75
+      40,    40,    40,    40,    42,    42,    51,    51,    61,    64,
+      67,    70,    73
 };
 #endif
 
@@ -1287,7 +1287,7 @@ yyreduce:
     {
         case 2:
 
-    { cur_parent = cur_bus = head; }
+    { cur_parent = head; }
 
     break;
 
@@ -1318,9 +1318,8 @@ yyreduce:
   case 16:
 
     {
-	(yyval.device) = new_device(cur_parent, cur_bus, cur_chip, (yyvsp[-2].number), (yyvsp[-1].string), (yyvsp[0].number));
+	(yyval.device) = new_device(cur_parent, cur_chip, (yyvsp[-2].number), (yyvsp[-1].string), (yyvsp[0].number));
 	cur_parent = (yyval.device);
-	cur_bus = (yyval.device);
 }
 
     break;
@@ -1329,7 +1328,6 @@ yyreduce:
 
     {
 	cur_parent = (yyvsp[-2].device)->parent;
-	cur_bus = (yyvsp[-2].device)->bus;
 	fold_in((yyvsp[-2].device));
 	alias_siblings((yyvsp[-2].device)->children);
 }

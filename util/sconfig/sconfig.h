@@ -85,7 +85,6 @@ struct device {
 	struct pci_irq_info pci_irq_info[4];
 
 	struct device *parent;
-	struct device *bus;
 	struct device *next;
 	struct device *nextdev;
 	struct device *children;
@@ -110,8 +109,8 @@ void fold_in(struct device *parent);
 
 void postprocess_devtree(void);
 struct chip *new_chip(char *path);
-struct device *new_device(struct device *parent, struct device *busdev,
-			  struct chip *chip, const int bus, const char *devnum,
+struct device *new_device(struct device *parent, struct chip *chip,
+			  const int bustype, const char *devnum,
 			  int enabled);
 void alias_siblings(struct device *d);
 void add_resource(struct device *dev, int type, int index, int base);

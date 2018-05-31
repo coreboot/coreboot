@@ -110,7 +110,6 @@ void fold_in(struct device *parent);
 
 void postprocess_devtree(void);
 struct chip *new_chip(char *path);
-void add_header(struct chip *chip);
 struct device *new_device(struct device *parent, struct device *busdev,
 			  struct chip *chip, const int bus, const char *devnum,
 			  int enabled);

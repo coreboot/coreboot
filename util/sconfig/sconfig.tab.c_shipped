@@ -487,8 +487,8 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    36,    36,    36,    38,    38,    38,    38,    40,    40,
-      40,    40,    40,    40,    42,    42,    52,    52,    64,    67,
-      70,    73,    76
+      40,    40,    40,    40,    42,    42,    51,    51,    63,    66,
+      69,    72,    75
 };
 #endif
 
@@ -1311,7 +1311,6 @@ yyreduce:
 
     {
 	cur_chip = chip_dequeue_tail();
-	add_header((yyvsp[-2].chip));
 }
 
     break;

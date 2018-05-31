@@ -22,8 +22,6 @@ extern int linenum;
 
 struct device *head, *lastdev;
 
-struct header headers;
-
 static struct chip *chip_head;
 
 /*
@@ -242,30 +240,6 @@ struct chip *new_chip(char *path)
 	chip_head = new_chip;
 
 	return new_chip;
-}
-
-void add_header(struct chip *chip)
-{
-	int include_exists = 0;
-	struct header *h = &headers;
-	while (h->next) {
-		int result = strcmp(chip->name, h->next->name);
-		if (result == 0) {
-			include_exists = 1;
-			break;
-		}
-		if (result < 0)
-			break;
-		h = h->next;
-	}
-	if (!include_exists) {
-		struct header *tmp = h->next;
-		h->next = malloc(sizeof(struct header));
-		memset(h->next, 0, sizeof(struct header));
-		h->next->chiph_exists = chip->chiph_exists;
-		h->next->name = chip->name;
-		h->next->next = tmp;
-	}
 }
 
 struct device *new_device(struct device *parent, struct device *busdev,
@@ -622,9 +596,68 @@ static void walk_device_tree(FILE *fil, struct device *ptr,
 	} while (ptr);
 }
 
+static void add_header(struct chip *chip, struct header *h)
+{
+	int include_exists = 0;
+
+	while (h->next) {
+		int result = strcmp(chip->name, h->next->name);
+		if (result == 0) {
+			include_exists = 1;
+			break;
+		}
+		if (result < 0)
+			break;
+		h = h->next;
+	}
+
+	if (!include_exists) {
+		struct header *tmp = h->next;
+		h->next = malloc(sizeof(struct header));
+		memset(h->next, 0, sizeof(struct header));
+		h->next->chiph_exists = chip->chiph_exists;
+		h->next->name = chip->name;
+		h->next->next = tmp;
+	}
+}
+
+static void emit_headers(FILE *fil)
+{
+	struct header *h;
+	struct chip *chip;
+	struct header headers = {};
+
+	for (chip = chip_head; chip; chip = chip->next)
+		add_header(chip, &headers);
+
+	fprintf(fil, "#include <device/device.h>\n");
+	fprintf(fil, "#include <device/pci.h>\n");
+	h = &headers;
+	while (h->next) {
+		h = h->next;
+		if (h->chiph_exists)
+			fprintf(fil, "#include \"%s/chip.h\"\n", h->name);
+	}
+	fprintf(fil, "\n#if !DEVTREE_EARLY\n");
+	fprintf(fil,
+		"__attribute__((weak)) struct chip_operations mainboard_ops = {};\n");
+	h = &headers;
+	while (h->next) {
+		h = h->next;
+		char *name_underscore = translate_name(h->name, UNSLASH);
+		fprintf(fil,
+			"__attribute__((weak)) struct chip_operations %s_ops = {};\n",
+			name_underscore);
+		free(name_underscore);
+	}
+	fprintf(fil, "#endif\n");
+}
+
 static void emit_chips(FILE *fil)
 {
 	struct chip *chip;
+
+	emit_headers(fil);
 
 	for (chip = chip_head; chip; chip = chip->next) {
 		if (!chip->chiph_exists)
@@ -693,8 +726,6 @@ int main(int argc, char **argv)
 	char *devtree = argv[DEVICEFILE_ARG];
 	char *outputc = argv[OUTPUTFILE_ARG];
 
-	headers.next = 0;
-
 	FILE *filec = fopen(devtree, "r");
 	if (!filec) {
 		perror(NULL);
@@ -716,29 +747,6 @@ int main(int argc, char **argv)
 		perror(NULL);
 		exit(1);
 	}
-
-	struct header *h;
-	fprintf(autogen, "#include <device/device.h>\n");
-	fprintf(autogen, "#include <device/pci.h>\n");
-	h = &headers;
-	while (h->next) {
-		h = h->next;
-		if (h->chiph_exists)
-			fprintf(autogen, "#include \"%s/chip.h\"\n", h->name);
-	}
-	fprintf(autogen, "\n#if !DEVTREE_EARLY\n");
-	fprintf(autogen,
-		"__attribute__((weak)) struct chip_operations mainboard_ops = {};\n");
-	h = &headers;
-	while (h->next) {
-		h = h->next;
-		char *name_underscore = translate_name(h->name, UNSLASH);
-		fprintf(autogen,
-			"__attribute__((weak)) struct chip_operations %s_ops = {};\n",
-			name_underscore);
-		free(name_underscore);
-	}
-	fprintf(autogen, "#endif\n");
 
 	emit_chips(autogen);
 

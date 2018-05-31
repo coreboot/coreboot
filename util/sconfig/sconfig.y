@@ -46,7 +46,6 @@ chip: CHIP STRING /* == path */ {
 }
 	chipchildren END {
 	cur_chip = chip_dequeue_tail();
-	add_header($<chip>3);
 };
 
 device: DEVICE BUS NUMBER /* == devnum */ BOOL {

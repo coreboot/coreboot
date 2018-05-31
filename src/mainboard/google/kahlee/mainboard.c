@@ -26,7 +26,6 @@
 #include <smbios.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
-#include <soc/smi.h>
 #include <soc/southbridge.h>
 #include <variant/ec.h>
 #include <variant/thermal.h>

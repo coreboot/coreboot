@@ -20,7 +20,6 @@
 
 #include <assert.h>
 #include <commonlib/sdhci.h>
-#include <console/console.h>
 #include <device/pci.h>
 #include "sd_mmc.h"
 #include "storage.h"

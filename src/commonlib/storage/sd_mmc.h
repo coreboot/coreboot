@@ -18,6 +18,7 @@
 #include <commonlib/sd_mmc_ctrlr.h>
 #include <commonlib/storage.h>
 #include <stddef.h>
+#include <console/console.h>
 
 #define SD_MMC_IO_RETRIES	1000
 

@@ -20,7 +20,6 @@
 #include <commonlib/sd_mmc_ctrlr.h>
 #include <commonlib/sdhci.h>
 #include <commonlib/storage.h>
-#include <console/console.h>
 #include "sdhci.h"
 #include "sd_mmc.h"
 #include "storage.h"

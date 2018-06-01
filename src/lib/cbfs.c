@@ -119,7 +119,10 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 		return out_size;
 
 	case CBFS_COMPRESS_LZMA:
+		/* We assume here romstage and postcar are never compressed. */
 		if (ENV_BOOTBLOCK || ENV_VERSTAGE)
+			return 0;
+		if (ENV_ROMSTAGE && IS_ENABLED(CONFIG_POSTCAR_STAGE))
 			return 0;
 		if ((ENV_ROMSTAGE || ENV_POSTCAR)
 			&& !IS_ENABLED(CONFIG_COMPRESS_RAMSTAGE))

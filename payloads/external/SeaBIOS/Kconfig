@@ -120,6 +120,19 @@ config SEABIOS_BOOTMENU_WAIT_FILE
 
 	  See: https://www.coreboot.org/SeaBIOS#Configuring_boot_order
 
+config SEABIOS_BOOTMENU_MESSAGE_FILE
+	string "SeaBIOS boot-menu-message file"
+	default "$(top)/src/mainboard/$(MAINBOARDDIR)/boot-menu-message"
+	help
+	  Customize the text boot menu message. From wiki:
+
+	  "Customize the text boot menu message. Normally, when in text mode
+	  SeaBIOS will report the string "\nPress ESC for boot menu.\n\n". This
+	  field allows the string to be changed. (This is a string field, and
+	  is added as a file containing the raw string.)"
+
+	  See: https://www.seabios.org/Runtime_config#Other_Configuration_items
+
 config SEABIOS_SERCON_PORT_FILE
 	string "SeaBIOS sercon-port file"
 	default "$(top)/src/mainboard/$(MAINBOARDDIR)/sercon-port"

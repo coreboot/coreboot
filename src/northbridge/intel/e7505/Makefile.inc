@@ -6,4 +6,6 @@ ramstage-y += memmap.c
 romstage-y += raminit.c
 romstage-y += debug.c
 romstage-y += memmap.c
+
+postcar-y += memmap.c
 endif

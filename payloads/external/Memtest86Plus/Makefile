@@ -38,8 +38,8 @@ checkout: fetch
 	echo "    Checking out $(project_name) revision $(NAME-y) ($(TAG-y))"
 	cd $(project_dir); \
 		git checkout master; \
- 		git branch -D coreboot 2>/dev/null; \
- 		git checkout -b coreboot $(TAG-y)
+		git branch -D coreboot 2>/dev/null; \
+		git checkout -b coreboot $(TAG-y)
 
 build: checkout
 	echo "    MAKE       $(project_name) $(NAME-y)"

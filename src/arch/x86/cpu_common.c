@@ -11,15 +11,7 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <cpu/cpu.h>
-#include <arch/io.h>
-#include <string.h>
-#include <cpu/x86/lapic.h>
-#include <arch/cpu.h>
-#include <device/path.h>
-#include <device/device.h>
-#include <smp/spinlock.h>
 
 #ifndef __x86_64__
 /* Standard macro to see if a specific flag is changeable */

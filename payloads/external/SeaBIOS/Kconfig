@@ -90,37 +90,45 @@ config SEABIOS_BOOTORDER_MAP_FILE
 	string "SeaBIOS bootorder_map file"
 	default "$(top)/src/mainboard/$(MAINBOARDDIR)/bootorder_map"
 	help
-	  TBD
+	  Determine mapping of keystrokes to group of positions in bootorder
 
 config SEABIOS_BOOTORDER_DEF_FILE
 	string "SeaBIOS bootorder_def file"
 	default "$(top)/src/mainboard/$(MAINBOARDDIR)/bootorder_def"
 	help
-	  TBD
+	  Determine default boot order and default values for runtime config
+	  options e.g. usben, pxen, etc.
 
 config SEABIOS_BOOTMENU_KEY_FILE
 	string "SeaBIOS boot-menu-key file"
 	default "$(top)/src/mainboard/$(MAINBOARDDIR)/boot-menu-key"
 	help
-	  TBD
+	  Add SeaBIOS boot-menu-key file. From wiki:
+	  "Controls which key activates the boot menu. The value stored is the
+	  DOS scan code (eg, 0x86 for F12, 0x01 for Esc). If this field is set,
+	  be sure to also customize the boot-menu-message field above. 
+
+	  See: https://www.coreboot.org/SeaBIOS#Configuring_boot_order
 
 config SEABIOS_BOOTMENU_WAIT_FILE
 	string "SeaBIOS boot-menu-wait file"
 	default "$(top)/src/mainboard/$(MAINBOARDDIR)/boot-menu-wait"
 	help
-	  TBD
+	  Add SeaBIOS boot-menu-wait file. From wiki:
+	  "Amount of time (in milliseconds) to wait at the boot menu prompt
+	  before selecting the default boot."
 
-config SEABIOS_BOOTMENU_MESSAGE_FILE
-	string "SeaBIOS boot-menu-message file"
-	default "$(top)/src/mainboard/$(MAINBOARDDIR)/boot-menu-message"
-	help
-	  TBD
+	  See: https://www.coreboot.org/SeaBIOS#Configuring_boot_order
 
 config SEABIOS_SERCON_PORT_FILE
 	string "SeaBIOS sercon-port file"
 	default "$(top)/src/mainboard/$(MAINBOARDDIR)/sercon-port"
 	help
-	  TBD
+	  Enable serial port in SeaBIOS. From wiki:
+	  "Set this to the IO address of a serial port to enable SeaBIOS' VGA
+	  adapter emulation on the given serial port.
+
+	  See: https://www.coreboot.org/SeaBIOS#Configuring_boot_order
 
 config PAYLOAD_FILE
 	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"

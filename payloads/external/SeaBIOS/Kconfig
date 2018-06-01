@@ -5,7 +5,7 @@ choice
 	default SEABIOS_STABLE
 
 config SEABIOS_STABLE
-	bool "1.11.0.4"
+	bool "1.11.1"
 	help
 	  Stable SeaBIOS version
 config SEABIOS_MASTER
@@ -72,7 +72,7 @@ config PAYLOAD_CONFIGFILE
 
 config SEABIOS_BOOTORDER_FILE
 	string "SeaBIOS bootorder file"
-	default "$(top)/src/mainboard/$(MAINBOARDDIR)/variants/$(CONFIG_VARIANT_DIR)/bootorder"
+	default ""
 	help
 	  Add a SeaBIOS bootorder file.  From the wiki:
 	  "The bootorder file may be used to configure the boot up order. The file

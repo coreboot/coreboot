@@ -2,6 +2,10 @@
 #define CPU_X86_MTRR_H
 
 #include <commonlib/helpers.h>
+#ifndef __ASSEMBLER__
+#include <cpu/x86/msr.h>
+#include <arch/cpu.h>
+#endif
 
 /*  These are the region types  */
 #define MTRR_TYPE_UNCACHEABLE		0
@@ -95,6 +99,13 @@ void set_var_mtrr(unsigned int reg, unsigned int base, unsigned int size,
 	unsigned int type);
 int get_free_var_mtrr(void);
 
+/*
+ * Set the MTRRs using the data on the stack from setup_stack_and_mtrrs.
+ * Return a new top_of_stack value which removes the setup_stack_and_mtrrs data.
+ */
+asmlinkage void *soc_set_mtrrs(void *top_of_stack);
+asmlinkage void soc_enable_mtrrs(void);
+
 /* fms: find most significant bit set, stolen from Linux Kernel Source. */
 static inline unsigned int fms(unsigned int x)
 {
@@ -171,18 +182,5 @@ static inline unsigned int fls(unsigned int x)
 #endif
 
 #define CACHE_ROM_BASE _FROM_4G_TOP(CACHE_ROM_SIZE)
-
-#if (IS_ENABLED(CONFIG_SOC_SETS_MSRS) && !defined(__ASSEMBLER__) \
-	&& !defined(__ROMCC__))
-#include <cpu/x86/msr.h>
-#include <arch/cpu.h>
-
-/*
- * Set the MTRRs using the data on the stack from setup_stack_and_mtrrs.
- * Return a new top_of_stack value which removes the setup_stack_and_mtrrs data.
- */
-asmlinkage void *soc_set_mtrrs(void *top_of_stack);
-asmlinkage void soc_enable_mtrrs(void);
-#endif /* CONFIG_SOC_SETS_MSRS ... */
 
 #endif /* CPU_X86_MTRR_H */

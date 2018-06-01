@@ -284,6 +284,9 @@
 #define PAD_CFG_GPI_APIC_HIGH(pad, pull, rst) \
 	PAD_CFG_GPI_APIC(pad, pull, rst, LEVEL, NONE)
 
+#define PAD_CFG_GPI_APIC_EDGE_LOW(pad, pull, rst) \
+	PAD_CFG_GPI_APIC(pad, pull, rst, EDGE_SINGLE, INVERT)
+
 /* General purpose input, routed to SMI */
 #define PAD_CFG_GPI_SMI(pad, pull, rst, trig, inv) \
 	_PAD_CFG_STRUCT(pad,		\

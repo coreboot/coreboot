@@ -101,7 +101,7 @@ config COREINFO_SECONDARY_PAYLOAD
 
 config MEMTEST_SECONDARY_PAYLOAD
 	bool "Load Memtest86+ as a secondary payload"
-	default y
+	default n
 	depends on ARCH_X86
 	help
 	  Memtest86+ can be loaded as a secondary payload under SeaBIOS, GRUB,
@@ -146,7 +146,7 @@ config TINT_SECONDARY_PAYLOAD
 
 config SORTBOOTORDER_SECONDARY_PAYLOAD
 	bool "Load sortbootorder as a secondary payload"
-	default y
+	default n
 	depends on ARCH_X86
 	help
 	  sortbootorder can be loaded as a secondary payload under SeaBIOS

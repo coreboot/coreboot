@@ -58,6 +58,10 @@ config MAINBOARD_PART_NUMBER
 	default "apu4" if BOARD_PCENGINES_APU4
 	default "apu5" if BOARD_PCENGINES_APU5
 
+config DEFAULT_CONSOLE_LOGLEVEL
+	int
+	default 1
+
 config MAX_CPUS
 	int
 	default 4

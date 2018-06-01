@@ -15,7 +15,6 @@
  * vtxprintf.c, originally from linux/lib/vsprintf.c
  */
 
-#include <console/console.h>
 #include <console/vtxprintf.h>
 #include <string.h>
 

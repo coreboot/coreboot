@@ -166,6 +166,10 @@ const char *mainboard_vbt_filename(void)
 	case SKU_0_PANTHEON:
 	case SKU_1_PANTHEON:
 		return "vbt-pantheon.bin";
+	case SKU_0_VAYNE:
+	case SKU_1_VAYNE:
+	case SKU_2_VAYNE:
+		return "vbt-vayne.bin";
 	default:
 		return "vbt.bin";
 		break;

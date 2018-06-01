@@ -18,6 +18,7 @@
 
 #define SKU_UNKNOWN	0xFFFFFFFF
 #define SKU_0_NAMI	0x3A7B
+#define SKU_0_VAYNE	0x3A67
 #define SKU_1_VAYNE	0x3A63
 #define SKU_2_VAYNE	0x3A7F
 #define SKU_0_PANTHEON	0x3F63

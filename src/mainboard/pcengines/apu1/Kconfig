@@ -69,10 +69,6 @@ config VGA_BIOS
 #	depends on VGA_BIOS
 #	default "rom/video/OntarioGenericVbios.bin"
 
-config SEABIOS_BOOTORDER_FILE
-	string
-	default "$(top)/src/mainboard/$(MAINBOARDDIR)/bootorder"
-
 config VGA_BIOS_ID
 	string
 	default "1002,9802"

@@ -96,7 +96,8 @@ config SEABIOS_BOOTORDER_DEF_FILE
 	string "SeaBIOS bootorder_def file"
 	default "$(top)/src/mainboard/$(MAINBOARDDIR)/bootorder_def"
 	help
-	  Determine default boot order
+	  Determine default boot order and default values for runtime config
+	  options e.g. usben, pxen, etc.
 
 config SEABIOS_BOOTMENU_KEY_FILE
 	string "SeaBIOS boot-menu-key file"

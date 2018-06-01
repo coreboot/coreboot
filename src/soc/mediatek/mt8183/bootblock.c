@@ -13,18 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SOC_MEDIATEK_MT8183_INCLUDE_SOC_ADDRESSMAP_H__
-#define __SOC_MEDIATEK_MT8183_INCLUDE_SOC_ADDRESSMAP_H__
+#include <bootblock_common.h>
+#include <soc/wdt.h>
 
-enum {
-	IO_PHYS		= 0x10000000,
-	DDR_BASE	= 0x40000000
-};
-
-enum {
-	RGU_BASE	= IO_PHYS + 0x00007000,
-	GPT_BASE	= IO_PHYS + 0x00008000,
-	UART0_BASE	= IO_PHYS + 0x01002000,
-};
-
-#endif
+void bootblock_soc_init(void)
+{
+	mtk_wdt_init();
+}

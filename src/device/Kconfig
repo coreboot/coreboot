@@ -85,7 +85,7 @@ config MAINBOARD_USE_LIBGFXINIT
 # TODO: Explain differences (if any) for onboard cards.
 config VGA_ROM_RUN
 	bool "Run VGA Option ROMs"
-	depends on PCI && !MAINBOARD_FORCE_NATIVE_VGA_INIT
+	depends on PCI && (ARCH_X86 || ARCH_POWER8) && !MAINBOARD_FORCE_NATIVE_VGA_INIT
 	select HAVE_VGA_TEXT_FRAMEBUFFER
 	help
 	  Execute VGA Option ROMs in coreboot if found. This can be used

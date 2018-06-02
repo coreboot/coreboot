@@ -416,19 +416,8 @@ static struct dimm_size sdram_spd_get_width(uint16_t dimm_socket_address)
 		    spd_read_byte(dimm_socket_address, SPD_NUM_DIMM_BANKS);
 		die_on_spd_error(value);
 
-#ifdef ROMCC_IF_BUG_FIXED
 		if (value == 2)
 			width.side2 = width.side1;
-#else
-		switch (value) {
-		case 2:
-			width.side2 = width.side1;
-			break;
-
-		default:
-			break;
-		}
-#endif
 	}
 
 	return width;
@@ -640,25 +629,12 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 		}
 #endif /* VALIDATE_DIMM_COMPATIBILITY */
 
-		// Code around ROMCC bug in optimization of "if" statements
-#ifdef ROMCC_IF_BUG_FIXED
 		if (bDualChannel) {
-			// Made it through all the checks, this DIMM pair is usable
-			dimm_mask |= ((1 << i) | (1 << (MAX_DIMM_SOCKETS_PER_CHANNEL + i)));
+			// This DIMM pair is usable
+			dimm_mask |= 1 << i;
+			dimm_mask |= 1 << (MAX_DIMM_SOCKETS_PER_CHANNEL + i);
 		} else
 			printk(BIOS_DEBUG, "Skipping un-matched DIMMs - only dual-channel operation supported\n");
-#else
-		switch (bDualChannel) {
-		case 0:
-			printk(BIOS_DEBUG, "Skipping un-matched DIMMs - only dual-channel operation supported\n");
-			break;
-
-		default:
-			// Made it through all the checks, this DIMM pair is usable
-			dimm_mask |= (1 << i) | (1 << (MAX_DIMM_SOCKETS_PER_CHANNEL + i));
-			break;
-		}
-#endif
 	}
 
 	return dimm_mask;

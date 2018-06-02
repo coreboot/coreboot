@@ -27,10 +27,9 @@
 u8 is_dev3_present(void);
 void set_pcie_dereset(void);
 void set_pcie_reset(void);
-void enable_int_gfx(void);
 
 /* GPIO6. */
-void enable_int_gfx(void)
+static void enable_int_gfx(void)
 {
 	u8 byte;
 

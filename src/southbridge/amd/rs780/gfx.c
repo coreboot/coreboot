@@ -35,7 +35,7 @@
 #include <delay.h>
 #include <cpu/x86/msr.h>
 #include "rs780.h"
-extern int is_dev3_present(void);
+
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
 

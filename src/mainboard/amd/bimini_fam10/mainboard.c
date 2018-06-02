@@ -22,9 +22,8 @@
 #include <device/pci_def.h>
 #include <southbridge/amd/common/amd_defs.h>
 #include <southbridge/amd/sb800/sb800.h>
+#include "southbridge/amd/rs780/rs780.h"
 
-
-u8 is_dev3_present(void);
 void set_pcie_dereset(void);
 void set_pcie_reset(void);
 
@@ -70,7 +69,7 @@ void set_pcie_reset(void)
 	/* GPIO 50h reset PCIe slot */
 }
 
-u8 is_dev3_present(void)
+int is_dev3_present(void)
 {
 	return 0;
 }

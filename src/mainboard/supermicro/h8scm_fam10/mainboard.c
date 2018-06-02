@@ -26,13 +26,6 @@
 
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
-u8 is_dev3_present(void);
-
-/* 780 board use this function*/
-u8 is_dev3_present(void)
-{
-	return 0;
-}
 
 /*
  * TODO: Add the routine info of each PCIE_RESET_L.

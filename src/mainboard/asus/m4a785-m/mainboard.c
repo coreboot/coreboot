@@ -22,6 +22,7 @@
 #include <device/pci_def.h>
 #include "southbridge/amd/sb700/sb700.h"
 #include "southbridge/amd/sb700/smbus.h"
+#include "southbridge/amd/rs780/rs780.h"
 
 #define ADT7461_ADDRESS 0x4C
 #define ARA_ADDRESS     0x0C /* Alert Response Address */
@@ -35,7 +36,6 @@
 
 void set_pcie_dereset(void);
 void set_pcie_reset(void);
-u8 is_dev3_present(void);
 
 void set_pcie_dereset()
 {
@@ -93,7 +93,7 @@ void set_pcie_reset()
  * NOTE: This just copied from AMD Tilapia code.
  * It is completly unknown it it will work at all for ASUS M4A785-M.
  */
-u8 is_dev3_present(void)
+int is_dev3_present(void)
 {
 	u16 word;
 	struct device *sm_dev;

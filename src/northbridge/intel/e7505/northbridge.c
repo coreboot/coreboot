@@ -29,10 +29,12 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-static void pci_domain_set_resources(struct device *dev)
+static void mch_domain_read_resources(struct device *dev)
 {
 	struct device *mc_dev;
 	uint32_t pci_tolm;
+
+	pci_domain_read_resources(dev);
 
 	pci_tolm = find_pci_tolm(dev->link_list);
 	mc_dev = dev->link_list->children;
@@ -107,6 +109,10 @@ static void pci_domain_set_resources(struct device *dev)
 
 		set_late_cbmem_top(tolmk * 1024);
 	}
+}
+
+static void mch_domain_set_resources(struct device *dev)
+{
 	assign_resources(dev->link_list);
 }
 
@@ -122,8 +128,8 @@ static struct pci_operations intel_pci_ops = {
 };
 
 static struct device_operations pci_domain_ops = {
-	.read_resources   = pci_domain_read_resources,
-	.set_resources    = pci_domain_set_resources,
+	.read_resources   = mch_domain_read_resources,
+	.set_resources    = mch_domain_set_resources,
 	.enable_resources = NULL,
 	.init             = NULL,
 	.scan_bus         = pci_domain_scan_bus,

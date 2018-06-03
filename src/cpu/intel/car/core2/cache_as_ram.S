@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
  * Copyright (C) 2007-2008 coresystems GmbH
+ * Copyright (C) 2012 Kyösti Mälkki <kyosti.malkki@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +18,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
-
-#define CPU_PHYSMASK_HI  (1 << (CONFIG_CPU_ADDR_BITS - 32) - 1)
 
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
@@ -37,24 +36,64 @@ cache_as_ram:
 	movl	$0xFEE00300, %esi
 	movl	%eax, (%esi)
 
-	/* Zero out all fixed range and variable range MTRRs. */
-	movl	$mtrr_table, %esi
-	movl	$((mtrr_table_end - mtrr_table) >> 1), %edi
-	xorl	%eax, %eax
-	xorl	%edx, %edx
-clear_mtrrs:
-	movw	(%esi), %bx
-	movzx	%bx, %ecx
+	/* All CPUs need to be in Wait for SIPI state */
+wait_for_sipi:
+	movl	(%esi), %eax
+	bt	$12, %eax
+	jc	wait_for_sipi
+
+	post_code(0x22)
+
+	/* Clear/disable fixed MTRRs */
+	mov	$fixed_mtrr_list_size, %ebx
+	xor	%eax, %eax
+	xor	%edx, %edx
+
+clear_fixed_mtrr:
+	add	$-2, %ebx
+	movzwl	fixed_mtrr_list(%ebx), %ecx
 	wrmsr
-	add	$2, %esi
-	dec	%edi
-	jnz	clear_mtrrs
+	jnz	clear_fixed_mtrr
+
+	/* Figure put how many MTRRs we have, and clear them out */
+	mov	$MTRR_CAP_MSR, %ecx
+	rdmsr
+	movzb	%al, %ebx		/* Number of variable MTRRs */
+	mov	$MTRR_PHYS_BASE(0), %ecx
+	xor	%eax, %eax
+	xor	%edx, %edx
+
+clear_var_mtrr:
+	wrmsr
+	inc	%ecx
+	wrmsr
+	inc	%ecx
+	dec	%ebx
+	jnz	clear_var_mtrr
 
 	post_code(0x22)
 	/* Configure the default memory type to uncacheable. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
 	andl	$(~0x00000cff), %eax
+	wrmsr
+
+	/* Determine CPU_ADDR_BITS and load PHYSMASK high word to %edx. */
+	movl	$0x80000008, %eax
+	cpuid
+	movb	%al, %cl
+	sub	$32, %cl
+	movl	$1, %edx
+	shl	%cl, %edx
+	subl	$1, %edx
+
+	/* Preload high word of address mask (in %edx) for Variable
+	   MTRRs 0 and 1. */
+addrsize_set_high:
+	xorl	%eax, %eax
+	movl	$MTRR_PHYS_MASK(0), %ecx
+	wrmsr
+	movl	$MTRR_PHYS_MASK(1), %ecx
 	wrmsr
 
 	post_code(0x23)
@@ -67,8 +106,8 @@ clear_mtrrs:
 	post_code(0x24)
 	/* Set Cache-as-RAM mask. */
 	movl	$(MTRR_PHYS_MASK(0)), %ecx
+	rdmsr
 	movl	$(~(CACHE_AS_RAM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
-	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 
 	post_code(0x25)
@@ -95,7 +134,6 @@ clear_mtrrs:
 	movl	$CACHE_AS_RAM_BASE, %esi
 	movl	%esi, %edi
 	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
-	// movl	$0x23322332, %eax
 	xorl	%eax, %eax
 	rep	stosl
 
@@ -118,7 +156,7 @@ clear_mtrrs:
 	wrmsr
 
 	movl	$MTRR_PHYS_MASK(1), %ecx
-	movl	$CPU_PHYSMASK_HI, %edx
+	rdmsr
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 
@@ -149,17 +187,18 @@ before_romstage:
 	hlt
 	jmp	.Lhlt
 
-mtrr_table:
-	/* Fixed MTRRs */
-	.word 0x250, 0x258, 0x259
-	.word 0x268, 0x269, 0x26A
-	.word 0x26B, 0x26C, 0x26D
-	.word 0x26E, 0x26F
-	/* Variable MTRRs */
-	.word 0x200, 0x201, 0x202, 0x203
-	.word 0x204, 0x205, 0x206, 0x207
-	.word 0x208, 0x209, 0x20A, 0x20B
-	.word 0x20C, 0x20D, 0x20E, 0x20F
-mtrr_table_end:
+fixed_mtrr_list:
+	.word	MTRR_FIX_64K_00000
+	.word	MTRR_FIX_16K_80000
+	.word	MTRR_FIX_16K_A0000
+	.word	MTRR_FIX_4K_C0000
+	.word	MTRR_FIX_4K_C8000
+	.word	MTRR_FIX_4K_D0000
+	.word	MTRR_FIX_4K_D8000
+	.word	MTRR_FIX_4K_E0000
+	.word	MTRR_FIX_4K_E8000
+	.word	MTRR_FIX_4K_F0000
+	.word	MTRR_FIX_4K_F8000
+fixed_mtrr_list_size = . - fixed_mtrr_list
 
 _cache_as_ram_setup_end:

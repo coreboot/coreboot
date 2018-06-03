@@ -36,9 +36,6 @@
 #include <cpu/x86/msr.h>
 #include "rs780.h"
 
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
 /* Trust the original resource allocation. Don't do it again. */
 #undef DONT_TRUST_RESOURCE_ALLOCATION
 //#define DONT_TRUST_RESOURCE_ALLOCATION

@@ -34,10 +34,7 @@
 #define ADT7461_write_byte(address, val) \
 	do_smbus_write_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address, val)
 
-void set_pcie_dereset(void);
-void set_pcie_reset(void);
-
-void set_pcie_dereset()
+void set_pcie_dereset(void)
 {
 	u8 byte;
 	u16 word;
@@ -62,7 +59,7 @@ void set_pcie_dereset()
 	pci_write_config16(sm_dev, 0x7e, word);
 }
 
-void set_pcie_reset()
+void set_pcie_reset(void)
 {
 	u8 byte;
 	u16 word;

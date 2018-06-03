@@ -24,9 +24,6 @@
 #include <southbridge/amd/sb800/sb800.h>
 #include "southbridge/amd/rs780/rs780.h"
 
-void set_pcie_dereset(void);
-void set_pcie_reset(void);
-
 /* GPIO6. */
 static void enable_int_gfx(void)
 {
@@ -58,16 +55,9 @@ static void enable_int_gfx(void)
 /*
  * Bimini uses GPIO 6 as PCIe slot reset, GPIO4 as GFX slot reset. We need to
  * pull it up before training the slot.
+ *
+ * Old comment says: GPIO 50h to reset PCIe slot.
  ***/
-void set_pcie_dereset(void)
-{
-	/* GPIO 50h reset PCIe slot */
-}
-
-void set_pcie_reset(void)
-{
-	/* GPIO 50h reset PCIe slot */
-}
 
 int is_dev3_present(void)
 {

@@ -24,21 +24,10 @@
 #include "southbridge/amd/sb700/smbus.h"
 #include "southbridge/amd/rs780/rs780.h"
 
-void set_pcie_dereset(void);
-void set_pcie_reset(void);
 /* TODO - Need to find GPIO for PCIE slot.
  * Kino uses GPIO ? as PCIe slot reset, GPIO? as GFX slot reset. We need to
  * pull it up before training the slot.
  ***/
-void set_pcie_dereset()
-{
-	/* PCIE slot not yet supported.*/
-}
-
-void set_pcie_reset()
-{
-	/* PCIE slot not yet supported.*/
-}
 
 int is_dev3_present(void)
 {

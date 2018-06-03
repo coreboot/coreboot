@@ -256,9 +256,6 @@ u8 PcieTrainPort(struct device *nb_dev, struct device *dev, u32 port)
 	u32 lc_state, reg, current_link_width, lane_mask;
 	int8_t current, res = 0;
 	u32 gfx_gpp_sb_sel;
-	void set_pcie_dereset(void);
-	void set_pcie_reset(void);
-
 	switch (port) {
 	case 2 ... 3:
 		gfx_gpp_sb_sel = PCIE_CORE_INDEX_GFX;
@@ -396,4 +393,12 @@ int is_family0Fh(void)
 int is_family10h(void)
 {
 	return cpuidFamily() == 0x10;
+}
+
+__weak void set_pcie_reset(void)
+{
+}
+
+__weak void set_pcie_dereset(void)
+{
 }

@@ -25,14 +25,11 @@
 #include "southbridge/amd/sb700/smbus.h"
 #include "southbridge/amd/rs780/rs780.h"
 
-void set_pcie_dereset(void);
-void set_pcie_reset(void);
-
 /*
  * the board uses GPIO 6 as PCIe slot reset, GPIO4 as GFX slot reset. We need to
  * pull it up before training the slot.
  ***/
-void set_pcie_dereset()
+void set_pcie_dereset(void)
 {
 	u16 word;
 	struct device *sm_dev;
@@ -45,7 +42,7 @@ void set_pcie_dereset()
 	pci_write_config16(sm_dev, 0xA8, word);
 }
 
-void set_pcie_reset()
+void set_pcie_reset(void)
 {
 	u16 word;
 	struct device *sm_dev;

@@ -23,9 +23,6 @@
 #include <device/pci_def.h>
 #include "southbridge/amd/rs780/rs780.h"
 
-void set_pcie_dereset(void);
-void set_pcie_reset(void);
-
 /* GPIO6. */
 static void enable_int_gfx(void)
 {
@@ -43,14 +40,6 @@ static void enable_int_gfx(void)
 
 	*(gpio_reg + 0x6) = 0x8;
 	*(gpio_reg + 170) = 0x0;
-}
-
-void set_pcie_dereset()
-{
-}
-
-void set_pcie_reset(void)
-{
 }
 
 int is_dev3_present(void)

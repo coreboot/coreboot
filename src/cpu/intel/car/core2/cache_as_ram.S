@@ -169,6 +169,10 @@ addrsize_set_high:
 	/* Setup the stack. */
 	movl	$(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE), %eax
 	movl	%eax, %esp
+	/* Align the stack 16 bytes */
+	andl	$0xfffffff0, %esp
+	/* Account for pushing the BIST result */
+	subl	$12, %esp
 
 	/* Restore the BIST result. */
 	movl	%ebp, %eax

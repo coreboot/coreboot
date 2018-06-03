@@ -20,11 +20,7 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
 cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_2065x/microcode.bin
 
-ifneq ($(CONFIG_POSTCAR_STAGE),y)
-cpu_incs-y += $(src)/cpu/intel/model_2065x/cache_as_ram.inc
-else
 cpu_incs-y += $(src)/cpu/intel/car/non-evict/cache_as_ram.S
 postcar-y += ../car/non-evict/exit_car.S
-endif
 
 romstage-y += ../car/romstage.c

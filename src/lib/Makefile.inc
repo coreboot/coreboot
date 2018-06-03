@@ -43,9 +43,7 @@ bootblock-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 bootblock-y += libgcc.c
 bootblock-$(CONFIG_GENERIC_UDELAY) += timer.c
 
-ifeq ($(CONFIG_EARLY_CBMEM_INIT),y)
 bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
-endif
 
 bootblock-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 bootblock-y += delay.c
@@ -97,10 +95,8 @@ ramstage-y += romstage_stack.c
 romstage-y += stack.c
 ramstage-y += rtc.c
 
-ifeq ($(CONFIG_EARLY_CBMEM_INIT),y)
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 romstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
-endif
 
 romstage-y += compute_ip_checksum.c
 ifeq ($(CONFIG_COMPILER_GCC),y)

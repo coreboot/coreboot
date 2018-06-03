@@ -64,7 +64,7 @@ static inline const struct imd_entry *cbmem_to_imd(const struct cbmem_entry *e)
 }
 
 /* These are the different situations to handle:
- *  CONFIG_EARLY_CBMEM_INIT:
+ *
  *      In ramstage cbmem_initialize() attempts a recovery of the
  *      cbmem region set up by romstage. It uses cbmem_top() as the
  *      starting point of recovery.
@@ -116,11 +116,8 @@ void __weak cbmem_top_init(void)
 static void cbmem_top_init_once(void)
 {
 	/* Call one-time hook on expected cbmem init during boot. This sequence
-	   assumes first init call is in romstage for early cbmem init and
-	   ramstage for late cbmem init. */
-	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT) && !ENV_ROMSTAGE)
-		return;
-	if (IS_ENABLED(CONFIG_LATE_CBMEM_INIT) && !ENV_RAMSTAGE)
+	   assumes first init call is in romstage. */
+	if (!ENV_ROMSTAGE)
 		return;
 
 	cbmem_top_init();

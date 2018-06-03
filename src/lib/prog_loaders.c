@@ -136,8 +136,7 @@ void run_ramstage(void)
 	 * firmware path on resume.
 	 */
 	if (IS_ENABLED(CONFIG_ARCH_X86) &&
-	    !IS_ENABLED(CONFIG_NO_STAGE_CACHE) &&
-	    IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
+	    !IS_ENABLED(CONFIG_NO_STAGE_CACHE))
 		run_ramstage_from_resume(&ramstage);
 
 	if (prog_locate(&ramstage))

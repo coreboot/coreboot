@@ -60,16 +60,6 @@ int postcar_frame_init(struct postcar_frame *pcf, size_t stack_size)
 	return 0;
 }
 
-/*
- * For use with LATE_CBMEM_INIT boards only, with a fixed stacktop in
- * low memory.
- */
-void postcar_frame_init_lowmem(struct postcar_frame *pcf)
-{
-	postcar_frame_prepare(pcf);
-	pcf->stack = CONFIG_RAMTOP;
-}
-
 void postcar_frame_add_mtrr(struct postcar_frame *pcf,
 				uintptr_t addr, size_t size, int type)
 {

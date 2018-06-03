@@ -458,12 +458,10 @@ void main(void)
 	post_code(POST_CONSOLE_READY);
 
 	/*
-	 * CBMEM needs to be recovered in the EARLY_CBMEM_INIT case because
-	 * timestamps, APCI, etc rely on the cbmem infrastructure being
-	 * around. Explicitly recover it.
+	 * CBMEM needs to be recovered because timestamps, APCI, etc rely on
+	 * the cbmem infrastructure being around. Explicitly recover it.
 	 */
-	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
-		cbmem_initialize();
+	cbmem_initialize();
 
 	/* Record current time, try to locate timestamps in CBMEM. */
 	timestamp_init(timestamp_get());

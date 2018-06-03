@@ -43,7 +43,7 @@
 	 * in size. Therefore place them at the beginning .car.data section
 	 * so that multiple stages (romstage and verstage) have a consistent
 	 * link address of these shared objects. */
-	PRERAM_CBMEM_CONSOLE(., (CONFIG_LATE_CBMEM_INIT ? 0 : CONFIG_PRERAM_CBMEM_CONSOLE_SIZE))
+	PRERAM_CBMEM_CONSOLE(., CONFIG_PRERAM_CBMEM_CONSOLE_SIZE)
 #if IS_ENABLED(CONFIG_PAGING_IN_CACHE_AS_RAM)
 	. = ALIGN(32);
 	/* Page directory pointer table resides here. There are 4 8-byte entries

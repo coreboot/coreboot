@@ -218,10 +218,10 @@ void timestamp_init(uint64_t base)
 		return;
 	}
 
-	/* In the EARLY_CBMEM_INIT case timestamps could have already been
-	 * recovered. In those circumstances honor the cache which sits in BSS
+	/* Timestamps could have already been recovered.
+	 * In those circumstances honor the cache which sits in BSS
 	 * as it has already been initialized. */
-	if (ENV_RAMSTAGE && IS_ENABLED(CONFIG_EARLY_CBMEM_INIT) &&
+	if (ENV_RAMSTAGE &&
 	    ts_cache->cache_state != TIMESTAMP_CACHE_UNINITIALIZED)
 		return;
 
@@ -271,10 +271,10 @@ static void timestamp_sync_cache_to_cbmem(int is_recovery)
 
 	/*
 	 * There's no need to worry about the base_time fields being out of
-	 * sync because only the following configurations are used/supported:
+	 * sync because only the following configuration is used/supported:
 	 *
-	 * 1. Timestamps get initialized before ramstage, which implies
-	 *    CONFIG_EARLY_CBMEM_INIT and CBMEM initialization in romstage.
+	 *    Timestamps get initialized before ramstage, which implies
+	 *    CBMEM initialization in romstage.
 	 *    This requires the board to define a TIMESTAMP() region in its
 	 *    memlayout.ld (default on x86). The base_time from timestamp_init()
 	 *    (usually called from bootblock.c on most non-x86 boards) persists
@@ -283,18 +283,12 @@ static void timestamp_sync_cache_to_cbmem(int is_recovery)
 	 *    sync, which will adjust the timestamps in there to the correct
 	 *    base_time (from CBMEM) with the timestamp_add_table_entry() below.
 	 *
-	 * 2. Timestamps only get initialized in ramstage *and*
-	 *    CONFIG_LATE_CBMEM_INIT is set. main() will call timestamp_init()
-	 *    very early (before any timestamps get logged) to set a base_time
-	 *    in the BSS cache, which will later get synced over to CBMEM.
-	 *
 	 * If you try to initialize timestamps before ramstage but don't define
 	 * a TIMESTAMP region, all operations will fail (safely), and coreboot
 	 * will behave as if timestamps only get initialized in ramstage.
 	 *
-	 * If CONFIG_EARLY_CBMEM_INIT is set but timestamps only get
-	 * initialized in ramstage, the base_time from timestamp_init() will
-	 * get ignored and all timestamps will be 0-based.
+	 * If timestamps only get initialized in ramstage, the base_time from
+	 * timestamp_init() will get ignored and all timestamps will be 0-based.
 	 */
 	for (i = 0; i < ts_cache_table->num_entries; i++) {
 		struct timestamp_entry *tse = &ts_cache_table->entries[i];

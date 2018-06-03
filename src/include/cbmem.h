@@ -156,15 +156,8 @@ void cbmem_add_records_to_cbtable(struct lb_header *header);
  * value stored in nvram to enable early recovery on S3 path.
  */
 #if IS_ENABLED(CONFIG_ARCH_X86)
-/* Note that with LATE_CBMEM_INIT, restore_top_of_low_cacheable()
- * may conditionally return 0 when the sleep type is non S3,
- * i.e. cold and warm boots would return NULL also for cbmem_top. */
 void backup_top_of_low_cacheable(uintptr_t ramtop);
 uintptr_t restore_top_of_low_cacheable(void);
-uintptr_t restore_cbmem_top(void);
-
-/* Deprecated, only use with LATE_CBMEM_INIT. */
-void set_late_cbmem_top(uintptr_t ramtop);
 #endif
 
 /*

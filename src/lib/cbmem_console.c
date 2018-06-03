@@ -63,17 +63,13 @@ static struct cbmem_console *cbmem_console_p CAR_GLOBAL;
 #else
 
 /*
- * When running from RAM, a lot of console output is generated before CBMEM is
+ * When running from RAM, some console output is generated before CBMEM is
  * reinitialized. This static buffer is used to store that output temporarily,
  * to be concatenated with the CBMEM console buffer contents accumulated
  * during the ROM stage, once CBMEM becomes available at RAM stage.
  */
 
-#if IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
 #define STATIC_CONSOLE_SIZE 1024
-#else
-#define STATIC_CONSOLE_SIZE CONFIG_CONSOLE_CBMEM_BUFFER_SIZE
-#endif
 static u8 static_console[STATIC_CONSOLE_SIZE];
 #endif
 

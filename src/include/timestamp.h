@@ -19,8 +19,7 @@
 
 #include <commonlib/timestamp_serialized.h>
 
-#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS) && (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT) \
-	|| !defined(__PRE_RAM__))
+#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
 /*
  * timestamp_init() needs to be called once for each of these cases:
  *    1. __PRE_RAM__ (bootblock, romstage, verstage, etc) and
@@ -59,8 +58,6 @@ uint32_t get_us_since_boot(void);
 
 /**
  * Workaround for guard combination above.
- * Looks like CONFIG_EARLY_CBMEM_INIT selects
- * timestamp.c to be build.
  */
 #if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
 /* Implemented by the architecture code */

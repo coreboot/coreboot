@@ -17,9 +17,6 @@
 #include <bootstate.h>
 #include <rules.h>
 #include <symbols.h>
-#if IS_ENABLED(CONFIG_ARCH_X86) && !IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
-#include <arch/acpi.h>
-#endif
 
 void cbmem_run_init_hooks(int is_recovery)
 {
@@ -40,16 +37,3 @@ void cbmem_run_init_hooks(int is_recovery)
 void __weak cbmem_fail_resume(void)
 {
 }
-
-#if ENV_RAMSTAGE && !IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
-static void init_cbmem_post_device(void *unused)
-{
-	if (acpi_is_wakeup())
-		cbmem_initialize();
-	else
-		cbmem_initialize_empty();
-}
-
-BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY,
-			init_cbmem_post_device, NULL);
-#endif

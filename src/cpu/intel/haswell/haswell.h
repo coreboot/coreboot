@@ -181,9 +181,6 @@ void romstage_common(const struct romstage_params *params);
  *  ...
  */
 asmlinkage void *romstage_main(unsigned long bist);
-/* romstage_after_car() is the C function called after cache-as-ram has
- * been torn down. It is responsible for loading the ramstage. */
-asmlinkage void romstage_after_car(void);
 #endif
 
 #ifdef __SMM__

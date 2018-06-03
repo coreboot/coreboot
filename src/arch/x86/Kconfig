@@ -17,6 +17,7 @@ config ARCH_X86
 	bool
 	default n
 	select PCI
+	select RELOCATABLE_MODULES
 
 # stage selectors for x86
 
@@ -220,7 +221,6 @@ config VERSTAGE_ADDR
 config POSTCAR_STAGE
 	def_bool n
 	select NO_CAR_GLOBAL_MIGRATION
-	select RELOCATABLE_MODULES
 
 config VERSTAGE_DEBUG_SPINLOOP
 	bool

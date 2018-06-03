@@ -101,7 +101,6 @@ config LOGICAL_CPUS
 config SMM_TSEG
 	bool
 	default n
-	select RELOCATABLE_MODULES
 
 config SMM_MODULE_HEAP_SIZE
 	hex

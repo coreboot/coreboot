@@ -146,4 +146,8 @@ static inline void set_pcie_enable_bits(device_t dev, u32 reg_pos, u32 mask, u32
 		nb_write_index(dev, NBPCIE_INDEX, reg_pos, reg);
 	}
 }
+
+void set_pcie_reset(void);
+void set_pcie_dereset(void);
+
 #endif /* __SR5650_CMN_H__ */

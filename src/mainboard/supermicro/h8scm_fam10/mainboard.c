@@ -23,10 +23,6 @@
 #include <southbridge/amd/sb700/sb700.h>
 #include <southbridge/amd/sr5650/cmn.h>
 
-
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
 /*
  * TODO: Add the routine info of each PCIE_RESET_L.
  * TODO: Add the reset of each PCIE_RESET_L.

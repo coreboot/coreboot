@@ -32,9 +32,6 @@
 /*
  * extern function declaration
  */
-extern void set_pcie_dereset(void);
-extern void set_pcie_reset(void);
-
 struct resource * sr5650_retrieve_cpu_mmio_resource() {
 	struct device *domain;
 	struct resource *res;

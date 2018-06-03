@@ -9,6 +9,11 @@ subdirs-y += ../microcode
 subdirs-y += ../hyperthreading
 subdirs-y += ../speedstep
 
-# Use Intel Core (not Core 2) code for CAR init, any CPU might be used.
+ifneq ($(CONFIG_POSTCAR_STAGE),y)
 cpu_incs-y += $(src)/cpu/intel/model_6ex/cache_as_ram.inc
+else
+cpu_incs-y += $(src)/cpu/intel/car/core2/cache_as_ram.S
+postcar-y += ../car/p4-netburst/exit_car.S
+endif
+
 romstage-y += ../car/romstage.c

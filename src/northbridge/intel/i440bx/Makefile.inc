@@ -17,10 +17,10 @@
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_I440BX),y)
 
 ramstage-y += northbridge.c
-ramstage-$(CONFIG_EARLY_CBMEM_INIT) += ram_calc.c
+ramstage-y += ram_calc.c
 
 romstage-y += raminit.c
 romstage-$(CONFIG_DEBUG_RAM_SETUP) += debug.c
-romstage-$(CONFIG_EARLY_CBMEM_INIT) += ram_calc.c
+romstage-y += ram_calc.c
 
 endif

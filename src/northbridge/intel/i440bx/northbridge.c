@@ -79,9 +79,6 @@ static void i440bx_domain_set_resources(struct device *dev)
 		idx = 10;
 		ram_resource(dev, idx++, 0, 640);
 		ram_resource(dev, idx++, 768, tolmk - 768);
-
-		if (IS_ENABLED(CONFIG_LATE_CBMEM_INIT))
-			set_late_cbmem_top(tomk * 1024);
 	}
 	assign_resources(dev->link_list);
 }

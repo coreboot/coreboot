@@ -20,12 +20,12 @@
 int yylex();
 void yyerror(const char *s);
 
-static struct device *cur_parent;
+static struct bus *cur_parent;
 static struct chip_instance *cur_chip_instance;
 
 %}
 %union {
-	struct device *device;
+	struct device *dev;
 	struct chip_instance *chip_instance;
 	char *string;
 	int number;
@@ -33,7 +33,7 @@ static struct chip_instance *cur_chip_instance;
 
 %token CHIP DEVICE REGISTER BOOL BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC CPU_CLUSTER CPU DOMAIN IRQ DRQ IO NUMBER SUBSYSTEMID INHERIT IOAPIC_IRQ IOAPIC PCIINT GENERIC SPI USB MMIO
 %%
-devtree: { cur_parent = head; } chip { postprocess_devtree(); } ;
+devtree: { cur_parent = root_parent; } chip;
 
 chipchildren: chipchildren device | chipchildren chip | chipchildren registers | /* empty */ ;
 
@@ -49,13 +49,11 @@ chip: CHIP STRING /* == path */ {
 };
 
 device: DEVICE BUS NUMBER /* == devnum */ BOOL {
-	$<device>$ = new_device(cur_parent, cur_chip_instance, $<number>2, $<string>3, $<number>4);
-	cur_parent = $<device>$;
+	$<dev>$ = new_device(cur_parent, cur_chip_instance, $<number>2, $<string>3, $<number>4);
+	cur_parent = $<dev>$->last_bus;
 }
 	devicechildren END {
-	cur_parent = $<device>5->parent;
-	fold_in($<device>5);
-	alias_siblings($<device>5->children);
+	cur_parent = $<dev>5->parent;
 };
 
 resource: RESOURCE NUMBER /* == resnum */ EQUALS NUMBER /* == resval */

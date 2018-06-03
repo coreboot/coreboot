@@ -85,7 +85,7 @@
 int yylex();
 void yyerror(const char *s);
 
-static struct device *cur_parent;
+static struct bus *cur_parent;
 static struct chip_instance *cur_chip_instance;
 
 
@@ -164,7 +164,7 @@ union YYSTYPE
 {
 
 
-	struct device *device;
+	struct device *dev;
 	struct chip_instance *chip_instance;
 	char *string;
 	int number;
@@ -487,8 +487,8 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    36,    36,    36,    38,    38,    38,    38,    40,    40,
-      40,    40,    40,    40,    42,    42,    51,    51,    61,    64,
-      67,    70,    73
+      40,    40,    40,    40,    42,    42,    51,    51,    59,    62,
+      65,    68,    71
 };
 #endif
 
@@ -1287,13 +1287,7 @@ yyreduce:
     {
         case 2:
 
-    { cur_parent = head; }
-
-    break;
-
-  case 3:
-
-    { postprocess_devtree(); }
+    { cur_parent = root_parent; }
 
     break;
 
@@ -1318,8 +1312,8 @@ yyreduce:
   case 16:
 
     {
-	(yyval.device) = new_device(cur_parent, cur_chip_instance, (yyvsp[-2].number), (yyvsp[-1].string), (yyvsp[0].number));
-	cur_parent = (yyval.device);
+	(yyval.dev) = new_device(cur_parent, cur_chip_instance, (yyvsp[-2].number), (yyvsp[-1].string), (yyvsp[0].number));
+	cur_parent = (yyval.dev)->last_bus;
 }
 
     break;
@@ -1327,9 +1321,7 @@ yyreduce:
   case 17:
 
     {
-	cur_parent = (yyvsp[-2].device)->parent;
-	fold_in((yyvsp[-2].device));
-	alias_siblings((yyvsp[-2].device)->children);
+	cur_parent = (yyvsp[-2].dev)->parent;
 }
 
     break;

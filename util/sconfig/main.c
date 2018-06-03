@@ -20,8 +20,6 @@
 
 extern int linenum;
 
-struct device *head, *lastnode;
-
 static struct chip chip_header;
 
 /*
@@ -37,9 +35,63 @@ typedef enum {
 	TO_UPPER,
 } translate_t;
 
-static struct device root;
-
+/*
+ * Mainboard is assumed to have a root device whose bus is the parent of all the
+ * devices that are added by parsing the devicetree file. This device has a
+ * mainboard chip instance associated with it.
+ *
+ *
+ *
+ *                 +------------------------+                +----------------------+
+ *                 |                        |                |  Mainboard           |
+ *       +---------+ Root device (root_dev) +--------------->+  instance            +
+ *       |         |                        | chip_instance  |  (mainboard_instance)|
+ *       |         +------------------------+                |                      |
+ *       |                      |                            +----------------------+
+ *       |                      | bus                                  |
+ *       | parent               v                                      |
+ *       |            +-------------------+                            |
+ *       |            |     Root bus      |                            |
+ *       +----------->+    (root_bus)     |                            |
+ *                    |                   |                            |
+ *                    +-------------------+                            |
+ *                              |                                      |
+ *                              | children                             | chip
+ *                              v                                      |
+ *                              X                                      |
+ *                        (new devices will                            |
+ *                         be added here as                            |
+ *                         children)                                   |
+ *                                                                     |
+ *                                                                     |
+ *                                                                     |
+ *                                                             +-------+----------+
+ *                                                             |                  |
+ *                                                             |  Mainboard chip  +----------->X (new chips will be
+ *                                                             | (mainboard_chip) |               added here)
+ *                                                             |                  |
+ *                                                             +------------------+
+ *
+ *
+ */
+static struct device root_dev;
 static struct chip_instance mainboard_instance;
+
+static struct bus root_bus = {
+	.id = 0,
+	.dev = &root_dev,
+};
+
+static struct device root_dev = {
+	.name = "dev_root",
+	.id = 0,
+	.chip_instance = &mainboard_instance,
+	.path = " .type = DEVICE_PATH_ROOT ",
+	.ops = "&default_dev_ops_root",
+	.parent = &root_bus,
+	.enabled = 1,
+	.bus = &root_bus,
+};
 
 static struct chip mainboard_chip = {
 	.name = "mainboard",
@@ -52,15 +104,8 @@ static struct chip_instance mainboard_instance = {
 	.chip = &mainboard_chip,
 };
 
-static struct device root = {
-	.name = "dev_root",
-	.id = 0,
-	.chip_instance = &mainboard_instance,
-	.path = " .type = DEVICE_PATH_ROOT ",
-	.ops = "&default_dev_ops_root",
-	.parent = &root,
-	.enabled = 1
-};
+/* This is the parent of all devices added by parsing the devicetree file. */
+struct bus *root_parent = &root_bus;
 
 struct queue_entry {
 	void *data;
@@ -172,42 +217,6 @@ void *chip_dequeue_tail(void)
 	return dequeue_tail(&chip_q_head);
 }
 
-static struct device *new_dev(struct device *parent)
-{
-	struct device *dev = S_ALLOC(sizeof(struct device));
-
-	dev->id = ++count;
-	dev->parent = parent;
-	dev->subsystem_vendor = -1;
-	dev->subsystem_device = -1;
-	head->next = dev;
-	head = dev;
-	return dev;
-}
-
-static int device_match(struct device *a, struct device *b)
-{
-	if ((a->bustype == b->bustype) && (a->parent == b->parent)
-	    && (a->path_a == b->path_a) && (a->path_b == b->path_b))
-		return 1;
-	return 0;
-}
-
-void fold_in(struct device *parent)
-{
-	struct device *child = parent->children;
-	struct device *latest = 0;
-	while (child != latest) {
-		if (child->children) {
-			if (!latest)
-				latest = child->children;
-			parent->latestchild->next_sibling = child->children;
-			parent->latestchild = child->latestchild;
-		}
-		child = child->next_sibling;
-	}
-}
-
 int yywrap(void)
 {
 	return 1;
@@ -218,28 +227,6 @@ void yyerror(char const *str)
 	extern char *yytext;
 	fprintf(stderr, "line %d: %s: %s\n", linenum + 1, yytext, str);
 	exit(1);
-}
-
-void postprocess_devtree(void)
-{
-	root.next_sibling = root.children;
-
-	/*
-	 * Since root is statically created we need to call fold_in explicitly
-	 * here to have the next_sibling and latestchild setup correctly.
-	 */
-	fold_in(&root);
-
-	struct device *dev = &root;
-	while (dev) {
-		/* skip functions of the same device in sibling chain */
-		while (dev->sibling && dev->sibling->used)
-			dev->sibling = dev->sibling->sibling;
-		/* skip duplicate function elements in next chain */
-		while (dev->next && dev->next->used)
-			dev->next = dev->next->next;
-		dev = dev->next_sibling;
-	}
 }
 
 char *translate_name(const char *str, translate_t mode)
@@ -324,20 +311,103 @@ struct chip_instance *new_chip_instance(char *path)
 	return instance;
 }
 
-struct device *new_device(struct device *parent,
+/*
+ * Allocate a new bus for the provided device.
+ *   - If this is the first bus being allocated under this device, then its id
+ *     is set to 0 and bus and last_bus are pointed to the newly allocated bus.
+ *   - If this is not the first bus under this device, then its id is set to 1
+ *     plus the id of last bus and newly allocated bus is added to the list of
+ *     buses under the device. last_bus is updated to point to the newly
+ *     allocated bus.
+ */
+static void alloc_bus(struct device *dev)
+{
+	struct bus *bus = S_ALLOC(sizeof(*bus));
+
+	bus->dev = dev;
+
+	if (dev->last_bus == NULL)  {
+		bus->id = 0;
+		dev->bus = bus;
+	} else {
+		bus->id = dev->last_bus->id + 1;
+		dev->last_bus->next_bus = bus;
+	}
+
+	dev->last_bus = bus;
+}
+
+/*
+ * Allocate a new device under the given parent. This function allocates a new
+ * device structure under the provided parent bus and allocates a bus structure
+ * under the newly allocated device.
+ */
+static struct device *alloc_dev(struct bus *parent)
+{
+	struct device *dev = S_ALLOC(sizeof(*dev));
+
+	dev->id = ++count;
+	dev->parent = parent;
+	dev->subsystem_vendor = -1;
+	dev->subsystem_device = -1;
+
+	alloc_bus(dev);
+
+	return dev;
+}
+
+/*
+ * This function scans the children of given bus to see if any device matches
+ * the new device that is requested.
+ *
+ * Returns pointer to the node if found, else NULL.
+ */
+static struct device *get_dev(struct bus *parent, int path_a, int path_b,
+			      int bustype, struct chip_instance *chip_instance)
+{
+	struct device *child = parent->children;
+
+	while (child) {
+		if ((child->path_a == path_a) && (child->path_b == path_b) &&
+		    (child->bustype == bustype) &&
+		    (child->chip_instance == chip_instance))
+			return child;
+
+		child = child->sibling;
+	}
+
+	return NULL;
+}
+
+struct device *new_device(struct bus *parent,
 			  struct chip_instance *chip_instance,
 			  const int bustype, const char *devnum,
 			  int enabled)
 {
-	struct device *new_d = new_dev(parent);
-	new_d->bustype = bustype;
-
 	char *tmp;
-	new_d->path_a = strtol(devnum, &tmp, 16);
+	int path_a;
+	int path_b = 0;
+	struct device *new_d;
+
+	path_a = strtol(devnum, &tmp, 16);
 	if (*tmp == '.') {
 		tmp++;
-		new_d->path_b = strtol(tmp, NULL, 16);
+		path_b = strtol(tmp, NULL, 16);
 	}
+
+	/* If device is found under parent, no need to allocate new device. */
+	new_d = get_dev(parent, path_a, path_b, bustype, chip_instance);
+	if (new_d) {
+		alloc_bus(new_d);
+		return new_d;
+	}
+
+	new_d = alloc_dev(parent);
+
+	new_d->bustype = bustype;
+
+	new_d->path_a = path_a;
+	new_d->path_b = path_b;
 
 	char *name = S_ALLOC(10);
 	sprintf(name, "_dev%d", new_d->id);
@@ -346,16 +416,13 @@ struct device *new_device(struct device *parent,
 	new_d->enabled = enabled;
 	new_d->chip_instance = chip_instance;
 
-	if (parent->latestchild) {
-		parent->latestchild->next_sibling = new_d;
-		parent->latestchild->sibling = new_d;
-	}
-	parent->latestchild = new_d;
-	if (!parent->children)
+	struct device *c = parent->children;
+	if (c) {
+		while (c->sibling)
+			c = c->sibling;
+		c->sibling = new_d;
+	} else
 		parent->children = new_d;
-
-	lastnode->next = new_d;
-	lastnode = new_d;
 
 	switch (bustype) {
 	case PCI:
@@ -410,31 +477,9 @@ struct device *new_device(struct device *parent,
 	return new_d;
 }
 
-void alias_siblings(struct device *d)
+void add_resource(struct bus *bus, int type, int index, int base)
 {
-	while (d) {
-		int link = 0;
-		struct device *cmp = d->next_sibling;
-		while (cmp && (cmp->parent == d->parent) && (cmp->path_a == d->path_a)
-		       && (cmp->path_b == d->path_b)) {
-			if (!cmp->used) {
-				if (device_match(d, cmp)) {
-					d->multidev = 1;
-
-					cmp->id = d->id;
-					cmp->name = d->name;
-					cmp->used = 1;
-					cmp->link = ++link;
-				}
-			}
-			cmp = cmp->next_sibling;
-		}
-		d = d->next_sibling;
-	}
-}
-
-void add_resource(struct device *dev, int type, int index, int base)
-{
+	struct device *dev = bus->dev;
 	struct resource *r = S_ALLOC(sizeof(struct resource));
 
 	r->type = type;
@@ -480,9 +525,11 @@ void add_register(struct chip_instance *chip_instance, char *name, char *val)
 	}
 }
 
-void add_pci_subsystem_ids(struct device *dev, int vendor, int device,
+void add_pci_subsystem_ids(struct bus *bus, int vendor, int device,
 			   int inherit)
 {
+	struct device *dev = bus->dev;
+
 	if (dev->bustype != PCI && dev->bustype != DOMAIN) {
 		printf("ERROR: 'subsystem' only allowed for PCI devices\n");
 		exit(1);
@@ -493,11 +540,11 @@ void add_pci_subsystem_ids(struct device *dev, int vendor, int device,
 	dev->inherit_subsystem = inherit;
 }
 
-void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin,
+void add_ioapic_info(struct bus *bus, int apicid, const char *_srcpin,
 		     int irqpin)
 {
-
 	int srcpin;
+	struct device *dev = bus->dev;
 
 	if (!_srcpin || strlen(_srcpin) < 4 || strncasecmp(_srcpin, "INT", 3) ||
 	    _srcpin[3] < 'A' || _srcpin[3] > 'D') {
@@ -520,163 +567,206 @@ void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin,
 	dev->pci_irq_info[srcpin].ioapic_dst_id = apicid;
 }
 
-static void pass0(FILE *fil, struct device *ptr)
+static int dev_has_children(struct device *dev)
 {
-	if (ptr->id == 0)
+	struct bus *bus = dev->bus;
+
+	while (bus) {
+		if (bus->children)
+			return 1;
+		bus = bus->next_bus;
+	}
+
+	return 0;
+}
+
+static void pass0(FILE *fil, struct device *ptr, struct device *next)
+{
+	if (ptr == &root_dev) {
+		fprintf(fil, "DEVTREE_CONST struct bus %s_links[];\n",
+			ptr->name);
+		return;
+	}
+
+	fprintf(fil, "DEVTREE_CONST static struct device %s;\n", ptr->name);
+	if (ptr->rescnt > 0)
+		fprintf(fil, "DEVTREE_CONST struct resource %s_res[];\n",
+			ptr->name);
+	if (dev_has_children(ptr))
 		fprintf(fil, "DEVTREE_CONST struct bus %s_links[];\n",
 			ptr->name);
 
-	if ((ptr->id != 0) && (!ptr->used)) {
-		fprintf(fil, "DEVTREE_CONST static struct device %s;\n",
-			ptr->name);
-		if (ptr->rescnt > 0)
-			fprintf(fil,
-				"DEVTREE_CONST struct resource %s_res[];\n",
-				ptr->name);
-		if (ptr->children || ptr->multidev)
-			fprintf(fil, "DEVTREE_CONST struct bus %s_links[];\n",
-				ptr->name);
-	}
+	if (next)
+		return;
+
+	fprintf(fil,
+		"DEVTREE_CONST struct device * DEVTREE_CONST last_dev = &%s;\n",
+		ptr->name);
 }
 
-static void pass1(FILE *fil, struct device *ptr)
+static void emit_resources(FILE *fil, struct device *ptr)
+{
+	if (ptr->rescnt == 0)
+		return;
+
+	int i = 1;
+	fprintf(fil, "DEVTREE_CONST struct resource %s_res[] = {\n", ptr->name);
+	struct resource *r = ptr->res;
+	while (r) {
+		fprintf(fil,
+			"\t\t{ .flags=IORESOURCE_FIXED | IORESOURCE_ASSIGNED | IORESOURCE_");
+		if (r->type == IRQ)
+			fprintf(fil, "IRQ");
+		if (r->type == DRQ)
+			fprintf(fil, "DRQ");
+		if (r->type == IO)
+			fprintf(fil, "IO");
+		fprintf(fil, ", .index=0x%x, .base=0x%x,", r->index,
+			r->base);
+		if (r->next)
+			fprintf(fil, ".next=&%s_res[%d]},\n", ptr->name,
+				i++);
+		else
+			fprintf(fil, ".next=NULL },\n");
+		r = r->next;
+	}
+
+	fprintf(fil, "\t };\n");
+}
+
+static void emit_bus(FILE *fil, struct bus *bus)
+{
+	fprintf(fil, "\t\t[%d] = {\n", bus->id);
+	fprintf(fil, "\t\t\t.link_num = %d,\n", bus->id);
+	fprintf(fil, "\t\t\t.dev = &%s,\n", bus->dev->name);
+	if (bus->children)
+		fprintf(fil, "\t\t\t.children = &%s,\n", bus->children->name);
+
+	if (bus->next_bus)
+		fprintf(fil, "\t\t\t.next=&%s_links[%d],\n", bus->dev->name,
+			bus->id + 1);
+	else
+		fprintf(fil, "\t\t\t.next = NULL,\n");
+	fprintf(fil, "\t\t},\n");
+}
+
+static void emit_dev_links(FILE *fil, struct device *ptr)
+{
+	fprintf(fil, "DEVTREE_CONST struct bus %s_links[] = {\n",
+		ptr->name);
+
+	struct bus *bus = ptr->bus;
+
+	while (bus) {
+		emit_bus(fil, bus);
+		bus = bus->next_bus;
+	}
+
+	fprintf(fil, "\t};\n");
+}
+
+static void pass1(FILE *fil, struct device *ptr, struct device *next)
 {
 	int pin;
 	struct chip_instance *chip_ins = ptr->chip_instance;
+	int has_children = dev_has_children(ptr);
 
-	if (!ptr->used) {
-		if (ptr->id != 0)
-			fprintf(fil, "static ");
-		fprintf(fil, "DEVTREE_CONST struct device %s = {\n",
-			ptr->name);
-		fprintf(fil, "#if !DEVTREE_EARLY\n");
-		fprintf(fil, "\t.ops = %s,\n", (ptr->ops) ? (ptr->ops) : "0");
-		fprintf(fil, "#endif\n");
-		fprintf(fil, "\t.bus = &%s_links[%d],\n", ptr->parent->name,
-			ptr->parent->link);
-		fprintf(fil, "\t.path = {");
-		fprintf(fil, ptr->path, ptr->path_a, ptr->path_b);
-		fprintf(fil, "},\n");
-		fprintf(fil, "\t.enabled = %d,\n", ptr->enabled);
-		fprintf(fil, "\t.on_mainboard = 1,\n");
-		if (ptr->subsystem_vendor > 0)
-			fprintf(fil, "\t.subsystem_vendor = 0x%04x,\n",
-				ptr->subsystem_vendor);
+	if (ptr != &root_dev)
+		fprintf(fil, "static ");
+	fprintf(fil, "DEVTREE_CONST struct device %s = {\n", ptr->name);
+	fprintf(fil, "#if !DEVTREE_EARLY\n");
+	fprintf(fil, "\t.ops = %s,\n", (ptr->ops) ? (ptr->ops) : "0");
+	fprintf(fil, "#endif\n");
+	fprintf(fil, "\t.bus = &%s_links[%d],\n", ptr->parent->dev->name,
+		ptr->parent->id);
+	fprintf(fil, "\t.path = {");
+	fprintf(fil, ptr->path, ptr->path_a, ptr->path_b);
+	fprintf(fil, "},\n");
+	fprintf(fil, "\t.enabled = %d,\n", ptr->enabled);
+	fprintf(fil, "\t.on_mainboard = 1,\n");
+	if (ptr->subsystem_vendor > 0)
+		fprintf(fil, "\t.subsystem_vendor = 0x%04x,\n",
+			ptr->subsystem_vendor);
 
-		for (pin = 0; pin < 4; pin++) {
-			if (ptr->pci_irq_info[pin].ioapic_irq_pin > 0)
-				fprintf(fil, "\t.pci_irq_info[%d].ioapic_irq_pin = %d,\n",
-					pin, ptr->pci_irq_info[pin].ioapic_irq_pin);
-
-			if (ptr->pci_irq_info[pin].ioapic_dst_id > 0)
-				fprintf(fil, "\t.pci_irq_info[%d].ioapic_dst_id = %d,\n",
-					pin, ptr->pci_irq_info[pin].ioapic_dst_id);
-		}
-
-		if (ptr->subsystem_device > 0)
-			fprintf(fil, "\t.subsystem_device = 0x%04x,\n",
-				ptr->subsystem_device);
-
-		if (ptr->rescnt > 0) {
-			fprintf(fil, "\t.resource_list = &%s_res[0],\n",
-				ptr->name);
-		}
-		if (ptr->children || ptr->multidev)
-			fprintf(fil, "\t.link_list = &%s_links[0],\n",
-				ptr->name);
-		else
-			fprintf(fil, "\t.link_list = NULL,\n");
-		if (ptr->sibling)
-			fprintf(fil, "\t.sibling = &%s,\n", ptr->sibling->name);
-		fprintf(fil, "#if !DEVTREE_EARLY\n");
-		fprintf(fil, "\t.chip_ops = &%s_ops,\n",
-			chip_ins->chip->name_underscore);
-		if (chip_ins == &mainboard_instance)
-			fprintf(fil, "\t.name = mainboard_name,\n");
-		fprintf(fil, "#endif\n");
-		if (chip_ins->chip->chiph_exists)
-			fprintf(fil, "\t.chip_info = &%s_info_%d,\n",
-				chip_ins->chip->name_underscore, chip_ins->id);
-		if (ptr->next)
-			fprintf(fil, "\t.next=&%s\n", ptr->next->name);
-		fprintf(fil, "};\n");
-	}
-	if (ptr->rescnt > 0) {
-		int i = 1;
-		fprintf(fil, "DEVTREE_CONST struct resource %s_res[] = {\n",
-			ptr->name);
-		struct resource *r = ptr->res;
-		while (r) {
+	for (pin = 0; pin < 4; pin++) {
+		if (ptr->pci_irq_info[pin].ioapic_irq_pin > 0)
 			fprintf(fil,
-				"\t\t{ .flags=IORESOURCE_FIXED | IORESOURCE_ASSIGNED | IORESOURCE_");
-			if (r->type == IRQ)
-				fprintf(fil, "IRQ");
-			if (r->type == DRQ)
-				fprintf(fil, "DRQ");
-			if (r->type == IO)
-				fprintf(fil, "IO");
-			fprintf(fil, ", .index=0x%x, .base=0x%x,", r->index,
-				r->base);
-			if (r->next)
-				fprintf(fil, ".next=&%s_res[%d]},\n", ptr->name,
-					i++);
-			else
-				fprintf(fil, ".next=NULL },\n");
-			r = r->next;
-		}
-		fprintf(fil, "\t };\n");
+				"\t.pci_irq_info[%d].ioapic_irq_pin = %d,\n",
+				pin, ptr->pci_irq_info[pin].ioapic_irq_pin);
+
+		if (ptr->pci_irq_info[pin].ioapic_dst_id > 0)
+			fprintf(fil,
+				"\t.pci_irq_info[%d].ioapic_dst_id = %d,\n",
+				pin, ptr->pci_irq_info[pin].ioapic_dst_id);
 	}
-	if (!ptr->used && (ptr->children || ptr->multidev)) {
-		fprintf(fil, "DEVTREE_CONST struct bus %s_links[] = {\n",
+
+	if (ptr->subsystem_device > 0)
+		fprintf(fil, "\t.subsystem_device = 0x%04x,\n",
+			ptr->subsystem_device);
+
+	if (ptr->rescnt > 0) {
+		fprintf(fil, "\t.resource_list = &%s_res[0],\n",
 			ptr->name);
-		if (ptr->multidev) {
-			struct device *d = ptr;
-			while (d) {
-				if (device_match(d, ptr)) {
-					fprintf(fil, "\t\t[%d] = {\n", d->link);
-					fprintf(fil, "\t\t\t.link_num = %d,\n",
-						d->link);
-					fprintf(fil, "\t\t\t.dev = &%s,\n",
-						d->name);
-					if (d->children)
-						fprintf(fil,
-							"\t\t\t.children = &%s,\n",
-							d->children->name);
-					if (d->next_sibling
-					    && device_match(d->next_sibling,
-							    ptr))
-						fprintf(fil,
-							"\t\t\t.next=&%s_links[%d],\n",
-							d->name, d->link + 1);
-					else
-						fprintf(fil,
-							"\t\t\t.next = NULL,\n");
-					fprintf(fil, "\t\t},\n");
-				}
-				d = d->next_sibling;
-			}
-		} else {
-			if (ptr->children) {
-				fprintf(fil, "\t\t[0] = {\n");
-				fprintf(fil, "\t\t\t.link_num = 0,\n");
-				fprintf(fil, "\t\t\t.dev = &%s,\n", ptr->name);
-				fprintf(fil, "\t\t\t.children = &%s,\n",
-					ptr->children->name);
-				fprintf(fil, "\t\t\t.next = NULL,\n");
-				fprintf(fil, "\t\t},\n");
-			}
-		}
-		fprintf(fil, "\t};\n");
+	}
+	if (has_children)
+		fprintf(fil, "\t.link_list = &%s_links[0],\n",
+			ptr->name);
+	else
+		fprintf(fil, "\t.link_list = NULL,\n");
+	if (ptr->sibling)
+		fprintf(fil, "\t.sibling = &%s,\n", ptr->sibling->name);
+	fprintf(fil, "#if !DEVTREE_EARLY\n");
+	fprintf(fil, "\t.chip_ops = &%s_ops,\n",
+		chip_ins->chip->name_underscore);
+	if (chip_ins == &mainboard_instance)
+		fprintf(fil, "\t.name = mainboard_name,\n");
+	fprintf(fil, "#endif\n");
+	if (chip_ins->chip->chiph_exists)
+		fprintf(fil, "\t.chip_info = &%s_info_%d,\n",
+			chip_ins->chip->name_underscore, chip_ins->id);
+	if (next)
+		fprintf(fil, "\t.next=&%s\n", next->name);
+	fprintf(fil, "};\n");
+
+	emit_resources(fil, ptr);
+
+	if (has_children)
+		emit_dev_links(fil, ptr);
+}
+
+static void add_siblings_to_queue(struct queue_entry **bfs_q_head,
+				  struct device *d)
+{
+	while (d) {
+		enqueue_tail(bfs_q_head, d);
+		d = d->sibling;
+	}
+}
+
+static void add_children_to_queue(struct queue_entry **bfs_q_head,
+				  struct device *d)
+{
+	struct bus *bus = d->bus;
+
+	while (bus) {
+		if (bus->children)
+			add_siblings_to_queue(bfs_q_head, bus->children);
+		bus = bus->next_bus;
 	}
 }
 
 static void walk_device_tree(FILE *fil, struct device *ptr,
-			     void (*func)(FILE *, struct device *))
+			     void (*func)(FILE *, struct device *,
+					  struct device *))
 {
-	do {
-		func(fil, ptr);
-		ptr = ptr->next_sibling;
-	} while (ptr);
+	struct queue_entry *bfs_q_head = NULL;
+
+	enqueue_tail(&bfs_q_head, ptr);
+
+	while ((ptr = dequeue_head(&bfs_q_head))) {
+		add_children_to_queue(&bfs_q_head, ptr);
+		func(fil, ptr, peek_queue_head(bfs_q_head));
+	}
 }
 
 static void emit_chip_headers(FILE *fil, struct chip *chip)
@@ -742,7 +832,8 @@ static void emit_chips(FILE *fil)
 	}
 }
 
-static void inherit_subsystem_ids(FILE *file, struct device *dev)
+static void inherit_subsystem_ids(FILE *file, struct device *dev,
+				  struct device *next)
 {
 	struct device *p;
 
@@ -751,7 +842,7 @@ static void inherit_subsystem_ids(FILE *file, struct device *dev)
 		return;
 	}
 
-	for (p = dev; p && p != p->parent; p = p->parent) {
+	for (p = dev; p && p->parent->dev != p; p = p->parent->dev) {
 
 		if (p->bustype != PCI && p->bustype != DOMAIN)
 			continue;
@@ -793,8 +884,6 @@ int main(int argc, char **argv)
 
 	yyrestart(filec);
 
-	lastnode = head = &root;
-
 	yyparse();
 
 	fclose(filec);
@@ -809,13 +898,11 @@ int main(int argc, char **argv)
 
 	emit_chips(autogen);
 
-	walk_device_tree(autogen, &root, inherit_subsystem_ids);
+	walk_device_tree(autogen, &root_dev, inherit_subsystem_ids);
 	fprintf(autogen, "\n/* pass 0 */\n");
-	walk_device_tree(autogen, &root, pass0);
-	fprintf(autogen, "\n/* pass 1 */\n"
-		"DEVTREE_CONST struct device * DEVTREE_CONST last_dev = &%s;\n",
-		lastnode->name);
-	walk_device_tree(autogen, &root, pass1);
+	walk_device_tree(autogen, &root_dev, pass0);
+	fprintf(autogen, "\n/* pass 1 */\n");
+	walk_device_tree(autogen, &root_dev, pass1);
 
 	fclose(autogen);
 

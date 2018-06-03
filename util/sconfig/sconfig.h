@@ -78,50 +78,83 @@ struct chip {
 };
 
 struct device;
-struct device {
+struct bus {
+	/* Instance/ID of the bus under the device. */
 	int id;
+
+	/* Pointer to device to which this bus belongs. */
+	struct device *dev;
+
+	/* Pointer to list of children. */
+	struct device *children;
+
+	/* Pointer to next bus for the device. */
+	struct bus *next_bus;
+};
+
+struct device {
+	/* Monotonically increasing ID for the device. */
+	int id;
+
+	/* Indicates whether this device is enabled. */
 	int enabled;
-	int used;
-	int multidev;
-	int link;
+
+	/* Indicates number of resources for the device. */
 	int rescnt;
+
+	/* Subsystem IDs for the device. */
 	int subsystem_vendor;
 	int subsystem_device;
 	int inherit_subsystem;
+
+	/* Name of ops structure for the device. */
 	char *ops;
+
+	/* Name of this device. */
 	char *name;
+
+	/* Path of this device. */
 	char *path;
 	int path_a;
 	int path_b;
+
+	/* Type of bus that exists under this device. */
 	int bustype;
+
+	/* PCI IRQ info. */
 	struct pci_irq_info pci_irq_info[4];
 
-	struct device *parent;
-	struct device *next;
-	struct device *children;
-	struct device *latestchild;
-	struct device *next_sibling;
+	/* Pointer to bus of parent on which this device resides. */
+	struct bus *parent;
+
+	/* Pointer to next child under the same parent. */
 	struct device *sibling;
+
+	/* Pointer to resources for this device. */
 	struct resource *res;
 
+	/* Pointer to chip instance for this device. */
 	struct chip_instance *chip_instance;
+
+	/* Pointer to list of buses under this device. */
+	struct bus *bus;
+	/* Pointer to last bus under this device. */
+	struct bus *last_bus;
 };
 
-extern struct device *head;
+extern struct bus *root_parent;
 
-void fold_in(struct device *parent);
-
-void postprocess_devtree(void);
-
-struct device *new_device(struct device *parent,
+struct device *new_device(struct bus *parent,
 			  struct chip_instance *chip_instance,
 			  const int bustype, const char *devnum,
 			  int enabled);
-void alias_siblings(struct device *d);
-void add_resource(struct device *dev, int type, int index, int base);
-void add_pci_subsystem_ids(struct device *dev, int vendor, int device,
+
+void add_resource(struct bus *bus, int type, int index, int base);
+
+void add_pci_subsystem_ids(struct bus *bus, int vendor, int device,
 			   int inherit);
-void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin,
+
+void add_ioapic_info(struct bus *bus, int apicid, const char *_srcpin,
 		     int irqpin);
 
 void yyrestart(FILE *input_file);

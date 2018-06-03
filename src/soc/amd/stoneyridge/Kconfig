@@ -143,17 +143,9 @@ config S3_VGA_ROM_RUN
 	bool
 	default n
 
-config RAMTOP
-	hex
-	default 0x1000000
-
 config HEAP_SIZE
 	hex
 	default 0xc0000
-
-config RAMBASE
-	hex
-	default 0x200000
 
 config SOUTHBRIDGE_AMD_STONEYRIDGE_SKIP_ISA_DMA_INIT
 	bool

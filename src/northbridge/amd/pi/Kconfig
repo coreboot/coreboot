@@ -53,16 +53,8 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
 
-config RAMTOP
-	hex
-	default 0x1000000
-
 config HEAP_SIZE
 	hex
 	default 0xc0000
-
-config RAMBASE
-	hex
-	default 0x200000
 
 endif # NORTHBRIDGE_AMD_PI

@@ -148,9 +148,6 @@ static void ConcatenateNodes(BIOS_BUFFER_NODE *FirstNodePtr,
 	memset(SecondNodePtr, 0, sizeof(BIOS_BUFFER_NODE));
 }
 
-#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
-#error "Only EARLY_CBMEM_INIT is supported."
-#endif
 ROMSTAGE_CBMEM_INIT_HOOK(EmptyHeap)
 
 AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)

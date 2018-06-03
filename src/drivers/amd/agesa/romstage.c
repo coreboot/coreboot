@@ -29,9 +29,6 @@
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
-#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
-#error "Only EARLY_CBMEM_INIT is supported."
-#endif
 #if !IS_ENABLED(CONFIG_POSTCAR_STAGE)
 #error "Only POSTCAR_STAGE is supported."
 #endif

@@ -129,18 +129,6 @@ config CBMEM_TOP_BACKUP
 	  Platform implements non-volatile storage to cache cbmem_top()
 	  over stage transitions and optionally also over S3 suspend.
 
-config LATE_CBMEM_INIT
-	def_bool n
-	select CBMEM_TOP_BACKUP
-	help
-	  Enable this in chipset's Kconfig if northbridge does not implement
-	  early cbmem_top() call for romstage. CBMEM tables will be allocated
-	  late in ramstage, after PCI devices resources are known.
-
-	  WARNING: Late CBMEM initialization is deprecated. Platforms that
-	  don't support early CBMEM initialization will be removed after
-	  the release of coreboot 4.7.
-
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0xc00

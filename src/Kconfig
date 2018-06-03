@@ -234,7 +234,6 @@ config NO_RELOCATABLE_RAMSTAGE
 
 config RELOCATABLE_RAMSTAGE
 	bool
-	depends on EARLY_CBMEM_INIT
 	default !NO_RELOCATABLE_RAMSTAGE
 	select RELOCATABLE_MODULES
 	help
@@ -451,12 +450,10 @@ config RESUME_PATH_SAME_AS_BOOT
 
 config HAVE_ROMSTAGE_CONSOLE_SPINLOCK
 	bool
-	depends on EARLY_CBMEM_INIT
 	default n
 
 config HAVE_ROMSTAGE_NVRAM_CBFS_SPINLOCK
 	bool
-	depends on EARLY_CBMEM_INIT
 	default n
 	help
 	  This should be enabled on certain plaforms, such as the AMD
@@ -465,7 +462,6 @@ config HAVE_ROMSTAGE_NVRAM_CBFS_SPINLOCK
 
 config HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK
 	bool
-	depends on EARLY_CBMEM_INIT
 	default n
 
 config HAVE_MONOTONIC_TIMER
@@ -1132,9 +1128,6 @@ config NO_XIP_EARLY_STAGES
 	default y
 	help
 	  Identify if early stages are eXecute-In-Place(XIP).
-
-config EARLY_CBMEM_INIT
-	def_bool !LATE_CBMEM_INIT
 
 config EARLY_CBMEM_LIST
 	bool

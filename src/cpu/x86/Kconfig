@@ -88,7 +88,6 @@ config NO_FIXED_XIP_ROM_SIZE
 config XIP_ROM_SIZE
 	hex
 	depends on !NO_FIXED_XIP_ROM_SIZE
-	default ROM_SIZE if ROMCC
 	default 0x10000
 
 config CPU_ADDR_BITS

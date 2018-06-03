@@ -8,7 +8,7 @@ if ARCH_X86
 
 config CACHE_AS_RAM
 	bool
-	default !ROMCC
+	default y
 
 config NO_CAR_GLOBAL_MIGRATION
 	bool

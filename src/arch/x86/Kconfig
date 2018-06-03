@@ -107,10 +107,6 @@ config NUM_IPI_STARTS
 	int
 	default 2
 
-config ROMCC
-	bool
-	default n
-
 config CBMEM_TOP_BACKUP
 	def_bool n
 	help

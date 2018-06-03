@@ -136,17 +136,7 @@ asmlinkage void * post_cache_as_ram(void)
 	if ((*lower_stack_boundary) != 0xdeadbeef)
 		printk(BIOS_WARNING, "BSP overran lower stack boundary.  Undefined behaviour may result!\n");
 
-	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)) {
-		s3resume = acpi_is_wakeup_s3();
-	} else {
-		if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME))
-			s3resume = (acpi_get_sleep_type() == ACPI_S3);
-		/* For normal boot path, boards with LATE_CBMEM_INIT will do
-		 * cbmem_initialize_empty() late in ramstage.
-		 */
-		if (s3resume)
-			cbmem_recovery(s3resume);
-	}
+	s3resume = acpi_is_wakeup_s3();
 
 	prepare_romstage_ramstack(s3resume);
 

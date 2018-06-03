@@ -561,7 +561,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	execute_memory_test();
 #endif
 
-#if !IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 	if (s3resume)
 		cbmem_initialize();
 	else
@@ -571,7 +570,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	romstage_handoff_init(s3resume);
 
 	amdmct_cbmem_store_info(sysinfo);
-#endif
 
 	printk(BIOS_DEBUG, "disable_spd()\n");
 	switch_spd_mux(0x1);

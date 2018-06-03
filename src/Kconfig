@@ -227,6 +227,11 @@ config UBSAN
 	  say N because it adds a small performance penalty and may abort
 	  on code that happens to work in spite of the UB.
 
+config NO_RELOCATABLE_RAMSTAGE
+	bool
+	default n if ARCH_X86
+	default y
+
 config RELOCATABLE_RAMSTAGE
 	depends on EARLY_CBMEM_INIT
 	bool "Build the ramstage to be relocatable in 32-bit address space."

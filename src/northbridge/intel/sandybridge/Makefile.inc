@@ -46,4 +46,6 @@ romstage-y += ../../../arch/x86/walkcbfs.S
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
+postcar-y += ram_calc.c
+
 endif

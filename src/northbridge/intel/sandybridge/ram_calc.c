@@ -46,9 +46,10 @@ void *cbmem_top(void)
 
 #define ROMSTAGE_RAM_STACK_SIZE 0x5000
 
-/* setup_stack_and_mtrrs() determines the stack to use after
- * cache-as-ram is torn down as well as the MTRR settings to use. */
-void *setup_stack_and_mtrrs(void)
+/* platform_enter_postcar() determines the stack to use after
+ * cache-as-ram is torn down as well as the MTRR settings to use,
+ * and continues execution in postcar stage. */
+void platform_enter_postcar(void)
 {
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
@@ -76,8 +77,7 @@ void *setup_stack_and_mtrrs(void)
 	 * handler as well as using the TSEG region for other purposes. */
 	postcar_frame_add_mtrr(&pcf, top_of_ram, 8*MiB, MTRR_TYPE_WRBACK);
 
-	/* Save the number of MTRRs to setup. Return the stack location
-	 * pointing to the number of MTRRs.
-	 */
-	return postcar_commit_mtrrs(&pcf);
+	run_postcar_phase(&pcf);
+
+	/* We do not return here. */
 }

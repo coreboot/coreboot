@@ -62,11 +62,11 @@ static struct device root = {
 	.enabled = 1
 };
 
-static struct queue {
+struct queue_entry {
 	void *data;
-	struct queue *next;
-	struct queue *prev;
-} *q;
+	struct queue_entry *next;
+	struct queue_entry *prev;
+};
 
 #define S_ALLOC(_s)	s_alloc(__func__, _s)
 
@@ -80,21 +80,22 @@ static void *s_alloc(const char *f, size_t s)
 	return data;
 }
 
-struct queue *new_queue_entry(void *data)
+static struct queue_entry *new_queue_entry(void *data)
 {
-	struct queue *e = S_ALLOC(sizeof(*e));
+	struct queue_entry *e = S_ALLOC(sizeof(*e));
 
 	e->data = data;
 	e->next = e->prev = e;
 	return e;
 }
 
-void chip_enqueue_tail(void *data)
+static void enqueue_tail(struct queue_entry **q_head, void *data)
 {
-	struct queue *tmp = new_queue_entry(data);
+	struct queue_entry *tmp = new_queue_entry(data);
+	struct queue_entry *q = *q_head;
 
 	if (!q) {
-		q = tmp;
+		*q_head = tmp;
 		return;
 	}
 
@@ -104,13 +105,19 @@ void chip_enqueue_tail(void *data)
 	tmp->next = q;
 }
 
-void *chip_dequeue_tail(void)
+static void *dequeue_tail(struct queue_entry **q_head)
 {
-	struct queue *tmp = q->prev;
+	struct queue_entry *q = *q_head;
+	struct queue_entry *tmp;
 	void *data;
 
+	if (!q)
+		return NULL;
+
+	tmp = q->prev;
+
 	if (tmp == q)
-		q = NULL;
+		*q_head = NULL;
 	else {
 		tmp->prev->next = q;
 		q->prev = tmp->prev;
@@ -120,6 +127,49 @@ void *chip_dequeue_tail(void)
 	free(tmp);
 
 	return data;
+}
+
+static void *dequeue_head(struct queue_entry **q_head)
+{
+	struct queue_entry *q = *q_head;
+	struct queue_entry *tmp = q;
+	void *data;
+
+	if (!q)
+		return NULL;
+
+	if (q->next == q)
+		*q_head = NULL;
+	else {
+		q->next->prev = q->prev;
+		q->prev->next = q->next;
+		*q_head = q->next;
+	}
+
+	data = tmp->data;
+	free(tmp);
+
+	return data;
+}
+
+static void *peek_queue_head(struct queue_entry *q_head)
+{
+	if (!q_head)
+		return NULL;
+
+	return q_head->data;
+}
+
+static struct queue_entry *chip_q_head;
+
+void chip_enqueue_tail(void *data)
+{
+	enqueue_tail(&chip_q_head, data);
+}
+
+void *chip_dequeue_tail(void)
+{
+	return dequeue_tail(&chip_q_head);
 }
 
 static struct device *new_dev(struct device *parent)

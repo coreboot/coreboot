@@ -621,8 +621,7 @@ static void pass1(FILE *fil, struct device *ptr)
 }
 
 static void walk_device_tree(FILE *fil, struct device *ptr,
-			     void (*func)(FILE *, struct device *),
-			     struct device *chips)
+			     void (*func)(FILE *, struct device *))
 {
 	do {
 		func(fil, ptr);
@@ -760,13 +759,13 @@ int main(int argc, char **argv)
 
 	emit_chips(autogen);
 
-	walk_device_tree(autogen, &root, inherit_subsystem_ids, NULL);
+	walk_device_tree(autogen, &root, inherit_subsystem_ids);
 	fprintf(autogen, "\n/* pass 0 */\n");
-	walk_device_tree(autogen, &root, pass0, NULL);
+	walk_device_tree(autogen, &root, pass0);
 	fprintf(autogen, "\n/* pass 1 */\n"
 		"DEVTREE_CONST struct device * DEVTREE_CONST last_dev = &%s;\n",
 		lastnode->name);
-	walk_device_tree(autogen, &root, pass1, NULL);
+	walk_device_tree(autogen, &root, pass1);
 
 	fclose(autogen);
 

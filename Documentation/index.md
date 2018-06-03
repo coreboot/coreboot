@@ -18,3 +18,4 @@ Contents:
 * [System on Chip-specific documentation](soc/index.md)
 * [Mainboard-specific documentation](mainboard/index.md)
 * [SuperIO-specific documentation](superio/index.md)
+* [Release notes for past releases](releases/index.md)

@@ -187,8 +187,6 @@ static boot_state_t bs_os_resume_check(void *arg)
 		boot_states[BS_OS_RESUME].arg = wake_vector;
 		return BS_OS_RESUME;
 	}
-
-	acpi_prepare_resume_backup();
 #endif
 	timestamp_add_now(TS_CBMEM_POST);
 

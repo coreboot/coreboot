@@ -484,6 +484,7 @@ source "src/console/Kconfig"
 config HAVE_ACPI_RESUME
 	bool
 	default n
+	depends on RELOCATABLE_RAMSTAGE
 
 config RESUME_PATH_SAME_AS_BOOT
 	bool

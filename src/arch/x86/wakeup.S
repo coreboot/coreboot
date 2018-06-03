@@ -64,14 +64,6 @@ __wakeup:
 	shr	$4, %eax
 	movw	%ax, (__wakeup_segment)
 
-	/* Then overwrite coreboot with our backed up memory */
-	cld
-	movl	8(%esp), %esi
-	movl	12(%esp), %edi
-	movl	16(%esp), %ecx
-	shrl	$2, %ecx
-	rep	movsl
-
 	/* Activate the right segment descriptor real mode. */
 	ljmp	$0x28, $RELOCATED(1f)
 1:

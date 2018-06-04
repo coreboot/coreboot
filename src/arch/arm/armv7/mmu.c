@@ -45,8 +45,8 @@
 #define ATTR_BLOCK (\
 	0ULL << 54 |	/* XN. 0:Not restricted */ \
 	0ULL << 53 |	/* PXN. 0:Not restricted */ \
-	1 << 10 |	/* AF. 1:Accessed. This is to prevent access \
-			 * fault when accessed for the first time */ \
+	1 << 10 |	/* AF. 1:Accessed. This is to prevent access */ \
+			/* fault when accessed for the first time */ \
 	0 << 6 |	/* AP[2:1]. 0b00:full access from PL1 */ \
 	0 << 5 |	/* NS. 0:Output address is in Secure space */ \
 	0 << 1 |	/* block/table. 0:block entry */ \
@@ -219,7 +219,7 @@ void mmu_config_range_kb(u32 start_kb, u32 size_kb, enum dcache_policy policy)
 	       start_kb * KiB, (start_kb + size_kb) * KiB, attrs[policy].name);
 
 	u32 end_kb = ALIGN_UP((start_kb + size_kb), PAGE_SIZE/KiB) -
-			(start_kb & ~mask);
+		     (start_kb & ~mask);
 
 	assert(end_kb <= BLOCK_SIZE/KiB);
 
@@ -285,7 +285,7 @@ void mmu_init(void)
 		int i;
 
 		printk(BIOS_DEBUG, "LPAE Translation tables are @ %p\n",
-			ttb_buff);
+		       ttb_buff);
 		ASSERT((read_mmfr0() & 0xf) >= 5);
 
 		/*
@@ -308,7 +308,7 @@ void mmu_init(void)
 		 */
 		for (i = 0; i < 4; i++) {
 			pgd_buff[i] = ((uint32_t)pmd & NEXTLEVEL_MASK) |
-				ATTR_NEXTLEVEL;
+				      ATTR_NEXTLEVEL;
 			pmd += BLOCK_SIZE / PAGE_SIZE;
 		}
 

@@ -58,13 +58,6 @@ config DCACHE_RAM_MRC_VAR_SIZE
 	help
 	  The amount of cache-as-ram region required by the reference code.
 
-config DCACHE_RAM_ROMSTAGE_STACK_SIZE
-	hex
-	default 0x2000
-	help
-	  The amount of anticipated stack usage from the data cache
-	  during pre-ram ROM stage execution.
-
 config HAVE_MRC
 	bool "Add a System Agent binary"
 	help

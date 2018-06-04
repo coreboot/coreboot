@@ -2,6 +2,7 @@ ramstage-y += haswell_init.c
 ramstage-y += tsc_freq.c
 romstage-y += romstage.c
 romstage-y += tsc_freq.c
+romstage-y += ../car/romstage.c
 
 ramstage-y += acpi.c
 ramstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c

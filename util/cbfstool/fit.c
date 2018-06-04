@@ -115,6 +115,26 @@ static inline uint32_t offset_to_ptr(fit_offset_converter_t helper,
 	return -helper(region, offset);
 }
 
+static int fit_table_verified(struct fit_table *table)
+{
+	/* Check that the address field has the proper signature. */
+	if (strncmp((const char *)&table->header.address, FIT_HEADER_ADDRESS,
+			sizeof(table->header.address)))
+		return 0;
+
+	if (table->header.version != FIT_HEADER_VERSION)
+		return 0;
+
+	if (fit_entry_type(&table->header) != FIT_TYPE_HEADER)
+		return 0;
+
+	/* Assume that the FIT table only contains the header */
+	if (fit_entry_size_bytes(&table->header) != sizeof(struct fit_entry))
+		return 0;
+
+	return 1;
+}
+
 static struct fit_table *locate_fit_table(fit_offset_converter_t offset_helper,
 					  struct buffer *buffer)
 {
@@ -131,23 +151,10 @@ static struct fit_table *locate_fit_table(fit_offset_converter_t offset_helper,
 
 	table = rom_buffer_pointer(buffer,
 			   ptr_to_offset(offset_helper, buffer, *fit_pointer));
-
-	/* Check that the address field has the proper signature. */
-	if (strncmp((const char *)&table->header.address, FIT_HEADER_ADDRESS,
-	            sizeof(table->header.address)))
+	if (!fit_table_verified(table))
 		return NULL;
-
-	if (table->header.version != FIT_HEADER_VERSION)
-		return NULL;
-
-	if (fit_entry_type(&table->header) != FIT_TYPE_HEADER)
-		return NULL;
-
-	/* Assume that the FIT table only contains the header */
-	if (fit_entry_size_bytes(&table->header) != sizeof(struct fit_entry))
-		return NULL;
-
-	return table;
+	else
+		return table;
 }
 
 static void update_fit_checksum(struct fit_table *fit)
@@ -166,24 +173,46 @@ static void update_fit_checksum(struct fit_table *fit)
 	fit->header.checksum = -result;
 }
 
+static void update_fit_ucode_entry(struct fit_table *fit,
+				struct fit_entry *entry, uint64_t mcu_addr)
+{
+	entry->address = mcu_addr;
+	/*
+	 * While loading MCU, its size is not referred from FIT and
+	 * rather from the MCU header, hence we can assign zero here
+	 */
+	entry->size_reserved = 0x0000;
+	/* Checksum valid should be cleared for MCU */
+	entry->type_checksum_valid = 0;
+	entry->version = FIT_MICROCODE_VERSION;
+	entry->checksum = 0;
+	fit_entry_add_size(&fit->header, sizeof(struct fit_entry));
+}
+
 static void add_microcodde_entries(struct fit_table *fit,
 				   const struct cbfs_image *image,
 				   int num_mcus, struct microcode_entry *mcus,
-				   fit_offset_converter_t offset_helper)
+				   fit_offset_converter_t offset_helper,
+				   uint32_t first_mcu_addr)
 {
-	int i;
+	int i = 0;
+	/*
+	 * Check if an entry has to be forced into the FIT at index 0.
+	 * first_mcu_addr is an address (in ROM) that will point to a
+	 * microcode patch.
+	 */
+	if (first_mcu_addr) {
+		struct fit_entry *entry = &fit->entries[0];
+		update_fit_ucode_entry(fit, entry, first_mcu_addr);
+		i = 1;
+	}
 
-	for (i = 0; i < num_mcus; i++) {
+	struct microcode_entry *mcu = &mcus[0];
+	for (; i < num_mcus; i++) {
 		struct fit_entry *entry = &fit->entries[i];
-		struct microcode_entry *mcu = &mcus[i];
-
-		entry->address = offset_to_ptr(offset_helper, &image->buffer,
-								mcu->offset);
-		fit_entry_update_size(entry, mcu->size);
-		entry->version = FIT_MICROCODE_VERSION;
-		entry->type_checksum_valid = FIT_TYPE_MICROCODE;
-		entry->checksum = 0;
-		fit_entry_add_size(&fit->header, sizeof(struct fit_entry));
+		update_fit_ucode_entry(fit, entry, offset_to_ptr(offset_helper,
+						&image->buffer, mcu->offset));
+		mcu++;
 	}
 }
 
@@ -209,8 +238,9 @@ static int fit_header(void *ptr, uint32_t *current_offset, uint32_t *file_length
 }
 
 static int parse_microcode_blob(struct cbfs_image *image,
-                                struct cbfs_file *mcode_file,
-                                struct microcode_entry *mcus, int *total_mcus)
+				struct cbfs_file *mcode_file,
+				struct microcode_entry *mcus,
+				int total_entries, int *mcus_found)
 {
 	int num_mcus;
 	uint32_t current_offset;
@@ -245,25 +275,28 @@ static int parse_microcode_blob(struct cbfs_image *image,
 		num_mcus++;
 
 		/* Reached limit of FIT entries. */
-		if (num_mcus == *total_mcus)
+		if (num_mcus == total_entries)
 			break;
 		if (file_length < sizeof(struct microcode_header))
 			break;
 	}
 
 	/* Update how many microcode updates we found. */
-	*total_mcus = num_mcus;
+	*mcus_found = num_mcus;
 
 	return 0;
 }
 
 int fit_update_table(struct buffer *bootblock, struct cbfs_image *image,
 		     const char *microcode_blob_name, int empty_entries,
-		     fit_offset_converter_t offset_fn)
+		     fit_offset_converter_t offset_fn, uint32_t topswap_size,
+			uint32_t first_mcu_addr)
 {
-	struct fit_table *fit;
+	struct fit_table *fit, *fit2;
 	struct cbfs_file *mcode_file;
 	struct microcode_entry *mcus;
+	int mcus_found;
+
 	int ret = 0;
 	// struct rom_image image = { .rom = rom, .size = romsize, };
 
@@ -288,15 +321,43 @@ int fit_update_table(struct buffer *bootblock, struct cbfs_image *image,
 		return 1;
 	}
 
-	if (parse_microcode_blob(image, mcode_file, mcus, &empty_entries)) {
+	if (parse_microcode_blob(image, mcode_file, mcus, empty_entries,
+						&mcus_found)) {
 		ERROR("Couldn't parse microcode blob.\n");
 		ret = 1;
 		goto out;
 	}
 
-	add_microcodde_entries(fit, image, empty_entries, mcus, offset_fn);
+	add_microcodde_entries(fit, image, mcus_found, mcus, offset_fn, 0);
+
 	update_fit_checksum(fit);
 
+	/* A second fit is exactly topswap size away from the bottom one */
+	if (topswap_size) {
+
+		fit2 = (struct fit_table *)((uintptr_t)fit - topswap_size);
+
+		if (!fit_table_verified(fit2)) {
+			ERROR("second FIT is invalid\n");
+			ret = 1;
+			goto out;
+		}
+		/* Check if we have room for first entry */
+		if (first_mcu_addr) {
+			if (mcus_found >= empty_entries) {
+				ERROR("No room, blob mcus = %d, total entries = %d\n",
+					mcus_found, empty_entries);
+				ret = 1;
+				goto out;
+			}
+			/* Add 1 for the first entry */
+			mcus_found++;
+		}
+		/* Add entries in the second FIT */
+		add_microcodde_entries(fit2, image, mcus_found, mcus,
+						offset_fn, first_mcu_addr);
+		update_fit_checksum(fit2);
+	}
 out:
 	free(mcus);
 	return ret;

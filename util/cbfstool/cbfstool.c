@@ -59,6 +59,7 @@ static struct param {
 	const char *source_region;
 	const char *bootblock;
 	const char *ignore_section;
+	const char *ucode_region;
 	uint64_t u64val;
 	uint32_t type;
 	uint32_t baseaddress;
@@ -1209,8 +1210,25 @@ static int cbfs_update_fit(void)
 							param.headeroffset))
 		return 1;
 
+	uint32_t addr = 0;
+
+	/*
+	 * get the address of provided region for first row.
+	 */
+	if (param.ucode_region) {
+		struct buffer ucode;
+
+		if (partitioned_file_read_region(&ucode,
+				param.image_file, param.ucode_region))
+			addr = -convert_to_from_top_aligned(&ucode, 0);
+		else
+			return 1;
+	}
+
+
 	if (fit_update_table(&bootblock, &image, param.name,
-			param.fit_empty_entries, convert_to_from_top_aligned))
+			param.fit_empty_entries, convert_to_from_top_aligned,
+						param.topswap_size, addr))
 		return 1;
 
 	// The region to be written depends on the type of image, so we write it
@@ -1300,7 +1318,7 @@ static const struct command commands[] = {
 	{"print", "H:r:vkh?", cbfs_print, true, false},
 	{"read", "r:f:vh?", cbfs_read, true, false},
 	{"remove", "H:r:n:vh?", cbfs_remove, true, true},
-	{"update-fit", "H:r:n:x:vh?", cbfs_update_fit, true, true},
+	{"update-fit", "H:r:n:x:vh?j:q:", cbfs_update_fit, true, true},
 	{"write", "r:f:i:Fudvh?", cbfs_write, true, true},
 	{"expand", "r:h?", cbfs_expand, true, true},
 	{"truncate", "r:h?", cbfs_truncate, true, true},
@@ -1334,6 +1352,7 @@ static struct option long_options[] = {
 	{"offset",        required_argument, 0, 'o' },
 	{"padding",       required_argument, 0, 'p' },
 	{"page-size",     required_argument, 0, 'P' },
+	{"ucode-region",  required_argument, 0, 'q' },
 	{"size",          required_argument, 0, 's' },
 	{"top-aligned",   required_argument, 0, 'T' },
 	{"type",          required_argument, 0, 't' },
@@ -1464,8 +1483,13 @@ static void usage(char *name)
 	     " expand [-r fmap-region]                                     "
 			"Expand CBFS to span entire region\n"
 	     " update-fit [-r image,regions] -n MICROCODE_BLOB_NAME \\\n"
-	     "        -x EMTPY_FIT_ENTRIES                                 "
-			"Updates the FIT table with microcode entries\n"
+	     "        -x EMTPY_FIT_ENTRIES \\                         \n"
+	     "        [-j topswap-size [-q ucode-region](Intel CPUs only)] "
+			"Updates the FIT table with microcode entries.\n"
+	     "                                                         "
+	     "    ucode-region is a region in the FMAP, its address is \n"
+	     "                                                         "
+	     "    inserted as the first entry in the topswap FIT.  \n"
 	     "\n"
 	     "OFFSETs:\n"
 	     "  Numbers accompanying -b, -H, and -o switches* may be provided\n"
@@ -1717,6 +1741,9 @@ int main(int argc, char **argv)
 				param.topswap_size = strtol(optarg, NULL, 0);
 				if (!is_valid_topswap())
 					return 1;
+				break;
+			case 'q':
+				param.ucode_region = optarg;
 				break;
 			case 'v':
 				verbose++;

@@ -132,8 +132,6 @@ chip soc/intel/skylake
 		.voltage_limit = 0x0 \
 	}"
 
-	register "FspSkipMpInit" = "1"
-
 	# Enable Root ports.
 	register "PcieRpEnable[2]" = "1"
 	register "PcieRpEnable[3]" = "1"

@@ -434,7 +434,12 @@ struct soc_intel_skylake_config {
 		SERIAL_IRQ_FRAME_PULSE_8CLK = 2,
 	} SerialIrqConfigStartFramePulse;
 
-	u8 FspSkipMpInit;
+	/*
+	 * Option for mainboard to skip coreboot MP initialization
+	 * 0 = Make use of coreboot MP Init
+	 * 1 = Make use of FSP MP Init
+	 */
+	u8 use_fsp_mp_init;
 
 	/*
 	 * VrConfig Settings for 5 domains

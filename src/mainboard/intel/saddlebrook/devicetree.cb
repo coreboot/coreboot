@@ -142,7 +142,8 @@ chip soc/intel/skylake
 		.voltage_limit = 0x5F0 \
 	}"
 
-	register "FspSkipMpInit" = "0"
+	# Skip coreboot MP Init
+	register "use_fsp_mp_init" = "1"
 
 	# Enable x1 slot
 	register "PcieRpEnable[7]" = "1"

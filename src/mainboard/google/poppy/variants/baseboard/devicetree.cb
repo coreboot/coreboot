@@ -51,7 +51,6 @@ chip soc/intel/skylake
 	register "SkipExtGfxScan" = "1"
 	register "Device4Enable" = "1"
 	register "HeciEnabled" = "0"
-	register "FspSkipMpInit" = "1"
 	register "SaGv" = "3"
 	register "SerialIrqConfigSirqEnable" = "1"
 	register "PmConfigSlpS3MinAssert" = "2"        # 50ms

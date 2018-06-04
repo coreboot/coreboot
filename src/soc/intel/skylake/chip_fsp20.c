@@ -387,7 +387,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchSirqEnable = config->SerialIrqConfigSirqEnable;
 	params->PchSirqMode = config->SerialIrqConfigSirqMode;
 
-	params->CpuConfig.Bits.SkipMpInit = config->FspSkipMpInit;
+	params->CpuConfig.Bits.SkipMpInit = !config->use_fsp_mp_init;
 
 	for (i = 0; i < ARRAY_SIZE(config->i2c); i++)
 		params->SerialIoI2cVoltage[i] = config->i2c_voltage[i];

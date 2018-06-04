@@ -35,6 +35,7 @@ SMC8416 PIO support added by Andrew Bettison (andrewb@zip.com.au) on 4/3/02
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <rules.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ip_checksum.h>
@@ -107,73 +108,7 @@ void ne2k_append_data(unsigned char *d, int len, unsigned int base)
 	set_count(base, get_count(base)+len);
 }
 
-#ifdef __ROMCC__
-
-void eth_pio_write_byte(int data, unsigned short dst, unsigned int eth_nic_base)
-{
-	outb(D8390_COMMAND_RD2 | D8390_COMMAND_STA, eth_nic_base + D8390_P0_COMMAND);
-	outb(D8390_ISR_RDC, eth_nic_base + D8390_P0_ISR);
-	outb(1, eth_nic_base + D8390_P0_RBCR0);
-	outb(0, eth_nic_base + D8390_P0_RBCR1);
-	outb(dst, eth_nic_base + D8390_P0_RSAR0);
-	outb(dst >> 8, eth_nic_base + D8390_P0_RSAR1);
-	outb(D8390_COMMAND_RD1 | D8390_COMMAND_STA, eth_nic_base + D8390_P0_COMMAND);
-	outb(data, eth_nic_base + NE_ASIC_OFFSET + NE_DATA);
-
-	while ((inb(eth_nic_base + D8390_P0_ISR) & D8390_ISR_RDC) != D8390_ISR_RDC)
-		;
-}
-
-void ne2k_append_data_byte(int d, unsigned int base)
-{
-	eth_pio_write_byte(d, (TX_START << 8) + 42 + get_count(base), base);
-	set_count(base, get_count(base)+1);
-}
-
-static unsigned char eth_pio_read_byte(unsigned int src,
-				unsigned int eth_nic_base)
-{
-	outb(D8390_COMMAND_RD2 | D8390_COMMAND_STA, eth_nic_base + D8390_P0_COMMAND);
-	outb(0, eth_nic_base + D8390_P0_RBCR0);
-	outb(1, eth_nic_base + D8390_P0_RBCR1);
-	outb(src, eth_nic_base + D8390_P0_RSAR0);
-	outb(src >> 8, eth_nic_base + D8390_P0_RSAR1);
-	outb(D8390_COMMAND_RD0 | D8390_COMMAND_STA, eth_nic_base + D8390_P0_COMMAND);
-	return inb(eth_nic_base + NE_ASIC_OFFSET + NE_DATA);
-}
-
-
-/* Variation of compute_ip_checksum which works on SRAM */
-unsigned long compute_ip_checksum_from_sram(unsigned short offset, unsigned short length,
-					unsigned int eth_nic_base)
-{
-	unsigned long sum;
-	unsigned long i;
-	/* In the most straight forward way possible,
-	 * compute an ip style checksum.
-	 */
-	sum = 0;
-	for (i = 0; i < length; i++) {
-		unsigned long v;
-		v = eth_pio_read_byte((TX_START << 8)+i+offset, eth_nic_base);
-		if (i & 1) {
-			v <<= 8;
-		}
-		/* Add the new value */
-		sum += v;
-		/* Wrap around the carry */
-		if (sum > 0xFFFF) {
-			sum = (sum + (sum >> 16)) & 0xFFFF;
-		}
-	}
-	return   (~((sum & 0xff) | (((sum >> 8) & 0xff) << 8) )) & 0xffff;
-}
-
-
-static void str2ip_load(const char *str, unsigned short offset, unsigned int eth_nic_base)
-#else
 static void str2ip(const char *str, unsigned char *ip)
-#endif
 {
 	unsigned char c, i = 0;
 	int acc = 0;
@@ -184,23 +119,14 @@ static void str2ip(const char *str, unsigned char *ip)
 			acc *= 10;
 			acc += (c - '0');
 		} else {
-#ifdef __ROMCC__
-			eth_pio_write_byte(acc, (TX_START << 8)+offset, eth_nic_base);
-			offset++;
-#else
 			*ip++ = acc;
-#endif
 			acc = 0;
 		}
 		i++;
 	} while (c != '\0');
 }
 
-#ifdef __ROMCC__
-static void str2mac_load(const char *str, unsigned short offset, unsigned int eth_nic_base)
-#else
 static void str2mac(const char *str, unsigned char *mac)
-#endif
 {
 	unsigned char c, i = 0;
 	int acc = 0;
@@ -218,12 +144,7 @@ static void str2mac(const char *str, unsigned char *mac)
 			acc *= 16;
 			acc += ((c - 'A') + 10) ;
 		} else {
-#ifdef __ROMCC__
-			eth_pio_write_byte(acc, ((TX_START << 8)+offset), eth_nic_base);
-			offset++;
-#else
 			*mac++ = acc;
-#endif
 			acc = 0;
 		}
 
@@ -232,39 +153,31 @@ static void str2mac(const char *str, unsigned char *mac)
 }
 
 
-#ifndef __ROMCC__
-static void ns8390_tx_header(unsigned int eth_nic_base, int pktlen) {
+static void ns8390_tx_header(unsigned int eth_nic_base, int pktlen)
+{
 	unsigned short chksum;
 	unsigned char hdr[] = {
-#else
-static const unsigned char hdr[] = {
-#endif
-		/*
-		 * ETHERNET HDR
-		 */
-
-		// destination macaddr
+		/* ETHERNET HDR */
+		/* destination macaddr */
 		0x02, 0x00, 0x00, 0x00, 0x00, 0x01,
 		/* source mac */
 		0x02, 0x00, 0x00, 0xC0, 0xFF, 0xEE,
 		/* ethtype (IP) */
 		0x08, 0x00,
-		/*
-		 * IP HDR
-		 */
+
+		/* IP HDR */
 		0x45, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00,
 		/* TTL, proto (UDP), chksum_hi, chksum_lo, IP0, IP1, IP2, IP3, */
 		0x40, 0x11, 0x0, 0x0, 0x7f, 0x0, 0x0, 0x1,
 		/* IP0, IP1, IP2, IP3  */
 		0xff, 0xff, 0xff, 0xff,
-		/*
-		 * UDP HDR
-		 */
-		/*  SRC PORT DST PORT  (2bytes each), ulen, uchksum (must be zero or correct */
+
+		/* UDP HDR */
+		/* SRC PORT DST PORT (2 bytes each),
+		 * ulen, uchksum (must be zero or correct */
 		0x1a, 0x0b, 0x1a, 0x0a, 0x00, 0x9, 0x00, 0x00,
 	};
 
-#ifndef __ROMCC__
 	str2mac(CONFIG_CONSOLE_NE2K_DST_MAC,  &hdr[0]);
 	str2ip(CONFIG_CONSOLE_NE2K_DST_IP, &hdr[30]);
 	str2ip(CONFIG_CONSOLE_NE2K_SRC_IP, &hdr[26]);
@@ -287,40 +200,6 @@ static const unsigned char hdr[] = {
 	hdr[24] = chksum;
 	eth_pio_write(hdr, (TX_START << 8), sizeof(hdr), eth_nic_base);
 }
-
-
-#else
-
-/* ROMCC madness */
-static void ns8390_tx_header(unsigned int eth_nic_base, int pktlen)
-{
-	unsigned short chksum;
-
-	eth_pio_write(hdr, (TX_START << 8), sizeof(hdr), eth_nic_base);
-
-	str2mac_load(CONFIG_CONSOLE_NE2K_DST_MAC, 0, eth_nic_base);
-
-	str2ip_load(CONFIG_CONSOLE_NE2K_DST_IP, 30, eth_nic_base);
-	str2ip_load(CONFIG_CONSOLE_NE2K_SRC_IP, 26, eth_nic_base);
-	/* zero checksum */
-	eth_pio_write_byte(0, (TX_START << 8)+24, eth_nic_base);
-	eth_pio_write_byte(0, (TX_START << 8)+25, eth_nic_base);
-
-	/* update IP packet len */
-	eth_pio_write_byte(((28 + pktlen) >> 8) & 0xff, (TX_START << 8)+16, eth_nic_base);
-	eth_pio_write_byte( (28 + pktlen) & 0xff, (TX_START << 8)+17, eth_nic_base);
-
-	/* update UDP len */
-	eth_pio_write_byte((8 + pktlen) >> 8, (TX_START << 8)+38, eth_nic_base);
-	eth_pio_write_byte( 8 + pktlen, (TX_START << 8)+39, eth_nic_base);
-
-	chksum = compute_ip_checksum_from_sram(14, 20, eth_nic_base);
-
-	eth_pio_write_byte(chksum, (TX_START << 8)+24, eth_nic_base);
-	eth_pio_write_byte(chksum >> 8, (TX_START << 8)+25, eth_nic_base);
-}
-
-#endif
 
 void ne2k_transmit(unsigned int eth_nic_base) {
 	unsigned int pktsize;
@@ -351,7 +230,7 @@ void ne2k_transmit(unsigned int eth_nic_base) {
 	set_count(eth_nic_base, 0);
 }
 
-#ifdef __PRE_RAM__
+#if !ENV_RAMSTAGE
 
 static void ns8390_reset(unsigned int eth_nic_base)
 {
@@ -455,4 +334,4 @@ static const struct pci_driver ne2k_driver __pci_driver = {
 	.device = 0x8029,
 };
 
-#endif /* __PRE_RAM__ */
+#endif /* !ENV_RAMSTAGE */

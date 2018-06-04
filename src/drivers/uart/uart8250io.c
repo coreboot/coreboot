@@ -17,13 +17,10 @@
 #include <rules.h>
 #include <stdlib.h>
 #include <arch/io.h>
+#include <boot/coreboot_tables.h>
 #include <console/uart.h>
 #include <trace.h>
 #include "uart8250reg.h"
-
-#ifndef __ROMCC__
-#include <boot/coreboot_tables.h>
-#endif
 
 /* Should support 8250, 16450, 16550, 16550A type UARTs */
 

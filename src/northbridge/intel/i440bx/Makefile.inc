@@ -23,4 +23,6 @@ romstage-y += raminit.c
 romstage-$(CONFIG_DEBUG_RAM_SETUP) += debug.c
 romstage-y += ram_calc.c
 
+postcar-y += ram_calc.c
+
 endif

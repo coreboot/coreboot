@@ -23,6 +23,9 @@
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
+.code32
+_cache_as_ram_setup:
+
 	/* Save the BIST result. */
 	movl	%eax, %ebp
 
@@ -165,118 +168,11 @@ before_romstage:
 	post_code(0x2f)
 	/* Call romstage.c main function. */
 	call	romstage_main
-	/* Save return value from romstage_main. It contains the stack to use
-	 * after cache-as-ram is torn down. It also contains the information
-	 * for setting up MTRRs. */
-	movl	%eax, %esp
 
-	post_code(0x30)
-
-	/* Disable cache. */
-	movl	%cr0, %eax
-	orl	$CR0_CacheDisable, %eax
-	movl	%eax, %cr0
-
-	post_code(0x31)
-
-	/* Disable MTRR. */
-	movl	$MTRR_DEF_TYPE_MSR, %ecx
-	rdmsr
-	andl	$(~MTRR_DEF_TYPE_EN), %eax
-	wrmsr
-
-	post_code(0x32)
-
-	invd
-
-	post_code(0x33)
-
-	/* Enable cache. */
-	movl	%cr0, %eax
-	andl	$~(CR0_CacheDisable | CR0_NoWriteThrough), %eax
-	movl	%eax, %cr0
-
-	post_code(0x36)
-
-	/* Disable cache. */
-	movl	%cr0, %eax
-	orl	$CR0_CacheDisable, %eax
-	movl	%eax, %cr0
-
-	post_code(0x38)
-
-	/* Clear all of the variable MTRRs. */
-	popl	%ebx
-	movl	$MTRR_PHYS_BASE(0), %ecx
-	clr	%eax
-	clr	%edx
-
-1:
-	testl	%ebx, %ebx
-	jz	1f
-	wrmsr			/* Write MTRR base. */
-	inc	%ecx
-	wrmsr			/* Write MTRR mask. */
-	inc	%ecx
-	dec	%ebx
-	jmp	1b
-
-1:
-	/* Get number of MTRRs. */
-	popl	%ebx
-	movl	$MTRR_PHYS_BASE(0), %ecx
-2:
-	testl	%ebx, %ebx
-	jz	2f
-
-	/* Low 32 bits of MTRR base. */
-	popl	%eax
-	/* Upper 32 bits of MTRR base. */
-	popl	%edx
-	/* Write MTRR base. */
-	wrmsr
-	inc	%ecx
-	/* Low 32 bits of MTRR mask. */
-	popl	%eax
-	/* Upper 32 bits of MTRR mask. */
-	popl	%edx
-	/* Write MTRR mask. */
-	wrmsr
-	inc	%ecx
-
-	dec	%ebx
-	jmp	2b
-2:
-
-	post_code(0x39)
-
-	/* And enable cache again after setting MTRRs. */
-	movl	%cr0, %eax
-	andl	$~(CR0_CacheDisable | CR0_NoWriteThrough), %eax
-	movl	%eax, %cr0
-
-	post_code(0x3a)
-
-	/* Enable MTRR. */
-	movl	$MTRR_DEF_TYPE_MSR, %ecx
-	rdmsr
-	orl	$MTRR_DEF_TYPE_EN, %eax
-	wrmsr
-
-	post_code(0x3b)
-
-	/* Invalidate the cache again. */
-	invd
-
-	post_code(0x3c)
-
-__main:
-	post_code(POST_PREPARE_RAMSTAGE)
-	cld			/* Clear direction flag. */
-	call	romstage_after_car
+	/* Should never see this postcode */
+	post_code(POST_DEAD_CODE)
 
 .Lhlt:
-	post_code(POST_DEAD_CODE)
 	hlt
 	jmp	.Lhlt
 
@@ -293,3 +189,5 @@ fixed_mtrr_list:
 	.word	MTRR_FIX_4K_F0000
 	.word	MTRR_FIX_4K_F8000
 fixed_mtrr_list_size = . - fixed_mtrr_list
+
+_cache_as_ram_setup_end:

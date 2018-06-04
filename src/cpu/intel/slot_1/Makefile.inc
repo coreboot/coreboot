@@ -29,4 +29,5 @@ subdirs-y += ../../x86/smm
 subdirs-y += ../microcode
 
 cpu_incs-y += $(src)/cpu/intel/car/p3/cache_as_ram.S
+postcar-y += ../car/p4-netburst/exit_car.S
 romstage-y += ../car/romstage.c

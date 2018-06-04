@@ -1,6 +1,0 @@
-Category: half
-Board URL: http://www.ieiworld.com/product_groups/industrial/content.aspx?gid=00001000010000000001&cid=09050665574743104681&id=08142307826854456110#.UCLx8cLlgao
-ROM package: PLCC
-ROM protocol: LPC
-ROM socketed: y
-Flashrom support: y

@@ -1,2 +1,0 @@
-config BOARD_IEI_PCISA_LX_800_R10
-	bool "PCISA LX-800-R10"

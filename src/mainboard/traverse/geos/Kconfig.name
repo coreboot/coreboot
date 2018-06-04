@@ -1,2 +1,0 @@
-config BOARD_TRAVERSE_GEOS
-	bool "Geos"

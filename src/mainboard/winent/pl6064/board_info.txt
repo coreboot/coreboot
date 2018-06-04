@@ -1,3 +1,0 @@
-Board name: PL60640
-Category: desktop
-Board URL: http://www.win-ent.com/network-computing/network-systems/desktop-platforms/440-pl-60640.html

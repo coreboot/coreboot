@@ -1,2 +1,0 @@
-config BOARD_WINENT_PL6064
-	bool "PL6064"

@@ -1,2 +1,0 @@
-config BOARD_IEI_PM_LX2_800_R10
-	bool "PM LX2-800-R10"

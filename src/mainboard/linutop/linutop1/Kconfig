@@ -1,9 +1,0 @@
-if BOARD_LINUTOP_LINUTOP1
-
-# Dummy for abuild
-
-config MAINBOARD_PART_NUMBER
-	string
-	default "Linutop-1"
-
-endif

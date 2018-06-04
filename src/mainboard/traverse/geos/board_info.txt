@@ -1,4 +1,0 @@
-Category: half
-Board URL: http://www.traverse.com.au/geos11-adsl2-x86-router-appliance
-ROM package: PLCC
-ROM socketed: y

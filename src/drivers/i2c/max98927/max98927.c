@@ -93,7 +93,13 @@ static struct device_operations max98927_ops = {
 
 static void max98927_enable(struct device *dev)
 {
+	struct drivers_i2c_max98927_config *config = dev->chip_info;
+
 	dev->ops = &max98927_ops;
+
+	if (config && config->desc) {
+		dev->name = config->desc;
+	}
 }
 
 struct chip_operations drivers_i2c_max98927_ops = {

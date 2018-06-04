@@ -217,6 +217,11 @@ static void i2c_generic_enable(struct device *dev)
 	}
 
 	dev->ops = &i2c_generic_ops;
+
+	/* Name the device as per description provided in devicetree */
+	if (config && config->desc) {
+		dev->name = config->desc;
+	}
 }
 
 struct chip_operations drivers_i2c_generic_ops = {

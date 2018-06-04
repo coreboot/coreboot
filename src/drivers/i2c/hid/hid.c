@@ -58,7 +58,13 @@ static struct device_operations i2c_hid_ops = {
 
 static void i2c_hid_enable(struct device *dev)
 {
+	struct drivers_i2c_hid_config *config = dev->chip_info;
+
 	dev->ops = &i2c_hid_ops;
+
+	if (config && config->generic.desc) {
+		dev->name = config->generic.desc;
+	}
 }
 
 struct chip_operations drivers_i2c_hid_ops = {

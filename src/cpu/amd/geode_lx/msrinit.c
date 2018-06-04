@@ -14,7 +14,9 @@
  */
 
 #include <stdlib.h>
-#include "cpu/x86/msr.h"
+#include <cpu/amd/lxdef.h>
+#include <cpu/x86/msr.h>
+#include <northbridge/amd/lx/northbridge.h>
 
 static const msrinit_t msr_table[] =
 {
@@ -50,7 +52,7 @@ static const msrinit_t msr_table[] =
 	{MSR_GLIU1_SYSMEM,  {.hi = 0x2000001F,.lo = 0x6BF00100}}, // 0x100000-0x1F6BF000
 };
 
-static void msr_init(void)
+void lx_msr_init(void)
 {
 	int i;
 	for (i = 0; i < ARRAY_SIZE(msr_table); i++)

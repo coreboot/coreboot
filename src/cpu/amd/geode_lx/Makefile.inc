@@ -3,6 +3,10 @@ subdirs-y += ../../x86/lapic
 subdirs-y += ../../x86/cache
 subdirs-y += ../../x86/smm
 
+romstage-y += cpureginit.c
+romstage-y += syspreinit.c
+romstage-y += msrinit.c
+
 ramstage-y += geode_lx_init.c
 ramstage-y += cpubug.c
 

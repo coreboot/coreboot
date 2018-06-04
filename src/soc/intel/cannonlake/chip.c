@@ -295,7 +295,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	params->Heci3Enabled = config->Heci3Enabled;
 	params->Device4Enable = config->Device4Enable;
-	params->SkipMpInit = config->FspSkipMpInit;
+	params->SkipMpInit = !config->use_fsp_mp_init;
 
 	/* VrConfig Settings for 5 domains
 	 * 0 = System Agent, 1 = IA Core, 2 = Ring,

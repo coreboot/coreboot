@@ -53,10 +53,26 @@ static void romstage_main(unsigned long bist)
 	platform_enter_postcar();
 }
 
+#if !IS_ENABLED(CONFIG_C_ENVIRONMENT_BOOTBLOCK)
 /* This wrapper enables easy transition towards C_ENVIRONMENT_BOOTBLOCK,
  * keeping changes in cache_as_ram.S easy to manage.
  */
 asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
 {
 	romstage_main(bist);
+}
+#endif
+
+
+/* We don't carry BIST from bootblock in a good location to read from.
+ * Any error should have been reported in bootblock already.
+ */
+#define NO_BIST 0
+
+asmlinkage void car_stage_entry(void)
+{
+	/* Assumes the hardware was set up during the bootblock */
+	console_init();
+
+	romstage_main(NO_BIST);
 }

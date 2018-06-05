@@ -65,6 +65,7 @@ void variant_devtree_update(void)
 	cfg->tdp_pl2_override = get_pl2();
 
 	switch (sku_id) {
+	case SKU_0_VAYNE:
 	case SKU_1_VAYNE:
 	case SKU_2_VAYNE:
 		/* Disable unused port USB port */

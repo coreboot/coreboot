@@ -401,6 +401,7 @@ const struct pad_config *variant_sku_gpio_table(size_t *num)
 	uint32_t sku_id = variant_board_sku();
 	const struct pad_config *board_gpio_tables;
 	switch (sku_id) {
+	case SKU_0_VAYNE:
 	case SKU_1_VAYNE:
 	case SKU_2_VAYNE:
 		*num = ARRAY_SIZE(vayne_sku_gpio_table);

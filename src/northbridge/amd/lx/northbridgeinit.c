@@ -236,7 +236,7 @@ static void GLIUInit(struct gliutable *gl)
 	/* ************************************************************************** */
 static void GLPCIInit(void)
 {
-	struct gliutable *gl = 0;
+	struct gliutable *gl = NULL;
 	int i;
 	msr_t msr;
 	int msrnum, enable_preempt, enable_cpu_override;
@@ -604,7 +604,7 @@ static void rom_shadow_settings(void)
 
 static void enable_L1_cache(void)
 {
-	struct gliutable *gl = 0;
+	struct gliutable *gl = NULL;
 	int i;
 	msr_t msr;
 	uint8_t SysMemCacheProp;

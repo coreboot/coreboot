@@ -1090,12 +1090,12 @@ regex_compile (pattern, size, syntax, bufp)
      command.  This makes it possible to tell if a new exact-match
      character can be added to that command or if the character requires
      a new `exactn' command.  */
-  unsigned char *pending_exact = 0;
+  unsigned char *pending_exact = NULL;
 
   /* Address of start of the most recently finished expression.
      This tells, e.g., postfix * where to find the start of its
      operand.  Reset at the beginning of groups and alternatives.  */
-  unsigned char *laststart = 0;
+  unsigned char *laststart = NULL;
 
   /* Address of beginning of regexp, or inside of last group.  */
   unsigned char *begalt;
@@ -1107,7 +1107,7 @@ regex_compile (pattern, size, syntax, bufp)
   /* Address of the place where a forward jump should go to the end of
      the containing expression.  Each alternative of an `or' -- except the
      last -- ends with a forward jump of this sort.  */
-  unsigned char *fixup_alt_jump = 0;
+  unsigned char *fixup_alt_jump = NULL;
 
   /* Counts open-groups as they are encountered.  Remembered for the
      matching close-group on the compile stack, so the same register

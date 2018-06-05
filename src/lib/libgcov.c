@@ -409,7 +409,7 @@ gcov_exit(void)
 		gcov_position_t summary_pos = 0;
 		gcov_position_t eof_pos = 0;
 		const char *fname, *s;
-		struct gcov_fn_buffer *fn_buffer = 0;
+		struct gcov_fn_buffer *fn_buffer = NULL;
 		struct gcov_fn_buffer **fn_tail = &fn_buffer;
 
 		fname = gi_ptr->filename;

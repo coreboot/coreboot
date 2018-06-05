@@ -135,8 +135,8 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long
 int main(int argc, char **argv)
 {
 	int ret;
-	char *absegname = 0;
-	void *abseg = 0;
+	char *absegname = NULL;
+	void *abseg = NULL;
 	int c, trace = 0;
 	unsigned char *cp;
 	char *filename;

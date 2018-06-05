@@ -196,6 +196,7 @@
 #define GPE0_DW_SHIFT(x)	(4 + 4*(x))
 
 #if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#define PMC_GPE_AUDIO_31_0	9
 #define PMC_GPE_N_95_64		8
 #define PMC_GPE_N_63_32		7
 #define PMC_GPE_N_31_0		6

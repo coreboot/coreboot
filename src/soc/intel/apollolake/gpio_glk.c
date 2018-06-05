@@ -131,11 +131,19 @@ const struct pad_community *soc_gpio_get_community(size_t *num_communities)
 const struct pmc_to_gpio_route *soc_pmc_gpio_routes(size_t *num)
 {
 	static const struct pmc_to_gpio_route routes[] = {
+		{ PMC_GPE_SCC_31_0, GPIO_GPE_SCC_31_0 },
+		{ PMC_GPE_SCC_63_32, GPIO_GPE_SCC_63_32 },
 		{ PMC_GPE_NW_31_0, GPIO_GPE_NW_31_0 },
 		{ PMC_GPE_NW_63_32, GPIO_GPE_NW_63_32 },
+		{ PMC_GPE_NW_95_64, GPIO_GPE_NW_95_64 },
+		/*
+		 * PMC_GPE_NW_127_96 maps to GPIO group 3, which is reserved and
+		 * cannot be set in GPE0_DWx. Hence, it is skipped here.
+		 */
 		{ PMC_GPE_N_31_0, GPIO_GPE_N_31_0 },
 		{ PMC_GPE_N_63_32, GPIO_GPE_N_63_32 },
 		{ PMC_GPE_N_95_64, GPIO_GPE_N_95_64 },
+		{ PMC_GPE_AUDIO_31_0, GPIO_GPE_AUDIO_31_0 },
 	};
 	*num = ARRAY_SIZE(routes);
 	return routes;

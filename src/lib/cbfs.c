@@ -321,6 +321,11 @@ extern const struct cbfs_locator vboot_locator;
 
 static const struct cbfs_locator *locators[] = {
 #if IS_ENABLED(CONFIG_VBOOT)
+	/*
+	 * NOTE: Does not link in SMM, as the vboot_locator isn't compiled.
+	 * ATM there's no need for VBOOT functionality in SMM and it's not
+	 * a problem.
+	 */
 	&vboot_locator,
 #endif
 	&cbfs_master_header_locator,

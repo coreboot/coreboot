@@ -154,6 +154,8 @@ regions-for-file = $(subst $(spc),$(comma),$(sort \
 		font.bin \
 		vbgfx.bin \
 		rmu.bin \
+		cmos_layout.bin \
+		cmos.default \
 		$(call strip_quotes,$(CONFIG_RO_REGION_ONLY)) \
 		,$(1)),COREBOOT,COREBOOT FW_MAIN_A FW_MAIN_B)))
 

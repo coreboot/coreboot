@@ -240,9 +240,34 @@ static enum cb_err get_cmos_value(unsigned long bit, unsigned long length,
 	return CB_SUCCESS;
 }
 
+static enum cb_err locate_cmos_layout(struct region_device *rdev)
+{
+	uint32_t cbfs_type = CBFS_COMPONENT_CMOS_LAYOUT;
+	struct cbfsf fh;
+
+	/*
+	 * In case VBOOT is enabled and this function is called from SMM,
+	 * we have multiple CMOS layout files and to locate them we'd need to
+	 * include VBOOT into SMM...
+	 *
+	 * Support only one CMOS layout in the 'COREBOOT' region for now.
+	 */
+	if (cbfs_locate_file_in_region(&fh, "COREBOOT", "cmos_layout.bin",
+				       &cbfs_type)) {
+		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be found. "
+						"Options are disabled\n");
+		return CB_CMOS_LAYOUT_NOT_FOUND;
+	}
+
+	cbfs_file_data(rdev, &fh);
+
+	return CB_SUCCESS;
+}
+
 enum cb_err get_option(void *dest, const char *name)
 {
 	struct cmos_option_table *ct;
+	struct region_device rdev;
 	struct cmos_entries *ce;
 	size_t namelen;
 	int found = 0;
@@ -255,16 +280,20 @@ enum cb_err get_option(void *dest, const char *name)
 	/* Figure out how long name is */
 	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
 
-	/* find the requested entry record */
-	ct = cbfs_boot_map_with_leak("cmos_layout.bin",
-					CBFS_COMPONENT_CMOS_LAYOUT, NULL);
+	if (locate_cmos_layout(&rdev) != CB_SUCCESS) {
+		UNLOCK_NVRAM_CBFS_SPINLOCK();
+		return CB_CMOS_LAYOUT_NOT_FOUND;
+	}
+	ct = rdev_mmap_full(&rdev);
 	if (!ct) {
-		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be found. "
-						"Options are disabled\n");
+		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be mapped. "
+		       "Options are disabled\n");
 
 		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_LAYOUT_NOT_FOUND;
 	}
+
+	/* find the requested entry record */
 	ce = (struct cmos_entries *)((unsigned char *)ct + ct->header_length);
 	for (; ce->tag == LB_TAG_OPTION;
 		ce = (struct cmos_entries *)((unsigned char *)ce + ce->size)) {
@@ -275,18 +304,22 @@ enum cb_err get_option(void *dest, const char *name)
 	}
 	if (!found) {
 		printk(BIOS_DEBUG, "WARNING: No CMOS option '%s'.\n", name);
+		rdev_munmap(&rdev, ct);
 		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_OPTION_NOT_FOUND;
 	}
 
 	if (!cmos_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END, LB_CKS_LOC)) {
+		rdev_munmap(&rdev, ct);
 		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_CHECKSUM_INVALID;
 	}
 	if (get_cmos_value(ce->bit, ce->length, dest) != CB_SUCCESS) {
+		rdev_munmap(&rdev, ct);
 		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_ACCESS_ERROR;
 	}
+	rdev_munmap(&rdev, ct);
 	UNLOCK_NVRAM_CBFS_SPINLOCK();
 	return CB_SUCCESS;
 }
@@ -347,6 +380,7 @@ unsigned int read_option_lowlevel(unsigned int start, unsigned int size,
 enum cb_err set_option(const char *name, void *value)
 {
 	struct cmos_option_table *ct;
+	struct region_device rdev;
 	struct cmos_entries *ce;
 	unsigned long length;
 	size_t namelen;
@@ -358,14 +392,20 @@ enum cb_err set_option(const char *name, void *value)
 	/* Figure out how long name is */
 	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
 
-	/* find the requested entry record */
-	ct = cbfs_boot_map_with_leak("cmos_layout.bin",
-					CBFS_COMPONENT_CMOS_LAYOUT, NULL);
-	if (!ct) {
-		printk(BIOS_ERR, "cmos_layout.bin could not be found. "
-				 "Options are disabled\n");
+	if (locate_cmos_layout(&rdev) != CB_SUCCESS) {
+		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_LAYOUT_NOT_FOUND;
 	}
+	ct = rdev_mmap_full(&rdev);
+	if (!ct) {
+		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be mapped. "
+		       "Options are disabled\n");
+
+		UNLOCK_NVRAM_CBFS_SPINLOCK();
+		return CB_CMOS_LAYOUT_NOT_FOUND;
+	}
+
+	/* find the requested entry record */
 	ce = (struct cmos_entries *)((unsigned char *)ct + ct->header_length);
 	for (; ce->tag == LB_TAG_OPTION;
 		ce = (struct cmos_entries *)((unsigned char *)ce + ce->size)) {
@@ -376,6 +416,7 @@ enum cb_err set_option(const char *name, void *value)
 	}
 	if (!found) {
 		printk(BIOS_DEBUG, "WARNING: No CMOS option '%s'.\n", name);
+		rdev_munmap(&rdev, ct);
 		return CB_CMOS_OPTION_NOT_FOUND;
 	}
 
@@ -384,13 +425,18 @@ enum cb_err set_option(const char *name, void *value)
 		length = MAX(strlen((const char *)value) * 8, ce->length - 8);
 		/* make sure the string is null terminated */
 		if (set_cmos_value(ce->bit + ce->length - 8, 8, &(u8[]){0})
-		    != CB_SUCCESS)
+		    != CB_SUCCESS) {
+			rdev_munmap(&rdev, ct);
 			return CB_CMOS_ACCESS_ERROR;
+		}
 	}
 
-	if (set_cmos_value(ce->bit, length, value) != CB_SUCCESS)
+	if (set_cmos_value(ce->bit, length, value) != CB_SUCCESS) {
+		rdev_munmap(&rdev, ct);
 		return CB_CMOS_ACCESS_ERROR;
+	}
 
+	rdev_munmap(&rdev, ct);
 	return CB_SUCCESS;
 }
 

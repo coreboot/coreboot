@@ -41,6 +41,7 @@ endif
 config ELOG_GSMI
 	depends on ELOG && SMM_TSEG
 	bool "SMI interface to write and clear event log"
+	select SPI_FLASH_SMM if BOOT_DEVICE_SPI_FLASH_RW_NOMMAP
 	default n
 	help
 	  This interface is compatible with the linux kernel driver

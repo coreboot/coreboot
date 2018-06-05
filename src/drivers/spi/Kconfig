@@ -62,8 +62,7 @@ config SPI_FLASH_INCLUDE_ALL_DRIVERS
 	default y
 
 config SPI_FLASH_SMM
-	bool "SPI flash driver support in SMM"
-	default n
+	bool
 	depends on HAVE_SMI_HANDLER
 	help
 	  Select this option if you want SPI flash support in SMM.

@@ -4,7 +4,7 @@ subdirs-y += tpm
 
 ifeq ($(CONFIG_SPI_CONSOLE),y)
 ramstage-y += spiconsole.c
-smm-$(CONFIG_DEBUG_SMI) += spiconsole.c
+smm-y += spiconsole.c
 endif
 
 ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
@@ -13,8 +13,7 @@ verstage-y += flashconsole.c
 romstage-y += flashconsole.c
 ramstage-y += flashconsole.c
 postcar-y += flashconsole.c
-smm-$(CONFIG_DEBUG_SMI) += flashconsole.c
-
+smm-y += flashconsole.c
 endif
 
 bootblock-y += spi-generic.c

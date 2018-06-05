@@ -15,6 +15,8 @@
 
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_HASWELL),y)
 
+bootblock-y += bootblock.c
+
 ramstage-y += ram_calc.c
 ramstage-y += northbridge.c
 ramstage-y += gma.c
@@ -26,7 +28,6 @@ romstage-y += ram_calc.c
 romstage-y += raminit.c
 romstage-y += early_init.c
 romstage-y += report_platform.c
-romstage-y += ../../../arch/x86/walkcbfs.S
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 

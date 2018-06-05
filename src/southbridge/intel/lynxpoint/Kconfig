@@ -53,10 +53,6 @@ config EHCI_BAR
 	hex
 	default 0xe8000000
 
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/intel/lynxpoint/bootblock.c"
-
 config SERIRQ_CONTINUOUS_MODE
 	bool
 	default n

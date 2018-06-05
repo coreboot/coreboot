@@ -14,6 +14,7 @@
  */
 
 #include <device/pci_ops.h>
+#include <cpu/intel/car/bootblock.h>
 #include "pch.h"
 
 /*
@@ -69,7 +70,7 @@ static void set_spi_speed(void)
 	SPIBAR8(SSFC + 2) = ssfc;
 }
 
-static void bootblock_southbridge_init(void)
+void bootblock_early_southbridge_init(void)
 {
 	map_rcba();
 	enable_spi_prefetch();

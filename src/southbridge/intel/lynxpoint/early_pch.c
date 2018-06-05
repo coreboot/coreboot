@@ -116,8 +116,6 @@ int early_pch_init(const void *gpio_map,
 
 	mainboard_config_superio();
 
-	console_init();
-
 	pch_generic_setup();
 
 	/* Enable SMBus for reading SPDs. */

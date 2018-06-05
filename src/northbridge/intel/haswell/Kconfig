@@ -22,16 +22,14 @@ config NORTHBRIDGE_INTEL_HASWELL
 	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 	select POSTCAR_STAGE
 	select POSTCAR_CONSOLE
+	select C_ENVIRONMENT_BOOTBLOCK
+#	select BOOTBLOCK_CONSOLE TODO: route LPC
 
 if NORTHBRIDGE_INTEL_HASWELL
 
 config VBOOT
 	select VBOOT_OPROM_MATTERS
 	select VBOOT_STARTS_IN_ROMSTAGE
-
-config BOOTBLOCK_NORTHBRIDGE_INIT
-	string
-	default "northbridge/intel/haswell/bootblock.c"
 
 config VGA_BIOS_ID
 	string
@@ -62,6 +60,13 @@ config DCACHE_RAM_MRC_VAR_SIZE
 	default 0x30000
 	help
 	  The amount of cache-as-ram region required by the reference code.
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x2000
+	help
+	  The amount of anticipated stack usage in CAR by bootblock and
+	  other stages.
 
 config HAVE_MRC
 	bool "Add a System Agent binary"

@@ -12,11 +12,10 @@
  */
 
 #include <device/pci_ops.h>
+#include <cpu/intel/car/bootblock.h>
+#include "haswell.h"
 
-/* Just re-define this instead of including haswell.h. It blows up romcc. */
-#define PCIEXBAR	0x60
-
-static void bootblock_northbridge_init(void)
+void bootblock_early_northbridge_init(void)
 {
 	uint32_t reg;
 
@@ -33,7 +32,7 @@ static void bootblock_northbridge_init(void)
 	 * 4GiB.
 	 */
 	reg = 0;
-	pci_io_write_config32(PCI_DEV(0,0,0), PCIEXBAR + 4, reg);
+	pci_io_write_config32(PCI_DEV(0, 0, 0), PCIEXBAR + 4, reg);
 	reg = CONFIG_MMCONF_BASE_ADDRESS | 4 | 1; /* 64MiB - 0-63 buses. */
-	pci_io_write_config32(PCI_DEV(0,0,0), PCIEXBAR, reg);
+	pci_io_write_config32(PCI_DEV(0, 0, 0), PCIEXBAR, reg);
 }

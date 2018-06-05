@@ -21,7 +21,11 @@ ramstage-y += monotonic_timer.c
 smm-y += monotonic_timer.c
 endif
 
-cpu_incs-y += $(src)/cpu/intel/car/non-evict/cache_as_ram.S
+bootblock-y += ../car/non-evict/cache_as_ram.S
+bootblock-y += ../car/bootblock.c
+bootblock-y += ../../x86/early_reset.S
+bootblock-y += bootblock.c
+
 postcar-y += ../car/non-evict/exit_car.S
 
 subdirs-y += ../../x86/tsc

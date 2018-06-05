@@ -24,10 +24,6 @@ config CPU_SPECIFIC_OPTIONS
 	select PARALLEL_MP
 	select CPU_INTEL_COMMON
 
-config BOOTBLOCK_CPU_INIT
-	string
-	default "cpu/intel/haswell/bootblock.c"
-
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000

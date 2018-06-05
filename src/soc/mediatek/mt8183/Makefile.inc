@@ -19,6 +19,7 @@ romstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 romstage-y += ../common/wdt.c
 
 ramstage-y += ../common/cbmem.c emi.c
+ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-y += ../common/timer.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c

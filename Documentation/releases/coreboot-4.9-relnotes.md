@@ -26,6 +26,10 @@ General changes
 * Rename the POWER8 architecture port to PPC64 to reflect that it isn't limited
   to POWER8
 
+Added mainboards
+----------------
+* Lenovo W530                                          Intel Ivybridge
+
 Toolchain
 ---------
 

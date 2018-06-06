@@ -47,47 +47,6 @@
  */
 #define SET_PSYSPL2(w)     (9 * (w) / 10)
 
-#define OEM_ID_COUNT	3
-#define SKU_ID_COUNT	7
-
-/* List of BJ adapters shipped with Fizz or its variants */
-enum bj_adapter {
-	BJ_UNKNOWN,
-	BJ_65W_19V,
-	BJ_90W_19V,
-	BJ_65W_19P5V,
-	BJ_90W_19P5V,
-	BJ_COUNT,
-};
-
-/* BJ adapter specs */
-static const struct {
-	uint16_t current_lim; /* in mA */
-	uint16_t voltage_lim; /* in mV */
-} bj_adapters[] = {
-	[BJ_65W_19V] = { .current_lim = 3420, .voltage_lim = 19000 },
-	[BJ_90W_19V] = { .current_lim = 4740, .voltage_lim = 19000 },
-	[BJ_65W_19P5V] = { .current_lim = 3330, .voltage_lim = 19500 },
-	[BJ_90W_19P5V] = { .current_lim = 4620, .voltage_lim = 19500 },
-};
-
-/*
- * The table showing which device is shipped with which BJ adapter.
- *
- *        | SKU0     SKU1     ...
- *   OEM0 | AdapterX AdapterZ ...
- *   OEM1 | AdapterY ...
- *   ...  |
- */
-static const enum bj_adapter bj_adapter_table[OEM_ID_COUNT][SKU_ID_COUNT] = {
-	{ BJ_65W_19P5V, BJ_65W_19P5V, BJ_90W_19P5V, BJ_90W_19P5V,
-			BJ_90W_19P5V, BJ_90W_19P5V, BJ_65W_19P5V },
-	{ BJ_65W_19V, BJ_65W_19V, BJ_UNKNOWN, BJ_UNKNOWN,
-			BJ_90W_19V, BJ_90W_19V, BJ_UNKNOWN },
-	{ BJ_65W_19V, BJ_65W_19V, BJ_90W_19V, BJ_90W_19V,
-			BJ_90W_19V, BJ_90W_19V, BJ_65W_19V },
-};
-
 static uint8_t read_sku_id_from_gpio(void)
 {
 	const gpio_t sku_id_gpios[] = {
@@ -260,45 +219,12 @@ static unsigned long mainboard_write_acpi_tables(
 	return end_addr;
 }
 
-/*
- * Set max current and voltage for a barrel jack adapter based on {OEM, SKU}.
- * If this fails, the limit will remain unchanged = default values, which make
- * the system run under safe but under-rated power.
- * If a BJ adapter isn't plugged, this is a no-op.
- */
-static void set_bj_adapter_limit(void)
-{
-	uint8_t oem = board_oem_id();
-	uint8_t sku = board_sku_id();
-	enum bj_adapter bj;
-
-	printk(BIOS_INFO, "OEM:%u(0x%x) SKU:%u(0x%x)\n", oem, oem, sku, sku);
-	if (oem >= OEM_ID_COUNT || sku >= SKU_ID_COUNT) {
-		printk(BIOS_ERR, "Unrecognized OEM or SKU\n");
-		return;
-	}
-
-	bj = bj_adapter_table[oem][sku];
-	if (bj <= BJ_UNKNOWN || BJ_COUNT <= bj) {
-		printk(BIOS_ERR, "Invalid BJ adapter ID: %d\n", bj);
-		return;
-	}
-	printk(BIOS_INFO, "Setting BJ limit: %dmA/%dmV\n",
-	       bj_adapters[bj].current_lim, bj_adapters[bj].voltage_lim);
-	if (google_chromeec_override_dedicated_charger_limit(
-			bj_adapters[bj].current_lim,
-			bj_adapters[bj].voltage_lim))
-		printk(BIOS_ERR, "Failed to set BJ limit\n");
-}
-
 static void mainboard_enable(struct device *dev)
 {
 	struct device *root = SA_DEV_ROOT;
 	config_t *conf = root->chip_info;
 
 	mainboard_set_power_limits(conf);
-
-	set_bj_adapter_limit();
 
 	dev->ops->init = mainboard_init;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;

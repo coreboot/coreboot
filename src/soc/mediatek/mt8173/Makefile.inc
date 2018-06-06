@@ -20,6 +20,7 @@ bootblock-$(CONFIG_SPI_FLASH) += flash_controller.c
 bootblock-y += i2c.c
 bootblock-y += pll.c
 bootblock-y += spi.c
+bootblock-y += common_timer.c
 bootblock-y += timer.c
 
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
@@ -37,6 +38,7 @@ verstage-y += spi.c
 
 verstage-$(CONFIG_DRIVERS_UART) += uart.c
 
+verstage-y += common_timer.c
 verstage-y += timer.c
 verstage-y += wdt.c
 verstage-$(CONFIG_SPI_FLASH) += flash_controller.c
@@ -46,6 +48,7 @@ verstage-y += gpio.c
 
 romstage-$(CONFIG_SPI_FLASH) += flash_controller.c
 romstage-y += pll.c
+romstage-y += common_timer.c
 romstage-y += timer.c
 
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
@@ -64,6 +67,7 @@ ramstage-y += cbmem.c emi.c
 ramstage-y += spi.c
 ramstage-$(CONFIG_SPI_FLASH) += flash_controller.c
 ramstage-y += soc.c mtcmos.c
+ramstage-y += common_timer.c
 ramstage-y += timer.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += pmic_wrap.c mt6391.c i2c.c

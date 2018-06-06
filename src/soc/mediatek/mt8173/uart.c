@@ -86,10 +86,10 @@ static int mtk_uart_tst_byte(void);
 static void mtk_uart_init(void)
 {
 	/* Use a hardcoded divisor for now. */
-	const unsigned uartclk = 26 * MHz;
-	const unsigned baudrate = get_uart_baudrate();
-	const uint8_t line_config = UART8250_LCR_WLS_8;	/* 8n1 */
-	unsigned highspeed, quot, divisor, remainder;
+	const unsigned int uartclk = 26 * MHz;
+	const unsigned int baudrate = get_uart_baudrate();
+	const uint8_t line_config = UART8250_LCR_WLS_8;  /* 8n1 */
+	unsigned int highspeed, quot, divisor, remainder;
 
 	if (baudrate <= 115200) {
 		highspeed = 0;
@@ -124,19 +124,21 @@ static void mtk_uart_init(void)
 	/* Enable FIFOs, and clear receive and transmit. */
 	write8(&uart_ptr->fcr,
 	       UART8250_FCR_FIFO_EN | UART8250_FCR_CLEAR_RCVR |
-               UART8250_FCR_CLEAR_XMIT);
+	       UART8250_FCR_CLEAR_XMIT);
 
 }
 
 static void mtk_uart_tx_byte(unsigned char data)
 {
-	while (!(read8(&uart_ptr->lsr) & UART8250_LSR_THRE));
+	while (!(read8(&uart_ptr->lsr) & UART8250_LSR_THRE))
+		;
 	write8(&uart_ptr->thr, data);
 }
 
 static void mtk_uart_tx_flush(void)
 {
-	while (!(read8(&uart_ptr->lsr) & UART8250_LSR_TEMT));
+	while (!(read8(&uart_ptr->lsr) & UART8250_LSR_TEMT))
+		;
 }
 
 static unsigned char mtk_uart_rx_byte(void)

@@ -134,7 +134,7 @@ struct sif_u2_phy_com {
 	u32 reserved1[17];
 	u32 u2phydtm0;
 	u32 u2phydtm1;
-	u32 reserved2[36]; /* 0x70 - 0xff */
+	u32 reserved2[36];  /* 0x70 - 0xff */
 };
 check_member(sif_u2_phy_com, u2phydtm0, 0x68);
 

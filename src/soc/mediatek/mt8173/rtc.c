@@ -127,7 +127,7 @@ static int rtc_reg_init(void)
 	if (!write_trigger())
 		return 0;
 
-	pwrap_read(RTC_IRQ_STA, &irqsta);	/* read clear */
+	pwrap_read(RTC_IRQ_STA, &irqsta);  /* read clear */
 
 	/* init time counters after resetting RTC_DIFF and RTC_CALI */
 	pwrap_write(RTC_TC_YEA, RTC_DEFAULT_YEA - RTC_MIN_YEAR);
@@ -147,7 +147,7 @@ static int rtc_gpio_init(void)
 	u16 con;
 
 	mt6391_gpio_set_pull(3, MT6391_GPIO_PULL_DISABLE,
-				MT6391_GPIO_PULL_DOWN); /* RTC_32K1V8 */
+				MT6391_GPIO_PULL_DOWN);  /* RTC_32K1V8 */
 
 	/* Export 32K clock RTC_32K2V8 */
 	pwrap_read(RTC_CON, &con);
@@ -307,7 +307,7 @@ void rtc_boot(void)
 		break;
 	}
 
-	pwrap_read(RTC_IRQ_STA, &irqsta);	/* Read clear */
+	pwrap_read(RTC_IRQ_STA, &irqsta);  /* Read clear */
 	pwrap_read(RTC_BBPU, &bbpu);
 	pwrap_read(RTC_CON, &con);
 

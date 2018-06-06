@@ -20,7 +20,7 @@
 #include <soc/wdt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-static struct mt8173_wdt_regs * const mt8173_wdt = (void *)RGU_BASE;
+static struct mt8173_wdt_regs *const mt8173_wdt = (void *)RGU_BASE;
 
 int mtk_wdt_init(void)
 {

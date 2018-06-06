@@ -55,7 +55,7 @@ struct mt8173_gpt_regs {
 	u32 apxgpt_irqmask1;
 };
 
-static struct mt8173_gpt_regs * const mt8173_gpt = (void *)GPT_BASE;
+static struct mt8173_gpt_regs *const mt8173_gpt = (void *)GPT_BASE;
 
 enum {
 	GPT_CON_EN = 0x01,

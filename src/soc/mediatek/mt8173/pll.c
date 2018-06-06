@@ -328,7 +328,7 @@ void mt_pll_init(void)
 	for (i = 0; i < APMIXED_NR_PLL; i++)
 		setbits_le32(plls[i].pwr_reg, PLL_PWR_ON);
 
-	udelay(5); /* wait for xPLL_PWR_ON ready (min delay is 1us) */
+	udelay(5);  /* wait for xPLL_PWR_ON ready (min delay is 1us) */
 
 	/******************
 	 * xPLL ISO Disable
@@ -361,7 +361,7 @@ void mt_pll_init(void)
 	for (i = 0; i < APMIXED_NR_PLL; i++)
 		setbits_le32(plls[i].reg, PLL_EN);
 
-	udelay(40); /* wait for PLL stable (min delay is 20us) */
+	udelay(40);  /* wait for PLL stable (min delay is 20us) */
 
 	/***************
 	 * xPLL DIV RSTB
@@ -448,12 +448,12 @@ void mt_pll_enable_ssusb_clk(void)
 {
 	/* set  RG_LTECLKSQ_EN */
 	setbits_le32(&mt8173_apmixed->ap_pll_con0, 0x1);
-	udelay(100); /* wait for PLL stable */
+	udelay(100);  /* wait for PLL stable */
 
 	/* set RG_LTECLKSQ_LPF_EN & DA_REF2USB_TX_EN */
 	setbits_le32(&mt8173_apmixed->ap_pll_con0, 0x1 << 1);
 	setbits_le32(&mt8173_apmixed->ap_pll_con2, 0x1);
-	udelay(100); /* wait for PLL stable */
+	udelay(100);  /* wait for PLL stable */
 
 	/* set DA_REF2USB_TX_LPF_EN & DA_REF2USB_TX_OUT_EN */
 	setbits_le32(&mt8173_apmixed->ap_pll_con2, (0x1 << 2) | (0x1 << 1));

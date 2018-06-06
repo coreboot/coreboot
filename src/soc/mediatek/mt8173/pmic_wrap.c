@@ -88,7 +88,7 @@ static inline u32 wait_for_state_idle(u32 timeout_us, void *wacs_register,
 			return E_PWR_WAIT_IDLE_TIMEOUT;
 
 	} while (((reg_rdata >> RDATA_WACS_FSM_SHIFT) & RDATA_WACS_FSM_MASK) !=
-		 WACS_FSM_IDLE);        /* IDLE State */
+		 WACS_FSM_IDLE);  /* IDLE State */
 	if (read_reg)
 		*read_reg = reg_rdata;
 	return 0;
@@ -108,7 +108,7 @@ static inline u32 wait_for_state_ready(loop_condition_fp fp, u32 timeout_us,
 			pwrap_err("timeout when waiting for idle\n");
 			return E_PWR_WAIT_IDLE_TIMEOUT;
 		}
-	} while (fp(reg_rdata));        /* IDLE State */
+	} while (fp(reg_rdata));  /* IDLE State */
 	if (read_reg)
 		*read_reg = reg_rdata;
 	return 0;

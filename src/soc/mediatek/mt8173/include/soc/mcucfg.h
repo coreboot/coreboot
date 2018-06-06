@@ -102,6 +102,6 @@ struct mt8173_mcucfg_regs {
 
 check_member(mt8173_mcucfg_regs, mcusys_rw_rsvd1, 0x688);
 
-static struct mt8173_mcucfg_regs * const mt8173_mcucfg = (void *)MCUCFG_BASE;
+static struct mt8173_mcucfg_regs *const mt8173_mcucfg = (void *)MCUCFG_BASE;
 
 #endif  /* __SOC_MEDIATEK_MT8173_MCUCFG_H__ */

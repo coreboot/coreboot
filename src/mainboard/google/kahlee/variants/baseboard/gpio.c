@@ -98,7 +98,7 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	PAD_SCI(GPIO_22, PULL_UP, EDGE_LOW),
 
 	/* GPIO_24 - EC_PCH_WAKE_L */
-	PAD_GPI(GPIO_24, PULL_UP),
+	PAD_SCI(GPIO_24, PULL_UP, EDGE_LOW),
 
 	/* GPIO_26 - APU_PCIE_RST_L */
 	PAD_NF(GPIO_26, PCIE_RST_L, PULL_NONE),

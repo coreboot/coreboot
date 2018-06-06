@@ -23,5 +23,6 @@
 #define SKU_2_VAYNE	0x3A7F
 #define SKU_0_PANTHEON	0x3F63
 #define SKU_1_PANTHEON	0x3F67
+#define SKU_2_PANTHEON	0x3F62
 
 #endif /* __MAINBOARD_SKU_H__ */

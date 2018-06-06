@@ -20,11 +20,11 @@ bootblock-$(CONFIG_SPI_FLASH) += flash_controller.c
 bootblock-y += i2c.c
 bootblock-y += pll.c
 bootblock-y += spi.c
-bootblock-y += common_timer.c
+bootblock-y += ../common/timer.c
 bootblock-y += timer.c
 
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
-bootblock-$(CONFIG_DRIVERS_UART) += uart.c
+bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 endif
 
 bootblock-y += gpio.c gpio_init.c pmic_wrap.c mt6391.c
@@ -36,9 +36,9 @@ bootblock-y += mmu_operations.c
 verstage-y += i2c.c
 verstage-y += spi.c
 
-verstage-$(CONFIG_DRIVERS_UART) += uart.c
+verstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 
-verstage-y += common_timer.c
+verstage-y += ../common/timer.c
 verstage-y += timer.c
 verstage-y += wdt.c
 verstage-$(CONFIG_SPI_FLASH) += flash_controller.c
@@ -48,11 +48,11 @@ verstage-y += gpio.c
 
 romstage-$(CONFIG_SPI_FLASH) += flash_controller.c
 romstage-y += pll.c
-romstage-y += common_timer.c
+romstage-y += ../common/timer.c
 romstage-y += timer.c
 
-romstage-$(CONFIG_DRIVERS_UART) += uart.c
-romstage-y += cbmem.c
+romstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
+romstage-y += ../common/cbmem.c
 romstage-y += spi.c
 romstage-y += gpio.c
 romstage-y += pmic_wrap.c mt6391.c
@@ -63,13 +63,13 @@ romstage-y += rtc.c
 
 ################################################################################
 
-ramstage-y += cbmem.c emi.c
+ramstage-y += ../common/cbmem.c emi.c
 ramstage-y += spi.c
 ramstage-$(CONFIG_SPI_FLASH) += flash_controller.c
 ramstage-y += soc.c mtcmos.c
-ramstage-y += common_timer.c
+ramstage-y += ../common/timer.c
 ramstage-y += timer.c
-ramstage-$(CONFIG_DRIVERS_UART) += uart.c
+ramstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 ramstage-y += pmic_wrap.c mt6391.c i2c.c
 ramstage-y += mt6311.c
 ramstage-y += da9212.c
@@ -94,5 +94,6 @@ $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	./util/mtkheader/gen-bl-img.py mt8173 sf $< $@
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8173/include
+CPPFLAGS_common += -Isrc/soc/mediatek/common/include
 
 endif

@@ -598,16 +598,16 @@ config VGA_BIOS_ID
 
 	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
 
-config INTEL_GMA_VBT_HAVE_DATA_FILE
+config INTEL_GMA_HAVE_VBT
 	bool
 	help
 	  Select this in the mainboard Kconfig to indicate the board has
 	  a data.vbt file.
 
-config INTEL_GMA_ADD_VBT_DATA_FILE
+config INTEL_GMA_ADD_VBT
 	depends on SOC_INTEL_COMMON || CPU_INTEL_COMMON
 	bool "Add a Video Bios Table (VBT) binary to CBFS"
-	default y if INTEL_GMA_VBT_HAVE_DATA_FILE
+	default y if INTEL_GMA_HAVE_VBT
 	help
 	  Add a VBT data file to CBFS. The VBT describes the integrated
 	  GPU and connections, and is needed by the GOP driver integrated into
@@ -615,10 +615,10 @@ config INTEL_GMA_ADD_VBT_DATA_FILE
 
 config INTEL_GMA_VBT_FILE
 	string "VBT binary path and filename"
-	depends on INTEL_GMA_ADD_VBT_DATA_FILE
+	depends on INTEL_GMA_ADD_VBT
 	default "src/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/data.vbt" \
-		if INTEL_GMA_VBT_HAVE_DATA_FILE && VARIANT_DIR != ""
-	default "src/mainboard/$(MAINBOARDDIR)/data.vbt" if INTEL_GMA_VBT_HAVE_DATA_FILE
+		if INTEL_GMA_HAVE_VBT && VARIANT_DIR != ""
+	default "src/mainboard/$(MAINBOARDDIR)/data.vbt" if INTEL_GMA_HAVE_VBT
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/vbt.bin"
 	help
 	  The path and filename of the VBT binary.

@@ -16,6 +16,13 @@ before the release, so those do not need to be added.
 General changes
 ---------------
 
+* Various code cleanups
+ * Removed `device_t` in favor of `struct device*` in ramstage code
+ * Improve adherence to coding style
+* Expand use of the postcar stage
+* Add bootblock compression capability: on systems that copy the bootblock
+  from very slow flash to ERAM, allow adding a stub that decompresses the
+  bootblock into ERAM to minimize the amount of flash reads
 
 Toolchain
 ---------

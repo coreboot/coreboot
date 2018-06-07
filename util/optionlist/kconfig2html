@@ -56,11 +56,11 @@ def readfile(filename):
 		if helplen:
 			i = i.expandtabs()
 			if not len(i) or i[:helplen].isspace():
-				sys.stdout.write("%s\n" % htmlescape(i))
+				sys.stdout.write("%s<br />\n" % htmlescape(i))
 				continue
 			else:
 				helplen = 0
-				sys.stdout.write("||\n")
+				sys.stdout.write("</td></tr>\n")
 
 		words = i.strip().split(None,1)
 		if not len(words): continue
@@ -74,32 +74,18 @@ def readfile(filename):
 		elif words[0]=="prompt":
 			description = htmlescape(zapquotes(words[1]))
 		elif words[0] in ("help", "---help---"):
-			sys.stdout.write("|- bgcolor=\"#eeeeee\"\n")
-			sys.stdout.write("| %s || %s || %s || %s || \n" % (config,source,configtype,description) )
+			sys.stdout.write("<tr bgcolor=\"#eeeeee\">\n")
+			sys.stdout.write("<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>\n" % (config,source,configtype,description) )
 			helplen = len(i[:i.find(words[0])].expandtabs())
 		elif words[0] == "comment":
-			sys.stdout.write("|- bgcolor=\"#eeeeee\"\n")
-			sys.stdout.write("| || || (comment) || || %s ||\n" % htmlescape(zapquotes(words[1])))
+			sys.stdout.write("<tr bgcolor=\"#eeeeee\">\n")
+			sys.stdout.write("<td></td><td></td><td>(comment)</td><td></td><td>%s</td></tr>\n" % htmlescape(zapquotes(words[1])))
 		elif words[0]=="menu":
 			if len(words)>1:
 				temp = htmlescape(zapquotes(words[1]))
-				if extra_chapters:
-					sys.stdout.write("== Menu: %s ==\n" % temp)
-					sys.stdout.write("{| border=\"0\" style=\"font-size: smaller\"\n");
-					sys.stdout.write("|- bgcolor=\"#6699dd\"\n")
-					sys.stdout.write("! align=\"left\" | Option\n")
-					sys.stdout.write("! align=\"left\" | Source\n")
-					sys.stdout.write("! align=\"left\" | Format\n")
-					sys.stdout.write("! align=\"left\" | Short&nbsp;Description\n")
-					sys.stdout.write("! align=\"left\" | Description\n")
-				else:
-					# Don't start an extra chapter for a
-					# new menu
-					sys.stdout.write("|- bgcolor=\"#6699dd\"\n")
-					sys.stdout.write("! align=\"left\" | Menu: %s || || || ||\n" % temp)
+				sys.stdout.write("<tr bgcolor=\"#6699dd\">\n")
+				sys.stdout.write("<td colspan=5>Menu: %s</td></tr>\n" % temp)
 		elif words[0] == "endmenu":
-			if extra_chapters:
-				sys.stdout.write("|}\n")
 			sys.stdout.write("\n")
 		elif words[0] == "source":
 			fn=zapquotes(words[1])
@@ -107,7 +93,7 @@ def readfile(filename):
 				readfile(name)
 		elif words[0] in ("default","depends", "select", "if", "endif", "#"): pass
 		#else: sys.stderr.write("unknown: %s\n" % i)
-	if helplen: sys.stdout.write("||\n")
+	if helplen: sys.stdout.write("</td></tr>\n")
 
 def main():
 	import sys, time
@@ -118,15 +104,15 @@ def main():
 
 	sys.stdout.write("This is an automatically generated list of '''coreboot compile-time options'''.\n")
 	sys.stdout.write("\nLast update: %s\n" % sys.argv[2])
-	sys.stdout.write("{| border=\"0\" style=\"font-size: smaller\"\n");
-	sys.stdout.write("|- bgcolor=\"#6699dd\"\n")
-	sys.stdout.write("! align=\"left\" | Option\n")
-	sys.stdout.write("! align=\"left\" | Source\n")
-	sys.stdout.write("! align=\"left\" | Format\n")
-	sys.stdout.write("! align=\"left\" | Short&nbsp;Description\n")
-	sys.stdout.write("! align=\"left\" | Description\n")
+	sys.stdout.write("<table border=\"0\" style=\"font-size: smaller\">\n");
+	sys.stdout.write("<tr bgcolor=\"#6699dd\">\n")
+	sys.stdout.write("<td align=\"left\">Option</td>\n")
+	sys.stdout.write("<td align=\"left\">Source</td>\n")
+	sys.stdout.write("<td align=\"left\">Format</td>\n")
+	sys.stdout.write("<td align=\"left\">Short&nbsp;Description</td>\n")
+	sys.stdout.write("<td align=\"left\">Description</td></tr>\n")
 	readfile(sys.argv[1])
-	sys.stdout.write("|}\n")
+	sys.stdout.write("</table>\n")
 
 if __name__ == "__main__":
 	main()

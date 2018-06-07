@@ -14,8 +14,8 @@
  */
 
 /* Below values might change after Thermal Tuning. */
-#define DPTF_CPU_PASSIVE	95
-#define DPTF_CPU_CRITICAL	105
+#define DPTF_CPU_PASSIVE	90
+#define DPTF_CPU_CRITICAL	99
 
 #define DPTF_TSR0_SENSOR_ID	0
 #define DPTF_TSR0_SENSOR_NAME	"Battery"
@@ -24,12 +24,12 @@
 
 #define DPTF_TSR1_SENSOR_ID	1
 #define DPTF_TSR1_SENSOR_NAME	"Ambient"
-#define DPTF_TSR1_PASSIVE	46
-#define DPTF_TSR1_CRITICAL	75
+#define DPTF_TSR1_PASSIVE	48
+#define DPTF_TSR1_CRITICAL	90
 
 #define DPTF_TSR2_SENSOR_ID	2
 #define DPTF_TSR2_SENSOR_NAME	"Charger"
-#define DPTF_TSR2_PASSIVE	58
+#define DPTF_TSR2_PASSIVE	62
 #define DPTF_TSR2_CRITICAL	90
 
 #define DPTF_ENABLE_CHARGER
@@ -48,7 +48,7 @@ Name (DTRT, Package () {
 	Package () { \_SB.PCI0.TCPU, \_SB.PCI0.TCPU, 100, 100, 0, 0, 0, 0 },
 
 	/* CPU Effect on Temp Sensor 0 */
-	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR0, 100, 1200, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR0, 100, 600, 0, 0, 0, 0 },
 
 #ifdef DPTF_ENABLE_CHARGER
 	/* Charger Effect on Temp Sensor 2 */
@@ -65,7 +65,7 @@ Name (MPPC, Package ()
 	Package () {	/* Power Limit 1 */
 		0,	/* PowerLimitIndex, 0 for Power Limit 1 */
 		3000,	/* PowerLimitMinimum */
-		8000,	/* PowerLimitMaximum */
+		12000,	/* PowerLimitMaximum */
 		1000,	/* TimeWindowMinimum */
 		1000,	/* TimeWindowMaximum */
 		200	/* StepSize */

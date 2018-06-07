@@ -18,9 +18,6 @@
 
 void variant_romstage_entry(int s3_resume)
 {
-	uint32_t sku = google_chromeec_get_sku_id();
-
-	/* Based on SKU, turn on keyboard backlight to show system is booting */
-	if (sku <= 6 && !s3_resume)
+	if (!s3_resume)
 		google_chromeec_kbbacklight(75);
 }

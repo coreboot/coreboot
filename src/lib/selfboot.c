@@ -350,6 +350,15 @@ static int payload_targets_usable_ram(struct segment *head)
 		if (payload_arch_usable_ram_quirk(ptr->s_dstaddr, ptr->s_memsz))
 			continue;
 
+		if (arch_supports_bounce_buffer() &&
+			bootmem_region_usable_with_bounce(ptr->s_dstaddr,
+						      ptr->s_memsz)) {
+			printk(BIOS_DEBUG,
+				"Payload is loaded over non-relocatable "
+				"ramstage. Will use bounce-buffer.\n");
+			return 1;
+		}
+
 		/* Payload segment not targeting RAM. */
 		printk(BIOS_ERR, "SELF Payload doesn't target RAM:\n");
 		printk(BIOS_ERR, "Failed Segment: 0x%lx, %lu bytes\n",

@@ -203,7 +203,7 @@ static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 
 int arch_supports_bounce_buffer(void)
 {
-	return 1;
+	return !IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE);
 }
 
 int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size)

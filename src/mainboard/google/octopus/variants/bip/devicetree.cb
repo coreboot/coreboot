@@ -29,9 +29,17 @@ chip soc/intel/apollolake
 	# route, i.e., if this route changes then the affected GPE
 	# offset bits also need to be changed. This sets the PMC register
 	# GPE_CFG fields.
-	register "gpe0_dw1" = "PMC_GPE_N_63_32"
+	# DW1 is used by:
+	#   - GPIO_63 - H1_PCH_INT_ODL
+	# DW2 is used by:
+	#   - GPIO_141 - EC_PCH_WAKE_ODL
+	#   - GPIO_142 - TRACKPAD_INT2_1V8_ODL
+	# DW3 is used by:
+	#   - GPIO_117 - LTE_WAKE_ODL
+	#   - GPIO_119 - WLAN_PCIE_WAKE_ODL
+	register "gpe0_dw1" = "PMC_GPE_NW_63_32"
 	register "gpe0_dw2" = "PMC_GPE_N_95_64"
-	register "gpe0_dw3" = "PMC_GPE_NW_31_0"
+	register "gpe0_dw3" = "PMC_GPE_N_63_32"
 
 	# PL1 override 8000 mW: Due to error in the energy calculation for
 	# current VR solution. Experiments show that SoC TDP max (6W) can
@@ -122,7 +130,7 @@ chip soc/intel/apollolake
 		device pci 12.0 off end	# - SATA
 		device pci 13.0 on
 			chip drivers/intel/wifi
-				register "wake" = "GPE0_DW1_11"
+				register "wake" = "GPE0_DW3_11"
 				device pci 00.0 on end
 			end
 		end	# - PCIe-A 0 Onboard M2 Slot(Wifi)

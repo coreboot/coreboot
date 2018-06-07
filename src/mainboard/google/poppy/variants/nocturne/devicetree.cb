@@ -160,6 +160,20 @@ chip soc/intel/skylake
 	register "PcieRpAdvancedErrorReporting[0]" = "1"
 	register "PcieRpLtrEnable[0]" = "1"
 
+        # Root port 9 (x2)
+        #  PcieRpEnable:                 Enable root port
+        #  PcieRpClkReqSupport:          Enable CLKREQ#
+        #  PcieRpClkReqNumber:           Uses SRCCLKREQ2#
+        #  PcieRpClkSrcNumber:           Uses 2
+        #  PcieRpAdvancedErrorReporting: Enable Advanced Error Reporting
+        #  PcieRpLtrEnable:              Enable Latency Tolerance Reporting Mechanism
+        register "PcieRpEnable[8]" = "1"
+        register "PcieRpClkReqSupport[8]" = "1"
+        register "PcieRpClkReqNumber[8]" = "2"
+        register "PcieRpClkSrcNumber[8]" = "2"
+        register "PcieRpAdvancedErrorReporting[8]" = "1"
+        register "PcieRpLtrEnable[8]" = "1"
+
 	# USB 2.0
 	register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"	# Type-C Port 1
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"		# Empty
@@ -326,7 +340,7 @@ chip soc/intel/skylake
 		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 off end # PCI Express Port 9
+		device pci 1d.0 on  end # PCI Express Port 9
 		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12

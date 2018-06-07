@@ -79,7 +79,7 @@ def readfile(filename):
 			helplen = len(i[:i.find(words[0])].expandtabs())
 		elif words[0] == "comment":
 			sys.stdout.write("<tr bgcolor=\"#eeeeee\">\n")
-			sys.stdout.write("<td></td><td></td><td>(comment)</td><td></td><td>%s</td></tr>\n" % htmlescape(zapquotes(words[1])))
+			sys.stdout.write("<td></td><td>%s</td><td>(comment)</td><td></td><td>%s</td></tr>\n" % (source, htmlescape(zapquotes(words[1]))))
 		elif words[0]=="menu":
 			if len(words)>1:
 				temp = htmlescape(zapquotes(words[1]))

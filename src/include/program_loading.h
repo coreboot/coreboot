@@ -188,6 +188,8 @@ void backup_ramstage_section(uintptr_t base, size_t size);
  *   PAYLOAD LOADING   *
  ***********************/
 
+int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size);
+
 /* Load payload into memory in preparation to run. */
 void payload_load(void);
 

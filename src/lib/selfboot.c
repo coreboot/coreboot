@@ -333,9 +333,13 @@ static int build_self_segment_list(
 	return 1;
 }
 
+__weak int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size)
+{
+	return 0;
+}
+
 static int payload_targets_usable_ram(struct segment *head)
 {
-	const unsigned long one_meg = (1UL << 20);
 	struct segment *ptr;
 
 	for (ptr = head->next; ptr != head; ptr = ptr->next) {
@@ -343,13 +347,8 @@ static int payload_targets_usable_ram(struct segment *head)
 						      ptr->s_memsz))
 			continue;
 
-		if (ptr->s_dstaddr < one_meg &&
-		    (ptr->s_dstaddr + ptr->s_memsz) <= one_meg) {
-			printk(BIOS_DEBUG,
-				"Payload being loaded at below 1MiB "
-				"without region being marked as RAM usable.\n");
+		if (payload_arch_usable_ram_quirk(ptr->s_dstaddr, ptr->s_memsz))
 			continue;
-		}
 
 		/* Payload segment not targeting RAM. */
 		printk(BIOS_ERR, "SELF Payload doesn't target RAM:\n");

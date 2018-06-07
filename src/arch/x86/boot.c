@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <arch/stages.h>
 #include <program_loading.h>
@@ -203,6 +204,17 @@ static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 int arch_supports_bounce_buffer(void)
 {
 	return 1;
+}
+
+int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size)
+{
+	if (start < 1 * MiB && (start + size) <= 1 * MiB) {
+		printk(BIOS_DEBUG,
+			"Payload being loaded at below 1MiB without region being marked as RAM usable.\n");
+		return 1;
+	}
+
+	return 0;
 }
 
 static void try_payload(struct prog *prog)

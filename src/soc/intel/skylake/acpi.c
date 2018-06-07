@@ -234,6 +234,8 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
+	const struct device *dev = SA_DEV_ROOT;
+	const config_t *config = dev ? dev->chip_info : NULL;
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
 
 	/* Use ACPI 3.0 revision */
@@ -281,6 +283,9 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 			ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON |
 			ACPI_FADT_RESET_REGISTER | ACPI_FADT_SEALED_CASE |
 			ACPI_FADT_S4_RTC_WAKE | ACPI_FADT_PLATFORM_CLOCK;
+
+	if (config && config->s0ix_enable)
+		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;
 
 	fadt->reset_reg.space_id = 1;
 	fadt->reset_reg.bit_width = 8;

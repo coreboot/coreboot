@@ -13,6 +13,10 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 3. `make`
 
 ## [Unreleased]
+## [v4.8.0.1] - 2018-06-08
+### Changed
+- Rebased coreboot repository to official coreboot 4.8.0
+
 ## [v4.6.10] - 2018-06-08
 ### Changed
 - Updated SeaBIOS to 1.11.0.5
@@ -184,7 +188,8 @@ redundant code which was similar for APU2/3/5 boards.
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.6.10...coreboot-4.6.x
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.8.0.1...develop
+[v4.8.0.1]: https://github.com/pcengines/coreboot/compare/v4.6.9...v4.8.0.1
 [v4.6.10]: https://github.com/pcengines/coreboot/compare/v4.6.9...v4.6.10
 [v4.6.9]: https://github.com/pcengines/coreboot/compare/v4.6.8...v4.6.9
 [v4.6.8]: https://github.com/pcengines/coreboot/compare/v4.6.7...v4.6.8

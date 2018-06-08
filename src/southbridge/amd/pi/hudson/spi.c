@@ -39,11 +39,7 @@
  #define SPI_EXT_REG_RXCOUNT	0x6
 #define SPI_EXT_REG_DATA	0x1f
 
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE)
 #define AMD_SB_SPI_TX_LEN	64
-#else
-#define AMD_SB_SPI_TX_LEN	8
-#endif
 
 static uintptr_t spibar;
 
@@ -156,16 +152,24 @@ int chipset_volatile_group_end(const struct spi_flash *flash)
 	return 0;
 }
 
+static int xfer_vectors(const struct spi_slave *slave,
+			struct spi_op vectors[], size_t count)
+{
+	return spi_flash_vector_helper(slave, vectors, count, spi_ctrlr_xfer);
+}
+
 static const struct spi_ctrlr spi_ctrlr = {
-	.xfer = spi_ctrlr_xfer,
+        .xfer_vector = xfer_vectors,
+        .max_xfer_size = AMD_SB_SPI_TX_LEN,
+        .flags = SPI_CNTRLR_DEDUCT_CMD_LEN,
 };
 
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
-	{
-		.ctrlr = &spi_ctrlr,
-		.bus_start = 0,
-		.bus_end = 0,
-	},
+        {
+                .ctrlr = &spi_ctrlr,
+                .bus_start = 0,
+                .bus_end = 0,
+        },
 };
 
 const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

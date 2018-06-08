@@ -17,7 +17,7 @@
 #include <device/device.h>
 #include <symbols.h>
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	uintptr_t ram_base;
 	size_t ram_size;

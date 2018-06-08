@@ -20,12 +20,12 @@
 #include <console/console.h>
 #include <pc80/keyboard.h>
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	pc_keyboard_init(NO_AUX_DEVICE);
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 

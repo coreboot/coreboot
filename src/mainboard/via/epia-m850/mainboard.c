@@ -92,7 +92,7 @@ static int vx900_int15_handler(void)
 }
 #endif
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	(void)dev;
 

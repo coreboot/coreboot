@@ -26,7 +26,7 @@ static const unsigned char qemu_i440fx_irqs[] = {
 	11, 10, 10, 11,
 };
 
-static void qemu_nb_init(device_t dev)
+static void qemu_nb_init(struct device *dev)
 {
 	/* Map memory at 0xc0000 - 0xfffff */
 	int i;

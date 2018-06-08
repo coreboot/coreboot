@@ -50,7 +50,7 @@ static void init_gfx(void)
 	set_vbe_mode_info_valid(&edid, framebuffer);
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	int discovered;
 	if (!dev) {

@@ -21,6 +21,7 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <intelblocks/acpi.h>
+#include <intelblocks/chip.h>
 #include <intelblocks/xdci.h>
 #include <romstage_handoff.h>
 #include <soc/intel/common/vbt.h>
@@ -295,7 +296,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	params->Heci3Enabled = config->Heci3Enabled;
 	params->Device4Enable = config->Device4Enable;
-	params->SkipMpInit = !config->use_fsp_mp_init;
+	params->SkipMpInit = !chip_get_fsp_mp_init();
 
 	/* VrConfig Settings for 5 domains
 	 * 0 = System Agent, 1 = IA Core, 2 = Ring,

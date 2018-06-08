@@ -143,7 +143,9 @@ chip soc/intel/skylake
 	}"
 
 	# Skip coreboot MP Init
-	register "use_fsp_mp_init" = "1"
+	register "common_soc_config" = "{
+		.use_fsp_mp_init = 1,
+	}"
 
 	# Enable x1 slot
 	register "PcieRpEnable[7]" = "1"

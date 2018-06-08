@@ -28,9 +28,10 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <intelblocks/acpi.h>
+#include <intelblocks/chip.h>
 #include <intelblocks/fast_spi.h>
-#include <intelblocks/p2sb.h>
 #include <intelblocks/msr.h>
+#include <intelblocks/p2sb.h>
 #include <intelblocks/xdci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
@@ -614,7 +615,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	if (!IS_ENABLED(CONFIG_SOC_INTEL_GLK))
 		silconfig->MonitorMwaitEnable = 0;
 
-	silconfig->SkipMpInit = !cfg->use_fsp_mp_init;
+	silconfig->SkipMpInit = !chip_get_fsp_mp_init();
 
 	/* Disable setting of EISS bit in FSP. */
 	silconfig->SpiEiss = 0;

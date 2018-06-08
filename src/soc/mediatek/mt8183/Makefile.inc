@@ -1,6 +1,7 @@
 ifeq ($(CONFIG_SOC_MEDIATEK_MT8183),y)
 
 bootblock-y += bootblock.c
+bootblock-y += ../common/mmu_operations.c mmu_operations.c
 bootblock-$(CONFIG_SPI_FLASH) += spi.c
 bootblock-y += ../common/timer.c
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
@@ -13,13 +14,17 @@ verstage-y += ../common/timer.c
 verstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 verstage-y += ../common/wdt.c
 
+romstage-y += emi.c
+romstage-y += ../common/mmu_operations.c mmu_operations.c
 romstage-$(CONFIG_SPI_FLASH) += spi.c
 romstage-y += ../common/timer.c
 romstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 romstage-y += ../common/wdt.c
 
 ramstage-y += ../common/cbmem.c emi.c
+ramstage-y += ../common/mmu_operations.c mmu_operations.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
+ramstage-y += soc.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-y += ../common/timer.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c

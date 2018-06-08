@@ -13,22 +13,12 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SOC_MEDIATEK_MT8183_INCLUDE_SOC_ADDRESSMAP_H__
-#define __SOC_MEDIATEK_MT8183_INCLUDE_SOC_ADDRESSMAP_H__
+#include <arch/io.h>
+#include <soc/mcucfg.h>
+#include <soc/mmu_operations.h>
 
-enum {
-	MCUCFG_BASE	= 0x0C530000,
-	IO_PHYS		= 0x10000000,
-	DDR_BASE	= 0x40000000
-};
-
-enum {
-	INFRACFG_AO_BASE	= IO_PHYS + 0x00001000,
-	SPM_BASE		= IO_PHYS + 0x00006000,
-	RGU_BASE                = IO_PHYS + 0x00007000,
-	GPT_BASE		= IO_PHYS + 0x00008000,
-	UART0_BASE		= IO_PHYS + 0x01002000,
-	SMI_BASE		= IO_PHYS + 0x04019000,
-};
-
-#endif
+void mtk_soc_disable_l2c_sram(void)
+{
+	/* Turn off L2C SRAM and return it to L2 cache. */
+	write32(&mt8183_mcucfg->l2c_cfg_mp0, 7 << 8);
+}

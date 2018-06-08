@@ -109,9 +109,9 @@ static void pch_enable_serial_irqs(struct device *dev)
  * 0x80 - The PIRQ is not routed.
  */
 
-static void pch_pirq_init(device_t dev)
+static void pch_pirq_init(struct device *dev)
 {
-	device_t irq_dev;
+	struct device *irq_dev;
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
@@ -151,7 +151,7 @@ static void pch_pirq_init(device_t dev)
 	}
 }
 
-static void pch_gpi_routing(device_t dev)
+static void pch_gpi_routing(struct device *dev)
 {
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
@@ -180,7 +180,7 @@ static void pch_gpi_routing(device_t dev)
 	pci_write_config32(dev, GPIO_ROUT, reg32);
 }
 
-static void pch_power_options(device_t dev)
+static void pch_power_options(struct device *dev)
 {
 	u8 reg8;
 	u16 reg16;
@@ -420,7 +420,7 @@ static void enable_hpet(struct device *const dev)
 	reg32 = RCBA32(HPTC);
 }
 
-static void enable_clock_gating(device_t dev)
+static void enable_clock_gating(struct device *dev)
 {
 	/* LynxPoint Mobile */
 	u32 reg32;
@@ -445,7 +445,7 @@ static void enable_clock_gating(device_t dev)
 	RCBA32_OR(0x38c0, 0x7); // SPI Dynamic
 }
 
-static void enable_lp_clock_gating(device_t dev)
+static void enable_lp_clock_gating(struct device *dev)
 {
 	/* LynxPoint LP */
 	u32 reg32;
@@ -595,7 +595,7 @@ static void lpc_init(struct device *dev)
 	pch_fixups(dev);
 }
 
-static void pch_lpc_add_mmio_resources(device_t dev)
+static void pch_lpc_add_mmio_resources(struct device *dev)
 {
 	u32 reg;
 	struct resource *res;
@@ -657,7 +657,8 @@ static inline int pch_io_range_in_default(u16 base, u16 size)
  * Note: this function assumes there is no overlap with the default LPC device's
  * claimed range: LPC_DEFAULT_IO_RANGE_LOWER -> LPC_DEFAULT_IO_RANGE_UPPER.
  */
-static void pch_lpc_add_io_resource(device_t dev, u16 base, u16 size, int index)
+static void pch_lpc_add_io_resource(struct device *dev, u16 base, u16 size,
+				    int index)
 {
 	struct resource *res;
 
@@ -670,7 +671,8 @@ static void pch_lpc_add_io_resource(device_t dev, u16 base, u16 size, int index)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void pch_lpc_add_gen_io_resources(device_t dev, int reg_value, int index)
+static void pch_lpc_add_gen_io_resources(struct device *dev, int reg_value,
+					 int index)
 {
 	/*
 	 * Check if the register is enabled. If so and the base exceeds the
@@ -683,7 +685,7 @@ static void pch_lpc_add_gen_io_resources(device_t dev, int reg_value, int index)
 	}
 }
 
-static void pch_lpc_add_io_resources(device_t dev)
+static void pch_lpc_add_io_resources(struct device *dev)
 {
 	struct resource *res;
 	config_t *config = dev->chip_info;
@@ -708,7 +710,7 @@ static void pch_lpc_add_io_resources(device_t dev)
 	pch_lpc_add_gen_io_resources(dev, config->gen4_dec, LPC_GEN4_DEC);
 }
 
-static void pch_lpc_read_resources(device_t dev)
+static void pch_lpc_read_resources(struct device *dev)
 {
 	global_nvs_t *gnvs;
 
@@ -727,7 +729,7 @@ static void pch_lpc_read_resources(device_t dev)
 		memset(gnvs, 0, sizeof(global_nvs_t));
 }
 
-static void pch_lpc_enable(device_t dev)
+static void pch_lpc_enable(struct device *dev)
 {
 	/* Enable PCH Display Port */
 	RCBA16(DISPBDF) = 0x0010;
@@ -736,7 +738,7 @@ static void pch_lpc_enable(device_t dev)
 	pch_enable(dev);
 }
 
-static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -747,7 +749,7 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
-static void southbridge_inject_dsdt(device_t dev)
+static void southbridge_inject_dsdt(struct device *dev)
 {
 	global_nvs_t *gnvs;
 
@@ -788,7 +790,7 @@ static void southbridge_inject_dsdt(device_t dev)
 	}
 }
 
-static unsigned long southbridge_write_acpi_tables(device_t device,
+static unsigned long southbridge_write_acpi_tables(struct device *device,
 						   unsigned long start,
 						   struct acpi_rsdp *rsdp)
 {

@@ -42,7 +42,7 @@ struct root_port_config {
 	int coalesce;
 	int gbe_port;
 	int num_ports;
-	device_t ports[MAX_NUM_ROOT_PORTS];
+	struct device *ports[MAX_NUM_ROOT_PORTS];
 };
 
 static struct root_port_config rpc;
@@ -55,18 +55,18 @@ static inline int max_root_ports(void)
 		return H_NUM_ROOT_PORTS;
 }
 
-static inline int root_port_is_first(device_t dev)
+static inline int root_port_is_first(struct device *dev)
 {
 	return PCI_FUNC(dev->path.pci.devfn) == 0;
 }
 
-static inline int root_port_is_last(device_t dev)
+static inline int root_port_is_last(struct device *dev)
 {
 	return PCI_FUNC(dev->path.pci.devfn) == (rpc.num_ports - 1);
 }
 
 /* Root ports are numbered 1..N in the documentation. */
-static inline int root_port_number(device_t dev)
+static inline int root_port_number(struct device *dev)
 {
 	return PCI_FUNC(dev->path.pci.devfn) + 1;
 }
@@ -101,7 +101,7 @@ static void root_port_config_update_gbe_port(void)
 	}
 }
 
-static void root_port_init_config(device_t dev)
+static void root_port_init_config(struct device *dev)
 {
 	int rp;
 
@@ -154,7 +154,7 @@ static void root_port_init_config(device_t dev)
 /* Update devicetree with new Root Port function number assignment */
 static void pch_pcie_device_set_func(int index, int pci_func)
 {
-	device_t dev;
+	struct device *dev;
 	unsigned new_devfn;
 
 	dev = rpc.ports[index];
@@ -187,7 +187,7 @@ static void pcie_enable_clock_gating(void)
 	enabled_ports = 0;
 
 	for (i = 0; i < rpc.num_ports; i++) {
-		device_t dev;
+		struct device *dev;
 		int rp;
 
 		dev = rpc.ports[i];
@@ -275,7 +275,7 @@ static void root_port_commit_config(void)
 	pcie_enable_clock_gating();
 
 	for (i = 0; i < rpc.num_ports; i++) {
-		device_t dev;
+		struct device *dev;
 		u32 reg32;
 
 		dev = rpc.ports[i];
@@ -328,7 +328,7 @@ static void root_port_commit_config(void)
 	RCBA32(RPFN) = rpc.new_rpfn;
 }
 
-static void root_port_mark_disable(device_t dev)
+static void root_port_mark_disable(struct device *dev)
 {
 	/* Mark device as disabled. */
 	dev->enabled = 0;
@@ -336,7 +336,7 @@ static void root_port_mark_disable(device_t dev)
 	rpc.new_rpfn |= RPFN_HIDE(PCI_FUNC(dev->path.pci.devfn));
 }
 
-static void root_port_check_disable(device_t dev)
+static void root_port_check_disable(struct device *dev)
 {
 	int rp;
 	int is_lp;
@@ -695,7 +695,7 @@ static void pci_init(struct device *dev)
 	pci_write_config16(dev, 0x1e, reg16);
 }
 
-static void pch_pcie_enable(device_t dev)
+static void pch_pcie_enable(struct device *dev)
 {
 	/* Add this device to the root port config structure. */
 	root_port_init_config(dev);
@@ -715,7 +715,8 @@ static void pch_pcie_enable(device_t dev)
 		root_port_commit_config();
 }
 
-static void pcie_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void pcie_set_subsystem(struct device *dev, unsigned vendor,
+			       unsigned device)
 {
 	/* NOTE: This is not the default position! */
 	if (!vendor || !device) {

@@ -493,7 +493,6 @@ void add_resource(struct bus *bus, int type, int index, int base)
 	} else {
 		dev->res = r;
 	}
-	dev->rescnt++;
 }
 
 void add_register(struct chip_instance *chip_instance, char *name, char *val)
@@ -589,7 +588,7 @@ static void pass0(FILE *fil, struct device *ptr, struct device *next)
 	}
 
 	fprintf(fil, "DEVTREE_CONST static struct device %s;\n", ptr->name);
-	if (ptr->rescnt > 0)
+	if (ptr->res)
 		fprintf(fil, "DEVTREE_CONST struct resource %s_res[];\n",
 			ptr->name);
 	if (dev_has_children(ptr))
@@ -606,7 +605,7 @@ static void pass0(FILE *fil, struct device *ptr, struct device *next)
 
 static void emit_resources(FILE *fil, struct device *ptr)
 {
-	if (ptr->rescnt == 0)
+	if (ptr->res == NULL)
 		return;
 
 	int i = 1;
@@ -704,7 +703,7 @@ static void pass1(FILE *fil, struct device *ptr, struct device *next)
 		fprintf(fil, "\t.subsystem_device = 0x%04x,\n",
 			ptr->subsystem_device);
 
-	if (ptr->rescnt > 0) {
+	if (ptr->res) {
 		fprintf(fil, "\t.resource_list = &%s_res[0],\n",
 			ptr->name);
 	}

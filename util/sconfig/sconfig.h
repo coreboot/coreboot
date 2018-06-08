@@ -99,9 +99,6 @@ struct device {
 	/* Indicates whether this device is enabled. */
 	int enabled;
 
-	/* Indicates number of resources for the device. */
-	int rescnt;
-
 	/* Subsystem IDs for the device. */
 	int subsystem_vendor;
 	int subsystem_device;

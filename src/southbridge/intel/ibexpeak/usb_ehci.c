@@ -22,6 +22,7 @@
 #include "pch.h"
 #include <device/pci_ehci.h>
 #include <arch/io.h>
+#include <southbridge/intel/common/rcba.h>
 
 static void usb_ehci_init(struct device *dev)
 {
@@ -67,7 +68,7 @@ static void usb_ehci_init(struct device *dev)
 	printk(BIOS_DEBUG, "done.\n");
 }
 
-static void usb_ehci_set_subsystem(device_t dev, unsigned vendor,
+static void usb_ehci_set_subsystem(struct device *dev, unsigned vendor,
 				   unsigned device)
 {
 	u8 access_cntl;

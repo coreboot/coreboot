@@ -24,7 +24,7 @@
 #include <string.h>
 #include "chip.h"
 
-static int spi_acpi_get_bus(struct device *dev)
+static int spi_acpi_get_bus(const struct device *dev)
 {
 	struct device *spi_dev;
 	struct device_operations *ops;
@@ -165,10 +165,20 @@ static void spi_acpi_fill_ssdt_generator(struct device *dev)
 	}
 
 	/* Power Resource */
-	if (config->has_power_resource)
-		acpi_device_add_power_res(
-			&config->reset_gpio, config->reset_delay_ms,
-			&config->enable_gpio, config->enable_delay_ms);
+	if (config->has_power_resource) {
+		const struct acpi_power_res_params power_res_params = {
+			&config->reset_gpio,
+			config->reset_delay_ms,
+			config->reset_off_delay_ms,
+			&config->enable_gpio,
+			config->enable_delay_ms,
+			config->enable_off_delay_ms,
+			&config->stop_gpio,
+			config->stop_delay_ms,
+			config->stop_off_delay_ms
+		};
+		acpi_device_add_power_res(&power_res_params);
+	}
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */
@@ -177,7 +187,7 @@ static void spi_acpi_fill_ssdt_generator(struct device *dev)
 	       config->desc ? : dev->chip_ops->name, dev_path(dev));
 }
 
-static const char *spi_acpi_name(struct device *dev)
+static const char *spi_acpi_name(const struct device *dev)
 {
 	struct drivers_spi_acpi_config *config = dev->chip_info;
 	static char name[5];

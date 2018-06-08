@@ -17,6 +17,7 @@
 #define _BROADWELL_DEVICE_NVS_H_
 
 #include <stdint.h>
+#include <compiler.h>
 
 /* Offset in Global NVS where this structure lives */
 #define DEVICE_NVS_OFFSET	0x1000
@@ -35,6 +36,6 @@ typedef struct {
 	u8	enable[9];
 	u32	bar0[9];
 	u32	bar1[9];
-} __attribute__((packed)) device_nvs_t;
+} __packed device_nvs_t;
 
 #endif

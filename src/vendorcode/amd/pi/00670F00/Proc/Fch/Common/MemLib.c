@@ -41,7 +41,10 @@
  *
  ***************************************************************************/
 #include "FchPlatform.h"
-#include "Ids.h"
+ /*
+  * Header removed for coreboot.
+  * #include  "Ids.h"
+  */
 #define FILECODE PROC_FCH_COMMON_MEMLIB_FILECODE
 
 

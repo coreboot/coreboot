@@ -251,11 +251,6 @@ static int do_xfer(struct rockchip_spi *regs, bool use_16bit, const void *dout,
 	return 0;
 }
 
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
-{
-	return min(65535, buf_len);
-}
-
 static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 			  size_t bytes_out, void *din, size_t bytes_in)
 {
@@ -332,15 +327,15 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.claim_bus = spi_ctrlr_claim_bus,
 	.release_bus = spi_ctrlr_release_bus,
 	.xfer = spi_ctrlr_xfer,
+	.max_xfer_size = 65535,
 };
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	assert(bus < ARRAY_SIZE(rockchip_spi_slaves));
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = 0,
+		.bus_end = ARRAY_SIZE(rockchip_spi_slaves) - 1,
+	},
+};
 
-	slave->bus = bus;
-	slave->cs = cs;
-	slave->ctrlr = &spi_ctrlr;
-
-	return 0;
-}
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

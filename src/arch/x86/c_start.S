@@ -23,7 +23,7 @@
 _stack:
 .space CONFIG_MAX_CPUS*CONFIG_STACK_SIZE
 _estack:
-#if CONFIG_COOP_MULTITASKING
+#if IS_ENABLED(CONFIG_COOP_MULTITASKING)
 .global thread_stacks
 thread_stacks:
 .space CONFIG_STACK_SIZE*CONFIG_NUM_THREADS
@@ -73,35 +73,13 @@ _start:
 	/* set new stack */
 	movl	$_estack, %esp
 
-#if CONFIG_COOP_MULTITASKING
+#if IS_ENABLED(CONFIG_COOP_MULTITASKING)
 	/* Push the thread pointer. */
 	push	$0
 #endif
 	/* Push the CPU index and struct CPU */
 	push	$0
 	push	$0
-
-	/* Initialize the Interrupt Descriptor table */
-	leal	_idt, %edi
-	leal	vec0, %ebx
-	movl	$(0x10 << 16), %eax	/* cs selector */
-
-1:	movw	%bx, %ax
-	movl	%ebx, %edx
-	movw	$0x8E00, %dx		/* Interrupt gate - dpl=0, present */
-	movl	%eax, 0(%edi)
-	movl	%edx, 4(%edi)
-	addl	$6, %ebx
-	addl	$8, %edi
-	cmpl	$_idt_end, %edi
-	jne	1b
-
-	/* Load the Interrupt descriptor table */
-#ifndef __x86_64__
-	lidt	idtarg
-#else
-	// FIXME port table to x64 - lidt     idtarg
-#endif
 
 	/*
 	 *	Now we are finished. Memory is up, data is copied and
@@ -112,7 +90,7 @@ _start:
 
 	andl	$0xFFFFFFF0, %esp
 
-#if CONFIG_GDB_WAIT
+#if IS_ENABLED(CONFIG_GDB_WAIT)
 	call gdb_hw_init
 	call gdb_stub_breakpoint
 #endif
@@ -123,178 +101,7 @@ _start:
 	hlt
 	jmp	.Lhlt
 
-vec0:
-	push	$0 /* error code */
-	push	$0 /* vector */
-	jmp int_hand
-vec1:
-	push	$0 /* error code */
-	push	$1 /* vector */
-	jmp int_hand
-
-vec2:
-	push	$0 /* error code */
-	push	$2 /* vector */
-	jmp int_hand
-
-vec3:
-	push	$0 /* error code */
-	push	$3 /* vector */
-	jmp	int_hand
-
-vec4:
-	push	$0 /* error code */
-	push	$4 /* vector */
-	jmp	int_hand
-
-vec5:
-	push	$0 /* error code */
-	push	$5 /* vector */
-	jmp	int_hand
-
-vec6:
-	push	$0 /* error code */
-	push	$6 /* vector */
-	jmp	int_hand
-
-vec7:
-	push	$0 /* error code */
-	push	$7 /* vector */
-	jmp	int_hand
-
-vec8:
-	/* error code */
-	push	$8 /* vector */
-	jmp	int_hand
-	.word	0x9090
-
-vec9:
-	push	$0 /* error code */
-	push	$9 /* vector */
-	jmp int_hand
-
-vec10:
-	/* error code */
-	push	$10 /* vector */
-	jmp	int_hand
-	.word	0x9090
-
-vec11:
-	/* error code */
-	push	$11 /* vector */
-	jmp	int_hand
-	.word	0x9090
-
-vec12:
-	/* error code */
-	push	$12 /* vector */
-	jmp	int_hand
-	.word	0x9090
-
-vec13:
-	/* error code */
-	push	$13 /* vector */
-	jmp	int_hand
-	.word	0x9090
-
-vec14:
-	/* error code */
-	push	$14 /* vector */
-	jmp	int_hand
-	.word	0x9090
-
-vec15:
-	push	$0 /* error code */
-	push	$15 /* vector */
-	jmp	int_hand
-
-vec16:
-	push	$0 /* error code */
-	push	$16 /* vector */
-	jmp	int_hand
-
-vec17:
-	/* error code */
-	push	$17 /* vector */
-	jmp	int_hand
-	.word	0x9090
-
-vec18:
-	push	$0 /* error code */
-	push	$18 /* vector */
-	jmp	int_hand
-
-vec19:
-	push	$0 /* error code */
-	push	$19 /* vector */
-	jmp	int_hand
-
-int_hand:
-	/* At this point, on x86-32, on the stack there is:
-	 *  0(%esp) vector
-	 *  4(%esp) error code
-	 *  8(%esp) eip
-	 * 12(%esp) cs
-	 * 16(%esp) eflags
-	 */
-#ifdef __x86_64__
-	push	%rdi
-	push	%rsi
-	push	%rbp
-	/* Original stack pointer */
-	lea	32(%rsp), %rbp
-	push	%rbp
-	push	%rbx
-	push	%rdx
-	push	%rcx
-	push	%rax
-
-	push	%rsp	/* Pointer to structure on the stack */
-	call	x86_exception
-	pop	%rax	/* Drop the pointer */
-
-	pop	%rax
-	pop	%rcx
-	pop	%rdx
-	pop	%rbx
-	pop	%rbp	/* Ignore saved %rsp value */
-	pop	%rbp
-	pop	%rsi
-	pop	%rdi
-
-	add	$8, %rsp /* pop of the vector and error code */
-#else
-	pushl	%edi
-	pushl	%esi
-	pushl	%ebp
-
-	/* Original stack pointer */
-	leal	32(%esp), %ebp
-	pushl	%ebp
-	pushl	%ebx
-	pushl	%edx
-	pushl	%ecx
-	pushl	%eax
-
-	pushl	%esp	/* Pointer to structure on the stack */
-	call	x86_exception
-	pop	%eax	/* Drop the pointer */
-
-	popl	%eax
-	popl	%ecx
-	popl	%edx
-	popl	%ebx
-	popl	%ebp	/* Ignore saved %esp value */
-	popl	%ebp
-	popl	%esi
-	popl	%edi
-
-	addl	$8, %esp /* pop of the vector and error code */
-#endif
-
-	iret
-
-#if CONFIG_GDB_WAIT
+#if IS_ENABLED(CONFIG_GDB_WAIT)
 
 	.globl gdb_stub_breakpoint
 gdb_stub_breakpoint:
@@ -316,7 +123,7 @@ gdb_stub_breakpoint:
 	jmp	int_hand
 #endif
 
-	.globl gdt, gdt_end, idtarg
+	.globl gdt, gdt_end
 
 gdtaddr:
 	.word	gdt_end - gdt - 1
@@ -397,14 +204,6 @@ gdt:
 	.byte	0x00, 0x9b, 0xaf, 0x00
 #endif
 gdt_end:
-
-idtarg:
-	.word	_idt_end - _idt - 1	/* limit */
-	.long	_idt
-	.word	0
-_idt:
-	.fill	20, 8, 0	# idt is uninitialized
-_idt_end:
 
 	.section ".text._start", "ax", @progbits
 #ifdef __x86_64__

@@ -36,7 +36,7 @@ extern void set_pcie_dereset(void);
 extern void set_pcie_reset(void);
 
 struct resource * sr5650_retrieve_cpu_mmio_resource() {
-	device_t domain;
+	struct device *domain;
 	struct resource *res;
 
 	for (domain = all_devices; domain; domain = domain->next) {
@@ -51,7 +51,7 @@ struct resource * sr5650_retrieve_cpu_mmio_resource() {
 }
 
 /* extension registers */
-u32 pci_ext_read_config32(device_t nb_dev, device_t dev, u32 reg)
+u32 pci_ext_read_config32(struct device *nb_dev, struct device *dev, u32 reg)
 {
 	/*get BAR3 base address for nbcfg0x1c */
 	u32 addr = pci_read_config32(nb_dev, 0x1c) & ~0xF;
@@ -62,7 +62,7 @@ u32 pci_ext_read_config32(device_t nb_dev, device_t dev, u32 reg)
 	return *((u32 *) addr);
 }
 
-void pci_ext_write_config32(device_t nb_dev, device_t dev, u32 reg_pos, u32 mask, u32 val)
+void pci_ext_write_config32(struct device *nb_dev, struct device *dev, u32 reg_pos, u32 mask, u32 val)
 {
 	u32 reg_old, reg;
 
@@ -81,42 +81,42 @@ void pci_ext_write_config32(device_t nb_dev, device_t dev, u32 reg_pos, u32 mask
 	}
 }
 
-u32 nbpcie_p_read_index(device_t dev, u32 index)
+u32 nbpcie_p_read_index(struct device *dev, u32 index)
 {
 	return nb_read_index((dev), NBPCIE_INDEX, (index));
 }
 
-void nbpcie_p_write_index(device_t dev, u32 index, u32 data)
+void nbpcie_p_write_index(struct device *dev, u32 index, u32 data)
 {
 	nb_write_index((dev), NBPCIE_INDEX, (index), (data));
 }
 
-u32 nbpcie_ind_read_index(device_t nb_dev, u32 index)
+u32 nbpcie_ind_read_index(struct device *nb_dev, u32 index)
 {
 	return nb_read_index((nb_dev), NBPCIE_INDEX, (index));
 }
 
-void nbpcie_ind_write_index(device_t nb_dev, u32 index, u32 data)
+void nbpcie_ind_write_index(struct device *nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBPCIE_INDEX, (index), (data));
 }
 
-uint32_t l2cfg_ind_read_index(device_t nb_dev, uint32_t index)
+uint32_t l2cfg_ind_read_index(struct device *nb_dev, uint32_t index)
 {
 	return nb_read_index((nb_dev), L2CFG_INDEX, (index));
 }
 
-void l2cfg_ind_write_index(device_t nb_dev, uint32_t index, uint32_t data)
+void l2cfg_ind_write_index(struct device *nb_dev, uint32_t index, uint32_t data)
 {
 	nb_write_index((nb_dev), L2CFG_INDEX | (0x1 << 8), (index), (data));
 }
 
-uint32_t l1cfg_ind_read_index(device_t nb_dev, uint32_t index)
+uint32_t l1cfg_ind_read_index(struct device *nb_dev, uint32_t index)
 {
 	return nb_read_index((nb_dev), L1CFG_INDEX, (index));
 }
 
-void l1cfg_ind_write_index(device_t nb_dev, uint32_t index, uint32_t data)
+void l1cfg_ind_write_index(struct device *nb_dev, uint32_t index, uint32_t data)
 {
 	nb_write_index((nb_dev), L1CFG_INDEX | (0x1 << 31), (index), (data));
 }
@@ -130,8 +130,8 @@ void l1cfg_ind_write_index(device_t nb_dev, uint32_t index, uint32_t data)
 void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add)
 {
 	/* K8 Function1 is address map */
-	device_t k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
-	device_t k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+	struct device *k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
+	struct device *k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
 
 	if (in_out) {
 		u32 dword, sblk;
@@ -157,7 +157,7 @@ void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add)
 	}
 }
 
-void PcieReleasePortTraining(device_t nb_dev, device_t dev, u32 port)
+void PcieReleasePortTraining(struct device *nb_dev, struct device *dev, u32 port)
 {
 	switch (port) {
 	case 2:		/* GPP1, bit4-5 */
@@ -194,7 +194,7 @@ void PcieReleasePortTraining(device_t nb_dev, device_t dev, u32 port)
 *	0: no device is present.
 *	1: device is present and is trained.
 ********************************************************************************************************/
-u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
+u8 PcieTrainPort(struct device *nb_dev, struct device *dev, u32 port)
 {
 	u16 count = 5000;
 	u32 lc_state, reg, current_link_width, lane_mask;
@@ -300,7 +300,7 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 /*
  * Set Top Of Memory below and above 4G.
  */
-void sr5650_set_tom(device_t nb_dev)
+void sr5650_set_tom(struct device *nb_dev)
 {
 	msr_t sysmem;
 
@@ -315,12 +315,12 @@ void sr5650_set_tom(device_t nb_dev)
 	htiu_write_index(nb_dev, 0x30, sysmem.lo | 1);
 }
 
-u32 get_vid_did(device_t dev)
+u32 get_vid_did(struct device *dev)
 {
 	return pci_read_config32(dev, 0);
 }
 
-void detect_and_enable_iommu(device_t iommu_dev) {
+void detect_and_enable_iommu(struct device *iommu_dev) {
 	uint32_t dword;
 	uint8_t l1_target;
 	unsigned char iommu;
@@ -332,7 +332,7 @@ void detect_and_enable_iommu(device_t iommu_dev) {
 	if (iommu) {
 		printk(BIOS_DEBUG, "Initializing IOMMU\n");
 
-		device_t nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+		struct device *nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 
 		if (!nb_dev) {
 			printk(BIOS_WARNING, "Unable to find SR5690 device!  IOMMU NOT initialized\n");
@@ -496,7 +496,7 @@ void detect_and_enable_iommu(device_t iommu_dev) {
 	}
 }
 
-void sr5650_iommu_read_resources(device_t dev)
+void sr5650_iommu_read_resources(struct device *dev)
 {
 	unsigned char iommu;
 	struct resource *res;
@@ -521,7 +521,7 @@ void sr5650_iommu_read_resources(device_t dev)
 	compact_resources(dev);
 }
 
-void sr5650_iommu_set_resources(device_t dev)
+void sr5650_iommu_set_resources(struct device *dev)
 {
 	unsigned char iommu;
 	struct resource *res;
@@ -549,12 +549,12 @@ void sr5650_iommu_set_resources(device_t dev)
 	pci_dev_set_resources(dev);
 }
 
-void sr5650_iommu_enable_resources(device_t dev)
+void sr5650_iommu_enable_resources(struct device *dev)
 {
 	detect_and_enable_iommu(dev);
 }
 
-void sr5650_nb_pci_table(device_t nb_dev)
+void sr5650_nb_pci_table(struct device *nb_dev)
 {	/* NBPOR_InitPOR function. */
 	u8 temp8;
 	u16 temp16;
@@ -609,9 +609,9 @@ void sr5650_nb_pci_table(device_t nb_dev)
 * case 0 will be called twice, one is by CPU in hypertransport.c line458,
 * the other is by sr5650.
 ***********************************************/
-void sr5650_enable(device_t dev)
+void sr5650_enable(struct device *dev)
 {
-	device_t nb_dev = 0, sb_dev = 0;
+	struct device *nb_dev = NULL, *sb_dev = NULL;
 	int dev_ind;
 	struct southbridge_amd_sr5650_config *cfg;
 
@@ -823,14 +823,14 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t* ivrs, unsigned long current)
 {
 	uint8_t *p;
 
-	device_t nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!nb_dev) {
 		printk(BIOS_WARNING, "acpi_fill_ivrs: Unable to locate SR5650 "
 				"device!  IVRS table not generated...\n");
 		return (unsigned long)ivrs;
 	}
 
-	device_t iommu_dev = dev_find_slot(0, PCI_DEVFN(0, 2));
+	struct device *iommu_dev = dev_find_slot(0, PCI_DEVFN(0, 2));
 	if (!iommu_dev) {
 		printk(BIOS_WARNING, "acpi_fill_ivrs: Unable to locate SR5650 "
 				"IOMMU device!  IVRS table not generated...\n");
@@ -890,7 +890,7 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t* ivrs, unsigned long current)
 	return current;
 }
 
-unsigned long southbridge_write_acpi_tables(device_t device,
+unsigned long southbridge_write_acpi_tables(struct device *device,
 						unsigned long current,
 						struct acpi_rsdp *rsdp)
 {

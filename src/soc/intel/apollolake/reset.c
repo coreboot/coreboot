@@ -16,6 +16,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <fsp/util.h>
+#include <intelblocks/pmclib.h>
 #include <reset.h>
 #include <soc/heci.h>
 #include <soc/pm.h>
@@ -23,13 +24,13 @@
 
 #define CSE_WAIT_MAX_MS							1000
 
-void global_reset(void)
+void do_global_reset(void)
 {
-	global_reset_enable(1);
+	pmc_global_reset_enable(1);
 	hard_reset();
 }
 
-void reset_prepare(void)
+void soc_reset_prepare(enum reset_type reset_type)
 {
 	struct stopwatch sw;
 

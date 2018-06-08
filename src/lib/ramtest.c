@@ -6,7 +6,7 @@ static void write_phys(unsigned long addr, u32 value)
 {
 	// Assembler in lib/ is very ugly. But we properly guarded
 	// it so let's obey this one for now
-#if CONFIG_SSE2
+#if IS_ENABLED(CONFIG_SSE2)
 	asm volatile(
 		"movnti %1, (%0)"
 		: /* outputs */
@@ -31,7 +31,7 @@ static u32 read_phys(unsigned long addr)
 
 static void phys_memory_barrier(void)
 {
-#if CONFIG_SSE2
+#if IS_ENABLED(CONFIG_SSE2)
 	// Needed for movnti
 	asm volatile (
 		"sfence"
@@ -74,6 +74,8 @@ static inline void test_pattern(unsigned short int idx,
  * Simple write-read-verify memory test. See console debug output for
  * any dislocated bytes.
  *
+ * Tests 1MiB of memory starting from start.
+ *
  * @param start   System memory offset, aligned to 128bytes
  */
 static int ram_bitset_nodie(unsigned long start)
@@ -100,7 +102,7 @@ static int ram_bitset_nodie(unsigned long start)
 
 		failed = (value2 != value);
 		failures |= failed;
-		if  (failed && !verbose) {
+		if (failed && !verbose) {
 			printk(BIOS_ERR, "0x%08lx wr: 0x%08lx rd: 0x%08lx FAIL\n",
 				 start + addr, value, value2);
 		}

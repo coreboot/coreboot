@@ -15,6 +15,7 @@
 #ifndef TIMER_H
 #define TIMER_H
 
+#define NSECS_PER_SEC 1000000000
 #define USECS_PER_SEC 1000000
 #define MSECS_PER_SEC 1000
 #define USECS_PER_MSEC (USECS_PER_SEC / MSECS_PER_SEC)
@@ -163,6 +164,15 @@ static inline int stopwatch_expired(struct stopwatch *sw)
 {
 	stopwatch_tick(sw);
 	return !mono_time_before(&sw->current, &sw->expires);
+}
+
+/*
+ * Tick and check the stopwatch as long as it has not expired.
+ */
+static inline void stopwatch_wait_until_expired(struct stopwatch *sw)
+{
+	while (!stopwatch_expired(sw))
+		;
 }
 
 /*

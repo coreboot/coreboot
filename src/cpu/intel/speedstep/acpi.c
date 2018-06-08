@@ -23,6 +23,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/intel/speedstep.h>
 #include <device/device.h>
+#include <string.h>
 
 static int determine_total_number_of_cores(void)
 {
@@ -112,7 +113,7 @@ static void gen_pstate_entries(const sst_table_t *const pstates,
 /**
  * @brief Generate ACPI entries for Speedstep for each cpu
  */
-void generate_cpu_entries(device_t device)
+void generate_cpu_entries(struct device *device)
 {
 	int coreID, cpuID, pcontrol_blk = PMB0_BASE, plen = 6;
 	int totalcores = determine_total_number_of_cores();
@@ -161,4 +162,19 @@ void generate_cpu_entries(device_t device)
 			acpigen_pop_len();
 		}
 	}
+	/* PPKG is usually used for thermal management
+	   of the first and only package. */
+	acpigen_write_processor_package("PPKG", 0, cores_per_package);
+
+	/* Add a method to notify processor nodes */
+	acpigen_write_method("\\_PR.CNOT", 1);
+	for (coreID = 0; coreID < cores_per_package; coreID++) {
+		char buffer[DEVICE_PATH_MAX];
+		snprintf(buffer, sizeof(buffer), "\\_PR.CP%c%c",
+			'0' + coreID / 10, '0' + coreID % 10);
+		acpigen_emit_byte(NOTIFY_OP);
+		acpigen_emit_namestring(buffer);
+		acpigen_emit_byte(ARG0_OP);
+	}
+	acpigen_pop_len();
 }

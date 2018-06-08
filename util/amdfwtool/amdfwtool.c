@@ -190,6 +190,7 @@ static void usage(void)
 	printf("                               size must be larger than %dKB\n",
 		MIN_ROM_KB);
 	printf("                               and must a multiple of 1024\n");
+	printf("-l | --location                Location of Directory\n");
 	printf("-h | --help                    show this help\n");
 
 }
@@ -284,6 +285,7 @@ static uint32_t integrate_firmwares(char *base, uint32_t pos, uint32_t *romsig,
 				    amd_fw_entry *fw_table, uint32_t rom_size)
 {
 	int fd;
+	ssize_t bytes;
 	struct stat fd_stat;
 	int i;
 	uint32_t rom_base_address = 0xFFFFFFFF - rom_size + 1;
@@ -291,7 +293,16 @@ static uint32_t integrate_firmwares(char *base, uint32_t pos, uint32_t *romsig,
 	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
 		if (fw_table[i].filename != NULL) {
 			fd = open(fw_table[i].filename, O_RDONLY);
-			fstat(fd, &fd_stat);
+			if (fd < 0) {
+				printf("Error: %s\n", strerror(errno));
+				free(base);
+				exit(1);
+			}
+			if (fstat(fd, &fd_stat)) {
+				printf("fstat error: %s\n", strerror(errno));
+				free(base);
+				exit(1);
+			}
 
 			switch (fw_table[i].type) {
 			case AMD_FW_IMC:
@@ -317,9 +328,17 @@ static uint32_t integrate_firmwares(char *base, uint32_t pos, uint32_t *romsig,
 				exit(1);
 			}
 
-			read(fd, (void *)(base + pos), (size_t)fd_stat.st_size);
+			bytes = read(fd, (void *)(base + pos),
+					(size_t)fd_stat.st_size);
+			if (bytes == (ssize_t)fd_stat.st_size)
+				pos += fd_stat.st_size;
+			else {
+				printf("Error while reading %s\n",
+					fw_table[i].filename);
+				free(base);
+				exit(1);
+			}
 
-			pos += fd_stat.st_size;
 			close(fd);
 			pos = ALIGN(pos, 0x100U);
 		}
@@ -334,6 +353,7 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 					uint32_t rom_size)
 {
 	int fd;
+	ssize_t bytes;
 	struct stat fd_stat;
 	unsigned int i;
 	uint32_t rom_base_address = 0xFFFFFFFF - rom_size + 1;
@@ -348,7 +368,16 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 			pspdir[4+4*i+0] = fw_table[i].type;
 
 			fd = open(fw_table[i].filename, O_RDONLY);
-			fstat(fd, &fd_stat);
+			if (fd < 0) {
+				printf("Error: %s\n", strerror(errno));
+				free(base);
+				exit(1);
+			}
+			if (fstat(fd, &fd_stat)) {
+				printf("fstat error: %s\n", strerror(errno));
+				free(base);
+				exit(1);
+			}
 			pspdir[4+4*i+1] = (uint32_t)fd_stat.st_size;
 
 			pspdir[4+4*i+2] = pos + rom_base_address;
@@ -362,9 +391,17 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 				exit(1);
 			}
 
-			read(fd, (void *)(base + pos), (size_t)fd_stat.st_size);
+			bytes = read(fd, (void *)(base + pos),
+					(size_t)fd_stat.st_size);
+			if (bytes == (ssize_t)fd_stat.st_size)
+				pos += fd_stat.st_size;
+			else {
+				printf("Error while reading %s\n",
+					fw_table[i].filename);
+				free(base);
+				exit(1);
+			}
 
-			pos += fd_stat.st_size;
 			close(fd);
 			pos = ALIGN(pos, 0x100U);
 		} else {
@@ -377,9 +414,9 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 
 #if PSP2
 static const char *optstring  =
-	"x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:P:B:S:L:R:K:C:N:D:T:U:W:E:M:o:f:h";
+	"x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:P:B:S:L:R:K:C:N:D:T:U:W:E:M:o:f:l:h";
 #else
-static const char *optstring  = "x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:o:f:h";
+static const char *optstring  = "x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:o:f:l:h";
 #endif
 
 static struct option long_options[] = {
@@ -420,6 +457,7 @@ static struct option long_options[] = {
 
 	{"output",           required_argument, 0, 'o' },
 	{"flashsize",        required_argument, 0, 'f' },
+	{"location",         required_argument, 0, 'l' },
 	{"help",             no_argument,       0, 'h' },
 
 	{NULL,               0,                 0,  0  }
@@ -479,6 +517,8 @@ int main(int argc, char **argv)
 	int targetfd;
 	char *output = NULL;
 	uint32_t rom_size = CONFIG_ROM_SIZE;
+	uint32_t dir_location = 0;
+	uint32_t romsig_offset;
 	uint32_t rom_base_address;
 
 	while (1) {
@@ -624,6 +664,15 @@ int main(int argc, char **argv)
 				retval = 1;
 			}
 			break;
+		case 'l':
+			dir_location = (uint32_t)strtoul(optarg, &tmp, 16);
+			if (*tmp != '\0') {
+				printf("Error: Directory Location specified"
+					" incorrectly (%s)\n\n", optarg);
+				retval = 1;
+			}
+			break;
+
 		case 'h':
 			usage();
 			return 0;
@@ -662,13 +711,40 @@ int main(int argc, char **argv)
 	printf("    AMDFWTOOL  Using ROM size of %dKB\n", rom_size / 1024);
 
 	rom_base_address = 0xFFFFFFFF - rom_size + 1;
+	if (dir_location && (dir_location < rom_base_address)) {
+		printf("Error: Directory location outside of ROM.\n\n");
+		return 1;
+	}
+
+	switch (dir_location) {
+	case 0:          /* Fall through */
+	case 0xFFFA0000: /* Fall through */
+	case 0xFFF20000: /* Fall through */
+	case 0xFFE20000: /* Fall through */
+	case 0xFFC20000: /* Fall through */
+	case 0xFF820000: /* Fall through */
+	case 0xFF020000: /* Fall through */
+		break;
+	default:
+		printf("Error: Invalid Directory location.\n");
+		printf("  Valid locations are 0xFFFA0000, 0xFFF20000,\n");
+		printf("  0xFFE20000, 0xFFC20000, 0xFF820000, 0xFF020000\n");
+		return 1;
+	}
+
 	rom = malloc(rom_size);
 	if (!rom)
 		return 1;
 	memset(rom, 0xFF, rom_size);
 
-	current = AMD_ROMSIG_OFFSET;
-	amd_romsig = (void *)(rom + AMD_ROMSIG_OFFSET);
+	if (dir_location)
+		romsig_offset = current = dir_location - rom_base_address;
+	else
+		romsig_offset = current = AMD_ROMSIG_OFFSET;
+	printf("    AMDFWTOOL  Using firmware directory location of %08lx\n",
+			(unsigned long)rom_base_address + current);
+
+	amd_romsig = (void *)(rom + romsig_offset);
 	amd_romsig[0] = 0x55AA55AA; /* romsig */
 	amd_romsig[1] = 0;
 	amd_romsig[2] = 0;
@@ -731,7 +807,7 @@ int main(int argc, char **argv)
 
 	targetfd = open(output, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (targetfd >= 0) {
-		write(targetfd, amd_romsig, current - AMD_ROMSIG_OFFSET);
+		write(targetfd, amd_romsig, current - romsig_offset);
 		close(targetfd);
 	} else {
 		printf("Error: could not open file: %s\n", output);

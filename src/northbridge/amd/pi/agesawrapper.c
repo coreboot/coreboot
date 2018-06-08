@@ -15,31 +15,20 @@
 
 #include <AGESA.h>
 #include <cbfs.h>
+#include <cbmem.h>
+#include <compiler.h>
 #include <delay.h>
 #include <cpu/x86/mtrr.h>
-#include <cpuRegisters.h>
 #include <FchPlatform.h>
 #include <heapManager.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/pi/agesawrapper.h>
-#include <northbridge/amd/pi/BiosCallOuts.h>
+#include <northbridge/amd/agesa/BiosCallOuts.h>
 
-void __attribute__((weak)) OemPostParams(AMD_POST_PARAMS *PostParams) {}
+void __weak OemPostParams(AMD_POST_PARAMS *PostParams) {}
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
-
-#ifndef __PRE_RAM__
-/* ACPI table pointers returned by AmdInitLate */
-static void *DmiTable    = NULL;
-static void *AcpiPstate  = NULL;
-static void *AcpiSrat    = NULL;
-static void *AcpiSlit    = NULL;
-
-static void *AcpiWheaMce = NULL;
-static void *AcpiWheaCmc = NULL;
-static void *AcpiAlib    = NULL;
-static void *AcpiIvrs    = NULL;
-static void *AcpiCrat    = NULL;
-#endif /* #ifndef __PRE_RAM__ */
 
 AGESA_STATUS agesawrapper_amdinitreset(void)
 {
@@ -137,15 +126,25 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	AmdCreateStruct (&AmdParamStruct);
 	PostParams = (AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr;
 
-	OemPostParams(PostParams);
-
 	// Do not use IS_ENABLED here.  CONFIG_GFXUMA should always have a value.  Allow
 	// the compiler to flag the error if CONFIG_GFXUMA is not set.
 	PostParams->MemConfig.UmaMode = CONFIG_GFXUMA ? UMA_AUTO : UMA_NONE;
 	PostParams->MemConfig.UmaSize = 0;
 	PostParams->MemConfig.BottomIo = (UINT16)
 					 (CONFIG_BOTTOMIO_POSITION >> 24);
+
+	OemPostParams(PostParams);
+
 	status = AmdInitPost (PostParams);
+
+	/* If UMA is enabled we currently have it below TOP_MEM as well.
+	 * UMA may or may not be cacheable, so Sub4GCacheTop could be
+	 * higher than UmaBase. With UMA_NONE we see UmaBase==0. */
+	if (PostParams->MemConfig.UmaBase)
+		backup_top_of_low_cacheable(PostParams->MemConfig.UmaBase << 16);
+	else
+		backup_top_of_low_cacheable(PostParams->MemConfig.Sub4GCacheTop);
+
 	printk(
 			BIOS_SPEW,
 			"setup_uma_memory: umamode %s\n",
@@ -166,11 +165,8 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 			(unsigned long)(PostParams->MemConfig.UmaSize) >> (20 - 16),
 			(unsigned long)(PostParams->MemConfig.UmaBase) << 16
 	);
-
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(PostParams->StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
-	/* Initialize heap space */
-	EmptyHeap();
 
 	return status;
 }
@@ -180,6 +176,9 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_ENV_PARAMS       *EnvParam;
+
+	/* Initialize heap space */
+	EmptyHeap();
 
 	LibAmdMemFill (&AmdParamStruct,
 		       0,
@@ -211,34 +210,6 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 
 	return status;
 }
-
-#ifndef __PRE_RAM__
-VOID* agesawrapper_getlateinitptr (int pick)
-{
-	switch (pick) {
-	case PICK_DMI:
-		return DmiTable;
-	case PICK_PSTATE:
-		return AcpiPstate;
-	case PICK_SRAT:
-		return AcpiSrat;
-	case PICK_SLIT:
-		return AcpiSlit;
-	case PICK_WHEA_MCE:
-		return AcpiWheaMce;
-	case PICK_WHEA_CMC:
-		return AcpiWheaCmc;
-	case PICK_ALIB:
-		return AcpiAlib;
-	case PICK_IVRS:
-		return AcpiIvrs;
-	case PICK_CRAT:
-		return AcpiCrat;
-	default:
-		return NULL;
-	}
-}
-#endif /* #ifndef __PRE_RAM__ */
 
 AGESA_STATUS agesawrapper_amdinitmid(void)
 {
@@ -309,86 +280,12 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 		printk(BIOS_WARNING, "AmdInitLate returned error!\n");
 	}
 
-	DmiTable    = AmdLateParams->DmiTable;
-	AcpiPstate  = AmdLateParams->AcpiPState;
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_PI_00630F01) || IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_PI_00730F01)
-	AcpiSrat    = AmdLateParams->AcpiSrat;
-	AcpiSlit    = AmdLateParams->AcpiSlit;
-#endif
+	agesawrapper_setlateinitptr(AmdLateParams);
 
-	AcpiWheaMce = AmdLateParams->AcpiWheaMce;
-	AcpiWheaCmc = AmdLateParams->AcpiWheaCmc;
-	AcpiAlib    = AmdLateParams->AcpiAlib;
-	AcpiIvrs    = AmdLateParams->AcpiIvrs;
-	AcpiCrat    = AmdLateParams->AcpiCrat;
-
-	printk(BIOS_DEBUG, "DmiTable:%x, AcpiPstatein: %x, AcpiSrat:%x,"
-	       "AcpiSlit:%x, Mce:%x, Cmc:%x,"
-	       "Alib:%x, AcpiIvrs:%x in %s\n",
-	       (unsigned int)DmiTable, (unsigned int)AcpiPstate, (unsigned int)AcpiSrat,
-	       (unsigned int)AcpiSlit, (unsigned int)AcpiWheaMce, (unsigned int)AcpiWheaCmc,
-	       (unsigned int)AcpiAlib, (unsigned int)AcpiIvrs, __func__);
-
-	/* AmdReleaseStruct (&AmdParamStruct); */
+	/* No AmdReleaseStruct(&AmdParamStruct), we need AmdLateParams later. */
 	return Status;
 }
 #endif /* #ifndef __PRE_RAM__ */
-
-AGESA_STATUS agesawrapper_amdlaterunaptask (
-	UINT32 Func,
-	UINT32 Data,
-	VOID *ConfigPtr
-	)
-{
-	AGESA_STATUS Status;
-	AP_EXE_PARAMS ApExeParams;
-
-	LibAmdMemFill (&ApExeParams,
-		       0,
-		       sizeof(AP_EXE_PARAMS),
-		       &(ApExeParams.StdHeader));
-
-	ApExeParams.StdHeader.AltImageBasePtr = 0;
-	ApExeParams.StdHeader.CalloutPtr = &GetBiosCallout;
-	ApExeParams.StdHeader.Func = 0;
-	ApExeParams.StdHeader.ImageBasePtr = 0;
-	ApExeParams.FunctionNumber = Func;
-	ApExeParams.RelatedDataBlock = ConfigPtr;
-
-	Status = AmdLateRunApTask (&ApExeParams);
-	if (Status != AGESA_SUCCESS) {
-		/* agesawrapper_amdreadeventlog(); */
-		ASSERT(Status == AGESA_SUCCESS);
-	}
-
-	return Status;
-}
-
-AGESA_STATUS agesawrapper_amdreadeventlog (UINT8 HeapStatus)
-{
-	AGESA_STATUS Status;
-	EVENT_PARAMS AmdEventParams;
-
-	LibAmdMemFill (&AmdEventParams,
-		       0,
-		       sizeof(EVENT_PARAMS),
-		       &(AmdEventParams.StdHeader));
-
-	AmdEventParams.StdHeader.AltImageBasePtr = 0;
-	AmdEventParams.StdHeader.CalloutPtr = &GetBiosCallout;
-	AmdEventParams.StdHeader.Func = 0;
-	AmdEventParams.StdHeader.ImageBasePtr = 0;
-	AmdEventParams.StdHeader.HeapStatus = HeapStatus;
-	Status = AmdReadEventLog (&AmdEventParams);
-	while (AmdEventParams.EventClass != 0) {
-		printk(BIOS_DEBUG,"\nEventLog:  EventClass = %x, EventInfo = %x.\n", (unsigned int)AmdEventParams.EventClass,(unsigned int)AmdEventParams.EventInfo);
-		printk(BIOS_DEBUG,"  Param1 = %x, Param2 = %x.\n",(unsigned int)AmdEventParams.DataParam1, (unsigned int)AmdEventParams.DataParam2);
-		printk(BIOS_DEBUG,"  Param3 = %x, Param4 = %x.\n",(unsigned int)AmdEventParams.DataParam3, (unsigned int)AmdEventParams.DataParam4);
-		Status = AmdReadEventLog (&AmdEventParams);
-	}
-
-	return Status;
-}
 
 const void *agesawrapper_locate_module (const CHAR8 name[8])
 {
@@ -402,7 +299,7 @@ const void *agesawrapper_locate_module (const CHAR8 name[8])
 		agesa = (void *)CONFIG_AGESA_BINARY_PI_LOCATION;
 		file_size = 0x100000;
 	} else {
-		agesa = cbfs_boot_map_with_leak((const char *)CONFIG_CBFS_AGESA_NAME,
+		agesa = cbfs_boot_map_with_leak((const char *)CONFIG_AGESA_CBFS_NAME,
 					CBFS_TYPE_RAW, &file_size);
 	}
 

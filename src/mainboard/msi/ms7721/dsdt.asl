@@ -37,7 +37,7 @@ DefinitionBlock (
 	#include <cpu/amd/agesa/family15tn/acpi/cpu.asl>
 
 	/* Describe the supported Sleep States for this Southbridge */
-	#include <southbridge/amd/agesa/hudson/acpi/sleepstates.asl>
+	#include <southbridge/amd/common/acpi/sleepstates.asl>
 
 	/* Describe the Sleep Methods (WAK, PTS, GTS, etc.) for this platform */
 	#include "acpi/sleep.asl"

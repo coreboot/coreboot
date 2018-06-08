@@ -40,18 +40,6 @@ struct amic_spi_flash_params {
 	const char	*name;
 };
 
-/* spi_flash needs to be first so upper layers can free() it */
-struct amic_spi_flash {
-	struct spi_flash flash;
-	const struct amic_spi_flash_params *params;
-};
-
-static inline struct amic_spi_flash *
-to_amic_spi_flash(const struct spi_flash *flash)
-{
-	return container_of(flash, struct amic_spi_flash, flash);
-}
-
 static const struct amic_spi_flash_params amic_spi_flash_table[] = {
 	{
 		.id			= 0x3016,
@@ -66,7 +54,6 @@ static const struct amic_spi_flash_params amic_spi_flash_table[] = {
 static int amic_write(const struct spi_flash *flash, u32 offset, size_t len,
 		const void *buf)
 {
-	struct amic_spi_flash *amic = to_amic_spi_flash(flash);
 	unsigned long byte_addr;
 	unsigned long page_size;
 	size_t chunk_len;
@@ -74,18 +61,18 @@ static int amic_write(const struct spi_flash *flash, u32 offset, size_t len,
 	int ret;
 	u8 cmd[4];
 
-	page_size = 1 << amic->params->l2_page_size;
+	page_size = flash->page_size;
 	byte_addr = offset % page_size;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
-		chunk_len = spi_crop_chunk(sizeof(cmd), chunk_len);
+		chunk_len = spi_crop_chunk(&flash->spi, sizeof(cmd), chunk_len);
 
 		cmd[0] = CMD_A25_PP;
 		cmd[1] = (offset >> 16) & 0xff;
 		cmd[2] = (offset >> 8) & 0xff;
 		cmd[3] = offset & 0xff;
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 		printk(BIOS_SPEW, "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
 		        " chunk_len = %zu\n", buf + actual,
 			cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
@@ -112,7 +99,7 @@ static int amic_write(const struct spi_flash *flash, u32 offset, size_t len,
 		byte_addr = 0;
 	}
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 	printk(BIOS_SPEW, "SF: AMIC: Successfully programmed %zu bytes @"
 			" 0x%lx\n", len, (unsigned long)(offset - len));
 #endif
@@ -122,11 +109,20 @@ out:
 	return ret;
 }
 
-struct spi_flash *spi_flash_probe_amic(struct spi_slave *spi, u8 *idcode)
+static const struct spi_flash_ops spi_flash_ops = {
+	.write = amic_write,
+	.erase = spi_flash_cmd_erase,
+#if IS_ENABLED(CONFIG_SPI_FLASH_NO_FAST_READ)
+	.read = spi_flash_cmd_read_slow,
+#else
+	.read = spi_flash_cmd_read_fast,
+#endif
+};
+
+int spi_flash_probe_amic(const struct spi_slave *spi, u8 *idcode,
+			 struct spi_flash *flash)
 {
 	const struct amic_spi_flash_params *params;
-	unsigned page_size;
-	struct amic_spi_flash *amic;
 	unsigned int i;
 
 	for (i = 0; i < ARRAY_SIZE(amic_spi_flash_table); i++) {
@@ -138,35 +134,20 @@ struct spi_flash *spi_flash_probe_amic(struct spi_slave *spi, u8 *idcode)
 	if (i == ARRAY_SIZE(amic_spi_flash_table)) {
 		printk(BIOS_WARNING, "SF: Unsupported AMIC ID %02x%02x\n",
 				idcode[1], idcode[2]);
-		return NULL;
+		return -1;
 	}
 
-	amic = malloc(sizeof(struct amic_spi_flash));
-	if (!amic) {
-		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
-		return NULL;
-	}
-
-	amic->params = params;
-	memcpy(&amic->flash.spi, spi, sizeof(*spi));
-	amic->flash.name = params->name;
+	memcpy(&flash->spi, spi, sizeof(*spi));
+	flash->name = params->name;
 
 	/* Assuming power-of-two page size initially. */
-	page_size = 1 << params->l2_page_size;
+	flash->page_size = 1 << params->l2_page_size;
+	flash->sector_size = flash->page_size * params->pages_per_sector;
+	flash->size = flash->sector_size * params->sectors_per_block *
+			params->nr_blocks;
+	flash->erase_cmd = CMD_A25_SE;
 
-	amic->flash.internal_write = amic_write;
-	amic->flash.internal_erase = spi_flash_cmd_erase;
-#if CONFIG_SPI_FLASH_NO_FAST_READ
-	amic->flash.internal_read = spi_flash_cmd_read_slow;
-#else
-	amic->flash.internal_read = spi_flash_cmd_read_fast;
-#endif
-	amic->flash.sector_size = (1 << amic->params->l2_page_size) *
-		amic->params->pages_per_sector;
-	amic->flash.size = page_size * params->pages_per_sector
-				* params->sectors_per_block
-				* params->nr_blocks;
-	amic->flash.erase_cmd = CMD_A25_SE;
+	flash->ops = &spi_flash_ops;
 
-	return &amic->flash;
+	return 0;
 }

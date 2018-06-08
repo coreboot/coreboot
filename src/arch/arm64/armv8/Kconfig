@@ -13,3 +13,15 @@ config ARCH_ROMSTAGE_ARMV8_64
 config ARCH_RAMSTAGE_ARMV8_64
 	def_bool n
 	select ARCH_RAMSTAGE_ARM64
+
+config ARCH_ARMV8_EXTENSION
+	int
+	default 0
+	help
+	  Specify ARMv8 extension, for example '1' for ARMv8.1, to control the
+	  '-march' option passed into the compiler. Defaults to 0 for vanilla
+	  ARMv8 but may be overridden in the SoC's Kconfig.
+
+	  All ARMv8 implementations are downwards-compatible, so this does not
+	  need to be changed unless specific features (e.g. new instructions)
+	  are used by the SoC's coreboot code.

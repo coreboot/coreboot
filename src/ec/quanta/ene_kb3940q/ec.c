@@ -129,7 +129,7 @@ void ec_mem_write(u8 addr, u8 data)
 #ifndef __SMM__
 static void ene_kb3940q_log_events(void)
 {
-#if CONFIG_ELOG
+#if IS_ENABLED(CONFIG_ELOG)
 	u8 reason = ec_mem_read(EC_SHUTDOWN_REASON);
 	if (reason)
 		elog_add_event_byte(ELOG_TYPE_EC_SHUTDOWN, reason);
@@ -154,7 +154,7 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, 0, 0, { 0, 0 }, }
+	{ &ops, 0, 0, 0, }
 };
 
 static void enable_dev(struct device *dev)

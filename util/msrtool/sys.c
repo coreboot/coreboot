@@ -36,7 +36,7 @@ struct cpuid_t *cpuid(void) {
 	asm ("cpuid" : "=b" (outebx) : "a" (0) : "%ecx", "%edx");
 #endif
 
-	id.vendor = (outebx == 0x756e6547) ? VENDOR_INTEL : VENDOR_AMD;
+	id.vendor = outebx;
 
 /* Then, identificate CPU itself */
 #if defined(__DARWIN__) && !defined(__LP64__)

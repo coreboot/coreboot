@@ -15,30 +15,11 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
-#include <device/pci_def.h>
+
 #include <southbridge/amd/sb800/sb800.h>
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 
-void broadcom_init(void);
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
-/**
- * TODO
- * SB CIMx callback
- */
-void set_pcie_reset(void)
-{
-}
-
-/**
- * mainboard specific SB CIMx callback
- */
-void set_pcie_dereset(void)
+static void init_gpios(void)
 {
 	/**
 	 * GPIO32 Pcie Device DeAssert for APU
@@ -52,7 +33,7 @@ void set_pcie_dereset(void)
 	 */
 
 	/* Multi-function pins switch to GPIO0-35, these pins are shared with
-	 * PCI pins, make sure Husson PCI device is disabled.
+	 * PCI pins, make sure Hudson PCI device is disabled.
 	 */
 	RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGEA, AccWidthUint8, ~BIT0, 1);
 
@@ -70,12 +51,12 @@ void set_pcie_dereset(void)
 /**********************************************
  * Enable the dedicated functions of the board.
  **********************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
 	/* Inagua mainboard specific setting */
-	set_pcie_dereset();
+	init_gpios();
 
 	/*
 	 * Initialize ASF registers to an arbitrary address because someone
@@ -85,10 +66,6 @@ static void mainboard_enable(device_t dev)
 	 */
 	pm_iowrite(0x29, 0x80);
 	pm_iowrite(0x28, 0x61);
-
-	/* Upload AMD A55E GbE 'NV'RAM contents.  Still untested on Inagua.
-	 * After anyone can confirm it works please uncomment the call. */
-	//broadcom_init();
 }
 
 struct chip_operations mainboard_ops = {

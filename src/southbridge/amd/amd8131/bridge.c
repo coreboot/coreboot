@@ -16,9 +16,9 @@
 #define NPUMB 0xD8	/* Non prefetchable upper memory base */
 
 static void amd8131_walk_children(struct bus *bus,
-	void (*visit)(device_t dev, void *ptr), void *ptr)
+	void (*visit)(struct device *dev, void *ptr), void *ptr)
 {
-	device_t child;
+	struct device *child;
 	for (child = bus->children; child; child = child->sibling) {
 		if (child->path.type != DEVICE_PATH_PCI) {
 			continue;
@@ -38,7 +38,7 @@ struct amd8131_bus_info {
 	int max_func;
 };
 
-static void amd8131_count_dev(device_t dev, void *ptr)
+static void amd8131_count_dev(struct device *dev, void *ptr)
 {
 	struct amd8131_bus_info *info = ptr;
 	/* Don't count pci bridges */
@@ -51,14 +51,14 @@ static void amd8131_count_dev(device_t dev, void *ptr)
 }
 
 
-static void amd8131_pcix_tune_dev(device_t dev, void *ptr)
+static void amd8131_pcix_tune_dev(struct device *dev, void *ptr)
 {
 	struct amd8131_bus_info *info = ptr;
 	unsigned cap;
 	unsigned status, cmd, orig_cmd;
 	unsigned max_read, max_tran;
 	int sib_funcs, sibs;
-	device_t sib;
+	struct device *sib;
 
 	if (dev->hdr_type != PCI_HEADER_TYPE_NORMAL) {
 		return;
@@ -264,13 +264,13 @@ static void amd8131_scan_bus(struct bus *bus,
 	}
 }
 
-static void amd8131_scan_bridge(device_t dev)
+static void amd8131_scan_bridge(struct device *dev)
 {
 	do_pci_scan_bridge(dev, amd8131_scan_bus);
 }
 
 
-static void amd8131_pcix_init(device_t dev)
+static void amd8131_pcix_init(struct device *dev)
 {
 	uint32_t dword;
 	uint16_t word;
@@ -395,7 +395,7 @@ static const struct pci_driver pcix_driver __pci_driver = {
 };
 
 
-static void ioapic_enable(device_t dev)
+static void ioapic_enable(struct device *dev)
 {
 	uint32_t value;
 

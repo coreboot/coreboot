@@ -1,0 +1,44 @@
+#!/bin/sh
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2016 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+#
+# DESCR: Run checkpatch on directories that are known good
+
+# Top level
+util/lint/lint-007-checkpatch "src/acpi"
+
+#src/cpu
+util/lint/lint-007-checkpatch "src/cpu/armltd src/cpu/qemu-power8 \
+src/cpu/qemu-x86"
+
+#src/drivers
+util/lint/lint-007-checkpatch "src/drivers/dec  src/drivers/gic \
+src/drivers/ti"
+
+#src/ec
+util/lint/lint-007-checkpatch "src/ec/purism"
+
+#src/include
+util/lint/lint-007-checkpatch "src/include/boot src/include/superio \
+src/include/sys"
+
+#src/mainboard
+util/lint/lint-007-checkpatch "src/mainboard/adlink src/mainboard/linutop \
+src/mainboard/purism src/mainboard/ti"
+
+# src/soc
+util/lint/lint-007-checkpatch "src/soc/rdc"
+
+# src/superio
+util/lint/lint-007-checkpatch "src/superio/acpi src/superio/common"

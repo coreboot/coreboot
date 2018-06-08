@@ -173,7 +173,7 @@ static void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 	}
 }
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	set_bios_reset();
 
@@ -182,7 +182,7 @@ void hard_reset(void)
 	outb(0x0e, 0x0cf9);
 }
 
-void soft_reset(void)
+void do_soft_reset(void)
 {
 	set_bios_reset();
 	/* link reset */

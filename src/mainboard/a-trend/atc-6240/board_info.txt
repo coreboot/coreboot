@@ -1,4 +1,0 @@
-Category: desktop
-Board URL: http://active-hardware.com/english/reviews/mainboard/atc6240.htm
-ROM package: DIP32
-ROM protocol: Parallel

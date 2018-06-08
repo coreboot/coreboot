@@ -16,17 +16,10 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include <arch/acpi.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
-#include <northbridge/amd/agesa/agesawrapper.h>
+
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <southbridge/amd/agesa/hudson/pci_devs.h>
 #include <northbridge/amd/agesa/family16kb/pci_devs.h>
-
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
 
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
@@ -96,25 +89,12 @@ static void pirq_setup(void)
 	picr_data_ptr = mainboard_picr_data;
 }
 
-/* TODO: mainboard specific SB AGESA callback */
-void set_pcie_reset(void)
-{
-}
-
-/* TODO: mainboard specific SB AGESA callback */
-void set_pcie_dereset(void)
-{
-}
-
 /**********************************************
  * Enable the dedicated functions of the board.
  **********************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3earlyrestore();
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();

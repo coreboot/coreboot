@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Siemens AG.
+ * Copyright (C) 2016-2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +22,16 @@
 #include <string.h>
 #include <delay.h>
 #include <hwilib.h>
+#include <bootstate.h>
 #include "nc_fpga.h"
+
+static void *nc_fpga_bar0;
 
 #define FPGA_SET_PARAM(src, dst) \
 { \
-	typeof(dst) var; \
-	size_t len = sizeof(var); \
-	if (hwilib_get_field(src, (uint8_t *)&var, len) == len) \
-		dst = (typeof(dst))(var); \
+	uint32_t var; \
+	if (hwilib_get_field(src, (uint8_t *)&var, sizeof(var))) \
+		dst = ((typeof(dst))var); \
 }
 
 static void init_temp_mon (void *base_adr)
@@ -41,7 +43,7 @@ static void init_temp_mon (void *base_adr)
 	/* Program sensor delay first. */
 	FPGA_SET_PARAM(FANSensorDelay, ctrl->sensordelay);
 	/* Program correction curve for every used sensor. */
-	if (hwilib_get_field(FANSensorNum, &num, sizeof(num) != sizeof(num)) ||
+	if ((hwilib_get_field(FANSensorNum, &num, 1) != 1) ||
 	    (num == 0) || (num > MAX_NUM_SENSORS))
 		return;
 	for (i = 0; i < num; i ++) {
@@ -54,17 +56,19 @@ static void init_temp_mon (void *base_adr)
 		}
 	}
 	ctrl->sensornum = num;
+
+	/* Program sensor selection and temperature thresholds. */
+	FPGA_SET_PARAM(FANSensorSelect, ctrl->sensorselect);
+	FPGA_SET_PARAM(T_Warn, ctrl->t_warn);
+	FPGA_SET_PARAM(T_Crit, ctrl->t_crit);
 }
 
 static void init_fan_ctrl (void *base_adr)
 {
-	uint8_t mask = 0, freeze_mode = 0, fan_req = 0;
+	uint8_t mask = 0, freeze_disable = 0, fan_req = 0;
 	volatile fan_ctrl_t *ctrl = (fan_ctrl_t *)base_adr;
 
 	/* Program all needed fields of FAN controller. */
-	FPGA_SET_PARAM(FANSensorSelect, ctrl->sensorselect);
-	FPGA_SET_PARAM(T_Warn, ctrl->t_warn);
-	FPGA_SET_PARAM(T_Crit, ctrl->t_crit);
 	FPGA_SET_PARAM(FANSamplingTime, ctrl->samplingtime);
 	FPGA_SET_PARAM(FANSetPoint, ctrl->setpoint);
 	FPGA_SET_PARAM(FANHystCtrl, ctrl->hystctrl);
@@ -74,12 +78,13 @@ static void init_fan_ctrl (void *base_adr)
 	FPGA_SET_PARAM(FANKi, ctrl->ki);
 	FPGA_SET_PARAM(FANKd, ctrl->kd);
 	FPGA_SET_PARAM(FANMaxSpeed, ctrl->fanmax);
+	FPGA_SET_PARAM(FANStartSpeed, ctrl->fanmin);
 	/* Set freeze and FAN configuration. */
 	if ((hwilib_get_field(FF_FanReq, &fan_req, 1) == 1) &&
-	    (hwilib_get_field(FF_FreezeDis, &freeze_mode, 1) == 1)) {
+	    (hwilib_get_field(FF_FreezeDis, &freeze_disable, 1) == 1)) {
 		if (!fan_req)
 			mask = 1;
-		else if  (fan_req && freeze_mode)
+		else if (fan_req && !freeze_disable)
 			mask = 2;
 		else
 			mask = 3;
@@ -109,6 +114,9 @@ static void nc_fpga_init(struct device *dev)
 	/* Ensure this is really a NC FPGA by checking magic register. */
 	if (read32(bar0_ptr + NC_MAGIC_OFFSET) != NC_FPGA_MAGIC)
 		return;
+	/* Save BAR0 address so that it can be used on all NC_FPGA devices to
+	   set the FW_DONE bit before jumping to payload. */
+	nc_fpga_bar0 = bar0_ptr;
 	/* Open hwinfo block. */
 	if (hwilib_find_blocks("hwinfo.hex") != CB_SUCCESS)
 		return;
@@ -119,7 +127,34 @@ static void nc_fpga_init(struct device *dev)
 		init_temp_mon(bar0_ptr + NC_FANMON_CTRL_OFFSET);
 	if (cap & NC_CAP1_FAN_CTRL)
 		init_fan_ctrl(bar0_ptr + NC_FANMON_CTRL_OFFSET);
+	if (cap & NC_CAP1_DSAVE_NMI_DELAY) {
+		uint16_t *dsave_ptr = (uint16_t *)(bar0_ptr + NC_DSAVE_OFFSET);
+		FPGA_SET_PARAM(NvramVirtTimeDsaveReset, *dsave_ptr);
+	}
+	if (cap & NC_CAP1_BL_BRIGHTNESS_CTRL) {
+		uint8_t *bl_bn_ptr =
+				(uint8_t *)(bar0_ptr + NC_BL_BRIGHTNESS_OFFSET);
+		uint8_t *bl_pwm_ptr = (uint8_t *)(bar0_ptr + NC_BL_PWM_OFFSET);
+		FPGA_SET_PARAM(BL_Brightness, *bl_bn_ptr);
+		FPGA_SET_PARAM(PF_PwmFreq, *bl_pwm_ptr);
+	}
 }
+
+#if IS_ENABLED(CONFIG_NC_FPGA_NOTIFY_CB_READY)
+/* Set FW_DONE bit in FPGA before jumping to payload. */
+static void set_fw_done(void *unused)
+{
+	uint32_t reg;
+
+	if (nc_fpga_bar0) {
+		reg = read32(nc_fpga_bar0 + NC_DIAG_CTRL_OFFSET);
+		reg |= NC_DIAG_FW_DONE;
+		write32(nc_fpga_bar0 + NC_DIAG_CTRL_OFFSET, reg);
+	}
+}
+
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, set_fw_done, NULL);
+#endif
 
 static struct device_operations nc_fpga_ops  = {
 	.read_resources   = pci_dev_read_resources,
@@ -130,10 +165,10 @@ static struct device_operations nc_fpga_ops  = {
 	.ops_pci          = 0,
 };
 
-static const unsigned short nc_fpga_device_ids[] = { 0x4091, 0 };
+static const unsigned short nc_fpga_device_ids[] = { 0x4080, 0x4091, 0 };
 
 static const struct pci_driver nc_fpga_driver __pci_driver = {
 	.ops    = &nc_fpga_ops,
-	.vendor = 0x110A,
+	.vendor = PCI_VENDOR_ID_SIEMENS,
 	.devices = nc_fpga_device_ids,
 };

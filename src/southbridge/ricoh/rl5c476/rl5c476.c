@@ -28,7 +28,7 @@
 static int enable_cf_boot = 0;
 static unsigned int cf_base;
 
-static void rl5c476_init(device_t dev)
+static void rl5c476_init(struct device *dev)
 {
 	pc16reg_t *pc16;
 	unsigned char *base;
@@ -158,7 +158,7 @@ static void rl5c476_init(device_t dev)
 	*cptr = 0x41;
 }
 
-static void rl5c476_read_resources(device_t dev)
+static void rl5c476_read_resources(struct device *dev)
 {
 
 	struct resource *resource;
@@ -177,7 +177,7 @@ static void rl5c476_read_resources(device_t dev)
 	cardbus_read_resources(dev);
 }
 
-static void rl5c476_set_resources(device_t dev)
+static void rl5c476_set_resources(struct device *dev)
 {
 	struct resource *resource;
 	printk(BIOS_DEBUG, "%s In set resources\n",dev_path(dev));
@@ -194,7 +194,8 @@ static void rl5c476_set_resources(device_t dev)
 
 }
 
-static void rl5c476_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void rl5c476_set_subsystem(struct device *dev, unsigned vendor,
+				  unsigned device)
 {
 	u16 miscreg = pci_read_config16(dev, 0x82);
 	/* Enable subsystem id register writes */
@@ -225,7 +226,7 @@ static const struct pci_driver ricoh_rl5c476_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_RICOH_RL5C476,
 };
 
-static void southbridge_init(device_t dev)
+static void southbridge_init(struct device *dev)
 {
 	struct southbridge_ricoh_rl5c476_config *conf = dev->chip_info;
 	enable_cf_boot = conf->enable_cf;

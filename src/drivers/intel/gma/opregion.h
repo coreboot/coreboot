@@ -19,11 +19,13 @@
 #define _COMMON_GMA_H_
 
 #include <types.h>
+#include <compiler.h>
 #include <commonlib/helpers.h>
 
 /* IGD PCI Configuration register */
 #define ASLS           0xfc            /* OpRegion Base */
 #define SWSCI          0xe8            /* SWSCI Register */
+#define SWSMISCI       0xe0            /* SWSMISCI Register */
 #define GSSCIE         (1 << 0)        /* SCI Event trigger */
 #define SMISCISEL      (1 << 15)       /* Select SMI or SCI event source */
 
@@ -40,7 +42,7 @@ typedef struct {
 	u32	pcon;		    /* Offset 96   Platform Capabilities */
 	u16	dver[16];	    /* Offset 100  GOP Version */
 	u8	reserved[124];	    /* Offset 132  Reserved */
-} __attribute__((packed)) opregion_header_t;
+} __packed opregion_header_t;
 
 #define IGD_OPREGION_SIGNATURE "IntelGraphicsMem"
 #define IGD_OPREGION_VERSION  2
@@ -121,7 +123,7 @@ typedef struct {
 	u32	cp14;	/* Offset 244  Extended Currently present device 6 */
 	u32	cp15;	/* Offset 248  Extended Currently present device 7 */
 	u8	reserved2[4];	/* Offset 252  Reserved 4 bytes */
-} __attribute__((packed)) opregion_mailbox1_t;
+} __packed opregion_mailbox1_t;
 
 /* mailbox 2: software sci interface */
 typedef struct {
@@ -129,7 +131,7 @@ typedef struct {
 	u32	parm;	/* Offset 4  Software SCI function number parameters */
 	u32	dslp;	/* Offset 8  Driver sleep timeout */
 	u8	reserved[244];	/* Offset 12   Reserved */
-} __attribute__((packed)) opregion_mailbox2_t;
+} __packed opregion_mailbox2_t;
 
 /* mailbox 3: power conservation */
 typedef struct {
@@ -163,26 +165,26 @@ typedef struct {
 				 *            Size of Raw VBT data
 				 */
 	u8	reserved[58];	/* Offset 198 Reserved */
-} __attribute__((packed)) opregion_mailbox3_t;
+} __packed opregion_mailbox3_t;
 
 #define IGD_BACKLIGHT_BRIGHTNESS 0xff
 #define IGD_INITIAL_BRIGHTNESS 0x64
 
-#define IGD_FIELD_VALID	(1 << 31)
+#define IGD_FIELD_VALID	(1UL << 31)
 #define IGD_WORD_FIELD_VALID (1 << 15)
 #define IGD_PFIT_STRETCH 6
 
 /* mailbox 4: vbt */
 typedef struct {
 	u8 gvd1[6*KiB];
-} __attribute__((packed)) opregion_vbt_t;
+} __packed opregion_vbt_t;
 
 /* Mailbox 5: BIOS to Driver Notification Extension */
 typedef struct {
 	u32	phed;		/* Offset 7168 Panel Header */
 	u8	bddc[256];	/* Offset 7172 Panel EDID */
 	u8	reserved[764];	/* Offset 7428 764 bytes */
-} __attribute__((packed)) opregion_mailbox5_t;
+} __packed opregion_mailbox5_t;
 
 /* IGD OpRegion */
 typedef struct {
@@ -193,7 +195,7 @@ typedef struct {
 	opregion_vbt_t vbt;
 	opregion_mailbox5_t	mailbox5;
 
-} __attribute__((packed)) igd_opregion_t;
+} __packed igd_opregion_t;
 
 /* Intel Video BIOS (Option ROM) */
 typedef struct {
@@ -202,7 +204,7 @@ typedef struct {
 	u8	reserved[21];
 	u16	pcir_offset;
 	u16	vbt_offset;
-} __attribute__((packed)) optionrom_header_t;
+} __packed optionrom_header_t;
 
 #define OPROM_SIGNATURE 0xaa55
 
@@ -219,7 +221,7 @@ typedef struct {
 	u8	codetype;
 	u8	indicator;
 	u16	reserved2;
-} __attribute__((packed)) optionrom_pcir_t;
+} __packed optionrom_pcir_t;
 
 typedef struct {
 	u8	hdr_signature[20];
@@ -243,6 +245,26 @@ typedef struct {
 	u8	coreblock_integratedhw;
 	u8	coreblock_biosbuild[4];
 	u8	coreblock_biossignon[155];
-} __attribute__((packed)) optionrom_vbt_t;
+} __packed optionrom_vbt_t;
+
+void intel_gma_opregion_register(uintptr_t opregion);
+void intel_gma_restore_opregion(void);
+uintptr_t gma_get_gnvs_aslb(const void *gnvs);
+void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb);
+enum cb_err intel_gma_init_igd_opregion(igd_opregion_t *opregion);
+
+/*
+ * Returns the CBFS filename of the VBT blob.
+ *
+ * The default implementation returns "vbt.bin", but other implementations can
+ * override this.
+ */
+const char *mainboard_vbt_filename(void);
+
+/*
+ * locate vbt.bin file. Returns a pointer to its content.
+ * If vbt_size is non-NULL, also return the vbt's size.
+ */
+void *locate_vbt(size_t *vbt_size);
 
 #endif /* _COMMON_GMA_H_ */

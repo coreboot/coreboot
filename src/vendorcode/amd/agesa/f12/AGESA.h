@@ -1021,7 +1021,7 @@ typedef struct {
 
 /// GNB configuration info
 typedef struct {
-  IN       PCIe_COMPLEX_DESCRIPTOR  *PcieComplexList;  /**< Pointer to array of structures describe PCIe topology on each processor package or NULL.
+  IN       const PCIe_COMPLEX_DESCRIPTOR  *PcieComplexList;  /**< Pointer to array of structures describe PCIe topology on each processor package or NULL.
                                                         * Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST
                                                         * Example of topology definition for single socket system:
                                                         * @code
@@ -3009,6 +3009,8 @@ typedef struct {
      OUT   VOID                   *AcpiWheaCmc;           ///< WHEA CMC Table
      OUT   VOID                   *AcpiAlib;              ///< ACPI SSDT table with ALIB implementation
      OUT   VOID                   *AcpiIvrs;              ///< IOMMU ACPI IVRS(I/O Virtualization Reporting Structure) table
+     OUT   VOID                   *AcpiCrat;              ///< Component Resource Affinity Table table
+     OUT   VOID                   *AcpiCdit;              ///< Component Locality Distance Information table
 } AMD_LATE_PARAMS;
 
 AGESA_STATUS

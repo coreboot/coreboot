@@ -49,7 +49,7 @@
  * BSEL1 is connected with GPIO33 with inversed logic
  * BSEL2 is connected with GPIO55
  */
-static void setup_sio_gpio(u8 bsel)
+static int setup_sio_gpio(u8 bsel)
 {
 	int need_reset = 0;
 	u8 reg, old_reg;
@@ -83,13 +83,7 @@ static void setup_sio_gpio(u8 bsel)
 
 	pnp_exit_ext_func_mode(GPIO_DEV);
 
-	if (need_reset) {
-		int i = 1000;
-		while (i--)
-			outb(i & 0xff, 0x80);
-		outb(0xe, 0xcf9);
-		halt();
-	}
+	return need_reset;
 }
 
 static u8 msr_get_fsb(void)
@@ -100,7 +94,7 @@ static u8 msr_get_fsb(void)
 
 	/* Netburst */
 	if (((eax >> 8) & 0xf) == 0xf) {
-		msr = rdmsr(0x2c);
+		msr = rdmsr(MSR_EBC_FREQUENCY_ID);
 		fsbcfg = (msr.lo >> 16) & 0x7;
 	} else { /* Intel Core 2 */
 		msr = rdmsr(MSR_FSB_FREQ);
@@ -113,30 +107,28 @@ static u8 msr_get_fsb(void)
 static void ich7_enable_lpc(void)
 {
 	// Enable Serial IRQ
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0xd0);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0xd0);
 	// Set COM1/COM2 decode range
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0010);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0010);
 	// Enable COM1
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x140f);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF1_LPC_EN
+			| KBC_LPC_EN | FDD_LPC_EN | LPT_LPC_EN | COMB_LPC_EN
+			| COMA_LPC_EN);
 	// Enable SuperIO Power Management Events
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x84, 0x000c0801);
-
-	/* range 0x15e0 - 0x10ef */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x40291);
-
-
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x00040291);
 }
 
 static void rcba_config(void)
 {
 	/* Enable IOAPIC */
-	RCBA8(0x31ff) = 0x03;
+	RCBA8(OIC) = 0x03;
 
 	/* Disable unused devices */
-	RCBA32(0x3418) = 0x003c0061;
+	RCBA32(FD) = FD_PCIE6 | FD_PCIE5 | FD_PCIE4 | FD_PCIE3 | FD_ACMOD
+		| FD_ACAUD | 1;
 
 	/* Enable PCIe Root Port Clock Gate */
-	RCBA32(0x341c) = 0x00000001;
+	RCBA32(CG) = 0x00000001;
 }
 
 static void early_ich7_init(void)
@@ -171,14 +163,14 @@ static void early_ich7_init(void)
 	RCBA32(0x0214) = 0x10030509;
 	RCBA32(0x0218) = 0x00020504;
 	RCBA8(0x0220) = 0xc5;
-	reg32 = RCBA32(0x3410);
+	reg32 = RCBA32(GCS);
 	reg32 |= (1 << 6);
-	RCBA32(0x3410) = reg32;
+	RCBA32(GCS) = reg32;
 	reg32 = RCBA32(0x3430);
 	reg32 &= ~(3 << 0);
 	reg32 |= (1 << 0);
 	RCBA32(0x3430) = reg32;
-	RCBA32(0x3418) |= (1 << 0);
+	RCBA32(FD) |= (1 << 0);
 	RCBA16(0x0200) = 0x2008;
 	RCBA8(0x2027) = 0x0d;
 	RCBA16(0x3e08) |= (1 << 7);
@@ -197,7 +189,6 @@ void mainboard_romstage_entry(unsigned long bist)
 {
 	int s3resume = 0, boot_mode = 0;
 
-	u8 m_bsel;
 	u8 c_bsel = msr_get_fsb();
 
 	timestamp_init(get_initial_timestamp());
@@ -209,8 +200,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	ich7_enable_lpc();
 
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-
-	setup_sio_gpio(c_bsel);
 
 	/* Set up the console */
 	console_init();
@@ -228,10 +217,18 @@ void mainboard_romstage_entry(unsigned long bist)
 	 */
 	i945_early_initialization();
 
-	m_bsel = MCHBAR32(CLKCFG) & 7;
-	printk(BIOS_DEBUG, "CPU BSEL: 0x%x\nMCH BSEL: 0x%x\n", c_bsel, m_bsel);
-
 	s3resume = southbridge_detect_s3_resume();
+
+	/*
+	 * Result is that FSB is incorrect on s3 resume (fixed at 800MHz).
+	 * Some CPU accept this others don't.
+	 */
+	if (!s3resume && setup_sio_gpio(c_bsel)) {
+		printk(BIOS_DEBUG,
+			"Needs reset to configure CPU BSEL straps\n");
+		outb(0xe, 0xcf9);
+		halt();
+	}
 
 	/* Enable SPD ROMs and DDR-II DRAM */
 	enable_smbus();

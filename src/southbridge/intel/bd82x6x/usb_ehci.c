@@ -18,6 +18,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <southbridge/intel/common/rcba.h>
 #include "pch.h"
 #include <device/pci_ehci.h>
 #include <arch/io.h>
@@ -94,6 +95,17 @@ static void usb_ehci_set_subsystem(device_t dev, unsigned vendor, unsigned devic
 	pci_write_config8(dev, 0x80, access_cntl);
 }
 
+static const char *usb_ehci_acpi_name(const struct device *dev)
+{
+	switch (dev->path.pci.devfn) {
+	case PCI_DEVFN(0x1a, 0):
+		return "EHC2";
+	case PCI_DEVFN(0x1d, 0):
+		return "EHC1";
+	}
+	return NULL;
+}
+
 static struct pci_operations lops_pci = {
 	.set_subsystem	= &usb_ehci_set_subsystem,
 };
@@ -105,6 +117,7 @@ static struct device_operations usb_ehci_ops = {
 	.init			= usb_ehci_init,
 	.scan_bus		= 0,
 	.ops_pci		= &lops_pci,
+	.acpi_name		= usb_ehci_acpi_name,
 };
 
 static const unsigned short pci_device_ids[] = { 0x1c26, 0x1c2d, 0x1e26, 0x1e2d,

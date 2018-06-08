@@ -163,6 +163,7 @@ int cpu_cpuid_extended_level(void);
 int cpu_have_cpuid(void);
 
 void smm_init(void);
+void smm_init_completion(void);
 void smm_lock(void);
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
 
@@ -177,7 +178,7 @@ struct cpu_device_id {
 
 struct cpu_driver {
 	struct device_operations *ops;
-	struct cpu_device_id *id_table;
+	const struct cpu_device_id *id_table;
 	struct acpi_cstate *cstates;
 };
 
@@ -188,7 +189,7 @@ struct thread;
 struct cpu_info {
 	struct device *cpu;
 	unsigned int index;
-#if CONFIG_COOP_MULTITASKING
+#if IS_ENABLED(CONFIG_COOP_MULTITASKING)
 	struct thread *thread;
 #endif
 };
@@ -260,8 +261,8 @@ asmlinkage void car_stage_entry(void);
 struct postcar_frame {
 	uintptr_t stack;
 	uint32_t upper_mask;
-	int max_var_mttrs;
-	int num_var_mttrs;
+	int max_var_mtrrs;
+	int num_var_mtrrs;
 };
 
 /*
@@ -297,6 +298,13 @@ void *postcar_commit_mtrrs(struct postcar_frame *pcf);
  * utilizes prog_run() internally.
  */
 void run_postcar_phase(struct postcar_frame *pcf);
+
+/*
+ * Systems without a native coreboot cache-as-ram teardown may implement
+ * this to use an alternate method.
+ */
+void late_car_teardown(void);
+
 #endif
 
 #endif /* ARCH_CPU_H */

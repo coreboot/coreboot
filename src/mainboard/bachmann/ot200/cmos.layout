@@ -24,7 +24,7 @@ entries
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-392          3       e       1        baud_rate
+#392          3       r       0        unused
 395          4       e       2        debug_level
 
 # -----------------------------------------------------------------
@@ -34,14 +34,6 @@ entries
 enumerations
 
 #ID value   text
-1     0     115200
-1     1     57600
-1     2     38400
-1     3     19200
-1     4     9600
-1     5     4800
-1     6     2400
-1     7     1200
 2     0     Emergency
 2     1     Alert
 2     2     Critical

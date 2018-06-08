@@ -21,7 +21,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#if CONFIG_VGA_ROM_RUN
+#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
 #include <pc80/mc146818rtc.h>
@@ -40,7 +40,7 @@ void mainboard_suspend_resume(void)
 {
 }
 
-#if CONFIG_VGA_ROM_RUN
+#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 static int int15_handler(void)
 {
 	int res = 1;
@@ -126,7 +126,7 @@ static int int15_handler(void)
 }
 #endif
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
 #if IS_ENABLED(CONFIG_BOARD_GOOGLE_NINJA) || IS_ENABLED(CONFIG_BOARD_GOOGLE_SUMO)
@@ -134,7 +134,7 @@ static void mainboard_init(device_t dev)
 #endif
 }
 
-static int mainboard_smbios_data(device_t dev, int *handle,
+static int mainboard_smbios_data(struct device *dev, int *handle,
 				 unsigned long *current)
 {
 	int len = 0;
@@ -164,12 +164,12 @@ static int mainboard_smbios_data(device_t dev, int *handle,
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = mainboard_smbios_data;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
-#if CONFIG_VGA_ROM_RUN
+#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif

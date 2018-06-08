@@ -16,7 +16,8 @@
 #include "msrtool.h"
 
 int intel_nehalem_probe(const struct targetdef *target, const struct cpuid_t *id) {
-	return ((0x6 == id->family) && (
+	return ((VENDOR_INTEL == id->vendor) &&
+		(0x6 == id->family) && (
 		(0x1a == id->model) ||
 		(0x1e == id->model) ||
 		(0x1f == id->model) ||
@@ -1620,13 +1621,13 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x400, MSRTYPE_RDWR, MSR2(0,0), "IA32_MCO_CTL", "", {
+	{0x400, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC0_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x401, MSRTYPE_RDWR, MSR2(0,0), "IA32_MCO_STATUS", "", {
+	{0x401, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC0_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x402, MSRTYPE_RDWR, MSR2(0,0), "IA32_MCO_ADDR", "", {
+	{0x402, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC0_ADDR", "", {
 		{ BITS_EOT }
 	}},
 	{0x403, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC0_MISC", "", {
@@ -1656,28 +1657,28 @@ const struct msrdef intel_nehalem_msrs[] = {
 	{0x40b, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC2_MISC", "", {
 		{ BITS_EOT }
 	}},
-	{0x40c, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_CTL", "", {
+	{0x40c, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x40d, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_STATUS", "", {
+	{0x40d, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x40e, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_ADDR", "", {
+	{0x40e, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_ADDR", "", {
 		{ BITS_EOT }
 	}},
-	{0x40f, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_MISC", "", {
+	{0x40f, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_MISC", "", {
 		{ BITS_EOT }
 	}},
-	{0x410, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_CTL", "", {
+	{0x410, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x411, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_STATUS", "", {
+	{0x411, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x412, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_ADDR", "", {
+	{0x412, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_ADDR", "", {
 		{ BITS_EOT }
 	}},
-	{0x413, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_MISC", "", {
+	{0x413, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_MISC", "", {
 		{ BITS_EOT }
 	}},
 	{0x414, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC5_CTL", "", {

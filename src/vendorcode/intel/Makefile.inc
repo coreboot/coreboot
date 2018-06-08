@@ -2,6 +2,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+## Copyright (C) 2018 Intel Corp.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -34,4 +35,8 @@ else ifeq ($(CONFIG_UDK_2015_BINDING),y)
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/UDK2015/MdePkg/Include/Ia32
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/UDK2015/MdePkg/Include
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/UDK2015/IntelFsp2Pkg/Include
+else ifeq ($(CONFIG_UDK_2017_BINDING),y)
+CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/UDK2017/MdePkg/Include/Ia32
+CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/UDK2017/MdePkg/Include
+CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/UDK2017/IntelFsp2Pkg/Include
 endif

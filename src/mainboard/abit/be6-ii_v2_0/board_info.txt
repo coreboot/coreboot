@@ -1,5 +1,0 @@
-Category: desktop
-Board URL: http://www.extremeoverclocking.com/reviews/motherboards/BE6-II_v2_1.html
-ROM package: DIP32
-ROM protocol: Parallel
-Flashrom support: &mdash;

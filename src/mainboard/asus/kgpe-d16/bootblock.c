@@ -33,7 +33,7 @@ void bootblock_mainboard_init(void)
 	pci_io_write_config8(PCI_DEV(0, 0x14, 0), 0x56, byte);
 	recovery_enabled = (!(pci_io_read_config8(PCI_DEV(0, 0x14, 0), 0x57) & 0x1));
 	if (recovery_enabled) {
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 		/* Clear NVRAM checksum */
 		for (addr = LB_CKS_RANGE_START; addr <= LB_CKS_RANGE_END; addr++) {
 			cmos_write(0x0, addr);

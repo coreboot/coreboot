@@ -82,7 +82,7 @@ clear_mtrrs:
 addrsize_no_MSR:
 	movl	$1, %eax
 	cpuid
-	andl	$(1<<6 | 1<<17), %edx	/* PAE or PSE36 */
+	andl	$(1 << 6 | 1 << 17), %edx	/* PAE or PSE36 */
 	jz	addrsize_set_high
 	movl	$0x0f, %edx
 
@@ -208,7 +208,7 @@ ap_init:
 
 	/* MTRR registers are shared between HT siblings. */
 	movl	$(MTRR_PHYS_BASE(0)), %ecx
-	movl	$(1<<12), %eax
+	movl	$(1 << 12), %eax
 	xorl	%edx, %edx
 	wrmsr
 
@@ -306,7 +306,7 @@ no_msr_11e:
 	xorl	%edx, %edx
 	/*
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
-	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
+	 * https://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
 	movl	$copy_and_run, %eax
 	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax

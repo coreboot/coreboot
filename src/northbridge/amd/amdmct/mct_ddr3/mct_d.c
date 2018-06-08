@@ -42,6 +42,7 @@
 #include <cpu/x86/msr.h>
 #include <arch/acpi.h>
 #include <string.h>
+#include <device/dram/ddr3.h>
 #include "s3utils.h"
 
 static u8 ReconfigureDIMMspare_D(struct MCTStatStruc *pMCTstat,
@@ -8214,30 +8215,12 @@ static void AfterDramInit_D(struct DCTStatStruc *pDCTstat, u8 dct) {
  */
 uint8_t crcCheck(struct DCTStatStruc *pDCTstat, uint8_t dimm)
 {
-	u8 byte_use;
-	u8 Index;
-	u16 CRC;
-	u8 byte, i;
+	u16 crc_calc = spd_ddr3_calc_crc(pDCTstat->spd_data.spd_bytes[dimm],
+		sizeof(pDCTstat->spd_data.spd_bytes[dimm]));
+	u16 checksum_spd = pDCTstat->spd_data.spd_bytes[dimm][SPD_byte_127] << 8
+		| pDCTstat->spd_data.spd_bytes[dimm][SPD_byte_126];
 
-	byte_use = pDCTstat->spd_data.spd_bytes[dimm][SPD_ByteUse];
-	if (byte_use & 0x80)
-		byte_use = 117;
-	else
-		byte_use = 126;
-
-	CRC = 0;
-	for (Index = 0; Index < byte_use; Index ++) {
-		byte = pDCTstat->spd_data.spd_bytes[dimm][Index];
-		CRC ^= byte << 8;
-		for (i = 0; i < 8; i++) {
-			if (CRC & 0x8000) {
-				CRC <<= 1;
-				CRC ^= 0x1021;
-			} else
-				CRC <<= 1;
-		}
-	}
-	return CRC == (pDCTstat->spd_data.spd_bytes[dimm][SPD_byte_127] << 8 | pDCTstat->spd_data.spd_bytes[dimm][SPD_byte_126]);
+	return crc_calc == checksum_spd;
 }
 
 int32_t abs(int32_t val)

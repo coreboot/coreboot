@@ -34,7 +34,12 @@
 	*(.rom.data);
 	*(.text._start);
 	*(.text.stage_entry);
+#if (ENV_DECOMPRESSOR || ENV_BOOTBLOCK && \
+		!IS_ENABLED(CONFIG_COMPRESS_BOOTBLOCK)) && \
+    !(IS_ENABLED(CONFIG_ARCH_BOOTBLOCK_X86_32) || \
+      IS_ENABLED(CONFIG_ARCH_BOOTBLOCK_X86_64))
 	KEEP(*(.id));
+#endif
 	*(.text);
 	*(.text.*);
 

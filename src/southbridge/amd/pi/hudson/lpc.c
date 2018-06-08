@@ -29,13 +29,13 @@
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
 #include "hudson.h"
-#include <vboot/vbnv.h>
+#include "pci_devs.h"
 
-static void lpc_init(device_t dev)
+static void lpc_init(struct device *dev)
 {
 	u8 byte;
 	u32 dword;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	/* Enable the LPC Controller */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
@@ -77,10 +77,7 @@ static void lpc_init(device_t dev)
 	 * update CMOS unless it is invalid.
 	 * 1 tells cmos_init to always initialize the CMOS.
 	 */
-	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
-		init_vbnv_cmos(0);
-	else
-		cmos_init(0);
+	cmos_init(0);
 
 	/* Initialize i8259 pic */
 	setup_i8259 ();
@@ -96,7 +93,7 @@ static void lpc_init(device_t dev)
 	pm_write8(PM_SERIRQ_CONF, byte);
 }
 
-static void hudson_lpc_read_resources(device_t dev)
+static void hudson_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -147,7 +144,7 @@ static void hudson_lpc_set_resources(struct device *dev)
  * @param dev the device whose children's resources are to be enabled
  *
  */
-static void hudson_lpc_enable_childrens_resources(device_t dev)
+static void hudson_lpc_enable_childrens_resources(struct device *dev)
 {
 	struct bus *link;
 	u32 reg, reg_x;
@@ -187,7 +184,7 @@ static void hudson_lpc_enable_childrens_resources(device_t dev)
 	reg_var[0] = pci_read_config16(dev, 0x64);
 
 	for (link = dev->link_list; link; link = link->next) {
-		device_t child;
+		struct device *child;
 		for (child = link->children; child;
 		     child = child->sibling) {
 			if (child->enabled
@@ -326,7 +323,7 @@ static void hudson_lpc_enable_childrens_resources(device_t dev)
 	pci_write_config8(dev, 0x74, wiosize);
 }
 
-static void hudson_lpc_enable_resources(device_t dev)
+static void hudson_lpc_enable_resources(struct device *dev)
 {
 	pci_dev_enable_resources(dev);
 	hudson_lpc_enable_childrens_resources(dev);
@@ -336,6 +333,17 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 {
 	/* Just a dummy */
 	return current;
+}
+
+static const char *lpc_acpi_name(const struct device *dev)
+{
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return NULL;
+
+	if (dev->path.pci.devfn == LPC_DEVFN)
+		return "LIBR";
+
+	return NULL;
 }
 
 static struct pci_operations lops_pci = {
@@ -352,6 +360,7 @@ static struct device_operations lpc_ops = {
 	.init = lpc_init,
 	.scan_bus = scan_lpc_bus,
 	.ops_pci = &lops_pci,
+	.acpi_name = lpc_acpi_name,
 };
 
 static const unsigned short pci_device_ids[] = {

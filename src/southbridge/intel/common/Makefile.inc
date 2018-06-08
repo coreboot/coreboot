@@ -24,4 +24,19 @@ ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
 romstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_GPIO) += gpio.c
 ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_GPIO) += gpio.c
 smm-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_GPIO) += gpio.c
+
+romstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SMBUS) += smbus.c
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SMBUS) += smbus.c
+
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SPI) += spi.c
+ifeq ($(CONFIG_SPI_FLASH_SMM),y)
+smm-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SPI) += spi.c
+endif
+
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_PIRQ_ACPI_GEN) += acpi_pirq_gen.c
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RCBA_PIRQ) += rcba_pirq.c
+
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SMM) += pmutil.c smi.c
+smm-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SMM) += pmutil.c smihandler.c
+
 endif

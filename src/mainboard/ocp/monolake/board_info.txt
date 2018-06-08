@@ -1,0 +1,5 @@
+Board name: Mono Lake
+Category: server
+ROM protocol: SPI
+ROM socketed: yes
+Release year: 2016

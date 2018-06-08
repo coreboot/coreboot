@@ -39,5 +39,6 @@ enum {
 int nhlt_soc_add_dmic_array(struct nhlt *nhlt, int num_channels);
 int nhlt_soc_add_max98357(struct nhlt *nhlt, int hwlink);
 int nhlt_soc_add_da7219(struct nhlt *nhlt, int hwlink);
+int nhlt_soc_add_rt5682(struct nhlt *nhlt, int hwlink);
 
 #endif

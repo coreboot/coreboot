@@ -17,7 +17,6 @@
 PROGRAM = nvramtool
 
 CC      = gcc
-STRIP	= strip
 INSTALL = /usr/bin/install
 PREFIX  = /usr/local
 CFLAGS  = -O2 -g -Wall -W -I. -DCMOS_HAL=1
@@ -35,7 +34,7 @@ OS_ARCH        = $(shell uname)
 ifeq ($(OS_ARCH), Darwin)
 LDFLAGS = -framework DirectHW
 endif
-ifeq ($(OS_ARCH), NetBSD)
+ifeq ($(OS_ARCH),$(filter $(OS_ARCH),NetBSD OpenBSD))
 LDFLAGS = -l$(shell uname -p)
 endif
 ifeq ($(shell uname -o 2>/dev/null), Cygwin)
@@ -47,7 +46,6 @@ all: dep $(PROGRAM)
 
 $(PROGRAM): $(OBJS)
 	$(CC) -o $(PROGRAM) $(OBJS) $(LDFLAGS) $(CFLAGS)
-	$(STRIP) $(STRIP_ARGS) $(PROGRAM)
 
 clean:
 	rm -f $(PROGRAM) $(OBJS) junit.xml

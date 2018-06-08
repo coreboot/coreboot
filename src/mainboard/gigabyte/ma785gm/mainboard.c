@@ -31,7 +31,7 @@ void set_pcie_dereset()
 {
 	u8 byte;
 	u16 word;
-	device_t sm_dev;
+	struct device *sm_dev;
 	/* set 0 to bit1 :disable GPM9 as SLP_S2 output */
 	/* set 0 to bit2 :disable GPM8 as AZ_RST output */
 	byte = pm_ioread(0x8d);
@@ -56,7 +56,7 @@ void set_pcie_reset()
 {
 	u8 byte;
 	u16 word;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	/* set 0 to bit1 :disable GPM9 as SLP_S2 output */
 	/* set 0 to bit2 :disable GPM8 as AZ_RST output */
@@ -94,7 +94,7 @@ static void set_gpio40_gfx(void)
 	u8 byte;
 //	u16 word;
 	u32 dword;
-	device_t sm_dev;
+	struct device *sm_dev;
 	/* disable the GPIO40 as CLKREQ2# function */
 	byte = pm_ioread(0xd3);
 	byte &= ~(1 << 7);
@@ -130,7 +130,7 @@ static void set_gpio40_gfx(void)
 * enable the dedicated function in ma785gm board.
 * This function called early than rs780_enable.
 *************************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard MA785GM-US2H Enable. dev=0x%p\n", dev);
 

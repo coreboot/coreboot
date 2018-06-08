@@ -27,9 +27,9 @@
 
 static u32 final_reg;
 
-static device_t find_lpc_dev(device_t dev, unsigned devfn)
+static struct device *find_lpc_dev(struct device *dev, unsigned devfn)
 {
-	device_t lpc_dev;
+	struct device *lpc_dev;
 
 	lpc_dev = dev_find_slot(dev->bus->secondary, devfn);
 
@@ -54,9 +54,9 @@ static device_t find_lpc_dev(device_t dev, unsigned devfn)
 	return lpc_dev;
 }
 
-void mcp55_enable(device_t dev)
+void mcp55_enable(struct device *dev)
 {
-	device_t lpc_dev = 0, sm_dev = 0;
+	struct device *lpc_dev = NULL, *sm_dev = NULL;
 	unsigned index = 0, index2 = 0;
 	u32 reg_old, reg;
 	u8 byte;
@@ -221,7 +221,8 @@ void mcp55_enable(device_t dev)
 	}
 }
 
-static void mcp55_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void mcp55_set_subsystem(struct device *dev, unsigned vendor,
+				unsigned device)
 {
 	pci_write_config32(dev, 0x40,
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));

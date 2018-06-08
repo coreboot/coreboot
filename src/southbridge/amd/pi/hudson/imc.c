@@ -56,7 +56,7 @@ void enable_imc_thermal_zone(void)
 {
 	AMD_CONFIG_PARAMS StdHeader;
 	UINT8 FunNum;
-	UINT8 regs[9];
+	UINT8 regs[10];
 	int i;
 
 	regs[0] = 0;
@@ -67,7 +67,7 @@ void enable_imc_thermal_zone(void)
 	WriteECmsg(MSG_SYS_TO_IMC, AccessWidth8, &FunNum, &StdHeader);
 	WaitForEcLDN9MailboxCmdAck(&StdHeader);
 
-	for (i = 2; i <= 9; i++)
+	for (i = 2; i < ARRAY_SIZE(regs); i++)
 		ReadECmsg(MSG_REG0 + i, AccessWidth8, &regs[i], &StdHeader);
 
 	/* enable thermal zone 0 */
@@ -75,27 +75,9 @@ void enable_imc_thermal_zone(void)
 	regs[0] = 0;
 	regs[1] = 0;
 	FunNum = Fun_81;
-	for (i = 0; i <= 9; i++)
+	for (i = 0; i < ARRAY_SIZE(regs); i++)
 		WriteECmsg(MSG_REG0 + i, AccessWidth8, &regs[i], &StdHeader);
 	WriteECmsg(MSG_SYS_TO_IMC, AccessWidth8, &FunNum, &StdHeader);
 	WaitForEcLDN9MailboxCmdAck(&StdHeader);
 }
 #endif
-
-/* Bettong Hardware Monitor Fan Control
- * Hardware limitation:
- *  HWM will fail to read the input temperature via I2C if other
- *  software switches the I2C address.  AMD recommends using IMC
- *  to control fans, instead of HWM.
- */
-void oem_fan_control(FCH_DATA_BLOCK *FchParams)
-{
-	/* Enable IMC fan control. the recommand way */
-	imc_reg_init();
-
-	FchParams->Imc.ImcEnable = TRUE;
-	FchParams->Hwm.HwmControl = 1; /* 1 IMC, 0 HWM */
-	FchParams->Imc.ImcEnableOverWrite = 1; /* 2 disable IMC, 1 enable IMC, 0 following hw strap setting */
-
-	LibAmdMemFill(&(FchParams->Imc.EcStruct), 0, sizeof(FCH_EC), FchParams->StdHeader);
-}

@@ -20,12 +20,12 @@
 #include "variant.h"
 
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
 }
 
-static int mainboard_smbios_data(device_t dev, int *handle,
+static int mainboard_smbios_data(struct device *dev, int *handle,
 				 unsigned long *current)
 {
 	return variant_smbios_data(dev, handle, current);
@@ -34,7 +34,7 @@ static int mainboard_smbios_data(device_t dev, int *handle,
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = mainboard_smbios_data;

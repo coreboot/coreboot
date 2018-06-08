@@ -814,7 +814,7 @@ int rk_hdmi_get_edid(struct edid *edid)
 
 	/* Assume usage of HDMI implies an external display in which case
 	 * we should be lenient about errors that the EDID decoder finds. */
-	if (decode_edid(edid_buf, edid_size, edid))
+	if (decode_edid(edid_buf, edid_size, edid) != EDID_CONFORMANT)
 		hdmi_debug("failed to decode edid.\n");
 
 	/* Try 480p for best compatibility. */

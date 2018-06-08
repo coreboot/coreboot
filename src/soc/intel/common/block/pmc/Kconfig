@@ -1,0 +1,39 @@
+config SOC_INTEL_COMMON_BLOCK_PMC
+	depends on SOC_INTEL_COMMON_BLOCK_GPIO
+	depends on ACPI_INTEL_HARDWARE_SLEEP_VALUES
+	bool
+	help
+	  Intel Processor common code for Power Management controller(PMC)
+	  subsystem
+
+choice
+	prompt "System Power State after Failure"
+	default POWER_STATE_ON_AFTER_FAILURE
+
+config POWER_STATE_OFF_AFTER_FAILURE
+	bool "S5 Soft Off"
+	help
+	  Choose this option if you want to keep system into
+	  S5 after reapplying power after failure
+
+config POWER_STATE_ON_AFTER_FAILURE
+	bool "S0 Full On"
+	help
+	  Choose this option if you want to keep system into
+	  S0 after reapplying power after failure
+
+config POWER_STATE_PREVIOUS_AFTER_FAILURE
+	bool "Keep Previous State"
+	help
+	  Choose this option if you want to keep system into
+	  same power state as before failure even after reapplying
+	  power
+
+endchoice
+
+config PMC_INVALID_READ_AFTER_WRITE
+	bool
+	default n
+	help
+	  Enable this for PMC devices where a read back of ACPI BAR and
+	  IO access bit does not return the previously written value.

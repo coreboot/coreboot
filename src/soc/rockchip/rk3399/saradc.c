@@ -46,19 +46,11 @@ struct rk3399_saradc_regs *rk3399_saradc = (void *)SARADC_BASE;
 /* SARADC_DATA, 10[0:9] bits */
 #define DATA_MASK		0x3FF
 
-/* The max clk is 13 MHz, we also recommended that
- * the sample rate(=clk/13) should be > 500KHz.
- * So choose 8MHz, that 8MHz/13 = 615.38KHz > 500KHz.
- */
-#define SARADC_HZ		(8*MHz)
-
-/* TRM(V0.3 Part 1 Page 366) said there is a delay between
- * power up and start command, default value is 2 src clk.
- * Let delay 2 src clk here, in ns(udelay).
- */
-#define SARADC_DELAY_PU		(1 * 1000 * 1000 * 1000 / SARADC_HZ * 2)
+#define SARADC_HZ		(4*MHz)
 
 #define SARADC_MAX_CHANNEL	6
+
+#define SARADC_DELAY_PU                (1 * 1000 * 1000 * 1000 / SARADC_HZ * 4)
 
 u32 get_saradc_value(u32 chn)
 {

@@ -14,7 +14,7 @@
  */
 
 #include <delay.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <edid.h>
 #include <console/console.h>
 #include <timer.h>
@@ -47,7 +47,7 @@ int ps8640_get_edid(uint8_t bus, uint8_t chip, struct edid *out)
 		}
 	}
 
-	if (decode_edid(edid, edid_size, out)) {
+	if (decode_edid(edid, edid_size, out) != EDID_CONFORMANT) {
 		printk(BIOS_INFO, "Failed to decode EDID.\n");
 		return -1;
 	}

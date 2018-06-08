@@ -16,13 +16,14 @@
 #include <arch/acpi.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <soc/nvs.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include "acpi.h"
 
-__attribute__((weak)) int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
+__weak int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 {
 	return -1;
 }

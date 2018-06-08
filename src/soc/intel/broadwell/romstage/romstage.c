@@ -20,12 +20,13 @@
 #include <arch/cbfs.h>
 #include <arch/early_variables.h>
 #include <bootmode.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
 #include <elog.h>
-#include <tpm.h>
+#include <security/tpm/tis.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <stage_cache.h>
@@ -79,7 +80,7 @@ asmlinkage void *romstage_main(unsigned long bist,
 	/* Call into mainboard. */
 	mainboard_romstage_entry(&rp);
 
-	return setup_stack_and_mttrs();
+	return setup_stack_and_mtrrs();
 }
 
 /* Entry from the mainboard. */
@@ -91,7 +92,7 @@ void romstage_common(struct romstage_params *params)
 
 	params->pei_data->boot_mode = params->power_state->prev_sleep_state;
 
-#if CONFIG_ELOG_BOOT_COUNT
+#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
 	if (params->power_state->prev_sleep_state != ACPI_S3)
 		boot_count_increment();
 #endif
@@ -110,7 +111,7 @@ void romstage_common(struct romstage_params *params)
 
 	romstage_handoff_init(params->power_state->prev_sleep_state == ACPI_S3);
 
-#if CONFIG_LPC_TPM
+#if IS_ENABLED(CONFIG_LPC_TPM)
 	init_tpm(params->power_state->prev_sleep_state == ACPI_S3);
 #endif
 }
@@ -123,11 +124,4 @@ asmlinkage void romstage_after_car(void)
 		;
 }
 
-int get_sw_write_protect_state(void)
-{
-	u8 status;
-	/* Return unprotected status if status read fails. */
-	return early_spi_read_wpsr(&status) ? 0 : !!(status & 0x80);
-}
-
-void __attribute__((weak)) mainboard_pre_console_init(void) {}
+void __weak mainboard_pre_console_init(void) {}

@@ -30,14 +30,12 @@ config SOUTH_BRIDGE_OPTIONS # dummy
 	select PCIEXP_COMMON_CLOCK
 	select SPI_FLASH
 	select HAVE_INTEL_FIRMWARE
+	select SOUTHBRIDGE_INTEL_COMMON
+	select SOUTHBRIDGE_INTEL_COMMON_SMBUS
 
 config EHCI_BAR
 	hex
 	default 0xfef00000
-
-config EHCI_DEBUG_OFFSET
-	hex
-	default 0xa0
 
 config SERIRQ_CONTINUOUS_MODE
 	bool

@@ -15,7 +15,7 @@
 
 #include "cpu/amd/dualcore/dualcore_id.c"
 #include <pc80/mc146818rtc.h>
-#if CONFIG_HAVE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_HAVE_OPTION_TABLE)
 #include "option_table.h"
 #endif
 
@@ -30,7 +30,7 @@ static inline unsigned get_core_num_in_bsp(unsigned nodeid)
 
 static inline uint8_t set_apicid_cpuid_lo(void)
 {
-#if !CONFIG_K8_REV_F_SUPPORT
+#if !IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 	if (is_cpu_pre_e0()) return 0; // pre_e0 can not be set
 #endif
 
@@ -48,11 +48,11 @@ static inline void real_start_other_core(unsigned nodeid)
 	uint32_t dword;
 	// set PCI_DEV(0, 0x18+nodeid, 3), 0x44 bit 27 to redirect all MC4 accesses and error logging to core0
 	dword = pci_read_config32(PCI_DEV(0, 0x18+nodeid, 3), 0x44);
-	dword |= 1<<27; // NbMcaToMstCpuEn bit
+	dword |= 1 << 27; // NbMcaToMstCpuEn bit
 	pci_write_config32(PCI_DEV(0, 0x18+nodeid, 3), 0x44, dword);
 	// set PCI_DEV(0, 0x18+nodeid, 0), 0x68 bit 5 to start core1
 	dword = pci_read_config32(PCI_DEV(0, 0x18+nodeid, 0), 0x68);
-	dword |= 1<<5;
+	dword |= 1 << 5;
 	pci_write_config32(PCI_DEV(0, 0x18+nodeid, 0), 0x68, dword);
 }
 

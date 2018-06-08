@@ -3,6 +3,8 @@ config DRIVERS_EMULATION_QEMU_BOCHS
 	default y
 	depends on BOARD_EMULATION_QEMU_X86
 	depends on MAINBOARD_DO_NATIVE_VGA_INIT
+	select HAVE_VGA_TEXT_FRAMEBUFFER
+	select HAVE_LINEAR_FRAMEBUFFER
 	select VGA
 	help
 	   VGA driver for qemu emulated vga cards supporting
@@ -14,11 +16,11 @@ config DRIVERS_EMULATION_QEMU_BOCHS
 config DRIVERS_EMULATION_QEMU_BOCHS_XRES
 	int "bochs vga xres"
 	default 800
-	depends on FRAMEBUFFER_KEEP_VESA_MODE
+	depends on LINEAR_FRAMEBUFFER
 	depends on DRIVERS_EMULATION_QEMU_BOCHS
 
 config DRIVERS_EMULATION_QEMU_BOCHS_YRES
 	int "bochs vga yres"
 	default 600
-	depends on FRAMEBUFFER_KEEP_VESA_MODE
+	depends on LINEAR_FRAMEBUFFER
 	depends on DRIVERS_EMULATION_QEMU_BOCHS

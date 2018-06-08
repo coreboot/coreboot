@@ -57,7 +57,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_recovery_mode_switch(void)
 {
-	uint32_t ec_events;
+	uint64_t ec_events;
 
 	/* The GPIO is active low. */
 	if (!gpio_get(GPIO_RECOVERY))

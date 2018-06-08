@@ -74,6 +74,11 @@
 #define  D_LCK		(1 << 4)
 #define  G_SMRAME	(1 << 3)
 #define  C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
+#define CAPID0_A	0xe4
+#define  VTD_DISABLE	(1 << 23)
+#define ARCHDIS		0xff0	/* DMA Remap Engine Policy Control */
+#define  DMAR_LCKDN	(1 << 31)
+#define  PRSCAPDIS	(1 << 2)
 
 #define MESEG_BASE	0x70	/* Management Engine Base. */
 #define MESEG_LIMIT	0x78	/* Management Engine Limit. */
@@ -95,7 +100,9 @@
 
 #define MCHBAR_PEI_VERSION	0x5034
 #define BIOS_RESET_CPL		0x5da8
+#define GFXVTBAR		0x5400
 #define EDRAMBAR		0x5408
+#define VTVC0BAR		0x5410
 #define MCH_PAIR		0x5418
 #define GDXCBAR			0x5420
 

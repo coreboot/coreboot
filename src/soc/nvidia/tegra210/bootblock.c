@@ -17,6 +17,7 @@
 #include <arch/hlt.h>
 #include <arch/stages.h>
 #include <bootblock_common.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <delay.h>
 #include <program_loading.h>
@@ -50,7 +51,7 @@ static void save_odmdata(void)
 	}
 }
 
-void __attribute__((weak)) bootblock_mainboard_early_init(void)
+void __weak bootblock_mainboard_early_init(void)
 {
 	/* Empty default implementation. */
 }

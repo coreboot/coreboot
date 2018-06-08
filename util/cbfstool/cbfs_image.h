@@ -80,6 +80,15 @@ int cbfs_copy_instance(struct cbfs_image *image, struct buffer *dst);
  * beginning of the image. Returns 0 on success, otherwise non-zero.  */
 int cbfs_compact_instance(struct cbfs_image *image);
 
+/* Expand a CBFS image inside an fmap region to the entire region's space.
+   Returns 0 on success, otherwise non-zero. */
+int cbfs_expand_to_region(struct buffer *region);
+
+/* Truncate a CBFS by removing a trailing "empty" file if it exists.
+   Returns 0 on success, otherwise non-zero and passes the CBFS' remaining
+   size in the size argument. */
+int cbfs_truncate_space(struct buffer *region, uint32_t *size);
+
 /* Releases the CBFS image. Returns 0 on success, otherwise non-zero. */
 int cbfs_image_delete(struct cbfs_image *image);
 

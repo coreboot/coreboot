@@ -234,7 +234,7 @@ MemNCmnGetSetFieldKB (
           if ((FieldName != BFDctAddlDataReg) && (FieldName != BFDctAddlOffsetReg) && (FieldName != BFDctCfgSel)) {
             IDS_HDT_CONSOLE (MEM_GETREG, "~Dev%x Dct%d Fn%d_%03x = %x\n",
                              NBPtr->PciAddr.Address.Device, NBPtr->Dct,
-                             (Address >> 12) & 0xF, Address & 0xFFF, Value);
+                             (Address >> 12) & 0x7, Address & 0xFFF, Value);
           }
         } else if (Type == DCT_PHY_ACCESS) {
           if (IsPhyDirectAccess && (NumOfInstances > 1)) {
@@ -265,7 +265,7 @@ MemNCmnGetSetFieldKB (
               if ((FieldName != BFDctAddlDataReg) && (FieldName != BFDctAddlOffsetReg) && (FieldName != BFDctCfgSel)) {
                 IDS_HDT_CONSOLE (MEM_SETREG, "~Dev%x Dct%d Fn%d_%03x [%d:%d] = %x\n",
                                  NBPtr->PciAddr.Address.Device, NBPtr->Dct,
-                                 (Address >> 12) & 0xF, Address & 0xFFF, Highbit, Lowbit, Field);
+                                 (Address >> 12) & 0x7, Address & 0xFFF, Highbit, Lowbit, Field);
               }
             } else if (Type == DCT_PHY_ACCESS) {
               ASSERT (!NBPtr->IsSupported[ScrubberEn]);   // Phy CSR write is not allowed after scrubber is enabled

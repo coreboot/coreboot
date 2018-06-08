@@ -17,13 +17,14 @@
 #define _BROADWELL_SMM_H_
 
 #include <stdint.h>
+#include <compiler.h>
 #include <cpu/x86/msr.h>
 
 struct ied_header {
 	char signature[10];
 	u32 size;
 	u8 reserved[34];
-} __attribute__ ((packed));
+} __packed;
 
 struct smm_relocation_params {
 	u32 smram_base;

@@ -1,0 +1,172 @@
+#*****************************************************************************
+#
+# Copyright (c) 2012, 2016   Advanced Micro Devices, Inc.
+#               2013 - 2014, Sage Electronic Engineering, LLC
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of Advanced Micro Devices, Inc. nor the names of
+#       its contributors may be used to endorse or promote products derived
+#       from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ADVANCED MICRO DEVICES, INC. BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#*****************************************************************************
+
+ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)
+# AGESA V5 Files
+
+AGESA_ROOT = $(call strip_quotes,$(CONFIG_AGESA_BINARY_PI_VENDORCODE_PATH))
+
+BINARY_PI_INC  = -I$(AGESA_ROOT)
+BINARY_PI_INC += -I$(AGESA_ROOT)/binaryPI
+BINARY_PI_INC += -I$(AGESA_ROOT)/Include
+BINARY_PI_INC += -I$(AGESA_ROOT)/Lib
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/Common
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/CPU
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/CPU/Family
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/Fch
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/Fch/Common
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/Psp/PspBaseLib
+
+
+AGESA_INC = -I$(obj)
+AGESA_INC += $(BINARY_PI_INC)
+
+AGESA_INC += -I$(src)/soc/amd/stoneyridge/include
+AGESA_INC += -I$(src)/soc/amd/common/block/include
+
+AGESA_INC += -I$(src)/arch/x86/include
+AGESA_INC += -I$(src)/include
+AGESA_INC += -I$(src)/commonlib/include
+AGESA_INC += -I$(VBOOT_SOURCE)/firmware/include
+
+AGESA_CFLAGS += -march=amdfam10 -fno-strict-aliasing -D__LIBAGESA__
+
+CC_bootblock := $(CC_bootblock) $(BINARY_PI_INC)
+CC_romstage := $(CC_romstage) $(BINARY_PI_INC)
+CC_postcar:= $(CC_postcar) -I$(AGESA_ROOT)/binaryPI
+CC_ramstage := $(CC_ramstage) $(BINARY_PI_INC)
+
+#######################################################################
+
+define create_agesa_cp_template
+# $1 AGESA source file
+
+$(agesa_src_path)/$(notdir $1): $1
+	@printf "    AGESA      Copying $$(notdir $1) => $$(@D)\n"
+	if [ ! -r $(agesa_src_path)/$(notdir $1) ]; then                   \
+		cp -f $1 $$(@D);                                           \
+	fi
+
+$(call src-to-obj,libagesa,$1): $(agesa_src_path)/$(notdir $1) $(obj)/config.h $(src)/include/kconfig.h
+	@printf "    CC         $$(subst $(obj)/,,$$(@))\n"
+	$(CC_libagesa) -c -MMD $(CFLAGS_libagesa) $(AGESA_CFLAGS)             \
+	               $(AGESA_INC)                                           \
+	               -include $(src)/include/rules.h                        \
+	               -include $(src)/include/kconfig.h                      \
+	               -o $$@                                                 \
+	               $(agesa_src_path)/$(notdir $1)
+
+endef
+
+agesa_raw_files += $(wildcard $(AGESA_ROOT)/Lib/*.[cS])
+
+agesa_raw_files += $(wildcard $(AGESA_ROOT)/binaryPI/*.[cS])
+
+ifeq ($(CONFIG_VENDORCODE_FULL_SUPPORT),y)
+agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Common/*.[cS])
+endif
+agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Psp/PspBaseLib/*.[cS])
+ifeq ($(CONFIG_STONEYRIDGE_IMC_FWM),y)
+agesa_raw_files += $(wildcard $(AGESA_ROOT)/Lib/imc/*.c)
+agesa_raw_files += $(AGESA_ROOT)/Proc/Fch/Common/FchLib.c
+agesa_raw_files += $(AGESA_ROOT)/Proc/Fch/Common/FchPeLib.c
+endif
+
+classes-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += libagesa
+
+ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
+$(eval $(call create_class_compiler,libagesa,x86_32))
+else
+$(eval $(call create_class_compiler,libagesa,x86_64))
+endif
+
+agesa_src_files := $(strip $(sort $(foreach file,$(strip $(agesa_raw_files)),$(call strip_quotes,$(file)))))
+agesa_output_path := $(obj)/libagesa
+agesa_src_path := $(agesa_output_path)
+agesa_dirs := $(sort $(abspath $(dir $(call src-to-obj,libagesa,$(agesa_src_files)))))
+
+additional-dirs += $(agesa_src_path) $(agesa_dirs)
+
+$(foreach file,$(strip $(agesa_src_files)),$(eval $(call create_agesa_cp_template,$(file))))
+
+$(agesa_output_path)/libagesa.a: $(call src-to-obj,libagesa,$(agesa_src_files))
+	@printf "    AGESA      $(subst $(obj)/,,$(@))\n"
+	$(AR_libagesa) rcs $@ $+
+
+bootblock-libs += $(agesa_output_path)/libagesa.a
+romstage-libs += $(agesa_output_path)/libagesa.a
+ramstage-libs += $(agesa_output_path)/libagesa.a
+
+#######################################################################
+
+ifeq ($(CONFIG_AGESA_SPLIT_MEMORY_FILES), y)
+
+# convert input elf to rmodule
+AGESA_POST_MEM_INPUT_ELF = $(call strip_quotes,$(CONFIG_AGESA_POST_MEMORY_BINARY_PI_FILE))
+AGESA_POST_MEM_ELF = $(objcbfs)/$(patsubst %.elf,%.debug,$(notdir $(AGESA_POST_MEM_INPUT_ELF)))
+AGESA_POST_MEM_ELF_RMOD = $(AGESA_POST_MEM_ELF).rmod
+
+$(AGESA_POST_MEM_ELF): $(AGESA_POST_MEM_INPUT_ELF)
+	cp $< $@
+
+$(AGESA_POST_MEM_ELF_RMOD): $(AGESA_POST_MEM_ELF)
+
+cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += $(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)
+$(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)-file := $(CONFIG_AGESA_PRE_MEMORY_BINARY_PI_FILE)
+$(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)-type := stage
+$(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)-options :=  --xip
+# 4KiB alignment to handle any interior alignment. Current AGESA only has
+# 64 byte alignment.
+$(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)-align := 4096
+
+cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += $(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)
+$(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)-file := $(AGESA_POST_MEM_ELF_RMOD)
+$(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)-type := stage
+$(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)-compression := $(CBFS_COMPRESS_FLAG)
+else
+
+cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += $(CONFIG_AGESA_CBFS_NAME)
+$(CONFIG_AGESA_CBFS_NAME)-file := $(CONFIG_AGESA_BINARY_PI_FILE)
+
+ifeq ($(CONFIG_AGESA_BINARY_PI_AS_STAGE),y)
+$(CONFIG_AGESA_CBFS_NAME)-type := stage
+$(CONFIG_AGESA_CBFS_NAME)-options :=  --xip
+# 4KiB alignment to handle any interior alignment. Current AGESA only has
+# 64 byte alignment.
+$(CONFIG_AGESA_CBFS_NAME)-align := 4096
+else
+$(CONFIG_AGESA_CBFS_NAME)-type := raw
+$(CONFIG_AGESA_CBFS_NAME)-position := $(CONFIG_AGESA_BINARY_PI_LOCATION)
+endif  # CONFIG_AGESA_BINARY_PI_AS_STAGE
+
+endif  # CONFIG_AGESA_SPLIT_MEMORY_FILES
+
+endif

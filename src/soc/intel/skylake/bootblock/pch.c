@@ -18,12 +18,16 @@
 #include <chip.h>
 #include <device/device.h>
 #include <device/pci_def.h>
+#include <intelblocks/cse.h>
+#include <intelblocks/fast_spi.h>
 #include <intelblocks/itss.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
+#include <intelblocks/pmclib.h>
+#include <intelblocks/smbus.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
-#include <soc/lpc.h>
 #include <soc/p2sb.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
@@ -32,51 +36,13 @@
 #include <soc/pmc.h>
 #include <soc/smbus.h>
 
-#define PCR_DMI_LPCLGIR1	0x2730
-#define PCR_DMI_LPCLGIR2	0x2734
-#define PCR_DMI_LPCLGIR3	0x2738
-#define PCR_DMI_LPCLGIR4	0x273c
-
+#define PCR_DMI_DMICTL		0x2234
+#define  PCR_DMI_DMICTL_SRLOCK	(1 << 31)
 #define PCR_DMI_ACPIBA		0x27B4
 #define PCR_DMI_ACPIBDID	0x27B8
 #define PCR_DMI_PMBASEA		0x27AC
 #define PCR_DMI_PMBASEC		0x27B0
 #define PCR_DMI_TCOBASE		0x2778
-
-#define PCR_DMI_LPCIOD		0x2770
-#define PCR_DMI_LPCIOE		0x2774
-
-/*
- * Enable Prefetching and Caching.
- */
-static void enable_spi_prefetch(void)
-{
-	u8 reg8 = pci_read_config8(PCH_DEV_SPI, 0xdc);
-	reg8 &= ~(3 << 2);
-	reg8 |= (2 << 2); /* Prefetching and Caching Enabled */
-	pci_write_config8(PCH_DEV_SPI, 0xdc, reg8);
-}
-
-static void enable_spibar(void)
-{
-	device_t dev = PCH_DEV_SPI;
-	u8 pcireg;
-
-	/* Assign Resources to SPI Controller */
-	/* Clear BIT 1-2 SPI Command Register */
-	pcireg = pci_read_config8(dev, PCI_COMMAND);
-	pcireg &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-	pci_write_config8(dev, PCI_COMMAND, pcireg);
-
-	/* Program Temporary BAR for SPI */
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0,
-		SPI_BASE_ADDRESS | PCI_BASE_ADDRESS_SPACE_MEMORY);
-
-	/* Enable Bus Master and MMIO Space */
-	pcireg = pci_read_config8(dev, PCI_COMMAND);
-	pcireg |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_config8(dev, PCI_COMMAND, pcireg);
-}
 
 static void enable_p2sbbar(void)
 {
@@ -99,58 +65,9 @@ static void enable_p2sbbar(void)
 
 void bootblock_pch_early_init(void)
 {
-	enable_spibar();
-	enable_spi_prefetch();
+	fast_spi_early_init(SPI_BASE_ADDRESS);
 	enable_p2sbbar();
 }
-
-static void pch_enable_lpc(void)
-{
-	/* Lookup device tree in romstage */
-	const struct device *dev;
-	const config_t *config;
-
-	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
-	if (!dev || !dev->chip_info)
-		return;
-	config = dev->chip_info;
-
-	/* Set in PCI generic decode range registers */
-	pci_write_config32(PCH_DEV_LPC, LPC_GEN1_DEC, config->gen1_dec);
-	pci_write_config32(PCH_DEV_LPC, LPC_GEN2_DEC, config->gen2_dec);
-	pci_write_config32(PCH_DEV_LPC, LPC_GEN3_DEC, config->gen3_dec);
-	pci_write_config32(PCH_DEV_LPC, LPC_GEN4_DEC, config->gen4_dec);
-
-	/* Mirror these same settings in DMI PCR */
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR1, config->gen1_dec);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR2, config->gen2_dec);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR3, config->gen3_dec);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR4, config->gen4_dec);
-}
-
-static void pch_interrupt_init(void)
-{
-	const struct device *dev;
-	const config_t *config;
-	uint8_t pch_interrupt_routing[MAX_PXRC_CONFIG];
-
-	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
-	if (!dev || !dev->chip_info)
-		return;
-	config = dev->chip_info;
-
-	pch_interrupt_routing[0] = config->pirqa_routing;
-	pch_interrupt_routing[1] = config->pirqb_routing;
-	pch_interrupt_routing[2] = config->pirqc_routing;
-	pch_interrupt_routing[3] = config->pirqd_routing;
-	pch_interrupt_routing[4] = config->pirqe_routing;
-	pch_interrupt_routing[5] = config->pirqf_routing;
-	pch_interrupt_routing[6] = config->pirqg_routing;
-	pch_interrupt_routing[7] = config->pirqh_routing;
-
-	itss_irq_init(pch_interrupt_routing);
-}
-
 
 static void soc_config_acpibase(void)
 {
@@ -172,7 +89,10 @@ static void soc_config_acpibase(void)
 	 */
 	reg32 = ((0x3f << 18) | ACPI_BASE_ADDRESS | 1);
 	pcr_write32(PID_DMI, PCR_DMI_ACPIBA, reg32);
-	pcr_write32(PID_DMI, PCR_DMI_ACPIBDID, 0x23A0);
+	if (IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H))
+		pcr_write32(PID_DMI, PCR_DMI_ACPIBDID, 0x23a8);
+	else
+		pcr_write32(PID_DMI, PCR_DMI_ACPIBDID, 0x23a0);
 }
 
 static void soc_config_pwrmbase(void)
@@ -203,7 +123,10 @@ static void soc_config_pwrmbase(void)
 	pcr_write32(PID_DMI, PCR_DMI_PMBASEA,
 		((PCH_PWRM_BASE_ADDRESS & 0xFFFF0000) |
 		 (PCH_PWRM_BASE_ADDRESS >> 16)));
-	pcr_write32(PID_DMI, PCR_DMI_PMBASEC, 0x800023A0);
+	if (IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H))
+		pcr_write32(PID_DMI, PCR_DMI_PMBASEC, 0x800023a8);
+	else
+		pcr_write32(PID_DMI, PCR_DMI_PMBASEC, 0x800023a0);
 }
 
 static void soc_config_tco(void)
@@ -214,14 +137,14 @@ static void soc_config_tco(void)
 
 	/* Disable TCO in SMBUS Device first before changing Base Address */
 	reg32 = pci_read_config32(PCH_DEV_SMBUS, TCOCTL);
-	reg32 &= ~SMBUS_TCO_EN;
+	reg32 &= ~TCO_EN;
 	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32);
 
 	/* Program TCO Base */
 	pci_write_config32(PCH_DEV_SMBUS, TCOBASE, TCO_BASE_ADDDRESS);
 
 	/* Enable TCO in SMBUS */
-	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32 | SMBUS_TCO_EN);
+	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32 | TCO_EN);
 
 	/*
 	 * Program "TCO Base Address" PCR[DMI] + 2778h[15:5, 1]
@@ -237,41 +160,42 @@ static void soc_config_tco(void)
 	outw(tcocnt, tcobase + TCO1_CNT);
 }
 
-static void enable_heci(void)
+static int pch_check_decode_enable(void)
 {
-	device_t dev = PCH_DEV_CSE;
-	u8 pcireg;
+	uint32_t dmi_control;
 
-	/* Assign Resources to HECI1 */
-	/* Clear BIT 1-2 of Command Register */
-	pcireg = pci_read_config8(dev, PCI_COMMAND);
-	pcireg &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-	pci_write_config8(dev, PCI_COMMAND, pcireg);
-
-	/* Program Temporary BAR for HECI1 */
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0, HECI1_BASE_ADDRESS);
-	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0x0);
-
-	/* Enable Bus Master and MMIO Space */
-	pcireg = pci_read_config8(dev, PCI_COMMAND);
-	pcireg |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_config8(dev, PCI_COMMAND, pcireg);
+	/*
+	 * This cycle decoding is only allowed to set when
+	 * DMICTL.SRLOCK is 0.
+	 */
+	dmi_control = pcr_read32(PID_DMI, PCR_DMI_DMICTL);
+	if (dmi_control & PCR_DMI_DMICTL_SRLOCK)
+		return -1;
+	return 0;
 }
 
 void pch_early_iorange_init(void)
 {
-	/* Lookup device tree in romstage */
-	u16 lpc_en;
+	uint16_t io_enables = LPC_IOE_SUPERIO_2E_2F | LPC_IOE_KBC_60_64 |
+			LPC_IOE_EC_62_66;
 
 	/* IO Decode Range */
-	lpc_en = COMA_RANGE | (COMB_RANGE << 4);
-	pci_write_config16(PCH_DEV_LPC, LPC_IO_DEC, lpc_en);
-	pcr_write16(PID_DMI, PCR_DMI_LPCIOD, lpc_en);
+	if (IS_ENABLED(CONFIG_DRIVERS_UART_8250IO))
+		lpc_io_setup_comm_a_b();
 
 	/* IO Decode Enable */
-	lpc_en = CNF1_LPC_EN | COMA_LPC_EN | KBC_LPC_EN | MC_LPC_EN;
-	pci_write_config16(PCH_DEV_LPC, LPC_EN, lpc_en);
-	pcr_write16(PID_DMI, PCR_DMI_LPCIOE, lpc_en);
+	if (pch_check_decode_enable() == 0) {
+		io_enables = lpc_enable_fixed_io_ranges(io_enables);
+		/*
+		 * As per PCH BWG 2.5.16.
+		 * Set up LPC IO Enables PCR[DMI] + 2774h [15:0] to the same
+		 * value program in LPC PCI offset 82h.
+		 */
+		pcr_write16(PID_DMI, PCR_DMI_LPCIOE, io_enables);
+	}
+
+	/* Program generic IO Decode Range */
+	pch_enable_lpc();
 }
 
 void pch_early_init(void)
@@ -291,22 +215,14 @@ void pch_early_init(void)
 	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
 	soc_config_tco();
 
-	/*
-	 * Interrupt Configuration Register Programming
-	 * PIRQx to IRQ Programming
-	 */
-	pch_interrupt_init();
-
-	/* Program generic IO Decode Range */
-	pch_enable_lpc();
-
 	/* Program SMBUS_BASE_ADDRESS and Enable it */
-	enable_smbus();
+	smbus_common_init();
 
 	/* Set up GPE configuration */
 	pmc_gpe_init();
 
 	enable_rtc_upper_bank();
 
-	enable_heci();
+	/* initialize Heci interface */
+	heci_init(HECI1_BASE_ADDRESS);
 }

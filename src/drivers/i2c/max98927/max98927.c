@@ -17,7 +17,7 @@
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
 #include <console/console.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <stdint.h>
@@ -61,6 +61,8 @@ static void max98927_fill_ssdt(struct device *dev)
 	dp = acpi_dp_new_table("_DSD");
 
 	acpi_dp_add_integer(dp, "interleave_mode", config->interleave_mode);
+	acpi_dp_add_integer(dp, "vmon-slot-no", config->vmon_slot_no);
+	acpi_dp_add_integer(dp, "imon-slot-no", config->imon_slot_no);
 
 	acpi_dp_write(dp);
 
@@ -71,7 +73,7 @@ static void max98927_fill_ssdt(struct device *dev)
 			dev->chip_ops->name, dev->path.i2c.device);
 }
 
-static const char *max98927_acpi_name(struct device *dev)
+static const char *max98927_acpi_name(const struct device *dev)
 {
 	struct drivers_i2c_max98927_config *config = dev->chip_info;
 

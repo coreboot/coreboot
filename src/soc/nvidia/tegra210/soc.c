@@ -35,7 +35,7 @@
 
 #include "chip.h"
 
-static void soc_read_resources(device_t dev)
+static void soc_read_resources(struct device *dev)
 {
 	unsigned long index = 0;
 	int i; uintptr_t begin, end;
@@ -65,7 +65,7 @@ static struct device_operations soc_ops = {
 	.scan_bus         = NULL,
 };
 
-static void enable_tegra210_dev(device_t dev)
+static void enable_tegra210_dev(struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &soc_ops;

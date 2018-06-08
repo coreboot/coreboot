@@ -32,7 +32,7 @@ static int disable_siblings = !CONFIG_LOGICAL_CPUS;
 
 static int get_max_siblings(int nodes)
 {
-	device_t dev;
+	struct device *dev;
 	int nodeid;
 	int siblings=0;
 
@@ -51,7 +51,7 @@ static int get_max_siblings(int nodes)
 
 static void enable_apic_ext_id(int nodes)
 {
-	device_t dev;
+	struct device *dev;
 	int nodeid;
 
 	//enable APIC_EXIT_ID all the nodes
@@ -59,7 +59,7 @@ static void enable_apic_ext_id(int nodes)
 		uint32_t val;
 		dev = dev_find_slot(0, PCI_DEVFN(0x18+nodeid, 0));
 		val = pci_read_config32(dev, 0x68);
-		val |= (1<<17)|(1<<18);
+		val |= (1 << 17)|(1 << 18);
 		pci_write_config32(dev, 0x68, val);
 	}
 }
@@ -67,7 +67,7 @@ static void enable_apic_ext_id(int nodes)
 
 unsigned get_apicid_base(unsigned ioapic_num)
 {
-	device_t dev;
+	struct device *dev;
 	int nodes;
 	unsigned apicid_base;
 	int siblings;
@@ -84,7 +84,7 @@ unsigned get_apicid_base(unsigned ioapic_num)
 
 	if (bsp_apic_id > 0) { // IOAPIC could start from 0
 		return 0;
-	} else if (pci_read_config32(dev, 0x68) & ( (1<<17) | (1<<18)) )  { // enabled ext id but bsp = 0
+	} else if (pci_read_config32(dev, 0x68) & ( (1 << 17) | (1 << 18)) )  { // enabled ext id but bsp = 0
 		return 1;
 	}
 

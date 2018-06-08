@@ -27,6 +27,7 @@
 #include <console/console.h>
 #include "northbridge/intel/sandybridge/sandybridge.h"
 #include "northbridge/intel/sandybridge/raminit_native.h"
+#include <southbridge/intel/common/rcba.h>
 #include "southbridge/intel/bd82x6x/pch.h"
 #include <southbridge/intel/common/gpio.h>
 #include <arch/cpu.h>
@@ -42,8 +43,7 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x000c0701);
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x8c, 0x000c0069);
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x90, 0x000c06a1);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0000);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xac, 0x00010000);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), ETR3, 0x10000);
 
 	/* Memory map KB9012 EC registers */
 	pci_write_config32(
@@ -56,12 +56,10 @@ void pch_enable_lpc(void)
 		ec_mm_set_bit(0x3b, 4);
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
 	/* Disable devices.  */
 	RCBA32(0x3414) = 0x00000020;
-	RCBA32(0x3418) = 0x17f41fe3;
-
 }
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, 0 },

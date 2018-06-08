@@ -130,6 +130,36 @@ int print_bioscntl(struct pci_dev *sb)
 	case PCI_DEVICE_ID_INTEL_PM55:
 	case PCI_DEVICE_ID_INTEL_QM57:
 	case PCI_DEVICE_ID_INTEL_QS57:
+	case PCI_DEVICE_ID_INTEL_Z68:
+	case PCI_DEVICE_ID_INTEL_P67:
+	case PCI_DEVICE_ID_INTEL_UM67:
+	case PCI_DEVICE_ID_INTEL_HM65:
+	case PCI_DEVICE_ID_INTEL_H67:
+	case PCI_DEVICE_ID_INTEL_HM67:
+	case PCI_DEVICE_ID_INTEL_Q65:
+	case PCI_DEVICE_ID_INTEL_QS67:
+	case PCI_DEVICE_ID_INTEL_Q67:
+	case PCI_DEVICE_ID_INTEL_QM67:
+	case PCI_DEVICE_ID_INTEL_B65:
+	case PCI_DEVICE_ID_INTEL_C202:
+	case PCI_DEVICE_ID_INTEL_C204:
+	case PCI_DEVICE_ID_INTEL_C206:
+	case PCI_DEVICE_ID_INTEL_H61:
+	case PCI_DEVICE_ID_INTEL_Z77:
+	case PCI_DEVICE_ID_INTEL_Z75:
+	case PCI_DEVICE_ID_INTEL_Q77:
+	case PCI_DEVICE_ID_INTEL_Q75:
+	case PCI_DEVICE_ID_INTEL_B75:
+	case PCI_DEVICE_ID_INTEL_H77:
+	case PCI_DEVICE_ID_INTEL_C216:
+	case PCI_DEVICE_ID_INTEL_QM77:
+	case PCI_DEVICE_ID_INTEL_QS77:
+	case PCI_DEVICE_ID_INTEL_HM77:
+	case PCI_DEVICE_ID_INTEL_UM77:
+	case PCI_DEVICE_ID_INTEL_HM76:
+	case PCI_DEVICE_ID_INTEL_HM75:
+	case PCI_DEVICE_ID_INTEL_HM70:
+	case PCI_DEVICE_ID_INTEL_NM70:
 		bios_cntl = pci_read_byte(sb, 0xdc);
 		bios_cntl_register = pch_bios_cntl_registers;
 		size = ARRAY_SIZE(pch_bios_cntl_registers);
@@ -279,7 +309,8 @@ int print_spibar(struct pci_dev *sb) {
 				printf("0x%08x = %s\n", *(uint32_t *)(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
 				break;
 			case 8:
-				printf("0x%08x%08x = %s\n", *(uint32_t *)(rcba + spi_register[i].addr), *(uint32_t *)(rcba + spi_register[i].addr + 4), spi_register[i].name);
+				printf("0x%08x%08x = %s\n",  *(uint32_t *)(rcba + spibaroffset + spi_register[i].addr + 4),
+					*(uint32_t *)(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
 				break;
 		}
 	}

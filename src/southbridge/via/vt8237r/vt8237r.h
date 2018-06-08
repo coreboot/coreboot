@@ -16,6 +16,8 @@
 #ifndef SOUTHBRIDGE_VIA_VT8237R_VT8237R_H
 #define SOUTHBRIDGE_VIA_VT8237R_VT8237R_H
 
+#include <compiler.h>
+
 /* Static resources for the VT8237R southbridge */
 
 #define VT8237R_APIC_ID			0x2
@@ -89,7 +91,7 @@
 #define I2C_TRANS_CMD			0x40
 #define CLOCK_SLAVE_ADDRESS		0x69
 
-#if CONFIG_DEBUG_SMBUS
+#if IS_ENABLED(CONFIG_DEBUG_SMBUS)
 #define PRINT_DEBUG(x)		printk(BIOS_DEBUG, x)
 #define PRINT_DEBUG_HEX16(x)	printk(BIOS_DEBUG, "%04x", x)
 #else
@@ -121,7 +123,7 @@ struct vt8237_network_rom {
 	u8 cfg_c;
 	u8 cfg_d;
 	u8 checksum;
-} __attribute__ ((packed));
+} __packed;
 
 #define MAINBOARD_POWER_OFF	0
 #define MAINBOARD_POWER_ON	1
@@ -142,9 +144,9 @@ void enable_rom_decode(void);
 void vt8237_early_spi_init(void);
 int vt8237_early_network_init(struct vt8237_network_rom *rom);
 #else
-void writeback(device_t dev, u16 where, u8 what);
-void dump_south(device_t dev);
-u32 vt8237_ide_80pin_detect(device_t dev);
+void writeback(struct device *dev, u16 where, u8 what);
+void dump_south(struct device *dev);
+u32 vt8237_ide_80pin_detect(struct device *dev);
 #endif
 
 #endif

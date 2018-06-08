@@ -27,7 +27,6 @@ DefinitionBlock(
 
 	// Some generic macros
 	#include "acpi/platform.asl"
-	#include "acpi/mainboard.asl"
 
 	// global NVS and variables
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
@@ -44,11 +43,12 @@ DefinitionBlock(
 		{
 			#include <northbridge/intel/sandybridge/acpi/sandybridge.asl>
 			#include <southbridge/intel/bd82x6x/acpi/pch.asl>
-			#include "acpi/sandybridge_pci_irqs.asl"
 
 			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		}
 	}
+
+	#include "acpi/mainboard.asl"
 
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 

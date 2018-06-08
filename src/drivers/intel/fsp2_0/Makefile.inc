@@ -27,7 +27,7 @@ romstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
 romstage-$(CONFIG_MMA) += mma_core.c
 
 ramstage-y += debug.c
-ramstage-y += graphics.c
+ramstage-$(CONFIG_RUN_FSP_GOP) += graphics.c
 ramstage-y += hand_off_block.c
 ramstage-$(CONFIG_DISPLAY_FSP_HEADER) += header_display.c
 ramstage-$(CONFIG_DISPLAY_HOBS) += hob_display.c
@@ -43,6 +43,7 @@ postcar-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
 postcar-$(CONFIG_FSP_CAR) += temp_ram_exit.c
 postcar-$(CONFIG_FSP_CAR) += util.c
 postcar-$(CONFIG_DISPLAY_FSP_HEADER) += header_display.c
+postcar-y += hand_off_block.c
 
 CPPFLAGS_common += -I$(src)/drivers/intel/fsp2_0/include
 

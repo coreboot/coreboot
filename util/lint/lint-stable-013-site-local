@@ -22,7 +22,9 @@
 
 LC_ALL=C export LC_ALL
 
-if [ -n "$(command -v git)" ]  && [ -e ".git" ]; then
+if [ -n "$(command -v git)" ] && \
+	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
+then
 	if [ -n "$(git ls-files site-local/*)" ]; then
 		echo "Error: site-local must be kept separate from the coreboot repository."
 	fi

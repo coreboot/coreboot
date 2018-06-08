@@ -27,8 +27,6 @@
 #include <cpu/amd/lxdef.h>
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <spd.h>
-#include "southbridge/amd/cs5536/early_smbus.c"
-#include "southbridge/amd/cs5536/early_setup.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
 #include <northbridge/amd/lx/raminit.h>
@@ -41,7 +39,6 @@ int spd_read_byte(unsigned int device, unsigned int address)
 }
 
 #include "northbridge/amd/lx/pll_reset.c"
-#include "lib/generic_sdram.c"
 #include "cpu/amd/geode_lx/cpureginit.c"
 #include "cpu/amd/geode_lx/syspreinit.c"
 #include "cpu/amd/geode_lx/msrinit.c"
@@ -61,7 +58,7 @@ void asmlinkage mainboard_romstage_entry(unsigned long bist)
 	/* Note: must do this AFTER the early_setup! It is counting on some
 	 * early MSR setup for CS5536.
 	 */
-	w83627hf_set_clksel_48(SERIAL_DEV);
+	winbond_set_clksel_48(SERIAL_DEV);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 

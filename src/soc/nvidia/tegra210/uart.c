@@ -19,6 +19,7 @@
 #include <console/uart.h>
 #include <drivers/uart/uart8250reg.h>
 #include <stdint.h>
+#include <compiler.h>
 
 struct tegra210_uart {
 	union {
@@ -38,7 +39,7 @@ struct tegra210_uart {
 	uint32_t mcr; // Modem control register.
 	uint32_t lsr; // Line status register.
 	uint32_t msr; // Modem status register.
-} __attribute__ ((packed));
+} __packed;
 
 
 static struct tegra210_uart * const uart_ptr =
@@ -122,7 +123,7 @@ void uart_fill_lb(void *data)
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial.baseaddr = CONFIG_CONSOLE_SERIAL_TEGRA210_UART_ADDRESS;
-	serial.baud = default_baudrate();
+	serial.baud = get_uart_baudrate();
 	serial.regwidth = 4;
 	lb_add_serial(&serial, data);
 

@@ -71,10 +71,8 @@ struct rk3399_grf_regs {
 	u32 reserved10[0xc9];
 	u32 hsicphy_con0;
 	u32 reserved11[3];
-	u32 usbphy0_ctrl[26];
-	u32 reserved12[6];
-	u32 usbphy1_ctrl[26];
-	u32 reserved13[0x72f];
+	u32 usbphy_ctrl[2][26 + 6]; /* 26 PHY regs, 6 reserved padding regs */
+	u32 reserved13[0x729];
 	u32 soc_con9;
 	u32 reserved14[0x0a];
 	u32 soc_con20;
@@ -358,8 +356,7 @@ static struct rk3399_pmusgrf_regs * const rk3399_pmusgrf = (void *)PMUSGRF_BASE;
 #define IOMUX_I2C0_SCL	RK_CLRSETBITS(3 << 0, 2 << 0)
 #define IOMUX_I2C0_SDA	RK_CLRSETBITS(3 << 14, 2 << 14)
 
-#define IOMUX_I2S0	RK_SETBITS(1 << 14 | 1 << 12 | 1 << 10 | 1 << 8 |\
-				   1 << 6 | 1 << 4 | 1 << 2 | 1 << 0)
+#define IOMUX_I2S0_SD0	RK_SETBITS(1 << 14 | 1 << 6 | 1 << 4 | 1 << 2 | 1 << 0)
 #define IOMUX_I2SCLK	RK_SETBITS(1 << 0)
 
 #define IOMUX_PWM_0	RK_SETBITS(1 << 4)

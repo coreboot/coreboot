@@ -40,7 +40,7 @@ DefinitionBlock (
 	#include <cpu/amd/agesa/family16kb/acpi/cpu.asl>
 
 	/* Contains the supported sleep states for this chipset */
-	#include <southbridge/amd/agesa/hudson/acpi/sleepstates.asl>
+	#include <southbridge/amd/common/acpi/sleepstates.asl>
 
 	/* Contains the Sleep methods (WAK, PTS, GTS, etc.) */
 	#include "acpi/sleep.asl"

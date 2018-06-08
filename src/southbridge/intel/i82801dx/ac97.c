@@ -220,7 +220,7 @@ static void ac97_modem_init(struct device *dev)
 	mbar = pci_read_config16(dev, MBAR) & 0xfffe;
 
 	reg16 = inw(mmbar + EXT_MODEM_ID1);
-	if ((reg16 & 0xc000) != 0xc000 ) {
+	if ((reg16 & 0xc000) != 0xc000) {
 		if (reg16 & (1 << 0)) {
 			reg32 = inw(mmbar + VENDOR_ID2);
 			reg32 <<= 16;

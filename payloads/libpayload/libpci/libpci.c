@@ -82,7 +82,7 @@ void pci_init(struct pci_access *pacc)
 	memset(pacc, 0, sizeof(*pacc));
 }
 
-void pci_cleanup(__attribute__ ((unused)) struct pci_access *pacc)
+void pci_cleanup(__attribute__((unused)) struct pci_access *pacc)
 {
 }
 
@@ -218,4 +218,9 @@ struct pci_dev *pci_get_dev(struct pci_access* pacc, u16 domain, u8 bus, u8 dev,
 	cur->dev = dev;
 	cur->func = func;
 	return cur;
+}
+
+void pci_free_dev(struct pci_dev *const dev)
+{
+	free(dev);
 }

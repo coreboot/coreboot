@@ -86,6 +86,25 @@
 #define MCHBAR16(x) (*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
 #define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
 
+#define CHDECMISC	0x111
+#define STACKED_MEM	(1 << 1)
+
+#define C0DRB0		0x200
+#define C0DRB1		0x202
+#define C0DRB2		0x204
+#define C0DRB3		0x206
+#define C0DRA01		0x208
+#define C0DRA23		0x20a
+#define C0CKECTRL	0x260
+
+#define C1DRB0		0x600
+#define C1DRB1		0x602
+#define C1DRB2		0x604
+#define C1DRB3		0x606
+#define C1DRA01		0x608
+#define C1DRA23		0x60a
+#define C1CKECTRL	0x660
+
 #define PMSTS_MCHBAR		0x0f14	/* Self refresh channel status */
 #define PMSTS_WARM_RESET	(1 << 8)
 #define PMSTS_BOTH_SELFREFRESH	(3 << 0)
@@ -142,8 +161,10 @@
 
 #define TOTAL_CHANNELS 2
 #define TOTAL_DIMMS 4
+#define TOTAL_BYTELANES 8
 #define DIMMS_PER_CHANNEL (TOTAL_DIMMS / TOTAL_CHANNELS)
 #define RAW_CARD_UNPOPULATED 0xff
+#define RAW_CARD_POPULATED 0
 
 #define DIMM_IS_POPULATED(dimms, idx) (dimms[idx].card_type != RAW_CARD_UNPOPULATED)
 #define IF_DIMM_POPULATED(dimms, idx) if (dimms[idx].card_type != RAW_CARD_UNPOPULATED)
@@ -195,6 +216,10 @@
 	FOR_EACH_CHANNEL(ch) FOR_EACH_RANK_IN_CHANNEL(r)
 #define FOR_EACH_POPULATED_RANK(dimms, ch, r) \
 	FOR_EACH_RANK(ch, r) IF_RANK_POPULATED(dimms, ch, r)
+#define FOR_EACH_BYTELANE(l) \
+	for (l = 0; l < TOTAL_BYTELANES; l++)
+#define FOR_EACH_POPULATED_CHANNEL_AND_BYTELANE(dimms, ch, l) \
+	FOR_EACH_POPULATED_CHANNEL (dimms, ch) FOR_EACH_BYTELANE(l)
 
 #define DDR3_MAX_CAS 18
 
@@ -240,8 +265,28 @@ enum chip_cap { /* as in DDR3 spd */
 	CHIP_CAP_16G	= 6,
 };
 
+struct dll_setting {
+	u8 tap;
+	u8 pi;
+	u8 db_en;
+	u8 db_sel;
+	u8 clk_delay;
+	u8 coarse;
+};
+
+struct rt_dqs_setting {
+	u8 tap;
+	u8 pi;
+};
+
+enum n_banks {
+	N_BANKS_4 = 0,
+	N_BANKS_8 = 1,
+};
+
 struct timings {
 	unsigned int	CAS;
+	unsigned int    tclk;
 	enum fsb_clock	fsb_clk;
 	enum mem_clock	mem_clk;
 	unsigned int	tRAS;
@@ -258,45 +303,43 @@ struct dimminfo {
 	unsigned int	card_type; /* 0xff: unpopulated,
 				      0xa - 0xf: raw card type A - F */
 	enum chip_width	width;
-	enum chip_cap	chip_capacity;
 	unsigned int	page_size; /* of whole DIMM in Bytes (4096 or 8192) */
-	unsigned int	sides;
-	unsigned int	banks;
+	enum n_banks	n_banks;
 	unsigned int	ranks;
 	unsigned int	rows;
 	unsigned int	cols;
-	unsigned int	cas_latencies;
-	unsigned int	tAAmin;
-	unsigned int	tCKmin;
-	unsigned int	tWR;
-	unsigned int	tRP;
-	unsigned int	tRCD;
-	unsigned int	tRAS;
-	unsigned int	rank_capacity_mb; /* per rank in Megabytes */
-	u8		spd_data[256];
+	u16             spd_crc;
+	u8		mirrored;
+};
+
+struct rcven_timings {
+	u8 min_common_coarse;
+	u8 coarse_offset[TOTAL_BYTELANES];
+	u8 medium[TOTAL_BYTELANES];
+	u8 tap[TOTAL_BYTELANES];
+	u8 pi[TOTAL_BYTELANES];
 };
 
 /* The setup is up to two DIMMs per channel */
 struct sysinfo {
-	int		txt_enabled;
-	int		cores;
 	int		boot_path;
-	int		max_ddr2_mhz;
-	int		max_ddr3_mt;
 	enum fsb_clock	max_fsb;
-	int		max_fsb_mhz;
-	int		max_render_mhz;
-	int		enable_igd;
-	int		enable_peg;
-	u16		ggc;
 
 	int		dimm_config[2];
-	int		dimms_per_ch;
 	int		spd_type;
 	int		channel_capacity[2];
 	struct timings	selected_timings;
 	struct dimminfo	dimms[4];
 	u8		spd_map[4];
+	struct rcven_timings rcven_t[TOTAL_CHANNELS];
+	/*
+	 * The rt_dqs delay register for rank 0 seems to be used
+	 * for all other ranks on the channel, so only save that
+	 */
+	struct rt_dqs_setting rt_dqs[TOTAL_CHANNELS][TOTAL_BYTELANES];
+	struct dll_setting dqs_settings[TOTAL_CHANNELS][TOTAL_BYTELANES];
+	struct dll_setting dq_settings[TOTAL_CHANNELS][TOTAL_BYTELANES];
+	u8		nmode;
 };
 #define BOOT_PATH_NORMAL	0
 #define BOOT_PATH_WARM_RESET	1
@@ -310,22 +353,6 @@ enum ddr2_signals {
 	CTRL1,
 	CTRL2,
 	CTRL3,
-	DQS1,
-	DQS2,
-	DQS3,
-	DQS4,
-	DQS5,
-	DQS6,
-	DQS7,
-	DQS8,
-	DQ1,
-	DQ2,
-	DQ3,
-	DQ4,
-	DQ5,
-	DQ6,
-	DQ7,
-	DQ8
 };
 
 #ifndef __BOOTBLOCK__
@@ -335,11 +362,45 @@ u32 decode_igd_memory_size(u32 gms);
 u32 decode_igd_gtt_size(u32 gsm);
 u8 decode_pciebar(u32 *const base, u32 *const len);
 void sdram_initialize(int boot_path, const u8 *spd_map);
-void raminit_ddr2(struct sysinfo *);
+void do_raminit(struct sysinfo *, int fast_boot);
+void rcven(struct sysinfo *s);
+u32 fsb2mhz(u32 speed);
+u32 ddr2mhz(u32 speed);
+u32 test_address(int channel, int rank);
+void dqsset(u8 ch, u8 lane, const struct dll_setting *setting);
+void dqset(u8 ch, u8 lane, const struct dll_setting *setting);
+void rt_set_dqs(u8 channel, u8 lane, u8 rank,
+		struct rt_dqs_setting *dqs_setting);
+int do_write_training(struct sysinfo *s);
+int do_read_training(struct sysinfo *s);
+void search_write_leveling(struct sysinfo *s);
+void send_jedec_cmd(const struct sysinfo *s, u8 r, u8 ch, u8 cmd, u32 val);
+
+extern const struct dll_setting default_ddr2_667_ctrl[7];
+extern const struct dll_setting default_ddr2_800_ctrl[7];
+extern const struct dll_setting default_ddr3_800_ctrl[2][7];
+extern const struct dll_setting default_ddr3_1067_ctrl[2][7];
+extern const struct dll_setting default_ddr3_1333_ctrl[2][7];
+extern const struct dll_setting default_ddr2_667_dqs[TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr2_800_dqs[TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr3_800_dqs[2][TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr3_1067_dqs[2][TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr3_1333_dqs[2][TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr2_667_dq[TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr2_800_dq[TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr3_800_dq[2][TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr3_1067_dq[2][TOTAL_BYTELANES];
+extern const struct dll_setting default_ddr3_1333_dq[2][TOTAL_BYTELANES];
+extern const u8 ddr3_emrs1_rtt_nom_config[16][4];
+extern const u8 post_jedec_tab[3][4][2];
+extern const u32 ddr3_c2_tab[2][3][6][2];
+extern const u8 ddr3_c2_x264[3][6];
+extern const u16 ddr3_c2_x23c[3][6];
 
 struct acpi_rsdp;
 #ifndef __SIMPLE_DEVICE__
-unsigned long northbridge_write_acpi_tables(device_t device, unsigned long start, struct acpi_rsdp *rsdp);
+unsigned long northbridge_write_acpi_tables(struct device *device,
+		unsigned long start, struct acpi_rsdp *rsdp);
 #endif /* __SIMPLE_DEVICE__ */
 #endif
 #endif /* __NORTHBRIDGE_INTEL_X4X_H__ */

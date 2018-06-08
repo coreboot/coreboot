@@ -199,8 +199,8 @@ static void sata_init(struct device *dev)
 	pci_write_config32(dev, SATA_IR, reg32);
 }
 
-static void sata_set_subsystem(device_t dev, unsigned int vendor,
-			unsigned int device)
+static void sata_set_subsystem(struct device *dev, unsigned int vendor,
+			       unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

@@ -30,6 +30,15 @@ Method(_PRT)
 		Package(){0x000FFFFF, 0, 0, CSE_INT},
 		Package(){0x0011FFFF, 0, 0, ISH_INT},
 		Package(){0x0012FFFF, 0, 0, SATA_INT},
+#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+		Package(){0x000CFFFF, 0, 0, CNVI_INT},
+		Package(){0x0013FFFF, 0, 0, PIRQF_INT},
+		Package(){0x0013FFFF, 1, 0, PIRQF_INT},
+		Package(){0x0013FFFF, 2, 0, PIRQF_INT},
+		Package(){0x0013FFFF, 3, 0, PIRQF_INT},
+		Package(){0x0014FFFF, 0, 0, PIRQG_INT},
+		Package(){0x0014FFFF, 1, 0, PIRQG_INT},
+#else
 		Package(){0x0013FFFF, 0, 0, PIRQA_INT},
 		Package(){0x0013FFFF, 1, 0, PIRQB_INT},
 		Package(){0x0013FFFF, 2, 0, PIRQC_INT},
@@ -38,6 +47,7 @@ Method(_PRT)
 		Package(){0x0014FFFF, 1, 0, PIRQC_INT},
 		Package(){0x0014FFFF, 2, 0, PIRQD_INT},
 		Package(){0x0014FFFF, 3, 0, PIRQA_INT},
+#endif
 		Package(){0x0015FFFF, 0, 0, XHCI_INT},
 		Package(){0x0015FFFF, 1, 0, XDCI_INT},
 		Package(){0x0016FFFF, 0, 0, I2C0_INT},

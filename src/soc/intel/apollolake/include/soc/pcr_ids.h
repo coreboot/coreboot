@@ -19,12 +19,21 @@
 /*
  * Port ids.
  */
+#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#define PID_GPIO_AUDIO	0xC9
+#define PID_GPIO_SCC	0xC8
+#else
 #define PID_GPIO_SW	0xC0
 #define PID_GPIO_S	0xC2
+#define PID_GPIO_W	0xC7
+#endif
 #define PID_GPIO_NW	0xC4
 #define PID_GPIO_N	0xC5
-#define PID_GPIO_W	0xC7
 #define PID_ITSS	0xD0
 #define PID_RTC		0xD1
+
+#define PID_AUNIT	0x4d
+#define PID_BUNIT	0x4c
+#define PID_TUNIT	0x52
 
 #endif	/* SOC_INTEL_APL_PCR_H */

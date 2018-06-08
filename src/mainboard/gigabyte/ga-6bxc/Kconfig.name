@@ -1,2 +1,0 @@
-config BOARD_GIGABYTE_GA_6BXC
-	bool "GA-6BXC"

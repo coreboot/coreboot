@@ -14,7 +14,7 @@
  */
 
 #ifndef VARIANT_H
-#define VARAINT_H
+#define VARIANT_H
 
 void variant_romstage_entry(unsigned long bist);
 

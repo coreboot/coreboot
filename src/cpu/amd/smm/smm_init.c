@@ -77,3 +77,7 @@ void smm_lock(void)
 {
 	/* We lock SMM in CPU init */
 }
+
+void smm_init_completion(void)
+{
+}

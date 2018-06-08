@@ -106,7 +106,7 @@ static void crmu_ns_config(void)
 	 *
 	 * NOTE: In the future, we might want to protect particular CRMU
 	 * sub-blocks to allow SECURE access only. That can be done by
-	 * programing the CRMU IPROC address range registers. Up to 4 access
+	 * programming the CRMU IPROC address range registers. Up to 4 access
 	 * windows can be created
 	 */
 	write32((void *)CRMU_IPROC_ADDR_RANGE0_LOW,

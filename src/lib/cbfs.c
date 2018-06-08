@@ -20,6 +20,7 @@
 #include <boot_device.h>
 #include <cbfs.h>
 #include <commonlib/compression.h>
+#include <compiler.h>
 #include <endian.h>
 #include <lib.h>
 #include <symbols.h>
@@ -44,7 +45,7 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 	if (cbfs_boot_region_properties(&props))
 		return -1;
 
-	/* All boot CBFS operations are performed using the RO devie. */
+	/* All boot CBFS operations are performed using the RO device. */
 	boot_dev = boot_device_ro();
 
 	if (boot_dev == NULL)
@@ -182,12 +183,12 @@ void *cbfs_boot_load_stage_by_name(const char *name)
 	return prog_entry(&stage);
 }
 
-size_t cbfs_boot_load_struct(const char *name, void *buf, size_t buf_size)
+size_t cbfs_boot_load_file(const char *name, void *buf, size_t buf_size,
+			   uint32_t type)
 {
 	struct cbfsf fh;
 	uint32_t compression_algo;
 	size_t decompressed_size;
-	uint32_t type = CBFS_TYPE_STRUCT;
 
 	if (cbfs_boot_locate(&fh, name, &type) < 0)
 		return 0;
@@ -308,7 +309,7 @@ static int cbfs_master_header_props(struct cbfs_props *props)
 /* This struct is marked as weak to allow a particular platform to
  * override the master header logic. This implementation should work for most
  * devices. */
-const struct cbfs_locator __attribute__((weak)) cbfs_master_header_locator = {
+const struct cbfs_locator __weak cbfs_master_header_locator = {
 	.name = "Master Header Locator",
 	.locate = cbfs_master_header_props,
 };
@@ -316,7 +317,7 @@ const struct cbfs_locator __attribute__((weak)) cbfs_master_header_locator = {
 extern const struct cbfs_locator vboot_locator;
 
 static const struct cbfs_locator *locators[] = {
-#if CONFIG_VBOOT
+#if IS_ENABLED(CONFIG_VBOOT)
 	&vboot_locator,
 #endif
 	&cbfs_master_header_locator,

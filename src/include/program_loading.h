@@ -28,6 +28,7 @@ enum {
 
 enum prog_type {
 	PROG_UNKNOWN,
+	PROG_BOOTBLOCK,
 	PROG_VERSTAGE,
 	PROG_ROMSTAGE,
 	PROG_RAMSTAGE,
@@ -58,6 +59,7 @@ struct prog {
 	 * payload. For architectures that use a bounce buffer
 	 * then it would represent the bounce buffer. */
 	enum prog_type type;
+	uint32_t cbfs_type;
 	const char *name;
 	struct region_device rdev;
 	/* Entry to program with optional argument. It's up to the architecture
@@ -80,6 +82,11 @@ static inline const char *prog_name(const struct prog *prog)
 static inline enum prog_type prog_type(const struct prog *prog)
 {
 	return prog->type;
+}
+
+static inline uint32_t prog_cbfs_type(const struct prog *prog)
+{
+	return prog->cbfs_type;
 }
 
 static inline struct region_device *prog_rdev(struct prog *prog)

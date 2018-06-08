@@ -138,7 +138,7 @@ u32 X86API rdl(u32 addr)
 	u8 *ptr;
 
 	ptr = mem_ptr(addr, 4);
-       	val = *(u32 *) (ptr);
+	val = *(u32 *) (ptr);
 
 	DB(if (DEBUG_MEM_TRACE())
 	   printf("%#08x 4 -> %#x\n", addr, val);)

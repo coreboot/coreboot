@@ -1,2 +1,2 @@
 config BOARD_GOOGLE_EVE
-	bool "Eve"
+	bool "Eve (Google Pixelbook)"

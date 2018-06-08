@@ -15,7 +15,7 @@
  */
 
 /*
- * udelay() impementation for SMI handlers
+ * udelay() implementation for SMI handlers
  * This is neat in that it never writes to hardware registers, and thus does not
  * modify the state of the hardware while servicing SMIs.
  */

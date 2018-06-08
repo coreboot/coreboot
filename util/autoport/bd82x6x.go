@@ -11,7 +11,7 @@ type bd82x6x struct {
 }
 
 func (b bd82x6x) writeGPIOSet(ctx Context, sb *os.File,
-	val uint32, set uint, partno int) {
+	val uint32, set uint, partno int, constraint uint32) {
 
 	max := uint(32)
 	if set == 3 {
@@ -28,22 +28,25 @@ func (b bd82x6x) writeGPIOSet(ctx Context, sb *os.File,
 	}
 
 	for i := uint(0); i < max; i++ {
-		fmt.Fprintf(sb, "	.gpio%d = %s,\n",
-			(set-1)*32+i,
-			bits[partno][(val>>i)&1])
+		if ((constraint>>i)&1 == 1) {
+			fmt.Fprintf(sb, "	.gpio%d = %s,\n",
+				(set-1)*32+i,
+				bits[partno][(val>>i)&1])
+		}
 	}
 }
 
 func (b bd82x6x) GPIO(ctx Context, inteltool InteltoolData) {
+	var constraint uint32
 	gpio := Create(ctx, "gpio.c")
 	defer gpio.Close()
 
 	AddROMStageFile("gpio.c", "")
 
-	gpio.WriteString(`#include <southbridge/intel/common/gpio.h>
-`)
+	Add_gpl(gpio)
+	gpio.WriteString("#include <southbridge/intel/common/gpio.h>\n\n")
 
-	adresses := [3][6]int{
+	addresses := [3][6]int{
 		{0x00, 0x04, 0x0c, 0x60, 0x2c, 0x18},
 		{0x30, 0x34, 0x38, 0x64, -1, -1},
 		{0x40, 0x44, 0x48, 0x68, -1, -1},
@@ -51,14 +54,37 @@ func (b bd82x6x) GPIO(ctx Context, inteltool InteltoolData) {
 
 	for set := 1; set <= 3; set++ {
 		for partno, part := range []string{"mode", "direction", "level", "reset", "invert", "blink"} {
-			addr := adresses[set-1][partno]
+			addr := addresses[set-1][partno]
 			if addr < 0 {
 				continue
 			}
-			fmt.Fprintf(gpio, "const struct pch_gpio_set%d pch_gpio_set%d_%s = {\n",
+			fmt.Fprintf(gpio, "static const struct pch_gpio_set%d pch_gpio_set%d_%s = {\n",
 				set, set, part)
 
-			b.writeGPIOSet(ctx, gpio, inteltool.GPIO[uint16(addr)], uint(set), partno)
+			constraint = 0xffffffff
+			switch part {
+			case "direction":
+				/* Ignored on native mode */
+				constraint = inteltool.GPIO[uint16(addresses[set-1][0])]
+			case "level":
+				/* Level doesn't matter for input */
+				constraint = inteltool.GPIO[uint16(addresses[set-1][0])]
+				constraint &^= inteltool.GPIO[uint16(addresses[set-1][1])]
+			case "reset":
+				/* Only show reset */
+				constraint = inteltool.GPIO[uint16(addresses[set-1][3])]
+			case "invert":
+				/* Only on input and only show inverted GPIO */
+				constraint = inteltool.GPIO[uint16(addresses[set-1][0])]
+				constraint &= inteltool.GPIO[uint16(addresses[set-1][1])]
+				constraint &= inteltool.GPIO[uint16(addresses[set-1][4])]
+			case "blink":
+				/* Only on output and only show blinking GPIO */
+				constraint = inteltool.GPIO[uint16(addresses[set-1][0])]
+				constraint &^= inteltool.GPIO[uint16(addresses[set-1][1])]
+				constraint &= inteltool.GPIO[uint16(addresses[set-1][5])]
+			}
+			b.writeGPIOSet(ctx, gpio, inteltool.GPIO[uint16(addr)], uint(set), partno, constraint)
 			gpio.WriteString("};\n\n")
 		}
 	}
@@ -179,10 +205,6 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 
 	/* SPI init */
 	MainboardIncludes = append(MainboardIncludes, "southbridge/intel/bd82x6x/pch.h")
-	/* FIXME:XX Move this to runtime.  */
-	for _, addr := range []uint16{0x38c8, 0x38c4, 0x38c0} {
-		MainboardInit += fmt.Sprintf("\tRCBA32(0x%04x) = 0x%08x;\n", addr, inteltool.RCBA[addr])
-	}
 
 	FADT := ctx.InfoSource.GetACPI()["FACP"]
 
@@ -220,6 +242,8 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 			"p_cnt_throttling_supported": (FormatBool(FADT[104] == 1 && FADT[105] == 3)),
 			"c2_latency":                 FormatHexLE16(FADT[96:98]),
 			"docking_supported":          (FormatBool((FADT[113] & (1 << 1)) != 0)),
+			"spi_uvscc": fmt.Sprintf("0x%x", inteltool.RCBA[0x38c8]),
+			"spi_lvscc": fmt.Sprintf("0x%x", inteltool.RCBA[0x38c4] &^ (1 << 23)),
 		},
 		PCISlots: []PCISlot{
 			PCISlot{PCIAddr: PCIAddr{Dev: 0x14, Func: 0}, writeEmpty: false, additionalComment: "USB 3.0 Controller"},
@@ -273,13 +297,12 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	})
 	DSDTPCI0Includes = append(DSDTPCI0Includes, DSDTInclude{
 		File: "southbridge/intel/bd82x6x/acpi/pch.asl",
-	}, DSDTInclude{
-		File: "southbridge/intel/bd82x6x/acpi/default_irq_route.asl",
 	})
 
 	sb := Create(ctx, "early_southbridge.c")
 	defer sb.Close()
 	AddROMStageFile("early_southbridge.c", "")
+	Add_gpl(sb)
 	sb.WriteString(`#include <stdint.h>
 #include <string.h>
 #include <lib.h>
@@ -309,18 +332,12 @@ void pch_enable_lpc(void)
 
 	RestorePCI16Simple(sb, addr, 0x80)
 
-	RestorePCI32Simple(sb, addr, 0xac)
-
 	sb.WriteString(`}
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
-	/* Disable devices.  */
 `)
-	RestoreRCBA32(sb, inteltool, 0x3414)
-	RestoreRCBA32(sb, inteltool, 0x3418)
-
-	sb.WriteString("\n}\n")
+	sb.WriteString("}\n\n")
 
 	sb.WriteString("const struct southbridge_usb_port mainboard_usb_ports[] = {\n")
 
@@ -378,6 +395,7 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 	gnvs := Create(ctx, "gnvs.c")
 	defer gnvs.Close()
 
+	Add_gpl(gnvs)
 	gnvs.WriteString(`#include <southbridge/intel/bd82x6x/nvs.h>
 
 /* FIXME: check this function.  */
@@ -415,10 +433,12 @@ func init() {
 
 	/* PCIe bridge */
 	for _, id := range []uint16{
-		0x1c10, 0x1c12, 0x1c14, 0x1c16,
-		0x1c18, 0x1c1a, 0x1c1c, 0x1c1e,
-		0x1e10, 0x1e12, 0x1e14, 0x1e16,
-		0x1e18, 0x1e1a, 0x1e1c, 0x1e1e,
+		0x0151, 0x0155, 0x1c10, 0x1c12,
+		0x1c14, 0x1c16, 0x1c18, 0x1c1a,
+		0x1c1c, 0x1c1e, 0x1e10, 0x1e12,
+		0x1e14, 0x1e16, 0x1e18, 0x1e1a,
+		0x1e1c, 0x1e1e, 0x1e25, 0x244e,
+		0x2448,
 	} {
 		RegisterPCI(0x8086, id, GenericPCI{})
 	}
@@ -455,5 +475,6 @@ func init() {
 
 	/* Ethernet */
 	RegisterPCI(0x8086, 0x1502, GenericPCI{})
+	RegisterPCI(0x8086, 0x1503, GenericPCI{})
 
 }

@@ -17,6 +17,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <compiler.h>
+#include <commonlib/helpers.h>
 #include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
@@ -72,7 +74,7 @@ typedef struct ich7_spi_regs {
 	uint16_t preop;
 	uint16_t optype;
 	uint8_t opmenu[8];
-} __attribute__((packed)) ich7_spi_regs;
+} __packed ich7_spi_regs;
 
 typedef struct ich9_spi_regs {
 	uint32_t bfpr;                  // 0
@@ -105,7 +107,7 @@ typedef struct ich9_spi_regs {
 	uint32_t srdl;
 	uint32_t srdc;
 	uint32_t srd;
-} __attribute__((packed)) ich9_spi_regs;
+} __packed ich9_spi_regs;
 
 typedef struct ich10_spi_regs {
 	uint32_t bfpr;
@@ -137,7 +139,7 @@ typedef struct ich10_spi_regs {
 	uint32_t scs;
 	uint32_t bcr;
 	uint32_t tcgc;
-} __attribute__((packed)) ich10_spi_regs;
+} __packed ich10_spi_regs;
 
 typedef struct ich_spi_controller {
 	int locked;
@@ -341,7 +343,7 @@ void spi_init(void)
 {
 	int ich_version = 0;
 	uint8_t bios_cntl;
-	device_t dev;
+	struct device *dev;
 	uint32_t ids;
 	uint16_t vendor_id, device_id;
 
@@ -569,11 +571,6 @@ static int ich_status_poll(u16 bitmask, int wait_til_set)
 	return -1;
 }
 
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
-{
-	return min(cntlr.databytes, buf_len);
-}
-
 static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		size_t bytesout, void *din, size_t bytesin)
 {
@@ -722,15 +719,23 @@ spi_xfer_exit:
 	return 0;
 }
 
+static int xfer_vectors(const struct spi_slave *slave,
+			struct spi_op vectors[], size_t count)
+{
+	return spi_flash_vector_helper(slave, vectors, count, spi_ctrlr_xfer);
+}
+
 static const struct spi_ctrlr spi_ctrlr = {
-	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
+	.xfer_vector = xfer_vectors,
+	.max_xfer_size = member_size(ich10_spi_regs, fdata),
 };
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	slave->bus = bus;
-	slave->cs = cs;
-	slave->ctrlr = &spi_ctrlr;
-	return 0;
-}
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = 0,
+		.bus_end = 0,
+	},
+};
+
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

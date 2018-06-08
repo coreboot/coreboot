@@ -46,7 +46,7 @@ static void *smp_write_config_table(void *v)
 
 /* I/O APICs:	APIC ID	Version	State		Address*/
 	{
-		device_t dev;
+		struct device *dev;
 		struct resource *res;
 		u32 dword;
 

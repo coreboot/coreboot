@@ -50,7 +50,7 @@ static void reserve_ram_oops_dynamic(chromeos_acpi_t *chromeos)
 	set_ramoops(chromeos, ram_oops, size);
 }
 
-#if CONFIG_CHROMEOS_RAMOOPS_DYNAMIC
+#if IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS_DYNAMIC)
 static inline void set_global_chromeos_pointer(chromeos_acpi_t *chromeos) {}
 #else /* !CONFIG_CHROMEOS_RAMOOPS_DYNAMIC */
 

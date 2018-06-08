@@ -28,7 +28,7 @@ Device (SATA)
 		Name (_ADR, 0)
 
 		// Get Timing Mode
-		Method (_GTM)
+		Method (_GTM, 0, Serialized)
 		{
 			Name(PBUF, Buffer(20) {
 				0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,

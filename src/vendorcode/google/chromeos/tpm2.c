@@ -15,7 +15,7 @@
 
 #include <bootstate.h>
 #include <console/console.h>
-#include <tpm_lite/tlcl.h>
+#include <security/tpm/tss.h>
 #include <vb2_api.h>
 
 static void disable_platform_hierarchy(void *unused)

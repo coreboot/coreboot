@@ -147,14 +147,20 @@ static void cb_parse_acpi_gnvs(unsigned char *ptr, struct sysinfo_t *info)
 
 static void cb_parse_board_id(unsigned char *ptr, struct sysinfo_t *info)
 {
-	struct cb_board_id *const cbbid = (struct cb_board_id *)ptr;
-	info->board_id = cbbid->board_id;
+	struct cb_strapping_id *const cbbid = (struct cb_strapping_id *)ptr;
+	info->board_id = cbbid->id_code;
 }
 
 static void cb_parse_ram_code(unsigned char *ptr, struct sysinfo_t *info)
 {
-	struct cb_ram_code *const ram_code = (struct cb_ram_code *)ptr;
-	info->ram_code = ram_code->ram_code;
+	struct cb_strapping_id *const ram_code = (struct cb_strapping_id *)ptr;
+	info->ram_code = ram_code->id_code;
+}
+
+static void cb_parse_sku_id(unsigned char *ptr, struct sysinfo_t *info)
+{
+	struct cb_strapping_id *const sku_id = (struct cb_strapping_id *)ptr;
+	info->sku_id = sku_id->id_code;
 }
 
 #if IS_ENABLED(CONFIG_LP_NVRAM)
@@ -277,13 +283,10 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 
 	info->header = header;
 
-	/*
-	 * Board straps represented by numerical values are small numbers.
-	 * Preset them to an invalid value in case the firmware does not
-	 * supply the info.
-	 */
-	info->board_id = ~0;
-	info->ram_code = ~0;
+	/* Initialize IDs as undefined in case they don't show up in table. */
+	info->board_id = UNDEFINED_STRAPPING_ID;
+	info->ram_code = UNDEFINED_STRAPPING_ID;
+	info->sku_id = UNDEFINED_STRAPPING_ID;
 
 	/* Now, walk the tables. */
 	ptr += header->header_bytes;
@@ -383,6 +386,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_RAM_CODE:
 			cb_parse_ram_code(ptr, info);
+			break;
+		case CB_TAG_SKU_ID:
+			cb_parse_sku_id(ptr, info);
 			break;
 		case CB_TAG_WIFI_CALIBRATION:
 			cb_parse_wifi_calibration(ptr, info);

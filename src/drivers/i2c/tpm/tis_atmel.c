@@ -14,15 +14,16 @@
 
 #include <arch/early_variables.h>
 #include <stdint.h>
+#include <compiler.h>
 #include <string.h>
 #include <assert.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
 #include <delay.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <endian.h>
 #include <lib.h>
-#include <tpm.h>
+#include <security/tpm/tis.h>
 #include <timer.h>
 
 #define RECV_TIMEOUT            (1 * 1000)  /* 1 second */
@@ -33,7 +34,7 @@ struct tpm_output_header {
 	uint16_t tag;
 	uint32_t length;
 	uint32_t return_code;
-} __attribute__ ((packed));
+} __packed;
 
 int tis_open(void)
 {

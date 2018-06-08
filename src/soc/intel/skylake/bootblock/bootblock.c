@@ -14,13 +14,14 @@
  */
 
 #include <bootblock_common.h>
+#include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/gspi.h>
 #include <soc/bootblock.h>
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
 	/* Call lib/bootblock.c main */
-	bootblock_main_with_timestamp(base_timestamp);
+	bootblock_main_with_timestamp(base_timestamp, NULL, 0);
 }
 
 void bootblock_soc_early_init(void)
@@ -46,8 +47,7 @@ void bootblock_soc_init(void)
 	 * and abase, i2c programming and print platform info
 	 */
 	report_platform_info();
-	set_max_freq();
 	pch_early_init();
-	i2c_early_init();
+
 	gspi_early_bar_init();
 }

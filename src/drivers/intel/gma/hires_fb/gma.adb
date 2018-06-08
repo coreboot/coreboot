@@ -12,49 +12,48 @@ with GMA.Mainboard;
 package body GMA
 is
 
-   vbe_valid : boolean := false;
+   fb_valid : boolean := false;
 
    linear_fb_addr : word64;
 
    fb : Framebuffer_Type;
 
-   function vbe_mode_info_valid return Interfaces.C.int
-   is
-   begin
-      return (if vbe_valid then 1 else 0);
-   end vbe_mode_info_valid;
-
-   procedure fill_lb_framebuffer (framebuffer : out lb_framebuffer)
+   function fill_lb_framebuffer
+     (framebuffer : in out lb_framebuffer)
+      return Interfaces.C.int
    is
       use type word32;
+      use type Interfaces.C.int;
    begin
-      framebuffer :=
-        (tag                  =>  0,
-         size                 =>  0,
-         physical_address     => linear_fb_addr,
-         x_resolution         => word32 (fb.Width),
-         y_resolution         => word32 (fb.Height),
-         bytes_per_line       => 4 * word32 (fb.Stride),
-         bits_per_pixel       => 32,
-         reserved_mask_pos    => 24,
-         reserved_mask_size   =>  8,
-         red_mask_pos         => 16,
-         red_mask_size        =>  8,
-         green_mask_pos       =>  8,
-         green_mask_size      =>  8,
-         blue_mask_pos        =>  0,
-         blue_mask_size       =>  8);
+      if fb_valid then
+         framebuffer :=
+           (tag                  =>  0,
+            size                 =>  0,
+            physical_address     => linear_fb_addr,
+            x_resolution         => word32 (fb.Width),
+            y_resolution         => word32 (fb.Height),
+            bytes_per_line       => 4 * word32 (fb.Stride),
+            bits_per_pixel       => 32,
+            reserved_mask_pos    => 24,
+            reserved_mask_size   =>  8,
+            red_mask_pos         => 16,
+            red_mask_size        =>  8,
+            green_mask_pos       =>  8,
+            green_mask_size      =>  8,
+            blue_mask_pos        =>  0,
+            blue_mask_size       =>  8);
+         return 0;
+      else
+         return -1;
+      end if;
    end fill_lb_framebuffer;
 
    ----------------------------------------------------------------------------
 
-   procedure gfxinit
-     (mmio_base   : in     word64;
-      linear_fb   : in     word64;
-      phys_fb     : in     word32;
-      lightup_ok  :    out Interfaces.C.int)
+   procedure gfxinit (lightup_ok : out Interfaces.C.int)
    is
       use type pos32;
+      use type word64;
 
       ports : Port_List;
       configs : Pipe_Configs;
@@ -66,9 +65,7 @@ is
    begin
       lightup_ok := 0;
 
-      HW.GFX.GMA.Initialize
-        (MMIO_Base   => mmio_base,
-         Success     => success);
+      HW.GFX.GMA.Initialize (Success => success);
 
       if success then
          ports := Mainboard.ports;
@@ -82,12 +79,12 @@ is
                min_v := pos16'min (min_v, configs (i).Mode.V_Visible);
             end loop;
 
-            fb :=
-               (Width   => Width_Type (min_h),
-                Height  => Height_Type (min_v),
-                BPC     => 8,
-                Stride  => ((Width_Type (min_h) + 63) / 64) * 64,
-                Offset  => 0);
+            fb := configs (Primary).Framebuffer;
+            fb.Width    := Width_Type (min_h);
+            fb.Height   := Height_Type (min_v);
+            fb.Stride   := Div_Round_Up (fb.Width, 16) * 16;
+            fb.V_Stride := fb.Height;
+
             for i in Pipe_Index loop
                exit when configs (i).Port = Disabled;
 
@@ -96,15 +93,19 @@ is
 
             HW.GFX.GMA.Dump_Configs (configs);
 
-            HW.GFX.GMA.Setup_Default_GTT (fb, phys_fb);
-            HW.GFX.Framebuffer_Filler.Fill (linear_fb, fb);
+            HW.GFX.GMA.Setup_Default_FB
+              (FB       => fb,
+               Clear    => true,
+               Success  => success);
 
-            HW.GFX.GMA.Update_Outputs (configs);
+            if success then
+               HW.GFX.GMA.Update_Outputs (configs);
 
-            linear_fb_addr := linear_fb;
-            vbe_valid := true;
+               HW.GFX.GMA.Map_Linear_FB (linear_fb_addr, fb);
+               fb_valid := linear_fb_addr /= 0;
 
-            lightup_ok := 1;
+               lightup_ok := (if fb_valid then 1 else 0);
+            end if;
          end if;
       end if;
    end gfxinit;

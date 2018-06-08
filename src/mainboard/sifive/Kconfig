@@ -1,0 +1,16 @@
+if VENDOR_SIFIVE
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/sifive/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/sifive/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "SiFive"
+
+endif # VENDOR_SIFIVE

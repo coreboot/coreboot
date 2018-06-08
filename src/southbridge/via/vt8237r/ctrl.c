@@ -26,7 +26,7 @@
 static void vt8237_cfg(struct device *dev)
 {
 	u8 regm;
-	device_t devfun3;
+	struct device *devfun3;
 
 	devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
 				  PCI_DEVICE_ID_VIA_K8T800_DRAM, 0);
@@ -107,7 +107,7 @@ static void vt8237_cfg(struct device *dev)
 static void vt8237s_vlink_init(struct device *dev)
 {
 	u8 reg;
-	device_t devfun7;
+	struct device *devfun7;
 
 	devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
 				  PCI_DEVICE_ID_VIA_K8T800_NB_SB_CTR, 0);
@@ -182,7 +182,7 @@ static void vt8237s_vlink_init(struct device *dev)
 static void vt8237a_vlink_init(struct device *dev)
 {
 	u8 reg;
-	device_t devfun7;
+	struct device *devfun7;
 
 	devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
 				  PCI_DEVICE_ID_VIA_K8T800_NB_SB_CTR, 0);
@@ -276,8 +276,9 @@ static void ctrl_init(struct device *dev)
 	 * VT8237R specific configuration. Other SB are done in their own
 	 * directories. TODO: Add A version.
 	 */
-	device_t devsb = dev_find_device(PCI_VENDOR_ID_VIA,
-					 PCI_DEVICE_ID_VIA_VT8237S_LPC, 0);
+	struct device *devsb = dev_find_device(PCI_VENDOR_ID_VIA,
+					       PCI_DEVICE_ID_VIA_VT8237S_LPC,
+					       0);
 	if (devsb) {
 		vt8237s_vlink_init(dev);
 	}

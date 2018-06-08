@@ -17,6 +17,7 @@
 #include <spi-generic.h>
 #include <soc/dma.h>
 #include <stddef.h>
+#include <compiler.h>
 
 struct tegra_spi_regs {
 	u32 command1;		/* 0x000: SPI_COMMAND1 */
@@ -34,7 +35,7 @@ struct tegra_spi_regs {
 	u32 rsvd2[31];		/* 0x10c-0x187 reserved */
 	u32 rx_fifo;		/* 0x188: SPI_FIFO2 */
 	u32 spare_ctl;		/* 0x18c: SPI_SPARE_CTRL */
-} __attribute__((packed));
+} __packed;
 check_member(tegra_spi_regs, spare_ctl, 0x18c);
 
 enum spi_xfer_mode {

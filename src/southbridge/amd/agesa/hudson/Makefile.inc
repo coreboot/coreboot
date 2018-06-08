@@ -1,3 +1,7 @@
+
+CPPFLAGS_x86_32 += -I$(src)/southbridge/amd/agesa/hudson
+CPPFLAGS_x86_64 += -I$(src)/southbridge/amd/agesa/hudson
+
 romstage-y += smbus.c smbus_spd.c
 ramstage-y += hudson.c
 ramstage-y += usb.c
@@ -10,8 +14,6 @@ ramstage-y += pci.c
 ramstage-y += pcie.c
 ramstage-y += sd.c
 
-ramstage-y += agesawrapper.c
-
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 ramstage-y += reset.c
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
@@ -22,6 +24,7 @@ ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-y += resume.c ramtop.c
 
 romstage-y += ramtop.c
+postcar-y += ramtop.c
 
 romstage-y += imc.c
 ramstage-y += imc.c

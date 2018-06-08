@@ -219,7 +219,7 @@ MemNCmnGetSetFieldLN (
           LibAmdPciRead (AccessWidth32, PciAddr, &Value, &NBPtr->MemPtr->StdHeader);
           if ((FieldName != BFDctAddlDataReg) && (FieldName != BFDctAddlOffsetReg) &&
               (FieldName != BFDctExtraDataReg) && (FieldName != BFDctExtraOffsetReg)) {
-            IDS_HDT_CONSOLE (MEM_GETREG, "~Fn%d_%03x = %x\n", (Address >> 12) & 0xF, Address & 0xFFF, Value);
+            IDS_HDT_CONSOLE (MEM_GETREG, "~Fn%d_%03x = %x\n", (Address >> 12) & 0x7, Address & 0xFFF, Value);
           }
         } else if (Type == DCT_PHY_ACCESS) {
           if (IsPhyDirectAccess && (NumOfInstances > 1)) {
@@ -251,7 +251,7 @@ MemNCmnGetSetFieldLN (
             LibAmdPciWrite (AccessWidth32, PciAddr, &Value, &NBPtr->MemPtr->StdHeader);
             if ((FieldName != BFDctAddlDataReg) && (FieldName != BFDctAddlOffsetReg) &&
                 (FieldName != BFDctExtraDataReg) && (FieldName != BFDctExtraOffsetReg)) {
-              IDS_HDT_CONSOLE (MEM_SETREG, "~Fn%d_%03x [%d:%d] = %x\n", (Address >> 12) & 0xF, Address & 0xFFF, Highbit, Lowbit, Field);
+              IDS_HDT_CONSOLE (MEM_SETREG, "~Fn%d_%03x [%d:%d] = %x\n", (Address >> 12) & 0x7, Address & 0xFFF, Highbit, Lowbit, Field);
             }
           } else if (Type == DCT_PHY_ACCESS) {
             MemNSetBitFieldNb (NBPtr, BFDctAddlDataReg, Value);

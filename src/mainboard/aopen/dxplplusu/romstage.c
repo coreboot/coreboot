@@ -65,8 +65,8 @@ void mainboard_romstage_entry(unsigned long bist)
 		 * is lost. Only return addresses from main() and
 		 * scrub_ecc() are recovered to stack via xmm0-xmm3.
 		 */
-#if CONFIG_HW_SCRUBBER
-#if !CONFIG_USBDEBUG_IN_ROMSTAGE
+#if IS_ENABLED(CONFIG_HW_SCRUBBER)
+#if !IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE)
 		unsigned long ret_addr = (unsigned long)((unsigned long*)&bist - 1);
 		e7505_mch_scrub_ecc(ret_addr);
 #endif

@@ -20,7 +20,7 @@
 #include <device/pci_def.h>
 #include "pch.h"
 
-/* HCD_INDEX==2 selects 0:1a.0 (PCH_EHCI2), any other index
+/* HCD_INDEX == 2 selects 0:1a.0 (PCH_EHCI2), any other index
  * selects 0:1d.0 (PCH_EHCI1) for usbdebug use.
  */
 #if CONFIG_USBDEBUG_HCD_INDEX != 2

@@ -32,11 +32,11 @@
 #include <cpu/amd/powernow.h>
 #include "sb700.h"
 
-static void lpc_init(device_t dev)
+static void lpc_init(struct device *dev)
 {
 	u8 byte;
 	u32 dword;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	printk(BIOS_SPEW, "%s\n", __func__);
 
@@ -47,7 +47,7 @@ static void lpc_init(device_t dev)
 	pci_write_config32(sm_dev, 0x64, dword);
 
 	/* Initialize isa dma */
-#if CONFIG_SOUTHBRIDGE_AMD_SB700_SKIP_ISA_DMA_INIT
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700_SKIP_ISA_DMA_INIT)
 	printk(BIOS_DEBUG, "Skipping isa_dma_init() to avoid getting stuck.\n");
 #else
 	isa_dma_init();
@@ -68,7 +68,7 @@ static void lpc_init(device_t dev)
 	/* Disable LPC MSI Capability */
 	byte = pci_read_config8(dev, 0x78);
 	byte &= ~(1 << 1);
-#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 	/* Disable FlowContrl, Always service the request from Host
 	 * whenever there is a request from Host pending
 	 */
@@ -82,26 +82,7 @@ static void lpc_init(device_t dev)
 	setup_i8254(); /* Initialize i8254 timers */
 }
 
-#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
-int acpi_get_sleep_type(void)
-{
-	u16 tmp = inw(ACPI_PM1_CNT_BLK);
-	return ((tmp & (7 << 10)) >> 10);
-}
-
-void backup_top_of_ram(uint64_t ramtop)
-{
-	u32 dword = (u32) ramtop;
-	int nvram_pos = 0xfc, i;
-	for (i = 0; i < 4; i++) {
-		outb(nvram_pos, BIOSRAM_INDEX);
-		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
-		nvram_pos++;
-	}
-}
-#endif
-
-static void sb700_lpc_read_resources(device_t dev)
+static void sb700_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -148,7 +129,7 @@ static void sb700_lpc_set_resources(struct device *dev)
  * @param dev the device whose children's resources are to be enabled
  *
  */
-static void sb700_lpc_enable_childrens_resources(device_t dev)
+static void sb700_lpc_enable_childrens_resources(struct device *dev)
 {
 	struct bus *link;
 	u32 reg, reg_x;
@@ -160,86 +141,88 @@ static void sb700_lpc_enable_childrens_resources(device_t dev)
 	reg_x = pci_read_config32(dev, 0x48);
 
 	for (link = dev->link_list; link; link = link->next) {
-		device_t child;
+		struct device *child;
 		for (child = link->children; child;
 		     child = child->sibling) {
-			if (child->enabled
-			    && (child->path.type == DEVICE_PATH_PNP)) {
-				struct resource *res;
-				for (res = child->resource_list; res; res = res->next) {
-					u32 base, end;	/*  don't need long long */
-					if (!(res->flags & IORESOURCE_IO))
+			if (!(child->enabled
+				&& (child->path.type == DEVICE_PATH_PNP)))
+				continue;
+
+			struct resource *res;
+			for (res = child->resource_list; res; res = res->next) {
+				u32 base, end;	/*  don't need long long */
+				if (!(res->flags & IORESOURCE_IO))
+					continue;
+				base = res->base;
+				end = resource_end(res);
+				printk(BIOS_DEBUG, "sb700 lpc decode:%s,"
+					" base=0x%08x, end=0x%08x\n",
+					dev_path(child), base, end);
+				switch (base) {
+				case 0x60:	/*  KB */
+				case 0x64:	/*  MS */
+					reg |= (1 << 29);
+					break;
+				case 0x3f8:	/*  COM1 */
+					reg |= (1 << 6);
+					break;
+				case 0x2f8:	/*  COM2 */
+					reg |= (1 << 7);
+					break;
+				case 0x378:	/*  Parallel 1 */
+					reg |= (1 << 0);
+					reg |= (1 << 1); /* + 0x778 for ECP */
+					break;
+				case 0x3f0:	/*  FD0 */
+					reg |= (1 << 26);
+					break;
+				case 0x220:	/*  Audio 0 */
+					reg |= (1 << 8);
+					break;
+				case 0x300:	/*  Midi 0 */
+					reg |= (1 << 18);
+					break;
+				case 0x400:
+					reg_x |= (1 << 16);
+					break;
+				case 0x480:
+					reg_x |= (1 << 17);
+					break;
+				case 0x500:
+					reg_x |= (1 << 18);
+					break;
+				case 0x580:
+					reg_x |= (1 << 19);
+					break;
+				case 0x4700:
+					reg_x |= (1 << 22);
+					break;
+				case 0xfd60:
+					reg_x |= (1 << 23);
+					break;
+				default:
+					/* only 3 var ; compact them ? */
+					if (var_num >= 3)
 						continue;
-					base = res->base;
-					end = resource_end(res);
-					printk(BIOS_DEBUG, "sb700 lpc decode:%s, base=0x%08x, end=0x%08x\n",
-					     dev_path(child), base, end);
-					switch (base) {
-					case 0x60:	/*  KB */
-					case 0x64:	/*  MS */
-						reg |= (1 << 29);
+					switch (var_num) {
+					case 0:
+						reg_x |= (1 << 2);
+						if ((end - base) < 16)
+							wiosize |= (1 << 0);
 						break;
-					case 0x3f8:	/*  COM1 */
-						reg |= (1 << 6);
+					case 1:
+						reg_x |= (1 << 24);
+						if ((end - base) < 16)
+							wiosize |= (1 << 2);
 						break;
-					case 0x2f8:	/*  COM2 */
-						reg |= (1 << 7);
+					case 2:
+						reg_x |= (1 << 25);
+						reg_x |= (1 << 24);
+						if ((end - base) < 16)
+							wiosize |= (1 << 3);
 						break;
-					case 0x378:	/*  Parallel 1 */
-						reg |= (1 << 0);
-						reg |= (1 << 1); /* + 0x778 for ECP */
-						break;
-					case 0x3f0:	/*  FD0 */
-						reg |= (1 << 26);
-						break;
-					case 0x220:	/*  Audio 0 */
-						reg |= (1 << 8);
-						break;
-					case 0x300:	/*  Midi 0 */
-						reg |= (1 << 18);
-						break;
-					case 0x400:
-						reg_x |= (1 << 16);
-						break;
-					case 0x480:
-						reg_x |= (1 << 17);
-						break;
-					case 0x500:
-						reg_x |= (1 << 18);
-						break;
-					case 0x580:
-						reg_x |= (1 << 19);
-						break;
-					case 0x4700:
-						reg_x |= (1 << 22);
-						break;
-					case 0xfd60:
-						reg_x |= (1 << 23);
-						break;
-					default:
-						if (var_num >= 3)
-							continue;	/* only 3 var ; compact them ? */
-						switch (var_num) {
-						case 0:
-							reg_x |= (1 << 2);
-							if ((end - base) < 16)
-								wiosize |= (1 << 0);
-							break;
-						case 1:
-							reg_x |= (1 << 24);
-							if ((end - base) < 16)
-								wiosize |= (1 << 2);
-							break;
-						case 2:
-							reg_x |= (1 << 25);
-							reg_x |= (1 << 24);
-							if ((end - base) < 16)
-								wiosize |= (1 << 3);
-							break;
-						}
-						reg_var[var_num++] =
-						    base & 0xffff;
 					}
+					reg_var[var_num++] = base & 0xffff;
 				}
 			}
 		}
@@ -259,7 +242,7 @@ static void sb700_lpc_enable_childrens_resources(device_t dev)
 	pci_write_config8(dev, 0x74, wiosize);
 }
 
-static void sb700_lpc_enable_resources(device_t dev)
+static void sb700_lpc_enable_resources(struct device *dev)
 {
 	pci_dev_enable_resources(dev);
 	sb700_lpc_enable_childrens_resources(dev);
@@ -267,11 +250,12 @@ static void sb700_lpc_enable_resources(device_t dev)
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 
-static void southbridge_acpi_fill_ssdt_generator(device_t device) {
+static void southbridge_acpi_fill_ssdt_generator(struct device *device) {
 	amd_generate_powernow(ACPI_CPU_CONTROL, 6, 1);
 }
 
-static const char *lpc_acpi_name(struct device *dev) {
+static const char *lpc_acpi_name(const struct device *dev)
+{
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return NULL;
 

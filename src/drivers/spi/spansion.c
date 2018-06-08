@@ -64,17 +64,6 @@ struct spansion_spi_flash_params {
 	const char *name;
 };
 
-struct spansion_spi_flash {
-	struct spi_flash flash;
-	const struct spansion_spi_flash_params *params;
-};
-
-static inline
-struct spansion_spi_flash *to_spansion_spi_flash(const struct spi_flash *flash)
-{
-	return container_of(flash, struct spansion_spi_flash, flash);
-}
-
 /*
  * returns non-zero if the given idcode matches the ID of the chip. this is for
  * chips which use 2nd, 3rd, 4th, and 5th byte.
@@ -204,7 +193,6 @@ static const struct spansion_spi_flash_params spansion_spi_flash_table[] = {
 static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
 			const void *buf)
 {
-	struct spansion_spi_flash *spsn = to_spansion_spi_flash(flash);
 	unsigned long byte_addr;
 	unsigned long page_size;
 	size_t chunk_len;
@@ -212,19 +200,19 @@ static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
 	int ret = 0;
 	u8 cmd[4];
 
-	page_size = spsn->params->page_size;
+	page_size = flash->page_size;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		byte_addr = offset % page_size;
 		chunk_len = min(len - actual, page_size - byte_addr);
-		chunk_len = spi_crop_chunk(sizeof(cmd), chunk_len);
+		chunk_len = spi_crop_chunk(&flash->spi, sizeof(cmd), chunk_len);
 
 		cmd[0] = CMD_S25FLXX_PP;
 		cmd[1] = (offset >> 16) & 0xff;
 		cmd[2] = (offset >> 8) & 0xff;
 		cmd[3] = offset & 0xff;
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 		printk(BIOS_SPEW, "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
 		     " chunk_len = %zu\n",
 		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
@@ -250,7 +238,7 @@ static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
 		offset += chunk_len;
 	}
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 	printk(BIOS_SPEW, "SF: SPANSION: Successfully programmed %zu bytes @ 0x%x\n",
 	      len, offset);
 #endif
@@ -258,12 +246,17 @@ static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
 	return ret;
 }
 
-static struct spansion_spi_flash spsn_flash;
+static const struct spi_flash_ops spi_flash_ops = {
+	.write = spansion_write,
+	.erase = spi_flash_cmd_erase,
+	.read = spi_flash_cmd_read_slow,
+	.status = spi_flash_cmd_status,
+};
 
-struct spi_flash *spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode)
+int spi_flash_probe_spansion(const struct spi_slave *spi, u8 *idcode,
+				struct spi_flash *flash)
 {
 	const struct spansion_spi_flash_params *params;
-	struct spansion_spi_flash *spsn;
 	unsigned int i;
 
 	for (i = 0; i < ARRAY_SIZE(spansion_spi_flash_table); i++) {
@@ -276,23 +269,18 @@ struct spi_flash *spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode)
 		printk(BIOS_WARNING,
 		       "SF: Unsupported SPANSION ID %02x %02x %02x %02x %02x\n",
 		       idcode[0], idcode[1], idcode[2], idcode[3], idcode[4]);
-		return NULL;
+		return -1;
 	}
 
-	spsn = &spsn_flash;
+	memcpy(&flash->spi, spi, sizeof(*spi));
+	flash->name = params->name;
+	flash->page_size = params->page_size;
+	flash->sector_size = params->page_size * params->pages_per_sector;
+	flash->size = flash->sector_size * params->nr_sectors;
+	flash->erase_cmd = CMD_S25FLXX_SE;
+	flash->status_cmd = CMD_S25FLXX_RDSR;
 
-	spsn->params = params;
-	memcpy(&spsn->flash.spi, spi, sizeof(*spi));
-	spsn->flash.name = params->name;
+	flash->ops = &spi_flash_ops;
 
-	spsn->flash.internal_write = spansion_write;
-	spsn->flash.internal_erase = spi_flash_cmd_erase;
-	spsn->flash.internal_read = spi_flash_cmd_read_slow;
-	spsn->flash.internal_status = spi_flash_cmd_status;
-	spsn->flash.sector_size = params->page_size * params->pages_per_sector;
-	spsn->flash.size = spsn->flash.sector_size * params->nr_sectors;
-	spsn->flash.erase_cmd = CMD_S25FLXX_SE;
-	spsn->flash.status_cmd = CMD_S25FLXX_RDSR;
-
-	return &spsn->flash;
+	return 0;
 }

@@ -18,30 +18,20 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <arch/acpi.h>
 #include <arch/io.h>
-#include <delay.h>
-#include <string.h>
-#include <device/pci_def.h>
-#include <device/pci_ops.h>
-#include <device/pci_ids.h>
-#include <arch/io.h>
-#include <ec/lenovo/pmh7/pmh7.h>
 #include <ec/acpi/ec.h>
-#include <ec/lenovo/h8/h8.h>
 #include <northbridge/intel/nehalem/nehalem.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
 #include <pc80/mc146818rtc.h>
 #include "dock.h"
-#include <arch/x86/include/arch/acpigen.h>
 #include <drivers/intel/gma/int15.h>
-#include <arch/interrupt.h>
 #include <pc80/keyboard.h>
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
-#include <smbios.h>
-#include "drivers/lenovo/lenovo.h"
+#include <drivers/lenovo/lenovo.h>
+#include <arch/acpigen.h>
 
 static acpi_cstate_t cst_entries[] = {
 	{1, 1, 1000, {0x7f, 1, 2, {0}, 1, 0}},
@@ -55,7 +45,7 @@ int get_cst_entries(acpi_cstate_t ** entries)
 	return ARRAY_SIZE(cst_entries);
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	printk(BIOS_SPEW, "starting SPI configuration\n");
 
@@ -78,18 +68,17 @@ static void mainboard_init(device_t dev)
 	RCBA32(0x38b4) = 0x03040002;
 	RCBA32(0x38c8) = 0x00002005;
 	RCBA32(0x38c4) = 0x00802005;
-	RCBA32(0x38c0) = 0x00000007;
 	RCBA32(0x3804) = 0x3f04e008;
 
 	printk(BIOS_SPEW, "SPI configured\n");
 }
 
-static void fill_ssdt(device_t device)
+static void fill_ssdt(struct device *device)
 {
 	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 0);
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	u16 pmbase;
 
@@ -113,8 +102,9 @@ static void mainboard_enable(device_t dev)
 	if (acpi_is_wakeup_s3())
 		ec_write(0x0c, 0xc7);
 
-	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_LFP, 2);
-
+	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS,
+					GMA_INT15_PANEL_FIT_DEFAULT,
+					GMA_INT15_BOOT_DISPLAY_LFP, 2);
 }
 
 struct chip_operations mainboard_ops = {

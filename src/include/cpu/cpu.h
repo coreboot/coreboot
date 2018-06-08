@@ -10,7 +10,7 @@ void initialize_cpus(struct bus *cpu_bus);
 asmlinkage void secondary_cpu_init(unsigned int cpu_index);
 int cpu_phys_address_size(void);
 
-#define __cpu_driver __attribute__ ((used, __section__(".rodata.cpu_driver")))
+#define __cpu_driver __attribute__((used, __section__(".rodata.cpu_driver")))
 #ifndef __SIMPLE_DEVICE__
 /** start of compile time generated pci driver array */
 extern struct cpu_driver _cpu_drivers[];

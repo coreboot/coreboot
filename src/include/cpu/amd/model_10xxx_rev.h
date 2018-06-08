@@ -13,8 +13,13 @@
  * GNU General Public License for more details.
  */
 
+#ifndef __CPU_AMD_MODEL_10XXX_REV_H__
+#define __CPU_AMD_MODEL_10XXX_REV_H__
+
 #include <arch/cpu.h>
 
 int init_processor_name(void);
 
 /* place holder for Family 10 revision code */
+
+#endif /* __CPU_AMD_MODEL_10XXX_REV_H__ */

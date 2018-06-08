@@ -18,6 +18,7 @@
 #include <arch/acpi.h>
 #include <cbmem.h>
 #include <cbfs.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <fsp/memmap.h>
 #include <fsp/ramstage.h>
@@ -28,7 +29,7 @@
 #include <timestamp.h>
 
 /* SOC initialization after FSP silicon init */
-__attribute__((weak)) void soc_after_silicon_init(void)
+__weak void soc_after_silicon_init(void)
 {
 }
 
@@ -119,7 +120,7 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 	soc_silicon_init_params(&silicon_init_params);
 
 	/* Locate VBT and pass to FSP GOP */
-	if (IS_ENABLED(CONFIG_GOP_SUPPORT))
+	if (IS_ENABLED(CONFIG_RUN_FSP_GOP))
 		load_vbt(is_s3_wakeup, &silicon_init_params);
 	mainboard_silicon_init_params(&silicon_init_params);
 
@@ -141,7 +142,7 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 	printk(BIOS_DEBUG, "FspSiliconInit returned 0x%08x\n", status);
 
 	/* Mark graphics init done after SiliconInit if VBT was provided */
-#if IS_ENABLED(CONFIG_GOP_SUPPORT)
+#if IS_ENABLED(CONFIG_RUN_FSP_GOP)
 	/* GraphicsConfigPtr doesn't exist in Quark X1000's FSP, so this needs
 	 * to be #if'd out instead of using if (). */
 	if (silicon_init_params.GraphicsConfigPtr)
@@ -215,13 +216,13 @@ void intel_silicon_init(void)
 }
 
 /* Initialize the UPD parameters for SiliconInit */
-__attribute__((weak)) void mainboard_silicon_init_params(
+__weak void mainboard_silicon_init_params(
 	SILICON_INIT_UPD *params)
 {
 };
 
 /* Display the UPD parameters for SiliconInit */
-__attribute__((weak)) void soc_display_silicon_init_params(
+__weak void soc_display_silicon_init_params(
 	const SILICON_INIT_UPD *old, SILICON_INIT_UPD *new)
 {
 	printk(BIOS_SPEW, "UPD values for SiliconInit:\n");
@@ -229,6 +230,6 @@ __attribute__((weak)) void soc_display_silicon_init_params(
 }
 
 /* Initialize the UPD parameters for SiliconInit */
-__attribute__((weak)) void soc_silicon_init_params(SILICON_INIT_UPD *params)
+__weak void soc_silicon_init_params(SILICON_INIT_UPD *params)
 {
 }

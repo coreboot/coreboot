@@ -48,15 +48,10 @@ static void execute_command(void)
 
 void spi_init()
 {
-	device_t dev;
+	struct device *dev;
 
 	dev = dev_find_slot(0, PCI_DEVFN(0x14, 3));
 	spibar = pci_read_config32(dev, 0xA0) & ~0x1F;
-}
-
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
-{
-	return min(AMD_SB_SPI_TX_LEN - cmd_len, buf_len);
 }
 
 static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
@@ -156,15 +151,24 @@ int chipset_volatile_group_end(const struct spi_flash *flash)
 	return 0;
 }
 
+static int xfer_vectors(const struct spi_slave *slave,
+			struct spi_op vectors[], size_t count)
+{
+	return spi_flash_vector_helper(slave, vectors, count, spi_ctrlr_xfer);
+}
+
 static const struct spi_ctrlr spi_ctrlr = {
-	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
+	.xfer_vector = xfer_vectors,
+	.max_xfer_size = AMD_SB_SPI_TX_LEN,
+	.flags = SPI_CNTRLR_DEDUCT_CMD_LEN,
 };
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	slave->bus = bus;
-	slave->cs = cs;
-	slave->ctrlr = &spi_ctrlr;
-	return 0;
-}
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = 0,
+		.bus_end = 0,
+	},
+};
+
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

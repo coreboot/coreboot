@@ -43,10 +43,6 @@ cbfs-files-$(CONFIG_VGA_BIOS) += pci$(stripped_vgabios_id).rom
 pci$(stripped_vgabios_id).rom-file := $(call strip_quotes,$(CONFIG_VGA_BIOS_FILE))
 pci$(stripped_vgabios_id).rom-type := optionrom
 
-cbfs-files-$(CONFIG_INTEL_MBI) += mbi.bin
-mbi.bin-file := $(call strip_quotes,$(CONFIG_MBI_FILE))
-mbi.bin-type := mbi
-
 ###############################################################################
 # common support for early assembly includes
 ###############################################################################
@@ -96,9 +92,11 @@ ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32)$(CONFIG_ARCH_BOOTBLOCK_X86_64),y)
 
 bootblock-y += boot.c
 bootblock-y += cpu_common.c
+bootblock-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
+bootblock-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 bootblock-y += memcpy.c
 bootblock-y += memset.c
-bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+bootblock-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 bootblock-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 
 bootblock-y += id.S
@@ -173,6 +171,9 @@ endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32)$(CONFIG_ARCH_VERSTAGE_X86_64),y)
 
 verstage-y += boot.c
+verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += gdt_init.S
+verstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
+verstage-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 
 verstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += cpu_common.c
 verstage-y += memset.c
@@ -184,7 +185,7 @@ verstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 # which just calls verstage().
 verstage-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += verstage.c
 
-verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+verstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 
 verstage-libs ?=
 
@@ -206,15 +207,21 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
 romstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 romstage-y += boot.c
+# gdt_init.S is included by entry32.inc when romstage is the first C
+# environment.
+romstage-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += gdt_init.S
 romstage-y += cbmem.c
 romstage-y += cbfs_and_run.c
 romstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += cpu_common.c
+romstage-$(CONFIG_EARLY_EBDA_INIT) += ebda.c
+romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
+romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 romstage-y += memcpy.c
 romstage-y += memmove.c
 romstage-y += memset.c
 romstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 romstage-y += postcar_loader.c
-romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+romstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 
 ifneq ($(CONFIG_ROMCC),y)
 
@@ -278,9 +285,15 @@ endif # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
 $(eval $(call create_class_compiler,postcar,x86_32))
 postcar-generic-ccopts += -D__POSTCAR__
 
+postcar-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 postcar-y += boot.c
+postcar-y += gdt_init.S
 postcar-y += cbfs_and_run.c
+postcar-y += cbmem.c
 postcar-y += cpu_common.c
+postcar-$(CONFIG_EARLY_EBDA_INIT) += ebda.c
+postcar-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
+postcar-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 postcar-y += exit_car.S
 postcar-y += memcpy.c
 postcar-y += memmove.c
@@ -288,7 +301,7 @@ postcar-y += memset.c
 postcar-y += memlayout.ld
 postcar-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 postcar-y += postcar.c
-postcar-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+postcar-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 
 LDFLAGS_postcar += -Map $(objcbfs)/postcar.map
 
@@ -315,6 +328,7 @@ ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpigen.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpigen_dsm.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi_device.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi_pld.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 ramstage-y += boot.c
 ramstage-y += c_start.S
@@ -323,6 +337,7 @@ ramstage-y += cpu.c
 ramstage-y += cpu_common.c
 ramstage-y += ebda.c
 ramstage-y += exception.c
+ramstage-y += idt.S
 ramstage-y += gdt.c
 ramstage-$(CONFIG_IOAPIC) += ioapic.c
 ramstage-y += memcpy.c
@@ -332,16 +347,18 @@ ramstage-y += memset.c
 ramstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 ramstage-$(CONFIG_GENERATE_MP_TABLE) += mpspec.c
 ramstage-y += pci_ops_conf1.c
-ramstage-$(CONFIG_MMCONF_SUPPORT) += pci_ops_mmconf.c
+ramstage-$(CONFIG_NO_MMCONF_SUPPORT) += pci_ops.c
 ramstage-$(CONFIG_GENERATE_PIRQ_TABLE) += pirq_routing.c
 ramstage-y += rdrand.c
 ramstage-$(CONFIG_GENERATE_SMBIOS_TABLES) += smbios.c
 ramstage-y += tables.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S
-ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+ramstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.S
 
+smm-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
+smm-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 smm-y += memcpy.c
 smm-y += memmove.c
 smm-y += memset.c

@@ -33,10 +33,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select UDELAY_LAPIC
 	select BOARD_ROMSIZE_KB_1024
 	select CHANNEL_XOR_RANDOMIZATION
-	select VGA
-	select MAINBOARD_HAS_NATIVE_VGA_INIT
-	select MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
 	select INTEL_INT15
+	select I945_LVDS
 
 config MAINBOARD_DIR
 	string
@@ -45,10 +43,6 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	string
 	default "P470"
-
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf0000000
 
 config IRQ_SLOT_COUNT
 	int

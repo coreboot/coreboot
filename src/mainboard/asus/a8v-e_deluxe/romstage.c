@@ -37,6 +37,7 @@ unsigned int get_sbdn(unsigned bus);
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627ehg/w83627ehg.h>
 #include <southbridge/via/vt8237r/vt8237r.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include <spd.h>
@@ -55,7 +56,7 @@ int spd_read_byte(unsigned int device, unsigned int address)
 }
 
 #include <reset.h>
-void soft_reset(void)
+void do_soft_reset(void)
 {
 	uint8_t tmp;
 
@@ -93,7 +94,7 @@ static void sio_init(void)
 {
 	u8 reg;
 
-	pnp_enter_ext_func_mode(SERIAL_DEV);
+	pnp_enter_conf_state(SERIAL_DEV);
 	/* We have 24MHz input. */
 	reg = pnp_read_config(SERIAL_DEV, 0x24);
 	pnp_write_config(SERIAL_DEV, 0x24, (reg & ~0x40));
@@ -103,9 +104,9 @@ static void sio_init(void)
 	/* We have all RESTOUT and even some reserved bits, too. */
 	reg = pnp_read_config(SERIAL_DEV, 0x2c);
 	pnp_write_config(SERIAL_DEV, 0x2c, (reg | 0xf0));
-	pnp_exit_ext_func_mode(SERIAL_DEV);
+	pnp_exit_conf_state(SERIAL_DEV);
 
-	pnp_enter_ext_func_mode(ACPI_DEV);
+	pnp_enter_conf_state(ACPI_DEV);
 	pnp_set_logical_device(ACPI_DEV);
 	/*
 	 * Set the delay rising time from PWROK_LP to PWROK_ST to
@@ -116,9 +117,9 @@ static void sio_init(void)
 	/* 1 Use external suspend clock source 32.768KHz. Undocumented?? */
 	reg = pnp_read_config(ACPI_DEV, 0xe4);
 	pnp_write_config(ACPI_DEV, 0xe4, (reg | 0x10));
-	pnp_exit_ext_func_mode(ACPI_DEV);
+	pnp_exit_conf_state(ACPI_DEV);
 
-	pnp_enter_ext_func_mode(GPIO_DEV);
+	pnp_enter_conf_state(GPIO_DEV);
 	pnp_set_logical_device(GPIO_DEV);
 	/* Set memory voltage to 2.75V, vcore offset + 100mV, 1.5V chipset voltage. */
 	pnp_write_config(GPIO_DEV, 0x30, 0x09);	/* Enable GPIO 2 & GPIO 5. */
@@ -128,7 +129,7 @@ static void sio_init(void)
 	pnp_write_config(GPIO_DEV, 0xe0, 0xde);	/* 1101 1110, 0 = output 1 = input */
 	pnp_write_config(GPIO_DEV, 0xe1, 0x01);	/* Set output val. */
 	pnp_write_config(GPIO_DEV, 0xe4, 0xb4);	/* Set output val (1011 0100). */
-	pnp_exit_ext_func_mode(GPIO_DEV);
+	pnp_exit_conf_state(GPIO_DEV);
 }
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
@@ -173,7 +174,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	printk(BIOS_INFO, "now booting... Core0 started\n");
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	/* It is said that we should start core1 after all core0 launched. */
 	start_other_cores();
 	wait_all_other_cores_started(bsp_apicid);
@@ -202,5 +203,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	enable_smbus();
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
-	post_cache_as_ram();
 }

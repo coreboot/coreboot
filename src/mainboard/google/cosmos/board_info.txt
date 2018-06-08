@@ -1,5 +1,0 @@
-Vendor name: Google
-Board name: Cosmos Marvell BG4CD reference board
-Category: eval
-ROM protocol: SPI
-ROM socketed: n

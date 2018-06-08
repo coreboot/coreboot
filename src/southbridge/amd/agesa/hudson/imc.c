@@ -35,7 +35,7 @@ void imc_reg_init(void)
 	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x03, 0xff);
 	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x04, 0xff);
 
-#if !CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE
+#if !IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE)
 	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x10, 0x06);
 	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x11, 0x06);
 	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x12, 0xf7);
@@ -43,7 +43,7 @@ void imc_reg_init(void)
 	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x14, 0xff);
 #endif
 
-#if CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE)
 	UINT8 PciData;
 	PCI_ADDR PciAddress;
 	AMD_CONFIG_PARAMS StdHeader;
@@ -60,7 +60,7 @@ void enable_imc_thermal_zone(void)
 {
 	AMD_CONFIG_PARAMS StdHeader;
 	UINT8 FunNum;
-	UINT8 regs[9];
+	UINT8 regs[10];
 	int i;
 
 	regs[0] = 0;
@@ -71,7 +71,7 @@ void enable_imc_thermal_zone(void)
 	WriteECmsg(MSG_SYS_TO_IMC, AccessWidth8, &FunNum, &StdHeader);     // function number
 	WaitForEcLDN9MailboxCmdAck(&StdHeader);
 
-	for (i = 2; i <= 9; i++)
+	for (i = 2; i < ARRAY_SIZE(regs); i++)
 		ReadECmsg(MSG_REG0 + i, AccessWidth8, &regs[i], &StdHeader);
 
 	/* enable thermal zone 0 */
@@ -79,7 +79,7 @@ void enable_imc_thermal_zone(void)
 	regs[0] = 0;
 	regs[1] = 0;
 	FunNum = Fun_81;
-	for (i = 0; i <= 9; i++)
+	for (i = 0; i < ARRAY_SIZE(regs); i++)
 		WriteECmsg(MSG_REG0 + i, AccessWidth8, &regs[i], &StdHeader);
 	WriteECmsg(MSG_SYS_TO_IMC, AccessWidth8, &FunNum, &StdHeader);     // function number
 	WaitForEcLDN9MailboxCmdAck(&StdHeader);

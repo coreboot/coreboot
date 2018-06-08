@@ -84,8 +84,10 @@ static int ns16550_tst_byte(void)
 static unsigned char ns16550_rx_byte(void)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
-	while (i-- && !ns16550_tst_byte())
+	while (i && !ns16550_tst_byte()) {
 		udelay(1);
+		i--;
+	}
 	if (i)
 		return read32(&regs->rbr);
 	else
@@ -118,7 +120,7 @@ void uart_fill_lb(void *data)
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial.baseaddr = (uintptr_t)regs;
-	serial.baud = default_baudrate();
+	serial.baud = get_uart_baudrate();
 	serial.regwidth = 4;
 	lb_add_serial(&serial, data);
 

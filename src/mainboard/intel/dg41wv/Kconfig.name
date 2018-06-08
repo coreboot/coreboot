@@ -1,0 +1,2 @@
+config BOARD_INTEL_DG41WV
+	bool "DG41WV"

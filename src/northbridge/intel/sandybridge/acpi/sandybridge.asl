@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2009 coresystems GmbH
+ * Copyright (C) 2017-2018 Patrick Rudolph <siro@das-labor.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -16,6 +17,7 @@
 
 #include "../sandybridge.h"
 #include "hostbridge.asl"
+#include "peg.asl"
 
 /* PCI Device Resource Consumption */
 Device (PDRC)
@@ -33,7 +35,7 @@ Device (PDRC)
 		Memory32Fixed(ReadWrite, 0xfed40000, 0x00005000) // Misc ICH
 		Memory32Fixed(ReadWrite, 0xfed45000, 0x0004b000) // Misc ICH
 
-#if CONFIG_CHROMEOS_RAMOOPS
+#if IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS)
 		Memory32Fixed(ReadWrite, CONFIG_CHROMEOS_RAMOOPS_RAM_START,
 					 CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE)
 #endif

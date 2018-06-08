@@ -131,7 +131,7 @@ Device (SDMA)
 	Name (RBUF, ResourceTemplate ()
 	{
 		Memory32Fixed (ReadWrite, 0x00000000, 0x00000000, BAR0)
-		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , , ) {7}
+		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , ,) {7}
 	})
 
 	Method (_CRS, 0, NotSerialized)
@@ -172,7 +172,7 @@ Device (I2C0)
 	Name (RBUF, ResourceTemplate ()
 	{
 		Memory32Fixed (ReadWrite, 0x00000000, 0x00000000, BAR0)
-		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , , ) {7}
+		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , ,) {7}
 	})
 
 	// DMA channels are only used if Serial IO DMA controller is enabled
@@ -254,7 +254,7 @@ Device (I2C1)
 	Name (RBUF, ResourceTemplate ()
 	{
 		Memory32Fixed (ReadWrite, 0x00000000, 0x00000000, BAR0)
-		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , , ) {7}
+		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , ,) {7}
 	})
 
 	// DMA channels are only used if Serial IO DMA controller is enabled
@@ -333,7 +333,7 @@ Device (SPI0)
 	Name (RBUF, ResourceTemplate ()
 	{
 		Memory32Fixed (ReadWrite, 0x00000000, 0x00000000, BAR0)
-		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , , ) {7}
+		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , ,) {7}
 	})
 
 	Method (_CRS, 0, NotSerialized)
@@ -371,7 +371,7 @@ Device (SPI1)
 	Name (RBUF, ResourceTemplate ()
 	{
 		Memory32Fixed (ReadWrite, 0x00000000, 0x00000000, BAR0)
-		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , , ) {7}
+		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , ,) {7}
 	})
 
 	// DMA channels are only used if Serial IO DMA controller is enabled
@@ -422,7 +422,7 @@ Device (UAR0)
 	Name (RBUF, ResourceTemplate ()
 	{
 		Memory32Fixed (ReadWrite, 0x00000000, 0x00000000, BAR0)
-		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , , ) {13}
+		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , ,) {13}
 	})
 
 	// DMA channels are only used if Serial IO DMA controller is enabled
@@ -473,7 +473,7 @@ Device (UAR1)
 	Name (RBUF, ResourceTemplate ()
 	{
 		Memory32Fixed (ReadWrite, 0x00000000, 0x00000000, BAR0)
-		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , , ) {13}
+		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , ,) {13}
 	})
 
 	Method (_CRS, 0, NotSerialized)
@@ -511,7 +511,7 @@ Device (SDIO)
 	Name (RBUF, ResourceTemplate ()
 	{
 		Memory32Fixed (ReadWrite, 0x00000000, 0x00000000, BAR0)
-		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , , ) {5}
+		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , ,) {5}
 	})
 
 	Method (_CRS, 0, NotSerialized)
@@ -560,7 +560,7 @@ Device (GPIO)
 			,            // ResourceSource
 			BAR0)
 		Interrupt (ResourceConsumer,
-			Level, ActiveHigh, Shared, , , ) {14}
+			Level, ActiveHigh, Shared, , ,) {14}
 	})
 
 	Method (_CRS, 0, NotSerialized)

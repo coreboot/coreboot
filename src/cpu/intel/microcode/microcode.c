@@ -24,6 +24,7 @@
 #else
 #include <arch/cbfs.h>
 #endif
+#include <compiler.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/microcode.h>
@@ -209,7 +210,7 @@ void intel_update_microcode_from_cbfs(void)
 }
 
 #if ENV_RAMSTAGE
-__attribute__((weak)) int soc_skip_ucode_update(u32 currrent_patch_id,
+__weak int soc_skip_ucode_update(u32 currrent_patch_id,
 	u32 new_patch_id)
 {
 	return 0;

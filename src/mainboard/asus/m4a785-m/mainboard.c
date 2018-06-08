@@ -41,7 +41,7 @@ void set_pcie_dereset()
 {
 	u8 byte;
 	u16 word;
-	device_t sm_dev;
+	struct device *sm_dev;
 	/* set 0 to bit1 :disable GPM9 as SLP_S2 output */
 	/* set 0 to bit2 :disable GPM8 as AZ_RST output */
 	byte = pm_ioread(0x8d);
@@ -66,7 +66,7 @@ void set_pcie_reset()
 {
 	u8 byte;
 	u16 word;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	/* set 0 to bit1 :disable GPM9 as SLP_S2 output */
 	/* set 0 to bit2 :disable GPM8 as AZ_RST output */
@@ -96,7 +96,7 @@ void set_pcie_reset()
 u8 is_dev3_present(void)
 {
 	u16 word;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	/* access the smbus extended register */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
@@ -125,7 +125,7 @@ static void set_thermal_config(void)
 {
 	u8 byte;
 	u16 word;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	/* set ADT 7461 */
 	ADT7461_write_byte(0x0B, 0x50);	/* Local Temperature Hight limit */
@@ -186,7 +186,7 @@ static void set_thermal_config(void)
 * enable the dedicated function in this board.
 * This function called early than rs780_enable.
 *************************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard enable. dev=0x%p\n", dev);
 

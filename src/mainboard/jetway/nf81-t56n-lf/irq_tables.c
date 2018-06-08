@@ -15,7 +15,6 @@
 
 #include <arch/pirq_routing.h>
 #include <console/console.h>
-#include <cpu/amd/amdfam14.h>
 #include <device/pci_def.h>
 #include <string.h>
 #include <stdint.h>

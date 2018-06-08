@@ -72,7 +72,7 @@
 #define SMBUS_IO_BASE		0x0400
 #define SMBUS_SLAVE_ADDR	0x24
 
-#if CONFIG_INTEL_LYNXPOINT_LP
+#if IS_ENABLED(CONFIG_INTEL_LYNXPOINT_LP)
 #define DEFAULT_PMBASE		0x1000
 #define DEFAULT_GPIOBASE	0x1400
 #define DEFAULT_GPIOSIZE	0x400
@@ -91,7 +91,7 @@
 
 #ifndef __ACPI__
 
-#if defined (__SMM__) && !defined(__ASSEMBLER__)
+#if defined(__SMM__) && !defined(__ASSEMBLER__)
 void intel_pch_finalize_smm(void);
 void usb_ehci_sleep_prepare(device_t dev, u8 slp_typ);
 void usb_ehci_disable(device_t dev);
@@ -172,6 +172,9 @@ void disable_all_gpe(void);
 void enable_gpe(u32 mask);
 void disable_gpe(u32 mask);
 
+/* Return non-zero when RTC failure happened. */
+int rtc_failure(void);
+
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
 #include <device/device.h>
 #include <arch/acpi.h>
@@ -181,7 +184,7 @@ void pch_disable_devfn(device_t dev);
 u32 pch_iobp_read(u32 address);
 void pch_iobp_write(u32 address, u32 data);
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
-#if CONFIG_ELOG
+#if IS_ENABLED(CONFIG_ELOG)
 void pch_log_state(void);
 #endif
 void acpi_create_intel_hpet(acpi_hpet_t * hpet);
@@ -242,7 +245,7 @@ void pch_enable_lpc(void);
 #define GEN_PMCON_2		0xa2
 #define GEN_PMCON_3		0xa4
 #define PMIR			0xac
-#define  PMIR_CF9LOCK		(1 << 31)
+#define  PMIR_CF9LOCK		(1UL << 31)
 #define  PMIR_CF9GR		(1 << 20)
 
 /* GEN_PMCON_3 bits */
@@ -279,6 +282,8 @@ void pch_enable_lpc(void);
 #define  LPT_LPC_EN		(1 << 2)  /* LPC_IO_DEC[9:8] */
 #define  COMB_LPC_EN		(1 << 1)  /* LPC_IO_DEC[6:4] */
 #define  COMA_LPC_EN		(1 << 0)  /* LPC_IO_DEC[2:0] */
+#define LPC_IBDF		0x6C /* I/O APIC bus/dev/fn */
+#define LPC_HnBDF(n)		(0x70 + n * 2) /* HPET n bus/dev/fn */
 #define LPC_GEN1_DEC		0x84 /* LPC IF Generic Decode Range 1 */
 #define LPC_GEN2_DEC		0x88 /* LPC IF Generic Decode Range 2 */
 #define LPC_GEN3_DEC		0x8c /* LPC IF Generic Decode Range 3 */
@@ -389,7 +394,7 @@ void pch_enable_lpc(void);
 #define  XHCI_USB3_PORTSC_WRC	(1 << 19)	/* Warm Reset Complete */
 #define  XHCI_USB3_PORTSC_LWS  	(1 << 16)	/* Link Write Strobe */
 #define  XHCI_USB3_PORTSC_PED 	(1 << 1)	/* Port Enabled/Disabled */
-#define  XHCI_USB3_PORTSC_WPR	(1 << 31)	/* Warm Port Reset */
+#define  XHCI_USB3_PORTSC_WPR	(1UL << 31)	/* Warm Port Reset */
 #define  XHCI_USB3_PORTSC_PLS	(0xf << 5)	/* Port Link State */
 #define   XHCI_PLSR_DISABLED	(4 << 5)	/* Port is disabled */
 #define   XHCI_PLSR_RXDETECT	(5 << 5)	/* Port is disconnected */
@@ -473,22 +478,6 @@ void pch_enable_lpc(void);
 #define SMB_SMI_EN		(1 << 1)
 #define HST_EN			(1 << 0)
 
-/* SMBus I/O bits. */
-#define SMBHSTSTAT		0x0
-#define SMBHSTCTL		0x2
-#define SMBHSTCMD		0x3
-#define SMBXMITADD		0x4
-#define SMBHSTDAT0		0x5
-#define SMBHSTDAT1		0x6
-#define SMBBLKDAT		0x7
-#define SMBTRNSADD		0x9
-#define SMBSLVDATA		0xa
-#define SMLINK_PIN_CTL		0xe
-#define SMBUS_PIN_CTL		0xf
-
-#define SMBUS_TIMEOUT		(10 * 1000 * 100)
-
-
 /* Southbridge IO BARs */
 
 #define GPIOBASE		0x48
@@ -547,7 +536,7 @@ void pch_enable_lpc(void);
 #define RPFN		0x0404	/* 32bit */
 
 /* Root Port configuratinon space hide */
-#define RPFN_HIDE(port)         (1 << (((port) * 4) + 3))
+#define RPFN_HIDE(port)         (1UL << (((port) * 4) + 3))
 /* Get the function number assigned to a Root Port */
 #define RPFN_FNGET(reg,port)    (((reg) >> ((port) * 4)) & 7)
 /* Set the function number for a Root Port */
@@ -682,6 +671,11 @@ void pch_enable_lpc(void);
 #define PCH_DISABLE_MEI2	(1 << 2)
 #define PCH_DISABLE_MEI1	(1 << 1)
 #define PCH_ENABLE_DBDF		(1 << 0)
+
+#define PCH_IOAPIC_PCI_BUS	250
+#define PCH_IOAPIC_PCI_SLOT	31
+#define PCH_HPET_PCI_BUS	250
+#define PCH_HPET_PCI_SLOT	15
 
 /* ICH7 PMBASE */
 #define PM1_STS		0x00

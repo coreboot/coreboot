@@ -69,7 +69,7 @@ static const uint32_t hdmi_codec_verb_table[] = {
 	0x20671f58,
 };
 
-static void hda_init(device_t dev)
+static void hda_init(struct device *dev)
 {
 	struct resource *res;
 	int codec_mask;

@@ -44,3 +44,6 @@ Scope (\_SB.PCI0.RP01)
 }
 
 #include <variant/acpi/mainboard.asl>
+
+/* USB port entries */
+#include <variant/acpi/usb.asl>

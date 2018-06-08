@@ -17,7 +17,6 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <arch/ioapic.h>
-#include <cpu/amd/amdfam15.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

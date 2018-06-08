@@ -17,9 +17,13 @@
 #ifndef _SOC_PM_H_
 #define _SOC_PM_H_
 
+#include <compiler.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <soc/gpe.h>
+#include <soc/iomap.h>
 #include <soc/pmc.h>
+#include <soc/smbus.h>
 
 /* ACPI_BASE_ADDRESS / PMBASE */
 
@@ -51,7 +55,7 @@
 #define  INTEL_USB2_EN		(1 << 18)
 #define  LEGACY_USB2_EN		(1 << 17)
 #define  PERIODIC_EN		(1 << 14)
-#define  TCO_EN			(1 << 13)
+#define  TCO_SMI_EN		(1 << 13)
 #define  MCSMI_EN		(1 << 11)
 #define  BIOS_RLS		(1 <<  7)
 #define  SWSMI_TMR_EN		(1 <<  6)
@@ -102,6 +106,7 @@
 #define  GPE_63_32		1	/* 0x84/0x94 = GPE[63:32] */
 #define  GPE_95_64		2	/* 0x88/0x98 = GPE[95:64] */
 #define  GPE_STD		3	/* 0x8c/0x9c = Standard GPE */
+#define GPE_STS_RSVD            GPE_STD
 #define   WADT_STS		(1 << 18)
 #define   LAN_WAK_STS		(1 << 16)
 #define   GPIO_T2_STS		(1 << 15)
@@ -131,9 +136,25 @@
 
 #define GBLRST_CAUSE0_THERMTRIP	(1 << 5)
 
-#define MAINBOARD_POWER_OFF	0
-#define MAINBOARD_POWER_ON	1
-#define MAINBOARD_POWER_KEEP	2
+/*
+ * Enable SMI generation:
+ *  - on APMC writes (io 0xb2)
+ *  - on writes to SLP_EN (sleep states)
+ *  - on writes to GBL_RLS (bios commands)
+ *  - on eSPI events (does nothing on LPC systems)
+ * No SMIs:
+ *  - on microcontroller writes (io 0x62/0x66)
+ *  - on TCO events
+ */
+#define ENABLE_SMI_PARAMS \
+	(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | ESPI_SMI_EN | EOS)
+
+/* This is defined as ETR3 in EDS. We named it as ETR here for consistency */
+#define ETR		0xac
+#define  CF9_LOCK	(1 << 31)
+#define  CF9_GLB_RST	(1 << 20)
+
+#define PRSTS		0x10
 
 struct chipset_power_state {
 	uint16_t pm1_sts;
@@ -147,48 +168,30 @@ struct chipset_power_state {
 	uint32_t gen_pmcon_b;
 	uint32_t gblrst_cause[2];
 	uint32_t prev_sleep_state;
-} __attribute__ ((packed));
+} __packed;
 
+/*
+ * This is used only in FSP1_1 as we wanted to keep the flow unchanged.
+ * Internally fill_power_state calls the new pmc_fill_power_state now
+ */
+#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
 struct chipset_power_state *fill_power_state(void);
-
-/* PM1_CNT */
-void enable_pm1_control(uint32_t mask);
-void disable_pm1_control(uint32_t mask);
-
-/* PM1 */
-uint16_t clear_pm1_status(void);
-void enable_pm1(uint16_t events);
-uint32_t clear_smi_status(void);
-
-/* SMI */
-void enable_smi(uint32_t mask);
-void disable_smi(uint32_t mask);
-
-/* TCO */
-uint32_t clear_tco_status(void);
-void enable_tco_sci(void);
-
-/* GPE0 */
-uint32_t clear_gpe_status(void);
-void clear_gpe_enable(void);
-void enable_all_gpe(uint32_t set1, uint32_t set2, uint32_t set3, uint32_t set4);
-void disable_all_gpe(void);
-void enable_gpe(uint32_t mask);
-void disable_gpe(uint32_t mask);
+#endif
 
 /* Return the selected ACPI SCI IRQ */
 int acpi_sci_irq(void);
 
 /* Get base address PMC memory mapped registers. */
 uint8_t *pmc_mmio_regs(void);
+
 /* Get base address of TCO I/O registers. */
 uint16_t smbus_tco_regs(void);
 
 /* Set the DISB after DRAM init */
 void pmc_set_disb(void);
 
-/* Initialize GPEs */
-void pmc_gpe_init(void);
+/* Return non-zero when RTC failure happened. */
+int rtc_failure(void);
 
 static inline int deep_s3_enabled(void)
 {

@@ -72,7 +72,7 @@ static int via_cn700_int15_handler(void)
 	return res;
 }
 
-static void vga_init(device_t dev)
+static void vga_init(struct device *dev)
 {
 	u8 reg8;
 

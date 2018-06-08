@@ -18,15 +18,17 @@
 #define _SOC_SMM_H_
 
 #include <stdint.h>
+#include <compiler.h>
 #include <cpu/x86/msr.h>
 #include <fsp/memmap.h>
+#include <intelblocks/smihandler.h>
 #include <soc/gpio.h>
 
 struct ied_header {
 	char signature[10];
 	u32 size;
 	u8 reserved[34];
-} __attribute__ ((packed));
+} __packed;
 
 struct smm_relocation_params {
 	u32 smram_base;
@@ -47,12 +49,6 @@ struct smm_relocation_params {
 	int smm_save_state_in_msrs;
 };
 
-/* Mainboard handler for GPI SMIs*/
-void mainboard_smi_gpi_handler(const struct gpi_status *sts);
-
-/* Mainboard handler for eSPI SMIs */
-void mainboard_smi_espi_handler(void);
-
 #if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 				uintptr_t staggered_smbase);
@@ -60,18 +56,6 @@ void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 		size_t *smm_save_state_size);
 void smm_initialize(void);
 void smm_relocate(void);
-
-/* These helpers are for performing SMM relocation. */
-void southbridge_trigger_smi(void);
-void southbridge_clear_smi_status(void);
-
-/*
- * The initialization of the southbridge is split into 2 compoments. One is
- * for clearing the state in the SMM registers. The other is for enabling
- * SMIs.
- */
-void southbridge_smm_clear_state(void);
-void southbridge_smm_enable_smi(void);
 #else	/* CONFIG_HAVE_SMI_HANDLER */
 static inline void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 				uintptr_t staggered_smbase) {}
@@ -80,10 +64,6 @@ static inline void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 static inline void smm_initialize(void) {}
 
 static inline void smm_relocate(void) {}
-static inline void southbridge_trigger_smi(void) {}
-static inline void southbridge_clear_smi_status(void) {}
-static inline void southbridge_smm_clear_state(void) {}
-static inline void southbridge_smm_enable_smi(void) {}
 #endif	/* CONFIG_HAVE_SMI_HANDLER */
 
 #endif

@@ -1,3 +1,16 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 #include <stdint.h>
 #include <delay.h>
 #include <edid.h>
@@ -41,7 +54,6 @@
 #define VBE_DISPI_LFB_ENABLED           0x40
 #define VBE_DISPI_NOCLEARMEM            0x80
 
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 static int width  = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_XRES;
 static int height = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_YRES;
 
@@ -56,11 +68,9 @@ static int bochs_read(int index)
 	outw(index, VBE_DISPI_IOPORT_INDEX);
 	return inw(VBE_DISPI_IOPORT_DATA);
 }
-#endif
 
-static void bochs_init(struct device *dev)
+static void bochs_init_linear_fb(struct device *dev)
 {
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 	struct edid edid;
 	int id, mem, bar;
 	u32 addr;
@@ -115,10 +125,20 @@ static void bochs_init(struct device *dev)
 	edid.panel_bits_per_pixel = 24;
 	edid_set_framebuffer_bits_per_pixel(&edid, 32, 0);
 	set_vbe_mode_info_valid(&edid, addr);
-#else
+}
+
+static void bochs_init_text_mode(struct device *dev)
+{
 	vga_misc_write(0x1);
 	vga_textmode_init();
-#endif
+}
+
+static void bochs_init(struct device *dev)
+{
+	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER))
+		bochs_init_linear_fb(dev);
+	else if (IS_ENABLED(CONFIG_VGA_TEXT_FRAMEBUFFER))
+		bochs_init_text_mode(dev);
 }
 
 static struct device_operations qemu_graph_ops = {

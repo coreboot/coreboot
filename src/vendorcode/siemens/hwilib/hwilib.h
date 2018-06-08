@@ -39,12 +39,15 @@ typedef enum {
 	SPD,
 	FF_FreezeDis,
 	FF_FanReq,
+	NvramVirtTimeDsaveReset,
 	BiosFlags,
 	MacMapping1,
 	MacMapping2,
 	MacMapping3,
 	MacMapping4,
 	RTCType,
+	BL_Brightness,
+	PF_PwmFreq,
 	PF_Color_Depth,
 	PF_DisplType,
 	PF_DisplCon,
@@ -61,7 +64,7 @@ typedef enum {
 	FANHystThreshold,
 	FANHystCtrl,
 	FANMaxSpeed,
-	FANStartpeed,
+	FANStartSpeed,
 	FANSensorDelay,
 	FANSensorNum,
 	FANSensorSelect,
@@ -112,8 +115,8 @@ typedef enum {
 	netKind7,
 	netKind8,
 	netKind9,
-	netKind10
-
+	netKind10,
+	LegacyDelay
 } hwinfo_field_t;
 
 /* Define used values in supported fields */

@@ -1,0 +1,1 @@
+ramstage-$(CONFIG_DRIVERS_GENERIC_ADAU7002) += adau7002.c

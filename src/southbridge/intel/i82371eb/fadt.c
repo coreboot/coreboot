@@ -31,7 +31,7 @@
 void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
-	device_t dev;
+	struct device *dev;
 
 	/* Power management controller */
 	dev = dev_find_device(PCI_VENDOR_ID_INTEL,

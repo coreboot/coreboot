@@ -1,6 +1,17 @@
 /*
- * Copyright (C) 2014 Vladimir Serbinenko
- * Subject to the GNU GPL v2, or (at your option) any later version.
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2014 Vladimir Serbinenko <phcoder@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
 #include <arch/acpi.h>
@@ -122,7 +133,7 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 			^^XDSS(0x5a, Arg0)
 		}
 		*/
-		acpigen_write_method("_DSS", 0);
+		acpigen_write_method("_DSS", 1);
 		acpigen_emit_namestring("^^XDSS");
 		acpigen_write_byte(i);
 		acpigen_emit_byte(0x68); /* Arg0Op.  */

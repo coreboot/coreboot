@@ -37,6 +37,8 @@ size_t ulzman(const void *src, size_t srcn, void *dst, size_t dstn)
 	 * byte and re-construct. */
 	cp = src + LZMA_PROPERTIES_SIZE;
 	outSize = cp[3] << 24 | cp[2] << 16 | cp[1] << 8 | cp[0];
+	if (outSize > dstn)
+		outSize = dstn;
 	if (LzmaDecodeProperties(&state.Properties, properties,
 				 LZMA_PROPERTIES_SIZE) != LZMA_RESULT_OK) {
 		printk(BIOS_WARNING, "lzma: Incorrect stream properties.\n");

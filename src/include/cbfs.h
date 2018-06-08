@@ -37,11 +37,12 @@ void *cbfs_boot_map_with_leak(const char *name, uint32_t type, size_t *size);
 /* Locate file in a specific region of fmap. Return 0 on success. < 0 on error*/
 int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
 		const char *name, uint32_t *type);
-/* Load a struct file from CBFS into a buffer. Returns amount of loaded
- * bytes on success or 0 on error. File will get decompressed as necessary.
- * Same decompression requirements as cbfs_load_and_decompress(). */
-size_t cbfs_boot_load_struct(const char *name, void *buf, size_t buf_size);
-
+/* Load an arbitrary type file from CBFS into a buffer. Returns amount of
+ * loaded bytes on success or 0 on error. File will get decompressed as
+ * necessary.  Same decompression requirements as
+ * cbfs_load_and_decompress(). */
+size_t cbfs_boot_load_file(const char *name, void *buf, size_t buf_size,
+	uint32_t type);
 /* Load |in_size| bytes from |rdev| at |offset| to the |buffer_size| bytes
  * large |buffer|, decompressing it according to |compression| in the process.
  * Returns the decompressed file size, or 0 on error.

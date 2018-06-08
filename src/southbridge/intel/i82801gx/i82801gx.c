@@ -20,7 +20,7 @@
 #include "i82801gx.h"
 #include "sata.h"
 
-void i82801gx_enable(device_t dev)
+void i82801gx_enable(struct device *dev)
 {
 	u32 reg32;
 

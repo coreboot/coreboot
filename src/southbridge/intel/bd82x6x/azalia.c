@@ -23,6 +23,7 @@
 #include <arch/io.h>
 #include <delay.h>
 #include <device/azalia_device.h>
+#include <southbridge/intel/common/rcba.h>
 #include "pch.h"
 
 #define HDA_ICII_REG 0x68
@@ -331,6 +332,11 @@ static void azalia_init(struct device *dev)
 	pci_write_config8(dev, 0x43, reg8);
 }
 
+static const char *azalia_acpi_name(const struct device *dev)
+{
+	return "HDEF";
+}
+
 static void azalia_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
@@ -353,6 +359,7 @@ static struct device_operations azalia_ops = {
 	.init			= azalia_init,
 	.scan_bus		= 0,
 	.ops_pci		= &azalia_pci_ops,
+	.acpi_name		= azalia_acpi_name,
 };
 
 static const unsigned short pci_device_ids[] = { 0x1c20, 0x1e20, 0 };

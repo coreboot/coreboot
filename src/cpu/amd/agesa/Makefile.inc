@@ -12,27 +12,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY10) += family10
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY12) += family12
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY14) += family14
-subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY15) += family15
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY15_TN) += family15tn
-subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY15_RL) += family15rl
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY16_KB) += family16kb
-
-romstage-y += s3_resume.c
-ramstage-y += s3_mtrr.c
-
-ifeq ($(CONFIG_AGESA_LEGACY), y)
-cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram_legacy.inc
-else
-cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram.inc
-romstage-y += romstage.c
-endif
-
-romstage-y += heapmanager.c
-ramstage-y += heapmanager.c
-ramstage-y += amd_late_init.c
 
 ifeq ($(CONFIG_HAVE_ACPI_RESUME), y)
 

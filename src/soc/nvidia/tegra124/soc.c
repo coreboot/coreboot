@@ -30,7 +30,7 @@
  * Will break if we get 2. Sigh.
  * We assume it's all multiples of MiB for MMUs sake.
  */
-static void soc_enable(device_t dev)
+static void soc_enable(struct device *dev)
 {
 	u32 lcdbase = fb_base_mb();
 	unsigned long fb_size = FB_SIZE_MB;
@@ -47,7 +47,7 @@ static void soc_enable(device_t dev)
 			(sdram_end_mb - sdram_max_addressable_mb())*KiB);
 }
 
-static void soc_init(device_t dev)
+static void soc_init(struct device *dev)
 {
 	if (display_init_required())
 		display_startup(dev);
@@ -64,7 +64,7 @@ static struct device_operations soc_ops = {
 	.scan_bus         = 0,
 };
 
-static void enable_tegra124_dev(device_t dev)
+static void enable_tegra124_dev(struct device *dev)
 {
 	dev->ops = &soc_ops;
 }

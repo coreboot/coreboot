@@ -27,6 +27,7 @@
 #include "cbfs.h"
 #include "cbfs_image.h"
 #include "cbfs_sections.h"
+#include "elfparsing.h"
 #include "fit.h"
 #include "partitioned_file.h"
 #include <commonlib/fsp.h>
@@ -71,6 +72,7 @@ static struct param {
 	uint32_t cbfsoffset;
 	uint32_t cbfsoffset_assigned;
 	uint32_t arch;
+	uint32_t padding;
 	bool u64val_assigned;
 	bool fill_partial_upward;
 	bool fill_partial_downward;
@@ -146,7 +148,8 @@ static unsigned convert_to_from_top_aligned(const struct buffer *region,
 	return convert_to_from_absolute_top_aligned(region, offset);
 }
 
-static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size)
+static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size,
+			size_t data_size)
 {
 	if (!param.filename) {
 		ERROR("You need to specify -f/--filename.\n");
@@ -166,11 +169,17 @@ static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size)
 	if (cbfs_get_entry(&image, param.name))
 		WARN("'%s' already in CBFS.\n", param.name);
 
-	struct buffer buffer;
-	if (buffer_from_file(&buffer, param.filename) != 0) {
-		ERROR("Cannot load %s.\n", param.filename);
-		return 1;
+	if (!data_size) {
+		struct buffer buffer;
+		if (buffer_from_file(&buffer, param.filename) != 0) {
+			ERROR("Cannot load %s.\n", param.filename);
+			return 1;
+		}
+		data_size = buffer.size;
+		buffer_delete(&buffer);
 	}
+
+	DEBUG("File size is %zd (0x%zx)\n", data_size, data_size);
 
 	/* Include cbfs_file size along with space for with name. */
 	metadata_size += cbfs_calculate_file_header_size(param.name);
@@ -186,9 +195,8 @@ static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size)
 	if (param.hash != VB2_HASH_INVALID)
 		metadata_size += sizeof(struct cbfs_file_attr_hash);
 
-	int32_t address = cbfs_locate_entry(&image, buffer.size, param.pagesize,
+	int32_t address = cbfs_locate_entry(&image, data_size, param.pagesize,
 						param.alignment, metadata_size);
-	buffer_delete(&buffer);
 
 	if (address == -1) {
 		ERROR("'%s' can't fit in CBFS for page-size %#x, align %#x.\n",
@@ -402,7 +410,7 @@ static int cbfs_add_component(const char *filename,
 			if (type == CBFS_COMPONENT_STAGE)
 				attrs->position = htonl(offset +
 					sizeof(struct cbfs_stage));
-			else if (type == CBFS_COMPONENT_PAYLOAD)
+			else if (type == CBFS_COMPONENT_SELF)
 				attrs->position = htonl(offset +
 					sizeof(struct cbfs_payload));
 			else
@@ -419,6 +427,18 @@ static int cbfs_add_component(const char *filename,
 				return -1;
 			attrs->alignment = htonl(param.alignment);
 		}
+	}
+
+	if (param.padding) {
+		const uint32_t hs = sizeof(struct cbfs_file_attribute);
+		uint32_t size = MAX(hs, param.padding);
+		INFO("Padding %d bytes\n", size);
+		struct cbfs_file_attribute *attr =
+			(struct cbfs_file_attribute *)cbfs_add_file_attr(
+					header, CBFS_FILE_ATTR_TAG_PADDING,
+					size);
+		if (attr == NULL)
+			return -1;
 	}
 
 	if (IS_TOP_ALIGNED_ADDRESS(offset))
@@ -566,8 +586,15 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 
 	if (param.stage_xip) {
 		int32_t address;
+		size_t data_size;
 
-		if (do_cbfs_locate(&address, sizeof(struct cbfs_stage)))  {
+		if (elf_program_file_size(buffer, &data_size) < 0) {
+			ERROR("Could not obtain ELF size\n");
+			return 1;
+		}
+
+		if (do_cbfs_locate(&address, sizeof(struct cbfs_stage),
+			data_size))  {
 			ERROR("Could not find location for XIP stage.\n");
 			return 1;
 		}
@@ -671,7 +698,7 @@ static int cbfs_add(void)
 	if (param.alignment) {
 		/* CBFS compression file attribute is unconditionally added. */
 		size_t metadata_sz = sizeof(struct cbfs_file_attr_compression);
-		if (do_cbfs_locate(&address, metadata_sz))
+		if (do_cbfs_locate(&address, metadata_sz, 0))
 			return 1;
 		local_baseaddress = address;
 	}
@@ -710,7 +737,7 @@ static int cbfs_add_payload(void)
 {
 	return cbfs_add_component(param.filename,
 				  param.name,
-				  CBFS_COMPONENT_PAYLOAD,
+				  CBFS_COMPONENT_SELF,
 				  param.baseaddress,
 				  param.headeroffset,
 				  cbfstool_convert_mkpayload);
@@ -730,7 +757,7 @@ static int cbfs_add_flat_binary(void)
 	}
 	return cbfs_add_component(param.filename,
 				  param.name,
-				  CBFS_COMPONENT_PAYLOAD,
+				  CBFS_COMPONENT_SELF,
 				  param.baseaddress,
 				  param.headeroffset,
 				  cbfstool_convert_mkflatpayload);
@@ -903,7 +930,8 @@ static int cbfs_layout(void)
 			qualifier = "read-only, ";
 		else if (region_is_modern_cbfs((const char *)current->name))
 			qualifier = "CBFS, ";
-		printf(" (%ssize %u)\n", qualifier, current->size);
+		printf(" (%ssize %u, offset %u)\n", qualifier, current->size,
+				current->offset);
 
 		i += lookahead - 1;
 	}
@@ -1107,13 +1135,44 @@ static int cbfs_compact(void)
 	return cbfs_compact_instance(&image);
 }
 
+static int cbfs_expand(void)
+{
+	struct buffer src_buf;
+
+	/* Obtain the source region. */
+	if (!partitioned_file_read_region(&src_buf, param.image_file,
+						param.region_name)) {
+		ERROR("Region not found in image: %s\n", param.source_region);
+		return 1;
+	}
+
+	return cbfs_expand_to_region(param.image_region);
+}
+
+static int cbfs_truncate(void)
+{
+	struct buffer src_buf;
+
+	/* Obtain the source region. */
+	if (!partitioned_file_read_region(&src_buf, param.image_file,
+						param.region_name)) {
+		ERROR("Region not found in image: %s\n", param.source_region);
+		return 1;
+	}
+
+	uint32_t size;
+	int result = cbfs_truncate_space(param.image_region, &size);
+	printf("0x%x\n", size);
+	return result;
+}
+
 static const struct command commands[] = {
-	{"add", "H:r:f:n:t:c:b:a:yvA:gh?", cbfs_add, true, true},
-	{"add-flat-binary", "H:r:f:n:l:e:c:b:vA:gh?", cbfs_add_flat_binary,
+	{"add", "H:r:f:n:t:c:b:a:p:yvA:gh?", cbfs_add, true, true},
+	{"add-flat-binary", "H:r:f:n:l:e:c:b:p:vA:gh?", cbfs_add_flat_binary,
 				true, true},
-	{"add-payload", "H:r:f:n:t:c:b:C:I:vA:gh?", cbfs_add_payload,
+	{"add-payload", "H:r:f:n:c:b:C:I:p:vA:gh?", cbfs_add_payload,
 				true, true},
-	{"add-stage", "a:H:r:f:n:t:c:b:P:S:yvA:gh?", cbfs_add_stage,
+	{"add-stage", "a:H:r:f:n:t:c:b:P:S:p:yvA:gh?", cbfs_add_stage,
 				true, true},
 	{"add-int", "H:r:i:n:b:vgh?", cbfs_add_integer, true, true},
 	{"add-master-header", "H:r:vh?", cbfs_add_master_header, true, true},
@@ -1127,6 +1186,8 @@ static const struct command commands[] = {
 	{"remove", "H:r:n:vh?", cbfs_remove, true, true},
 	{"update-fit", "H:r:n:x:vh?", cbfs_update_fit, true, true},
 	{"write", "r:f:i:Fudvh?", cbfs_write, true, true},
+	{"expand", "r:h?", cbfs_expand, true, true},
+	{"truncate", "r:h?", cbfs_truncate, true, true},
 };
 
 static struct option long_options[] = {
@@ -1154,6 +1215,7 @@ static struct option long_options[] = {
 	{"machine",       required_argument, 0, 'm' },
 	{"name",          required_argument, 0, 'n' },
 	{"offset",        required_argument, 0, 'o' },
+	{"padding",       required_argument, 0, 'p' },
 	{"page-size",     required_argument, 0, 'P' },
 	{"size",          required_argument, 0, 's' },
 	{"top-aligned",   required_argument, 0, 'T' },
@@ -1234,7 +1296,7 @@ static void usage(char *name)
 	     "COMMANDs:\n"
 	     " add [-r image,regions] -f FILE -n NAME -t TYPE [-A hash] \\\n"
 	     "        [-c compression] [-b base-address | -a alignment] \\\n"
-	     "        [-y|--xip if TYPE is FSP]                            "
+	     "        [-p padding size] [-y|--xip if TYPE is FSP]           "
 			"Add a component\n"
 	     " add-payload [-r image,regions] -f FILE -n NAME [-A hash] \\\n"
 	     "        [-c compression] [-b base-address] \\\n"
@@ -1276,6 +1338,10 @@ static void usage(char *name)
 			"Write file into same-size [or larger] raw region\n"
 	     " read [-r fmap-region] -f file                               "
 			"Extract raw region contents into binary file\n"
+	     " truncate [-r fmap-region]                                   "
+			"Truncate CBFS and print new size on stdout\n"
+	     " expand [-r fmap-region]                                     "
+			"Expand CBFS to span entire region\n"
 	     " update-fit [-r image,regions] -n MICROCODE_BLOB_NAME \\\n"
 	     "        -x EMTPY_FIT_ENTRIES                                 "
 			"Updates the FIT table with microcode entries\n"
@@ -1285,10 +1351,11 @@ static void usage(char *name)
 	     "  in two possible formats: if their value is greater than\n"
 	     "  0x80000000, they are interpreted as a top-aligned x86 memory\n"
 	     "  address; otherwise, they are treated as an offset into flash.\n"
-	     "ARCHes:\n"
-	     "  arm64, arm, mips, x86\n"
-	     "TYPEs:\n", name, name
+	     "ARCHes:\n", name, name
 	    );
+	print_supported_architectures();
+
+	printf("TYPEs:\n");
 	print_supported_filetypes();
 
 	printf(
@@ -1464,6 +1531,14 @@ int main(int argc, char **argv)
 				param.alignment = strtoul(optarg, &suffix, 0);
 				if (!*optarg || (suffix && *suffix)) {
 					ERROR("Invalid alignment '%s'.\n",
+						optarg);
+					return 1;
+				}
+				break;
+			case 'p':
+				param.padding = strtoul(optarg, &suffix, 0);
+				if (!*optarg || (suffix && *suffix)) {
+					ERROR("Invalid pad size '%s'.\n",
 						optarg);
 					return 1;
 				}

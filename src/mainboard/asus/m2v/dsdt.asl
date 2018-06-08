@@ -55,22 +55,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 
 	/* _PR CPU0 is dynamically supplied by SSDT */
 
-	/* We define 3 power states:
-	 *  - S0 which is fully on
-	 *  - S3 which is suspend to ram
-	 *  - S5 which is soft off
-	 *
-	 * Package contents:
-	 * ofs len desc
-	 * 0   1   Value for PM1a_CNT.SLP_TYP register to enter this system state.
-	 * 1   1   Value for PM1b_CNT.SLP_TYP register to enter this system state. To enter any
-	 *         given state, OSPM must write the PM1a_CNT.SLP_TYP register before the
-	 *         PM1b_CNT.SLP_TYP register.
-	 * 2   2   Reserved
-	 */
-	Name (\_S0, Package () { 0x00, 0x00, 0x00, 0x00 })
-	Name (\_S3, Package () { 0x01, 0x01, 0x00, 0x00 })
-	Name (\_S5, Package () { 0x02, 0x02, 0x00, 0x00 })
+	#include <southbridge/via/k8t890/acpi/sleepstates.asl>
 
 	/* Root of the bus hierarchy */
 	Scope (\_SB)

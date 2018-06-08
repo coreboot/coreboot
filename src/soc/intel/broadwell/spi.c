@@ -13,9 +13,11 @@
 
 /* This file is derived from the flashrom project. */
 #include <stdint.h>
+#include <compiler.h>
 #include <stdlib.h>
 #include <string.h>
 #include <bootstate.h>
+#include <commonlib/helpers.h>
 #include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
@@ -91,7 +93,7 @@ typedef struct ich9_spi_regs {
 	uint32_t srdl;
 	uint32_t srdc;
 	uint32_t srd;
-} __attribute__((packed)) ich9_spi_regs;
+} __packed ich9_spi_regs;
 
 typedef struct ich_spi_controller {
 	int locked;
@@ -160,7 +162,7 @@ enum {
 	SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS =	3
 };
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 
 static u8 readb_(const void *addr)
 {
@@ -186,21 +188,21 @@ static u32 readl_(const void *addr)
 	return v;
 }
 
-static void writeb_(u8 b, const void *addr)
+static void writeb_(u8 b, void *addr)
 {
 	write8(addr, b);
 	printk(BIOS_DEBUG, "wrote %2.2x to %4.4x\n",
 	       b, ((unsigned int) addr & 0xffff) - 0xf020);
 }
 
-static void writew_(u16 b, const void *addr)
+static void writew_(u16 b, void *addr)
 {
 	write16(addr, b);
 	printk(BIOS_DEBUG, "wrote %4.4x to %4.4x\n",
 	       b, ((unsigned int) addr & 0xffff) - 0xf020);
 }
 
-static void writel_(u32 b, const void *addr)
+static void writel_(u32 b, void *addr)
 {
 	write32(addr, b);
 	printk(BIOS_DEBUG, "wrote %8.8x to %4.4x\n",
@@ -454,11 +456,6 @@ static int ich_status_poll(u16 bitmask, int wait_til_set)
 	return -1;
 }
 
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
-{
-	return min(cntlr.databytes, buf_len);
-}
-
 static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		    size_t bytesout, void *din, size_t bytesin)
 {
@@ -615,9 +612,11 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 }
 
 /* Use first empty Protected Range Register to cover region of flash */
-int spi_flash_protect(u32 start, u32 size)
+static int spi_flash_protect(const struct spi_flash *flash,
+				const struct region *region)
 {
-	u32 end = start + size - 1;
+	u32 start = region_offset(region);
+	u32 end = start + region_sz(region) - 1;
 	u32 reg;
 	int prr;
 
@@ -651,15 +650,24 @@ int spi_flash_protect(u32 start, u32 size)
 	return 0;
 }
 
+static int xfer_vectors(const struct spi_slave *slave,
+			struct spi_op vectors[], size_t count)
+{
+	return spi_flash_vector_helper(slave, vectors, count, spi_ctrlr_xfer);
+}
+
 static const struct spi_ctrlr spi_ctrlr = {
-	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
+	.xfer_vector = xfer_vectors,
+	.max_xfer_size = member_size(ich9_spi_regs, fdata),
+	.flash_protect = spi_flash_protect,
 };
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	slave->bus = bus;
-	slave->cs = cs;
-	slave->ctrlr = &spi_ctrlr;
-	return 0;
-}
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = 0,
+		.bus_end = 0,
+	},
+};
+
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

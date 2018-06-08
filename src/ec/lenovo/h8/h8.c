@@ -28,14 +28,6 @@
 #include "h8.h"
 #include "chip.h"
 
-static void h8_bluetooth_enable(int on)
-{
-	if (on)
-		ec_set_bit(0x3a, 4);
-	else
-		ec_clr_bit(0x3a, 4);
-}
-
 void h8_trackpoint_enable(int on)
 {
 	ec_write(H8_TRACKPOINT_CTRL,
@@ -50,15 +42,6 @@ void h8_wlan_enable(int on)
 		ec_set_bit(0x3a, 5);
 	else
 		ec_clr_bit(0x3a, 5);
-}
-
-/* Controls radio-off pin in WWAN MiniPCIe slot.  */
-static void h8_wwan_enable(int on)
-{
-	if (on)
-		ec_set_bit(0x3a, 6);
-	else
-		ec_clr_bit(0x3a, 6);
 }
 
 /* Controls radio-off pin in UWB MiniPCIe slot.  */
@@ -193,7 +176,7 @@ static void h8_smbios_strings(struct device *dev, struct smbios_type11 *t)
 }
 #endif
 
-static void h8_init(device_t dev)
+static void h8_init(struct device *dev)
 {
 	pc_keyboard_init(NO_AUX_DEVICE);
 }
@@ -209,21 +192,26 @@ static void h8_enable(struct device *dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
 	u8 val;
-	u8 beepmask0, beepmask1, config1;
+	u8 beepmask0, beepmask1, reg8;
 
 	dev->ops = &h8_dev_ops;
 
+	ec_clear_out_queue();
 	h8_log_ec_version();
 
-	ec_write(H8_CONFIG0, conf->config0);
-	config1 = conf->config1;
+	/* Always enable I/O range 0x1600-0x160f and thermal management */
+	reg8 = conf->config0;
+	reg8 |= H8_CONFIG0_SMM_H8_ENABLE;
+	reg8 |= H8_CONFIG0_TC_ENABLE;
+	ec_write(H8_CONFIG0, reg8);
 
+	reg8 = conf->config1;
 	if (conf->has_keyboard_backlight) {
 		if (get_option(&val, "backlight") != CB_SUCCESS)
 			val = 0; /* Both backlights.  */
-		config1 = (config1 & 0xf3) | ((val & 0x3) << 2);
+		reg8 = (reg8 & 0xf3) | ((val & 0x3) << 2);
 	}
-	ec_write(H8_CONFIG1, config1);
+	ec_write(H8_CONFIG1, reg8);
 	ec_write(H8_CONFIG2, conf->config2);
 	ec_write(H8_CONFIG3, conf->config3);
 
@@ -284,13 +272,11 @@ static void h8_enable(struct device *dev)
 	if (get_option(&val, "volume") == CB_SUCCESS && !acpi_is_wakeup_s3())
 		ec_write(H8_VOLUME_CONTROL, val);
 
-	if (get_option(&val, "bluetooth") != CB_SUCCESS)
-		val = 1;
+	val = (IS_ENABLED(CONFIG_H8_SUPPORT_BT_ON_WIFI) || h8_has_bdc(dev)) &&
+		h8_bluetooth_nv_enable();
 	h8_bluetooth_enable(val);
 
-	if (get_option(&val, "wwan") != CB_SUCCESS)
-		val = 1;
-
+	val = h8_has_wwan(dev) && h8_wwan_nv_enable();
 	h8_wwan_enable(val);
 
 	if (conf->has_uwb) {

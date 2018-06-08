@@ -15,38 +15,14 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include <cpu/x86/msr.h>
-#include <device/pci_def.h>
+
 #include <southbridge/amd/sb800/sb800.h>
-#include <cpu/amd/mtrr.h>
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
-
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
-/**
- * TODO
- * SB CIMx callback
- */
-void set_pcie_reset(void)
-{
-}
-
-/**
- * TODO
- * mainboard specific SB CIMx callback
- */
-void set_pcie_dereset(void)
-{
-}
-
 
 /**********************************************
  * Enable the dedicated functions of the board.
  **********************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 

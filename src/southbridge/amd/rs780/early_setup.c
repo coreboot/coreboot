@@ -13,7 +13,14 @@
  * GNU General Public License for more details.
  */
 
+#include <types.h>
+#include <arch/io.h>
+#include <northbridge/amd/amdmct/mct/mct_d.h>
+#include <console/console.h>
+#include <cpu/x86/msr.h>
+
 #include "rev.h"
+#include "rs780.h"
 
 #define NBHTIU_INDEX		0x94 /* Note: It is different with RS690, whose HTIU index is 0xA8 */
 #define NBMISC_INDEX		0x60
@@ -97,7 +104,7 @@ static void set_nbcfg_enable_bits(pci_devfn_t nb_dev, u32 reg_pos, u32 mask,
 	}
 }
 /* family 10 only, for reg > 0xFF */
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
 static void set_fam10_ext_cfg_enable_bits(pci_devfn_t fam10_dev, u32 reg_pos,
 		u32 mask, u32 val)
 {
@@ -143,7 +150,7 @@ static u8 is_famly10(void)
 	return (cpuid_eax(1) & 0xff00000) != 0;
 }
 
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
 static u8 l3_cache(void)
 {
 	return (cpuid_edx(0x80000006) & (0x3FFF << 18)) != 0;
@@ -154,25 +161,6 @@ static u8 cpu_core_number(void)
 	return (cpuid_ecx(0x80000008) & 0xFF) + 1;
 }
 #endif
-
-static u8 get_nb_rev(pci_devfn_t nb_dev)
-{
-	u8 reg;
-	reg = pci_read_config8(nb_dev, 0x89);	/* copy from CIM, can't find in doc */
-	switch(reg & 3)
-	{
-	case 0x01:
-		reg = REV_RS780_A12;
-		break;
-	case 0x02:
-		reg = REV_RS780_A13;
-		break;
-	default:
-		reg = REV_RS780_A11;
-		break;
-	}
-	return reg;
-}
 
 /*****************************************
  * Init HT link speed/width for rs780 -- k8 link
@@ -198,7 +186,7 @@ static const u8 rs780_ibias[] = {
 	[0xe] = 0xC6,		/* 2.6GHz HyperTransport 3 only */
 };
 
-static void rs780_htinit(void)
+void rs780_htinit(void)
 {
 	/*
 	 * About HT, it has been done in enumerate_ht_chain().
@@ -242,7 +230,7 @@ static void rs780_htinit(void)
 	} else if ((cpu_ht_freq > 0x6) && (cpu_ht_freq < 0xf)) {
 		printk(BIOS_INFO, "rs780_htinit: HT3 mode\n");
 
-		#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
+		#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
 		/* HT3 mode, RPR 8.4.3 */
 		set_nbcfg_enable_bits(rs780_f0, 0x9c, 0x3 << 16, 0);
 
@@ -282,7 +270,7 @@ static void rs780_htinit(void)
 	}
 }
 
-#if !CONFIG_NORTHBRIDGE_AMD_AMDFAM10
+#if !IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
 /*******************************************************
 * Optimize k8 with UMA.
 * See BKDG_NPT_0F guide for details.
@@ -338,7 +326,7 @@ static void k8_optimization(void)
 #define k8_optimization() do {} while (0)
 #endif	/* !CONFIG_NORTHBRIDGE_AMD_AMDFAM10 */
 
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
 static void fam10_optimization(void)
 {
 	pci_devfn_t cpu_f0, cpu_f2, cpu_f3;
@@ -610,16 +598,12 @@ static void rs780_por_init(pci_devfn_t nb_dev)
 }
 
 /* enable CFG access to Dev8, which is the SB P2P Bridge */
-static void enable_rs780_dev8(void)
+void enable_rs780_dev8(void)
 {
 	set_nbmisc_enable_bits(PCI_DEV(0, 0, 0), 0x00, 1 << 6, 1 << 6);
 }
 
-static void rs780_before_pci_init(void)
-{
-}
-
-static void rs780_early_setup(void)
+void rs780_early_setup(void)
 {
 	pci_devfn_t nb_dev = PCI_DEV(0, 0, 0);
 	printk(BIOS_INFO, "rs780_early_setup()\n");

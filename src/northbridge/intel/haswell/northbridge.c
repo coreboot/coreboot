@@ -33,9 +33,11 @@
 #include "chip.h"
 #include "haswell.h"
 
-static int get_pcie_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
+static int get_pcie_bar(struct device *dev, unsigned int index, u32 *base,
+			u32 *len)
 {
 	u32 pciexbar_reg;
+	u32 mask;
 
 	*base = 0;
 	*len = 0;
@@ -47,15 +49,20 @@ static int get_pcie_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
 
 	switch ((pciexbar_reg >> 1) & 3) {
 	case 0: // 256MB
-		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28));
+		mask = (1UL << 31) | (1 << 30) | (1 << 29) | (1 << 28);
+		*base = pciexbar_reg & mask;
 		*len = 256 * 1024 * 1024;
 		return 1;
 	case 1: // 128M
-		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27));
+		mask = (1UL << 31) | (1 << 30) | (1 << 29) | (1 << 28);
+		mask |= (1 << 27);
+		*base = pciexbar_reg & mask;
 		*len = 128 * 1024 * 1024;
 		return 1;
 	case 2: // 64M
-		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27)|(1 << 26));
+		mask = (1UL << 31) | (1 << 30) | (1 << 29) | (1 << 28);
+		mask |= (1 << 27) | (1 << 26);
+		*base = pciexbar_reg & mask;
 		*len = 64 * 1024 * 1024;
 		return 1;
 	}
@@ -63,7 +70,7 @@ static int get_pcie_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
 	return 0;
 }
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
@@ -78,10 +85,10 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init             = NULL,
 	.scan_bus         = pci_domain_scan_bus,
-	.ops_pci_bus	  = pci_bus_default_ops,
+	.write_acpi_tables = northbridge_write_acpi_tables,
 };
 
-static int get_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
+static int get_bar(struct device *dev, unsigned int index, u32 *base, u32 *len)
 {
 	u32 bar;
 
@@ -100,7 +107,8 @@ static int get_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
 /* There are special BARs that actually are programmed in the MCHBAR. These
  * Intel special features, but they do consume resources that need to be
  * accounted for. */
-static int get_bar_in_mchbar(device_t dev, unsigned int index, u32 *base, u32 *len)
+static int get_bar_in_mchbar(struct device *dev, unsigned int index,
+			     u32 *base, u32 *len)
 {
 	u32 bar;
 
@@ -119,7 +127,7 @@ static int get_bar_in_mchbar(device_t dev, unsigned int index, u32 *base, u32 *l
 struct fixed_mmio_descriptor {
 	unsigned int index;
 	u32 size;
-	int (*get_resource)(device_t dev, unsigned int index,
+	int (*get_resource)(struct device *dev, unsigned int index,
 			    u32 *base, u32 *size);
 	const char *description;
 };
@@ -139,7 +147,7 @@ struct fixed_mmio_descriptor mc_fixed_resources[] = {
  * Add all known fixed MMIO ranges that hang off the host bridge/memory
  * controller device.
  */
-static void mc_add_fixed_mmio_resources(device_t dev)
+static void mc_add_fixed_mmio_resources(struct device *dev)
 {
 	int i;
 
@@ -196,7 +204,8 @@ struct map_entry {
 	const char *description;
 };
 
-static void read_map_entry(device_t dev, struct map_entry *entry, uint64_t *result)
+static void read_map_entry(struct device *dev, struct map_entry *entry,
+			   uint64_t *result)
 {
 	uint64_t value;
 	uint64_t mask;
@@ -264,7 +273,7 @@ static struct map_entry memory_map[NUM_MAP_ENTRIES] = {
 	[TSEG_REG] = MAP_ENTRY_BASE_32(TSEG, "TESGMB"),
 };
 
-static void mc_read_map_entries(device_t dev, uint64_t *values)
+static void mc_read_map_entries(struct device *dev, uint64_t *values)
 {
 	int i;
 	for (i = 0; i < NUM_MAP_ENTRIES; i++) {
@@ -272,7 +281,7 @@ static void mc_read_map_entries(device_t dev, uint64_t *values)
 	}
 }
 
-static void mc_report_map_entries(device_t dev, uint64_t *values)
+static void mc_report_map_entries(struct device *dev, uint64_t *values)
 {
 	int i;
 	for (i = 0; i < NUM_MAP_ENTRIES; i++) {
@@ -283,7 +292,7 @@ static void mc_report_map_entries(device_t dev, uint64_t *values)
 	printk(BIOS_DEBUG, "MC MAP: GGC: 0x%x\n", pci_read_config16(dev, GGC));
 }
 
-static void mc_add_dram_resources(device_t dev)
+static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 {
 	unsigned long base_k, size_k;
 	unsigned long touud_k;
@@ -325,7 +334,7 @@ static void mc_add_dram_resources(device_t dev)
 	 * The resource index starts low and should not meet or exceed
 	 * PCI_BASE_ADDRESS_0.
 	 */
-	index = 0;
+	index = *resource_cnt;
 
 	/* 0 - > 0xa0000 */
 	base_k = 0;
@@ -368,26 +377,40 @@ static void mc_add_dram_resources(device_t dev)
 	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
 	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
 			      (0x100000 - 0xc0000) >> 10);
-#if CONFIG_CHROMEOS_RAMOOPS
+#if IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS)
 	reserved_ram_resource(dev, index++,
 			CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
 			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
 #endif
+	*resource_cnt = index;
 }
 
-static void mc_read_resources(device_t dev)
+static void mc_read_resources(struct device *dev)
 {
+	int index = 0;
+	const bool vtd_capable =
+		!(pci_read_config32(dev, CAPID0_A) & VTD_DISABLE);
+
 	/* Read standard PCI resources. */
 	pci_dev_read_resources(dev);
 
 	/* Add all fixed MMIO resources. */
 	mc_add_fixed_mmio_resources(dev);
 
+	/* Add VT-d MMIO resources if capable */
+	if (vtd_capable) {
+		mmio_resource(dev, index++, GFXVT_BASE_ADDRESS / KiB,
+			GFXVT_BASE_SIZE / KiB);
+		mmio_resource(dev, index++, VTVC0_BASE_ADDRESS / KiB,
+			VTVC0_BASE_SIZE / KiB);
+	}
+
 	/* Calculate and add DRAM resources. */
-	mc_add_dram_resources(dev);
+	mc_add_dram_resources(dev, &index);
 }
 
-static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void intel_set_subsystem(struct device *dev, unsigned vendor,
+				unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -451,7 +474,7 @@ static const struct pci_driver mc_driver_hsw_ult __pci_driver = {
 	.device = PCI_DEVICE_ID_HSW_ULT,
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	bsp_init_and_start_aps(dev->link_list);
 }
@@ -464,7 +487,7 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus         = 0,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {

@@ -37,7 +37,7 @@
 
 #undef set_menu_fore
 int	set_menu_fore(
-		MENU	*menu, 
+		MENU	*menu,
 		chtype	attr)
 		{ return(*(int *)0); }
 
@@ -48,7 +48,7 @@ chtype	menu_fore(
 
 #undef set_menu_back
 int	set_menu_back(
-		MENU	*menu, 
+		MENU	*menu,
 		chtype	attr)
 		{ return(*(int *)0); }
 
@@ -59,7 +59,7 @@ chtype	menu_back(
 
 #undef set_menu_grey
 int	set_menu_grey(
-		MENU	*menu, 
+		MENU	*menu,
 		chtype	attr)
 		{ return(*(int *)0); }
 
@@ -72,9 +72,9 @@ chtype	menu_grey(
 
 #undef _nc_menu_cursor_pos
 int	_nc_menu_cursor_pos(
-		const MENU *menu, 
-		const ITEM *item, 
-		int	*pY, 
+		const MENU *menu,
+		const ITEM *item,
+		int	*pY,
 		int	*pX)
 		{ return(*(int *)0); }
 
@@ -87,14 +87,14 @@ int	pos_menu_cursor(
 
 #undef _nc_Match_Next_Character_In_Item_Name
 int	_nc_Match_Next_Character_In_Item_Name(
-		MENU	*menu, 
-		int	ch, 
+		MENU	*menu,
+		int	ch,
 		ITEM	**item)
 		{ return(*(int *)0); }
 
 #undef menu_driver
 int	menu_driver(
-		MENU	*menu, 
+		MENU	*menu,
 		int	c)
 		{ return(*(int *)0); }
 
@@ -102,15 +102,15 @@ int	menu_driver(
 
 #undef set_menu_format
 int	set_menu_format(
-		MENU	*menu, 
-		int	rows, 
+		MENU	*menu,
+		int	rows,
 		int	cols)
 		{ return(*(int *)0); }
 
 #undef menu_format
 void	menu_format(
-		const MENU *menu, 
-		int	*rows, 
+		const MENU *menu,
+		int	*rows,
 		int	*cols)
 		{ /* void */ }
 
@@ -123,7 +123,7 @@ ITEM	_nc_Default_Item;
 
 #undef _nc_Connect_Items
 NCURSES_BOOL _nc_Connect_Items(
-		MENU	*menu, 
+		MENU	*menu,
 		ITEM	**items)
 		{ return(*(NCURSES_BOOL *)0); }
 
@@ -154,8 +154,8 @@ void	_nc_Show_Menu(
 
 #undef _nc_New_TopRow_and_CurrentItem
 void	_nc_New_TopRow_and_CurrentItem(
-		MENU	*menu, 
-		int	new_toprow, 
+		MENU	*menu,
+		int	new_toprow,
 		ITEM	*new_current_item)
 		{ /* void */ }
 
@@ -163,7 +163,7 @@ void	_nc_New_TopRow_and_CurrentItem(
 
 #undef set_menu_init
 int	set_menu_init(
-		MENU	*menu, 
+		MENU	*menu,
 		Menu_Hook func)
 		{ return(*(int *)0); }
 
@@ -174,7 +174,7 @@ Menu_Hook menu_init(
 
 #undef set_menu_term
 int	set_menu_term(
-		MENU	*menu, 
+		MENU	*menu,
 		Menu_Hook func)
 		{ return(*(int *)0); }
 
@@ -185,7 +185,7 @@ Menu_Hook menu_term(
 
 #undef set_item_init
 int	set_item_init(
-		MENU	*menu, 
+		MENU	*menu,
 		Menu_Hook func)
 		{ return(*(int *)0); }
 
@@ -196,7 +196,7 @@ Menu_Hook item_init(
 
 #undef set_item_term
 int	set_item_term(
-		MENU	*menu, 
+		MENU	*menu,
 		Menu_Hook func)
 		{ return(*(int *)0); }
 
@@ -209,7 +209,7 @@ Menu_Hook item_term(
 
 #undef set_current_item
 int	set_current_item(
-		MENU	*menu, 
+		MENU	*menu,
 		ITEM	*item)
 		{ return(*(int *)0); }
 
@@ -239,7 +239,7 @@ const char *item_description(
 
 #undef new_item
 ITEM	*new_item(
-		const char *name, 
+		const char *name,
 		const char *description)
 		{ return(*(ITEM **)0); }
 
@@ -250,7 +250,7 @@ int	free_item(
 
 #undef set_menu_mark
 int	set_menu_mark(
-		MENU	*menu, 
+		MENU	*menu,
 		const char *mark)
 		{ return(*(int *)0); }
 
@@ -263,19 +263,19 @@ const char *menu_mark(
 
 #undef set_item_opts
 int	set_item_opts(
-		ITEM	*item, 
+		ITEM	*item,
 		Item_Options opts)
 		{ return(*(int *)0); }
 
 #undef item_opts_off
 int	item_opts_off(
-		ITEM	*item, 
+		ITEM	*item,
 		Item_Options opts)
 		{ return(*(int *)0); }
 
 #undef item_opts_on
 int	item_opts_on(
-		ITEM	*item, 
+		ITEM	*item,
 		Item_Options opts)
 		{ return(*(int *)0); }
 
@@ -288,7 +288,7 @@ Item_Options item_opts(
 
 #undef set_top_row
 int	set_top_row(
-		MENU	*menu, 
+		MENU	*menu,
 		int	row)
 		{ return(*(int *)0); }
 
@@ -301,7 +301,7 @@ int	top_row(
 
 #undef set_item_userptr
 int	set_item_userptr(
-		ITEM	*item, 
+		ITEM	*item,
 		void	*userptr)
 		{ return(*(int *)0); }
 
@@ -314,7 +314,7 @@ void	*item_userptr(
 
 #undef set_item_value
 int	set_item_value(
-		ITEM	*item, 
+		ITEM	*item,
 		NCURSES_BOOL value)
 		{ return(*(int *)0); }
 
@@ -334,7 +334,7 @@ NCURSES_BOOL item_visible(
 
 #undef set_menu_items
 int	set_menu_items(
-		MENU	*menu, 
+		MENU	*menu,
 		ITEM	**items)
 		{ return(*(int *)0); }
 
@@ -352,7 +352,7 @@ int	item_count(
 
 #undef new_menu_sp
 MENU	*new_menu_sp(
-		SCREEN	*sp, 
+		SCREEN	*sp,
 		ITEM	**items)
 		{ return(*(MENU **)0); }
 
@@ -370,19 +370,19 @@ int	free_menu(
 
 #undef set_menu_opts
 int	set_menu_opts(
-		MENU	*menu, 
+		MENU	*menu,
 		Menu_Options opts)
 		{ return(*(int *)0); }
 
 #undef menu_opts_off
 int	menu_opts_off(
-		MENU	*menu, 
+		MENU	*menu,
 		Menu_Options opts)
 		{ return(*(int *)0); }
 
 #undef menu_opts_on
 int	menu_opts_on(
-		MENU	*menu, 
+		MENU	*menu,
 		Menu_Options opts)
 		{ return(*(int *)0); }
 
@@ -395,7 +395,7 @@ Menu_Options menu_opts(
 
 #undef set_menu_pad
 int	set_menu_pad(
-		MENU	*menu, 
+		MENU	*menu,
 		int	pad)
 		{ return(*(int *)0); }
 
@@ -413,7 +413,7 @@ char	*menu_pattern(
 
 #undef set_menu_pattern
 int	set_menu_pattern(
-		MENU	*menu, 
+		MENU	*menu,
 		const char *p)
 		{ return(*(int *)0); }
 
@@ -421,7 +421,7 @@ int	set_menu_pattern(
 
 #undef _nc_Post_Item
 void	_nc_Post_Item(
-		const MENU *menu, 
+		const MENU *menu,
 		const ITEM *item)
 		{ /* void */ }
 
@@ -456,8 +456,8 @@ int	menu_request_by_name(
 
 #undef scale_menu
 int	scale_menu(
-		const MENU *menu, 
-		int	*rows, 
+		const MENU *menu,
+		int	*rows,
 		int	*cols)
 		{ return(*(int *)0); }
 
@@ -465,17 +465,17 @@ int	scale_menu(
 
 #undef set_menu_spacing
 int	set_menu_spacing(
-		MENU	*menu, 
-		int	s_desc, 
-		int	s_row, 
+		MENU	*menu,
+		int	s_desc,
+		int	s_row,
 		int	s_col)
 		{ return(*(int *)0); }
 
 #undef menu_spacing
 int	menu_spacing(
-		const MENU *menu, 
-		int	*s_desc, 
-		int	*s_row, 
+		const MENU *menu,
+		int	*s_desc,
+		int	*s_row,
 		int	*s_col)
 		{ return(*(int *)0); }
 
@@ -483,7 +483,7 @@ int	menu_spacing(
 
 #undef set_menu_sub
 int	set_menu_sub(
-		MENU	*menu, 
+		MENU	*menu,
 		WINDOW	*win)
 		{ return(*(int *)0); }
 
@@ -528,7 +528,7 @@ Menu_Options _nc_retrace_menu_opts(
 
 #undef set_menu_userptr
 int	set_menu_userptr(
-		MENU	*menu, 
+		MENU	*menu,
 		void	*userptr)
 		{ return(*(int *)0); }
 
@@ -541,7 +541,7 @@ void	*menu_userptr(
 
 #undef set_menu_win
 int	set_menu_win(
-		MENU	*menu, 
+		MENU	*menu,
 		WINDOW	*win)
 		{ return(*(int *)0); }
 

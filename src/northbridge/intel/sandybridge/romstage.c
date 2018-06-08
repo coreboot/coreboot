@@ -28,7 +28,7 @@
 #include <device/pci_def.h>
 #include <device/device.h>
 #include <halt.h>
-#include <tpm.h>
+#include <security/tpm/tis.h>
 #include <northbridge/intel/sandybridge/chip.h>
 #include "southbridge/intel/bd82x6x/pch.h"
 #include <southbridge/intel/common/gpio.h>
@@ -38,9 +38,9 @@ static void early_pch_init(void)
 	u8 reg8;
 
 	// reset rtc power status
-	reg8 = pci_read_config8(PCH_LPC_DEV, 0xa4);
+	reg8 = pci_read_config8(PCH_LPC_DEV, GEN_PMCON_3);
 	reg8 &= ~(1 << 2);
-	pci_write_config8(PCH_LPC_DEV, 0xa4, reg8);
+	pci_write_config8(PCH_LPC_DEV, GEN_PMCON_3, reg8);
 }
 
 /* Platform has no romstage entry point under mainboard directory,
@@ -110,7 +110,8 @@ void mainboard_romstage_entry(unsigned long bist)
 	post_code(0x3c);
 
 	southbridge_configure_default_intmap();
-	rcba_config();
+	southbridge_rcba_config();
+	mainboard_rcba_config();
 
 	post_code(0x3d);
 

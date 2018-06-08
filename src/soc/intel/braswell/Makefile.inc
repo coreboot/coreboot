@@ -12,6 +12,7 @@ romstage-y += gpio_support.c
 romstage-y += iosf.c
 romstage-y += lpc_init.c
 romstage-y += memmap.c
+romstage-y += pmutil.c
 romstage-y += tsc_freq.c
 
 ramstage-y += acpi.c
@@ -20,7 +21,7 @@ ramstage-y += cpu.c
 ramstage-$(CONFIG_ELOG) += elog.c
 ramstage-y += emmc.c
 ramstage-y += gpio.c
-ifeq ($(CONFIG_GOP_SUPPORT),n)
+ifneq ($(CONFIG_RUN_FSP_GOP),y)
 ramstage-y += gfx.c
 endif
 ramstage-y += gpio_support.c
@@ -39,7 +40,6 @@ ramstage-y += sd.c
 ramstage-y += smm.c
 ramstage-y += southcluster.c
 ramstage-y += spi.c
-ramstage-$(CONFIG_ALT_CBFS_LOAD_PAYLOAD) += spi_loading.c
 ramstage-y += tsc_freq.c
 ramstage-y += xhci.c
 
@@ -59,7 +59,6 @@ CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp1_1/braswell
 
 CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(MAINBOARDDIR)
 
-ifneq ($(CONFIG_GOP_SUPPORT),y)
 ifneq ($(CONFIG_VGA_BIOS_FILE),)
 #we will assume that the vbios names will remain as they are now: vgabios.bin and vgabios_c0.bin
 BRASWELL_C0_VBIOS= $(subst .bin,_c0.bin,$(call strip_quotes,$(CONFIG_VGA_BIOS_FILE)))
@@ -67,8 +66,6 @@ BRASWELL_C0_VBIOS= $(subst .bin,_c0.bin,$(call strip_quotes,$(CONFIG_VGA_BIOS_FI
 cbfs-files-$(CONFIG_VGA_BIOS) += pci8086,22b1.rom
 pci8086,22b1.rom-file := $(BRASWELL_C0_VBIOS)
 pci8086,22b1.rom-type := optionrom
-
-endif # ifneq ($(CONFIG_GOP_SUPPORT),y)
 endif # ifneq ($(CONFIG_VGA_BIOS_FILE),)
 
 endif # ifeq ($(CONFIG_SOC_INTEL_BRASWELL),y)

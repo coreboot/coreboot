@@ -1,0 +1,33 @@
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2018 Jonathan Neuschäfer
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+if BOARD_SIFIVE_HIFIVE_UNLEASHED
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select SOC_SIFIVE_FU540
+	select BOARD_ROMSIZE_KB_32768
+
+config MAINBOARD_DIR
+	string
+	default sifive/hifive-unleashed
+
+config MAX_CPUS
+	int
+	default 4
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "HiFive Unleashed"
+
+endif

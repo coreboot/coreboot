@@ -18,13 +18,10 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/io.h>
-#include <cpu/x86/msr.h>
 #include <device/pci_def.h>
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <southbridge/amd/cimx/cimx_util.h>
 #include <arch/acpi.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
-#include <cpu/amd/mtrr.h>
 #include <smbios.h>
 #include <string.h>
 #include "SBPLATFORM.h"
@@ -33,9 +30,6 @@
 #include <superio/nuvoton/nct5104d/nct5104d.h>
 #include "gpio_ftns.h"
 #include "bios_knobs.h"
-
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
 
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
@@ -210,26 +204,10 @@ static void config_addon_uart(void)
 		pnp_raw_resource(uart, 0xf2, 0x12);
 }
 
-/**
- * TODO
- * SB CIMx callback
- */
-void set_pcie_reset(void)
-{
-}
-
-/**
- * TODO
- * mainboard specific SB CIMx callback
- */
-void set_pcie_dereset(void)
-{
-}
-
 /**********************************************
  * Enable the dedicated functions of the board.
  **********************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
@@ -259,7 +237,7 @@ static void mainboard_enable(device_t dev)
 const char *smbios_mainboard_serial_number(void)
 {
 	static char serial[10];
-	device_t nic_dev;
+	struct device *nic_dev;
 	uintptr_t bar18;
 	u32 mac_addr = 0;
 	int i;
@@ -308,7 +286,7 @@ const char *smbios_mainboard_serial_number(void)
  */
 static void usb_oc_setup(void)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x12, 0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x12, 0));
 
 	pci_write_config32(dev, 0x58, 0x011f0);
 }

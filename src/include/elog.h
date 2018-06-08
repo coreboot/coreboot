@@ -16,6 +16,8 @@
 #ifndef ELOG_H_
 #define ELOG_H_
 
+#include <compiler.h>
+
 /* SMI command code for GSMI event logging */
 #define ELOG_GSMI_APM_CNT                 0xEF
 
@@ -73,7 +75,7 @@
 #define EC_EVENT_BATTERY_CRITICAL            0x07
 #define EC_EVENT_BATTERY                     0x08
 #define EC_EVENT_THERMAL_THRESHOLD           0x09
-#define EC_EVENT_THERMAL_OVERLOAD            0x0a
+#define EC_EVENT_DEVICE_EVENT                0x0a
 #define EC_EVENT_THERMAL                     0x0b
 #define EC_EVENT_USB_CHARGER                 0x0c
 #define EC_EVENT_KEY_PRESSED                 0x0d
@@ -113,6 +115,7 @@
 
 /* Sleep/Wake */
 #define ELOG_TYPE_ACPI_ENTER              0x9d
+/* Deep Sx wake variant is provided below - 0xad */
 #define ELOG_TYPE_ACPI_WAKE               0x9e
 #define ELOG_TYPE_WAKE_SOURCE             0x9f
 #define  ELOG_WAKE_SOURCE_PCIE             0x00
@@ -122,10 +125,36 @@
 #define  ELOG_WAKE_SOURCE_GPIO             0x04
 #define  ELOG_WAKE_SOURCE_SMBUS            0x05
 #define  ELOG_WAKE_SOURCE_PWRBTN           0x06
+#define  ELOG_WAKE_SOURCE_PME_HDA          0x07
+#define  ELOG_WAKE_SOURCE_PME_GBE          0x08
+#define  ELOG_WAKE_SOURCE_PME_EMMC         0x09
+#define  ELOG_WAKE_SOURCE_PME_SDCARD       0x0a
+#define  ELOG_WAKE_SOURCE_PME_PCIE1        0x0b
+#define  ELOG_WAKE_SOURCE_PME_PCIE2        0x0c
+#define  ELOG_WAKE_SOURCE_PME_PCIE3        0x0d
+#define  ELOG_WAKE_SOURCE_PME_PCIE4        0x0e
+#define  ELOG_WAKE_SOURCE_PME_PCIE5        0x0f
+#define  ELOG_WAKE_SOURCE_PME_PCIE6        0x10
+#define  ELOG_WAKE_SOURCE_PME_PCIE7        0x11
+#define  ELOG_WAKE_SOURCE_PME_PCIE8        0x12
+#define  ELOG_WAKE_SOURCE_PME_PCIE9        0x13
+#define  ELOG_WAKE_SOURCE_PME_PCIE10       0x14
+#define  ELOG_WAKE_SOURCE_PME_PCIE11       0x15
+#define  ELOG_WAKE_SOURCE_PME_PCIE12       0x16
+#define  ELOG_WAKE_SOURCE_PME_SATA         0x17
+#define  ELOG_WAKE_SOURCE_PME_CSE          0x18
+#define  ELOG_WAKE_SOURCE_PME_CSE2         0x19
+#define  ELOG_WAKE_SOURCE_PME_CSE3         0x1a
+#define  ELOG_WAKE_SOURCE_PME_XHCI         0x1b
+#define  ELOG_WAKE_SOURCE_PME_XDCI         0x1c
+#define  ELOG_WAKE_SOURCE_PME_XHCI_USB_2   0x1d
+#define  ELOG_WAKE_SOURCE_PME_XHCI_USB_3   0x1e
+#define  ELOG_WAKE_SOURCE_PME_WIFI         0x1f
+
 struct elog_event_data_wake {
 	u8 source;
 	u32 instance;
-} __attribute__ ((packed));
+} __packed;
 
 /* Chrome OS related events */
 #define ELOG_TYPE_CROS_DEVELOPER_MODE     0xa0
@@ -143,7 +172,7 @@ struct elog_event_data_me_extended {
 	u8 progress_code;
 	u8 current_pmevent;
 	u8 current_state;
-} __attribute__ ((packed));
+} __packed;
 
 /* Last post code from previous boot */
 #define ELOG_TYPE_LAST_POST_CODE          0xa3
@@ -169,12 +198,28 @@ struct elog_event_data_me_extended {
 struct elog_event_mem_cache_update {
 	u8 slot;
 	u8 status;
-} __attribute__ ((packed));
+} __packed;
 
 /* CPU Thermal Trip */
 #define ELOG_TYPE_THERM_TRIP              0xab
 
-#if CONFIG_ELOG
+/* Cr50 */
+#define ELOG_TYPE_CR50_UPDATE             0xac
+
+/* Deep Sx wake variant */
+#define ELOG_TYPE_ACPI_DEEP_WAKE          0xad
+
+/* EC Device Event */
+#define ELOG_TYPE_EC_DEVICE_EVENT         0xae
+#define ELOG_EC_DEVICE_EVENT_TRACKPAD       0x01
+#define ELOG_EC_DEVICE_EVENT_DSP            0x02
+#define ELOG_EC_DEVICE_EVENT_WIFI           0x03
+
+/* S0ix sleep/wake */
+#define ELOG_TYPE_S0IX_ENTER              0xaf
+#define ELOG_TYPE_S0IX_EXIT               0xb0
+
+#if IS_ENABLED(CONFIG_ELOG)
 /* Eventlog backing storage must be initialized before calling elog_init(). */
 extern int elog_init(void);
 extern int elog_clear(void);
@@ -205,7 +250,26 @@ static inline int elog_smbios_write_type15(unsigned long *current,
 
 extern u32 gsmi_exec(u8 command, u32 *param);
 
+#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
 u32 boot_count_read(void);
+#else
+static inline u32 boot_count_read(void)
+{
+	return 0;
+}
+#endif
 u32 boot_count_increment(void);
+
+/*
+ * Callback from GSMI handler to allow platform to log any wake source
+ * information.
+ */
+void elog_gsmi_cb_platform_log_wake_source(void);
+
+/*
+ * Callback from GSMI handler to allow mainboard to log any wake source
+ * information.
+ */
+void elog_gsmi_cb_mainboard_log_wake_source(void);
 
 #endif /* ELOG_H_ */

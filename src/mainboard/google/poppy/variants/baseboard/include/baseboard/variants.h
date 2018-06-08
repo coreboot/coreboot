@@ -20,9 +20,6 @@
 #include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-/* Return the board id for the current variant board. */
-uint8_t variant_board_id(void);
-
 /*
  * The next set of functions return the gpio table and fill in the number of
  * entries for each table.
@@ -31,8 +28,17 @@ const struct pad_config *variant_gpio_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
 
 const struct cros_gpio *variant_cros_gpios(size_t *num);
+/* Config gpio by different sku id */
+const struct pad_config *variant_sku_gpio_table(size_t *num);
+
+enum memory_type {
+	MEMORY_LPDDR3,
+	MEMORY_DDR4,
+	MEMORY_COUNT,
+};
 
 struct memory_params {
+	enum memory_type type;
 	const void *dq_map;
 	size_t dq_map_size;
 	const void *dqs_map;
@@ -41,10 +47,13 @@ struct memory_params {
 	size_t rcomp_resistor_size;
 	const void *rcomp_target;
 	size_t rcomp_target_size;
+	bool use_sec_spd;
 };
 
 void variant_memory_params(struct memory_params *p);
 int variant_memory_sku(void);
+void variant_devtree_update(void);
+uint32_t variant_board_sku(void);
 
 struct nhlt;
 void variant_nhlt_init(struct nhlt *nhlt);

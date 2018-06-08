@@ -32,7 +32,7 @@ void mainboard_romstage_entry(struct romstage_params *params)
 	/* Fill out PEI DATA */
 	mainboard_fill_pei_data(params->pei_data);
 	mainboard_fill_spd_data(params->pei_data);
-	/* Initliaze memory */
+	/* Initialize memory */
 	romstage_common(params);
 }
 

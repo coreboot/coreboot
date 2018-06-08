@@ -55,7 +55,7 @@ typedef volatile struct {
 	u32 hcsparams;
 	u32 hccparams;
 	u64 hcsp_portroute;
-} __attribute__ ((packed)) hc_cap_t;
+} __packed hc_cap_t;
 
 typedef volatile struct {
 	u32 usbcmd;
@@ -83,7 +83,7 @@ typedef volatile struct {
 	u8 res2[0x40];
 	u32 hostpc;
 	/* hostpc register is used for CONFIG_LP_USB_EHCI_HOSTPC_ROOT_HUB_TT */
-} __attribute__ ((packed)) hc_op_t;
+} __packed hc_op_t;
 
 typedef volatile struct {
 #define QTD_TERMINATE 1
@@ -101,22 +101,22 @@ typedef volatile struct {
 #define QTD_CPAGE_SHIFT 12
 #define QTD_CPAGE_MASK (7 << QTD_CPAGE_SHIFT)
 #define QTD_TOTAL_LEN_SHIFT 16
-#define QTD_TOTAL_LEN_MASK (((1<<15)-1) << QTD_TOTAL_LEN_SHIFT)
+#define QTD_TOTAL_LEN_MASK (((1 << 15)-1) << QTD_TOTAL_LEN_SHIFT)
 #define QTD_TOGGLE_SHIFT 31
 #define QTD_TOGGLE_MASK (1 << 31)
 #define QTD_TOGGLE_DATA0 0
 #define QTD_TOGGLE_DATA1 (1 << QTD_TOGGLE_SHIFT)
 	u32 bufptrs[5];
 	u32 bufptrs64[5];
-} __attribute__ ((packed)) qtd_t;
+} __packed qtd_t;
 
 typedef volatile struct {
 	u32 horiz_link_ptr;
 #define QH_TERMINATE 1
-#define QH_iTD (0<<1)
-#define QH_QH (1<<1)
-#define QH_siTD (2<<1)
-#define QH_FSTN (3<<1)
+#define QH_iTD (0 << 1)
+#define QH_QH (1 << 1)
+#define QH_siTD (2 << 1)
+#define QH_FSTN (3 << 1)
 	u32 epchar;
 #define QH_EP_SHIFT 8
 #define QH_EPS_SHIFT 12
@@ -132,7 +132,7 @@ typedef volatile struct {
 #define QH_PIPE_MULTIPLIER_SHIFT 30
 	volatile u32 current_td_ptr;
 	volatile qtd_t td;
-} __attribute__ ((packed)) ehci_qh_t;
+} __packed ehci_qh_t;
 
 typedef struct ehci {
 	hc_cap_t *capabilities;
@@ -143,7 +143,7 @@ typedef struct ehci {
 } ehci_t;
 
 #define PS_TERMINATE 1
-#define PS_TYPE_QH 1 << 1
+#define PS_TYPE_QH (1 << 1)
 #define PS_PTR_MASK ~0x1f
 
 #define EHCI_INST(controller) ((ehci_t*)((controller)->instance))

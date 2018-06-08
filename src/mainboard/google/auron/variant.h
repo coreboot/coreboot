@@ -15,6 +15,7 @@
 #define VARIANT_H
 
 #include <arch/io.h>
+#include <device/device.h>
 #include <soc/romstage.h>
 
 int variant_smbios_data(device_t dev, int *handle, unsigned long *current);

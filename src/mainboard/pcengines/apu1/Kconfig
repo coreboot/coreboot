@@ -30,7 +30,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_CMOS_DEFAULT
 	select BOARD_ROMSIZE_KB_2048
 	select GENERIC_SPD_BIN
-	select PXE
 
 config MAINBOARD_DIR
 	string
@@ -39,6 +38,10 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	string
 	default "apu1"
+
+config DEFAULT_CONSOLE_LOGLEVEL
+	int
+	default 1
 
 config HW_MEM_HOLE_SIZEK
 	hex
@@ -68,10 +71,6 @@ config VGA_BIOS
 #	string "VGA BIOS path and filename"
 #	depends on VGA_BIOS
 #	default "rom/video/OntarioGenericVbios.bin"
-
-config SEABIOS_BOOTORDER_FILE
-	string
-	default "$(top)/src/mainboard/$(MAINBOARDDIR)/bootorder"
 
 config VGA_BIOS_ID
 	string

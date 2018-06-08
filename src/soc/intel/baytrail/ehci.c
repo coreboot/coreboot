@@ -87,7 +87,7 @@ static const struct reg_script ehci_hc_reset[] = {
 	REG_SCRIPT_END
 };
 
-static void usb2_phy_init(device_t dev)
+static void usb2_phy_init(struct device *dev)
 {
 	struct soc_intel_baytrail_config *config = dev->chip_info;
 	u32 usb2_comp_bg = (config->usb2_comp_bg == 0 ?
@@ -122,7 +122,7 @@ static void usb2_phy_init(device_t dev)
 	reg_script_run(usb2_phy_script);
 }
 
-static void ehci_init(device_t dev)
+static void ehci_init(struct device *dev)
 {
 	struct soc_intel_baytrail_config *config = dev->chip_info;
 	struct reg_script ehci_hc_init[] = {

@@ -16,6 +16,8 @@
 #ifndef _CIMX_SB800_PCI_DEVS_H_
 #define _CIMX_SB800_PCI_DEVS_H_
 
+#include <device/pci_def.h>
+
 #define BUS0 0
 
 /* SATA */

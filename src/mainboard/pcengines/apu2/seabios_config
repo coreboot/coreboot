@@ -1,0 +1,9 @@
+CONFIG_ATA_DMA=y
+CONFIG_ATA_PIO32=y
+# CONFIG_BOOTSPLASH is not set
+# CONFIG_MEGASAS is not set
+# CONFIG_FLOPPY is not set
+# CONFIG_PS2PORT is not set
+# CONFIG_USB_UHCI is not set
+# CONFIG_USB_OHCI is not set
+# CONFIG_LPT is not set

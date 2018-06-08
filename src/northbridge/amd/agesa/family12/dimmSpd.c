@@ -30,7 +30,6 @@
 #include <stdlib.h>
 #include "Porting.h"
 #include "AGESA.h"
-#include "amdlib.h"
 
 #include <northbridge/amd/agesa/dimmSpd.h>
 
@@ -54,7 +53,7 @@ STATIC CONST DIMM_INFO_SMBUS SpdAddrLookup [] =
 AGESA_STATUS
 AmdMemoryReadSPD (
   IN UINT32 Func,
-  IN UINT32 Data,
+  IN UINTN Data,
   IN OUT AGESA_READ_SPD_PARAMS *SpdData
   )
 {

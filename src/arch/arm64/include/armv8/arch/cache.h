@@ -67,11 +67,10 @@ void dcache_clean_invalidate_by_mva(void const *addr, size_t len);
 /* dcache invalidate by virtual address to PoC */
 void dcache_invalidate_by_mva(void const *addr, size_t len);
 
-/* dcache invalidate all */
-void flush_dcache_all(int op_type);
-
-/* flush the dcache up to the Level of Unification Inner Shareable */
-void flush_dcache_louis(int op_type);
+/* dcache clean and/or invalidate all sets/ways to PoC */
+void dcache_clean_all(void);
+void dcache_invalidate_all(void);
+void dcache_clean_invalidate_all(void);
 
 /* returns number of bytes per cache line */
 unsigned int dcache_line_bytes(void);

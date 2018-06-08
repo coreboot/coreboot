@@ -1,0 +1,5 @@
+config DRIVERS_I2C_PCA9538
+	bool
+	default n
+	help
+	  Enable support for I2C I/O expander PCA9538.

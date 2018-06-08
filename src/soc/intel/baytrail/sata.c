@@ -155,7 +155,7 @@ static void sata_init(struct device *dev)
 	pci_write_config32(dev, 0x98, reg32);
 }
 
-static void sata_enable(device_t dev)
+static void sata_enable(struct device *dev)
 {
 	config_t *config = dev->chip_info;
 	u8  reg8;

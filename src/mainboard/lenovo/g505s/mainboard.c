@@ -13,20 +13,13 @@
  * GNU General Public License for more details.
  */
 
-#include <northbridge/amd/agesa/agesawrapper.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "ec.h"
 
 #include <arch/acpi.h>
-#include <arch/io.h>
 #include <console/console.h>
-#include <cpu/x86/msr.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_def.h>
 
 #include <southbridge/amd/agesa/hudson/smi.h>
-
 
 static void pavilion_cold_boot_init(void)
 {
@@ -36,16 +29,14 @@ static void pavilion_cold_boot_init(void)
 	lenovo_g505s_ec_init();
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
 	hudson_configure_gevent_smi(EC_SMI_GEVENT, SMI_MODE_SMI, SMI_LVL_HIGH);
 	hudson_enable_smi_generation();
 
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3earlyrestore();
-	else
+	if (!acpi_is_wakeup_s3())
 		pavilion_cold_boot_init();
 
 }

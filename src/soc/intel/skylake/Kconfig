@@ -15,82 +15,105 @@ if SOC_INTEL_SKYLAKE
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
 	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
+	select ACPI_NHLT
 	select ARCH_BOOTBLOCK_X86_32
 	select ARCH_RAMSTAGE_X86_32
 	select ARCH_ROMSTAGE_X86_32
 	select ARCH_VERSTAGE_X86_32
-	select ACPI_NHLT
 	select BOOTBLOCK_CONSOLE
 	select BOOT_DEVICE_SPI_FLASH_RW_NOMMAP_EARLY if BOOT_DEVICE_SPI_FLASH
 	select BOOT_DEVICE_SUPPORTS_WRITES
 	select CACHE_MRC_SETTINGS
 	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM if RELOCATABLE_RAMSTAGE
-	select C_ENVIRONMENT_BOOTBLOCK
 	select COLLECT_TIMESTAMPS
 	select COMMON_FADT
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
+	select C_ENVIRONMENT_BOOTBLOCK
 	select GENERIC_GPIO_LIB
+	select HAVE_FSP_GOP
 	select HAVE_HARD_RESET
 	select HAVE_INTEL_FIRMWARE
 	select HAVE_MONOTONIC_TIMER
 	select HAVE_SMI_HANDLER
+	select INTEL_GMA_ACPI
 	select IOAPIC
-	select NO_FIXED_XIP_ROM_SIZE
 	select MRC_SETTINGS_PROTECT
+	select NO_FIXED_XIP_ROM_SIZE
 	select PARALLEL_MP
+	select PARALLEL_MP_AP_WORK
 	select PCIEXP_ASPM
-	select PCIEXP_COMMON_CLOCK
 	select PCIEXP_CLK_PM
+	select PCIEXP_COMMON_CLOCK
 	select PCIEXP_L1_SUB_STATE
 	select PCIEX_LENGTH_64MB
 	select REG_SCRIPT
 	select RELOCATABLE_MODULES
 	select RELOCATABLE_RAMSTAGE
 	select RTC
+	select SA_ENABLE_DPR
+	select SMM_TSEG
+	select SMP
 	select SOC_INTEL_COMMON
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	select SOC_INTEL_COMMON_BLOCK
+	select SOC_INTEL_COMMON_BLOCK_CPU
+	select SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
+	select SOC_INTEL_COMMON_BLOCK_CSE
+	select SOC_INTEL_COMMON_BLOCK_DSP
+	select SOC_INTEL_COMMON_BLOCK_EBDA
+	select SOC_INTEL_COMMON_BLOCK_FAST_SPI
+	select SOC_INTEL_COMMON_BLOCK_GPIO
+	select SOC_INTEL_COMMON_BLOCK_GPIO_LEGACY_MACROS
+	select SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL
+	select SOC_INTEL_COMMON_BLOCK_GRAPHICS
 	select SOC_INTEL_COMMON_BLOCK_GSPI
+	select SOC_INTEL_COMMON_BLOCK_I2C
 	select SOC_INTEL_COMMON_BLOCK_ITSS
+	select SOC_INTEL_COMMON_BLOCK_LPC
 	select SOC_INTEL_COMMON_BLOCK_LPSS
+	select SOC_INTEL_COMMON_BLOCK_PCIE
 	select SOC_INTEL_COMMON_BLOCK_PCR
+	select SOC_INTEL_COMMON_BLOCK_PMC
 	select SOC_INTEL_COMMON_BLOCK_RTC
 	select SOC_INTEL_COMMON_BLOCK_SA
+	select SOC_INTEL_COMMON_BLOCK_SATA
+	select SOC_INTEL_COMMON_BLOCK_SCS
+	select SOC_INTEL_COMMON_BLOCK_SGX
+	select SOC_INTEL_COMMON_BLOCK_SMBUS
+	select SOC_INTEL_COMMON_BLOCK_SMM
+	select SOC_INTEL_COMMON_BLOCK_SMM_IO_TRAP
+	select SOC_INTEL_COMMON_BLOCK_SPI
+	select SOC_INTEL_COMMON_BLOCK_TIMER
 	select SOC_INTEL_COMMON_BLOCK_UART
+	select SOC_INTEL_COMMON_BLOCK_VMX
+	select SOC_INTEL_COMMON_BLOCK_XDCI
 	select SOC_INTEL_COMMON_BLOCK_XHCI
-	select SOC_INTEL_COMMON_LPSS_I2C
 	select SOC_INTEL_COMMON_NHLT
 	select SOC_INTEL_COMMON_RESET
-	select SOC_INTEL_COMMON_SPI_FLASH_PROTECT
-	select SMM_TSEG
-	select SMP
 	select SSE2
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	select TSC_CONSTANT_RATE
+	select TSC_MONOTONIC_TIMER
 	select TSC_SYNC_MFENCE
 	select UDELAY_TSC
-	select ACPI_NHLT
 
 config MAINBOARD_USES_FSP2_0
 	bool
 	default n
 
 config USE_FSP2_0_DRIVER
-	bool "Build with FSP 2.0"
+	def_bool y
 	depends on MAINBOARD_USES_FSP2_0
-	default y if MAINBOARD_USES_FSP2_0
 	select PLATFORM_USES_FSP2_0
-	select ADD_VBT_DATA_FILE
-	select SOC_INTEL_COMMON_GFX_OPREGION
+	select UDK_2015_BINDING
+	select INTEL_GMA_ADD_VBT_DATA_FILE if RUN_FSP_GOP
 	select POSTCAR_CONSOLE
 	select POSTCAR_STAGE
 
 config USE_FSP1_1_DRIVER
-	bool "Build with FSP 1.1"
+	def_bool y
 	depends on !MAINBOARD_USES_FSP2_0
-	default y if !MAINBOARD_USES_FSP2_0
 	select PLATFORM_USES_FSP1_1
-	select GOP_SUPPORT
 	select DISPLAY_FSP_ENTRY_POINTS
 
 config CHROMEOS
@@ -118,11 +141,11 @@ config CPU_ADDR_BITS
 	default 36
 
 config DCACHE_RAM_BASE
-	hex "Base address of cache-as-RAM"
+	hex
 	default 0xfef00000
 
 config DCACHE_RAM_SIZE
-	hex "Length in bytes of cache-as-RAM"
+	hex
 	default 0x40000
 	help
 	  The size of the cache-as-ram region required during bootblock
@@ -153,26 +176,11 @@ config IED_REGION_SIZE
 	hex
 	default 0x400000
 
-config MONOTONIC_TIMER_MSR
-	def_bool y
-	select HAVE_MONOTONIC_TIMER
-	help
-	  Provide a monotonic timer using the 24MHz MSR counter.
-
 config PCR_BASE_ADDRESS
 	hex
 	default 0xfd000000
 	help
 	  This option allows you to select MMIO Base Address of sideband bus.
-
-config PRE_GRAPHICS_DELAY
-	int "Graphics initialization delay in ms"
-	default 0
-	help
-	  On some systems, coreboot boots so fast that connected monitors
-	  (mostly TVs) won't be able to wake up fast enough to talk to the
-	  VBIOS. On those systems we need to wait for a bit before executing
-	  the VBIOS.
 
 config SERIAL_CPU_INIT
 	bool
@@ -204,6 +212,14 @@ config UART_DEBUG
 	select DRIVERS_UART
 	select DRIVERS_UART_8250MEM_32
 	select NO_UART_ON_SUPERIO
+
+config UART_FOR_CONSOLE
+	int "Index for LPSS UART port to use for console"
+	default 2 if DRIVERS_UART_8250MEM
+	default 0
+	help
+	    Index for LPSS UART port to use for console:
+	    0 = LPSS UART0, 1 = LPSS UART1, 2 = LPSS UART2
 
 config SKYLAKE_SOC_PCH_H
 	bool
@@ -239,6 +255,12 @@ config NHLT_MAX98357
 	help
 	  Include DSP firmware settings for max98357 amplifier.
 
+config NHLT_MAX98373
+	bool
+	default n
+	help
+	  Include DSP firmware settings for max98373 amplifier.
+
 config NHLT_SSM4567
 	bool
 	default n
@@ -263,29 +285,35 @@ config NHLT_MAX98927
 	help
 	  Include DSP firmware settings for max98927 amplifier.
 
+config NHLT_DA7219
+	bool
+	default n
+	help
+	  Include DSP firmware settings for DA7219 headset codec.
+
 choice
 	prompt "Cache-as-ram implementation"
-	default CAR_NEM_ENHANCED
+	default USE_SKYLAKE_CAR_NEM_ENHANCED
 	help
 	  This option allows you to select how cache-as-ram (CAR) is set up.
 
-config CAR_NEM_ENHANCED
+config USE_SKYLAKE_CAR_NEM_ENHANCED
 	bool "Enhanced Non-evict mode"
 	select SOC_INTEL_COMMON_BLOCK_CAR
 	select INTEL_CAR_NEM_ENHANCED
 	help
-	  A current limitation of NEM (Non-Evict mode) is that code and data sizes
-	  are derived from the requirement to not write out any modified cache line.
-	  With NEM, if there is no physical memory behind the cached area,
-	  the modified data will be lost and NEM results will be inconsistent.
-	  ENHANCED NEM guarantees that modified data is always
+	  A current limitation of NEM (Non-Evict mode) is that code and data
+	  sizes are derived from the requirement to not write out any modified
+	  cache line. With NEM, if there is no physical memory behind the
+	  cached area, the modified data will be lost and NEM results will be
+	  inconsistent. ENHANCED NEM guarantees that modified data is always
 	  kept in cache while clean data is replaced.
 
 config USE_SKYLAKE_FSP_CAR
 	bool "Use FSP CAR"
 	select FSP_CAR
 	help
-	  Use FSP APIs to initialize & tear Down the Cache-As-Ram.
+	  Use FSP APIs to initialize and tear down the Cache-As-Ram.
 
 endchoice
 
@@ -310,12 +338,33 @@ config NO_FADT_8042
 	help
 	  Choose this option if you want to disable 8042 Keyboard
 
-config SOC_INTEL_COMMON_LPSS_CLOCK_MHZ
+config SOC_INTEL_COMMON_BLOCK_GSPI_CLOCK_MHZ
 	int
 	default 120
+
+config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
+	int
+	default SOC_INTEL_COMMON_BLOCK_GSPI_CLOCK_MHZ
 
 config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 	int
 	default 2
+
+config CPU_BCLK_MHZ
+	int
+	default 100
+
+# Clock divider parameters for 115200 baud rate
+config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
+	hex
+	default 0x30
+
+config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
+	hex
+	default 0xc35
+
+config IFD_CHIPSET
+	string
+	default "sklkbl"
 
 endif

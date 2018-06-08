@@ -40,6 +40,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***************************************************************************/
+
+#include <check_for_wrapper.h>
+
 #ifndef _FCH_BIOS_RAM_USAGE_H_
 #define _FCH_BIOS_RAM_USAGE_H_
 

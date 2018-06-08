@@ -153,6 +153,12 @@ Method (_CRS, 0, Serialized)
 				0x00000000, 0x000f0000, 0x000fffff, 0x00000000,
 				0x00010000,,, FSEG)
 
+		/* LPEA Memory Region (0x20000000-0x201FFFFF) */
+		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+				Cacheable, ReadWrite,
+				0x00000000, 0x20000000, 0x201FFFFF, 0x00000000,
+				0x00200000,,, LMEM)
+
 		/* PCI Memory Region (Top of memory-0xfeafffff) */
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 				Cacheable, ReadWrite,
@@ -166,6 +172,23 @@ Method (_CRS, 0, Serialized)
 				0x00005000,,, TPMR)
 	})
 
+	/* Update LPEA resource area */
+	CreateDWordField (MCRS, LMEM._MIN, LMIN)
+	CreateDWordField (MCRS, LMEM._MAX, LMAX)
+	CreateDWordField (MCRS, LMEM._LEN, LLEN)
+	If (LAnd (LNotEqual (LPFW, Zero), LEqual (LPEN, One)))
+	{
+		Store (LPFW, LMIN)
+		Store (Add (LMIN, 0x001FFFFF), LMAX)
+		Store (0x00200000, LLEN)
+	}
+	Else
+	{
+		Store (Zero, LMIN)
+		Store (Zero, LMAX)
+		Store (Zero, LLEN)
+	}
+
 	/* Update PCI resource area */
 	CreateDwordField(MCRS, PMEM._MIN, PMIN)
 	CreateDwordField(MCRS, PMEM._MAX, PMAX)
@@ -173,6 +196,7 @@ Method (_CRS, 0, Serialized)
 
 	/* TOLM is BMBOUND accessible from IOSF so is saved in NVS */
 	Store (\TOLM, PMIN)
+	Store (Subtract(CONFIG_MMCONF_BASE_ADDRESS, 1), PMAX)
 	Add (Subtract (PMAX, PMIN), 1, PLEN)
 
 	Return (MCRS)
@@ -253,7 +277,10 @@ Scope (\_SB)
 {
 	/* GPIO Devices */
 	#include "gpio.asl"
+}
 
+Scope (\_SB.PCI0)
+{
 	/* LPSS Devices */
 	#include "lpss.asl"
 

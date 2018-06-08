@@ -38,6 +38,7 @@ static inline uint8_t rdrand_32(uint32_t *rand)
 	return carry;
 }
 
+#if ENV_X86_64
 /*
  * Generate a 64-bit random number through RDRAND instruction.
  * Carry flag is set on RDRAND success and 0 on failure.
@@ -51,6 +52,7 @@ static inline uint8_t rdrand_64(uint64_t *rand)
 	     : "=a" (*rand), "=qm" (carry));
 	return carry;
 }
+#endif
 
 int get_random_number_32(uint32_t *rand)
 {
@@ -71,9 +73,12 @@ int get_random_number_64(uint64_t *rand)
 
 	/* Perform a loop call until RDRAND succeeds or returns failure. */
 	for (i = 0; i < RDRAND_RETRY_LOOPS; i++) {
-		if (ENV_X86_64 && rdrand_64(rand))
+#if ENV_X86_64
+		if (rdrand_64(rand))
 			return 0;
-		else if (rdrand_32(&rand_high) && rdrand_32(&rand_low)) {
+		else
+#endif
+		if (rdrand_32(&rand_high) && rdrand_32(&rand_low)) {
 			*rand = ((uint64_t)rand_high << 32) |
 				(uint64_t)rand_low;
 			return 0;

@@ -23,7 +23,7 @@ void sis966_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anactrl_io
 	uint32_t pll_ctrl;
 	uint32_t dword;
 	int i;
-	device_t dev;
+	pci_devfn_t dev;
 	dev = PCI_DEV(busnx, devnx+1, 1);
 	dword = pci_read_config32(dev, 0xe4);
 	dword |= 0x3f0; // disable it at first

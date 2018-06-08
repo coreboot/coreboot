@@ -29,13 +29,13 @@ void warm_reset(void)
 	outb(RST_CPU | SYS_RST, RST_CNT);
 }
 
-void soft_reset(void)
+void do_soft_reset(void)
 {
 	/* Sends INIT# to CPU */
 	outb(RST_CPU, RST_CNT);
 }
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	/* Don't power cycle on hard_reset(). It's not really clear what the
 	 * semantics should be for the meaning of hard_reset(). */

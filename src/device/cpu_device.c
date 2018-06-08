@@ -17,10 +17,11 @@
 #include <device/device.h>
 #include <console/console.h>
 
-device_t add_cpu_device(struct bus *cpu_bus, unsigned apic_id, int enabled)
+struct device *add_cpu_device(struct bus *cpu_bus, unsigned apic_id,
+			      int enabled)
 {
 	struct device_path cpu_path;
-	device_t cpu;
+	struct device *cpu;
 
 	/* Build the CPU device path */
 	cpu_path.type = DEVICE_PATH_APIC;
@@ -41,7 +42,8 @@ device_t add_cpu_device(struct bus *cpu_bus, unsigned apic_id, int enabled)
 	return cpu;
 }
 
-void set_cpu_topology(device_t cpu, unsigned node, unsigned package, unsigned core, unsigned thread)
+void set_cpu_topology(struct device *cpu, unsigned node, unsigned package,
+		      unsigned core, unsigned thread)
 {
 	cpu->path.apic.node_id = node;
 	cpu->path.apic.package_id = package;

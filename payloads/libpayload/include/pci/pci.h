@@ -67,6 +67,8 @@
 #define PCI_ROM_ADDRESS1	0x38 // on bridges
 #define PCI_ROM_ADDRESS_MASK	~0x7ff
 
+#define PCI_CLASS_MEMORY_OTHER	0x0580
+
 #define PCI_VENDOR_ID_INTEL 0x8086
 
 struct pci_dev {
@@ -86,7 +88,14 @@ struct pci_filter {
 	struct pci_dev *devices;
 };
 
+enum pci_access_type { /* dummy for code compatibility */
+	PCI_ACCESS_AUTO,
+	PCI_ACCESS_I386_TYPE1,
+	PCI_ACCESS_MAX
+};
+
 struct pci_access {
+	unsigned int method; /* dummy for code compatibility */
 	struct pci_dev *devices;
 };
 
@@ -106,5 +115,6 @@ int pci_filter_match(struct pci_filter*, struct pci_dev*);
 void pci_filter_init(struct pci_access*, struct pci_filter*);
 void pci_scan_bus(struct pci_access*);
 struct pci_dev *pci_get_dev(struct pci_access*, u16, u8, u8, u8);
+void pci_free_dev(struct pci_dev *);
 
 #endif

@@ -16,13 +16,10 @@
 
 #include "Porting.h"
 #include "AGESA.h"
-#include "amdlib.h"
 
-#include <northbridge/amd/agesa/agesawrapper.h>
-#include <vendorcode/amd/agesa/f15tn/Proc/CPU/heapManager.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <PlatformMemoryConfiguration.h>
 
-#define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 
 /*
  * Lane ID Mapping (from Fam15h BKDG: Table 45: Lane Id Mapping)
@@ -69,142 +66,97 @@
  * 38 DP2_TX[P,N]6
  */
 
-static const PCIe_PORT_DESCRIPTOR PortList [] = {
+static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	/* PCIe port, Lanes 8:23, PCI Device Number 2, x16 slot */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 8, 23),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 2, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 8, 23),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 2,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, 1)
 	},
 	/* PCIe port, Lane 4, PCI Device Number 4, Realtek LAN */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 4),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 4, 4),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 4,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, 1)
 	},
 	/* PCIe port, Lane 5, PCI Device Number 5, x1 slot (1) */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 5, 5),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 5, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 5, 5),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 5,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, 1)
 	},
 	/* PCIe port, Lane 6, PCI Device Number 6, x1 slot (2) */
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 6, 6),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 6, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 6, 6),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 6,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, 1)
 	},
 	/* PCIe port, Lanes 0:3, UMI link to SB, PCI Device Number 8 */
 	{
 		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 8, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
+		PCIE_ENGINE_DATA_INITIALIZER(PciePortEngine, 0, 3),
+		PCIE_PORT_DATA_INITIALIZER(PortEnabled, ChannelTypeExt6db, 8,
+				HotplugDisabled,
+				PcieGenMaxSupported,
+				PcieGenMaxSupported,
+				AspmDisabled, 0)
 	},
 };
 
-static const PCIe_DDI_DESCRIPTOR DdiList [] = {
+static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 	// DP0 to HDMI0/DP
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 24, 27),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux1, Hdp1)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 24, 27),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeHDMI, Aux1, Hdp1)
 	},
 	// DP1 to FCH
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 28, 31),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeNutmegDpToVga, Aux2, Hdp2)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 28, 31),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeNutmegDpToVga, Aux2, Hdp2)
 	},
 	// DP2 to HDMI1/DP
 	{
 		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 32, 35),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux3, Hdp3)
+		PCIE_ENGINE_DATA_INITIALIZER(PcieDdiEngine, 32, 35),
+		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeHDMI, Aux3, Hdp3)
 	},
 };
 
-static const PCIe_COMPLEX_DESCRIPTOR Trinity = {
-        DESCRIPTOR_TERMINATE_LIST,
-        0,
-        &PortList[0],
-        &DdiList[0]
+static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
+	.Flags        = DESCRIPTOR_TERMINATE_LIST,
+	.SocketId     = 0,
+	.PciePortList = PortList,
+	.DdiLinkList  = DdiList,
 };
 
-/*---------------------------------------------------------------------------------------*/
-/**
- *  OemCustomizeInitEarly
- *
- *  Description:
- *    This stub function will call the host environment through the binary block
- *    interface (call-out port) to provide a user hook opportunity
- *
- *  Parameters:
- *    @param[in]      *InitEarly
- *
- *    @retval         VOID
- *
- **/
-/*---------------------------------------------------------------------------------------*/
-
-static AGESA_STATUS OemInitEarly(AMD_EARLY_PARAMS * InitEarly)
+void board_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 {
-	AGESA_STATUS         Status;
-	VOID                 *TrinityPcieComplexListPtr;
-	VOID                 *TrinityPciePortPtr;
-	VOID                 *TrinityPcieDdiPtr;
-
-	ALLOCATE_HEAP_PARAMS AllocHeapParams;
-
-	// GNB PCIe topology Porting
-
-	//
-	// Allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR
-	//
-	AllocHeapParams.RequestedBufferSize = sizeof(Trinity) + sizeof(PortList) + sizeof(DdiList);
-	AllocHeapParams.BufferHandle = AMD_MEM_MISC_HANDLES_START;
-	AllocHeapParams.Persist = HEAP_LOCAL_CACHE;
-	Status = HeapAllocateBuffer (&AllocHeapParams, &InitEarly->StdHeader);
-	ASSERT(Status == AGESA_SUCCESS);
-
-	TrinityPcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
-
-	AllocHeapParams.BufferPtr += sizeof(Trinity);
-	TrinityPciePortPtr         =  (PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
-
-	AllocHeapParams.BufferPtr += sizeof(PortList);
-	TrinityPcieDdiPtr          =  (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
-
-	LibAmdMemFill (TrinityPcieComplexListPtr,
-		       0,
-		       sizeof(Trinity),
-		       &InitEarly->StdHeader);
-
-	LibAmdMemFill (TrinityPciePortPtr,
-		       0,
-		       sizeof(PortList),
-		       &InitEarly->StdHeader);
-
-	LibAmdMemFill (TrinityPcieDdiPtr,
-		       0,
-		       sizeof(DdiList),
-		       &InitEarly->StdHeader);
-
-	LibAmdMemCopy  (TrinityPcieComplexListPtr, &Trinity, sizeof(Trinity), &InitEarly->StdHeader);
-	LibAmdMemCopy  (TrinityPciePortPtr, &PortList[0], sizeof(PortList), &InitEarly->StdHeader);
-	LibAmdMemCopy  (TrinityPcieDdiPtr, &DdiList[0], sizeof(DdiList), &InitEarly->StdHeader);
-
-	((PCIe_COMPLEX_DESCRIPTOR*)TrinityPcieComplexListPtr)->PciePortList =  (PCIe_PORT_DESCRIPTOR*)TrinityPciePortPtr;
-	((PCIe_COMPLEX_DESCRIPTOR*)TrinityPcieComplexListPtr)->DdiLinkList  =  (PCIe_DDI_DESCRIPTOR*)TrinityPcieDdiPtr;
-
-	InitEarly->GnbConfig.PcieComplexList = TrinityPcieComplexListPtr;
-	return AGESA_SUCCESS;
+	FCH_RESET_INTERFACE *FchReset = &Reset->FchInterface;
+	FchReset->Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
+	FchReset->Xhci1Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
 }
 
-static AGESA_STATUS OemInitMid(AMD_MID_PARAMS * InitMid)
+void board_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *InitEarly)
 {
-	/* 0 iGpuVgaAdapter, 1 iGpuVgaNonAdapter; */
-	InitMid->GnbMidConfiguration.iGpuVgaMode = 0;
-	return AGESA_SUCCESS;
+	InitEarly->GnbConfig.PcieComplexList = &PcieComplex;
 }
 
 /*----------------------------------------------------------------------------------------
@@ -218,21 +170,28 @@ static AGESA_STATUS OemInitMid(AMD_MID_PARAMS * InitMid)
  *  is populated, AGESA will base its settings on the data from the table. Otherwise, it will
  *  use its default conservative settings.
  */
-CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
+static CONST PSO_ENTRY ROMDATA PlatformMemoryTable[] = {
 
-  NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
-  NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 2),
+  NUMBER_OF_DIMMS_SUPPORTED(ANY_SOCKET, ANY_CHANNEL, 2),
+  NUMBER_OF_CHANNELS_SUPPORTED(ANY_SOCKET, 2),
 /*
   TODO: is this OK for DDR3 socket FM2?
-  MEMCLK_DIS_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
-  CKE_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x05, 0x0A),
-  ODT_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00),
-  CS_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+  MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+  CKE_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0x05, 0x0A),
+  ODT_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00),
+  CS_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
   */
   PSO_END
 };
 
-const struct OEM_HOOK OemCustomize = {
-	.InitEarly = OemInitEarly,
-	.InitMid = OemInitMid,
-};
+
+void board_BeforeInitPost(struct sysinfo *cb, AMD_POST_PARAMS *InitPost)
+{
+	InitPost->MemConfig.PlatformMemoryConfiguration = (PSO_ENTRY *)PlatformMemoryTable;
+}
+
+void board_BeforeInitMid(struct sysinfo *cb, AMD_MID_PARAMS *InitMid)
+{
+	/* 0 iGpuVgaAdapter, 1 iGpuVgaNonAdapter; */
+	InitMid->GnbMidConfiguration.iGpuVgaMode = 0;
+}

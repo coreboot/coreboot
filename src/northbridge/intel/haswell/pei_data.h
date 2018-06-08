@@ -30,6 +30,8 @@
 #ifndef PEI_DATA_H
 #define PEI_DATA_H
 
+#include <compiler.h>
+
 typedef void (*tx_byte_func)(unsigned char byte);
 #define PEI_VERSION 15
 
@@ -56,12 +58,12 @@ struct usb2_port_setting {
 	uint8_t enable;
 	uint8_t over_current_pin;
 	uint8_t location;
-} __attribute__((packed));
+} __packed;
 
 struct usb3_port_setting {
 	uint8_t enable;
 	uint8_t over_current_pin;
-} __attribute__((packed));
+} __packed;
 
 struct pei_data
 {
@@ -110,6 +112,6 @@ struct pei_data
 	struct usb3_port_setting usb3_ports[MAX_USB3_PORTS];
 	uint8_t spd_data[4][256];
 	tx_byte_func tx_byte;
-} __attribute__((packed));
+} __packed;
 
 #endif

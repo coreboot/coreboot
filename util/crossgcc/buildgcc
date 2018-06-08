@@ -18,8 +18,8 @@
 
 cd $(dirname $0)
 
-CROSSGCC_DATE="March 3rd, 2017"
-CROSSGCC_VERSION="1.44"
+CROSSGCC_DATE="October 15th, 2017"
+CROSSGCC_VERSION="1.50"
 CROSSGCC_COMMIT=$( git describe )
 
 # default settings
@@ -38,49 +38,48 @@ THREADS=1
 GMP_VERSION=6.1.2
 MPFR_VERSION=3.1.5
 MPC_VERSION=1.0.3
-LIBELF_VERSION=0.8.13
 GCC_VERSION=6.3.0
 GCC_AUTOCONF_VERSION=2.69
-BINUTILS_VERSION=2.28
-GDB_VERSION=7.12
+BINUTILS_VERSION=2.29.1
+GDB_VERSION=8.0
 IASL_VERSION=20161222
 PYTHON_VERSION=3.5.1
-EXPAT_VERSION=2.1.1
+EXPAT_VERSION=2.2.1
 # CLANG version number
-CLANG_VERSION=3.9.1
+CLANG_VERSION=4.0.0
 MAKE_VERSION=4.2.1
+CMAKE_VERSION=3.9.0-rc3
 
 # GCC toolchain archive locations
 # These are sanitized by the jenkins toolchain test builder, so if
 # a completely new URL is added here, it probably needs to be added
 # to the jenkins build as well, or the builder won't download it.
-GMP_ARCHIVE="http://ftpmirror.gnu.org/gmp/gmp-${GMP_VERSION}.tar.xz"
-MPFR_ARCHIVE="http://ftpmirror.gnu.org/mpfr/mpfr-${MPFR_VERSION}.tar.xz"
-MPC_ARCHIVE="http://ftpmirror.gnu.org/mpc/mpc-${MPC_VERSION}.tar.gz"
-LIBELF_ARCHIVE="http://www.mr511.de/software/libelf-${LIBELF_VERSION}.tar.gz"
-GCC_ARCHIVE="http://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2"
-BINUTILS_ARCHIVE="http://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.bz2"
-GDB_ARCHIVE="http://ftpmirror.gnu.org/gdb/gdb-${GDB_VERSION}.tar.xz"
+GMP_ARCHIVE="https://ftpmirror.gnu.org/gmp/gmp-${GMP_VERSION}.tar.xz"
+MPFR_ARCHIVE="https://ftpmirror.gnu.org/mpfr/mpfr-${MPFR_VERSION}.tar.xz"
+MPC_ARCHIVE="https://ftpmirror.gnu.org/mpc/mpc-${MPC_VERSION}.tar.gz"
+GCC_ARCHIVE="https://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2"
+BINUTILS_ARCHIVE="https://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.xz"
+GDB_ARCHIVE="https://ftpmirror.gnu.org/gdb/gdb-${GDB_VERSION}.tar.xz"
 IASL_ARCHIVE="https://acpica.org/sites/acpica/files/acpica-unix2-${IASL_VERSION}.tar.gz"
-PYTHON_ARCHIVE="http://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz"
-EXPAT_ARCHIVE="http://downloads.sourceforge.net/sourceforge/expat/expat-${EXPAT_VERSION}.tar.bz2"
+PYTHON_ARCHIVE="https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz"
+EXPAT_ARCHIVE="https://downloads.sourceforge.net/sourceforge/expat/expat-${EXPAT_VERSION}.tar.bz2"
 # CLANG toolchain archive locations
-LLVM_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/llvm-${CLANG_VERSION}.src.tar.xz"
-CFE_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/cfe-${CLANG_VERSION}.src.tar.xz"
-CRT_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz"
-CTE_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/clang-tools-extra-${CLANG_VERSION}.src.tar.xz"
-MAKE_ARCHIVE="http://ftpmirror.gnu.org/make/make-${MAKE_VERSION}.tar.bz2"
+LLVM_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/llvm-${CLANG_VERSION}.src.tar.xz"
+CFE_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/cfe-${CLANG_VERSION}.src.tar.xz"
+CRT_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz"
+CTE_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/clang-tools-extra-${CLANG_VERSION}.src.tar.xz"
+MAKE_ARCHIVE="https://ftpmirror.gnu.org/make/make-${MAKE_VERSION}.tar.bz2"
+CMAKE_ARCHIVE="https://cmake.org/files/v3.9/cmake-${CMAKE_VERSION}.tar.gz"
 
-ALL_ARCHIVES="$GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE \
+ALL_ARCHIVES="$GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE \
 	$GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $IASL_ARCHIVE \
 	$PYTHON_ARCHIVE $EXPAT_ARCHIVE $LLVM_ARCHIVE $CFE_ARCHIVE \
-	$CRT_ARCHIVE $CTE_ARCHIVE $MAKE_ARCHIVE"
+	$CRT_ARCHIVE $CTE_ARCHIVE $MAKE_ARCHIVE $CMAKE_ARCHIVE"
 
 # GCC toolchain directories
 GMP_DIR="gmp-${GMP_VERSION}"
 MPFR_DIR="mpfr-${MPFR_VERSION}"
 MPC_DIR="mpc-${MPC_VERSION}"
-LIBELF_DIR="libelf-${LIBELF_VERSION}"
 GCC_DIR="gcc-${GCC_VERSION}"
 BINUTILS_DIR="binutils-${BINUTILS_VERSION}"
 GDB_DIR="gdb-${GDB_VERSION}"
@@ -93,6 +92,7 @@ CFE_DIR="cfe-${CLANG_VERSION}.src"
 CRT_DIR="compiler-rt-${CLANG_VERSION}.src"
 CTE_DIR="clang-tools-extra-${CLANG_VERSION}.src"
 MAKE_DIR="make-${MAKE_VERSION}"
+CMAKE_DIR="cmake-${CMAKE_VERSION}"
 
 unset MAKELEVEL MAKEFLAGS
 
@@ -109,6 +109,26 @@ NC='\033[0m' # No Color
 UNAME=$(uname | grep -iq cygwin && echo Cygwin || uname)
 HALT_FOR_TOOLS=0
 
+hostcc()
+{
+	# $1 "host" or "target"
+	if [ "$BOOTSTRAP" = 1 -a "$1" = target ]; then
+		echo $DESTDIR$TARGETDIR/bin/gcc
+	else
+		echo $CC
+	fi
+}
+
+hostcxx()
+{
+	# $1 "host" or "target"
+	if [ "$BOOTSTRAP" = 1 -a "$1" = target ]; then
+		echo $DESTDIR$TARGETDIR/bin/g++
+	else
+		echo $CXX
+	fi
+}
+
 normalize_dirs()
 {
 	mkdir -p $DESTDIR$TARGETDIR/lib
@@ -120,10 +140,51 @@ normalize_dirs()
 	perl -pi -e "s,/lib64,/lib," $DESTDIR$TARGETDIR/lib/*.la
 }
 
+countdown()
+{
+	tout=${1:-10}
+
+	printf "\nPress Ctrl-C to abort, Enter to continue... %2ds" $tout
+	while [ $tout -gt 0 ]; do
+		sleep 1
+		tout=$((tout - 1))
+		printf "\b\b\b%2ds" $tout
+	done
+	printf "\n"
+}
+
+timeout()
+{
+	tout=${1:-10}
+
+	# Ignore SIGUSR1, should interrupt `read` though.
+	trap false USR1
+	# Clean up in case the user aborts.
+	trap 'kill $counter > /dev/null 2>&1' EXIT
+
+	(countdown $tout; kill -USR1 $$)&
+	counter=$!
+
+	# Some shells with sh compatibility mode (e.g. zsh, mksh) only
+	# let us interrupt `read` if a non-standard -t parameter is given.
+	if echo | read -t 1 foo 2>/dev/null; then
+		read -t $((tout + 1)) foo
+	else
+		read foo
+	fi
+
+	kill $counter > /dev/null 2>&1
+	trap - USR1 EXIT
+}
+
 please_install()
 {
 	HALT_FOR_TOOLS=1
 	test -r /etc/os-release && . /etc/os-release
+	# vanilla debian doesn't define `ID_LIKE`, just `ID`
+	if [ -z "${ID_LIKE}" ] && [ -n "${ID}" ]; then
+		ID_LIKE=${ID}
+	fi
 	case "$ID_LIKE" in
 	debian) solution="sudo apt-get install $1" ;;
 	suse) solution="sudo zypper install $1" ;;
@@ -149,7 +210,7 @@ searchtool()
 		search="$2"
 	fi
 	for i in "$1" "g$1" "gnu$1"; do
-		if [ -x "$(which $i 2>/dev/null)" ]; then
+		if [ -x "$(command -v $i 2>/dev/null)" ]; then
 			if [ "$(cat /dev/null | $i --version 2>&1 | grep -c "$search")" \
 			    -gt 0 ]; then
 				echo $i
@@ -161,7 +222,7 @@ searchtool()
 	# patch and tar also work.
 	if [ $UNAME = "Darwin" -o $UNAME = "FreeBSD" -o $UNAME = "NetBSD" -o $UNAME = "OpenBSD" ]; then
 		if [ "$1" = "patch" -o "$1" = "tar" ]; then
-			if [ -x "$(which $1 2>/dev/null)" ]; then
+			if [ -x "$(command -v $1 2>/dev/null)" ]; then
 				echo $1
 				return
 			fi
@@ -169,19 +230,19 @@ searchtool()
 	fi
 	if echo $1 | grep -q "sum" ; then
 		algor=$(echo $1 | sed -e 's,sum,,')
-		if [ -x "$(which $1 2>/dev/null)" ]; then
+		if [ -x "$(command -v $1 2>/dev/null)" ]; then
 			#xxxsum [file]
 			echo $1
 			return
-		elif [ -x "$(which $algor 2>/dev/null)" ]; then
+		elif [ -x "$(command -v $algor 2>/dev/null)" ]; then
 			#xxx [file]
 			echo $algor
 			return
-		elif [ -x "$(which openssl 2>/dev/null)" ]; then
+		elif [ -x "$(command -v openssl 2>/dev/null)" ]; then
 			#openssl xxx [file]
 			echo openssl $algor
 			return
-		elif [ -x "$(which cksum 2>/dev/null)" ]; then
+		elif [ -x "$(command -v cksum 2>/dev/null)" ]; then
 			#cksum -a xxx [file]
 			#cksum has special options in NetBSD. Actually, NetBSD will use the second case above.
 			echo "buildgcc" | cksum -a $algor > /dev/null 2>/dev/null && \
@@ -202,7 +263,7 @@ check_for_library() {
 
 	echo "int main(int argc, char **argv) { (void) argc; (void) argv; return 0; }" > "${LIBTEST_FILE}.c"
 
-	cc $CFLAGS $LIBRARY_FLAGS "${LIBTEST_FILE}.c" -o "${LIBTEST_FILE}" >/dev/null 2>&1 || \
+	"$CC" $CFLAGS $LIBRARY_FLAGS "${LIBTEST_FILE}.c" -o "${LIBTEST_FILE}" >/dev/null 2>&1 || \
 		please_install "$LIBRARY_PACKAGES"
 	rm -rf "${LIBTEST_FILE}.c" "${LIBTEST_FILE}"
 }
@@ -235,49 +296,13 @@ hostcc_has_gnat1() {
 	[ -x "$(${CC} -print-prog-name=gnat1)" ]
 }
 
+have_gnat() {
+	hostcc_has_gnat1 && \
+	searchtool gnatbind "Free Software Foundation" nofail > /dev/null
+}
+
 ada_requested() {
 	echo "${LANGUAGES}" | grep -q '\<ada\>'
-}
-
-check_gnat() {
-	if hostcc_has_gnat1; then
-		if [ \( "$(hostcc_major)" -lt 4 -o \
-			\( "$(hostcc_major)" -eq 4 -a "$(hostcc_minor)" -lt 9 \) \) -a \
-		     "${BOOTSTRAP}" != "1" ];
-		then
-			printf "\n${RED}ERROR:${red} Building the Ada compiler (gnat $(buildcc_version)) "
-			printf "with a host compiler older\n       than 4.9.x (yours $(hostcc_version)) "
-			printf "requires bootstrapping (-b).${NC}\n\n"
-			HALT_FOR_TOOLS=1
-		fi
-	else
-		please_install gnat
-	fi
-}
-
-check_cc() {
-	if is_package_enabled "GCC"; then
-		if [ "$(hostcc_major)" != "$(buildcc_major)" -a "${BOOTSTRAP}" != "1" ]; then
-			printf "\n${red}warning: Building GCC $(buildcc_version) with a different major "
-			printf "version ($(hostcc_version)).\n"
-			printf "         Bootstrapping (-b) is recommended.${NC}\n\n"
-		fi
-		if ada_requested; then
-			check_gnat
-		fi
-	fi
-}
-
-check_sum() {
-	test -z "$CHECKSUM" || \
-	test "$(cat sum/$1.cksum 2>/dev/null | sed -e 's@.*\([0-9a-f]\{40,\}\).*@\1@')" = \
-	"$($CHECKSUM tarballs/$1 2>/dev/null | sed -e 's@.*\([0-9a-f]\{40,\}\).*@\1@')"
-}
-
-compute_sum() {
-	test ! -f sum/$1.cksum && test -f tarballs/$1 && \
-	(test -z "$CHECKSUM" || $CHECKSUM tarballs/$1 > sum/$1.cksum ) && \
-	printf "(checksum created. ${RED}Note. Please upload sum/$1.cksum if the corresponding archive is upgraded.)${NC}"
 }
 
 download() {
@@ -287,21 +312,105 @@ download() {
 	FILE=$(basename $archive)
 	printf " * $FILE "
 
-	if test -f tarballs/$FILE && check_sum $FILE ; then
-		echo "(cached)"
+	if test -f tarballs/$FILE; then
+		printf "(cached)... "
 	else
 		printf "(downloading from $archive)"
 		rm -f tarballs/$FILE
 		cd tarballs
 		download_showing_percentage $archive
 		cd ..
-		compute_sum $FILE
 	fi
 
 	if [ ! -f tarballs/$FILE ]; then
 		printf "${RED}Failed to download $FILE.${NC}\n"
 		exit 1
 	fi
+}
+
+# Compute the hash of the package given in $1, and print it raw (just the
+# hexadecimal hash).
+compute_hash() {
+	package=$1
+	archive="$(eval echo \$$package"_ARCHIVE")"
+	file="$(basename "$archive")"
+
+	if test -z "$CHECKSUM"; then
+		echo "${RED}\$CHECKSUM program missing. This is bad.${NC}" 1>&2
+		exit 1
+	fi
+
+	$CHECKSUM "tarballs/$file" 2>/dev/null | sed -e 's@.*\([0-9a-f]\{40,\}\).*@\1@'
+}
+
+error_hash_missing() {
+	package="$1"
+	archive="$(eval echo \$$package"_ARCHIVE")"
+	file="$(basename "$archive")"
+
+	fullhashfile="util/crossgcc/sum/$file.cksum"
+	printf "${RED}hash file missing:${NC}\n\n" 1>&2
+	printf "Please verify util/crossgcc/tarball/$file carefully\n" 1>&2
+	printf "(using PGP if possible), and then rename\n" 1>&2
+	printf "        ${CYAN}${fullhashfile}.calc${NC}\n" 1>&2
+	printf "     to ${CYAN}${fullhashfile}${NC}\n\n" 1>&2
+
+	exit 1
+}
+
+# Read the known hash file of the package given in $1, and print it raw.
+get_known_hash() {
+	package=$1
+	archive="$(eval echo \$$package"_ARCHIVE")"
+	file="$(basename "$archive")"
+	hashfile="sum/$file.cksum"
+
+	if [ ! -f "$hashfile" ]; then
+		calc_hash="$(compute_hash "$package")" || exit 1
+		echo "$calc_hash  tarballs/$file" > "${hashfile}.calc"
+
+		error_hash_missing "$package"
+		exit 1
+	fi
+
+	cat "$hashfile" | sed -e 's@.*\([0-9a-f]\{40,\}\).*@\1@'
+}
+
+error_hash_mismatch() {
+	package=$1
+	known_hash="$2"
+	computed_hash="$3"
+	archive="$(eval echo \$$package"_ARCHIVE")"
+	file="$(basename "$archive")"
+
+	printf "${RED}hash mismatch:${NC}\n\n"
+	printf "             expected (known) hash: $known_hash\n"
+	printf "calculated hash of downloaded file: $computed_hash\n\n"
+
+	printf "If you think this is due to a network error, please delete\n"
+	printf "  ${CYAN}util/crossgcc/tarballs/$file${NC}\n"
+	printf "and try again. If the problem persists, it may be due to an\n"
+	printf "administration error on the file server, or you might be\n"
+	printf "subject to a Man-in-the-Middle attack\n\n"
+
+	exit 1
+}
+
+# verify_hash - Check that the hash of the file given in $1 matches the known
+# hash; Bail out on mismatch or missing hash file.
+verify_hash() {
+	package=$1
+	archive="$(eval echo \$$package"_ARCHIVE")"
+
+	known_hash="$(get_known_hash "$package")" || exit "$?"
+	computed_hash="$(compute_hash "$package")" || exit "$?"
+
+	if [ "$known_hash" != "$computed_hash" ]; then
+		error_hash_mismatch "$package" "$known_hash" "$computed_hash"
+		exit 1
+	fi
+
+	printf "${GREEN}hash verified ("$known_hash")${NC}\n"
 }
 
 unpack_and_patch() {
@@ -375,7 +484,7 @@ generic_build()
 		if [ ! -f "$builddir/.failed" ]; then
 			touch "$success";
 		else
-			printf "${RED}failed${NC}. Check $builddir/build.log.\n"
+			printf "${RED}failed${NC}. Check '$builddir/build.log'.\n"
 			exit 1
 		fi
 		printf "${green}ok${NC}\n"
@@ -408,7 +517,7 @@ build()
 	fi
 }
 
-quit()
+exit_handler()
 {
 	printf "${NC}Stop\n"
 	exit 1
@@ -510,7 +619,8 @@ build_GMP() {
 		OPTIONS="$OPTIONS --with-pic"
 	fi
 
-	CC="$CC" ../${GMP_DIR}/configure --disable-shared --enable-fat \
+	CC="$(hostcc host)" CXX="$(hostcxx host)" \
+	../${GMP_DIR}/configure --disable-shared --enable-fat \
 		--prefix=$TARGETDIR $OPTIONS \
 		|| touch .failed
 	$MAKE $JOBS || touch .failed
@@ -523,7 +633,8 @@ build_GMP() {
 
 build_MPFR() {
 	test $UNAME = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
-	CC="$CC" ../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+	CC="$(hostcc host)" CXX="$(hostcxx host)" \
+	../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info \
 		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
 		touch .failed
@@ -539,7 +650,8 @@ build_MPFR() {
 }
 
 build_MPC() {
-	CC="$CC" ../${MPC_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+	CC="$(hostcc host)" CXX="$(hostcxx host)" \
+	../${MPC_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info --with-mpfr=$DESTDIR$TARGETDIR \
 		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
 		touch .failed
@@ -560,25 +672,16 @@ build_MPC() {
 	normalize_dirs
 }
 
-build_LIBELF() {
-	CC="$CC" CFLAGS="$HOSTCFLAGS" libelf_cv_elf_h_works=no \
-	../${LIBELF_DIR}/configure --disable-shared --prefix=$TARGETDIR \
-		--infodir=$TARGETDIR/info CFLAGS="$HOSTCFLAGS" || touch .failed
-	$MAKE $JOBS || touch .failed
-	$MAKE install prefix=$DESTDIR$TARGETDIR || touch .failed
-
-	normalize_dirs
-}
-
 build_BINUTILS() {
 	if [ $TARGETARCH = "x86_64-elf" ]; then
 		ADDITIONALTARGET=",i386-elf"
 	fi
-	CC="$CC" ../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR \
+	CC="$(hostcc target)" CXX="$(hostcxx target)" \
+	../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR \
 		--target=${TARGETARCH} --enable-targets=${TARGETARCH}${ADDITIONALTARGET} \
 		--disable-werror --disable-nls --enable-lto --enable-gold \
 		--enable-interwork --enable-multilib \
-		--enable-plugins --enable-multilibs
+		--enable-plugins --enable-multilibs \
 		CFLAGS="$HOSTCFLAGS" \
 		CXXFLAGS="$HOSTCFLAGS" \
 		|| touch .failed
@@ -587,7 +690,7 @@ build_BINUTILS() {
 }
 
 bootstrap_GCC() {
-	CC="$CC" \
+	CC="$(hostcc host)" CXX="$(hostcxx host)" \
 		CFLAGS="$HOSTCFLAGS" \
 		CFLAGS_FOR_BUILD="$HOSTCFLAGS" \
 		CFLAGS_FOR_TARGET="$HOSTCFLAGS -fPIC" \
@@ -603,7 +706,7 @@ bootstrap_GCC() {
 		--disable-libsanitizer \
 		${GCC_OPTIONS} --enable-languages="${LANGUAGES}" \
 		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
-		--with-mpc=$DESTDIR$TARGETDIR --with-libelf=$DESTDIR$TARGETDIR \
+		--with-mpc=$DESTDIR$TARGETDIR \
 		--with-pkgversion="coreboot bootstrap v$CROSSGCC_VERSION $CROSSGCC_DATE" \
 		&& \
 	$MAKE $JOBS BOOT_CFLAGS="$HOSTCFLAGS" BUILD_CONFIG="" bootstrap && \
@@ -611,14 +714,15 @@ bootstrap_GCC() {
 		install-target-libgcc \
 		maybe-install-target-libada \
 		maybe-install-target-libstdc++-v3 \
-		DESTDIR=$DESTDIR && \
-	ln -s gcc $DESTDIR$TARGETDIR/bin/cc || touch .failed
+		DESTDIR=$DESTDIR || touch .failed
 }
 
 build_cross_GCC() {
 	# Work around crazy code generator in GCC that confuses CLANG.
 	$CC --version | grep clang >/dev/null 2>&1 && \
-		HOSTCFLAGS="$HOSTCFLAGS -fbracket-depth=1024"
+		CLANGFLAGS="-fbracket-depth=1024"
+	[ -n "$CXX" ] && $CXX --version | grep clang >/dev/null 2>&1 && \
+		CLANGCXXFLAGS="-fbracket-depth=1024"
 
 	# GCC does not honor HOSTCFLAGS at all. CFLAGS are used for
 	# both target and host object files.
@@ -627,9 +731,13 @@ build_cross_GCC() {
 	# libiberty is not compiled with CFLAGS_FOR_BUILD.
 	# Also set the CXX version of the flags because GCC is now compiled
 	# using C++.
-	CC="$CC" CFLAGS_FOR_TARGET="-O2 -Dinhibit_libc" CFLAGS="$HOSTCFLAGS" \
-		CFLAGS_FOR_BUILD="$HOSTCFLAGS" CXXFLAGS="$HOSTCFLAGS" \
-		CXXFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
+	CC="$(hostcc target)" CXX="$(hostcxx target)" \
+		CFLAGS_FOR_TARGET="-O2 -Dinhibit_libc" \
+		CFLAGS="$HOSTCFLAGS $CLANGFLAGS" \
+		CFLAGS_FOR_BUILD="$HOSTCFLAGS $CLANGFLAGS" \
+		CXXFLAGS="$HOSTCFLAGS $CLANGCXXFLAGS" \
+		CXXFLAGS_FOR_BUILD="$HOSTCFLAGS $CLANGCXXFLAGS" \
+		../gcc-${GCC_VERSION}/configure \
 		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
 		--target=${TARGETARCH} --disable-werror --disable-shared \
 		--enable-lto --enable-plugins --enable-gold --enable-ld=default \
@@ -641,29 +749,30 @@ build_cross_GCC() {
 		${GCC_OPTIONS} --enable-languages="${LANGUAGES}" \
 		--with-system-zlib \
 		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
-		--with-mpc=$DESTDIR$TARGETDIR --with-libelf=$DESTDIR$TARGETDIR \
+		--with-mpc=$DESTDIR$TARGETDIR \
 		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE" \
-		|| touch .failed
-	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-gcc || touch .failed
+		&& \
+	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-gcc && \
 	$MAKE install-gcc DESTDIR=$DESTDIR || touch .failed
 
-	if [ "$(echo $TARGETARCH | grep -c -- -mingw32)" -eq 0 ]; then
-		$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libgcc || touch .failed
+	if [ ! -f .failed -a "$(echo $TARGETARCH | grep -c -- -mingw32)" -eq 0 ]; then
+		$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libgcc && \
 		$MAKE install-target-libgcc DESTDIR=$DESTDIR || touch .failed
 	fi
 }
 
 build_GCC() {
 	if [ "$1" = host ]; then
-		bootstrap_GCC
+		bootstrap_GCC $1
 	else
-		build_cross_GCC
+		build_cross_GCC $1
 	fi
 }
 
 build_EXPAT() {
-	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${EXPAT_DIR}/configure --disable-shared \
-		--prefix=$TARGETDIR || touch .failed
+	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS"
+	../${EXPAT_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+		|| touch .failed
 	$MAKE || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
@@ -671,7 +780,8 @@ build_EXPAT() {
 }
 
 build_PYTHON() {
-	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${PYTHON_DIR}/configure --prefix=$TARGETDIR \
+	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS"
+	../${PYTHON_DIR}/configure --prefix=$TARGETDIR \
 		|| touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
@@ -686,7 +796,8 @@ build_GDB() {
 	fi
 	LDFLAGS="-Wl,-rpath,\$\$ORIGIN/../lib/ -L$DESTDIR$TARGETDIR/lib \
 		 -lpthread $LIBDL -lutil" \
-	CC="$CC" CFLAGS="$HOSTCFLAGS -I$DESTDIR$TARGETDIR/include" \
+	CC="$(hostcc target)" CXX="$(hostcxx target)" \
+	CFLAGS="$HOSTCFLAGS -I$DESTDIR$TARGETDIR/include" \
 	../${GDB_DIR}/configure --prefix=$TARGETDIR \
 		--target=${TARGETARCH} --disable-werror --disable-nls
 	$MAKE $JOBS || touch .failed
@@ -701,7 +812,9 @@ build_IASL() {
 	test $UNAME = "Darwin" && HOST="_APPLE"
 	test $UNAME = "FreeBSD" && HOST="_FreeBSD"
 	test $UNAME = "Cygwin" && HOST="_CYGWIN"
-	HOST="$HOST" OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2 -D COREBOOT_TOOLCHAIN_VERSION='\"coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE\"' " CFLAGS="$CFLAGS" $MAKE CC="$CC" iasl || touch $RDIR/.failed
+	HOST="$HOST" CFLAGS="$CFLAGS" \
+	OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2 -D COREBOOT_TOOLCHAIN_VERSION='\"coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE\"' " \
+	$MAKE CC="$(hostcc host)" iasl || touch $RDIR/.failed
 	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch $RDIR/.failed
 	cp bin/iasl $DESTDIR$TARGETDIR/bin || touch $RDIR/.failed
 }
@@ -731,16 +844,27 @@ build_LLVM() {
 }
 
 build_MAKE() {
-	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${MAKE_DIR}/configure --prefix=$TARGETDIR \
-		--disable-nls || touch .failed
+	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS" \
+	../${MAKE_DIR}/configure --prefix=$TARGETDIR --disable-nls \
+		|| touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
 	normalize_dirs
 }
 
-print_stable() {
-	case "$PRINTSTABLE" in
+build_CMAKE() {
+	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS" \
+	../${CMAKE_DIR}/configure --prefix=$TARGETDIR \
+		 || touch .failed
+	$MAKE $JOBS || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	normalize_dirs
+}
+
+print_supported() {
+	case "$PRINTSUPPORTED" in
 		AUTOCONF|autoconf)  printf "%s\n" "$GCC_AUTOCONF_VERSION";;
 		BINUTILS|binutils)  printf "%s\n" "$BINUTILS_VERSION";;
 		CLANG|clang)  printf "%s\n" "$CLANG_VERSION";;
@@ -749,31 +873,30 @@ print_stable() {
 		GDB|gdb)  printf "%s\n" "$GDB_VERSION";;
 		GMP|gmp)   printf "%s\n" "$GMP_VERSION";;
 		IASL|iasl) printf "%s\n" "$IASL_VERSION";;
-		LIBELF|libelf)  printf "%s\n" "$LIBELF_VERSION";;
 		MPC|mpc)  printf "%s\n" "$MPC_VERSION";;
 		MPFR|mpfr)  printf "%s\n" "$MPFR_VERSION";;
 		PYTHON|python)  printf "%s\n" "$PYTHON_VERSION";;
 		MAKE|make)  printf "%s\n" "$MAKE_VERSION";;
-		*) printf "Unknown tool %s\n" "$PRINTSTABLE";;
+		*) printf "Unknown tool %s\n" "$PRINTSUPPORTED";;
 	esac
 }
 
-trap quit 1 2 3 15
+trap exit_handler 1 2 3 15
 
 # Look if we have getopt. If not, build it.
 export PATH=$PATH:.
 getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 
 # parse parameters.. try to find out whether we're running GNU getopt
-getoptbrand="$(getopt -V | sed -e '1!d' -e 's,^\(......\).*,\1,')"
+getoptbrand="$(getopt -V 2>/dev/null | sed -e '1!d' -e 's,^\(......\).*,\1,')"
 if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,help,clean,directory:,bootstrap,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported:,urls,nocolor -o Vhcd:bp:l:P:j:D:tSys:un -- "$@")
+	args=$(getopt -l version,help,clean,directory:,bootstrap,bootstrap-only,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported:,urls,nocolor -o Vhcd:bBp:l:P:j:D:tSys:un -- "$@")
 	getopt_ret=$?
 	eval set -- "$args"
 else
 	# Detected non-GNU getopt
-	args=$(getopt Vhcd:bp:l:P:j:D:tSys:un $*)
+	args=$(getopt Vhcd:bBp:l:P:j:D:tSys:un $*)
 	getopt_ret=$?
 	set -- $args
 fi
@@ -785,22 +908,23 @@ fi
 
 while true ; do
         case "$1" in
-		-V|--version)	shift; myversion; exit 0;;
-		-h|--help)	shift; myhelp; exit 0;;
-		-c|--clean)	shift; clean=1;;
-		-t|--savetemps)	shift; SAVETEMPS=1;;
-		-d|--directory)	shift; TARGETDIR="$1"; shift;;
-		-b|--bootstrap) shift; BOOTSTRAP=1;;
-		-p|--platform)	shift; TARGETARCH="$1"; shift;;
-		-l|--languages)	shift; LANGUAGES="$1"; shift;;
-		-D|--destdir)	shift; DESTDIR="$1"; shift;;
-		-j|--jobs)	shift; THREADS="$1"; JOBS="-j $1"; shift;;
-		-P|--package)   shift; PACKAGE="$1"; shift;;
-		-S|--scripting) shift; SKIPPYTHON=0;;
-		-y|--ccache)	shift; USECCACHE=1;;
-		-s|--supported) shift; PRINTSTABLE="$1"; shift;;
-		-u|--urls)	shift; printf "%s\n" "$ALL_ARCHIVES"; exit 0;;
-		-n|--nocolor)	shift; \
+		-V|--version)		shift; myversion; exit 0;;
+		-h|--help)		shift; myhelp; exit 0;;
+		-c|--clean)		shift; clean=1;;
+		-t|--savetemps)		shift; SAVETEMPS=1;;
+		-d|--directory)		shift; TARGETDIR="$1"; shift;;
+		-b|--bootstrap)		shift; BOOTSTRAP=1;;
+		-B|--bootstrap-only)	shift; BOOTSTRAPONLY=1; BOOTSTRAP=1;;
+		-p|--platform)		shift; TARGETARCH="$1"; shift;;
+		-l|--languages)		shift; LANGUAGES="$1"; shift;;
+		-D|--destdir)		shift; DESTDIR="$1"; shift;;
+		-j|--jobs)		shift; THREADS="$1"; JOBS="-j $1"; shift;;
+		-P|--package)		shift; PACKAGE="$1"; shift;;
+		-S|--scripting)		shift; SKIPPYTHON=0;;
+		-y|--ccache)		shift; USECCACHE=1;;
+		-s|--supported)		shift; PRINTSUPPORTED="$1"; shift;;
+		-u|--urls)		shift; printf "%s\n" "$ALL_ARCHIVES"; exit 0;;
+		-n|--nocolor)		shift; \
 			unset red RED green GREEN blue BLUE cyan CYAN NC;;
 		--)		shift; break;;
 		*)		break;;
@@ -813,8 +937,8 @@ if [ $# -gt 0 ]; then
 	exit 1
 fi
 
-if [ -n "$PRINTSTABLE" ]; then
-	print_stable
+if [ -n "$PRINTSUPPORTED" ]; then
+	print_supported
 	exit 0
 fi
 
@@ -842,9 +966,9 @@ esac
 
 case "$PACKAGE" in
 	GCC|gcc)
-		echo "Target architecture is now $TARGETARCH"
+		echo "Target architecture is $TARGETARCH"
 		NAME="${TARGETARCH} cross GCC"
-		PACKAGES="GMP MPFR MPC LIBELF BINUTILS GCC"
+		PACKAGES="GMP MPFR MPC BINUTILS GCC"
 		;;
 	GDB|gdb)
 		NAME="${TARGETARCH} cross GDB"
@@ -855,9 +979,10 @@ case "$PACKAGE" in
 		fi
 		;;
 	CLANG|clang)
-		NAME=clang
-		PACKAGES="LLVM CFE CRT CTE"
-		CMAKE=$(searchtool cmake "cmake") || exit $?
+		NAME="LLVM clang"
+		LLVM_VERSION=${CLANG_VERSION}
+		PACKAGES="CMAKE LLVM CFE CRT CTE"
+		CMAKE=${DESTDIR}${TARGETDIR}/bin/cmake
 		;;
 	IASL|iasl)
 		NAME="IASL ACPI compiler"
@@ -866,6 +991,10 @@ case "$PACKAGE" in
 	MAKE|make)
 		NAME="GNU Make"
 		PACKAGES=MAKE
+		;;
+	CMAKE|cmake)
+		NAME="CMake"
+		PACKAGES=CMAKE
 		;;
 	*)
 		printf "${red}ERROR: Unsupported package $PACKAGE. (Supported packages are GCC, GDB, CLANG, IASL, MAKE)${NC}\n\n";
@@ -888,20 +1017,17 @@ PIGZ=$(searchtool pigz "" nofail)
 searchtool m4 > /dev/null
 searchtool bison > /dev/null
 searchtool flex flex > /dev/null
-searchtool g++ "Free Software Foundation" nofail > /dev/null || \
-searchtool clang "clang version" nofail > /dev/null || \
-searchtool clang "LLVM" "" "g++" > /dev/null
 searchtool bzip2 "bzip2," > /dev/null
 searchtool xz "XZ Utils" "" "xz-utils" > /dev/null
 
 if searchtool wget "GNU" nofail > /dev/null; then
 	download_showing_percentage() {
 		url=$1
-		printf " ..${red}  0%%"
+		printf "... ${red}  0%%"
 		wget $url 2>&1 | while read line; do
 			echo $line | grep -o "[0-9]\+%" | awk '{printf("\b\b\b\b%4s", $1)}'
 		done
-		echo "${NC}"
+		printf "${NC}... "
 	}
 elif searchtool curl "^curl " > /dev/null; then
 	download_showing_percentage() {
@@ -911,10 +1037,39 @@ elif searchtool curl "^curl " > /dev/null; then
 	}
 fi
 
-check_for_library "-lz" "zlib (zlib1g-dev or zlib-devel)"
+# Allow $CC override from the environment.
+if [ -n "$CC" ]; then
+	if [ ! -x "$(command -v "$CC" 2>/dev/null)" ]; then
+		printf "${RED}ERROR:${red} CC is set to '%s' but wasn't found.${NC}\n" "$CC"
+		HALT_FOR_TOOLS=1
+	fi
+else
+	if searchtool gnatgcc "Free Software Foundation" nofail > /dev/null; then
+		CC=gnatgcc
+	elif searchtool gcc "Free Software Foundation" nofail > /dev/null; then
+		CC=gcc
+	else
+		searchtool cc '^' nofail > /dev/null || please_install gcc
+		CC=cc
+	fi
+fi
 
-CC=cc
-check_cc
+# We can leave $CXX empty if it's not set since *buildgcc* never
+# calls it directly. This way configure scripts can search for
+# themselves and we still override it when a bootstrapped g++ is
+# to be used (cf. hostcxx()).
+if [ -n "$CXX" ]; then
+	if [ ! -x "$(command -v "$CXX" 2>/dev/null)" ]; then
+		printf "${RED}ERROR:${red} CXX is set to '%s' but wasn't found.${NC}\n" "$CXX"
+		HALT_FOR_TOOLS=1
+	fi
+else
+	searchtool g++ "Free Software Foundation" nofail > /dev/null || \
+	searchtool clang "clang version" nofail > /dev/null || \
+	searchtool clang "LLVM" "" "g++" > /dev/null
+fi
+
+check_for_library "-lz" "zlib (zlib1g-dev or zlib-devel)"
 
 if [ "$HALT_FOR_TOOLS" -ne 0 ]; then
 	exit 1
@@ -929,6 +1084,9 @@ fi
 # Set up host compiler and flags needed for various OSes
 
 if is_package_enabled "GCC"; then
+# sane preset: let the configure script figure out things by itself
+# more importantly, avoid any values that might already linger in the variable
+OPTIONS="ABI="
 if [ $UNAME = "Darwin" ]; then
 	#GCC_OPTIONS="$GCC_OPTIONS --enable-threads=posix"
 
@@ -962,15 +1120,56 @@ elif [ $UNAME = "NetBSD" ]; then
 	fi
 fi
 if [ -z "${LANGUAGES}" ]; then
-	if hostcc_has_gnat1 && \
-		[ "$(hostcc_major)" -ge 5 -o \
-		  \( "$(hostcc_major)" -eq 4 -a "$(hostcc_minor)" -ge 9 \) -o \
-		  "${BOOTSTRAP}" = "1" ];
-	then
+	if have_gnat; then
 		printf "\nFound compatible Ada compiler, enabling Ada support by default.\n\n"
 		LANGUAGES="ada,${DEFAULT_LANGUAGES}"
 	else
+		printf "\n${red}WARNING${NC}\n"
+		printf "No compatible Ada compiler (GNAT) found. You can continue without\n"
+		printf "Ada support, but this will limit the features of ${blue}coreboot${NC} (e.g.\n"
+		printf "native graphics initialization won't be available on most Intel\n"
+		printf "boards).\n\n"
+
+		printf "Usually, you can install GNAT with your package management system\n"
+		printf "(the package is called \`gnat\` or \`gcc-ada\`). It has to match the\n"
+		printf "\`gcc\` package in version. If there are multiple versions of GCC in-\n"
+		printf "stalled, you can point this script to the matching version through\n"
+		printf "the \`CC\` and \`CXX\` environment variables.\n\n"
+
+		printf "e.g. on Ubuntu 14.04, if \`gcc\` is \`gcc-4.8\`:\n"
+		printf "    apt-get install gnat-4.8 && make crossgcc\n\n"
+
+		printf "on Ubuntu 16.04, if \`gcc\` is \`gcc-5\`:\n"
+		printf "    apt-get install gnat-5 && make crossgcc\n"
+		timeout 30
 		LANGUAGES="${DEFAULT_LANGUAGES}"
+	fi
+fi
+if ada_requested; then
+	if have_gnat; then
+		if [ "$BOOTSTRAP" != 1 -a \
+		     \( "$(hostcc_major)" -lt 4 -o \
+		        \( "$(hostcc_major)" -eq 4 -a "$(hostcc_minor)" -lt 9 \) \) ]
+		then
+			printf "\n${red}WARNING${NC}\n"
+			printf "Building the Ada compiler (GNAT $(buildcc_version)) with a host compiler older\n"
+			printf "than 4.9.x (yours $(hostcc_version)) requires bootstrapping. This will take\n"
+			printf "significantly longer than a usual build. You can abort and update\n"
+			printf "your host GNAT or disable Ada support with BUILD_LANGUAGES=c (or\n"
+			printf "\`-l c\` in case you invoke \`buildgcc\` directly).\n"
+			timeout 15
+			BOOTSTRAP=1
+		fi
+	else
+		please_install gnat gcc-ada
+		exit 1
+	fi
+else
+	if [ "$(hostcc_major)" -lt 4 -a "$BOOTSTRAP" != 1 ]; then
+		printf "\n${red}WARNING${NC}\n"
+		printf "Building GCC $(buildcc_version) with a very old host compiler ($(hostcc_version)).\n"
+		printf "Bootstrapping (-b) is recommended.\n"
+		timeout 10
 	fi
 fi
 fi # GCC
@@ -992,10 +1191,11 @@ export PATH=$DESTDIR$TARGETDIR/bin:$PATH
 
 # Download, unpack, patch and build all packages
 
-printf "Downloading tarballs ... \n"
+printf "Downloading and verifing tarballs ... \n"
 mkdir -p tarballs
 for P in $PACKAGES; do
-	download $P
+	download "$P" || exit "$?"
+	verify_hash "$P" || exit "$?"
 done
 printf "Downloaded tarballs ... ${green}ok${NC}\n"
 
@@ -1004,6 +1204,14 @@ for P in $PACKAGES; do
 	unpack_and_patch $P || exit 1
 done
 printf "Unpacked and patched ... ${green}ok${NC}\n"
+
+if [ -n "$BOOTSTRAPONLY" ]; then
+	printf "Building bootstrap compiler only ... \n"
+	for pkg in GMP MPFR MPC GCC; do
+		build_for_host $pkg
+	done
+	exit 0
+fi
 
 printf "Building packages ... \n"
 for package in $PACKAGES; do
@@ -1015,8 +1223,13 @@ printf "Packages built ... ${green}ok${NC}\n"
 # for reproducibility
 PROGNAME=$(basename "$0")
 rm -f "$DESTDIR$TARGETDIR/share/$PROGNAME-*"
-cp "$PROGNAME" "$DESTDIR$TARGETDIR/share/$PROGNAME-$CROSSGCC_VERSION-$CROSGCC_COMMIT"
+cp "$PROGNAME" "$DESTDIR$TARGETDIR/share/$PROGNAME-$CROSSGCC_VERSION-$CROSSGCC_COMMIT"
+
+# Adding edk2 tools template
+mkdir -p "$DESTDIR$TARGETDIR/share/edk2config"
+sed -e "s,@@PREFIX@@,$TARGETDIR,g" edk2tools.txt > "$DESTDIR$TARGETDIR/share/edk2config/tools_def.txt"
+printf "Copied EDK2 tools template ... ${green}ok${NC}\n"
 
 cleanup
 
-printf "\n${green}You can now run your $NAME toolchain from $TARGETDIR.${NC}\n"
+printf "\n${green}You can now run $NAME from $TARGETDIR.${NC}\n"

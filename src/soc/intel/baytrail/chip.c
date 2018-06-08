@@ -22,7 +22,7 @@
 #include <soc/ramstage.h>
 #include "chip.h"
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
@@ -33,7 +33,6 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init             = NULL,
 	.scan_bus         = pci_domain_scan_bus,
-	.ops_pci_bus      = pci_bus_default_ops,
 };
 
 static struct device_operations cpu_bus_ops = {
@@ -45,7 +44,7 @@ static struct device_operations cpu_bus_ops = {
 };
 
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
@@ -73,7 +72,8 @@ struct chip_operations soc_intel_baytrail_ops = {
 	.init = soc_init,
 };
 
-static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void pci_set_subsystem(struct device *dev, unsigned vendor,
+			      unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

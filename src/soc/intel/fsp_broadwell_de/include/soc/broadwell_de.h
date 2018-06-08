@@ -26,4 +26,7 @@
 #define TSEG_BASE		0xa8	/* TSEG base */
 #define TSEG_LIMIT		0xac	/* TSEG limit */
 
+/* CPU bus clock is fixed at 100MHz */
+#define CPU_BCLK		100
+
 #endif /* _SOC_BROADWELL_DE_H_ */

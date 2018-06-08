@@ -14,11 +14,12 @@
  */
 
 #include <arch/io.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <rmodule.h>
 
-#if CONFIG_SPI_FLASH_SMM
+#if IS_ENABLED(CONFIG_SPI_FLASH_SMM)
 #include <spi-generic.h>
 #endif
 
@@ -28,7 +29,7 @@ typedef enum { SMI_LOCKED, SMI_UNLOCKED } smi_semaphore;
 
 /* SMI multiprocessing semaphore */
 static volatile
-__attribute__ ((aligned(4))) smi_semaphore smi_handler_status = SMI_UNLOCKED;
+__attribute__((aligned(4))) smi_semaphore smi_handler_status = SMI_UNLOCKED;
 
 static int smi_obtain_lock(void)
 {
@@ -158,7 +159,7 @@ asmlinkage void smm_handler_start(void *arg)
 
 	/* Allow drivers to initialize variables in SMM context. */
 	if (do_driver_init) {
-#if CONFIG_SPI_FLASH_SMM
+#if IS_ENABLED(CONFIG_SPI_FLASH_SMM)
 		spi_init();
 #endif
 		do_driver_init = 0;
@@ -182,10 +183,10 @@ RMODULE_ENTRY(smm_handler_start);
  * entries in the modules make sense. Without default implementations the
  * weak relocations w/o a symbol have a 0 address which is where the modules
  * are linked at. */
-int __attribute__((weak)) mainboard_io_trap_handler(int smif) { return 0; }
-void __attribute__((weak)) cpu_smi_handler(void) {}
-void __attribute__((weak)) northbridge_smi_handler() {}
-void __attribute__((weak)) southbridge_smi_handler() {}
-void __attribute__((weak)) mainboard_smi_gpi(u32 gpi_sts) {}
-int __attribute__((weak)) mainboard_smi_apmc(u8 data) { return 0; }
-void __attribute__((weak)) mainboard_smi_sleep(u8 slp_typ) {}
+int __weak mainboard_io_trap_handler(int smif) { return 0; }
+void __weak cpu_smi_handler(void) {}
+void __weak northbridge_smi_handler() {}
+void __weak southbridge_smi_handler() {}
+void __weak mainboard_smi_gpi(u32 gpi_sts) {}
+int __weak mainboard_smi_apmc(u8 data) { return 0; }
+void __weak mainboard_smi_sleep(u8 slp_typ) {}

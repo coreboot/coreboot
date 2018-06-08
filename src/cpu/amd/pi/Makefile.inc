@@ -15,14 +15,10 @@
 
 subdirs-$(CONFIG_CPU_AMD_PI_00630F01) += 00630F01
 subdirs-$(CONFIG_CPU_AMD_PI_00730F01) += 00730F01
-subdirs-$(CONFIG_CPU_AMD_PI_00670F00_FP4) += 00670F00
-subdirs-$(CONFIG_CPU_AMD_PI_00670F00_FT4) += 00670F00
 subdirs-$(CONFIG_CPU_AMD_PI_00660F01) += 00660F01
 
-ramstage-$(CONFIG_SPI_FLASH) += spi.c
-
-cpu_incs-y += $(src)/cpu/amd/pi/cache_as_ram.inc
-
-romstage-y += heapmanager.c
-ramstage-y += heapmanager.c
+ifeq ($(CONFIG_BINARYPI_LEGACY_WRAPPER), y)
+cpu_incs-y += $(src)/drivers/amd/agesa/cache_as_ram.S
+romstage-y += romstage.c
 ramstage-y += amd_late_init.c
+endif

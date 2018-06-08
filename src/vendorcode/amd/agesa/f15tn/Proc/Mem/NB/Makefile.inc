@@ -1,0 +1,9 @@
+libagesa-y += mn.c
+libagesa-y += mnS3.c
+libagesa-y += mndct.c
+libagesa-y += mnfeat.c
+libagesa-y += mnflow.c
+libagesa-y += mnmct.c
+libagesa-y += mnphy.c
+libagesa-y += mnreg.c
+libagesa-y += mntrain3.c

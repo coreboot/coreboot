@@ -37,6 +37,7 @@ unsigned int get_sbdn(unsigned bus);
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>
 #include <southbridge/via/vt8237r/vt8237r.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include <spd.h>
@@ -81,7 +82,7 @@ static void ldtstop_sb(void)
 #include "cpu/amd/model_fxx/fidvid.c"
 #include "northbridge/amd/amdk8/resourcemap.c"
 
-void soft_reset(void)
+void do_soft_reset(void)
 {
 	uint8_t tmp;
 
@@ -139,7 +140,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	printk(BIOS_INFO, "now booting... All core 0 started\n");
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	/* It is said that we should start core1 after all core0 launched. */
 	start_other_cores();
 	wait_all_other_cores_started(bsp_apicid);
@@ -179,5 +180,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 	enable_smbus();
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
-	post_cache_as_ram();
 }

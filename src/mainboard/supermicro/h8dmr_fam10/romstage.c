@@ -50,7 +50,7 @@
 #include "southbridge/nvidia/mcp55/early_setup_car.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-#define DUMMY_DEV PNP_DEV(0x2e, 0)
+#define SUPERIO_DEV PNP_DEV(0x2e, 0)
 
 void activate_spd_rom(const struct mem_controller *ctrl);
 int spd_read_byte(unsigned device, unsigned address);
@@ -130,7 +130,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x32);
 
-	w83627hf_set_clksel_48(DUMMY_DEV);
+	winbond_set_clksel_48(SUPERIO_DEV);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();
@@ -173,7 +173,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 */
 
 	wait_all_core0_started();
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	/* Core0 on each node is configured. Now setup any additional cores. */
 	printk(BIOS_DEBUG, "start_other_cores()\n");
 	start_other_cores(bsp_apicid);
@@ -183,7 +183,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x38);
 
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 	msr = rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n",
 		msr.hi, msr.lo);
@@ -216,7 +216,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (!warm_reset_detect(0)) {
 		printk(BIOS_INFO, "...WARM RESET...\n\n\n");
 		soft_reset();
-		die("After soft_reset_x - shouldn't see this message!!!\n");
+		die("After soft_reset - shouldn't see this message!!!\n");
 	}
 
 	if (wants_reset)
@@ -245,8 +245,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	amdmct_cbmem_store_info(sysinfo);
 
-	post_cache_as_ram(); // BSP switch stack to ram, copy + execute stage 2
-	post_code(0x42);     // Should never see this post code.
 }
 
 /**

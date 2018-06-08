@@ -14,39 +14,5 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
-#include <device/pci_def.h>
-#include <arch/io.h>
-#include <device/pnp_def.h>
-#include <stdlib.h>
-#include <console/console.h>
-#include <southbridge/intel/i82371eb/i82371eb.h>
-#include <northbridge/intel/i440bx/raminit.h>
-#include <delay.h>
-#include <cpu/x86/bist.h>
-#include <cpu/intel/romstage.h>
-#include <superio/winbond/common/winbond.h>
-/* FIXME: The ASUS P2B-F has a Winbond W83977EF, actually. */
-#include <superio/winbond/w83977tf/w83977tf.h>
-#include <lib.h>
-
-/* FIXME: The ASUS P2B-F has a Winbond W83977EF, actually. */
-#define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)
-
-int spd_read_byte(unsigned int device, unsigned int address)
-{
-	return smbus_read_byte(device, address);
-}
-
-void mainboard_romstage_entry(unsigned long bist)
-{
-	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	console_init();
-	report_bist_failure(bist);
-
-	enable_smbus();
-	dump_spd_registers();
-	sdram_set_registers();
-	sdram_set_spd_registers();
-	sdram_enable();
-}
+/* Shares romstage with the better supported P2B-LS sibling. */
+#include "../p2b-ls/romstage.c"

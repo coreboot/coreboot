@@ -235,16 +235,16 @@ static struct device_operations it8516e_pm2_ops = {
 };
 
 static struct pnp_info it8516e_dev_infos[] = {
-	{ NULL,             IT8516E_LDN_UART1, PNP_IO0 | PNP_IRQ0, { 0x07f8, }, },
-	{ NULL,             IT8516E_LDN_UART2, PNP_IO0 | PNP_IRQ0, { 0x07f8, }, },
-	{ NULL,             IT8516E_LDN_SWUC,  PNP_IO0 | PNP_IRQ0, { 0xff7e0, }, },
+	{ NULL,             IT8516E_LDN_UART1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL,             IT8516E_LDN_UART2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL,             IT8516E_LDN_SWUC,  PNP_IO0 | PNP_IRQ0, 0xffe0, },
 	{ NULL,             IT8516E_LDN_MOUSE, PNP_IRQ0, },
-	{ NULL,             IT8516E_LDN_KBD,   PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x07ff, }, { 0x07ff, }, },
-	{ NULL,             IT8516E_LDN_SMFI,  PNP_IO0 | PNP_IRQ0, { 0xfff0, }, },
-	{ NULL,             IT8516E_LDN_BRAM,  PNP_IO0 | PNP_IO1, { 0xfffe, }, { 0xfffe, }, },
-	{ NULL,             IT8516E_LDN_PM1,   PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x07ff, }, { 0x07ff, }, },
-	{ &it8516e_pm2_ops, IT8516E_LDN_PM2,   PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x07ff, }, { 0x07ff, }, },
-	{ NULL,             IT8516E_LDN_PM3,   PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x07ff, }, { 0x07ff, }, },
+	{ NULL,             IT8516E_LDN_KBD,   PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07ff, 0x07ff, },
+	{ NULL,             IT8516E_LDN_SMFI,  PNP_IO0 | PNP_IRQ0, 0xfff0, },
+	{ NULL,             IT8516E_LDN_BRAM,  PNP_IO0 | PNP_IO1, 0xfffe, 0xfffe, },
+	{ NULL,             IT8516E_LDN_PM1,   PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07ff, 0x07ff, },
+	{ &it8516e_pm2_ops, IT8516E_LDN_PM2,   PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07ff, 0x07ff, },
+	{ NULL,             IT8516E_LDN_PM3,   PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07ff, 0x07ff, },
 };
 
 static void it8516e_enable(struct device *dev)

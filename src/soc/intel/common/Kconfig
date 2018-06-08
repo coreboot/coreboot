@@ -6,44 +6,7 @@ config SOC_INTEL_COMMON
 if SOC_INTEL_COMMON
 
 comment "Intel SoC Common Code"
-source "src/soc/intel/common/basecode/Kconfig"
 source "src/soc/intel/common/block/Kconfig"
-
-config CACHE_MRC_SETTINGS
-	bool "Save cached MRC settings"
-	default n
-
-config SOC_INTEL_COMMON_SPI_FLASH_PROTECT
-	bool
-	default n
-
-if CACHE_MRC_SETTINGS
-
-config MRC_SETTINGS_CACHE_BASE
-	hex
-	default 0xfffe0000
-
-config MRC_SETTINGS_CACHE_SIZE
-	hex
-	default 0x10000
-
-config MRC_SETTINGS_PROTECT
-	bool "Enable protection on MRC settings"
-	default n
-
-config HAS_RECOVERY_MRC_CACHE
-	bool
-	default n
-
-config MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN
-	bool
-	default n
-
-config MRC_SETTINGS_VARIABLE_DATA
-	bool
-	default n
-
-endif # CACHE_MRC_SETTINGS
 
 config DISPLAY_MTRRS
 	bool "MTRRs: Display the MTRR settings"
@@ -67,28 +30,6 @@ config ACPI_CONSOLE
 	help
 	  Provide a mechanism for serial console based ACPI debug.
 
-config SOC_INTEL_COMMON_LPSS_CLOCK_MHZ
-	int
-	help
-	  The clock speed that the controllers in LPSS(GSPI, I2C) are running
-	  at, in MHz. No default is set here as this is an SOC-specific value
-	  and must be provided by the SOC.
-
-config SOC_INTEL_COMMON_LPSS_I2C
-	bool
-	default n
-	help
-	  This driver supports the Intel Low Power Subsystem (LPSS) I2C
-	  controllers that are based on Synopsys DesignWare IP.
-
-config SOC_INTEL_COMMON_LPSS_I2C_DEBUG
-	bool "Enable debug output for LPSS I2C transactions"
-	default n
-	depends on SOC_INTEL_COMMON_LPSS_I2C
-	help
-	  Enable debug output for I2C transactions.  This can be useful
-	  when debugging I2C drivers.
-
 config MMA
 	bool "Enable MMA (Memory Margin Analysis) support for Intel Core"
 	default n
@@ -101,23 +42,6 @@ config MMA_BLOBS_PATH
 	depends on MMA
 	default "3rdparty/blobs/soc/intel/kabylake/mma-blobs" if SOC_INTEL_KABYLAKE
 	default "3rdparty/blobs/soc/intel/skylake/mma-blobs" if SOC_INTEL_SKYLAKE
-
-config ADD_VBT_DATA_FILE
-	bool "Add a Video Bios Table (VBT) binary to CBFS"
-	help
-	  Add a VBT file data file to CBFS. The VBT describes the integrated
-	  GPU and connections, and is needed by FSP in order to initialize the
-	  display.
-
-config VBT_FILE
-	string "VBT binary path and filename"
-	depends on ADD_VBT_DATA_FILE
-	help
-	  The path and filename of the VBT binary.
-
-config SOC_INTEL_COMMON_GFX_OPREGION
-	bool
-	default n
 
 config SOC_INTEL_COMMON_SMI
 	bool

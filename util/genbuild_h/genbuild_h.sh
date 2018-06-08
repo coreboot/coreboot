@@ -21,25 +21,26 @@ TIMESOURCE=""
 
 export LANG=C
 export LC_ALL=C
-export TZ=UTC
-
-top=`dirname $0`/../..
+export TZ=UTC0
 
 if [ "${BUILD_TIMELESS}" = "1" ]; then
 	GITREV=Timeless
 	GITTAG=Timeless
 	TIMESOURCE="fixed"
 	DATE=0
-elif [ -e "${top}/.git" -a -x "$(command -v git)" ]; then
+elif [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
 	GITREV=$(LANG= git log -1 --format=format:%h)
 	GITTAG=$(LANG= git describe --tags --exact-match $GITREV)
+	if [ -z $GITTAG ]; then
+		GITTAG=$KERNELVERSION
+	fi
 	TIMESOURCE=git
 	DATE=$(git log --pretty=format:%ct -1)
 else
 	GITREV=Unknown
 	GITTAG=Unknown
 	TIMESOURCE="date"
-	DATE=$(LANG= LC_ALL=C TZ=UTC date +%s)
+	DATE=$(LANG= LC_ALL=C TZ=UTC0 date +%s)
 fi
 
 our_date() {

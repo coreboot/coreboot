@@ -1,0 +1,67 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2017 Tristan Corrick <tristan@corrick.kiwi>
+##
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+if BOARD_ASUS_MAXIMUS_IV_GENE_Z
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select CPU_INTEL_SOCKET_LGA1155
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select INTEL_INT15
+	select MAINBOARD_HAS_LIBGFXINIT
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_BD82X6X
+	select SUPERIO_NUVOTON_NCT6776
+	select USE_NATIVE_RAMINIT
+
+config HAVE_IFD_BIN
+	bool
+	default n
+
+config MAINBOARD_DIR
+	string
+	default asus/maximus_iv_gene-z
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Maximus IV GENE-Z"
+
+config VGA_BIOS_ID
+	string
+	default "8086,0112"
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x844d
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1043
+
+config MAX_CPUS
+	int
+	default 8
+
+config USBDEBUG_HCD_INDEX
+	int
+	default 1
+
+endif

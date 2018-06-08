@@ -18,8 +18,11 @@ ifeq ($(CONFIG_NORTHBRIDGE_INTEL_X4X),y)
 
 romstage-y += early_init.c
 romstage-y += raminit.c
-romstage-y += raminit_ddr2.c
+romstage-y += raminit_ddr23.c
 romstage-y += ram_calc.c
+romstage-y += rcven.c
+romstage-y += raminit_tables.c
+romstage-y += dq_dqs.c
 
 ramstage-y += acpi.c
 ramstage-y += ram_calc.c

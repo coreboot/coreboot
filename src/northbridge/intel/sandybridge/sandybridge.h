@@ -40,7 +40,8 @@
 #define IVB_STEP_D0	(BASE_REV_IVB + 6)
 
 /* Intel Enhanced Debug region must be 4MB */
-#define IED_SIZE	0x400000
+
+#define IED_SIZE	CONFIG_IED_REGION_SIZE
 
 /* Northbridge BARs */
 #define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS	/* 4 KB per PCIe device */
@@ -58,6 +59,7 @@
 #define IOMMU_BASE2		0xfed91000ULL
 
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/common/rcba.h>
 
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__
@@ -75,7 +77,9 @@
 #define GGC		0x50			/* GMCH Graphics Control */
 
 #define DEVEN		0x54			/* Device Enable */
+#define  DEVEN_D7EN	(1 << 14)
 #define  DEVEN_PEG60	(1 << 13)
+#define  DEVEN_D4EN	(1 << 7)
 #define  DEVEN_IGD	(1 << 4)
 #define  DEVEN_PEG10	(1 << 3)
 #define  DEVEN_PEG11	(1 << 2)
@@ -112,8 +116,6 @@
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 
 #define MSAC		0x62	/* Multi Size Aperture Control */
-#define SWSCI		0xe8	/* SWSCI  enable */
-#define ASLS		0xfc	/* OpRegion Base */
 
 /*
  * MCHBAR
@@ -199,9 +201,6 @@
 #ifndef __ASSEMBLER__
 static inline void barrier(void) { asm("" ::: "memory"); }
 
-#define PCI_DEVICE_ID_SB 0x0104
-#define PCI_DEVICE_ID_IB 0x0154
-
 #ifdef __SMM__
 void intel_sandybridge_finalize_smm(void);
 #else /* !__SMM__ */
@@ -221,7 +220,6 @@ void report_platform_info(void);
 
 #endif /* !__SMM__ */
 
-void rcba_config(void);
 void pch_enable_lpc(void);
 void mainboard_early_init(int s3resume);
 void mainboard_config_superio(void);
@@ -232,12 +230,7 @@ void perform_raminit(int s3resume);
 #include <device/device.h>
 
 struct acpi_rsdp;
-unsigned long northbridge_write_acpi_tables(device_t device, unsigned long start, struct acpi_rsdp *rsdp);
-#endif
-
-#if !defined(__PRE_RAM__)
-#include <drivers/intel/gma/opregion.h>
-int init_igd_opregion(igd_opregion_t *igd_opregion);
+unsigned long northbridge_write_acpi_tables(struct device *device, unsigned long start, struct acpi_rsdp *rsdp);
 #endif
 
 #endif

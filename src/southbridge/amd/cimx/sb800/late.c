@@ -15,7 +15,7 @@
  */
 
 
-#include <device/device.h>	/* device_t */
+#include <device/device.h>
 #include <device/pci.h>		/* device_operations */
 #include <device/pci_ids.h>
 #include <bootstate.h>
@@ -37,14 +37,8 @@
 #include "pci_devs.h"
 #include <southbridge/amd/common/amd_pci_util.h>
 
-/*implement in mainboard.c*/
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
-
 static AMDSBCFG sb_late_cfg; //global, init in sb800_cimx_config
 static AMDSBCFG *sb_config = &sb_late_cfg;
-
 
 /**
  * @brief Entry point of Southbridge CIMx callout
@@ -62,11 +56,9 @@ static u32 sb800_callout_entry(u32 func, u32 data, void* config)
 	printk(BIOS_DEBUG, "SB800 - Late.c - %s - Start.\n", __func__);
 	switch (func) {
 	case CB_SBGPP_RESET_ASSERT:
-		set_pcie_reset();
 		break;
 
 	case CB_SBGPP_RESET_DEASSERT:
-		set_pcie_dereset();
 		break;
 
 	case IMC_FIRMWARE_FAIL:
@@ -126,7 +118,7 @@ static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
 
-static void lpc_init(device_t dev)
+static void lpc_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "SB800 - Late.c - lpc_init - Start.\n");
 
@@ -151,7 +143,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-static const char *lpc_acpi_name(struct device *dev)
+static const char *lpc_acpi_name(const struct device *dev)
 {
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return NULL;
@@ -352,13 +344,13 @@ BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, set_pci_irqs, NULL);
 /**
  * @brief SB Cimx entry point sbBeforePciInit wrapper
  */
-static void sb800_enable(device_t dev)
+static void sb800_enable(struct device *dev)
 {
 	struct southbridge_amd_cimx_sb800_config *sb_chip =
 		(struct southbridge_amd_cimx_sb800_config *)(dev->chip_info);
 
 	switch (dev->path.pci.devfn) {
-	case (0x11 << 3) | 0: /* 0:11.0  SATA */
+	case PCI_DEVFN(0x11, 0): /* 0:11.0  SATA */
 		if (dev->enabled) {
   			sb_config->SATAMODE.SataMode.SataController = CIMX_OPTION_ENABLED;
 			if (1 == sb_chip->boot_switch_sata_ide)
@@ -370,9 +362,9 @@ static void sb800_enable(device_t dev)
 		}
 		break;
 
-	case (0x14 << 3) | 0: /* 0:14:0 SMBUS */
+	case PCI_DEVFN(0x14, 0): /* 0:14:0 SMBUS */
 		clear_ioapic(VIO_APIC_VADDR);
-#if CONFIG_CPU_AMD_AGESA
+#if IS_ENABLED(CONFIG_CPU_AMD_AGESA)
 		/* Assign the ioapic ID the next available number after the processor core local APIC IDs */
 		setup_ioapic(VIO_APIC_VADDR, CONFIG_MAX_CPUS);
 #else
@@ -390,10 +382,10 @@ static void sb800_enable(device_t dev)
 #endif
 		break;
 
-	case (0x14 << 3) | 1: /* 0:14:1 IDE */
+	case PCI_DEVFN(0x14, 1): /* 0:14:1 IDE */
 		break;
 
-	case (0x14 << 3) | 2: /* 0:14:2 HDA */
+	case PCI_DEVFN(0x14, 2): /* 0:14:2 HDA */
 		if (dev->enabled) {
   			if (AZALIA_DISABLE == sb_config->AzaliaController) {
   				sb_config->AzaliaController = AZALIA_AUTO;
@@ -404,16 +396,16 @@ static void sb800_enable(device_t dev)
 		break;
 
 
-	case (0x14 << 3) | 3: /* 0:14:3 LPC */
+	case PCI_DEVFN(0x14, 3): /* 0:14:3 LPC */
 		/* Initialize the fans */
-#if CONFIG_SB800_IMC_FAN_CONTROL
+#if IS_ENABLED(CONFIG_SB800_IMC_FAN_CONTROL)
 		init_sb800_IMC_fans(dev);
-#elif CONFIG_SB800_MANUAL_FAN_CONTROL
+#elif IS_ENABLED(CONFIG_SB800_MANUAL_FAN_CONTROL)
 		init_sb800_MANUAL_fans(dev);
 #endif
 		break;
 
-	case (0x14 << 3) | 4: /* 0:14:4 PCI */
+	case PCI_DEVFN(0x14, 4): /* 0:14:4 PCI */
 		/* PcibConfig [PM_Reg: EAh], PCIDisable [Bit0]
 		 * 'PCIDisable' set to 0 to enable P2P bridge.
 		 * 'PCIDisable' set to 1 to disable P2P bridge and enable PCI interface pins
@@ -425,7 +417,7 @@ static void sb800_enable(device_t dev)
 			RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGEA, AccWidthUint8, ~BIT0, BIT0);
 		break;
 
-	case (0x14 << 3) | 6: /* 0:14:6 GEC */
+	case PCI_DEVFN(0x14, 6): /* 0:14:6 GEC */
 		if (dev->enabled) {
 			sb_config->GecConfig = 0;
 		} else {
@@ -433,12 +425,11 @@ static void sb800_enable(device_t dev)
 		}
 		break;
 
-	case (0x15 << 3) | 0: /* 0:15:0 PCIe PortA */
+	case PCI_DEVFN(0x15, 0): /* 0:15:0 PCIe PortA */
 		{
-			device_t device;
-			for (device = dev; device; device = device->next) {
-				if (dev->path.type != DEVICE_PATH_PCI) continue;
-				if ((device->path.pci.devfn & ~7) != PCI_DEVFN(0x15,0)) break;
+			struct device *device;
+			for (device = dev; device; device = device->sibling) {
+				if ((device->path.pci.devfn & ~3) != PCI_DEVFN(0x15,0)) break;
 				sb_config->PORTCONFIG[device->path.pci.devfn & 3].PortCfg.PortPresent = device->enabled;
 			}
 
@@ -452,28 +443,29 @@ static void sb800_enable(device_t dev)
 		}
 		break;
 
-	case (0x12 << 3) | 0: /* 0:12:0 OHCI-USB1 */
+	case PCI_DEVFN(0x12, 0): /* 0:12:0 OHCI-USB1 */
 		sb_config->USBMODE.UsbMode.Ohci1 = dev->enabled;
 		break;
-	case (0x12 << 3) | 2: /* 0:12:2 EHCI-USB1 */
+	case PCI_DEVFN(0x12, 2): /* 0:12:2 EHCI-USB1 */
 		sb_config->USBMODE.UsbMode.Ehci1 = dev->enabled;
 		break;
-	case (0x13 << 3) | 0: /* 0:13:0 OHCI-USB2 */
+	case PCI_DEVFN(0x13, 0): /* 0:13:0 OHCI-USB2 */
 		sb_config->USBMODE.UsbMode.Ohci2 = dev->enabled;
 		break;
-	case (0x13 << 3) | 2: /* 0:13:2 EHCI-USB2 */
+	case PCI_DEVFN(0x13, 2): /* 0:13:2 EHCI-USB2 */
 		sb_config->USBMODE.UsbMode.Ehci2 = dev->enabled;
 		break;
-	case (0x14 << 3) | 5: /* 0:14:5 OHCI-USB4 */
+	case PCI_DEVFN(0x14, 5): /* 0:14:5 OHCI-USB4 */
 		sb_config->USBMODE.UsbMode.Ohci4 = dev->enabled;
 		break;
-	case (0x16 << 3) | 0: /* 0:16:0 OHCI-USB3 */
+	case PCI_DEVFN(0x16, 0): /* 0:16:0 OHCI-USB3 */
 		sb_config->USBMODE.UsbMode.Ohci3 = dev->enabled;
 		break;
-	case (0x16 << 3) | 2: /* 0:16:2 EHCI-USB3 */
+	case PCI_DEVFN(0x16, 2): /* 0:16:2 EHCI-USB3 */
 		sb_config->USBMODE.UsbMode.Ehci3 = dev->enabled;
 
-		/* call the CIMX entry at the last sb800 device,
+		/* FIXME: Find better callsites for these.
+		 * call the CIMX entry at the last sb800 device,
 		 * so make sure the mainboard devicetree is complete
 		 */
 		if (!acpi_is_wakeup_s3())

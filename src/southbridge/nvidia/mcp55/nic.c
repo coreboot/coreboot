@@ -42,7 +42,7 @@ static int phy_read(u8 *base, unsigned phy_addr, unsigned phy_reg)
 	write32(base + 0x190, (phy_addr << 5) | (phy_reg));
 	do {
 		dword = read32(base + 0x190);
-		if (--loop==0)
+		if (--loop == 0)
 			return -4;
 	} while ((dword & (1 << 15)));
 

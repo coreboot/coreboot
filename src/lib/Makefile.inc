@@ -12,9 +12,25 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-subdirs-y += loaders
 subdirs-y += gnat
 
+ifeq ($(CONFIG_UBSAN),y)
+ramstage-y += ubsan.c
+CFLAGS_ramstage += -fsanitize=undefined
+endif
+
+decompressor-y += decompressor.c
+$(call src-to-obj,decompressor,$(dir)/decompressor.c): $(objcbfs)/bootblock.lz4
+$(call src-to-obj,decompressor,$(dir)/decompressor.c): CCACHE_EXTRAFILES=$(objcbfs)/bootblock.lz4
+# Must reset CCACHE_EXTRAFILES or make applies it transitively to dependencies.
+$(objcbfs)/bootblock.lz4: CCACHE_EXTRAFILES=
+
+decompressor-y += delay.c
+decompressor-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
+decompressor-y += memchr.c
+decompressor-y += memcmp.c
+decompressor-y += prog_ops.c
+decompressor-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
 bootblock-y += bootblock.c
@@ -49,16 +65,6 @@ verstage-y += memcmp.c
 verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 verstage-y += boot_device.c
 verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
-
-verstage-$(CONFIG_TPM) += tlcl.c
-verstage-$(CONFIG_TPM2) += tpm2_marshaling.c
-verstage-$(CONFIG_TPM2) += tpm2_tlcl.c
-
-ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
-romstage-$(CONFIG_TPM) += tlcl.c
-romstage-$(CONFIG_TPM2) += tpm2_marshaling.c
-romstage-$(CONFIG_TPM2) += tpm2_tlcl.c
-endif # CONFIG_VBOOT_SEPARATE_VERSTAGE
 
 verstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 verstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
@@ -117,6 +123,7 @@ ramstage-y += memchr.c
 ramstage-y += memcmp.c
 ramstage-y += malloc.c
 smm-$(CONFIG_SMM_TSEG) += malloc.c
+ramstage-y += dimm_info_util.c
 ramstage-y += delay.c
 ramstage-y += fallback_boot.c
 ramstage-y += compute_ip_checksum.c
@@ -130,7 +137,10 @@ ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c
 ramstage-$(CONFIG_TRACE) += trace.c
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 ramstage-$(CONFIG_COVERAGE) += libgcov.c
-ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += edid.c
+ramstage-y += edid.c
+ifneq ($(CONFIG_NO_EDID_FILL_FB),y)
+ramstage-y += edid_fill_fb.c
+endif
 ramstage-y += memrange.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 ramstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
@@ -138,8 +148,8 @@ ramstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 ramstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 ramstage-y += b64_decode.c
 ramstage-$(CONFIG_ACPI_NHLT) += nhlt.c
-ramstage-$(CONFIG_TPM2) += tpm2_marshaling.c
-ramstage-$(CONFIG_TPM2) += tpm2_tlcl.c
+ramstage-y += list.c
+ramstage-$(CONFIG_FLATTENED_DEVICE_TREE) += device_tree.c
 
 romstage-y += cbmem_common.c
 romstage-y += imd_cbmem.c
@@ -159,6 +169,7 @@ bootblock-y += hexdump.c
 ramstage-y += hexdump.c
 romstage-y += hexdump.c
 verstage-y += hexdump.c
+smm-y += hexdump.c
 
 bootblock-$(CONFIG_REG_SCRIPT) += reg_script.c
 verstage-$(CONFIG_REG_SCRIPT) += reg_script.c
@@ -172,6 +183,7 @@ postcar-y += ext_stage_cache.c
 else
 ramstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
 romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
+postcar-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
 endif
 
 
@@ -179,8 +191,10 @@ romstage-y += boot_device.c
 ramstage-y += boot_device.c
 
 smm-y += boot_device.c
+smm-y += delay.c
 smm-y += fmap.c
 smm-y += cbfs.c memcmp.c
+smm-$(CONFIG_GENERIC_UDELAY) += timer.c
 
 bootblock-y += version.c
 romstage-y += version.c
@@ -215,10 +229,19 @@ romstage-y += bootmode.c
 ramstage-y += bootmode.c
 verstage-y += bootmode.c
 
+decompressor-y += halt.c
 bootblock-y += halt.c
 romstage-y += halt.c
 ramstage-y += halt.c
 smm-y += halt.c
+
+decompressor-y += reset.c
+bootblock-y += reset.c
+verstage-y += reset.c
+romstage-y += reset.c
+postcar-y += reset.c
+ramstage-y += reset.c
+smm-y += reset.c
 
 postcar-y += bootmode.c
 postcar-y += boot_device.c
@@ -235,10 +258,12 @@ postcar-y += prog_loaders.c
 postcar-y += prog_ops.c
 postcar-y += rmodule.c
 postcar-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+postcar-$(CONFIG_GENERIC_UDELAY) += timer.c
 
 # Use program.ld for all the platforms which use C fo the bootblock.
 bootblock-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += program.ld
 
+decompressor-y += program.ld
 postcar-y += program.ld
 romstage-y += program.ld
 ramstage-y += program.ld
@@ -273,8 +298,21 @@ $(obj)/%.elf.rmod: $(obj)/%.elf | $(RMODTOOL)
 
 ifeq ($(CONFIG_RAMSTAGE_LIBHWBASE),y)
 
+to-ada-hex = $(eval $(1) := 16\\\#$(patsubst 0x%,%,$($(1)))\\\#)
+
+$(call to-ada-hex,CONFIG_HWBASE_DEFAULT_MMCONF)
+
 $(call add-special-class,hw)
 hw-handler = $(eval ramstage-srcs += $$(addprefix $(1),$(2)))
+
+$(call add-special-class,hw-gen)
+hw-gen-handler = \
+	$(eval additional-dirs += $(dir $(2))) \
+	$(eval ramstage-srcs += $(2)) \
+	$(eval ramstage-ads-deps += $(2)) \
+	$(eval ramstage-adb-deps += $(2)) \
+	$(eval $(2): $(obj)/config.h)
+
 subdirs-y += ../../3rdparty/libhwbase
 
 ramstage-$(CONFIG_HAVE_MONOTONIC_TIMER) += hw-time-timer.adb

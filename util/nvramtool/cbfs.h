@@ -67,7 +67,7 @@ typedef uint8_t u8;
     components */
 
 #define CBFS_TYPE_STAGE      0x10
-#define CBFS_TYPE_PAYLOAD    0x20
+#define CBFS_TYPE_SELF       0x20
 #define CBFS_TYPE_OPTIONROM  0x30
 #define CBFS_TYPE_BOOTSPLASH 0x40
 #define CBFS_TYPE_RAW        0x50

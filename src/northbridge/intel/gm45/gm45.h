@@ -433,14 +433,22 @@ void gm45_late_init(stepping_t);
 
 u32 decode_igd_memory_size(u32 gms);
 u32 decode_igd_gtt_size(u32 gsm);
+u32 decode_tseg_size(u8 esmramc);
 
 void init_iommu(void);
+
+struct blc_pwm_t {
+	char ascii_string[13];
+	int pwm_freq; /* In Hz */
+};
+int get_blc_values(const struct blc_pwm_t **entries);
+
 
 #if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
 
 struct acpi_rsdp;
-unsigned long northbridge_write_acpi_tables(device_t device, unsigned long start, struct acpi_rsdp *rsdp);
+unsigned long northbridge_write_acpi_tables(struct device *device, unsigned long start, struct acpi_rsdp *rsdp);
 #endif
 
 #endif /* !__ACPI__ */

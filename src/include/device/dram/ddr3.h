@@ -31,29 +31,20 @@
 
 #include <stdint.h>
 #include <spd.h>
+#include <device/dram/common.h>
+
 
 /**
- * \brief Convenience definitions for TCK values
+ * Convenience definitions for SPD offsets
  *
- * Different values for tCK, representing standard DDR3 frequencies.
- * These values are in 1/256 ns units.
  * @{
  */
-#define TCK_1333MHZ     192
-#define TCK_1200MHZ     212
-#define TCK_1100MHZ     232
-#define TCK_1066MHZ     240
-#define TCK_1000MHZ     256
-#define TCK_933MHZ      274
-#define TCK_900MHZ      284
-#define TCK_800MHZ      320
-#define TCK_700MHZ      365
-#define TCK_666MHZ      384
-#define TCK_533MHZ      480
-#define TCK_400MHZ      640
-#define TCK_333MHZ      768
-#define TCK_266MHZ      960
-#define TCK_200MHZ      1280
+#define SPD_DIMM_MOD_ID1	117
+#define SPD_DIMM_MOD_ID2	118
+#define SPD_DIMM_SERIAL_NUM	122
+#define SPD_DIMM_SERIAL_LEN	4
+#define SPD_DIMM_PART_NUM	128
+#define SPD_DIMM_PART_LEN	18
 /** @} */
 
 /**
@@ -171,6 +162,8 @@ typedef struct dimm_attr_st {
 	u32 tWTR;
 	u32 tRTP;
 	u32 tFAW;
+	u32 tCWL;
+	u16 tCMD;
 
 	u8 reference_card;
 	/* XMP: Module voltage in mV */
@@ -182,14 +175,6 @@ typedef struct dimm_attr_st {
 	/* ASCII part number - NULL terminated */
 	u8 part_number[17];
 } dimm_attr;
-
-/** Result of the SPD decoding process */
-enum spd_status {
-	SPD_STATUS_OK = 0,
-	SPD_STATUS_INVALID,
-	SPD_STATUS_CRC_ERROR,
-	SPD_STATUS_INVALID_FIELD,
-};
 
 enum ddr3_xmp_profile {
 	DDR3_XMP_PROFILE_1 = 0,

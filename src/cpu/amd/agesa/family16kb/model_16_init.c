@@ -28,9 +28,9 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/amdfam16.h>
 #include <arch/acpi.h>
-#include <cpu/amd/agesa/s3_resume.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
 
-static void model_16_init(device_t dev)
+static void model_16_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Model 16 Init.\n");
 
@@ -44,7 +44,7 @@ static void model_16_init(device_t dev)
 	//x86_enable_cache();
 	//amd_setup_mtrrs();
 	//x86_mtrr_check();
-	disable_cache ();
+	disable_cache();
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
@@ -112,7 +112,7 @@ static struct device_operations cpu_dev_ops = {
 	.init = model_16_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0x700f00 },	/* KB-A0 */
 	{ 0, 0 },
 };

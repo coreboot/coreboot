@@ -45,7 +45,7 @@
  *   xmm2: Fam10h comparison value
  *   xmm3: Fam15h comparison value
  *   xmm4: Backup EBX
- *   xmm5: Coreboot init detect
+ *   xmm5: coreboot init detect
  */
 
 	/* Save the BIST result. */
@@ -143,7 +143,7 @@ CAR_FAM10_out:
 
 CAR_FAM10_errata_applied:
 
-#if CONFIG_MMCONF_SUPPORT
+#if IS_ENABLED(CONFIG_MMCONF_SUPPORT)
    #if (CONFIG_MMCONF_BASE_ADDRESS > 0xFFFFFFFF)
    #error "MMCONF_BASE_ADDRESS too big"
    #elif (CONFIG_MMCONF_BASE_ADDRESS & 0xFFFFF)
@@ -378,7 +378,7 @@ fam15_skip_dram_mtrr_setup:
 	xorl	%edx, %edx
 	/*
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
-	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
+	 * https://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
 	movl	$copy_and_run, %eax
 	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
@@ -598,19 +598,14 @@ CAR_FAM10_ap_out:
 
 	call	cache_as_ram_main
 
+	call	post_cache_as_ram
+	movl	%eax, %esp
+
+	call	cache_as_ram_new_stack
+
 	/* We will not go back. */
 
 	post_code(0xaf)		/* Should never see this POST code. */
-
-	.globl cache_as_ram_switch_stack
-
-cache_as_ram_switch_stack:
-	/* Return address.  */
-	popl	%eax
-	/* New stack.  */
-	popl	%eax
-	movl	%eax, %esp
-	call	cache_as_ram_new_stack
 
 all_mtrr_msrs:
 	/* fixed MTRR MSRs */

@@ -73,23 +73,23 @@ typedef s32 pid_t;
 /* If libc and its header files are not available, provide dummy functions.  */
 
 #ifdef L_gcov
-void __gcov_init(struct gcov_info *p __attribute__ ((unused))) {}
+void __gcov_init(struct gcov_info *p __attribute__((unused))) {}
 void __gcov_flush(void) {}
 #endif
 
 #ifdef L_gcov_merge_add
-void __gcov_merge_add(gcov_type *counters  __attribute__ ((unused)),
-		       unsigned int n_counters __attribute__ ((unused))) {}
+void __gcov_merge_add(gcov_type *counters  __attribute__((unused)),
+		       unsigned int n_counters __attribute__((unused))) {}
 #endif
 
 #ifdef L_gcov_merge_single
-void __gcov_merge_single(gcov_type *counters  __attribute__ ((unused)),
-			  unsigned int n_counters __attribute__ ((unused))) {}
+void __gcov_merge_single(gcov_type *counters  __attribute__((unused)),
+			  unsigned int n_counters __attribute__((unused))) {}
 #endif
 
 #ifdef L_gcov_merge_delta
-void __gcov_merge_delta(gcov_type *counters  __attribute__ ((unused)),
-			 unsigned int n_counters __attribute__ ((unused))) {}
+void __gcov_merge_delta(gcov_type *counters  __attribute__((unused)),
+			 unsigned int n_counters __attribute__((unused))) {}
 #endif
 
 #else
@@ -102,8 +102,8 @@ void __gcov_merge_delta(gcov_type *counters  __attribute__ ((unused)),
 #include <sys/stat.h>
 #endif
 #else
-void __gcov_merge_add(gcov_type *counters  __attribute__ ((unused)),
-			unsigned int n_counters __attribute__ ((unused))) {}
+void __gcov_merge_add(gcov_type *counters  __attribute__((unused)),
+			unsigned int n_counters __attribute__((unused))) {}
 #endif /* __COREBOOT__ */
 
 #ifdef L_gcov

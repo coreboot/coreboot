@@ -45,7 +45,7 @@ static const struct reg_script emmc_ops[] = {
 	REG_SCRIPT_END,
 };
 
-static void emmc_init(device_t dev)
+static void emmc_init(struct device *dev)
 {
 	struct soc_intel_baytrail_config *config = dev->chip_info;
 

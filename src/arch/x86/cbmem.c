@@ -14,53 +14,61 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <arch/acpi.h>
 
 #if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 
-#if !defined(__PRE_RAM__)
-void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
+void __weak backup_top_of_low_cacheable(uintptr_t ramtop)
 {
 	/* Do nothing. Chipset may have implementation to save ramtop in NVRAM.
 	 */
 }
 
-static void *ramtop_pointer;
-
-void set_top_of_ram(uint64_t ramtop)
-{
-	backup_top_of_ram(ramtop);
-	ramtop_pointer = (void *)(uintptr_t)ramtop;
-}
-
-static inline void *saved_ramtop(void)
-{
-	return ramtop_pointer;
-}
-#else
-static inline void *saved_ramtop(void)
-{
-	return NULL;
-}
-#endif /* !__PRE_RAM__ */
-
-unsigned long __attribute__((weak)) get_top_of_ram(void)
+uintptr_t __weak restore_top_of_low_cacheable(void)
 {
 	return 0;
 }
 
-void *cbmem_top(void)
+#endif /* LATE_CBMEM_INIT */
+
+#if IS_ENABLED(CONFIG_CBMEM_TOP_BACKUP)
+
+static void *cbmem_top_backup;
+
+void set_late_cbmem_top(uintptr_t ramtop)
 {
-	/* Top of cbmem is at lowest usable DRAM address below 4GiB. */
-	void *ptr = saved_ramtop();
-
-	if (ptr != NULL)
-		return ptr;
-
-	return (void *)get_top_of_ram();
+	backup_top_of_low_cacheable(ramtop);
+	if (ENV_RAMSTAGE)
+		cbmem_top_backup = (void *)ramtop;
 }
 
-#endif /* LATE_CBMEM_INIT */
+/* Top of CBMEM is at highest usable DRAM address below 4GiB. */
+uintptr_t __weak restore_cbmem_top(void)
+{
+	if (IS_ENABLED(CONFIG_LATE_CBMEM_INIT) && ENV_ROMSTAGE)
+		if (!acpi_is_wakeup_s3())
+			return 0;
+
+	return restore_top_of_low_cacheable();
+}
+
+void *cbmem_top(void)
+{
+	uintptr_t top_backup;
+
+	if (ENV_RAMSTAGE && cbmem_top_backup != NULL)
+		return cbmem_top_backup;
+
+	top_backup = restore_cbmem_top();
+
+	if (ENV_RAMSTAGE)
+		cbmem_top_backup = (void *)top_backup;
+
+	return (void *)top_backup;
+}
+
+#endif /* CBMEM_TOP_BACKUP */
 
 /* Something went wrong, our high memory area got wiped */
 void cbmem_fail_resume(void)

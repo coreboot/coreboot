@@ -1,6 +1,8 @@
+Vendor name: Lenovo
+Board name: ThinkPad T520 baseboard
 Category: laptop
 ROM package: WSON-8
 ROM protocol: SPI
 ROM socketed: n
-Flashrom support: n
+Flashrom support: y
 Release year: 2011

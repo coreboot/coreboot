@@ -82,7 +82,7 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 	if (IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_BOOTBLOCK_ENTRY))
 		light_sd_led();
 
-	bootblock_main_with_timestamp(base_timestamp);
+	bootblock_main_with_timestamp(base_timestamp, NULL, 0);
 }
 
 void bootblock_soc_early_init(void)

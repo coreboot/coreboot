@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <commonlib/endian.h>
 #include <commonlib/fsp.h>
@@ -67,7 +68,7 @@ struct fsp_patch_table {
 	uint8_t reserved;
 	uint32_t patch_entry_num;
 	uint32_t patch_entries[0];
-} __attribute__((packed));
+} __packed;
 
 #define FSPP_SIG 0x50505346
 

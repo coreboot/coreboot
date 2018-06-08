@@ -15,7 +15,7 @@
  *
  *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
- *  For details, see http://coreboot.org/nvramtool.
+ *  For details, see https://coreboot.org/nvramtool.
  *
  *  Please also read the file DISCLAIMER which is included in this software
  *  distribution.
@@ -694,6 +694,12 @@ static void try_add_layout_file_entry(const cmos_entry_t * cmos_entry)
 		 * reasonable manner just to be safe.
 		 */
 		return;
+
+	case LAYOUT_MULTIBYTE_ENTRY_NOT_ALIGNED:
+		fprintf(stderr,
+			"%s: Unaligned CMOS option table entry %s "
+			"spans multiple bytes.\n", prog_name, cmos_entry->name);
+		break;
 
 	default:
 		BUG();

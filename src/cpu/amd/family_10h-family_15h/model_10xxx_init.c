@@ -59,12 +59,12 @@ static inline uint8_t is_gt_rev_d(void)
 
 static volatile uint8_t fam15h_startup_flags[MAX_NODES_SUPPORTED][MAX_CORES_SUPPORTED] = {{ 0 }};
 
-static void model_10xxx_init(device_t dev)
+static void model_10xxx_init(struct device *dev)
 {
 	u8 i;
 	msr_t msr;
 	struct node_core_id id;
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	u32 siblings;
 #endif
 	uint8_t delay_start;
@@ -92,10 +92,10 @@ static void model_10xxx_init(device_t dev)
 		disable_cache();
 
 		for (i = 0x2; i < 0x10; i++) {
- 			wrmsr(0x00000200 | i, msr);
- 		}
+			wrmsr(0x00000200 | i, msr);
+		}
 
- 		enable_cache();
+		enable_cache();
 
 		/* Set up other MTRRs */
 		amd_setup_mtrrs();
@@ -124,7 +124,7 @@ static void model_10xxx_init(device_t dev)
 	/* Set the processor name string */
 	init_processor_name();
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	siblings = cpuid_ecx(0x80000008) & 0xff;
 
 	if (siblings > 0) {
@@ -240,7 +240,7 @@ static struct device_operations cpu_dev_ops = {
 	.init = model_10xxx_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 //AMD_GH_SUPPORT
 	{ X86_VENDOR_AMD, 0x100f00 },		/* SH-F0 L1 */
 	{ X86_VENDOR_AMD, 0x100f10 },		/* M2 */

@@ -1,7 +1,0 @@
-Board name: S50
-Category: settop
-Board URL: http://au.wyse.com/products/hardware/thinclients/S50/index.asp
-ROM package: PLCC
-ROM protocol: LPC
-ROM socketed: y
-Flashrom support: y

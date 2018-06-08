@@ -17,6 +17,7 @@
 #define INTEL_COMMON_GPIO_H
 
 #include <stdint.h>
+#include <compiler.h>
 
 /* LPC GPIO Base Address Register */
 #define GPIO_BASE		0x48
@@ -91,7 +92,7 @@ struct pch_gpio_set1 {
 	u32 gpio29 : 1;
 	u32 gpio30 : 1;
 	u32 gpio31 : 1;
-} __attribute__ ((packed));
+} __packed;
 
 struct pch_gpio_set2 {
 	u32 gpio32 : 1;
@@ -126,7 +127,7 @@ struct pch_gpio_set2 {
 	u32 gpio61 : 1;
 	u32 gpio62 : 1;
 	u32 gpio63 : 1;
-} __attribute__ ((packed));
+} __packed;
 
 struct pch_gpio_set3 {
 	u32 gpio64 : 1;
@@ -141,7 +142,7 @@ struct pch_gpio_set3 {
 	u32 gpio73 : 1;
 	u32 gpio74 : 1;
 	u32 gpio75 : 1;
-} __attribute__ ((packed));
+} __packed;
 
 struct pch_gpio_map {
 	struct {

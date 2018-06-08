@@ -16,6 +16,7 @@
 #include <arch/acpi.h>
 #include <baseboard/variants.h>
 #include <boardid.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <ec/ec.h>
@@ -29,6 +30,14 @@
 #include <variant/ec.h>
 #include <variant/gpio.h>
 
+/* override specific gpio by sku id */
+const struct pad_config __weak
+*variant_sku_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}
+
 static void mainboard_init(void *chip_info)
 {
 	int boardid;
@@ -41,7 +50,12 @@ static void mainboard_init(void *chip_info)
 	pads = variant_gpio_table(&num);
 	gpio_configure_pads(pads, num);
 
+	pads = variant_sku_gpio_table(&num);
+	gpio_configure_pads(pads, num);
+
 	mainboard_ec_init();
+
+	variant_board_ec_set_skuid();
 }
 
 /*
@@ -50,40 +64,51 @@ static void mainboard_init(void *chip_info)
  * a pulldown. This way we can generate 9 different values with the
  * 2 pins.
  */
-static int board_sku(void)
+uint8_t sku_strapping_value(void)
 {
-	static int board_sku_num = -1;
 	gpio_t board_sku_gpios[] = {
 		[1] = GPIO_17, [0] = GPIO_16,
 	};
 	const size_t num = ARRAY_SIZE(board_sku_gpios);
 
+	return gpio_base3_value(board_sku_gpios, num);
+}
+
+uint8_t __weak variant_board_sku(void)
+{
+	static int board_sku_num = -1;
+
 	if (board_sku_num < 0)
-		board_sku_num = gpio_base3_value(board_sku_gpios, num);
+		board_sku_num = sku_strapping_value();
 
 	return board_sku_num;
 }
 
+/* Set variant board sku to ec by sku id */
+void __weak variant_board_ec_set_skuid(void)
+{
+}
+
 const char *smbios_mainboard_sku(void)
 {
-	static char sku_str[5]; /* sku[0-8] */
+	static char sku_str[7]; /* sku{0..255} */
 
-	snprintf(sku_str, sizeof(sku_str), "sku%d", board_sku());
+	snprintf(sku_str, sizeof(sku_str), "sku%d", variant_board_sku());
 
 	return sku_str;
 }
 
-void __attribute__((weak)) variant_nhlt_oem_overrides(const char **oem_id,
+void __weak variant_nhlt_oem_overrides(const char **oem_id,
 						const char **oem_table_id,
 						uint32_t *oem_revision)
 {
 	*oem_id = "reef";
 	*oem_table_id = CONFIG_VARIANT_DIR;
-	*oem_revision = board_sku();
+	*oem_revision = variant_board_sku();
 }
 
 static unsigned long mainboard_write_acpi_tables(
-	device_t device, unsigned long current, acpi_rsdp_t *rsdp)
+	struct device *device, unsigned long current, acpi_rsdp_t *rsdp)
 {
 	uintptr_t start_addr;
 	uintptr_t end_addr;
@@ -111,7 +136,7 @@ static unsigned long mainboard_write_acpi_tables(
 	return end_addr;
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;

@@ -29,7 +29,7 @@ static unsigned get_sbdn(unsigned bus)
 	return (dev>>15) & 0x1f;
 }
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	set_bios_reset();
 
@@ -44,7 +44,7 @@ static void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 	/* set VFSMAF ( VID/FID System Management Action Field) to 2 */
 }
 
-void soft_reset(void)
+void do_soft_reset(void)
 {
 	set_bios_reset();
 

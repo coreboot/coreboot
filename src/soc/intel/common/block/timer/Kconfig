@@ -1,0 +1,4 @@
+config SOC_INTEL_COMMON_BLOCK_TIMER
+	bool
+	help
+	  Intel Processor common TIMER support

@@ -34,17 +34,21 @@
 #include <cpu/x86/name.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>
+#include <intelblocks/cpulib.h>
+#include <intelblocks/fast_spi.h>
+#include <intelblocks/mp_init.h>
+#include <intelblocks/sgx.h>
+#include <intelblocks/smm.h>
+#include <intelblocks/vmx.h>
 #include <pc80/mc146818rtc.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
+#include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/smm.h>
 #include <soc/systemagent.h>
-
-/* MP initialization support. */
-static const void *microcode_patch;
-static int ht_disabled;
+#include <timer.h>
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
@@ -104,15 +108,6 @@ static const u8 power_limit_time_msr_to_sec[] = {
 	[0x11] = 128,
 };
 
-int cpu_config_tdp_levels(void)
-{
-	msr_t platform_info;
-
-	/* Bits 34:33 indicate how many levels supported */
-	platform_info = rdmsr(MSR_PLATFORM_INFO);
-	return (platform_info.hi >> 1) & 3;
-}
-
 /*
  * Configure processor power limits if possible
  * This must be done AFTER set of BIOS_RESET_CPL
@@ -168,10 +163,11 @@ void set_power_limits(u8 power_limit_1_time)
 	limit.lo |= (power_limit_1_val & PKG_POWER_LIMIT_TIME_MASK) <<
 		PKG_POWER_LIMIT_TIME_SHIFT;
 
-	/* Set short term power limit to 1.25 * TDP */
+	/* Set short term power limit to 1.25 * TDP if no config given */
 	limit.hi = 0;
 	tdp_pl2 = (conf->tdp_pl2_override == 0) ?
 		(tdp * 125) / 100 : (conf->tdp_pl2_override * power_unit);
+	printk(BIOS_DEBUG, "CPU PL2 = %u Watts\n", tdp_pl2 / power_unit);
 	limit.hi |= (tdp_pl2) & PKG_POWER_LIMIT_MASK;
 	limit.hi |= PKG_POWER_LIMIT_CLAMP;
 	limit.hi |= PKG_POWER_LIMIT_EN;
@@ -183,6 +179,52 @@ void set_power_limits(u8 power_limit_1_time)
 	MCHBAR32(MCH_PKG_POWER_LIMIT_LO) = limit.lo & (~(PKG_POWER_LIMIT_EN));
 	MCHBAR32(MCH_PKG_POWER_LIMIT_HI) = limit.hi;
 
+	/* Set PsysPl2 */
+	if (conf->tdp_psyspl2) {
+		limit = rdmsr(MSR_PLATFORM_POWER_LIMIT);
+		limit.hi = 0;
+		printk(BIOS_DEBUG, "CPU PsysPL2 = %u Watts\n",
+			conf->tdp_psyspl2);
+		limit.hi |= (conf->tdp_psyspl2 * power_unit) &
+			PKG_POWER_LIMIT_MASK;
+		limit.hi |= PKG_POWER_LIMIT_CLAMP;
+		limit.hi |= PKG_POWER_LIMIT_EN;
+
+		wrmsr(MSR_PLATFORM_POWER_LIMIT, limit);
+	}
+
+	/* Set PsysPl3 */
+	if (conf->tdp_psyspl3) {
+		limit = rdmsr(MSR_PL3_CONTROL);
+		limit.lo = 0;
+		printk(BIOS_DEBUG, "CPU PsysPL3 = %u Watts\n",
+		       conf->tdp_psyspl3);
+		limit.lo |= (conf->tdp_psyspl3 * power_unit) &
+			PKG_POWER_LIMIT_MASK;
+		/* Enable PsysPl3 */
+		limit.lo |= PKG_POWER_LIMIT_EN;
+		/* set PsysPl3 time window */
+		limit.lo |= (conf->tdp_psyspl3_time &
+			     PKG_POWER_LIMIT_TIME_MASK) <<
+			PKG_POWER_LIMIT_TIME_SHIFT;
+		/* set PsysPl3  duty cycle */
+		limit.lo |= (conf->tdp_psyspl3_dutycycle &
+			     PKG_POWER_LIMIT_DUTYCYCLE_MASK) <<
+			PKG_POWER_LIMIT_DUTYCYCLE_SHIFT;
+		wrmsr(MSR_PL3_CONTROL, limit);
+	}
+
+	/* Set Pl4 */
+	if (conf->tdp_pl4) {
+		limit = rdmsr(MSR_VR_CURRENT_CONFIG);
+		limit.lo = 0;
+		printk(BIOS_DEBUG, "CPU PL4 = %u Watts\n",
+		       conf->tdp_pl4);
+		limit.lo |= (conf->tdp_pl4 * power_unit) &
+			PKG_POWER_LIMIT_MASK;
+		wrmsr(MSR_VR_CURRENT_CONFIG, limit);
+	}
+
 	/* Set DDR RAPL power limit by copying from MMIO to MSR */
 	msr.lo = MCHBAR32(MCH_DDR_POWER_LIMIT_LO);
 	msr.hi = MCHBAR32(MCH_DDR_POWER_LIMIT_HI);
@@ -192,7 +234,7 @@ void set_power_limits(u8 power_limit_1_time)
 	if (cpu_config_tdp_levels()) {
 		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
 		limit.hi = 0;
-		limit.lo = msr.lo & 0xff;
+		limit.lo = cpu_get_tdp_nominal_ratio();
 		wrmsr(MSR_TURBO_ACTIVATION_RATIO, limit);
 	}
 }
@@ -226,7 +268,7 @@ static void configure_isst(void)
 	if (conf->speed_shift_enable) {
 		/*
 		* Kernel driver checks CPUID.06h:EAX[Bit 7] to determine if HWP
-		  is supported or not. Coreboot needs to configure MSR 0x1AA
+		  is supported or not. coreboot needs to configure MSR 0x1AA
 		  which is then reflected in the CPUID register.
 		*/
 		msr = rdmsr(MSR_MISC_PWR_MGMT);
@@ -245,12 +287,17 @@ static void configure_isst(void)
 
 static void configure_misc(void)
 {
+	device_t dev = SA_DEV_ROOT;
+	config_t *conf = dev->chip_info;
 	msr_t msr;
 
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 0);	/* Fast String enable */
 	msr.lo |= (1 << 3);	/* TM1/TM2/EMTTM enable */
-	msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
+	if (conf->eist_enable)
+		msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
+	else
+		msr.lo &= ~(1 << 16);	/* Enhanced SpeedStep Disable */
 	wrmsr(IA32_MISC_ENABLE, msr);
 
 	/* Disable Thermal interrupts */
@@ -293,31 +340,6 @@ static void configure_dca_cap(void)
 	}
 }
 
-static void set_max_ratio(void)
-{
-	msr_t msr, perf_ctl;
-
-	perf_ctl.hi = 0;
-
-	/* Check for configurable TDP option */
-	if (get_turbo_state() == TURBO_ENABLED) {
-		msr = rdmsr(MSR_TURBO_RATIO_LIMIT);
-		perf_ctl.lo = (msr.lo & 0xff) << 8;
-	} else if (cpu_config_tdp_levels()) {
-		/* Set to nominal TDP ratio */
-		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
-		perf_ctl.lo = (msr.lo & 0xff) << 8;
-	} else {
-		/* Platform Info bits 15:8 give max ratio */
-		msr = rdmsr(MSR_PLATFORM_INFO);
-		perf_ctl.lo = msr.lo & 0xff00;
-	}
-	wrmsr(IA32_PERF_CTL, perf_ctl);
-
-	printk(BIOS_DEBUG, "cpu: frequency set to %d\n",
-	       ((perf_ctl.lo >> 8) & 0xff) * CPU_BCLK);
-}
-
 static void set_energy_perf_bias(u8 policy)
 {
 	msr_t msr;
@@ -337,44 +359,89 @@ static void set_energy_perf_bias(u8 policy)
 	printk(BIOS_DEBUG, "cpu: energy policy set to %u\n", policy);
 }
 
-static void configure_mca(void)
+static void configure_c_states(void)
 {
 	msr_t msr;
-	int i;
-	int num_banks;
 
-	msr = rdmsr(IA32_MCG_CAP);
-	num_banks = msr.lo & 0xff;
-	msr.lo = msr.hi = 0;
+	/* C-state Interrupt Response Latency Control 0 - package C3 latency */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_0_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_0, msr);
+
+	/* C-state Interrupt Response Latency Control 1 - package C6/C7 short */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_1_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_1, msr);
+
+	/* C-state Interrupt Response Latency Control 2 - package C6/C7 long */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_2_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_2, msr);
+
+	/* C-state Interrupt Response Latency Control 3 - package C8 */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS |
+		C_STATE_LATENCY_CONTROL_3_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_3, msr);
+
+	/* C-state Interrupt Response Latency Control 4 - package C9 */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS |
+		C_STATE_LATENCY_CONTROL_4_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_4, msr);
+
+	/* C-state Interrupt Response Latency Control 5 - package C10 */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS |
+		C_STATE_LATENCY_CONTROL_5_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
+}
+
+/*
+ * The emulated ACPI timer allows disabling of the ACPI timer
+ * (PM1_TMR) to have no impart on the system.
+ */
+static void enable_pm_timer_emulation(void)
+{
+	/* ACPI PM timer emulation */
+	msr_t msr;
 	/*
-	 * TODO(adurbin): This should only be done on a cold boot. Also, some
-	 * of these banks are core vs package scope. For now every CPU clears
-	 * every bank.
+	 * The derived frequency is calculated as follows:
+	 *    (CTC_FREQ * msr[63:32]) >> 32 = target frequency.
+	 * Back solve the multiplier so the 3.579545MHz ACPI timer
+	 * frequency is used.
 	 */
-	for (i = 0; i < num_banks; i++) {
-		/* Clear the machine check status */
-		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
-		/* Initialize machine checks */
-		wrmsr(IA32_MC0_CTL + i * 4,
-			(msr_t) {.lo = 0xffffffff, .hi = 0xffffffff});
-	}
+	msr.hi = (3579545ULL << 32) / CTC_FREQ;
+	/* Set PM1 timer IO port and enable*/
+	msr.lo = (EMULATE_DELAY_VALUE << EMULATE_DELAY_OFFSET_VALUE) |
+			EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + PM1_TMR);
+	wrmsr(MSR_EMULATE_PM_TMR, msr);
 }
 
 /* All CPUs including BSP will run the following function. */
-static void cpu_core_init(device_t cpu)
+void soc_core_init(device_t cpu)
 {
 	/* Clear out pending MCEs */
-	configure_mca();
+	/* TODO(adurbin): This should only be done on a cold boot. Also, some
+	 * of these banks are core vs package scope. For now every CPU clears
+	 * every bank. */
+	mca_configure();
 
 	/* Enable the local CPU apics */
 	enable_lapic_tpr();
 	setup_lapic();
+
+	/* Configure c-state interrupt response time */
+	configure_c_states();
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();
 
 	/* Configure Intel Speed Shift */
 	configure_isst();
+
+	/* Enable ACPI Timer Emulation via MSR 0x121 */
+	enable_pm_timer_emulation();
 
 	/* Enable Direct Cache Access */
 	configure_dca_cap();
@@ -385,99 +452,35 @@ static void cpu_core_init(device_t cpu)
 	/* Enable Turbo */
 	enable_turbo();
 
-	/* Configure SGX */
-	configure_sgx(microcode_patch);
-}
-
-static struct device_operations cpu_dev_ops = {
-	.init = cpu_core_init,
-};
-
-static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, CPUID_SKYLAKE_C0 },
-	{ X86_VENDOR_INTEL, CPUID_SKYLAKE_D0 },
-	{ X86_VENDOR_INTEL, CPUID_SKYLAKE_HQ0 },
-	{ X86_VENDOR_INTEL, CPUID_SKYLAKE_HR0 },
-	{ X86_VENDOR_INTEL, CPUID_KABYLAKE_G0 },
-	{ X86_VENDOR_INTEL, CPUID_KABYLAKE_H0 },
-	{ X86_VENDOR_INTEL, CPUID_KABYLAKE_Y0 },
-	{ X86_VENDOR_INTEL, CPUID_KABYLAKE_HA0 },
-	{ X86_VENDOR_INTEL, CPUID_KABYLAKE_HB0 },
-	{ 0, 0 },
-};
-
-static const struct cpu_driver driver __cpu_driver = {
-	.ops      = &cpu_dev_ops,
-	.id_table = cpu_table,
-};
-
-static int get_cpu_count(void)
-{
-	msr_t msr;
-	int num_threads;
-	int num_cores;
-
-	msr = rdmsr(MSR_CORE_THREAD_COUNT);
-	num_threads = (msr.lo >> 0) & 0xffff;
-	num_cores = (msr.lo >> 16) & 0xffff;
-	printk(BIOS_DEBUG, "CPU has %u cores, %u threads enabled.\n",
-	       num_cores, num_threads);
-
-	ht_disabled = num_threads == num_cores;
-
-	return num_threads;
-}
-
-static void get_microcode_info(const void **microcode, int *parallel)
-{
-	microcode_patch = intel_microcode_find();
-	*microcode = microcode_patch;
-	*parallel = 1;
-}
-
-static int adjust_apic_id(int index, int apic_id)
-{
-	if (ht_disabled)
-		return 2 * index;
-	else
-		return index;
-}
-
-/* Check whether the current CPU is the sibling hyperthread. */
-int is_secondary_thread(void)
-{
-	int apic_id;
-	apic_id = lapicid();
-
-	if (!ht_disabled && (apic_id & 1))
-		return 1;
-	return 0;
+	/* Configure Core PRMRR for SGX. */
+	prmrr_core_configure();
 }
 
 static void per_cpu_smm_trigger(void)
 {
 	/* Relocate the SMM handler. */
 	smm_relocate();
-
-	/* After SMM relocation a 2nd microcode load is required. */
-	intel_microcode_load_unlocked(microcode_patch);
 }
 
 static void post_mp_init(void)
 {
 	/* Set Max Ratio */
-	set_max_ratio();
+	cpu_set_max_ratio();
 
 	/*
 	 * Now that all APs have been relocated as well as the BSP let SMIs
 	 * start flowing.
 	 */
-	southbridge_smm_enable_smi();
+	smm_southbridge_enable(GBL_EN);
 
 	/* Lock down the SMRAM space. */
 #if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 	smm_lock();
 #endif
+
+	mp_run_on_all_cpus(vmx_configure, NULL, 2 * USECS_PER_MSEC);
+
+	mp_run_on_all_cpus(sgx_configure, NULL, 14 * USECS_PER_MSEC);
 }
 
 static const struct mp_ops mp_ops = {
@@ -490,39 +493,19 @@ static const struct mp_ops mp_ops = {
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = smm_info,
 	.get_microcode_info = get_microcode_info,
-	.adjust_cpu_apic_entry = adjust_apic_id,
 	.pre_mp_smm_init = smm_initialize,
 	.per_cpu_smm_trigger = per_cpu_smm_trigger,
 	.relocation_handler = smm_relocation_handler,
 	.post_mp_init = post_mp_init,
 };
 
-static void soc_init_cpus(void *unused)
+void soc_init_cpus(struct bus *cpu_bus)
 {
-	device_t dev = dev_find_path(NULL, DEVICE_PATH_CPU_CLUSTER);
-	assert(dev != NULL);
-	struct bus *cpu_bus = dev->link_list;
-
 	if (mp_init_with_smm(cpu_bus, &mp_ops))
 		printk(BIOS_ERR, "MP initialization failure.\n");
 
 	/* Thermal throttle activation offset */
 	configure_thermal_target();
-
-	/*
-	 * TODO: somehow calling configure_sgx() in cpu_core_init() is not
-	 * successful on the BSP (other threads are fine). Have to run it again
-	 * here to get SGX enabled on BSP. This behavior needs to root-caused
-	 * and we shall not have this redundant call.
-	 */
-	configure_sgx(microcode_patch);
-}
-
-/* Ensure to re-program all MTRRs based on DRAM resource settings */
-static void soc_post_cpus_init(void *unused)
-{
-	if (mp_run_on_all_cpus(&x86_setup_mtrrs_with_detect, 1000) < 0)
-		printk(BIOS_ERR, "MTRR programming failure\n");
 }
 
 int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
@@ -548,8 +531,42 @@ int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
 			(current_patch_id == new_patch_id - 1);
 }
 
-/*
- * Do CPU MP Init before FSP Silicon Init
- */
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, soc_init_cpus, NULL);
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, soc_post_cpus_init, NULL);
+void cpu_lock_sgx_memory(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(MSR_LT_LOCK_MEMORY);
+	if ((msr.lo & 1) == 0) {
+		msr.lo |= 1; /* Lock it */
+		wrmsr(MSR_LT_LOCK_MEMORY, msr);
+	}
+}
+
+int soc_fill_sgx_param(struct sgx_param *sgx_param)
+{
+	device_t dev = SA_DEV_ROOT;
+	assert(dev != NULL);
+	config_t *conf = dev->chip_info;
+
+	if (!conf) {
+		printk(BIOS_ERR, "Failed to get chip_info for SGX param\n");
+		return -1;
+	}
+
+	sgx_param->enable = conf->sgx_enable;
+	return 0;
+}
+int soc_fill_vmx_param(struct vmx_param *vmx_param)
+{
+	device_t dev = SA_DEV_ROOT;
+	assert(dev != NULL);
+	config_t *conf = dev->chip_info;
+
+	if (!conf) {
+		printk(BIOS_ERR, "Failed to get chip_info for VMX param\n");
+		return -1;
+	}
+
+	vmx_param->enable = conf->VmxEnable;
+	return 0;
+}

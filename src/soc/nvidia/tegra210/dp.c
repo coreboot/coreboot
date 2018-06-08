@@ -17,7 +17,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <edid.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1361,7 +1361,7 @@ static void tegra_dp_update_config(struct tegra_dc_dp_data *dp,
 		return;
 	}
 
-	if (decode_edid(buf, sizeof(buf), &edid)) {
+	if (decode_edid(buf, sizeof(buf), &edid) != EDID_CONFORMANT) {
 		printk(BIOS_ERR, "%s: Failed to decode EDID. Use defaults.\n",
 		       __func__);
 		return;
@@ -1570,7 +1570,7 @@ error_enable:
 	return;
 }
 
-void dp_display_startup(device_t dev)
+void dp_display_startup(struct device *dev)
 {
 	struct soc_nvidia_tegra210_config *config = dev->chip_info;
 	struct display_controller *disp_ctrl =

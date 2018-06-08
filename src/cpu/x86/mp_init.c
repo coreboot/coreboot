@@ -16,6 +16,7 @@
 
 #include <console/console.h>
 #include <stdint.h>
+#include <compiler.h>
 #include <rmodule.h>
 #include <arch/cpu.h>
 #include <cpu/cpu.h>
@@ -39,7 +40,11 @@
 
 #define MAX_APIC_IDS 256
 
-typedef void (*mp_callback_t)(void);
+struct mp_callback {
+	void (*func)(void *);
+	void *arg;
+	int logical_cpu_number;
+};
 
 /*
  * A mp_flight_record details a sequence of calls for the APs to perform
@@ -57,9 +62,9 @@ typedef void (*mp_callback_t)(void);
 struct mp_flight_record {
 	atomic_t barrier;
 	atomic_t cpus_entered;
-	mp_callback_t ap_call;
-	mp_callback_t bsp_call;
-} __attribute__((aligned(CACHELINE_SIZE)));
+	void (*ap_call)(void);
+	void (*bsp_call)(void);
+} __aligned(CACHELINE_SIZE);
 
 #define _MP_FLIGHT_RECORD(barrier_, ap_func_, bsp_func_) \
 	{							\
@@ -81,9 +86,6 @@ struct mp_params {
 	int num_cpus; /* Total cpus include BSP */
 	int parallel_microcode_load;
 	const void *microcode_pointer;
-	/* adjust_apic_id() is called for every potential APIC id in the
-	 * system up from 0 to CONFIG_MAX_CPUS. Return adjusted apic_id. */
-	int (*adjust_apic_id)(int index, int apic_id);
 	/* Flight plan  for APs and BSP. */
 	struct mp_flight_record *flight_plan;
 	int num_records;
@@ -103,14 +105,14 @@ struct sipi_params {
 	uint32_t msr_count;
 	uint32_t c_handler;
 	atomic_t ap_count;
-} __attribute__((packed));
+} __packed;
 
 /* This also needs to match the assembly code for saved MSR encoding. */
 struct saved_msr {
 	uint32_t index;
 	uint32_t lo;
 	uint32_t hi;
-} __attribute__((packed));
+} __packed;
 
 
 /* The sipi vector rmodule is included in the ramstage using 'objdump -B'. */
@@ -132,43 +134,27 @@ static struct mp_flight_plan mp_info;
 
 struct cpu_map {
 	struct device *dev;
-	int apic_id;
+	/* Keep track of default apic ids for SMM. */
+	int default_apic_id;
 };
 
 /* Keep track of APIC and device structure for each CPU. */
 static struct cpu_map cpus[CONFIG_MAX_CPUS];
 
-inline void barrier_wait(atomic_t *b)
+static inline void add_cpu_map_entry(const struct cpu_info *info)
+{
+	cpus[info->index].dev = info->cpu;
+	cpus[info->index].default_apic_id = cpuid_ebx(1) >> 24;
+}
+
+static inline void barrier_wait(atomic_t *b)
 {
 	while (atomic_read(b) == 0)
 		asm ("pause");
 	mfence();
 }
 
-/* Returns 1 if timeout occurs before barier is released.
- * returns 0 if barrier is released before timeout. */
-int barrier_wait_timeout(atomic_t *b, uint32_t timeout_ms)
-{
-	int timeout = 0;
-	struct mono_time current, end;
-
-	timer_monotonic_get(&current);
-	end = current;
-	mono_time_add_msecs(&end, timeout_ms);
-
-	while ((atomic_read(b) == 0) && (!mono_time_after(&current, &end))) {
-		timer_monotonic_get(&current);
-		asm ("pause");
-	}
-	mfence();
-
-	if (mono_time_after(&current, &end))
-		timeout = 1;
-
-	return timeout;
-}
-
-inline void release_barrier(atomic_t *b)
+static inline void release_barrier(atomic_t *b)
 {
 	mfence();
 	atomic_set(b, 1);
@@ -207,7 +193,7 @@ static void ap_do_flight_plan(void)
 	}
 }
 
-static void park_this_cpu(void)
+static void park_this_cpu(void *unused)
 {
 	stop_this_cpu();
 }
@@ -217,7 +203,6 @@ static void park_this_cpu(void)
 static void asmlinkage ap_init(unsigned int cpu)
 {
 	struct cpu_info *info;
-	int apic_id;
 
 	/* Ensure the local APIC is enabled */
 	enable_lapic();
@@ -225,19 +210,21 @@ static void asmlinkage ap_init(unsigned int cpu)
 	info = cpu_info();
 	info->index = cpu;
 	info->cpu = cpus[cpu].dev;
+
+	add_cpu_map_entry(info);
 	thread_init_cpu_info_non_bsp(info);
 
-	apic_id = lapicid();
-	info->cpu->path.apic.apic_id = apic_id;
-	cpus[cpu].apic_id = apic_id;
+	/* Fix up APIC id with reality. */
+	info->cpu->path.apic.apic_id = lapicid();
 
-	printk(BIOS_INFO, "AP: slot %d apic_id %x.\n", cpu, apic_id);
+	printk(BIOS_INFO, "AP: slot %d apic_id %x.\n", cpu,
+		info->cpu->path.apic.apic_id);
 
 	/* Walk the flight plan */
 	ap_do_flight_plan();
 
 	/* Park the AP. */
-	park_this_cpu();
+	park_this_cpu(NULL);
 }
 
 static void setup_default_sipi_vector_params(struct sipi_params *sp)
@@ -293,6 +280,8 @@ static int save_bsp_msrs(char *start, int size)
 		return -1;
 	}
 
+	fixed_mtrrs_expose_amd_rwdram();
+
 	msr_entry = (void *)start;
 	for (i = 0; i < NUM_FIXED_MTRRS; i++)
 		msr_entry = save_msr(fixed_mtrrs[i], msr_entry);
@@ -303,6 +292,8 @@ static int save_bsp_msrs(char *start, int size)
 	}
 
 	msr_entry = save_msr(MTRR_DEF_TYPE_MSR, msr_entry);
+
+	fixed_mtrrs_hide_amd_rwdram();
 
 	return msr_count;
 }
@@ -398,16 +389,13 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 	for (i = 1; i < max_cpus; i++) {
 		struct device_path cpu_path;
 		struct device *new;
-		int apic_id;
 
 		/* Build the CPU device path */
 		cpu_path.type = DEVICE_PATH_APIC;
 
-		/* Assuming linear APIC space allocation. */
-		apic_id = info->cpu->path.apic.apic_id + i;
-		if (p->adjust_apic_id != NULL)
-			apic_id = p->adjust_apic_id(i, apic_id);
-		cpu_path.apic.apic_id = apic_id;
+		/* Assuming linear APIC space allocation. AP will set its own
+		   APIC id in the ap_init() path above. */
+		cpu_path.apic.apic_id = info->cpu->path.apic.apic_id + i;
 
 		/* Allocate the new CPU device structure */
 		new = alloc_find_dev(cpu_bus, &cpu_path);
@@ -532,9 +520,17 @@ static int bsp_do_flight_plan(struct mp_params *mp_params)
 {
 	int i;
 	int ret = 0;
-	const int timeout_us = 100000;
+	/*
+	 * Set time-out to wait for APs to a huge value (=1 second) since it
+	 * could take a longer time for APs to check-in as the number of APs
+	 * increases (contention for resources like UART also increases).
+	 */
+	const int timeout_us = 1000000;
 	const int step_us = 100;
 	int num_aps = mp_params->num_cpus - 1;
+	struct stopwatch sw;
+
+	stopwatch_init(&sw);
 
 	for (i = 0; i < mp_params->num_records; i++) {
 		struct mp_flight_record *rec = &mp_params->flight_plan[i];
@@ -554,6 +550,9 @@ static int bsp_do_flight_plan(struct mp_params *mp_params)
 
 		release_barrier(&rec->barrier);
 	}
+
+	printk(BIOS_INFO, "%s done after %ld msecs.\n", __func__,
+	       stopwatch_duration_msecs(&sw));
 	return ret;
 }
 
@@ -582,8 +581,7 @@ static void init_bsp(struct bus *cpu_bus)
 		printk(BIOS_CRIT, "BSP index(%d) != 0!\n", info->index);
 
 	/* Track BSP in cpu_map structures. */
-	cpus[info->index].dev = info->cpu;
-	cpus[info->index].apic_id = cpu_path.apic.apic_id;
+	add_cpu_map_entry(info);
 }
 
 /*
@@ -667,7 +665,7 @@ static int mp_get_apic_id(int cpu_slot)
 	if (cpu_slot >= CONFIG_MAX_CPUS || cpu_slot < 0)
 		return -1;
 
-	return cpus[cpu_slot].apic_id;
+	return cpus[cpu_slot].default_apic_id;
 }
 
 void smm_initiate_relocation_parallel(void)
@@ -792,9 +790,9 @@ static int install_permanent_handler(int num_cpus, uintptr_t smbase,
 					size_t smsize, size_t save_state_size)
 {
 	/* There are num_cpus concurrent stacks and num_cpus concurrent save
-	 * state areas. Lastly, set the stack size to the save state size. */
+	 * state areas. Lastly, set the stack size to 1KiB. */
 	struct smm_loader_params smm_params = {
-		.per_cpu_stack_size = save_state_size,
+		.per_cpu_stack_size = 1 * KiB,
 		.num_concurrent_stacks = num_cpus,
 		.per_cpu_save_state_size = save_state_size,
 		.num_concurrent_save_states = num_cpus,
@@ -857,19 +855,30 @@ static void trigger_smm_relocation(void)
 	mp_state.ops.per_cpu_smm_trigger();
 }
 
-static mp_callback_t ap_callbacks[CONFIG_MAX_CPUS];
+static struct mp_callback *ap_callbacks[CONFIG_MAX_CPUS];
 
-static mp_callback_t read_callback(mp_callback_t *slot)
+static struct mp_callback *read_callback(struct mp_callback **slot)
 {
-	return *(volatile mp_callback_t *)slot;
+	struct mp_callback *ret;
+
+	asm volatile ("mov	%1, %0\n"
+		: "=r" (ret)
+		: "m" (*slot)
+		: "memory"
+	);
+	return ret;
 }
 
-static void store_callback(mp_callback_t *slot, mp_callback_t value)
+static void store_callback(struct mp_callback **slot, struct mp_callback *val)
 {
-	*(volatile mp_callback_t *)slot = value;
+	asm volatile ("mov	%1, %0\n"
+		: "=m" (*slot)
+		: "r" (val)
+		: "memory"
+	);
 }
 
-static int run_ap_work(mp_callback_t func, long expire_us)
+static int run_ap_work(struct mp_callback *val, long expire_us)
 {
 	int i;
 	int cpus_accepted;
@@ -885,22 +894,27 @@ static int run_ap_work(mp_callback_t func, long expire_us)
 	for (i = 0; i < ARRAY_SIZE(ap_callbacks); i++) {
 		if (cur_cpu == i)
 			continue;
-		store_callback(&ap_callbacks[i], func);
+		store_callback(&ap_callbacks[i], val);
 	}
 	mfence();
 
 	/* Wait for all the APs to signal back that call has been accepted. */
-	stopwatch_init_usecs_expire(&sw, expire_us);
-	for (cpus_accepted = 0; !stopwatch_expired(&sw); cpus_accepted = 0) {
+	if (expire_us > 0)
+		stopwatch_init_usecs_expire(&sw, expire_us);
+
+	do {
+		cpus_accepted = 0;
+
 		for (i = 0; i < ARRAY_SIZE(ap_callbacks); i++) {
 			if (cur_cpu == i)
 				continue;
 			if (read_callback(&ap_callbacks[i]) == NULL)
 				cpus_accepted++;
 		}
+
 		if (cpus_accepted == global_num_aps)
 			return 0;
-	}
+	} while (expire_us <= 0 || !stopwatch_expired(&sw));
 
 	printk(BIOS_ERR, "AP call expired. %d/%d CPUs accepted.\n",
 		cpus_accepted, global_num_aps);
@@ -909,40 +923,73 @@ static int run_ap_work(mp_callback_t func, long expire_us)
 
 static void ap_wait_for_instruction(void)
 {
-	int cur_cpu = cpu_index();
+	struct mp_callback lcb;
+	struct mp_callback **per_cpu_slot;
+	int cur_cpu;
 
 	if (!IS_ENABLED(CONFIG_PARALLEL_MP_AP_WORK))
 		return;
 
-	while (1) {
-		mp_callback_t func = read_callback(&ap_callbacks[cur_cpu]);
+	cur_cpu = cpu_index();
+	per_cpu_slot = &ap_callbacks[cur_cpu];
 
-		if (func == NULL) {
+	while (1) {
+		struct mp_callback *cb = read_callback(per_cpu_slot);
+
+		if (cb == NULL) {
 			asm ("pause");
 			continue;
 		}
 
-		store_callback(&ap_callbacks[cur_cpu], NULL);
+		/* Copy to local variable before signalling consumption. */
+		memcpy(&lcb, cb, sizeof(lcb));
 		mfence();
-		func();
+		store_callback(per_cpu_slot, NULL);
+		if (lcb.logical_cpu_number && (cur_cpu !=
+				lcb.logical_cpu_number))
+			continue;
+		else
+			lcb.func(lcb.arg);
 	}
 }
 
-int mp_run_on_aps(void (*func)(void), long expire_us)
+int mp_run_on_aps(void (*func)(void *), void *arg, int logical_cpu_num,
+		long expire_us)
 {
-	return run_ap_work(func, expire_us);
+	struct mp_callback lcb = { .func = func, .arg = arg,
+				.logical_cpu_number = logical_cpu_num};
+	return run_ap_work(&lcb, expire_us);
 }
 
-int mp_run_on_all_cpus(void (*func)(void), long expire_us)
+int mp_run_on_all_cpus(void (*func)(void *), void *arg, long expire_us)
 {
 	/* Run on BSP first. */
-	func();
-	return mp_run_on_aps(func, expire_us);
+	func(arg);
+
+	return mp_run_on_aps(func, arg, MP_RUN_ON_ALL_CPUS, expire_us);
 }
 
 int mp_park_aps(void)
 {
-	return mp_run_on_aps(park_this_cpu, 10 * USECS_PER_MSEC);
+	struct stopwatch sw;
+	int ret;
+	long duration_msecs;
+
+	stopwatch_init(&sw);
+
+	ret = mp_run_on_aps(park_this_cpu, NULL, MP_RUN_ON_ALL_CPUS,
+				250 * USECS_PER_MSEC);
+
+	duration_msecs = stopwatch_duration_msecs(&sw);
+
+	if (!ret)
+		printk(BIOS_DEBUG, "%s done after %ld msecs.\n", __func__,
+		       duration_msecs);
+	else
+		printk(BIOS_ERR, "%s failed after %ld msecs.\n", __func__,
+		       duration_msecs);
+
+	return ret;
 }
 
 static struct mp_flight_record mp_steps[] = {
@@ -1011,7 +1058,6 @@ int mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops)
 	if (mp_state.ops.get_microcode_info != NULL)
 		mp_state.ops.get_microcode_info(&mp_params.microcode_pointer,
 			&mp_params.parallel_microcode_load);
-	mp_params.adjust_apic_id = mp_state.ops.adjust_cpu_apic_entry;
 	mp_params.flight_plan = &mp_steps[0];
 	mp_params.num_records = ARRAY_SIZE(mp_steps);
 

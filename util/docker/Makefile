@@ -34,6 +34,9 @@ export COREBOOT_CONTAINER_VERSION?=$(crossgcc_version)
 # Commit id to build from
 export DOCKER_COMMIT?=$(shell git log -n 1 --pretty=%h)
 
+# SDK architecture
+export COREBOOT_CROSSGCC_PARAM?=all_without_gdb
+
 test-docker:
 	$(if $(DOCKER),,\
 		$(warning Docker command not found.  Please install docker) \
@@ -50,6 +53,7 @@ coreboot-sdk: test-docker
 	cat coreboot-sdk/Dockerfile | \
 		sed "s/{{DOCKER_COMMIT}}/$(DOCKER_COMMIT)/" | \
 		sed "s/{{SDK_VERSION}}/$(COREBOOT_CONTAINER_VERSION)/" | \
+		sed "s/{{CROSSGCC_PARAM}}/$(COREBOOT_CROSSGCC_PARAM)/" | \
 		$(DOCKER) build -t coreboot/coreboot-sdk:$(COREBOOT_CONTAINER_VERSION) -
 
 upload-coreboot-sdk: test-docker-login

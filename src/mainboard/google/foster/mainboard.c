@@ -106,7 +106,7 @@ static void setup_audio(void)
 	clock_enable_audio();
 }
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	soc_configure_pads(padcfgs, ARRAY_SIZE(padcfgs));
 	soc_configure_funits(funitcfgs, ARRAY_SIZE(funitcfgs));
@@ -115,7 +115,7 @@ static void mainboard_init(device_t dev)
 	setup_audio();
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = &mainboard_init;
 }

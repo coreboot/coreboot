@@ -32,7 +32,7 @@
 #define DEBUG_USB2 0
 
 #ifndef __SIMPLE_DEVICE__
-void sis966_enable(device_t dev);
+void sis966_enable(struct device *dev);
 #endif
 
 #endif /* SIS966_H */

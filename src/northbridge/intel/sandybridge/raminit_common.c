@@ -160,6 +160,8 @@ void dram_find_common_params(ramctr_timing *ctrl)
 		ctrl->tWTR = MAX(ctrl->tWTR, dimm->tWTR);
 		ctrl->tRTP = MAX(ctrl->tRTP, dimm->tRTP);
 		ctrl->tFAW = MAX(ctrl->tFAW, dimm->tFAW);
+		ctrl->tCWL = MAX(ctrl->tCWL, dimm->tCWL);
+		ctrl->tCMD = MAX(ctrl->tCMD, dimm->tCMD);
 	}
 
 	if (!ctrl->cas_supported)
@@ -295,49 +297,39 @@ void dram_timing_regs(ramctr_timing *ctrl)
 
 void dram_dimm_mapping(ramctr_timing *ctrl)
 {
-	u32 reg, val32;
 	int channel;
 	dimm_info *info = &ctrl->info;
 
 	FOR_ALL_CHANNELS {
-		dimm_attr *dimmA = 0;
-		dimm_attr *dimmB = 0;
-		reg = 0;
-		val32 = 0;
+		dimm_attr *dimmA, *dimmB;
+		u32 reg = 0;
+
 		if (info->dimm[channel][0].size_mb >=
 		    info->dimm[channel][1].size_mb) {
-			// dimm 0 is bigger, set it to dimmA
 			dimmA = &info->dimm[channel][0];
 			dimmB = &info->dimm[channel][1];
-			reg |= (0 << 16);
+			reg |= 0 << 16;
 		} else {
-			// dimm 1 is bigger, set it to dimmA
 			dimmA = &info->dimm[channel][1];
 			dimmB = &info->dimm[channel][0];
-			reg |= (1 << 16);
+			reg |= 1 << 16;
 		}
-		// dimmA
-		if (dimmA && (dimmA->ranks > 0)) {
-			val32 = dimmA->size_mb / 256;
-			reg = (reg & ~0xff) | val32;
-			val32 = dimmA->ranks - 1;
-			reg = (reg & ~0x20000) | (val32 << 17);
-			val32 = (dimmA->width / 8) - 1;
-			reg = (reg & ~0x80000) | (val32 << 19);
-		}
-		// dimmB
-		if (dimmB && (dimmB->ranks > 0)) {
-			val32 = dimmB->size_mb / 256;
-			reg = (reg & ~0xff00) | (val32 << 8);
-			val32 = dimmB->ranks - 1;
-			reg = (reg & ~0x40000) | (val32 << 18);
-			val32 = (dimmB->width / 8) - 1;
-			reg = (reg & ~0x100000) | (val32 << 20);
-		}
-		reg = (reg & ~0x200000) | (1 << 21);	// rank interleave
-		reg = (reg & ~0x400000) | (1 << 22);	// enhanced interleave
 
-		// Save MAD-DIMM register
+		if (dimmA && (dimmA->ranks > 0)) {
+			reg |= dimmA->size_mb / 256;
+			reg |= (dimmA->ranks - 1) << 17;
+			reg |= (dimmA->width / 8 - 1) << 19;
+		}
+
+		if (dimmB && (dimmB->ranks > 0)) {
+			reg |= (dimmB->size_mb / 256) << 8;
+			reg |= (dimmB->ranks - 1) << 18;
+			reg |= (dimmB->width / 8 - 1) << 20;
+		}
+
+		reg |= 1 << 21; /* rank interleave */
+		reg |= 1 << 22; /* enhanced interleave */
+
 		if ((dimmA && (dimmA->ranks > 0))
 		    || (dimmB && (dimmB->ranks > 0))) {
 			ctrl->mad_dimm[channel] = reg;
@@ -402,6 +394,9 @@ unsigned int get_mem_min_tck(void)
 
 	/* If this is zero, it just means devicetree.cb didn't set it */
 	if (!cfg || cfg->max_mem_clock_mhz == 0) {
+		if (IS_ENABLED(CONFIG_NATIVE_RAMINIT_IGNORE_MAX_MEM_FUSES))
+			return TCK_1333MHZ;
+
 		rev = pci_read_config8(PCI_DEV(0, 0, 0), PCI_DEVICE_ID);
 
 		if ((rev & BASE_REV_MASK) == BASE_REV_SNB) {
@@ -1020,30 +1015,18 @@ void program_timings(ramctr_timing * ctrl, int channel)
 			shift = 0;
 
 		FOR_ALL_LANES {
-			if (post_timA_min_high >
-			    ((ctrl->timings[channel][slotrank].lanes[lane].
-			      timA + shift) >> 6))
-				post_timA_min_high =
-				    ((ctrl->timings[channel][slotrank].
-				      lanes[lane].timA + shift) >> 6);
-			if (pre_timA_min_high >
-			    (ctrl->timings[channel][slotrank].lanes[lane].
-			     timA >> 6))
-				pre_timA_min_high =
-				    (ctrl->timings[channel][slotrank].
-				     lanes[lane].timA >> 6);
-			if (post_timA_max_high <
-			    ((ctrl->timings[channel][slotrank].lanes[lane].
-			      timA + shift) >> 6))
-				post_timA_max_high =
-				    ((ctrl->timings[channel][slotrank].
-				      lanes[lane].timA + shift) >> 6);
-			if (pre_timA_max_high <
-			    (ctrl->timings[channel][slotrank].lanes[lane].
-			     timA >> 6))
-				pre_timA_max_high =
-				    (ctrl->timings[channel][slotrank].
-				     lanes[lane].timA >> 6);
+			post_timA_min_high = MIN(post_timA_min_high,
+				(ctrl->timings[channel][slotrank].lanes[lane].
+					timA + shift) >> 6);
+			pre_timA_min_high = MIN(pre_timA_min_high,
+				ctrl->timings[channel][slotrank].lanes[lane].
+						timA >> 6);
+			post_timA_max_high = MAX(post_timA_max_high,
+				(ctrl->timings[channel][slotrank].lanes[lane].
+					timA + shift) >> 6);
+			pre_timA_max_high = MAX(pre_timA_max_high,
+				ctrl->timings[channel][slotrank].lanes[lane].
+						timA >> 6);
 		}
 
 		if (pre_timA_max_high - pre_timA_min_high <
@@ -2354,7 +2337,6 @@ static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 int command_training(ramctr_timing *ctrl)
 {
 	int channel;
-	int err;
 
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern5(ctrl, channel, 0);
@@ -2362,17 +2344,39 @@ int command_training(ramctr_timing *ctrl)
 	}
 
 	FOR_ALL_POPULATED_CHANNELS {
-		/* try command rate 1T and 2T */
-		err = try_cmd_stretch(ctrl, channel, 0);
+		int cmdrate, err;
+
+		/*
+		 * Dual DIMM per channel:
+		 * Issue:      While c320c discovery seems to succeed raminit
+		 *             will fail in write training.
+		 * Workaround: Skip 1T in dual DIMM mode, that's only
+		 *             supported by a few DIMMs.
+		 * Only try 1T mode for XMP DIMMs that request it in dual DIMM
+		 * mode.
+		 *
+		 * Single DIMM per channel:
+		 * Try command rate 1T and 2T
+		 */
+		cmdrate = ((ctrl->rankmap[channel] & 0x5) == 0x5);
+		if (ctrl->tCMD)
+			/* XMP gives the CMD rate in clock ticks, not ns */
+			cmdrate = MIN(DIV_ROUND_UP(ctrl->tCMD, 256) - 1, 1);
+
+		for (; cmdrate < 2; cmdrate++) {
+			err = try_cmd_stretch(ctrl, channel, cmdrate << 1);
+
+			if (!err)
+				break;
+		}
+
 		if (err) {
-			err = try_cmd_stretch(ctrl, channel, 2);
-			if (err) {
-				printk(BIOS_EMERG, "c320c discovery failed\n");
-				return err;
-			}
-			printram("Using CMD rate 2T on channel %u\n", channel);
-		} else
-			printram("Using CMD rate 1T on channel %u\n", channel);
+			printk(BIOS_EMERG, "c320c discovery failed\n");
+			return err;
+		}
+
+		printram("Using CMD rate %uT on channel %u\n",
+			 cmdrate + 1, channel);
 	}
 
 	FOR_ALL_POPULATED_CHANNELS
@@ -3100,9 +3104,9 @@ void set_scrambling_seed(ramctr_timing * ctrl)
 	};
 	FOR_ALL_POPULATED_CHANNELS {
 		MCHBAR32(0x4020 + 0x400 * channel) &= ~0x10000000;
-		write32(DEFAULT_MCHBAR + 0x4034, seeds[channel][0]);
-		write32(DEFAULT_MCHBAR + 0x403c, seeds[channel][1]);
-		write32(DEFAULT_MCHBAR + 0x4038, seeds[channel][2]);
+		MCHBAR32(0x4034 + 0x400 * channel) = seeds[channel][0];
+		MCHBAR32(0x403c + 0x400 * channel) = seeds[channel][1];
+		MCHBAR32(0x4038 + 0x400 * channel) = seeds[channel][2];
 	}
 }
 

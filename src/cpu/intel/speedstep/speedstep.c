@@ -55,15 +55,15 @@ static void speedstep_get_limits(sst_params_t *const params)
 
 	/* Read normal maximum parameters. */
 	/* Newer CPUs provide the normal maximum settings in
-	   IA32_PLATFORM_ID. The values in IA32_PERF_STS change
+	   IA32_PLATFORM_ID. The values in IA32_PERF_STATUS change
 	   when using turbo mode. */
 	msr = rdmsr(IA32_PLATFORM_ID);
 	params->max = SPEEDSTEP_STATE_FROM_MSR(msr.lo, state_mask);
 	if (cpu_id == 0x006e) {
 		/* Looks like Yonah CPUs don't have the frequency ratio in
-		   IA32_PLATFORM_ID. Use IA32_PERF_STS instead, the reading
+		   IA32_PLATFORM_ID. Use IA32_PERF_STATUS instead, the reading
 		   should be reliable as those CPUs don't have turbo mode. */
-		msr = rdmsr(IA32_PERF_STS);
+		msr = rdmsr(IA32_PERF_STATUS);
 		params->max.ratio = (msr.hi & SPEEDSTEP_RATIO_VALUE_MASK)
 						>> SPEEDSTEP_RATIO_SHIFT;
 	}

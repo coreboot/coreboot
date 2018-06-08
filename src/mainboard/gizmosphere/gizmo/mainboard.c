@@ -14,43 +14,20 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-#include <device/device.h>
-#include <device/pci.h>
 #include <arch/io.h>
-#include <cpu/x86/msr.h>
-#include <device/pci_def.h>
-#include <southbridge/amd/sb800/sb800.h>
-#include <arch/acpi.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
-#include <cpu/amd/mtrr.h>
-#include "SBPLATFORM.h"
+#include <console/console.h>
 #include <delay.h>
+#include <device/device.h>
+#include <device/pci_def.h>
+#include <device/pci_ops.h>
 
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
-/**
- * TODO
- * SB CIMx callback
- */
-void set_pcie_reset(void)
-{
-}
-
-/**
- * TODO
- * mainboard specific SB CIMx callback
- */
-void set_pcie_dereset(void)
-{
-}
-
+#include <southbridge/amd/sb800/sb800.h>
+#include "SBPLATFORM.h"
 
 /**********************************************
  * Enable the dedicated functions of the board.
  **********************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
@@ -72,7 +49,7 @@ static void mainboard_enable(device_t dev)
 
 static void mainboard_final(void *chip_info)
 {
-	device_t ahci_dev;
+	struct device *ahci_dev;
 	uintptr_t ABAR;
 	u8 *memptr;
 

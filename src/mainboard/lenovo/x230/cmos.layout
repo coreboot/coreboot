@@ -48,7 +48,7 @@ entries
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-392          3       e       5        baud_rate
+#392          3       r       0        unused
 395          4       e       6        debug_level
 #399          1       r       0        unused
 
@@ -67,13 +67,12 @@ entries
 416         1       e       1        trackpoint
 417         1       e       1        fn_ctrl_swap
 418         1       e       1        sticky_fn
-#419        2       r       0        unused
+419         2       e       12       usb_always_on
 421         1       e       9        sata_mode
-422	    2	    e	    10	     backlight
+422         2       e       10       backlight
 
 # coreboot config options: cpu
-424          1       e       2        hyper_threading
-#425        7       r       0        unused
+#424        8       r       0        unused
 
 # coreboot config options: northbridge
 432         3        e      11        gfx_uma_size
@@ -100,23 +99,15 @@ enumerations
 2     1     Disable
 4     0     Fallback
 4     1     Normal
-5     0     115200
-5     1     57600
-5     2     38400
-5     3     19200
-5     4     9600
-5     5     4800
-5     6     2400
-5     7     1200
-6     1     Emergency
-6     2     Alert
-6     3     Critical
-6     4     Error
-6     5     Warning
-6     6     Notice
-6     7     Info
-6     8     Debug
-6     9     Spew
+6     0     Emergency
+6     1     Alert
+6     2     Critical
+6     3     Error
+6     4     Warning
+6     5     Notice
+6     6     Info
+6     7     Debug
+6     8     Spew
 7     0     Disable
 7     1     Enable
 7     2     Keep
@@ -135,8 +126,11 @@ enumerations
 11    4	    160M
 11    5	    192M
 11    6	    224M
+12    0     Disable
+12    1     AC and battery
+12    2     AC only
 
 # -----------------------------------------------------------------
 checksums
 
-checksum 392 415 984
+checksum 392 447 984

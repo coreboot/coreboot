@@ -27,6 +27,12 @@ post_car_stack_top:
 .text
 .global _start
 _start:
+	/* Assume stack alignment doesn't matter here as chipset_teardown_car
+	   is expected to be implemented in assembly. */
+
+	/* Migrate GDT to this text segment */
+	call	gdt_init
+
 	/* chipset_teardown_car() is expected to disable cache-as-ram. */
 	call	chipset_teardown_car
 
@@ -56,11 +62,20 @@ _start:
 	 */
 
 #if IS_ENABLED(CONFIG_SOC_SETS_MSRS)
-	push	%esp
+
+	mov	%esp, %ebp
+	/* Need to align stack to 16 bytes at the call instruction. Therefore
+	   account for the 1 push. */
+	andl	$0xfffffff0, %esp
+	sub	$12, %esp
+	push	%ebp
 	call	soc_set_mtrrs
+	/* Ignore fixing up %esp since we're setting it a new value. */
 
 	/* eax: new top_of_stack with setup_stack_and_mtrrs data removed */
 	movl	%eax, %esp
+	/* Align stack to 16 bytes at call instruction. */
+	andl	$0xfffffff0, %esp
 	call	soc_enable_mtrrs
 #else /* CONFIG_SOC_SETS_MSRS */
 	/* Clear variable MTRRs. */
@@ -109,6 +124,8 @@ _start:
 	wrmsr
 #endif /* CONFIG_SOC_SETS_MSRS */
 
+	/* Align stack to 16 bytes at call instruction. */
+	andl	$0xfffffff0, %esp
 	/* Call into main for postcar. */
 	call main
 	/* Should never return. */

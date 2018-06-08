@@ -22,8 +22,6 @@
 #include "spi_flash_internal.h"
 #include <timer.h>
 
-static struct spi_flash *spi_flash_dev = NULL;
-
 static void spi_flash_addr(u32 addr, u8 *cmd)
 {
 	/* cmd[0] is actual command */
@@ -73,7 +71,7 @@ int spi_flash_cmd(const struct spi_slave *spi, u8 cmd, void *response, size_t le
 }
 
 int spi_flash_cmd_read(const struct spi_slave *spi, const u8 *cmd,
-		       size_t cmd_len, void *data, size_t data_len)
+			      size_t cmd_len, void *data, size_t data_len)
 {
 	int ret = do_spi_flash_cmd(spi, cmd, cmd_len, data, data_len);
 	if (ret) {
@@ -86,7 +84,9 @@ int spi_flash_cmd_read(const struct spi_slave *spi, const u8 *cmd,
 
 /* TODO: This code is quite possibly broken and overflowing stacks. Fix ASAP! */
 #pragma GCC diagnostic push
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Wstack-usage="
+#endif
 int spi_flash_cmd_write(const struct spi_slave *spi, const u8 *cmd,
 			size_t cmd_len, const void *data, size_t data_len)
 {
@@ -113,6 +113,34 @@ static int spi_flash_cmd_read_array(const struct spi_slave *spi, u8 *cmd,
 	return spi_flash_cmd_read(spi, cmd, cmd_len, data, len);
 }
 
+/* Perform the read operation honoring spi controller fifo size, reissuing
+ * the read command until the full request completed. */
+static int spi_flash_cmd_read_array_wrapped(const struct spi_slave *spi,
+				u8 *cmd, size_t cmd_len, u32 offset,
+				size_t len, void *buf)
+{
+	int ret;
+	size_t xfer_len;
+	uint8_t *data = buf;
+
+	while (len) {
+		xfer_len = spi_crop_chunk(spi, cmd_len, len);
+
+		/* Perform the read. */
+		ret = spi_flash_cmd_read_array(spi, cmd, cmd_len,
+						offset, xfer_len, data);
+
+		if (ret)
+			return ret;
+
+		offset += xfer_len;
+		data += xfer_len;
+		len -= xfer_len;
+	}
+
+	return 0;
+}
+
 int spi_flash_cmd_read_fast(const struct spi_flash *flash, u32 offset,
 			size_t len, void *data)
 {
@@ -121,7 +149,7 @@ int spi_flash_cmd_read_fast(const struct spi_flash *flash, u32 offset,
 	cmd[0] = CMD_READ_ARRAY_FAST;
 	cmd[4] = 0x00;
 
-	return spi_flash_cmd_read_array(&flash->spi, cmd, sizeof(cmd),
+	return spi_flash_cmd_read_array_wrapped(&flash->spi, cmd, sizeof(cmd),
 					offset, len, data);
 }
 
@@ -131,7 +159,7 @@ int spi_flash_cmd_read_slow(const struct spi_flash *flash, u32 offset,
 	u8 cmd[4];
 
 	cmd[0] = CMD_READ_ARRAY_SLOW;
-	return spi_flash_cmd_read_array(&flash->spi, cmd, sizeof(cmd),
+	return spi_flash_cmd_read_array_wrapped(&flash->spi, cmd, sizeof(cmd),
 					offset, len, data);
 }
 
@@ -187,7 +215,7 @@ int spi_flash_cmd_erase(const struct spi_flash *flash, u32 offset, size_t len)
 		spi_flash_addr(offset, cmd);
 		offset += erase_size;
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 		printk(BIOS_SPEW, "SF: erase %2x %2x %2x %2x (%x)\n", cmd[0], cmd[1],
 		      cmd[2], cmd[3], offset);
 #endif
@@ -242,64 +270,57 @@ int spi_flash_cmd_status(const struct spi_flash *flash, u8 *reg)
 static struct {
 	const u8 shift;
 	const u8 idcode;
-	struct spi_flash *(*probe) (struct spi_slave *spi, u8 *idcode);
+	int (*probe) (const struct spi_slave *spi, u8 *idcode,
+		      struct spi_flash *flash);
 } flashes[] = {
 	/* Keep it sorted by define name */
-#if CONFIG_SPI_FLASH_AMIC
+#if IS_ENABLED(CONFIG_SPI_FLASH_AMIC)
 	{ 0, 0x37, spi_flash_probe_amic, },
 #endif
-#if CONFIG_SPI_FLASH_ATMEL
+#if IS_ENABLED(CONFIG_SPI_FLASH_ATMEL)
 	{ 0, 0x1f, spi_flash_probe_atmel, },
 #endif
-#if CONFIG_SPI_FLASH_EON
+#if IS_ENABLED(CONFIG_SPI_FLASH_EON)
 	{ 0, 0x1c, spi_flash_probe_eon, },
 #endif
-#if CONFIG_SPI_FLASH_GIGADEVICE
+#if IS_ENABLED(CONFIG_SPI_FLASH_GIGADEVICE)
 	{ 0, 0xc8, spi_flash_probe_gigadevice, },
 #endif
-#if CONFIG_SPI_FLASH_MACRONIX
+#if IS_ENABLED(CONFIG_SPI_FLASH_MACRONIX)
 	{ 0, 0xc2, spi_flash_probe_macronix, },
 #endif
-#if CONFIG_SPI_FLASH_SPANSION
+#if IS_ENABLED(CONFIG_SPI_FLASH_SPANSION)
 	{ 0, 0x01, spi_flash_probe_spansion, },
 #endif
-#if CONFIG_SPI_FLASH_SST
+#if IS_ENABLED(CONFIG_SPI_FLASH_SST)
 	{ 0, 0xbf, spi_flash_probe_sst, },
 #endif
-#if CONFIG_SPI_FLASH_STMICRO
+#if IS_ENABLED(CONFIG_SPI_FLASH_STMICRO)
 	{ 0, 0x20, spi_flash_probe_stmicro, },
 #endif
-#if CONFIG_SPI_FLASH_WINBOND
+#if IS_ENABLED(CONFIG_SPI_FLASH_WINBOND)
 	{ 0, 0xef, spi_flash_probe_winbond, },
 #endif
 	/* Keep it sorted by best detection */
-#if CONFIG_SPI_FLASH_STMICRO
+#if IS_ENABLED(CONFIG_SPI_FLASH_STMICRO)
 	{ 0, 0xff, spi_flash_probe_stmicro, },
 #endif
-#if CONFIG_SPI_FLASH_ADESTO
+#if IS_ENABLED(CONFIG_SPI_FLASH_ADESTO)
 	{ 0, 0x1f, spi_flash_probe_adesto, },
 #endif
 };
 #define IDCODE_LEN (IDCODE_CONT_LEN + IDCODE_PART_LEN)
 
-struct spi_flash *
-__attribute__((weak)) spi_flash_programmer_probe(struct spi_slave *spi,
-						 int force)
-{
-	/* Default weak implementation. Do nothing. */
-	return NULL;
-}
-
-static struct spi_flash *__spi_flash_probe(struct spi_slave *spi)
+int spi_flash_generic_probe(const struct spi_slave *spi,
+				struct spi_flash *flash)
 {
 	int ret, i, shift;
 	u8 idcode[IDCODE_LEN], *idp;
-	struct spi_flash *flash = NULL;
 
 	/* Read the ID codes */
 	ret = spi_flash_cmd(spi, CMD_READ_ID, idcode, sizeof(idcode));
 	if (ret)
-		return NULL;
+		return -1;
 
 	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
 		printk(BIOS_SPEW, "SF: Got idcode: ");
@@ -319,59 +340,53 @@ static struct spi_flash *__spi_flash_probe(struct spi_slave *spi)
 	for (i = 0; i < ARRAY_SIZE(flashes); ++i)
 		if (flashes[i].shift == shift && flashes[i].idcode == *idp) {
 			/* we have a match, call probe */
-			flash = flashes[i].probe(spi, idp);
-			if (flash)
-				break;
+			if (flashes[i].probe(spi, idp, flash) == 0)
+				return 0;
 		}
 
-	return flash;
+	/* No match, return error. */
+	return -1;
 }
 
-struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs)
+int spi_flash_probe(unsigned int bus, unsigned int cs, struct spi_flash *flash)
 {
 	struct spi_slave spi;
-	struct spi_flash *flash;
+	int ret = -1;
 
 	if (spi_setup_slave(bus, cs, &spi)) {
 		printk(BIOS_WARNING, "SF: Failed to set up slave\n");
-		return NULL;
+		return -1;
 	}
 
-	/* Try special programmer probe if any (without force). */
-	flash = spi_flash_programmer_probe(&spi, 0);
+	/* Try special programmer probe if any. */
+	if (spi.ctrlr->flash_probe)
+		ret = spi.ctrlr->flash_probe(&spi, flash);
 
 	/* If flash is not found, try generic spi flash probe. */
-	if (!flash)
-		flash = __spi_flash_probe(&spi);
-
-	/* If flash is not yet found, force special programmer probe if any. */
-	if (!flash)
-		flash = spi_flash_programmer_probe(&spi, 1);
+	if (ret)
+		ret = spi_flash_generic_probe(&spi, flash);
 
 	/* Give up -- nothing more to try if flash is not found. */
-	if (!flash) {
+	if (ret) {
 		printk(BIOS_WARNING, "SF: Unsupported manufacturer!\n");
-		return NULL;
+		return -1;
 	}
 
 	printk(BIOS_INFO, "SF: Detected %s with sector size 0x%x, total 0x%x\n",
 			flash->name, flash->sector_size, flash->size);
-
-	/*
-	 * Only set the global spi_flash_dev if this is the boot
-	 * device's bus and it's previously unset while in ramstage.
-	 */
-	if (ENV_RAMSTAGE && IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH) &&
-		CONFIG_BOOT_DEVICE_SPI_FLASH_BUS == bus && !spi_flash_dev)
-		spi_flash_dev = flash;
-
-	return flash;
+	if (bus == CONFIG_BOOT_DEVICE_SPI_FLASH_BUS
+			&& flash->size != CONFIG_ROM_SIZE) {
+		printk(BIOS_ERR, "SF size 0x%x does not correspond to"
+			" CONFIG_ROM_SIZE 0x%x!!\n", flash->size,
+			CONFIG_ROM_SIZE);
+	}
+	return 0;
 }
 
 int spi_flash_read(const struct spi_flash *flash, u32 offset, size_t len,
 		void *buf)
 {
-	return flash->internal_read(flash, offset, len, buf);
+	return flash->ops->read(flash, offset, len, buf);
 }
 
 int spi_flash_write(const struct spi_flash *flash, u32 offset, size_t len,
@@ -382,7 +397,7 @@ int spi_flash_write(const struct spi_flash *flash, u32 offset, size_t len,
 	if (spi_flash_volatile_group_begin(flash))
 		return -1;
 
-	ret = flash->internal_write(flash, offset, len, buf);
+	ret = flash->ops->write(flash, offset, len, buf);
 
 	if (spi_flash_volatile_group_end(flash))
 		return -1;
@@ -397,7 +412,7 @@ int spi_flash_erase(const struct spi_flash *flash, u32 offset, size_t len)
 	if (spi_flash_volatile_group_begin(flash))
 		return -1;
 
-	ret = flash->internal_erase(flash, offset, len);
+	ret = flash->ops->erase(flash, offset, len);
 
 	if (spi_flash_volatile_group_end(flash))
 		return -1;
@@ -407,13 +422,16 @@ int spi_flash_erase(const struct spi_flash *flash, u32 offset, size_t len)
 
 int spi_flash_status(const struct spi_flash *flash, u8 *reg)
 {
-	return flash->internal_status(flash, reg);
+	if (flash->ops->status)
+		return flash->ops->status(flash, reg);
+
+	return -1;
 }
 
 int spi_flash_read_sec(const struct spi_flash *flash, u32 offset, size_t len,
-		       void *buf)
+		void *buf)
 {
-	return flash->internal_read_sec(flash, offset, len, buf);
+	return flash->ops->read_sec(flash, offset, len, buf);
 }
 
 static uint32_t volatile_group_count CAR_GLOBAL;
@@ -457,6 +475,7 @@ int spi_flash_volatile_group_end(const struct spi_flash *flash)
 void lb_spi_flash(struct lb_header *header)
 {
 	struct lb_spi_flash *flash;
+	const struct spi_flash *spi_flash_dev;
 
 	if (!IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
 		return;
@@ -466,9 +485,7 @@ void lb_spi_flash(struct lb_header *header)
 	flash->tag = LB_TAG_SPI_FLASH;
 	flash->size = sizeof(*flash);
 
-	/* Try to get the flash device if not loaded yet */
-	if (!spi_flash_dev)
-		boot_device_init();
+	spi_flash_dev = boot_device_spi_flash();
 
 	if (spi_flash_dev) {
 		flash->flash_size = spi_flash_dev->size;
@@ -481,4 +498,78 @@ void lb_spi_flash(struct lb_header *header)
 		flash->sector_size = 64 * KiB;
 		flash->erase_cmd = CMD_BLOCK_ERASE;
 	}
+}
+
+
+int spi_flash_ctrlr_protect_region(const struct spi_flash *flash,
+					const struct region *region)
+{
+	const struct spi_ctrlr *ctrlr;
+	struct region flash_region = { 0 };
+
+	if (!flash)
+		return -1;
+
+	flash_region.size = flash->size;
+
+	if (!region_is_subregion(&flash_region, region))
+		return -1;
+
+	ctrlr = flash->spi.ctrlr;
+
+	if (!ctrlr)
+		return -1;
+
+	if (ctrlr->flash_protect)
+		return ctrlr->flash_protect(flash, region);
+
+	return -1;
+}
+
+int spi_flash_vector_helper(const struct spi_slave *slave,
+	struct spi_op vectors[], size_t count,
+	int (*func)(const struct spi_slave *slave, const void *dout,
+		    size_t bytesout, void *din, size_t bytesin))
+{
+	int ret;
+	void *din;
+	size_t bytes_in;
+
+	if (count < 1 || count > 2)
+		return -1;
+
+	/* SPI flash commands always have a command first... */
+	if (!vectors[0].dout || !vectors[0].bytesout)
+		return -1;
+	/* And not read any data during the command. */
+	if (vectors[0].din || vectors[0].bytesin)
+		return -1;
+
+	if (count == 2) {
+		/* If response bytes requested ensure the buffer is valid. */
+		if (vectors[1].bytesin && !vectors[1].din)
+			return -1;
+		/* No sends can accompany a receive. */
+		if (vectors[1].dout || vectors[1].bytesout)
+			return -1;
+		din = vectors[1].din;
+		bytes_in = vectors[1].bytesin;
+	} else {
+		din = NULL;
+		bytes_in = 0;
+	}
+
+	ret = func(slave, vectors[0].dout, vectors[0].bytesout, din, bytes_in);
+
+	if (ret) {
+		vectors[0].status = SPI_OP_FAILURE;
+		if (count == 2)
+			vectors[1].status = SPI_OP_FAILURE;
+	} else {
+		vectors[0].status = SPI_OP_SUCCESS;
+		if (count == 2)
+			vectors[1].status = SPI_OP_SUCCESS;
+	}
+
+	return ret;
 }

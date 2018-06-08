@@ -21,6 +21,7 @@
 #include <bootstate.h>
 #include <cbmem.h>
 #include "chip.h"
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
@@ -38,6 +39,18 @@
 #include <soc/spi.h>
 #include <spi-generic.h>
 #include <stdint.h>
+#include <reg_script.h>
+
+static const struct reg_script ops[] = {
+	REG_MMIO_RMW32(ILB_BASE_ADDRESS + SCNT,
+		~SCNT_MODE, 0),	/* put LPC SERIRQ in Quiet Mode */
+	REG_SCRIPT_END
+};
+
+static void enable_serirq_quiet_mode(void)
+{
+	reg_script_run(ops);
+}
 
 static inline void
 add_mmio_resource(device_t dev, int i, unsigned long addr, unsigned long size)
@@ -137,23 +150,8 @@ static void sc_read_resources(device_t dev)
 
 static void sc_rtc_init(void)
 {
-	uint32_t gen_pmcon1;
-	int rtc_fail;
-	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
-
-	printk(BIOS_SPEW, "%s/%s\n",
-			__FILE__, __func__);
-	if (ps != NULL)
-		gen_pmcon1 = ps->gen_pmcon1;
-	else
-		gen_pmcon1 = read32((void *)(PMC_BASE_ADDRESS + GEN_PMCON1));
-
-	rtc_fail = !!(gen_pmcon1 & RPS);
-
-	if (rtc_fail)
-		printk(BIOS_DEBUG, "RTC failure.\n");
-
-	cmos_init(rtc_fail);
+	printk(BIOS_SPEW, "%s/%s\n", __FILE__, __func__);
+	cmos_init(rtc_failure());
 }
 
 static void sc_init(device_t dev)
@@ -460,7 +458,7 @@ static const struct pci_driver southcluster __pci_driver = {
 	.device		= LPC_DEVID,
 };
 
-int __attribute__((weak)) mainboard_get_spi_config(struct spi_config *cfg)
+int __weak mainboard_get_spi_config(struct spi_config *cfg)
 {
 	printk(BIOS_SPEW, "%s/%s ( 0x%p )\n",
 			__FILE__, __func__, (void *)cfg);
@@ -503,10 +501,10 @@ static void finalize_chipset(void *unused)
 		write32(spi + LVSCC, cfg.lvscc | VCL);
 	}
 	spi_init();
+	enable_serirq_quiet_mode();
 
 	printk(BIOS_DEBUG, "Finalizing SMM.\n");
 	outb(APM_CNT_FINALIZE, APM_CNT);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, finalize_chipset, NULL);
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, finalize_chipset, NULL);
+BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT, finalize_chipset, NULL);

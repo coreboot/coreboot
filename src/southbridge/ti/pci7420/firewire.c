@@ -24,7 +24,7 @@
 #include "pci7420.h"
 #include "chip.h"
 
-static void pci7420_firewire_init(device_t dev)
+static void pci7420_firewire_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "TI PCI7420/7620 FireWire init\n");
 
@@ -51,7 +51,7 @@ static const struct pci_driver ti_pci7420_driver __pci_driver = {
 	.device = 0x802e,
 };
 
-static void ti_pci7420_firewire_enable_dev(device_t dev)
+static void ti_pci7420_firewire_enable_dev(struct device *dev)
 {
 	/* Nothing here yet */
 }

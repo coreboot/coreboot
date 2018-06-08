@@ -26,8 +26,16 @@
 #include <cpu/amd/msr.h>
 #include <arch/acpi.h>
 #include <romstage_handoff.h>
-#include "cbmem.h"
+#include <cbmem.h>
+
 #include "cpu/amd/car/disable_cache_as_ram.c"
+
+// For set_sysinfo_in_ram()
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDK8)
+#include "northbridge/amd/amdk8/raminit.h"
+#else
+#include "northbridge/amd/amdfam10/raminit.h"
+#endif
 
 #if CONFIG_RAMTOP <= 0x100000
 	#error "You need to set CONFIG_RAMTOP greater than 1M"
@@ -48,20 +56,23 @@ static size_t backup_size(void)
 static void memcpy_(void *d, const void *s, size_t len)
 {
 	print_car_debug(" Copy [%08x-%08x] to [%08x - %08x] ...",
-		(uint32_t) s, (uint32_t) (s + len - 1), (uint32_t) d, (uint32_t) (d + len - 1));
+		(uint32_t) s, (uint32_t) (s + len - 1),
+		(uint32_t) d, (uint32_t) (d + len - 1));
 	memcpy(d, s, len);
 }
 
 static void memset_(void *d, int val, size_t len)
 {
-	print_car_debug(" Fill [%08x-%08x] ...", (uint32_t) d, (uint32_t) (d + len - 1));
+	print_car_debug(" Fill [%08x-%08x] ...",
+	(uint32_t) d, (uint32_t) (d + len - 1));
 	memset(d, val, len);
 }
 
 static int memcmp_(void *d, const void *s, size_t len)
 {
 	print_car_debug(" Compare [%08x-%08x] with [%08x - %08x] ...",
-		(uint32_t) s, (uint32_t) (s + len - 1), (uint32_t) d, (uint32_t) (d + len - 1));
+		(uint32_t) s, (uint32_t) (s + len - 1),
+		(uint32_t) d, (uint32_t) (d + len - 1));
 	return memcmp(d, s, len);
 }
 
@@ -71,10 +82,13 @@ static void prepare_romstage_ramstack(int s3resume)
 	print_car_debug("Prepare CAR migration and stack regions...");
 
 	if (s3resume) {
-		void *resume_backup_memory = acpi_backup_container(CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
+		void *resume_backup_memory =
+		acpi_backup_container(CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
 		if (resume_backup_memory)
-			memcpy_(resume_backup_memory + HIGH_MEMORY_SAVE - backup_top,
-				(void *)(CONFIG_RAMTOP - backup_top), backup_top);
+			memcpy_(resume_backup_memory
+			+ HIGH_MEMORY_SAVE - backup_top,
+				(void *)(CONFIG_RAMTOP - backup_top),
+				backup_top);
 	}
 	memset_((void *)(CONFIG_RAMTOP - backup_top), 0, backup_top);
 
@@ -87,7 +101,8 @@ static void prepare_ramstage_region(int s3resume)
 	print_car_debug("Prepare ramstage memory region...");
 
 	if (s3resume) {
-		void *resume_backup_memory = acpi_backup_container(CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
+		void *resume_backup_memory =
+		acpi_backup_container(CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
 		if (resume_backup_memory)
 			memcpy_(resume_backup_memory, (void *) CONFIG_RAMBASE,
 				HIGH_MEMORY_SAVE - backup_top);
@@ -110,24 +125,32 @@ static void vErrata343(void)
 	wrmsr(BU_CFG2_MSR, msr);
 }
 
-void post_cache_as_ram(void)
+asmlinkage void * post_cache_as_ram(void)
 {
 	uint32_t family = amd_fam1x_cpu_family();
+	int s3resume = 0;
 
 	/* Verify that the BSP didn't overrun the lower stack
 	 * boundary during romstage execution
 	 */
 	volatile uint32_t *lower_stack_boundary;
-	lower_stack_boundary = (void *)((CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE) - CONFIG_DCACHE_BSP_STACK_SIZE);
+	lower_stack_boundary =
+	(void *)((CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)
+	- CONFIG_DCACHE_BSP_STACK_SIZE);
 	if ((*lower_stack_boundary) != 0xdeadbeef)
 		printk(BIOS_WARNING, "BSP overran lower stack boundary.  Undefined behaviour may result!\n");
 
-	int s3resume = acpi_is_wakeup_s3();
-
-	/* Boards with EARLY_CBMEM_INIT need to do this in cache_as_ram_main().
-	 */
-	if (s3resume && !IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
-		cbmem_recovery(s3resume);
+	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)) {
+		s3resume = acpi_is_wakeup_s3();
+	} else {
+		if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME))
+			s3resume = (acpi_get_sleep_type() == ACPI_S3);
+		/* For normal boot path, boards with LATE_CBMEM_INIT will do
+		 * cbmem_initialize_empty() late in ramstage.
+		 */
+		if (s3resume)
+			cbmem_recovery(s3resume);
+	}
 
 	prepare_romstage_ramstack(s3resume);
 
@@ -154,15 +177,13 @@ void post_cache_as_ram(void)
 
 	/* New stack grows right below migrated_car. */
 	print_car_debug("Switching to use RAM as stack...");
-	cache_as_ram_switch_stack(migrated_car);
-
-	/* We do not come back. */
+	return migrated_car;
 }
 
-void cache_as_ram_new_stack (void)
+asmlinkage void cache_as_ram_new_stack(void)
 {
 	print_car_debug("Disabling cache as RAM now\n");
-	disable_cache_as_ram_bsp();
+	disable_cache_as_ram_real(0);	// inline
 
 	disable_cache();
 	/* Enable cached access to RAM in the range 0M to CACHE_TMP_RAMTOP */

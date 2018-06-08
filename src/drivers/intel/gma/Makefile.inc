@@ -13,14 +13,18 @@
 ## GNU General Public License for more details.
 ##
 
-ramstage-$(CONFIG_INTEL_DP) += intel_dp.c drm_dp_helper.c display.c
 ramstage-$(CONFIG_INTEL_DDI) += intel_ddi.c
 ramstage-$(CONFIG_INTEL_EDID) += edid.c vbt.c
 ifeq ($(CONFIG_VGA_ROM_RUN),y)
 ramstage-$(CONFIG_INTEL_INT15) += int15.c
 endif
 ramstage-$(CONFIG_INTEL_GMA_ACPI) += acpi.c
+ramstage-$(CONFIG_INTEL_GMA_ACPI) += opregion.c
 
+cbfs-files-$(CONFIG_INTEL_GMA_ADD_VBT_DATA_FILE) += vbt.bin
+vbt.bin-file := $(call strip_quotes,$(CONFIG_INTEL_GMA_VBT_FILE))
+vbt.bin-type := raw
+vbt.bin-compression := lzma
 
 ifeq ($(CONFIG_MAINBOARD_USE_LIBGFXINIT),y)
 
@@ -40,7 +44,7 @@ CONFIG_GFX_GMA_DEFAULT_MMIO := 0 # dummy, will be overwritten at runtime
 subdirs-y += ../../../../3rdparty/libgfxinit
 
 ramstage-y += gma.ads
-ifeq ($(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE),y)
+ifeq ($(CONFIG_LINEAR_FRAMEBUFFER),y)
 ramstage-y += hires_fb/gma.adb
 else
 ramstage-y += text_fb/gma.adb

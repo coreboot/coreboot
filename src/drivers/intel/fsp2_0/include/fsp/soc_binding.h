@@ -26,6 +26,14 @@
 #include <Base.h>
 #include <FspmUpd.h>
 #include <FspsUpd.h>
+#if IS_ENABLED(CONFIG_DISPLAY_FSP_VERSION_INFO)
+#include <FirmwareVersionInfoHob.h>
+#endif
+
+#if CONFIG_UDK_VERSION >= CONFIG_UDK_2017_VERSION
+#include <PiPei.h>
+#include <Ppi/MpServices.h>
+#endif
 
 #pragma pack(pop)
 

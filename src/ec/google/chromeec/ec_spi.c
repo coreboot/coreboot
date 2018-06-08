@@ -51,8 +51,9 @@ static int crosec_spi_io(size_t req_size, size_t resp_size, void *context)
 	struct spi_slave *slave = (struct spi_slave *)context;
 	int ret = 0;
 
-	while (!stopwatch_expired(&cs_cooldown_sw))
-		/* Wait minimum delay between CS assertions. */;
+	/* Wait minimum delay between CS assertions. */
+	stopwatch_wait_until_expired(&cs_cooldown_sw);
+
 	spi_claim_bus(slave);
 
 	 /* Allow EC to ramp up clock after being awaken.

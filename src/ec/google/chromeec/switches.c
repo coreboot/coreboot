@@ -42,8 +42,8 @@ int get_recovery_mode_switch(void)
 
 int get_recovery_mode_retrain_switch(void)
 {
-	uint32_t events;
-	const uint32_t mask =
+	uint64_t events;
+	const uint64_t mask =
 		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY_HW_REINIT);
 
 	/*
@@ -53,7 +53,7 @@ int get_recovery_mode_retrain_switch(void)
 	events = google_chromeec_get_events_b();
 
 	if (cbmem_possibly_online()) {
-		const uint32_t *events_save;
+		const uint64_t *events_save;
 
 		events_save = cbmem_find(CBMEM_ID_EC_HOSTEVENT);
 		if (events_save != NULL)

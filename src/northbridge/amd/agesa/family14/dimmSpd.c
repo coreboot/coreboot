@@ -21,7 +21,6 @@
 /* warning: Porting.h includes an open #pragma pack(1) */
 #include "Porting.h"
 #include "AGESA.h"
-#include "amdlib.h"
 #include "chip.h"
 
 #include <northbridge/amd/agesa/dimmSpd.h>
@@ -30,7 +29,7 @@
  * Gets the SMBus address for an SPD from the array in devicetree.cb
  * then read the SPD into the supplied buffer.
  */
-AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PARAMS *info)
+AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINTN unused2, AGESA_READ_SPD_PARAMS *info)
 {
 	UINT8 spdAddress;
 

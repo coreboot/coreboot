@@ -43,7 +43,7 @@ drivers_lenovo_is_wacom_present(void)
 	const char *pn;
 	int i;
 	static int result = -1;
-	device_t superio;
+	struct device *superio;
 	u8 sioid;
 
 	if (result != -1)
@@ -105,11 +105,7 @@ drivers_lenovo_serial_ports_ssdt_generate(const char *scope,
 
 		acpigen_write_resourcetemplate_footer();
 
-		acpigen_write_method("_STA", 0);
-		/* return */
-		acpigen_emit_byte(0xa4);
-		acpigen_write_byte(0xf);
-		acpigen_pop_len();
+		acpigen_write_STA(0xf);
 
 		acpigen_pop_len();
 	}
@@ -131,12 +127,7 @@ drivers_lenovo_serial_ports_ssdt_generate(const char *scope,
 
 		acpigen_write_resourcetemplate_footer();
 
-		/* method op */
-		acpigen_write_method("_STA", 0);
-		/* return */
-		acpigen_emit_byte(0xa4);
-		acpigen_write_byte(0xf);
-		acpigen_pop_len();
+		acpigen_write_STA(0xf);
 
 		acpigen_pop_len();
 	}

@@ -54,12 +54,12 @@ static struct device_operations ops = {
 
 static struct pnp_info pnp_dev_info[] = {
 	/* TODO: Some of the 0x07f8 etc. values may not be correct. */
-	{ &ops, F71808A_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, F71808A_HWM,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, F71808A_KBC,  PNP_IO0 | PNP_IRQ0 | PNP_IRQ1, {0x07ff, 0}, },
+	{ &ops, F71808A_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ &ops, F71808A_HWM,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ &ops, F71808A_KBC,  PNP_IO0 | PNP_IRQ0 | PNP_IRQ1, 0x07ff, },
 	{ &ops, F71808A_GPIO, PNP_IRQ0, },
-	{ &ops, F71808A_WDT,  PNP_IO0, {0x07f8, 0},},
-	{ &ops, F71808A_CIR,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, F71808A_WDT,  PNP_IO0, 0x07f8,},
+	{ &ops, F71808A_CIR,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
 	{ &ops, F71808A_PME, },
 };
 

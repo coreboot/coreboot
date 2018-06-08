@@ -34,7 +34,7 @@
 
 #include <string.h>
 #include <types.h>
-#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
+#if IS_ENABLED(CONFIG_FRAMEBUFFER_SET_VESA_MODE)
 #include <boot/coreboot_tables.h>
 #endif
 
@@ -66,7 +66,7 @@ u8 *vbe_info_buffer = 0;
 u8 *biosmem;
 u32 biosmem_size;
 
-#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
+#if IS_ENABLED(CONFIG_FRAMEBUFFER_SET_VESA_MODE)
 static inline u8
 vbe_prepare(void)
 {
@@ -75,14 +75,14 @@ vbe_prepare(void)
 	memset(vbe_info_buffer, 0, 512);
 	//set VbeSignature to "VBE2" to indicate VBE 2.0+ request
 	vbe_info_buffer[0] = 'V';
-	vbe_info_buffer[0] = 'B';
-	vbe_info_buffer[0] = 'E';
-	vbe_info_buffer[0] = '2';
+	vbe_info_buffer[1] = 'B';
+	vbe_info_buffer[2] = 'E';
+	vbe_info_buffer[3] = '2';
 	// ES:DI store pointer to buffer in virtual mem see vbe_info_buffer above...
 	M.x86.R_EDI = 0x0;
 	M.x86.R_ES = VBE_SEGMENT;
 
-	return 0;		// successfull init
+	return 0;		// successful init
 }
 
 // VBE Function 00h
@@ -156,7 +156,7 @@ vbe_info(vbe_info_t * info)
 
 static int mode_info_valid;
 
-int vbe_mode_info_valid(void)
+static int vbe_mode_info_valid(void)
 {
 	return mode_info_valid;
 }
@@ -734,7 +734,7 @@ void vbe_set_graphics(void)
 	vbe_get_mode_info(&mode_info);
 	vbe_set_mode(&mode_info);
 
-#if CONFIG_BOOTSPLASH
+#if IS_ENABLED(CONFIG_BOOTSPLASH)
 	unsigned char *framebuffer =
 		(unsigned char *) le32_to_cpu(mode_info.vesa.phys_base_ptr);
 	DEBUG_PRINTF_VBE("FRAMEBUFFER: 0x%p\n", framebuffer);
@@ -763,8 +763,11 @@ void vbe_set_graphics(void)
 #endif
 }
 
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
+int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 {
+	if (!vbe_mode_info_valid())
+		return -1;
+
 	framebuffer->physical_address = le32_to_cpu(mode_info.vesa.phys_base_ptr);
 
 	framebuffer->x_resolution = le16_to_cpu(mode_info.vesa.x_resolution);
@@ -783,6 +786,8 @@ void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 
 	framebuffer->reserved_mask_pos = mode_info.vesa.reserved_mask_pos;
 	framebuffer->reserved_mask_size = mode_info.vesa.reserved_mask_size;
+
+	return 0;
 }
 
 void vbe_textmode_console(void)

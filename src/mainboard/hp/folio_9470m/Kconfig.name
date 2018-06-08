@@ -1,0 +1,2 @@
+config BOARD_HP_FOLIO_9470M
+	bool "EliteBook Folio 9470m"

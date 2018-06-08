@@ -45,7 +45,7 @@ static void *smp_write_config_table(void *v)
 	mptable_write_buses(mc, NULL, &isa_bus);
 	/* I/O APICs:   APIC ID Version State   Address */
 	{
-		device_t dev;
+		struct device *dev;
 
 		dev = dev_find_slot(bus_sb600[0], PCI_DEVFN(sbdn_sb600 + 0x14, 0));
 		if (dev) {

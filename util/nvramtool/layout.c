@@ -9,7 +9,7 @@
  *
  *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
- *  For details, see http://coreboot.org/nvramtool.
+ *  For details, see https://coreboot.org/nvramtool.
  *
  *  Please also read the file DISCLAIMER which is included in this software
  *  distribution.
@@ -168,6 +168,9 @@ int add_cmos_entry(const cmos_entry_t * e, const cmos_entry_t ** conflict)
 
 	if (e->length < 1)
 		return LAYOUT_ENTRY_BAD_LENGTH;
+
+	if (e->bit % 8 && e->bit / 8 != (e->bit + e->length - 1) / 8)
+		return LAYOUT_MULTIBYTE_ENTRY_NOT_ALIGNED;
 
 	if ((new_entry =
 	     (cmos_entry_item_t *) malloc(sizeof(*new_entry))) == NULL)

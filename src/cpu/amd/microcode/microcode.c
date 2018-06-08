@@ -175,7 +175,7 @@ static void amd_update_microcode(const void *ucode,  size_t ucode_len,
 
 		cur_section_hdr = c + 4 + blob_size;
 		sec_hdr_id = read32(cur_section_hdr);
- 		c = cur_section_hdr + 4;
+		c = cur_section_hdr + 4;
 	}
 }
 

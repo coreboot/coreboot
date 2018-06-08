@@ -31,13 +31,23 @@
 #include <console/console.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <northbridge/intel/gm45/gm45.h>
+#include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
+#include <timestamp.h>
 #include "dock.h"
 #include "gpio.h"
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 #define MCH_DEV PCI_DEV(0, 0, 0)
 
-void hybrid_graphics_init(sysinfo_t *sysinfo);
+static void hybrid_graphics_init(sysinfo_t *sysinfo)
+{
+	bool peg, igd;
+
+	early_hybrid_graphics(&igd, &peg);
+
+	sysinfo->enable_igd = igd;
+	sysinfo->enable_peg = peg;
+}
 
 static void early_lpc_setup(void)
 {
@@ -59,6 +69,9 @@ void mainboard_romstage_entry(unsigned long bist)
 	int s3resume = 0;
 	int cbmem_initted;
 	u16 reg16;
+
+	timestamp_init(get_initial_timestamp());
+	timestamp_add_now(TS_START_ROMSTAGE);
 
 	/* basic northbridge setup, including MMCONF BAR */
 	gm45_early_init();
@@ -90,7 +103,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	/* Check for S3 resume. */
 	const u32 pm1_cnt = inl(DEFAULT_PMBASE + 0x04);
 	if (((pm1_cnt >> 10) & 7) == 5) {
-#if CONFIG_HAVE_ACPI_RESUME
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "Resume from S3 detected.\n");
 		s3resume = 1;
 		/* Clear SLP_TYPE. This will break stage2 but

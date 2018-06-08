@@ -14,6 +14,9 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/x86/cr.h>
+#include <cpu/amd/mtrr.h>
+
 /* The SIPI vector is responsible for initializing the APs in the sytem. It
  * loads microcode, sets up MSRs, and enables caching before calling into
  * C code. */
@@ -50,6 +53,11 @@ c_handler:
 ap_count:
 .long 0
 
+#define CR0_CLEAR_FLAGS_CACHE_ENABLE (CR0_CD | CR0_NW)
+#define CR0_SET_FLAGS (CR0_CLEAR_FLAGS_CACHE_ENABLE | CR0_PE)
+#define CR0_CLEAR_FLAGS \
+	(CR0_PG | CR0_AM | CR0_WP | CR0_NE | CR0_TS | CR0_EM | CR0_MP)
+
 .text
 .code16
 .global _start
@@ -72,11 +80,11 @@ _start:
 	movl	$(gdtaddr), %ebx
 	sub	$(_start), %ebx
 
-	data32 lgdt (%ebx)
+	lgdtl	(%ebx)
 
 	movl	%cr0, %eax
-	andl	$0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
-	orl	$0x60000001, %eax /* CD, NW, PE = 1 */
+	andl	$~CR0_CLEAR_FLAGS, %eax
+	orl	$CR0_SET_FLAGS, %eax
 	movl	%eax, %cr0
 
 	ljmpl	$CODE_SEG, $1f
@@ -107,6 +115,8 @@ _start:
 	movl	stack_top, %edx
 	subl	%eax, %edx
 	mov	%edx, %esp
+	andl	$0xfffffff0, %esp /* ensure stack alignment */
+
 	/* Save CPU number. */
 	mov	%ecx, %esi
 
@@ -125,7 +135,7 @@ _start:
 	jnz	microcode_done
 
 	/* Determine if parallel microcode loading is allowed. */
-	cmp	$0xffffffff, microcode_lock
+	cmpl	$0xffffffff, microcode_lock
 	je	load_microcode
 
 	/* Protect microcode loading. */
@@ -146,7 +156,7 @@ load_microcode:
 	popa
 
 	/* Unconditionally unlock microcode loading. */
-	cmp	$0xffffffff, microcode_lock
+	cmpl	$0xffffffff, microcode_lock
 	je	microcode_done
 
 	xor	%eax, %eax
@@ -163,6 +173,15 @@ microcode_done:
 	mov	msr_count, %ebx
 	test	%ebx, %ebx
 	jz	1f
+
+#if IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS)
+	/* Allow modification of RdDram and WrDram bits */
+	mov	$SYSCFG_MSR, %ecx
+	rdmsr
+	or	$SYSCFG_MSR_MtrrFixDramModEn, %eax
+	wrmsr
+#endif
+
 load_msr:
 	mov	(%edi), %ecx
 	mov	4(%edi), %eax
@@ -172,13 +191,28 @@ load_msr:
 	dec	%ebx
 	jnz	load_msr
 
+#if IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS)
+	mov	$SYSCFG_MSR, %ecx
+	rdmsr
+	and	$~SYSCFG_MSR_MtrrFixDramModEn, %eax
+	wrmsr
+#endif
+
 1:
 	/* Enable caching. */
 	mov	%cr0, %eax
-	and	$0x9fffffff, %eax /* CD, NW = 0 */
+	and	$~(CR0_CLEAR_FLAGS_CACHE_ENABLE), %eax
 	mov	%eax, %cr0
 
-	/* c_handler(cpu_num) */
+#if IS_ENABLED(CONFIG_SSE)
+	/* Enable sse instructions. */
+	mov	%cr4, %eax
+	orl	$(CR4_OSFXSR | CR4_OSXMMEXCPT), %eax
+	mov	%eax, %cr4
+#endif
+
+	/* c_handler(cpu_num), preserve proper stack alignment */
+	sub	$12, %esp
 	push	%esi	/* cpu_num */
 	mov	c_handler, %eax
 	call	*%eax

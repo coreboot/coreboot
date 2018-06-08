@@ -44,7 +44,7 @@
 #if !defined(__PRE_RAM__)
 #include "chip.h"
 #if !defined(__SIMPLE_DEVICE__)
-void i82801gx_enable(device_t dev);
+void i82801gx_enable(struct device *dev);
 #endif
 void gpi_route_interrupt(u8 gpi, u8 mode);
 #else
@@ -52,6 +52,9 @@ void enable_smbus(void);
 int smbus_read_byte(unsigned int device, unsigned int address);
 int i2c_block_read(unsigned int device, unsigned int cmd, unsigned int bytes,
 		u8 *buf);
+int smbus_block_read(unsigned int device, unsigned int cmd, u8 bytes, u8 *buf);
+int smbus_block_write(unsigned int device, unsigned int cmd, u8 bytes,
+		const u8 *buf);
 int southbridge_detect_s3_resume(void);
 #endif
 #endif
@@ -122,6 +125,11 @@ int southbridge_detect_s3_resume(void);
 #define   COMB_LPC_EN		(1 << 1)  /* LPC_IO_DEC[6:4] */
 #define   COMA_LPC_EN		(1 << 0)  /* LPC_IO_DEC[2:0] */
 
+#define GEN1_DEC		0x84
+#define GEN2_DEC		0x88
+#define GEN3_DEC		0x8c
+#define GEN4_DEC		0x90
+
 /* PCI Configuration Space (D31:F1): IDE */
 #define INTR_LN			0x3c
 #define IDE_TIM_PRI		0x40	/* IDE timings, primary */
@@ -176,22 +184,6 @@ int southbridge_detect_s3_resume(void);
 #define I2C_EN			(1 << 2)
 #define SMB_SMI_EN		(1 << 1)
 #define HST_EN			(1 << 0)
-
-/* SMBus I/O bits. */
-#define SMBHSTSTAT		0x0
-#define SMBHSTCTL		0x2
-#define SMBHSTCMD		0x3
-#define SMBXMITADD		0x4
-#define SMBHSTDAT0		0x5
-#define SMBHSTDAT1		0x6
-#define SMBBLKDAT		0x7
-#define SMBTRNSADD		0x9
-#define SMBSLVDATA		0xa
-#define SMLINK_PIN_CTL		0xe
-#define SMBUS_PIN_CTL		0xf
-
-#define SMBUS_TIMEOUT		(10 * 1000 * 100)
-
 
 /* Southbridge IO BARs */
 

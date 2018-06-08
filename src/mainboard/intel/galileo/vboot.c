@@ -14,9 +14,10 @@
 
 #include <assert.h>
 #include <bootmode.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <delay.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <lib.h>
 #include <soc/i2c.h>
 #include <soc/reg_access.h>
@@ -24,7 +25,8 @@
 #include "gen1.h"
 #include "gen2.h"
 #include <spi_flash.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
+#include <security/vboot/vbnv.h>
 
 int clear_recovery_mode_switch(void)
 {
@@ -34,12 +36,6 @@ int clear_recovery_mode_switch(void)
 
 int get_recovery_mode_switch(void)
 {
-	return 0;
-}
-
-int get_sw_write_protect_state(void)
-{
-	/* Not write protected */
 	return 0;
 }
 
@@ -79,7 +75,7 @@ void verstage_mainboard_init(void)
 	reg_script_run(script);
 }
 
-void __attribute__((weak)) vboot_platform_prepare_reboot(void)
+void __weak vboot_platform_prepare_reboot(void)
 {
 	const struct reg_script *script;
 
@@ -103,4 +99,10 @@ void __attribute__((weak)) vboot_platform_prepare_reboot(void)
 
 	/* Reset the TPM */
 	reg_script_run(script);
+}
+
+int vbnv_cmos_failed(void)
+{
+	/* Indicate no failure until RTC failure bits are supported. */
+	return 0;
 }

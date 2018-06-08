@@ -11,11 +11,20 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cpu.h>
+#include <arch/early_variables.h>
+#include <arch/exception.h>
+#include <commonlib/helpers.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <console/streams.h>
+#include <cpu/x86/cr.h>
+#include <cpu/x86/lapic.h>
+#include <rules.h>
+#include <stdint.h>
 #include <string.h>
 
-#if CONFIG_GDB_STUB
+#if IS_ENABLED(CONFIG_GDB_STUB)
 
 /* BUFMAX defines the maximum number of characters in inbound/outbound buffers.
  * At least NUM_REGBYTES*2 are needed for register packets
@@ -387,7 +396,7 @@ void x86_exception(struct eregs *info);
 
 void x86_exception(struct eregs *info)
 {
-#if CONFIG_GDB_STUB
+#if IS_ENABLED(CONFIG_GDB_STUB)
 	int signo;
 	memcpy(gdb_stub_registers, info, 8*sizeof(uint32_t));
 	gdb_stub_registers[PC] = info->eip;
@@ -495,13 +504,20 @@ void x86_exception(struct eregs *info)
 	}
 #else /* !CONFIG_GDB_STUB */
 #define MDUMP_SIZE 0x80
+	unsigned int logical_processor = 0;
+
+#if ENV_RAMSTAGE
+	logical_processor = cpu_index();
+#endif
 	printk(BIOS_EMERG,
-		"Unexpected Exception: %d @ %02x:%08x - Halting\n"
-		"Code: %d eflags: %08x\n"
+		"CPU Index %d - APIC %d Unexpected Exception:"
+		"%d @ %02x:%08x - Halting\n"
+		"Code: %d eflags: %08x cr2: %08x\n"
 		"eax: %08x ebx: %08x ecx: %08x edx: %08x\n"
 		"edi: %08x esi: %08x ebp: %08x esp: %08x\n",
+		logical_processor, (unsigned int)lapicid(),
 		info->vector, info->cs, info->eip,
-		info->error_code, info->eflags,
+		info->error_code, info->eflags, read_cr2(),
 		info->eax, info->ebx, info->ecx, info->edx,
 		info->edi, info->esi, info->ebp, info->esp);
 	u8 *code = (u8 *)((uintptr_t)info->eip - (MDUMP_SIZE >> 1));
@@ -517,4 +533,110 @@ void x86_exception(struct eregs *info)
 	}
 	die("");
 #endif
+}
+
+#define GATE_P		(1 << 15)
+#define GATE_DPL(x)	(((x) & 0x3) << 13)
+#define GATE_SIZE_16	(0 << 11)
+#define GATE_SIZE_32	(1 << 11)
+
+#define IGATE_FLAGS (GATE_P | GATE_DPL(0) | GATE_SIZE_32 | (0x6 << 8))
+
+struct intr_gate {
+	uint16_t offset_0;
+	uint16_t segsel;
+	uint16_t flags;
+	uint16_t offset_1;
+#if ENV_X86_64
+	uint32_t offset_2;
+	uint32_t reserved;
+#endif
+} __packed;
+
+/* Even though the vecX symbols are interrupt entry points just treat them
+   like data to more easily get the pointer values in C. Because IDT entries
+   format splits the offset field up one can't use the linker to resolve
+   parts of a relecation on x86 ABI an array of pointers is used to gather
+   the symbols. The IDT is initialized at runtime when exception_init() is
+   called. */
+extern u8 vec0[], vec1[], vec2[], vec3[], vec4[], vec5[], vec6[], vec7[];
+extern u8 vec8[], vec9[], vec10[], vec11[], vec12[], vec13[], vec14[], vec15[];
+extern u8 vec16[], vec17[], vec18[], vec19[];
+
+static const uintptr_t intr_entries[] = {
+	(uintptr_t)vec0, (uintptr_t)vec1, (uintptr_t)vec2, (uintptr_t)vec3,
+	(uintptr_t)vec4, (uintptr_t)vec5, (uintptr_t)vec6, (uintptr_t)vec7,
+	(uintptr_t)vec8, (uintptr_t)vec9, (uintptr_t)vec10, (uintptr_t)vec11,
+	(uintptr_t)vec12, (uintptr_t)vec13, (uintptr_t)vec14, (uintptr_t)vec15,
+	(uintptr_t)vec16, (uintptr_t)vec17, (uintptr_t)vec18, (uintptr_t)vec19,
+};
+
+static struct intr_gate idt[ARRAY_SIZE(intr_entries)] __aligned(8) CAR_GLOBAL;
+
+static inline uint16_t get_cs(void)
+{
+	uint16_t segment;
+
+	asm volatile (
+		"mov	%%cs, %0\n"
+		: "=r" (segment)
+		:
+		: "memory"
+	);
+
+	return segment;
+}
+
+struct lidtarg {
+	uint16_t limit;
+#if ENV_X86_32
+	uint32_t base;
+#else
+	uint64_t base;
+#endif
+} __packed;
+
+/* This global is for src/cpu/x86/lapic/secondary.S usage which is only
+   used during ramstage. */
+struct lidtarg idtarg;
+
+static void load_idt(void *table, size_t sz)
+{
+	struct lidtarg lidtarg = {
+		.limit = sz - 1,
+		.base = (uintptr_t)table,
+	};
+
+	asm volatile (
+		"lidt	%0"
+		:
+		: "m" (lidtarg)
+		: "memory"
+	);
+
+	if (ENV_RAMSTAGE)
+		memcpy(&idtarg, &lidtarg, sizeof(idtarg));
+}
+
+asmlinkage void exception_init(void)
+{
+	int i;
+	uint16_t segment;
+	struct intr_gate *gates = car_get_var_ptr(idt);
+
+	segment = get_cs();
+	gates = car_get_var_ptr(idt);
+
+	/* Initialize IDT. */
+	for (i = 0; i < ARRAY_SIZE(idt); i++) {
+		gates[i].offset_0 = intr_entries[i];
+		gates[i].segsel = segment;
+		gates[i].flags = IGATE_FLAGS;
+		gates[i].offset_1 = intr_entries[i] >> 16;
+#if ENV_X86_64
+		gates[i].offset_2 = intr_entries[i] >> 32;
+#endif
+	}
+
+	load_idt(gates, sizeof(idt));
 }

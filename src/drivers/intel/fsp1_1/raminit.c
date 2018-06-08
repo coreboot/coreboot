@@ -15,6 +15,7 @@
 
 #include <arch/acpi.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <fsp/memmap.h>
 #include <fsp/romstage.h>
@@ -23,7 +24,7 @@
 #include <reset.h>
 #include <string.h>
 #include <timestamp.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 void raminit(struct romstage_params *params)
 {
@@ -277,7 +278,7 @@ void raminit(struct romstage_params *params)
 
 	/* Verify the FSP 1.1 HOB interface */
 	if (fsp_verification_failure)
-		die("ERROR - Coreboot's requirements not met by FSP binary!\n");
+		die("ERROR - coreboot's requirements not met by FSP binary!\n");
 
 	/* Display the memory configuration */
 	report_memory_config();
@@ -296,7 +297,7 @@ void raminit(struct romstage_params *params)
 }
 
 /* Initialize the UPD parameters for MemoryInit */
-__attribute__((weak)) void mainboard_memory_init_params(
+__weak void mainboard_memory_init_params(
 	struct romstage_params *params,
 	MEMORY_INIT_UPD *upd_ptr)
 {
@@ -304,7 +305,7 @@ __attribute__((weak)) void mainboard_memory_init_params(
 }
 
 /* Display the UPD parameters for MemoryInit */
-__attribute__((weak)) void soc_display_memory_init_params(
+__weak void soc_display_memory_init_params(
 	const MEMORY_INIT_UPD *old, MEMORY_INIT_UPD *new)
 {
 	printk(BIOS_SPEW, "UPD values for MemoryInit:\n");
@@ -312,7 +313,7 @@ __attribute__((weak)) void soc_display_memory_init_params(
 }
 
 /* Initialize the UPD parameters for MemoryInit */
-__attribute__((weak)) void soc_memory_init_params(
+__weak void soc_memory_init_params(
 	struct romstage_params *params,
 	MEMORY_INIT_UPD *upd)
 {

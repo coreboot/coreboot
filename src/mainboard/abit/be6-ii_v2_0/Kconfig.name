@@ -1,2 +1,0 @@
-config BOARD_ABIT_BE6_II_V2_0
-	bool "BE6-II V2.0"

@@ -19,8 +19,8 @@
 #include <console/console.h>
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
+#include <southbridge/intel/common/smbus.h>
 #include "i82801ix.h"
-#include "smbus.h"
 
 void enable_smbus(void)
 {

@@ -22,7 +22,7 @@
 #include <soc/pm.h>
 #include <soc/ramstage.h>
 
-static void pmc_read_resources(device_t dev)
+static void pmc_read_resources(struct device *dev)
 {
 	unsigned int index = 0;
 	struct resource *res;

@@ -29,7 +29,10 @@ Device(AC)
 
 	Method(_PSR, 0, NotSerialized)
 	{
-		return (HPAC)
+		Store(HPAC, Local0)
+		Store(Local0, \PWRS)
+		\PNOT()
+		return (Local0)
 	}
 
 	Method(_STA, 0, NotSerialized)

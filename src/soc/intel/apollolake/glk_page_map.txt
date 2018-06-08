@@ -1,0 +1,13 @@
+0xd0000000, 0x100000000, UC, NX # All of MMIO
+# Maximum 16MiB of mmio SPI flash decode.
+0xff000000, 0x100000000, WP, # memory-mapped SPI
+# MMIO XIP bootblock C_ENV_BOOTBLOCK_SIZE
+0xffff8000, 0x100000000, WP, # XIP bootblock
+# DCACHE_RAM_BASE + DCACHE_RAM_SIZE
+0xfef00000, 0xff000000, WB, NX # CAR
+# VERSTAGE_ADDR ~63KiB
+0xfef40000, 0xfefc0000, WB, # verstage
+# ROMSTAGE_ADDR ~68KiB
+0xfef20000, 0xfefc0000, WB, # romstage
+# FSP_M_ADDR  ~408 KiB (non-debug)
+0xfef40000, 0xfefc0000, WB, # fsp-m

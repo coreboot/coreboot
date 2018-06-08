@@ -30,6 +30,8 @@ TIN8, 8,	// Temperature 8
 TIN9, 8,	// Temperature 9
 Offset (0x10),
 FAN0, 16,	// Fan Speed 0
+Offset (0x24),
+BTVR, 8,	// Battery structure version
 Offset (0x30),
 LIDS, 1,	// Lid Switch State
 PBTN, 1,	// Power Button Pressed
@@ -45,6 +47,9 @@ BTEX, 1,	// Battery Present
 BFDC, 1,	// Battery Discharging
 BFCG, 1,	// Battery Charging
 BFCR, 1,	// Battery Level Critical
+Offset (0x4d),
+BTCN, 8,	// Battery Count
+BTIX, 8,	// Battery index
 Offset (0x50),
 BTDA, 32,	// Battery Design Capacity
 BTDV, 32,	// Battery Design Voltage

@@ -27,8 +27,6 @@
 
 #include <stdlib.h>
 #include "AGESA.h"
-#include "Filecode.h"
-#define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
 /*  Select the CPU family.  */
 #define INSTALL_FAMILY_10_SUPPORT FALSE
@@ -154,7 +152,7 @@
 #define BLDCFG_LVDS_POWER_ON_SEQ_VARY_BL_TO_BLON	3
 #define BLDCFG_LVDS_POWER_ON_SEQ_BLON_TO_VARY_BL	3
 
-#if CONFIG_GFXUMA
+#if IS_ENABLED(CONFIG_GFXUMA)
 #define BLDCFG_UMA_ALIGNMENT                      UMA_4MB_ALIGNED
 #define BLDCFG_UMA_ALLOCATION_MODE		  UMA_SPECIFIED
 //#define BLDCFG_UMA_ALLOCATION_SIZE      	  0x1000//0x1800//0x1000 /* (1000 << 16) = 256M*/
@@ -342,4 +340,4 @@ GPIO_CONTROL   thatcher_gpio[] = {
 #define DFLT_MEMORY_QUADRANK_TYPE       QUADRANK_UNBUFFERED
 #define DFLT_VRM_SLEW_RATE              (5000)
 
-#include "PlatformInstall.h"
+#include <PlatformInstall.h>

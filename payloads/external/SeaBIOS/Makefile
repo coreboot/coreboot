@@ -1,5 +1,5 @@
 TAG-$(CONFIG_SEABIOS_MASTER)=origin/master
-TAG-$(CONFIG_SEABIOS_STABLE)=rel-1.11.0.4
+TAG-$(CONFIG_SEABIOS_STABLE)=0551a4be2ce599fb60e478b4c15e06ab6587822c
 TAG-$(CONFIG_SEABIOS_REVISION)=$(CONFIG_SEABIOS_REVISION_ID)
 
 project_git_repo=https://github.com/pcengines/seabios.git
@@ -42,10 +42,15 @@ config: checkout
 ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO),yy)
 	echo "CONFIG_DEBUG_SERIAL=y" >> seabios/.config
 	echo "CONFIG_DEBUG_SERIAL_PORT=$(CONFIG_TTYS0_BASE)" >> seabios/.config
-	echo "CONFIG_DEBUG_LEVEL=$(CONFIG_SEABIOS_DEBUG_LEVEL)" >> seabios/.config
 else ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250MEM)$(CONFIG_HUDSON_UART),yyy)
 	echo "CONFIG_DEBUG_SERIAL_MMIO=y" >> seabios/.config
 	echo "CONFIG_DEBUG_SERIAL_MEM_ADDRESS=0xFEDC6000" >> seabios/.config
+else ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_ENABLE_HSUART),yy)
+	echo "CONFIG_DEBUG_SERIAL_MMIO=y" >> seabios/.config
+	echo "CONFIG_DEBUG_SERIAL_MEM_ADDRESS=$(CONFIG_CONSOLE_UART_BASE_ADDRESS)" >> seabios/.config
+else ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250MEM_32),yy)
+	echo "CONFIG_DEBUG_SERIAL_MMIO=y" >> seabios/.config
+	echo "CONFIG_DEBUG_SERIAL_MEM_ADDRESS=$(CONFIG_CONSOLE_UART_BASE_ADDRESS)" >> seabios/.config
 else
 	echo "# CONFIG_DEBUG_SERIAL is not set" >> seabios/.config
 endif
@@ -64,24 +69,11 @@ else
 	false
 endif
 endif
-#
-# Project specific configuration for optimized SeaBIOS
-#
-	echo "# CONFIG_BOOTSPLASH is not set" >> seabios/.config
-	echo "# CONFIG_MEGASAS is not set" >> seabios/.config
-	echo "# CONFIG_FLOPPY is not set" >> seabios/.config
-	echo "# CONFIG_PS2PORT is not set" >> seabios/.config
-	echo "# CONFIG_USB_UHCI is not set" >> seabios/.config
-	echo "# CONFIG_USB_OHCI is not set" >> seabios/.config
-	echo "# CONFIG_LPT is not set" >> seabios/.config
-#
-# Enable UDMA to speed up booting
-#
-	echo "CONFIG_ATA_DMA=y" >> seabios/.config
-	echo "CONFIG_ATA_PIO32=y" >> seabios/.config
-
-	# This shows how to force a previously set .config option *off*
-	#echo "# CONFIG_SMBIOS is not set" >> seabios/.config
+ifneq ($(CONFIG_SEABIOS_DEBUG_LEVEL),-1)
+	echo "CONFIG_DEBUG_LEVEL=$(CONFIG_SEABIOS_DEBUG_LEVEL)" >> seabios/.config
+endif
+#	This shows how to force a previously set .config option *off*
+#	echo "# CONFIG_SMBIOS is not set" >> seabios/.config
 	$(MAKE) -C seabios olddefconfig OUT=out/
 
 build: config

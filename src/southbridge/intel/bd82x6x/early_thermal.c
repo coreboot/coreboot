@@ -16,6 +16,7 @@
 
 #include <arch/io.h>
 #include "pch.h"
+#include <southbridge/intel/common/rcba.h>
 #include "cpu/intel/model_206ax/model_206ax.h"
 #include <cpu/x86/msr.h>
 

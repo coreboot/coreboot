@@ -1,5 +1,5 @@
 Vendor name: Google
-Board name: Cyan Braswell reference board
+Board name: Cyan Braswell baseboard
 Category: laptop
 ROM protocol: SPI
 ROM socketed: n

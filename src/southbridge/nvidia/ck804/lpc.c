@@ -51,7 +51,7 @@
 #define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
 
-static void lpc_common_init(device_t dev)
+static void lpc_common_init(struct device *dev)
 {
 	u32 dword;
 	struct resource *res;
@@ -68,12 +68,12 @@ static void lpc_common_init(device_t dev)
 #endif
 }
 
-static void lpc_slave_init(device_t dev)
+static void lpc_slave_init(struct device *dev)
 {
 	lpc_common_init(dev);
 }
 
-static void rom_dummy_write(device_t dev)
+static void rom_dummy_write(struct device *dev)
 {
 	u8 old, new;
 	u8 *p;
@@ -103,7 +103,7 @@ static void rom_dummy_write(device_t dev)
 
 unsigned pm_base = 0;
 
-static void lpc_init(device_t dev)
+static void lpc_init(struct device *dev)
 {
 	u8 byte, byte_old;
 	int on, nmi_option;
@@ -158,7 +158,7 @@ static void lpc_init(device_t dev)
 	rom_dummy_write(dev);
 }
 
-static void ck804_lpc_read_resources(device_t dev)
+static void ck804_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 	unsigned long index;
@@ -203,7 +203,7 @@ static void ck804_lpc_read_resources(device_t dev)
 	}
 }
 
-static void ck804_lpc_set_resources(device_t dev)
+static void ck804_lpc_set_resources(struct device *dev)
 {
 	u8 byte;
 	struct resource *res;
@@ -239,7 +239,7 @@ static void ck804_lpc_set_resources(device_t dev)
  * This function is called by the global enable_resources() indirectly via the
  * device_operation::enable_resources() method of devices.
  */
-static void ck804_lpc_enable_childrens_resources(device_t dev)
+static void ck804_lpc_enable_childrens_resources(struct device *dev)
 {
 	struct bus *link;
 	u32 reg, reg_var[4];
@@ -248,7 +248,7 @@ static void ck804_lpc_enable_childrens_resources(device_t dev)
 	reg = pci_read_config32(dev, 0xa0);
 
 	for (link = dev->link_list; link; link = link->next) {
-		device_t child;
+		struct device *child;
 		for (child = link->children; child; child = child->sibling) {
 			if (child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
 				struct resource *res;
@@ -295,7 +295,7 @@ static void ck804_lpc_enable_childrens_resources(device_t dev)
 		pci_write_config32(dev, 0xa8 + i * 4, reg_var[i]);
 }
 
-static void ck804_lpc_enable_resources(device_t dev)
+static void ck804_lpc_enable_resources(struct device *dev)
 {
 	pci_dev_enable_resources(dev);
 	ck804_lpc_enable_childrens_resources(dev);
@@ -303,7 +303,7 @@ static void ck804_lpc_enable_resources(device_t dev)
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 
-static void southbridge_acpi_fill_ssdt_generator(device_t device)
+static void southbridge_acpi_fill_ssdt_generator(struct device *device)
 {
 	amd_generate_powernow(0, 0, 0);
 }

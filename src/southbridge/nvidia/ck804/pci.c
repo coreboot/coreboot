@@ -25,7 +25,7 @@
 static void pci_init(struct device *dev)
 {
 	u32 dword;
-	device_t pci_domain_dev;
+	struct device *pci_domain_dev;
 	struct resource *mem, *pref;
 
 	dword = pci_read_config32(dev, 0x04);

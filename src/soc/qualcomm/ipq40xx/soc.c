@@ -44,7 +44,7 @@ typedef struct {
 #define LINUX_REGION2_START	((uintptr_t)(ipq_mem_map->hlos2))
 #define LINUX_REGION2_START_KB	(LINUX_REGION2_START / KiB)
 
-static void soc_read_resources(device_t dev)
+static void soc_read_resources(struct device *dev)
 {
 	ipq_mem_map_t *ipq_mem_map = ((ipq_mem_map_t *)_dram);
 
@@ -58,7 +58,7 @@ static void soc_read_resources(device_t dev)
 			LINUX_REGION1_SIZE_KB - RESERVED_SIZE_KB);
 }
 
-static void soc_init(device_t dev)
+static void soc_init(struct device *dev)
 {
 	/*
 	 * Do this in case console is not enabled: kernel's earlyprintk()
@@ -74,7 +74,7 @@ static struct device_operations soc_ops = {
 	.init		= soc_init,
 };
 
-static void enable_soc_dev(device_t dev)
+static void enable_soc_dev(struct device *dev)
 {
 	dev->ops = &soc_ops;
 }

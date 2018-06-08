@@ -94,7 +94,7 @@ static void pci_routing_fixup(struct device *dev)
 	printk(BIOS_SPEW, "%s: DONE\n", __FUNCTION__);
 }
 
-static void setup_pm(device_t dev)
+static void setup_pm(struct device *dev)
 {
 	u16 tmp;
 	/* Debounce LID and PWRBTN# Inputs for 16ms. */
@@ -274,7 +274,7 @@ static void vx800_sb_init(struct device *dev)
 
 /* total kludge to get lxb to call our childrens set/enable functions - these are
    not called unless this device has a resource to set - so set a dummy one */
-static void vx800_read_resources(device_t dev)
+static void vx800_read_resources(struct device *dev)
 {
 
 	struct resource *resource;
@@ -287,7 +287,7 @@ static void vx800_read_resources(device_t dev)
 	resource->base = 0x2e;
 }
 
-static void vx800_set_resources(device_t dev)
+static void vx800_set_resources(struct device *dev)
 {
 	struct resource *resource;
 	resource = find_resource(dev, 1);

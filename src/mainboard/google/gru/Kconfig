@@ -25,19 +25,33 @@ config GRU_HAS_TPM2
 	default n if BOARD_GOOGLE_KEVIN
 	default y
 
+config GRU_HAS_CENTERLOG_PWM
+	bool
+	default y if BOARD_GOOGLE_GRU || BOARD_GOOGLE_KEVIN || BOARD_GOOGLE_BOB
+	default n
+
+config GRU_HAS_WLAN_RESET
+	bool
+	default y if BOARD_GOOGLE_GRU || BOARD_GOOGLE_KEVIN || BOARD_GOOGLE_BOB
+	default n
+
+config GRU_BASEBOARD_SCARLET
+	bool
+	default y if BOARD_GOOGLE_SCARLET || BOARD_GOOGLE_RAINIER
+	default n
+
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
-	select BOARD_ID_AUTO
 	select BOARD_ROMSIZE_KB_8192
 	select COMMON_CBFS_SPI_WRAPPER
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_RTC
 	select EC_GOOGLE_CHROMEEC_SPI
 	select HAVE_HARD_RESET
-	select MAINBOARD_DO_NATIVE_VGA_INIT
+	select MAINBOARD_FORCE_NATIVE_VGA_INIT
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
-	select RAM_CODE_SUPPORT
+	select RK3399_SPREAD_SPECTRUM_DDR if BOARD_GOOGLE_BOB
 	select RTC
 	select SOC_ROCKCHIP_RK3399
 	select SPI_FLASH
@@ -74,6 +88,11 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x20
 
+config DRIVER_TPM_SPI_BUS
+	hex
+	default 0x2 if GRU_BASEBOARD_SCARLET
+	default 0x0
+
 config CONSOLE_SERIAL_UART_ADDRESS
 	hex
 	depends on DRIVERS_UART
@@ -93,13 +112,8 @@ config MAINBOARD_PART_NUMBER
 	default "Bob" if BOARD_GOOGLE_BOB
 	default "Gru" if BOARD_GOOGLE_GRU
 	default "Kevin" if BOARD_GOOGLE_KEVIN
-
-# The default max sdram freq is 933M(actually 928M dpll), and
-# 800M is another choice.
-config MAX_SDRAM_FREQ
-	int
-	default 800 if BOARD_GOOGLE_BOB
-	default 933
+	default "Nefario" if BOARD_GOOGLE_NEFARIO
+	default "Rainier" if BOARD_GOOGLE_RAINIER
 
 config GBB_HWID
 	string
@@ -108,5 +122,7 @@ config GBB_HWID
 	default "BOB TEST 7422" if BOARD_GOOGLE_BOB
 	default "GRU TEST 5431" if BOARD_GOOGLE_GRU
 	default "KEVIN TEST 1422" if BOARD_GOOGLE_KEVIN
+	default "NEFARIO TEST 3735" if BOARD_GOOGLE_NEFARIO
+	default "RAINIER TEST 9752" if BOARD_GOOGLE_RAINIER
 
 endif # BOARD_GOOGLE_GRU_COMMON

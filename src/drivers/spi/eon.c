@@ -40,18 +40,6 @@ struct eon_spi_flash_params {
 	const char *name;
 };
 
-/* spi_flash needs to be first so upper layers can free() it */
-struct eon_spi_flash {
-	struct spi_flash flash;
-	const struct eon_spi_flash_params *params;
-};
-
-static inline
-struct eon_spi_flash *to_eon_spi_flash(const struct spi_flash *flash)
-{
-	return container_of(flash, struct eon_spi_flash, flash);
-}
-
 static const struct eon_spi_flash_params eon_spi_flash_table[] = {
 	{
 		.id = EON_ID_EN25Q128,
@@ -82,7 +70,6 @@ static const struct eon_spi_flash_params eon_spi_flash_table[] = {
 static int eon_write(const struct spi_flash *flash,
 		     u32 offset, size_t len, const void *buf)
 {
-	struct eon_spi_flash *eon = to_eon_spi_flash(flash);
 	unsigned long byte_addr;
 	unsigned long page_size;
 	size_t chunk_len;
@@ -90,12 +77,12 @@ static int eon_write(const struct spi_flash *flash,
 	int ret = 0;
 	u8 cmd[4];
 
-	page_size = 1 << eon->params->page_size;
+	page_size = flash->page_size;
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		byte_addr = offset % page_size;
 		chunk_len = min(len - actual, page_size - byte_addr);
-		chunk_len = spi_crop_chunk(sizeof(cmd), chunk_len);
+		chunk_len = spi_crop_chunk(&flash->spi, sizeof(cmd), chunk_len);
 
 		ret = spi_flash_cmd(&flash->spi, CMD_EN25_WREN, NULL, 0);
 		if (ret < 0) {
@@ -108,7 +95,7 @@ static int eon_write(const struct spi_flash *flash,
 		cmd[2] = (offset >> 8) & 0xff;
 		cmd[3] = offset & 0xff;
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 		printk(BIOS_SPEW,
 		    "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x } chunk_len = %zu\n",
 		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
@@ -130,7 +117,7 @@ static int eon_write(const struct spi_flash *flash,
 		offset += chunk_len;
 	}
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 	printk(BIOS_SPEW, "SF: EON: Successfully programmed %zu bytes @ %#x\n",
 	       len, (unsigned int)(offset - len));
 #endif
@@ -139,10 +126,17 @@ out:
 	return ret;
 }
 
-struct spi_flash *spi_flash_probe_eon(struct spi_slave *spi, u8 *idcode)
+static const struct spi_flash_ops spi_flash_ops = {
+	.write = eon_write,
+	.erase = spi_flash_cmd_erase,
+	.status = spi_flash_cmd_status,
+	.read = spi_flash_cmd_read_fast,
+};
+
+int spi_flash_probe_eon(const struct spi_slave *spi, u8 *idcode,
+			struct spi_flash *flash)
 {
 	const struct eon_spi_flash_params *params;
-	struct eon_spi_flash *eon;
 	unsigned int i;
 
 	for (i = 0; i < ARRAY_SIZE(eon_spi_flash_table); ++i) {
@@ -154,28 +148,19 @@ struct spi_flash *spi_flash_probe_eon(struct spi_slave *spi, u8 *idcode)
 	if (i == ARRAY_SIZE(eon_spi_flash_table)) {
 		printk(BIOS_WARNING, "SF: Unsupported EON ID %#02x%02x\n",
 		       idcode[1], idcode[2]);
-		return NULL;
+		return -1;
 	}
 
-	eon = malloc(sizeof(*eon));
-	if (!eon) {
-		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
-		return NULL;
-	}
+	memcpy(&flash->spi, spi, sizeof(*spi));
 
-	eon->params = params;
-	memcpy(&eon->flash.spi, spi, sizeof(*spi));
-	eon->flash.name = params->name;
+	flash->name = params->name;
+	flash->page_size = params->page_size;
+	flash->sector_size = params->page_size * params->pages_per_sector;
+	flash->size = flash->sector_size * params->nr_sectors;
+	flash->erase_cmd = CMD_EN25_SE;
+	flash->status_cmd = CMD_EN25_RDSR;
 
-	eon->flash.internal_write = eon_write;
-	eon->flash.internal_erase = spi_flash_cmd_erase;
-	eon->flash.internal_status = spi_flash_cmd_status;
-	eon->flash.internal_read = spi_flash_cmd_read_fast;
-	eon->flash.sector_size = params->page_size * params->pages_per_sector;
-	eon->flash.size = params->page_size * params->pages_per_sector
-	    * params->nr_sectors;
-	eon->flash.erase_cmd = CMD_EN25_SE;
-	eon->flash.status_cmd = CMD_EN25_RDSR;
+	flash->ops = &spi_flash_ops;
 
-	return &eon->flash;
+	return 0;
 }

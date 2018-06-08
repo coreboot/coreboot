@@ -1,0 +1,2 @@
+config BOARD_HP_8470P
+	bool "EliteBook 8470p"

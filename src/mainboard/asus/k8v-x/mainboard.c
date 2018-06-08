@@ -23,7 +23,7 @@
 
 u32 vt8237_ide_80pin_detect(struct device *dev)
 {
-	device_t lpc_dev;
+	struct device *lpc_dev;
 	u16 acpi_io_base;
 	u32 gpio_in;
 	u32 res;

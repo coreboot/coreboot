@@ -348,4 +348,3 @@ const struct pad_config *sleep_gpio_table(size_t *num)
 	*num = ARRAY_SIZE(sleep_gpio_table_config);
 	return sleep_gpio_table_config;
 }
-

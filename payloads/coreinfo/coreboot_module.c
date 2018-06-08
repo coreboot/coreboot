@@ -42,10 +42,10 @@ int coreboot_module_redraw(WINDOW *win)
 	int row = 2;
 	int i;
 
-	print_module_title(win, "Coreboot Tables");
+	print_module_title(win, "coreboot Tables");
 
 	if (tables_good) {
-		mvwprintw(win, row++, 1, "No Coreboot tables were found");
+		mvwprintw(win, row++, 1, "No coreboot tables were found");
 		return 0;
 	}
 
@@ -249,7 +249,7 @@ static int coreboot_module_init(void)
 }
 
 struct coreinfo_module coreboot_module = {
-	.name = "Coreboot",
+	.name = "coreboot",
 	.init = coreboot_module_init,
 	.redraw = coreboot_module_redraw,
 };

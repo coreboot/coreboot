@@ -1,3 +1,28 @@
 #!/bin/sh
+
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2015 Patrick Georgi <patrick@georgi-clan.de>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+set -e # -o errexit
+set -u # -o nounset
+
 %MAKE% lint-stable
-git diff --cached | util/lint/checkpatch.pl --no-signoff -q -
+
+PATCHDIFF=$(git diff --cached)
+if printf "%s\n" "$PATCHDIFF" | grep -q "@@"; then
+	echo
+	echo "Running checkpatch"
+	printf "%s\n" "$PATCHDIFF" | util/lint/checkpatch.pl --no-signoff -q -
+fi

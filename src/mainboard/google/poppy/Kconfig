@@ -1,34 +1,57 @@
 
 config BOARD_GOOGLE_BASEBOARD_POPPY
 	def_bool n
-	select BOARD_ID_AUTO
 	select BOARD_ROMSIZE_KB_16384
-	select DRIVERS_INTEL_MIPI_CAMERA
+	select DRIVERS_GENERIC_GPIO_KEYS
 	select DRIVERS_I2C_GENERIC
 	select DRIVERS_I2C_HID
-	select DRIVERS_I2C_MAX98927
 	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_BOARDID
 	select EC_GOOGLE_CHROMEEC_LPC
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_USES_FSP2_0
-	select NO_FADT_8042
 	select SOC_INTEL_KABYLAKE
 
 if BOARD_GOOGLE_BASEBOARD_POPPY
 
+config CHROMEOS_WIFI_SAR
+	bool
+	depends on CHROMEOS
+	select DSAR_ENABLE
+	select SAR_ENABLE
+	select USE_SAR
+
 config DEVICETREE
 	string
+	default "variants/atlas/devicetree.cb" if BOARD_GOOGLE_ATLAS
+	default "variants/nami/devicetree.cb" if BOARD_GOOGLE_NAMI
+	default "variants/nautilus/devicetree.cb" if BOARD_GOOGLE_NAUTILUS
+	default "variants/nocturne/devicetree.cb" if BOARD_GOOGLE_NOCTURNE
+	default "variants/soraka/devicetree.cb" if BOARD_GOOGLE_SORAKA
 	default "variants/baseboard/devicetree.cb"
 
+config DRIVER_TPM_I2C_BUS
+	depends on VARIANT_HAS_I2C_TPM
+	default 0x1
+
+config DRIVER_TPM_I2C_ADDR
+	depends on VARIANT_HAS_I2C_TPM
+	default 0x50
+
 config DRIVER_TPM_SPI_BUS
+	depends on VARIANT_HAS_SPI_TPM
 	default 0x1
 
 config GBB_HWID
 	string
 	depends on CHROMEOS
+	default "ATLAS TEST 1412" if BOARD_GOOGLE_ATLAS
 	default "POPPY TEST 8294" if BOARD_GOOGLE_POPPY
+	default "NAMI TEST 1669" if BOARD_GOOGLE_NAMI
+	default "NAUTILUS TEST 3013" if BOARD_GOOGLE_NAUTILUS
+	default "NOCTURNE TEST 3421" if BOARD_GOOGLE_NOCTURNE
 	default "SORAKA TEST 1869" if BOARD_GOOGLE_SORAKA
 
 config INCLUDE_NHLT_BLOBS
@@ -38,49 +61,149 @@ config INCLUDE_NHLT_BLOBS
 	select NHLT_MAX98927
 	select NHLT_RT5663
 
+config INCLUDE_NHLT_BLOBS_ATLAS
+	bool "Include blobs for atlas audio."
+	select NHLT_DA7219
+	select NHLT_DMIC_4CH
+	select NHLT_MAX98373
+
+config INCLUDE_NHLT_BLOBS_NAUTILUS
+	bool "Include blobs for nautilus audio."
+	select NHLT_DA7219
+	select NHLT_DMIC_4CH
+	select NHLT_MAX98357
+
+config INCLUDE_NHLT_BLOBS_NAMI
+	bool "Include blobs for nami audio."
+	select NHLT_DA7219
+	select NHLT_DMIC_4CH
+	select NHLT_MAX98357
+
+config INCLUDE_NHLT_BLOBS_NOCTURNE
+	bool "Include blobs for nocturne audio."
+	select NHLT_DMIC_4CH
+	select NHLT_MAX98373
+
 config MAINBOARD_DIR
 	string
 	default "google/poppy"
 
 config MAINBOARD_FAMILY
 	string
+	default "Google_Atlas" if BOARD_GOOGLE_ATLAS
 	default "Google_Poppy" if BOARD_GOOGLE_POPPY
+	default "Google_Nami" if BOARD_GOOGLE_NAMI
+	default "Google_Nautilus" if BOARD_GOOGLE_NAUTILUS
+	default "Google_Nocturne" if BOARD_GOOGLE_NOCTURNE
 	default "Google_Soraka" if BOARD_GOOGLE_SORAKA
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Atlas" if BOARD_GOOGLE_ATLAS
 	default "Poppy" if BOARD_GOOGLE_POPPY
+	default "Nami" if BOARD_GOOGLE_NAMI
+	default "Nautilus" if BOARD_GOOGLE_NAUTILUS
+	default "Nocturne" if BOARD_GOOGLE_NOCTURNE
 	default "Soraka" if BOARD_GOOGLE_SORAKA
 
 config MAX_CPUS
 	int
 	default 8
 
-# Select this option to enable use of cr50 SPI TPM on poppy.
-# This option is disabled by default.
-config POPPY_USE_SPI_TPM
+config OEM_BIN_FILE
+	string "OEM ID table"
+	default ""
+
+config TPM_TIS_ACPI_INTERRUPT
+	int
+	default 64  # GPE0_DW2_00 (GPP_E0)
+
+config VARIANT_DIR
+	string
+	default "atlas" if BOARD_GOOGLE_ATLAS
+	default "poppy" if BOARD_GOOGLE_POPPY
+	default "nami" if BOARD_GOOGLE_NAMI
+	default "nautilus" if BOARD_GOOGLE_NAUTILUS
+	default "nocturne" if BOARD_GOOGLE_NOCTURNE
+	default "soraka" if BOARD_GOOGLE_SORAKA
+
+# Select this option to enable use of cr50 I2C TPM on the variant.
+config VARIANT_HAS_I2C_TPM
+	bool
+	default n
+	select I2C_TPM
+	select MAINBOARD_HAS_I2C_TPM_CR50
+	select TPM2
+
+# Select this option to enable camera ACPI support on the variant.
+config VARIANT_HAS_CAMERA_ACPI
+	bool
+	default n
+
+# Select this option to enable use of cr50 SPI TPM on the variant.
+config VARIANT_HAS_SPI_TPM
 	bool
 	default n
 	select MAINBOARD_HAS_SPI_TPM_CR50
 	select SPI_TPM
 	select TPM2
 
-config VARIANT_DIR
-	string
-	default "poppy" if BOARD_GOOGLE_POPPY
-	default "soraka" if BOARD_GOOGLE_SORAKA
+config VARIANT_SPECIFIC_OPTIONS_ATLAS
+	def_bool n
+	select CHROMEOS_WIFI_SAR if CHROMEOS
+	select DRIVERS_I2C_MAX98373
+	select DRIVERS_I2C_DA7219
+	select DRIVERS_PS2_KEYBOARD
+	select DRIVERS_SPI_ACPI
+	select EXCLUDE_NATIVE_SD_INTERFACE
+	select VARIANT_HAS_SPI_TPM if !VBOOT_MOCK_SECDATA
+
+config VARIANT_SPECIFIC_OPTIONS_POPPY
+	def_bool n
+	select DRIVERS_I2C_MAX98927
+	select NO_FADT_8042
+	select VARIANT_HAS_CAMERA_ACPI
+	select VARIANT_HAS_I2C_TPM if !VBOOT_MOCK_SECDATA
+
+config VARIANT_SPECIFIC_OPTIONS_NAMI
+	def_bool n
+	select CHROMEOS_WIFI_SAR if CHROMEOS
+	select DRIVERS_GENERIC_MAX98357A
+	select DRIVERS_I2C_DA7219
+	select DRIVERS_PS2_KEYBOARD
+	select DRIVERS_SPI_ACPI
+	select EXCLUDE_NATIVE_SD_INTERFACE
+	select VARIANT_HAS_SPI_TPM if !VBOOT_MOCK_SECDATA
+
+config VARIANT_SPECIFIC_OPTIONS_NAUTILUS
+	def_bool n
+	select CHROMEOS_WIFI_SAR if CHROMEOS
+	select DRIVERS_GENERIC_MAX98357A
+	select DRIVERS_I2C_DA7219
+	select DRIVERS_PS2_KEYBOARD
+	select VARIANT_HAS_CAMERA_ACPI
+	select VARIANT_HAS_I2C_TPM if !VBOOT_MOCK_SECDATA
+
+config VARIANT_SPECIFIC_OPTIONS_NOCTURNE
+	def_bool n
+	select CHROMEOS_WIFI_SAR if CHROMEOS
+	select DRIVERS_I2C_MAX98373
+	select DRIVERS_I2C_DA7219
+	select DRIVERS_SPI_ACPI
+	select EXCLUDE_NATIVE_SD_INTERFACE
+	select VARIANT_HAS_SPI_TPM if !VBOOT_MOCK_SECDATA
+
+config VARIANT_SPECIFIC_OPTIONS_SORAKA
+	def_bool n
+	select DRIVERS_I2C_MAX98927
+	select NO_FADT_8042
+	select VARIANT_HAS_CAMERA_ACPI
+	select VARIANT_HAS_I2C_TPM if !VBOOT_MOCK_SECDATA
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
 	select HAS_RECOVERY_MRC_CACHE
 	select MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN
 	select VBOOT_LID_SWITCH
-
-config DRIVER_TPM_SPI_BUS
-	default 0x1
-
-config TPM_TIS_ACPI_INTERRUPT
-	int
-	default 64  # GPE0_DW2_00 (GPP_E0)
 
 endif # BOARD_GOOGLE_BASEBOARD_POPPY

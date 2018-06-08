@@ -52,7 +52,7 @@ MODULE_ID("$Id: m_attribs.c,v 1.16 2010/01/23 21:16:54 tom Exp $")
 NCURSES_IMPEXP int NCURSES_API set_menu_ ## name (MENU* menu, chtype attr) \
 {\
   T((T_CALLED("set_menu_" #name "(%p,%s)"), menu, _traceattr(attr))); \
-   if (!(attr==A_NORMAL || (attr & A_ATTRIBUTES)==attr))\
+   if (!(attr == A_NORMAL || (attr & A_ATTRIBUTES) == attr))\
       RETURN(E_BAD_ARGUMENT);\
    if (menu && ( menu -> name != attr))\
      {\

@@ -110,12 +110,10 @@ static void host_ctrl_enable_k8m8xx(struct device *dev) {
 
 }
 
-#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
-void backup_top_of_ram(uint64_t ramtop)
+void backup_top_of_low_cacheable(uintptr_t ramtop)
 {
-		outl((u32) ramtop, K8T890_NVRAM_IO_BASE+K8T890_NVRAM_TOP_OF_RAM);
+	outl((u32) ramtop, K8T890_NVRAM_IO_BASE+K8T890_NVRAM_TOP_OF_RAM);
 }
-#endif
 
 static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,

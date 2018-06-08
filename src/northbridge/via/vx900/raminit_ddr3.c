@@ -897,7 +897,7 @@ static void vx900_dram_ddr3_dimm_init(const ramctr_timing * ctrl,
 	for (i = 0; i < VX900_MAX_MEM_RANKS; i++) {
 		if (ranks->phys_rank_size_mb[i] == 0)
 			continue;
-		printram("Initializing rank %lu\n", i);
+		printram("Initializing rank %zu\n", i);
 
 		/* Set target physical rank to virtual rank 0
 		 * other ranks to virtual rank 3*/
@@ -1283,7 +1283,7 @@ static void vx900_dram_calibrate_recieve_delays(vx900_delay_calib * delays,
 		break;
 	}
 	if (n_tries > 1)
-		printram("Hmm, we had to try %lu times before our calibration "
+		printram("Hmm, we had to try %zu times before our calibration "
 			 "was good.\n", n_tries);
 }
 
@@ -1340,7 +1340,7 @@ static void vx900_dram_calibrate_transmit_delays(delay_range * tx_dq,
 		break;
 	}
 	if (n_tries > 1)
-		printram("Hmm, we had to try %lu times before our calibration "
+		printram("Hmm, we had to try %zu times before our calibration "
 			 "was good.\n", n_tries);
 }
 
@@ -1575,7 +1575,7 @@ static void vx900_dram_map_row_col_bank(dimm_info * dimms)
 		 * column address bits.
 		 */
 		if ((col_bits < 10) || (col_bits > 11)) {
-			printram("DIMM %ld has %d column address bits.\n",
+			printram("DIMM %zd has %d column address bits.\n",
 				 i, col_bits);
 			die("Unsupported DIMM. Try booting without this DIMM");
 		}

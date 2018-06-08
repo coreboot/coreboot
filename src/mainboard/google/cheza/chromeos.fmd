@@ -1,0 +1,52 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2018, The Linux Foundation.  All rights reserved.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License version 2 and
+## only version 2 as published by the Free Software Foundation.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+FLASH@0x0 0x800000 {
+	WP_RO@0x0 0x300000 {
+		RO_SECTION@0x0 0x2E0000 {
+			BOOTBLOCK@0 128K
+			COREBOOT(CBFS)@0x20000 0x1E0000
+			FMAP@0x200000 0x1000
+			GBB@0x201000 0xDEF00
+			RO_FRID@0x2DFF00 0x100
+		}
+		RO_VPD@0x2E0000 0x2000
+	}
+
+	RW_NVRAM@0x300000 0x8000
+	RW_ELOG@0x308000 0x8000
+	RW_VPD@0x310000 0x8000
+	RW_CDT@0x318000 0x8000
+
+	RW_SECTION_A@0x320000 0x268000 {
+		VBLOCK_A@0x0 0x2000
+		FW_MAIN_A(CBFS)@0x2000 0x1E1F00
+		RW_FWID_A@0x1E3F00 0x100
+		RW_DDR_TRAINING_A@0x1E4000 0x4000
+		RW_XBL_BUFFER_A@0x1E8000 0x4000
+	}
+
+	RW_SHARED@0x588000 0x10000 {
+		SHARED_DATA@0x0 0x10000
+	}
+
+	RW_SECTION_B@0x598000 0x268000 {
+		VBLOCK_B@0x0 0x2000
+		FW_MAIN_B(CBFS)@0x2000 0x1E1F00
+		RW_FWID_B@0x1E3F00 0x100
+		RW_DDR_TRAINING_B@0x1E4000 0x4000
+		RW_XBL_BUFFER_B@0x1E8000 0x4000
+	}
+}

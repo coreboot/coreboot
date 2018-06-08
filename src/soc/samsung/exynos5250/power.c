@@ -39,7 +39,7 @@ void power_reset(void)
 	setbits_le32(&exynos_power->sw_reset, 1);
 }
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	power_reset();
 }

@@ -37,7 +37,7 @@ struct bitmap_file_header {
 	uint32_t file_size;
 	uint16_t reserved[2];
 	uint32_t bitmap_offset;
-} __attribute__ ((__packed__));
+} __packed;
 
 /* Bitmap version 3 */
 
@@ -53,13 +53,13 @@ struct bitmap_header_v3 {
 	int32_t v_res;
 	uint32_t colors_used;
 	uint32_t colors_important;
-} __attribute__ ((__packed__));
+} __packed;
 
 struct bitmap_palette_element_v3 {
 	uint8_t blue;
 	uint8_t green;
 	uint8_t red;
 	uint8_t reserved;
-} __attribute__ ((__packed__));
+} __packed;
 
 #endif /* __BITMAP_H__ */

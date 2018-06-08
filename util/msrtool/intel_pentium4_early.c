@@ -16,7 +16,9 @@
 #include "msrtool.h"
 
 int intel_pentium4_early_probe(const struct targetdef *target, const struct cpuid_t *id) {
-	return ((0xf == id->family) && (0x2 == id->model));
+	return ((VENDOR_INTEL == id->vendor) &&
+		(0xf == id->family) &&
+		(0x2 == id->model));
 }
 
 const struct msrdef intel_pentium4_early_msrs[] = {

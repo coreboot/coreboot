@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/cpu.h>
@@ -53,8 +54,8 @@ void setup_bsp_ramtop(void)
 	    "%s, TOP MEM2: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
 	     __func__, msr2.lo, msr2.hi);
 
-	amd_topmem = (uint64_t) msr.hi<<32 | msr.lo;
-	amd_topmem2 = (uint64_t) msr2.hi<<32 | msr2.lo;
+	amd_topmem = (uint64_t) msr.hi << 32 | msr.lo;
+	amd_topmem2 = (uint64_t) msr2.hi << 32 | msr2.lo;
 }
 
 static void setup_ap_ramtop(void)
@@ -76,6 +77,23 @@ static void setup_ap_ramtop(void)
 	wrmsr(TOP_MEM2, msr);
 }
 
+void add_uma_resource_below_tolm(struct device *nb, int idx)
+{
+	uint32_t topmem = bsp_topmem();
+	uint32_t top_of_cacheable = restore_top_of_low_cacheable();
+
+	if (top_of_cacheable == topmem)
+		return;
+
+	uint32_t uma_base = top_of_cacheable;
+	uint32_t uma_size = topmem - top_of_cacheable;
+
+	printk(BIOS_INFO, "%s: uma size 0x%08x, memory start 0x%08x\n",
+			__func__, uma_size, uma_base);
+
+	uma_resource(nb, idx, uma_base / KiB, uma_size / KiB);
+}
+
 void amd_setup_mtrrs(void)
 {
 	unsigned long address_bits;
@@ -85,9 +103,12 @@ void amd_setup_mtrrs(void)
 	const int cpu_id = cpuid_eax(0x80000001);
 	printk(BIOS_SPEW, "CPU ID 0x80000001: %x\n", cpu_id);
 	const int has_tom2wb =
-		 (((cpu_id>>20 )&0xf) > 0) || // ExtendedFamily > 0
-		((((cpu_id>>8 )&0xf) == 0xf) && // Family == 0F
-		 (((cpu_id>>16)&0xf) >= 0x4));  // Rev>=F deduced from rev tables
+		// ExtendedFamily > 0
+		 (((cpu_id>>20)&0xf) > 0) ||
+		// Family == 0F
+		((((cpu_id>>8)&0xf) == 0xf) &&
+		// Rev>=F deduced from rev tables
+		 (((cpu_id>>16)&0xf) >= 0x4));
 	if (has_tom2wb)
 		printk(BIOS_DEBUG, "CPU is Fam 0Fh rev.F or later. We can use TOM2WB for any memory above 4GB\n");
 
@@ -107,7 +128,7 @@ void amd_setup_mtrrs(void)
 
 	/* if DRAM above 4GB: set SYSCFG_MSR_TOM2En and SYSCFG_MSR_TOM2WB */
 	sys_cfg.lo &= ~(SYSCFG_MSR_TOM2En | SYSCFG_MSR_TOM2WB);
-	if (bsp_topmem2() > (uint64_t)1<<32) {
+	if (bsp_topmem2() > (uint64_t)1 << 32) {
 		sys_cfg.lo |= SYSCFG_MSR_TOM2En;
 		if (has_tom2wb)
 			sys_cfg.lo |= SYSCFG_MSR_TOM2WB;
@@ -117,9 +138,8 @@ void amd_setup_mtrrs(void)
 	 * undefined side effects.
 	 */
 	msr.lo = msr.hi = 0;
-	for (i = IORR_FIRST; i <= IORR_LAST; i++) {
+	for (i = IORR_FIRST; i <= IORR_LAST; i++)
 		wrmsr(i, msr);
-	}
 
 	/* Enable Variable Mtrrs
 	 * Enable the RdMem and WrMem bits in the fixed mtrrs.
@@ -133,12 +153,12 @@ void amd_setup_mtrrs(void)
 
 	enable_cache();
 
-	address_bits = CONFIG_CPU_ADDR_BITS; //K8 could be 40, and GH could be 48
+	//K8 could be 40, and GH could be 48
+	address_bits = CONFIG_CPU_ADDR_BITS;
 
 	/* AMD specific cpuid function to query number of address bits */
-	if (cpuid_eax(0x80000000) >= 0x80000008) {
+	if (cpuid_eax(0x80000000) >= 0x80000008)
 		address_bits = cpuid_eax(0x80000008) & 0xff;
-	}
 
 	/* Now that I have mapped what is memory and what is not
 	 * Set up the mtrrs so we can cache the memory.

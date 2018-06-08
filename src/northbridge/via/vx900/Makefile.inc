@@ -21,6 +21,7 @@ romstage-y += early_smbus.c
 romstage-y += early_vx900.c
 romstage-y += early_host_bus_ctl.c
 romstage-y += raminit_ddr3.c
+romstage-y += memmap.c
 romstage-y += ./../../../device/dram/ddr3.c
 romstage-y += ./../../../southbridge/via/common/early_smbus_delay.c
 romstage-y += ./../../../southbridge/via/common/early_smbus_is_busy.c
@@ -36,6 +37,7 @@ ramstage-y += chrome9hd.c
 ramstage-y += traf_ctrl.c
 ramstage-y += sata.c
 ramstage-y += lpc.c
+ramstage-y += memmap.c
 
 # The buildsystem only includes this file if CONFIG_VGA is selected.
 # We need to do some VGA I/O before the VGA can be initialized. We can make good

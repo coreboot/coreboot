@@ -1,8 +1,0 @@
-Board name: Tsunami ATX (S1846)
-Category: desktop
-Board URL: http://www.tyan.com/archive/products/html/tsunamiatx.html
-ROM package: DIP32
-ROM protocol: Parallel
-ROM socketed: y
-Flashrom support: y
-Release year: 1998

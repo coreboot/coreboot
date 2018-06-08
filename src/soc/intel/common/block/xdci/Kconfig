@@ -1,0 +1,4 @@
+config SOC_INTEL_COMMON_BLOCK_XDCI
+	bool
+	help
+	  Intel Processor common XDCI support

@@ -58,7 +58,7 @@ u32 mct_SetDramConfigMisc2(struct DCTStatStruc *pDCTstat,
 			if (((((f2x80 >> 4) & 0xf) == 0x7) || (((f2x80 >> 4) & 0xf) == 0x9))
 				&& ((f2x64 & 0x3) == 0x3))
 				cs_mux_67 = 1;
-			else if (((((f2x80 >> 4) & 0xa) == 0x7) || (((f2x80 >> 4) & 0xb) == 0x9))
+			else if (((((f2x80 >> 4) & 0xf) == 0xa) || (((f2x80 >> 4) & 0xf) == 0xb))
 				&& ((f2x64 & 0x3) > 0x1))
 				cs_mux_67 = 1;
 			else

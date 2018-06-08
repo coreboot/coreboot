@@ -71,6 +71,12 @@ size_t cbfs_for_each_attr(void *metadata, size_t metadata_size,
 int cbfsf_decompression_info(struct cbfsf *fh, uint32_t *algo, size_t *size);
 
 /*
+ * Return the CBFS file type as out-parameter.
+ * Returns 0 on success and < 0 on error.
+ */
+int cbfsf_file_type(struct cbfsf *fh, uint32_t *ftype);
+
+/*
  * Perform the vb2 hash over the CBFS region skipping empty file contents.
  * Caller is responsible for providing the hash algorithm as well as storage
  * for the final digest. Return 0 on success or non-zero on error.

@@ -26,7 +26,7 @@
 
 static int determine_total_number_of_cores(void)
 {
-	device_t cpu;
+	struct device *cpu;
 	int count = 0;
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
@@ -41,7 +41,7 @@ static int determine_total_number_of_cores(void)
 	return count;
 }
 
-void generate_cpu_entries(device_t device)
+void generate_cpu_entries(struct device *device)
 {
 	int cpu, pcontrol_blk=DEFAULT_PMBASE+PCNTRL, plen=6;
 	int numcpus = determine_total_number_of_cores();

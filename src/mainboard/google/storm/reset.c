@@ -37,12 +37,9 @@ static void wdog_reset(void)
 	write32(APCS_WDT0_BITE_TIME, RESET_WDT_BITE_TIME);
 	write32(APCS_WDT0_EN, 1);
 	write32(APCS_WDT0_CPU0_WDOG_EXPIRED_ENABLE, 1);
-
-	for (;;)
-		;
 }
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	wdog_reset();
 }

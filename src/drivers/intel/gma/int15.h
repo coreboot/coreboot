@@ -26,7 +26,7 @@ enum {
 };
 
 
-#if CONFIG_VGA_ROM_RUN
+#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 /* Install custom int15 handler for VGA OPROM */
 void install_intel_vga_int15_handler(int active_lfp, int pfit, int display, int panel_type);
 #else

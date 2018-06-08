@@ -24,9 +24,10 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <console/console.h>
+#include <security/vboot/vbnv.h>
 #include "pch.h"
 
-#if CONFIG_INTEL_LYNXPOINT_LP
+#if IS_ENABLED(CONFIG_INTEL_LYNXPOINT_LP)
 #include "lp_gpio.h"
 #endif
 
@@ -45,7 +46,7 @@ static void print_status_bits(u32 status, const char *bit_names[])
 		return;
 
 	for (i=31; i>=0; i--) {
-		if (status & (1 << i)) {
+		if (status & (1UL << i)) {
 			if (bit_names[i])
 				printk(BIOS_DEBUG, "%s ", bit_names[i]);
 			else
@@ -552,4 +553,19 @@ void disable_gpe(u32 mask)
 	u32 gpe0_en = inl(get_pmbase() + gpe0_reg);
 	gpe0_en &= ~mask;
 	outl(gpe0_en, get_pmbase() + gpe0_reg);
+}
+
+int rtc_failure(void)
+{
+#if defined(__SIMPLE_DEVICE__)
+	device_t dev = PCI_DEV(0, 31, 0);
+#else
+	device_t dev = dev_find_slot(0, PCI_DEVFN(31, 0));
+#endif
+	return !!(pci_read_config8(dev, GEN_PMCON_3) & RTC_BATTERY_DEAD);
+}
+
+int vbnv_cmos_failed(void)
+{
+	return rtc_failure();
 }

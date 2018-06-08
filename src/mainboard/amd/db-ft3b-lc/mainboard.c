@@ -20,8 +20,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
-#include <northbridge/amd/pi/BiosCallOuts.h>
-#include <northbridge/amd/pi/agesawrapper.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <southbridge/amd/pi/hudson/pci_devs.h>
 #include <southbridge/amd/pi/hudson/amd_pci_int_defs.h>
@@ -43,9 +41,7 @@
  * MP Tables.  TODO: Make ACPI use these values too.
  */
 static const u8 mainboard_picr_data[FCH_INT_TABLE_SIZE] = {
-#if defined(__GNUC__)
 	[0 ... FCH_INT_TABLE_SIZE-1] = 0x1F,
-#endif
 	/* INTA# - INTH# */
 	[0x00] = 0x0A,0x0B,0x0A,0x0B,0x0A,0x0B,0x0A,0x0B,
 	/* Misc-nil,0,1,2, INT from Serial irq */
@@ -61,9 +57,7 @@ static const u8 mainboard_picr_data[FCH_INT_TABLE_SIZE] = {
 };
 
 static const u8 mainboard_intr_data[FCH_INT_TABLE_SIZE] = {
-#if defined(__GNUC__)
 	[0 ... FCH_INT_TABLE_SIZE-1] = 0x1F,
-#endif
 	/* INTA# - INTH# */
 	[0x00] = 0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,
 	/* Misc-nil,0,1,2, INT from Serial irq */
@@ -120,7 +114,7 @@ static void pirq_setup(void)
 /**********************************************
  * enable the dedicated function in mainboard.
  **********************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 

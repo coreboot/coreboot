@@ -20,7 +20,9 @@
 #include <fmap.h>
 #include <intelblocks/cse.h>
 #include <soc/pci_devs.h>
+#include <device/pci_ops.h>
 #include <stdint.h>
+#include <compiler.h>
 
 #define PCI_ME_HFSTS1	0x40
 #define PCI_ME_HFSTS2	0x48
@@ -69,7 +71,7 @@ static int read_cse_file(const char *path, void *buff, size_t *size,
 			uint32_t is_response: 1;
 			uint32_t reserved: 8;
 			uint32_t result: 8;
-		} __attribute__ ((packed)) fields;
+		} __packed fields;
 	};
 
 	struct mca_command {
@@ -78,19 +80,23 @@ static int read_cse_file(const char *path, void *buff, size_t *size,
 		uint32_t offset;
 		uint32_t data_size;
 		uint8_t flags;
-	} __attribute__ ((packed)) msg;
+	} __packed msg;
 
 	struct mca_response {
 		union mkhi_header mkhi_hdr;
 		uint32_t data_size;
 		uint8_t buffer[128];
-	} __attribute__ ((packed)) rmsg;
+	} __packed rmsg;
 
 	if (sizeof(rmsg.buffer) < *size) {
 		printk(BIOS_ERR, "internal buffer is too small\n");
 		return 0;
 	}
 
+	if (strnlen(path, sizeof(msg.file_name)) >= sizeof(msg.file_name)) {
+		printk(BIOS_ERR, "path too big for msg.file_name buffer\n");
+		return 0;
+	}
 	strncpy(msg.file_name, path, sizeof(msg.file_name));
 	msg.mkhi_hdr.fields.group_id = MKHI_GROUP_ID_MCA;
 	msg.mkhi_hdr.fields.command = READ_FILE;

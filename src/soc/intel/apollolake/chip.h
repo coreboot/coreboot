@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2017 Siemens AG
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,36 +19,42 @@
 #ifndef _SOC_APOLLOLAKE_CHIP_H_
 #define _SOC_APOLLOLAKE_CHIP_H_
 
+#include <commonlib/helpers.h>
+#include <intelblocks/gspi.h>
 #include <soc/gpe.h>
-#include <soc/gpio_defs.h>
 #include <soc/gpio.h>
-#include <soc/intel/common/lpss_i2c.h>
-#include <device/i2c.h>
+#include <intelblocks/lpc_lib.h>
+#include <device/i2c_simple.h>
+#include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/pm.h>
 #include <soc/usb.h>
 
+#define MAX_PCIE_PORTS			6
 #define CLKREQ_DISABLED		0xf
 #define APOLLOLAKE_I2C_DEV_MAX	8
 
-/* Serial IRQ control. SERIRQ_QUIET is the default (0). */
-enum serirq_mode {
-	SERIRQ_QUIET,
-	SERIRQ_CONTINUOUS,
-	SERIRQ_OFF,
+enum pnp_settings {
+	PNP_PERF,
+	PNP_POWER,
+	PNP_PERF_POWER,
 };
 
 struct soc_intel_apollolake_config {
+	/* GSPI */
+	struct gspi_cfg gspi[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
+
 	/*
 	 * Mapping from PCIe root port to CLKREQ input on the SOC. The SOC has
 	 * four CLKREQ inputs, but six root ports. Root ports without an
 	 * associated CLKREQ signal must be marked with "CLKREQ_DISABLED"
 	 */
-	uint8_t pcie_rp0_clkreq_pin;
-	uint8_t pcie_rp1_clkreq_pin;
-	uint8_t pcie_rp2_clkreq_pin;
-	uint8_t pcie_rp3_clkreq_pin;
-	uint8_t pcie_rp4_clkreq_pin;
-	uint8_t pcie_rp5_clkreq_pin;
+	uint8_t pcie_rp_clkreq_pin[MAX_PCIE_PORTS];
+
+	/* Enable/disable hot-plug for root ports (0 = disable, 1 = enable). */
+	uint8_t pcie_rp_hotplug_enable[MAX_PCIE_PORTS];
+
+	/* De-emphasis enable configuration for each PCIe root port */
+	uint8_t pcie_rp_deemphasis_enable[MAX_PCIE_PORTS];
 
 	/* [14:8] DDR mode Number of dealy elements.Each = 125pSec.
 	 * [6:0] SDR mode Number of dealy elements.Each = 125pSec.
@@ -85,11 +92,14 @@ struct soc_intel_apollolake_config {
 	 */
 	uint32_t emmc_rx_cmd_data_cntl2;
 
+	/* Specifies on which IRQ the SCI will internally appear. */
+	uint8_t sci_irq;
+
 	/* Configure serial IRQ (SERIRQ) line. */
 	enum serirq_mode serirq_mode;
 
 	/* I2C bus configuration */
-	struct lpss_i2c_bus_config i2c[APOLLOLAKE_I2C_DEV_MAX];
+	struct dw_i2c_bus_config i2c[APOLLOLAKE_I2C_DEV_MAX];
 
 	uint8_t gpe0_dw1; /* GPE0_63_32 STS/EN */
 	uint8_t gpe0_dw2; /* GPE0_95_64 STS/EN */
@@ -124,9 +134,26 @@ struct soc_intel_apollolake_config {
 
 	/* GPIO SD card detect pin */
 	unsigned int sdcard_cd_gpio;
+
+	/* PRMRR size setting with three options
+	 *  0x02000000 - 32MiB
+	 *  0x04000000 - 64MiB
+	 *  0x08000000 - 128MiB */
+	uint32_t PrmrrSize;
+
+	/* Enable SGX feature.
+	 * Enabling SGX feature is 2 step process,
+	 * (1) set sgx_enable = 1
+	 * (2) set PrmrrSize to supported size */
+	uint8_t sgx_enable;
+
+	/* Select PNP Settings.
+	 * (0) Performance,
+	 * (1) Power
+	 * (2) Power & Performance */
+	enum pnp_settings pnp_settings;
 };
 
 typedef struct soc_intel_apollolake_config config_t;
-extern struct pci_operations soc_pci_ops;
 
 #endif	/* _SOC_APOLLOLAKE_CHIP_H_ */

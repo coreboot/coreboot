@@ -17,6 +17,5 @@ config AMD_SB_CIMX
 	bool
 	default n
 
-source src/southbridge/amd/cimx/sb700/Kconfig
 source src/southbridge/amd/cimx/sb800/Kconfig
 source src/southbridge/amd/cimx/sb900/Kconfig

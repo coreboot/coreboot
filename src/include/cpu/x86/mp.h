@@ -58,14 +58,6 @@ struct mp_ops {
 	 */
 	void (*get_microcode_info)(const void **microcode, int *parallel);
 	/*
-	 * Optionally provide a function which adjusts the APIC id
-	 * map to CPU number. By default the CPU number and APIC id
-	 * are 1:1. To change the APIC id for a given CPU return the
-	 * new APIC id. It's called for each CPU as indicated by
-	 * get_cpu_count().
-	 */
-	int (*adjust_cpu_apic_entry)(int cpu, int cur_apic_id);
-	/*
 	 * Optionally adjust SMM handler parameters to override the default
 	 * values.  The is_perm variable indicates if the parameters to adjust
 	 * are for the relocation handler or the permanent handler. This
@@ -124,17 +116,28 @@ struct mp_ops {
  */
 int mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops);
 
+enum {
+	/* Function runs on all cores (both BSP and APs) */
+	MP_RUN_ON_ALL_CPUS,
+	/* Need to specify cores (only on APs) numbers */
+};
 
 /*
  * After APs are up and PARALLEL_MP_AP_WORK is enabled one can issue work
  * to all the APs to perform. Currently the BSP is the only CPU that is allowed
  * to issue work. i.e. the APs should not call any of these functions.
+ *
+ * Input parameter expire_us <= 0 to specify an infinite timeout.
+ * logical_cpu_num = MP_RUN_ON_ALL_CPUS to execute function over all cores (BSP
+ * + APs) else specified AP number using logical_cpu_num.
+ *
  * All functions return < 0 on error, 0 on success.
  */
-int mp_run_on_aps(void (*func)(void), long expire_us);
+int mp_run_on_aps(void (*func)(void *), void *arg, int logical_cpu_num,
+		long expire_us);
 
 /* Like mp_run_on_aps() but also runs func on BSP. */
-int mp_run_on_all_cpus(void (*func)(void), long expire_us);
+int mp_run_on_all_cpus(void (*func)(void *), void *arg, long expire_us);
 
 /*
  * Park all APs to prepare for OS boot. This is handled automatically
@@ -150,15 +153,5 @@ int mp_park_aps(void);
 void smm_initiate_relocation_parallel(void);
 /* Send SMI to self with single execution. */
 void smm_initiate_relocation(void);
-/* Make a CPU wait until the barrier is released */
-void barrier_wait(atomic_t *b);
-/*
- * Make a CPU wait until the barrier is released, or timeout occurs
- * returns 1 if timeout occurs before barier is released.
- * returns 0 if barrier is released before timeout.
- */
-int barrier_wait_timeout(atomic_t *b, uint32_t timeout_ms);
-/* Release a barrier so that other CPUs waiting for that barrier can continue */
-void release_barrier(atomic_t *b);
 
 #endif /* _X86_MP_H_ */

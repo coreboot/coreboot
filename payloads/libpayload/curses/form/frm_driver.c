@@ -200,7 +200,7 @@ static int FE_Delete_Previous(FORM *);
 /* Logic to determine whether or not we are on the first position in the
    current field */
 #define First_Position_In_Current_Field(form) \
-  (((form)->currow==0) && ((form)->curcol==0))
+  (((form)->currow == 0) && ((form)->curcol == 0))
 
 #define Minimum(a,b) (((a)<=(b)) ? (a) : (b))
 #define Maximum(a,b) (((a)>=(b)) ? (a) : (b))
@@ -2586,7 +2586,7 @@ FE_New_Line(FORM *form)
 	{
 	  if (Last_Row && !Field_Grown(field, 1))
 	    {
-	      /* N.B.: due to the logic in the 'if', LastRow==TRUE
+	      /* N.B.: due to the logic in the 'if', LastRow == TRUE
 	         means here that the field is growable and not
 	         a single-line field */
 	      returnCode(E_SYSTEM_ERROR);

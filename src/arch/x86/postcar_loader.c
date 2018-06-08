@@ -39,8 +39,8 @@ static void postcar_frame_prepare(struct postcar_frame *pcf)
 	msr = rdmsr(MTRR_CAP_MSR);
 
 	pcf->upper_mask = (1 << (cpu_phys_address_size() - 32)) - 1;
-	pcf->max_var_mttrs = msr.lo & MTRR_CAP_VCNT;
-	pcf->num_var_mttrs = 0;
+	pcf->max_var_mtrrs = msr.lo & MTRR_CAP_VCNT;
+	pcf->num_var_mtrrs = 0;
 }
 
 int postcar_frame_init(struct postcar_frame *pcf, size_t stack_size)
@@ -82,9 +82,9 @@ void postcar_frame_add_mtrr(struct postcar_frame *pcf,
 		uint32_t size_msb;
 		uint32_t mtrr_size;
 
-		if (pcf->num_var_mttrs >= pcf->max_var_mttrs) {
+		if (pcf->num_var_mtrrs >= pcf->max_var_mtrrs) {
 			printk(BIOS_ERR, "No more variable MTRRs: %d\n",
-					pcf->max_var_mttrs);
+					pcf->max_var_mtrrs);
 			return;
 		}
 
@@ -106,7 +106,7 @@ void postcar_frame_add_mtrr(struct postcar_frame *pcf,
 		stack_push(pcf, ~(mtrr_size - 1) | MTRR_PHYS_MASK_VALID);
 		stack_push(pcf, 0);
 		stack_push(pcf, addr | type);
-		pcf->num_var_mttrs++;
+		pcf->num_var_mtrrs++;
 
 		size -= mtrr_size;
 		addr += mtrr_size;
@@ -119,9 +119,20 @@ void *postcar_commit_mtrrs(struct postcar_frame *pcf)
 	 * Place the number of used variable MTRRs on stack then max number
 	 * of variable MTRRs supported in the system.
 	 */
-	stack_push(pcf, pcf->num_var_mttrs);
-	stack_push(pcf, pcf->max_var_mttrs);
+	stack_push(pcf, pcf->num_var_mtrrs);
+	stack_push(pcf, pcf->max_var_mtrrs);
 	return (void *) pcf->stack;
+}
+
+static void finalize_load(uintptr_t *stack_top_ptr, uintptr_t stack_top)
+{
+	*stack_top_ptr = stack_top;
+	/*
+	 * Signal to rest of system that another update was made to the
+	 * postcar program prior to running it.
+	 */
+	prog_segment_loaded((uintptr_t)stack_top_ptr, sizeof(uintptr_t),
+		SEG_FINAL);
 }
 
 static void load_postcar_cbfs(struct prog *prog, struct postcar_frame *pcf)
@@ -140,14 +151,7 @@ static void load_postcar_cbfs(struct prog *prog, struct postcar_frame *pcf)
 	if (rsl.params == NULL)
 		die("No parameters found in after CAR program.\n");
 
-	*(uintptr_t *)rsl.params = pcf->stack;
-
-	/*
-	 * Signal to rest of system that another update was made to the
-	 * postcar program prior to running it.
-	 */
-	prog_segment_loaded((uintptr_t)rsl.params, sizeof(uintptr_t),
-		SEG_FINAL);
+	finalize_load(rsl.params, pcf->stack);
 
 	if (!IS_ENABLED(CONFIG_NO_STAGE_CACHE))
 		stage_cache_add(STAGE_POSTCAR, prog);
@@ -160,9 +164,14 @@ void run_postcar_phase(struct postcar_frame *pcf)
 
 	postcar_commit_mtrrs(pcf);
 
-	if (!IS_ENABLED(CONFIG_NO_STAGE_CACHE) && romstage_handoff_is_resume())
+	if (!IS_ENABLED(CONFIG_NO_STAGE_CACHE) &&
+				romstage_handoff_is_resume()) {
 		stage_cache_load_stage(STAGE_POSTCAR, &prog);
-	else
+		/* This is here to allow platforms to pass different stack
+		   parameters between S3 resume and normal boot. On the
+		   platforms where the values are the same it's a nop. */
+		finalize_load(prog.arg, pcf->stack);
+	} else
 		load_postcar_cbfs(&prog, pcf);
 
 	prog_run(&prog);

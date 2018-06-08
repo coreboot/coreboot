@@ -16,7 +16,7 @@
 
 config NORTHBRIDGE_INTEL_SANDYBRIDGE
 	bool
-	select NORTHBRIDGE_INTEL_COMMON_MRC_CACHE
+	select CACHE_MRC_SETTINGS
 	select CPU_INTEL_MODEL_206AX
 	select HAVE_DEBUG_RAM_SETUP
 	select INTEL_GMA_ACPI
@@ -24,7 +24,7 @@ config NORTHBRIDGE_INTEL_SANDYBRIDGE
 
 config NORTHBRIDGE_INTEL_IVYBRIDGE
 	bool
-	select NORTHBRIDGE_INTEL_COMMON_MRC_CACHE
+	select CACHE_MRC_SETTINGS
 	select CPU_INTEL_MODEL_306AX
 	select HAVE_DEBUG_RAM_SETUP
 	select INTEL_GMA_ACPI
@@ -42,6 +42,27 @@ config USE_NATIVE_RAMINIT
 	  Select if you want to use coreboot implementation of raminit rather than
 	  System Agent/MRC.bin. You should answer Y.
 
+config NATIVE_RAMINIT_IGNORE_MAX_MEM_FUSES
+	bool "Ignore vendor programmed fuses that limit max. DRAM frequency"
+	default n
+	depends on USE_NATIVE_RAMINIT
+	help
+	  Ignore the mainboard's vendor programmed fuses that might limit the
+	  maximum DRAM frequency. By selecting this option the fuses will be
+	  ignored and the only limits on DRAM frequency are set by RAM's SPD and
+	  hard fuses in southbridge's clockgen.
+	  Disabled by default as it might causes system instability.
+	  Handle with care!
+
+config NATIVE_RAMINIT_IGNORE_XMP_MAX_DIMMS
+	bool "Ignore XMP profile max DIMMs per channel"
+	default n
+	depends on USE_NATIVE_RAMINIT
+	help
+	  Ignore the max DIMMs per channel restriciton defined in XMP profiles.
+	  Disabled by default as it might cause system instability.
+	  Handle with care!
+
 config CBFS_SIZE
 	hex
 	default 0x100000
@@ -58,21 +79,24 @@ config SANDYBRIDGE_IVYBRIDGE_LVDS
 	def_bool n
 	select VGA
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
-	select MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
 
-# Select VGA & INTEL_EDID if MAINBOARD_DO_NATIVE_VGA_INIT is enabled.
-config MAINBOARD_DO_NATIVE_VGA_INIT
+config IF_NATIVE_VGA_INIT
+	def_bool y
+	depends on MAINBOARD_DO_NATIVE_VGA_INIT
 	select VGA
 	select INTEL_EDID
-
-config MRC_CACHE_SIZE
-	hex
-	depends on !CHROMEOS
-	default 0x10000
+	select HAVE_LINEAR_FRAMEBUFFER
+	select HAVE_VGA_TEXT_FRAMEBUFFER
 
 config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 	default "northbridge/intel/sandybridge/bootblock.c"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+	help
+	  The MRC blob requires it to be at 0xf0000000.
 
 if USE_NATIVE_RAMINIT
 
@@ -110,10 +134,6 @@ config MRC_FILE
 	help
 	  The path and filename of the file to use as System Agent
 	  binary.
-
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf0000000
 
 endif # !USE_NATIVE_RAMINIT
 

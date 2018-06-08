@@ -31,25 +31,23 @@
 
 void bootblock_mainboard_early_init(void)
 {
-	/* Let gpio2ab io domains works at 1.8V.
-	 *
-	 * If io_vsel[0] == 0(default value), gpio2ab io domains is 3.0V
-	 * powerd by APIO2_VDD, otherwise, 1.8V supplied by APIO2_VDDPST.
-	 * But from the schematic of kevin rev0, the APIO2_VDD and
-	 * APIO2_VDDPST both are 1.8V(intentionally?).
-	 *
-	 * So, by default, CPU1_SDIO_PWREN(GPIO2_A2) can't output 3.0V
-	 * because the supply is 1.8V.
-	 * Let ask GPIO2_A2 output 1.8V to make GPIO interal logic happy.
-	 */
-	write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 0));
+	/* Configure all programmable IO voltage domains (3D/4A and 2A/2B) early
+	   so that we know we can use our GPIOs reliably in following code. */
+	write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 1 | 1 << 0));
+	/* On Scarlet-based boards, the 4C/4D domain is 1.8V (on others 3.0V) */
+	if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
+		write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 3));
 
-	/*
-	 * Let's enable these power rails here, we are already running the SPI
-	 * Flash based code.
-	 */
-	gpio_output(GPIO(0, B, 2), 1);  /* PP1500_EN */
-	gpio_output(GPIO(0, B, 4), 1);  /* PP3000_EN */
+	/* Reconfigure GPIO1 from dynamic voltage selection through GPIO0_B1 to
+	   hardcoded 1.8V, and change that pin to a normal GPIO. The TRM says
+	   this is already the power-on reset, but we all know that TRMs lie. */
+	write32(&rk3399_pmugrf->soc_con0, RK_SETBITS(1 << 9 | 1 << 8));
+	write32(&rk3399_pmugrf->gpio0b_iomux, RK_CLRBITS(3 << 2));
+
+	/* Enable rails powering GPIO blocks, among other things. */
+	gpio_output(GPIO_P30V_EN, 1);
+	if (!IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
+		gpio_output(GPIO_P15V_EN, 1);	/* Scarlet: EC-controlled */
 
 #if IS_ENABLED(CONFIG_DRIVERS_UART)
 	_Static_assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE,
@@ -92,16 +90,23 @@ static void configure_ec(void)
 static void configure_tpm(void)
 {
 	if (IS_ENABLED(CONFIG_GRU_HAS_TPM2)) {
-		gpio_input(GPIO(3, A, 4));	/* SPI0_MISO remove pull-up */
-		gpio_input(GPIO(3, A, 5));	/* SPI0_MOSI remove pull-up */
-		gpio_input(GPIO(3, A, 6));	/* SPI0_CLK remove pull-up */
-		gpio_input_pullup(GPIO(3, A, 7));	/* SPI0_CS confirm */
-
 		rockchip_spi_init(CONFIG_DRIVER_TPM_SPI_BUS, 1500*KHz);
 
-		write32(&rk3399_grf->iomux_spi0, IOMUX_SPI0);
+		if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)) {
+			gpio_input(GPIO(2, B, 1));	/* SPI2_MISO no-pull */
+			gpio_input(GPIO(2, B, 2));	/* SPI2_MOSI no-pull */
+			gpio_input(GPIO(2, B, 3));	/* SPI2_CLK no-pull */
+			gpio_input_pullup(GPIO(2, B, 4));	/* SPI2_CS */
+			write32(&rk3399_grf->iomux_spi2, IOMUX_SPI2);
+		} else {
+			gpio_input(GPIO(3, A, 4));	/* SPI0_MISO no-pull */
+			gpio_input(GPIO(3, A, 5));	/* SPI0_MOSI no-pull */
+			gpio_input(GPIO(3, A, 6));	/* SPI0_CLK no-pull */
+			gpio_input_pullup(GPIO(3, A, 7));	/* SPI0_CS */
+			write32(&rk3399_grf->iomux_spi0, IOMUX_SPI0);
+		}
 
-		gpio_input_irq(GPIO_TPM_IRQ, IRQ_TYPE_EDGE_RISING);
+		gpio_input_irq(GPIO_TPM_IRQ, IRQ_TYPE_EDGE_RISING, GPIO_PULLUP);
 	} else {
 		gpio_input(GPIO(1, B, 7));	/* I2C0_SDA remove pull-up */
 		gpio_input(GPIO(1, C, 0));	/* I2C0_SCL remove pull-up */

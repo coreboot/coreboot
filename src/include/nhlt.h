@@ -298,6 +298,7 @@ struct nhlt_endpoint {
 
 #define MAX_ENDPOINTS 8
 struct nhlt {
+	uint32_t subsystem_id;
 	uint8_t num_endpoints;
 	struct nhlt_endpoint endpoints[MAX_ENDPOINTS];
 	uint8_t current_instance_id[NHLT_MAX_LINK_TYPES];
@@ -320,8 +321,7 @@ struct nhlt_dmic_array_config {
 
 /*
  * Microphone array definitions may be found here:
- * https://msdn.microsoft.com/en-us/library/windows/hardware/
- * dn613960%28v=vs.85%29.aspx
+ * https://msdn.microsoft.com/en-us/library/windows/hardware/dn613960%28v=vs.85%29.aspx
  */
 enum {
 	NHLT_MIC_ARRAY_2CH_SMALL = 0xa,

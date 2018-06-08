@@ -82,8 +82,10 @@ static int uart8250_mem_can_rx_byte(void *base)
 static unsigned char uart8250_mem_rx_byte(void *base)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
-	while (i-- && !uart8250_mem_can_rx_byte(base))
+	while (i && !uart8250_mem_can_rx_byte(base)) {
 		udelay(1);
+		i--;
+	}
 	if (i)
 		return uart8250_read(base, UART8250_RBR);
 	else
@@ -117,7 +119,7 @@ void uart_init(int idx)
 		return;
 
 	unsigned int div;
-	div = uart_baudrate_divisor(default_baudrate(),
+	div = uart_baudrate_divisor(get_uart_baudrate(),
 		uart_platform_refclk(), uart_input_clock_divider());
 	uart8250_mem_init(base, div);
 }
@@ -152,7 +154,9 @@ void uart_fill_lb(void *data)
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
-	serial.baud = default_baudrate();
+	if (!serial.baseaddr)
+		return;
+	serial.baud = get_uart_baudrate();
 	if (IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM_32))
 		serial.regwidth = sizeof(uint32_t);
 	else

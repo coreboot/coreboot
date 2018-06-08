@@ -16,6 +16,7 @@
 #ifndef _SPI_GENERIC_H_
 #define _SPI_GENERIC_H_
 
+#include <commonlib/region.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -87,14 +88,48 @@ struct spi_cfg {
 	unsigned int data_bit_length;
 };
 
+/*
+ * If there is no limit on the maximum transfer size for the controller,
+ * max_xfer_size can be set to SPI_CTRLR_DEFAULT_MAX_XFER_SIZE which is equal to
+ * UINT32_MAX.
+ */
+#define SPI_CTRLR_DEFAULT_MAX_XFER_SIZE	(UINT32_MAX)
+
+struct spi_flash;
+
+enum {
+	/* Deduct the command length from the spi_crop_chunk() calculation for
+	   sizing a transaction. */
+	SPI_CNTRLR_DEDUCT_CMD_LEN = 1 << 0,
+	/* Remove the opcode size from the command length used in the
+	   spi_crop_chunk() calculation. Controllers which have a dedicated
+	   register for the command byte would set this flag which would
+	   allow the use of the maximum transfer size. */
+	SPI_CNTRLR_DEDUCT_OPCODE_LEN = 1 << 1,
+};
+
 /*-----------------------------------------------------------------------
- * Representation of a SPI contoller.
+ * Representation of a SPI controller. Note the xfer() and xfer_vector()
+ * callbacks are meant to process full duplex transactions. If the
+ * controller cannot handle these transactions then return an error when
+ * din and dout are both set. See spi_xfer() below for more details.
  *
- * claim_bus:	Claim SPI bus and prepare for communication.
- * release_bus: Release SPI bus.
- * setup:	Setup given SPI device bus.
- * xfer:	Perform one SPI transfer operation.
- * xfer_vector: Vector of SPI transfer operations.
+ * claim_bus:		Claim SPI bus and prepare for communication.
+ * release_bus:	Release SPI bus.
+ * setup:		Setup given SPI device bus.
+ * xfer:		Perform one SPI transfer operation.
+ * xfer_vector:	Vector of SPI transfer operations.
+ * max_xfer_size:	Maximum transfer size supported by the controller
+ *			(0 = invalid,
+ *			 SPI_CTRLR_DEFAULT_MAX_XFER_SIZE = unlimited)
+ * flags:		See SPI_CNTRLR_* enums above.
+ *
+ * Following member is provided by specialized SPI controllers that are
+ * actually SPI flash controllers.
+ *
+ * flash_probe:	Specialized probe function provided by SPI flash
+ *			controllers.
+ * flash_protect: Protect a region of flash using the SPI flash controller.
  */
 struct spi_ctrlr {
 	int (*claim_bus)(const struct spi_slave *slave);
@@ -104,6 +139,12 @@ struct spi_ctrlr {
 		    size_t bytesout, void *din, size_t bytesin);
 	int (*xfer_vector)(const struct spi_slave *slave,
 			struct spi_op vectors[], size_t count);
+	uint32_t max_xfer_size;
+	uint32_t flags;
+	int (*flash_probe)(const struct spi_slave *slave,
+				struct spi_flash *flash);
+	int (*flash_protect)(const struct spi_flash *flash,
+				const struct region *region);
 };
 
 /*-----------------------------------------------------------------------
@@ -194,6 +235,10 @@ void spi_release_bus(const struct spi_slave *slave);
  *   din:	Pointer to a string of bytes that will be filled in.
  *   bytesin:	How many bytes to read.
  *
+ * Note that din and dout are transferred simulataneously in a full duplex
+ * transaction. The number of clocks within one transaction is calculated
+ * as: MAX(bytesout*8, bytesin*8).
+ *
  *   Returns: 0 on success, not 0 on failure
  */
 int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytesout,
@@ -212,7 +257,14 @@ int spi_xfer(const struct spi_slave *slave, const void *dout, size_t bytesout,
 int spi_xfer_vector(const struct spi_slave *slave,
 		struct spi_op vectors[], size_t count);
 
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len);
+/*-----------------------------------------------------------------------
+ * Given command length and length of remaining data, return the maximum data
+ * that can be transferred in next spi_xfer.
+ *
+ * Returns: 0 on error, non-zero data size that can be xfered on success.
+ */
+unsigned int spi_crop_chunk(const struct spi_slave *slave, unsigned int cmd_len,
+			unsigned int buf_len);
 
 /*-----------------------------------------------------------------------
  * Write 8 bits, then read 8 bits.
@@ -235,24 +287,5 @@ static inline int spi_w8r8(const struct spi_slave *slave, unsigned char byte)
 	ret = spi_xfer(slave, dout, 2, din, 2);
 	return ret < 0 ? ret : din[1];
 }
-
-/*
- * Helper function to allow chipsets to combine two vectors if possible. It can
- * only handle upto 2 vectors.
- *
- * This function is provided to support command-response kind of transactions
- * expected by users like flash. Some special SPI flash controllers can handle
- * such command-response operations in a single transaction. For these special
- * controllers, separate command and response vectors can be combined into a
- * single operation.
- *
- * Two vectors are combined if first vector has a non-NULL dout and NULL din and
- * second vector has a non-NULL din and NULL dout. Otherwise, each vector is
- * operated upon one at a time.
- *
- * Returns 0 on success and non-zero on failure.
- */
-int spi_xfer_two_vectors(const struct spi_slave *slave,
-			struct spi_op vectors[], size_t count);
 
 #endif	/* _SPI_GENERIC_H_ */

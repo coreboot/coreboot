@@ -18,6 +18,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
 #include <pc80/i8259.h>
@@ -32,9 +33,12 @@
 #include <cbmem.h>
 #include <string.h>
 #include <cpu/x86/smm.h>
+#include <southbridge/intel/common/rcba.h>
 #include "pch.h"
 #include "nvs.h"
 #include <southbridge/intel/common/pciehp.h>
+#include <southbridge/intel/common/acpi_pirq_gen.h>
+#include <southbridge/intel/common/pmutil.h>
 
 #define NMI_OFF	0
 
@@ -76,7 +80,7 @@ static void pch_enable_serial_irqs(struct device *dev)
 	/* Set packet length and toggle silent mode bit for one frame. */
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (1 << 6) | ((21 - 17) << 2) | (0 << 0));
-#if !CONFIG_SERIRQ_CONTINUOUS_MODE
+#if !IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE)
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (0 << 6) | ((21 - 17) << 2) | (0 << 0));
 #endif
@@ -235,7 +239,7 @@ static void pch_power_options(device_t dev)
 		reg8 &= ~(1 << 7);	/* Set NMI. */
 	} else {
 		printk(BIOS_INFO, "NMI sources disabled.\n");
-		reg8 |= ( 1 << 7);	/* Can't mask NMI from PCI-E and NMI_NOW */
+		reg8 |= (1 << 7);	/* Can't mask NMI from PCI-E and NMI_NOW */
 	}
 	outb(reg8, 0x70);
 
@@ -277,18 +281,14 @@ static void pch_power_options(device_t dev)
 
 static void pch_rtc_init(struct device *dev)
 {
-	u8 reg8;
-	int rtc_failed;
+	int rtc_failed = rtc_failure();
 
-	reg8 = pci_read_config8(dev, GEN_PMCON_3);
-	rtc_failed = reg8 & RTC_BATTERY_DEAD;
 	if (rtc_failed) {
-		reg8 &= ~RTC_BATTERY_DEAD;
-		pci_write_config8(dev, GEN_PMCON_3, reg8);
-#if CONFIG_ELOG
-		elog_add_event(ELOG_TYPE_RTC_RESET);
-#endif
+		if (IS_ENABLED(CONFIG_ELOG))
+			elog_add_event(ELOG_TYPE_RTC_RESET);
+		pci_update_config8(dev, GEN_PMCON_3, ~RTC_BATTERY_DEAD, 0);
 	}
+
 	printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
 
 	cmos_init(rtc_failed);
@@ -654,10 +654,6 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 static void southbridge_inject_dsdt(device_t dev)
 {
 	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
-	void *opregion;
-
-	/* Calling northbridge code as gnvs contains opregion address.  */
-	opregion = igd_make_opregion();
 
 	if (gnvs) {
 		const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
@@ -672,12 +668,10 @@ static void southbridge_inject_dsdt(device_t dev)
 		gnvs->ndid = gfx->ndid;
 		memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 		chromeos_init_vboot(&(gnvs->chromeos));
 #endif
 
-		/* IGD OpRegion Base Address */
-		gnvs->aslb = (u32)opregion;
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);
 
@@ -820,19 +814,56 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.addrh = 0x0;
 }
 
+static const char *lpc_acpi_name(const struct device *dev)
+{
+	return "LPCB";
+}
+
 static void southbridge_fill_ssdt(device_t device)
 {
 	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
 	config_t *chip = dev->chip_info;
 
 	intel_acpi_pcie_hotplug_generator(chip->pcie_hotplug_map, 8);
+	intel_acpi_gen_def_acpi_pirq(dev);
 }
 
 static void lpc_final(struct device *dev)
 {
-	if (CONFIG_HAVE_SMI_HANDLER && acpi_is_wakeup_s3()) {
-		/* Call SMM finalize() handlers before resume */
-		outb(0xcb, 0xb2);
+	u16 spi_opprefix	= SPI_OPPREFIX;
+	u16 spi_optype		= SPI_OPTYPE;
+	u32 spi_opmenu[2]	= { SPI_OPMENU_LOWER, SPI_OPMENU_UPPER };
+
+	/* Configure SPI opcode menu; devicetree may override defaults. */
+	const config_t *const config = dev->chip_info;
+	if (config && config->spi.ops[0].op) {
+		unsigned int i;
+
+		spi_opprefix	= 0;
+		spi_optype	= 0;
+		spi_opmenu[0]	= 0;
+		spi_opmenu[1]	= 0;
+		for (i = 0; i < sizeof(spi_opprefix); ++i)
+			spi_opprefix |= config->spi.opprefixes[i] << i * 8;
+		for (i = 0; i < sizeof(spi_opmenu); ++i) {
+			spi_optype |=
+				config->spi.ops[i].is_write << 2 * i |
+				config->spi.ops[i].needs_address << (2 * i + 1);
+			spi_opmenu[i / 4] |=
+				config->spi.ops[i].op << (i % 4) * 8;
+		}
+	}
+	RCBA16(0x3894) = spi_opprefix;
+	RCBA16(0x3896) = spi_optype;
+	RCBA32(0x3898) = spi_opmenu[0];
+	RCBA32(0x389c) = spi_opmenu[1];
+
+	/* Call SMM finalize() handlers before resume */
+	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+		if (IS_ENABLED(CONFIG_INTEL_CHIPSET_LOCKDOWN) ||
+		    acpi_is_wakeup_s3()) {
+			outb(APM_CNT_FINALIZE, APM_CNT);
+		}
 	}
 }
 
@@ -847,6 +878,7 @@ static struct device_operations device_ops = {
 	.write_acpi_tables      = acpi_write_hpet,
 	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.acpi_fill_ssdt_generator = southbridge_fill_ssdt,
+	.acpi_name		= lpc_acpi_name,
 	.init			= lpc_init,
 	.final			= lpc_final,
 	.enable			= pch_lpc_enable,

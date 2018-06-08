@@ -50,7 +50,7 @@
 #define _VSTRUCT_H_
 
 struct SiS_PanelDelayTbl {
- 	unsigned char timer[2];
+	unsigned char timer[2];
 };
 
 struct SiS_LCDData {
@@ -166,7 +166,7 @@ struct SiS_Ext2 {
 };
 
 struct SiS_Part2PortTbl {
- 	unsigned char  CR[12];
+	unsigned char  CR[12];
 };
 
 struct SiS_CRT1Table {

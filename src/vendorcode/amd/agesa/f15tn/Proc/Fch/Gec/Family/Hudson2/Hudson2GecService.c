@@ -67,7 +67,7 @@ FchSwInitGecBootRom (
   LocalCfgPtr = (FCH_DATA_BLOCK *) FchDataPtr;
   StdHeader = LocalCfgPtr->StdHeader;
 
-  if ( !LocalCfgPtr->Gec.PtrDynamicGecRomAddress == 0 ) {
+  if ( LocalCfgPtr->Gec.PtrDynamicGecRomAddress ) {
     GecRomAddress = LocalCfgPtr->Gec.PtrDynamicGecRomAddress;
     GecShadowRomAddress = (VOID*) (UINTN) LocalCfgPtr->Gec.GecShadowRomBase;
     FchCopyMem (GecShadowRomAddress, GecRomAddress, 0x100);

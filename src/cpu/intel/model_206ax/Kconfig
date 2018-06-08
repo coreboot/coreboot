@@ -14,13 +14,15 @@ config CPU_SPECIFIC_OPTIONS
 	select ARCH_RAMSTAGE_X86_32
 	select SMP
 	select SSE2
-	select UDELAY_LAPIC
+	select UDELAY_TSC
+	select TSC_CONSTANT_RATE
+	select TSC_MONOTONIC_TIMER
 	select SMM_TSEG
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	#select AP_IN_SIPI_WAIT
 	select TSC_SYNC_MFENCE
-	select LAPIC_MONOTONIC_TIMER
 	select CPU_INTEL_COMMON
+	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 
 config BOOTBLOCK_CPU_INIT
 	string
@@ -33,5 +35,14 @@ config XIP_ROM_SIZE
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x100000
+
+# Intel Enhanced Debug region must be 4MB
+config IED_REGION_SIZE
+	hex
+	default 0x400000
 
 endif

@@ -3,7 +3,7 @@ NAME-$(CONFIG_FILO_MASTER)=MASTER
 TAG-$(CONFIG_FILO_STABLE)=22baa6bde9339029edfafa421b3d4a7be159edad
 NAME-$(CONFIG_FILO_STABLE)=STABLE
 
-project_git_repo=https://review.coreboot.org/p/filo.git
+project_git_repo=https://review.coreboot.org/filo.git
 project_dir=filo
 
 unexport KCONFIG_AUTOHEADER

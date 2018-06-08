@@ -50,7 +50,7 @@ Device(UOH6) {
 	Name(_PRW, Package() {0x0B, 3})
 } /* end UOH5 */
 
-#if !CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE
+#if !IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE)
 /* 0:14.5 - OHCI */
 Device(UEH1) {
 	Name(_ADR, 0x00140005)
@@ -64,7 +64,7 @@ Device(XHC0) {
 	Name(_PRW, Package() {0x0B, 4})
 } /* end XHC0 */
 
-#if !CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE
+#if !IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE)
 /* 0:10.1 - XHCI 1*/
 Device(XHC1) {
 	Name(_ADR, 0x00100001)

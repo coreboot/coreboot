@@ -1,2 +1,2 @@
 config BOARD_GOOGLE_SMAUG
-	bool "Smaug"
+	bool "Smaug (Google Pixel C)"

@@ -54,7 +54,7 @@
 #ifndef __ACPI__
 #define DEBUG_PERIODIC_SMIS 0
 
-#if defined (__SMM__) && !defined(__ASSEMBLER__)
+#if defined(__SMM__) && !defined(__ASSEMBLER__)
 void intel_pch_finalize_smm(void);
 #endif
 
@@ -64,8 +64,8 @@ void intel_pch_finalize_smm(void);
 int pch_silicon_revision(void);
 int pch_silicon_type(void);
 int pch_silicon_supported(int type, int rev);
-void pch_enable(device_t dev);
-#if CONFIG_ELOG
+void pch_enable(struct device *dev);
+#if IS_ENABLED(CONFIG_ELOG)
 void pch_log_state(void);
 #endif
 #else
@@ -173,22 +173,6 @@ void early_pch_init(void);
 #define I2C_EN			(1 << 2)
 #define SMB_SMI_EN		(1 << 1)
 #define HST_EN			(1 << 0)
-
-/* SMBus I/O bits. */
-#define SMBHSTSTAT		0x0
-#define SMBHSTCTL		0x2
-#define SMBHSTCMD		0x3
-#define SMBXMITADD		0x4
-#define SMBHSTDAT0		0x5
-#define SMBHSTDAT1		0x6
-#define SMBBLKDAT		0x7
-#define SMBTRNSADD		0x9
-#define SMBSLVDATA		0xa
-#define SMLINK_PIN_CTL		0xe
-#define SMBUS_PIN_CTL		0xf
-
-#define SMBUS_TIMEOUT		(10 * 1000 * 100)
-
 
 /* Southbridge IO BARs */
 

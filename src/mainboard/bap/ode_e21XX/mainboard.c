@@ -19,15 +19,13 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <arch/acpi.h>
-#include <northbridge/amd/pi/BiosCallOuts.h>
-#include <northbridge/amd/pi/agesawrapper.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 
 /**********************************************
  * enable the dedicated function in mainboard.
  **********************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 }

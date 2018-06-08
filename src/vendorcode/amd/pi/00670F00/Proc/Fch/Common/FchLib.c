@@ -77,6 +77,7 @@ FchStall (
   }
 }
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /**< cimFchStall - Reserved  */
 VOID
 CimFchStall (
@@ -670,3 +671,4 @@ ClearAllSmiStatus (
     ACPIMMIO8 (0xfed80280 + Index) |= 0;
   }
 }
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */

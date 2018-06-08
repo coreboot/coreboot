@@ -1,0 +1,2 @@
+config BOARD_OCP_MONOLAKE
+	bool "Mono Lake"

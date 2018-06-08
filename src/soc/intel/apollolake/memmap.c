@@ -26,42 +26,45 @@
 #include <arch/io.h>
 #include <assert.h>
 #include <cbmem.h>
+#include "chip.h"
 #include <device/pci.h>
+#include <fsp/memmap.h>
+#include <intelblocks/smm.h>
 #include <soc/systemagent.h>
 #include <soc/pci_devs.h>
-#include <soc/smm.h>
-
-static uintptr_t smm_region_start(void)
-{
-	return ALIGN_DOWN(pci_read_config32(SA_DEV_ROOT, TSEG), 1*MiB);
-}
-
-static size_t smm_region_size(void)
-{
-	uintptr_t smm_end =
-		ALIGN_DOWN(pci_read_config32(SA_DEV_ROOT, BGSM), 1*MiB);
-	return smm_end - smm_region_start();
-}
 
 void *cbmem_top(void)
 {
-	return (void *)smm_region_start();
-}
+	const struct device *dev;
+	const config_t *config;
+	void *tolum = (void *)sa_get_tseg_base();
 
-void smm_region(void **start, size_t *size)
-{
-	*start = (void *)smm_region_start();
-	*size = smm_region_size();
+	if (!IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+		return tolum;
+
+	dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	assert(dev != NULL);
+	config = dev->chip_info;
+
+	if (!config)
+		die("Failed to get chip_info\n");
+
+	/* FSP allocates 2x PRMRR Size Memory for alignment */
+	if (config->sgx_enable)
+		tolum -= config->PrmrrSize * 2;
+
+	return tolum;
 }
 
 int smm_subregion(int sub, void **start, size_t *size)
 {
 	uintptr_t sub_base;
 	size_t sub_size;
+	void *smm_base;
 	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
 
-	sub_base = smm_region_start();
-	sub_size = smm_region_size();
+	smm_region_info(&smm_base, &sub_size);
+	sub_base = (uintptr_t)smm_base;
 
 	assert(sub_size > CONFIG_SMM_RESERVED_SIZE);
 

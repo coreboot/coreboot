@@ -34,7 +34,7 @@ static void i2c_alps_fill_ssdt_generator(struct device *dev)
 	i2c_generic_fill_ssdt(dev, &i2c_alps_fill_dsm, &config->generic);
 }
 
-static const char *i2c_alps_acpi_name(struct device *dev)
+static const char *i2c_alps_acpi_name(const struct device *dev)
 {
 	return "ALPS";
 }

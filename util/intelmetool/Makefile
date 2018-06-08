@@ -17,10 +17,10 @@ PROGRAM = intelmetool
 CC      ?= gcc
 INSTALL ?= /usr/bin/install
 PREFIX  ?= /usr/local
-CFLAGS  ?= -O0 -g -Wall -W -Wno-unused-parameter -Wno-unused-but-set-variable -Wno-sign-compare -Wno-unused-function
+CFLAGS  ?= -O0 -g -Wall -W -Wno-unused-parameter -Wno-sign-compare -Wno-unused-function
 LDFLAGS += -lpci -lz
 
-OBJS = intelmetool.o me.o me_status.o mmap.o
+OBJS = intelmetool.o me.o me_status.o mmap.o rcba.o msr.o
 
 OS_ARCH	= $(shell uname)
 ifeq ($(OS_ARCH), Darwin)
@@ -37,6 +37,9 @@ LDFLAGS += -L/usr/pkg/lib -Wl,-rpath-link,/usr/pkg/lib -lz -lpciutils -lpci -l$(
 endif
 
 all: pciutils dep $(PROGRAM)
+
+oldarc: CFLAGS += -DOLDARC
+oldarc: all
 
 $(PROGRAM): $(OBJS)
 	$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJS) $(LDFLAGS)
@@ -70,11 +73,12 @@ endef
 export LIBPCI_TEST
 
 pciutils:
-	@printf "\nChecking for pciutils and zlib... "
+	@printf "\nChecking for development libraries: pci and zlib... "
 	@echo "$$LIBPCI_TEST" > .test.c
 	@$(CC) $(CFLAGS) .test.c -o .test $(LDFLAGS) >/dev/null 2>&1 &&	  \
 		printf "found.\n" || ( printf "not found.\n\n"; 	  \
-		printf "Please install pciutils-devel and zlib-devel.\n"; \
+		printf "For RPM based distributions like Fedora, please install pciutils-devel and zlib-devel.\n"; \
+		printf "For DEB based distributions, please install libpci-dev and zlib1g-dev.\n"; \
 		rm -f .test.c .test; exit 1)
 	@rm -rf .test.c .test .test.dSYM
 
@@ -82,6 +86,6 @@ install: $(PROGRAM)
 	mkdir -p $(DESTDIR)$(PREFIX)/sbin
 	$(INSTALL) $(PROGRAM) $(DESTDIR)$(PREFIX)/sbin
 
-.PHONY: all clean distclean dep pciutils
+.PHONY: all clean distclean dep pciutils oldarc
 
 -include .dependencies

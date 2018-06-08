@@ -17,6 +17,7 @@
 #define EC_LENOVO_H8_H
 
 #include <stdint.h>
+#include <device/device.h>
 
 void h8_trackpoint_enable(int on);
 void h8_wlan_enable(int on);
@@ -29,6 +30,14 @@ u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len);
 void h8_usb_always_on(void);
 
 void h8_mainboard_init_dock (void);
+
+void h8_bluetooth_enable(int on);
+bool h8_bluetooth_nv_enable(void);
+bool h8_has_bdc(struct device *dev);
+
+void h8_wwan_enable(int on);
+bool h8_wwan_nv_enable(void);
+bool h8_has_wwan(struct device *dev);
 
 /* EC registers */
 #define H8_CONFIG0 0x00
@@ -71,6 +80,8 @@ void h8_mainboard_init_dock (void);
 #define H8_LED_CONTROL_SUSPEND_LED	0x07
 #define H8_LED_CONTROL_DOCK_LED1	0x08
 #define H8_LED_CONTROL_DOCK_LED2	0x09
+#define H8_LED_CONTROL_ACDC_LED		0x0c
+#define H8_LED_CONTROL_MUTE_LED		0x0e
 
 #define H8_USB_ALWAYS_ON		0x0d
 #define H8_USB_ALWAYS_ON_ENABLE		0x01

@@ -30,12 +30,13 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/common/gpio.h>
 #include "ec/google/chromeec/ec.h"
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
-#include <tpm.h>
+#include <security/tpm/tis.h>
 #include <cbfs.h>
 
 #include <southbridge/intel/bd82x6x/chip.h>
@@ -66,10 +67,8 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN4_DEC, config->gen4_dec);
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
-	u32 reg32;
-
 	/*
 	 *             GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P3IP  WLAN   INTA -> PIRQB
@@ -105,14 +104,9 @@ void rcba_config(void)
 	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
 
 	/* Enable IOAPIC (generic) */
-	RCBA16(OIC) = 0x0100;
+	RCBA16(EOIC) = 0x0100;
 	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(OIC);
-
-	/* Disable unused devices (board specific) */
-	reg32 = RCBA32(FD);
-	reg32 |= PCH_DISABLE_ALWAYS;
-	RCBA32(FD) = reg32;
+	(void) RCBA16(EOIC);
 }
 
 static uint8_t *locate_spd(void)

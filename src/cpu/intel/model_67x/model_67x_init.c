@@ -55,7 +55,7 @@ static struct device_operations cpu_dev_ops = {
  * Intel Pentium III Processor Specification Update
  * http://download.intel.com/design/intarch/specupdt/24445358.pdf
  */
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x0671 },
 	{ X86_VENDOR_INTEL, 0x0672 }, /* PIII, kB0 */
 	{ X86_VENDOR_INTEL, 0x0673 }, /* PIII, kC0 */

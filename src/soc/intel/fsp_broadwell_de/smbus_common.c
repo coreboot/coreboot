@@ -67,7 +67,7 @@ int do_smbus_read_byte(unsigned smbus_base, unsigned device, unsigned address)
 	/* Setup transaction */
 	/* Disable interrupts */
 	outb(inb(smbus_base + SMBHSTCTL) & (~1), smbus_base + SMBHSTCTL);
-	/* Set the device I'm talking too */
+	/* Set the device I'm talking to */
 	outb(((device & 0x7f) << 1) | 1, smbus_base + SMBXMITADD);
 	/* Set the command/address... */
 	outb(address & 0xff, smbus_base + SMBHSTCMD);
@@ -113,7 +113,7 @@ int do_smbus_write_byte(unsigned smbus_base, unsigned device,
 	/* Setup transaction */
 	/* Disable interrupts */
 	outb(inb(smbus_base + SMBHSTCTL) & (~1), smbus_base + SMBHSTCTL);
-	/* Set the device I'm talking too */
+	/* Set the device I'm talking to */
 	outb(((device & 0x7f) << 1) & ~0x01, smbus_base + SMBXMITADD);
 	/* Set the command/address... */
 	outb(address & 0xff, smbus_base + SMBHSTCMD);

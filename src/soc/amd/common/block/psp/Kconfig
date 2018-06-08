@@ -1,0 +1,18 @@
+config SOC_AMD_COMMON_BLOCK_PSP
+	bool
+	default n
+	help
+	  This option builds in the Platform Security Processor initialization
+	  functions.
+
+config SOC_AMD_PSP_SELECTABLE_SMU_FW
+	bool
+	default n
+	help
+	  Some PSP implementations allow storing SMU firmware into cbfs and
+	  calling the PSP to load the blobs at the proper time.
+
+	  The soc/<codename> should select this if its PSP supports the feature
+	  and each mainboard can choose to select an appropriate fanless or
+	  fanned set of blobs.  Ask your AMD representative whether your APU
+	  is considered fanless.

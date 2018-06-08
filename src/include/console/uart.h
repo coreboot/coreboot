@@ -23,10 +23,16 @@
  * baudrate generator. */
 unsigned int uart_platform_refclk(void);
 
-/* Return the baudrate determined from option_table, or when that is
- * not used, CONFIG_TTYS0_BAUD.
- */
-unsigned int default_baudrate(void);
+#if IS_ENABLED(CONFIG_UART_OVERRIDE_BAUDRATE)
+/* Return the baudrate, define this in your platform when using the above
+   configuration. */
+unsigned int get_uart_baudrate(void);
+#else
+static inline unsigned int get_uart_baudrate(void)
+{
+	return CONFIG_TTYS0_BAUD;
+}
+#endif
 
 /* Returns the divisor value for a given baudrate.
  * The formula to satisfy is:
@@ -39,6 +45,9 @@ unsigned int uart_baudrate_divisor(unsigned int baudrate,
  * on the input clock
  */
 unsigned int uart_input_clock_divider(void);
+
+/* Bitbang out one byte on an 8n1 UART through the output function set_tx(). */
+void uart_bitbang_tx_byte(unsigned char data, void (*set_tx)(int line_state));
 
 void uart_init(int idx);
 void uart_tx_byte(int idx, unsigned char data);
@@ -55,9 +64,9 @@ static inline void *uart_platform_baseptr(int idx)
 
 void oxford_remap(unsigned int new_base);
 
-#define __CONSOLE_SERIAL_ENABLE__	(CONFIG_CONSOLE_SERIAL && \
+#define __CONSOLE_SERIAL_ENABLE__	(IS_ENABLED(CONFIG_CONSOLE_SERIAL) && \
 	(ENV_BOOTBLOCK || ENV_ROMSTAGE || ENV_RAMSTAGE || ENV_VERSTAGE || \
-	ENV_POSTCAR || (ENV_SMM && CONFIG_DEBUG_SMI)))
+	ENV_POSTCAR || (ENV_SMM && IS_ENABLED(CONFIG_DEBUG_SMI))))
 
 #if __CONSOLE_SERIAL_ENABLE__
 static inline void __uart_init(void)
@@ -78,7 +87,7 @@ static inline void __uart_tx_byte(u8 data)	{}
 static inline void __uart_tx_flush(void)	{}
 #endif
 
-#if CONFIG_GDB_STUB && (ENV_ROMSTAGE || ENV_RAMSTAGE)
+#if IS_ENABLED(CONFIG_GDB_STUB) && (ENV_ROMSTAGE || ENV_RAMSTAGE)
 #define CONFIG_UART_FOR_GDB	CONFIG_UART_FOR_CONSOLE
 static inline void __gdb_hw_init(void)	{ uart_init(CONFIG_UART_FOR_GDB); }
 static inline void __gdb_tx_byte(u8 data)

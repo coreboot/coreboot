@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <console/usb.h>
 #include <bootmode.h>
@@ -24,13 +25,13 @@
 #include <ip_checksum.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
-#include <northbridge/intel/common/mrc_cache.h>
+#include <mrc_cache.h>
 #include <halt.h>
 #include <timestamp.h>
 #include "raminit.h"
 #include "pei_data.h"
 #include "sandybridge.h"
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 /* Management Engine is in the southbridge */
 #include "southbridge/intel/bd82x6x/me.h"
@@ -39,7 +40,7 @@
  * MRC scrambler seed offsets should be reserved in
  * mainboard cmos.layout and not covered by checksum.
  */
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 #include "option_table.h"
 #define CMOS_OFFSET_MRC_SEED     (CMOS_VSTART_mrc_scrambler_seed >> 3)
 #define CMOS_OFFSET_MRC_SEED_S3  (CMOS_VSTART_mrc_scrambler_seed_s3 >> 3)
@@ -50,12 +51,16 @@
 #define CMOS_OFFSET_MRC_SEED_CHK 160
 #endif
 
+#define MRC_CACHE_VERSION 0
+
 void save_mrc_data(struct pei_data *pei_data)
 {
 	u16 c1, c2, checksum;
 
 	/* Save the MRC S3 restore data to cbmem */
-	store_current_mrc_cache(pei_data->mrc_output, pei_data->mrc_output_len);
+	mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION,
+			pei_data->mrc_output,
+			pei_data->mrc_output_len);
 
 	/* Save the MRC seed values to CMOS */
 	cmos_write32(CMOS_OFFSET_MRC_SEED, pei_data->scrambler_seed);
@@ -79,7 +84,7 @@ void save_mrc_data(struct pei_data *pei_data)
 
 static void prepare_mrc_cache(struct pei_data *pei_data)
 {
-	struct mrc_data_container *mrc_cache;
+	struct region_device rdev;
 	u16 c1, c2, checksum, seed_checksum;
 
 	// preset just in case there is an error
@@ -112,17 +117,17 @@ static void prepare_mrc_cache(struct pei_data *pei_data)
 		return;
 	}
 
-	if ((mrc_cache = find_current_mrc_cache()) == NULL) {
+	if (mrc_cache_get_current(MRC_TRAINING_DATA, MRC_CACHE_VERSION,
+					&rdev)) {
 		/* error message printed in find_current_mrc_cache */
 		return;
 	}
 
-	pei_data->mrc_input = mrc_cache->mrc_data;
-	pei_data->mrc_input_len = mrc_cache->mrc_data_size;
+	pei_data->mrc_input = rdev_mmap_full(&rdev);
+	pei_data->mrc_input_len = region_device_sz(&rdev);
 
-	printk(BIOS_DEBUG, "%s: at %p, size %x checksum %04x\n",
-	       __func__, pei_data->mrc_input,
-	       pei_data->mrc_input_len, mrc_cache->mrc_checksum);
+	printk(BIOS_DEBUG, "%s: at %p, size %x\n",
+	       __func__, pei_data->mrc_input, pei_data->mrc_input_len);
 }
 
 static const char* ecc_decoder[] = {
@@ -183,7 +188,7 @@ static void report_memory_config(void)
 void sdram_initialize(struct pei_data *pei_data)
 {
 	struct sys_info sysinfo;
-	int (*entry) (struct pei_data *pei_data) __attribute__ ((regparm(1)));
+	int (*entry) (struct pei_data *pei_data) __attribute__((regparm(1)));
 
 	report_platform_info();
 
@@ -236,7 +241,7 @@ void sdram_initialize(struct pei_data *pei_data)
 		die("UEFI PEI System Agent not found.\n");
 	}
 
-#if CONFIG_USBDEBUG_IN_ROMSTAGE
+#if IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE)
 	/* mrc.bin reconfigures USB, so reinit it to have debug */
 	usbdebug_init();
 #endif

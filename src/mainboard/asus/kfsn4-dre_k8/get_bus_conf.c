@@ -24,7 +24,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 #include <cpu/amd/multicore.h>
 #endif
 #include <stdlib.h>
@@ -58,7 +58,7 @@ static unsigned get_bus_conf_done = 0;
 void get_bus_conf(void)
 {
 	unsigned apicid_base, sbdn;
-	device_t dev;
+	struct device *dev;
 	int i;
 
 	if (get_bus_conf_done == 1)
@@ -107,10 +107,10 @@ void get_bus_conf(void)
 
 	if (IS_ENABLED(CONFIG_LOGICAL_CPUS)) {
 		apicid_base = get_apicid_base(1);
-		printk(BIOS_SPEW, "CONFIG_LOGICAL_CPUS==1: apicid_base: %08x\n", apicid_base);
+		printk(BIOS_SPEW, "CONFIG_LOGICAL_CPUS == 1: apicid_base: %08x\n", apicid_base);
 	} else {
 		apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
-		printk(BIOS_SPEW, "CONFIG_LOGICAL_CPUS==0: apicid_base: %08x\n", apicid_base);
+		printk(BIOS_SPEW, "CONFIG_LOGICAL_CPUS == 0: apicid_base: %08x\n", apicid_base);
 	}
 	apicid_ck804 = apicid_base + 0;
 }

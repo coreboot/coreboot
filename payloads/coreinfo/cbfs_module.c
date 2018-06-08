@@ -28,7 +28,7 @@
 #define COMPONENT_BOOTBLOCK	0x01
 #define COMPONENT_CBFSHEADER	0x02
 #define COMPONENT_STAGE		0x10
-#define COMPONENT_PAYLOAD	0x20
+#define COMPONENT_SELF		0x20
 #define COMPONENT_OPTIONROM	0x30
 #define COMPONENT_RAW		0x50
 #define COMPONENT_MICROCODE	0x53
@@ -44,7 +44,7 @@ struct cbheader {
 	u32 offset;
 	u32 architecture;
 	u32 pad[1];
-} __attribute__ ((packed));
+} __packed;
 
 struct cbfile {
 	u64 magic;
@@ -53,7 +53,7 @@ struct cbfile {
 	u32 checksum;
 	u32 offset;
 	char filename[0];
-} __attribute__ ((packed));
+} __packed;
 
 static int filecount = 0, selected = 0, start_row = 0;
 static char **filenames;
@@ -187,8 +187,8 @@ static int cbfs_module_redraw(WINDOW * win)
 	case COMPONENT_STAGE:
 		mvwprintw(win, row++, 38, "stage");
 		break;
-	case COMPONENT_PAYLOAD:
-		mvwprintw(win, row++, 38, "payload");
+	case COMPONENT_SELF:
+		mvwprintw(win, row++, 38, "simple ELF");
 		break;
 	case COMPONENT_OPTIONROM:
 		mvwprintw(win, row++, 38, "optionrom");

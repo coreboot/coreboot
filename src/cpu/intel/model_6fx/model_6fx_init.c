@@ -94,7 +94,7 @@ static void configure_misc(void)
 	wrmsr(IA32_MISC_ENABLE, msr);
 
 	// set maximum CPU speed
-	msr = rdmsr(IA32_PERF_STS);
+	msr = rdmsr(IA32_PERF_STATUS);
 	int busratio_max = (msr.hi >> (40-32)) & 0x1f;
 
 	msr = rdmsr(IA32_PLATFORM_ID);
@@ -170,7 +170,7 @@ static struct device_operations cpu_dev_ops = {
 	.init     = model_6fx_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x06f0 }, /* Intel Core 2 Solo/Core Duo */
 	{ X86_VENDOR_INTEL, 0x06f2 }, /* Intel Core 2 Solo/Core Duo */
 	{ X86_VENDOR_INTEL, 0x06f6 }, /* Intel Core 2 Solo/Core Duo */

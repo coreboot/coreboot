@@ -23,7 +23,9 @@ fi
 
 # If coreboot is in a git repo, use git grep to check as it will ignore any
 # files in the tree that aren't checked into git
-if [ -n "$(command -v git)" ] && [ -e ".git" ]; then
+if [ -n "$(command -v git)" ] && \
+	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
+then
 	env perl util/lint/kconfig_lint
 else
 	env perl util/lint/kconfig_lint --no_git_grep

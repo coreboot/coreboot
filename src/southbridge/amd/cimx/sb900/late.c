@@ -14,7 +14,7 @@
  */
 
 
-#include <device/device.h>	/* device_t */
+#include <device/device.h>
 #include <device/pci.h>		/* device_operations */
 #include <device/pci_ids.h>
 #include <device/smbus.h>	/* smbus_bus_operations */
@@ -27,14 +27,6 @@
 #include "lpc.h"		/* lpc_read_resources */
 #include "SbPlatform.h" 	/* Platform Specific Definitions */
 #include "chip.h" 		/* struct southbridge_amd_cimx_sb900_config */
-
-
-/*implement in mainboard.c*/
-//void set_pcie_assert(void);
-//void set_pcie_deassert(void);
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
 
 #ifndef _RAMSTAGE_
 #define _RAMSTAGE_
@@ -60,13 +52,9 @@ u32 sb900_callout_entry(u32 func, u32 data, void* config)
 	printk(BIOS_DEBUG, "SB900 - Late.c - sb900_callout_entry - Start.\n");
 	switch (func) {
 	case CB_SBGPP_RESET_ASSERT:
-		//set_pcie_assert();
-//-		set_pcie_reset();
 		break;
 
 	case CB_SBGPP_RESET_DEASSERT:
-		//set_pcie_deassert();
-//-		set_pcie_dereset();
 		break;
 
 //-	case IMC_FIRMWARE_FAIL:
@@ -85,7 +73,7 @@ static struct pci_operations lops_pci = {
 	.set_subsystem = 0,
 };
 
-static void lpc_enable_resources(device_t dev)
+static void lpc_enable_resources(struct device *dev)
 {
 
 	printk(BIOS_DEBUG, "SB900 - Late.c - lpc_enable_resources - Start.\n");
@@ -94,7 +82,7 @@ static void lpc_enable_resources(device_t dev)
 	printk(BIOS_DEBUG, "SB900 - Late.c - lpc_enable_resources - End.\n");
 }
 
-static void lpc_init(device_t dev)
+static void lpc_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "SB900 - Late.c - lpc_init - Start.\n");
 	/* SB Configure HPET base and enable bit */
@@ -278,7 +266,7 @@ static const struct pci_driver gec_driver __pci_driver = {
 };
 
 
-static void pcie_init(device_t dev)
+static void pcie_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "SB900 - Late.c - pcie_init - Start.\n");
 //-	sbPcieGppLateInit(sb_config);
@@ -345,7 +333,7 @@ static const struct pci_driver PORTD_driver __pci_driver = {
 /**
  * @brief SB Cimx entry point sbBeforePciInit wrapper
  */
-static void sb900_enable(device_t dev)
+static void sb900_enable(struct device *dev)
 {
 	u8 gpp_port = 0;
 	struct southbridge_amd_cimx_sb900_config *sb_chip =

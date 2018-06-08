@@ -15,31 +15,23 @@
 
 config CPU_AMD_AGESA
 	bool
-	default y if CPU_AMD_AGESA_FAMILY10
 	default y if CPU_AMD_AGESA_FAMILY12
 	default y if CPU_AMD_AGESA_FAMILY14
-	default y if CPU_AMD_AGESA_FAMILY15
 	default y if CPU_AMD_AGESA_FAMILY15_TN
-	default y if CPU_AMD_AGESA_FAMILY15_RL
 	default y if CPU_AMD_AGESA_FAMILY16_KB
 	default n
 	select ARCH_BOOTBLOCK_X86_32
 	select ARCH_VERSTAGE_X86_32
 	select ARCH_ROMSTAGE_X86_32
 	select ARCH_RAMSTAGE_X86_32
+	select DRIVERS_AMD_PI
 	select TSC_SYNC_LFENCE
 	select UDELAY_LAPIC
 	select LAPIC_MONOTONIC_TIMER
 	select SPI_FLASH if HAVE_ACPI_RESUME
+	select POSTCAR_STAGE
 
 if CPU_AMD_AGESA
-
-config AGESA_LEGACY
-	def_bool n
-
-config AGESA_NO_LEGACY
-	bool
-	default !AGESA_LEGACY
 
 config XIP_ROM_SIZE
 	hex
@@ -68,6 +60,14 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x10000
 
+config ENABLE_MRC_CACHE
+	bool "Use cached memory configuration"
+	default n
+	select SPI_FLASH
+	help
+	  Try to restore memory training results
+	  from non-volatile memory.
+
 config S3_DATA_POS
 	hex
 	default 0xFFFF0000
@@ -78,10 +78,8 @@ config S3_DATA_SIZE
 
 endif # CPU_AMD_AGESA
 
-source src/cpu/amd/agesa/family10/Kconfig
 source src/cpu/amd/agesa/family12/Kconfig
 source src/cpu/amd/agesa/family14/Kconfig
 source src/cpu/amd/agesa/family15/Kconfig
 source src/cpu/amd/agesa/family15tn/Kconfig
-source src/cpu/amd/agesa/family15rl/Kconfig
 source src/cpu/amd/agesa/family16kb/Kconfig

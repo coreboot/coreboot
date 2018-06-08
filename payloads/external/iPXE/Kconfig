@@ -21,7 +21,7 @@ menu "PXE Options"
 
 choice
 	prompt "PXE ROM to use"
-	default BUILD_IPXE
+	default PXE_ROM
 
 config PXE_ROM
 	bool "Add an existing PXE ROM image"
@@ -72,10 +72,7 @@ config PXE_SERIAL_CONSOLE
 
 config PXE_ROM_ID
 	string "network card PCI IDs"
-	default "10ec,8168" if BOARD_PCENGINES_APU1
-	default "8086,157b" if BOARD_PCENGINES_APU2
- 	default "8086,1539" if BOARD_PCENGINES_APU3 || BOARD_PCENGINES_APU4 || \
-	BOARD_PCENGINES_APU5
+	default "10ec,8168"
 	help
 	  The comma-separated PCI vendor and device ID that would associate
 	  your PXE ROM to your network card.
@@ -90,13 +87,13 @@ config PXE_ROM_ID
 
 config PXE_CUSTOM_GENERAL_H
 	string "iPXE custom general.h file"
-	default "../../../../apu2-documentation/ipxe/general.h"
+	default "general.h"
 	help
 	  This option allows user to customize feature set built-in into iPXE ROM.
 
 config PXE_CUSTOM_BOOTMENU_FILE
 	string "iPXE custom menu.ipxe file"
-	default "../../../../apu2-documentation/ipxe/menu.ipxe"
+	default "menu.ipxe"
 	help
 	  This option allows user to customize boot menu for iPXE ROM.
 

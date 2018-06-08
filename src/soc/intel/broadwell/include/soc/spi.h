@@ -101,6 +101,4 @@
 #define  SPIBAR_SSFC_DATA           (1 << 14)
 #define  SPIBAR_SSFC_GO             (1 << 1)
 
-int spi_flash_protect(u32 start, u32 size);
-
 #endif

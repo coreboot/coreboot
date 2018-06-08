@@ -7,7 +7,7 @@
 void qemu_debugcon_init(void);
 void qemu_debugcon_tx_byte(unsigned char data);
 
-#if CONFIG_CONSOLE_QEMU_DEBUGCON && (ENV_ROMSTAGE || ENV_RAMSTAGE)
+#if IS_ENABLED(CONFIG_CONSOLE_QEMU_DEBUGCON) && (ENV_ROMSTAGE || ENV_RAMSTAGE)
 static inline void __qemu_debugcon_init(void)	{ qemu_debugcon_init(); }
 static inline void __qemu_debugcon_tx_byte(u8 data)
 {

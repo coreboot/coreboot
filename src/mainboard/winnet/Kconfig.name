@@ -1,0 +1,4 @@
+config VENDOR_WINNET
+	bool "WinNET"
+	help
+	  WinNET boards. Used in various thin client appliances.

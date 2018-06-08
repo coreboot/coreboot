@@ -52,7 +52,7 @@
 
 /* Battery Device Notification Values */
 #define	NOTIFY_BAT_STATUSCHG	0x80
-#define	NOTIFY_BAT_INFOCHG  	0x81
+#define	NOTIFY_BAT_INFOCHG	0x81
 #define	NOTIFY_BAT_MAINTDATA    0x82
 
 /* Power Source Object Notification Values */
@@ -62,7 +62,7 @@
 #define	NOTIFY_TZ_STATUSCHG	    0x80
 #define	NOTIFY_TZ_TRIPPTCHG	    0x81
 #define	NOTIFY_TZ_DEVLISTCHG	0x82
-#define	NOTIFY_TZ_RELTBLCHG 	0x83
+#define	NOTIFY_TZ_RELTBLCHG	0x83
 
 /* Power Button Notification Values */
 #define	NOTIFY_POWER_BUTTON		0x80
@@ -74,14 +74,14 @@
 #define	NOTIFY_LID_STATUSCHG	0x80
 
 /* Processor Device Notification Values */
-#define	NOTIFY_CPU_PPCCHG   	0x80
-#define	NOTIFY_CPU_CSTATECHG  	0x81
+#define	NOTIFY_CPU_PPCCHG	0x80
+#define	NOTIFY_CPU_CSTATECHG	0x81
 #define	NOTIFY_CPU_THROTLCHG    0x82
 
 /* User Presence Device Notification Values */
 #define	NOTIFY_USR_PRESNCECHG	0x80
 
 /* Battery Device Notification Values */
-#define	NOTIFY_ALS_ILLUMCHG 	0x80
-#define	NOTIFY_ALS_COLORTMPCHG 	0x81
+#define	NOTIFY_ALS_ILLUMCHG	0x80
+#define	NOTIFY_ALS_COLORTMPCHG	0x81
 #define	NOTIFY_ALS_RESPCHG      0x82

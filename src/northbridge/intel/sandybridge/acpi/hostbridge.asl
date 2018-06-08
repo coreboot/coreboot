@@ -37,7 +37,8 @@ Device (MCHC)
 		MHEN,	 1,	// Enable
 		,	13,	//
 		MHBR,	22,	// MCHBAR
-
+		Offset (0x54),
+		DVEN,	32,
 		Offset (0x60),	// PCIe BAR
 		PXEN,	 1,	// Enable
 		PXSZ,	 2,	// BAR size

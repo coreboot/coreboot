@@ -44,7 +44,7 @@
 #include <cbmem.h>
 #include "spd.h"
 #include <reset.h>
-#include "southbridge/amd/rs780/early_setup.c"
+#include <southbridge/amd/rs780/rs780.h>
 #include "southbridge/amd/sb800/early_setup.c"
 
 #include "resourcemap.c"
@@ -100,7 +100,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	enable_rs780_dev8();
 	sb800_clk_output_48Mhz();
 
-	w83627hf_set_clksel_48(CLK_DEV);
+	winbond_set_clksel_48(CLK_DEV);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();
@@ -144,7 +144,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 */
 	wait_all_core0_started();
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	/* Core0 on each node is configured. Now setup any additional cores. */
 	printk(BIOS_DEBUG, "start_other_cores()\n");
 	start_other_cores(bsp_apicid);
@@ -158,7 +158,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	rs780_early_setup();
 	sb800_early_setup();
 
-#if CONFIG_SET_FIDVID
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 	msr = rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 	post_code(0x39);
@@ -184,7 +184,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (!warm_reset_detect(0)) {
 		printk(BIOS_INFO, "...WARM RESET...\n\n\n");
 		soft_reset();
-		die("After soft_reset_x - shouldn't see this message!!!\n");
+		die("After soft_reset - shouldn't see this message!!!\n");
 	}
 
 	post_code(0x3B);
@@ -205,12 +205,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	amdmct_cbmem_store_info(sysinfo);
 
-	rs780_before_pci_init();
 	sb800_before_pci_init();
 
 	post_code(0x42);
-	post_cache_as_ram();	/* BSP switch stack to ram, copy then execute LB. */
-	post_code(0x43);	/* Should never see this post code. */
 }
 
 /**

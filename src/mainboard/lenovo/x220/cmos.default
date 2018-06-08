@@ -1,5 +1,4 @@
 boot_option=Fallback
-baud_rate=115200
 debug_level=Spew
 power_on_after_fail=Disable
 nmi=Enable
@@ -14,4 +13,3 @@ usb_always_on=Disable
 fn_ctrl_swap=Disable
 sticky_fn=Disable
 trackpoint=Enable
-hyper_threading=Enable

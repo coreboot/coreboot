@@ -31,6 +31,7 @@
 #define _PEI_WRAPPER_H_
 
 #include <types.h>
+#include <compiler.h>
 
 #define PEI_VERSION 22
 
@@ -53,7 +54,7 @@ struct pei_data {
 	/* Data from MRC that should be saved to flash */
 	void *data_to_save;
 	int data_to_save_size;
-} __attribute__((packed));
+} __packed;
 
 typedef struct pei_data PEI_DATA;
 

@@ -14,6 +14,7 @@
  */
 
 #include <arch/io.h>
+#include <compiler.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/funitcfg.h>
@@ -175,7 +176,7 @@ void soc_configure_funits(const struct funit_cfg * const entries, size_t num)
 	}
 }
 
-void __attribute__((weak)) usb_setup_utmip(void *usb_base)
+void __weak usb_setup_utmip(void *usb_base)
 {
 	/* default empty implementation required if usb.c is not included */
 	printk(BIOS_ERR, "USB setup is not supported in current stage\n");

@@ -24,6 +24,9 @@ REMOTE=1
 FATAL=0
 NONFATAL=1
 
+# Used if cbmem is not in default $PATH, e.g. not installed or when using `sudo`
+CBMEM_PATH=""
+
 # test a command
 #
 # $1: 0 ($LOCAL) to run command locally,
@@ -143,8 +146,7 @@ get_serial_bootlog () {
 
 	echo
 	echo "Waiting to receive boot log from $TTY"
-	echo "Press [Enter] when the boot is complete and the"
-	echo "system is ready for ssh to get the dmesg log."
+	echo "Press [Enter] when the boot is complete."
 	echo
 
 	if [ $tput_not_available -eq 0 ]; then
@@ -172,6 +174,8 @@ show_help() {
 	${0} <option>
 
 Options
+    -c, --cbmem
+        Path to cbmem on device under test (DUT).
     -C, --clobber
         Clobber temporary output when finished. Useful for debugging.
     -h, --help
@@ -199,16 +203,20 @@ if [ $? -ne 4 ]; then
 	exit $EXIT_FAILURE
 fi
 
-LONGOPTS="clobber,help,image:,remote-host:,upload-results"
+LONGOPTS="cbmem:,clobber,help,image:,remote-host:,upload-results"
 LONGOPTS="${LONGOPTS},serial-device:,serial-speed:"
 LONGOPTS="${LONGOPTS},ssh-port:"
 
-ARGS=$(getopt -o Chi:r:s:S:u -l "$LONGOPTS" -n "$0" -- "$@");
+ARGS=$(getopt -o c:Chi:r:s:S:u -l "$LONGOPTS" -n "$0" -- "$@");
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 eval set -- "$ARGS"
 while true ; do
 	case "$1" in
 		# generic options
+		-c|--cbmem)
+			shift
+			CBMEM_PATH="$1"
+			;;
 		-C|--clobber)
 			CLOBBER_OUTPUT=1
 			;;
@@ -349,19 +357,47 @@ printf "Upstream revision: %s\n" "$($getrevision -u)" >> "${tmpdir}/${results}/r
 printf "Upstream URL: %s\n" "$($getrevision -U)" >> "${tmpdir}/${results}/revision.txt"
 printf "Timestamp: %s\n" "$timestamp" >> "${tmpdir}/${results}/revision.txt"
 
-if [ -z "$SERIAL_DEVICE" ]; then
-	echo "Verifying that CBMEM is available on remote device"
-	test_cmd $REMOTE "cbmem"
-	echo "Getting coreboot boot log"
-	cmd $REMOTE "cbmem -c" "${tmpdir}/${results}/coreboot_console.txt"
-	echo "Getting timestamp data"
-	cmd_nonfatal $REMOTE "cbmem -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
+if [ -n "$CBMEM_PATH" ]; then
+	cbmem_cmd="$CBMEM_PATH"
 else
-	get_serial_bootlog "$SERIAL_DEVICE" "$SERIAL_PORT_SPEED" "${tmpdir}/${results}/coreboot_console.txt"
+	cbmem_cmd="cbmem"
 fi
 
-echo "Getting remote dmesg"
-cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"
+if [ -n "$SERIAL_DEVICE" ]; then
+	get_serial_bootlog "$SERIAL_DEVICE" "$SERIAL_PORT_SPEED" "${tmpdir}/${results}/coreboot_console.txt"
+elif [ -n "$REMOTE_HOST" ]; then
+	echo "Verifying that CBMEM is available on remote device"
+	test_cmd $REMOTE "$cbmem_cmd"
+	echo "Getting coreboot boot log"
+	cmd $REMOTE "$cbmem_cmd -c" "${tmpdir}/${results}/coreboot_console.txt"
+	echo "Getting timestamp data"
+	cmd_nonfatal $REMOTE "$cbmem_cmd -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
+
+	echo "Getting remote dmesg"
+	cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"
+else
+	echo "Verifying that CBMEM is available"
+	if [ $(id -u) -ne 0 ]; then
+		command -v "$cbmem_cmd" >/dev/null
+		if [ $? -ne 0 ]; then
+			echo "Failed to run $cbmem_cmd. Check \$PATH or" \
+			"use -c to specify path to cbmem binary."
+			exit $EXIT_FAILURE
+		else
+			cbmem_cmd="sudo $cbmem_cmd"
+		fi
+	else
+		test_cmd $LOCAL "$cbmem_cmd"
+	fi
+
+	echo "Getting coreboot boot log"
+	cmd $LOCAL "$cbmem_cmd -c" "${tmpdir}/${results}/coreboot_console.txt"
+	echo "Getting timestamp data"
+	cmd_nonfatal $LOCAL "$cbmem_cmd -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
+
+	echo "Getting local dmesg"
+	cmd $LOCAL dmesg "${tmpdir}/${results}/kernel_log.txt"
+fi
 
 #
 # Finish up.
@@ -426,8 +462,13 @@ cd "$coreboot_dir"
 if [ $CLOBBER_OUTPUT -eq 1 ]; then
 	rm -rf "${tmpdir}"
 else
-	echo
-	echo "output files are in ${tmpdir}/${results}"
+	if [ $UPLOAD_RESULTS -eq 1 ]; then
+		echo
+		echo "output files are in $(dirname $0)/board-status/${mainboard_dir}/${tagged_version}/${timestamp}"
+	else
+		echo
+		echo "output files are in ${tmpdir}/${results}"
+	fi
 fi
 
 exit $EXIT_SUCCESS

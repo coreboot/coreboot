@@ -23,6 +23,7 @@
 
 #include "memmap.h"
 #include <types.h>
+#include <compiler.h>
 
 /* CPU_AHB_APB0 config values */
 #define CPU_CLK_SRC_MASK		(3 << 16)
@@ -51,7 +52,7 @@
 #define  APB1_CLK_SRC_32K		(2 << 24)
 #define APB1_RAT_N_MASK			(3 << 16)
 #define  APB1_RAT_N(m)			(((m) & 0x3) << 16)
-#define APB1_RAT_M_MASK			0x1f << 0)
+#define APB1_RAT_M_MASK			(0x1f << 0)
 #define  APB1_RAT_M(n)			(((n) & 0x1f) << 0)
 
 /* PLL5_CFG values */
@@ -267,7 +268,7 @@ struct a10_ccm {
 	u32 mali_clk_cfg;	/* 0x154 */
 	u8 res7[0x4];
 	u32 mbus_clk_cfg;	/* 0x15c */
-} __attribute__ ((packed));
+} __packed;
 
 void a1x_periph_clock_enable(enum a1x_clken periph);
 void a1x_periph_clock_disable(enum a1x_clken periph);

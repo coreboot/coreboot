@@ -26,5 +26,4 @@ enum {
 	UNCACHED_MEM	= MA_MEM | MA_NS | MA_RW | MA_MEM_NC,
 };
 
-void rockchip_mmu_init(void);
 #endif

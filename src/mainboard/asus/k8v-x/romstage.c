@@ -37,6 +37,7 @@ unsigned int get_sbdn(unsigned bus);
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83697hf/w83697hf.h>
 #include <southbridge/via/vt8237r/vt8237r.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include <spd.h>
@@ -53,7 +54,7 @@ int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include <reset.h>
-void soft_reset(void)
+void do_soft_reset(void)
 {
 	uint8_t tmp;
 
@@ -128,7 +129,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	printk(BIOS_INFO, "now booting... Core0 started\n");
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	/* It is said that we should start core1 after all core0 launched. */
 	start_other_cores();
 	wait_all_other_cores_started(bsp_apicid);
@@ -178,5 +179,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	smbus_write_byte(0x4a, 0x03, 0x04 | mask);
 
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
-	post_cache_as_ram();
 }

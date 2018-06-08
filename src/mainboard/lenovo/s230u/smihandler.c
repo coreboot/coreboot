@@ -25,6 +25,7 @@
 #include <ec/acpi/ec.h>
 #include <ec/compal/ene932/ec.h>
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/common/pmutil.h>
 
 #define GPE_PALMDET1	2
 #define GPE_PALMDET2	4

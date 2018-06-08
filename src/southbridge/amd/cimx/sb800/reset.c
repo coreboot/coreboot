@@ -40,7 +40,7 @@ static inline void set_bios_reset(void)
 	}
 }
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	set_bios_reset();
 	/* Try rebooting through port 0xcf9 */
@@ -50,7 +50,7 @@ void hard_reset(void)
 }
 
 //SbReset();
-void soft_reset(void)
+void do_soft_reset(void)
 {
 	set_bios_reset();
 	/* link reset */

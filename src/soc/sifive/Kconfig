@@ -1,0 +1,2 @@
+# Load all chipsets
+source "src/soc/sifive/*/Kconfig"

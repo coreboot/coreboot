@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-/* South Bridge */
+/* System Bus */
 /*  _SB.PCI0 */
 
 /* Operating System Capabilities Method */

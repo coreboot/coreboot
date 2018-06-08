@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <device/pciexp.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #include "pch.h"
 #include <southbridge/intel/common/gpio.h>
 
@@ -193,6 +194,8 @@ static void pcie_enable_clock_gating(void)
 		rp = root_port_number(dev);
 
 		if (!dev->enabled) {
+			static const uint32_t high_bit = (1UL << 31);
+
 			/* Configure shared resource clock gating. */
 			if (rp == 1 || rp == 5 || (rp == 6 && is_lp))
 				pci_update_config8(dev, 0xe1, 0xc3, 0x3c);
@@ -214,7 +217,7 @@ static void pcie_enable_clock_gating(void)
 			}
 
 			pci_update_config8(dev, 0xe2, ~(3 << 4), (3 << 4));
-			pci_update_config32(dev, 0x420, ~(1 << 31), (1 << 31));
+			pci_update_config32(dev, 0x420, ~high_bit, high_bit);
 
 			/* Per-Port CLKREQ# handling. */
 			if (is_lp && gpio_is_native(18 + rp - 1))
@@ -608,7 +611,7 @@ static void pch_pcie_early(struct device *dev)
 	pci_update_config32(dev, 0x64, ~(1 << 11), (1 << 11));
 	pci_update_config32(dev, 0x68, ~(1 << 10), (1 << 10));
 
-	pci_update_config32(dev, 0x318, ~(0xffff << 16), (0x1414 << 16));
+	pci_update_config32(dev, 0x318, ~(0xffffUL << 16), (0x1414UL << 16));
 
 	/* Set L1 exit latency in LCAP register. */
 	if (!do_aspm && (pci_read_config8(dev, 0xf5) & 0x1))

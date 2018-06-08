@@ -17,7 +17,7 @@
 #include <console/cbmem_console.h>
 #include <console/console.h>
 #include <arch/acpi.h>
-#include <tpm.h>
+#include <security/tpm/tis.h>
 #include <reset.h>
 
 //#define EXTRA_LOGGING
@@ -215,7 +215,6 @@ void init_tpm(int s3resume)
 	if (tis_open())
 		return;
 
-
 	if (s3resume) {
 		/* S3 Resume */
 		printk(BIOS_SPEW, "TPM: Resume\n");
@@ -226,6 +225,7 @@ void init_tpm(int s3resume)
 			 * in S3, so it's already initialized.
 			 */
 			printk(BIOS_DEBUG, "TPM: Already initialized.\n");
+			tis_close();
 			return;
 		}
 	} else {
@@ -233,6 +233,8 @@ void init_tpm(int s3resume)
 		result = TlclSendReceive(tpm_startup_cmd.buffer,
 					response, sizeof(response));
 	}
+
+	tis_close();
 
 	if (result == TPM_SUCCESS) {
 		printk(BIOS_SPEW, "TPM: OK.\n");

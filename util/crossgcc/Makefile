@@ -71,7 +71,7 @@ build-nds32le:
 
 clean_tempfiles:
 	rm -rf build-*
-	rm -rf binutils-* gcc-* gmp-* libelf-* mpc-* mpfr-*
+	rm -rf binutils-* gcc-* gmp-* mpc-* mpfr-*
 	rm -rf llvm-* clang-tools-* cfe-* compiler-rt-*
 	rm -rf acpica-*
 	rm -rf gdb-*
@@ -87,3 +87,4 @@ distclean: clean
 	all_without_gdb build_tools build-i386 build-x64 build-arm  \
 	build-aarch64 build-mips build-riscv build-power8 build-nds32le \
 	clean distclean clean_tempfiles
+.NOTPARALLEL:

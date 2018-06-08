@@ -25,6 +25,7 @@
 #include <console/console.h>
 #include <commonlib/loglevel.h>
 #include <cpu/amd/car.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #include <cpu/x86/bist.h>
@@ -39,9 +40,6 @@
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
-
-	/* Must come first to enable PCI MMCONF. */
-	amd_initmmio();
 
 	/*
 	 *  In Hudson RRG, PMIOxD2[5:4] is "Drive strength control for
@@ -89,16 +87,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x40);
 	AGESAWRAPPER(amdinitpost);
+}
 
+void agesa_postcar(struct sysinfo *cb)
+{
 	post_code(0x41);
 	AGESAWRAPPER(amdinitenv);
-	/*
-	  If code hangs here, please check cahaltasm.S
-	*/
-	disable_cache_as_ram();
-
-	post_code(0x50);
-	copy_and_run();
-
-	post_code(0x54);  /* Should never see this post code. */
 }

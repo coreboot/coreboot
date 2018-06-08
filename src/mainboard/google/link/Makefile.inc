@@ -20,6 +20,7 @@ ramstage-y += chromeos.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += i915.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += i915io.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += intel_dp.c
+ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
 SPD_BIN = $(obj)/spd.bin

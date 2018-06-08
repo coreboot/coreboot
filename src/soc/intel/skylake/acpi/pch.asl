@@ -19,7 +19,7 @@
 #include <intelblocks/pcr.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>
-#include <soc/gpio_defs.h>
+#include <soc/itss.h>
 #include <soc/gpe.h>
 #include <soc/pcr_ids.h>
 
@@ -39,7 +39,7 @@
 #include "pcie.asl"
 
 /* PCR Access */
-#include "pcr.asl"
+#include <soc/intel/common/acpi/pcr.asl>
 
 /* PMC 0:1f.2 */
 #include "pmc.asl"
@@ -72,3 +72,8 @@ Method (_OSC, 4)
 		Return (Arg3)
 	}
 }
+
+/* SGX */
+#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX)
+#include <soc/intel/common/acpi/sgx.asl>
+#endif

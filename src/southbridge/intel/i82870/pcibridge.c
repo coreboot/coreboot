@@ -6,7 +6,7 @@
 #include <pc80/mc146818rtc.h>
 #include "82870.h"
 
-static void p64h2_pcix_init(device_t dev)
+static void p64h2_pcix_init(struct device *dev)
 {
 	u32 dword;
 	u8 byte;

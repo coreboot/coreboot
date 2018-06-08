@@ -19,13 +19,16 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <drivers/intel/gma/opregion.h>
 #include <reg_script.h>
 #include <stdlib.h>
 
 #include <soc/gfx.h>
 #include <soc/iosf.h>
+#include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
+#include <cbmem.h>
 
 #include "chip.h"
 
@@ -35,7 +38,7 @@
  * Lock Power Context Base Register to point to a 24KB block
  * of memory in GSM.  Power context save data is stored here.
  */
-static void gfx_lock_pcbase(device_t dev)
+static void gfx_lock_pcbase(struct device *dev)
 {
 	struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	const u16 gms_size_map[17] = { 0,32,64,96,128,160,192,224,256,
@@ -260,18 +263,19 @@ static const struct reg_script gfx_post_vbios_script[] = {
 	REG_SCRIPT_END
 };
 
-static inline void gfx_run_script(device_t dev, const struct reg_script *ops)
+static inline void gfx_run_script(struct device *dev,
+				  const struct reg_script *ops)
 {
 	reg_script_run_on_dev(dev, ops);
 }
 
-static void gfx_pre_vbios_init(device_t dev)
+static void gfx_pre_vbios_init(struct device *dev)
 {
 	printk(BIOS_INFO, "GFX: Pre VBIOS Init\n");
 	gfx_run_script(dev, gpu_pre_vbios_script);
 }
 
-static void gfx_pm_init(device_t dev)
+static void gfx_pm_init(struct device *dev)
 {
 	printk(BIOS_INFO, "GFX: Power Management Init\n");
 	gfx_run_script(dev, gfx_init_script);
@@ -280,13 +284,13 @@ static void gfx_pm_init(device_t dev)
 	gfx_lock_pcbase(dev);
 }
 
-static void gfx_post_vbios_init(device_t dev)
+static void gfx_post_vbios_init(struct device *dev)
 {
 	printk(BIOS_INFO, "GFX: Post VBIOS Init\n");
 	gfx_run_script(dev, gfx_post_vbios_script);
 }
 
-static void set_backlight_pwm(device_t dev, uint32_t bklt_reg, int req_hz)
+static void set_backlight_pwm(struct device *dev, uint32_t bklt_reg, int req_hz)
 {
 	int divider;
 	struct resource *res;
@@ -307,7 +311,7 @@ static void set_backlight_pwm(device_t dev, uint32_t bklt_reg, int req_hz)
 	write32((u32 *)(uintptr_t)(res->base + bklt_reg), divider << 16);
 }
 
-static void gfx_panel_setup(device_t dev)
+static void gfx_panel_setup(struct device *dev)
 {
 	struct soc_intel_baytrail_config *config = dev->chip_info;
 	struct reg_script gfx_pipea_init[] = {
@@ -362,7 +366,20 @@ static void gfx_panel_setup(device_t dev)
 	}
 }
 
-static void gfx_init(device_t dev)
+uintptr_t gma_get_gnvs_aslb(const void *gnvs)
+{
+	const global_nvs_t *gnvs_ptr = gnvs;
+	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
+}
+
+void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
+{
+	global_nvs_t *gnvs_ptr = gnvs;
+	if (gnvs_ptr)
+		gnvs_ptr->aslb = aslb;
+}
+
+static void gfx_init(struct device *dev)
 {
 	/* Pre VBIOS Init */
 	gfx_pre_vbios_init(dev);
@@ -377,6 +394,35 @@ static void gfx_init(device_t dev)
 
 	/* Post VBIOS Init */
 	gfx_post_vbios_init(dev);
+
+	/* Restore opregion on S3 resume */
+	intel_gma_restore_opregion();
+}
+
+static unsigned long
+gma_write_acpi_tables(struct device *const dev,
+		      unsigned long current,
+		      struct acpi_rsdp *const rsdp)
+{
+	igd_opregion_t *opregion = (igd_opregion_t *)current;
+	global_nvs_t *gnvs;
+
+	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
+		return current;
+
+	current += sizeof(igd_opregion_t);
+
+	/* GNVS has been already set up */
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs) {
+		/* IGD OpRegion Base Address */
+		gma_set_gnvs_aslb(gnvs, (uintptr_t)opregion);
+	} else {
+		printk(BIOS_ERR, "Error: GNVS table not found.\n");
+	}
+
+	current = acpi_align_current(current);
+	return current;
 }
 
 static struct device_operations gfx_device_ops = {
@@ -385,6 +431,7 @@ static struct device_operations gfx_device_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= gfx_init,
 	.ops_pci		= &soc_pci_ops,
+	.write_acpi_tables	= gma_write_acpi_tables,
 };
 
 static const struct pci_driver gfx_driver __pci_driver = {

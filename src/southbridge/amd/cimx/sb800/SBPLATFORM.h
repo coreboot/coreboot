@@ -49,7 +49,7 @@ typedef union _PCI_ADDR {
 #endif
 #define FIXUP_PTR(ptr)  ptr
 
-#if CONFIG_SB800_IMC_FWM
+#if IS_ENABLED(CONFIG_SB800_IMC_FWM)
 	#define IMC_ENABLE_OVER_WRITE        0x01
 #endif
 
@@ -153,10 +153,7 @@ typedef union _PCI_ADDR {
 #define cimFusionMsgCStageDefault       FALSE
 
 #include "vendorcode/amd/cimx/sb800/AMDSBLIB.h"
-
-#if CONFIG_HAVE_ACPI_RESUME
 #include <spi-generic.h>
-#endif
 
 #define BIOSRAM_INDEX	0xcd4
 #define BIOSRAM_DATA	0xcd5

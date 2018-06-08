@@ -17,15 +17,16 @@
 
 #include <console/console.h>
 #include <console/usb.h>
+#include <commonlib/region.h>
 #include <bootmode.h>
 #include <string.h>
 #include <arch/io.h>
 #include <cbmem.h>
 #include <halt.h>
 #include <timestamp.h>
-#include <northbridge/intel/common/mrc_cache.h>
+#include <mrc_cache.h>
 #include <southbridge/intel/bd82x6x/me.h>
-#include <southbridge/intel/bd82x6x/smbus.h>
+#include <southbridge/intel/common/smbus.h>
 #include <cpu/x86/msr.h>
 #include <delay.h>
 #include <smbios.h>
@@ -34,6 +35,8 @@
 #include "raminit_native.h"
 #include "raminit_common.h"
 #include "sandybridge.h"
+
+#define MRC_CACHE_VERSION 0
 
 /* FIXME: no ECC support.  */
 /* FIXME: no support for 3-channel chipsets.  */
@@ -123,14 +126,17 @@ static void fill_smbios17(ramctr_timing *ctrl)
 static void report_memory_config(void)
 {
 	u32 addr_decoder_common, addr_decode_ch[NUM_CHANNELS];
-	int i;
+	int i, refclk;
 
 	addr_decoder_common = MCHBAR32(0x5000);
 	addr_decode_ch[0] = MCHBAR32(0x5004);
 	addr_decode_ch[1] = MCHBAR32(0x5008);
 
+	refclk = MCHBAR32(MC_BIOS_REQ) & 0x100 ? 100 : 133;
+
+	printk(BIOS_DEBUG, "memcfg DDR3 ref clock %d MHz\n", refclk);
 	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
-	       (MCHBAR32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100);
+	       (MCHBAR32(MC_BIOS_DATA) * refclk * 100 * 2 + 50) / 100);
 	printk(BIOS_DEBUG, "memcfg channel assignment: A: %d, B % d, C % d\n",
 	       addr_decoder_common & 3, (addr_decoder_common >> 2) & 3,
 	       (addr_decoder_common >> 4) & 3);
@@ -206,6 +212,9 @@ static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 		/* count dimms on channel */
 		for (slot = 0; slot < NUM_SLOTS; slot++) {
 			spd_slot = 2 * channel + slot;
+			printk(BIOS_DEBUG,
+			       "SPD probe channel%d, slot%d\n", channel, slot);
+
 			spd_decode_ddr3(&dimm->dimm[channel][slot], spd[spd_slot]);
 			if (dimm->dimm[channel][slot].dram_type == SPD_MEMORY_TYPE_SDRAM_DDR3)
 				dimms_on_channel++;
@@ -213,6 +222,9 @@ static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 
 		for (slot = 0; slot < NUM_SLOTS; slot++) {
 			spd_slot = 2 * channel + slot;
+			printk(BIOS_DEBUG,
+			       "SPD probe channel%d, slot%d\n", channel, slot);
+
 			/* search for XMP profile */
 			spd_xmp_decode_ddr3(&dimm->dimm[channel][slot],
 					spd[spd_slot],
@@ -225,7 +237,10 @@ static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 				printram("XMP profile supports %u DIMMs, but %u DIMMs are installed.\n",
 						 dimm->dimm[channel][slot].dimms_per_channel,
 						 dimms_on_channel);
-				spd_decode_ddr3(&dimm->dimm[channel][slot], spd[spd_slot]);
+				if (IS_ENABLED(CONFIG_NATIVE_RAMINIT_IGNORE_XMP_MAX_DIMMS))
+					printk(BIOS_WARNING, "XMP maximum DIMMs will be ignored.\n");
+				else
+					spd_decode_ddr3(&dimm->dimm[channel][slot], spd[spd_slot]);
 			} else if (dimm->dimm[channel][slot].voltage != 1500) {
 				/* TODO: support other DDR3 voltage than 1500mV */
 				printram("XMP profile's requested %u mV is unsupported.\n",
@@ -280,7 +295,8 @@ static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 static void save_timings(ramctr_timing *ctrl)
 {
 	/* Save the MRC S3 restore data to cbmem */
-	store_current_mrc_cache(ctrl, sizeof(*ctrl));
+	mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION, ctrl,
+			sizeof(*ctrl));
 }
 
 static int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot,
@@ -299,7 +315,7 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 	ramctr_timing ctrl;
 	int fast_boot;
 	spd_raw_data spds[4];
-	struct mrc_data_container *mrc_cache;
+	struct region_device rdev;
 	ramctr_timing *ctrl_cached;
 	struct cpuid_result cpures;
 	int err;
@@ -335,8 +351,9 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 	early_thermal_init();
 
 	/* try to find timings in MRC cache */
-	mrc_cache = find_current_mrc_cache();
-	if (!mrc_cache || (mrc_cache->mrc_data_size < sizeof(ctrl))) {
+	int cache_not_found = mrc_cache_get_current(MRC_TRAINING_DATA,
+						MRC_CACHE_VERSION, &rdev);
+	if (cache_not_found || (region_device_sz(&rdev) < sizeof(ctrl))) {
 		if (s3resume) {
 			/* Failed S3 resume, reset to come up cleanly */
 			outb(0x6, 0xcf9);
@@ -344,7 +361,7 @@ static void init_dram_ddr3(int mobile, int min_tck, int s3resume)
 		}
 		ctrl_cached = NULL;
 	} else {
-		ctrl_cached = (ramctr_timing *)mrc_cache->mrc_data;
+		ctrl_cached = rdev_mmap_full(&rdev);
 	}
 
 	/* verify MRC cache for fast boot */

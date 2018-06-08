@@ -177,8 +177,8 @@ static void sr5690_set_resources(struct device *dev)
 
 	if (IS_ENABLED(CONFIG_EXT_CONF_SUPPORT)) {
 		uint32_t reg;
-		device_t amd_ht_cfg_dev;
-		device_t amd_addr_map_dev;
+		struct device *amd_ht_cfg_dev;
+		struct device *amd_addr_map_dev;
 		resource_t res_base;
 		resource_t res_end;
 		uint32_t base;

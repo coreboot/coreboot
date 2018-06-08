@@ -24,16 +24,17 @@
 #include <cbmem.h>
 #include <pc80/mc146818rtc.h>
 #include <romstage_handoff.h>
+#include <southbridge/intel/common/rcba.h>
 #include "sandybridge.h"
 
 static void sandybridge_setup_bars(void)
 {
 	/* Setting up Southbridge. In the northbridge code. */
 	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA, (uintptr_t)DEFAULT_RCBA | 1);
+	pci_write_config32(PCH_LPC_DEV, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
 
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44 /* ACPI_CNTL */ , 0x80); /* Enable ACPI BAR */
+	pci_write_config32(PCH_LPC_DEV, PMBASE, DEFAULT_PMBASE | 1);
+	pci_write_config8(PCH_LPC_DEV, ACPI_CNTL, 0x80); /* Enable ACPI BAR */
 
 	printk(BIOS_DEBUG, " done.\n");
 
@@ -60,7 +61,7 @@ static void sandybridge_setup_bars(void)
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM5, 0x33);
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM6, 0x33);
 
-#if CONFIG_ELOG_BOOT_COUNT
+#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
 	/* Increment Boot Counter for non-S3 resume */
 	if ((inw(DEFAULT_PMBASE + PM1_STS) & WAK_STS) &&
 	    ((inl(DEFAULT_PMBASE + PM1_CNT) >> 10) & 7) != SLP_TYP_S3)
@@ -69,7 +70,7 @@ static void sandybridge_setup_bars(void)
 
 	printk(BIOS_DEBUG, " done.\n");
 
-#if CONFIG_ELOG_BOOT_COUNT
+#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
 	/* Increment Boot Counter except when resuming from S3 */
 	if ((inw(DEFAULT_PMBASE + PM1_STS) & WAK_STS) &&
 	    ((inl(DEFAULT_PMBASE + PM1_CNT) >> 10) & 7) == SLP_TYP_S3)
@@ -98,6 +99,7 @@ static void sandybridge_setup_graphics(void)
 	case 0x0156: /* IvyBridge */
 	case 0x0162: /* IvyBridge */
 	case 0x0166: /* IvyBridge */
+	case 0x016a: /* IvyBridge */
 		break;
 	default:
 		printk(BIOS_DEBUG, "Graphics not supported by this CPU/chipset.\n");

@@ -1,0 +1,75 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2014 - 2017 Intel Corporation.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+chip soc/intel/denverton_ns
+
+	# configure pirq routing
+	register "pirqa_routing" = "11"
+	register "pirqb_routing" = "10"
+	register "pirqc_routing" = "06"
+	register "pirqd_routing" = "07"
+	register "pirqe_routing" = "12"
+	register "pirqf_routing" = "14"
+	register "pirqg_routing" = "15"
+	register "pirqh_routing" = "15"
+	# configure device interrupt routing
+	register "ir00_routing" = "0x3217" # IR00, Dev31
+	register "ir01_routing" = "0x3210" # IR01, Dev22
+	register "ir02_routing" = "0x3211" # IR02, Dev23
+	register "ir03_routing" = "0x3217" # IR03, Dev5
+	register "ir04_routing" = "0x3212" # IR04, Dev6
+	register "ir05_routing" = "0x3210" # IR05, Dev24
+	register "ir06_routing" = "0x3214" # IR06, Dev19
+	register "ir07_routing" = "0x3210" # IR07, Dev9/10/11/12
+	register "ir08_routing" = "0x7654" # IR08, Dev14/15/16/17
+	register "ir09_routing" = "0x3213" # IR09, Dev21
+	register "ir10_routing" = "0x3210" # IR10, Dev26/18
+	register "ir11_routing" = "0x3215" # IR11, Dev20
+	register "ir12_routing" = "0x3210" # IR12, Dev27
+	# configure interrupt polarity control
+	register "ipc0" = "0x00ff4000" # IPC0, PIRQA-H (IRQ16-23) should always be ActiveLow
+	register "ipc1" = "0x00000000" # IPC1
+	register "ipc2" = "0x00000000" # IPC2
+	register "ipc3" = "0x00000000" # IPC3
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	device domain 0 on
+		device pci 00.0 on end # Host Bridge
+		device pci 04.0 on end # RAS
+		device pci 05.0 on end # RCEC(Root Complex Event Collector)
+		device pci 06.0 on end # Virtual root port 2 (QAT)
+		device pci 09.0 on end # PCI Express Port 0, cluster #0, x4
+		device pci 10.0 on end # PCI Express Port 6, cluster #1, x2
+		device pci 11.0 on end # PCI Express Port 7, cluster #1, x2
+		device pci 12.0 on end # SMBus Controller 1
+		device pci 13.0 on end # SATA Controller 0
+		device pci 14.0 on end # SATA Controller 1
+		device pci 15.0 on end # XHCI USB Controller
+		device pci 16.0 on end # Virtual root port 0 (10GBE0)
+		device pci 17.0 on end # Virtual root port 1 (10GBE1)
+		device pci 18.0 on end # CSME HECI 1
+		device pci 1a.0 on end # UART 0
+		device pci 1a.1 off end # UART 1
+		device pci 1a.2 off end # UART 2
+		device pci 1c.0 on end # eMMC
+		device pci 1f.0 on end # LPC bridge
+		device pci 1f.2 on end # PMC/ACPI
+		device pci 1f.4 on end # SMBus Controller 0
+		device pci 1f.5 on end # SPI Controller
+	end
+end

@@ -19,8 +19,6 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <arch/acpi.h>
-#include <northbridge/amd/pi/BiosCallOuts.h>
-#include <northbridge/amd/pi/agesawrapper.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <northbridge/amd/pi/00630F01/pci_devs.h>
@@ -64,7 +62,7 @@ const u8 mainboard_picr_data[] = {
 	[0x68] = 0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,
 	[0x70] = 0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,
 	[0x78] = 0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,
-	/* [80..81] Northbridge devices (indicies above C00/C01 range) */
+	/* [80..81] Northbridge devices (indices above C00/C01 range) */
 	[0x80] = 0x0C,0x1F,
 };
 
@@ -92,7 +90,7 @@ const u8 mainboard_intr_data[] = {
 	[0x68] = 0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,
 	[0x70] = 0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,
 	[0x78] = 0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,
-	/* [80..81] Northbridge devices (indicies above C00/C01 range) */
+	/* [80..81] Northbridge devices (indices above C00/C01 range) */
 	[0x80] = 0x17,0x10,
 };
 
@@ -143,7 +141,7 @@ static void pirq_setup(void)
 /*************************************************
  * enable the dedicated function in lamar board.
  *************************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 

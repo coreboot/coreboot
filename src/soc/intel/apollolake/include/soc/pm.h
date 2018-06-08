@@ -19,7 +19,10 @@
 #define _SOC_APOLLOLAKE_PM_H_
 
 #include <stdint.h>
+#include <compiler.h>
 #include <arch/acpi.h>
+#include <soc/gpe.h>
+#include <soc/iomap.h>
 
 /* ACPI_BASE_ADDRESS */
 
@@ -44,6 +47,7 @@
 
 #define SMI_EN			0x40
 
+#define SMI_ESPI		28 /* This bit is present in GLK*/
 #define SMI_OCP_CSE		27
 #define SMI_SPI			26
 #define SMI_SPI_SSMI		25
@@ -68,6 +72,11 @@
 #define SMI_EOS			1
 #define SMI_GBL			0
 
+#if IS_ENABLED(CONFIG_SOC_ESPI)
+#define   ESPI_SMI_EN	(1 << SMI_ESPI) /* Valid for GLK with ESPI */
+#else
+#define   ESPI_SMI_EN	0
+#endif
 #define   USB_EN	(1 << SMI_XHCI) /* Legacy USB2 SMI logic */
 #define   PERIODIC_EN	(1 << SMI_PERIODIC) /* SMI on PERIODIC_STS in SMI_STS */
 #define   TCO_EN	(1 << SMI_TCO) /* Enable TCO Logic (BIOSWE et al) */
@@ -82,8 +91,23 @@
 #define   EOS		(1 << SMI_EOS) /* End of SMI (deassert SMI#) */
 #define   GBL_SMI_EN	(1 << SMI_GBL) /* Global SMI Enable */
 
+/* SMI_EN Params for this platform to pass to enable_smi
+ *
+ * Enable SMI generation:
+ *  - on APMC writes (io 0xb2)
+ *  - on writes to SLP_EN (sleep states)
+ *  - on writes to GBL_RLS (bios commands)
+ *  - on eSPI events (does nothing on LPC systems)
+ * No SMIs:
+ *  - on microcontroller writes (io 0x62/0x66)
+ *  - on TCO events
+ */
+#define   ENABLE_SMI_PARAMS \
+	(ESPI_SMI_EN | APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS | GPIO_EN)
+
 #define SMI_STS			0x44
 /* Bits for SMI status */
+#define  ESPI_SMI_STS_BIT	28
 #define  PMC_OCP_SMI_STS	27
 #define  SPI_SMI_STS		26
 #define  SPI_SSMI_STS		25
@@ -120,6 +144,8 @@
 #define  GPE0_B			1
 #define  GPE0_C			2
 #define  GPE0_D			3
+#define GPE_STD			GPE0_A
+#define   ESPI_STS              (1 << 20) /* This bit is present in GLK */
 #define   SATA_PME_STS		(1 << 17)
 #define   SMB_WAK_STS		(1 << 16)
 #define   AVS_PME_STS		(1 << 14)
@@ -130,6 +156,7 @@
 #define   PCIE_GPE_STS		(1 << 9)
 #define   SWGPE_STS		(1 << 2)
 #define GPE0_EN(x)		(0x30 + (x * 4))
+#define   ESPI_EN		(1 << 20) /* This bit is present in GLK */
 #define   SATA_PME_EN		(1 << 17)
 #define   SMB_WAK_EN		(1 << 16)
 #define   AVS_PME_EN		(1 << 14)
@@ -146,8 +173,13 @@
 #define  COLD_BOOT_STS		(1 << 27)
 #define  COLD_RESET_STS		(1 << 26)
 #define  WARM_RESET_STS		(1 << 25)
+#define  GLOBAL_RESET_STS	(1 << 24)
 #define  SRS			(1 << 20)
+#define  MS4V			(1 << 18)
 #define  RPS			(1 << 2)
+#define GEN_PMCON1_CLR1_BITS	(COLD_BOOT_STS | COLD_RESET_STS | \
+				 WARM_RESET_STS | GLOBAL_RESET_STS | \
+				 SRS | MS4V)
 #define GEN_PMCON2		0x1024
 #define GEN_PMCON3		0x1028
 #       define SLP_S3_ASSERT_WIDTH_SHIFT	10
@@ -161,10 +193,19 @@
 #       define CF9_GLB_RST      (1 << 20)
 #define GPIO_GPE_CFG		0x1050
 #define  GPE0_DWX_MASK		0xf
-#define  GPE0_DW1_SHIFT		4
-#define  GPE0_DW2_SHIFT		8
-#define  GPE0_DW3_SHIFT		12
+#define GPE0_DW_SHIFT(x)	(4 + 4*(x))
 
+#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#define PMC_GPE_N_95_64		8
+#define PMC_GPE_N_63_32		7
+#define PMC_GPE_N_31_0		6
+#define PMC_GPE_NW_127_96	5
+#define PMC_GPE_NW_95_64	4
+#define PMC_GPE_NW_63_32	3
+#define PMC_GPE_NW_31_0		2
+#define PMC_GPE_SCC_63_32	1
+#define PMC_GPE_SCC_31_0	0
+#else  /*For APL*/
 #define  PMC_GPE_SW_31_0	0
 #define  PMC_GPE_SW_63_32	1
 #define  PMC_GPE_NW_31_0	3
@@ -173,6 +214,24 @@
 #define  PMC_GPE_N_31_0		6
 #define  PMC_GPE_N_63_32	7
 #define  PMC_GPE_W_31_0		9
+#endif
+
+#define IRQ_REG			0x106C
+#define SCI_IRQ_ADJUST		24
+#define SCI_IRQ_SEL		(255 << SCI_IRQ_ADJUST)
+#define SCIS_IRQ9		9
+#define SCIS_IRQ10		10
+#define SCIS_IRQ11		11
+#define SCIS_IRQ20		20
+#define SCIS_IRQ21		21
+#define SCIS_IRQ22		22
+#define SCIS_IRQ23		23
+
+/* P-state configuration */
+#define PSS_MAX_ENTRIES		8
+#define PSS_RATIO_STEP		2
+#define PSS_LATENCY_TRANSITION	10
+#define PSS_LATENCY_BUSMASTER	10
 
 /* Track power state from reset to log events. */
 struct chipset_power_state {
@@ -187,34 +246,7 @@ struct chipset_power_state {
 	uint32_t gen_pmcon2;
 	uint32_t gen_pmcon3;
 	uint32_t prev_sleep_state;
-} __attribute__((packed));
-
-int fill_power_state(struct chipset_power_state *ps);
-int chipset_prev_sleep_state(struct chipset_power_state *ps);
-/* Rewrite the gpe0 registers in cbmem to proper values as per routing table */
-void fixup_power_state(void);
-
-/* Power Management Utility Functions. */
-uint32_t clear_smi_status(void);
-uint16_t clear_pm1_status(void);
-uint32_t clear_tco_status(void);
-uint32_t clear_gpe_status(void);
-void clear_pmc_status(void);
-void clear_gpi_gpe_sts(void);
-uint32_t get_smi_en(void);
-void enable_smi(uint32_t mask);
-void disable_smi(uint32_t mask);
-void enable_pm1(uint16_t events);
-void enable_pm1_control(uint32_t mask);
-void disable_pm1_control(uint32_t mask);
-void enable_gpe(uint32_t mask);
-void disable_gpe(uint32_t mask);
-void disable_all_gpe(void);
-uintptr_t get_pmc_mmio_bar(void);
-void pmc_gpe_init(void);
-
-void global_reset_enable(bool enable);
-void global_reset_lock(void);
+} __packed;
 
 void pch_log_state(void);
 

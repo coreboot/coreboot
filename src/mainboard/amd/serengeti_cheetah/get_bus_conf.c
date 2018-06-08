@@ -47,7 +47,7 @@ static unsigned get_hcid(unsigned i)
 
 	unsigned devn = sysconf.hcdn[i] & 0xff;
 
-	device_t dev;
+	struct device *dev;
 
 	dev = dev_find_slot(busn, PCI_DEVFN(devn, 0));
 
@@ -75,7 +75,7 @@ void get_bus_conf(void)
 
 	unsigned apicid_base;
 
-	device_t dev;
+	struct device *dev;
 	int i, j;
 	struct mb_sysconf_t *m;
 

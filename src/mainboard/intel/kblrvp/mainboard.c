@@ -26,7 +26,7 @@
 #include "ec.h"
 #include <variant/gpio.h>
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
 		mainboard_ec_init();
@@ -36,7 +36,7 @@ static void mainboard_init(device_t dev)
  * mainboard_enable is executed as first thing after
  * enumerate_buses().
  */
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;

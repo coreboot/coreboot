@@ -19,10 +19,12 @@
 #include "../chip.h"
 #include <cpu/x86/cache.h>
 #include <fsp/util.h>
+#include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <soc/reg_access.h>
+#include <soc/storage_test.h>
 
 asmlinkage void *car_stage_c_entry(void)
 {
@@ -33,6 +35,21 @@ asmlinkage void *car_stage_c_entry(void)
 
 	post_code(0x20);
 	console_init();
+
+	if (IS_ENABLED(CONFIG_STORAGE_TEST)) {
+		uint32_t bar;
+		dev_t dev;
+		uint32_t previous_bar;
+		uint16_t previous_command;
+
+		/* Enable the SD/MMC controller and run the test.  Restore
+		 * the BAR and command registers upon completion.
+		 */
+		dev = PCI_DEV(0, SD_MMC_DEV, SD_MMC_FUNC);
+		bar = storage_test_init(dev, &previous_bar, &previous_command);
+		storage_test(bar, 1);
+		storage_test_complete(dev, previous_bar, previous_command);
+	}
 
 	/* Initialize DRAM */
 	s3wake = fill_power_state() == ACPI_S3;

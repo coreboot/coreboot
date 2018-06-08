@@ -150,7 +150,7 @@ static u32 cim_verb_data[] = {
 
 static u32 find_verb(u32 viddid, u32 ** verb)
 {
-	device_t azalia_dev = dev_find_slot(0, PCI_DEVFN(0x14, 2));
+	struct device *azalia_dev = dev_find_slot(0, PCI_DEVFN(0x14, 2));
 	struct southbridge_amd_sb600_config *cfg =
 	    (struct southbridge_amd_sb600_config *)azalia_dev->chip_info;
 	if (!cfg)
@@ -265,7 +265,7 @@ static void hda_init(struct device *dev)
 	void *base;
 	struct resource *res;
 	u32 codec_mask;
-	device_t sm_dev;
+	struct device *sm_dev;
 
 	/* Enable azalia - PM_io 0x59[4], disable ac97 - PM_io 0x59[1..0] */
 	pm_iowrite(0x59, 0xB);

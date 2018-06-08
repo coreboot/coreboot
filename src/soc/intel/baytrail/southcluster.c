@@ -19,6 +19,7 @@
 #include <arch/acpi.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
@@ -41,12 +42,13 @@
 #include <cpu/cpu.h>
 
 static inline void
-add_mmio_resource(device_t dev, int i, unsigned long addr, unsigned long size)
+add_mmio_resource(struct device *dev, int i, unsigned long addr,
+		  unsigned long size)
 {
 	mmio_resource(dev, i, addr >> 10, size >> 10);
 }
 
-static void sc_add_mmio_resources(device_t dev)
+static void sc_add_mmio_resources(struct device *dev)
 {
 	add_mmio_resource(dev, 0xfeb, ABORT_BASE_ADDRESS, ABORT_BASE_SIZE);
 	add_mmio_resource(dev, PBASE, PMC_BASE_ADDRESS, PMC_BASE_SIZE);
@@ -81,7 +83,8 @@ static inline int io_range_in_default(int base, int size)
  * Note: this function assumes there is no overlap with the default LPC device's
  * claimed range: LPC_DEFAULT_IO_RANGE_LOWER -> LPC_DEFAULT_IO_RANGE_UPPER.
  */
-static void sc_add_io_resource(device_t dev, int base, int size, int index)
+static void sc_add_io_resource(struct device *dev, int base, int size,
+			       int index)
 {
 	struct resource *res;
 
@@ -94,7 +97,7 @@ static void sc_add_io_resource(device_t dev, int base, int size, int index)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void sc_add_io_resources(device_t dev)
+static void sc_add_io_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -111,7 +114,7 @@ static void sc_add_io_resources(device_t dev)
 	sc_add_io_resource(dev, ACPI_BASE_ADDRESS, 128, ABASE);
 }
 
-static void sc_read_resources(device_t dev)
+static void sc_read_resources(struct device *dev)
 {
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
@@ -125,23 +128,7 @@ static void sc_read_resources(device_t dev)
 
 static void sc_rtc_init(void)
 {
-	uint32_t gen_pmcon1;
-	int rtc_fail;
-	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
-
-	if (ps != NULL) {
-		gen_pmcon1 = ps->gen_pmcon1;
-	} else {
-		gen_pmcon1 = read32((u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1));
-	}
-
-	rtc_fail = !!(gen_pmcon1 & RPS);
-
-	if (rtc_fail) {
-		printk(BIOS_DEBUG, "RTC failure.\n");
-	}
-
-	cmos_init(rtc_fail);
+	cmos_init(rtc_failure());
 }
 
 /*
@@ -152,7 +139,7 @@ static void sc_rtc_init(void)
  * or configuration.  This is definitely a hack, but it helps the kernel
  * along.
  */
-static void com1_configure_resume(device_t dev)
+static void com1_configure_resume(struct device *dev)
 {
 	const uint16_t port = 0x3f8;
 
@@ -180,7 +167,7 @@ static void com1_configure_resume(device_t dev)
 	outb(3, port + UART8250_LCR);
 }
 
-static void sc_init(device_t dev)
+static void sc_init(struct device *dev)
 {
 	int i;
 	u8 *pr_base = (u8 *)(ILB_BASE_ADDRESS + 0x08);
@@ -222,7 +209,7 @@ static void sc_init(device_t dev)
  */
 
 /* Set bit in function disable register to hide this device. */
-static void sc_disable_devfn(device_t dev)
+static void sc_disable_devfn(struct device *dev)
 {
 	u32 *func_dis = (u32 *)(PMC_BASE_ADDRESS + FUNC_DIS);
 	u32 *func_dis2 = (u32 *)(PMC_BASE_ADDRESS + FUNC_DIS2);
@@ -331,7 +318,7 @@ static void sc_disable_devfn(device_t dev)
 	}
 }
 
-static inline void set_d3hot_bits(device_t dev, int offset)
+static inline void set_d3hot_bits(struct device *dev, int offset)
 {
 	uint32_t reg8;
 	printk(BIOS_DEBUG, "Power management CAP offset 0x%x.\n", offset);
@@ -343,7 +330,7 @@ static inline void set_d3hot_bits(device_t dev, int offset)
 /* Parts of the audio subsystem are powered by the HDA device. Therefore, one
  * cannot put HDA into D3Hot. Instead perform this workaround to make some of
  * the audio paths work for LPE audio. */
-static void hda_work_around(device_t dev)
+static void hda_work_around(struct device *dev)
 {
 	u32 *gctl = (u32 *)(TEMP_BASE_ADDRESS + 0x8);
 
@@ -360,7 +347,7 @@ static void hda_work_around(device_t dev)
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, 0);
 }
 
-static int place_device_in_d3hot(device_t dev)
+static int place_device_in_d3hot(struct device *dev)
 {
 	unsigned offset;
 
@@ -476,7 +463,7 @@ static int place_device_in_d3hot(device_t dev)
 }
 
 /* Common PCI device function disable. */
-void southcluster_enable_dev(device_t dev)
+void southcluster_enable_dev(struct device *dev)
 {
 	uint32_t reg32;
 
@@ -509,7 +496,7 @@ void southcluster_enable_dev(device_t dev)
 	}
 }
 
-static void southcluster_inject_dsdt(device_t device)
+static void southcluster_inject_dsdt(struct device *device)
 {
 	global_nvs_t *gnvs;
 
@@ -552,7 +539,7 @@ static const struct pci_driver southcluster __pci_driver = {
 	.device		= LPC_DEVID,
 };
 
-int __attribute__((weak)) mainboard_get_spi_config(struct spi_config *cfg)
+int __weak mainboard_get_spi_config(struct spi_config *cfg)
 {
 	return -1;
 }

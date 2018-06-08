@@ -65,7 +65,7 @@
 
 /* Statically allocate all structures (no malloc())! */
 static WINDOW window_list[MAX_WINDOWS];
-static int window_count = 1;
+static int window_count = 0;
 
 // struct ldat foo;
 static struct ldat ldat_list[MAX_WINDOWS][SCREEN_Y];
@@ -386,12 +386,17 @@ int mvwprintw(WINDOW *win, int y, int x, const char *fmt, ...)
 // SCREEN *newterm (NCURSES_CONST char *,FILE *,FILE *) {}
 WINDOW *newwin(int num_lines, int num_columns, int begy, int begx)
 {
+	WINDOW *win;
 	int i;
 
 	/* Use next statically allocated window. */
-	// TODO: Error handling.
+	// TODO: Error handling. Yes. Please.
 	// TODO: WINDOWLIST?
-	WINDOW *win = &window_list[window_count++];
+
+	if (window_count >= MAX_WINDOWS)
+		return NULL;
+
+	win = &window_list[window_count++];
 
 	// bool is_pad = (flags & _ISPAD);
 

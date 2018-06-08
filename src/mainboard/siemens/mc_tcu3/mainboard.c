@@ -21,7 +21,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#if CONFIG_VGA_ROM_RUN
+#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
 #include <pc80/mc146818rtc.h>
@@ -75,7 +75,7 @@ enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[6])
  * mainboard_enable is executed as first thing after enumerate_buses().
  * This is the earliest point to add customization.
  */
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	setup_lcd_panel();
 }

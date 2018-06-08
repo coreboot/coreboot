@@ -27,7 +27,7 @@ void ne2k_transmit(unsigned int eth_nic_base);
 #define ne2k_append_data_byte(d, base) ne2k_append_data(&d, 1, base)
 #endif
 
-#if CONFIG_CONSOLE_NE2K && (ENV_ROMSTAGE || ENV_RAMSTAGE)
+#if IS_ENABLED(CONFIG_CONSOLE_NE2K) && (ENV_ROMSTAGE || ENV_RAMSTAGE)
 static inline void __ne2k_init(void)
 {
 	ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT);

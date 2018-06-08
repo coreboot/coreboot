@@ -29,7 +29,7 @@
 /*****************************************
 * Compliant with CIM_33's ATINB_MiscClockCtrl
 *****************************************/
-void static rs690_config_misc_clk(device_t nb_dev)
+void static rs690_config_misc_clk(struct device *nb_dev)
 {
 	u32 reg;
 	u16 word;
@@ -100,7 +100,7 @@ void static rs690_config_misc_clk(device_t nb_dev)
 	set_htiu_enable_bits(nb_dev, 0x05, 7 << 8, 7 << 8);
 }
 
-static u32 get_vid_did(device_t dev)
+static u32 get_vid_did(struct device *dev)
 {
 	return pci_read_config32(dev, 0);
 }
@@ -119,9 +119,9 @@ static u32 get_vid_did(device_t dev)
 * case 0 will be called twice, one is by CPU in hypertransport.c line458,
 * the other is by rs690.
 ***********************************************/
-void rs690_enable(device_t dev)
+void rs690_enable(struct device *dev)
 {
-	device_t nb_dev = 0, sb_dev = 0;
+	struct device *nb_dev = NULL, *sb_dev = NULL;
 	int dev_ind;
 
 	printk(BIOS_INFO, "rs690_enable: dev=%p, VID_DID=0x%x\n", dev, get_vid_did(dev));

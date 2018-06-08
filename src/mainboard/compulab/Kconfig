@@ -1,0 +1,16 @@
+if VENDOR_COMPULAB
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/compulab/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/compulab/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "CompuLab"
+
+endif # VENDOR_COMPULAB

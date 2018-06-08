@@ -13,6 +13,9 @@
 ##
 ################################################################################
 
+-include ../../../../../.xcompile
+GCC_PREFIX?=$(CROSS_COMPILE_arm)
+
 CC = $(GCC_PREFIX)gcc
 NM = $(GCC_PREFIX)nm
 OBJCOPY = $(GCC_PREFIX)objcopy
@@ -31,6 +34,7 @@ all: tegra_lp0_resume.fw
 tegra_lp0_resume.elf: tegra_lp0_resume.ld tegra_lp0_resume.c
 	$(CC) -marm -march=armv4t -mno-unaligned-access -nostdlib -static \
 		-Os -fpie -Wl,--build-id=none -ggdb3 -T tegra_lp0_resume.ld \
+		-I ../../../../include -I ../../../../arch/arm/include \
 		-o $@ $(filter %.c,$+)
 
 tegra_lp0_resume.fw: tegra_lp0_resume.elf
@@ -49,6 +53,6 @@ tegra_lp0_resume.fw: tegra_lp0_resume.elf
 	@# Copy the signed binary to the target file name.
 	$(MV) $@.nosig $@
 
-clean:
+distclean clean:
 	$(RM) -f tegra_lp0_resume.fw tegra_lp0_resume.fw.sig
 	$(RM) -f tegra_lp0_resume.fw.tosig tegra_lp0_resume.elf

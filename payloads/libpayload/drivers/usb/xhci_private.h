@@ -165,7 +165,7 @@ typedef struct {
 	trb_t *ring;
 	trb_t *cur;
 	u8 pcs;
-} __attribute__ ((packed)) transfer_ring_t;
+} __packed transfer_ring_t;
 
 #define COMMAND_RING_SIZE 4
 typedef transfer_ring_t command_ring_t;
@@ -332,8 +332,8 @@ typedef struct xhci {
 			struct {
 				u8 hciver_lo;
 				u8 hciver_hi;
-			} __attribute__ ((packed));
-		} __attribute__ ((packed));
+			} __packed;
+		} __packed;
 		union {
 			u32 hcsparams1;
 			struct {
@@ -341,8 +341,8 @@ typedef struct xhci {
 				unsigned long MaxIntrs:11;
 				unsigned long:6;
 				unsigned long MaxPorts:8;
-			} __attribute__ ((packed));
-		} __attribute__ ((packed));
+			} __packed;
+		} __packed;
 		union {
 			u32 hcsparams2;
 			struct {
@@ -352,16 +352,16 @@ typedef struct xhci {
 				unsigned long Max_Scratchpad_Bufs_Hi:5;
 				unsigned long SPR:1;
 				unsigned long Max_Scratchpad_Bufs_Lo:5;
-			} __attribute__ ((packed));
-		} __attribute__ ((packed));
+			} __packed;
+		} __packed;
 		union {
 			u32 hcsparams3;
 			struct {
 				unsigned long u1latency:8;
 				unsigned long:8;
 				unsigned long u2latency:16;
-			} __attribute__ ((packed));
-		} __attribute__ ((packed));
+			} __packed;
+		} __packed;
 		union {
 			u32 hccparams;
 			struct {
@@ -376,36 +376,36 @@ typedef struct xhci {
 				unsigned long:4;
 				unsigned long MaxPSASize:4;
 				unsigned long xECP:16;
-			} __attribute__ ((packed));
-		} __attribute__ ((packed));
+			} __packed;
+		} __packed;
 		u32 dboff;
 		u32 rtsoff;
-	} __attribute__ ((packed)) *capreg;
+	} __packed *capreg;
 
 	/* opreg is R/W is most places, so volatile access is necessary.
 	   volatile means that the compiler seeks byte writes if possible,
 	   making bitfields unusable for MMIO register blocks. Yay C :-( */
 	volatile struct opreg {
 		u32 usbcmd;
-#define USBCMD_RS 1<<0
-#define USBCMD_HCRST 1<<1
-#define USBCMD_INTE 1<<2
+#define USBCMD_RS (1 << 0)
+#define USBCMD_HCRST (1 << 1)
+#define USBCMD_INTE (1 << 2)
 		u32 usbsts;
-#define USBSTS_HCH 1<<0
-#define USBSTS_HSE 1<<2
-#define USBSTS_EINT 1<<3
-#define USBSTS_PCD 1<<4
-#define USBSTS_CNR 1<<11
+#define USBSTS_HCH (1 << 0)
+#define USBSTS_HSE (1 << 2)
+#define USBSTS_EINT (1 << 3)
+#define USBSTS_PCD (1 << 4)
+#define USBSTS_CNR (1 << 11)
 #define USBSTS_PRSRV_MASK ((1 << 1) | 0xffffe000)
 		u32 pagesize;
 		u8 res1[0x13-0x0c+1];
 		u32 dnctrl;
 		u32 crcr_lo;
 		u32 crcr_hi;
-#define CRCR_RCS 1<<0
-#define CRCR_CS 1<<1
-#define CRCR_CA 1<<2
-#define CRCR_CRR 1<<3
+#define CRCR_RCS (1 << 0)
+#define CRCR_CS (1 << 1)
+#define CRCR_CA (1 << 2)
+#define CRCR_CRR (1 << 3)
 		u8 res2[0x2f-0x20+1];
 		u32 dcbaap_lo;
 		u32 dcbaap_hi;
@@ -414,40 +414,40 @@ typedef struct xhci {
 		u8 res3[0x3ff-0x3c+1];
 		struct {
 			u32 portsc;
-#define PORTSC_CCS (1<<0)
-#define PORTSC_PED (1<<1)
+#define PORTSC_CCS (1 << 0)
+#define PORTSC_PED (1 << 1)
 	// BIT 2 rsvdZ
-#define PORTSC_OCA (1<<3)
-#define PORTSC_PR (1<<4)
-#define PORTSC_PLS (1<<5)
+#define PORTSC_OCA (1 << 3)
+#define PORTSC_PR (1 << 4)
+#define PORTSC_PLS (1 << 5)
 #define PORTSC_PLS_MASK MASK(5, 4)
-#define PORTSC_PP (1<<9)
+#define PORTSC_PP (1 << 9)
 #define PORTSC_PORT_SPEED_START 10
-#define PORTSC_PORT_SPEED (1<<PORTSC_PORT_SPEED_START)
+#define PORTSC_PORT_SPEED (1 << PORTSC_PORT_SPEED_START)
 #define PORTSC_PORT_SPEED_MASK MASK(PORTSC_PORT_SPEED_START, 4)
-#define PORTSC_PIC (1<<14)
+#define PORTSC_PIC (1 << 14)
 #define PORTSC_PIC_MASK MASK(14, 2)
-#define PORTSC_LWS (1<<16)
-#define PORTSC_CSC (1<<17)
-#define PORTSC_PEC (1<<18)
-#define PORTSC_WRC (1<<19)
-#define PORTSC_OCC (1<<20)
-#define PORTSC_PRC (1<<21)
-#define PORTSC_PLC (1<<22)
-#define PORTSC_CEC (1<<23)
-#define PORTSC_CAS (1<<24)
-#define PORTSC_WCE (1<<25)
-#define PORTSC_WDE (1<<26)
-#define PORTSC_WOE (1<<27)
+#define PORTSC_LWS (1 << 16)
+#define PORTSC_CSC (1 << 17)
+#define PORTSC_PEC (1 << 18)
+#define PORTSC_WRC (1 << 19)
+#define PORTSC_OCC (1 << 20)
+#define PORTSC_PRC (1 << 21)
+#define PORTSC_PLC (1 << 22)
+#define PORTSC_CEC (1 << 23)
+#define PORTSC_CAS (1 << 24)
+#define PORTSC_WCE (1 << 25)
+#define PORTSC_WDE (1 << 26)
+#define PORTSC_WOE (1 << 27)
 	// BIT 29:28 rsvdZ
-#define PORTSC_DR (1<<30)
-#define PORTSC_WPR (1<<31)
+#define PORTSC_DR (1 << 30)
+#define PORTSC_WPR (1 << 31)
 #define PORTSC_RW_MASK (PORTSC_PR | PORTSC_PLS_MASK | PORTSC_PP | PORTSC_PIC_MASK | PORTSC_LWS | PORTSC_WCE | PORTSC_WDE | PORTSC_WOE)
 			u32 portpmsc;
 			u32 portli;
 			u32 res;
-		} __attribute__ ((packed)) prs[];
-	} __attribute__ ((packed)) *opreg;
+		} __packed prs[];
+	} __packed *opreg;
 
 	/* R/W, volatile, MMIO -> no bitfields */
 	volatile struct hcrreg {
@@ -462,8 +462,8 @@ typedef struct xhci {
 			u32 erstba_hi;
 			u32 erdp_lo;
 			u32 erdp_hi;
-		} __attribute__ ((packed)) intrrs[]; // up to 1024, but maximum host specific, given in capreg->MaxIntrs
-	} __attribute__ ((packed)) *hcrreg;
+		} __packed intrrs[]; // up to 1024, but maximum host specific, given in capreg->MaxIntrs
+	} __packed *hcrreg;
 
 	/* R/W, volatile, MMIO -> no bitfields */
 	volatile u32 *dbreg;

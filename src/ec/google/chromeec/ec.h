@@ -26,28 +26,33 @@ void google_chromeec_ioport_range(uint16_t *base, size_t *size);
 
 int google_chromeec_i2c_xfer(uint8_t chip, uint8_t addr, int alen,
 			     uint8_t *buffer, int len, int is_read);
-u32 google_chromeec_get_wake_mask(void);
-int google_chromeec_set_sci_mask(u32 mask);
-int google_chromeec_set_smi_mask(u32 mask);
-int google_chromeec_set_wake_mask(u32 mask);
+uint64_t google_chromeec_get_wake_mask(void);
+int google_chromeec_set_sci_mask(uint64_t mask);
+int google_chromeec_set_smi_mask(uint64_t mask);
+int google_chromeec_set_wake_mask(uint64_t mask);
 u8 google_chromeec_get_event(void);
+
+/* Check if EC supports feature EC_FEATURE_UNIFIED_WAKE_MASKS */
+bool google_chromeec_is_uhepi_supported(void);
 int google_ec_running_ro(void);
 void google_chromeec_init(void);
+int google_chromeec_pd_get_amode(uint16_t svid);
+int google_chromeec_wait_for_displayport(long timeout);
 
-/* If recovery mode is enabled and EC is not running RO firmware reboot. */
-void google_chromeec_early_init(void);
-/* Reboot if EC firmware is not expected type. */
-void google_chromeec_check_ec_image(int expected_type);
-void google_chromeec_check_pd_image(int expected_type);
+/* Device events */
+uint64_t google_chromeec_get_device_enabled_events(void);
+int google_chromeec_set_device_enabled_events(uint64_t mask);
+uint64_t google_chromeec_get_device_current_events(void);
 
 int google_chromeec_check_feature(int feature);
 uint8_t google_chromeec_calc_checksum(const uint8_t *data, int size);
 u16 google_chromeec_get_board_version(void);
-u32 google_chromeec_get_events_b(void);
-int google_chromeec_clear_events_b(u32 mask);
+u32 google_chromeec_get_sku_id(void);
+int google_chromeec_set_sku_id(u32 skuid);
+uint64_t  google_chromeec_get_events_b(void);
+int google_chromeec_clear_events_b(uint64_t mask);
 int google_chromeec_kbbacklight(int percent);
 void google_chromeec_post(u8 postcode);
-void google_chromeec_log_events(u32 mask);
 int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len);
 uint8_t google_chromeec_get_switches(void);
 
@@ -56,6 +61,19 @@ int google_chromeec_vstore_supported(void);
 int google_chromeec_vstore_info(uint32_t *locked);
 int google_chromeec_vstore_read(int slot, uint8_t *data);
 int google_chromeec_vstore_write(int slot, uint8_t *data, size_t size);
+
+/* Issue reboot command to EC with specified type and flags. Returns 0 on
+   success, < 0 otherwise. */
+int google_chromeec_reboot(int dev_idx, enum ec_reboot_cmd type, uint8_t flags);
+
+/**
+ * Get OEM (or SKU) ID from Cros Board Info
+ *
+ * @param id [OUT] oem/sku id
+ * @return 0 on success or negative integer for errors.
+ */
+int google_chromeec_cbi_get_oem_id(uint32_t *id);
+int google_chromeec_cbi_get_sku_id(uint32_t *id);
 
 /* MEC uses 0x800/0x804 as register/index pair, thus an 8-byte resource. */
 #define MEC_EMI_BASE		0x800
@@ -77,6 +95,25 @@ enum usb_charge_mode {
 };
 int google_chromeec_set_usb_charge_mode(u8 port_id, enum usb_charge_mode mode);
 int google_chromeec_set_usb_pd_role(u8 port, enum usb_pd_control_role role);
+/*
+ * Retrieve the charger type and max wattage.
+ *
+ * @param type      charger type
+ * @param max_watts charger max wattage
+ * @return non-zero for error, otherwise 0.
+ */
+int google_chromeec_get_usb_pd_power_info(enum usb_chg_type *type,
+					  u32 *max_watts);
+
+/*
+ * Set max current and voltage of a dedicated charger.
+ *
+ * @param current_lim Max current in mA
+ * @param voltage_lim Max voltage in mV
+ * @return non-zero for error, otherwise 0.
+ */
+int google_chromeec_override_dedicated_charger_limit(u16 current_lim,
+						     u16 voltage_lim);
 
 /* internal structure to send a command to the EC and wait for response. */
 struct chromeec_command {
@@ -111,5 +148,25 @@ int crosec_command_proto(struct chromeec_command *cec_command,
 			 crosec_io_t crosec_io, void *context);
 
 int google_chromeec_command(struct chromeec_command *cec_command);
+
+struct google_chromeec_event_info {
+	uint64_t log_events;
+	uint64_t sci_events;
+	uint64_t s3_wake_events;
+	uint64_t s3_device_events;
+	uint64_t s5_wake_events;
+	uint64_t s0ix_wake_events;
+};
+void google_chromeec_events_init(const struct google_chromeec_event_info *info,
+					bool is_s3_wakeup);
+
+/*
+ * Get next available MKBP event in ec_response_get_next_event. Returns 0 on
+ * success, < 0 otherwise.
+ */
+int google_chromeec_get_mkbp_event(struct ec_response_get_next_event *event);
+
+/* Log host events to eventlog based on the mask provided. */
+void google_chromeec_log_events(uint64_t mask);
 
 #endif /* _EC_GOOGLE_CHROMEEC_EC_H */

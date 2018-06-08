@@ -69,7 +69,7 @@
 /* XLAT Table Init Attributes */
 
 #define VA_START                   0x0
-#define BITS_PER_VA                33
+#define BITS_PER_VA                48
 /* Granule size of 4KB is being used */
 #define GRANULE_SIZE_SHIFT         12
 #define GRANULE_SIZE               (1 << GRANULE_SIZE_SHIFT)
@@ -77,14 +77,12 @@
 #define GRANULE_SIZE_MASK          ((1 << GRANULE_SIZE_SHIFT) - 1)
 
 #define BITS_RESOLVED_PER_LVL   (GRANULE_SIZE_SHIFT - 3)
+#define L0_ADDR_SHIFT           (GRANULE_SIZE_SHIFT + BITS_RESOLVED_PER_LVL * 3)
 #define L1_ADDR_SHIFT           (GRANULE_SIZE_SHIFT + BITS_RESOLVED_PER_LVL * 2)
 #define L2_ADDR_SHIFT           (GRANULE_SIZE_SHIFT + BITS_RESOLVED_PER_LVL * 1)
 #define L3_ADDR_SHIFT           (GRANULE_SIZE_SHIFT + BITS_RESOLVED_PER_LVL * 0)
 
-#if BITS_PER_VA > L1_ADDR_SHIFT + BITS_RESOLVED_PER_LVL
-  #error "BITS_PER_VA too large (we don't have L0 table support)"
-#endif
-
+#define L0_ADDR_MASK     (((1UL << BITS_RESOLVED_PER_LVL) - 1) << L0_ADDR_SHIFT)
 #define L1_ADDR_MASK     (((1UL << BITS_RESOLVED_PER_LVL) - 1) << L1_ADDR_SHIFT)
 #define L2_ADDR_MASK     (((1UL << BITS_RESOLVED_PER_LVL) - 1) << L2_ADDR_SHIFT)
 #define L3_ADDR_MASK     (((1UL << BITS_RESOLVED_PER_LVL) - 1) << L3_ADDR_SHIFT)
@@ -94,6 +92,7 @@
 #define L3_XLAT_SIZE               (1UL << L3_ADDR_SHIFT)
 #define L2_XLAT_SIZE               (1UL << L2_ADDR_SHIFT)
 #define L1_XLAT_SIZE               (1UL << L1_ADDR_SHIFT)
+#define L0_XLAT_SIZE               (1UL << L0_ADDR_SHIFT)
 
 /* Block indices required for MAIR */
 #define BLOCK_INDEX_MEM_DEV_NGNRNE 0
@@ -149,8 +148,17 @@
 #define TCR_TBI_USED               (0x0 << TCR_TBI_SHIFT)
 #define TCR_TBI_IGNORED            (0x1 << TCR_TBI_SHIFT)
 
+struct mmu_context {
+	uint64_t mair;         /* MAIR attributes */
+	uint64_t tcr;          /* TCR Attributes */
+};
+
 /* Initialize MMU registers and page table memory region. */
 void mmu_init(void);
+/* Desc : Save mmu context (registers and ttbr base/size). */
+void mmu_save_context(struct mmu_context *mmu_context);
+/* Desc : Restore mmu context using input backed-up context */
+void mmu_restore_context(const struct mmu_context *mmu_context);
 /* Change a memory type for a range of bytes at runtime. */
 void mmu_config_range(void *start, size_t size, uint64_t tag);
 /* Enable the MMU (need previous mmu_init() and configured ranges!). */

@@ -1,2 +1,0 @@
-config BOARD_SUPERMICRO_X7DB8
-	bool "X7DB8 / X7DB8+"

@@ -18,12 +18,13 @@
 
 #include <rules.h>
 #include <stdint.h>
+#include <compiler.h>
 
 void spiconsole_init(void);
 void spiconsole_tx_byte(unsigned char c);
 
-#define __CONSOLE_SPI_ENABLE__	(CONFIG_SPI_CONSOLE && \
-	(ENV_RAMSTAGE || (ENV_SMM && CONFIG_DEBUG_SMI)))
+#define __CONSOLE_SPI_ENABLE__	(IS_ENABLED(CONFIG_SPI_CONSOLE) && \
+	(ENV_RAMSTAGE || (ENV_SMM && IS_ENABLED(CONFIG_DEBUG_SMI))))
 
 #if __CONSOLE_SPI_ENABLE__
 static inline void __spiconsole_init(void)	{ spiconsole_init(); }
@@ -59,12 +60,12 @@ struct em100_msg_header {
 	uint32_t	msg_signature;
 	uint8_t		msg_type;
 	uint8_t		msg_length;
-} __attribute__ ((packed));
+} __packed;
 
 struct em100_msg {
 	struct em100_msg_header header;
 	char data[MAX_MSG_LENGTH];
-} __attribute__ ((packed));
+} __packed;
 
 
 

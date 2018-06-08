@@ -106,7 +106,7 @@ Device (SIO1)
 		})
 
 		/* Current Resource Settings */
-		Method(_CRS, 0)
+		Method(_CRS, 0, Serialized)
 		{
 			Name(NONE, ResourceTemplate() {
 				IO(Decode16, 0x000, 0x000, 0x0, 0x1)
@@ -256,7 +256,7 @@ Device (SIO1)
 		})
 
 		/* Current Resource Settings */
-		Method(_CRS, 0)
+		Method(_CRS, 0, Serialized)
 		{
 			Name(NONE, ResourceTemplate() {
 				IO(Decode16, 0x000, 0x000, 0x0, 0x1)
@@ -405,7 +405,7 @@ Device (SIO1)
 		})
 
 		/* Current Resource Settings */
-		Method(_CRS, 0)
+		Method(_CRS, 0, Serialized)
 		{
 			Name(NONE, ResourceTemplate() {
 				IO(Decode16, 0x000, 0x000, 0x0, 0x1)
@@ -552,7 +552,7 @@ Device (SIO1)
 		})
 
 		/* Current Resource Settings */
-		Method(_CRS, 0)
+		Method(_CRS, 0, Serialized)
 		{
 			Name(NONE, ResourceTemplate() {
 				IO(Decode16, 0x000, 0x000, 0x0, 0x1)

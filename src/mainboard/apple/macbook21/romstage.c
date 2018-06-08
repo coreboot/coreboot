@@ -38,7 +38,7 @@
 static void ich7_enable_lpc(void)
 {
 	/* Enable Serial IRQ */
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0xd0);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0xd0);
 
 	/* I/O Decode Ranges
 	 * X60:       0x0210 == 00000010 00010000
@@ -48,7 +48,7 @@ static void ich7_enable_lpc(void)
 	 *            00 = 378h - 37Fh and 778h - 77Fh
 	 *            10 = 3BCh - 3BEh and 7BCh - 7BEh
 	 */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0010);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0010);
 
 	/* LPC_EN--LPC I/F Enables Register
 	 * X60:       0x1f0d == 00011111 00001101
@@ -102,7 +102,9 @@ static void ich7_enable_lpc(void)
 	 *            interface. This range is selected in the LPC_COM Decode
 	 *            Range Register (D31:F0:80h, bits 3:2).
 	 */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x3807);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF2_LPC_EN
+			| CNF1_LPC_EN | MC_LPC_EN | LPT_LPC_EN | COMB_LPC_EN
+			| COMA_LPC_EN);
 
 	/* GEN1_DEC, LPC Interface Generic Decode Range 1
 	 * X60:       0x1601 0x007c == 00000000 01111100 00010110 00000001
@@ -126,29 +128,19 @@ static void ich7_enable_lpc(void)
 	 *            1 = Enable the GEN1 I/O range to be forwarded to the LPC
 	 *            I/F
 	 */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x84, 0x0681);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x86, 0x000c);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x000c0681);
 
 	/* GEN2_DEC, LPC Interface Generic Decode Range 2
 	 * X60:       0x15e1 0x000c == 00000000 00001100 00010101 11100001
 	 * Macbook21: 0x1641 0x000c == 00000000 00001100 00010110 01000001
 	 */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x88, 0x1641);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8a, 0x000c);
-
-	/* GEN3_DEC, LPC Interface Generic Decode Range 3
-	 * X60:       0x1681 0x001c == 00000000 00011100 00010110 10000001
-	 * Macbook21: 0x0000 0x0000
-	 */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8c, 0x0000); /* obsolete, because it writes zeros? */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8e, 0x0000);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN2_DEC, 0x000c1641);
 
 	/* GEN4_DEC, LPC Interface Generic Decode Range 4
 	 * X60:       0x0000 0x0000
 	 * Macbook21: 0x0301 0x001c == 00000000 00011100 00000011 00000001
 	 */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x90, 0x0301);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x92, 0x001c);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN4_DEC, 0x001c0301);
 }
 
 static void rcba_config(void)
@@ -163,23 +155,24 @@ static void rcba_config(void)
 	RCBA32(0x3108) = 0x10004321;
 
 	/* PCIe Interrupts */
-	RCBA32(0x310c) = 0x00214321;
+	RCBA32(D28IP) = 0x00214321;
 	/* HD Audio Interrupt */
-	RCBA32(0x3110) = 0x00000001;
+	RCBA32(D27IP) = 0x00000001;
 
 	/* dev irq route register */
-	RCBA16(0x3140) = 0x0232;
-	RCBA16(0x3142) = 0x3246;
-	RCBA16(0x3144) = 0x0235;
-	RCBA16(0x3146) = 0x3201;
-	RCBA16(0x3148) = 0x3216;
+	RCBA16(D31IR) = 0x0232;
+	RCBA16(D30IR) = 0x3246;
+	RCBA16(D29IR) = 0x0235;
+	RCBA16(D28IR) = 0x3201;
+	RCBA16(D27IR) = 0x3216;
 
 	/* Enable IOAPIC */
-	RCBA8(0x31ff) = 0x03;
+	RCBA8(OIC) = 0x03;
 
 	/* Disable unused devices */
-	RCBA32(0x3418) = FD_PCIE6 | FD_PCIE5 | FD_PCIE4 | FD_PCIE3 | FD_INTLAN | FD_ACMOD | FD_ACAUD;
-	RCBA32(0x3418) |= (1 << 0);	/* Required. */
+	RCBA32(FD) = FD_PCIE6 | FD_PCIE5 | FD_PCIE4 | FD_PCIE3 | FD_INTLAN
+		| FD_ACMOD | FD_ACAUD;
+	RCBA32(FD) |= (1 << 0);	/* Required. */
 
 	/* Set up I/O Trap #0 for 0xfe00 (SMIC) */
 
@@ -220,14 +213,14 @@ static void early_ich7_init(void)
 	RCBA32(0x0214) = 0x10030549;
 	RCBA32(0x0218) = 0x00020504;
 	RCBA8(0x0220) = 0xc5;
-	reg32 = RCBA32(0x3410);
+	reg32 = RCBA32(GCS);
 	reg32 |= (1 << 6);
-	RCBA32(0x3410) = reg32;
+	RCBA32(GCS) = reg32;
 	reg32 = RCBA32(0x3430);
 	reg32 &= ~(3 << 0);
 	reg32 |= (1 << 0);
 	RCBA32(0x3430) = reg32;
-	RCBA32(0x3418) |= (1 << 0);
+	RCBA32(FD) |= (1 << 0);
 	RCBA16(0x0200) = 0x2008;
 	RCBA8(0x2027) = 0x0d;
 	RCBA16(0x3e08) |= (1 << 7);

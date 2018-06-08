@@ -85,7 +85,7 @@ static void sata_init(struct device *dev)
 	struct southbridge_ati_sb800_config *conf;
 	conf = dev->chip_info;
 
-	device_t sm_dev;
+	struct device *sm_dev;
 	/* SATA SMBus Disable */
 	/* sm_dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0); */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));

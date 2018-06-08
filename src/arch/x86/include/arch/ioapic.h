@@ -26,8 +26,8 @@
 
 #define ALL		(0xff << 24)
 #define NONE		(0)
-#define DISABLED	(1 << 16)
-#define ENABLED		(0 << 16)
+#define INT_DISABLED	(1 << 16)
+#define INT_ENABLED	(0 << 16)
 #define TRIGGER_EDGE	(0 << 15)
 #define TRIGGER_LEVEL	(1 << 15)
 #define POLARITY_HIGH	(0 << 13)

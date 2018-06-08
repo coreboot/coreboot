@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2016 Google Inc.
+ * Copyright 2017 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,69 +15,31 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_def.h>
-#include <device/pci_ids.h>
-#include <device/spi.h>
-#include <intelblocks/gspi.h>
-#include <soc/ramstage.h>
-#include <spi-generic.h>
+#include <intelblocks/spi.h>
+#include <soc/pci_devs.h>
 
-/* SPI controller managing the flash-device SPI. */
-static int flash_spi_ctrlr_setup(const struct spi_slave *dev)
+int spi_soc_devfn_to_bus(unsigned int devfn)
 {
-	if ((dev->bus != 0) || (dev->cs != 0)) {
-		printk(BIOS_ERR, "%s: Unsupported device bus=0x%x,cs=0x%x!\n",
-			__func__, dev->bus, dev->cs);
-		return -1;
+	switch (devfn) {
+	case PCH_DEVFN_SPI:
+		return 0;
+	case PCH_DEVFN_GSPI0:
+		return 1;
+	case PCH_DEVFN_GSPI1:
+		return 2;
 	}
-
-	return 0;
+	return -1;
 }
 
-static const struct spi_ctrlr flash_spi_ctrlr = {
-	.setup = flash_spi_ctrlr_setup,
-};
-
-const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
-	{ .ctrlr = &flash_spi_ctrlr, .bus_start = 0, .bus_end = 0 },
-#if !ENV_SMM
-	{ .ctrlr = &gspi_ctrlr, .bus_start = 1,
-	  .bus_end =  1 + (CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX - 1)},
-#endif
-};
-
-const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);
-
-#if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
-
-static int spi_dev_to_bus(struct device *dev)
+int spi_soc_bus_to_devfn(unsigned int bus)
 {
-	return spi_devfn_to_bus(dev->path.pci.devfn);
+	switch (bus) {
+	case 0:
+		return PCH_DEVFN_SPI;
+	case 1:
+		return PCH_DEVFN_GSPI0;
+	case 2:
+		return PCH_DEVFN_GSPI1;
+	}
+	return -1;
 }
-
-static struct spi_bus_operations spi_bus_ops = {
-	.dev_to_bus			= &spi_dev_to_bus,
-};
-
-static struct device_operations spi_dev_ops = {
-	.read_resources			= &pci_dev_read_resources,
-	.set_resources			= &pci_dev_set_resources,
-	.enable_resources		= &pci_dev_enable_resources,
-	.scan_bus			= &scan_generic_bus,
-	.ops_pci			= &soc_pci_ops,
-	.ops_spi_bus			= &spi_bus_ops,
-};
-
-static const unsigned short pci_device_ids[] = {
-	0x9d24, 0x9d29, 0x9d2a, 0
-};
-
-static const struct pci_driver pch_spi __pci_driver = {
-	.ops				= &spi_dev_ops,
-	.vendor				= PCI_VENDOR_ID_INTEL,
-	.devices			= pci_device_ids,
-};
-#endif

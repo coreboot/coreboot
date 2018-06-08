@@ -64,7 +64,7 @@ static inline msr_t rdmsr(unsigned index)
  *
  * @param dev TODO
  */
-static void sis761_read_resources(device_t dev)
+static void sis761_read_resources(struct device *dev)
 {
 	/* Read the generic PCI resources */
 	printk(BIOS_DEBUG, "sis761_read_resources ------->\n");
@@ -81,7 +81,7 @@ static void sis761_read_resources(device_t dev)
 
 }
 
-static void sis761_set_resources(device_t dev)
+static void sis761_set_resources(struct device *dev)
 {
 	printk(BIOS_DEBUG, "sis761_set_resources ------->\n");
 

@@ -32,7 +32,6 @@ chip soc/intel/skylake
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "3"
 	register "EnableTraceHub" = "0"
-	register "XdciEnable" = "0"
 	register "SsicPortEnable" = "0"
 	register "SmbusEnable" = "1"
 	register "Cio2Enable" = "0"
@@ -53,6 +52,7 @@ chip soc/intel/skylake
 	register "PmConfigSlpSusMinAssert" = "1"       # 500ms
 	register "PmConfigSlpAMinAssert" = "3"         # 2s
 	register "PmTimerDisabled" = "1"
+	register "VmxEnable" = "1"
 
 	register "pirqa_routing" = "PCH_IRQ11"
 	register "pirqb_routing" = "PCH_IRQ10"
@@ -68,7 +68,7 @@ chip soc/intel/skylake
 	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |
 	#+----------------+-------+-------+-------+-------+
 	#| Psi1Threshold  | 20A   | 20A   | 20A   | 20A   |
-	#| Psi2Threshold  | 4A    | 5A    | 5A    | 5A    |
+	#| Psi2Threshold  | 2A    | 2A    | 2A    | 2A    |
 	#| Psi3Threshold  | 1A    | 1A    | 1A    | 1A    |
 	#| Psi3Enable     | 1     | 1     | 1     | 1     |
 	#| Psi4Enable     | 1     | 1     | 1     | 1     |
@@ -76,13 +76,13 @@ chip soc/intel/skylake
 	#| ImonOffset     | 0     | 0     | 0     | 0     |
 	#| IccMax         | 4A    | 24A   | 24A   | 24A   |
 	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
-	#| AcLoadline     | 17.9  | 5.9   | 5.7   | 5.7   |
-	#| DcLoadline     | 14    | 4.7   | 4.2   | 4.2   |
+	#| AcLoadline     | 14.9  | 5     | 5.7   | 4.57  |
+	#| DcLoadline     | 14.2  | 4.86  | 4.2   | 4.3   |
 	#+----------------+-------+-------+-------+-------+
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
-		.psi2threshold = VR_CFG_AMP(4),
+		.psi2threshold = VR_CFG_AMP(2),
 		.psi3threshold = VR_CFG_AMP(1),
 		.psi3enable = 1,
 		.psi4enable = 1,
@@ -90,14 +90,14 @@ chip soc/intel/skylake
 		.imon_offset = 0x0,
 		.icc_max = VR_CFG_AMP(4),
 		.voltage_limit = 1520,
-		.ac_loadline = 1790,
-		.dc_loadline = 1400,
+		.ac_loadline = 1490,
+		.dc_loadline = 1420,
 	}"
 
 	register "domain_vr_config[VR_IA_CORE]" = "{
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
-		.psi2threshold = VR_CFG_AMP(5),
+		.psi2threshold = VR_CFG_AMP(2),
 		.psi3threshold = VR_CFG_AMP(1),
 		.psi3enable = 1,
 		.psi4enable = 1,
@@ -105,14 +105,14 @@ chip soc/intel/skylake
 		.imon_offset = 0x0,
 		.icc_max = VR_CFG_AMP(24),
 		.voltage_limit = 1520,
-		.ac_loadline = 590,
-		.dc_loadline = 470,
+		.ac_loadline = 500,
+		.dc_loadline = 486,
 	}"
 
 	register "domain_vr_config[VR_GT_UNSLICED]" = "{
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
-		.psi2threshold = VR_CFG_AMP(5),
+		.psi2threshold = VR_CFG_AMP(2),
 		.psi3threshold = VR_CFG_AMP(1),
 		.psi3enable = 1,
 		.psi4enable = 1,
@@ -127,7 +127,7 @@ chip soc/intel/skylake
 	register "domain_vr_config[VR_GT_SLICED]" = "{
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
-		.psi2threshold = VR_CFG_AMP(5),
+		.psi2threshold = VR_CFG_AMP(2),
 		.psi3threshold = VR_CFG_AMP(1),
 		.psi3enable = 1,
 		.psi4enable = 1,
@@ -135,19 +135,28 @@ chip soc/intel/skylake
 		.imon_offset = 0x0,
 		.icc_max = VR_CFG_AMP(24),
 		.voltage_limit = 1520,
-		.ac_loadline = 570,
-		.dc_loadline = 420,
+		.ac_loadline = 457,
+		.dc_loadline = 430,
 	}"
 
 	# Enable Root port 1 with SRCCLKREQ1#
 	register "PcieRpEnable[0]" = "1"
 	register "PcieRpClkReqSupport[0]" = "1"
 	register "PcieRpClkReqNumber[0]" = "1"
+	register "PcieRpAdvancedErrorReporting[0]" = "1"
+	register "PcieRpLtrEnable[0]" = "1"
+	register "PcieRpHotPlug[0]" = "1"
+	#RP 1 uses CLK SRC 1
+	register "PcieRpClkSrcNumber[0]" = "1"
 
 	# Enable Root port 5 with SRCCLKREQ4#
 	register "PcieRpEnable[4]" = "1"
 	register "PcieRpClkReqSupport[4]" = "1"
 	register "PcieRpClkReqNumber[4]" = "4"
+	register "PcieRpAdvancedErrorReporting[4]" = "1"
+	register "PcieRpLtrEnable[4]" = "1"
+	#RP 5 uses CLK SRC 4
+	register "PcieRpClkSrcNumber[4]" = "4"
 
 	register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"	# Type-C Port 1
 	register "usb2_ports[1]" = "USB2_PORT_FLEX(OC_SKIP)"	# Camera
@@ -182,16 +191,24 @@ chip soc/intel/skylake
 	register "i2c_voltage[2]" = "I2C_VOLTAGE_1V8"
 	register "i2c[2]" = "{
 		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 111,
-		.fall_time_ns = 41,
+		.speed_config[0] = {
+			.speed = I2C_SPEED_FAST,
+			.scl_lcnt = 186,
+			.scl_hcnt = 93,
+			.sda_hold = 36,
+		}
 	}"
 
 	# Audio
 	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"
 	register "i2c[4]" = "{
 		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 240,
-		.fall_time_ns = 30,
+		.speed_config[0] = {
+			.speed = I2C_SPEED_FAST,
+			.scl_lcnt = 176,
+			.scl_hcnt = 95,
+			.sda_hold = 36,
+		}
 	}"
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
@@ -203,7 +220,7 @@ chip soc/intel/skylake
 		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
 		[PchSerialIoIndexSpi0]  = PchSerialIoPci,
-		[PchSerialIoIndexSpi1]  = PchSerialIoPci,
+		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled,
 		[PchSerialIoIndexUart0] = PchSerialIoSkipInit,
 		[PchSerialIoIndexUart1] = PchSerialIoDisabled,
 		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,
@@ -211,8 +228,11 @@ chip soc/intel/skylake
 
 	register "speed_shift_enable" = "1"
 	register "dptf_enable" = "1"
-	register "tdp_pl2_override" = "7"
+	register "tdp_pl2_override" = "15"
 	register "tcc_offset" = "10"
+
+	# Lock Down
+	register "chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end
@@ -220,7 +240,49 @@ chip soc/intel/skylake
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
-		device pci 14.0 on  end # USB xHCI
+		device pci 14.0 on
+			chip drivers/usb/acpi
+				register "desc" = ""Root Hub""
+				register "type" = "UPC_TYPE_HUB"
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Left""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device usb 2.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Right""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device usb 2.4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 H1 TPM""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Left""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device usb 3.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Right""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device usb 3.1 on end
+					end
+				end
+			end
+		end # USB xHCI
 		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.2 on  end # Thermal Subsystem
 		device pci 15.0 on
@@ -266,6 +328,8 @@ chip soc/intel/skylake
 		device pci 19.2 on
 			chip drivers/i2c/max98927
 				register "interleave_mode" = "1"
+				register "vmon_slot_no" = "4"
+				register "imon_slot_no" = "5"
 				register "uid" = "0"
 				register "desc" = ""Right Speaker Amp""
 				register "name" = ""MAXR""
@@ -273,22 +337,38 @@ chip soc/intel/skylake
 			end
 			chip drivers/i2c/max98927
 				register "interleave_mode" = "1"
+				register "vmon_slot_no" = "6"
+				register "imon_slot_no" = "7"
 				register "uid" = "1"
 				register "desc" = ""Left Speaker Amp""
 				register "name" = ""MAXL""
 				device i2c 3a on end
 			end
-			chip drivers/i2c/generic
-				register "hid" = ""10EC5663""
-				register "name" = ""RT53""
-				register "desc" = ""Realtek RT5663""
-				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D9)"
+			chip drivers/i2c/rt5663
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH_WAKE(GPP_D9)"
+				register "dc_offset_l_manual" = "0xffd160"
+				register "dc_offset_r_manual" = "0xffd1c0"
+				register "dc_offset_l_manual_mic" = "0xff8a10"
+				register "dc_offset_r_manual_mic" = "0xff8ab0"
 				device i2c 13 on end
 			end
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5514""
 				register "name" = ""RT54""
 				register "desc" = ""Realtek RT5514""
+				register "property_count" = "3"
+				# Set the DMIC initial delay to 16ms to avoid pop noise
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,dmic-init-delay""
+				register "property_list[0].integer" = "16"
+				# Set clock name for RT5514 to calibrate DSP clock.
+				register "property_list[1].type" = "ACPI_DP_TYPE_STRING"
+				register "property_list[1].name" = ""realtek,dsp-calib-clk-name""
+				register "property_list[1].string" = ""ssp1_mclk""
+				# Set clock rate for RT5514 to calibrate DSP clock.
+				register "property_list[2].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[2].name" = ""realtek,dsp-calib-clk-rate""
+				register "property_list[2].integer" = "24000000"
 				device i2c 57 on end
 			end
 		end # I2C #4
@@ -315,20 +395,12 @@ chip soc/intel/skylake
 			chip drivers/spi/acpi
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "compat_string" = ""realtek,rt5514""
-				register "irq" = "ACPI_IRQ_LEVEL_HIGH(GPP_F10_IRQ)"
+				register "irq" = "ACPI_IRQ_EDGE_HIGH(GPP_F10_IRQ)"
+				register "speed" = "12 * MHz"
 				device spi 0 on end
 			end
 		end # GSPI #0
-		device pci 1e.3 on
-			chip drivers/spi/acpi
-				register "hid" = "ACPI_DT_NAMESPACE_HID"
-				register "uid" = "1"
-				register "compat_string" = ""fpc,fpc1020""
-				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_HIGH(GPP_C8)"
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C9)"
-				device spi 0 on end
-			end
-		end # GSPI #1
+		device pci 1e.3 off end # GSPI #1
 		device pci 1e.4 on  end # eMMC
 		device pci 1e.5 off end # SDIO
 		device pci 1e.6 off end # SDCard

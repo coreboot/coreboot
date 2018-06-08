@@ -86,4 +86,7 @@
 #define  PMIR_CF9LOCK		(1 << 31)
 #define  PMIR_CF9GR		(1 << 20)
 
+#define LPC_IBDF		0x6C		/* I/O APIC bus/dev/fn */
+#define LPC_HnBDF(n)		(0x70 + n * 2)	/* HPET n bus/dev/fn */
+
 #endif

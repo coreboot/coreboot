@@ -16,7 +16,7 @@
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
 #include <console/console.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <stdint.h>
@@ -55,7 +55,11 @@ static void i2c_tpm_fill_ssdt(struct device *dev)
 	acpigen_write_name("_CRS");
 	acpigen_write_resourcetemplate_header();
 	acpi_device_write_i2c(&i2c);
-	acpi_device_write_interrupt(&config->irq);
+	if (config->irq_gpio.pin_count)
+		acpi_device_write_gpio(&config->irq_gpio);
+	else
+		acpi_device_write_interrupt(&config->irq);
+
 	acpigen_write_resourcetemplate_footer();
 
 	acpigen_pop_len(); /* Device */
@@ -65,7 +69,7 @@ static void i2c_tpm_fill_ssdt(struct device *dev)
 	       dev->chip_ops->name, dev_path(dev));
 }
 
-static const char *i2c_tpm_acpi_name(struct device *dev)
+static const char *i2c_tpm_acpi_name(const struct device *dev)
 {
 	return "TPMI";
 }

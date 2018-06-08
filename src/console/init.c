@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/early_variables.h>
 #include <console/console.h>
 #include <console/uart.h>
 #include <console/streams.h>
@@ -29,12 +30,15 @@
 #define CONSOLE_LEVEL_CONST 0
 #endif
 
+static int console_inited CAR_GLOBAL;
 static int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 
 static inline int get_log_level(void)
 {
+	if (car_get_var(console_inited) == 0)
+		return -1;
 	if (CONSOLE_LEVEL_CONST)
-		return CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+		return get_console_loglevel();
 
 	return console_loglevel;
 }
@@ -49,7 +53,10 @@ static inline void set_log_level(int new_level)
 
 static void init_log_level(void)
 {
-	int debug_level = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+	int debug_level = get_console_loglevel();
+
+	if (CONSOLE_LEVEL_CONST)
+		return;
 
 	get_option(&debug_level, "debug_level");
 
@@ -65,12 +72,14 @@ asmlinkage void console_init(void)
 {
 	init_log_level();
 
-#if CONFIG_EARLY_PCI_BRIDGE && !defined(__SMM__)
+#if IS_ENABLED(CONFIG_EARLY_PCI_BRIDGE) && !defined(__SMM__)
 	pci_early_bridge_init();
 #endif
 
 	console_hw_init();
 
-	printk(BIOS_INFO, "\n\ncoreboot-%s%s %s " ENV_STRING " starting...\n",
+	car_set_var(console_inited, 1);
+
+	printk(BIOS_NOTICE, "\n\ncoreboot-%s%s %s " ENV_STRING " starting...\n",
 	       coreboot_version, coreboot_extra_version, coreboot_build);
 }

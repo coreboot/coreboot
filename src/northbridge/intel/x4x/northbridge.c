@@ -29,19 +29,18 @@
 #include <northbridge/intel/x4x/chip.h>
 #include <northbridge/intel/x4x/x4x.h>
 
-static void mch_domain_read_resources(device_t dev)
+static const int legacy_hole_base_k = 0xa0000 / 1024;
+
+static void mch_domain_read_resources(struct device *dev)
 {
-	u8 index;
+	u8 index, reg8;
 	u64 tom, touud;
-	u32 tomk, tseg_sizek, tolud, usable_tomk;
+	u32 tomk, tseg_sizek = 0, tolud;
 	u32 pcie_config_base, pcie_config_size;
 	u32 uma_sizek = 0;
 
 	const u32 top32memk = 4 * (GiB / KiB);
 	index = 3;
-
-	/* 1024KiB TSEG */
-	tseg_sizek = 1024;
 
 	pci_domain_read_resources(dev);
 
@@ -63,25 +62,51 @@ static void mch_domain_read_resources(device_t dev)
 	tomk = tolud >> 10;
 
 	/* Graphics memory comes next */
+
 	const u16 ggc = pci_read_config16(dev, D0F0_GGC);
 	printk(BIOS_DEBUG, "IGD decoded, subtracting ");
 
 	/* Graphics memory */
 	const u32 gms_sizek = decode_igd_memory_size((ggc >> 4) & 0xf);
 	printk(BIOS_DEBUG, "%uM UMA", gms_sizek >> 10);
+	tomk -= gms_sizek;
+	uma_sizek += gms_sizek;
 
 	/* GTT Graphics Stolen Memory Size (GGMS) */
 	const u32 gsm_sizek = decode_igd_gtt_size((ggc >> 8) & 0xf);
 	printk(BIOS_DEBUG, " and %uM GTT\n", gsm_sizek >> 10);
+	tomk -= gsm_sizek;
+	uma_sizek += gsm_sizek;
 
-	uma_sizek = gms_sizek + gsm_sizek + tseg_sizek;
-	usable_tomk = tomk - uma_sizek;
+	printk(BIOS_DEBUG, "TSEG decoded, subtracting ");
+	reg8 = pci_read_config8(dev, D0F0_ESMRAMC);
+	reg8 >>= 1;
+	reg8 &= 3;
+	switch (reg8) {
+	case 0:
+		tseg_sizek = 1024;
+		break;	/* TSEG = 1M */
+	case 1:
+		tseg_sizek = 2048;
+		break;	/* TSEG = 2M */
+	case 2:
+		tseg_sizek = 8192;
+		break;	/* TSEG = 8M */
+	}
+	uma_sizek += tseg_sizek;
+	tomk -= tseg_sizek;
 
-	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", usable_tomk >> 10);
+	printk(BIOS_DEBUG, "%dM\n", tseg_sizek >> 10);
+
+	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", tomk >> 10);
 
 	/* Report the memory regions */
-	ram_resource(dev, index++, 0, 0xa0000 >> 10);
-	ram_resource(dev, index++, 1*MiB >> 10, (usable_tomk - (1*MiB >> 10)));
+	ram_resource(dev, index++, 0, legacy_hole_base_k);
+	mmio_resource(dev, index++, legacy_hole_base_k,
+			(0xc0000 >> 10) - legacy_hole_base_k);
+	reserved_ram_resource(dev, index++, 0xc0000 >> 10,
+			(0x100000 - 0xc0000) >> 10);
+	ram_resource(dev, index++, 0x100000 >> 10, (tomk - (0x100000 >> 10)));
 
 	/*
 	 * If >= 4GB installed then memory from TOLUD to 4GB
@@ -95,9 +120,8 @@ static void mch_domain_read_resources(device_t dev)
 	}
 
 	printk(BIOS_DEBUG, "Adding UMA memory area base=0x%08x "
-			"size=0x%08x\n", usable_tomk << 10, uma_sizek << 10);
-	fixed_mem_resource(dev, index++, usable_tomk, uma_sizek,
-			IORESOURCE_RESERVE);
+		"size=0x%08x\n", tomk << 10, uma_sizek << 10);
+	uma_resource(dev, index++, tomk, uma_sizek);
 
 	/* Reserve high memory where the NB BARs are up to 4GiB */
 	fixed_mem_resource(dev, index++, DEFAULT_HECIBAR >> 10,
@@ -112,7 +136,7 @@ static void mch_domain_read_resources(device_t dev)
 	}
 }
 
-static void mch_domain_set_resources(device_t dev)
+static void mch_domain_set_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -122,7 +146,7 @@ static void mch_domain_set_resources(device_t dev)
 	assign_resources(dev->link_list);
 }
 
-static void mch_domain_init(device_t dev)
+static void mch_domain_init(struct device *dev)
 {
 	u32 reg32;
 
@@ -137,13 +161,12 @@ static struct device_operations pci_domain_ops = {
 	.set_resources    = mch_domain_set_resources,
 	.init             = mch_domain_init,
 	.scan_bus         = pci_domain_scan_bus,
-	.ops_pci_bus      = pci_bus_default_ops,
 	.write_acpi_tables = northbridge_write_acpi_tables,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }
@@ -156,7 +179,7 @@ static struct device_operations cpu_bus_ops = {
 };
 
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -172,8 +195,12 @@ static void x4x_init(void *const chip_info)
 	struct device *const d0f0 = dev_find_slot(0, 0);
 
 	/* Hide internal functions based on devicetree info. */
-	for (dev = 3; dev > 0; --dev) {
+	for (dev = 6; dev > 0; --dev) {
 		switch (dev) {
+		case 6: /* PEG1: only on P45 */
+			fn = 0;
+			bit_base = 13;
+			break;
 		case 3: /* ME */
 			fn = 3;
 			bit_base = 6;
@@ -182,10 +209,13 @@ static void x4x_init(void *const chip_info)
 			fn = 1;
 			bit_base = 3;
 			break;
-		case 1: /* PEG */
+		case 1: /* PEG0 */
 			fn = 0;
 			bit_base = 1;
 			break;
+		case 4: /* Nothing to do */
+		case 5:
+			continue;
 		}
 		for (; fn >= 0; --fn) {
 			const struct device *const d =

@@ -1,0 +1,10 @@
+config SOC_AMD_COMMON_BLOCK_CAR
+	bool
+	default n
+	help
+	  This option allows the SOC to use a standard AMD cache-as-ram (CAR)
+	  implementation.  CAR setup is built into bootblock and teardown is
+	  in postcar.  The teardown procedure does not preserve the stack so
+	  it may not be appropriate for a romstage implementation without
+	  additional consideration.  If this option is not used, the SOC must
+	  implement these functions separately.

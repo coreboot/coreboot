@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2015-2017 Intel Corp.
+## Copyright (C) 2015-2018 Intel Corp.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@ config FSP_VERSION_1_1
 config FSP_VERSION_2_0
 	bool "FSP 2.0"
 	select PLATFORM_USES_FSP2_0
+	select UDK_2015_BINDING
 	select POSTCAR_STAGE
 	help
 	  Use FSP 2.0 binary
@@ -178,5 +179,13 @@ config FMDFILE
 
 	  When an FMD descriptionn file is specified, the build system uses it
 	  instead of creating a default FMAP file.
+
+config ENABLE_SD_TESTING
+	bool "Enable SD card testing"
+	default y
+	select COMMONLIB_STORAGE_SD
+	select SDHC_DEBUG
+	select STORAGE_LOG
+	select STORAGE_TEST
 
 endif # BOARD_INTEL_QUARK

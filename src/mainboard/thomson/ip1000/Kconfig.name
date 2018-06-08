@@ -1,2 +1,0 @@
-config BOARD_THOMSON_IP1000
-	bool "IP1000"

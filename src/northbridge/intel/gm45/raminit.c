@@ -25,6 +25,7 @@
 #include <console/console.h>
 #include <lib.h>
 #include <delay.h>
+#include <timestamp.h>
 #include "gm45.h"
 #include "chip.h"
 
@@ -1240,11 +1241,13 @@ static void program_memory_map(const dimminfo_t *const dimms, const channel_mode
 			printk(BIOS_DEBUG, " and %uM GTT\n", gsm_sizek >> 10);
 
 			uma_sizem = (gms_sizek + gsm_sizek) >> 10;
-			/* Further reduce MTRR usage if it costs use less than
-			   16 MiB.  */
-			if (ALIGN_UP(uma_sizem, 64) - uma_sizem <= 16)
-				uma_sizem = ALIGN_UP(uma_sizem, 64);
 		}
+		/* TSEG 8M */
+		u8 reg8 = pci_read_config8(PCI_DEV(0, 0, 0), D0F0_ESMRAMC);
+		reg8 &= ~0x7;
+		reg8 |= (2 << 1) | (1 << 0); /* 8M and TSEG_Enable */
+		pci_write_config8(PCI_DEV(0, 0, 0), D0F0_ESMRAMC, reg8);
+		uma_sizem += 8;
 	}
 
 	const unsigned int mmio_size = get_mmio_size();
@@ -1713,6 +1716,7 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 	int ch;
 	u8 reg8;
 
+	timestamp_add_now(TS_BEFORE_INITRAM);
 
 	/* Wait for some bit, maybe TXT clear. */
 	if (sysinfo->txt_enabled) {
@@ -1800,10 +1804,12 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 	/* Perform receive-enable calibration. */
 	raminit_receive_enable_calibration(timings, dimms);
 	/* Lend clock values from receive-enable calibration. */
-	MCHBAR32(0x1224) = (MCHBAR32(0x1224) & ~(0xf0)) |
-			   ((((MCHBAR32(0x121c) >> 7) - 1) & 0xf) << 4);
-	MCHBAR32(0x1324) = (MCHBAR32(0x1324) & ~(0xf0)) |
-			   ((((MCHBAR32(0x131c) >> 7) - 1) & 0xf) << 4);
+	MCHBAR32(CxDRT5_MCHBAR(0)) =
+		(MCHBAR32(CxDRT5_MCHBAR(0)) & ~(0xf0)) |
+		((((MCHBAR32(CxDRT3_MCHBAR(0)) >> 7) - 1) & 0xf) << 4);
+	MCHBAR32(CxDRT5_MCHBAR(1)) =
+		(MCHBAR32(CxDRT5_MCHBAR(1)) & ~(0xf0)) |
+		((((MCHBAR32(CxDRT3_MCHBAR(1)) >> 7) - 1) & 0xf) << 4);
 
 	/* Perform read/write training for high clock rate. */
 	if (timings->mem_clock == MEM_CLOCK_1067MT) {
@@ -1825,4 +1831,6 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 
 	raminit_thermal(sysinfo);
 	init_igd(sysinfo);
+
+	timestamp_add_now(TS_AFTER_INITRAM);
 }

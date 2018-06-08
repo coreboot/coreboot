@@ -44,7 +44,7 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 #include <device/device.h>
 #if 0
 extern void writeback(struct device *dev, u16 where, u8 what);
-extern void dump_south(device_t dev);
+extern void dump_south(struct device *dev);
 #endif
 #endif
 

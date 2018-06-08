@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corporation.
+ * Copyright (C) 2016-2017 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,38 +14,23 @@
  */
 
 #include <arch/io.h>
+#include <bootstate.h>
 #include <commonlib/helpers.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <device/pci_ids.h>
+#include <intelblocks/cse.h>
+#include <soc/iomap.h>
+#include <soc/me.h>
+#include <soc/pci_devs.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <soc/iomap.h>
-#include <soc/pci_devs.h>
-#include <soc/me.h>
-#include <delay.h>
-#include <timer.h>
 
 static inline u32 me_read_config32(int offset)
 {
 	return pci_read_config32(PCH_DEV_CSE, offset);
-}
-
-static inline void me_write_config32(int offset, u32 value)
-{
-	pci_write_config32(PCH_DEV_CSE, offset, value);
-}
-
-static inline u32 me_read_mmio32(int offset)
-{
-	return read32((void *)(HECI1_BASE_ADDRESS + offset));
-}
-
-static inline void me_write_mmio32(u16 offset, u32 value)
-{
-	write32((void *)(HECI1_BASE_ADDRESS + offset), value);
 }
 
 /* HFSTS1[3:0] Current Working State Values */
@@ -219,16 +204,109 @@ static const char * const me_progress_bup_values[] = {
 	"M0 kernel load",
 };
 
+static void print_me_version(void *unused)
+{
+	struct mkhi_hdr {
+		uint8_t group_id;
+		uint8_t command:7;
+		uint8_t is_resp:1;
+		uint8_t rsvd;
+		uint8_t result;
+	} __packed;
+
+	struct version {
+		uint16_t minor;
+		uint16_t major;
+		uint16_t build;
+		uint16_t hotfix;
+	} __packed;
+
+	struct fw_ver_resp {
+		struct mkhi_hdr hdr;
+		struct version code;
+		struct version rec;
+		struct version fitc;
+	} __packed;
+
+	const struct mkhi_hdr fw_ver_msg = {
+		.group_id = MKHI_GEN_GROUP_ID,
+		.command = MKHI_GET_FW_VERSION,
+	};
+
+	struct fw_ver_resp resp;
+	size_t resp_size = sizeof(resp);
+	union me_hfs hfs;
+
+	/*
+	 * Print ME version only if UART debugging is enabled. Else, it takes ~1
+	 * second to talk to ME and get this information.
+	 */
+	if (!IS_ENABLED(CONFIG_UART_DEBUG))
+		return;
+
+	hfs.data = me_read_config32(PCI_ME_HFSTS1);
+	/*
+	 * This command can be run only if:
+	 * - Working state is normal and
+	 * - Operation mode is normal.
+	 */
+	if ((hfs.fields.working_state != ME_HFS_CWS_NORMAL) ||
+	    (hfs.fields.operation_mode != ME_HFS_MODE_NORMAL))
+		goto failed;
+
+	/*
+	 * It is important to do a heci_reset to ensure BIOS and ME are in sync
+	 * before reading firmware version.
+	 */
+	heci_reset();
+
+	if (!heci_send(&fw_ver_msg, sizeof(fw_ver_msg), BIOS_HOST_ADD,
+		       HECI_MKHI_ADD))
+		goto failed;
+
+	if (!heci_receive(&resp, &resp_size))
+		goto failed;
+
+	if (resp.hdr.result)
+		goto failed;
+
+	printk(BIOS_DEBUG, "ME: Version : %d.%d.%d.%d\n", resp.code.major,
+	       resp.code.minor, resp.code.hotfix, resp.code.build);
+	return;
+
+failed:
+	printk(BIOS_DEBUG, "ME: Version : Unavailable\n");
+}
+/*
+ * This can't be put in intel_me_status because by the time control
+ * reaches there, ME doesn't respond to GET_FW_VERSION command.
+ */
+BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_EXIT, print_me_version, NULL);
+
 void intel_me_status(void)
 {
 	union me_hfs hfs;
 	union me_hfs2 hfs2;
 	union me_hfs3 hfs3;
+	union me_hfs6 hfs6;
 
 	hfs.data = me_read_config32(PCI_ME_HFSTS1);
 	hfs2.data = me_read_config32(PCI_ME_HFSTS2);
 	hfs3.data = me_read_config32(PCI_ME_HFSTS3);
+	hfs6.data = me_read_config32(PCI_ME_HFSTS6);
 
+	printk(BIOS_DEBUG, "ME: Host Firmware Status Register 1 : 0x%08X\n",
+		hfs.data);
+	printk(BIOS_DEBUG, "ME: Host Firmware Status Register 2 : 0x%08X\n",
+		hfs2.data);
+	printk(BIOS_DEBUG, "ME: Host Firmware Status Register 3 : 0x%08X\n",
+		hfs3.data);
+	printk(BIOS_DEBUG, "ME: Host Firmware Status Register 4 : 0x%08X\n",
+		me_read_config32(PCI_ME_HFSTS4));
+	printk(BIOS_DEBUG, "ME: Host Firmware Status Register 5 : 0x%08X\n",
+		me_read_config32(PCI_ME_HFSTS5));
+	printk(BIOS_DEBUG, "ME: Host Firmware Status Register 6 : 0x%08X\n",
+		hfs6.data);
 	/* Check Current States */
 	printk(BIOS_DEBUG, "ME: FW Partition Table      : %s\n",
 	       hfs.fields.fpt_bad ? "BAD" : "OK");
@@ -248,8 +326,6 @@ void intel_me_status(void)
 	       hfs.fields.d0i3_support_valid ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: Low Power State Enabled : %s\n",
 	       hfs2.fields.low_power_state ? "YES" : "NO");
-	printk(BIOS_DEBUG, "ME: Power Gated             : %s\n",
-	       hfs2.fields.power_gating_ind ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: CPU Replaced            : %s\n",
 	       hfs2.fields.cpu_replaced_sts  ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: CPU Replacement Valid   : %s\n",
@@ -270,8 +346,14 @@ void intel_me_status(void)
 	printk(BIOS_DEBUG, "ME: Progress Phase State    : ");
 	switch (hfs2.fields.progress_code) {
 	case ME_HFS2_PHASE_ROM:		/* ROM Phase */
-		printk(BIOS_DEBUG, "%s",
-		       me_progress_rom_values[hfs2.fields.current_state]);
+		if (hfs2.fields.current_state
+			< ARRAY_SIZE(me_progress_rom_values)
+		    && me_progress_rom_values[hfs2.fields.current_state])
+			printk(BIOS_DEBUG, "%s",
+			       me_progress_rom_values[
+						hfs2.fields.current_state]);
+		else
+			printk(BIOS_DEBUG, "0x%02x", hfs2.fields.current_state);
 		break;
 
 	case ME_HFS2_PHASE_UKERNEL:	/* uKernel Phase */
@@ -341,291 +423,18 @@ void intel_me_status(void)
 				hfs3.fields.fw_sku);
 		}
 	}
-}
 
-/*
-* Aligning a byte length to length in dwords.
-*/
-static u32 get_dword_length(u32 byte_length)
-{
-	return ALIGN_UP(byte_length, sizeof(uint32_t)) / sizeof(uint32_t);
-}
-
-/*
-* Get remaining message count in dword from circular buffer based on
-* write and read offset.
-*/
-static u32 get_cb_msg_count(u32 data)
-{
-	u8 read_offset = data >> 8;
-	u8 write_offset = data >> 16;
-
-	return get_dword_length(write_offset - read_offset);
-}
-
-static int wait_heci_ready(void)
-{
-	struct stopwatch sw;
-	int timeout = 0;
-	union me_csr csr;
-
-	stopwatch_init_msecs_expire(&sw, HECI_TIMEOUT);
-	while (1) {
-		do {
-			csr.data = me_read_mmio32(MMIO_ME_CSR);
-			if (csr.fields.host_ready)
-				return 0;
-		} while (!(timeout = stopwatch_expired(&sw)));
-
-		printk(BIOS_ERR, "ME_RDY bit is not set after 15 sec");
-		return -1;
+	printk(BIOS_DEBUG, "ME: FPF status               : ");
+	switch (hfs6.fields.fpf_nvars) {
+	case ME_HFS6_FPF_NOT_COMMITTED:
+		printk(BIOS_DEBUG, "unfused\n");
+		break;
+	case ME_HFS6_FPF_ERROR:
+		printk(BIOS_DEBUG, "unknown\n");
+		break;
+	default:
+		printk(BIOS_DEBUG, "fused\n");
 	}
-}
-
-static int wait_heci_cb_avail(u32 len)
-{
-	struct stopwatch sw;
-	union host_csr csr;
-
-	csr.data = me_read_mmio32(MMIO_HOST_CSR);
-	/*
-	* if timeout has happened, return failure as
-	* the circular buffer is not empty
-	*/
-	stopwatch_init_msecs_expire(&sw, HECI_SEND_TIMEOUT);
-	/* Must have room for message and message header */
-	while (len > (get_dword_length(csr.fields.me_cir_depth) -
-			get_cb_msg_count(csr.data))) {
-		if (stopwatch_expired(&sw)) {
-			printk(BIOS_ERR,
-			"Circular Buffer never emptied within 5 sec");
-			return -1;
-		}
-		/* wait before trying again */
-		udelay(HECI_DELAY);
-		/* read HOST_CSR for next iteration */
-		csr.data = me_read_mmio32(MMIO_HOST_CSR);
-	}
-	return 0;
-}
-
-static int send_heci_packet(union mei_header *head, u32 len, u32 *payload)
-{
-	int sts;
-	int index;
-	union me_csr csr;
-	union host_csr hcsr;
-
-	/*
-	 * wait until there is sufficient room in CB
-	 */
-	sts = wait_heci_cb_avail(len + 1);
-	if (sts != 0)
-		return -1;
-
-	/* Write message header */
-	me_write_mmio32(MMIO_ME_CB_WW, head->data);
-
-	/* Write message body */
-	for (index = 0; index < len; index++)
-		me_write_mmio32(MMIO_ME_CB_WW, payload[index]);
-
-	/* Set Interrupt Generate bit */
-	hcsr.data = me_read_mmio32(MMIO_HOST_CSR);
-	hcsr.fields.int_gen = 1;
-	me_write_mmio32(MMIO_HOST_CSR, hcsr.data);
-
-	/* Check if ME Ready bit is set, if set to 0 then return fatal error */
-	csr.data = me_read_mmio32(MMIO_ME_CSR);
-	if (csr.fields.host_ready)
-		return 0;
-	else
-		return -1;
-}
-
-static int recv_heci_packet(union mei_header *head, u32 *packet,
-		 u32 *packet_size)
-{
-	union me_csr csr;
-	union host_csr hcsr;
-	int rec_msg = 0;
-	struct stopwatch sw;
-	u32 length, index;
-
-	/* Clear Interrupt Status bit */
-	hcsr.data = me_read_mmio32(MMIO_HOST_CSR);
-	hcsr.fields.int_sts = 1;
-	me_write_mmio32(MMIO_HOST_CSR, hcsr.data);
-
-	/* Check if circular buffer overflow
-	 * if yes then return fatal error
-	 */
-	csr.data = me_read_mmio32(MMIO_ME_CSR);
-	if (get_cb_msg_count(csr.data) >
-			get_dword_length(csr.fields.me_cir_buff))
-		return -1;
-	/*
-	* if timeout has happened, return failure as
-	* the circular buffer is not empty
-	*/
-	stopwatch_init_msecs_expire(&sw, HECI_READ_TIMEOUT);
-	/* go until we got message pkt */
-	do {
-		if (stopwatch_expired(&sw)) {
-			printk(BIOS_ERR,
-			"Circular Buffer not filled within 5 sec");
-			*packet_size = 0;
-			return -1;
-		}
-		csr.data = me_read_mmio32(MMIO_ME_CSR);
-		/* Read one message from HECI buffer */
-		if (get_cb_msg_count(csr.data) > 0) {
-			head->data = me_read_mmio32(MMIO_ME_CB_RW);
-			/* calculate the message length in dword */
-			length = get_dword_length(head->fields.length);
-			if (head->fields.length == 0) {
-				*packet_size = 0;
-				goto SET_IG;
-			}
-			/* Make sure, we have enough space to catch all */
-			if (head->fields.length <= *packet_size) {
-				csr.data = me_read_mmio32(MMIO_ME_CSR);
-				/* get complete message into circular buffer */
-				while (length > get_cb_msg_count(csr.data)) {
-					udelay(HECI_DELAY);
-					csr.data = me_read_mmio32(MMIO_ME_CSR);
-				}
-				/* here is the message */
-				for (index = 0; index < length; index++)
-					packet[index] =
-						me_read_mmio32(MMIO_ME_CB_RW);
-
-				rec_msg = 1;
-				*packet_size = head->fields.length;
-			} else {
-				/* Too small buffer */
-				*packet_size = 0;
-				return -1;
-			}
-		}
-	} while (!rec_msg);
-
-	/*
-	 * Check if ME Ready bit is set, if set to 0 then return fatal error
-	 * because ME might have reset during transaction and we might have
-	 * read a junk data from CB
-	*/
-	csr.data = me_read_mmio32(MMIO_ME_CSR);
-	if (!(csr.fields.host_ready))
-		return -1;
-SET_IG:
-	/* Set Interrupt Generate bit */
-	hcsr.data = me_read_mmio32(MMIO_HOST_CSR);
-	hcsr.fields.int_gen = 1;
-	me_write_mmio32(MMIO_HOST_CSR, hcsr.data);
-	return 0;
-}
-
-static int
-send_heci_message(void *msg, int len, u8 hostaddress, u8 clientaddress)
-{
-	u8 retry;
-	int status = -1;
-	u32 cir_buff_depth;
-	union host_csr csr;
-	union mei_header head;
-	int cur = 0;
-	u32 slength, rlength;
-
-	for (retry = 0; retry < MAX_HECI_MESSAGE; retry++) {
-		if (wait_heci_ready() != 0)
-			continue;
-		/* HECI is ready */
-		csr.data = me_read_mmio32(MMIO_HOST_CSR);
-		cir_buff_depth = csr.fields.me_cir_depth;
-		head.fields.client_address = clientaddress;
-		head.fields.host_address = hostaddress;
-		while (len > cur) {
-			rlength = get_dword_length(len - cur);
-			/*
-			 * Set the message complete bit if this is last packet
-			 * in message needs to be "less than" to account for
-			 * the header OR needs to be exact equal to CB depth
-			 */
-			if (rlength <= cir_buff_depth)
-				head.fields.is_complete = 1;
-			else
-				head.fields.is_complete = 0;
-			/*
-			 * calculate length for message header
-			 * header length = smaller of CB buffer or
-			 * remaining message
-			 */
-			slength = ((cir_buff_depth <= rlength)
-					? ((cir_buff_depth - 1) * 4)
-					: (len - cur));
-			head.fields.length = slength;
-			head.fields.reserved = 0;
-			/*
-			 * send the current packet
-			 * (cur should be treated as index for message)
-			 */
-			status = send_heci_packet(&head,
-				get_dword_length(head.fields.length), msg);
-			if (status != 0)
-				break;
-			/* update the length information */
-			cur += slength;
-			msg += cur;
-		}
-		if (!status)
-			break;
-	}
-	return status;
-}
-
-static int
-recv_heci_message(void *message, u32 *message_size)
-{
-	union mei_header head;
-	int cur = 0;
-	u8 retry;
-	int status = -1;
-	int msg_complete = 0;
-	u32 pkt_buff;
-
-	for (retry = 0; retry < MAX_HECI_MESSAGE; retry++) {
-		if (wait_heci_ready() != 0)
-			continue;
-		/* HECI is ready */
-		while ((cur < *message_size) && (msg_complete == 0)) {
-			pkt_buff = *message_size - cur;
-			status = recv_heci_packet(&head, message + (cur >> 2),
-						&pkt_buff);
-			if (status == -1) {
-				*message_size = 0;
-				break;
-			}
-			msg_complete = head.fields.is_complete;
-			if (pkt_buff == 0) {
-				/* if not in middle of msg and msg complete bit
-				 * is set then this is a valid zero length msg
-				 */
-				if ((cur == 0) && (msg_complete == 1))
-					status = 0;
-				else
-					status = -1;
-				*message_size = 0;
-				break;
-			}
-			cur += pkt_buff;
-		}
-		if (!status) {
-			*message_size = cur;
-			break;
-		}
-	}
-	return status;
 }
 
 static int send_heci_reset_message(void)
@@ -636,7 +445,7 @@ static int send_heci_reset_message(void)
 		u8 command;
 		u8 reserved;
 		u8 result;
-	} __attribute__ ((packed)) reply;
+	} __packed reply;
 	struct reset_message {
 		u8 group_id;
 		u8 cmd;
@@ -644,24 +453,27 @@ static int send_heci_reset_message(void)
 		u8 result;
 		u8 req_origin;
 		u8 reset_type;
-	} __attribute__ ((packed));
+	} __packed;
 	struct reset_message msg = {
 		.cmd = MKHI_GLOBAL_RESET,
 		.req_origin = GR_ORIGIN_BIOS_POST,
 		.reset_type = GLOBAL_RST_TYPE
 	};
-	u32 reply_size;
+	size_t reply_size;
 
-	status = send_heci_message(&msg, sizeof(msg),
-			BIOS_HOST_ADD, HECI_MKHI_ADD);
-	if (status != 0)
+	heci_reset();
+
+	status = heci_send(&msg, sizeof(msg), BIOS_HOST_ADD, HECI_MKHI_ADD);
+	if (!status)
 		return -1;
 
 	reply_size = sizeof(reply);
-	if (recv_heci_message(&reply, &reply_size) == -1)
+	memset(&reply, 0, reply_size);
+	status = heci_receive(&reply, &reply_size);
+	if (!status)
 		return -1;
 	/* get reply result from HECI MSG  */
-	if (reply.result != 0) {
+	if (reply.result) {
 		printk(BIOS_DEBUG, "%s: Exit with Failure\n", __func__);
 		return -1;
 	}

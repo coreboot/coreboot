@@ -18,7 +18,7 @@
 #include <gpio.h>
 #include <stdlib.h>
 
-uint8_t board_id(void)
+uint32_t board_id(void)
 {
 	static int id = -1;
 	gpio_t gpio[] = {[3] = GPIO(X4), [2] = GPIO(X1),	/* X4 is MSB */

@@ -27,7 +27,22 @@ to=$2
 # so go for Reviewed-on instead. It's also unique because it
 # contains the gerrit instance's host name and the change's number
 # on that system.
-match_string='^    [-A-Za-z]*[Rr]eviewed-on: '
+match_string='[-A-Za-z]*[Rr]eviewed-on:'
+
+# Custom root: allow a certain CL (identified by matching either side's
+# match_string) to be the new root, instead of using git's common history only.
+# This allows cutting down on commits that are re-evaluated on every run.
+#
+# Use:
+# To the commit message of a commit on the "to" side, add
+# $custom_root: match_string (the part coming after $match_string)
+#
+# For a $match_string of ~ "Reviewed-on: " this might
+# be "$custom_root: https://example.com/12345"
+#
+# On traversal, the commit with "$match_string: https://example.com/12345"
+# is then considered a base commit.
+custom_root='^Gerrit-Rebase-Ignore-CLs-Before:'
 
 # fetch common ancestor
 common_base=$(git merge-base ${from} ${to} 2>/dev/null)
@@ -37,9 +52,22 @@ if [ -z "${common_base}" ]; then
 	exit 1
 fi
 
+from_base=$common_base
+
+# fetch custom root ID
+croot_marker=$(git log --pretty=%b -1 --grep "${custom_root}" \
+	${common_base}..${to} | \
+	grep "${custom_root}" | cut -d: -f2-)
+if [ -n "${croot_marker}" ]; then
+	from_base=$( ( \
+		git log --pretty=%H -1 \
+		--grep "^${match_string}${croot_marker}" \
+		${from_base}..${from}; echo ${from_base} )| head -1)
+fi
+
 # collect matches that are present on the target side
 to_matches="$(git log ${common_base}..${to} | \
-	grep "${match_string}" | \
+	grep "^    ${match_string}" | \
 	cut -d: -f2-)"
 
 # start rebase process, but fail immediately by enforcing an invalid todo
@@ -49,8 +77,8 @@ GIT_SEQUENCE_EDITOR="echo foo >" \
 # write new rebase todo
 # the appended "commit" line triggers handling of the last log entry
 commit=""
-(git log --reverse ${common_base}..${from} | \
-	grep -E "(^commit [0-9a-f]{40}\$|${match_string})"; \
+(git log --reverse ${from_base}..${from} | \
+	grep -E "(^commit [0-9a-f]{40}\$|^    ${match_string})"; \
 	echo "commit") | \
 while read key value; do
 	if [ "${key}" = "commit" ]; then

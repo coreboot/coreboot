@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <arch/acpi.h>
 #include <arch/acpi_device.h>
+#include <arch/acpi_pld.h>
 
 /* Values that can be returned for ACPI Device _STA method */
 #define ACPI_STATUS_DEVICE_PRESENT	(1 << 0)
@@ -53,6 +54,7 @@ enum {
 	DUAL_NAME_PREFIX	= 0x2E,
 	MULTI_NAME_PREFIX	= 0x2F,
 	EXT_OP_PREFIX		= 0x5B,
+	 CREATEFIELD_OP		= 0x13,
 	 SLEEP_OP		= 0x22,
 	 DEBUG_OP		= 0x31,
 	 OPREGION_OP		= 0x80,
@@ -76,10 +78,15 @@ enum {
 	ARG5_OP		= 0x6D,
 	ARG6_OP		= 0x6E,
 	STORE_OP		= 0x70,
+	SUBTRACT_OP		= 0x74,
+	MULTIPLY_OP		= 0x77,
 	AND_OP			= 0x7B,
 	OR_OP			= 0x7D,
 	NOT_OP			= 0x80,
+	NOTIFY_OP		= 0x86,
 	LEQUAL_OP		= 0x93,
+	LGREATER_OP		= 0x94,
+	LLESS_OP		= 0x95,
 	TO_BUFFER_OP		= 0x96,
 	TO_INTEGER_OP		= 0x99,
 	IF_OP			= 0xA0,
@@ -214,6 +221,9 @@ typedef enum { CSD_HW_ALL = 0xfe } CSD_coord;
 void acpigen_write_CSD_package(u32 domain, u32 numprocs, CSD_coord coordtype,
 				u32 index);
 void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len);
+void acpigen_write_processor_package(const char *name,
+				     unsigned int first_core,
+				     unsigned int core_count);
 void acpigen_write_TSS_package(int entries, acpi_tstate_t *tstate_list);
 void acpigen_write_TSD_package(u32 domain, u32 numprocs, PSD_coord coordtype);
 void acpigen_write_mem32fixed(int readwrite, u32 base, u32 size);
@@ -246,6 +256,8 @@ void acpigen_write_byte_buffer(uint8_t *arr, size_t size);
 void acpigen_write_return_byte_buffer(uint8_t *arr, size_t size);
 void acpigen_write_return_singleton_buffer(uint8_t arg);
 void acpigen_write_return_byte(uint8_t arg);
+void acpigen_write_upc(enum acpi_upc_type type);
+void acpigen_write_pld(const struct acpi_pld *pld);
 /*
  * Generate ACPI AML code for _DSM method.
  * This function takes as input uuid for the device, set of callbacks and
@@ -255,6 +267,14 @@ void acpigen_write_return_byte(uint8_t arg);
 void acpigen_write_dsm(const char *uuid, void (**callbacks)(void *),
 		       size_t count, void *arg);
 void acpigen_write_dsm_uuid_arr(struct dsm_uuid *ids, size_t count);
+
+/*
+ * Generate ACPI AML code for _ROM method.
+ * This function takes as input ROM data and ROM length.
+ * The ROM length has to be multiple of 4096 and has to be less
+ * than the current implementation limit of 0x40000.
+ */
+void acpigen_write_rom(void *bios, const size_t length);
 /*
  * Generate ACPI AML code for OperationRegion
  * This function takes input region name, region space, region offset & region

@@ -14,11 +14,12 @@
  */
 
 #include <baseboard/variants.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <nhlt.h>
 #include <soc/nhlt.h>
 
-void __attribute__((weak)) variant_nhlt_init(struct nhlt *nhlt)
+void __weak variant_nhlt_init(struct nhlt *nhlt)
 {
 	/* 2 Channel DMIC array. */
 	if (nhlt_soc_add_dmic_array(nhlt, 2))
@@ -37,7 +38,7 @@ void __attribute__((weak)) variant_nhlt_init(struct nhlt *nhlt)
 		printk(BIOS_ERR, "Couldn't add Realtek RT5663.\n");
 }
 
-void __attribute__((weak)) variant_nhlt_oem_overrides(const char **oem_id,
+void __weak variant_nhlt_oem_overrides(const char **oem_id,
 						const char **oem_table_id,
 						uint32_t *oem_revision)
 {

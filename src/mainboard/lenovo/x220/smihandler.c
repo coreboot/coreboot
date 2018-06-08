@@ -25,37 +25,12 @@
 #include <southbridge/intel/bd82x6x/nvs.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/me.h>
+#include <southbridge/intel/common/pmutil.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
 
 #define GPE_EC_SCI	1
 #define GPE_EC_WAKE	13
-
-static void mainboard_smm_init(void)
-{
-	printk(BIOS_DEBUG, "initializing SMI\n");
-	/* Enable 0x1600/0x1600 register pair */
-	ec_set_bit(0x00, 0x05);
-}
-
-int mainboard_io_trap_handler(int smif)
-{
-	static int smm_initialized;
-
-	if (!smm_initialized) {
-		mainboard_smm_init();
-		smm_initialized = 1;
-	}
-
-	switch (smif) {
-	default:
-		return 0;
-	}
-
-	/* On success, the IO Trap Handler returns 1
-	 * On failure, the IO Trap Handler returns a value != 1 */
-	return 1;
-}
 
 static void mainboard_smi_brightness_up(void)
 {

@@ -28,7 +28,7 @@
  *  ......
  *  1     1     1      H
  */
-uint8_t board_id(void)
+uint32_t board_id(void)
 {
 	void *gpiommioaddr;
 	u8  value = 0;

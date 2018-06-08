@@ -33,7 +33,7 @@ u8 is_dev3_present(void);
 void set_pcie_dereset()
 {
 	u16 word;
-	device_t sm_dev;
+	struct device *sm_dev;
 	/* GPIO 6 reset PCIe slot, GPIO 4 reset GFX PCIe */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 
@@ -46,7 +46,7 @@ void set_pcie_dereset()
 void set_pcie_reset()
 {
 	u16 word;
-	device_t sm_dev;
+	struct device *sm_dev;
 	/* GPIO 6 reset PCIe slot, GPIO 4 reset GFX PCIe */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 
@@ -64,7 +64,7 @@ u8 is_dev3_present(void)
 * enable the dedicated function in mahogany board.
 * This function called early than rs780_enable.
 *************************************************/
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard MAHOGANY Enable. dev=0x%p\n", dev);
 

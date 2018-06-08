@@ -15,6 +15,8 @@
 #ifndef AM335X_UART_H
 #define AM335X_UART_H
 
+#include <compiler.h>
+
 #define AM335X_UART0_BASE	0x44e09000
 #define AM335X_UART1_BASE	0x48020000
 #define AM335X_UART2_BASE	0x48024000
@@ -168,6 +170,6 @@ struct am335x_uart {
 	uint8_t rsvd_0x82[2];
 	uint16_t txdma;			/* TX DMA threshold */
 
-} __attribute__((packed));
+} __packed;
 
 #endif	/* AM335X_UART_H */

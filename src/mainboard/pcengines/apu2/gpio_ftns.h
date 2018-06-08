@@ -29,6 +29,7 @@ int get_spd_offset(void);
 // http://www.pcengines.ch/schema/apu2c.pdf
 // http://www.pcengines.ch/schema/apu3a.pdf
 //
+#define IOMUX_GPIO_22   0x09    // MODESW (APU5)
 #define IOMUX_GPIO_32   0x59    // MODESW (SIMSWAP2 on APU5)
 #define IOMUX_GPIO_33   0x5A    // SIMSWAP (SIMSWAP3 on APU5)
 #define IOMUX_GPIO_49   0x40    // STRAP0
@@ -43,6 +44,7 @@ int get_spd_offset(void);
 #define IOMUX_GPIO_68   0x48    // PE4_WDIS (SIMSWAP1 on APU5)
 #define IOMUX_GPIO_71   0x4D    // PROCHOT
 
+#define GPIO_22   0x24     // MODESW (APU5)
 #define GPIO_32   0x164    // MODESW (SIMSWAP2 on APU5)
 #define GPIO_33   0x168    // SIMSWAP (SIMSWAP3 on APU5)
 #define GPIO_49   0x100    // STRAP0

@@ -51,8 +51,20 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 	/*
 	 * Serial Port
 	 */
-	if (IS_ENABLED(CONFIG_INTEGRATED_UART))
+	if (IS_ENABLED(CONFIG_INTEGRATED_UART)) {
 		UpdData->SerialPortConfigure = 1;
+		/* values are from FSP .bsf file */
+		if (IS_ENABLED(CONFIG_CONSOLE_SERIAL_9600))
+			UpdData->SerialPortBaudRate = 8;
+		else if (IS_ENABLED(CONFIG_CONSOLE_SERIAL_19200))
+			UpdData->SerialPortBaudRate = 9;
+		else if (IS_ENABLED(CONFIG_CONSOLE_SERIAL_38400))
+			UpdData->SerialPortBaudRate = 10;
+		else if (IS_ENABLED(CONFIG_CONSOLE_SERIAL_57600))
+			UpdData->SerialPortBaudRate = 11;
+		else if (IS_ENABLED(CONFIG_CONSOLE_SERIAL_115200))
+			UpdData->SerialPortBaudRate = 12;
+	}
 
 	/*
 	 * Memory Down
@@ -93,6 +105,17 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 		UpdData->HyperThreading = 1;
 	else
 		UpdData->HyperThreading = 0;
+
+	/* Enable USB */
+	if (IS_ENABLED(CONFIG_FSP_EHCI1_ENABLE))
+		UpdData->Ehci1Enable = 1;
+	else
+		UpdData->Ehci1Enable = 0;
+
+	if (IS_ENABLED(CONFIG_FSP_EHCI2_ENABLE))
+		UpdData->Ehci2Enable = 1;
+	else
+		UpdData->Ehci2Enable = 0;
 }
 
 /* Set up the Broadwell-DE specific structures for the call into the FSP */

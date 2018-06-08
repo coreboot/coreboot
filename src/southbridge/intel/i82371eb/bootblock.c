@@ -19,7 +19,7 @@
 #include <device/pci_ids.h>
 #include "i82371eb.h"
 
-static void i82371eb_enable_rom(void)
+static void bootblock_southbridge_init(void)
 {
 	u16 reg16;
 	pci_devfn_t dev;
@@ -36,14 +36,7 @@ static void i82371eb_enable_rom(void)
 
 	/* Enable access to the whole ROM, disable ROM write access. */
 	reg16 = pci_read_config16(dev, XBCS);
-	reg16 |= LOWER_BIOS_ENABLE;
-	reg16 |= EXT_BIOS_ENABLE;
-	reg16 |= EXT_BIOS_ENABLE_1MB;
+	reg16 |= LOWER_BIOS_ENABLE | EXT_BIOS_ENABLE | EXT_BIOS_ENABLE_1MB;
 	reg16 &= ~(WRITE_PROTECT_ENABLE);	/* Disable ROM write access. */
 	pci_write_config16(dev, XBCS, reg16);
-}
-
-static void bootblock_southbridge_init(void)
-{
-	i82371eb_enable_rom();
 }

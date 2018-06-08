@@ -67,7 +67,7 @@ static u32 get_hcid(u32 i)
 	u32 id = 0;
 	u32 busn = (sysconf.pci1234[i] >> 12) & 0xff;
 	u32 devn = sysconf.hcdn[i] & 0xff;
-	device_t dev;
+	struct device *dev;
 
 	dev = dev_find_slot(busn, PCI_DEVFN(devn,0));
 
@@ -91,7 +91,7 @@ void get_bus_conf(void)
 {
 	u32 apicid_base;
 
-	device_t dev;
+	struct device *dev;
 	int i, j;
 	struct mb_sysconf_t *m;
 

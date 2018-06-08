@@ -11,8 +11,8 @@ a package called gcc-multilib if you are on a 64bit system.
 Build
 -----
 
-You need libpayload to build coreinfo. So, first, you need follow the README of 
-libpayload to build it but install libpayload into its own directory by doing 
+You need libpayload to build coreinfo. So, first, you need follow the README of
+libpayload to build it but install libpayload into its own directory by doing
 this:
 
  $ make DESTDIR=/path/to/libpayload/install install

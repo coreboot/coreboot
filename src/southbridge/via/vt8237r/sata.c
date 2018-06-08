@@ -92,7 +92,8 @@ static void sata_ii_init(struct device *dev)
 }
 
 
-static void vt8237_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void vt8237_set_subsystem(struct device *dev, unsigned vendor,
+				 unsigned device)
 {
 	pci_write_config16(dev, 0xd4, vendor);
 	pci_write_config16(dev, 0xd6, device);

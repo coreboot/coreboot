@@ -31,7 +31,7 @@
  */
 void enable_usb_bar(void)
 {
-	device_t usb0 = PCH_EHCI1_DEV;
+	pci_devfn_t usb0 = PCH_EHCI1_DEV;
 	u32 cmd;
 
 	/* USB Controller 0 */

@@ -28,6 +28,7 @@
 #include <superio/ite/common/ite.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <arch/cpu.h>
@@ -61,7 +62,7 @@ static void it8728f_b75md3h_disable_reboot(pnp_devfn_t dev)
 	ite_reg_write(IT8728F_EC, 0x30, 0x01);
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
 /*
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
@@ -131,9 +132,6 @@ void rcba_config(void)
 	RCBA32(0x3844) = 0x0000e5e4;
 	RCBA32(0x3848) = 0x0000000e;
 */
-	/* Disable unused devices (board specific) */
-	RCBA32(FD) = 0x17ee1fe1;
-
 	/* Enable HECI */
 	RCBA32(FD2) &= ~0x2;
 }
@@ -153,7 +151,7 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, 0x3c0a01);
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x10);
 
-	pci_write_config32(PCH_LPC_DEV, 0xac, 0x10000);
+	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
 
 	/* Initialize SuperIO */
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

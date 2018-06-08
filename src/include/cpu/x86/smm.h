@@ -22,6 +22,7 @@
 
 #include <arch/cpu.h>
 #include <types.h>
+#include <compiler.h>
 
 #define SMM_DEFAULT_BASE 0x30000
 #define SMM_DEFAULT_SIZE 0x10000
@@ -32,6 +33,12 @@
 #define SMM_ENTRY_OFFSET 0x8000
 #define SMM_SAVE_STATE_BEGIN(x) (SMM_ENTRY_OFFSET + (x))
 
+/* AMD64 x86 SMM State-Save Area
+ * starts @ 0x7e00
+ */
+#define SMM_AMD64_ARCH_OFFSET 0x7e00
+#define SMM_AMD64_SAVE_STATE_OFFSET \
+	SMM_SAVE_STATE_BEGIN(SMM_AMD64_ARCH_OFFSET)
 typedef struct {
 	u16	es_selector;
 	u16	es_attributes;
@@ -83,7 +90,12 @@ typedef struct {
 	u32	tr_limit;
 	u64	tr_base;
 
-	u8	reserved4[40];
+	u64	io_restart_rip;
+	u64	io_restart_rcx;
+	u64	io_restart_rsi;
+	u64	io_restart_rdi;
+	u32	smm_io_trap_offset;
+	u32	local_smi_status;
 
 	u8	io_restart;
 	u8	autohalt_restart;
@@ -124,20 +136,24 @@ typedef struct {
 	u64	rdx;
 	u64	rcx;
 	u64	rax;
-} __attribute__((packed)) amd64_smm_state_save_area_t;
+} __packed amd64_smm_state_save_area_t;
 
 
 /* Intel Core 2 (EM64T) SMM State-Save Area
- * starts @ 0x7d00
+ * starts @ 0x7c00
  */
+#define SMM_EM64T_ARCH_OFFSET 0x7c00
+#define SMM_EM64T_SAVE_STATE_OFFSET \
+	SMM_SAVE_STATE_BEGIN(SMM_EM64T_ARCH_OFFSET)
 typedef struct {
-	u8	reserved0[208];
+	u8	reserved0[256];
+	u8	reserved1[208];
 
 	u32	gdtr_upper_base;
 	u32	ldtr_upper_base;
 	u32	idtr_upper_base;
 
-	u8	reserved1[4];
+	u8	reserved2[4];
 
 	u64	io_rdi;
 	u64	io_rip;
@@ -145,13 +161,13 @@ typedef struct {
 	u64	io_rsi;
 	u64	cr4;
 
-	u8	reserved2[68];
+	u8	reserved3[68];
 
 	u64	gdtr_base;
 	u64	idtr_base;
 	u64	ldtr_base;
 
-	u8	reserved3[84];
+	u8	reserved4[84];
 
 	u32	smm_revision;
 	u32	smbase;
@@ -159,7 +175,7 @@ typedef struct {
 	u16	io_restart;
 	u16	autohalt_restart;
 
-	u8	reserved4[24];
+	u8	reserved5[24];
 
 	u64	r15;
 	u64	r14;
@@ -202,7 +218,7 @@ typedef struct {
 
 	u64	cr3;
 	u64	cr0;
-} __attribute__((packed)) em64t_smm_state_save_area_t;
+} __packed em64t_smm_state_save_area_t;
 
 
 /* Intel Revision 30100 SMM State-Save Area
@@ -289,7 +305,7 @@ typedef struct {
 
 	u64	cr3;
 	u64	cr0;
-} __attribute__((packed)) em64t100_smm_state_save_area_t;
+} __packed em64t100_smm_state_save_area_t;
 
 /* Intel Revision 30101 SMM State-Save Area
  * The following processor architectures use this:
@@ -388,12 +404,13 @@ typedef struct {
 
 	u64	cr3;
 	u64	cr0;
-} __attribute__((packed)) em64t101_smm_state_save_area_t;
+} __packed em64t101_smm_state_save_area_t;
 
 
 /* Legacy x86 SMM State-Save Area
  * starts @ 0x7e00
  */
+#define SMM_LEGACY_ARCH_OFFSET 0x7e00
 
 typedef struct {
 	u8	reserved0[248];
@@ -428,7 +445,7 @@ typedef struct {
 	u32	eflags;
 	u32	cr3;
 	u32	cr0;
-} __attribute__((packed)) legacy_smm_state_save_area_t;
+} __packed legacy_smm_state_save_area_t;
 
 typedef enum {
 	AMD64,
@@ -468,7 +485,7 @@ int mainboard_io_trap_handler(int smif);
 
 void southbridge_smi_set_eos(void);
 
-#if CONFIG_SMM_TSEG
+#if IS_ENABLED(CONFIG_SMM_TSEG)
 void cpu_smi_handler(void);
 void northbridge_smi_handler(void);
 void southbridge_smi_handler(void);
@@ -483,7 +500,7 @@ void mainboard_smi_gpi(u32 gpi_sts);
 int  mainboard_smi_apmc(u8 data);
 void mainboard_smi_sleep(u8 slp_typ);
 
-#if !CONFIG_SMM_TSEG
+#if !IS_ENABLED(CONFIG_SMM_TSEG)
 void smi_release_lock(void);
 #endif
 
@@ -504,7 +521,7 @@ struct smm_runtime {
 	 * contiguous like the 1:1 mapping it is up to the caller of the stub
 	 * loader to adjust this mapping. */
 	u8 apic_id_to_cpu[CONFIG_MAX_CPUS];
-} __attribute__ ((packed));
+} __packed;
 
 struct smm_module_params {
 	void *arg;
@@ -548,11 +565,11 @@ void *smm_get_save_state(int cpu);
  */
 struct smm_loader_params {
 	void *stack_top;
-	int per_cpu_stack_size;
-	int num_concurrent_stacks;
+	size_t per_cpu_stack_size;
+	size_t num_concurrent_stacks;
 
-	int per_cpu_save_state_size;
-	int num_concurrent_save_states;
+	size_t per_cpu_save_state_size;
+	size_t num_concurrent_save_states;
 
 	smm_handler_t handler;
 	void *handler_arg;
@@ -562,7 +579,7 @@ struct smm_loader_params {
 
 /* Both of these return 0 on success, < 0 on failure. */
 int smm_setup_relocation_handler(struct smm_loader_params *params);
-int smm_load_module(void *smram, int size, struct smm_loader_params *params);
+int smm_load_module(void *smram, size_t size, struct smm_loader_params *params);
 
 /* Backup and restore default SMM region. */
 void *backup_default_smm_area(void);

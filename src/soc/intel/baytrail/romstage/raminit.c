@@ -21,8 +21,8 @@
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <halt.h>
+#include <mrc_cache.h>
 #include <soc/gpio.h>
-#include <soc/intel/common/mrc_cache.h>
 #include <soc/iomap.h>
 #include <soc/iosf.h>
 #include <soc/pci_devs.h>
@@ -30,7 +30,7 @@
 #include <soc/romstage.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
-#include <vboot/vboot_common.h>
+#include <security/vboot/vboot_common.h>
 
 static void reset_system(void)
 {
@@ -137,12 +137,6 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 		reset_system();
 	} else {
 		printk(BIOS_DEBUG, "No MRC cache found.\n");
-#if CONFIG_EC_GOOGLE_CHROMEEC
-		if (prev_sleep_state == ACPI_S0) {
-			/* Ensure EC is running RO firmware. */
-			google_chromeec_check_ec_image(EC_IMAGE_RO);
-		}
-#endif
 	}
 
 	/* Determine if mrc.bin is in the cbfs. */
@@ -168,7 +162,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	if (prev_sleep_state != ACPI_S3) {
 		cbmem_initialize_empty();
 	} else if (cbmem_initialize()) {
-	#if CONFIG_HAVE_ACPI_RESUME
+	#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
 		/* Failed S3 resume, reset to come up cleanly */
 		reset_system();

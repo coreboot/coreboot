@@ -66,10 +66,10 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 
 		val = inb(smbus_io_base + SMBHSTSTAT);
 		val &= 0x1f; // mask off reserved bits
-		if ( val & 0x1c) {
+		if (val & 0x1c) {
 			return -5; // error
 		}
-		if ( val == 0x02) {
+		if (val == 0x02) {
 			outb(val, smbus_io_base + SMBHSTSTAT); // clear status
 			return 0; //
 		}
@@ -85,7 +85,7 @@ static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 		return -2; // not ready
 	}
 
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outb(((device & 0x7f) << 1)|1 , smbus_io_base + SMBHSTADDR);
 
 	byte = inb(smbus_io_base + SMBHSTCTRL);
@@ -115,7 +115,7 @@ static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	/* set the command... */
 	outb(val, smbus_io_base + SMBHSTCMD);
 
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outb(((device & 0x7f) << 1)|0 , smbus_io_base + SMBHSTADDR);
 
 	byte = inb(smbus_io_base + SMBHSTCTRL);
@@ -142,7 +142,7 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	/* set the command/address... */
 	outb(address & 0xff, smbus_io_base + SMBHSTCMD);
 
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outb(((device & 0x7f) << 1)|1 , smbus_io_base + SMBHSTADDR);
 
 	byte = inb(smbus_io_base + SMBHSTCTRL);
@@ -172,7 +172,7 @@ static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device, unsigned
 	/* set the command/address... */
 	outb(address & 0xff, smbus_io_base + SMBHSTCMD);
 
-	/* set the device I'm talking too */
+	/* set the device I'm talking to */
 	outb(((device & 0x7f) << 1)|0 , smbus_io_base + SMBHSTADDR);
 
 	/* output value */

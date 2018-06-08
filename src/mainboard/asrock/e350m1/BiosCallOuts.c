@@ -16,7 +16,6 @@
 #include "AGESA.h"
 #include "amdlib.h"
 #include <northbridge/amd/agesa/BiosCallOuts.h>
-#include "heapManager.h"
 #include "SB800.h"
 #include <stdlib.h>
 

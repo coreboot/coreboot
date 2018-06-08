@@ -29,14 +29,21 @@ void mainboard_smi_espi_handler(void)
 static void mainboard_gpio_smi_sleep(u8 slp_typ)
 {
 	/* Power down the rails on any sleep type */
-	gpio_set(EN_PP3300_DX_TOUCH, 0);
 	gpio_set(EN_PP3300_DX_CAM, 0);
+
+	/* Assert TOUSHCREEN_STOP_L */
+	gpio_set(GPP_E11, 0);
+
+	/* Turn off touchscreen power */
+	gpio_set(GPP_C22, 0);
 }
 
 void mainboard_smi_sleep(u8 slp_typ)
 {
 	chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS,
 			   MAINBOARD_EC_S5_WAKE_EVENTS);
+	chromeec_smi_device_event_sleep(slp_typ,
+					MAINBOARD_EC_S3_DEVICE_EVENTS, 0);
 	mainboard_gpio_smi_sleep(slp_typ);
 }
 

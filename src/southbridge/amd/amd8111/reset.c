@@ -37,7 +37,7 @@ static pci_devfn_t pci_io_locate_device_on_bus(unsigned pci_id, unsigned bus)
 
 #include "../../../northbridge/amd/amdk8/reset_test.c"
 
-void hard_reset(void)
+void do_hard_reset(void)
 {
 	pci_devfn_t dev;
 	unsigned bus;

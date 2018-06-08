@@ -442,6 +442,82 @@ int cbfs_copy_instance(struct cbfs_image *image, struct buffer *dst)
 	return 0;
 }
 
+int cbfs_expand_to_region(struct buffer *region)
+{
+	if (buffer_get(region) == NULL)
+		return 1;
+
+	struct cbfs_image image;
+	memset(&image, 0, sizeof(image));
+	if (cbfs_image_from_buffer(&image, region, 0)) {
+		ERROR("reading CBFS failed!\n");
+		return 1;
+	}
+
+	uint32_t region_sz = buffer_size(region);
+
+	struct cbfs_file *entry;
+	for (entry = buffer_get(region);
+	     cbfs_is_valid_entry(&image, entry);
+	     entry = cbfs_find_next_entry(&image, entry)) {
+	     /* just iterate through */
+	}
+
+	/* entry now points to the first aligned address after the last valid
+	 * file header. That's either outside the image or exactly the place
+	 * where we need to create a new file.
+	 */
+	int last_entry_size = region_sz - ((void *)entry - buffer_get(region))
+		- cbfs_calculate_file_header_size("") - sizeof(int32_t);
+
+	if (last_entry_size > 0) {
+		cbfs_create_empty_entry(entry, CBFS_COMPONENT_NULL,
+			last_entry_size, "");
+		/* If the last entry was an empty file, merge them. */
+		cbfs_walk(&image, cbfs_merge_empty_entry, NULL);
+	}
+
+	return 0;
+}
+
+int cbfs_truncate_space(struct buffer *region, uint32_t *size)
+{
+	if (buffer_get(region) == NULL)
+		return 1;
+
+	struct cbfs_image image;
+	memset(&image, 0, sizeof(image));
+	if (cbfs_image_from_buffer(&image, region, 0)) {
+		ERROR("reading CBFS failed!\n");
+		return 1;
+	}
+
+	struct cbfs_file *entry, *trailer;
+	for (trailer = entry = buffer_get(region);
+	     cbfs_is_valid_entry(&image, entry);
+	     trailer = entry,
+	     entry = cbfs_find_next_entry(&image, entry)) {
+	     /* just iterate through */
+	}
+
+	/* trailer now points to the last valid CBFS entry's header.
+	 * If that file is empty, remove it and report its header's offset as
+	 * maximum size.
+	 */
+	if ((strlen(trailer->filename) != 0) &&
+	    (trailer->type != htonl(CBFS_COMPONENT_NULL)) &&
+	    (trailer->type != htonl(CBFS_COMPONENT_DELETED))) {
+		/* nothing to truncate. Return de-facto CBFS size in case it
+		 * was already truncated. */
+		*size = (void *)entry - buffer_get(region);
+		return 0;
+	}
+	*size = (void *)trailer - buffer_get(region);
+	memset(trailer, 0xff, buffer_size(region) - *size);
+
+	return 0;
+}
+
 static size_t cbfs_file_entry_metadata_size(const struct cbfs_file *f)
 {
 	return ntohl(f->offset);
@@ -1252,7 +1328,7 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 			buffer_delete(&buffer);
 			return -1;
 		}
-	} else if (ntohl(entry->type) == CBFS_COMPONENT_PAYLOAD) {
+	} else if (ntohl(entry->type) == CBFS_COMPONENT_SELF) {
 		if (cbfs_payload_make_elf(&buffer, arch)) {
 			buffer_delete(&buffer);
 			return -1;
@@ -1384,24 +1460,26 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 	unsigned int decompressed_size = 0;
 	unsigned int compression = cbfs_file_get_compression_info(entry,
 		&decompressed_size);
+	const char *compression_name = lookup_name_by_type(
+			types_cbfs_compression, compression, "????");
 
-	if (compression == CBFS_COMPRESS_NONE) {
-		fprintf(fp, "%-30s 0x%-8x %-12s %d\n",
-			*name ? name : "(empty)",
-			cbfs_get_entry_addr(image, entry),
-			get_cbfs_entry_type_name(ntohl(entry->type)),
-			ntohl(entry->len));
-	} else {
-		fprintf(fp, "%-30s 0x%-8x %-12s %d (%d after %s decompression)\n",
+	if (compression == CBFS_COMPRESS_NONE)
+		fprintf(fp, "%-30s 0x%-8x %-12s %8d %-4s\n",
 			*name ? name : "(empty)",
 			cbfs_get_entry_addr(image, entry),
 			get_cbfs_entry_type_name(ntohl(entry->type)),
 			ntohl(entry->len),
-			decompressed_size,
-			lookup_name_by_type(types_cbfs_compression,
-				compression, "(unknown)")
+			compression_name
 			);
-	}
+	else
+		fprintf(fp, "%-30s 0x%-8x %-12s %8d %-4s (%d decompressed)\n",
+			*name ? name : "(empty)",
+			cbfs_get_entry_addr(image, entry),
+			get_cbfs_entry_type_name(ntohl(entry->type)),
+			ntohl(entry->len),
+			compression_name,
+			decompressed_size
+			);
 
 	struct cbfs_file_attr_hash *hash = NULL;
 	while ((hash = cbfs_file_get_next_hash(entry, hash)) != NULL) {
@@ -1444,7 +1522,7 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 					      CBFS_SUBHEADER(entry), fp);
 			break;
 
-		case CBFS_COMPONENT_PAYLOAD:
+		case CBFS_COMPONENT_SELF:
 			payload = (struct cbfs_payload_segment *)
 					CBFS_SUBHEADER(entry);
 			while (payload) {
@@ -1503,7 +1581,7 @@ int cbfs_print_directory(struct cbfs_image *image)
 {
 	if (cbfs_is_legacy_cbfs(image))
 		cbfs_print_header_info(image);
-	printf("%-30s %-10s %-12s Size\n", "Name", "Offset", "Type");
+	printf("%-30s %-10s %-12s   Size   Comp\n", "Name", "Offset", "Type");
 	cbfs_walk(image, cbfs_print_entry_info, NULL);
 	return 0;
 }

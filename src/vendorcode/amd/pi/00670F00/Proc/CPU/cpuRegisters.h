@@ -14,7 +14,7 @@
  */
  /*****************************************************************************
  *
- * Copyright (c) 2008 - 2016, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2017, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***************************************************************************/
+
+#include <check_for_wrapper.h>
 
 #ifndef _CPU_REGISTERS_H_
 #define _CPU_REGISTERS_H_
@@ -234,7 +236,7 @@ typedef struct {
 /// Logical CPU ID Table
 typedef struct {
   IN       UINT32  Elements;                    ///< Number of Elements
-  IN       CPU_LOGICAL_ID_XLAT *LogicalIdTable; ///< CPU Logical ID Transfer table Pointer
+  IN       CONST CPU_LOGICAL_ID_XLAT *LogicalIdTable; ///< CPU Logical ID Transfer table Pointer
 } LOGICAL_ID_TABLE;
 
 // MSRs

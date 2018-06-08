@@ -112,14 +112,14 @@ typedef struct {
 	unsigned long bCBWCBLength:5;
 	unsigned long:3;
 	unsigned char CBWCB[31 - 15];
-} __attribute__ ((packed)) cbw_t;
+} __packed cbw_t;
 
 typedef struct {
 	unsigned int dCSWSignature;
 	unsigned int dCSWTag;
 	unsigned int dCSWDataResidue;
 	unsigned char bCSWStatus;
-} __attribute__ ((packed)) csw_t;
+} __packed csw_t;
 
 enum {
 	/*
@@ -297,7 +297,7 @@ typedef struct {
 	unsigned char res2;	//6
 	unsigned short numblocks;	//7-8
 	unsigned char control;	//9 - the block is 10 bytes long
-} __attribute__ ((packed)) cmdblock_t;
+} __packed cmdblock_t;
 
 typedef struct {
 	unsigned char command;	//0
@@ -312,7 +312,7 @@ typedef struct {
 		unsigned char length;		// for REQUEST SENSE
 	};
 	unsigned char control;	//5
-} __attribute__ ((packed)) cmdblock6_t;
+} __packed cmdblock6_t;
 
 /**
  * Like readwrite_blocks, but for soft-sectors of 512b size. Converts the

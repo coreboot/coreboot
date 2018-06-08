@@ -1,0 +1,5 @@
+# Load all chipsets before common
+source "src/soc/amd/stoneyridge/Kconfig"
+
+# Load common defaults last
+source "src/soc/amd/common/Kconfig"

@@ -39,10 +39,10 @@
 #include <cpu/amd/multicore.h>
 #include <cpu/amd/msr.h>
 
-#if CONFIG_WAIT_BEFORE_CPUS_INIT
+#if IS_ENABLED(CONFIG_WAIT_BEFORE_CPUS_INIT)
 void cpus_ready_for_init(void)
 {
-#if CONFIG_K8_REV_F_SUPPORT
+#if IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 #if CONFIG_MEM_TRAIN_SEQ == 1
 	struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - sizeof(*sysinfox));
 	// wait for ap memory to trained
@@ -65,7 +65,7 @@ int is_e0_later_in_bsp(int nodeid)
 		return !is_cpu_pre_e0();
 	}
 	// d0 will be treated as e0 with this methods, but the d0 nb_cfg_54 always 0
-	device_t dev;
+	struct device *dev;
 	dev = dev_find_slot(0, PCI_DEVFN(0x18 + nodeid, 2));
 	if (!dev)
 		return 0;
@@ -85,7 +85,7 @@ int is_e0_later_in_bsp(int nodeid)
 int is_cpu_f0_in_bsp(int nodeid)
 {
 	uint32_t dword;
-	device_t dev;
+	struct device *dev;
 
 	if (!IS_ENABLED(CONFIG_K8_REV_F_SUPPORT))
 		return 0;
@@ -243,7 +243,7 @@ static void init_ecc_memory(unsigned node_id)
 	unsigned long basek;
 	struct mtrr_state mtrr_state;
 
-	device_t f1_dev, f2_dev, f3_dev;
+	struct device *f1_dev, *f2_dev, *f3_dev;
 	int enable_scrubbing;
 	uint32_t dcl;
 
@@ -463,7 +463,7 @@ static void k8_errata(void)
 	wrmsr(HWCR_MSR, msr);
 }
 
-static void model_fxx_init(device_t dev)
+static void model_fxx_init(struct device *dev)
 {
 	unsigned long i;
 	msr_t msr;
@@ -511,7 +511,7 @@ static void model_fxx_init(device_t dev)
 	/* Enable the local CPU APICs */
 	setup_lapic();
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	u32 siblings = cpuid_ecx(0x80000008) & 0xff;
 
 	if (siblings > 0) {
@@ -558,8 +558,8 @@ static struct device_operations cpu_dev_ops = {
 	.init = model_fxx_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
-#if !CONFIG_K8_REV_F_SUPPORT
+static const struct cpu_device_id cpu_table[] = {
+#if !IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 	{ X86_VENDOR_AMD, 0xf40 },   /* SH-B0 (socket 754) */
 	{ X86_VENDOR_AMD, 0xf50 },   /* SH-B0 (socket 940) */
 	{ X86_VENDOR_AMD, 0xf51 },   /* SH-B3 (socket 940) */
@@ -601,7 +601,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0x30ff2 }, /* E4 ? */
 #endif
 
-#if CONFIG_K8_REV_F_SUPPORT
+#if IS_ENABLED(CONFIG_K8_REV_F_SUPPORT)
 	/*
 	 * AMD F0 support.
 	 *

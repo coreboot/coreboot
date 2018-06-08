@@ -32,8 +32,6 @@
 
 #include <stdlib.h>
 #include "AGESA.h"
-#include "Filecode.h"
-#define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
 #define INSTALL_FT3_SOCKET_SUPPORT           TRUE
 #define INSTALL_FAMILY_16_MODEL_0x_SUPPORT   TRUE
@@ -355,4 +353,4 @@ GPIO_CONTROL   hp_abm_gpio[] = {
 #define DFLT_MEMORY_QUADRANK_TYPE       QUADRANK_UNBUFFERED
 #define DFLT_VRM_SLEW_RATE              (5000)
 
-#include "PlatformInstall.h"
+#include <PlatformInstall.h>

@@ -1,0 +1,8 @@
+ifeq ($(CONFIG_SOC_INTEL_COMMON_BLOCK_PMC),y)
+bootblock-y += pmclib.c
+romstage-y += pmclib.c
+ramstage-y += pmc.c
+ramstage-y += pmclib.c
+smm-y += pmclib.c
+verstage-y += pmclib.c
+endif

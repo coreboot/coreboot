@@ -291,9 +291,8 @@ int main(void)
 {
 	int i, j;
 
-#if IS_ENABLED(CONFIG_LP_USB)
-	usb_initialize();
-#endif
+	if (IS_ENABLED(CONFIG_LP_USB))
+		usb_initialize();
 
 	initscr();
 

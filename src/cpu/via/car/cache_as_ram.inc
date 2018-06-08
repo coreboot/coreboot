@@ -114,7 +114,7 @@ clear_fixed_var_mtrr_out:
 	xorl	%edx, %edx
 	/*
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
-	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
+	 * https://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
 	movl	$copy_and_run, %eax
 	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
@@ -149,25 +149,9 @@ clear_fixed_var_mtrr_out:
 	movl	%esi, %edi
 	movl	$(CacheSize >> 2), %ecx
 
-	/*
-	 * 0x5c5c5c5c is a memory test pattern.
-	 * TODO: Check if everything works with the zero pattern as well.
-	 */
-	/* xorl	%eax, %eax */
-	xorl	$0x5c5c5c5c, %eax
+	/* Zero out the cache-as-ram area. */
+	xorl	%eax, %eax
 	rep	stosl
-
-#ifdef CARTEST
-	/*
-	 * IMPORTANT: The following calculation _must_ be done at runtime. See
-	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
-	 */
-	movl	$copy_and_run, %esi
-	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %ei
-	movl	%esi, %edi
-	movl	$(CONFIG_XIP_ROM_SIZE >> 2), %ecx
-	rep	lodsl
-#endif
 
 	/*
 	 * The key point of this CAR code is C7 cache does not turn into
@@ -176,26 +160,6 @@ clear_fixed_var_mtrr_out:
 
 	movl	$(CacheBase + CacheSize - 4), %eax
 	movl	%eax, %esp
-
-#ifdef CARTEST
-testok:
-	post_code(0x40)
-	xorl	%edx, %edx
-	xorl	%eax, %eax
-	movl	$0x5c5c, %edx
-	pushl	%edx
-	pushl	%edx
-	pushl	%edx
-	pushl	%edx
-	pushl	%edx
-	popl	%esi
-	popl	%esi
-	popl	%eax
-	popl	%eax
-	popl	%eax
-	cmpl	%edx, %eax
-	jne	stackerr
-#endif
 
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
@@ -241,7 +205,7 @@ testok:
 	xorl	%edx, %edx
 	/*
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
-	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
+	 * https://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
 	movl	$copy_and_run, %eax
 	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax

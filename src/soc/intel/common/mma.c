@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <bootstate.h>
 #include <cbfs.h>
 #include <cbmem.h>
@@ -31,7 +32,7 @@
 struct mma_data_container {
 	uint32_t mma_signature; /* "MMAD" */
 	uint8_t mma_data[0]; /* Variable size, platform/run time dependent. */
-} __attribute__ ((packed));
+} __packed;
 
 /*
  * Format of the MMA test metadata file, stored under CBFS

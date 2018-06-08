@@ -16,7 +16,6 @@
 PROGRAM = k8resdump
 
 CC      = gcc
-STRIP	= strip
 INSTALL = /usr/bin/install
 PREFIX  = /usr/local
 #CFLAGS  = -O2 -g -Wall -Werror
@@ -26,7 +25,6 @@ ifeq ($(OS_ARCH), SunOS)
 LDFLAGS = -lpci
 else
 LDFLAGS = -lpci -lz -static
-STRIP_ARGS = -s
 endif
 
 OBJS = k8resdump.o
@@ -35,7 +33,6 @@ all: pciutils dep $(PROGRAM)
 
 $(PROGRAM): $(OBJS)
 	$(CC) -o $(PROGRAM) $(OBJS) $(LDFLAGS)
-	$(STRIP) $(STRIP_ARGS) $(PROGRAM)
 
 clean:
 	rm -f *.o *~

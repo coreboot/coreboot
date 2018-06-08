@@ -26,7 +26,7 @@
 #include <symbols.h>
 
 /* This allows USB A-A firmware upload from a compatible host in four parts:
- * The first two are the bare BL1 and the Coreboot boot block, which are just
+ * The first two are the bare BL1 and the coreboot boot block, which are just
  * written to their respective loading addresses. These transfers are initiated
  * by the IROM / BL1, so this code has nothing to do with them.
  *

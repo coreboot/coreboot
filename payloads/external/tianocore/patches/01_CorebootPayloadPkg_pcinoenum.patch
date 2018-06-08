@@ -1,0 +1,65 @@
+From 4f9d41e69356ce7486b0c74a754ff494256723de Mon Sep 17 00:00:00 2001
+From: CoolStar <coolstarorganization@gmail.com>
+Date: Sun, 4 Dec 2016 11:23:38 -0800
+Subject: [PATCH] PCI: use Duet's PciNoEnumeration
+
+---
+ CorebootPayloadPkg/CorebootPayloadPkg.fdf        | 4 ++--
+ CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc    | 7 ++-----
+ CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc | 7 ++-----
+ 3 files changed, 6 insertions(+), 12 deletions(-)
+
+diff --git a/CorebootPayloadPkg/CorebootPayloadPkg.fdf b/CorebootPayloadPkg/CorebootPayloadPkg.fdf
+index 303e626842..a39e3999ba 100644
+--- a/CorebootPayloadPkg/CorebootPayloadPkg.fdf
++++ b/CorebootPayloadPkg/CorebootPayloadPkg.fdf
+@@ -124,8 +124,8 @@ INF MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
+ #
+ # PCI Support
+ #
+-INF MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
+-INF MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
++INF DuetPkg/PciRootBridgeNoEnumerationDxe/PciRootBridgeNoEnumeration.inf
++INF DuetPkg/PciBusNoEnumerationDxe/PciBusNoEnumeration.inf
+ 
+ #
+ # ISA Support
+diff --git a/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc b/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
+index cdfcb75b59..e838aca61d 100644
+--- a/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
++++ b/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
+@@ -450,11 +450,8 @@
+   #
+   # PCI Support
+   #
+-  MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
+-  MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf {
+-    <LibraryClasses>
+-      PciHostBridgeLib|CorebootPayloadPkg/Library/PciHostBridgeLib/PciHostBridgeLib.inf
+-  }
++  DuetPkg/PciRootBridgeNoEnumerationDxe/PciRootBridgeNoEnumeration.inf
++  DuetPkg/PciBusNoEnumerationDxe/PciBusNoEnumeration.inf
+ 
+   #
+   # SCSI/ATA/IDE/DISK Support
+diff --git a/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc b/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
+index 6b16af63ba..c25d821fd4 100644
+--- a/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
++++ b/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
+@@ -451,11 +451,8 @@
+   #
+   # PCI Support
+   #
+-  MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
+-  MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf {
+-    <LibraryClasses>
+-      PciHostBridgeLib|CorebootPayloadPkg/Library/PciHostBridgeLib/PciHostBridgeLib.inf
+-  }
++  DuetPkg/PciRootBridgeNoEnumerationDxe/PciRootBridgeNoEnumeration.inf
++  DuetPkg/PciBusNoEnumerationDxe/PciBusNoEnumeration.inf
+ 
+   #
+   # SCSI/ATA/IDE/DISK Support
+-- 
+2.13.2.725.g09c95d1e9-goog
+

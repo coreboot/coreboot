@@ -44,10 +44,11 @@ PCIE_CFG AtiPcieCfg = {
 	0			/* GppPwr */
 };
 
-static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port);
-static void ValidatePortEn(device_t nb_dev);
+static void PciePowerOffGppPorts(struct device *nb_dev, struct device *dev,
+				 u32 port);
+static void ValidatePortEn(struct device *nb_dev);
 
-static void ValidatePortEn(device_t nb_dev)
+static void ValidatePortEn(struct device *nb_dev)
 {
 }
 
@@ -56,7 +57,8 @@ static void ValidatePortEn(device_t nb_dev)
 * Compliant with CIM_33's PCIEPowerOffGppPorts
 * Power off unused GPP lines
 *****************************************************************/
-static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port)
+static void PciePowerOffGppPorts(struct device *nb_dev, struct device *dev,
+				 u32 port)
 {
 	u32 reg;
 	u16 state_save;
@@ -119,7 +121,8 @@ static void pcie_init(struct device *dev)
 
 /**********************************************************************
 **********************************************************************/
-static void switching_gpp_configurations(device_t nb_dev, device_t sb_dev)
+static void switching_gpp_configurations(struct device *nb_dev,
+					 struct device *sb_dev)
 {
 	u32 reg;
 	struct southbridge_amd_rs690_config *cfg =
@@ -164,7 +167,7 @@ static void switching_gpp_configurations(device_t nb_dev, device_t sb_dev)
 * The rs690 uses NBCONFIG:0x1c (BAR3) to map the PCIE Extended Configuration
 * Space to a 256MB range within the first 4GB of addressable memory.
 *****************************************************************/
-void enable_pcie_bar3(device_t nb_dev)
+void enable_pcie_bar3(struct device *nb_dev)
 {
 	printk(BIOS_DEBUG, "enable_pcie_bar3()\n");
 	set_nbcfg_enable_bits(nb_dev, 0x7C, 1 << 30, 1 << 30);	/* Enables writes to the BAR3 register. */
@@ -180,7 +183,7 @@ void enable_pcie_bar3(device_t nb_dev)
 * We should disable bar3 when we want to exit rs690_enable, because bar3 will be
 * remapped in set_resource later.
 *****************************************************************/
-void disable_pcie_bar3(device_t nb_dev)
+void disable_pcie_bar3(struct device *nb_dev)
 {
 	printk(BIOS_DEBUG, "disable_pcie_bar3()\n");
 	set_nbcfg_enable_bits(nb_dev, 0x7C, 1 << 30, 0 << 30);	/* Disable writes to the BAR3. */
@@ -197,11 +200,11 @@ void disable_pcie_bar3(device_t nb_dev)
 * port:
 *	p2p bridge number, 4-8
 *****************************************/
-void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
+void rs690_gpp_sb_init(struct device *nb_dev, struct device *dev, u32 port)
 {
 	u8 reg8;
 	u16 reg16;
-	device_t sb_dev;
+	struct device *sb_dev;
 	struct southbridge_amd_rs690_config *cfg =
 	    (struct southbridge_amd_rs690_config *)nb_dev->chip_info;
 	printk(BIOS_DEBUG, "gpp_sb_init nb_dev=0x%p, dev=0x%p, port=0x%x\n", nb_dev, dev, port);
@@ -334,7 +337,7 @@ void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 /*****************************************
 * Compliant with CIM_33's PCIEConfigureGPPCore
 *****************************************/
-void config_gpp_core(device_t nb_dev, device_t sb_dev)
+void config_gpp_core(struct device *nb_dev, struct device *sb_dev)
 {
 	u32 reg;
 	struct southbridge_amd_rs690_config *cfg =
@@ -357,7 +360,7 @@ void config_gpp_core(device_t nb_dev, device_t sb_dev)
 /*****************************************
 * Compliant with CIM_33's PCIEMiscClkProg
 *****************************************/
-void pcie_config_misc_clk(device_t nb_dev)
+void pcie_config_misc_clk(struct device *nb_dev)
 {
 	u32 reg;
 	struct bus pbus; /* fake bus for dev0 fun1 */

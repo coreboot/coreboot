@@ -1,2 +1,0 @@
-config BOARD_A_TREND_ATC_6240
-	bool "ATC-6240"

@@ -19,6 +19,8 @@
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
+#include <intelblocks/mp_init.h>
 #include <soc/bootblock.h>
 #include <soc/cpu.h>
 #include <soc/pch.h>
@@ -30,63 +32,87 @@ static struct {
 	u32 cpuid;
 	const char *name;
 } cpu_table[] = {
-	{ CPUID_SKYLAKE_C0,	"Skylake C0" },
-	{ CPUID_SKYLAKE_D0,	"Skylake D0" },
-	{ CPUID_SKYLAKE_HQ0,    "Skylake H Q0" },
-	{ CPUID_SKYLAKE_HR0,    "Skylake H R0" },
-	{ CPUID_KABYLAKE_G0,	"Kabylake G0" },
-	{ CPUID_KABYLAKE_H0,	"Kabylake H0" },
-	{ CPUID_KABYLAKE_Y0,	"Kabylake Y0" },
-	{ CPUID_KABYLAKE_HA0,	"Kabylake H A0" },
-	{ CPUID_KABYLAKE_HB0,	"Kabylake H B0" },
+	{ CPUID_SKYLAKE_C0, "Skylake C0" },
+	{ CPUID_SKYLAKE_D0, "Skylake D0" },
+	{ CPUID_SKYLAKE_HQ0, "Skylake H Q0" },
+	{ CPUID_SKYLAKE_HR0, "Skylake H R0" },
+	{ CPUID_KABYLAKE_G0, "Kabylake G0" },
+	{ CPUID_KABYLAKE_H0, "Kabylake H0" },
+	{ CPUID_KABYLAKE_Y0, "Kabylake Y0" },
+	{ CPUID_KABYLAKE_HA0, "Kabylake H A0" },
+	{ CPUID_KABYLAKE_HB0, "Kabylake H B0" },
 };
 
 static struct {
 	u16 mchid;
 	const char *name;
 } mch_table[] = {
-	{ MCH_SKYLAKE_ID_U,	"Skylake-U" },
-	{ MCH_SKYLAKE_ID_Y,	"Skylake-Y" },
-	{ MCH_SKYLAKE_ID_ULX,	"Skylake-ULX" },
-	{ MCH_SKYLAKE_ID_H,	"Skylake-H" },
-	{ MCH_SKYLAKE_ID_H_EM,  "Skylake-H Embedded" },
-	{ MCH_KABYLAKE_ID_U,	"Kabylake-U" },
-	{ MCH_KABYLAKE_ID_U_R,	"Kabylake-R ULT"},
-	{ MCH_KABYLAKE_ID_Y,	"Kabylake-Y" },
-	{ MCH_KABYLAKE_ID_H,	"Kabylake-H" },
+	{ PCI_DEVICE_ID_INTEL_SKL_ID_U, "Skylake-U" },
+	{ PCI_DEVICE_ID_INTEL_SKL_ID_Y, "Skylake-Y" },
+	{ PCI_DEVICE_ID_INTEL_SKL_ID_ULX, "Skylake-ULX" },
+	{ PCI_DEVICE_ID_INTEL_SKL_ID_H, "Skylake-H" },
+	{ PCI_DEVICE_ID_INTEL_SKL_ID_H_EM, "Skylake-H Embedded" },
+	{ PCI_DEVICE_ID_INTEL_KBL_ID_U, "Kabylake-U" },
+	{ PCI_DEVICE_ID_INTEL_KBL_U_R, "Kabylake-R ULT"},
+	{ PCI_DEVICE_ID_INTEL_KBL_ID_Y, "Kabylake-Y" },
+	{ PCI_DEVICE_ID_INTEL_KBL_ID_H, "Kabylake-H" },
+	{ PCI_DEVICE_ID_INTEL_KBL_ID_S, "Kabylake-S" },
+	{ PCI_DEVICE_ID_INTEL_KBL_ID_DT, "Kabylake DT" },
 };
 
 static struct {
 	u16 lpcid;
 	const char *name;
 } pch_table[] = {
-	{ PCH_SPT_LP_SAMPLE,		"Skylake LP Sample" },
-	{ PCH_SPT_LP_U_BASE,		"Skylake-U Base" },
-	{ PCH_SPT_LP_U_PREMIUM,		"Skylake-U Premium" },
-	{ PCH_SPT_LP_Y_PREMIUM,		"Skylake-Y Premium" },
-	{ PCH_SPT_H_PREMIUM,		"Skylake-H Premium" },
-	{ PCH_SPT_H_C236,		"Skylake-H C236" },
-	{ PCH_SPT_H_QM170,		"Skylake-H QM170" },
-	{ PCH_KBL_LP_U_PREMIUM,		"Kabylake-U Premium" },
-	{ PCH_KBL_LP_Y_PREMIUM,		"Kabylake-Y Premium" },
-	{ PCH_KBL_LP_Y_PREMIUM_HDCP22,	"Kabylake-Y iHDCP 2.2 Premium" },
+	{ PCI_DEVICE_ID_INTEL_SPT_LP_SAMPLE, "Skylake LP Sample" },
+	{ PCI_DEVICE_ID_INTEL_SPT_LP_U_BASE, "Skylake-U Base" },
+	{ PCI_DEVICE_ID_INTEL_SPT_LP_U_PREMIUM, "Skylake-U Premium" },
+	{ PCI_DEVICE_ID_INTEL_SPT_LP_Y_PREMIUM, "Skylake-Y Premium" },
+	{ PCI_DEVICE_ID_INTEL_SPT_H_PREMIUM, "Skylake PCH-H Premium" },
+	{ PCI_DEVICE_ID_INTEL_SPT_H_C236, "Skylake PCH-H C236" },
+	{ PCI_DEVICE_ID_INTEL_SPT_H_QM170, "Skylake PCH-H QM170" },
+	{ PCI_DEVICE_ID_INTEL_KBP_H_Q270, "Kabylake-H Q270" },
+	{ PCI_DEVICE_ID_INTEL_KBP_H_H270, "Kabylake-H H270" },
+	{ PCI_DEVICE_ID_INTEL_KBP_H_Z270, "Kabylake-H Z270" },
+	{ PCI_DEVICE_ID_INTEL_KBP_H_B250, "Kabylake-H B250" },
+	{ PCI_DEVICE_ID_INTEL_KBP_H_Q250, "Kabylake-H Q250" },
+	{ PCI_DEVICE_ID_INTEL_KBP_LP_U_PREMIUM, "Kabylake-U Premium" },
+	{ PCI_DEVICE_ID_INTEL_KBP_LP_Y_PREMIUM, "Kabylake-Y Premium" },
+	{ PCI_DEVICE_ID_INTEL_KBP_LP_SUPER_SKU, "Kabylake Super Sku" },
+	{ PCI_DEVICE_ID_INTEL_SPT_LP_Y_PREMIUM_HDCP22,
+			"Kabylake-Y iHDCP 2.2 Premium" },
+	{ PCI_DEVICE_ID_INTEL_SPT_LP_U_PREMIUM_HDCP22,
+			"Kabylake-U iHDCP 2.2 Premium" },
+	{ PCI_DEVICE_ID_INTEL_SPT_LP_U_BASE_HDCP22,
+			"Kabylake-U iHDCP 2.2 Base" },
 };
 
 static struct {
 	u16 igdid;
 	const char *name;
 } igd_table[] = {
-	{ IGD_SKYLAKE_GT1_SULTM, "Skylake ULT GT1"},
-	{ IGD_SKYLAKE_GT2_SULXM, "Skylake ULX GT2" },
-	{ IGD_SKYLAKE_GT2_SULTM, "Skylake ULT GT2" },
-	{ IGD_SKYLAKE_GT2_SHALM, "Skylake HALO GT2" },
-	{ IGD_SKYLAKE_GT4_SHALM, "Skylake HALO GT4" },
-	{ IGD_KABYLAKE_GT1_SULTM, "Kabylake ULT GT1"},
-	{ IGD_KABYLAKE_GT2_SULXM, "Kabylake ULX GT2" },
-	{ IGD_KABYLAKE_GT2_SULTM, "Kabylake ULT GT2" },
-	{ IGD_KABYLAKE_GT2_SULTMR, "Kabylake-R ULT GT2"},
-	{ IGD_KABYLAKE_GT2_SHALM, "Kabylake HALO GT2" },
+	{ PCI_DEVICE_ID_INTEL_SKL_GT1_SULTM, "Skylake ULT GT1"},
+	{ PCI_DEVICE_ID_INTEL_SKL_GT2_SULXM, "Skylake ULX GT2" },
+	{ PCI_DEVICE_ID_INTEL_SKL_GT2_SULTM, "Skylake ULT GT2" },
+	{ PCI_DEVICE_ID_INTEL_SKL_GT2_SHALM, "Skylake HALO GT2" },
+	{ PCI_DEVICE_ID_INTEL_SKL_GT4_SHALM, "Skylake HALO GT4" },
+	{ PCI_DEVICE_ID_INTEL_KBL_GT1_SULTM, "Kabylake ULT GT1"},
+	{ PCI_DEVICE_ID_INTEL_KBL_GT2_SULXM, "Kabylake ULX GT2" },
+	{ PCI_DEVICE_ID_INTEL_KBL_GT2_SULTM, "Kabylake ULT GT2" },
+	{ PCI_DEVICE_ID_INTEL_KBL_GT2_SULTMR, "Kabylake-R ULT GT2"},
+	{ PCI_DEVICE_ID_INTEL_KBL_GT2_SHALM, "Kabylake HALO GT2" },
+	{ PCI_DEVICE_ID_INTEL_KBL_GT2_DT2P2, "Kabylake DT GT2" },
 };
+
+static uint8_t get_dev_revision(device_t dev)
+{
+	return pci_read_config8(dev, PCI_REVISION_ID);
+}
+
+static uint16_t get_dev_id(device_t dev)
+{
+	return pci_read_config16(dev, PCI_DEVICE_ID);
+}
 
 static void report_cpu_info(void)
 {
@@ -145,8 +171,9 @@ static void report_cpu_info(void)
 static void report_mch_info(void)
 {
 	int i;
-	u16 mchid = pci_read_config16(SA_DEV_ROOT, PCI_DEVICE_ID);
-	u8 mch_revision = pci_read_config8(SA_DEV_ROOT, PCI_REVISION_ID);
+	device_t dev = SA_DEV_ROOT;
+	uint16_t mchid = get_dev_id(dev);
+	uint8_t mch_revision = get_dev_revision(dev);
 	const char *mch_type = "Unknown";
 
 	for (i = 0; i < ARRAY_SIZE(mch_table); i++) {
@@ -163,7 +190,8 @@ static void report_mch_info(void)
 static void report_pch_info(void)
 {
 	int i;
-	u16 lpcid = pch_type();
+	device_t dev = PCH_DEV_LPC;
+	uint16_t lpcid = get_dev_id(dev);
 	const char *pch_type = "Unknown";
 
 	for (i = 0; i < ARRAY_SIZE(pch_table); i++) {
@@ -173,13 +201,14 @@ static void report_pch_info(void)
 		}
 	}
 	printk(BIOS_DEBUG, "PCH: device id %04x (rev %02x) is %s\n",
-	       lpcid, pch_revision(), pch_type);
+	       lpcid, get_dev_revision(dev), pch_type);
 }
 
 static void report_igd_info(void)
 {
 	int i;
-	u16 igdid = pci_read_config16(SA_DEV_IGD, PCI_DEVICE_ID);
+	device_t dev = SA_DEV_IGD;
+	uint16_t igdid = get_dev_id(dev);
 	const char *igd_type = "Unknown";
 
 	for (i = 0; i < ARRAY_SIZE(igd_table); i++) {
@@ -189,7 +218,7 @@ static void report_igd_info(void)
 		}
 	}
 	printk(BIOS_DEBUG, "IGD: device id %04x (rev %02x) is %s\n",
-	       igdid, pci_read_config8(SA_DEV_IGD, PCI_REVISION_ID), igd_type);
+	       igdid, get_dev_revision(dev), igd_type);
 }
 
 void report_platform_info(void)

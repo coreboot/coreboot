@@ -35,10 +35,10 @@
 #include <types.h>
 #include <delay.h>
 #include <console/console.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
 #include <endian.h>
 #include <timer.h>
-#include <tpm.h>
+#include <security/tpm/tis.h>
 #include "tpm.h"
 
 /* max. number of iterations after I2C NAK */
@@ -144,9 +144,10 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 		 * retries should usually not be needed, but are kept just to
 		 * be safe on the safe side.
 		 */
-		struct i2c_seg aseg = { .read = 0, .chip = tpm_dev->addr,
+		struct i2c_msg aseg = { .flags = 0, .slave = tpm_dev->addr,
 					.buf = &addr, .len = 1 };
-		struct i2c_seg dseg = { .read = 1, .chip = tpm_dev->addr,
+		struct i2c_msg dseg = { .flags = I2C_M_RD,
+					.slave = tpm_dev->addr,
 					.buf = buffer, .len = len };
 		for (count = 0; count < MAX_COUNT; count++) {
 			rc = i2c_transfer(tpm_dev->bus, &aseg, 1) ||

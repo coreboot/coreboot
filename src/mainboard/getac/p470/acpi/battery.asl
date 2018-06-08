@@ -40,7 +40,7 @@ Scope(\_SB) {
 		}
 
 		/* Battery Info */
-		Method(_BIF, 0)
+		Method(_BIF, 0, Serialized)
 		{
 			Name(PBIF, Package() {
 				0x01,
@@ -145,7 +145,7 @@ Scope(\_SB) {
 		}
 
 		/* Battery Info */
-		Method(_BIF, 0)
+		Method(_BIF, 0, Serialized)
 		{
 			Name(PBIF, Package() {
 				0x01,

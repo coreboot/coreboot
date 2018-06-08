@@ -1,16 +1,15 @@
 diff -rupN tint-0.03b/config.h tint/config.h
 --- tint-0.03b/config.h	2001-12-08 00:03:24.000000000 +0100
 +++ tint/config.h	2016-05-27 14:47:15.797402090 +0200
-@@ -29,7 +29,16 @@
+@@ -29,7 +29,15 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
  
 +#include <libpayload.h>
 +#include <curses.h>
-+#define random(x) rand(x)
-+#define srandom(x) srand(x)
-+#define curs_set(x)
 +
++#define curs_set(x)
++#define USE_RAND
 +
  /* Score file */
 +#if 0
@@ -939,19 +938,7 @@ diff -rupN tint-0.03b/utils.c tint/utils.c
  
  /*
   * Initialize random number generator
-@@ -41,8 +43,11 @@ void rand_init ()
- #ifdef USE_RAND
-    srand (time (NULL));
- #else
-+#if 0
-    srandom (time (NULL));
- #endif
-+   srandom (123);
-+#endif
- }
- 
- /*
-@@ -61,6 +66,7 @@ int rand_value (int range)
+@@ -61,6 +63,7 @@ int rand_value (int range)
   * Convert an str to long. Returns TRUE if successful,
   * FALSE otherwise.
   */
@@ -959,7 +946,7 @@ diff -rupN tint-0.03b/utils.c tint/utils.c
  bool str2int (int *i,const char *str)
  {
     char *endptr;
-@@ -69,3 +75,4 @@ bool str2int (int *i,const char *str)
+@@ -69,3 +72,4 @@ bool str2int (int *i,const char *str)
     return TRUE;
  }
  

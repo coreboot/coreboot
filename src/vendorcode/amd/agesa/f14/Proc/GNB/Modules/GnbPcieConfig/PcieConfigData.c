@@ -123,7 +123,7 @@ PcieConfigurationInit (
 
   IDS_HDT_CONSOLE (GNB_TRACE, "PcieConfigurationInit Enter\n");
   EarlyParamsPtr = (AMD_EARLY_PARAMS *) StdHeader;
-  ComplexList = EarlyParamsPtr->GnbConfig.PcieComplexList;
+  ComplexList = (PCIe_COMPLEX_DESCRIPTOR *)EarlyParamsPtr->GnbConfig.PcieComplexList;
   AgesaStatus = AGESA_SUCCESS;
   ComplexesDataLength = 0;
   NumberOfSockets = GnbGetNumberOfSockets (StdHeader);

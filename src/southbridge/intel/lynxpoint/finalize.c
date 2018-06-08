@@ -15,6 +15,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <console/post_codes.h>
 #include <spi-generic.h>
 #include "me.h"
@@ -34,13 +35,13 @@ void intel_pch_finalize_smm(void)
 	/* Lock SPIBAR */
 	RCBA32_OR(0x3804, (1 << 15));
 
-#if CONFIG_SPI_FLASH_SMM
+#if IS_ENABLED(CONFIG_SPI_FLASH_SMM)
 	/* Re-init SPI driver to handle locked BAR */
 	spi_init();
 #endif
 
 	/* TCLOCKDN: TC Lockdown */
-	RCBA32_OR(0x0050, (1 << 31));
+	RCBA32_OR(0x0050, (1UL << 31));
 
 	/* BIOS Interface Lockdown */
 	RCBA32_OR(0x3410, (1 << 0));
@@ -55,7 +56,7 @@ void intel_pch_finalize_smm(void)
 	pci_or_config8(PCH_LPC_DEV, 0xa6, (1 << 1) | (1 << 2));
 
 	/* PMSYNC */
-	RCBA32_OR(PMSYNC_CONFIG, (1 << 31));
+	RCBA32_OR(PMSYNC_CONFIG, (1UL << 31));
 
 	/* R/WO registers */
 	RCBA32(0x21a4) = RCBA32(0x21a4);

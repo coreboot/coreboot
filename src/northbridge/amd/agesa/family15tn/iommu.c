@@ -19,7 +19,7 @@
 #include <device/pci_ops.h>
 #include <lib.h>
 
-static void iommu_read_resources(device_t dev)
+static void iommu_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -35,7 +35,7 @@ static void iommu_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM;
 }
 
-static void iommu_set_resources(device_t dev)
+static void iommu_set_resources(struct device *dev)
 {
 	struct resource *res;
 

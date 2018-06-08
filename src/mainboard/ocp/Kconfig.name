@@ -1,0 +1,2 @@
+config VENDOR_OCP
+	bool "Open Compute Project"

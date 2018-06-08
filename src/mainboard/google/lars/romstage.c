@@ -17,6 +17,7 @@
 
 #include <string.h>
 #include <gpio.h>
+#include <ec/google/chromeec/ec.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 #include <soc/romstage.h>
@@ -33,12 +34,16 @@ void mainboard_romstage_entry(struct romstage_params *params)
 		GPIO_MEM_CONFIG_3,
 	};
 
+	/* Turn on keyboard backlight to indicate we are booting */
+	if (params->power_state->prev_sleep_state != ACPI_S3)
+		google_chromeec_kbbacklight(25);
+
 	params->pei_data->mem_cfg_id = gpio_base2_value(spd_gpios,
 							ARRAY_SIZE(spd_gpios));
 	/* Fill out PEI DATA */
 	mainboard_fill_pei_data(params->pei_data);
 	mainboard_fill_spd_data(params->pei_data);
-	/* Initliaze memory */
+	/* Initialize memory */
 	romstage_common(params);
 }
 

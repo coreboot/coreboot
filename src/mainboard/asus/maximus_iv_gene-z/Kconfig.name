@@ -1,0 +1,2 @@
+config BOARD_ASUS_MAXIMUS_IV_GENE_Z
+	bool "Maximus IV GENE-Z"

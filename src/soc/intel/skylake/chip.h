@@ -20,13 +20,13 @@
 #define _SOC_CHIP_H_
 
 #include <arch/acpi_device.h>
-#include <device/i2c.h>
+#include <device/i2c_simple.h>
+#include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/gspi.h>
 #include <stdint.h>
-#include <soc/gpio_defs.h>
 #include <soc/gpe.h>
+#include <soc/gpio.h>
 #include <soc/irq.h>
-#include <soc/intel/common/lpss_i2c.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
 #include <soc/serialio.h>
@@ -38,15 +38,6 @@
 enum skylake_i2c_voltage {
 	I2C_VOLTAGE_3V3,
 	I2C_VOLTAGE_1V8
-};
-
-struct skylake_i2c_config {
-	/* Bus speed in Hz, default is I2C_SPEED_FAST (400 KHz) */
-	enum i2c_speed speed;
-	/* Bus should be enabled prior to ramstage with temporary base */
-	int early_init;
-	/* Custom bus speed configuration { scl_lcnt, scl_hcnt, sda_hold } */
-	struct lpss_i2c_speed_config speed_config[LPSS_I2C_SPEED_CONFIG_COUNT];
 };
 
 struct soc_intel_skylake_config {
@@ -96,12 +87,34 @@ struct soc_intel_skylake_config {
 	 * Deep Sx Configuration
 	 *  DSX_EN_WAKE_PIN       - Enable WAKE# pin
 	 *  DSX_EN_LAN_WAKE_PIN   - Enable LAN_WAKE# pin
-	 *  DSX_EN_AC_PRESENT_PIN - Enable AC_PRESENT pin
+	 *  DSX_DIS_AC_PRESENT_PD - Disable pull-down on AC_PRESENT pin
 	 */
 	uint32_t deep_sx_config;
 
 	/* TCC activation offset */
 	int tcc_offset;
+
+	/* PL2 Override value in Watts */
+	u32 tdp_pl2_override;
+
+	/* SysPL2 Value in Watts */
+	u32 tdp_psyspl2;
+
+	/* SysPL3 Value in Watts */
+	u32 tdp_psyspl3;
+	/* SysPL3 window size */
+	u32 tdp_psyspl3_time;
+	/* SysPL3 duty cycle */
+	u32 tdp_psyspl3_dutycycle;
+
+	/* PL4 Value in Watts */
+	u32 tdp_pl4;
+
+	/* Estimated maximum platform power in Watts */
+	u16 psys_pmax;
+
+	/* Wether to ignore VT-d support of the SKU */
+	int ignore_vtd;
 
 	/*
 	 * The following fields come from FspUpdVpd.h.
@@ -138,13 +151,24 @@ struct soc_intel_skylake_config {
 
 	/* Lan */
 	u8 EnableLan;
+	u8 EnableLanLtr;
+	u8 EnableLanK1Off;
+	u8 LanClkReqSupported;
+	u8 LanClkReqNumber;
 
 	/* SATA related */
 	u8 EnableSata;
-	u8 SataMode;
+	enum {
+		/* Documentation and header files of Skylake FSP disagree on
+		   the values, Kaby Lake FSP (KabylakeFsp0001 on github) uses
+		   these: */
+		KBLFSP_SATA_MODE_AHCI    = 0,
+		KBLFSP_SATA_MODE_RAID    = 1,
+	} SataMode;
 	u8 SataSalpSupport;
 	u8 SataPortsEnable[8];
 	u8 SataPortsDevSlp[8];
+	u8 SataSpeedLimit;
 
 	/* Audio related */
 	u8 EnableAzalia;
@@ -166,15 +190,56 @@ struct soc_intel_skylake_config {
 	/* DCI Enable/Disable */
 	u8 PchDciEn;
 
-	/* Pcie Root Ports */
+	/*
+	 * Pcie Root Port configuration:
+	 * each element of array corresponds to
+	 * respective PCIe root port.
+	 */
+
+	/*
+	 * Enable/Disable Root Port
+	 * 0: Disable Root Port
+	 * 1: Enable Root Port
+	 */
 	u8 PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
+
+	/*
+	 * Enable/Disable Clk-req support for Root Port
+	 * 0: Disable Clk-Req
+	 * 1: Enable Clk-req
+	 */
 	u8 PcieRpClkReqSupport[CONFIG_MAX_ROOT_PORTS];
+
+	/*
+	 * Clk-req source for Root Port
+	 */
 	u8 PcieRpClkReqNumber[CONFIG_MAX_ROOT_PORTS];
+
+	/*
+	 * Clk source number for Root Port
+	 */
+	u8 PcieRpClkSrcNumber[CONFIG_MAX_ROOT_PORTS];
+
+	/*
+	 * Enable/Disable AER (Advanced Error Reporting) for Root Port
+	 * 0: Disable AER
+	 * 1: Enable AER
+	 */
+	u8 PcieRpAdvancedErrorReporting[CONFIG_MAX_ROOT_PORTS];
+
+	/*
+	 * Enable/Disable Latency Tolerance Reporting for Root Port
+	 * 0: Disable LTR
+	 * 1: Enable LTR
+	 */
+	u8 PcieRpLtrEnable[CONFIG_MAX_ROOT_PORTS];
+
+	/* Enable/Disable HotPlug support for Root Port */
+	u8 PcieRpHotPlug[CONFIG_MAX_ROOT_PORTS];
 
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];
 	struct usb3_port_config usb3_ports[10];
-	u8 XdciEnable;
 	u8 SsicPortEnable;
 
 	/* SMBus */
@@ -209,7 +274,7 @@ struct soc_intel_skylake_config {
 	/* I2C */
 	/* Bus voltage level, default is 3.3V */
 	enum skylake_i2c_voltage i2c_voltage[SKYLAKE_I2C_DEV_MAX];
-	struct lpss_i2c_bus_config i2c[SKYLAKE_I2C_DEV_MAX];
+	struct dw_i2c_bus_config i2c[SKYLAKE_I2C_DEV_MAX];
 
 	/* GSPI */
 	struct gspi_cfg gspi[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
@@ -259,29 +324,10 @@ struct soc_intel_skylake_config {
 	/* Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit.*/
 	u8 LockDownConfigGlobalSmi;
 	/*
-	 * Enable BIOS Interface Lock Down bit to prevent writes to the Backup
-	 * Control Register. Top Swap bit and the General Control and Status
-	 * Registers Boot BIOS Straps.
-	 */
-	u8 LockDownConfigBiosInterface;
-	/*
 	 * Enable RTC lower and upper 128 byte Lock bits to lock Bytes 38h-3Fh
 	 * in the upper and and lower 128-byte bank of RTC RAM.
 	 */
 	u8 LockDownConfigRtcLock;
-	/*
-	 * When enabled, the BIOS Region can only be modified from SMM after
-	 * EndOfDxe protocol is installed
-	 */
-	u8 LockDownConfigBiosLock;
-	/*
-	 * Enable InSMM.STS (EISS) in SPI If this bit is set, then WPD must be a
-	 * '1' and InSMM.STS must be '1' also in order to write to BIOS regions
-	 * of SPI Flash. If this bit is clear, then the InSMM.STS is a don't
-	 * care. The BIOS must set the EISS bit while BIOS Guard support is
-	 * enabled.
-	 */
-	u8 LockDownConfigSpiEiss;
 	/* Subsystem Vendor ID of the PCH devices*/
 	u16 PchConfigSubSystemVendorId;
 	/* Subsystem ID of the PCH devices*/
@@ -311,26 +357,38 @@ struct soc_intel_skylake_config {
 	 * 4: PchDpS4S5AlwaysEn, 5: PchDpS3S4S5BatteryEn, 6: PchDpS3S4S5AlwaysEn
 	 */
 	u8 PmConfigDeepSxPol;
-	/*
-	 * SLP_S3 Minimum Assertion Width Policy. Values 0: PchSlpS360us,
-	 * 1: PchSlpS31ms, 2: PchSlpS350ms, 3: PchSlpS32s.
-	 */
-	u8 PmConfigSlpS3MinAssert;
-	/*
-	 * SLP_S4 Minimum Assertion Width Policy. Values 0: PchSlpS4PchTime,
-	 * 1: PchSlpS41s, 2: PchSlpS42s, 3: PchSlpS43s, 4: PchSlpS44s.
-	 */
-	u8 PmConfigSlpS4MinAssert;
-	/*
-	 * SLP_SUS Minimum Assertion Width Policy. Values 0: PchSlpSus0ms,
-	 * 1: PchSlpSus500ms, 2: PchSlpSus1s, 3: PchSlpSus4s.
-	 */
-	u8 PmConfigSlpSusMinAssert;
-	/*
-	 * SLP_A Minimum Assertion Width Policy. Values 0: PchSlpA0ms,
-	 * 1: PchSlpA4s, 2: PchSlpA98ms, 3: PchSlpA2s.
-	 */
-	u8 PmConfigSlpAMinAssert;
+
+	enum {
+		SLP_S3_MIN_ASSERT_60US = 0,
+		SLP_S3_MIN_ASSERT_1MS  = 1,
+		SLP_S3_MIN_ASSERT_50MS = 2,
+		SLP_S3_MIN_ASSERT_2S   = 3,
+	} PmConfigSlpS3MinAssert;
+
+	enum {
+		SLP_S4_MIN_ASSERT_PCH = 0,
+		SLP_S4_MIN_ASSERT_1S  = 1,
+		SLP_S4_MIN_ASSERT_2S  = 2,
+		SLP_S4_MIN_ASSERT_3S  = 3,
+		SLP_S4_MIN_ASSERT_4S  = 4,
+	} PmConfigSlpS4MinAssert;
+
+	/* When deep Sx enabled: Must be greater than or equal to
+	                         all other minimum assertion widths. */
+	enum {
+		SLP_SUS_MIN_ASSERT_0MS   = 0,
+		SLP_SUS_MIN_ASSERT_500MS = 1,
+		SLP_SUS_MIN_ASSERT_1S    = 2,
+		SLP_SUS_MIN_ASSERT_4S    = 3,
+	} PmConfigSlpSusMinAssert;
+
+	enum {
+		SLP_A_MIN_ASSERT_0MS  = 0,
+		SLP_A_MIN_ASSERT_4S   = 1,
+		SLP_A_MIN_ASSERT_98MS = 2,
+		SLP_A_MIN_ASSERT_2S   = 3,
+	} PmConfigSlpAMinAssert;
+
 	/*
 	 * This member describes whether or not the PCI ClockRun feature of PCH
 	 * should be enabled. Values 0: Disabled, 1: Enabled
@@ -354,24 +412,30 @@ struct soc_intel_skylake_config {
 	 */
 	u8 PchPmSlpS0VmEnable;
 
-	/*
-	 * Reset Power Cycle Duration could be customized in the unit of second.
-	 * PCH HW default is 4 seconds, and range is 1~4 seconds.
-	 * Values: 0x0 - 0s, 0x1 - 1s, 0x2 - 2s, 0x3 - 3s, 0x4 - 4s
-	 */
-	u8 PmConfigPwrCycDur;
+	enum {
+		RESET_POWER_CYCLE_DEFAULT = 0,
+		RESET_POWER_CYCLE_1S      = 1,
+		RESET_POWER_CYCLE_2S      = 2,
+		RESET_POWER_CYCLE_3S      = 3,
+		RESET_POWER_CYCLE_4S      = 4,
+	} PmConfigPwrCycDur;
+
 	/* Determines if enable Serial IRQ. Values 0: Disabled, 1: Enabled.*/
 	u8 SerialIrqConfigSirqEnable;
-	/* Serial IRQ Mode Select. Values: 0: PchQuietMode,
-	 * 1: PchContinuousMode.
-	 */
-	u8 SerialIrqConfigSirqMode;
-	/*
-	 * Start Frame Pulse Width.
-	 * Values: 0: PchSfpw4Clk, 1: PchSfpw6Clk, 2; PchSfpw8Clk.
-	 */
-	u8 SerialIrqConfigStartFramePulse;
+
+	enum {
+		SERIAL_IRQ_QUIET_MODE      = 0,
+		SERIAL_IRQ_CONTINUOUS_MODE = 1,
+	} SerialIrqConfigSirqMode;
+
+	enum {
+		SERIAL_IRQ_FRAME_PULSE_4CLK = 0,
+		SERIAL_IRQ_FRAME_PULSE_6CLK = 1,
+		SERIAL_IRQ_FRAME_PULSE_8CLK = 2,
+	} SerialIrqConfigStartFramePulse;
+
 	u8 FspSkipMpInit;
+
 	/*
 	 * VrConfig Settings for 5 domains
 	 * 0 = System Agent, 1 = IA Core, 2 = Ring,
@@ -383,8 +447,6 @@ struct soc_intel_skylake_config {
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS
 	 */
 	u8 HeciEnabled;
-	/* PL2 Override value in Watts */
-	u32 tdp_pl2_override;
 	u8 PmTimerDisabled;
 	/* Intel Speed Shift Technology */
 	u8 speed_shift_enable;
@@ -450,6 +512,9 @@ struct soc_intel_skylake_config {
 	 * 0b - Enabled
 	 * 1b - Disabled
 	 */
+	/* FSP 1.1 */
+	u8 FastPkgCRampDisable;
+	/* FSP 2.0 */
 	u8 FastPkgCRampDisableIa;
 	u8 FastPkgCRampDisableGt;
 	u8 FastPkgCRampDisableSa;
@@ -468,6 +533,36 @@ struct soc_intel_skylake_config {
 
 	/* Enable SGX feature */
 	u8 sgx_enable;
+
+	/* Enable/Disable EIST
+	 * 1b - Enabled
+	 * 0b - Disabled
+	 */
+	u8 eist_enable;
+	/* Chipset (LPC and SPI)  Lock Down
+	 * 1b - coreboot to handle lockdown
+	 * 0b - FSP to handle lockdown
+	 */
+	enum {
+		/* lock according to binary UPD settings */
+		CHIPSET_LOCKDOWN_FSP,
+		/* coreboot handles locking */
+		CHIPSET_LOCKDOWN_COREBOOT,
+	} chipset_lockdown;
+
+	/*
+	 * Activates VR mailbox command for Intersil VR C-state issues.
+	 * 0 - no mailbox command sent.
+	 * 1 - VR mailbox command sent for IA/GT rails only.
+	 * 2 - VR mailbox command sent for IA/GT/SA rails.
+	 */
+	u8 IslVrCmd;
+
+	/* PCH Trip Temperature */
+	u8 pch_trip_temp;
+
+	/* Enable/Disable Sata power optimization */
+	u8 SataPwrOptEnable;
 };
 
 typedef struct soc_intel_skylake_config config_t;

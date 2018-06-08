@@ -1,9 +1,8 @@
-if BOARD_GOOGLE_CYAN
-
-config BOARD_SPECIFIC_OPTIONS
-	def_bool y
+config BOARD_GOOGLE_BASEBOARD_CYAN
+	def_bool n
 	select BOARD_ROMSIZE_KB_8192
 	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_BOARDID
 	select EC_GOOGLE_CHROMEEC_MEC
 	select EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
 	select ENABLE_BUILTIN_COM1
@@ -13,7 +12,10 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_LPC_TPM
 	select SOC_INTEL_BRASWELL
 	select HAVE_ACPI_RESUME
-	select PCIEXP_L1_SUB_STATE
+	select PCIEXP_L1_SUB_STATE if !BOARD_GOOGLE_CYAN
+	select SYSTEM_TYPE_LAPTOP
+
+if BOARD_GOOGLE_BASEBOARD_CYAN
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
@@ -34,17 +36,61 @@ config MAINBOARD_DIR
 	string
 	default google/cyan
 
+config MAINBOARD_FAMILY
+	string
+	default "Intel_Strago" if !BOARD_GOOGLE_CYAN
+	default ""
+
+config VARIANT_DIR
+	string
+	default "banon" if BOARD_GOOGLE_BANON
+	default "celes" if BOARD_GOOGLE_CELES
+	default "cyan" if BOARD_GOOGLE_CYAN
+	default "edgar" if BOARD_GOOGLE_EDGAR
+	default "kefka" if BOARD_GOOGLE_KEFKA
+	default "reks" if BOARD_GOOGLE_REKS
+	default "relm" if BOARD_GOOGLE_RELM
+	default "setzer" if BOARD_GOOGLE_SETZER
+	default "terra" if BOARD_GOOGLE_TERRA
+	default "ultima" if BOARD_GOOGLE_ULTIMA
+	default "wizpig" if BOARD_GOOGLE_WIZPIG
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "Cyan"
+	default "Banon" if BOARD_GOOGLE_BANON
+	default "Celes" if BOARD_GOOGLE_CELES
+	default "Cyan" if BOARD_GOOGLE_CYAN
+	default "Edgar" if BOARD_GOOGLE_EDGAR
+	default "Kefka" if BOARD_GOOGLE_KEFKA
+	default "Reks" if BOARD_GOOGLE_REKS
+	default "Relm" if BOARD_GOOGLE_RELM
+	default "Setzer" if BOARD_GOOGLE_SETZER
+	default "Terra" if BOARD_GOOGLE_TERRA
+	default "Ultima" if BOARD_GOOGLE_ULTIMA
+	default "Wizpig" if BOARD_GOOGLE_WIZPIG
 
 config MAINBOARD_VENDOR
 	string
 	default "Google"
 
-if !GOP_SUPPORT
+config DEVICETREE
+	string
+	default "variants/banon/devicetree.cb" if BOARD_GOOGLE_BANON
+	default "variants/celes/devicetree.cb" if BOARD_GOOGLE_CELES
+	default "variants/cyan/devicetree.cb" if BOARD_GOOGLE_CYAN
+	default "variants/edgar/devicetree.cb" if BOARD_GOOGLE_EDGAR
+	default "variants/kefka/devicetree.cb" if BOARD_GOOGLE_KEFKA
+	default "variants/reks/devicetree.cb" if BOARD_GOOGLE_REKS
+	default "variants/relm/devicetree.cb" if BOARD_GOOGLE_RELM
+	default "variants/setzer/devicetree.cb" if BOARD_GOOGLE_SETZER
+	default "variants/terra/devicetree.cb" if BOARD_GOOGLE_TERRA
+	default "variants/ultima/devicetree.cb" if BOARD_GOOGLE_ULTIMA
+	default "variants/wizpig/devicetree.cb" if BOARD_GOOGLE_WIZPIG
+
+
 config VGA_BIOS_FILE
 	string
+	depends on VGA_BIOS
 	default "3rdparty/blobs/mainboard/intel/strago/vgabios.bin"
 	help
 	  The C0 version of the video bios gets computed from this name
@@ -53,15 +99,25 @@ config VGA_BIOS_FILE
 
 config VGA_BIOS_ID
 	string
+	depends on VGA_BIOS
 	default "8086,22b0"
 	help
 	  The VGA_BIOS_ID for the C0 version of the video bios is hardcoded
 	  in soc/intel/braswell/Makefile.inc as 8086,22b1
 
-endif #GOP_SUPPORT
-
 config GBB_HWID
 	string
 	depends on CHROMEOS
-	default "CYAN TEST A-A 1829"
-endif # BOARD_GOOGLE_CYAN
+	default "BANON TEST A-A 8050" if BOARD_GOOGLE_BANON
+	default "CELES TEST A-A 5441" if BOARD_GOOGLE_CELES
+	default "CYAN TEST A-A 1829" if BOARD_GOOGLE_CYAN
+	default "EDGAR TEST A-A 2507" if BOARD_GOOGLE_EDGAR
+	default "KEFKA TEST A-A 5397" if BOARD_GOOGLE_KEFKA
+	default "REKS TEST A-A 3004" if BOARD_GOOGLE_REKS
+	default "RELM TEST A-A 2323" if BOARD_GOOGLE_RELM
+	default "SETZER TEST A-A 8721" if BOARD_GOOGLE_SETZER
+	default "TERRA TEST A-A 1650" if BOARD_GOOGLE_TERRA
+	default "ULTIMA TEST A-A 6017" if BOARD_GOOGLE_ULTIMA
+	default "WIZPIG TEST A-A 0597" if BOARD_GOOGLE_WIZPIG
+
+endif # BOARD_GOOGLE_BASEBOARD_CYAN

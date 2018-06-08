@@ -12,7 +12,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-FAM10", "AMDACPI", 100925440)
+DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMDF10", "AMDACPI ", 100925440)
 {
 
 //	Scope (_PR)
@@ -25,10 +25,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-FAM10", "AMDACPI", 100925440)
 
 	Method (FWSO, 0, NotSerialized) { }
 
-	Name (_S0, Package (0x04) { 0x00, 0x00, 0x00, 0x00 })
-	Name (_S1, Package (0x04) { 0x01, 0x01, 0x01, 0x01 })
-	Name (_S3, Package (0x04) { 0x05, 0x05, 0x05, 0x05 })
-	Name (_S5, Package (0x04) { 0x07, 0x07, 0x07, 0x07 })
 
 	Scope (_SB)
 	{

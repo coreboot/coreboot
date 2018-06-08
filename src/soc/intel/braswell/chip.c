@@ -15,6 +15,7 @@
  */
 
 #include <chip.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -35,7 +36,6 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init             = NULL,
 	.scan_bus         = pci_domain_scan_bus,
-	.ops_pci_bus      = pci_bus_default_ops,
 };
 
 static void cpu_bus_noop(device_t dev) { }
@@ -79,6 +79,10 @@ static void enable_dev(device_t dev)
 			southcluster_enable_dev(dev);
 		}
 	}
+}
+
+__weak void board_silicon_USB2_override(SILICON_INIT_UPD *params)
+{
 }
 
 void soc_silicon_init_params(SILICON_INIT_UPD *params)
@@ -126,22 +130,37 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->Usb2Port0PerPortTxiSet = config->Usb2Port0PerPortTxiSet;
 	params->Usb2Port0IUsbTxEmphasisEn = config->Usb2Port0IUsbTxEmphasisEn;
 	params->Usb2Port0PerPortTxPeHalf = config->Usb2Port0PerPortTxPeHalf;
+	if (config->D0Usb2Port0PerPortRXISet != 0)
+		params->D0Usb2Port0PerPortRXISet = config->D0Usb2Port0PerPortRXISet;
+
 	params->Usb2Port1PerPortPeTxiSet = config->Usb2Port1PerPortPeTxiSet;
 	params->Usb2Port1PerPortTxiSet = config->Usb2Port1PerPortTxiSet;
 	params->Usb2Port1IUsbTxEmphasisEn = config->Usb2Port1IUsbTxEmphasisEn;
 	params->Usb2Port1PerPortTxPeHalf = config->Usb2Port1PerPortTxPeHalf;
+	if (config->D0Usb2Port1PerPortRXISet != 0)
+		params->D0Usb2Port1PerPortRXISet = config->D0Usb2Port1PerPortRXISet;
+
 	params->Usb2Port2PerPortPeTxiSet = config->Usb2Port2PerPortPeTxiSet;
 	params->Usb2Port2PerPortTxiSet = config->Usb2Port2PerPortTxiSet;
 	params->Usb2Port2IUsbTxEmphasisEn = config->Usb2Port2IUsbTxEmphasisEn;
 	params->Usb2Port2PerPortTxPeHalf = config->Usb2Port2PerPortTxPeHalf;
+	if (config->D0Usb2Port2PerPortRXISet != 0)
+		params->D0Usb2Port2PerPortRXISet = config->D0Usb2Port2PerPortRXISet;
+
 	params->Usb2Port3PerPortPeTxiSet = config->Usb2Port3PerPortPeTxiSet;
 	params->Usb2Port3PerPortTxiSet = config->Usb2Port3PerPortTxiSet;
 	params->Usb2Port3IUsbTxEmphasisEn = config->Usb2Port3IUsbTxEmphasisEn;
 	params->Usb2Port3PerPortTxPeHalf = config->Usb2Port3PerPortTxPeHalf;
+	if (config->D0Usb2Port3PerPortRXISet != 0)
+		params->D0Usb2Port3PerPortRXISet = config->D0Usb2Port3PerPortRXISet;
+
 	params->Usb2Port4PerPortPeTxiSet = config->Usb2Port4PerPortPeTxiSet;
 	params->Usb2Port4PerPortTxiSet = config->Usb2Port4PerPortTxiSet;
 	params->Usb2Port4IUsbTxEmphasisEn = config->Usb2Port4IUsbTxEmphasisEn;
 	params->Usb2Port4PerPortTxPeHalf = config->Usb2Port4PerPortTxPeHalf;
+	if (config->D0Usb2Port4PerPortRXISet != 0)
+		params->D0Usb2Port4PerPortRXISet = config->D0Usb2Port4PerPortRXISet;
+
 	params->Usb3Lane0Ow2tapgen2deemph3p5 =
 		config->Usb3Lane0Ow2tapgen2deemph3p5;
 	params->Usb3Lane1Ow2tapgen2deemph3p5 =
@@ -162,6 +181,15 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->ISPEnable = config->ISPEnable;
 	params->ISPPciDevConfig = config->ISPPciDevConfig;
 	params->PcdSdDetectChk = config->PcdSdDetectChk;
+	params->I2C0Frequency = config->I2C0Frequency;
+	params->I2C1Frequency = config->I2C1Frequency;
+	params->I2C2Frequency = config->I2C2Frequency;
+	params->I2C3Frequency = config->I2C3Frequency;
+	params->I2C4Frequency = config->I2C4Frequency;
+	params->I2C5Frequency = config->I2C5Frequency;
+	params->I2C6Frequency = config->I2C6Frequency;
+
+	board_silicon_USB2_override(params);
 }
 
 void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
@@ -239,6 +267,9 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 	fsp_display_upd_value("Usb2Port0PerPortTxPeHalf", 1,
 		old->Usb2Port0PerPortTxPeHalf,
 		new->Usb2Port0PerPortTxPeHalf);
+	fsp_display_upd_value("D0Usb2Port0PerPortRXISet", 1,
+		old->D0Usb2Port0PerPortRXISet,
+		new->D0Usb2Port0PerPortRXISet);
 	fsp_display_upd_value("Usb2Port1PerPortPeTxiSet", 1,
 		old->Usb2Port1PerPortPeTxiSet,
 		new->Usb2Port1PerPortPeTxiSet);
@@ -251,6 +282,9 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 	fsp_display_upd_value("Usb2Port1PerPortTxPeHalf", 1,
 		old->Usb2Port1PerPortTxPeHalf,
 		new->Usb2Port1PerPortTxPeHalf);
+	fsp_display_upd_value("D0Usb2Port1PerPortRXISet", 1,
+		old->D0Usb2Port1PerPortRXISet,
+		new->D0Usb2Port1PerPortRXISet);
 	fsp_display_upd_value("Usb2Port2PerPortPeTxiSet", 1,
 		old->Usb2Port2PerPortPeTxiSet,
 		new->Usb2Port2PerPortPeTxiSet);
@@ -263,6 +297,9 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 	fsp_display_upd_value("Usb2Port2PerPortTxPeHalf", 1,
 		old->Usb2Port2PerPortTxPeHalf,
 		new->Usb2Port2PerPortTxPeHalf);
+	fsp_display_upd_value("D0Usb2Port2PerPortRXISet", 1,
+		old->D0Usb2Port2PerPortRXISet,
+		new->D0Usb2Port2PerPortRXISet);
 	fsp_display_upd_value("Usb2Port3PerPortPeTxiSet", 1,
 		old->Usb2Port3PerPortPeTxiSet,
 		new->Usb2Port3PerPortPeTxiSet);
@@ -275,6 +312,9 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 	fsp_display_upd_value("Usb2Port3PerPortTxPeHalf", 1,
 		old->Usb2Port3PerPortTxPeHalf,
 		new->Usb2Port3PerPortTxPeHalf);
+	fsp_display_upd_value("D0Usb2Port3PerPortRXISet", 1,
+		old->D0Usb2Port3PerPortRXISet,
+		new->D0Usb2Port3PerPortRXISet);
 	fsp_display_upd_value("Usb2Port4PerPortPeTxiSet", 1,
 		old->Usb2Port4PerPortPeTxiSet,
 		new->Usb2Port4PerPortPeTxiSet);
@@ -287,6 +327,9 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 	fsp_display_upd_value("Usb2Port4PerPortTxPeHalf", 1,
 		old->Usb2Port4PerPortTxPeHalf,
 		new->Usb2Port4PerPortTxPeHalf);
+	fsp_display_upd_value("D0Usb2Port4PerPortRXISet", 1,
+		old->D0Usb2Port4PerPortRXISet,
+		new->D0Usb2Port4PerPortRXISet);
 	fsp_display_upd_value("Usb3Lane0Ow2tapgen2deemph3p5", 1,
 		old->Usb3Lane0Ow2tapgen2deemph3p5,
 		new->Usb3Lane0Ow2tapgen2deemph3p5);
@@ -356,3 +399,83 @@ static void pci_set_subsystem(device_t dev, unsigned int vendor,
 struct pci_operations soc_pci_ops = {
 	.set_subsystem = &pci_set_subsystem,
 };
+
+/**
+  Return SoC stepping type
+
+  @retval SOC_STEPPING            SoC stepping type
+**/
+int SocStepping(void)
+{
+	device_t dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	u8 revid = pci_read_config8(dev, 0x8);
+
+	switch (revid & B_PCH_LPC_RID_STEPPING_MASK) {
+	case V_PCH_LPC_RID_A0:
+	  return SocA0;
+	case V_PCH_LPC_RID_A1:
+	  return SocA1;
+	case V_PCH_LPC_RID_A2:
+	  return SocA2;
+	case V_PCH_LPC_RID_A3:
+	  return SocA3;
+	case V_PCH_LPC_RID_A4:
+	  return SocA4;
+	case V_PCH_LPC_RID_A5:
+	  return SocA5;
+	case V_PCH_LPC_RID_A6:
+	  return SocA6;
+	case V_PCH_LPC_RID_A7:
+	  return SocA7;
+	case V_PCH_LPC_RID_B0:
+	  return SocB0;
+	case V_PCH_LPC_RID_B1:
+	  return SocB1;
+	case V_PCH_LPC_RID_B2:
+	  return SocB2;
+	case V_PCH_LPC_RID_B3:
+	  return SocB3;
+	case V_PCH_LPC_RID_B4:
+	  return SocB4;
+	case V_PCH_LPC_RID_B5:
+	  return SocB5;
+	case V_PCH_LPC_RID_B6:
+	  return SocB6;
+	case V_PCH_LPC_RID_B7:
+	  return SocB7;
+	case V_PCH_LPC_RID_C0:
+	  return SocC0;
+	case V_PCH_LPC_RID_C1:
+	  return SocC1;
+	case V_PCH_LPC_RID_C2:
+	  return SocC2;
+	case V_PCH_LPC_RID_C3:
+	  return SocC3;
+	case V_PCH_LPC_RID_C4:
+	  return SocC4;
+	case V_PCH_LPC_RID_C5:
+	  return SocC5;
+	case V_PCH_LPC_RID_C6:
+	  return SocC6;
+	case V_PCH_LPC_RID_C7:
+	  return SocC7;
+	case V_PCH_LPC_RID_D0:
+	  return SocD0;
+	case V_PCH_LPC_RID_D1:
+	  return SocD1;
+	case V_PCH_LPC_RID_D2:
+	  return SocD2;
+	case V_PCH_LPC_RID_D3:
+	  return SocD3;
+	case V_PCH_LPC_RID_D4:
+	  return SocD4;
+	case V_PCH_LPC_RID_D5:
+	  return SocD5;
+	case V_PCH_LPC_RID_D6:
+	  return SocD6;
+	case V_PCH_LPC_RID_D7:
+	  return SocD7;
+	default:
+	  return SocSteppingMax;
+	}
+}

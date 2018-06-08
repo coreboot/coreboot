@@ -17,6 +17,8 @@
 #ifndef INTEL_RANGELEY_GPIO_H
 #define INTEL_RANGELEY_GPIO_H
 
+#include <compiler.h>
+
 #define GPIO_MODE_NATIVE	0
 #define GPIO_MODE_GPIO		1
 #define GPIO_MODE_NONE		1
@@ -72,14 +74,14 @@ struct soc_gpio {
 	u32 gpio29 : 1;
 	u32 gpio30 : 1;
 	u32 gpio31 : 1;
-} __attribute__ ((packed));
+} __packed;
 
 struct soc_cfio {
 	u32 pad_conf_0;
 	u32 pad_conf_1;
 	u32 pad_val;
 	u32 pad_dft;
-} __attribute__ ((packed));
+} __packed;
 
 struct soc_gpio_map {
 	/* GPIO core */

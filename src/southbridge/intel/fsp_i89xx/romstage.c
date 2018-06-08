@@ -50,7 +50,7 @@ static inline void reset_system(void)
 
 static void pch_enable_lpc(void)
 {
-	device_t dev = PCH_LPC_DEV;
+	pci_devfn_t dev = PCH_LPC_DEV;
 
 	/* Set COM1/COM2 decode range */
 	pci_write_config16(dev, LPC_IO_DEC, 0x0010);
@@ -99,9 +99,9 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 
 	post_code(0x40);
 
-#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
-	save_timestamp_to_cmos(CMOS_MAIN_START_ADDR, rdtsc());
-#endif
+	timestamp_init(get_initial_timestamp());
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	pch_enable_lpc();
 
 	/* Enable GPIOs */
@@ -137,7 +137,7 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 	pm1_cnt = inl(DEFAULT_PMBASE + PM1_CNT);
 	post_code(0x46);
 	if ((pm1_sts & WAK_STS) && ((pm1_cnt >> 10) & 7) == 5) {
-#if CONFIG_HAVE_ACPI_RESUME
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "Resume from S3 detected.\n");
 		boot_mode = 2;
 		/* Clear SLP_TYPE. This will break stage2 but
@@ -151,9 +151,7 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 
 	post_code(0x48);
 
-#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
-	save_timestamp_to_cmos(CMOS_PRE_INITRAM_ADDR, rdtsc());
-#endif
+	timestamp_add_now(TS_BEFORE_INITRAM);
 
   /*
    * Call early init to initialize memory and chipset. This function returns

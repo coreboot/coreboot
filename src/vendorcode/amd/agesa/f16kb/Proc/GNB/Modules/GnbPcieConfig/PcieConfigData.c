@@ -214,7 +214,14 @@ PcieConfigurationMap (
   IDS_HDT_CONSOLE (GNB_TRACE, "PcieConfigurationMap Enter\n");
   AgesaStatus = AGESA_SUCCESS;
   EarlyParamsPtr = (AMD_EARLY_PARAMS *) StdHeader;
-  PcieComplexList = PcieConfigProcessUserConfig (EarlyParamsPtr->GnbConfig.PcieComplexList, StdHeader);
+
+  /* FIXME: Intentionally discard qualifier const of
+   * GnbConfig.PcieComplexList here.
+   */
+  PcieComplexList = PcieConfigProcessUserConfig (
+    (PCIe_COMPLEX_DESCRIPTOR *)EarlyParamsPtr->GnbConfig.PcieComplexList,
+    StdHeader);
+
   GNB_DEBUG_CODE (
     if (PcieComplexList != NULL) {
       PcieUserConfigConfigDump (PcieComplexList);

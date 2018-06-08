@@ -32,7 +32,7 @@ scope (\_SB) {
 			Memory32Fixed (ReadWrite, 0x0, 0x2000, IBAR)
 			Memory32Fixed (ReadWrite, 0x0, 0x4, MDAT)
 			Memory32Fixed (ReadWrite, 0x0, 0x4, MINF)
-			IO (Decode16, ACPI_PMIO_BASE, PMIO_LIMIT,
+			IO (Decode16, ACPI_BASE_ADDRESS, PMIO_LIMIT,
 			      0x04, PMIO_LENGTH)
 			Memory32Fixed (ReadWrite, 0x0, 0x2000, SBAR)
 			Interrupt (ResourceConsumer, Level, ActiveLow, Exclusive, , , )
@@ -47,12 +47,12 @@ scope (\_SB) {
 			Store (PMC_BAR0, IBAS)
 
 			CreateDwordField (^RBUF, ^MDAT._BAS, MDBA)
-			Store (MCH_BASE_ADDR + MAILBOX_DATA, MDBA)
+			Store (MCH_BASE_ADDRESS + MAILBOX_DATA, MDBA)
 			CreateDwordField (^RBUF, ^MINF._BAS, MIBA)
-			Store (MCH_BASE_ADDR + MAILBOX_INTF, MIBA)
+			Store (MCH_BASE_ADDRESS + MAILBOX_INTF, MIBA)
 
 			CreateDwordField (^RBUF, ^SBAR._BAS, SBAS)
-			Store (PMC_SRAM_BASE_0, SBAS)
+			Store (SRAM_BASE_0, SBAS)
 
 			Return (^RBUF)
 		}

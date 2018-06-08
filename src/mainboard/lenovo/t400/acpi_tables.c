@@ -26,6 +26,7 @@
 #include <device/pci_ids.h>
 
 #include "southbridge/intel/i82801ix/nvs.h"
+
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
 	memset((void *)gnvs, 0, sizeof(*gnvs));
@@ -36,6 +37,9 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->cmap = 0x01;
 	gnvs->cmbp = 0x01;
 
+	/* Set thermal levels */
+	gnvs->tcrt = 100;
+	gnvs->tpsv = 90;
 }
 
 unsigned long acpi_fill_madt(unsigned long current)

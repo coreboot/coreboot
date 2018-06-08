@@ -17,6 +17,7 @@
 #define __NVIDIA_TEGRA124_DMA_H__
 
 #include <inttypes.h>
+#include <compiler.h>
 #include <soc/addressmap.h>
 
 /*
@@ -66,7 +67,7 @@ struct apb_dma {
 	u32 chan_wt_reg2;	/* 0x4c */
 	u32 chan_wr_reg3;	/* 0x50 */
 	u32 channel_swid1;	/* 0x54 */
-} __attribute__((packed));
+} __packed;
 check_member(apb_dma, channel_swid1, 0x54);
 
 /*
@@ -164,7 +165,7 @@ struct apb_dma_channel_regs {
 	u32 apb_seq;		/* 0x1c */
 	u32 wcount;		/* 0x20 */
 	u32 word_transfer;	/* 0x24 */
-} __attribute__((packed));
+} __packed;
 check_member(apb_dma_channel_regs, word_transfer, 0x24);
 
 struct apb_dma_channel {

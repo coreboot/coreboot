@@ -1,0 +1,68 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2017 Iru Cai <mytbk920423@gmail.com>
+# Copyright (C) 2018 Robert Reeves
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+if BOARD_HP_8770W
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select CPU_INTEL_SOCKET_RPGA989
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_INT15
+	select NORTHBRIDGE_INTEL_IVYBRIDGE
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_C216
+	select SYSTEM_TYPE_LAPTOP
+	select USE_NATIVE_RAMINIT
+	select EC_HP_KBC1126
+	select SUPERIO_SMSC_LPC47N217
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+
+config HAVE_IFD_BIN
+	bool
+	default n
+
+config HAVE_ME_BIN
+	bool
+	default n
+
+config MAINBOARD_DIR
+	string
+	default hp/8770w
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "EliteBook 8770w"
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x176c
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x103c
+
+config MAX_CPUS
+	int
+	default 8
+
+config USBDEBUG_HCD_INDEX
+	int
+	default 2
+
+endif

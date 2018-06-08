@@ -15,7 +15,7 @@
 
 TAG-$(CONFIG_MEMTEST_MASTER)=origin/master
 NAME-$(CONFIG_MEMTEST_MASTER)=Master
-TAG-$(CONFIG_MEMTEST_STABLE)=485c4fd363fe8570b3da9f0cc5dacf20e1c40cbc
+TAG-$(CONFIG_MEMTEST_STABLE)=3754fd440f4009b62244e0f95c56bbb12c2fffcb
 NAME-$(CONFIG_MEMTEST_STABLE)=Stable
 
 project_name=Memtest86+
@@ -38,8 +38,8 @@ checkout: fetch
 	echo "    Checking out $(project_name) revision $(NAME-y) ($(TAG-y))"
 	cd $(project_dir); \
 		git checkout master; \
- 		git branch -D coreboot 2>/dev/null; \
- 		git checkout -b coreboot $(TAG-y)
+		git branch -D coreboot 2>/dev/null; \
+		git checkout -b coreboot $(TAG-y)
 
 build: checkout
 	echo "    MAKE       $(project_name) $(NAME-y)"

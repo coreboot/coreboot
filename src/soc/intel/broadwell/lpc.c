@@ -44,12 +44,14 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <cpu/cpu.h>
-#include <vboot/vbnv.h>
-#include <vboot/vbnv_layout.h>
 
 static void pch_enable_ioapic(struct device *dev)
 {
 	u32 reg32;
+
+	/* Assign unique bus/dev/fn for I/O APIC */
+	pci_write_config16(dev, LPC_IBDF,
+		PCH_IOAPIC_PCI_BUS << 8 | PCH_IOAPIC_PCI_SLOT << 3);
 
 	set_ioapic_id(VIO_APIC_VADDR, 0x02);
 
@@ -67,6 +69,16 @@ static void pch_enable_ioapic(struct device *dev)
 	 * use Processor System Bus (0x01) to deliver interrupts.
 	 */
 	io_apic_write(VIO_APIC_VADDR, 0x03, 0x01);
+}
+
+static void enable_hpet(struct device *dev)
+{
+	size_t i;
+
+	/* Assign unique bus/dev/fn for each HPET */
+	for (i = 0; i < 8; ++i)
+		pci_write_config16(dev, LPC_HnBDF(i),
+			PCH_HPET_PCI_BUS << 8 | PCH_HPET_PCI_SLOT << 3 | i);
 }
 
 /* PIRQ[n]_ROUT[3:0] - PIRQ Routing Control
@@ -182,21 +194,7 @@ static void pch_power_options(device_t dev)
 
 static void pch_rtc_init(struct device *dev)
 {
-	u8 reg8;
-	int rtc_failed;
-
-	reg8 = pci_read_config8(dev, GEN_PMCON_3);
-	rtc_failed = reg8 & RTC_BATTERY_DEAD;
-	if (rtc_failed) {
-		reg8 &= ~RTC_BATTERY_DEAD;
-		pci_write_config8(dev, GEN_PMCON_3, reg8);
-		printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
-	}
-
-	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
-		init_vbnv_cmos(rtc_failed);
-	else
-		cmos_init(rtc_failed);
+	cmos_init(rtc_failure());
 }
 
 static const struct reg_script pch_misc_init_script[] = {
@@ -221,7 +219,7 @@ static const struct reg_script pch_misc_init_script[] = {
 	REG_MMIO_OR32(RCBA_BASE_ADDRESS + 0x1114, (1 << 15) | (1 << 14)),
 	/* Setup SERIRQ, enable continuous mode */
 	REG_PCI_OR8(SERIRQ_CNTL, (1 << 7) | (1 << 6)),
-#if !CONFIG_SERIRQ_CONTINUOUS_MODE
+#if !IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE)
 	REG_PCI_RMW8(SERIRQ_CNTL, ~(1 << 6), 0),
 #endif
 	REG_SCRIPT_END
@@ -431,7 +429,7 @@ static void pch_cg_init(device_t dev)
 
 static void pch_set_acpi_mode(void)
 {
-#if CONFIG_HAVE_SMI_HANDLER
+#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 	if (!acpi_is_wakeup_s3()) {
 		printk(BIOS_DEBUG, "Disabling ACPI via APMC:\n");
 		outb(APM_CNT_ACPI_DISABLE, APM_CNT);
@@ -452,6 +450,7 @@ static void lpc_init(struct device *dev)
 	pch_pirq_init(dev);
 	setup_i8259();
 	i8259_configure_irq_trigger(9, 1);
+	enable_hpet(dev);
 
 	/* Initialize power management */
 	pch_power_options(dev);
@@ -617,12 +616,24 @@ static void southcluster_inject_dsdt(device_t device)
 	}
 }
 
+static unsigned long broadwell_write_acpi_tables(device_t device,
+						 unsigned long current,
+						 struct acpi_rsdp *rsdp)
+{
+	if (IS_ENABLED(CONFIG_INTEL_PCH_UART_CONSOLE))
+		current = acpi_write_dbg2_pci_uart(rsdp, current,
+			(CONFIG_INTEL_PCH_UART_CONSOLE_NUMBER == 1) ?
+				PCH_DEV_UART1 : PCH_DEV_UART0,
+			ACPI_ACCESS_SIZE_BYTE_ACCESS);
+	return acpi_write_hpet(device, current, rsdp);
+}
+
 static struct device_operations device_ops = {
 	.read_resources		= &pch_lpc_read_resources,
 	.set_resources		= &pci_dev_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
 	.acpi_inject_dsdt_generator = southcluster_inject_dsdt,
-	.write_acpi_tables      = acpi_write_hpet,
+	.write_acpi_tables      = broadwell_write_acpi_tables,
 	.init			= &lpc_init,
 	.scan_bus		= &scan_lpc_bus,
 	.ops_pci		= &broadwell_pci_ops,

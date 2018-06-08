@@ -109,6 +109,10 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.7 off end # GPIO
 					device pnp 2e.a off end # IR
 				end
+
+				chip drivers/pc80/tpm
+				     device pnp 0c31.0 on end
+				end
 			end
 			device pci 1f.2 on # SATA Controller 1
 				subsystemid 0x1458 0xb005

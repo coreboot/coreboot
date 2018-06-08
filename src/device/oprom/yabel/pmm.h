@@ -35,6 +35,7 @@
 #define _YABEL_PMM_H_
 
 #include <types.h>
+#include <compiler.h>
 
 /* PMM Structure see PMM Spec Version 1.01 Chapter 3.1.1
  * (search web for specspmm101.pdf)
@@ -54,7 +55,7 @@ typedef struct {
 	 * see interrupt.c) and the INT Handler will do the actual PMM work.
 	 */
 	u8 code[3];
-} __attribute__ ((__packed__)) pmm_information_t;
+} __packed pmm_information_t;
 
 /* This function is used to setup the PMM struct in virtual memory
  * at a certain offset */

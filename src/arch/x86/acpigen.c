@@ -28,6 +28,7 @@
 #include <lib.h>
 #include <string.h>
 #include <arch/acpigen.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 
@@ -223,7 +224,7 @@ void acpigen_write_string(const char *string)
 
 void acpigen_write_coreboot_hid(enum coreboot_acpi_ids id)
 {
-	char hid[9]; /* CORExxxx */
+	char hid[9]; /* BOOTxxxx */
 
 	snprintf(hid, sizeof(hid), "%.4s%04X", COREBOOT_ACPI_ID, id);
 	acpigen_write_name_string("_HID", hid);
@@ -338,7 +339,7 @@ void acpigen_write_scope(const char *name)
 void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 {
 /*
-	Processor (\_PR.CPUcpuindex, cpuindex, pblock_addr, pblock_len)
+	Processor (\_PR.CPcpuindex, cpuindex, pblock_addr, pblock_len)
 	{
 */
 	char pscope[16];
@@ -346,11 +347,27 @@ void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 	acpigen_write_len_f();
 
 	snprintf(pscope, sizeof(pscope),
-		 "\\_PR.CP%02d", (unsigned int) cpuindex);
+		 CONFIG_ACPI_CPU_STRING, (unsigned int) cpuindex);
 	acpigen_emit_namestring(pscope);
 	acpigen_emit_byte(cpuindex);
 	acpigen_emit_dword(pblock_addr);
 	acpigen_emit_byte(pblock_len);
+}
+
+void acpigen_write_processor_package(const char *const name,
+				     const unsigned int first_core,
+				     const unsigned int core_count)
+{
+	unsigned int i;
+	char pscope[16];
+
+	acpigen_write_name(name);
+	acpigen_write_package(core_count);
+	for (i = first_core; i < first_core + core_count; ++i) {
+		snprintf(pscope, sizeof(pscope), CONFIG_ACPI_CPU_STRING, i);
+		acpigen_emit_namestring(pscope);
+	}
+	acpigen_pop_len();
 }
 
 /*
@@ -373,12 +390,34 @@ void acpigen_write_opregion(struct opregion *opreg)
 	acpigen_write_integer(opreg->regionlen);
 }
 
+static void acpigen_write_field_length(uint32_t len)
+{
+	uint8_t i, j;
+	uint8_t emit[4];
+
+	i = 1;
+	if (len < 0x40) {
+		emit[0] = len & 0x3F;
+	} else {
+		emit[0] = len & 0xF;
+		len >>= 4;
+		while (len) {
+			emit[i] = len & 0xFF;
+			i++;
+			len >>= 8;
+		}
+	}
+	/* Update bit 7:6 : Number of bytes followed by emit[0] */
+	emit[0] |= (i - 1) << 6;
+
+	for (j = 0; j < i; j++)
+		acpigen_emit_byte(emit[j]);
+}
+
 static void acpigen_write_field_offset(uint32_t offset,
 				       uint32_t current_bit_pos)
 {
 	uint32_t diff_bits;
-	uint8_t i, j;
-	uint8_t emit[4];
 
 	if (offset < current_bit_pos) {
 		printk(BIOS_WARNING, "%s: Cannot move offset backward",
@@ -394,24 +433,14 @@ static void acpigen_write_field_offset(uint32_t offset,
 		return;
 	}
 
-	i = 1;
-	if (diff_bits < 0x40) {
-		emit[0] = diff_bits & 0x3F;
-	} else {
-		emit[0] = diff_bits & 0xF;
-		diff_bits >>= 4;
-		while (diff_bits) {
-			emit[i] = diff_bits & 0xFF;
-			i++;
-			diff_bits >>= 8;
-		}
-	}
-	/* Update bit 7:6 : Number of bytes followed by emit[0] */
-	emit[0] |= (i - 1) << 6;
-
 	acpigen_emit_byte(0);
-	for (j = 0; j < i; j++)
-		acpigen_emit_byte(emit[j]);
+	acpigen_write_field_length(diff_bits);
+}
+
+static void acpigen_write_field_name(const char *name, uint32_t size)
+{
+	acpigen_emit_simple_namestring(name);
+	acpigen_write_field_length(size);
 }
 
 /*
@@ -452,8 +481,7 @@ void acpigen_write_field(const char *name, struct fieldlist *l, size_t count,
 	for (i = 0; i < count; i++) {
 		switch (l[i].type) {
 		case NAME_STRING:
-			acpigen_emit_simple_namestring(l[i].name);
-			acpigen_emit_byte(l[i].bits);
+			acpigen_write_field_name(l[i].name, l[i].bits);
 			current_bit_pos += l[i].bits;
 			break;
 		case OFFSET:
@@ -1193,6 +1221,32 @@ void acpigen_write_return_string(const char *arg)
 	acpigen_write_string(arg);
 }
 
+void acpigen_write_upc(enum acpi_upc_type type)
+{
+	acpigen_write_name("_UPC");
+	acpigen_write_package(4);
+	/* Connectable */
+	acpigen_write_byte(type == UPC_TYPE_UNUSED ? 0 : 0xff);
+	/* Type */
+	acpigen_write_byte(type);
+	/* Reserved0 */
+	acpigen_write_zero();
+	/* Reserved1 */
+	acpigen_write_zero();
+	acpigen_pop_len();
+}
+
+void acpigen_write_pld(const struct acpi_pld *pld)
+{
+	uint8_t buf[20];
+
+	if (acpi_pld_to_buffer(pld, buf, ARRAY_SIZE(buf)) < 0)
+		return;
+
+	acpigen_write_name("_PLD");
+	acpigen_write_byte_buffer(buf, ARRAY_SIZE(buf));
+}
+
 void acpigen_write_dsm(const char *uuid, void (**callbacks)(void *),
 		       size_t count, void *arg)
 {
@@ -1284,29 +1338,232 @@ void acpigen_write_dsm_uuid_arr(struct dsm_uuid *ids, size_t count)
 	acpigen_pop_len();	/* Method _DSM */
 }
 
+/*
+ * Generate ACPI AML code for _ROM method.
+ * This function takes as input ROM data and ROM length.
+ *
+ * The ACPI spec isn't clear about what should happen at the end of the
+ * ROM. Tests showed that it shouldn't truncate, but fill the remaining
+ * bytes in the returned buffer with zeros.
+ *
+ * Arguments passed into _DSM method:
+ * Arg0 = Offset in Bytes
+ * Arg1 = Bytes to return
+ *
+ * Example:
+ *   acpigen_write_rom(0xdeadbeef, 0x10000)
+ *
+ * AML code generated would look like:
+ * Method (_ROM, 2, NotSerialized) {
+ *
+ *	OperationRegion("ROMS", SYSTEMMEMORY, 0xdeadbeef, 0x10000)
+ *	Field (ROMS, AnyAcc, NoLock, Preserve)
+ *	{
+ *		Offset (0),
+ *		RBF0,   0x80000
+ *	}
+ *
+ *	Store (Arg0, Local0)
+ *	Store (Arg1, Local1)
+ *
+ *	If (LGreater (Local1, 0x1000))
+ *	{
+ *		Store (0x1000, Local1)
+ *	}
+ *
+ *	Store (Local1, Local3)
+ *
+ *	If (LGreater (Local0, 0x10000))
+ *	{
+ *		Return(Buffer(Local1){0})
+ *	}
+ *
+ *	If (LGreater (Local0, 0x0f000))
+ *	{
+ *		Subtract (0x10000, Local0, Local2)
+ *		If (LGreater (Local1, Local2))
+ *		{
+ *			Store (Local2, Local1)
+ *		}
+ *	}
+ *
+ *	Name (ROM1, Buffer (Local3) {0})
+ *
+ *	Multiply (Local0, 0x08, Local0)
+ *	Multiply (Local1, 0x08, Local1)
+ *
+ *	CreateField (RBF0, Local0, Local1, TMPB)
+ *	Store (TMPB, ROM1)
+ *	Return (ROM1)
+ * }
+ */
+
+void acpigen_write_rom(void *bios, const size_t length)
+{
+	ASSERT(bios)
+	ASSERT(length)
+
+	/* Method (_ROM, 2, NotSerialized) */
+	acpigen_write_method("_ROM", 2);
+
+	/* OperationRegion("ROMS", SYSTEMMEMORY, current, length) */
+	struct opregion opreg = OPREGION("ROMS", SYSTEMMEMORY,
+			(uintptr_t)bios, length);
+	acpigen_write_opregion(&opreg);
+
+	struct fieldlist l[] = {
+		FIELDLIST_OFFSET(0),
+		FIELDLIST_NAMESTR("RBF0", 8 * length),
+	};
+
+	/* Field (ROMS, AnyAcc, NoLock, Preserve)
+	 * {
+	 *  Offset (0),
+	 *  RBF0,   0x80000
+	 * } */
+	acpigen_write_field(opreg.name, l, 2, FIELD_ANYACC |
+			    FIELD_NOLOCK | FIELD_PRESERVE);
+
+	/* Store (Arg0, Local0) */
+	acpigen_write_store();
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+
+	/* Store (Arg1, Local1) */
+	acpigen_write_store();
+	acpigen_emit_byte(ARG1_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+
+	/* ACPI SPEC requires to return at maximum 4KiB */
+	/* If (LGreater (Local1, 0x1000)) */
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_write_integer(0x1000);
+
+	/* Store (0x1000, Local1) */
+	acpigen_write_store();
+	acpigen_write_integer(0x1000);
+	acpigen_emit_byte(LOCAL1_OP);
+
+	/* Pop if */
+	acpigen_pop_len();
+
+	/* Store (Local1, Local3) */
+	acpigen_write_store();
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_emit_byte(LOCAL3_OP);
+
+	/* If (LGreater (Local0, length)) */
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_integer(length);
+
+	/* Return(Buffer(Local1){0}) */
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_emit_byte(BUFFER_OP);
+	acpigen_write_len_f();
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_emit_byte(0);
+	acpigen_pop_len();
+
+	/* Pop if */
+	acpigen_pop_len();
+
+	/* If (LGreater (Local0, length - 4096)) */
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_integer(length - 4096);
+
+	/* Subtract (length, Local0, Local2) */
+	acpigen_emit_byte(SUBTRACT_OP);
+	acpigen_write_integer(length);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_emit_byte(LOCAL2_OP);
+
+	/* If (LGreater (Local1, Local2)) */
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_emit_byte(LOCAL2_OP);
+
+	/* Store (Local2, Local1) */
+	acpigen_write_store();
+	acpigen_emit_byte(LOCAL2_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+
+	/* Pop if */
+	acpigen_pop_len();
+
+	/* Pop if */
+	acpigen_pop_len();
+
+	/* Name (ROM1, Buffer (Local3) {0}) */
+	acpigen_write_name("ROM1");
+	acpigen_emit_byte(BUFFER_OP);
+	acpigen_write_len_f();
+	acpigen_emit_byte(LOCAL3_OP);
+	acpigen_emit_byte(0);
+	acpigen_pop_len();
+
+	/* Multiply (Local1, 0x08, Local1) */
+	acpigen_emit_byte(MULTIPLY_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_write_integer(0x08);
+	acpigen_emit_byte(LOCAL1_OP);
+
+	/* Multiply (Local0, 0x08, Local0) */
+	acpigen_emit_byte(MULTIPLY_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_integer(0x08);
+	acpigen_emit_byte(LOCAL0_OP);
+
+	/* CreateField (RBF0, Local0, Local1, TMPB) */
+	acpigen_emit_ext_op(CREATEFIELD_OP);
+	acpigen_emit_namestring("RBF0");
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_emit_namestring("TMPB");
+
+	/* Store (TMPB, ROM1) */
+	acpigen_write_store();
+	acpigen_emit_namestring("TMPB");
+	acpigen_emit_namestring("ROM1");
+
+	/* Return (ROM1) */
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_emit_namestring("ROM1");
+
+	/* Pop method */
+	acpigen_pop_len();
+}
+
+
 /* Soc-implemented functions -- weak definitions. */
-int __attribute__((weak)) acpigen_soc_read_rx_gpio(unsigned int gpio_num)
+int __weak acpigen_soc_read_rx_gpio(unsigned int gpio_num)
 {
 	printk(BIOS_ERR, "ERROR: %s not implemented\n", __func__);
 	acpigen_write_debug_string("read_rx_gpio not available");
 	return -1;
 }
 
-int __attribute__((weak)) acpigen_soc_get_tx_gpio(unsigned int gpio_num)
+int __weak acpigen_soc_get_tx_gpio(unsigned int gpio_num)
 {
 	printk(BIOS_ERR, "ERROR: %s not implemented\n", __func__);
 	acpigen_write_debug_string("get_tx_gpio not available");
 	return -1;
 }
 
-int __attribute__((weak)) acpigen_soc_set_tx_gpio(unsigned int gpio_num)
+int __weak acpigen_soc_set_tx_gpio(unsigned int gpio_num)
 {
 	printk(BIOS_ERR, "ERROR: %s not implemented\n", __func__);
 	acpigen_write_debug_string("set_tx_gpio not available");
 	return -1;
 }
 
-int __attribute__((weak)) acpigen_soc_clear_tx_gpio(unsigned int gpio_num)
+int __weak acpigen_soc_clear_tx_gpio(unsigned int gpio_num)
 {
 	printk(BIOS_ERR, "ERROR: %s not implemented\n", __func__);
 	acpigen_write_debug_string("clear_tx_gpio not available");

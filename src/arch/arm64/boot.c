@@ -19,6 +19,7 @@
 #include <arch/transition.h>
 #include <arm_tf.h>
 #include <cbmem.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <program_loading.h>
 #include <rules.h>
@@ -78,7 +79,7 @@ int arch_supports_bounce_buffer(void)
 }
 
 /* Generic stage entry point. Can be overridden by board/SoC if needed. */
-__attribute__((weak)) void stage_entry(void)
+__weak void stage_entry(void)
 {
 	main();
 }

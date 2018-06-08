@@ -92,12 +92,12 @@ void ap_start(void *entry)
 
 void no_boot(void)
 {
-	/*TODO: impelement no_boot */
+	/*TODO: implement no_boot */
 }
 
 void charging_screen(void)
 {
-	/*TODO: impelement charging_screen */
+	/*TODO: implement charging_screen */
 }
 
 void full_boot(void)

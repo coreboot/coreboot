@@ -16,6 +16,7 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
+#include <compiler.h>
 
 /*
  * Pad configuration in ramstage. The order largely follows the 'GPIO Muxing'
@@ -31,15 +32,15 @@ static const struct pad_config gpio_table[] = {
 
 	/* EMMC interface */
 	PAD_CFG_NF(GPIO_156, DN_20K, DEEP, NF1), /* EMMC_CLK */
-	PAD_CFG_NF(GPIO_157, UP_20K, DEEP, NF1), /* EMMC_D0 */
-	PAD_CFG_NF(GPIO_158, UP_20K, DEEP, NF1), /* EMMC_D1 */
-	PAD_CFG_NF(GPIO_159, UP_20K, DEEP, NF1), /* EMMC_D2 */
-	PAD_CFG_NF(GPIO_160, UP_20K, DEEP, NF1), /* EMMC_D3 */
-	PAD_CFG_NF(GPIO_161, UP_20K, DEEP, NF1), /* EMMC_D4 */
-	PAD_CFG_NF(GPIO_162, UP_20K, DEEP, NF1), /* EMMC_D5 */
-	PAD_CFG_NF(GPIO_163, UP_20K, DEEP, NF1), /* EMMC_D6 */
-	PAD_CFG_NF(GPIO_164, UP_20K, DEEP, NF1), /* EMMC_D7 */
-	PAD_CFG_NF(GPIO_165, UP_20K, DEEP, NF1), /* EMMC_CMD */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_157, UP_20K, DEEP, NF1, HIZCRx1, DISPUPD), /* EMMC_D0 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_158, UP_20K, DEEP, NF1, HIZCRx1, DISPUPD), /* EMMC_D1 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_159, UP_20K, DEEP, NF1, HIZCRx1, DISPUPD), /* EMMC_D2 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_160, UP_20K, DEEP, NF1, HIZCRx1, DISPUPD), /* EMMC_D3 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_161, UP_20K, DEEP, NF1, HIZCRx1, DISPUPD), /* EMMC_D4 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_162, UP_20K, DEEP, NF1, HIZCRx1, DISPUPD), /* EMMC_D5 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_163, UP_20K, DEEP, NF1, HIZCRx1, DISPUPD), /* EMMC_D6 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_164, UP_20K, DEEP, NF1, HIZCRx1, DISPUPD), /* EMMC_D7 */
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_165, UP_20K, DEEP, NF1, HIZCRx1, DISPUPD), /* EMMC_CMD */
 	PAD_CFG_NF(GPIO_182, DN_20K, DEEP, NF1), /* EMMC_RCLK */
 
 	/* SDIO -- unused. */
@@ -245,8 +246,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_98, UP_20K, DEEP),				/* FST_SPI_CS1_B -- unused */
 	PAD_CFG_NF_IOSSTATE(GPIO_99, NATIVE, DEEP, NF1, IGNORE),	/* FST_SPI_MOSI_IO0 */
 	PAD_CFG_NF_IOSSTATE(GPIO_100, NATIVE, DEEP, NF1, IGNORE),	/* FST_SPI_MISO_IO1 */
-	PAD_CFG_GPI(GPIO_101, UP_20K, DEEP),				/* FST_IO2 -- MEM_CONFIG0 */
-	PAD_CFG_GPI(GPIO_102, UP_20K, DEEP),				/* FST_IO3 -- MEM_CONFIG1 */
+	PAD_CFG_GPI(GPIO_101, NONE, DEEP),				/* FST_IO2 -- MEM_CONFIG0 */
+	PAD_CFG_GPI(GPIO_102, NONE, DEEP),				/* FST_IO3 -- MEM_CONFIG1 */
 	PAD_CFG_NF_IOSSTATE(GPIO_103, NATIVE, DEEP, NF1, IGNORE),	/* FST_SPI_CLK */
 	PAD_CFG_NF_IOSSTATE(FST_SPI_CLK_FB, NATIVE, DEEP, NF1, IGNORE), /* FST_SPI_CLK_FB */
 	PAD_CFG_NF_IOSSTATE(GPIO_106, NATIVE, DEEP, NF3, IGNORE),	/* FST_SPI_CS2_N */
@@ -316,7 +317,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_37, UP_20K, DEEP),	 /* unused */
 
 	/* LPSS_UART[0:2] */
-	PAD_CFG_GPI(GPIO_38, UP_20K, DEEP),	 /* LPSS_UART0_RXD - MEM_CONFIG2*/
+	PAD_CFG_GPI(GPIO_38, NONE, DEEP),	 /* LPSS_UART0_RXD - MEM_CONFIG2*/
 	/* Next 2 are straps. */
 	PAD_CFG_GPI(GPIO_39, DN_20K, DEEP),	 /* LPSS_UART0_TXD - unused */
 	PAD_CFG_GPI(GPIO_40, DN_20K, DEEP),	 /* LPSS_UART0_RTS - unused */
@@ -324,7 +325,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPIO_42, NATIVE, DEEP, NF1),	 /* LPSS_UART1_RXD */
 	PAD_CFG_NF(GPIO_43, NATIVE, DEEP, NF1),	 /* LPSS_UART1_TXD */
 	PAD_CFG_GPO(GPIO_44, 1, DEEP),	 /* GPS_RST_ODL */
-	PAD_CFG_GPI(GPIO_45, UP_20K, DEEP),	 /* LPSS_UART1_CTS - MEM_CONFIG3 */
+	PAD_CFG_GPI(GPIO_45, NONE, DEEP),	 /* LPSS_UART1_CTS - MEM_CONFIG3 */
 	PAD_CFG_NF(GPIO_46, NATIVE, DEEP, NF1),	 /* LPSS_UART2_RXD */
 	PAD_CFG_NF_IOSSTATE(GPIO_47, NATIVE, DEEP, NF1, Tx1RXDCRx0), /* LPSS_UART2_TXD */
 	PAD_CFG_GPI(GPIO_48, UP_20K, DEEP),	 /* LPSS_UART2_RTS - unused */
@@ -345,7 +346,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_73, UP_20K, DEEP),	 /* GP_CAMERASB11 */
 };
 
-const struct pad_config * __attribute__((weak)) variant_gpio_table(size_t *num)
+const struct pad_config * __weak variant_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
@@ -362,7 +363,7 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPIO_122, 0, DEEP),		 /* SIO_SPI_2_RXD */
 };
 
-const struct pad_config * __attribute__((weak))
+const struct pad_config * __weak
 variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
@@ -375,8 +376,8 @@ static const struct pad_config sleep_gpio_table[] = {
 	PAD_CFG_GPI_APIC_LOW(GPIO_20, NONE, DEEP),	/* NFC_INT_L */
 };
 
-const struct pad_config * __attribute__((weak))
-variant_sleep_gpio_table(size_t *num)
+const struct pad_config * __weak
+variant_sleep_gpio_table(u8 slp_typ, size_t *num)
 {
 	*num = ARRAY_SIZE(sleep_gpio_table);
 	return sleep_gpio_table;
@@ -388,7 +389,7 @@ static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_PE_AH(PAD_N(GPIO_SHIP_MODE), GPIO_COMM_N_NAME),
 };
 
-const struct cros_gpio * __attribute__((weak)) variant_cros_gpios(size_t *num)
+const struct cros_gpio * __weak variant_cros_gpios(size_t *num)
 {
 	*num = ARRAY_SIZE(cros_gpios);
 	return cros_gpios;

@@ -98,10 +98,10 @@
 
 #include <stdint.h>
 
-#define DAIF_DBG_BIT      (1<<3)
-#define DAIF_ABT_BIT      (1<<2)
-#define DAIF_IRQ_BIT      (1<<1)
-#define DAIF_FIQ_BIT      (1<<0)
+#define DAIF_DBG_BIT      (1 << 3)
+#define DAIF_ABT_BIT      (1 << 2)
+#define DAIF_IRQ_BIT      (1 << 1)
+#define DAIF_FIQ_BIT      (1 << 0)
 
 #define SWITCH_CASE_READ(func, var, type, el)	 do {	\
 	type var = -1;					\
@@ -360,6 +360,8 @@ uint64_t raw_read_vbar_current(void);
 void raw_write_vbar_current(uint64_t vbar);
 uint64_t raw_read_vbar(uint32_t el);
 void raw_write_vbar(uint64_t vbar, uint32_t el);
+uint64_t raw_read_cntpct_el0(void);
+uint32_t raw_read_cntfrq_el0(void);
 
 /* Cache maintenance system instructions */
 void dccisw(uint64_t cisw);

@@ -24,7 +24,7 @@ PHDRS
 	to_load PT_LOAD;
 }
 
-#if ENV_BOOTBLOCK ||  ENV_RMODULE
+#if ENV_DECOMPRESSOR || ENV_BOOTBLOCK || ENV_RMODULE
 ENTRY(_start)
 #else
 ENTRY(stage_entry)

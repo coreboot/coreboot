@@ -23,7 +23,7 @@
 #include "msrtool.h"
 
 /* This Darwin support requires DirectHW, which is available at
- * http://www.coreboot.org/DirectHW
+ * https://www.coreboot.org/DirectHW
  */
 
 int darwin_probe(const struct sysdef *system)

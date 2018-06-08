@@ -29,7 +29,7 @@
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	unsigned int irq_start = 0;
-	device_t dev = 0;
+	struct device *dev = NULL;
 	struct resource* res = NULL;
 
 	/* SJM: Hard-code CPU LAPIC entries for now */

@@ -28,10 +28,10 @@
 #ifndef __ROMCC__
 
 void post_code(u8 value);
-#if CONFIG_CMOS_POST_EXTRA
+#if IS_ENABLED(CONFIG_CMOS_POST_EXTRA)
 void post_log_extra(u32 value);
 struct device;
-void post_log_path(struct device *dev);
+void post_log_path(const struct device *dev);
 void post_log_clear(void);
 #else
 #define post_log_extra(x) do {} while (0)
@@ -40,13 +40,19 @@ void post_log_clear(void);
 #endif
 /* this function is weak and can be overridden by a mainboard function. */
 void mainboard_post(u8 value);
-void __attribute__ ((noreturn)) die(const char *msg);
+void __attribute__((noreturn)) die(const char *msg);
+
+/*
+ * This function is weak and can be overridden to provide additional
+ * feedback to the user. Possible use case: Play a beep.
+ */
+void die_notify(void);
 
 #define __CONSOLE_ENABLE__ \
 	((ENV_BOOTBLOCK && IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)) || \
 	(ENV_POSTCAR && IS_ENABLED(CONFIG_POSTCAR_CONSOLE)) || \
 	ENV_VERSTAGE || ENV_ROMSTAGE || ENV_RAMSTAGE || ENV_LIBAGESA || \
-	(ENV_SMM && CONFIG_DEBUG_SMI))
+	(ENV_SMM && IS_ENABLED(CONFIG_DEBUG_SMI)))
 
 #if __CONSOLE_ENABLE__
 asmlinkage void console_init(void);
@@ -58,6 +64,18 @@ void do_putchar(unsigned char byte);
 #define printk(LEVEL, fmt, args...) \
 	do { do_printk(LEVEL, fmt, ##args); } while (0)
 
+#if IS_ENABLED(CONFIG_CONSOLE_OVERRIDE_LOGLEVEL)
+/*
+ * This function should be implemented at mainboard level.
+ * The returned value will _replace_ the loglevel value;
+ */
+int get_console_loglevel(void);
+#else
+static inline int get_console_loglevel(void)
+{
+	return CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+}
+#endif
 #else
 static inline void console_init(void) {}
 static inline int console_log_level(int msg_level) { return 0; }

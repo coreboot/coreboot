@@ -12,6 +12,7 @@ func (i azalia) Scan(ctx Context, addr PCIDevData) {
 	az := Create(ctx, "hda_verb.c")
 	defer az.Close()
 
+	Add_gpl(az)
 	az.WriteString(
 		`#include <device/azalia_device.h>
 

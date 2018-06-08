@@ -21,9 +21,8 @@
 void fill_processor_name(char *processor_name)
 {
 	struct cpuid_result regs;
-	char temp_processor_name[49];
 	char *processor_name_start;
-	unsigned int *name_as_ints = (unsigned int *)temp_processor_name;
+	uint32_t name_as_ints[13];
 	int i;
 
 	for (i = 0; i < 3; i++) {
@@ -34,13 +33,12 @@ void fill_processor_name(char *processor_name)
 		name_as_ints[i * 4 + 3] = regs.edx;
 	}
 
-	temp_processor_name[48] = 0;
+	name_as_ints[12] = 0;
 
 	/* Skip leading spaces. */
-	processor_name_start = temp_processor_name;
+	processor_name_start = (char *)name_as_ints;
 	while (*processor_name_start == ' ')
 		processor_name_start++;
 
-	memset(processor_name, 0, 49);
 	strcpy(processor_name, processor_name_start);
 }

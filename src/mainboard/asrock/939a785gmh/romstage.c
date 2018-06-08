@@ -29,6 +29,7 @@
 #include <cpu/x86/lapic.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
+#include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include <southbridge/amd/sb700/sb700.h>
@@ -48,7 +49,7 @@ int spd_read_byte(u32 device, u32 address)
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
-#include "southbridge/amd/rs780/early_setup.c"
+#include <southbridge/amd/rs780/rs780.h>
 #include <northbridge/amd/amdk8/amdk8.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/raminit.c"
@@ -157,7 +158,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	setup_coherent_ht_domain();
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	/* It is said that we should start core1 after all core0 launched */
 	wait_all_core0_started();
 	start_other_cores();
@@ -207,8 +208,5 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
-	rs780_before_pci_init();
 	sb7xx_51xx_before_pci_init();
-
-	post_cache_as_ram();
 }

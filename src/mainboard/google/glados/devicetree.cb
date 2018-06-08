@@ -36,7 +36,6 @@ chip soc/intel/skylake
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "3"
 	register "EnableTraceHub" = "0"
-	register "XdciEnable" = "0"
 	register "SsicPortEnable" = "0"
 	register "SmbusEnable" = "1"
 	register "Cio2Enable" = "0"
@@ -187,6 +186,9 @@ chip soc/intel/skylake
 
 	# Send an extra VR mailbox command for the supported MPS IMVP8 model
 	register "SendVrMbxCmd" = "1"
+
+	# Lock Down
+	register "chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end

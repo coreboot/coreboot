@@ -31,7 +31,7 @@
 #define CLK_CNTL_DATA	0xC
 
 #ifdef UNUSED_CODE
-static u32 clkind_read(device_t dev, u32 index)
+static u32 clkind_read(struct device *dev, u32 index)
 {
 	u32	gfx_bar2 = pci_read_config32(dev, 0x18) & ~0xF;
 
@@ -40,7 +40,7 @@ static u32 clkind_read(device_t dev, u32 index)
 }
 #endif
 
-static void clkind_write(device_t dev, u32 index, u32 data)
+static void clkind_write(struct device *dev, u32 index, u32 data)
 {
 	u32	gfx_bar2 = pci_read_config32(dev, 0x18) & ~0xF;
 	/* printk(BIOS_INFO, "gfx bar 2 %02x\n", gfx_bar2); */
@@ -53,7 +53,7 @@ static void clkind_write(device_t dev, u32 index, u32 data)
 * pci_dev_read_resources thinks it is a IO type.
 * We have to force it to mem type.
 */
-static void rs690_gfx_read_resources(device_t dev)
+static void rs690_gfx_read_resources(struct device *dev)
 {
 	printk(BIOS_INFO, "rs690_gfx_read_resources.\n");
 
@@ -106,12 +106,12 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 * Set registers in RS690 and CPU to enable the internal GFX.
 * Please refer to CIM source code and BKDG.
 */
-static void rs690_internal_gfx_enable(device_t dev)
+static void rs690_internal_gfx_enable(struct device *dev)
 {
 	u32 l_dword;
 	int i;
-	device_t k8_f2 = 0;
-	device_t nb_dev = dev_find_slot(0, 0);
+	struct device *k8_f2 = NULL;
+	struct device *nb_dev = dev_find_slot(0, 0);
 
 	printk(BIOS_INFO, "rs690_internal_gfx_enable dev=0x%p, nb_dev=0x%p.\n", dev,
 		    nb_dev);
@@ -182,7 +182,8 @@ static void rs690_internal_gfx_enable(device_t dev)
 	/* TODO: the optimization of voltage and frequency */
 }
 
-static void gfx_dev_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
+static void gfx_dev_set_subsystem(struct device *dev, unsigned vendor,
+				  unsigned device)
 {
 	pci_write_config32(dev, 0x4c,  ((device & 0xffff) << 16) | (vendor & 0xffff));
 }
@@ -218,7 +219,7 @@ static const struct pci_driver pcie_driver_690 __pci_driver = {
 };
 
 /* step 12 ~ step 14 from rpr */
-static void single_port_configuration(device_t nb_dev, device_t dev)
+static void single_port_configuration(struct device *nb_dev, struct device *dev)
 {
 	u8 result, width;
 	u32 reg32;
@@ -276,7 +277,7 @@ static void single_port_configuration(device_t nb_dev, device_t dev)
 }
 
 /* step 15 ~ step 18 from rpr */
-static void dual_port_configuration(device_t nb_dev, device_t dev)
+static void dual_port_configuration(struct device *nb_dev, struct device *dev)
 {
 	u8 result, width;
 	u32 reg32;
@@ -355,10 +356,11 @@ static void dual_port_configuration(device_t nb_dev, device_t dev)
 *	101 = x12 (not supported)
 *	110 = x16
 */
-static void dynamic_link_width_control(device_t nb_dev, device_t dev, u8 width)
+static void dynamic_link_width_control(struct device *nb_dev,
+				       struct device *dev, u8 width)
 {
 	u32 reg32;
-	device_t sb_dev;
+	struct device *sb_dev;
 	struct southbridge_amd_rs690_config *cfg =
 	    (struct southbridge_amd_rs690_config *)nb_dev->chip_info;
 
@@ -401,7 +403,7 @@ static void dynamic_link_width_control(device_t nb_dev, device_t dev, u8 width)
 /*
 * GFX Core initialization, dev2, dev3
 */
-void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
+void rs690_gfx_init(struct device *nb_dev, struct device *dev, u32 port)
 {
 	u16 reg16;
 	struct southbridge_amd_rs690_config *cfg =

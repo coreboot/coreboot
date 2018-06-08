@@ -109,8 +109,6 @@
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 
 #define MSAC		0x62	/* Multi Size Aperture Control */
-#define SWSCI		0xe8	/* SWSCI  enable */
-#define ASLS		0xfc	/* OpRegion Base */
 
 /*
  * MCHBAR
@@ -214,11 +212,6 @@ void dump_spd_registers(void);
 void dump_mem(unsigned start, unsigned end);
 void report_platform_info(void);
 #endif /* !__SMM__ */
-
-#if !defined(__PRE_RAM__)
-#include <drivers/intel/gma/opregion.h>
-int init_igd_opregion(igd_opregion_t *igd_opregion);
-#endif
 
 #endif
 #endif

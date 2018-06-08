@@ -21,14 +21,15 @@
 #include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-/* Return the board id for the current variant board. */
-uint8_t variant_board_id(void);
+/* Return the sku id based off the strapping resistors attached to SoC. */
+uint8_t sku_strapping_value(void);
 
 /* The next set of functions return the gpio table and fill in the number of
  * entries for each table. */
 const struct pad_config *variant_gpio_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
-const struct pad_config *variant_sleep_gpio_table(size_t *num);
+const struct pad_config *variant_sleep_gpio_table(u8 slp_typ, size_t *num);
+const struct pad_config *variant_sku_gpio_table(size_t *num);
 
 /* Baseboard default swizzle. Can be reused if swizzle is same. */
 extern const struct lpddr4_swizzle_cfg baseboard_lpddr4_swizzle;
@@ -36,6 +37,10 @@ extern const struct lpddr4_swizzle_cfg baseboard_lpddr4_swizzle;
 const struct lpddr4_cfg *variant_lpddr4_config(void);
 /* Return memory SKU for the board. */
 size_t variant_memory_sku(void);
+/* Return board SKU. Limited to uint8_t, so it fits into 3 decimal digits */
+uint8_t variant_board_sku(void);
+/* Set variant board sku to ec by sku id */
+void variant_board_ec_set_skuid(void);
 
 /* Return ChromeOS gpio table and fill in number of entries. */
 const struct cros_gpio *variant_cros_gpios(size_t *num);

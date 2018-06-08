@@ -14,8 +14,10 @@
 #ifndef _TEGRA210_CLST_CLK_H_
 #define _TEGRA210_CLST_CLK_H_
 
+#include <compiler.h>
+
 /* Cluster Clock (CLUSTER_CLOCKS_PUBLIC_) regs */
-struct  __attribute__ ((__packed__)) clst_clk_ctlr {
+struct  __packed clst_clk_ctlr {
 	u32 pllx_base;			/* _PLLX_BASE,              0x000 */
 	u32 pllx_misc;			/* _PLLX_MISC,              0x004 */
 	u32 pllx_misc1;			/* _PLLX_MISC_1,            0x008 */

@@ -24,7 +24,9 @@
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <commonlib/loglevel.h>
+#include <timestamp.h>
 #include <cpu/amd/car.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #include <cpu/x86/bist.h>
@@ -32,6 +34,8 @@
 #include <cpu/amd/microcode.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <Fch/Fch.h>
+#include <security/tpm/tis.h>
+
 #include "gpio_ftns.h"
 #include <build.h>
 #include "bios_knobs.h"
@@ -53,12 +57,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	outb(0xD2, 0xcd6);
 	outb(0x00, 0xcd7);
 
-	amd_initmmio();
-
 	hudson_lpc_port80();
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		u32 data, *memptr;
+		timestamp_init(timestamp_get());
+		timestamp_add_now(TS_START_ROMSTAGE);
 
 		post_code(0x30);
 		early_lpc_init();
@@ -148,26 +152,28 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x39);
 	AGESAWRAPPER(amdinitearly);
 
+	timestamp_add_now(TS_BEFORE_INITRAM);
+
 	post_code(0x40);
 	AGESAWRAPPER(amdinitpost);
 
+	/* FIXME: Detect if TSC frequency changed during raminit? */
+	timestamp_rescale_table(1, 4);
+
+	timestamp_add_now(TS_AFTER_INITRAM);
+}
+
+void agesa_postcar(struct sysinfo *cb)
+{
 	//PspMboxBiosCmdDramInfo();
 	post_code(0x41);
 	AGESAWRAPPER(amdinitenv);
-	/*
-	  If code hangs here, please check cahaltasm.S
-	*/
-	disable_cache_as_ram();
+
+	init_tpm(false);
 
 	outb(0xEA, 0xCD6);
 	outb(0x1, 0xcd7);
-
-	post_code(0x50);
-	copy_and_run();
-
-	post_code(0x54);  /* Should never see this post code. */
 }
-
 
 static void early_lpc_init(void)
 {
@@ -176,6 +182,10 @@ static void early_lpc_init(void)
 	//
 	// Configure output disabled, value low, pull up/down disabled
 	//
+#if CONFIG_BOARD_PCENGINES_APU5
+	configure_gpio(IOMUX_GPIO_22, Function0, GPIO_22, setting);
+#endif
+
 #if CONFIG_BOARD_PCENGINES_APU2 || CONFIG_BOARD_PCENGINES_APU3 || CONFIG_BOARD_PCENGINES_APU4
 	configure_gpio(IOMUX_GPIO_32, Function0, GPIO_32, setting);
 #endif

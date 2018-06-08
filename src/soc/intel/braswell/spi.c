@@ -16,6 +16,7 @@
 /* This file is derived from the flashrom project. */
 #include <arch/io.h>
 #include <bootstate.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/pci_ids.h>
@@ -25,6 +26,7 @@
 #include <spi_flash.h>
 #include <spi-generic.h>
 #include <stdint.h>
+#include <compiler.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -79,7 +81,7 @@ typedef struct ich9_spi_regs {
 	uint16_t preop;
 	uint16_t optype;
 	uint8_t opmenu[8];
-} __attribute__((packed)) ich9_spi_regs;
+} __packed ich9_spi_regs;
 
 typedef struct ich_spi_controller {
 	int locked;
@@ -438,11 +440,6 @@ static int ich_status_poll(u16 bitmask, int wait_til_set)
 	return -1;
 }
 
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
-{
-	return min(cntlr.databytes, buf_len);
-}
-
 static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		    size_t bytesout, void *din, size_t bytesin)
 {
@@ -594,15 +591,23 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	return 0;
 }
 
+static int xfer_vectors(const struct spi_slave *slave,
+			struct spi_op vectors[], size_t count)
+{
+	return spi_flash_vector_helper(slave, vectors, count, spi_ctrlr_xfer);
+}
+
 static const struct spi_ctrlr spi_ctrlr = {
-	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
+	.xfer_vector = xfer_vectors,
+	.max_xfer_size = member_size(ich9_spi_regs, fdata),
 };
 
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
-{
-	slave->bus = bus;
-	slave->cs = cs;
-	slave->ctrlr = &spi_ctrlr;
-	return 0;
-}
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = 0,
+		.bus_end = 0,
+	},
+};
+
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

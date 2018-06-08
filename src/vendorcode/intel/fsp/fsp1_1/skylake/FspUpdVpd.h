@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -950,14 +950,34 @@ typedef struct {
   UINT8                       Early8254ClockGatingEnable;
 
 /** Offset 0x03E5 - Enable VR specific mailbox command
-  When set, an extra VR mailbox command specifically for the MPS IMPV8 VR will be sent. This for FSP only. 0 - Don't Send, 1 - Send
+  VR specific mailbox commands, 000b: no VR specific command sent, 001b: A VR mailbox command specifically for the MPS IMPV8 VR will be sent, 010b: VR specific command sent for PS4 exit issue, 011b: VR specific command sent for both MPS IMPV8 & PS4 exit issue.
   $EN_DIS
 **/
   UINT8                       SendVrMbxCmd;
 
 /** Offset 0x03E6
 **/
-  UINT8                       ReservedSiliconInitUpd[20];
+  UINT8                       AcousticNoiseMitigation;
+
+/** Offset 0x03E7
+**/
+  UINT8                       SlowSlewRateForIa;
+
+/** Offset 0x03E8
+**/
+  UINT8                       SlowSlewRateForGt;
+
+/** Offset 0x03E9
+**/
+  UINT8                       SlowSlewRateForSa;
+
+/** Offset 0x03EA
+**/
+  UINT8                       FastPkgCRampDisable;
+
+/** Offset 0x03EB
+**/
+  UINT8                       ReservedSiliconInitUpd[15];
 } SILICON_INIT_UPD;
 
 #define FSP_UPD_SIGNATURE                0x244450554C4B5324        /* '$SKLUPD$' */

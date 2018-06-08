@@ -1,0 +1,26 @@
+From ef89b11ce6f93c96fbd1753a8006dd9c3da212e0 Mon Sep 17 00:00:00 2001
+From: ReddestDream <reddestdream@gmail.com>
+Date: Wed, 3 May 2017 00:13:28 -0400
+Subject: [PATCH] CbSupportPei: prevent lower coreboot table from being
+ overwritten
+
+Exclude the bottom 4kb from being included in System Memory HoB
+
+diff --git a/CorebootModulePkg/CbSupportPei/CbSupportPei.c b/CorebootModulePkg/CbSupportPei/CbSupportPei.c
+index 262e6b9..d3c5723 100755
+--- a/CorebootModulePkg/CbSupportPei/CbSupportPei.c
++++ b/CorebootModulePkg/CbSupportPei/CbSupportPei.c
+@@ -261,8 +261,9 @@ CbPeiEntryPoint (
+     EFI_RESOURCE_ATTRIBUTE_WRITE_THROUGH_CACHEABLE |
+     EFI_RESOURCE_ATTRIBUTE_WRITE_BACK_CACHEABLE
+     ),
+-    (EFI_PHYSICAL_ADDRESS)(0),
+-    (UINT64)(0xA0000)
++    // Lower 640KB, except for first 4KB where the lower coreboot pointer ("LBIO") resides
++    (EFI_PHYSICAL_ADDRESS)(0 + 0x1000),
++    (UINT64)(0xA0000 - 0x1000)
+     );
+
+
+--
+2.14.0

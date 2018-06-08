@@ -29,13 +29,14 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
 #include <cbfs.h>
-#include <tpm.h>
+#include <security/tpm/tis.h>
 #include "ec/compal/ene932/ec.h"
 
 void pch_enable_lpc(void)
@@ -51,7 +52,7 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN2_DEC, (68 & ~3) | 0x00040001);
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
 	u32 reg32;
 
@@ -94,13 +95,12 @@ void rcba_config(void)
 	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
 
 	/* Enable IOAPIC (generic) */
-	RCBA16(OIC) = 0x0100;
+	RCBA16(EOIC) = 0x0100;
 	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(OIC);
+	(void) RCBA16(EOIC);
 
 	/* Disable unused devices (board specific) */
 	reg32 = RCBA32(FD);
-	reg32 |= PCH_DISABLE_ALWAYS;
 	/* Disable PCI bridge so MRC does not probe this bus */
 	reg32 |= PCH_DISABLE_P2P;
 	RCBA32(FD) = reg32;

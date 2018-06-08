@@ -24,6 +24,7 @@
 #include <halt.h>
 #include <pc80/mc146818rtc.h>
 #include "pch.h"
+#include <southbridge/intel/common/rcba.h>
 
 #include "nvs.h"
 
@@ -215,9 +216,9 @@ static u32 reset_tco_status(void)
 
 	reg32 = inl(tcobase + 0x04);
 	/* set status bits are cleared by writing 1 to them */
-	outl(reg32 & ~(1<<18), tcobase + 0x04); //  Don't clear BOOT_STS before SECOND_TO_STS
+	outl(reg32 & ~(1 << 18), tcobase + 0x04); //  Don't clear BOOT_STS before SECOND_TO_STS
 	if (reg32 & (1 << 18))
-		outl(reg32 & (1<<18), tcobase + 0x04); // clear BOOT_STS
+		outl(reg32 & (1 << 18), tcobase + 0x04); // clear BOOT_STS
 
 	return reg32;
 }
@@ -433,7 +434,7 @@ static void southbridge_smi_sleep(void)
 	/* Do any mainboard sleep handling */
 	mainboard_smi_sleep(slp_typ);
 
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 	/* Log S3, S4, and S5 entry */
 	if (slp_typ >= ACPI_S3)
 		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
@@ -513,11 +514,11 @@ static em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u8 cmd)
 	for (node = 0; node < CONFIG_MAX_CPUS; node++) {
 		state = smm_get_save_state(node);
 
-		/* Check for Synchronous IO (bit0==1) */
+		/* Check for Synchronous IO (bit0 == 1) */
 		if (!(state->io_misc_info & (1 << 0)))
 			continue;
 
-		/* Make sure it was a write (bit4==0) */
+		/* Make sure it was a write (bit4 == 0) */
 		if (state->io_misc_info & (1 << 4))
 			continue;
 
@@ -535,7 +536,7 @@ static em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u8 cmd)
 	return NULL;
 }
 
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 static void southbridge_smi_gsmi(void)
 {
 	u32 *ret, *param;
@@ -607,7 +608,7 @@ static void southbridge_smi_apmc(void)
 			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
 		}
 		break;
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 	case ELOG_GSMI_APM_CNT:
 		southbridge_smi_gsmi();
 		break;
@@ -631,7 +632,7 @@ static void southbridge_smi_pm1(void)
 		// power button pressed
 		u32 reg32;
 		reg32 = (7 << 10) | (1 << 13);
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 		elog_add_event(ELOG_TYPE_POWER_BUTTON);
 #endif
 		outl(reg32, pmbase + PM1_CNT);

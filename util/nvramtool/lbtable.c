@@ -10,7 +10,7 @@
  *
  *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
- *  For details, see http://coreboot.org/nvramtool.
+ *  For details, see https://coreboot.org/nvramtool.
  *
  *  Please also read the file DISCLAIMER which is included in this software
  *  distribution.
@@ -325,7 +325,7 @@ void dump_lbtable(void)
 	const struct lb_record *lbrec;
 
 	p = ((const char *)lbtable) + lbtable->header_bytes;
-	printf("Coreboot table at physical address 0x%lx:\n"
+	printf("coreboot table at physical address 0x%lx:\n"
 	       "    signature:       0x%x (ASCII: %c%c%c%c)\n"
 	       "    header_bytes:    0x%x (decimal: %d)\n"
 	       "    header_checksum: 0x%x (decimal: %d)\n"

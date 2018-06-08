@@ -18,7 +18,6 @@ Device (IMGU)
 {
 	Name (_ADR, 0x00050000)
 	Name (_DDN, "Imaging Unit")
-	Name (_CCA, ZERO)
 	Name (CAMD, 0x01)
 }
 
@@ -27,6 +26,5 @@ Device (CIO2)
 {
 	Name (_ADR, 0x00140003)
 	Name (_DDN, "Camera and Imaging Subsystem")
-	Name (_CCA, ZERO)
 	Name (CAMD, 0x00)
 }

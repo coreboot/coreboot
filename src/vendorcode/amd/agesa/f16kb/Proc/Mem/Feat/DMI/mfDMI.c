@@ -380,7 +380,10 @@ MemFDMISupport3 (
             DmiPhysicalDimmInfoTable->Attributes = 4;        // Quad Rank Dimm
           }
 
-          DimmSize = (UINT32) (Capacity / 8 * BusWidth / Width * Rank);
+          if ((!BusWidth) || (!Width) || (!Rank))
+            DimmSize = 0xFFFF; // size is unknown
+          else
+            DimmSize = (UINT32) (Capacity / 8 * BusWidth / Width * Rank);
           if (DimmSize < 0x7FFF) {
             DmiPhysicalDimmInfoTable->MemorySize = (UINT16) DimmSize;
           } else {
@@ -409,21 +412,32 @@ MemFDMISupport3 (
           }
 
           // Speed (offset 15h)
-          MTB_ps = ((INT32) SpdDataStructure->Data[10] * 1000) / SpdDataStructure->Data[11];
-          FTB_ps = (SpdDataStructure->Data[9] >> 4) / (SpdDataStructure->Data[9] & 0xF);
-          Value32 = (MTB_ps * SpdDataStructure->Data[12]) + (FTB_ps * (INT8) SpdDataStructure->Data[34]) ;
-          if (Value32 <= 938) {
-            DmiPhysicalDimmInfoTable->Speed = 1067;              // DDR3-2133
-          } else if (Value32 <= 1071) {
-            DmiPhysicalDimmInfoTable->Speed = 933;               // DDR3-1866
-          } else if (Value32 <= 1250) {
-            DmiPhysicalDimmInfoTable->Speed = 800;               // DDR3-1600
-          } else if (Value32 <= 1500) {
-            DmiPhysicalDimmInfoTable->Speed = 667;               // DDR3-1333
-          } else if (Value32 <= 1875) {
-            DmiPhysicalDimmInfoTable->Speed = 533;               // DDR3-1066
-          } else if (Value32 <= 2500) {
-            DmiPhysicalDimmInfoTable->Speed = 400;               // DDR3-800
+
+          // If SPD is wrong, division by 0 in DIMM speed calculation could reboot CPU
+          // So avoid it by this check
+          if ((SpdDataStructure->Data[11]==0) ||
+             ((SpdDataStructure->Data[9] & 0xF) == 0)) {
+            DmiPhysicalDimmInfoTable->Speed = 0;                   // Unknown
+          } else {
+            MTB_ps = ((INT32) SpdDataStructure->Data[10] * 1000) /
+              SpdDataStructure->Data[11];
+            FTB_ps = (SpdDataStructure->Data[9] >> 4) /
+              (SpdDataStructure->Data[9] & 0xF);
+            Value32 = (MTB_ps * SpdDataStructure->Data[12]) +
+              (FTB_ps * (INT8) SpdDataStructure->Data[34]);
+            if (Value32 <= 938) {
+              DmiPhysicalDimmInfoTable->Speed = 1067;              // DDR3-2133
+            } else if (Value32 <= 1071) {
+              DmiPhysicalDimmInfoTable->Speed = 933;               // DDR3-1866
+            } else if (Value32 <= 1250) {
+              DmiPhysicalDimmInfoTable->Speed = 800;               // DDR3-1600
+            } else if (Value32 <= 1500) {
+              DmiPhysicalDimmInfoTable->Speed = 667;               // DDR3-1333
+            } else if (Value32 <= 1875) {
+              DmiPhysicalDimmInfoTable->Speed = 533;               // DDR3-1066
+            } else if (Value32 <= 2500) {
+              DmiPhysicalDimmInfoTable->Speed = 400;               // DDR3-800
+            }
           }
 
           // Manufacturer (offset 17h)

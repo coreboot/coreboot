@@ -37,7 +37,7 @@ static int hub_port_status(const char * buf, int feature)
 /* After USB port reset, treat device number 0 as an USB hub. Assign it with
  * a device number hub_addr. Then apply enable and reset on downstream port.
  */
- static int dbgp_hub_enable(struct ehci_dbg_port *ehci_debug, unsigned char hub_addr,
+static int dbgp_hub_enable(struct ehci_dbg_port *ehci_debug, unsigned char hub_addr,
 	unsigned char port)
 {
 	char status[8];
@@ -154,7 +154,7 @@ debug_dev_retry:
 		USB_REQ_GET_DESCRIPTOR, (USB_DT_DEBUG << 8), 0,
 		&dbgp_desc, sizeof(dbgp_desc));
 	if (ret == sizeof(dbgp_desc)) {
-		if (dbgp_desc.bLength == sizeof(dbgp_desc) && dbgp_desc.bDescriptorType==USB_DT_DEBUG)
+		if (dbgp_desc.bLength == sizeof(dbgp_desc) && dbgp_desc.bDescriptorType == USB_DT_DEBUG)
 			goto debug_dev_found;
 		else
 			dprintk(BIOS_INFO, "Invalid debug device descriptor.\n");

@@ -21,7 +21,7 @@
 #include <soc/pmic_wrap.h>
 #include <types.h>
 
-#if CONFIG_DEBUG_PMIC
+#if IS_ENABLED(CONFIG_DEBUG_PMIC)
 #define DEBUG_PMIC(level, x...)		printk(level, x)
 #else
 #define DEBUG_PMIC(level, x...)
@@ -415,7 +415,9 @@ static void mt6391_default_buck_voltage(void)
 {
 	u16 reg_val = 0;
 	u16 buck_val = 0;
-	/* There are two kinds of PMIC used for MT8173 : MT6397s/MT6391.
+	/*
+	 * There are two kinds of PMIC used for MT8173 : MT6397s/MT6391.
+	 *
 	 * MT6397s: the default voltage of register was not suitable for
 	 * MT8173, needs to apply the setting of eFuse.
 	 * VPCA15/VSRMCA15/: 1.15V
@@ -460,7 +462,7 @@ static void mt6391_default_buck_voltage(void)
 void mt6391_init(void)
 {
 	if (pwrap_init())
-		die("ERROR - Failed to initial pmic wrap!");
+		die("ERROR - Failed to initialize pmic wrap!");
 	/* pmic initial setting */
 	mt6391_init_setting();
 

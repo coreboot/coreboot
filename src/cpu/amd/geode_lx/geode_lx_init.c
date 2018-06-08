@@ -33,7 +33,7 @@ static void vsm_end_post_smi(void)
 			  ".byte 0x0f, 0x38\n" "pop %ax\n");
 }
 
-static void geode_lx_init(device_t dev)
+static void geode_lx_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "geode_lx_init\n");
 
@@ -58,7 +58,7 @@ static struct device_operations cpu_dev_ops = {
 	.init = geode_lx_init,
 };
 
-static struct cpu_device_id cpu_table[] = {
+static const struct cpu_device_id cpu_table[] = {
 	{X86_VENDOR_AMD, 0x05A2},
 	{0, 0},
 };

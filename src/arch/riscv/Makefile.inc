@@ -15,13 +15,23 @@
 ##
 ################################################################################
 
-riscv_flags = -I$(src)/arch/riscv/ -mcmodel=medany
-
-riscv_asm_flags =
+################################################################################
+## RISC-V specific options
+################################################################################
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
 check-ramstage-overlap-regions += stack
 endif
+
+riscv_arch = rv64imafd
+
+ifeq ($(CONFIG_ARCH_RISCV_COMPRESSED),y)
+	riscv_arch := $(riscv_arch)c
+endif
+
+riscv_flags = -I$(src)/arch/riscv/ -mcmodel=medany -march=$(riscv_arch)
+
+riscv_asm_flags = -march=$(riscv_arch)
 
 ################################################################################
 ## bootblock
@@ -43,8 +53,7 @@ bootblock-y += \
 	$(top)/src/lib/memcmp.c \
 	$(top)/src/lib/memcpy.c \
 	$(top)/src/lib/memmove.c \
-	$(top)/src/lib/memset.c \
-	$(top)/src/commonlib/configstring.c
+	$(top)/src/lib/memset.c
 
 $(objcbfs)/bootblock.debug: $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
@@ -70,8 +79,7 @@ romstage-y += \
 	$(top)/src/lib/memcmp.c \
 	$(top)/src/lib/memcpy.c \
 	$(top)/src/lib/memmove.c \
-	$(top)/src/lib/memset.c \
-	$(top)/src/commonlib/configstring.c
+	$(top)/src/lib/memset.c
 
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
@@ -97,15 +105,13 @@ ramstage-y += stages.c
 ramstage-y += misc.c
 ramstage-y += boot.c
 ramstage-y += tables.c
-ramstage-y += sbi.S
 ramstage-y += payload.S
 ramstage-y += \
 	$(top)/src/lib/memchr.c \
 	$(top)/src/lib/memcmp.c \
 	$(top)/src/lib/memcpy.c \
 	$(top)/src/lib/memmove.c \
-	$(top)/src/lib/memset.c \
-	$(top)/src/commonlib/configstring.c
+	$(top)/src/lib/memset.c
 
 $(eval $(call create_class_compiler,rmodules,riscv))
 

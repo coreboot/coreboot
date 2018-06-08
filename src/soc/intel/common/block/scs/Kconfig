@@ -1,0 +1,4 @@
+config SOC_INTEL_COMMON_BLOCK_SCS
+	bool
+	help
+	  Intel Processor common storage and communication subsystem support

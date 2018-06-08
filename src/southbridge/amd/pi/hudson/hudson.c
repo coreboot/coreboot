@@ -20,16 +20,14 @@
 
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
 #include "hudson.h"
 #include "smbus.h"
 #include "smi.h"
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
 #include "fchec.h"
-#endif
-
 
 int acpi_get_sleep_type(void)
 {
@@ -58,15 +56,13 @@ u16 pm_read16(u16 reg)
 	return read16((void *)(PM_MMIO_BASE + reg));
 }
 
-void hudson_enable(device_t dev)
+void hudson_enable(struct device *dev)
 {
 	printk(BIOS_DEBUG, "hudson_enable()\n");
 	switch (dev->path.pci.devfn) {
-	case (0x14 << 3) | 7: /* 0:14.7  SD */
+	case PCI_DEVFN(0x14, 7): /* SD */
 		if (dev->enabled == 0) {
-			// read the VENDEV ID
-			device_t sd_dev = dev_find_slot( 0, PCI_DEVFN( 0x14, 7));
-			u32 sd_device_id = pci_read_config32( sd_dev, 0) >> 16;
+			u32 sd_device_id = pci_read_config16(dev, PCI_DEVICE_ID);
 			/* turn off the SDHC controller in the PM reg */
 			u8 reg8;
 			if (sd_device_id == PCI_DEVICE_ID_AMD_HUDSON_SD) {
@@ -123,12 +119,11 @@ static void hudson_init(void *chip_info)
 
 static void hudson_final(void *chip_info)
 {
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
-	agesawrapper_fchecfancontrolservice();
-#if !IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE)
-	enable_imc_thermal_zone();
-#endif
-#endif
+	if (IS_ENABLED(CONFIG_HUDSON_IMC_FWM)) {
+		agesawrapper_fchecfancontrolservice();
+		if (!IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE))
+			enable_imc_thermal_zone();
+	}
 }
 
 struct chip_operations southbridge_amd_pi_hudson_ops = {

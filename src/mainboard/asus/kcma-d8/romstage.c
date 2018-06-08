@@ -26,6 +26,7 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
+#include <romstage_handoff.h>
 #include <timestamp.h>
 #include <lib.h>
 #include <spd.h>
@@ -114,7 +115,7 @@ void activate_spd_rom(const struct mem_controller *ctrl) {
 }
 
 /* Voltages are specified by index
- * Valid indicies for this platform are:
+ * Valid indices for this platform are:
  * 0: 1.5V
  * 1: 1.35V
  * 2: 1.25V
@@ -507,7 +508,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (!warm_reset_detect(0)) {
 		printk(BIOS_INFO, "...WARM RESET...\n\n\n");
 		soft_reset();
-		die("After soft_reset_x - shouldn't see this message!!!\n");
+		die("After soft_reset - shouldn't see this message!!!\n");
 	}
 
 	sr5650_htinit_dect_and_enable_isochronous_link();
@@ -567,6 +568,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		cbmem_initialize_empty();
 	post_code(0x41);
 
+	romstage_handoff_init(s3resume);
+
 	amdmct_cbmem_store_info(sysinfo);
 #endif
 
@@ -581,9 +584,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	pci_write_config16(PCI_DEV(0, 0x14, 0), 0x54, 0x0707);
 	pci_write_config16(PCI_DEV(0, 0x14, 0), 0x56, 0x0bb0);
 	pci_write_config16(PCI_DEV(0, 0x14, 0), 0x5a, 0x0ff0);
-
-	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
-	post_code(0x43);	// Should never see this post code.
 }
 
 /**

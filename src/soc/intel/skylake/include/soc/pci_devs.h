@@ -44,14 +44,11 @@
 #define  SA_DEVFN_IGD		_SA_DEVFN(IGD)
 #define  SA_DEV_IGD		_SA_DEV(IGD)
 
-#define SA_DEV_SLOT_DSP		0x04
-#define  SA_DEVFN_DSP		_SA_DEVFN(DSP)
-#define  SA_DEV_DSP		_SA_DEV(DSP)
-
 /* PCH Devices */
 
 #define PCH_DEV_SLOT_ISH	0x13
 #define  PCH_DEVFN_ISH		_PCH_DEVFN(ISH, 0)
+#define  PCH_DEV_ISH		_PCH_DEV(ISH, 0)
 
 #define PCH_DEV_SLOT_XHCI	0x14
 #define  PCH_DEVFN_XHCI		_PCH_DEVFN(XHCI, 0)
@@ -61,6 +58,7 @@
 #define  PCH_DEV_XHCI		_PCH_DEV(XHCI, 0)
 #define  PCH_DEV_USBOTG		_PCH_DEV(XHCI, 1)
 #define  PCH_DEV_THERMAL	_PCH_DEV(XHCI, 2)
+#define  PCH_DEV_CIO		_PCH_DEV(XHCI, 3)
 
 #define PCH_DEV_SLOT_SIO1	0x15
 #define  PCH_DEVFN_I2C0		_PCH_DEVFN(SIO1, 0)
@@ -111,12 +109,18 @@
 #define  PCH_DEV_PCIE4		_PCH_DEV(PCIE, 3)
 #define  PCH_DEV_PCIE5		_PCH_DEV(PCIE, 4)
 #define  PCH_DEV_PCIE6		_PCH_DEV(PCIE, 5)
+#define  PCH_DEV_PCIE7		_PCH_DEV(PCIE, 6)
+#define  PCH_DEV_PCIE8		_PCH_DEV(PCIE, 7)
 
 #define PCH_DEV_SLOT_PCIE_1	0x1d
 #define  PCH_DEVFN_PCIE9	_PCH_DEVFN(PCIE_1, 0)
 #define  PCH_DEVFN_PCIE10	_PCH_DEVFN(PCIE_1, 1)
 #define  PCH_DEVFN_PCIE11	_PCH_DEVFN(PCIE_1, 2)
 #define  PCH_DEVFN_PCIE12	_PCH_DEVFN(PCIE_1, 3)
+#define  PCH_DEV_PCIE9		_PCH_DEV(PCIE_1, 0)
+#define  PCH_DEV_PCIE10		_PCH_DEV(PCIE_1, 1)
+#define  PCH_DEV_PCIE11		_PCH_DEV(PCIE_1, 2)
+#define  PCH_DEV_PCIE12		_PCH_DEV(PCIE_1, 3)
 
 #define PCH_DEV_SLOT_STORAGE	0x1e
 #define  PCH_DEVFN_UART0	_PCH_DEVFN(STORAGE, 0)
@@ -128,7 +132,10 @@
 #define  PCH_DEVFN_SDCARD	_PCH_DEVFN(STORAGE, 6)
 #define  PCH_DEV_UART0		_PCH_DEV(STORAGE, 0)
 #define  PCH_DEV_UART1		_PCH_DEV(STORAGE, 1)
+#define  PCH_DEV_GSPI0		_PCH_DEV(STORAGE, 2)
+#define  PCH_DEV_GSPI1		_PCH_DEV(STORAGE, 3)
 #define  PCH_DEV_EMMC		_PCH_DEV(STORAGE, 4)
+#define  PCH_DEV_SDIO		_PCH_DEV(STORAGE, 5)
 #define  PCH_DEV_SDCARD		_PCH_DEV(STORAGE, 6)
 
 #define PCH_DEV_SLOT_LPC	0x1f
@@ -147,53 +154,6 @@
 #define  PCH_DEV_SMBUS		_PCH_DEV(LPC, 4)
 #define  PCH_DEV_SPI		_PCH_DEV(LPC, 5)
 #define  PCH_DEV_GBE		_PCH_DEV(LPC, 6)
-
-/* Convert I2C bus number to PCI device and function */
-static inline int i2c_bus_to_devfn(unsigned int bus)
-{
-	switch (bus) {
-	case 0: return PCH_DEVFN_I2C0;
-	case 1: return PCH_DEVFN_I2C1;
-	case 2: return PCH_DEVFN_I2C2;
-	case 3: return PCH_DEVFN_I2C3;
-	case 4: return PCH_DEVFN_I2C4;
-	case 5: return PCH_DEVFN_I2C5;
-	}
-	return -1;
-}
-
-/* Convert PCI device and function to I2C bus number */
-static inline int i2c_devfn_to_bus(unsigned int devfn)
-{
-	switch (devfn) {
-	case PCH_DEVFN_I2C0: return 0;
-	case PCH_DEVFN_I2C1: return 1;
-	case PCH_DEVFN_I2C2: return 2;
-	case PCH_DEVFN_I2C3: return 3;
-	case PCH_DEVFN_I2C4: return 4;
-	case PCH_DEVFN_I2C5: return 5;
-	}
-	return -1;
-}
-
-static inline int spi_devfn_to_bus(unsigned int devfn)
-{
-	switch (devfn) {
-	case PCH_DEVFN_SPI: return 0;
-	case PCH_DEVFN_GSPI0: return 1;
-	case PCH_DEVFN_GSPI1: return 2;
-	}
-	return -1;
-}
-
-static inline int spi_bus_to_devfn(unsigned int bus)
-{
-	switch (bus) {
-	case 0: return PCH_DEVFN_SPI;
-	case 1: return PCH_DEVFN_GSPI0;
-	case 2: return PCH_DEVFN_GSPI1;
-	}
-	return -1;
-}
+#define  PCH_DEV_TRACEHUB	_PCH_DEV(LPC, 7)
 
 #endif

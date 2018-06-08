@@ -15,6 +15,8 @@ enum device_path_type {
 	DEVICE_PATH_IOAPIC,
 	DEVICE_PATH_GENERIC,
 	DEVICE_PATH_SPI,
+	DEVICE_PATH_USB,
+	DEVICE_PATH_MMIO,
 
 	/*
 	 * When adding path types to this table, please also update the
@@ -36,6 +38,8 @@ enum device_path_type {
 		"DEVICE_PATH_IOAPIC",		\
 		"DEVICE_PATH_GENERIC",		\
 		"DEVICE_PATH_SPI",		\
+		"DEVICE_PATH_USB",		\
+		"DEVICE_PATH_MMIO",		\
 }
 
 struct domain_path {
@@ -89,6 +93,14 @@ struct generic_path {
 	unsigned int subid;
 };
 
+struct usb_path {
+	unsigned int port_type;
+	unsigned int port_id;
+};
+
+struct mmio_path {
+	uintptr_t addr;
+};
 
 struct device_path {
 	enum device_path_type type;
@@ -104,6 +116,8 @@ struct device_path {
 		struct cpu_bus_path	cpu_bus;
 		struct generic_path	generic;
 		struct spi_path		spi;
+		struct usb_path		usb;
+		struct mmio_path	mmio;
 	};
 };
 
@@ -111,7 +125,6 @@ struct device_path {
 #define DEVICE_PATH_MAX 30
 #define BUS_PATH_MAX (DEVICE_PATH_MAX+10)
 
-extern int path_eq(struct device_path *path1, struct device_path *path2);
 extern const char *dev_path_name(enum device_path_type type);
 
 #endif /* DEVICE_PATH_H */

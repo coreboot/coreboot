@@ -26,6 +26,16 @@ enum ite_ec_thermal_mode {
 	THERMAL_MODE_DISABLED = 0,
 	THERMAL_DIODE,
 	THERMAL_RESISTOR,
+	THERMAL_PECI,
+};
+
+struct ite_ec_thermal_config {
+	enum ite_ec_thermal_mode mode;
+	/* Offset is used for diode sensors and PECI */
+	u8 offset;
+	/* Limits */
+	u8 min;
+	u8 max;
 };
 
 /* Bit mask for voltage pins VINx */
@@ -68,31 +78,30 @@ struct ite_ec_fan_config {
 
 struct ite_ec_config {
 	/*
-	 * Enable external temperature sensor to use PECI GetTemp()
-	 * command and store in register TMPIN 1, 2, or 3.
-	 */
-	u8 peci_tmpin;
-
-	/*
-	 * Enable thermal mode on TMPINx.
-	 */
-	enum ite_ec_thermal_mode tmpin_mode[ITE_EC_TMPIN_CNT];
-
-	/*
 	 * Enable reading of voltage pins VINx.
 	 */
 	enum ite_ec_voltage_pin vin_mask;
 
 	/*
+	 * Enable temperature sensors in given mode.
+	 */
+	struct ite_ec_thermal_config tmpin[ITE_EC_TMPIN_CNT];
+
+	/*
 	 * Enable a FAN in given mode.
 	 */
 	struct ite_ec_fan_config fan[ITE_EC_FAN_CNT];
+
+	bool tmpin_beep;
+	bool fan_beep;
+	bool vin_beep;
 };
 
 /* Some shorthands for device trees */
-#define TMPIN1	ec.tmpin_mode[0]
-#define TMPIN2	ec.tmpin_mode[1]
-#define TMPIN3	ec.tmpin_mode[2]
+#define TMPIN1	ec.tmpin[0]
+#define TMPIN2	ec.tmpin[1]
+#define TMPIN3	ec.tmpin[2]
+
 #define FAN1	ec.fan[0]
 #define FAN2	ec.fan[1]
 #define FAN3	ec.fan[2]

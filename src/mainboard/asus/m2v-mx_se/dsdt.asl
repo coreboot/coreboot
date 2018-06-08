@@ -22,15 +22,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 {
 	 #include "northbridge/amd/amdk8/util.asl"
 
-	/* For now only define 2 power states:
-	 *  - S0 which is fully on
-	 *  - S5 which is soft off
-	 * Any others would involve declaring the wake up methods.
-	 */
-	Name (\_S0, Package () { 0x00, 0x00, 0x00, 0x00 })
-	Name (\_S3, Package () { 0x01, 0x01, 0x00, 0x00 })
-	Name (\_S5, Package () { 0x02, 0x02, 0x00, 0x00 })
-
+	#include <southbridge/via/k8t890/acpi/sleepstates.asl>
 
 	/* blink a LED when entering the sleep (any type) */
 	Method (_PTS, 1, NotSerialized)

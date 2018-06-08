@@ -28,6 +28,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/gpio.h>
+#include <security/vboot/vbnv.h>
 
 /* Print status bits with descriptive names */
 static void print_status_bits(u32 status, const char *bit_names[])
@@ -445,4 +446,26 @@ int acpi_sci_irq(void)
 
 	printk(BIOS_DEBUG, "SCI is IRQ%d\n", sci_irq);
 	return sci_irq;
+}
+
+int rtc_failure(void)
+{
+	u8 reg8;
+	int rtc_failed;
+	device_t dev = PCH_DEV_LPC;
+
+	reg8 = pci_read_config8(dev, GEN_PMCON_3);
+	rtc_failed = reg8 & RTC_BATTERY_DEAD;
+	if (rtc_failed) {
+		reg8 &= ~RTC_BATTERY_DEAD;
+		pci_write_config8(dev, GEN_PMCON_3, reg8);
+		printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
+	}
+
+	return !!rtc_failed;
+}
+
+int vbnv_cmos_failed(void)
+{
+	return rtc_failure();
 }

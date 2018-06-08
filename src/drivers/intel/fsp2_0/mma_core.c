@@ -41,6 +41,8 @@ void setup_mma(FSP_M_CONFIG *memory_cfg)
 		return;
 	}
 
+	/* Enable EvLoader to run load and run MMA tests.*/
+	memory_cfg->EvLoader = 1;
 	soc_update_memory_params_for_mma(memory_cfg, &mma_cfg);
 	printk(BIOS_DEBUG, "MMA: set up completed successfully\n");
 }

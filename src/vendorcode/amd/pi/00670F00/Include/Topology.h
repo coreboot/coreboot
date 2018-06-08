@@ -41,6 +41,8 @@
  *
  ***************************************************************************/
 
+#include <check_for_wrapper.h>
+
 #ifndef _TOPOLOGY_H_
 #define _TOPOLOGY_H_
 

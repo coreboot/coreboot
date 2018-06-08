@@ -96,7 +96,7 @@ Scope(\)
 #include "smbus.asl"
 
 // Serial IO
-#if CONFIG_INTEL_LYNXPOINT_LP
+#if IS_ENABLED(CONFIG_INTEL_LYNXPOINT_LP)
 #include "serialio.asl"
 #include "lpt_lp.asl"
 #endif

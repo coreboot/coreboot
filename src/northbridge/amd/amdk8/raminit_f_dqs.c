@@ -1782,7 +1782,7 @@ void set_sysinfo_in_ram(unsigned val)
 #endif
 }
 
-#if CONFIG_HAVE_ACPI_RESUME
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 
 #if CONFIG_MEM_TRAIN_SEQ == 0
 static int save_index_to_pos(unsigned int dev, int size, int index, int nvram_pos)
@@ -1937,7 +1937,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 		if (train_DqsRcvrEn(ctrl+i, 2, sysinfo)) goto out;
 		printk(BIOS_DEBUG, " done\n");
 		sysinfo->mem_trained[i]=1;
-#if CONFIG_HAVE_ACPI_RESUME
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 		dqs_save_MC_NVRAM((ctrl+i)->f2);
 #endif
 	}

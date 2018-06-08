@@ -34,6 +34,7 @@
 #include <commonlib/helpers.h>
 #include <stdint.h>
 #include <string.h>
+#include <compiler.h>
 
 /* LZ4 comes with its own supposedly portable memory access functions, but they
  * seem to be very inefficient in practice (at least on ARM64). Since coreboot
@@ -67,7 +68,7 @@ static void LZ4_copy8(void *dst, const void *src)
 			: "=m"(*(uint32_t *)(dst + 4))
 			: [x1]"r"(x1), [dst]"r"(dst));
 	#endif
-#elif defined(__riscv__)
+#elif defined(__riscv)
 	/* RISC-V implementations may trap on any unaligned access. */
 	int i;
 	for (i = 0; i < 8; i++)
@@ -115,7 +116,7 @@ struct lz4_frame_header {
 	};
 	/* + uint64_t content_size iff has_content_size is set */
 	/* + uint8_t header_checksum */
-} __attribute__((packed));
+} __packed;
 
 struct lz4_block_header {
 	union {
@@ -127,7 +128,7 @@ struct lz4_block_header {
 	};
 	/* + size bytes of data */
 	/* + uint32_t block_checksum iff has_block_checksum is set */
-} __attribute__((packed));
+} __packed;
 
 size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 {

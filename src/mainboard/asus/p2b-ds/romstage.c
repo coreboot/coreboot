@@ -14,20 +14,17 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
 #include <device/pci_def.h>
-#include <arch/io.h>
 #include <device/pnp_def.h>
-#include <stdlib.h>
 #include <console/console.h>
 #include <southbridge/intel/i82371eb/i82371eb.h>
 #include <northbridge/intel/i440bx/raminit.h>
-#include <delay.h>
 #include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83977tf/w83977tf.h>
 #include <lib.h>
+#include <cbmem.h>
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)
 
@@ -43,8 +40,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	report_bist_failure(bist);
 
 	enable_smbus();
-	dump_spd_registers();
-	sdram_set_registers();
-	sdram_set_spd_registers();
-	sdram_enable();
+	sdram_initialize();
+	cbmem_initialize_empty();
 }

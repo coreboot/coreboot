@@ -25,7 +25,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
-#include <soc/smm.h>
 
 static void ABI_X86 send_to_console(unsigned char b)
 {

@@ -22,6 +22,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_HAS_LPC_TPM
 	select MAINBOARD_HAS_LIBGFXINIT
 	select GFX_GMA_INTERNAL_IS_LVDS
+	select DRIVERS_LENOVO_HYBRID_GRAPHICS
 
 	# Workaround for EC/KBC IRQ1.
 	select SERIRQ_CONTINUOUS_MODE
@@ -41,10 +42,6 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	string
 	default "ThinkPad T420"
-
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf8000000
 
 config MAX_CPUS
 	int

@@ -31,11 +31,12 @@
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/common/gpio.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
-#include <tpm.h>
+#include <security/tpm/tis.h>
 
 #define SIO_PORT 0x164e
 
@@ -63,16 +64,9 @@ void pch_enable_lpc(void)
 	}
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
-	u32 reg32;
-
 	southbridge_configure_default_intmap();
-
-	/* Disable unused devices (board specific) */
-	reg32 = RCBA32(FD);
-	reg32 |= PCH_DISABLE_ALWAYS;
-	RCBA32(FD) = reg32;
 }
 
 void mainboard_config_superio(void)

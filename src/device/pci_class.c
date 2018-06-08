@@ -220,7 +220,7 @@ static const PCI_CLASS class_list[] = {
 };
 static const unsigned int class_entries = ARRAY_SIZE(class_list);
 
-static const PCI_CLASS *get_pci_class_entry(device_t dev)
+static const PCI_CLASS *get_pci_class_entry(struct device *dev)
 {
 	unsigned char class;
 	const PCI_CLASS *class_entry;
@@ -240,7 +240,7 @@ static const PCI_CLASS *get_pci_class_entry(device_t dev)
 	return NULL;
 }
 
-const char *get_pci_class_name(device_t dev)
+const char *get_pci_class_name(struct device *dev)
 {
 	const PCI_CLASS *class_entry;
 
@@ -248,7 +248,7 @@ const char *get_pci_class_name(device_t dev)
 	return class_entry ? class_entry->class_name : "???";
 }
 
-const char *get_pci_subclass_name(device_t dev)
+const char *get_pci_subclass_name(struct device *dev)
 {
 	const PCI_CLASS *class_entry;
 	unsigned char subclass;

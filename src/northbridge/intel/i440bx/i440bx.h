@@ -86,4 +86,6 @@
 #define DRTC    0xe8 /* DRAM Read Thermal Throttling Control (0x000..000). */
 #define BUFFC   0xf0 /* Buffer Control Register (0x0000). */
 
+#define NB PCI_DEV(0, 0, 0)
+
 #endif /* NORTHBRIDGE_INTEL_I440BX_I440BX_H */

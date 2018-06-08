@@ -107,7 +107,7 @@ struct reg_script_bus_entry {
 	void (*reg_script_write)(struct reg_script_context *ctx);
 };
 
-#define REG_SCRIPT_TABLE_ATTRIBUTE __attribute__ ((used, section(".rsbe_init")))
+#define REG_SCRIPT_TABLE_ATTRIBUTE __attribute__((used, section(".rsbe_init")))
 
 #define REG_SCRIPT_BUS_ENTRY(bus_entry_)				\
 	const struct reg_script_bus_entry *rsbe_ ## bus_entry_	\

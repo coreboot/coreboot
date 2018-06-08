@@ -11,25 +11,18 @@ with GMA.Mainboard;
 package body GMA
 is
 
-   function vbe_mode_info_valid return Interfaces.C.int
+   function fill_lb_framebuffer
+     (framebuffer : in out lb_framebuffer)
+      return Interfaces.C.int
    is
+      use type Interfaces.C.int;
    begin
-      return 0;
-   end vbe_mode_info_valid;
-
-   procedure fill_lb_framebuffer (framebuffer : out lb_framebuffer)
-   is
-   begin
-      null;
+      return -1;
    end fill_lb_framebuffer;
 
    ----------------------------------------------------------------------------
 
-   procedure gfxinit
-     (mmio_base   : in     word64;
-      linear_fb   : in     word64;
-      phys_fb     : in     word32;
-      lightup_ok  :    out Interfaces.C.int)
+   procedure gfxinit (lightup_ok : out Interfaces.C.int)
    is
       ports : Port_List;
       configs : Pipe_Configs;
@@ -44,9 +37,7 @@ is
    begin
       lightup_ok := 0;
 
-      HW.GFX.GMA.Initialize
-        (MMIO_Base   => mmio_base,
-         Success     => success);
+      HW.GFX.GMA.Initialize (Success => success);
 
       if success then
          ports := Mainboard.ports;
@@ -56,15 +47,15 @@ is
             Max_Pipe => Primary);
 
          if configs (Primary).Port /= Disabled then
+            HW.GFX.GMA.Power_Up_VGA;
             vga_io_init;
             vga_textmode_init;
 
-            configs (Primary).Framebuffer :=
-              (Width    => 640,
-               Height   => 400,
-               BPC      => Auto_BPC,   -- ignored for VGA plane
-               Stride   => 320,        -- ignored
-               Offset   => VGA_PLANE_FRAMEBUFFER_OFFSET);
+            -- override probed framebuffer config
+            configs (Primary).Framebuffer.Width    := 640;
+            configs (Primary).Framebuffer.Height   := 400;
+            configs (Primary).Framebuffer.Offset   :=
+               VGA_PLANE_FRAMEBUFFER_OFFSET;
 
             HW.GFX.GMA.Dump_Configs (configs);
             HW.GFX.GMA.Update_Outputs (configs);

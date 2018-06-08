@@ -27,6 +27,7 @@
 #include <console/console.h>
 #include "northbridge/intel/sandybridge/sandybridge.h"
 #include "northbridge/intel/sandybridge/raminit_native.h"
+#include <southbridge/intel/common/rcba.h>
 #include "southbridge/intel/bd82x6x/pch.h"
 #include <southbridge/intel/common/gpio.h>
 #include <arch/cpu.h>
@@ -44,12 +45,10 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xac, 0x00010000);
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
 	/* Disable devices.  */
 	RCBA32(0x3414) = 0x00000020;
-	RCBA32(0x3418) = 0x1fce1fe3;
-
 }
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, 0 },
@@ -70,13 +69,6 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 
 void mainboard_early_init(int s3resume)
 {
-	if (s3resume) {
-		/*
-		 * Raminit after S3 resume fails if started too early; a delay
-		 * of 10 ms seems to be sufficient to fix the issue.
-		 */
-		mdelay(10);
-	}
 }
 
 void mainboard_config_superio(void)

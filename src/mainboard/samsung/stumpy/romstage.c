@@ -32,18 +32,19 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
-#include <tpm.h>
-#if CONFIG_DRIVERS_UART_8250IO
+#include <security/tpm/tis.h>
+#if IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)
 #include <superio/smsc/lpc47n207/lpc47n207.h>
 #endif
 
 /* Stumpy USB Reset Disable defined in cmos.layout */
-#if CONFIG_USE_OPTION_TABLE
+#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
 #include "option_table.h"
 #define CMOS_USB_RESET_DISABLE  (CMOS_VSTART_stumpy_usb_reset_disable >> 3)
 #else
@@ -51,7 +52,7 @@
 #endif
 #define USB_RESET_DISABLE_MAGIC (0xdd) /* Disable if set to this */
 
-#define DUMMY_DEV PNP_DEV(0x2e, 0)
+#define SUPERIO_DEV PNP_DEV(0x2e, 0)
 #define SERIAL_DEV PNP_DEV(0x2e, IT8772F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8772F_GPIO)
 
@@ -60,7 +61,7 @@ void pch_enable_lpc(void)
 	/* Set COM1/COM2 decode range */
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);
 
-#if CONFIG_DRIVERS_UART_8250IO
+#if IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)
 	/* Enable SuperIO + PS/2 Keyboard/Mouse + COM1 + lpc47n207 config*/
 	pci_write_config16(PCH_LPC_DEV, LPC_EN, CNF1_LPC_EN | KBC_LPC_EN |\
 			   CNF2_LPC_EN | COMA_LPC_EN);
@@ -75,10 +76,8 @@ void pch_enable_lpc(void)
 #endif
 }
 
-void rcba_config(void)
+void mainboard_rcba_config(void)
 {
-	u32 reg32;
-
 	/*
 	 *             GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P1IP  WLAN   INTA -> PIRQB
@@ -113,14 +112,9 @@ void rcba_config(void)
 	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
 
 	/* Enable IOAPIC (generic) */
-	RCBA16(OIC) = 0x0100;
+	RCBA16(EOIC) = 0x0100;
 	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(OIC);
-
-	/* Disable unused devices (board specific) */
-	reg32 = RCBA32(FD);
-	reg32 |= PCH_DISABLE_ALWAYS;
-	RCBA32(FD) = reg32;
+	(void) RCBA16(EOIC);
 }
 
 static void setup_sio_gpios(void)
@@ -129,17 +123,17 @@ static void setup_sio_gpios(void)
 	 * GPIO10 as USBPWRON12#
 	 * GPIO12 as USBPWRON13#
 	 */
-	it8772f_gpio_setup(DUMMY_DEV, 1, 0x05, 0x05, 0x00, 0x05, 0x05);
+	it8772f_gpio_setup(SUPERIO_DEV, 1, 0x05, 0x05, 0x00, 0x05, 0x05);
 
 	/*
 	 * GPIO22 as wake SCI#
 	 */
-	it8772f_gpio_setup(DUMMY_DEV, 2, 0x04, 0x04, 0x00, 0x04, 0x04);
+	it8772f_gpio_setup(SUPERIO_DEV, 2, 0x04, 0x04, 0x00, 0x04, 0x04);
 
 	/*
 	 * GPIO32 as EXTSMI#
 	 */
-	it8772f_gpio_setup(DUMMY_DEV, 3, 0x04, 0x04, 0x00, 0x04, 0x04);
+	it8772f_gpio_setup(SUPERIO_DEV, 3, 0x04, 0x04, 0x00, 0x04, 0x04);
 
 	/*
 	 * GPIO45 as LED_POWER#
@@ -153,8 +147,8 @@ static void setup_sio_gpios(void)
 	 * GPIO51 as USBPWRON8#
 	 * GPIO52 as USBPWRON1#
 	 */
-	it8772f_gpio_setup(DUMMY_DEV, 5, 0x06, 0x06, 0x00, 0x06, 0x06);
-	it8772f_gpio_setup(DUMMY_DEV, 6, 0x00, 0x00, 0x00, 0x00, 0x00);
+	it8772f_gpio_setup(SUPERIO_DEV, 5, 0x06, 0x06, 0x00, 0x06, 0x06);
+	it8772f_gpio_setup(SUPERIO_DEV, 6, 0x00, 0x00, 0x00, 0x00, 0x00);
 }
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
@@ -264,7 +258,7 @@ void mainboard_config_superio(void)
 	setup_sio_gpios();
 
 	/* Early SuperIO setup */
-	it8772f_ac_resume_southbridge(DUMMY_DEV);
+	it8772f_ac_resume_southbridge(SUPERIO_DEV);
 	ite_kill_watchdog(GPIO_DEV);
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

@@ -89,8 +89,8 @@ static void pci_init(struct device *dev)
 	pci_write_config16(dev, 0x1e, reg16);
 }
 
-static void pcie_set_subsystem(device_t dev, unsigned int vendor,
-			unsigned int device)
+static void pcie_set_subsystem(struct device *dev, unsigned int vendor,
+			       unsigned int device)
 {
 	/* NOTE: This is not the default position! */
 	if (!vendor || !device) {

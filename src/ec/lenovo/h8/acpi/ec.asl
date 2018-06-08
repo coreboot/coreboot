@@ -39,6 +39,10 @@ Device(EC)
 				DKR2, 1,	/* Dock register 2 */
 		Offset (0x2a),
 				EVNT, 8,	/* write will trigger EC event */
+		Offset (0x2f),
+				    , 6,
+				FAND, 1,	/* Fan disengage */
+				FANA, 1,	/* Fan automatic mode enable */
 		Offset (0x30),
 				    , 6,
 				ALMT, 1,	/* Audio Mute + LED */
@@ -53,6 +57,9 @@ Device(EC)
 				KBLT, 1,	/* Keyboard Light */
 				    , 2,
 				USPW, 1,	/* USB Power enable */
+		Offset (0x48),
+				HPPI, 1,	/* Headphone plugged in */
+				GSTS, 1,	/* Master wireless switch */
 		Offset (0x4e),
 				WAKE, 16,
 		Offset (0x78),
@@ -65,7 +72,7 @@ Device(EC)
 				DKR3, 1		/* Dock register 3 */
 	}
 
-	Method (_CRS, 0)
+	Method (_CRS, 0, Serialized)
 	{
 		Name (ECMD, ResourceTemplate()
 		{
@@ -107,6 +114,11 @@ Device(EC)
 		Store(Arg0, USPW)
 	}
 
+	Method (LGHT, 1, NotSerialized)
+	{
+		Store(Arg0, KBLT)
+	}
+
 
 	/* Sleep Button pressed */
 	Method(_Q13, 0, NotSerialized)
@@ -137,6 +149,7 @@ Device(EC)
 	Method(_Q26, 0, NotSerialized)
 	{
 		Notify (AC, 0x80)
+ 		\PNOT()
 	}
 
 	/* AC status change: not present */
@@ -144,6 +157,7 @@ Device(EC)
 	{
 		Notify (AC, 0x80)
 		Store(0x50, EVNT)
+ 		\PNOT()
 	}
 
 	Method(_Q2A, 0, NotSerialized)
@@ -274,23 +288,45 @@ Device(EC)
 		^HKEY.RTAB (0xA)
 	}
 
+	/*
+	 * Set FAN disengage:
+	 * Arg0: 1: Run at full speed
+	 *       0: Automatic fan control
+	 */
+	Method (FANE, 1, Serialized)
+	{
+		If (Arg0) {
+			Store (One, FAND)
+			Store (Zero, FANA)
+		} Else {
+			Store (Zero, FAND)
+			Store (One, FANA)
+		}
+	}
+
 	Device (HKEY)
 	{
 		Name (_HID, EisaId ("IBM0068"))
 		Name (BTN, 0)
 		Name (BTAB, 0)
+
 		/* MASK */
 		Name (DHKN, 0x080C)
+
 		/* Effective Mask */
 		Name (EMSK, 0)
+
 		/* Effective Mask for tablet */
 		Name (ETAB, 0)
+
 		/* Device enabled. */
 		Name (EN, 0)
+
 		Method (_STA, 0, NotSerialized)
 		{
 			Return (0x0F)
 		}
+
 		/* Retrieve event. */
 		Method (MHKP, 0, NotSerialized)
 		{
@@ -308,6 +344,7 @@ Device(EC)
 			}
 			Return (Zero)
 		}
+
 		/* Report event  */
 		Method (RHK, 1, NotSerialized) {
 			ShiftLeft (One, Subtract (Arg0, 1), Local0)
@@ -316,6 +353,7 @@ Device(EC)
 				Notify (HKEY, 0x80)
 			}
 		}
+
 		/* Report tablet  */
 		Method (RTAB, 1, NotSerialized) {
 			ShiftLeft (One, Subtract (Arg0, 1), Local0)
@@ -324,6 +362,7 @@ Device(EC)
 				Notify (HKEY, 0x80)
 			}
 		}
+
 		/* Enable/disable all events.  */
 		Method (MHKC, 1, NotSerialized) {
 			If (Arg0) {
@@ -337,6 +376,7 @@ Device(EC)
 			}
 			Store (Arg0, EN)
 		}
+
 		/* Enable/disable event.  */
 		Method (MHKM, 2, NotSerialized) {
 			If (LLessEqual (Arg0, 0x20)) {
@@ -355,21 +395,25 @@ Device(EC)
 				}
 			}
 		}
+
 		/* Mask hotkey all. */
 		Method (MHKA, 0, NotSerialized)
 		{
 			Return (0x07FFFFFF)
 		}
+
 		/* Report tablet mode switch state */
 		Method (MHKG, 0, NotSerialized)
 		{
 			Return (ShiftLeft(TBSW, 3))
 		}
+
 		/* Mute audio */
 		Method (SSMS, 1, NotSerialized)
 		{
 			Store(Arg0, ALMT)
 		}
+
 		/* Control mute microphone LED */
 		Method (MMTS, 1, NotSerialized)
 		{
@@ -382,10 +426,17 @@ Device(EC)
 				TLED(0x0E)
 			}
 		}
+
 		/* Version */
 		Method (MHKV, 0, NotSerialized)
 		{
 			Return (0x0100)
+		}
+
+		/* Master wireless switch state */
+		Method (WLSW, 0, NotSerialized)
+		{
+			Return (\_SB.PCI0.LPCB.EC.GSTS)
 		}
 	}
 

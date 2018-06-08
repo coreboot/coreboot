@@ -201,12 +201,6 @@ static void spi_reset(struct ipq_spi_slave *ds)
 
 static struct ipq_spi_slave spi_slave_pool[2];
 
-void spi_init(void)
-{
-	/* just in case */
-	memset(spi_slave_pool, 0, sizeof(spi_slave_pool));
-}
-
 static struct ipq_spi_slave *to_ipq_spi(const struct spi_slave *slave)
 {
 	struct ipq_spi_slave *ds;
@@ -408,11 +402,6 @@ static void enable_io_config(struct ipq_spi_slave *ds,
 	}
 
 	return;
-}
-
-unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
-{
-	return min(MAX_PACKET_COUNT, buf_len);
 }
 
 /*
@@ -622,6 +611,10 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	u8 *rxp = (u8 *)din;
 	int ret;
 
+	/* Driver implementation does not support full duplex. */
+	if (dout && din)
+		return -1;
+
 	ret = config_spi_state(ds, QUP_STATE_RESET);
 	if (ret != SUCCESS)
 		return ret;
@@ -652,17 +645,12 @@ out:
 	return ret;
 }
 
-static const struct spi_ctrlr spi_ctrlr = {
-	.claim_bus = spi_ctrlr_claim_bus,
-	.release_bus = spi_ctrlr_release_bus,
-	.xfer = spi_ctrlr_xfer,
-	.xfer_vector = spi_xfer_two_vectors,
-};
-
-int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
+static int spi_ctrlr_setup(const struct spi_slave *slave)
 {
 	struct ipq_spi_slave *ds = NULL;
 	int i;
+	unsigned int bus = slave->bus;
+	unsigned int cs = slave->cs;
 
 	if ((bus < BLSP0_SPI) || (bus > BLSP1_SPI)
 		|| ((bus == BLSP0_SPI) && (cs > 2))
@@ -678,9 +666,8 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 			continue;
 		ds = spi_slave_pool + i;
 
-		ds->slave.bus = slave->bus = bus;
-		ds->slave.cs = slave->cs = cs;
-		slave->ctrlr = &spi_ctrlr;
+		ds->slave.bus = bus;
+		ds->slave.cs = cs;
 		ds->regs = &spi_reg[bus];
 
 		/*
@@ -698,3 +685,21 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 	printk(BIOS_ERR, "SPI error: all %d pools busy\n", i);
 	return -1;
 }
+
+static const struct spi_ctrlr spi_ctrlr = {
+	.setup = spi_ctrlr_setup,
+	.claim_bus = spi_ctrlr_claim_bus,
+	.release_bus = spi_ctrlr_release_bus,
+	.xfer = spi_ctrlr_xfer,
+	.max_xfer_size = MAX_PACKET_COUNT,
+};
+
+const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
+	{
+		.ctrlr = &spi_ctrlr,
+		.bus_start = BLSP0_SPI,
+		.bus_end = BLSP1_SPI,
+	},
+};
+
+const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);

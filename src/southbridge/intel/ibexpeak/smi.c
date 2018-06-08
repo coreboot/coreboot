@@ -181,9 +181,9 @@ static u32 reset_tco_status(void)
 
 	reg32 = inl(tcobase + 0x04);
 	/* set status bits are cleared by writing 1 to them */
-	outl(reg32 & ~(1<<18), tcobase + 0x04); //  Don't clear BOOT_STS before SECOND_TO_STS
+	outl(reg32 & ~(1 << 18), tcobase + 0x04); //  Don't clear BOOT_STS before SECOND_TO_STS
 	if (reg32 & (1 << 18))
-		outl(reg32 & (1<<18), tcobase + 0x04); // clear BOOT_STS
+		outl(reg32 & (1 << 18), tcobase + 0x04); // clear BOOT_STS
 
 	return reg32;
 }
@@ -228,7 +228,7 @@ void southbridge_smm_init(void)
 	u16 pm1_en;
 	u32 gpe0_en;
 
-#if CONFIG_ELOG
+#if IS_ENABLED(CONFIG_ELOG)
 	/* Log events from chipset before clearing */
 	pch_log_state();
 #endif

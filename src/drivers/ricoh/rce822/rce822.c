@@ -39,7 +39,7 @@ static void rce822_init(struct device *dev)
 	pci_write_config8(dev, 0xf9, 0x00);
 }
 
-static void rce822_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void rce822_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, 0xac,

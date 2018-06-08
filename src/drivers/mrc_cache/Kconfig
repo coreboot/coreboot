@@ -1,0 +1,37 @@
+config CACHE_MRC_SETTINGS
+	bool
+	help
+	  Save cached MRC settings
+
+if CACHE_MRC_SETTINGS
+
+config MRC_SETTINGS_CACHE_SIZE
+	hex
+	default 0x10000
+
+config MRC_SETTINGS_PROTECT
+	bool "Enable protection on MRC settings"
+	default n
+
+config HAS_RECOVERY_MRC_CACHE
+	bool
+	default n
+
+config MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN
+	bool
+	default n
+
+config MRC_SETTINGS_VARIABLE_DATA
+	bool
+	default n
+
+config MRC_WRITE_NV_LATE
+	bool
+	default n
+	help
+	  MRC settings are normally written to NVRAM at BS_DEV_ENUMERATE-EXIT.
+	  If a platform requires MRC settings written to NVRAM later than
+	  normal, select this item.  This will cause the write to occur at
+	  BS_OS_RESUME_CHECK-ENTRY.
+
+endif # CACHE_MRC_SETTINGS

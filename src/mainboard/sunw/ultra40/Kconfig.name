@@ -1,2 +1,0 @@
-config BOARD_SUNW_ULTRA40
-	bool "Ultra 40"

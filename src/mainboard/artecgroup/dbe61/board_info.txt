@@ -1,3 +1,0 @@
-Category: settop
-Board URL: http://www.artecgroup.com/thincan/index.php?option=com_content&task=blogcategory&id=15&Itemid=34
-Flashrom support: y

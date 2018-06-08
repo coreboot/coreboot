@@ -17,13 +17,13 @@
 #include <device/device.h>
 #include <symbols.h>
 
-static void soc_read_resources(device_t dev)
+static void soc_read_resources(struct device *dev)
 {
 	ram_resource(dev, 0, (uintptr_t)_dram / KiB,
 		     (CONFIG_DRAM_SIZE_MB * MiB) / KiB);
 }
 
-static void soc_init(device_t dev)
+static void soc_init(struct device *dev)
 {
 	printk(BIOS_INFO, "CPU: Imgtec Pistachio\n");
 }
@@ -33,7 +33,7 @@ static struct device_operations soc_ops = {
 	.init		= soc_init,
 };
 
-static void enable_soc_dev(device_t dev)
+static void enable_soc_dev(struct device *dev)
 {
 	dev->ops = &soc_ops;
 }

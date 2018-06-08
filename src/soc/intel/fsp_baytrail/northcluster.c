@@ -88,7 +88,7 @@ uint32_t nc_read_top_of_low_memory(void)
 
 static int get_pcie_bar(u32 *base)
 {
-	device_t dev;
+	struct device *dev;
 	u32 pciexbar_reg;
 
 	*base = 0;
@@ -123,7 +123,7 @@ static int add_fixed_resources(struct device *dev, int index)
 	return index;
 }
 
-static void mc_add_dram_resources(device_t dev)
+static void mc_add_dram_resources(struct device *dev)
 {
 	u32 bmbound, bsmmrrl;
 	int index = 0;
@@ -166,7 +166,7 @@ static void mc_add_dram_resources(device_t dev)
 	index = add_fixed_resources(dev, index);
 }
 
-static void nc_read_resources(device_t dev)
+static void nc_read_resources(struct device *dev)
 {
 	u32 pcie_config_base;
 	int buses;
@@ -185,7 +185,7 @@ static void nc_read_resources(device_t dev)
 	mc_add_dram_resources(dev);
 }
 
-static void nc_enable(device_t dev)
+static void nc_enable(struct device *dev)
 {
 	print_fsp_info();
 }

@@ -90,4 +90,7 @@
 #define TCO_BASE_ADDDRESS	0x400
 #define TCO_BASE_SIZE		0x20
 
+#define P2SB_BAR		CONFIG_PCR_BASE_ADDRESS
+#define P2SB_SIZE		(16 * MiB)
+
 #endif

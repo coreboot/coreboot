@@ -264,7 +264,7 @@ static void mem_pll_phase_cali(u32 channel)
 			}
 		}
 
-		udelay(20); /* delay 20us for external loop pll stable */
+		udelay(20);  /* delay 20us for external loop pll stable */
 
 		/* 2. enable mempll 2 3 4 jitter meter */
 		for (i = 0; i < 3; i++)
@@ -323,7 +323,7 @@ void mem_pll_init(const struct mt8173_sdram_params *sdram_params)
 	for (channel = 0; channel < CHANNEL_NUM; channel++)
 		mem_pll_init_set_params(channel);
 
-	udelay(1); /* wait after da_mpll_sdm_iso_en goes low */
+	udelay(1);  /* wait after da_mpll_sdm_iso_en goes low */
 
 	/* only set once in MPLL */
 	mt_mem_pll_config_post();
@@ -391,7 +391,7 @@ void mem_pll_init(const struct mt8173_sdram_params *sdram_params)
 	/* unrequest mempll reset/pdn mode and wait settle */
 	clrbits_le32(&mt8173_spm->power_on_val0, 0x1 << 27);
 
-	udelay(31); /* PLL ready */
+	udelay(31);  /* PLL ready */
 
 	for (channel = 0; channel < CHANNEL_NUM; channel++)
 		mem_pll_init_phase_sync(channel);
@@ -402,7 +402,7 @@ void mem_pll_init(const struct mt8173_sdram_params *sdram_params)
 	for (channel = 0; channel < CHANNEL_NUM; channel++)
 		mem_pll_phase_cali(channel);
 
-	div2_phase_sync(); /* phase sync for channel B */
+	div2_phase_sync();  /* phase sync for channel B */
 
 	mt_mem_pll_mux();
 }
@@ -584,7 +584,7 @@ void dramc_init(u32 channel, const struct mt8173_sdram_params *sdram_params)
 	write32(&ch[channel].ao_regs->padctl4, 0x1 << 2 |
 					       0x1 << 0);
 
-	udelay(200); /* tINIT3 > 200us */
+	udelay(200);  /* tINIT3 > 200us */
 
 	write32(&ch[channel].ao_regs->gddr3ctl1, 0x1 << 24 |
 						 0x1 << 20);
@@ -682,7 +682,7 @@ void dramc_phy_reset(u32 channel)
 	setbits_le32(&ch[channel].ao_regs->gddr3ctl1,
 		     1 << GDDR3CTL1_RDATRST_SHIFT);
 
-	udelay(1); /* delay 1ns */
+	udelay(1);  /* delay 1ns */
 
 	clrbits_le32(&ch[channel].ao_regs->gddr3ctl1,
 		     1 << GDDR3CTL1_RDATRST_SHIFT);

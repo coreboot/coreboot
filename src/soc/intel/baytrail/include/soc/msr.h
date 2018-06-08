@@ -20,10 +20,10 @@
 #define MSR_BSEL_CR_OVERCLOCK_CONTROL	0xcd
 #define MSR_PLATFORM_INFO		0xce
 #define MSR_PMG_CST_CONFIG_CONTROL	0xe2
-#define 	SINGLE_PCTL			(1 << 11)
+#define	SINGLE_PCTL			(1 << 11)
 #define MSR_POWER_MISC			0x120
-#define 	ENABLE_ULFM_AUTOCM_MASK		(1 << 2)
-#define 	ENABLE_INDP_AUTOCM_MASK		(1 << 3)
+#define	ENABLE_ULFM_AUTOCM_MASK		(1 << 2)
+#define	ENABLE_INDP_AUTOCM_MASK		(1 << 3)
 #define MSR_IA32_PERF_CTL		0x199
 #define MSR_IA32_MISC_ENABLES		0x1a0
 #define MSR_POWER_CTL			0x1fc

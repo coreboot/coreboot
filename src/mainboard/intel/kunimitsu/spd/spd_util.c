@@ -75,7 +75,7 @@ void mainboard_fill_rcomp_strength_data(void *rcomp_strength_ptr)
 
 uintptr_t mainboard_get_spd_data(void)
 {
-	char* spd_file;
+	char *spd_file;
 	int spd_index, spd_span;
 	size_t spd_file_len;
 

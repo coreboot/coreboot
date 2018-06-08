@@ -48,7 +48,7 @@ static void reset_edp(void)
 	printk(BIOS_WARNING, "Retrying EDP initialization.\n");
 }
 
-void rk_display_init(device_t dev)
+void rk_display_init(struct device *dev)
 {
 	struct edid edid;
 	struct soc_rockchip_rk3399_config *conf = dev->chip_info;

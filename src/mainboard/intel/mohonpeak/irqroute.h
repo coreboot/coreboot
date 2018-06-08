@@ -21,10 +21,10 @@
 #include <southbridge/intel/fsp_rangeley/pci_devs.h>
 
 /*
- * IR01h PCIe		INT(ABCD) 	- PIRQ ABCD
- * IR02h PCIe		INT(ABCD) 	- PIRQ ABCD
- * IR03h PCIe		INT(ABCD) 	- PIRQ ABCD
- * IR04h PCIe		INT(ABCD) 	- PIRQ ABCD
+ * IR01h PCIe		INT(ABCD)	- PIRQ ABCD
+ * IR02h PCIe		INT(ABCD)	- PIRQ ABCD
+ * IR03h PCIe		INT(ABCD)	- PIRQ ABCD
+ * IR04h PCIe		INT(ABCD)	- PIRQ ABCD
  * IR0Bh IQIA		INT(ABCD)	- PIRQ EFGH
  * IR0Eh RAS		INT(A)		- PIRQ A
  * IR13h SMBUS1		INT(A)		- PIRQ B

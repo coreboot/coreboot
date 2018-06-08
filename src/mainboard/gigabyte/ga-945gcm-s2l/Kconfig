@@ -32,6 +32,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select CHANNEL_XOR_RANDOMIZATION
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
 	select REALTEK_8168_RESET if BOARD_GIGABYTE_GA_945GCM_S2L
+	select INTEL_GMA_VBT_HAVE_DATA_FILE
 
 config MAINBOARD_DIR
 	string
@@ -54,5 +55,9 @@ config IRQ_SLOT_COUNT
 config MAX_CPUS
 	int
 	default 2
+
+# Override the default variant behavior, since the data.vbt is the same
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
 
 endif

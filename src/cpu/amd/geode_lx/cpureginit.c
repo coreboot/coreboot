@@ -16,9 +16,13 @@
  * GNU General Public License for more details.
  */
 
-/* SetDelayControl */
-#include "cpu/x86/msr.h"
-
+#include <stdint.h>
+#include <spd.h>
+#include <console/console.h>
+#include <cpu/x86/msr.h>
+#include <cpu/amd/lxdef.h>
+#include <northbridge/amd/lx/raminit.h>
+#include <northbridge/amd/lx/northbridge.h>
 
 /**
  * Delay Control Settings table from AMD (MCP 0x4C00000F).

@@ -26,7 +26,7 @@ Device(EC0)
 	{
 		MODE,	  1,	// Thermal Policy (Quiet/Perform)
 		FAN,	  1,	// Fan Power (On/Off)
-		LIDS, 	  1,	// LID Status (0=Open/1=Close)
+		LIDS,	  1,	// LID Status (0=Open/1=Close)
 		LSW0,	  1,	// LCD Power Switch
 
 		BTYP,	  1,	// Battery Type (0=LiIon/1=NiMh)

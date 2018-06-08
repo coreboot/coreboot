@@ -57,7 +57,7 @@ uint64_t get_uma_memory_base(void)
 	return uma_memory_base;
 }
 
-static u64 vx900_get_top_of_ram(device_t mcu)
+static u64 vx900_get_top_of_ram(struct device *mcu)
 {
 	u16 reg16;
 	/* The last valid DRAM address is computed by the MCU
@@ -94,7 +94,7 @@ static void killme_debug_4g_remap_reg(u32 reg32)
  *
  * @return The new top of memory.
  */
-static u64 vx900_remap_above_4g(device_t mcu, u32 tolm)
+static u64 vx900_remap_above_4g(struct device *mcu, u32 tolm)
 {
 	size_t i;
 	u8 reg8, start8, end8, start, end;
@@ -214,7 +214,7 @@ static u64 vx900_remap_above_4g(device_t mcu, u32 tolm)
 	return newtor;
 }
 
-static void vx900_set_resources(device_t dev)
+static void vx900_set_resources(struct device *dev)
 {
 	u32 pci_tolm, tomk, vx900_tolm, full_tolmk, fbufk, tolmk;
 
@@ -226,9 +226,9 @@ static void vx900_set_resources(device_t dev)
 		    "========================================\n");
 
 	int idx = 10;
-	const device_t mcu = dev_find_device(PCI_VENDOR_ID_VIA,
-					     PCI_DEVICE_ID_VIA_VX900_MEMCTRL,
-					     0);
+	struct device *const mcu = dev_find_device(PCI_VENDOR_ID_VIA,
+						PCI_DEVICE_ID_VIA_VX900_MEMCTRL,
+						0);
 	if (!mcu) {
 		die("Something is terribly wrong.\n"
 		    " We tried locating the MCU on the PCI bus, "
@@ -283,7 +283,7 @@ static void vx900_set_resources(device_t dev)
 	assign_resources(dev->link_list);
 }
 
-static void vx900_read_resources(device_t dev)
+static void vx900_read_resources(struct device *dev)
 {
 	/* Our fixed resources start at 0 */
 	int idx = 0;
@@ -310,7 +310,7 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus = pci_domain_scan_bus,
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	initialize_cpus(dev->link_list);
 }
@@ -323,7 +323,7 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus = 0,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {

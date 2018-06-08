@@ -21,13 +21,21 @@ INCLUDED_FILES='.*\.[ch]\|Kconfig.*$'
 
 EXCLUDED_DIRS="^payloads/libpayload/util/kconfig\|\
 ^payloads/libpayload/curses/PDCurses\|\
+^util/crossgcc/patches\|\
 ^util/kconfig\|\
 ^src/vendorcode\|\
 ^Documentation"
 
-# Space separated list of directories to test
+# default: test src and util
 if [ "$1" = "" ]; then
 	INCLUDED_DIRS="src util"
+# special mode: take diff from stdin, but exclude the dirs
+elif [ "$1" = "diff" ]; then
+	args=$( echo $EXCLUDED_DIRS | \
+		sed -e 's,\\|, ,g' -e 's,\^,--exclude=,g' )
+	util/lint/checkpatch.pl --quiet --no-signoff $args -
+	exit $?
+# Space separated list of directories to test
 else
 	INCLUDED_DIRS="$1"
 fi

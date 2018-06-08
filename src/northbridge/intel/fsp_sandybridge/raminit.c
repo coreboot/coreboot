@@ -21,7 +21,7 @@
 #include "raminit.h"
 #include "northbridge.h"
 
-static const char* ecc_decoder[] = {
+static const char *ecc_decoder[] = {
 	"inactive",
 	"active on IO",
 	"disabled on IO",

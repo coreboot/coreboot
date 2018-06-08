@@ -15,6 +15,7 @@
 
 // Thermal Zone
 
+#define HAVE_THERMALZONE
 Scope (\_TZ)
 {
 	// Convert from Degrees C to 1/10 Kelvin for ACPI

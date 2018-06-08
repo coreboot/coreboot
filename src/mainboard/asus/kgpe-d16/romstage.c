@@ -46,7 +46,7 @@
 #include <cpu/amd/family_10h-family_15h/init_cpus.h>
 #include <arch/early_variables.h>
 #include <cbmem.h>
-#include <security/tpm/tis.h>
+#include <security/tpm/tspi.h>
 
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
@@ -587,7 +587,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 */
 	if (IS_ENABLED(CONFIG_DEBUG_SMBUS)) {
 	        dump_spd_registers(&cpu[0]);
-        	dump_smbus_registers();
+		dump_smbus_registers();
 	}
 #endif
 
@@ -602,7 +602,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	execute_memory_test();
 #endif
 
-#if !IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 	if (s3resume)
 		cbmem_initialize();
 	else
@@ -613,7 +612,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x41);
 
 	amdmct_cbmem_store_info(sysinfo);
-#endif
 
 	printk(BIOS_DEBUG, "disable_spd()\n");
 	switch_spd_mux(0x1);
@@ -627,8 +625,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	pci_write_config16(PCI_DEV(0, 0x14, 0), 0x56, 0x0bb0);
 	pci_write_config16(PCI_DEV(0, 0x14, 0), 0x5a, 0x0ff0);
 
-	if (IS_ENABLED(CONFIG_LPC_TPM))
-		init_tpm(s3resume);
+	if (IS_ENABLED(CONFIG_TPM1) || IS_ENABLED(CONFIG_TPM2))
+		tpm_setup(s3resume);
 }
 
 /**

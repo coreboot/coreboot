@@ -25,6 +25,7 @@ void mainboard_ec_init(void)
 	const struct google_chromeec_event_info info = {
 		.log_events = MAINBOARD_EC_LOG_EVENTS,
 		.sci_events = MAINBOARD_EC_SCI_EVENTS,
+		.smi_events = MAINBOARD_EC_SMI_EVENTS,
 		.s3_wake_events = MAINBOARD_EC_S3_WAKE_EVENTS,
 		.s5_wake_events = MAINBOARD_EC_S5_WAKE_EVENTS,
 	};
@@ -33,9 +34,6 @@ void mainboard_ec_init(void)
 	post_code(0xf0);
 
 	google_chromeec_events_init(&info, s3_wakeup);
-
-	if (!s3_wakeup)
-		google_chromeec_set_smi_mask(MAINBOARD_EC_SMI_EVENTS);
 
 	post_code(0xf1);
 }

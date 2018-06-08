@@ -1,15 +1,17 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * Copyright (c) 2013-2015, NVIDIA CORPORATION.  All rights reserved.
  * Copyright 2014 Google Inc.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
 #include <arch/io.h>
@@ -644,7 +646,7 @@ void clock_init(void)
 	graphics_pll();
 }
 
-void clock_grp_enable_clear_reset(u32 val, u32* clk_enb_set_reg,
+void clock_grp_enable_clear_reset(u32 val, u32 *clk_enb_set_reg,
 				  u32 *rst_dev_clr_reg)
 {
 	write32(clk_enb_set_reg, val);

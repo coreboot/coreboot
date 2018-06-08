@@ -43,9 +43,16 @@ chip soc/intel/apollolake
 	# [6:0] steps of delay for HS200, each 125ps.
 	register "emmc_rx_cmd_data_cntl2" = "0x10008"
 
-	# Enable I2C0 for proximity sensor at 100kHz
-	register "i2c[0]" = "{
-		.speed = I2C_SPEED_STANDARD
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| I2C0              | Proximity Sensor          |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_STANDARD
+		},
 	}"
 
 	device domain 0 on

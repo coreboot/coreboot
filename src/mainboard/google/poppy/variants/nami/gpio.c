@@ -391,7 +391,7 @@ static const struct pad_config nami_default_sku_gpio_table[] = {
 	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF1),
 };
 
-static const struct pad_config vayne_sku_gpio_table[] = {
+static const struct pad_config no_dmic1_sku_gpio_table[] = {
 	/* D17 : DMIC_CLK1 ==> NC */
 	PAD_CFG_NC(GPP_D17),
 };
@@ -401,10 +401,16 @@ const struct pad_config *variant_sku_gpio_table(size_t *num)
 	uint32_t sku_id = variant_board_sku();
 	const struct pad_config *board_gpio_tables;
 	switch (sku_id) {
+	case SKU_0_VAYNE:
 	case SKU_1_VAYNE:
 	case SKU_2_VAYNE:
-		*num = ARRAY_SIZE(vayne_sku_gpio_table);
-		board_gpio_tables = vayne_sku_gpio_table;
+	case SKU_0_PANTHEON:
+	case SKU_1_PANTHEON:
+	case SKU_2_PANTHEON:
+	case SKU_0_SONA:
+	case SKU_1_SONA:
+		*num = ARRAY_SIZE(no_dmic1_sku_gpio_table);
+		board_gpio_tables = no_dmic1_sku_gpio_table;
 		break;
 	default:
 		*num = ARRAY_SIZE(nami_default_sku_gpio_table);

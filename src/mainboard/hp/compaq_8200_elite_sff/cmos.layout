@@ -51,7 +51,9 @@ entries
 # coreboot config options: console
 #392          3       r       0        unused
 395          4       e       6        debug_level
-#399          9       r       0        unused
+#399          1       r       0        unused
+400          3       h       0        psu_fan_lvl
+#403          5       r       0        unused
 
 # coreboot config options: southbridge
 408          1       e       1        nmi

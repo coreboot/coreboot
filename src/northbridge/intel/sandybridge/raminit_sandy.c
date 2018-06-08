@@ -17,7 +17,6 @@
 
 #include <console/console.h>
 #include <console/usb.h>
-#include <cpu/x86/msr.h>
 #include <delay.h>
 #include "raminit_native.h"
 #include "raminit_common.h"

@@ -233,9 +233,7 @@ asmlinkage void car_stage_entry(void)
 		MTRR_TYPE_WRBACK);
 
 	/* Cache the memory-mapped boot media. */
-	if (IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED))
-		postcar_frame_add_mtrr(&pcf, -CONFIG_ROM_SIZE, CONFIG_ROM_SIZE,
-					MTRR_TYPE_WRPROT);
+	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);
 
 	/*
 	* Cache the TSEG region at the top of ram. This region is
@@ -247,13 +245,6 @@ asmlinkage void car_stage_entry(void)
 	smm_region_info(&smm_base, &smm_size);
 	tseg_base = (uintptr_t)smm_base;
 	postcar_frame_add_mtrr(&pcf, tseg_base, smm_size, MTRR_TYPE_WRBACK);
-
-	/* Ensure TSEG has mappings. */
-	if (IS_ENABLED(CONFIG_PAGING_IN_CACHE_AS_RAM)) {
-		if (paging_identity_map_addr(tseg_base, smm_size, PAT_WB))
-			printk(BIOS_ERR, "Unable to map TSEG: %lx--%lx\n",
-				tseg_base, tseg_base + smm_size);
-	}
 
 	run_postcar_phase(&pcf);
 }
@@ -343,40 +334,6 @@ static void parse_devicetree_setting(FSPM_UPD *m_upd)
 #endif
 }
 
-static void prepare_fspm_pages(void)
-{
-	const size_t mib128 = 128 * MiB;
-	uintptr_t base;
-	/* All in units of MiB */
-	size_t mem_sz;
-	size_t iohole_sz;
-	size_t low_mem_sz;
-
-	mem_sz = memory_in_system_in_mib();
-
-	if (!mem_sz) {
-		printk(BIOS_ERR, "No memory in system! FSP will hang...\n");
-		return;
-	}
-
-	iohole_sz = iohole_in_mib();
-
-	/* Mark pages as WB where FSP will write. One region will be in cbmem,
-	   but it's not clear what else FSP is writing to. Try to make the best
-	   calculation. */
-	low_mem_sz = 4 * (GiB / MiB) - iohole_sz;
-
-	if (low_mem_sz > mem_sz)
-		low_mem_sz = mem_sz;
-
-	/* Assume all accesses are within 128MiB of the crude low memory
-	   calculation above. */
-	base = low_mem_sz * MiB - mib128;
-	if (paging_identity_map_addr(base, mib128, PAT_WB))
-		printk(BIOS_ERR, "Unable to map %lx--%lx\n", base,
-			base + mib128);
-}
-
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	struct region_device rdev;
@@ -430,8 +387,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	car_set_var(fsp_version, version);
 
-	if (IS_ENABLED(CONFIG_PAGING_IN_CACHE_AS_RAM))
-		prepare_fspm_pages();
 }
 
 __weak

@@ -14,9 +14,12 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
+#include <cpu/x86/msr.h>
+#include <cpu/amd/lxdef.h>
 #include "northbridge.h"
 
-static void pll_reset(void)
+void lx_pll_reset(void)
 {
 	msr_t msrGlcpSysRstpll;
 

@@ -14,16 +14,18 @@
 #include <stdint.h>
 #include <compiler.h>
 #include <types.h>
-
-#include <security/tpm/tss.h>
+#include "../common/tss_common.h"
 
 /* This should be plenty for what firmware needs. */
 #define TPM_BUFFER_SIZE 256
 
+/* Some TPM2 return codes used in this library. */
+#define TPM2_RC_SUCCESS    0
+#define TPM2_RC_NV_DEFINED 0x14c
+
 /* Basic TPM2 types. */
 typedef uint16_t TPM_SU;
 typedef uint16_t TPM_ALG_ID;
-typedef uint32_t TPM_CC;
 typedef uint32_t TPM_HANDLE;
 typedef uint32_t TPM_RC;
 typedef uint8_t TPMI_YES_NO;
@@ -46,6 +48,8 @@ typedef TPM_HANDLE TPM_RH;
 #define TPM_RH_NULL         0x40000007
 #define TPM_RS_PW           0x40000009
 #define TPM_RH_PLATFORM     0x4000000C
+
+typedef uint32_t TPM_CC;
 
 typedef struct {
 	uint16_t      size;
@@ -74,13 +78,6 @@ struct tpm_header {
 /* TPM2 specifies vendor commands need to have this bit set. Vendor command
    space is defined by the lower 16 bits. */
 #define TPM_CC_VENDOR_BIT_MASK 0x20000000
-/* FIXME: below is not enough to differentiate between vendors commands
-   of numerous devices. However, the current tpm2 APIs aren't very amenable
-   to extending generically because the marshaling code is assuming all
-   knowledge of all commands. */
-#define TPM2_CR50_VENDOR_COMMAND ((TPM_CC)(TPM_CC_VENDOR_BIT_MASK | 0))
-#define  TPM2_CR50_SUB_CMD_NVMEM_ENABLE_COMMITS (21)
-#define  TPM2_CR50_SUB_CMD_TURN_UPDATE_ON (24)
 
 /* Startup values. */
 #define TPM_SU_CLEAR 0

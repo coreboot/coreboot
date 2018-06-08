@@ -15,7 +15,6 @@
  */
 
 #include <console/console.h>
-#include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <device/pci_def.h>
 #include <device/device.h>

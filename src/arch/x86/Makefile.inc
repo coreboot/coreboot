@@ -223,46 +223,7 @@ romstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 romstage-y += postcar_loader.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 
-ifneq ($(CONFIG_ROMCC),y)
-
 romstage-srcs += $(src)/mainboard/$(MAINBOARDDIR)/romstage.c
-
-else # CONFIG_ROMCC == y
-
-# This order matters. The mainboards requiring ROMCC need their mainboard
-# code to follow the prior crt0s files for program flow control. The
-# romstage.inc from the MAINBOARDDIR is implicitly main() for romstage
-# because of the instruction sequen fall-through.
-crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
-crt0s += $(src)/arch/x86/crt0_romcc_epilogue.inc
-
-ifeq ($(CONFIG_MMX),y)
-	ifeq ($(CONFIG_SSE),y)
-		ROMCCFLAGS := -mcpu=p4 -O2 # MMX, SSE
-	else
-		ROMCCFLAGS := -mcpu=p2 -O2 # MMX, !SSE
-	endif
-else
-	ROMCCFLAGS := -mcpu=i386 -O2 # !MMX, !SSE
-endif
-
-$(objcbfs)/romstage%.bin: $(objcbfs)/romstage%.elf
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	$(OBJCOPY_romstage) -O binary $< $@
-
-$(objcbfs)/romstage%.elf: $(objcbfs)/romstage%.debug
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	cp $< $@.tmp
-	$(OBJCOPY_romstage) --strip-debug $@.tmp
-	$(OBJCOPY_romstage) --add-gnu-debuglink=$< $@.tmp
-	mv $@.tmp $@
-
-$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(objutil)/romcc/romcc $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
-	printf "    ROMCC      romstage.inc\n"
-	$(ROMCC) -c -S $(ROMCCFLAGS) -D__ROMSTAGE__ -D__PRE_RAM__ -I. $(CPPFLAGS_romstage) $< -o $@
-
-endif
-
 romstage-libs ?=
 
 $(eval $(call early_x86_assembly_entry_rule,romstage))

@@ -1,3 +1,0 @@
-Category: server
-Board URL: http://web.archive.org/web/20060507170150/http://www.iwill.net/product_2.asp?p_id=98
-Flashrom support: y

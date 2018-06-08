@@ -123,7 +123,7 @@ static void setup_dwc3(struct usb_dwc3 *dwc3)
 	write32(&dwc3->uctl,
 		0x32 << 22 |	/* (default) reference clock period in ns */
 		 0x1 << 15 |	/* (default) XHCI compliant device addressing */
-		0x10 << 0); 	/* (default) devices time out after 32us */
+		0x10 << 0);	/* (default) devices time out after 32us */
 
 	udelay(5);
 
@@ -149,7 +149,7 @@ static void setup_phy(struct usb_qc_phy *phy)
 		0x1 << 18 |	/* use ref clock from core */
 		0x1 << 17 |	/* (default) unclamp DPSE VLS */
 		0x1 << 11 |	/* force xo/bias/pll to stay on in suspend */
-		0x1 <<  9 | 	/* (default) unclamp IDHV */
+		0x1 <<  9 |	/* (default) unclamp IDHV */
 		0x1 <<  8 |	/* (default) unclamp VLS (again???) */
 		0x1 <<  7 |	/* (default) unclamp HV VLS */
 		0x7 <<  4 |	/* select frequency (no idea which one) */

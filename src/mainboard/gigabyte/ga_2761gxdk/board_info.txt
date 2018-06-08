@@ -1,4 +1,0 @@
-Board name: GA-2761GXDK (Churchill)
-Category: desktop
-Board URL: http://www.computerbase.de/news/hardware/mainboards/amd-systeme/2007/mai/gigabyte_dtx-mainboard/
-Release year: 2007

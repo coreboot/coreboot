@@ -149,7 +149,7 @@ struct linux_params {
 	u16 mount_root_rdonly;	/* 0x1f2 */
 	u8 reserved7[4];	/* 0x1f4 */
 	u16 ramdisk_flags;	/* 0x1f8 */
-#define RAMDISK_IMAGE_START_MASK  	0x07FF
+#define RAMDISK_IMAGE_START_MASK	0x07FF
 #define RAMDISK_PROMPT_FLAG		0x8000
 #define RAMDISK_LOAD_FLAG		0x4000
 	u8 reserved8[2];	/* 0x1fa */

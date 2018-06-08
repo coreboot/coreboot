@@ -14,26 +14,10 @@
  */
 
 #include <arch/io.h>
-#include <console/console.h>
-#include <timer.h>
-#include <delay.h>
-#include <thread.h>
-
-#include <soc/addressmap.h>
 #include <soc/mcucfg.h>
 #include <soc/timer.h>
 
-#define GPT4_MHZ	13
-
-void timer_monotonic_get(struct mono_time *mt)
-{
-        mono_time_set_usecs(mt, read32(&mt8173_gpt->gpt4_cnt) / GPT4_MHZ);
-}
-
-/**
- * init_timer - initialize timer
- */
-void init_timer(void)
+void timer_prepare(void)
 {
 	/* Set XGPT_IDX to 0, then the bit field of XGPT_CTL will be programmed
 	 * with following definition.
@@ -48,13 +32,4 @@ void init_timer(void)
 	write32(&mt8173_mcucfg->xgpt_idx, 0);
 	/* Set clock mode to 13Mhz and enable XGPT */
 	write32(&mt8173_mcucfg->xgpt_ctl, (0x1 | ((26 / GPT4_MHZ) << 8)));
-
-	/* Disable GPT4 and clear the counter */
-	clrbits_le32(&mt8173_gpt->gpt4_con, GPT_CON_EN);
-	setbits_le32(&mt8173_gpt->gpt4_con, GPT_CON_CLR);
-
-	/* Set clock source to system clock and set clock divider to 1 */
-	write32(&mt8173_gpt->gpt4_clk, GPT_SYS_CLK | 0x0);
-	/* Set operation mode to FREERUN mode and enable GTP4 */
-	write32(&mt8173_gpt->gpt4_con, GPT_CON_EN | GPT_MODE_FREERUN);
 }

@@ -1,2 +1,0 @@
-config BOARD_MSI_MS9185
-	bool "MS-9185 (K9SD Master-S2R)"

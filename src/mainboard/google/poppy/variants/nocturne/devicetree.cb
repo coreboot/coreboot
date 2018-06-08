@@ -11,7 +11,7 @@ chip soc/intel/skylake
 	# Note that GPE events called out in ASL code rely on this
 	# route. i.e. If this route changes then the affected GPE
 	# offset bits also need to be changed.
-	register "gpe0_dw0" = "GPP_B"
+	register "gpe0_dw0" = "GPP_C"
 	register "gpe0_dw1" = "GPP_D"
 	register "gpe0_dw2" = "GPP_E"
 
@@ -51,7 +51,6 @@ chip soc/intel/skylake
 	register "SkipExtGfxScan" = "1"
 	register "Device4Enable" = "1"
 	register "HeciEnabled" = "0"
-	register "FspSkipMpInit" = "1"
 	register "SaGv" = "3"
 	register "SerialIrqConfigSirqEnable" = "1"
 	register "PmConfigSlpS3MinAssert" = "2"        # 50ms
@@ -67,7 +66,6 @@ chip soc/intel/skylake
 	register "psys_pmax" = "45"
 	register "tcc_offset" = "10"
 	register "pch_trip_temp" = "75"
-	register "chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
 
 	register "pirqa_routing" = "PCH_IRQ11"
 	register "pirqb_routing" = "PCH_IRQ10"
@@ -177,59 +175,75 @@ chip soc/intel/skylake
 	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Empty
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Empty
 
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#| I2C0              | Touchscreen               |
+	#| I2C1              | Trackpad                  |
+	#| I2C3              | Camera                    |
+	#| I2C4              | Audio                     |
+	#| I2C5              | Rear Camera & SAR         |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 98,
+			.fall_time_ns = 38,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 186,
+				.scl_hcnt = 93,
+				.sda_hold = 36,
+			},
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 98,
+			.fall_time_ns = 38,
+		},
+		.i2c[4] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 176,
+				.scl_hcnt = 95,
+				.sda_hold = 36,
+			}
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 98,
+			.fall_time_ns = 38,
+		},
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+	}"
 	# Touchscreen
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"
-	register "i2c[0]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 98,
-		.fall_time_ns = 38,
-	}"
 
 	# Trackpad
 	register "i2c_voltage[1]" = "I2C_VOLTAGE_1V8"
-	register "i2c[1]" = "{
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 186,
-			.scl_hcnt = 93,
-			.sda_hold = 36,
-		},
-	}"
 
 	# Front Camera
 	register "i2c_voltage[3]" = "I2C_VOLTAGE_1V8"
-	register "i2c[3]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 98,
-		.fall_time_ns = 38,
-	}"
 
 	# Audio
 	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"
-	register "i2c[4]" = "{
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 176,
-			.scl_hcnt = 95,
-			.sda_hold = 36,
-		}
-	}"
 
 	# Rear Camera & SAR
 	register "i2c_voltage[5]" = "I2C_VOLTAGE_1V8"
-	register "i2c[5]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 98,
-		.fall_time_ns = 38,
-	}"
-
-	# GSPI0 for cr50 TPM
-	register "gspi[0]" = "{
-		 .speed_mhz = 1,
-		 .early_init = 1,
-	}"
 
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
@@ -326,7 +340,23 @@ chip soc/intel/skylake
 				device spi 0 on end
 			end
 		end # GSPI #0
-		device pci 1e.3 on  end # GSPI #1
+		device pci 1e.3 on
+			chip drivers/spi/acpi
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "uid" = "1"
+				register "compat_string" = ""google,cros-ec-spi""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C11_IRQ)"
+				register "wake" = "GPE0_DW0_09" # GPP_C9
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)"
+				register "reset_delay_ms" = "0"
+				register "reset_off_delay_ms" = "0"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
+				register "enable_delay_ms" = "0"
+				register "enable_off_delay_ms" = "0"
+				register "has_power_resource" = "1"
+				device spi 0 on end
+			end
+		end # GSPI #1
 		device pci 1e.4 on  end # eMMC
 		device pci 1e.5 off end # SDIO
 		device pci 1e.6 off end # SDCard

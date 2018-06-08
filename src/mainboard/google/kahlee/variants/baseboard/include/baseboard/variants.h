@@ -18,7 +18,6 @@
 #define __BASEBOARD_VARIANTS_H__
 
 #include <stddef.h>
-#include <soc/smi.h>
 #include <soc/southbridge.h>
 
 const struct sci_source *get_gpe_table(size_t *num);

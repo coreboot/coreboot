@@ -32,10 +32,10 @@
  * stored in the TPM NVRAM.
  */
 
-#include <security/tpm/antirollback.h>
+#include <security/vboot/antirollback.h>
 #include <stdlib.h>
 #include <string.h>
-#include <security/tpm/tss.h>
+#include <security/tpm/tspi.h>
 #include <vb2_api.h>
 #include <console/console.h>
 
@@ -64,7 +64,7 @@
 
 static uint32_t safe_write(uint32_t index, const void *data, uint32_t length);
 
-uint32_t tpm_extend_pcr(struct vb2_context *ctx, int pcr,
+uint32_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
 			enum vb2_pcr_digest which_digest)
 {
 	uint8_t buffer[VB2_PCR_DIGEST_RECOMMENDED_SIZE];
@@ -74,10 +74,10 @@ uint32_t tpm_extend_pcr(struct vb2_context *ctx, int pcr,
 	rv = vb2api_get_pcr_digest(ctx, which_digest, buffer, &size);
 	if (rv != VB2_SUCCESS)
 		return rv;
-	if (size < TPM_PCR_DIGEST)
+	if (size < TPM_PCR_MINIMUM_DIGEST_SIZE)
 		return VB2_ERROR_UNKNOWN;
 
-	return tlcl_extend(pcr, buffer, NULL);
+	return tpm_extend_pcr(pcr, buffer, NULL);
 }
 
 static uint32_t read_space_firmware(struct vb2_context *ctx)
@@ -158,6 +158,35 @@ static const uint8_t secdata_kernel[] = {
 static const uint8_t rec_hash_data[REC_HASH_NV_SIZE] = { };
 
 #if IS_ENABLED(CONFIG_TPM2)
+/*
+ * Different sets of NVRAM space attributes apply to the "ro" spaces,
+ * i.e. those which should not be possible to delete or modify once
+ * the RO exits, and the rest of the NVRAM spaces.
+ */
+const static TPMA_NV ro_space_attributes = {
+	.TPMA_NV_PPWRITE = 1,
+	.TPMA_NV_AUTHREAD = 1,
+	.TPMA_NV_PPREAD = 1,
+	.TPMA_NV_PLATFORMCREATE = 1,
+	.TPMA_NV_WRITE_STCLEAR = 1,
+	.TPMA_NV_POLICY_DELETE = 1,
+};
+
+const static TPMA_NV rw_space_attributes = {
+	.TPMA_NV_PPWRITE = 1,
+	.TPMA_NV_AUTHREAD = 1,
+	.TPMA_NV_PPREAD = 1,
+	.TPMA_NV_PLATFORMCREATE = 1,
+};
+
+/*
+ * This policy digest was obtained using TPM2_PolicyPCR
+ * selecting only PCR_0 with a value of all zeros.
+ */
+const static uint8_t pcr0_unchanged_policy[] = {
+	0x09, 0x93, 0x3C, 0xCE, 0xEB, 0xB4, 0x41, 0x11, 0x18, 0x81, 0x1D,
+	0xD4, 0x47, 0x78, 0x80, 0x08, 0x88, 0x86, 0x62, 0x2D, 0xD7, 0x79,
+	0x94, 0x46, 0x62, 0x26, 0x68, 0x8E, 0xEE, 0xE6, 0x6A, 0xA1};
 
 /* Nothing special in the TPM2 path yet. */
 static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
@@ -166,11 +195,13 @@ static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
 }
 
 static uint32_t set_space(const char *name, uint32_t index, const void *data,
-			  uint32_t length)
+			  uint32_t length, const TPMA_NV nv_attributes,
+			  const uint8_t *nv_policy, size_t nv_policy_size)
 {
 	uint32_t rv;
 
-	rv = tlcl_define_space(index, length);
+	rv = tlcl_define_space(index, length, nv_attributes, nv_policy,
+			       nv_policy_size);
 	if (rv == TPM_E_NV_DEFINED) {
 		/*
 		 * Continue with writing: it may be defined, but not written
@@ -193,19 +224,22 @@ static uint32_t set_space(const char *name, uint32_t index, const void *data,
 static uint32_t set_firmware_space(const void *firmware_blob)
 {
 	return set_space("firmware", FIRMWARE_NV_INDEX, firmware_blob,
-			 VB2_SECDATA_SIZE);
+			 VB2_SECDATA_SIZE, ro_space_attributes,
+			 pcr0_unchanged_policy, sizeof(pcr0_unchanged_policy));
 }
 
 static uint32_t set_kernel_space(const void *kernel_blob)
 {
 	return set_space("kernel", KERNEL_NV_INDEX, kernel_blob,
-			 sizeof(secdata_kernel));
+			 sizeof(secdata_kernel), rw_space_attributes, NULL, 0);
 }
 
 static uint32_t set_rec_hash_space(const uint8_t *data)
 {
 	return set_space("MRC Hash", REC_HASH_NV_INDEX, data,
-			 REC_HASH_NV_SIZE);
+			 REC_HASH_NV_SIZE,
+			 ro_space_attributes, pcr0_unchanged_policy,
+			 sizeof(pcr0_unchanged_policy));
 }
 
 static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
@@ -228,13 +262,6 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	return TPM_SUCCESS;
 }
 
-uint32_t tpm_clear_and_reenable(void)
-{
-	VBDEBUG("TPM: Clear and re-enable\n");
-	RETURN_ON_FAILURE(tlcl_force_clear());
-	return TPM_SUCCESS;
-}
-
 uint32_t antirollback_lock_space_firmware(void)
 {
 	return tlcl_lock_nv_write(FIRMWARE_NV_INDEX);
@@ -246,16 +273,6 @@ uint32_t antirollback_lock_space_rec_hash(void)
 }
 
 #else
-
-uint32_t tpm_clear_and_reenable(void)
-{
-	VBDEBUG("TPM: Clear and re-enable\n");
-	RETURN_ON_FAILURE(tlcl_force_clear());
-	RETURN_ON_FAILURE(tlcl_set_enable());
-	RETURN_ON_FAILURE(tlcl_set_deactivated(0));
-
-	return TPM_SUCCESS;
-}
 
 /**
  * Like tlcl_write(), but checks for write errors due to hitting the 64-write
@@ -416,110 +433,22 @@ static uint32_t factory_initialize_tpm(struct vb2_context *ctx)
 	return TPM_SUCCESS;
 }
 
-/*
- * SetupTPM starts the TPM and establishes the root of trust for the
- * anti-rollback mechanism.  SetupTPM can fail for three reasons.  1 A bug. 2 a
- * TPM hardware failure. 3 An unexpected TPM state due to some attack.  In
- * general we cannot easily distinguish the kind of failure, so our strategy is
- * to reboot in recovery mode in all cases.  The recovery mode calls SetupTPM
- * again, which executes (almost) the same sequence of operations.  There is a
- * good chance that, if recovery mode was entered because of a TPM failure, the
- * failure will repeat itself.  (In general this is impossible to guarantee
- * because we have no way of creating the exact TPM initial state at the
- * previous boot.)  In recovery mode, we ignore the failure and continue, thus
- * giving the recovery kernel a chance to fix things (that's why we don't set
- * bGlobalLock).  The choice is between a knowingly insecure device and a
- * bricked device.
- *
- * As a side note, observe that we go through considerable hoops to avoid using
- * the STCLEAR permissions for the index spaces.  We do this to avoid writing
- * to the TPM flashram at every reboot or wake-up, because of concerns about
- * the durability of the NVRAM.
- */
-uint32_t setup_tpm(struct vb2_context *ctx)
+uint32_t vboot_setup_tpm(struct vb2_context *ctx)
 {
-	uint8_t disable;
-	uint8_t deactivated;
 	uint32_t result;
 
-	RETURN_ON_FAILURE(tlcl_lib_init());
-
-	/* Handle special init for S3 resume path */
-	if (ctx->flags & VB2_CONTEXT_S3_RESUME) {
-		result = tlcl_resume();
-		if (result == TPM_E_INVALID_POSTINIT)
-			printk(BIOS_DEBUG, "TPM: Already initialized.\n");
-		return TPM_SUCCESS;
-	}
-
-	if (IS_ENABLED(CONFIG_VBOOT_SOFT_REBOOT_WORKAROUND)) {
-		result = tlcl_startup();
-		if (result == TPM_E_INVALID_POSTINIT) {
-			/*
-			 * Some prototype hardware doesn't reset the TPM on a CPU
-			 * reset.  We do a hard reset to get around this.
-			 */
-			VBDEBUG("TPM: soft reset detected\n");
-			ctx->flags |= VB2_CONTEXT_SECDATA_WANTS_REBOOT;
-			return TPM_E_MUST_REBOOT;
-		} else if (result != TPM_SUCCESS) {
-			VBDEBUG("TPM: tlcl_startup returned %08x\n", result);
-			return result;
-		}
-	} else
-		RETURN_ON_FAILURE(tlcl_startup());
-
-	/*
-	 * Some TPMs start the self test automatically at power on. In that case
-	 * we don't need to call ContinueSelfTest. On some (other) TPMs,
-	 * continue_self_test may block. In that case, we definitely don't want
-	 * to call it here. For TPMs in the intersection of these two sets, we
-	 * are screwed. (In other words: TPMs that require manually starting the
-	 * self-test AND block will have poor performance until we split
-	 * tlcl_send_receive() into send() and receive(), and have a state
-	 * machine to control setup.)
-	 *
-	 * This comment is likely to become obsolete in the near future, so
-	 * don't trust it. It may have not been updated.
-	 */
-#ifdef TPM_MANUAL_SELFTEST
-#ifdef TPM_BLOCKING_CONTINUESELFTEST
-#warning "lousy TPM!"
-#endif
-	RETURN_ON_FAILURE(tlcl_continue_self_test());
-#endif
-	result = tlcl_assert_physical_presence();
-	if (result != TPM_SUCCESS) {
-		/*
-		 * It is possible that the TPM was delivered with the physical
-		 * presence command disabled.  This tries enabling it, then
-		 * tries asserting PP again.
-		 */
-		RETURN_ON_FAILURE(tlcl_physical_presence_cmd_enable());
-		RETURN_ON_FAILURE(tlcl_assert_physical_presence());
-	}
-
-	/* Check that the TPM is enabled and activated. */
-	RETURN_ON_FAILURE(tlcl_get_flags(&disable, &deactivated, NULL));
-	if (disable || deactivated) {
-		VBDEBUG("TPM: disabled (%d) or deactivated (%d). Fixing...\n",
-			disable, deactivated);
-		RETURN_ON_FAILURE(tlcl_set_enable());
-		RETURN_ON_FAILURE(tlcl_set_deactivated(0));
-		VBDEBUG("TPM: Must reboot to re-enable\n");
+	result = tpm_setup(ctx->flags & VB2_CONTEXT_S3_RESUME);
+	if (result == TPM_E_MUST_REBOOT)
 		ctx->flags |= VB2_CONTEXT_SECDATA_WANTS_REBOOT;
-		return TPM_E_MUST_REBOOT;
-	}
 
-	VBDEBUG("TPM: SetupTPM() succeeded\n");
-	return TPM_SUCCESS;
+	return result;
 }
 
 uint32_t antirollback_read_space_firmware(struct vb2_context *ctx)
 {
 	uint32_t rv;
 
-	rv = setup_tpm(ctx);
+	rv = vboot_setup_tpm(ctx);
 	if (rv)
 		return rv;
 
@@ -584,4 +513,14 @@ uint32_t antirollback_write_space_rec_hash(const uint8_t *data, uint32_t size)
 		return rv;
 
 	return write_secdata(REC_HASH_NV_INDEX, data, size);
+}
+
+int vb2ex_tpm_clear_owner(struct vb2_context *ctx)
+{
+	uint32_t rv;
+	printk(BIOS_INFO, "Clearing TPM owner\n");
+	rv = tpm_clear_and_reenable();
+	if (rv)
+		return VB2_ERROR_EX_TPM_CLEAR_OWNER;
+	return VB2_SUCCESS;
 }

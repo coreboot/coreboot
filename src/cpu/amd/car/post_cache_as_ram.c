@@ -31,11 +31,7 @@
 #include "cpu/amd/car/disable_cache_as_ram.c"
 
 // For set_sysinfo_in_ram()
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDK8)
-#include "northbridge/amd/amdk8/raminit.h"
-#else
 #include "northbridge/amd/amdfam10/raminit.h"
-#endif
 
 #if CONFIG_RAMTOP <= 0x100000
 	#error "You need to set CONFIG_RAMTOP greater than 1M"
@@ -140,17 +136,7 @@ asmlinkage void * post_cache_as_ram(void)
 	if ((*lower_stack_boundary) != 0xdeadbeef)
 		printk(BIOS_WARNING, "BSP overran lower stack boundary.  Undefined behaviour may result!\n");
 
-	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)) {
-		s3resume = acpi_is_wakeup_s3();
-	} else {
-		if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME))
-			s3resume = (acpi_get_sleep_type() == ACPI_S3);
-		/* For normal boot path, boards with LATE_CBMEM_INIT will do
-		 * cbmem_initialize_empty() late in ramstage.
-		 */
-		if (s3resume)
-			cbmem_recovery(s3resume);
-	}
+	s3resume = acpi_is_wakeup_s3();
 
 	prepare_romstage_ramstack(s3resume);
 

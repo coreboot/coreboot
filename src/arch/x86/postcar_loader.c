@@ -113,6 +113,13 @@ void postcar_frame_add_mtrr(struct postcar_frame *pcf,
 	}
 }
 
+void postcar_frame_add_romcache(struct postcar_frame *pcf, int type)
+{
+	if (!IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED))
+		return;
+	postcar_frame_add_mtrr(pcf, CACHE_ROM_BASE, CACHE_ROM_SIZE, type);
+}
+
 void *postcar_commit_mtrrs(struct postcar_frame *pcf)
 {
 	/*

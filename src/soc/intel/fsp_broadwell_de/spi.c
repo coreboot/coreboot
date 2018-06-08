@@ -266,12 +266,12 @@ void spi_init(void)
 	uint8_t *rcrb; /* Root Complex Register Block */
 	uint32_t rcba; /* Root Complex Base Address */
 	uint8_t bios_cntl;
-	device_t dev;
 	ich9_spi_regs *ich9_spi;
 
 #ifdef __SMM__
-	dev = PCI_DEV(0, 31, 0);
+	pci_devfn_t dev = PCI_DEV(0, 31, 0);
 #else
+	struct device *dev;
 	dev = dev_find_slot(0, PCI_DEVFN(31, 0));
 #endif
 

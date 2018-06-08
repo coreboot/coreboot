@@ -43,7 +43,7 @@ chip northbridge/amd/agesa/family16kb/root_complex
 				device pci 13.2 on  end # USB
 				device pci 14.0 on  end # SM
 				device pci 14.2 on  end # HDA	0x4383
-				device pci 14.3 on 	# LPC	0x439d
+				device pci 14.3 on	# LPC	0x439d
 					chip superio/fintek/f81866d
 						register "hwm_amd_tsi_addr" = "0x98"	# Set to AMD
 						register "hwm_amd_tsi_control" = "0x02"	# Set to AMD

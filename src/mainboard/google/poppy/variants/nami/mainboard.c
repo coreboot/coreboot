@@ -65,8 +65,14 @@ void variant_devtree_update(void)
 	cfg->tdp_pl2_override = get_pl2();
 
 	switch (sku_id) {
+	case SKU_0_VAYNE:
 	case SKU_1_VAYNE:
 	case SKU_2_VAYNE:
+	case SKU_0_PANTHEON:
+	case SKU_1_PANTHEON:
+	case SKU_2_PANTHEON:
+	case SKU_0_SONA:
+	case SKU_1_SONA:
 		/* Disable unused port USB port */
 		cfg->usb2_ports[5].enable = 0;
 		break;
@@ -166,6 +172,10 @@ const char *mainboard_vbt_filename(void)
 	case SKU_0_PANTHEON:
 	case SKU_1_PANTHEON:
 		return "vbt-pantheon.bin";
+	case SKU_0_VAYNE:
+	case SKU_1_VAYNE:
+	case SKU_2_VAYNE:
+		return "vbt-vayne.bin";
 	default:
 		return "vbt.bin";
 		break;

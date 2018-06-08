@@ -23,8 +23,6 @@
 #include <device/pci_ids.h>
 #include <string.h>
 #include <device/pci_ops.h>
-#include <cpu/x86/msr.h>
-#include <cpu/x86/mtrr.h>
 #include <commonlib/helpers.h>
 #include <cbmem.h>
 
@@ -35,6 +33,7 @@
 #include <drivers/intel/gma/edid.h>
 #include <drivers/intel/gma/i915.h>
 #include <drivers/intel/gma/opregion.h>
+#include <drivers/intel/gma/libgfxinit.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
 
@@ -413,6 +412,9 @@ static void gma_func0_init(struct device *dev)
 			return;
 		}
 		native_init(dev);
+	} else if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
+		int lightup_ok;
+		gma_gfxinit(&lightup_ok);
 	} else {
 		pci_dev_init(dev);
 	}

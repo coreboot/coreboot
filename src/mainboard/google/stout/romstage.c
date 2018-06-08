@@ -36,7 +36,7 @@
 #include <cpu/x86/msr.h>
 #include <halt.h>
 #include <bootmode.h>
-#include <security/tpm/tis.h>
+#include <security/tpm/tspi.h>
 #include <cbfs.h>
 #include <ec/quanta/it8518/ec.h>
 #include "ec.h"

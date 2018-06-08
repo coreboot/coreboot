@@ -1,2 +1,0 @@
-config BOARD_TECHNEXION_TIM8690
-	bool "TIM-8690"

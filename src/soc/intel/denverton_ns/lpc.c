@@ -85,9 +85,9 @@ static void pch_enable_ioapic(struct device *dev)
  * 0x80 - The PIRQ is not routed.
  */
 
-static void pch_pirq_init(device_t dev)
+static void pch_pirq_init(struct device *dev)
 {
-	device_t irq_dev;
+	struct device *irq_dev;
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
@@ -178,7 +178,7 @@ static void pch_pirq_init(device_t dev)
 	}
 }
 
-static void pci_p2sb_read_resources(device_t dev)
+static void pci_p2sb_read_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -236,9 +236,9 @@ static void lpc_init(struct device *dev)
 	pch_pirq_init(dev);
 }
 
-static void pch_lpc_add_mmio_resources(device_t dev) { /* TODO */ }
+static void pch_lpc_add_mmio_resources(struct device *dev) { /* TODO */ }
 
-static void pch_lpc_add_io_resources(device_t dev)
+static void pch_lpc_add_io_resources(struct device *dev)
 {
 	struct resource *res;
 	u8 io_index = 0;
@@ -257,7 +257,7 @@ static void pch_lpc_add_io_resources(device_t dev)
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void lpc_read_resources(device_t dev)
+static void lpc_read_resources(struct device *dev)
 {
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
@@ -274,7 +274,7 @@ static void lpc_read_resources(device_t dev)
 
 static void pch_decode_init(struct device *dev) { /* TODO */ }
 
-static void lpc_enable_resources(device_t dev)
+static void lpc_enable_resources(struct device *dev)
 {
 	pch_decode_init(dev);
 	pci_dev_enable_resources(dev);
@@ -283,7 +283,7 @@ static void lpc_enable_resources(device_t dev)
 /* Set bit in Function Disable register to hide this device */
 static void pch_hide_devfn(uint32_t devfn) { /* TODO */ }
 
-void southcluster_enable_dev(device_t dev)
+void southcluster_enable_dev(struct device *dev)
 {
 	u32 reg32;
 

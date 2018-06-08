@@ -64,9 +64,9 @@
 #define AUDIO_CODEC_DDN			"Maxim 98090 Codec  "
 #define AUDIO_CODEC_I2C_ADDR		0x10
 
-#define TI_SWITCH_HID           	"104C227E"
-#define TI_SWITCH_CID           	"104C227E"
-#define TI_SWITCH_DDN           	"TI SWITCH "
+#define TI_SWITCH_HID			"104C227E"
+#define TI_SWITCH_CID			"104C227E"
+#define TI_SWITCH_DDN			"TI SWITCH "
 #define TI_SWITCH_I2C_ADDR		0x3B
 
 #define DPTF_CPU_PASSIVE	88

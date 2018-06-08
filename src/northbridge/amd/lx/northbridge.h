@@ -16,8 +16,6 @@
 #ifndef NORTHBRIDGE_AMD_LX_H
 #define NORTHBRIDGE_AMD_LX_H
 
-#include <cpu/amd/lxdef.h>
-
 /* northbridge.c */
 int sizeram(void);
 
@@ -26,4 +24,8 @@ void northbridge_init_early(void);
 
 /* pll_reset.c */
 unsigned int GeodeLinkSpeed(void);
+void lx_pll_reset(void);
+
+void lx_msr_init(void);
+
 #endif

@@ -37,6 +37,9 @@ export DOCKER_COMMIT?=$(shell git log -n 1 --pretty=%h)
 # SDK architecture
 export COREBOOT_CROSSGCC_PARAM?=all_without_gdb
 
+UID ?= $(shell id -u)
+GID ?= $(shell id -g)
+
 test-docker:
 	$(if $(DOCKER),,\
 		$(warning Docker command not found.  Please install docker) \
@@ -97,23 +100,21 @@ docker-cleanall:
 
 docker-build-coreboot: test-docker
 	$(DOCKER) run -u root -it -v $(top):/home/coreboot/coreboot \
+		--user $(UID):$(GID) \
 		--rm coreboot/coreboot-sdk:$(COREBOOT_CONTAINER_VERSION) \
 		/bin/bash -c "cd /home/coreboot/coreboot && \
 		make clean && \
-		make $(BUILD_CMD)"
-	@echo "Enter root password to chown files to $$(whoami):$$(id -gn $$(whoami))"
-	@echo "Exiting now will leave built files owned by root"
-	sudo chown -R $$(whoami):$$(id -gn $$(whoami)) $(top)
+		make $(BUILD_CMD); \
+		rm .xcompile"
 
 docker-abuild: test-docker
 	$(DOCKER) run -u root -it -v $(top):/home/coreboot/coreboot \
+		--user $(UID):$(GID) \
 		--rm coreboot/coreboot-sdk:$(COREBOOT_CONTAINER_VERSION) \
 		/bin/bash -c "cd /home/coreboot/coreboot && \
 		make clean && \
-		util/abuild/abuild $(ABUILD_ARGS)"
-	@echo "Enter root password to chown files to $$(whoami):$$(id -gn $$(whoami))"
-	@echo "Exiting now will leave built files owned by root"
-	sudo chown -R $$(whoami):$$(id -gn $$(whoami)) $(top)
+		util/abuild/abuild $(ABUILD_ARGS); \
+		rm -f .xcompile"
 
 docker-what-jenkins-does: test-docker
 	$(DOCKER) run -u root -it -v $(top):/home/coreboot/coreboot \

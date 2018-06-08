@@ -216,7 +216,7 @@ void display_startup(struct device *dev)
 {
 	struct soc_nvidia_tegra124_config *config = dev->chip_info;
 	struct display_controller *disp_ctrl = (void *)config->display_controller;
-	struct pwm_controller 	*pwm = (void *)TEGRA_PWM_BASE;
+	struct pwm_controller	*pwm = (void *)TEGRA_PWM_BASE;
 	struct tegra_dc		*dc = &dc_data;
 	u32 plld_rate;
 

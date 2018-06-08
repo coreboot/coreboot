@@ -25,6 +25,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SPI_FLASH
 	select SPI_FLASH_SPANSION
 	select SPI_FLASH_STMICRO # required for the reference board BCM958305K
+	select MAINBOARD_HAS_I2C_TPM_GENERIC
+	select MAINBOARD_HAS_TPM1
 
 config VBOOT
 	select VBOOT_VBNV_FLASH

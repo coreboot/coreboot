@@ -140,7 +140,7 @@ void soc_init_pre_device(void *chip_info)
 	fsp_display_fvi_version_hob();
 }
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
@@ -162,7 +162,7 @@ static struct device_operations cpu_bus_ops = {
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
-static void soc_enable(device_t dev)
+static void soc_enable(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -295,7 +295,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	params->Heci3Enabled = config->Heci3Enabled;
 	params->Device4Enable = config->Device4Enable;
-	params->SkipMpInit = config->FspSkipMpInit;
+	params->SkipMpInit = !config->use_fsp_mp_init;
 
 	/* VrConfig Settings for 5 domains
 	 * 0 = System Agent, 1 = IA Core, 2 = Ring,

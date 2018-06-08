@@ -100,7 +100,7 @@ static int wait_for_idle(char *base_adr)
  */
 int i2c_init(unsigned bus)
 {
-	device_t dev;
+	struct device *dev;
 	int base_adr[7] = {I2C0_MEM_BASE, I2C1_MEM_BASE, I2C2_MEM_BASE,
 			   I2C3_MEM_BASE, I2C4_MEM_BASE, I2C5_MEM_BASE,
 			   I2C6_MEM_BASE};
@@ -166,7 +166,7 @@ int i2c_read(unsigned bus, unsigned chip, unsigned addr,
 {
 	int i = 0;
 	char *base_ptr = NULL;
-	device_t dev;
+	struct device *dev;
 	unsigned int val;
 	int stat;
 
@@ -225,7 +225,7 @@ int i2c_write(unsigned bus, unsigned chip, unsigned addr,
 {
 	int i;
 	char *base_ptr;
-	device_t dev;
+	struct device *dev;
 	unsigned int val;
 	int stat;
 

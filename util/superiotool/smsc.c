@@ -20,8 +20,8 @@
 #define DEVICE_ID_REG_OLD	0x0d
 #define DEVICE_REV_REG_OLD	0x0e
 
-#define DEVICE_ID_REG   	0x20
-#define DEVICE_REV_REG  	0x21
+#define DEVICE_ID_REG		0x20
+#define DEVICE_REV_REG		0x21
 
 static const struct superio_registers reg_table[] = {
 	/* The following Super I/Os use the 0x20/0x21 ID registers. */

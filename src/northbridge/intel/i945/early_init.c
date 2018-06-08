@@ -192,6 +192,11 @@ static void i945_setup_bars(void)
 		gfxsize = 2;
 	pci_write_config16(PCI_DEV(0, 0x00, 0), GGC, ((gfxsize + 1) << 4));
 
+	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC);
+	reg8 &= ~0x7;
+	reg8 |= (2 << 1) | (1 << 0); /* 8M and TSEG_Enable */
+	pci_write_config8(PCI_DEV(0, 0, 0), ESMRAMC, reg8);
+
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM0, 0x30);
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM1, 0x33);

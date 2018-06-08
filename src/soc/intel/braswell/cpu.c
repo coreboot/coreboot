@@ -45,7 +45,7 @@ static const struct reg_script core_msr_script[] = {
 	REG_SCRIPT_END
 };
 
-static void soc_core_init(device_t cpu)
+static void soc_core_init(struct device *cpu)
 {
 	printk(BIOS_SPEW, "%s/%s ( %s )\n",
 			__FILE__, __func__, dev_name(cpu));
@@ -215,7 +215,7 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = southcluster_smm_enable_smi,
 };
 
-void soc_init_cpus(device_t dev)
+void soc_init_cpus(struct device *dev)
 {
 	struct bus *cpu_bus = dev->link_list;
 

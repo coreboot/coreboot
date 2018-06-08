@@ -22,6 +22,7 @@
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
 #include <intelblocks/lpc_lib.h>
+#include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
 #include <reg_script.h>
 #include <spi-generic.h>
@@ -39,7 +40,8 @@
 #define PCR_PSFX_T0_SHDW_PCIEN	0x1C
 #define PCR_PSFX_T0_SHDW_PCIEN_FUNDIS	(1 << 8)
 
-static void pch_configure_endpoints(device_t dev, int epmask_id, uint32_t mask)
+static void pch_configure_endpoints(struct device *dev, int epmask_id,
+	uint32_t mask)
 {
 	uint32_t reg32;
 
@@ -47,13 +49,10 @@ static void pch_configure_endpoints(device_t dev, int epmask_id, uint32_t mask)
 	pci_write_config32(dev, PCH_P2SB_EPMASK(epmask_id), reg32 | mask);
 }
 
-static void disable_sideband_access(void)
+static void disable_sideband_access(struct device *dev)
 {
-	device_t dev;
 	u8 reg8;
 	uint32_t mask;
-
-	dev = PCH_DEV_P2SB;
 
 	/*
 	 * Set p2sb PCI offset EPMASK5 C4h [29, 28, 27, 26] to disable Sideband
@@ -77,12 +76,12 @@ static void disable_sideband_access(void)
 	pci_write_config8(dev, PCH_P2SB_E0 + 2, reg8 | (1 << 1));
 
 	/* hide p2sb device */
-	pci_write_config8(dev, PCH_P2SB_E0 + 1, 1);
+	p2sb_hide();
 }
 
 static void pch_disable_heci(void)
 {
-	device_t dev = PCH_DEV_P2SB;
+	struct device *dev = PCH_DEV_P2SB;
 
 	/*
 	 * if p2sb device 1f.1 is not present or hidden in devicetree
@@ -92,18 +91,17 @@ static void pch_disable_heci(void)
 		return;
 
 	/* unhide p2sb device */
-	pci_write_config8(dev, PCH_P2SB_E0 + 1, 0);
+	p2sb_unhide();
 
 	/* disable heci */
 	pcr_or32(PID_PSF1, PSF_BASE_ADDRESS + PCR_PSFX_T0_SHDW_PCIEN,
 		PCR_PSFX_T0_SHDW_PCIEN_FUNDIS);
 
-	disable_sideband_access();
+	disable_sideband_access(dev);
 }
 
-static void pch_finalize_script(void)
+static void pch_finalize_script(struct device *dev)
 {
-	device_t dev;
 	uint32_t reg32;
 	uint8_t *pmcbase;
 	config_t *config;
@@ -112,7 +110,6 @@ static void pch_finalize_script(void)
 	/* Display me status before we hide it */
 	intel_me_status();
 
-	dev = PCH_DEV_PMC;
 	pmcbase = pmc_mmio_regs();
 	config = dev->chip_info;
 
@@ -150,17 +147,10 @@ static void pch_finalize_script(void)
 		pch_disable_heci();
 }
 
-static void soc_lockdown(void)
+static void soc_lockdown(struct device *dev)
 {
 	struct soc_intel_skylake_config *config;
-	struct device *dev;
 	u8 reg8;
-
-	dev = PCH_DEV_PMC;
-
-	/* Check if PMC is enabled, else return */
-	if (dev == NULL || dev->chip_info == NULL)
-		return;
 
 	config = dev->chip_info;
 
@@ -174,11 +164,19 @@ static void soc_lockdown(void)
 
 static void soc_finalize(void *unused)
 {
+	struct device *dev;
+
+	dev = PCH_DEV_PMC;
+
+	/* Check if PMC is enabled, else return */
+	if (dev == NULL || dev->chip_info == NULL)
+		return;
+
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
 
-	pch_finalize_script();
+	pch_finalize_script(dev);
 
-	soc_lockdown();
+	soc_lockdown(dev);
 
 	printk(BIOS_DEBUG, "Finalizing SMM.\n");
 	outb(APM_CNT_FINALIZE, APM_CNT);

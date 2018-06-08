@@ -35,8 +35,7 @@
 
 #include "chip.h"
 
-void rk_display_init(device_t dev, u32 lcdbase,
-		unsigned long fb_size)
+void rk_display_init(struct device *dev, u32 lcdbase, unsigned long fb_size)
 {
 	struct edid edid;
 	uint32_t val;

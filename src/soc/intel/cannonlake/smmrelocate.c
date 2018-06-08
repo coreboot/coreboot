@@ -170,7 +170,7 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 		write_smrr(relo_params);
 }
 
-static void fill_in_relocation_params(device_t dev,
+static void fill_in_relocation_params(struct device *dev,
 				      struct smm_relocation_params *params)
 {
 	void *handler_base;

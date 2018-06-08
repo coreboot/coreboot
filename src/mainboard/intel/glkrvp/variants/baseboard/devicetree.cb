@@ -80,11 +80,18 @@ chip soc/intel/apollolake
 	register "gpe0_dw2" = "PMC_GPE_N_95_64"
 	register "gpe0_dw3" = "PMC_GPE_NW_31_0"
 
-	# Enable I2C0 for audio codec at 400kHz
-	register "i2c[0]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 104,
-		.fall_time_ns = 52,
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| I2C0              | Audio                     |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 104,
+			.fall_time_ns = 52,
+		},
 	}"
 
 	# Minimum SLP S3 assertion width 28ms.

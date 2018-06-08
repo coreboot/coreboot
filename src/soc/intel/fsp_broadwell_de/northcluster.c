@@ -56,7 +56,7 @@ static int add_fixed_resources(struct device *dev, int index)
 	return index;
 }
 
-static void mc_add_dram_resources(device_t dev)
+static void mc_add_dram_resources(struct device *dev)
 {
 	u32 fsp_mem_base, fsp_mem_len;
 	u32 tseg_base, tseg_length;
@@ -120,7 +120,7 @@ static void mc_add_dram_resources(device_t dev)
 	index = add_fixed_resources(dev, index);
 }
 
-static void nc_read_resources(device_t dev)
+static void nc_read_resources(struct device *dev)
 {
 	/* Call the normal read_resources */
 	pci_dev_read_resources(dev);
@@ -129,7 +129,7 @@ static void nc_read_resources(device_t dev)
 	mc_add_dram_resources(dev);
 }
 
-static void nc_enable(device_t dev)
+static void nc_enable(struct device *dev)
 {
 	print_fsp_info();
 }

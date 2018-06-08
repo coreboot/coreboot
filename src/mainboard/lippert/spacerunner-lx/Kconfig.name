@@ -1,2 +1,0 @@
-config BOARD_LIPPERT_SPACERUNNER_LX
-	bool "Cool SpaceRunner-LX"

@@ -1,4 +1,0 @@
-Board URL: http://www.jetway.com.tw/jw/ipcboard_view.asp?productid=279&proname=J7F4K1G5D
-Category: mini
-Clone of: jetway/j7f2
-Release year: 2008

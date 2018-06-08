@@ -42,7 +42,7 @@ static const struct reg_script core_msr_script[] = {
 	REG_SCRIPT_END
 };
 
-static void baytrail_core_init(device_t cpu)
+static void baytrail_core_init(struct device *cpu)
 {
 	printk(BIOS_DEBUG, "Init BayTrail core.\n");
 
@@ -164,7 +164,7 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = enable_smis,
 };
 
-void baytrail_init_cpus(device_t dev)
+void baytrail_init_cpus(struct device *dev)
 {
 	struct bus *cpu_bus = dev->link_list;
 

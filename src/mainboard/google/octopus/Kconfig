@@ -12,11 +12,12 @@ config BOARD_GOOGLE_BASEBOARD_OCTOPUS
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_BOARDID
 	select EC_GOOGLE_CHROMEEC_LPC
-	select HAS_TPM if !VBOOT_MOCK_SECDATA
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select MAINBOARD_HAS_CHROMEOS
 	select SOC_ESPI
+	select MAINBOARD_HAS_SPI_TPM_CR50
+	select MAINBOARD_HAS_TPM2
 
 if BOARD_GOOGLE_BASEBOARD_OCTOPUS
 
@@ -68,14 +69,6 @@ config GBB_HWID
 	default "PHASER TEST 7167" if BOARD_GOOGLE_PHASER
 	default "OCTOPUS TEST 6859" if BOARD_GOOGLE_OCTOPUS
 
-config HAS_TPM
-	bool
-	default n
-	select MAINBOARD_HAS_SPI_TPM_CR50
-	select MAINBOARD_HAS_TPM2
-	select SPI_TPM
-	select TPM2
-
 config MAX_CPUS
 	int
 	default 4
@@ -85,9 +78,9 @@ config UART_FOR_CONSOLE
 	default 2
 
 config INCLUDE_NHLT_BLOBS
-	bool "Include blobs for audio."
+	bool "Include blobs for audio"
+	select NHLT_DMIC_2CH_16B
 	select NHLT_DMIC_4CH_16B
-	select NHLT_DA7219
 	select NHLT_MAX98357
 
 config DRIVER_TPM_SPI_BUS

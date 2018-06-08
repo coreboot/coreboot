@@ -18,8 +18,7 @@
 #include <string.h>
 #include <trace.h>
 
-struct vsnprintf_context
-{
+struct vsnprintf_context {
 	char *str_buf;
 	size_t buf_limit;
 };

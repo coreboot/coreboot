@@ -103,15 +103,6 @@ config VIRTUAL_ROM_SIZE
 	  the SPI ROMs are loaded with an 8 MB coreboot image, the virtual ROM
 	  size is 16 MB.
 
-config CACHE_ROM_SIZE_OVERRIDE
-	hex "Cache ROM Size"
-	default CBFS_SIZE
-	help
-	  This is the size of the cachable area that is passed into the FSP in
-	  the early initialization.  Typically this should be the size of the CBFS
-	  area, but the size must be a power of 2 whereas the CBFS size does not
-	  have this limitation.
-
 config USE_GENERIC_FSP_CAR_INC
 	bool
 	default n

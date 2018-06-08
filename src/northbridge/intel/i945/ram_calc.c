@@ -25,6 +25,24 @@
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>
 
+/* Decodes TSEG region size to bytes. */
+u32 decode_tseg_size(const u8 esmramc)
+{
+	if (!(esmramc & 1))
+		return 0;
+	switch ((esmramc >> 1) & 3) {
+	case 0:
+		return 1 << 20;
+	case 1:
+		return 2 << 20;
+	case 2:
+		return 8 << 20;
+	case 3:
+	default:
+		die("Bad TSEG setting.\n");
+	}
+}
+
 static uintptr_t smm_region_start(void)
 {
 	uintptr_t tom;
@@ -35,24 +53,8 @@ static uintptr_t smm_region_start(void)
 	else
 		tom = (pci_read_config8(PCI_DEV(0, 0, 0), TOLUD) & 0xf7) << 24;
 
-	/* if TSEG enabled subtract size */
-	switch (pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC) & 0x07) {
-	case 0x01:
-		/* 1MB TSEG */
-		tom -= 0x100000;
-		break;
-	case 0x03:
-		/* 2MB TSEG */
-		tom -= 0x200000;
-		break;
-	case 0x05:
-		/* 8MB TSEG */
-		tom -= 0x800000;
-		break;
-	default:
-		/* TSEG either disabled or invalid */
-		break;
-	}
+	/* subsctract TSEG size */
+	tom -= decode_tseg_size(pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC));
 	return tom;
 }
 
@@ -80,9 +82,10 @@ u32 decode_igd_memory_size(const u32 gms)
 
 #define ROMSTAGE_RAM_STACK_SIZE 0x5000
 
-/* setup_stack_and_mtrrs() determines the stack to use after
- * cache-as-ram is torn down as well as the MTRR settings to use. */
-void *setup_stack_and_mtrrs(void)
+/* platform_enter_postcar() determines the stack to use after
+ * cache-as-ram is torn down as well as the MTRR settings to use,
+ * and continues execution in postcar stage. */
+void platform_enter_postcar(void)
 {
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
@@ -91,8 +94,7 @@ void *setup_stack_and_mtrrs(void)
 		die("Unable to initialize postcar frame.\n");
 
 	/* Cache the ROM as WP just below 4GiB. */
-	postcar_frame_add_mtrr(&pcf, -CACHE_ROM_SIZE, CACHE_ROM_SIZE,
-		MTRR_TYPE_WRPROT);
+	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);
 
 	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
 	postcar_frame_add_mtrr(&pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
@@ -106,8 +108,7 @@ void *setup_stack_and_mtrrs(void)
 	postcar_frame_add_mtrr(&pcf, top_of_ram - 4*MiB, 4*MiB, MTRR_TYPE_WRBACK);
 	postcar_frame_add_mtrr(&pcf, top_of_ram - 8*MiB, 4*MiB, MTRR_TYPE_WRBACK);
 
-	/* Save the number of MTRRs to setup. Return the stack location
-	 * pointing to the number of MTRRs.
-	 */
-	return postcar_commit_mtrrs(&pcf);
+	run_postcar_phase(&pcf);
+
+	/* We do not return here. */
 }

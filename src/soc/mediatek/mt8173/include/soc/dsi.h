@@ -91,8 +91,8 @@ check_member(dsi_regs, dsi_phy_lccon, 0x104);
 check_member(dsi_regs, dsi_phy_timecon3, 0x11c);
 check_member(dsi_regs, dsi_vm_cmd_con, 0x130);
 check_member(dsi_regs, dsi_cmdq0, 0x200);
-static struct dsi_regs * const dsi0 = (void *)DSI0_BASE;
-static struct dsi_regs * const dsi1 = (void *)DSI1_BASE;
+static struct dsi_regs *const dsi0 = (void *)DSI0_BASE;
+static struct dsi_regs *const dsi1 = (void *)DSI1_BASE;
 
 /* DSI_INTSTA */
 enum {
@@ -227,8 +227,8 @@ struct mipi_tx_regs {
 check_member(mipi_tx_regs, dsi_top_con, 0x40);
 check_member(mipi_tx_regs, dsi_pll_pwr, 0x68);
 
-static struct mipi_tx_regs * const mipi_tx0 = (void *)MIPI_TX0_BASE;
-static struct mipi_tx_regs * const mipi_tx1 = (void *)MIPI_TX0_BASE;
+static struct mipi_tx_regs *const mipi_tx0 = (void *)MIPI_TX0_BASE;
+static struct mipi_tx_regs *const mipi_tx1 = (void *)MIPI_TX0_BASE;
 
 /* MIPITX_DSI0_CON */
 enum {
@@ -322,8 +322,8 @@ struct lvds_tx1_regs {
 	u32 vopll_ctl3;
 };
 
-static struct lvds_tx1_regs * const lvds_tx1 = (void *)(MIPI_TX0_BASE + 0x800);
-static struct lvds_tx1_regs * const lvds_tx2 = (void *)(MIPI_TX1_BASE + 0x800);
+static struct lvds_tx1_regs *const lvds_tx1 = (void *)(MIPI_TX0_BASE + 0x800);
+static struct lvds_tx1_regs *const lvds_tx2 = (void *)(MIPI_TX1_BASE + 0x800);
 
 /* LVDS_VOPLL_CTRL3 */
 enum {

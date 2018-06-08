@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <security/tpm/antirollback.h>
 #include <arch/exception.h>
 #include <assert.h>
 #include <bootmode.h>
@@ -26,6 +25,8 @@
 #include <vb2_api.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vbnv.h>
+
+#include "antirollback.h"
 
 /* The max hash size to expect is for SHA512. */
 #define VBOOT_MAX_HASH_SIZE VB2_SHA512_DIGEST_SIZE
@@ -51,16 +52,6 @@ void vb2ex_printf(const char *func, const char *fmt, ...)
 	va_end(args);
 
 	return;
-}
-
-int vb2ex_tpm_clear_owner(struct vb2_context *ctx)
-{
-	uint32_t rv;
-	printk(BIOS_INFO, "Clearing TPM owner\n");
-	rv = tpm_clear_and_reenable();
-	if (rv)
-		return VB2_ERROR_EX_TPM_CLEAR_OWNER;
-	return VB2_SUCCESS;
 }
 
 int vb2ex_read_resource(struct vb2_context *ctx,
@@ -290,8 +281,8 @@ static void save_if_needed(struct vb2_context *ctx)
 
 static uint32_t extend_pcrs(struct vb2_context *ctx)
 {
-	return tpm_extend_pcr(ctx, 0, BOOT_MODE_PCR) ||
-	       tpm_extend_pcr(ctx, 1, HWID_DIGEST_PCR);
+	return vboot_extend_pcr(ctx, 0, BOOT_MODE_PCR) ||
+	       vboot_extend_pcr(ctx, 1, HWID_DIGEST_PCR);
 }
 
 /**

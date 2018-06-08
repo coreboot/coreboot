@@ -33,7 +33,7 @@
 static u16 acpi_base = DEFAULT_ACPI_BASE;
 static u32 pwrm_base = DEFAULT_PWRM_BASE;
 
-static void pch_power_options(device_t dev) { /* TODO */ }
+static void pch_power_options(struct device *dev) { /* TODO */ }
 
 static void pch_set_acpi_mode(void)
 {
@@ -44,7 +44,7 @@ static void pch_set_acpi_mode(void)
 	}
 }
 
-static void pmc_init(device_t dev)
+static void pmc_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "pch: pmc_init\n");
 
@@ -64,7 +64,7 @@ static void pmc_init(device_t dev)
 	pch_set_acpi_mode();
 }
 
-static void pci_pmc_read_resources(device_t dev)
+static void pci_pmc_read_resources(struct device *dev)
 {
 	struct resource *res;
 

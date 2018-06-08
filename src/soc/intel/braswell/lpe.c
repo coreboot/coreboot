@@ -44,7 +44,8 @@
 #define FIRMWARE_REG_BASE_C0 0x144000
 #define FIRMWARE_REG_LENGTH_C0 (FIRMWARE_REG_BASE_C0 + 4)
 
-static void assign_device_nvs(device_t dev, u32 *field, unsigned int index)
+static void assign_device_nvs(struct device *dev, u32 *field,
+			      unsigned int index)
 {
 	struct resource *res;
 
@@ -53,7 +54,7 @@ static void assign_device_nvs(device_t dev, u32 *field, unsigned int index)
 		*field = res->base;
 }
 
-static void lpe_enable_acpi_mode(device_t dev)
+static void lpe_enable_acpi_mode(struct device *dev)
 {
 	static const struct reg_script ops[] = {
 		/* Disable PCI interrupt, enable Memory and Bus Master */
@@ -87,7 +88,7 @@ static void lpe_enable_acpi_mode(device_t dev)
 	reg_script_run_on_dev(dev, ops);
 }
 
-static void setup_codec_clock(device_t dev)
+static void setup_codec_clock(struct device *dev)
 {
 	uint32_t reg;
 	u32 *clk_reg;
@@ -123,7 +124,7 @@ static void setup_codec_clock(device_t dev)
 	write32(clk_reg, (read32(clk_reg) & ~0x7) | reg);
 }
 
-static void lpe_stash_firmware_info(device_t dev)
+static void lpe_stash_firmware_info(struct device *dev)
 {
 	struct resource *res;
 	struct resource *mmio;
@@ -148,7 +149,7 @@ static void lpe_stash_firmware_info(device_t dev)
 }
 
 
-static void lpe_init(device_t dev)
+static void lpe_init(struct device *dev)
 {
 	struct soc_intel_braswell_config *config = dev->chip_info;
 
@@ -162,7 +163,7 @@ static void lpe_init(device_t dev)
 		lpe_enable_acpi_mode(dev);
 }
 
-static void lpe_read_resources(device_t dev)
+static void lpe_read_resources(struct device *dev)
 {
 	struct resource *res;
 	pci_dev_read_resources(dev);
@@ -184,7 +185,7 @@ static void lpe_read_resources(device_t dev)
 			      FIRMWARE_PHYS_LENGTH >> 10);
 }
 
-static void lpe_set_resources(device_t dev)
+static void lpe_set_resources(struct device *dev)
 {
 	struct resource *res;
 

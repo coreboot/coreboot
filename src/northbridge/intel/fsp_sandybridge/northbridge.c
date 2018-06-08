@@ -21,7 +21,6 @@
 #include <stdint.h>
 #include <delay.h>
 #include <cpu/intel/fsp_model_206ax/model_206ax.h>
-#include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

@@ -23,8 +23,7 @@
 #define REF_CLK_24M	(0x0 << 0)
 #define REF_CLK_27M	(0x1 << 0)
 
-void rk_display_init(device_t dev, u32 lcdbase,
-		unsigned long fb_size);
+void rk_display_init(struct device *dev, u32 lcdbase, unsigned long fb_size);
 
 void mainboard_power_on_backlight(void);
 

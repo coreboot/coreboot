@@ -19,6 +19,7 @@
 #include <console/console.h>
 #include <gpio.h>
 #include <soc/gpio.h>
+#include <soc/southbridge.h>
 #include <assert.h>
 #include <compiler.h>
 
@@ -95,6 +96,11 @@ static void program_smi(uint32_t flag, int gevent_num)
 	if (trigger == GPIO_TRIGGER_LEVEL_LOW)
 		configure_gevent_smi(gevent_num, SMI_MODE_SMI,
 					SMI_SCI_LVL_LOW);
+}
+
+static void route_sci(uint8_t event)
+{
+	smi_write8(SMI_SCI_MAP(event), event);
 }
 
 static void get_sci_config_bits(uint32_t flag, uint32_t *edge, uint32_t *level)
@@ -232,6 +238,9 @@ void sb_program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 
 		mux_ptr = (uint8_t *)(uintptr_t)(gpio + AMD_GPIO_MUX);
 		write8(mux_ptr, mux & AMD_GPIO_MUX_MASK);
+		/* special case if pin 2 is assigned to wake */
+		if ((gpio == 2) && !(mux & AMD_GPIO_MUX_MASK))
+			route_sci(GPIO_2_EVENT);
 		gpio_ptr = (uint32_t *)gpio_get_address(gpio);
 
 		if (control_flags & GPIO_SPECIAL_FLAG) {
@@ -267,6 +276,7 @@ void sb_program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 				edge_level |= bit_edge << gevent_num;
 				direction |= bit_level << gevent_num;
 				mask |= (1 << gevent_num);
+				route_sci(gevent_num);
 				break;
 			default:
 				printk(BIOS_WARNING, "Error, flags 0x%08x\n",

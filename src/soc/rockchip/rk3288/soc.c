@@ -30,7 +30,7 @@
 
 #include "chip.h"
 
-static void soc_init(device_t dev)
+static void soc_init(struct device *dev)
 {
 	ram_resource(dev, 0, (uintptr_t)_dram/KiB, sdram_size_mb()*(MiB/KiB));
 	if (display_init_required())
@@ -47,7 +47,7 @@ static struct device_operations soc_ops = {
 	.scan_bus         = 0,
 };
 
-static void enable_rk3288_dev(device_t dev)
+static void enable_rk3288_dev(struct device *dev)
 {
 	dev->ops = &soc_ops;
 }

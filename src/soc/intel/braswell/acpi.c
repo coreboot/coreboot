@@ -420,7 +420,7 @@ static void generate_p_state_entries(int core, int cores_per_package)
 	acpigen_pop_len();
 }
 
-void generate_cpu_entries(device_t device)
+void generate_cpu_entries(struct device *device)
 {
 	int core;
 	int pcontrol_blk = get_pmbase(), plen = 6;
@@ -482,7 +482,7 @@ static int update_igd_opregion(igd_opregion_t *opregion)
 	return 0;
 }
 
-unsigned long southcluster_write_acpi_tables(device_t device,
+unsigned long southcluster_write_acpi_tables(struct device *device,
 					     unsigned long current,
 					     struct acpi_rsdp *rsdp)
 {
@@ -524,7 +524,7 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 	return current;
 }
 
-void southcluster_inject_dsdt(device_t device)
+void southcluster_inject_dsdt(struct device *device)
 {
 	global_nvs_t *gnvs;
 

@@ -1,2 +1,0 @@
-config BOARD_BACHMANN_OT200
-	bool "OT200"

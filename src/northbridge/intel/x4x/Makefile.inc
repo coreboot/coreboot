@@ -29,4 +29,6 @@ ramstage-y += ram_calc.c
 ramstage-y += gma.c
 ramstage-y += northbridge.c
 
+postcar-y += ram_calc.c
+
 endif

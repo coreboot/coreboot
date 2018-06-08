@@ -234,6 +234,8 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
+	const struct device *dev = SA_DEV_ROOT;
+	const config_t *config = dev ? dev->chip_info : NULL;
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
 
 	/* Use ACPI 3.0 revision */
@@ -281,6 +283,9 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 			ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON |
 			ACPI_FADT_RESET_REGISTER | ACPI_FADT_SEALED_CASE |
 			ACPI_FADT_S4_RTC_WAKE | ACPI_FADT_PLATFORM_CLOCK;
+
+	if (config && config->s0ix_enable)
+		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;
 
 	fadt->reset_reg.space_id = 1;
 	fadt->reset_reg.bit_width = 8;
@@ -495,13 +500,13 @@ static void generate_p_state_entries(int core, int cores_per_package)
 	acpigen_pop_len();
 }
 
-void generate_cpu_entries(device_t device)
+void generate_cpu_entries(struct device *device)
 {
 	int core_id, cpu_id, pcontrol_blk = ACPI_BASE_ADDRESS, plen = 6;
 	int totalcores = dev_count_cpu();
 	int cores_per_package = get_cores_per_package();
 	int numcpus = totalcores/cores_per_package;
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	config_t *config = dev->chip_info;
 	int is_s0ix_enable = config->s0ix_enable;
 	int max_c_state;
@@ -629,7 +634,7 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 	return current;
 }
 
-unsigned long southbridge_write_acpi_tables(device_t device,
+unsigned long southbridge_write_acpi_tables(struct device *device,
 					     unsigned long current,
 					     struct acpi_rsdp *rsdp)
 {
@@ -640,7 +645,7 @@ unsigned long southbridge_write_acpi_tables(device_t device,
 	return acpi_align_current(current);
 }
 
-void southbridge_inject_dsdt(device_t device)
+void southbridge_inject_dsdt(struct device *device)
 {
 	global_nvs_t *gnvs;
 

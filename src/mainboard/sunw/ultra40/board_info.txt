@@ -1,2 +1,0 @@
-Category: desktop
-Board URL: http://docs.oracle.com/cd/E19127-01/ultra40.ws/820-0123-13/intro.html

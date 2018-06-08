@@ -1,2 +1,0 @@
-config BOARD_ASUS_K8V_X
-	bool "K8V-X"

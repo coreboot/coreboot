@@ -1,3 +1,0 @@
-Board name: dbM690T (Herring)
-Category: eval
-Board URL: http://support.amd.com/us/ChipsetMotherboard_TechDocs/42655A_S1DBM680T_PB.pdf

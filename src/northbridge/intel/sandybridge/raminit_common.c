@@ -26,7 +26,6 @@
 #include <device/pci_def.h>
 #include <delay.h>
 #include <arch/cpu.h>
-#include <cpu/x86/msr.h>
 #include "raminit_native.h"
 #include "raminit_common.h"
 #include "sandybridge.h"

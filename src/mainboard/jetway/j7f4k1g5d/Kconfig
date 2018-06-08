@@ -1,8 +1,0 @@
-if BOARD_JETWAY_J7F4K1G5D
-
-# Dummy for abuild
-
-config MAINBOARD_PART_NUMBER
-	string
-	default "J7f4K1G5D"
-endif

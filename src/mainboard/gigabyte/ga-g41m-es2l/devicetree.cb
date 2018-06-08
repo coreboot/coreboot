@@ -28,7 +28,7 @@ chip northbridge/intel/x4x		# Northbridge
     device pci 0.0 on			# Host Bridge
       subsystemid 0x1458 0x5000
     end
-    device pci 2.0 on 			# Integrated graphics controller
+    device pci 2.0 on			# Integrated graphics controller
       subsystemid 0x1458 0xd000
     end
     device pci 2.1 on			# Integrated graphics controller 2

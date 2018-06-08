@@ -29,11 +29,11 @@
  * caching settings are based on an 8MiB Flash Size given as a
  * parameter to TempRamInit.
  *
- * 	TempRamExit MTRR Settings:
- * 	0x00000000  - 0x0009FFFF           | Write Back
- * 	0x000C0000  - Top of Low Memory    | Write Back
- * 	0xFF800000  - 0xFFFFFFFF Flash Reg | Write Protect
- * 	0x100000000 - Top of High Memory   | Write Back
+ *	TempRamExit MTRR Settings:
+ *	0x00000000  - 0x0009FFFF           | Write Back
+ *	0x000C0000  - Top of Low Memory    | Write Back
+ *	0xFF800000  - 0xFFFFFFFF Flash Reg | Write Protect
+ *	0x100000000 - Top of High Memory   | Write Back
  */
 
 .text

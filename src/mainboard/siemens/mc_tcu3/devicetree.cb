@@ -59,7 +59,7 @@ chip soc/intel/fsp_baytrail
 		device pci 18.7 on end	# 8086 0F47 -   I2C Port 7
 		device pci 1a.0 on end	# 8086 0F18 - Trusted Execution Engine
 		device pci 1b.0 on end	# 8086 0F04 - HD Audio
-		device pci 1c.0 on 	# 8086 0F48 - PCIe Root Port 1 (x4 slot)
+		device pci 1c.0 on	# 8086 0F48 - PCIe Root Port 1 (x4 slot)
 			device pci 0.0 on end	# 8086 1538 - Intel i210 MACPHY
 		end
 		device pci 1c.1 on end	# 8086 0F4A - PCIe Root Port 2 (half mini pcie slot)

@@ -266,7 +266,7 @@
 
 #define GPIO_GPE_NW_31_0	0
 #define GPIO_GPE_NW_63_32	1
-#define GPIO_GPE_NW_95_63	2
+#define GPIO_GPE_NW_95_64	2
 #define GPIO_GPE_N_31_0		4
 #define GPIO_GPE_N_63_32	5
 #define GPIO_GPE_N_95_64	6

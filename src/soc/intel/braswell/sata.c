@@ -34,7 +34,7 @@ static void sata_init(struct device *dev)
 			__FILE__, __func__, dev_name(dev));
 }
 
-static void sata_enable(device_t dev)
+static void sata_enable(struct device *dev)
 {
 	southcluster_enable_dev(dev);
 }

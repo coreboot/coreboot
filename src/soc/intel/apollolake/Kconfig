@@ -40,7 +40,7 @@ config CPU_SPECIFIC_OPTIONS
 	# Misc options
 	select C_ENVIRONMENT_BOOTBLOCK
 	select CACHE_MRC_SETTINGS
-	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM if RELOCATABLE_RAMSTAGE
+	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 	select COLLECT_TIMESTAMPS
 	select COMMON_FADT
 	select FSP_PLATFORM_MEMORY_SETTINGS_VERSIONS
@@ -62,7 +62,6 @@ config CPU_SPECIFIC_OPTIONS
 	select POSTCAR_STAGE
 	select PMC_INVALID_READ_AFTER_WRITE
 	select REG_SCRIPT
-	select RELOCATABLE_RAMSTAGE	# Build fails if this is not selected
 	select RTC
 	select SMM_TSEG
 	select SA_ENABLE_IMR
@@ -70,6 +69,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	select SOC_INTEL_COMMON_BLOCK
 	select SOC_INTEL_COMMON_BLOCK_ACPI
+	select SOC_INTEL_COMMON_BLOCK_CHIP_CONFIG
 	select SOC_INTEL_COMMON_BLOCK_CPU
 	select SOC_INTEL_COMMON_BLOCK_DSP
 	select SOC_INTEL_COMMON_BLOCK_FAST_SPI
@@ -124,7 +124,7 @@ config VBOOT
 config TPM_ON_FAST_SPI
 	bool
 	default n
-	select LPC_TPM
+	depends on MAINBOARD_HAS_LPC_TPM
 	help
 	 TPM part is conntected on Fast SPI interface, but the LPC MMIO
 	 TPM transactions are decoded and serialized over the SPI interface.
@@ -391,6 +391,10 @@ config SOC_ESPI
 config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 	int
 	default 3
+
+config SOC_INTEL_I2C_DEV_MAX
+	int
+	default 8
 
 # Don't include the early page tables in RW_A or RW_B cbfs regions
 config RO_REGION_ONLY

@@ -84,7 +84,13 @@ static struct device_operations i2c_tpm_ops = {
 
 static void i2c_tpm_enable(struct device *dev)
 {
+	struct drivers_i2c_tpm_config *config = dev->chip_info;
+
 	dev->ops = &i2c_tpm_ops;
+
+	if (config && config->desc) {
+		dev->name = config->desc;
+	}
 }
 
 struct chip_operations drivers_i2c_tpm_ops = {

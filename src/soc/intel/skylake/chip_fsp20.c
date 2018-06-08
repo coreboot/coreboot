@@ -19,15 +19,18 @@
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <arch/acpi.h>
+#include <arch/io.h>
 #include <chip.h>
 #include <compiler.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <intelblocks/xdci.h>
+#include <intelpch/lockdown.h>
 #include <romstage_handoff.h>
 #include <soc/acpi.h>
 #include <soc/intel/common/vbt.h>
@@ -39,10 +42,135 @@
 #include <soc/systemagent.h>
 #include <string.h>
 
+struct pcie_entry {
+	unsigned int devfn;
+	unsigned int func_count;
+};
+
+/*
+ * According to table 2-2 in doc#546717:
+ * PCI bus[function]	ID
+ * D28:[F0 - F7]		0xA110 - 0xA117
+ * D29:[F0 - F7]		0xA118 - 0xA11F
+ * D27:[F0 - F3]		0xA167 - 0xA16A
+ */
+static const struct pcie_entry pcie_table_skl_pch_h[] = {
+	{PCH_DEVFN_PCIE1, 8},
+	{PCH_DEVFN_PCIE9, 8},
+	{PCH_DEVFN_PCIE17, 4},
+};
+
+/*
+ * According to table 2-2 in doc#564464:
+ * PCI bus[function]	ID
+ * D28:[F0 - F7]		0xA290 - 0xA297
+ * D29:[F0 - F7]		0xA298 - 0xA29F
+ * D27:[F0 - F7]		0xA2E7 - 0xA2EE
+ */
+static const struct pcie_entry pcie_table_kbl_pch_h[] = {
+	{PCH_DEVFN_PCIE1, 8},
+	{PCH_DEVFN_PCIE9, 8},
+	{PCH_DEVFN_PCIE17, 8},
+};
+
+/*
+ * According to table 2-2 in doc#567995/545659:
+ * PCI bus[function]	ID
+ * D28:[F0 - F7]		0x9D10 - 0x9D17
+ * D29:[F0 - F3]		0x9D18 - 0x9D1B
+ */
+static const struct pcie_entry pcie_table_skl_pch_lp[] = {
+	{PCH_DEVFN_PCIE1, 8},
+	{PCH_DEVFN_PCIE9, 4},
+};
+
+/*
+ * If the PCIe root port at function 0 is disabled,
+ * the PCIe root ports might be coalesced after FSP silicon init.
+ * The below function will swap the devfn of the first enabled device
+ * in devicetree and function 0 resides a pci device
+ * so that it won't confuse coreboot.
+ */
+static void pcie_update_device_tree(const struct pcie_entry *pcie_rp_group,
+		size_t pci_groups)
+{
+	struct device *func0;
+	unsigned int devfn, devfn0;
+	int i, group;
+	unsigned int inc = PCI_DEVFN(0, 1);
+
+	for (group = 0; group < pci_groups; group++) {
+		devfn0 = pcie_rp_group[group].devfn;
+		func0 = dev_find_slot(0, devfn0);
+		if (func0 == NULL)
+			continue;
+
+		/* No more functions if function 0 is disabled. */
+		if (pci_read_config32(func0, PCI_VENDOR_ID) == 0xffffffff)
+			continue;
+
+		devfn = devfn0 + inc;
+
+		/*
+		 * Increase function by 1.
+		 * Then find first enabled device to replace func0
+		 * as that port was move to func0.
+		 */
+		for (i = 1; i < pcie_rp_group[group].func_count;
+				i++, devfn += inc) {
+			struct device *dev = dev_find_slot(0, devfn);
+			if (dev == NULL || !dev->enabled)
+				continue;
+
+			/*
+			 * Found the first enabled device in
+			 * a given dev number.
+			 */
+			printk(BIOS_INFO, "PCI func %d was swapped"
+				" to func 0.\n", i);
+			func0->path.pci.devfn = dev->path.pci.devfn;
+			dev->path.pci.devfn = devfn0;
+			break;
+		}
+	}
+}
+
+static void pcie_override_devicetree_after_silicon_init(void)
+{
+	uint16_t id, id_mask;
+
+	id = pci_read_config16(PCH_DEV_PCIE1, PCI_DEVICE_ID);
+	/*
+	 * We may read an ID other than func 0 after FSP-S.
+	 * Strip out 4 least significant bits.
+	 */
+	id_mask = id & ~0xf;
+	printk(BIOS_INFO, "Override DT after FSP-S, PCH is ");
+	if (id_mask == (PCI_DEVICE_ID_INTEL_SPT_LP_PCIE_RP1 & ~0xf)) {
+		printk(BIOS_INFO, "KBL/SKL PCH-LP SKU\n");
+		pcie_update_device_tree(&pcie_table_skl_pch_lp[0],
+			ARRAY_SIZE(pcie_table_skl_pch_lp));
+	} else if (id_mask == (PCI_DEVICE_ID_INTEL_KBP_H_PCIE_RP1 & ~0xf)) {
+		printk(BIOS_INFO, "KBL PCH-H SKU\n");
+		pcie_update_device_tree(&pcie_table_kbl_pch_h[0],
+			ARRAY_SIZE(pcie_table_kbl_pch_h));
+	} else if (id_mask == (PCI_DEVICE_ID_INTEL_SPT_H_PCIE_RP1 & ~0xf)) {
+		printk(BIOS_INFO, "SKL PCH-H SKU\n");
+		pcie_update_device_tree(&pcie_table_skl_pch_h[0],
+			ARRAY_SIZE(pcie_table_skl_pch_h));
+	} else {
+		printk(BIOS_ERR, "[BUG] PCIE Root Port id 0x%x"
+			" is not found\n", id);
+		return;
+	}
+}
+
 void soc_init_pre_device(void *chip_info)
 {
 	/* Perform silicon specific init. */
 	fsp_silicon_init(romstage_handoff_is_resume());
+	/* swap enabled PCI ports in device tree if needed */
+	pcie_override_devicetree_after_silicon_init();
 }
 
 void soc_fsp_load(void)
@@ -50,7 +178,7 @@ void soc_fsp_load(void)
 	fsps_load(romstage_handoff_is_resume());
 }
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
@@ -75,7 +203,7 @@ static struct device_operations cpu_bus_ops = {
 #endif
 };
 
-static void soc_enable(device_t dev)
+static void soc_enable(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -225,7 +353,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 * do the changes and then lock it back in coreboot during finalize.
 	 */
 	tconfig->PchSbAccessUnlock = (config->HeciEnabled == 0) ? 1 : 0;
-	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
+	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {
 		tconfig->PchLockDownBiosInterface = 0;
 		params->PchLockDownBiosLock = 0;
 		params->PchLockDownSpiEiss = 0;
@@ -260,9 +388,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchSirqEnable = config->SerialIrqConfigSirqEnable;
 	params->PchSirqMode = config->SerialIrqConfigSirqMode;
 
-	params->CpuConfig.Bits.SkipMpInit = config->FspSkipMpInit;
+	params->CpuConfig.Bits.SkipMpInit = !config->use_fsp_mp_init;
 
-	for (i = 0; i < ARRAY_SIZE(config->i2c); i++)
+	for (i = 0; i < ARRAY_SIZE(config->i2c_voltage); i++)
 		params->SerialIoI2cVoltage[i] = config->i2c_voltage[i];
 
 	for (i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++)

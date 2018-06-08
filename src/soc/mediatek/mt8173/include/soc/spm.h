@@ -154,6 +154,6 @@ struct mt8173_spm_regs {
 
 check_member(mt8173_spm_regs, sleep_ca15_wfi_en[3], 0xf1c);
 
-static struct mt8173_spm_regs * const mt8173_spm = (void *)SPM_BASE;
+static struct mt8173_spm_regs *const mt8173_spm = (void *)SPM_BASE;
 
 #endif  /* __SOC_MEDIATEK_MT8173_SPM_H__ */

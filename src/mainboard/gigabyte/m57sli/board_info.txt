@@ -1,7 +1,0 @@
-Category: desktop
-Board URL: http://www.gigabyte.com/products/product-page.aspx?pid=2287#ov
-ROM socketed: n
-Flashrom support: y
-Vendor cooperation score: 3
-Vendor cooperation page: Gigabyte m57sli Vendor Cooperation Score
-Release year: 2006

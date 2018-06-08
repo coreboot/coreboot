@@ -21,6 +21,7 @@
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <lib.h>
+#include <memory_info.h>
 #include <mrc_cache.h>
 #include <string.h>
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
@@ -121,6 +122,29 @@ void raminit(struct pei_data *pei_data)
 
 	printk(BIOS_DEBUG, "create cbmem for dimm information\n");
 	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(struct memory_info));
-	memcpy(mem_info, &pei_data->meminfo, sizeof(struct memory_info));
-
+	memset(mem_info, 0, sizeof(*mem_info));
+	/* Translate pei_memory_info struct data into memory_info struct */
+	mem_info->dimm_cnt = pei_data->meminfo.dimm_cnt;
+	for (int i = 0; i < MIN(DIMM_INFO_TOTAL, PEI_DIMM_INFO_TOTAL); i++) {
+		struct dimm_info *dimm = &mem_info->dimm[i];
+		const struct pei_dimm_info *pei_dimm =
+			&pei_data->meminfo.dimm[i];
+		dimm->dimm_size = pei_dimm->dimm_size;
+		dimm->ddr_type = pei_dimm->ddr_type;
+		dimm->ddr_frequency = pei_dimm->ddr_frequency;
+		dimm->rank_per_dimm = pei_dimm->rank_per_dimm;
+		dimm->channel_num = pei_dimm->channel_num;
+		dimm->dimm_num = pei_dimm->dimm_num;
+		dimm->bank_locator = pei_dimm->bank_locator;
+		memcpy(&dimm->serial, &pei_dimm->serial,
+			MIN(sizeof(dimm->serial), sizeof(pei_dimm->serial)));
+		memcpy(&dimm->module_part_number,
+			&pei_dimm->module_part_number,
+			MIN(sizeof(dimm->module_part_number),
+			sizeof(pei_dimm->module_part_number)));
+		dimm->module_part_number[DIMM_INFO_PART_NUMBER_SIZE - 1] = '\0';
+		dimm->mod_id =  pei_dimm->mod_id;
+		dimm->mod_type = pei_dimm->mod_type;
+		dimm->bus_width = pei_dimm->bus_width;
+	}
 }

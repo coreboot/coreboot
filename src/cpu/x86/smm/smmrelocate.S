@@ -67,7 +67,7 @@
  *
  * Example (with SMM handler living at 0xa0000):
  *
- * LAPICID	SMBASE		SMM Entry 	SAVE STATE
+ * LAPICID	SMBASE		SMM Entry	SAVE STATE
  *    0		0xa0000		0xa8000		0xafd00
  *    1		0x9fc00		0xa7c00		0xaf900
  *    2		0x9f800		0xa7800		0xaf500

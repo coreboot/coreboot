@@ -29,4 +29,6 @@ romstage-y += rcven.c
 
 smm-y += udelay.c
 
+postcar-y += ram_calc.c
+
 endif

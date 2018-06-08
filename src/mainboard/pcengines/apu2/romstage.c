@@ -34,7 +34,7 @@
 #include <cpu/amd/microcode.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <Fch/Fch.h>
-#include <security/tpm/tis.h>
+#include <security/tpm/tspi.h>
 
 #include "gpio_ftns.h"
 #include <build.h>
@@ -169,7 +169,8 @@ void agesa_postcar(struct sysinfo *cb)
 	post_code(0x41);
 	AGESAWRAPPER(amdinitenv);
 
-	init_tpm(false);
+	if (IS_ENABLED(CONFIG_TPM1) || IS_ENABLED(CONFIG_TPM2))
+		tpm_setup(false);
 
 	outb(0xEA, 0xCD6);
 	outb(0x1, 0xcd7);

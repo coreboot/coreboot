@@ -1,4 +1,0 @@
-Board name: Thunder n3600R (S2912)
-Category: server
-Board URL: http://www.tyan.com/product_board_detail.aspx?pid=157
-Release year: 2007

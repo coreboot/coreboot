@@ -39,12 +39,13 @@
 typedef struct soc_intel_fsp_broadwell_de_config config_t;
 
 static inline void
-add_mmio_resource(device_t dev, int i, unsigned long addr, unsigned long size)
+add_mmio_resource(struct device *dev, int i, unsigned long addr,
+		  unsigned long size)
 {
 	mmio_resource(dev, i, addr >> 10, size >> 10);
 }
 
-static void sc_add_mmio_resources(device_t dev)
+static void sc_add_mmio_resources(struct device *dev)
 {
 	add_mmio_resource(dev, 0xfeb0,
 	                       ABORT_BASE_ADDRESS,
@@ -84,8 +85,8 @@ static void sc_add_mmio_resources(device_t dev)
  */
 static void write_pci_config_irqs(void)
 {
-	device_t irq_dev;
-	device_t targ_dev;
+	struct device *irq_dev;
+	struct device *targ_dev;
 	uint8_t int_line = 0;
 	uint8_t original_int_pin = 0;
 	uint8_t new_int_pin = 0;
@@ -168,7 +169,7 @@ static void write_pci_config_irqs(void)
 	printk(BIOS_DEBUG, "PCI_CFG IRQ: Finished writing PCI config space IRQ assignments\n");
 }
 
-static void sc_pirq_init(device_t dev)
+static void sc_pirq_init(struct device *dev)
 {
 	int i;
 	const uint8_t *pirq = global_broadwell_de_irq_route.pic;
@@ -183,7 +184,7 @@ static void sc_pirq_init(device_t dev)
 	}
 }
 
-static void sc_add_io_resources(device_t dev)
+static void sc_add_io_resources(struct device *dev)
 {
 	struct resource *res;
 	u8 io_index = 0;
@@ -210,7 +211,7 @@ static void sc_add_io_resources(device_t dev)
 	pci_write_config8(dev, GPIO_CTRL_OFFSET, GPIO_DECODE_ENABLE);
 }
 
-static void sc_read_resources(device_t dev)
+static void sc_read_resources(struct device *dev)
 {
 	pci_dev_read_resources(dev);
 	sc_add_mmio_resources(dev);
@@ -246,7 +247,7 @@ static void sc_init(struct device *dev)
 /*
  * Common code for the south cluster devices.
  */
-void southcluster_enable_dev(device_t dev)
+void southcluster_enable_dev(struct device *dev)
 {
 	uint32_t reg32;
 

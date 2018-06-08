@@ -152,6 +152,7 @@ int google_chromeec_command(struct chromeec_command *cec_command);
 struct google_chromeec_event_info {
 	uint64_t log_events;
 	uint64_t sci_events;
+	uint64_t smi_events;
 	uint64_t s3_wake_events;
 	uint64_t s3_device_events;
 	uint64_t s5_wake_events;

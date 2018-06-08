@@ -16,6 +16,7 @@
 
 // Thermal Zone
 
+#define HAVE_THERMALZONE
 Scope (\_TZ)
 {
 	ThermalZone (THRM)

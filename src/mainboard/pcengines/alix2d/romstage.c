@@ -27,6 +27,7 @@
 #include <cpu/amd/car.h>
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <northbridge/amd/lx/raminit.h>
+#include <northbridge/amd/lx/northbridge.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
@@ -85,11 +86,6 @@ int spd_read_byte(unsigned int device, unsigned int address)
 	return spdbytes[address];
 }
 
-#include "northbridge/amd/lx/pll_reset.c"
-#include "cpu/amd/geode_lx/cpureginit.c"
-#include "cpu/amd/geode_lx/syspreinit.c"
-#include "cpu/amd/geode_lx/msrinit.c"
-
 /** Early mainboard specific GPIO setup. */
 static void mb_gpio_init(void)
 {
@@ -122,7 +118,7 @@ void asmlinkage mainboard_romstage_entry(unsigned long bist)
 	};
 
 	SystemPreInit();
-	msr_init();
+	lx_msr_init();
 
 	cs5536_early_setup();
 
@@ -136,7 +132,7 @@ void asmlinkage mainboard_romstage_entry(unsigned long bist)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	pll_reset();
+	lx_pll_reset();
 
 	cpuRegInit(0, DIMM0, DIMM1, DRAM_TERMINATED);
 

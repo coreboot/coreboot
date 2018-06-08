@@ -208,7 +208,7 @@ static void sata_init(struct device *dev)
 	pch_iobp_update(0xea00408a, 0xfffffcff, 0x00000100);
 }
 
-static void sata_enable(device_t dev)
+static void sata_enable(struct device *dev)
 {
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
@@ -233,7 +233,8 @@ static void sata_enable(device_t dev)
 	pci_write_config16(dev, 0x90, map);
 }
 
-static void sata_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void sata_set_subsystem(struct device *dev, unsigned vendor,
+			       unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -249,7 +250,7 @@ static const char *sata_acpi_name(const struct device *dev)
 	return "SATA";
 }
 
-static void sata_fill_ssdt(device_t dev)
+static void sata_fill_ssdt(struct device *dev)
 {
 	config_t *config = dev->chip_info;
 	generate_sata_ssdt_ports("\\_SB_.PCI0.SATA", config->sata_port_map);

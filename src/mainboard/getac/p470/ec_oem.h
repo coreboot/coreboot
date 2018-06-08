@@ -32,8 +32,8 @@
 #define   RD_EC		0x80 // Read Embedded Controller
 #define   WR_EC		0x81 // Write Embedded Controller
 #define   BE_EC		0x82 // Burst Enable Embedded Controller
-#define   BD_EC 	0x83 // Burst Disable Embedded Controller
-#define   QR_EC 	0x84 // Query Embedded Controller
+#define   BD_EC	0x83 // Burst Disable Embedded Controller
+#define   QR_EC	0x84 // Query Embedded Controller
 
 int send_ec_oem_command(u8 command);
 int send_ec_oem_data(u8 data);

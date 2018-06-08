@@ -1,2 +1,0 @@
-config BOARD_VIA_EPIA_M700
-	bool "EPIA-M700"

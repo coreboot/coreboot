@@ -84,7 +84,7 @@ endif
 # CustomerRevisionID;		/* Customer Revision ID */
 #
 # SBIUsage			/* Boot Image Usage */
-#   NONE		0 	/* All purposes */
+#   NONE		0	/* All purposes */
 #   SLEEP		1
 #   DEEP_SLEEP		2
 #   EXCEPTION		4

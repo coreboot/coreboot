@@ -23,7 +23,7 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	printk(BIOS_SPEW, "%s/%s ( %s )\n",
 			__FILE__, __func__, dev_name(dev));
@@ -38,7 +38,7 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus         = pci_domain_scan_bus,
 };
 
-static void cpu_bus_noop(device_t dev) { }
+static void cpu_bus_noop(struct device *dev) { }
 
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = cpu_bus_noop,
@@ -48,7 +48,7 @@ static struct device_operations cpu_bus_ops = {
 };
 
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	printk(BIOS_SPEW, "----------\n%s/%s ( %s ), type: %d\n",
 			__FILE__, __func__,
@@ -87,7 +87,7 @@ __weak void board_silicon_USB2_override(SILICON_INIT_UPD *params)
 
 void soc_silicon_init_params(SILICON_INIT_UPD *params)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
 	struct soc_intel_braswell_config *config;
 
 	if (!dev) {
@@ -382,7 +382,7 @@ struct chip_operations soc_intel_braswell_ops = {
 	.init = soc_init,
 };
 
-static void pci_set_subsystem(device_t dev, unsigned int vendor,
+static void pci_set_subsystem(struct device *dev, unsigned int vendor,
 	unsigned int device)
 {
 	printk(BIOS_SPEW, "%s/%s ( %s, 0x%04x, 0x%04x )\n",
@@ -407,7 +407,7 @@ struct pci_operations soc_pci_ops = {
 **/
 int SocStepping(void)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
 	u8 revid = pci_read_config8(dev, 0x8);
 
 	switch (revid & B_PCH_LPC_RID_STEPPING_MASK) {

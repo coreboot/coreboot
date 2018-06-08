@@ -1,14 +1,16 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * Copyright (c) 2013, NVIDIA CORPORATION.  All rights reserved.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
 #ifndef _TEGRA124_CLK_RST_H_
@@ -469,12 +471,12 @@ enum {
 #define SCLK_DIVISOR_MASK		(0xff << SCLK_DIVISOR_SHIFT)
 
 /* CLK_RST_CONTROLLER_CLK_SYSTEM_RATE 0x30 */
-#define HCLK_DISABLE 			(1 << 7)
-#define HCLK_DIVISOR_SHIFT    		4
-#define HCLK_DIVISOR_MASK     		(3 << AHB_RATE_SHIFT)
-#define PCLK_DISABLE 			(1 << 3)
-#define PCLK_DIVISOR_SHIFT    		0
-#define PCLK_DIVISOR_MASK     		(3 << AHB_RATE_SHIFT)
+#define HCLK_DISABLE			(1 << 7)
+#define HCLK_DIVISOR_SHIFT		4
+#define HCLK_DIVISOR_MASK		(3 << AHB_RATE_SHIFT)
+#define PCLK_DISABLE			(1 << 3)
+#define PCLK_DIVISOR_SHIFT		0
+#define PCLK_DIVISOR_MASK		(3 << AHB_RATE_SHIFT)
 
 /* CRC_CLK_SOURCE_MSELECT_0 0x3b4 */
 #define MSELECT_CLK_SRC_PLLP_OUT0	(0 << 29)

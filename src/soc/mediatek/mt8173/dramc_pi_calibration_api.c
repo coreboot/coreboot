@@ -37,7 +37,7 @@ void sw_impedance_cal(u32 channel,
 	dramc_dbg_msg("[Imp Calibration] DRVP:%d\n", params->impedance_drvp);
 	dramc_dbg_msg("[Imp Calibration] DRVN:%d\n", params->impedance_drvn);
 
-	mask = 0xf << 28 | 0xf << 24 | 0xf << 12 | 0xf << 8; /* driving */
+	mask = 0xf << 28 | 0xf << 24 | 0xf << 12 | 0xf << 8;  /* driving */
 
 	value =  params->impedance_drvp << 28 | params->impedance_drvn << 24 |
 		 params->impedance_drvp << 12 | params->impedance_drvn << 8;
@@ -101,7 +101,7 @@ void ca_training(u32 channel, const struct mt8173_sdram_params *sdram_params)
 
 	/* CKE and CS delay */
 	ca_shift_avg32 = (u32)(ca_shift_avg8 + (CATRAINING_NUM >> 1));
-	ca_shift_avg32 /= (u32) CATRAINING_NUM;
+	ca_shift_avg32 /= (u32)CATRAINING_NUM;
 
 	/* CKEDLY */
 	clrsetbits_le32(&ch[channel].ddrphy_regs->cmddly[4],
@@ -201,7 +201,7 @@ static void set_gw_coarse_factor(u32 channel, u8 curr_val)
 		coarse_tune_start = 15;
 	}
 
-	curr_val_p1 = curr_val + 2; /* diff is 0.5T */
+	curr_val_p1 = curr_val + 2;  /* diff is 0.5T */
 
 	/* Rank 0 P0/P1 coarse tune settings */
 	clrsetbits_le32(&ch[channel].ao_regs->dqsctl1,
@@ -248,7 +248,7 @@ static void set_gw_coarse_factor_rank1(u32 channel, u8 curr_val, u8 dqsinctl)
 {
 	u8 curr_val_p1, r1dqsgate, r1dqsgate_p1;
 
-	curr_val_p1 = curr_val + 2; /* diff is 0.5T */
+	curr_val_p1 = curr_val + 2;  /* diff is 0.5T */
 
 	clrsetbits_le32(&ch[channel].ao_regs->dqsctl2,
 			0xf << DQSCTL2_DQSINCTL_SHIFT,

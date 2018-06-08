@@ -22,6 +22,8 @@ config BOARD_SPECIFIC_OPTIONS
 	select ENABLE_BUILTIN_HSUART1
 	select HAVE_ACPI_TABLES
 	select SOC_INTEL_QUARK
+	select MAINBOARD_HAS_I2C_TPM_ATMEL
+	select MAINBOARD_HAS_TPM2
 
 config MAINBOARD_DIR
 	string
@@ -152,8 +154,6 @@ config VBOOT_WITH_CRYPTO_SHIELD
 	bool "Verified boot using the Crypto Shield board"
 	default n
 	select COLLECT_TIMESTAMPS
-	select I2C_TPM
-	select MAINBOARD_HAS_I2C_TPM_ATMEL
 	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT
 	select VBOOT_STARTS_IN_BOOTBLOCK

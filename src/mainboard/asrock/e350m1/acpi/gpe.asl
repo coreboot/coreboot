@@ -73,7 +73,7 @@ Scope(\_GPE) {	/* Start Scope GPE */
 		Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
 	}
 
-} 	/* End Scope GPE */
+}	/* End Scope GPE */
 
 /* Contains the GPEs for USB overcurrent */
 #include "usb_oc.asl"

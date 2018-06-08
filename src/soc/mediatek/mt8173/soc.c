@@ -19,12 +19,12 @@
 #include <symbols.h>
 #include <soc/emi.h>
 
-static void soc_read_resources(device_t dev)
+static void soc_read_resources(struct device *dev)
 {
 	ram_resource(dev, 0, (uintptr_t)_dram / KiB, sdram_size() / KiB);
 }
 
-static void soc_init(device_t dev)
+static void soc_init(struct device *dev)
 {
 }
 
@@ -33,7 +33,7 @@ static struct device_operations soc_ops = {
 	.init = soc_init,
 };
 
-static void enable_soc_dev(device_t dev)
+static void enable_soc_dev(struct device *dev)
 {
 	dev->ops = &soc_ops;
 }

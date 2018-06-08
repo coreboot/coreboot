@@ -73,7 +73,7 @@ static const char *stepping_str[] = {
 
 static void fill_in_pattrs(void)
 {
-	device_t dev;
+	struct device *dev;
 	msr_t msr;
 	struct pattrs *attrs = (struct pattrs *)pattrs_get();
 

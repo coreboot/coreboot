@@ -59,8 +59,8 @@ static int get_pcie_bar(u32 *base)
 
 static void pci_domain_set_resources(struct device *dev)
 {
-	uint32_t pci_tolm;
-	uint8_t tolud, reg8;
+	uint32_t pci_tolm, tseg_sizek;
+	uint8_t tolud;
 	uint16_t reg16;
 	unsigned long long tomk, tomk_stolen;
 	uint64_t uma_memory_base = 0, uma_memory_size = 0;
@@ -95,31 +95,12 @@ static void pci_domain_set_resources(struct device *dev)
 		uma_memory_size = uma_size * 1024ULL;
 	}
 
-	reg8 = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), ESMRAMC);
-	if (reg8 & 1) {
-		int tseg_size = 0;
-		printk(BIOS_DEBUG, "TSEG decoded, subtracting ");
-		reg8 >>= 1;
-		reg8 &= 3;
-		switch (reg8) {
-		case 0:
-			tseg_size = 1024;
-			break;	/* TSEG = 1M */
-		case 1:
-			tseg_size = 2048;
-			break;	/* TSEG = 2M */
-		case 2:
-			tseg_size = 8192;
-			break;	/* TSEG = 8M */
-		}
-
-		printk(BIOS_DEBUG, "%dM\n", tseg_size >> 10);
-		tomk_stolen -= tseg_size;
-
-		/* For reserving TSEG memory in the memory map */
-		tseg_memory_base = tomk_stolen * 1024ULL;
-		tseg_memory_size = tseg_size * 1024ULL;
-	}
+	tseg_sizek = decode_tseg_size(pci_read_config8(dev_find_slot(0,
+					PCI_DEVFN(0, 0)), ESMRAMC)) >> 10;
+	printk(BIOS_DEBUG, "TSEG decoded, subtracting %dM\n", tseg_sizek >> 10);
+	tomk_stolen -= tseg_sizek;
+	tseg_memory_base = tomk_stolen * 1024ULL;
+	tseg_memory_size = tseg_sizek * 1024ULL;
 
 	/* The following needs to be 2 lines, otherwise the second
 	 * number is always 0

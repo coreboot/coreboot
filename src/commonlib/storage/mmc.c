@@ -20,7 +20,6 @@
  */
 
 #include <commonlib/storage.h>
-#include <console/console.h>
 #include <delay.h>
 #include "sd_mmc.h"
 #include "mmc.h"

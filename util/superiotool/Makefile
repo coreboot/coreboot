@@ -104,7 +104,7 @@ pciutils:
 	@printf "\nChecking for pciutils and zlib... "
 	@echo "$$LIBPCI_TEST" > .test.c
 	@$(CC) $(CFLAGS) .test.c -o .test $(LIBS) >/dev/null 2>&1 &&	  \
-		printf "found.\n" || ( printf "not found.\n\n"; 	  \
+		printf "found.\n" || ( printf "not found.\n\n";		  \
 		printf "Please install pciutils-devel and zlib-devel.\n"; \
 		printf "See README for more information.\n\n";		  \
 		rm -f .test.c .test; exit 1)

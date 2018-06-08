@@ -1,3 +1,9 @@
+0x00000000, 0x100000000, WB, # RAM
+# Above entry is needed because below 4G allocated memory range is
+# only known after FSP memory init completes. However, FSP migrates to memory
+# from cache as ram before it exits FSP Memory Init. Hence we need to add
+# page table entries for this entire range before FSP Memory Init. The
+# overlapped MMIO ranges will be overridden by below entries.
 0xd0000000, 0x100000000, UC, NX # All of MMIO
 # Maximum 16MiB of mmio SPI flash decode.
 0xff000000, 0x100000000, WP, # memory-mapped SPI

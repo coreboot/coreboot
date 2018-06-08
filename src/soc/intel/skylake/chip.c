@@ -21,6 +21,7 @@
 #include <device/pci.h>
 #include <fsp/util.h>
 #include <intelblocks/xdci.h>
+#include <intelpch/lockdown.h>
 #include <soc/acpi.h>
 #include <soc/interrupt.h>
 #include <soc/irq.h>
@@ -39,7 +40,7 @@ void soc_fsp_load(void)
 	fsp_load();
 }
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
@@ -60,7 +61,7 @@ static struct device_operations cpu_bus_ops = {
 #endif
 };
 
-static void soc_enable(device_t dev)
+static void soc_enable(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -145,7 +146,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->SataMode = config->SataMode;
 	params->LockDownConfigGlobalSmi = config->LockDownConfigGlobalSmi;
 	params->LockDownConfigRtcLock = config->LockDownConfigRtcLock;
-	if (config->chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
+	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {
 		params->LockDownConfigBiosInterface = 0;
 		params->LockDownConfigBiosLock = 0;
 		params->LockDownConfigSpiEiss = 0;
@@ -171,9 +172,9 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->SerialIrqConfigStartFramePulse =
 		config->SerialIrqConfigStartFramePulse;
 
-	params->SkipMpInit = config->FspSkipMpInit;
+	params->SkipMpInit = !config->use_fsp_mp_init;
 
-	for (i = 0; i < ARRAY_SIZE(config->i2c); i++)
+	for (i = 0; i < ARRAY_SIZE(config->i2c_voltage); i++)
 		params->SerialIoI2cVoltage[i] = config->i2c_voltage[i];
 
 	/*

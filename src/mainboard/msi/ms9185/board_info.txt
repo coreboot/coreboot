@@ -1,4 +1,0 @@
-Board name: K9SD Master-S2R (MS-9185)
-Category: server
-Board URL: http://www.msiserver.de/de/Produkte/Server_Mainboards/K9SD_Master_S2R_MS_9185.aspx
-Release year: 2006

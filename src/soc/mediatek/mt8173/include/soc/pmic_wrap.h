@@ -25,7 +25,7 @@ s32 pwrap_write(u16 adr, u16 wdata);
 s32 pwrap_wacs2(u32 write, u16 adr, u16 wdata, u16 *rdata, u32 init_check);
 s32 pwrap_init(void);
 
-static struct mt8173_pwrap_regs * const mt8173_pwrap = (void *)PMIC_WRAP_BASE;
+static struct mt8173_pwrap_regs *const mt8173_pwrap = (void *)PMIC_WRAP_BASE;
 
 enum {
 	WACS2 = 1 << 4

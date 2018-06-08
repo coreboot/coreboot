@@ -119,6 +119,8 @@ config DISPLAY_FSP_VERSION_INFO
 
 config FSP2_0_USES_TPM_MRC_HASH
 	bool
+	depends on TPM1 || TPM2
+	depends on VBOOT
 	default y if HAS_RECOVERY_MRC_CACHE
 	default n
 	select VBOOT_HAS_REC_HASH_SPACE

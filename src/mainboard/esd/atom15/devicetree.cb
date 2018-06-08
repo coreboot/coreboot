@@ -63,7 +63,7 @@ chip soc/intel/fsp_baytrail
 		device pci 11.0 off end	# 8086 0F15 - SDIO Port			-
 		device pci 12.0 on end	# 8086 0F16 - SD Port			MicroSD on SD3
 		device pci 13.0 off end	# 8086 0F23 - SATA AHCI			-
-		device pci 14.0 off end	# 8086 0F35 - USB XHCI 			-
+		device pci 14.0 off end	# 8086 0F35 - USB XHCI			-
 		device pci 15.0 off end	# 8086 0F28 - LP Engine Audio		-
 		device pci 17.0 off end	# 8086 0F50 - MMC Port			-
 		device pci 18.0 on end	# 8086 0F40 - SIO - DMA			-

@@ -24,7 +24,7 @@
 #include <soc/nvs.h>
 #include <soc/ramstage.h>
 
-void scc_enable_acpi_mode(device_t dev, int iosf_reg, int nvs_index)
+void scc_enable_acpi_mode(struct device *dev, int iosf_reg, int nvs_index)
 {
 	struct resource *bar;
 	global_nvs_t *gnvs;

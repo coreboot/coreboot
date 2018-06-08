@@ -36,4 +36,6 @@ mrc.bin-file := $(call strip_quotes,$(CONFIG_MRC_FILE))
 mrc.bin-position := 0xfffa0000
 mrc.bin-type := mrc
 
+postcar-y += ram_calc.c
+
 endif

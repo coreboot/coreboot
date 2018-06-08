@@ -21,7 +21,7 @@
 #include <soc/addressmap.h>
 #include <symbols.h>
 
-static void soc_enable(device_t dev)
+static void soc_enable(struct device *dev)
 {
 	ram_resource(dev, 0, 0x0, MAX_DRAM_ADDRESS / KiB);
 }
@@ -30,7 +30,7 @@ static struct device_operations soc_ops = {
 	.enable_resources = soc_enable,
 };
 
-static void enable_mvmap2315_dev(device_t dev)
+static void enable_mvmap2315_dev(struct device *dev)
 {
 	dev->ops = &soc_ops;
 }

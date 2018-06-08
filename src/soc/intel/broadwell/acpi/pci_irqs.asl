@@ -29,11 +29,11 @@ Method(_PRT)
 			Package() { 0x001cffff, 1, 0, 17 },
 			Package() { 0x001cffff, 2, 0, 18 },
 			Package() { 0x001cffff, 3, 0, 19 },
-			// EHCI	  			0:1d.0
+			// EHCI				0:1d.0
 			Package() { 0x001dffff, 0, 0, 19 },
 			// Audio DSP (Smart Sound)	0:13.0
 			Package() { 0x0013ffff, 0, 0, 23 },
-			// XHCI	  			0:14.0
+			// XHCI				0:14.0
 			Package() { 0x0014ffff, 0, 0, 18 },
 			// LPC devices			0:1f.0
 			Package() { 0x001fffff, 0, 0, 22 },
@@ -61,11 +61,11 @@ Method(_PRT)
 			Package() { 0x001cffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
 			Package() { 0x001cffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
 			Package() { 0x001cffff, 3, \_SB.PCI0.LPCB.LNKD, 0 },
-			// EHCI	  			0:1d.0
+			// EHCI				0:1d.0
 			Package() { 0x001dffff, 0, \_SB.PCI0.LPCB.LNKD, 0 },
 			// Audio DSP (Smart Sound)	0:13.0
 			Package() { 0x0013ffff, 0, \_SB.PCI0.LPCB.LNKH, 0 },
-			// XHCI	  			0:14.0
+			// XHCI				0:14.0
 			Package() { 0x0014ffff, 0, \_SB.PCI0.LPCB.LNKC, 0 },
 			// LPC device			0:1f.0
 			Package() { 0x001fffff, 0, \_SB.PCI0.LPCB.LNKG, 0 },

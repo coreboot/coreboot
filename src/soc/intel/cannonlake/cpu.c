@@ -36,7 +36,7 @@ static void soc_fsp_load(void)
 
 static void configure_isst(void)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	config_t *conf = dev->chip_info;
 	msr_t msr;
 
@@ -62,7 +62,7 @@ static void configure_isst(void)
 
 static void configure_misc(void)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	config_t *conf = dev->chip_info;
 	msr_t msr;
 
@@ -166,7 +166,7 @@ static void configure_c_states(void)
 }
 
 /* All CPUs including BSP will run the following function. */
-void soc_core_init(device_t cpu)
+void soc_core_init(struct device *cpu)
 {
 	/* Clear out pending MCEs */
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some

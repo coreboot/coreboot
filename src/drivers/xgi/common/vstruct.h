@@ -42,7 +42,7 @@
  * * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: 	Thomas Winischhofer <thomas@winischhofer.net>
+ * Author:	Thomas Winischhofer <thomas@winischhofer.net>
  *
  */
 
@@ -230,7 +230,7 @@ struct SiS_Private
 	unsigned char			ChipType;
 	unsigned char			ChipRevision;
 	void				*ivideo;
-	unsigned char 			*VirtualRomBase;
+	unsigned char			*VirtualRomBase;
 	bool				UseROM;
 	unsigned char SISIOMEMTYPE	*VideoMemoryAddress;
 	unsigned int			VideoMemorySize;

@@ -20,7 +20,6 @@
  */
 
 // Mainboard specific throttle handler
-External (\_TZ.THRT, MethodObj)
 #ifdef DPTF_ENABLE_CHARGER
 External (\_SB.DPTF.TCHG, DeviceObj)
 #endif
@@ -325,19 +324,19 @@ Device (EC0)
 	// Throttle Start
 	Method (_Q12, 0, NotSerialized)
 	{
+#ifdef EC_ENABLE_THROTTLING_HANDLER
 		Store ("EC: THROTTLE START", Debug)
-		If (CondRefOf (\_TZ.THRT)) {
-			\_TZ.THRT (1)
-		}
+		\_TZ.THRT (1)
+#endif
 	}
 
 	// Throttle Stop
 	Method (_Q13, 0, NotSerialized)
 	{
+#ifdef EC_ENABLE_THROTTLING_HANDLER
 		Store ("EC: THROTTLE STOP", Debug)
-		If (CondRefOf (\_TZ.THRT)) {
-			\_TZ.THRT (0)
-		}
+		\_TZ.THRT (0)
+#endif
 	}
 
 #ifdef EC_ENABLE_PD_MCU_DEVICE

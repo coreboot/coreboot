@@ -222,5 +222,8 @@ int is_family10h(void);
 void enable_rs780_dev8(void);
 void rs780_early_setup(void);
 void rs780_htinit(void);
+int is_dev3_present(void);
+void set_pcie_reset(void);
+void set_pcie_dereset(void);
 
 #endif /* __RS780_H__ */

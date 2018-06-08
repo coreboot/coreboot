@@ -1,2 +1,0 @@
-config BOARD_AAEON_PFM_540I_REVB
-	bool "PFM-540I_REVB"

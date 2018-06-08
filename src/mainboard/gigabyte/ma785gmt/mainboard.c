@@ -22,6 +22,7 @@
 #include <device/pci_def.h>
 #include "southbridge/amd/sb700/sb700.h"
 #include "southbridge/amd/sb700/smbus.h"
+#include "southbridge/amd/rs780/rs780.h"
 
 #define ADT7461_ADDRESS 0x4C
 #define ARA_ADDRESS     0x0C /* Alert Response Address */
@@ -33,11 +34,7 @@
 #define ADT7461_write_byte(address, val) \
 	do_smbus_write_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address, val)
 
-void set_pcie_dereset(void);
-void set_pcie_reset(void);
-int is_dev3_present(void);
-
-void set_pcie_dereset()
+void set_pcie_dereset(void)
 {
 	u8 byte;
 	u16 word;
@@ -62,7 +59,7 @@ void set_pcie_dereset()
 	pci_write_config16(sm_dev, 0x7e, word);
 }
 
-void set_pcie_reset()
+void set_pcie_reset(void)
 {
 	u8 byte;
 	u16 word;
@@ -153,7 +150,7 @@ static void set_gpio40_gfx(void)
 		dword = pci_read_config32(sm_dev, 0xfc);
 		dword &= ~(1 << 10);
 
-	        /* When the gpio40 is configured as GPIO, this will represent the output value*/
+		/* When the gpio40 is configured as GPIO, this will represent the output value*/
 		/* 1 :enable two x8  , 0 : master slot enable only */
 		dword |= (1 << 26);
 		pci_write_config32(sm_dev, 0xfc, dword);
@@ -165,7 +162,7 @@ static void set_gpio40_gfx(void)
 		dword = pci_read_config32(sm_dev, 0xfc);
 		dword &= ~(1 << 10);
 
-        	/* When the gpio40 is configured as GPIO, this will represent the output value*/
+		/* When the gpio40 is configured as GPIO, this will represent the output value*/
 		/* 1 :enable two x8  , 0 : master slot enable only */
 		dword &=  ~(1 << 26);
 		pci_write_config32(sm_dev, 0xfc, dword);

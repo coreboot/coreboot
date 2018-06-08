@@ -85,6 +85,9 @@ chip northbridge/amd/agesa/family16kb/root_complex
 							io 0x62 = 0x300
 						end
 					end	#superio/ite/it8623e
+					chip drivers/pc80/tpm
+						device pnp 4e.0 on end		# TPM module
+					end
 				end	#device pci 14.3 # LPC
 				device pci 14.7 off  end # SD - no card reader present
 			end	#chip southbridge/amd/agesa/hudson

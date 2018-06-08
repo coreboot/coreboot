@@ -296,7 +296,7 @@ void soc_pch_pirq_init(const struct device *dev)
 {
 	const config_t *config = dev->chip_info;
 	uint8_t pch_interrupt_routing[MAX_PXRC_CONFIG];
-	device_t irq_dev;
+	struct device *irq_dev;
 
 	pch_interrupt_routing[0] = config->pirqa_routing;
 	pch_interrupt_routing[1] = config->pirqb_routing;

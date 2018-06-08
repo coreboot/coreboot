@@ -14,7 +14,6 @@
  */
 
 #include <baseboard/variants.h>
-#include <soc/smi.h>
 #include <soc/southbridge.h>
 #include <stdlib.h>
 #include <variant/gpio.h>

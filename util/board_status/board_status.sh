@@ -340,6 +340,13 @@ timestamp=$($getrevision -t)
 
 results="${vendor}/${mainboard}/${tagged_version}/${timestamp}"
 
+if [ -n "$(echo $tagged_version | grep dirty)" ]; then
+	echo "The repository is in a dirty state. Please see the output of"
+	echo "'git status' below."
+	git status
+	exit $EXIT_FAILURE
+fi
+
 echo "Temporarily placing output in ${tmpdir}/${results}"
 mkdir -p "${tmpdir}/${results}"
 

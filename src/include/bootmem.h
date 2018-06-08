@@ -97,6 +97,11 @@ bool bootmem_walk(range_action_t action, void *arg);
 /* Return 1 if region targets usable RAM, 0 otherwise. */
 int bootmem_region_targets_usable_ram(uint64_t start, uint64_t size);
 
+/* Return 1 if region targets usable RAM, and we allow memory ranges
+ * with type >BM_MEM_OS_CUTOFF to be overwritten at the time we jump
+ * to payload. 0 otherwise. */
+int bootmem_region_usable_with_bounce(uint64_t start, uint64_t size);
+
 /* Allocate a temporary buffer from the unused RAM areas. */
 void *bootmem_allocate_buffer(size_t size);
 

@@ -189,14 +189,16 @@ out:
 	return ret;
 }
 
-static int winbond_sec_read(const struct spi_flash *flash, u32 offset, size_t len, void *buf)
+static int winbond_sec_read(const struct spi_flash *flash, u32 offset,
+				size_t len, void *buf)
 {
 	int ret = 1;
 	u8 cmd[5];
 	u8 reg = (offset >> 8) & 0xFF;
 	u8 addr = offset & 0xFF;
 
-	if (reg != ADDR_W25_SEC1 && reg != ADDR_W25_SEC2 && reg != ADDR_W25_SEC3) {
+	if (reg != ADDR_W25_SEC1 && reg != ADDR_W25_SEC2 &&
+			reg != ADDR_W25_SEC3) {
 		printk(BIOS_WARNING, "SF: Wrong security register\n");
 		return 1;
 	}
@@ -209,7 +211,8 @@ static int winbond_sec_read(const struct spi_flash *flash, u32 offset, size_t le
 
 	ret = spi_flash_cmd_read(&flash->spi, cmd, sizeof(cmd), buf, len);
 	if (ret) {
-		printk(BIOS_WARNING, "SF: Can't read sec register %d\n", reg >> 4);
+		printk(BIOS_WARNING, "SF: Can't read sec register %d\n",
+			reg >> 4);
 	}
 
 	return ret;

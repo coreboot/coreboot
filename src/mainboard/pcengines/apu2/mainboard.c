@@ -409,7 +409,8 @@ static void mainboard_final(void *chip_info)
  * We will stuff a modified version of the first NICs (BDF 1:0.0) MAC address
  * into the smbios serial number location.
  */
-static int read_serial_from_nic(char *serial, size_t len) {
+static int read_serial_from_nic(char *serial, size_t len)
+{
 	device_t nic_dev;
 	uintptr_t bar10;
 	u32 mac_addr = 0;
@@ -435,8 +436,9 @@ static int read_serial_from_nic(char *serial, size_t len) {
 	return 0;
 }
 
-static int read_serial_from_flash(char *serial, size_t len) {
-	const struct spi_flash *flash = NULL;;
+static int read_serial_from_flash(char *serial, size_t len)
+{
+	const struct spi_flash *flash = NULL;
 	int ret;
 
 	flash = boot_device_spi_flash();

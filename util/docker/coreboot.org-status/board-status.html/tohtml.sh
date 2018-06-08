@@ -1,10 +1,10 @@
 #!/bin/sh
-export COREBOOT_DIR="../coreboot"
+export COREBOOT_DIR="../coreboot.git"
 export GIT_DIR="$COREBOOT_DIR/.git"
 CODE_GITWEB="https://review.coreboot.org/gitweb/cgit/coreboot.git/commit/?id="
 STATUS_GITWEB="https://review.coreboot.org/gitweb/cgit/board-status.git/tree/"
-if [ -f `dirname $0`/foreword.wiki ]; then
-	cat `dirname $0`/foreword.wiki
+if [ -f `dirname $0`/foreword.html ]; then
+	cat `dirname $0`/foreword.html
 fi
 detailed=
 nl="
@@ -13,7 +13,7 @@ have=
 while read line; do
 	timeframe=`echo $line | cut -d: -f1`
 	rest=`echo $line | cut -d: -f2-`
-	detailed="$detailed= $timeframe =$nl"
+	detailed="$detailed<h1>$timeframe</h1>$nl"
 	for i in $rest; do
 		vendor_board=`echo $i | cut -d/ -f1-2`
 		commit=`echo $i | cut -d/ -f3`
@@ -27,36 +27,37 @@ while read line; do
 			have="$have$vendor_board:$datetime$nl"
 		fi
 
-		detailed="$detailed[[Board:$vendor_board|$vendor_board]] at $datetime_human$nl"
-		detailed="$detailed[$CODE_GITWEB$upstream upstream tree] ($nl"
+		detailed="$detailed<a href='https://www.coreboot.org/Board:$vendor_board'>$vendor_board</a> at $datetime_human$nl"
+		detailed="$detailed<a href='$CODE_GITWEB$upstream'>upstream tree</a> ($nl"
 		for file in "$vendor_board/$commit/$datetime_path/"*; do
 			if [ "$file" = "$vendor_board/$commit/$datetime_path/revision.txt" ]; then
 				continue
 			fi
-			detailed="$detailed[$STATUS_GITWEB$file `basename $file`] $nl"
+			detailed="$detailed<a href='$STATUS_GITWEB$file'>`basename $file`</a> $nl"
 		done
-		detailed="$detailed)$nl$nl"
+		detailed="$detailed)<br />"
 	done
 done
 
 cat <<EOF
-== Motherboards supported in coreboot ==
+<h1>Motherboards supported in coreboot</h1>
 
-{| border="0" style="font-size: smaller"
-|- bgcolor="#6699ff"
-! align="left" | Vendor
-! align="left" | Mainboard
-! align="left" | Latest known good
-! align="left" | Northbridge
-! align="left" | Southbridge
-! align="left" | Super&nbsp;I/O
-! align="left" | CPU
-! align="left" | Socket
-! align="left" | <span title="ROM chip package">ROM&nbsp;<sup>1</sup></span>
-! align="left" | <span title="ROM chip protocol">P&nbsp;<sup>2</sup></span>
-! align="left" | <span title="ROM chip socketed?">S&nbsp;<sup>3</sup></span>
-! align="left" | <span title="Board supported by flashrom?">F&nbsp;<sup>4</sup></span>
-! align="left" | <span title="Vendor Cooperation Score">VCS<sup>5</sup></span>
+<table border="0" style="font-size: smaller">
+<tr bgcolor="#6699ff">
+<td>Vendor</td>
+<td>Mainboard</td>
+<td>Latest known good</td>
+<td>Northbridge</td>
+<td>Southbridge</td>
+<td>Super&nbsp;I/O</td>
+<td>CPU</td>
+<td>Socket</td>
+<td><span title="ROM chip package">ROM&nbsp;<sup>1</sup></span></td>
+<td><span title="ROM chip protocol">P&nbsp;<sup>2</sup></span></td>
+<td><span title="ROM chip socketed?">S&nbsp;<sup>3</sup></span></td>
+<td><span title="Board supported by flashrom?">F&nbsp;<sup>4</sup></span></td>
+<td><span title="Vendor Cooperation Score">VCS<sup>5</sup></span></td>
+</tr>
 EOF
 
 for category in laptop server desktop half mini settop "eval" sbc emulation misc unclass; do
@@ -65,78 +66,89 @@ for category in laptop server desktop half mini settop "eval" sbc emulation misc
 	case "$category" in
 		desktop)
 			cat <<EOF
-|- bgcolor="#6699ff"
-| colspan="13" | <h4>Desktops / Workstations</h4>
+<tr bgcolor="#6699ff">
+<td colspan="13"><h4>Desktops / Workstations</h4></td>
+</tr>
 
 EOF
 			;;
 		server)
 			cat <<EOF
-|- bgcolor="#6699ff"
-| colspan="13" | <h4>Servers</h4>
+<tr bgcolor="#6699ff">
+<td colspan="13"><h4>Servers</h4></td>
+</tr>
 
 EOF
 			;;
 		laptop)
 			cat <<EOF
-|- bgcolor="#6699ff"
-| colspan="13" | <h4>Laptops</h4>
+<tr bgcolor="#6699ff">
+<td colspan="13"><h4>Laptops</h4></td>
+</tr>
 
 EOF
 			;;
 		half)
 			cat <<EOF
-|- bgcolor="#6699ff"
-| colspan="13" | <h4>Embedded / PC/104 / Half-size boards</h4>
+<tr bgcolor="#6699ff">
+<td colspan="13"><h4>Embedded / PC/104 / Half-size boards</h4></td>
+</tr>
 
 EOF
 			;;
 		mini)
 			cat <<EOF
-|- bgcolor="#6699ff"
-| colspan="13" | <h4>Mini-ITX / Micro-ITX / Nano-ITX</h4>
+<tr bgcolor="#6699ff">
+<td colspan="13"><h4>Mini-ITX / Micro-ITX / Nano-ITX</h4></td>
+</tr>
 
 EOF
 			;;
 		settop)
 			cat <<EOF
-|- bgcolor="#6699ff"
-| colspan="13" | <h4>Set-top-boxes / Thin clients</h4>
+<tr bgcolor="#6699ff">
+<td colspan="13"><h4>Set-top-boxes / Thin clients</h4></td>
+</tr>
 
 EOF
 			;;
 		"eval")
 			cat <<EOF
-|- bgcolor="#6699ff"
-| colspan="13" | <h4>Devel/Eval Boards</h4>
+<tr bgcolor="#6699ff">
+<td colspan="13"><h4>Devel/Eval Boards</h4></td>
+</tr>
 
 EOF
 			;;
 		sbc)
 			cat <<EOF
-|- bgcolor="#6699ff"
-| colspan="13" | <h4>Single-Board computer</h4>
+<tr bgcolor="#6699ff">
+<td colspan="13"><h4>Single-Board computer</h4></td>
+</tr>
 
 EOF
 			;;
 		emulation)
 			cat <<EOF
-|- bgcolor="#6699ff"
-| colspan="13" | <h4>Emulation</h4>
+<tr bgcolor="#6699ff">
+<td colspan="13"><h4>Emulation</h4></td>
+</tr>
 
 EOF
 			;;
 		misc)
 			cat <<EOF
-|- bgcolor="#6699ff"
-| colspan="13" | <h4>Miscellaneous</h4>
+<tr bgcolor="#6699ff">
+<td colspan="13"><h4>Miscellaneous</h4></td>
+</tr>
 
 EOF
 			;;
 		unclass)
 			cat <<EOF
-|- bgcolor="#6699ff"
-| colspan="13" | <h4>Unclassified</h4>
+<tr bgcolor="#6699ff">
+<td colspan="13"><h4>Unclassified</h4></td>
+</tr>
 
 EOF
 			;;
@@ -399,21 +411,21 @@ EOF
 				socket_nice="$cpu";;
 		esac
 
-		echo "|- bgcolor=\"#$color\""
+		echo "<tr bgcolor=\"#$color\">"
 
 		if [ -z "$board_url" ]; then
-			echo "| $vendor_nice"
+			echo "<td>$vendor_nice"
 		else
-			echo "| [$board_url $vendor_nice]"
+			echo "<td><a href='$board_url'>$vendor_nice</a>"
 		fi
 		if ! [ -z "$vendor_2nd" ]; then
-			echo "( $vendor_2nd )"
+			echo " ($vendor_2nd)"
 		fi
 
-		echo "| [[Board:$vendor/$board|$board_nice]]"
+		echo "</td><td><a href='https://www.coreboot.org/Board:$vendor/$board'>$board_nice</a></td>"
 
 		if [ -z "$lastgood" ]; then
-			echo "| style=\"background:red\" | Unknown"
+			echo "<td style=\"background:red\">Unknown</td>"
 		else
 			lastgood_diff=0
 			lastgood_ts=$(date -d "$lastgood" "+%s")
@@ -434,62 +446,64 @@ EOF
 				lastgood_diff_hex="0${lastgood_diff_hex}"
 			fi
 			cell_bgcolor="#${lastgood_diff_hex}ff00"
-			echo "| style=\"background:${cell_bgcolor}\" | [[#$venboard|$lastgood]]"
+			echo "<td style=\"background:${cell_bgcolor}\"><a href='#$venboard'>$lastgood</a></td>"
 		fi
 
-		echo "| $northbridge_nice"
-		echo "| $southbridge_nice"
-		echo "| $superio_nice"
-		echo "| $cpu_nice"
-		echo "| $socket_nice"
+		echo "<td>$northbridge_nice</td>"
+		echo "<td>$southbridge_nice</td>"
+		echo "<td>$superio_nice</td>"
+		echo "<td>$cpu_nice</td>"
+		echo "<td>$socket_nice</td>"
 		if [ "$rom_package" = "" ]; then
-			echo "| ?"
+			echo "<td>?</td>"
 		else
-			echo "| $rom_package"
+			echo "<td>$rom_package</td>"
 		fi
 		if [ "$rom_protocol" = "" ]; then
-			echo "| ?"
+			echo "<td>?</td>"
 		else
-			echo "| $rom_protocol"
+			echo "<td>$rom_protocol</td>"
 		fi
 		if [ "$rom_socketed" = "y" ]; then
-			echo "| style=\"background:lime\" | Y"
+			echo "<td style=\"background:lime\">Y</td>"
 		elif [ "$rom_socketed" = "n" ]; then
-			echo "| style=\"background:red\" | N"
+			echo "<td style=\"background:red\">N</td>"
 		elif [ "$flashrom_support" = "variable" ]; then
-			echo "| ...<sup>7</sup>"
+			echo "<td>...<sup>7</sup></td>"
 		elif [ "$rom_socketed" = "" ]; then
-			echo "| ?"
+			echo "<td>?</td>"
 		else
-			echo "| $rom_socketed"
+			echo "<td>$rom_socketed</td>"
 		fi
 		if [ "$flashrom_support" = "y" ]; then
-			echo "| style=\"background:lime\" | Y"
+			echo "<td style=\"background:lime\">Y</td>"
 		elif [ "$flashrom_support" = "n" ]; then
-			echo "| style=\"background:red\" | N"
+			echo "<td style=\"background:red\">N</td>"
 		elif [ "$flashrom_support" = "coreboot-only" ]; then
-			echo "| style=\"background:yellow\" | ...<sup>6</sup>"
+			echo "<td style=\"background:yellow\">...<sup>6</sup></td>"
 		elif [ "$flashrom_support" = "" ]; then
-			echo "| ?"
+			echo "<td>?</td>"
 		else
-			echo "| $flashrom_support"
+			echo "<td>$flashrom_support</td>"
 		fi
 		if [ "$vendor_cooperation_score" = "4" ]; then
-			echo -n "| style=\"background:lime\""
+			echo -n "<td style=\"background:lime\">"
 		elif [ "$vendor_cooperatio_scoren" = "3" ]; then
-			echo -n "| style=\"background:yellow\""
+			echo -n "<td style=\"background:yellow\">"
+		else
+			echo -n "<td>"
 		fi
 		if [ "$vendor_cooperation_page" != "" ]; then
-			echo "| [[$vendor_cooperation_page|$vendor_cooperation_score]]"
+			echo "<a href='http://www.coreboot.org/$vendor_cooperation_page'>$vendor_cooperation_score</a>"
 		elif [ "$vendor_cooperation_score" = "" ]; then
-			echo "| —"
+			echo "—"
 		else
-			echo "| $vendor_cooperation_score"
+			echo "$vendor_cooperation_score"
 		fi
-		echo
+		echo "</td></tr>"
 	done
 done
-echo "|}"
+echo "</table>"
 
 cat <<EOF
 <small>

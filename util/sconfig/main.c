@@ -74,7 +74,7 @@ static void *s_alloc(const char *f, size_t s)
 {
 	void *data = calloc(1, s);
 	if (!data) {
-		fprintf(stderr, "%s: Failed to alloc mem!\n", f, s);
+		fprintf(stderr, "%s: Failed to alloc mem!\n", f);
 		exit(1);
 	}
 	return data;

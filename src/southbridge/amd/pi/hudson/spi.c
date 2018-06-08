@@ -39,11 +39,7 @@
  #define SPI_EXT_REG_RXCOUNT	0x6
 #define SPI_EXT_REG_DATA	0x1f
 
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE)
 #define AMD_SB_SPI_TX_LEN	64
-#else
-#define AMD_SB_SPI_TX_LEN	8
-#endif
 
 static uintptr_t spibar;
 

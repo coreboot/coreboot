@@ -26,8 +26,8 @@ struct northbridge_amd_agesa_family14_config
 	 *
 	 * register "spdAddrLookup" = "
 	 * { // Use 8-bit SPD addresses here
-	 * 	{ {0xA0, 0xA2}, {0x00, 0x00}, }, // socket 0 - Channel 0 & 1
-	 * 	{ {0x00, 0x00}, {0x00, 0x00}, }, // socket 1 - Channel 0 & 1 (Unused)
+	 *	{ {0xA0, 0xA2}, {0x00, 0x00}, }, // socket 0 - Channel 0 & 1
+	 *	{ {0x00, 0x00}, {0x00, 0x00}, }, // socket 1 - Channel 0 & 1 (Unused)
 	 * }"
 	 *
 	 */

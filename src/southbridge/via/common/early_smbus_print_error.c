@@ -25,7 +25,7 @@
  *		      a transaction is processed.
  * @param loops The number of times a transaction was attempted.
  * @return	0 if no error occurred
- * 		1 if an error was detected
+ *		1 if an error was detected
  */
 int smbus_print_error(u32 smbus_dev, u8 host_status, int loops)
 {

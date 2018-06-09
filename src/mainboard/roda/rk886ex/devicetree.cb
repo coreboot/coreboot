@@ -19,23 +19,23 @@ chip northbridge/intel/i945
 	register "gfx.ndid" = "3"
 	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
 
-        device cpu_cluster 0 on
-                chip cpu/intel/socket_mFCPGA478
-                        device lapic 0 on end
-                end
-        end
+	device cpu_cluster 0 on
+		chip cpu/intel/socket_mFCPGA478
+			device lapic 0 on end
+		end
+	end
 
 	register "pci_mmio_size" = "768"
 
-        device domain 0 on
-                subsystemid 0x4352 0x6886 inherit
-                device pci 00.0 on end # host bridge
+	device domain 0 on
+		subsystemid 0x4352 0x6886 inherit
+		device pci 00.0 on end # host bridge
 		# auto detection:
 		#device pci 01.0 off end # i945 PCIe root port
 		device pci 02.0 on end # vga controller
 		device pci 02.1 on end # display controller
 
-                chip southbridge/intel/i82801gx
+		chip southbridge/intel/i82801gx
 			register "pirqa_routing" = "0x0b"
 			register "pirqb_routing" = "0x0b"
 			register "pirqc_routing" = "0x0b"
@@ -58,26 +58,26 @@ chip northbridge/intel/i945
 			register "docking_supported" = "1"
 			register "p_cnt_throttling_supported" = "1"
 
-                        register "ide_legacy_combined" = "0x1"
-                        register "ide_enable_primary" = "0x1"
-                        register "ide_enable_secondary" = "0x0"
-                        register "sata_ahci" = "0x0"
+			register "ide_legacy_combined" = "0x1"
+			register "ide_enable_primary" = "0x1"
+			register "ide_enable_secondary" = "0x0"
+			register "sata_ahci" = "0x0"
 
-                	device pci 1b.0 on end # High Definition Audio
-                	device pci 1c.0 on end # PCIe
-                	device pci 1c.1 on end # PCIe
-                	device pci 1c.2 on end # PCIe
+			device pci 1b.0 on end # High Definition Audio
+			device pci 1c.0 on end # PCIe
+			device pci 1c.1 on end # PCIe
+			device pci 1c.2 on end # PCIe
 			#device pci 1c.3 off end # PCIe port 4
 			#device pci 1c.4 off end # PCIe port 5
 			#device pci 1c.5 off end # PCIe port 6
-                	device pci 1d.0 on end # USB UHCI
-                	device pci 1d.1 on end # USB UHCI
-                	device pci 1d.2 on end # USB UHCI
-                	device pci 1d.3 on end # USB UHCI
-                	device pci 1d.7 on end # USB2 EHCI
-                	device pci 1e.0 on
+			device pci 1d.0 on end # USB UHCI
+			device pci 1d.1 on end # USB UHCI
+			device pci 1d.2 on end # USB UHCI
+			device pci 1d.3 on end # USB UHCI
+			device pci 1d.7 on end # USB2 EHCI
+			device pci 1e.0 on
 				chip southbridge/ti/pci7420
-                        		register "smartcard_enabled" = "0x0"
+					register "smartcard_enabled" = "0x0"
 					device pci 3.0 on end
 					device pci 3.1 on end
 					device pci 3.2 on end
@@ -86,19 +86,19 @@ chip northbridge/intel/i945
 			end # PCI bridge
 			#device pci 1e.2 off end # AC'97 Audio
 			#device pci 1e.3 off end # AC'97 Modem
-                        device pci 1f.0 on # LPC bridge
-                                chip superio/smsc/lpc47n227
+			device pci 1f.0 on # LPC bridge
+				chip superio/smsc/lpc47n227
 					device pnp 2e.1 on # Parallel port
 						 io 0x60 = 0x378
 						irq 0x70 = 5
 					end
 					device pnp 2e.2 on # COM1
-                                                 io 0x60 = 0x3f8
-                                                irq 0x70 = 4
+						 io 0x60 = 0x3f8
+						irq 0x70 = 4
 					end
 					device pnp 2e.3 on # COM2
-                                                 io 0x60 = 0x2f8
-                                                irq 0x70 = 3
+						 io 0x60 = 0x2f8
+						irq 0x70 = 3
 					end
 					device pnp 2e.5 off # Keyboard+Mouse
 					#	 io 0x60 = 0x60
@@ -106,7 +106,7 @@ chip northbridge/intel/i945
 					#	irq 0x70 = 1
 					#	irq 0x72 = 12
 					end
-                                end
+				end
 				chip superio/renesas/m3885x
 					device pnp ff.1 on # dummy address
 					end
@@ -114,11 +114,11 @@ chip northbridge/intel/i945
 				chip ec/acpi
 				end
 
-                        end
+			end
 			#device pci 1f.1 off end # IDE
-                        device pci 1f.2 on end  # SATA
-                        device pci 1f.3 on end  # SMBus
+			device pci 1f.2 on end  # SATA
+			device pci 1f.3 on end  # SMBus
 			#device pci 1f.4 off end # Realtek ID Codec
-                end
-        end
+		end
+	end
 end

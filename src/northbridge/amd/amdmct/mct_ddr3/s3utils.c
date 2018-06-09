@@ -707,7 +707,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 			 * For now, skip restoration...
 			 */
 			// for (i = 0; i < 8; i++)
-			// 	wrmsr_uint64_t(0x00000260 | (i + 8), data->msr0000026[i]);
+			//	wrmsr_uint64_t(0x00000260 | (i + 8), data->msr0000026[i]);
 			wrmsr_uint64_t(0x000002ff, data->msr000002ff);
 			wrmsr_uint64_t(0xc0010010, data->msrc0010010);
 			wrmsr_uint64_t(0xc001001a, data->msrc001001a);

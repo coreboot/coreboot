@@ -24,7 +24,7 @@
 
 #define NBHTIU_INDEX		0x94 /* Note: It is different with RS690, whose HTIU index is 0xA8 */
 #define NBMISC_INDEX		0x60
-#define NBMC_INDEX 		0xE8
+#define NBMC_INDEX		0xE8
 
 static u32 nb_read_index(pci_devfn_t dev, u32 index_reg, u32 index)
 {

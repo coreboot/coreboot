@@ -124,7 +124,7 @@ struct boot_state_callback {
 #if IS_ENABLED(CONFIG_DEBUG_BOOT_STATE)
 #define BOOT_STATE_CALLBACK_LOC __FILE__ ":" STRINGIFY(__LINE__)
 #define BOOT_STATE_CALLBACK_INIT_DEBUG .location = BOOT_STATE_CALLBACK_LOC,
-#define INIT_BOOT_STATE_CALLBACK_DEBUG(bscb_) 			\
+#define INIT_BOOT_STATE_CALLBACK_DEBUG(bscb_)			\
 	do {							\
 		bscb_->location = BOOT_STATE_CALLBACK_LOC;	\
 	} while (0)

@@ -62,7 +62,7 @@ chip soc/intel/skylake
 
 	# Determines if enable Serial IRQ. Values 0: Disabled, 1: Enabled
 	register "SerialIrqConfigSirqEnable" = "0x01"
-        register "SerialIrqConfigSirqMode" = "0x01"
+	register "SerialIrqConfigSirqMode" = "0x01"
 
 	# VR Settings Configuration for 5 Domains
 	#+----------------+-------+-------+-------------+-------------+-------+
@@ -226,17 +226,17 @@ chip soc/intel/skylake
 		[7]	= 1, \
 	}"
 	register "SerialIoDevMode" = "{ \
-		[PchSerialIoIndexI2C0]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C1]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C2]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C3]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C4]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C5]  = PchSerialIoPci, \
-		[PchSerialIoIndexSpi0]  = PchSerialIoPci, \
-		[PchSerialIoIndexSpi1]  = PchSerialIoPci, \
-		[PchSerialIoIndexUart0] = PchSerialIoPci, \
-		[PchSerialIoIndexUart1] = PchSerialIoPci, \
-		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, \
+		[PchSerialIoIndexI2C0]	= PchSerialIoPci, \
+		[PchSerialIoIndexI2C1]	= PchSerialIoPci, \
+		[PchSerialIoIndexI2C2]	= PchSerialIoPci, \
+		[PchSerialIoIndexI2C3]	= PchSerialIoPci, \
+		[PchSerialIoIndexI2C4]	= PchSerialIoPci, \
+		[PchSerialIoIndexI2C5]	= PchSerialIoPci, \
+		[PchSerialIoIndexSpi0]	= PchSerialIoPci, \
+		[PchSerialIoIndexSpi1]	= PchSerialIoPci, \
+		[PchSerialIoIndexUart0]	= PchSerialIoPci, \
+		[PchSerialIoIndexUart1]	= PchSerialIoPci, \
+		[PchSerialIoIndexUart2]	= PchSerialIoSkipInit, \
 	}"
 
 	# PL2 override 25W

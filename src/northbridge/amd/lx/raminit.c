@@ -419,8 +419,8 @@ static void set_latencies(void)
 
 	/* tRC = tRP + tRAS */
 	dimm_setting |= (((dimm_setting >> CF8F_LOWER_ACT2PRE_SHIFT) & 0x0F) +
-	     		((dimm_setting >> CF8F_LOWER_PRE2ACT_SHIFT) & 0x07))
-	    			<< CF8F_LOWER_ACT2ACTREF_SHIFT;
+			 ((dimm_setting >> CF8F_LOWER_PRE2ACT_SHIFT) & 0x07))
+			<< CF8F_LOWER_ACT2ACTREF_SHIFT;
 
 	msr = rdmsr(MC_CF8F_DATA);
 	msr.lo &= 0xF00000FF;

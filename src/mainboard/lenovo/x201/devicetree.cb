@@ -165,7 +165,7 @@ chip northbridge/intel/nehalem
 			end
 			device pci 1f.3 on # SMBUS
 				subsystemid 0x17aa 0x2167
-			        # eeprom, 8 virtual devices, same chip
+				# eeprom, 8 virtual devices, same chip
 				chip drivers/i2c/at24rf08c
 					device i2c 54 on end
 					device i2c 55 on end

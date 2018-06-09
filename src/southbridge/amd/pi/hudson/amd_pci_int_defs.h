@@ -46,7 +46,7 @@
 #define PIRQ_FC		0x14	/* FC */
 #define PIRQ_GEC	0x15	/* GEC */
 #define PIRQ_PMON	0x16	/* Performance Monitor */
-#define PIRQ_SD 	0x17	/* SD */
+#define PIRQ_SD		0x17	/* SD */
 #define PIRQ_IMC0	0x20	/* IMC INT0 */
 #define PIRQ_IMC1	0x21	/* IMC INT1 */
 #define PIRQ_IMC2	0x22	/* IMC INT2 */

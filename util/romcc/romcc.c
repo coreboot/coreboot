@@ -9199,7 +9199,7 @@ static void decompose_compound_types(struct compile_state *state)
 
 		}
 #if DEBUG_DECOMPOSE_HIRES
-		fprintf(fp, "decompose next: %p \n", next);
+		fprintf(fp, "decompose next: %p\n", next);
 		fflush(fp);
 		fprintf(fp, "next->op: %d %s\n",
 			next->op, tops(next->op));
@@ -14284,7 +14284,7 @@ static void compute_closure_variables(struct compile_state *state,
 #if DEBUG_EXPLICIT_CLOSURES
 	/* Print out the variables to be enclosed */
 	loc(state->dbgout, state, fcall);
-	fprintf(state->dbgout, "Alive: \n");
+	fprintf(state->dbgout, "Alive:\n");
 	for(set = *enclose; set; set = set->next) {
 		display_triple(state->dbgout, set->member);
 	}
@@ -25048,7 +25048,7 @@ static void usage(void)
 	fprintf(fp,
 		"\nUsage: romcc [options] <source>.c\n"
 		"Compile a C source file generating a binary that does not implicilty use RAM\n"
-		"Options: \n"
+		"Options:\n"
 		"-o <output file name>\n"
 		"-f<option>            Specify a generic compiler option\n"
 		"-m<option>            Specify a arch dependent option\n"

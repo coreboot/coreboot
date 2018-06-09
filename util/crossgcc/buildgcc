@@ -1191,7 +1191,7 @@ export PATH=$DESTDIR$TARGETDIR/bin:$PATH
 
 # Download, unpack, patch and build all packages
 
-printf "Downloading and verifing tarballs ... \n"
+printf "Downloading and verifing tarballs ...\n"
 mkdir -p tarballs
 for P in $PACKAGES; do
 	download "$P" || exit "$?"
@@ -1199,21 +1199,21 @@ for P in $PACKAGES; do
 done
 printf "Downloaded tarballs ... ${green}ok${NC}\n"
 
-printf "Unpacking and patching ... \n"
+printf "Unpacking and patching ...\n"
 for P in $PACKAGES; do
 	unpack_and_patch $P || exit 1
 done
 printf "Unpacked and patched ... ${green}ok${NC}\n"
 
 if [ -n "$BOOTSTRAPONLY" ]; then
-	printf "Building bootstrap compiler only ... \n"
+	printf "Building bootstrap compiler only ...\n"
 	for pkg in GMP MPFR MPC GCC; do
 		build_for_host $pkg
 	done
 	exit 0
 fi
 
-printf "Building packages ... \n"
+printf "Building packages ...\n"
 for package in $PACKAGES; do
 	build $package
 done

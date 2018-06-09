@@ -1,59 +1,59 @@
 chip northbridge/intel/i440bx		# Northbridge
-  device cpu_cluster 0 on		# APIC cluster
-    chip cpu/intel/slot_1		# CPU
-      device lapic 0 on end		# APIC
-    end
-  end
-  device domain 0 on		# PCI domain
-    device pci 0.0 on end		# Host bridge
-    device pci 1.0 on end		# PCI/AGP bridge
-    chip southbridge/intel/i82371eb	# Southbridge
-      device pci 4.0 on			# ISA bridge
-        chip superio/winbond/w83977tf	# Super I/O (FIXME: It's W83977EF!)
-          device pnp 3f0.0 on		# Floppy
-            io 0x60 = 0x3f0
-            irq 0x70 = 6
-            drq 0x74 = 2
-          end
-          device pnp 3f0.1 on		# Parallel port
-            io 0x60 = 0x378
-            irq 0x70 = 7
-          end
-          device pnp 3f0.2 on		# COM1
-            io 0x60 = 0x3f8
-            irq 0x70 = 4
-          end
-          device pnp 3f0.3 on		# COM2 / IR
-            io 0x60 = 0x2f8
-            irq 0x70 = 3
-          end
-          device pnp 3f0.5 on		# PS/2 keyboard
-            io 0x60 = 0x60
-            io 0x62 = 0x64
-            irq 0x70 = 1		# PS/2 keyboard interrupt
-            irq 0x72 = 12		# PS/2 mouse interrupt
-          end
-          device pnp 3f0.6 on		# Consumer IR
-          end
-          device pnp 3f0.7 on		# GPIO 1
-          end
-          device pnp 3f0.8 on		# GPIO 2
-          end
-          device pnp 3f0.a on		# ACPI
-          end
-        end
-      end
-      device pci 4.1 on	end		# IDE
-      device pci 4.2 on	end		# USB
-      device pci 4.3 on end		# ACPI
-      register "ide0_enable" = "1"
-      register "ide1_enable" = "1"
-      register "ide_legacy_enable" = "1"
-      # Enable UDMA/33 for higher speed if your IDE device(s) support it.
-      register "ide0_drive0_udma33_enable" = "0"
-      register "ide0_drive1_udma33_enable" = "0"
-      register "ide1_drive0_udma33_enable" = "0"
-      register "ide1_drive1_udma33_enable" = "0"
-    end
-  end
+	device cpu_cluster 0 on		# APIC cluster
+	chip cpu/intel/slot_1		# CPU
+			device lapic 0 on end	# APIC
+		end
+	end
+	device domain 0 on	# PCI domain
+		device pci 0.0 on end	# Host bridge
+		device pci 1.0 on end	# PCI/AGP bridge
+		chip southbridge/intel/i82371eb	# Southbridge
+			device pci 4.0 on	# ISA bridge
+				chip superio/winbond/w83977tf	# Super I/O (FIXME: It's W83977EF!)
+					device pnp 3f0.0 on	# Floppy
+						io 0x60 = 0x3f0
+						irq 0x70 = 6
+						drq 0x74 = 2
+					end
+					device pnp 3f0.1 on	# Parallel port
+						io 0x60 = 0x378
+						irq 0x70 = 7
+					end
+					device pnp 3f0.2 on	# COM1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 3f0.3 on	# COM2 / IR
+						io 0x60 = 0x2f8
+						irq 0x70 = 3
+					end
+					device pnp 3f0.5 on	# PS/2 keyboard
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 1	# PS/2 keyboard interrupt
+						irq 0x72 = 12	# PS/2 mouse interrupt
+					end
+					device pnp 3f0.6 on	# Consumer IR
+					end
+					device pnp 3f0.7 on	# GPIO 1
+					end
+					device pnp 3f0.8 on	# GPIO 2
+					end
+					device pnp 3f0.a on	# ACPI
+					end
+				end
+			end
+			device pci 4.1 on	end	# IDE
+			device pci 4.2 on	end	# USB
+			device pci 4.3 on end		# ACPI
+			register "ide0_enable" = "1"
+			register "ide1_enable" = "1"
+			register "ide_legacy_enable" = "1"
+			# Enable UDMA/33 for higher speed if your IDE device(s) support it.
+			register "ide0_drive0_udma33_enable" = "0"
+			register "ide0_drive1_udma33_enable" = "0"
+			register "ide1_drive0_udma33_enable" = "0"
+			register "ide1_drive1_udma33_enable" = "0"
+		end
+	end
 end

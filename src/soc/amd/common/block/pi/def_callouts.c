@@ -199,7 +199,7 @@ static void callout_ap_entry(void *unused)
 {
 	AGESA_STATUS Status = AGESA_UNSUPPORTED;
 
-	printk(BIOS_DEBUG, "%s Func: 0x%x,  Data: 0x%lx, Ptr: 0x%p \n",
+	printk(BIOS_DEBUG, "%s Func: 0x%x,  Data: 0x%lx, Ptr: 0x%p\n",
 		__func__, agesadata.Func, agesadata.Data, agesadata.ConfigPtr);
 
 	/* Check if this AP should run the function */

@@ -2346,7 +2346,7 @@ void set_2t_configuration(struct MCTStatStruc *pMCTstat,
 			enable_slow_access_mode = 1;
 	}
 
-	reg = 0x94; 				/* DRAM Configuration High */
+	reg = 0x94;				/* DRAM Configuration High */
 	dword = Get_NB32_DCT(dev, dct, reg);
 	if (enable_slow_access_mode)
 		dword |= (0x1 << 20);		/* Set 2T CMD mode */
@@ -2539,7 +2539,7 @@ static void set_cc6_save_enable(struct MCTStatStruc *pMCTstat,
 	uint32_t dword;
 
 	dword = Get_NB32(pDCTstat->dev_dct, 0x118);
-	dword &= ~(0x1 << 18); 		/* CC6SaveEn = enable */
+	dword &= ~(0x1 << 18);		/* CC6SaveEn = enable */
 	dword |= (enable & 0x1) << 18;
 	Set_NB32(pDCTstat->dev_dct, 0x118, dword);
 }
@@ -7908,10 +7908,11 @@ void mct_SetDramConfigHi_D(struct MCTStatStruc *pMCTstat,
 	 * Solution: From the bug report:
 	 *  1. A software-initiated frequency change should be wrapped into the
 	 *     following sequence :
-	 * 	- a) Disable Compensation (F2[1, 0]9C_x08[30])
-	 * 	b) Reset the Begin Compensation bit (D3CMP->COMP_CONFIG[0]) in all the compensation engines
-	 * 	c) Do frequency change
-	 * 	d) Enable Compensation (F2[1, 0]9C_x08[30])
+	 *	a) Disable Compensation (F2[1, 0]9C_x08[30])
+	 *	b) Reset the Begin Compensation bit (D3CMP->COMP_CONFIG[0]) in
+	 *	   all the compensation engines
+	 *	c) Do frequency change
+	 *	d) Enable Compensation (F2[1, 0]9C_x08[30])
 	 *  2. A software-initiated Disable Compensation should always be
 	 *     followed by step b) of the above steps.
 	 * Silicon Status: Fixed In Rev B0

@@ -191,7 +191,7 @@ struct mei_header {
 #define MKHI_MDES_ENABLE	0x09
 
 #define MKHI_GET_FW_VERSION	0x02
-#define MKHI_SET_UMA  	        0x08
+#define MKHI_SET_UMA	        0x08
 #define MKHI_END_OF_POST	0x0c
 #define MKHI_FEATURE_OVERRIDE	0x14
 
@@ -293,7 +293,7 @@ typedef struct {
 typedef struct {
 	u16  lock_state		     : 1;
 	u16  authenticate_module     : 1;
-	u16  s3authentication  	     : 1;
+	u16  s3authentication	     : 1;
 	u16  flash_wear_out          : 1;
 	u16  flash_variable_security : 1;
 	u16  wwan3gpresent	     : 1;
@@ -351,7 +351,7 @@ typedef struct {
 typedef  struct {
 	u32  mbp_size	 : 8;
 	u32  num_entries : 8;
-	u32  rsvd      	 : 16;
+	u32  rsvd	 : 16;
 } __packed mbp_header;
 
 typedef struct {

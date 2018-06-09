@@ -454,14 +454,14 @@ static void EnableLclkGating(struct device *dev)
 	reg = 0xE8;
 	port = dev->path.pci.devfn >> 3;
 	switch (port) {
- 		//PCIE_CORE_INDEX_GPP1
+		//PCIE_CORE_INDEX_GPP1
 		case 2:
 		case 3:
 			reg = 0x94;
 			mask = 1 << 16;
 			break;
 
- 		//PCIE_CORE_INDEX_GPP2
+		//PCIE_CORE_INDEX_GPP2
 		case 11:
 		case 12:
 			value = 1 << 28;
@@ -479,7 +479,7 @@ static void EnableLclkGating(struct device *dev)
 			value = 1 << 25;
 			break;
 
- 		//PCIE_CORE_INDEX_SB;
+		//PCIE_CORE_INDEX_SB;
 		case 8:
 			reg = 0x94;
 			mask = 1 << 24;

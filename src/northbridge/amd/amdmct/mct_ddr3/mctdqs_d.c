@@ -1102,7 +1102,7 @@ void read_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 
 	dword = Get_NB32_DCT(dev, dct, 0x270);
 	dword &= ~(0x7ffff);				/* DataPrbsSeed = 55555 */
-// 	dword |= (0x55555);
+//	dword |= (0x55555);
 	dword |= (0x44443);				/* Use AGESA seed */
 	Set_NB32_DCT(dev, dct, 0x270, dword);
 
@@ -1199,7 +1199,7 @@ void write_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 
 	dword = Get_NB32_DCT(dev, dct, 0x270);
 	dword &= ~(0x7ffff);				/* DataPrbsSeed = 55555 */
-// 	dword |= (0x55555);
+//	dword |= (0x55555);
 	dword |= (0x44443);				/* Use AGESA seed */
 	Set_NB32_DCT(dev, dct, 0x270, dword);
 
@@ -1633,7 +1633,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 	uint8_t lane_training_success[MAX_BYTE_LANES];
 	uint8_t dqs_results_array[1024];
 
- 	uint16_t ren_step = 0x40;
+	uint16_t ren_step = 0x40;
 	uint32_t index_reg = 0x98;
 	uint32_t dev = pDCTstat->dev_dct;
 

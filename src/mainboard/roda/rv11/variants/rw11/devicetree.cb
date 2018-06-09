@@ -115,7 +115,7 @@ chip northbridge/intel/sandybridge
 				chip superio/ite/it8783ef
 					register "TMPIN1.mode"		= "THERMAL_RESISTOR"
 					register "TMPIN2.mode"		= "THERMAL_RESISTOR"
-					register "ec.vin_mask"          = "VIN_ALL"
+					register "ec.vin_mask"		= "VIN_ALL"
 					register "FAN1.mode"		= "FAN_SMART_AUTOMATIC"
 					register "FAN1.smart.tmpin"	= " 1"
 					register "FAN1.smart.tmp_off"	= "60"

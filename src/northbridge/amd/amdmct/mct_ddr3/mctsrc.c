@@ -1002,7 +1002,7 @@ static void dqsTrainRcvrEn_SW_Fam10(struct MCTStatStruc *pMCTstat,
 	}
 	if (!_SSE2) {
 		cr4 = read_cr4();
-		cr4 &= ~(1<<9); 	/* restore cr4.OSFXSR */
+		cr4 &= ~(1<<9);		/* restore cr4.OSFXSR */
 		write_cr4(cr4);
 	}
 
@@ -1505,7 +1505,7 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 	}
 	if (!_SSE2) {
 		cr4 = read_cr4();
-		cr4 &= ~(1<<9); 	/* restore cr4.OSFXSR */
+		cr4 &= ~(1<<9);		/* restore cr4.OSFXSR */
 		write_cr4(cr4);
 	}
 
@@ -1725,7 +1725,7 @@ void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 	}
 	if (!_SSE2) {
 		cr4 = read_cr4();
-		cr4 &= ~(1<<9); 	/* restore cr4.OSFXSR */
+		cr4 &= ~(1<<9);		/* restore cr4.OSFXSR */
 		write_cr4(cr4);
 	}
 

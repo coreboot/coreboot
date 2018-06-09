@@ -461,7 +461,7 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 			continue;
 		}
 
-		BanksPresent = 1; 	/* flag for at least one bank is present */
+		BanksPresent = 1;	/* flag for at least one bank is present */
 		TestAddr = mct_GetMCTSysAddr_D(pMCTstat, pDCTstat, pDCTstat->Channel, ChipSel, &valid);
 		if (!valid) {
 			print_debug_dqs("\t\t\t\tAddress not supported on current CS ", TestAddr, 4);
@@ -762,7 +762,7 @@ static u8 CompareDQSTestPattern_D(struct MCTStatStruc *pMCTstat, struct DCTStatS
 		test_buf += 2;
 	}
 
-	bytelane = 0;  		/* bytelane counter */
+	bytelane = 0;		/* bytelane counter */
 	bitmap = 0xFF;		/* bytelane test bitmap, 1 = pass */
 	for (i = 0; i < (9 * 64 / 4); i++) { /* sizeof testpattern. /4 due to next loop */
 		value = read32_fs(addr_lo);

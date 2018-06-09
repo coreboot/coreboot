@@ -22,10 +22,10 @@
 #include "chip.h"
 #include "rev.h"
 
-#define NBMISC_INDEX 	0x60
-#define NBHTIU_INDEX 	0x94
-#define NBMC_INDEX 		0xE8
-#define NBPCIE_INDEX  	0xE0
+#define NBMISC_INDEX	0x60
+#define NBHTIU_INDEX	0x94
+#define NBMC_INDEX		0xE8
+#define NBPCIE_INDEX	0xE0
 #define EXT_CONF_BASE_ADDRESS 0xE0000000
 #define	TEMP_MMIO_BASE_ADDRESS	0xC0000000
 

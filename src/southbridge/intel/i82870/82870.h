@@ -16,9 +16,9 @@
 #define ABAR		0x40
 
 /* for pci bridge  1460 */
-#define MTT	  	0x042
-#define HCCR	  	0x0f0
-#define ACNF	  	0x0e0
+#define MTT		0x042
+#define HCCR		0x0f0
+#define ACNF		0x0e0
 #define STRP		0x44		// Strap status register
 
 #define STRP_EN133	0x0001		// 133 MHz-capable (Px_133EN)

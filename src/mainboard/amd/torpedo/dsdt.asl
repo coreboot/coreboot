@@ -676,7 +676,7 @@ DefinitionBlock (
 
 		/* On older chips, clear PciExpWakeDisEn */
 		/*if (LLessEqual(\_SB.SBRI, 0x13)) {
-		*    	Store(0,\_SB.PWDE)
+		*	Store(0,\_SB.PWDE)
 		*}
 		*/
 
@@ -691,13 +691,13 @@ DefinitionBlock (
 	*  used, so it could be removed.
 	*
 	*
-	*  	\_GTS OEM Going To Sleep method
+	*	\_GTS OEM Going To Sleep method
 	*
-	*  	Entry:
-	*  		Arg0=The value of the sleeping state S1=1, S2=2
+	*	Entry:
+	*		Arg0=The value of the sleeping state S1=1, S2=2
 	*
-	*  	Exit:
-	*  		-none-
+	*	Exit:
+	*		-none-
 	*
 	*  Method(\_GTS, 1) {
 	*  DBGO("\\_GTS\n")
@@ -766,7 +766,7 @@ DefinitionBlock (
 	} /* End Method(\_WAK) */
 
 	Scope(\_GPE) {	/* Start Scope GPE */
-	} 	/* End Scope GPE */
+	}	/* End Scope GPE */
 
 	/* System Bus */
 	Scope(\_SB) { /* Start \_SB scope */

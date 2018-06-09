@@ -374,7 +374,7 @@ void intel_me8_finalize_smm(void);
 typedef  struct {
 	u32  mbp_size	 : 8;
 	u32  num_entries : 8;
-	u32  rsvd      	 : 16;
+	u32  rsvd	 : 16;
 } __packed mbp_header;
 
 typedef struct {
@@ -459,7 +459,7 @@ typedef struct {
 typedef struct {
 	u16  lock_state		     : 1;
 	u16  authenticate_module     : 1;
-	u16  s3authentication  	     : 1;
+	u16  s3authentication	     : 1;
 	u16  flash_wear_out          : 1;
 	u16  flash_variable_security : 1;
 	u16  reserved		     : 11;

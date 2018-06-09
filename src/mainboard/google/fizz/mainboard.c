@@ -179,6 +179,25 @@ const char *smbios_system_sku(void)
 	return sku_str;
 }
 
+const char *fizz_oem_name[] = {
+	"Kench",
+	"Teemo",
+	"Sion",
+	"Wukong",
+	"Wukong",
+	"Wukong",
+	"Teemo",
+	"",
+	"Jax",
+	"",
+	"Excelsior"
+};
+
+const char *smbios_mainboard_product_name(void)
+{
+	return fizz_oem_name[board_oem_id()];
+}
+
 static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();

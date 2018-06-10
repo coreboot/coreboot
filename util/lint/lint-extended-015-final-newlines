@@ -16,6 +16,8 @@
 
 LC_ALL=C export LC_ALL
 
+PIDS=""
+INCLUDED_DIRS_AND_FILES='util/* src/* payloads/* configs/* Makefile *.inc'
 EXCLUDED_DIRS='src/vendorcode/\|util/romcc/\|cbfstool/lzma/\|cbfstool/lz4/\|Documentation/\|build/\|3rdparty/\|\.git/\|coreboot-builds/\|util/nvidia/cbootimage/'
 EXCLUDED_FILES='\.jpg$\|\.cksum$\|\.bin$\|\.vbt$\|\.hex$\|\.ico$\|\.o$\|\.bz2$\|\.xz$\|^.tmpconfig\|\.pyc$\|_shipped$\|sha256$\|\.png$\|\.patch$'
 
@@ -25,7 +27,7 @@ if [ -n "$(command -v git)" ] && \
 then
 	FIND_FILES="git ls-files"
 else
-	FIND_FILES="find . "
+	FIND_FILES="find"
 fi
 
 HAVE_FILE=$(command -v file 1>/dev/null 2>&1; echo $?)
@@ -49,7 +51,6 @@ test_for_final_newline() {
 		if [ -f "$filename" ] && { [ ! -x "$filename" ] || \
 			is_eligible_executable "$filename"; };
 		then
-
 			# Verify that there is a newline at the end
 			# $() strips trailing newlines
 			if [ -n "$(tail -c 1 "$filename")" ]; then
@@ -65,7 +66,15 @@ test_for_final_newline() {
 	done
 }
 
-${FIND_FILES} | sed 's|^\./||' | sort | \
-	grep -v "$EXCLUDED_DIRS" | \
-	grep -v "$EXCLUDED_FILES" | \
-	test_for_final_newline
+for directory in $INCLUDED_DIRS_AND_FILES ; do
+	${FIND_FILES} ${directory} | sed 's|^\./||' | sort | \
+		grep -v "$EXCLUDED_DIRS" | \
+		grep -v "$EXCLUDED_FILES" | \
+		test_for_final_newline &
+	PIDS="$PIDS $!"
+done
+
+# wait for tests to finish.
+for pid in $PIDS; do
+	wait "$pid"
+done

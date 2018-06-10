@@ -126,6 +126,11 @@ typedef enum ACCESS_WIDTH {
   AccessS3SaveWidth64,                                      ///< Save 64 bits data.
 } ACCESS_WIDTH;
 
+/* When AMD rolled out CarrizoPI, they made a bad choice of removing
+ * an entry from the middle of the enumeration list.
+ */
+#define AMD_S3_SAVE_REMOVED
+
 /// AGESA struct name
 typedef enum {
   // AGESA BASIC FUNCTIONS
@@ -140,6 +145,10 @@ typedef enum {
   AMD_INIT_RESUME            = 0x00029000,                                          ///< AmdInitResume entry point handle
   AMD_RELEASE_STRUCT         = 0x0002A000,                                       ///< AmdReleaseStruct handle
   AMD_S3LATE_RESTORE         = 0x0002B000,                                       ///< AmdS3LateRestore entry point handle
+#if 0
+  /* This was removed, shifting everything else up.*/
+  AMD_S3_SAVE                = 0x0002C000,
+#endif
   AMD_GET_APIC_ID            = 0x0002C000,                                          ///< AmdGetApicId entry point handle
   AMD_GET_PCI_ADDRESS        = 0x0002D000,                               ///< AmdGetPciAddress entry point handle
   AMD_IDENTIFY_CORE          = 0x0002E000,                                        ///< AmdIdentifyCore general service handle

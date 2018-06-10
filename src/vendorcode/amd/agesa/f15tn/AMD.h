@@ -144,7 +144,10 @@ typedef enum {
   AMD_READ_EVENT_LOG,                                       ///< AmdReadEventLog general service handle
   AMD_GET_EXECACHE_SIZE,                                    ///< AmdGetAvailableExeCacheSize general service handle
   AMD_LATE_RUN_AP_TASK,                                     ///< AmdLateRunApTask entry point handle
-  AMD_IDENTIFY_DIMMS                                        ///< AmdIdentifyDimm general service handle
+  AMD_IDENTIFY_DIMMS,                                       ///< AmdIdentifyDimm general service handle
+  AMD_GET_2D_DATA_EYE,                                      ///< AmdGet2DDataEye general service handle
+  AMD_S3FINAL_RESTORE,                                      ///< AmdS3FinalRestore entry point handle
+  AMD_INIT_RTB                                              ///< AmdInitRtb entry point handle
 } AGESA_STRUCT_NAME;
 
   /*  ResetType constant values */

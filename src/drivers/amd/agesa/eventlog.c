@@ -29,8 +29,9 @@ static const char undefined[] = "undefined";
 static const char *AgesaFunctionNameStr[] = {
 	"AmdInitRecovery", "AmdCreateStruct", "AmdInitEarly", "AmdInitEnv", "AmdInitLate",
 	"AmdInitMid", "AmdInitPost", "AmdInitReset", "AmdInitResume", "AmdReleaseStruct",
-	"AmdS3LateRestore","AmdS3Save", "AmdGetApicId", "AmdGetPciAddress", "AmdIdentifyCore",
+	"AmdS3LateRestore", "AmdS3Save", "AmdGetApicId", "AmdGetPciAddress", "AmdIdentifyCore",
 	"AmdReadEventLog", "AmdGetAvailableExeCacheSize", "AmdLateRunApTask", "AmdIdentifyDimm",
+	"Amd2dDataEye", "AmdS3FinalRestore", "AmdInitRtb"
 };
 
 /* heapManager.h */

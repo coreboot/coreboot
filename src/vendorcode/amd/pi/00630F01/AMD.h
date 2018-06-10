@@ -149,6 +149,8 @@ typedef enum {
   AMD_IDENTIFY_DIMMS         = 0x00033000,                  ///< AmdIdentifyDimm general service handle
   AMD_GET_2D_DATA_EYE        = 0x00034000,                  ///< AmdGet2DDataEye general service handle
   AMD_S3FINAL_RESTORE        = 0x00035000,                  ///< AmdS3FinalRestore entry point handle
+  AMD_INIT_RTB               = 0x00036000, /* reserved */
+
   AMD_HEAP_ALLOCATE_BUFFER   = 0x00038000,
   AMD_HEAP_DEALLOCATE_BUFFER = 0x00039000,
   FCH_INIT_RESET             = 0x00040000,

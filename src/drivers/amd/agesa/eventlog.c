@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Kyösti Mälkki
+ * Copyright (C) 2016-2019 Kyösti Mälkki
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,45 +26,75 @@
 
 static const char undefined[] = "undefined";
 
-/* Match order of enum AGESA_STRUCT_NAME. */
-static const char *AgesaFunctionNameStr[] = {
-	"AmdInitRecovery", "AmdCreateStruct", "AmdInitEarly", "AmdInitEnv", "AmdInitLate",
-	"AmdInitMid", "AmdInitPost", "AmdInitReset", "AmdInitResume", "AmdReleaseStruct",
-	"AmdS3LateRestore", "AmdS3Save", "AmdGetApicId", "AmdGetPciAddress", "AmdIdentifyCore",
-	"AmdReadEventLog", "AmdGetAvailableExeCacheSize", "AmdLateRunApTask", "AmdIdentifyDimm",
-	"Amd2dDataEye", "AmdS3FinalRestore", "AmdInitRtb"
+struct agesa_mapping
+{
+	AGESA_STRUCT_NAME func;
+	const char *name;
 };
 
-/* This function has to match with enumeration of AGESA_STRUCT_NAME defined
- * inside AMD.h header file. Unfortunately those are different across
- * different vendorcode subtrees.
- *
- * TBD: Fix said header or move this function together with the strings above
- * under vendorcode/ tree.
- */
-
-static const char *agesa_struct_name(AGESA_STRUCT_NAME state)
-{
-#if CONFIG(CPU_AMD_AGESA_OPENSOURCE)
-	if ((state < AMD_INIT_RECOVERY) || (state > AMD_IDENTIFY_DIMMS))
-		return undefined;
-
-	int index = state - AMD_INIT_RECOVERY;
-#else
-	state >>= 12;
-	if ((state < AMD_INIT_RECOVERY >> 12) || (state > AMD_IDENTIFY_DIMMS >> 12))
-		return undefined;
-
-	int index = state - (AMD_INIT_RECOVERY >> 12);
+static const struct agesa_mapping entrypoint[] = {
+	{
+		.func = AMD_INIT_RESET,
+		.name = "AmdInitReset",
+	},
+	{
+		.func = AMD_INIT_EARLY,
+		.name = "AmdInitEarly",
+	},
+	{
+		.func = AMD_INIT_POST,
+		.name = "AmdInitPost",
+	},
+	{
+		.func = AMD_INIT_RESUME,
+		.name = "AmdInitResume",
+	},
+	{
+		.func = AMD_INIT_ENV,
+		.name = "AmdInitEnv",
+	},
+	{
+		.func = AMD_INIT_MID,
+		.name = "AmdInitMid",
+	},
+	{
+		.func = AMD_INIT_LATE,
+		.name = "AmdInitLate",
+	},
+	{
+		.func = AMD_S3LATE_RESTORE,
+		.name = "AmdS3LateRestore",
+	},
+#if !defined(AMD_S3_SAVE_REMOVED)
+	{
+		.func = AMD_S3_SAVE,
+		.name = "AmdS3Save",
+	},
 #endif
-	return AgesaFunctionNameStr[index];
-}
+	{
+		.func = AMD_S3FINAL_RESTORE,
+		.name = "AmdS3FinalRestore",
+	},
+	{
+		.func = AMD_INIT_RTB,
+		.name = "AmdInitRtb",
+	},
+};
 
 void agesa_state_on_entry(struct agesa_state *task, AGESA_STRUCT_NAME func)
 {
+	int i;
+
 	task->apic_id = (u8) (cpuid_ebx(1) >> 24);
 	task->func = func;
-	task->function_name = agesa_struct_name(func);
+	task->function_name = undefined;
+
+	for (i = 0; i < ARRAY_SIZE(entrypoint); i++) {
+		if (task->func == entrypoint[i].func) {
+			task->function_name = entrypoint[i].name;
+			break;
+		}
+	}
 
 	printk(BIOS_DEBUG, "\nAPIC %02d: ** Enter %s [%08x]\n",
 		task->apic_id, task->function_name, task->func);

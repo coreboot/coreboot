@@ -49,7 +49,7 @@ static void alink_ax_indx(u32 space, u32 axindc, u32 mask, u32 val)
 }
 
 
-static void set_fam10_ext_cfg_enable_bits(device_t fam10_dev,
+static void set_fam10_ext_cfg_enable_bits(pci_devfn_t fam10_dev,
 	u32 reg_pos, u32 mask, u32 val)
 {
 	u32 reg_old, reg;
@@ -100,7 +100,7 @@ static void get_cpu_rev(void)
 /*
 CIM NB_GetRevisionInfo()
 */
-static u8 get_nb_rev(device_t nb_dev)
+static u8 get_nb_rev(pci_devfn_t nb_dev)
 {
 	u8 reg;
 	reg = pci_read_config8(nb_dev, 0x8);	/* copy from CIM, can't find in doc */
@@ -148,7 +148,7 @@ void sr5650_htinit(void)
 	/*
 	 * About HT, it has been done in enumerate_ht_chain().
 	 */
-	device_t cpu_f0, sr5650_f0, clk_f1;
+	pci_devfn_t cpu_f0, sr5650_f0, clk_f1;
 	u32 reg;
 	u8 cpu_ht_freq, cpu_htfreq_max, ibias;
 	u8 sbnode;
@@ -277,7 +277,7 @@ void sr5650_htinit(void)
  */
 void sr5650_htinit_dect_and_enable_isochronous_link(void)
 {
-	device_t sr5650_f0;
+	pci_devfn_t sr5650_f0;
 	unsigned char iommu;
 
 	sr5650_f0 = PCI_DEV(0, 0, 0);
@@ -300,8 +300,8 @@ void sr5650_htinit_dect_and_enable_isochronous_link(void)
 
 void fam10_optimization(void)
 {
-	device_t cpu_f0, cpu_f2, cpu_f3;
-	device_t cpu1_f0, cpu1_f2, cpu1_f3;
+	pci_devfn_t cpu_f0, cpu_f2, cpu_f3;
+	pci_devfn_t cpu1_f0, cpu1_f2, cpu1_f3;
 	msr_t msr;
 	u32 val;
 
@@ -331,7 +331,7 @@ void fam10_optimization(void)
 /*****************************************
 * Compliant with CIM_33's ATINB_PCICFG_POR_TABLE
 *****************************************/
-static void sr5650_por_pcicfg_init(device_t nb_dev)
+static void sr5650_por_pcicfg_init(pci_devfn_t nb_dev)
 {
 	/* enable PCI Memory Access */
 	set_nbcfg_enable_bits_8(nb_dev, 0x04, (u8)(~0xFD), 0x02);
@@ -357,7 +357,7 @@ static void sr5650_por_pcicfg_init(device_t nb_dev)
 * Compliant with CIM_33's ATINB_MISCIND_POR_TABLE
 * Compliant with CIM_33's MISC_INIT_TBL
 *****************************************/
-static void sr5650_por_misc_index_init(device_t nb_dev)
+static void sr5650_por_misc_index_init(pci_devfn_t nb_dev)
 {
 	unsigned char iommu;
 
@@ -455,9 +455,9 @@ static void sr5650_por_misc_index_init(device_t nb_dev)
 /*****************************************
 * Some setting is from rpr. Some is from CIMx.
 *****************************************/
-static void sr5650_por_htiu_index_init(device_t nb_dev)
+static void sr5650_por_htiu_index_init(pci_devfn_t nb_dev)
 {
-	device_t cpu_f0;
+	pci_devfn_t cpu_f0;
 
 	cpu_f0 = PCI_DEV(0, 0x18, 0);
 
@@ -505,7 +505,7 @@ static void sr5650_por_htiu_index_init(device_t nb_dev)
 * POR: Power On Reset
 * RPR: Register Programming Requirements
 *****************************************/
-static void sr5650_por_init(device_t nb_dev)
+static void sr5650_por_init(pci_devfn_t nb_dev)
 {
 	printk(BIOS_INFO, "sr5650_por_init\n");
 	/* ATINB_PCICFG_POR_TABLE, initialize the values for sr5650 PCI Config registers */
@@ -539,7 +539,7 @@ void sr5650_before_pci_init(void)
 */
 void sr5650_early_setup(void)
 {
-	device_t nb_dev = PCI_DEV(0, 0, 0);
+	pci_devfn_t nb_dev = PCI_DEV(0, 0, 0);
 	printk(BIOS_INFO, "sr5650_early_setup()\n");
 
 	/*ATINB_PrepareInit */
@@ -573,7 +573,7 @@ void sr5650_disable_pcie_bridge(void)
 {
 	u32 mask;
 	u32 reg;
-	device_t nb_dev = PCI_DEV(0, 0, 0);
+	pci_devfn_t nb_dev = PCI_DEV(0, 0, 0);
 
 	mask = (1 << 2) | (1 << 3); /*GPP1*/
 	mask |= (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7) | (1 << 16) | (1 << 17); /*GPP3a*/

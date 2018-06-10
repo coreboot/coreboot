@@ -273,7 +273,11 @@ static void ns8390_reset(unsigned int eth_nic_base)
 
 int ne2k_init(unsigned int eth_nic_base) {
 
-	device_t dev;
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
 	unsigned char c;
 
 	/* Power management controller */

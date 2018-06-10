@@ -233,13 +233,12 @@ static void read_reg(void *src, void *value, uint32_t size)
 
 static ich9_spi_regs *spi_regs(void)
 {
-	device_t dev;
 	uint32_t sbase;
 
 #if ENV_SMM
-	dev = PCI_DEV(0, LPC_DEV, LPC_FUNC);
+	pci_devfn_t dev = PCI_DEV(0, LPC_DEV, LPC_FUNC);
 #else
-	dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
 #endif
 	if (!dev) {
 		printk(BIOS_ERR, "%s: PCI device not found", __func__);

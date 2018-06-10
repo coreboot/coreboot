@@ -189,7 +189,7 @@ static void showmmio(int level, u8 which, u32 base, u32 lim)
  * @param dev A 32-bit number in the standard bus/dev/fn format which is used
  *            raw config space.
  */
-static void showalldram(int level, device_t dev)
+static void showalldram(int level, struct device *dev)
 {
 	u8 reg;
 	for (reg = DRAM_ROUTE_START; reg <= DRAM_ROUTE_END; reg += 8) {
@@ -207,7 +207,7 @@ static void showalldram(int level, device_t dev)
  * @param dev A 32-bit number in the standard bus/dev/fn format which is used
  *            raw config space.
  */
-static void showallmmio(int level, device_t dev)
+static void showallmmio(int level, struct device *dev)
 {
 	u8 reg;
 	for (reg = MMIO_ROUTE_START; reg <= MMIO_ROUTE_END; reg += 8) {
@@ -225,7 +225,7 @@ static void showallmmio(int level, device_t dev)
  * @param dev A 32-bit number in the standard bus/dev/fn format which is used
  *            raw config space.
  */
-static void showallpciio(int level, device_t dev)
+static void showallpciio(int level, struct device *dev)
 {
 	u8 reg;
 	for (reg = PCIIO_ROUTE_START; reg <= PCIIO_ROUTE_END; reg += 8) {
@@ -243,7 +243,7 @@ static void showallpciio(int level, device_t dev)
  * @param dev A 32-bit number in the standard bus/dev/fn format which is used
  *            raw config space.
  */
-static void showallconfig(int level, device_t dev)
+static void showallconfig(int level, struct device *dev)
 {
 	u8 reg;
 	for (reg = CONFIG_ROUTE_START; reg <= CONFIG_ROUTE_END; reg += 4) {
@@ -260,7 +260,7 @@ static void showallconfig(int level, device_t dev)
  * @param dev A 32-bit number in the standard bus/dev/fn format which is used
  *            raw config space.
  */
-void showallroutes(int level, device_t dev)
+void showallroutes(int level, struct device *dev)
 {
 	showalldram(level, dev);
 	showallmmio(level, dev);

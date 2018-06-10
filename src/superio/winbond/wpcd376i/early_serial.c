@@ -21,7 +21,7 @@
 #include <device/pnp_def.h>
 #include "wpcd376i.h"
 
-void wpcd376i_enable_serial(device_t dev, u16 iobase)
+void wpcd376i_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);

@@ -49,8 +49,8 @@
 #define I8900_UART_CLK_PREDIVIDE_26	0x02
 #define I8900_ENABLE_SIRQ		0x01
 
-void i8900_configure_uart_clk(device_t dev, u8 predivide);
-void i8900_enable_serial(device_t dev, u16 iobase);
-void i8900_enable_wdt(device_t dev, u16 iobase);
+void i8900_configure_uart_clk(pnp_devfn_t dev, u8 predivide);
+void i8900_enable_serial(pnp_devfn_t dev, u16 iobase);
+void i8900_enable_wdt(pnp_devfn_t dev, u16 iobase);
 
 #endif

@@ -35,7 +35,8 @@ const struct smm_save_state_ops *get_smm_save_state_ops(void)
 	return &em64t101_smm_ops;
 }
 
-static void pch_configure_endpoints(device_t dev, int epmask_id, uint32_t mask)
+static void pch_configure_endpoints(pci_devfn_t dev, int epmask_id,
+				    uint32_t mask)
 {
 	uint32_t reg32;
 
@@ -43,7 +44,7 @@ static void pch_configure_endpoints(device_t dev, int epmask_id, uint32_t mask)
 	pci_write_config32(dev, PCH_P2SB_EPMASK(epmask_id), reg32 | mask);
 }
 
-static void disable_sideband_access(device_t dev)
+static void disable_sideband_access(pci_devfn_t dev)
 {
 	u8 reg8;
 	uint32_t mask;
@@ -60,7 +61,7 @@ static void disable_sideband_access(device_t dev)
 
 static void pch_disable_heci(void)
 {
-	device_t dev = PCH_DEV_P2SB;
+	pci_devfn_t dev = PCH_DEV_P2SB;
 	struct pcr_sbi_msg msg = {
 		.pid = PID_CSME0,
 		.offset = 0,

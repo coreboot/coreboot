@@ -50,7 +50,7 @@ static void tpm_enable(void)
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	bootblock_systemagent_early_init();
 
@@ -75,7 +75,7 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 
 static void enable_pmcbar(void)
 {
-	device_t pmc = PCH_DEV_PMC;
+	pci_devfn_t pmc = PCH_DEV_PMC;
 
 	/* Set PMC base addresses and enable decoding. */
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_0, PMC_BAR0);

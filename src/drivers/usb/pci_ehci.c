@@ -37,7 +37,8 @@ int ehci_debug_hw_enable(unsigned int *base, unsigned int *dbg_offset)
 #ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev = dbg_dev;
 #else
-	device_t dev = dev_find_slot(PCI_DEV2SEGBUS(dbg_dev), PCI_DEV2DEVFN(dbg_dev));
+	struct device *dev = dev_find_slot(PCI_DEV2SEGBUS(dbg_dev),
+					   PCI_DEV2DEVFN(dbg_dev));
 #endif
 
 	u32 class = pci_read_config32(dev, PCI_CLASS_REVISION) >> 8;
@@ -123,7 +124,8 @@ u8 *pci_ehci_base_regs(pci_devfn_t sdev)
 #ifdef __SIMPLE_DEVICE__
 	u8 *base = (u8 *)(pci_read_config32(sdev, EHCI_BAR_INDEX) & ~0x0f);
 #else
-	device_t dev = dev_find_slot(PCI_DEV2SEGBUS(sdev), PCI_DEV2DEVFN(sdev));
+	struct device *dev = dev_find_slot(PCI_DEV2SEGBUS(sdev),
+					   PCI_DEV2DEVFN(sdev));
 	u8 *base = (u8 *)(pci_read_config32(dev, EHCI_BAR_INDEX) & ~0x0f);
 #endif
 	return base + HC_LENGTH(read32(base));

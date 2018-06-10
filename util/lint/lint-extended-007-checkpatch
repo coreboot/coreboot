@@ -15,30 +15,24 @@
 #
 # DESCR: Run checkpatch on directories that are known good
 
-# Top level
-util/lint/lint-007-checkpatch "src/acpi"
+PIDS=""
+DIRS="src/acpi \
+src/cpu/armltd src/cpu/qemu-power8 src/cpu/qemu-x86 \
+src/drivers/dec src/drivers/gic src/drivers/ti \
+src/ec/purism \
+src/include/boot src/include/superio src/include/sys \
+src/mainboard/adlink src/mainboard/linutop \
+src/mainboard/purism src/mainboard/ti \
+src/soc/rdc \
+src/superio/acpi src/superio/common \
+"
 
-#src/cpu
-util/lint/lint-007-checkpatch "src/cpu/armltd src/cpu/qemu-power8 \
-src/cpu/qemu-x86"
+for directory in $DIRS; do
+	util/lint/lint-007-checkpatch "$directory" &
+	PIDS="$PIDS $!"
+done
 
-#src/drivers
-util/lint/lint-007-checkpatch "src/drivers/dec  src/drivers/gic \
-src/drivers/ti"
-
-#src/ec
-util/lint/lint-007-checkpatch "src/ec/purism"
-
-#src/include
-util/lint/lint-007-checkpatch "src/include/boot src/include/superio \
-src/include/sys"
-
-#src/mainboard
-util/lint/lint-007-checkpatch "src/mainboard/adlink src/mainboard/linutop \
-src/mainboard/purism src/mainboard/ti"
-
-# src/soc
-util/lint/lint-007-checkpatch "src/soc/rdc"
-
-# src/superio
-util/lint/lint-007-checkpatch "src/superio/acpi src/superio/common"
+# wait for tests to finish.
+for pid in $PIDS; do
+	wait "$pid"
+done

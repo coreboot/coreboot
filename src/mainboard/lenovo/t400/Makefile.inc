@@ -18,3 +18,5 @@ romstage-y += dock.c
 ramstage-y += dock.c
 ramstage-y += cstates.c
 ramstage-y += blc.c
+
+ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads

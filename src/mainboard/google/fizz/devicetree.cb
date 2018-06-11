@@ -429,17 +429,17 @@ chip soc/intel/skylake
 			end
 		end # I2C #5
 		device pci 19.2 off  end # I2C #4
-		device pci 1c.0 on # PCI Express Port 1
+		device pci 1c.0 on end # PCI Express Port 1
+		device pci 1c.1 off end # PCI Express Port 2
+		# PCI Express Port 3 for LAN, will be swapped to port 1 by FSP
+		device pci 1c.2 on
 			chip drivers/net
 				register "customized_leds" = "0x0fa5"
 				register "wake" = "GPE0_PCI_EXP"
 				register "device_index" = "1"
 				device pci 00.0 on end
 			end
-		end # PCI Express Port 1
-		device pci 1c.1 off end # PCI Express Port 2
-		# PCI Express Port 3 for LAN, but will be swapped to port 1
-		device pci 1c.2 on end
+		end # PCI Express Port 3
 		device pci 1c.3 on
 			chip drivers/intel/wifi
 				register "wake" = "GPE0_PCI_EXP"

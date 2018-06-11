@@ -20,6 +20,7 @@
 
 extern int linenum;
 
+/* Maintains list of all the unique chip structures for the board. */
 static struct chip chip_header;
 
 /*
@@ -43,8 +44,8 @@ typedef enum {
  *
  *
  *                 +------------------------+                +----------------------+
- *                 |                        |                |  Mainboard           |
- *       +---------+ Root device (root_dev) +--------------->+  instance            +
+ *                 |       Root device      |                |  Mainboard           |
+ *       +---------+     (base_root_dev)    +--------------->+  instance            +
  *       |         |                        | chip_instance  |  (mainboard_instance)|
  *       |         +------------------------+                |                      |
  *       |                      |                            +----------------------+
@@ -52,7 +53,7 @@ typedef enum {
  *       | parent               v                                      |
  *       |            +-------------------+                            |
  *       |            |     Root bus      |                            |
- *       +----------->+    (root_bus)     |                            |
+ *       +----------->+  (base_root_bus)  |                            |
  *                    |                   |                            |
  *                    +-------------------+                            |
  *                              |                                      |
@@ -74,23 +75,23 @@ typedef enum {
  *
  *
  */
-static struct device root_dev;
+static struct device base_root_dev;
 static struct chip_instance mainboard_instance;
 
-static struct bus root_bus = {
+static struct bus base_root_bus = {
 	.id = 0,
-	.dev = &root_dev,
+	.dev = &base_root_dev,
 };
 
-static struct device root_dev = {
+static struct device base_root_dev = {
 	.name = "dev_root",
 	.id = 0,
 	.chip_instance = &mainboard_instance,
 	.path = " .type = DEVICE_PATH_ROOT ",
 	.ops = "&default_dev_ops_root",
-	.parent = &root_bus,
+	.parent = &base_root_bus,
 	.enabled = 1,
-	.bus = &root_bus,
+	.bus = &base_root_bus,
 };
 
 static struct chip mainboard_chip = {
@@ -105,7 +106,7 @@ static struct chip_instance mainboard_instance = {
 };
 
 /* This is the parent of all devices added by parsing the devicetree file. */
-struct bus *root_parent = &root_bus;
+struct bus *root_parent;
 
 struct queue_entry {
 	void *data;
@@ -581,7 +582,7 @@ static int dev_has_children(struct device *dev)
 
 static void pass0(FILE *fil, struct device *ptr, struct device *next)
 {
-	if (ptr == &root_dev) {
+	if (ptr == &base_root_dev) {
 		fprintf(fil, "DEVTREE_CONST struct bus %s_links[];\n",
 			ptr->name);
 		return;
@@ -670,7 +671,7 @@ static void pass1(FILE *fil, struct device *ptr, struct device *next)
 	struct chip_instance *chip_ins = ptr->chip_instance;
 	int has_children = dev_has_children(ptr);
 
-	if (ptr != &root_dev)
+	if (ptr != &base_root_dev)
 		fprintf(fil, "static ");
 	fprintf(fil, "DEVTREE_CONST struct device %s = {\n", ptr->name);
 	fprintf(fil, "#if !DEVTREE_EARLY\n");
@@ -867,15 +868,9 @@ enum {
 
 #define ARG_COUNT		3
 
-int main(int argc, char **argv)
+static void parse_devicetree(const char *file, struct bus *parent)
 {
-	if (argc != ARG_COUNT)
-		usage();
-
-	char *devtree = argv[DEVICEFILE_ARG];
-	char *outputc = argv[OUTPUTFILE_ARG];
-
-	FILE *filec = fopen(devtree, "r");
+	FILE *filec = fopen(file, "r");
 	if (!filec) {
 		perror(NULL);
 		exit(1);
@@ -883,9 +878,23 @@ int main(int argc, char **argv)
 
 	yyrestart(filec);
 
+	root_parent = parent;
+	linenum = 0;
+
 	yyparse();
 
 	fclose(filec);
+}
+
+int main(int argc, char **argv)
+{
+	if (argc != ARG_COUNT)
+		usage();
+
+	char *base_devtree = argv[DEVICEFILE_ARG];
+	char *outputc = argv[OUTPUTFILE_ARG];
+
+	parse_devicetree(base_devtree, &base_root_bus);
 
 	FILE *autogen = fopen(outputc, "w");
 	if (!autogen) {
@@ -897,11 +906,11 @@ int main(int argc, char **argv)
 
 	emit_chips(autogen);
 
-	walk_device_tree(autogen, &root_dev, inherit_subsystem_ids);
+	walk_device_tree(autogen, &base_root_dev, inherit_subsystem_ids);
 	fprintf(autogen, "\n/* pass 0 */\n");
-	walk_device_tree(autogen, &root_dev, pass0);
+	walk_device_tree(autogen, &base_root_dev, pass0);
 	fprintf(autogen, "\n/* pass 1 */\n");
-	walk_device_tree(autogen, &root_dev, pass1);
+	walk_device_tree(autogen, &base_root_dev, pass1);
 
 	fclose(autogen);
 

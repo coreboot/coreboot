@@ -21,8 +21,6 @@
 #include <AGESA.h>
 #include <AMD.h>
 
-#include <heapManager.h>
-
 static const char undefined[] = "undefined";
 
 /* Match order of enum AGESA_STRUCT_NAME. */
@@ -32,11 +30,6 @@ static const char *AgesaFunctionNameStr[] = {
 	"AmdS3LateRestore", "AmdS3Save", "AmdGetApicId", "AmdGetPciAddress", "AmdIdentifyCore",
 	"AmdReadEventLog", "AmdGetAvailableExeCacheSize", "AmdLateRunApTask", "AmdIdentifyDimm",
 	"Amd2dDataEye", "AmdS3FinalRestore", "AmdInitRtb"
-};
-
-/* heapManager.h */
-static const char *HeapStatusStr[] = {
-	"DoNotExistYet", "LocalCache", "TempMem", "SystemMem", "DoNotExistAnymore","S3Resume"
 };
 
 /* This function has to match with enumeration of AGESA_STRUCT_NAME defined
@@ -62,15 +55,6 @@ const char *agesa_struct_name(int state)
 	int index = state - (AMD_INIT_RECOVERY >> 12);
 #endif
 	return AgesaFunctionNameStr[index];
-}
-
-const char *heap_status_name(int status)
-{
-	if ((status < HEAP_DO_NOT_EXIST_YET) || (status > HEAP_S3_RESUME))
-		return undefined;
-
-	int index = status - HEAP_DO_NOT_EXIST_YET;
-	return HeapStatusStr[index];
 }
 
 /*

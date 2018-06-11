@@ -30,6 +30,7 @@
 romstage-y += agesa-entry.c
 ramstage-y += agesa-entry.c
 
+libagesa-y += debug_util.c
 libagesa-y += amdlib.c
 
 # Do not optimise performance-critical low-level IO for size with -Os,

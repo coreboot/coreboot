@@ -25,6 +25,8 @@
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <amdlib.h>
+
+#include <debug_util.h>
 #include <AMD.h>
 
 #if CONFIG(CPU_AMD_AGESA_OPENSOURCE)

@@ -13,12 +13,12 @@
  * GNU General Public License for more details.
  */
 
-#ifndef SOC_MEDIATEK_MT8173_WDT_H
-#define SOC_MEDIATEK_MT8173_WDT_H
+#ifndef SOC_MEDIATEK_COMMON_WDT_H
+#define SOC_MEDIATEK_COMMON_WDT_H
 
 #include <stdint.h>
 
-struct mt8173_wdt_regs {
+struct mtk_wdt_regs {
 	u32 wdt_mode;
 	u32 wdt_length;
 	u32 wdt_restart;
@@ -50,4 +50,4 @@ enum {
 
 int mtk_wdt_init(void);
 
-#endif /* SOC_MEDIATEK_MT8173_WDT_H */
+#endif /* SOC_MEDIATEK_COMMON_WDT_H */

@@ -20,14 +20,14 @@
 #include <soc/wdt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-static struct mt8173_wdt_regs *const mt8173_wdt = (void *)RGU_BASE;
+static struct mtk_wdt_regs *const mtk_wdt = (void *)RGU_BASE;
 
 int mtk_wdt_init(void)
 {
 	uint32_t wdt_sta;
 
 	/* Write Mode register will clear status register */
-	wdt_sta = read32(&mt8173_wdt->wdt_status);
+	wdt_sta = read32(&mtk_wdt->wdt_status);
 
 	printk(BIOS_INFO, "WDT: Last reset was ");
 	if (wdt_sta & MTK_WDT_STA_HW_RST) {
@@ -49,7 +49,7 @@ int mtk_wdt_init(void)
 	 * ENABLE: disable watchdog on initialization.
 	 * Setting bit EXTEN to enable watchdog output.
 	 */
-	clrsetbits_le32(&mt8173_wdt->wdt_mode,
+	clrsetbits_le32(&mtk_wdt->wdt_mode,
 			MTK_WDT_MODE_DUAL_MODE | MTK_WDT_MODE_IRQ |
 			MTK_WDT_MODE_EXT_POL | MTK_WDT_MODE_ENABLE,
 			MTK_WDT_MODE_EXTEN | MTK_WDT_MODE_KEY);
@@ -59,5 +59,5 @@ int mtk_wdt_init(void)
 
 void do_hard_reset(void)
 {
-	write32(&mt8173_wdt->wdt_swrst, MTK_WDT_SWRST_KEY);
+	write32(&mtk_wdt->wdt_swrst, MTK_WDT_SWRST_KEY);
 }

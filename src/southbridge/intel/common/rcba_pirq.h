@@ -37,8 +37,4 @@
 #define D20IR		0x3160	/* 16bit */
 #define D19IR		0x3168	/* 16bit */
 
-#define DEFAULT_RCBA	0xfed1c000
-
-#define RCBA16(x) (*((volatile u16 *)(DEFAULT_RCBA + (x))))
-
 #endif /* SOUTHBRIDGE_INTEL_COMMON_RCBA_PIRQ_H */

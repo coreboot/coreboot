@@ -292,6 +292,10 @@ config SMM_RESERVED_SIZE
 	hex
 	default 0x150000
 
+config SMM_MODULE_STACK_SIZE
+	hex
+	default 0x800
+
 config ACPI_CPU_STRING
 	string
 	default "\\_PR.P%03d"

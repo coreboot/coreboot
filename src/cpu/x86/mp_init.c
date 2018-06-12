@@ -795,7 +795,7 @@ static int install_permanent_handler(int num_cpus, uintptr_t smbase,
 	/* There are num_cpus concurrent stacks and num_cpus concurrent save
 	 * state areas. Lastly, set the stack size to 1KiB. */
 	struct smm_loader_params smm_params = {
-		.per_cpu_stack_size = 1 * KiB,
+		.per_cpu_stack_size = CONFIG_SMM_MODULE_STACK_SIZE,
 		.num_concurrent_stacks = num_cpus,
 		.per_cpu_save_state_size = save_state_size,
 		.num_concurrent_save_states = num_cpus,

@@ -53,11 +53,11 @@ static const struct reg_script core_msr_script[] = {
 	/* Power Management I/O base address for I/O trapping to C-states */
 	REG_MSR_WRITE(MSR_PMG_IO_CAPTURE_BASE,
 		(ACPI_PMIO_CST_REG | (PMG_IO_BASE_CST_RNG_BLK_SIZE << 16))),
-	/* Disable C1E */
-	REG_MSR_RMW(MSR_POWER_CTL, ~0x2, 0),
 	/* Disable support for MONITOR and MWAIT instructions */
 	REG_MSR_RMW(MSR_IA32_MISC_ENABLES, ~MONITOR_MWAIT_DIS_MASK, 0),
 #endif
+	/* Disable C1E */
+	REG_MSR_RMW(MSR_POWER_CTL, ~POWER_CTL_C1E_MASK, 0),
 	/*
 	 * Enable and Lock the Advanced Encryption Standard (AES-NI)
 	 * feature register

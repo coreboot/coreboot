@@ -20,7 +20,6 @@
 #include <device/pci_def.h>
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
-#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
 void pch_enable_lpc(void)

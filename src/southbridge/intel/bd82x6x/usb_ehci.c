@@ -18,7 +18,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <southbridge/intel/common/rcba.h>
 #include "pch.h"
 #include <device/pci_ehci.h>
 #include <arch/io.h>

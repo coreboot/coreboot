@@ -29,7 +29,6 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
-#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <arch/cpu.h>
@@ -101,9 +100,9 @@ void mainboard_rcba_config(void)
 	DIR_ROUTE(D20IR, PIRQD, PIRQE, PIRQF, PIRQG);
 
 	/* Enable IOAPIC (generic) */
-	RCBA16(EOIC) = 0x0100;
+	RCBA16(OIC) = 0x0100;
 	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(EOIC);
+	(void) RCBA16(OIC);
 
 	/* Disable unused devices (board specific) */
 	reg32 = RCBA32(FD);

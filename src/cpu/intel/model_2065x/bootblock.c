@@ -24,7 +24,6 @@
 #include <cpu/intel/microcode/microcode.c>
 
 #if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_IBEXPEAK)
-#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/ibexpeak/pch.h>
 #include "model_2065x.h"
 #else

@@ -23,7 +23,6 @@
 #include <elog.h>
 #include <halt.h>
 #include <pc80/mc146818rtc.h>
-#include <southbridge/intel/common/rcba.h>
 #include "pch.h"
 
 #include "nvs.h"

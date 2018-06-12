@@ -18,7 +18,6 @@
 #include <arch/io.h>
 #include "northbridge/intel/sandybridge/raminit_native.h"
 #include <superio/smsc/sio1007/chip.h>
-#include <southbridge/intel/common/rcba.h>
 
 #define SIO_PORT 0x164e
 

@@ -28,7 +28,7 @@ bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 endif
 
 bootblock-y += gpio.c gpio_init.c pmic_wrap.c mt6391.c
-bootblock-y += wdt.c
+bootblock-y += ../common/wdt.c
 bootblock-y += mmu_operations.c
 
 ################################################################################
@@ -40,7 +40,7 @@ verstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 
 verstage-y += ../common/timer.c
 verstage-y += timer.c
-verstage-y += wdt.c
+verstage-y += ../common/wdt.c
 verstage-$(CONFIG_SPI_FLASH) += flash_controller.c
 verstage-y += gpio.c
 
@@ -74,7 +74,7 @@ ramstage-y += pmic_wrap.c mt6391.c i2c.c
 ramstage-y += mt6311.c
 ramstage-y += da9212.c
 ramstage-y += gpio.c
-ramstage-y += wdt.c
+ramstage-y += ../common/wdt.c
 ramstage-y += pll.c
 ramstage-y += rtc.c
 

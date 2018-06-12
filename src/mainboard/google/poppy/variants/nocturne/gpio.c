@@ -214,8 +214,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC_INVERT(GPP_E0, NONE, PLTRST),
 	/* E1  : SATAXPCIE1 ==> NC */
 	PAD_CFG_NC(GPP_E1),
-	/* E2  : SATAXPCIE2 ==> NC */
-	PAD_CFG_NC(GPP_E2),
+	/* E2  : SATAXPCIE2 ==> BT_DISABLE_L */
+	PAD_CFG_GPO(GPP_E2, 1, DEEP),
 	/* E3  : CPU_GP0 ==> NC */
 	PAD_CFG_NC(GPP_E4),
 	/* E5  : SATA_DEVSLP1 ==> NC */

@@ -23,7 +23,14 @@ enum {
 	SPM_PROJECT_CODE = 0xb16
 };
 
-struct mt8173_spm_regs {
+enum {
+	DISP_SRAM_PDN_MASK	= 0xf << 8,
+	DISP_SRAM_ACK_MASK	= 0x1 << 12,
+	AUDIO_SRAM_PDN_MASK	= 0xf << 8,
+	AUDIO_SRAM_ACK_MASK	= 0xf << 12,
+};
+
+struct mtk_spm_regs {
 	u32 poweron_config_set;
 	u32 reserved1[3];
 	u32 power_on_val0;		/* 0x010 */
@@ -152,8 +159,8 @@ struct mt8173_spm_regs {
 	u32 sleep_ca15_wfi_en[4];
 };
 
-check_member(mt8173_spm_regs, sleep_ca15_wfi_en[3], 0xf1c);
+check_member(mtk_spm_regs, sleep_ca15_wfi_en[3], 0xf1c);
 
-static struct mt8173_spm_regs *const mt8173_spm = (void *)SPM_BASE;
+static struct mtk_spm_regs *const mtk_spm = (void *)SPM_BASE;
 
 #endif  /* __SOC_MEDIATEK_MT8173_SPM_H__ */

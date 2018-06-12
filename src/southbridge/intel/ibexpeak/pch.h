@@ -46,11 +46,7 @@
 #define DEFAULT_GPIOBASE	0x0480
 #define DEFAULT_PMBASE		0x0500
 
-#ifndef __ACPI__
-#define DEFAULT_RCBA		((u8 *)0xfed1c000)
-#else
-#define DEFAULT_RCBA		0xfed1c000
-#endif
+#include <southbridge/intel/common/rcba.h>
 
 #ifndef __ACPI__
 #define DEBUG_PERIODIC_SMIS 0
@@ -241,17 +237,6 @@ void southbridge_configure_default_intmap(void);
 
 /* Root Complex Register Block */
 #define RCBA		0xf0
-
-#define RCBA8(x) *((volatile u8 *)(DEFAULT_RCBA + x))
-#define RCBA16(x) *((volatile u16 *)(DEFAULT_RCBA + x))
-#define RCBA32(x) *((volatile u32 *)(DEFAULT_RCBA + x))
-
-#define RCBA_AND_OR(bits, x, and, or) \
-        RCBA##bits(x) = ((RCBA##bits(x) & (and)) | (or))
-#define RCBA8_AND_OR(x, and, or)  RCBA_AND_OR(8, x, and, or)
-#define RCBA16_AND_OR(x, and, or) RCBA_AND_OR(16, x, and, or)
-#define RCBA32_AND_OR(x, and, or) RCBA_AND_OR(32, x, and, or)
-#define RCBA32_OR(x, or) RCBA_AND_OR(32, x, ~0UL, or)
 
 #define VCH		0x0000	/* 32bit */
 #define VCAP1		0x0004	/* 32bit */

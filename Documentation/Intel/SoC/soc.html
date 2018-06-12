@@ -516,7 +516,7 @@ Use the following steps to debug the call to TempRamInit:
   a "struct pci_operations" that specifies a routine to set the subsystem
   IDs for the device.  The routine might look something like this:
 </p>
-<pre><code>static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+<pre><code>static void pci_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
 		vendor = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -538,7 +538,7 @@ Use the following steps to debug the call to TempRamInit:
   The memory map is built by the various PCI device drivers during the
   BS_DEV_RESOURCES state of ramstage.  The northcluster driver will typically
   specify the DRAM resources while the other drivers will typically specify
-  the IO resources.  These resources are hung off the device_t data structure by
+  the IO resources.  These resources are hung off the struct device *data structure by
   src/device/device_util.c/<a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/device/device_util.c;hb=HEAD#l448">new_resource</a>.
 </p>
 <p>

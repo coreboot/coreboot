@@ -35,7 +35,11 @@
 
 static const struct port {
 	struct pad_config pads[2]; /* just TX and RX */
-	device_t dev;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
 } uart_ports[] = {
 	{.dev = PCH_DEV_UART0,
 	 .pads = { PAD_CFG_NF(GPP_C8, NONE, DEEP, NF1), /* RX */

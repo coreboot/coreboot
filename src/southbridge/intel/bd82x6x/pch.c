@@ -36,7 +36,7 @@ int pch_silicon_revision(void)
 	pci_devfn_t dev;
 	dev = PCI_DEV(0, 0x1f, 0);
 #else
-	device_t dev;
+	struct device *dev;
 	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
 #endif
 
@@ -53,7 +53,7 @@ int pch_silicon_type(void)
 	pci_devfn_t dev;
 	dev = PCI_DEV(0, 0x1f, 0);
 #else
-	device_t dev;
+	struct device *dev;
 	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
 #endif
 

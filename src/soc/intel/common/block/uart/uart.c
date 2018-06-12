@@ -59,7 +59,11 @@ __weak device_t pch_uart_get_debug_controller(void)
 
 bool uart_debug_controller_is_initialized(void)
 {
-	device_t dev;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
 	uintptr_t base;
 
 	dev = pch_uart_get_debug_controller();

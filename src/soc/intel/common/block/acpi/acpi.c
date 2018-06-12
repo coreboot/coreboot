@@ -164,7 +164,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	soc_fill_fadt(fadt);
 }
 
-unsigned long southbridge_write_acpi_tables(device_t device,
+unsigned long southbridge_write_acpi_tables(struct device *device,
 					    unsigned long current,
 					    struct acpi_rsdp *rsdp)
 {
@@ -224,7 +224,7 @@ __weak void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {
 }
 
-void southbridge_inject_dsdt(device_t device)
+void southbridge_inject_dsdt(struct device *device)
 {
 	struct global_nvs_t *gnvs;
 
@@ -407,7 +407,7 @@ __weak void soc_power_states_generation(int core_id,
 {
 }
 
-void generate_cpu_entries(device_t device)
+void generate_cpu_entries(struct device *device)
 {
 	int core_id, cpu_id, pcontrol_blk = ACPI_BASE_ADDRESS;
 	int plen = 6;

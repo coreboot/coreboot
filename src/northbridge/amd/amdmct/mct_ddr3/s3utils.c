@@ -70,9 +70,9 @@ static uint32_t read_config32_dct(device_t dev, uint8_t node, uint8_t dct, uint3
 	if (is_fam15h()) {
 		uint32_t dword;
 #ifdef __PRE_RAM__
-		device_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
+		pci_devfn_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
 #else
-		device_t dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
+		struct device *dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
 #endif
 
 		/* Select DCT */
@@ -92,9 +92,9 @@ static void write_config32_dct(device_t dev, uint8_t node, uint8_t dct, uint32_t
 	if (is_fam15h()) {
 		uint32_t dword;
 #ifdef __PRE_RAM__
-		device_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
+		pci_devfn_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
 #else
-		device_t dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
+		struct device *dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
 #endif
 
 		/* Select DCT */
@@ -129,9 +129,9 @@ static uint32_t read_amd_dct_index_register_dct(device_t dev, uint8_t node, uint
 	if (is_fam15h()) {
 		uint32_t dword;
 #ifdef __PRE_RAM__
-		device_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
+		pci_devfn_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
 #else
-		device_t dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
+		struct device *dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
 #endif
 
 		/* Select DCT */
@@ -247,9 +247,12 @@ static uint64_t rdmsr_uint64_t(unsigned long index) {
 	return (((uint64_t)msr.hi) << 32) | ((uint64_t)msr.lo);
 }
 
-static uint32_t read_config32_dct_nbpstate(device_t dev, uint8_t node, uint8_t dct, uint8_t nb_pstate, uint32_t reg) {
+static uint32_t read_config32_dct_nbpstate(struct device *dev, uint8_t node,
+					   uint8_t dct, uint8_t nb_pstate,
+					   uint32_t reg)
+{
 	uint32_t dword;
-	device_t dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
+	struct device *dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
 
 	/* Select DCT */
 	dword = pci_read_config32(dev_fn1, 0x10c);
@@ -312,9 +315,9 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_da
 
 	/* Load data from DCTs into data structure */
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
-		device_t dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
-		device_t dev_fn2 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 2));
-		device_t dev_fn3 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 3));
+		struct device *dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
+		struct device *dev_fn2 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 2));
+		struct device *dev_fn3 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 3));
 		/* Test for node presence */
 		if ((!dev_fn1) || (pci_read_config32(dev_fn1, PCI_VENDOR_ID) == 0xffffffff)) {
 			persistent_data->node[node].node_present = 0;
@@ -524,9 +527,12 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_da
 	}
 }
 #else
-static void write_config32_dct_nbpstate(device_t dev, uint8_t node, uint8_t dct, uint8_t nb_pstate, uint32_t reg, uint32_t value) {
+static void write_config32_dct_nbpstate(pci_devfn_t dev, uint8_t node,
+					uint8_t dct, uint8_t nb_pstate,
+					uint32_t reg, uint32_t value)
+{
 	uint32_t dword;
-	device_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
+	pci_devfn_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
 
 	/* Select DCT */
 	dword = pci_read_config32(dev_fn1, 0x10c);
@@ -543,7 +549,9 @@ static void write_config32_dct_nbpstate(device_t dev, uint8_t node, uint8_t dct,
 	pci_write_config32(dev, reg, value);
 }
 
-static void write_amd_dct_index_register(device_t dev, uint32_t index_ctl_reg, uint32_t index, uint32_t value)
+static void write_amd_dct_index_register(pci_devfn_t dev,
+					 uint32_t index_ctl_reg, uint32_t index,
+					 uint32_t value)
 {
 	uint32_t dword;
 
@@ -555,11 +563,14 @@ static void write_amd_dct_index_register(device_t dev, uint32_t index_ctl_reg, u
 	} while (!(dword & (1 << 31)));
 }
 
-static void write_amd_dct_index_register_dct(device_t dev, uint8_t node, uint8_t dct, uint32_t index_ctl_reg, uint32_t index, uint32_t value)
+static void write_amd_dct_index_register_dct(pci_devfn_t dev, uint8_t node,
+					     uint8_t dct,
+					     uint32_t index_ctl_reg,
+					     uint32_t index, uint32_t value)
 {
 	if (is_fam15h()) {
 		uint32_t dword;
-		device_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
+		pci_devfn_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
 
 		/* Select DCT */
 		dword = pci_read_config32(dev_fn1, 0x10c);

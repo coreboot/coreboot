@@ -558,9 +558,9 @@ void disable_gpe(u32 mask)
 int rtc_failure(void)
 {
 #if defined(__SIMPLE_DEVICE__)
-	device_t dev = PCI_DEV(0, 31, 0);
+	pci_devfn_t dev = PCI_DEV(0, 31, 0);
 #else
-	device_t dev = dev_find_slot(0, PCI_DEVFN(31, 0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(31, 0));
 #endif
 	return !!(pci_read_config8(dev, GEN_PMCON_3) & RTC_BATTERY_DEAD);
 }

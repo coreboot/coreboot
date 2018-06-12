@@ -30,8 +30,11 @@
 /* Returns base of requested region encoded in the system agent. */
 static inline uintptr_t system_agent_region_base(size_t reg)
 {
-	device_t dev = SA_DEV_ROOT;
-
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev = SA_DEV_ROOT;
+#else
+	struct device *dev = SA_DEV_ROOT;
+#endif
 	/* All regions concerned for have 1 MiB alignment. */
 	return ALIGN_DOWN(pci_read_config32(dev, reg), 1 * MiB);
 }

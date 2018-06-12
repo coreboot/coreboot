@@ -19,8 +19,6 @@
  * and the differences between PCH variants.
  */
 
-#define __SIMPLE_DEVICE__
-
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <device/device.h>
@@ -232,7 +230,11 @@ int rtc_failure(void)
 	u8 reg8;
 	int rtc_failed;
 	/* PMC Controller Device 0x1F, Func 02 */
-	device_t dev = PCH_DEV_PMC;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev = PCH_DEV_PMC;
+#else
+	struct device *dev = PCH_DEV_PMC;
+#endif
 	reg8 = pci_read_config8(dev, GEN_PMCON_B);
 	rtc_failed = reg8 & RTC_BATTERY_DEAD;
 	if (rtc_failed) {

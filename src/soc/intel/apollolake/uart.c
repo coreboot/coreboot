@@ -60,7 +60,11 @@ static inline int invalid_uart_for_console(void)
 void pch_uart_init(void)
 {
 	uintptr_t base = CONFIG_CONSOLE_UART_BASE_ADDRESS;
-	device_t uart = _PCH_DEV(UART, CONFIG_UART_FOR_CONSOLE & 3);
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t uart = _PCH_DEV(UART, CONFIG_UART_FOR_CONSOLE & 3);
+#else
+	struct device *uart = _PCH_DEV(UART, CONFIG_UART_FOR_CONSOLE & 3);
+#endif
 
 	/* Get a 0-based pad index. See invalid_uart_for_console() above. */
 	const int pad_index = CONFIG_UART_FOR_CONSOLE - 1;

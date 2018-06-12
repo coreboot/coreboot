@@ -50,7 +50,11 @@ static void display_fsp_smbios_memory_info_hob(void)
 static void early_pmc_init(void)
 {
 	/* PMC (B0:D31:F2). */
-	device_t dev = PCH_PMC_DEV;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev = PCH_PMC_DEV;
+#else
+	struct device *dev = PCH_PMC_DEV;
+#endif
 
 	/* Is PMC present */
 	if (pci_read_config16(dev, 0) == 0xffff) {
@@ -99,7 +103,11 @@ static void early_pmc_init(void)
 static void early_tco_init(void)
 {
 	/* SMBUS (B0:D31:F4). */
-	device_t dev = PCI_DEV(0, SMBUS_DEV, SMBUS_FUNC);
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev = PCI_DEV(0, SMBUS_DEV, SMBUS_FUNC);
+#else
+	struct device *dev = PCI_DEV(0, SMBUS_DEV, SMBUS_FUNC);
+#endif
 
 	/* Configure TCO base address */
 	if (pci_read_config16(dev, TCOBASE) == 0xffff) {

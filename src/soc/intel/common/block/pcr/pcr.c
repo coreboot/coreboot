@@ -254,7 +254,11 @@ static int pcr_wait_for_completion(device_t dev)
 int pcr_execute_sideband_msg(struct pcr_sbi_msg *msg, uint32_t *data,
 		uint8_t *response)
 {
-	device_t dev = PCH_DEV_P2SB;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev = PCH_DEV_P2SB;
+#else
+	struct device *dev = PCH_DEV_P2SB;
+#endif
 	uint32_t sbi_data;
 	uint16_t sbi_status;
 	uint16_t sbi_rid;

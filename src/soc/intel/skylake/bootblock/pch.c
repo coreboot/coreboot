@@ -46,7 +46,7 @@
 
 static void enable_p2sbbar(void)
 {
-	device_t dev = PCH_DEV_P2SB;
+	pci_devfn_t dev = PCH_DEV_P2SB;
 
 	/* Enable PCR Base address in PCH */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, CONFIG_PCR_BASE_ADDRESS);

@@ -771,12 +771,12 @@ func main() {
 		}
 		mainboard.WriteString("\n")
 		if MainboardInit != "" {
-			mainboard.WriteString(`static void mainboard_init(device_t dev)
+			mainboard.WriteString(`static void mainboard_init(struct device *dev)
 {
 ` + MainboardInit + "}\n\n")
 		}
 		if MainboardInit != "" || MainboardEnable != "" {
-			mainboard.WriteString("static void mainboard_enable(device_t dev)\n{\n")
+			mainboard.WriteString("static void mainboard_enable(struct device *dev)\n{\n")
 			if MainboardInit != "" {
 				mainboard.WriteString("\tdev->ops->init = mainboard_init;\n\n")
 			}

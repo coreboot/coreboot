@@ -65,7 +65,11 @@ static void busmaster_disable_on_bus(int bus)
 	for (slot = 0; slot < 0x20; slot++) {
 		for (func = 0; func < 8; func++) {
 			u32 reg32;
-			device_t dev = PCI_DEV(bus, slot, func);
+#if defined(__SIMPLE_DEVICE__)
+			pci_devfn_t dev = PCI_DEV(bus, slot, func);
+#else
+			struct device *dev = PCI_DEV(bus, slot, func);
+#endif
 
 			val = pci_read_config32(dev, PCI_VENDOR_ID);
 

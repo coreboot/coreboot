@@ -31,7 +31,7 @@
 static const void *microcode_patch;
 
 /* SoC override function */
-__weak void soc_core_init(device_t dev)
+__weak void soc_core_init(struct device *dev)
 {
 	/* no-op */
 }
@@ -41,7 +41,7 @@ __weak void soc_init_cpus(struct bus *cpu_bus)
 	/* no-op */
 }
 
-static void init_one_cpu(device_t dev)
+static void init_one_cpu(struct device *dev)
 {
 	soc_core_init(dev);
 	intel_microcode_load_unlocked(microcode_patch);
@@ -121,7 +121,7 @@ void get_microcode_info(const void **microcode, int *parallel)
 
 static void init_cpus(void *unused)
 {
-	device_t dev = dev_find_path(NULL, DEVICE_PATH_CPU_CLUSTER);
+	struct device *dev = dev_find_path(NULL, DEVICE_PATH_CPU_CLUSTER);
 	assert(dev != NULL);
 
 	microcode_patch = intel_microcode_find();

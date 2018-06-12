@@ -31,11 +31,7 @@
 #define DEFAULT_GPIOBASE	0x0480
 #define DEFAULT_PMBASE		0x0500
 
-#ifndef __ACPI__
-#define DEFAULT_RCBA		((u8 *)0xfed1c000)
-#else
-#define DEFAULT_RCBA		0xfed1c000
-#endif
+#include <southbridge/intel/common/rcba.h>
 
 #ifndef __ACPI__
 #define DEBUG_PERIODIC_SMIS 0
@@ -193,10 +189,6 @@ int southbridge_detect_s3_resume(void);
 
 /* Root Complex Register Block */
 #define RCBA		0xf0
-
-#define RCBA8(x) (*((volatile u8 *)(DEFAULT_RCBA + (x))))
-#define RCBA16(x) (*((volatile u16 *)(DEFAULT_RCBA + (x))))
-#define RCBA32(x) (*((volatile u32 *)(DEFAULT_RCBA + (x))))
 
 #define VCH		0x0000	/* 32bit */
 #define VCAP1		0x0004	/* 32bit */

@@ -25,11 +25,8 @@
 #endif
 
 #define DEFAULT_TBAR		((u8 *)0xfed1b000)
-#ifndef __ACPI__
-#define DEFAULT_RCBA		((u8 *)0xfed1c000)
-#else
-#define DEFAULT_RCBA		0xfed1c000
-#endif
+
+#include <southbridge/intel/common/rcba.h>
 
 #if IS_ENABLED(CONFIG_BOARD_EMULATION_QEMU_X86_Q35)
 /*
@@ -153,10 +150,6 @@
 #define I2C_EN			(1 << 2)
 #define SMB_SMI_EN		(1 << 1)
 #define HST_EN			(1 << 0)
-
-#define RCBA8(x) *((volatile u8 *)(DEFAULT_RCBA + x))
-#define RCBA16(x) *((volatile u16 *)(DEFAULT_RCBA + x))
-#define RCBA32(x) *((volatile u32 *)(DEFAULT_RCBA + x))
 
 #define RCBA_V0CTL		0x0014
 #define RCBA_V1CAP		0x001c

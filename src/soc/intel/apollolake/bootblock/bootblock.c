@@ -106,7 +106,7 @@ void bootblock_soc_early_init(void)
 
 	enable_pm_timer_emulation();
 
-	fast_spi_early_init(PRERAM_SPI_BASE_ADDRESS);
+	fast_spi_early_init(SPI_BASE_ADDRESS);
 
 	fast_spi_cache_bios_region();
 

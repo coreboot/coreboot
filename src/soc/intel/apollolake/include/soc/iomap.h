@@ -47,7 +47,7 @@
 #define HECI1_BASE_ADDRESS		0xfed1a000
 
 /* Temporary BAR for SPI until PCI enumeration assigns a BAR in ramstage. */
-#define PRERAM_SPI_BASE_ADDRESS		0xfe010000
+#define SPI_BASE_ADDRESS		0xfe010000
 #define EARLY_GSPI_BASE_ADDRESS		0xfe011000
 
 /* Temporary BAR for early I2C bus access */

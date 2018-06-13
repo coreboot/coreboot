@@ -35,6 +35,60 @@ Scope (\_SB.PCI0.I2C5)
 				)
 		})
 
+		Name (STA, 0)
+		Method (PMON, 0, Serialized) {
+			If (STA == 0) {
+				CTXS(GPIO_RCAM_RST_L)
+				STXS(GPIO_RCAM_PWR_EN)
+				STXS(GPIO_PCH_RCAM_CLK_EN)
+				Sleep(3)
+				STXS(GPIO_RCAM_RST_L)
+
+				/*
+				 * A delay of T7 (minimum of 10 ms) + T8
+				 * (max 1.4 ms + delay of coarse integration
+				 * time value) is needed to have the sensor
+				 * ready for streaming, as soon as the power
+				 * on sequence completes
+				 */
+				Sleep(12)
+			}
+			STA++
+		}
+
+		Method (PMOF, 0, Serialized) {
+			If (STA == 0) {
+				Return
+			}
+			STA--
+			If (STA == 0) {
+				CTXS(GPIO_PCH_RCAM_CLK_EN)
+				CTXS(GPIO_RCAM_RST_L)
+				CTXS(GPIO_RCAM_PWR_EN)
+			}
+		}
+
+		Name (_PR0, Package (0x01) { RCPR })
+		Name (_PR3, Package (0x01) { RCPR })
+
+		/* Power resource methods for Rear Camera */
+		PowerResource (RCPR, 0, 0) {
+			Method (_ON, 0, Serialized) {
+				PMON ()
+			}
+			Method (_OFF, 0, Serialized) {
+				PMOF ()
+			}
+			Method (_STA, 0, Serialized) {
+				If (LGreater(STA,0)) {
+					Return (0x1)
+				}
+				Else {
+					Return (0x0)
+				}
+			}
+		}
+
 		/* Port0 of CAM1 is connected to port1 of CIO2 device */
 		Name (_DSD, Package () {
 			ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
@@ -98,6 +152,11 @@ Scope (\_SB.PCI0.I2C5)
 				)
 		})
 
+		Name (_DEP, Package() { ^^I2C5.CAM1 })
+
+		Name (_PR0, Package (0x01) { ^^I2C5.CAM1.RCPR })
+		Name (_PR3, Package (0x01) { ^^I2C5.CAM1.RCPR })
+
 		Name (_DSD, Package () {
 			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
 			Package () {
@@ -123,6 +182,11 @@ Scope (\_SB.PCI0.I2C5)
 				AddressingMode7Bit, "\\_SB.PCI0.I2C5",
 				0x00, ResourceConsumer, ,)
 		})
+
+		Name (_DEP, Package () { ^^I2C5.CAM1 })
+
+		Name (_PR0, Package (0x01) { ^^I2C5.CAM1.RCPR })
+		Name (_PR3, Package (0x01) { ^^I2C5.CAM1.RCPR })
 
 		Name (_DSD, Package ()
 		{

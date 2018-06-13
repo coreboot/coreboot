@@ -226,13 +226,18 @@ static int parse_microcode_blob(struct cbfs_image *image,
 
 		mcu_header = rom_buffer_pointer(&image->buffer, current_offset);
 
+		/* Newer microcode updates include a size field, whereas older
+		 * containers set it at 0 and are exactly 2048 bytes long */
+		uint32_t total_size = mcu_header->total_size
+			? mcu_header->total_size : 2048;
+
 		/* Quickly sanity check a prospective microcode update. */
-		if (mcu_header->total_size < sizeof(*mcu_header))
+		if (total_size < sizeof(*mcu_header))
 			break;
 
 		/* FIXME: Should the checksum be validated? */
 		mcus[num_mcus].offset = current_offset;
-		mcus[num_mcus].size = mcu_header->total_size;
+		mcus[num_mcus].size = total_size;
 
 		/* Proceed to next payload. */
 		current_offset += mcus[num_mcus].size;

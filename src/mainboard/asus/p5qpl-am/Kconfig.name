@@ -1,2 +1,5 @@
 config BOARD_ASUS_P5QPL_AM
 	bool "P5QPL-AM"
+
+config BOARD_ASUS_P5G41T_M_LX
+	bool "P5G41T-M LX"

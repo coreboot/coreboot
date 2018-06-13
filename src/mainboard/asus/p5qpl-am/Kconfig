@@ -14,7 +14,7 @@
 # GNU General Public License for more details.
 #
 
-if BOARD_ASUS_P5QPL_AM
+if BOARD_ASUS_P5QPL_AM || BOARD_ASUS_P5G41T_M_LX
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -33,18 +33,34 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_ACPI_RESUME
 	select INTEL_GMA_HAVE_VBT
 	select MAINBOARD_HAS_LIBGFXINIT
-	select ATHEROS_ATL1E_SETMAC
+
+	# P5G41T-M LX has ATL1C which works fine
+	select ATHEROS_ATL1E_SETMAC if BOARD_ASUS_P5QPL_AM
 
 config MAINBOARD_DIR
 	string
 	default "asus/p5qpl-am"
 
+config VARIANT_DIR
+	string
+	default "p5qpl-am" if BOARD_ASUS_P5QPL_AM
+	default "p5g41t-m_lx" if BOARD_ASUS_P5G41T_M_LX
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "P5QPL-AM"
+	default "P5QPL-AM" if BOARD_ASUS_P5QPL_AM
+	default "P5G41T-M LX" if BOARD_ASUS_P5G41T_M_LX
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAX_CPUS
 	int
 	default 4
 
-endif # BOARD_ASUS_P5QPL_AM
+# Override the default variant behavior, since the data.vbt is the same
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
+
+endif # BOARD_ASUS_P5QPL_AM || BOARD_ASUS_P5G41T_M_LX

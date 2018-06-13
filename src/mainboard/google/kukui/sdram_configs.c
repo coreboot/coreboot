@@ -13,14 +13,25 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/stages.h>
+#include <boardid.h>
+#include <cbfs.h>
+#include <console/console.h>
 #include <soc/emi.h>
-#include <soc/mmu_operations.h>
-#include <soc/mt6358.h>
 
-void platform_romstage_main(void)
+static const char *const sdram_configs[] = {
+	[1] = "sdram-lpddr4x-H9HCNNNCPMALHR-4GB",
+};
+
+static struct sdram_params params;
+
+const struct sdram_params *get_sdram_config(void)
 {
-	mt6358_init();
-	mt_mem_init(get_sdram_config());
-	mtk_mmu_after_dram();
+	uint32_t ramcode = ram_code();
+
+	if (ramcode >= ARRAY_SIZE(sdram_configs) ||
+	    cbfs_boot_load_file(sdram_configs[ramcode], &params, sizeof(params),
+				CBFS_TYPE_STRUCT) != sizeof(params))
+		die("Cannot load SDRAM parameter file!");
+
+	return &params;
 }

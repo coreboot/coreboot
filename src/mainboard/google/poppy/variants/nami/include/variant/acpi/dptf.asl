@@ -23,23 +23,23 @@
 
 #define DPTF_TSR0_SENSOR_ID	0
 #define DPTF_TSR0_SENSOR_NAME	"Thermal_Sensor_Remote_CPU"
-#define DPTF_TSR0_PASSIVE	81
+#define DPTF_TSR0_PASSIVE	75
 #define DPTF_TSR0_CRITICAL	125
 #define DPTF_TSR0_ACTIVE_AC0	50
 #define DPTF_TSR0_ACTIVE_AC1	47
 #define DPTF_TSR0_ACTIVE_AC2	45
-#define DPTF_TSR0_ACTIVE_AC3	43
-#define DPTF_TSR0_ACTIVE_AC4	41
+#define DPTF_TSR0_ACTIVE_AC3	42
+#define DPTF_TSR0_ACTIVE_AC4	39
 
 #define DPTF_TSR1_SENSOR_ID	1
 #define DPTF_TSR1_SENSOR_NAME	"Thermal_Sensor_Remote_PMIC"
-#define DPTF_TSR1_PASSIVE	78
+#define DPTF_TSR1_PASSIVE	75
 #define DPTF_TSR1_CRITICAL	125
 #define DPTF_TSR1_ACTIVE_AC0    50
 #define DPTF_TSR1_ACTIVE_AC1    47
 #define DPTF_TSR1_ACTIVE_AC2    45
-#define DPTF_TSR1_ACTIVE_AC3    43
-#define DPTF_TSR1_ACTIVE_AC4    41
+#define DPTF_TSR1_ACTIVE_AC3    42
+#define DPTF_TSR1_ACTIVE_AC4    39
 
 #define DPTF_ENABLE_CHARGER
 #define DPTF_ENABLE_FAN_CONTROL
@@ -63,7 +63,7 @@ Name (DFPS, Package () {
 	/* Control, Trip Point, Speed, NoiseLevel, Power */
 	Package () {90,		0xFFFFFFFF,	6700,	220,	2200},
 	Package () {69,		0xFFFFFFFF,	5800,	180,	1800},
-	Package () {52,		0xFFFFFFFF,	5000,	145,	1450},
+	Package () {56,		0xFFFFFFFF,	5000,	145,	1450},
 	Package () {46,		0xFFFFFFFF,	4900,	115,	1150},
 	Package () {36,		0xFFFFFFFF,	3900,	90,	900}
 })
@@ -76,15 +76,15 @@ Name (DART, Package () {
 		 * Source, Target, Weight, AC0, AC1, AC2, AC3, AC4, AC5, AC6,
 		 *	AC7, AC8, AC9
 		 */
-		\_SB.DPTF.TFN1, \_SB.PCI0.B0D4, 100, 90, 69, 52, 46, 36, 0, 0,
+		\_SB.DPTF.TFN1, \_SB.PCI0.B0D4, 100, 90, 69, 56, 46, 36, 0, 0,
 			0, 0, 0
 	},
 	Package () {
-		\_SB.DPTF.TFN1, \_SB.DPTF.TSR0, 100, 90, 69, 52, 46, 36, 0, 0,
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR0, 100, 90, 69, 56, 46, 36, 0, 0,
 			0, 0, 0
 	},
 	Package () {
-		\_SB.DPTF.TFN1, \_SB.DPTF.TSR1, 100, 90, 69, 52, 46, 36, 0, 0,
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR1, 100, 90, 69, 56, 46, 36, 0, 0,
 			0, 0, 0
 	}
 })

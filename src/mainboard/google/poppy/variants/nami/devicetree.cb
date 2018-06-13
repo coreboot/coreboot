@@ -282,7 +282,7 @@ chip soc/intel/skylake
 
 	register "speed_shift_enable" = "1"
 
-	register "tcc_offset" = "10"     # TCC of 90C
+	register "tcc_offset" = "3"     # TCC of 97C
 	register "psys_pmax" = "101"
 
 	# PCH Trip Temperature in degree C

@@ -355,7 +355,7 @@ function compile_target
 	eval $BUILDPREFIX $MAKE "$verboseopt" DOTCONFIG="${build_dir}/config.build" obj="${build_dir}" objutil="$TARGET/sharedutils" BUILD_TIMELESS=$TIMELESS \
 		&> "${build_dir}/make.log" ; \
 		MAKE_FAILED=$?
-	cp .xcompile "${build_dir}/xcompile.build"
+	cp ${ROOT}/.xcompile "${build_dir}/xcompile.build"
 	cd "${build_dir}" || return $?
 
 	etime=$(perl -e 'print time();' 2>/dev/null || date +%s)
@@ -455,7 +455,7 @@ function build_config
 	required_arches=$(egrep "^CONFIG_ARCH_(BOOTBLOCK|R.MSTAGE|VERSTAGE)" "$TARGET/${BUILD_NAME}/config.build" | \
 			sed "s,^CONFIG_ARCH_[^_]*_\([^=]*\)=.*$,\1," |sort -u |tr 'A-Z\n\r' 'a-z  ')
 	# shellcheck disable=SC2016,SC2059
-	missing_arches=$(printf 'include .xcompile\nall: ; @echo $(foreach arch,'"$required_arches"',$(if $(filter $(arch),$(SUBARCH_SUPPORTED)),,$(arch)))' | make --no-print-directory -f -)
+	missing_arches=$(printf 'include .xcompile\nall: ; @echo $(foreach arch,'"$required_arches"',$(if $(filter $(arch),$(SUBARCH_SUPPORTED)),,$(arch)))' | $MAKE --no-print-directory -f -)
 	if [ -n "$missing_arches" ]; then
 		printf "skipping %s because we're missing compilers for (%s)\n" "$BUILD_NAME" "$missing_arches"
 		return
@@ -648,7 +648,7 @@ while true ; do
 		-V|--version)	shift; myversion; exit 0;;
 		-h|--help)	shift; myversion; myhelp; exit 0;;
 		-p|--payloads)  shift; payloads="$1"; shift;;
-		-R|--root)	shift; ROOT="$1"; shift;;
+		-R|--root)	shift; ROOT="$1"; MAKE="$MAKE -C $1"; shift;;
 		-c|--cpus)	shift
 			export MAKEFLAGS="-j $1"
 			cpus=$1

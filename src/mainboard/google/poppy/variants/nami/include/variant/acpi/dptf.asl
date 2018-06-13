@@ -96,10 +96,9 @@ Name (DTRT, Package () {
 
 	/* CPU Throttle Effect on TSR0 */
 	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR0, 100, 1, 0, 0, 0, 0 },
-#ifdef DPTF_ENABLE_CHARGER
-	/* Charger Throttle Effect on Charger (TSR1) */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR1, 100, 1, 0, 0, 0, 0 },
-#endif
+
+	/* CPU Throttle Effect on TSR1 */
+	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR1, 100, 1, 0, 0, 0, 0 },
 })
 
 Name (MPPC, Package ()

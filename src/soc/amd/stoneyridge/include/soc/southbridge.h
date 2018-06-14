@@ -361,6 +361,14 @@ struct stoneyridge_aoac {
 	int status;
 };
 
+struct soc_power_reg {
+	uint16_t pm1_sts;
+	uint16_t pm1_en;
+	uint32_t gpe0_sts;
+	uint32_t gpe0_en;
+	uint16_t wake_from;
+};
+
 void enable_aoac_devices(void);
 void sb_enable_rom(void);
 void configure_stoneyridge_i2c(void);

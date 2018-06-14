@@ -662,25 +662,24 @@ static void sb_log_pm1_status(uint16_t pm1_sts)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PCIE, 0);
 }
 
-struct soc_amd_sws {
-	uint16_t pm1_sts;
-	uint16_t pm1_en;
-	uint32_t gpe0_sts;
-	uint32_t gpe0_en;
-};
-
-static struct soc_amd_sws sws;
-
 static void sb_save_sws(uint16_t pm1_status)
 {
+	struct soc_power_reg *sws;
 	uint32_t reg32;
+	uint16_t reg16;
 
-	sws.pm1_sts = pm1_status;
-	sws.pm1_en = inw(ACPI_PM1_EN);
+	sws = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(struct soc_power_reg));
+	if (sws == NULL)
+		return;
+	sws->pm1_sts = pm1_status;
+	sws->pm1_en = inw(ACPI_PM1_EN);
 	reg32 = inl(ACPI_GPE0_STS);
 	outl(ACPI_GPE0_STS, reg32);
-	sws.gpe0_sts = reg32;
-	sws.gpe0_en = inl(ACPI_GPE0_EN);
+	sws->gpe0_sts = reg32;
+	sws->gpe0_en = inl(ACPI_GPE0_EN);
+	reg16 = inw(ACPI_PM1_CNT_BLK);
+	reg16 &= SLP_TYP;
+	sws->wake_from = reg16 >> SLP_TYP_SHIFT;
 }
 
 static void sb_clear_pm1_status(void)
@@ -715,20 +714,24 @@ static int get_index_bit(uint32_t value, uint16_t limit)
 
 static void set_nvs_sws(void *unused)
 {
+	struct soc_power_reg *sws;
 	struct global_nvs_t *gnvs;
 	int index;
 
+	sws = cbmem_find(CBMEM_ID_POWER_STATE);
+	if (sws == NULL)
+		return;
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (gnvs == NULL)
 		return;
 
-	index = get_index_bit(sws.pm1_sts & sws.pm1_en, PM1_LIMIT);
+	index = get_index_bit(sws->pm1_sts & sws->pm1_en, PM1_LIMIT);
 	if (index < 0)
 		gnvs->pm1i = ~0ULL;
 	else
 		gnvs->pm1i = index;
 
-	index = get_index_bit(sws.gpe0_sts & sws.gpe0_en, GPE0_LIMIT);
+	index = get_index_bit(sws->gpe0_sts & sws->gpe0_en, GPE0_LIMIT);
 	if (index < 0)
 		gnvs->gpei = ~0ULL;
 	else

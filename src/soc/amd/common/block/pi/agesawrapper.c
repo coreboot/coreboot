@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 - 2017 Advanced Micro Devices, Inc.
+ * Copyright (C) 2018 Kyösti Mälkki
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +76,9 @@ static AGESA_STATUS agesawrapper_readeventlog(UINT8 HeapStatus)
 
 static AGESA_STATUS create_struct(AMD_INTERFACE_PARAMS *interface_struct)
 {
+	/* Should clone entire StdHeader here. */
+	interface_struct->StdHeader.CalloutPtr = &GetBiosCallout;
+
 	AGESA_STATUS status = AmdCreateStruct(interface_struct);
 	if (status == AGESA_SUCCESS)
 		return status;
@@ -98,7 +102,6 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 		.AllocationMethod = ByHost,
 		.NewStructSize = sizeof(AMD_RESET_PARAMS),
 		.NewStructPtr = &ResetParams,
-		.StdHeader.CalloutPtr = &GetBiosCallout
 	};
 	create_struct(&AmdParamStruct);
 	SetFchResetParams(&ResetParams.FchInterface);
@@ -120,7 +123,6 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_EARLY,
 		.AllocationMethod = PreMemHeap,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
 
 	create_struct(&AmdParamStruct);
@@ -180,7 +182,6 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_POST,
 		.AllocationMethod = PreMemHeap,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
 	AMD_POST_PARAMS *PostParams;
 
@@ -238,7 +239,6 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_ENV,
 		.AllocationMethod = PostMemDram,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
 	AMD_ENV_PARAMS *EnvParams;
 
@@ -291,7 +291,6 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_MID,
 		.AllocationMethod = PostMemDram,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
 	AMD_MID_PARAMS *MidParams;
 
@@ -321,7 +320,6 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_LATE,
 		.AllocationMethod = PostMemDram,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
 	AMD_LATE_PARAMS *LateParams;
 
@@ -391,7 +389,6 @@ AGESA_STATUS agesawrapper_amdinitrtb(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_RTB,
 		.AllocationMethod = PostMemDram,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
 	AMD_RTB_PARAMS *RtbParams;
 
@@ -425,7 +422,6 @@ AGESA_STATUS agesawrapper_amdinitresume(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_RESUME,
 		.AllocationMethod = PreMemHeap,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
 	AMD_RESUME_PARAMS *InitResumeParams;
 	size_t nv_size;
@@ -457,7 +453,6 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_S3LATE_RESTORE,
 		.AllocationMethod = ByHost,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
 	AMD_S3LATE_PARAMS *S3LateParams;
 	size_t vol_size;
@@ -493,7 +488,6 @@ AGESA_STATUS agesawrapper_amds3finalrestore(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_S3FINAL_RESTORE,
 		.AllocationMethod = ByHost,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
 	AMD_S3FINAL_PARAMS *S3FinalParams;
 	size_t vol_size;

@@ -74,23 +74,23 @@ static AGESA_STATUS agesawrapper_readeventlog(UINT8 HeapStatus)
 	return Status;
 }
 
-static AGESA_STATUS create_struct(AMD_INTERFACE_PARAMS *interface_struct)
+static void *create_struct(AMD_INTERFACE_PARAMS *interface_struct)
 {
 	/* Should clone entire StdHeader here. */
 	interface_struct->StdHeader.CalloutPtr = &GetBiosCallout;
 
 	AGESA_STATUS status = AmdCreateStruct(interface_struct);
-	if (status == AGESA_SUCCESS)
-		return status;
 
-	printk(BIOS_ERR, "Error: AmdCreateStruct() for 0x%x returned 0x%x. "
-			"Proper system initialization may not be possible.\n",
-			interface_struct->AgesaFunctionName, status);
+	if (status != AGESA_SUCCESS) {
+		printk(BIOS_ERR, "Error: AmdCreateStruct() for 0x%x returned 0x%x. "
+				"Proper system initialization may not be possible.\n",
+				interface_struct->AgesaFunctionName, status);
+	}
 
 	if (!interface_struct->NewStructPtr) /* Avoid NULL pointer usage */
 		die("No AGESA structure created");
 
-	return status;
+	return interface_struct->NewStructPtr;
 }
 
 AGESA_STATUS agesawrapper_amdinitreset(void)
@@ -103,11 +103,9 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 		.NewStructSize = sizeof(AMD_RESET_PARAMS),
 		.NewStructPtr = &_ResetParams,
 	};
-	AMD_RESET_PARAMS *ResetParams;
 
-	create_struct(&AmdParamStruct);
+	AMD_RESET_PARAMS *ResetParams = create_struct(&AmdParamStruct);
 
-	ResetParams = (AMD_RESET_PARAMS *)AmdParamStruct.NewStructPtr;
 	SetFchResetParams(&ResetParams->FchInterface);
 
 	timestamp_add_now(TS_AGESA_INIT_RESET_START);
@@ -123,15 +121,13 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 AGESA_STATUS agesawrapper_amdinitearly(void)
 {
 	AGESA_STATUS status;
-	AMD_EARLY_PARAMS *EarlyParams;
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_EARLY,
 		.AllocationMethod = PreMemHeap,
 	};
 
-	create_struct(&AmdParamStruct);
+	AMD_EARLY_PARAMS *EarlyParams = create_struct(&AmdParamStruct);
 
-	EarlyParams = (AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr;
 	OemCustomizeInitEarly(EarlyParams);
 
 	EarlyParams->GnbConfig.PsppPolicy = PsppDisabled;
@@ -187,11 +183,9 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 		.AgesaFunctionName = AMD_INIT_POST,
 		.AllocationMethod = PreMemHeap,
 	};
-	AMD_POST_PARAMS *PostParams;
 
-	create_struct(&AmdParamStruct);
+	AMD_POST_PARAMS *PostParams = create_struct(&AmdParamStruct);
 
-	PostParams = (AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr;
 	PostParams->MemConfig.UmaMode = CONFIG_GFXUMA ? UMA_AUTO : UMA_NONE;
 	PostParams->MemConfig.UmaSize = 0;
 	PostParams->MemConfig.BottomIo = (UINT16)
@@ -244,11 +238,9 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 		.AgesaFunctionName = AMD_INIT_ENV,
 		.AllocationMethod = PostMemDram,
 	};
-	AMD_ENV_PARAMS *EnvParams;
 
-	status = create_struct(&AmdParamStruct);
+	AMD_ENV_PARAMS *EnvParams = create_struct(&AmdParamStruct);
 
-	EnvParams = (AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr;
 	SetFchEnvParams(&EnvParams->FchInterface);
 	SetNbEnvParams(&EnvParams->GnbEnvConfiguration);
 
@@ -296,14 +288,12 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 		.AgesaFunctionName = AMD_INIT_MID,
 		.AllocationMethod = PostMemDram,
 	};
-	AMD_MID_PARAMS *MidParams;
 
 	/* Enable MMIO on AMD CPU Address Map Controller */
 	amd_initcpuio();
 
-	create_struct(&AmdParamStruct);
+	AMD_MID_PARAMS *MidParams = create_struct(&AmdParamStruct);
 
-	MidParams = (AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr;
 	SetFchMidParams(&MidParams->FchInterface);
 	SetNbMidParams(&MidParams->GnbMidConfiguration);
 
@@ -325,14 +315,12 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 		.AgesaFunctionName = AMD_INIT_LATE,
 		.AllocationMethod = PostMemDram,
 	};
-	AMD_LATE_PARAMS *LateParams;
 
 	/*
 	 * NOTE: if not call amdcreatestruct, the initializer
 	 * (AmdInitLateInitializer) would not be called.
 	 */
-	create_struct(&AmdParamStruct);
-	LateParams = (AMD_LATE_PARAMS *)AmdParamStruct.NewStructPtr;
+	AMD_LATE_PARAMS *LateParams = create_struct(&AmdParamStruct);
 
 	timestamp_add_now(TS_AGESA_INIT_LATE_START);
 	Status = AmdInitLate(LateParams);
@@ -394,11 +382,8 @@ AGESA_STATUS agesawrapper_amdinitrtb(void)
 		.AgesaFunctionName = AMD_INIT_RTB,
 		.AllocationMethod = PostMemDram,
 	};
-	AMD_RTB_PARAMS *RtbParams;
 
-	create_struct(&AmdParamStruct);
-
-	RtbParams = (AMD_RTB_PARAMS *)AmdParamStruct.NewStructPtr;
+	AMD_RTB_PARAMS *RtbParams = create_struct(&AmdParamStruct);
 
 	timestamp_add_now(TS_AGESA_INIT_RTB_START);
 	Status = AmdInitRtb(RtbParams);
@@ -427,15 +412,12 @@ AGESA_STATUS agesawrapper_amdinitresume(void)
 		.AgesaFunctionName = AMD_INIT_RESUME,
 		.AllocationMethod = PreMemHeap,
 	};
-	AMD_RESUME_PARAMS *InitResumeParams;
 	size_t nv_size;
 
 	if (!acpi_s3_resume_allowed())
 		return AGESA_UNSUPPORTED;
 
-	create_struct(&AmdParamStruct);
-
-	InitResumeParams = (AMD_RESUME_PARAMS *)AmdParamStruct.NewStructPtr;
+	AMD_RESUME_PARAMS *InitResumeParams = create_struct(&AmdParamStruct);
 
 	get_s3nv_info(&InitResumeParams->S3DataBlock.NvStorage, &nv_size);
 	InitResumeParams->S3DataBlock.NvStorageSize = nv_size;
@@ -461,7 +443,6 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 		.NewStructSize = sizeof(AMD_S3LATE_PARAMS),
 		.NewStructPtr = &_S3LateParams,
 	};
-	AMD_S3LATE_PARAMS *S3LateParams;
 	size_t vol_size;
 
 	if (!acpi_s3_resume_allowed())
@@ -469,9 +450,7 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 
 	amd_initcpuio();
 
-	create_struct(&AmdParamStruct);
-
-	S3LateParams = (AMD_S3LATE_PARAMS *)AmdParamStruct.NewStructPtr;
+	AMD_S3LATE_PARAMS *S3LateParams = create_struct(&AmdParamStruct);
 
 	get_s3vol_info(&S3LateParams->S3DataBlock.VolatileStorage, &vol_size);
 	S3LateParams->S3DataBlock.VolatileStorageSize = vol_size;
@@ -499,15 +478,12 @@ AGESA_STATUS agesawrapper_amds3finalrestore(void)
 		.NewStructSize = sizeof(AMD_S3FINAL_PARAMS),
 		.NewStructPtr = &_S3FinalParams,
 	};
-	AMD_S3FINAL_PARAMS *S3FinalParams;
 	size_t vol_size;
 
 	if (!acpi_s3_resume_allowed())
 		return AGESA_UNSUPPORTED;
 
-	create_struct(&AmdParamStruct);
-
-	S3FinalParams = (AMD_S3FINAL_PARAMS *)AmdParamStruct.NewStructPtr;
+	AMD_S3FINAL_PARAMS *S3FinalParams = create_struct(&AmdParamStruct);
 
 	get_s3vol_info(&S3FinalParams->S3DataBlock.VolatileStorage, &vol_size);
 	S3FinalParams->S3DataBlock.VolatileStorageSize = vol_size;

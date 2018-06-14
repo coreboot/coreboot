@@ -151,7 +151,8 @@ void nehalem_early_initialization(int chipset_type)
 	nehalem_setup_bars();
 
 	/* Device Enable */
-	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_DEVEN, 9 | 2);
+	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_DEVEN,
+			   DEVEN_IGD | DEVEN_PEG10 | DEVEN_HOST);
 
 	early_cpu_init();
 

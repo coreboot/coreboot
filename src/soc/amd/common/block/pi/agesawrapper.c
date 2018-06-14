@@ -96,18 +96,22 @@ static AGESA_STATUS create_struct(AMD_INTERFACE_PARAMS *interface_struct)
 AGESA_STATUS agesawrapper_amdinitreset(void)
 {
 	AGESA_STATUS status;
-	AMD_RESET_PARAMS ResetParams;
+	AMD_RESET_PARAMS _ResetParams;
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_RESET,
 		.AllocationMethod = ByHost,
 		.NewStructSize = sizeof(AMD_RESET_PARAMS),
-		.NewStructPtr = &ResetParams,
+		.NewStructPtr = &_ResetParams,
 	};
+	AMD_RESET_PARAMS *ResetParams;
+
 	create_struct(&AmdParamStruct);
-	SetFchResetParams(&ResetParams.FchInterface);
+
+	ResetParams = (AMD_RESET_PARAMS *)AmdParamStruct.NewStructPtr;
+	SetFchResetParams(&ResetParams->FchInterface);
 
 	timestamp_add_now(TS_AGESA_INIT_RESET_START);
-	status = AmdInitReset(&ResetParams);
+	status = AmdInitReset(ResetParams);
 	timestamp_add_now(TS_AGESA_INIT_RESET_DONE);
 
 	if (status != AGESA_SUCCESS)
@@ -450,9 +454,12 @@ AGESA_STATUS agesawrapper_amdinitresume(void)
 AGESA_STATUS agesawrapper_amds3laterestore(void)
 {
 	AGESA_STATUS Status;
+	AMD_S3LATE_PARAMS _S3LateParams;
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_S3LATE_RESTORE,
 		.AllocationMethod = ByHost,
+		.NewStructSize = sizeof(AMD_S3LATE_PARAMS),
+		.NewStructPtr = &_S3LateParams,
 	};
 	AMD_S3LATE_PARAMS *S3LateParams;
 	size_t vol_size;
@@ -485,9 +492,12 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 AGESA_STATUS agesawrapper_amds3finalrestore(void)
 {
 	AGESA_STATUS Status;
+	AMD_S3FINAL_PARAMS _S3FinalParams;
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_S3FINAL_RESTORE,
 		.AllocationMethod = ByHost,
+		.NewStructSize = sizeof(AMD_S3FINAL_PARAMS),
+		.NewStructPtr = &_S3FinalParams,
 	};
 	AMD_S3FINAL_PARAMS *S3FinalParams;
 	size_t vol_size;

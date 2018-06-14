@@ -41,8 +41,34 @@ static void *AcpiAlib;
 static void *AcpiIvrs;
 static void *AcpiCrat;
 
+static AGESA_STATUS module_dispatch(AGESA_STRUCT_NAME func,
+	AMD_CONFIG_PARAMS *StdHeader)
+{
+	MODULE_ENTRY dispatcher = agesa_get_dispatcher();
+
+	if (!dispatcher)
+		return AGESA_UNSUPPORTED;
+
+	StdHeader->Func = func;
+	return dispatcher(StdHeader);
+}
+
+static AGESA_STATUS amd_dispatch(void *Params)
+{
+	AMD_CONFIG_PARAMS *StdHeader = Params;
+	return module_dispatch(StdHeader->Func, StdHeader);
+}
+
+AGESA_STATUS amd_late_run_ap_task(AP_EXE_PARAMS *ApExeParams)
+{
+	AMD_CONFIG_PARAMS *StdHeader = (void *)ApExeParams;
+	return module_dispatch(AMD_LATE_RUN_AP_TASK, StdHeader);
+}
+
 static void *create_struct(AMD_INTERFACE_PARAMS *interface_struct)
 {
+	AMD_CONFIG_PARAMS *StdHeader;
+
 	/* Should clone entire StdHeader here. */
 	interface_struct->StdHeader.CalloutPtr = &GetBiosCallout;
 
@@ -57,7 +83,9 @@ static void *create_struct(AMD_INTERFACE_PARAMS *interface_struct)
 	if (!interface_struct->NewStructPtr) /* Avoid NULL pointer usage */
 		die("No AGESA structure created");
 
-	return interface_struct->NewStructPtr;
+	StdHeader = interface_struct->NewStructPtr;
+	StdHeader->Func = interface_struct->AgesaFunctionName;
+	return StdHeader;
 }
 
 static AGESA_STATUS amd_init_reset(void)
@@ -76,7 +104,7 @@ static AGESA_STATUS amd_init_reset(void)
 	SetFchResetParams(&ResetParams->FchInterface);
 
 	timestamp_add_now(TS_AGESA_INIT_RESET_START);
-	status = AmdInitReset(ResetParams);
+	status = amd_dispatch(ResetParams);
 	timestamp_add_now(TS_AGESA_INIT_RESET_DONE);
 
 	AmdReleaseStruct(&AmdParamStruct);
@@ -97,7 +125,7 @@ static AGESA_STATUS amd_init_early(void)
 	OemCustomizeInitEarly(EarlyParams);
 
 	timestamp_add_now(TS_AGESA_INIT_EARLY_START);
-	status = AmdInitEarly(EarlyParams);
+	status = amd_dispatch(EarlyParams);
 	timestamp_add_now(TS_AGESA_INIT_EARLY_DONE);
 
 	AmdReleaseStruct(&AmdParamStruct);
@@ -162,7 +190,7 @@ static AGESA_STATUS amd_init_post(void)
 	);
 
 	timestamp_add_now(TS_AGESA_INIT_POST_START);
-	status = AmdInitPost(PostParams);
+	status = amd_dispatch(PostParams);
 	timestamp_add_now(TS_AGESA_INIT_POST_DONE);
 
 	/*
@@ -205,7 +233,7 @@ static AGESA_STATUS amd_init_env(void)
 	SetNbEnvParams(&EnvParams->GnbEnvConfiguration);
 
 	timestamp_add_now(TS_AGESA_INIT_ENV_START);
-	status = AmdInitEnv(EnvParams);
+	status = amd_dispatch(EnvParams);
 	timestamp_add_now(TS_AGESA_INIT_ENV_DONE);
 
 	AmdReleaseStruct(&AmdParamStruct);
@@ -256,7 +284,7 @@ static AGESA_STATUS amd_init_mid(void)
 	SetNbMidParams(&MidParams->GnbMidConfiguration);
 
 	timestamp_add_now(TS_AGESA_INIT_MID_START);
-	status = AmdInitMid(MidParams);
+	status = amd_dispatch(MidParams);
 	timestamp_add_now(TS_AGESA_INIT_MID_DONE);
 
 	AmdReleaseStruct(&AmdParamStruct);
@@ -286,7 +314,7 @@ static AGESA_STATUS amd_init_late(void)
 	}
 
 	timestamp_add_now(TS_AGESA_INIT_LATE_START);
-	Status = AmdInitLate(LateParams);
+	Status = amd_dispatch(LateParams);
 	timestamp_add_now(TS_AGESA_INIT_LATE_DONE);
 
 	DmiTable = LateParams->DmiTable;
@@ -309,11 +337,6 @@ static AGESA_STATUS amd_init_late(void)
 	return Status;
 }
 
-AGESA_STATUS amd_late_run_ap_task(AP_EXE_PARAMS *ApExeParams)
-{
-	return AmdLateRunApTask(ApExeParams);
-}
-
 static AGESA_STATUS amd_init_rtb(void)
 {
 	AGESA_STATUS Status;
@@ -325,7 +348,7 @@ static AGESA_STATUS amd_init_rtb(void)
 	AMD_RTB_PARAMS *RtbParams = create_struct(&AmdParamStruct);
 
 	timestamp_add_now(TS_AGESA_INIT_RTB_START);
-	Status = AmdInitRtb(RtbParams);
+	Status = amd_dispatch(RtbParams);
 	timestamp_add_now(TS_AGESA_INIT_RTB_DONE);
 
 	if (save_s3_info(RtbParams->S3DataBlock.NvStorage,
@@ -354,7 +377,7 @@ static AGESA_STATUS amd_init_resume(void)
 	InitResumeParams->S3DataBlock.NvStorageSize = nv_size;
 
 	timestamp_add_now(TS_AGESA_INIT_RESUME_START);
-	status = AmdInitResume(InitResumeParams);
+	status = amd_dispatch(InitResumeParams);
 	timestamp_add_now(TS_AGESA_INIT_RESUME_DONE);
 
 	AmdReleaseStruct(&AmdParamStruct);
@@ -382,7 +405,7 @@ static AGESA_STATUS amd_s3late_restore(void)
 	S3LateParams->S3DataBlock.VolatileStorageSize = vol_size;
 
 	timestamp_add_now(TS_AGESA_S3_LATE_START);
-	Status = AmdS3LateRestore(S3LateParams);
+	Status = amd_dispatch(S3LateParams);
 	timestamp_add_now(TS_AGESA_S3_LATE_DONE);
 
 	AmdReleaseStruct(&AmdParamStruct);
@@ -408,7 +431,7 @@ static AGESA_STATUS amd_s3final_restore(void)
 	S3FinalParams->S3DataBlock.VolatileStorageSize = vol_size;
 
 	timestamp_add_now(TS_AGESA_S3_FINAL_START);
-	Status = AmdS3FinalRestore(S3FinalParams);
+	Status = amd_dispatch(S3FinalParams);
 	timestamp_add_now(TS_AGESA_S3_FINAL_DONE);
 
 	AmdReleaseStruct(&AmdParamStruct);

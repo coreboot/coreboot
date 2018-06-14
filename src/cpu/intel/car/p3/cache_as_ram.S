@@ -29,19 +29,32 @@
 cache_as_ram:
 	post_code(0x20)
 
-	/* Zero out all fixed range and variable range MTRRs. */
-	movl	$mtrr_table, %esi
-	movl	$((mtrr_table_end - mtrr_table) >> 1), %edi
-	xorl	%eax, %eax
-	xorl	%edx, %edx
-clear_mtrrs:
-	movw	(%esi), %bx
-	movzx	%bx, %ecx
-	wrmsr
-	add	$2, %esi
-	dec	%edi
-	jnz	clear_mtrrs
+	/* Clear/disable fixed MTRRs */
+	mov	$fixed_mtrr_list_size, %ebx
+	xor	%eax, %eax
+	xor	%edx, %edx
 
+clear_fixed_mtrr:
+	add	$-2, %ebx
+	movzwl	fixed_mtrr_list(%ebx), %ecx
+	wrmsr
+	jnz	clear_fixed_mtrr
+
+	/* Figure put how many MTRRs we have, and clear them out */
+	mov	$MTRR_CAP_MSR, %ecx
+	rdmsr
+	movzb	%al, %ebx		/* Number of variable MTRRs */
+	mov	$MTRR_PHYS_BASE(0), %ecx
+	xor	%eax, %eax
+	xor	%edx, %edx
+
+clear_var_mtrr:
+	wrmsr
+	inc	%ecx
+	wrmsr
+	inc	%ecx
+	dec	%ebx
+	jnz	clear_var_mtrr
 	post_code(0x21)
 
 	/* Configure the default memory type to uncacheable. */
@@ -267,15 +280,16 @@ __main:
 	hlt
 	jmp	.Lhlt
 
-mtrr_table:
-	/* Fixed MTRRs */
-	.word 0x250, 0x258, 0x259
-	.word 0x268, 0x269, 0x26A
-	.word 0x26B, 0x26C, 0x26D
-	.word 0x26E, 0x26F
-	/* Variable MTRRs */
-	.word 0x200, 0x201, 0x202, 0x203
-	.word 0x204, 0x205, 0x206, 0x207
-	.word 0x208, 0x209, 0x20A, 0x20B
-	.word 0x20C, 0x20D, 0x20E, 0x20F
-mtrr_table_end:
+fixed_mtrr_list:
+	.word	MTRR_FIX_64K_00000
+	.word	MTRR_FIX_16K_80000
+	.word	MTRR_FIX_16K_A0000
+	.word	MTRR_FIX_4K_C0000
+	.word	MTRR_FIX_4K_C8000
+	.word	MTRR_FIX_4K_D0000
+	.word	MTRR_FIX_4K_D8000
+	.word	MTRR_FIX_4K_E0000
+	.word	MTRR_FIX_4K_E8000
+	.word	MTRR_FIX_4K_F0000
+	.word	MTRR_FIX_4K_F8000
+fixed_mtrr_list_size = . - fixed_mtrr_list

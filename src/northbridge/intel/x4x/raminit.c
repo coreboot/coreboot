@@ -653,6 +653,11 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 			/* Failed S3 resume, reset to come up cleanly */
 			outb(0x6, 0xcf9);
 			halt();
+		} else if (boot_path == BOOT_PATH_WARM_RESET) {
+			/* On warm reset some of dram calibrations fail
+			   and therefore requiring valid cached settings */
+			outb(0xe, 0xcf9);
+			halt();
 		}
 		ctrl_cached = NULL;
 	} else {

@@ -58,29 +58,37 @@ void sdram_init(void)
 
 	/* See if we should test this node's DRAM during boot */
 	int test_dram = bdk_config_get_int(BDK_CONFIG_DRAM_BOOT_TEST, 0);
-	if (test_dram) {
+	if (test_dram == 1) {
+		static const u8 tests[] = {13, 0, 1};
+		for (size_t i = 0; i < ARRAY_SIZE(tests); i++) {
+			/* Run the address test to make sure DRAM works */
+			if (bdk_dram_test(tests[i], 4 * MiB,
+					  sdram_size_mb() * MiB - 4 * MiB,
+					  BDK_DRAM_TEST_NO_STATS |
+					  BDK_DRAM_TEST_NODE0)) {
+				printk(BIOS_CRIT, "%s: Failed DRAM test.\n",
+				       __func__);
+			}
+			bdk_watchdog_poke();
+		}
+	} else {
 		/* Run the address test to make sure DRAM works */
-		if (bdk_dram_test(13, 0, 0x10000000000ull, BDK_DRAM_TEST_NO_STATS | (1<<0))) {
+		if (bdk_dram_test(13, 4 * MiB,
+			  sdram_size_mb() * MiB - 4 * MiB,
+			  BDK_DRAM_TEST_NO_STATS |
+			  BDK_DRAM_TEST_NODE0)) {
 			/**
-			 * FIXME(dhendrix): This should be handled by mainboard code since we
-			 * don't necessarily have a BMC to report to. Also, we need to figure out
-			 * if we need to keep going as to avoid getting into a boot loop.
+			 * FIXME(dhendrix): This should be handled by mainboard
+			 * code since we don't necessarily have a BMC to report
+			 * to. Also, we need to figure out if we need to keep
+			 * going as to avoid getting into a boot loop.
 			 */
 			// bdk_boot_status(BDK_BOOT_STATUS_REQUEST_POWER_CYCLE);
-			printk(BIOS_ERR, "%s: Failed DRAM test.\n", __func__);
+			printk(BIOS_CRIT, "%s: Failed DRAM test.\n", __func__);
 		}
-		bdk_watchdog_poke();
-		/* Put other node core back in reset */
-		if (0 != bdk_numa_master())
-			BDK_CSR_WRITE(0, BDK_RST_PP_RESET, -1);
-		/* Clear DRAM */
-		uint64_t skip = 0;
-		if (0 == bdk_numa_master())
-			skip = bdk_dram_get_top_of_bdk();
-		void *base = bdk_phys_to_ptr(bdk_numa_get_address(0, skip));
-		bdk_zero_memory(base, ((uint64_t)mbytes << 20) - skip);
-		bdk_watchdog_poke();
 	}
+
+	bdk_watchdog_poke();
 
 	/* Unlock L2 now that DRAM works */
 	if (0 == bdk_numa_master()) {

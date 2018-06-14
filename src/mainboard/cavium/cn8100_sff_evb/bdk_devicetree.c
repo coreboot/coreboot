@@ -20,6 +20,7 @@
 #include <bdk-devicetree.h>
 
 const struct bdk_devicetree_key_value devtree[] = {
+{"DDR-TEST-BOOT", "1"},
 {"DDR-CONFIG-DQX-CTL", "0x4"},
 {"DDR-CONFIG-WODT-MASK.RANKS2.DIMMS2", "0xc0c0303"},
 {"DDR-CONFIG-WODT-MASK.RANKS4.DIMMS1", "0x1030203"},

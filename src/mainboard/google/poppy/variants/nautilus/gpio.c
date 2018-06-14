@@ -231,10 +231,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
 	/* E10 : USB2_OC1# ==> USB3_C0_OC0_L */
 	PAD_CFG_NF(GPP_E10, NONE, DEEP, NF1),
-	/* E11 : USB2_OC2# ==> NC */
-	PAD_CFG_NC(GPP_E11),
-	/* E12 : USB2_OC3# ==> USB2_OC3_L */
-	PAD_CFG_NF(GPP_E12, NONE, DEEP, NF1),
+	/* E11 : USB2_OC2# ==> USB2_P2_FAULT# */
+	PAD_CFG_NF(GPP_E11, NONE, DEEP, NF1),
+	/* E12 : USB2_OC3# ==> NC */
+	PAD_CFG_NC(GPP_E12),
 	/* E13 : DDPB_HPD0 ==> KBC3_USB_C0_DP_HPD */
 	PAD_CFG_NF(GPP_E13, 20K_PD, DEEP, NF1),
 	/* E14 : DDPC_HPD1 ==> KBC3_USB_C1_DP_HPD */

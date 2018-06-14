@@ -163,12 +163,11 @@ static void earliest_ramstage(void *unused)
 			psp_load_named_blob(MBOX_BIOS_CMD_SMU_FW2, "smu_fw2");
 
 		post_code(0x47);
-		do_agesawrapper(agesawrapper_amdinitenv, "amdinitenv");
+		do_agesawrapper(AMD_INIT_ENV, "amdinitenv");
 	} else {
 		/* Complete the initial system restoration */
 		post_code(0x46);
-		do_agesawrapper(agesawrapper_amds3laterestore,
-						"amds3laterestore");
+		do_agesawrapper(AMD_S3LATE_RESTORE, "amds3laterestore");
 	}
 }
 

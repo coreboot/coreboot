@@ -18,7 +18,7 @@
 
 static void agesawrapper_s3finalrestore(void *unused)
 {
-	do_agesawrapper(agesawrapper_amds3finalrestore, "amds3finalrestore");
+	do_agesawrapper(AMD_S3FINAL_RESTORE, "amds3finalrestore");
 }
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY,

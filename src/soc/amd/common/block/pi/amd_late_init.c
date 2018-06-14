@@ -179,12 +179,12 @@ static void agesawrapper_post_device(void *unused)
 	if (acpi_is_wakeup_s3())
 		return;
 
-	do_agesawrapper(agesawrapper_amdinitlate, "amdinitlate");
+	do_agesawrapper(AMD_INIT_LATE, "amdinitlate");
 
 	if (!acpi_s3_resume_allowed())
 		return;
 
-	do_agesawrapper(agesawrapper_amdinitrtb, "amdinitrtb");
+	do_agesawrapper(AMD_INIT_RTB, "amdinitrtb");
 }
 
 BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT, agesawrapper_post_device,

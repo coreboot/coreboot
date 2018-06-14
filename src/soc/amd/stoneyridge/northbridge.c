@@ -391,7 +391,7 @@ void domain_enable_resources(struct device *dev)
 {
 	/* Must be called after PCI enumeration and resource allocation */
 	if (!romstage_handoff_is_resume())
-		do_agesawrapper(agesawrapper_amdinitmid, "amdinitmid");
+		do_agesawrapper(AMD_INIT_MID, "amdinitmid");
 }
 
 void domain_set_resources(struct device *dev)

@@ -42,11 +42,11 @@ static const char *decodeAGESA_STATUS(AGESA_STATUS sret)
 	return statusStrings[sret];
 }
 
-static inline u32 do_agesawrapper(AGESA_STATUS (*func)(void), const char *name)
+static inline u32 do_agesawrapper(AGESA_STRUCT_NAME func, const char *name)
 {
 	AGESA_STATUS ret;
 	printk(BIOS_DEBUG, "agesawrapper_%s() entry\n", name);
-	ret = func();
+	ret = agesa_execute_state(func);
 	printk(BIOS_DEBUG, "agesawrapper_%s() returned %s\n",
 			name, decodeAGESA_STATUS(ret));
 	return (u32)ret;

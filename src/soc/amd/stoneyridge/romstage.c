@@ -65,11 +65,11 @@ static void load_smu_fw1(void)
 static void agesa_call(void)
 {
 	post_code(0x37);
-	do_agesawrapper(agesawrapper_amdinitreset, "amdinitreset");
+	do_agesawrapper(AMD_INIT_RESET, "amdinitreset");
 
 	post_code(0x38);
 	/* APs will not exit amdinitearly */
-	do_agesawrapper(agesawrapper_amdinitearly, "amdinitearly");
+	do_agesawrapper(AMD_INIT_EARLY, "amdinitearly");
 }
 
 static void bsp_agesa_call(void)
@@ -102,7 +102,7 @@ asmlinkage void car_stage_entry(void)
 
 	if (!s3_resume) {
 		post_code(0x40);
-		do_agesawrapper(agesawrapper_amdinitpost, "amdinitpost");
+		do_agesawrapper(AMD_INIT_POST, "amdinitpost");
 
 		post_code(0x41);
 		/*
@@ -137,7 +137,7 @@ asmlinkage void car_stage_entry(void)
 	} else {
 		printk(BIOS_INFO, "S3 detected\n");
 		post_code(0x60);
-		do_agesawrapper(agesawrapper_amdinitresume, "amdinitresume");
+		do_agesawrapper(AMD_INIT_RESUME, "amdinitresume");
 
 		post_code(0x61);
 	}

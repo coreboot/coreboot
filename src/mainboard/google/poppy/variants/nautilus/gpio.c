@@ -16,6 +16,7 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
+#include <variant/sku.h>
 
 /* Pad configuration in ramstage */
 /* Leave eSPI pins untouched from default settings */
@@ -49,8 +50,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
 	/* A17 : SD_PWR_EN# ==> CPU1_SDCARD_PWREN_L */
 	PAD_CFG_NF(GPP_A17, NONE, DEEP, NF1),
-	/* A18 : ISH_GP0 ==> NC */
-	PAD_CFG_NC(GPP_A18),
 	/* A19 : ISH_GP1 ==> NC */
 	PAD_CFG_NC(GPP_A19),
 	/* A20 : ISH_GP2 ==> NC */
@@ -102,8 +101,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_B18),
 	/* B19 : GSPI1_CS# ==> CHP3_PEN_EJECT - for notification */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_B19, NONE, DEEP),
-	/* B20 : GSPI1_CLK ==> NC */
-	PAD_CFG_NC(GPP_B20),
+	/* B20 : GSPI1_CLK ==> LTE3_STRAP# - for SAR sensor presence */
+	PAD_CFG_GPI(GPP_B20, 20K_PD, DEEP),
 	/* B21 : GSPI1_MISO ==> CHP3_PEN_EJECT - for wake event */
 	PAD_CFG_GPI_ACPI_SCI(GPP_B21, NONE, DEEP, NONE),
 	/* B22 : GSPI1_MOSI ==> NC */
@@ -160,8 +159,6 @@ static const struct pad_config gpio_table[] = {
 	/* C23 : UART2_CTS# ==> CHP3_PCH_WP*/
 	PAD_CFG_GPI(GPP_C23, 20K_PU, DEEP),
 
-	/* D0  : SPI1_CS# ==> NC */
-	PAD_CFG_NC(GPP_D0),
 	/* D1  : SPI1_CLK ==> NC */
 	PAD_CFG_NC(GPP_D1),
 	/* D2  : SPI1_MISO ==> NC */
@@ -192,8 +189,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_D14),
 	/* D15 : ISH_UART0_RTS# ==> NC */
 	PAD_CFG_NC(GPP_D15),
-	/* D16 : ISH_UART0_CTS# ==> NC */
-	PAD_CFG_NC(GPP_D16),
 	/* D17 : DMIC_CLK1 */
 	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF1),
 	/* D18 : DMIC_DATA1 */
@@ -202,8 +197,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
 	/* D20 : DMIC_DATA0 */
 	PAD_CFG_NF(GPP_D20, NONE, DEEP, NF1),
-	/* D21 : SPI1_IO2 ==> NC */
-	PAD_CFG_NC(GPP_D21),
 	/* D22 : SPI1_IO3 ==> CHP1_BOOT_BEEP_OVERRIDE */
 	PAD_CFG_GPO(GPP_D22, 1, DEEP),
 	/* D23 : I2S_MCLK ==> CHP1_I2S_MCLK */
@@ -381,4 +374,43 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
+}
+
+static const struct pad_config nautilus_default_sku_gpio_table[] = {
+	/* A18 : ISH_GP0 ==> NC */
+	PAD_CFG_NC(GPP_A18),
+	/* D0  : SPI1_CS# ==> NC */
+	PAD_CFG_NC(GPP_D0),
+	/* D16 : ISH_UART0_CTS# ==> NC */
+	PAD_CFG_NC(GPP_D16),
+	/* D21 : SPI1_IO2 ==> NC */
+	PAD_CFG_NC(GPP_D21),
+};
+
+static const struct pad_config lte_sku_gpio_table[] = {
+	/* A18 : ISH_GP0 ==> LTE1_P_SENSOR_INT_L */
+	PAD_CFG_GPI_APIC(GPP_A18, NONE, DEEP),
+	/* D0  : SPI1_CS# ==> LTE_PWROFF# */
+	PAD_CFG_GPO(GPP_D0, 1, DEEP),
+	/* D16 : ISH_UART0_CTS# ==> LTE3_W_DISABLE# */
+	PAD_CFG_GPO(GPP_D16, 1, DEEP),
+	/* D21 : SPI1_IO2 ==> LTE3_BODY_SAR */
+	PAD_CFG_GPO(GPP_D21, 0, DEEP),
+};
+
+const struct pad_config *variant_sku_gpio_table(size_t *num)
+{
+	uint32_t sku_id = variant_board_sku();
+	const struct pad_config *board_gpio_tables;
+	switch (sku_id) {
+	case SKU_1_NAUTILUS_LTE:
+		*num = ARRAY_SIZE(lte_sku_gpio_table);
+		board_gpio_tables = lte_sku_gpio_table;
+		break;
+	default:
+		*num = ARRAY_SIZE(nautilus_default_sku_gpio_table);
+		board_gpio_tables = nautilus_default_sku_gpio_table;
+		break;
+	}
+	return board_gpio_tables;
 }

@@ -57,7 +57,7 @@ static int get_pcie_bar(u32 *base)
 	return 0;
 }
 
-static void pci_domain_set_resources(struct device *dev)
+static void mch_domain_read_resources(struct device *dev)
 {
 	uint32_t pci_tolm, tseg_sizek;
 	uint8_t tolud;
@@ -65,6 +65,8 @@ static void pci_domain_set_resources(struct device *dev)
 	unsigned long long tomk, tomk_stolen;
 	uint64_t uma_memory_base = 0, uma_memory_size = 0;
 	uint64_t tseg_memory_base = 0, tseg_memory_size = 0;
+
+	pci_domain_read_resources(dev);
 
 	/* Can we find out how much memory we can use at most
 	 * this way?
@@ -113,6 +115,14 @@ static void pci_domain_set_resources(struct device *dev)
 	ram_resource(dev, 4, 768, (tomk - 768));
 	uma_resource(dev, 5, uma_memory_base >> 10, uma_memory_size >> 10);
 	mmio_resource(dev, 6, tseg_memory_base >> 10, tseg_memory_size >> 10);
+}
+
+static void mch_domain_set_resources(struct device *dev)
+{
+	struct resource *res;
+
+	for (res = dev->resource_list; res; res = res->next)
+		report_resource_stored(dev, res, "");
 
 	assign_resources(dev->link_list);
 }
@@ -138,8 +148,8 @@ static const char *northbridge_acpi_name(const struct device *dev)
 	 * See e7525/northbridge.c for an example.
 	 */
 static struct device_operations pci_domain_ops = {
-	.read_resources   = pci_domain_read_resources,
-	.set_resources    = pci_domain_set_resources,
+	.read_resources   = mch_domain_read_resources,
+	.set_resources    = mch_domain_set_resources,
 	.enable_resources = NULL,
 	.init             = NULL,
 	.scan_bus         = pci_domain_scan_bus,

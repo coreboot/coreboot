@@ -85,7 +85,8 @@ static void rcba_config(void)
 	RCBA8(OIC) = 0x03;
 
 	/* Disable unused devices */
-	RCBA32(FD) = 0x003c0061;
+	RCBA32(FD) = FD_PCIE6 | FD_PCIE5 | FD_PCIE4 | FD_PCIE3
+		| FD_ACMOD | FD_ACAUD | 1;
 
 	/* Enable PCIe Root Port Clock Gate */
 	RCBA32(CG) = 0x00000001;

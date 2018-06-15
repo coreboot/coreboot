@@ -62,7 +62,9 @@ chip northbridge/intel/x4x		# Northbridge
         end
       end
       device pci 1c.2 on end		# PCIe 3
-      device pci 1c.3 on end		# PCIe 4
+      device pci 1c.3 off end		# PCIe 4
+      device pci 1c.4 off end		# PCIe 5
+      device pci 1c.5 off end		# PCIe 6
       device pci 1d.0 on		# USB
         subsystemid 0x1458 0x5004
       end
@@ -79,6 +81,8 @@ chip northbridge/intel/x4x		# Northbridge
         subsystemid 0x1458 0x5006
       end
       device pci 1e.0 on end		# PCI bridge
+      device pci 1e.2 off end           # AC'97 Audio
+      device pci 1e.3 off end           # AC'97 Modem
       device pci 1f.0 on		# ISA bridge
         subsystemid 0x1458 0x5001
         chip superio/ite/it8718f	# Super I/O
@@ -164,9 +168,6 @@ chip northbridge/intel/x4x		# Northbridge
       device pci 1f.3 on		# SMbus
         subsystemid 0x1458 0x5001
       end
-      device pci 1f.4 off end
-      device pci 1f.5 off end
-      device pci 1f.6 off end
     end
   end
 end

@@ -131,9 +131,6 @@ chip northbridge/intel/x4x		# Northbridge
 			device pci 1f.3 on		# SMbus
 				subsystemid 0x1849 0x27da
 			end
-			device pci 1f.4 off end
-			device pci 1f.5 off end
-			device pci 1f.6 off end
 		end
 	end
 end

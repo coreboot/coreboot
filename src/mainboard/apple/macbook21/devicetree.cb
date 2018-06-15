@@ -83,6 +83,11 @@ chip northbridge/intel/i945
 			end
 			device pci 1c.0 on end # Ethernet
 			device pci 1c.1 on end # Atheros WLAN
+			device pci 1c.2 off end # PCIe #3
+			device pci 1c.3 off end # PCIe #4
+			device pci 1c.4 off end # PCIe #5
+			device pci 1c.5 off end # PCIe #6
+
 			device pci 1d.0 on # USB UHCI
 				subsystemid 0x8086 0x7270
 			end
@@ -98,6 +103,9 @@ chip northbridge/intel/i945
 			device pci 1d.7 on # USB2 EHCI
 				subsystemid 0x8086 0x7270
 			end
+			device pci 1e.0 on end # PCI bridge
+			device pci 1e.2 off end # AC'97 Audio
+			device pci 1e.3 off end # AC'97 Modem
 			device pci 1f.0 on # PCI-LPC bridge
 				subsystemid 0x8086 0x7270
 			end

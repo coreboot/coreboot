@@ -151,9 +151,6 @@ chip northbridge/intel/x4x		# Northbridge
 				device i2c 69 on end
 				end
 			end
-			device pci 1f.4 off end
-			device pci 1f.5 off end
-			device pci 1f.6 off end
 		end
 	end
 end

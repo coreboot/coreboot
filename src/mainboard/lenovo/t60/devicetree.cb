@@ -90,6 +90,11 @@ chip northbridge/intel/i945
 				subsystemid 0x17aa 0x2001
 			end
 			device pci 1c.1 on end # WLAN
+			device pci 1c.2 on end # PCIe port 3
+			device pci 1c.3 on end # PCIe port 4
+			device pci 1c.4 off end # PCIe port 5
+			device pci 1c.5 off end # PCIe port 6
+
 			device pci 1d.0 on # USB UHCI
 				subsystemid 0x17aa 0x200a
 			end
@@ -115,6 +120,8 @@ chip northbridge/intel/i945
 
 				end
 			end
+			device pci 1e.2 off end # AC'97 Audio
+			device pci 1e.3 off end # AC'97 Modem
 			device pci 1f.0 on # PCI-LPC bridge
 				subsystemid 0x17aa 0x2009
 				chip ec/lenovo/pmh7

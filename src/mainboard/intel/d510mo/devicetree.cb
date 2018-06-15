@@ -49,12 +49,15 @@ chip northbridge/intel/pineview		# Northbridge
       device pci 1c.1 on end		# PCIe 2
       device pci 1c.2 on end		# PCIe 3
       device pci 1c.3 on end		# PCIe 4
+      # (PCIe 5 and 6 not on nm10?)
       device pci 1d.0 on end		# USB
       device pci 1d.1 on end		# USB
       device pci 1d.2 on end		# USB
       device pci 1d.3 on end		# USB
       device pci 1d.7 on end		# USB
       device pci 1e.0 on end		# PCI bridge
+      #device pci 1e.2 off end		# AC'97 Audio (not on nm10?)
+      #device pci 1e.3 off end		# AC'97 Modem (not on nm10?)
       device pci 1f.0 on		# ISA bridge
         chip superio/winbond/w83627thg	# Super I/O
           device pnp 4e.0 off end	# Floppy
@@ -90,7 +93,7 @@ chip northbridge/intel/pineview		# Northbridge
           end
         end
       end
-      device pci 1f.1 off end
+      device pci 1f.1 off end		# PATA
       device pci 1f.2 on end		# SATA
       device pci 1f.3 on		# SMbus
         chip drivers/i2c/ck505		# ICS9EPRS525

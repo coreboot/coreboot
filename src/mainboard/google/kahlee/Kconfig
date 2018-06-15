@@ -54,8 +54,7 @@ config VARIANT_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Careena" if BOARD_GOOGLE_CAREENA
-	default "Grunt" if BOARD_GOOGLE_GRUNT
+	default "Grunt"
 
 config DEVICETREE
 	string

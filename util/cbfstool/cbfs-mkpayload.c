@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <commonlib/endian.h>
 
 #include "elfparsing.h"
 #include "common.h"
@@ -426,7 +427,7 @@ int parse_fit_to_payload(const struct buffer *input, struct buffer *output,
 	DEBUG("start: parse_fit_to_payload\n");
 
 	fdt_h = buffer_get(input);
-	if (be32toh(fdt_h->magic) != FDT_HEADER_MAGIC) {
+	if (read_be32(&fdt_h->magic) != FDT_HEADER_MAGIC) {
 		INFO("Not a FIT payload.\n");
 		return -1;
 	}

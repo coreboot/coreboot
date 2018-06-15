@@ -40,8 +40,8 @@ chip soc/intel/skylake
 	register "EnableTraceHub" = "0"
 	register "SsicPortEnable" = "0"
 	register "SmbusEnable" = "1"
-	register "Cio2Enable" = "0"		# FIXME: enable once MIPI is ready
-	register "SaImguEnable" = "0"		# FIXME: enable once MIPI is ready
+	register "Cio2Enable" = "1"
+	register "SaImguEnable" = "1"
 	register "ScsEmmcEnabled" = "1"
 	register "ScsEmmcHs400Enabled" = "1"
 	register "ScsSdCardEnabled" = "0"

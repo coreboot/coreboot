@@ -22,7 +22,7 @@
 #include <device/pci_def.h>
 #include <arch/acpi.h>
 #include <console/console.h>
-#include "northbridge/intel/sandybridge/raminit_native.h"
+#include <northbridge/intel/sandybridge/raminit_native.h>
 
 #include "superio.h"
 #include "thermal.h"

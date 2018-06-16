@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <arch/smp/mpspec.h>
 #include <device/pci.h>
 #include <arch/io.h>
@@ -22,7 +21,7 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
-#include "southbridge/amd/agesa/hudson/hudson.h"
+#include <southbridge/amd/agesa/hudson/hudson.h>
 
 u8 picr_data[] = {
 	0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x0A,0xF1,0x00,0x00,0x1F,0x1F,0x1F,0x1F,

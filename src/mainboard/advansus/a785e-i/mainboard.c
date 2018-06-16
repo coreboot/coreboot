@@ -21,7 +21,7 @@
 #include <cpu/amd/mtrr.h>
 #include <southbridge/amd/common/amd_defs.h>
 #include <device/pci_def.h>
-#include "southbridge/amd/rs780/rs780.h"
+#include <southbridge/amd/rs780/rs780.h>
 
 /* GPIO6. */
 static void enable_int_gfx(void)

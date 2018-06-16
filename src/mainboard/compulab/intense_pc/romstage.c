@@ -16,7 +16,7 @@
 #include <stdint.h>
 #include <lib.h>
 #include <arch/io.h>
-#include "northbridge/intel/sandybridge/raminit_native.h"
+#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <superio/smsc/sio1007/chip.h>
 
 #define SIO_PORT 0x164e

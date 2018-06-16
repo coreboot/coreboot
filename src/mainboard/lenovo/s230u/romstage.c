@@ -17,20 +17,15 @@
 #include <string.h>
 #include <cbfs.h>
 #include <lib.h>
-#include <timestamp.h>
 #include <arch/byteorder.h>
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
-#include <cpu/x86/lapic.h>
-#include <arch/acpi.h>
 #include <console/console.h>
-#include "northbridge/intel/sandybridge/sandybridge.h"
-#include "northbridge/intel/sandybridge/raminit_native.h"
-#include "southbridge/intel/bd82x6x/pch.h"
+#include <northbridge/intel/sandybridge/sandybridge.h>
+#include <northbridge/intel/sandybridge/raminit_native.h>
+#include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
-#include <arch/cpu.h>
-#include <cpu/x86/msr.h>
 #include "ec.h"
 
 #define SPD_LEN 256

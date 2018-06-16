@@ -24,8 +24,8 @@
 #include "hudson.h"
 #include <stdlib.h>
 #include <string.h>
-#include "northbridge/amd/pi/dimmSpd.h"
-#include "northbridge/amd/pi/agesawrapper.h"
+#include <northbridge/amd/pi/dimmSpd.h>
+#include <northbridge/amd/pi/agesawrapper.h>
 #include <boardid.h>
 
 static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr);

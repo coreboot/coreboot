@@ -22,7 +22,7 @@
 #include <device/pci.h>
 #include <delay.h>
 #include "dock.h"
-#include "southbridge/intel/ibexpeak/pch.h"
+#include <southbridge/intel/ibexpeak/pch.h>
 #include "ec/lenovo/h8/h8.h"
 #include <ec/acpi/ec.h>
 

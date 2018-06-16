@@ -261,12 +261,12 @@ chip soc/intel/skylake
 		device pci 15.0 on  end # I2C #0 - Touchscreen
 		device pci 15.1 off end # I2C #1
 		device pci 15.2 on
-			chip drivers/i2c/generic
-				register "hid" = ""ELAN0000""
-				register "desc" = ""ELAN Touchpad""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A19_IRQ)"
-				register "wake" = "GPE0_DW0_23" # GPP_A23
-				register "probed" = "1" # may not be present
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ACPI0C50""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_A19_IRQ)"
+				register "generic.wake" = "GPE0_DW0_23" # GPP_A23
+				register "hid_desc_reg_offset" = "0x01"
 				device i2c 0x15 on end
 			end
 		end # I2C #2 - Trackpad

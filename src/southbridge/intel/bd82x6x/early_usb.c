@@ -15,10 +15,9 @@
  */
 
 #include <arch/io.h>
-#include <console/console.h>
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
-#include "northbridge/intel/sandybridge/sandybridge.h" /* For DEFAULT_RCBABASE.  */
+#include <northbridge/intel/sandybridge/sandybridge.h> /* For DEFAULT_RCBABASE.  */
 #include "pch.h"
 
 void

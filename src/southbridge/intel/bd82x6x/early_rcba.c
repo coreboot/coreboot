@@ -16,8 +16,8 @@
  */
 
 #include <stdint.h>
+#include <northbridge/intel/sandybridge/sandybridge.h>
 #include "pch.h"
-#include "northbridge/intel/sandybridge/sandybridge.h"
 
 void
 southbridge_configure_default_intmap(void)

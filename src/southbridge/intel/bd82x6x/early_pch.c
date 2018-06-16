@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <string.h>
 #include <arch/io.h>
 #include <cbmem.h>
@@ -26,7 +25,7 @@
 
 #include "pch.h"
 /* For DMI bar.  */
-#include "northbridge/intel/sandybridge/sandybridge.h"
+#include <northbridge/intel/sandybridge/sandybridge.h>
 
 #define SOUTHBRIDGE PCI_DEV(0, 0x1f, 0)
 

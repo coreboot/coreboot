@@ -258,7 +258,17 @@ chip soc/intel/skylake
 		device pci 14.0 on  end # USB xHCI
 		device pci 14.1 on  end # USB xDCI (OTG)
 		device pci 14.2 on  end # Thermal Subsystem
-		device pci 15.0 on  end # I2C #0 - Touchscreen
+		device pci 15.0 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ACPI0C50""
+				register "generic.desc" = ""STM Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
+				register "generic.speed" = "I2C_SPEED_FAST"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0xab"
+				device i2c 0x49 on end
+			end
+		end # I2C #0 - Touchscreen
 		device pci 15.1 off end # I2C #1
 		device pci 15.2 on
 			chip drivers/i2c/hid

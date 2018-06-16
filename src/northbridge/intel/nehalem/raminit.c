@@ -56,7 +56,7 @@ typedef u32 device_t;
 
 #include "nehalem.h"
 
-#include "southbridge/intel/ibexpeak/me.h"
+#include <southbridge/intel/ibexpeak/me.h>
 
 #if REAL
 #include <delay.h>

@@ -19,7 +19,7 @@
 #include <arch/io.h>
 #include <spd.h>
 #include <stddef.h>
-#include "southbridge/amd/cs5536/cs5536.h"
+#include <southbridge/amd/cs5536/cs5536.h>
 #include "raminit.h"
 #include "northbridge.h"
 

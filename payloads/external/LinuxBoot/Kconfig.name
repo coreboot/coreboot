@@ -1,0 +1,23 @@
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2017 Facebook Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+config PAYLOAD_LINUXBOOT
+	bool "LinuxBoot"
+	depends on ARCH_X86
+	help
+	  Select this option if you want to build a coreboot image
+	  with a LinuxBoot payload. If you don't know what this is
+	  about, just leave it enabled.
+
+	  See https://coreboot.org/Payloads for more information.

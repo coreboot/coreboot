@@ -355,6 +355,7 @@
 
 #define PM1_LIMIT			16
 #define GPE0_LIMIT			28
+#define TOTAL_BITS(a)			(8 * sizeof(a))
 
 /* Bit definitions for MISC_MMIO_BASE register GPPClkCntrl */
 #define GPP_CLK_CNTRL			0

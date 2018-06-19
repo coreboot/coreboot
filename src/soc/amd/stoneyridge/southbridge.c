@@ -696,7 +696,7 @@ static int get_index_bit(uint32_t value, uint16_t limit)
 	uint16_t i;
 	uint32_t t;
 
-	if (limit >= sizeof(uint32_t))
+	if (limit >= TOTAL_BITS(uint32_t))
 		return -1;
 
 	/* get a mask of valid bits. Ex limit = 3, set bits 0-2 */

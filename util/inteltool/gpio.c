@@ -852,7 +852,27 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
 		gpio_registers = lynxpoint_lp_gpio_registers;
 		size = ARRAY_SIZE(lynxpoint_lp_gpio_registers);
-	    break;
+		break;
+	case PCI_DEVICE_ID_INTEL_C8_MOBILE:
+	case PCI_DEVICE_ID_INTEL_C8_DESKTOP:
+	case PCI_DEVICE_ID_INTEL_Z87:
+	case PCI_DEVICE_ID_INTEL_Z85:
+	case PCI_DEVICE_ID_INTEL_HM86:
+	case PCI_DEVICE_ID_INTEL_H87:
+	case PCI_DEVICE_ID_INTEL_HM87:
+	case PCI_DEVICE_ID_INTEL_Q85:
+	case PCI_DEVICE_ID_INTEL_Q87:
+	case PCI_DEVICE_ID_INTEL_QM87:
+	case PCI_DEVICE_ID_INTEL_B85:
+	case PCI_DEVICE_ID_INTEL_C222:
+	case PCI_DEVICE_ID_INTEL_C224:
+	case PCI_DEVICE_ID_INTEL_C226:
+	case PCI_DEVICE_ID_INTEL_H81:
+		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
+		gpio_registers = lynxpoint_lp_gpio_registers;
+		/* Shares register locations but has less of them */
+		size = 29;
+		break;
 	case PCI_DEVICE_ID_INTEL_3400:
 	case PCI_DEVICE_ID_INTEL_3420:
 	case PCI_DEVICE_ID_INTEL_3450:

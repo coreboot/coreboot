@@ -730,6 +730,21 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP_PREM:
 	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP:
 	case PCI_DEVICE_ID_INTEL_BAYTRAIL_LPC:
+	case PCI_DEVICE_ID_INTEL_C8_MOBILE:
+	case PCI_DEVICE_ID_INTEL_C8_DESKTOP:
+	case PCI_DEVICE_ID_INTEL_Z87:
+	case PCI_DEVICE_ID_INTEL_Z85:
+	case PCI_DEVICE_ID_INTEL_HM86:
+	case PCI_DEVICE_ID_INTEL_H87:
+	case PCI_DEVICE_ID_INTEL_HM87:
+	case PCI_DEVICE_ID_INTEL_Q85:
+	case PCI_DEVICE_ID_INTEL_Q87:
+	case PCI_DEVICE_ID_INTEL_QM87:
+	case PCI_DEVICE_ID_INTEL_B85:
+	case PCI_DEVICE_ID_INTEL_C222:
+	case PCI_DEVICE_ID_INTEL_C224:
+	case PCI_DEVICE_ID_INTEL_C226:
+	case PCI_DEVICE_ID_INTEL_H81:
 		pmbase = pci_read_word(sb, 0x40) & 0xff80;
 		pm_registers = pch_pm_registers;
 		size = ARRAY_SIZE(pch_pm_registers);

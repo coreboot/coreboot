@@ -13,21 +13,19 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/exception.h>
-#include <console/console.h>
-#include <program_loading.h>
+#include <device/device.h>
 #include <soc/mmu_operations.h>
-#include <timestamp.h>
 
-void main(void)
+static void mainboard_init(struct device *dev)
 {
-	timestamp_add_now(TS_START_ROMSTAGE);
-
-	/* Init UART baudrate when PLL on. */
-	console_init();
-	exception_init();
-
-	mtk_mmu_after_dram();
-
-	run_ramstage();
 }
+
+static void mainboard_enable(struct device *dev)
+{
+	dev->ops->init = &mainboard_init;
+}
+
+struct chip_operations mainboard_ops = {
+	.name = CONFIG_MAINBOARD_PART_NUMBER,
+	.enable_dev = mainboard_enable,
+};

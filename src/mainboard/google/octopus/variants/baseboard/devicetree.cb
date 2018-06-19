@@ -185,6 +185,15 @@ chip soc/intel/apollolake
 				register "probed" = "1"
 				device i2c 15 on end
 			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""PNP0C50""
+				register "generic.desc" = ""Synaptics Touchpad""
+				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPIO_135_IRQ)"
+				register "generic.wake" = "GPE0_DW2_02"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 0x2c on end
+			end
 		end	# - I2C 6
 		device pci 17.3 on
 			chip drivers/i2c/generic

@@ -317,7 +317,7 @@ chip soc/intel/skylake
 				register "uid" = "0"
 				register "desc" = ""RIGHT SPEAKER AMP""
 				register "name" = ""MAXR""
-				device i2c 31 on end
+				device i2c 32 on end
 			end
 			chip drivers/i2c/max98373
 				register "vmon_slot_no" = "6"
@@ -325,7 +325,7 @@ chip soc/intel/skylake
 				register "uid" = "1"
 				register "desc" = ""LEFT SPEAKER AMP""
 				register "name" = ""MAXL""
-				device i2c 32 on end
+				device i2c 31 on end
 			end
 		end # I2C #4 - Audio
 		device pci 1c.0 on

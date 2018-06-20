@@ -299,7 +299,38 @@ chip soc/intel/skylake
 				device i2c 0a on end
 			end
 		end # I2C #0 - Touchscreen
-		device pci 15.1 on  end # I2C #1 - Trackpad
+		device pci 15.1 on
+			chip drivers/i2c/sx9310
+				register "desc" = ""Left SAR Proximity Sensor""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D9_IRQ)"
+				register "speed" = "I2C_SPEED_FAST_PLUS"
+				register "uid" = "1"
+				register "reg_prox_ctrl0" = "0x1A"
+				register "reg_prox_ctrl1" = "0x00"
+				register "reg_prox_ctrl2" = "0x84"
+				register "reg_prox_ctrl3" = "0x0E"
+				register "reg_prox_ctrl4" = "0x07"
+				register "reg_prox_ctrl5" = "0xC6"
+				register "reg_prox_ctrl6" = "0x20"
+				register "reg_prox_ctrl7" = "0x0D"
+				register "reg_prox_ctrl8" = "0x8D"
+				register "reg_prox_ctrl9" = "0x43"
+				register "reg_prox_ctrl10" = "0x11"
+				register "reg_prox_ctrl11" = "0x00"
+				register "reg_prox_ctrl12" = "0x00"
+				register "reg_prox_ctrl13" = "0x00"
+				register "reg_prox_ctrl14" = "0x00"
+				register "reg_prox_ctrl15" = "0x00"
+				register "reg_prox_ctrl16" = "0x00"
+				register "reg_prox_ctrl17" = "0x00"
+				register "reg_prox_ctrl18" = "0x00"
+				register "reg_prox_ctrl19" = "0x00"
+				register "reg_sar_ctrl0" = "0x50"
+				register "reg_sar_ctrl1" = "0x8A"
+				register "reg_sar_ctrl2" = "0x3C"
+				device i2c 28 on end
+			end
+		end # I2C #1
 		device pci 15.2 off end # I2C #2
 		device pci 15.3 on  end # I2C #3 - Camera
 		device pci 16.0 on  end # Management Engine Interface 1
@@ -309,7 +340,38 @@ chip soc/intel/skylake
 		device pci 16.4 off end # Management Engine Interface 3
 		device pci 17.0 off end # SATA
 		device pci 19.0 on  end # UART #2
-		device pci 19.1 on  end # I2C #5
+		device pci 19.1 on
+			chip drivers/i2c/sx9310
+				register "desc" = ""Left SAR Proximity Sensor""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D10_IRQ)"
+				register "speed" = "I2C_SPEED_FAST_PLUS"
+				register "uid" = "1"
+				register "reg_prox_ctrl0" = "0x1A"
+				register "reg_prox_ctrl1" = "0x00"
+				register "reg_prox_ctrl2" = "0x84"
+				register "reg_prox_ctrl3" = "0x0E"
+				register "reg_prox_ctrl4" = "0x07"
+				register "reg_prox_ctrl5" = "0xC6"
+				register "reg_prox_ctrl6" = "0x20"
+				register "reg_prox_ctrl7" = "0x0D"
+				register "reg_prox_ctrl8" = "0x8D"
+				register "reg_prox_ctrl9" = "0x43"
+				register "reg_prox_ctrl10" = "0x11"
+				register "reg_prox_ctrl11" = "0x00"
+				register "reg_prox_ctrl12" = "0x00"
+				register "reg_prox_ctrl13" = "0x00"
+				register "reg_prox_ctrl14" = "0x00"
+				register "reg_prox_ctrl15" = "0x00"
+				register "reg_prox_ctrl16" = "0x00"
+				register "reg_prox_ctrl17" = "0x00"
+				register "reg_prox_ctrl18" = "0x00"
+				register "reg_prox_ctrl19" = "0x00"
+				register "reg_sar_ctrl0" = "0x50"
+				register "reg_sar_ctrl1" = "0x8A"
+				register "reg_sar_ctrl2" = "0x3C"
+				device i2c 28 on end
+			end
+		end # I2C #5
 		device pci 19.2 on
 			chip drivers/i2c/max98373
 				register "vmon_slot_no" = "4"

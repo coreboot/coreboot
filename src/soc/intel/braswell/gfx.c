@@ -68,15 +68,16 @@ static void gfx_init(struct device *dev)
 	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 
-	/* Pre VBIOS Init */
-	gfx_pre_vbios_init(dev);
+	if (!IS_ENABLED(CONFIG_RUN_FSP_GOP)) {
+		/* Pre VBIOS Init */
+		gfx_pre_vbios_init(dev);
 
-	/* Run VBIOS */
-	pci_dev_init(dev);
+		/* Run VBIOS */
+		pci_dev_init(dev);
 
-	/* Post VBIOS Init */
-	gfx_post_vbios_init(dev);
-
+		/* Post VBIOS Init */
+		gfx_post_vbios_init(dev);
+	}
 	intel_gma_restore_opregion();
 }
 

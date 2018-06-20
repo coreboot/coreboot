@@ -38,11 +38,11 @@ def update_struct( file_path, msg_output, line_number):
 def parse_file(input_file):
     fp = open (input_file, "r")
     for line in fp:
-        if "ERROR" in line:
+        if line.startswith("ERROR:"):
             msg_output = line.split("ERROR:")[1].strip()
-        elif "WARNING" in line:
+        elif line.startswith("WARNING:"):
             msg_output = line.split("WARNING:")[1].strip()
-        elif "FILE" in line:
+        elif ": FILE:" in line:
             temp = line.split("FILE:")
             file_path = temp[1].split(":")[0]
             line_number = temp[1].split(":")[1]

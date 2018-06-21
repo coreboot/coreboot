@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootmode.h>
 #include <console/console.h>
 #include <string.h>
 #include <ec/google/chromeec/ec.h>
@@ -47,7 +48,7 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 	romstage_common(rp);
 
 	if (IS_ENABLED(CONFIG_CHROMEOS))
-		save_chromeos_gpios();
+		init_bootmode_straps();
 }
 
 void mainboard_pre_console_init(void)

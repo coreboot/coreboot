@@ -19,8 +19,6 @@
 #ifndef __ACPI__
 void lan_init(void);
 
-void save_chromeos_gpios(void);
-
 void set_power_led(int state);
 
 enum {

@@ -73,7 +73,7 @@ int get_recovery_mode_switch(void)
 }
 
 #ifdef __PRE_RAM__
-void save_chromeos_gpios(void)
+void init_bootmode_straps(void)
 {
 	u32 flags = 0;
 

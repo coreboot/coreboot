@@ -25,7 +25,7 @@ void variant_update_devtree(struct device *dev)
 	uint32_t sku_id = SKU_UNKNOWN;
 	struct device *touchscreen_i2c_host;
 
-	touchscreen_i2c_host = dev_find_slot(0, PCH_DEVFN_I2C7);
+	touchscreen_i2c_host = pcidev_path_on_root(PCH_DEVFN_I2C7);
 
 	if (touchscreen_i2c_host == NULL)
 		return;

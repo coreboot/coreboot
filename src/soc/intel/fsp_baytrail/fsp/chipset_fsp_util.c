@@ -86,7 +86,7 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 	DEVTREE_CONST config_t *config;
 	printk(FSP_INFO_LEVEL, "Configure Default UPD Data\n");
 
-	dev = dev_find_slot(0, SOC_DEV_FUNC);
+	dev = pcidev_path_on_root(SOC_DEV_FUNC);
 	config = dev->chip_info;
 
 	/* Set up default verb tables - Just HDMI audio */

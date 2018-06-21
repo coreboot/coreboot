@@ -79,7 +79,7 @@ void OemPostParams(AMD_POST_PARAMS *PostParams)
 void set_board_env_params(GNB_ENV_CONFIGURATION *params)
 {
 	const struct soc_amd_stoneyridge_config *cfg;
-	const struct device *dev = dev_find_slot(0, GNB_DEVFN);
+	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_WARNING, "Warning: Cannot find SoC devicetree config\n");
 		return;

@@ -120,7 +120,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)
 		die("Microcode file (rmu.bin) not found.");
 
 	/* Locate the configuration data from devicetree.cb */
-	dev = dev_find_slot(0, LPC_DEV_FUNC);
+	dev = pcidev_path_on_root(LPC_DEV_FUNC);
 	if (!dev)
 		die("ERROR - LPC device not found!");
 	config = dev->chip_info;

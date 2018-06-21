@@ -137,7 +137,7 @@ static void i82801ix_ehci_init(void)
 
 static int i82801ix_function_disabled(const unsigned devfn)
 {
-	const struct device *const dev = dev_find_slot(0, devfn);
+	struct device *const dev = pcidev_path_on_root(devfn);
 	if (!dev) {
 		printk(BIOS_EMERG,
 		       "PCI device 00:%x.%x",

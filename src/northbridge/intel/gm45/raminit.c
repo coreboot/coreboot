@@ -1165,7 +1165,7 @@ static unsigned int get_mmio_size(void)
 	const struct device *dev;
 	const struct northbridge_intel_gm45_config *cfg = NULL;
 
-	dev = dev_find_slot(0, HOST_BRIDGE);
+	dev = pcidev_path_on_root(HOST_BRIDGE);
 	if (dev)
 		cfg = dev->chip_info;
 

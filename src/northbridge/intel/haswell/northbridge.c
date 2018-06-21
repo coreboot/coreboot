@@ -459,7 +459,7 @@ static void disable_devices(void)
 	deven = pci_read_config32(host_dev, DEVEN);
 
 	for (i = 0; i < ARRAY_SIZE(nb_devs); i++) {
-		struct device *dev = dev_find_slot(0, nb_devs[i].devfn);
+		struct device *dev = pcidev_path_on_root(nb_devs[i].devfn);
 		if (!dev || !dev->enabled) {
 			printk(BIOS_DEBUG, "Disabling %s.\n", nb_devs[i].name);
 			deven &= ~nb_devs[i].mask;

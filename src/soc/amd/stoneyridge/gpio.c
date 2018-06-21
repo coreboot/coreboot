@@ -347,7 +347,7 @@ static void restore_i2c_pin_registers(uint8_t gpio,
 void sb_reset_i2c_slaves(void)
 {
 	const struct soc_amd_stoneyridge_config *cfg;
-	const struct device *dev = dev_find_slot(0, GNB_DEVFN);
+	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
 	struct soc_amd_i2c_save save_table[saved_pins_count];
 	uint8_t i, j, control;
 

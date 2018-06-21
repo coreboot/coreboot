@@ -36,7 +36,7 @@
 
 static bool is_cnvi_held_in_reset(void)
 {
-	struct device *dev = dev_find_slot(0, PCH_DEVFN_CNVI);
+	struct device *dev = pcidev_path_on_root(PCH_DEVFN_CNVI);
 	uint32_t reg = pci_read_config32(dev, PCI_VENDOR_ID);
 
 	/*
@@ -167,7 +167,7 @@ static void wifi_device_update(void)
 	else
 		devfn = PCH_DEVFN_PCIE1;
 
-	dev = dev_find_slot(0, devfn);
+	dev = pcidev_path_on_root(devfn);
 	if (dev)
 		dev->enabled = 0;
 }

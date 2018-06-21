@@ -324,7 +324,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	 */
 	AMD_LATE_PARAMS *LateParams = create_struct(&AmdParamStruct);
 
-	const struct device *dev = dev_find_slot(0, IOMMU_DEVFN);
+	const struct device *dev = pcidev_path_on_root(IOMMU_DEVFN);
 	if (dev && dev->enabled) {
 		LateParams->GnbLateConfiguration.GnbIoapicId = CONFIG_MAX_CPUS
 									+ 1;

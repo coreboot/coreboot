@@ -59,7 +59,7 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 	DEVTREE_CONST config_t *config;
 	printk(BIOS_DEBUG, "Configure Default UPD Data\n");
 
-	dev = dev_find_slot(0, SOC_DEV_FUNC);
+	dev = pcidev_path_on_root(SOC_DEV_FUNC);
 	config = dev->chip_info;
 
 	/* Set SPD addresses */

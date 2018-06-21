@@ -52,7 +52,7 @@ AGESA_STATUS agesa_fch_initenv(uint32_t Func, uintptr_t FchData,
 							void *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
-	const struct device *dev = dev_find_slot(0, SATA_DEVFN);
+	const struct device *dev = pcidev_path_on_root(SATA_DEVFN);
 
 	if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
@@ -104,7 +104,7 @@ AGESA_STATUS agesa_ReadSpd(uint32_t Func, uintptr_t Data, void *ConfigPtr)
 	if (!ENV_ROMSTAGE)
 		return AGESA_UNSUPPORTED;
 
-	dev = dev_find_slot(0, DCT_DEVFN);
+	dev = pcidev_path_on_root(DCT_DEVFN);
 	if (dev == NULL)
 		return AGESA_ERROR;
 

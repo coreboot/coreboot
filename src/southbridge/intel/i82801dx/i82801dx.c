@@ -26,7 +26,7 @@ void i82801dx_enable(struct device *dev)
 
 //      all 82801dbm devices are in bus 0
 	unsigned int devfn = PCI_DEVFN(0x1f, 0);	// lpc
-	struct device *lpc_dev = dev_find_slot(0, devfn);	// 0
+	struct device *lpc_dev = pcidev_path_on_root(devfn);	// 0
 	if (!lpc_dev)
 		return;
 

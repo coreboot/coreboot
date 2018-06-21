@@ -73,7 +73,7 @@ static inline int sb_ide_enable(void)
 
 void SetFchResetParams(FCH_RESET_INTERFACE *params)
 {
-	const struct device *dev = dev_find_slot(0, SATA_DEVFN);
+	const struct device *dev = pcidev_path_on_root(SATA_DEVFN);
 	params->Xhci0Enable = IS_ENABLED(CONFIG_STONEYRIDGE_XHCI_ENABLE);
 	if (dev && dev->enabled) {
 		params->SataEnable = sb_sata_enable();
@@ -86,7 +86,7 @@ void SetFchResetParams(FCH_RESET_INTERFACE *params)
 
 void SetFchEnvParams(FCH_INTERFACE *params)
 {
-	const struct device *dev = dev_find_slot(0, SATA_DEVFN);
+	const struct device *dev = pcidev_path_on_root(SATA_DEVFN);
 	params->AzaliaController = AzEnable;
 	params->SataClass = CONFIG_STONEYRIDGE_SATA_MODE;
 	if (dev && dev->enabled) {
@@ -904,9 +904,9 @@ static void set_sb_final_nvs(void)
 	gnvs->aoac.ehce = is_aoac_device_enabled(FCH_AOAC_D3_STATE_USB2);
 	gnvs->aoac.xhce = is_aoac_device_enabled(FCH_AOAC_D3_STATE_USB3);
 	/* Rely on these being in sync with devicetree */
-	sd = dev_find_slot(0, SD_DEVFN);
+	sd = pcidev_path_on_root(SD_DEVFN);
 	gnvs->aoac.st_e = sd && sd->enabled ? 1 : 0;
-	sata = dev_find_slot(0, SATA_DEVFN);
+	sata = pcidev_path_on_root(SATA_DEVFN);
 	gnvs->aoac.sd_e = sata && sata->enabled ? 1 : 0;
 	gnvs->aoac.espi = 1;
 

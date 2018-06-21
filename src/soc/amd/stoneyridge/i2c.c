@@ -45,7 +45,7 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 
 static const struct soc_amd_stoneyridge_config *get_soc_config(void)
 {
-	const struct device *dev = dev_find_slot(0, GNB_DEVFN);
+	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
 
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "%s: Could not find SoC devicetree config!\n",

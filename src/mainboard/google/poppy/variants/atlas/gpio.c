@@ -419,7 +419,7 @@ static const struct pad_config ish_disabled_gpio_table[] = {
 const struct pad_config *variant_sku_gpio_table(size_t *num)
 {
 	const struct pad_config *board_gpio_tables;
-	const struct device *dev = dev_find_slot(0, PCH_DEVFN_ISH);
+	const struct device *dev = pcidev_path_on_root(PCH_DEVFN_ISH);
 	if (dev && dev->enabled) {
 		*num = ARRAY_SIZE(ish_enabled_gpio_table);
 		board_gpio_tables = ish_enabled_gpio_table;

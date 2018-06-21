@@ -84,7 +84,7 @@ void soc_memory_init_params(struct romstage_params *params,
 	size_t rmu_data_len;
 
 	/* Locate the configuration data from devicetree.cb */
-	dev = dev_find_slot(0, LPC_DEV_FUNC);
+	dev = pcidev_path_on_root(LPC_DEV_FUNC);
 	if (!dev) {
 		printk(BIOS_CRIT,
 			"Error! Device (PCI:0:%02x.%01x) not found, "

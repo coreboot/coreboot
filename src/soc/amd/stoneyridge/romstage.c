@@ -187,7 +187,7 @@ asmlinkage void car_stage_entry(void)
 void SetMemParams(AMD_POST_PARAMS *PostParams)
 {
 	const struct soc_amd_stoneyridge_config *cfg;
-	const struct device *dev = dev_find_slot(0, GNB_DEVFN);
+	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
 
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "ERROR: Cannot find SoC devicetree config\n");
@@ -224,7 +224,7 @@ void SetMemParams(AMD_POST_PARAMS *PostParams)
 void soc_customize_init_early(AMD_EARLY_PARAMS *InitEarly)
 {
 	const struct soc_amd_stoneyridge_config *cfg;
-	const struct device *dev = dev_find_slot(0, GNB_DEVFN);
+	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
 	struct _PLATFORM_CONFIGURATION *platform;
 
 	if (!dev || !dev->chip_info) {

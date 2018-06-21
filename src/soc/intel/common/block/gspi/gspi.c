@@ -236,7 +236,7 @@ static uintptr_t gspi_calc_base_addr(unsigned int gspi_bus)
 	if (devfn < 0)
 		return 0;
 
-	dev = dev_find_slot(0, devfn);
+	dev = pcidev_path_on_root(devfn);
 	if (!dev || !dev->enabled)
 		return 0;
 

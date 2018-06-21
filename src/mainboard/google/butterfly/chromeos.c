@@ -37,7 +37,7 @@
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	struct device *dev = pcidev_on_root(0x1f, 0);
 	u16 gpio_base = pci_read_config16(dev, GPIOBASE) & 0xfffe;
 
 	int lidswitch = 0;

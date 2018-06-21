@@ -40,7 +40,7 @@
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	struct device *dev = pcidev_on_root(0x1f, 0);
 	u16 gen_pmcon_1 = pci_read_config32(dev, GEN_PMCON_1);
 	u8  lid = ec_read(0x83);
 
@@ -88,11 +88,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 int get_write_protect_state(void)
 {
 #ifdef __SIMPLE_DEVICE__
-	pci_devfn_t dev;
-	dev = PCI_DEV(0, 0x1f, 2);
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
 #else
-	struct device *dev;
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 2));
+	struct device *dev = pcidev_on_root(0x1f, 2);
 #endif
 	return (pci_read_config32(dev, SATA_SP) >> FLAG_SPI_WP) & 1;
 }
@@ -100,11 +98,9 @@ int get_write_protect_state(void)
 int get_developer_mode_switch(void)
 {
 #ifdef __SIMPLE_DEVICE__
-	pci_devfn_t dev;
-	dev = PCI_DEV(0, 0x1f, 2);
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
 #else
-	struct device *dev;
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 2));
+	struct device *dev = pcidev_on_root(0x1f, 2);
 #endif
 	return (pci_read_config32(dev, SATA_SP) >> FLAG_DEV_MODE) & 1;
 }
@@ -112,19 +108,21 @@ int get_developer_mode_switch(void)
 int get_recovery_mode_switch(void)
 {
 #ifdef __SIMPLE_DEVICE__
-	pci_devfn_t dev;
-	dev = PCI_DEV(0, 0x1f, 2);
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
 #else
-	struct device *dev;
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 2));
+	struct device *dev = pcidev_on_root(0x1f, 2);
 #endif
 	return (pci_read_config32(dev, SATA_SP) >> FLAG_REC_MODE) & 1;
 }
 
 void init_bootmode_straps(void)
 {
-#ifdef __PRE_RAM__
 	u32 flags = 0;
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
+#else
+	struct device *dev = pcidev_on_root(0x1f, 2);
+#endif
 
 	/* Write Protect: GPIO24 = KBC3_SPI_WP#, active high */
 	if (get_gpio(GPIO_SPI_WP))
@@ -136,8 +134,7 @@ void init_bootmode_straps(void)
 	if (get_gpio(GPIO_DEV_MODE))
 		flags |= (1 << FLAG_DEV_MODE);
 
-	pci_write_config32(PCI_DEV(0, 0x1f, 2), SATA_SP, flags);
-#endif
+	pci_write_config32(dev, SATA_SP, flags);
 }
 
 static const struct cros_gpio cros_gpios[] = {

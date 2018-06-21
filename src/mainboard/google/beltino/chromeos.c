@@ -48,32 +48,32 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_write_protect_state(void)
 {
-#ifdef __PRE_RAM__
-	pci_devfn_t dev;
-	dev = PCI_DEV(0, 0x1f, 2);
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
 #else
-	struct device *dev;
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 2));
+	struct device *dev = pcidev_on_root(0x1f, 2);
 #endif
 	return (pci_read_config32(dev, SATA_SP) >> FLAG_SPI_WP) & 1;
 }
 
 int get_recovery_mode_switch(void)
 {
-#ifdef __PRE_RAM__
-	pci_devfn_t dev;
-	dev = PCI_DEV(0, 0x1f, 2);
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
 #else
-	struct device *dev;
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 2));
+	struct device *dev = pcidev_on_root(0x1f, 2);
 #endif
 	return (pci_read_config32(dev, SATA_SP) >> FLAG_REC_MODE) & 1;
 }
 
-#ifdef __PRE_RAM__
 void init_bootmode_straps(void)
 {
 	u32 flags = 0;
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
+#else
+	struct device *dev = pcidev_on_root(0x1f, 2);
+#endif
 
 	/* Write Protect: GPIO58 = GPIO_SPI_WP, active high */
 	if (get_gpio(GPIO_SPI_WP))
@@ -85,9 +85,8 @@ void init_bootmode_straps(void)
 
 	/* Developer: Virtual */
 
-	pci_write_config32(PCI_DEV(0, 0x1f, 2), SATA_SP, flags);
+	pci_write_config32(dev, SATA_SP, flags);
 }
-#endif
 
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(GPIO_REC_MODE, CROS_GPIO_DEVICE_NAME),

@@ -101,7 +101,7 @@ int get_recovery_mode_switch(void)
 #else
 	static int ec_in_rec_mode = 0;
 	static int ec_rec_flag_good = 0;
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	struct device *dev = pcidev_on_root(0x1f, 0);
 #endif
 
 	u8 ec_status = ec_read(EC_STATUS_REG);

@@ -58,6 +58,12 @@ struct chip_instance {
 
 	/* Pointer to next instance of the same chip. */
 	struct chip_instance *next;
+
+	/*
+	 * Reference count - Indicates how many devices hold pointer to this
+	 * chip instance.
+	 */
+	int ref_count;
 };
 
 struct chip {

@@ -295,6 +295,17 @@ config DEVICETREE
 	  Examples: "devicetree.variant.cb"
 	            "variant/devicetree.cb"
 
+config OVERRIDE_DEVICETREE
+	string
+	default ""
+	help
+	  This symbol allows variants to provide an override devicetree file to
+	  override the registers and/or add new devices on top of the ones
+	  provided by baseboard devicetree using CONFIG_DEVICETREE.
+
+	  Examples: "devicetree.variant-override.cb"
+	            "variant/devicetree-override.cb"
+
 config CBFS_SIZE
 	hex "Size of CBFS filesystem in ROM"
 	# Default value set at the end of the file

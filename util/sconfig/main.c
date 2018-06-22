@@ -75,7 +75,13 @@ typedef enum {
  *
  *
  */
+
+/* Root device of primary tree. */
 static struct device base_root_dev;
+
+/* Root device of override tree (if applicable). */
+static struct device override_root_dev;
+
 static struct chip_instance mainboard_instance;
 
 static struct bus base_root_bus = {
@@ -92,6 +98,28 @@ static struct device base_root_dev = {
 	.parent = &base_root_bus,
 	.enabled = 1,
 	.bus = &base_root_bus,
+};
+
+static struct bus override_root_bus = {
+	.id = 0,
+	.dev = &override_root_dev,
+};
+
+static struct device override_root_dev = {
+	.name = "override_root",
+	.id = 0,
+	/*
+	 * Override tree root device points to the same mainboard chip instance
+	 * as the base tree root device. It should not cause any side-effects
+	 * since the mainboard chip instance pointer in override tree will just
+	 * be ignored.
+	 */
+	.chip_instance = &mainboard_instance,
+	.path = " .type = DEVICE_PATH_ROOT ",
+	.ops = "&default_dev_ops_root",
+	.parent = &override_root_bus,
+	.enabled = 1,
+	.bus = &override_root_bus,
 };
 
 static struct chip mainboard_chip = {
@@ -857,16 +885,19 @@ static void inherit_subsystem_ids(FILE *file, struct device *dev,
 
 static void usage(void)
 {
-	printf("usage: sconfig devicetree_file output_file\n");
+	printf("usage: sconfig devicetree_file output_file [override_devicetree_file]\n");
 	exit(1);
 }
 
 enum {
 	DEVICEFILE_ARG = 1,
-	OUTPUTFILE_ARG
+	OUTPUTFILE_ARG,
+	OVERRIDE_DEVICEFILE_ARG,
 };
 
-#define ARG_COUNT		3
+#define MANDATORY_ARG_COUNT		3
+#define OPTIONAL_ARG_COUNT		1
+#define TOTAL_ARG_COUNT		(MANDATORY_ARG_COUNT + OPTIONAL_ARG_COUNT)
 
 static void parse_devicetree(const char *file, struct bus *parent)
 {
@@ -888,13 +919,19 @@ static void parse_devicetree(const char *file, struct bus *parent)
 
 int main(int argc, char **argv)
 {
-	if (argc != ARG_COUNT)
+	if ((argc < MANDATORY_ARG_COUNT) || (argc > TOTAL_ARG_COUNT))
 		usage();
 
-	char *base_devtree = argv[DEVICEFILE_ARG];
-	char *outputc = argv[OUTPUTFILE_ARG];
+	const char *base_devtree = argv[DEVICEFILE_ARG];
+	const char *outputc = argv[OUTPUTFILE_ARG];
+	const char *override_devtree;
 
 	parse_devicetree(base_devtree, &base_root_bus);
+
+	if (argc == TOTAL_ARG_COUNT) {
+		override_devtree = argv[OVERRIDE_DEVICEFILE_ARG];
+		parse_devicetree(override_devtree, &override_root_bus);
+	}
 
 	FILE *autogen = fopen(outputc, "w");
 	if (!autogen) {

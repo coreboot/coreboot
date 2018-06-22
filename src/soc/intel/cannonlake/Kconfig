@@ -64,7 +64,7 @@ config CPU_SPECIFIC_OPTIONS
 
 config UART_DEBUG
 	bool "Enable UART debug port."
-	default y
+	default n
 	select CONSOLE_SERIAL
 	select BOOTBLOCK_CONSOLE
 	select DRIVERS_UART

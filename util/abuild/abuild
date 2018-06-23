@@ -168,8 +168,11 @@ function normalize_target
 {
 	local targets
 
+	local VARIANT_UC=$(echo "${variant}" | tr '[:lower:]' '[:upper:]')
+
 	targets=$(get_mainboards "$1")
 	if [ -n "$targets" ]; then
+		targets=$(grep "${VARIANT_UC}\$" <<< ${targets})
 		echo "$targets"
 		return
 	fi
@@ -537,6 +540,8 @@ Usage: $0 [options]
 Options:\n"
     [-a|--all]                    Build previously succeeded ports as well
     [-A|--any-toolchain]          Use any toolchain
+    [-b|--board-variant <name>]   Build specific board variant under the
+                                  given target.
     [-B|--blobs]                  Allow using binary files
     [--checksum <path/basefile>]  Store checksums at path/basefile
     [-c|--cpus <numcpus>]         Build on <numcpus> at the same time
@@ -613,12 +618,12 @@ getoptbrand="$(getopt -V)"
 # shellcheck disable=SC2086
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,verbose,quiet,help,all,target:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,any-toolchain,clean,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless,exitcode -o Vvqhat:p:c:sJCl:rP:uyBLAzo:xX:K:d:R:Ie -- "$@") || exit 1
+	args=$(getopt -l version,verbose,quiet,help,all,target:,board-variant:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,any-toolchain,clean,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless,exitcode -o Vvqhat:b:p:c:sJCl:rP:uyBLAzo:xX:K:d:R:Ie -- "$@") || exit 1
 	eval set -- $args
 	retval=$?
 else
 	# Detected non-GNU getopt
-	args=$(getopt Vvqhat:p:c:sJCl:rP:uyBLAzo:xX:K:d:R:Ie "$@")
+	args=$(getopt Vvqhat:b:p:c:sJCl:rP:uyBLAzo:xX:K:d:R:Ie "$@")
 	set -- $args
 	retval=$?
 fi
@@ -639,6 +644,7 @@ while true ; do
 	case "$1" in
 		-J|--junit)     shift; mode=junit; rm -f "$XMLFILE" ;;
 		-t|--target)	shift; target="$1"; shift;;
+		-b|--board-variant)	shift; variant="$1"; shift;;
 		-a|--all)	shift; buildall=true;;
 		-d|--dir)	shift; configdir="$1"; shift;;
 		-e|--exitcode)	shift; exitcode=1;;
@@ -829,7 +835,11 @@ if [ "$target" != "" ]; then
 	# build a single board
 	MAINBOARD=$(normalize_target "${target}")
 	if [ -z "${MAINBOARD}" ]; then
-		printf "No such target: %s\n" "$target"
+		printf "No such target: %s" "${target}"
+		if [ -n "${variant}" ]; then
+			printf ", variant: %s" "${variant}"
+		fi
+		printf "\n"
 		exit 1
 	fi
 	build_srcdir="$(mainboard_directory "${MAINBOARD}")"

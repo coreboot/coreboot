@@ -110,9 +110,6 @@ struct device {
 	int subsystem_device;
 	int inherit_subsystem;
 
-	/* Name of ops structure for the device. */
-	char *ops;
-
 	/* Name of this device. */
 	char *name;
 

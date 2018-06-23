@@ -98,7 +98,6 @@ static struct device base_root_dev = {
 	.id = 0,
 	.chip_instance = &mainboard_instance,
 	.path = " .type = DEVICE_PATH_ROOT ",
-	.ops = "&default_dev_ops_root",
 	.parent = &base_root_bus,
 	.enabled = 1,
 	.bus = &base_root_bus,
@@ -120,7 +119,6 @@ static struct device override_root_dev = {
 	 */
 	.chip_instance = &mainboard_instance,
 	.path = " .type = DEVICE_PATH_ROOT ",
-	.ops = "&default_dev_ops_root",
 	.parent = &override_root_bus,
 	.enabled = 1,
 	.bus = &override_root_bus,
@@ -773,7 +771,15 @@ static void pass1(FILE *fil, struct device *ptr, struct device *next)
 		fprintf(fil, "static ");
 	fprintf(fil, "DEVTREE_CONST struct device %s = {\n", ptr->name);
 	fprintf(fil, "#if !DEVTREE_EARLY\n");
-	fprintf(fil, "\t.ops = %s,\n", (ptr->ops) ? (ptr->ops) : "0");
+
+	/*
+	 * ops field is set to default_dev_ops_root only for the root
+	 * device. For all other devices, it is set by the driver at runtime.
+	 */
+	if (ptr == &base_root_dev)
+		fprintf(fil, "\t.ops = &default_dev_ops_root,\n");
+	else
+		fprintf(fil, "\t.ops = NULL,\n");
 	fprintf(fil, "#endif\n");
 	fprintf(fil, "\t.bus = &%s_links[%d],\n", ptr->parent->dev->name,
 		ptr->parent->id);

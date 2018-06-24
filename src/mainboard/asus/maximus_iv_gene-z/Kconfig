@@ -32,10 +32,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_NUVOTON_NCT6776
 	select USE_NATIVE_RAMINIT
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
 config MAINBOARD_DIR
 	string
 	default asus/maximus_iv_gene-z

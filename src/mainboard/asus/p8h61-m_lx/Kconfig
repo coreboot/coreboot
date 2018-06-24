@@ -36,10 +36,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_NUVOTON_NCT6776_COM_A
 	select USE_NATIVE_RAMINIT
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
 config MAINBOARD_DIR
 	string
 	default asus/p8h61-m_lx

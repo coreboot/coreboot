@@ -19,14 +19,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_HAS_LIBGFXINIT
 	select INTEL_GMA_HAVE_VBT
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
 config MAINBOARD_DIR
 	string
 	default hp/compaq_8200_elite_sff

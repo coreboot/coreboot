@@ -20,14 +20,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_HAS_TPM1
 	select GENERIC_SPD_BIN
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
 config MAINBOARD_DIR
 	string
 	default lenovo/s230u

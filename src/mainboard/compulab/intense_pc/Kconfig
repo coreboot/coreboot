@@ -16,18 +16,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select USE_NATIVE_RAMINIT
 	select SUPERIO_SMSC_SIO1007
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
-config HAVE_GBE_BIN
-	bool
-	default n
-
 config MAINBOARD_DIR
 	string
 	default compulab/intense_pc

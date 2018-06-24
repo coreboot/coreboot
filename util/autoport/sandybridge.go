@@ -119,9 +119,6 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 	KconfigBool["HAVE_ACPI_TABLES"] = true
 	KconfigBool["HAVE_ACPI_RESUME"] = true
 
-	KconfigBool["HAVE_IFD_BIN"] = false
-	KconfigBool["HAVE_ME_BIN"] = false
-
 	KconfigInt["MAX_CPUS"] = 8
 
 	DSDTIncludes = append(DSDTIncludes, DSDTInclude{

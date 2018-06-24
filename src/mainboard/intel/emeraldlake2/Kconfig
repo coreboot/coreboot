@@ -11,6 +11,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_OPTION_TABLE
 	select HAVE_ACPI_RESUME
 	select INTEL_INT15
+	select HAVE_IFD_BIN
+	select HAVE_ME_BIN
 	#select MAINBOARD_HAS_CHROMEOS
 
 config VBOOT

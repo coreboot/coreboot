@@ -32,10 +32,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_CMOS_DEFAULT
 	select DRIVERS_ASMEDIA_ASPM_BLACKLIST
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
 config MAINBOARD_DIR
 	string
 	default asus/p8h61-m_pro

@@ -25,14 +25,6 @@ config BOARD_LENOVO_BASEBOARD_T520
 
 if BOARD_LENOVO_BASEBOARD_T520
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
 config VARIANT_DIR
 	string
 	default "t520" if BOARD_LENOVO_T520

@@ -30,14 +30,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_HAS_LIBGFXINIT
 	select DRIVERS_ASMEDIA_ASPM_BLACKLIST
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
 config MAINBOARD_DIR
 	string
 	default asrock/b75pro3-m

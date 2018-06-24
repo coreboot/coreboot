@@ -17,10 +17,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select INTEL_INT15
 	select NO_UART_ON_SUPERIO
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
 config MAINBOARD_DIR
 	string
 	default sapphire/pureplatinumh61

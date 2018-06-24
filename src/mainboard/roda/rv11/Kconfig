@@ -43,18 +43,6 @@ config MAINBOARD_VENDOR
 	string
 	default "Roda"
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
-config HAVE_GBE_BIN
-	bool
-	default n
-
 config IFD_BIOS_SECTION
 	string
 	default "0x00d80000:0x00ffffff"

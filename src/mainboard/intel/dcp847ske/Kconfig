@@ -25,14 +25,6 @@ config DISABLE_UART_ON_TESTPADS
 
 endmenu
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
 config MAINBOARD_DIR
 	string
 	default intel/dcp847ske

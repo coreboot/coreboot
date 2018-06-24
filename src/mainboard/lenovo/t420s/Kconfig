@@ -25,14 +25,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	# Workaround for EC/KBC IRQ1.
 	select SERIRQ_CONTINUOUS_MODE
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
 config MAINBOARD_DIR
 	string
 	default lenovo/t420s

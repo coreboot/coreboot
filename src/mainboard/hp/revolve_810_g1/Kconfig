@@ -23,14 +23,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_HAS_LIBGFXINIT
 	select GFX_GMA_INTERNAL_IS_LVDS
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
 config MAINBOARD_DIR
 	string
 	default hp/revolve_810_g1

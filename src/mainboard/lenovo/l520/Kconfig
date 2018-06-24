@@ -18,14 +18,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SYSTEM_TYPE_LAPTOP
 	select USE_NATIVE_RAMINIT
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
 config MAINBOARD_DIR
 	string
 	default lenovo/l520

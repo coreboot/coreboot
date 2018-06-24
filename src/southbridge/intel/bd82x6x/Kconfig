@@ -66,9 +66,6 @@ config HPET_MIN_TICKS
 	hex
 	default 0x80
 
-config HAVE_IFD_BIN
-	def_bool y
-
 config BUILD_WITH_FAKE_IFD
 	def_bool !HAVE_IFD_BIN
 

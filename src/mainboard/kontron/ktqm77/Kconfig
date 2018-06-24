@@ -44,18 +44,6 @@ config MAINBOARD_VENDOR
 	string
 	default "Kontron"
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
-config HAVE_GBE_BIN
-	bool
-	default n
-
 config IFD_BIOS_SECTION
 	string
 	default "0x00580000:0x007fffff"

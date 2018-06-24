@@ -28,14 +28,6 @@ config BOARD_LENOVO_BASEBOARD_T530
 
 if BOARD_LENOVO_BASEBOARD_T530
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
 config VARIANT_DIR
 	string
 	default "t530" if BOARD_LENOVO_T530

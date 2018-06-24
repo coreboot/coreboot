@@ -14,14 +14,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SOUTHBRIDGE_INTEL_BD82X6X
 	select SYSTEM_TYPE_LAPTOP
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
 config MAINBOARD_DIR
 	string
 	default apple/macbookair4_2

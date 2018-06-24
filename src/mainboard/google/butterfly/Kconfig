@@ -17,6 +17,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_HAS_TPM1
 	select INTEL_INT15
 	select SERIRQ_CONTINUOUS_MODE	# Workaround for EC/KBC IRQ1.
+	select HAVE_IFD_BIN
+	select HAVE_ME_BIN
 
 config VBOOT
 	select VBOOT_VBNV_CMOS

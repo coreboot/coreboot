@@ -46,14 +46,6 @@ config VGA_BIOS_FILE
 	string
 	default "pci8086,0102.rom"
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
 config IFD_BIOS_SECTION
 	string
 	default "0x00600000:0x007fffff"

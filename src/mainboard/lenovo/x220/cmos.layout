@@ -117,15 +117,15 @@ enumerations
 9     1     Compatible
 10    0     Both
 10    1     Keyboard only
-10    2	    Thinklight only
-10    3	    None
+10    2     Thinklight only
+10    3     None
 11    0     32M
 11    1     64M
-11    2	    96M
-11    3	    128M
-11    4	    160M
-11    5	    192M
-11    6	    224M
+11    2     96M
+11    3     128M
+11    4     160M
+11    5     192M
+11    6     224M
 12    0     Disable
 12    1     AC and battery
 12    2     AC only

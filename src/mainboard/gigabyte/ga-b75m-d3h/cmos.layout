@@ -60,7 +60,7 @@ entries
 
 #411       10       r       0        unused
 421         1       e       9        sata_mode
-#422	    2	    r	    0	     unused
+#422        2       r       0        unused
 
 # coreboot config options: cpu
 424          1       e       2        hyper_threading
@@ -105,11 +105,11 @@ enumerations
 9     1     IDE
 11    0     32M
 11    1     64M
-11    2	    96M
-11    3	    128M
-11    4	    160M
-11    5	    192M
-11    6	    224M
+11    2     96M
+11    3     128M
+11    4     160M
+11    5     192M
+11    6     224M
 
 # -----------------------------------------------------------------
 checksums

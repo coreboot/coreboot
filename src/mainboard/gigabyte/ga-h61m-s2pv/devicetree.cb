@@ -14,14 +14,8 @@
 ##
 
 chip northbridge/intel/sandybridge
-	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410 }"
-	register "gfx.link_frequency_270_mhz" = "0"
 	register "gfx.ndid" = "3"
-	register "gfx.use_spread_spectrum_clock" = "0"
-	register "gpu_dp_b_hotplug" = "4"
-	register "gpu_dp_c_hotplug" = "4"
-	register "gpu_dp_d_hotplug" = "4"
-	register "gpu_panel_port_select" = "0"
+	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410 }"
 	device cpu_cluster 0x0 on
 		chip cpu/intel/socket_LGA1155
 			device lapic 0x0 on

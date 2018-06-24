@@ -1,6 +1,6 @@
 chip northbridge/intel/sandybridge
 	register "gfx.ndid" = "3"
-	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
+	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410 }"
 
 	device cpu_cluster 0 on
 		chip cpu/intel/socket_LGA1155

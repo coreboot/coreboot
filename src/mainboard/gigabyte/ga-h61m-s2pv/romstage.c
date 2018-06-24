@@ -57,11 +57,11 @@ void mainboard_early_init(int s3resume)
 
 void mainboard_config_superio(void)
 {
-	/* Enable serial port and flip some magic bits */
-
+	/* Enable serial port */
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
-	ite_reg_write(SUPERIO_GPIO, 0xEF, 0x7E); // magic
+	/* Disable SIO WDT which kicks in DualBIOS */
+	ite_reg_write(SUPERIO_GPIO, 0xEF, 0x7E);
 }
 
 void mainboard_get_spd(spd_raw_data *spd, bool id_only)

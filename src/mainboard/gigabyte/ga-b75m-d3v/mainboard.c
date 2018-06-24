@@ -15,22 +15,9 @@
  * GNU General Public License for more details.
  */
 
-#include <types.h>
-#include <string.h>
 #include <device/device.h>
-#include <device/pci_def.h>
-#include <device/pci_ops.h>
-#include <console/console.h>
 #include <drivers/intel/gma/int15.h>
-#include <pc80/mc146818rtc.h>
-#include <arch/acpi.h>
-#include <arch/io.h>
-#include <arch/interrupt.h>
-#include <boot/coreboot_tables.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <smbios.h>
-#include <device/pci.h>
-#include <cbfs.h>
 
 static void mainboard_init(struct device *dev)
 {
@@ -75,7 +62,9 @@ static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 
-	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_NONE, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_CRT, 0);
+	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_NONE,
+					GMA_INT15_PANEL_FIT_DEFAULT,
+					GMA_INT15_BOOT_DISPLAY_CRT, 0);
 }
 
 struct chip_operations mainboard_ops = {

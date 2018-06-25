@@ -1152,6 +1152,7 @@ config RELOCATABLE_MODULES
 
 config NO_STAGE_CACHE
 	bool
+	default y if !HAVE_ACPI_RESUME
 	help
 	  Do not save any component in stage cache for resume path. On resume,
 	  all components would be read back from CBFS again.

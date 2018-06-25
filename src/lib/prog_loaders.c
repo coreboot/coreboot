@@ -154,7 +154,8 @@ void run_ramstage(void)
 	} else if (load_nonrelocatable_ramstage(&ramstage))
 		goto fail;
 
-	stage_cache_add(STAGE_RAMSTAGE, &ramstage);
+	if (!IS_ENABLED(CONFIG_NO_STAGE_CACHE))
+		stage_cache_add(STAGE_RAMSTAGE, &ramstage);
 
 	timestamp_add_now(TS_END_COPYRAM);
 

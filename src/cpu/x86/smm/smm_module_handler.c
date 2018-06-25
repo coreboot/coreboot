@@ -122,10 +122,13 @@ asmlinkage void smm_handler_start(void *arg)
 	const struct smm_module_params *p;
 	const struct smm_runtime *runtime;
 	int cpu;
+	uintptr_t actual_canary;
+	uintptr_t expected_canary;
 
 	p = arg;
 	runtime = p->runtime;
 	cpu = p->cpu;
+	expected_canary = (uintptr_t)p->canary;
 
 	/* Make sure to set the global runtime. It's OK to race as the value
 	 * will be the same across CPUs as well as multiple SMIs. */
@@ -170,6 +173,17 @@ asmlinkage void smm_handler_start(void *arg)
 	southbridge_smi_handler();
 
 	smi_restore_pci_address();
+
+	actual_canary = *p->canary;
+
+	if (actual_canary != expected_canary) {
+		printk(BIOS_DEBUG, "canary 0x%lx != 0x%lx\n", actual_canary,
+		       expected_canary);
+
+		// Don't die if we can't indicate an error.
+		if (IS_ENABLED(CONFIG_DEBUG_SMI))
+			die("SMM Handler caused a stack overflow\n");
+	}
 
 	smi_release_lock();
 

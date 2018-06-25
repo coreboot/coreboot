@@ -136,6 +136,11 @@ smm_trampoline32:
 	subl	%eax, %ebx /* global_stack_top - offset = stack_top */
 	mov	%ebx, %esp
 
+	/* Write canary to the bottom of the stack */
+	movl	stack_size, %eax
+	subl	%eax, %ebx /* %ebx(stack_top) - size = %ebx(stack_bottom) */
+	movl	%ebx, (%ebx)
+
 	/* Create stack frame by pushing a NULL stack base pointer */
 	pushl	$0x0
 	mov	%esp, %ebp
@@ -166,14 +171,18 @@ smm_trampoline32:
 	fxsave	(%edi)
 
 1:
-	/* Align stack to 16 bytes. Another 16 bytes are pushed below. */
+	/* Align stack to 16 bytes. Another 32 bytes are pushed below. */
 	andl	$0xfffffff0, %esp
 
 	/* Call into the c-based SMM relocation function with the platform
 	 * parameters. Equivalent to:
-	 *   struct arg = { c_handler_params, cpu_num, smm_runtime };
+	 *   struct arg = { c_handler_params, cpu_num, smm_runtime, canary };
 	 *   c_handler(&arg)
 	 */
+	push	$0x0 /* Padding */
+	push	$0x0 /* Padding */
+	push	$0x0 /* Padding */
+	push	%ebx /* uintptr_t *canary */
 	push	$(smm_runtime)
 	push	%ecx /* int cpu */
 	push	c_handler_arg /* void *arg */

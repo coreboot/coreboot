@@ -131,10 +131,14 @@ smm_trampoline32:
 	jmp	2f
 1:
 	movl	stack_size, %eax
-	mul	%ecx
+	mul	%ecx /* %eax(stack_size) * %ecx(cpu) = %eax(offset) */
 	movl	stack_top, %edx
-	subl	%eax, %edx
+	subl	%eax, %edx /* global_stack_top - offset = stack_top */
 	mov	%edx, %esp
+	mov	%esp, %ebp
+
+	/* Allocate locals (fxsave) */
+	subl	$0x4, %esp
 
 	/* calculate fxsave location */
 	mov	fxsave_area, %edi
@@ -146,8 +150,7 @@ smm_trampoline32:
 
 2:
 	/* Save location of fxsave area. */
-	push	%edi
-	mov	%esp, %ebp
+	mov	%edi, -4(%ebp)
 	test	%edi, %edi
 	jz	1f
 
@@ -165,20 +168,18 @@ smm_trampoline32:
 
 	/* Call into the c-based SMM relocation function with the platform
 	 * parameters. Equivalent to:
-	 *   struct arg = { c_handler_params, cpu_num, smm_runtime {;
+	 *   struct arg = { c_handler_params, cpu_num, smm_runtime };
 	 *   c_handler(&arg)
 	 */
 	push	$(smm_runtime)
-	push	%ecx
-	push	c_handler_arg
-	push	%esp
+	push	%ecx /* int cpu */
+	push	c_handler_arg /* void *arg */
+	push	%esp /* smm_module_params *arg (allocated on stack). */
 	mov	c_handler, %eax
 	call	*%eax
 
-	/* Restore stack from call frame */
-	mov	%ebp, %esp
 	/* Retrieve fxsave location. */
-	pop	%edi
+	mov	-4(%ebp), %edi
 	test	%edi, %edi
 	jz	1f
 

@@ -77,6 +77,8 @@ void enable_power_aware_intr(void);
 uintptr_t sa_get_tolud_base(void);
 /* API to get DSM size */
 size_t sa_get_dsm_size(void);
+/* API to get GSM base address */
+uintptr_t sa_get_gsm_base(void);
 /* API to get GSM size */
 size_t sa_get_gsm_size(void);
 /* API to get TSEG base address */

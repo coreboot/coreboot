@@ -554,12 +554,20 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	/* iGFX has to be enabled, GFXVTBAR set and in 32-bit space. */
 	if (igfx_dev && igfx_dev->enabled && gfxvten &&
 	    gfx_vtbar && !MCHBAR32(GFXVTBAR + 4)) {
-		const unsigned long tmp = current;
+		unsigned long tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, gfx_vtbar);
 		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
 
 		acpi_dmar_drhd_fixup(tmp, current);
+
+		/* Add RMRR entry */
+		tmp = current;
+
+		current += acpi_create_dmar_rmrr(current, 0,
+				sa_get_gsm_base(), sa_get_tolud_base() - 1);
+		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
+		acpi_dmar_rmrr_fixup(tmp, current);
 	}
 
 	struct device *const p2sb_dev = dev_find_slot(0, PCH_DEVFN_P2SB);

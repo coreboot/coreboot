@@ -132,9 +132,9 @@ smm_trampoline32:
 1:
 	movl	stack_size, %eax
 	mul	%ecx /* %eax(stack_size) * %ecx(cpu) = %eax(offset) */
-	movl	stack_top, %edx
-	subl	%eax, %edx /* global_stack_top - offset = stack_top */
-	mov	%edx, %esp
+	movl	stack_top, %ebx
+	subl	%eax, %ebx /* global_stack_top - offset = stack_top */
+	mov	%ebx, %esp
 
 	/* Create stack frame by pushing a NULL stack base pointer */
 	pushl	$0x0

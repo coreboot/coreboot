@@ -13,9 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <boardid.h>
 #include <baseboard/variants.h>
 #include <chip.h>
+#include <gpio.h>
 #include <device/device.h>
 #include <variant/sku.h>
 
@@ -26,7 +26,13 @@ uint32_t variant_board_sku(void)
 	if (sku_id != SKU_UNKNOWN)
 		return sku_id;
 
-	if (board_id() < 9)
+	/*
+	*  Nautilus uses GPP_B20 to determine SKU
+	*  0 - Wifi SKU
+	*  1 - LTE SKU
+	*/
+	gpio_input_pulldown(GPP_B20);
+	if (!gpio_get(GPP_B20))
 		sku_id = SKU_0_NAUTILUS;
 	else
 		sku_id = SKU_1_NAUTILUS_LTE;

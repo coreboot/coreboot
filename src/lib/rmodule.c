@@ -162,7 +162,7 @@ static int rmodule_relocate(const struct rmodule *module)
 		printk(PK_ADJ_LEVEL, "Adjusting %p: 0x%08lx -> 0x%08lx\n",
 		       adjust_loc, (unsigned long) *adjust_loc,
 		       (unsigned long) (*adjust_loc + adjustment));
-			*adjust_loc += adjustment;
+		*adjust_loc += adjustment;
 
 		reloc++;
 		num_relocations--;

@@ -47,8 +47,11 @@ config VARIANT_DIR
 
 config DEVICETREE
 	string
-	default "variants/bip/devicetree.cb" if BOARD_GOOGLE_BIP
 	default "variants/baseboard/devicetree.cb"
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb" if !BOARD_GOOGLE_OCTOPUS
 
 config MAINBOARD_PART_NUMBER
 	string

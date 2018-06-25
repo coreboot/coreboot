@@ -135,6 +135,9 @@ smm_trampoline32:
 	movl	stack_top, %edx
 	subl	%eax, %edx /* global_stack_top - offset = stack_top */
 	mov	%edx, %esp
+
+	/* Create stack frame by pushing a NULL stack base pointer */
+	pushl	$0x0
 	mov	%esp, %ebp
 
 	/* Allocate locals (fxsave) */

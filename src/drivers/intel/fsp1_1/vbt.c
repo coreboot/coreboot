@@ -26,7 +26,7 @@
 void load_vbt(uint8_t s3_resume, SILICON_INIT_UPD *params)
 {
 	const optionrom_vbt_t *vbt_data = NULL;
-	uint32_t vbt_len;
+	size_t vbt_len;
 
 	/* Check boot mode - for S3 resume path VBT loading is not needed */
 	if (s3_resume) {

@@ -59,20 +59,22 @@ static void mch_domain_read_resources(struct device *dev)
 	u16 index;
 	const u32 top32memk = 4 * (GiB / KiB);
 
+	struct device *mch = dev_find_slot(0, PCI_DEVFN(0, 0));
+
 	index = 3;
 
 	pci_domain_read_resources(dev);
 
 	/* Top of Upper Usable DRAM, including remap */
-	touud = pci_read_config16(dev, TOUUD);
+	touud = pci_read_config16(mch, TOUUD);
 	touud <<= 20;
 
 	/* Top of Lower Usable DRAM */
-	tolud = pci_read_config16(dev, TOLUD) & 0xfff0;
+	tolud = pci_read_config16(mch, TOLUD) & 0xfff0;
 	tolud <<= 16;
 
 	/* Top of Memory - does not account for any UMA */
-	tom = pci_read_config16(dev, TOM) & 0x1ff;
+	tom = pci_read_config16(mch, TOM) & 0x1ff;
 	tom <<= 27;
 
 	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx ",
@@ -81,7 +83,7 @@ static void mch_domain_read_resources(struct device *dev)
 	tomk = tolud >> 10;
 
 	/* Graphics memory */
-	const u16 ggc = pci_read_config16(dev, GGC);
+	const u16 ggc = pci_read_config16(mch, GGC);
 	const u32 gms_sizek = decode_igd_memory_size((ggc >> 4) & 0xf);
 	printk(BIOS_DEBUG, "%uM UMA", gms_sizek >> 10);
 	tomk -= gms_sizek;
@@ -91,9 +93,9 @@ static void mch_domain_read_resources(struct device *dev)
 	printk(BIOS_DEBUG, " and %uM GTT\n", gsm_sizek >> 10);
 	tomk -= gsm_sizek;
 
-	const u32 tseg_basek = pci_read_config32(dev, TSEG) >> 10;
-	const u32 igd_basek = pci_read_config32(dev, GBSM) >> 10;
-	const u32 gtt_basek = pci_read_config32(dev, BGSM) >> 10;
+	const u32 tseg_basek = pci_read_config32(mch, TSEG) >> 10;
+	const u32 igd_basek = pci_read_config32(mch, GBSM) >> 10;
+	const u32 gtt_basek = pci_read_config32(mch, BGSM) >> 10;
 
 	/* Subtract TSEG size */
 	tseg_sizek = gtt_basek - tseg_basek;

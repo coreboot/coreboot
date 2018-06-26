@@ -22,8 +22,7 @@
 #include <soc/pei_data.h>
 #include <soc/romstage.h>
 #include <string.h>
-
-#include "../gpio.h"
+#include <baseboard/variant.h>
 #include "spd.h"
 
 static void mainboard_print_spd_info(uint8_t spd[])
@@ -77,6 +76,12 @@ static void mainboard_print_spd_info(uint8_t spd[])
 	}
 }
 
+__weak int is_dual_channel(const int spd_index)
+{
+	/* default to dual channel */
+	return 1;
+}
+
 /* Copy SPD data for on-board memory */
 void mainboard_fill_spd_data(struct pei_data *pei_data)
 {
@@ -84,14 +89,7 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	size_t spd_file_len;
 	int spd_index;
 
-	gpio_t spd_gpios[] = {
-		GPIO_MEM_CONFIG_0,
-		GPIO_MEM_CONFIG_1,
-		GPIO_MEM_CONFIG_2,
-		GPIO_MEM_CONFIG_3,
-	};
-
-	spd_index = gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
+	spd_index = pei_data->mem_cfg_id;
 	printk(BIOS_INFO, "SPD index %d\n", spd_index);
 
 	/* Load SPD data from CBFS */
@@ -113,7 +111,8 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	/* Assume same memory in both channels */
 	spd_index *= SPD_LEN;
 	memcpy(pei_data->spd_data[0][0], spd_file + spd_index, SPD_LEN);
-	memcpy(pei_data->spd_data[1][0], spd_file + spd_index, SPD_LEN);
+	if (is_dual_channel(spd_index))
+		memcpy(pei_data->spd_data[1][0], spd_file + spd_index, SPD_LEN);
 
 	/* Make sure a valid SPD was found */
 	if (pei_data->spd_data[0][0][0] == 0)

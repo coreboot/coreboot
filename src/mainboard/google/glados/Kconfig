@@ -1,13 +1,11 @@
-if BOARD_GOOGLE_GLADOS
-
-config BOARD_SPECIFIC_OPTIONS # dummy
-	def_bool y
+config BOARD_GOOGLE_BASEBOARD_GLADOS
+	def_bool n
 	select BOARD_ROMSIZE_KB_16384
 	select DRIVERS_I2C_GENERIC
 	select DRIVERS_I2C_NAU8825
 	select EC_GOOGLE_CHROMEEC
-	select EC_GOOGLE_CHROMEEC_BOARDID
 	select EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
+	select EC_GOOGLE_CHROMEEC_BOARDID
 	select EC_GOOGLE_CHROMEEC_LPC
 	select EC_GOOGLE_CHROMEEC_MEC
 	select EC_GOOGLE_CHROMEEC_PD
@@ -20,6 +18,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_HAS_TPM1
 	select SOC_INTEL_SKYLAKE
 	select SYSTEM_TYPE_LAPTOP
+
+if BOARD_GOOGLE_BASEBOARD_GLADOS
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
@@ -35,11 +35,19 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Glados"
+	default "Glados" if BOARD_GOOGLE_GLADOS
 
 config MAINBOARD_FAMILY
 	string
 	default "Google_Glados"
+
+config VARIANT_DIR
+	string
+	default "glados" if BOARD_GOOGLE_GLADOS
+
+config DEVICETREE
+	string
+	default "variants/glados/devicetree.cb" if BOARD_GOOGLE_GLADOS
 
 config MAX_CPUS
 	int
@@ -52,20 +60,18 @@ config TPM_PIRQ
 config INCLUDE_NHLT_BLOBS
 	bool "Include blobs for audio."
 	select NHLT_DMIC_2CH
-	select NHLT_DMIC_4CH
 	select NHLT_NAU88L25
-	select NHLT_SSM4567
 
 config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string
-	default "glados"
+	default "glados" if BOARD_GOOGLE_GLADOS
 
 config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
 	string
-	default "glados_pd"
+	default "glados_pd" if BOARD_GOOGLE_GLADOS
 
 config GBB_HWID
 	string
 	depends on CHROMEOS
-	default "GLADOS TEST 1988"
+	default "GLADOS TEST 1988" if BOARD_GOOGLE_GLADOS
 endif

@@ -15,13 +15,8 @@
 
 /* mainboard configuration */
 #include "../ec.h"
-#include "../gpio.h"
-
-/* Enable EC backed ALS device in ACPI */
-#define EC_ENABLE_ALS_DEVICE
-
-/* Enable EC backed Keyboard Backlight in ACPI */
-#define EC_ENABLE_KEYBOARD_BACKLIGHT
+#include <variant/ec.h>
+#include <variant/gpio.h>
 
 /* Enable EC backed PD MCU device in ACPI */
 #define EC_ENABLE_PD_MCU_DEVICE

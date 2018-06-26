@@ -16,6 +16,7 @@
  */
 
 #include <arch/acpi.h>
+#include <baseboard/variant.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <stdlib.h>
@@ -47,12 +48,14 @@ static unsigned long mainboard_write_acpi_tables(
 		printk(BIOS_ERR, "Couldn't add 2CH DMIC array.\n");
 
 	/* 4 Channel DMIC array. */
-	if (nhlt_soc_add_dmic_array(nhlt, 4))
-		printk(BIOS_ERR, "Couldn't add 4CH DMIC arrays.\n");
+	if (IS_ENABLED(CONFIG_NHLT_DMIC_4CH))
+		if (nhlt_soc_add_dmic_array(nhlt, 4))
+			printk(BIOS_ERR, "Couldn't add 4CH DMIC arrays.\n");
 
 	/* ADI Smart Amps for left and right. */
-	if (nhlt_soc_add_ssm4567(nhlt, AUDIO_LINK_SSP0))
-		printk(BIOS_ERR, "Couldn't add ssm4567.\n");
+	if (IS_ENABLED(CONFIG_NHLT_SSM4567))
+		if (nhlt_soc_add_ssm4567(nhlt, AUDIO_LINK_SSP0))
+			printk(BIOS_ERR, "Couldn't add ssm4567.\n");
 
 	/* NAU88l25 Headset codec. */
 	if (nhlt_soc_add_nau88l25(nhlt, AUDIO_LINK_SSP1))

@@ -14,7 +14,9 @@
 ## GNU General Public License for more details.
 ##
 
-romstage-y += spd.c
+romstage-y += variant.c
+ramstage-y += variant.c
+smm-y += variant.c
 
 SPD_BIN = $(obj)/spd.bin
 

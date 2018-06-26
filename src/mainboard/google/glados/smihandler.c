@@ -16,6 +16,7 @@
 
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <baseboard/variant.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <elog.h>
@@ -26,7 +27,7 @@
 #include <soc/pm.h>
 #include <soc/smm.h>
 #include "ec.h"
-#include "gpio.h"
+#include <variant/gpio.h>
 
 int mainboard_io_trap_handler(int smif)
 {
@@ -54,21 +55,8 @@ void mainboard_smi_gpi_handler(const struct gpi_status *sts)
 		chromeec_smi_process_events();
 }
 
-static void mainboard_gpio_smi_sleep(u8 slp_typ)
+__weak void mainboard_gpio_smi_sleep(void)
 {
-	int i;
-
-	/* Power down the rails on any sleep type. */
-	gpio_t active_high_signals[] = {
-		EN_PP3300_KEPLER,
-		EN_PP3300_DX_TOUCH,
-		EN_PP3300_DX_EMMC,
-		EN_PP1800_DX_EMMC,
-		EN_PP3300_DX_CAM,
-	};
-
-	for (i = 0; i < ARRAY_SIZE(active_high_signals); i++)
-		gpio_set(active_high_signals[i], 0);
 }
 
 void mainboard_smi_sleep(u8 slp_typ)
@@ -77,7 +65,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 		chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS,
 					MAINBOARD_EC_S5_WAKE_EVENTS);
 
-	mainboard_gpio_smi_sleep(slp_typ);
+	mainboard_gpio_smi_sleep();
 }
 
 int mainboard_smi_apmc(u8 apmc)

@@ -2,7 +2,6 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015 Google Inc.
- * Copyright (C) 2015 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-/* Include Variant DPTF */
-#include <variant/acpi/dptf.asl>
+/* Enable EC backed ALS device in ACPI */
+#define EC_ENABLE_ALS_DEVICE
 
-/* Include SoC DPTF */
-#include <soc/intel/skylake/acpi/dptf/dptf.asl>
+/* Enable EC backed Keyboard Backlight in ACPI */
+#define EC_ENABLE_KEYBOARD_BACKLIGHT

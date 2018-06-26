@@ -15,7 +15,7 @@
  */
 
 #include <soc/ramstage.h>
-#include "gpio.h"
+#include <variant/gpio.h>
 
 void mainboard_silicon_init_params(SILICON_INIT_UPD *params)
 {

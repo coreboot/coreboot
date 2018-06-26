@@ -14,10 +14,13 @@
  * GNU General Public License for more details.
  */
 
+#include <baseboard/variant.h>
+#include <gpio.h>
 #include <stdint.h>
 #include <string.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
+#include <variant/gpio.h>
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
@@ -44,4 +47,21 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		 sizeof(RcompResistor));
 	memcpy(pei_data->RcompTarget, RcompTarget,
 		 sizeof(RcompTarget));
+}
+
+void mainboard_gpio_smi_sleep(void)
+{
+	int i;
+
+	/* Power down the rails on any sleep type. */
+	gpio_t active_high_signals[] = {
+		EN_PP3300_KEPLER,
+		EN_PP3300_DX_TOUCH,
+		EN_PP3300_DX_EMMC,
+		EN_PP1800_DX_EMMC,
+		EN_PP3300_DX_CAM,
+	};
+
+	for (i = 0; i < ARRAY_SIZE(active_high_signals); i++)
+		gpio_set(active_high_signals[i], 0);
 }

@@ -1,2 +1,7 @@
+comment "Glados"
+
 config BOARD_GOOGLE_GLADOS
-	bool "Glados"
+	bool "->  Glados Skylake Reference Board"
+	select BOARD_GOOGLE_BASEBOARD_GLADOS
+	select NHLT_DMIC_4CH if INCLUDE_NHLT_BLOBS
+	select NHLT_SSM4567 if INCLUDE_NHLT_BLOBS

@@ -11,6 +11,10 @@ bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 endif
 bootblock-y += ../common/wdt.c
 
+decompressor-y += decompressor.c
+decompressor-y += ../common/mmu_operations.c
+decompressor-y += ../common/timer.c
+
 verstage-y += ../common/gpio.c gpio.c
 verstage-$(CONFIG_SPI_FLASH) += spi.c
 verstage-y += ../common/timer.c

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2018 MediaTek Inc.
+ * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,11 +15,8 @@
 
 #include <bootblock_common.h>
 #include <soc/mmu_operations.h>
-#include <soc/pll.h>
-#include <soc/wdt.h>
 
-void bootblock_soc_init(void)
+void decompressor_soc_init(void)
 {
-	mt_pll_init();
-	mtk_wdt_init();
+	mtk_mmu_init();
 }

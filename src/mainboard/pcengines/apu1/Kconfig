@@ -29,6 +29,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_OPTION_TABLE
 	select HAVE_CMOS_DEFAULT
 	select BOARD_ROMSIZE_KB_2048
+	select GENERIC_SPD_BIN
 
 config MAINBOARD_DIR
 	string

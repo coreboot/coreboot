@@ -32,10 +32,6 @@
 #ifndef ARM_ARM64_CACHE_H
 #define ARM_ARM64_CACHE_H
 
-#include <stddef.h>
-#include <stdint.h>
-#include <arch/barrier.h>
-
 /* SCTLR_ELx common bits */
 #define SCTLR_M		(1 << 0)	/* MMU enable			*/
 #define SCTLR_A		(1 << 1)	/* Alignment check enable	*/
@@ -57,6 +53,11 @@
 #define SCTLR_EL1_E0E	(1 << 24)	/* Exception endianness at EL0	*/
 #define SCTLR_EL1_UCI	(1 << 26)	/* EL0 access to cache instructions */
 
+#ifndef __ASSEMBLER__
+
+#include <stddef.h>
+#include <stdint.h>
+#include <arch/barrier.h>
 
 /* dcache clean by virtual address to PoC */
 void dcache_clean_by_mva(void const *addr, size_t len);
@@ -91,5 +92,7 @@ static inline void icache_invalidate_all(void)
 		"isb\n\t"
 	: : : "memory");
 }
+
+#endif /* __ASSEMBLER__ */
 
 #endif /* ARM_ARM64_CACHE_H */

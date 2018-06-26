@@ -78,5 +78,14 @@ config PXE_ROM_ID
 
 	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
 
+config PXE_SERIAL_CONSOLE
+	bool "Enable iPXE serial console"
+	def_bool y
+	help
+	  Enable/disable iPXE serial console. Since SeaBIOS supports serial
+	  console this option might be helpful to avoid duplicated output.
+
+	  Unselect to let only SeaBIOS handle printing output.
+
 endmenu
 endif

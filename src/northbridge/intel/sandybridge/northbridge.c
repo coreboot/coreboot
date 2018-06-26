@@ -152,26 +152,28 @@ static void pci_domain_set_resources(struct device *dev)
 	 * 14fe00000   5368MB TOUUD
 	 */
 
+	struct device *mch = dev_find_slot(0, PCI_DEVFN(0, 0));
+
 	/* Top of Upper Usable DRAM, including remap */
-	touud = pci_read_config32(dev, TOUUD+4);
+	touud = pci_read_config32(mch, TOUUD+4);
 	touud <<= 32;
-	touud |= pci_read_config32(dev, TOUUD);
+	touud |= pci_read_config32(mch, TOUUD);
 
 	/* Top of Lower Usable DRAM */
-	tolud = pci_read_config32(dev, TOLUD);
+	tolud = pci_read_config32(mch, TOLUD);
 
 	/* Top of Memory - does not account for any UMA */
-	tom = pci_read_config32(dev, 0xa4);
+	tom = pci_read_config32(mch, 0xa4);
 	tom <<= 32;
-	tom |= pci_read_config32(dev, 0xa0);
+	tom |= pci_read_config32(mch, 0xa0);
 
 	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx\n",
 	       touud, tolud, tom);
 
 	/* ME UMA needs excluding if total memory <4GB */
-	me_base = pci_read_config32(dev, 0x74);
+	me_base = pci_read_config32(mch, 0x74);
 	me_base <<= 32;
-	me_base |= pci_read_config32(dev, 0x70);
+	me_base |= pci_read_config32(mch, 0x70);
 
 	printk(BIOS_DEBUG, "MEBASE 0x%llx\n", me_base);
 
@@ -190,7 +192,7 @@ static void pci_domain_set_resources(struct device *dev)
 	}
 
 	/* Graphics memory comes next */
-	ggc = pci_read_config16(dev, GGC);
+	ggc = pci_read_config16(mch, GGC);
 	if (!(ggc & 2)) {
 		printk(BIOS_DEBUG, "IGD decoded, subtracting ");
 
@@ -210,7 +212,7 @@ static void pci_domain_set_resources(struct device *dev)
 	}
 
 	/* Calculate TSEG size from its base which must be below GTT */
-	tseg_base = pci_read_config32(dev, 0xb8);
+	tseg_base = pci_read_config32(mch, 0xb8);
 	uma_size = (uma_memory_base - tseg_base) >> 10;
 	tomk -= uma_size;
 	uma_memory_base = tomk * 1024ULL;

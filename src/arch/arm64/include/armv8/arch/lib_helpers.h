@@ -136,7 +136,7 @@
 #define CPACR_TRAP_FP_EL0	(1 << CPACR_FPEN_SHIFT)
 #define CPACR_TRAP_FP_DISABLE	(3 << CPACR_FPEN_SHIFT)
 
-#ifdef __ASSEMBLY__
+#ifdef __ASSEMBLER__
 
 /* Macro to switch to label based on current el */
 .macro switch_el xreg label1 label2 label3
@@ -585,6 +585,6 @@ void tlbiallis_current(void);
 void tlbiallis(uint32_t el);
 void tlbivaa_el1(uint64_t va);
 
-#endif // __ASSEMBLY__
+#endif /* __ASSEMBLER__ */
 
 #endif /* __ARCH_LIB_HELPERS_H__ */

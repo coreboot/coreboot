@@ -15,7 +15,7 @@
 #ifndef __ASM_ARM_BARRIER_H
 #define __ASM_ARM_BARRIER_H
 
-#ifndef __ASSEMBLY__
+#ifndef __ASSEMBLER__
 
 #define sevl()		asm volatile("sevl" : : : "memory")
 #define sev()		asm volatile("sev" : : : "memory")
@@ -103,6 +103,6 @@ do {									\
 	!ret;								\
 })
 
-#endif	/* __ASSEMBLY__ */
+#endif	/* __ASSEMBLER__ */
 
 #endif	/* __ASM_ARM_BARRIER_H */

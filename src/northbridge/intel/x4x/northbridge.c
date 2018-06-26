@@ -44,16 +44,18 @@ static void mch_domain_read_resources(struct device *dev)
 
 	pci_domain_read_resources(dev);
 
+	struct device *mch = dev_find_slot(0, PCI_DEVFN(0, 0));
+
 	/* Top of Upper Usable DRAM, including remap */
-	touud = pci_read_config16(dev, D0F0_TOUUD);
+	touud = pci_read_config16(mch, D0F0_TOUUD);
 	touud <<= 20;
 
 	/* Top of Lower Usable DRAM */
-	tolud = pci_read_config16(dev, D0F0_TOLUD) & 0xfff0;
+	tolud = pci_read_config16(mch, D0F0_TOLUD) & 0xfff0;
 	tolud <<= 16;
 
 	/* Top of Memory - does not account for any UMA */
-	tom = pci_read_config16(dev, D0F0_TOM) & 0x01ff;
+	tom = pci_read_config16(mch, D0F0_TOM) & 0x01ff;
 	tom <<= 26;
 
 	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx\n",
@@ -63,7 +65,7 @@ static void mch_domain_read_resources(struct device *dev)
 
 	/* Graphics memory comes next */
 
-	const u16 ggc = pci_read_config16(dev, D0F0_GGC);
+	const u16 ggc = pci_read_config16(mch, D0F0_GGC);
 	printk(BIOS_DEBUG, "IGD decoded, subtracting ");
 
 	/* Graphics memory */
@@ -79,7 +81,7 @@ static void mch_domain_read_resources(struct device *dev)
 	uma_sizek += gsm_sizek;
 
 	printk(BIOS_DEBUG, "TSEG decoded, subtracting ");
-	reg8 = pci_read_config8(dev, D0F0_ESMRAMC);
+	reg8 = pci_read_config8(mch, D0F0_ESMRAMC);
 	reg8 >>= 1;
 	reg8 &= 3;
 	switch (reg8) {

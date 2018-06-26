@@ -424,7 +424,7 @@ void intel_me_status(void)
 		}
 	}
 
-	printk(BIOS_DEBUG, "ME: FPF status               : ");
+	printk(BIOS_DEBUG, "ME: FPF status              : ");
 	switch (hfs6.fields.fpf_nvars) {
 	case ME_HFS6_FPF_NOT_COMMITTED:
 		printk(BIOS_DEBUG, "unfused\n");

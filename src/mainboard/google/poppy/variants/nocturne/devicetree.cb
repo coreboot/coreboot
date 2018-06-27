@@ -59,8 +59,8 @@ chip soc/intel/skylake
 	register "PmTimerDisabled" = "1"
 	register "VmxEnable" = "1"
 
-	# Disable P-States
-	register "speed_shift_enable" = "0"
+	# Set speed_shift_enable to 1 to enable P-States, and 0 to disable
+	register "speed_shift_enable" = "1"
 	register "dptf_enable" = "1"
 	register "tdp_pl2_override" = "15"
 	register "psys_pmax" = "45"

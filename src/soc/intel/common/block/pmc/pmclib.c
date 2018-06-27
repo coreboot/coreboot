@@ -416,18 +416,6 @@ int pmc_fill_power_state(struct chipset_power_state *ps)
 	ps->prev_sleep_state = pmc_prev_sleep_state(ps);
 	printk(BIOS_DEBUG, "prev_sleep_state %d\n", ps->prev_sleep_state);
 
-	/*
-	 * GPEs need to be disabled before enabling SMI. Otherwise, it could
-	 * lead to SMIs being triggered in coreboot preventing the progress of
-	 * normal boot-up. However, GPEs should not be disabled as part of
-	 * pmc_gpe_init which happens in bootblock. Otherwise,
-	 * pmc_fill_power_state would read GPE0_EN registers as all 0s thus
-	 * losing information about the wake source. Hence,
-	 * pmc_disable_all_gpe() is placed here after GPE0_EN registers are
-	 * saved in chipset_power_state.
-	 */
-	pmc_disable_all_gpe();
-
 	return ps->prev_sleep_state;
 }
 

@@ -1,6 +1,4 @@
 subdirs-y += ../model_f2x
-subdirs-y += ../model_f3x
-subdirs-y += ../model_f4x
 subdirs-y += ../../x86/tsc
 subdirs-y += ../../x86/mtrr
 subdirs-y += ../../x86/lapic

@@ -6,8 +6,6 @@ if CPU_INTEL_SOCKET_MPGA604
 config SOCKET_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select CPU_INTEL_MODEL_F2X
-	select CPU_INTEL_MODEL_F3X
-	select CPU_INTEL_MODEL_F4X
 	select MMX
 	select SSE
 	select UDELAY_TSC

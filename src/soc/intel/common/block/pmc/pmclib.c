@@ -385,30 +385,6 @@ static int pmc_prev_sleep_state(const struct chipset_power_state *ps)
 	return soc_prev_sleep_state(ps, prev_sleep_state);
 }
 
-/*
- * This function re-writes the gpe0 register values in power state
- * cbmem variable. After system wakes from sleep state internal PMC logic
- * writes default values in GPE_CFG register which gives a wrong offset to
- * calculate the wake reason. So we need to set it again to the routing
- * table as per the devicetree.
- */
-void pmc_fixup_power_state(void)
-{
-	int i;
-	struct chipset_power_state *ps;
-
-	ps = pmc_get_power_state();
-	if (ps == NULL)
-		return;
-
-	for (i = 0; i < GPE0_REG_MAX; i++) {
-		ps->gpe0_sts[i] = inl(ACPI_BASE_ADDRESS + GPE0_STS(i));
-		ps->gpe0_en[i] = inl(ACPI_BASE_ADDRESS + GPE0_EN(i));
-		printk(BIOS_DEBUG, "gpe0_sts[%d]: %08x gpe0_en[%d]: %08x\n",
-		       i, ps->gpe0_sts[i], i, ps->gpe0_en[i]);
-	}
-}
-
 void pmc_fill_pm_reg_info(struct chipset_power_state *ps)
 {
 	int i;

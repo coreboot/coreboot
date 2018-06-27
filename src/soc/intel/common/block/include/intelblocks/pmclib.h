@@ -150,9 +150,6 @@ void pmc_global_reset_enable(bool enable);
  */
 void pmc_global_reset_lock(void);
 
-/* Rewrite the gpe0 registers in cbmem to proper values as per routing table */
-void pmc_fixup_power_state(void);
-
 /* Returns the power state structure */
 struct chipset_power_state *pmc_get_power_state(void);
 

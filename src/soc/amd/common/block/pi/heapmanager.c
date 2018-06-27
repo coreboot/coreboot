@@ -73,17 +73,9 @@ AGESA_STATUS agesa_HeapRebase(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	AGESA_REBASE_PARAMS *Rebase;
 
 	Rebase = (AGESA_REBASE_PARAMS *)ConfigPtr;
-	if (ENV_BOOTBLOCK) {
+	Rebase->HeapAddress = (UINTN)agesa_heap_base();
+	if (!Rebase->HeapAddress)
 		Rebase->HeapAddress = CONFIG_PI_AGESA_CAR_HEAP_BASE;
-	} else {
-		/*
-		 * todo: remove the if() above and keep the assignment here
-		 * once all AGESA functions are removed from bootblock.
-		 */
-		Rebase->HeapAddress = (UINTN)agesa_heap_base();
-		if (!Rebase->HeapAddress)
-			Rebase->HeapAddress = CONFIG_PI_AGESA_CAR_HEAP_BASE;
-	}
 
 	return AGESA_SUCCESS;
 }

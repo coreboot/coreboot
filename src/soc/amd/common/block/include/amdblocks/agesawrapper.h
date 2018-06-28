@@ -34,6 +34,8 @@ enum {
 /* Return current dispatcher or NULL on error. */
 MODULE_ENTRY agesa_get_dispatcher(void);
 
+AGESA_STATUS amd_late_run_ap_task(AP_EXE_PARAMS *ApExeParams);
+
 AGESA_STATUS agesawrapper_amdinitreset(void);
 AGESA_STATUS agesawrapper_amdinitearly(void);
 AGESA_STATUS agesawrapper_amdinitenv(void);
@@ -41,8 +43,6 @@ AGESA_STATUS agesawrapper_amdinitlate(void);
 AGESA_STATUS agesawrapper_amdinitpost(void);
 AGESA_STATUS agesawrapper_amdinitmid(void);
 void *agesawrapper_getlateinitptr(int pick);
-AGESA_STATUS agesawrapper_amdlaterunaptask(uint32_t Func, uintptr_t Data,
-							void *ConfigPtr);
 AGESA_STATUS agesawrapper_amdinitrtb(void);
 AGESA_STATUS agesawrapper_amdinitresume(void);
 AGESA_STATUS agesawrapper_amds3laterestore(void);

@@ -353,28 +353,9 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	return Status;
 }
 
-AGESA_STATUS agesawrapper_amdlaterunaptask(uint32_t Func, uintptr_t Data,
-				void *ConfigPtr)
+AGESA_STATUS amd_late_run_ap_task(AP_EXE_PARAMS *ApExeParams)
 {
-	AGESA_STATUS Status;
-	AP_EXE_PARAMS ApExeParams;
-
-	memset(&ApExeParams, 0, sizeof(ApExeParams));
-
-	ApExeParams.StdHeader.AltImageBasePtr = 0;
-	ApExeParams.StdHeader.CalloutPtr = &GetBiosCallout;
-	ApExeParams.StdHeader.Func = 0;
-	ApExeParams.StdHeader.ImageBasePtr = 0;
-	ApExeParams.FunctionNumber = Func;
-	ApExeParams.RelatedDataBlock = ConfigPtr;
-
-	Status = AmdLateRunApTask(&ApExeParams);
-	if (Status != AGESA_SUCCESS) {
-		/* agesawrapper_readeventlog(); */
-		ASSERT(Status == AGESA_SUCCESS);
-	}
-
-	return Status;
+	return AmdLateRunApTask(ApExeParams);
 }
 
 AGESA_STATUS agesawrapper_amdinitrtb(void)

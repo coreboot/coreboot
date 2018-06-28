@@ -186,7 +186,7 @@ AGESA_STATUS agesa_PcieSlotResetControl(uint32_t Func, uintptr_t Data,
 static struct agesa_data {
 	uint32_t Func;
 	uintptr_t Data;
-	void *ConfigPtr;
+	AP_EXE_PARAMS *ConfigPtr;
 } agesadata;
 
 /*
@@ -205,8 +205,7 @@ static void callout_ap_entry(void *unused)
 	    (agesadata.Data == lapicid())))
 		return;
 
-	Status = agesawrapper_amdlaterunaptask(agesadata.Func, agesadata.Data,
-			agesadata.ConfigPtr);
+	Status = amd_late_run_ap_task(agesadata.ConfigPtr);
 
 	if (Status)
 		printk(BIOS_DEBUG, "There was a problem with %lx returned %s\n",

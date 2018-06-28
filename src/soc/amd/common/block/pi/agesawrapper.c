@@ -422,9 +422,6 @@ AGESA_STATUS agesawrapper_amdinitresume(void)
 	};
 	size_t nv_size;
 
-	if (!acpi_s3_resume_allowed())
-		return AGESA_UNSUPPORTED;
-
 	AMD_RESUME_PARAMS *InitResumeParams = create_struct(&AmdParamStruct);
 
 	get_s3nv_info(&InitResumeParams->S3DataBlock.NvStorage, &nv_size);
@@ -452,9 +449,6 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 		.NewStructPtr = &_S3LateParams,
 	};
 	size_t vol_size;
-
-	if (!acpi_s3_resume_allowed())
-		return AGESA_UNSUPPORTED;
 
 	amd_initcpuio();
 
@@ -487,9 +481,6 @@ AGESA_STATUS agesawrapper_amds3finalrestore(void)
 		.NewStructPtr = &_S3FinalParams,
 	};
 	size_t vol_size;
-
-	if (!acpi_s3_resume_allowed())
-		return AGESA_UNSUPPORTED;
 
 	AMD_S3FINAL_PARAMS *S3FinalParams = create_struct(&AmdParamStruct);
 

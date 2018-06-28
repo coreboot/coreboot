@@ -155,7 +155,9 @@ struct chip_operations soc_amd_stoneyridge_ops = {
 
 static void earliest_ramstage(void *unused)
 {
-	if (!romstage_handoff_is_resume()) {
+	int s3_resume = acpi_s3_resume_allowed() &&
+			romstage_handoff_is_resume();
+	if (!s3_resume) {
 		post_code(0x46);
 		if (IS_ENABLED(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW))
 			psp_load_named_blob(MBOX_BIOS_CMD_SMU_FW2, "smu_fw2");

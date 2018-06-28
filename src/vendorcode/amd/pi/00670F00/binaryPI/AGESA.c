@@ -45,30 +45,3 @@ CONST UINT32 ImageSignature = IMAGE_SIGNATURE;
 CONST UINT32 ModuleSignature = MODULE_SIGNATURE;
 CONST CHAR8 ModuleIdentifier[8] = AGESA_ID;
 
-/**********************************************************************
- * Interface call:  AmdCreateStruct
- **********************************************************************/
-AGESA_STATUS
-AmdCreateStruct (
-  IN OUT   AMD_INTERFACE_PARAMS *InterfaceParams
-  )
-{
-	MODULE_ENTRY Dispatcher = agesa_get_dispatcher();
-	InterfaceParams->StdHeader.Func = AMD_CREATE_STRUCT;
-	if (!Dispatcher) return AGESA_UNSUPPORTED;
-	return Dispatcher(InterfaceParams);
-}
-
-/**********************************************************************
- * Interface call:  AmdReleaseStruct
- **********************************************************************/
-AGESA_STATUS
-AmdReleaseStruct (
-  IN OUT   AMD_INTERFACE_PARAMS *InterfaceParams
-  )
-{
-	MODULE_ENTRY Dispatcher = agesa_get_dispatcher();
-	InterfaceParams->StdHeader.Func = AMD_RELEASE_STRUCT;
-	if (!Dispatcher) return AGESA_UNSUPPORTED;
-	return Dispatcher(InterfaceParams);
-}

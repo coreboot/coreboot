@@ -18,16 +18,13 @@
 #include <device/pci_ops.h>
 #include <console/post_codes.h>
 #include <cpu/x86/smm.h>
-#include "pch.h"
+#include <southbridge/intel/common/pmbase.h>
 #include <spi-generic.h>
 #include "chip.h"
 #include "pch.h"
 
 void intel_pch_finalize_smm(void)
 {
-	u16 tco1_cnt;
-	u16 pmbase;
-
 	if (IS_ENABLED(CONFIG_LOCK_SPI_FLASH_RO) ||
 	    IS_ENABLED(CONFIG_LOCK_SPI_FLASH_NO_ACCESS)) {
 		/* Copy flash regions from FREG0-4 to PR0-4
@@ -72,10 +69,7 @@ void intel_pch_finalize_smm(void)
 		    pci_read_config32(PCI_DEV(0, 27, 0), 0x74));
 
 	/* TCO_Lock */
-	pmbase = smm_get_pmbase();
-	tco1_cnt = inw(pmbase + TCO1_CNT);
-	tco1_cnt |= TCO_LOCK;
-	outw(tco1_cnt, pmbase + TCO1_CNT);
+	write_pmbase16(TCO1_CNT, read_pmbase16(TCO1_CNT) | TCO_LOCK);
 
 	/* Indicate finalize step with post code */
 	outb(POST_OS_BOOT, 0x80);

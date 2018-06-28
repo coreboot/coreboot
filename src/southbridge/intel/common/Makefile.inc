@@ -18,6 +18,11 @@ subdirs-y += firmware
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_COMMON),y)
 
+romstage-y += pmbase.c
+ramstage-y += pmbase.c
+postcar-y += pmbase.c
+smm-y += pmbase.c
+
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += usb_debug.c
 ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
 

@@ -182,8 +182,7 @@ static void update_fit_ucode_entry(struct fit_table *fit,
 	 * rather from the MCU header, hence we can assign zero here
 	 */
 	entry->size_reserved = 0x0000;
-	/* Checksum valid should be cleared for MCU */
-	entry->type_checksum_valid = 0;
+	entry->type_checksum_valid = FIT_TYPE_MICROCODE;
 	entry->version = FIT_MICROCODE_VERSION;
 	entry->checksum = 0;
 	fit_entry_add_size(&fit->header, sizeof(struct fit_entry));

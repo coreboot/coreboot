@@ -22,27 +22,25 @@
 #include <cpu/x86/smm.h>
 #include <elog.h>
 #include <pc80/mc146818rtc.h>
-
+#include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/common/gpio.h>
 
 #include "pmutil.h"
 
 void alt_gpi_mask(u16 clr, u16 set)
 {
-	u16 pmbase = get_pmbase();
-	u16 alt_gp = inw(pmbase + ALT_GP_SMI_EN);
+	u16 alt_gp = read_pmbase16(ALT_GP_SMI_EN);
 	alt_gp &= ~clr;
 	alt_gp |= set;
-	outw(alt_gp, pmbase + ALT_GP_SMI_EN);
+	write_pmbase16(ALT_GP_SMI_EN, alt_gp);
 }
 
 void gpe0_mask(u32 clr, u32 set)
 {
-	u16 pmbase = get_pmbase();
-	u32 gpe0 = inl(pmbase + GPE0_EN);
+	u32 gpe0 = read_pmbase32(GPE0_EN);
 	gpe0 &= ~clr;
 	gpe0 |= set;
-	outl(gpe0, pmbase + GPE0_EN);
+	write_pmbase32(GPE0_EN, gpe0);
 }
 
 /**
@@ -51,12 +49,9 @@ void gpe0_mask(u32 clr, u32 set)
  */
 u16 reset_pm1_status(void)
 {
-	u16 pmbase = get_pmbase();
-	u16 reg16;
-
-	reg16 = inw(pmbase + PM1_STS);
+	u16 reg16 = read_pmbase16(PM1_STS);
 	/* set status bits are cleared by writing 1 to them */
-	outw(reg16, pmbase + PM1_STS);
+	write_pmbase16(PM1_STS, reg16);
 
 	return reg16;
 }
@@ -73,7 +68,8 @@ void dump_pm1_status(u16 pm1_sts)
 	if (pm1_sts & (1 <<  4)) printk(BIOS_SPEW, "BM ");
 	if (pm1_sts & (1 <<  0)) printk(BIOS_SPEW, "TMROF ");
 	printk(BIOS_SPEW, "\n");
-	int reg16 = inw(get_pmbase() + PM1_EN);
+
+	int reg16 = read_pmbase16(PM1_EN);
 	printk(BIOS_SPEW, "PM1_EN: %x\n", reg16);
 }
 
@@ -83,12 +79,11 @@ void dump_pm1_status(u16 pm1_sts)
  */
 u32 reset_smi_status(void)
 {
-	u16 pmbase = get_pmbase();
 	u32 reg32;
 
-	reg32 = inl(pmbase + SMI_STS);
+	reg32 = read_pmbase32(SMI_STS);
 	/* set status bits are cleared by writing 1 to them */
-	outl(reg32, pmbase + SMI_STS);
+	write_pmbase32(SMI_STS, reg32);
 
 	return reg32;
 }
@@ -125,14 +120,13 @@ void dump_smi_status(u32 smi_sts)
  */
 u64 reset_gpe0_status(void)
 {
-	u16 pmbase = get_pmbase();
 	u32 reg_h, reg_l;
 
-	reg_l = inl(pmbase + GPE0_STS);
-	reg_h = inl(pmbase + GPE0_STS + 4);
+	reg_l = read_pmbase32(GPE0_STS);
+	reg_h = read_pmbase32(GPE0_STS + 4);
 	/* set status bits are cleared by writing 1 to them */
-	outl(reg_l, pmbase + GPE0_STS);
-	outl(reg_h, pmbase + GPE0_STS + 4);
+	write_pmbase32(GPE0_STS, reg_l);
+	write_pmbase32(GPE0_STS + 4, reg_h);
 
 	return (((u64)reg_h) << 32) | reg_l;
 }
@@ -169,14 +163,16 @@ void dump_gpe0_status(u64 gpe0_sts)
  */
 u32 reset_tco_status(void)
 {
-	u32 tcobase = get_pmbase() + 0x60;
 	u32 reg32;
 
-	reg32 = inl(tcobase + 0x04);
-	/* set status bits are cleared by writing 1 to them */
-	outl(reg32 & ~(1<<18), tcobase + 0x04); //  Don't clear BOOT_STS before SECOND_TO_STS
-	if (reg32 & (1 << 18))
-		outl(reg32 & (1<<18), tcobase + 0x04); // clear BOOT_STS
+	reg32 = read_pmbase32(TCO1_STS);
+	/*
+	 * set status bits are cleared by writing 1 to them, but don't
+	 * clear BOOT_STS before SECOND_TO_STS.
+	 */
+	write_pmbase32(TCO1_STS, reg32 & ~BOOT_STS);
+	if (reg32 & BOOT_STS)
+		write_pmbase32(TCO1_STS, BOOT_STS);
 
 	return reg32;
 }
@@ -206,12 +202,11 @@ void dump_tco_status(u32 tco_sts)
  */
 void smi_set_eos(void)
 {
-	u16 pmbase = get_pmbase();
 	u8 reg8;
 
-	reg8 = inb(pmbase + SMI_EN);
+	reg8 = read_pmbase8(SMI_EN);
 	reg8 |= EOS;
-	outb(reg8, pmbase + SMI_EN);
+	write_pmbase8(SMI_EN, reg8);
 }
 
 
@@ -231,12 +226,11 @@ void dump_alt_gp_smi_status(u16 alt_gp_smi_sts)
  */
 u16 reset_alt_gp_smi_status(void)
 {
-	u16 pmbase = get_pmbase();
 	u16 reg16;
 
-	reg16 = inl(pmbase + ALT_GP_SMI_STS);
+	reg16 = read_pmbase16(ALT_GP_SMI_STS);
 	/* set status bits are cleared by writing 1 to them */
-	outl(reg16, pmbase + ALT_GP_SMI_STS);
+	write_pmbase16(ALT_GP_SMI_STS, reg16);
 
 	return reg16;
 }

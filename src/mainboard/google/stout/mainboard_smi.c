@@ -19,6 +19,7 @@
 #include <southbridge/intel/bd82x6x/nvs.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/me.h>
+#include <southbridge/intel/common/pmbase.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
 
@@ -29,15 +30,12 @@
 static u8 mainboard_smi_ec(void)
 {
 	u8 cmd = ec_it8518_get_event();
-	u32 pm1_cnt;
 
 	switch (cmd) {
 	case EC_SMI_LID_CLOSED:
 		printk(BIOS_DEBUG, "LID CLOSED, SHUTDOWN\n");
 		/* Go to S5 */
-		pm1_cnt = inl(smm_get_pmbase() + PM1_CNT);
-		pm1_cnt |= (0xf << 10);
-		outl(pm1_cnt, smm_get_pmbase() + PM1_CNT);
+		write_pmbase32(PM1_CNT, read_pmbase32(PM1_CNT) | (0xf << 10));
 		break;
 	}
 

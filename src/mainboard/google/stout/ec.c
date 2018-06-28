@@ -22,6 +22,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/common/pmbase.h>
 #include <elog.h>
 #include "ec.h"
 
@@ -64,7 +65,6 @@ void stout_ec_init(void)
 void stout_ec_finalize_smm(void)
 {
 	u8 ec_reg, critical_shutdown = 0;
-	u32 pm1_cnt;
 
 	/*
 	 * Check EC for error conditions.
@@ -115,9 +115,7 @@ void stout_ec_finalize_smm(void)
 		printk(BIOS_ERR, "EC critical_shutdown");
 
 		/* Go to S5 */
-		pm1_cnt = inl(smm_get_pmbase() + PM1_CNT);
-		pm1_cnt |= (0xf << 10);
-		outl(pm1_cnt, smm_get_pmbase() + PM1_CNT);
+		write_pmbase32(PM1_CNT, read_pmbase32(PM1_CNT) | (0xf << 10));
 	}
 }
 #endif //__SMM__

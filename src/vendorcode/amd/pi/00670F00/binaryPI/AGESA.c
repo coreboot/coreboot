@@ -226,17 +226,3 @@ AmdLateRunApTask (
 	if (!Dispatcher) return AGESA_UNSUPPORTED;
 	return Dispatcher(AmdApExeParams);
 }
-
-/**********************************************************************
- * Interface service call:  AmdReadEventLog
- **********************************************************************/
-AGESA_STATUS
-AmdReadEventLog (
-  IN       EVENT_PARAMS *Event
-)
-{
-	MODULE_ENTRY Dispatcher = agesa_get_dispatcher();
-	Event->StdHeader.Func = AMD_READ_EVENT_LOG;
-	if (!Dispatcher) return AGESA_UNSUPPORTED;
-	return Dispatcher(Event);
-}

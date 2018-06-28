@@ -20,6 +20,7 @@
 #include <southbridge/intel/bd82x6x/nvs.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/me.h>
+#include <southbridge/intel/common/pmbase.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
 #include <elog.h>
@@ -31,7 +32,6 @@
 static u8 mainboard_smi_ec(void)
 {
 	u8 cmd = google_chromeec_get_event();
-	u32 pm1_cnt;
 
 #if IS_ENABLED(CONFIG_ELOG_GSMI)
 	/* Log this event */
@@ -44,9 +44,7 @@ static u8 mainboard_smi_ec(void)
 		printk(BIOS_DEBUG, "LID CLOSED, SHUTDOWN\n");
 
 		/* Go to S5 */
-		pm1_cnt = inl(smm_get_pmbase() + PM1_CNT);
-		pm1_cnt |= (0xf << 10);
-		outl(pm1_cnt, smm_get_pmbase() + PM1_CNT);
+		write_pmbase32(PM1_CNT, read_pmbase32(PM1_CNT) | (0xf << 10));
 		break;
 	}
 

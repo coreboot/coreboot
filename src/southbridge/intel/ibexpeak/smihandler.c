@@ -23,6 +23,7 @@
 #include <elog.h>
 #include <halt.h>
 #include <pc80/mc146818rtc.h>
+#include <southbridge/intel/common/pmbase.h>
 #include "pch.h"
 
 #include "nvs.h"
@@ -39,10 +40,6 @@
  * initialize it with a sane value
  */
 static u16 pmbase = DEFAULT_PMBASE;
-u16 smm_get_pmbase(void)
-{
-	return pmbase;
-}
 
 static u8 smm_initialized = 0;
 
@@ -829,7 +826,7 @@ void southbridge_smi_handler(void)
 	u32 smi_sts;
 
 	/* Update global variable pmbase */
-	pmbase = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0x40) & 0xfffc;
+	pmbase = lpc_get_pmbase();
 
 	/* We need to clear the SMI status registers, or we won't see what's
 	 * happening in the following calls.

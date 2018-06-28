@@ -35,12 +35,6 @@ u16 get_pmbase(void)
 	return lpc_get_pmbase();
 }
 
-/* Defined in <cpu/x86/smm.h> which is used outside of common code*/
-u16 smm_get_pmbase(void)
-{
-	return lpc_get_pmbase();
-}
-
 void gpi_route_interrupt(u8 gpi, u8 mode)
 {
 	u32 gpi_rout;

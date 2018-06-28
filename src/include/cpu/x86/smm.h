@@ -507,9 +507,6 @@ void smi_release_lock(void);
 extern unsigned char _binary_smm_start[];
 extern unsigned char _binary_smm_end[];
 
-/* Get PMBASE address */
-u16 smm_get_pmbase(void);
-
 struct smm_runtime {
 	u32 smbase;
 	u32 save_state_size;

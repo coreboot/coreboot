@@ -31,9 +31,16 @@
 
 #define PL2_I7_SKU	44
 #define PL2_DEFAULT	29
+#define PL2_KBL_R	25
 
-static uint32_t get_pl2(void)
+static uint32_t get_pl2(uint32_t sku_id)
 {
+	if ((sku_id == SKU_0_SONA) || (sku_id == SKU_1_SONA)) {
+		if (cpuid_eax(1) == CPUID_KABYLAKE_Y0)
+			return PL2_DEFAULT;
+
+		return PL2_KBL_R;
+	}
 	if (cpuid_eax(1) == CPUID_KABYLAKE_Y0)
 		return PL2_I7_SKU;
 
@@ -62,7 +69,7 @@ void variant_devtree_update(void)
 	config_t *cfg = root->chip_info;
 
 	/* Update PL2 based on SKU. */
-	cfg->tdp_pl2_override = get_pl2();
+	cfg->tdp_pl2_override = get_pl2(sku_id);
 
 	switch (sku_id) {
 	case SKU_0_VAYNE:

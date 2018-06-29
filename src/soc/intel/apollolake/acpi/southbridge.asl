@@ -18,15 +18,6 @@
 #include <intelblocks/pcr.h>
 #include <soc/gpe.h>
 
-/* Power button. */
-Scope (\_SB)
-{
-	Device (PWRB)
-	{
-		Name (_HID, EisaId ("PNP0C0C"))
-	}
-}
-
 /* PCIE device */
 #include "pcie.asl"
 

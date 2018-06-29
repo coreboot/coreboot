@@ -31,6 +31,8 @@
 #include <libpayload.h>
 #include <stddef.h>
 
+#include "i8042.h"
+
 /* Overflowing FIFO implementation */
 
 struct fifo {
@@ -204,13 +206,13 @@ u8 i8042_probe(void)
 	kbc_init = 1;
 
 	/* Disable first device */
-	if (i8042_cmd(0xad) != 0) {
+	if (i8042_cmd(I8042_CMD_DIS_KB) != 0) {
 		kbc_init = 0;
 		return 0;
 	}
 
 	/* Disable second device */
-	if (i8042_cmd(0xa7) != 0) {
+	if (i8042_cmd(I8042_CMD_DIS_AUX) != 0) {
 		kbc_init = 0;
 		return 0;
 	}
@@ -220,17 +222,18 @@ u8 i8042_probe(void)
 		read_data();
 
 	/* Self test. */
-	if (i8042_cmd_with_response(0xaa) != 0x55) {
+	if (i8042_cmd_with_response(I8042_CMD_SELF_TEST)
+	    != I8042_SELF_TEST_RSP) {
 		kbc_init = 0;
 		return 0;
 	}
 
 	/* Test secondary port */
-	if (i8042_cmd_with_response(0xa9) == 0)
+	if (i8042_cmd_with_response(I8042_CMD_AUX_TEST) == 0)
 		aux_fifo = fifo_init(4 * 32);
 
 	/* Test first PS/2 port */
-	if (i8042_cmd_with_response(0xab) == 0)
+	if (i8042_cmd_with_response(I8042_CMD_KB_TEST) == 0)
 		ps2_fifo = fifo_init(2 * 16);
 
 	kbc_init = 0;

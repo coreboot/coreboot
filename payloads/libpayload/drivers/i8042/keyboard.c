@@ -32,7 +32,8 @@
 #include <libpayload-config.h>
 #include <libpayload.h>
 
-#define I8042_CMD_DIS_KB     0xad
+#include "i8042.h"
+
 #define POWER_BUTTON         0x90
 
 struct layout_maps {
@@ -203,12 +204,12 @@ unsigned char keyboard_get_scancode(void)
 	case 0x3a:
 		if (modifier & KB_MOD_CAPSLOCK) {
 			modifier &= ~KB_MOD_CAPSLOCK;
-			if (keyboard_cmd(0xed))
-				keyboard_cmd(0 << 2);
+			if (keyboard_cmd(I8042_KBCMD_SET_MODE_IND))
+				keyboard_cmd(I8042_MODE_CAPS_LOCK_OFF);
 		} else {
 			modifier |= KB_MOD_CAPSLOCK;
-			if (keyboard_cmd(0xed))
-				keyboard_cmd(1 << 2);
+			if (keyboard_cmd(I8042_KBCMD_SET_MODE_IND))
+				keyboard_cmd(I8042_MODE_CAPS_LOCK_ON);
 		}
 		break;
 	}
@@ -304,19 +305,19 @@ void keyboard_init(void)
 		keyboard_getchar();
 
 	/* Enable first PS/2 port */
-	i8042_cmd(0xae);
+	i8042_cmd(I8042_CMD_EN_KB);
 
 	/* Set scancode set 1 */
-	ret = keyboard_cmd(0xf0);
+	ret = keyboard_cmd(I8042_KBCMD_SET_SCANCODE);
 	if (!ret)
 		return;
 
-	ret = keyboard_cmd(0x01);
+	ret = keyboard_cmd(I8042_SCANCODE_SET_1);
 	if (!ret)
 		return;
 
 	/* Enable scanning */
-	ret = keyboard_cmd(0xf4);
+	ret = keyboard_cmd(I8042_KBCMD_EN);
 	if (!ret)
 		return;
 

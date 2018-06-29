@@ -23,16 +23,15 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <cpu/intel/smm/gen1/smi.h>
+#include <southbridge/intel/common/pmbase.h>
 
 #include "pmutil.h"
 
 #define DEBUG_PERIODIC_SMIS 0
 
-static u16 pmbase;
-
 u16 get_pmbase(void)
 {
-	return pmbase;
+	return lpc_get_pmbase();
 }
 
 void southbridge_smm_init(void)
@@ -48,12 +47,9 @@ void southbridge_smm_init(void)
 
 	printk(BIOS_DEBUG, "Initializing southbridge SMI...");
 
-	pmbase = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x1f, 0)),
-						D31F0_PMBASE) & 0xff80;
+	printk(BIOS_SPEW, " ... pmbase = 0x%04x\n", lpc_get_pmbase());
 
-	printk(BIOS_SPEW, " ... pmbase = 0x%04x\n", pmbase);
-
-	smi_en = inl(pmbase + SMI_EN);
+	smi_en = read_pmbase32(SMI_EN);
 	if (smi_en & APMC_EN) {
 		printk(BIOS_INFO, "SMI# handler already enabled?\n");
 		return;
@@ -67,14 +63,14 @@ void southbridge_smm_init(void)
 	dump_tco_status(reset_tco_status());
 
 	/* Disable GPE0 PME_B0 */
-	gpe0_en = inl(pmbase + GPE0_EN);
+	gpe0_en = read_pmbase32(GPE0_EN);
 	gpe0_en &= ~PME_B0_EN;
-	outl(gpe0_en, pmbase + GPE0_EN);
+	write_pmbase32(GPE0_EN, gpe0_en);
 
 	pm1_en = 0;
 	pm1_en |= PWRBTN_EN;
 	pm1_en |= GBL_EN;
-	outw(pm1_en, pmbase + PM1_EN);
+	write_pmbase16(PM1_EN, pm1_en);
 
 	/* Enable SMI generation:
 	 *  - on TCO events
@@ -106,7 +102,7 @@ void southbridge_smm_init(void)
 	/* The following need to be on for SMIs to happen */
 	smi_en |= EOS | GBL_SMI_EN;
 
-	outl(smi_en, pmbase + SMI_EN);
+	write_pmbase32(SMI_EN, smi_en);
 }
 
 void southbridge_trigger_smi(void)

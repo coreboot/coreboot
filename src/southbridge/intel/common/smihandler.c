@@ -25,21 +25,21 @@
 #include <elog.h>
 #include <halt.h>
 #include <pc80/mc146818rtc.h>
+#include <southbridge/intel/common/pmbase.h>
+
 #include "pmutil.h"
 
 static int smm_initialized = 0;
 
-static u16 pmbase;
-
 u16 get_pmbase(void)
 {
-	return pmbase;
+	return lpc_get_pmbase();
 }
 
 /* Defined in <cpu/x86/smm.h> which is used outside of common code*/
 u16 smm_get_pmbase(void)
 {
-	return get_pmbase();
+	return lpc_get_pmbase();
 }
 
 void gpi_route_interrupt(u8 gpi, u8 mode)
@@ -67,11 +67,7 @@ void gpi_route_interrupt(u8 gpi, u8 mode)
  */
 void southbridge_smi_set_eos(void)
 {
-	u8 reg8;
-
-	reg8 = inb(pmbase + SMI_EN);
-	reg8 |= EOS;
-	outb(reg8, pmbase + SMI_EN);
+	write_pmbase8(SMI_EN, read_pmbase8(SMI_EN) | EOS);
 }
 
 static void busmaster_disable_on_bus(int bus)
@@ -134,12 +130,10 @@ static void southbridge_smi_sleep(void)
 	outb(tmp72, 0x72);
 
 	/* First, disable further SMIs */
-	reg8 = inb(pmbase + SMI_EN);
-	reg8 &= ~SLP_SMI_EN;
-	outb(reg8, pmbase + SMI_EN);
+	write_pmbase8(SMI_EN, read_pmbase8(SMI_EN) & ~SLP_SMI_EN);
 
 	/* Figure out SLP_TYP */
-	reg32 = inl(pmbase + PM1_CNT);
+	reg32 = read_pmbase32(PM1_CNT);
 	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x\n", reg32);
 	slp_typ = acpi_sleep_from_pm1(reg32);
 
@@ -179,7 +173,7 @@ static void southbridge_smi_sleep(void)
 	case ACPI_S5:
 		printk(BIOS_DEBUG, "SMI#: Entering S5 (Soft Power off)\n");
 
-		outl(0, pmbase + GPE0_EN);
+		write_pmbase32(GPE0_EN, 0);
 
 		/* Always set the flag in case CMOS was changed on runtime. For
 		 * "KEEP", switch to "OFF" - KEEP is software emulated
@@ -202,7 +196,7 @@ static void southbridge_smi_sleep(void)
 	 * event again. We need to set BIT13 (SLP_EN) though to make the
 	 * sleep happen.
 	 */
-	outl(reg32 | SLP_EN, pmbase + PM1_CNT);
+	write_pmbase32(PM1_CNT, reg32 | SLP_EN);
 
 	/* Make sure to stop executing code here for S3/S4/S5 */
 	if (slp_typ >= ACPI_S3)
@@ -212,11 +206,11 @@ static void southbridge_smi_sleep(void)
 	 * the line above. However, if we entered sleep state S1 and wake
 	 * up again, we will continue to execute code in this function.
 	 */
-	reg32 = inl(pmbase + PM1_CNT);
+	reg32 = read_pmbase32(PM1_CNT);
 	if (reg32 & SCI_EN) {
 		/* The OS is not an ACPI OS, so we set the state to S0 */
 		reg32 &= ~(SLP_EN | SLP_TYP);
-		outl(reg32, pmbase + PM1_CNT);
+		write_pmbase32(PM1_CNT, reg32);
 	}
 }
 
@@ -283,7 +277,6 @@ static int mainboard_finalized = 0;
 
 static void southbridge_smi_apmc(void)
 {
-	u32 pmctrl;
 	u8 reg8;
 
 	/* Emulate B2 register as the FADT / Linux expects it */
@@ -305,15 +298,11 @@ static void southbridge_smi_apmc(void)
 		printk(BIOS_DEBUG, "P-state control\n");
 		break;
 	case APM_CNT_ACPI_DISABLE:
-		pmctrl = inl(pmbase + PM1_CNT);
-		pmctrl &= ~SCI_EN;
-		outl(pmctrl, pmbase + PM1_CNT);
+		write_pmbase32(PM1_CNT, read_pmbase32(PM1_CNT) & ~SCI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI disabled.\n");
 		break;
 	case APM_CNT_ACPI_ENABLE:
-		pmctrl = inl(pmbase + PM1_CNT);
-		pmctrl |= SCI_EN;
-		outl(pmctrl, pmbase + PM1_CNT);
+		write_pmbase32(PM1_CNT, read_pmbase32(PM1_CNT) | SCI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
 		break;
 	case APM_CNT_GNVS_UPDATE:
@@ -360,7 +349,7 @@ static void southbridge_smi_pm1(void)
 #if IS_ENABLED(CONFIG_ELOG_GSMI)
 		elog_add_event(ELOG_TYPE_POWER_BUTTON);
 #endif
-		outl(reg32, pmbase + PM1_CNT);
+		write_pmbase32(PM1_CNT, reg32);
 	}
 }
 
@@ -375,24 +364,23 @@ static void southbridge_smi_gpe0(void)
 static void southbridge_smi_gpi(void)
 {
 	u16 reg16;
-	reg16 = inw(pmbase + ALT_GP_SMI_STS);
-	outw(reg16, pmbase + ALT_GP_SMI_STS);
 
-	reg16 &= inw(pmbase + ALT_GP_SMI_EN);
+	reg16 = reset_alt_gp_smi_status();
+	reg16 &= read_pmbase16(ALT_GP_SMI_EN);
 
 	mainboard_smi_gpi(reg16);
 
 	if (reg16)
 		printk(BIOS_DEBUG, "GPI (mask %04x)\n", reg16);
 
-	outw(reg16, pmbase + ALT_GP_SMI_STS);
+	write_pmbase16(ALT_GP_SMI_STS, reg16);
 }
 
 static void southbridge_smi_mc(void)
 {
 	u32 reg32;
 
-	reg32 = inl(pmbase + SMI_EN);
+	reg32 = read_pmbase32(SMI_EN);
 
 	/* Are periodic SMIs enabled? */
 	if ((reg32 & MCSMI_EN) == 0)
@@ -445,7 +433,7 @@ static void southbridge_smi_periodic(void)
 {
 	u32 reg32;
 
-	reg32 = inl(pmbase + SMI_EN);
+	reg32 = read_pmbase32(SMI_EN);
 
 	/* Are periodic SMIs enabled? */
 	if ((reg32 & PERIODIC_EN) == 0)
@@ -500,9 +488,6 @@ void southbridge_smi_handler(void)
 {
 	int i, dump = 0;
 	u32 smi_sts;
-
-	/* Update global variable pmbase */
-	pmbase = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0x40) & 0xfffc;
 
 	/* We need to clear the SMI status registers, or we won't see what's
 	 * happening in the following calls.

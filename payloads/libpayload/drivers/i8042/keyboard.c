@@ -338,6 +338,9 @@ void keyboard_disconnect(void)
 	while (keyboard_havechar())
 		keyboard_getchar();
 
+	/* Disable scanning */
+	keyboard_cmd(I8042_KBCMD_DEFAULT_DIS);
+
 	/* Send keyboard disconnect command */
 	i8042_cmd(I8042_CMD_DIS_KB);
 

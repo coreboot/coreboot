@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/pnp.h>
-#include <pc80/keyboard.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -430,7 +429,6 @@ static void lpc_ec_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
-	pc_keyboard_init(NO_AUX_DEVICE);
 	google_chromeec_init();
 }
 

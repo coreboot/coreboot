@@ -115,7 +115,7 @@ u16 spd_ddr3_calc_unique_crc(u8 *spd, int len)
  * array, and passed to this function.
  *
  * @param dimm pointer to @ref dimm_attr structure where the decoded data is to
- * 	       be stored
+ *	       be stored
  * @param spd array of raw data previously read from the SPD.
  *
  * @return @ref spd_status enumerator
@@ -123,7 +123,7 @@ u16 spd_ddr3_calc_unique_crc(u8 *spd, int len)
  *		SPD_STATUS_INVALID -- invalid SPD or not a DDR3 SPD
  *		SPD_STATUS_CRC_ERROR -- CRC did not verify
  *		SPD_STATUS_INVALID_FIELD -- A field with an invalid value was
- * 					    detected.
+ *					    detected.
  */
 int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 {

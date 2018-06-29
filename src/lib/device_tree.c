@@ -497,12 +497,12 @@ void dt_read_cell_props(struct device_tree_node *node, u32 *addrcp, u32 *sizecp)
  *
  * @param parent	The node from which to start the relative path lookup.
  * @param path		An array of path component strings that will be looked
- * 			up in order to find the node. Must be terminated with
- * 			a NULL pointer. Example: {'firmware', 'coreboot', NULL}
+ *			up in order to find the node. Must be terminated with
+ *			a NULL pointer. Example: {'firmware', 'coreboot', NULL}
  * @param addrcp	Pointer that will be updated with any #address-cells
- * 			value found in the path. May be NULL to ignore.
+ *			value found in the path. May be NULL to ignore.
  * @param sizecp	Pointer that will be updated with any #size-cells
- * 			value found in the path. May be NULL to ignore.
+ *			value found in the path. May be NULL to ignore.
  * @param create	1: Create node(s) if not found. 0: Return NULL instead.
  * @return		The found/created node, or NULL.
  */

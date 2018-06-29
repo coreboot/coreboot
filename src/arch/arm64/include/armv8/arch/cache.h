@@ -48,8 +48,8 @@
 #define SCTLR_EL1_UMA	(1 << 9)	/* User mask access		*/
 #define SCTLR_EL1_DZE	(1 << 14)	/* DC ZVA instruction at EL0	*/
 #define SCTLR_EL1_UCT	(1 << 15)	/* CTR_EL0 register EL0 access	*/
-#define SCTLR_EL1_NTWI	(1 << 16)	/* Not trap WFI		 	*/
-#define SCTLR_EL1_NTWE	(1 << 18)	/* Not trap WFE		 	*/
+#define SCTLR_EL1_NTWI	(1 << 16)	/* Not trap WFI			*/
+#define SCTLR_EL1_NTWE	(1 << 18)	/* Not trap WFE			*/
 #define SCTLR_EL1_E0E	(1 << 24)	/* Exception endianness at EL0	*/
 #define SCTLR_EL1_UCI	(1 << 26)	/* EL0 access to cache instructions */
 

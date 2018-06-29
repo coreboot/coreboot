@@ -214,6 +214,7 @@ static int is_platform_ifd_2(void)
 	static const int ifd_2_platforms[] = {
 		PLATFORM_GLK,
 		PLATFORM_CNL,
+		PLATFORM_ICL,
 	};
 	unsigned int i;
 
@@ -1542,6 +1543,8 @@ int main(int argc, char *argv[])
 				platform = PLATFORM_CNL;
 			} else if (!strcmp(optarg, "glk")) {
 				platform = PLATFORM_GLK;
+			} else if (!strcmp(optarg, "icl")) {
+				platform = PLATFORM_ICL;
 			} else if (!strcmp(optarg, "sklkbl")) {
 				platform = PLATFORM_SKLKBL;
 			} else {

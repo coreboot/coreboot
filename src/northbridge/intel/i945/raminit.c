@@ -629,43 +629,50 @@ static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 static void sdram_program_dram_width(struct sys_info *sysinfo)
 {
 	u16 c0dramw = 0, c1dramw = 0;
-	int idx;
+	int i, idx;
 
 	if (sysinfo->dual_channel)
 		idx = 2;
 	else
 		idx = 1;
 
-	switch (sysinfo->dimm[0]) {
-	case SYSINFO_DIMM_X16DS:
-		c0dramw = 0x0000; break;
-	case SYSINFO_DIMM_X8DS:
-		c0dramw = 0x0001; break;
-	case SYSINFO_DIMM_X16SS:
-		c0dramw = 0x0000; break;
-	case SYSINFO_DIMM_X8DDS:
-		c0dramw = 0x0005; break;
-	case SYSINFO_DIMM_NOT_POPULATED:
-		c0dramw = 0x0000; break;
+	for (i = 0; i < DIMM_SOCKETS; i++) { /* Channel 0 */
+		switch (sysinfo->dimm[i]) {
+		case SYSINFO_DIMM_X16DS:
+			c0dramw |= (0x0000) << 4*(i % 2);
+			break;
+		case SYSINFO_DIMM_X8DS:
+			c0dramw |= (0x0001) << 4*(i % 2);
+			break;
+		case SYSINFO_DIMM_X16SS:
+			c0dramw |= (0x0000) << 4*(i % 2);
+			break;
+		case SYSINFO_DIMM_X8DDS:
+			c0dramw |= (0x0005) << 4*(i % 2);
+			break;
+		case SYSINFO_DIMM_NOT_POPULATED:
+			c0dramw |= (0x0000) << 4*(i % 2);
+			break;
+		}
 	}
-
-	switch (sysinfo->dimm[idx]) {
-	case SYSINFO_DIMM_X16DS:
-		c1dramw = 0x0000; break;
-	case SYSINFO_DIMM_X8DS:
-		c1dramw = 0x0010; break;
-	case SYSINFO_DIMM_X16SS:
-		c1dramw = 0x0000; break;
-	case SYSINFO_DIMM_X8DDS:
-		c1dramw = 0x0050; break;
-	case SYSINFO_DIMM_NOT_POPULATED:
-		c1dramw = 0x0000; break;
-	}
-
-	if (!sdram_capabilities_dual_channel()) {
-		/* Single Channel */
-		c0dramw |= c1dramw;
-		c1dramw = 0;
+	for (i = DIMM_SOCKETS; i < idx * DIMM_SOCKETS; i++) { /* Channel 1 */
+		switch (sysinfo->dimm[i]) {
+		case SYSINFO_DIMM_X16DS:
+			c1dramw |= (0x0000) << 4*(i % 2);
+			break;
+		case SYSINFO_DIMM_X8DS:
+			c1dramw |= (0x0001) << 4*(i % 2);
+			break;
+		case SYSINFO_DIMM_X16SS:
+			c1dramw |= (0x0000) << 4*(i % 2);
+			break;
+		case SYSINFO_DIMM_X8DDS:
+			c1dramw |= (0x0005) << 4*(i % 2);
+			break;
+		case SYSINFO_DIMM_NOT_POPULATED:
+			c1dramw |= (0x0000) << 4*(i % 2);
+			break;
+		}
 	}
 
 	MCHBAR16(C0DRAMW) = c0dramw;

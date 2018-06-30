@@ -115,6 +115,7 @@ struct soc_intel_icelake_config {
 	uint16_t usb3_wake_enable_bitmap;
 
 	/* SATA related */
+	uint8_t SataEnable;
 	uint8_t SataMode;
 	uint8_t SataSalpSupport;
 	uint8_t SataPortsEnable[8];

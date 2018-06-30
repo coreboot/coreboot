@@ -254,10 +254,6 @@ struct soc_intel_icelake_config {
 	/* Enable Pch iSCLK */
 	uint8_t pch_isclk;
 
-	/* Intel VT configuration */
-	uint8_t VtdDisable;
-	uint8_t VmxEnable;
-
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
 	enum {
 		PLATFORM_POR,

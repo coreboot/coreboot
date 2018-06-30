@@ -13,14 +13,203 @@
  * GNU General Public License for more details.
  */
 
+#include <chip.h>
 #include <console/console.h>
+#include <device/device.h>
+#include <device/pci.h>
 #include <fsp/api.h>
+#include <fsp/util.h>
+#include <intelblocks/xdci.h>
+#include <soc/intel/common/vbt.h>
+#include <soc/pci_devs.h>
 #include <soc/ramstage.h>
+#include <string.h>
+#include <intelblocks/mp_init.h>
+#include <fsp/ppi/mp_service_ppi.h>
+
+static void parse_devicetree(FSP_S_CONFIG *params)
+{
+	struct device *dev = pcidev_on_root(0, 0);
+	if (!dev) {
+		printk(BIOS_ERR, "Could not find root device\n");
+		return;
+	}
+
+	const struct soc_intel_icelake_config *config = dev->chip_info;
+
+	for (int i = 0; i < CONFIG_SOC_INTEL_I2C_DEV_MAX; i++)
+		params->SerialIoI2cMode[i] = config->SerialIoI2cMode[i];
+
+	for (int i = 0; i < CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX; i++) {
+		params->SerialIoSpiMode[i] = config->SerialIoGSpiMode[i];
+		params->SerialIoSpiCsMode[i] = config->SerialIoGSpiCsMode[i];
+		params->SerialIoSpiCsState[i] = config->SerialIoGSpiCsState[i];
+	}
+
+	for (int i = 0; i < CONFIG_SOC_INTEL_UART_DEV_MAX; i++)
+		params->SerialIoUartMode[i] = config->SerialIoUartMode[i];
+}
 
 /* UPD parameters to be initialized before SiliconInit */
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
-	/* ToDo: update with UPD override as FSP matures */
+	int i;
+	FSP_S_CONFIG *params = &supd->FspsConfig;
+	struct device *dev = SA_DEV_ROOT;
+	config_t *config = dev->chip_info;
+
+	/* Parse device tree and enable/disable devices */
+	parse_devicetree(params);
+
+	/* Load VBT before devicetree-specific config. */
+	params->GraphicsConfigPtr = (uintptr_t)vbt_get();
+
+	/* Set USB OC pin to 0 first */
+	for (i = 0; i < ARRAY_SIZE(params->Usb2OverCurrentPin); i++)
+		params->Usb2OverCurrentPin[i] = 0;
+
+	for (i = 0; i < ARRAY_SIZE(params->Usb3OverCurrentPin); i++)
+		params->Usb3OverCurrentPin[i] = 0;
+
+	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI)) {
+		params->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
+		params->SkipMpInit = 0;
+	} else {
+		params->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
+	}
+
+	mainboard_silicon_init_params(params);
+
+	params->PeiGraphicsPeimInit = 1;
+	params->GtFreqMax = 2;
+	params->CdClock = 3;
+	/* Unlock upper 8 bytes of RTC RAM */
+	params->PchLockDownRtcMemoryLock = 0;
+
+	params->CnviBtAudioOffload = config->CnviBtAudioOffload;
+	/* SATA */
+	dev = pcidev_on_root(PCH_DEV_SLOT_SATA, 0);
+	if (!dev)
+		params->SataEnable = 0;
+	else {
+		params->SataEnable = dev->enabled;
+		params->SataMode = config->SataMode;
+		params->SataSalpSupport = config->SataSalpSupport;
+		memcpy(params->SataPortsEnable, config->SataPortsEnable,
+				sizeof(params->SataPortsEnable));
+		memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
+				sizeof(params->SataPortsDevSlp));
+	}
+
+	/* Lan */
+	dev = pcidev_on_root(PCH_DEV_SLOT_LPC, 6);
+	if (!dev)
+		params->PchLanEnable = 0;
+	else
+		params->PchLanEnable = dev->enabled;
+
+	/* Audio */
+	params->PchHdaDspEnable = config->PchHdaDspEnable;
+	params->PchHdaAudioLinkHda = config->PchHdaAudioLinkHda;
+	params->PchHdaAudioLinkDmic0 = config->PchHdaAudioLinkDmic0;
+	params->PchHdaAudioLinkDmic1 = config->PchHdaAudioLinkDmic1;
+	params->PchHdaAudioLinkSsp0 = config->PchHdaAudioLinkSsp0;
+	params->PchHdaAudioLinkSsp1 = config->PchHdaAudioLinkSsp1;
+	params->PchHdaAudioLinkSsp2 = config->PchHdaAudioLinkSsp2;
+	params->PchHdaAudioLinkSndw1 = config->PchHdaAudioLinkSndw1;
+	params->PchHdaAudioLinkSndw2 = config->PchHdaAudioLinkSndw2;
+	params->PchHdaAudioLinkSndw3 = config->PchHdaAudioLinkSndw3;
+	params->PchHdaAudioLinkSndw4 = config->PchHdaAudioLinkSndw4;
+
+	/* disable Legacy PME */
+	memset(params->PcieRpPmSci, 0, sizeof(params->PcieRpPmSci));
+
+	/* S0ix */
+	params->PchPmSlpS0Enable = config->s0ix_enable;
+
+	/* USB */
+	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
+		params->PortUsb20Enable[i] =
+			config->usb2_ports[i].enable;
+		params->Usb2OverCurrentPin[i] =
+			config->usb2_ports[i].ocpin;
+		params->Usb2PhyPetxiset[i] =
+			config->usb2_ports[i].pre_emp_bias;
+		params->Usb2PhyTxiset[i] =
+			config->usb2_ports[i].tx_bias;
+		params->Usb2PhyPredeemp[i] =
+			config->usb2_ports[i].tx_emp_enable;
+		params->Usb2PhyPehalfbit[i] =
+			config->usb2_ports[i].pre_emp_bit;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(config->usb3_ports); i++) {
+		params->PortUsb30Enable[i] = config->usb3_ports[i].enable;
+		params->Usb3OverCurrentPin[i] = config->usb3_ports[i].ocpin;
+		if (config->usb3_ports[i].tx_de_emp) {
+			params->Usb3HsioTxDeEmphEnable[i] = 1;
+			params->Usb3HsioTxDeEmph[i] =
+				config->usb3_ports[i].tx_de_emp;
+		}
+		if (config->usb3_ports[i].tx_downscale_amp) {
+			params->Usb3HsioTxDownscaleAmpEnable[i] = 1;
+			params->Usb3HsioTxDownscaleAmp[i] =
+				config->usb3_ports[i].tx_downscale_amp;
+		}
+	}
+
+	/* Enable xDCI controller if enabled in devicetree and allowed */
+	dev = pcidev_on_root(PCH_DEV_SLOT_XHCI, 1);
+	if (!xdci_can_enable())
+		dev->enabled = 0;
+	params->XdciEnable = dev->enabled;
+
+	/* PCI Express */
+	for (i = 0; i < ARRAY_SIZE(config->PcieClkSrcUsage); i++) {
+		if (config->PcieClkSrcUsage[i] == 0)
+			config->PcieClkSrcUsage[i] = PCIE_CLK_NOTUSED;
+	}
+	memcpy(params->PcieClkSrcUsage, config->PcieClkSrcUsage,
+	       sizeof(config->PcieClkSrcUsage));
+	memcpy(params->PcieClkSrcClkReq, config->PcieClkSrcClkReq,
+	       sizeof(config->PcieClkSrcClkReq));
+
+	/* eMMC */
+	dev = pcidev_on_root(PCH_DEV_SLOT_STORAGE, 0);
+	if (!dev)
+		params->ScsEmmcEnabled = 0;
+	else {
+		params->ScsEmmcEnabled = dev->enabled;
+		params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
+		params->EmmcUseCustomDlls = config->EmmcUseCustomDlls;
+		if (config->EmmcUseCustomDlls == 1) {
+			params->EmmcTxCmdDelayRegValue =
+					config->EmmcTxCmdDelayRegValue;
+			params->EmmcTxDataDelay1RegValue =
+					config->EmmcTxDataDelay1RegValue;
+			params->EmmcTxDataDelay2RegValue =
+					config->EmmcTxDataDelay2RegValue;
+			params->EmmcRxCmdDataDelay1RegValue =
+					config->EmmcRxCmdDataDelay1RegValue;
+			params->EmmcRxCmdDataDelay2RegValue =
+					config->EmmcRxCmdDataDelay2RegValue;
+			params->EmmcRxStrobeDelayRegValue =
+					config->EmmcRxStrobeDelayRegValue;
+		}
+	}
+
+	/* SD */
+	dev = pcidev_on_root(PCH_DEV_SLOT_XHCI, 5);
+	if (!dev)
+		params->ScsSdCardEnabled = 0;
+	else {
+		params->ScsSdCardEnabled = dev->enabled;
+		params->SdCardPowerEnableActiveHigh =
+				config->SdCardPowerEnableActiveHigh;
+	}
+
+	params->Heci3Enabled = config->Heci3Enabled;
+	params->Device4Enable = config->Device4Enable;
 }
 
 /* Mainboard GPIO Configuration */

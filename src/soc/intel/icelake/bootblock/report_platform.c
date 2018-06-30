@@ -31,55 +31,52 @@ static struct {
 	u32 cpuid;
 	const char *name;
 } cpu_table[] = {
-	{ CPUID_CANNONLAKE_A0, "Cannonlake A0" },
-	{ CPUID_CANNONLAKE_B0, "Cannonlake B0" },
-	{ CPUID_CANNONLAKE_C0, "Cannonlake C0" },
-	{ CPUID_CANNONLAKE_D0, "Cannonlake D0" },
-	{ CPUID_COFFEELAKE_D0, "Coffeelake D0" },
-	{ CPUID_WHISKEYLAKE_W0, "Whiskeylake W0"},
-	{ CPUID_COFFEELAKE_U0, "Coffeelake U0 (6+2)" },
+	{ CPUID_ICELAKE_A0, "Icelake A0" },
+	{ CPUID_ICELAKE_B0, "Icelake B0" },
 };
 
 static struct {
 	u16 mchid;
 	const char *name;
 } mch_table[] = {
-	{ PCI_DEVICE_ID_INTEL_CNL_ID_U, "Cannonlake-U" },
-	{ PCI_DEVICE_ID_INTEL_CNL_ID_Y, "Cannonlake-Y" },
-	{ PCI_DEVICE_ID_INTEL_CFL_ID_U, "Coffeelake U (4+3e)"},
-	{ PCI_DEVICE_ID_INTEL_WHL_ID_Wx4, "Whiskeylake W (4+2)"},
-	{ PCI_DEVICE_ID_INTEL_WHL_ID_Wx2, "Whiskeylake W (2+2)"},
-	{ PCI_DEVICE_ID_INTEL_CFL_ID_H, "Coffeelake-H" },
-	{ PCI_DEVICE_ID_INTEL_CFL_ID_S, "Coffeelake-S" },
+	{ PCI_DEVICE_ID_INTEL_ICL_ID_U, "Icelake-U" },
+	{ PCI_DEVICE_ID_INTEL_ICL_ID_U_2_2, "Icelake-U-2-2" },
+	{ PCI_DEVICE_ID_INTEL_ICL_ID_Y, "Icelake-Y" },
+	{ PCI_DEVICE_ID_INTEL_ICL_ID_Y_2, "Icelake-Y-2" },
 };
 
 static struct {
 	u16 lpcid;
 	const char *name;
 } pch_table[] = {
-	{ PCI_DEVICE_ID_INTEL_CNL_BASE_U_LPC, "Cannonlake-U Base" },
-	{ PCI_DEVICE_ID_INTEL_CNL_U_PREMIUM_LPC, "Cannonlake-U Premium" },
-	{ PCI_DEVICE_ID_INTEL_CNL_Y_PREMIUM_LPC, "Cannonlake-Y Premium" },
-	{ PCI_DEVICE_ID_INTEL_CNP_H_LPC_Q370, "Cannonlake-H Q370" },
-	{ PCI_DEVICE_ID_INTEL_CNP_H_LPC_QM370, "Cannonlake-H QM370" },
+	{ PCI_DEVICE_ID_INTEL_ICL_BASE_U_LPC, "Icelake-U Base" },
+	{ PCI_DEVICE_ID_INTEL_ICL_BASE_Y_LPC, "Icelake-Y Base" },
+	{ PCI_DEVICE_ID_INTEL_ICL_U_PREMIUM_LPC, "Icelake-U Premium" },
+	{ PCI_DEVICE_ID_INTEL_ICL_U_SUPER_U_LPC, "Icelake-U Super" },
+	{ PCI_DEVICE_ID_INTEL_ICL_U_SUPER_U_LPC_REV0, "Icelake-U Super REV0" },
+	{ PCI_DEVICE_ID_INTEL_ICL_SUPER_Y_LPC, "Icelake-Y Super" },
+	{ PCI_DEVICE_ID_INTEL_ICL_Y_PREMIUM_LPC, "Icelake-Y Premium" },
 };
 
 static struct {
 	u16 igdid;
 	const char *name;
 } igd_table[] = {
-	{ PCI_DEVICE_ID_INTEL_CNL_GT2_ULX_1, "Cannonlake ULX GT2" },
-	{ PCI_DEVICE_ID_INTEL_CNL_GT2_ULX_2, "Cannonlake ULX GT1.5" },
-	{ PCI_DEVICE_ID_INTEL_CNL_GT2_ULX_3, "Cannonlake ULX GT1" },
-	{ PCI_DEVICE_ID_INTEL_CNL_GT2_ULX_4, "Cannonlake ULX GT0.5" },
-	{ PCI_DEVICE_ID_INTEL_CNL_GT2_ULT_1, "Cannonlake ULT GT2" },
-	{ PCI_DEVICE_ID_INTEL_CNL_GT2_ULT_2, "Cannonlake ULT GT1.5" },
-	{ PCI_DEVICE_ID_INTEL_CNL_GT2_ULT_3, "Cannonlake ULT GT1" },
-	{ PCI_DEVICE_ID_INTEL_CNL_GT2_ULT_4, "Cannonlake ULT GT0.5" },
-	{ PCI_DEVICE_ID_INTEL_CFL_GT2_ULT, "Coffeelake ULT GT2"},
-	{ PCI_DEVICE_ID_INTEL_WHL_GT2_ULT_1, "Whiskeylake ULT GT1"},
-	{ PCI_DEVICE_ID_INTEL_CFL_H_GT2, "Coffeelake-H GT2" },
-	{ PCI_DEVICE_ID_INTEL_CFL_S_GT2, "Coffeelake-S GT2" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT0_ULT, "Icelake ULT GT0" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT0_5_ULT, "Icelake ULT GT0.5" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT1_ULT, "Icelake U GT1" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULX_0, "Icelake Y GT2" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULX_1, "Icelake Y GT2_1" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULT_1, "Icelake U GT2_1" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULX_2, "Icelake Y GT2_2" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULT_2, "Icelake U GT2_2" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULX_3, "Icelake Y GT2_3" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULT_3, "Icelake U GT2_3" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULX_4, "Icelake Y GT2_4" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULT_4, "Icelake U GT2_4" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULX_5, "Icelake Y GT2_5" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULT_5, "Icelake U GT2_5" },
+	{ PCI_DEVICE_ID_INTEL_ICL_GT3_ULT, "Icelake U GT3" },
 };
 
 static uint8_t get_dev_revision(pci_devfn_t dev)

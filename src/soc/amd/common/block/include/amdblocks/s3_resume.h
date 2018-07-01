@@ -17,10 +17,10 @@
 #define __AMD_S3_RESUME_H__
 
 #include <stdint.h>
+#include <agesa_headers.h>
 
-int save_s3_info(void *nv_base, size_t nv_size,
-			void *vol_base, size_t vol_size);
-void get_s3nv_info(void **base, size_t *size);
-void get_s3vol_info(void **base, size_t *size);
+AGESA_STATUS OemInitResume(S3_DATA_BLOCK *dataBlock);
+AGESA_STATUS OemS3LateRestore(S3_DATA_BLOCK *dataBlock);
+AGESA_STATUS OemS3Save(S3_DATA_BLOCK *dataBlock);
 
 #endif /* __AMD_S3_RESUME_H__ */

@@ -312,10 +312,10 @@ static AGESA_STATUS amd_init_rtb(AMD_RTB_PARAMS *RtbParams)
 	Status = amd_dispatch(RtbParams);
 	timestamp_add_now(TS_AGESA_INIT_RTB_DONE);
 
-	if (save_s3_info(RtbParams->S3DataBlock.NvStorage,
-			 RtbParams->S3DataBlock.NvStorageSize,
-			 RtbParams->S3DataBlock.VolatileStorage,
-			 RtbParams->S3DataBlock.VolatileStorageSize))
+	if (Status != AGESA_SUCCESS)
+		return Status;
+
+	if (OemS3Save(&RtbParams->S3DataBlock) != AGESA_SUCCESS)
 		printk(BIOS_ERR, "S3 data not saved, resuming impossible\n");
 
 	return Status;
@@ -324,10 +324,8 @@ static AGESA_STATUS amd_init_rtb(AMD_RTB_PARAMS *RtbParams)
 static AGESA_STATUS amd_init_resume(AMD_RESUME_PARAMS *InitResumeParams)
 {
 	AGESA_STATUS status;
-	size_t nv_size;
 
-	get_s3nv_info(&InitResumeParams->S3DataBlock.NvStorage, &nv_size);
-	InitResumeParams->S3DataBlock.NvStorageSize = nv_size;
+	OemInitResume(&InitResumeParams->S3DataBlock);
 
 	timestamp_add_now(TS_AGESA_INIT_RESUME_START);
 	status = amd_dispatch(InitResumeParams);
@@ -339,12 +337,10 @@ static AGESA_STATUS amd_init_resume(AMD_RESUME_PARAMS *InitResumeParams)
 static AGESA_STATUS amd_s3late_restore(AMD_S3LATE_PARAMS *S3LateParams)
 {
 	AGESA_STATUS Status;
-	size_t vol_size;
 
 	amd_initcpuio();
 
-	get_s3vol_info(&S3LateParams->S3DataBlock.VolatileStorage, &vol_size);
-	S3LateParams->S3DataBlock.VolatileStorageSize = vol_size;
+	OemS3LateRestore(&S3LateParams->S3DataBlock);
 
 	timestamp_add_now(TS_AGESA_S3_LATE_START);
 	Status = amd_dispatch(S3LateParams);
@@ -356,10 +352,8 @@ static AGESA_STATUS amd_s3late_restore(AMD_S3LATE_PARAMS *S3LateParams)
 static AGESA_STATUS amd_s3final_restore(AMD_S3FINAL_PARAMS *S3FinalParams)
 {
 	AGESA_STATUS Status;
-	size_t vol_size;
 
-	get_s3vol_info(&S3FinalParams->S3DataBlock.VolatileStorage, &vol_size);
-	S3FinalParams->S3DataBlock.VolatileStorageSize = vol_size;
+	OemS3LateRestore(&S3FinalParams->S3DataBlock);
 
 	timestamp_add_now(TS_AGESA_S3_FINAL_START);
 	Status = amd_dispatch(S3FinalParams);

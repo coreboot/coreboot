@@ -31,4 +31,13 @@ void intel_microcode_load_unlocked(const void *microcode_patch);
  * required, will skip microcode update if true. */
 int soc_skip_ucode_update(u32 currrent_patch_id, u32 new_patch_id);
 
+/* return the the version of the currently running microcode */
+uint32_t get_current_microcode_rev(void);
+
+/* extract microcode revision from the given patch */
+uint32_t get_microcode_rev(const void *microcode);
+/* extract microcode size from the given patch */
+uint32_t get_microcode_size(const void *microcode);
+/* extract checksum from the given patch */
+uint32_t get_microcode_checksum(const void *microcode);
 #endif

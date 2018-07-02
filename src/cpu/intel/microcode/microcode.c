@@ -113,6 +113,26 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 #endif
 }
 
+uint32_t get_current_microcode_rev(void)
+{
+	return read_microcode_rev();
+}
+
+uint32_t get_microcode_rev(const void *microcode)
+{
+	return ((struct microcode *)microcode)->rev;
+}
+
+uint32_t get_microcode_size(const void *microcode)
+{
+	return ((struct microcode *)microcode)->total_size;
+}
+
+uint32_t get_microcode_checksum(const void *microcode)
+{
+	return ((struct microcode *)microcode)->cksum;
+}
+
 const void *intel_microcode_find(void)
 {
 	const struct microcode *ucode_updates;

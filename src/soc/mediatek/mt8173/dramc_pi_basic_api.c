@@ -738,7 +738,7 @@ void transfer_to_spm_control(void)
 	u32 msk;
 
 	msk = BIT(7) | BIT(11) | BIT(15);
-	clrbits_le32(&mt8173_apmixed->ap_pll_con3, msk);
+	clrbits_le32(&mtk_apmixed->ap_pll_con3, msk);
 
 	msk = BIT(0) | BIT(4) | BIT(8);
 	clrbits_le32(&ch[CHANNEL_A].ddrphy_regs->peri[3], msk);
@@ -756,7 +756,7 @@ void transfer_to_reg_control(void)
 	u32 val;
 
 	val = BIT(7) | BIT(11) | BIT(15);
-	setbits_le32(&mt8173_apmixed->ap_pll_con3, val);
+	setbits_le32(&mtk_apmixed->ap_pll_con3, val);
 
 	val = BIT(0) | BIT(4) | BIT(8);
 	setbits_le32(&ch[CHANNEL_A].ddrphy_regs->peri[3], val);

@@ -260,6 +260,13 @@ enum {
 /* top_div rate */
 enum {
 	CLK26M_HZ	= 26 * MHz,
+	MAINPLL_D5_HZ   = MAINPLL_HZ / 5,
+	MAINPLL_D5_D2_HZ = MAINPLL_D5_HZ / 2,
+};
+
+/* top_mux rate */
+enum {
+	SPI_HZ		= MAINPLL_D5_D2_HZ,
 };
 
 #endif /* SOC_MEDIATEK_MT8183_PLL_H */

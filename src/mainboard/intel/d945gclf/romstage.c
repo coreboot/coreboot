@@ -16,17 +16,12 @@
 // __PRE_RAM__ means: use "unsigned" for device, not a struct.
 
 #include <stdint.h>
-#include <string.h>
-#include <arch/io.h>
 #include <device/pci_def.h>
+#include <arch/io.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
-#include <lib.h>
-#include <arch/acpi.h>
-#include <cbmem.h>
 #include <timestamp.h>
 #include <superio/smsc/lpc47m15x/lpc47m15x.h>
-#include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>

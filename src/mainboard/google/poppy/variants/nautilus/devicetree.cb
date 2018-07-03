@@ -330,7 +330,7 @@ chip soc/intel/skylake
 		end # I2C #1
 		device pci 15.2 on
 			chip drivers/i2c/generic
-				register "hid" = ""SX9321""
+				register "hid" = ""STH9321""
 				register "name" = ""SEMTECH SX9321""
 				register "desc" = ""SAR Proximity Sensor""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_A18_IRQ)"

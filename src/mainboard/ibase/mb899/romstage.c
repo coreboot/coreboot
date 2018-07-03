@@ -16,25 +16,20 @@
 // __PRE_RAM__ means: use "unsigned" for device, not a struct.
 
 #include <stdint.h>
-#include <string.h>
+#include <halt.h>
 #include <arch/io.h>
+#include <timestamp.h>
+#include <console/console.h>
+#include <cpu/intel/romstage.h>
+#include <cpu/x86/bist.h>
+#include <cpu/x86/lapic.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
-#include <cpu/x86/lapic.h>
-#include <lib.h>
-#include <arch/acpi.h>
-#include <cbmem.h>
-#include <timestamp.h>
-#include <superio/winbond/common/winbond.h>
-#include <superio/winbond/w83627ehg/w83627ehg.h>
-#include <pc80/mc146818rtc.h>
-#include <console/console.h>
-#include <cpu/x86/bist.h>
-#include <cpu/intel/romstage.h>
-#include <halt.h>
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627ehg/w83627ehg.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, W83627EHG_SP1)
 #define SUPERIO_DEV PNP_DEV(0x4e, 0)

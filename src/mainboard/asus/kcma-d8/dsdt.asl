@@ -39,8 +39,8 @@ DefinitionBlock (
 		0x00000001	/* OEM Revision */
 		)
 {
-	#include "northbridge/amd/amdfam10/amdfam10_util.asl"
-	#include "southbridge/amd/sr5650/acpi/sr5650.asl"
+	#include <northbridge/amd/amdfam10/amdfam10_util.asl>
+	#include <southbridge/amd/sr5650/acpi/sr5650.asl>
 
 	/* Some global data */
 	Name(OSVR, 3)	/* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
@@ -427,7 +427,7 @@ DefinitionBlock (
 			{
 				Name (_ADR, 0x00110000)  // _ADR: Address
 				Name(_PRW, Package () {0x05, 0x04})	// Wake from S1-S4
-				#include "southbridge/amd/sb700/acpi/sata.asl"
+				#include <southbridge/amd/sb700/acpi/sata.asl>
 			}
 
 			/* 0:12.0 SP5100 USB 0 */
@@ -477,7 +477,7 @@ DefinitionBlock (
 			{
 				Name (_ADR, 0x00140001)  // _ADR: Address
 				Name(_PRW, Package () {0x05, 0x04})	// Wake from S1-S4
-				#include "southbridge/amd/sb700/acpi/ide.asl"
+				#include <southbridge/amd/sb700/acpi/ide.asl>
 			}
 
 			/* 0:14.3 SP5100 LPC */

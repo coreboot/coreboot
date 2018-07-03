@@ -116,7 +116,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 				Return (0x0B)
 			}
 		}
-		#include "southbridge/intel/i82371eb/acpi/intx.asl"
+		#include <southbridge/intel/i82371eb/acpi/intx.asl>
 
 		PCI_INTX_DEV(LNKA, \_SB.PCI0.PX40.PIRA, 1)
 		PCI_INTX_DEV(LNKB, \_SB.PCI0.PX40.PIRB, 2)
@@ -174,7 +174,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 				Package (0x04) { 0x000CFFFF, 3, LNKD, 0 },
 
 			})
-			#include "northbridge/intel/i440bx/acpi/sb_pci0_crs.asl"
+			#include <northbridge/intel/i440bx/acpi/sb_pci0_crs.asl>
 
 			/* Begin southbridge block */
 			Device (PX40)
@@ -230,7 +230,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 					Return (BUF1)
 					}
 				}
-				#include "southbridge/intel/i82371eb/acpi/i82371eb.asl"
+				#include <southbridge/intel/i82371eb/acpi/i82371eb.asl>
 			}
 			Device (PX43)
 			{

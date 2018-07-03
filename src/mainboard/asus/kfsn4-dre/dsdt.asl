@@ -39,7 +39,7 @@ DefinitionBlock (
 		0x00000001	/* OEM Revision */
 		)
 {
-	#include "northbridge/amd/amdfam10/amdfam10_util.asl"
+	#include <northbridge/amd/amdfam10/amdfam10_util.asl>
 
 	/* Some global data */
 	Name(OSVR, 3)	/* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
@@ -404,7 +404,7 @@ DefinitionBlock (
 				Return (Local3)
 			}
 
-#include "southbridge/nvidia/ck804/acpi/ck804.asl"
+#include <southbridge/nvidia/ck804/acpi/ck804.asl>
 
 			/* PCI Routing Table Access */
 			Method (_PRT, 0, NotSerialized) {

@@ -37,12 +37,12 @@
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 #include <ec/google/chromeec/ec.h>
 #endif
-#include "haswell.h"
-#include "northbridge/intel/haswell/haswell.h"
-#include "northbridge/intel/haswell/raminit.h"
-#include "southbridge/intel/lynxpoint/pch.h"
-#include "southbridge/intel/lynxpoint/me.h"
+#include <northbridge/intel/haswell/haswell.h>
+#include <northbridge/intel/haswell/raminit.h>
+#include <southbridge/intel/lynxpoint/pch.h>
+#include <southbridge/intel/lynxpoint/me.h>
 #include <cpu/intel/romstage.h>
+#include "haswell.h"
 
 static inline void reset_system(void)
 {

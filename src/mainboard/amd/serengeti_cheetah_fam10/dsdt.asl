@@ -230,5 +230,5 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMDF10", "AMDACPI ", 100925440)
 		Z00A, 8
 	}
 
-	#include "northbridge/amd/amdfam10/amdfam10_util.asl"
+	#include <northbridge/amd/amdfam10/amdfam10_util.asl>
 }

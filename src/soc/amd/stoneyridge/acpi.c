@@ -357,14 +357,19 @@ static int acpigen_soc_set_gpio_val(unsigned int gpio_num, uint32_t val)
 	}
 	uintptr_t addr = (uintptr_t) gpio_get_address(gpio_num);
 
+	/* Store (0x40, Local0) */
+	acpigen_write_store();
+	acpigen_write_integer(GPIO_PIN_OUT);
+	acpigen_emit_byte(LOCAL0_OP);
+
 	acpigen_soc_get_gpio_in_local5(addr);
 
 	if (val) {
 		/* Or (Local5, GPIO_PIN_OUT, Local5) */
-		acpigen_write_or(LOCAL5_OP, GPIO_PIN_OUT, LOCAL5_OP);
+		acpigen_write_or(LOCAL5_OP, LOCAL0_OP, LOCAL5_OP);
 	} else {
 		/* Not (GPIO_PIN_OUT, Local6) */
-		acpigen_write_not(GPIO_PIN_OUT, LOCAL6_OP);
+		acpigen_write_not(LOCAL0_OP, LOCAL6_OP);
 
 		/* And (Local5, Local6, Local5) */
 		acpigen_write_and(LOCAL5_OP, LOCAL6_OP, LOCAL5_OP);

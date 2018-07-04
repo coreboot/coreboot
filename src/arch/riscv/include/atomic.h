@@ -39,7 +39,7 @@ typedef struct { int lock; } spinlock_t;
 #define atomic_set(ptr, val) (*(volatile typeof(*(ptr)) *)(ptr) = val)
 #define atomic_read(ptr) (*(volatile typeof(*(ptr)) *)(ptr))
 
-#ifdef PK_ENABLE_ATOMICS
+#ifdef __riscv_atomic
 # define atomic_add(ptr, inc) __sync_fetch_and_add(ptr, inc)
 # define atomic_swap(ptr, swp) __sync_lock_test_and_set(ptr, swp)
 # define atomic_cas(ptr, cmp, swp) __sync_val_compare_and_swap(ptr, cmp, swp)

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2018 Google LLC
+ * Copyright (C) 2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,17 +13,17 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __MAINBOARD_GPIO_H__
-#define __MAINBOARD_GPIO_H__
-
-#include <baseboard/gpio.h>
-
-#undef EN_PP3300_DX_CAM
-#define EN_PP3300_DX_CAM	GPP_D8
-
-#undef EN_CAM_PMIC_RST_L
-#define EN_CAM_PMIC_RST_L	GPP_D17
-
-#define EN_CAM_CLOCK		GPP_D18
-
-#endif /* __MAINBOARD_GPIO_H__ */
+Scope (\_SB.PCI0.CIO2)
+{
+	Name (EP00, Package() {
+		ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+		Package () {
+			Package () { "endpoint", 0 },
+			Package () { "clock-lanes", 0 },
+			Package () { "data-lanes", Package () { 1, 2 } },
+			Package () { "remote-endpoint",
+				Package() { \_SB.PCI0.I2C3.CAM0, 0, 0 }
+			},
+		}
+	})
+}

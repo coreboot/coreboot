@@ -25,6 +25,7 @@ endif
 CONFIG_CBFS_PREFIX:=$(call strip_quotes,$(CONFIG_CBFS_PREFIX))
 CONFIG_FMDFILE:=$(call strip_quotes,$(CONFIG_FMDFILE))
 CONFIG_DEVICETREE:=$(call strip_quotes, $(CONFIG_DEVICETREE))
+CONFIG_OVERRIDE_DEVICETREE:=$(call strip_quotes, $(CONFIG_OVERRIDE_DEVICETREE))
 
 #######################################################################
 # misleadingly named, this is the coreboot version
@@ -154,29 +155,19 @@ ws_to_under=$(shell echo '$1' | tr ' \t' '_')
 # Helper functions for ramstage postprocess
 spc :=
 spc +=
-$(spc) :=
-$(spc) +=
 comma := ,
 
-# files-in-dir-recursive,dir,files
-files-in-dir-recursive=$(filter $(1)%,$(2))
+# Returns all files and dirs below `dir` (recursively).
+# files-below-dir,dir,files
+files-below-dir=$(filter $(1)%,$(2))
 
-# parent-dir,dir/
-parent-dir=$(dir $(if $(patsubst /%,,$(1)),,/)$(subst $( ),/,$(strip $(subst /, ,$(1)))))
+# Returns all dirs below `dir` (recursively).
+# dirs-below-dir,dir,files
+dirs-below-dir=$(filter-out $(1),$(sort $(dir $(call files-below-dir,$(1),$(2)))))
 
-# filters out exactly the directory specified
-# filter-out-dir,dir_to_keep,dirs
-filter-out-dir=$(filter-out $(1),$(2))
-
-# filters out dir_to_keep and all its parents
-# filter-out-dirs,dir_to_keep,dirs
-filter-out-dirs=$(if $(filter-out ./ /,$(1)),$(call filter-out-dirs,$(call parent-dir,$(1)),$(call filter-out-dir,$(1),$(2))),$(call filter-out-dir,$(1),$(2)))
-
-# dir-wildcards,dirs
-dir-wildcards=$(addsuffix %,$(1))
-
+# Returns all files directly in `dir` (non-recursively).
 # files-in-dir,dir,files
-files-in-dir=$(filter-out $(call dir-wildcards,$(call filter-out-dirs,$(1),$(sort $(dir $(2))))),$(call files-in-dir-recursive,$(1),$(2)))
+files-in-dir=$(filter-out $(addsuffix %,$(call dirs-below-dir,$(1),$(2))),$(call files-below-dir,$(1),$(2)))
 
 #######################################################################
 # reduce command line length by linking the objects of each
@@ -391,10 +382,10 @@ CFLAGS_common += -pipe -g -nostdinc -std=gnu11
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS_common += -Wstrict-aliasing -Wshadow -Wdate-time
-CFLAGS_common += -Wno-packed-not-aligned
 CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 CFLAGS_common += -ffunction-sections -fdata-sections -fno-pie
 ifeq ($(CONFIG_COMPILER_GCC),y)
+CFLAGS_common += -Wno-packed-not-aligned
 CFLAGS_common += -fno-delete-null-pointer-checks
 # Don't add these GCC specific flags when running scan-build
 ifeq ($(CCC_ANALYZER_OUTPUT_FORMAT),)
@@ -558,12 +549,19 @@ $(obj)/config.h: $(objutil)/kconfig/conf
 # needed objects that every mainboard uses
 # Creation of these is architecture and mainboard independent
 DEVICETREE_FILE := $(src)/mainboard/$(MAINBOARDDIR)/$(CONFIG_DEVICETREE)
+
+ifneq ($(CONFIG_OVERRIDE_DEVICETREE),)
+
+OVERRIDE_DEVICETREE_FILE := $(src)/mainboard/$(MAINBOARDDIR)/$(CONFIG_OVERRIDE_DEVICETREE)
+
+endif
+
 DEVICETREE_STATIC_C := $(obj)/mainboard/$(MAINBOARDDIR)/static.c
 
-$(DEVICETREE_STATIC_C): $(DEVICETREE_FILE) $(objutil)/sconfig/sconfig
+$(DEVICETREE_STATIC_C): $(DEVICETREE_FILE) $(OVERRIDE_DEVICETREE_FILE) $(objutil)/sconfig/sconfig
 	@printf "    SCONFIG    $(subst $(src)/,,$(<))\n"
 	mkdir -p $(dir $(DEVICETREE_STATIC_C))
-	$(objutil)/sconfig/sconfig $(DEVICETREE_FILE) $(DEVICETREE_STATIC_C)
+	$(objutil)/sconfig/sconfig $(DEVICETREE_FILE) $(DEVICETREE_STATIC_C) $(OVERRIDE_DEVICETREE_FILE)
 
 ramstage-y+=$(DEVICETREE_STATIC_C)
 romstage-y+=$(DEVICETREE_STATIC_C)

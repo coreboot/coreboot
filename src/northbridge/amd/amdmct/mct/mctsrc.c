@@ -450,7 +450,7 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 	}
 	if (!_SSE2) {
 		cr4 = read_cr4();
-		cr4 &= ~(1<<9); 	/* restore cr4.OSFXSR */
+		cr4 &= ~(1<<9);		/* restore cr4.OSFXSR */
 		write_cr4(cr4);
 	}
 

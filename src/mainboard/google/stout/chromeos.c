@@ -97,11 +97,11 @@ int get_lid_switch(void)
 int get_recovery_mode_switch(void)
 {
 #ifdef __PRE_RAM__
-	device_t dev = PCI_DEV(0, 0x1f, 0);
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
 #else
 	static int ec_in_rec_mode = 0;
 	static int ec_rec_flag_good = 0;
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
 #endif
 
 	u8 ec_status = ec_read(EC_STATUS_REG);

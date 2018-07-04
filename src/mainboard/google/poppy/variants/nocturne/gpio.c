@@ -71,14 +71,14 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_B2),
 	/* B3  : CPU_GP2 ==> NC */
 	PAD_CFG_NC(GPP_B3),
-	/* B4  : CPU_GP3 ==> NC */
-	PAD_CFG_NC(GPP_B4),
+	/* B4  : CPU_GP3 ==> FCAM_PWR_EN */
+	PAD_CFG_GPO(GPP_B4, 0, DEEP),
 	/* B5  : SRCCLKREQ0# ==> NC */
 	PAD_CFG_NC(GPP_B5),
 	/* B6  : SRCCLKREQ1# ==> WLAN_PCIE_CLKREQ_L */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_B6, NONE, DEEP),
-	/* B7  : SRCCLKREQ2# ==> NC */
-	PAD_CFG_NC(GPP_B7),
+	/* B7  : SRCCLKREQ2# ==> PCIE_NVME_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF1),
 	/* B8  : SRCCLKREQ3# ==> WLAN_PE_RST */
 	PAD_CFG_GPO(GPP_B8, 0, RSMRST),
 	/* B9  : SRCCLKREQ4# ==> NC */
@@ -214,8 +214,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC_INVERT(GPP_E0, NONE, PLTRST),
 	/* E1  : SATAXPCIE1 ==> NC */
 	PAD_CFG_NC(GPP_E1),
-	/* E2  : SATAXPCIE2 ==> NC */
-	PAD_CFG_NC(GPP_E2),
+	/* E2  : SATAXPCIE2 ==> BT_DISABLE_L */
+	PAD_CFG_GPO(GPP_E2, 1, DEEP),
 	/* E3  : CPU_GP0 ==> NC */
 	PAD_CFG_NC(GPP_E4),
 	/* E5  : SATA_DEVSLP1 ==> NC */

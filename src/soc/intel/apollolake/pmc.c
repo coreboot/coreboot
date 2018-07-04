@@ -97,7 +97,6 @@ void pmc_soc_init(struct device *dev)
 
 	/* Set up GPE configuration */
 	pmc_gpe_init();
-	pmc_fixup_power_state();
 	pmc_set_acpi_mode();
 
 	if (cfg != NULL)

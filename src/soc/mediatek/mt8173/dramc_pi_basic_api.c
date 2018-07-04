@@ -381,15 +381,15 @@ void mem_pll_init(const struct mt8173_sdram_params *sdram_params)
 	}
 
 	/* mempll new power-on */
-	write32(&mt8173_spm->poweron_config_set, 0x1 << 0 |
+	write32(&mtk_spm->poweron_config_set, 0x1 << 0 |
 						 SPM_PROJECT_CODE << 16);
 	/* request mempll reset/pdn mode */
-	setbits_le32(&mt8173_spm->power_on_val0, 0x1 << 27);
+	setbits_le32(&mtk_spm->power_on_val0, 0x1 << 27);
 
 	udelay(2);
 
 	/* unrequest mempll reset/pdn mode and wait settle */
-	clrbits_le32(&mt8173_spm->power_on_val0, 0x1 << 27);
+	clrbits_le32(&mtk_spm->power_on_val0, 0x1 << 27);
 
 	udelay(31);  /* PLL ready */
 

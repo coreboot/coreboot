@@ -24,7 +24,6 @@
 #include <halt.h>
 #include <pc80/mc146818rtc.h>
 #include "pch.h"
-#include <southbridge/intel/common/rcba.h>
 
 #include "nvs.h"
 
@@ -32,7 +31,7 @@
  *  1. the chipset can do it
  *  2. we don't need to worry about how we leave 0xcf8/0xcfc behind
  */
-#include "northbridge/intel/nehalem/nehalem.h"
+#include <northbridge/intel/nehalem/nehalem.h>
 #include <southbridge/intel/common/gpio.h>
 #include <arch/io.h>
 

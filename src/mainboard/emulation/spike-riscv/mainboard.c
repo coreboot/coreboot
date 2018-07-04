@@ -17,7 +17,7 @@
 #include <device/device.h>
 #include <cbmem.h>
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	/*
 	 * Size of the emulated system RAM. On hardware, this would be external

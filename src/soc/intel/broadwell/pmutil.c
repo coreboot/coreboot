@@ -452,7 +452,11 @@ int rtc_failure(void)
 {
 	u8 reg8;
 	int rtc_failed;
-	device_t dev = PCH_DEV_LPC;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev =  PCH_DEV_LPC;
+#else
+	struct device *dev = PCH_DEV_LPC;
+#endif
 
 	reg8 = pci_read_config8(dev, GEN_PMCON_3);
 	rtc_failed = reg8 & RTC_BATTERY_DEAD;

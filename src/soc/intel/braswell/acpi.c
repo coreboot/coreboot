@@ -492,7 +492,7 @@ unsigned long southcluster_write_acpi_tables(struct device *device,
 	current = acpi_write_hpet(device, current, rsdp);
 	current = acpi_align_current(current);
 
-	if (IS_ENABLED(CONFIG_INTEL_GMA_ADD_VBT_DATA_FILE)) {
+	if (IS_ENABLED(CONFIG_INTEL_GMA_ADD_VBT)) {
 		igd_opregion_t *opregion;
 
 		printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");

@@ -180,10 +180,10 @@ verstage-y += memset.c
 verstage-y += memcpy.c
 verstage-y += memmove.c
 verstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
-# If C environment is used for bootblock it means there's no need
+# If verstage is a separate stage it means there's no need
 # for a chipset-specific car_stage_entry() so use the generic one
 # which just calls verstage().
-verstage-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += verstage.c
+verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += verstage.c
 
 verstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 

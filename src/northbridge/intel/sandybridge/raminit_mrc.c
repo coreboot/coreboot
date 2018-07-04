@@ -34,7 +34,7 @@
 #include <security/vboot/vboot_common.h>
 
 /* Management Engine is in the southbridge */
-#include "southbridge/intel/bd82x6x/me.h"
+#include <southbridge/intel/bd82x6x/me.h>
 
 /*
  * MRC scrambler seed offsets should be reserved in

@@ -225,7 +225,7 @@ static void sm_init(struct device *dev)
 	pci_write_config8(dev, 0xE1, byte);
 
 	/* 2.5 Enabling Non-Posted Memory Write */
-       	axindxc_reg(0x10, 1 << 9, 1 << 9);
+	axindxc_reg(0x10, 1 << 9, 1 << 9);
 
 	/* 2.11 IO Trap Settings */
 	abcfg_reg(0x10090, 1 << 16, 1 << 16);

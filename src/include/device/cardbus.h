@@ -5,8 +5,8 @@
 
 #include <device/device.h>
 
-void cardbus_read_resources(device_t dev);
-void cardbus_enable_resources(device_t dev);
+void cardbus_read_resources(struct device *dev);
+void cardbus_enable_resources(struct device *dev);
 
 extern struct device_operations default_cardbus_ops_bus;
 

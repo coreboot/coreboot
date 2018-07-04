@@ -1,3 +1,6 @@
+#ifndef __CB_BDK_DEVICE_H__
+#define __CB_BDK_DEVICE_H__
+
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -250,10 +253,11 @@ extern void bdk_bar_write(const bdk_device_t *device, int bar, int size, uint64_
             } else if (bdk_clock_get_count(BDK_CLOCK_TIME) > done) {    \
                 result = -1;                                            \
                 break;                                                  \
-            } else                                                      \
-                bdk_thread_yield();                                     \
+            }                                                           \
         }                                                               \
     } while (0);                                                        \
     result;})
 
 /** @} */
+
+#endif	/* !__CB_BDK_DEVICE_H__ */

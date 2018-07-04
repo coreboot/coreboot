@@ -158,7 +158,7 @@ chip northbridge/intel/sandybridge
 			end # LPC bridge
 			device pci 1f.2 on end # SATA Controller 1
 			device pci 1f.3 on
-			        # eeprom, 8 virtual devices, same chip
+				# eeprom, 8 virtual devices, same chip
 				chip drivers/i2c/at24rf08c
 					device i2c 54 on end
 					device i2c 55 on end

@@ -3752,10 +3752,11 @@ void mct_SetDramConfigHi_D(struct DCTStatStruc *pDCTstat, u32 dct,
 	 * Solution: From the bug report:
 	 *  1. A software-initiated frequency change should be wrapped into the
 	 *     following sequence :
-	 * 	- a) Disable Compensation (F2[1, 0]9C_x08[30])
-	 * 	b) Reset the Begin Compensation bit (D3CMP->COMP_CONFIG[0]) in all the compensation engines
-	 * 	c) Do frequency change
-	 * 	d) Enable Compensation (F2[1, 0]9C_x08[30])
+	 *	a) Disable Compensation (F2[1, 0]9C_x08[30])
+	 *	b) Reset the Begin Compensation bit (D3CMP->COMP_CONFIG[0]) in
+	 *	   all the compensation engines
+	 *	c) Do frequency change
+	 *	d) Enable Compensation (F2[1, 0]9C_x08[30])
 	 *  2. A software-initiated Disable Compensation should always be
 	 *     followed by step b) of the above steps.
 	 * Silicon Status: Fixed In Rev B0

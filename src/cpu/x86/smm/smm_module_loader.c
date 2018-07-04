@@ -346,6 +346,10 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 	if (rmodule_parse(&_binary_smm_start, &smm_mod))
 		return -1;
 
+	/* Clear SMM region */
+	if (IS_ENABLED(CONFIG_DEBUG_SMI))
+		memset(smram, 0xcd, size);
+
 	total_stack_size = params->per_cpu_stack_size *
 			   params->num_concurrent_stacks;
 

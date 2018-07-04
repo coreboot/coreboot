@@ -58,6 +58,12 @@ struct chip_instance {
 
 	/* Pointer to next instance of the same chip. */
 	struct chip_instance *next;
+
+	/*
+	 * Reference count - Indicates how many devices hold pointer to this
+	 * chip instance.
+	 */
+	int ref_count;
 };
 
 struct chip {
@@ -103,9 +109,6 @@ struct device {
 	int subsystem_vendor;
 	int subsystem_device;
 	int inherit_subsystem;
-
-	/* Name of ops structure for the device. */
-	char *ops;
 
 	/* Name of this device. */
 	char *name;

@@ -242,7 +242,7 @@ static void busmaster_disable_on_bus(int bus)
 	for (slot = 0; slot < 0x20; slot++) {
 		for (func = 0; func < 8; func++) {
 			u32 reg32;
-			device_t dev = PCI_DEV(bus, slot, func);
+			pci_devfn_t dev = PCI_DEV(bus, slot, func);
 
 			val = pci_read_config32(dev, PCI_VENDOR_ID);
 
@@ -659,7 +659,7 @@ static void southbridge_smi_monitor(void)
 			data = RCBA32(0x1e18);
 			data &= mask;
 			// if (smi1)
-			// 	southbridge_smi_command(data);
+			//	southbridge_smi_command(data);
 			// return;
 		}
 		// Fall through to debug

@@ -89,11 +89,11 @@ call_bootblock:
 	/* Set stackpointer in internal RAM to call bootblock main() */
 	ldr	sp, =_estack
 	ldr	r0,=0x00000000
-	 /*
-	  * The current design of cpu_info places the struct at the top of the
-	  * stack. Free enough space to accommodate for that, but make sure it's
-	  * 8-byte aligned for ABI compliance.
-	  */
+	/*
+	 * The current design of cpu_info places the struct at the top of the
+	 * stack. Free enough space to accommodate for that, but make sure it's
+	 * 8-byte aligned for ABI compliance.
+	 */
 	sub	sp, sp, #16
 	bl	main
 

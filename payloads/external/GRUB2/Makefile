@@ -30,6 +30,7 @@ grub2/build/config.h: $(CONFIG_DEP) | checkout
 	mkdir grub2/build
 	cd grub2 && ./autogen.sh
 	cd grub2/build && ../configure CC="$(HOSTCC)" LD="$(LD)" \
+	FREETYPE="pkg-config freetype2" BUILD_FREETYPE="pkg-config freetype2" \
 	TARGET_CC="$(CC)" TARGET_OBJCOPY="$(OBJCOPY)" TARGET_STRIP="$(STRIP)" \
 	CFLAGS=-O2 TARGET_CFLAGS=-Os \
 	--with-platform=coreboot --enable-boot-time --disable-werror

@@ -116,7 +116,7 @@ clear_fixed_var_mtrr_out:
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
 	 * https://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
-	movl	$copy_and_run, %eax
+	movl	$_program, %eax
 	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
 	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr
@@ -207,7 +207,7 @@ clear_fixed_var_mtrr_out:
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
 	 * https://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
-	movl	$copy_and_run, %eax
+	movl	$_program, %eax
 	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
 	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr

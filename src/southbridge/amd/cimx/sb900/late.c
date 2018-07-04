@@ -25,8 +25,8 @@
 #include <device/pci_ehci.h>
 #include <arch/acpi.h>
 #include "lpc.h"		/* lpc_read_resources */
-#include "SbPlatform.h" 	/* Platform Specific Definitions */
-#include "chip.h" 		/* struct southbridge_amd_cimx_sb900_config */
+#include "SbPlatform.h"		/* Platform Specific Definitions */
+#include "chip.h"		/* struct southbridge_amd_cimx_sb900_config */
 
 #ifndef _RAMSTAGE_
 #define _RAMSTAGE_
@@ -353,13 +353,13 @@ static void sb900_enable(struct device *dev)
 
 	case (0x11 << 3) | 0: /* 0:11.0  SATA */
 		if (dev->enabled) {
-  			sb_config->SATAMODE.SataMode.SataController = ENABLED;
+			sb_config->SATAMODE.SataMode.SataController = ENABLED;
 			if (1 == sb_chip->boot_switch_sata_ide)
 				sb_config->SATAMODE.SataMode.SataIdeCombMdPriSecOpt = 0; //0 -IDE as primary.
 			else if (0 == sb_chip->boot_switch_sata_ide)
 				sb_config->SATAMODE.SataMode.SataIdeCombMdPriSecOpt = 1; //1 -IDE as secondary.
 		} else {
-  			sb_config->SATAMODE.SataMode.SataController = DISABLED;
+			sb_config->SATAMODE.SataMode.SataController = DISABLED;
 		}
 
 //-		sataInitBeforePciEnum(sb_config); // Init SATA class code and PHY
@@ -380,19 +380,19 @@ static void sb900_enable(struct device *dev)
 		if (dev->enabled) {
 			sb_config->SATAMODE.SataMode.SataIdeCombinedMode = ENABLED;
 		} else {
-  			sb_config->SATAMODE.SataMode.SataIdeCombinedMode = DISABLED;
+			sb_config->SATAMODE.SataMode.SataIdeCombinedMode = DISABLED;
 		}
 //-		sataInitBeforePciEnum(sb_config); // Init SATA class code and PHY
 		break;
 
 	case (0x14 << 3) | 2: /* 0:14:2 HDA */
 		if (dev->enabled) {
-  			if (AZALIA_DISABLE == sb_config->AzaliaController) {
-  				sb_config->AzaliaController = AZALIA_AUTO;
+			if (sb_config->AzaliaController == AZALIA_DISABLE) {
+				sb_config->AzaliaController = AZALIA_AUTO;
 			}
 			printk(BIOS_DEBUG, "hda enabled\n");
 		} else {
-  			sb_config->AzaliaController = AZALIA_DISABLE;
+			sb_config->AzaliaController = AZALIA_DISABLE;
 			printk(BIOS_DEBUG, "hda disabled\n");
 		}
 //-		azaliaInitBeforePciEnum(sb_config); // Detect and configure High Definition Audio
@@ -446,7 +446,7 @@ static void sb900_enable(struct device *dev)
 
 	/* Special setting ABCFG registers before PCI emulation. */
 //-	abSpecialSetBeforePciEnum(sb_config);
-//-  	usbDesertPll(sb_config);
+//-	usbDesertPll(sb_config);
 	//sb_config->StdHeader.Func = SB_BEFORE_PCI_INIT;
 	//AmdSbDispatcher(sb_config);
 }

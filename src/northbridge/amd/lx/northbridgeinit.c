@@ -236,7 +236,7 @@ static void GLIUInit(struct gliutable *gl)
 	/* ************************************************************************** */
 static void GLPCIInit(void)
 {
-	struct gliutable *gl = 0;
+	struct gliutable *gl = NULL;
 	int i;
 	msr_t msr;
 	int msrnum, enable_preempt, enable_cpu_override;
@@ -594,7 +594,7 @@ static void rom_shadow_settings(void)
  *  ROMBASE(36:55) = 0FFFC0h ; Top of PCI/bottom of ROM chipselect area
  *  DEVRC(35:28) =  39h	 ; cache disabled in PCI memory + WS bit on + Write Combine + write burst.
  *  SYSTOP(27:8) = top of system memory
- *  SYSRC(7:0) = 00h 		 ; writeback, can set to 08h to make writethrough
+ *  SYSRC(7:0) = 00h	 ; writeback, can set to 08h to make writethrough
  *
  ***************************************************************************/
 #define SYSMEM_RCONF_WRITETHROUGH 8
@@ -604,7 +604,7 @@ static void rom_shadow_settings(void)
 
 static void enable_L1_cache(void)
 {
-	struct gliutable *gl = 0;
+	struct gliutable *gl = NULL;
 	int i;
 	msr_t msr;
 	uint8_t SysMemCacheProp;

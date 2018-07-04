@@ -20,6 +20,11 @@
 
 extern int linenum;
 
+/*
+ * Maintains list of all the unique chip structures for the board.
+ * This is shared across base and override device trees since we need to
+ * generate headers for all chips added by both the trees.
+ */
 static struct chip chip_header;
 
 /*
@@ -43,8 +48,8 @@ typedef enum {
  *
  *
  *                 +------------------------+                +----------------------+
- *                 |                        |                |  Mainboard           |
- *       +---------+ Root device (root_dev) +--------------->+  instance            +
+ *                 |       Root device      |                |  Mainboard           |
+ *       +---------+     (base_root_dev)    +--------------->+  instance            +
  *       |         |                        | chip_instance  |  (mainboard_instance)|
  *       |         +------------------------+                |                      |
  *       |                      |                            +----------------------+
@@ -52,7 +57,7 @@ typedef enum {
  *       | parent               v                                      |
  *       |            +-------------------+                            |
  *       |            |     Root bus      |                            |
- *       +----------->+    (root_bus)     |                            |
+ *       +----------->+  (base_root_bus)  |                            |
  *                    |                   |                            |
  *                    +-------------------+                            |
  *                              |                                      |
@@ -74,23 +79,49 @@ typedef enum {
  *
  *
  */
-static struct device root_dev;
+
+/* Root device of primary tree. */
+static struct device base_root_dev;
+
+/* Root device of override tree (if applicable). */
+static struct device override_root_dev;
+
 static struct chip_instance mainboard_instance;
 
-static struct bus root_bus = {
+static struct bus base_root_bus = {
 	.id = 0,
-	.dev = &root_dev,
+	.dev = &base_root_dev,
 };
 
-static struct device root_dev = {
+static struct device base_root_dev = {
 	.name = "dev_root",
 	.id = 0,
 	.chip_instance = &mainboard_instance,
 	.path = " .type = DEVICE_PATH_ROOT ",
-	.ops = "&default_dev_ops_root",
-	.parent = &root_bus,
+	.parent = &base_root_bus,
 	.enabled = 1,
-	.bus = &root_bus,
+	.bus = &base_root_bus,
+};
+
+static struct bus override_root_bus = {
+	.id = 0,
+	.dev = &override_root_dev,
+};
+
+static struct device override_root_dev = {
+	.name = "override_root",
+	.id = 0,
+	/*
+	 * Override tree root device points to the same mainboard chip instance
+	 * as the base tree root device. It should not cause any side-effects
+	 * since the mainboard chip instance pointer in override tree will just
+	 * be ignored.
+	 */
+	.chip_instance = &mainboard_instance,
+	.path = " .type = DEVICE_PATH_ROOT ",
+	.parent = &override_root_bus,
+	.enabled = 1,
+	.bus = &override_root_bus,
 };
 
 static struct chip mainboard_chip = {
@@ -102,10 +133,11 @@ static struct chip mainboard_chip = {
 static struct chip_instance mainboard_instance = {
 	.id = 0,
 	.chip = &mainboard_chip,
+	.ref_count = 2,
 };
 
 /* This is the parent of all devices added by parsing the devicetree file. */
-struct bus *root_parent = &root_bus;
+struct bus *root_parent;
 
 struct queue_entry {
 	void *data;
@@ -311,6 +343,54 @@ struct chip_instance *new_chip_instance(char *path)
 	return instance;
 }
 
+static void delete_chip_instance(struct chip_instance *ins)
+{
+
+	if (ins->ref_count == 0) {
+		printf("ERROR: ref count for chip instance is zero!!\n");
+		exit(1);
+	}
+
+	if (--ins->ref_count)
+		return;
+
+	struct chip *c = ins->chip;
+
+	/* Get pointer to first instance of the chip. */
+	struct chip_instance *i = c->instance;
+
+	/*
+	 * If chip instance to be deleted is the first instance, then update
+	 * instance pointer of the chip as well.
+	 */
+	if (i == ins) {
+		c->instance = ins->next;
+		free(ins);
+		return;
+	}
+
+	/*
+	 * Loop through the instances list of the chip to find and remove the
+	 * given instance.
+	 */
+	while (1) {
+		if (i == NULL) {
+			printf("ERROR: chip instance not found!\n");
+			exit(1);
+		}
+
+		if (i->next != ins) {
+			i = i->next;
+			continue;
+		}
+
+		i->next = ins->next;
+		break;
+	}
+
+	free(ins);
+}
+
 /*
  * Allocate a new bus for the provided device.
  *   - If this is the first bus being allocated under this device, then its id
@@ -379,6 +459,24 @@ static struct device *get_dev(struct bus *parent, int path_a, int path_b,
 	return NULL;
 }
 
+/*
+ * Add given node as child of the provided parent. If this is the first child of
+ * the parent, update parent->children pointer as well.
+ */
+static void set_new_child(struct bus *parent, struct device *child)
+{
+	struct device *c = parent->children;
+	if (c) {
+		while (c->sibling)
+			c = c->sibling;
+		c->sibling = child;
+	} else
+		parent->children = child;
+
+	child->sibling = NULL;
+	child->parent = parent;
+}
+
 struct device *new_device(struct bus *parent,
 			  struct chip_instance *chip_instance,
 			  const int bustype, const char *devnum,
@@ -415,14 +513,9 @@ struct device *new_device(struct bus *parent,
 
 	new_d->enabled = enabled;
 	new_d->chip_instance = chip_instance;
+	chip_instance->ref_count++;
 
-	struct device *c = parent->children;
-	if (c) {
-		while (c->sibling)
-			c = c->sibling;
-		c->sibling = new_d;
-	} else
-		parent->children = new_d;
+	set_new_child(parent, new_d);
 
 	switch (bustype) {
 	case PCI:
@@ -477,9 +570,8 @@ struct device *new_device(struct bus *parent,
 	return new_d;
 }
 
-void add_resource(struct bus *bus, int type, int index, int base)
+static void new_resource(struct device *dev, int type, int index, int base)
 {
-	struct device *dev = bus->dev;
 	struct resource *r = S_ALLOC(sizeof(struct resource));
 
 	r->type = type;
@@ -493,6 +585,11 @@ void add_resource(struct bus *bus, int type, int index, int base)
 	} else {
 		dev->res = r;
 	}
+}
+
+void add_resource(struct bus *bus, int type, int index, int base)
+{
+	new_resource(bus->dev, type, index, base);
 }
 
 void add_register(struct chip_instance *chip_instance, char *name, char *val)
@@ -581,7 +678,7 @@ static int dev_has_children(struct device *dev)
 
 static void pass0(FILE *fil, struct device *ptr, struct device *next)
 {
-	if (ptr == &root_dev) {
+	if (ptr == &base_root_dev) {
 		fprintf(fil, "DEVTREE_CONST struct bus %s_links[];\n",
 			ptr->name);
 		return;
@@ -670,11 +767,19 @@ static void pass1(FILE *fil, struct device *ptr, struct device *next)
 	struct chip_instance *chip_ins = ptr->chip_instance;
 	int has_children = dev_has_children(ptr);
 
-	if (ptr != &root_dev)
+	if (ptr != &base_root_dev)
 		fprintf(fil, "static ");
 	fprintf(fil, "DEVTREE_CONST struct device %s = {\n", ptr->name);
 	fprintf(fil, "#if !DEVTREE_EARLY\n");
-	fprintf(fil, "\t.ops = %s,\n", (ptr->ops) ? (ptr->ops) : "0");
+
+	/*
+	 * ops field is set to default_dev_ops_root only for the root
+	 * device. For all other devices, it is set by the driver at runtime.
+	 */
+	if (ptr == &base_root_dev)
+		fprintf(fil, "\t.ops = &default_dev_ops_root,\n");
+	else
+		fprintf(fil, "\t.ops = NULL,\n");
 	fprintf(fil, "#endif\n");
 	fprintf(fil, "\t.bus = &%s_links[%d],\n", ptr->parent->dev->name,
 		ptr->parent->id);
@@ -856,26 +961,23 @@ static void inherit_subsystem_ids(FILE *file, struct device *dev,
 
 static void usage(void)
 {
-	printf("usage: sconfig devicetree_file output_file\n");
+	printf("usage: sconfig devicetree_file output_file [override_devicetree_file]\n");
 	exit(1);
 }
 
 enum {
 	DEVICEFILE_ARG = 1,
-	OUTPUTFILE_ARG
+	OUTPUTFILE_ARG,
+	OVERRIDE_DEVICEFILE_ARG,
 };
 
-#define ARG_COUNT		3
+#define MANDATORY_ARG_COUNT		3
+#define OPTIONAL_ARG_COUNT		1
+#define TOTAL_ARG_COUNT		(MANDATORY_ARG_COUNT + OPTIONAL_ARG_COUNT)
 
-int main(int argc, char **argv)
+static void parse_devicetree(const char *file, struct bus *parent)
 {
-	if (argc != ARG_COUNT)
-		usage();
-
-	char *devtree = argv[DEVICEFILE_ARG];
-	char *outputc = argv[OUTPUTFILE_ARG];
-
-	FILE *filec = fopen(devtree, "r");
+	FILE *filec = fopen(file, "r");
 	if (!filec) {
 		perror(NULL);
 		exit(1);
@@ -883,9 +985,337 @@ int main(int argc, char **argv)
 
 	yyrestart(filec);
 
+	root_parent = parent;
+	linenum = 0;
+
 	yyparse();
 
 	fclose(filec);
+}
+
+/*
+ * Match device nodes from base and override tree to see if they are the same
+ * node.
+ */
+static int device_match(struct device *a, struct device *b)
+{
+	return ((a->path_a == b->path_a) &&
+		(a->path_b == b->path_b) &&
+		(a->bustype == b->bustype) &&
+		(a->chip_instance->chip ==
+		 b->chip_instance->chip));
+}
+
+/*
+ * Walk through the override subtree in breadth-first manner starting at node to
+ * see if chip_instance pointer of the node is same as chip_instance pointer of
+ * override parent that is passed into the function. If yes, then update the
+ * chip_instance pointer of the node to chip_instance pointer of the base
+ * parent.
+ */
+static void update_chip_pointers(struct device *node,
+				 struct chip_instance *base_parent_ci,
+				 struct chip_instance *override_parent_ci)
+{
+	struct queue_entry *q_head = NULL;
+
+	enqueue_tail(&q_head, node);
+
+	while ((node = dequeue_head(&q_head))) {
+		if (node->chip_instance != override_parent_ci)
+			continue;
+		node->chip_instance = base_parent_ci;
+		add_children_to_queue(&q_head, node);
+	}
+}
+
+/*
+ * Add resource to device. If resource is already present, then update its base
+ * and index. If not, then add a new resource to the device.
+ */
+static void update_resource(struct device *dev, struct resource *res)
+{
+	struct resource *base_res = dev->res;
+
+	while (base_res) {
+		if (base_res->type == res->type) {
+			base_res->index = res->index;
+			base_res->base = res->base;
+			return;
+		}
+		base_res = base_res->next;
+	}
+
+	new_resource(dev, res->type, res->index, res->base);
+}
+
+/*
+ * Add register to chip instance. If register is already present, then update
+ * its value. If not, then add a new register to the chip instance.
+ */
+static void update_register(struct chip_instance *c, struct reg *reg)
+{
+	struct reg *base_reg = c->reg;
+
+	while (base_reg) {
+		if (!strcmp(base_reg->key, reg->key)) {
+			base_reg->value = reg->value;
+			return;
+		}
+		base_reg = base_reg->next;
+	}
+
+	add_register(c, reg->key, reg->value);
+}
+
+static void override_devicetree(struct bus *base_parent,
+				struct bus *override_parent);
+
+/*
+ * Update the base device properties using the properties of override device. In
+ * addition to that, call override_devicetree for all the buses under the
+ * override device.
+ *
+ * Override Rules:
+ * +--------------------+--------------------------------------------+
+ * |                    |                                            |
+ * |struct device member|                 Rule                       |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ * |                    |                                            |
+ * | id                 | Unchanged. This is used to generate device |
+ * |                    | structure name in static.c. So, no need to |
+ * |                    | override.                                  |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ * |                    |                                            |
+ * | enabled            | Copy enabled state from override device.   |
+ * |                    | This allows variants to override device    |
+ * |                    | state.                                     |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ * |                    |                                            |
+ * | subsystem_vendor   | Copy from override device only if any one  |
+ * | subsystem_device   | of the ids is non-zero.                    |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ * |                    |                                            |
+ * | inherit_subsystem  | Copy from override device only if it is    |
+ * |                    | non-zero. This allows variant to only      |
+ * |                    | enable inherit flag for a device.          |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ * |                    |                                            |
+ * | path               | Unchanged since these are same for both    |
+ * | path_a             | base and override device (Used for         |
+ * | path_b             | matching devices).                         |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ * |                    |                                            |
+ * | bustype            | Unchanged since this is same for both base |
+ * |                    | and override device (User for matching     |
+ * |                    | devices).                                  |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ * |                    |                                            |
+ * | pci_irq_info       | Unchanged.                                 |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ * |                    |                                            |
+ * | parent             | Unchanged. This is meaningful only within  |
+ * | sibling            | the parse tree, hence not being copied.    |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ * |                    |                                            |
+ * | res                | Each resource that is present in override  |
+ * |                    | device is copied over to base device:      |
+ * |                    | 1. If resource of same type is present in  |
+ * |                    |    base device, then index and base of the |
+ * |                    |    resource is copied.                     |
+ * |                    | 2. If not, then a new resource is allocated|
+ * |                    |    under the base device using type, index |
+ * |                    |    and base from override res.             |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ * |                    |                                            |
+ * | chip_instance      | Each register of chip_instance is copied   |
+ * |                    | over from override device to base device:  |
+ * |                    | 1. If register with same key is present in |
+ * |                    |    base device, then value of the register |
+ * |                    |    is copied.                              |
+ * |                    | 2. If not, then a new register is allocated|
+ * |                    |    under the base chip_instance using key  |
+ * |                    |    and value from override register.       |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ * |                    |                                            |
+ * | bus                | Recursively call override_devicetree on    |
+ * | last_bus           | each bus of override device. It is assumed |
+ * |                    | that bus with id X under base device       |
+ * |                    | to bus with id X under override device. If |
+ * |                    | override device has more buses than base   |
+ * |                    | device, then new buses are allocated under |
+ * |                    | base device.                               |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ */
+static void update_device(struct device *base_dev, struct device *override_dev)
+{
+	/*
+	 * Copy the enabled state of override device to base device. This allows
+	 * override tree to enable or disable a particular device.
+	 */
+	base_dev->enabled = override_dev->enabled;
+
+	/*
+	 * Copy subsystem vendor and device ids from override device to base
+	 * device only if the ids are non-zero in override device. Else, honor
+	 * the values in base device.
+	 */
+	if (override_dev->subsystem_vendor ||
+	    override_dev->subsystem_device) {
+		base_dev->subsystem_vendor = override_dev->subsystem_vendor;
+		base_dev->subsystem_device = override_dev->subsystem_device;
+	}
+
+	/*
+	 * Copy value of inherity_subsystem from override device to base device
+	 * only if it is non-zero in override device. This allows override
+	 * tree to only enable inhert flag for a device.
+	 */
+	if (override_dev->inherit_subsystem)
+		base_dev->inherit_subsystem = override_dev->inherit_subsystem;
+
+	/*
+	 * Copy resources of override device to base device.
+	 * 1. If resource is already present in base device, then index and base
+	 * of the resource will be copied over.
+	 * 2. If resource is not already present in base device, a new resource
+	 * will be allocated.
+	 */
+	struct resource *res = override_dev->res;
+	while (res) {
+		update_resource(base_dev, res);
+		res = res->next;
+	}
+
+	/*
+	 * Copy registers of override chip instance to base chip instance.
+	 * 1. If register key is already present in base chip instance, then
+	 * value for the register is copied over.
+	 * 2. If register key is not already present in base chip instance, then
+	 * a new register will be allocated.
+	 */
+	struct reg *reg = override_dev->chip_instance->reg;
+	while (reg) {
+		update_register(base_dev->chip_instance, reg);
+		reg = reg->next;
+	}
+
+	/*
+	 * Now that the device properties are all copied over, look at each bus
+	 * of the override device and run override_devicetree in a recursive
+	 * manner. The assumption here is that first bus of override device
+	 * corresponds to first bus of base device and so on. If base device has
+	 * lesser buses than override tree, then new buses are allocated for it.
+	 */
+	struct bus *override_bus = override_dev->bus;
+	struct bus *base_bus = base_dev->bus;
+
+	while (override_bus) {
+
+		/*
+		 * If we have more buses in override tree device, then allocate
+		 * a new bus for the base tree device as well.
+		 */
+		if (!base_bus) {
+			alloc_bus(base_dev);
+			base_bus = base_dev->last_bus;
+		}
+
+		override_devicetree(base_dev->bus, override_dev->bus);
+
+		override_bus = override_bus->next_bus;
+		base_bus = base_bus->next_bus;
+	}
+
+	delete_chip_instance(override_dev->chip_instance);
+	override_dev->chip_instance = NULL;
+}
+
+/*
+ * Perform copy of device and properties from override parent to base parent.
+ * This function walks through the override tree in a depth-first manner
+ * performing following actions:
+ * 1. If matching device is found in base tree, then copy the properties of
+ * override device to base tree device. Call override_devicetree recursively on
+ * the bus of override device.
+ * 2. If matching device is not found in base tree, then set override tree
+ * device as new child of base_parent and update the chip pointers in override
+ * device subtree to ensure the nodes do not point to override tree chip
+ * instance.
+ */
+static void override_devicetree(struct bus *base_parent,
+				struct bus *override_parent)
+{
+	struct device *base_child;
+	struct device *override_child = override_parent->children;
+	struct device *next_child;
+
+	while (override_child) {
+
+		/* Look for a matching device in base tree. */
+		for (base_child = base_parent->children;
+		     base_child; base_child = base_child->sibling) {
+			if (device_match(base_child, override_child))
+				break;
+		}
+
+		next_child = override_child->sibling;
+
+		/*
+		 * If matching device is found, copy properties of
+		 * override_child to base_child.
+		 */
+		if (base_child)
+			update_device(base_child, override_child);
+		else {
+			/*
+			 * If matching device is not found, set override_child
+			 * as a new child of base_parent.
+			 */
+			set_new_child(base_parent, override_child);
+			/*
+			 * Ensure all nodes in override tree pointing to
+			 * override parent chip_instance now point to base
+			 * parent chip_instance.
+			 */
+			update_chip_pointers(override_child,
+					base_parent->dev->chip_instance,
+					override_parent->dev->chip_instance);
+		}
+
+		override_child = next_child;
+	}
+}
+
+int main(int argc, char **argv)
+{
+	if ((argc < MANDATORY_ARG_COUNT) || (argc > TOTAL_ARG_COUNT))
+		usage();
+
+	const char *base_devtree = argv[DEVICEFILE_ARG];
+	const char *outputc = argv[OUTPUTFILE_ARG];
+	const char *override_devtree;
+
+	parse_devicetree(base_devtree, &base_root_bus);
+
+	if (argc == TOTAL_ARG_COUNT) {
+		override_devtree = argv[OVERRIDE_DEVICEFILE_ARG];
+		parse_devicetree(override_devtree, &override_root_bus);
+
+		override_devicetree(&base_root_bus, &override_root_bus);
+	}
 
 	FILE *autogen = fopen(outputc, "w");
 	if (!autogen) {
@@ -897,11 +1327,11 @@ int main(int argc, char **argv)
 
 	emit_chips(autogen);
 
-	walk_device_tree(autogen, &root_dev, inherit_subsystem_ids);
+	walk_device_tree(autogen, &base_root_dev, inherit_subsystem_ids);
 	fprintf(autogen, "\n/* pass 0 */\n");
-	walk_device_tree(autogen, &root_dev, pass0);
+	walk_device_tree(autogen, &base_root_dev, pass0);
 	fprintf(autogen, "\n/* pass 1 */\n");
-	walk_device_tree(autogen, &root_dev, pass1);
+	walk_device_tree(autogen, &base_root_dev, pass1);
 
 	fclose(autogen);
 

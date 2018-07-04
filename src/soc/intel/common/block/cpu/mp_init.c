@@ -22,6 +22,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mp.h>
 #include <cpu/intel/microcode.h>
+#include <intelblocks/chip.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/mp_init.h>
@@ -31,7 +32,7 @@
 static const void *microcode_patch;
 
 /* SoC override function */
-__weak void soc_core_init(device_t dev)
+__weak void soc_core_init(struct device *dev)
 {
 	/* no-op */
 }
@@ -41,7 +42,7 @@ __weak void soc_init_cpus(struct bus *cpu_bus)
 	/* no-op */
 }
 
-static void init_one_cpu(device_t dev)
+static void init_one_cpu(struct device *dev)
 {
 	soc_core_init(dev);
 	intel_microcode_load_unlocked(microcode_patch);
@@ -121,8 +122,11 @@ void get_microcode_info(const void **microcode, int *parallel)
 
 static void init_cpus(void *unused)
 {
-	device_t dev = dev_find_path(NULL, DEVICE_PATH_CPU_CLUSTER);
+	struct device *dev = dev_find_path(NULL, DEVICE_PATH_CPU_CLUSTER);
 	assert(dev != NULL);
+
+	if (chip_get_fsp_mp_init())
+		return;
 
 	microcode_patch = intel_microcode_find();
 	intel_microcode_load_unlocked(microcode_patch);
@@ -138,6 +142,9 @@ static void wrapper_x86_setup_mtrrs(void *unused)
 /* Ensure to re-program all MTRRs based on DRAM resource settings */
 static void post_cpus_init(void *unused)
 {
+	if (chip_get_fsp_mp_init())
+		return;
+
 	if (mp_run_on_all_cpus(&wrapper_x86_setup_mtrrs, NULL, 1000) < 0)
 		printk(BIOS_ERR, "MTRR programming failure\n");
 

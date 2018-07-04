@@ -20,6 +20,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/util.h>
+#include <intelblocks/chip.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <soc/acpi.h>
@@ -172,7 +173,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->SerialIrqConfigStartFramePulse =
 		config->SerialIrqConfigStartFramePulse;
 
-	params->SkipMpInit = !config->use_fsp_mp_init;
+	params->SkipMpInit = !chip_get_fsp_mp_init();
 
 	for (i = 0; i < ARRAY_SIZE(config->i2c_voltage); i++)
 		params->SerialIoI2cVoltage[i] = config->i2c_voltage[i];

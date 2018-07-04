@@ -32,6 +32,7 @@
 #include <cbmem.h>
 #include <string.h>
 #include <drivers/intel/gma/i915.h>
+#include <southbridge/intel/common/acpi_pirq_gen.h>
 #include "nvs.h"
 
 #define NMI_OFF	0
@@ -718,6 +719,16 @@ static void southbridge_inject_dsdt(struct device *dev)
 	}
 }
 
+static const char *lpc_acpi_name(const struct device *dev)
+{
+	return "LPCB";
+}
+
+static void southbridge_fill_ssdt(device_t device)
+{
+	intel_acpi_gen_def_acpi_pirq(device);
+}
+
 static struct pci_operations pci_ops = {
 	.set_subsystem = set_subsystem,
 };
@@ -728,6 +739,8 @@ static struct device_operations device_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.write_acpi_tables      = acpi_write_hpet,
+	.acpi_fill_ssdt_generator = southbridge_fill_ssdt,
+	.acpi_name		= lpc_acpi_name,
 	.init			= lpc_init,
 	.scan_bus		= scan_lpc_bus,
 	.enable			= i82801gx_enable,

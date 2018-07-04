@@ -527,6 +527,10 @@ struct smm_module_params {
 	void *arg;
 	int cpu;
 	const struct smm_runtime *runtime;
+	/* A canary value that has been placed at the end of the stack.
+	 * If (uintptr_t)canary != *canary then a stack overflow has occurred.
+	 */
+	const uintptr_t *canary;
 };
 
 /* smm_handler_t is called with arg of smm_module_params pointer. */

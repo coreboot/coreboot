@@ -81,7 +81,7 @@ static uint32_t sd_mmc_calculate_transfer_speed(uint32_t csd0)
 	return freq * mult;
 }
 
-static int sd_mmc_go_idle(struct storage_media *media)
+int sd_mmc_go_idle(struct storage_media *media)
 {
 	struct sd_mmc_ctrlr *ctrlr = media->ctrlr;
 

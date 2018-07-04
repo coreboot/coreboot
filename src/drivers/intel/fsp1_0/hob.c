@@ -167,7 +167,7 @@ void print_guid_type_attributes(void *Hobptr)
 void print_hob_type_structure(u16 Hobtype, void *Hoblistptr)
 {
 	u32 *Currenthob;
-	u32 *Nexthob = 0;
+	u32 *Nexthob = NULL;
 	u8  Lasthob = 0;
 	u32 Currenttype;
 	const char *Currenttypestr;

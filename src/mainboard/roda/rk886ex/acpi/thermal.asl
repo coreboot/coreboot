@@ -37,7 +37,7 @@ Scope (\_TZ)
 
 		// Method (_AC1, 0, Serialized)
 		// {
-		// 	Return (0xf5c)
+		//	Return (0xf5c)
 		// }
 
 		// Critical shutdown temperature

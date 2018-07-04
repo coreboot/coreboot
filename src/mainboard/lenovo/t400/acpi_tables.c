@@ -15,7 +15,6 @@
  */
 
 #include <string.h>
-#include <console/console.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
@@ -24,8 +23,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-
-#include "southbridge/intel/i82801ix/nvs.h"
+#include <southbridge/intel/i82801ix/nvs.h>
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {

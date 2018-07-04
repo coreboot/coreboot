@@ -42,7 +42,7 @@ void mainboard_suspend_resume(void)
 
 
 
-static void mainboard_init(device_t dev)
+static void mainboard_init(struct device *dev)
 {
 	/* Initialize the Embedded Controller */
 	lumpy_ec_init();
@@ -74,7 +74,7 @@ static int lumpy_smbios_type41_irq(int *handle, unsigned long *current,
 }
 
 
-static int lumpy_onboard_smbios_data(device_t dev, int *handle,
+static int lumpy_onboard_smbios_data(struct device *dev, int *handle,
 				     unsigned long *current)
 {
 	int len = 0;
@@ -95,7 +95,7 @@ static int lumpy_onboard_smbios_data(device_t dev, int *handle,
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = lumpy_onboard_smbios_data;

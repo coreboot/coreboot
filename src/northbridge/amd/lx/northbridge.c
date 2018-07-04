@@ -287,11 +287,11 @@ int sizeram(void)
 	return sizem;
 }
 
-static void enable_shadow(device_t dev)
+static void enable_shadow(struct device *dev)
 {
 }
 
-static void northbridge_init(device_t dev)
+static void northbridge_init(struct device *dev)
 {
 
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
@@ -348,11 +348,11 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 
 #include <cbmem.h>
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	int idx;
 	u32 tomk;
-	device_t mc_dev;
+	struct device *mc_dev;
 
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
 
@@ -371,7 +371,7 @@ static void pci_domain_set_resources(device_t dev)
 	assign_resources(dev->link_list);
 }
 
-static void pci_domain_enable(device_t dev)
+static void pci_domain_enable(struct device *dev)
 {
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
 
@@ -393,7 +393,7 @@ static struct device_operations pci_domain_ops = {
 	.enable = pci_domain_enable,
 };
 
-static void cpu_bus_init(device_t dev)
+static void cpu_bus_init(struct device *dev)
 {
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
 

@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_LMT_H__
+#define __CB_BDK_LMT_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -98,3 +100,4 @@ static inline int bdk_lmt_submit(uint64_t io_address)
 }
 
 /** @} */
+#endif

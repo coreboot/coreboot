@@ -40,6 +40,14 @@
 #include "libbdk-arch/bdk-csrs-gti.h"
 #include "libbdk-arch/bdk-csrs-ocx.h"
 
+#include <bdk-minimal.h>        /* for printf --> printk */
+#include <libbdk-dram/bdk-dram-test.h>
+#include <libbdk-hal/bdk-atomic.h>
+#include <libbdk-hal/bdk-clock.h>
+#include <libbdk-hal/bdk-utils.h>
+#include <libbdk-os/bdk-init.h>
+#include <libbdk-os/bdk-thread.h>
+
 /* This code is an optional part of the BDK. It is only linked in
     if BDK_REQUIRE() needs it */
 BDK_REQUIRE_DEFINE(DRAM_TEST);
@@ -170,7 +178,7 @@ static void dram_test_thread(int arg, void *arg1)
     start_address = bdk_numa_get_address(test_node, start_address);
     end_address = bdk_numa_get_address(test_node, end_address);
     /* Test the region */
-    BDK_TRACE(DRAM_TEST, "  Node %d, core %d, Testing [0x%011lx:0x%011lx]\n",
+    BDK_TRACE(DRAM_TEST, "  Node %d, core %d, Testing [0x%011llx:0x%011llx]\n",
         bdk_numa_local(), bdk_get_core_num() & 127, start_address, end_address - 1);
     test_info->test_func(start_address, end_address, bursts);
 
@@ -197,7 +205,7 @@ static int __bdk_dram_run_test(const dram_test_info_t *test_info, uint64_t start
 {
     /* Figure out the addess of the byte one off the top of memory */
     uint64_t max_address = bdk_dram_get_size_mbytes(bdk_numa_local());
-    BDK_TRACE(DRAM_TEST, "DRAM available per node: %lu MB\n", max_address);
+    BDK_TRACE(DRAM_TEST, "DRAM available per node: %llu MB\n", max_address);
     max_address <<= 20;
 
     /* Make sure we have enough */
@@ -218,13 +226,13 @@ static int __bdk_dram_run_test(const dram_test_info_t *test_info, uint64_t start
         if (max_address > (1ull << 43)) /* 43 bits in CN9XXX */
             max_address = 1ull << 43;
     }
-    BDK_TRACE(DRAM_TEST, "DRAM max address: 0x%011lx\n", max_address-1);
+    BDK_TRACE(DRAM_TEST, "DRAM max address: 0x%011llx\n", max_address-1);
 
     /* Make sure the start address is lower than the top of memory */
     if (start_address >= max_address)
     {
-        bdk_error("Start address is larger than the amount of memory: 0x%011lx versus 0x%011lx\n",
-	          start_address, max_address);
+        bdk_error("Start address is larger than the amount of memory: 0x%011llx versus 0x%011llx\n",
+                  start_address, max_address);
         return -1;
     }
     if (length == (uint64_t)-1)
@@ -260,8 +268,8 @@ static int __bdk_dram_run_test(const dram_test_info_t *test_info, uint64_t start
             }
     }
     if (!(flags & BDK_DRAM_TEST_NO_BANNERS))
-        printf("Starting Test \"%s\" for [0x%011lx:0x%011lx] using %d core(s)\n",
-	   test_info->name, start_address, end_address - 1, total_cores_all_nodes);
+        printf("Starting Test \"%s\" for [0x%011llx:0x%011llx] using %d core(s)\n",
+           test_info->name, start_address, end_address - 1, total_cores_all_nodes);
 
     /* Remember the LMC perf counters for stats after the test */
     uint64_t start_dram_dclk[BDK_NUMA_MAX_NODES][4];
@@ -332,15 +340,15 @@ static int __bdk_dram_run_test(const dram_test_info_t *test_info, uint64_t start
         /* Poke the watchdog */
         BDK_CSR_WRITE(bdk_numa_local(), BDK_GTI_CWD_POKEX(0), 0);
 
-	/* disable progress output when batch mode is ON  */
+        /* disable progress output when batch mode is ON  */
         if (!(flags & BDK_DRAM_TEST_NO_PROGRESS)) {
 
             /* Report progress percentage */
             int percent_x10 = (work_address - start_address) * 1000 / (end_address - start_address);
-            printf("  %3d.%d%% complete, testing [0x%011lx:0x%011lx]\r",
+            printf("  %3d.%d%% complete, testing [0x%011llx:0x%011llx]\r",
                    percent_x10 / 10, percent_x10 % 10,  work_address, work_address + size - 1);
             fflush(stdout);
-	}
+        }
 
         work_address += size;
 
@@ -357,17 +365,8 @@ static int __bdk_dram_run_test(const dram_test_info_t *test_info, uint64_t start
                 {
                     if (per_node >= max_cores)
                         break;
-                    int run_node = (flags & BDK_DRAM_TEST_USE_CCPI) ? node ^ 1 : node;
                     BDK_TRACE(DRAM_TEST, "Starting thread %d on node %d for memory test\n", per_node, node);
-                    if (bdk_thread_create(run_node, 0, dram_test_thread, per_node, (void *)test_info, 0))
-                    {
-                        bdk_error("Failed to create thread %d for memory test on node %d\n", per_node, node);
-                    }
-                    else
-                    {
-                        per_node++;
-                        total_count++;
-                    }
+                    dram_test_thread(per_node, (void *)test_info);
                 }
             }
         }
@@ -384,7 +383,6 @@ static int __bdk_dram_run_test(const dram_test_info_t *test_info, uint64_t start
         uint64_t period = bdk_clock_get_rate(bdk_numa_local(), BDK_CLOCK_TIME) * TIMEOUT_SECS; // FIXME? 
         uint64_t timeout = bdk_clock_get_count(BDK_CLOCK_TIME) + period;
         do {
-            bdk_thread_yield();
             cur_count = bdk_atomic_get64(&dram_test_thread_done);
             cur_time = bdk_clock_get_count(BDK_CLOCK_TIME);
             if (cur_time >= timeout) {
@@ -430,7 +428,7 @@ static int __bdk_dram_run_test(const dram_test_info_t *test_info, uint64_t start
     if (!(flags & BDK_DRAM_TEST_NO_PROGRESS)) {
 
         /* Report progress percentage as complete */
-        printf("  %3d.%d%% complete, testing [0x%011lx:0x%011lx]\n",
+        printf("  %3d.%d%% complete, testing [0x%011llx:0x%011llx]\n",
                100, 0,  start_address, end_address - 1);
         fflush(stdout);
     }
@@ -450,7 +448,7 @@ static int __bdk_dram_run_test(const dram_test_info_t *test_info, uint64_t start
                     if (dclk == 0)
                         dclk = 1;
                     uint64_t percent_x10 = ops * 1000 / dclk;
-                    printf("  Node %d, LMC%d: ops %lu, cycles %lu, used %lu.%lu%%\n",
+                    printf("  Node %d, LMC%d: ops %llu, cycles %llu, used %llu.%llu%%\n",
                         node, i, ops, dclk, percent_x10 / 10, percent_x10 % 10);
                 }
             }
@@ -471,7 +469,7 @@ static int __bdk_dram_run_test(const dram_test_info_t *test_info, uint64_t start
                         if (total == 0)
                             continue;
                         uint64_t percent_x10 = busy * 1000 / total;
-                        printf("  Node %d, CCPI%d: busy %lu, total %lu, used %lu.%lu%%\n",
+                        printf("  Node %d, CCPI%d: busy %llu, total %llu, used %llu.%llu%%\n",
                             node, link, busy, total, percent_x10 / 10, percent_x10 % 10);
                     }
                 }
@@ -543,11 +541,13 @@ int bdk_dram_test(int test, uint64_t start_address, uint64_t length, bdk_dram_te
 
     /* Clear ECC error counters before starting the test */
     for (int chan = 0; chan < BDK_MAX_MEM_CHANS; chan++) {
-	bdk_atomic_set64(&__bdk_dram_ecc_single_bit_errors[chan], 0);
-	bdk_atomic_set64(&__bdk_dram_ecc_double_bit_errors[chan], 0);
+        bdk_atomic_set64(&__bdk_dram_ecc_single_bit_errors[chan], 0);
+        bdk_atomic_set64(&__bdk_dram_ecc_double_bit_errors[chan], 0);
     }
 
     /* Make sure at least one core from each node is running */
+    /* FIXME(dhendrix): we only care about core0 on node0 for now */
+#if 0
     for (bdk_node_t node = BDK_NODE_0; node < BDK_NUMA_MAX_NODES; node++)
     {
         if (flags & (1<<node))
@@ -557,16 +557,10 @@ int bdk_dram_test(int test, uint64_t start_address, uint64_t length, bdk_dram_te
                 bdk_init_cores(use_node, 1);
         }
     }
+#endif
 
     /* This returns any data compare errors found */
     int errors = __bdk_dram_run_test(&TEST_INFO[test], start_address, length, flags);
-
-    /* Poll for any errors right now to make sure any ECC errors are reported */
-    for (bdk_node_t node = BDK_NODE_0; node < BDK_NUMA_MAX_NODES; node++)
-    {
-        if (bdk_numa_exists(node) && bdk_error_check)
-            bdk_error_check(node);
-    }
 
     /* Check ECC error counters after the test */
     int64_t ecc_single = 0;
@@ -582,14 +576,14 @@ int bdk_dram_test(int test, uint64_t start_address, uint64_t length, bdk_dram_te
     /* Always print any ECC errors */
     if (ecc_single || ecc_double)
     {
-        printf("Test \"%s\": ECC errors, %ld/%ld/%ld/%ld corrected, %ld/%ld/%ld/%ld uncorrected\n",
-	       name,
-	       ecc_single_errs[0], ecc_single_errs[1], ecc_single_errs[2], ecc_single_errs[3],
-	       ecc_double_errs[0], ecc_double_errs[1], ecc_double_errs[2], ecc_double_errs[3]);
+        printf("Test \"%s\": ECC errors, %lld/%lld/%lld/%lld corrected, %lld/%lld/%lld/%lld uncorrected\n",
+               name,
+               ecc_single_errs[0], ecc_single_errs[1], ecc_single_errs[2], ecc_single_errs[3],
+               ecc_double_errs[0], ecc_double_errs[1], ecc_double_errs[2], ecc_double_errs[3]);
     }
     if (errors || ecc_double || ecc_single) {
-	printf("Test \"%s\": FAIL: %ld single, %ld double, %d compare errors\n",
-	       name, ecc_single, ecc_double, errors);
+        printf("Test \"%s\": FAIL: %lld single, %lld double, %d compare errors\n",
+               name, ecc_single, ecc_double, errors);
     }
     else
         BDK_TRACE(DRAM_TEST, "Test \"%s\": PASS\n", name);
@@ -610,7 +604,7 @@ static void __bdk_dram_report_address_decode(uint64_t address, char *buffer, int
     bdk_dram_address_extract_info(address, &node, &lmc, &dimm, &prank, &lrank, &bank, &row, &col);
 
     snprintf(buffer, len, "[0x%011lx] (N%d,LMC%d,DIMM%d,Rank%d/%d,Bank%02d,Row 0x%05x,Col 0x%04x)",
-	     address, node, lmc, dimm, prank, lrank, bank, row, col);
+             address, node, lmc, dimm, prank, lrank, bank, row, col);
 }
 
 /**
@@ -632,22 +626,22 @@ static void __bdk_dram_report_address_decode_new(uint64_t address, uint64_t orig
     for (int i = 0; i < 8; i++) {
         bits = xor & 0xffULL;
         xor >>= 8;
-	if (bits) {
-	    if (byte != 8) {
-		byte = 9; // means more than 1 byte-lane was present
+        if (bits) {
+            if (byte != 8) {
+                byte = 9; // means more than 1 byte-lane was present
                 print_bits = orig_xor; // print the full original
-		break; // quit now
-	    } else {
-		byte = i; // keep checking
+                break; // quit now
+            } else {
+                byte = i; // keep checking
                 print_bits = bits;
-	    }
-	}
+            }
+        }
     }
-	
+
     bdk_dram_address_extract_info(address, &node, &lmc, &dimm, &prank, &lrank, &bank, &row, &col);
 
     snprintf(buffer, len, "N%d.LMC%d: CMP byte %d xor 0x%02lx (DIMM%d,Rank%d/%d,Bank%02d,Row 0x%05x,Col 0x%04x)[0x%011lx]",
-	     node, lmc, byte, print_bits, dimm, prank, lrank, bank, row, col, address);
+             node, lmc, byte, print_bits, dimm, prank, lrank, bank, row, col, address);
 }
 
 /**
@@ -671,15 +665,15 @@ void __bdk_dram_report_error(uint64_t address, uint64_t data, uint64_t correct, 
 
     if (errors < MAX_ERRORS_TO_REPORT)
     {
-	if (fails < 0) {
-	    snprintf(failbuf, sizeof(failbuf), " ");
-	} else {
+        if (fails < 0) {
+            snprintf(failbuf, sizeof(failbuf), " ");
+        } else {
             int percent_x10 = fails * 1000 / RETRY_LIMIT;
-	    snprintf(failbuf, sizeof(failbuf), ", retries failed %3d.%d%%",
+            snprintf(failbuf, sizeof(failbuf), ", retries failed %3d.%d%%",
                      percent_x10 / 10, percent_x10 % 10);
-	}
+        }
 
-	__bdk_dram_report_address_decode_new(address, xor, buffer, sizeof(buffer));
+        __bdk_dram_report_address_decode_new(address, xor, buffer, sizeof(buffer));
         bdk_error("%s%s\n", buffer, failbuf);
 
         if (errors == MAX_ERRORS_TO_REPORT-1)
@@ -702,26 +696,26 @@ void __bdk_dram_report_error(uint64_t address, uint64_t data, uint64_t correct, 
  * @return Zero if a message was logged, non-zero if the error limit has been reached
  */
 void __bdk_dram_report_error2(uint64_t address1, uint64_t data1, uint64_t address2, uint64_t data2,
-			      int burst, int fails)
+                              int burst, int fails)
 {
     int64_t errors = bdk_atomic_fetch_and_add64(&dram_test_thread_errors, 1);
     if (errors < MAX_ERRORS_TO_REPORT)
     {
-	char buffer1[80], buffer2[80];
-	char failbuf[32];
+        char buffer1[80], buffer2[80];
+        char failbuf[32];
 
-	if (fails < 0) {
-	    snprintf(failbuf, sizeof(failbuf), " ");
-	} else {
-	    snprintf(failbuf, sizeof(failbuf), ", retried %d failed %d", RETRY_LIMIT, fails);
-	}
-	__bdk_dram_report_address_decode(address1, buffer1, sizeof(buffer1));
-	__bdk_dram_report_address_decode(address2, buffer2, sizeof(buffer2));
+        if (fails < 0) {
+            snprintf(failbuf, sizeof(failbuf), " ");
+        } else {
+            snprintf(failbuf, sizeof(failbuf), ", retried %d failed %d", RETRY_LIMIT, fails);
+        }
+        __bdk_dram_report_address_decode(address1, buffer1, sizeof(buffer1));
+        __bdk_dram_report_address_decode(address2, buffer2, sizeof(buffer2));
 
-        bdk_error("compare: data1: 0x%016lx, xor: 0x%016lx%s\n"
-		  "       %s\n       %s\n",
-		  data1, data1 ^ data2, failbuf,
-		  buffer1, buffer2);
+        bdk_error("compare: data1: 0x%016llx, xor: 0x%016llx%s\n"
+                  "       %s\n       %s\n",
+                  data1, data1 ^ data2, failbuf,
+                  buffer1, buffer2);
 
         if (errors == MAX_ERRORS_TO_REPORT-1)
             bdk_error("No further DRAM errors will be reported\n");
@@ -741,23 +735,23 @@ int __bdk_dram_retry_failure(int burst, uint64_t address, uint64_t data, uint64_
     // bypass the retries if we are already over the limit...
     if (bdk_atomic_get64(&dram_test_thread_errors) < MAX_ERRORS_TO_REPORT) {
 
-	/* Try re-reading the memory location. A transient error may fail
-	 * on one read and work on another. Keep on retrying even when a
-	 * read succeeds.
-	 */
-	for (int i = 0; i < RETRY_LIMIT; i++) {
+        /* Try re-reading the memory location. A transient error may fail
+         * on one read and work on another. Keep on retrying even when a
+         * read succeeds.
+         */
+        for (int i = 0; i < RETRY_LIMIT; i++) {
 
-	    __bdk_dram_flush_to_mem(address);
-	    BDK_DCACHE_INVALIDATE;
+            __bdk_dram_flush_to_mem(address);
+            BDK_DCACHE_INVALIDATE;
 
-	    uint64_t new = __bdk_dram_read64(address);
+            uint64_t new = __bdk_dram_read64(address);
 
-	    if (new != expected) {
-		refail++;
-	    }
-	}
+            if (new != expected) {
+                refail++;
+            }
+        }
     } else
-	refail = -1;
+        refail = -1;
 
     // this will increment the errors always, but maybe not print...
     __bdk_dram_report_error(address, data, expected, burst, refail);
@@ -779,20 +773,20 @@ int __bdk_dram_retry_failure2(int burst, uint64_t address1, uint64_t data1, uint
     // bypass the retries if we are already over the limit...
     if (bdk_atomic_get64(&dram_test_thread_errors) < MAX_ERRORS_TO_REPORT) {
 
-	for (int i = 0; i < RETRY_LIMIT; i++) {
-	    __bdk_dram_flush_to_mem(address1);
-	    __bdk_dram_flush_to_mem(address2);
-	    BDK_DCACHE_INVALIDATE;
+        for (int i = 0; i < RETRY_LIMIT; i++) {
+            __bdk_dram_flush_to_mem(address1);
+            __bdk_dram_flush_to_mem(address2);
+            BDK_DCACHE_INVALIDATE;
 
-	    uint64_t d1 = __bdk_dram_read64(address1);
-	    uint64_t d2 = __bdk_dram_read64(address2);
+            uint64_t d1 = __bdk_dram_read64(address1);
+            uint64_t d2 = __bdk_dram_read64(address2);
 
-	    if (d1 != d2) {
-		refail++;
-	    }
-	}
+            if (d1 != d2) {
+                refail++;
+            }
+        }
     } else
-	refail = -1;
+        refail = -1;
 
     // this will increment the errors always, but maybe not print...
     __bdk_dram_report_error2(address1, data1, address2, data2, burst, refail);
@@ -854,7 +848,7 @@ void bdk_dram_test_inject_error(uint64_t address, int bit)
     BDK_CSR_WRITE(node, BDK_LMCX_CHAR_MASK2(lmc), 0);
 
     /* Read back the data, which should now cause an error */
-    printf("Loading the injected error address 0x%lx, node=%d, lmc=%d, dimm=%d, rank=%d/%d, bank=%d, row=%d, col=%d\n",
+    printf("Loading the injected error address 0x%llx, node=%d, lmc=%d, dimm=%d, rank=%d/%d, bank=%d, row=%d, col=%d\n",
            address, node, lmc, dimm, prank, lrank, bank, row, col);
     __bdk_dram_read64(aligned_address);
 }

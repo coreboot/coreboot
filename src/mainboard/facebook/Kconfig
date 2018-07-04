@@ -1,0 +1,16 @@
+if VENDOR_FACEBOOK
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/facebook/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/facebook/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Facebook"
+
+endif # VENDOR_FACEBOOK

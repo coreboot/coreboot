@@ -201,12 +201,12 @@ bool bootmem_walk(range_action_t action, void *arg)
 	return false;
 }
 
-int bootmem_region_targets_usable_ram(uint64_t start, uint64_t size)
+static int bootmem_region_targets_ram(uint64_t start, uint64_t end,
+				struct memranges *bm)
 {
 	const struct range_entry *r;
-	uint64_t end = start + size;
 
-	memranges_each_entry(r, &bootmem) {
+	memranges_each_entry(r, bm) {
 		/* All further bootmem entries are beyond this range. */
 		if (end <= range_entry_base(r))
 			break;
@@ -217,6 +217,24 @@ int bootmem_region_targets_usable_ram(uint64_t start, uint64_t size)
 		}
 	}
 	return 0;
+}
+
+/* Common testcase for loading any segments to bootmem.
+ * Returns 1 if the requested memory range is all tagged as type BM_MEM_RAM.
+ * Otherwise returns 0.
+ */
+int bootmem_region_targets_usable_ram(uint64_t start, uint64_t size)
+{
+	return bootmem_region_targets_ram(start, start + size, &bootmem);
+}
+
+/* Special testcase to use when loading payload segments when bounce-buffer is
+ * supported. Memory ranges tagged with >BM_MEM_OS_CUTOFF may be overwritten at
+ * the time we jump to payload.
+ */
+int bootmem_region_usable_with_bounce(uint64_t start, uint64_t size)
+{
+	return bootmem_region_targets_ram(start, start + size, &bootmem_os);
 }
 
 void *bootmem_allocate_buffer(size_t size)

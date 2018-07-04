@@ -174,7 +174,7 @@ size_t sa_get_dsm_size(void)
 		return (prealloc_memory - 0xEF) * 4*MiB;
 }
 
-static uintptr_t sa_get_gsm_base(void)
+uintptr_t sa_get_gsm_base(void)
 {
 	/* All regions concerned for have 1 MiB alignment. */
 	return ALIGN_DOWN(pci_read_config32(SA_DEV_ROOT, BGSM), 1*MiB);

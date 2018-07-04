@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <device/device.h>
 #include <arch/io.h>
 #include <delay.h>
@@ -22,7 +21,7 @@
 #include <superio/nsc/pc87384/pc87384.h>
 #include "ec/acpi/ec.h"
 #include "ec/lenovo/pmh7/pmh7.h"
-#include "southbridge/intel/i82801gx/i82801gx.h"
+#include <southbridge/intel/i82801gx/i82801gx.h>
 
 #define DLPC_CONTROL 0x164c
 

@@ -39,6 +39,10 @@
 #include <bdk.h>
 #include "dram-internal.h"
 
+/* FIXME(dhendrix): added */
+#include <libbdk-hal/bdk-l2c.h>
+#include <libbdk-hal/bdk-utils.h>
+
 int limit_l2_ways(bdk_node_t node, int ways, int verbose)
 {
     int ways_max = bdk_l2c_get_num_assoc(node);

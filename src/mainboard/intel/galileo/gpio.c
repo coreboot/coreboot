@@ -45,7 +45,7 @@ void car_mainboard_pre_console_init(void)
 	}
 }
 
-void mainboard_gpio_i2c_init(device_t dev)
+void mainboard_gpio_i2c_init(struct device *dev)
 {
 	const struct reg_script *script;
 

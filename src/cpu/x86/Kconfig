@@ -110,6 +110,14 @@ config SMM_MODULE_HEAP_SIZE
 	  This option determines the size of the heap within the SMM handler
 	  modules.
 
+config SMM_MODULE_STACK_SIZE
+	hex
+	default 0x400
+	depends on SMM_TSEG
+	help
+	  This option determines the size of the stack within the SMM handler
+	  modules.
+
 config SMM_LAPIC_REMAP_MITIGATION
 	bool
 	default y if NORTHBRIDGE_INTEL_I945

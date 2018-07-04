@@ -84,7 +84,7 @@
 	lsl	ip, ip, r2		@ shift by that into way position
 	mov	r0, #1
 	lsl	r2, r0, r2		@ r2 now contains the way decr
-	mov	r0, r3 			@ get sets/level (no way yet)
+	mov	r0, r3			@ get sets/level (no way yet)
 	orr	r3, r3, ip		@ merge way into way/set/level
 	bfc	r0, #0, #4		@ clear low 4 bits (level) to get numset - 1
 	sub	r2, r2, r0		@ subtract from way decr

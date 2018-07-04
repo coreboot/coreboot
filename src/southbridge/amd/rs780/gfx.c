@@ -186,7 +186,7 @@ static CIM_STATUS GetCreativeMMIO(MMIORANGE *pMMIO)
 			printk(BIOS_DEBUG, "Dev ID %x\n", Value);
 			if ((Value & 0xffff) == 0x1102) {//Creative
 				//Found Creative SB
-			 	u32	MMIOStart = 0xffffffff;
+				u32	MMIOStart = 0xffffffff;
 				u32 MMIOLimit = 0;
 				for (Reg = 0x10; Reg < 0x20; Reg+=4) {
 					u32	BaseA, LimitA;
@@ -449,7 +449,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	vgainfo.ulMinSidePortClock = 333*100;
 #endif
 
-	vgainfo.ulBootUpEngineClock = 500 * 100;	       	// setup option on reference BIOS, 500 is default
+	vgainfo.ulBootUpEngineClock = 500 * 100;		// setup option on reference BIOS, 500 is default
 
 	// find the DDR memory frequency
 	if (is_family10h()) {
@@ -1109,8 +1109,8 @@ static void dual_port_configuration(struct device *nb_dev, struct device *dev)
 
 /* For single port GFX configuration Only
 * width:
-* 	000 = x16
-* 	001 = x1
+*	000 = x16
+*	001 = x1
 *	010 = x2
 *	011 = x4
 *	100 = x8

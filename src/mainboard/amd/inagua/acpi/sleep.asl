@@ -49,7 +49,7 @@ Method(\_PTS, 1) {
 
 	/* On older chips, clear PciExpWakeDisEn */
 	/*if (LLessEqual(\_SB.SBRI, 0x13)) {
-	*    	Store(0,\_SB.PWDE)
+	*	Store(0,\_SB.PWDE)
 	*}
 	*/
 

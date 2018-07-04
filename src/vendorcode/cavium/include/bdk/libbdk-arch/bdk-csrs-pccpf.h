@@ -41,6 +41,7 @@
  * PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
  ***********************license end**************************************/
 
+#include <bdk.h>	/* FIXME(dhendrix): added to satisfy compiler... */
 
 /**
  * @file

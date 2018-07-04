@@ -118,8 +118,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),
 	/* C2  : SMBALERT# ==> NC(TP917) */
 	PAD_CFG_NC(GPP_C2),
-	/* C3  : SML0CLK ==> TOUCHSCREEN_DIS# */
-	PAD_CFG_GPO(GPP_C3, 0, DEEP),
 	/* C4  : SML0DATA ==> NC */
 	PAD_CFG_NC(GPP_C4),
 	/* C5  : SML0ALERT# ==> SOC_SML0ALERT# (unstuffed) */
@@ -389,11 +387,22 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 static const struct pad_config nami_default_sku_gpio_table[] = {
 	/* D17 : DMIC_CLK1 ==> SOC_DMIC_CLK1 */
 	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF1),
+	/* C3  : SML0CLK ==> TOUCHSCREEN_DIS# */
+	PAD_CFG_GPO(GPP_C3, 0, DEEP),
 };
 
 static const struct pad_config no_dmic1_sku_gpio_table[] = {
 	/* D17 : DMIC_CLK1 ==> NC */
 	PAD_CFG_NC(GPP_D17),
+	/* C3  : SML0CLK ==> TOUCHSCREEN_DIS# */
+	PAD_CFG_GPO(GPP_C3, 0, DEEP),
+};
+
+static const struct pad_config pantheon_gpio_table[] = {
+	/* D17 : DMIC_CLK1 ==> NC */
+	PAD_CFG_NC(GPP_D17),
+	/* C3  : SML0CLK ==> NC */
+	PAD_CFG_NC(GPP_C3),
 };
 
 const struct pad_config *variant_sku_gpio_table(size_t *num)
@@ -404,13 +413,16 @@ const struct pad_config *variant_sku_gpio_table(size_t *num)
 	case SKU_0_VAYNE:
 	case SKU_1_VAYNE:
 	case SKU_2_VAYNE:
-	case SKU_0_PANTHEON:
-	case SKU_1_PANTHEON:
-	case SKU_2_PANTHEON:
 	case SKU_0_SONA:
 	case SKU_1_SONA:
 		*num = ARRAY_SIZE(no_dmic1_sku_gpio_table);
 		board_gpio_tables = no_dmic1_sku_gpio_table;
+		break;
+	case SKU_0_PANTHEON:
+	case SKU_1_PANTHEON:
+	case SKU_2_PANTHEON:
+		*num = ARRAY_SIZE(pantheon_gpio_table);
+		board_gpio_tables = pantheon_gpio_table;
 		break;
 	default:
 		*num = ARRAY_SIZE(nami_default_sku_gpio_table);

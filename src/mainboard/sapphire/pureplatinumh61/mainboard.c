@@ -17,7 +17,6 @@
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/common/rcba.h>
 
 static void mainboard_init(struct device *dev)
 {

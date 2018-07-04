@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_CLOCK_H__
+#define __CB_BDK_CLOCK_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -37,6 +39,13 @@
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
 
+/* FIXME(dhendrix): added */
+#include <libbdk-arch/bdk-asm.h>
+#include <libbdk-arch/bdk-numa.h>
+/* FIXME(prudolph): added */
+
+#include <soc/clock.h>
+
 /**
  * @file
  *
@@ -48,7 +57,7 @@
  * @{
  */
 
-#define BDK_GTI_RATE 100000000ull
+#define BDK_GTI_RATE 1000000ull
 
 /**
  * Enumeration of different Clocks.
@@ -60,10 +69,30 @@ typedef enum{
     BDK_CLOCK_SCLK,     /**< Clock used by IO blocks. */
 } bdk_clock_t;
 
+static inline uint64_t clock_get_rate_slow(bdk_clock_t clock)
+{
+	const uint64_t REF_CLOCK = 50000000;
+
+	switch (clock) {
+		case BDK_CLOCK_TIME:
+			return BDK_GTI_RATE;    /* Programed as part of setup */
+		case BDK_CLOCK_MAIN_REF:
+			return REF_CLOCK;
+		case BDK_CLOCK_RCLK:
+			return thunderx_get_core_clock();
+		case BDK_CLOCK_SCLK:
+			return thunderx_get_io_clock();
+	}
+	return 0;
+}
+
 /**
  * Called in __bdk_init to setup the global timer
  */
-extern void bdk_clock_setup();
+extern void bdk_clock_setup(bdk_node_t node);	/* FIXME(dhendrix): added arg */
+
+extern uint64_t __bdk_clock_get_count_slow(bdk_clock_t clock);
+extern uint64_t __bdk_clock_get_rate_slow(bdk_node_t node, bdk_clock_t clock);
 
 /**
  * Get cycle count based on the clock type.
@@ -74,7 +103,6 @@ extern void bdk_clock_setup();
 static inline uint64_t bdk_clock_get_count(bdk_clock_t clock) __attribute__ ((always_inline));
 static inline uint64_t bdk_clock_get_count(bdk_clock_t clock)
 {
-    extern uint64_t __bdk_clock_get_count_slow(bdk_clock_t clock);
     if (clock == BDK_CLOCK_TIME)
     {
         uint64_t clk;
@@ -95,11 +123,11 @@ static inline uint64_t bdk_clock_get_count(bdk_clock_t clock)
 static inline uint64_t bdk_clock_get_rate(bdk_node_t node, bdk_clock_t clock) __attribute__ ((always_inline, pure));
 static inline uint64_t bdk_clock_get_rate(bdk_node_t node, bdk_clock_t clock)
 {
-    extern uint64_t __bdk_clock_get_rate_slow(bdk_node_t node, bdk_clock_t clock) __attribute__ ((pure));
     if (clock == BDK_CLOCK_TIME)
         return BDK_GTI_RATE; /* Programed as part of setup */
     else
-        return __bdk_clock_get_rate_slow(node, clock);
+        return clock_get_rate_slow(clock);
 }
 
 /** @} */
+#endif	/* !__CB_BDK_CLOCK_H__ */

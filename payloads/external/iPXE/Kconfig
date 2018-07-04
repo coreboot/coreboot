@@ -63,13 +63,6 @@ config PXE_ROM_FILE
 	help
 	  The path and filename of the file to use as PXE ROM.
 
-config PXE_SERIAL_CONSOLE
-	bool "Enable serial console"
-	def_bool n
-	help
-	  Enable/disable iPXE serial console. Since SeaBIOS supports serial
-	  console this option might be helpful to avoid duplicated output.
-
 config PXE_ROM_ID
 	string "network card PCI IDs"
 	default "10ec,8168"
@@ -96,6 +89,15 @@ config PXE_CUSTOM_BOOTMENU_FILE
 	default "menu.ipxe"
 	help
 	  This option allows user to customize boot menu for iPXE ROM.
+
+config PXE_SERIAL_CONSOLE
+	bool "Enable iPXE serial console"
+	def_bool y
+	help
+	  Enable/disable iPXE serial console. Since SeaBIOS supports serial
+	  console this option might be helpful to avoid duplicated output.
+
+	  Unselect to let only SeaBIOS handle printing output.
 
 endmenu
 endif

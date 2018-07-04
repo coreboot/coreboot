@@ -15,7 +15,6 @@
 
 #include <types.h>
 #include <string.h>
-#include <console/console.h>
 #include <arch/acpi.h>
 #include <arch/ioapic.h>
 #include <arch/acpigen.h>
@@ -26,7 +25,7 @@
 
 #include "../qemu-i440fx/fw_cfg.h"
 #include "../qemu-i440fx/acpi.h"
-#include "southbridge/intel/i82801ix/nvs.h"
+#include <southbridge/intel/i82801ix/nvs.h>
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {

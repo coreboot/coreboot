@@ -104,8 +104,8 @@ static void s3_resume_init_data(FCH_DATA_BLOCK *FchParams)
 	FchParams->Usb.Ohci4Enable             = FchInterfaceDefault.Ohci4Enable;
 	FchParams->HwAcpi.PwrFailShadow        = FchInterfaceDefault.FchPowerFail;
 
-	FchParams->Usb.Xhci0Enable 	= IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
-	FchParams->Usb.Xhci1Enable 	= FALSE;
+	FchParams->Usb.Xhci0Enable	= IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
+	FchParams->Usb.Xhci1Enable	= FALSE;
 
 #if DUMP_FCH_SETTING
 	int i;

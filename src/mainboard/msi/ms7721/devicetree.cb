@@ -47,7 +47,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 				device pci 12.2 on  end # USB EHCI
 				device pci 13.0 on  end # USB OHCI
 				device pci 13.2 on  end # USB EHCI
-				device pci 14.0 on      # SMBUS
+				device pci 14.0 on	# SMBUS
 					chip drivers/generic/generic #dimm 0
 						device i2c 50 on end # 7-bit SPD address
 					end
@@ -57,7 +57,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 				end # SM
 				device pci 14.1 off end # IDE	0x439c
 				device pci 14.2 on  end # Azalia (Audio)
-				device pci 14.3 on      # LPC	0x439d
+				device pci 14.3 on	# LPC	0x439d
 					chip superio/fintek/f71869ad
 						register "multi_function_register_1" = "0x01"
 						register "multi_function_register_2" = "0x0f"
@@ -97,51 +97,51 @@ chip northbridge/amd/agesa/family15tn/root_complex
 							io 0x60 = 0x225	# Fintek datasheet says 0x295.
 							irq 0x70 = 0
 						end
-						device pnp 4e.05 on     # KBC
+						device pnp 4e.05 on	# KBC
 							io 0x60 = 0x060
 							irq 0x70 = 1 # Keyboard IRQ
 							irq 0x72 = 12 # Mouse IRQ
 						end
-                                                device pnp 4e.06 on     # GPIO
+						device pnp 4e.06 on	# GPIO
 							# ! GPIO config is disabled because the code in romstage.c
 							# ! has already taken care of it
-                                                        #io 0x60 = 0xa00
-                                                        #irq 0xe0 = 0x04	# GPIO1 output
-                                                        #irq 0xe1 = 0xff	# GPIO1 output data
-                                                        #irq 0xe3 = 0x04	# GPIO1 drive enable
-                                                        #irq 0xe4 = 0x00	# GPIO1 PME enable
-                                                        #irq 0xe5 = 0x00	# GPIO1 input detect select
-                                                        #irq 0xe6 = 0x40	# GPIO1 event status
+							#io 0x60 = 0xa00
+							#irq 0xe0 = 0x04	# GPIO1 output
+							#irq 0xe1 = 0xff	# GPIO1 output data
+							#irq 0xe3 = 0x04	# GPIO1 drive enable
+							#irq 0xe4 = 0x00	# GPIO1 PME enable
+							#irq 0xe5 = 0x00	# GPIO1 input detect select
+							#irq 0xe6 = 0x40	# GPIO1 event status
 
-                                                        #irq 0xd0 = 0x00	# GPIO2 output
-                                                        #irq 0xd1 = 0xff	# GPIO2 output data
-                                                        #irq 0xd3 = 0x00	# GPIO2 drive enable
+							#irq 0xd0 = 0x00	# GPIO2 output
+							#irq 0xd1 = 0xff	# GPIO2 output data
+							#irq 0xd3 = 0x00	# GPIO2 drive enable
 
-                                                        #irq 0xc0 = 0x00	# GPIO3 output
-                                                        #irq 0xc1 = 0xff	# GPIO3 output data
+							#irq 0xc0 = 0x00	# GPIO3 output
+							#irq 0xc1 = 0xff	# GPIO3 output data
 
-                                                        #irq 0xb0 = 0x04	# GPIO4 output
-                                                        #irq 0xb1 = 0x04	# GPIO4 output data
-                                                        #irq 0xb3 = 0x04	# GPIO4 drive enable
-                                                        #irq 0xb4 = 0x00	# GPIO4 PME enable
-                                                        #irq 0xb5 = 0x00	# GPIO4 input detect select
-                                                        #irq 0xb6 = 0x00	# GPIO4 event status
+							#irq 0xb0 = 0x04	# GPIO4 output
+							#irq 0xb1 = 0x04	# GPIO4 output data
+							#irq 0xb3 = 0x04	# GPIO4 drive enable
+							#irq 0xb4 = 0x00	# GPIO4 PME enable
+							#irq 0xb5 = 0x00	# GPIO4 input detect select
+							#irq 0xb6 = 0x00	# GPIO4 event status
 
-                                                        #irq 0xa0 = 0x00	# GPIO5 output
-                                                        #irq 0xa1 = 0x1f	# GPIO5 output data
-                                                        #irq 0xa3 = 0x00	# GPIO5 drive enable
-                                                        #irq 0xa4 = 0x00	# GPIO5 PME enable
-                                                        #irq 0xa5 = 0xff	# GPIO5 input detect select
-                                                        #irq 0xa6 = 0xe0	# GPIO5 event status
+							#irq 0xa0 = 0x00	# GPIO5 output
+							#irq 0xa1 = 0x1f	# GPIO5 output data
+							#irq 0xa3 = 0x00	# GPIO5 drive enable
+							#irq 0xa4 = 0x00	# GPIO5 PME enable
+							#irq 0xa5 = 0xff	# GPIO5 input detect select
+							#irq 0xa6 = 0xe0	# GPIO5 event status
 
-                                                        #irq 0x90 = 0x00	# GPIO6 output
-                                                        #irq 0x91 = 0xff	# GPIO6 output data
-                                                        #irq 0x93 = 0x00	# GPIO6 drive enable
+							#irq 0x90 = 0x00	# GPIO6 output
+							#irq 0x91 = 0xff	# GPIO6 output data
+							#irq 0x93 = 0x00	# GPIO6 drive enable
 
-                                                        #irq 0x80 = 0x00	# GPIO7 output
-                                                        #irq 0x81 = 0xff	# GPIO7 output data
-                                                        #irq 0x83 = 0x00	# GPIO7 drive enable
-                                                end
+							#irq 0x80 = 0x00	# GPIO7 output
+							#irq 0x81 = 0xff	# GPIO7 output data
+							#irq 0x83 = 0x00	# GPIO7 drive enable
+						end
 
 						device pnp 4e.07 on end	# WDT
 						device pnp 4e.08 off end	# CIR

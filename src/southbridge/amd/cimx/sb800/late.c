@@ -28,7 +28,7 @@
 #include <arch/acpi.h>
 #include <device/pci_ehci.h>
 #include "lpc.h"		/* lpc_read_resources */
-#include "SBPLATFORM.h" 	/* Platform Specific Definitions */
+#include "SBPLATFORM.h"		/* Platform Specific Definitions */
 #include "cfg.h"		/* sb800 Cimx configuration */
 #include "chip.h"		/* struct southbridge_amd_cimx_sb800_config */
 #include "sb_cimx.h"		/* AMD CIMX wrapper entries */
@@ -352,13 +352,13 @@ static void sb800_enable(struct device *dev)
 	switch (dev->path.pci.devfn) {
 	case PCI_DEVFN(0x11, 0): /* 0:11.0  SATA */
 		if (dev->enabled) {
-  			sb_config->SATAMODE.SataMode.SataController = CIMX_OPTION_ENABLED;
+			sb_config->SATAMODE.SataMode.SataController = CIMX_OPTION_ENABLED;
 			if (1 == sb_chip->boot_switch_sata_ide)
 				sb_config->SATAMODE.SataMode.SataIdeCombMdPriSecOpt = 0; //0 -IDE as primary.
 			else if (0 == sb_chip->boot_switch_sata_ide)
 				sb_config->SATAMODE.SataMode.SataIdeCombMdPriSecOpt = 1; //1 -IDE as secondary.
 		} else {
-  			sb_config->SATAMODE.SataMode.SataController = CIMX_OPTION_DISABLED;
+			sb_config->SATAMODE.SataMode.SataController = CIMX_OPTION_DISABLED;
 		}
 		break;
 
@@ -387,11 +387,11 @@ static void sb800_enable(struct device *dev)
 
 	case PCI_DEVFN(0x14, 2): /* 0:14:2 HDA */
 		if (dev->enabled) {
-  			if (AZALIA_DISABLE == sb_config->AzaliaController) {
-  				sb_config->AzaliaController = AZALIA_AUTO;
+			if (AZALIA_DISABLE == sb_config->AzaliaController) {
+				sb_config->AzaliaController = AZALIA_AUTO;
 			}
 		} else {
-  			sb_config->AzaliaController = AZALIA_DISABLE;
+			sb_config->AzaliaController = AZALIA_DISABLE;
 		}
 		break;
 

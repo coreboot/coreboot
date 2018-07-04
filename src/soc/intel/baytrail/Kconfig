@@ -67,22 +67,20 @@ config SMM_RESERVED_SIZE
 	default 0x100000
 
 config HAVE_MRC
-	bool "Add a Memory Reference Code binary"
-	default y
+	bool "Add a System Agent binary"
 	help
-	  Select this option to add a blob containing
-	  memory reference code.
+	  Select this option to add a System Agent binary to
+	  the resulting coreboot image.
+
 	  Note: Without this binary coreboot will not work
 
-if HAVE_MRC
-
 config MRC_FILE
-	string "Intel memory refeference code path and filename"
-	default "3rdparty/blobs/northbridge/intel/sandybridge/systemagent-r6.bin"
+	string "Intel System Agent path and filename"
+	depends on HAVE_MRC
+	default "mrc.bin"
 	help
 	  The path and filename of the file to use as System Agent
-	  binary. Note that this points to the sandybridge binary file
-	  which is will not work, but it serves its purpose to do builds.
+	  binary.
 
 config MRC_BIN_ADDRESS
 	hex
@@ -91,8 +89,6 @@ config MRC_BIN_ADDRESS
 config MRC_RMT
 	bool "Enable MRC RMT training + debug prints"
 	default n
-
-endif # HAVE_MRC
 
 # Cache As RAM region layout:
 #

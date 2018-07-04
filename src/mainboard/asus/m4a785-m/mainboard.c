@@ -17,12 +17,10 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/io.h>
-#include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
-#include "southbridge/amd/sb700/sb700.h"
-#include "southbridge/amd/sb700/smbus.h"
-#include "southbridge/amd/rs780/rs780.h"
+#include <southbridge/amd/sb700/sb700.h>
+#include <southbridge/amd/sb700/smbus.h>
+#include <southbridge/amd/rs780/rs780.h>
 
 #define ADT7461_ADDRESS 0x4C
 #define ARA_ADDRESS     0x0C /* Alert Response Address */

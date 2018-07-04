@@ -2,7 +2,7 @@
 chip northbridge/amd/amdfam10/root_complex
 	device cpu_cluster 0 on
 		chip cpu/amd/socket_ASB2  #L1 and DDR3
-			 device lapic 0 on end
+			device lapic 0 on end
 		end
 	end
 	device domain 0 on
@@ -54,49 +54,49 @@ chip northbridge/amd/amdfam10/root_complex
 							device i2c 53 on end
 						end
 					end # SM
-					device pci 14.1 on end # IDE    0x439c
-					device pci 14.2 on end # HDA    0x4383
+					device pci 14.1 on end # IDE	0x439c
+					device pci 14.2 on end # HDA	0x4383
 					device pci 14.3 on
-                                                chip superio/winbond/w83627hf
-                                                        device pnp 2e.0 off #  Floppy
-                                                                io 0x60 = 0x3f0
-                                                                irq 0x70 = 6
-                                                                drq 0x74 = 2
-                                                        end
-                                                        device pnp 2e.1 off #  Parallel Port
-                                                                io 0x60 = 0x378
-                                                                irq 0x70 = 7
-                                                        end
-                                                        device pnp 2e.2 on #  Com1
-                                                                io 0x60 = 0x3f8
-                                                                irq 0x70 = 4
-                                                        end
-                                                        device pnp 2e.3 on #  Com2
-                                                                io 0x60 = 0x2f8
-                                                                irq 0x70 = 3
-                                                        end
-                                                        device pnp 2e.5 on #  Keyboard
-                                                                io 0x60 = 0x60
-                                                                io 0x62 = 0x64
-                                                                irq 0x70 = 1
-                                                                irq 0x72 = 12
-                                                        end
-                                                        device pnp 2e.6 off  # SFI
-                                                                io 0x62 = 0x100
-                                                        end
-                                                        device pnp 2e.7 off #  GPIO_GAME_MIDI
-                                                                io 0x60 = 0x220
-                                                                io 0x62 = 0x300
-                                                                irq 0x70 = 9
-                                                        end
-                                                        device pnp 2e.8 off end #  WDTO_PLED
-                                                        device pnp 2e.9 off end #  GPIO_SUSLED
-                                                        device pnp 2e.a off end #  ACPI
-                                                        device pnp 2e.b on #  HW Monitor
-                                                                io 0x60 = 0x290
-                                                                irq 0x70 = 5
-                                                        end
-                                                end     #superio/winbond/w83627hf
+						chip superio/winbond/w83627hf
+							device pnp 2e.0 off #  Floppy
+								io 0x60 = 0x3f0
+								irq 0x70 = 6
+								drq 0x74 = 2
+							end
+							device pnp 2e.1 off #  Parallel Port
+								io 0x60 = 0x378
+								irq 0x70 = 7
+							end
+							device pnp 2e.2 on #  Com1
+								io 0x60 = 0x3f8
+								irq 0x70 = 4
+							end
+							device pnp 2e.3 on #  Com2
+								io 0x60 = 0x2f8
+								irq 0x70 = 3
+							end
+							device pnp 2e.5 on #  Keyboard
+								io 0x60 = 0x60
+								io 0x62 = 0x64
+								irq 0x70 = 1
+								irq 0x72 = 12
+							end
+							device pnp 2e.6 off  # SFI
+								io 0x62 = 0x100
+							end
+							device pnp 2e.7 off #  GPIO_GAME_MIDI
+								io 0x60 = 0x220
+								io 0x62 = 0x300
+								irq 0x70 = 9
+							end
+							device pnp 2e.8 off end #  WDTO_PLED
+							device pnp 2e.9 off end #  GPIO_SUSLED
+							device pnp 2e.a off end #  ACPI
+							device pnp 2e.b on #  HW Monitor
+								io 0x60 = 0x290
+								irq 0x70 = 5
+							end
+						end	#superio/winbond/w83627hf
 					end # LPC	0x439d
 					device pci 14.4 off end # PCIB 0x4384, NOTE: PCI interface pins shared with GPIO {GPIO 35:0}
 					device pci 14.5 on end # USB 2

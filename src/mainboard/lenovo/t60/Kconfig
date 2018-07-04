@@ -23,7 +23,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select H8_DOCK_EARLY_INIT
 	select HAVE_CMOS_DEFAULT
 	select I945_LVDS
-	select INTEL_GMA_VBT_HAVE_DATA_FILE
+	select INTEL_GMA_HAVE_VBT
 
 config MAINBOARD_DIR
 	string

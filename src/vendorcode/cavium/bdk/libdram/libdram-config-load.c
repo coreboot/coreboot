@@ -38,6 +38,14 @@
 ***********************license end**************************************/
 #include <bdk.h>
 
+/* FIXME(dhendrix): added */
+#include <console/console.h>	/* for die() */
+#include <string.h>
+#include <libbdk-arch/bdk-model.h>
+#include <libbdk-hal/bdk-config.h>
+#include <soc/twsi.h>
+#include <device/i2c_simple.h>
+
 /**
  * Load a "odt_*rank_config" structure
  *
@@ -157,10 +165,12 @@ const dram_config_t *libdram_config_load(bdk_node_t node)
             }
             else
             {
+#if 0
                 int spd_size;
                 const void *spd_data = bdk_config_get_blob(&spd_size, BDK_CONFIG_DDR_SPD_DATA, dimm, lmc, node);
                 if (spd_data && spd_size)
                     cfg->config[lmc].dimm_config_table[dimm].spd_ptr = spd_data;
+#endif
             }
         }
     }

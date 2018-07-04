@@ -1078,7 +1078,7 @@ static int do_match(int key, struct match_state *state, int *ans)
 
 static void conf(struct menu *menu)
 {
-	struct menu *submenu = 0;
+	struct menu *submenu = NULL;
 	const char *prompt = menu_get_prompt(menu);
 	struct symbol *sym;
 	int res;
@@ -1245,7 +1245,7 @@ static void show_help(struct menu *menu)
 static void conf_choice(struct menu *menu)
 {
 	const char *prompt = _(menu_get_prompt(menu));
-	struct menu *child = 0;
+	struct menu *child = NULL;
 	struct symbol *active;
 	int selected_index = 0;
 	int last_top_row = 0;

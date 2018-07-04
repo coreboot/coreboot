@@ -26,7 +26,7 @@
 #define SMRBASE		0x14	/* System Memory RCOMP Base Address Register, 32 bit? */
 #define MCHCFGNS	0x52	/* MCH (scrubber) configuration register, 16 bit */
 
-#define PAM_0 		0x59
+#define PAM_0		0x59
 
 #define DRB_ROW_0	0x60	/* DRAM Row Boundary register, 8 bit */
 #define DRB_ROW_1	0x61

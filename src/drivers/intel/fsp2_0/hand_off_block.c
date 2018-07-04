@@ -232,7 +232,7 @@ static void display_fsp_version_info_hob(const void *hob, size_t size)
 			 (fvih->Count * sizeof (FIRMWARE_VERSION_INFO)));
 	size -= sizeof(SMBIOS_STRUCTURE);
 
-	printk(BIOS_DEBUG, "Display FSP Version Info HOB \n");
+	printk(BIOS_DEBUG, "Display FSP Version Info HOB\n");
 	for (index = 0; index < fvih->Count; index++) {
 		cnt = strlen(str_ptr);
 
@@ -247,7 +247,7 @@ static void display_fsp_version_info_hob(const void *hob, size_t size)
 			continue;
 		}
 		/*
-		 * Firmware Version String is consist of 2 informations
+		 * Firmware Version String consist of 2 pieces of information
 		 * 1. Component Name: string type data holds FW type name.
 		 * 2. Version Information : Either a string type data or
 		 * numeric field holds FW version information.

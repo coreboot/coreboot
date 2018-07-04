@@ -33,9 +33,24 @@ struct soc_intel_common_config {
 	int chipset_lockdown;
 	struct gspi_cfg gspi[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 	struct dw_i2c_bus_config i2c[CONFIG_SOC_INTEL_I2C_DEV_MAX];
+	/*
+	 * Option for mainboard to skip coreboot MP initialization
+	 * 0 = Make use of coreboot MP Init
+	 * 1 = Make use of FSP MP Init
+	 */
+	uint8_t use_fsp_mp_init;
 };
 
 /* This function to retrieve soc config structure required by common code */
 const struct soc_intel_common_config *chip_get_common_soc_structure(void);
+
+/*
+ * This function will get MP Init config
+ *
+ * Return values:
+ * 0 = Make use of coreboot MP Init
+ * 1 = Make use of FSP MP Init
+ */
+int chip_get_fsp_mp_init(void);
 
 #endif /* SOC_INTEL_COMMON_BLOCK_CHIP_H */

@@ -43,6 +43,7 @@
 #include "southbridge/intel/lynxpoint/pch.h"
 #include "southbridge/intel/lynxpoint/me.h"
 #include <security/tpm/tspi.h>
+#include <cpu/intel/romstage.h>
 
 static inline void reset_system(void)
 {
@@ -55,7 +56,7 @@ static inline void reset_system(void)
 /* platform_enter_postcar() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use,
  * and continues execution in postcar stage. */
-static void platform_enter_postcar(void)
+void platform_enter_postcar(void)
 {
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
@@ -78,34 +79,6 @@ static void platform_enter_postcar(void)
 			MTRR_TYPE_WRBACK);
 
 	run_postcar_phase(&pcf);
-}
-
-asmlinkage void *romstage_main(unsigned long bist)
-{
-	int i;
-	const int num_guards = 4;
-	const u32 stack_guard = 0xdeadbeef;
-	u32 *stack_base = (void *)(CONFIG_DCACHE_RAM_BASE +
-				   CONFIG_DCACHE_RAM_SIZE -
-				   CONFIG_DCACHE_RAM_ROMSTAGE_STACK_SIZE);
-
-	printk(BIOS_DEBUG, "Setting up stack guards.\n");
-	for (i = 0; i < num_guards; i++)
-		stack_base[i] = stack_guard;
-
-	mainboard_romstage_entry(bist);
-
-	/* Check the stack. */
-	for (i = 0; i < num_guards; i++) {
-		if (stack_base[i] == stack_guard)
-			continue;
-		printk(BIOS_DEBUG, "Smashed stack detected in romstage!\n");
-	}
-
-	platform_enter_postcar();
-
-	/* We do not return here */
-	return NULL;
 }
 
 void romstage_common(const struct romstage_params *params)

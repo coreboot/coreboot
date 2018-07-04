@@ -34,6 +34,7 @@
 #include "nvs.h"
 #include <southbridge/intel/common/pciehp.h>
 #include <drivers/intel/gma/i915.h>
+#include <southbridge/intel/common/acpi_pirq_gen.h>
 
 #define NMI_OFF	0
 
@@ -558,12 +559,19 @@ static void southbridge_inject_dsdt(struct device *dev)
 	}
 }
 
+
+static const char *lpc_acpi_name(const struct device *dev)
+{
+	return "LPCB";
+}
+
 static void southbridge_fill_ssdt(struct device *device)
 {
 	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
 	config_t *chip = dev->chip_info;
 
 	intel_acpi_pcie_hotplug_generator(chip->pcie_hotplug_map, 8);
+	intel_acpi_gen_def_acpi_pirq(device);
 }
 
 static struct pci_operations pci_ops = {
@@ -577,6 +585,7 @@ static struct device_operations device_ops = {
 	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.write_acpi_tables      = acpi_write_hpet,
 	.acpi_fill_ssdt_generator = southbridge_fill_ssdt,
+	.acpi_name		= lpc_acpi_name,
 	.init			= lpc_init,
 	.scan_bus		= scan_lpc_bus,
 	.ops_pci		= &pci_ops,

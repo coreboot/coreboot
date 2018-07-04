@@ -147,12 +147,29 @@ static void mch_domain_init(struct device *dev)
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 }
 
+static const char *northbridge_acpi_name(const struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PCI0";
+
+	if (dev->path.type != DEVICE_PATH_PCI || dev->bus->secondary != 0)
+		return NULL;
+
+	switch (dev->path.pci.devfn) {
+	case PCI_DEVFN(0, 0):
+		return "MCHC";
+	}
+
+	return NULL;
+}
+
 static struct device_operations pci_domain_ops = {
 	.read_resources   = mch_domain_read_resources,
 	.set_resources    = mch_domain_set_resources,
 	.init             = mch_domain_init,
 	.scan_bus         = pci_domain_scan_bus,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
+	.acpi_name        = northbridge_acpi_name,
 };
 
 static void cpu_bus_init(struct device *dev)

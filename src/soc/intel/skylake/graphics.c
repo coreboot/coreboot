@@ -101,7 +101,7 @@ uintptr_t graphics_soc_write_acpi_opregion(struct device *device,
 	global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 
 	/* If GOP is not used, exit here */
-	if (!IS_ENABLED(CONFIG_INTEL_GMA_ADD_VBT_DATA_FILE))
+	if (!IS_ENABLED(CONFIG_INTEL_GMA_ADD_VBT))
 		return current;
 
 	/* If IGD is disabled, exit here */

@@ -42,7 +42,9 @@
  * Intenral use only.
  */
 
-
+#ifndef __DRAM_ENV_H_
+#define __DRAM_ENV_H_
 extern const char *lookup_env_parameter(const char *format, ...) __attribute__ ((format(printf, 1, 2)));
 extern const char *lookup_env_parameter_ull(const char *format, ...) __attribute__ ((format(printf, 1, 2)));
 
+#endif

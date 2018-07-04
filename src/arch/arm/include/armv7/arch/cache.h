@@ -48,8 +48,8 @@
 #define SCTLR_SW	(1 << 10)	/* SWP and SWPB enable		*/
 #define SCTLR_Z		(1 << 11)	/* Branch prediction enable	*/
 #define SCTLR_I		(1 << 12)	/* Instruction cache enable	*/
-#define SCTLR_V		(1 << 13)	/* Low/high exception vectors 	*/
-#define SCTLR_RR  	(1 << 14)	/* Round Robin select		*/
+#define SCTLR_V		(1 << 13)	/* Low/high exception vectors	*/
+#define SCTLR_RR	(1 << 14)	/* Round Robin select		*/
 /* Bits 16:15 are reserved */
 #define SCTLR_HA	(1 << 17)	/* Hardware Access flag enable	*/
 /* Bit 18 is reserved */

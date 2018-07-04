@@ -46,6 +46,7 @@
 int sd_mmc_enter_standby(struct storage_media *media);
 uint64_t sd_mmc_extract_uint32_bits(const uint32_t *array, int start,
 	int count);
+int sd_mmc_go_idle(struct storage_media *media);
 int sd_mmc_send_status(struct storage_media *media, ssize_t tries);
 int sd_mmc_set_blocklen(struct sd_mmc_ctrlr *ctrlr, int len);
 

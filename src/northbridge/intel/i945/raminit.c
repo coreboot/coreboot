@@ -1198,13 +1198,6 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 	if (sysinfo->interleaved)
 		cum1 = 0;
 
-#if 0
-	/* Exception: Channel 1 is not populated. C1DRB stays zero */
-	if (sysinfo->dimm[2] == SYSINFO_DIMM_NOT_POPULATED &&
-			sysinfo->dimm[3] == SYSINFO_DIMM_NOT_POPULATED)
-		cum1 = 0;
-#endif
-
 	for (i = 0; i < 2 * DIMM_SOCKETS; i++) {
 		cum1 += sysinfo->banksize[i + 4];
 		MCHBAR8(C1DRB0+i) = cum1;

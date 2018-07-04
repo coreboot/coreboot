@@ -30,7 +30,6 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
-#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/common/gpio.h>
 #include "ec/google/chromeec/ec.h"
 #include <arch/cpu.h>
@@ -104,9 +103,9 @@ void mainboard_rcba_config(void)
 	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
 
 	/* Enable IOAPIC (generic) */
-	RCBA16(EOIC) = 0x0100;
+	RCBA16(OIC) = 0x0100;
 	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(EOIC);
+	(void) RCBA16(OIC);
 }
 
 static uint8_t *locate_spd(void)

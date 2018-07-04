@@ -9,6 +9,8 @@ SPD_SOURCES += hynix_dimm_H9CCNNNCLGALAR-NUD    # 0b0110
 SPD_SOURCES += micron_dimm_MT52L512M32D2PF-107  # 0b0111
 SPD_SOURCES += micron_dimm_MT52L1G32D4PG-107    # 0b1000
 SPD_SOURCES += micron_dimm_MT52L256M32D1PF-107  # 0b1001
+SPD_SOURCES += samsung_dimm_K4E6E304EC-EGCF     # 0b1010
+SPD_SOURCES += samsung_dimm_K4EBE304EC-EGCF     # 0b1011
 
 bootblock-y += gpio.c
 

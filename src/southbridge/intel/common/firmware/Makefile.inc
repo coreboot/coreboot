@@ -63,7 +63,8 @@ ifeq ($(CONFIG_CHECK_ME),y)
 endif
 ifeq ($(CONFIG_USE_ME_CLEANER),y)
 	printf "    ME_CLEANER coreboot.pre\n"
-	util/me_cleaner/me_cleaner.py $(obj)/coreboot.pre > \
+	util/me_cleaner/me_cleaner.py $(obj)/coreboot.pre \
+		$(patsubst "%,%,$(patsubst %",%,$(CONFIG_ME_CLEANER_ARGS))) > \
 		$(obj)/me_cleaner.log
 endif
 ifeq ($(CONFIG_HAVE_GBE_BIN),y)

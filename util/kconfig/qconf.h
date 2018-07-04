@@ -43,7 +43,7 @@ class ConfigList : public QTreeWidget {
 	Q_OBJECT
 	typedef class QTreeWidget Parent;
 public:
-	ConfigList(ConfigView* p, const char *name = 0);
+	ConfigList(ConfigView* p, const char *name = NULL);
 	void reinit(void);
 	ConfigView* parent(void) const
 	{
@@ -209,7 +209,7 @@ class ConfigView : public QWidget {
 	Q_OBJECT
 	typedef class QWidget Parent;
 public:
-	ConfigView(QWidget* parent, const char *name = 0);
+	ConfigView(QWidget* parent, const char *name = NULL);
 	~ConfigView(void);
 	static void updateList(ConfigItem* item);
 	static void updateListAll(void);
@@ -242,7 +242,7 @@ class ConfigInfoView : public QTextBrowser {
 	Q_OBJECT
 	typedef class QTextBrowser Parent;
 public:
-	ConfigInfoView(QWidget* parent, const char *name = 0);
+	ConfigInfoView(QWidget* parent, const char *name = NULL);
 	bool showDebug(void) const { return _showDebug; }
 
 public slots:
@@ -272,7 +272,7 @@ class ConfigSearchWindow : public QDialog {
 	Q_OBJECT
 	typedef class QDialog Parent;
 public:
-	ConfigSearchWindow(ConfigMainWindow* parent, const char *name = 0);
+	ConfigSearchWindow(ConfigMainWindow* parent, const char *name = NULL);
 
 public slots:
 	void saveSettings(void);

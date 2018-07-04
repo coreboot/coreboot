@@ -1,0 +1,2 @@
+config BOARD_OPENCELLULAR_ROTUNDU
+	bool "Rotundu"

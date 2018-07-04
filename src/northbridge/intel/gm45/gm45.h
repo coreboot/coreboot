@@ -17,7 +17,7 @@
 #ifndef __NORTHBRIDGE_INTEL_GM45_GM45_H__
 #define __NORTHBRIDGE_INTEL_GM45_GM45_H__
 
-#include "southbridge/intel/i82801ix/i82801ix.h"
+#include <southbridge/intel/i82801ix/i82801ix.h>
 
 #ifndef __ACPI__
 

@@ -1,3 +1,6 @@
+#ifndef __CB_BDK_FUSE_H__
+#define __CB_BDK_FUSE_H__
+
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -115,3 +118,4 @@ extern int bdk_fuse_field_soft_blow(bdk_node_t node, int fuse);
  */
 extern int bdk_fuse_field_hard_blow(bdk_node_t node, int start_fuse, uint64_t fuses0, uint64_t fuses1);
 
+#endif

@@ -38,6 +38,7 @@
 ***********************license end**************************************/
 #include <bdk.h>
 #include "libbdk-arch/bdk-csrs-gpio.h"
+#include "libbdk-hal/bdk-gpio.h"
 
 /* This code is an optional part of the BDK. It is only linked in
     if BDK_REQUIRE() needs it */

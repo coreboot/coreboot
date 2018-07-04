@@ -36,7 +36,7 @@ Name(UOM9, 6)
 
 Method(UCOC, 0) {
 	Sleep(20)
-    	Store(0x13,CMTI)
+	Store(0x13,CMTI)
 	Store(0,GPSL)
 }
 

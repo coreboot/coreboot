@@ -315,6 +315,18 @@ no_msr_11e:
 	orl	$CR0_CacheDisable, %eax
 	movl	%eax, %cr0
 
+	/*
+	 * An unidentified combination of speculative reads and branch
+	 * predictions inside WRPROT-cacheable memory can cause invalidation
+	 * of cachelines and loss of stack on models based on NetBurst
+	 * microarchitecture. Therefore disable WRPROT region entirely for
+	 * all family F models.
+	 */
+	movl	$1, %eax
+	cpuid
+	cmp	$0xf, %ah
+	je	skip_cache_rom
+
 	/* Enable cache for our code in Flash because we do XIP here */
 	movl	$MTRR_PHYS_BASE(1), %ecx
 	xorl	%edx, %edx
@@ -322,7 +334,7 @@ no_msr_11e:
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
 	 * https://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
-	movl	$copy_and_run, %eax
+	movl	$_program, %eax
 	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
 	orl	$MTRR_TYPE_WRPROT, %eax
 	wrmsr
@@ -331,6 +343,8 @@ no_msr_11e:
 	rdmsr
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
+
+skip_cache_rom:
 
 	post_code(0x2e)
 	/* Enable cache. */

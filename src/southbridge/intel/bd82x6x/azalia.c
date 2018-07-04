@@ -23,7 +23,6 @@
 #include <arch/io.h>
 #include <delay.h>
 #include <device/azalia_device.h>
-#include <southbridge/intel/common/rcba.h>
 #include "pch.h"
 
 #define HDA_ICII_REG 0x68

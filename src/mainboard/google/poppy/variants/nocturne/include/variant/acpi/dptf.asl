@@ -18,22 +18,22 @@
 #define DPTF_CPU_CRITICAL		105
 
 #define DPTF_TSR0_SENSOR_ID		1
-#define DPTF_TSR0_SENSOR_NAME		"systherm0"
+#define DPTF_TSR0_SENSOR_NAME		"Ambient"
 #define DPTF_TSR0_PASSIVE		48
 #define DPTF_TSR0_CRITICAL		90
 
 #define DPTF_TSR1_SENSOR_ID		2
-#define DPTF_TSR1_SENSOR_NAME		"systherm1"
+#define DPTF_TSR1_SENSOR_NAME		"Charger"
 #define DPTF_TSR1_PASSIVE		48
 #define DPTF_TSR1_CRITICAL		90
 
 #define DPTF_TSR2_SENSOR_ID		3
-#define DPTF_TSR2_SENSOR_NAME		"systherm2"
+#define DPTF_TSR2_SENSOR_NAME		"DRAM"
 #define DPTF_TSR2_PASSIVE		65
 #define DPTF_TSR2_CRITICAL		75
 
 #define DPTF_TSR3_SENSOR_ID		4
-#define DPTF_TSR3_SENSOR_NAME		"systherm3"
+#define DPTF_TSR3_SENSOR_NAME		"eMMC"
 #define DPTF_TSR3_PASSIVE		65
 #define DPTF_TSR3_CRITICAL		75
 
@@ -52,20 +52,19 @@ Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */
 	Package () { \_SB.PCI0.B0D4, \_SB.PCI0.B0D4, 100, 50, 0, 0, 0, 0 },
 
-	/* CPU Throttle Effect on TSR0 */
+	/* CPU Throttle Effect on Ambient (TSR0) */
 	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR0, 100, 600, 0, 0, 0, 0 },
 
-	/* CPU Throttle Effect on TSR1 */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR1, 100, 600, 0, 0, 0, 0 },
-
-	/* CPU Throttle Effect on TSR2 */
+	/* CPU Throttle Effect on DRAM (TSR2) */
 	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR2, 100, 600, 0, 0, 0, 0 },
 
-	/* CPU Throttle Effect on TSR3 */
+	/* CPU Throttle Effect on eMMC (TSR3) */
 	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR3, 100, 600, 0, 0, 0, 0 },
 
-	/* Charger Throttle Effect on TSR0 */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR0, 100, 600, 0, 0, 0, 0 },
+#ifdef DPTF_ENABLE_CHARGER
+	/* Charger Throttle Effect on Charger (TSR1) */
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR1, 100, 600, 0, 0, 0, 0 },
+#endif
 })
 
 Name (MPPC, Package ()

@@ -1,0 +1,41 @@
+if BOARD_FACEBOOK_WATSON
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_INTEL_FSP_BROADWELL_DE
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select INTEGRATED_UART
+	select SERIRQ_CONTINUOUS_MODE
+
+config MAINBOARD_DIR
+	string
+	default "facebook/watson"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Watson"
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config CBFS_SIZE
+	hex
+	default 0x00800000
+
+config VIRTUAL_ROM_SIZE
+	hex
+	# Set to CONFIG_ROM_SIZE*2 if using concatenated flash chips.
+	# See FSP's Kconfig for details.
+	default ROM_SIZE
+
+config DRIVERS_UART_8250IO
+	def_bool n
+
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+endif # BOARD_FACEBOOK_WATSON

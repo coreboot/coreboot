@@ -13,7 +13,6 @@
 
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
-#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/acpi/ec.h>
 #include <console/console.h>

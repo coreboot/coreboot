@@ -31,6 +31,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
 	{ AGESA_DO_RESET,                 agesa_Reset },
 	{ AGESA_FCH_OEM_CALLOUT,          agesa_fch_initreset },
 	{ AGESA_HALT_THIS_AP,             agesa_HaltThisAp },
+	{ AGESA_HEAP_REBASE,              agesa_HeapRebase },
 	{ AGESA_GNB_PCIE_SLOT_RESET,      agesa_PcieSlotResetControl }
 };
 #else
@@ -45,6 +46,8 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
 	{ AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
 	{ AGESA_READ_SPD,                 agesa_ReadSpd },
 	{ AGESA_GNB_PCIE_SLOT_RESET,      agesa_PcieSlotResetControl },
+	{ AGESA_GET_TEMP_HEAP_BASE,       agesa_GetTempHeapBase },
+	{ AGESA_HEAP_REBASE,              agesa_HeapRebase },
 #if ENV_RAMSTAGE
 	{ AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
 	{ AGESA_RUNFUNC_ON_ALL_APS,       agesa_RunFcnOnAllAps },
@@ -196,7 +199,7 @@ static void callout_ap_entry(void *unused)
 {
 	AGESA_STATUS Status = AGESA_UNSUPPORTED;
 
-	printk(BIOS_DEBUG, "%s Func: 0x%x,  Data: 0x%lx, Ptr: 0x%p \n",
+	printk(BIOS_DEBUG, "%s Func: 0x%x,  Data: 0x%lx, Ptr: 0x%p\n",
 		__func__, agesadata.Func, agesadata.Data, agesadata.ConfigPtr);
 
 	/* Check if this AP should run the function */

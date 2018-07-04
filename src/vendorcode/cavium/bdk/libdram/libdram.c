@@ -36,9 +36,20 @@
 * QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION. THE ENTIRE  RISK
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
+
 #include <bdk.h>
-#include "libbdk-arch/bdk-csrs-mio_fus.h"
+#include <libbdk-arch/bdk-csrs-mio_fus.h>
+#include <libbdk-dram/bdk-dram-config.h>
+#include <libbdk-hal/bdk-config.h>
+#include <libbdk-hal/bdk-gpio.h>
+#include <libbdk-hal/bdk-l2c.h>
+#include <libbdk-hal/bdk-utils.h>
+#include <libbdk-os/bdk-init.h>
+#include <libdram/libdram-config.h>
 #include "dram-internal.h"
+#include <stddef.h>                /* for NULL */
+#include <lame_string.h>        /* for strtol() and friends */
+
 
 /* This global variable is accessed through dram_is_verbose() to determine
    the verbosity level. Use that function instead of setting it directly */
@@ -55,35 +66,33 @@ dram_config_t __libdram_global_cfg;
 
 static void bdk_dram_clear_mem(bdk_node_t node)
 {
-    if (!bdk_is_platform(BDK_PLATFORM_ASIM)) {
-        uint64_t mbytes = bdk_dram_get_size_mbytes(node);
-        uint64_t skip = (node == bdk_numa_master()) ? bdk_dram_get_top_of_bdk() : 0;
-        uint64_t len =  (mbytes << 20) - skip;
+     uint64_t mbytes = bdk_dram_get_size_mbytes(node);
+     uint64_t skip = (node == bdk_numa_master()) ? bdk_dram_get_top_of_bdk() : 0;
+     uint64_t len =  (mbytes << 20) - skip;
 
-        BDK_TRACE(DRAM, "N%d: Clearing DRAM\n", node);
-        if (skip)
-        {
-            /* All memory below skip may contain valid data, so we can't clear
-               it. We still need to make sure all cache lines in this area are
-               fully dirty so that ECC bits will be updated on store. A single
-               write to the cache line isn't good enough because partial LMC
-               writes may be enabled */
-            ddr_print("N%d: Rewriting DRAM: start 0 length 0x%lx\n", node, skip);
-            volatile uint64_t *ptr = bdk_phys_to_ptr(bdk_numa_get_address(node, 8));
-            /* The above pointer got address 8 to avoid NULL pointer checking
-               in bdk_phys_to_ptr(). Correct it here */
-            ptr--;
-            uint64_t *end = bdk_phys_to_ptr(bdk_numa_get_address(node, skip));
-            while (ptr < end)
-            {
-                *ptr = *ptr;
-                ptr++;
-            }
-        }
-        ddr_print("N%d: Clearing DRAM: start 0x%lx length 0x%lx\n", node, skip, len);
-        bdk_zero_memory(bdk_phys_to_ptr(bdk_numa_get_address(node, skip)), len);
-        BDK_TRACE(DRAM, "N%d: DRAM clear complete\n", node);
-    }
+     BDK_TRACE(DRAM, "N%d: Clearing DRAM\n", node);
+     if (skip)
+     {
+         /* All memory below skip may contain valid data, so we can't clear
+            it. We still need to make sure all cache lines in this area are
+            fully dirty so that ECC bits will be updated on store. A single
+            write to the cache line isn't good enough because partial LMC
+            writes may be enabled */
+         ddr_print("N%d: Rewriting DRAM: start 0 length 0x%llx\n", node, skip);
+         volatile uint64_t *ptr = bdk_phys_to_ptr(bdk_numa_get_address(node, 8));
+         /* The above pointer got address 8 to avoid NULL pointer checking
+            in bdk_phys_to_ptr(). Correct it here */
+         ptr--;
+         uint64_t *end = bdk_phys_to_ptr(bdk_numa_get_address(node, skip));
+         while (ptr < end)
+         {
+             *ptr = *ptr;
+             ptr++;
+         }
+     }
+     ddr_print("N%d: Clearing DRAM: start 0x%llx length 0x%llx\n", node, skip, len);
+     bdk_zero_memory(bdk_phys_to_ptr(bdk_numa_get_address(node, skip)), len);
+     BDK_TRACE(DRAM, "N%d: DRAM clear complete\n", node);
 }
 
 static void bdk_dram_clear_ecc(bdk_node_t node)
@@ -110,7 +119,7 @@ static void bdk_dram_enable_ecc_reporting(bdk_node_t node)
         if (! CAVIUM_IS_MODEL(CAVIUM_CN88XX_PASS1_X)) { // added 81xx and 83xx
             DRAM_CSR_WRITE(node, BDK_LMCX_INT_ENA_W1S(lmc), -1ULL);
             BDK_CSR_INIT(lmc_int_ena_w1s, node, BDK_LMCX_INT_ENA_W1S(lmc));
-            ddr_print("N%d.LMC%d: %-36s : 0x%08lx\n",
+            ddr_print("N%d.LMC%d: %-36s : 0x%08llx\n",
                       node, lmc, "LMC_INT_ENA_W1S", lmc_int_ena_w1s.u);
         }
     }
@@ -130,7 +139,7 @@ static void bdk_dram_disable_ecc_reporting(bdk_node_t node)
         if (! CAVIUM_IS_MODEL(CAVIUM_CN88XX_PASS1_X)) { // added 81xx and 83xx
             DRAM_CSR_WRITE(node, BDK_LMCX_INT_ENA_W1C(lmc), -1ULL);
             BDK_CSR_INIT(lmc_int_ena_w1c, node, BDK_LMCX_INT_ENA_W1C(lmc));
-            ddr_print("N%d.LMC%d: %-36s : 0x%08lx\n",
+            ddr_print("N%d.LMC%d: %-36s : 0x%08llx\n",
                       node, lmc, "LMC_INT_ENA_W1C", lmc_int_ena_w1c.u);
         }
     }
@@ -171,14 +180,15 @@ static int bdk_libdram_tune_node(int node)
     // Automatically tune the data byte DLL write offsets
     // allow override of default setting
     str = getenv("ddr_tune_write_offsets");
+    str = NULL;
     if (str)
         do_dllwo = !!strtoul(str, NULL, 0);
     if (do_dllwo) {
-	BDK_TRACE(DRAM, "N%d: Starting DLL Write Offset Tuning for LMCs\n", node);
-	errs = perform_dll_offset_tuning(node, /* write */1, /* tune */1); 
-	BDK_TRACE(DRAM, "N%d: Finished DLL Write Offset Tuning for LMCs, %d errors)\n",
-	       node, errs);
-	tot_errs += errs;
+        BDK_TRACE(DRAM, "N%d: Starting DLL Write Offset Tuning for LMCs\n", node);
+        errs = perform_dll_offset_tuning(node, /* write */1, /* tune */1);
+        BDK_TRACE(DRAM, "N%d: Finished DLL Write Offset Tuning for LMCs, %d errors)\n",
+               node, errs);
+        tot_errs += errs;
     }
 
     // disabled by default for now, does not seem to be needed much?
@@ -287,9 +297,6 @@ static int bdk_libdram_maybe_tune_node(int node)
  */
 int libdram_config(int node, const dram_config_t *dram_config, int ddr_clock_override)
 {
-    if (bdk_is_platform(BDK_PLATFORM_ASIM))
-        return bdk_dram_get_size_mbytes(node);
-
     /* Boards may need to mux the TWSI connection between THUNDERX and the BMC.
        This allows the BMC to monitor DIMM temeratures and health */
     int gpio_select = bdk_config_get_int(BDK_CONFIG_DRAM_CONFIG_GPIO);
@@ -446,7 +453,7 @@ int libdram_tune(int node)
     // the only way this entry point should be called is from a MENU item,
     // so, enable any non-running cores on this node, and leave them
     // running at the end...
-    ddr_print("N%d: %s: Starting cores (mask was 0x%lx)\n",
+    ddr_print("N%d: %s: Starting cores (mask was 0x%llx)\n",
               node, __FUNCTION__, bdk_get_running_coremask(node));
     bdk_init_cores(node, ~0ULL);
 
@@ -600,7 +607,7 @@ int libdram_margin_read_timing(int node)
 int libdram_margin(int node)
 {
     int ret_rt, ret_wt, ret_rv, ret_wv;
-    char *risk[2] = { "Low Risk", "Needs Review" };
+    const char *risk[2] = { "Low Risk", "Needs Review" };
     int l2c_is_locked = bdk_l2c_is_locked(node);
 
     // for now, no margining on 81xx, until we can reduce the dynamic runtime size... 
@@ -614,7 +621,7 @@ int libdram_margin(int node)
     // the only way this entry point should be called is from a MENU item,
     // so, enable any non-running cores on this node, and leave them
     // running at the end...
-    ddr_print("N%d: %s: Starting cores (mask was 0x%lx)\n",
+    ddr_print("N%d: %s: Starting cores (mask was 0x%llx)\n",
               node, __FUNCTION__, bdk_get_running_coremask(node));
     bdk_init_cores(node, ~0ULL);
 
@@ -712,7 +719,7 @@ uint32_t libdram_get_freq_from_pll(int node, int lmc)
 #ifndef DRAM_CSR_WRITE_INLINE
 void dram_csr_write(bdk_node_t node, const char *csr_name, bdk_csr_type_t type, int busnum, int size, uint64_t address, uint64_t value)
 {
-    VB_PRT(VBL_CSRS, "N%d: DDR Config %s[%016lx] => %016lx\n", node, csr_name, address, value);
+    VB_PRT(VBL_CSRS, "N%d: DDR Config %s[%016llx] => %016llx\n", node, csr_name, address, value);
     bdk_csr_write(node, type, busnum, size, address, value);
 }
 #endif

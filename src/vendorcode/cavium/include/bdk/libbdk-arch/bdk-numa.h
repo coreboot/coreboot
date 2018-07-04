@@ -1,3 +1,6 @@
+#ifndef __CB_BDK_NUMA_H__
+#define __CB_BDK_NUMA_H__
+
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -36,6 +39,10 @@
 * QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION. THE ENTIRE  RISK
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
+
+/* FIXME(dhendricks): added */
+#include <libbdk-arch/bdk-asm.h>
+#include <libbdk-arch/bdk-model.h>
 
 /**
  * @file
@@ -113,7 +120,7 @@ extern int bdk_numa_exists(bdk_node_t node);
  *
  * @return
  */
-extern int bdk_numa_is_only_one();
+extern int bdk_numa_is_only_one(void);
 
 /**
  * Given a physical address without a node, return the proper physical address
@@ -136,4 +143,4 @@ static inline uint64_t bdk_numa_get_address(bdk_node_t node, uint64_t pa)
     return pa;
 }
 
-
+#endif

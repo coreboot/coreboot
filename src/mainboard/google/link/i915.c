@@ -157,7 +157,7 @@ static unsigned long times[4096];
 static int run(int index)
 {
 	int i, prev = 0;
-	struct iodef *id, *lastidread = 0;
+	struct iodef *id, *lastidread = NULL;
 	unsigned long u, t;
 	if (index >= niodefs)
 		return index;

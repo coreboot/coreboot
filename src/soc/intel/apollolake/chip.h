@@ -150,13 +150,6 @@ struct soc_intel_apollolake_config {
 	 * (1) Power
 	 * (2) Power & Performance */
 	enum pnp_settings pnp_settings;
-
-	/*
-	 * Option for mainboard to skip coreboot MP initialization
-	 * 0 = Make use of coreboot MP Init
-	 * 1 = Make use of FSP MP Init
-	 */
-	uint8_t use_fsp_mp_init;
 };
 
 typedef struct soc_intel_apollolake_config config_t;

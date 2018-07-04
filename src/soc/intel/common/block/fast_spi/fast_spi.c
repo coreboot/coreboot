@@ -34,7 +34,11 @@
  */
 void *fast_spi_get_bar(void)
 {
-	device_t dev = PCH_DEV_SPI;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev = PCH_DEV_SPI;
+#else
+	struct device *dev = PCH_DEV_SPI;
+#endif
 	uintptr_t bar;
 
 	bar = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
@@ -51,7 +55,11 @@ void *fast_spi_get_bar(void)
  */
 void fast_spi_init(void)
 {
-	device_t dev = PCH_DEV_SPI;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev = PCH_DEV_SPI;
+#else
+	struct device *dev = PCH_DEV_SPI;
+#endif
 	uint8_t bios_cntl;
 
 	bios_cntl = pci_read_config8(dev, SPIBAR_BIOS_CONTROL);
@@ -71,7 +79,11 @@ void fast_spi_init(void)
  */
 static void fast_spi_set_bios_control_reg(uint8_t bios_cntl_bit)
 {
-	device_t dev = PCH_DEV_SPI;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev = PCH_DEV_SPI;
+#else
+	struct device *dev = PCH_DEV_SPI;
+#endif
 	uint8_t bc_cntl;
 
 	assert((bios_cntl_bit & (bios_cntl_bit - 1)) == 0);
@@ -253,7 +265,11 @@ void fast_spi_cache_bios_region(void)
  */
 void fast_spi_early_init(uintptr_t spi_base_address)
 {
-	device_t dev = PCH_DEV_SPI;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev = PCH_DEV_SPI;
+#else
+	struct device *dev = PCH_DEV_SPI;
+#endif
 	uint8_t pcireg;
 
 	/* Assign Resources to SPI Controller */
@@ -285,7 +301,11 @@ bool fast_spi_wpd_status(void)
 /* Enable SPI Write Protect. */
 void fast_spi_enable_wp(void)
 {
-	device_t dev = PCH_DEV_SPI;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev = PCH_DEV_SPI;
+#else
+	struct device *dev = PCH_DEV_SPI;
+#endif
 	uint8_t bios_cntl;
 
 	bios_cntl = pci_read_config8(dev, SPIBAR_BIOS_CONTROL);

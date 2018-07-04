@@ -18,8 +18,8 @@
 
 cd $(dirname $0)
 
-CROSSGCC_DATE="June 3rd, 2018"
-CROSSGCC_VERSION="1.51"
+CROSSGCC_DATE="June 11th, 2018"
+CROSSGCC_VERSION="1.52"
 CROSSGCC_COMMIT=$( git describe )
 
 # default settings
@@ -38,17 +38,17 @@ THREADS=1
 GMP_VERSION=6.1.2
 MPFR_VERSION=3.1.5
 MPC_VERSION=1.0.3
-GCC_VERSION=6.3.0
+GCC_VERSION=8.1.0
 GCC_AUTOCONF_VERSION=2.69
-BINUTILS_VERSION=2.29.1
+BINUTILS_VERSION=2.30
 GDB_VERSION=8.0
 IASL_VERSION=20180531
 PYTHON_VERSION=3.5.1
 EXPAT_VERSION=2.2.1
 # CLANG version number
-CLANG_VERSION=4.0.0
+CLANG_VERSION=6.0.0
 MAKE_VERSION=4.2.1
-CMAKE_VERSION=3.9.0-rc3
+CMAKE_VERSION=3.11.3
 
 # GCC toolchain archive locations
 # These are sanitized by the jenkins toolchain test builder, so if
@@ -57,7 +57,7 @@ CMAKE_VERSION=3.9.0-rc3
 GMP_ARCHIVE="https://ftpmirror.gnu.org/gmp/gmp-${GMP_VERSION}.tar.xz"
 MPFR_ARCHIVE="https://ftpmirror.gnu.org/mpfr/mpfr-${MPFR_VERSION}.tar.xz"
 MPC_ARCHIVE="https://ftpmirror.gnu.org/mpc/mpc-${MPC_VERSION}.tar.gz"
-GCC_ARCHIVE="https://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2"
+GCC_ARCHIVE="https://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz"
 BINUTILS_ARCHIVE="https://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.xz"
 GDB_ARCHIVE="https://ftpmirror.gnu.org/gdb/gdb-${GDB_VERSION}.tar.xz"
 IASL_ARCHIVE="https://acpica.org/sites/acpica/files/acpica-unix2-${IASL_VERSION}.tar.gz"
@@ -69,7 +69,7 @@ CFE_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/cfe-${CLANG_VERSION}.src
 CRT_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz"
 CTE_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/clang-tools-extra-${CLANG_VERSION}.src.tar.xz"
 MAKE_ARCHIVE="https://ftpmirror.gnu.org/make/make-${MAKE_VERSION}.tar.bz2"
-CMAKE_ARCHIVE="https://cmake.org/files/v3.9/cmake-${CMAKE_VERSION}.tar.gz"
+CMAKE_ARCHIVE="https://cmake.org/files/v3.11/cmake-${CMAKE_VERSION}.tar.gz"
 
 ALL_ARCHIVES="$GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE \
 	$GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $IASL_ARCHIVE \
@@ -752,6 +752,8 @@ build_cross_GCC() {
 		--with-mpc=$DESTDIR$TARGETDIR \
 		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE" \
 		&& \
+	mkdir -p gcc/$TARGETARCH && \
+	ln -s $DESTDIR$TARGETDIR/$TARGETARCH/bin gcc/$TARGETARCH/$GCC_VERSION && \
 	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-gcc && \
 	$MAKE install-gcc DESTDIR=$DESTDIR || touch .failed
 
@@ -1191,7 +1193,7 @@ export PATH=$DESTDIR$TARGETDIR/bin:$PATH
 
 # Download, unpack, patch and build all packages
 
-printf "Downloading and verifing tarballs ... \n"
+printf "Downloading and verifing tarballs ...\n"
 mkdir -p tarballs
 for P in $PACKAGES; do
 	download "$P" || exit "$?"
@@ -1199,21 +1201,21 @@ for P in $PACKAGES; do
 done
 printf "Downloaded tarballs ... ${green}ok${NC}\n"
 
-printf "Unpacking and patching ... \n"
+printf "Unpacking and patching ...\n"
 for P in $PACKAGES; do
 	unpack_and_patch $P || exit 1
 done
 printf "Unpacked and patched ... ${green}ok${NC}\n"
 
 if [ -n "$BOOTSTRAPONLY" ]; then
-	printf "Building bootstrap compiler only ... \n"
+	printf "Building bootstrap compiler only ...\n"
 	for pkg in GMP MPFR MPC GCC; do
 		build_for_host $pkg
 	done
 	exit 0
 fi
 
-printf "Building packages ... \n"
+printf "Building packages ...\n"
 for package in $PACKAGES; do
 	build $package
 done

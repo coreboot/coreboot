@@ -80,7 +80,11 @@ struct cse_device {
 void heci_init(uintptr_t tempbar)
 {
 	struct cse_device *cse = car_get_var_ptr(&g_cse);
-	device_t dev = PCH_DEV_CSE;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev = PCH_DEV_CSE;
+#else
+	struct device *dev = PCH_DEV_CSE;
+#endif
 	u8 pcireg;
 
 	/* Assume it is already initialized, nothing else to do */

@@ -53,7 +53,6 @@
  * to be executed.
  */
 
-#define __ASSEMBLY__
 #include <arch/asm.h>
 #include <arch/lib_helpers.h>
 #include <arch/transition.h>

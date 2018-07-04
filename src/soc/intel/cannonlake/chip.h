@@ -201,12 +201,6 @@ struct soc_intel_cannonlake_config {
 	uint8_t TcoIrqSelect;
 	uint8_t TcoIrqEnable;
 
-	/*
-	 * Option for mainboard to skip coreboot MP initialization
-	 * 0 = Make use of coreboot MP Init
-	 * 1 = Make use of FSP MP Init
-	 */
-	uint8_t use_fsp_mp_init;
 	/* VrConfig Settings for 5 domains
 	 * 0 = System Agent, 1 = IA Core, 2 = Ring,
 	 * 3 = GT unsliced,  4 = GT sliced */

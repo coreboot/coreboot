@@ -266,7 +266,11 @@ void spi_init(void)
 	uint8_t *rcrb; /* Root Complex Register Block */
 	uint32_t rcba; /* Root Complex Base Address */
 	uint8_t bios_cntl;
-	device_t dev = PCH_DEV_LPC;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev = PCH_DEV_LPC;
+#else
+	struct device *dev = PCH_DEV_LPC;
+#endif
 	ich9_spi_regs *ich9_spi;
 
 	pci_read_config_dword(dev, 0xf0, &rcba);

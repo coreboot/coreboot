@@ -69,7 +69,7 @@ static int smbus_wait_until_done(u16 smbus_base)
  */
 void enable_smbus(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	/* Set the SMBus device statically. */
 	dev = PCI_DEV(0x0, 0x1f, 0x3);

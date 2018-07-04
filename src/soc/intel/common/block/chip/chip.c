@@ -32,3 +32,18 @@ const struct soc_intel_common_config *chip_get_common_soc_structure(void)
 
 	return soc_config;
 }
+
+/*
+ * This function will get MP Init config
+ *
+ * Return values:
+ * 0 = Make use of coreboot MP Init
+ * 1 = Make use of FSP MP Init
+ */
+int chip_get_fsp_mp_init(void)
+{
+	const struct soc_intel_common_config *common_config;
+	common_config = chip_get_common_soc_structure();
+
+	return common_config->use_fsp_mp_init;
+}

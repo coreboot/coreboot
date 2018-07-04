@@ -223,7 +223,6 @@ Device (EC0)
 	Method (_Q03, 0, NotSerialized)
 	{
 		Store ("EC: POWER BUTTON", Debug)
-		Notify (\_SB.PWRB, 0x80)
 	}
 
 	// AC Connected

@@ -88,16 +88,16 @@ up in SPD. Under Linux you can see present SPD addresses with following commands
 
 	phcoder@sid:~/coreboot/util/autoport$ sudo modprobe i2c-dev
 	phcoder@sid:~/coreboot/util/autoport$ sudo i2cdetect -l
-	i2c-0	i2c       	i915 gmbus ssc                  	I2C adapter
-	i2c-1	i2c       	i915 gmbus vga                  	I2C adapter
-	i2c-2	i2c       	i915 gmbus panel                	I2C adapter
-	i2c-3	i2c       	i915 gmbus dpc                  	I2C adapter
-	i2c-4	i2c       	i915 gmbus dpb                  	I2C adapter
-	i2c-5	i2c       	i915 gmbus dpd                  	I2C adapter
-	i2c-6	i2c       	DPDDC-B                         	I2C adapter
-	i2c-7	i2c       	DPDDC-C                         	I2C adapter
-	i2c-8	i2c       	DPDDC-D                         	I2C adapter
-	i2c-9	smbus     	SMBus I801 adapter at 0400      	SMBus adapter
+	i2c-0	i2c		i915 gmbus ssc				I2C adapter
+	i2c-1	i2c		i915 gmbus vga				I2C adapter
+	i2c-2	i2c		i915 gmbus panel			I2C adapter
+	i2c-3	i2c		i915 gmbus dpc				I2C adapter
+	i2c-4	i2c		i915 gmbus dpb				I2C adapter
+	i2c-5	i2c		i915 gmbus dpd				I2C adapter
+	i2c-6	i2c		DPDDC-B					I2C adapter
+	i2c-7	i2c		DPDDC-C					I2C adapter
+	i2c-8	i2c		DPDDC-D					I2C adapter
+	i2c-9	smbus		SMBus I801 adapter at 0400		SMBus adapter
 	phcoder@sid:~/coreboot/util/autoport$ sudo i2cdetect 9
 	WARNING! This program can confuse your I2C bus, cause data loss and worse!
 	I will probe file /dev/i2c-9.

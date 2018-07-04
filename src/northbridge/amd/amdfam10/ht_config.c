@@ -26,7 +26,7 @@
 struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
 {
 	struct dram_base_mask_t d;
-	device_t dev = __f1_dev[0];
+	struct device *dev = __f1_dev[0];
 
 	u32 temp;
 	temp = pci_read_config32(dev, 0x44 + (nodeid << 3)); //[39:24] at [31:16]
@@ -57,7 +57,7 @@ void set_config_map_reg(struct bus *link)
 	tempreg |= (busn_max << 24)|(busn_min << 16)|(linkn << 8);
 
 	for (i = 0; i < sysconf.nodes; i++) {
-		device_t dev = __f1_dev[i];
+		struct device *dev = __f1_dev[i];
 		pci_write_config32(dev, 0xe0 + ht_c_index * 4, tempreg);
 	}
 }
@@ -68,7 +68,7 @@ void clear_config_map_reg(struct bus *link)
 	u32 ht_c_index = get_ht_c_index(link);
 
 	for (i = 0; i < sysconf.nodes; i++) {
-		device_t dev = __f1_dev[i];
+		struct device *dev = __f1_dev[i];
 		pci_write_config32(dev, 0xe0 + ht_c_index * 4, 0);
 	}
 }
@@ -190,8 +190,8 @@ void store_conf_mmio_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,
 }
 
 
-void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
-				u32 io_min, u32 io_max)
+void set_io_addr_reg(struct device *dev, u32 nodeid, u32 linkn, u32 reg,
+		     u32 io_min, u32 io_max)
 {
 	u32 i;
 	u32 tempreg;

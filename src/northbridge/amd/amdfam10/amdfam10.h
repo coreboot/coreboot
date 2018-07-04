@@ -987,7 +987,7 @@ extern struct sys_info sysinfo_car;
 #endif
 */
 #ifndef __PRE_RAM__
-device_t get_node_pci(u32 nodeid, u32 fn);
+struct device *get_node_pci(u32 nodeid, u32 fn);
 #endif
 
 #ifdef __PRE_RAM__
@@ -1021,10 +1021,10 @@ BOOL AMD_CB_ManualBUIDSwapList(u8 Node, u8 Link, const u8 **List);
 struct acpi_rsdp;
 
 #ifndef __SIMPLE_DEVICE__
-unsigned long northbridge_write_acpi_tables(device_t device,
+unsigned long northbridge_write_acpi_tables(struct device *device,
 					    unsigned long start,
 					    struct acpi_rsdp *rsdp);
-void northbridge_acpi_write_vars(device_t device);
+void northbridge_acpi_write_vars(struct device *device);
 #endif
 
 #endif /* AMDFAM10_H */

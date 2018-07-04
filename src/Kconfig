@@ -295,6 +295,17 @@ config DEVICETREE
 	  Examples: "devicetree.variant.cb"
 	            "variant/devicetree.cb"
 
+config OVERRIDE_DEVICETREE
+	string
+	default ""
+	help
+	  This symbol allows variants to provide an override devicetree file to
+	  override the registers and/or add new devices on top of the ones
+	  provided by baseboard devicetree using CONFIG_DEVICETREE.
+
+	  Examples: "devicetree.variant-override.cb"
+	            "variant/devicetree-override.cb"
+
 config CBFS_SIZE
 	hex "Size of CBFS filesystem in ROM"
 	# Default value set at the end of the file
@@ -748,7 +759,7 @@ config DEBUG_SMI
 	bool "Output verbose SMI debug messages"
 	default n
 	depends on HAVE_SMI_HANDLER
-	select SPI_FLASH_SMM if SPI_CONSOLE
+	select SPI_FLASH_SMM if SPI_CONSOLE || CONSOLE_SPI_FLASH
 	help
 	  This option enables additional SMI related debug messages.
 
@@ -1141,6 +1152,7 @@ config RELOCATABLE_MODULES
 
 config NO_STAGE_CACHE
 	bool
+	default y if !HAVE_ACPI_RESUME
 	help
 	  Do not save any component in stage cache for resume path. On resume,
 	  all components would be read back from CBFS again.

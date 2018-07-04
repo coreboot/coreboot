@@ -45,7 +45,7 @@
 #include "spd.h"
 #include <reset.h>
 #include <southbridge/amd/rs780/rs780.h>
-#include "southbridge/amd/sb800/early_setup.c"
+#include <southbridge/amd/sb800/early_setup.c>
 
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"

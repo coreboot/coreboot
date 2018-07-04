@@ -301,7 +301,7 @@ static void sata_init(struct device *dev)
 	pci_write_config32(dev, 0x300, reg32);
 }
 
-static void sata_enable(device_t dev)
+static void sata_enable(struct device *dev)
 {
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
@@ -322,7 +322,8 @@ static void sata_enable(device_t dev)
 	pci_write_config16(dev, 0x90, map);
 }
 
-static void sata_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void sata_set_subsystem(struct device *dev, unsigned vendor,
+			       unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

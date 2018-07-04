@@ -43,6 +43,10 @@
 #include "libbdk-arch/bdk-csrs-l2c.h"
 #include "dram-internal.h"
 
+#include "dram-env.h"
+#include <libbdk-hal/bdk-rng.h>
+#include <lame_string.h>
+
 /* Define DDR_DEBUG to debug the DDR interface.  This also enables the
 ** output necessary for review by Cavium Inc., Inc. */
 /* #define DDR_DEBUG */
@@ -166,8 +170,8 @@ static int init_octeon_dram_interface(bdk_node_t node,
         }
     }
 
-    error_print("N%d.LMC%d Configuration Completed: %d MB\n",
-                node, ddr_interface_num, mem_size_mbytes);
+    printf("N%d.LMC%d Configuration Completed: %d MB\n",
+           node, ddr_interface_num, mem_size_mbytes);
     return mem_size_mbytes;
 }
 
@@ -503,7 +507,7 @@ int test_dram_byte_hw(bdk_node_t node, int ddr_interface_num,
     errors = 0;
 
     bdk_dram_address_extract_info(p, &node_address, &lmc, &dimm, &prank, &lrank, &bank, &row, &col);
-    VB_PRT(VBL_DEV2, "test_dram_byte_hw: START at A:0x%012lx, N%d L%d D%d R%d/%d B%1x Row:%05x Col:%05x\n",
+    VB_PRT(VBL_DEV2, "test_dram_byte_hw: START at A:0x%012llx, N%d L%d D%d R%d/%d B%1x Row:%05x Col:%05x\n",
            p, node_address, lmc, dimm, prank, lrank, bank, row, col);
 
     // only check once per call, and ignore if no match...
@@ -540,7 +544,7 @@ int test_dram_byte_hw(bdk_node_t node, int ddr_interface_num,
 	p1 = p + k;
 
 	bdk_dram_address_extract_info(p1, &node_address, &lmc, &dimm, &prank, &lrank, &bank, &row, &col);
-        VB_PRT(VBL_DEV3, "test_dram_byte_hw: NEXT interation at A:0x%012lx, N%d L%d D%d R%d/%d B%1x Row:%05x Col:%05x\n",
+        VB_PRT(VBL_DEV3, "test_dram_byte_hw: NEXT interation at A:0x%012llx, N%d L%d D%d R%d/%d B%1x Row:%05x Col:%05x\n",
                p1, node_address, lmc, dimm, prank, lrank, bank, row, col);
 
         /*
@@ -1013,7 +1017,7 @@ int initialize_ddr_clock(bdk_node_t node,
             
             // always write LMC0 CSR, it must be active
             DRAM_CSR_WRITE(node, BDK_LMCX_DDR_PLL_CTL(0), ddr_pll_ctl.u);
-            ddr_print("%-45s : 0x%016lx\n", "LMC0: DDR_PLL_CTL", ddr_pll_ctl.u);
+            ddr_print("%-45s : 0x%016llx\n", "LMC0: DDR_PLL_CTL", ddr_pll_ctl.u);
 
             // only when LMC1 is active
             // NOTE: 81xx has only 1 LMC, and 83xx can operate in 1-LMC mode
@@ -1030,7 +1034,7 @@ int initialize_ddr_clock(bdk_node_t node,
 
                 // always write LMC1 CSR when it is active
                 DRAM_CSR_WRITE(node, BDK_LMCX_DDR_PLL_CTL(1), ddr_pll_ctl.u);
-                ddr_print("%-45s : 0x%016lx\n", "LMC1: DDR_PLL_CTL", ddr_pll_ctl.u);
+                ddr_print("%-45s : 0x%016llx\n", "LMC1: DDR_PLL_CTL", ddr_pll_ctl.u);
             }
 
             /*
@@ -1107,7 +1111,7 @@ int initialize_ddr_clock(bdk_node_t node,
 			    if (clkf > max_clkf) continue; /* PLL requires clkf to be limited */
 			    if (_abs(error) > _abs(best_error)) continue;
 
-			    VB_PRT(VBL_TME, "clkr: %2lu, en[%d]: %2d, clkf: %4lu, pll_MHz: %4lu, ddr_hertz: %8lu, error: %8ld\n",
+			    VB_PRT(VBL_TME, "clkr: %2llu, en[%d]: %2d, clkf: %4llu, pll_MHz: %4llu, ddr_hertz: %8llu, error: %8lld\n",
                                     clkr, save_en_idx, _en[save_en_idx], clkf, pll_MHz, calculated_ddr_hertz, error);
 
 			    /* Favor the highest PLL frequency. */
@@ -1143,7 +1147,7 @@ int initialize_ddr_clock(bdk_node_t node,
 			best_error = ddr_hertz - best_calculated_ddr_hertz;
 		    }
 
-		    ddr_print("clkr: %2lu, en[%d]: %2d, clkf: %4lu, pll_MHz: %4lu, ddr_hertz: %8lu, error: %8ld <==\n",
+		    ddr_print("clkr: %2llu, en[%d]: %2d, clkf: %4llu, pll_MHz: %4llu, ddr_hertz: %8llu, error: %8lld <==\n",
 			      best_clkr, best_en_idx, _en[best_en_idx], best_clkf, best_pll_MHz,
 			      best_calculated_ddr_hertz, best_error);
 
@@ -1177,7 +1181,7 @@ int initialize_ddr_clock(bdk_node_t node,
 
                     // make sure we preserve any settings already there
                     ddr_pll_ctl.u = BDK_CSR_READ(node, BDK_LMCX_DDR_PLL_CTL(loop_interface_num));
-                    ddr_print("LMC%d: DDR_PLL_CTL                             : 0x%016lx\n",
+                    ddr_print("LMC%d: DDR_PLL_CTL                             : 0x%016llx\n",
                               loop_interface_num, ddr_pll_ctl.u);
 
                     ddr_pll_ctl.cn83xx.ddr_ps_en = best_en_idx;
@@ -1187,7 +1191,7 @@ int initialize_ddr_clock(bdk_node_t node,
                     ddr_pll_ctl.cn83xx.bwadj = new_bwadj;
 
                     DRAM_CSR_WRITE(node, BDK_LMCX_DDR_PLL_CTL(loop_interface_num), ddr_pll_ctl.u);
-                    ddr_print("LMC%d: DDR_PLL_CTL                             : 0x%016lx\n",
+                    ddr_print("LMC%d: DDR_PLL_CTL                             : 0x%016llx\n",
                               loop_interface_num, ddr_pll_ctl.u);
                 }
             }
@@ -1579,7 +1583,7 @@ int initialize_ddr_clock(bdk_node_t node,
                     lmc_phy_ctl.u = BDK_CSR_READ(node, BDK_LMCX_PHY_CTL(loop_interface_num));
                     lmc_phy_ctl.cn83xx.lv_mode = (~loop_interface_num) & 1; /* Odd LMCs = 0, Even LMCs = 1 */
 
-                    ddr_print("LMC%d: PHY_CTL                                 : 0x%016lx\n",
+                    ddr_print("LMC%d: PHY_CTL                                 : 0x%016llx\n",
                               loop_interface_num, lmc_phy_ctl.u);
                     DRAM_CSR_WRITE(node, BDK_LMCX_PHY_CTL(loop_interface_num), lmc_phy_ctl.u);
                 }
@@ -1860,7 +1864,7 @@ restart_training:
         // NOTE: return is a bitmask of the erroring bytelanes - we only print it
         errors = test_dram_byte_hw(node, lmc, phys_addr, DBTRAIN_DBI, NULL);
 
-        ddr_print("N%d.LMC%d: DBI switchover: TEST: rank %d, phys_addr 0x%lx, errors 0x%x.\n",
+        ddr_print("N%d.LMC%d: DBI switchover: TEST: rank %d, phys_addr 0x%llx, errors 0x%x.\n",
                   node, lmc, rankx, phys_addr, errors);
 
         // NEXT - check for locking
@@ -1895,7 +1899,7 @@ restart_training:
 // end of DBI switchover
 ///////////////////////////////////////////////////////////
 
-uint32_t measure_octeon_ddr_clock(bdk_node_t node,
+static uint32_t measure_octeon_ddr_clock(bdk_node_t node,
 				  const ddr_configuration_t *ddr_configuration,
 				  uint32_t cpu_hertz,
 				  uint32_t ddr_hertz,
@@ -1926,17 +1930,14 @@ uint32_t measure_octeon_ddr_clock(bdk_node_t node,
         core_clocks = bdk_clock_get_count(BDK_CLOCK_TIME) - core_clocks;
         calc_ddr_hertz = ddr_clocks * bdk_clock_get_rate(bdk_numa_local(), BDK_CLOCK_TIME) / core_clocks;
 
-        /* Asim doesn't have a DDR clock, force the measurement to be correct  */
-        if (bdk_is_platform(BDK_PLATFORM_ASIM))
-            calc_ddr_hertz = ddr_hertz;
-
-	ddr_print("LMC%d: Measured DDR clock: %lu, cpu clock: %u, ddr clocks: %lu\n",
+	ddr_print("LMC%d: Measured DDR clock: %llu, cpu clock: %u, ddr clocks: %llu\n",
 		  ddr_interface_num, calc_ddr_hertz, cpu_hertz, ddr_clocks);
 
 	/* Check for unreasonable settings. */
 	if (calc_ddr_hertz == 0) {
 	    error_print("DDR clock misconfigured. Exiting.\n");
-	    exit(1);
+	    /* FIXME(dhendrix): We don't exit() in coreboot */
+//	    exit(1);
 	}
 	return calc_ddr_hertz;
 }

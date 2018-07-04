@@ -43,7 +43,7 @@ void udelay(u32 us)
 	u32 fsb = 100, divisor;
 	u32 d;			/* ticks per us */
 
-	msr = rdmsr(0xce);
+	msr = rdmsr(MSR_PLATFORM_INFO);
 	divisor = (msr.lo >> 8) & 0xff;
 
 	d = fsb * divisor;

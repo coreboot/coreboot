@@ -1,0 +1,60 @@
+This enables building on Mac OS and FreeBSD by adding support to their
+variants of the sed utility.
+
+diff -urN gcc-5.2.0.orig/libgcc/config/t-hardfp gcc-5.2.0/libgcc/config/t-hardfp
+--- gcc-5.2.0.orig/libgcc/config/t-hardfp	2015-01-05 04:33:28.000000000 -0800
++++ gcc-8.1.0/libgcc/config/t-hardfp	2016-04-06 12:04:51.000000000 -0700
+@@ -59,21 +59,52 @@
+ 
+ hardfp_func_list := $(filter-out $(hardfp_exclusions),$(hardfp_func_list))
+ 
++HOST_OS ?= $(shell uname)
++
+ # Regexp for matching a floating-point mode.
++ifeq ($(HOST_OS), Darwin)
++hardfp_mode_regexp := $(shell echo $(hardfp_float_modes) | sed 's/ /|/g')
++else
++ifeq ($(HOST_OS), FreeBSD)
++hardfp_mode_regexp := $(shell echo $(hardfp_float_modes) | sed 's/ /|/g')
++else
+ hardfp_mode_regexp := $(shell echo $(hardfp_float_modes) | sed 's/ /\\|/g')
++endif
++endif
+ 
+ # Regexp for matching the end of a function name, after the last
+ # floating-point mode.
++ifeq ($(HOST_OS), Darwin)
++hardfp_suffix_regexp := $(shell echo $(hardfp_int_modes) 2 3 | sed 's/ /|/g')
++else
++ifeq ($(HOST_OS), FreeBSD)
++hardfp_suffix_regexp := $(shell echo $(hardfp_int_modes) 2 3 | sed 's/ /|/g')
++else
+ hardfp_suffix_regexp := $(shell echo $(hardfp_int_modes) 2 3 | sed 's/ /\\|/g')
++endif
++endif
+ 
+ # Add -D options to define:
+ #   FUNC: the function name (e.g. __addsf3)
+ #   OP:   the function name without the leading __ and with the last
+ #            floating-point mode removed (e.g. add3)
+ #   TYPE: the last floating-point mode (e.g. sf)
++
++ifeq ($(HOST_OS), Darwin)
+ hardfp_defines_for = \
+   $(shell echo $1 | \
+-    sed 's/\(.*\)\($(hardfp_mode_regexp)\)\($(hardfp_suffix_regexp)\|\)$$/-DFUNC=__& -DOP_\1\3 -DTYPE=\2/')
++    sed -E 's/(.*)($(hardfp_mode_regexp))($(hardfp_suffix_regexp)|.*)$$/-DFUNC=__& -DOP_\1\3 -DTYPE=\2/')
++else
++ifeq ($(HOST_OS), FreeBSD)
++hardfp_defines_for = \
++  $(shell echo $1 | \
++    sed -r 's/(.*)($(hardfp_mode_regexp))($(hardfp_suffix_regexp)|.*)$$/-DFUNC=__& -DOP_\1\3 -DTYPE=\2/')
++else
++hardfp_defines_for = \
++  $(shell echo $1 | \
++    sed 's/\(.*\)\($(hardfp_mode_regexp)\)\($(hardfp_suffix_regexp)\|\)$$/-DFUNC=__& -DOP_\1\3 -DTYPE=\2/')
++endif
++endif
+ 
+ hardfp-o = $(patsubst %,%$(objext),$(hardfp_func_list))
+ $(hardfp-o): %$(objext): $(srcdir)/config/hardfp.c

@@ -59,7 +59,6 @@
 #define IOMMU_BASE2		0xfed91000ULL
 
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/common/rcba.h>
 
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__

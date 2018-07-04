@@ -150,6 +150,8 @@ ramstage-y += b64_decode.c
 ramstage-$(CONFIG_ACPI_NHLT) += nhlt.c
 ramstage-y += list.c
 ramstage-$(CONFIG_FLATTENED_DEVICE_TREE) += device_tree.c
+ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit.c
+ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit_payload.c
 
 romstage-y += cbmem_common.c
 romstage-y += imd_cbmem.c

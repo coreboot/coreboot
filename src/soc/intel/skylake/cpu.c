@@ -310,9 +310,9 @@ static void configure_misc(void)
 	msr.hi = 0;
 	wrmsr(IA32_PACKAGE_THERM_INTERRUPT, msr);
 
-	/* Enable PROCHOT */
 	msr = rdmsr(MSR_POWER_CTL);
 	msr.lo |= (1 << 0);	/* Enable Bi-directional PROCHOT as an input*/
+	msr.lo &= ~POWER_CTL_C1E_MASK;	/* Disable C1E */
 	msr.lo |= (1 << 23);	/* Lock it */
 	wrmsr(MSR_POWER_CTL, msr);
 }
@@ -425,7 +425,7 @@ void soc_core_init(struct device *cpu)
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some
 	 * of these banks are core vs package scope. For now every CPU clears
 	 * every bank. */
-	mca_configure();
+	mca_configure(NULL);
 
 	/* Enable the local CPU apics */
 	enable_lapic_tpr();

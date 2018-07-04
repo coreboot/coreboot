@@ -542,7 +542,7 @@ static void southbridge_smi_monitor(unsigned int node, smm_state_save_area_t *st
 			data = RCBA32(0x1e18);
 			data &= mask;
 			// if (smi1)
-			// 	southbridge_smi_command(data);
+			//	southbridge_smi_command(data);
 			// return;
 		}
 		// Fall through to debug

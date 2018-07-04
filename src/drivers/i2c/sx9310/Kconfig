@@ -1,0 +1,6 @@
+config DRIVERS_I2C_SX9310
+	bool
+	default n
+	depends on HAVE_ACPI_TABLES
+	help
+	  Board has a Semtech SX9310 proximity sensor.

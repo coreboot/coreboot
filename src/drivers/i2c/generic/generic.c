@@ -202,6 +202,9 @@ static void i2c_generic_enable(struct device *dev)
 {
 	struct drivers_i2c_generic_config *config = dev->chip_info;
 
+	if (!config)
+		return;
+
 	/* Check if device is present by reading GPIO */
 	if (config->device_present_gpio) {
 		int present = gpio_get(config->device_present_gpio);
@@ -219,9 +222,8 @@ static void i2c_generic_enable(struct device *dev)
 	dev->ops = &i2c_generic_ops;
 
 	/* Name the device as per description provided in devicetree */
-	if (config && config->desc) {
+	if (config->desc)
 		dev->name = config->desc;
-	}
 }
 
 struct chip_operations drivers_i2c_generic_ops = {

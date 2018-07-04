@@ -54,7 +54,7 @@
 #define SMBHSTSTS_HOST_BUSY	(1 << 0)
 
 #define SMBUS_TIMEOUT		(10 * 1000 * 100)
-#define SMBUS_BLOCK_MAXLEN 	32
+#define SMBUS_BLOCK_MAXLEN	32
 
 static void smbus_delay(void)
 {

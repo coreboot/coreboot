@@ -324,7 +324,7 @@ void southbridge_clear_smi_status(void)
 	reset_pm1_status();
 
 	/* Set EOS bit so other SMIs can occur. */
- 	smi_set_eos();
+	smi_set_eos();
 }
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)

@@ -56,7 +56,7 @@
 #define EXC_VID_LOW32_SERR		15
 #define NUM_EXC_VIDS			16
 
-#ifndef __ASSEMBLY__
+#ifndef __ASSEMBLER__
 
 #include <stdint.h>
 #include <arch/lib_helpers.h>
@@ -197,6 +197,6 @@ void exc_dispatch(struct exc_state *exc_state, uint64_t id);
  */
 void exc_entry(struct exc_state *exc_state, uint64_t id);
 
-#endif /* __ASSEMBLY__ */
+#endif /* __ASSEMBLER__ */
 
 #endif /* __ARCH_ARM64_TRANSITION_H__ */

@@ -1,3 +1,6 @@
+#ifndef __CB_BDK_MODEL_H__
+#define __CB_BDK_MODEL_H__
+
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -88,8 +91,8 @@
 #define CAVIUM_CN8XXX           (CAVIUM_CN88XX_PASS1_0 | __OM_IGNORE_MODEL)
 #define CAVIUM_CN9XXX           (CAVIUM_CN93XX_PASS1_0 | __OM_IGNORE_MODEL)
 
-static inline uint64_t cavium_get_model() __attribute__ ((pure, always_inline));
-static inline uint64_t cavium_get_model()
+static inline uint64_t cavium_get_model(void) __attribute__ ((pure, always_inline));
+static inline uint64_t cavium_get_model(void)
 {
 #ifdef BDK_BUILD_HOST
     extern uint32_t thunder_remote_get_model(void) __attribute__ ((pure));
@@ -158,13 +161,5 @@ static inline int CAVIUM_IS_MODEL(uint32_t arg_model)
  */
 extern int cavium_is_altpkg(uint32_t arg_model);
 
-/**
- * Return the SKU string for a chip
- *
- * @param node   Node to get SKU for
- *
- * @return Chip's SKU
- */
-extern const char* bdk_model_get_sku(int node);
-
 /** @} */
+#endif

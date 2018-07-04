@@ -140,8 +140,11 @@ void soc_pch_pirq_init(const struct device *dev)
 	pch_interrupt_routing[7] = config->pirqh_routing;
 
 	itss_irq_init(pch_interrupt_routing);
-
-	device_t irq_dev;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t irq_dev;
+#else
+	struct device *irq_dev;
+#endif
 	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
 		u8 int_pin = 0, int_line = 0;
 

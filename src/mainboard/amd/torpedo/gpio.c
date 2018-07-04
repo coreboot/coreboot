@@ -75,7 +75,7 @@ void gpioEarlyInit(void) {
 	StripInfo = (Data8 & BIT7) >> 7;
 	Data8 = Mmio8_G (GpioMmioAddr, GPIO_31);
 	StripInfo |= (Data8 & BIT7) >> 6;
-	if (StripInfo < boardRevC) { 		// for old board. Rev B
+	if (StripInfo < boardRevC) {		// for old board. Rev B
 		Mmio8_And_Or (IoMuxMmioAddr, GPIO_111, 0x00, 3);		// function 3
 		Mmio8_And_Or (IoMuxMmioAddr, GPIO_113, 0x00, 0);		// function 0
 	}

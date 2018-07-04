@@ -43,7 +43,7 @@ intel_gma_get_controller_info(void)
 	return &gfx_controller_info;
 }
 
-static void qemu_nb_init(device_t dev)
+static void qemu_nb_init(struct device *dev)
 {
 	/* Map memory at 0xc0000 - 0xfffff */
 	int i;

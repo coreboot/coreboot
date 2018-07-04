@@ -37,4 +37,12 @@
 /* eSPI virtual wire reporting */
 #define EC_SCI_GPI		GPE0_ESPI
 
+/* Camera Sensor config */
+#define GPIO_RCAM_PWR_EN	GPP_D7
+#define GPIO_PCH_RCAM_CLK_EN	GPP_D14
+#define GPIO_RCAM_RST_L		GPP_D16
+#define GPIO_FCAM_PWR_EN	GPP_D8
+#define GPIO_PCH_FCAM_CLK_EN	GPP_D13
+#define GPIO_FCAM_RST_L		GPP_D15
+
 #endif /* BASEBOARD_GPIO_H */

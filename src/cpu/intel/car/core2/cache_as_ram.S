@@ -150,7 +150,7 @@ addrsize_set_high:
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
 	 * https://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
-	movl	$copy_and_run, %eax
+	movl	$_program, %eax
 	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
 	orl	$MTRR_TYPE_WRPROT, %eax
 	wrmsr

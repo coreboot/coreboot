@@ -1,3 +1,5 @@
+#ifndef __BDK_HAL_USB_H__
+#define __BDK_HAL_USB_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -82,7 +84,7 @@ typedef enum
  *
  * @return Zero on success, negative on failure
  */
-extern int bdk_usb_initialize(bdk_node_t node, int usb_port, bdk_usb_clock_t clock_type);
+int bdk_usb_initialize(bdk_node_t node, int usb_port, bdk_usb_clock_t clock_type);
 
 /**
  * Put the USB port into a specific testing mode
@@ -93,7 +95,7 @@ extern int bdk_usb_initialize(bdk_node_t node, int usb_port, bdk_usb_clock_t clo
  *
  * @return Zero on success, negative on failure
  */
-extern int bdk_usb_test_mode(bdk_node_t node, int usb_port, bdk_usb_test_t test_mode);
+int bdk_usb_test_mode(bdk_node_t node, int usb_port, bdk_usb_test_t test_mode);
 
 /**
  * Convert a USB test enumeration into a string for display to the user
@@ -104,6 +106,7 @@ extern int bdk_usb_test_mode(bdk_node_t node, int usb_port, bdk_usb_test_t test_
  *
  * @return String name of test
  */
-extern const char *bdk_usb_get_test_mode_string(bdk_node_t node, int usb_port, bdk_usb_test_t test_mode);
+const char *bdk_usb_get_test_mode_string(bdk_node_t node, int usb_port, bdk_usb_test_t test_mode);
 
 /** @} */
+#endif

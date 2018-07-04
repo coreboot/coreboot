@@ -29,7 +29,7 @@ endif
 
 bootblock-y += gpio.c gpio_init.c pmic_wrap.c mt6391.c
 bootblock-y += ../common/wdt.c
-bootblock-y += mmu_operations.c
+bootblock-y += ../common/mmu_operations.c mmu_operations.c
 
 ################################################################################
 
@@ -58,7 +58,7 @@ romstage-y += gpio.c
 romstage-y += pmic_wrap.c mt6391.c
 romstage-y += memory.c
 romstage-y += emi.c dramc_pi_basic_api.c dramc_pi_calibration_api.c
-romstage-y += mmu_operations.c
+romstage-y += ../common/mmu_operations.c mmu_operations.c
 romstage-y += rtc.c
 
 ################################################################################

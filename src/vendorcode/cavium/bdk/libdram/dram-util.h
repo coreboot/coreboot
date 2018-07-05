@@ -42,6 +42,8 @@
  * are not meant for users's of the libdram API.
  */
 
+#if 0
+/* FIXME(dhendrix): min/max are defined in stdlib.h */
 /**
  * Standard min(a,b) macro
  */
@@ -56,6 +58,7 @@
 #define max(X, Y)				\
 	({ typeof (X) __x = (X); typeof(Y) __y = (Y);	\
 		(__x > __y) ? __x : __y; })
+#endif
 
 /**
  * Absolute value of an integer

@@ -267,7 +267,7 @@ static void sata_init(struct device *dev)
  * Set SATA controller mode early so the resource allocator can
  * properly assign IO/Memory resources for the controller.
  */
-static void sata_enable(device_t dev)
+static void sata_enable(struct device *dev)
 {
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;

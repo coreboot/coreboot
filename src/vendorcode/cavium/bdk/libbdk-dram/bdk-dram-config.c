@@ -37,7 +37,9 @@
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
 #include <bdk.h>
-#include <unistd.h>
+#include <string.h>
+#include <libbdk-hal/bdk-config.h>
+#include <libbdk-hal/bdk-l2c.h>
 
 BDK_REQUIRE_DEFINE(DRAM_CONFIG);
 
@@ -70,22 +72,6 @@ int bdk_dram_config(int node, int ddr_clock_override)
     }
 
     return mbytes;
-}
-
-/**
- * Do DRAM configuration tuning
- *
- * @param node   Node to tune
- *
- * @return Success or Fail
- */
-int bdk_dram_tune(int node)
-{
-    int ret;
-    BDK_TRACE(DRAM, "N%d: Starting DRAM tuning\n", node);
-    ret = libdram_tune(node);
-    BDK_TRACE(DRAM, "N%d: DRAM tuning returned %d\n", node, ret);
-    return ret;
 }
 
 /**
@@ -144,7 +130,9 @@ uint64_t bdk_dram_get_top_of_bdk(void)
      * the address to make it a physical offset. Doing this simplifies the
      * address checks and calculations which only work with physical offsets.
      */
-    uint64_t top_of_bdk = (bdk_ptr_to_phys(sbrk(0)) & bdk_build_mask(40));
+	/* FIXME(dhendrix): we only care about node 0 */
+//    uint64_t top_of_bdk = (bdk_ptr_to_phys(sbrk(0)) & bdk_build_mask(40));
+    uint64_t top_of_bdk = 0;
     uint64_t l2_size = bdk_l2c_get_cache_size_bytes(bdk_numa_master());
     if (top_of_bdk <= l2_size)
     {

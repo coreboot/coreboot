@@ -32,6 +32,7 @@
 #include <cbmem.h>
 #include <string.h>
 #include <drivers/intel/gma/i915.h>
+#include <southbridge/intel/common/acpi_pirq_gen.h>
 #include "nvs.h"
 
 #define NMI_OFF	0
@@ -645,6 +646,40 @@ static void i82801gx_lpc_read_resources(struct device *dev)
 	}
 }
 
+#define SPIBAR16(x) RCBA16(0x3020 + x)
+#define SPIBAR32(x) RCBA32(0x3020 + x)
+
+static void lpc_final(struct device *dev)
+{
+	u16 tco1_cnt;
+
+	if (!IS_ENABLED(CONFIG_INTEL_CHIPSET_LOCKDOWN))
+		return;
+
+	SPIBAR16(PREOP) = SPI_OPPREFIX;
+	/* Set SPI opcode menu */
+	SPIBAR16(OPTYPE) = SPI_OPTYPE;
+	SPIBAR32(OPMENU) = SPI_OPMENU_LOWER;
+	SPIBAR32(OPMENU + 4) = SPI_OPMENU_UPPER;
+
+	/* Lock SPIBAR */
+	SPIBAR16(0) = SPIBAR16(0) | (1 << 15);
+
+	/* BIOS Interface Lockdown */
+	RCBA32(0x3410) |= 1 << 0;
+
+	/* Global SMI Lock */
+	pci_or_config16(dev, GEN_PMCON_1, 1 << 4);
+
+	/* TCO_Lock */
+	tco1_cnt = inw(DEFAULT_PMBASE + 0x60 + TCO1_CNT);
+	tco1_cnt |= (1 << 12); /* TCO lock */
+	outw(tco1_cnt, DEFAULT_PMBASE + 0x60 + TCO1_CNT);
+
+	/* Indicate finalize step with post code */
+	outb(POST_OS_BOOT, 0x80);
+}
+
 static void set_subsystem(struct device *dev, unsigned int vendor,
 			  unsigned int device)
 {
@@ -684,6 +719,16 @@ static void southbridge_inject_dsdt(struct device *dev)
 	}
 }
 
+static const char *lpc_acpi_name(const struct device *dev)
+{
+	return "LPCB";
+}
+
+static void southbridge_fill_ssdt(device_t device)
+{
+	intel_acpi_gen_def_acpi_pirq(device);
+}
+
 static struct pci_operations pci_ops = {
 	.set_subsystem = set_subsystem,
 };
@@ -694,10 +739,13 @@ static struct device_operations device_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.write_acpi_tables      = acpi_write_hpet,
+	.acpi_fill_ssdt_generator = southbridge_fill_ssdt,
+	.acpi_name		= lpc_acpi_name,
 	.init			= lpc_init,
 	.scan_bus		= scan_lpc_bus,
 	.enable			= i82801gx_enable,
 	.ops_pci		= &pci_ops,
+	.final			= lpc_final,
 };
 
 /* 27b0: 82801GH (ICH7 DH) */

@@ -7,16 +7,16 @@ config BOARD_GOOGLE_BASEBOARD_OCTOPUS
 	select DRIVERS_I2C_DA7219
 	select DRIVERS_I2C_GENERIC
 	select DRIVERS_I2C_HID
-	select DRIVERS_PS2_KEYBOARD
 	select DRIVERS_SPI_ACPI
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_BOARDID
 	select EC_GOOGLE_CHROMEEC_LPC
-	select HAS_TPM if !VBOOT_MOCK_SECDATA
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select MAINBOARD_HAS_CHROMEOS
 	select SOC_ESPI
+	select MAINBOARD_HAS_SPI_TPM_CR50
+	select MAINBOARD_HAS_TPM2
 
 if BOARD_GOOGLE_BASEBOARD_OCTOPUS
 
@@ -28,7 +28,6 @@ config CHROMEOS
 	bool
 	default y
 	select EC_GOOGLE_CHROMEEC_SWITCHES
-	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC if !BOARD_GOOGLE_YORP
 	select HAS_RECOVERY_MRC_CACHE
 	select MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN
 	select VBOOT_LID_SWITCH
@@ -42,18 +41,25 @@ config VARIANT_DIR
 	default "yorp" if BOARD_GOOGLE_YORP
 	default "bip" if BOARD_GOOGLE_BIP
 	default "phaser" if BOARD_GOOGLE_PHASER
+	default "fleex" if BOARD_GOOGLE_FLEEX
+	default "bobba" if BOARD_GOOGLE_BOBBA
 	default "octopus" if BOARD_GOOGLE_OCTOPUS
 
 config DEVICETREE
 	string
-	default "variants/bip/devicetree.cb" if BOARD_GOOGLE_BIP
 	default "variants/baseboard/devicetree.cb"
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb" if !BOARD_GOOGLE_OCTOPUS
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Yorp" if BOARD_GOOGLE_YORP
 	default "Bip" if BOARD_GOOGLE_BIP
 	default "Phaser" if BOARD_GOOGLE_PHASER
+	default "Fleex" if BOARD_GOOGLE_FLEEX
+	default "Bobba" if BOARD_GOOGLE_BOBBA
 	default "Octopus" if BOARD_GOOGLE_OCTOPUS
 
 config MAINBOARD_FAMILY
@@ -66,15 +72,9 @@ config GBB_HWID
 	default "YORP TEST 7755" if BOARD_GOOGLE_YORP
 	default "BIP TEST 5732" if BOARD_GOOGLE_BIP
 	default "PHASER TEST 7167" if BOARD_GOOGLE_PHASER
+	default "FLEEX TEST 7423" if BOARD_GOOGLE_FLEEX
+	default "BOBBA TEST 4516" if BOARD_GOOGLE_BOBBA
 	default "OCTOPUS TEST 6859" if BOARD_GOOGLE_OCTOPUS
-
-config HAS_TPM
-	bool
-	default n
-	select MAINBOARD_HAS_SPI_TPM_CR50
-	select MAINBOARD_HAS_TPM2
-	select SPI_TPM
-	select TPM2
 
 config MAX_CPUS
 	int
@@ -85,9 +85,9 @@ config UART_FOR_CONSOLE
 	default 2
 
 config INCLUDE_NHLT_BLOBS
-	bool "Include blobs for audio."
+	bool "Include blobs for audio"
+	select NHLT_DMIC_2CH_16B
 	select NHLT_DMIC_4CH_16B
-	select NHLT_DA7219
 	select NHLT_MAX98357
 
 config DRIVER_TPM_SPI_BUS

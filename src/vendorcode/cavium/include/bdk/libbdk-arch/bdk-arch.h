@@ -48,24 +48,24 @@
  * <hr>$Revision: 49448 $<hr>
  */
 
+#include <arch/byteorder.h>
+
 #ifndef __BYTE_ORDER
-    #if !defined(__ORDER_BIG_ENDIAN__) || !defined(__ORDER_LITTLE_ENDIAN__) || !defined(__BYTE_ORDER__)
-        #error Unable to determine Endian mode
-    #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        #define __BYTE_ORDER __ORDER_BIG_ENDIAN__
-        #define BDK_LITTLE_ENDIAN_STRUCT __attribute__ ((scalar_storage_order("little-endian")))
-    #elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-        #define __BYTE_ORDER __ORDER_LITTLE_ENDIAN__
-        #define BDK_LITTLE_ENDIAN_STRUCT
-    #else
-        #error Unable to determine Endian mode
-    #endif
-    #define __BIG_ENDIAN    __ORDER_BIG_ENDIAN__
-    #define __LITTLE_ENDIAN __ORDER_LITTLE_ENDIAN__
+ #if (__LITTLE_ENDIAN)
+  #define __BYTE_ORDER __LITTLE_ENDIAN
+ #elif defined(__BIG_ENDIAN)
+  #define __BYTE_ORDER __BIG_ENDIAN
+ #endif
+#endif
+
+#ifndef __LITTLE_ENDIAN
+ #define __LITTLE_ENDIAN 1234
+#endif
+#ifndef __BIG_ENDIAN
+ #define __BIG_ENDIAN 4321
 #endif
 
 #include "bdk-require.h"
-#include "bdk-swap.h"
 #ifndef BDK_BUILD_HOST
 #include "bdk-asm.h"
 #endif
@@ -76,10 +76,8 @@
 #include "bdk-lmt.h"
 #endif
 #include "bdk-warn.h"
-#include "bdk-version.h"
 #ifndef BDK_BUILD_HOST
 #include "bdk-fuse.h"
-#include "bdk-platform.h"
 #endif
 
 #endif

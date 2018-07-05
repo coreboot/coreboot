@@ -1,2 +1,0 @@
-Category: half
-Board URL: http://www.technexion.com/index.php/embedded-mainboards/amd/tim-5690

@@ -188,6 +188,8 @@ void backup_ramstage_section(uintptr_t base, size_t size);
  *   PAYLOAD LOADING   *
  ***********************/
 
+int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size);
+
 /* Load payload into memory in preparation to run. */
 void payload_load(void);
 
@@ -200,10 +202,10 @@ void mirror_payload(struct prog *payload);
 /*
  * Set check_regions to true to check that the payload targets usable memory.
  * With this flag set, if it does not, the load will fail and this function
- * will return NULL.
+ * will return false. On successful payload loading this functions return true.
  *
  * Defined in src/lib/selfboot.c
  */
-void *selfload(struct prog *payload, bool check_regions);
+bool selfload(struct prog *payload, bool check_regions);
 
 #endif /* PROGRAM_LOADING_H */

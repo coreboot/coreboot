@@ -168,7 +168,7 @@ typedef struct {
 	 *	@param[in]  u8   node   = The node on which this chain is located
 	 *	@param[in]  u8   link   = The link on the host for this chain
 	 *	@param[out] u8   secBus = Secondary Bus number for this non-coherent chain
-	 *	@param[out] u8*  subBus = Subordinate Bus number
+	 *	@param[out] u8 *subBus = Subordinate Bus number
 	 *	@param[out] BOOL result = true this routine is supplying the bus numbers
 	 *				  false use auto Bus numbering
 	 *
@@ -194,7 +194,7 @@ typedef struct {
 	 * Parameters:
 	 *	@param[in]  u8  node    = The node on which this chain is located
 	 *	@param[in]  u8  link    = The link on the host for this chain
-	 *	@param[out] u8** list   = supply a pointer to a list
+	 *	@param[out] u8 **list   = supply a pointer to a list
 	 *	@param[out] BOOL result = true to use a manual list
 	 *				  false to initialize the link automatically
 	 *
@@ -226,10 +226,10 @@ typedef struct {
 	 *	@param[in]  u8  Dev       = The Device's PCI device Number
 	 *	@param[in]  u32 DevVenID  = The Device's PCI Vendor + Device ID (offset 0x00)
 	 *	@param[in]  u8  Link      = The Device's link number (0 or 1)
-	 *	@param[in,out] u8*  LinkWidthIn  = modify to change the Link Witdh In
-	 *	@param[in,out] u8*  LinkWidthOut  = modify to change the Link Witdh Out
-	 *	@param[in,out] u32* FreqCap = modify to change the link's frequency capability
-	 *	@param[in,out] u32* FeatureCap = modify to change the link's feature capability
+	 *	@param[in,out] u8 *LinkWidthIn  = modify to change the Link Witdh In
+	 *	@param[in,out] u8 *LinkWidthOut  = modify to change the Link Witdh Out
+	 *	@param[in,out] u32 *FreqCap = modify to change the link's frequency capability
+	 *	@param[in,out] u32 *FeatureCap = modify to change the link's feature capability
 	 *
 	 * ---------------------------------------------------------------------------------------
 	 */
@@ -266,9 +266,9 @@ typedef struct {
 	 *	@param[in]  u8  linkA  = The link on this node
 	 *	@param[in]  u8  nodeB  = The other node on which this link is located
 	 *	@param[in]  u8  linkB  = The link on that node
-	 *	@param[in,out]  u8*  ABLinkWidthLimit = modify to change the Link Witdh In
-	 *	@param[in,out]  u8*  BALinkWidthLimit = modify to change the Link Witdh Out
-	 *	@param[in,out]  u32* PCBFreqCap  = modify to change the link's frequency capability
+	 *	@param[in,out]  u8 *ABLinkWidthLimit = modify to change the Link Witdh In
+	 *	@param[in,out]  u8 *BALinkWidthLimit = modify to change the Link Witdh Out
+	 *	@param[in,out]  u32 *PCBFreqCap  = modify to change the link's frequency capability
 	 *
 	 * ---------------------------------------------------------------------------------------
 	 */
@@ -299,9 +299,9 @@ typedef struct {
 	 *	@param[in]  u8  hostNode  = The node on which this link is located
 	 *	@param[in]  u8  hostLink  = The link about to be initialized
 	 *	@param[in]  u8  Depth  = The depth in the I/O chain from the Host
-	 *	@param[in,out]  u8* DownstreamLinkWidthLimit = modify to change the Link Witdh In
-	 *	@param[in,out]  u8* UpstreamLinkWidthLimit  = modify to change the Link Witdh Out
-	 *	@param[in,out]  u32* PCBFreqCap = modify to change the link's frequency capability
+	 *	@param[in,out]  u8 *DownstreamLinkWidthLimit = modify to change the Link Witdh In
+	 *	@param[in,out]  u8 *UpstreamLinkWidthLimit  = modify to change the Link Witdh Out
+	 *	@param[in,out]  u32 *PCBFreqCap = modify to change the link's frequency capability
 	 *
 	 * ---------------------------------------------------------------------------------------
 	 */
@@ -400,9 +400,9 @@ typedef struct {
 	 *	@param[in]  u8   hostLink  = The link about to be initialized
 	 *	@param[in]  u8   Depth     = The depth in the I/O chain from the Host
 	 *	@param[in]  u8   Link      = the link on the device (0 or 1)
-	 *	@param[in,out]  u8*   LinkWidthIn    = modify to change the Link Witdh In
-	 *	@param[in,out]  u8*   LinkWidthOut   = modify to change the Link Witdh Out
-	 *	@param[in,out]  u16*   LinkFrequency = modify to change the link's frequency capability
+	 *	@param[in,out]  u8 *LinkWidthIn    = modify to change the Link Witdh In
+	 *	@param[in,out]  u8 *LinkWidthOut   = modify to change the Link Witdh Out
+	 *	@param[in,out]  u16 *LinkFrequency = modify to change the link's frequency capability
 	 *
 	 * ---------------------------------------------------------------------------------------
 	 */
@@ -431,9 +431,9 @@ typedef struct {
 	 * Parameters:
 	 *	@param[in]  u8  node  = One node on which this link is located
 	 *	@param[in]  u8  link  = The link on this node
-	 *	@param[in,out]  u8*  LinkWidthIn = modify to change the Link Witdh In
-	 *	@param[in,out]  u8*  LinkWidthOut = modify to change the Link Witdh Out
-	 *	@param[in,out]  u16*  LinkFrequency  = modify to change the link's frequency capability
+	 *	@param[in,out]  u8 *LinkWidthIn = modify to change the Link Witdh In
+	 *	@param[in,out]  u8 *LinkWidthOut = modify to change the Link Witdh Out
+	 *	@param[in,out]  u16 *LinkFrequency  = modify to change the link's frequency capability
 	 *
 	 *---------------------------------------------------------------------------------------
 	 */
@@ -459,7 +459,7 @@ typedef struct {
 	 * Parameters:
 	 *	@param[in]  u8  evtClass = What level event is this
 	 *	@param[in]  u16 event = A unique ID of this event
-	 *	@param[in]  u8* pEventData0 = useful data associated with the event.
+	 *	@param[in]  u8 *pEventData0 = useful data associated with the event.
 	 *
 	 * ---------------------------------------------------------------------------------------
 	 */

@@ -134,7 +134,7 @@
 #define MemClkFreqVal		((is_fam15h())?7:3)	/* func 2, offset 94h, bit 3 or 7*/
 #define RDqsEn			12	/* func 2, offset 94h, bit 12*/
 #define DisDramInterface	14	/* func 2, offset 94h, bit 14*/
-#define PowerDownEn      	15	/* func 2, offset 94h, bit 15*/
+#define PowerDownEn		15	/* func 2, offset 94h, bit 15*/
 #define DctAccessWrite		30	/* func 2, offset 98h, bit 30*/
 #define DctAccessDone		31	/* func 2, offset 98h, bit 31*/
 #define MemClrStatus		0	/* func 2, offset A0h, bit 0*/

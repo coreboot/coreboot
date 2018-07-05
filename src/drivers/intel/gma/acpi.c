@@ -72,7 +72,7 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 			/*
 			  Method (_BCL, 0, NotSerialized)
 			  {
-			  	Return (^^XBCL())
+				Return (^^XBCL())
 			  }
 			*/
 			acpigen_write_method("_BCL", 0);
@@ -83,7 +83,7 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 			/*
 			  Method (_BCM, 1, NotSerialized)
 			  {
-			  	^^XBCM(Arg0)
+				^^XBCM(Arg0)
 			  }
 			*/
 			acpigen_write_method("_BCM", 1);
@@ -94,7 +94,7 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 			/*
 			  Method (_BQC, 0, NotSerialized)
 			  {
-			  	Return (^^XBQC())
+				Return (^^XBQC())
 			  }
 			*/
 			acpigen_write_method("_BQC", 0);

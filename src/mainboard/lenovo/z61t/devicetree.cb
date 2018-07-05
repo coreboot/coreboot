@@ -139,7 +139,6 @@ chip northbridge/intel/i945
 						io 0x66 = 0x1604
 					end
 
-
 					register "config0" = "0xa6"
 					register "config1" = "0x05"
 					register "config2" = "0xa0"
@@ -212,27 +211,26 @@ chip northbridge/intel/i945
 				subsystemid 0x17aa 0x200d
 			end
 			device pci 1f.3 on # SMBUS
-                                subsystemid 0x17aa 0x200f
-                                chip drivers/i2c/ck505
+				subsystemid 0x17aa 0x200f
+				chip drivers/i2c/ck505
 					register "mask" = "{ 0xff, 0xff, 0xff,
 						0xff, 0xff, 0xff, 0xff, 0xff }"
 					# vendor clockgen setup
 					register "regs" = "{ 0x6d, 0xff, 0xff,
 						0x20, 0x41, 0x7f, 0x18, 0x00 }"
-                                        device i2c 69 on end
-                                end
-                                # eeprom, 8 virtual devices, same chip
-                                chip drivers/i2c/at24rf08c
-                                        device i2c 54 on end
-                                        device i2c 55 on end
-                                        device i2c 56 on end
-                                        device i2c 57 on end
-                                        device i2c 5c on end
-                                        device i2c 5d on end
-                                        device i2c 5e on end
-                                        device i2c 5f on end
-                                end
-
+					device i2c 69 on end
+				end
+				# eeprom, 8 virtual devices, same chip
+				chip drivers/i2c/at24rf08c
+					device i2c 54 on end
+					device i2c 55 on end
+					device i2c 56 on end
+					device i2c 57 on end
+					device i2c 5c on end
+					device i2c 5d on end
+					device i2c 5e on end
+					device i2c 5f on end
+				end
 			end
 		end
 	end

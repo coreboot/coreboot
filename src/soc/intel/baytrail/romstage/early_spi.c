@@ -22,7 +22,7 @@
 #include <soc/romstage.h>
 #include <soc/spi.h>
 
-#define SPI_CYCLE_DELAY 10 				/* 10us */
+#define SPI_CYCLE_DELAY 10				/* 10us */
 #define SPI_CYCLE_TIMEOUT 400000 / SPI_CYCLE_DELAY	/* 400ms */
 
 #define SPI8(x) *((volatile u8 *)(SPI_BASE_ADDRESS + x))

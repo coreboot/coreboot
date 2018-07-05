@@ -1638,7 +1638,7 @@ wakeup:
 	asm(
 		"movw	r3, #0x4c64\n"
 		"movt	r3, #0x0302\n"
-		"ldr 	r5, [r3]\n"
+		"ldr	r5, [r3]\n"
 		"mov	lr, #0\n"
 		"mov	pc, r5\n");
 #endif /* IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS) */

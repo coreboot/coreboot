@@ -21,14 +21,14 @@
 #include <soc/intel/fsp_baytrail/include/soc/pci_devs.h>
 
 /*
- *IR02h GFX      INT(A) 	- PIRQ A
+ *IR02h GFX      INT(A)		- PIRQ A
  *IR10h EMMC	 INT(ABCD)	- PIRQ DEFG
- *IR11h SDIO     INT(A) 	- PIRQ B
- *IR12h SD       INT(A) 	- PIRQ C
- *IR13h SATA     INT(A) 	- PIRQ D
- *IR14h XHCI     INT(A) 	- PIRQ E
- *IR15h LP Audio INT(A) 	- PIRQ F
- *IR17h MMC      INT(A) 	- PIRQ F
+ *IR11h SDIO     INT(A)		- PIRQ B
+ *IR12h SD       INT(A)		- PIRQ C
+ *IR13h SATA     INT(A)		- PIRQ D
+ *IR14h XHCI     INT(A)		- PIRQ E
+ *IR15h LP Audio INT(A)		- PIRQ F
+ *IR17h MMC      INT(A)		- PIRQ F
  *IR18h SIO      INT(ABCD)	- PIRQ BADC
  *IR1Ah TXE      INT(A)		- PIRQ F
  *IR1Bh HD Audio INT(A)		- PIRQ G

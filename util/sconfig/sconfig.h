@@ -22,8 +22,6 @@
 #include <unistd.h>
 #include <errno.h>
 
-enum devtype { chip, device };
-
 struct resource;
 struct resource {
 	int type;
@@ -43,62 +41,129 @@ struct pci_irq_info {
 	int ioapic_irq_pin;
 	int ioapic_dst_id;
 };
-struct device;
-struct device {
+
+struct chip;
+struct chip_instance {
+	/*
+	 * Monotonically increasing ID for each newly allocated
+	 * node(chip/device).
+	 */
 	int id;
-	int enabled;
-	int used;
-	int multidev;
-	int link;
-	int rescnt;
+
+	/* Pointer to registers for this chip. */
+	struct reg *reg;
+
+	/* Pointer to chip of which this is instance. */
+	struct chip *chip;
+
+	/* Pointer to next instance of the same chip. */
+	struct chip_instance *next;
+
+	/*
+	 * Reference count - Indicates how many devices hold pointer to this
+	 * chip instance.
+	 */
+	int ref_count;
+};
+
+struct chip {
+	/* Indicates if chip header exists for this chip. */
 	int chiph_exists;
+
+	/* Name of current chip. */
+	char *name;
+
+	/* Name of current chip normalized to _. */
+	char *name_underscore;
+
+	/* Pointer to first instance of this chip. */
+	struct chip_instance *instance;
+
+	/* Pointer to next chip. */
+	struct chip *next;
+};
+
+struct device;
+struct bus {
+	/* Instance/ID of the bus under the device. */
+	int id;
+
+	/* Pointer to device to which this bus belongs. */
+	struct device *dev;
+
+	/* Pointer to list of children. */
+	struct device *children;
+
+	/* Pointer to next bus for the device. */
+	struct bus *next_bus;
+};
+
+struct device {
+	/* Monotonically increasing ID for the device. */
+	int id;
+
+	/* Indicates whether this device is enabled. */
+	int enabled;
+
+	/* Subsystem IDs for the device. */
 	int subsystem_vendor;
 	int subsystem_device;
 	int inherit_subsystem;
-	char *ops;
+
+	/* Name of this device. */
 	char *name;
-	char *name_underscore;
+
+	/* Path of this device. */
 	char *path;
 	int path_a;
 	int path_b;
+
+	/* Type of bus that exists under this device. */
 	int bustype;
+
+	/* PCI IRQ info. */
 	struct pci_irq_info pci_irq_info[4];
-	enum devtype type;
-	struct device *parent;
-	struct device *bus;
-	struct device *next;
-	struct device *nextdev;
-	struct device *children;
-	struct device *latestchild;
-	struct device *next_sibling;
+
+	/* Pointer to bus of parent on which this device resides. */
+	struct bus *parent;
+
+	/* Pointer to next child under the same parent. */
 	struct device *sibling;
-	struct device *chip;
+
+	/* Pointer to resources for this device. */
 	struct resource *res;
-	struct reg *reg;
+
+	/* Pointer to chip instance for this device. */
+	struct chip_instance *chip_instance;
+
+	/* Pointer to list of buses under this device. */
+	struct bus *bus;
+	/* Pointer to last bus under this device. */
+	struct bus *last_bus;
 };
 
-struct device *head;
+extern struct bus *root_parent;
 
-struct header;
-struct header {
-	char *name;
-	int chiph_exists;
-	struct header *next;
-};
+struct device *new_device(struct bus *parent,
+			  struct chip_instance *chip_instance,
+			  const int bustype, const char *devnum,
+			  int enabled);
 
-void fold_in(struct device *parent);
+void add_resource(struct bus *bus, int type, int index, int base);
 
-void postprocess_devtree(void);
-struct device *new_chip(struct device *parent, struct device *bus, char *path);
-void add_header(struct device *dev);
-struct device *new_device(struct device *parent, struct device *busdev,
-			  const int bus, const char *devnum, int enabled);
-void alias_siblings(struct device *d);
-void add_resource(struct device *dev, int type, int index, int base);
-void add_register(struct device *dev, char *name, char *val);
-void add_pci_subsystem_ids(struct device *dev, int vendor, int device,
+void add_pci_subsystem_ids(struct bus *bus, int vendor, int device,
 			   int inherit);
-void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin,
+
+void add_ioapic_info(struct bus *bus, int apicid, const char *_srcpin,
 		     int irqpin);
 
 void yyrestart(FILE *input_file);
+
+/* Add chip data to tail of queue. */
+void chip_enqueue_tail(void *data);
+
+/* Retrieve chip data from tail of queue. */
+void *chip_dequeue_tail(void);
+
+struct chip_instance *new_chip_instance(char *path);
+void add_register(struct chip_instance *chip, char *name, char *val);

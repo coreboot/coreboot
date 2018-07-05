@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_CSR_H__
+#define __CB_BDK_CSR_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -36,6 +38,9 @@
 * QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION. THE ENTIRE  RISK
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
+
+//#include <libbdk-arch/bdk-csrs-rst.h>	/* FIXME: circular dependency with this header */
+#include <libbdk-hal/bdk-clock.h>	/* FIXME(dhendrix): added */
 
 /**
  * @file
@@ -106,7 +111,7 @@ extern int bdk_csr_write_by_name(bdk_node_t node, const char *name, uint64_t val
 extern int __bdk_csr_lookup_index(const char *name, int params[]);
 extern int bdk_csr_get_name(const char *last_name, char *buffer);
 struct bdk_readline_tab;
-extern struct bdk_readline_tab *__bdk_csr_get_tab_complete() BDK_WEAK;
+extern struct bdk_readline_tab *__bdk_csr_get_tab_complete(void) BDK_WEAK;
 extern uint64_t bdk_sysreg_read(int node, int core, uint64_t regnum);
 extern void bdk_sysreg_write(int node, int core, uint64_t regnum, uint64_t value);
 
@@ -125,10 +130,11 @@ extern void bdk_sysreg_write(int node, int core, uint64_t regnum, uint64_t value
  *
  * @return The value of the CSR
  */
+/* FIXME(dhendrix): Moved __bdk_csr_read_slow out of the function body... */
+extern uint64_t __bdk_csr_read_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, int size, uint64_t address);
 static inline uint64_t bdk_csr_read(bdk_node_t node, bdk_csr_type_t type, int busnum, int size, uint64_t address) __attribute__ ((always_inline));
 static inline uint64_t bdk_csr_read(bdk_node_t node, bdk_csr_type_t type, int busnum, int size, uint64_t address)
 {
-    extern uint64_t __bdk_csr_read_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, int size, uint64_t address);
     switch (type)
     {
         case BDK_CSR_TYPE_DAB:
@@ -174,10 +180,11 @@ static inline uint64_t bdk_csr_read(bdk_node_t node, bdk_csr_type_t type, int bu
  * @param address The address of the CSR
  * @param value   Value to write to the CSR
  */
+/* FIXME(dhendrix): Moved __bdk_csr_write_slow out of the function body... */
+extern void __bdk_csr_write_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, int size, uint64_t address, uint64_t value);
 static inline void bdk_csr_write(bdk_node_t node, bdk_csr_type_t type, int busnum, int size, uint64_t address, uint64_t value) __attribute__ ((always_inline));
 static inline void bdk_csr_write(bdk_node_t node, bdk_csr_type_t type, int busnum, int size, uint64_t address, uint64_t value)
 {
-    extern void __bdk_csr_write_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, int size, uint64_t address, uint64_t value);
     switch (type)
     {
         case BDK_CSR_TYPE_DAB:
@@ -264,6 +271,8 @@ static inline void bdk_csr_write(bdk_node_t node, bdk_csr_type_t type, int busnu
  * 2) Check if ("type".s."field" "op" "value")
  * 3) If #2 isn't true loop to #1 unless too much time has passed.
  */
+/* FIXME(dhendrix): removed bdk_thread_yield() */
+#if 0
 #define BDK_CSR_WAIT_FOR_FIELD(node, csr, field, op, value, timeout_usec) \
     ({int result;                                                       \
     do {                                                                \
@@ -285,6 +294,27 @@ static inline void bdk_csr_write(bdk_node_t node, bdk_csr_type_t type, int busnu
         }                                                               \
     } while (0);                                                        \
     result;})
+#endif
+#define BDK_CSR_WAIT_FOR_FIELD(node, csr, field, op, value, timeout_usec) \
+    ({int result;                                                       \
+    do {                                                                \
+        uint64_t done = bdk_clock_get_count(BDK_CLOCK_TIME) + (uint64_t)timeout_usec * \
+                        bdk_clock_get_rate(bdk_numa_local(), BDK_CLOCK_TIME) / 1000000;   \
+        typedef_##csr c;                                                \
+        uint64_t _tmp_address = csr;                                    \
+        while (1)                                                       \
+        {                                                               \
+            c.u = bdk_csr_read(node, bustype_##csr, busnum_##csr, sizeof(typedef_##csr), _tmp_address); \
+            if ((c.s.field) op (value)) {                               \
+                result = 0;                                             \
+                break;                                                  \
+            } else if (bdk_clock_get_count(BDK_CLOCK_TIME) > done) {    \
+                result = -1;                                            \
+                break;                                                  \
+            }                                                           \
+        }                                                               \
+    } while (0);                                                        \
+    result;})
 
 /**
  * This macro spins on a field waiting for it to reach a value. It
@@ -299,6 +329,8 @@ static inline void bdk_csr_write(bdk_node_t node, bdk_csr_type_t type, int busnu
  * change bit locations, the compiler will not catch those changes
  * with this macro. Changes silently do the wrong thing at runtime.
  */
+/* FIXME(dhendrix): removed bdk_thread_yield() */
+#if 0
 #define BDK_CSR_WAIT_FOR_CHIP_FIELD(node, csr, chip, field, op, value, timeout_usec) \
     ({int result;                                                       \
     do {                                                                \
@@ -320,5 +352,27 @@ static inline void bdk_csr_write(bdk_node_t node, bdk_csr_type_t type, int busnu
         }                                                               \
     } while (0);                                                        \
     result;})
+#endif
+#define BDK_CSR_WAIT_FOR_CHIP_FIELD(node, csr, chip, field, op, value, timeout_usec) \
+    ({int result;                                                       \
+    do {                                                                \
+        uint64_t done = bdk_clock_get_count(BDK_CLOCK_TIME) + (uint64_t)timeout_usec * \
+                        bdk_clock_get_rate(bdk_numa_local(), BDK_CLOCK_TIME) / 1000000;   \
+        typedef_##csr c;                                                \
+        uint64_t _tmp_address = csr;                                    \
+        while (1)                                                       \
+        {                                                               \
+            c.u = bdk_csr_read(node, bustype_##csr, busnum_##csr, sizeof(typedef_##csr), _tmp_address); \
+            if ((c.chip.field) op (value)) {                            \
+                result = 0;                                             \
+                break;                                                  \
+            } else if (bdk_clock_get_count(BDK_CLOCK_TIME) > done) {    \
+                result = -1;                                            \
+                break;                                                  \
+            }                                                           \
+        }                                                               \
+    } while (0);                                                        \
+    result;})
 
 /** @} */
+#endif

@@ -178,7 +178,7 @@ Method(_INI, 0) {
 
 	/* On older chips, clear PciExpWakeDisEn */
 	/*if (LLessEqual(\SBRI, 0x13)) {
-	*    	Store(0,\PWDE)
+	*	Store(0,\PWDE)
 	* }
 	*/
 } /* End Method(_SB._INI) */
@@ -298,9 +298,9 @@ Scope(\){
 		PWMK, 1,
 		PWNS, 1,
 
-		/* 	Offset(0x61), */	/*  Options_1 */
-		/* 		,7,  */
-		/* 		R617,1, */
+		/*	Offset(0x61), */	/*  Options_1 */
+		/*		,7,  */
+		/*		R617,1, */
 
 		Offset(0x65),	/* UsbPMControl */
 		, 4,

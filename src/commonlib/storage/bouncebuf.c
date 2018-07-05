@@ -16,7 +16,6 @@
  */
 
 #include <arch/cache.h>
-#include <console/console.h>
 #include "bouncebuf.h"
 #include <halt.h>
 #include "storage.h"

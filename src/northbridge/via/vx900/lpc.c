@@ -47,7 +47,7 @@
  * it will work, but perhaps this should be more configurable.
  */
 
-static void vx900_lpc_misc_stuff(device_t dev)
+static void vx900_lpc_misc_stuff(struct device *dev)
 {
 	char extint;
 	u8 val;
@@ -71,7 +71,7 @@ static void vx900_lpc_misc_stuff(device_t dev)
 	}
 }
 
-static void vx900_lpc_dma_setup(device_t dev)
+static void vx900_lpc_dma_setup(struct device *dev)
 {
 	/* These are the steps recommended by VIA in order to get DMA running */
 
@@ -104,12 +104,12 @@ static void vx900_lpc_dma_setup(device_t dev)
  * We are assuming this is called before the drivers/generic/ioapic code,
  * which should be the case if devicetree.cb is set up properly.
  */
-static void vx900_lpc_ioapic_setup(device_t dev)
+static void vx900_lpc_ioapic_setup(struct device *dev)
 {
 	/* Find the IOAPIC, and make sure it's set up correctly in devicetree.cb
 	 * If it's not, then the generic ioapic driver will not set it up
 	 * correctly, and the MP table will not be correctly generated */
-	device_t ioapic;
+	struct device *ioapic;
 	for (ioapic = dev->next; ioapic; ioapic = ioapic->next) {
 		if (ioapic->path.type == DEVICE_PATH_IOAPIC)
 			break;
@@ -151,7 +151,7 @@ static void vx900_lpc_ioapic_setup(device_t dev)
 	pci_mod_config8(dev, 0x58, 0, 1 << 6);
 }
 
-static void vx900_lpc_interrupt_stuff(device_t dev)
+static void vx900_lpc_interrupt_stuff(struct device *dev)
 {
 	/* Enable setting trigger mode through 0x4d0, and 0x4d1 ports
 	 * And enable I/O recovery time */
@@ -177,14 +177,14 @@ static void vx900_lpc_interrupt_stuff(device_t dev)
 	vx900_lpc_ioapic_setup(dev);
 }
 
-static void vx900_lpc_init(device_t dev)
+static void vx900_lpc_init(struct device *dev)
 {
 	vx900_lpc_interrupt_stuff(dev);
 	vx900_lpc_misc_stuff(dev);
 	dump_pci_device(dev);
 }
 
-static void vx900_lpc_read_resources(device_t dev)
+static void vx900_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 	pci_dev_read_resources(dev);
@@ -206,7 +206,7 @@ static void vx900_lpc_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_RESERVE;
 }
 
-static void vx900_lpc_set_resources(device_t dev)
+static void vx900_lpc_set_resources(struct device *dev)
 {
 	struct resource *mmio, *spi;
         u32 reg;
@@ -248,7 +248,7 @@ static const struct pci_driver lpc_driver __pci_driver = {
 #if IS_ENABLED(CONFIG_PIRQ_ROUTE)
 void pirq_assign_irqs(const u8 * pirq)
 {
-	device_t lpc;
+	struct device *lpc;
 
 	lpc = dev_find_device(PCI_VENDOR_ID_VIA,
 			      PCI_DEVICE_ID_VIA_VX900_LPC, 0);

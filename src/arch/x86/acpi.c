@@ -449,7 +449,7 @@ void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 }
 
 unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
-	u16 segment, u32 bar)
+	u16 segment, u64 bar)
 {
 	dmar_entry_t *drhd = (dmar_entry_t *)current;
 	memset(drhd, 0, sizeof(*drhd));
@@ -460,6 +460,20 @@ unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
 	drhd->bar = bar;
 
 	return drhd->length;
+}
+
+unsigned long acpi_create_dmar_rmrr(unsigned long current, u16 segment,
+				    u64 bar, u64 limit)
+{
+	dmar_rmrr_entry_t *rmrr = (dmar_rmrr_entry_t *)current;
+	memset(rmrr, 0, sizeof(*rmrr));
+	rmrr->type = DMAR_RMRR;
+	rmrr->length = sizeof(*rmrr); /* will be fixed up later */
+	rmrr->segment = segment;
+	rmrr->bar = bar;
+	rmrr->limit = limit;
+
+	return rmrr->length;
 }
 
 unsigned long acpi_create_dmar_atsr(unsigned long current, u8 flags,
@@ -481,13 +495,19 @@ void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current)
 	drhd->length = current - base;
 }
 
+void acpi_dmar_rmrr_fixup(unsigned long base, unsigned long current)
+{
+	dmar_rmrr_entry_t *rmrr = (dmar_rmrr_entry_t *)base;
+	rmrr->length = current - base;
+}
+
 void acpi_dmar_atsr_fixup(unsigned long base, unsigned long current)
 {
 	dmar_atsr_entry_t *atsr = (dmar_atsr_entry_t *)base;
 	atsr->length = current - base;
 }
 
-static unsigned long acpi_create_dmar_drhd_ds(unsigned long current,
+static unsigned long acpi_create_dmar_ds(unsigned long current,
 	enum dev_scope_type type, u8 enumeration_id, u8 bus, u8 dev, u8 fn)
 {
 	/* we don't support longer paths yet */
@@ -505,31 +525,31 @@ static unsigned long acpi_create_dmar_drhd_ds(unsigned long current,
 	return ds->length;
 }
 
-unsigned long acpi_create_dmar_drhd_ds_pci_br(unsigned long current, u8 bus,
+unsigned long acpi_create_dmar_ds_pci_br(unsigned long current, u8 bus,
 	u8 dev, u8 fn)
 {
-	return acpi_create_dmar_drhd_ds(current,
+	return acpi_create_dmar_ds(current,
 			SCOPE_PCI_SUB, 0, bus, dev, fn);
 }
 
-unsigned long acpi_create_dmar_drhd_ds_pci(unsigned long current, u8 bus,
+unsigned long acpi_create_dmar_ds_pci(unsigned long current, u8 bus,
 	u8 dev, u8 fn)
 {
-	return acpi_create_dmar_drhd_ds(current,
+	return acpi_create_dmar_ds(current,
 			SCOPE_PCI_ENDPOINT, 0, bus, dev, fn);
 }
 
-unsigned long acpi_create_dmar_drhd_ds_ioapic(unsigned long current,
+unsigned long acpi_create_dmar_ds_ioapic(unsigned long current,
 	u8 enumeration_id, u8 bus, u8 dev, u8 fn)
 {
-	return acpi_create_dmar_drhd_ds(current,
+	return acpi_create_dmar_ds(current,
 			SCOPE_IOAPIC, enumeration_id, bus, dev, fn);
 }
 
-unsigned long acpi_create_dmar_drhd_ds_msi_hpet(unsigned long current,
+unsigned long acpi_create_dmar_ds_msi_hpet(unsigned long current,
 	u8 enumeration_id, u8 bus, u8 dev, u8 fn)
 {
-	return acpi_create_dmar_drhd_ds(current,
+	return acpi_create_dmar_ds(current,
 			SCOPE_MSI_HPET, enumeration_id, bus, dev, fn);
 }
 

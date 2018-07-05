@@ -1,0 +1,97 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007-2008 coresystems GmbH
+## Copyright (C) 2017-present Facebook, Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+# -----------------------------------------------------------------
+entries
+
+# -----------------------------------------------------------------
+# Status Register A
+# -----------------------------------------------------------------
+# Status Register B
+# -----------------------------------------------------------------
+# Status Register C
+#96           4       r       0        status_c_rsvd
+#100          1       r       0        uf_flag
+#101          1       r       0        af_flag
+#102          1       r       0        pf_flag
+#103          1       r       0        irqf_flag
+# -----------------------------------------------------------------
+# Status Register D
+#104          7       r       0        status_d_rsvd
+#111          1       r       0        valid_cmos_ram
+# -----------------------------------------------------------------
+# Diagnostic Status Register
+#112          8       r       0        diag_rsvd1
+
+# -----------------------------------------------------------------
+0          120       r       0        reserved_memory
+#120        264       r       0        unused
+
+# -----------------------------------------------------------------
+# RTC_BOOT_BYTE (coreboot hardcoded)
+384          1       e       4        boot_option
+#390          2       r       0        unused?
+
+# -----------------------------------------------------------------
+# coreboot config options: console
+395          4       e       6        debug_level
+#399          1       r       0        unused
+
+# coreboot config options: cpu
+#401          7       r       0        unused
+
+# coreboot config options: southbridge
+408          1       e       1        nmi
+411          2       e       8        use_xhci_over_ehci
+#413          3       r       0        unused
+
+# MRC Scrambler Seed values
+928         32        r       0        mrc_scrambler_seed_s3
+
+# coreboot config options: check sums
+984         16       h       0        check_sum
+#1000        24       r       0        amd_reserved
+
+# -----------------------------------------------------------------
+
+enumerations
+
+#ID value   text
+1     0     Disable
+1     1     Enable
+2     0     Enable
+2     1     Disable
+4     0     Fallback
+4     1     Normal
+6     1     Emergency
+6     2     Alert
+6     3     Critical
+6     4     Error
+6     5     Warning
+6     6     Notice
+6     7     Info
+6     8     Debug
+6     9     Spew
+7     0     Disable
+7     1     Enable
+7     2     Keep
+8     0     EHCI
+8     1     XHCI
+8     2     Default
+# -----------------------------------------------------------------
+checksums
+
+checksum 392 415 984

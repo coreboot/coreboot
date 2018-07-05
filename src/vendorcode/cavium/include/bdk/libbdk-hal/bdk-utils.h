@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_UTILS_H__
+#define __CB_BDK_UTILS_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -36,8 +38,8 @@
 * QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION. THE ENTIRE  RISK
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
-#include "libbdk-arch/bdk-csrs-lmc.h"
 #include "libbdk-arch/bdk-csrs-rst.h"
+#include <string.h>
 
 /**
  * @file
@@ -204,3 +206,4 @@ static inline void bdk_zero_memory(void *start, uint64_t length)
 }
 
 /** @} */
+#endif	/* !__CB_BDK_UTILS_H__ */

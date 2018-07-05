@@ -53,11 +53,11 @@ static const struct reg_script core_msr_script[] = {
 	/* Power Management I/O base address for I/O trapping to C-states */
 	REG_MSR_WRITE(MSR_PMG_IO_CAPTURE_BASE,
 		(ACPI_PMIO_CST_REG | (PMG_IO_BASE_CST_RNG_BLK_SIZE << 16))),
-	/* Disable C1E */
-	REG_MSR_RMW(MSR_POWER_CTL, ~0x2, 0),
 	/* Disable support for MONITOR and MWAIT instructions */
 	REG_MSR_RMW(MSR_IA32_MISC_ENABLES, ~MONITOR_MWAIT_DIS_MASK, 0),
 #endif
+	/* Disable C1E */
+	REG_MSR_RMW(MSR_POWER_CTL, ~POWER_CTL_C1E_MASK, 0),
 	/*
 	 * Enable and Lock the Advanced Encryption Standard (AES-NI)
 	 * feature register
@@ -67,13 +67,13 @@ static const struct reg_script core_msr_script[] = {
 	REG_SCRIPT_END
 };
 
-void soc_core_init(device_t cpu)
+void soc_core_init(struct device *cpu)
 {
 	/* Clear out pending MCEs */
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some
 	 * of these banks are core vs package scope. For now every CPU clears
 	 * every bank. */
-	mca_configure();
+	mca_configure(NULL);
 
 	/* Set core MSRs */
 	reg_script_run(core_msr_script);
@@ -96,7 +96,7 @@ void soc_core_init(device_t cpu)
 }
 
 #if !IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)
-static void soc_init_core(device_t cpu)
+static void soc_init_core(struct device *cpu)
 {
 	soc_core_init(cpu);
 }
@@ -283,7 +283,7 @@ void cpu_lock_sgx_memory(void)
 
 int soc_fill_sgx_param(struct sgx_param *sgx_param)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	assert(dev != NULL);
 	config_t *conf = dev->chip_info;
 

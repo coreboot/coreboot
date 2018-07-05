@@ -1,0 +1,11 @@
+--- gcc-6.1.0/gcc/ada/gcc-interface/Make-lang.in.bak	2015-08-24 16:23:25.004493665 +0200
++++ gcc-6.1.0/gcc/ada/gcc-interface/Make-lang.in	2015-08-24 17:53:52.496636113 +0200
+@@ -45,7 +45,7 @@
+ 
+ 
+ # Extra flags to pass to recursive makes.
+-COMMON_ADAFLAGS= -gnatpg
++COMMON_ADAFLAGS= -gnatpg -gnatwGUR
+ ifeq ($(TREECHECKING),)
+ CHECKING_ADAFLAGS=
+ else

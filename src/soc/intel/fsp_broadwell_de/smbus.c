@@ -26,7 +26,7 @@
 #include <soc/pci_devs.h>
 #include <soc/smbus.h>
 
-static void pch_smbus_init(device_t dev)
+static void pch_smbus_init(struct device *dev)
 {
 	struct resource *res;
 
@@ -36,7 +36,7 @@ static void pch_smbus_init(device_t dev)
 		outb(SMBUS_SLAVE_ADDR, res->base + SMB_RCV_SLVA);
 }
 
-static void pch_smbus_enable(device_t dev)
+static void pch_smbus_enable(struct device *dev)
 {
 	uint8_t reg8;
 
@@ -45,7 +45,7 @@ static void pch_smbus_enable(device_t dev)
 	pci_write_config8(dev, HOSTC, reg8);
 }
 
-static int lsmbus_read_byte(device_t dev, uint8_t address)
+static int lsmbus_read_byte(struct device *dev, uint8_t address)
 {
 	uint16_t device;
 	struct resource *res;
@@ -58,7 +58,7 @@ static int lsmbus_read_byte(device_t dev, uint8_t address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
-static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t data)
+static int lsmbus_write_byte(struct device *dev, uint8_t address, uint8_t data)
 {
 	uint16_t device;
 	struct resource *res;

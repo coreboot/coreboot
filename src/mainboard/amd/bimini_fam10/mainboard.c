@@ -17,20 +17,13 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/io.h>
-#include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 #include <southbridge/amd/common/amd_defs.h>
 #include <southbridge/amd/sb800/sb800.h>
-
-
-u8 is_dev3_present(void);
-void set_pcie_dereset(void);
-void set_pcie_reset(void);
-void enable_int_gfx(void);
+#include <southbridge/amd/rs780/rs780.h>
 
 /* GPIO6. */
-void enable_int_gfx(void)
+static void enable_int_gfx(void)
 {
 	u8 byte;
 
@@ -60,18 +53,11 @@ void enable_int_gfx(void)
 /*
  * Bimini uses GPIO 6 as PCIe slot reset, GPIO4 as GFX slot reset. We need to
  * pull it up before training the slot.
+ *
+ * Old comment says: GPIO 50h to reset PCIe slot.
  ***/
-void set_pcie_dereset(void)
-{
-	/* GPIO 50h reset PCIe slot */
-}
 
-void set_pcie_reset(void)
-{
-	/* GPIO 50h reset PCIe slot */
-}
-
-u8 is_dev3_present(void)
+int is_dev3_present(void)
 {
 	return 0;
 }

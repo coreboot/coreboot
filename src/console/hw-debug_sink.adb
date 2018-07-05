@@ -19,14 +19,19 @@ use type Interfaces.C.int;
 
 package body HW.Debug_Sink is
 
-   Sink_Enabled : Boolean;
+   function console_log_level
+     (msg_level : Interfaces.C.int)
+      return Interfaces.C.int;
+   pragma Import (C, console_log_level, "console_log_level");
+
+   Msg_Level_BIOS_DEBUG : constant := 7;
 
    procedure console_tx_byte (chr : Interfaces.C.char);
    pragma Import (C, console_tx_byte, "console_tx_byte");
 
    procedure Put (Item : String) is
    begin
-      if Sink_Enabled then
+      if console_log_level (Msg_Level_BIOS_DEBUG) /= 0 then
          for Idx in Item'Range loop
             console_tx_byte (Interfaces.C.To_C (Item (Idx)));
          end loop;
@@ -35,7 +40,7 @@ package body HW.Debug_Sink is
 
    procedure Put_Char (Item : Character) is
    begin
-      if Sink_Enabled then
+      if console_log_level (Msg_Level_BIOS_DEBUG) /= 0 then
          console_tx_byte (Interfaces.C.To_C (Item));
       end if;
    end Put_Char;
@@ -45,15 +50,4 @@ package body HW.Debug_Sink is
       Put_Char (Character'Val (16#0a#));
    end New_Line;
 
-   ----------------------------------------------------------------------------
-
-   function console_log_level
-     (msg_level : Interfaces.C.int)
-      return Interfaces.C.int;
-   pragma Import (C, console_log_level, "console_log_level");
-
-   Msg_Level_BIOS_DEBUG : constant := 7;
-
-begin
-   Sink_Enabled := console_log_level (Msg_Level_BIOS_DEBUG) /= 0;
 end HW.Debug_Sink;

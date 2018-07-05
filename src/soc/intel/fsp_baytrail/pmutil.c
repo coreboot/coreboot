@@ -35,8 +35,8 @@ static inline pci_devfn_t get_pcu_dev(void)
 #include <device/device.h>
 #include <device/pci.h>
 
-static device_t pcu_dev;
-static device_t get_pcu_dev(void)
+static struct device *pcu_dev;
+static struct device *get_pcu_dev(void)
 {
 	if (pcu_dev == NULL)
 		pcu_dev = dev_find_slot(0, PCI_DEVFN(PCU_DEV, 0));

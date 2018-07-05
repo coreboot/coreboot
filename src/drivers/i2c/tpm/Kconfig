@@ -1,32 +1,28 @@
 config I2C_TPM
-	bool "I2C TPM"
-	depends on TPM || TPM2
+	bool
+	help
+	  I2C TPM driver is enabled!
 
 config MAINBOARD_HAS_I2C_TPM_ATMEL
 	bool
 	default n
+	select I2C_TPM
+	help
+	  Board has an Atmel I2C TPM support
 
 config MAINBOARD_HAS_I2C_TPM_CR50
 	bool
 	default n
+	select I2C_TPM
+	help
+	  Board has a Cr50 I2C TPM support
 
-choice
-	prompt "I2C TPM Driver"
-	default I2C_TPM_ATMEL if MAINBOARD_HAS_I2C_TPM_ATMEL
-	default I2C_TPM_CR50 if MAINBOARD_HAS_I2C_TPM_CR50
-	default I2C_TPM_GENERIC if !MAINBOARD_HAS_I2C_TPM_CR50 && !MAINBOARD_HAS_I2C_TPM_ATMEL
-	depends on I2C_TPM
-
-config I2C_TPM_GENERIC
-	bool "Generic I2C TPM Driver"
-
-config I2C_TPM_ATMEL
-	bool "ATMEL I2C TPM Driver"
-
-config I2C_TPM_CR50
-	bool "CR50 I2C TPM Driver"
-
-endchoice
+config MAINBOARD_HAS_I2C_TPM_GENERIC
+	bool
+	default n
+	select I2C_TPM
+	help
+	  Board has a generic I2C TPM support
 
 config DRIVER_TIS_DEFAULT
 	bool

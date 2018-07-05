@@ -46,7 +46,7 @@ DefinitionBlock (
 
 	/* System Bus */
 	Scope(\_SB) { /* Start \_SB scope */
-	 	/* global utility methods expected within the \_SB scope */
+		/* global utility methods expected within the \_SB scope */
 		#include <arch/x86/acpi/globutil.asl>
 
 		/* Describe IRQ Routing mapping for this platform (within the \_SB scope) */

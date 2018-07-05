@@ -28,6 +28,9 @@ DefinitionBlock(
 	// Some generic macros
 	#include "acpi/platform.asl"
 
+	// Thermal handler
+	#include "acpi/thermal.asl"
+
 	// global NVS and variables
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
 
@@ -35,8 +38,6 @@ DefinitionBlock(
 	//#include "acpi/gpe.asl"
 
 	#include <cpu/intel/model_206ax/acpi/cpu.asl>
-
-	#include "acpi/thermal.asl"
 
 	Scope (\_SB) {
 		Device (PCI0)

@@ -218,7 +218,7 @@ void ReadL18TestPattern(u32 addr_lo)
 	// set fs and use fs prefix to access the mem
 	__asm__ volatile (
 		"outb %%al, $0xed\n\t"			/* _EXECFENCE */
-		"movl %%fs:-128(%%esi), %%eax\n\t" 	//TestAddr cache line
+		"movl %%fs:-128(%%esi), %%eax\n\t"	//TestAddr cache line
 		"movl %%fs:-64(%%esi), %%eax\n\t"	//+1
 		"movl %%fs:(%%esi), %%eax\n\t"		//+2
 		"movl %%fs:64(%%esi), %%eax\n\t"	//+3

@@ -198,9 +198,9 @@ chip northbridge/intel/sandybridge
 						#drq 0xfe = 0x03
 					end
 				end
-			end
-			chip drivers/pc80/tpm
-				device pnp 4e.0 on end		# TPM module
+				chip drivers/pc80/tpm
+					device pnp 4e.0 on end          # TPM module
+				end
 			end
 			device pci 1f.2 on # SATA Controller 1
 				subsystemid 0x103c 0x1495

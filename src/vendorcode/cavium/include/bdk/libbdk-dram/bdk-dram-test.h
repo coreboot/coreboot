@@ -1,3 +1,6 @@
+#ifndef __CB_BDK_DRAM_TEST_H__
+#define __CB_BDK_DRAM_TEST_H__
+
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -145,7 +148,8 @@ extern void bdk_dram_test_inject_error(uint64_t address, int bit);
 /* Keep the counts per memory channel (LMC) for more detail. */
 #define BDK_MAX_MEM_CHANS 4
 extern int64_t __bdk_dram_ecc_single_bit_errors[BDK_MAX_MEM_CHANS];
-extern int64_t __bdk_dram_ecc_double_bit_errors[BDK_MAX_MEM_CHANS];
+/* FIXME(dhendrix): redundant declaration in original BDK */
+//extern int64_t __bdk_dram_ecc_double_bit_errors[BDK_MAX_MEM_CHANS];
 
 /* These are internal support functions */
 extern void __bdk_dram_flush_to_mem(uint64_t address);
@@ -196,3 +200,5 @@ extern int __bdk_dram_test_fast_scan(uint64_t area, uint64_t max_address, int bu
 
 /** @} */
 
+
+#endif	/* !__CB_BDK_DRAM_TEST_H__ */

@@ -46,6 +46,15 @@ void smm_southbridge_enable(uint16_t pm1_events)
 	pmc_disable_std_gpe(PME_B0_EN);
 
 	/*
+	 * GPEs need to be disabled before enabling SMI. Otherwise, it could
+	 * lead to SMIs being triggered in coreboot preventing the progress of
+	 * normal boot-up. This is done as late as possible so that
+	 * pmc_fill_power_state can read the correct state of GPE0_EN* registers
+	 * and not lose information about the wake source.
+	 */
+	pmc_disable_all_gpe();
+
+	/*
 	 * Enable SMI generation:
 	 *  - on APMC writes (io 0xb2)
 	 *  - on writes to SLP_EN (sleep states)

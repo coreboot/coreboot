@@ -1,3 +1,0 @@
-Board name: DB800 (Salsa)
-Category: eval
-Board URL: http://www.amd.com/us/products/embedded/develop-and-design/Pages/development-boards-lx.aspx

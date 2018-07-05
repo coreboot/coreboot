@@ -36,4 +36,6 @@ ramstage-y += gma.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/lapic/apic_timer.c
 
+postcar-y += ram_calc.c
+
 endif

@@ -197,7 +197,7 @@ static int pcode_mailbox_write(u32 command, u32 data)
 
 static void initialize_vr_config(void)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	config_t *conf = dev->chip_info;
 	msr_t msr;
 
@@ -452,7 +452,7 @@ static void configure_c_states(void)
 
 static void configure_thermal_target(void)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	config_t *conf = dev->chip_info;
 	msr_t msr;
 
@@ -572,7 +572,7 @@ static void configure_mca(void)
 }
 
 /* All CPUs including BSP will run the following function. */
-static void cpu_core_init(device_t cpu)
+static void cpu_core_init(struct device *cpu)
 {
 	/* Clear out pending MCEs */
 	configure_mca();
@@ -672,7 +672,7 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = post_mp_init,
 };
 
-void broadwell_init_cpus(device_t dev)
+void broadwell_init_cpus(struct device *dev)
 {
 	struct bus *cpu_bus = dev->link_list;
 

@@ -180,7 +180,7 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 		write_smrr(relo_params);
 }
 
-static void fill_in_relocation_params(device_t dev,
+static void fill_in_relocation_params(struct device *dev,
 				      struct smm_relocation_params *params)
 {
 	void *handler_base;
@@ -265,7 +265,7 @@ static void setup_ied_area(struct smm_relocation_params *params)
 void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 				size_t *smm_save_state_size)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 
 	printk(BIOS_DEBUG, "Setting up SMI for CPU\n");
 

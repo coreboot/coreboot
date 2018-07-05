@@ -1,2 +1,0 @@
-Category: server
-Board URL: http://www.supermicro.com/Aplus/motherboard/Opteron2000/MCP55/H8DMR-i2.cfm

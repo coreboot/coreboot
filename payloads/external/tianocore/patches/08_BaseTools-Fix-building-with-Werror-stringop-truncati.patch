@@ -1,0 +1,38 @@
+From b652262ed0dd554c44e7b1bf7134d3458f5edef1 Mon Sep 17 00:00:00 2001
+From: Patrick Rudolph <siro@das-labor.org>
+Date: Sun, 17 Jun 2018 08:44:51 +0200
+Subject: [PATCH] BaseTools: Fix building with -Werror=stringop-truncation
+
+Signed-off-by: Patrick Rudolph <siro@das-labor.org>
+---
+ BaseTools/Source/C/GenVtf/GenVtf.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/BaseTools/Source/C/GenVtf/GenVtf.c b/BaseTools/Source/C/GenVtf/GenVtf.c
+index acc142a6d1..5d77016eba 100644
+--- a/BaseTools/Source/C/GenVtf/GenVtf.c
++++ b/BaseTools/Source/C/GenVtf/GenVtf.c
+@@ -129,9 +129,9 @@ Returns:
+   } else {
+     Length = strlen(Str);
+     if (Length < 4) {
+-      strncpy (TemStr + 4 - Length, Str, Length);
++      memcpy (TemStr + 4 - Length, Str, Length);
+     } else {
+-      strncpy (TemStr, Str + Length - 4, 4);
++      memcpy (TemStr, Str + Length - 4, 4);
+     }
+   
+     sscanf (
+@@ -1529,7 +1529,7 @@ Returns:
+   //
+   FitStartPtr = (FIT_TABLE *) RelativeAddress;
+ 
+-  strncpy ((CHAR8 *) &FitStartPtr->CompAddress, FIT_SIGNATURE, 8);  // "_FIT_   "
++  memcpy ((CHAR8 *) &FitStartPtr->CompAddress, FIT_SIGNATURE, 8);  // "_FIT_   "
+   assert (((VtfInfo->CompSize & 0x00FFFFFF) % 16) == 0);
+   FitStartPtr->CompSize     = (VtfInfo->CompSize & 0x00FFFFFF) / 16;
+   FitStartPtr->CompVersion  = MAKE_VERSION (VtfInfo->MajorVer, VtfInfo->MinorVer);
+-- 
+2.17.0
+

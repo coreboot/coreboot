@@ -22,7 +22,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 
-int smihandler_soc_disable_busmaster(device_t dev)
+int smihandler_soc_disable_busmaster(pci_devfn_t dev)
 {
 	if (dev == PCH_DEV_PMC)
 		return 0;

@@ -40,11 +40,11 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 	/* Set temporary top of memory from Node structure data.
 	 * Adjust temp top of memory down to accommodate 32-bit IO space.
 	 * Bottom40bIO = top of memory, right justified 8 bits
-	 * 	(defines dram versus IO space type)
+	 *	(defines dram versus IO space type)
 	 * Bottom32bIO = sub 4GB top of memory, right justified 8 bits
-	 * 	(defines dram versus IO space type)
+	 *	(defines dram versus IO space type)
 	 * Cache32bTOP = sub 4GB top of WB cacheable memory,
-	 * 	right justified 8 bits
+	 *	right justified 8 bits
 	 */
 
 	val = mctGet_NVbits(NV_BottomIO);

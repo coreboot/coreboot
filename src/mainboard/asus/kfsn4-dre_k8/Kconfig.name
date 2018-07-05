@@ -1,2 +1,0 @@
-config BOARD_ASUS_KFSN4_DRE_K8
-	bool "KFSN4-DRE_K8"

@@ -1,2 +1,0 @@
-config BOARD_VIA_EPIA_CN
-	bool "EPIA-CN"

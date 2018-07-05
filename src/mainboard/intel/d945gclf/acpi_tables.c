@@ -13,18 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include <types.h>
-#include <string.h>
-#include <console/console.h>
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
-#include <arch/smp/mpspec.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_ids.h>
-#include <arch/ioapic.h>
-
-#include "southbridge/intel/i82801gx/nvs.h"
+#include <stdint.h>
+#include <southbridge/intel/i82801gx/nvs.h>
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {

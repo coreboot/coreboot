@@ -48,7 +48,11 @@ void pch_uart_init(void)
 {
 	/* Program IOBP CB000154h[12,9:8,4:0] = 1001100011111b */
 	u32 gpiodf = 0x131f;
-	device_t dev;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
 
 	/* Put UART in byte access mode for 16550 compatibility */
 	switch (CONFIG_INTEL_PCH_UART_CONSOLE_NUMBER) {

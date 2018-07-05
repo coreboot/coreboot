@@ -26,7 +26,7 @@
 #define SMRBASE		0x14	/* System Memory RCOMP Base Address Register, 32 bit? */
 #define MCHCFGNS	0x52	/* MCH (scrubber) configuration register, 16 bit */
 
-#define PAM_0 		0x59
+#define PAM_0		0x59
 
 #define DRB_ROW_0	0x60	/* DRAM Row Boundary register, 8 bit */
 #define DRB_ROW_1	0x61
@@ -42,6 +42,7 @@
 #define DRC		0x7C	/* DRAM Controller Mode register, 32 bit */
 #define DRDCTL		0x80	/* DRAM Read Timing Control register, 16 bit? (if similar to 855PM) */
 #define CKDIS		0x8C	/* Clock disable register, 8 bit */
+#define APSIZE		0xB4
 #define TOLM		0xC4	/* Top of Low Memory register, 16 bit */
 #define REMAPBASE	0xC6	/* Remap Base Address register, 16 bit */
 #define REMAPLIMIT	0xC8	/* Remap Limit Address register, 16 bit */
@@ -81,5 +82,9 @@
 #define NERR_GLOBAL	0x44	/* Next global error register, 32 bits */
 #define DRAM_FERR	0x80	/* DRAM first error register, 8 bits */
 #define DRAM_NERR	0x82	/* DRAM next error register, 8 bits */
+
+/************  D1:F0 ************/
+
+#define APSIZE1		0x74
 
 #endif /* NORTHBRIDGE_INTEL_E7505_E7505_H */

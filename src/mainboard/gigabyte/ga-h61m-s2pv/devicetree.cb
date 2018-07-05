@@ -81,7 +81,7 @@ chip northbridge/intel/sandybridge
 						irq 0x70 = 7
 						drq 0x74 = 4
 					end
-					device pnp 2e.4 on 		# Environment Controller
+					device pnp 2e.4 on		# Environment Controller
 						io 0x60 = 0x0a30
 						irq 0x70 = 9
 						io 0x62 = 0x0a20

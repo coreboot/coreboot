@@ -16,7 +16,7 @@
 config PLATFORM_USES_FSP1_1
 	bool
 	select UEFI_2_4_BINDING
-	select INTEL_GMA_ADD_VBT_DATA_FILE if RUN_FSP_GOP
+	select INTEL_GMA_ADD_VBT if RUN_FSP_GOP
 	help
 	  Does the code require the Intel Firmware Support Package?
 

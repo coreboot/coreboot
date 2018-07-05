@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_VRM_H__
+#define __CB_BDK_VRM_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -64,3 +66,4 @@ extern int bdk_vrm_initialize(bdk_node_t node);
 extern int bdk_vrm_poll(bdk_node_t node);
 
 /** @} */
+#endif	/* !__CB_BDK_VRM_H__ */

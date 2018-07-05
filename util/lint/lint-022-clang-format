@@ -1,0 +1,34 @@
+#!/bin/sh
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2018 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+#
+# DESCR: Run clang-format on white-listed directories
+
+LC_ALL=C export LC_ALL
+
+# until we require this by default, we need a list of opted-in directories
+if [ ! -f .clang-format-scope ]; then
+	exit 0
+fi
+
+files_to_check=$(git log HEAD~..HEAD --format= --name-only $(cat .clang-format-scope) |grep "\.[ch]$")
+
+# nothing to do
+if [ -z "$files_to_check" ]; then
+	exit 0
+fi
+
+if [ $(clang-format $files_to_check | wc -l) -gt 0 ]; then
+	git diff HEAD~..HEAD -- $files_to_check | clang-format-diff
+fi

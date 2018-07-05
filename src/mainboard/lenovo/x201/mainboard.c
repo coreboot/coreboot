@@ -21,7 +21,6 @@
 #include <arch/io.h>
 #include <ec/acpi/ec.h>
 #include <northbridge/intel/nehalem/nehalem.h>
-#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
 #include <pc80/mc146818rtc.h>

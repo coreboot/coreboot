@@ -23,7 +23,11 @@
  * specified by the devicetree. */
 
 struct soc_intel_fsp_broadwell_de_config {
+	/* PCIe completion timeout value */
+	int pcie_compltoval;
 };
+
+typedef struct soc_intel_fsp_broadwell_de_config config_t;
 
 extern struct chip_operations soc_intel_fsp_broadwell_de_ops;
 #endif /* _SOC_CHIP_H_ */

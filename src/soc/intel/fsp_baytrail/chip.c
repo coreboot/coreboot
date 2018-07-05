@@ -21,7 +21,7 @@
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #include "chip.h"
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
@@ -42,7 +42,7 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus         = NULL,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	printk(BIOS_DEBUG, "enable_dev(%s, %d)\n",
 	       dev_name(dev), dev->path.type);
@@ -73,7 +73,7 @@ struct chip_operations soc_intel_fsp_baytrail_ops = {
 	.init = soc_init,
 };
 
-static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void pci_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

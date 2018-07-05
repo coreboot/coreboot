@@ -40,7 +40,6 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_SMI_HANDLER
 	select SMM_TSEG
 	select CACHE_MRC_SETTINGS
-	select RELOCATABLE_RAMSTAGE     # Build fails if this is not selected
 	select PARALLEL_MP
 	select PCR_COMMON_IOSF_1_0
 	select SMP

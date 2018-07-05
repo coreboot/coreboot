@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  */
 
-#include <southbridge/intel/bd82x6x/pch.h>
+
 #include <southbridge/intel/bd82x6x/nvs.h>
 #include "thermal.h"
 

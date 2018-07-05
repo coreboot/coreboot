@@ -22,6 +22,8 @@ void mainboard_romstage_entry(unsigned long bist);
  */
 void *setup_stack_and_mtrrs(void);
 
+void platform_enter_postcar(void);
+
 /* romstage_main is called from the cache-as-ram assembly file to prepare
  * CAR stack guards.*/
 asmlinkage void *romstage_main(unsigned long bist);

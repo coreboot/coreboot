@@ -1,4 +1,0 @@
-Board name: K9SD Master (MS-9282)
-Category: server
-Board URL: http://cweb.msi.com.tw/program/products/server/svr/pro_svr_detail.php?UID=632
-Release year: 2006

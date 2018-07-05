@@ -35,7 +35,7 @@
  * If the link never comes up, we hang.
  */
 
-static void vx900_pcie_link_init(device_t dev)
+static void vx900_pcie_link_init(struct device *dev)
 {
 	u8 reg8;
 	u32 reg32;
@@ -81,12 +81,12 @@ static void vx900_pcie_link_init(device_t dev)
 	 * time? */
 }
 
-static void vx900_pex_dev_set_resources(device_t dev)
+static void vx900_pex_dev_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
 
-static void vx900_pex_init(device_t dev)
+static void vx900_pex_init(struct device *dev)
 {
 	/* FIXME: For some reason, PEX0 hangs on init. Find issue, fix it. */
 	if ((dev->path.pci.devfn & 0x7) == 0)

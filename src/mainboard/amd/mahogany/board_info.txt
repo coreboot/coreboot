@@ -1,3 +1,0 @@
-Board name: DB780E (Mahogany)
-Category: eval
-ROM protocol: SPI

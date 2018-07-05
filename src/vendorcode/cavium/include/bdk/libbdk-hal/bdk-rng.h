@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_RNG_H__
+#define __CB_BDK_RNG_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -76,4 +78,7 @@ extern uint32_t bdk_rng_get_random32(void);
  */
 extern uint64_t bdk_rng_get_random64(void);
 
+
+int bdk_rng_init(bdk_node_t node);
 /** @} */
+#endif	/* !__CB_BDK_RNG_H__ */

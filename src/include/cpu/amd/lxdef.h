@@ -644,6 +644,10 @@
 #define DELAY_LOWER_STATUS_MASK		0x7C0
 
 #if !defined(__ASSEMBLER__)
+
+#include <stdint.h>
+#include <arch/cpu.h>
+
 #if defined(__PRE_RAM__)
 void cpuRegInit(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated);
 void SystemPreInit(void);

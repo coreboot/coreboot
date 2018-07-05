@@ -30,6 +30,6 @@
 #define WPCD376I_KBCK	6	/* PS/2 keyboard */
 #define WPCD376I_GPIO	7	/* General Purpose I/O */
 
-void wpcd376i_enable_serial(device_t dev, u16 iobase);
+void wpcd376i_enable_serial(pnp_devfn_t dev, u16 iobase);
 
 #endif

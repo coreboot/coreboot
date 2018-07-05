@@ -44,10 +44,6 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
-#if IS_ENABLED(CONFIG_ARCH_X86)
-#include <cpu/x86/mtrr.h>
-#endif
-#include <commonlib/helpers.h>
 
 static struct lb_header *lb_table_init(unsigned long addr)
 {

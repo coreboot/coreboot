@@ -34,9 +34,9 @@ struct ht_link {
 	unsigned char ctrl_off, config_off, freq_off, freq_cap_off;
 };
 
-static device_t ht_scan_get_devs(device_t *old_devices)
+static struct device *ht_scan_get_devs(struct device **old_devices)
 {
-	device_t first, last;
+	struct device *first, *last;
 
 	first = *old_devices;
 	last = first;
@@ -53,7 +53,7 @@ static device_t ht_scan_get_devs(device_t *old_devices)
 	}
 
 	if (first) {
-		device_t child;
+		struct device *child;
 
 		/* Unlink the chain from the list of old devices. */
 		*old_devices = last->sibling;
@@ -73,7 +73,7 @@ static device_t ht_scan_get_devs(device_t *old_devices)
 	return first;
 }
 
-static int ht_setup_link(struct ht_link *prev, device_t dev, unsigned pos)
+static int ht_setup_link(struct ht_link *prev, struct device *dev, unsigned pos)
 {
 	struct ht_link cur[1];
 	int linkb_to_host;
@@ -256,7 +256,7 @@ static unsigned int do_hypertransport_scan_chain(struct bus *bus, unsigned min_d
 	 * optimize link.
 	 */
 	unsigned int next_unitid, last_unitid, min_unitid, max_unitid;
-	device_t old_devices, dev, func, last_func = 0;
+	struct device *old_devices, *dev, *func, *last_func = NULL;
 	struct ht_link prev;
 	int ht_dev_num = 0;
 
@@ -271,7 +271,7 @@ static unsigned int do_hypertransport_scan_chain(struct bus *bus, unsigned min_d
 	 */
 	unsigned int real_last_unitid = 0, end_used = 0;
 	u8 real_last_pos = 0;
-	device_t real_last_dev = NULL;
+	struct device *real_last_dev = NULL;
 #endif
 
 	/* Restore the hypertransport chain to it's uninitialized state. */
@@ -458,7 +458,7 @@ end_of_chain:
 	 * a problem in devicetree.cb.
 	 */
 	if (old_devices) {
-		device_t left;
+		struct device *left;
 		for (left = old_devices; left; left = left->sibling)
 			printk(BIOS_DEBUG, "%s\n", dev_path(left));
 

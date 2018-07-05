@@ -1,2 +1,0 @@
-config BOARD_LIPPERT_ROADRUNNER_LX
-	bool "Cool RoadRunner-LX"

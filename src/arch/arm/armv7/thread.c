@@ -39,7 +39,7 @@ static inline uintptr_t push_stack(uintptr_t cur_stack, uintptr_t value)
 }
 
 void arch_prepare_thread(struct thread *t,
-			void asmlinkage(*thread_entry)(void *), void *arg)
+			 void asmlinkage(*thread_entry)(void *), void *arg)
 {
 	uintptr_t stack = t->stack_current;
 	int i;

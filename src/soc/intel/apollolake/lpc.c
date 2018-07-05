@@ -47,9 +47,9 @@ static const struct pad_config lpc_gpios[] = {
 #if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
 #if !IS_ENABLED(CONFIG_SOC_ESPI)
 	PAD_CFG_NF(GPIO_147, UP_20K, DEEP, NF1), /* LPC_ILB_SERIRQ */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_148, UP_20K, DEEP, NF1, HIZCRx1,
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_148, NONE, DEEP, NF1, HIZCRx1,
 		DISPUPD), /* LPC_CLKOUT0 */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_149, UP_20K, DEEP, NF1, HIZCRx1,
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_149, NONE, DEEP, NF1, HIZCRx1,
 		DISPUPD), /* LPC_CLKOUT1 */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_150, UP_20K, DEEP, NF1, HIZCRx1,
 		DISPUPD), /* LPC_AD0 */
@@ -59,10 +59,17 @@ static const struct pad_config lpc_gpios[] = {
 		DISPUPD), /* LPC_AD2 */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_153, UP_20K, DEEP, NF1, HIZCRx1,
 		DISPUPD), /* LPC_AD3 */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_154, UP_20K, DEEP, NF1, HIZCRx1,
-		DISPUPD), /* LPC_CLKRUNB */
+	PAD_CFG_NF(GPIO_154, UP_20K, DEEP, NF1), /* LPC_CLKRUNB */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_155, UP_20K, DEEP, NF1, HIZCRx1,
-		DISPUPD), /* LPC_FRAMEB*/
+		DISPUPD), /* LPC_FRAMEB */
+#else
+	/*
+	 * LPC_CLKRUNB should be in GPIO mode for eSPI. Other pin settings
+	 * i.e. Rx path enable/disable, Tx path enable/disable, pull up
+	 * enable/disable etc are ignored. Leaving this pin in Native mode
+	 * will keep LPC Controller awake and prevent S0ix entry
+	 */
+	PAD_NC(GPIO_154, NONE),
 #endif /* !IS_ENABLED(CONFIG_SOC_ESPI) */
 #else
 	PAD_CFG_NF(LPC_ILB_SERIRQ, UP_20K, DEEP, NF1),

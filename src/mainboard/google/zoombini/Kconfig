@@ -97,17 +97,15 @@ config VBOOT
 config ZOOMBINI_USE_I2C_TPM
 	bool
 	default n
-	select I2C_TPM
 	select MAINBOARD_HAS_I2C_TPM_CR50
-	select TPM2
+	select MAINBOARD_HAS_TPM2
 
 # Select this option to enable use of cr50 SPI TPM on zoombini.
 config ZOOMBINI_USE_SPI_TPM
 	bool
 	default y
 	select MAINBOARD_HAS_SPI_TPM_CR50
-	select SPI_TPM
-	select TPM2
+	select MAINBOARD_HAS_TPM2
 
 config TPM_TIS_ACPI_INTERRUPT
 	int

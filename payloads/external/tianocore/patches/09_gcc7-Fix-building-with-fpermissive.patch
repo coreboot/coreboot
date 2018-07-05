@@ -1,0 +1,40 @@
+From 5546ab29b2c0c2fc3a963bc71221918dc77b6152 Mon Sep 17 00:00:00 2001
+From: Patrick Rudolph <siro@das-labor.org>
+Date: Sun, 17 Jun 2018 08:53:25 +0200
+Subject: [PATCH] gcc7: Fix building with -fpermissive
+
+Signed-off-by: Patrick Rudolph <siro@das-labor.org>
+---
+ BaseTools/Source/C/VfrCompile/VfrUtilityLib.cpp | 2 +-
+ MdeModulePkg/Library/UefiHiiLib/HiiLib.c        | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/BaseTools/Source/C/VfrCompile/VfrUtilityLib.cpp b/BaseTools/Source/C/VfrCompile/VfrUtilityLib.cpp
+index 3ca57ed741..4fa066dd9f 100644
+--- a/BaseTools/Source/C/VfrCompile/VfrUtilityLib.cpp
++++ b/BaseTools/Source/C/VfrCompile/VfrUtilityLib.cpp
+@@ -3372,7 +3372,7 @@ CVfrStringDB::GetVarStoreNameFormStringId (
+   UINT8       BlockType;
+   EFI_HII_STRING_PACKAGE_HDR *PkgHeader;
+   
+-  if (mStringFileName == '\0' ) {
++  if (mStringFileName == NULL ) {
+     return NULL;
+   }
+ 
+diff --git a/MdeModulePkg/Library/UefiHiiLib/HiiLib.c b/MdeModulePkg/Library/UefiHiiLib/HiiLib.c
+index 857950118f..de0aa5f7bc 100644
+--- a/MdeModulePkg/Library/UefiHiiLib/HiiLib.c
++++ b/MdeModulePkg/Library/UefiHiiLib/HiiLib.c
+@@ -2181,7 +2181,7 @@ InternalHiiIfrValueAction (
+   
+   StringPtr = ConfigAltResp;
+   
+-  while (StringPtr != L'\0') {
++  while (StringPtr != NULL) {
+     //
+     // 1. Find <ConfigHdr> GUID=...&NAME=...&PATH=...
+     //
+-- 
+2.17.0
+

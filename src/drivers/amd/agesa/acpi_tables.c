@@ -26,11 +26,11 @@
 	IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_PI_00630F01) || \
 	IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_PI_00730F01)
 
-#define HAS_ACPI_SRAT 	TRUE
-#define HAS_ACPI_SLIT 	TRUE
+#define HAS_ACPI_SRAT	TRUE
+#define HAS_ACPI_SLIT	TRUE
 #else
-#define HAS_ACPI_SRAT 	FALSE
-#define HAS_ACPI_SLIT 	FALSE
+#define HAS_ACPI_SRAT	FALSE
+#define HAS_ACPI_SLIT	FALSE
 #endif
 
 /* We will reference AmdLateParams later to copy ACPI tables. */

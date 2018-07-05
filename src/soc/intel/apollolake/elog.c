@@ -18,6 +18,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <elog.h>
+#include <intelblocks/pmclib.h>
 #include <soc/pm.h>
 #include <soc/pci_devs.h>
 #include <stdint.h>
@@ -56,8 +57,9 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 	if (ps->gpe0_sts[GPE0_A] & SMB_WAK_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_SMBUS, 0);
 
-	/* ACPI Wake Event - Always Log prev_sleep_state*/
-	elog_add_event_byte(ELOG_TYPE_ACPI_WAKE, ps->prev_sleep_state);
+	/* ACPI Wake Event - Log prev sleep state only if it was not S0. */
+	if (ps->prev_sleep_state != ACPI_S0)
+		elog_add_event_byte(ELOG_TYPE_ACPI_WAKE, ps->prev_sleep_state);
 
 	/* Log GPIO events in set A-D */
 	pch_log_gpio_gpe(ps->gpe0_sts[GPE0_A], ps->gpe0_en[GPE0_A], 0);
@@ -104,4 +106,12 @@ void pch_log_state(void)
 	/* Wake Sources */
 	if (ps->prev_sleep_state > ACPI_S0)
 		pch_log_wake_source(ps);
+}
+
+void elog_gsmi_cb_platform_log_wake_source(void)
+{
+	struct chipset_power_state ps;
+
+	pmc_fill_pm_reg_info(&ps);
+	pch_log_wake_source(&ps);
 }

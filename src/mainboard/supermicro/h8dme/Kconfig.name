@@ -1,2 +1,0 @@
-config BOARD_SUPERMICRO_H8DME
-	bool "H8DME-2"

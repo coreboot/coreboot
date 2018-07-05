@@ -514,7 +514,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 
 /****************************************************************************
  *
- * 	ChipsetInit
+ *	ChipsetInit
  *
  *	Called from northbridge init (Pre-VSA).
  *

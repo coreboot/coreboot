@@ -1,2 +1,0 @@
-config BOARD_KONTRON_KT690
-	bool "KT690/mITX"

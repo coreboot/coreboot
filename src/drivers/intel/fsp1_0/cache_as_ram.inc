@@ -112,7 +112,7 @@ fake_fsp_stack:
 CAR_init_params:
 	.long  dummy_microcode
 	.long  0
-	.long  0xFFFFFFFF - CACHE_ROM_SIZE + 1	/* Firmware Location */
+	.long  CACHE_ROM_BASE	/* Firmware Location */
 	.long  CACHE_ROM_SIZE	/* Total Firmware Length */
 
 CAR_init_stack:

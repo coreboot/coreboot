@@ -21,7 +21,7 @@
 #include <soc/ramstage.h>
 #include <soc/intel/broadwell/chip.h>
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
@@ -42,7 +42,7 @@ static struct device_operations cpu_bus_ops = {
 	.init             = &broadwell_init_cpus,
 };
 
-static void broadwell_enable(device_t dev)
+static void broadwell_enable(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
@@ -64,7 +64,7 @@ struct chip_operations soc_intel_broadwell_ops = {
 	.init       = &broadwell_init_pre_device,
 };
 
-static void pci_set_subsystem(device_t dev, unsigned int vendor,
+static void pci_set_subsystem(struct device *dev, unsigned int vendor,
 	unsigned int device)
 {
 	if (!vendor || !device)

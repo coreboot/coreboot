@@ -14,7 +14,6 @@
  */
 
 #include <compiler.h>
-#include <console/console.h>
 #include <timer.h>
 #include <delay.h>
 #include <thread.h>

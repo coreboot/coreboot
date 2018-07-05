@@ -93,7 +93,7 @@ void static rs780_config_misc_clk(struct device *nb_dev)
 	byte |= 1 << 0;
 	pci_cf8_conf1.write8(&pbus, 0, 1, 0xe4, reg);
 
-	/* CLKCFG:0xE8 Bit[17] = 0x1 	 Powerdown clock to IOC GFX block in no external graphics mode */
+	/* CLKCFG:0xE8 Bit[17] = 0x1	 Powerdown clock to IOC GFX block in no external graphics mode */
 	/* TODO: */
 #endif
 

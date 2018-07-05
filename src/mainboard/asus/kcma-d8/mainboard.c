@@ -24,10 +24,6 @@
 #include <southbridge/amd/sb700/sb700.h>
 #include <southbridge/amd/sr5650/cmn.h>
 
-
-void set_pcie_reset(void);
-void set_pcie_dereset(void);
-
 void set_pcie_reset(void)
 {
 	struct device *pcie_core_dev;

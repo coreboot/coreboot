@@ -17,18 +17,12 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/io.h>
-#include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
-#include "southbridge/amd/sb700/sb700.h"
-#include "southbridge/amd/sb700/smbus.h"
+#include <southbridge/amd/sb700/sb700.h>
+#include <southbridge/amd/sb700/smbus.h>
+#include <southbridge/amd/rs780/rs780.h>
 
-
-void set_pcie_dereset(void);
-void set_pcie_reset(void);
-u8 is_dev3_present(void);
-
-void set_pcie_dereset()
+void set_pcie_dereset(void)
 {
 	u8 byte;
 	u16 word;
@@ -53,7 +47,7 @@ void set_pcie_dereset()
 	pci_write_config16(sm_dev, 0x7e, word);
 }
 
-void set_pcie_reset()
+void set_pcie_reset(void)
 {
 	u8 byte;
 	u16 word;
@@ -84,7 +78,7 @@ void set_pcie_reset()
  * NOTE: This just copied from AMD Tilapia code.
  * It is completly unknown if it will work at all for this board.
  */
-u8 is_dev3_present(void)
+int is_dev3_present(void)
 {
 	u16 word;
 	struct device *sm_dev;

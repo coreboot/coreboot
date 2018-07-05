@@ -53,14 +53,15 @@ static void enable_serirq_quiet_mode(void)
 }
 
 static inline void
-add_mmio_resource(device_t dev, int i, unsigned long addr, unsigned long size)
+add_mmio_resource(struct device *dev, int i, unsigned long addr,
+		  unsigned long size)
 {
 	printk(BIOS_SPEW, "%s/%s ( %s, 0x%016lx, 0x%016lx )\n",
 			__FILE__, __func__, dev_name(dev), addr, size);
 	mmio_resource(dev, i, addr >> 10, size >> 10);
 }
 
-static void sc_add_mmio_resources(device_t dev)
+static void sc_add_mmio_resources(struct device *dev)
 {
 	printk(BIOS_SPEW, "%s/%s ( %s )\n",
 			__FILE__, __func__, dev_name(dev));
@@ -97,7 +98,8 @@ static inline int io_range_in_default(int base, int size)
  * Note: this function assumes there is no overlap with the default LPC device's
  * claimed range: LPC_DEFAULT_IO_RANGE_LOWER -> LPC_DEFAULT_IO_RANGE_UPPER.
  */
-static void sc_add_io_resource(device_t dev, int base, int size, int index)
+static void sc_add_io_resource(struct device *dev, int base, int size,
+			       int index)
 {
 	struct resource *res;
 
@@ -113,7 +115,7 @@ static void sc_add_io_resource(device_t dev, int base, int size, int index)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void sc_add_io_resources(device_t dev)
+static void sc_add_io_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -133,7 +135,7 @@ static void sc_add_io_resources(device_t dev)
 	sc_add_io_resource(dev, ACPI_BASE_ADDRESS, 128, ABASE);
 }
 
-static void sc_read_resources(device_t dev)
+static void sc_read_resources(struct device *dev)
 {
 	printk(BIOS_SPEW, "%s/%s ( %s )\n",
 			__FILE__, __func__, dev_name(dev));
@@ -154,7 +156,7 @@ static void sc_rtc_init(void)
 	cmos_init(rtc_failure());
 }
 
-static void sc_init(device_t dev)
+static void sc_init(struct device *dev)
 {
 	int i;
 	const unsigned long pr_base = ILB_BASE_ADDRESS + 0x08;
@@ -198,7 +200,7 @@ static void sc_init(device_t dev)
  */
 
 /* Set bit in function disble register to hide this device. */
-static void sc_disable_devfn(device_t dev)
+static void sc_disable_devfn(struct device *dev)
 {
 	void *func_dis = (void *)(PMC_BASE_ADDRESS + FUNC_DIS);
 	void *func_dis2 = (void *)(PMC_BASE_ADDRESS + FUNC_DIS2);
@@ -287,7 +289,7 @@ static void sc_disable_devfn(device_t dev)
 	}
 }
 
-static inline void set_d3hot_bits(device_t dev, int offset)
+static inline void set_d3hot_bits(struct device *dev, int offset)
 {
 	uint32_t reg8;
 
@@ -304,7 +306,7 @@ static inline void set_d3hot_bits(device_t dev, int offset)
  * cannot put HDA into D3Hot. Instead perform this workaround to make some of
  * the audio paths work for LPE audio.
  */
-static void hda_work_around(device_t dev)
+static void hda_work_around(struct device *dev)
 {
 	void *gctl = (void *)(TEMP_BASE_ADDRESS + 0x8);
 
@@ -326,7 +328,7 @@ static void hda_work_around(device_t dev)
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, 0);
 }
 
-static int place_device_in_d3hot(device_t dev)
+static int place_device_in_d3hot(struct device *dev)
 {
 	unsigned int offset;
 
@@ -405,7 +407,7 @@ static int place_device_in_d3hot(device_t dev)
 }
 
 /* Common PCI device function disable. */
-void southcluster_enable_dev(device_t dev)
+void southcluster_enable_dev(struct device *dev)
 {
 	uint32_t reg32;
 

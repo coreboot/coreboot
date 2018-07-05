@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 - 2017 Advanced Micro Devices, Inc.
+ * Copyright (C) 2018 Kyösti Mälkki
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,38 +74,42 @@ static AGESA_STATUS agesawrapper_readeventlog(UINT8 HeapStatus)
 	return Status;
 }
 
-static AGESA_STATUS create_struct(AMD_INTERFACE_PARAMS *interface_struct)
+static void *create_struct(AMD_INTERFACE_PARAMS *interface_struct)
 {
-	AGESA_STATUS status = AmdCreateStruct(interface_struct);
-	if (status == AGESA_SUCCESS)
-		return status;
+	/* Should clone entire StdHeader here. */
+	interface_struct->StdHeader.CalloutPtr = &GetBiosCallout;
 
-	printk(BIOS_ERR, "Error: AmdCreateStruct() for 0x%x returned 0x%x. "
-			"Proper system initialization may not be possible.\n",
-			interface_struct->AgesaFunctionName, status);
+	AGESA_STATUS status = AmdCreateStruct(interface_struct);
+
+	if (status != AGESA_SUCCESS) {
+		printk(BIOS_ERR, "Error: AmdCreateStruct() for 0x%x returned 0x%x. "
+				"Proper system initialization may not be possible.\n",
+				interface_struct->AgesaFunctionName, status);
+	}
 
 	if (!interface_struct->NewStructPtr) /* Avoid NULL pointer usage */
 		die("No AGESA structure created");
 
-	return status;
+	return interface_struct->NewStructPtr;
 }
 
 AGESA_STATUS agesawrapper_amdinitreset(void)
 {
 	AGESA_STATUS status;
-	AMD_RESET_PARAMS ResetParams;
+	AMD_RESET_PARAMS _ResetParams;
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_RESET,
 		.AllocationMethod = ByHost,
 		.NewStructSize = sizeof(AMD_RESET_PARAMS),
-		.NewStructPtr = &ResetParams,
-		.StdHeader.CalloutPtr = &GetBiosCallout
+		.NewStructPtr = &_ResetParams,
 	};
-	create_struct(&AmdParamStruct);
-	SetFchResetParams(&ResetParams.FchInterface);
+
+	AMD_RESET_PARAMS *ResetParams = create_struct(&AmdParamStruct);
+
+	SetFchResetParams(&ResetParams->FchInterface);
 
 	timestamp_add_now(TS_AGESA_INIT_RESET_START);
-	status = AmdInitReset(&ResetParams);
+	status = AmdInitReset(ResetParams);
 	timestamp_add_now(TS_AGESA_INIT_RESET_DONE);
 
 	if (status != AGESA_SUCCESS)
@@ -116,16 +121,13 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 AGESA_STATUS agesawrapper_amdinitearly(void)
 {
 	AGESA_STATUS status;
-	AMD_EARLY_PARAMS *EarlyParams;
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_EARLY,
 		.AllocationMethod = PreMemHeap,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
 
-	create_struct(&AmdParamStruct);
+	AMD_EARLY_PARAMS *EarlyParams = create_struct(&AmdParamStruct);
 
-	EarlyParams = (AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr;
 	OemCustomizeInitEarly(EarlyParams);
 
 	EarlyParams->GnbConfig.PsppPolicy = PsppDisabled;
@@ -180,13 +182,10 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_POST,
 		.AllocationMethod = PreMemHeap,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
-	AMD_POST_PARAMS *PostParams;
 
-	create_struct(&AmdParamStruct);
+	AMD_POST_PARAMS *PostParams = create_struct(&AmdParamStruct);
 
-	PostParams = (AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr;
 	PostParams->MemConfig.UmaMode = CONFIG_GFXUMA ? UMA_AUTO : UMA_NONE;
 	PostParams->MemConfig.UmaSize = 0;
 	PostParams->MemConfig.BottomIo = (UINT16)
@@ -238,13 +237,10 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_ENV,
 		.AllocationMethod = PostMemDram,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
-	AMD_ENV_PARAMS *EnvParams;
 
-	status = create_struct(&AmdParamStruct);
+	AMD_ENV_PARAMS *EnvParams = create_struct(&AmdParamStruct);
 
-	EnvParams = (AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr;
 	SetFchEnvParams(&EnvParams->FchInterface);
 	SetNbEnvParams(&EnvParams->GnbEnvConfiguration);
 
@@ -291,16 +287,13 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_MID,
 		.AllocationMethod = PostMemDram,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
-	AMD_MID_PARAMS *MidParams;
 
 	/* Enable MMIO on AMD CPU Address Map Controller */
 	amd_initcpuio();
 
-	create_struct(&AmdParamStruct);
+	AMD_MID_PARAMS *MidParams = create_struct(&AmdParamStruct);
 
-	MidParams = (AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr;
 	SetFchMidParams(&MidParams->FchInterface);
 	SetNbMidParams(&MidParams->GnbMidConfiguration);
 
@@ -321,16 +314,13 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_LATE,
 		.AllocationMethod = PostMemDram,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
-	AMD_LATE_PARAMS *LateParams;
 
 	/*
 	 * NOTE: if not call amdcreatestruct, the initializer
 	 * (AmdInitLateInitializer) would not be called.
 	 */
-	create_struct(&AmdParamStruct);
-	LateParams = (AMD_LATE_PARAMS *)AmdParamStruct.NewStructPtr;
+	AMD_LATE_PARAMS *LateParams = create_struct(&AmdParamStruct);
 
 	timestamp_add_now(TS_AGESA_INIT_LATE_START);
 	Status = AmdInitLate(LateParams);
@@ -391,13 +381,9 @@ AGESA_STATUS agesawrapper_amdinitrtb(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_RTB,
 		.AllocationMethod = PostMemDram,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
-	AMD_RTB_PARAMS *RtbParams;
 
-	create_struct(&AmdParamStruct);
-
-	RtbParams = (AMD_RTB_PARAMS *)AmdParamStruct.NewStructPtr;
+	AMD_RTB_PARAMS *RtbParams = create_struct(&AmdParamStruct);
 
 	timestamp_add_now(TS_AGESA_INIT_RTB_START);
 	Status = AmdInitRtb(RtbParams);
@@ -425,17 +411,13 @@ AGESA_STATUS agesawrapper_amdinitresume(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_INIT_RESUME,
 		.AllocationMethod = PreMemHeap,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
 	};
-	AMD_RESUME_PARAMS *InitResumeParams;
 	size_t nv_size;
 
 	if (!acpi_s3_resume_allowed())
 		return AGESA_UNSUPPORTED;
 
-	create_struct(&AmdParamStruct);
-
-	InitResumeParams = (AMD_RESUME_PARAMS *)AmdParamStruct.NewStructPtr;
+	AMD_RESUME_PARAMS *InitResumeParams = create_struct(&AmdParamStruct);
 
 	get_s3nv_info(&InitResumeParams->S3DataBlock.NvStorage, &nv_size);
 	InitResumeParams->S3DataBlock.NvStorageSize = nv_size;
@@ -454,12 +436,13 @@ AGESA_STATUS agesawrapper_amdinitresume(void)
 AGESA_STATUS agesawrapper_amds3laterestore(void)
 {
 	AGESA_STATUS Status;
+	AMD_S3LATE_PARAMS _S3LateParams;
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_S3LATE_RESTORE,
 		.AllocationMethod = ByHost,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
+		.NewStructSize = sizeof(AMD_S3LATE_PARAMS),
+		.NewStructPtr = &_S3LateParams,
 	};
-	AMD_S3LATE_PARAMS *S3LateParams;
 	size_t vol_size;
 
 	if (!acpi_s3_resume_allowed())
@@ -467,9 +450,7 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 
 	amd_initcpuio();
 
-	create_struct(&AmdParamStruct);
-
-	S3LateParams = (AMD_S3LATE_PARAMS *)AmdParamStruct.NewStructPtr;
+	AMD_S3LATE_PARAMS *S3LateParams = create_struct(&AmdParamStruct);
 
 	get_s3vol_info(&S3LateParams->S3DataBlock.VolatileStorage, &vol_size);
 	S3LateParams->S3DataBlock.VolatileStorageSize = vol_size;
@@ -490,20 +471,19 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 AGESA_STATUS agesawrapper_amds3finalrestore(void)
 {
 	AGESA_STATUS Status;
+	AMD_S3FINAL_PARAMS _S3FinalParams;
 	AMD_INTERFACE_PARAMS AmdParamStruct = {
 		.AgesaFunctionName = AMD_S3FINAL_RESTORE,
 		.AllocationMethod = ByHost,
-		.StdHeader.CalloutPtr = &GetBiosCallout,
+		.NewStructSize = sizeof(AMD_S3FINAL_PARAMS),
+		.NewStructPtr = &_S3FinalParams,
 	};
-	AMD_S3FINAL_PARAMS *S3FinalParams;
 	size_t vol_size;
 
 	if (!acpi_s3_resume_allowed())
 		return AGESA_UNSUPPORTED;
 
-	create_struct(&AmdParamStruct);
-
-	S3FinalParams = (AMD_S3FINAL_PARAMS *)AmdParamStruct.NewStructPtr;
+	AMD_S3FINAL_PARAMS *S3FinalParams = create_struct(&AmdParamStruct);
 
 	get_s3vol_info(&S3FinalParams->S3DataBlock.VolatileStorage, &vol_size);
 	S3FinalParams->S3DataBlock.VolatileStorageSize = vol_size;

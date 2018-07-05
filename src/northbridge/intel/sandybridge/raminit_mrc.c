@@ -34,7 +34,7 @@
 #include <security/vboot/vboot_common.h>
 
 /* Management Engine is in the southbridge */
-#include "southbridge/intel/bd82x6x/me.h"
+#include <southbridge/intel/bd82x6x/me.h>
 
 /*
  * MRC scrambler seed offsets should be reserved in
@@ -130,7 +130,7 @@ static void prepare_mrc_cache(struct pei_data *pei_data)
 	       __func__, pei_data->mrc_input, pei_data->mrc_input_len);
 }
 
-static const char* ecc_decoder[] = {
+static const char *ecc_decoder[] = {
 	"inactive",
 	"active on IO",
 	"disabled on IO",

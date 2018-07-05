@@ -22,7 +22,11 @@ static void print_debug_pci_dev(unsigned int dev)
 
 static inline void print_pci_devices(void)
 {
-	device_t dev;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
 	for (dev = PCI_DEV(0, 0, 0);
 	     dev <= PCI_DEV(0x00, 0x1f, 0x7); dev += PCI_DEV(0, 0, 1)) {
 		u32 id;
@@ -56,7 +60,11 @@ static void dump_pci_device(unsigned int dev)
 
 static inline void dump_pci_devices(void)
 {
-	device_t dev;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
 	for (dev = PCI_DEV(0, 0, 0);
 	     dev <= PCI_DEV(0, 0x1f, 0x7); dev += PCI_DEV(0, 0, 1)) {
 		u32 id;

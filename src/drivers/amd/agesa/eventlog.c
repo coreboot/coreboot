@@ -84,9 +84,9 @@ const char *heap_status_name(int status)
  * 0x6 = AGESA_CRITICAL
  * 0x7 = AGESA_FATAL
  */
-static const char * decodeAGESA_STATUS(AGESA_STATUS sret)
+static const char *decodeAGESA_STATUS(AGESA_STATUS sret)
 {
-	const char* statusStrings[] = { "AGESA_SUCCESS", "AGESA_UNSUPPORTED",
+	const char *statusStrings[] = { "AGESA_SUCCESS", "AGESA_UNSUPPORTED",
 					"AGESA_BOUNDS_CHK", "AGESA_ALERT",
 					"AGESA_WARNING", "AGESA_ERROR",
 					"AGESA_CRITICAL", "AGESA_FATAL"

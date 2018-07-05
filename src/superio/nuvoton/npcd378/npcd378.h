@@ -17,6 +17,50 @@
 #ifndef SUPERIO_NUVOTON_NPCD378_H
 #define SUPERIO_NUVOTON_NPCD378_H
 
+/* HWM at LDN8 */
+#define NPCD837_HWM_WRITE_LOCK_CTRL 0x4
+#define NPCD837_HWM_WRITE_LOCK_BIT 0x1
+
+#define NPCD378_HWM_PSU_FAN_MIN 0x17
+#define NPCD378_HWM_PSU_FAN_MAX 0xf8
+#define NPCD378_HWM_PSU_FAN_PWM_CTRL 0x198
+
+/*
+ * Read HWM register at specific page and offset.
+ *
+ * @param iobase IOBASE address of LDN8
+ * @param reg MSB is page, LSB sets the offset in selected page
+ *
+ * @return Byte read from HWM
+ */
+uint8_t npcd378_hwm_read(const uint16_t iobase, const uint16_t reg);
+
+/*
+ * Write to HWM register at specific page and offset.
+ *
+ * @param iobase IOBASE address of LDN8
+ * @param reg MSB is page, LSB sets the offset in selected page
+ * @param val The value to write to HWM register
+ */
+void npcd378_hwm_write(const uint16_t iobase, const uint16_t reg,
+		       const uint8_t val);
+
+/*
+ * Notify SuperIO a host-to-device transfer is ongoing.
+ * Has to be called before any register in HWM is written to.
+ *
+ * @param iobase IOBASE address of LDN8
+ */
+void npcd378_hwm_write_start(const uint16_t iobase);
+
+/*
+ * Notify SuperIO a host-to-device transfer has finished.
+ * Has to be called after any register in HWM was written to.
+ *
+ * @param iobase IOBASE address of LDN8
+ */
+void npcd378_hwm_write_finished(const uint16_t iobase);
+
 /* Logical Device Numbers (LDN). */
 /* Default Nuvoton hardware: */
 #define NPCD378_FDC		0x00 /* Floppy */

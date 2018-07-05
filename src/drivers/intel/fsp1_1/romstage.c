@@ -37,7 +37,7 @@
 #include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>
-#include <security/tpm/tis.h>
+#include <security/tpm/tspi.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)
@@ -172,9 +172,9 @@ void romstage_common(struct romstage_params *params)
 	 * Initialize the TPM, unless the TPM was already initialized
 	 * in verstage and used to verify romstage.
 	 */
-	if (IS_ENABLED(CONFIG_LPC_TPM) &&
+	if ((IS_ENABLED(CONFIG_TPM1) || IS_ENABLED(CONFIG_TPM2)) &&
 	    !IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
-		init_tpm(params->power_state->prev_sleep_state ==
+		tpm_setup(params->power_state->prev_sleep_state ==
 			 ACPI_S3);
 }
 

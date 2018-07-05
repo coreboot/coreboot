@@ -14,7 +14,6 @@
 #include <arch/early_variables.h>
 #include <console/console.h>
 #include <arch/io.h>
-#include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
 #include <smp/spinlock.h>
 #include <delay.h>

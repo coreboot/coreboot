@@ -89,7 +89,7 @@ static void bcm5785_lpc_enable_childrens_resources(struct device *dev)
 					case 0x64:
 						reg |= (1<<29); break;
 					case 0x3f8: // COM1
-						reg |= (1<<6); 	break;
+						reg |= (1<<6);	break;
 					case 0x2f8: // COM2
 						reg |= (1<<7);  break;
 					case 0x378: // Parallel 1

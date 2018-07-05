@@ -50,7 +50,6 @@ chip soc/intel/skylake
 	register "SkipExtGfxScan" = "1"
 	register "Device4Enable" = "1"
 	register "HeciEnabled" = "0"
-	register "FspSkipMpInit" = "1"
 	register "SaGv" = "3"
 	register "SerialIrqConfigSirqEnable" = "1"
 	register "PmConfigSlpS3MinAssert" = "2"        # 50ms
@@ -197,58 +196,73 @@ chip soc/intel/skylake
 
 	# Touchscreen
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"
-	register "i2c[0]" = "{
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 185,
-			.scl_hcnt = 90,
-			.sda_hold = 36,
-		},
-	}"
 
 	# Trackpad
 	register "i2c_voltage[1]" = "I2C_VOLTAGE_3V3"
-	register "i2c[1]" = "{
-		.early_init = 1,
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 185,
-			.scl_hcnt = 90,
-			.sda_hold = 36,
-		},
-	}"
 
 	# Pen
 	register "i2c_voltage[2]" = "I2C_VOLTAGE_1V8"
-	register "i2c[2]" = "{
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 185,
-			.scl_hcnt = 100,
-			.sda_hold = 36,
-		},
-	}"
 
 	# Audio
 	register "i2c_voltage[3]" = "I2C_VOLTAGE_1V8"
-	register "i2c[3]" = "{
-		.speed = I2C_SPEED_FAST,
-		.speed_config[0] = {
-			.speed = I2C_SPEED_FAST,
-			.scl_lcnt = 195,
-			.scl_hcnt = 90,
-			.sda_hold = 36,
-		},
-	}"
 
-	# Use GSPI0 for cr50 TPM. Early init is required to set up a BAR for TPM
-	# communication before memory is up.
-	register "gspi[0]" = "{
-		 .speed_mhz = 1,
-		 .early_init = 1,
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#| I2C0              | Touchscreen               |
+	#| I2C1              | Trackpad                  |
+	#| I2C2              | Pen                       |
+	#| I2C3              | Audio                     |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 185,
+				.scl_hcnt = 90,
+				.sda_hold = 36,
+			},
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 185,
+				.scl_hcnt = 90,
+				.sda_hold = 36,
+			},
+			.early_init = 1,
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 185,
+				.scl_hcnt = 100,
+				.sda_hold = 36,
+			},
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 195,
+				.scl_hcnt = 90,
+				.sda_hold = 36,
+			},
+		},
 	}"
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
@@ -268,11 +282,8 @@ chip soc/intel/skylake
 
 	register "speed_shift_enable" = "1"
 
-	register "tcc_offset" = "10"     # TCC of 90C
+	register "tcc_offset" = "3"     # TCC of 97C
 	register "psys_pmax" = "101"
-
-	# Lock Down
-	register "chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
 
 	# PCH Trip Temperature in degree C
 	register "pch_trip_temp" = "75"
@@ -284,7 +295,7 @@ chip soc/intel/skylake
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
 		device pci 14.0 on  end # USB xHCI
-		device pci 14.1 off end # USB xDCI (OTG)
+		device pci 14.1 on  end # USB xDCI (OTG)
 		device pci 14.2 on  end # Thermal Subsystem
 		device pci 15.0 on
 			chip drivers/i2c/generic
@@ -296,7 +307,7 @@ chip soc/intel/skylake
 				register "reset_delay_ms" = "20"
 				register "reset_off_delay_ms" = "2"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B4)"
-				register "enable_delay_ms" = "1"
+				register "enable_delay_ms" = "5"
 				register "enable_off_delay_ms" = "100"
 				register "has_power_resource" = "1"
 				register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C3)"

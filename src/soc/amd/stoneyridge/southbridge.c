@@ -368,6 +368,20 @@ void sb_acpi_mmio_decode(void)
 	outb(byte, PM_DATA);
 }
 
+static void sb_enable_cf9_io(void)
+{
+	uint32_t reg = pm_read32(PM_DECODE_EN);
+
+	pm_write32(PM_DECODE_EN, reg | CF9_IO_EN);
+}
+
+static void sb_enable_legacy_io(void)
+{
+	uint32_t reg = pm_read32(PM_DECODE_EN);
+
+	pm_write32(PM_DECODE_EN, reg | LEGACY_IO_EN);
+}
+
 void sb_clk_output_48Mhz(void)
 {
 	u32 ctrl;
@@ -542,6 +556,8 @@ void bootblock_fch_early_init(void)
 	sb_spibase();
 	sb_disable_4dw_burst(); /* Must be disabled on CZ(ST) */
 	sb_acpi_mmio_decode();
+	sb_enable_cf9_io();
+	sb_enable_legacy_io();
 	enable_aoac_devices();
 }
 
@@ -616,8 +632,8 @@ static void print_num_status_bits(int num_bits, uint32_t status,
 
 static uint16_t reset_pm1_status(void)
 {
-	uint16_t pm1_sts = inw(ACPI_PM_EVT_BLK);
-	outw(pm1_sts, ACPI_PM_EVT_BLK);
+	uint16_t pm1_sts = inw(ACPI_PM1_STS);
+	outw(pm1_sts, ACPI_PM1_STS);
 	return pm1_sts;
 }
 
@@ -662,22 +678,24 @@ static void sb_log_pm1_status(uint16_t pm1_sts)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PCIE, 0);
 }
 
-struct soc_amd_sws {
-	uint32_t pm1i;
-	uint32_t gevent;
-};
-
-static struct soc_amd_sws sws;
-
-static void sb_save_sws(uint32_t pm1_status)
+static void sb_save_sws(uint16_t pm1_status)
 {
+	struct soc_power_reg *sws;
 	uint32_t reg32;
+	uint16_t reg16;
 
-	sws.pm1i = pm1_status;
-	reg32 = inl(ACPI_GPE0_BLK);
-	outl(ACPI_GPE0_BLK, reg32);
-	reg32 &= inl(ACPI_GPE0_BLK + sizeof(uint32_t));
-	sws.gevent = reg32;
+	sws = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(struct soc_power_reg));
+	if (sws == NULL)
+		return;
+	sws->pm1_sts = pm1_status;
+	sws->pm1_en = inw(ACPI_PM1_EN);
+	reg32 = inl(ACPI_GPE0_STS);
+	outl(ACPI_GPE0_STS, reg32);
+	sws->gpe0_sts = reg32;
+	sws->gpe0_en = inl(ACPI_GPE0_EN);
+	reg16 = inw(ACPI_PM1_CNT_BLK);
+	reg16 &= SLP_TYP;
+	sws->wake_from = reg16 >> SLP_TYP_SHIFT;
 }
 
 static void sb_clear_pm1_status(void)
@@ -689,19 +707,51 @@ static void sb_clear_pm1_status(void)
 	print_pm1_status(pm1_sts);
 }
 
+static int get_index_bit(uint32_t value, uint16_t limit)
+{
+	uint16_t i;
+	uint32_t t;
+
+	if (limit >= TOTAL_BITS(uint32_t))
+		return -1;
+
+	/* get a mask of valid bits. Ex limit = 3, set bits 0-2 */
+	t = (1 << limit) - 1;
+	if ((value & t) == 0)
+		return -1;
+	t = 1;
+	for (i = 0; i < limit; i++) {
+		if (value & t)
+			break;
+		t <<= 1;
+	}
+	return i;
+}
+
 static void set_nvs_sws(void *unused)
 {
+	struct soc_power_reg *sws;
 	struct global_nvs_t *gnvs;
+	int index;
 
+	sws = cbmem_find(CBMEM_ID_POWER_STATE);
+	if (sws == NULL)
+		return;
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (gnvs == NULL)
 		return;
 
-	gnvs->pm1i = sws.pm1i;
-	gnvs->gpei = sws.gevent;
+	index = get_index_bit(sws->pm1_sts & sws->pm1_en, PM1_LIMIT);
+	if (index < 0)
+		gnvs->pm1i = ~0ULL;
+	else
+		gnvs->pm1i = index;
 
-	printk(BIOS_DEBUG, "Loaded _SWS parameters PM1 0x%08x, EVENT 0x%08x into nvs\n",
-				sws.pm1i, sws.gevent);
+	index = get_index_bit(sws->gpe0_sts & sws->gpe0_en, GPE0_LIMIT);
+	if (index < 0)
+		gnvs->gpei = ~0ULL;
+	else
+		gnvs->gpei = index;
 }
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, set_nvs_sws, NULL);

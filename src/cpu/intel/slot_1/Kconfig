@@ -28,7 +28,7 @@ config SLOT_SPECIFIC_OPTIONS # dummy
 
 config DCACHE_RAM_BASE
 	hex
-	default 0xce000
+	default 0xfefc0000
 
 config DCACHE_RAM_SIZE
 	hex

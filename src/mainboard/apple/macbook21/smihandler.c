@@ -17,8 +17,8 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include "southbridge/intel/i82801gx/nvs.h"
-#include "southbridge/intel/i82801gx/i82801gx.h"
+#include <southbridge/intel/i82801gx/nvs.h>
+#include <southbridge/intel/i82801gx/i82801gx.h>
 #include <pc80/mc146818rtc.h>
 #include <delay.h>
 

@@ -15,7 +15,6 @@
 
 #include <arch/io.h>
 #include <cpu/x86/tsc.h>
-#include "southbridge/intel/common/rcba.h"
 #include "pch.h"
 
 static void store_initial_timestamp(void)

@@ -50,7 +50,7 @@ Method(\_PTS, 1) {
 
 	/* On older chips, clear PciExpWakeDisEn */
 	/*if (LLessEqual(\_SB.SBRI, 0x13)) {
-	*    	Store(0,\_SB.PWDE)
+	*	Store(0,\_SB.PWDE)
 	*}
 	*/
 
@@ -108,7 +108,7 @@ Method(\_WAK, 1) {
 	Store(PWST, Local1)
 	Store(Local1, PWST)
 
-	/* if(DeRefOf(Index(WKST,0))) {
+	/* if (DeRefOf(Index(WKST,0))) {
 	*	Store(0, Index(WKST,1))
 	* } else {
 	*	Store(Arg0, Index(WKST,1))

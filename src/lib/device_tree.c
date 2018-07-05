@@ -497,12 +497,12 @@ void dt_read_cell_props(struct device_tree_node *node, u32 *addrcp, u32 *sizecp)
  *
  * @param parent	The node from which to start the relative path lookup.
  * @param path		An array of path component strings that will be looked
- * 			up in order to find the node. Must be terminated with
- * 			a NULL pointer. Example: {'firmware', 'coreboot', NULL}
+ *			up in order to find the node. Must be terminated with
+ *			a NULL pointer. Example: {'firmware', 'coreboot', NULL}
  * @param addrcp	Pointer that will be updated with any #address-cells
- * 			value found in the path. May be NULL to ignore.
+ *			value found in the path. May be NULL to ignore.
  * @param sizecp	Pointer that will be updated with any #size-cells
- * 			value found in the path. May be NULL to ignore.
+ *			value found in the path. May be NULL to ignore.
  * @param create	1: Create node(s) if not found. 0: Return NULL instead.
  * @return		The found/created node, or NULL.
  */
@@ -725,6 +725,28 @@ struct device_tree_node *dt_find_prop_value(struct device_tree_node *parent,
 	return NULL;
 }
 
+/**
+ * Find the phandle of a node.
+ *
+ * @param node Pointer to node containing the phandle
+ * @return Zero on error, the phandle on success
+ */
+uint32_t dt_get_phandle(struct device_tree_node *node)
+{
+	uint32_t *phandle;
+	size_t len;
+
+	dt_find_bin_prop(node, "phandle", (void **)&phandle, &len);
+	if (phandle != NULL && len == sizeof(*phandle))
+		return be32_to_cpu(*phandle);
+
+	dt_find_bin_prop(node, "linux,phandle", (void **)&phandle, &len);
+	if (phandle != NULL && len == sizeof(*phandle))
+		return be32_to_cpu(*phandle);
+
+	return 0;
+}
+
 /*
  * Write an arbitrary sized big-endian integer into a pointer.
  *
@@ -737,6 +759,24 @@ void dt_write_int(u8 *dest, u64 src, size_t length)
 	while (length--) {
 		dest[length] = (u8)src;
 		src >>= 8;
+	}
+}
+
+/*
+ * Delete a property by name in a given node if it exists.
+ *
+ * @param node		The device tree node to operate on.
+ * @param name		The name of the property to delete.
+ */
+void dt_delete_prop(struct device_tree_node *node, const char *name)
+{
+	struct device_tree_property *prop;
+
+	list_for_each(prop, node->properties, list_node) {
+		if (!strcmp(prop->prop.name, name)) {
+			list_remove(&prop->list_node);
+			return;
+		}
 	}
 }
 

@@ -1,2 +1,0 @@
-config BOARD_JETWAY_J7F4K1G5D
-	bool "J7F4K1G5D"

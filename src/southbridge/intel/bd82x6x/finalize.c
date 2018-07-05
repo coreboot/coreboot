@@ -18,7 +18,7 @@
 #include <device/pci_ops.h>
 #include <console/post_codes.h>
 #include <cpu/x86/smm.h>
-#include <southbridge/intel/common/rcba.h>
+#include "pch.h"
 #include <spi-generic.h>
 #include "chip.h"
 #include "pch.h"

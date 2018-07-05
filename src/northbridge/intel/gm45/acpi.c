@@ -78,24 +78,24 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 
 	unsigned long tmp = current;
 	current += acpi_create_dmar_drhd(current, 0, 0, IOMMU_BASE1);
-	current += acpi_create_dmar_drhd_ds_pci(current, 0, 0x1b, 0);
+	current += acpi_create_dmar_ds_pci(current, 0, 0x1b, 0);
 	acpi_dmar_drhd_fixup(tmp, current);
 
 	if (stepping != STEPPING_B2) {
 		tmp = current;
 		current += acpi_create_dmar_drhd(current, 0, 0, IOMMU_BASE2);
-		current += acpi_create_dmar_drhd_ds_pci(current, 0, 0x2, 0);
-		current += acpi_create_dmar_drhd_ds_pci(current, 0, 0x2, 1);
+		current += acpi_create_dmar_ds_pci(current, 0, 0x2, 0);
+		current += acpi_create_dmar_ds_pci(current, 0, 0x2, 1);
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 
 	if (me_active) {
 		tmp = current;
 		current += acpi_create_dmar_drhd(current, 0, 0, IOMMU_BASE3);
-		current += acpi_create_dmar_drhd_ds_pci(current, 0, 0x3, 0);
-		current += acpi_create_dmar_drhd_ds_pci(current, 0, 0x3, 1);
-		current += acpi_create_dmar_drhd_ds_pci(current, 0, 0x3, 2);
-		current += acpi_create_dmar_drhd_ds_pci(current, 0, 0x3, 3);
+		current += acpi_create_dmar_ds_pci(current, 0, 0x3, 0);
+		current += acpi_create_dmar_ds_pci(current, 0, 0x3, 1);
+		current += acpi_create_dmar_ds_pci(current, 0, 0x3, 2);
+		current += acpi_create_dmar_ds_pci(current, 0, 0x3, 3);
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 

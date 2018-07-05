@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_REQUIRE_H__
+#define __CB_BDK_REQIORE_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -102,6 +104,8 @@
  * reference to bdk_requires_depends() which then contains strong
  * references to all needed components.
  */
-extern void __bdk_require_depends(void);
+// FIXME(dhendrix): leave it out if possible */
+//extern void __bdk_require_depends(void);
 
 /** @} */
+#endif

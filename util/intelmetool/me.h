@@ -76,7 +76,7 @@ struct me_hfs {
 	uint32_t boot_options_present: 1;
 	uint32_t ack_data: 3;
 	uint32_t bios_msg_ack: 4;
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 #define PCI_ME_UMA		0x44
 
@@ -86,7 +86,7 @@ struct me_uma {
 	uint32_t valid: 1;
 	uint32_t reserved_0: 14;
 	uint32_t set_to_one: 1;
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 #define PCI_ME_H_GS		0x4c
 #define  ME_INIT_DONE		1
@@ -99,7 +99,7 @@ struct me_did {
 	uint32_t reserved: 8;
 	uint32_t status: 4;
 	uint32_t init_done: 4;
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 #define PCI_ME_GMES		0x48
 #define  ME_GMES_PHASE_ROM	0
@@ -125,7 +125,7 @@ struct me_gmes {
 	uint32_t current_state: 8;
 	uint32_t current_pmevent: 4;
 	uint32_t progress_code: 4;
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 #define PCI_ME_HERES		0xbc
 #define  PCI_ME_EXT_SHA1	0x00
@@ -137,14 +137,14 @@ struct me_heres {
 	uint32_t reserved: 26;
 	uint32_t extend_feature_present: 1;
 	uint32_t extend_reg_valid: 1;
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 struct me_thermal_reporting {
 	uint32_t polling_timeout: 8;
 	uint32_t smbus_ec_msglen: 8;
 	uint32_t smbus_ec_msgpec: 8;
 	uint32_t dimmnumber: 8;
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 /*
  * Management Engine MEI registers
@@ -165,7 +165,7 @@ struct mei_csr {
 	uint32_t buffer_read_ptr: 8;
 	uint32_t buffer_write_ptr: 8;
 	uint32_t buffer_depth: 8;
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 #define MEI_ADDRESS_HBM		0x00
 #define MEI_ADDRESS_CORE_WD	0x01
@@ -187,7 +187,7 @@ struct mei_header {
 	uint32_t length: 9;
 	uint32_t reserved: 6;
 	uint32_t is_complete: 1;
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 #define MKHI_GROUP_ID_CBM	0x00
 #define MKHI_GROUP_ID_PM	0x01
@@ -231,7 +231,7 @@ struct mkhi_header {
 	uint32_t is_response: 1;
 	uint32_t reserved: 8;
 	uint32_t result: 8;
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 struct me_fw_version {
 	uint16_t code_minor;
@@ -246,7 +246,7 @@ struct me_fw_version {
 	uint16_t fitcmajor;
 	uint16_t fitcbuildno;
 	uint16_t fitchotfix;
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 
 #define HECI_EOP_STATUS_SUCCESS       0x0
@@ -261,7 +261,7 @@ struct me_fw_version {
 struct me_global_reset {
 	uint8_t request_origin;
 	uint8_t reset_type;
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 typedef enum {
 	ME_NORMAL_BIOS_PATH,
@@ -277,7 +277,7 @@ typedef struct {
 	uint32_t       minor_version  : 16;
 	uint32_t       hotfix_version : 16;
 	uint32_t       build_version  : 16;
-} __attribute__ ((packed)) mbp_fw_version_name;
+} __attribute__((packed)) mbp_fw_version_name;
 
 typedef struct {
 	uint8_t        num_icc_profiles;
@@ -285,7 +285,7 @@ typedef struct {
 	uint8_t        icc_profile_index;
 	uint8_t        reserved;
 	uint32_t       register_lock_mask[3];
-} __attribute__ ((packed)) mbp_icc_profile;
+} __attribute__((packed)) mbp_icc_profile;
 
 typedef struct {
 	uint32_t  full_net		: 1;
@@ -308,7 +308,7 @@ typedef struct {
 	uint32_t  reserved_4		: 1;
 	uint32_t  wlan		: 1;
 	uint32_t  reserved_5		: 8;
-} __attribute__ ((packed)) mefwcaps_sku;
+} __attribute__((packed)) mefwcaps_sku;
 
 typedef struct {
 	uint16_t  lock_state		     : 1;
@@ -319,13 +319,13 @@ typedef struct {
 	uint16_t  wwan3gpresent	     : 1;
 	uint16_t  wwan3goob		     : 1;
 	uint16_t  reserved		     : 9;
-} __attribute__ ((packed)) tdt_state_flag;
+} __attribute__((packed)) tdt_state_flag;
 
 typedef struct {
 	uint8_t           state;
 	uint8_t           last_theft_trigger;
 	tdt_state_flag  flags;
-}  __attribute__ ((packed)) tdt_state_info;
+}  __attribute__((packed)) tdt_state_info;
 
 typedef struct {
 	uint32_t  platform_target_usage_type	 : 4;
@@ -335,7 +335,7 @@ typedef struct {
 	uint32_t  intel_me_fw_image_type	 : 4;
 	uint32_t  platform_brand		 : 4;
 	uint32_t  reserved_1			 : 16;
-}  __attribute__ ((packed)) platform_type_rule_data;
+}  __attribute__((packed)) platform_type_rule_data;
 
 typedef struct {
 	mefwcaps_sku fw_capabilities;
@@ -346,7 +346,7 @@ typedef struct {
 	uint16_t        device_id;
 	uint16_t        fuse_test_flags;
 	uint32_t        umchid[4];
-}  __attribute__ ((packed)) mbp_rom_bist_data;
+}  __attribute__((packed)) mbp_rom_bist_data;
 
 typedef struct {
 	uint32_t        key[8];
@@ -372,28 +372,28 @@ typedef  struct {
 	uint32_t  mbp_size	 : 8;
 	uint32_t  num_entries : 8;
 	uint32_t  rsvd      	 : 16;
-} __attribute__ ((packed)) mbp_header;
+} __attribute__((packed)) mbp_header;
 
 typedef struct {
 	uint32_t  app_id  : 8;
 	uint32_t  item_id : 8;
 	uint32_t  length  : 8;
 	uint32_t  rsvd    : 8;
-}  __attribute__ ((packed)) mbp_item_header;
+}  __attribute__((packed)) mbp_item_header;
 
 struct me_fwcaps {
 	uint32_t id;
 	uint8_t length;
 	mefwcaps_sku caps_sku;
 	uint8_t reserved[3];
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 struct me_debug_mem {
 	uint32_t debug_phys;
         uint32_t debug_size;
         uint32_t me_phys;
         uint32_t me_size;
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 void intel_me_status(uint32_t hfs, uint32_t gmes);
 void mkhi_thermal(void);

@@ -18,8 +18,6 @@ config CPU_SPECIFIC_OPTIONS
 	select UDELAY_TSC
 	select TSC_CONSTANT_RATE
 	select SMM_TSEG
-	select RELOCATABLE_MODULES
-	select RELOCATABLE_RAMSTAGE
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	#select AP_IN_SIPI_WAIT
 	select TSC_SYNC_MFENCE
@@ -46,7 +44,6 @@ config SMM_RESERVED_SIZE
 config RESET_ON_INVALID_RAMSTAGE_CACHE
 	bool "Reset the system on S3 wake when ramstage cache invalid."
 	default n
-	depends on RELOCATABLE_RAMSTAGE
 	help
 	  The haswell romstage code caches the loaded ramstage program
 	  in SMM space. On S3 wake the romstage will copy over a fresh

@@ -16,7 +16,6 @@
 #include <types.h>
 #include <string.h>
 #include <cbmem.h>
-#include <console/console.h>
 #include <arch/acpi.h>
 #include <arch/ioapic.h>
 #include <arch/acpigen.h>
@@ -28,8 +27,8 @@
 #if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
+#include <southbridge/intel/bd82x6x/nvs.h>
 
-#include "southbridge/intel/bd82x6x/nvs.h"
 #include "thermal.h"
 
 static global_nvs_t *gnvs_;

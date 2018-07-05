@@ -2,6 +2,8 @@
  * Bochs/QEMU ACPI DSDT ASL definition
  *
  * Copyright (c) 2006 Fabrice Bellard
+ * Copyright (c) 2010 Isaku Yamahata
+ *                    yamahata at valinux co jp
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -12,9 +14,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  */
+
 /*
- * Copyright (c) 2010 Isaku Yamahata
- *                    yamahata at valinux co jp
  * Based on acpi-dsdt.dsl, but heavily modified for q35 chipset.
  */
 

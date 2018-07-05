@@ -31,8 +31,11 @@ static void pci_early_hsuart_device_probe(u8 bus, u8 dev, u8 func,
 					  u32 mmio_base)
 {
 	register uint16_t reg16;
-
-	device_t uart_dev = PCI_DEV(bus, dev, func);
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t uart_dev = PCI_DEV(bus, dev, func);
+#else
+	struct device *uart_dev = PCI_DEV(bus, dev, func);
+#endif
 
 	/* We're using MMIO for HSUARTs. This section is needed for logging
 	*  from FSP only

@@ -85,7 +85,7 @@ static void gpio_keys_fill_ssdt_generator(struct device *dev)
 	acpi_dp_add_string(dsd, "compatible", drv_string);
 	if (config->is_polled)
 		acpi_dp_add_integer(dsd, "poll-interval",
-				 	config->poll_interval);
+					config->poll_interval);
 	/* Child device defining key */
 	child = gpio_keys_add_child_node(config, path);
 	if (child)
@@ -112,8 +112,8 @@ static const char *gpio_keys_acpi_name(const struct device *dev)
 
 static struct device_operations gpio_keys_ops = {
 	.read_resources			= DEVICE_NOOP,
-	.set_resources		  	= DEVICE_NOOP,
-	.enable_resources	  	= DEVICE_NOOP,
+	.set_resources			= DEVICE_NOOP,
+	.enable_resources		= DEVICE_NOOP,
 	.acpi_name			= &gpio_keys_acpi_name,
 	.acpi_fill_ssdt_generator	= &gpio_keys_fill_ssdt_generator,
 };

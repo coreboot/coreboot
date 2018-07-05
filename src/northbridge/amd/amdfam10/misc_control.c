@@ -49,7 +49,7 @@
  * implemented in a way to NOT DOING legacy VGA resource allocation on
  * purpose :-(.
  */
-static void mcf3_read_resources(device_t dev)
+static void mcf3_read_resources(struct device *dev)
 {
 	struct resource *resource;
 	unsigned char gart;
@@ -75,14 +75,14 @@ static void mcf3_read_resources(device_t dev)
 	}
 }
 
-static void set_agp_aperture(device_t dev, uint32_t pci_id)
+static void set_agp_aperture(struct device *dev, uint32_t pci_id)
 {
 	uint32_t dword;
 	struct resource *resource;
 
 	resource = probe_resource(dev, 0x94);
 	if (resource) {
-		device_t pdev;
+		struct device *pdev;
 		u32 gart_base, gart_acr;
 
 		/* Remember this resource has been stored */
@@ -117,7 +117,7 @@ static void set_agp_aperture(device_t dev, uint32_t pci_id)
 	}
 }
 
-static void mcf3_set_resources_fam10h(device_t dev)
+static void mcf3_set_resources_fam10h(struct device *dev)
 {
 	/* Set the gart aperture */
 	set_agp_aperture(dev, 0x1203);
@@ -126,7 +126,7 @@ static void mcf3_set_resources_fam10h(device_t dev)
 	pci_dev_set_resources(dev);
 }
 
-static void mcf3_set_resources_fam15h_model10(device_t dev)
+static void mcf3_set_resources_fam15h_model10(struct device *dev)
 {
 	/* Set the gart aperture */
 	set_agp_aperture(dev, 0x1403);
@@ -135,7 +135,7 @@ static void mcf3_set_resources_fam15h_model10(device_t dev)
 	pci_dev_set_resources(dev);
 }
 
-static void mcf3_set_resources_fam15h(device_t dev)
+static void mcf3_set_resources_fam15h(struct device *dev)
 {
 	/* Set the gart aperture */
 	set_agp_aperture(dev, 0x1603);

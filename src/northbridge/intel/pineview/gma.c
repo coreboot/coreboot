@@ -23,8 +23,6 @@
 #include <device/pci_ids.h>
 #include <string.h>
 #include <device/pci_ops.h>
-#include <cpu/x86/msr.h>
-#include <cpu/x86/mtrr.h>
 
 #include <drivers/intel/gma/i915_reg.h>
 #include "chip.h"

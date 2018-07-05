@@ -16,7 +16,6 @@
 #include <types.h>
 #include <string.h>
 #include <cbmem.h>
-#include <console/console.h>
 #include <arch/acpi.h>
 #include <arch/ioapic.h>
 #include <arch/acpigen.h>
@@ -25,8 +24,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <vendorcode/google/chromeos/gnvs.h>
+#include <southbridge/intel/bd82x6x/nvs.h>
 
-#include "southbridge/intel/bd82x6x/nvs.h"
 #include "thermal.h"
 
 static global_nvs_t *gnvs_;

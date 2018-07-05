@@ -118,7 +118,8 @@ static const unsigned int ctrl_conf_enable_msi_mapping[] = {
 	RES_PCI_IO, PCI_ADDR(0, 0, 0, 0xe0), ~(0x00000000), 0x00010000,	/* Enable MSI mapping on host bridge -- without this Linux cannot use the network device MSI interrupts! */
 };
 
-static void ck804_control(const unsigned int* values, u32 size, uint8_t bus_unit_id)
+static void ck804_control(const unsigned int *values, u32 size,
+			  uint8_t bus_unit_id)
 {
 	unsigned busn[4], io_base[4];
 	int i, ck804_num = 0;
@@ -317,8 +318,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 * IS_ENABLED(CONFIG_DEBUG_SMBUS) uncomment this block
 	 */
 	if (IS_ENABLED(CONFIG_DEBUG_SMBUS)) {
-	        dump_spd_registers(&cpu[0]);
-        	dump_smbus_registers();
+		dump_spd_registers(&cpu[0]);
+		dump_smbus_registers();
 	}
 #endif
 
@@ -343,8 +344,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Initialize GPIO */
 	/* Access SuperIO GPI03 logical device */
 	uint16_t port = GPIO3_DEV >> 8;
-        outb(0x87, port);
-        outb(0x87, port);
+	outb(0x87, port);
+	outb(0x87, port);
 	pnp_set_logical_device(GPIO3_DEV);
 	/* Set GP37 (power LED) to output */
 	pnp_write_config(GPIO3_DEV, 0xf0, 0x7f);

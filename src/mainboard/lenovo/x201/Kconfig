@@ -18,6 +18,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SUPERIO_NSC_PC87382
 	select DRIVERS_LENOVO_WACOM
 	select MAINBOARD_HAS_LPC_TPM
+	select MAINBOARD_HAS_TPM1
 
 config MAINBOARD_DIR
 	string
@@ -46,5 +47,11 @@ config MAX_CPUS
 config CPU_ADDR_BITS
 	int
 	default 36
+
+# Without the Intel ME's EFFS partition some PCIe devices (like the USB and SATA
+# controllers) don't work as expected
+config ME_CLEANER_ARGS
+	string
+	default "-S -w EFFS"
 
 endif

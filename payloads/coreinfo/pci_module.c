@@ -183,8 +183,14 @@ static void pci_scan_bus(int bus)
 
 			/* Nobody home. */
 			if (val == 0xffffffff || val == 0x00000000 ||
-			    val == 0x0000ffff || val == 0xffff0000)
+			    val == 0x0000ffff || val == 0xffff0000) {
+
+				/* If function 0 is not present, no need
+				 * to test other functions. */
+				if (func == 0)
+					func = 8;
 				continue;
+			}
 
 			/* FIXME: Remove this arbitrary limitation. */
 			if (devices_index >= MAX_PCI_DEVICES)
@@ -197,7 +203,11 @@ static void pci_scan_bus(int bus)
 
 			/* If this is a bridge, then follow it. */
 			hdr = pci_read_config8(dev, REG_HEADER_TYPE);
-			hdr &= 0x7f;
+
+			if ((func == 0) && !(hdr & HEADER_TYPE_MULTIFUNCTION))
+				func = 8;
+
+			hdr &= ~HEADER_TYPE_MULTIFUNCTION;
 			if (hdr == HEADER_TYPE_BRIDGE ||
 			    hdr == HEADER_TYPE_CARDBUS) {
 				unsigned int busses;

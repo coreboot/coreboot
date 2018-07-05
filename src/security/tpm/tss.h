@@ -11,13 +11,70 @@
 
 #ifndef TSS_H_
 #define TSS_H_
+
 #include <stdint.h>
 #include <types.h>
 
-#include "tss_constants.h"
+#include <security/tpm/tss/common/tss_common.h>
+#include <security/tpm/tss_errors.h>
+#include <security/tpm/tss/vendor/cr50/cr50.h>
+
+#if IS_ENABLED(CONFIG_TPM1)
+
+#include <security/tpm/tss/tcg-1.2/tss_structures.h>
+
+/**
+ * Define a space with permission [perm]. [index] is the index for the space,
+ * [size] the usable data size. The TPM error code is returned.
+ */
+uint32_t tlcl_define_space(uint32_t index, uint32_t perm, uint32_t size);
+
+/**
+ * Issue a PhysicalEnable. The TPM error code is returned.
+ */
+uint32_t tlcl_set_enable(void);
+
+/**
+ * Issue a SetDeactivated. Pass 0 to activate. Returns result code.
+ */
+uint32_t tlcl_set_deactivated(uint8_t flag);
+
+/**
+ * Get flags of interest. Pointers for flags you aren't interested in may
+ * be NULL. The TPM error code is returned.
+ */
+uint32_t tlcl_get_flags(uint8_t *disable, uint8_t *deactivated,
+			uint8_t *nvlocked);
+
+/**
+ * Get the entire set of permanent flags.
+ */
+uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags);
+
+#endif
+
+#if IS_ENABLED(CONFIG_TPM2)
+
+#include <security/tpm/tss/tcg-2.0/tss_structures.h>
+
+/*
+ * Define a TPM2 space. The define space command TPM command used by the tlcl
+ * layer offers the ability to use custom nv attributes and policies.
+ */
+uint32_t tlcl_define_space(uint32_t space_index, size_t space_size,
+			   const TPMA_NV nv_attributes,
+			   const uint8_t *nv_policy, size_t nv_policy_size);
+
+/*
+ * Makes tpm_process_command available for on top implementations of
+ * custom tpm standards like cr50
+ */
+void *tpm_process_command(TPM_CC command, void *command_body);
+
+#endif
 
 /*****************************************************************************/
-/* Functions implemented in tlcl.c */
+/* Generic Functions implemented in tlcl.c */
 
 /**
  * Call this first.  Returns 0 if success, nonzero if error.
@@ -56,23 +113,6 @@ uint32_t tlcl_self_test_full(void);
  * Run the self test in the background.
  */
 uint32_t tlcl_continue_self_test(void);
-
-#if IS_ENABLED(CONFIG_TPM)
-/**
- * Define a space with permission [perm].  [index] is the index for the space,
- * [size] the usable data size.  The TPM error code is returned.
- */
-uint32_t tlcl_define_space(uint32_t index, uint32_t perm, uint32_t size);
-
-#elif IS_ENABLED(CONFIG_TPM2)
-
-/*
- * Define a TPM space. The define space command TPM command used by the tlcl
- * layer is enforcing the policy which would not allow to delete the created
- * space after any PCR0 change from its initial value.
- */
-uint32_t tlcl_define_space(uint32_t space_index, size_t space_size);
-#endif
 
 /**
  * Write [length] bytes of [data] to space at [index].  The TPM error code is
@@ -113,23 +153,6 @@ uint32_t tlcl_set_nv_locked(void);
 uint32_t tlcl_force_clear(void);
 
 /**
- * Issue a PhysicalEnable.  The TPM error code is returned.
- */
-uint32_t tlcl_set_enable(void);
-
-/**
- * Issue a SetDeactivated.  Pass 0 to activate.  Returns result code.
- */
-uint32_t tlcl_set_deactivated(uint8_t flag);
-
-/**
- * Get flags of interest.  Pointers for flags you aren't interested in may
- * be NULL.  The TPM error code is returned.
- */
-uint32_t tlcl_get_flags(uint8_t *disable, uint8_t *deactivated,
-			uint8_t *nvlocked);
-
-/**
  * Set the bGlobalLock flag, which only a reboot can clear.  The TPM error
  * code is returned.
  */
@@ -147,31 +170,8 @@ uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
 		     uint8_t *out_digest);
 
 /**
- * Get the entire set of permanent flags.
- */
-uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags);
-
-/**
  * Disable platform hierarchy. Specific to TPM2. The TPM error code is returned.
  */
 uint32_t tlcl_disable_platform_hierarchy(void);
 
-/**
- * CR50 specific tpm command to enable nvmem commits before internal timeout
- * expires.
- */
-uint32_t tlcl_cr50_enable_nvcommits(void);
-
-/**
- * CR50 specific tpm command to restore header(s) of the dormant RO/RW
- * image(s) and in case there indeed was a dormant image, trigger reboot after
- * the timeout milliseconds. Note that timeout of zero means "NO REBOOT", not
- * "IMMEDIATE REBOOT".
- *
- * Return value indicates success or failure of accessing the TPM; in case of
- * success the number of restored headers is saved in num_restored_headers.
- */
-uint32_t tlcl_cr50_enable_update(uint16_t timeout_ms,
-				 uint8_t *num_restored_headers);
-
-#endif  /* TSS_H_ */
+#endif /* TSS_H_ */

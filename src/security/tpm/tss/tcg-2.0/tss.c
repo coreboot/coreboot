@@ -10,7 +10,7 @@
 #include <string.h>
 #include <vb2_api.h>
 #include <security/tpm/tis.h>
-#include <security/tpm/antirollback.h>
+#include <security/tpm/tss.h>
 
 #include "tss_structures.h"
 #include "tss_marshaling.h"
@@ -21,7 +21,7 @@
  * TPM2 specification.
  */
 
-static void *tpm_process_command(TPM_CC command, void *command_body)
+void *tpm_process_command(TPM_CC command, void *command_body)
 {
 	struct obuf ob;
 	struct ibuf ib;
@@ -51,13 +51,6 @@ static void *tpm_process_command(TPM_CC command, void *command_body)
 	ibuf_init(&ib, cr_buffer_ptr, in_size);
 
 	return tpm_unmarshal_response(command, &ib);
-}
-
-
-uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags)
-{
-	printk(BIOS_INFO, "%s:%s:%d\n", __FILE__, __func__, __LINE__);
-	return TPM_SUCCESS;
 }
 
 static uint32_t tlcl_send_startup(TPM_SU type)
@@ -135,30 +128,6 @@ uint32_t tlcl_force_clear(void)
 
 	if (!response || response->hdr.tpm_code)
 		return TPM_E_IOERROR;
-
-	return TPM_SUCCESS;
-}
-
-uint32_t tlcl_get_flags(uint8_t *disable, uint8_t *deactivated,
-			uint8_t *nvlocked)
-{
-	/*
-	 * TPM2 does not map directly into these flags TPM1.2 based firmware
-	 * expects to be able to retrieve.
-	 *
-	 * In any case, if any of these conditions are present, the following
-	 * firmware flow would be interrupted and will have a chance to report
-	 * an error. Let's just hardcode an "All OK" response for now.
-	 */
-
-	if (disable)
-		*disable = 0;
-
-	if (nvlocked)
-		*nvlocked = 1;
-
-	if (deactivated)
-		*deactivated = 0;
 
 	return TPM_SUCCESS;
 }
@@ -247,18 +216,6 @@ uint32_t tlcl_self_test_full(void)
 	return TPM_SUCCESS;
 }
 
-uint32_t tlcl_set_deactivated(uint8_t flag)
-{
-	printk(BIOS_INFO, "%s:%s:%d\n", __FILE__, __func__, __LINE__);
-	return TPM_SUCCESS;
-}
-
-uint32_t tlcl_set_enable(void)
-{
-	printk(BIOS_INFO, "%s:%s:%d\n", __FILE__, __func__, __LINE__);
-	return TPM_SUCCESS;
-}
-
 uint32_t tlcl_lock_nv_write(uint32_t index)
 {
 	struct tpm2_response *response;
@@ -306,29 +263,12 @@ uint32_t tlcl_write(uint32_t index, const void *data, uint32_t length)
 	return TPM_SUCCESS;
 }
 
-uint32_t tlcl_define_space(uint32_t space_index, size_t space_size)
+uint32_t tlcl_define_space(uint32_t space_index, size_t space_size,
+			   const TPMA_NV nv_attributes,
+			   const uint8_t *nv_policy, size_t nv_policy_size)
 {
 	struct tpm2_nv_define_space_cmd nvds_cmd;
 	struct tpm2_response *response;
-	/*
-	 * Different sets of NVRAM space attributes apply to the "ro" spaces,
-	 * i.e. those which should not be possible to delete or modify once
-	 * the RO exits, and the rest of the NVRAM spaces.
-	 */
-	const TPMA_NV ro_space_attributes = {
-		.TPMA_NV_PPWRITE = 1,
-		.TPMA_NV_AUTHREAD = 1,
-		.TPMA_NV_PPREAD = 1,
-		.TPMA_NV_PLATFORMCREATE = 1,
-		.TPMA_NV_WRITE_STCLEAR = 1,
-		.TPMA_NV_POLICY_DELETE = 1,
-	};
-	const TPMA_NV default_space_attributes = {
-		.TPMA_NV_PPWRITE = 1,
-		.TPMA_NV_AUTHREAD = 1,
-		.TPMA_NV_PPREAD = 1,
-		.TPMA_NV_PLATFORMCREATE = 1,
-	};
 
 	/* Prepare the define space command structure. */
 	memset(&nvds_cmd, 0, sizeof(nvds_cmd));
@@ -336,37 +276,21 @@ uint32_t tlcl_define_space(uint32_t space_index, size_t space_size)
 	nvds_cmd.publicInfo.dataSize = space_size;
 	nvds_cmd.publicInfo.nvIndex = HR_NV_INDEX + space_index;
 	nvds_cmd.publicInfo.nameAlg = TPM_ALG_SHA256;
+	nvds_cmd.publicInfo.attributes = nv_attributes;
 
-	/* RO only NV spaces should be impossible to destroy. */
-	if ((space_index == FIRMWARE_NV_INDEX) ||
-	    (space_index == REC_HASH_NV_INDEX)) {
-		/*
-		 * This policy digest was obtained using TPM2_PolicyPCR
-		 * selecting only PCR_0 with a value of all zeros.
-		 */
-		const uint8_t pcr0_unchanged_policy[] = {
-			0x09, 0x93, 0x3C, 0xCE, 0xEB, 0xB4, 0x41, 0x11,
-			0x18, 0x81, 0x1D, 0xD4, 0x47, 0x78, 0x80, 0x08,
-			0x88, 0x86, 0x62, 0x2D, 0xD7, 0x79, 0x94, 0x46,
-			0x62, 0x26, 0x68, 0x8E, 0xEE, 0xE6, 0x6A, 0xA1
-		};
-
-		nvds_cmd.publicInfo.attributes = ro_space_attributes;
-		/*
-		 * Use policy digest based on default pcr0 value. This makes
-		 * sure that the space can not be deleted as soon as PCR0
-		 * value has been extended from default.
-		 */
-		nvds_cmd.publicInfo.authPolicy.t.buffer = pcr0_unchanged_policy;
-		nvds_cmd.publicInfo.authPolicy.t.size =
-			sizeof(pcr0_unchanged_policy);
-	} else {
-		nvds_cmd.publicInfo.attributes = default_space_attributes;
+	/*
+	 * Use policy digest based on default pcr0 value. This makes
+	 * sure that the space can not be deleted as soon as PCR0
+	 * value has been extended from default.
+	 */
+	if (nv_policy && nv_policy_size) {
+		nvds_cmd.publicInfo.authPolicy.t.buffer = nv_policy;
+		nvds_cmd.publicInfo.authPolicy.t.size = nv_policy_size;
 	}
 
 	response = tpm_process_command(TPM2_NV_DefineSpace, &nvds_cmd);
-	printk(BIOS_INFO, "%s: response is %x\n",
-	       __func__, response ? response->hdr.tpm_code : -1);
+	printk(BIOS_INFO, "%s: response is %x\n", __func__,
+	       response ? response->hdr.tpm_code : -1);
 
 	if (!response)
 		return TPM_E_NO_DEVICE;
@@ -395,44 +319,5 @@ uint32_t tlcl_disable_platform_hierarchy(void)
 	if (!response || response->hdr.tpm_code)
 		return TPM_E_INTERNAL_INCONSISTENCY;
 
-	return TPM_SUCCESS;
-}
-
-uint32_t tlcl_cr50_enable_nvcommits(void)
-{
-	uint16_t sub_command = TPM2_CR50_SUB_CMD_NVMEM_ENABLE_COMMITS;
-	struct tpm2_response *response;
-
-	printk(BIOS_INFO, "Enabling cr50 nvmem commmits\n");
-
-	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &sub_command);
-
-	if (response == NULL || (response && response->hdr.tpm_code)) {
-		if (response)
-			printk(BIOS_INFO, "%s: failed %x\n", __func__,
-				response->hdr.tpm_code);
-		else
-			printk(BIOS_INFO, "%s: failed\n", __func__);
-		return TPM_E_IOERROR;
-	}
-	return TPM_SUCCESS;
-}
-
-uint32_t tlcl_cr50_enable_update(uint16_t timeout_ms,
-				 uint8_t *num_restored_headers)
-{
-	struct tpm2_response *response;
-	uint16_t command_body[] = {
-		TPM2_CR50_SUB_CMD_TURN_UPDATE_ON, timeout_ms
-	};
-
-	printk(BIOS_INFO, "Checking cr50 for pending updates\n");
-
-	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, command_body);
-
-	if (!response || response->hdr.tpm_code)
-		return TPM_E_INTERNAL_INCONSISTENCY;
-
-	*num_restored_headers = response->vcr.num_restored_headers;
 	return TPM_SUCCESS;
 }

@@ -384,7 +384,7 @@ PAYLOAD_SEGMENT_BSS    0x20535342   The memory specified by the segment
 PAYLOAD_SEGMENT_PARAMS 0x41524150   The segment contains information for
                                      the payload
 PAYLOAD_SEGMENT_ENTRY  0x52544E45   The segment contains the entry point
-		       		    for the payload
+		  		    for the payload
 
 'compression' is the compression scheme for the segment.  Each segment can
 be independently compressed. There are three compression types defined by

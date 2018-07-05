@@ -149,7 +149,7 @@ Device (ICH0)
 	        })
 
 	        Method (_CRS, 0, NotSerialized)
-	      	{
+		{
 			Return (MSBG)
 		}
 	}

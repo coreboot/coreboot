@@ -28,7 +28,15 @@
 typedef unsigned (*fit_offset_converter_t)(const struct buffer *region,
 							unsigned offset);
 
+/*
+ * populate FIT with the MCUs prepsent in the blob provided.
+ *
+ * first_mcu_addr is an address (in ROM) that will point to a
+ * microcode patch. When provided, it will be forced as the first
+ * MCU entry into the FIT located in the topswap bootblock.
+ */
 int fit_update_table(struct buffer *bootblock, struct cbfs_image *image,
-		     const char *microcode_blob_name, int empty_entries,
-		     fit_offset_converter_t offset_fn);
+			const char *microcode_blob_name, int empty_entries,
+			fit_offset_converter_t offset_fn,
+			uint32_t topswap_size, uint32_t first_mcu_addr);
 #endif

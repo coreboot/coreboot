@@ -126,7 +126,7 @@ DefinitionBlock (
 			Notify (\_SB.PWRB, 0x02)		/* NOTIFY_DEVICE_WAKE */
 		}
 
-	} 	/* End Scope GPE */
+	}	/* End Scope GPE */
 
 	/* Root of the bus hierarchy */
 	Scope (\_SB)

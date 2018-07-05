@@ -78,7 +78,7 @@ struct mt8173_pericfg_regs {
 	u32 ssusb_pdn_sta;
 };
 
-static struct mt8173_pericfg_regs * const mt8173_pericfg =
+static struct mt8173_pericfg_regs *const mt8173_pericfg =
 					(void *)PERI_CON_BASE;
 
 /*

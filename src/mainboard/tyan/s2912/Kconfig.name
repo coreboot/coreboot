@@ -1,2 +1,0 @@
-config BOARD_TYAN_S2912
-	bool "S2912 (Thunder n3600R)"

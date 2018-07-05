@@ -78,7 +78,7 @@ checktools:
 	echo "#include <uuid/uuid.h>" > libtest.c
 	echo "int main(int argc, char **argv) { (void) argc; (void) argv; return 0; }" >> libtest.c
 	$(HOSTCC) $(HOSTCCFLAGS) libtest.c -o libtest >/dev/null 2>&1 && echo " found uuid-dev." || \
-		( echo " Not found."; echo "ERROR: please_install uuid-dev (uuid-devel)"; exit 1 )
+		( echo " Not found."; echo "ERROR: please_install uuid-dev (libuuid-devel)"; exit 1 )
 	rm -rf libtest.c libtest
 	echo "Checking nasm..."
 	type nasm > /dev/null 2>&1 && echo " found nasm." || \

@@ -19,12 +19,12 @@
 
 #include <arch/io.h>
 
-#define NBMISC_INDEX 	0x60
-#define NBHTIU_INDEX 	0x94 /* Note: It is different with RS690, whose HTIU index is 0xA8 */
-#define NBMC_INDEX 	0xE8
-#define NBPCIE_INDEX  	0xE0
-#define L2CFG_INDEX  	0xF0
-#define L1CFG_INDEX  	0xF8
+#define NBMISC_INDEX	0x60
+#define NBHTIU_INDEX	0x94 /* Note: It is different with RS690, whose HTIU index is 0xA8 */
+#define NBMC_INDEX	0xE8
+#define NBPCIE_INDEX	0xE0
+#define L2CFG_INDEX	0xF0
+#define L1CFG_INDEX	0xF8
 #define EXT_CONF_BASE_ADDRESS	CONFIG_MMCONF_BASE_ADDRESS
 #define	TEMP_MMIO_BASE_ADDRESS	0xC0000000
 
@@ -146,4 +146,8 @@ static inline void set_pcie_enable_bits(device_t dev, u32 reg_pos, u32 mask, u32
 		nb_write_index(dev, NBPCIE_INDEX, reg_pos, reg);
 	}
 }
+
+void set_pcie_reset(void);
+void set_pcie_dereset(void);
+
 #endif /* __SR5650_CMN_H__ */

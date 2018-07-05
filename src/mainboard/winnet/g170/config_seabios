@@ -1,3 +1,0 @@
-#  VT8237R won't DMA between 0xc0000 and 0x100000
-
-# CONFIG_MALLOC_UPPERMEMORY is not set

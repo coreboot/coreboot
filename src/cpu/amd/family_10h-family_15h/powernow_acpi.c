@@ -23,7 +23,6 @@
 #include <cpu/amd/powernow.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdfam10_sysconf.h>
 #include <arch/cpu.h>

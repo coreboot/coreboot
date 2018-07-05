@@ -109,7 +109,7 @@ static int bsp_setup_msr_save_state(struct smm_relocation_params *relo_params)
 	smm_mca_cap = rdmsr(SMM_MCA_CAP_MSR);
 	if (smm_mca_cap.hi & SMM_CPU_SVRSTR_MASK) {
 		uint32_t smm_feature_control;
-		device_t dev = PCI_DEV(QPI_BUS, SMM_DEV, SMM_FUNC);
+		pci_devfn_t dev = PCI_DEV(QPI_BUS, SMM_DEV, SMM_FUNC);
 
 		/*
 		 * SMM_FEATURE_CONTROL on Broadwell-DE is not located in
@@ -155,7 +155,7 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 		 */
 		if (relo_params->smm_save_state_in_msrs) {
 			uint32_t smm_feature_control;
-			device_t dev = PCI_DEV(QPI_BUS, SMM_DEV, SMM_FUNC);
+			pci_devfn_t dev = PCI_DEV(QPI_BUS, SMM_DEV, SMM_FUNC);
 
 			/*
 			 * SMM_FEATURE_CONTROL on Broadwell-DE is not located in
@@ -191,7 +191,7 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 		write_prmrr(relo_params);
 }
 
-static u32 northbridge_get_base_reg(device_t dev, int reg)
+static u32 northbridge_get_base_reg(pci_devfn_t dev, int reg)
 {
 	u32 value;
 
@@ -201,8 +201,8 @@ static u32 northbridge_get_base_reg(device_t dev, int reg)
 	return value;
 }
 
-static void fill_in_relocation_params(device_t dev,
-					struct smm_relocation_params *params)
+static void fill_in_relocation_params(pci_devfn_t dev,
+				      struct smm_relocation_params *params)
 {
 	u32 tseg_size;
 	u32 tseg_base;
@@ -276,7 +276,7 @@ static void setup_ied_area(struct smm_relocation_params *params)
 void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 				size_t *smm_save_state_size)
 {
-	device_t dev = PCI_DEV(BUS0, VTD_DEV, VTD_FUNC);
+	pci_devfn_t dev = PCI_DEV(BUS0, VTD_DEV, VTD_FUNC);
 
 	printk(BIOS_DEBUG, "Setting up SMI for CPU\n");
 
@@ -325,7 +325,7 @@ void smm_relocate(void)
 
 void smm_lock(void)
 {
-	device_t dev = PCI_DEV(BUS0, LPC_DEV, LPC_FUNC);
+	pci_devfn_t dev = PCI_DEV(BUS0, LPC_DEV, LPC_FUNC);
 	uint16_t smi_lock;
 
 	/* There is no register to lock SMRAM region on Broadwell-DE.

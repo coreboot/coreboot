@@ -1,0 +1,4 @@
+Board name: Watson
+Category: server
+ROM protocol: SPI
+ROM socketed: yes

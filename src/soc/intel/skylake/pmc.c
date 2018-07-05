@@ -31,7 +31,11 @@ void pmc_set_disb(void)
 {
 	/* Set the DISB after DRAM init */
 	u32 disb_val;
-	device_t dev = PCH_DEV_PMC;
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev = PCH_DEV_PMC;
+#else
+	struct device *dev = PCH_DEV_PMC;
+#endif
 
 	disb_val = pci_read_config32(dev, GEN_PMCON_A);
 	disb_val |= DISB;

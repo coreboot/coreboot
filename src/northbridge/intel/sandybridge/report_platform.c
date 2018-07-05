@@ -16,7 +16,7 @@
 #include <console/console.h>
 #include <arch/cpu.h>
 #include <string.h>
-#include "southbridge/intel/bd82x6x/pch.h"
+#include <southbridge/intel/bd82x6x/pch.h>
 #include <arch/io.h>
 #include "sandybridge.h"
 

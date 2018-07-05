@@ -135,7 +135,7 @@ ComputeMaximum_NameDesc_Lengths(MENU * menu)
 |   Facility      :  libnmenu
 |   Function      :  static void ResetConnectionInfo(MENU *, ITEM **)
 |
-|   Description   :  Reset all informations in the menu and the items in
+|   Description   :  Reset all information in the menu and the items in
 |                    the item array that indicates a connection
 |
 |   Return Values :  -

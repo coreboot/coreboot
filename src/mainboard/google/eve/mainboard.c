@@ -21,7 +21,7 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/nhlt.h>
 
-#define SUBSYSTEM_ID 0x006B
+#define SUBSYSTEM_ID 0x1AE0006B
 
 static const char *oem_id_maxim = "GOOGLE";
 static const char *oem_table_id_maxim = "EVEMAX";

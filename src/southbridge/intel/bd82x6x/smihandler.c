@@ -23,7 +23,6 @@
 #include <elog.h>
 #include <halt.h>
 #include <pc80/mc146818rtc.h>
-#include <southbridge/intel/common/rcba.h>
 #include "pch.h"
 
 #include "nvs.h"
@@ -188,7 +187,7 @@ void southbridge_smi_monitor(void)
 			data = RCBA32(0x1e18);
 			data &= mask;
 			// if (smi1)
-			// 	southbridge_smi_command(data);
+			//	southbridge_smi_command(data);
 			// return;
 		}
 		// Fall through to debug

@@ -15,13 +15,7 @@
 
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/BiosCallOuts.h>
-#include <soc/southbridge.h>
-#include <stdlib.h>
-#include <baseboard/variants.h>
 
 void platform_FchParams_env(FCH_DATA_BLOCK *FchParams_env)
 {
-	/* SDHCI/MMC configuration */
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KAHLEE))
-		FchParams_env->Sd.SdSlotType = 1; // EMMC
 }

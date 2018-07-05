@@ -13,8 +13,6 @@
 
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
-#include <cpu/x86/msr.h>
-#include <cpu/x86/mtrr.h>
 
 void do_lapic_init(void)
 {

@@ -1,6 +1,0 @@
-Board name: F2950
-Category: mini
-ROM package: PLCC
-ROM protocol: LPC
-ROM socketed: n
-Flashrom support: n

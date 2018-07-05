@@ -119,7 +119,10 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 		return out_size;
 
 	case CBFS_COMPRESS_LZMA:
+		/* We assume here romstage and postcar are never compressed. */
 		if (ENV_BOOTBLOCK || ENV_VERSTAGE)
+			return 0;
+		if (ENV_ROMSTAGE && IS_ENABLED(CONFIG_POSTCAR_STAGE))
 			return 0;
 		if ((ENV_ROMSTAGE || ENV_POSTCAR)
 			&& !IS_ENABLED(CONFIG_COMPRESS_RAMSTAGE))
@@ -318,6 +321,11 @@ extern const struct cbfs_locator vboot_locator;
 
 static const struct cbfs_locator *locators[] = {
 #if IS_ENABLED(CONFIG_VBOOT)
+	/*
+	 * NOTE: Does not link in SMM, as the vboot_locator isn't compiled.
+	 * ATM there's no need for VBOOT functionality in SMM and it's not
+	 * a problem.
+	 */
 	&vboot_locator,
 #endif
 	&cbfs_master_header_locator,

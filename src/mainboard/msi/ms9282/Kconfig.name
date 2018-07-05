@@ -1,2 +1,0 @@
-config BOARD_MSI_MS9282
-	bool "MS-9282 (K9SD Master)"

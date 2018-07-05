@@ -1,2 +1,0 @@
-config BOARD_MSI_MS7135
-	bool "MS-7135 (K8N Neo3)"

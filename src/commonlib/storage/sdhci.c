@@ -19,7 +19,6 @@
 
 #include <assert.h>
 #include "bouncebuf.h"
-#include <console/console.h>
 #include <commonlib/sd_mmc_ctrlr.h>
 #include <commonlib/sdhci.h>
 #include <commonlib/storage.h>

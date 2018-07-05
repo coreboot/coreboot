@@ -28,6 +28,7 @@
 #include <bootmem.h>
 #include <program_loading.h>
 #include <timestamp.h>
+#include <cbmem.h>
 
 static const unsigned long lb_start = (unsigned long)&_program;
 static const unsigned long lb_end = (unsigned long)&_eprogram;
@@ -333,9 +334,13 @@ static int build_self_segment_list(
 	return 1;
 }
 
+__weak int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size)
+{
+	return 0;
+}
+
 static int payload_targets_usable_ram(struct segment *head)
 {
-	const unsigned long one_meg = (1UL << 20);
 	struct segment *ptr;
 
 	for (ptr = head->next; ptr != head; ptr = ptr->next) {
@@ -343,12 +348,16 @@ static int payload_targets_usable_ram(struct segment *head)
 						      ptr->s_memsz))
 			continue;
 
-		if (ptr->s_dstaddr < one_meg &&
-		    (ptr->s_dstaddr + ptr->s_memsz) <= one_meg) {
-			printk(BIOS_DEBUG,
-				"Payload being loaded at below 1MiB "
-				"without region being marked as RAM usable.\n");
+		if (payload_arch_usable_ram_quirk(ptr->s_dstaddr, ptr->s_memsz))
 			continue;
+
+		if (arch_supports_bounce_buffer() &&
+			bootmem_region_usable_with_bounce(ptr->s_dstaddr,
+						      ptr->s_memsz)) {
+			printk(BIOS_DEBUG,
+				"Payload is loaded over non-relocatable "
+				"ramstage. Will use bounce-buffer.\n");
+			return 1;
 		}
 
 		/* Payload segment not targeting RAM. */
@@ -512,7 +521,7 @@ static int load_self_segments(struct segment *head, struct prog *payload,
 	return 1;
 }
 
-void *selfload(struct prog *payload, bool check_regions)
+bool selfload(struct prog *payload, bool check_regions)
 {
 	uintptr_t entry = 0;
 	struct segment head;
@@ -521,7 +530,7 @@ void *selfload(struct prog *payload, bool check_regions)
 	data = rdev_mmap_full(prog_rdev(payload));
 
 	if (data == NULL)
-		return NULL;
+		return false;
 
 	/* Preprocess the self segments */
 	if (!build_self_segment_list(&head, data, &entry))
@@ -538,9 +547,11 @@ void *selfload(struct prog *payload, bool check_regions)
 	/* Update the payload's area with the bounce buffer information. */
 	prog_set_area(payload, (void *)(uintptr_t)bounce_buffer, bounce_size);
 
-	return (void *)entry;
+	/* Pass cbtables to payload if architecture desires it. */
+	prog_set_entry(payload, (void *)entry, cbmem_find(CBMEM_ID_CBTABLE));
 
+	return true;
 out:
 	rdev_munmap(prog_rdev(payload), data);
-	return NULL;
+	return false;
 }

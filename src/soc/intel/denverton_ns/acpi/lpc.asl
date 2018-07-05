@@ -177,7 +177,7 @@ Device (LPCB)
 		Name(BUF0,ResourceTemplate()
 		{
 		  IO(Decode16,0x02F8,0x02F8,0x01,0x08)
- 		  Interrupt (ResourceConsumer, Level, ActiveLow, Shared) {17}
+		  Interrupt (ResourceConsumer, Level, ActiveLow, Shared) {17}
 		})
 		Return(BUF0)
 	  }

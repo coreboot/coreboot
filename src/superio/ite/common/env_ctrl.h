@@ -77,7 +77,7 @@
 #define   ITE_EC_FAN_CTL_PWM_MODE_AUTOMATIC	(1 << 7)
 #define   ITE_EC_FAN_CTL_PWM_DUTY_MASK		(ITE_EC_FAN_MAX_PWM << 0)
 #define   ITE_EC_FAN_CTL_PWM_DUTY(p)		\
-	  ({ 					\
+	  ({					\
 		const unsigned int _p = p;			\
 		(_p >= 100)					\
 			? ITE_EC_FAN_MAX_PWM			\

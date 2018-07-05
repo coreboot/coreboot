@@ -31,7 +31,7 @@ SPD_SOURCES += micron_dimm_MT52L512M32D2PF-107-2G-1866  # 0b1001 Dual Channel 8G
 SPD_SOURCES += hynix_dimm_H9CCNNN8GTALAR-NUD-1G-1866    # 0b1010 Dual Channel 4GB
 SPD_SOURCES += micron_dimm_MT52L512M32D2PF-107-2G-1866  # 0b1011 Single Channel 4GB
 SPD_SOURCES += samsung_dimm_K4E6E304EB-EGCF-2G-1866     # 0b1100 Single Channel 4GB
-SPD_SOURCES += empty                                    # 0b1101
+SPD_SOURCES += hynix_dimm_H9CCNNNBJTALAR-NUD-2G-1866    # 0b1101 Dual Channel 8GB
 SPD_SOURCES += empty                                    # 0b1110
 SPD_SOURCES += empty                                    # 0b1111
 

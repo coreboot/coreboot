@@ -20,8 +20,9 @@
 #include <security/tpm/tis.h>
 #include <vb2_api.h>
 #include <security/tpm/tss.h>
+
 #include "tss_internal.h"
-#include "tss_structures.h"
+#include "tss_commands.h"
 
 #ifdef FOR_TEST
 #include <stdio.h>

@@ -16,7 +16,6 @@
 config NORTHBRIDGE_AMD_AGESA
 	bool
 	default CPU_AMD_AGESA
-	select RELOCATABLE_RAMSTAGE if EARLY_CBMEM_INIT
 	select CBMEM_TOP_BACKUP
 
 if NORTHBRIDGE_AMD_AGESA
@@ -35,9 +34,5 @@ source "src/northbridge/amd/agesa/*/Kconfig"
 config HEAP_SIZE
 	hex
 	default 0xc0000
-
-config RAMTOP
-	hex
-	default 0x400000
 
 endif # NORTHBRIDGE_AMD_AGESA

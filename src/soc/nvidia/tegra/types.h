@@ -18,7 +18,7 @@
 
 #define EFAULT		1
 #define EINVAL		2
-#define ETIMEDOUT 	3
+#define ETIMEDOUT	3
 #define ENOSPC		4
 #define ENOSYS		5
 #define EPTR		6

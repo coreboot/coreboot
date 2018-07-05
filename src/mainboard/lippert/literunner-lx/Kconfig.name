@@ -1,2 +1,0 @@
-config BOARD_LIPPERT_LITERUNNER_LX
-	bool "Cool LiteRunner-LX"

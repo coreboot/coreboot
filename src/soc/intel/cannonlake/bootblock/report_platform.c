@@ -69,12 +69,12 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_CNL_GT2_ULT_4, "Cannonlake ULT GT0.5" },
 };
 
-static uint8_t get_dev_revision(device_t dev)
+static uint8_t get_dev_revision(pci_devfn_t dev)
 {
 	return pci_read_config8(dev, PCI_REVISION_ID);
 }
 
-static uint16_t get_dev_id(device_t dev)
+static uint16_t get_dev_id(pci_devfn_t dev)
 {
 	return pci_read_config16(dev, PCI_DEVICE_ID);
 }
@@ -140,7 +140,7 @@ static void report_cpu_info(void)
 static void report_mch_info(void)
 {
 	int i;
-	device_t dev = SA_DEV_ROOT;
+	pci_devfn_t dev = SA_DEV_ROOT;
 	uint16_t mchid = get_dev_id(dev);
 	uint8_t mch_revision = get_dev_revision(dev);
 	const char *mch_type = "Unknown";
@@ -159,7 +159,7 @@ static void report_mch_info(void)
 static void report_pch_info(void)
 {
 	int i;
-	device_t dev = PCH_DEV_LPC;
+	pci_devfn_t dev = PCH_DEV_LPC;
 	uint16_t lpcid = get_dev_id(dev);
 	const char *pch_type = "Unknown";
 
@@ -176,7 +176,7 @@ static void report_pch_info(void)
 static void report_igd_info(void)
 {
 	int i;
-	device_t dev = SA_DEV_IGD;
+	pci_devfn_t dev = SA_DEV_IGD;
 	uint16_t igdid = get_dev_id(dev);
 	const char *igd_type = "Unknown";
 

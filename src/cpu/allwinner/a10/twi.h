@@ -31,7 +31,7 @@
 
 /* TWI_STAT values */
 enum twi_status {
-	TWI_STAT_BUS_ERROR 	= 0x00,		/**< Bus error */
+	TWI_STAT_BUS_ERROR	= 0x00,		/**< Bus error */
 	TWI_STAT_TX_START	= 0x08,		/**< START sent */
 	TWI_STAT_TX_RSTART	= 0x10,		/**< Repeated START sent */
 	TWI_STAT_TX_AW_ACK	= 0x18,		/**< Sent address+read, ACK */

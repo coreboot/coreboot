@@ -1,3 +1,0 @@
-config DRIVERS_I2C_ALPS
-	bool
-	select DRIVERS_I2C_GENERIC

@@ -1,0 +1,120 @@
+diff --git a/gcc/ada/adaint.c b/gcc/ada/adaint.c
+index 3b0aea92c05..998f2c66289 100644
+--- a/gcc/ada/adaint.c
++++ b/gcc/ada/adaint.c
+@@ -107,6 +107,15 @@
+ #define xmalloc(S) malloc (S)
+ #define xrealloc(V,S) realloc (V,S)
+ #else
++#if !defined(__ANDROID__) && defined(__linux__)
++#ifdef __cplusplus
++extern "C" {
++#endif
++#include <sched.h>
++#ifdef __cplusplus
++}
++#endif
++#endif
+ #include "config.h"
+ #include "system.h"
+ #include "version.h"
+@@ -3265,7 +3274,7 @@ __gnat_lwp_self (void)
+ 
+ /* Dynamic cpu sets */
+ 
+-cpu_set_t *
++void *
+ __gnat_cpu_alloc (size_t count)
+ {
+   return CPU_ALLOC (count);
+@@ -3278,33 +3287,33 @@ __gnat_cpu_alloc_size (size_t count)
+ }
+ 
+ void
+-__gnat_cpu_free (cpu_set_t *set)
++__gnat_cpu_free (void *set)
+ {
+-  CPU_FREE (set);
++  CPU_FREE ((cpu_set_t *)set);
+ }
+ 
+ void
+-__gnat_cpu_zero (size_t count, cpu_set_t *set)
++__gnat_cpu_zero (size_t count, void *set)
+ {
+   CPU_ZERO_S (count, set);
+ }
+ 
+ void
+-__gnat_cpu_set (int cpu, size_t count, cpu_set_t *set)
++__gnat_cpu_set (int cpu, size_t count, void *set)
+ {
+   /* Ada handles CPU numbers starting from 1, while C identifies the first
+      CPU by a 0, so we need to adjust. */
+-  CPU_SET_S (cpu - 1, count, set);
++  CPU_SET_S (cpu - 1, count, (cpu_set_t *)set);
+ }
+ 
+ #else /* !CPU_ALLOC */
+ 
+ /* Static cpu sets */
+ 
+-cpu_set_t *
++void *
+ __gnat_cpu_alloc (size_t count ATTRIBUTE_UNUSED)
+ {
+-  return (cpu_set_t *) xmalloc (sizeof (cpu_set_t));
++  return xmalloc (sizeof (cpu_set_t));
+ }
+ 
+ size_t
+@@ -3314,23 +3323,23 @@ __gnat_cpu_alloc_size (size_t count ATTRIBUTE_UNUSED)
+ }
+ 
+ void
+-__gnat_cpu_free (cpu_set_t *set)
++__gnat_cpu_free (void *set)
+ {
+   free (set);
+ }
+ 
+ void
+-__gnat_cpu_zero (size_t count ATTRIBUTE_UNUSED, cpu_set_t *set)
++__gnat_cpu_zero (size_t count ATTRIBUTE_UNUSED, void *set)
+ {
+   CPU_ZERO (set);
+ }
+ 
+ void
+-__gnat_cpu_set (int cpu, size_t count ATTRIBUTE_UNUSED, cpu_set_t *set)
++__gnat_cpu_set (int cpu, size_t count ATTRIBUTE_UNUSED, void *set)
+ {
+   /* Ada handles CPU numbers starting from 1, while C identifies the first
+      CPU by a 0, so we need to adjust. */
+-  CPU_SET (cpu - 1, set);
++  CPU_SET (cpu - 1, (cpu_set_t *)set);
+ }
+ #endif /* !CPU_ALLOC */
+ #endif /* __linux__ */
+diff --git a/gcc/ada/adaint.h b/gcc/ada/adaint.h
+index 0d12f7e9020..7b3def03fb0 100644
+--- a/gcc/ada/adaint.h
++++ b/gcc/ada/adaint.h
+@@ -316,13 +316,11 @@ extern void   *__gnat_lwp_self			   (void);
+ 
+ /* Routines for interface to required CPU set primitives */
+ 
+-#include <sched.h>
+-
+-extern cpu_set_t *__gnat_cpu_alloc                 (size_t);
++extern void *__gnat_cpu_alloc                 (size_t);
+ extern size_t __gnat_cpu_alloc_size                (size_t);
+-extern void   __gnat_cpu_free                  (cpu_set_t *);
+-extern void   __gnat_cpu_zero                      (size_t, cpu_set_t *);
+-extern void   __gnat_cpu_set                       (int, size_t, cpu_set_t *);
++extern void   __gnat_cpu_free                  (void *);
++extern void   __gnat_cpu_zero                      (size_t, void *);
++extern void   __gnat_cpu_set                       (int, size_t, void *);
+ #endif
+ 
+ #if defined (_WIN32)

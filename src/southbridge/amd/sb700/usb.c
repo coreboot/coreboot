@@ -215,14 +215,14 @@ static const struct pci_driver usb_1_driver __pci_driver = {
 /* the pci id of usb ctrl 0 and 1 are the same. */
 /*
  * static const struct pci_driver usb_3_driver __pci_driver = {
- * 	.ops = &usb_ops,
- * 	.vendor = PCI_VENDOR_ID_ATI,
- * 	.device = PCI_DEVICE_ID_ATI_SB700_USB_19_0,
+ *	.ops = &usb_ops,
+ *	.vendor = PCI_VENDOR_ID_ATI,
+ *	.device = PCI_DEVICE_ID_ATI_SB700_USB_19_0,
  * };
  * static const struct pci_driver usb_4_driver __pci_driver = {
- * 	.ops = &usb_ops,
- * 	.vendor = PCI_VENDOR_ID_ATI,
- * 	.device = PCI_DEVICE_ID_ATI_SB700_USB_19_1,
+ *	.ops = &usb_ops,
+ *	.vendor = PCI_VENDOR_ID_ATI,
+ *	.device = PCI_DEVICE_ID_ATI_SB700_USB_19_1,
  * };
  */
 
@@ -248,8 +248,8 @@ static const struct pci_driver usb_5_driver __pci_driver = {
 };
 /*
  * static const struct pci_driver usb_5_driver __pci_driver = {
- * 	.ops = &usb_ops2,
- * 	.vendor = PCI_VENDOR_ID_ATI,
- * 	.device = PCI_DEVICE_ID_ATI_SB700_USB_19_2,
+ *	.ops = &usb_ops2,
+ *	.vendor = PCI_VENDOR_ID_ATI,
+ *	.device = PCI_DEVICE_ID_ATI_SB700_USB_19_2,
  * };
  */

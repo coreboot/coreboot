@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <delay.h>
 #include <cpu/intel/haswell/haswell.h>
-#include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

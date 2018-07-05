@@ -29,7 +29,7 @@ $(PROGRAM): $(OBJS)
 	$(CC) -o $(PROGRAM) $(OBJS) $(LDFLAGS)
 
 clean:
-	rm -f $(PROGRAM) *.o *~
+	rm -f $(PROGRAM) *.o *~ .dependencies
 distclean: clean
 
 dep:

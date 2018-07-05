@@ -16,7 +16,7 @@ chip northbridge/amd/amdfam10/root_complex
 					end
 					device pci 2.0 on
 					end  # unused
-					device pci 3.0 on  	# bridge to slot PCI-E 16x ??
+					device pci 3.0 on	# bridge to slot PCI-E 16x ??
 					end
 					device pci 4.0 on
 					end  # unused

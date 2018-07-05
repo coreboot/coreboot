@@ -39,6 +39,9 @@
 #include <bdk.h>
 #include "dram-internal.h"
 
+#include <string.h>
+#include <lame_string.h>
+
 const char* lookup_env_parameter(const char *format, ...)
 {
     const char *s;
@@ -55,7 +58,7 @@ const char* lookup_env_parameter(const char *format, ...)
     {
         value = strtoul(s, NULL, 0);
         error_print("Parameter found in environment: %s = \"%s\" 0x%lx (%ld)\n",
-		    buffer, s, value, value);
+                    buffer, s, value, value);
     }
     return s;
 }
@@ -76,7 +79,7 @@ const char* lookup_env_parameter_ull(const char *format, ...)
     {
         value = strtoull(s, NULL, 0);
         error_print("Parameter found in environment: %s = 0x%016llx\n",
-		    buffer, value);
+                    buffer, value);
     }
     return s;
 }

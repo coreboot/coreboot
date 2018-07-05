@@ -31,7 +31,6 @@
 
 #include <types.h>
 #include <compiler.h>
-#include <memory_info.h>
 
 #define PEI_VERSION 22
 
@@ -85,6 +84,87 @@ struct usb3_port_setting {
 	 * Set to 1 if trace length is <= 5 inches
 	 */
 	uint8_t fixed_eq;
+} __packed;
+
+#define PEI_DIMM_INFO_SERIAL_SIZE	5
+#define PEI_DIMM_INFO_PART_NUMBER_SIZE	19
+#define PEI_DIMM_INFO_TOTAL		8	/* Maximum num of dimm is 8 */
+
+
+/**
+ * This table is filled by the MRC blob and used to populate the mem_info
+ * struct, which is placed in CBMEM and then used to generate SMBIOS type
+ * 17 table(s)
+ *
+ * Values are specified according to the JEDEC SPD Standard.
+ */
+struct pei_dimm_info {
+	/*
+	 * Size of the module in MiB.
+	 */
+	uint32_t dimm_size;
+	/*
+	 * SMBIOS (not SPD) device type.
+	 *
+	 * See the smbios.h smbios_memory_device_type enum.
+	 */
+	uint16_t ddr_type;
+	uint16_t ddr_frequency;
+	uint8_t rank_per_dimm;
+	uint8_t channel_num;
+	uint8_t dimm_num;
+	uint8_t bank_locator;
+	/*
+	 * The last byte is '\0' for the end of string.
+	 *
+	 * Even though the SPD spec defines this field as a byte array the value
+	 * is passed directly to SMBIOS as a string, and thus must be printable
+	 * ASCII.
+	 */
+	uint8_t serial[PEI_DIMM_INFO_SERIAL_SIZE];
+	/*
+	 * The last byte is '\0' for the end of string
+	 *
+	 * Must contain only printable ASCII.
+	 */
+	uint8_t module_part_number[PEI_DIMM_INFO_PART_NUMBER_SIZE];
+	/*
+	 * SPD Manufacturer ID
+	 */
+	uint16_t mod_id;
+	/*
+	 * SPD Module Type.
+	 *
+	 * See spd.h for valid values.
+	 *
+	 * e.g., SPD_RDIMM, SPD_SODIMM, SPD_MICRO_DIMM
+	 */
+	uint8_t mod_type;
+	/*
+	 * SPD bus width.
+	 *
+	 * Bits 0 - 2 encode the primary bus width:
+	 *   0b000 = 8 bit width
+	 *   0b001 = 16 bit width
+	 *   0b010 = 32 bit width
+	 *   0b011 = 64 bit width
+	 *
+	 * Bits 3 - 4 encode the extension bits (ECC):
+	 *   0b00 = 0 extension bits
+	 *   0b01 = 8 bit of ECC
+	 *
+	 * e.g.,
+	 *   64 bit bus with 8 bits of ECC (72 bits total): 0b1011
+	 *   64 bit bus with 0 bits of ECC (64 bits total): 0b0011
+	 *
+	 * See the smbios.h smbios_memory_bus_width enum.
+	 */
+	uint8_t bus_width;
+} __packed;
+
+struct pei_memory_info {
+	uint8_t dimm_cnt;
+	struct pei_dimm_info dimm[PEI_DIMM_INFO_TOTAL];
 } __packed;
 
 struct pei_data {
@@ -191,7 +271,7 @@ struct pei_data {
 	/* Data from MRC that should be saved to flash */
 	void *data_to_save;
 	int data_to_save_size;
-	struct memory_info meminfo;
+	struct pei_memory_info meminfo;
 } __packed;
 
 typedef struct pei_data PEI_DATA;

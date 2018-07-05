@@ -129,9 +129,9 @@ IndexField (PIOI, PIOD, ByteAcc, NoLock, Preserve) {
 	PWMK, 1,
 	PWNS, 1,
 
-	/* 	Offset(0x61), */	/*  Options_1 */
-	/* 		,7,  */
-	/* 		R617,1, */
+	/*	Offset(0x61), */	/*  Options_1 */
+	/*		,7,  */
+	/*		R617,1, */
 
 	Offset(0x65),	/* UsbPMControl */
 	, 4,

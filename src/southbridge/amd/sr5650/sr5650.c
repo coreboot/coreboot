@@ -32,9 +32,6 @@
 /*
  * extern function declaration
  */
-extern void set_pcie_dereset(void);
-extern void set_pcie_reset(void);
-
 struct resource * sr5650_retrieve_cpu_mmio_resource() {
 	struct device *domain;
 	struct resource *res;
@@ -430,7 +427,7 @@ void detect_and_enable_iommu(struct device *iommu_dev) {
 		dword |= (0x1 << 0);
 		l2cfg_ind_write_index(nb_dev, 0x44, dword);
 
-// 		if (get_nb_rev(nb_dev) == REV_SR5650_A21) {
+//		if (get_nb_rev(nb_dev) == REV_SR5650_A21) {
 			dword = l2cfg_ind_read_index(nb_dev, 0x7);
 			dword |= (0x1 << 1);
 			l2cfg_ind_write_index(nb_dev, 0x7, dword);
@@ -482,7 +479,7 @@ void detect_and_enable_iommu(struct device *iommu_dev) {
 			dword = l2cfg_ind_read_index(nb_dev, 0x6);
 			dword |= (0x1 << 8);
 			l2cfg_ind_write_index(nb_dev, 0x6, dword);
-// 		}
+//		}
 
 		l2cfg_ind_write_index(nb_dev, 0x52, 0xf0000002);
 

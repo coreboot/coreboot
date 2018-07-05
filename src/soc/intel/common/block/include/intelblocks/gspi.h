@@ -33,20 +33,6 @@ struct gspi_cfg {
 void gspi_early_bar_init(void);
 
 /* SoC-callbacks */
-/* Get gspi_config array from SoC. Returns NULL in case of error. */
-const struct gspi_cfg *gspi_get_soc_cfg(void);
-
-/* Get base address for early init of GSPI controllers. */
-uintptr_t gspi_get_soc_early_base(void);
-
-/*
- * Map given SPI bus number to GSPI bus number.
- * Return value:
- *  0 = success
- * -1 = error
- */
-int gspi_soc_spi_to_gspi_bus(unsigned int spi_bus, unsigned int *gspi_bus);
-
 /*
  * Map given GSPI bus number to devfn.
  * Return value:

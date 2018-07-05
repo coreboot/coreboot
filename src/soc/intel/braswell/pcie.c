@@ -29,17 +29,17 @@
 static int pll_en_off;
 static uint32_t strpfusecfg;
 
-static inline int root_port_offset(device_t dev)
+static inline int root_port_offset(struct device *dev)
 {
 	return PCI_FUNC(dev->path.pci.devfn);
 }
 
-static inline int is_first_port(device_t dev)
+static inline int is_first_port(struct device *dev)
 {
 	return root_port_offset(dev) == PCIE_PORT1_FUNC;
 }
 
-static void pcie_init(device_t dev)
+static void pcie_init(struct device *dev)
 {
 	printk(BIOS_SPEW, "%s/%s ( %s )\n",
 			__FILE__, __func__, dev_name(dev));
@@ -52,7 +52,7 @@ static const struct reg_script no_dev_behind_port[] = {
 	REG_SCRIPT_END,
 };
 
-static void check_port_enabled(device_t dev)
+static void check_port_enabled(struct device *dev)
 {
 	int rp_config = (strpfusecfg & LANECFG_MASK) >> LANECFG_SHIFT;
 
@@ -81,10 +81,10 @@ static void check_port_enabled(device_t dev)
 	}
 }
 
-static void check_device_present(device_t dev)
+static void check_device_present(struct device *dev)
 {
 	/* port1_dev will store the dev struct pointer of the PORT1 */
-	static device_t port1_dev;
+	static struct device *port1_dev;
 
 	/*
 	 * The SOC has 4 ROOT ports defined with MAX_ROOT_PORTS_BSW.
@@ -135,7 +135,7 @@ static void check_device_present(device_t dev)
 	}
 }
 
-static void pcie_enable(device_t dev)
+static void pcie_enable(struct device *dev)
 {
 	printk(BIOS_SPEW, "%s/%s ( %s )\n",
 			__FILE__, __func__, dev_name(dev));
@@ -159,7 +159,7 @@ static void pcie_enable(device_t dev)
 	southcluster_enable_dev(dev);
 }
 
-static void pcie_root_set_subsystem(device_t dev, unsigned int vid,
+static void pcie_root_set_subsystem(struct device *dev, unsigned int vid,
 	unsigned int did)
 {
 	printk(BIOS_SPEW, "%s/%s ( %s, 0x%04x, 0x%04x )\n",

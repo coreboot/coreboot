@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include "southbridge/intel/i82371eb/i82371eb.h"
+#include <southbridge/intel/i82371eb/i82371eb.h>
 
 #define SUPERIO_PNP_BASE 0x3F0
 #define SUPERIO_SHOW_UARTA

@@ -383,7 +383,7 @@ void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 {
 	int newl, cur_x, cur_y;
 	int prompt_len, room, wlen;
-	char tempstr[MAX_LEN + 1], *word, *sp, *sp2, *newline_separator = 0;
+	char tempstr[MAX_LEN + 1], *word, *sp, *sp2, *newline_separator = NULL;
 
 	strcpy(tempstr, prompt);
 

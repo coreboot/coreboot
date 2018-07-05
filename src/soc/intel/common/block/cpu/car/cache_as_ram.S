@@ -94,7 +94,7 @@ clear_var_mtrr:
 	 *  MTRR_PHYS_MASK_HIGH = 0000000FFh  For 40 bit addressing
 	 */
 
-	movl	$0x80000008, %eax 	/* Address sizes leaf */
+	movl	$0x80000008, %eax	/* Address sizes leaf */
 	cpuid
 	sub	$32, %al
 	movzx	%al, %eax
@@ -193,7 +193,7 @@ car_init_done:
 	movd	%mm2, %eax
 	pushl	%eax	/* tsc[63:32] */
 	movd	%mm1, %eax
-	pushl	%eax 	/* tsc[31:0] */
+	pushl	%eax	/* tsc[31:0] */
 
 before_carstage:
 	post_code(0x2A)

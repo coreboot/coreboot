@@ -37,6 +37,8 @@
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
 #include <bdk.h>
+#include <libbdk-hal/bdk-utils.h>
+
 
 /**
  * Return the number of LMC controllers in use
@@ -92,7 +94,7 @@ static int __bdk_dram_is_lmc_in_dreset(bdk_node_t node, int lmc)
  *
  * @param node   Node to probe
  *
- */ 
+ */
 uint32_t __bdk_dram_get_row_mask(bdk_node_t node, int lmc)
 {
     // PROTECT!!!
@@ -108,7 +110,7 @@ uint32_t __bdk_dram_get_row_mask(bdk_node_t node, int lmc)
  *
  * @param node   Node to probe
  *
- */ 
+ */
 uint32_t __bdk_dram_get_col_mask(bdk_node_t node, int lmc)
 {
     // PROTECT!!!
@@ -124,7 +126,7 @@ uint32_t __bdk_dram_get_col_mask(bdk_node_t node, int lmc)
  *
  * @param node   Node to probe
  *
- */ 
+ */
 // all DDR3, and DDR4 x16 today, use only 3 bank bits; DDR4 x4 and x8 always have 4 bank bits
 // NOTE: this will change in the future, when DDR4 x16 devices can come with 16 banks!! FIXME!!
 int __bdk_dram_get_num_bank_bits(bdk_node_t node, int lmc)
@@ -181,9 +183,6 @@ int __bdk_dram_is_rdimm(bdk_node_t node, int lmc)
  */
 uint64_t bdk_dram_get_size_mbytes(int node)
 {
-    if (bdk_is_platform(BDK_PLATFORM_EMULATOR))
-        return 2 << 10; /* 2GB is available on t88 and t81 
-                        ** some t83 models have 8gb, but it is too long to init */
     /* Return zero if dram isn't enabled */
     if (!__bdk_is_dram_enabled(node))
         return 0;
@@ -192,21 +191,13 @@ uint64_t bdk_dram_get_size_mbytes(int node)
     const int num_dram_controllers = __bdk_dram_get_num_lmc(node);
     for (int lmc = 0; lmc < num_dram_controllers; lmc++)
     {
-        if (bdk_is_platform(BDK_PLATFORM_ASIM))
-        {
-            /* Asim doesn't simulate the rank detection, fake 4GB per controller */
-            memsize += 4ull << 30;
-        }
-        else
-        {
-            // PROTECT!!!
-	    if (__bdk_dram_is_lmc_in_dreset(node, lmc)) // check LMCn
-		return 0;
-            BDK_CSR_INIT(lmcx_config, node, BDK_LMCX_CONFIG(lmc));
-            int num_ranks = bdk_pop(lmcx_config.s.init_status);
-            uint64_t rank_size = 1ull << (28 + lmcx_config.s.pbank_lsb - lmcx_config.s.rank_ena);
-            memsize += rank_size * num_ranks;
-        }
+         // PROTECT!!!
+        if (__bdk_dram_is_lmc_in_dreset(node, lmc)) // check LMCn
+            return 0;
+        BDK_CSR_INIT(lmcx_config, node, BDK_LMCX_CONFIG(lmc));
+        int num_ranks = bdk_pop(lmcx_config.s.init_status);
+        uint64_t rank_size = 1ull << (28 + lmcx_config.s.pbank_lsb - lmcx_config.s.rank_ena);
+        memsize += rank_size * num_ranks;
     }
     return memsize >> 20;
 }

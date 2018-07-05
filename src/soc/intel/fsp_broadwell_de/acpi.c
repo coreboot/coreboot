@@ -82,7 +82,7 @@ static int acpi_sci_irq(void)
 {
 	uint8_t actl = 0;
 	static uint8_t sci_irq = 0;
-	device_t dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
 
 	/* If this function was already called, just return the stored value. */
 	if (sci_irq)
@@ -331,12 +331,12 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	current += acpi_create_dmar_drhd(current,
 			DRHD_INCLUDE_PCI_ALL, 0, vtbar);
 	/* The IIO I/O APIC is fixed on PCI 00:05.4 on Broadwell-DE */
-	current += acpi_create_dmar_drhd_ds_ioapic(current,
+	current += acpi_create_dmar_ds_ioapic(current,
 			9, 0, 5, 4);
 	/* Get the PCI BDF for the PCH I/O APIC */
 	dev = dev_find_slot(0, LPC_DEV_FUNC);
 	bdf = pci_read_config16(dev, 0x6c);
-	current += acpi_create_dmar_drhd_ds_ioapic(current,
+	current += acpi_create_dmar_ds_ioapic(current,
 			8, (bdf >> 8), PCI_SLOT(bdf), PCI_FUNC(bdf));
 
 	/*
@@ -365,7 +365,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	/* Create one HPET entry in DMAR for every unique HPET PCI path. */
 	for (i = 0; i < ARRAY_SIZE(hpet_bdf); i++) {
 		if (hpet_bdf[i])
-			current += acpi_create_dmar_drhd_ds_msi_hpet(current,
+			current += acpi_create_dmar_ds_msi_hpet(current,
 				0, (hpet_bdf[i] >> 8), PCI_SLOT(hpet_bdf[i]),
 				PCI_FUNC(hpet_bdf[i]));
 	}
@@ -380,7 +380,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 		dev = dev_find_class(PCI_CLASS_BRIDGE_PCI << 8, dev);
 		if (dev && dev->bus->secondary == 0 &&
 		    PCI_SLOT(dev->path.pci.devfn) <= 3)
-			current += acpi_create_dmar_drhd_ds_pci_br(current,
+			current += acpi_create_dmar_ds_pci_br(current,
 					dev->bus->secondary,
 					PCI_SLOT(dev->path.pci.devfn),
 					PCI_FUNC(dev->path.pci.devfn));
@@ -395,7 +395,7 @@ unsigned long northcluster_write_acpi_tables(struct device *const dev,
 					     struct acpi_rsdp *const rsdp)
 {
 	acpi_dmar_t *const dmar = (acpi_dmar_t *)current;
-	device_t vtdev = dev_find_slot(0, PCI_DEVFN(5, 0));
+	struct device *vtdev = dev_find_slot(0, PCI_DEVFN(5, 0));
 
 	/* Create DMAR table only if virtualization is enabled */
 	if (!(pci_read_config32(vtdev, 0x180) & 0x01))
@@ -523,7 +523,7 @@ static void generate_P_state_entries(int core, int cores_per_package)
 	acpigen_pop_len();
 }
 
-void generate_cpu_entries(device_t device)
+void generate_cpu_entries(struct device *device)
 {
 	int core;
 	int pcontrol_blk = get_pmbase(), plen = 6;

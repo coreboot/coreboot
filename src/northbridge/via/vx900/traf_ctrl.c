@@ -45,10 +45,10 @@
  * We are assuming this is called before the drivers/generic/ioapic code,
  * which should be the case if devicetree.cb is set up properly.
  */
-static void vx900_north_ioapic_setup(device_t dev)
+static void vx900_north_ioapic_setup(struct device *dev)
 {
 	u8 base_val;
-	device_t ioapic;
+	struct device *ioapic;
 	ioapic_config_t *config;
 	/* Find the IOAPIC, and make sure it's set up correctly in devicetree.cb
 	 * If it's not, then the generic ioapic driver will not set it up
@@ -103,7 +103,7 @@ static void vx900_north_ioapic_setup(device_t dev)
  *
  * FIXME: triple-quadruple-check this
  */
-static void vx900_pex_link_setup(device_t dev)
+static void vx900_pex_link_setup(struct device *dev)
 {
 	u8 reg8;
 	struct northbridge_via_vx900_config *nb = (void *)dev->chip_info;
@@ -120,7 +120,7 @@ static void vx900_pex_link_setup(device_t dev)
 	pci_write_config8(dev, 0xb0, reg8);
 }
 
-static void vx900_traf_ctr_init(device_t dev)
+static void vx900_traf_ctr_init(struct device *dev)
 {
 	vx900_north_ioapic_setup(dev);
 	vx900_pex_link_setup(dev);

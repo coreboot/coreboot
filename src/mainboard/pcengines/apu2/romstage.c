@@ -34,7 +34,7 @@
 #include <cpu/amd/microcode.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <Fch/Fch.h>
-#include <security/tpm/tis.h>
+#include <security/tpm/tspi.h>
 
 #include "gpio_ftns.h"
 #include <build.h>
@@ -138,8 +138,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* Load MPB */
 	val = cpuid_eax(1);
-	printk(BIOS_DEBUG, "BSP Family_Model: %08x \n", val);
-	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
+	printk(BIOS_DEBUG, "BSP Family_Model: %08x\n", val);
+	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx\n", cpu_init_detectedx);
 
 	update_microcode(val);
 
@@ -169,7 +169,8 @@ void agesa_postcar(struct sysinfo *cb)
 	post_code(0x41);
 	AGESAWRAPPER(amdinitenv);
 
-	init_tpm(false);
+	if (IS_ENABLED(CONFIG_TPM1) || IS_ENABLED(CONFIG_TPM2))
+		tpm_setup(false);
 
 	outb(0xEA, 0xCD6);
 	outb(0x1, 0xcd7);

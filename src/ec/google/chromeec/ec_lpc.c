@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/pnp.h>
-#include <pc80/keyboard.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -430,7 +429,6 @@ static void lpc_ec_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
-	pc_keyboard_init(NO_AUX_DEVICE);
 	google_chromeec_init();
 }
 
@@ -459,15 +457,11 @@ static void lpc_ec_read_resources(struct device *dev)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void lpc_ec_enable_resources(struct device *dev)
-{
-	/* Nothing, but this function avoids an error on serial console. */
-}
-
 static struct device_operations ops = {
 	.init             = lpc_ec_init,
 	.read_resources   = lpc_ec_read_resources,
-	.enable_resources = lpc_ec_enable_resources
+	.enable_resources = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP
 };
 
 static struct pnp_info pnp_dev_info[] = {

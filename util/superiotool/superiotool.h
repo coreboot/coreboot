@@ -133,7 +133,7 @@ and print its vendor, name, ID, revision, and config port.\n"
 #define MAXLDN		0x14		/* Biggest LDN */
 #define LDNSIZE		(MAXLDN + 3)	/* Biggest LDN + 0 + NOLDN + EOT */
 #define MAXNUMIDX	170		/* Maximum number of indices */
-#define IDXSIZE 	(MAXNUMIDX + 1)
+#define IDXSIZE		(MAXNUMIDX + 1)
 #define MAXNUMPORTS	(6 + 1)		/* Maximum number of Super I/O ports */
 
 /* Select registers for various components. */

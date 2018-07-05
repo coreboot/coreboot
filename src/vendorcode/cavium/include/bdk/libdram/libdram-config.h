@@ -39,6 +39,8 @@
 #ifndef __LIBDRAM_CONFIG_H__
 #define __LIBDRAM_CONFIG_H__
 
+#include <libbdk-arch/bdk-csrs-lmc.h>
+
 #define DDR_CFG_T_MAX_DIMMS     2 /* ThunderX supports a max of two DIMMs per LMC */
 
 /* Structure that provides DIMM information, either in the form of an SPD TWSI

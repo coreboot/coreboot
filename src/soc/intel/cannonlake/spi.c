@@ -32,18 +32,3 @@ int spi_soc_devfn_to_bus(unsigned int devfn)
 	}
 	return -1;
 }
-
-int spi_soc_bus_to_devfn(unsigned int bus)
-{
-	switch (bus) {
-	case 0:
-		return PCH_DEVFN_SPI;
-	case 1:
-		return PCH_DEVFN_GSPI0;
-	case 2:
-		return PCH_DEVFN_GSPI1;
-	case 3:
-		return PCH_DEVFN_GSPI2;
-	}
-	return -1;
-}

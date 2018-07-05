@@ -20,50 +20,47 @@
 int yylex();
 void yyerror(const char *s);
 
-static struct device *cur_parent, *cur_bus;
+static struct bus *cur_parent;
+static struct chip_instance *cur_chip_instance;
 
 %}
 %union {
-	struct device *device;
+	struct device *dev;
+	struct chip_instance *chip_instance;
 	char *string;
 	int number;
 }
 
 %token CHIP DEVICE REGISTER BOOL BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC CPU_CLUSTER CPU DOMAIN IRQ DRQ IO NUMBER SUBSYSTEMID INHERIT IOAPIC_IRQ IOAPIC PCIINT GENERIC SPI USB MMIO
 %%
-devtree: { cur_parent = cur_bus = head; } chip { postprocess_devtree(); } ;
+devtree: { cur_parent = root_parent; } chip;
 
 chipchildren: chipchildren device | chipchildren chip | chipchildren registers | /* empty */ ;
 
 devicechildren: devicechildren device | devicechildren chip | devicechildren resource | devicechildren subsystemid | devicechildren ioapic_irq | /* empty */ ;
 
 chip: CHIP STRING /* == path */ {
-	$<device>$ = new_chip(cur_parent, cur_bus, $<string>2);
-	cur_parent = $<device>$;
+	$<chip_instance>$ = new_chip_instance($<string>2);
+	chip_enqueue_tail(cur_chip_instance);
+	cur_chip_instance = $<chip_instance>$;
 }
 	chipchildren END {
-	cur_parent = $<device>3->parent;
-	fold_in($<device>3);
-	add_header($<device>3);
+	cur_chip_instance = chip_dequeue_tail();
 };
 
 device: DEVICE BUS NUMBER /* == devnum */ BOOL {
-	$<device>$ = new_device(cur_parent, cur_bus, $<number>2, $<string>3, $<number>4);
-	cur_parent = $<device>$;
-	cur_bus = $<device>$;
+	$<dev>$ = new_device(cur_parent, cur_chip_instance, $<number>2, $<string>3, $<number>4);
+	cur_parent = $<dev>$->last_bus;
 }
 	devicechildren END {
-	cur_parent = $<device>5->parent;
-	cur_bus = $<device>5->bus;
-	fold_in($<device>5);
-	alias_siblings($<device>5->children);
+	cur_parent = $<dev>5->parent;
 };
 
 resource: RESOURCE NUMBER /* == resnum */ EQUALS NUMBER /* == resval */
 	{ add_resource(cur_parent, $<number>1, strtol($<string>2, NULL, 0), strtol($<string>4, NULL, 0)); } ;
 
 registers: REGISTER STRING /* == regname */ EQUALS STRING /* == regval */
-	{ add_register(cur_parent, $<string>2, $<string>4); } ;
+	{ add_register(cur_chip_instance, $<string>2, $<string>4); } ;
 
 subsystemid: SUBSYSTEMID NUMBER NUMBER
 	{ add_pci_subsystem_ids(cur_parent, strtol($<string>2, NULL, 16), strtol($<string>3, NULL, 16), 0); };

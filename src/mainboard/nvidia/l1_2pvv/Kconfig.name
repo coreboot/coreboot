@@ -1,2 +1,0 @@
-config BOARD_NVIDIA_L1_2PVV
-	bool "l1_2pvv"

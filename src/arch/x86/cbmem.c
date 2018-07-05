@@ -12,7 +12,6 @@
  */
 
 #include <stdlib.h>
-#include <console/console.h>
 #include <cbmem.h>
 #include <compiler.h>
 #include <arch/acpi.h>

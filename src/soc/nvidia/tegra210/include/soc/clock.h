@@ -1,15 +1,17 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * Copyright 2014 Google Inc.
  * Copyright (c) 2013-2015, NVIDIA CORPORATION.  All rights reserved.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
 #ifndef __SOC_NVIDIA_TEGRA210_CLOCK_H__
@@ -431,7 +433,8 @@ void clock_disable_regs(u32 bits[DEV_CONFIG_BLOCKS]);
 void clock_set_reset_regs(u32 bits[DEV_CONFIG_BLOCKS]);
 void clock_clr_reset_regs(u32 bits[DEV_CONFIG_BLOCKS]);
 void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x, u32 y);
-void clock_grp_enable_clear_reset(u32 val, u32* clk_enb_set_reg, u32* rst_dev_clr_reg);
+void clock_grp_enable_clear_reset(u32 val, u32 *clk_enb_set_reg,
+				  u32 *rst_dev_clr_reg);
 void clock_reset_l(u32 l);
 void clock_reset_h(u32 h);
 void clock_reset_u(u32 u);

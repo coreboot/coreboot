@@ -1,15 +1,7 @@
 #include <console/console.h>
 #include <device/device.h>
-#include <device/smbus.h>
-#include <device/pci.h>
-#include <device/pci_ids.h>
-#include <device/pci_ops.h>
-#include <cpu/x86/msr.h>
-#include <reset.h>
-#include <delay.h>
 #include "chip.h"
 #include <arch/ioapic.h>
-#include <arch/io.h>
 #include <cpu/x86/lapic.h>
 
 static void ioapic_init(struct device *dev)

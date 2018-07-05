@@ -17,10 +17,7 @@ menu "Verified Boot (vboot)"
 config VBOOT
 	bool "Verify firmware with vboot."
 	default n
-	select TPM if !MAINBOARD_HAS_TPM2 && !VBOOT_MOCK_SECDATA
-	select TPM2 if MAINBOARD_HAS_TPM2 && !VBOOT_MOCK_SECDATA
-	select TPM_INIT_FAILURE_IS_FATAL if PC80_SYSTEM && LPC_TPM
-	select SKIP_TPM_STARTUP_ON_NORMAL_BOOT if PC80_SYSTEM && LPC_TPM
+	select VBOOT_MOCK_SECDATA if !TPM1 && !TPM2
 	depends on HAVE_HARD_RESET
 	help
 	  Enabling VBOOT will use vboot to verify the components of the firmware

@@ -227,9 +227,15 @@ config UBSAN
 	  say N because it adds a small performance penalty and may abort
 	  on code that happens to work in spite of the UB.
 
+config NO_RELOCATABLE_RAMSTAGE
+	bool
+	default n if ARCH_X86
+	default y
+
 config RELOCATABLE_RAMSTAGE
+	bool
 	depends on EARLY_CBMEM_INIT
-	bool "Build the ramstage to be relocatable in 32-bit address space."
+	default !NO_RELOCATABLE_RAMSTAGE
 	select RELOCATABLE_MODULES
 	help
 	 The reloctable ramstage support allows for the ramstage to be built
@@ -288,6 +294,17 @@ config DEVICETREE
 
 	  Examples: "devicetree.variant.cb"
 	            "variant/devicetree.cb"
+
+config OVERRIDE_DEVICETREE
+	string
+	default ""
+	help
+	  This symbol allows variants to provide an override devicetree file to
+	  override the registers and/or add new devices on top of the ones
+	  provided by baseboard devicetree using CONFIG_DEVICETREE.
+
+	  Examples: "devicetree.variant-override.cb"
+	            "variant/devicetree-override.cb"
 
 config CBFS_SIZE
 	hex "Size of CBFS filesystem in ROM"
@@ -516,10 +533,6 @@ config IOAPIC
 	bool
 	default n
 
-config CACHE_ROM_SIZE_OVERRIDE
-	hex
-	default 0x0
-
 config USE_WATCHDOG_ON_BOOT
 	bool
 	default n
@@ -746,7 +759,7 @@ config DEBUG_SMI
 	bool "Output verbose SMI debug messages"
 	default n
 	depends on HAVE_SMI_HANDLER
-	select SPI_FLASH_SMM if SPI_CONSOLE
+	select SPI_FLASH_SMM if SPI_CONSOLE || CONSOLE_SPI_FLASH
 	help
 	  This option enables additional SMI related debug messages.
 
@@ -1139,6 +1152,7 @@ config RELOCATABLE_MODULES
 
 config NO_STAGE_CACHE
 	bool
+	default y if !HAVE_ACPI_RESUME
 	help
 	  Do not save any component in stage cache for resume path. On resume,
 	  all components would be read back from CBFS again.

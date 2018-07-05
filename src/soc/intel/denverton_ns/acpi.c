@@ -57,7 +57,7 @@ void acpi_init_gnvs(global_nvs_t *gnvs)
 static int acpi_sci_irq(void)
 {
 	int scis, sci_irq;
-	device_t dev = get_pmc_dev();
+	struct device *dev = get_pmc_dev();
 
 	if (!dev)
 		return 0;
@@ -231,7 +231,7 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.addrh = 0x00;
 }
 
-void generate_cpu_entries(device_t device)
+void generate_cpu_entries(struct device *device)
 {
 	int core;
 	int pcontrol_blk = get_pmbase(), plen = 6;
@@ -278,7 +278,7 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 	return current;
 }
 
-unsigned long southcluster_write_acpi_tables(device_t device,
+unsigned long southcluster_write_acpi_tables(struct device *device,
 					     unsigned long current,
 					     struct acpi_rsdp *rsdp)
 {
@@ -306,7 +306,7 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 	return current;
 }
 
-void southcluster_inject_dsdt(device_t device)
+void southcluster_inject_dsdt(struct device *device)
 {
 	global_nvs_t *gnvs;
 

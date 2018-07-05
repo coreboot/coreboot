@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <cpu/intel/haswell/haswell.h>
+#include <cpu/intel/romstage.h>
 #include "variant.h"
 
 

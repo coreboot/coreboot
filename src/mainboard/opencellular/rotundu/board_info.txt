@@ -1,0 +1,4 @@
+Board name: Rotundu
+Category: sbc
+ROM protocol: SPI
+ROM socketed: n

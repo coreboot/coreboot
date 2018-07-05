@@ -1,2 +1,0 @@
-config BOARD_HP_DL145_G1
-	bool "ProLiant DL145 G1"

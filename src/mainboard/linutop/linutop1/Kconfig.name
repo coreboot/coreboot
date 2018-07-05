@@ -1,2 +1,0 @@
-config BOARD_LINUTOP_LINUTOP1
-	bool "Linutop-1"

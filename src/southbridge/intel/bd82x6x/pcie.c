@@ -21,7 +21,6 @@
 #include <device/pci_ids.h>
 #include <southbridge/intel/common/pciehp.h>
 #include <assert.h>
-#include <southbridge/intel/common/rcba.h>
 #include "pch.h"
 
 static void pch_pcie_pm_early(struct device *dev)
@@ -265,13 +264,13 @@ static void pci_init(struct device *dev)
 	}
 }
 
-static void pch_pcie_enable(device_t dev)
+static void pch_pcie_enable(struct device *dev)
 {
 	/* Power Management init before enumeration */
 	pch_pcie_pm_early(dev);
 }
 
-static void pch_pciexp_scan_bridge(device_t dev)
+static void pch_pciexp_scan_bridge(struct device *dev)
 {
 	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
 
@@ -306,7 +305,8 @@ static const char *pch_pcie_acpi_name(const struct device *dev)
 	return NULL;
 }
 
-static void pcie_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void pcie_set_subsystem(struct device *dev, unsigned vendor,
+			       unsigned device)
 {
 	/* NOTE: This is not the default position! */
 	if (!vendor || !device) {

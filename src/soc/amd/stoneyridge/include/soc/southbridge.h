@@ -32,6 +32,9 @@
 #define  PSP_MAILBOX_BAR_EN		0x10
 
 /* Power management registers:  0xfed80300 or index/data at IO 0xcd6/cd7 */
+#define PM_DECODE_EN			0x00
+#define   CF9_IO_EN			BIT(1)
+#define   LEGACY_IO_EN			BIT(0)
 #define PM_ISA_CONTROL			0x04
 #define   MMIO_EN			BIT(1)
 #define PM_PCI_CTRL			0x08
@@ -353,9 +356,27 @@
 #define   FCH_AOAC_STAT0		BIT(6)
 #define   FCH_AOAC_STAT1		BIT(7)
 
+#define PM1_LIMIT			16
+#define GPE0_LIMIT			28
+#define TOTAL_BITS(a)			(8 * sizeof(a))
+
+/* Bit definitions for MISC_MMIO_BASE register GPPClkCntrl */
+#define GPP_CLK_CNTRL			0
+#define GPP_CLK2_CLOCK_REQ_MAP_SHIFT	8
+#define GPP_CLK2_CLOCK_REQ_MAP_MASK	(0xf << GPP_CLK2_CLOCK_REQ_MAP_SHIFT)
+#define GPP_CLK2_CLOCK_REQ_MAP_CLK_REQ2	3
+
 struct stoneyridge_aoac {
 	int enable;
 	int status;
+};
+
+struct soc_power_reg {
+	uint16_t pm1_sts;
+	uint16_t pm1_en;
+	uint32_t gpe0_sts;
+	uint32_t gpe0_en;
+	uint16_t wake_from;
 };
 
 void enable_aoac_devices(void);

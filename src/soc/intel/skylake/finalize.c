@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,12 @@
 #include <chip.h>
 #include <console/console.h>
 #include <console/post_codes.h>
+#include <cpu/x86/mp.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
+#include <intelblocks/cpulib.h>
 #include <intelblocks/lpc_lib.h>
+#include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
 #include <reg_script.h>
 #include <spi-generic.h>
@@ -34,65 +37,24 @@
 #include <soc/systemagent.h>
 #include <soc/thermal.h>
 #include <stdlib.h>
+#include <timer.h>
 
 #define PSF_BASE_ADDRESS	0xA00
 #define PCR_PSFX_T0_SHDW_PCIEN	0x1C
 #define PCR_PSFX_T0_SHDW_PCIEN_FUNDIS	(1 << 8)
 
-static void pch_configure_endpoints(device_t dev, int epmask_id, uint32_t mask)
-{
-	uint32_t reg32;
-
-	reg32 = pci_read_config32(dev, PCH_P2SB_EPMASK(epmask_id));
-	pci_write_config32(dev, PCH_P2SB_EPMASK(epmask_id), reg32 | mask);
-}
-
 static void disable_sideband_access(void)
 {
-	device_t dev;
-	u8 reg8;
-	uint32_t mask;
-
-	dev = PCH_DEV_P2SB;
-
-	/*
-	 * Set p2sb PCI offset EPMASK5 C4h [29, 28, 27, 26] to disable Sideband
-	 * access for PCI Root Bridge.
-	 * Set p2sb PCI offset EPMASK5 C4h [17, 16,10, 1] to disable Sideband
-	 * access for MIPI controller.
-	 */
-	mask = (1 << 29) | (1 << 28) | (1 << 27) | (1 << 26) | (1 << 17) |
-			 (1 << 16) | (1 << 10) | (1 << 1);
-	pch_configure_endpoints(dev, 5, mask);
-
-	/*
-	 * Set p2sb PCI offset EPMASK7 CCh ports E6, E5 (bits 6, 5)
-	 * to disable Sideband access for XHCI controller.
-	 */
-	mask = (1 << 6) | (1 << 5);
-	pch_configure_endpoints(dev, 7, mask);
-
-	/* Set the "Endpoint Mask Lock!", P2SB PCI offset E2h bit[1] to 1. */
-	reg8 = pci_read_config8(dev, PCH_P2SB_E0 + 2);
-	pci_write_config8(dev, PCH_P2SB_E0 + 2, reg8 | (1 << 1));
+	p2sb_disable_sideband_access();
 
 	/* hide p2sb device */
-	pci_write_config8(dev, PCH_P2SB_E0 + 1, 1);
+	p2sb_hide();
 }
 
 static void pch_disable_heci(void)
 {
-	device_t dev = PCH_DEV_P2SB;
-
-	/*
-	 * if p2sb device 1f.1 is not present or hidden in devicetree
-	 * p2sb device becomes NULL
-	 */
-	if (!dev)
-		return;
-
 	/* unhide p2sb device */
-	pci_write_config8(dev, PCH_P2SB_E0 + 1, 0);
+	p2sb_unhide();
 
 	/* disable heci */
 	pcr_or32(PID_PSF1, PSF_BASE_ADDRESS + PCR_PSFX_T0_SHDW_PCIEN,
@@ -101,9 +63,8 @@ static void pch_disable_heci(void)
 	disable_sideband_access();
 }
 
-static void pch_finalize_script(void)
+static void pch_finalize_script(struct device *dev)
 {
-	device_t dev;
 	uint32_t reg32;
 	uint8_t *pmcbase;
 	config_t *config;
@@ -112,7 +73,6 @@ static void pch_finalize_script(void)
 	/* Display me status before we hide it */
 	intel_me_status();
 
-	dev = PCH_DEV_PMC;
 	pmcbase = pmc_mmio_regs();
 	config = dev->chip_info;
 
@@ -150,17 +110,10 @@ static void pch_finalize_script(void)
 		pch_disable_heci();
 }
 
-static void soc_lockdown(void)
+static void soc_lockdown(struct device *dev)
 {
 	struct soc_intel_skylake_config *config;
-	struct device *dev;
 	u8 reg8;
-
-	dev = PCH_DEV_PMC;
-
-	/* Check if PMC is enabled, else return */
-	if (dev == NULL || dev->chip_info == NULL)
-		return;
 
 	config = dev->chip_info;
 
@@ -174,11 +127,22 @@ static void soc_lockdown(void)
 
 static void soc_finalize(void *unused)
 {
+	struct device *dev;
+
+	dev = PCH_DEV_PMC;
+
+	/* Check if PMC is enabled, else return */
+	if (dev == NULL || dev->chip_info == NULL)
+		return;
+
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
 
-	pch_finalize_script();
+	pch_finalize_script(dev);
 
-	soc_lockdown();
+	printk(BIOS_DEBUG, "Clearing MCA.\n");
+	mp_run_on_all_cpus(mca_configure, NULL, 17 * USECS_PER_SEC);
+
+	soc_lockdown(dev);
 
 	printk(BIOS_DEBUG, "Finalizing SMM.\n");
 	outb(APM_CNT_FINALIZE, APM_CNT);

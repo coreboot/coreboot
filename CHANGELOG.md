@@ -4,6 +4,9 @@ Change log for PC Engines fork of coreboot
 Releases 4.0.x are based on PC Engines 20160304 release.
 Releases 4.5.x and 4.6.x are based on mainline support submitted in
 [this gerrit ref](https://review.coreboot.org/#/c/14138/).
+Releases 4.8.0.x are based on continuous synchronization with official
+[coreboot repository](https://review.coreboot.org/cgit/coreboot.git)
+
 
 ## Quick build instructions
 1. After cloning run `make crossgcc-i386` to build the toolchain.
@@ -13,6 +16,11 @@ Releases 4.5.x and 4.6.x are based on mainline support submitted in
 3. `make`
 
 ## [Unreleased]
+
+## [v4.8.0.2] - 2018-07-08
+### Changed
+- synced and rebased with coreboot official repo commit afc74ca
+
 ## [v4.8.0.1] - 2018-06-08
 ### Changed
 - Rebased coreboot repository to official coreboot 4.8.0
@@ -188,7 +196,8 @@ redundant code which was similar for APU2/3/5 boards.
 - turn off D4 and D5 leds on boot
 - enable power on after power failure
 
-[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.8.0.1...develop
+[Unreleased]: https://github.com/pcengines/coreboot/compare/v4.8.0.2...develop
+[v4.8.0.2]: https://github.com/pcengines/coreboot/compare/v4.8.0.1...v4.8.0.2
 [v4.8.0.1]: https://github.com/pcengines/coreboot/compare/v4.6.9...v4.8.0.1
 [v4.6.10]: https://github.com/pcengines/coreboot/compare/v4.6.9...v4.6.10
 [v4.6.9]: https://github.com/pcengines/coreboot/compare/v4.6.8...v4.6.9

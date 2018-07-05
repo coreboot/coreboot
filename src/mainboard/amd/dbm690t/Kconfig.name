@@ -1,2 +1,0 @@
-config BOARD_AMD_DBM690T
-	bool "DBM690T (Herring)"

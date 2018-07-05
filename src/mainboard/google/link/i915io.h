@@ -48,7 +48,7 @@
  *   2 -> print IO ops
  *   4 -> print the number of times we spin on a register in a poll
  *   8 -> restore whatever the previous verbosity level was
- *   		(only one deep stack)
+ *		(only one deep stack)
  *
  * Again, this is not really meant for human consumption. There is not a poll
  * operator as such because, sometimes, there is a read/write/read where the

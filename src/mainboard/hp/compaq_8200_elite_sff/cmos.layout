@@ -51,7 +51,9 @@ entries
 # coreboot config options: console
 #392          3       r       0        unused
 395          4       e       6        debug_level
-#399          9       r       0        unused
+#399          1       r       0        unused
+400          3       h       0        psu_fan_lvl
+#403          5       r       0        unused
 
 # coreboot config options: southbridge
 408          1       e       1        nmi
@@ -100,11 +102,11 @@ enumerations
 9     1     IDE
 11    0     32M
 11    1     64M
-11    2	    96M
-11    3	    128M
-11    4	    160M
-11    5	    192M
-11    6	    224M
+11    2     96M
+11    3     128M
+11    4     160M
+11    5     192M
+11    6     224M
 
 # -----------------------------------------------------------------
 checksums

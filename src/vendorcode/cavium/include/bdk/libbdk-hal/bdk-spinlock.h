@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_SPINLOCK_H__
+#define __CB_BDK_SPINLOCK_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -144,3 +146,4 @@ static inline int bdk_spinlock_trylock(bdk_spinlock_t *lock)
 }
 
 /** @} */
+#endif	/* !__CB_BDK_SPINLOCK_H__ */

@@ -18,23 +18,85 @@
  */
 
 #include <arch/io.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <device/pnp.h>
+#include <option.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
 #include <superio/conf_mode.h>
 
 #include "npcd378.h"
 
+uint8_t npcd378_hwm_read(const uint16_t iobase, const uint16_t reg)
+{
+	outb((reg >> 8) & 0xf, iobase + 0xff);
+	uint8_t reg8 = inb(iobase + (reg & 0xff));
+	if (reg8 == 0xff)
+		reg8 = inb(iobase + (reg & 0xff));
+
+	outb(0, iobase + 0xff);
+	return reg8;
+}
+
+void npcd378_hwm_write(const uint16_t iobase, const uint16_t reg,
+		       const uint8_t val)
+{
+	outb((reg >> 8) & 0xf, iobase + 0xff);
+	outb(val, iobase + (reg & 0xff));
+
+	outb(0, iobase + 0xff);
+}
+
+void npcd378_hwm_write_start(const uint16_t iobase)
+{
+	u8 reg8 = npcd378_hwm_read(iobase, NPCD837_HWM_WRITE_LOCK_CTRL);
+	reg8 &= ~NPCD837_HWM_WRITE_LOCK_BIT;
+	npcd378_hwm_write(iobase, NPCD837_HWM_WRITE_LOCK_CTRL, reg8);
+}
+
+void npcd378_hwm_write_finished(const uint16_t iobase)
+{
+	u8 reg8 = npcd378_hwm_read(iobase, NPCD837_HWM_WRITE_LOCK_CTRL);
+	reg8 |= NPCD837_HWM_WRITE_LOCK_BIT;
+	npcd378_hwm_write(iobase, NPCD837_HWM_WRITE_LOCK_CTRL, reg8);
+}
+
 static void npcd378_init(struct device *dev)
 {
+	struct resource *res;
+	uint8_t pwm, fan_lvl;
+
 	if (!dev->enabled)
 		return;
 
 	switch (dev->path.pnp.device) {
-	/* TODO: Might potentially need code for HWM or FDC etc. */
+	/* TODO: Might potentially need code for FDC etc. */
 	case NPCD378_KBC:
 		pc_keyboard_init(PROBE_AUX_DEVICE);
+		break;
+	case NPCD378_HWM:
+		res = find_resource(dev, PNP_IDX_IO0);
+		if (!res || !res->base) {
+			printk(BIOS_ERR, "NPCD378: LDN%u IOBASE not set.\n",
+			       NPCD378_HWM);
+			break;
+		}
+
+		npcd378_hwm_write_start(res->base);
+
+		if (!get_option(&fan_lvl, "psu_fan_lvl") || fan_lvl > 7)
+			fan_lvl = 3;
+
+		pwm = NPCD378_HWM_PSU_FAN_MIN +
+		    (NPCD378_HWM_PSU_FAN_MAX - NPCD378_HWM_PSU_FAN_MIN) *
+		    fan_lvl / 7;
+
+		/* Set PSU fan PWM lvl */
+		npcd378_hwm_write(res->base, NPCD378_HWM_PSU_FAN_PWM_CTRL, pwm);
+		printk(BIOS_INFO, "NPCD378: PSU fan PWM 0x%02x\n", pwm);
+
+		npcd378_hwm_write_finished(res->base);
 		break;
 	}
 }

@@ -43,6 +43,7 @@ smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += spi.c
 smm-$(CONFIG_SOC_UART_DEBUG) += uart.c
+smm-y += elog.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += cpu.c

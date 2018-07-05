@@ -31,11 +31,7 @@
 #define DEFAULT_GPIOBASE	0x0480
 #define DEFAULT_PMBASE		0x0500
 
-#ifndef __ACPI__
-#define DEFAULT_RCBA		((u8 *)0xfed1c000)
-#else
-#define DEFAULT_RCBA		0xfed1c000
-#endif
+#include <southbridge/intel/common/rcba.h>
 
 #ifndef __ACPI__
 #define DEBUG_PERIODIC_SMIS 0
@@ -193,10 +189,6 @@ int southbridge_detect_s3_resume(void);
 
 /* Root Complex Register Block */
 #define RCBA		0xf0
-
-#define RCBA8(x) (*((volatile u8 *)(DEFAULT_RCBA + (x))))
-#define RCBA16(x) (*((volatile u16 *)(DEFAULT_RCBA + (x))))
-#define RCBA32(x) (*((volatile u32 *)(DEFAULT_RCBA + (x))))
 
 #define VCH		0x0000	/* 32bit */
 #define VCAP1		0x0004	/* 32bit */
@@ -368,6 +360,53 @@ int southbridge_detect_s3_resume(void);
 #define DEVACT_STS	0x44
 #define SS_CNT		0x50
 #define C3_RES		0x54
+#define TCO1_CNT	0x68
+
+/* SPIBAR
+ *
+ * SPI Opcode Menu setup for SPIBAR lockdown
+ * should support most common flash chips.
+ */
+
+#define PREOP		0x54
+#define OPTYPE		0x56
+#define OPMENU		0x58
+
+#define SPI_OPMENU_0 0x01 /* WRSR: Write Status Register */
+#define SPI_OPTYPE_0 0x01 /* Write, no address */
+
+#define SPI_OPMENU_1 0x02 /* BYPR: Byte Program */
+#define SPI_OPTYPE_1 0x03 /* Write, address required */
+
+#define SPI_OPMENU_2 0x03 /* READ: Read Data */
+#define SPI_OPTYPE_2 0x02 /* Read, address required */
+
+#define SPI_OPMENU_3 0x05 /* RDSR: Read Status Register */
+#define SPI_OPTYPE_3 0x00 /* Read, no address */
+
+#define SPI_OPMENU_4 0x20 /* SE20: Sector Erase 0x20 */
+#define SPI_OPTYPE_4 0x03 /* Write, address required */
+
+#define SPI_OPMENU_5 0x9f /* RDID: Read ID */
+#define SPI_OPTYPE_5 0x00 /* Read, no address */
+
+#define SPI_OPMENU_6 0xd8 /* BED8: Block Erase 0xd8 */
+#define SPI_OPTYPE_6 0x03 /* Write, address required */
+
+#define SPI_OPMENU_7 0x0b /* FAST: Fast Read */
+#define SPI_OPTYPE_7 0x02 /* Read, address required */
+
+#define SPI_OPMENU_UPPER ((SPI_OPMENU_7 << 24) | (SPI_OPMENU_6 << 16) | \
+			  (SPI_OPMENU_5 << 8) | SPI_OPMENU_4)
+#define SPI_OPMENU_LOWER ((SPI_OPMENU_3 << 24) | (SPI_OPMENU_2 << 16) | \
+			  (SPI_OPMENU_1 << 8) | SPI_OPMENU_0)
+
+#define SPI_OPTYPE ((SPI_OPTYPE_7 << 14) | (SPI_OPTYPE_6 << 12) | \
+		    (SPI_OPTYPE_5 << 10) | (SPI_OPTYPE_4 << 8) |  \
+		    (SPI_OPTYPE_3 << 6) | (SPI_OPTYPE_2 << 4) |	  \
+		    (SPI_OPTYPE_1 << 2) | (SPI_OPTYPE_0))
+
+#define SPI_OPPREFIX ((0x50 << 8) | 0x06) /* EWSR and WREN */
 
 #endif /* __ACPI__ */
 #endif				/* SOUTHBRIDGE_INTEL_I82801GX_I82801GX_H */

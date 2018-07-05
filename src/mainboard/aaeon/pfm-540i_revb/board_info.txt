@@ -1,3 +1,0 @@
-Board name: PFM-540I Rev.B
-Category: half
-Board URL: http://www.aaeonusa.com/products/details/?item_id=1043

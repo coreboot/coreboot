@@ -160,7 +160,7 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 	},
 };
 
-static uint16_t get_dev_id(device_t dev)
+static uint16_t get_dev_id(struct device *dev)
 {
 	return pci_read_config16(dev, PCI_DEVICE_ID);
 }

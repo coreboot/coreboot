@@ -6,5 +6,6 @@ ramstage-y += grphinit.c
 
 romstage-y += raminit.c
 romstage-y += generic_sdram.c
+romstage-y += pll_reset.c
 
 endif

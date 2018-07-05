@@ -1,0 +1,113 @@
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2017 Facebook Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+if PAYLOAD_LINUXBOOT
+
+choice
+	prompt "Architecture"
+	default LINUXBOOT_X86_64
+
+config LINUXBOOT_X86_64
+	bool "x86_64"
+	help
+	  AMD64 kernel and initramfs
+
+config LINUXBOOT_X86
+	bool "x86"
+	help
+	  X86 kernel and initramfs
+endchoice
+
+config LINUXBOOT_ARCH
+	string
+	default "amd64" if LINUXBOOT_X86_64
+	default "386" if LINUXBOOT_X86
+
+choice
+	prompt "Kernel version"
+	default LINUXBOOT_KERNEL_STABLE
+
+config LINUXBOOT_KERNEL_STABLE
+	bool "4.15.3"
+	help
+	  Stable kernel version
+endchoice
+
+config LINUXBOOT_KERNEL_VERSION
+	string
+	default "4.15.3" if LINUXBOOT_KERNEL_STABLE
+
+config LINUXBOOT_KERNEL_CONFIGFILE
+	string "Kernel config file"
+	default ""
+	help
+	  Add your own kernel configuration file. Otherwise a default
+	  minimal defconfig is used.
+
+config LINUXBOOT_KERNEL_COMMANDLINE
+	string "Kernel command-line"
+	default ""
+	help
+	  Add your own kernel command-line arguments.
+
+config PAYLOAD_FILE
+	default "payloads/external/LinuxBoot/linuxboot/kernel-image"
+
+choice
+	prompt "Payload Mode"
+	default LINUXBOOT_UROOT
+
+config LINUXBOOT_UROOT
+	bool "u-root"
+	help
+	  Enable u-root linuxboot mode.
+	  See http://u-root.tk/ for more information.
+endchoice
+
+if LINUXBOOT_UROOT
+
+choice
+	prompt "U-root version"
+	default LINUXBOOT_UROOT_MASTER
+
+config LINUXBOOT_UROOT_MASTER
+	bool "master"
+	help
+	  Latest u-root version
+endchoice
+
+config LINUXBOOT_UROOT_VERSION
+	string
+	default "master" if LINUXBOOT_UROOT_MASTER
+
+config LINUXBOOT_UROOT_COMMANDS
+	string "Select u-root commands"
+	default ""
+	help
+	  Comma separated list of additional modules to include. Otherwise all modules
+	  of u-root are included.
+
+config LINUXBOOT_UROOT_FILES
+	string "Add files to u-root base"
+	default ""
+	help
+	  Path to directory containing root structure for embedding into the
+	  initramfs.
+
+config PAYLOAD_USERSPACE
+	string ""
+	default "payloads/external/LinuxBoot/linuxboot/initramfs.cpio.xz"
+
+endif
+endif

@@ -22,7 +22,6 @@
 #include <delay.h>
 #include <cpu/intel/model_2065x/model_2065x.h>
 #include <cpu/x86/msr.h>
-#include <cpu/x86/mtrr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

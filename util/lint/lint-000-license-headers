@@ -19,7 +19,10 @@
 
 # regex list of files and directories to exclude from the search
 HEADER_EXCLUDED="\
+^src/lib/gnat/|\
 ^src/vendorcode/|\
+^util/amdtools/example_input/|\
+^util/cbfstool/lzma/|\
 ^util/kconfig/|\
 ^util/romcc/tests|\
 ^util/romcc/results|\
@@ -30,6 +33,15 @@ Kconfig|\
 Changelog|\
 TODO|\
 EXAMPLE|\
+NEWS|\
+ChangeLog|\
+Dockerfile|\
+\.in$|\
+\.[18]$|\
+\.md$|\
+\.wiki$|\
+\.xxdump$|\
+\.spec$|\
 \.txt$|\
 \.jpg$|\
 \.cksum$|\
@@ -93,6 +105,7 @@ check_for_license '"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES'
 check_for_license 'assumes any liability or responsibility for the use'
 check_for_license 'THE AUTHORS DISCLAIM.*ALL WARRANTIES WITH REGARD TO THIS SOFTWARE'
 check_for_license 'No license required'
+check_for_license 'GNU Lesser General Public'
 
 for file in $headerlist; do
 	# Verify the file exists, and has content that requires a header

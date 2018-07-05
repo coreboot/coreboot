@@ -37,7 +37,6 @@
 #include <cbmem.h>
 
 #include "arch/early_variables.h"
-#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <northbridge/intel/nehalem/nehalem.h>
 

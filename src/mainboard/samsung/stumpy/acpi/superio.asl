@@ -24,7 +24,7 @@
 #define SIO_ENABLE_ENVC          // pnp 2e.4: Enable Environmental Controller
 #define SIO_ENVC_IO0      0x700  // pnp 2e.4: io 0x60
 #define SIO_ENVC_IO1      0x710  // pnp 2e.4: io 0x62
-#define SIO_ENABLE_GPIO	  	 // pnp 2e.7: Enable GPIO
+#define SIO_ENABLE_GPIO		 // pnp 2e.7: Enable GPIO
 #define SIO_GPIO_IO0      0x720  // pnp 2e.7: io 0x60
 #define SIO_GPIO_IO1      0x730  // pnp 2e.7: io 0x60
 

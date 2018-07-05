@@ -113,7 +113,7 @@ volatile u8 * find_fsp ()
 	);
 #else
 	volatile u8 *fsp_ptr;
-#endif 	/* __PRE_RAM__ */
+#endif	/* __PRE_RAM__ */
 
 	/* The FSP is stored in CBFS */
 	fsp_ptr = (u8 *) CONFIG_FSP_LOC;

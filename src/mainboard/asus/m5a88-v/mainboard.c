@@ -17,18 +17,12 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/io.h>
-#include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
 #include <southbridge/amd/common/amd_defs.h>
 #include <device/pci_def.h>
-
-u8 is_dev3_present(void);
-void set_pcie_dereset(void);
-void set_pcie_reset(void);
-void enable_int_gfx(void);
+#include <southbridge/amd/rs780/rs780.h>
 
 /* GPIO6. */
-void enable_int_gfx(void)
+static void enable_int_gfx(void)
 {
 	volatile u8 *gpio_reg;
 
@@ -46,15 +40,7 @@ void enable_int_gfx(void)
 	*(gpio_reg + 170) = 0x0;
 }
 
-void set_pcie_dereset()
-{
-}
-
-void set_pcie_reset(void)
-{
-}
-
-u8 is_dev3_present(void)
+int is_dev3_present(void)
 {
 	return 0;
 }

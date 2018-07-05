@@ -154,7 +154,7 @@ chip northbridge/intel/x4x		# Northbridge
 					end
 				end
 			end
-			device pci 1f.1 off end 	# PATA/IDE
+			device pci 1f.1 off end	# PATA/IDE
 			device pci 1f.2 on		# SATA
 				subsystemid 0x8086 0x5756
 			end

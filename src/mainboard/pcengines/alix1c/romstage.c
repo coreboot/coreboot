@@ -25,13 +25,13 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/lxdef.h>
 #include <cpu/amd/car.h>
-#include <southbridge/amd/cs5536/cs5536.h>
 #include <northbridge/amd/lx/raminit.h>
-
-#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-
+#include <northbridge/amd/lx/northbridge.h>
+#include <southbridge/amd/cs5536/cs5536.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
+
+#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 /* The part is a Hynix hy5du121622ctp-d43.
  *
@@ -88,11 +88,6 @@ int spd_read_byte(unsigned int device, unsigned int address)
 	return spdbytes[address];
 }
 
-#include "northbridge/amd/lx/pll_reset.c"
-#include "cpu/amd/geode_lx/cpureginit.c"
-#include "cpu/amd/geode_lx/syspreinit.c"
-#include "cpu/amd/geode_lx/msrinit.c"
-
 void asmlinkage mainboard_romstage_entry(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {
@@ -100,7 +95,7 @@ void asmlinkage mainboard_romstage_entry(unsigned long bist)
 	};
 
 	SystemPreInit();
-	msr_init();
+	lx_msr_init();
 
 	cs5536_early_setup();
 
@@ -114,7 +109,7 @@ void asmlinkage mainboard_romstage_entry(unsigned long bist)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	pll_reset();
+	lx_pll_reset();
 
 	cpuRegInit(0, DIMM0, DIMM1, DRAM_TERMINATED);
 

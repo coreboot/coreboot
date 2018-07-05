@@ -17,7 +17,7 @@
 #ifndef MAINBOARD_GPIO_H
 #define MAINBOARD_GPIO_H
 
-#include "southbridge/intel/fsp_i89xx/gpio.h"
+#include <southbridge/intel/fsp_i89xx/gpio.h>
 
 const struct pch_gpio_set1 pch_gpio_set1_mode = {
 

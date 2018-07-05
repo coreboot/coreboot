@@ -88,7 +88,6 @@ config NO_FIXED_XIP_ROM_SIZE
 config XIP_ROM_SIZE
 	hex
 	depends on !NO_FIXED_XIP_ROM_SIZE
-	default ROM_SIZE if ROMCC
 	default 0x10000
 
 config CPU_ADDR_BITS
@@ -102,7 +101,6 @@ config LOGICAL_CPUS
 config SMM_TSEG
 	bool
 	default n
-	select RELOCATABLE_MODULES
 
 config SMM_MODULE_HEAP_SIZE
 	hex
@@ -110,6 +108,14 @@ config SMM_MODULE_HEAP_SIZE
 	depends on SMM_TSEG
 	help
 	  This option determines the size of the heap within the SMM handler
+	  modules.
+
+config SMM_MODULE_STACK_SIZE
+	hex
+	default 0x400
+	depends on SMM_TSEG
+	help
+	  This option determines the size of the stack within the SMM handler
 	  modules.
 
 config SMM_LAPIC_REMAP_MITIGATION

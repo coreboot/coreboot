@@ -39,7 +39,6 @@
 # include <device/pci.h>
 #endif
 
-#include <southbridge/intel/common/rcba.h>
 #include "me.h"
 #include "pch.h"
 
@@ -830,7 +829,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 	memset(mbp_data, 0, sizeof(*mbp_data));
 
 	while (mbp_hdr.num_entries--) {
-		u32* copy_addr;
+		u32 *copy_addr;
 		u32 copy_size, buffer_room;
 		void *p;
 

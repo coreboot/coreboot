@@ -11,6 +11,8 @@
 #define TSC_SYNC
 #endif
 
+#define MSR_PLATFORM_INFO 0xce
+
 struct tsc_struct {
 	unsigned int lo;
 	unsigned int hi;

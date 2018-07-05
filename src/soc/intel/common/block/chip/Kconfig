@@ -1,0 +1,4 @@
+config SOC_INTEL_COMMON_BLOCK_CHIP_CONFIG
+	bool
+	help
+	  Intel Processor common soc/ chip configuration support

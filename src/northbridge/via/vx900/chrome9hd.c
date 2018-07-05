@@ -98,7 +98,7 @@
 u8 vx900_int15_get_5f18_bl(void)
 {
 	u8 reg8, ret;
-	device_t dev;
+	struct device *dev;
 	/*
 	 * BL Bit[7:4]
 	 * Memory Data Rate (not to be confused with fCLK)
@@ -137,7 +137,7 @@ static void chrome9hd_set_sid_vid(u16 vendor, u16 device)
 	vga_sr_write(0x37, device & 0xff);	/*  SID low  byte */
 }
 
-static void chrome9hd_handle_uma(device_t dev)
+static void chrome9hd_handle_uma(struct device *dev)
 {
 	u8 fb_pow = vx900_get_chrome9hd_fb_pow();
 
@@ -165,12 +165,12 @@ static void chrome9hd_handle_uma(device_t dev)
  *
  * This document is only available under NDA.
  */
-static void chrome9hd_biosguide_init_seq(device_t dev)
+static void chrome9hd_biosguide_init_seq(struct device *dev)
 {
-	device_t mcu = dev_find_device(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
-	device_t host = dev_find_device(PCI_VENDOR_ID_VIA,
-					PCI_DEVICE_ID_VIA_VX900_HOST_BR, 0);
+	struct device *mcu = dev_find_device(PCI_VENDOR_ID_VIA,
+					    PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
+	struct device *host = dev_find_device(PCI_VENDOR_ID_VIA,
+					    PCI_DEVICE_ID_VIA_VX900_HOST_BR, 0);
 
 	/* Step 1 - Enable VGA controller */
 	/* FIXME: This is the VGA hole @ 640k-768k, and the vga port io
@@ -208,7 +208,7 @@ static void chrome9hd_biosguide_init_seq(device_t dev)
 
 }
 
-static void chrome9hd_init(device_t dev)
+static void chrome9hd_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "======================================================\n");
 	printk(BIOS_DEBUG, "== Chrome9 HD INIT\n");
@@ -243,18 +243,18 @@ static void chrome9hd_init(device_t dev)
 	dump_pci_device(dev);
 }
 
-static void chrome9hd_enable(device_t dev)
+static void chrome9hd_enable(struct device *dev)
 {
-	device_t mcu = dev_find_device(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
+	struct device *mcu = dev_find_device(PCI_VENDOR_ID_VIA,
+					    PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
 	/* FIXME: here? -=- ACLK 250MHz */
 	pci_mod_config8(mcu, 0xbb, 0, 0x01);
 }
 
-static void chrome9hd_disable(device_t dev)
+static void chrome9hd_disable(struct device *dev)
 {
-	device_t mcu = dev_find_device(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
+	struct device *mcu = dev_find_device(PCI_VENDOR_ID_VIA,
+					    PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
 	/* Disable GFX - This step effectively renders the GFX inert
 	 * It won't even show up as a PCI device during enumeration */
 	pci_mod_config8(mcu, 0xa1, 1 << 7, 0);

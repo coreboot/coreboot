@@ -156,7 +156,7 @@ static const struct pad_config gpio_table[] = {
 	/* C21 : UART2_TXD ==> PCHTX_SERVORX_UART */
 	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
 	/* C22 : UART2_RTS# ==> EN_PP3300_DX_TOUCHSCREEN */
-	PAD_CFG_GPO(GPP_C22, 0, DEEP),
+	PAD_CFG_GPO(GPP_C22, 1, DEEP),
 	/* C23 : UART2_CTS# ==> PCH_WP */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_C23, 20K_PU, DEEP),
 
@@ -177,7 +177,7 @@ static const struct pad_config gpio_table[] = {
 	/* D7  : ISH_I2C1_SDA ==> SPKR_IRQ_L */
 	PAD_CFG_GPI_APIC(GPP_D7, NONE, PLTRST),
 	/* D8  : ISH_I2C1_SCL ==> EN_CAMERA_PWR */
-	PAD_CFG_GPO(GPP_D8, 0, DEEP),
+	PAD_CFG_GPO(GPP_D8, 1, DEEP),
 	/* D9  : ISH_SPI_CS# ==> ISH_SPI_CS_L */
 	PAD_CFG_NF_1V8(GPP_D9, NONE, DEEP, NF1),
 	/* D10 : ISH_SPI_CLK ==> ISH_SPI_CLK */
@@ -195,9 +195,9 @@ static const struct pad_config gpio_table[] = {
 	/* D16 : ISH_UART0_CTS# ==> NC */
 	PAD_CFG_NC(GPP_D16),
 	/* D17 : DMIC_CLK1 ==> PCH_CAMERA_RESET */
-	PAD_CFG_GPO(GPP_D17, 0, DEEP),
+	PAD_CFG_GPO(GPP_D17, 1, DEEP),
 	/* D18 : DMIC_DATA1 ==> PCH_CAMERA_CLOCK_ENABLE */
-	PAD_CFG_GPO(GPP_D18, 0, DEEP),
+	PAD_CFG_GPO(GPP_D18, 1, DEEP),
 	/* D19 : DMIC_CLK0 ==> PCH_DMIC_CLK_OUT */
 	PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
 	/* D20 : DMIC_DATA0 ==> PCH_DMIC_DATA_IN */
@@ -213,8 +213,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC_INVERT(GPP_E0, NONE, PLTRST),
 	/* E1  : SATAXPCIE1 ==> NC */
 	PAD_CFG_NC(GPP_E1),
-	/* E2  : SATAXPCIE2 ==> NC */
-	PAD_CFG_NC(GPP_E2),
+	/* E2  : SATAXPCIE2 ==> BT_DISABLE_L */
+	PAD_CFG_GPO(GPP_E2, 1, DEEP),
 	/* E3  : CPU_GP0 ==> NC */
 	PAD_CFG_NC(GPP_E3),
 	/* E4  : SATA_DEVSLP0 ==> NC */
@@ -232,7 +232,7 @@ static const struct pad_config gpio_table[] = {
 	/* E10 : USB2_OC1# ==> USB_C1_OC_ODL */
 	PAD_CFG_NF(GPP_E10, NONE, DEEP, NF1),
 	/* E11 : USB2_OC2# ==> TOUCHSCREEN_RESET_L */
-	PAD_CFG_GPO(GPP_E11, 0, DEEP),
+	PAD_CFG_GPO(GPP_E11, 1, DEEP),
 	/* E12 : USB2_OC3# ==> NC */
 	PAD_CFG_NC(GPP_E12),
 	/* E13 : DDPB_HPD0 ==> USB_C1_DP_HPD */
@@ -279,7 +279,7 @@ static const struct pad_config gpio_table[] = {
 	/* F9  : I2C4_SCL ==> PCH_I2C4_AUDIO_1V8_SCL */
 	PAD_CFG_NF_1V8(GPP_F9, NONE, DEEP, NF1),
 	/* F10 : I2C5_SDA ==> HP_IRQ_GPIO */
-	PAD_CFG_GPI_APIC(GPP_F10, NONE, PLTRST),
+	PAD_CFG_GPI_APIC(GPP_F10, 20K_PU, DEEP),
 	/* F11 : I2C5_SCL ==> SPKR_RST_L */
 	PAD_CFG_GPO(GPP_F11, 1, RSMRST),
 	/* F12 : EMMC_CMD */

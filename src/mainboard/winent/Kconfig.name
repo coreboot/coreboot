@@ -1,2 +1,0 @@
-config VENDOR_WINENT
-	bool "Win Enterprises"

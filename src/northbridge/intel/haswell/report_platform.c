@@ -16,7 +16,7 @@
 #include <console/console.h>
 #include <arch/cpu.h>
 #include <string.h>
-#include "southbridge/intel/lynxpoint/pch.h"
+#include <southbridge/intel/lynxpoint/pch.h>
 #include <arch/io.h>
 #include <cpu/x86/msr.h>
 #include "haswell.h"

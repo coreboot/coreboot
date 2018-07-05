@@ -91,7 +91,7 @@ static void lpc47n217_pnp_set_resources(struct device *dev)
 	for (res = dev->resource_list; res; res = res->next)
 		lpc47n217_pnp_set_resource(dev, res);
 	/* dump_pnp_device(dev); */
-   	pnp_exit_conf_state(dev);
+	pnp_exit_conf_state(dev);
 }
 
 /*

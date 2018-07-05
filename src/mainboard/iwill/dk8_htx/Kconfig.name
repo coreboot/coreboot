@@ -1,2 +1,0 @@
-config BOARD_IWILL_DK8_HTX
-	bool "DK8-HTX"

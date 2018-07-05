@@ -22,10 +22,10 @@
 #include "chip.h"
 #include "rev.h"
 
-#define NBMISC_INDEX 	0x60
-#define NBHTIU_INDEX 	0x94
-#define NBMC_INDEX 		0xE8
-#define NBPCIE_INDEX  	0xE0
+#define NBMISC_INDEX	0x60
+#define NBHTIU_INDEX	0x94
+#define NBMC_INDEX		0xE8
+#define NBPCIE_INDEX	0xE0
 #define EXT_CONF_BASE_ADDRESS 0xE0000000
 #define	TEMP_MMIO_BASE_ADDRESS	0xC0000000
 
@@ -222,5 +222,8 @@ int is_family10h(void);
 void enable_rs780_dev8(void);
 void rs780_early_setup(void);
 void rs780_htinit(void);
+int is_dev3_present(void);
+void set_pcie_reset(void);
+void set_pcie_dereset(void);
 
 #endif /* __RS780_H__ */

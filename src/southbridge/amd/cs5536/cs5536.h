@@ -413,7 +413,7 @@
 
 /* FLASH device macros */
 #define FLASH_TYPE_NONE		0	/* No flash device installed */
-#define FLASH_TYPE_NAND 	1	/* NAND device */
+#define FLASH_TYPE_NAND		1	/* NAND device */
 #define FLASH_TYPE_NOR		2	/* NOR device */
 
 #define FLASH_IF_MEM		1	/* Memory or memory-mapped I/O interface for Flash device */

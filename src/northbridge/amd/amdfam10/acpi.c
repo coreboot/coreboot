@@ -28,7 +28,7 @@
 
 unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags, u8 lint)
 {
-	device_t cpu;
+	struct device *cpu;
 	int cpu_index = 0;
 
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
@@ -47,7 +47,7 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags, u8 l
 
 unsigned long acpi_create_srat_lapics(unsigned long current)
 {
-	device_t cpu;
+	struct device *cpu;
 	int cpu_index = 0;
 
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
@@ -193,7 +193,7 @@ void update_ssdtx(void *ssdtx, int i)
 
 }
 
-void northbridge_acpi_write_vars(device_t device)
+void northbridge_acpi_write_vars(struct device *device)
 {
 	/*
 	 * If more than one physical CPU is installed, northbridge_acpi_write_vars()
@@ -326,7 +326,7 @@ void northbridge_acpi_write_vars(device_t device)
 	acpigen_pop_len();
 }
 
-unsigned long northbridge_write_acpi_tables(device_t device,
+unsigned long northbridge_write_acpi_tables(struct device *device,
 					    unsigned long current,
 					    struct acpi_rsdp *rsdp)
 {

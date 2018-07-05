@@ -163,7 +163,7 @@ static void enable_wideio(uint8_t port, uint16_t size)
 		tmp = pci_read_config32(dev, LPC_ALT_WIDEIO_RANGE_ENABLE);
 		tmp |= alt_wideio_enable[port];
 		pci_write_config32(dev, LPC_ALT_WIDEIO_RANGE_ENABLE, tmp);
-	} else { 	/* 512 */
+	} else {	/* 512 */
 		tmp = pci_read_config32(dev, LPC_ALT_WIDEIO_RANGE_ENABLE);
 		tmp &= ~alt_wideio_enable[port];
 		pci_write_config32(dev, LPC_ALT_WIDEIO_RANGE_ENABLE, tmp);

@@ -30,9 +30,9 @@
 #define UCODE_SECTION_START_ID		0x00000001
 #define UCODE_MAGIC			0x00414d44
 
-#define F1XH_MPB_MAX_SIZE 	2048
-#define F15H_MPB_MAX_SIZE 	4096
-#define CONT_HDR 		12
+#define F1XH_MPB_MAX_SIZE	2048
+#define F15H_MPB_MAX_SIZE	4096
+#define CONT_HDR		12
 #define SECT_HDR		8
 
 /*

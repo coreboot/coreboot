@@ -22,7 +22,6 @@
 #include "pch.h"
 #include <device/pci_ehci.h>
 #include <arch/io.h>
-#include <southbridge/intel/common/rcba.h>
 
 static void usb_ehci_init(struct device *dev)
 {

@@ -38,10 +38,6 @@ config MAX_CPUS
 	int
 	default 16
 
-config CACHE_ROM_SIZE_OVERRIDE
-	hex
-	default 0x800000
-
 config FSP_FILE
 	string
 	default "../intel/fsp/baytrail/BAYTRAIL_FSP_ECC.fd" if BOARD_INTEL_BAKERSPORT_FSP

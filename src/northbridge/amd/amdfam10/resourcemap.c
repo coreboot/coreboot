@@ -123,7 +123,7 @@ static void setup_default_resource_map(void)
 		 * [31: 8] Memory-Mapped I/O Limit Address i (39-16)
 		 *	   This field defines the upp adddress bits of a 40-bit
 		 *	   address that defines the end of a memory-mapped
-		 * 	   I/O region n
+		 *	   I/O region n
 		 */
 		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x84), 0x00000048, 0x00000000,
 		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x8C), 0x00000048, 0x00000000,
@@ -158,7 +158,7 @@ static void setup_default_resource_map(void)
 		 * [ 7: 4] Reserved
 		 * [31: 8] Memory-Mapped I/O Base Address i (39-16)
 		 *	   This field defines the upper address bits of a 40bit
-		 * 	   address that defines the start of memory-mapped
+		 *	   address that defines the start of memory-mapped
 		 *	   I/O region i
 		 */
 		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x80), 0x000000f0, 0x00000000,

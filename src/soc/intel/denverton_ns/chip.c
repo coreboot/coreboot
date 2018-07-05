@@ -34,7 +34,7 @@
 #include <spi-generic.h>
 #include <soc/hob_mem.h>
 
-static void pci_domain_set_resources(device_t dev)
+static void pci_domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
 }
@@ -56,7 +56,7 @@ static struct device_operations cpu_bus_ops = {
 #endif
 };
 
-static void soc_enable_dev(device_t dev)
+static void soc_enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -130,7 +130,8 @@ struct chip_operations soc_intel_denverton_ns_ops = {
 	.final = &soc_final
 };
 
-static void soc_set_subsystem(device_t dev, uint32_t vendor, uint32_t device)
+static void soc_set_subsystem(struct device *dev, uint32_t vendor,
+			      uint32_t device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

@@ -1,2 +1,0 @@
-config BOARD_VIA_VT8454C
-	bool "VT8454c"

@@ -31,6 +31,56 @@ static void EmptyHeap(int unused)
 }
 
 /*
+ * Name			agesa_GetTempHeapBase
+ * Brief description	Get the location for TempRam, the target location in
+ *			memory where AmdInitPost copies the heap prior to CAR
+ *			teardown.  AmdInitEnv calls this function after
+ *			teardown for the source address when relocation the
+ *			heap to its final location.
+ * Input parameters
+ *	Func		Unused
+ *	Data		Unused
+ *	ConfigPtr	Pointer to type AGESA_TEMP_HEAP_BASE_PARAMS
+ * Output parameters
+ *	Status		Indicates whether TempHeapAddress was successfully
+ *			set.
+ */
+AGESA_STATUS agesa_GetTempHeapBase(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+{
+	AGESA_TEMP_HEAP_BASE_PARAMS *pTempHeapBase;
+
+	pTempHeapBase = (AGESA_TEMP_HEAP_BASE_PARAMS *)ConfigPtr;
+	pTempHeapBase->TempHeapAddress = CONFIG_PI_AGESA_TEMP_RAM_BASE;
+
+	return AGESA_SUCCESS;
+}
+
+/*
+ * Name			agesa_HeapRebase
+ * Brief description	AGESA may use internal hardcoded locations for its
+ *			heap.  Modern implementations allow the base to be
+ *			overridden by calling agesa_HeapRebase.
+ * Input parameters
+ *	Func		Unused
+ *	Data		Unused
+ *	ConfigPtr	Pointer to type AGESA_REBASE_PARAMS
+ * Output parameters
+ *	Status		Indicates whether HeapAddress was successfully
+ *			set.
+ */
+AGESA_STATUS agesa_HeapRebase(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+{
+	AGESA_REBASE_PARAMS *Rebase;
+
+	Rebase = (AGESA_REBASE_PARAMS *)ConfigPtr;
+	Rebase->HeapAddress = (UINTN)agesa_heap_base();
+	if (!Rebase->HeapAddress)
+		Rebase->HeapAddress = CONFIG_PI_AGESA_CAR_HEAP_BASE;
+
+	return AGESA_SUCCESS;
+}
+
+/*
  * Name			FindAllocatedNode
  * Brief description	Find an allocated node that matches the handle.
  * Input parameter	The desired handle.
@@ -90,9 +140,6 @@ static void ConcatenateNodes(BIOS_BUFFER_NODE *FirstNodePtr,
 	memset(SecondNodePtr, 0, sizeof(BIOS_BUFFER_NODE));
 }
 
-#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
-#error "Only EARLY_CBMEM_INIT is supported."
-#endif
 ROMSTAGE_CBMEM_INIT_HOOK(EmptyHeap)
 
 AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
@@ -363,7 +410,7 @@ AGESA_STATUS agesa_DeallocateBuffer (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 			ConcatenateNodes(AllocNodePtr, NextNodePtr);
 		} else {
 			/*AllocNodePtr->NextNodeOffset =
-			 * 			FreedNodePtr->NextNodeOffset; */
+			 *			FreedNodePtr->NextNodeOffset; */
 			AllocNodePtr->NextNodeOffset = NextNodeOffset;
 		}
 		/*

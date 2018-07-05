@@ -1,11 +1,8 @@
 config LPC_TPM
-	bool "Enable TPM support"
-	depends on MAINBOARD_HAS_LPC_TPM
+	bool
 	default n
 	help
-	  Enable this option to enable LPC TPM support in coreboot.
-
-	  If unsure, say N.
+	  LPC TPM driver is enabled!
 
 config TPM_TIS_BASE_ADDRESS
 	hex
@@ -25,33 +22,9 @@ config TPM_PIRQ
 	  This can be used to specify a PIRQ to use instead of SERIRQ,
 	  which is needed for SPI TPM interrupt support on x86.
 
-config TPM_INIT_FAILURE_IS_FATAL
+config MAINBOARD_HAS_LPC_TPM
 	bool
 	default n
-	depends on LPC_TPM
+	select LPC_TPM
 	help
-	  What to do if TPM init failed. If true, force a hard reset,
-	  otherwise just log error message to console.
-
-config SKIP_TPM_STARTUP_ON_NORMAL_BOOT
-	bool
-	default n
-	depends on LPC_TPM
-	help
-	  Skip TPM init on normal boot. Useful if payload does TPM init.
-
-config TPM_DEACTIVATE
-	bool "Deactivate TPM"
-	default n
-	depends on LPC_TPM
-	help
-	  Deactivate TPM by issuing deactivate command.
-
-config TPM_RDRESP_NEED_DELAY
-	bool "Enable Delay Workaround for TPM"
-	default n
-	depends on LPC_TPM
-	help
-	  Certain TPMs seem to need some delay when reading response
-	  to work around a race-condition-related issue, possibly
-	  caused by ill-programmed TPM firmware.
+	  Board has LPC TPM support

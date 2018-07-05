@@ -80,7 +80,8 @@ biosemu_dev_get_addr_info(void)
 	taa_index++;
 	/* legacy ranges if its a VGA card... */
 	if ((bios_device.dev->class & 0xFF0000) == 0x030000) {
-		DEBUG_PRINTF("%s: VGA device found, adding legacy resources... \n", __func__);
+		DEBUG_PRINTF("%s: VGA device found, adding legacy resources..."
+			     "\n", __func__);
 		/* I/O 0x3B0-0x3BB */
 		translate_address_array[taa_index].info = IORESOURCE_FIXED | IORESOURCE_IO;
 		translate_address_array[taa_index].bus = bus;
@@ -116,7 +117,7 @@ biosemu_dev_get_addr_info(void)
 	taa_last_entry = taa_index - 1;
 #if CONFIG_X86EMU_DEBUG
 	//dump translate_address_array
-	printf("translate_address_array: \n");
+	printf("translate_address_array:\n");
 	translate_address_t ta;
 	int i;
 	for (i = 0; i <= taa_last_entry; i++) {
@@ -201,7 +202,7 @@ biosemu_dev_get_addr_info(void)
 	taa_last_entry = taa_index - 1;
 #if CONFIG_X86EMU_DEBUG
 	//dump translate_address_array
-	printf("translate_address_array: \n");
+	printf("translate_address_array:\n");
 	translate_address_t ta;
 	for (i = 0; i <= taa_last_entry; i++) {
 		ta = translate_address_array[i];

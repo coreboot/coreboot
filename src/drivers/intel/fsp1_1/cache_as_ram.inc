@@ -131,7 +131,7 @@ CAR_init_done:
 	movd	%mm1, %eax
 	pushl	%eax	/* tsc[63:32] */
 	movd	%mm0, %eax
-	pushl	%eax 	/* tsc[31:0] */
+	pushl	%eax	/* tsc[31:0] */
 	pushl	%esp	/* pointer to cache_as_ram_params */
 
 	/* Save FSP_INFO_HEADER location in ebx */

@@ -321,17 +321,3 @@ void mmu_enable(void)
 	raw_write_sctlr_el3(sctlr);
 	isb();
 }
-
-/*
- * CAUTION: This implementation assumes that coreboot never uses non-identity
- * page tables for pages containing executed code. If you ever want to violate
- * this assumption, have fun figuring out the associated problems on your own.
- */
-void mmu_disable(void)
-{
-	dcache_clean_invalidate_all();
-	uint32_t sctlr = raw_read_sctlr_el3();
-	sctlr &= ~(SCTLR_C | SCTLR_M);
-	raw_write_sctlr_el3(sctlr);
-	isb();
-}

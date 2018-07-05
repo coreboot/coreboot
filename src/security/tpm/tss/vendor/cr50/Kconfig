@@ -1,0 +1,28 @@
+## This file is part of the coreboot project.
+##
+## Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+## Copyright (C) 2018 Facebook, Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+config TPM_CR50
+	bool
+	default y if MAINBOARD_HAS_I2C_TPM_CR50 || MAINBOARD_HAS_SPI_TPM_CR50
+	select POWER_OFF_ON_CR50_UPDATE if ARCH_X86
+
+if TPM_CR50
+
+config POWER_OFF_ON_CR50_UPDATE
+	bool
+	help
+	  Power off machine while waiting for CR50 update to take effect.
+
+endif

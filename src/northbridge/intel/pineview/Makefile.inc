@@ -25,4 +25,6 @@ romstage-y += ram_calc.c
 romstage-y += raminit.c
 romstage-y += early_init.c
 
+postcar-y += ram_calc.c
+
 endif

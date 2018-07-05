@@ -1,11 +1,13 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * drivers/video/tegra/dc/sor_regs.h
  *
  * Copyright (c) 2011-2015, NVIDIA Corporation.
  *
- * This software is licensed under the terms of the GNU General Public
- * License version 2, as published by the Free Software Foundation, and
- * may be copied, distributed, and modified under those terms.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of

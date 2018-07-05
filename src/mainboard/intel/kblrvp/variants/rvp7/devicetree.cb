@@ -132,8 +132,6 @@ chip soc/intel/skylake
 		.voltage_limit = 0x0 \
 	}"
 
-	register "FspSkipMpInit" = "1"
-
 	# Enable Root ports.
 	register "PcieRpEnable[2]" = "1"
 	register "PcieRpEnable[3]" = "1"
@@ -211,7 +209,9 @@ chip soc/intel/skylake
 	register "sdcard_cd_gpio_default" = "GPP_G5"
 
 	# Lock Down
-	register "chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+	}"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end

@@ -17,6 +17,7 @@ config ARCH_X86
 	bool
 	default n
 	select PCI
+	select RELOCATABLE_MODULES
 
 # stage selectors for x86
 
@@ -106,10 +107,6 @@ config X86_TOP4G_BOOTMEDIA_MAP
 config NUM_IPI_STARTS
 	int
 	default 2
-
-config ROMCC
-	bool
-	default n
 
 config CBMEM_TOP_BACKUP
 	def_bool n
@@ -224,7 +221,6 @@ config VERSTAGE_ADDR
 config POSTCAR_STAGE
 	def_bool n
 	select NO_CAR_GLOBAL_MIGRATION
-	select RELOCATABLE_MODULES
 
 config VERSTAGE_DEBUG_SPINLOOP
 	bool

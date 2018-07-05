@@ -1,2 +1,0 @@
-config BOARD_ASUS_A8N_E
-	bool "A8N-E"

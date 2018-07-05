@@ -204,7 +204,7 @@ chip northbridge/intel/i945
 						 0x54, 0xff, 0xff, 0x07 }"
 					device i2c 69 on end
 				end
-			        # eeprom, 8 virtual devices, same chip
+				# eeprom, 8 virtual devices, same chip
 				chip drivers/i2c/at24rf08c
 					device i2c 54 on end
 					device i2c 55 on end

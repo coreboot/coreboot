@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_RVU_H__
+#define __CB_BDK_RVU_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -64,3 +66,4 @@ static inline int bdk_rvu_alloc_msix(bdk_node_t node, int msix_count)
 
 
 /** @} */
+#endif	/* !__CB_BDK_RVU_H__ */

@@ -115,12 +115,12 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 
 	OB_ECCRedir =  mctGet_NVbits(NV_ECCRedir);		/* ECC Redirection */
 
-	OB_ChipKill = mctGet_NVbits(NV_ChipKill); 		/* ECC Chip-kill mode */
+	OB_ChipKill = mctGet_NVbits(NV_ChipKill);		/* ECC Chip-kill mode */
 	OF_ScrubCTL = 0;					/* Scrub CTL for Dcache, L2, and dram */
 
 	if (!is_fam15h()) {
 		nvbits = mctGet_NVbits(NV_DCBKScrub);
-		/* mct_AdjustScrub_D(pDCTstatA, &nvbits); */ 	/* Need not adjust */
+		/* mct_AdjustScrub_D(pDCTstatA, &nvbits); */	/* Need not adjust */
 		OF_ScrubCTL |= (u32) nvbits << 16;
 
 		nvbits = mctGet_NVbits(NV_L2BKScrub);

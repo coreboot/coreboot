@@ -35,6 +35,8 @@ ramstage-y += gpio.c
 ramstage-y += nhlt.c
 ramstage-y += mainboard.c
 
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+
 # Add OEM ID table
 cbfs-files-y += oem.bin
 oem.bin-file := $(call strip_quotes,$(CONFIG_OEM_BIN_FILE))

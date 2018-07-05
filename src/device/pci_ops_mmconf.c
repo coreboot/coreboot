@@ -17,6 +17,10 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
+#if !defined(CONFIG_MMCONF_BASE_ADDRESS) || !CONFIG_MMCONF_BASE_ADDRESS
+#error "CONFIG_MMCONF_BASE_ADDRESS needs to be non-zero!"
+#endif
+
 /*
  * Functions for accessing PCI configuration space with mmconf accesses
  */

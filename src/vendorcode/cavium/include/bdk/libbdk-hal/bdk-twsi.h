@@ -1,3 +1,5 @@
+#ifndef __CB_BDK_TWSI_H__
+#define __CB_BDK_TWSI_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.
@@ -49,16 +51,7 @@
  * @addtogroup hal
  * @{
  */
-
-/**
- * Initialize the TWSI blocks. This just sets the clock rate.
- * Many times stuff will work without calling this, but some
- * TWSI devices will fail. This is normally called automatically
- * in bdk-init-main.c.
- *
- * @return Zero on success, negative on failure
- */
-extern int bdk_twsix_initialize(bdk_node_t node) BDK_WEAK;
+#include <libbdk-arch/bdk-numa.h>
 
 /**
  * Do a twsi read from a 7 bit device address using an (optional)
@@ -100,3 +93,4 @@ extern int64_t bdk_twsix_read_ia(bdk_node_t node, int twsi_id, uint8_t dev_addr,
 extern int bdk_twsix_write_ia(bdk_node_t node, int twsi_id, uint8_t dev_addr, uint16_t internal_addr, int num_bytes, int ia_width_bytes, uint64_t data);
 
 /** @} */
+#endif	/* !__CB_BDK_TWSI_H__ */

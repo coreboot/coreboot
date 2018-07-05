@@ -15,6 +15,7 @@
 
 // Thermal Zone
 
+#define HAVE_THERMALZONE
 Scope (\_TZ)
 {
 	// Handler for throttle requests on this platform

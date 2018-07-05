@@ -142,7 +142,7 @@ struct mmsys_cfg_regs {
 
 check_member(mmsys_cfg_regs, mmsys_sw1_rst_b, 0x144);
 check_member(mmsys_cfg_regs, hdmi_en, 0x904);
-static struct mmsys_cfg_regs * const mmsys_cfg = (void *) MMSYS_BASE;
+static struct mmsys_cfg_regs *const mmsys_cfg = (void *)MMSYS_BASE;
 
 /* DISP_REG_CONFIG_MMSYS_CG_CON0
    Configures free-run clock gating 0
@@ -240,7 +240,7 @@ struct disp_mutex_regs {
 };
 
 check_member(disp_mutex_regs, debug_out_sel, 0x100);
-static struct disp_mutex_regs * const disp_mutex = (void *) DISP_MUTEX_BASE;
+static struct disp_mutex_regs *const disp_mutex = (void *)DISP_MUTEX_BASE;
 
 enum {
 	MUTEX_MOD_DISP_OVL0	= BIT(11),
@@ -306,8 +306,9 @@ struct disp_ovl_regs {
 };
 
 check_member(disp_ovl_regs, l3_addr, 0xFA0);
-static struct disp_ovl_regs * const disp_ovl[2] =
-	{(void *) DIS_OVL0_BASE, (void *) DIS_OVL1_BASE};
+static struct disp_ovl_regs *const disp_ovl[2] = {
+	(void *)DIS_OVL0_BASE, (void *)DIS_OVL1_BASE
+};
 
 struct disp_rdma_regs {
 	u32 int_enable;
@@ -341,8 +342,11 @@ enum {
 };
 
 check_member(disp_rdma_regs, debug_out_sel, 0x94);
-static struct disp_rdma_regs * const disp_rdma[3] =
-	{(void *)DISP_RDMA0_BASE, (void *)DISP_RDMA1_BASE, (void *)DISP_RDMA2_BASE};
+static struct disp_rdma_regs *const disp_rdma[3] = {
+	(void *)DISP_RDMA0_BASE,
+	(void *)DISP_RDMA1_BASE,
+	(void *)DISP_RDMA2_BASE
+};
 
 struct disp_od_regs {
 	u32 en;
@@ -363,7 +367,7 @@ struct disp_od_regs {
 };
 
 check_member(disp_od_regs, misc, 0x48);
-static struct disp_od_regs * const disp_od = (void *)DISP_OD_BASE;
+static struct disp_od_regs *const disp_od = (void *)DISP_OD_BASE;
 
 enum {
 	OD_RELAY_MODE = BIT(0),
@@ -396,7 +400,7 @@ struct disp_ufoe_regs {
 };
 
 check_member(disp_ufoe_regs, dbg[7], 0x15C);
-static struct disp_ufoe_regs * const disp_ufoe = (void *)DISP_UFOE_BASE;
+static struct disp_ufoe_regs *const disp_ufoe = (void *)DISP_UFOE_BASE;
 
 enum {
 	UFO_BYPASS = BIT(2),
@@ -407,7 +411,7 @@ struct disp_split_regs {
 	u32 start;
 };
 
-static struct disp_split_regs * const disp_split = (void *)DISP_SPLIT1_BASE;
+static struct disp_split_regs *const disp_split = (void *)DISP_SPLIT1_BASE;
 
 struct disp_color_regs {
 	u8 reserved0[1024];
@@ -423,8 +427,9 @@ check_member(disp_color_regs, cfg_main, 0x400);
 check_member(disp_color_regs, start, 0xC00);
 check_member(disp_color_regs, width, 0xC50);
 check_member(disp_color_regs, height, 0xC54);
-static struct disp_color_regs * const disp_color[2] =
-	{(void *)DISP_COLOR0_BASE, (void *)DISP_COLOR1_BASE};
+static struct disp_color_regs *const disp_color[2] = {
+	(void *)DISP_COLOR0_BASE, (void *)DISP_COLOR1_BASE
+};
 
 enum {
 	COLOR_BYPASS_ALL = BIT(7),

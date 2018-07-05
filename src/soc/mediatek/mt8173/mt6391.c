@@ -152,7 +152,7 @@ static void mt6391_init_setting(void)
 	mt6391_write(PMIC_RG_VCA15_CON7, 0x1, 0x1, 0);
 	mt6391_write(PMIC_RG_VSRMCA15_CON7, 0x1, 0x1, 0);
 	mt6391_write(PMIC_RG_VPCA7_CON7, 0x1, 0x1, 0);
-	udelay(200); /* delay for Buck ready */
+	udelay(200);  /* delay for Buck ready */
 
 	/* [3:3]: RG_PWMOC_CK_PDN; For OC protection */
 	mt6391_write(PMIC_RG_TOP_CKPDN, 0x0, 0x1, 3);

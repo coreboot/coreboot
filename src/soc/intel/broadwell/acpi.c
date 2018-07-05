@@ -387,7 +387,7 @@ static void generate_T_state_entries(int core, int cores_per_package)
 
 static void generate_C_state_entries(void)
 {
-	device_t dev = SA_DEV_ROOT;
+	struct device *dev = SA_DEV_ROOT;
 	config_t *config = dev->chip_info;
 	acpi_cstate_t map[3];
 	int *set;
@@ -534,7 +534,7 @@ static void generate_P_state_entries(int core, int cores_per_package)
 	acpigen_pop_len();
 }
 
-void generate_cpu_entries(device_t device)
+void generate_cpu_entries(struct device *device)
 {
 	int coreID, cpuID, pcontrol_blk = ACPI_BASE_ADDRESS, plen = 6;
 	int totalcores = dev_count_cpu();
@@ -586,7 +586,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 		const unsigned long tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);
-		current += acpi_create_dmar_drhd_ds_pci(current, 0, 2, 0);
+		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
 
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
@@ -596,11 +596,11 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 		const unsigned long tmp = current;
 		current += acpi_create_dmar_drhd(current,
 				DRHD_INCLUDE_PCI_ALL, 0, vtvc0bar);
-		current += acpi_create_dmar_drhd_ds_ioapic(current,
+		current += acpi_create_dmar_ds_ioapic(current,
 				2, PCH_IOAPIC_PCI_BUS, PCH_IOAPIC_PCI_SLOT, 0);
 		size_t i;
 		for (i = 0; i < 8; ++i)
-			current += acpi_create_dmar_drhd_ds_msi_hpet(current,
+			current += acpi_create_dmar_ds_msi_hpet(current,
 					0, PCH_HPET_PCI_BUS,
 					PCH_HPET_PCI_SLOT, i);
 		acpi_dmar_drhd_fixup(tmp, current);

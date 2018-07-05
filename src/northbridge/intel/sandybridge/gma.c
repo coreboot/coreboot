@@ -22,8 +22,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <cpu/x86/msr.h>
-#include <cpu/x86/mtrr.h>
 #include <drivers/intel/gma/libgfxinit.h>
 #include <southbridge/intel/bd82x6x/nvs.h>
 #include <drivers/intel/gma/opregion.h>

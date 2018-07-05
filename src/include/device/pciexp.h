@@ -17,9 +17,9 @@ enum aspm_type {
 void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 			     unsigned int max_devfn);
 
-void pciexp_scan_bridge(device_t dev);
+void pciexp_scan_bridge(struct device *dev);
 
 extern struct device_operations default_pciexp_ops_bus;
 
-unsigned int pciexp_find_extended_cap(device_t dev, unsigned int cap);
+unsigned int pciexp_find_extended_cap(struct device *dev, unsigned int cap);
 #endif /* DEVICE_PCIEXP_H */

@@ -31,18 +31,17 @@
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/common/gpio.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
-#include <security/tpm/tis.h>
+#include <security/tpm/tspi.h>
 
 #define SIO_PORT 0x164e
 
 void pch_enable_lpc(void)
 {
-	device_t dev = PCH_LPC_DEV;
+	pci_devfn_t dev = PCH_LPC_DEV;
 
 	/* Set COM1/COM2 decode range */
 	pci_write_config16(dev, LPC_IO_DEC, 0x0010);

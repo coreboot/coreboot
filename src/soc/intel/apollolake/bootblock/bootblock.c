@@ -20,6 +20,7 @@
 #include <device/pci.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
 #include <intelblocks/systemagent.h>
@@ -50,16 +51,12 @@ static void tpm_enable(void)
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	bootblock_systemagent_early_init();
 
-	dev = PCH_DEV_P2SB;
-	/* BAR and MMIO enable for PCR-Space, so that GPIOs can be configured */
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0, CONFIG_PCR_BASE_ADDRESS);
-	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0);
-	pci_write_config16(dev, PCI_COMMAND,
-				PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+	p2sb_enable_bar();
+	p2sb_configure_hpet();
 
 	/* Decode the ACPI I/O port range for early firmware verification.*/
 	dev = PCH_DEV_PMC;
@@ -75,7 +72,7 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 
 static void enable_pmcbar(void)
 {
-	device_t pmc = PCH_DEV_PMC;
+	pci_devfn_t pmc = PCH_DEV_PMC;
 
 	/* Set PMC base addresses and enable decoding. */
 	pci_write_config32(pmc, PCI_BASE_ADDRESS_0, PMC_BAR0);
@@ -106,7 +103,7 @@ void bootblock_soc_early_init(void)
 
 	enable_pm_timer_emulation();
 
-	fast_spi_early_init(PRERAM_SPI_BASE_ADDRESS);
+	fast_spi_early_init(SPI_BASE_ADDRESS);
 
 	fast_spi_cache_bios_region();
 

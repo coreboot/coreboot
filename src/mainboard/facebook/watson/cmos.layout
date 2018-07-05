@@ -1,0 +1,105 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007-2008 coresystems GmbH
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+# -----------------------------------------------------------------
+entries
+
+#start-bit length  config config-ID    name
+#0            8       r       0        seconds
+#8            8       r       0        alarm_seconds
+#16           8       r       0        minutes
+#24           8       r       0        alarm_minutes
+#32           8       r       0        hours
+#40           8       r       0        alarm_hours
+#48           8       r       0        day_of_week
+#56           8       r       0        day_of_month
+#64           8       r       0        month
+#72           8       r       0        year
+# -----------------------------------------------------------------
+# Status Register A
+#80           4       r       0        rate_select
+#84           3       r       0        REF_Clock
+#87           1       r       0        UIP
+# -----------------------------------------------------------------
+# Status Register B
+#88           1       r       0        auto_switch_DST
+#89           1       r       0        24_hour_mode
+#90           1       r       0        binary_values_enable
+#91           1       r       0        square-wave_out_enable
+#92           1       r       0        update_finished_enable
+#93           1       r       0        alarm_interrupt_enable
+#94           1       r       0        periodic_interrupt_enable
+#95           1       r       0        disable_clock_updates
+# -----------------------------------------------------------------
+# Status Register C
+#96           4       r       0        status_c_rsvd
+#100          1       r       0        uf_flag
+#101          1       r       0        af_flag
+#102          1       r       0        pf_flag
+#103          1       r       0        irqf_flag
+# -----------------------------------------------------------------
+# Status Register D
+#104          7       r       0        status_d_rsvd
+#111          1       r       0        valid_cmos_ram
+# -----------------------------------------------------------------
+# Diagnostic Status Register
+#112          8       r       0        diag_rsvd1
+
+# -----------------------------------------------------------------
+0          120       r       0        reserved_memory
+120        264       r       0        unused
+
+# -----------------------------------------------------------------
+# RTC_BOOT_BYTE (coreboot hardcoded)
+384          1       e       4        boot_option
+388          4       h       0        reboot_counter
+#390          2       r       0        unused?
+
+# -----------------------------------------------------------------
+# coreboot config options: console
+#392          3       r       0        unused
+395          4       e       6        debug_level
+#399          1       r       0        unused
+
+# coreboot config options: check sums
+984         16       h       0        check_sum
+
+# -----------------------------------------------------------------
+
+enumerations
+
+#ID value   text
+1     0     Disable
+1     1     Enable
+2     0     Enable
+2     1     Disable
+4     0     Fallback
+4     1     Normal
+6     1     Emergency
+6     2     Alert
+6     3     Critical
+6     4     Error
+6     5     Warning
+6     6     Notice
+6     7     Info
+6     8     Debug
+6     9     Spew
+7     0     Disable
+7     1     Enable
+7     2     Keep
+# -----------------------------------------------------------------
+checksums
+
+checksum 392 415 984

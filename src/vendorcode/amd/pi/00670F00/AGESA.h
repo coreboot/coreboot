@@ -68,7 +68,8 @@
 #define AGESA_IDLE_AN_AP                        0x00028107ul
 #define AGESA_WAIT_FOR_ALL_APS                  0x00028108ul
 #define AGESA_HALT_THIS_AP                      0x00028109ul
-#define AGESA_HEAP_REBASE                       0x0002810aul
+#define AGESA_GET_TEMP_HEAP_BASE                0x0002810Aul
+#define AGESA_HEAP_REBASE                       0x0002810Bul
 
 // AGESA ADVANCED CALLOUTS, Memory
 #define AGESA_READ_SPD                 0x00028140ul
@@ -2528,6 +2529,15 @@ typedef struct {
                                            ///  be enabled
 } AGESA_HALT_THIS_AP_PARAMS;
 
+/// Parameters structure for interface call-out AgesaGetTempHeapBase
+typedef struct {
+  IN OUT    AMD_CONFIG_PARAMS StdHeader;        ///< Standard configuration
+                                                ///  header
+     OUT    UINTN             TempHeapAddress;  ///< The address where heap
+                                                ///  contents will be stored
+                                                ///  temporarily
+} AGESA_TEMP_HEAP_BASE_PARAMS;
+
 /// VoltageType values
 typedef enum {
   VTYPE_CPU_VREF,                                    ///< Cpu side Vref
@@ -2612,6 +2622,12 @@ AGESA_STATUS
 AgesaHookBeforeDramInitRecovery (
   IN       UINTN           FcnData,
   IN OUT   MEM_DATA_STRUCT *MemData
+  );
+
+AGESA_STATUS
+AgesaGetTempHeapBase (
+  IN       UINTN                            FcnData,
+  IN OUT   AGESA_TEMP_HEAP_BASE_PARAMS      *TempHeapBaseParams
   );
 
 AGESA_STATUS

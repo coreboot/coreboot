@@ -59,8 +59,8 @@ static int get_pcie_bar(u32 *base)
 
 static void pci_domain_set_resources(struct device *dev)
 {
-	uint32_t pci_tolm;
-	uint8_t tolud, reg8;
+	uint32_t pci_tolm, tseg_sizek;
+	uint8_t tolud;
 	uint16_t reg16;
 	unsigned long long tomk, tomk_stolen;
 	uint64_t uma_memory_base = 0, uma_memory_size = 0;
@@ -95,31 +95,12 @@ static void pci_domain_set_resources(struct device *dev)
 		uma_memory_size = uma_size * 1024ULL;
 	}
 
-	reg8 = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), ESMRAMC);
-	if (reg8 & 1) {
-		int tseg_size = 0;
-		printk(BIOS_DEBUG, "TSEG decoded, subtracting ");
-		reg8 >>= 1;
-		reg8 &= 3;
-		switch (reg8) {
-		case 0:
-			tseg_size = 1024;
-			break;	/* TSEG = 1M */
-		case 1:
-			tseg_size = 2048;
-			break;	/* TSEG = 2M */
-		case 2:
-			tseg_size = 8192;
-			break;	/* TSEG = 8M */
-		}
-
-		printk(BIOS_DEBUG, "%dM\n", tseg_size >> 10);
-		tomk_stolen -= tseg_size;
-
-		/* For reserving TSEG memory in the memory map */
-		tseg_memory_base = tomk_stolen * 1024ULL;
-		tseg_memory_size = tseg_size * 1024ULL;
-	}
+	tseg_sizek = decode_tseg_size(pci_read_config8(dev_find_slot(0,
+					PCI_DEVFN(0, 0)), ESMRAMC)) >> 10;
+	printk(BIOS_DEBUG, "TSEG decoded, subtracting %dM\n", tseg_sizek >> 10);
+	tomk_stolen -= tseg_sizek;
+	tseg_memory_base = tomk_stolen * 1024ULL;
+	tseg_memory_size = tseg_sizek * 1024ULL;
 
 	/* The following needs to be 2 lines, otherwise the second
 	 * number is always 0
@@ -136,6 +117,22 @@ static void pci_domain_set_resources(struct device *dev)
 	assign_resources(dev->link_list);
 }
 
+static const char *northbridge_acpi_name(const struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PCI0";
+
+	if (dev->path.type != DEVICE_PATH_PCI || dev->bus->secondary != 0)
+		return NULL;
+
+	switch (dev->path.pci.devfn) {
+	case PCI_DEVFN(0, 0):
+		return "MCHC";
+	}
+
+	return NULL;
+}
+
 	/* TODO We could determine how many PCIe busses we need in
 	 * the bar. For now that number is hardcoded to a max of 64.
 	 * See e7525/northbridge.c for an example.
@@ -146,6 +143,7 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init             = NULL,
 	.scan_bus         = pci_domain_scan_bus,
+	.acpi_name        = northbridge_acpi_name,
 };
 
 static void mc_read_resources(struct device *dev)
@@ -173,7 +171,6 @@ static void intel_set_subsystem(struct device *dev, unsigned int vendor,
 				((device & 0xffff) << 16) | (vendor & 0xffff));
 	}
 }
-
 static struct pci_operations intel_pci_ops = {
 	.set_subsystem    = intel_set_subsystem,
 };

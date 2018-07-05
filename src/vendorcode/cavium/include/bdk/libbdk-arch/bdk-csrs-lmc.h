@@ -41,6 +41,12 @@
  * PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
  ***********************license end**************************************/
 
+/* FIXME(dhendrix) added to make compiler happy. However this introduces a
+ * circular dependency and the typdef'd bdk_lmcx_modereg_params2_t makes
+ * forward declaration impossible. */
+//#include <libdram/libdram-config.h>
+#include <bdk-minimal.h>
+#include <libbdk-arch/bdk-model.h>
 
 /**
  * @file

@@ -132,7 +132,7 @@ Scope(\)
 		Offset(0x1000), // Chipset
 		Offset(0x3000), // Legacy Configuration Registers
 		Offset(0x3404), // High Performance Timer Configuration
-		HPAS, 2, 	// Address Select
+		HPAS, 2,	// Address Select
 		, 5,
 		HPTE, 1,	// Address Enable
 		Offset(0x3418), // FD (Function Disable)

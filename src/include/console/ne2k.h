@@ -23,10 +23,6 @@ void ne2k_append_data(unsigned char *d, int len, unsigned int base);
 int ne2k_init(unsigned int eth_nic_base);
 void ne2k_transmit(unsigned int eth_nic_base);
 
-#ifndef __ROMCC__
-#define ne2k_append_data_byte(d, base) ne2k_append_data(&d, 1, base)
-#endif
-
 #if IS_ENABLED(CONFIG_CONSOLE_NE2K) && (ENV_ROMSTAGE || ENV_RAMSTAGE)
 static inline void __ne2k_init(void)
 {
@@ -34,7 +30,7 @@ static inline void __ne2k_init(void)
 }
 static inline void __ne2k_tx_byte(u8 data)
 {
-	ne2k_append_data_byte(data, CONFIG_CONSOLE_NE2K_IO_PORT);
+	ne2k_append_data(&data, 1, CONFIG_CONSOLE_NE2K_IO_PORT);
 }
 static inline void __ne2k_tx_flush(void)
 {

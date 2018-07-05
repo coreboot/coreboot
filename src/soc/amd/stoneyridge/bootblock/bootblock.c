@@ -32,7 +32,14 @@
 #include <timestamp.h>
 #include <halt.h>
 
-/* Set the MMIO Configuration Base Address and Bus Range. */
+#if CONFIG_PI_AGESA_TEMP_RAM_BASE < 0x100000
+#error "Error: CONFIG_PI_AGESA_TEMP_RAM_BASE must be >= 1MB"
+#endif
+#if CONFIG_PI_AGESA_CAR_HEAP_BASE < 0x100000
+#error "Error: CONFIG_PI_AGESA_CAR_HEAP_BASE must be >= 1MB"
+#endif
+
+/* Set the MMIO Configuration Base Address, Bus Range, and misc MTRRs. */
 static void amd_initmmio(void)
 {
 	msr_t mmconf;
@@ -47,30 +54,23 @@ static void amd_initmmio(void)
 	/*
 	 * todo: AGESA currently writes variable MTRRs.  Once that is
 	 *       corrected, un-hardcode this MTRR.
+	 *
+	 *       Be careful not to use get_free_var_mtrr/set_var_mtrr pairs
+	 *       where all cores execute the path.  Both cores within a compute
+	 *       unit share MTRRs.  Programming core0 has the appearance of
+	 *       modifying core1 too.  Using the pair again will create
+	 *       duplicate copies.
 	 */
 	mtrr = (mtrr_cap.lo & MTRR_CAP_VCNT) - SOC_EARLY_VMTRR_FLASH;
 	set_var_mtrr(mtrr, FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
-}
 
-/*
- * To move AGESA calls to romstage, just move agesa_call() and bsp_agesa_call()
- * to romstage.c. Also move the call to bsp_agesa_call() to the marked location
- * in romstage.c.
- */
-static void agesa_call(void)
-{
-	post_code(0x37);
-	do_agesawrapper(agesawrapper_amdinitreset, "amdinitreset");
+	mtrr = (mtrr_cap.lo & MTRR_CAP_VCNT) - SOC_EARLY_VMTRR_CAR_HEAP;
+	set_var_mtrr(mtrr, CONFIG_PI_AGESA_CAR_HEAP_BASE,
+			CONFIG_PI_AGESA_HEAP_SIZE, MTRR_TYPE_WRBACK);
 
-	post_code(0x38);
-	/* APs will not exit amdinitearly */
-	do_agesawrapper(agesawrapper_amdinitearly, "amdinitearly");
-}
-
-static void bsp_agesa_call(void)
-{
-	set_ap_entry_ptr(agesa_call); /* indicate the path to the AP */
-	agesa_call();
+	mtrr = (mtrr_cap.lo & MTRR_CAP_VCNT) - SOC_EARLY_VMTRR_TEMPRAM;
+	set_var_mtrr(mtrr, CONFIG_PI_AGESA_TEMP_RAM_BASE,
+			CONFIG_PI_AGESA_HEAP_SIZE, MTRR_TYPE_UNCACHEABLE);
 }
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
@@ -97,37 +97,6 @@ void bootblock_soc_early_init(void)
 	post_code(0x90);
 }
 
-/*
- * This step is in bootblock because the SMU FW1 must be loaded prior to
- * issuing any reset to the system.  Set up just enough to get the command
- * to the PSP.  A side effect of placing this step here is we will always
- * load a RO version of FW1 and never a RW version.
- *
- * todo: If AMD develops a more robust methodology, move this function to
- *       romstage.
- */
-static void load_smu_fw1(void)
-{
-	u32 base, limit, cmd;
-
-	/* Open a posted hole from 0x80000000 : 0xfed00000-1 */
-	base = (0x80000000 >> 8) | MMIO_WE | MMIO_RE;
-	limit = (ALIGN_DOWN(HPET_BASE_ADDRESS - 1, 64 * KiB) >> 8);
-	pci_write_config32(SOC_ADDR_DEV, D18F1_MMIO_LIMIT0_LO, limit);
-	pci_write_config32(SOC_ADDR_DEV, D18F1_MMIO_BASE0_LO, base);
-
-	/* Preload a value into "BAR3" and enable it */
-	pci_write_config32(SOC_PSP_DEV, PSP_MAILBOX_BAR, PSP_MAILBOX_BAR3_BASE);
-	pci_write_config32(SOC_PSP_DEV, PSP_BAR_ENABLES, PSP_MAILBOX_BAR_EN);
-
-	/* Enable memory access and master */
-	cmd = pci_read_config32(SOC_PSP_DEV, PCI_COMMAND);
-	cmd |= PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER;
-	pci_write_config32(SOC_PSP_DEV, PCI_COMMAND, cmd);
-
-	psp_load_named_blob(MBOX_BIOS_CMD_SMU_FW, "smu_fw");
-}
-
 void bootblock_soc_init(void)
 {
 	if (IS_ENABLED(CONFIG_STONEYRIDGE_UART))
@@ -136,11 +105,6 @@ void bootblock_soc_init(void)
 
 	u32 val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
-
-	if (IS_ENABLED(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW))
-		load_smu_fw1();
-
-	bsp_agesa_call();
 
 	/* Initialize any early i2c buses. */
 	i2c_soc_early_init();

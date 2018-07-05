@@ -30,6 +30,8 @@
 #include <stage_cache.h>
 #include <symbols.h>
 #include <timestamp.h>
+#include <cbfs.h>
+#include <fit_payload.h>
 
 /* Only can represent up to 1 byte less than size_t. */
 const struct mem_region_device addrspace_32bit =
@@ -152,7 +154,8 @@ void run_ramstage(void)
 	} else if (load_nonrelocatable_ramstage(&ramstage))
 		goto fail;
 
-	stage_cache_add(STAGE_RAMSTAGE, &ramstage);
+	if (!IS_ENABLED(CONFIG_NO_STAGE_CACHE))
+		stage_cache_add(STAGE_RAMSTAGE, &ramstage);
 
 	timestamp_add_now(TS_END_COPYRAM);
 
@@ -182,9 +185,19 @@ void payload_load(void)
 
 	mirror_payload(payload);
 
-	/* Pass cbtables to payload if architecture desires it. */
-	prog_set_entry(payload, selfload(payload, true),
-			cbmem_find(CBMEM_ID_CBTABLE));
+	switch (prog_cbfs_type(payload)) {
+	case CBFS_TYPE_SELF: /* Simple ELF */
+		selfload(payload, true);
+		break;
+	case CBFS_TYPE_FIT: /* Flattened image tree */
+		if (IS_ENABLED(CONFIG_PAYLOAD_FIT_SUPPORT)) {
+			fit_payload(payload);
+			break;
+		} /* else fall-through */
+	default:
+		die("Unsupported payload type.\n");
+		break;
+	}
 
 out:
 	if (prog_entry(payload) == NULL)

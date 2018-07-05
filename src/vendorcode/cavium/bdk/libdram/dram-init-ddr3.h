@@ -82,7 +82,7 @@ read_DAC_DBI_settings(int node, int ddr_interface_num,
 		      int dac_or_dbi, int *settings);
 extern void
 display_DAC_DBI_settings(int node, int ddr_interface_num, int dac_or_dbi,
-                         int ecc_ena, int *settings, char *title);
+                         int ecc_ena, int *settings, const char *title);
 
 #define RODT_OHMS_COUNT        8
 #define RTT_NOM_OHMS_COUNT     8
@@ -94,4 +94,5 @@ display_DAC_DBI_settings(int node, int ddr_interface_num, int dac_or_dbi,
 extern uint64_t hertz_to_psecs(uint64_t hertz);
 extern uint64_t psecs_to_mts(uint64_t psecs);
 extern uint64_t mts_to_hertz(uint64_t mts);
-extern uint64_t pretty_psecs_to_mts(uint64_t psecs);
+//extern uint64_t pretty_psecs_to_mts(uint64_t psecs);
+extern unsigned long pretty_psecs_to_mts(uint64_t psecs);	/* FIXME(dhendrix) */

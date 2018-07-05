@@ -48,7 +48,7 @@ enum power_mode {
 #define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL POWER_MODE_ON
 #endif
 
-static const char* power_mode_names[] = {
+static const char *power_mode_names[] = {
 	[POWER_MODE_OFF] = "off",
 	[POWER_MODE_ON] = "on",
 	[POWER_MODE_LAST] = "last",
@@ -225,7 +225,7 @@ static void sm_init(struct device *dev)
 	pci_write_config8(dev, 0xE1, byte);
 
 	/* 2.5 Enabling Non-Posted Memory Write */
-       	axindxc_reg(0x10, 1 << 9, 1 << 9);
+	axindxc_reg(0x10, 1 << 9, 1 << 9);
 
 	/* 2.11 IO Trap Settings */
 	abcfg_reg(0x10090, 1 << 16, 1 << 16);

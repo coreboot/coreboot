@@ -20,6 +20,7 @@
 #define _SOC_APOLLOLAKE_CHIP_H_
 
 #include <commonlib/helpers.h>
+#include <intelblocks/chip.h>
 #include <intelblocks/gspi.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
@@ -31,7 +32,6 @@
 
 #define MAX_PCIE_PORTS			6
 #define CLKREQ_DISABLED		0xf
-#define APOLLOLAKE_I2C_DEV_MAX	8
 
 enum pnp_settings {
 	PNP_PERF,
@@ -40,8 +40,9 @@ enum pnp_settings {
 };
 
 struct soc_intel_apollolake_config {
-	/* GSPI */
-	struct gspi_cfg gspi[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
+
+	/* Common structure containing soc config data required by common code*/
+	struct soc_intel_common_config common_soc_config;
 
 	/*
 	 * Mapping from PCIe root port to CLKREQ input on the SOC. The SOC has
@@ -97,9 +98,6 @@ struct soc_intel_apollolake_config {
 
 	/* Configure serial IRQ (SERIRQ) line. */
 	enum serirq_mode serirq_mode;
-
-	/* I2C bus configuration */
-	struct dw_i2c_bus_config i2c[APOLLOLAKE_I2C_DEV_MAX];
 
 	uint8_t gpe0_dw1; /* GPE0_63_32 STS/EN */
 	uint8_t gpe0_dw2; /* GPE0_95_64 STS/EN */

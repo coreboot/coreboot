@@ -202,7 +202,7 @@ Scope(\)
 		Offset(0x1000), // Chipset
 		Offset(0x3000), // Legacy Configuration Registers
 		Offset(0x3404), // High Performance Timer Configuration
-		HPAS, 2, 	// Address Select
+		HPAS, 2,	// Address Select
 		, 5,
 		HPTE, 1,	// Address Enable
 		Offset(0x3418), // FD (Function Disable)
@@ -254,10 +254,16 @@ Scope(\)
 
 Method (_OSC, 4)
 {
+	/*
+	 * Arg0 - A Buffer containing a UUID
+	 * Arg1 - An Integer containing a Revision ID of the buffer format
+	 * Arg2 - An Integer containing a count of entries in Arg3
+	 * Arg3 - A Buffer containing a list of DWORD capabilities
+	 */
 	/* Check for XHCI */
 	If (LEqual (Arg0, ToUUID("7c9512a9-1705-4cb4-af7d-506a2423ab71")))
 	{
-		Return (^XHC.POSC(Arg1, Arg2, Arg3))
+		Return (^XHC.POSC(Arg2, Arg3))
 	}
 
 	/* Check for PCIe */

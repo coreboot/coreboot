@@ -43,7 +43,8 @@ static void sd_init(struct device *dev)
 			pci_write_config32(dev, 0xD0, 0x0000058B);
 		}
 		else {					/* Stepping >= A1 */
-			pci_write_config32(dev, 0xA4, 0x31FE3FB2);
+			pci_write_config32(dev, 0xA4, 0x31FE32B2);
+			pci_write_config32(dev, 0xA8, 0x00000070);
 			pci_write_config32(dev, 0xB0, 0x01180C19);
 			pci_write_config32(dev, 0xD0, 0x0000078B);
 		}

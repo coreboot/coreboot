@@ -47,13 +47,12 @@ static struct device_operations ops = {
 
 /* TODO: FDC, PP, AUX. */
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, SIO10N268_KBDC, PNP_IO0 | PNP_IO1, 0x07f8, 0x07f8, },
+	{ NULL, SIO10N268_KBDC, PNP_IO0 | PNP_IO1, 0x07f8, 0x07f8, },
 };
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &pnp_ops,
-		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_smsc_sio10n268_ops = {

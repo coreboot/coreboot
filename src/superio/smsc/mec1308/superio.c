@@ -49,19 +49,18 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, MEC1308_PM1,  PNP_IO0, 0x7ff },
-	{ &ops, MEC1308_EC1,  PNP_IO0, 0x7ff },
-	{ &ops, MEC1308_EC2,  PNP_IO0, 0x7ff },
-	{ &ops, MEC1308_UART, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
-	{ &ops, MEC1308_KBC,  PNP_IRQ0, 0 /* IO Fixed at 0x60/0x64 */ },
-	{ &ops, MEC1308_EC0,  PNP_IO0, 0x7ff },
-	{ &ops, MEC1308_MBX,  PNP_IO0, 0x7ff },
+	{ NULL, MEC1308_PM1,  PNP_IO0, 0x7ff },
+	{ NULL, MEC1308_EC1,  PNP_IO0, 0x7ff },
+	{ NULL, MEC1308_EC2,  PNP_IO0, 0x7ff },
+	{ NULL, MEC1308_UART, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ NULL, MEC1308_KBC,  PNP_IRQ0, 0 /* IO Fixed at 0x60/0x64 */ },
+	{ NULL, MEC1308_EC0,  PNP_IO0, 0x7ff },
+	{ NULL, MEC1308_MBX,  PNP_IO0, 0x7ff },
 };
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &pnp_ops,
-			   ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_smsc_mec1308_ops = {

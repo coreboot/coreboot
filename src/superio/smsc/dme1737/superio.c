@@ -50,18 +50,18 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, DME1737_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ &ops, DME1737_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ &ops, DME1737_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, DME1737_SP2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, DME1737_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, 0x07ff, 0x07ff, },
-	{ &ops, DME1737_RT,  PNP_IO0, 0x0780, },
+	{ NULL, DME1737_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ NULL, DME1737_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ NULL, DME1737_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, DME1737_SP2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, DME1737_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1,
+		0x07ff, 0x07ff, },
+	{ NULL, DME1737_RT,  PNP_IO0, 0x0780, },
 };
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &pnp_ops,
-		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_smsc_dme1737_ops = {

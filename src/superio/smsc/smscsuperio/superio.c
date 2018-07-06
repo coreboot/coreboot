@@ -194,21 +194,22 @@ static struct device_operations ops = {
  * TODO: FDC, PP, SP1, SP2, and KBC should work, the rest probably not (yet).
  */
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, LD_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ &ops, LD_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ &ops, LD_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, LD_SP2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, LD_RTC, },
-	{ &ops, LD_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, 0x07ff, 0x07ff, },
-	{ &ops, LD_AUX, },
-	{ &ops, LD_XBUS, },
-	{ &ops, LD_HWM, PNP_IO0, 0x07f0, },
-	{ &ops, LD_GAME, },
-	{ &ops, LD_PME, },
-	{ &ops, LD_MPU401, },
-	{ &ops, LD_RT,  PNP_IO0, 0x0780, },
-	{ &ops, LD_ACPI, },
-	{ &ops, LD_SMB, },
+	{ NULL, LD_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ NULL, LD_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ NULL, LD_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, LD_SP2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, LD_RTC, },
+	{ NULL, LD_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1,
+		0x07ff, 0x07ff, },
+	{ NULL, LD_AUX, },
+	{ NULL, LD_XBUS, },
+	{ NULL, LD_HWM, PNP_IO0, 0x07f0, },
+	{ NULL, LD_GAME, },
+	{ NULL, LD_PME, },
+	{ NULL, LD_MPU401, },
+	{ NULL, LD_RT,  PNP_IO0, 0x0780, },
+	{ NULL, LD_ACPI, },
+	{ NULL, LD_SMB, },
 };
 
 /**
@@ -281,8 +282,7 @@ static void enable_dev(struct device *dev)
 	}
 
 	/* Enable the specified devices (if present on the chip). */
-	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info),
-			   &pnp_dev_info[0]);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 
 	/* Restore LD_FOO values. */
 	for (j = 0; j < ARRAY_SIZE(pnp_dev_info); j++)

@@ -58,21 +58,22 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, W83627DHG_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ &ops, W83627DHG_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ &ops, W83627DHG_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, W83627DHG_SP2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, W83627DHG_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, 0x07ff, 0x07ff, },
-	{ &ops, W83627DHG_SPI, PNP_IO1, 0, 0x7f8, },
-	{ &ops, W83627DHG_GPIO6, },
-	{ &ops, W83627DHG_WDTO_PLED, },
-	{ &ops, W83627DHG_GPIO2, },
-	{ &ops, W83627DHG_GPIO3, },
-	{ &ops, W83627DHG_GPIO4, },
-	{ &ops, W83627DHG_GPIO5, },
-	{ &ops, W83627DHG_ACPI, PNP_IRQ0, },
-	{ &ops, W83627DHG_HWM, PNP_IO0 | PNP_IRQ0, 0x07fe, },
-	{ &ops, W83627DHG_PECI_SST, },
+	{ NULL, W83627DHG_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ NULL, W83627DHG_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ NULL, W83627DHG_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, W83627DHG_SP2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, W83627DHG_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1,
+		0x07ff, 0x07ff, },
+	{ NULL, W83627DHG_SPI, PNP_IO1, 0, 0x7f8, },
+	{ NULL, W83627DHG_GPIO6, },
+	{ NULL, W83627DHG_WDTO_PLED, },
+	{ NULL, W83627DHG_GPIO2, },
+	{ NULL, W83627DHG_GPIO3, },
+	{ NULL, W83627DHG_GPIO4, },
+	{ NULL, W83627DHG_GPIO5, },
+	{ NULL, W83627DHG_ACPI, PNP_IRQ0, },
+	{ NULL, W83627DHG_HWM, PNP_IO0 | PNP_IRQ0, 0x07fe, },
+	{ NULL, W83627DHG_PECI_SST, },
 };
 
 static void enable_dev(struct device *dev)

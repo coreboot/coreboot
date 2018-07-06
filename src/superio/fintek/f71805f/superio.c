@@ -41,13 +41,13 @@ static struct device_operations ops = {
 
 static struct pnp_info pnp_dev_info[] = {
 	/* TODO: Some of the 0x07f8 etc. values may not be correct. */
-	{ &ops, F71805F_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ &ops, F71805F_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, F71805F_SP2,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, F71805F_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ &ops, F71805F_HWM,  PNP_IO0 | PNP_IRQ0, 0x0ff8, },
-	{ &ops, F71805F_GPIO, PNP_IRQ0, },
-	{ &ops, F71805F_PME, },
+	{ NULL, F71805F_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ NULL, F71805F_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, F71805F_SP2,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, F71805F_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ NULL, F71805F_HWM,  PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ NULL, F71805F_GPIO, PNP_IRQ0, },
+	{ NULL, F71805F_PME, },
 };
 
 static void enable_dev(struct device *dev)

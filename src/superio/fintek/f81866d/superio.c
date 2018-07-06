@@ -70,19 +70,19 @@ static struct device_operations ops = {
 
 static struct pnp_info pnp_dev_info[] = {
 	/* TODO: Some of the 0x7f8 etc. values may not be correct. */
-	{ &ops, F81866D_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ &ops, F81866D_SP1,  PNP_IO0 | PNP_IRQ0, 0x7f8, },
-	{ &ops, F81866D_SP2,  PNP_IO0 | PNP_IRQ0, 0x7f8, },
-	{ &ops, F81866D_SP3,  PNP_IO0 | PNP_IRQ0, 0x7f8, },
-	{ &ops, F81866D_SP4,  PNP_IO0 | PNP_IRQ0, 0x7f8, },
-	{ &ops, F81866D_SP5,  PNP_IO0 | PNP_IRQ0, 0x7f8, },
-	{ &ops, F81866D_SP6,  PNP_IO0 | PNP_IRQ0, 0x7f8, },
-	{ &ops, F81866D_KBC,  PNP_IO0 | PNP_IRQ0 | PNP_IRQ1, 0x07ff, },
-	{ &ops, F81866D_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ &ops, F81866D_HWM,  PNP_IO0 | PNP_IRQ0, 0xff8, },
-	{ &ops, F81866D_GPIO, PNP_IRQ0, },
-	{ &ops, F81866D_PME, },
-	{ &ops, F81866D_WDT, },
+	{ NULL, F81866D_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ NULL, F81866D_SP1,  PNP_IO0 | PNP_IRQ0, 0x7f8, },
+	{ NULL, F81866D_SP2,  PNP_IO0 | PNP_IRQ0, 0x7f8, },
+	{ NULL, F81866D_SP3,  PNP_IO0 | PNP_IRQ0, 0x7f8, },
+	{ NULL, F81866D_SP4,  PNP_IO0 | PNP_IRQ0, 0x7f8, },
+	{ NULL, F81866D_SP5,  PNP_IO0 | PNP_IRQ0, 0x7f8, },
+	{ NULL, F81866D_SP6,  PNP_IO0 | PNP_IRQ0, 0x7f8, },
+	{ NULL, F81866D_KBC,  PNP_IO0 | PNP_IRQ0 | PNP_IRQ1, 0x07ff, },
+	{ NULL, F81866D_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ NULL, F81866D_HWM,  PNP_IO0 | PNP_IRQ0, 0xff8, },
+	{ NULL, F81866D_GPIO, PNP_IRQ0, },
+	{ NULL, F81866D_PME, },
+	{ NULL, F81866D_WDT, },
 };
 
 static void enable_dev(struct device *dev)

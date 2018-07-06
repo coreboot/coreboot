@@ -94,11 +94,11 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, F81216H_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, F81216H_SP2,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, F81216H_SP3,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, F81216H_SP4,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, F81216H_WDT, },
+	{ NULL, F81216H_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, F81216H_SP2,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, F81216H_SP3,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, F81216H_SP4,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, F81216H_WDT, },
 };
 
 static void enable_dev(struct device *dev)

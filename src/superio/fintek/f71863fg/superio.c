@@ -50,16 +50,16 @@ static struct device_operations ops = {
 
 static struct pnp_info pnp_dev_info[] = {
 	/* TODO: Some of the 0x07f8 etc. values may not be correct. */
-	{ &ops, F71863FG_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ &ops, F71863FG_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, F71863FG_SP2,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, F71863FG_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ &ops, F71863FG_HWM,  PNP_IO0 | PNP_IRQ0, 0x0ff8, },
-	{ &ops, F71863FG_KBC,  PNP_IO0 | PNP_IRQ0 | PNP_IRQ1, 0x07ff, },
-	{ &ops, F71863FG_GPIO, },
-	{ &ops, F71863FG_VID,  PNP_IO0, 0x07f8, },
-	{ &ops, F71863FG_SPI, },
-	{ &ops, F71863FG_PME, },
+	{ NULL, F71863FG_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ NULL, F71863FG_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, F71863FG_SP2,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, F71863FG_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ NULL, F71863FG_HWM,  PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ NULL, F71863FG_KBC,  PNP_IO0 | PNP_IRQ0 | PNP_IRQ1, 0x07ff, },
+	{ NULL, F71863FG_GPIO, },
+	{ NULL, F71863FG_VID,  PNP_IO0, 0x07f8, },
+	{ NULL, F71863FG_SPI, },
+	{ NULL, F71863FG_PME, },
 };
 
 static void enable_dev(struct device *dev)

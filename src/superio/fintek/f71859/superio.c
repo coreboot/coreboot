@@ -42,7 +42,7 @@ static struct device_operations ops = {
 
 static struct pnp_info pnp_dev_info[] = {
 	/* TODO: Some of the 0x07f8 etc. values may not be correct. */
-	{ &ops, F71859_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, F71859_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
 };
 
 static void enable_dev(struct device *dev)

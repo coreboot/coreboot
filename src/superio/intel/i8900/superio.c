@@ -70,9 +70,9 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, I8900_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, I8900_SP2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, I8900_WDT, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, I8900_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, I8900_SP2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, I8900_WDT, PNP_IO0 | PNP_IRQ0, 0x07f8, },
 };
 
 static void enable_dev(struct device *dev)

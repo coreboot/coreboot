@@ -1,3 +1,4 @@
+bootblock-y += bootblock.c
 bootblock-y += memlayout.ld
 decompressor-y += memlayout.ld
 

@@ -144,13 +144,12 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, 0, 0, 0, }
+	{ NULL, 0, 0, 0, }
 };
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info),
-			   pnp_dev_info);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations ec_compal_ene932_ops = {

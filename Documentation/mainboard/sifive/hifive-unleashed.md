@@ -11,7 +11,7 @@ For general setup instructions, please refer to the [Getting Started Guide].
 
 The following things are still missing from this coreboot port:
 
-- Trampoline in the MBR block to support boot mode 1
+- Support running romstage from flash (fix stack) to support boot mode 1
 - CBMEM support
 - FU540 clock configuration
 - FU540 RAM init

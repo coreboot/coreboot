@@ -25,6 +25,12 @@ BLOCK_MASK = BLOCK_SIZE - 1
 # Size of the bootcode part of the MBR
 MBR_BOOTCODE_SIZE = 0x1be
 
+# MBR trampoline to bootblock
+MBR_BOOTCODE = bytes([
+    # j pc + 0x0800
+    0x6f, 0x00, 0x10, 0x00,
+])
+
 # A protecive MBR, without the bootcode part
 PROTECTIVE_MBR_FOOTER = bytes([
     0x00, 0x00, 0x02, 0x00, 0xee, 0xff, 0xff, 0xff,
@@ -43,7 +49,7 @@ PROTECTIVE_MBR_FOOTER = bytes([
 # [1]: https://en.wikipedia.org/wiki/GUID_Partition_Table#PROTECTIVE-MBR
 class ProtectiveMBR:
     def __init__(self):
-        self.bootcode = bytes(MBR_BOOTCODE_SIZE)
+        self.bootcode = MBR_BOOTCODE + bytes(MBR_BOOTCODE_SIZE - len(MBR_BOOTCODE))
 
     def generate(self, stream):
         assert len(self.bootcode) == MBR_BOOTCODE_SIZE
@@ -176,6 +182,12 @@ if __name__ == '__main__':
         image.bootblock = f.read()
 
     image.fixup()
+
+    # Verify if first partition is at expected lba, otherwise trampoline will
+    # fail
+    if image.partitions[0].first_lba != 4:
+        print('Warning: First partition not at expected location (LBA 4)')
+        sys.exit(1)
 
     with open(sys.argv[2], 'wb') as f:
         image.generate(f)

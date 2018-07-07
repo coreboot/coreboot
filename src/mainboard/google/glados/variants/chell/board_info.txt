@@ -1,5 +1,5 @@
 Vendor name: Google
-Board name: Chell Skylake Reference Board
+Board name: Chell (HP Chromebook 13 G1)
 Category: laptop
 ROM protocol: SPI
 ROM socketed: n

@@ -13,6 +13,7 @@ config BOARD_GOOGLE_BASEBOARD_GLADOS
 	select HAVE_ACPI_TABLES
 	select HAVE_OPTION_TABLE
 	select HAVE_SMI_HANDLER
+	select INTEL_GMA_HAVE_VBT if !BOARD_GOOGLE_GLADOS
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_LPC_TPM
 	select MAINBOARD_HAS_TPM1
@@ -35,6 +36,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Chell" if BOARD_GOOGLE_CHELL
 	default "Glados" if BOARD_GOOGLE_GLADOS
 
 config MAINBOARD_FAMILY
@@ -43,10 +45,12 @@ config MAINBOARD_FAMILY
 
 config VARIANT_DIR
 	string
+	default "chell" if BOARD_GOOGLE_CHELL
 	default "glados" if BOARD_GOOGLE_GLADOS
 
 config DEVICETREE
 	string
+	default "variants/chell/devicetree.cb" if BOARD_GOOGLE_CHELL
 	default "variants/glados/devicetree.cb" if BOARD_GOOGLE_GLADOS
 
 config MAX_CPUS
@@ -64,14 +68,17 @@ config INCLUDE_NHLT_BLOBS
 
 config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string
+	default "chell" if BOARD_GOOGLE_CHELL
 	default "glados" if BOARD_GOOGLE_GLADOS
 
 config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
 	string
+	default "chell_pd" if BOARD_GOOGLE_CHELL
 	default "glados_pd" if BOARD_GOOGLE_GLADOS
 
 config GBB_HWID
 	string
 	depends on CHROMEOS
+	default "CHELL TEST 6297" if BOARD_GOOGLE_CHELL
 	default "GLADOS TEST 1988" if BOARD_GOOGLE_GLADOS
 endif

@@ -1,5 +1,10 @@
 comment "Glados"
 
+config BOARD_GOOGLE_CHELL
+	bool "->  Chell (HP Chromebook 13 G1)"
+	select BOARD_GOOGLE_BASEBOARD_GLADOS
+	select NHLT_SSM4567 if INCLUDE_NHLT_BLOBS
+
 config BOARD_GOOGLE_GLADOS
 	bool "->  Glados Skylake Reference Board"
 	select BOARD_GOOGLE_BASEBOARD_GLADOS

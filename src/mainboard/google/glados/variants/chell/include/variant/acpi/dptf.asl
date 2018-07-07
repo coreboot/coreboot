@@ -89,6 +89,3 @@ Name (MPPC, Package ()
 		1000	/* StepSize */
 	}
 })
-
-/* Include DPTF */
-#include <soc/intel/skylake/acpi/dptf/dptf.asl>

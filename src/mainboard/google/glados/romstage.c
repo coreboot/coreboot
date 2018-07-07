@@ -22,10 +22,16 @@
 #include <soc/pei_wrapper.h>
 #include <soc/romstage.h>
 #include "spd/spd.h"
+#include <variant/ec.h>
 #include <variant/gpio.h>
 
 void mainboard_romstage_entry(struct romstage_params *params)
 {
+#ifdef EC_ENABLE_KEYBOARD_BACKLIGHT
+	/* Turn on keyboard backlight to indicate we are booting */
+	if (params->power_state->prev_sleep_state != ACPI_S3)
+		google_chromeec_kbbacklight(25);
+#endif
 	/* Get SPD index */
 	gpio_t spd_gpios[] = {
 		GPIO_MEM_CONFIG_0,

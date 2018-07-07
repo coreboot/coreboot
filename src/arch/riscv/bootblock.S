@@ -24,6 +24,12 @@
 .global _estack
 .globl _start
 _start:
+	csrr a0, mhartid
+	li a3, 0
+	beq a0, a3, _hart_zero
+_hart_loop:
+	j _hart_loop
+_hart_zero:
 
 	# The boot ROM may pass the following arguments to coreboot:
 	#   a0: the value of mhartid

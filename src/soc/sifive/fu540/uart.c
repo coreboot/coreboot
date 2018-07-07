@@ -23,3 +23,11 @@ uintptr_t uart_platform_base(int idx)
 	else
 		return 0;
 }
+
+unsigned int uart_platform_refclk(void)
+{
+	/*
+	 * The SiFive UART uses tlclk, which is coreclk/2 as input
+	 */
+	return 33330000 / 2;
+}

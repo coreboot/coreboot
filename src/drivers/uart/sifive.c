@@ -46,17 +46,24 @@ struct sifive_uart_registers {
 #define IP_TXWM			BIT(0)
 #define IP_RXWM			BIT(1)
 
-void uart_init(int idx)
+static void sifive_uart_init(struct sifive_uart_registers *regs, int div)
 {
-	struct sifive_uart_registers *regs = uart_platform_baseptr(idx);
-
-	/* TODO: Configure the divisor */
+	/* Configure the divisor */
+	write32(&regs->div, div);
 
 	/* Enable transmission, one stop bit, transmit watermark at 1 */
 	write32(&regs->txctrl, TXCTRL_TXEN|TXCTRL_NSTOP(1)|TXCTRL_TXCNT(1));
 
 	/* Enable reception, receive watermark at 0 */
 	write32(&regs->rxctrl, RXCTRL_RXEN|RXCTRL_RXCNT(0));
+}
+
+void uart_init(int idx)
+{
+	unsigned int div;
+	div = uart_baudrate_divisor(get_uart_baudrate(),
+		uart_platform_refclk(), uart_input_clock_divider());
+	sifive_uart_init(uart_platform_baseptr(idx), div);
 }
 
 static bool uart_can_tx(struct sifive_uart_registers *regs)

@@ -328,7 +328,7 @@ static int tegra_dc_dpaux_read(struct tegra_dc_dp_data *dp, u32 cmd, u32 addr,
 }
 
 static int tegra_dc_dp_dpcd_read(struct tegra_dc_dp_data *dp, u32 cmd,
-				 u8 * data_ptr)
+				 u8 *data_ptr)
 {
 	u32 size = 1;
 	u32 status = 0;
@@ -1356,7 +1356,7 @@ static void tegra_dp_update_config(struct tegra_dc_dp_data *dp,
 	printk(BIOS_SPEW, "%s: configuration updated by EDID.\n", __func__);
 }
 
-void dp_init(void * _config)
+void dp_init(void *_config)
 {
 	struct soc_nvidia_tegra124_config *config = (void *)_config;
 	struct tegra_dc *dc = config->dc_data;
@@ -1406,7 +1406,7 @@ static int tegra_dp_hpd_plug(struct tegra_dc_dp_data *dp, int timeout_ms)
 	return -1;
 }
 
-void dp_enable(void * _dp)
+void dp_enable(void *_dp)
 {
 	struct tegra_dc_dp_data *dp = _dp;
 	struct tegra_dc *dc = dp->dc;

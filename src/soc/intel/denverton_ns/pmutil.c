@@ -24,7 +24,7 @@
 #include <soc/pm.h>
 
 static void print_num_status_bits(int num_bits, uint32_t status,
-				  const char * const bit_names[])
+				  const char *const bit_names[])
 {
 	int i;
 
@@ -43,7 +43,7 @@ static void print_num_status_bits(int num_bits, uint32_t status,
 
 static uint32_t print_smi_status(uint32_t smi_sts)
 {
-	static const char * const smi_sts_bits[] = {
+	static const char *const smi_sts_bits[] = {
 		[2] = "BIOS",
 		[4] = "SLP_SMI",
 		[5] = "APM",
@@ -129,7 +129,7 @@ static uint16_t reset_pm1_status(void)
 
 static uint16_t print_pm1_status(uint16_t pm1_sts)
 {
-	static const char * const pm1_sts_bits[] = {
+	static const char *const pm1_sts_bits[] = {
 		[0] = "TMROF",  [4] = "BM",   [5] = "GBL",
 		[8] = "PWRBTN", [10] = "RTC", [11] = "PRBTNOR",
 		[15] = "WAK",
@@ -155,7 +155,7 @@ void enable_pm1(uint16_t events)
 
 static uint32_t print_tco_status(uint32_t tco_sts)
 {
-	static const char * const tco_sts_bits[] = {
+	static const char *const tco_sts_bits[] = {
 		[0] = "NMI2SMI",     [1] = "OS_TCO_SMI",
 		[2] = "TCO_INIT",    [3] = "TIMEOUT",
 		[7] = "NEWCENTURY ", [8] = "BIOSWR ",
@@ -214,7 +214,7 @@ static uint32_t reset_gpe_status(void)
 
 static uint32_t print_gpe_sts(uint32_t gpe_sts)
 {
-	static const char * const gpe_sts_bits[] = {
+	static const char *const gpe_sts_bits[] = {
 		[0] = "GPIO_0", [1] = "GPIO_1",
 		[2] = "GPIO_2", [3] = "GPIO_3",
 		[4] = "GPIO_4", [5] = "GPIO_5",

@@ -31,7 +31,7 @@ struct pirq_struct {
 
 struct irq_idx_name {
 	uint8_t index;
-	const char * const name;
+	const char *const name;
 };
 
 extern const struct pirq_struct *pirq_data_ptr;

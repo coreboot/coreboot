@@ -34,7 +34,7 @@ static inline u32 me_read_config32(int offset)
 }
 
 /* HFSTS1[3:0] Current Working State Values */
-static const char * const me_cws_values[] = {
+static const char *const me_cws_values[] = {
 	[ME_HFS_CWS_RESET]	= "Reset",
 	[ME_HFS_CWS_INIT]	= "Initializing",
 	[ME_HFS_CWS_REC]	= "Recovery",
@@ -54,7 +54,7 @@ static const char * const me_cws_values[] = {
 };
 
 /* HFSTS1[8:6] Current Operation State Values */
-static const char * const me_opstate_values[] = {
+static const char *const me_opstate_values[] = {
 	[ME_HFS_STATE_PREBOOT]	= "Preboot",
 	[ME_HFS_STATE_M0_UMA]	= "M0 with UMA",
 	[ME_HFS_STATE_M3]	= "M3 without UMA",
@@ -64,7 +64,7 @@ static const char * const me_opstate_values[] = {
 };
 
 /* HFSTS1[19:16] Current Operation Mode Values */
-static const char * const me_opmode_values[] = {
+static const char *const me_opmode_values[] = {
 	[ME_HFS_MODE_NORMAL]	= "Normal",
 	[ME_HFS_MODE_DEBUG]	= "Debug",
 	[ME_HFS_MODE_DIS]	= "Soft Temporary Disable",
@@ -73,7 +73,7 @@ static const char * const me_opmode_values[] = {
 };
 
 /* HFSTS1[15:12] Error Code Values */
-static const char * const me_error_values[] = {
+static const char *const me_error_values[] = {
 	[ME_HFS_ERROR_NONE]	= "No Error",
 	[ME_HFS_ERROR_UNCAT]	= "Uncategorized Failure",
 	[ME_HFS_ERROR_IMAGE]	= "Image Failure",
@@ -81,7 +81,7 @@ static const char * const me_error_values[] = {
 };
 
 /* HFSTS2[31:28] ME Progress Code */
-static const char * const me_progress_values[] = {
+static const char *const me_progress_values[] = {
 	[ME_HFS2_PHASE_ROM]		= "ROM Phase",
 	[1]				= "Unknown (1)",
 	[ME_HFS2_PHASE_UKERNEL]		= "uKernel Phase",
@@ -94,7 +94,7 @@ static const char * const me_progress_values[] = {
 };
 
 /* HFSTS2[27:24] Power Management Event */
-static const char * const me_pmevent_values[] = {
+static const char *const me_pmevent_values[] = {
 	[ME_HFS2_PMEVENT_CLEAN_MOFF_MX_WAKE] =
 	"Clean Moff->Mx wake",
 	[ME_HFS2_PMEVENT_MOFF_MX_WAKE_ERROR] =
@@ -131,13 +131,13 @@ static const char * const me_pmevent_values[] = {
 };
 
 /* Progress Code 0 states */
-static const char * const me_progress_rom_values[] = {
+static const char *const me_progress_rom_values[] = {
 	[ME_HFS2_STATE_ROM_BEGIN]	= "BEGIN",
 	[ME_HFS2_STATE_ROM_DISABLE]	= "DISABLE"
 };
 
 /* Progress Code 1 states */
-static const char * const me_progress_bup_values[] = {
+static const char *const me_progress_bup_values[] = {
 	[ME_HFS2_STATE_BUP_INIT] =
 	"Initialization starts",
 	[ME_HFS2_STATE_BUP_DIS_HOST_WAKE] =

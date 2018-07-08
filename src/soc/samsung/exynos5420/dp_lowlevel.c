@@ -916,7 +916,7 @@ unsigned char exynos_dp_get_lanex_pre_emphasis(unsigned char lanecnt)
 void exynos_dp_set_lanex_pre_emphasis(unsigned char request_val,
 		unsigned char lanecnt)
 {
-	void * reg_list[DP_LANE_CNT_4] = {
+	void *reg_list[DP_LANE_CNT_4] = {
 		&dp_regs->ln0_link_training_ctl,
 		&dp_regs->ln1_link_training_ctl,
 		&dp_regs->ln2_link_training_ctl,

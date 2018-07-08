@@ -483,7 +483,7 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 
 void clock_cpu0_config(void *entry)
 {
-	void * const evp_cpu_reset = (uint8_t *)TEGRA_EVP_BASE + 0x100;
+	void *const evp_cpu_reset = (uint8_t *)TEGRA_EVP_BASE + 0x100;
 
 	write32(&maincpu_stack_pointer, (uintptr_t)_estack);
 	write32(&maincpu_entry_point, (uintptr_t)entry);

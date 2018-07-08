@@ -91,7 +91,7 @@ uint32_t pmc_clear_tco_status(void);
  * names for the TCO status bits. Size of the array is
  * returned as an output parameter.
  */
-const char * const *soc_tco_sts_array(size_t *a);
+const char *const *soc_tco_sts_array(size_t *a);
 
 /*
  * Resets the tco status registers. This function clears the tco_sts register
@@ -186,14 +186,14 @@ uintptr_t soc_read_pmc_base(void);
  * names for the SMI status register bits. Size of the array is
  * returned as an output parameter.
  */
-const char * const *soc_smi_sts_array(size_t *a);
+const char *const *soc_smi_sts_array(size_t *a);
 
 /*
  * This function returns array of string which represents
  * names for the STD GPE status register bits.
  * Size of the array is returned as an output parameter.
  */
-const char * const *soc_std_gpe_sts_array(size_t *a);
+const char *const *soc_std_gpe_sts_array(size_t *a);
 
 /*
  * This function gets the gpe0 dwX values from devicetree

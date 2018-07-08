@@ -61,7 +61,7 @@ static ucode_validity nano_ucode_is_valid(const nano_ucode_header *ucode)
 	 * Two's complement done over the entire file, including the header */
 	int i;
 	u32 check = 0;
-	u32 *raw = (void*) ucode;
+	u32 *raw = (void *) ucode;
 	for (i = 0; i < ((ucode->total_size) >> 2); i++) {
 		check += raw[i];
 	}

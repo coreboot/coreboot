@@ -121,7 +121,7 @@ static void vErrata343(void)
 	wrmsr(BU_CFG2_MSR, msr);
 }
 
-asmlinkage void * post_cache_as_ram(void)
+asmlinkage void *post_cache_as_ram(void)
 {
 	uint32_t family = amd_fam1x_cpu_family();
 	int s3resume = 0;

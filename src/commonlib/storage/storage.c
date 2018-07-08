@@ -31,7 +31,7 @@
 #define HEX_CAPACITY_MULTIPLIER		1024ULL
 
 struct capacity {
-	const char * const units;
+	const char *const units;
 	uint64_t bytes;
 };
 

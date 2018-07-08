@@ -529,7 +529,7 @@ int mmc_set_partition(struct storage_media *media,
 const char *mmc_partition_name(struct storage_media *media,
 	unsigned int partition_number)
 {
-	static const char * const partition_name[8] = {
+	static const char *const partition_name[8] = {
 		"User",		/* 0 */
 		"Boot 1",	/* 1 */
 		"Boot 2",	/* 2 */

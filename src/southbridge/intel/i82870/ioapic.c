@@ -44,8 +44,8 @@ static void p64h2_ioapic_init(struct device *dev)
 	uint32_t memoryBase;
 	int apic_index, apic_id;
 
-	volatile uint32_t* pIndexRegister;    /* io apic io memory space command address */
-	volatile uint32_t* pWindowRegister;    /* io apic io memory space data address */
+	volatile uint32_t *pIndexRegister;    /* io apic io memory space command address */
+	volatile uint32_t *pWindowRegister;    /* io apic io memory space data address */
 
 	apic_index = num_p64h2_ioapics;
 	num_p64h2_ioapics++;
@@ -71,8 +71,8 @@ static void p64h2_ioapic_init(struct device *dev)
 	// NOTE: this address was assigned during enumeration of the bus
 
 	memoryBase = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
-	pIndexRegister  = (volatile uint32_t*) memoryBase;
-	pWindowRegister = (volatile uint32_t*)(memoryBase + 0x10);
+	pIndexRegister  = (volatile uint32_t *) memoryBase;
+	pWindowRegister = (volatile uint32_t *)(memoryBase + 0x10);
 
 	printk(BIOS_DEBUG, "IOAPIC %d at %02x:%02x.%01x  MBAR = %p DataAddr = %p\n",
 		apic_id, dev->bus->secondary, PCI_SLOT(dev->path.pci.devfn),

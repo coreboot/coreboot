@@ -45,7 +45,7 @@ static AMDSBCFG *sb_config = &sb_late_cfg;
  * @param[in] config    Southbridge configuration structure pointer.
  *
  */
-u32 sb900_callout_entry(u32 func, u32 data, void* config)
+u32 sb900_callout_entry(u32 func, u32 data, void *config)
 {
 	u32 ret = 0;
 

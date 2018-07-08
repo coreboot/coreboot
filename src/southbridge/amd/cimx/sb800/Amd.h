@@ -61,9 +61,10 @@ typedef unsigned int AGESA_STATUS;
 #define AGESA_CRITICAL      ((AGESA_STATUS) 0xC0000002)
 #define AGESA_FATAL         ((AGESA_STATUS) 0xC0000003)
 
-typedef AGESA_STATUS (*CALLOUT_ENTRY) (unsigned int Param1, unsigned int Param2, void* ConfigPtr);
-typedef AGESA_STATUS (*IMAGE_ENTRY) (IN OUT void* ConfigPtr);
-typedef AGESA_STATUS (*MODULE_ENTRY) (IN OUT void* ConfigPtr);
+typedef AGESA_STATUS(*CALLOUT_ENTRY) (unsigned int Param1, unsigned int Param2,
+				       void *ConfigPtr);
+typedef AGESA_STATUS(*IMAGE_ENTRY) (IN OUT void *ConfigPtr);
+typedef AGESA_STATUS(*MODULE_ENTRY) (IN OUT void *ConfigPtr);
 
 ///This allocation type is used by the AmdCreateStruct entry point
 typedef enum {

@@ -50,7 +50,7 @@ static AMDSBCFG *sb_config = &sb_late_cfg;
  * @param[in] config    Southbridge configuration structure pointer.
  *
  */
-static u32 sb800_callout_entry(u32 func, u32 data, void* config)
+static u32 sb800_callout_entry(u32 func, u32 data, void *config)
 {
 	u32 ret = 0;
 	printk(BIOS_DEBUG, "SB800 - Late.c - %s - Start.\n", __func__);

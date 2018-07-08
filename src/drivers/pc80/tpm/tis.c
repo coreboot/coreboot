@@ -109,13 +109,13 @@
  */
 struct device_name {
 	u16 dev_id;
-	const char * const dev_name;
+	const char *const dev_name;
 };
 
 struct vendor_name {
 	u16 vendor_id;
-	const char * vendor_name;
-	const struct device_name* dev_names;
+	const char *vendor_name;
+	const struct device_name *dev_names;
 };
 
 static const struct device_name atmel_devices[] = {
@@ -443,7 +443,7 @@ static u32 tis_probe(void)
  * Returns 0 on success, TPM_DRIVER_ERR on error (in case the device does
  * not accept the entire command).
  */
-static u32 tis_senddata(const u8 * const data, u32 len)
+static u32 tis_senddata(const u8 *const data, u32 len)
 {
 	u32 offset = 0;
 	u16 burst = 0;

@@ -130,8 +130,9 @@ int xgifb_probe(struct pci_dev *pdev, struct xgifb_video_info *xgifb_info)
 
 	hw_info->ulVideoMemorySize = xgifb_info->video_size;
 
-	xgifb_info->video_vbase = hw_info->pjVideoMemoryAddress = (void*)(intptr_t)xgifb_info->video_base;
-	xgifb_info->mmio_vbase = (void*)(intptr_t)xgifb_info->mmio_base;
+	xgifb_info->video_vbase = hw_info->pjVideoMemoryAddress =
+				  (void *)(intptr_t)xgifb_info->video_base;
+	xgifb_info->mmio_vbase = (void *)(intptr_t)xgifb_info->mmio_base;
 
 	dev_info(&pdev->dev,
 		 "Framebuffer at 0x%Lx, mapped to 0x%p, size %dk\n",

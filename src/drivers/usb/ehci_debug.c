@@ -631,7 +631,7 @@ void usbdebug_re_enable(unsigned ehci_base)
 
 	diff = (unsigned)dbg_info->ehci_base - ehci_base;
 	dbg_info->ehci_debug -= diff;
-	dbg_info->ehci_base = (void*)ehci_base;
+	dbg_info->ehci_base = (void *)ehci_base;
 
 	for (i=0; i<DBGP_MAX_ENDPOINTS; i++)
 		if (dbg_info->ep_pipe[i].status & DBGP_EP_VALID)

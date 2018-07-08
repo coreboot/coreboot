@@ -65,7 +65,7 @@ enum i2c_chip_type {
 	UNKNOWN,
 };
 
-static const char * const chip_name[] = {
+static const char *const chip_name[] = {
 	[SLB9635] = "slb9635tt",
 	[SLB9645] = "slb9645tt",
 	[UNKNOWN] = "unknown/fallback to slb9635",

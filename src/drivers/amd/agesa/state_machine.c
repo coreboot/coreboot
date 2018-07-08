@@ -53,7 +53,7 @@ static void agesa_locate_image(AMD_CONFIG_PARAMS *StdHeader)
 
 	image = LibAmdLocateImage(agesa, agesa + file_size, 4096,
 		ModuleIdentifier);
-	StdHeader->ImageBasePtr = (void*) image;
+	StdHeader->ImageBasePtr = (void *) image;
 #endif
 }
 
@@ -66,10 +66,10 @@ void agesa_set_interface(struct sysinfo *cb)
 	if (IS_ENABLED(CONFIG_CPU_AMD_AGESA_BINARY_PI)) {
 		agesa_locate_image(&cb->StdHeader);
 		AMD_IMAGE_HEADER *image =
-			(void*)(uintptr_t)cb->StdHeader.ImageBasePtr;
+			(void *)(uintptr_t)cb->StdHeader.ImageBasePtr;
 		ASSERT(image);
 		AMD_MODULE_HEADER *module =
-			(void*)(uintptr_t)image->ModuleInfoOffset;
+			(void *)(uintptr_t)image->ModuleInfoOffset;
 		ASSERT(module && module->ModuleDispatcher);
 	}
 }
@@ -83,8 +83,8 @@ AGESA_STATUS module_dispatch(AGESA_STRUCT_NAME func,
 	dispatcher = AmdAgesaDispatcher;
 #endif
 #if IS_ENABLED(CONFIG_CPU_AMD_AGESA_BINARY_PI)
-	AMD_IMAGE_HEADER *image = (void*)(uintptr_t)StdHeader->ImageBasePtr;
-	AMD_MODULE_HEADER *module = (void*)(uintptr_t)image->ModuleInfoOffset;
+	AMD_IMAGE_HEADER *image = (void *)(uintptr_t)StdHeader->ImageBasePtr;
+	AMD_MODULE_HEADER *module = (void *)(uintptr_t)image->ModuleInfoOffset;
 	dispatcher = module->ModuleDispatcher;
 #endif
 

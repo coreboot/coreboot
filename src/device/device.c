@@ -195,7 +195,7 @@ static resource_t round(resource_t val, unsigned long pow)
 	return val;
 }
 
-static const char * resource2str(struct resource *res)
+static const char *resource2str(struct resource *res)
 {
 	if (res->flags & IORESOURCE_IO)
 		return "io";

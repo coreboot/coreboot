@@ -130,6 +130,6 @@ static inline void set_ci(void) {};
 
 #endif				//DEBUG
 
-void dump(u8 * addr, u32 len);
+void dump(u8 *addr, u32 len);
 
 #endif

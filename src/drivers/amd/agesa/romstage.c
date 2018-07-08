@@ -54,7 +54,7 @@ static void fill_sysinfo(struct sysinfo *cb)
 	agesa_set_interface(cb);
 }
 
-void * asmlinkage romstage_main(unsigned long bist)
+void *asmlinkage romstage_main(unsigned long bist)
 {
 	struct postcar_frame pcf;
 	struct sysinfo romstage_state;

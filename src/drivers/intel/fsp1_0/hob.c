@@ -42,7 +42,7 @@ void print_hob_mem_attributes(void *Hobptr)
 	EFI_MEMORY_TYPE Hobmemtype = HobMemoryPtr->AllocDescriptor.MemoryType;
 	u64 Hobmemaddr = HobMemoryPtr->AllocDescriptor.MemoryBaseAddress;
 	u64 Hobmemlength = HobMemoryPtr->AllocDescriptor.MemoryLength;
-	const char * Hobmemtypenames[15];
+	const char *Hobmemtypenames[15];
 
 	Hobmemtypenames[0] = "EfiReservedMemoryType";
 	Hobmemtypenames[1] = "EfiLoaderCode";
@@ -104,7 +104,7 @@ void print_hob_resource_attributes(void *Hobptr)
 			(unsigned long)Hobresaddr, (unsigned long)Hobreslength);
 }
 
-const char * get_hob_type_string(void *Hobptr)
+const char *get_hob_type_string(void *Hobptr)
 {
 	EFI_HOB_GENERIC_HEADER *HobHeaderPtr = (EFI_HOB_GENERIC_HEADER *)Hobptr;
 	u16 Hobtype = HobHeaderPtr->HobType;
@@ -215,7 +215,7 @@ void print_hob_type_structure(u16 Hobtype, void *Hoblistptr)
  * @param guid the GUID of the HOB entry to find
  * @return pointer to the start of the requested HOB or NULL if not found.
  */
-void * find_hob_by_guid(void *current_hob, EFI_GUID *guid)
+void *find_hob_by_guid(void *current_hob, EFI_GUID *guid)
 {
 	do {
 		switch (((EFI_HOB_GENERIC_HEADER *)current_hob)->HobType) {
@@ -255,8 +255,8 @@ void * find_hob_by_guid(void *current_hob, EFI_GUID *guid)
  */
 uint8_t guids_are_equal(EFI_GUID *guid1, EFI_GUID *guid2)
 {
-	uint64_t* guid_1 = (void *) guid1;
-	uint64_t* guid_2 = (void *) guid2;
+	uint64_t *guid_1 = (void *) guid1;
+	uint64_t *guid_2 = (void *) guid2;
 
 	if ((*(guid_1) != *(guid_2)) || (*(guid_1 + 1) != *(guid_2 + 1)))
 		return 0;

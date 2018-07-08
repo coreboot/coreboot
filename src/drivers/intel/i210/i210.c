@@ -26,7 +26,7 @@
 
 /* This is a private function to wait for a bit mask in a given register */
 /* To avoid endless loops, a time-out is implemented here. */
-static int wait_done(uint32_t* reg, uint32_t mask)
+static int wait_done(uint32_t *reg, uint32_t mask)
 {
 	uint32_t timeout = I210_POLL_TIMEOUT_US;
 
@@ -58,7 +58,7 @@ static uint32_t read_flash(struct device *dev, uint32_t address,
 	bar = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 	if ((!bar) || ((address + count) > 0x40))
 		return I210_INVALID_PARAM;
-	eeprd = (uint32_t*)(bar + I210_REG_EEREAD);
+	eeprd = (uint32_t *)(bar + I210_REG_EEREAD);
 	/* Prior to start ensure flash interface is ready by checking DONE-bit */
 	if (wait_done(eeprd, I210_DONE))
 		return I210_NOT_READY;
@@ -122,8 +122,8 @@ static uint32_t write_flash(struct device *dev, uint32_t address,
 	bar = pci_read_config32(dev, 0x10);
 	if ((!bar) || ((address + count) > 0x40))
 		return I210_INVALID_PARAM;
-	eepwr = (uint32_t*)(bar + I210_REG_EEWRITE);
-	eectrl = (uint32_t*)(bar + I210_REG_EECTRL);
+	eepwr = (uint32_t *)(bar + I210_REG_EEWRITE);
+	eectrl = (uint32_t *)(bar + I210_REG_EECTRL);
 	/* Prior to start ensure flash interface is ready by checking DONE-bit */
 	if (wait_done(eepwr, I210_DONE))
 		return I210_NOT_READY;
@@ -166,7 +166,7 @@ static uint32_t read_mac_adr(struct device *dev, uint8_t *mac_adr)
 		return I210_READ_ERROR;
 	/* Copy the address into destination. This is done because of possible */
 	/* not matching alignment for destination to uint16_t boundary. */
-	memcpy(mac_adr, (uint8_t*)adr, 6);
+	memcpy(mac_adr, (uint8_t *)adr, 6);
 	return I210_SUCCESS;
 }
 
@@ -181,7 +181,7 @@ static uint32_t write_mac_adr(struct device *dev, uint8_t *mac_adr)
 	if (!dev || !mac_adr)
 		return I210_INVALID_PARAM;
 	/* Copy desired address into a local buffer to avoid alignment issues */
-	memcpy((uint8_t*)adr, mac_adr, 6);
+	memcpy((uint8_t *)adr, mac_adr, 6);
 	return write_flash(dev, 0, 3, adr);
 }
 

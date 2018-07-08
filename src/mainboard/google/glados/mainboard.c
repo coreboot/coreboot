@@ -19,8 +19,10 @@
 #include <baseboard/variant.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <gpio.h>
 #include <stdlib.h>
 #include <soc/nhlt.h>
+#include <variant/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 
@@ -30,6 +32,24 @@ static const char *oem_table_id_maxim = "SCRDMAX";
 static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
+}
+
+static uint8_t adi_codec_enable(void)
+{
+#ifdef AUDIO_DB_ID
+	return gpio_get(AUDIO_DB_ID);
+#else
+	return 1;
+#endif
+}
+
+static uint8_t max_codec_enable(void)
+{
+#ifdef AUDIO_DB_ID
+	return gpio_get(AUDIO_DB_ID) ? 0 : 1;
+#else
+	return 1;
+#endif
 }
 
 static unsigned long mainboard_write_acpi_tables(
@@ -58,12 +78,12 @@ static unsigned long mainboard_write_acpi_tables(
 			printk(BIOS_ERR, "Couldn't add 4CH DMIC arrays.\n");
 
 	/* ADI Smart Amps for left and right. */
-	if (IS_ENABLED(CONFIG_NHLT_SSM4567))
+	if (IS_ENABLED(CONFIG_NHLT_SSM4567) && adi_codec_enable())
 		if (nhlt_soc_add_ssm4567(nhlt, AUDIO_LINK_SSP0))
 			printk(BIOS_ERR, "Couldn't add ssm4567.\n");
 
 	/* MAXIM Smart Amps for left and right. */
-	if (IS_ENABLED(CONFIG_NHLT_MAX98357)) {
+	if (IS_ENABLED(CONFIG_NHLT_MAX98357) && max_codec_enable()) {
 		if (nhlt_soc_add_max98357(nhlt, AUDIO_LINK_SSP0))
 			printk(BIOS_ERR, "Couldn't add max98357.\n");
 

@@ -39,6 +39,7 @@ config MAINBOARD_PART_NUMBER
 	default "Chell" if BOARD_GOOGLE_CHELL
 	default "Glados" if BOARD_GOOGLE_GLADOS
 	default "Lars" if BOARD_GOOGLE_LARS
+	default "Sentry" if BOARD_GOOGLE_SENTRY
 
 config MAINBOARD_FAMILY
 	string
@@ -49,12 +50,14 @@ config VARIANT_DIR
 	default "chell" if BOARD_GOOGLE_CHELL
 	default "glados" if BOARD_GOOGLE_GLADOS
 	default "lars" if BOARD_GOOGLE_LARS
+	default "sentry" if BOARD_GOOGLE_SENTRY
 
 config DEVICETREE
 	string
 	default "variants/chell/devicetree.cb" if BOARD_GOOGLE_CHELL
 	default "variants/glados/devicetree.cb" if BOARD_GOOGLE_GLADOS
 	default "variants/lars/devicetree.cb" if BOARD_GOOGLE_LARS
+	default "variants/sentry/devicetree.cb" if BOARD_GOOGLE_SENTRY
 
 config MAX_CPUS
 	int
@@ -87,4 +90,5 @@ config GBB_HWID
 	default "CHELL TEST 6297" if BOARD_GOOGLE_CHELL
 	default "GLADOS TEST 1988" if BOARD_GOOGLE_GLADOS
 	default "LARS TEST 5001" if BOARD_GOOGLE_LARS
+	default "SENTRY TEST 6297" if BOARD_GOOGLE_SENTRY
 endif

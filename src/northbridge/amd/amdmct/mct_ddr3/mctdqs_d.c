@@ -317,7 +317,7 @@ static void CalcEccDQSPos_D(struct MCTStatStruc *pMCTstat,
 	pDCTstat->DQSDelay = (u8)DQSDelay;
 }
 
-static void read_dqs_write_data_timing_registers(uint16_t* delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+static void read_dqs_write_data_timing_registers(uint16_t *delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint32_t dword;
 	uint32_t mask;
@@ -346,7 +346,7 @@ static void read_dqs_write_data_timing_registers(uint16_t* delay, uint32_t dev, 
 	delay[8] = dword & mask;
 }
 
-static void write_dqs_write_data_timing_registers(uint16_t* delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+static void write_dqs_write_data_timing_registers(uint16_t *delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint32_t dword;
 	uint32_t mask;

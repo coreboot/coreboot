@@ -324,7 +324,7 @@ static u8 const amdHtTopologyEightTwistedLadder[] = {
 	0x00, 0x55, 0x00, 0x55, 0x00, 0x55, 0x00, 0x55, 0x00, 0x65, 0x40, 0x55, 0x00, 0x66, 0x60, 0xFF	// Node7
 };
 
-static const u8 * const amd_topo_list[] = {
+static const u8 *const amd_topo_list[] = {
 	amdHtTopologySingleNode,
 	amdHtTopologyDualNode,
 	amdHtTopologyThreeLine,

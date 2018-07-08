@@ -65,7 +65,7 @@ static const char * event_class_string_decodes[] = {
 
 typedef struct {
 	uint32_t code;
-	const char * string;
+	const char *string;
 } event_string_decode_t;
 
 static const event_string_decode_t event_string_decodes[] = {
@@ -90,7 +90,8 @@ static const event_string_decode_t event_string_decodes[] = {
 	{ HT_EVENT_HW_HTCRC, "HT_EVENT_HW_HTCRC" }
 };
 
-static const char * event_string_decode(uint32_t event) {
+static const char *event_string_decode(uint32_t event)
+{
 	uint32_t i;
 	for (i = 0; i < ARRAY_SIZE(event_string_decodes); i++)
 		if (event_string_decodes[i].code == event)

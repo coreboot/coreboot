@@ -33,7 +33,7 @@ static void GetUpdDefaultFromFsp (FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION   *U
 	UPD_DATA_REGION *UpdDataRgnPtr;
 	VpdDataRgnPtr = (VPD_DATA_REGION *)(UINT32)(FspInfo->CfgRegionOffset  + FspInfo->ImageBase);
 	UpdDataRgnPtr = (UPD_DATA_REGION *)(UINT32)(VpdDataRgnPtr->PcdUpdRegionOffset + FspInfo->ImageBase);
-	memcpy((void*)UpdData, (void*)UpdDataRgnPtr, sizeof(UPD_DATA_REGION));
+	memcpy((void *)UpdData, (void *)UpdDataRgnPtr, sizeof(UPD_DATA_REGION));
 }
 
 static void ConfigureDefaultUpdData(UPD_DATA_REGION   *UpdData)
@@ -70,7 +70,7 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *FspInitParams,
 	UPD_DATA_REGION *fsp_upd_data = pFspRtBuffer->Common.UpdDataRgnPtr;
 #else
 	MEM_CONFIG MemoryConfig;
-	memset((void*)&MemoryConfig, 0, sizeof(MEM_CONFIG));
+	memset((void *)&MemoryConfig, 0, sizeof(MEM_CONFIG));
 #endif
 	FspInitParams->NvsBufferPtr = NULL;
 

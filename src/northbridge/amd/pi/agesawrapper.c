@@ -289,7 +289,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 
 const void *agesawrapper_locate_module (const CHAR8 name[8])
 {
-	const void* agesa;
+	const void *agesa;
 	const AMD_IMAGE_HEADER* image;
 	const AMD_MODULE_HEADER* module;
 	size_t file_size;

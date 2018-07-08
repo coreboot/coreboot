@@ -1786,7 +1786,7 @@ static void wait_heci_cb_avail(int len)
 				       csr.csr.buffer_read_ptr));
 }
 
-static void send_heci_packet(struct mei_header *head, u32 * payload)
+static void send_heci_packet(struct mei_header *head, u32 *payload)
 {
 	int len = (head->length + 3) / 4;
 	int i;
@@ -1803,7 +1803,7 @@ static void send_heci_packet(struct mei_header *head, u32 * payload)
 }
 
 static void
-send_heci_message(u8 * msg, int len, u8 hostaddress, u8 clientaddress)
+send_heci_message(u8 *msg, int len, u8 hostaddress, u8 clientaddress)
 {
 	struct mei_header head;
 	int maxlen;
@@ -1830,8 +1830,8 @@ send_heci_message(u8 * msg, int len, u8 hostaddress, u8 clientaddress)
 
 /* FIXME: Add timeout.  */
 static int
-recv_heci_packet(struct raminfo *info, struct mei_header *head, u32 * packet,
-		 u32 * packet_size)
+recv_heci_packet(struct raminfo *info, struct mei_header *head, u32 *packet,
+		 u32 *packet_size)
 {
 	union {
 		struct mei_csr csr;
@@ -1877,7 +1877,7 @@ recv_heci_packet(struct raminfo *info, struct mei_header *head, u32 * packet,
 
 /* FIXME: Add timeout.  */
 static int
-recv_heci_message(struct raminfo *info, u32 * message, u32 * message_size)
+recv_heci_message(struct raminfo *info, u32 *message, u32 *message_size)
 {
 	struct mei_header head;
 	int current_position;
@@ -2291,9 +2291,9 @@ static int validate_state(enum state *in)
 }
 
 static void
-do_fsm(enum state *state, u16 * counter,
-       u8 fail_mask, int margin, int uplimit,
-       u8 * res_low, u8 * res_high, u8 val)
+do_fsm(enum state *state, u16 *counter,
+	u8 fail_mask, int margin, int uplimit,
+	u8 *res_low, u8 *res_high, u8 val)
 {
 	int lane;
 

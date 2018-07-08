@@ -1845,7 +1845,7 @@ static u8 sampledqs(u32 dqshighaddr, u32 strobeaddr, u8 highlow, u8 count)
 		MCHBAR8(0x5d8) = MCHBAR8(0x5d8) | 0x2;
 		hpet_udelay(1);
 		barrier();
-		strobedata = read32((void*)strobeaddr);
+		strobedata = read32((void *)strobeaddr);
 		barrier();
 		hpet_udelay(1);
 

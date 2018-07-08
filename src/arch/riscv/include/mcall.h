@@ -26,7 +26,6 @@
 #ifndef __ASSEMBLER__
 
 #include <arch/encoding.h>
-#include <atomic.h>
 #include <stdint.h>
 
 typedef struct {

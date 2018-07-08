@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2013, The Regents of the University of California (Regents).
+ * Copyright (c) 2018, HardenedLinux.
  * All Rights Reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,38 +31,58 @@
 
 #include <arch/encoding.h>
 
+typedef struct { volatile int counter; } atomic_t;
+
 #define disable_irqsave() clear_csr(mstatus, MSTATUS_MIE)
 #define enable_irqrestore(flags) set_csr(mstatus, (flags) & MSTATUS_MIE)
 
-typedef struct { int lock; } spinlock_t;
-#define SPINLOCK_INIT {0}
-
-#define atomic_set(ptr, val) (*(volatile typeof(*(ptr)) *)(ptr) = val)
-#define atomic_read(ptr) (*(volatile typeof(*(ptr)) *)(ptr))
+#define atomic_set(v, val) ((v)->counter = (val))
+#define atomic_read(v)     ((v)->counter)
 
 #ifdef __riscv_atomic
-# define atomic_add(ptr, inc) __sync_fetch_and_add(ptr, inc)
-# define atomic_swap(ptr, swp) __sync_lock_test_and_set(ptr, swp)
-# define atomic_cas(ptr, cmp, swp) __sync_val_compare_and_swap(ptr, cmp, swp)
+# define atomic_add(v, inc)       __sync_fetch_and_add(&((v)->counter), inc)
+# define atomic_swap(v, swp)      __sync_lock_test_and_set(&((v)->counter), swp)
+# define atomic_cas(v, cmp, swp)  __sync_val_compare_and_swap(&((v)->counter), \
+					cmp, swp)
+# define atomic_inc(v)            atomic_add(v, 1)
+# define atomic_dec(v)            atomic_add(v, -1)
 #else
-# define atomic_add(ptr, inc) ({ \
-	  long flags = disable_irqsave(); \
-	  typeof(ptr) res = *(volatile typeof(ptr))(ptr); \
-	  *(volatile typeof(ptr))(ptr) = res + (inc); \
-	  enable_irqrestore(flags); \
-	  res; })
-# define atomic_swap(ptr, swp) ({ \
-	  long flags = disable_irqsave(); \
-	  typeof(*ptr) res = *(volatile typeof(ptr))(ptr); \
-	  *(volatile typeof(ptr))(ptr) = (swp); \
-	  enable_irqrestore(flags); \
-	  res; })
-# define atomic_cas(ptr, cmp, swp) ({ \
-	  long flags = disable_irqsave(); \
-	  typeof(ptr) res = *(volatile typeof(ptr))(ptr); \
-	  if (res == (cmp)) *(volatile typeof(ptr))(ptr) = (swp); \
-		  enable_irqrestore(flags); \
-	  res; })
-#endif
+static inline int atomic_add(atomic_t *v, int inc)
+{
+	long flags = disable_irqsave();
+	int res = v->counter;
+	v->counter += inc;
+	enable_irqrestore(flags);
+	return res;
+}
 
-#endif
+static inline int atomic_swap(atomic_t *v, int swp)
+{
+	long flags = disable_irqsave();
+	int res = v->counter;
+	v->counter = swp;
+	enable_irqrestore(flags);
+	return res;
+}
+
+static inline int atomic_cas(atomic_t *v, int cmp, int swp)
+{
+	long flags = disable_irqsave();
+	int res = v->counter;
+	v->counter = (res == cmp ? swp : res);
+	enable_irqrestore(flags);
+	return res;
+}
+
+static inline int atomic_inc(atomic_t *v)
+{
+	return atomic_add(v, 1);
+}
+
+static inline int atomic_dec(atomic_t *v)
+{
+	return atomic_add(v, -1);
+}
+#endif //__riscv_atomic
+
+#endif //_RISCV_ATOMIC_H

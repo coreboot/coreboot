@@ -24,6 +24,9 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 
+static const char *oem_id_maxim = "INTEL";
+static const char *oem_table_id_maxim = "SCRDMAX";
+
 static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
@@ -35,6 +38,8 @@ static unsigned long mainboard_write_acpi_tables(
 	uintptr_t start_addr;
 	uintptr_t end_addr;
 	struct nhlt *nhlt;
+	const char *oem_id = NULL;
+	const char *oem_table_id = NULL;
 
 	start_addr = current;
 
@@ -57,11 +62,21 @@ static unsigned long mainboard_write_acpi_tables(
 		if (nhlt_soc_add_ssm4567(nhlt, AUDIO_LINK_SSP0))
 			printk(BIOS_ERR, "Couldn't add ssm4567.\n");
 
+	/* MAXIM Smart Amps for left and right. */
+	if (IS_ENABLED(CONFIG_NHLT_MAX98357)) {
+		if (nhlt_soc_add_max98357(nhlt, AUDIO_LINK_SSP0))
+			printk(BIOS_ERR, "Couldn't add max98357.\n");
+
+		oem_id = oem_id_maxim;
+		oem_table_id = oem_table_id_maxim;
+	}
+
 	/* NAU88l25 Headset codec. */
 	if (nhlt_soc_add_nau88l25(nhlt, AUDIO_LINK_SSP1))
 		printk(BIOS_ERR, "Couldn't add headset codec.\n");
 
-	end_addr = nhlt_soc_serialize(nhlt, start_addr);
+	end_addr = nhlt_soc_serialize_oem_overrides(nhlt, start_addr,
+					 oem_id, oem_table_id, 0);
 
 	if (end_addr != start_addr)
 		acpi_add_table(rsdp, (void *)start_addr);

@@ -2,7 +2,6 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015 Google Inc.
- * Copyright (C) 2015 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,21 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
-#include <console/console.h>
-#include <ec/google/chromeec/ec.h>
-#include "ec.h"
+/* Enable EC backed ALS device in ACPI */
+#define EC_ENABLE_ALS_DEVICE
 
-void mainboard_ec_init(void)
-{
-	const struct google_chromeec_event_info info = {
-		.log_events = MAINBOARD_EC_LOG_EVENTS,
-		.sci_events = MAINBOARD_EC_SCI_EVENTS,
-		.s3_wake_events = MAINBOARD_EC_S3_WAKE_EVENTS,
-		.s5_wake_events = MAINBOARD_EC_S5_WAKE_EVENTS,
-	};
-
-	printk(BIOS_DEBUG, "mainboard: EC init\n");
-
-	google_chromeec_events_init(&info, acpi_is_wakeup_s3());
-}
+/* Enable EC backed Keyboard Backlight in ACPI */
+#define EC_ENABLE_KEYBOARD_BACKLIGHT

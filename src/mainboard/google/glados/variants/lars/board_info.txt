@@ -1,5 +1,5 @@
 Vendor name: Google
-Board name: Lars Skylake chromebook
+Board name: Lars (Acer Chromebook 14 for Work)
 Category: laptop
 ROM protocol: SPI
 ROM socketed: n

@@ -16,14 +16,18 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <baseboard/variant.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
-#include "boardid.h"
 
-/* PCH_MEM_CFG[3:0] */
-#define MAX_MEMORY_CONFIG	0x10
 #define K4E6E304EB_MEM_ID	0x5
-#define RCOMP_TARGET_PARAMS	0x5
+
+#define MEM_SINGLE_CHAN0	0x0
+#define MEM_SINGLE_CHAN3	0x3
+#define MEM_SINGLE_CHAN4	0x4
+#define MEM_SINGLE_CHAN7	0x7
+#define MEM_SINGLE_CHANB	0xb
+#define MEM_SINGLE_CHANC	0xc
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
@@ -42,14 +46,10 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	const u16 RcompResistor[3] = { 200, 81, 162 };
 
 	/* Rcomp target */
-	static const u16 RcompTarget[RCOMP_TARGET_PARAMS] = {
-		100, 40, 40, 23, 40
-        };
+	const u16 RcompTarget[5] = { 100, 40, 40, 23, 40 };
 
 	/*Strengthen the Rcomp Target Ctrl for 8GB K4E6E304EB -EGCF*/
-	static const u16 StrengthendRcompTarget[RCOMP_TARGET_PARAMS] = {
-		100, 40, 40, 21, 40
-        };
+	const u16 StrengthendRcompTarget[5] = { 100, 40, 40, 21, 40 };
 
 	/* Default Rcomp Target assignment */
 	const u16 *targeted_rcomp = RcompTarget;
@@ -57,13 +57,22 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	memcpy(pei_data->dq_map, dq_map, sizeof(dq_map));
 	memcpy(pei_data->dqs_map, dqs_map, sizeof(dqs_map));
 	memcpy(pei_data->RcompResistor, RcompResistor,
-		 sizeof(RcompResistor));
+		sizeof(RcompResistor));
 
 	/* Override Rcomp Target assignment for specific SKU(s) */
 	if (pei_data->mem_cfg_id == K4E6E304EB_MEM_ID)
 		targeted_rcomp = StrengthendRcompTarget;
 
 	memcpy(pei_data->RcompTarget, targeted_rcomp,
-		 sizeof(pei_data->RcompTarget));
+		sizeof(pei_data->RcompTarget));
+}
 
+int is_dual_channel(const int spd_index)
+{
+	return (spd_index != MEM_SINGLE_CHAN0
+		&& spd_index != MEM_SINGLE_CHAN3
+		&& spd_index != MEM_SINGLE_CHAN4
+		&& spd_index != MEM_SINGLE_CHAN7
+		&& spd_index != MEM_SINGLE_CHANB
+		&& spd_index != MEM_SINGLE_CHANC);
 }

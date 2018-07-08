@@ -36,6 +36,11 @@ chip soc/intel/skylake
 	register "Device4Enable" = "1"
 	register "HeciEnabled" = "0"
 	register "SaGv" = "3"
+	register "SerialIrqConfigSirqEnable" = "1"
+	register "PmConfigSlpS3MinAssert" = "2"        # 50ms
+	register "PmConfigSlpS4MinAssert" = "4"        # 4s
+	register "PmConfigSlpSusMinAssert" = "3"       # 4s
+	register "PmConfigSlpAMinAssert" = "3"         # 2s
 	register "PmTimerDisabled" = "1"
 
 	register "pirqa_routing" = "PCH_IRQ11"
@@ -46,22 +51,6 @@ chip soc/intel/skylake
 	register "pirqf_routing" = "PCH_IRQ11"
 	register "pirqg_routing" = "PCH_IRQ11"
 	register "pirqh_routing" = "PCH_IRQ11"
-
-	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch
-	# SLP_S3 Minimum Assertion Width. Values 0: 60us, 1: 1ms, 2: 50ms, 3: 2s
-	register "PmConfigSlpS3MinAssert" = "0x02"
-
-	# SLP_S4 Minimum Assertion Width. Values 0: default, 1: 1s, 2: 2s, 3: 3s, 4: 4s
-	register "PmConfigSlpS4MinAssert" = "0x04"
-
-	# SLP_SUS Minimum Assertion Width. Values 0: 0ms, 1: 500ms, 2: 1s, 3: 4s
-	register "PmConfigSlpSusMinAssert" = "0x03"
-
-	# SLP_A Minimum Assertion Width. Values 0: 0ms, 1: 4s, 2: 98ms, 3: 2s
-	register "PmConfigSlpAMinAssert" = "0x03"
-
-	# Determines if enable Serial IRQ. Values 0: Disabled, 1: Enabled
-	register "SerialIrqConfigSirqEnable" = "0x01"
 
 	# VR Settings Configuration for 5 Domains
 	#+----------------+-------+-------+-------------+-------------+-------+
@@ -78,67 +67,68 @@ chip soc/intel/skylake
 	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V       | 1.52V       | 1.52V |
 	#+----------------+-------+-------+-------------+-------------+-------+
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = 0x50, \
-		.psi2threshold = 0x10, \
-		.psi3threshold = 0x4, \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0x0, \
-		.imon_offset = 0x0, \
-		.icc_max = 0x1C, \
-		.voltage_limit = 0x5F0 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(4),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(7),
+		.voltage_limit = 1520,
 	}"
 
 	register "domain_vr_config[VR_IA_CORE]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = 0x50, \
-		.psi2threshold = 0x14, \
-		.psi3threshold = 0x4, \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0x0, \
-		.imon_offset = 0x0, \
-		.icc_max = 0x88, \
-		.voltage_limit = 0x5F0 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(34),
+		.voltage_limit = 1520,
 	}"
+
 	register "domain_vr_config[VR_RING]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = 0x50, \
-		.psi2threshold = 0x14, \
-		.psi3threshold = 0x4, \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0x0, \
-		.imon_offset = 0x0, \
-		.icc_max = 0x88, \
-		.voltage_limit = 0x5F0, \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(34),
+		.voltage_limit = 1520,
 	}"
 
 	register "domain_vr_config[VR_GT_UNSLICED]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = 0x50, \
-		.psi2threshold = 0x14, \
-		.psi3threshold = 0x4, \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0x0, \
-		.imon_offset = 0x0, \
-		.icc_max = 0x8C ,\
-		.voltage_limit = 0x5F0 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(35),
+		.voltage_limit = 1520,
 	}"
 
 	register "domain_vr_config[VR_GT_SLICED]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = 0x50, \
-		.psi2threshold = 0x14, \
-		.psi3threshold = 0x4, \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0x0, \
-		.imon_offset = 0x0, \
-		.icc_max = 0x8C, \
-		.voltage_limit = 0x5F0 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(35),
+		.voltage_limit = 1520,
 	}"
 
 	# Enable Root port 1.
@@ -163,18 +153,18 @@ chip soc/intel/skylake
 	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"  # I2C4 is 1.8V
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
-	register "SerialIoDevMode" = "{ \
-		[PchSerialIoIndexI2C0]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C1]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C4]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart0] = PchSerialIoPci, \
-		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, \
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
+		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled,
+		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexUart0] = PchSerialIoPci,
+		[PchSerialIoIndexUart1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,
 	}"
 
 	# PL2 override 25W

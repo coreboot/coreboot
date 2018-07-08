@@ -38,6 +38,7 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Chell" if BOARD_GOOGLE_CHELL
 	default "Glados" if BOARD_GOOGLE_GLADOS
+	default "Lars" if BOARD_GOOGLE_LARS
 
 config MAINBOARD_FAMILY
 	string
@@ -47,11 +48,13 @@ config VARIANT_DIR
 	string
 	default "chell" if BOARD_GOOGLE_CHELL
 	default "glados" if BOARD_GOOGLE_GLADOS
+	default "lars" if BOARD_GOOGLE_LARS
 
 config DEVICETREE
 	string
 	default "variants/chell/devicetree.cb" if BOARD_GOOGLE_CHELL
 	default "variants/glados/devicetree.cb" if BOARD_GOOGLE_GLADOS
+	default "variants/lars/devicetree.cb" if BOARD_GOOGLE_LARS
 
 config MAX_CPUS
 	int
@@ -70,15 +73,18 @@ config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string
 	default "chell" if BOARD_GOOGLE_CHELL
 	default "glados" if BOARD_GOOGLE_GLADOS
+	default ""
 
 config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
 	string
 	default "chell_pd" if BOARD_GOOGLE_CHELL
 	default "glados_pd" if BOARD_GOOGLE_GLADOS
+	default ""
 
 config GBB_HWID
 	string
 	depends on CHROMEOS
 	default "CHELL TEST 6297" if BOARD_GOOGLE_CHELL
 	default "GLADOS TEST 1988" if BOARD_GOOGLE_GLADOS
+	default "LARS TEST 5001" if BOARD_GOOGLE_LARS
 endif

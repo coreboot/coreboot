@@ -31,7 +31,7 @@ static const int month_offset[] = {
 	0,  31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
 };
 
-static const char * const weekdays[] = {
+static const char *const weekdays[] = {
 	"Sun",  "Mon",  "Tues",  "Wednes",  "Thurs",  "Fri",  "Satur",
 };
 

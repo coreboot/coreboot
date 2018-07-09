@@ -25,7 +25,6 @@
 #include <soc/addressmap.h>
 #include <soc/flash_controller.h>
 #include <soc/gpio.h>
-#include <soc/pinmux.h>
 #include <soc/pll.h>
 #include <soc/spi.h>
 
@@ -68,10 +67,10 @@ static void mtk_spi_set_gpio_pinmux(enum spi_pad_mask pad_select)
 {
 	/* TODO: implement support for other pads when needed */
 	assert(pad_select == SPI_PAD1_MASK);
-	gpio_set_mode(PAD_MSDC2_DAT2, PAD_MSDC2_DAT2_FUNC_SPI_CK_1);
-	gpio_set_mode(PAD_MSDC2_DAT3, PAD_MSDC2_DAT3_FUNC_SPI_MI_1);
-	gpio_set_mode(PAD_MSDC2_CLK, PAD_MSDC2_CLK_FUNC_SPI_MO_1);
-	gpio_set_mode(PAD_MSDC2_CMD, PAD_MSDC2_CMD_FUNC_SPI_CS_1);
+	gpio_set_mode(GPIO(MSDC2_DAT2), PAD_MSDC2_DAT2_FUNC_SPI_CK_1);
+	gpio_set_mode(GPIO(MSDC2_DAT3), PAD_MSDC2_DAT3_FUNC_SPI_MI_1);
+	gpio_set_mode(GPIO(MSDC2_CLK), PAD_MSDC2_CLK_FUNC_SPI_MO_1);
+	gpio_set_mode(GPIO(MSDC2_CMD), PAD_MSDC2_CMD_FUNC_SPI_CS_1);
 }
 
 void mtk_spi_init(unsigned int bus, unsigned int pad_select,

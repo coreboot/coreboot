@@ -35,14 +35,14 @@ void setup_chromeos_gpios(void)
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
-		{WRITE_PROTECT, ACTIVE_LOW,
+		{WRITE_PROTECT.id, ACTIVE_LOW,
 			gpio_get(WRITE_PROTECT), "write protect"},
 		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
-		{LID, ACTIVE_HIGH, -1, "lid"},
-		{POWER_BUTTON, ACTIVE_HIGH, -1, "power"},
-		{EC_IN_RW, ACTIVE_HIGH, -1, "EC in RW"},
-		{EC_IRQ, ACTIVE_LOW, -1, "EC interrupt"},
-		{CR50_IRQ, ACTIVE_HIGH, -1, "TPM interrupt"},
+		{LID.id, ACTIVE_HIGH, -1, "lid"},
+		{POWER_BUTTON.id, ACTIVE_HIGH, -1, "power"},
+		{EC_IN_RW.id, ACTIVE_HIGH, -1, "EC in RW"},
+		{EC_IRQ.id, ACTIVE_LOW, -1, "EC interrupt"},
+		{CR50_IRQ.id, ACTIVE_HIGH, -1, "TPM interrupt"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }

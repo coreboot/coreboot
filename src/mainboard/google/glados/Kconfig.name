@@ -1,5 +1,12 @@
 comment "Glados"
 
+config BOARD_GOOGLE_ASUKA
+	bool "->  Asuka (Dell Chromebook 13 3380)"
+	select BOARD_GOOGLE_BASEBOARD_GLADOS
+	select DRIVERS_GENERIC_MAX98357A
+	select EXCLUDE_NATIVE_SD_INTERFACE
+	select NHLT_MAX98357 if INCLUDE_NHLT_BLOBS
+
 config BOARD_GOOGLE_CAROLINE
 	bool "->  Caroline (Samsung Chromebook Pro)"
 	select BOARD_GOOGLE_BASEBOARD_GLADOS

@@ -1,0 +1,6 @@
+Vendor name: Google
+Board name: Caroline (Samsung Chromebook Pro)
+Category: laptop
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

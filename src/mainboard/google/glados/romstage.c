@@ -71,4 +71,6 @@ void mainboard_memory_init_params(struct romstage_params *params,
 			sizeof(params->pei_data->RcompTarget));
 	memory_params->MemorySpdDataLen = SPD_LEN;
 	memory_params->DqPinsInterleaved = FALSE;
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_CAROLINE))
+		memory_params->DdrFreqLimit = 1600;
 }

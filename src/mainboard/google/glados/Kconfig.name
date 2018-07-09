@@ -1,5 +1,14 @@
 comment "Glados"
 
+config BOARD_GOOGLE_CAROLINE
+	bool "->  Caroline (Samsung Chromebook Pro)"
+	select BOARD_GOOGLE_BASEBOARD_GLADOS
+	select DRIVERS_INTEL_WIFI
+	select DSAR_ENABLE
+	select NHLT_SSM4567 if INCLUDE_NHLT_BLOBS
+	select SAR_ENABLE
+	select USE_SAR
+
 config BOARD_GOOGLE_CHELL
 	bool "->  Chell (HP Chromebook 13 G1)"
 	select BOARD_GOOGLE_BASEBOARD_GLADOS

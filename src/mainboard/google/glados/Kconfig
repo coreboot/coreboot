@@ -37,6 +37,7 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	string
 	default "Caroline" if BOARD_GOOGLE_CAROLINE
+	default "Cave" if BOARD_GOOGLE_CAVE
 	default "Chell" if BOARD_GOOGLE_CHELL
 	default "Glados" if BOARD_GOOGLE_GLADOS
 	default "Lars" if BOARD_GOOGLE_LARS
@@ -49,6 +50,7 @@ config MAINBOARD_FAMILY
 config VARIANT_DIR
 	string
 	default "caroline" if BOARD_GOOGLE_CAROLINE
+	default "cave" if BOARD_GOOGLE_CAVE
 	default "chell" if BOARD_GOOGLE_CHELL
 	default "glados" if BOARD_GOOGLE_GLADOS
 	default "lars" if BOARD_GOOGLE_LARS
@@ -57,6 +59,7 @@ config VARIANT_DIR
 config DEVICETREE
 	string
 	default "variants/caroline/devicetree.cb" if BOARD_GOOGLE_CAROLINE
+	default "variants/cave/devicetree.cb" if BOARD_GOOGLE_CAVE
 	default "variants/chell/devicetree.cb" if BOARD_GOOGLE_CHELL
 	default "variants/glados/devicetree.cb" if BOARD_GOOGLE_GLADOS
 	default "variants/lars/devicetree.cb" if BOARD_GOOGLE_LARS
@@ -91,6 +94,7 @@ config GBB_HWID
 	string
 	depends on CHROMEOS
 	default "CAROLINE TEST 0958" if BOARD_GOOGLE_CAROLINE
+	default "CAVE TEST 9629" if BOARD_GOOGLE_CAVE
 	default "CHELL TEST 6297" if BOARD_GOOGLE_CHELL
 	default "GLADOS TEST 1988" if BOARD_GOOGLE_GLADOS
 	default "LARS TEST 5001" if BOARD_GOOGLE_LARS

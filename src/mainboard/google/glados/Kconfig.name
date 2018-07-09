@@ -9,6 +9,12 @@ config BOARD_GOOGLE_CAROLINE
 	select SAR_ENABLE
 	select USE_SAR
 
+config BOARD_GOOGLE_CAVE
+	bool "->  Cave (Asus Chromebook Flip C302SA)"
+	select BOARD_GOOGLE_BASEBOARD_GLADOS
+	select DRIVERS_GENERIC_MAX98357A
+	select NHLT_MAX98357 if INCLUDE_NHLT_BLOBS
+
 config BOARD_GOOGLE_CHELL
 	bool "->  Chell (HP Chromebook 13 G1)"
 	select BOARD_GOOGLE_BASEBOARD_GLADOS

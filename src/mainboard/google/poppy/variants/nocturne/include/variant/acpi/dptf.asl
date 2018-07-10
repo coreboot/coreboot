@@ -73,7 +73,7 @@ Name (MPPC, Package ()
 	Package () {	/* Power Limit 1 */
 		0,	/* PowerLimitIndex, 0 for Power Limit 1 */
 		3000,	/* PowerLimitMinimum */
-		7000,	/* PowerLimitMaximum */
+		5000,	/* PowerLimitMaximum */
 		5000,	/* TimeWindowMinimum */
 		5000,	/* TimeWindowMaximum */
 		200	/* StepSize */
@@ -81,7 +81,7 @@ Name (MPPC, Package ()
 	Package () {	/* Power Limit 2 */
 		1,	/* PowerLimitIndex, 1 for Power Limit 2 */
 		15000,	/* PowerLimitMinimum */
-		15000,	/* PowerLimitMaximum */
+		18000,	/* PowerLimitMaximum */
 		1000,	/* TimeWindowMinimum */
 		1000,	/* TimeWindowMaximum */
 		1000	/* StepSize */

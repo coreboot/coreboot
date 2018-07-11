@@ -18,4 +18,7 @@
 
 #include <baseboard/ec.h>
 
+/* Enable Tablet switch */
+#define EC_ENABLE_TBMC_DEVICE
+
 #endif

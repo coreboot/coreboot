@@ -366,6 +366,10 @@
 #define GPP_CLK2_CLOCK_REQ_MAP_MASK	(0xf << GPP_CLK2_CLOCK_REQ_MAP_SHIFT)
 #define GPP_CLK2_CLOCK_REQ_MAP_CLK_REQ2	3
 
+#define GPP_CLK0_CLOCK_REQ_MAP_SHIFT	0
+#define GPP_CLK0_CLOCK_REQ_MAP_MASK	(0xf << GPP_CLK0_CLOCK_REQ_MAP_SHIFT)
+#define GPP_CLK0_CLOCK_REQ_MAP_CLK_REQ0	1
+
 struct stoneyridge_aoac {
 	int enable;
 	int status;

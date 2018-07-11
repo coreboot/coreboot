@@ -18,7 +18,7 @@ The following things are still missing from this coreboot port:
 - Placing the ramstage in DRAM
 - Starting the U54 cores
 - FU540 PIN configuration and GPIO access macros
-- FU540 OTP driver and serial number read-out
+- Provide serial number to payload (e.g. in device tree)
 - Support for booting Linux on RISC-V
 
 

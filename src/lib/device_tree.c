@@ -944,6 +944,7 @@ int dt_set_bin_prop_by_path(struct device_tree *tree, const char *path,
 
 	prop_name = strrchr(path_copy, '/');
 	if (!prop_name) {
+		free(path_copy);
 		printk(BIOS_ERR, "Path %s does not include '/'\n", path);
 		return 1;
 	}
@@ -956,10 +957,12 @@ int dt_set_bin_prop_by_path(struct device_tree *tree, const char *path,
 	if (!dt_node) {
 		printk(BIOS_ERR, "Failed to %s %s in the device tree\n",
 		       create ? "create" : "find", path_copy);
+		free(path_copy);
 		return 1;
 	}
 
 	dt_add_bin_prop(dt_node, prop_name, data, data_size);
+	free(path_copy);
 
 	return 0;
 }

@@ -519,7 +519,7 @@ int bdk_device_add(bdk_node_t node, int ecam, int bus, int dev, int func)
     {
         int grow = device_list_max + DEVICE_GROW;
         bdk_device_t *tmp = malloc(grow * sizeof(bdk_device_t));
-        if (!tmp)
+        if (tmp)
             memcpy(tmp, device_list, device_list_max * sizeof(bdk_device_t));
         free(device_list);
         if (tmp == NULL)

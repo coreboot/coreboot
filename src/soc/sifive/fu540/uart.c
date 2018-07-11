@@ -13,8 +13,11 @@
  * GNU General Public License for more details.
  */
 
+#include <stddef.h>
+#include <stdint.h>
 #include <console/uart.h>
 #include <soc/addressmap.h>
+#include <soc/clock.h>
 
 uintptr_t uart_platform_base(int idx)
 {
@@ -29,5 +32,9 @@ unsigned int uart_platform_refclk(void)
 	/*
 	 * The SiFive UART uses tlclk, which is coreclk/2 as input
 	 */
-	return 33330000 / 2;
+
+	if (ENV_BOOTBLOCK)
+		return 33330000 / 2;
+	else
+		return clock_get_coreclk_khz() * KHz / 2;
 }

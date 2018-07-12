@@ -549,15 +549,17 @@ dram_get_default_spd_speed(bdk_node_t node, const ddr_configuration_t *ddr_confi
     int dimm_speed[8], dimm_count = 0;
     int dimms_per_lmc = 0;
 
+    memset (dimm_speed, 0, sizeof(dimm_speed));
+
     for (lmc = 0; lmc < 4; lmc++) {
         for (dimm = 0; dimm < DDR_CFG_T_MAX_DIMMS; dimm++) {
             const dimm_config_t *dimm_config = &ddr_config[lmc].dimm_config_table[dimm];
-            if (/*dimm_config->spd_addr ||*/ dimm_config->spd_ptr)
+            if (dimm_config->spd_addr || dimm_config->spd_ptr)
             {
                 speed = (ddr_type == DDR4_DRAM)
                     ? get_ddr4_spd_speed(node, dimm_config)
                     : get_ddr3_spd_speed(node, dimm_config);
-                //printf("N%d.LMC%d.DIMM%d: SPD speed %d\n", node, lmc, dimm, speed);
+                printf("N%d.LMC%d.DIMM%d: SPD speed %d\n", node, lmc, dimm, speed);
                 dimm_speed[dimm_count] = speed;
                 dimm_count++;
                 if (lmc == 0)
@@ -596,6 +598,6 @@ dram_get_default_spd_speed(bdk_node_t node, const ddr_configuration_t *ddr_confi
     ret_speed = mts_to_hertz(speed);
 
  finish_up:
-    //printf("N%d: Returning default SPD speed %d\n", node, ret_speed);
+    printf("N%d: Returning default SPD speed %d\n", node, ret_speed);
     return ret_speed;
 }

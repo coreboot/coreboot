@@ -90,7 +90,6 @@ const struct bdk_devicetree_key_value devtree[] = {
 {"MULTI-NODE", "0"},
 {"QLM-AUTO-CONFIG", "0"},
 {"QLM-DIP-AUTO-CONFIG", "1"},
-{"DDR-SPEED.N0", "1333"},
 {"DDR-CONFIG-SPD-ADDR.DIMM0.LMC0", "0x1050"},
 {"USB-PWR-GPIO.N0.PORT0", "12"},
 {"USB-PWR-GPIO-POLARITY.N0.PORT0", "0"},

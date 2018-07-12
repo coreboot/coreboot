@@ -369,7 +369,9 @@ int bdk_usb_initialize(bdk_node_t node, int usb_port, bdk_usb_clock_t clock_type
             uint64_t fr_div;
             if (divider < 5) fr_div = divider * 2;
             else fr_div = 8 * (divider - 3);
-            uint64_t freq = (typeof(freq)) (sclk_rate / fr_div);
+            uint64_t freq = 0;
+            if (fr_div > 0)
+                freq = (typeof(freq)) (sclk_rate / fr_div);
             const char *token;
             if (freq < 62500000ULL) token = "???Low";
             else if (freq < 90000000ULL) token = "USB2";

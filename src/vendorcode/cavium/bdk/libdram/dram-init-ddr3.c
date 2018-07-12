@@ -2312,7 +2312,7 @@ void perform_octeon3_ddr3_sequence(bdk_node_t node, int rank_mask, int ddr_inter
     seq_ctl.s.seq_sel    = sequence;
 
     VB_PRT(VBL_SEQ, "N%d.LMC%d: Performing LMC sequence=%x: rank_mask=0x%02x, %s\n",
-            node, ddr_interface_num, sequence, rank_mask, sequence_str[sequence]);
+            node, ddr_interface_num, sequence, rank_mask, sequence < 12 ? sequence_str[sequence] : "");
 
     if ((s = lookup_env_parameter("ddr_trigger_sequence%d", sequence)) != NULL) {
             /* FIXME(dhendrix): this appears to be meant for the eval board */

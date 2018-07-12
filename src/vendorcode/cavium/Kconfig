@@ -65,6 +65,27 @@ config CAVIUM_BDK_VERBOSE_PHY
 	depends on CAVIUM_BDK
 	help
 	  Build Cavium's BDK with verbose PHY code.
+
+config CAVIUM_BDK_DDR_TUNE_HW_OFFSETS
+	bool "Hardware assisted DLL read offset tuning"
+	default n
+	depends on CAVIUM_BDK
+
+	help
+	  Automatically tune the data byte DLL read offsets.
+	  Always done by default, but allow use of HW-assist.
+	  NOTE: HW-assist will also tune the ECC byte.
+
+config CAVIUM_BDK_DDR_TUNE_WRITE_OFFSETS
+	bool "Automatically tune the data byte DLL write offsets"
+	default n
+	depends on CAVIUM_BDK
+
+config CAVIUM_BDK_DDR_TUNE_ECC_ENABLE
+	bool "Automatically tune the ECC byte DLL read offsets"
+	default n
+	depends on CAVIUM_BDK
+
 endmenu
 
 endif

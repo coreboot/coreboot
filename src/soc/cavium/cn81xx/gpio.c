@@ -103,9 +103,9 @@ void gpio_set(gpio_t gpio, int value)
 	printk(BIOS_SPEW, "GPIO(%u): level: %u\n", gpio, !!value);
 
 	if (value)
-		write64(&regs->tx_set, 1 << gpio);
+		write64(&regs->tx_set, 1ULL << gpio);
 	else
-		write64(&regs->tx_clr, 1 << gpio);
+		write64(&regs->tx_clr, 1ULL << gpio);
 }
 
 /* Set GPIO direction to OUTPUT with level */
@@ -153,9 +153,10 @@ int gpio_get(gpio_t gpio)
 		return 0;
 
 	const u64 reg = read64(&regs->rx_dat);
-	printk(BIOS_SPEW, "GPIO(%u): input: %u\n", gpio, !!(reg & (1 << gpio)));
+	printk(BIOS_SPEW, "GPIO(%u): input: %u\n", gpio,
+	       !!(reg & (1ULL << gpio)));
 
-	return !!(reg & (1 << gpio));
+	return !!(reg & (1ULL << gpio));
 }
 
 /* Read GPIO STRAP level sampled at cold boot */
@@ -167,9 +168,10 @@ int gpio_strap_value(gpio_t gpio)
 		return 0;
 
 	const u64 reg = read64(&regs->strap);
-	printk(BIOS_SPEW, "GPIO(%u): strap: %u\n", gpio, !!(reg & (1 << gpio)));
+	printk(BIOS_SPEW, "GPIO(%u): strap: %u\n", gpio,
+	       !!(reg & (1ULL << gpio)));
 
-	return !!(reg & (1 << gpio));
+	return !!(reg & (1ULL << gpio));
 }
 
 /* FIXME: Parse devicetree ? */

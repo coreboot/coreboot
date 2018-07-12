@@ -61,6 +61,7 @@ void bdk_boot_pcie(void)
                 {
                     BDK_TRACE(INIT, "Initializing PCIe%d on Node %d\n", p, n);
                     bdk_pcie_rc_initialize(n, p);
+                    bdk_watchdog_poke();
                 }
             }
         }

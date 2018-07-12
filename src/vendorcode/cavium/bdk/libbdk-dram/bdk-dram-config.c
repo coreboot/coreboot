@@ -106,7 +106,7 @@ const char* bdk_dram_get_info_string(int node)
     snprintf(info_string, INFO_STRING_LEN,
              " %ld MB, %ld MT/s, %s %s",
              bdk_dram_get_size_mbytes(node),
-             bdk_config_get_int(BDK_CONFIG_DDR_SPEED, node),
+             libdram_get_freq_from_pll(node, 0) / 1000000,
              (__bdk_dram_is_ddr4(node, 0)) ? "DDR4" : "DDR3",
              (__bdk_dram_is_rdimm(node, 0)) ? "RDIMM" : "UDIMM");
 

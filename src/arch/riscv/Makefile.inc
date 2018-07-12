@@ -23,15 +23,15 @@ ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
 check-ramstage-overlap-regions += stack
 endif
 
-riscv_arch = rv64imafd
+riscv_flags = -I$(src)/arch/riscv/ -mcmodel=$(CONFIG_RISCV_CODEMODEL) -march=$(CONFIG_RISCV_ARCH) -mabi=$(CONFIG_RISCV_ABI)
 
-ifeq ($(CONFIG_ARCH_RISCV_COMPRESSED),y)
-	riscv_arch := $(riscv_arch)c
-endif
+riscv_asm_flags = -march=$(CONFIG_RISCV_ARCH) -mabi=$(CONFIG_RISCV_ABI)
 
-riscv_flags = -I$(src)/arch/riscv/ -mcmodel=medany -march=$(riscv_arch)
+COMPILER_RT_bootblock = $(shell $(GCC_bootblock) $(riscv_flags) -print-libgcc-file-name)
 
-riscv_asm_flags = -march=$(riscv_arch)
+COMPILER_RT_romstage  = $(shell  $(GCC_romstage) $(riscv_flags) -print-libgcc-file-name)
+
+COMPILER_RT_ramstage  = $(shell  $(GCC_ramstage) $(riscv_flags) -print-libgcc-file-name)
 
 ################################################################################
 ## bootblock

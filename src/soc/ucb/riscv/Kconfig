@@ -10,4 +10,16 @@ config SOC_UCB_RISCV
 
 if SOC_UCB_RISCV
 
+config RISCV_ARCH
+	string
+	default "rv64imafd"
+
+config RISCV_ABI
+	string
+	default "lp64d"
+
+config RISCV_CODEMODEL
+	string
+	default "medany"
+
 endif

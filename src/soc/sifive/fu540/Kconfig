@@ -23,4 +23,16 @@ config SOC_SIFIVE_FU540
 
 if SOC_SIFIVE_FU540
 
+config RISCV_ARCH
+	string
+	default "rv64imac"
+
+config RISCV_ABI
+	string
+	default "lp64"
+
+config RISCV_CODEMODEL
+	string
+	default "medany"
+
 endif

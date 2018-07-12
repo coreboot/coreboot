@@ -1024,6 +1024,24 @@ config DEBUG_ADA_CODE
 	  Add the compiler switch `-gnata` to compile code guarded by
 	  `pragma Debug`.
 
+config HAVE_EM100_SUPPORT
+	bool "Platform can support the Dediprog EM100 SPI emulator"
+	help
+	  This is enabled by platforms which can support using the EM100.
+
+config EM100
+	bool "Configure image for EM100 usage"
+	depends on HAVE_EM100_SUPPORT
+	help
+	  The Dediprog EM100 SPI emulator allows fast loading of new SPI images
+	  over USB. However it only supports a maximum SPI clock of 20MHz and
+	  single data output. Enable this option to use a 20MHz SPI clock and
+	  disable "Dual Output Fast Read" Support.
+
+	  On AMD platforms this changes the SPI speed at run-time if the
+	  mainboard code supports this. On supported Intel platforms this works
+	  by changing the settings in the descriptor.bin file.
+
 endmenu
 
 

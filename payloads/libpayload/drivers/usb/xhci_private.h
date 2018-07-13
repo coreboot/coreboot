@@ -325,16 +325,16 @@ typedef struct xhci {
 	/* capreg is read-only, so no need for volatile,
 	   and thus 32bit accesses can be assumed. */
 	struct capreg {
-		u8 caplength;
-		u8 res1;
-		union {
+		u8 caplength; /* 0x00 */
+		u8 res1; /* 0x01 */
+		union { /* 0x02 */
 			u16 hciversion;
 			struct {
 				u8 hciver_lo;
 				u8 hciver_hi;
 			} __packed;
 		} __packed;
-		union {
+		union { /* 0x04 */
 			u32 hcsparams1;
 			struct {
 				unsigned long MaxSlots:7;
@@ -343,7 +343,7 @@ typedef struct xhci {
 				unsigned long MaxPorts:8;
 			} __packed;
 		} __packed;
-		union {
+		union { /* 0x08 */
 			u32 hcsparams2;
 			struct {
 				unsigned long IST:4;
@@ -354,7 +354,7 @@ typedef struct xhci {
 				unsigned long Max_Scratchpad_Bufs_Lo:5;
 			} __packed;
 		} __packed;
-		union {
+		union { /* 0x0C */
 			u32 hcsparams3;
 			struct {
 				unsigned long u1latency:8;
@@ -362,7 +362,7 @@ typedef struct xhci {
 				unsigned long u2latency:16;
 			} __packed;
 		} __packed;
-		union {
+		union { /* 0x10 */
 			u32 hccparams;
 			struct {
 				unsigned long ac64:1;
@@ -378,42 +378,42 @@ typedef struct xhci {
 				unsigned long xECP:16;
 			} __packed;
 		} __packed;
-		u32 dboff;
-		u32 rtsoff;
+		u32 dboff; /* 0x14 */
+		u32 rtsoff; /* 0x18 */
 	} __packed *capreg;
 
 	/* opreg is R/W is most places, so volatile access is necessary.
 	   volatile means that the compiler seeks byte writes if possible,
 	   making bitfields unusable for MMIO register blocks. Yay C :-( */
 	volatile struct opreg {
-		u32 usbcmd;
+		u32 usbcmd; /* 0x00 */
 #define USBCMD_RS (1 << 0)
 #define USBCMD_HCRST (1 << 1)
 #define USBCMD_INTE (1 << 2)
-		u32 usbsts;
+		u32 usbsts; /* 0x04 */
 #define USBSTS_HCH (1 << 0)
 #define USBSTS_HSE (1 << 2)
 #define USBSTS_EINT (1 << 3)
 #define USBSTS_PCD (1 << 4)
 #define USBSTS_CNR (1 << 11)
 #define USBSTS_PRSRV_MASK ((1 << 1) | 0xffffe000)
-		u32 pagesize;
-		u8 res1[0x13-0x0c+1];
-		u32 dnctrl;
-		u32 crcr_lo;
-		u32 crcr_hi;
+		u32 pagesize; /* 0x08 */
+		u8 res1[0x13-0x0c+1]; /* 0x0C */
+		u32 dnctrl; /* 0x14 */
+		u32 crcr_lo; /* 0x18 */
+		u32 crcr_hi; /* 0x1C */
 #define CRCR_RCS (1 << 0)
 #define CRCR_CS (1 << 1)
 #define CRCR_CA (1 << 2)
 #define CRCR_CRR (1 << 3)
-		u8 res2[0x2f-0x20+1];
-		u32 dcbaap_lo;
-		u32 dcbaap_hi;
-		u32 config;
+		u8 res2[0x2f-0x20+1]; /* 0x20 */
+		u32 dcbaap_lo; /* 0x30 */
+		u32 dcbaap_hi; /* 0x34 */
+		u32 config; /* 0x38 */
 #define CONFIG_LP_MASK_MaxSlotsEn 0xff
-		u8 res3[0x3ff-0x3c+1];
+		u8 res3[0x3ff-0x3c+1]; /* 0x3C */
 		struct {
-			u32 portsc;
+			u32 portsc; /* 0x400 + 4 * port */
 #define PORTSC_CCS (1 << 0)
 #define PORTSC_PED (1 << 1)
 	// BIT 2 rsvdZ
@@ -443,9 +443,9 @@ typedef struct xhci {
 #define PORTSC_DR (1 << 30)
 #define PORTSC_WPR (1 << 31)
 #define PORTSC_RW_MASK (PORTSC_PR | PORTSC_PLS_MASK | PORTSC_PP | PORTSC_PIC_MASK | PORTSC_LWS | PORTSC_WCE | PORTSC_WDE | PORTSC_WOE)
-			u32 portpmsc;
-			u32 portli;
-			u32 res;
+			u32 portpmsc; /* 0x404 + 4 * port */
+			u32 portli; /* 0x408 + 4 * port */
+			u32 res; /* 0x40C + 4 * port */
 		} __packed prs[];
 	} __packed *opreg;
 

@@ -3,6 +3,19 @@ config SOC_INTEL_CANNONLAKE
 	help
 	  Intel Cannonlake support
 
+config SOC_INTEL_COFFEELAKE
+	bool
+	default n
+	select SOC_INTEL_CANNONLAKE
+	help
+	  Intel Coffeelake support
+
+config CANNONLAKE_SOC_PCH_H
+	bool
+	default n
+	help
+	  Choose this option if you have a PCH-H chipset.
+
 if SOC_INTEL_CANNONLAKE
 
 config CPU_SPECIFIC_OPTIONS

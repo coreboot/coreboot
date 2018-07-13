@@ -27,7 +27,7 @@
  */
 
 /* Control TDP Settings */
-#define CTL_TDP_SENSOR_ID		0	/* EC TIN0 */
+#define CTL_TDP_SENSOR_ID		2	/* EC TIN2 */
 
 /* Temperature which OS will shutdown at */
 #define CRITICAL_TEMPERATURE		94

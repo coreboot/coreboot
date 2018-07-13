@@ -147,7 +147,7 @@ READELF := $(READELF_$(ARCH-y))
 STRIP := $(STRIP_$(ARCH-y))
 AR := $(AR_$(ARCH-y))
 
-CFLAGS += $(CFLAGS_$(ARCH-y))
+CFLAGS += -std=gnu11 $(CFLAGS_$(ARCH-y))
 
 ifneq ($(INNER_SCANBUILD),y)
 ifeq ($(CONFIG_LP_COMPILER_LLVM_CLANG),y)

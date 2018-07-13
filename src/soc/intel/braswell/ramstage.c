@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +74,7 @@ static inline void fill_in_msr(msr_t *msr, int idx)
 }
 
 static const char *const stepping_str[] = {
-	"A0", "A1", "B0", "B1", "B2", "B3", "C0"
+	"A0", "A1", "B0", "B1", "B2", "B3", "C0", "D1"
 };
 
 static void fill_in_pattrs(void)
@@ -86,7 +87,10 @@ static void fill_in_pattrs(void)
 	dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
 	attrs->revid = pci_read_config8(dev, REVID);
 	/* The revision to stepping IDs have two values per metal stepping. */
-	if (attrs->revid >= RID_C_STEPPING_START) {
+    if (attrs->revid >= RID_D_STEPPING_START) {
+		attrs->stepping = (attrs->revid - RID_D_STEPPING_START) / 2;
+		attrs->stepping += STEP_D1;
+    } else if (attrs->revid >= RID_C_STEPPING_START) {
 		attrs->stepping = (attrs->revid - RID_C_STEPPING_START) / 2;
 		attrs->stepping += STEP_C0;
 	} else if (attrs->revid >= RID_B_STEPPING_START) {

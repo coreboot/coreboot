@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +37,8 @@
 
 #define RID_A_STEPPING_START 1
 #define RID_B_STEPPING_START 5
-#define RID_C_STEPPING_START 0xe
+#define RID_C_STEPPING_START 0x21
+#define RID_D_STEPPING_START 0x35
 enum soc_stepping {
 	STEP_A0,
 	STEP_A1,
@@ -45,6 +47,7 @@ enum soc_stepping {
 	STEP_B2,
 	STEP_B3,
 	STEP_C0,
+	STEP_D1,
 };
 
 /* Registers behind the RCBA_BASE_ADDRESS bar. */

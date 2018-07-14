@@ -211,7 +211,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_130, PULL_UP),
 
 	/* GPIO_133 - APU_EDP_BKLTEN_L (backlight - Active LOW) */
-	PAD_GPO(GPIO_133, LOW),
+	PAD_GPO(GPIO_133, HIGH),
 
 	/* GPIO_135 - Unused (TP128) */
 	PAD_GPI(GPIO_135, PULL_UP),

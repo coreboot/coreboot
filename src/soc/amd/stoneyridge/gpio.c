@@ -162,7 +162,7 @@ void gpio_set(gpio_t gpio_num, int value)
 	reg = read32((void *)gpio_address);
 	reg &= ~GPIO_OUTPUT_MASK;
 	reg |=  !!value << GPIO_OUTPUT_SHIFT;
-	write32((void *)(uintptr_t)gpio_num, reg);
+	write32((void *)(uintptr_t)gpio_address, reg);
 }
 
 void gpio_input_pulldown(gpio_t gpio_num)

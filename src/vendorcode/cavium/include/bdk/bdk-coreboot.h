@@ -139,7 +139,7 @@ static inline uint8_t bdk_read64_uint8(uint64_t address)
  *
  * @return Number of bits set
  */
-inline uint32_t bdk_pop(uint32_t v)
+static inline uint32_t bdk_pop(uint32_t v)
 {
 	/* Use parallel SWAR algorithm */
 	v = v - ((v >> 1) & 0x55555555);
@@ -155,7 +155,7 @@ inline uint32_t bdk_pop(uint32_t v)
  *
  * @return Number of bits set
  */
-inline int bdk_dpop(uint64_t val)
+static inline int bdk_dpop(uint64_t val)
 {
 	return bdk_pop(val & 0xffffffff) + bdk_pop(val >> 32);
 }

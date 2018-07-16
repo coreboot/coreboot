@@ -403,9 +403,12 @@ xhci_reinit (hci_t *controller)
 		xhci_post_command(xhci);
 
 		/* Wait for result in event ring */
-		xhci_wait_for_command_done(xhci, cmd, 1);
-		xhci_debug("Command ring is %srunning\n",
-			   (xhci->opreg->crcr_lo & CRCR_CRR) ? "" : "not ");
+		int cc = xhci_wait_for_command_done(xhci, cmd, 1);
+
+		xhci_debug("Command ring is %srunning: cc: %d\n",
+			   (xhci->opreg->crcr_lo & CRCR_CRR) ? "" : "not ", cc);
+		if (cc != CC_SUCCESS)
+			xhci_debug("noop command failed.\n");
 	}
 #endif
 }

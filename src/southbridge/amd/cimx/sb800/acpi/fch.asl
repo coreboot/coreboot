@@ -354,12 +354,3 @@ Scope(\){
 		PWDA, 1,
 	}
 }
-
-Scope(\_SB) {
-	Device(PWRB) {	/* Start Power button device */
-		Name(_HID, EISAID("PNP0C0C"))
-		Name(_UID, 0xAA)
-		Name(_PRW, Package () {3, 0x04})	/* wake from S1-S4 */
-		Name(_STA, 0x0B)	/* sata is invisible */
-	}
-} /* End Scope(_SB)  */

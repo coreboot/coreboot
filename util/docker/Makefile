@@ -150,9 +150,17 @@ docker-jenkins-shell: test-docker
 docker-shell: USER=coreboot
 docker-shell: test-docker
 	$(DOCKER) run -u $(USER) -it \
+		-e COLUMNS=$(shell tput cols) -e LINES=$(shell tput lines) -e TERM=$(TERM) \
 		-w /home/coreboot/coreboot \
 		-v $(top):/home/coreboot/coreboot \
 		--rm coreboot/coreboot-sdk:$(COREBOOT_CONTAINER_VERSION) \
+		/bin/bash -l
+
+docker-jenkins-attach: USER=root
+docker-jenkins-attach:
+	docker exec --user $(USER) \
+		-e COLUMNS=$(shell tput cols) -e LINES=$(shell tput lines) -e TERM=$(TERM) \
+		-it "$$(docker ps | grep coreboot-jenkins-node | cut -f1 -d' ')" \
 		/bin/bash -l
 
 help:
@@ -174,6 +182,7 @@ help:
 	@echo "  docker-shell                 - Bash prompt in coreboot-jenkins-node"
 	@echo "      <USER=root or USER=coreboot>"
 	@echo "  docker-jenkins-server        - Run coreboot-jenkins-node image (for server)"
+	@echo "  docker-jenkins-attach        - Open shell in running jenkins server"
 	@echo
 	@echo "Variables:"
 	@echo "  COREBOOT_JENKINS_PORT=$(COREBOOT_JENKINS_PORT)"
@@ -187,5 +196,5 @@ help:
 .PHONY: coreboot-sdk upload-coreboot-sdk
 .PHONY: clean-coreboot-containers clean-coreboot-images
 .PHONY: docker-abuild
-.PHONY: docker-what-jenkins-does docker-shell docker-jenkins-server
+.PHONY: docker-what-jenkins-does docker-shell docker-jenkins-server docker-jenkins-attach
 .PHONY: help

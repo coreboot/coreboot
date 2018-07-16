@@ -95,7 +95,7 @@ xhci_rh_port_speed(usbdev_t *const dev, const int port)
 				>> PORTSC_PORT_SPEED_START)
 			- 1;
 	} else {
-		return -1;
+		return UNKNOWN_SPEED;
 	}
 }
 

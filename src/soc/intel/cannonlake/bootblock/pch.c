@@ -14,7 +14,9 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <device/device.h>
+#include <device/pci_ids.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpc_lib.h>
@@ -27,12 +29,15 @@
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/p2sb.h>
+#include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <soc/smbus.h>
 
-#define PCR_PSF3_TO_SHDW_PMC_REG_BASE	0x1400
+#define PCR_PSF3_TO_SHDW_PMC_REG_BASE_CNP_LP	0x1400
+#define PCR_PSF3_TO_SHDW_PMC_REG_BASE_CNP_H	0x0980
+
 #define PCR_PSFX_TO_SHDW_BAR0	0
 #define PCR_PSFX_TO_SHDW_BAR1	0x4
 #define PCR_PSFX_TO_SHDW_BAR2	0x8
@@ -51,12 +56,28 @@
 #define PCR_DMI_LPCIOD		0x2770
 #define PCR_DMI_LPCIOE		0x2774
 
+static uint32_t get_pmc_reg_base(void)
+{
+	uint8_t pch_series;
+
+	pch_series = get_pch_series();
+
+	if (pch_series == PCH_H)
+		return PCR_PSF3_TO_SHDW_PMC_REG_BASE_CNP_H;
+	else if (pch_series == PCH_LP)
+		return PCR_PSF3_TO_SHDW_PMC_REG_BASE_CNP_LP;
+	else
+		return 0;
+}
+
 static void soc_config_pwrmbase(void)
 {
 	uint32_t reg32;
 
-	/* Assign Resources to PWRMBASE  */
-	/* Clear BIT 1-2  Command Register */
+	/*
+	 * Assign Resources to PWRMBASE
+	 * Clear BIT 1-2  Command Register
+	 */
 	reg32 = pci_read_config32(PCH_DEV_PMC, PCI_COMMAND);
 	reg32 &= ~(PCI_COMMAND_MEMORY);
 	pci_write_config32(PCH_DEV_PMC, PCI_COMMAND, reg32);
@@ -92,22 +113,27 @@ void bootblock_pch_early_init(void)
 static void soc_config_acpibase(void)
 {
 	uint32_t pmc_reg_value;
+	uint32_t pmc_base_reg;
 
-	pmc_reg_value = pcr_read32(PID_PSF3, PCR_PSF3_TO_SHDW_PMC_REG_BASE +
-						PCR_PSFX_TO_SHDW_BAR4);
+	pmc_base_reg = get_pmc_reg_base();
+	if (!pmc_base_reg)
+		die("Invalid PMC base address\n");
+
+	pmc_reg_value = pcr_read32(PID_PSF3, pmc_base_reg +
+					PCR_PSFX_TO_SHDW_BAR4);
 
 	if (pmc_reg_value != 0xFFFFFFFF)
 	{
 		/* Disable Io Space before changing the address */
-		pcr_rmw32(PID_PSF3, PCR_PSF3_TO_SHDW_PMC_REG_BASE +
+		pcr_rmw32(PID_PSF3, pmc_base_reg +
 				PCR_PSFX_T0_SHDW_PCIEN,
 				~PCR_PSFX_TO_SHDW_PCIEN_IOEN, 0);
 		/* Program ABASE in PSF3 PMC space BAR4*/
-		pcr_write32(PID_PSF3, PCR_PSF3_TO_SHDW_PMC_REG_BASE +
+		pcr_write32(PID_PSF3, pmc_base_reg +
 				PCR_PSFX_TO_SHDW_BAR4,
 				ACPI_BASE_ADDRESS);
 		/* Enable IO Space */
-		pcr_rmw32(PID_PSF3, PCR_PSF3_TO_SHDW_PMC_REG_BASE +
+		pcr_rmw32(PID_PSF3, pmc_base_reg +
 				PCR_PSFX_T0_SHDW_PCIEN,
 				~0, PCR_PSFX_TO_SHDW_PCIEN_IOEN);
 	}

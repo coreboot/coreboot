@@ -54,6 +54,7 @@ chip soc/intel/skylake
 	register "PmConfigSlpSusMinAssert" = "1"       # 500ms
 	register "PmConfigSlpAMinAssert" = "3"         # 2s
 	register "PmTimerDisabled" = "1"
+	register "VmxEnable" = "1"
 
 	# TCC offset
 	register "tcc_offset" = "10"

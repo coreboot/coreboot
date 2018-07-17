@@ -35,6 +35,7 @@ DefinitionBlock(
 		{
 			#include <soc/intel/skylake/acpi/systemagent.asl>
 			#include <soc/intel/skylake/acpi/pch.asl>
+			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		}
 
 		// Dynamic Platform Thermal Framework

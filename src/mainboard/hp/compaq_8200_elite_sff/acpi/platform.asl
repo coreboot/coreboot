@@ -13,11 +13,14 @@
  * GNU General Public License for more details.
  */
 
-Method(_WAK,1)
+Method(_WAK, 1, NotSerialized)
 {
+	\_SB.PCI0.LPCB.SIO0.SIOW (Arg0)
+
 	Return(Package(){0,0})
 }
 
-Method(_PTS,1)
+Method(_PTS, 1, NotSerialized)
 {
+	\_SB.PCI0.LPCB.SIO0.SIOS (Arg0)
 }

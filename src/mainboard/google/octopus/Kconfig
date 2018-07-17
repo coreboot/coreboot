@@ -43,6 +43,7 @@ config VARIANT_DIR
 	default "phaser" if BOARD_GOOGLE_PHASER
 	default "fleex" if BOARD_GOOGLE_FLEEX
 	default "bobba" if BOARD_GOOGLE_BOBBA
+	default "meep" if BOARD_GOOGLE_MEEP
 	default "octopus" if BOARD_GOOGLE_OCTOPUS
 
 config DEVICETREE
@@ -60,6 +61,7 @@ config MAINBOARD_PART_NUMBER
 	default "Phaser" if BOARD_GOOGLE_PHASER
 	default "Fleex" if BOARD_GOOGLE_FLEEX
 	default "Bobba" if BOARD_GOOGLE_BOBBA
+	default "Meep" if BOARD_GOOGLE_MEEP
 	default "Octopus" if BOARD_GOOGLE_OCTOPUS
 
 config MAINBOARD_FAMILY
@@ -74,6 +76,7 @@ config GBB_HWID
 	default "PHASER TEST 7167" if BOARD_GOOGLE_PHASER
 	default "FLEEX TEST 7423" if BOARD_GOOGLE_FLEEX
 	default "BOBBA TEST 4516" if BOARD_GOOGLE_BOBBA
+	default "MEEP TEST 1118" if BOARD_GOOGLE_MEEP
 	default "OCTOPUS TEST 6859" if BOARD_GOOGLE_OCTOPUS
 
 config MAX_CPUS

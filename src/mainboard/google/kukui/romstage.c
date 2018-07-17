@@ -16,6 +16,7 @@
 #include <arch/exception.h>
 #include <console/console.h>
 #include <program_loading.h>
+#include <soc/mmu_operations.h>
 #include <timestamp.h>
 
 void main(void)
@@ -25,6 +26,8 @@ void main(void)
 	/* Init UART baudrate when PLL on. */
 	console_init();
 	exception_init();
+
+	mtk_mmu_after_dram();
 
 	run_ramstage();
 }

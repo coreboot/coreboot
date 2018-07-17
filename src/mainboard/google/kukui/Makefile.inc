@@ -8,4 +8,5 @@ romstage-y += memlayout.ld
 romstage-y += romstage.c
 
 ramstage-y += chromeos.c
+ramstage-y += mainboard.c
 ramstage-y += memlayout.ld

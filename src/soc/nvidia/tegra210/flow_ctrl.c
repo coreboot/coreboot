@@ -36,7 +36,7 @@
 #define FLOW_CTRL_CPU1_CSR		0x18
 #define FLOW_CTRL_CC4_CORE0_CTRL	0x6c
 
-static void *tegra_flowctrl_base = (void*)TEGRA_FLOW_BASE;
+static void *tegra_flowctrl_base = (void *)TEGRA_FLOW_BASE;
 
 static const uint8_t flowctrl_offset_halt_cpu[] = {
 	FLOW_CTRL_HALT_CPU0_EVENTS,

@@ -321,7 +321,7 @@ vbe_set_color(u16 color_number, u32 color_value)
 }
 
 static u8
-vbe_get_color(u16 color_number, u32 * color_value)
+vbe_get_color(u16 color_number, u32 *color_value)
 {
 	vbe_prepare();
 	// call VBE function 09h (Set/Get Palette Data Function)

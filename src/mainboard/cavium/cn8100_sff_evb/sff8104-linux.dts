@@ -1,0 +1,282 @@
+/*
+ * Cavium Thunder DTS file - Thunder board description
+ *
+ * Copyright (C) 2016, Cavium Inc.
+ *
+ * This file is dual-licensed: you can use it either under the terms
+ * of the GPL or the X11 license, at your option. Note that this dual
+ * licensing only applies to this file, and not this project as a
+ * whole.
+ *
+ * a) This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; version 2 of the License.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ * Or, alternatively,
+ *
+ *  b) Permission is hereby granted, free of charge, to any person
+ *     obtaining a copy of this software and associated documentation
+ *     files (the "Software"), to deal in the Software without
+ *     restriction, including without limitation the rights to use,
+ *     copy, modify, merge, publish, distribute, sublicense, and/or
+ *     sell copies of the Software, and to permit persons to whom the
+ *     Software is furnished to do so, subject to the following
+ *     conditions:
+ *
+ *     The above copyright notice and this permission notice shall be
+ *     included in all copies or substantial portions of the Software.
+ *
+ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *     OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+/dts-v1/;
+
+/include/ "cn81xx-linux.dtsi"
+
+&mrml_bridge {
+	mdio-nexus@1,3 {
+		mdio0@87e005003800 {
+			rgmii00: rgmii00 {
+				reg = <0> ;
+				compatible = "marvell,88e1510", "ethernet-phy-ieee802.3-c22";
+			};
+
+			qsgmii00: qsgmii00 {
+				qlm-mode = "0x000,qsgmii";
+				reg = <0x10> ;
+				compatible = "vitesse,vsc8574", "ethernet-phy-ieee802.3-c22";
+			};
+			qsgmii01: qsgmii01 {
+				qlm-mode = "0x001,qsgmii";
+				reg = <0x11> ;
+				compatible = "vitesse,vsc8574", "ethernet-phy-ieee802.3-c22";
+			};
+			qsgmii02: qsgmii02 {
+				qlm-mode = "0x002,qsgmii";
+				reg = <0x12> ;
+				compatible = "vitesse,vsc8574", "ethernet-phy-ieee802.3-c22";
+			};
+			qsgmii03: qsgmii03 {
+				qlm-mode = "0x003,qsgmii";
+				reg = <0x13> ;
+				compatible = "vitesse,vsc8574", "ethernet-phy-ieee802.3-c22";
+			};
+		};
+		mdio1@87e005003880 {
+			xfi00: xfi00 {
+				qlm-mode = "0x000,xfi";
+				reg = <0x0>;
+				compatible = "aquantia,aqr105", "ethernet-phy-ieee802.3-c45";
+			};
+		};
+	};
+
+	rgx0 {
+		rgmii00 {
+			reg = <0>;
+			local-mac-address = [00 00 00 00 00 00];
+			phy-handle = <&rgmii00>;
+		};
+	};
+
+	bgx0 {
+		/* typename+qlm+typenumber eg :
+		   qsgmii+bgx0+sgmmi0
+		 */
+		qsgmii00 {
+			reg = <0>;
+			qlm-mode = "0x000,qsgmii";
+			local-mac-address = [00 00 00 00 00 00];
+			phy-handle = <&qsgmii00>;
+		};
+		qsgmii01 {
+			reg = <1>;
+			qlm-mode = "0x001,qsgmii";
+			local-mac-address = [00 00 00 00 00 00];
+			phy-handle = <&qsgmii01>;
+		};
+		qsgmii02 {
+			reg = <2>;
+			qlm-mode = "0x002,qsgmii";
+			local-mac-address = [00 00 00 00 00 00];
+			phy-handle = <&qsgmii02>;
+		};
+		qsgmii03 {
+			reg = <3>;
+			qlm-mode = "0x003,qsgmii";
+			local-mac-address = [00 00 00 00 00 00];
+			phy-handle = <&qsgmii03>;
+		};
+
+		xfi00 {
+			reg = <0>;
+			qlm-mode = "0x000,xfi";
+			local-mac-address = [00 00 00 00 00 00];
+			phy-handle = <&xfi00>;
+		};
+	};
+
+	bgx1 {
+		xfi10 {
+			reg = <0>;
+			qlm-mode = "0x010,xfi";
+			local-mac-address = [00 00 00 00 00 00];
+		};
+
+		xfi11 {
+			reg = <1>;
+			qlm-mode = "0x011,xfi";
+			local-mac-address = [00 00 00 00 00 00];
+		};
+	};
+
+
+};
+
+&mmc_1_4 {
+	/* NOTE: the BDK is responsible for swapping the two slots.
+	 * Unfortunately there does not appear to be any way to read the
+	 * position of SW2-7 in software.
+	 */
+	mmc-slot@0 {
+		compatible = "mmc-slot";
+		reg = <0>;
+		vmmc-supply = <&mmc_supply_3v3>;
+		max-frequency = <26000000>;
+		/* 1.8v is not supported */
+		no-1-8-v;
+		/* Bus width is only 4 bits maximum */
+		bus-width = <4>;
+		/* No write-protect switch is present */
+		disable-wp;
+		/* There is no card detection available; polling must be used. */
+		broken-cd;
+		/* High-speed mode is supported */
+		cap-sd-highspeed;
+		/* speed up device probing */
+		no-sdio;
+		no-mmc;
+	};
+	mmc-slot@1 {
+		compatible = "mmc-slot";
+		reg = <1>;
+		vmmc-supply = <&mmc_supply_3v3>;
+		max-frequency = <26000000>;
+		mmc-ddr-3_3v;
+		/* 1.8v is not supported */
+		no-1-8-v;
+		/* Bus width is only 8 bits maximum */
+		bus-width = <8>;
+		/* No write-protect switch is present */
+		disable-wp;
+		/* There is no card detection available; polling must be used. */
+		broken-cd;
+		/* High-speed mode is supported */
+		cap-mmc-highspeed;
+		/* eMMC device is soldered onto the board */
+		non-removable;
+		/* speed up device probing */
+		no-sdio;
+		no-sd;
+	};
+};
+
+&i2c_9_0 {
+        /* another pca9535 at 0x20 is only visible via jtag */
+        gpio1: gpio-i2c@21 {
+                compatible = "nxp,pca9535";
+		gpio-controller;
+                reg = <0x21>;
+                gpio_base = <48>;
+		pins = <48 16>;
+		ngpios = <16>; // standard
+		n_gpios = <16>; // deprecated, driver required
+		#gpio-cells = <2>;
+        };
+
+        gpio2: gpio-i2c@22 {
+                compatible = "nxp,pca9535";
+		gpio-controller;
+                reg = <0x22>;
+                gpio_base = <64>;
+		pins = <64 16>;
+		ngpios = <16>; // standard
+		n_gpios = <16>; // deprecated, driver required
+		#gpio-cells = <2>;
+        };
+
+	mux@70 {
+		compatible = "nxp,pca9546";
+		reg = <0x70>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		i2c@0 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0>;
+		};
+
+		i2c@1 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <1>;
+		};
+
+		i2c@2 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <2>;
+		};
+	};
+};
+
+&i2c_9_1 {
+        rom@54 {
+                compatible = "atmel,24c256";
+                reg = <0x54>;
+                pagesize = <64>;
+        };
+
+        rtc@68 {
+                compatible = "isil,isl12057";
+                reg = <0x68>;
+        };
+};
+
+&spi_7_0 {
+	flash@0 {
+		compatible = "micron,n25q128a13", "spi-flash", "jedec,spi-nor";
+		reg = <0x0>;
+		spi-max-frequency = <16000000>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+	};
+	flash@1 {
+		compatible = "spinand,mt29f", "mt29f";
+		reg = <0x1>;
+		spi-max-frequency = <50000000>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+		nand-ecc-mode = "none";
+	};
+};
+
+&nfc {
+	nand@1 {
+		reg = <0x1>;
+		nand-ecc-mode = "none";
+	};
+};

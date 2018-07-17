@@ -832,11 +832,11 @@ static void __bdk_qlm_set_reference(bdk_node_t node, int qlm, int ref_clk)
     {
         switch (ref_clk)
         {
-            case REF_100MHZ:
+            case REF_156MHZ:
                 use_clock = 0; /* Common clock 0 */
                 BDK_TRACE(QLM, "Setting N%d.QLM%d to use common clock 0\n", node, qlm);
                 break;
-            case REF_156MHZ:
+            case REF_100MHZ:
                 use_clock = 1; /* Common clock 1 */
                 BDK_TRACE(QLM, "Setting N%d.QLM%d to use common clock 1\n", node, qlm);
                 break;

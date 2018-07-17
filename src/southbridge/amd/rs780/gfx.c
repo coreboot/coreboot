@@ -311,9 +311,9 @@ static void poweron_ddi_lanes(struct device *nb_dev)
 
 static void internal_gfx_pci_dev_init(struct device *dev)
 {
-	unsigned char * bpointer;
-	volatile u32 * GpuF0MMReg;
-	volatile u32 * pointer;
+	unsigned char *bpointer;
+	volatile u32 *GpuF0MMReg;
+	volatile u32 *pointer;
 	int i;
 	u16 command;
 	u32 value;

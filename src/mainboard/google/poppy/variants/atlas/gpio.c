@@ -16,6 +16,8 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
+#include <device/device.h>
+#include <soc/pci_devs.h>
 
 /* Pad configuration in ramstage */
 /* Leave eSPI pins untouched from default settings */
@@ -51,10 +53,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_A17),
 	/* A18 : ISH_GP0 ==> ISH_GP0 */
 	PAD_CFG_NC(GPP_A18),
-	/* A19 : ISH_GP1 ==> TRACKPAD_INT_L */
-	PAD_CFG_GPI_APIC(GPP_A19, NONE, PLTRST),
-	/* A20 : ISH_GP2 ==> ISH_UART0_RXD */
-	PAD_CFG_NC(GPP_A20),
 	/* A21 : ISH_GP3 */
 	PAD_CFG_NC(GPP_A21),
 	/* A22 : ISH_GP4 */
@@ -186,10 +184,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_1V8(GPP_D11, NONE, DEEP, NF1),
 	/* D12 : ISH_SPI_MOSI ==> ISH_SPI_MOSI */
 	PAD_CFG_NF_1V8(GPP_D12, NONE, DEEP, NF1),
-	/* D13 : ISH_UART0_RXD ==> ISH_UART0_RXD */
-	PAD_CFG_NF_1V8(GPP_D13, NONE, DEEP, NF1),
-	/* D14 : ISH_UART0_TXD ==> ISH_UART0_TXD */
-	PAD_CFG_NF_1V8(GPP_D14, NONE, DEEP, NF1),
 	/* D15 : ISH_UART0_RTS# ==> NC */
 	PAD_CFG_NC(GPP_D15),
 	/* D16 : ISH_UART0_CTS# ==> NC */
@@ -387,4 +381,51 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
+}
+
+static const struct pad_config ish_enabled_gpio_table[] = {
+	/* A19 : ISH_GP1 ==> TRACKPAD_INT_L
+	 * trackpad interrupt to ISH
+	 */
+	PAD_CFG_NF(GPP_A19, NONE, DEEP, NF1),
+	/* A20 : ISH_GP2 ==> ISH_UART0_RXD
+	 * ISH_UART0_RXD signal goes to this ISH GPIO pin.
+	 * It is used as wake up source in ISH firmware.
+	 * Implementation is in ISH firmware also.
+	 */
+	PAD_CFG_NF(GPP_A20, NONE, DEEP, NF1),
+
+	/* D13 : ISH_UART0_RXD ==> ISH_UART0_RXD */
+	PAD_CFG_NF_1V8(GPP_D13, NONE, DEEP, NF1),
+	/* D14 : ISH_UART0_TXD ==> ISH_UART0_TXD */
+	PAD_CFG_NF_1V8(GPP_D14, NONE, DEEP, NF1),
+};
+
+
+static const struct pad_config ish_disabled_gpio_table[] = {
+	/* A19 : GPP_A19 ==> TRACKPAD_INT_L
+	 * trackpad interrupt to PCH
+	 */
+	PAD_CFG_GPI_APIC(GPP_A19, NONE, PLTRST),
+	/* A20 : ISH_GP2 ==> NC */
+	PAD_CFG_NC(GPP_A20),
+
+	/* D13 : ISH_UART0_RXD ==> NC */
+	PAD_CFG_NC(GPP_D13),
+	/* D14 : ISH_UART0_TXD ==> NC */
+	PAD_CFG_NC(GPP_D14),
+};
+
+const struct pad_config *variant_sku_gpio_table(size_t *num)
+{
+	const struct pad_config *board_gpio_tables;
+	const struct device *dev = dev_find_slot(0, PCH_DEVFN_ISH);
+	if (dev && dev->enabled) {
+		*num = ARRAY_SIZE(ish_enabled_gpio_table);
+		board_gpio_tables = ish_enabled_gpio_table;
+	} else {
+		*num = ARRAY_SIZE(ish_disabled_gpio_table);
+		board_gpio_tables = ish_disabled_gpio_table;
+	}
+	return board_gpio_tables;
 }

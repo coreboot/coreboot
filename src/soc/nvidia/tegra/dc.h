@@ -512,14 +512,14 @@ struct tegra_dc_mode {
 	u32	vmode;
 };
 
-unsigned long READL(void * p);
-void WRITEL(unsigned long value, void * p);
+unsigned long READL(void *p);
+void WRITEL(unsigned long value, void *p);
 
 #ifndef __PRE_RAM__
 void display_startup(struct device *dev);
 #endif
-void dp_init(void * _config);
-void dp_enable(void * _dp);
+void dp_init(void *_config);
+void dp_enable(void *_dp);
 unsigned int fb_base_mb(void);
 
 #endif /* __SOC_NVIDIA_TEGRA_DC_H */

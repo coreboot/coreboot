@@ -28,7 +28,7 @@ void asmlinkage early_all_cores(void)
 	amd_initmmio();
 }
 
-void * asmlinkage romstage_main(unsigned long bist)
+void *asmlinkage romstage_main(unsigned long bist)
 {
 	int s3resume = 0;
 	u8 initial_apic_id = cpuid_ebx(1) >> 24;
@@ -45,7 +45,7 @@ void * asmlinkage romstage_main(unsigned long bist)
 	stack_top += HIGH_ROMSTAGE_STACK_SIZE;
 
 	printk(BIOS_DEBUG, "Move CAR stack.\n");
-	return (void*)stack_top;
+	return (void *)stack_top;
 }
 
 void asmlinkage romstage_after_car(void)

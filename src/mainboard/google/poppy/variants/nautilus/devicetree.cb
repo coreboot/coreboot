@@ -45,7 +45,6 @@ chip soc/intel/skylake
 	register "ScsEmmcEnabled" = "1"
 	register "ScsEmmcHs400Enabled" = "1"
 	register "ScsSdCardEnabled" = "2"
-	register "IshEnable" = "0"
 	register "PttSwitch" = "0"
 	register "InternalGfx" = "1"
 	register "SkipExtGfxScan" = "1"
@@ -330,7 +329,7 @@ chip soc/intel/skylake
 		end # I2C #1
 		device pci 15.2 on
 			chip drivers/i2c/generic
-				register "hid" = ""SX9321""
+				register "hid" = ""STH9321""
 				register "name" = ""SEMTECH SX9321""
 				register "desc" = ""SAR Proximity Sensor""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_A18_IRQ)"

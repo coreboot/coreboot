@@ -28,7 +28,7 @@
 
 #include "memory.c"
 
-void * asmlinkage romstage_main(unsigned long bist)
+void *asmlinkage romstage_main(unsigned long bist)
 {
 	int cbmem_was_initted;
 

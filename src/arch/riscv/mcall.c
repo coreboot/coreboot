@@ -27,7 +27,6 @@
 
 #include <arch/barrier.h>
 #include <arch/errno.h>
-#include <atomic.h>
 #include <console/console.h>
 #include <mcall.h>
 #include <string.h>

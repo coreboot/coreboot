@@ -63,7 +63,7 @@ void main(void)
 	else
 		mt_pll_raise_ca53_freq(1700 * MHz);
 
-	mt8173_mmu_after_dram();
+	mtk_mmu_after_dram();
 
 	/* should be called after memory init */
 	cbmem_initialize_empty();

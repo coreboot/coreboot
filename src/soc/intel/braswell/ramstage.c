@@ -72,7 +72,7 @@ static inline void fill_in_msr(msr_t *msr, int idx)
 	}
 }
 
-static const char * const stepping_str[] = {
+static const char *const stepping_str[] = {
 	"A0", "A1", "B0", "B1", "B2", "B3", "C0"
 };
 

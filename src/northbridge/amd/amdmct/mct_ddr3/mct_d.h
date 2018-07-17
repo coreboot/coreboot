@@ -1055,13 +1055,13 @@ void mct_EnableDatIntlv_D(struct MCTStatStruc *pMCTstat,
 void SetDllSpeedUp_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct);
 uint8_t get_available_lane_count(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
-void read_dqs_receiver_enable_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
-void read_dqs_write_timing_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
+void read_dqs_receiver_enable_control_registers(uint16_t *current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
+void read_dqs_write_timing_control_registers(uint16_t *current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
 void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t enable);
-void read_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev,
+void read_dqs_read_data_timing_registers(uint16_t *delay, uint32_t dev,
 			uint8_t dct, uint8_t dimm, uint32_t index_reg);
-void write_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev,
+void write_dqs_read_data_timing_registers(uint16_t *delay, uint32_t dev,
 			uint8_t dct, uint8_t dimm, uint32_t index_reg);
 void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat);
@@ -1133,7 +1133,7 @@ void write_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 void read_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 	struct DCTStatStruc *pDCTstat, uint8_t dct,
 	uint8_t Receiver, uint8_t lane, uint8_t stop_on_error);
-void write_dqs_receiver_enable_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
+void write_dqs_receiver_enable_control_registers(uint16_t *current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
 
 uint32_t fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat, uint8_t dct);

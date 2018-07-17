@@ -549,6 +549,7 @@ static uint32_t cfg_read32_retry(bdk_node_t node, int pcie_port, int bus, int de
             return val;
         /* Failed, wait a little and try again */
         bdk_wait_usec(10000);
+        bdk_watchdog_poke();
     } while (bdk_clock_get_count(BDK_CLOCK_TIME) < timeout);
 
     BDK_TRACE(PCIE, "N%d.PCIe%d: Config read failed, can't communicate with device\n",
@@ -1123,6 +1124,7 @@ int bdk_pcie_rc_initialize(bdk_node_t node, int pcie_port)
             return -1;
         }
         retry_count++;
+        bdk_watchdog_poke();
     }
 
     /* Errata PCIE-28816: Link retrain initiated at GEN1 can cause PCIE

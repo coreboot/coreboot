@@ -29,7 +29,7 @@
 #define USB_HUB_C_PORT_RESET		20
 
 
-static int hub_port_status(const char * buf, int feature)
+static int hub_port_status(const char *buf, int feature)
 {
 	return !!(buf[feature>>3] & (1<<(feature&0x7)));
 }

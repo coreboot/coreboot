@@ -13,4 +13,4 @@
 ## GNU General Public License for more details.
 ##
 
-ramstage-$(CONFIG_SUPERIO_SMSC_FDC37N972) += fdc37n972.c
+ramstage-$(CONFIG_SUPERIO_SMSC_FDC37N972) += superio.c

@@ -224,7 +224,7 @@ void update_mrc_cache(void *unused)
 
 #endif	/* !defined(__PRE_RAM__) */
 
-void * find_and_set_fastboot_cache(void)
+void *find_and_set_fastboot_cache(void)
 {
 	struct mrc_data_container *mrc_cache = NULL;
 	if (((mrc_cache = find_current_mrc_cache()) == NULL) ||

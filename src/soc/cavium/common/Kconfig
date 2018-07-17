@@ -1,0 +1,12 @@
+config SOC_CAVIUM_COMMON
+	bool
+	default n
+	select BOOTBLOCK_CUSTOM
+	select CAVIUM_BDK
+	select FLATTENED_DEVICE_TREE
+#       FIXME: No Cavium support in ATF
+#       select ARM64_USE_ARM_TRUSTED_FIRMWARE
+
+if SOC_CAVIUM_COMMON
+
+endif

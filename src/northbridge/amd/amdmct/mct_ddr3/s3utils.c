@@ -194,11 +194,11 @@ uint16_t calculate_nvram_mct_hash(void)
 	return ret;
 }
 
-static struct amd_s3_persistent_data * map_s3nv_in_nvram(void)
+static struct amd_s3_persistent_data *map_s3nv_in_nvram(void)
 {
 	ssize_t s3nv_offset;
 	ssize_t s3nv_file_offset;
-	void * s3nv_cbfs_file_ptr;
+	void *s3nv_cbfs_file_ptr;
 	struct amd_s3_persistent_data *persistent_data;
 
 	/* Obtain CBFS file offset */
@@ -269,7 +269,7 @@ static uint32_t read_config32_dct_nbpstate(struct device *dev, uint8_t node,
 	return pci_read_config32(dev, reg);
 }
 
-static void copy_cbmem_spd_data_to_save_variable(struct amd_s3_persistent_data* persistent_data, uint8_t * restored)
+static void copy_cbmem_spd_data_to_save_variable(struct amd_s3_persistent_data *persistent_data, uint8_t *restored)
 {
 	uint8_t node;
 	uint8_t dimm;
@@ -303,7 +303,7 @@ static void copy_cbmem_spd_data_to_save_variable(struct amd_s3_persistent_data* 
 	}
 }
 
-void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_data)
+void copy_mct_data_to_save_variable(struct amd_s3_persistent_data *persistent_data)
 {
 	uint8_t i;
 	uint8_t j;
@@ -326,7 +326,7 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_da
 		persistent_data->node[node].node_present = 1;
 
 		for (channel = 0; channel < 2; channel++) {
-			struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+			struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 
 			/* Stage 1 */
 			data->f2x110 = pci_read_config32(dev_fn2, 0x110);
@@ -594,7 +594,7 @@ static void wrmsr_uint64_t(unsigned long index, uint64_t value) {
 	wrmsr(index, msr);
 }
 
-void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persistent_data, uint8_t training_only)
+void restore_mct_data_from_save_variable(struct amd_s3_persistent_data *persistent_data, uint8_t training_only)
 {
 	uint8_t i;
 	uint8_t j;
@@ -608,7 +608,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 		/* Only restore the Receiver Enable and DQS training registers */
 		for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 			for (channel = 0; channel < 2; channel++) {
-				struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+				struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 				if (!persistent_data->node[node].node_present)
 					continue;
 
@@ -652,7 +652,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	/* Stage 1 */
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 		for (channel = 0; channel < 2; channel++) {
-			struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+			struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 			if (!persistent_data->node[node].node_present)
 				continue;
 
@@ -663,7 +663,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	/* Stage 2 */
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 		for (channel = 0; channel < 2; channel++) {
-			struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+			struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 			if (!persistent_data->node[node].node_present)
 				continue;
 
@@ -719,7 +719,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	/* Stage 3 */
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 		for (channel = 0; channel < 2; channel++) {
-			struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+			struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 			if (!persistent_data->node[node].node_present)
 				continue;
 
@@ -758,7 +758,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	if (is_fam15h()) {
 		for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 			for (channel = 0; channel < 2; channel++) {
-				struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+				struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 				if (!persistent_data->node[node].node_present)
 					continue;
 
@@ -823,7 +823,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	/* Stage 4 */
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 		for (channel = 0; channel < 2; channel++) {
-			struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+			struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 			if (!persistent_data->node[node].node_present)
 				continue;
 
@@ -868,7 +868,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	/* Stage 5 */
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 		for (channel = 0; channel < 2; channel++) {
-			struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+			struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 			if (!persistent_data->node[node].node_present)
 				continue;
 
@@ -909,7 +909,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	/* Stage 6 */
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 		for (channel = 0; channel < 2; channel++) {
-			struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+			struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 			if (!persistent_data->node[node].node_present)
 				continue;
 
@@ -926,7 +926,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	if (is_fam15h()) {
 		for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 			for (channel = 0; channel < 2; channel++) {
-				struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+				struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 				if (!persistent_data->node[node].node_present)
 					continue;
 
@@ -964,7 +964,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	/* Stage 7 */
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 		for (channel = 0; channel < 2; channel++) {
-			struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+			struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 			if (!persistent_data->node[node].node_present)
 				continue;
 
@@ -983,7 +983,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	/* Stage 8 */
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 		for (channel = 0; channel < 2; channel++) {
-			struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+			struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 			if (!persistent_data->node[node].node_present)
 				continue;
 
@@ -1010,7 +1010,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	/* Stage 9 */
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 		for (channel = 0; channel < 2; channel++) {
-			struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+			struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 			if (!persistent_data->node[node].node_present)
 				continue;
 
@@ -1034,7 +1034,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	/* Stage 10 */
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 		for (channel = 0; channel < 2; channel++) {
-			struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+			struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 			if (!persistent_data->node[node].node_present)
 				continue;
 
@@ -1066,7 +1066,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
 		for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 			for (channel = 0; channel < 2; channel++) {
-				struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+				struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 				if (!persistent_data->node[node].node_present)
 					continue;
 
@@ -1081,7 +1081,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	/* Other */
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 		for (channel = 0; channel < 2; channel++) {
-			struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+			struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];
 			if (!persistent_data->node[node].node_present)
 				continue;
 

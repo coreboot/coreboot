@@ -31,7 +31,7 @@ int tegra210_run_mtc(void)
 	struct region_device fh;
 	struct cbfsf mtc_file;
 
-	void * const mtc = (void *)(uintptr_t)CONFIG_MTC_ADDRESS;
+	void *const mtc = (void *)(uintptr_t)CONFIG_MTC_ADDRESS;
 	void *dvfs_table;
 	size_t (*mtc_fw)(void **dvfs_table) = (void *)mtc;
 

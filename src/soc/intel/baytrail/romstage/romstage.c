@@ -98,7 +98,7 @@ static void spi_init(void)
 }
 
 /* Entry from cache-as-ram.inc. */
-void * asmlinkage romstage_main(unsigned long bist,
+void *asmlinkage romstage_main(unsigned long bist,
                                 uint32_t tsc_low, uint32_t tsc_hi)
 {
 	struct romstage_params rp = {

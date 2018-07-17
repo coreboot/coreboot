@@ -45,12 +45,12 @@
 #define CORE_STATE_SWITCH_CLUSTER			(1 << 4)
 
 /* The default address to re-power on a code. */
-#define CORE_RESET_INIT_ADDRESS				((void*)0x00000000)
+#define CORE_RESET_INIT_ADDRESS				((void *)0x00000000)
 
 /* Vectors in BL1 (0x02020000 = base of iRAM). */
-#define VECTOR_CORE_SEV_HANDLER			((void*)(intptr_t)0x02020004)
-#define VECTOR_LOW_POWER_FLAG			((void*)(intptr_t)0x02020028)
-#define VECTOR_LOW_POWER_ADDRESS		((void*)(intptr_t)0x0202002C)
+#define VECTOR_CORE_SEV_HANDLER			((void *)(intptr_t)0x02020004)
+#define VECTOR_LOW_POWER_FLAG			((void *)(intptr_t)0x02020028)
+#define VECTOR_LOW_POWER_ADDRESS		((void *)(intptr_t)0x0202002C)
 
 /* The data structure for the "CPU state" memory page (shared with kernel)
  * controlling cores in active cluster. Kernel will put starting address for one
@@ -93,12 +93,12 @@ inline static uint32_t get_bits(uint32_t value, uint32_t start, uint32_t len)
 }
 
 /* Waits the referenced address to be ready (non-zero) and then jump into it. */
-static void wait_and_jump(volatile uint32_t* reference)
+static void wait_and_jump(volatile uint32_t *reference)
 {
 	while (!*reference) {
 		wfe();
 	}
-	jump_bx((void*)*reference);
+	jump_bx((void *)*reference);
 }
 
 /* Configures L2 Control Register to use 3 cycles for DATA/TAG RAM latency. */
@@ -127,7 +127,7 @@ static void configure_l2actlr(void)
 
 /* Initializes the CPU states to reset state. */
 static void init_exynos_cpu_states(void) {
-	memset((void*)exynos_cpu_states, 0, sizeof(*exynos_cpu_states));
+	memset((void *)exynos_cpu_states, 0, sizeof(*exynos_cpu_states));
 	exynos_cpu_states->cpu_states[0] = CORE_STATE_RESET;
 	exynos_cpu_states->cpu_states[1] = CORE_STATE_SECONDARY_RESET;
 	exynos_cpu_states->cpu_states[2] = CORE_STATE_SECONDARY_RESET;
@@ -176,7 +176,7 @@ static void core_start_execution(void)
 	/* Standard Exynos suspend/resume. */
 	if (exynos_power->inform1) {
 		exynos_power->inform1 = 0;
-		jump_bx((void*)exynos_power->inform0);
+		jump_bx((void *)exynos_power->inform0);
 		/* never returns. */
 	}
 

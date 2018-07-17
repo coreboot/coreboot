@@ -16,6 +16,8 @@
 #ifndef __ARCH_CPU_H__
 #define __ARCH_CPU_H__
 
+#include <arch/encoding.h>
+
 #define asmlinkage
 
 #if !defined(__PRE_RAM__)
@@ -43,6 +45,11 @@ struct cpuinfo_riscv {
 };
 
 #endif
+
+static inline int supports_extension(char ext)
+{
+	return read_csr(misa) & (1 << (ext - 'A'));
+}
 
 struct cpu_info *cpu_info(void);
 #endif /* __ARCH_CPU_H__ */

@@ -116,7 +116,7 @@ static struct {
 	{ X86_VENDOR_SIS,       "SiS SiS SiS ", },
 };
 
-static const char * const x86_vendor_name[] = {
+static const char *const x86_vendor_name[] = {
 	[X86_VENDOR_INTEL]     = "Intel",
 	[X86_VENDOR_CYRIX]     = "Cyrix",
 	[X86_VENDOR_AMD]       = "AMD",

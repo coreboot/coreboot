@@ -377,7 +377,7 @@ u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 	uint32_t max_bsp_stack_region_size = CONFIG_DCACHE_BSP_STACK_SIZE + CONFIG_DCACHE_BSP_STACK_SLUSH;
 	uint32_t bsp_stack_region_upper_boundary = CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE;
 	uint32_t bsp_stack_region_lower_boundary = bsp_stack_region_upper_boundary - max_bsp_stack_region_size;
-	void * lower_stack_region_boundary = (void*)(bsp_stack_region_lower_boundary - max_ap_stack_region_size);
+	void *lower_stack_region_boundary = (void *)(bsp_stack_region_lower_boundary - max_ap_stack_region_size);
 	if (((void*)(sysinfo + 1)) > lower_stack_region_boundary)
 		printk(BIOS_WARNING,
 			"sysinfo extends into stack region (sysinfo range: [%p,%p] lower stack region boundary: %p)\n",
@@ -825,7 +825,7 @@ static void AMD_SetupPSIVID_d(u32 platform_type, u8 node)
  *
  * Returns the offset of the link register.
  */
-static BOOL AMD_CpuFindCapability(u8 node, u8 cap_count, u8 * offset)
+static BOOL AMD_CpuFindCapability(u8 node, u8 cap_count, u8 *offset)
 {
 	u32 reg;
 	u32 val;

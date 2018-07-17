@@ -17,9 +17,9 @@
 #define SOC_MEDIATEK_MT8173_PLL_H
 
 #include <soc/emi.h>
-#include <soc/addressmap.h>
+#include <soc/pll_common.h>
 
-struct mt8173_topckgen_regs {
+struct mtk_topckgen_regs {
 	u32 clk_mode;
 	u32 dcm_cfg;
 	u32 reserved1[6];
@@ -97,12 +97,12 @@ struct mt8173_topckgen_regs {
 	u32 mbist_cfg_3;	/* 0x314 */
 };
 
-check_member(mt8173_topckgen_regs, clk_cfg_0, 0x40);
-check_member(mt8173_topckgen_regs, clk_cfg_8, 0x100);
-check_member(mt8173_topckgen_regs, clk_scp_cfg_0, 0x200);
-check_member(mt8173_topckgen_regs, mbist_cfg_3, 0x314);
+check_member(mtk_topckgen_regs, clk_cfg_0, 0x40);
+check_member(mtk_topckgen_regs, clk_cfg_8, 0x100);
+check_member(mtk_topckgen_regs, clk_scp_cfg_0, 0x200);
+check_member(mtk_topckgen_regs, mbist_cfg_3, 0x314);
 
-struct mt8173_apmixed_regs {
+struct mtk_apmixed_regs {
 	u32 ap_pll_con0;
 	u32 reserved1[1];
 	u32 ap_pll_con2;	/* 0x008 */
@@ -187,12 +187,19 @@ struct mt8173_apmixed_regs {
 	u32 msdcpll2_pwr_con0;	/* 0x2fc */
 };
 
-check_member(mt8173_apmixed_regs, ap_pll_con2, 0x8);
-check_member(mt8173_apmixed_regs, armca15pll_con0, 0x200);
-check_member(mt8173_apmixed_regs, msdcpll2_pwr_con0, 0x2fc);
+check_member(mtk_apmixed_regs, ap_pll_con2, 0x8);
+check_member(mtk_apmixed_regs, armca15pll_con0, 0x200);
+check_member(mtk_apmixed_regs, msdcpll2_pwr_con0, 0x2fc);
 
-static struct mt8173_topckgen_regs *const mt8173_topckgen = (void *)CKSYS_BASE;
-static struct mt8173_apmixed_regs *const mt8173_apmixed = (void *)APMIXED_BASE;
+enum {
+	PLL_PWR_ON_DELAY = 5,
+	PLL_ISO_DELAY = 0,
+	PLL_EN_DELAY = 40,
+};
+
+enum {
+	PCW_INTEGER_BITS = 7,
+};
 
 /* PLL rate */
 enum {
@@ -283,7 +290,6 @@ enum {
 };
 
 void mt_pll_post_init(void);
-void mt_pll_init(void);
 void mt_pll_set_aud_div(u32 rate);
 void mt_pll_enable_ssusb_clk(void);
 void mt_pll_raise_ca53_freq(u32 freq);

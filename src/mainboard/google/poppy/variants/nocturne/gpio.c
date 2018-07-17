@@ -135,7 +135,7 @@ static const struct pad_config gpio_table[] = {
 	/* C10 : UART0_RTS# ==> PCH_FPMCU_RST_ODL */
 	PAD_CFG_GPO(GPP_C10, 0, DEEP),
 	/* C11 : UART0_CTS# ==> FPMCU_INT */
-	PAD_CFG_GPI_APIC_INVERT(GPP_C11, NONE, DEEP),
+	PAD_CFG_GPI_APIC(GPP_C11, 20K_PU, DEEP),
 	/* C12 : UART1_RXD ==> PCH_MEM_CONFIG[0] */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_C12, NONE, DEEP),
 	/* C13 : UART1_TXD ==> PCH_MEM_CONFIG[1] */
@@ -177,8 +177,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_D6),
 	/* D7  : ISH_I2C1_SDA ==> RCAM_PWR_EN */
 	PAD_CFG_GPO(GPP_D7, 0, DEEP),
-	/* D8  : ISH_I2C1_SCL ==> FCAM_PWR_EN */
-	PAD_CFG_GPO(GPP_D8, 0, DEEP),
+	/* D8  : ISH_I2C1_SCL ==> NC */
+	PAD_CFG_NC(GPP_D8),
 	/* D9  : ISH_SPI_CS# ==> PCH_SR1_INT_L */
 	PAD_CFG_GPI_APIC(GPP_D9, NONE, DEEP),
 	/* D10 : ISH_SPI_CLK ==> PCH_SR0_INT_L */

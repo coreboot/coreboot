@@ -32,8 +32,8 @@ struct pirq_struct {
 
 extern const struct pirq_struct * pirq_data_ptr;
 extern u32 pirq_data_size;
-extern const u8 * intr_data_ptr;
-extern const u8 * picr_data_ptr;
+extern const u8 *intr_data_ptr;
+extern const u8 *picr_data_ptr;
 
 u8 read_pci_int_idx(u8 index, int mode);
 void write_pci_int_idx(u8 index, int mode, u8 data);

@@ -42,7 +42,6 @@ chip soc/intel/skylake
 	register "ScsEmmcEnabled" = "1"
 	register "ScsEmmcHs400Enabled" = "1"
 	register "ScsSdCardEnabled" = "0"
-	register "IshEnable" = "0"
 	register "PttSwitch" = "0"
 	register "InternalGfx" = "1"
 	register "SkipExtGfxScan" = "1"

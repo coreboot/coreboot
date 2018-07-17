@@ -42,11 +42,18 @@ static void sd_init(struct device *dev)
 		pci_write_config32(dev, 0xB0, 0x01180C19);
 		pci_write_config32(dev, 0xD0, 0x0000058B);
 	}
-	else {					/* Stepping >= A1 */
-		pci_write_config32(dev, 0xA4, 0x21FE32B2);
-		pci_write_config32(dev, 0xA8, 0x00000070);
-		pci_write_config32(dev, 0xB0, 0x01180C19);
-		pci_write_config32(dev, 0xD0, 0x0000078B);
+	else {				/* SD 2.0 mode */
+		if ((stepping & 0x0000000F) == 0) {	/* Stepping A0 */
+			pci_write_config32(dev, 0xA4, 0x31DE32B2);
+			pci_write_config32(dev, 0xB0, 0x01180C19);
+			pci_write_config32(dev, 0xD0, 0x0000058B);
+		}
+		else {					/* Stepping >= A1 */
+			pci_write_config32(dev, 0xA4, 0x31FE32B2);
+			pci_write_config32(dev, 0xA8, 0x00000070);
+			pci_write_config32(dev, 0xB0, 0x01180C19);
+			pci_write_config32(dev, 0xD0, 0x0000078B);
+		}
 	}
 	//}
 }

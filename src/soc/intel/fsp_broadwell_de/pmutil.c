@@ -29,7 +29,7 @@
 #include <soc/pci_devs.h>
 
 /* Print status bits with descriptive names */
-static void print_status_bits(u32 status, const char * const bit_names[])
+static void print_status_bits(u32 status, const char *const bit_names[])
 {
 	int i;
 
@@ -73,7 +73,7 @@ static u16 reset_pm1_status(void)
 /* Print PM1 status bits */
 static u16 print_pm1_status(u16 pm1_sts)
 {
-	static const char * const pm1_sts_bits[] = {
+	static const char *const pm1_sts_bits[] = {
 		[0] = "TMROF",
 		[4] = "BM",
 		[5] = "GBL",
@@ -117,7 +117,7 @@ static u32 reset_smi_status(void)
 /* Print SMI status bits */
 static u32 print_smi_status(u32 smi_sts)
 {
-	static const char * const smi_sts_bits[] = {
+	static const char *const smi_sts_bits[] = {
 		[2] = "BIOS",
 		[3] = "LEGACY_USB",
 		[4] = "SLP_SMI",

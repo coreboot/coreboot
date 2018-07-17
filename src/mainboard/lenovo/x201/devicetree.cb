@@ -36,48 +36,6 @@ chip northbridge/intel/nehalem
 	register "gfx.use_spread_spectrum_clock" = "1"
 	register "gfx.link_frequency_270_mhz" = "1"
 
-	chip ec/lenovo/pmh7
-		device pnp ff.1 on # dummy
-		end
-		register "backlight_enable" = "0x01"
-		register "dock_event_enable" = "0x01"
-	end
-
-	chip ec/lenovo/h8
-		device pnp ff.2 on # dummy
-			io 0x60 = 0x62
-			io 0x62 = 0x66
-			io 0x64 = 0x1600
-			io 0x66 = 0x1604
-		end
-
-		register "config0" = "0xa6"
-		register "config1" = "0x05"
-		register "config2" = "0xa0"
-		register "config3" = "0x01"
-
-		register "beepmask0" = "0xfe"
-		register "beepmask1" = "0x96"
-		register "has_power_management_beeps" = "1"
-
-		register "event2_enable" = "0xff"
-		register "event3_enable" = "0xff"
-		register "event4_enable" = "0xf4"
-		register "event5_enable" = "0x3c"
-		register "event6_enable" = "0x80"
-		register "event7_enable" = "0x01"
-		register "event8_enable" = "0x01"
-		register "event9_enable" = "0xff"
-		register "eventa_enable" = "0xff"
-		register "eventb_enable" = "0xff"
-		register "eventc_enable" = "0xff"
-		register "eventd_enable" = "0xff"
-
-		register "has_bdc_detection" = "1"
-		register "bdc_gpio_num" = "48"
-		register "bdc_gpio_lvl" = "0"
-	end
-
 	device cpu_cluster 0 on
 		chip cpu/intel/model_2065x
 			device lapic 0 on end
@@ -158,6 +116,48 @@ chip northbridge/intel/nehalem
 				end
 				chip drivers/pc80/tpm
 					device pnp 0c31.0 on end
+				end
+
+				chip ec/lenovo/pmh7
+					device pnp ff.1 on # dummy
+					end
+					register "backlight_enable" = "0x01"
+					register "dock_event_enable" = "0x01"
+				end
+
+				chip ec/lenovo/h8
+					device pnp ff.2 on # dummy
+						io 0x60 = 0x62
+						io 0x62 = 0x66
+						io 0x64 = 0x1600
+						io 0x66 = 0x1604
+					end
+
+					register "config0" = "0xa6"
+					register "config1" = "0x05"
+					register "config2" = "0xa0"
+					register "config3" = "0x01"
+
+					register "beepmask0" = "0xfe"
+					register "beepmask1" = "0x96"
+					register "has_power_management_beeps" = "1"
+
+					register "event2_enable" = "0xff"
+					register "event3_enable" = "0xff"
+					register "event4_enable" = "0xf4"
+					register "event5_enable" = "0x3c"
+					register "event6_enable" = "0x80"
+					register "event7_enable" = "0x01"
+					register "event8_enable" = "0x01"
+					register "event9_enable" = "0xff"
+					register "eventa_enable" = "0xff"
+					register "eventb_enable" = "0xff"
+					register "eventc_enable" = "0xff"
+					register "eventd_enable" = "0xff"
+
+					register "has_bdc_detection" = "1"
+					register "bdc_gpio_num" = "48"
+					register "bdc_gpio_lvl" = "0"
 				end
 			end
 			device pci 1f.2 on # IDE/SATA

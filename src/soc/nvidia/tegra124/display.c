@@ -38,7 +38,7 @@
 struct tegra_dc dc_data;
 
 int dump = 0;
-unsigned long READL(void * p)
+unsigned long READL(void *p)
 {
         unsigned long value;
 
@@ -55,7 +55,7 @@ unsigned long READL(void * p)
         return value;
 }
 
-void WRITEL(unsigned long value, void * p)
+void WRITEL(unsigned long value, void *p)
 {
         if (dump)
 		printk(BIOS_SPEW, "writel %p %08lx\n", p, value);

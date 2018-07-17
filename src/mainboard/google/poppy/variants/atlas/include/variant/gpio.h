@@ -24,4 +24,6 @@
 #undef EN_CAM_PMIC_RST_L
 #define EN_CAM_PMIC_RST_L	GPP_D17
 
+#define EN_CAM_CLOCK		GPP_D18
+
 #endif /* __MAINBOARD_GPIO_H__ */

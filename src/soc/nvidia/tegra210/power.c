@@ -36,7 +36,7 @@ static int partition_powered(int id)
 	return POWER_GATE;
 }
 
-static const char * const power_gate_string[] = {
+static const char *const power_gate_string[] = {
 	[POWER_GATE] = "Gat",
 	[POWER_UNGATE] = "Ungat",
 };

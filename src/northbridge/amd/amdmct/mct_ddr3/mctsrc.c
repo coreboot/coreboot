@@ -255,7 +255,7 @@ static uint16_t fam15_receiver_enable_training_seed(struct DCTStatStruc *pDCTsta
 	return seed;
 }
 
-void read_dqs_write_timing_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+void read_dqs_write_timing_control_registers(uint16_t *current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint8_t lane;
 	uint32_t dword;
@@ -282,7 +282,7 @@ void read_dqs_write_timing_control_registers(uint16_t* current_total_delay, uint
 }
 
 #ifdef UNUSED_CODE
-static void write_dqs_write_timing_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+static void write_dqs_write_timing_control_registers(uint16_t *current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint8_t lane;
 	uint32_t dword;
@@ -314,7 +314,7 @@ static void write_dqs_write_timing_control_registers(uint16_t* current_total_del
 }
 #endif
 
-static void write_write_data_timing_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+static void write_write_data_timing_control_registers(uint16_t *current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint8_t lane;
 	uint32_t dword;
@@ -353,7 +353,7 @@ static void write_write_data_timing_control_registers(uint16_t* current_total_de
 	}
 }
 
-void read_dqs_receiver_enable_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+void read_dqs_receiver_enable_control_registers(uint16_t *current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint8_t lane;
 	uint32_t mask;
@@ -387,7 +387,7 @@ void read_dqs_receiver_enable_control_registers(uint16_t* current_total_delay, u
 	}
 }
 
-void write_dqs_receiver_enable_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+void write_dqs_receiver_enable_control_registers(uint16_t *current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint8_t lane;
 	uint32_t mask;
@@ -424,7 +424,7 @@ void write_dqs_receiver_enable_control_registers(uint16_t* current_total_delay, 
 	}
 }
 
-static void read_dram_phase_recovery_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+static void read_dram_phase_recovery_control_registers(uint16_t *current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint8_t lane;
 	uint32_t dword;
@@ -456,7 +456,7 @@ static void read_dram_phase_recovery_control_registers(uint16_t* current_total_d
 	}
 }
 
-static void write_dram_phase_recovery_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+static void write_dram_phase_recovery_control_registers(uint16_t *current_total_delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint8_t lane;
 	uint32_t dword;
@@ -494,7 +494,7 @@ static void write_dram_phase_recovery_control_registers(uint16_t* current_total_
 	}
 }
 
-void read_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+void read_dqs_read_data_timing_registers(uint16_t *delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint8_t shift;
 	uint32_t dword;
@@ -528,7 +528,7 @@ void read_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev, uint8_t 
 	delay[8] = (dword & mask) >> shift;
 }
 
-void write_dqs_read_data_timing_registers(uint16_t* delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
+void write_dqs_read_data_timing_registers(uint16_t *delay, uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg)
 {
 	uint8_t shift;
 	uint32_t dword;

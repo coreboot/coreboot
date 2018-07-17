@@ -178,6 +178,7 @@ const char *mainboard_vbt_filename(void)
 	switch (sku_id) {
 	case SKU_0_PANTHEON:
 	case SKU_1_PANTHEON:
+	case SKU_2_PANTHEON:
 		return "vbt-pantheon.bin";
 	case SKU_0_VAYNE:
 	case SKU_1_VAYNE:

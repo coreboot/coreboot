@@ -1,6 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2018 Eltan B.V.
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; version 2 of
@@ -13,7 +15,7 @@
  */
 
 /* Thermal Threshold Event Handler */
-#define HAVE_THERM_EVENT_HANDLER
+#ifdef HAVE_THERM_EVENT_HANDLER
 Method (TEVT, 1, NotSerialized)
 {
 	Store (ToInteger (Arg0), Local0)
@@ -34,6 +36,7 @@ Method (TEVT, 1, NotSerialized)
 	}
 #endif
 }
+#endif
 
 /* Thermal device initialization - Disable Aux Trip Points */
 Method (TINI)

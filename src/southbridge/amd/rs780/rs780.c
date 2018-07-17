@@ -187,7 +187,7 @@ static void rs780_nb_gfx_dev_table(struct device *nb_dev, struct device *dev)
 {
 	/* NB_InitGFXStraps */
 	u32 MMIOBase, apc04, apc18, apc24, romstrap2;
-	volatile u32 * strap;
+	volatile u32 *strap;
 
 	/* Choose a base address that is unused and routed to the RS780. */
 	MMIOBase = 0xFFB00000;

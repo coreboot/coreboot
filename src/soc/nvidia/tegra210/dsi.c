@@ -569,7 +569,7 @@ static int tegra_dsi_pad_calibrate(struct tegra_dsi *dsi)
 	return tegra_mipi_calibrate(dsi->mipi);
 }
 
-static const char * const error_report[16] = {
+static const char *const error_report[16] = {
 	"SoT Error",
 	"SoT Sync Error",
 	"EoT Sync Error",

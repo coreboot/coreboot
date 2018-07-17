@@ -32,7 +32,8 @@
 /*
  * extern function declaration
  */
-struct resource * sr5650_retrieve_cpu_mmio_resource() {
+struct resource *sr5650_retrieve_cpu_mmio_resource()
+{
 	struct device *domain;
 	struct resource *res;
 
@@ -321,7 +322,7 @@ void detect_and_enable_iommu(struct device *iommu_dev) {
 	uint32_t dword;
 	uint8_t l1_target;
 	unsigned char iommu;
-	void * mmio_base;
+	void *mmio_base;
 
 	iommu = 1;
 	get_option(&iommu, "iommu");
@@ -336,7 +337,8 @@ void detect_and_enable_iommu(struct device *iommu_dev) {
 			return;
 		}
 
-		mmio_base = (void*)(pci_read_config32(iommu_dev, 0x44) & 0xffffc000);
+		mmio_base = (void *)(pci_read_config32(iommu_dev, 0x44) &
+				     0xffffc000);
 
 		// if (get_nb_rev(nb_dev) == REV_SR5650_A11) {
 		//	dword = pci_read_config32(iommu_dev, 0x6c);
@@ -352,11 +354,11 @@ void detect_and_enable_iommu(struct device *iommu_dev) {
 		dword |= 0x1;
 		pci_write_config32(iommu_dev, 0x44, dword);
 
-		write32((void*)(mmio_base + 0x8), 0x0);
-		write32((void*)(mmio_base + 0xc), 0x08000000);
-		write32((void*)(mmio_base + 0x10), 0x0);
-		write32((void*)(mmio_base + 0x2008), 0x0);
-		write32((void*)(mmio_base + 0x2010), 0x0);
+		write32((void *)(mmio_base + 0x8), 0x0);
+		write32((void *)(mmio_base + 0xc), 0x08000000);
+		write32((void *)(mmio_base + 0x10), 0x0);
+		write32((void *)(mmio_base + 0x2008), 0x0);
+		write32((void *)(mmio_base + 0x2010), 0x0);
 
 		/* IOMMU L1 initialization */
 		for (l1_target = 0; l1_target < 6; l1_target++) {
@@ -816,7 +818,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-static unsigned long acpi_fill_ivrs(acpi_ivrs_t* ivrs, unsigned long current)
+static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 {
 	uint8_t *p;
 

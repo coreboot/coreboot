@@ -75,7 +75,7 @@ void __attribute__((noreturn)) fsp_early_init (FSP_INFO_HEADER *fsp_ptr)
 	UPD_DATA_REGION fsp_upd_data;
 #endif
 
-	memset((void*)&FspRtBuffer, 0, sizeof(FSP_INIT_RT_BUFFER));
+	memset((void *)&FspRtBuffer, 0, sizeof(FSP_INIT_RT_BUFFER));
 	FspRtBuffer.Common.StackTop = (u32 *)CONFIG_RAMTOP;
 	FspInitParams.NvsBufferPtr = NULL;
 
@@ -100,7 +100,7 @@ void __attribute__((noreturn)) fsp_early_init (FSP_INFO_HEADER *fsp_ptr)
 }
 #endif	/* __PRE_RAM__ */
 
-volatile u8 * find_fsp ()
+volatile u8 *find_fsp()
 {
 
 #ifdef __PRE_RAM__
@@ -175,7 +175,7 @@ volatile u8 * find_fsp ()
  * @param hob_list_ptr pointer to the start of the hob list
  * @return pointer to saved CAR MEM or NULL if not found.
  */
-void * find_saved_temp_mem(void *hob_list_ptr)
+void *find_saved_temp_mem(void *hob_list_ptr)
 {
 	EFI_GUID temp_hob_guid = FSP_BOOTLOADER_TEMPORARY_MEMORY_HOB_GUID;
 	EFI_HOB_GUID_TYPE *saved_mem_hob =
@@ -194,7 +194,7 @@ void * find_saved_temp_mem(void *hob_list_ptr)
  * @param hob_list_ptr pointer to the start of the hob list
  * @return pointer to the start of the FSP reserved memory or NULL if not found.
  */
-void * find_fsp_reserved_mem(void *hob_list_ptr)
+void *find_fsp_reserved_mem(void *hob_list_ptr)
 {
 	EFI_GUID fsp_reserved_guid = FSP_HOB_RESOURCE_OWNER_FSP_GUID;
 	EFI_HOB_RESOURCE_DESCRIPTOR *fsp_reserved_mem =
@@ -221,7 +221,8 @@ void print_fsp_info(void) {
 	}
 
 	if (FspHobListPtr == NULL) {
-		FspHobListPtr = (void*)*((u32*) cbmem_find(CBMEM_ID_HOB_POINTER));
+		FspHobListPtr = (void *)*((u32 *)
+				 cbmem_find(CBMEM_ID_HOB_POINTER));
 	}
 
 	printk(BIOS_SPEW,"fsp_header_ptr: %p\n", fsp_header_ptr);
@@ -294,7 +295,7 @@ int save_mrc_data(void *hob_start)
 static void find_fsp_hob_update_mrc(void *unused)
 {
 	/* Set the global HOB list pointer */
-	FspHobListPtr = (void*)*((u32*) cbmem_find(CBMEM_ID_HOB_POINTER));
+	FspHobListPtr = (void *)*((u32 *) cbmem_find(CBMEM_ID_HOB_POINTER));
 
 	if (!FspHobListPtr){
 		printk(BIOS_ERR, "ERROR: Could not find FSP HOB pointer in CBFS!\n");

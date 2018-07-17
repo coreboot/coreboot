@@ -17,9 +17,6 @@ FROM coreboot/coreboot-sdk:{{SDK_VERSION}}
 MAINTAINER Martin Roth <martin@coreboot.org>
 USER root
 
-# Check to make sure /dev is a tmpfs file system
-RUN mount | grep "on /dev type tmpfs" > /dev/null || exit 1
-
 RUN apt-get -y update && \
 	apt-get -y install \
 	lua5.3 liblua5.3-dev openjdk-8-jre-headless openssh-server && \
@@ -37,6 +34,16 @@ RUN mkdir /var/run/sshd && \
 	chmod 0755 /var/run/sshd && \
 	/usr/bin/ssh-keygen -A
 
+# Create /cb-build as a tmpfs directory to build in
+RUN mkdir /cb-build && \
+	chown coreboot:coreboot /cb-build && \
+	echo "tmpfs /cb-build tmpfs rw,mode=1777 0 0" > /etc/fstab && \
+	mkdir -p /home/coreboot/slave-root/workspace && \
+	chown -R coreboot:coreboot /home/coreboot/slave-root && \
+	echo "tmpfs /home/coreboot/slave-root/workspace tmpfs rw,mode=1777 0 0" >> /etc/fstab && \
+	chown coreboot:coreboot /home/coreboot/.ccache && \
+	echo "tmpfs /home/coreboot/.ccache tmpfs rw,mode=1777 0 0" >> /etc/fstab
+
 # Build encapsulate tool
 ADD https://raw.githubusercontent.com/pgeorgi/encapsulate/master/encapsulate.c /tmp/encapsulate.c
 RUN gcc -o /usr/sbin/encapsulate /tmp/encapsulate.c && \
@@ -44,6 +51,11 @@ RUN gcc -o /usr/sbin/encapsulate /tmp/encapsulate.c && \
 	chmod +s /usr/sbin/encapsulate
 
 VOLUME /data/cache
-ENTRYPOINT mkdir /dev/cb-build && chown coreboot /dev/cb-build && /usr/sbin/sshd -p 49151 -D
+ENTRYPOINT mount /cb-build && \
+	mount /home/coreboot/slave-root/workspace && \
+	chown -R coreboot:coreboot /home/coreboot/slave-root && \
+	mount /home/coreboot/.ccache && \
+	chown coreboot:coreboot /home/coreboot/.ccache && \
+	/usr/sbin/sshd -p 49151 -D
 EXPOSE 49151
 ENV PATH $PATH:/usr/sbin

@@ -22,7 +22,7 @@
 #include <string.h>
 #include "chip.h"
 
-#define I2C_SX9310_ACPI_ID	"SX9310"
+#define I2C_SX9310_ACPI_ID	"STH9310"
 #define I2C_SX9310_ACPI_NAME	"Semtech SX9310"
 
 #define REGISTER(NAME) acpi_dp_add_integer(dsd, \

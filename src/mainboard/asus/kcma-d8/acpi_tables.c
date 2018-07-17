@@ -66,7 +66,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t* ivrs, unsigned long current)
+unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
 {
 	uint8_t *p;
 

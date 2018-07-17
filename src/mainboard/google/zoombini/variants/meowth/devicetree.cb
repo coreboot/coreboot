@@ -107,7 +107,7 @@ chip soc/intel/cannonlake
 		end # I2C #0
 		device pci 15.1 on
 			chip drivers/i2c/generic
-				register "hid" = ""SX9310""
+				register "hid" = ""STH9310""
 				register "name" = ""SEMTECH SX9310""
 				register "desc" = ""Left SAR Proximity Sensor""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C3_IRQ)"
@@ -145,7 +145,7 @@ chip soc/intel/cannonlake
 		device pci 19.0 on  end # I2C #4
 		device pci 19.1 on
 			chip drivers/i2c/generic
-				register "hid" = ""SX9310""
+				register "hid" = ""STH9310""
 				register "name" = ""SEMTECH SX9310""
 				register "desc" = ""Right SAR Proximity Sensor""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C4_IRQ)"

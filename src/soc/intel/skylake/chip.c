@@ -138,7 +138,14 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->ScsEmmcEnabled = config->ScsEmmcEnabled;
 	params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
 	params->ScsSdCardEnabled = config->ScsSdCardEnabled;
-	params->IshEnable = 0;
+
+	/* Enable ISH if device is on */
+	dev = dev_find_slot(0, PCH_DEVFN_ISH);
+	if (dev)
+		params->IshEnable = dev->enabled;
+	else
+		params->IshEnable = 0;
+
 	params->EnableAzalia = config->EnableAzalia;
 	params->IoBufferOwnership = config->IoBufferOwnership;
 	params->DspEnable = config->DspEnable;

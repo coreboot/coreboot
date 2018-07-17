@@ -43,7 +43,7 @@ static void GetUpdDefaultFromFsp
 			+ FspInfo->ImageBase);
 	UpdDataRgnPtr = (UPD_DATA_REGION *)(UINT32)
 			(VpdDataRgnPtr->PcdUpdRegionOffset + FspInfo->ImageBase);
-	memcpy((void*)UpdData, (void*)UpdDataRgnPtr, sizeof(UPD_DATA_REGION));
+	memcpy((void *)UpdData, (void *)UpdDataRgnPtr, sizeof(UPD_DATA_REGION));
 }
 
 typedef struct northbridge_intel_fsp_rangeley_config config_t;

@@ -26,6 +26,7 @@ comment "Intel Firmware"
 
 config HAVE_IFD_BIN
 	bool "Add Intel descriptor.bin file"
+	select HAVE_EM100_SUPPORT  # We use ifdtool to enable this.
 	help
 	  The descriptor binary
 
@@ -33,12 +34,6 @@ config IFD_BIN_PATH
 	string "Path and filename of the descriptor.bin file"
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/descriptor.bin"
 	depends on HAVE_IFD_BIN && !BUILD_WITH_FAKE_IFD
-
-config EM100
-	bool "Configure IFD for EM100 usage"
-	depends on HAVE_IFD_BIN && !BUILD_WITH_FAKE_IFD
-	help
-	  Set SPI frequency to 20MHz and disable Dual Output Fast Read Support
 
 config HAVE_ME_BIN
 	bool "Add Intel ME/TXE firmware"

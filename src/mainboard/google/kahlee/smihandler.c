@@ -17,8 +17,10 @@
 #include <arch/acpi.h>
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/smm.h>
+#include <gpio.h>
 #include <soc/smi.h>
 #include <variant/ec.h>
+#include <variant/gpio.h>
 
 void mainboard_smi_gpi(u32 gpi_sts)
 {
@@ -39,5 +41,9 @@ int mainboard_smi_apmc(u8 apmc)
 	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
 		chromeec_smi_apmc(apmc, MAINBOARD_EC_SCI_EVENTS,
 					MAINBOARD_EC_SMI_EVENTS);
+
+	/* Enable backlight - GPIO active low */
+	gpio_set(GPIO_133, 0);
+
 	return 0;
 }

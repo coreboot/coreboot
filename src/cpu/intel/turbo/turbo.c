@@ -42,7 +42,7 @@ static inline void set_global_turbo_state(int state)
 }
 #endif
 
-static const char * const turbo_state_desc[] = {
+static const char *const turbo_state_desc[] = {
 	[TURBO_UNKNOWN]		= "unknown",
 	[TURBO_UNAVAILABLE]	= "unavailable",
 	[TURBO_DISABLED]	= "available but hidden",

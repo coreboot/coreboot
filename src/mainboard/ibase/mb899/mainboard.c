@@ -13,16 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <types.h>
 #include <device/device.h>
-#include <console/console.h>
 #include <drivers/intel/gma/int15.h>
-#include <pc80/mc146818rtc.h>
-#include <arch/io.h>
-#include <arch/interrupt.h>
 #include "superio_hwm.h"
-
-
 
 // mainboard_enable is executed as first thing after
 // enumerate_buses().

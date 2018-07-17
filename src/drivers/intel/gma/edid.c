@@ -39,7 +39,7 @@ static void wait_rdy(u8 *mmio)
 	}
 }
 
-static void intel_gmbus_stop_bus(u8 * mmio, u8 bus)
+static void intel_gmbus_stop_bus(u8 *mmio, u8 bus)
 {
 	wait_rdy(mmio);
 	write32(GMBUS0_ADDR, bus);

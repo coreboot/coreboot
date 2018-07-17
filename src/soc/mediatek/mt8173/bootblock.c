@@ -29,7 +29,7 @@ void bootblock_soc_init(void)
 	/* post init pll */
 	mt_pll_post_init();
 
-	mt8173_mmu_init();
+	mtk_mmu_init();
 
 	/* init watch dog, will disable AP watch dog */
 	mtk_wdt_init();

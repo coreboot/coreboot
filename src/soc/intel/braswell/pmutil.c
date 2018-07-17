@@ -53,7 +53,7 @@ uint16_t get_pmbase(void)
 }
 
 static void print_num_status_bits(int num_bits, uint32_t status,
-				  const char * const bit_names[])
+				  const char *const bit_names[])
 {
 	int i;
 
@@ -72,7 +72,7 @@ static void print_num_status_bits(int num_bits, uint32_t status,
 
 static uint32_t print_smi_status(uint32_t smi_sts)
 {
-	static const char * const smi_sts_bits[] = {
+	static const char *const smi_sts_bits[] = {
 		[2] = "BIOS",
 		[4] = "SLP_SMI",
 		[5] = "APM",
@@ -157,7 +157,7 @@ static uint16_t reset_pm1_status(void)
 
 static uint16_t print_pm1_status(uint16_t pm1_sts)
 {
-	static const char * const pm1_sts_bits[] = {
+	static const char *const pm1_sts_bits[] = {
 		[0] = "TMROF",
 		[5] = "GBL",
 		[8] = "PWRBTN",
@@ -190,7 +190,7 @@ void enable_pm1(uint16_t events)
 
 static uint32_t print_tco_status(uint32_t tco_sts)
 {
-	static const char * const tco_sts_bits[] = {
+	static const char *const tco_sts_bits[] = {
 		[3] = "TIMEOUT",
 		[17] = "SECOND_TO",
 	};
@@ -252,7 +252,7 @@ static uint32_t reset_gpe_status(void)
 
 static uint32_t print_gpe_sts(uint32_t gpe_sts)
 {
-	static const char * const gpe_sts_bits[] = {
+	static const char *const gpe_sts_bits[] = {
 		[1] = "HOTPLUG",
 		[2] = "SWGPE",
 		[3] = "PCIE_WAKE0",
@@ -308,7 +308,7 @@ static uint32_t reset_alt_status(void)
 static uint32_t print_alt_sts(uint32_t alt_gpio_smi)
 {
 	uint32_t alt_gpio_sts;
-	static const char * const alt_gpio_smi_sts_bits[] = {
+	static const char *const alt_gpio_smi_sts_bits[] = {
 		[0] = "SUS_GPIO_0",
 		[1] = "SUS_GPIO_1",
 		[2] = "SUS_GPIO_2",

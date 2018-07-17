@@ -22,10 +22,10 @@
 
 #if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
 int save_mrc_data(void *hob_start);
-void * find_and_set_fastboot_cache(void);
+void *find_and_set_fastboot_cache(void);
 #endif
 
-volatile u8 * find_fsp(void);
+volatile u8 *find_fsp(void);
 void fsp_early_init(FSP_INFO_HEADER *fsp_info);
 void FspNotify(u32 Phase);
 void FspNotifyReturnPoint(EFI_STATUS Status, VOID *HobListPtr);
@@ -34,16 +34,16 @@ void print_fsp_info(void);
 void chipset_fsp_early_init(FSP_INIT_PARAMS *FspInitParams,
 	FSP_INFO_HEADER *fsp_ptr);
 void ChipsetFspReturnPoint(EFI_STATUS Status, VOID *HobListPtr);
-void * find_saved_temp_mem(void *hob_list_ptr);
-void * find_fsp_reserved_mem(void *hob_list_ptr);
+void *find_saved_temp_mem(void *hob_list_ptr);
+void *find_fsp_reserved_mem(void *hob_list_ptr);
 
 /* functions in hob.c */
 void print_hob_mem_attributes(void *Hobptr);
 void print_hob_type_structure(u16 Hobtype, void *Hoblistptr);
 void print_hob_resource_attributes(void *Hobptr);
 void print_guid_type_attributes(void *Hobptr);
-const char * get_hob_type_string(void *Hobptr);
-void * find_hob_by_guid(void *Hoblistptr, EFI_GUID *guid1);
+const char *get_hob_type_string(void *Hobptr);
+void *find_hob_by_guid(void *Hoblistptr, EFI_GUID *guid1);
 uint8_t guids_are_equal(EFI_GUID *guid1, EFI_GUID *guid2);
 void printguid(EFI_GUID *guid);
 
@@ -90,10 +90,10 @@ void update_mrc_cache(void *unused);
 #define FSP_SIG						0x48505346	/* 'FSPH' */
 
 #define ERROR_NO_FV_SIG				1
-#define ERROR_NO_FFS_GUID				2
+#define ERROR_NO_FFS_GUID			2
 #define ERROR_NO_INFO_HEADER			3
 #define ERROR_IMAGEBASE_MISMATCH		4
-#define ERROR_INFO_HEAD_SIG_MISMATCH	5
+#define ERROR_INFO_HEAD_SIG_MISMATCH		5
 #define ERROR_FSP_SIG_MISMATCH			6
 
 #ifndef __PRE_RAM__

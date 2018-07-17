@@ -22,9 +22,6 @@ export COREBOOT_JENKINS_PORT?=49151
 # Local cache directory - for storing files shared with the docker image
 export COREBOOT_JENKINS_CACHE_DIR?=/srv/docker/coreboot-builder/cache
 
-# Local ccache directory
-export COREBOOT_JENKINS_CCACHE_DIR?=/srv/docker/coreboot-builder/ccache
-
 # Name of the jenkins container
 export COREBOOT_JENKINS_CONTAINER?=coreboot_jenkins
 
@@ -134,33 +131,19 @@ docker-jenkins-server: test-docker
 	else \
 		 rm -f "$(COREBOOT_JENKINS_CACHE_DIR)/testfile"; \
 	fi
-	@if [ ! -d "$(COREBOOT_JENKINS_CCACHE_DIR)" ]; then \
-		printf "\nError: %s does not exist.\n" "$(COREBOOT_JENKINS_CCACHE_DIR)"; \
-		printf "Please run:\nsudo mkdir -p %s\n\n" "$(COREBOOT_JENKINS_CCACHE_DIR)"; \
-		false; \
-	fi
-	@if ! touch "$(COREBOOT_JENKINS_CCACHE_DIR)/testfile" 2>/dev/null; then \
-		printf "\nError: Cannot create file in %s." "$(COREBOOT_JENKINS_CCACHE_DIR)"; \
-		printf 'Please run:\nsudo chown -R $$(whoami):$$(whoami) %s\n\n' "$(COREBOOT_JENKINS_CCACHE_DIR)"; \
-	else \
-		rm -f "$(COREBOOT_JENKINS_CCACHE_DIR)/testfile"; \
-	fi
 	$(DOCKER) run -d --privileged --restart=always \
 		-p $(COREBOOT_JENKINS_PORT):49151 \
 		-v $(COREBOOT_JENKINS_CACHE_DIR):/data/cache \
-		-v $(COREBOOT_JENKINS_CCACHE_DIR):/home/coreboot/.ccache \
 		--name=$(COREBOOT_JENKINS_CONTAINER) \
 		coreboot/coreboot-jenkins-node:$(COREBOOT_CONTAINER_VERSION)
 
 docker-jenkins-shell: test-docker
 	@if [ ! -d $(COREBOOT_JENKINS_CACHE_DIR) ]; then printf "\nError: %s does not exist.\nPlease run:\nsudo mkdir -p %s\n\n" "$(COREBOOT_JENKINS_CACHE_DIR)" "$(COREBOOT_JENKINS_CACHE_DIR)"; false; fi
-	@if [ ! -d $(COREBOOT_JENKINS_CCACHE_DIR) ]; then printf "\nError: %s does not exist.\nPlease run:\nsudo mkdir -p %s\n\n" "$(COREBOOT_JENKINS_CCACHE_DIR)" "$(COREBOOT_JENKINS_CCACHE_DIR)"; false; fi
 	$(DOCKER) run -u root -it --privileged \
 		--entrypoint="/bin/bash" \
 		-p $(COREBOOT_JENKINS_PORT):49151 \
 		-v $(top):/home/coreboot/coreboot \
 		-v $(COREBOOT_JENKINS_CACHE_DIR):/data/cache \
-		-v $(COREBOOT_JENKINS_CCACHE_DIR):/home/coreboot/.ccache \
 		--name=$(COREBOOT_JENKINS_CONTAINER) \
 		--rm coreboot/coreboot-jenkins-node:$(COREBOOT_CONTAINER_VERSION)
 
@@ -195,7 +178,6 @@ help:
 	@echo "Variables:"
 	@echo "  COREBOOT_JENKINS_PORT=$(COREBOOT_JENKINS_PORT)"
 	@echo "  COREBOOT_JENKINS_CACHE_DIR=$(COREBOOT_JENKINS_CACHE_DIR)"
-	@echo "  COREBOOT_JENKINS_CCACHE_DIR=$(COREBOOT_JENKINS_CCACHE_DIR)"
 	@echo "  COREBOOT_JENKINS_CONTAINER=$(COREBOOT_JENKINS_CONTAINER)"
 	@echo "  COREBOOT_CONTAINER_VERSION=$(COREBOOT_CONTAINER_VERSION)"
 	@echo "  DOCKER_COMMIT=$(DOCKER_COMMIT)"

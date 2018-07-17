@@ -86,7 +86,7 @@ static void report_cpu_info(void)
 	char cpu_string[50], *cpu_name = cpu_string; /* 48 bytes are reported */
 	int vt, txt, aes;
 	msr_t microcode_ver;
-	static const char * const mode[] = {"NOT ", ""};
+	static const char *const mode[] = {"NOT ", ""};
 	const char *cpu_type = "Unknown";
 	u32 p[13];
 

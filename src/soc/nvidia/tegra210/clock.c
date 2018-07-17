@@ -654,7 +654,7 @@ void clock_grp_enable_clear_reset(u32 val, u32 *clk_enb_set_reg,
 	write32(rst_dev_clr_reg, val);
 }
 
-static u32 * const clk_enb_set_arr[DEV_CONFIG_BLOCKS] = {
+static u32 *const clk_enb_set_arr[DEV_CONFIG_BLOCKS] = {
 	CLK_RST_REG(clk_enb_l_set),
 	CLK_RST_REG(clk_enb_h_set),
 	CLK_RST_REG(clk_enb_u_set),
@@ -664,7 +664,7 @@ static u32 * const clk_enb_set_arr[DEV_CONFIG_BLOCKS] = {
 	CLK_RST_REG(clk_enb_y_set),
 };
 
-static u32 * const clk_enb_clr_arr[DEV_CONFIG_BLOCKS] = {
+static u32 *const clk_enb_clr_arr[DEV_CONFIG_BLOCKS] = {
 	CLK_RST_REG(clk_enb_l_clr),
 	CLK_RST_REG(clk_enb_h_clr),
 	CLK_RST_REG(clk_enb_u_clr),
@@ -674,7 +674,7 @@ static u32 * const clk_enb_clr_arr[DEV_CONFIG_BLOCKS] = {
 	CLK_RST_REG(clk_enb_y_clr),
 };
 
-static u32 * const rst_dev_set_arr[DEV_CONFIG_BLOCKS] = {
+static u32 *const rst_dev_set_arr[DEV_CONFIG_BLOCKS] = {
 	CLK_RST_REG(rst_dev_l_set),
 	CLK_RST_REG(rst_dev_h_set),
 	CLK_RST_REG(rst_dev_u_set),
@@ -684,7 +684,7 @@ static u32 * const rst_dev_set_arr[DEV_CONFIG_BLOCKS] = {
 	CLK_RST_REG(rst_dev_y_set),
 };
 
-static u32 * const rst_dev_clr_arr[DEV_CONFIG_BLOCKS] = {
+static u32 *const rst_dev_clr_arr[DEV_CONFIG_BLOCKS] = {
 	CLK_RST_REG(rst_dev_l_clr),
 	CLK_RST_REG(rst_dev_h_clr),
 	CLK_RST_REG(rst_dev_u_clr),
@@ -694,7 +694,7 @@ static u32 * const rst_dev_clr_arr[DEV_CONFIG_BLOCKS] = {
 	CLK_RST_REG(rst_dev_y_clr),
 };
 
-static void clock_write_regs(u32 * const regs[DEV_CONFIG_BLOCKS],
+static void clock_write_regs(u32 *const regs[DEV_CONFIG_BLOCKS],
 			     u32 bits[DEV_CONFIG_BLOCKS])
 {
 	int i = 0;

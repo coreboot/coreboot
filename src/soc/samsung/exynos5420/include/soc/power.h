@@ -76,7 +76,7 @@ struct exynos5_power {
 } __packed;
 check_member(exynos5_power, ps_hold_ctrl, 0x330c);
 
-static struct exynos5_power * const exynos_power = (void*)EXYNOS5_POWER_BASE;
+static struct exynos5_power *const exynos_power = (void *)EXYNOS5_POWER_BASE;
 
 /**
  * Perform a software reset.

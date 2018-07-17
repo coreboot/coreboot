@@ -17,40 +17,13 @@
 
 # Top level
 util/lint/lint-000-license-headers "src/acpi src/arch src/commonlib src/console \
-	src/cpu src/device src/ec src/superio src/vboot"
-
-# CPU
-util/lint/lint-000-license-headers "src/cpu/allwinner src/cpu/armltd src/cpu/dmp src/cpu/qemu-power8 \
-	src/cpu/qemu-x86 src/cpu/ti"
+	src/cpu src/device src/ec src/mainboard src/northbridge src/soc \
+	src/southbridge src/superio"
 
 # src/drivers
 util/lint/lint-000-license-headers "src/drivers/ams src/drivers/aspeed src/drivers/dec src/drivers/elog \
 	src/drivers/emulation src/drivers/gic src/drivers/ics src/drivers/ipmi src/drivers/maxim \
 	src/drivers/parade src/drivers/ricoh src/drivers/sil src/drivers/ti src/drivers/usb src/drivers/xgi"
 
-# src/include
-util/lint/lint-000-license-headers "src/device/superio"
-
-# /src/mainboard
-util/lint/lint-000-license-headers "src/mainboard/aaeon src/mainboard/abit src/mainboard/adlink src/mainboard/advansus \
-	src/mainboard/amd src/mainboard/aopen src/mainboard/apple src/mainboard/atrend src/mainboard/avalue \
-	src/mainboard/azza src/mainboard/bachmann src/mainboard/bap src/mainboard/bcom src/mainboard/bifferos"
-util/lint/lint-000-license-headers "src/mainboard/biostar src/mainboard/compaq src/mainboard/digitallogic \
-        src/mainboard/dmp src/mainboard/ecs \
-	src/mainboard/esd src/mainboard/gizmosphere src/mainboard/google src/mainboard/iei \
-	src/mainboard/intel src/mainboard/jetway src/mainboard/lanner src/mainboard/lintop \
-	src/mainboard/mitac src/mainboard/nec src/mainboard/nokia src/mainboard/nvidia"
-util/lint/lint-000-license-headers "src/mainboard/pcengines src/mainboard/purism src/mainboard/rca src/mainboard/samsung \
-	src/mainboard/soyo src/mainboard/technexion src/mainboard/thomson src/mainboard/traverse \
-	src/mainboard/tyan src/mainboard/via src/mainboard/wyse"
-
-# src/northbridge
-util/lint/lint-000-license-headers "src/northbridge/dmp src/northbridge/rdc src/northbridge/via"
-
-# src/soc
-util/lint/lint-000-license-headers "src/soc/broadcom src/soc/imgtec src/soc/intel src/soc/marvell src/soc/mediatek \
-	src/soc/rockchip src/soc/ucb"
-
-# src/southbridge
-util/lint/lint-000-license-headers "src/southbridge/broadcom src/southbridge/dmp src/southbridge/nvidia src/southbridge/rdc \
-	src/southbridge/ricoh src/southbridge/sis src/southbridge/ti src/southbridge/via"
+# src/security
+util/lint/lint-000-license-headers "src/security/vboot"

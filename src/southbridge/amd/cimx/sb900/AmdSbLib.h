@@ -28,7 +28,7 @@
 #define NUM_IMAGE_LOCATION   32
 
 //Entry Point Call
-typedef void (*CIM_IMAGE_ENTRY) (void* pConfig);
+typedef void (*CIM_IMAGE_ENTRY) (void *pConfig);
 
 //Hook Call
 

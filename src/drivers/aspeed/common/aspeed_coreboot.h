@@ -73,7 +73,7 @@ struct drm_device {
 };
 
 static inline void *kzalloc(size_t size, int flags) {
-	void* ptr = malloc(size);
+	void *ptr = malloc(size);
 	memset(ptr, 0, size);
 	return ptr;
 }

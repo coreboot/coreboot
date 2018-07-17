@@ -24,7 +24,7 @@
 #define CRPORT_RX_OVRD_IN_HI	0x1006
 #define CRPORT_TX_ALT_BLOCK	0x102d
 
-static u32 * const tcsr_usb_sel = (void *)0x1a4000b0;
+static u32 *const tcsr_usb_sel = (void *)0x1a4000b0;
 
 struct usb_qc_phy {
 	u32 ipcat;

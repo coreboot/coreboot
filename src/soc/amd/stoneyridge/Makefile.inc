@@ -126,6 +126,7 @@ smm-y += tsc_freq.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c
 smm-$(CONFIG_SPI_FLASH) += spi.c
 smm-y += nb_util.c
+smm-y += gpio.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge
 CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge/include

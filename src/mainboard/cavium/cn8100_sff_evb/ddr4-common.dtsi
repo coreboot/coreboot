@@ -1,0 +1,802 @@
+/***********************license start***********************************
+* Copyright (c) 2003-2016  Cavium Inc. (support@cavium.com). All rights
+* reserved.
+*
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are
+* met:
+*
+*   * Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
+*
+*   * Redistributions in binary form must reproduce the above
+*     copyright notice, this list of conditions and the following
+*     disclaimer in the documentation and/or other materials provided
+*     with the distribution.
+*
+*   * Neither the name of Cavium Inc. nor the names of
+*     its contributors may be used to endorse or promote products
+*     derived from this software without specific prior written
+*     permission.
+*
+* This Software, including technical data, may be subject to U.S. export
+* control laws, including the U.S. Export Administration Act and its
+* associated regulations, and may be subject to export or import
+* regulations in other countries.
+*
+* TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
+* AND WITH ALL FAULTS AND CAVIUM INC. MAKES NO PROMISES, REPRESENTATIONS OR
+* WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT
+* TO THE SOFTWARE, INCLUDING ITS CONDITION, ITS CONFORMITY TO ANY
+* REPRESENTATION OR DESCRIPTION, OR THE EXISTENCE OF ANY LATENT OR PATENT
+* DEFECTS, AND CAVIUM SPECIFICALLY DISCLAIMS ALL IMPLIED (IF ANY) WARRANTIES
+* OF TITLE, MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A PARTICULAR
+* PURPOSE, LACK OF VIRUSES, ACCURACY OR COMPLETENESS, QUIET ENJOYMENT,
+* QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION. THE ENTIRE  RISK
+* ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
+***********************license end**************************************/
+/ {
+cavium,bdk {
+	/* Speed grade to use for DRAM in MT/s. Hardware may adjust this value
+	slightly to improve DRAM stability, so scope measurements may not
+	exactly match the frequency with MT/s. The Cavium supported speed
+	grades are:
+	       0 (auto-set from SPD contents)
+	     666 MT/s (DDR3 only)
+	     800 MT/s (DDR3 only)
+	    1066 MT/s (DDR3 only)
+	    1333 MT/s (DDR3 only)
+	    1600 MT/s
+	    1866 MT/s
+	    2133 MT/s (DDR4 only)
+	Parameters:
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-SPEED.N%d = "0";
+
+	/* Set to use a an alternate reference clock for DRAM than the usual
+	50Mhz reference. The value of here specifies the frequency of the
+	alternate clock in Mhz. Currently the only supported reference
+	clock frequencies are 50Mhz and 100Mhz.
+	Parameters:
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-ALT-REFCLK.N%d = "0";
+
+	/* TWSI address of the DIMM SPD. The encoding of this address is
+	:    [15:12]: TWSI bus the DIMM is connected to.
+	     [11:7]: Reserved, set to zero.
+	      [6:0]: TWSI address for the DIMM.
+	A value of zero means the DIMMs are not accessible. Hard coded
+	values will be read from DDR-CONFIG-SPD-DATA.Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-SPD-ADDR.DIMM%d.LMC%d.N%d = "0";
+        // Note: The SPD addresses are not specified here so boards don't
+        // inherit a default. The default causes trouble with UEFI when it
+        // builds SMBIOS tables.
+
+	/* DIMM SPD data to be used if memory doesn't support the standard
+	TWSI access to DIMM SPDs. The format of this is a binary blob
+	stored in the device tree. An example would be:
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-SPD-DATA.DIMM%d.LMC%d.N%d = [];
+
+	/* Drive strength control for DDR_DQ* / DDR_DQS_*_P/N drivers.
+	    0x1 = 24 ohm.
+	    0x2 = 26.67 ohm.
+	    0x3 = 30 ohm.
+	    0x4 = 34.3 ohm.
+	    0x5 = 40 ohm.
+	    0x6 = 48 ohm.
+	    0x7 = 60 ohm.
+	    _ else = Reserved.
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-DQX-CTL.RANKS%d.DIMMS%d.LMC%d.N%d = "0";
+	DDR-CONFIG-DQX-CTL = "0x4";
+
+	/* LMC Write OnDieTermination Mask Register
+	System designers may desire to terminate DQ/DQS lines for
+	higher-frequency DDR operations, especially on a multirank system.
+	DDR3 DQ/DQS I/Os have built-in termination resistors that can be
+	turned on or off by the controller, after meeting TAOND and TAOF
+	timing requirements. Each rank has its own ODT pin that fans out
+	to all of the memory parts in that DIMM. System designers may
+	prefer different combinations of ODT ONs for write operations into
+	different ranks. CNXXXX supports full programmability by way of
+	the mask register below. Each rank position has its own 8-bit
+	programmable field. When the controller does a write to that rank,
+	it sets the 4 ODT pins to the mask pins below. For example, when
+	doing a write into Rank0, a system designer may desire to terminate
+	the lines with the resistor on DIMM0/Rank1. The mask WODT_D0_R0
+	would then be {00000010}.
+	CNXXXX drives the appropriate mask values on the ODT pins by
+	default. If this feature is not required, write 0x0 in this
+	register. When a given RANK is selected, the WODT mask for that
+	RANK is used.
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-WODT-MASK.RANKS%d.DIMMS%d.LMC%d.N%d = "0";
+	DDR-CONFIG-WODT-MASK.RANKS2.DIMMS2 = "0xc0c0303";
+	DDR-CONFIG-WODT-MASK.RANKS4.DIMMS1 = "0x1030203";
+
+	/* Partial array self-refresh per rank. LMC writes this value to
+	MR2[PASR] in the rank (i.e. DIMM0_CS0) DDR3 parts when selected
+	during power-up/init, write-leveling, and, if
+	LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit
+	instruction sequences. See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and
+	LMC()_CONFIG[RANKMASK] and LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT].
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    RANK#: Parameter can be different for each rank of a DIMM. This
+	        specifies which rank the value is for. Rank must be
+	        0-3. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-MODE1-PASR.RANKS%d.DIMMS%d.RANK%d.LMC%d.N%d = "0";
+
+	/* Auto self-refresh per rank. LMC writes this value to MR2[ASR] in
+	the rank (i.e. DIMM0_CS0) DDR3 parts when selected during
+	power-up/init, write-leveling, and, if LMC()_CONFIG[SREF_WITH_DLL]
+	is set, self-refresh entry and exit instruction sequences. See
+	LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+	LMC()_RESET_CTL [DDR3PWARM,DDR3PSOFT].
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    RANK#: Parameter can be different for each rank of a DIMM. This
+	        specifies which rank the value is for. Rank must be
+	        0-3. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-MODE1-ASR.RANKS%d.DIMMS%d.RANK%d.LMC%d.N%d = "0";
+
+	/* Self-refresh temperature range per rank. LMC writes this value to
+	MR2[SRT] in the rank (i.e. DIMM0_CS0) DDR3 parts when selected
+	during power-up/init, write-leveling, and, if
+	LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit
+	instruction sequences. See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and
+	LMC()_CONFIG[RANKMASK] and LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT].
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    RANK#: Parameter can be different for each rank of a DIMM. This
+	        specifies which rank the value is for. Rank must be
+	        0-3. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-MODE1-SRT.RANKS%d.DIMMS%d.RANK%d.LMC%d.N%d = "0";
+
+	/* RTT_WR per rank. LMC writes this value to MR2[RTT_WR] in the rank
+	(i.e. DIMM0_CS0) DDR3 parts when selected during power-up/init,
+	write-leveling, and, if LMC()_CONFIG[SREF_WITH_DLL] is set,
+	self-refresh entry and exit instruction sequences. See
+	LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+	LMC()_RESET_CTL[DDR3PWARM, DDR3PSOFT].
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    RANK#: Parameter can be different for each rank of a DIMM. This
+	        specifies which rank the value is for. Rank must be
+	        0-3. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-MODE1-RTT-WR.RANKS%d.DIMMS%d.RANK%d.LMC%d.N%d = "0";
+
+	//DDR-CONFIG-MODE1-RTT-WR.RANKS1 = "0x4";
+        DDR-CONFIG-MODE1-RTT-WR.RANKS1.DIMMS1.RANK0 = "0x4";
+        DDR-CONFIG-MODE1-RTT-WR.RANKS1.DIMMS2.RANK0 = "0x4";
+        DDR-CONFIG-MODE1-RTT-WR.RANKS1.DIMMS2.RANK2 = "0x4";
+
+        //DDR-CONFIG-MODE1-RTT-WR.RANKS2 = "0x2";
+        DDR-CONFIG-MODE1-RTT-WR.RANKS2.DIMMS1.RANK0 = "0x2";
+        DDR-CONFIG-MODE1-RTT-WR.RANKS2.DIMMS1.RANK1 = "0x2";
+        DDR-CONFIG-MODE1-RTT-WR.RANKS2.DIMMS2 = "0x2";
+
+	DDR-CONFIG-MODE1-RTT-WR.RANKS4 = "0x1";
+
+	/* Output driver impedance control per rank. LMC writes this value
+	to MR1[D.I.C.] in the rank (i.e. DIMM0_CS0) DDR3 parts when
+	selected during power-up/init, write-leveling, and, if
+	LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit
+	instruction sequences. See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and
+	LMC()_CONFIG[RANKMASK] and LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT].
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    RANK#: Parameter can be different for each rank of a DIMM. This
+	        specifies which rank the value is for. Rank must be
+	        0-3. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-MODE1-DIC.RANKS%d.DIMMS%d.RANK%d.LMC%d.N%d = "0";
+	DDR-CONFIG-MODE1-DIC.RANKS4.DIMMS1 = "0x1";
+
+	/* RTT_NOM per rank. LMC writes this value to MR1[RTT_NOM] in the
+	rank (i.e. DIMM0_CS0) DDR3 parts when selected during
+	power-up/init, write-leveling, and, if LMC()_CONFIG[SREF_WITH_DLL]
+	is set, self-refresh entry and exit instruction sequences. See
+	LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+	LMC()_RESET_CTL[DDR3PWARM, DDR3PSOFT]. Per JEDEC DDR3
+	specifications, if RTT_NOM is used during write operations, only
+	values MR1[RTT_NOM] = 1 (RZQ/4), 2 (RZQ/2), or 3 (RZQ/6) are
+	allowed. Otherwise, values MR1[RTT_NOM] = 4 (RZQ/12) and 5 (RZQ/8)
+	are also allowed.
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    RANK#: Parameter can be different for each rank of a DIMM. This
+	        specifies which rank the value is for. Rank must be
+	        0-3. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-MODE1-RTT-NOM.RANKS%d.DIMMS%d.RANK%d.LMC%d.N%d = "0";
+	DDR-CONFIG-MODE1-RTT-NOM.RANKS2.DIMMS2 = "0x2";
+	DDR-CONFIG-MODE1-RTT-NOM.RANKS4.DIMMS1.RANK0 = "0x4";
+	DDR-CONFIG-MODE1-RTT-NOM.RANKS4.DIMMS1.RANK2 = "0x4";
+
+	/* Host Interface DQ/DQS Output Driver Impedance control for DIMM0's
+	Data Buffer. This is the default value used during Host Interface
+	Write Leveling in LRDIMM environment, i.e.,
+	LMC()_CONFIG[LRDIMM_ENA] = 1, LMC()_SEQ_CTL[SEQ_SEL] = 0x6.
+	    0x0 = RZQ/6 (40 ohm).
+	    0x1 = RZQ/7 (34 ohm).
+	    0x2 = RZQ/5 (48 ohm).
+	    0x3-0x7 = Reserved.
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-MODE1-DB-OUTPUT-IMPEDANCE.RANKS%d.DIMMS%d.LMC%d.N%d = "0";
+
+	/* RTT park value per rank.
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    RANK#: Parameter can be different for each rank of a DIMM. This
+	        specifies which rank the value is for. Rank must be
+	        0-3. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-MODE2-RTT-PARK.RANKS%d.DIMMS%d.RANK%d.LMC%d.N%d = "0";
+
+	//DDR-CONFIG-MODE2-RTT-PARK.RANKS1.DIMMS1 = "0x1";
+	DDR-CONFIG-MODE2-RTT-PARK.RANKS1.DIMMS1.RANK0 = "0x1";
+
+	//DDR-CONFIG-MODE2-RTT-PARK.RANKS1.DIMMS2 = "0x5";
+        DDR-CONFIG-MODE2-RTT-PARK.RANKS1.DIMMS2.RANK0 = "0x5";
+        DDR-CONFIG-MODE2-RTT-PARK.RANKS1.DIMMS2.RANK2 = "0x5";
+
+        //DDR-CONFIG-MODE2-RTT-PARK.RANKS2.DIMMS1 = "0x2";
+        DDR-CONFIG-MODE2-RTT-PARK.RANKS2.DIMMS1.RANK0 = "0x2";
+        DDR-CONFIG-MODE2-RTT-PARK.RANKS2.DIMMS1.RANK1 = "0x2";
+
+	DDR-CONFIG-MODE2-RTT-PARK.RANKS2.DIMMS2 = "0x1";
+	DDR-CONFIG-MODE2-RTT-PARK.RANKS4.DIMMS1.RANK0 = "0x6";
+	DDR-CONFIG-MODE2-RTT-PARK.RANKS4.DIMMS1.RANK1 = "0x6";
+
+	/* VREF value per rank.
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    RANK#: Parameter can be different for each rank of a DIMM. This
+	        specifies which rank the value is for. Rank must be
+	        0-3. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-MODE2-VREF-VALUE.RANKS%d.DIMMS%d.RANK%d.LMC%d.N%d = "0";
+
+        //DDR-CONFIG-MODE2-VREF-VALUE.RANKS1.DIMMS1 = "0x22";
+        DDR-CONFIG-MODE2-VREF-VALUE.RANKS1.DIMMS1.RANK0 = "0x22";
+
+	//DDR-CONFIG-MODE2-VREF-VALUE.RANKS1.DIMMS2 = "0x1f";
+	DDR-CONFIG-MODE2-VREF-VALUE.RANKS1.DIMMS2.RANK0 = "0x1f";
+	DDR-CONFIG-MODE2-VREF-VALUE.RANKS1.DIMMS2.RANK2 = "0x1f";
+
+	//DDR-CONFIG-MODE2-VREF-VALUE.RANKS2.DIMMS1 = "0x19";
+	DDR-CONFIG-MODE2-VREF-VALUE.RANKS2.DIMMS1.RANK0 = "0x19";
+	DDR-CONFIG-MODE2-VREF-VALUE.RANKS2.DIMMS1.RANK1 = "0x19";
+
+	DDR-CONFIG-MODE2-VREF-VALUE.RANKS2.DIMMS2 = "0x19";
+	DDR-CONFIG-MODE2-VREF-VALUE.RANKS4.DIMMS1.RANK0 = "0x1f";
+	DDR-CONFIG-MODE2-VREF-VALUE.RANKS4.DIMMS1.RANK1 = "0x1f";
+
+	/* VREF range per rank.
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    RANK#: Parameter can be different for each rank of a DIMM. This
+	        specifies which rank the value is for. Rank must be
+	        0-3. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-MODE2-VREF-RANGE.RANKS%d.DIMMS%d.RANK%d.LMC%d.N%d = "0";
+
+	/* Vref training mode enable, used for all ranks.
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-MODE2-VREFDQ-TRAIN-EN.RANKS%d.DIMMS%d.LMC%d.N%d = "0";
+
+	/* RODT NCTL impedance control bits. This field controls ODT values
+	during a memory read.
+	    0x0 = No ODT.
+	    0x1 = 20 ohm.
+	    0x2 = 30 ohm.
+	    0x3 = 40 ohm.
+	    0x4 = 60 ohm.
+	    0x5 = 120 ohm.
+	    _ else = Reserved.
+	In DDR4 mode:
+	    0x0 = No ODT.
+	    0x1 = 40 ohm.
+	    0x2 = 60 ohm.
+	    0x3 = 80 ohm.
+	    0x4 = 120 ohm.
+	    0x5 = 240 ohm.
+	    0x6 = 34 ohm.
+	    0x7 = 48 ohm.
+	    _ else = Reserved.
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-RODT-CTL.RANKS%d.DIMMS%d.LMC%d.N%d = "0";
+	DDR-CONFIG-RODT-CTL.RANKS1.DIMMS1 = "0x7";
+	DDR-CONFIG-RODT-CTL.RANKS1.DIMMS2 = "0x3";
+	DDR-CONFIG-RODT-CTL.RANKS2.DIMMS1 = "0x3";
+	DDR-CONFIG-RODT-CTL.RANKS2.DIMMS2 = "0x7";
+	DDR-CONFIG-RODT-CTL.RANKS4.DIMMS1 = "0x7";
+
+	/* LMC Read OnDieTermination Mask Register
+	System designers may desire to terminate DQ/DQS lines for higher
+	frequency DDR operations, especially on a multirank system. DDR3
+	DQ/DQS I/Os have built-in termination resistors that can be turned
+	on or off by the controller, after meeting TAOND and TAOF timing
+	requirements.
+	Each rank has its own ODT pin that fans out to all the memory
+	parts in that DIMM. System designers may prefer different
+	combinations of ODT ONs for read operations into different ranks.
+	CNXXXX supports full programmability by way of the mask register
+	below. Each rank position has its own 4-bit programmable field.
+	When the controller does a read to that rank, it sets the 4 ODT
+	pins to the MASK pins below. For example, when doing a read from
+	Rank0, a system designer may desire to terminate the lines with
+	the resistor on DIMM0/Rank1. The mask RODT_D0_R0 would then be {0010}.
+	CNXXXX drives the appropriate mask values on the ODT pins by
+	default. If this feature is not required, write 0x0 in this
+	register. Note that, as per the JEDEC DDR3 specifications, the ODT
+	pin for the rank that is being read should always be 0x0. When a
+	given RANK is selected, the RODT mask for that rank is used.
+	Parameters:
+	    RANKS#: Specifies that this parameter only applies to DIMMs
+	        with the supplied number of ranks. Support ranks is 1, 2,
+	        or 4. Optional.
+	    DIMMS#: Specifies that this parameter only applies when the
+	        DIMMs per memory controller matches. Support number of
+	        DIMMs is 1 or 2. Optional.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-RODT-MASK.RANKS%d.DIMMS%d.LMC%d.N%d = "0";
+	DDR-CONFIG-RODT-MASK.RANKS2.DIMMS2 = "0x4080102";
+	DDR-CONFIG-RODT-MASK.RANKS4.DIMMS1 = "0x1010202";
+
+	/* 1=120ohms, 2=60ohms, 3=40ohms, 4=30ohms, 5=20ohms
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-MIN-RTT-NOM-IDX.LMC%d.N%d = "1";
+	DDR-CONFIG-CUSTOM-MIN-RTT-NOM-IDX = "0x1";
+
+	/* 1=120ohms, 2=60ohms, 3=40ohms, 4=30ohms, 5=20ohms
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-MAX-RTT-NOM-IDX.LMC%d.N%d = "5";
+	DDR-CONFIG-CUSTOM-MAX-RTT-NOM-IDX = "0x7";
+
+	/* 1=20ohms, 2=30ohms, 3=40ohms, 4=60ohms, 5=120ohms
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-MIN-RODT-CTL.LMC%d.N%d = "1";
+	DDR-CONFIG-CUSTOM-MIN-RODT-CTL = "0x1";
+
+	/* 1=20ohms, 2=30ohms, 3=40ohms, 4=60ohms, 5=120ohms
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-MAX-RODT-CTL.LMC%d.N%d = "5";
+	DDR-CONFIG-CUSTOM-MAX-RODT-CTL = "0x7";
+
+	/* Drive strength control for DDR_CK_X_P, DDR_DIMMX_CSX_L,
+	DDR_DIMMX_ODT_X drivers.
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-CK-CTL.LMC%d.N%d = "0";
+	DDR-CONFIG-CUSTOM-CK-CTL = "0x4";
+
+	/* Drive strength control for CMD/A/RESET_L/CKEX drivers.
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-CMD-CTL.LMC%d.N%d = "0";
+	DDR-CONFIG-CUSTOM-CMD-CTL = "0x4";
+
+	/* Drive strength control for ODT, etc. drivers.
+	In DDR3 mode:
+	    0x1 = 24 ohm.
+	    0x2 = 26.67 ohm.
+	    0x3 = 30 ohm.
+	    0x4 = 34.3 ohm.
+	    0x5 = 40 ohm.
+	    0x6 = 48 ohm.
+	    0x7 = 60 ohm.
+	    else = Reserved.
+	In DDR4 mode:
+	    0x0 = Reserved.
+	    0x1 = Reserved.
+	    0x2 = 26 ohm.
+	    0x3 = 30 ohm.
+	    0x4 = 34 ohm.
+	    0x5 = 40 ohm.
+	    0x6 = 48 ohm.
+	    else = Reserved.
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-CTL-CTL.LMC%d.N%d = "0";
+	DDR-CONFIG-CUSTOM-CTL-CTL = "0x4";
+
+	/* Minimum allowed CAS Latency
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-MIN-CAS-LATENCY.LMC%d.N%d = "0";
+
+	/* When set, LMC attempts to select the read-leveling setting that is
+	LMC()_RLEVEL_CTL[OFFSET] settings earlier than the last passing
+	read-leveling setting in the largest contiguous sequence of
+	passing settings. When clear, or if the setting selected by
+	LMC()_RLEVEL_CTL[OFFSET] did not pass, LMC selects the middle
+	setting in the largest contiguous sequence of passing settings,
+	rounding earlier when necessary.
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-OFFSET-EN.LMC%d.N%d = "1";
+	DDR-CONFIG-CUSTOM-OFFSET-EN = "0x1";
+
+	/* The offset used when LMC()_RLEVEL_CTL[OFFSET] is set.
+	Parameters:
+	   %s: This setting can by specified by DRAM type (UDIMM or RDIMM)
+	       Different settings can be used for each, or the type can be
+	       omitted to use the same setting for both.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-OFFSET.%s.LMC%d.N%d = "0";
+	DDR-CONFIG-CUSTOM-OFFSET = "0x2";
+
+	/* Enables software interpretation of per-byte read delays using the
+	measurements collected by the chip rather than completely relying
+	on the automatically to determine the delays. 1=software
+	computation is recommended since a more complete analysis is
+	implemented in software.
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-RLEVEL-COMPUTE.LMC%d.N%d = "0";
+
+	/* Set to 2 unless instructed differently by Cavium.
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-RLEVEL-COMP-OFFSET.%s.LMC%d.N%d = "2";
+
+	/* Turn on the DDR 2T mode. 2-cycle window for CMD and address. This
+	mode helps relieve setup time pressure on the address and command
+	bus. Please refer to Micron's tech note tn_47_01 titled DDR2-533
+	Memory Design Guide for Two DIMM Unbuffered Systems for physical
+	details.
+	Parameters:
+	   %s: This setting can by specified by DRAM type (UDIMM or RDIMM)
+	       Different settings can be used for each, or the type can be
+	       omitted to use the same setting for both.
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-DDR2T.%s.LMC%d.N%d = "0";
+	DDR-CONFIG-CUSTOM-DDR2T = "0x1";
+
+	/* As result of the flyby topology prescribed in the JEDEC
+	specifications the byte delays should maintain a consistent
+	increasing or decreasing trend across the bytes on standard DIMMs.
+	This setting can be used disable that check for unusual
+	circumstances where the check is not useful.
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-DISABLE-SEQUENTIAL-DELAY-CHECK.LMC%d.N%d = "0";
+
+	/* An additional sequential delay check for the delays that result
+	from the flyby topology. This value specifies the maximum
+	difference between the delays of adjacent bytes.  A value of 0
+	disables this check.
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-MAXIMUM-ADJACENT-RLEVEL-DELAY-INCREMENT.LMC%d.N%d = "0";
+	DDR-CONFIG-CUSTOM-MAXIMUM-ADJACENT-RLEVEL-DELAY-INCREMENT = "0x2";
+
+	/* The parity input signal PAR_IN on each DIMM must be strapped high
+	or low on the board.  This bit is programmed into
+	LMC0_DIMM_CTL[PARITY] and it must be set to match the board
+	strapping.  This signal is typically strapped low.
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-PARITY.LMC%d.N%d = "0";
+
+	/* Front Porch Enable: When set, the turn-off time for the default
+	DDR_DQ/DQS drivers is FPRCH2 CKs earlier.
+	    0 = 0 CKs
+	    1 = 1 CKs
+	    2 = 2 CKs
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-FPRCH2.LMC%d.N%d = "0";
+	DDR-CONFIG-CUSTOM-FPRCH2 = "0x2";
+
+	/* Enable 32-bit datapath mode. Set to 1 if only 32 DQ pins are
+	used.
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-MODE32B.LMC%d.N%d = "0";
+
+	/* Use Measured VREF
+	Parameters:
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-MEASURED-VREF.LMC%d.N%d = "0";
+
+	/* Supply a custom DLL write offset
+	Parameters:
+	    BYTE#: Byte lane to apply the parameter to (0-8).
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-DLL-WRITE-OFFSET.BYTE%d.LMC%d.N%d = "0";
+
+	/* Supply a custom DLL read offset
+	Parameters:
+	    BYTE#: Byte lane to apply the parameter to (0-8).
+	    LMC#: Parameter can be different for memory controller. This
+	        specifies which LMC the value is for. LMC must be
+	        0-3. Optional.
+	    N#: Parameter can be different for each node. This specifies
+	        which node the value is for. Node must be 0-3. Optional. */
+	//DDR-CONFIG-CUSTOM-DLL-READ-OFFSET.BYTE%d.LMC%d.N%d = "0";
+
+	/* Choose the debug logging level used during DRAM initialization.
+	Zero disables debug logging. The possible debug levels are:
+	    0: Off, no logging
+	    1: Logging of DRAM initialization at a normal detail level
+	    2: Logging of DRAM initialization at FAE detail level
+	    3: Logging of DRAM initialization at TME detail level
+	    4: Logging of DRAM initialization at DEV detail level
+	    5: Logging of DRAM initialization at DEV2 detail level
+	    6: Logging of DRAM initialization at DEV3 detail level
+	    7: Logging of DRAM initialization at DEV4 detail level
+	Add in the following for special trace features.
+	   16: Trace specialized DRAM controller sequences.
+	   32: Trace every DRAM controller register write. */
+	//DDR-VERBOSE = "0";
+
+	/* Run a short DRAM test after DRAM is initialized as quick check
+	for functionality. This is normally not needed required. Boards
+	with poor DRAM power supplies may use this to detect failures
+	during boot. This should be used in combination with the watchdog
+	timer. */
+	//DDR-TEST-BOOT = "0";
+
+	/* The DRAM initialization code has the ability to toggle a GPIO to
+	signal when it is running. Boards may need to mux TWSI access
+	between a BMC and the SOC so the BMC can monitor DIMM temperatures
+	and health. This GPIO will be driven high when the SOC may read
+	from the SPDs on the DIMMs. When driven low, another device (BMC)
+	may takeover the TWSI connections to the DIMMS. The default value
+	(-1) disables this feature. */
+	//DDR-CONFIG-GPIO = "-1";
+
+	/* Scramble DRAM to prevent snooping. This options programs the DRAM
+	controller to scramble addresses and data with random values.
+	Supported values:
+	    0: No scrambling
+	    1: Always scramble
+	    2: Scramble only when using trusted boot (Default) */
+	//DDR-CONFIG-SCRAMBLE = "2";
+}; /* cavium,bdk */
+}; /* / */

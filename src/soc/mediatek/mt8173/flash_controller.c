@@ -25,8 +25,8 @@
 #include <string.h>
 #include <symbols.h>
 #include <timer.h>
+#include <soc/symbols.h>
 #include <soc/flash_controller.h>
-#include <soc/mmu_operations.h>
 
 #define get_nth_byte(d, n)	((d >> (8 * n)) & 0xff)
 

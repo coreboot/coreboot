@@ -181,9 +181,20 @@ static void h8_init(struct device *dev)
 	pc_keyboard_init(NO_AUX_DEVICE);
 }
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+static const char *h8_acpi_name(const struct device *dev)
+{
+	return "EC";
+}
+#endif
+
 struct device_operations h8_dev_ops = {
 #if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
 	.get_smbios_strings = h8_smbios_strings,
+#endif
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.acpi_fill_ssdt_generator = h8_ssdt_generator,
+	.acpi_name = h8_acpi_name,
 #endif
 	.init = h8_init,
 };

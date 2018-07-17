@@ -288,7 +288,7 @@ static void execute_memory_test(void)
 	uint32_t x;
 	uint32_t y;
 	uint32_t z;
-	uint32_t* dataptr;
+	uint32_t *dataptr;
 	uint32_t readback;
 	uint32_t start = 0x300000;
 	printk(BIOS_DEBUG, "Writing test pattern 1 to memory...\n");
@@ -358,7 +358,7 @@ static void execute_memory_test(void)
 
 static spinlock_t printk_spinlock CAR_GLOBAL;
 
-spinlock_t* romstage_console_lock(void)
+spinlock_t *romstage_console_lock(void)
 {
 	return car_get_var_ptr(&printk_spinlock);
 }
@@ -370,7 +370,7 @@ void initialize_romstage_console_lock(void)
 
 static spinlock_t nvram_cbfs_spinlock CAR_GLOBAL;
 
-spinlock_t* romstage_nvram_cbfs_lock(void)
+spinlock_t *romstage_nvram_cbfs_lock(void)
 {
 	return car_get_var_ptr(&nvram_cbfs_spinlock);
 }
@@ -382,7 +382,7 @@ void initialize_romstage_nvram_cbfs_lock(void)
 
 static spinlock_t microcode_cbfs_spinlock CAR_GLOBAL;
 
-spinlock_t* romstage_microcode_cbfs_lock(void)
+spinlock_t *romstage_microcode_cbfs_lock(void)
 {
 	return car_get_var_ptr(&microcode_cbfs_spinlock);
 }

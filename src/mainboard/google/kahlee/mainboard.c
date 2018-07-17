@@ -190,17 +190,30 @@ int mainboard_get_ehci_oc_map(uint16_t *map)
 	return variant_get_ehci_oc_map(map);
 }
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+void mainboard_suspend_resume(void)
+{
+	variant_mainboard_suspend_resume();
+}
+#endif
+
 struct chip_operations mainboard_ops = {
 	.init = mainboard_init,
 	.enable_dev = kahlee_enable,
 	.final = mainboard_final,
 };
 
-/* Variants may override this function so see definitions in variants/ */
+/* Variants may override these functions so see definitions in variants/ */
 uint8_t __weak variant_board_sku(void)
 {
 	return 0;
 }
+
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+void __weak variant_mainboard_suspend_resume(void)
+{
+}
+#endif
 
 const char *smbios_mainboard_sku(void)
 {

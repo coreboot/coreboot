@@ -290,7 +290,7 @@ void clock_external_output(int clk_id);
 void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 		 u32 ph135, u32 kvco, u32 kcp, u32 stable_time, u32 emc_source,
 		 u32 same_freq);
-void clock_cpu0_config(void * entry);
+void clock_cpu0_config(void *entry);
 void clock_cpu0_remove_reset(void);
 void clock_halt_avp(void);
 void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x);

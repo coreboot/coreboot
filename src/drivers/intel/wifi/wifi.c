@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Vladimir Serbinenko
+ * Copyright (C) 2018 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +76,7 @@ static void emit_sar_acpi_structures(void)
 {
 	int i, j, package_size;
 	struct wifi_sar_limits sar_limits;
+	struct wifi_sar_delta_table *wgds;
 
 	/* Retrieve the sar limits data */
 	if (get_wifi_sar_limits(&sar_limits) < 0) {
@@ -133,6 +135,59 @@ static void emit_sar_acpi_structures(void)
 	for (i = 1; i < NUM_SAR_LIMITS; i++)
 		for (j = 0; j < BYTES_PER_SAR_LIMIT; j++)
 			acpigen_write_byte(sar_limits.sar_limit[i][j]);
+	acpigen_pop_len();
+	acpigen_pop_len();
+
+
+	if (!IS_ENABLED(CONFIG_GEO_SAR_ENABLE))
+		return;
+
+	/*
+	 * Name ("WGDS", Package() {
+	 *  Revision,
+	 *  Package() {
+	 *   DomainType,                         // 0x7:WiFi
+	 *   WgdsWiFiSarDeltaGroup1PowerMax1,    // Group 1 FCC 2400 Max
+	 *   WgdsWiFiSarDeltaGroup1PowerChainA1, // Group 1 FCC 2400 A Offset
+	 *   WgdsWiFiSarDeltaGroup1PowerChainB1, // Group 1 FCC 2400 B Offset
+	 *   WgdsWiFiSarDeltaGroup1PowerMax2,    // Group 1 FCC 5200 Max
+	 *   WgdsWiFiSarDeltaGroup1PowerChainA2, // Group 1 FCC 5200 A Offset
+	 *   WgdsWiFiSarDeltaGroup1PowerChainB2, // Group 1 FCC 5200 B Offset
+	 *   WgdsWiFiSarDeltaGroup2PowerMax1,    // Group 2 EC Jap 2400 Max
+	 *   WgdsWiFiSarDeltaGroup2PowerChainA1, // Group 2 EC Jap 2400 A Offset
+	 *   WgdsWiFiSarDeltaGroup2PowerChainB1, // Group 2 EC Jap 2400 B Offset
+	 *   WgdsWiFiSarDeltaGroup2PowerMax2,    // Group 2 EC Jap 5200 Max
+	 *   WgdsWiFiSarDeltaGroup2PowerChainA2, // Group 2 EC Jap 5200 A Offset
+	 *   WgdsWiFiSarDeltaGroup2PowerChainB2, // Group 2 EC Jap 5200 B Offset
+	 *   WgdsWiFiSarDeltaGroup3PowerMax1,    // Group 3 ROW 2400 Max
+	 *   WgdsWiFiSarDeltaGroup3PowerChainA1, // Group 3 ROW 2400 A Offset
+	 *   WgdsWiFiSarDeltaGroup3PowerChainB1, // Group 3 ROW 2400 B Offset
+	 *   WgdsWiFiSarDeltaGroup3PowerMax2,    // Group 3 ROW 5200 Max
+	 *   WgdsWiFiSarDeltaGroup3PowerChainA2, // Group 3 ROW 5200 A Offset
+	 *   WgdsWiFiSarDeltaGroup3PowerChainB2, // Group 3 ROW 5200 B Offset
+	 *  }
+	 * })
+	 */
+
+	wgds = &sar_limits.wgds;
+	acpigen_write_name("WGDS");
+	acpigen_write_package(2);
+	acpigen_write_dword(wgds->version);
+	/* Emit 'Domain Type' +
+	 * Group specific delta of power ( 6 bytes * NUM_WGDS_SAR_GROUPS )
+	 */
+	package_size = sizeof(sar_limits.wgds.group) + 1;
+	acpigen_write_package(package_size);
+	acpigen_write_dword(WGDS_DOMAIN_TYPE_WIFI);
+	for (i = 0; i < SAR_NUM_WGDS_GROUPS; i++) {
+		acpigen_write_byte(wgds->group[i].power_max_2400mhz);
+		acpigen_write_byte(wgds->group[i].power_chain_a_2400mhz);
+		acpigen_write_byte(wgds->group[i].power_chain_b_2400mhz);
+		acpigen_write_byte(wgds->group[i].power_max_5200mhz);
+		acpigen_write_byte(wgds->group[i].power_chain_a_5200mhz);
+		acpigen_write_byte(wgds->group[i].power_chain_b_5200mhz);
+	}
+
 	acpigen_pop_len();
 	acpigen_pop_len();
 }

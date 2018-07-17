@@ -149,23 +149,16 @@ static void bdk_dram_disable_ecc_reporting(bdk_node_t node)
 static int bdk_libdram_tune_node(int node)
 {
     int errs, tot_errs;
-    int do_dllro_hw = 0; // default to NO
-    int do_dllwo = 0; // default to NO
-    int do_eccdll = 0; // default to NO
-    const char *str;
+    int do_dllro_hw = IS_ENABLED(CONFIG_CAVIUM_BDK_DDR_TUNE_HW_OFFSETS);
+    int do_dllwo = IS_ENABLED(CONFIG_CAVIUM_BDK_DDR_TUNE_WRITE_OFFSETS);
+    int do_eccdll = IS_ENABLED(CONFIG_CAVIUM_BDK_DDR_TUNE_ECC_ENABLE);
     BDK_CSR_INIT(lmc_config, node, BDK_LMCX_CONFIG(0)); // FIXME: probe LMC0
     do_eccdll = (lmc_config.s.ecc_ena != 0); // change to ON if ECC enabled
-
-    // FIXME!!! make 81xx always use HW-assist tuning
-    if (CAVIUM_IS_MODEL(CAVIUM_CN81XX))
-        do_dllro_hw = 1;
 
     // Automatically tune the data byte DLL read offsets
     // always done by default, but allow use of HW-assist
     // NOTE: HW-assist will also tune the ECC byte 
-    str = getenv("ddr_tune_hw_offsets");
-    if (str)
-        do_dllro_hw = !!strtoul(str, NULL, 0);
+
     BDK_TRACE(DRAM, "N%d: Starting DLL Read Offset Tuning for LMCs\n", node);
     if (!do_dllro_hw || (lmc_config.s.mode32b != 0)) {
         errs = perform_dll_offset_tuning(node, 2, /* tune */1); 
@@ -179,10 +172,6 @@ static int bdk_libdram_tune_node(int node)
     // disabled by default for now, does not seem to be needed?
     // Automatically tune the data byte DLL write offsets
     // allow override of default setting
-    str = getenv("ddr_tune_write_offsets");
-    str = NULL;
-    if (str)
-        do_dllwo = !!strtoul(str, NULL, 0);
     if (do_dllwo) {
         BDK_TRACE(DRAM, "N%d: Starting DLL Write Offset Tuning for LMCs\n", node);
         errs = perform_dll_offset_tuning(node, /* write */1, /* tune */1);
@@ -195,9 +184,6 @@ static int bdk_libdram_tune_node(int node)
     // Automatically tune the ECC byte DLL read offsets
     // FIXME? allow override of the filtering
     // FIXME? allow programmatic override, not via envvar? 
-    str = getenv("ddr_tune_ecc_enable");
-    if (str)
-        do_eccdll = !!strtoul(str, NULL, 10);
     if (do_eccdll && !do_dllro_hw && (lmc_config.s.mode32b == 0)) { // do not do HW-assist twice for ECC
         BDK_TRACE(DRAM, "N%d: Starting ECC DLL Read Offset Tuning for LMCs\n", node);
         errs = perform_HW_dll_offset_tuning(node, 2, 8/* ECC bytelane */); 

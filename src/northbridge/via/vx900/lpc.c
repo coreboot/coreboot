@@ -246,7 +246,7 @@ static const struct pci_driver lpc_driver __pci_driver = {
 };
 
 #if IS_ENABLED(CONFIG_PIRQ_ROUTE)
-void pirq_assign_irqs(const u8 * pirq)
+void pirq_assign_irqs(const u8 *pirq)
 {
 	struct device *lpc;
 

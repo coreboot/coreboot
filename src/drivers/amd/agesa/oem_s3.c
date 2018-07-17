@@ -161,5 +161,5 @@ const void *OemS3Saved_MTRR_Storage(void)
 	if (!size)
 		return NULL;
 
-	return (void*)(pos + sizeof(UINT32));
+	return (void *)(pos + sizeof(UINT32));
 }

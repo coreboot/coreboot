@@ -184,6 +184,11 @@ const char *mainboard_vbt_filename(void)
 	case SKU_1_VAYNE:
 	case SKU_2_VAYNE:
 		return "vbt-vayne.bin";
+	case SKU_0_AKALI:
+	case SKU_1_AKALI:
+	case SKU_0_AKALI360:
+	case SKU_1_AKALI360:
+		return "vbt-akali.bin";
 	default:
 		return "vbt.bin";
 		break;

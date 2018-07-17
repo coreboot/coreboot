@@ -25,6 +25,8 @@
 #include <pc80/keyboard.h>
 #include <stdlib.h>
 #include <superio/conf_mode.h>
+#include <arch/acpi.h>
+#include <arch/acpigen.h>
 
 #include "npcd378.h"
 
@@ -101,6 +103,53 @@ static void npcd378_init(struct device *dev)
 	}
 }
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+static void npcd378_ssdt(struct device *dev)
+{
+	struct resource *res;
+
+	const char *scope = acpi_device_path(dev);
+	if (!scope) {
+		printk(BIOS_ERR, "%s: Missing ACPI scope\n", dev_path(dev));
+		return;
+	}
+
+	switch (dev->path.pnp.device) {
+	case NPCD378_PWR: {
+		res = find_resource(dev, PNP_IDX_IO0);
+		if (!res || !res->base) {
+			printk(BIOS_ERR, "NPCD378: LDN%u IOBASE not set.\n",
+			       NPCD378_PWR);
+			break;
+		}
+
+		acpigen_write_scope(scope);
+		acpigen_write_name_integer("SWB", res->base);
+		acpigen_write_name_integer("SWL", res->size);
+		acpigen_pop_len(); /* pop scope */
+
+		res = find_resource(dev, PNP_IDX_IO1);
+		if (!res || !res->base) {
+			printk(BIOS_ERR, "NPCD378: LDN%u IOBASE2 not set.\n",
+			       NPCD378_PWR);
+			break;
+		}
+
+		acpigen_write_scope(scope);
+		acpigen_write_name_integer("RNB", res->base);
+		acpigen_write_name_integer("RNL", res->size);
+		acpigen_pop_len(); /* pop scope */
+		break;
+	}
+	}
+}
+
+static const char *npcd378_acpi_name(const struct device *dev)
+{
+	return "SIO0";
+}
+#endif
+
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
 	.set_resources    = pnp_set_resources,
@@ -108,6 +157,10 @@ static struct device_operations ops = {
 	.enable           = pnp_alt_enable,
 	.init             = npcd378_init,
 	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.acpi_fill_ssdt_generator = npcd378_ssdt,
+	.acpi_name = npcd378_acpi_name,
+#endif
 };
 
 static struct pnp_info pnp_dev_info[] = {

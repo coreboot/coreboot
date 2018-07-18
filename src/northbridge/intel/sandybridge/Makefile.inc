@@ -19,8 +19,6 @@ ramstage-y += ram_calc.c
 ramstage-y += northbridge.c
 ramstage-y += pcie.c
 ramstage-y += gma.c
-ramstage-$(CONFIG_SANDYBRIDGE_IVYBRIDGE_LVDS) += gma_sandybridge_lvds.c
-ramstage-$(CONFIG_SANDYBRIDGE_IVYBRIDGE_LVDS) += gma_ivybridge_lvds.c
 
 ramstage-y += acpi.c
 

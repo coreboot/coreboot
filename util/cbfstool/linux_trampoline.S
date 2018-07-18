@@ -31,7 +31,6 @@
 #define E820_OFFSET 0x2d0
 
 .trampoline_start:
-
 cld
 xor %edx, %edx
 mov $0, %ecx
@@ -114,12 +113,13 @@ jnz .tableScan
 ** Use TRAMPOLINE_ENTRY_LOC as a scratchpad.
 */
 mov  $TRAMPOLINE_ENTRY_LOC, %eax
-sgdt (%eax)
-mov  2(%eax), %ebx
-movl  $0x0000ffff, 16(%ebx)
-movl  $0x00cf9b00, 20(%ebx)
-movl  $0x0000ffff, 24(%ebx)
-movl  $0x00cf9300, 28(%ebx)
+movl  $0x0000ffff, 16(%eax)		// Set up the 2 new descriptors
+movl  $0x00cf9b00, 20(%eax)
+movl  $0x0000ffff, 24(%eax)
+movl  $0x00cf9300, 28(%eax)
+movb $0x2b, 0(%eax)			// Set the size
+movl %eax, 2(%eax)			// Set pointer to new GDT
+lgdt (%eax)				// Load it
 
 /* finally: jump to kernel */
 mov $LINUX_PARAM_LOC, %esi
@@ -129,5 +129,4 @@ jmp *(LINUX_PARAM_LOC + LINUX_ENTRY_OFFSET)
 2:
 hlt
 jmp 2b
-
 .trampoline_end:

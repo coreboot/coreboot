@@ -53,6 +53,7 @@ config MAINBOARD_DIR
 
 config VARIANT_DIR
 	string
+	default "aleena" if BOARD_GOOGLE_ALEENA
 	default "careena" if BOARD_GOOGLE_CAREENA
 	default "grunt" if BOARD_GOOGLE_GRUNT
 
@@ -103,6 +104,7 @@ config CHROMEOS
 config GBB_HWID
 	string
 	depends on CHROMEOS
+	default "ALEENA TEST 7281" if BOARD_GOOGLE_ALEENA
 	default "CAREENA TEST 8777" if BOARD_GOOGLE_CAREENA
 	default "GRUNT TEST 8296" if BOARD_GOOGLE_GRUNT
 

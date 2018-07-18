@@ -18,6 +18,7 @@
 ################################################################################
 ## RISC-V specific options
 ################################################################################
+ifeq ($(CONFIG_ARCH_RISCV),y)
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
 check-ramstage-overlap-regions += stack
@@ -64,7 +65,7 @@ $(objcbfs)/bootblock.debug: $$(bootblock-objs)
 bootblock-c-ccopts += $(riscv_flags)
 bootblock-S-ccopts += $(riscv_asm_flags)
 
-endif
+endif #CONFIG_ARCH_BOOTBLOCK_RISCV
 
 ################################################################################
 ## romstage
@@ -92,7 +93,7 @@ $(objcbfs)/romstage.debug: $$(romstage-objs)
 romstage-c-ccopts += $(riscv_flags)
 romstage-S-ccopts += $(riscv_asm_flags)
 
-endif
+endif #CONFIG_ARCH_ROMSTAGE_RISCV
 
 ################################################################################
 ## ramstage
@@ -128,4 +129,5 @@ $(objcbfs)/ramstage.debug: $$(ramstage-objs)
 ramstage-c-ccopts += $(riscv_flags)
 ramstage-S-ccopts += $(riscv_asm_flags)
 
-endif
+endif #CONFIG_ARCH_RAMSTAGE_RISCV
+endif #CONFIG_ARCH_RISCV

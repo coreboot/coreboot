@@ -925,14 +925,6 @@ static int cbfs_payload_decompress(struct cbfs_payload_segment *segments,
 		struct buffer tbuff;
 		size_t decomp_size;
 
-		/* The payload uses an unknown compression algorithm. */
-		decompress = decompression_function(segments[i].compression);
-		if (decompress == NULL) {
-			ERROR("Unknown decompression algorithm: %u",
-					segments[i].compression);
-			return -1;
-		}
-
 		/* Segments BSS and ENTRY do not have binary data. */
 		if (segments[i].type == PAYLOAD_SEGMENT_BSS ||
 				segments[i].type == PAYLOAD_SEGMENT_ENTRY) {
@@ -945,6 +937,14 @@ static int cbfs_payload_decompress(struct cbfs_payload_segment *segments,
 			out_ptr += segments[i].len;
 			segments[i].compression = CBFS_COMPRESS_NONE;
 			continue;
+		}
+
+		/* The payload uses an unknown compression algorithm. */
+		decompress = decompression_function(segments[i].compression);
+		if (decompress == NULL) {
+			ERROR("Unknown decompression algorithm: %u\n",
+					segments[i].compression);
+			return -1;
 		}
 
 		if (buffer_create(&tbuff, segments[i].mem_len, "segment")) {

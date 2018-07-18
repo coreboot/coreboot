@@ -167,7 +167,7 @@ as such. This can be done in the title ‘[DONOTSUBMIT]’, or can be pushed as
 draft commits, so that only explicitly added reviewers will see them. These
 sorts of patches are frequently posted as ideas or RFCs for the community
 to look at. To push a draft, use the command:
-        git push origin HEAD:refs/drafts/master
+        git push origin HEAD:refs/for/master%private,wip
 
 * Respond to anyone who has taken the time to review your patches, even if
 it's just to say that you disagree. While it may seem annoying to address a

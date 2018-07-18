@@ -13,3 +13,5 @@ SPD_SOURCES += elpida_8gb			# 0b0101  FIXME: hynix_8gb
 SPD_SOURCES += elpida_2gb			# 0b0110
 SPD_SOURCES += samsung_2gb			# 0b0111
 SPD_SOURCES += hynix_2gb			# 0b1000
+
+ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads

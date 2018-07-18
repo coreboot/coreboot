@@ -19,6 +19,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_ME_BIN
 	# Workaround for EC/KBC IRQ1.
 	select SERIRQ_CONTINUOUS_MODE
+	# This board also feature sandy-bridge CPU's so must have LVDS
+	select GFX_GMA_INTERNAL_IS_LVDS
+	select MAINBOARD_HAS_LIBGFXINIT
 
 config VBOOT
 	select VBOOT_VBNV_CMOS

@@ -28,3 +28,5 @@ cbfs-files-y += spd.bin
 spd.bin-file := $(SPD_BIN)
 spd.bin-type := spd
 romstage-y += gpio.c
+
+ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads

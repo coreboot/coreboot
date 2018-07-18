@@ -20,3 +20,5 @@ ramstage-y += chromeos.c
 romstage-y += gpio.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
+
+ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads

@@ -585,7 +585,7 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	return lb_table_fini(head);
 }
 
-void write_tables(void)
+void *write_tables(void)
 {
 	uintptr_t cbtable_start;
 	uintptr_t cbtable_end;
@@ -596,7 +596,7 @@ void write_tables(void)
 
 	if (!cbtable_start) {
 		printk(BIOS_ERR, "Could not add CBMEM for coreboot table.\n");
-		return;
+		return NULL;
 	}
 
 	/* Add architecture specific tables. */
@@ -615,4 +615,5 @@ void write_tables(void)
 
 	/* Print CBMEM sections */
 	cbmem_list();
+	return (void *)cbtable_start;
 }

@@ -1,0 +1,51 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2015 Damien Zammit <damien@zamaudio.com>
+# Copyright (C) 2018 Arthur Heymans <arthur@aheymans.xyz>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+if BOARD_ASUS_P5QC
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_LGA775
+	select NORTHBRIDGE_INTEL_X4X
+	select SOUTHBRIDGE_INTEL_I82801JX
+	select SUPERIO_WINBOND_W83667HG_A
+	select HAVE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_1024
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select HAVE_ACPI_RESUME
+
+config MAINBOARD_DIR
+	string
+	default "asus/p5qc"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "P5QC"
+
+config MAX_CPUS
+	int
+	default 4
+
+# The MARVEL IDE controller delays SeaBIOS a lot and results in an unbootable
+# bogus disk. Compiling SeaBIOS without ATA support is a workaround.
+
+config PAYLOAD_CONFIGFILE
+	string
+	default "$(top)/src/mainboard/$(MAINBOARDDIR)/config_seabios" if PAYLOAD_SEABIOS
+
+endif # BOARD_ASUS_P5QC

@@ -56,6 +56,7 @@ config VARIANT_DIR
 	default "aleena" if BOARD_GOOGLE_ALEENA
 	default "careena" if BOARD_GOOGLE_CAREENA
 	default "grunt" if BOARD_GOOGLE_GRUNT
+	default "liara" if BOARD_GOOGLE_LIARA
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -107,6 +108,7 @@ config GBB_HWID
 	default "ALEENA TEST 7281" if BOARD_GOOGLE_ALEENA
 	default "CAREENA TEST 8777" if BOARD_GOOGLE_CAREENA
 	default "GRUNT TEST 8296" if BOARD_GOOGLE_GRUNT
+	default "LIARA TEST 0464" if BOARD_GOOGLE_LIARA
 
 config AMD_FWM_POSITION_INDEX
 	int

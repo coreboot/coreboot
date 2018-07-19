@@ -53,6 +53,7 @@ config GBB_HWID
 	default "NAMI TEST 1669" if BOARD_GOOGLE_NAMI
 	default "NAUTILUS TEST 3013" if BOARD_GOOGLE_NAUTILUS
 	default "NOCTURNE TEST 3421" if BOARD_GOOGLE_NOCTURNE
+	default "RAMMUS TEST 2130" if BOARD_GOOGLE_RAMMUS
 	default "SORAKA TEST 1869" if BOARD_GOOGLE_SORAKA
 
 config INCLUDE_NHLT_BLOBS
@@ -96,6 +97,7 @@ config MAINBOARD_FAMILY
 	default "Google_Nami" if BOARD_GOOGLE_NAMI
 	default "Google_Nautilus" if BOARD_GOOGLE_NAUTILUS
 	default "Google_Nocturne" if BOARD_GOOGLE_NOCTURNE
+	default "Google_Rammus" if BOARD_GOOGLE_RAMMUS
 	default "Google_Soraka" if BOARD_GOOGLE_SORAKA
 
 config MAINBOARD_PART_NUMBER
@@ -105,6 +107,7 @@ config MAINBOARD_PART_NUMBER
 	default "Nami" if BOARD_GOOGLE_NAMI
 	default "Nautilus" if BOARD_GOOGLE_NAUTILUS
 	default "Nocturne" if BOARD_GOOGLE_NOCTURNE
+	default "Rammus" if BOARD_GOOGLE_RAMMUS
 	default "Soraka" if BOARD_GOOGLE_SORAKA
 
 config MAX_CPUS
@@ -126,6 +129,7 @@ config VARIANT_DIR
 	default "nami" if BOARD_GOOGLE_NAMI
 	default "nautilus" if BOARD_GOOGLE_NAUTILUS
 	default "nocturne" if BOARD_GOOGLE_NOCTURNE
+	default "poppy" if BOARD_GOOGLE_RAMMUS
 	default "soraka" if BOARD_GOOGLE_SORAKA
 
 # Select this option to enable camera ACPI support on the variant.

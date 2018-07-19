@@ -43,7 +43,7 @@
 #define SEC_REG_SERIAL_ADDR 0x1000
 #define MAX_SERIAL_LEN	    10
 
-void change_build_date_format(void);
+static void change_build_date_format(void);
 extern char coreboot_dmi_date[];
 
 /***********************************************************
@@ -364,7 +364,7 @@ struct chip_operations mainboard_ops = {
 	.final = mainboard_final
 };
 
-void change_build_date_format()
+static void change_build_date_format()
 {
 	char tmp[15];
     
@@ -376,5 +376,5 @@ void change_build_date_format()
 	strncpy(coreboot_dmi_date,   tmp+6, 4);
 	strncpy(coreboot_dmi_date+4, tmp+3, 2);
 	strncpy(coreboot_dmi_date+6, tmp,   2);
-	coreboot_dmi_date[8] = 0;
+	coreboot_dmi_date[8] = '\0';
 }

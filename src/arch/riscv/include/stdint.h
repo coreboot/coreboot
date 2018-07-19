@@ -73,4 +73,7 @@ typedef uint8_t bool;
 typedef s64             intptr_t;
 typedef u64		uintptr_t;
 
+/* FIXME: This is used in some print code and may be removed in the future. */
+#define PRIu64  "llu"
+
 #endif /* RISCV_STDINT_H */

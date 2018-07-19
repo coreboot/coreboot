@@ -19,6 +19,7 @@
 #include <arch/encoding.h>
 #include <console/console.h>
 #include <arch/smp/smp.h>
+#include <mcall.h>
 
 /*
  * A pointer to the Flattened Device Tree passed to coreboot by the boot ROM.
@@ -26,27 +27,29 @@
  *
  * This pointer is only used in ramstage!
  */
-const void *rom_fdt;
 
 static void do_arch_prog_run(struct prog *prog)
 {
-	void (*doit)(void *) = prog_entry(prog);
-	void riscvpayload(const void *fdt, void *payload);
+	void (*doit)(int hart_id, void *fdt);
+	int hart_id;
+	void *fdt = prog_entry_arg(prog);
+
+	/*
+	 * If prog_entry_arg is not set (e.g. by fit_payload), use fdt from HLS
+	 * instead.
+	 */
+	if (fdt == NULL)
+		fdt = HLS()->fdt;
 
 	if (ENV_RAMSTAGE && prog_type(prog) == PROG_PAYLOAD) {
-		/*
-		 * FIXME: This is wrong and will crash. Linux can't (in early
-		 * boot) access memory that's before its own loading address.
-		 * We need to copy the FDT to a place where Linux can access it.
-		 */
-		const void *fdt = rom_fdt;
-
-		printk(BIOS_SPEW, "FDT is at %p\n", fdt);
-		printk(BIOS_SPEW, "OK, let's go\n");
-		riscvpayload(fdt, doit);
+		run_payload(prog, fdt, RISCV_PAYLOAD_MODE_S);
+		return;
 	}
 
-	doit(prog_entry_arg(prog));
+	doit = prog_entry(prog);
+	hart_id = HLS()->hart_id;
+
+	doit(hart_id, fdt);
 }
 
 void arch_prog_run(struct prog *prog)

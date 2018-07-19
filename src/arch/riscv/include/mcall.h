@@ -52,8 +52,13 @@ typedef struct {
 	int ipi_pending;
 	uint64_t *timecmp;
 	uint64_t *time;
+	void *fdt;
 	struct blocker entry;
 } hls_t;
+
+_Static_assert(
+	sizeof(hls_t) == HLS_SIZE,
+	"HLS_SIZE must equal to sizeof(hls_t)");
 
 #define MACHINE_STACK_TOP() ({ \
 	/* coverity[uninit_use] : FALSE */ \
@@ -66,7 +71,8 @@ typedef struct {
 
 #define MACHINE_STACK_SIZE RISCV_PGSIZE
 
-void hls_init(uint32_t hart_id); // need to call this before launching linux
+// need to call this before launching linux
+void hls_init(uint32_t hart_id, void *fdt);
 
 /* This function is used to initialize HLS()->time/HLS()->timecmp  */
 void mtime_init(void);

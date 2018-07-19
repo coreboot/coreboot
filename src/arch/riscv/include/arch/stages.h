@@ -18,6 +18,7 @@
 
 #include <main_decl.h>
 
-void stage_entry(void) __attribute__((section(".text.stage_entry")));
+void stage_entry(int hart_id, void *fdt)
+	__attribute__((section(".text.stage_entry")));
 
 #endif

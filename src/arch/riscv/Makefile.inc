@@ -137,7 +137,7 @@ ramstage-y += misc.c
 ramstage-y += smp.c
 ramstage-y += boot.c
 ramstage-y += tables.c
-ramstage-y += payload.S
+ramstage-y += payload.c
 ramstage-$(ARCH_RISCV_PMP) += pmp.c
 ramstage-y += \
 	$(top)/src/lib/memchr.c \

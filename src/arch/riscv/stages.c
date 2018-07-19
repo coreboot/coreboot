@@ -28,18 +28,19 @@
 #include <arch/encoding.h>
 #include <arch/stages.h>
 #include <arch/smp/smp.h>
+#include <rules.h>
+#include <mcall.h>
 
-void stage_entry(void)
+void stage_entry(int hart_id, void *fdt)
 {
-	smp_pause(CONFIG_RISCV_WORKING_HARTID);
-
 	/*
 	 * Save the FDT pointer before entering ramstage, because mscratch
 	 * might be overwritten in the trap handler, and there is code in
 	 * ramstage that generates misaligned access faults.
 	 */
-	if (ENV_RAMSTAGE)
-		rom_fdt = (const void *)read_csr(mscratch);
+	HLS()->hart_id = hart_id;
+	HLS()->fdt = fdt;
+	smp_pause(CONFIG_RISCV_WORKING_HARTID);
 
 	main();
 }

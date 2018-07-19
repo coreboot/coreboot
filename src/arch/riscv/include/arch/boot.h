@@ -16,6 +16,12 @@
 #ifndef ARCH_RISCV_INCLUDE_ARCH_BOOT_H
 #define ARCH_RISCV_INCLUDE_ARCH_BOOT_H
 
-extern const void *rom_fdt;
+#include <program_loading.h>
+
+#define RISCV_PAYLOAD_MODE_U 0
+#define RISCV_PAYLOAD_MODE_S 1
+#define RISCV_PAYLOAD_MODE_M 3
+
+void run_payload(struct prog *prog, void *fdt, int payload_mode);
 
 #endif

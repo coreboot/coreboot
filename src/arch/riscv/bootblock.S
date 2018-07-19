@@ -50,6 +50,7 @@ _start:
 
 	# initialize hart-local storage
 	csrr a0, mhartid
+	csrrw a1, mscratch, zero
 	call hls_init
 
 	li   a0, CONFIG_RISCV_WORKING_HARTID

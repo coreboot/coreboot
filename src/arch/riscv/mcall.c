@@ -34,10 +34,11 @@
 
 int mcalldebug; // set this interactively for copious debug.
 
-void hls_init(uint32_t hart_id)
+void hls_init(uint32_t hart_id, void *fdt)
 {
 	printk(BIOS_SPEW, "hart %d: HLS is %p\n", hart_id, HLS());
 	memset(HLS(), 0, sizeof(*HLS()));
+	HLS()->fdt = fdt;
 	HLS()->hart_id = hart_id;
 
 	mtime_init();

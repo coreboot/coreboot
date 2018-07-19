@@ -250,7 +250,7 @@ int parse_flat_binary_to_payload(const struct buffer *input,
 				 enum comp_algo algo)
 {
 	comp_func_ptr compress;
-	struct cbfs_payload_segment segs[2] = {0};
+	struct cbfs_payload_segment segs[2] = { {0} };
 	int doffset, len = 0;
 
 	compress = compression_function(algo);
@@ -295,7 +295,7 @@ int parse_fv_to_payload(const struct buffer *input, struct buffer *output,
 			enum comp_algo algo)
 {
 	comp_func_ptr compress;
-	struct cbfs_payload_segment segs[2] = {0};
+	struct cbfs_payload_segment segs[2] = { {0} };
 	int doffset, len = 0;
 	firmware_volume_header_t *fv;
 	ffs_file_header_t *fh;

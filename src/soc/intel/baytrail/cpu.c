@@ -179,10 +179,10 @@ static void relocation_handler(int cpu, uintptr_t curr_smbase,
 	/* Set up SMRR. */
 	smrr.lo = relo_attrs.smrr_base;
 	smrr.hi = 0;
-	wrmsr(SMRR_PHYS_BASE, smrr);
+	wrmsr(IA32_SMRR_PHYS_BASE, smrr);
 	smrr.lo = relo_attrs.smrr_mask;
 	smrr.hi = 0;
-	wrmsr(SMRR_PHYS_MASK, smrr);
+	wrmsr(IA32_SMRR_PHYS_MASK, smrr);
 
 	smm_state = (void *)(SMM_EM64T100_SAVE_STATE_OFFSET + curr_smbase);
 	smm_state->smbase = staggered_smbase;

@@ -41,8 +41,8 @@ static inline void write_smrr(struct smm_relocation_params *relo_params)
 {
 	printk(BIOS_DEBUG, "Writing SMRR. base = 0x%08x, mask=0x%08x\n",
 	       relo_params->smrr_base.lo, relo_params->smrr_mask.lo);
-	wrmsr(SMRR_PHYS_BASE, relo_params->smrr_base);
-	wrmsr(SMRR_PHYS_MASK, relo_params->smrr_mask);
+	wrmsr(IA32_SMRR_PHYS_BASE, relo_params->smrr_base);
+	wrmsr(IA32_SMRR_PHYS_MASK, relo_params->smrr_mask);
 }
 
 static void update_save_state(int cpu, uintptr_t curr_smbase,

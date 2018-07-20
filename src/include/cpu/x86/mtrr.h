@@ -28,8 +28,8 @@
 #define MTRR_DEF_TYPE_FIX_EN		(1 << 10)
 
 
-#define SMRR_PHYS_BASE			0x1f2
-#define SMRR_PHYS_MASK			0x1f3
+#define IA32_SMRR_PHYS_BASE		0x1f2
+#define IA32_SMRR_PHYS_MASK		0x1f3
 
 #define MTRR_PHYS_BASE(reg)		(0x200 + 2 * (reg))
 #define MTRR_PHYS_MASK(reg)		(MTRR_PHYS_BASE(reg) + 1)

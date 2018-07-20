@@ -156,6 +156,8 @@ $(objcbfs)/ramstage.debug: $$(ramstage-objs)
 
 ifeq ($(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE),y)
 
+ifeq ($(CONFIG_ARM64_BL31_EXTERNAL_FILE),"")
+
 BL31_SOURCE := $(top)/3rdparty/arm-trusted-firmware
 BL31_BUILD := $(abspath $(obj)/3rdparty/arm-trusted-firmware)
 BL31_TARGET := $(BL31_BUILD)/bl31/bl31.elf
@@ -204,6 +206,13 @@ $(BL31): $(obj)/build.h
 	mv $(BL31_TARGET) $@
 
 .PHONY: $(BL31)
+
+else
+
+BL31 := $(call strip_quotes,$(CONFIG_ARM64_BL31_EXTERNAL_FILE))
+
+endif # CONFIG_ARM64_BUILD_ARM_TRUSTED_FIRMWARE
+
 
 BL31_CBFS := $(CONFIG_CBFS_PREFIX)/bl31
 $(BL31_CBFS)-file := $(BL31)

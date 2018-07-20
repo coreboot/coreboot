@@ -31,6 +31,14 @@ config ARM64_USE_ARM_TRUSTED_FIRMWARE
 	default n
 	depends on ARCH_RAMSTAGE_ARM64
 
+config ARM64_BL31_EXTERNAL_FILE
+	string "Path to external BL31.ELF (leave empty to build from source)"
+	depends on ARM64_USE_ARM_TRUSTED_FIRMWARE
+	help
+	  The blob to use instead of building the Arm Trusted Firmware
+	  from tree. It is discouraged as compatibility with out-of-tree
+	  blobs may break anytime.
+
 config ARM64_USE_SECURE_OS
 	bool
 	default n

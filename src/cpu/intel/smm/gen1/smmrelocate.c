@@ -37,6 +37,10 @@
 #define  G_SMRAME	(1 << 3)
 #define  C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
 
+#define IA32_FEATURE_CONTROL	0x3a
+#define FEATURE_CONTROL_LOCK_BIT	(1 << 0)
+#define SMRR_ENABLE			(1 << 3)
+
 struct ied_header {
 	char signature[10];
 	u32 size;
@@ -57,12 +61,32 @@ struct smm_relocation_params {
 static struct smm_relocation_params smm_reloc_params;
 static void *default_smm_area = NULL;
 
-static inline void write_smrr(struct smm_relocation_params *relo_params)
+static void write_smrr(struct smm_relocation_params *relo_params)
 {
+	struct cpuinfo_x86 c;
+
 	printk(BIOS_DEBUG, "Writing SMRR. base = 0x%08x, mask=0x%08x\n",
 	       relo_params->smrr_base.lo, relo_params->smrr_mask.lo);
-	wrmsr(IA32_SMRR_PHYS_BASE, relo_params->smrr_base);
-	wrmsr(IA32_SMRR_PHYS_MASK, relo_params->smrr_mask);
+	/* Both model_6fx and model_1067x SMRR function slightly differently
+	   from the rest. The MSR are at different location from the rest
+	   and need to be explicitly enabled. */
+	get_fms(&c, cpuid_eax(1));
+	if (c.x86 == 6 && (c.x86_model == 0xf || c.x86_model == 0x17)) {
+		msr_t msr;
+		msr = rdmsr(IA32_FEATURE_CONTROL);
+		/* SMRR enabled and feature locked */
+		if (!((msr.lo & SMRR_ENABLE)
+				&& (msr.lo & FEATURE_CONTROL_LOCK_BIT))) {
+			printk(BIOS_WARNING,
+				"SMRR not enabled, skip writing SMRR...\n");
+			return;
+		}
+		wrmsr(MSR_SMRR_PHYS_BASE, relo_params->smrr_base);
+		wrmsr(MSR_SMRR_PHYS_MASK, relo_params->smrr_mask);
+	} else {
+		wrmsr(IA32_SMRR_PHYS_BASE, relo_params->smrr_base);
+		wrmsr(IA32_SMRR_PHYS_MASK, relo_params->smrr_mask);
+	}
 }
 
 /* The relocation work is actually performed in SMM context, but the code
@@ -137,7 +161,15 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 		params->smram_size -= CONFIG_SMM_RESERVED_SIZE;
 
 	/* SMRR has 32-bits of valid address aligned to 4KiB. */
-	params->smrr_base.lo = (params->smram_base & rmask) | MTRR_TYPE_WRBACK;
+	struct cpuinfo_x86 c;
+
+	/* On model_6fx and model_1067x bits [0:11] on smrr_base are reserved */
+	get_fms(&c, cpuid_eax(1));
+	if (c.x86 == 6 && (c.x86_model == 0xf || c.x86_model == 0x17))
+		params->smrr_base.lo = (params->smram_base & rmask);
+	else
+		params->smrr_base.lo = (params->smram_base & rmask)
+			| MTRR_TYPE_WRBACK;
 	params->smrr_base.hi = 0;
 	params->smrr_mask.lo = (~(tseg_size - 1) & rmask)
 		| MTRR_PHYS_MASK_VALID;

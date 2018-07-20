@@ -31,6 +31,10 @@
 #define IA32_SMRR_PHYS_BASE		0x1f2
 #define IA32_SMRR_PHYS_MASK		0x1f3
 
+/* Specific to model_6fx and model_1067x */
+#define MSR_SMRR_PHYS_BASE		0xa0
+#define MSR_SMRR_PHYS_MASK		0xa1
+
 #define MTRR_PHYS_BASE(reg)		(0x200 + 2 * (reg))
 #define MTRR_PHYS_MASK(reg)		(MTRR_PHYS_BASE(reg) + 1)
 #define  MTRR_PHYS_MASK_VALID		(1 << 11)

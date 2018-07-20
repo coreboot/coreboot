@@ -40,10 +40,7 @@ COMPILER_RT_ramstage  = $(shell  $(GCC_ramstage) $(riscv_flags) -print-libgcc-fi
 ################################################################################
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_RISCV),y)
 
-bootblock-y += id.S
-$(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
-
-bootblock-y = bootblock.S stages.c
+bootblock-y = bootblock.S
 bootblock-y += trap_util.S
 bootblock-y += trap_handler.c
 bootblock-y += mcall.c

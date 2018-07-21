@@ -1,0 +1,1 @@
+Generate coreboot release `Bash`

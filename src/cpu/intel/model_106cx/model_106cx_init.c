@@ -88,9 +88,6 @@ static void model_106cx_init(struct device *cpu)
 	/* Enable the local CPU APICs */
 	setup_lapic();
 
-	/* Set virtualization based on Kconfig option */
-	set_vmx_and_lock();
-
 	/* Configure C States */
 	configure_c_states();
 

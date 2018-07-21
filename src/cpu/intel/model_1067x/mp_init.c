@@ -49,8 +49,26 @@ static void pre_mp_smm_init(void)
 	smm_initialize();
 }
 
+#define SMRR_SUPPORTED (1 << 11)
+
 static void per_cpu_smm_trigger(void)
 {
+	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
+	if (cpu_has_alternative_smrr() && mtrr_cap.lo & SMRR_SUPPORTED) {
+		set_feature_ctrl_vmx();
+		msr_t ia32_ft_ctrl = rdmsr(IA32_FEATURE_CONTROL);
+		/* We don't care if the lock is already setting
+		   as our smm relocation handler is able to handle
+		   setups where SMRR is not enabled here. */
+		if (!IS_ENABLED(CONFIG_SET_IA32_FC_LOCK_BIT))
+			printk(BIOS_INFO,
+			       "Overriding CONFIG_SET_IA32_FC_LOCK_BIT to enable SMRR\n");
+		ia32_ft_ctrl.lo |= (1 << 3) | (1 << 0);
+		wrmsr(IA32_FEATURE_CONTROL, ia32_ft_ctrl);
+	} else {
+		set_vmx_and_lock();
+	}
+
 	/* Relocate the SMM handler. */
 	smm_relocate();
 

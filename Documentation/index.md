@@ -10,6 +10,7 @@ Contents:
 * [Getting Started](getting_started/index.md)
 * [Rookie Guide](lessons/index.md)
 * [Timestamps](timestamp.md)
+* [Intel IFD Binary Extraction](Binary_Extraction.md)
 * [Dealing with Untrusted Input in SMM](technotes/2017-02-dealing-with-untrusted-input-in-smm.md)
 * [ABI data consumption](abi-data-consumption.md)
 * [GPIO toggling in ACPI AML](acpi/gpio.md)

@@ -379,7 +379,11 @@ function compile_target
 		printf "failed\n" > compile.status
 		printf "%s build FAILED after %ss!\nLog excerpt:\n" "$BUILD_NAME" "${duration}"
 		tail -n $CONTEXT make.log 2> /dev/null || tail -$CONTEXT make.log
-		echo "$BUILD_NAME - Log: ${TOP}/${build_dir}/make.log" >> "$FAILED_BOARDS"
+		if [ "$clean_work" = "true" ]; then
+			echo "$BUILD_NAME" >> "$FAILED_BOARDS"
+		else
+			echo "$BUILD_NAME - Log: ${build_dir}/make.log" >> "$FAILED_BOARDS"
+		fi
 		failed=1
 	fi
 	cd "$CURR" || return $?
@@ -740,8 +744,8 @@ if [ "$customizing" = "" ]; then
 	customizing="default configuration"
 fi
 
-FAILED_BOARDS="${COREBOOT_BUILD_DIR:-${TOP}/coreboot-builds}/failed_boards"
-PASSED_BOARDS="${COREBOOT_BUILD_DIR:-${TOP}/coreboot-builds}/passing_boards"
+FAILED_BOARDS="${TARGET}/failed_boards"
+PASSED_BOARDS="${TARGET}/passing_boards"
 
 if [ "$recursive" = "false" ]; then
 	rm -f "$FAILED_BOARDS" "$PASSED_BOARDS"

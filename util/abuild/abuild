@@ -166,13 +166,16 @@ function mainboard_vendor
 # If a directory contains multiple boards, returns them all.
 function normalize_target
 {
+	# TODO: Change 'targets' variable to an array
 	local targets
+	local VARIANT_UC
 
-	local VARIANT_UC=$(echo "${variant}" | tr '[:lower:]' '[:upper:]')
+	VARIANT_UC=$(echo "${variant}" | tr '[:lower:]' '[:upper:]')
 
 	targets=$(get_mainboards "$1")
 	if [ -n "$targets" ]; then
-		targets=$(grep "${VARIANT_UC}\$" <<< ${targets})
+		# shellcheck disable=SC2086
+		targets="$(grep "${VARIANT_UC}\$" <<< ${targets})"
 		echo "$targets"
 		return
 	fi
@@ -355,10 +358,10 @@ function compile_target
 
 	CURR=$( pwd )
 	#stime=`perl -e 'print time();' 2>/dev/null || date +%s`
-	eval $BUILDPREFIX $MAKE "$verboseopt" DOTCONFIG="${build_dir}/config.build" obj="${build_dir}" objutil="$TARGET/sharedutils" BUILD_TIMELESS=$TIMELESS \
+	eval "$BUILDPREFIX" "$MAKE" "$verboseopt" DOTCONFIG="${build_dir}/config.build" obj="${build_dir}" objutil="$TARGET/sharedutils" BUILD_TIMELESS=$TIMELESS \
 		&> "${build_dir}/make.log" ; \
 		MAKE_FAILED=$?
-	cp ${ROOT}/.xcompile "${build_dir}/xcompile.build"
+	cp "${ROOT}/.xcompile" "${build_dir}/xcompile.build"
 	cd "${build_dir}" || return $?
 
 	etime=$(perl -e 'print time();' 2>/dev/null || date +%s)
@@ -459,7 +462,7 @@ function build_config
 		return
 	fi
 
-	required_arches=$(egrep "^CONFIG_ARCH_(BOOTBLOCK|R.MSTAGE|VERSTAGE)" "$TARGET/${BUILD_NAME}/config.build" | \
+	required_arches=$(grep -E "^CONFIG_ARCH_(BOOTBLOCK|R.MSTAGE|VERSTAGE)" "$TARGET/${BUILD_NAME}/config.build" | \
 			sed "s,^CONFIG_ARCH_[^_]*_\([^=]*\)=.*$,\1," |sort -u |tr 'A-Z\n\r' 'a-z  ')
 	# shellcheck disable=SC2016,SC2059
 	missing_arches=$(printf 'include .xcompile\nall: ; @echo $(foreach arch,'"$required_arches"',$(if $(filter $(arch),$(SUBARCH_SUPPORTED)),,$(arch)))' | $MAKE --no-print-directory -f -)
@@ -800,7 +803,7 @@ build_targets()
 	local XMLFILE="$ABSPATH/__util.xml"
 	rm -f "${XMLFILE}"
 	stime=$(perl -e 'print time();' 2>/dev/null || date +%s)
-	$BUILDPREFIX $MAKE -j "$cpus" DOTCONFIG="$TMPCFG" obj="$TARGET/temp" objutil="$TARGET/sharedutils" tools > "$TARGET/sharedutils/make.log" 2>&1
+	$BUILDPREFIX "$MAKE" -j "$cpus" DOTCONFIG="$TMPCFG" obj="$TARGET/temp" objutil="$TARGET/sharedutils" tools > "$TARGET/sharedutils/make.log" 2>&1
 	local ret=$?
 	etime=$(perl -e 'print time();' 2>/dev/null || date +%s)
 	local duration=$(( etime - stime ))
@@ -830,8 +833,6 @@ build_targets()
 	echo "$targets" | xargs -P ${cpus:-0} -n 1 "$0" "${cmdline[@]}" -I -c "$cpus_per_target" -t
 }
 fi
-
-debug "ROOT=$ROOT"
 
 junit '<?xml version="1.0" encoding="utf-8"?>'
 junit '<testsuite>'

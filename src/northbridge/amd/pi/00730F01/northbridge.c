@@ -582,6 +582,7 @@ unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
 static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 {
 	uint8_t *p;
+	acpi_ivrs_t *ivrs_agesa;
 
 	struct device *nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!nb_dev) {
@@ -592,29 +593,43 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 		return (unsigned long)ivrs;
 	}
 
-	ivrs->iv_info = 0x0;
-	/* Maximum supported virtual address size */
-	ivrs->iv_info |= (0x40 << 15);
-	/* Maximum supported physical address size */
-	ivrs->iv_info |= (0x30 << 8);
-	/* Guest virtual address width */
-	ivrs->iv_info |= (0x2 << 5);
 
-	ivrs->ivhd.type = 0x10;
-	ivrs->ivhd.flags = 0x0e;
-	/* Enable ATS support */
-	ivrs->ivhd.flags |= 0x10;
-	ivrs->ivhd.length = sizeof(struct acpi_ivrs_ivhd);
-	/* BDF <bus>:00.2 */
-	ivrs->ivhd.device_id = 0x2 | (nb_dev->bus->secondary << 8);
-	/* Capability block 0x40 (type 0xf, "Secure device") */
-	ivrs->ivhd.capability_offset = 0x40;
-	ivrs->ivhd.iommu_base_low = 0xfeb00000;
-	ivrs->ivhd.iommu_base_high = 0x0;
-	ivrs->ivhd.pci_segment_group = 0x0;
-	ivrs->ivhd.iommu_info = 0x0;
-	ivrs->ivhd.iommu_info |= (0x13 << 8);
-	ivrs->ivhd.iommu_feature_info = 0x0;
+	/* obtain IOMMU base address */
+	ivrs_agesa = agesawrapper_getlateinitptr(PICK_IVRS);
+	if (ivrs_agesa != NULL) {
+		ivrs->iv_info = 0x0;
+		/* Maximum supported virtual address size */
+		ivrs->iv_info |= (0x40 << 15);
+		/* Maximum supported physical address size */
+		ivrs->iv_info |= (0x30 << 8);
+		/* Guest virtual address width */
+		ivrs->iv_info |= (0x2 << 5);
+
+		ivrs->ivhd.type = 0x10;
+		ivrs->ivhd.flags = 0x0e;
+		/* Enable ATS support */
+		ivrs->ivhd.flags |= 0x10;
+		ivrs->ivhd.length = sizeof(struct acpi_ivrs_ivhd);
+		/* BDF <bus>:00.2 */
+		ivrs->ivhd.device_id = 0x2 | (nb_dev->bus->secondary << 8);
+		/* Capability block 0x40 (type 0xf, "Secure device") */
+		ivrs->ivhd.capability_offset = 0x40;
+		ivrs->ivhd.iommu_base_low = ivrs_agesa->ivhd.iommu_base_low;
+		ivrs->ivhd.iommu_base_high = ivrs_agesa->ivhd.iommu_base_high;
+		ivrs->ivhd.pci_segment_group = 0x0;
+		ivrs->ivhd.iommu_info = 0x0;
+		ivrs->ivhd.iommu_info |= (0x13 << 8);
+		/* use only performance counters related bits:
+		 * PNCounters[16:13] and
+		 * PNBanks[22:17],
+		 * otherwise 0 */
+		ivrs->ivhd.iommu_feature_info =
+			ivrs_agesa->ivhd.iommu_feature_info & 0x7fe000;
+	} else {
+		printk(BIOS_WARNING, "%s: AGESA returned NULL IVRS\n", __func__);
+
+		return (unsigned long)ivrs;
+	}
 
 	/* Describe HPET */
 	p = (uint8_t *)current;

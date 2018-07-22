@@ -37,13 +37,12 @@ struct blob {
 	unsigned int lenactualblob;
 };
 
-static struct field *putsym (char const *, unsigned int);
-static struct field *getsym (char const *);
-static void yyerror (FILE* fp, char const *);
-int yylex (void);
+static struct field *putsym(field_ptr_t, char const *, unsigned int);
+static struct field *getsym(field_ptr_t, char const *);
+static void yyerror(FILE *, field_ptr_t, char const *);
+int yylex(void);
 
 static struct blob *binary;
-static struct field *sym_table;
 static struct field *sym_table_tail;
 
 #endif /* __BINCFG_H */

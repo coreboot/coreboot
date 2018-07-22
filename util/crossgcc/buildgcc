@@ -1,4 +1,16 @@
 #!/bin/sh
+# shellcheck disable=SC2030,SC2031,SC2059
+# The above line must be directly after the shebang line.
+# Disables these warnings:
+# 2030 - Modification of var is local (to subshell caused by pipeline).
+#        shell check 0.4.6 gets confused by the read -t 1 command and interprets
+#        the '1' as $1 getting modified.
+# 2031 - var was modified in a subshell. That change might be lost.
+#        caused by shell check bug with SC2030?  This causes any $1 from that
+#        point on to be flagged.
+# 2059 - Don't use variables in the printf format string. Use printf "..%s.." "$foo".
+#        This is used for all of our color printing.
+
 #
 # Copyright (C) 2008-2010 by coresystems GmbH
 # written by Patrick Georgi <patrick.georgi@coresystems.de> and
@@ -16,7 +28,7 @@
 # GNU General Public License for more details.
 #
 
-cd $(dirname $0)
+cd "$(dirname "$0")" || exit 1
 
 CROSSGCC_DATE="June 11th, 2018"
 CROSSGCC_VERSION="1.52"
@@ -80,7 +92,9 @@ ALL_ARCHIVES="$GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE \
 GMP_DIR="gmp-${GMP_VERSION}"
 MPFR_DIR="mpfr-${MPFR_VERSION}"
 MPC_DIR="mpc-${MPC_VERSION}"
+# shellcheck disable=SC2034
 GCC_DIR="gcc-${GCC_VERSION}"
+# shellcheck disable=SC2034
 BINUTILS_DIR="binutils-${BINUTILS_VERSION}"
 GDB_DIR="gdb-${GDB_VERSION}"
 IASL_DIR="acpica-unix2-${IASL_VERSION}"
@@ -101,51 +115,49 @@ RED='\033[1;31m'
 green='\033[0;32m'
 GREEN='\033[1;32m'
 blue='\033[0;34m'
-BLUE='\033[1;34m'
-cyan='\033[0;36m'
 CYAN='\033[1;36m'
 NC='\033[0m' # No Color
 
-UNAME=$(uname | grep -iq cygwin && echo Cygwin || uname)
+UNAME=$(if uname | grep -iq cygwin; then echo Cygwin; else uname; fi)
 HALT_FOR_TOOLS=0
 
 hostcc()
 {
 	# $1 "host" or "target"
-	if [ "$BOOTSTRAP" = 1 -a "$1" = target ]; then
-		echo $DESTDIR$TARGETDIR/bin/gcc
+	if [ "$BOOTSTRAP" = 1 ] && [ "$1" = target ]; then
+		echo "$DESTDIR$TARGETDIR/bin/gcc"
 	else
-		echo $CC
+		echo "$CC"
 	fi
 }
 
 hostcxx()
 {
 	# $1 "host" or "target"
-	if [ "$BOOTSTRAP" = 1 -a "$1" = target ]; then
-		echo $DESTDIR$TARGETDIR/bin/g++
+	if [ "$BOOTSTRAP" = 1 ] && [ "$1" = target ]; then
+		echo "$DESTDIR$TARGETDIR/bin/g++"
 	else
-		echo $CXX
+		echo "$CXX"
 	fi
 }
 
 normalize_dirs()
 {
-	mkdir -p $DESTDIR$TARGETDIR/lib
-	test -d $DESTDIR$TARGETDIR/lib32 && mv $DESTDIR$TARGETDIR/lib32/* $DESTDIR$TARGETDIR/lib
-	test -d $DESTDIR$TARGETDIR/lib64 && mv $DESTDIR$TARGETDIR/lib64/* $DESTDIR$TARGETDIR/lib
-	rmdir -p $DESTDIR$TARGETDIR/lib32 $DESTDIR$TARGETDIR/lib64
+	mkdir -p "$DESTDIR$TARGETDIR/lib"
+	test -d "$DESTDIR$TARGETDIR/lib32" && mv "$DESTDIR$TARGETDIR"/lib32/* "$DESTDIR$TARGETDIR/lib"
+	test -d "$DESTDIR$TARGETDIR/lib64" && mv "$DESTDIR$TARGETDIR"/lib64/* "$DESTDIR$TARGETDIR/lib"
+	rmdir -p "$DESTDIR$TARGETDIR/lib32" "$DESTDIR$TARGETDIR/lib64"
 
-	perl -pi -e "s,/lib32,/lib," $DESTDIR$TARGETDIR/lib/*.la
-	perl -pi -e "s,/lib64,/lib," $DESTDIR$TARGETDIR/lib/*.la
+	perl -pi -e "s,/lib32,/lib," "$DESTDIR$TARGETDIR"/lib/*.la
+	perl -pi -e "s,/lib64,/lib," "$DESTDIR$TARGETDIR"/lib/*.la
 }
 
 countdown()
 {
 	tout=${1:-10}
 
-	printf "\nPress Ctrl-C to abort, Enter to continue... %2ds" $tout
-	while [ $tout -gt 0 ]; do
+	printf "\nPress Ctrl-C to abort, Enter to continue... %2ds" "$tout"
+	while [ "$tout" -gt 0 ]; do
 		sleep 1
 		tout=$((tout - 1))
 		printf "\b\b\b%2ds" $tout
@@ -162,11 +174,12 @@ timeout()
 	# Clean up in case the user aborts.
 	trap 'kill $counter > /dev/null 2>&1' EXIT
 
-	(countdown $tout; kill -USR1 $$)&
+	(countdown "$tout"; kill -USR1 $$)&
 	counter=$!
 
 	# Some shells with sh compatibility mode (e.g. zsh, mksh) only
 	# let us interrupt `read` if a non-standard -t parameter is given.
+	# shellcheck disable=SC2034,SC2039,SC2162
 	if echo | read -t 1 foo 2>/dev/null; then
 		read -t $((tout + 1)) foo
 	else
@@ -180,6 +193,7 @@ timeout()
 please_install()
 {
 	HALT_FOR_TOOLS=1
+	# shellcheck disable=SC1091
 	test -r /etc/os-release && . /etc/os-release
 	# vanilla debian doesn't define `ID_LIKE`, just `ID`
 	if [ -z "${ID_LIKE}" ] && [ -n "${ID}" ]; then
@@ -210,59 +224,60 @@ searchtool()
 		search="$2"
 	fi
 	for i in "$1" "g$1" "gnu$1"; do
-		if [ -x "$(command -v $i 2>/dev/null)" ]; then
+		if [ -x "$(command -v "$i" 2>/dev/null)" ]; then
 			if [ "$(cat /dev/null | $i --version 2>&1 | grep -c "$search")" \
 			    -gt 0 ]; then
-				echo $i
+				echo "$i"
 				return
 			fi
 		fi
 	done
 	# A workaround for OSX 10.9 and some BSDs, whose nongnu
 	# patch and tar also work.
-	if [ $UNAME = "Darwin" -o $UNAME = "FreeBSD" -o $UNAME = "NetBSD" -o $UNAME = "OpenBSD" ]; then
-		if [ "$1" = "patch" -o "$1" = "tar" ]; then
-			if [ -x "$(command -v $1 2>/dev/null)" ]; then
-				echo $1
+	if [ "$UNAME" = "Darwin" ] || [ "$UNAME" = "FreeBSD" ] || [ "$UNAME" = "NetBSD" ] || [ "$UNAME" = "OpenBSD" ]; then
+		if [ "$1" = "patch" ] || [ "$1" = "tar" ]; then
+			if [ -x "$(command -v "$1" 2>/dev/null)" ]; then
+				echo "$1"
 				return
 			fi
 		fi
 	fi
-	if echo $1 | grep -q "sum" ; then
-		algor=$(echo $1 | sed -e 's,sum,,')
-		if [ -x "$(command -v $1 2>/dev/null)" ]; then
+	if echo "$1" | grep -q "sum" ; then
+		algor=$(echo "$1" | sed -e 's,sum,,')
+		if [ -x "$(command -v "$1" 2>/dev/null)" ]; then
 			#xxxsum [file]
-			echo $1
+			echo "$1"
 			return
-		elif [ -x "$(command -v $algor 2>/dev/null)" ]; then
+		elif [ -x "$(command -v "$algor" 2>/dev/null)" ]; then
 			#xxx [file]
-			echo $algor
+			echo "$algor"
 			return
 		elif [ -x "$(command -v openssl 2>/dev/null)" ]; then
 			#openssl xxx [file]
-			echo openssl $algor
+			echo openssl "$algor"
 			return
 		elif [ -x "$(command -v cksum 2>/dev/null)" ]; then
 			#cksum -a xxx [file]
 			#cksum has special options in NetBSD. Actually, NetBSD will use the second case above.
-			echo "buildgcc" | cksum -a $algor > /dev/null 2>/dev/null && \
-			echo cksum -a $algor
+			echo "buildgcc" | cksum -a "$algor" > /dev/null 2>/dev/null && \
+			echo cksum -a "$algor"
 			return
 		fi
 	fi
 
-	[ -z "$3" ] && please_install $1 $4
+	[ -z "$3" ] && please_install "$1" "$4"
 	false
 }
 
 # Run a compile check of the specified library option to see if it's installed
 check_for_library() {
-	local LIBRARY_FLAGS=$1
-	local LIBRARY_PACKAGES="$2"
-	local LIBTEST_FILE=.libtest
+	LIBRARY_FLAGS="$1"
+	LIBRARY_PACKAGES="$2"
+	LIBTEST_FILE=.libtest
 
 	echo "int main(int argc, char **argv) { (void) argc; (void) argv; return 0; }" > "${LIBTEST_FILE}.c"
 
+	# shellcheck disable=SC2086
 	"$CC" $CFLAGS $LIBRARY_FLAGS "${LIBTEST_FILE}.c" -o "${LIBTEST_FILE}" >/dev/null 2>&1 || \
 		please_install "$LIBRARY_PACKAGES"
 	rm -rf "${LIBTEST_FILE}.c" "${LIBTEST_FILE}"
@@ -307,22 +322,23 @@ ada_requested() {
 
 download() {
 	package=$1
+	# shellcheck disable=SC2086
 	archive="$(eval echo \$$package"_ARCHIVE")"
 
-	FILE=$(basename $archive)
+	FILE=$(basename "$archive")
 	printf " * $FILE "
 
-	if test -f tarballs/$FILE; then
+	if test -f "tarballs/$FILE"; then
 		printf "(cached)... "
 	else
 		printf "(downloading from $archive)"
-		rm -f tarballs/$FILE
-		cd tarballs
-		download_showing_percentage $archive
+		rm -f "tarballs/$FILE"
+		cd tarballs || exit 1
+		download_showing_percentage "$archive"
 		cd ..
 	fi
 
-	if [ ! -f tarballs/$FILE ]; then
+	if [ ! -f "tarballs/$FILE" ]; then
 		printf "${RED}Failed to download $FILE.${NC}\n"
 		exit 1
 	fi
@@ -332,6 +348,7 @@ download() {
 # hexadecimal hash).
 compute_hash() {
 	package=$1
+	# shellcheck disable=SC2086
 	archive="$(eval echo \$$package"_ARCHIVE")"
 	file="$(basename "$archive")"
 
@@ -345,6 +362,7 @@ compute_hash() {
 
 error_hash_missing() {
 	package="$1"
+	# shellcheck disable=SC2086
 	archive="$(eval echo \$$package"_ARCHIVE")"
 	file="$(basename "$archive")"
 
@@ -361,6 +379,7 @@ error_hash_missing() {
 # Read the known hash file of the package given in $1, and print it raw.
 get_known_hash() {
 	package=$1
+	# shellcheck disable=SC2086
 	archive="$(eval echo \$$package"_ARCHIVE")"
 	file="$(basename "$archive")"
 	hashfile="sum/$file.cksum"
@@ -373,13 +392,14 @@ get_known_hash() {
 		exit 1
 	fi
 
-	cat "$hashfile" | sed -e 's@.*\([0-9a-f]\{40,\}\).*@\1@'
+	sed -e 's@.*\([0-9a-f]\{40,\}\).*@\1@' < "$hashfile"
 }
 
 error_hash_mismatch() {
 	package=$1
 	known_hash="$2"
 	computed_hash="$3"
+	# shellcheck disable=SC2086
 	archive="$(eval echo \$$package"_ARCHIVE")"
 	file="$(basename "$archive")"
 
@@ -400,6 +420,7 @@ error_hash_mismatch() {
 # hash; Bail out on mismatch or missing hash file.
 verify_hash() {
 	package=$1
+	# shellcheck disable=SC2086
 	archive="$(eval echo \$$package"_ARCHIVE")"
 
 	known_hash="$(get_known_hash "$package")" || exit "$?"
@@ -410,17 +431,19 @@ verify_hash() {
 		exit 1
 	fi
 
-	printf "${GREEN}hash verified ("$known_hash")${NC}\n"
+	printf "${GREEN}hash verified (\"$known_hash\")${NC}\n"
 }
 
 unpack_and_patch() {
-	package=$1
+	package="$1"
+	# shellcheck disable=SC2086
 	archive="$(eval echo \$$package"_ARCHIVE")"
+	# shellcheck disable=SC2086
 	dir="$(eval echo \$$package"_DIR")"
-	test -d ${dir} && test -f ${dir}/.unpack_success || (
-		printf " * $(basename $archive)\n"
+	test -d "${dir}" && test -f "${dir}/.unpack_success" || (
+		printf " * $(basename "$archive")\n"
 		FLAGS=zxf
-		suffix=$(echo $archive | sed 's,.*\.,,')
+		suffix=$(echo "$archive" | sed 's,.*\.,,')
 		if [ "$suffix" = "gz" ] && [ -n "$PIGZ" ]; then FLAGS="-I pigz -xf"
 		elif [ "$suffix" = "gz" ]; then FLAGS=zxf
 		elif [ "$suffix" = "bz2" ] && [ -n "$LBZIP2" ]; then FLAGS="-I lbzip2 -xf"
@@ -428,22 +451,24 @@ unpack_and_patch() {
 		elif [ "$suffix" = "xz" ]; then FLAGS="--xz -xf"
 		elif [ "$suffix" = "lzma" ]; then FLAGS="--lzma -xf"
 		fi
-		$TAR $FLAGS tarballs/$(basename $archive)
+		# shellcheck disable=SC2086
+		$TAR $FLAGS "tarballs/$(basename "$archive")"
 		for patch in patches/${dir}_*.patch; do
-			test -r $patch || continue
-			printf "   o $(basename $patch)\n"
-			(cd ${dir} && $PATCH -s -N -p1 <../${patch}) || {
+			test -r "$patch" || continue
+			printf "   o $(basename "$patch")\n"
+			(cd "${dir}" || exit 1; $PATCH -s -N -p1 <"../${patch}") || {
 				printf "\n${RED}Failed $patch.${NC}\n"
 				exit 1
 			}
 		done
-		touch ${dir}/.unpack_success
+		touch "${dir}/.unpack_success"
 	)
 }
 
 fn_exists()
 {
-	type $1 >/dev/null 2>&1
+	# shellcheck disable=SC2039
+	type "$1" >/dev/null 2>&1
 }
 
 is_package_enabled()
@@ -468,7 +493,7 @@ generic_build()
 	success=$4
 	version=$5
 
-	fn_exists build_$package || return
+	fn_exists "build_$package" || return
 
 	mkdir -p "$builddir"
 
@@ -477,10 +502,10 @@ generic_build()
 	else
 		printf "Building $package v$version for $host_target ... "
 		DIR="$PWD"
-		cd "$builddir"
+		cd "$builddir" || exit 1
 		rm -f .failed
-		build_${package} $host_target > build.log 2>&1
-		cd "$DIR"
+		"build_${package}" "$host_target" > build.log 2>&1
+		cd "$DIR" || exit 1
 		if [ ! -f "$builddir/.failed" ]; then
 			touch "$success";
 		else
@@ -494,6 +519,7 @@ generic_build()
 build_for_host()
 {
 	package="$1"
+	# shellcheck disable=SC2086
 	version="$(eval echo \$$package"_VERSION")"
 	generic_build "$package" host "build-$package" "${DESTDIR}${TARGETDIR}/.${package}.${version}.success" "$version"
 }
@@ -501,19 +527,20 @@ build_for_host()
 build_for_target()
 {
 	package="$1"
+	# shellcheck disable=SC2086
 	version="$(eval echo \$$package"_VERSION")"
 	generic_build "$package" target "build-${TARGETARCH}-$package" "${DESTDIR}${TARGETDIR}/.${TARGETARCH}-${package}.${version}.success" "$version"
 }
 
 build()
 {
-	if package_uses_targetarch $1; then
-		if [ $BOOTSTRAP -eq 1 -a ! -f "${DESTDIR}${TARGETDIR}/.GCC.${GCC_VERSION}.success" ]; then
+	if package_uses_targetarch "$1"; then
+		if [ $BOOTSTRAP -eq 1 ] && [ ! -f "${DESTDIR}${TARGETDIR}/.GCC.${GCC_VERSION}.success" ]; then
 			build_for_host GCC
 		fi
-		build_for_target $1
+		build_for_target "$1"
 	else
-		build_for_host $1
+		build_for_host "$1"
 	fi
 }
 
@@ -532,7 +559,8 @@ cleanup()
 
 	printf "Cleaning up temporary files... "
 	for package in $PACKAGES; do
-		rm -rf build-${TARGETARCH}-$package build-$package $(eval echo \$$package"_DIR")
+		# shellcheck disable=SC2086
+		rm -rf "build-${TARGETARCH}-$package" "build-$package" "$(eval echo \$$package"_DIR")"
 	done
 	rm -f getopt
 	printf "${green}ok${NC}\n"
@@ -601,14 +629,15 @@ EOF
 }
 
 have_hostcflags_from_gmp() {
-	grep -q __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h >/dev/null 2>&1
+	grep -q __GMP_CFLAGS "$DESTDIR$TARGETDIR/include/gmp.h" >/dev/null 2>&1
 }
 
 set_hostcflags_from_gmp() {
 	# Now set CFLAGS to match GMP CFLAGS but strip out -pedantic
 	# as GCC 4.6.x fails if it's there.
-	export HOSTCFLAGS="$(grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2 |\
+	HOSTCFLAGS="$(grep __GMP_CFLAGS "$DESTDIR$TARGETDIR/include/gmp.h" |cut -d\" -f2 |\
 	    sed s,-pedantic,,)"
+	export HOSTCFLAGS
 }
 
 build_GMP() {
@@ -619,10 +648,12 @@ build_GMP() {
 		OPTIONS="$OPTIONS --with-pic"
 	fi
 
+	# shellcheck disable=SC2086
 	CC="$(hostcc host)" CXX="$(hostcxx host)" \
 	../${GMP_DIR}/configure --disable-shared --enable-fat \
-		--prefix=$TARGETDIR $OPTIONS \
+		--prefix="$TARGETDIR" $OPTIONS \
 		|| touch .failed
+	# shellcheck disable=SC2086
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
@@ -632,12 +663,13 @@ build_GMP() {
 }
 
 build_MPFR() {
-	test $UNAME = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
+	test "$UNAME" = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
 	CC="$(hostcc host)" CXX="$(hostcxx host)" \
-	../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
-		--infodir=$TARGETDIR/info \
-		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
+	../${MPFR_DIR}/configure --disable-shared --prefix="$TARGETDIR" \
+		--infodir="$TARGETDIR/info" \
+		--with-gmp="$DESTDIR$TARGETDIR" CFLAGS="$HOSTCFLAGS" || \
 		touch .failed
+	# shellcheck disable=SC2086
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
@@ -645,28 +677,29 @@ build_MPFR() {
 
 	# work around build problem of libgmp.la
 	if [ "$DESTDIR" != "" ]; then
-	    perl -pi -e "s,$DESTDIR,," $DESTDIR$TARGETDIR/lib/libgmp.la
+	    perl -pi -e "s,$DESTDIR,," "$DESTDIR$TARGETDIR/lib/libgmp.la"
 	fi
 }
 
 build_MPC() {
 	CC="$(hostcc host)" CXX="$(hostcxx host)" \
-	../${MPC_DIR}/configure --disable-shared --prefix=$TARGETDIR \
-		--infodir=$TARGETDIR/info --with-mpfr=$DESTDIR$TARGETDIR \
-		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
+	../${MPC_DIR}/configure --disable-shared --prefix="$TARGETDIR" \
+		--infodir="$TARGETDIR/info" --with-mpfr="$DESTDIR$TARGETDIR" \
+		--with-gmp="$DESTDIR$TARGETDIR" CFLAGS="$HOSTCFLAGS" || \
 		touch .failed
 
 	# work around build problem of libmpfr.la
 	if [ "$DESTDIR" != "" ]; then
-	    perl -pi -e "s,$TARGETDIR/lib/libgmp.la,$DESTDIR\$&," $DESTDIR$TARGETDIR/lib/libmpfr.la
+	    perl -pi -e "s,$TARGETDIR/lib/libgmp.la,$DESTDIR\$&," "$DESTDIR$TARGETDIR/lib/libmpfr.la"
 	fi
 
+	# shellcheck disable=SC2086
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
 	# work around build problem of libmpfr.la
 	if [ "$DESTDIR" != "" ]; then
-	    perl -pi -e "s,$DESTDIR,," $DESTDIR$TARGETDIR/lib/libmpfr.la
+	    perl -pi -e "s,$DESTDIR,," "$DESTDIR$TARGETDIR/lib/libmpfr.la"
 	fi
 
 	normalize_dirs
@@ -677,7 +710,7 @@ build_BINUTILS() {
 		ADDITIONALTARGET=",i386-elf"
 	fi
 	CC="$(hostcc target)" CXX="$(hostcxx target)" \
-	../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR \
+	../binutils-${BINUTILS_VERSION}/configure --prefix="$TARGETDIR" \
 		--target=${TARGETARCH} --enable-targets=${TARGETARCH}${ADDITIONALTARGET} \
 		--disable-werror --disable-nls --enable-lto --enable-gold \
 		--enable-interwork --enable-multilib \
@@ -685,11 +718,13 @@ build_BINUTILS() {
 		CFLAGS="$HOSTCFLAGS" \
 		CXXFLAGS="$HOSTCFLAGS" \
 		|| touch .failed
+	# shellcheck disable=SC2086
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 }
 
 bootstrap_GCC() {
+	# shellcheck disable=SC2086
 	CC="$(hostcc host)" CXX="$(hostcxx host)" \
 		CFLAGS="$HOSTCFLAGS" \
 		CFLAGS_FOR_BUILD="$HOSTCFLAGS" \
@@ -698,17 +733,18 @@ bootstrap_GCC() {
 		CXXFLAGS_FOR_BUILD="$HOSTCFLAGS" \
 		CXXFLAGS_FOR_TARGET="$HOSTCFLAGS -fPIC" \
 		../gcc-${GCC_VERSION}/configure \
-		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
+		--prefix="$TARGETDIR" --libexecdir="$TARGETDIR/lib" \
 		--enable-bootstrap \
 		--disable-werror --disable-nls \
 		--disable-shared --disable-multilib \
 		--disable-libssp --disable-libquadmath --disable-libcc1 \
 		--disable-libsanitizer \
 		${GCC_OPTIONS} --enable-languages="${LANGUAGES}" \
-		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
-		--with-mpc=$DESTDIR$TARGETDIR \
+		--with-gmp="$DESTDIR$TARGETDIR" --with-mpfr="$DESTDIR$TARGETDIR" \
+		--with-mpc="$DESTDIR$TARGETDIR" \
 		--with-pkgversion="coreboot bootstrap v$CROSSGCC_VERSION $CROSSGCC_DATE" \
 		&& \
+	# shellcheck disable=SC2086
 	$MAKE $JOBS BOOT_CFLAGS="$HOSTCFLAGS" BUILD_CONFIG="" bootstrap && \
 	$MAKE	install-gcc \
 		install-target-libgcc \
@@ -731,6 +767,7 @@ build_cross_GCC() {
 	# libiberty is not compiled with CFLAGS_FOR_BUILD.
 	# Also set the CXX version of the flags because GCC is now compiled
 	# using C++.
+	# shellcheck disable=SC2086
 	CC="$(hostcc target)" CXX="$(hostcxx target)" \
 		CFLAGS_FOR_TARGET="-O2 -Dinhibit_libc" \
 		CFLAGS="$HOSTCFLAGS $CLANGFLAGS" \
@@ -738,7 +775,7 @@ build_cross_GCC() {
 		CXXFLAGS="$HOSTCFLAGS $CLANGCXXFLAGS" \
 		CXXFLAGS_FOR_BUILD="$HOSTCFLAGS $CLANGCXXFLAGS" \
 		../gcc-${GCC_VERSION}/configure \
-		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
+		--prefix="$TARGETDIR" --libexecdir="$TARGETDIR/lib" \
 		--target=${TARGETARCH} --disable-werror --disable-shared \
 		--enable-lto --enable-plugins --enable-gold --enable-ld=default \
 		--disable-libssp --disable-bootstrap --disable-nls \
@@ -748,16 +785,17 @@ build_cross_GCC() {
 		--disable-libatomic --disable-libcc1 --disable-decimal-float \
 		${GCC_OPTIONS} --enable-languages="${LANGUAGES}" \
 		--with-system-zlib \
-		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
-		--with-mpc=$DESTDIR$TARGETDIR \
+		--with-gmp="$DESTDIR$TARGETDIR" --with-mpfr="$DESTDIR$TARGETDIR" \
+		--with-mpc="$DESTDIR$TARGETDIR" \
 		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE" \
 		&& \
 	mkdir -p gcc/$TARGETARCH && \
-	ln -s $DESTDIR$TARGETDIR/$TARGETARCH/bin gcc/$TARGETARCH/$GCC_VERSION && \
+	ln -s "$DESTDIR$TARGETDIR/$TARGETARCH/bin" "gcc/$TARGETARCH/$GCC_VERSION" && \
 	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-gcc && \
-	$MAKE install-gcc DESTDIR=$DESTDIR || touch .failed
+	$MAKE install-gcc DESTDIR="$DESTDIR" || touch .failed
 
-	if [ ! -f .failed -a "$(echo $TARGETARCH | grep -c -- -mingw32)" -eq 0 ]; then
+	if [ ! -f .failed ] && [ "$(echo $TARGETARCH | grep -c -- -mingw32)" -eq 0 ]; then
+		# shellcheck disable=SC2086
 		$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libgcc && \
 		$MAKE install-target-libgcc DESTDIR=$DESTDIR || touch .failed
 	fi
@@ -765,15 +803,15 @@ build_cross_GCC() {
 
 build_GCC() {
 	if [ "$1" = host ]; then
-		bootstrap_GCC $1
+		bootstrap_GCC "$1"
 	else
-		build_cross_GCC $1
+		build_cross_GCC "$1"
 	fi
 }
 
 build_EXPAT() {
 	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS"
-	../${EXPAT_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+	../${EXPAT_DIR}/configure --disable-shared --prefix="$TARGETDIR" \
 		|| touch .failed
 	$MAKE || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
@@ -783,8 +821,9 @@ build_EXPAT() {
 
 build_PYTHON() {
 	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS"
-	../${PYTHON_DIR}/configure --prefix=$TARGETDIR \
+	../${PYTHON_DIR}/configure --prefix="$TARGETDIR" \
 		|| touch .failed
+	# shellcheck disable=SC2086
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
@@ -793,62 +832,66 @@ build_PYTHON() {
 
 build_GDB() {
 	export PYTHONHOME=$DESTDIR$TARGETDIR
-	if [ $(uname) != "FreeBSD" -a $(uname) != "NetBSD" ]; then
+	if [ "$UNAME" != "FreeBSD" ] && [ "$UNAME" != "NetBSD" ]; then
 		LIBDL="-ldl"
 	fi
 	LDFLAGS="-Wl,-rpath,\$\$ORIGIN/../lib/ -L$DESTDIR$TARGETDIR/lib \
 		 -lpthread $LIBDL -lutil" \
 	CC="$(hostcc target)" CXX="$(hostcxx target)" \
 	CFLAGS="$HOSTCFLAGS -I$DESTDIR$TARGETDIR/include" \
-	../${GDB_DIR}/configure --prefix=$TARGETDIR \
+	../${GDB_DIR}/configure --prefix="$TARGETDIR" \
 		--target=${TARGETARCH} --disable-werror --disable-nls
+	# shellcheck disable=SC2086
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 }
 
 build_IASL() {
 	RDIR=$PWD
-	cd ../$IASL_DIR/generate/unix
+	cd ../$IASL_DIR/generate/unix || exit 1
 	CFLAGS="$HOSTCFLAGS"
 	HOST="_LINUX"
-	test $UNAME = "Darwin" && HOST="_APPLE"
-	test $UNAME = "FreeBSD" && HOST="_FreeBSD"
-	test $UNAME = "Cygwin" && HOST="_CYGWIN"
+	test "$UNAME" = "Darwin" && HOST="_APPLE"
+	test "$UNAME" = "FreeBSD" && HOST="_FreeBSD"
+	test "$UNAME" = "Cygwin" && HOST="_CYGWIN"
 	HOST="$HOST" CFLAGS="$CFLAGS" \
 	OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2 -D COREBOOT_TOOLCHAIN_VERSION='\"coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE\"' " \
-	$MAKE CC="$(hostcc host)" iasl || touch $RDIR/.failed
-	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch $RDIR/.failed
-	cp bin/iasl $DESTDIR$TARGETDIR/bin || touch $RDIR/.failed
+	$MAKE CC="$(hostcc host)" iasl || touch "$RDIR/.failed"
+	rm -f "$DESTDIR$TARGETDIR/bin/iasl" || touch "$RDIR/.failed"
+	cp bin/iasl "$DESTDIR$TARGETDIR/bin" || touch "$RDIR/.failed"
 }
 
 build_LLVM() {
-	cd ..
-	ln -sf $PWD/$CFE_DIR  $LLVM_DIR/tools/clang
-	ln -sf $PWD/$CTE_DIR  $LLVM_DIR/tools/clang/tools/extra
-	ln -sf $PWD/$CRT_DIR  $LLVM_DIR/projects/compiler-rt
-	cd -
 
-	$CMAKE -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$DESTDIR$TARGETDIR \
+	cd .. || exit 1
+	ln -sf "$PWD/$CFE_DIR"  "$LLVM_DIR/tools/clang"
+	ln -sf "$PWD/$CTE_DIR"  "$LLVM_DIR/tools/clang/tools/extra"
+	ln -sf "$PWD/$CRT_DIR"  "$LLVM_DIR/projects/compiler-rt"
+	cd - || exit 1
+
+	$CMAKE -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$DESTDIR$TARGETDIR" \
 		-DCLANG_VENDOR="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE - " \
 		-DCMAKE_BUILD_TYPE=Release ../$LLVM_DIR || touch .failed
+	# shellcheck disable=SC2086
 	$MAKE $JOBS || touch .failed
 	$MAKE install || touch .failed
 
-	cp -a ../$CFE_DIR/tools/scan-build/* $DESTDIR$TARGETDIR/bin
-	cp -a ../$CFE_DIR/tools/scan-view/* $DESTDIR$TARGETDIR/bin
+	cp -a ../$CFE_DIR/tools/scan-build/* "$DESTDIR$TARGETDIR/bin"
+	cp -a ../$CFE_DIR/tools/scan-view/* "$DESTDIR$TARGETDIR/bin"
 
 	# create symlinks to work around broken --print-librt-file-name
 	# when used with -target.
-	cd $DESTDIR$TARGETDIR/lib/clang/${CLANG_VERSION}/lib
+	cd "$DESTDIR$TARGETDIR/lib/clang/${CLANG_VERSION}/lib" || exit 1
 	for i in */libclang_rt.builtins*.a; do
-		ln -s $i .
+		ln -s "$i" .
 	done
 }
 
 build_MAKE() {
 	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS" \
-	../${MAKE_DIR}/configure --prefix=$TARGETDIR --disable-nls \
+	../${MAKE_DIR}/configure --prefix="$TARGETDIR" --disable-nls \
 		|| touch .failed
+	# shellcheck disable=SC2086
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
@@ -857,8 +900,9 @@ build_MAKE() {
 
 build_CMAKE() {
 	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS" \
-	../${CMAKE_DIR}/configure --prefix=$TARGETDIR \
+	../${CMAKE_DIR}/configure --prefix="$TARGETDIR" \
 		 || touch .failed
+	# shellcheck disable=SC2086
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
@@ -900,6 +944,7 @@ else
 	# Detected non-GNU getopt
 	args=$(getopt Vhcd:bBp:l:P:j:D:tSys:un $*)
 	getopt_ret=$?
+	# shellcheck disable=SC2086
 	set -- $args
 fi
 
@@ -1026,8 +1071,8 @@ if searchtool wget "GNU" nofail > /dev/null; then
 	download_showing_percentage() {
 		url=$1
 		printf "... ${red}  0%%"
-		wget $url 2>&1 | while read line; do
-			echo $line | grep -o "[0-9]\+%" | awk '{printf("\b\b\b\b%4s", $1)}'
+		wget "$url" 2>&1 | while read -r line; do
+			echo "$line" | grep -o "[0-9]\+%" | awk '{printf("\b\b\b\b%4s", $1)}'
 		done
 		printf "${NC}... "
 	}
@@ -1035,7 +1080,7 @@ elif searchtool curl "^curl " > /dev/null; then
 	download_showing_percentage() {
 		url=$1
 		echo
-		curl -#OL $url
+		curl -#OL "$url"
 	}
 fi
 
@@ -1089,7 +1134,7 @@ if is_package_enabled "GCC"; then
 # sane preset: let the configure script figure out things by itself
 # more importantly, avoid any values that might already linger in the variable
 OPTIONS="ABI="
-if [ $UNAME = "Darwin" ]; then
+if [ "$UNAME" = "Darwin" ]; then
 	#GCC_OPTIONS="$GCC_OPTIONS --enable-threads=posix"
 
 	# generally the OS X compiler can create x64 binaries.
@@ -1097,7 +1142,7 @@ if [ $UNAME = "Darwin" ]; then
 	# binaries in 10.6 (even if the kernel is 32bit)
 	# For some weird reason, 10.5 autodetects an ABI=64 though
 	# so we're setting the ABI explicitly here.
-	if [ $(sysctl -n hw.optional.x86_64 2>/dev/null) -eq 1 ] 2>/dev/null; then
+	if [ "$(sysctl -n hw.optional.x86_64 2>/dev/null)" -eq 1 ] 2>/dev/null; then
 		OPTIONS="ABI=64"
 	else
 		OPTIONS="ABI=32"
@@ -1109,13 +1154,13 @@ if [ $UNAME = "Darwin" ]; then
 	if $CC -v 2>&1 | grep -q LLVM; then
 		CC=llvm-gcc
 	fi
-elif [ $UNAME = "Linux" -o $UNAME = "Cygwin" ]; then
+elif [ "$UNAME" = "Linux" ] || [ "$UNAME" = "Cygwin" ]; then
 	# gmp is overeager with detecting 64bit CPUs even if they run
 	# a 32bit kernel and userland.
 	if [ "$(uname -m 2>/dev/null)" = "i686" ]; then
 		OPTIONS="ABI=32"
 	fi
-elif [ $UNAME = "NetBSD" ]; then
+elif [ "$UNAME" = "NetBSD" ]; then
 	# same for NetBSD but this one reports an i386
 	if [ "$(uname -m 2>/dev/null)" = "i386" ]; then
 		OPTIONS="ABI=32"
@@ -1149,9 +1194,10 @@ if [ -z "${LANGUAGES}" ]; then
 fi
 if ada_requested; then
 	if have_gnat; then
-		if [ "$BOOTSTRAP" != 1 -a \
-		     \( "$(hostcc_major)" -lt 4 -o \
-		        \( "$(hostcc_major)" -eq 4 -a "$(hostcc_minor)" -lt 9 \) \) ]
+		if [ "$BOOTSTRAP" != 1 ] && \
+			\( [ "$(hostcc_major)" -lt 4 ] || \
+			\( [ "$(hostcc_major)" -eq 4 ] && \
+			[ "$(hostcc_minor)" -lt 9 ] \) \) ]
 		then
 			printf "\n${red}WARNING${NC}\n"
 			printf "Building the Ada compiler (GNAT $(buildcc_version)) with a host compiler older\n"
@@ -1167,7 +1213,7 @@ if ada_requested; then
 		exit 1
 	fi
 else
-	if [ "$(hostcc_major)" -lt 4 -a "$BOOTSTRAP" != 1 ]; then
+	if [ "$(hostcc_major)" -lt 4 ] && [ "$BOOTSTRAP" != 1 ]; then
 		printf "\n${red}WARNING${NC}\n"
 		printf "Building GCC $(buildcc_version) with a very old host compiler ($(hostcc_version)).\n"
 		printf "Bootstrapping (-b) is recommended.\n"
@@ -1187,8 +1233,8 @@ fi
 
 # Prepare target directory for building GCC
 # (dependencies must be in the PATH)
-mkdir -p $DESTDIR$TARGETDIR/bin
-mkdir -p $DESTDIR$TARGETDIR/share
+mkdir -p "$DESTDIR$TARGETDIR/bin"
+mkdir -p "$DESTDIR$TARGETDIR/share"
 export PATH=$DESTDIR$TARGETDIR/bin:$PATH
 
 # Download, unpack, patch and build all packages

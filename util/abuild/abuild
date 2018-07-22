@@ -469,7 +469,7 @@ function build_config
 		if [ "$scanbuild" = "true" ]; then
 			scanbuild_out=$TARGET/${BUILD_NAME}-scanbuild
 			rm -rf "${scanbuild_out}"
-			BUILDPREFIX="scan-build -o ${scanbuild_out}tmp"
+			BUILDPREFIX="scan-build ${SCANBUILD_ARGS} -o ${scanbuild_out}tmp"
 		fi
 		compile_target "${BUILD_NAME}"
 		if [ "$scanbuild" = "true" ]; then
@@ -667,6 +667,7 @@ while true ; do
 		--scan-build)   shift
 			scanbuild=true
 			customizing="${customizing}, scan-build"
+			SCANBUILD_ARGS=${SCANBUILD_ARGS:-'-k'}
 			;;
 		-y|--ccache)    shift
 			customizing="${customizing}, ccache"

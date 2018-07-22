@@ -385,11 +385,13 @@ CFLAGS_common += -Wstrict-aliasing -Wshadow -Wdate-time
 CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 CFLAGS_common += -ffunction-sections -fdata-sections -fno-pie
 ifeq ($(CONFIG_COMPILER_GCC),y)
-CFLAGS_common += -Wno-packed-not-aligned
 CFLAGS_common += -fno-delete-null-pointer-checks
 # Don't add these GCC specific flags when running scan-build
 ifeq ($(CCC_ANALYZER_OUTPUT_FORMAT),)
+CFLAGS_common += -Wno-packed-not-aligned
 CFLAGS_common += -fconserve-stack
+# cf. commit f69a99db (coreboot: x86: enable gc-sections)
+CFLAGS_common += -Wno-unused-but-set-variable
 endif
 endif
 
@@ -438,11 +440,6 @@ ADAFLAGS_common += -gnatwa.eeD.HHTU.U.W.Y
 ADAFLAGS_common += -gnatyN
 
 LDFLAGS_common := --gc-sections -nostdlib -nostartfiles -static --emit-relocs
-
-ifeq ($(CONFIG_COMPILER_GCC),y)
-# cf. commit f69a99db (coreboot: x86: enable gc-sections)
-CFLAGS_common += -Wno-unused-but-set-variable
-endif
 
 ifeq ($(CONFIG_WARNINGS_ARE_ERRORS),y)
 CFLAGS_common += -Werror

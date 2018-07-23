@@ -23,6 +23,7 @@
 
 #define KBLY_ICCMAX_SA					VR_CFG_AMP(4.1)
 #define KBLY_ICCMAX_CORE				VR_CFG_AMP(24)
+#define AMLY_ICCMAX_CORE				VR_CFG_AMP(28)
 #define KBLY_ICCMAX_GTS_GTUS			VR_CFG_AMP(24)
 #define KBLR_ICCMAX_SA_U42				VR_CFG_AMP(6)
 #define KBLU_ICCMAX_SA_U22				VR_CFG_AMP(4.5)
@@ -36,11 +37,13 @@ enum kbl_sku {
 	KBL_R_SKU,
 	KBL_U_BASE_SKU,
 	KBL_U_PREMIUM_SKU,
+	AML_Y_SKU,
 };
 
 /*
  * Iccmax table from Doc #559100 Section 7.2 DC Specifications, the
  * Iccmax is the same among KBL-Y but KBL-U/R.
+ * Addendum for AML-Y #594883, IccMax for IA core is 28A.
  * +----------------+-------------+---------------+------+-----+
  * | Domain/Setting |  SA         |  IA           | GTUS | GTS |
  * +----------------+-------------+---------------+------+-----+
@@ -50,14 +53,14 @@ enum kbl_sku {
  * +----------------+-------------+---------------+------+-----+
  * | IccMax(KBL-Y)  | 4.1A        | 24A           | 24A  | 24A |
  * +----------------+-------------+---------------+------+-----+
+ * | IccMax(AML-Y)  | 4.1A        | 28A           | 24A  | 24A |
+ * +----------------+-------------+---------------+------+-----+
  */
 
 static const struct {
-	enum kbl_sku sku;
 	uint16_t icc_max[NUM_VR_DOMAINS];
 }sku_icc_max_mapping[] = {
 	[KBL_Y_SKU] = {
-		.sku = KBL_Y_SKU,
 		.icc_max = {
 			KBLY_ICCMAX_SA,
 			KBLY_ICCMAX_CORE,
@@ -66,7 +69,6 @@ static const struct {
 		}
 	},
 	[KBL_R_SKU] = {
-		.sku = KBL_R_SKU,
 		.icc_max = {
 			KBLR_ICCMAX_SA_U42,
 			KBLR_ICCMAX_CORE_U42,
@@ -75,7 +77,6 @@ static const struct {
 		}
 	},
 	[KBL_U_BASE_SKU] = {
-		.sku = KBL_U_BASE_SKU,
 		.icc_max = {
 			KBLU_ICCMAX_SA_U22,
 			KBLU_ICCMAX_CORE_U22_BASE,
@@ -84,12 +85,19 @@ static const struct {
 		}
 	},
 	[KBL_U_PREMIUM_SKU] = {
-		.sku = KBL_U_PREMIUM_SKU,
 		.icc_max = {
 			KBLU_ICCMAX_SA_U22,
 			KBLU_ICCMAX_CORE_U22_PREMIUM,
 			KBLUR_ICCMAX_GTS_GTUS,
 			KBLUR_ICCMAX_GTS_GTUS
+		}
+	},
+	[AML_Y_SKU] = {
+		.icc_max = {
+			KBLY_ICCMAX_SA,
+			AMLY_ICCMAX_CORE,
+			KBLY_ICCMAX_GTS_GTUS,
+			KBLY_ICCMAX_GTS_GTUS
 		}
 	},
 };
@@ -176,9 +184,13 @@ static int get_kbl_sku(void)
 	id = get_dev_id(SA_DEV_ROOT);
 	if (id == PCI_DEVICE_ID_INTEL_KBL_U_R)
 		sku = KBL_R_SKU;
-	else if (id == PCI_DEVICE_ID_INTEL_KBL_ID_Y)
-		sku = KBL_Y_SKU;
-	else if (id == PCI_DEVICE_ID_INTEL_KBL_ID_U) {
+	else if (id == PCI_DEVICE_ID_INTEL_KBL_ID_Y) {
+		id = get_dev_id(SA_DEV_IGD);
+		if (id == PCI_DEVICE_ID_INTEL_KBL_GT2_ULX_R)
+			sku = AML_Y_SKU;
+		else
+			sku = KBL_Y_SKU;
+	} else if (id == PCI_DEVICE_ID_INTEL_KBL_ID_U) {
 		id = get_dev_id(PCH_DEV_LPC);
 		if (id == PCI_DEVICE_ID_INTEL_SPT_LP_U_BASE_HDCP22)
 			sku = KBL_U_BASE_SKU;

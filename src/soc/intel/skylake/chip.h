@@ -324,10 +324,6 @@ struct soc_intel_skylake_config {
 	 * in the upper and and lower 128-byte bank of RTC RAM.
 	 */
 	u8 LockDownConfigRtcLock;
-	/* Subsystem Vendor ID of the PCH devices*/
-	u16 PchConfigSubSystemVendorId;
-	/* Subsystem ID of the PCH devices*/
-	u16 PchConfigSubSystemId;
 
 	/*
 	 * Determine if WLAN wake from Sx, corresponds to the

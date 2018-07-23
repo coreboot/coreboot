@@ -159,8 +159,13 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 		params->LockDownConfigBiosLock = 0;
 		params->LockDownConfigSpiEiss = 0;
 	}
-	params->PchConfigSubSystemVendorId = config->PchConfigSubSystemVendorId;
-	params->PchConfigSubSystemId = config->PchConfigSubSystemId;
+	/* only replacing preexisting subsys ID defaults when non-zero */
+#if defined(CONFIG_SUBSYSTEM_VENDOR_ID) && CONFIG_SUBSYSTEM_VENDOR_ID
+	params->PchConfigSubSystemVendorId = CONFIG_SUBSYSTEM_VENDOR_ID;
+#endif
+#if defined(CONFIG_SUBSYSTEM_DEVICE_ID) && CONFIG_SUBSYSTEM_DEVICE_ID
+	params->PchConfigSubSystemId = CONFIG_SUBSYSTEM_DEVICE_ID;
+#endif
 	params->WakeConfigWolEnableOverride =
 		config->WakeConfigWolEnableOverride;
 	params->WakeConfigPcieWakeFromDeepSx =

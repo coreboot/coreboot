@@ -573,14 +573,14 @@ int google_chromeec_reboot(int dev_idx, enum ec_reboot_cmd type, uint8_t flags)
 	return google_chromeec_command(&cec_cmd);
 }
 
-static int cbi_get_uint32(uint32_t *id, uint32_t type)
+static int cbi_get_uint32(uint32_t *id, uint32_t tag)
 {
 	struct chromeec_command cmd;
 	struct ec_params_get_cbi p;
 	uint32_t r = 0;
 	int rv;
 
-	p.type = type;
+	p.tag = tag;
 
 	cmd.cmd_code = EC_CMD_GET_CROS_BOARD_INFO;
 	cmd.cmd_version = 0;

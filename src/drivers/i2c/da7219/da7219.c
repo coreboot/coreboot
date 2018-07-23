@@ -77,10 +77,12 @@ static void da7219_fill_ssdt(struct device *dev)
 	acpi_dp_add_integer(aad, "dlg,c-mic-btn-thr", config->c_mic_btn_thr);
 	acpi_dp_add_integer(aad, "dlg,btn-avg", config->btn_avg);
 	acpi_dp_add_integer(aad, "dlg,adc-1bit-rpt", config->adc_1bit_rpt);
-	acpi_dp_add_integer(aad, "dlg,micbias-pulse-lvl",
-			    config->micbias_pulse_lvl);
-	acpi_dp_add_integer(aad, "dlg,micbias-pulse-time",
-			    config->micbias_pulse_time);
+	if (config->micbias_pulse_lvl > 0) {
+		acpi_dp_add_integer(aad, "dlg,micbias-pulse-lvl",
+				    config->micbias_pulse_lvl);
+		acpi_dp_add_integer(aad, "dlg,micbias-pulse-time",
+				    config->micbias_pulse_time);
+	}
 
 	/* DA7219 Properties */
 	dsd = acpi_dp_new_table("_DSD");

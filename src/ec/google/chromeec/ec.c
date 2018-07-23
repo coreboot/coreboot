@@ -892,8 +892,7 @@ int google_chromeec_set_usb_pd_role(u8 port, enum usb_pd_control_role role)
 
 #ifndef __SMM__
 
-static
-int google_chromeec_hello(void)
+static int google_chromeec_hello(void)
 {
 	struct chromeec_command cec_cmd;
 	struct ec_params_hello cmd_hello;
@@ -912,14 +911,141 @@ int google_chromeec_hello(void)
 	return cec_cmd.cmd_code;
 }
 
+/*
+ * Convert a reset cause ID to human-readable string, providing total coverage
+ * of the 'cause' space.  The returned string points to static storage and must
+ * not be free()ed.
+ */
+static const char *reset_cause_to_str(uint16_t cause)
+{
+	/* See also ChromiumOS EC include/chipset.h for details. */
+	static const char * const reset_causes[] = {
+		"(reset unknown)",
+		"reset: board custom",
+		"reset: ap hang detected",
+		"reset: console command",
+		"reset: keyboard sysreset",
+		"reset: keyboard warm reboot",
+		"reset: debug warm reboot",
+		"reset: at AP's request",
+		"reset: during EC initialization",
+	};
+
+	static const size_t shutdown_cause_begin = 1 << 15;
+	static const char * const shutdown_causes[] = {
+		"shutdown: power failure",
+		"shutdown: during EC initialization",
+		"shutdown: board custom",
+		"shutdown: battery voltage startup inhibit",
+		"shutdown: power wait asserted",
+		"shutdown: critical battery",
+		"shutdown: by console command",
+		"shutdown: entering G3",
+		"shutdown: thermal",
+		"shutdown: power button",
+	};
+
+	if (cause < ARRAY_SIZE(reset_causes))
+		return reset_causes[cause];
+
+	if (cause < shutdown_cause_begin)
+		return "(reset unknown)";
+
+	if (cause < shutdown_cause_begin + ARRAY_SIZE(shutdown_causes))
+		return shutdown_causes[cause - shutdown_cause_begin];
+
+	return "(shutdown unknown)";
+}
+
+/*
+ * Copy the EC's information about resets of the AP and its own uptime for
+ * debugging purposes.
+ */
+static void google_chromeec_log_uptimeinfo(void)
+{
+	/* See also ChromiumOS EC include/system.h RESET_FLAG for details. */
+	static const char * const reset_flag_strings[] = {
+		"other",
+		"reset-pin",
+		"brownout",
+		"power-on",
+		"watchdog",
+		"soft",
+		"hibernate",
+		"rtc-alarm",
+		"wake-pin",
+		"low-battery",
+		"sysjump",
+		"hard",
+		"ap-off",
+		"preserved",
+		"usb-resume",
+		"rdd",
+		"rbox",
+		"security"
+	};
+	struct ec_response_uptime_info cmd_resp;
+	int i, flag, flag_count;
+
+	struct chromeec_command get_uptime_cmd = {
+		.cmd_code = EC_CMD_GET_UPTIME_INFO,
+		.cmd_version = 0,
+		.cmd_data_in = NULL,
+		.cmd_size_in = 0,
+		.cmd_data_out = &cmd_resp,
+		.cmd_size_out = sizeof(cmd_resp),
+		.cmd_dev_index = 0,
+	};
+	google_chromeec_command(&get_uptime_cmd);
+	if (get_uptime_cmd.cmd_code) {
+		/*
+		 * Deliberately say nothing for EC's that don't support this
+		 * command
+		 */
+		return;
+	}
+
+	printk(BIOS_DEBUG, "Google Chrome EC uptime: %d.%03d seconds\n",
+		cmd_resp.time_since_ec_boot_ms / MSECS_PER_SEC,
+		cmd_resp.time_since_ec_boot_ms % MSECS_PER_SEC);
+
+	printk(BIOS_DEBUG, "Google Chrome AP resets since EC boot: %d\n",
+		cmd_resp.ap_resets_since_ec_boot);
+
+	printk(BIOS_DEBUG, "Google Chrome most recent AP reset causes:\n");
+	for (i = 0; i != ARRAY_SIZE(cmd_resp.recent_ap_reset); ++i) {
+		if (cmd_resp.recent_ap_reset[i].reset_time_ms == 0)
+			continue;
+
+		printk(BIOS_DEBUG, "\t%d.%03d: %d %s\n",
+			cmd_resp.recent_ap_reset[i].reset_time_ms /
+				MSECS_PER_SEC,
+			cmd_resp.recent_ap_reset[i].reset_time_ms %
+				MSECS_PER_SEC,
+			cmd_resp.recent_ap_reset[i].reset_cause,
+			reset_cause_to_str(
+				cmd_resp.recent_ap_reset[i].reset_cause));
+	}
+
+	printk(BIOS_DEBUG, "Google Chrome EC reset flags at last EC boot: ");
+	flag_count = 0;
+	for (flag = 0; flag != ARRAY_SIZE(reset_flag_strings); ++flag) {
+		if ((cmd_resp.ec_reset_flags & (1 << flag)) != 0) {
+			if (flag_count)
+				printk(BIOS_DEBUG, " | ");
+			printk(BIOS_DEBUG, reset_flag_strings[flag]);
+			flag_count++;
+		}
+	}
+	printk(BIOS_DEBUG, "\n");
+}
+
 static int ec_image_type; /* Cached EC image type (ro or rw). */
 
 void google_chromeec_init(void)
 {
 	struct chromeec_command cec_cmd;
 	struct ec_response_get_version cec_resp = {{0}};
-
-	printk(BIOS_DEBUG, "Google Chrome EC: Initializing keyboard.\n");
 
 	google_chromeec_hello();
 
@@ -942,6 +1068,8 @@ void google_chromeec_init(void)
 		       cec_resp.current_image);
 		ec_image_type = cec_resp.current_image;
 	}
+
+	google_chromeec_log_uptimeinfo();
 }
 
 int google_ec_running_ro(void)

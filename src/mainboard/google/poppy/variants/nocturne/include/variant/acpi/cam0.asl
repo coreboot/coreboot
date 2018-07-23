@@ -15,6 +15,42 @@
 
 Scope (\_SB.PCI0.I2C3)
 {
+	PowerResource (FCPR, 0, 0)
+	{
+		Name (STA, 0)
+		Method (_ON, 0, Serialized) {
+			If (LEqual(STA, 0)) {
+				CTXS (GPIO_FCAM_RST_L)
+				STXS (GPIO_FCAM_PWR_EN)
+				STXS (GPIO_PCH_FCAM_CLK_EN)
+				Sleep (3)
+				STXS (GPIO_FCAM_RST_L)
+
+				/*
+				 * A delay of T7 (minimum of 5 ms) + T8
+				 * (max 5 ms + delay of coarse integration
+				 * time value + 14 H, time for 14 horizontal
+				 * lines) is needed to have the sensor ready
+				 * for streaming, as soon as the power on
+				 * sequence completes
+				 */
+				Sleep (11)
+				Store (1, STA)
+			}
+		}
+		Method (_OFF, 0, Serialized) {
+			If (LEqual(STA, 1)) {
+				CTXS (GPIO_PCH_FCAM_CLK_EN)
+				CTXS (GPIO_FCAM_RST_L)
+				CTXS (GPIO_FCAM_PWR_EN)
+				Store (0, STA)
+			}
+		}
+		Method (_STA, 0, NotSerialized) {
+			Return (STA)
+		}
+	}
+
 	Device (CAM0)
 	{
 		Name (_HID, "SONY319A") /* _HID: Hardware ID */
@@ -29,65 +65,13 @@ Scope (\_SB.PCI0.I2C3)
 		Name (_CRS, ResourceTemplate ()
 		{
 			I2cSerialBus (0x0010, ControllerInitiated, 0x00061A80,
-			AddressingMode7Bit, "\\_SB.PCI0.I2C3",
-			0x00, ResourceConsumer, ,
-			)
+				AddressingMode7Bit, "\\_SB.PCI0.I2C3",
+				0x00, ResourceConsumer, ,
+				)
 		})
 
-		Name (STA, 0)
-		Method (PMON, 0, Serialized) {
-			If (STA == 0) {
-				CTXS (GPIO_FCAM_RST_L)
-				STXS (GPIO_FCAM_PWR_EN)
-				STXS (GPIO_PCH_FCAM_CLK_EN)
-				Sleep(3)
-				STXS (GPIO_FCAM_RST_L)
-
-				/*
-				 * A delay of T7 (minimum of 5 ms) + T8
-				 * (max 5 ms + delay of coarse integration
-				 * time value + 14 H, time for 14 horizontal
-				 * lines) is needed to have the sensor ready
-				 * for streaming, as soon as the power on
-				 * sequence completes
-				 */
-				Sleep(11);
-			}
-			STA++
-		}
-
-		Method (PMOF, 0, Serialized) {
-			If (STA == 0) {
-				Return
-			}
-			STA--
-			If (STA == 0) {
-				CTXS (GPIO_PCH_FCAM_CLK_EN)
-				CTXS (GPIO_FCAM_RST_L)
-				CTXS (GPIO_FCAM_PWR_EN)
-			}
-		}
-
-		Name (_PR0, Package (0x01) { FCPR })
-		Name (_PR3, Package (0x01) { FCPR })
-
-		/* Power resource methods for Rear Camera */
-		PowerResource (FCPR, 0, 0) {
-			Method (_ON, 0, Serialized) {
-				PMON ()
-			}
-			Method (_OFF, 0, Serialized) {
-				PMOF ()
-			}
-			Method (_STA, 0, Serialized) {
-				If (LGreater(STA,0)) {
-					Return (0x1)
-				}
-				Else {
-					Return (0x0)
-				}
-			}
-		}
+		Name (_PR0, Package () { FCPR })
+		Name (_PR3, Package () { FCPR })
 
 		/* Port0 of CAM0 is connected to port0 of CIO2 device */
 		Name (_DSD, Package () {
@@ -147,11 +131,10 @@ Scope (\_SB.PCI0.I2C3)
 				AddressingMode7Bit, "\\_SB.PCI0.I2C3",
 				0x00, ResourceConsumer, ,)
 		})
+		Name (_DEP, Package () { CAM0 })
 
-		Name (_DEP, Package() { ^^I2C3.CAM0 })
-
-		Name (_PR0, Package (0x01) { ^^I2C3.CAM0.FCPR })
-		Name (_PR3, Package (0x01) { ^^I2C3.CAM0.FCPR })
+		Name (_PR0, Package () { FCPR })
+		Name (_PR3, Package () { FCPR })
 
 		Name (_DSD, Package ()
 		{

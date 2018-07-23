@@ -173,13 +173,13 @@ typedef struct {
   Enable/Disable IPU Device. 0:Disable, 1:Enable(Default).
   $EN_DIS
 **/
-  UINT8                       IpuEn;
+  UINT8                       IpuEnReserved;
 
 /** Offset 0x003A - IMGU ACPI mode selection
   0:Auto, 1:IGFX Child device(Default), 2:ACPI device.
   0:Disable, 1:IGFX Child device, 2:ACPI device
 **/
-  UINT8                       IpuAcpiMode;
+  UINT8                       IpuAcpiModeReserved;
 
 /** Offset 0x003B - Enable ForceWake
   Enable/disable ForceWake Models. 0:Disable(Default), 1:Enable.
@@ -279,7 +279,7 @@ typedef struct {
   Enable/disable SaIpuEnable. 0:Disable(Default), 1:Enable.
   $EN_DIS
 **/
-  UINT8                       SaIpuEnable;
+  UINT8                       SaIpuEnableReserved;
 
 /** Offset 0x0052 - GT PM Support
   Enable/Disable GT power management support. 0:Disable, 1:Enable(Default).

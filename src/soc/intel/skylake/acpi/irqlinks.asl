@@ -389,7 +389,7 @@ Device (LNKG)
 Device (LNKH)
 {
 	Name (_HID, EISAID ("PNP0C0F"))
-	Name (_UID, 1)
+	Name (_UID, 8)
 
 	Name (_PRS, ResourceTemplate ()
 	{

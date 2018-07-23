@@ -1,13 +1,16 @@
-From ef89b11ce6f93c96fbd1753a8006dd9c3da212e0 Mon Sep 17 00:00:00 2001
+From 336ce69129206ea6cb5bea2a99c5f00e77850518 Mon Sep 17 00:00:00 2001
 From: ReddestDream <reddestdream@gmail.com>
 Date: Wed, 3 May 2017 00:13:28 -0400
 Subject: [PATCH] CbSupportPei: prevent lower coreboot table from being
  overwritten
 
 Exclude the bottom 4kb from being included in System Memory HoB
+---
+ CorebootModulePkg/CbSupportPei/CbSupportPei.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/CorebootModulePkg/CbSupportPei/CbSupportPei.c b/CorebootModulePkg/CbSupportPei/CbSupportPei.c
-index 262e6b9..d3c5723 100755
+index 831de89b21d1..e84b9b55288a 100755
 --- a/CorebootModulePkg/CbSupportPei/CbSupportPei.c
 +++ b/CorebootModulePkg/CbSupportPei/CbSupportPei.c
 @@ -261,8 +261,9 @@ CbPeiEntryPoint (
@@ -20,7 +23,8 @@ index 262e6b9..d3c5723 100755
 +    (EFI_PHYSICAL_ADDRESS)(0 + 0x1000),
 +    (UINT64)(0xA0000 - 0x1000)
      );
+ 
+ 
+-- 
+2.17.0
 
-
---
-2.14.0

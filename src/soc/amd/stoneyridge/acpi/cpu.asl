@@ -22,14 +22,14 @@ Method (PNOT)
  * Processor Object
  */
 /* These devices are created at runtime */
-External (\_PR.CP00, DeviceObj)
-External (\_PR.CP01, DeviceObj)
-External (\_PR.CP02, DeviceObj)
-External (\_PR.CP03, DeviceObj)
-External (\_PR.CP04, DeviceObj)
-External (\_PR.CP05, DeviceObj)
-External (\_PR.CP06, DeviceObj)
-External (\_PR.CP07, DeviceObj)
+External (\_PR.P000, DeviceObj)
+External (\_PR.P001, DeviceObj)
+External (\_PR.P002, DeviceObj)
+External (\_PR.P003, DeviceObj)
+External (\_PR.P004, DeviceObj)
+External (\_PR.P005, DeviceObj)
+External (\_PR.P006, DeviceObj)
+External (\_PR.P007, DeviceObj)
 
 /* Return a package containing enabled processor entries */
 Method (PPKG)
@@ -37,13 +37,13 @@ Method (PPKG)
 	If (LGreaterEqual (\PCNT, 2)) {
 		Return (Package ()
 		{
-			\_PR.CP00,
-			\_PR.CP01
+			\_PR.P000,
+			\_PR.P001
 		})
 	} Else {
 		Return (Package ()
 		{
-			\_PR.CP00
+			\_PR.P000
 		})
 	}
 }

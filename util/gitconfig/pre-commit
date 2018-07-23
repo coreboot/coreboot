@@ -24,5 +24,6 @@ PATCHDIFF=$(git diff --cached --src-prefix=a/ --dst-prefix=b/)
 if printf "%s\n" "$PATCHDIFF" | grep -q "@@"; then
 	echo
 	echo "Running checkpatch"
-	printf "%s\n" "$PATCHDIFF" | util/lint/lint-007-checkpatch diff
+	printf "%s\n" "$PATCHDIFF" | util/lint/lint-007-checkpatch diff \
+		|| (echo "Please consider fixing these issues." ;sleep 5) ; true
 fi

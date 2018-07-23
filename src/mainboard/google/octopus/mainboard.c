@@ -18,10 +18,13 @@
 #include <boardid.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <ec/google/chromeec/ec.h>
 #include <ec/ec.h>
 #include <nhlt.h>
+#include <smbios.h>
 #include <soc/gpio.h>
 #include <soc/nhlt.h>
+#include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <variant/ec.h>
 #include <variant/gpio.h>
@@ -75,3 +78,35 @@ struct chip_operations mainboard_ops = {
 	.init = mainboard_init,
 	.enable_dev = mainboard_enable,
 };
+
+#define SKU_UNKNOWN		0xFFFFFFFF
+#define SKU_MAX			255
+
+static uint32_t get_board_sku(void)
+{
+	static uint32_t sku_id = SKU_UNKNOWN;
+
+	if (sku_id != SKU_UNKNOWN)
+		return sku_id;
+
+	if (google_chromeec_cbi_get_sku_id(&sku_id))
+		sku_id = SKU_UNKNOWN;
+
+	return sku_id;
+}
+
+const char *smbios_mainboard_sku(void)
+{
+	static char sku_str[7]; /* sku{0..255} */
+	uint32_t sku_id = get_board_sku();
+
+	if ((sku_id == SKU_UNKNOWN) || (sku_id > SKU_MAX)) {
+		printk(BIOS_ERR, "%s: Unexpected SKU ID %u\n",
+			__func__, sku_id);
+		return "";
+	}
+
+	snprintf(sku_str, sizeof(sku_str), "sku%u", sku_id);
+
+	return sku_str;
+}

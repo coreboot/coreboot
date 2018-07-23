@@ -292,6 +292,18 @@
 #define PCI_MSI_DATA_64		12	/* 16 bits of data for 64-bit devices */
 #define PCI_MSI_MASK_BIT	16	/* Mask bits register */
 
+/* MSI-X registers */
+#define PCI_MSIX_FLAGS		2
+#define  PCI_MSIX_FLAGS_QSIZE	0x7FF	/* table size */
+#define  PCI_MSIX_FLAGS_MASKALL	0x4000	/* Mask all vectors for this function */
+#define  PCI_MSIX_FLAGS_ENABLE	0x8000	/* MSI-X enable */
+#define PCI_MSIX_TABLE		4	/* Table offset */
+#define PCI_MSIX_PBA		8	/* Pending Bit Array offset */
+#define  PCI_MSIX_PBA_BIR	0x7	/* BAR index */
+#define  PCI_MSIX_PBA_OFFSET	~0x7	/* Offset into specified BAR */
+#define PCI_CAP_MSIX_SIZEOF	12	/* size of MSIX registers */
+
+
 /* CompactPCI Hotswap Register */
 
 #define PCI_CHSWP_CSR		2	/* Control and Status Register */

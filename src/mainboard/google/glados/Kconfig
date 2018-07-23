@@ -1,13 +1,11 @@
-if BOARD_GOOGLE_GLADOS
-
-config BOARD_SPECIFIC_OPTIONS # dummy
-	def_bool y
+config BOARD_GOOGLE_BASEBOARD_GLADOS
+	def_bool n
 	select BOARD_ROMSIZE_KB_16384
 	select DRIVERS_I2C_GENERIC
 	select DRIVERS_I2C_NAU8825
 	select EC_GOOGLE_CHROMEEC
-	select EC_GOOGLE_CHROMEEC_BOARDID
 	select EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
+	select EC_GOOGLE_CHROMEEC_BOARDID
 	select EC_GOOGLE_CHROMEEC_LPC
 	select EC_GOOGLE_CHROMEEC_MEC
 	select EC_GOOGLE_CHROMEEC_PD
@@ -15,11 +13,14 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_ACPI_TABLES
 	select HAVE_OPTION_TABLE
 	select HAVE_SMI_HANDLER
+	select INTEL_GMA_HAVE_VBT if !BOARD_GOOGLE_GLADOS
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_LPC_TPM
 	select MAINBOARD_HAS_TPM1
 	select SOC_INTEL_SKYLAKE
 	select SYSTEM_TYPE_LAPTOP
+
+if BOARD_GOOGLE_BASEBOARD_GLADOS
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
@@ -35,11 +36,25 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Glados"
+	default "Chell" if BOARD_GOOGLE_CHELL
+	default "Glados" if BOARD_GOOGLE_GLADOS
+	default "Lars" if BOARD_GOOGLE_LARS
 
 config MAINBOARD_FAMILY
 	string
 	default "Google_Glados"
+
+config VARIANT_DIR
+	string
+	default "chell" if BOARD_GOOGLE_CHELL
+	default "glados" if BOARD_GOOGLE_GLADOS
+	default "lars" if BOARD_GOOGLE_LARS
+
+config DEVICETREE
+	string
+	default "variants/chell/devicetree.cb" if BOARD_GOOGLE_CHELL
+	default "variants/glados/devicetree.cb" if BOARD_GOOGLE_GLADOS
+	default "variants/lars/devicetree.cb" if BOARD_GOOGLE_LARS
 
 config MAX_CPUS
 	int
@@ -52,20 +67,24 @@ config TPM_PIRQ
 config INCLUDE_NHLT_BLOBS
 	bool "Include blobs for audio."
 	select NHLT_DMIC_2CH
-	select NHLT_DMIC_4CH
 	select NHLT_NAU88L25
-	select NHLT_SSM4567
 
 config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string
-	default "glados"
+	default "chell" if BOARD_GOOGLE_CHELL
+	default "glados" if BOARD_GOOGLE_GLADOS
+	default ""
 
 config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
 	string
-	default "glados_pd"
+	default "chell_pd" if BOARD_GOOGLE_CHELL
+	default "glados_pd" if BOARD_GOOGLE_GLADOS
+	default ""
 
 config GBB_HWID
 	string
 	depends on CHROMEOS
-	default "GLADOS TEST 1988"
+	default "CHELL TEST 6297" if BOARD_GOOGLE_CHELL
+	default "GLADOS TEST 1988" if BOARD_GOOGLE_GLADOS
+	default "LARS TEST 5001" if BOARD_GOOGLE_LARS
 endif

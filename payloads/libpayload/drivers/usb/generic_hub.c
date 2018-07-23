@@ -157,6 +157,15 @@ generic_hub_attach_dev(usbdev_t *const dev, const int port)
 	if (hub->ops->reset_port) {
 		if (hub->ops->reset_port(dev, port) < 0)
 			return -1;
+
+		if (!hub->ops->port_connected(dev, port)) {
+			usb_debug(
+				"generic_hub: Port %d disconnected after "
+				"reset. Possibly upgraded, rescan required.\n",
+				port);
+			return 0;
+		}
+
 		/* after reset the port will be enabled automatically */
 		const int ret = generic_hub_wait_for_port(
 			/* time out after 1,000 * 10us = 10ms */

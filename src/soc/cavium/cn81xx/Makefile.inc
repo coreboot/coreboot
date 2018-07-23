@@ -63,6 +63,7 @@ ramstage-y += sdram.c
 ramstage-y += soc.c
 ramstage-y += cpu.c
 ramstage-y += cpu_secondary.S
+ramstage-y += ecam0.c
 
 # BDK coreboot interface
 ramstage-y += ../common/bdk-coreboot.c

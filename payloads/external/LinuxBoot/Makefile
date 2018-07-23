@@ -17,8 +17,29 @@ project_dir=linuxboot
 kernel_dir=$(project_dir)/kernel
 
 unexport $(COREBOOT_EXPORTS)
+unexport MAKEFLAGS
+
+XGCCPATH?=$(PWD)/util/crossgcc/xgcc/bin
+ifeq ($(CONFIG_LINUXBOOT_ARCH),386)
+CROSS_COMPILE?=$(XGCCPATH)/i386-linux-
+ARCH?=x86
+else ifeq ($(CONFIG_LINUXBOOT_ARCH),amd64)
+CROSS_COMPILE?=$(XGCCPATH)/x86_64-linux-
+ARCH?=x86_64
+else ifeq ($(CONFIG_LINUXBOOT_ARCH),arm64)
+CROSS_COMPILE?=$(XGCCPATH)/aarch64-linux-
+ARCH?=arm64
+endif
+
+OBJCOPY:=$(CROSS_COMPILE)objcopy
 
 all: payload
+
+toolchain:
+	if [[ ! -x "$(CROSS_COMPILE)gcc" ]]; then \
+	echo "Toolchain '$(CROSS_COMPILE)*' is missing."; \
+	exit 1; \
+	fi
 
 $(kernel_dir)/.config:
 	echo "    WWW        Download Linux $(CONFIG_LINUXBOOT_KERNEL_VERSION)"
@@ -36,22 +57,46 @@ ifeq ($(CONFIG_LINUXBOOT_ARCH),386)
 	cp x86/defconfig $(kernel_dir)/.config
 else ifeq ($(CONFIG_LINUXBOOT_ARCH),amd64)
 	cp x86_64/defconfig $(kernel_dir)/.config
+else ifeq ($(CONFIG_LINUXBOOT_ARCH),arm64)
+	cp arm64/defconfig $(kernel_dir)/.config
 endif
 
-$(project_dir)/kernel-image: config
+ifneq (,$(filter $(CONFIG_LINUXBOOT_ARCH),386 amd64))
+$(kernel_dir)/arch/x86/boot/bzImage: config toolchain
+else ifeq ($(CONFIG_LINUXBOOT_ARCH),arm64)
+$(kernel_dir)/vmlinux: config toolchain
+endif
 	echo "    MAKE       Kernel $(CONFIG_LINUXBOOT_KERNEL_VERSION)"
-	$(MAKE) -C $(kernel_dir) olddefconfig
-	$(MAKE) -C $(kernel_dir) -j $(CPUS)
-ifeq ($(CONFIG_LINUXBOOT_ARCH),386)
-	cp $(kernel_dir)/arch/x86/boot/bzImage $(project_dir)/kernel-image
-else ifeq ($(CONFIG_LINUXBOOT_ARCH),amd64)
-	cp $(kernel_dir)/arch/x86/boot/bzImage $(project_dir)/kernel-image
+	$(MAKE) -C $(kernel_dir) olddefconfig CROSS_COMPILE=$(CROSS_COMPILE) ARCH=$(ARCH)
+	$(MAKE) -C $(kernel_dir) -j $(CPUS) CROSS_COMPILE=$(CROSS_COMPILE) ARCH=$(ARCH)
+
+ifneq (,$(filter $(CONFIG_LINUXBOOT_ARCH),386 amd64))
+$(project_dir)/kernel-image: $(kernel_dir)/arch/x86/boot/bzImage
+	cp $< $@
+else ifeq ($(CONFIG_LINUXBOOT_ARCH),arm64)
+$(project_dir)/vmlinux.bin: $(kernel_dir)/vmlinux
+	$(OBJCOPY) -O binary $< $@
+
+$(project_dir)/target.dtb: $(CONFIG_LINUXBOOT_DTB_FILE)
+	cp $< $@
+
+$(project_dir)/vmlinux.bin.lzma: $(project_dir)/vmlinux.bin
+	xz -c -k -f --format=lzma --lzma1=dict=1MiB,lc=3,lp=0,pb=3 $< > $@
+
+$(project_dir)/kernel-image: $(project_dir)/vmlinux.bin.lzma $(project_dir)/../arm64/kernel_fdt_lzma.its $(project_dir)/target.dtb $(project_dir)/initramfs.cpio.xz
+	cp $(project_dir)/../arm64/kernel_fdt_lzma.its $(project_dir)
+	mkimage -f $(project_dir)/kernel_fdt_lzma.its $@
 endif
 
-payload: $(project_dir)/kernel-image
 ifeq ($(CONFIG_LINUXBOOT_UROOT),y)
+$(project_dir)/initramfs.cpio.xz:
 	$(MAKE) -f targets/u-root.mk
+else
+$(project_dir)/initramfs.cpio.xz:
+	echo "Building without u-root support"
 endif
+
+payload: $(project_dir)/kernel-image $(project_dir)/initramfs.cpio.xz
 
 clean:
 	if [ -d "$(kernel_dir)" ]; then make -C $(kernel_dir) clean; fi
@@ -60,4 +105,4 @@ clean:
 distclean:
 	rm -rf $(project_dir)
 
-.PHONY: config patch payload clean distclean clone fetch all
+.PHONY: config patch payload clean distclean clone fetch all toolchain

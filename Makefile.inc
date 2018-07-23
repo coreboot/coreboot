@@ -956,6 +956,10 @@ $(obj)/fmap.fmap: $(obj)/fmap.fmd $(FMAPTOOL)
 	echo "    FMAP       $(FMAPTOOL) -h $(obj)/fmap_config.h $< $@"
 	$(FMAPTOOL) -h $(obj)/fmap_config.h -R $(obj)/fmap.desc $< $@
 
+ifeq ($(CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK),y)
+TS_OPTIONS := -j $(CONFIG_INTEL_TOP_SWAP_BOOTBLOCK_SIZE)
+FIT_OPTIONS := $(TS_OPTIONS)
+endif
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
 $(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $$(cpu_ucode_cbfs_file) $(obj)/fmap.fmap $(obj)/fmap.desc
 	$(CBFSTOOL) $@.tmp create -M $(obj)/fmap.fmap -r $(shell cat $(obj)/fmap.desc)
@@ -964,7 +968,8 @@ ifeq ($(CONFIG_ARCH_X86),y)
 		-f $(objcbfs)/bootblock.bin \
 		-n bootblock \
 		-t bootblock \
-		-b -$(call file-size,$(objcbfs)/bootblock.bin) $(cbfs-autogen-attributes)
+		-b -$(call file-size,$(objcbfs)/bootblock.bin) $(cbfs-autogen-attributes) \
+		$(TS_OPTIONS)
 else # ifeq ($(CONFIG_ARCH_X86),y)
 	$(CBFSTOOL) $@.tmp write -u \
 		-r BOOTBLOCK \
@@ -979,7 +984,7 @@ else # ifeq ($(CONFIG_ARCH_X86),y)
 		-b -4
 	rm -f $@.tmp.2
 endif # ifeq ($(CONFIG_ARCH_X86),y)
-	$(CBFSTOOL) $@.tmp add-master-header
+	$(CBFSTOOL) $@.tmp add-master-header $(TS_OPTIONS)
 	$(prebuild-files) true
 	mv $@.tmp $@
 else # ifneq ($(CONFIG_UPDATE_IMAGE),y)
@@ -999,6 +1004,11 @@ $(REFCODE_BLOB): $(RMODTOOL)
 	$(RMODTOOL) -i $(CONFIG_REFCODE_BLOB_FILE) -o $@
 endif
 
+FIT_ENTRY=$(call strip_quotes, $(CONFIG_INTEL_TOP_SWAP_FIT_ENTRY_FMAP_REG))
+ifneq ($(FIT_ENTRY),)
+FIT_OPTIONS += -q $(FIT_ENTRY)
+endif
+
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/ramstage.elf $(CBFSTOOL) $$(INTERMEDIATE)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 # The full ROM may be larger than the CBFS part, so create an empty
@@ -1016,12 +1026,14 @@ endif
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_HEADER),y)
 	@printf "    UPDATE-FIT\n"
-	$(CBFSTOOL) $@.tmp update-fit -n cpu_microcode_blob.bin -x $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES)
+	$(CBFSTOOL) $@.tmp update-fit -n cpu_microcode_blob.bin -x $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) \
+	$(FIT_OPTIONS)
 endif
 
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_GENERATE),y)
 	@printf "    UPDATE-FIT\n"
-	$(CBFSTOOL) $@.tmp update-fit -n cpu_microcode_blob.bin -x $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES)
+	$(CBFSTOOL) $@.tmp update-fit -n cpu_microcode_blob.bin -x $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) \
+	$(FIT_OPTIONS)
 endif
 endif
 	mv $@.tmp $@

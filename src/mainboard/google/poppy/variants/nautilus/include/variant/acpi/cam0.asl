@@ -134,4 +134,38 @@ Scope (\_SB.PCI0.I2C2)
 		Name (_PR0, Package () { ^PMIC.VCMP })
 		Name (_PR3, Package () { ^PMIC.VCMP })
 	}
+
+	Device (NVM0)
+	{
+		Name (_HID, "INT3499")  /* _HID: Hardware ID */
+		Name (_UID, Zero)  /* _UID: Unique ID */
+		Name (_DDN, "Dongwoon NVM")  /* _DDN: DOS Device Name */
+
+		Method (_STA, 0, NotSerialized)  /* _STA: Status */
+		{
+			Return (0x0F)
+		}
+
+		Name (_DEP, Package() { \_SB.PCI0.I2C2.PMIC })
+		Name (_CRS, ResourceTemplate ()
+		{
+			I2cSerialBus (0x0058, ControllerInitiated, 0x00061A80,
+				AddressingMode7Bit, "\\_SB.PCI0.I2C2",
+				0x00, ResourceConsumer, ,)
+		})
+
+		Name (_PR0, Package () { ^PMIC.VCMP })
+		Name (_PR3, Package () { ^PMIC.VCMP })
+
+		Name (_DSD, Package ()
+		{
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				Package () { "size", 8192 },
+				Package () { "pagesize", 1 },
+				Package () { "read-only", 1 },
+				Package () { "address-width", 16 },
+			}
+		})
+	}
 }

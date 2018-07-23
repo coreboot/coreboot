@@ -187,7 +187,11 @@ typedef struct {
 } endpoint_t;
 
 typedef enum {
-	FULL_SPEED = 0, LOW_SPEED = 1, HIGH_SPEED = 2, SUPER_SPEED = 3,
+	UNKNOWN_SPEED = -1,
+	FULL_SPEED = 0,
+	LOW_SPEED = 1,
+	HIGH_SPEED = 2,
+	SUPER_SPEED = 3,
 } usb_speed;
 
 struct usbdev {

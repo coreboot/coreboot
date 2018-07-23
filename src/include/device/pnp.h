@@ -31,7 +31,7 @@ extern struct device_operations pnp_ops;
 /* PNP helper operations */
 
 struct pnp_info {
-	struct device_operations *ops;
+	struct device_operations *ops; /* LDN-specific ops override */
 	unsigned int function; /* Must be at least 16 bits (virtual LDNs)! */
 	unsigned int flags;
 #define PNP_IO0  0x000001

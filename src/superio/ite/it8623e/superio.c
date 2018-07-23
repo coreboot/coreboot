@@ -60,20 +60,21 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, IT8623E_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x0ff8, },
-	{ &ops, IT8623E_SP1, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
-	{ &ops, IT8623E_SP2, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
-	{ &ops, IT8623E_PP, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_DRQ0, 0x0ff8, 0x0ff8, },
-	{ &ops, IT8623E_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x0ff0, 0x0ff0, },
-	{ &ops, IT8623E_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x0fff, 0x0fff, },
-	{ &ops, IT8623E_KBCM, PNP_IRQ0, },
-	{ &ops, IT8623E_GPIO, PNP_IO0 | PNP_IO1 | PNP_IO2 | PNP_IRQ0, 0x0fff, 0x0fe0, 0x0fff, },
+	{ NULL, IT8623E_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x0ff8, },
+	{ NULL, IT8623E_SP1, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ NULL, IT8623E_SP2, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ NULL, IT8623E_PP, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_DRQ0,
+		0x0ff8, 0x0ff8, },
+	{ NULL, IT8623E_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x0ff0, 0x0ff0, },
+	{ NULL, IT8623E_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x0fff, 0x0fff, },
+	{ NULL, IT8623E_KBCM, PNP_IRQ0, },
+	{ NULL, IT8623E_GPIO, PNP_IO0 | PNP_IO1 | PNP_IO2 | PNP_IRQ0,
+		0x0fff, 0x0fe0, 0x0fff, },
 };
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &ops,
-		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_ite_it8623e_ops = {

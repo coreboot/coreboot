@@ -357,7 +357,7 @@ void verstage_main(void)
 			return;
 		}
 
-		printk(BIOS_INFO, "Reboot reqested (%x)\n", rv);
+		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
 		save_if_needed(&ctx);
 		vboot_reboot();
 	}

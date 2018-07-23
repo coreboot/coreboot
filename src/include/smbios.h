@@ -26,6 +26,12 @@ int smbios_add_string(u8 *start, const char *str);
 int smbios_string_table_len(u8 *start);
 
 /* Used by mainboard to add an on-board device */
+enum smbios_bmc_interface_type;
+int smbios_write_type38(unsigned long *current, int *handle,
+			const enum smbios_bmc_interface_type interface_type,
+			const u8 ipmi_rev, const u8 i2c_addr, const u8 nv_addr,
+			const u64 base_addr, const u8 base_modifier,
+			const u8 irq);
 int smbios_write_type41(unsigned long *current, int *handle,
 			const char *name, u8 instance, u16 segment,
 			u8 bus, u8 device, u8 function);
@@ -216,6 +222,7 @@ typedef enum {
 	SMBIOS_MEMORY_DEVICE = 17,
 	SMBIOS_MEMORY_ARRAY_MAPPED_ADDRESS = 19,
 	SMBIOS_SYSTEM_BOOT_INFORMATION = 32,
+	SMBIOS_IPMI_DEVICE_INFORMATION = 38,
 	SMBIOS_ONBOARD_DEVICES_EXTENDED_INFORMATION = 41,
 	SMBIOS_END_OF_TABLE = 127,
 } smbios_struct_type_t;
@@ -496,6 +503,13 @@ struct smbios_type38 {
 	u8 base_address_modifier;
 	u8 irq;
 } __packed;
+
+enum smbios_bmc_interface_type {
+	SMBIOS_BMC_INTERFACE_UNKNOWN = 0,
+	SMBIOS_BMC_INTERFACE_KCS,
+	SMBIOS_BMC_INTERFACE_SMIC,
+	SMBIOS_BMC_INTERFACE_BLOCK,
+};
 
 typedef enum {
 	SMBIOS_DEVICE_TYPE_OTHER = 0x01,

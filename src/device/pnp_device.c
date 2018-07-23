@@ -386,10 +386,13 @@ void pnp_enable_devices(struct device *base_dev, struct device_operations *ops,
 		if (dev->ops)
 			continue;
 
-		if (info[i].ops == 0)
-			dev->ops = ops;
-		else
+		/* use LDN-specific ops override from corresponding pnp_info
+		   entry if not NULL */
+		if (info[i].ops)
 			dev->ops = info[i].ops;
+		/* else use device ops  */
+		else
+			dev->ops = ops;
 
 		get_resources(dev, &info[i]);
 	}

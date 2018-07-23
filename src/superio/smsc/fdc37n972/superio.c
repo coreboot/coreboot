@@ -46,16 +46,15 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, FDC37N972_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, FDC37N972_SP2,
+	{ NULL, FDC37N972_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, FDC37N972_SP2,
 		PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, 0x07f8, },
-	{ &ops, FDC37N972_KBDC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07f8, 0x07f8, },
+	{ NULL, FDC37N972_KBDC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07f8, 0x07f8, },
 };
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &pnp_ops,
-		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_smsc_fdc37n972_ops = {

@@ -37,6 +37,7 @@
 #define CPUID_APOLLOLAKE_E0	0x506ca
 #define CPUID_GLK_A0		0x706a0
 #define CPUID_GLK_B0		0x706a1
+#define CPUID_WHISKEYLAKE_W0	0x806eb
 
 /*
  * MP Init callback function to Find CPU Topology. This function is common

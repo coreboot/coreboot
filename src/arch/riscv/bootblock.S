@@ -34,25 +34,26 @@ _start:
 	#
 	csrw mscratch, a1
 
-	# N.B. This only works on low 4G of the address space
+	# initialize cache as ram
+	call cache_as_ram
+
+	# initialize stack point for each hart
 	# and the stack must be page-aligned.
-	la sp, _estack
+	# 0xDEADBEEF used to check stack overflow
+	csrr a0, mhartid
+	la   t0, _stack
+	slli t1, a0, RISCV_PGSHIFT
+	add  t0, t0, t1
+	li   t1, 0xDEADBEEF
+	sd   t1, 0(t0)
+	li   t1, RISCV_PGSIZE - HLS_SIZE
+	add  sp, t0, t1
 
-	# poison the stack
-	la t1, _stack
-	li t0, 0xdeadbeef
-	sd t0, 0(t1)
-
-	# make room for HLS and initialize it
-	addi sp, sp, -HLS_SIZE
-
-	// Once again, the docs and toolchain disagree.
-	// Rather than get fancy I'll just lock this down
-	// until it all stabilizes.
-	//csrr a0, mhartid
-	csrr a0, 0xf14
+	# initialize hart-local storage
+	csrr a0, mhartid
 	call hls_init
 
+	# initialize entry of interrupt/exception
 	la t0, trap_entry
 	csrw mtvec, t0
 
@@ -62,3 +63,8 @@ _start:
 	# set up the mstatus register for VM
 	call mstatus_init
 	tail main
+
+	// These codes need to be implemented on a specific SoC.
+	.weak cache_as_ram
+cache_as_ram:
+	ret

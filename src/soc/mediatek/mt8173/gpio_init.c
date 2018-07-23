@@ -49,18 +49,18 @@ static void gpio_set_duty(enum external_power ext_power)
 	/* EXMD control reg */
 	if (ext_power == GPIO_EINT_1P8V) {
 		/* exmd_ctrl[9:4] = b`000000, [3:0] = b`1010 */
-		write16(&mt8173_gpio->exmd_ctrl[0].rst, 0x3F5);
-		write16(&mt8173_gpio->exmd_ctrl[0].set, 0xA);
+		write16(&mtk_gpio->exmd_ctrl[0].rst, 0x3F5);
+		write16(&mtk_gpio->exmd_ctrl[0].set, 0xA);
 	} else if (ext_power == GPIO_EINT_3P3V) {
 		/* exmd_ctrl[9:4] = b`001100, [3:0] = b`1010 */
-		write16(&mt8173_gpio->exmd_ctrl[0].rst, 0x335);
-		write16(&mt8173_gpio->exmd_ctrl[0].set, 0xCA);
+		write16(&mtk_gpio->exmd_ctrl[0].rst, 0x335);
+		write16(&mtk_gpio->exmd_ctrl[0].set, 0xCA);
 	}
 
 	/* other R/TDSEL */
 	/* msdc2_ctrl5 , bit[3:0] = b`1010 */
-	write16(&mt8173_gpio->msdc2_ctrl5.set, 0xA);
-	write16(&mt8173_gpio->msdc2_ctrl5.rst, 0x5);
+	write16(&mtk_gpio->msdc2_ctrl5.set, 0xA);
+	write16(&mtk_gpio->msdc2_ctrl5.rst, 0x5);
 }
 
 void gpio_init(enum external_power ext_power)

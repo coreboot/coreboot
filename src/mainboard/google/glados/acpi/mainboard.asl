@@ -13,8 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include "../gpio.h"
-
 Scope (\_SB)
 {
 	Device (PWRB)
@@ -22,3 +20,6 @@ Scope (\_SB)
 		Name (_HID, EisaId ("PNP0C0C"))
 	}
 }
+
+/* Variant-specific ACPI, including USB port defs */
+#include <variant/acpi/mainboard.asl>

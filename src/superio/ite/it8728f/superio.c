@@ -59,15 +59,16 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, IT8728F_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x0ff8, },
-	{ &ops, IT8728F_SP1, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
-	{ &ops, IT8728F_SP2, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
-	{ &ops, IT8728F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x0ffc, },
-	{ &ops, IT8728F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x0ff8, 0x0ff8, },
-	{ &ops, IT8728F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x0fff, 0x0fff, },
-	{ &ops, IT8728F_KBCM, PNP_IRQ0, },
-	{ &ops, IT8728F_GPIO, PNP_IO0 | PNP_IO1 | PNP_IO2 | PNP_IRQ0, 0x0fff, 0x0ff8, 0x0ff8, },
-	{ &ops, IT8728F_IR, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ NULL, IT8728F_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x0ff8, },
+	{ NULL, IT8728F_SP1, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ NULL, IT8728F_SP2, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ NULL, IT8728F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x0ffc, },
+	{ NULL, IT8728F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x0ff8, 0x0ff8, },
+	{ NULL, IT8728F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x0fff, 0x0fff, },
+	{ NULL, IT8728F_KBCM, PNP_IRQ0, },
+	{ NULL, IT8728F_GPIO, PNP_IO0 | PNP_IO1 | PNP_IO2 | PNP_IRQ0,
+		0x0fff, 0x0ff8, 0x0ff8, },
+	{ NULL, IT8728F_IR, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
 };
 
 static void enable_dev(struct device *dev)

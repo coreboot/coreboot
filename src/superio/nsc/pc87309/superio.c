@@ -43,19 +43,19 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, PC87309_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07fa, },
-	{ &ops, PC87309_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x04f8, },
-	{ &ops, PC87309_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, 0x07f8, },
-	{ &ops, PC87309_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, PC87309_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07fa, },
+	{ NULL, PC87309_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x04f8, },
+	{ NULL, PC87309_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1,
+		0x07f8, },
+	{ NULL, PC87309_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
 	/* TODO: PM. */
-	{ &ops, PC87309_KBCM, PNP_IRQ0, },
-	{ &ops, PC87309_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07f8, 0x7f8, },
+	{ NULL, PC87309_KBCM, PNP_IRQ0, },
+	{ NULL, PC87309_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07f8, 0x7f8, },
 };
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &pnp_ops,
-		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_nsc_pc87309_ops = {

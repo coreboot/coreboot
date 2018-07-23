@@ -20,19 +20,30 @@ choice
 
 config LINUXBOOT_X86_64
 	bool "x86_64"
+	depends on ARCH_X86
 	help
 	  AMD64 kernel and initramfs
 
 config LINUXBOOT_X86
 	bool "x86"
+	depends on ARCH_X86
 	help
 	  X86 kernel and initramfs
+
+config LINUXBOOT_ARM64
+	bool "arm64"
+	depends on ARCH_ARM64
+	select PAYLOAD_FIT_SUPPORT
+	help
+	  AARCH64 kernel and initramfs
+
 endchoice
 
 config LINUXBOOT_ARCH
 	string
 	default "amd64" if LINUXBOOT_X86_64
 	default "386" if LINUXBOOT_X86
+	default "arm64" if LINUXBOOT_ARM64
 
 choice
 	prompt "Kernel version"
@@ -60,6 +71,11 @@ config LINUXBOOT_KERNEL_COMMANDLINE
 	default ""
 	help
 	  Add your own kernel command-line arguments.
+
+config LINUXBOOT_DTB_FILE
+	string "Compiled devicetree file"
+	depends on LINUXBOOT_ARM64
+	default ""
 
 config PAYLOAD_FILE
 	default "payloads/external/LinuxBoot/linuxboot/kernel-image"
@@ -106,8 +122,11 @@ config LINUXBOOT_UROOT_FILES
 	  initramfs.
 
 config PAYLOAD_USERSPACE
-	string ""
+	string "LinuxBoot initramfs"
 	default "payloads/external/LinuxBoot/linuxboot/initramfs.cpio.xz"
+	help
+	  The initramfs to use with the compiled kernel.
+	  Useful for debugging or custom initramfs.
 
 endif
 endif

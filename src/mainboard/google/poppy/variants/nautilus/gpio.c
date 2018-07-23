@@ -224,8 +224,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
 	/* E10 : USB2_OC1# ==> USB3_C0_OC0_L */
 	PAD_CFG_NF(GPP_E10, NONE, DEEP, NF1),
-	/* E11 : USB2_OC2# ==> USB2_P2_FAULT# */
-	PAD_CFG_NF(GPP_E11, NONE, DEEP, NF1),
 	/* E12 : USB2_OC3# ==> NC */
 	PAD_CFG_NC(GPP_E12),
 	/* E13 : DDPB_HPD0 ==> KBC3_USB_C0_DP_HPD */
@@ -385,6 +383,8 @@ static const struct pad_config nautilus_default_sku_gpio_table[] = {
 	PAD_CFG_NC(GPP_D16),
 	/* D21 : SPI1_IO2 ==> NC */
 	PAD_CFG_NC(GPP_D21),
+	/* E11 : USB2_OC2# ==> USB2_P2_FAULT# */
+	PAD_CFG_NF(GPP_E11, 5K_PU, DEEP, NF1),
 };
 
 static const struct pad_config lte_sku_gpio_table[] = {
@@ -396,6 +396,8 @@ static const struct pad_config lte_sku_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D16, 1, DEEP),
 	/* D21 : SPI1_IO2 ==> LTE3_BODY_SAR */
 	PAD_CFG_GPO(GPP_D21, 0, DEEP),
+	/* E11 : USB2_OC2# ==> USB2_P2_FAULT# */
+	PAD_CFG_NF(GPP_E11, NONE, DEEP, NF1),
 };
 
 const struct pad_config *variant_sku_gpio_table(size_t *num)

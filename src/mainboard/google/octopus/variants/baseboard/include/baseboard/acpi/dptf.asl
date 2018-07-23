@@ -15,7 +15,11 @@
 
 /* Below values might change after Thermal Tuning. */
 #define DPTF_CPU_PASSIVE	90
-#define DPTF_CPU_CRITICAL	99
+/* During stress testing with busty workloads, sometime CPU temperature
+spikes till 99C and DPTF initiates shutdown. With reference to previous
+APL/reef/Coral platforms, we had used 105C for this CPU critical
+temperature trip value to avoid abrupt thermal shutdown. */
+#define DPTF_CPU_CRITICAL	105
 
 #define DPTF_TSR0_SENSOR_ID	0
 #define DPTF_TSR0_SENSOR_NAME	"Battery"
@@ -65,7 +69,8 @@ Name (MPPC, Package ()
 	Package () {	/* Power Limit 1 */
 		0,	/* PowerLimitIndex, 0 for Power Limit 1 */
 		3000,	/* PowerLimitMinimum */
-		12000,	/* PowerLimitMaximum */
+		/* TODO: Need to tune this value on closed chassis system. */
+		8000,	/* PowerLimitMaximum */
 		1000,	/* TimeWindowMinimum */
 		1000,	/* TimeWindowMaximum */
 		200	/* StepSize */

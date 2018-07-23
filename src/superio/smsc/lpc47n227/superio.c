@@ -55,10 +55,10 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, LPC47N227_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ &ops, LPC47N227_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, LPC47N227_SP2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, LPC47N227_KBDC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07f8, 0x07f8, },
+	{ NULL, LPC47N227_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
+	{ NULL, LPC47N227_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, LPC47N227_SP2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, LPC47N227_KBDC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07f8, 0x07f8, },
 };
 
 /**
@@ -69,8 +69,7 @@ static struct pnp_info pnp_dev_info[] = {
  */
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &pnp_ops,
-			   ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 /**

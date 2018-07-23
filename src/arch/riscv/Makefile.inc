@@ -18,20 +18,21 @@
 ################################################################################
 ## RISC-V specific options
 ################################################################################
+ifeq ($(CONFIG_ARCH_RISCV),y)
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
 check-ramstage-overlap-regions += stack
 endif
 
-riscv_arch = rv64imafd
+riscv_flags = -I$(src)/arch/riscv/ -mcmodel=$(CONFIG_RISCV_CODEMODEL) -march=$(CONFIG_RISCV_ARCH) -mabi=$(CONFIG_RISCV_ABI)
 
-ifeq ($(CONFIG_ARCH_RISCV_COMPRESSED),y)
-	riscv_arch := $(riscv_arch)c
-endif
+riscv_asm_flags = -march=$(CONFIG_RISCV_ARCH) -mabi=$(CONFIG_RISCV_ABI)
 
-riscv_flags = -I$(src)/arch/riscv/ -mcmodel=medany -march=$(riscv_arch)
+COMPILER_RT_bootblock = $(shell $(GCC_bootblock) $(riscv_flags) -print-libgcc-file-name)
 
-riscv_asm_flags = -march=$(riscv_arch)
+COMPILER_RT_romstage  = $(shell  $(GCC_romstage) $(riscv_flags) -print-libgcc-file-name)
+
+COMPILER_RT_ramstage  = $(shell  $(GCC_ramstage) $(riscv_flags) -print-libgcc-file-name)
 
 ################################################################################
 ## bootblock
@@ -64,7 +65,7 @@ $(objcbfs)/bootblock.debug: $$(bootblock-objs)
 bootblock-c-ccopts += $(riscv_flags)
 bootblock-S-ccopts += $(riscv_asm_flags)
 
-endif
+endif #CONFIG_ARCH_BOOTBLOCK_RISCV
 
 ################################################################################
 ## romstage
@@ -92,7 +93,7 @@ $(objcbfs)/romstage.debug: $$(romstage-objs)
 romstage-c-ccopts += $(riscv_flags)
 romstage-S-ccopts += $(riscv_asm_flags)
 
-endif
+endif #CONFIG_ARCH_ROMSTAGE_RISCV
 
 ################################################################################
 ## ramstage
@@ -128,4 +129,5 @@ $(objcbfs)/ramstage.debug: $$(ramstage-objs)
 ramstage-c-ccopts += $(riscv_flags)
 ramstage-S-ccopts += $(riscv_asm_flags)
 
-endif
+endif #CONFIG_ARCH_RAMSTAGE_RISCV
+endif #CONFIG_ARCH_RISCV

@@ -33,7 +33,6 @@
 #include <soc/mt6311.h>
 #include <soc/mt6391.h>
 #include <soc/mtcmos.h>
-#include <soc/pinmux.h>
 #include <soc/pll.h>
 #include <soc/usb.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -51,7 +50,7 @@ static void configure_ext_buck(void)
 	case 3:
 	case 4:
 		/* rev-3 and rev-4 use mt6311 as external buck */
-		gpio_output(PAD_EINT15, 1);
+		gpio_output(GPIO(EINT15), 1);
 		udelay(500);
 		mt6311_probe(EXT_BUCK_I2C_BUS);
 		break;
@@ -70,9 +69,9 @@ static void configure_touchscreen(void)
 {
 	/* Pull low reset gpio for 500us and then pull high */
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT >= 7) {
-		gpio_output(PAD_PCM_SYNC, 0);
+		gpio_output(GPIO(PCM_SYNC), 0);
 		udelay(500);
-		gpio_output(PAD_PCM_SYNC, 1);
+		gpio_output(GPIO(PCM_SYNC), 1);
 	}
 }
 
@@ -89,14 +88,14 @@ static void configure_audio(void)
 
 	/* reset ALC5676 */
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 5)
-		gpio_output(PAD_LCM_RST, 1);
+		gpio_output(GPIO(LCM_RST), 1);
 
 	/* SoC I2S */
-	gpio_set_mode(PAD_I2S0_LRCK, PAD_I2S0_LRCK_FUNC_I2S1_WS);
-	gpio_set_mode(PAD_I2S0_BCK, PAD_I2S0_BCK_FUNC_I2S1_BCK);
-	gpio_set_mode(PAD_I2S0_MCK, PAD_I2S0_MCK_FUNC_I2S1_MCK);
-	gpio_set_mode(PAD_I2S0_DATA0, PAD_I2S0_DATA0_FUNC_I2S1_DO_1);
-	gpio_set_mode(PAD_I2S0_DATA1, PAD_I2S0_DATA1_FUNC_I2S2_DI_2);
+	gpio_set_mode(GPIO(I2S0_LRCK), PAD_I2S0_LRCK_FUNC_I2S1_WS);
+	gpio_set_mode(GPIO(I2S0_BCK), PAD_I2S0_BCK_FUNC_I2S1_BCK);
+	gpio_set_mode(GPIO(I2S0_MCK), PAD_I2S0_MCK_FUNC_I2S1_MCK);
+	gpio_set_mode(GPIO(I2S0_DATA0), PAD_I2S0_DATA0_FUNC_I2S1_DO_1);
+	gpio_set_mode(GPIO(I2S0_DATA1), PAD_I2S0_DATA1_FUNC_I2S2_DI_2);
 	/* codec ext MCLK ON */
 	mt6391_gpio_output(MT6391_KP_COL4, 1);
 
@@ -108,7 +107,7 @@ static void configure_audio(void)
 		break;
 	case 5:
 	case 6:
-		gpio_set_mode(PAD_UCTS0, PAD_UCTS0_FUNC_I2S2_DI_1);
+		gpio_set_mode(GPIO(UCTS0), PAD_UCTS0_FUNC_I2S2_DI_1);
 		mt6391_gpio_output(MT6391_KP_COL5, 1);
 		break;
 	default:
@@ -128,25 +127,25 @@ static void configure_usb(void)
 
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 3) {
 		/* Type C port 0 Over current alert pin */
-		gpio_input_pullup(PAD_MSDC3_DSL);
+		gpio_input_pullup(GPIO(MSDC3_DSL));
 		if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_ROWAN)) {
 			/* Enable USB3 type A port 0 5V load switch */
-			gpio_output(PAD_CM2MCLK, 1);
+			gpio_output(GPIO(CM2MCLK), 1);
 			/* USB3 Type A port 0 power over current alert pin */
-			gpio_input_pullup(PAD_CMPCLK);
+			gpio_input_pullup(GPIO(CMPCLK));
 		}
 		/* Type C port 1 over current alert pin */
 		if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 7)
-			gpio_input_pullup(PAD_PCM_SYNC);
+			gpio_input_pullup(GPIO(PCM_SYNC));
 	}
 
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 4 &&
 	    board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 7)
 	{
 		/* USB 2.0 type A port over current interrupt pin(low active) */
-		gpio_input_pullup(PAD_UCTS2);
+		gpio_input_pullup(GPIO(UCTS2));
 		/* USB 2.0 type A port BC1.2 STATUS(low active) */
-		gpio_input_pullup(PAD_AUD_DAT_MISO);
+		gpio_input_pullup(GPIO(AUD_DAT_MISO));
 	}
 }
 
@@ -157,7 +156,7 @@ static void configure_usb_hub(void)
 
 	/* set usb hub reset pin (low active) to high */
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 4)
-		gpio_output(PAD_UTXD3, 1);
+		gpio_output(GPIO(UTXD3), 1);
 }
 
 /* Setup backlight control pins as output pin and power-off by default */
@@ -166,70 +165,70 @@ static void configure_backlight(void)
 	/* Configure PANEL_LCD_POWER_EN */
 	switch (board_id() + CONFIG_BOARD_ID_ADJUSTMENT) {
 	case 3:
-		gpio_output(PAD_UCTS2, 0);
+		gpio_output(GPIO(UCTS2), 0);
 		break;
 	case 4:
-		gpio_output(PAD_SRCLKENAI, 0);
+		gpio_output(GPIO(SRCLKENAI), 0);
 		break;
 	default:
-		gpio_output(PAD_UTXD2, 0);
+		gpio_output(GPIO(UTXD2), 0);
 		break;
 	}
 
-	gpio_output(PAD_DISP_PWM0, 0);	/* DISP_PWM0 */
-	gpio_output(PAD_PCM_TX, 0);	/* PANEL_POWER_EN */
+	gpio_output(GPIO(DISP_PWM0), 0);	/* DISP_PWM0 */
+	gpio_output(GPIO(PCM_TX), 0);	/* PANEL_POWER_EN */
 }
 
 static void configure_display(void)
 {
 	/* board from Rev2 */
-	gpio_output(PAD_CMMCLK, 1); /* PANEL_3V3_ENABLE */
+	gpio_output(GPIO(CMMCLK), 1); /* PANEL_3V3_ENABLE */
 	/* vgp2 set to 3.3V for ps8640 */
 	mt6391_configure_ldo(LDO_VGP2, LDO_3P3);
-	gpio_output(PAD_URTS0, 0); /* PS8640_SYSRSTN */
+	gpio_output(GPIO(URTS0), 0); /* PS8640_SYSRSTN */
 	/* PS8640_1V2_ENABLE */
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT == 4)
-		gpio_output(PAD_SRCLKENAI2, 1);
+		gpio_output(GPIO(SRCLKENAI2), 1);
 	else
-		gpio_output(PAD_URTS2, 1);
+		gpio_output(GPIO(URTS2), 1);
 	/* delay 2ms for vgp2 and PS8640_1V2_ENABLE stable */
 	mdelay(2);
 	/* PS8640_PDN */
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 4)
-		gpio_output(PAD_LCM_RST, 1);
+		gpio_output(GPIO(LCM_RST), 1);
 	else
-		gpio_output(PAD_UCTS0, 1);
-	gpio_output(PAD_PCM_CLK, 1); /* PS8640_MODE_CONF */
-	gpio_output(PAD_URTS0, 1); /* PS8640_SYSRSTN */
+		gpio_output(GPIO(UCTS0), 1);
+	gpio_output(GPIO(PCM_CLK), 1); /* PS8640_MODE_CONF */
+	gpio_output(GPIO(URTS0), 1); /* PS8640_SYSRSTN */
 	/* for level shift(1.8V to 3.3V) on */
 	udelay(100);
 }
 
 static void configure_backlight_rowan(void)
 {
-	gpio_output(PAD_DAIPCMOUT, 0);	/* PANEL_LCD_POWER_EN */
-	gpio_output(PAD_DISP_PWM0, 0);	/* DISP_PWM0 */
-	gpio_output(PAD_PCM_TX, 0);	/* PANEL_POWER_EN */
+	gpio_output(GPIO(DAIPCMOUT), 0);	/* PANEL_LCD_POWER_EN */
+	gpio_output(GPIO(DISP_PWM0), 0);	/* DISP_PWM0 */
+	gpio_output(GPIO(PCM_TX), 0);	/* PANEL_POWER_EN */
 }
 
 static void configure_display_rowan(void)
 {
-	gpio_output(PAD_UCTS2, 1); /* VDDIO_EN */
+	gpio_output(GPIO(UCTS2), 1); /* VDDIO_EN */
 	/* delay 15 ms for panel vddio to stabilize */
 	mdelay(15);
 
-	gpio_output(PAD_SRCLKENAI2, 1); /* LCD_RESET */
+	gpio_output(GPIO(SRCLKENAI2), 1); /* LCD_RESET */
 	udelay(20);
-	gpio_output(PAD_SRCLKENAI2, 0); /* LCD_RESET */
+	gpio_output(GPIO(SRCLKENAI2), 0); /* LCD_RESET */
 	udelay(20);
-	gpio_output(PAD_SRCLKENAI2, 1); /* LCD_RESET */
+	gpio_output(GPIO(SRCLKENAI2), 1); /* LCD_RESET */
 	mdelay(20);
 
 	/* Rowan panel avdd */
-	gpio_output(PAD_URTS2, 1);
+	gpio_output(GPIO(URTS2), 1);
 
 	/* Rowan panel avee */
-	gpio_output(PAD_URTS0, 1);
+	gpio_output(GPIO(URTS0), 1);
 
 	/* panel.delay.prepare */
 	mdelay(20);
@@ -320,7 +319,7 @@ static void mainboard_init(struct device *dev)
 		mt6391_gpio_output(MT6391_KP_ROW2, 1);
 
 	/* Config SD card detection pin */
-	gpio_input_pullup(PAD_EINT1); /* SD_DET */
+	gpio_input_pullup(GPIO(EINT1)); /* SD_DET */
 
 	configure_audio();
 

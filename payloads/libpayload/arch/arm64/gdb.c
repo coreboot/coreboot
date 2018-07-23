@@ -28,25 +28,6 @@ struct gdb_regs
 	u32 spsr;
 } __packed;
 
-static const u8 type_to_signal[] = {
-	[EXC_SYNC_SP0] = GDB_SIGTRAP,
-	[EXC_IRQ_SP0] = GDB_SIGSEGV,
-	[EXC_FIQ_SP0] = GDB_SIGSEGV,
-	[EXC_SERROR_SP0] = GDB_SIGSEGV,
-	[EXC_SYNC_SPX] = GDB_SIGTRAP,
-	[EXC_IRQ_SPX] = GDB_SIGSEGV,
-	[EXC_FIQ_SPX] = GDB_SIGSEGV,
-	[EXC_SERROR_SPX] = GDB_SIGSEGV,
-	[EXC_SYNC_ELX_64] = GDB_SIGTRAP,
-	[EXC_IRQ_ELX_64] = GDB_SIGSEGV,
-	[EXC_FIQ_ELX_64] = GDB_SIGSEGV,
-	[EXC_SERROR_ELX_64] = GDB_SIGSEGV,
-	[EXC_SYNC_ELX_32] = GDB_SIGTRAP,
-	[EXC_IRQ_ELX_32] = GDB_SIGSEGV,
-	[EXC_FIQ_ELX_32] = GDB_SIGSEGV,
-	[EXC_SERROR_ELX_32] = GDB_SIGSEGV
-};
-
 static int gdb_exception_hook(u32 type)
 {
 	return -1;

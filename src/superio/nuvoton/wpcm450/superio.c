@@ -45,9 +45,10 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, WPCM450_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, 0x07f8, },
-	{ &ops, WPCM450_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ &ops, WPCM450_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07f8, 0x07f8, },
+	{ NULL, WPCM450_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1,
+		0x07f8, },
+	{ NULL, WPCM450_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
+	{ NULL, WPCM450_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07f8, 0x07f8, },
 };
 
 static void enable_dev(struct device *dev)

@@ -481,9 +481,12 @@ u32 map_oprom_vendev(u32 vendev)
 	return new_vendev;
 }
 
+__weak void set_board_env_params(GNB_ENV_CONFIGURATION *params) { }
+
 void SetNbEnvParams(GNB_ENV_CONFIGURATION *params)
 {
 	params->IommuSupport = FALSE;
+	set_board_env_params(params);
 }
 
 void SetNbMidParams(GNB_MID_CONFIGURATION *params)

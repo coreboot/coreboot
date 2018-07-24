@@ -62,5 +62,6 @@ void SetFchEnvParams(FCH_INTERFACE *params);
 void SetNbEnvParams(GNB_ENV_CONFIGURATION *params);
 void SetFchMidParams(FCH_INTERFACE *params);
 void SetNbMidParams(GNB_MID_CONFIGURATION *params);
+void set_board_env_params(GNB_ENV_CONFIGURATION *params);
 
 #endif /* __AGESAWRAPPER_H__ */

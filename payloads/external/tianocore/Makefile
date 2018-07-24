@@ -69,7 +69,7 @@ $(project_dir)/.version_$(TAG-y): fetch
 		for patch in $(CURDIR)/patches/*.patch; do \
 			echo "Applying $$patch"; \
 			cd $(project_dir); \
-			git am --keep-cr $$patch || \
+			git am --keep-cr --ignore-space-change $$patch || \
 				( echo " Error when applying patches.\n"; git am --abort; exit 1; ); \
 		done; \
 		if ! [ "$(TAG-y)" = "origin/master" ] ; then \

@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <string.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/cimx/cimx_util.h>
 #include <superio/nuvoton/common/nuvoton.h>
@@ -27,6 +28,9 @@
 
 #define SIO_PORT 0x2e
 #define SERIAL_DEV PNP_DEV(SIO_PORT, NCT5104D_SP1)
+
+static void print_sign_of_life(void);
+extern char coreboot_dmi_date[];
 
 static void early_lpc_init(void)
 {
@@ -71,11 +75,20 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	bool scon = check_console();
 
 	if(scon) {
-		// sign of life strings
-		printk(BIOS_ALERT, CONFIG_MAINBOARD_VENDOR " "
-			                   CONFIG_MAINBOARD_PART_NUMBER "\n");
-		printk(BIOS_ALERT, "coreboot build %s\n", COREBOOT_DMI_DATE);
-		printk(BIOS_ALERT, "BIOS version %s\n", COREBOOT_ORIGIN_GIT_TAG);
+		print_sign_of_life();
 	}
 
+}
+
+static void print_sign_of_life()
+{
+	char tmp[9];
+	strncpy(tmp,   coreboot_dmi_date+6, 4);
+	strncpy(tmp+4, coreboot_dmi_date+3, 2);
+	strncpy(tmp+6, coreboot_dmi_date,   2);
+	tmp[8] = '\0';
+	printk(BIOS_ALERT, CONFIG_MAINBOARD_VENDOR " "
+	                   CONFIG_MAINBOARD_PART_NUMBER "\n");
+	printk(BIOS_ALERT, "coreboot build %s\n", tmp);
+	printk(BIOS_ALERT, "BIOS version %s\n", COREBOOT_ORIGIN_GIT_TAG);
 }

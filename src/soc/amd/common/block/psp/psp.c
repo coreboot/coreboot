@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Advanced Micro Devices, Inc.
+ * Copyright (C) 2012-2018 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,13 +14,17 @@
  */
 
 #include <arch/io.h>
+#include <cpu/x86/msr.h>
 #include <cbfs.h>
 #include <region_file.h>
 #include <timer.h>
 #include <device/pci_def.h>
 #include <bootstate.h>
 #include <console/console.h>
+#include <device/pci_ops.h>
 #include <amdblocks/psp.h>
+#include <soc/iomap.h>
+#include <soc/northbridge.h>
 
 static const char *psp_status_nobase = "error: PSP BAR3 not assigned";
 static const char *psp_status_halted = "error: PSP in halted state";
@@ -29,6 +33,73 @@ static const char *psp_status_errcmd = "error sending command";
 static const char *psp_status_init_timeout = "error: PSP init timeout";
 static const char *psp_status_cmd_timeout = "error: PSP command timeout";
 static const char *psp_status_noerror = "";
+
+static void psp_bar_init_early(void)
+{
+	u32 psp_mmio_size;
+	u32 value32;
+	u32 base, limit;
+
+	/* Check for presence of the PSP */
+	if (pci_read_config32(SOC_PSP_DEV, PCI_VENDOR_ID) == 0xffffffff) {
+		printk(BIOS_WARNING, "PSP: SOC_PSP_DEV device not found at D%xF%x\n",
+			PSP_DEV, PSP_FUNC);
+		return;
+	}
+
+	/* Check if PSP BAR has been assigned, and if so, just return */
+	if (pci_read_config32(SOC_PSP_DEV, PCI_BASE_ADDRESS_4) &
+			~PCI_BASE_ADDRESS_MEM_ATTR_MASK)
+		return;
+
+	/* Otherwise, do an early init of the BAR */
+	pci_write_config32(SOC_PSP_DEV, PCI_BASE_ADDRESS_4, 0xffffffff);
+	psp_mmio_size = ~pci_read_config32(SOC_PSP_DEV, PCI_BASE_ADDRESS_4) + 1;
+	printk(BIOS_SPEW, "PSP: BAR size is 0x%x\n", psp_mmio_size);
+	/* Assign BAR to an initial temporarily defined region */
+	pci_write_config32(SOC_PSP_DEV, PCI_BASE_ADDRESS_4,
+			PSP_MAILBOX_BAR3_BASE);
+
+	/* Route MMIO through the northbridge */
+	pci_write_config32(SOC_PSP_DEV, PCI_COMMAND,
+			(PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER));
+	limit = ((PSP_MAILBOX_BAR3_BASE + psp_mmio_size - 1) >> 8) & ~0xff;
+	pci_write_config32(SOC_ADDR_DEV, NB_MMIO_LIMIT_LO(7), limit);
+	base = (PSP_MAILBOX_BAR3_BASE >> 8) | MMIO_WE | MMIO_RE;
+	pci_write_config32(SOC_ADDR_DEV, NB_MMIO_BASE_LO(7), base);
+	pci_write_config32(SOC_PSP_DEV, PSP_PCI_EXT_HDR_CTRL, MAGIC_ENABLES);
+
+	/* Update the capability chain */
+	value32 = pci_read_config32(SOC_PSP_DEV, PSP_PCI_MIRRORCTRL1_REG);
+	value32 &= ~PMNXTPTRW_MASK;
+	value32 |= PMNXTPTRW_EXPOSE;
+	pci_write_config32(SOC_PSP_DEV, PSP_PCI_MIRRORCTRL1_REG, value32);
+}
+
+static uintptr_t get_psp_bar3_addr(void)
+{
+	uintptr_t psp_mmio;
+
+	/* Check for presence of the PSP */
+	if (pci_read_config32(SOC_PSP_DEV, PCI_VENDOR_ID) == 0xffffffff) {
+		printk(BIOS_WARNING, "PSP: No SOC_PSP_DEV found at D%xF%x\n",
+			PSP_DEV, PSP_FUNC);
+		return 0;
+	}
+
+	/* D8F0x48[12] is the Bar3Hide flag, check it */
+	if (pci_read_config32(SOC_PSP_DEV, PSP_PCI_EXT_HDR_CTRL) & BAR3HIDE) {
+		psp_mmio = rdmsr(MSR_CU_CBBCFG).lo;
+		if (psp_mmio == 0xffffffff) {
+			printk(BIOS_WARNING, "PSP: BAR hidden, MSR val uninitialized\n");
+			return 0;
+		}
+		return psp_mmio;
+	} else {
+		return pci_read_config32(SOC_PSP_DEV, PCI_BASE_ADDRESS_4) &
+				~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+	}
+}
 
 static const char *status_to_string(int err)
 {
@@ -52,19 +123,18 @@ static const char *status_to_string(int err)
 
 static struct psp_mbox *get_mbox_address(void)
 {
-	UINT32 base; /* UINT32 for compatibility with PspBaseLib */
-	BOOLEAN bar3_status;
 	uintptr_t baseptr;
 
-	bar3_status = GetPspBar3Addr(&base);
-	if (!bar3_status) {
-		PspBarInitEarly();
-		bar3_status = GetPspBar3Addr(&base);
+	baseptr = get_psp_bar3_addr();
+	if (baseptr == 0) {
+		psp_bar_init_early();
+		baseptr = get_psp_bar3_addr();
+		if (baseptr == 0) {
+			printk(BIOS_WARNING, "PSP: %s(), psp_bar_init_early() failed...\n",
+					__func__);
+			return NULL;
+		}
 	}
-	if (!bar3_status)
-		return NULL;
-
-	baseptr = base;
 	return (struct psp_mbox *)(baseptr + PSP_MAILBOX_BASE);
 }
 

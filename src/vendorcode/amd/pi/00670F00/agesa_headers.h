@@ -24,7 +24,6 @@
 
 #include "Include/PlatformMemoryConfiguration.h"
 #include "Proc/Fch/FchPlatform.h"
-#include "Proc/Psp/PspBaseLib/PspBaseLib.h"
 #pragma pack(pop)
 #undef AGESA_HEADERS_ARE_WRAPPED
 

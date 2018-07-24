@@ -21,6 +21,21 @@
 #include <stdint.h>
 #include <compiler.h>
 
+/* Extra, Special Purpose Registers in the PSP PCI Config Space */
+
+/* PSP Mirror Features Capabilities and Control Register */
+#define PSP_PCI_MIRRORCTRL1_REG       0x44    /* PSP Mirror Ctrl Reg          */
+#define   PMNXTPTRW_MASK              0xff    /* PCI AFCR pointer mask        */
+#define   PMNXTPTRW_EXPOSE            0xa4    /* Pointer to expose the AFCR   */
+
+#define PSP_PCI_EXT_HDR_CTRL          0x48    /* Extra PCI Header Ctrl        */
+#define   MAGIC_ENABLES               0x34    /* Extra PCI HDR Ctl Enables    */
+
+#define PSP_MAILBOX_BASE              0x70    /* Mailbox offset from PCIe BAR */
+
+#define MSR_CU_CBBCFG                 0xc00110a2 /* PSP Pvt Blk Base Addr */
+#define   BAR3HIDE                    BIT(12) /* Bit to hide BAR3 addr */
+
 /* x86 to PSP commands */
 #define MBOX_BIOS_CMD_DRAM_INFO    0x01
 #define MBOX_BIOS_CMD_SMM_INFO     0x02

@@ -1,4 +1,4 @@
-From 4f9d41e69356ce7486b0c74a754ff494256723de Mon Sep 17 00:00:00 2001
+From c3da734cd08117ce2d5cd48367f5a94848aa9321 Mon Sep 17 00:00:00 2001
 From: CoolStar <coolstarorganization@gmail.com>
 Date: Sun, 4 Dec 2016 11:23:38 -0800
 Subject: [PATCH] PCI: use Duet's PciNoEnumeration
@@ -10,7 +10,7 @@ Subject: [PATCH] PCI: use Duet's PciNoEnumeration
  3 files changed, 6 insertions(+), 12 deletions(-)
 
 diff --git a/CorebootPayloadPkg/CorebootPayloadPkg.fdf b/CorebootPayloadPkg/CorebootPayloadPkg.fdf
-index 303e626842..a39e3999ba 100644
+index 7994f0c94928..d71b3ec55690 100644
 --- a/CorebootPayloadPkg/CorebootPayloadPkg.fdf
 +++ b/CorebootPayloadPkg/CorebootPayloadPkg.fdf
 @@ -124,8 +124,8 @@ INF MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
@@ -25,7 +25,7 @@ index 303e626842..a39e3999ba 100644
  #
  # ISA Support
 diff --git a/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc b/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
-index cdfcb75b59..e838aca61d 100644
+index ace1bc0a3726..0f4e475187ee 100644
 --- a/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
 +++ b/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
 @@ -450,11 +450,8 @@
@@ -43,7 +43,7 @@ index cdfcb75b59..e838aca61d 100644
    #
    # SCSI/ATA/IDE/DISK Support
 diff --git a/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc b/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
-index 6b16af63ba..c25d821fd4 100644
+index 2492142b972d..97bb0a8ae0a1 100644
 --- a/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
 +++ b/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
 @@ -451,11 +451,8 @@
@@ -61,5 +61,5 @@ index 6b16af63ba..c25d821fd4 100644
    #
    # SCSI/ATA/IDE/DISK Support
 -- 
-2.13.2.725.g09c95d1e9-goog
+2.17.0
 

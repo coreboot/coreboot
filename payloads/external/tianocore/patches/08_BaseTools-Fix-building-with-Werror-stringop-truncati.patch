@@ -1,4 +1,4 @@
-From b652262ed0dd554c44e7b1bf7134d3458f5edef1 Mon Sep 17 00:00:00 2001
+From 8cb365e9ec90420e3d04b77f6e7999a65d5983a6 Mon Sep 17 00:00:00 2001
 From: Patrick Rudolph <siro@das-labor.org>
 Date: Sun, 17 Jun 2018 08:44:51 +0200
 Subject: [PATCH] BaseTools: Fix building with -Werror=stringop-truncation
@@ -9,7 +9,7 @@ Signed-off-by: Patrick Rudolph <siro@das-labor.org>
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/BaseTools/Source/C/GenVtf/GenVtf.c b/BaseTools/Source/C/GenVtf/GenVtf.c
-index acc142a6d1..5d77016eba 100644
+index 65ae08eeceb8..d4200621457c 100644
 --- a/BaseTools/Source/C/GenVtf/GenVtf.c
 +++ b/BaseTools/Source/C/GenVtf/GenVtf.c
 @@ -129,9 +129,9 @@ Returns:
@@ -24,7 +24,7 @@ index acc142a6d1..5d77016eba 100644
      }
    
      sscanf (
-@@ -1529,7 +1529,7 @@ Returns:
+@@ -1521,7 +1521,7 @@ Returns:
    //
    FitStartPtr = (FIT_TABLE *) RelativeAddress;
  

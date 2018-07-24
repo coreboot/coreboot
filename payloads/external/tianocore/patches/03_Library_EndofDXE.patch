@@ -1,16 +1,16 @@
-From 760f1cafdd689beedc8418ab89e856b54296389c Mon Sep 17 00:00:00 2001
+From 1e9c5c97a55f3ad3c0d6d5dde380b4d73bd15860 Mon Sep 17 00:00:00 2001
 From: CoolStar <coolstarorganization@gmail.com>
 Date: Sun, 4 Dec 2016 12:07:30 -0800
 Subject: [PATCH] CorebootBdsLib: Call End of DXE event to allow booting 3rd
  party efi binaries.
 
 ---
- .../Library/CorebootBdsLib/BdsPlatform.c           | 42 ++++++++++++++++++++++
- .../Library/CorebootBdsLib/PlatformBds.inf         |  1 +
+ .../Library/CorebootBdsLib/BdsPlatform.c      | 42 +++++++++++++++++++
+ .../Library/CorebootBdsLib/PlatformBds.inf    |  1 +
  2 files changed, 43 insertions(+)
 
 diff --git a/CorebootModulePkg/Library/CorebootBdsLib/BdsPlatform.c b/CorebootModulePkg/Library/CorebootBdsLib/BdsPlatform.c
-index b6253a17f8..cf3e5320cb 100644
+index b6253a17f8ea..cf3e5320cbe8 100644
 --- a/CorebootModulePkg/Library/CorebootBdsLib/BdsPlatform.c
 +++ b/CorebootModulePkg/Library/CorebootBdsLib/BdsPlatform.c
 @@ -1129,6 +1129,46 @@ Returns:
@@ -70,7 +70,7 @@ index b6253a17f8..cf3e5320cb 100644
    // Init the time out value
    //
 diff --git a/CorebootModulePkg/Library/CorebootBdsLib/PlatformBds.inf b/CorebootModulePkg/Library/CorebootBdsLib/PlatformBds.inf
-index 578c74afae..992bd846bd 100644
+index 578c74afae22..992bd846bdc4 100644
 --- a/CorebootModulePkg/Library/CorebootBdsLib/PlatformBds.inf
 +++ b/CorebootModulePkg/Library/CorebootBdsLib/PlatformBds.inf
 @@ -58,6 +58,7 @@
@@ -82,5 +82,5 @@ index 578c74afae..992bd846bd 100644
  [Pcd]
    gEfiMdePkgTokenSpaceGuid.PcdPlatformBootTimeOut
 -- 
-2.13.2.725.g09c95d1e9-goog
+2.17.0
 

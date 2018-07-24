@@ -1,4 +1,4 @@
-From 77c5dfcce842819215490fe63c481860fa7d752d Mon Sep 17 00:00:00 2001
+From e8d6ed35c15b92497cd3ede6cd35523b0e7366ac Mon Sep 17 00:00:00 2001
 From: CoolStar <coolstarorganization@gmail.com>
 Date: Sun, 4 Dec 2016 11:50:00 -0800
 Subject: [PATCH] CorebootPayloadPkg: Add PS/2 keyboard drivers.
@@ -10,7 +10,7 @@ Subject: [PATCH] CorebootPayloadPkg: Add PS/2 keyboard drivers.
  3 files changed, 9 insertions(+)
 
 diff --git a/CorebootPayloadPkg/CorebootPayloadPkg.fdf b/CorebootPayloadPkg/CorebootPayloadPkg.fdf
-index 347e9c75ce..a347af0c9a 100644
+index 22987093da58..0961e96c250d 100644
 --- a/CorebootPayloadPkg/CorebootPayloadPkg.fdf
 +++ b/CorebootPayloadPkg/CorebootPayloadPkg.fdf
 @@ -132,6 +132,9 @@ INF DuetPkg/PciBusNoEnumerationDxe/PciBusNoEnumeration.inf
@@ -24,7 +24,7 @@ index 347e9c75ce..a347af0c9a 100644
  #
  # Console Support
 diff --git a/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc b/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
-index 5ce823bb95..60ee064c59 100644
+index 053f380a8608..6ddd64faf7a5 100644
 --- a/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
 +++ b/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
 @@ -492,6 +492,9 @@
@@ -38,7 +38,7 @@ index 5ce823bb95..60ee064c59 100644
    #
    # Console Support
 diff --git a/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc b/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
-index fea297a77a..167329c897 100644
+index bb328349b44a..19c203e6cbb6 100644
 --- a/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
 +++ b/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
 @@ -493,6 +493,9 @@
@@ -52,5 +52,5 @@ index fea297a77a..167329c897 100644
    #
    # Console Support
 -- 
-2.13.2.725.g09c95d1e9-goog
+2.17.0
 

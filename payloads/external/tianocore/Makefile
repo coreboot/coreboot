@@ -16,7 +16,8 @@
 # force the shell to bash - the edksetup.sh script doesn't work with dash
 export SHELL := env bash
 
-STABLE_COMMIT_ID=315d9d08fd77db1024ccc5307823da8aaed85e2f
+# STABLE_COMMIT_ID represent official edk2 release, currently UDK2018
+STABLE_COMMIT_ID=3e72ffe8afdd03f1f89eba65c921cbdcb004cfee
 TAG-$(CONFIG_TIANOCORE_MASTER)=origin/master
 TAG-$(CONFIG_TIANOCORE_STABLE)=$(STABLE_COMMIT_ID)
 TAG-$(CONFIG_TIANOCORE_REVISION)=$(CONFIG_TIANOCORE_REVISION_ID)

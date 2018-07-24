@@ -1,4 +1,4 @@
-From 07dec11fe965e73cfef7df38af70c945b6ff21a2 Mon Sep 17 00:00:00 2001
+From 2e75f9ad6ef625575185dfc262c6803a89850dd5 Mon Sep 17 00:00:00 2001
 From: Arthur Heymans <arthur@aheymans.xyz>
 Date: Wed, 24 Jan 2018 10:07:08 +0100
 Subject: [PATCH] CorebootPayloadPkg: Use correct BytesPerScanLine
@@ -12,9 +12,12 @@ This fixes a garbled display when HorizontalResolution * (BitsPerPixel
 
 Contributed-under: TianoCore Contribution Agreement 1.1
 Signed-off-by: Arthur Heymans <arthur@aheymans.xyz>
+---
+ CorebootPayloadPkg/FbGop/FbGop.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/CorebootPayloadPkg/FbGop/FbGop.c b/CorebootPayloadPkg/FbGop/FbGop.c
-index 37d6def7f7..6790617033 100644
+index 37d6def7f780..679061703358 100644
 --- a/CorebootPayloadPkg/FbGop/FbGop.c
 +++ b/CorebootPayloadPkg/FbGop/FbGop.c
 @@ -822,7 +822,7 @@ FbGopCheckForVbe (
@@ -27,5 +30,5 @@ index 37d6def7f7..6790617033 100644
    ModeBuffer = (FB_VIDEO_MODE_DATA *) AllocatePool (
  																						ModeNumber * sizeof (FB_VIDEO_MODE_DATA)
 -- 
-2.16.1
+2.17.0
 

@@ -1,4 +1,4 @@
-From 336ce69129206ea6cb5bea2a99c5f00e77850518 Mon Sep 17 00:00:00 2001
+From 9c28ac87eb2df7319d4f5a48124c837b8bf123b3 Mon Sep 17 00:00:00 2001
 From: ReddestDream <reddestdream@gmail.com>
 Date: Wed, 3 May 2017 00:13:28 -0400
 Subject: [PATCH] CbSupportPei: prevent lower coreboot table from being

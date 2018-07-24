@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# This file is part of the coreboot project.
+
+if VENDOR_51NB
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/51nb/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/51nb/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	string "Mainboard Vendor"
+	default "51NB"
+
+endif # VENDOR_51NB

@@ -1,0 +1,2 @@
+config BOARD_51NB_X210
+	bool "51NB X210"

@@ -66,8 +66,6 @@ Scope (\_SB)
 
 Scope (\_SB.PCI0.I2C2)
 {
-	Name (FMCN, Package () { 87, 197, 26 })
-
 	Device (DIGI)
 	{
 		Name (_HID, "ACPI0C50")

@@ -17,7 +17,6 @@
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
 
-#if IS_ENABLED(CONFIG_BOARD_INTEL_COFFEELAKE_RVPU)
 static const struct pad_config gpio_table[] = {
 	/* GPPC */
 	/* A0  : RCINB_TIME_SYNC_1 */
@@ -284,14 +283,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPD-9  : SLP_WLANB */
 	/* GPD-10 : SLP_5B */
 	/* GPD_11 : LANPHYPC */
-
 };
-#elif IS_ENABLED(CONFIG_BOARD_INTEL_COFFEELAKE_RVP11)
-static const struct pad_config gpio_table[] = {
-
-};
-
-#endif
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {

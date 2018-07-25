@@ -259,7 +259,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_210, 0, DEEP, NONE, HIZCRx0, DISPUPD),
 };
 
-const struct pad_config *variant_gpio_table(size_t *num)
+const struct pad_config *variant_base_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;

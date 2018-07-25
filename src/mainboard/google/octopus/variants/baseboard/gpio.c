@@ -281,10 +281,16 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPIO_210, DN_20K),
 };
 
-const struct pad_config *__weak variant_gpio_table(size_t *num)
+const struct pad_config *__weak variant_base_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
+}
+
+const struct pad_config *__weak variant_override_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
 }
 
 /* GPIOs needed prior to ramstage. */

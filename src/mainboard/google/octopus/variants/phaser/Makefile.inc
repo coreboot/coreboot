@@ -1,0 +1,1 @@
+ramstage-y += variant.c

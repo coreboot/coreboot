@@ -259,7 +259,7 @@ static void mainboard_final(void *chip_info)
 		//
 		// The console is disabled, check if S1 is pressed and enable if so
 		//
-#if CONFIG_BOARD_PCENGINES_APU5
+#if IS_ENABLED(CONFIG_BOARD_PCENGINES_APU5)
  		if (!read_gpio(GPIO_22)) {
 #else
 		if (!read_gpio(GPIO_32)) {

@@ -33,7 +33,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select GENERIC_SPD_BIN
 	select SPI_FLASH
 	select SPI_FLASH_WINBOND
-	select TPM
+	select TPM1
 	select MAINBOARD_HAS_LPC_TPM
 	select MAINBOARD_HAS_TPM1
 

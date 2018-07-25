@@ -99,7 +99,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		data &= 0xFFFF0000;
 		data |= (0 + 1) << (0 * 4);	// CLKREQ 0 to CLK0
 		data |= (1 + 1) << (1 * 4);	// CLKREQ 1 to CLK1
-#if CONFIG_BOARD_PCENGINES_APU2 || CONFIG_BOARD_PCENGINES_APU3 || CONFIG_BOARD_PCENGINES_APU4
+#if IS_ENABLED(CONFIG_BOARD_PCENGINES_APU2) || IS_ENABLED(CONFIG_BOARD_PCENGINES_APU3) || IS_ENABLED(CONFIG_BOARD_PCENGINES_APU4)
 		data |= (2 + 1) << (2 * 4);	// CLKREQ 2 to CLK2 disabled on APU5
 #endif
 		// make CLK3 to ignore CLKREQ# input
@@ -183,11 +183,11 @@ static void early_lpc_init(void)
 	//
 	// Configure output disabled, value low, pull up/down disabled
 	//
-#if CONFIG_BOARD_PCENGINES_APU5
+#if iS_ENABLED(CONFIG_BOARD_PCENGINES_APU5)
 	configure_gpio(IOMUX_GPIO_22, Function0, GPIO_22, setting);
 #endif
 
-#if CONFIG_BOARD_PCENGINES_APU2 || CONFIG_BOARD_PCENGINES_APU3 || CONFIG_BOARD_PCENGINES_APU4
+#if IS_ENABLED(CONFIG_BOARD_PCENGINES_APU2) || IS_ENABLED(CONFIG_BOARD_PCENGINES_APU3) || IS_ENABLED(CONFIG_BOARD_PCENGINES_APU4)
 	configure_gpio(IOMUX_GPIO_32, Function0, GPIO_32, setting);
 #endif
 	configure_gpio(IOMUX_GPIO_49, Function2, GPIO_49, setting);
@@ -197,7 +197,7 @@ static void early_lpc_init(void)
 	// Configure output enabled, value low, pull up/down disabled
 	//
 	setting = GPIO_OUTPUT_ENABLE;
-#if CONFIG_BOARD_PCENGINES_APU3 || CONFIG_BOARD_PCENGINES_APU4
+#if IS_ENABLED(CONFIG_BOARD_PCENGINES_APU3) || IS_ENABLED(CONFIG_BOARD_PCENGINES_APU4)
 	configure_gpio(IOMUX_GPIO_33, Function0, GPIO_33, setting);
 #endif
 	configure_gpio(IOMUX_GPIO_57, Function1, GPIO_57, setting);
@@ -207,7 +207,7 @@ static void early_lpc_init(void)
 	// Configure output enabled, value high, pull up/down disabled
 	//
 	setting = GPIO_OUTPUT_ENABLE | GPIO_OUTPUT_VALUE;
-#if CONFIG_BOARD_PCENGINES_APU5
+#if IS_ENABLED(CONFIG_BOARD_PCENGINES_APU5)
 	configure_gpio(IOMUX_GPIO_32, Function0, GPIO_32, setting);
 	configure_gpio(IOMUX_GPIO_33, Function0, GPIO_33, setting);
 #endif

@@ -20,7 +20,7 @@ author = u'the coreboot project'
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = subprocess.check_output(('git', 'describe'))
+release = subprocess.check_output(('git', 'describe')).decode("utf-8")
 # The short X.Y version.
 version = release.split("-")[0]
 

@@ -41,4 +41,8 @@ const struct cros_gpio *variant_cros_gpios(size_t *num);
 struct nhlt;
 void variant_nhlt_init(struct nhlt *nhlt);
 
+/* Modify devictree settings during ramstage. */
+struct device;
+void variant_update_devtree(struct device *dev);
+
 #endif /* BASEBOARD_VARIANTS_H */

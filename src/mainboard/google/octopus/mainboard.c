@@ -16,12 +16,14 @@
 #include <arch/acpi.h>
 #include <baseboard/variants.h>
 #include <boardid.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/ec.h>
 #include <nhlt.h>
 #include <smbios.h>
+#include <soc/cpu.h>
 #include <soc/gpio.h>
 #include <soc/nhlt.h>
 #include <string.h>
@@ -109,4 +111,15 @@ const char *smbios_mainboard_sku(void)
 	snprintf(sku_str, sizeof(sku_str), "sku%u", sku_id);
 
 	return sku_str;
+}
+
+void __weak variant_update_devtree(struct device *dev)
+{
+	/* Place holder for common updates. */
+}
+
+void mainboard_devtree_update(struct device *dev)
+{
+	/* Defer to variant for board-specific updates. */
+	variant_update_devtree(dev);
 }

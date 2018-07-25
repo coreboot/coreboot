@@ -265,7 +265,7 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		dram_odt_stretch(ctrl, channel);
 
 		/*
-		 * TC—Refresh timing parameters
+		 * TC-Refresh timing parameters
 		 * The tREFIx9 field should be programmed to minimum of
 		 * 8.9*tREFI (to allow for possible delays from ZQ or
 		 * isoc) and tRASmax (70us) divided by 1024.

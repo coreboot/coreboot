@@ -43,6 +43,9 @@
 #define SEC_REG_SERIAL_ADDR 0x1000
 #define MAX_SERIAL_LEN	    10
 
+static void change_build_date_format(void);
+extern char coreboot_dmi_date[];
+
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
  * This table is responsible for physically routing the PIC and
@@ -199,6 +202,7 @@ static void config_gpio_mux(void)
 
 static void mainboard_enable(struct device *dev)
 {
+	change_build_date_format();
 	bool scon = check_console();
 
 	config_gpio_mux();
@@ -359,3 +363,18 @@ struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 	.final = mainboard_final
 };
+
+static void change_build_date_format()
+{
+	char tmp[15];
+    
+/* 
+ * Following lines change format of date in coreboot_dmi_date[]
+ * from "dd/mm/yyyy" to "yyyymmdd", as is expected by vendor.
+ */
+	strcpy(tmp, coreboot_dmi_date);
+	strncpy(coreboot_dmi_date,   tmp+6, 4);
+	strncpy(coreboot_dmi_date+4, tmp+3, 2);
+	strncpy(coreboot_dmi_date+6, tmp,   2);
+	coreboot_dmi_date[8] = '\0';
+}

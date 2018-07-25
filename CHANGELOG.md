@@ -16,6 +16,8 @@ Releases 4.8.0.x are based on continuous synchronization with official
 3. `make`
 
 ## [Unreleased]
+### Fixed
+- Change of date format in sign of life string now applies only to PC Engines
 
 ## [v4.8.0.2] - 2018-07-08
 ### Changed

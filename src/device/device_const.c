@@ -216,3 +216,27 @@ DEVTREE_CONST struct device *dev_find_slot_pnp(u16 port, u16 device)
 	}
 	return 0;
 }
+
+/**
+ * Given a device and previous match iterate through all the children.
+ *
+ * @param bus parent device's bus holding all the children
+ * @param prev_child previous child already traversed, if NULL start at
+ *        children of parent bus.
+ * @return pointer to child or NULL when no more children
+ */
+DEVTREE_CONST struct device *dev_bus_each_child(const struct bus *parent,
+					DEVTREE_CONST struct device *prev_child)
+{
+	DEVTREE_CONST struct device *dev;
+
+	if (parent == NULL)
+		return NULL;
+
+	if (prev_child == NULL)
+		dev = parent->children;
+	else
+		dev = prev_child->sibling;
+
+	return dev;
+}

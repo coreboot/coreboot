@@ -1,4 +1,5 @@
 #ifndef DEVICE_H
+
 #define DEVICE_H
 
 /*
@@ -275,6 +276,8 @@ DEVTREE_CONST struct device *dev_find_next_pci_device(
 DEVTREE_CONST struct device *dev_find_slot_on_smbus(unsigned int bus,
 							unsigned int addr);
 DEVTREE_CONST struct device *dev_find_slot_pnp(u16 port, u16 device);
+DEVTREE_CONST struct device *dev_bus_each_child(const struct bus *parent,
+				DEVTREE_CONST struct device *prev_child);
 
 void scan_smbus(struct device *bus);
 void scan_generic_bus(struct device *bus);

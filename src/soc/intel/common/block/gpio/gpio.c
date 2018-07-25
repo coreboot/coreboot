@@ -288,6 +288,43 @@ void gpio_configure_pads(const struct pad_config *cfg, size_t num_pads)
 		gpio_configure_pad(cfg + i);
 }
 
+/*
+ * This functions checks to see if there is an override config present for the
+ * provided pad_config. If no override config is present, then the input config
+ * is returned. Else, it returns the override config.
+ */
+static const struct pad_config *gpio_get_config(const struct pad_config *c,
+				const struct pad_config *override_cfg_table,
+				size_t num)
+{
+	size_t i;
+
+	if (override_cfg_table == NULL)
+		return c;
+
+	for (i = 0; i < num; i++) {
+		if (c->pad == override_cfg_table[i].pad)
+			return override_cfg_table + i;
+	}
+
+	return c;
+}
+
+void gpio_configure_pads_with_override(const struct pad_config *base_cfg,
+					size_t base_num_pads,
+					const struct pad_config *override_cfg,
+					size_t override_num_pads)
+{
+	size_t i;
+	const struct pad_config *c;
+
+	for (i = 0; i < base_num_pads; i++) {
+		c = gpio_get_config(base_cfg + i, override_cfg,
+				override_num_pads);
+		gpio_configure_pad(c);
+	}
+}
+
 void *gpio_dwx_address(const gpio_t pad)
 {
 	/* Calculate Address of DW0 register for given GPIO

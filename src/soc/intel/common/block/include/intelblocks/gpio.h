@@ -133,6 +133,21 @@ int gpi_status_get(const struct gpi_status *sts, gpio_t gpi);
 void gpio_configure_pads(const struct pad_config *cfg, size_t num_pads);
 
 /*
+ * gpio_configure_pads_with_override accepts as input two GPIO tables:
+ * 1. Base config
+ * 2. Override config
+ *
+ * This function configures raw pads in base config and applies override in
+ * override config if any. Thus, for every GPIO_x in base config, this function
+ * looks up the GPIO in override config and if it is present there, then applies
+ * the configuration from override config.
+ */
+void gpio_configure_pads_with_override(const struct pad_config *base_cfg,
+					size_t base_num_pads,
+					const struct pad_config *override_cfg,
+					size_t override_num_pads);
+
+/*
  * Calculate Address of DW0 register for given GPIO
  */
 void *gpio_dwx_address(const gpio_t pad);

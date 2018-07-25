@@ -16,7 +16,9 @@ over reStructuredText so only embedded ReST is supported. Checkout the
 
 ### Install Sphinx
 
-Please follow this official [guide].
+Please follow this official [guide] to install sphinx.
+You will also need python-recommonmark for sphinx to be able to handle
+markdown documenation.
 
 ### Optional
 

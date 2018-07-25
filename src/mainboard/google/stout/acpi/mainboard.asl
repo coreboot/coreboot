@@ -33,9 +33,4 @@ Scope (\_SB)
 			Store (Arg0, \_SB.PCI0.LPCB.EC0.HWLO)
 		}
 	}
-
-	Device (PWRB)
-	{
-		Name (_HID, EisaId("PNP0C0C"))
-	}
 }

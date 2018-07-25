@@ -16,14 +16,6 @@
 
 #include <mainboard/google/jecht/onboard.h>
 
-Scope (\_SB)
-{
-	Device (PWRB)
-	{
-		Name(_HID, EisaId("PNP0C0C"))
-	}
-}
-
 /*
  * LAN connected to Root Port 3, becomes Root Port 1 after coalesce
  */

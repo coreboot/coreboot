@@ -13,13 +13,5 @@
  * GNU General Public License for more details.
  */
 
-Scope (\_SB)
-{
-	Device (PWRB)
-	{
-		Name (_HID, EisaId ("PNP0C0C"))
-	}
-}
-
 /* Variant-specific ACPI, including USB port defs */
 #include <variant/acpi/mainboard.asl>

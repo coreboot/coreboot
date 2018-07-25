@@ -14,14 +14,6 @@
 
 #include <onboard.h>
 
-Scope (\_SB)
-{
-	Device (PWRB)
-	{
-		Name(_HID, EisaId("PNP0C0C"))
-	}
-}
-
 #include <variant/acpi/mainboard.asl>
 
 /* USB port entries */

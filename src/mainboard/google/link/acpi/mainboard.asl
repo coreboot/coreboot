@@ -17,11 +17,6 @@
 #include <mainboard/google/link/onboard.h>
 
 Scope (\_SB) {
-	Device (PWRB)
-	{
-		Name(_HID, EisaId("PNP0C0C"))
-	}
-
 	Device (TPAD)
 	{
 		Name (_ADR, 0x0)

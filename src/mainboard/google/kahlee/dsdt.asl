@@ -56,11 +56,6 @@ DefinitionBlock (
 		/* IRQ Routing mapping for this platform (in \_SB scope) */
 		#include <variant/acpi/routing.asl>
 
-		Device(PWRB) {
-			Name(_HID, EISAID("PNP0C0C"))
-			Name(_UID, 0xAA)
-		}
-
 		/* Describe the SOC */
 		#include <soc.asl>
 

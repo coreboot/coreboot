@@ -19,7 +19,6 @@ Scope (\_GPE)
 	Method (_L08)
 	{
 		/* DBGO ("\\_GPE\\_L08\n") */
-		Notify (\_SB.PWRB, 0x02)	/* NOTIFY_DEVICE_WAKE */
 	}
 
 	/*  EHCI USB controller PME#  SCIMAP24*/
@@ -27,7 +26,6 @@ Scope (\_GPE)
 	{
 		/* DBGO ("\\_GPE\\_L18\n") */
 		Notify (\_SB.PCI0.EHC0, 0x02)	/* NOTIFY_DEVICE_WAKE */
-		Notify (\_SB.PWRB, 0x02)	/* NOTIFY_DEVICE_WAKE */
 	}
 
 	/*  XHCI USB controller PME#  SCIMAP56*/
@@ -35,6 +33,5 @@ Scope (\_GPE)
 	{
 		/* DBGO ("\\_GPE\\_L1F\n") */
 		Notify (\_SB.PCI0.XHC0, 0x02)	/* NOTIFY_DEVICE_WAKE */
-		Notify (\_SB.PWRB, 0x02)	/* NOTIFY_DEVICE_WAKE */
 	}
 }	/* End Scope GPE */

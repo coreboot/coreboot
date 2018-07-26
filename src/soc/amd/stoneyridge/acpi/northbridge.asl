@@ -46,6 +46,11 @@ Device(AMRT) {
 	Name(_ADR, 0x00000000)
 } /* end AMRT */
 
+/* Internal Graphics */
+Device(IGFX) {
+	Name(_ADR, 0x00010000)
+}
+
 /* Gpp 0 */
 Device(PBR4) {
 	Name(_ADR, 0x00020001)

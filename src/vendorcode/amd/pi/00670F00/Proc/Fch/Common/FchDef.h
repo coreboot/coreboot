@@ -62,7 +62,6 @@ VOID          ProgramFchSciMapTbl (IN SCI_MAP_CONTROL  *pSciMapTbl, IN FCH_RESET
 VOID          ProgramFchGpioTbl (IN GPIO_CONTROL  *pGpioTbl);
 VOID          ProgramFchSataPhyTbl (IN SATA_PHY_CONTROL  *pSataPhyTbl, IN FCH_RESET_DATA_BLOCK *FchResetDataBlock);
 VOID          GetChipSysMode (IN VOID *Value, IN AMD_CONFIG_PARAMS *StdHeader);
-BOOLEAN       IsImcEnabled (IN AMD_CONFIG_PARAMS *StdHeader);
 VOID          ReadPmio (IN UINT8 Address, IN UINT8 OpFlag, IN VOID *Value, IN AMD_CONFIG_PARAMS *StdHeader);
 VOID          WritePmio (IN UINT8 Address, IN UINT8 OpFlag, IN VOID *Value, IN AMD_CONFIG_PARAMS *StdHeader);
 VOID          RwPmio (IN UINT8 Address, IN UINT8 OpFlag, IN UINT32 AndMask, IN UINT32 OrMask, IN AMD_CONFIG_PARAMS *StdHeader);
@@ -183,18 +182,14 @@ VOID  FchECfancontrolservice (IN VOID* FchDataPtr);
 
 
 ///
-/// Fch Imc Routines
+/// Fch EC Routines
 ///
 ///  Pei Phase
 ///
-VOID    FchInitResetImc    (IN VOID  *FchDataPtr);
 VOID    FchInitResetEc     (IN VOID  *FchDataPtr);
 ///
 ///  Dxe Phase
 ///
-VOID    FchInitEnvImc      (IN VOID  *FchDataPtr);
-VOID    FchInitMidImc      (IN VOID  *FchDataPtr);
-VOID    FchInitLateImc     (IN VOID  *FchDataPtr);
 VOID    FchInitEnvEc       (IN VOID  *FchDataPtr);
 VOID    FchInitMidEc       (IN VOID  *FchDataPtr);
 VOID    FchInitLateEc      (IN VOID  *FchDataPtr);
@@ -209,17 +204,6 @@ VOID    RwEc8      (IN UINT8 Address, IN UINT8 AndMask, IN UINT8 OrMask, IN AMD_
 VOID    WriteECmsg (IN UINT8 Address, IN UINT8 OpFlag, IN VOID* Value, IN AMD_CONFIG_PARAMS *StdHeader);
 VOID    ReadECmsg  (IN UINT8 Address, IN UINT8 OpFlag, OUT VOID* Value, IN AMD_CONFIG_PARAMS *StdHeader);
 VOID    WaitForEcLDN9MailboxCmdAck (IN AMD_CONFIG_PARAMS *StdHeader);
-
-VOID    ImcSleep                   (IN VOID  *FchDataPtr);
-VOID    ImcDisarmSurebootTimer     (IN VOID  *FchDataPtr);
-VOID    ImcDisableSurebootTimer    (IN VOID  *FchDataPtr);
-VOID    ImcWakeup                  (IN VOID  *FchDataPtr);
-VOID    ImcIdle                    (IN VOID  *FchDataPtr);
-BOOLEAN ValidateImcFirmware        (IN VOID  *FchDataPtr);
-VOID    SoftwareToggleImcStrapping (IN VOID  *FchDataPtr);
-VOID    ImcCrashReset              (IN VOID  *FchDataPtr);
-VOID    SoftwareDisableImc         (IN VOID  *FchDataPtr);
-
 
 ///
 /// Fch Ir Routines
@@ -428,6 +412,4 @@ RetrieveDataBlockFromInitReset (
   IN       FCH_DATA_BLOCK       *FchParams
   );
 
-
 #endif
-

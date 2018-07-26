@@ -94,11 +94,6 @@ ifeq ($(CONFIG_VENDORCODE_FULL_SUPPORT),y)
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Common/*.[cS])
 endif
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Psp/PspBaseLib/*.[cS])
-ifeq ($(CONFIG_STONEYRIDGE_IMC_FWM),y)
-agesa_raw_files += $(wildcard $(AGESA_ROOT)/Lib/imc/*.c)
-agesa_raw_files += $(AGESA_ROOT)/Proc/Fch/Common/FchLib.c
-agesa_raw_files += $(AGESA_ROOT)/Proc/Fch/Common/FchPeLib.c
-endif
 
 classes-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += libagesa
 

@@ -33,6 +33,41 @@
 #define PL2_DEFAULT	29
 #define PL2_KBL_R	25
 
+/* Variant for AKALI */
+#define AKALI_SA_AC_LOADLINE	1100
+#define AKALI_SA_DC_LOADLINE	1028
+#define AKALI_IA_AC_LOADLINE	272
+#define AKALI_IA_DC_LOADLINE	247
+#define AKALI_GT_AC_LOADLINE	314
+#define AKALI_GT_DC_LOADLINE	321
+
+/* We only have Akali and Nami default settings so far */
+enum project_sku {
+	PRJ_AKALI = 1,
+};
+
+static const struct {
+	enum project_sku sku;
+	int ac_loadline[NUM_VR_DOMAINS];
+	int dc_loadline[NUM_VR_DOMAINS];
+} sku_overwrite_mapping[] = {
+	{
+		.sku = PRJ_AKALI,
+		.ac_loadline = {
+			AKALI_SA_AC_LOADLINE,
+			AKALI_IA_AC_LOADLINE,
+			AKALI_GT_AC_LOADLINE,
+			AKALI_GT_AC_LOADLINE
+		},
+		.dc_loadline = {
+			AKALI_SA_DC_LOADLINE,
+			AKALI_IA_DC_LOADLINE,
+			AKALI_GT_DC_LOADLINE,
+			AKALI_GT_DC_LOADLINE
+		}
+	},
+};
+
 static uint32_t get_pl2(uint32_t sku_id)
 {
 	if ((sku_id == SKU_0_SONA) || (sku_id == SKU_1_SONA)) {
@@ -59,33 +94,6 @@ uint32_t variant_board_sku(void)
 	sku_id = id;
 
 	return sku_id;
-}
-
-/* Override dev tree settings per board */
-void variant_devtree_update(void)
-{
-	uint32_t sku_id = variant_board_sku();
-	struct device *root = SA_DEV_ROOT;
-	config_t *cfg = root->chip_info;
-
-	/* Update PL2 based on SKU. */
-	cfg->tdp_pl2_override = get_pl2(sku_id);
-
-	switch (sku_id) {
-	case SKU_0_VAYNE:
-	case SKU_1_VAYNE:
-	case SKU_2_VAYNE:
-	case SKU_0_PANTHEON:
-	case SKU_1_PANTHEON:
-	case SKU_2_PANTHEON:
-	case SKU_0_SONA:
-	case SKU_1_SONA:
-		/* Disable unused port USB port */
-		cfg->usb2_ports[5].enable = 0;
-		break;
-	default:
-		break;
-	}
 }
 
 const char *smbios_mainboard_sku(void)
@@ -192,5 +200,59 @@ const char *mainboard_vbt_filename(void)
 	default:
 		return "vbt.bin";
 		break;
+	}
+}
+
+static int find_sku_mapping(const uint8_t oem_id)
+{
+	/* Check if this OEM ID has a mapping table entry. */
+	for (int i = 0; i < ARRAY_SIZE(sku_overwrite_mapping); i++)
+		if (oem_id == sku_overwrite_mapping[i].sku)
+			return i;
+
+	return -1;
+}
+
+/* Override dev tree settings per board */
+void variant_devtree_update(void)
+{
+	uint32_t sku_id = variant_board_sku();
+	uint32_t i;
+	int oem_index;
+	struct device *root = SA_DEV_ROOT;
+	config_t *cfg = root->chip_info;
+
+	/* Update PL2 based on SKU. */
+
+	cfg->tdp_pl2_override = get_pl2(sku_id);
+
+	switch (sku_id) {
+	case SKU_0_VAYNE:
+	case SKU_1_VAYNE:
+	case SKU_2_VAYNE:
+	case SKU_0_PANTHEON:
+	case SKU_1_PANTHEON:
+	case SKU_2_PANTHEON:
+	case SKU_0_SONA:
+	case SKU_1_SONA:
+		/* Disable unused port USB port */
+		cfg->usb2_ports[5].enable = 0;
+		break;
+	default:
+		break;
+	}
+
+	/* Overwrite settings for different projects based on OEM ID*/
+	oem_index = find_sku_mapping(read_oem_id());
+
+	/* Return if the OEM ID is not supported or no changes are required */
+	if (oem_index < 0)
+		return;
+
+	for (i = 0; i < ARRAY_SIZE(cfg->domain_vr_config); i++) {
+		cfg->domain_vr_config[i].ac_loadline =
+				sku_overwrite_mapping[oem_index].ac_loadline[i];
+		cfg->domain_vr_config[i].dc_loadline =
+				sku_overwrite_mapping[oem_index].dc_loadline[i];
 	}
 }

@@ -171,12 +171,6 @@ config STONEYRIDGE_XHCI_FWM
 	help
 	  Add Stoney Ridge XHCI Firmware to support the onboard USB 3.0
 
-config STONEYRIDGE_IMC_FWM
-	bool "Add IMC firmware"
-	default n
-	help
-	  Add Stoney Ridge IMC Firmware to support the onboard fan control
-
 config STONEYRIDGE_GEC_FWM
 	bool
 	default n
@@ -188,11 +182,6 @@ config STONEYRIDGE_XHCI_FWM_FILE
 	string "XHCI firmware path and filename"
 	default "3rdparty/blobs/soc/amd/stoneyridge/xhci.bin"
 	depends on STONEYRIDGE_XHCI_FWM
-
-config STONEYRIDGE_IMC_FWM_FILE
-	string "IMC firmware path and filename"
-	default "3rdparty/blobs/soc/amd/stoneyridge/imc.bin"
-	depends on STONEYRIDGE_IMC_FWM
 
 config STONEYRIDGE_GEC_FWM_FILE
 	string "GEC firmware path and filename"

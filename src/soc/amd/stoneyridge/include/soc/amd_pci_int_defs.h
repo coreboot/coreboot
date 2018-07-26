@@ -47,12 +47,6 @@
 #define PIRQ_PMON	0x16	/* Performance Monitor */
 #define PIRQ_SD		0x17	/* SD */
 #define PIRQ_SDIO	0x1a	/* SDIO */
-#define PIRQ_IMC0	0x20	/* IMC INT0 */
-#define PIRQ_IMC1	0x21	/* IMC INT1 */
-#define PIRQ_IMC2	0x22	/* IMC INT2 */
-#define PIRQ_IMC3	0x23	/* IMC INT3 */
-#define PIRQ_IMC4	0x24	/* IMC INT4 */
-#define PIRQ_IMC5	0x25	/* IMC INT5 */
 #define PIRQ_EHCI	0x30	/* USB EHCI	12h.0 */
 #define PIRQ_XHCI	0x34	/* USB XHCI	10h.0 */
 #define PIRQ_SATA	0x41	/* SATA		11h.0 */

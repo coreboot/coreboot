@@ -25,10 +25,10 @@
 #include <cbmem.h>
 #include <elog.h>
 #include <amdblocks/amd_pci_util.h>
+#include <amdblocks/agesawrapper.h>
 #include <soc/southbridge.h>
 #include <soc/smi.h>
 #include <soc/amd_pci_int_defs.h>
-#include <fchec.h>
 #include <delay.h>
 #include <soc/pci_devs.h>
 #include <agesa_headers.h>
@@ -123,12 +123,6 @@ const static struct irq_idx_name irq_association[] = {
 	{ PIRQ_PMON,	"PerMon" },
 	{ PIRQ_SD,	"SD" },
 	{ PIRQ_SDIO,	"SDIOt" },
-	{ PIRQ_IMC0,	"IMC INT0" },
-	{ PIRQ_IMC1,	"IMC INT1" },
-	{ PIRQ_IMC2,	"IMC INT2" },
-	{ PIRQ_IMC3,	"IMC INT3" },
-	{ PIRQ_IMC4,	"IMC INT4" },
-	{ PIRQ_IMC5,	"IMC INT5" },
 	{ PIRQ_EHCI,	"EHCI" },
 	{ PIRQ_XHCI,	"XHCI" },
 	{ PIRQ_SATA,	"SATA" },
@@ -766,11 +760,6 @@ void southbridge_final(void *chip_info)
 {
 	uint8_t restored_power = PM_S5_AT_POWER_RECOVERY;
 
-	if (IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM)) {
-		agesawrapper_fchecfancontrolservice();
-		if (!IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE))
-			enable_imc_thermal_zone();
-	}
 	if (IS_ENABLED(CONFIG_MAINBOARD_POWER_RESTORE))
 		restored_power = PM_RESTORE_S0_IF_PREV_S0;
 	pm_write8(PM_RTC_SHADOW, restored_power);

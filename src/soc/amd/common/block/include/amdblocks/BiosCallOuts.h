@@ -64,7 +64,6 @@ AGESA_STATUS agesa_HaltThisAp(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 void platform_FchParams_reset(FCH_RESET_DATA_BLOCK *FchParams_reset);
 void platform_FchParams_env(FCH_DATA_BLOCK *FchParams_env);
-void oem_fan_control(FCH_DATA_BLOCK *FchParams);
 AGESA_STATUS platform_PcieSlotResetControl(UINT32 Func, UINTN Data,
 	VOID *ConfigPtr);
 typedef struct {

@@ -29,7 +29,6 @@
 #include <device/pci_ops.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
-#include <soc/imc.h>
 
 #define SPI_DEBUG_DRIVER IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 
@@ -169,15 +168,11 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 
 int chipset_volatile_group_begin(const struct spi_flash *flash)
 {
-	if (IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM))
-		imc_sleep();
 	return 0;
 }
 
 int chipset_volatile_group_end(const struct spi_flash *flash)
 {
-	if (IS_ENABLED(CONFIG_STONEYRIDGE_IMC_FWM))
-		imc_wakeup();
 	return 0;
 }
 

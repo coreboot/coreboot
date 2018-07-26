@@ -110,9 +110,6 @@
 #define   SPI_PRESERVE_BITS		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
 
 #define LPC_PCI_CONTROL			0x40
-#define   IMC_PRESENT			BIT(7)
-#define   IMC_TO_HOST_SEMAPHORE		BIT(6)
-#define   HOST_TO_IMC_SEMAPHORE		BIT(5)
 #define   LEGACY_DMA_EN			BIT(2)
 
 #define LPC_IO_PORT_DECODE_ENABLE	0x44

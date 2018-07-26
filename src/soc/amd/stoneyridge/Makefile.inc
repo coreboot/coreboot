@@ -57,7 +57,6 @@ romstage-y += i2c.c
 romstage-y += romstage.c
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
 romstage-y += gpio.c
-romstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += imc.c
 romstage-y += monotonic_timer.c
 romstage-y += pmutil.c
 romstage-y += reset.c
@@ -100,7 +99,6 @@ ramstage-y += hda.c
 ramstage-y += monotonic_timer.c
 ramstage-y += southbridge.c
 ramstage-y += sb_util.c
-ramstage-$(CONFIG_STONEYRIDGE_IMC_FWM) += imc.c
 ramstage-y += lpc.c
 ramstage-y += northbridge.c
 ramstage-y += pmutil.c
@@ -200,7 +198,6 @@ endif
 add_opt_prefix=$(if $(call strip_quotes, $(1)), $(2) $(call strip_quotes, $(1)), )
 
 OPT_STONEYRIDGE_XHCI_FWM_FILE=$(call add_opt_prefix, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE), --xhci)
-OPT_STONEYRIDGE_IMC_FWM_FILE=$(call add_opt_prefix, $(CONFIG_STONEYRIDGE_IMC_FWM_FILE), --imc)
 OPT_STONEYRIDGE_GEC_FWM_FILE=$(call add_opt_prefix, $(CONFIG_STONEYRIDGE_GEC_FWM_FILEddd), --gec)
 
 OPT_2AMD_PUBKEY_FILE=$(call add_opt_prefix, $(CONFIG_AMD_PUBKEY_FILE), --pubkey2)
@@ -222,7 +219,6 @@ OPT_2SMUFIRMWARE2_FN_FILE=$(call add_opt_prefix, $(SMUFIRMWARE2_FN_FILE), --smuf
 
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
-			$(call strip_quotes, $(CONFIG_STONEYRIDGE_IMC_FWM_FILE)) \
 			$(call strip_quotes, $(CONFIG_STONEYRIDGE_GEC_FWM_FILE)) \
 			$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call strip_quotes, $(PUBSIGNEDKEY_FILE)) \
@@ -243,7 +239,6 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
 	$(AMDFWTOOL) \
 		$(OPT_STONEYRIDGE_XHCI_FWM_FILE) \
-		$(OPT_STONEYRIDGE_IMC_FWM_FILE) \
 		$(OPT_STONEYRIDGE_GEC_FWM_FILE) \
 		$(OPT_AMD_PUBKEY_FILE) \
 		$(OPT_PSPBTLDR_FILE) \

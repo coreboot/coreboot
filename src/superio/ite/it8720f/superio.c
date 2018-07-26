@@ -33,17 +33,27 @@
 static void power_control_init(struct device *dev)
 {
 	int power_on = MAINBOARD_POWER_OFF;
-	u8 addr, value;
+	u8 value;
 
 	get_option(&power_on, "power_on_after_fail");
-	if (power_on == MAINBOARD_POWER_OFF)
-		return;
+
 	pnp_enter_conf_mode(dev);
 	pnp_set_logical_device(dev);
-	addr = power_on == MAINBOARD_POWER_KEEP ? 0xf2 : 0xf4;
-	value = pnp_read_config(dev, addr);
-	value |= BIT(5);
-	pnp_write_config(dev, addr, value);
+
+	value = pnp_read_config(dev, IT8720F_EC_PCR1);
+	if (power_on == MAINBOARD_POWER_KEEP)
+		value |= (1 << 5);
+	else
+		value &= ~(1 << 5);
+	pnp_write_config(dev, IT8720F_EC_PCR1, value);
+
+	value = pnp_read_config(dev, IT8720F_EC_PCR2);
+	if (power_on == MAINBOARD_POWER_ON)
+		value |= (1 << 5);
+	else
+		value &= ~(1 << 5);
+	pnp_write_config(dev, IT8720F_EC_PCR2, value);
+
 	pnp_exit_conf_mode(dev);
 }
 

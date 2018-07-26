@@ -30,4 +30,8 @@
 #define IT8720F_GPIO 0x07 /* GPIO (including SPI flash interface) */
 #define IT8720F_CIR  0x0a /* Consumer IR */
 
+/* Registers in LDNs */
+#define IT8720F_EC_PCR1	0xf2
+#define IT8720F_EC_PCR2	0xf4
+
 #endif /* SUPERIO_ITE_IT8720F_H */

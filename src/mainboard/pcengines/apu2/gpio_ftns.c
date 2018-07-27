@@ -19,19 +19,23 @@
 #include "FchPlatform.h"
 #include "gpio_ftns.h"
 
-void configure_gpio(uintptr_t base_addr, u32 iomux_gpio, u8 iomux_ftn, u32 gpio, u32 setting)
+void configure_gpio(u32 iomux_gpio, u8 iomux_ftn, u32 gpio, u32 setting)
 {
-	u8 bdata;
-	u8 *memptr;
+	u32 bdata;
 
-	memptr = (u8 *)(base_addr + IOMUX_OFFSET + iomux_gpio);
-	*memptr = iomux_ftn;
+	bdata = read32((const volatile void *)(ACPI_MMIO_BASE + GPIO_OFFSET
+		+ gpio));
+	/* out the data value to prevent glitches */
+	bdata |= (setting & GPIO_OUTPUT_ENABLE);
+	write32((volatile void *)(ACPI_MMIO_BASE + GPIO_OFFSET + gpio), bdata);
 
-	memptr = (u8 *)(base_addr + GPIO_OFFSET + gpio);
-	bdata = *memptr;
-	bdata &= 0x07;
-	bdata |= setting; /* set direction and data value */
-	*memptr = bdata;
+	/* set direction and data value */
+	bdata |= (setting & (GPIO_OUTPUT_ENABLE | GPIO_OUTPUT_VALUE
+			| GPIO_PULL_UP_ENABLE | GPIO_PULL_DOWN_ENABLE));
+	write32((volatile void *)(ACPI_MMIO_BASE + GPIO_OFFSET + gpio), bdata);
+
+	write8((volatile void *)(ACPI_MMIO_BASE + IOMUX_OFFSET + iomux_gpio),
+			iomux_ftn & 0x3);
 }
 
 int get_spd_offset(void)

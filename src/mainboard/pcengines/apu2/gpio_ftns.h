@@ -16,7 +16,7 @@
 #ifndef GPIO_FTNS_H
 #define GPIO_FTNS_H
 
-void configure_gpio(uintptr_t base_addr, u32 iomux_gpio, u8 iomux_ftn, u32 gpio, u32 setting);
+void configure_gpio(u32 iomux_gpio, u8 iomux_ftn, u32 gpio, u32 setting);
 int get_spd_offset(void);
 
 #define IOMUX_OFFSET    0xD00
@@ -27,6 +27,7 @@ int get_spd_offset(void);
 // http://www.pcengines.ch/schema/apu2c.pdf
 // http://www.pcengines.ch/schema/apu3a.pdf
 //
+#define IOMUX_GPIO_22   0x09    // MODESW (APU5)
 #define IOMUX_GPIO_32   0x59    // MODESW (SIMSWAP2 on APU5)
 #define IOMUX_GPIO_33   0x5A    // SIMSWAP (SIMSWAP3 on APU5)
 #define IOMUX_GPIO_49   0x40    // STRAP0
@@ -41,6 +42,7 @@ int get_spd_offset(void);
 #define IOMUX_GPIO_68   0x48    // PE4_WDIS (SIMSWAP1 on APU5)
 #define IOMUX_GPIO_71   0x4D    // PROCHOT
 
+#define GPIO_22   0x24     // MODESW (APU5)
 #define GPIO_32   0x164    // MODESW (SIMSWAP2 on APU5)
 #define GPIO_33   0x168    // SIMSWAP (SIMSWAP3 on APU5)
 #define GPIO_49   0x100    // STRAP0
@@ -55,9 +57,10 @@ int get_spd_offset(void);
 #define GPIO_68   0x120    // PE4_WDIS (SIMSWAP1 on APU5)
 #define GPIO_71   0x134    // PROCHOT
 
-#define GPIO_OUTPUT_ENABLE      23
-#define GPIO_OUTPUT_VALUE       22
-#define GPIO_PULL_DOWN_ENABLE   21
-#define GPIO_PULL_UP_ENABLE     20
+#define GPIO_OUTPUT_ENABLE      BIT23
+#define GPIO_OUTPUT_VALUE       BIT22
+#define GPIO_PULL_DOWN_ENABLE   BIT21
+#define GPIO_PULL_UP_ENABLE     BIT20
+#define GPIO_PIN_STS            BIT16
 
 #endif /* GPIO_FTNS_H */

@@ -43,6 +43,7 @@
 static void early_lpc_init(void);
 static void print_sign_of_life(void);
 extern char coreboot_dmi_date[];
+extern char coreboot_version[];
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -215,6 +216,14 @@ static void early_lpc_init(void)
 	configure_gpio(IOMUX_GPIO_68, Function0, GPIO_68, setting);
 }
 
+static const char *mainboard_bios_version(void)
+{
+	if (strlen(CONFIG_LOCALVERSION))
+		return CONFIG_LOCALVERSION;
+	else
+		return coreboot_version;
+}
+
 static void print_sign_of_life()
 {
 	char tmp[9];
@@ -225,5 +234,5 @@ static void print_sign_of_life()
 	printk(BIOS_ALERT, CONFIG_MAINBOARD_VENDOR " "
 	                   CONFIG_MAINBOARD_PART_NUMBER "\n");
 	printk(BIOS_ALERT, "coreboot build %s\n", tmp);
-	printk(BIOS_ALERT, "BIOS version %s\n", COREBOOT_ORIGIN_GIT_TAG);
+	printk(BIOS_ALERT, "BIOS version %s\n", mainboard_bios_version());
 }

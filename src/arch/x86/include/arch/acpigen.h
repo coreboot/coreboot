@@ -228,7 +228,7 @@ void acpigen_write_TSS_package(int entries, acpi_tstate_t *tstate_list);
 void acpigen_write_TSD_package(u32 domain, u32 numprocs, PSD_coord coordtype);
 void acpigen_write_mem32fixed(int readwrite, u32 base, u32 size);
 void acpigen_write_io16(u16 min, u16 max, u8 align, u8 len, u8 decode16);
-void acpigen_write_register(acpi_addr_t *addr);
+void acpigen_write_register_resource(const acpi_addr_t *addr);
 void acpigen_write_resourcetemplate_header(void);
 void acpigen_write_resourcetemplate_footer(void);
 void acpigen_write_mainboard_resource_template(void);

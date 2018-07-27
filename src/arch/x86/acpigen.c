@@ -578,14 +578,10 @@ void acpigen_write_empty_PTC(void)
 	acpigen_write_package(2);
 
 	/* ControlRegister */
-	acpigen_write_resourcetemplate_header();
-	acpigen_write_register(&addr);
-	acpigen_write_resourcetemplate_footer();
+	acpigen_write_register_resource(&addr);
 
 	/* StatusRegister */
-	acpigen_write_resourcetemplate_header();
-	acpigen_write_register(&addr);
-	acpigen_write_resourcetemplate_footer();
+	acpigen_write_register_resource(&addr);
 
 	acpigen_pop_len();
 }
@@ -725,9 +721,7 @@ void acpigen_write_PSD_package(u32 domain, u32 numprocs, PSD_coord coordtype)
 void acpigen_write_CST_package_entry(acpi_cstate_t *cstate)
 {
 	acpigen_write_package(4);
-	acpigen_write_resourcetemplate_header();
-	acpigen_write_register(&cstate->resource);
-	acpigen_write_resourcetemplate_footer();
+	acpigen_write_register_resource(&cstate->resource);
 	acpigen_write_dword(cstate->ctype);
 	acpigen_write_dword(cstate->latency);
 	acpigen_write_dword(cstate->power);
@@ -827,7 +821,7 @@ void acpigen_write_mem32fixed(int readwrite, u32 base, u32 size)
 	acpigen_emit_dword(size);
 }
 
-void acpigen_write_register(acpi_addr_t *addr)
+static void acpigen_write_register(const acpi_addr_t *addr)
 {
 	acpigen_emit_byte(0x82);		/* Register Descriptor */
 	acpigen_emit_byte(0x0c);		/* Register Length 7:0 */
@@ -838,6 +832,13 @@ void acpigen_write_register(acpi_addr_t *addr)
 	acpigen_emit_byte(addr->resv);		/* Register Access Size */
 	acpigen_emit_dword(addr->addrl);	/* Register Address Low */
 	acpigen_emit_dword(addr->addrh);	/* Register Address High */
+}
+
+void acpigen_write_register_resource(const acpi_addr_t *addr)
+{
+	acpigen_write_resourcetemplate_header();
+	acpigen_write_register(addr);
+	acpigen_write_resourcetemplate_footer();
 }
 
 void acpigen_write_irq(u16 mask)

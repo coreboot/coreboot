@@ -14,7 +14,6 @@
  */
 
 #include <bootblock_common.h>
-#include <soc/mmu_operations.h>
 #include <soc/pll.h>
 #include <soc/wdt.h>
 

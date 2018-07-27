@@ -498,9 +498,33 @@ static void intel_cores_init(struct device *cpu)
 	}
 }
 
+static void model_206ax_report(void)
+{
+	static const char *const mode[] = {"NOT ", ""};
+	struct cpuid_result cpuidr;
+	char processor_name[49];
+	int vt, txt, aes;
+
+	/* Print processor name */
+	fill_processor_name(processor_name);
+	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
+
+	/* Print platform ID */
+	printk(BIOS_INFO, "CPU: platform id %x\n", get_platform_id());
+
+	/* CPUID and features */
+	cpuidr = cpuid(1);
+	printk(BIOS_INFO, "CPU: cpuid(1) 0x%x\n", cpuidr.eax);
+	aes = (cpuidr.ecx & (1 << 25)) ? 1 : 0;
+	txt = (cpuidr.ecx & (1 << 6)) ? 1 : 0;
+	vt = (cpuidr.ecx & (1 << 5)) ? 1 : 0;
+	printk(BIOS_INFO, "CPU: AES %ssupported\n", mode[aes]);
+	printk(BIOS_INFO, "CPU: TXT %ssupported\n", mode[txt]);
+	printk(BIOS_INFO, "CPU: VT %ssupported\n", mode[vt]);
+}
+
 static void model_206ax_init(struct device *cpu)
 {
-	char processor_name[49];
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
@@ -510,12 +534,8 @@ static void model_206ax_init(struct device *cpu)
 	/* Clear out pending MCEs */
 	configure_mca();
 
-	/* Print processor name */
-	fill_processor_name(processor_name);
-	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
-
-	/* Print platform ID */
-	printk(BIOS_INFO, "CPU: platform id %x\n", get_platform_id());
+	/* Print infos */
+	model_206ax_report();
 
 	/* Setup MTRRs based on physical address size */
 	x86_setup_mtrrs_with_detect();

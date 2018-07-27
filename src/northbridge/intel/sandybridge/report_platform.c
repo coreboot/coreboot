@@ -14,46 +14,8 @@
  */
 
 #include <console/console.h>
-#include <arch/cpu.h>
-#include <string.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <arch/io.h>
 #include "sandybridge.h"
-
-static void report_cpu_info(void)
-{
-	struct cpuid_result cpuidr;
-	u32 i, index;
-	char cpu_string[50], *cpu_name = cpu_string; /* 48 bytes are reported */
-	int vt, txt, aes;
-	const char *mode[] = {"NOT ", ""};
-
-	index = 0x80000000;
-	cpuidr = cpuid(index);
-	if (cpuidr.eax < 0x80000004) {
-		strcpy(cpu_string, "Platform info not available");
-	} else {
-		u32 *p = (u32*) cpu_string;
-		for (i = 2; i <= 4; i++) {
-			cpuidr = cpuid(index + i);
-			*p++ = cpuidr.eax;
-			*p++ = cpuidr.ebx;
-			*p++ = cpuidr.ecx;
-			*p++ = cpuidr.edx;
-		}
-	}
-	/* Skip leading spaces in CPU name string */
-	while (cpu_name[0] == ' ')
-		cpu_name++;
-
-	cpuidr = cpuid(1);
-	printk(BIOS_DEBUG, "CPU id(%x): %s\n", cpuidr.eax, cpu_name);
-	aes = (cpuidr.ecx & (1 << 25)) ? 1 : 0;
-	txt = (cpuidr.ecx & (1 << 6)) ? 1 : 0;
-	vt = (cpuidr.ecx & (1 << 5)) ? 1 : 0;
-	printk(BIOS_DEBUG, "AES %ssupported, TXT %ssupported, VT %ssupported\n",
-	       mode[aes], mode[txt], mode[vt]);
-}
 
 static struct {
 	u16 dev_id;
@@ -125,6 +87,5 @@ static void report_pch_info(void)
 
 void report_platform_info(void)
 {
-	report_cpu_info();
 	report_pch_info();
 }

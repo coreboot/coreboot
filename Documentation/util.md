@@ -1,4 +1,5 @@
 # Utilities
+_Scripts and programs found in the `./util` directory_
 * __abuild__ - coreboot autobuild script builds coreboot images for all
 available targets. `bash`
 * __acpi__ - Walk through all ACPI tables with their addresses. `bash`

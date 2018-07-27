@@ -10,11 +10,13 @@ UTIL_README_DIR="$(cd "$(dirname "$0")" || exit; pwd -P)"
 UTIL_DIR=$(dirname "$UTIL_README_DIR")
 COREBOOT_ROOT_DIR=$(dirname "$UTIL_DIR")
 DOCMENTATION_DIR="$COREBOOT_ROOT_DIR/Documentation"
+SUMMARY="_Scripts and programs found in the \`./util\` directory_"
 
 DESCRIPTION_FILES=$(find "$UTIL_DIR" -name "description.md" | sort)
 
 echo -n "" > "$UTIL_DIR/README.md"
 echo "# Utilities" > "$DOCMENTATION_DIR/util.md"
+echo "$SUMMARY" >> "$DOCMENTATION_DIR/util.md"
 
 for DESC_FILE in $DESCRIPTION_FILES; do
   UTIL_NAME=$(echo "$DESC_FILE" | rev | cut -d '/' -f2 | rev)

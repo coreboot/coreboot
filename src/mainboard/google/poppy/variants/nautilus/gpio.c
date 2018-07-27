@@ -395,7 +395,7 @@ static const struct pad_config lte_sku_gpio_table[] = {
 	/* D16 : ISH_UART0_CTS# ==> LTE3_W_DISABLE# */
 	PAD_CFG_GPO(GPP_D16, 1, DEEP),
 	/* D21 : SPI1_IO2 ==> LTE3_BODY_SAR */
-	PAD_CFG_GPO(GPP_D21, 0, DEEP),
+	PAD_CFG_GPO(GPP_D21, 1, DEEP),
 	/* E11 : USB2_OC2# ==> USB2_P2_FAULT# */
 	PAD_CFG_NF(GPP_E11, NONE, DEEP, NF1),
 };

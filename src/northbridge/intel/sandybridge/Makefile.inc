@@ -46,7 +46,6 @@ endif
 romstage-y += romstage.c
 romstage-y += iommu.c
 romstage-y += early_init.c
-romstage-y += report_platform.c
 romstage-y += ../../../arch/x86/walkcbfs.S
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c

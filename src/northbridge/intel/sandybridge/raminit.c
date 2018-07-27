@@ -323,8 +323,6 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 
 	MCHBAR32(0x5f00) |= 1;
 
-	report_platform_info();
-
 	/* Wait for ME to be ready */
 	intel_early_me_init();
 	me_uma_size = intel_early_me_uma_size();

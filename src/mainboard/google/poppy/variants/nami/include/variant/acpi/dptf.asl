@@ -65,7 +65,8 @@ Name (DFPS, Package () {
 	Package () {69,		0xFFFFFFFF,	5800,	180,	1800},
 	Package () {56,		0xFFFFFFFF,	5000,	145,	1450},
 	Package () {46,		0xFFFFFFFF,	4900,	115,	1150},
-	Package () {36,		0xFFFFFFFF,	3900,	90,	900}
+	Package () {36,		0xFFFFFFFF,	3900,	90,	900},
+	Package () { 0,         0xFFFFFFFF,        0,    0,       0}
 })
 
 Name (DART, Package () {

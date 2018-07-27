@@ -118,9 +118,21 @@ void pnp_read_resources(struct device *dev)
 static void pnp_set_resource(struct device *dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-		printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010llx "
-		       "not assigned\n", dev_path(dev), resource->index,
-		       resource_type(resource), resource->size);
+		/* The PNP_MSC super IO registers have the IRQ flag set. If no
+		   value is assigned in the devicetree, the corresponding
+		   PNP_MSC register doesn't get written, which should be printed
+		   as warning and not as error. */
+		if (resource->flags & IORESOURCE_IRQ &&
+		    (resource->index != PNP_IDX_IRQ0) &&
+		    (resource->index != PNP_IDX_IRQ1))
+			printk(BIOS_WARNING, "WARNING: %s %02lx %s size: "
+			       "0x%010llx not assigned\n", dev_path(dev),
+			       resource->index, resource_type(resource),
+			       resource->size);
+		else
+			printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010llx "
+			       "not assigned\n", dev_path(dev), resource->index,
+			       resource_type(resource), resource->size);
 		return;
 	}
 

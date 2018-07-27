@@ -7,6 +7,7 @@
  * Copyright (C) 2005 Tyan
  * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
  * Copyright (C) 2013 Nico Huber <nico.h@gmx.de>
+ * Copyright (C) 2018 Felix Held <felix-coreboot@felixheld.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -194,8 +195,10 @@ struct device_operations pnp_ops = {
 static void pnp_get_ioresource(struct device *dev, u8 index, u16 mask)
 {
 	struct resource *resource;
-	unsigned moving, gran, step;
+	unsigned int bit;
 
+	/* If none of the mask bits is set, the resource would occupy the whole
+	   IO space leading to IO resource conflicts with the other devices */
 	if (!mask) {
 		printk(BIOS_ERR, "ERROR: device %s index %d has no mask.\n",
 				dev_path(dev), index);
@@ -203,43 +206,31 @@ static void pnp_get_ioresource(struct device *dev, u8 index, u16 mask)
 	}
 
 	resource = new_resource(dev, index);
-
-	/* Initilize the resource. */
-	resource->limit = 0xffff;
 	resource->flags |= IORESOURCE_IO;
 
-	/* Get the resource size... */
+	/* Calculate IO region size which is determined by the first one from
+	   the LSB of the mask. */
+	for (bit = 0; bit <= 15 && (mask & (1 << bit)) == 0; ++bit)
+		;
 
-	moving = mask;
-	gran = 15;
-	step = 1 << gran;
+	resource->gran  = bit;
+	resource->align = bit;
+	resource->size  = 1 << bit;
 
-	/* Find the first bit that moves. */
-	while ((moving & step) == 0) {
-		gran--;
-		step >>= 1;
-	}
+	/* Calculate IO region address limit which is determined by the first
+	   one from the MSB of the mask. */
+	for (bit = 15; bit != 0 && (mask & (1 << bit)) == 0; --bit)
+		;
 
-	/* Now find the first bit that does not move. */
-	while ((moving & step) != 0) {
-		gran--;
-		step >>= 1;
-	}
+	resource->limit = (1 << (bit + 1)) - 1;
 
-	/*
-	 * Of the moving bits the last bit in the first group,
-	 * tells us the size of this resource.
-	 */
-	if ((moving & step) == 0) {
-		gran++;
-		step <<= 1;
-	}
-
-	/* Set the resource size and alignment. */
-	resource->gran  = gran;
-	resource->align = gran;
-	resource->limit = mask | (step - 1);
-	resource->size  = 1 << gran;
+	/* The block of ones in the mask is expected to be continuous.
+	   If there is any zero inbetween the block of ones, it is ignored
+	   in the calculation of the resource size and limit. */
+	if (mask != (resource->limit ^ (resource->size - 1)))
+		printk(BIOS_WARNING,
+			"WARNING: mask of device %s index %d is wrong.\n",
+			dev_path(dev), index);
 }
 
 static void get_resources(struct device *dev, struct pnp_info *info)

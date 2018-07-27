@@ -51,3 +51,8 @@ void OemPostParams(AMD_POST_PARAMS *PostParams)
 	 */
 	PostParams->MemConfig.EnableBankIntlv = FALSE;
 }
+
+void set_board_env_params(GNB_ENV_CONFIGURATION *params)
+{
+	params->EDPv1_4VSMode = EDP_VS_HIGH_VDIFF_MODE;
+}

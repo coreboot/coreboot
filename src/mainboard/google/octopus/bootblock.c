@@ -25,7 +25,14 @@ void bootblock_mainboard_init(void)
 	size_t num;
 
 	lpc_configure_pads();
+
+	/*
+	 * Perform EC init before configuring GPIOs. This is because variant
+	 * might talk to the EC to get board id and hence it will require EC
+	 * init to have already performed.
+	 */
+	mainboard_ec_init();
+
 	pads = variant_early_gpio_table(&num);
 	gpio_configure_pads(pads, num);
-	mainboard_ec_init();
 }

@@ -18,18 +18,36 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <arch/early_variables.h>
 
 #include "gpio.h"
 
 #define MAX_GPIO_NUMBER 75 /* zero based */
 
+/* LPC GPIO Base Address Register */
+#define GPIO_BASE	0x48
+
+/* PCI Configuration Space (D31:F0): LPC */
+#if defined(__SIMPLE_DEVICE__)
+#define PCH_LPC_DEV	PCI_DEV(0, 0x1f, 0)
+#else
+#define PCH_LPC_DEV	dev_find_slot(0, PCI_DEVFN(0x1f, 0))
+#endif
+
 static u16 get_gpio_base(void)
 {
-#if defined(__PRE_RAM__) || defined(__SMM__)
-	return pci_read_config16(PCH_LPC_DEV, GPIO_BASE) & 0xfffc;
+#if defined(__SMM__)
+	/* Don't assume GPIO_BASE is still the same */
+	return pci_read_config16(PCH_LPC_DEV, GPIO_BASE) & 0xfffe;
 #else
-	return pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x1f, 0)),
-				 GPIO_BASE) & 0xfffc;
+	static u16 gpiobase CAR_GLOBAL;
+
+	if (gpiobase)
+		return gpiobase;
+
+	gpiobase = pci_read_config16(PCH_LPC_DEV, GPIO_BASE) & 0xfffe;
+
+	return gpiobase;
 #endif
 }
 

@@ -19,11 +19,6 @@
 #include <stdint.h>
 #include <compiler.h>
 
-/* LPC GPIO Base Address Register */
-#define GPIO_BASE		0x48
-/* PCI Configuration Space (D31:F0): LPC */
-#define PCH_LPC_DEV		PCI_DEV(0, 0x1f, 0)
-
 /* ICH7 GPIOBASE */
 #define GPIO_USE_SEL	0x00
 #define GP_IO_SEL	0x04

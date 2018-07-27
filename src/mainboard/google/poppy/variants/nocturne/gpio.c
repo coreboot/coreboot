@@ -38,7 +38,7 @@ static const struct pad_config gpio_table[] = {
 	/* A10 : CLKOUT_LPC1 ==> NC */
 	PAD_CFG_NC(GPP_A10),
 	/* A11 : PCH_FP_PWR_EN */
-	PAD_CFG_GPO(GPP_A11, 0, DEEP),
+	PAD_CFG_GPO(GPP_A11, 1, DEEP),
 	/* A12 : ISH_GP6 */
 	PAD_CFG_NC(GPP_A12),
 	/* A13 : SUSWARN# ==> SUSWARN_L */
@@ -133,7 +133,7 @@ static const struct pad_config gpio_table[] = {
 	/* C9  : UART0_TXD ==> FPMCU_INT */
 	PAD_CFG_GPI_ACPI_SCI(GPP_C9, NONE, DEEP, INVERT),
 	/* C10 : UART0_RTS# ==> PCH_FPMCU_RST_ODL */
-	PAD_CFG_GPO(GPP_C10, 0, DEEP),
+	PAD_CFG_GPO(GPP_C10, 1, DEEP),
 	/* C11 : UART0_CTS# ==> FPMCU_INT */
 	PAD_CFG_GPI_APIC(GPP_C11, 20K_PU, DEEP),
 	/* C12 : UART1_RXD ==> PCH_MEM_CONFIG[0] */

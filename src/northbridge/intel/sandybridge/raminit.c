@@ -335,10 +335,10 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 
 	wrmsr(0x000002e6, (msr_t) { .lo = 0, .hi = 0 });
 
-	reg_5d10 = read32(DEFAULT_MCHBAR + 0x5d10);	// !!! = 0x00000000
+	reg_5d10 = MCHBAR32(0x5d10);	// !!! = 0x00000000
 	if ((pci_read_config16(SOUTHBRIDGE, 0xa2) & 0xa0) == 0x20	/* 0x0004 */
 	    && reg_5d10 && !s3resume) {
-		write32(DEFAULT_MCHBAR + 0x5d10, 0);
+		MCHBAR32(0x5d10) = 0;
 		/* Need reset.  */
 		outb(0x6, 0xcf9);
 
@@ -438,7 +438,7 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 		die("raminit failed");
 
 	/* FIXME: should be hardware revision-dependent.  */
-	write32(DEFAULT_MCHBAR + 0x5024, 0x00a030ce);
+	MCHBAR32(0x5024) = 0x00a030ce;
 
 	set_scrambling_seed(&ctrl);
 

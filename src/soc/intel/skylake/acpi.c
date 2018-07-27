@@ -29,6 +29,7 @@
 #include <cpu/x86/smm.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
+#include <cpu/intel/common/common.h>
 #include <cpu/intel/turbo.h>
 #include <ec/google/chromeec/ec.h>
 #include <intelblocks/cpulib.h>
@@ -520,6 +521,12 @@ void generate_cpu_entries(struct device *device)
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
 
+	if (config->eist_enable && config->speed_shift_enable) {
+		struct cppc_config cppc_config;
+		cpu_init_cppc_config(&cppc_config, 2 /* version 2 */);
+		acpigen_write_CPPC_package(&cppc_config);
+	}
+
 	for (cpu_id = 0; cpu_id < numcpus; cpu_id++) {
 		for (core_id = 0; core_id < cores_per_package; core_id++) {
 			if (core_id > 0) {
@@ -535,11 +542,13 @@ void generate_cpu_entries(struct device *device)
 			generate_c_state_entries(is_s0ix_enable,
 				max_c_state);
 
-			if (config->eist_enable)
+			if (config->eist_enable) {
 				/* Generate P-state tables */
 				generate_p_state_entries(core_id,
 						cores_per_package);
-
+				if (config->speed_shift_enable)
+					acpigen_write_CPPC_method();
+			}
 			acpigen_pop_len();
 		}
 	}

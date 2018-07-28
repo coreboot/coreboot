@@ -2,6 +2,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2014 The ChromiumOS Authors.  All rights reserved.
+## Copyright (C) 2018 Siemens AG
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -144,6 +145,17 @@ postinclude-hooks += $$(eval romstage-srcs += $$(verstage-srcs))
 endif
 endif # CONFIG_VBOOT_SEPARATE_VERSTAGE
 
+#RO-Partition is always there!
+VBOOT_PARTITIONS := COREBOOT
+# Check for RW_A partition
+ifeq ($(CONFIG_VBOOT_SLOTS_RW_A),y)
+VBOOT_PARTITIONS += FW_MAIN_A
+endif
+# Check for RW_B partition
+ifeq ($(CONFIG_VBOOT_SLOTS_RW_AB),y)
+VBOOT_PARTITIONS += FW_MAIN_B
+endif
+
 # Define a list of files that need to be in RO only.
 # All other files will be installed into RO and RW regions
 # Use $(sort) to cut down on extra spaces that would be translated to commas
@@ -161,7 +173,7 @@ regions-for-file = $(subst $(spc),$(comma),$(sort \
 		cmos_layout.bin \
 		cmos.default \
 		$(call strip_quotes,$(CONFIG_RO_REGION_ONLY)) \
-		,$(1)),COREBOOT,COREBOOT FW_MAIN_A FW_MAIN_B)))
+		,$(1)),COREBOOT,$(VBOOT_PARTITIONS))))
 
 CONFIG_GBB_HWID := $(call strip_quotes,$(CONFIG_GBB_HWID))
 CONFIG_GBB_BMPFV_FILE := $(call strip_quotes,$(CONFIG_GBB_BMPFV_FILE))
@@ -237,8 +249,12 @@ build_complete:: $(obj)/gbb.region $(obj)/fwid.region
 	@printf "    WRITE GBB\n"
 	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r GBB -i 0 -f $(obj)/gbb.region
 	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r RO_FRID -i 0 -f $(obj)/fwid.region
+ifeq ($(CONFIG_VBOOT_SLOTS_RW_A),y)
 	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r RW_FWID_A -i 0 -f $(obj)/fwid.region
+endif
+ifeq ($(CONFIG_VBOOT_SLOTS_RW_AB),y)
 	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r RW_FWID_B -i 0 -f $(obj)/fwid.region
+endif
 
 ifneq ($(shell grep "SHARED_DATA" "$(CONFIG_FMDFILE)"),)
 build_complete::
@@ -270,8 +286,19 @@ $(obj)/VBLOCK_%.bin: $(obj)/FW_MAIN_%.bin $(FUTILITY)
 		--kernelkey "$(CONFIG_VBOOT_KERNEL_KEY)" \
 		--flags $(CONFIG_VBOOT_KEYBLOCK_PREAMBLE_FLAGS)
 
+ifeq ($(CONFIG_VBOOT_SLOTS_RW_AB),y)
 files_added:: $(obj)/VBLOCK_A.bin $(obj)/VBLOCK_B.bin
 	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r VBLOCK_A -f $(obj)/VBLOCK_A.bin
 	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r VBLOCK_B -f $(obj)/VBLOCK_B.bin
+	@printf "    FLASHMAP Layout generated for RO, A and B partition.\n"
+else ifeq ($(CONFIG_VBOOT_SLOTS_RW_A),y)
+files_added:: $(obj)/VBLOCK_A.bin
+	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r VBLOCK_A -f $(obj)/VBLOCK_A.bin
+	@printf "    FLASHMAP Layout generated for RO and A partition.\n"
+else
+files_added::
+	@printf "    FLASHMAP Layout generated for RO partition only.\n"
+	@printf "             Beware that there is no failure safety in case of update now!\n"
+endif
 
 endif # CONFIG_VBOOT

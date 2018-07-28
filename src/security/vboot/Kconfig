@@ -1,6 +1,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2014 The ChromiumOS Authors.  All rights reserved.
+## Copyright (C) 2018 Siemens AG
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -24,6 +25,18 @@ config VBOOT
 	  (stages, payload, etc).
 
 if VBOOT
+
+config VBOOT_SLOTS_RW_A
+	bool "Firmware RO + RW_A"
+	help
+	  Have one update partition beside the RO partition.
+
+config VBOOT_SLOTS_RW_AB
+	bool "Firmware RO + RW_A + RW_B"
+	select VBOOT_SLOTS_RW_A
+	help
+	  Have two update partitions beside the RO partition.
+
 
 config VBOOT_VBNV_CMOS
 	bool

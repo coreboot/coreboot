@@ -14,13 +14,6 @@
  * GNU General Public License for more details.
  */
 
-/* Please don't remove this. It's needed for debugging and reverse
- * engineering more nehalem variants in the future. */
-#ifndef REAL
-#define REAL 1
-#endif
-
-#if REAL
 #include <stdlib.h>
 #include <compiler.h>
 #include <console/console.h>
@@ -45,22 +38,11 @@
 #include <cpu/intel/turbo.h>
 #include <mrc_cache.h>
 #include <arch/early_variables.h>
-#endif
-
-#if !REAL
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned int u32;
-typedef u32 device_t;
-#endif
 
 #include "nehalem.h"
 
 #include <southbridge/intel/ibexpeak/me.h>
-
-#if REAL
 #include <delay.h>
-#endif
 
 #define NORTHBRIDGE PCI_DEV(0, 0, 0)
 #define SOUTHBRIDGE PCI_DEV(0, 0x1f, 0)
@@ -111,10 +93,6 @@ struct ram_training {
 	u32 reg_6dc;
 	u32 reg_6e8;
 };
-
-#if !REAL
-#include "raminit_fake.c"
-#else
 
 #include <lib.h>		/* Prototypes */
 
@@ -171,8 +149,6 @@ static void read128(u32 addr, u64 * out)
 	out[1] = ret.hi;
 }
 
-#endif
-
 /* OK */
 static void write_1d0(u32 val, u16 addr, int bits, int flag)
 {
@@ -215,9 +191,7 @@ static uint32_t read32p(uintptr_t addr)
 
 static void sfence(void)
 {
-#if REAL
 	asm volatile ("sfence");
-#endif
 }
 
 static inline u16 get_lane_offset(int slot, int rank, int lane)
@@ -232,7 +206,6 @@ static inline u16 get_timing_register_addr(int lane, int tm, int slot, int rank)
 	return get_lane_offset(slot, rank, lane) + offs[(tm + 3) % 4];
 }
 
-#if REAL
 static u32 gav_real(int line, u32 in)
 {
 	//  printk (BIOS_DEBUG, "%d: GAV: %x\n", line, in);
@@ -240,7 +213,7 @@ static u32 gav_real(int line, u32 in)
 }
 
 #define gav(x) gav_real (__LINE__, (x))
-#endif
+
 struct raminfo {
 	u16 clock_speed_index;	/* clock_speed (REAL, not DDR) / 133.(3) - 3 */
 	u16 fsb_frequency;	/* in 1.(1)/2 MHz.  */
@@ -1497,7 +1470,6 @@ static void program_total_memory_map(struct raminfo *info)
 
 	memset(memory_map, 0, sizeof(memory_map));
 
-#if REAL
 	if (info->uma_enabled) {
 		u16 t = pci_read_config16(NORTHBRIDGE, D0F0_GGC);
 		gav(t);
@@ -1512,7 +1484,6 @@ static void program_total_memory_map(struct raminfo *info)
 		uma_size_igd = uma_sizes_igd[(t >> 4) & 0xF];
 		uma_size_gtt = uma_sizes_gtt[(t >> 8) & 0xF];
 	}
-#endif
 
 	mmio_size = get_mmio_size();
 
@@ -1542,23 +1513,6 @@ static void program_total_memory_map(struct raminfo *info)
 	}
 	if (memory_remap)
 		TOUUD -= quickpath_reserved;
-
-#if !REAL
-	if (info->uma_enabled) {
-		u16 t = pci_read_config16(NORTHBRIDGE, D0F0_GGC);
-		gav(t);
-		const int uma_sizes_gtt[16] =
-		    { 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 3, 4, 42, 42, 42, 42 };
-		/* Igd memory */
-		const int uma_sizes_igd[16] = {
-			0, 0, 0, 0, 0, 32, 48, 64, 128, 256, 96, 160, 224, 352,
-			    256, 512
-		};
-
-		uma_size_igd = uma_sizes_igd[(t >> 4) & 0xF];
-		uma_size_gtt = uma_sizes_gtt[(t >> 8) & 0xF];
-	}
-#endif
 
 	uma_base_igd = TOLUD - uma_size_igd;
 	uma_base_gtt = uma_base_igd - uma_size_gtt;
@@ -1685,7 +1639,6 @@ static void write_training_data(struct raminfo *info)
 
 static void dump_timings(struct raminfo *info)
 {
-#if REAL
 	int channel, slot, rank, lane, i;
 	printk(BIOS_DEBUG, "Timings:\n");
 	FOR_POPULATED_RANKS {
@@ -1710,7 +1663,6 @@ static void dump_timings(struct raminfo *info)
 	       info->training.reg_178);
 	printk(BIOS_DEBUG, "[10b] = %x (%x)\n", read_1d0(0x10b, 6),
 	       info->training.reg_10b);
-#endif
 }
 
 /* Read timings and other registers that need to be restored verbatim and
@@ -1750,7 +1702,6 @@ static void save_timings(struct raminfo *info)
 			&train, sizeof(train));
 }
 
-#if REAL
 static const struct ram_training *get_cached_training(void)
 {
 	struct region_device rdev;
@@ -1759,7 +1710,6 @@ static const struct ram_training *get_cached_training(void)
 		return 0;
 	return (void *)rdev_mmap_full(&rdev);
 }
-#endif
 
 /* FIXME: add timeout.  */
 static void wait_heci_ready(void)
@@ -1842,10 +1792,6 @@ recv_heci_packet(struct raminfo *info, struct mei_header *head, u32 *packet,
 	write32(DEFAULT_HECIBAR + 0x4, read32(DEFAULT_HECIBAR + 0x4) | 2);
 	do {
 		csr.raw = read32(DEFAULT_HECIBAR + 0xc);
-#if !REAL
-		if (i++ > 346)
-			return -1;
-#endif
 	}
 	while (csr.csr.buffer_write_ptr == csr.csr.buffer_read_ptr);
 	*(u32 *) head = read32(DEFAULT_HECIBAR + 0x8);
@@ -3789,7 +3735,6 @@ static void restore_274265(struct raminfo *info)
 		write_mchbar8(0x2ca9, read_mchbar8(0x2ca9) & ~1);
 }
 
-#if REAL
 static void dmi_setup(void)
 {
 	gav(read8(DEFAULT_DMIBAR + 0x254));
@@ -3804,7 +3749,6 @@ static void dmi_setup(void)
 	     DEFAULT_GPIOBASE | 0x38);
 	gav(inb(DEFAULT_GPIOBASE | 0xe));	// = 0xfdcaff6e
 }
-#endif
 
 void chipset_init(const int s3resume)
 {
@@ -3817,14 +3761,9 @@ void chipset_init(const int s3resume)
 		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");
 		write_mchbar8(0x2ca8, 0);
 		outb(0x6, 0xcf9);
-#if REAL
 		halt();
-#else
-		printf("CP5\n");
-		exit(0);
-#endif
 	}
-#if !REAL
+#if 0
 	if (!s3resume) {
 		pre_raminit_3(x2ca8);
 	}
@@ -3911,15 +3850,13 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	/* before SPD */
 	timestamp_add_now(101);
 
-	if (!s3resume || REAL) {
+	if (!s3resume || 1) {	// possible error
 		pci_read_config8(SOUTHBRIDGE, GEN_PMCON_2);	// = 0x80
 
 		collect_system_info(&info);
 
-#if REAL
 		/* Enable SMBUS. */
 		enable_smbus();
-#endif
 
 		memset(&info.populated_ranks, 0, sizeof(info.populated_ranks));
 
@@ -4024,14 +3961,11 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	timestamp_add_now(102);
 
 	write_mchbar8(0x2ca8, read_mchbar8(0x2ca8) & 0xfc);
-#if !REAL
-	rdmsr (MTRR_PHYS_MASK (3));
-#endif
 
 	collect_system_info(&info);
 	calculate_timings(&info);
 
-#if !REAL
+#if 0
 	pci_write_config8(NORTHBRIDGE, 0xdf, 0x82);
 #endif
 
@@ -4051,14 +3985,9 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 			printk(BIOS_INFO,
 			       "Interrupted RAM init, reset required.\n");
 			outb(0x6, 0xcf9);
-#if REAL
 			halt();
-#endif
 		}
 	}
-#if !REAL
-	gav(read_mchbar8(0x2ca8));	///!!!!
-#endif
 
 	if (!s3resume && x2ca8 == 0)
 		pci_write_config8(SOUTHBRIDGE, GEN_PMCON_2,
@@ -4415,12 +4344,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		write_mchbar8(0x2ca8, read_mchbar8(0x2ca8) & ~3);
 		write_mchbar8(0x2ca8, read_mchbar8(0x2ca8) + 4);
 		write_mchbar32(0x1af0, read_mchbar32(0x1af0) | 0x10);
-#if REAL
 		halt();
-#else
-		printf("CP5\n");
-		exit(0);
-#endif
 	}
 
 	write_mchbar8(0x2ca8, read_mchbar8(0x2ca8));
@@ -4515,13 +4439,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 			reg32 = inl(DEFAULT_PMBASE + 0x04);
 			outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
 			outb(0xe, 0xcf9);
-
-#if REAL
 			halt();
-#else
-			printf("CP5\n");
-			exit(0);
-#endif
 		}
 		int tm;
 		info.training = *info.cached_training;
@@ -4781,10 +4699,6 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_mchbar32(0xfa4, read_mchbar32(0xfa4) & ~0x01000002);
 	write_mchbar32(0xfb0, 0x2000e019);
 
-#if !REAL
-	printf("CP16\n");
-#endif
-
 	/* Before training. */
 	timestamp_add_now(103);
 
@@ -4823,7 +4737,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_mchbar8(0xff4, read_mchbar8(0xff4) | 0x2);	// OK
 	write_mchbar32(0xff8, (read_mchbar32(0xff8) & ~0xe008) | 0x1020);	// OK
 
-#if REAL
+#if 1
 	write_mchbar32(0xd00, IOMMU_BASE2 | 1);
 	write_mchbar32(0xd40, IOMMU_BASE1 | 1);
 	write_mchbar32(0xdc0, IOMMU_BASE4 | 1);
@@ -4963,9 +4877,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		ax = read_mchbar16(0x1190) & 0xf00;	// = 0x480a  // OK
 		write_mchbar16(0x1170, ax | (read_mchbar16(0x1170) & 0x107f) | 0x4080);	// OK
 		write_mchbar16(0x1170, read_mchbar16(0x1170) | 0x1000);	// OK
-#if REAL
 		udelay(1000);
-#endif
+
 		u16 ecx;
 		for (ecx = 0xffff; ecx && (read_mchbar16(0x1170) & 0x1000); ecx--);	// OK
 		write_mchbar16(0x1190, read_mchbar16(0x1190) & ~0x4000);	// OK
@@ -4976,7 +4889,6 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	udelay(10000);
 	write_mchbar16(0x2ca8, 0x8);
 
-#if REAL
 	udelay(1000);
 	dump_timings(&info);
 	cbmem_wasnot_inited = cbmem_recovery(s3resume);
@@ -4996,5 +4908,4 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		outb(0xe, 0xcf9);
 		halt();
 	}
-#endif
 }

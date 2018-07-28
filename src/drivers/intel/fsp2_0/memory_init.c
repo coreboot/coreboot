@@ -310,8 +310,6 @@ static void do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 	post_code(POST_FSP_MEMORY_EXIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_END);
 
-	fsp_debug_after_memory_init(status);
-
 	/* Handle any errors returned by FspMemoryInit */
 	fsp_handle_reset(status);
 	if (status != FSP_SUCCESS) {
@@ -320,6 +318,13 @@ static void do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 	}
 
 	do_fsp_post_memory_init(s3wake, fsp_version);
+
+	/*
+	 * fsp_debug_after_memory_init() checks whether the end of the tolum
+	 * region is the same as the top of cbmem, so must be called here
+	 * after cbmem has been initialised in do_fsp_post_memory_init().
+	 */
+	fsp_debug_after_memory_init(status);
 }
 
 /* Load the binary into the memory specified by the info header. */

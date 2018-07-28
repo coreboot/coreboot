@@ -20,6 +20,7 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/me.h>
 #include <southbridge/intel/common/pmutil.h>
+#include <southbridge/intel/common/pmbase.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
 #include <elog.h>
@@ -29,7 +30,6 @@
 static u8 mainboard_smi_ec(void)
 {
 	u8 src;
-	u32 pm1_cnt;
 #if IS_ENABLED(CONFIG_ELOG_GSMI)
 	static int battery_critical_logged;
 #endif
@@ -54,9 +54,7 @@ static u8 mainboard_smi_ec(void)
 		elog_add_event_byte(ELOG_TYPE_EC_EVENT, EC_EVENT_LID_CLOSED);
 #endif
 		/* Go to S5 */
-		pm1_cnt = inl(smm_get_pmbase() + PM1_CNT);
-		pm1_cnt |= (0xf << 10);
-		outl(pm1_cnt, smm_get_pmbase() + PM1_CNT);
+		write_pmbase32(PM1_CNT, read_pmbase32(PM1_CNT) | (0xf << 10));
 		break;
 	}
 
@@ -65,8 +63,6 @@ static u8 mainboard_smi_ec(void)
 
 void mainboard_smi_gpi(u32 gpi_sts)
 {
-	u32 pm1_cnt;
-
 	printk(BIOS_DEBUG, "mainboard_smi_gpi: %x\n", gpi_sts);
 	if (gpi_sts & (1 << EC_SMI_GPI)) {
 		/* Process all pending events from EC */
@@ -79,9 +75,7 @@ void mainboard_smi_gpi(u32 gpi_sts)
 		elog_add_event_byte(ELOG_TYPE_EC_EVENT, EC_EVENT_LID_CLOSED);
 #endif
 		/* Go to S5 */
-		pm1_cnt = inl(smm_get_pmbase() + PM1_CNT);
-		pm1_cnt |= (0xf << 10);
-		outl(pm1_cnt, smm_get_pmbase() + PM1_CNT);
+		write_pmbase32(PM1_CNT, read_pmbase32(PM1_CNT) | (0xf << 10));
 	}
 }
 

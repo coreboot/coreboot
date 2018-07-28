@@ -122,9 +122,9 @@ enum platform_type {
  * MCHBAR
  */
 
-#define MCHBAR8(x) *((volatile u8 *)(DEFAULT_MCHBAR + x))
-#define MCHBAR16(x) *((volatile u16 *)(DEFAULT_MCHBAR + x))
-#define MCHBAR32(x) *((volatile u32 *)(DEFAULT_MCHBAR + x))
+#define MCHBAR8(x) (*((volatile u8 *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR16(x) (*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
 #define MCHBAR32_OR(x, or) MCHBAR32(x) = (MCHBAR32(x) | (or))
 
 #define SSKPD		0x5d14	/* 16bit (scratchpad) */
@@ -134,9 +134,9 @@ enum platform_type {
  * EPBAR - Egress Port Root Complex Register Block
  */
 
-#define EPBAR8(x) *((volatile u8 *)(DEFAULT_EPBAR + x))
-#define EPBAR16(x) *((volatile u16 *)(DEFAULT_EPBAR + x))
-#define EPBAR32(x) *((volatile u32 *)(DEFAULT_EPBAR + x))
+#define EPBAR8(x) (*((volatile u8 *)(DEFAULT_EPBAR + (x))))
+#define EPBAR16(x) (*((volatile u16 *)(DEFAULT_EPBAR + (x))))
+#define EPBAR32(x) (*((volatile u32 *)(DEFAULT_EPBAR + (x))))
 
 #define EPPVCCAP1	0x004	/* 32bit */
 #define EPPVCCAP2	0x008	/* 32bit */
@@ -165,9 +165,9 @@ enum platform_type {
  * DMIBAR
  */
 
-#define DMIBAR8(x) *((volatile u8 *)(DEFAULT_DMIBAR + x))
-#define DMIBAR16(x) *((volatile u16 *)(DEFAULT_DMIBAR + x))
-#define DMIBAR32(x) *((volatile u32 *)(DEFAULT_DMIBAR + x))
+#define DMIBAR8(x) (*((volatile u8 *)(DEFAULT_DMIBAR + (x))))
+#define DMIBAR16(x) (*((volatile u16 *)(DEFAULT_DMIBAR + (x))))
+#define DMIBAR32(x) (*((volatile u32 *)(DEFAULT_DMIBAR + (x))))
 
 #define DMIVCECH	0x000	/* 32bit */
 #define DMIPVCCAP1	0x004	/* 32bit */

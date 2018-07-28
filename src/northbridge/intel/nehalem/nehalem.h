@@ -175,7 +175,14 @@ typedef struct {
 #define MCHBAR8(x) (*((volatile u8 *)(DEFAULT_MCHBAR + (x))))
 #define MCHBAR16(x) (*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
 #define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
-#define MCHBAR32_OR(x, or) (MCHBAR32(x) = (MCHBAR32(x) | (or)))
+#define MCHBAR8_AND(x, and) (MCHBAR8(x) = MCHBAR8(x) & (and))
+#define MCHBAR8_OR(x, or) (MCHBAR8(x) = MCHBAR8(x) | (or))
+#define MCHBAR16_AND(x, and) (MCHBAR16(x) = MCHBAR16(x) & (and))
+#define MCHBAR16_OR(x, or) (MCHBAR16(x) = MCHBAR16(x) | (or))
+#define MCHBAR32_AND(x, and) (MCHBAR32(x) = MCHBAR32(x) & (and))
+#define MCHBAR32_OR(x, or) (MCHBAR32(x) = MCHBAR32(x) | (or))
+#define MCHBAR32_AND_OR(x, and, or) \
+	(MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
 
 #define BIOS_RESET_CPL	0x5da8	/* 8bit */
 

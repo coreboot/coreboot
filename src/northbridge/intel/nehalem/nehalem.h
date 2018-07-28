@@ -102,33 +102,6 @@ typedef struct {
 #define D1F0_VCCAP 0x104
 #define D1F0_VC0RCTL 0x114
 
-/*
- * MCHBAR
- */
-
-#define MCHBAR8(x) *((volatile u8 *)(DEFAULT_MCHBAR + x))
-#define MCHBAR16(x) *((volatile u16 *)(DEFAULT_MCHBAR + x))
-#define MCHBAR32(x) *((volatile u32 *)(DEFAULT_MCHBAR + x))
-
-/*
- * DMIBAR
- */
-
-#define DMIBAR8(x) *((volatile u8 *)(DEFAULT_DMIBAR + x))
-#define DMIBAR16(x) *((volatile u16 *)(DEFAULT_DMIBAR + x))
-#define DMIBAR32(x) *((volatile u32 *)(DEFAULT_DMIBAR + x))
-
-#define DMIVC0RCTL 0x14
-#define DMIESD  0x44
-
-/*
- * EPBAR
- */
-
-#define EPBAR8(x) *((volatile u8 *)(DEFAULT_EPBAR + x))
-#define EPBAR16(x) *((volatile u16 *)(DEFAULT_EPBAR + x))
-#define EPBAR32(x) *((volatile u32 *)(DEFAULT_EPBAR + x))
-
 /* Chipset types */
 #define NEHALEM_MOBILE	0
 #define NEHALEM_DESKTOP	1
@@ -199,10 +172,10 @@ typedef struct {
  * MCHBAR
  */
 
-#define MCHBAR8(x) *((volatile u8 *)(DEFAULT_MCHBAR + x))
-#define MCHBAR16(x) *((volatile u16 *)(DEFAULT_MCHBAR + x))
-#define MCHBAR32(x) *((volatile u32 *)(DEFAULT_MCHBAR + x))
-#define MCHBAR32_OR(x, or) MCHBAR32(x) = (MCHBAR32(x) | (or))
+#define MCHBAR8(x) (*((volatile u8 *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR16(x) (*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR32_OR(x, or) (MCHBAR32(x) = (MCHBAR32(x) | (or)))
 
 #define BIOS_RESET_CPL	0x5da8	/* 8bit */
 
@@ -210,9 +183,9 @@ typedef struct {
  * EPBAR - Egress Port Root Complex Register Block
  */
 
-#define EPBAR8(x) *((volatile u8 *)(DEFAULT_EPBAR + x))
-#define EPBAR16(x) *((volatile u16 *)(DEFAULT_EPBAR + x))
-#define EPBAR32(x) *((volatile u32 *)(DEFAULT_EPBAR + x))
+#define EPBAR8(x) (*((volatile u8 *)(DEFAULT_EPBAR + (x))))
+#define EPBAR16(x) (*((volatile u16 *)(DEFAULT_EPBAR + (x))))
+#define EPBAR32(x) (*((volatile u32 *)(DEFAULT_EPBAR + (x))))
 
 #define EPPVCCAP1	0x004	/* 32bit */
 #define EPPVCCAP2	0x008	/* 32bit */
@@ -241,9 +214,9 @@ typedef struct {
  * DMIBAR
  */
 
-#define DMIBAR8(x) *((volatile u8 *)(DEFAULT_DMIBAR + x))
-#define DMIBAR16(x) *((volatile u16 *)(DEFAULT_DMIBAR + x))
-#define DMIBAR32(x) *((volatile u32 *)(DEFAULT_DMIBAR + x))
+#define DMIBAR8(x) (*((volatile u8 *)(DEFAULT_DMIBAR + (x))))
+#define DMIBAR16(x) (*((volatile u16 *)(DEFAULT_DMIBAR + (x))))
+#define DMIBAR32(x) (*((volatile u32 *)(DEFAULT_DMIBAR + (x))))
 
 #define DMIVCECH	0x000	/* 32bit */
 #define DMIPVCCAP1	0x004	/* 32bit */
@@ -252,7 +225,7 @@ typedef struct {
 #define DMIPVCCCTL	0x00c	/* 16bit */
 
 #define DMIVC0RCAP	0x010	/* 32bit */
-#define DMIVC0RCTL0	0x014	/* 32bit */
+#define DMIVC0RCTL	0x014	/* 32bit */
 #define DMIVC0RSTS	0x01a	/* 16bit */
 
 #define DMIVC1RCAP	0x01c	/* 32bit */

@@ -20,6 +20,9 @@ Please follow this official [guide] to install sphinx.
 You will also need python-recommonmark for sphinx to be able to handle
 markdown documenation.
 
+The recommended version is sphinx 1.7.7, sphinx_rtd_theme 0.4.1 and
+recommonmark 0.4.0.
+
 ### Optional
 
 Install [shpinx-autobuild] for rebuilding markdown/rst sources on the fly!
@@ -46,6 +49,11 @@ Documentation:
      the current theme doesn't allow bigger images.
 12.  Shouldn't cover implementation details; for details, the code is the
      reference.
+
+## Referencing markdown documents
+
+Starting with Sphinx 1.6 recommonmark's *auto_doc_ref* feature is broken.
+To reference documents use the TOC tree or inline RST code.
 
 ## Markdown and Tables
 

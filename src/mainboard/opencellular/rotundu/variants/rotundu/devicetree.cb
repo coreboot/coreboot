@@ -75,7 +75,11 @@ chip soc/intel/fsp_baytrail
 		device pci 1e.3 on end	# 8086 0F0A -   HSUART 1
 		device pci 1e.4 off end	# 8086 0F0C -   HSUART 2
 		device pci 1e.5 off end	# 8086 0F0E -   SPI
-		device pci 1f.0 on end	# 8086 0F1C - LPC bridge
+		device pci 1f.0 on
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end	# 8086 0F1C - LPC bridge
 		device pci 1f.3 on end	# 8086 0F12 - SMBus 0
 	end
 end

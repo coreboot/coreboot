@@ -36,7 +36,7 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->s5u1 = 0;
 
 	/* TPM Present */
-	gnvs->tpmp = 0;
+	gnvs->tpmp = 1;
 
 	/* Enable DPTF */
 	gnvs->dpte = 0;

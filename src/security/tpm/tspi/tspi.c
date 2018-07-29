@@ -178,13 +178,21 @@ uint32_t tpm_clear_and_reenable(void)
 	return TPM_SUCCESS;
 }
 
-uint32_t tpm_extend_pcr(int pcr, uint8_t *digest, uint8_t *out_digest)
+uint32_t tpm_extend_pcr(int pcr, uint8_t *digest,
+			size_t digest_len, const char *name)
 {
+	uint32_t result;
+
 	if (!digest)
 		return TPM_E_IOERROR;
 
-	if (out_digest)
-		return tlcl_extend(pcr, digest, out_digest);
+	result = tlcl_extend(pcr, digest, NULL);
+	if (result != TPM_SUCCESS)
+		return result;
 
-	return tlcl_extend(pcr, digest, NULL);
+	result = tcpa_log_add_table_entry(name, pcr, digest, digest_len);
+	if (result != 0)
+		printk(BIOS_ERR, "ERROR: Couldn't create TCPA log entry\n");
+
+	return 0;
 }

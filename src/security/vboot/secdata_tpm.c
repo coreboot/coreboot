@@ -61,11 +61,13 @@
 		}							\
 	} while (0)
 
+#define TPM_PCR_GBB_FLAGS_NAME "GBB flags"
+#define TPM_PCR_GBB_HWID_NAME "GBB HWID"
 
 static uint32_t safe_write(uint32_t index, const void *data, uint32_t length);
 
 uint32_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
-			enum vb2_pcr_digest which_digest)
+			  enum vb2_pcr_digest which_digest)
 {
 	uint8_t buffer[VB2_PCR_DIGEST_RECOMMENDED_SIZE];
 	uint32_t size = sizeof(buffer);
@@ -77,7 +79,15 @@ uint32_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
 	if (size < TPM_PCR_MINIMUM_DIGEST_SIZE)
 		return VB2_ERROR_UNKNOWN;
 
-	return tpm_extend_pcr(pcr, buffer, NULL);
+	switch (which_digest) {
+	case BOOT_MODE_PCR:
+		return tpm_extend_pcr(pcr, buffer, size,
+				      TPM_PCR_GBB_FLAGS_NAME);
+	case HWID_DIGEST_PCR:
+		return tpm_extend_pcr(pcr, buffer, size, TPM_PCR_GBB_HWID_NAME);
+	default:
+		return VB2_ERROR_UNKNOWN;
+	}
 }
 
 static uint32_t read_space_firmware(struct vb2_context *ctx)
@@ -440,6 +450,9 @@ uint32_t vboot_setup_tpm(struct vb2_context *ctx)
 	result = tpm_setup(ctx->flags & VB2_CONTEXT_S3_RESUME);
 	if (result == TPM_E_MUST_REBOOT)
 		ctx->flags |= VB2_CONTEXT_SECDATA_WANTS_REBOOT;
+
+	// TCPA cbmem log
+	tcpa_log_init();
 
 	return result;
 }

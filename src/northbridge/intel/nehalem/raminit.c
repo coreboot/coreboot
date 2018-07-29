@@ -96,20 +96,6 @@ struct ram_training {
 
 #include <lib.h>		/* Prototypes */
 
-static inline u32 read_mchbar32(u32 addr)
-{
-	return MCHBAR32(addr);
-}
-
-static inline u16 read_mchbar16(u32 addr)
-{
-	return MCHBAR16(addr);
-}
-
-static inline u8 read_mchbar8(u32 addr)
-{
-	return MCHBAR8(addr);
-}
 
 static void clflush(u32 addr)
 {
@@ -3676,8 +3662,7 @@ static void dmi_setup(void)
 	gav(read8(DEFAULT_DMIBAR + 0x254));
 	write8(DEFAULT_DMIBAR + 0x254, 0x1);
 	write16(DEFAULT_DMIBAR + 0x1b8, 0x18f2);
-	read_mchbar16(0x48);
-	MCHBAR16(0x48) = 0x2;
+	MCHBAR16_AND_OR(0x48, 0, 0x2);
 
 	write32(DEFAULT_DMIBAR + 0xd68, read32(DEFAULT_DMIBAR + 0xd68) | 0x08000000);
 
@@ -3711,8 +3696,7 @@ void chipset_init(const int s3resume)
 	MCHBAR16(0x1170) = 0xa880;
 	MCHBAR8(0x11c1) = 0x1;
 	MCHBAR16(0x1170) = 0xb880;
-	read_mchbar8(0x1210);
-	MCHBAR8(0x1210) = 0x84;
+	MCHBAR8_AND_OR(0x1210, 0, 0x84);
 
 	if (get_option(&gfxsize, "gfx_uma_size") != CB_SUCCESS) {
 		/* 0 for 32MB */
@@ -3731,8 +3715,7 @@ void chipset_init(const int s3resume)
 		pci_read_config8(NORTHBRIDGE, 0x8);	// = 0x18
 		MCHBAR16_OR(0x2c30, 0x200);
 		MCHBAR16(0x2c32) = 0x434;
-		read_mchbar32(0x2c44);
-		MCHBAR32(0x2c44) = 0x1053687;
+		MCHBAR32_AND_OR(0x2c44, 0, 0x1053687);
 		pci_read_config8(GMA, 0x62);	// = 0x2
 		pci_write_config8(GMA, 0x62, 0x2);
 		read8(DEFAULT_RCBA + 0x2318);
@@ -3741,8 +3724,7 @@ void chipset_init(const int s3resume)
 		write8(DEFAULT_RCBA + 0x2320, 0xfc);
 	}
 
-	read_mchbar32(0x30);
-	MCHBAR32(0x30) = 0x40;
+	MCHBAR32_AND_OR(0x30, 0, 0x40);
 
 	pci_write_config16(NORTHBRIDGE, D0F0_GGC, ggc);
 	gav(read32(DEFAULT_RCBA + 0x3428));
@@ -3757,6 +3739,11 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	u8 x2ca8;
 	u16 deven;
 	int cbmem_wasnot_inited;
+
+	/* only used for dummy reads */
+	volatile u8 tmp8;
+	volatile u16 tmp16;
+	volatile u32 tmp32;
 
 	x2ca8 = MCHBAR8(0x2ca8);
 	deven = pci_read_config16(NORTHBRIDGE, D0F0_DEVEN);
@@ -4060,24 +4047,22 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		set_2dxx_series(&info, s3resume);
 
 		if (!(deven & 8)) {
-			read_mchbar32(0x2cb0);
-			MCHBAR32(0x2cb0) = 0x40;
+			MCHBAR32_AND_OR(0x2cb0, 0, 0x40);
 		}
 
 		udelay(1000);
 
 		if (deven & 8) {
 			MCHBAR32_OR(0xff8, 0x1800);
-			read_mchbar32(0x2cb0);
-			MCHBAR32(0x2cb0) = 0x00;
+			MCHBAR32_AND(0x2cb0, 0x00);
 			pci_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4c);
 			pci_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4c);
 			pci_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4e);
 
-			read_mchbar8(0x1150);
-			read_mchbar8(0x1151);
-			read_mchbar8(0x1022);
-			read_mchbar8(0x16d0);
+			tmp8 = MCHBAR8(0x1150);
+			tmp8 = MCHBAR8(0x1151);
+			tmp8 = MCHBAR8(0x1022);
+			tmp8 = MCHBAR8(0x16d0);
 			MCHBAR32(0x1300) = 0x60606060;
 			MCHBAR32(0x1304) = 0x60606060;
 			MCHBAR32(0x1308) = 0x78797a7b;
@@ -4128,13 +4113,11 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 			MCHBAR16(0x11c0) = 0xc40b;
 			MCHBAR16(0x11c2) = 0x303;
 			MCHBAR16(0x11c4) = 0x301;
-			read_mchbar32(0x1190);
-			MCHBAR32(0x1190) = 0x8900080a;
+			MCHBAR32_AND_OR(0x1190, 0, 0x8900080a);
 			MCHBAR32(0x11b8) = 0x70c3000;
 			MCHBAR8(0x11ec) = 0xa;
 			MCHBAR16(0x1100) = 0x800;
-			read_mchbar32(0x11bc);
-			MCHBAR32(0x11bc) = 0x1e84800;
+			MCHBAR32_AND_OR(0x11bc, 0, 0x1e84800);
 			MCHBAR16(0x11ca) = 0xfa;
 			MCHBAR32(0x11e4) = 0x4e20;
 			MCHBAR8(0x11bc) = 0xf;
@@ -4168,10 +4151,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	if ((deven & 8) && x2ca8 == 0) {
 		MCHBAR16(0x1214) = 0x320;
 		MCHBAR32(0x1600) = 0x40000000;
-		read_mchbar32(0x11f4);
-		MCHBAR32(0x11f4) = 0x10000000;
-		read_mchbar16(0x1230);
-		MCHBAR16(0x1230) = 0x8000;
+		MCHBAR32_AND_OR(0x11f4, 0, 0x10000000);
+		MCHBAR16_AND_OR(0x1230, 0, 0x8000);
 		MCHBAR32(0x1400) = 0x13040020;
 		MCHBAR32(0x1404) = 0xe090120;
 		MCHBAR32(0x1408) = 0x5120220;
@@ -4268,12 +4249,11 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		MCHBAR16(0x1220) = 0x1388;
 	}
 
-	read_mchbar32(0x2c80);	// !!!!
-	MCHBAR32(0x2c80) = 0x1053688;
-	read_mchbar32(0x1c04);	// !!!!
+	MCHBAR32_AND_OR(0x2c80, 0, 0x1053688);	// !!!!
+	tmp32 = MCHBAR32(0x1c04);	// !!!!
 	MCHBAR32(0x1804) = 0x406080;
 
-	read_mchbar8(0x2ca8);
+	tmp8 = MCHBAR8(0x2ca8);
 
 	if (x2ca8 == 0) {
 		MCHBAR8_AND(0x2ca8, ~3);
@@ -4283,12 +4263,11 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	}
 
 	MCHBAR8(0x2ca8) = MCHBAR8(0x2ca8);
-	read_mchbar32(0x2c80);	// !!!!
-	MCHBAR32(0x2c80) = 0x53688;
+	MCHBAR32_AND_OR(0x2c80, 0, 0x53688);	// !!!!
 	pci_write_config32(PCI_DEV (0xff, 0, 0), 0x60, 0x20220);
-	read_mchbar16(0x2c20);	// !!!!
-	read_mchbar16(0x2c10);	// !!!!
-	read_mchbar16(0x2c00);	// !!!!
+	tmp16 = MCHBAR16(0x2c20);	// !!!!
+	tmp16 = MCHBAR16(0x2c10);	// !!!!
+	tmp16 = MCHBAR16(0x2c00);	// !!!!
 	MCHBAR16(0x2c00) = 0x8c0;
 	udelay(1000);
 	write_1d0(0, 0x33d, 0, 0);
@@ -4301,10 +4280,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	MCHBAR16(0x616) = 0x26a;
 	MCHBAR32(0x134) = 0x856000;
 	MCHBAR32(0x160) = 0x5ffffff;
-	read_mchbar32(0x114);	// !!!!
-	MCHBAR32(0x114) = 0xc2024440;
-	read_mchbar32(0x118);	// !!!!
-	MCHBAR32(0x118) = 0x4;
+	MCHBAR32_AND_OR(0x114, 0, 0xc2024440);	// !!!!
+	MCHBAR32_AND_OR(0x118, 0, 0x4);	// !!!!
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
 		MCHBAR32(0x260 + (channel << 10)) = 0x30809ff |
 			((info.populated_ranks_mask[channel] & 3) << 20);
@@ -4394,12 +4371,10 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		write_1d0(info.cached_training->reg_10b, 0x10b, 6, 1);
 	}
 
-	read_mchbar32(0x1f4);	// !!!!
-	MCHBAR32(0x1f4) = 0x20000;
+	MCHBAR32_AND_OR(0x1f4, 0, 0x20000);	// !!!!
 	MCHBAR32(0x1f0) = 0x1d000200;
-	read_mchbar8(0x1f0);	// !!!!
-	MCHBAR8(0x1f0) = 0x1;
-	read_mchbar8(0x1f0);	// !!!!
+	MCHBAR8_AND_OR(0x1f0, 0, 0x1);	// !!!!
+	tmp8 = MCHBAR8(0x1f0);	// !!!!
 
 	program_board_delay(&info);
 
@@ -4427,10 +4402,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_1d0(0, 0xae, 6, 1);
 	read_1d0(0x300, 4);	// = 0x48088080 // !!!!
 	write_1d0(0, 0x300, 6, 1);
-	read_mchbar16(0x356);	// !!!!
-	MCHBAR16(0x356) = 0x1040;
-	read_mchbar16(0x756);	// !!!!
-	MCHBAR16(0x756) = 0x1040;
+	MCHBAR16_AND_OR(0x356, 0, 0x1040);	// !!!!
+	MCHBAR16_AND_OR(0x756, 0, 0x1040);	// !!!!
 	MCHBAR32_AND(0x140, ~0x07000000);
 	MCHBAR32_AND(0x138, ~0x07000000);
 	MCHBAR32(0x130) = 0x31111301;
@@ -4460,7 +4433,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 			info.populated_ranks[channel][0][0] ? 9 : 1);
 
 	rmw_1d0(0x116, 0xe, 1, 4, 1);	// = 0x4040432 // !!!!
-	read_mchbar32(0x144);	// !!!!
+	tmp32 = MCHBAR32(0x144);	// !!!!
 	write_1d0(2, 0xae, 6, 1);
 	write_1d0(2, 0x300, 6, 1);
 	write_1d0(2, 0x121, 3, 1);
@@ -4537,10 +4510,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 	MCHBAR8(0x12c) = 0x9f;
 
-	read_mchbar8(0x271);	// 2 // !!!!
-	MCHBAR8(0x271) = 0xe;
-	read_mchbar8(0x671);	// !!!!
-	MCHBAR8(0x671) = 0xe;
+	MCHBAR8_AND_OR(0x271, 0, 0xe);	// 2 // !!!!
+	MCHBAR8_AND_OR(0x671, 0, 0xe);	// !!!!
 
 	if (!s3resume) {
 		for (channel = 0; channel < NUM_CHANNELS; channel++) {
@@ -4551,8 +4522,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 				(info.populated_ranks[channel][0][1] << 5);
 			MCHBAR32(0x29c + (channel << 10)) = 0x77a;
 		}
-		read_mchbar32(0x2c0);	/// !!!
-		MCHBAR32(0x2c0) = 0x6009cc00;
+		MCHBAR32_AND_OR(0x2c0, 0, 0x6009cc00);	// !!!!
 
 		{
 			u8 a, b;
@@ -4601,8 +4571,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 				(info.populated_ranks[channel][0][1] << 5);
 			MCHBAR32(0x29c + (channel << 10)) = 0x77a;
 		}
-		read_mchbar32(0x2c0);	/// !!!
-		MCHBAR32(0x2c0) = 0x6009cc00;
+		MCHBAR32_AND_OR(0x2c0, 0, 0x6009cc00);	// !!!!
 	}
 
 	MCHBAR32_AND(0xfa4, ~0x01000002);
@@ -4714,7 +4683,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	reg1c = read32p(DEFAULT_EPBAR | 0x01c);	// = 0x8001 // OK
 	pci_read_config32(NORTHBRIDGE, 0x40);	// = DEFAULT_EPBAR | 0x001 // OK
 	write32p(DEFAULT_EPBAR | 0x01c, reg1c);	// OK
-	read_mchbar8(0xe08);	// = 0x0
+	tmp8 = MCHBAR8(0xe08);	// = 0x0
 	pci_read_config32(NORTHBRIDGE, 0xe4);	// = 0x316126
 	MCHBAR8_OR(0x1210, 2);
 	MCHBAR32(0x1200) = 0x8800440;

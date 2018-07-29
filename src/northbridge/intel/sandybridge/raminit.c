@@ -36,7 +36,7 @@
 #include "raminit_common.h"
 #include "sandybridge.h"
 
-#define MRC_CACHE_VERSION 0
+#define MRC_CACHE_VERSION 1
 
 /* FIXME: no ECC support.  */
 /* FIXME: no support for 3-channel chipsets.  */

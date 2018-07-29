@@ -47,6 +47,9 @@ config CPU_SPECIFIC_OPTIONS
 	# Microcode header files are delivered in FSP package
 	select USES_MICROCODE_HEADER_FILES if HAVE_FSP_BIN
 
+config VBOOT
+	select VBOOT_STARTS_IN_ROMSTAGE
+
 config SOC_INTEL_FSP_BAYTRAIL_MD
 	bool
 	default n

@@ -42,6 +42,7 @@ ramstage-y += northcluster.c
 ramstage-y += ramstage.c
 ramstage-y += gpio.c
 romstage-y += gpio.c
+romstage-y += pmutil.c
 ramstage-y += pmutil.c
 ramstage-y += southcluster.c
 romstage-y += reset.c

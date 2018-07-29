@@ -44,8 +44,11 @@
 		Store (And(Arg0, 7), DSEN)
 	}
 
-	/* Using Notify is the right way. But Windows doesn't handle
-	   it well. So use both method in a way to avoid double action.
+	/*
+	 * Decrement display brightness.
+	 *
+	 * Using Notify is the right way. But Windows doesn't handle
+	 * it well. So use both method in a way to avoid double action.
 	 */
 	Method (DECB, 0, NotSerialized)
 	{
@@ -62,6 +65,9 @@
 		}
 	}
 
+	/*
+	 * Increment display brightness.
+	 */
 	Method (INCB, 0, NotSerialized)
 	{
 		If (BRCT)

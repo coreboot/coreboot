@@ -22,7 +22,11 @@ Device (GFX0)
 	Field (GFXC, DWordAcc, NoLock, Preserve)
 	{
 		Offset (0x10),
-		BAR0, 64
+		BAR0, 64,
+		Offset (0xe4),
+		ASLE, 32,
+		Offset (0xfc),
+		ASLS, 32,
 	}
 
 	OperationRegion (GFRG, SystemMemory, And (BAR0, 0xfffffffffffffff0), 0x400000)

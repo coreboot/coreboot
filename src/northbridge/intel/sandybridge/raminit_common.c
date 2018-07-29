@@ -1947,17 +1947,15 @@ int write_training(ramctr_timing * ctrl)
 	volatile u32 tmp;
 
 	FOR_ALL_POPULATED_CHANNELS
-		MCHBAR32(0x4008 + 0x400 * channel) =
-			MCHBAR32(0x4008 + 0x400 * channel) | 0x8000000;
+		MCHBAR32_OR(0x4008 + 0x400 * channel, 0x8000000);
 
 	FOR_ALL_POPULATED_CHANNELS {
 		write_op(ctrl, channel);
-		MCHBAR32(0x4020 + 0x400 * channel) =
-			MCHBAR32(0x4020 + 0x400 * channel) | 0x200000;
+		MCHBAR32_OR(0x4020 + 0x400 * channel, 0x200000);
 	}
 
 	/* refresh disable */
-	MCHBAR32(0x5030) = MCHBAR32(0x5030) & ~8;
+	MCHBAR32_AND(0x5030, ~8);
 	FOR_ALL_POPULATED_CHANNELS {
 		write_op(ctrl, channel);
 	}
@@ -1992,11 +1990,10 @@ int write_training(ramctr_timing * ctrl)
 		wait_428c(channel);
 
 	/* refresh enable */
-	MCHBAR32(0x5030) = MCHBAR32(0x5030) | 8;
+	MCHBAR32_OR(0x5030, 8);
 
 	FOR_ALL_POPULATED_CHANNELS {
-		MCHBAR32(0x4020 + 0x400 * channel) =
-			~0x00200000 & MCHBAR32(0x4020 + 0x400 * channel);
+		MCHBAR32_AND(0x4020 + 0x400 * channel, ~0x00200000);
 		tmp = MCHBAR32(0x428c + 0x400 * channel);
 		wait_428c(channel);
 
@@ -2171,12 +2168,11 @@ static void reprogram_320c(ramctr_timing * ctrl)
 
 		MCHBAR32(0x4284 + 0x400 * channel) = 1;
 		wait_428c(channel);
-		MCHBAR32(0x4020 + 0x400 * channel) =
-			MCHBAR32(0x4020 + 0x400 * channel) | 0x200000;
+		MCHBAR32_OR(0x4020 + 0x400 * channel, 0x200000);
 	}
 
 	/* refresh disable */
-	MCHBAR32(0x5030) = MCHBAR32(0x5030) & ~8;
+	MCHBAR32_AND(0x5030, ~8);
 	FOR_ALL_POPULATED_CHANNELS {
 		wait_428c(channel);
 
@@ -2353,8 +2349,7 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank,
 		 * in this mode only RD and RDA are allowed
 		 * all reads return a predefined pattern */
 		MCHBAR32(0x4220 + 0x400 * channel) = 0x1f000;
-		MCHBAR32(0x4230 + 0x400 * channel) =
-			0xc01 | (ctrl->tMOD << 16);
+		MCHBAR32(0x4230 + 0x400 * channel) = 0xc01 | (ctrl->tMOD << 16);
 		MCHBAR32(0x4200 + 0x400 * channel) =
 			(slotrank << 24) | 0x360004;
 		MCHBAR32(0x4210 + 0x400 * channel) = 0;
@@ -2803,10 +2798,8 @@ int discover_timC_write(ramctr_timing *ctrl)
 
 	for (i = 0; i < 3; i++)
 		FOR_ALL_POPULATED_CHANNELS {
-			MCHBAR32(0xe3c + (channel * 0x100)) =
-				(rege3c_b24[i] << 24) |
-				(MCHBAR32(0xe3c + (channel * 0x100))
-				   & ~0x3f000000);
+			MCHBAR32_AND_OR(0xe3c + (channel * 0x100), ~0x3f000000,
+				rege3c_b24[i] << 24);
 			udelay(2);
 			for (pat = 0; pat < NUM_PATTERNS; pat++) {
 				FOR_ALL_POPULATED_RANKS {
@@ -2862,8 +2855,7 @@ int discover_timC_write(ramctr_timing *ctrl)
 		}
 
 	FOR_ALL_CHANNELS {
-		MCHBAR32((channel * 0x100) + 0xe3c) =
-			0 | (MCHBAR32((channel * 0x100) + 0xe3c) & ~0x3f000000);
+		MCHBAR32_AND((channel * 0x100) + 0xe3c, ~0x3f000000);
 		udelay(2);
 	}
 
@@ -3060,10 +3052,8 @@ void set_4008c(ramctr_timing * ctrl)
 		dram_odt_stretch(ctrl, channel);
 
 		MCHBAR32(0x4008 + (channel << 10)) =
-			0x0a000000
-			| (b20 << 20)
-			| ((ctrl->ref_card_offset[channel] + 2) << 16)
-			| b4_8_12;
+			0x0a000000 | (b20 << 20) |
+			((ctrl->ref_card_offset[channel] + 2) << 16) | b4_8_12;
 	}
 }
 
@@ -3073,7 +3063,7 @@ void set_42a0(ramctr_timing * ctrl)
 	FOR_ALL_POPULATED_CHANNELS {
 		MCHBAR32(0x42a0 + 0x400 * channel) =
 			0x00001000 | ctrl->rankmap[channel];
-		MCHBAR32(0x4004 + 0x400 * channel) &= ~0x20000000;	// OK
+		MCHBAR32_AND(0x4004 + 0x400 * channel, ~0x20000000);
 	}
 }
 
@@ -3094,8 +3084,8 @@ void final_registers(ramctr_timing * ctrl)
 
 	MCHBAR32(0x4cd4) = 0x00000046;
 
-	MCHBAR32(0x400c) = (MCHBAR32(0x400c) & 0xFFFFCFFF) | 0x1000;	// OK
-	MCHBAR32(0x440c) = (MCHBAR32(0x440c) & 0xFFFFCFFF) | 0x1000;	// OK
+	MCHBAR32_AND_OR(0x400c, 0xFFFFCFFF, 0x1000);
+	MCHBAR32_AND_OR(0x440c, 0xFFFFCFFF, 0x1000);
 
 	if (is_mobile)
 		/* APD - DLL Off, 64 DCLKs until idle, decision per rank */
@@ -3129,14 +3119,14 @@ void final_registers(ramctr_timing * ctrl)
 	}
 
 	MCHBAR32(0x5880) = 0xca9171e5;
-	MCHBAR32(0x5888) = (MCHBAR32(0x5888) & ~0xffffff) | 0xe4d5d0;
-	MCHBAR32(0x58a8) = MCHBAR32(0x58a8) & ~0x1f;
-	MCHBAR32(0x4294) = (MCHBAR32(0x4294) & ~0x30000) | (1 << 16);
-	MCHBAR32(0x4694) = (MCHBAR32(0x4694) & ~0x30000) | (1 << 16);
+	MCHBAR32_AND_OR(0x5888, ~0xffffff, 0xe4d5d0);
+	MCHBAR32_AND(0x58a8, ~0x1f);
+	MCHBAR32_AND_OR(0x4294, ~0x30000, 1 << 16);
+	MCHBAR32_AND_OR(0x4694, ~0x30000, 1 << 16);
 
-	MCHBAR32(0x5030) |= 1;	// OK
-	MCHBAR32(0x5030) |= 0x80;	// OK
-	MCHBAR32(0x5f18) = 0xfa;	// OK
+	MCHBAR32(0x5030) |= 1;
+	MCHBAR32(0x5030) |= 0x80;
+	MCHBAR32(0x5f18) = 0xfa;
 
 	/* Find a populated channel.  */
 	FOR_ALL_POPULATED_CHANNELS
@@ -3194,13 +3184,11 @@ void restore_timings(ramctr_timing * ctrl)
 	}
 
 	FOR_ALL_POPULATED_CHANNELS
-		MCHBAR32(0x4008 + 0x400 * channel) =
-			MCHBAR32(0x4008 + 0x400 * channel) | 0x8000000;
+		MCHBAR32_OR(0x4008 + 0x400 * channel, 0x8000000);
 
 	FOR_ALL_POPULATED_CHANNELS {
 		udelay (1);
-		MCHBAR32(0x4020 + 0x400 * channel) =
-			MCHBAR32(0x4020 + 0x400 * channel) | 0x200000;
+		MCHBAR32_OR(0x4020 + 0x400 * channel, 0x200000);
 	}
 
 	printram("CPE\n");
@@ -3253,8 +3241,7 @@ void restore_timings(ramctr_timing * ctrl)
 	MCHBAR32(0x3000) = 0;
 
 	FOR_ALL_CHANNELS {
-		MCHBAR32(channel * 0x100 + 0xe3c) =
-			0 | (MCHBAR32(channel * 0x100 + 0xe3c) & ~0x3f000000);
+		MCHBAR32_AND(channel * 0x100 + 0xe3c, ~0x3f000000);
 		udelay(2);
 	}
 

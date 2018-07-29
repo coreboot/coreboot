@@ -260,14 +260,14 @@ static void *get_tcpa_log(u32 *size)
 	const struct cbmem_entry *ce;
 	const u32 tcpa_default_log_len = 0x10000;
 	void *lasa;
-	ce = cbmem_entry_find(CBMEM_ID_TCPA_LOG);
+	ce = cbmem_entry_find(CBMEM_ID_TCPA_TCG_LOG);
 	if (ce) {
 		lasa = cbmem_entry_start(ce);
 		*size = cbmem_entry_size(ce);
 		printk(BIOS_DEBUG, "TCPA log found at %p\n", lasa);
 		return lasa;
 	}
-	lasa = cbmem_add(CBMEM_ID_TCPA_LOG, tcpa_default_log_len);
+	lasa = cbmem_add(CBMEM_ID_TCPA_TCG_LOG, tcpa_default_log_len);
 	if (!lasa) {
 		printk(BIOS_ERR, "TCPA log creation failed\n");
 		return NULL;

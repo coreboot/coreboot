@@ -96,22 +96,6 @@ struct ram_training {
 
 #include <lib.h>		/* Prototypes */
 
-static inline void write_mchbar32(u32 addr, u32 val)
-{
-	MCHBAR32(addr) = val;
-}
-
-static inline void write_mchbar16(u32 addr, u16 val)
-{
-	MCHBAR16(addr) = val;
-}
-
-static inline void write_mchbar8(u32 addr, u8 val)
-{
-	MCHBAR8(addr) = val;
-}
-
-
 static inline u32 read_mchbar32(u32 addr)
 {
 	return MCHBAR32(addr);
@@ -158,7 +142,7 @@ static void write_1d0(u32 val, u16 addr, int bits, int flag)
 	MCHBAR32(0x1d4) =
 		(val & ((1 << bits) - 1)) | (2 << bits) | (flag << bits);
 	MCHBAR32(0x1d0) = 0x40000000 | addr;
-	while (read_mchbar32(0x1d0) & 0x800000)
+	while (MCHBAR32(0x1d0) & 0x800000)
 		;
 }
 
@@ -297,7 +281,7 @@ write_500(struct raminfo *info, int channel, u32 val, u16 addr, int bits,
 	MCHBAR32(0x504 + (channel << 10)) =
 		(val & ((1 << bits) - 1)) | (2 << bits) | (flag << bits);
 	MCHBAR32(0x500 + (channel << 10)) = 0x40000000 | addr;
-	while (read_mchbar32(0x500 + (channel << 10)) & 0x800000)
+	while (MCHBAR32(0x500 + (channel << 10)) & 0x800000)
 		;
 }
 
@@ -518,8 +502,8 @@ static void set_334(int zero)
 				    MCHBAR32(0x13c + 8 * k));
 			}
 
-			write_mchbar32(0x334 + (channel << 10) + (j * 0x44),
-				       zero ? 0 : val3[j]);
+			MCHBAR32(0x334 + (channel << 10) + (j * 0x44)) =
+				zero ? 0 : val3[j];
 			MCHBAR32(0x32c + (channel << 10) + (j * 0x44)) =
 				zero ? 0 : (0x18191819 & lmask);
 			MCHBAR16(0x34a + (channel << 10) + (j * 0x44)) = c;
@@ -1282,7 +1266,7 @@ static void program_board_delay(struct raminfo *info)
 			 (frequency_11(info) * 2 -
 			  4 * (info->fsb_frequency))) >> 3, 7);
 	}
-	if (read_mchbar8(0x2ca9) & 1)
+	if (MCHBAR8(0x2ca9) & 1)
 		some_delay_3_half_cycles = 3;
 	for (channel = 0; channel < NUM_CHANNELS; channel++) {
 		MCHBAR32_OR(0x220 + (channel << 10), 0x18001117);
@@ -1318,7 +1302,7 @@ static void program_board_delay(struct raminfo *info)
 			  0x4c9, 4, 1);
 	}
 
-	write_mchbar8(0x2c4, ((1 + (info->clock_speed_index != 0)) << 6) | 0xC);
+	MCHBAR8(0x2c4) = ((1 + (info->clock_speed_index != 0)) << 6) | 0xC;
 	{
 		u8 freq_divisor = 2;
 		if (info->fsb_frequency == frequency_11(info))
@@ -1648,7 +1632,8 @@ static void save_timings(struct raminfo *info)
 		reg32 = MCHBAR32((channel << 10) + 0x274);
 		train.reg274265[channel][0] = reg32 >> 16;
 		train.reg274265[channel][1] = reg32 & 0xffff;
-		train.reg274265[channel][2] = read_mchbar16 ((channel << 10) + 0x265) >> 8;
+		train.reg274265[channel][2] =
+			MCHBAR16((channel << 10) + 0x265) >> 8;
 	}
 	train.reg2ca9_bit0 = MCHBAR8(0x2ca9) & 1;
 	train.reg_6dc = MCHBAR32(0x6dc);
@@ -1688,13 +1673,15 @@ static void wait_heci_cb_avail(int len)
 		u32 raw;
 	} csr;
 
-	while (!(read32(DEFAULT_HECIBAR + 0xc) & 8));
+	while (!(read32(DEFAULT_HECIBAR + 0xc) & 8))
+		;
 
 	do
 		csr.raw = read32(DEFAULT_HECIBAR + 0x4);
 	while (len >
 	       csr.csr.buffer_depth - (csr.csr.buffer_write_ptr -
-				       csr.csr.buffer_read_ptr));
+				       csr.csr.buffer_read_ptr))
+		;
 }
 
 static void send_heci_packet(struct mei_header *head, u32 *payload)
@@ -1771,8 +1758,9 @@ recv_heci_packet(struct raminfo *info, struct mei_header *head, u32 *packet,
 
 	do
 		csr.raw = read32(DEFAULT_HECIBAR + 0xc);
-	while ((head->length + 3) >> 2 >
-	       csr.csr.buffer_write_ptr - csr.csr.buffer_read_ptr);
+	while (((head->length + 3) >> 2) >
+		(csr.csr.buffer_write_ptr - csr.csr.buffer_read_ptr))
+		;
 
 	for (i = 0; i < (head->length + 3) >> 2; i++)
 		packet[i++] = read32(DEFAULT_HECIBAR + 0x8);
@@ -3671,11 +3659,11 @@ static void restore_274265(struct raminfo *info)
 	int channel;
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++) {
-		write_mchbar32((channel << 10) + 0x274,
-			       (info->cached_training->reg274265[channel][0] << 16)
-			       | info->cached_training->reg274265[channel][1]);
-		write_mchbar16((channel << 10) + 0x265,
-			       info->cached_training->reg274265[channel][2] << 8);
+		MCHBAR32((channel << 10) + 0x274) =
+			(info->cached_training->reg274265[channel][0] << 16) |
+			info->cached_training->reg274265[channel][1];
+		MCHBAR16((channel << 10) + 0x265) =
+			info->cached_training->reg274265[channel][2] << 8;
 	}
 	if (info->cached_training->reg2ca9_bit0)
 		MCHBAR8_OR(0x2ca9, 1);
@@ -4322,8 +4310,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 			((info.populated_ranks_mask[channel] & 3) << 20);
 	for (channel = 0; channel < NUM_CHANNELS; channel++) {
 		MCHBAR16(0x31c + (channel << 10)) = 0x101;
-		write_mchbar16(0x360 + (channel << 10), 0x909);
-		write_mchbar16(0x3a4 + (channel << 10), 0x101);
+		MCHBAR16(0x360 + (channel << 10)) = 0x909;
+		MCHBAR16(0x3a4 + (channel << 10)) = 0x101;
 		MCHBAR16(0x3e8 + (channel << 10)) = 0x101;
 		MCHBAR32(0x320 + (channel << 10)) = 0x29002900;
 		MCHBAR32(0x324 + (channel << 10)) = 0x0;
@@ -4420,7 +4408,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	MCHBAR8(0x5f4) = 0x1;
 
 	MCHBAR32_AND(0x130, 0xfffffffd);	// | 2 when ?
-	while (read_mchbar32(0x130) & 1)
+	while (MCHBAR32(0x130) & 1)
 		;
 	gav(read_1d0(0x14b, 7));	// = 0x81023100
 	write_1d0(0x30, 0x14b, 7, 1);
@@ -4447,7 +4435,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	MCHBAR32_AND(0x138, ~0x07000000);
 	MCHBAR32(0x130) = 0x31111301;
 	/* Wait until REG130b0 is 1.  */
-	while (read_mchbar32(0x130) & 1)
+	while (MCHBAR32(0x130) & 1)
 		;
 
 	{
@@ -4487,7 +4475,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 	MCHBAR32(0x130) = 0x11111301 | (info.populated_ranks[1][0][0] << 30) |
 		(info.populated_ranks[0][0][0] << 29);
-	while (read_mchbar8(0x130) & 1)	// !!!!
+	while (MCHBAR8(0x130) & 1)
 		;
 	read_1d0(0xa1, 6);	// = 0x1cf4054 // !!!!
 	read_1d0(0x2f3, 6);	// = 0x10a4054 // !!!!
@@ -4531,12 +4519,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	MCHBAR32_AND_OR(0x134, 0xfc01ffff, 0x10000);
 	MCHBAR32_AND_OR(0x134, 0xfc85ffff, 0x850000);
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
-		write_mchbar32(0x260 + (channel << 10),
-			       (read_mchbar32(0x260 + (channel << 10)) &
-				~0xf00000) | 0x8000000 | ((info.
-							   populated_ranks_mask
-							   [channel] & 3) <<
-							  20));
+		MCHBAR32_AND_OR(0x260 + (channel << 10), ~0xf00000, 0x8000000 |
+			((info.populated_ranks_mask[channel] & 3) << 20));
 
 	if (!s3resume)
 		jedec_init(&info);
@@ -4809,8 +4793,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		udelay(1000);
 
 		u16 ecx;
-		for (ecx = 0xffff; ecx && (read_mchbar16(0x1170) & 0x1000);
-			ecx--)	// OK
+		for (ecx = 0xffff; ecx && (MCHBAR16(0x1170) & 0x1000); ecx--)
 			;
 		MCHBAR16_AND(0x1190, ~0x4000);
 	}

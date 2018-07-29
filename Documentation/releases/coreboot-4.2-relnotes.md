@@ -1,5 +1,5 @@
-Announcing coreboot 4.2
-=======================
+coreboot 4.2 release notes
+==========================
 
 Halloween 2015 release - just as scary as that sounds
 

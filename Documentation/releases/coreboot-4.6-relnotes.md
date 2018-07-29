@@ -1,5 +1,5 @@
-Announcing coreboot 4.6
-=======================
+coreboot 4.6 release notes
+==========================
 
 We are happy to announce the April 2017 release of coreboot, version
 4.6.

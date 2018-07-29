@@ -1,4 +1,4 @@
-coreboot 4.9 release notes
+Upcoming release - coreboot 4.9
 ==========================
 
 The 4.9 release is planned for November 2018

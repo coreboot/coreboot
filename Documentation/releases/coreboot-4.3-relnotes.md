@@ -1,5 +1,5 @@
-Announcing coreboot 4.3
-=======================
+coreboot 4.3 release notes
+==========================
 
 The "Oh, has FOSDEM started?" release
 

@@ -1,5 +1,5 @@
-Announcing coreboot 4.5
-=======================
+coreboot 4.5 release notes
+==========================
 
 We are happy to announce the release of coreboot 4.5
 

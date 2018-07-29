@@ -1,5 +1,5 @@
-Announcing coreboot 4.4
-=======================
+coreboot 4.4 release notes
+==========================
 
 We are happy to announce the release of coreboot 4.4.  This is our
 fourth quarterly release.  Since the last release, we've had 850 commits

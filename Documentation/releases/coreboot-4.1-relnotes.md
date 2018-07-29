@@ -1,5 +1,5 @@
-Announcing coreboot 4.1
-=======================
+coreboot 4.1 release notes
+==========================
 
 Dear coreboot community,
 

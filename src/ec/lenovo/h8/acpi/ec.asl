@@ -75,6 +75,20 @@ Device(EC)
 				DKR3, 1		/* Dock register 3 */
 	}
 
+	/* Called on OperationRegion driver changes */
+	Method (_REG, 2, NotSerialized)
+	{
+		/* Wait for ERAM driver loaded */
+		if (LEqual(Arg1, One)) {
+			/* Fill HKEY defaults on first boot */
+			if (LEqual(^HKEY.INIT, Zero)) {
+				Store (BTEB, ^HKEY.WBDC)
+				Store (WWEB, ^HKEY.WWAN)
+				Store (One, ^HKEY.INIT)
+			}
+		}
+	}
+
 	Method (_CRS, 0, Serialized)
 	{
 		Name (ECMD, ResourceTemplate()

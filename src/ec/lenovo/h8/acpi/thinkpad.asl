@@ -157,6 +157,9 @@ Device (HKEY)
 		Return (\_SB.PCI0.LPCB.EC.GSTS)
 	}
 
+	/* Set to one on first boot */
+	Name (INIT, 0)
+
 	/* Has thinkpad_acpi module loaded */
 	Name (HAST, 0)
 
@@ -302,15 +305,6 @@ Device (HKEY)
 			ShiftRight (And(Arg0, 2), 1, Local0)
 			Store (Local0, \_SB.PCI0.LPCB.EC.UWBE)
 		}
-	}
-
-	/*
-	 * Store initial state
-	 */
-	Method (_INI, 0, NotSerialized)
-	{
-		Store (\_SB.PCI0.LPCB.EC.BTEB, WBDC)
-		Store (\_SB.PCI0.LPCB.EC.WWEB, WWAN)
 	}
 
 	/*

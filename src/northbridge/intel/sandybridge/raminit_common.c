@@ -1944,7 +1944,6 @@ int write_training(ramctr_timing * ctrl)
 {
 	int channel, slotrank, lane;
 	int err;
-	volatile u32 tmp;
 
 	FOR_ALL_POPULATED_CHANNELS
 		MCHBAR32_OR(0x4008 + 0x400 * channel, 0x8000000);
@@ -1993,6 +1992,7 @@ int write_training(ramctr_timing * ctrl)
 	MCHBAR32_OR(0x5030, 8);
 
 	FOR_ALL_POPULATED_CHANNELS {
+		volatile u32 tmp;
 		MCHBAR32_AND(0x4020 + 0x400 * channel, ~0x00200000);
 		tmp = MCHBAR32(0x428c + 0x400 * channel);
 		wait_428c(channel);
@@ -2014,8 +2014,7 @@ int write_training(ramctr_timing * ctrl)
 	printram("CPF\n");
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-		tmp = MCHBAR32(0x4080 + 0x400 * channel + 4 * lane);
-		MCHBAR32(0x4080 + 0x400 * channel + 4 * lane) = 0;
+		MCHBAR32_AND(0x4080 + 0x400 * channel + 4 * lane, 0);
 	}
 
 	FOR_ALL_POPULATED_CHANNELS {
@@ -2039,8 +2038,7 @@ int write_training(ramctr_timing * ctrl)
 		program_timings(ctrl, channel);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-		tmp = MCHBAR32(0x4080 + 0x400 * channel + 4 * lane);
-		MCHBAR32(0x4080 + 0x400 * channel + 4 * lane) = 0;
+		MCHBAR32_AND(0x4080 + 0x400 * channel + 4 * lane, 0);
 	}
 	return 0;
 }
@@ -2591,7 +2589,6 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel,
 	int lower[NUM_LANES];
 	int upper[NUM_LANES];
 	int pat;
-	volatile u32 tmp;
 
 	FOR_ALL_LANES {
 		lower[lane] = 0;
@@ -2616,6 +2613,7 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel,
 				program_timings(ctrl, channel);
 
 				FOR_ALL_LANES {
+					volatile u32 tmp;
 					MCHBAR32(0x4340 + 0x400 * channel +
 						4 * lane) = 0;
 					tmp = MCHBAR32(0x400 * channel +
@@ -2660,6 +2658,7 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel,
 				MCHBAR32(0x4284 + 0x400 * channel) = 0xc0001;
 				wait_428c(channel);
 				FOR_ALL_LANES {
+					volatile u32 tmp;
 					tmp = MCHBAR32(0x4340 +
 					       0x400 * channel + lane * 4);
 				}
@@ -3153,10 +3152,10 @@ void final_registers(ramctr_timing * ctrl)
 	}
 	printk(BIOS_DEBUG, "t123: %d, %d, %d\n",
 	       t1_ns, t2_ns, t3_ns);
-	MCHBAR32(0x5d10) = ((encode_5d10(t1_ns) + encode_5d10(t2_ns)) << 16) |
+	MCHBAR32_AND_OR(0x5d10, 0xC0C0C0C0,
+		((encode_5d10(t1_ns) + encode_5d10(t2_ns)) << 16) |
 		(encode_5d10(t1_ns) << 8) | ((encode_5d10(t3_ns) +
-		encode_5d10(t2_ns) + encode_5d10(t1_ns)) << 24) |
-		(MCHBAR32(0x5d10) & 0xC0C0C0C0) | 0xc;
+		encode_5d10(t2_ns) + encode_5d10(t1_ns)) << 24) | 0xc);
 }
 
 void restore_timings(ramctr_timing * ctrl)

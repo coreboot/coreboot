@@ -21,23 +21,23 @@ unexport MAKEFLAGS
 
 XGCCPATH?=$(PWD)/util/crossgcc/xgcc/bin
 ifeq ($(CONFIG_LINUXBOOT_ARCH),386)
-CROSS_COMPILE?=$(XGCCPATH)/i386-linux-
+LINUXBOOT_COMPILE?=$(XGCCPATH)/i386-linux-
 ARCH?=x86
 else ifeq ($(CONFIG_LINUXBOOT_ARCH),amd64)
-CROSS_COMPILE?=$(XGCCPATH)/x86_64-linux-
+LINUXBOOT_COMPILE?=$(XGCCPATH)/x86_64-linux-
 ARCH?=x86_64
 else ifeq ($(CONFIG_LINUXBOOT_ARCH),arm64)
-CROSS_COMPILE?=$(XGCCPATH)/aarch64-linux-
+LINUXBOOT_COMPILE?=$(XGCCPATH)/aarch64-linux-
 ARCH?=arm64
 endif
 
-OBJCOPY:=$(CROSS_COMPILE)objcopy
+OBJCOPY:=$(LINUXBOOT_COMPILE)objcopy
 
 all: payload
 
 toolchain:
-	if [[ ! -x "$(CROSS_COMPILE)gcc" ]]; then \
-	echo "Toolchain '$(CROSS_COMPILE)*' is missing."; \
+	if [[ ! -x "$(LINUXBOOT_COMPILE)gcc" ]]; then \
+	echo "Toolchain '$(LINUXBOOT_COMPILE)*' is missing."; \
 	exit 1; \
 	fi
 
@@ -67,8 +67,8 @@ else ifeq ($(CONFIG_LINUXBOOT_ARCH),arm64)
 $(kernel_dir)/vmlinux: config toolchain
 endif
 	echo "    MAKE       Kernel $(CONFIG_LINUXBOOT_KERNEL_VERSION)"
-	$(MAKE) -C $(kernel_dir) olddefconfig CROSS_COMPILE=$(CROSS_COMPILE) ARCH=$(ARCH)
-	$(MAKE) -C $(kernel_dir) -j $(CPUS) CROSS_COMPILE=$(CROSS_COMPILE) ARCH=$(ARCH)
+	$(MAKE) -C $(kernel_dir) olddefconfig CROSS_COMPILE=$(LINUXBOOT_COMPILE) ARCH=$(ARCH)
+	$(MAKE) -C $(kernel_dir) -j $(CPUS) CROSS_COMPILE=$(LINUXBOOT_COMPILE) ARCH=$(ARCH)
 
 ifneq (,$(filter $(CONFIG_LINUXBOOT_ARCH),386 amd64))
 $(project_dir)/kernel-image: $(kernel_dir)/arch/x86/boot/bzImage
@@ -99,7 +99,7 @@ endif
 payload: $(project_dir)/kernel-image $(project_dir)/initramfs.cpio.xz
 
 clean:
-	if [ -d "$(kernel_dir)" ]; then make -C $(kernel_dir) clean; fi
+	if [ -d "$(kernel_dir)" ]; then rm -rf $(kernel_dir); fi
 	rm -f $(project_dir)/initramfs.cpio.xz
 
 distclean:

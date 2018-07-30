@@ -53,10 +53,17 @@ config LINUXBOOT_KERNEL_STABLE
 	bool "4.15.3"
 	help
 	  Stable kernel version
+
+config LINUXBOOT_KERNEL_LATEST
+	bool "4.17.11"
+	help
+	  Latest kernel version
+
 endchoice
 
 config LINUXBOOT_KERNEL_VERSION
 	string
+	default "4.17.11" if LINUXBOOT_KERNEL_LATEST
 	default "4.15.3" if LINUXBOOT_KERNEL_STABLE
 
 config LINUXBOOT_KERNEL_CONFIGFILE

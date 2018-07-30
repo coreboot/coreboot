@@ -62,11 +62,15 @@ Name (DFPS, Package () {
 	 */
 	/* Control, Trip Point, Speed, NoiseLevel, Power */
 	Package () {90,		0xFFFFFFFF,	6700,	220,	2200},
-	Package () {69,		0xFFFFFFFF,	5800,	180,	1800},
-	Package () {56,		0xFFFFFFFF,	5000,	145,	1450},
-	Package () {46,		0xFFFFFFFF,	4900,	115,	1150},
-	Package () {36,		0xFFFFFFFF,	3900,	90,	900},
-	Package () { 0,         0xFFFFFFFF,        0,    0,       0}
+	Package () {80,		0xFFFFFFFF,	5800,	180,	1800},
+	Package () {70,		0xFFFFFFFF,	5000,	145,	1450},
+	Package () {60,		0xFFFFFFFF,	4900,	115,	1150},
+	Package () {50,		0xFFFFFFFF,	3838,	90,	900},
+	Package () {40,		0xFFFFFFFF,	2904,	55,	550},
+	Package () {30,		0xFFFFFFFF,	2337,	30,	300},
+	Package () {20,		0xFFFFFFFF,	1608,	15,	150},
+	Package () {10,		0xFFFFFFFF,	800,	10,	100},
+	Package () {0,		0xFFFFFFFF,	0,	0,	50}
 })
 
 Name (DART, Package () {

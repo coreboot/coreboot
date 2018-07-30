@@ -115,35 +115,5 @@ void asmlinkage mainboard_romstage_entry(unsigned long bist)
 
 	sdram_initialize(1, memctrl);
 
-	/* Switch from Cache as RAM to real RAM.
-	 *
-	 * There are two ways we could think about this.
-	 *
-	 * 1. If we are using the romstage.inc ROMCC way, the stack is
-	 * going to be re-setup in the code following this code.  Just
-	 * wbinvd the stack to clear the cache tags.  We don't care
-	 * where the stack used to be.
-	 *
-	 * 2. This file is built as a normal .c -> .o and linked in
-	 * etc.  The stack might be used to return etc.  That means we
-	 * care about what is in the stack.  If we are smart we set
-	 * the CAR stack to the same location as the rest of
-	 * coreboot. If that is the case we can just do a wbinvd.
-	 * The stack will be written into real RAM that is now setup
-	 * and we continue like nothing happened.  If the stack is
-	 * located somewhere other than where LB would like it, you
-	 * need to write some code to do a copy from cache to RAM
-	 *
-	 * We use method 1 on Norwich and on this board too.
-	 */
 	post_code(0x02);
-	printk(BIOS_ERR, "POST 02\n");
-	__asm__("wbinvd\n");
-	printk(BIOS_ERR, "Past wbinvd\n");
-
-	/* We are finding the return does not work on this board. Explicitly
-	 * call the label that is after the call to us. This is gross, but
-	 * sometimes at this level it is the only way out.
-	 */
-	done_cache_as_ram_main();
 }

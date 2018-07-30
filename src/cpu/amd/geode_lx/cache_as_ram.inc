@@ -183,24 +183,9 @@ DCacheSetupGood:
 	/* Call romstage.c main function */
 	call	mainboard_romstage_entry
 
-.global done_cache_as_ram_main
-done_cache_as_ram_main:
+        /* Switch from Cache as RAM to real RAM. */
+        wbinvd
 
-	/* We now run over the stack-in-cache,
-	 * copying it back to itself to invalidate the cache */
-
-	push   %edi
-	mov    $(CONFIG_DCACHE_RAM_SIZE >> 2),%ecx
-	push   %esi
-	mov    $(CONFIG_DCACHE_RAM_BASE),%edi
-	mov    %edi,%esi
-	cld
-	rep movsl %ds:(%esi),%es:(%edi)
-	pop    %esi
-	pop    %edi
-
-	/* Clear the cache out to RAM */
-	wbinvd
 	/* re-enable the cache */
 	movl    %cr0, %eax
 	xorl    $(CR0_CD + CR0_NW), %eax        /* clear  the CD and NW bits */

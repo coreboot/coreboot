@@ -76,8 +76,11 @@ know through which interface the EDID can be queried:
     select GFX_GMA_ANALOG_I2C_HDMI_D
 
 Beside Kconfig options, *libgfxinit* needs to know which ports are
-implemented on a board and should be probed for displays. Each
-board has to implement the package `GMA.Mainboard` with a list:
+implemented on a board and should be probed for displays. The mapping
+between the physical ports and these entries depends on the hardware
+implementation and can be recovered by testing or studying the output
+of `intelvbttool` or `intel_vbt_decode`.
+Each board has to implement the package `GMA.Mainboard` with a list:
 
     ports : HW.GFX.GMA.Display_Probing.Port_List;
 

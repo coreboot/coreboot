@@ -3083,8 +3083,8 @@ void final_registers(ramctr_timing * ctrl)
 
 	MCHBAR32(0x4cd4) = 0x00000046;
 
-	MCHBAR32_AND_OR(0x400c, 0xFFFFCFFF, 0x1000);
-	MCHBAR32_AND_OR(0x440c, 0xFFFFCFFF, 0x1000);
+	FOR_ALL_CHANNELS
+		MCHBAR32_AND_OR(0x400c + 0x400 * channel, 0xFFFFCFFF, 0x1000);
 
 	if (is_mobile)
 		/* APD - DLL Off, 64 DCLKs until idle, decision per rank */
@@ -3093,8 +3093,9 @@ void final_registers(ramctr_timing * ctrl)
 		/* APD - PPD, 64 DCLKs until idle, decision per rank */
 		MCHBAR32(PM_PDWN_Config) = 0x00000340;
 
-	MCHBAR32(0x4380) = 0x00000aaa;	// OK
-	MCHBAR32(0x4780) = 0x00000aaa;	// OK
+	FOR_ALL_CHANNELS
+		MCHBAR32(0x4380 + 0x400 * channel) = 0x00000aaa;
+
 	MCHBAR32(0x4f88) = 0x5f7003ff;	// OK
 	MCHBAR32(0x5064) = 0x00073000 | ctrl->reg_5064b0; // OK
 
@@ -3120,8 +3121,9 @@ void final_registers(ramctr_timing * ctrl)
 	MCHBAR32(0x5880) = 0xca9171e5;
 	MCHBAR32_AND_OR(0x5888, ~0xffffff, 0xe4d5d0);
 	MCHBAR32_AND(0x58a8, ~0x1f);
-	MCHBAR32_AND_OR(0x4294, ~0x30000, 1 << 16);
-	MCHBAR32_AND_OR(0x4694, ~0x30000, 1 << 16);
+
+	FOR_ALL_CHANNELS
+		MCHBAR32_AND_OR(0x4294 + 0x400 * channel, ~0x30000, 1 << 16);
 
 	MCHBAR32(0x5030) |= 1;
 	MCHBAR32(0x5030) |= 0x80;

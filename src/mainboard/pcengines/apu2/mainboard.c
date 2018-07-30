@@ -178,6 +178,15 @@ static void mainboard_enable(struct device *dev)
 	pirq_setup();
 }
 
+static void mainboard_final(void *chip_info)
+{
+	//
+	// Turn off LED 2 and LED 3
+	//
+	write_gpio(GPIO_58, 1);
+	write_gpio(GPIO_59, 1);
+}
+
 /*
  * We will stuff a modified version of the first NICs (BDF 1:0.0) MAC address
  * into the smbios serial number location.
@@ -228,4 +237,5 @@ const char *smbios_mainboard_sku(void)
 
 struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
+	.final = mainboard_final,
 };

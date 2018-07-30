@@ -38,6 +38,23 @@ void configure_gpio(u32 iomux_gpio, u8 iomux_ftn, u32 gpio, u32 setting)
 			iomux_ftn & 0x3);
 }
 
+u8 read_gpio(u32 gpio)
+{
+	u32 status = read32((const volatile void *)(ACPI_MMIO_BASE + GPIO_OFFSET
+			+ gpio));
+
+	return (status & GPIO_PIN_STS) ? 1 : 0;
+}
+
+void write_gpio(u32 gpio, u8 value)
+{
+	u32 status = read32((const volatile void *)(ACPI_MMIO_BASE + GPIO_OFFSET
+			+ gpio));
+	status &= ~GPIO_OUTPUT_VALUE;
+	status |= (value > 0) ? GPIO_OUTPUT_VALUE : 0;
+	write32((volatile void *)(ACPI_MMIO_BASE + GPIO_OFFSET + gpio), status);
+}
+
 int get_spd_offset(void)
 {
 	u8 index = 0;

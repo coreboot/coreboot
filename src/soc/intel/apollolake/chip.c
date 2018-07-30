@@ -49,8 +49,18 @@
 #include <soc/cpu.h>
 #include <soc/pm.h>
 #include <soc/systemagent.h>
+#include <timer.h>
 
 #include "chip.h"
+
+#define DUAL_ROLE_CFG0          0x80d8
+#define SW_VBUS_VALID_MASK      (1 << 24)
+#define SW_IDPIN_EN_MASK        (1 << 21)
+#define SW_IDPIN_MASK           (1 << 20)
+#define SW_IDPIN_HOST           (0 << 20)
+#define DUAL_ROLE_CFG1          0x80dc
+#define DRD_MODE_MASK           (1 << 29)
+#define DRD_MODE_HOST           (1 << 29)
 
 const char *soc_acpi_name(const struct device *dev)
 {
@@ -654,6 +664,46 @@ static void drop_privilege_all(void)
 		printk(BIOS_ERR, "failed to enable untrusted mode\n");
 }
 
+static void configure_xhci_host_mode_port0(void)
+{
+	uint32_t *cfg0;
+	uint32_t *cfg1;
+	const struct resource *res;
+	uint32_t reg;
+	struct stopwatch sw;
+	struct device *xhci_dev = PCH_DEV_XHCI;
+
+	printk(BIOS_INFO, "Putting xHCI port 0 into host mode.\n");
+	res = find_resource(xhci_dev, PCI_BASE_ADDRESS_0);
+	cfg0 = (void *)(uintptr_t)(res->base + DUAL_ROLE_CFG0);
+	cfg1 = (void *)(uintptr_t)(res->base + DUAL_ROLE_CFG1);
+	reg = read32(cfg0);
+	if (!(reg && SW_IDPIN_EN_MASK))
+		return;
+
+	reg &= ~(SW_IDPIN_MASK | SW_VBUS_VALID_MASK);
+	write32(cfg0, reg);
+
+	stopwatch_init_msecs_expire(&sw, 10);
+	/* Wait for the host mode status bit. */
+	while ((read32(cfg1) & DRD_MODE_MASK) != DRD_MODE_HOST) {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_ERR, "Timed out waiting for host mode.\n");
+			return;
+		}
+	}
+
+	printk(BIOS_INFO, "xHCI port 0 host switch over took %lu ms\n",
+		stopwatch_duration_msecs(&sw));
+}
+
+static int check_xdci_enable(void)
+{
+	struct device *dev = PCH_DEV_XDCI;
+
+	return !!dev->enabled;
+}
+
 void platform_fsp_notify_status(enum fsp_notify_phase phase)
 {
 	if (phase == END_OF_FIRMWARE) {
@@ -666,6 +716,13 @@ void platform_fsp_notify_status(enum fsp_notify_phase phase)
 		 * security.
 		 */
 		drop_privilege_all();
+
+		/*
+		 * When USB OTG is set, GLK FSP enables xHCI SW ID pin and
+		 * configures USB-C as device mode. Force USB-C into host mode.
+		 */
+		if (check_xdci_enable())
+			configure_xhci_host_mode_port0();
 	}
 }
 

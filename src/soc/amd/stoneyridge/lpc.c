@@ -76,12 +76,11 @@ static void lpc_init(struct device *dev)
 	pci_write_config8(dev, LPC_MISC_CONTROL_BITS, byte);
 
 	/*
-	 * IMC is not used, but some of its registers and ports need to be
-	 * programmed/accessed. So enable CPU access to them. This fixes
-	 * SPI_CS# timing issue when running at 66MHz.
+	 * Enable hand-instance of the pulse generator and SPI
+	 * controller prefetch of flash.
 	 */
 	byte = pci_read_config8(dev, LPC_HOST_CONTROL);
-	byte |= IMC_PAGE_FROM_HOST_EN | IMC_PORT_FROM_HOST_EN;
+	byte |= PREFETCH_EN_SPI_FROM_HOST | T_START_ENH;
 	pci_write_config8(dev, LPC_HOST_CONTROL, byte);
 
 	cmos_check_update_date();

@@ -213,8 +213,8 @@
 #define   SPI_FROM_USB_PREFETCH_EN	BIT(23)
 
 #define LPC_HOST_CONTROL		0xbb
-#define   IMC_PAGE_FROM_HOST_EN		BIT(0)
-#define   IMC_PORT_FROM_HOST_EN		BIT(3)
+#define   PREFETCH_EN_SPI_FROM_HOST	BIT(0)
+#define   T_START_ENH			BIT(3)
 
 /* SPI Controller */
 #define SPI_CNTRL0			0x00

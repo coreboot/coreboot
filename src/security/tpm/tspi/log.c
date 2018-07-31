@@ -44,24 +44,24 @@ void tcpa_log_init(void)
 	printk(BIOS_DEBUG, "TCPA log created at %p\n", tclt);
 }
 
-int tcpa_log_add_table_entry(const char *name, const uint32_t pcr,
-			     const uint8_t *digest, const size_t digest_length)
+void tcpa_log_add_table_entry(const char *name, const uint32_t pcr,
+			      const uint8_t *digest, const size_t digest_length)
 {
 	MAYBE_STATIC struct tcpa_table *tclt = NULL;
 	struct tcpa_entry *tce;
 
 	if (!cbmem_possibly_online())
-		return -1;
+		return;
 
 	tclt = cbmem_find(CBMEM_ID_TCPA_LOG);
 	if (!tclt) {
 		printk(BIOS_ERR, "ERROR: No TCPA log table found\n");
-		return -1;
+		return;
 	}
 
 	if (tclt->num_entries == tclt->max_entries) {
 		printk(BIOS_WARNING, "ERROR: TCPA log table is full\n");
-		return -1;
+		return;
 	}
 
 	tce = &tclt->entries[tclt->num_entries++];
@@ -70,6 +70,4 @@ int tcpa_log_add_table_entry(const char *name, const uint32_t pcr,
 	tce->pcr = pcr;
 	memcpy(tce->digest, digest, digest_length);
 	tce->digest_length = digest_length;
-
-	return 0;
 }

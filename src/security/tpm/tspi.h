@@ -28,8 +28,9 @@ void tcpa_log_init(void);
 /**
  * Add table entry for cbmem TCPA log.
  */
-int tcpa_log_add_table_entry(const char *name, const uint32_t pcr,
-			     const uint8_t *digest, const size_t digest_length);
+void tcpa_log_add_table_entry(const char *name, const uint32_t pcr,
+			      const uint8_t *digest,
+			      const size_t digest_length);
 
 /**
  * Ask vboot for a digest and extend a TPM PCR with it.

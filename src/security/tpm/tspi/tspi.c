@@ -190,9 +190,7 @@ uint32_t tpm_extend_pcr(int pcr, uint8_t *digest,
 	if (result != TPM_SUCCESS)
 		return result;
 
-	result = tcpa_log_add_table_entry(name, pcr, digest, digest_len);
-	if (result != 0)
-		printk(BIOS_ERR, "ERROR: Couldn't create TCPA log entry\n");
+	tcpa_log_add_table_entry(name, pcr, digest, digest_len);
 
-	return 0;
+	return TPM_SUCCESS;
 }

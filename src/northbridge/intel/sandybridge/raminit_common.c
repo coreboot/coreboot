@@ -195,7 +195,7 @@ void dram_xover(ramctr_timing * ctrl)
 static void dram_odt_stretch(ramctr_timing *ctrl, int channel)
 {
 	struct cpuid_result cpures;
-	u32 reg, addr, cpu, stretch;
+	u32 cpu, stretch;
 
 	stretch = ctrl->ref_card_offset[channel];
 	/* ODT stretch: Delay ODT signal by stretch value.
@@ -205,19 +205,13 @@ static void dram_odt_stretch(ramctr_timing *ctrl, int channel)
 	if (IS_SANDY_CPU(cpu) && IS_SANDY_CPU_C(cpu)) {
 		if (stretch == 2)
 			stretch = 3;
-		addr = 0x400 * channel + 0x401c;
-		reg = MCHBAR32(addr) & 0xffffc3ff;
-		reg |= (stretch << 12);
-		reg |= (stretch << 10);
-		MCHBAR32(addr) = reg;
+		MCHBAR32_AND_OR(0x401c + 0x400 * channel, 0xffffc3ff,
+			(stretch << 12) | (stretch << 10));
 		printram("OTHP Workaround [%x] = %x\n", addr, reg);
 	} else {
 		// OTHP
-		addr = 0x400 * channel + 0x400c;
-		reg = MCHBAR32(addr) & 0xfff0ffff;
-		reg |= (stretch << 16);
-		reg |= (stretch << 18);
-		MCHBAR32(addr) = reg;
+		MCHBAR32_AND_OR(0x400c + 0x400 * channel, 0xfff0ffff,
+			(stretch << 16) | (stretch << 18));
 		printram("OTHP [%x] = %x\n", addr, reg);
 	}
 }
@@ -262,7 +256,7 @@ void dram_timing_regs(ramctr_timing *ctrl)
 
 		MCHBAR32(0x400 * channel + 0x4014) = 0;
 
-		MCHBAR32(addr) |= 0x00020000;
+		MCHBAR32_OR(addr, 0x00020000);
 
 		dram_odt_stretch(ctrl, channel);
 
@@ -280,7 +274,7 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		printram("REFI [%x] = %x\n", 0x400 * channel + 0x4298, reg);
 		MCHBAR32(0x400 * channel + 0x4298) = reg;
 
-		MCHBAR32(0x400 * channel + 0x4294) |= 0xff;
+		MCHBAR32_OR(0x400 * channel + 0x4294,  0xff);
 
 		// SRFTP
 		reg = 0;
@@ -656,7 +650,7 @@ static void write_reset(ramctr_timing * ctrl)
 
 void dram_jedecreset(ramctr_timing * ctrl)
 {
-	u32 reg, addr;
+	u32 reg;
 	int channel;
 
 	while (!(MCHBAR32(0x5084) & 0x10000));
@@ -672,37 +666,33 @@ void dram_jedecreset(ramctr_timing * ctrl)
 	MCHBAR32(0x5030) = reg;
 
 	// Assert dimm reset signal
-	reg = MCHBAR32(0x5030);
-	reg &= ~0x2;
-	MCHBAR32(0x5030) = reg;
+	MCHBAR32_AND(0x5030, ~0x2);
 
 	// Wait 200us
 	udelay(200);
 
 	// Deassert dimm reset signal
-	MCHBAR32(0x5030) |= 2;
+	MCHBAR32_OR(0x5030, 2);
 
 	// Wait 500us
 	udelay(500);
 
 	// Enable DCLK
-	MCHBAR32(0x5030) |= 4;
+	MCHBAR32_OR(0x5030, 4);
 
 	// XXX Wait 20ns
 	udelay(1);
 
 	FOR_ALL_CHANNELS {
 		// Set valid rank CKE
-		reg = 0;
-		reg = (reg & ~0xf) | ctrl->rankmap[channel];
-		addr = 0x400 * channel + 0x42a0;
-		MCHBAR32(addr) = reg;
+		reg = ctrl->rankmap[channel];
+		MCHBAR32(0x42a0 + 0x400 * channel) = reg;
 
 		// Wait 10ns for ranks to settle
 		//udelay(0.01);
 
 		reg = (reg & ~0xf0) | (ctrl->rankmap[channel] << 4);
-		MCHBAR32(addr) = reg;
+		MCHBAR32(0x42a0 + 0x400 * channel) = reg;
 
 		// Write reset using a NOP
 		write_reset(ctrl);
@@ -862,7 +852,6 @@ static void dram_mr3(ramctr_timing *ctrl, u8 rank, int channel)
 void dram_mrscommands(ramctr_timing * ctrl)
 {
 	u8 slotrank;
-	u32 reg, addr;
 	int channel;
 
 	FOR_ALL_POPULATED_CHANNELS {
@@ -903,13 +892,10 @@ void dram_mrscommands(ramctr_timing * ctrl)
 	}
 
 	// Refresh enable
-	MCHBAR32(0x5030) |= 8;
+	MCHBAR32_OR(0x5030, 8);
 
 	FOR_ALL_POPULATED_CHANNELS {
-		addr = 0x400 * channel + 0x4020;
-		reg = MCHBAR32(addr);
-		reg &= ~0x200000;
-		MCHBAR32(addr) = reg;
+		MCHBAR32_AND(0x4020 + 0x400 * channel, ~0x200000);
 
 		wait_428c(channel);
 
@@ -1478,9 +1464,7 @@ static void test_timC(ramctr_timing * ctrl, int channel, int slotrank)
 	MCHBAR32(0x4230 + 0x400 * channel) =
 		(max((ctrl->tFAW >> 2) + 1, ctrl->tRRD) << 10)
 		| 4 | (ctrl->tRCD << 16);
-
 	MCHBAR32(0x4200 + 0x400 * channel) = (slotrank << 24) | (6 << 16);
-
 	MCHBAR32(0x4210 + 0x400 * channel) = 0x244;
 
 	/* DRAM command NOP */
@@ -1518,9 +1502,7 @@ static void test_timC(ramctr_timing * ctrl, int channel, int slotrank)
 	MCHBAR32(0x4234 + 0x400 * channel) =
 		(max(ctrl->tRRD, (ctrl->tFAW >> 2) + 1) << 10)
 		| 8 | (ctrl->CAS << 16);
-
 	MCHBAR32(0x4204 + 0x400 * channel) = (slotrank << 24) | 0x60000;
-
 	MCHBAR32(0x4214 + 0x400 * channel) = 0x244;
 
 	/* DRAM command RD */
@@ -1553,7 +1535,7 @@ static int discover_timC(ramctr_timing *ctrl, int channel, int slotrank)
 	/* DRAM command PREA */
 	MCHBAR32(0x4220 + 0x400 * channel) = 0x1f002;
 	MCHBAR32(0x4230 + 0x400 * channel) = 0xc01 | (ctrl->tRP << 16);
-	MCHBAR32(0x4200 + 0x400 * channel) =  (slotrank << 24) | 0x60400;
+	MCHBAR32(0x4200 + 0x400 * channel) = (slotrank << 24) | 0x60400;
 	MCHBAR32(0x4210 + 0x400 * channel) = 0x240;
 
 	// execute command queue
@@ -1725,7 +1707,6 @@ static void precharge(ramctr_timing * ctrl)
 			MCHBAR32(0x422c + 0x400 * channel) = 0x1f000;
 			MCHBAR32(0x423c + 0x400 * channel) =
 				0xc01 | (ctrl->tMOD << 16);
-
 			MCHBAR32(0x420c + 0x400 * channel) =
 				(slotrank << 24) | 0x360000;
 			MCHBAR32(0x421c + 0x400 * channel) = 0;
@@ -2095,11 +2076,10 @@ static int test_320c(ramctr_timing * ctrl, int channel, int slotrank)
 		MCHBAR32(0x4230 + 0x400 * channel) =
 			((max(ctrl->tRRD, (ctrl->tFAW >> 2) + 1)) << 10)
 			| 8 | (ctrl->tRCD << 16);
-
 		MCHBAR32(0x4200 + 0x400 * channel) =
 			(slotrank << 24) | ctr | 0x60000;
-
 		MCHBAR32(0x4210 + 0x400 * channel) = 0x244;
+
 		/* DRAM command WR */
 		MCHBAR32(0x4224 + 0x400 * channel) = 0x1f201;
 		MCHBAR32(0x4234 + 0x400 * channel) =
@@ -3059,7 +3039,7 @@ void prepare_training(ramctr_timing * ctrl)
 
 	FOR_ALL_POPULATED_CHANNELS {
 		// Always drive command bus
-		MCHBAR32(0x4004 + 0x400 * channel) |= 0x20000000;
+		MCHBAR32_OR(0x4004 + 0x400 * channel, 0x20000000);
 	}
 
 	udelay(1);
@@ -3170,8 +3150,8 @@ void final_registers(ramctr_timing * ctrl)
 	FOR_ALL_CHANNELS
 		MCHBAR32_AND_OR(0x4294 + 0x400 * channel, ~0x30000, 1 << 16);
 
-	MCHBAR32(0x5030) |= 1;
-	MCHBAR32(0x5030) |= 0x80;
+	MCHBAR32_OR(0x5030, 1);
+	MCHBAR32_OR(0x5030, 0x80);
 	MCHBAR32(0x5f18) = 0xfa;
 
 	/* Find a populated channel.  */

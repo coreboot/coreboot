@@ -73,7 +73,7 @@ Device (SUPERIO_ID(KBD, SUPERIO_KBC_LDN)) {
 		PNP_DEFAULT_PSC
 	}
 
-	Method (_CRS)
+	Method (_CRS, 0, Serialized)
 	{
 		Name (CRS, ResourceTemplate () {
 			IO (Decode16, 0x0000, 0x0000, 0x01, 0x01, IO0)
@@ -133,7 +133,7 @@ Device (SUPERIO_ID(PS2, SUPERIO_KBC_LDN)) {
 		Return (^^SUPERIO_ID(KBD, SUPERIO_KBC_LDN)._PSC ())
 	}
 
-	Method (_CRS)
+	Method (_CRS, 0, Serialized)
 	{
 		Name (CRS, ResourceTemplate () {
 			IRQNoFlags (IR1) {}
@@ -188,7 +188,7 @@ Device (SUPERIO_ID(PS2, SUPERIO_KBC_PS2LDN)) {
 		PNP_DEFAULT_PSC
 	}
 
-	Method (_CRS)
+	Method (_CRS, 0, Serialized)
 	{
 		Name (CRS, ResourceTemplate () {
 			IRQNoFlags (IR1) {}

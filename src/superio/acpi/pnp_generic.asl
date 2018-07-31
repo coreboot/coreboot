@@ -95,7 +95,7 @@ Device (SUPERIO_ID(PN, SUPERIO_PNP_LDN)) {
 	}
 #endif
 
-	Method (_CRS)
+	Method (_CRS, 0, Serialized)
 	{
 		Name (CRS, ResourceTemplate () {
 #ifdef SUPERIO_PNP_IO0

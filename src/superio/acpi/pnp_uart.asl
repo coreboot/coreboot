@@ -79,7 +79,7 @@ Device (SUPERIO_ID(SER, SUPERIO_UART_LDN)) {
 	}
 #endif
 
-	Method (_CRS)
+	Method (_CRS, 0, Serialized)
 	{
 		Name (CRS, ResourceTemplate () {
 			IO (Decode16, 0x0000, 0x0000, 0x08, 0x08, IO0)

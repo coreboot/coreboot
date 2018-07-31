@@ -126,6 +126,20 @@ static const struct lpddr4_sku skus[] = {
 		.ch1_rank_density = LP4_8Gb_DENSITY,
 		.part_num = "H9HCNNN8KUMLHR",
 	},
+	/* K4F6E3S4HM-MGCJ - both logical channels */
+	[6] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_16Gb_DENSITY,
+		.ch1_rank_density = LP4_16Gb_DENSITY,
+		.part_num = "K4F6E3S4HM-MGCJ",
+	},
+	/* MT53E512M32D2NP-046 - both logical channels */
+	[7] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_16Gb_DENSITY,
+		.ch1_rank_density = LP4_16Gb_DENSITY,
+		.part_num = "MT53E512M32D2NP",
+	},
 };
 
 static const struct lpddr4_cfg lp4cfg = {

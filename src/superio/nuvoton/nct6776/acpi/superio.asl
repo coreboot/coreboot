@@ -24,7 +24,7 @@
  *
  *   LDN		State
  * 0x2 SP1		Implemented, untested
- * 0x5 KBCK		Implemented, untested
+ * 0x5 KBC		Implemented, untested
  * 0x8 GPIO		Implemented, untested
  * 0xb HWM		Implemented, untested
  *
@@ -32,7 +32,7 @@
  * SUPERIO_DEV		Device identifier for this SIO (e.g. SIO0)
  * SUPERIO_PNP_BASE	I/O address of the first PnP configuration register
  * NCT6776_SHOW_SP1	If defined, Serial Port 1 will be exposed.
- * NCT6776_SHOW_KBCK	If defined, the Keyboard Controller will be exposed.
+ * NCT6776_SHOW_KBC	If defined, the Keyboard Controller will be exposed.
  * NCT6776_SHOW_GPIO	If defined, GPIO support will be exposed.
  * NCT6776_SHOW_HWM	If defined, the Environment Controller will be exposed.
  */

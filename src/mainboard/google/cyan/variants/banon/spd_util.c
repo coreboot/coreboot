@@ -23,11 +23,14 @@
  * 0b0001 - 4GiB total - 2 x 2GiB Samsung K4E8E324EB-EGCF
  * 0b0011 - 4GiB total - 2 x 2GiB Hynix H9CCNNN8JTBLAR
  * 0b0100 - 4GiB total - 2 x 2GiB Micron MT52L256M32D1PF
- *
+ * 0b0101 - 4GiB total - 2 x 2GiB Hynix H9CCNNN8GTALAR
+ * 0b0110 - 4GiB total - 2 x 2GiB NY NT6CL256T32CM-H1
  * 0b1000 - 2GiB total - 1 x 2GiB Samsung K4E8E304EE-EGCE
  * 0b1001 - 2GiB total - 1 x 2GiB Samsung K4E8E324EB-EGCF
  * 0b1011 - 2GiB total - 1 x 2GiB Hynix H9CCNNN8JTBLAR
  * 0b1100 - 2GiB total - 1 x 2GiB Micron MT52L256M32D1PF
+ * 0b1101 - 2GiB total - 1 x 2GiB Hynix H9CCNNN8GTALAR
+ * 0b1110 - 2GiB total - 1 x 2GiB NY NT6CL256T32CM-H1
  */
 
 int get_variant_spd_index(int ram_id, int *dual)
@@ -56,7 +59,12 @@ int get_variant_spd_index(int ram_id, int *dual)
 	case 4:
 		printk(BIOS_DEBUG, "Micron MT52L256M32D1PF\n");
 		break;
+	case 5:
+		printk(BIOS_DEBUG, "Hynix H9CCNNN8GTALAR\n");
+		break;
+	case 6:
+		printk(BIOS_DEBUG, "Nanya NT6CL256T32CM-H1\n");
+		break;
 	}
-
 	return spd_index;
 }

@@ -33,10 +33,8 @@ Scope (\_SB.PCI0.I2C6)
 				AddressingMode7Bit,		// AddressingMode
 				"\\_SB.PCI0.I2C6",		// ResourceSource
 			)
-			Interrupt (ResourceConsumer, Edge, ActiveLow)
-			{
-				183
-			}
+			GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
+				"\\_SB.GPNC") { BOARD_TRACKPAD_GPIO_INDEX }
 		})
 
 		Method (_STA)

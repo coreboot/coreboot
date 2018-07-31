@@ -30,8 +30,6 @@
  * GPSE_SIZE = 86
  */
 
-#define BOARD_TOUCH_IRQ			184
-
 /* KBD: Gpio index in N bank */
 #define BOARD_I8042_GPIO_INDEX		17
 /* Audio: Gpio index in SW bank */
@@ -40,6 +38,8 @@
 #define BOARD_SCI_GPIO_INDEX		15
 /* Trackpad: Gpio index in N bank */
 #define BOARD_TRACKPAD_GPIO_INDEX	18
+/* Touch: Gpio index in N bank */
+#define BOARD_TOUCH_GPIO_INDEX		19
 
 #define BOARD_TRACKPAD_NAME		"trackpad"
 #define BOARD_TRACKPAD_WAKE_GPIO	ACPI_ENABLE_WAKE_SUS_GPIO(1)

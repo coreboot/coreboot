@@ -30,8 +30,6 @@
  * GPSE_SIZE = 86
  */
 
-#define BOARD_TOUCH_IRQ			184
-
 /* KBD: Gpio index in N bank */
 #define BOARD_I8042_GPIO_INDEX		17
 /* SCI: Gpio index in N bank */

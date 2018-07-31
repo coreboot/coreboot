@@ -35,10 +35,8 @@ Scope (\_SB.PCI0.I2C1)
 					AddressingMode7Bit,       /* AddressingMode */
 					"\\_SB.PCI0.I2C1",        /* ResourceSource */
 				)
-				Interrupt (ResourceConsumer, Level, ActiveLow)
-				{
-					BOARD_TOUCH_IRQ
-				}
+				GpioInt (Level, ActiveLow, ExclusiveAndWake, PullNone,,
+ 					"\\_SB.GPNC") { BOARD_TOUCH_GPIO_INDEX }
 
 			} )
 			Return (BUF0)

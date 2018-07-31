@@ -23,7 +23,7 @@
 #define SIO_EC_ENABLE_PS2K       /* Enable PS/2 Keyboard */
 
 /* Override default IRQ settings */
-#define SIO_EC_PS2K_IRQ GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,\
+#define SIO_EC_PS2K_IRQ GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullDefault,,\
 				 "\\_SB.GPNC") { BOARD_I8042_GPIO_INDEX }
 
 /* ACPI code for EC SuperIO functions */

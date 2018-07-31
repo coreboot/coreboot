@@ -23,7 +23,7 @@ Scope (\_SB.GPNC)
 	{
 		Name (RBUF, ResourceTemplate ()
 		{
-			GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
+			GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullDefault,,
 				"\\_SB.GPNC") { BOARD_SCI_GPIO_INDEX }
 		})
 		Return (RBUF)

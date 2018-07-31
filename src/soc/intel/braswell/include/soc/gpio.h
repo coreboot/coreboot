@@ -524,10 +524,11 @@ typedef enum {
 
 typedef enum {
 	INT_DIS = 0,
-	trig_edge_low = 1,
-	trig_edge_high = 2,
-	trig_edge_both = 3,
-	trig_level = 4,
+	trig_edge_low = PAD_TRIG_EDGE_LOW,
+	trig_edge_high = PAD_TRIG_EDGE_HIGH,
+	trig_edge_both = PAD_TRIG_EDGE_BOTH,
+	trig_level_high = PAD_TRIG_EDGE_LEVEL | (0 << 4),
+	trig_level_low = PAD_TRIG_EDGE_LEVEL | (4 << 4),
 } int_type_t;
 
 typedef enum {

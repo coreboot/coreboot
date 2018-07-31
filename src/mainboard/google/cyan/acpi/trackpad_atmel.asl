@@ -33,7 +33,7 @@ Scope (\_SB.PCI0.I2C6)
 				AddressingMode7Bit,		// AddressingMode
 				"\\_SB.PCI0.I2C6",		// ResourceSource
 			)
-			GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
+			GpioInt (Level, ActiveLow, ExclusiveAndWake, PullNone,,
 				"\\_SB.GPNC") { BOARD_TRACKPAD_GPIO_INDEX }
 		})
 

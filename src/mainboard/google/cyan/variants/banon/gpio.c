@@ -161,9 +161,9 @@ static const struct soc_gpio_map  gpn_gpio_map[] = {
 	GPO_FUNC(NA, NA), /* 16 SEC_GPIO_SUS10 */
 	GPI(trig_edge_low, L0, P_1K_H, non_maskable, NA, NA, NA),
 	/* 17 GPIO_SUS3 */
-	GPI(trig_edge_low, L1, P_1K_H, non_maskable, NA, UNMASK_WAKE, NA),
+	GPI(trig_level_low, L1, P_1K_H, 0, NA, UNMASK_WAKE, NA),
 	/* 18 GPIO_SUS7 */
-	GPI(trig_edge_low, L3, P_1K_H, non_maskable, NA, UNMASK_WAKE, NA),
+	GPI(trig_level_low, L1, P_1K_H, 0, NA, UNMASK_WAKE, NA),
 	/* 19 GPIO_SUS1 */
 	GPIO_NC, /* 20 GPIO_SUS5 */
 	GPIO_NC, /* 21 SEC_GPIO_SUS11 */

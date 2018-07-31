@@ -62,8 +62,10 @@
  * DEFAULT_MCHBAR + 0x4284 + 0x400 * channel: execute command queue
  *  Starts to execute all queued commands
  *  Bit 0    : start DRAM command execution
- *  Bit 16-20: (number of queued commands - 1) * 4
+ *  Bit 18-19 : number of queued commands - 1
  */
+
+#define RUN_QUEUE_4284(x)	((((x) - 1) << 18) | 1)	// 0 <= x < 4
 
 static void sfence(void)
 {
@@ -643,12 +645,12 @@ static void write_reset(ramctr_timing * ctrl)
 	/* DRAM command ZQCS */
 	MCHBAR32(0x4220 + 0x400 * channel) = 0x0f003;
 	MCHBAR32(0x4230 + 0x400 * channel) = 0x80c01;
-
 	MCHBAR32(0x4200 + 0x400 * channel) = (slotrank << 24) | 0x60000;
-
 	MCHBAR32(0x4210 + 0x400 * channel) = 0;
 
-	MCHBAR32(0x4284 + 0x400 * channel) = 0x400001;
+	// execute command queue - why is bit 22 set here?!
+	MCHBAR32(0x4284 + 0x400 * channel) = (1 << 22) | RUN_QUEUE_4284(1);
+
 	wait_428c(channel);
 }
 
@@ -754,7 +756,9 @@ static void write_mrreg(ramctr_timing *ctrl, int channel, int slotrank,
 	MCHBAR32(0x4208 + 0x400 * channel) =
 		(slotrank << 24) | (reg << 20) | val | 0x60000;
 	MCHBAR32(0x4218 + 0x400 * channel) = 0;
-	MCHBAR32(0x4284 + 0x400 * channel) = 0x80001;
+
+	// execute command queue
+	MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(3);
 }
 
 static u32 make_mr0(ramctr_timing * ctrl, u8 rank)
@@ -889,7 +893,7 @@ void dram_mrscommands(ramctr_timing * ctrl)
 	MCHBAR32(0x4e04) = 0x60400;
 	MCHBAR32(0x4e14) = 0x288;
 
-	/* execute command queue on all channels ? */
+	// execute command queue on all channels? Why isn't bit 0 set here?
 	MCHBAR32(0x4e84) = 0x40004;
 
 	// Drain
@@ -920,7 +924,9 @@ void dram_mrscommands(ramctr_timing * ctrl)
 		MCHBAR32(0x4200 + 0x400 * channel) =
 			(slotrank << 24) | 0x60000;
 		MCHBAR32(0x4210 + 0x400 * channel) = 0x3e0;
-		MCHBAR32(0x4284 + 0x400 * channel) = 0x1;
+
+		// execute command queue
+		MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(1);
 
 		// Drain
 		wait_428c(channel);
@@ -1109,7 +1115,8 @@ static void test_timA(ramctr_timing * ctrl, int channel, int slotrank)
 	MCHBAR32(0x420c + 0x400 * channel) = (slotrank << 24) | 0x360000;
 	MCHBAR32(0x421c + 0x400 * channel) = 0;
 
-	MCHBAR32(0x4284 + 0x400 * channel) = 0xc0001;
+	// execute command queue
+	MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(4);
 
 	wait_428c(channel);
 }
@@ -1368,7 +1375,9 @@ int read_training(ramctr_timing * ctrl)
 		MCHBAR32(0x4230 + 0x400 * channel) = 0xc01 | (ctrl->tRP << 16);
 		MCHBAR32(0x4200 + 0x400 * channel) = (slotrank << 24) | 0x60400;
 		MCHBAR32(0x4210 + 0x400 * channel) = 0;
-		MCHBAR32(0x4284 + 0x400 * channel) = 1;
+
+		// execute command queue
+		MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(1);
 
 		MCHBAR32(0x3400) = (slotrank << 2) | 0x8001;
 
@@ -1493,7 +1502,8 @@ static void test_timC(ramctr_timing * ctrl, int channel, int slotrank)
 	MCHBAR32(0x420c + 0x400 * channel) = (slotrank << 24) | 8;
 	MCHBAR32(0x421c + 0x400 * channel) = 0x3e0;
 
-	MCHBAR32(0x4284 + 0x400 * channel) = 0xc0001;
+	// execute command queue
+	MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(4);
 
 	wait_428c(channel);
 
@@ -1525,7 +1535,10 @@ static void test_timC(ramctr_timing * ctrl, int channel, int slotrank)
 	MCHBAR32(0x423c + 0x400 * channel) = 0xc01 | (ctrl->tRP << 16);
 	MCHBAR32(0x420c + 0x400 * channel) = (slotrank << 24) | 0x60400;
 	MCHBAR32(0x421c + 0x400 * channel) = 0x240;
-	MCHBAR32(0x4284 + 0x400 * channel) = 0xc0001;
+
+	// execute command queue
+	MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(4);
+
 	wait_428c(channel);
 }
 
@@ -1542,7 +1555,9 @@ static int discover_timC(ramctr_timing *ctrl, int channel, int slotrank)
 	MCHBAR32(0x4230 + 0x400 * channel) = 0xc01 | (ctrl->tRP << 16);
 	MCHBAR32(0x4200 + 0x400 * channel) =  (slotrank << 24) | 0x60400;
 	MCHBAR32(0x4210 + 0x400 * channel) = 0x240;
-	MCHBAR32(0x4284 + 0x400 * channel) = 1;
+
+	// execute command queue
+	MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(1);
 
 	for (timC = 0; timC <= MAX_TIMC; timC++) {
 		FOR_ALL_LANES ctrl->timings[channel][slotrank].lanes[lane].
@@ -1661,7 +1676,9 @@ static void precharge(ramctr_timing * ctrl)
 			MCHBAR32(0x420c + 0x400 * channel) =
 				(slotrank << 24) | 0x360000;
 			MCHBAR32(0x421c + 0x400 * channel) = 0;
-			MCHBAR32(0x4284 + 0x400 * channel) = 0xc0001;
+
+			// execute command queue
+			MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(4);
 
 			wait_428c(channel);
 		}
@@ -1713,7 +1730,9 @@ static void precharge(ramctr_timing * ctrl)
 				(slotrank << 24) | 0x360000;
 			MCHBAR32(0x421c + 0x400 * channel) = 0;
 
-			MCHBAR32(0x4284 + 0x400 * channel) = 0xc0001;
+			// execute command queue
+			MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(4);
+
 			wait_428c(channel);
 		}
 	}
@@ -1740,7 +1759,9 @@ static void test_timB(ramctr_timing * ctrl, int channel, int slotrank)
 	MCHBAR32(0x4204 + 0x400 * channel) = (slotrank << 24) | 4;
 	MCHBAR32(0x4214 + 0x400 * channel) = 0;
 
-	MCHBAR32(0x400 * channel + 0x4284) = 0x40001;
+	// execute command queue
+	MCHBAR32(0x400 * channel + 0x4284) = RUN_QUEUE_4284(2);
+
 	wait_428c(channel);
 
 	/* disable DQs on this slotrank */
@@ -1859,7 +1880,8 @@ static void adjust_high_timB(ramctr_timing * ctrl)
 		MCHBAR32(0x420c + 0x400 * channel) = (slotrank << 24) | 0x8;
 		MCHBAR32(0x421c + 0x400 * channel) = 0x3e0;
 
-		MCHBAR32(0x4284 + 0x400 * channel) = 0xc0001;
+		// execute command queue
+		MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(4);
 
 		wait_428c(channel);
 
@@ -1886,7 +1908,9 @@ static void adjust_high_timB(ramctr_timing * ctrl)
 		MCHBAR32(0x4208 + 0x400 * channel) = (slotrank << 24) | 0x60008;
 		MCHBAR32(0x4218 + 0x400 * channel) = 0;
 
-		MCHBAR32(0x4284 + 0x400 * channel) = 0x80001;
+		// execute command queue
+		MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(3);
+
 		wait_428c(channel);
 		FOR_ALL_LANES {
 			u64 res = MCHBAR32(lane_registers[lane] +
@@ -1919,12 +1943,12 @@ static void write_op(ramctr_timing * ctrl, int channel)
 	/* DRAM command ACT */
 	MCHBAR32(0x4220 + 0x400 * channel) = 0x0f003;
 	MCHBAR32(0x4230 + 0x400 * channel) = 0x41001;
-
 	MCHBAR32(0x4200 + 0x400 * channel) = (slotrank << 24) | 0x60000;
-
 	MCHBAR32(0x4210 + 0x400 * channel) = 0x3e0;
 
-	MCHBAR32(0x4284 + 0x400 * channel) = 1;
+	// execute command queue
+	MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(1);
+
 	wait_428c(channel);
 }
 
@@ -2003,7 +2027,9 @@ int write_training(ramctr_timing * ctrl)
 		MCHBAR32(0x4200 + 0x400 * channel) = 0x60000;
 		MCHBAR32(0x4210 + 0x400 * channel) = 0x3e0;
 
-		MCHBAR32(0x4284 + 0x400 * channel) = 1;
+		// execute command queue
+		MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(1);
+
 		wait_428c(channel);
 	}
 
@@ -2096,7 +2122,9 @@ static int test_320c(ramctr_timing * ctrl, int channel, int slotrank)
 		MCHBAR32(0x420c + 0x400 * channel) = (slotrank << 24) | 0x60400;
 		MCHBAR32(0x421c + 0x400 * channel) = 0x240;
 
-		MCHBAR32(0x4284 + 0x400 * channel) = 0xc0001;
+		// execute command queue
+		MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(4);
+
 		wait_428c(channel);
 		FOR_ALL_LANES {
 			u32 r32 = MCHBAR32(0x4340 + 4 * lane + 0x400 * channel);
@@ -2159,12 +2187,12 @@ static void reprogram_320c(ramctr_timing * ctrl)
 		/* DRAM command ZQCS */
 		MCHBAR32(0x4220 + 0x400 * channel) = 0x0f003;
 		MCHBAR32(0x4230 + 0x400 * channel) = 0x41001;
-
 		MCHBAR32(0x4200 + 0x400 * channel) = (slotrank << 24) | 0x60000;
-
 		MCHBAR32(0x4210 + 0x400 * channel) = 0x3e0;
 
-		MCHBAR32(0x4284 + 0x400 * channel) = 1;
+		// execute command queue
+		MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(1);
+
 		wait_428c(channel);
 		MCHBAR32_OR(0x4020 + 0x400 * channel, 0x200000);
 	}
@@ -2180,12 +2208,12 @@ static void reprogram_320c(ramctr_timing * ctrl)
 		/* DRAM command ZQCS */
 		MCHBAR32(0x4220 + 0x400 * channel) = 0x0f003;
 		MCHBAR32(0x4230 + 0x400 * channel) = 0x41001;
-
 		MCHBAR32(0x4200 + 0x400 * channel) = (slotrank << 24) | 0x60000;
-
 		MCHBAR32(0x4210 + 0x400 * channel) = 0x3e0;
 
-		MCHBAR32(0x4284 + 0x400 * channel) = 1;
+		// execute command queue
+		MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(1);
+
 		wait_428c(channel);
 	}
 
@@ -2373,7 +2401,8 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank,
 			(slotrank << 24) | 0x360000;
 		MCHBAR32(0x421c + 0x400 * channel) = 0;
 
-		MCHBAR32(0x4284 + 0x400 * channel) = 0xc0001;
+		// execute command queue
+		MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(4);
 
 		wait_428c(channel);
 
@@ -2467,7 +2496,9 @@ int discover_edges(ramctr_timing *ctrl)
 			MCHBAR32(0x420c + 0x400 * channel) =
 				(slotrank << 24) | 0x360000;
 			MCHBAR32(0x421c + 0x400 * channel) = 0;
-			MCHBAR32(0x4284 + 0x400 * channel) = 0xc0001;
+
+			// execute command queue
+			MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(4);
 
 			wait_428c(channel);
 		}
@@ -2522,7 +2553,9 @@ int discover_edges(ramctr_timing *ctrl)
 				(slotrank << 24) | 0x360000;
 			MCHBAR32(0x421c + 0x400 * channel) = 0;
 
-			MCHBAR32(0x4284 + 0x400 * channel) = 0xc0001;
+			// execute command queue
+			MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(4);
+
 			wait_428c(channel);
 		}
 
@@ -2655,7 +2688,10 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel,
 					(slotrank << 24) | 0x60400;
 				MCHBAR32(0x421c + 0x400 * channel) = 0;
 
-				MCHBAR32(0x4284 + 0x400 * channel) = 0xc0001;
+				// execute command queue
+				MCHBAR32(0x4284 + 0x400 * channel) =
+					RUN_QUEUE_4284(4);
+
 				wait_428c(channel);
 				FOR_ALL_LANES {
 					volatile u32 tmp;
@@ -2774,7 +2810,9 @@ static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 	MCHBAR32(0x420c + 0x400 * channel) = (slotrank << 24) | 0x60400;
 	MCHBAR32(0x421c + 0x400 * channel) = 0;
 
-	MCHBAR32(0x4284 + 0x400 * channel) = 0xc0001;
+	// execute command queue
+	MCHBAR32(0x4284 + 0x400 * channel) = RUN_QUEUE_4284(4);
+
 	wait_428c(channel);
 }
 
@@ -2940,31 +2978,38 @@ int channel_test(ramctr_timing *ctrl)
 			MCHBAR32(0x4d40 + 4 * lane) = 0;
 		}
 		wait_428c(channel);
+
 		/* DRAM command ACT */
 		MCHBAR32(0x4220 + (channel << 10)) = 0x0001f006;
 		MCHBAR32(0x4230 + (channel << 10)) = 0x0028a004;
 		MCHBAR32(0x4200 + (channel << 10)) =
 			0x00060000 | (slotrank << 24);
 		MCHBAR32(0x4210 + (channel << 10)) = 0x00000244;
+
 		/* DRAM command WR */
 		MCHBAR32(0x4224 + (channel << 10)) = 0x0001f201;
 		MCHBAR32(0x4234 + (channel << 10)) = 0x08281064;
 		MCHBAR32(0x4204 + (channel << 10)) =
 			0x00000000 | (slotrank << 24);
 		MCHBAR32(0x4214 + (channel << 10)) = 0x00000242;
+
 		/* DRAM command RD */
 		MCHBAR32(0x4228 + (channel << 10)) = 0x0001f105;
 		MCHBAR32(0x4238 + (channel << 10)) = 0x04281064;
 		MCHBAR32(0x4208 + (channel << 10)) =
 			0x00000000 | (slotrank << 24);
 		MCHBAR32(0x4218 + (channel << 10)) = 0x00000242;
+
 		/* DRAM command PRE */
 		MCHBAR32(0x422c + (channel << 10)) = 0x0001f002;
 		MCHBAR32(0x423c + (channel << 10)) = 0x00280c01;
 		MCHBAR32(0x420c + (channel << 10)) =
 			0x00060400 | (slotrank << 24);
 		MCHBAR32(0x421c + (channel << 10)) = 0x00000240;
-		MCHBAR32(0x4284 + (channel << 10)) = 0x000c0001;
+
+		// execute command queue
+		MCHBAR32(0x4284 + (channel << 10)) = RUN_QUEUE_4284(4);
+
 		wait_428c(channel);
 		FOR_ALL_LANES
 			if (MCHBAR32(0x4340 + (channel << 10) + 4 * lane)) {

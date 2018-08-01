@@ -130,8 +130,6 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 
 	OemCustomizeInitEarly(EarlyParams);
 
-	EarlyParams->GnbConfig.PsppPolicy = PsppDisabled;
-
 	timestamp_add_now(TS_AGESA_INIT_EARLY_START);
 	status = AmdInitEarly(EarlyParams);
 	timestamp_add_now(TS_AGESA_INIT_EARLY_DONE);

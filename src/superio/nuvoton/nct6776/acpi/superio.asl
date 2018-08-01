@@ -152,6 +152,7 @@ Device(SUPERIO_DEV) {
 	#undef SUPERIO_KBC_PS2M
 	#undef SUPERIO_KBC_PS2LDN
 	#define SUPERIO_KBC_LDN 5
+	#define SUPERIO_KBC_PS2M
 	#include <superio/acpi/pnp_kbc.asl>
 #endif
 

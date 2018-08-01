@@ -58,6 +58,10 @@ chip soc/intel/skylake
 	register "PmTimerDisabled" = "1"
 	register "VmxEnable" = "1"
 
+	# Intersil VR c-state issue workaround
+	# send VR mailbox command for IA/GT/SA rails
+	register "IslVrCmd" = "2"
+
 	register "pirqa_routing" = "PCH_IRQ11"
 	register "pirqb_routing" = "PCH_IRQ10"
 	register "pirqc_routing" = "PCH_IRQ11"

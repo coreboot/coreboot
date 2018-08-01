@@ -14,6 +14,8 @@
  * GNU General Public License for more details.
  */
 
+External(\_SB.ALIB, MethodObj)
+
 /* System Bus */
 /*  _SB.PCI0 */
 
@@ -138,7 +140,7 @@ Method(_CRS, 0) {
  *  2. Get PCI Interrupt routing from ACPI VSM, this
  *     value is based on user choice in BIOS setup.
  */
-Method(_INI, 0) {
+Method(_INI, 0, Serialized) {
 	/* DBGO("\\_SB\\_INI\n") */
 	/* DBGO("   DSDT.ASL code from ") */
 	/* DBGO(__DATE__) */
@@ -154,6 +156,17 @@ Method(_INI, 0) {
 
 	/* Determine the OS we're running on */
 	OSFL()
+
+	/* Send ALIB Function 1 the AC/DC state */
+	Name(F1BF, Buffer(0x03){})
+	CreateWordField(F1BF, 0, F1SZ)
+	CreateByteField(F1BF, 2, F1DA)
+
+	Store(3, F1SZ)
+	Store(\PWRS, F1DA)
+
+	\_SB.ALIB(1, F1BF)
+
 } /* End Method(_SB._INI) */
 
 Method(OSFL, 0){

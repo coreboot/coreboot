@@ -15,11 +15,17 @@
 
 #include <device/device.h>
 #include <bootblock_common.h>
+#include <gpio.h>
 #include <timestamp.h>
+
+static void setup_usb(void)
+{
+	gpio_output(GPIO(120), 1);	/* Deassert HUB_RST_L to enable hub. */
+}
 
 static void mainboard_init(struct device *dev)
 {
-
+	setup_usb();
 }
 
 static void mainboard_enable(struct device *dev)

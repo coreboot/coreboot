@@ -208,14 +208,15 @@ chip soc/intel/skylake
 			.fall_time_ns = 38,
 		},
 		.i2c[2] = {
-			.speed = I2C_SPEED_FAST,
+			.speed = I2C_SPEED_FAST_PLUS,
 			.speed_config[0] = {
-				.speed = I2C_SPEED_FAST,
-				.scl_lcnt = 186,
-				.scl_hcnt = 93,
-				.sda_hold = 36,
-			},
+				.speed = I2C_SPEED_FAST_PLUS,
+				.scl_lcnt = 69,
+				.scl_hcnt = 33,
+				.sda_hold = 20,
+			}
 		},
+
 		.i2c[3] = {
 			.speed = I2C_SPEED_FAST,
 			.rise_time_ns = 98,
@@ -296,6 +297,7 @@ chip soc/intel/skylake
 				register "generic.hid" = ""ACPI0C50""
 				register "generic.desc" = ""ELAN Touchpad""
 				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_A19_IRQ)"
+				register "generic.speed" = "I2C_SPEED_FAST_PLUS"
 				register "generic.wake" = "GPE0_DW0_23" # GPP_A23
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 0x15 on end

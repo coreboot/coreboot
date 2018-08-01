@@ -18,47 +18,45 @@
 #include <console/console.h>
 #include <security/tpm/tspi.h>
 
-void tcpa_log_init(void)
+static struct tcpa_table *tcpa_log_init(void)
 {
-	const struct cbmem_entry *ce;
-	struct tcpa_table *tclt;
+	MAYBE_STATIC struct tcpa_table *tclt = NULL;
 
 	if (!cbmem_possibly_online())
-		return;
+		return NULL;
 
-	ce = cbmem_entry_find(CBMEM_ID_TCPA_LOG);
-	if (ce)
-		return;
+	if (tclt != NULL)
+		return tclt;
+
+	tclt = (struct tcpa_table *) cbmem_entry_find(CBMEM_ID_TCPA_LOG);
+	if (tclt)
+		return tclt;
 
 	tclt = cbmem_add(CBMEM_ID_TCPA_LOG,
 			 sizeof(struct tcpa_table) +
-				 MAX_TCPA_LOG_ENTRIES *
-					 sizeof(struct tcpa_entry));
+			 MAX_TCPA_LOG_ENTRIES *
+			 sizeof(struct tcpa_entry));
 
-	if (!tclt)
-		return;
+	if (!tclt) {
+		printk(BIOS_ERR, "ERROR: Could not create TCPA log table\n");
+		return NULL;
+	}
 
 	tclt->max_entries = MAX_TCPA_LOG_ENTRIES;
 	tclt->num_entries = 0;
 
 	printk(BIOS_DEBUG, "TCPA log created at %p\n", tclt);
+
+	return tclt;
 }
 
 void tcpa_log_add_table_entry(const char *name, const uint32_t pcr,
 			      const uint8_t *digest, const size_t digest_length)
 {
-	MAYBE_STATIC struct tcpa_table *tclt = NULL;
+	struct tcpa_table *tclt;
 	struct tcpa_entry *tce;
 
-	if (!cbmem_possibly_online())
-		return;
-
-	tclt = cbmem_find(CBMEM_ID_TCPA_LOG);
-	if (!tclt) {
-		printk(BIOS_ERR, "ERROR: No TCPA log table found\n");
-		return;
-	}
-
+	tclt = tcpa_log_init();
 	if (tclt->num_entries == tclt->max_entries) {
 		printk(BIOS_WARNING, "ERROR: TCPA log table is full\n");
 		return;
@@ -66,8 +64,13 @@ void tcpa_log_add_table_entry(const char *name, const uint32_t pcr,
 
 	tce = &tclt->entries[tclt->num_entries++];
 
-	memcpy(tce->name, name, TCPA_PCR_HASH_NAME);
+	strncpy(tce->name, name, TCPA_PCR_HASH_NAME - 1);
 	tce->pcr = pcr;
+
+	if (digest_length > TCPA_DIGEST_MAX_LENGTH) {
+		printk(BIOS_WARNING, "ERROR: PCR digest too long for TCPA log entry\n");
+		return;
+	}
 	memcpy(tce->digest, digest, digest_length);
 	tce->digest_length = digest_length;
 }

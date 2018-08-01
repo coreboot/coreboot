@@ -21,11 +21,6 @@
 #include <commonlib/tcpa_log_serialized.h>
 
 /**
- * Setup TCPA cbmem log.
- */
-void tcpa_log_init(void);
-
-/**
  * Add table entry for cbmem TCPA log.
  */
 void tcpa_log_add_table_entry(const char *name, const uint32_t pcr,

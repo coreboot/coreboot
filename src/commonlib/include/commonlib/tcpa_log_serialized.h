@@ -29,7 +29,7 @@ struct tcpa_entry {
 	uint32_t pcr;
 	uint8_t digest[TCPA_DIGEST_MAX_LENGTH];
 	uint32_t digest_length;
-	uint8_t name[TCPA_PCR_HASH_NAME];
+	char name[TCPA_PCR_HASH_NAME];
 } __packed;
 
 struct tcpa_table {

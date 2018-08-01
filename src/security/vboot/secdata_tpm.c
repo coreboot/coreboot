@@ -451,9 +451,6 @@ uint32_t vboot_setup_tpm(struct vb2_context *ctx)
 	if (result == TPM_E_MUST_REBOOT)
 		ctx->flags |= VB2_CONTEXT_SECDATA_WANTS_REBOOT;
 
-	// TCPA cbmem log
-	tcpa_log_init();
-
 	return result;
 }
 

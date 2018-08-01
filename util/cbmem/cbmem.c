@@ -1327,6 +1327,11 @@ int main(int argc, char** argv)
 		}
 	}
 
+	if (optind < argc) {
+		fprintf(stderr, "Error: Extra parameter found.\n");
+		print_usage(argv[0], 1);
+	}
+
 	mem_fd = open("/dev/mem", O_RDONLY, 0);
 	if (mem_fd < 0) {
 		fprintf(stderr, "Failed to gain memory access: %s\n",

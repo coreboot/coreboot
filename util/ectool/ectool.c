@@ -90,6 +90,11 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
+	if (argv[1] == NULL) {
+		print_usage(argv[0]);
+		exit(1);
+	}
+
 	while ((opt = getopt_long(argc, argv, "vh?Vidqpw:z:",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
@@ -126,6 +131,12 @@ int main(int argc, char *argv[])
 			exit(0);
 			break;
 		}
+	}
+
+	if (optind < argc) {
+		fprintf(stderr, "Error: Extra parameter found.\n");
+		print_usage(argv[0]);
+		exit(1);
 	}
 
 	if (get_ports && get_ec_ports() != 0)

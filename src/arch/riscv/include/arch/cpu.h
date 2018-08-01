@@ -51,5 +51,11 @@ static inline int supports_extension(char ext)
 	return read_csr(misa) & (1 << (ext - 'A'));
 }
 
+static inline int machine_xlen(void)
+{
+	int mxl = (read_csr(misa) >> (__riscv_xlen - 2)) & 3;
+	return (1 << mxl) * 16;
+}
+
 struct cpu_info *cpu_info(void);
 #endif /* __ARCH_CPU_H__ */

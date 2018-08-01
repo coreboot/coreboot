@@ -416,3 +416,14 @@ const struct pad_config *variant_sku_gpio_table(size_t *num)
 	}
 	return board_gpio_tables;
 }
+
+static const struct pad_config romstage_gpio_table[] = {
+	/* E22 : DDPD_CTRLCLK ==> CHP1_CABC */
+	PAD_CFG_GPO(GPP_E22, 1, DEEP),
+};
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
+}

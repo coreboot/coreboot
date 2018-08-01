@@ -129,11 +129,7 @@ chip soc/intel/braswell
 		device pci 1e.7 off end	# 8086 22ac -   SPI 3
 		device pci 1f.0 on	# 8086 229c - LPC bridge
 			chip drivers/pc80/tpm
-				# Rising edge interrupt
-				register "irq_polarity" = "2"
-				device pnp 0c31.0 on
-					irq 0x70 = 10
-				end
+				device pnp 0c31.0 on end
 			end
 			chip ec/google/chromeec
 				device pnp 0c09.0 on end

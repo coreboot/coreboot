@@ -90,12 +90,8 @@ chip soc/intel/broadwell
 		device pci 1d.0 on end # USB2 EHCI
 		device pci 1e.0 off end # PCI bridge
 		device pci 1f.0 on
-		chip drivers/pc80/tpm
-				# Rising edge interrupt
-				register "irq_polarity" = "2"
-				device pnp 0c31.0 on
-					irq 0x70 = 10
-				end
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
 			end
 			chip ec/google/chromeec
 				device pnp 0c09.0 on end

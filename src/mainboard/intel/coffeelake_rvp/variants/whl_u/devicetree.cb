@@ -6,10 +6,7 @@ chip soc/intel/cannonlake
 
 	# FSP configuration
 	register "SaGv" = "3"
-	register "SmbusEnable" = "1"
-	register "ScsEmmcEnabled" = "1"
 	register "ScsEmmcHs400Enabled" = "1"
-	register "ScsSdCardEnabled" = "1"
 	register "HeciEnabled" = "1"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"
@@ -30,7 +27,6 @@ chip soc/intel/cannonlake
 	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)"
 	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC0)"
 
-	register "SataEnable" = "1"
 	register "SataSalpSupport" = "1"
 	register "SataPortsEnable[0]" = "1"
 	register "SataPortsEnable[1]" = "1"

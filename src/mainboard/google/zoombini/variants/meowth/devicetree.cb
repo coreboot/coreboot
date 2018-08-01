@@ -30,9 +30,7 @@ chip soc/intel/cannonlake
 	# FSP configuration
 	register "SaGv" = "SaGv_Enabled"
 	register "SmbusEnable" = "1"
-	register "ScsEmmcEnabled" = "1"
 	register "ScsEmmcHs400Enabled" = "1"
-	register "ScsSdCardEnabled" = "1"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

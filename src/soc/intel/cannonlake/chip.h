@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2007-2008 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2017 Intel Corporation.
+ * Copyright (C) 2017-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,9 +118,6 @@ struct soc_intel_cannonlake_config {
 	/* Rank Margin Tool. 1:Enable, 0:Disable */
 	uint8_t RMT;
 
-	/* LAN controller. 1:Enable, 0:Disable */
-	uint8_t PchLanEnable;
-
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];
 	struct usb3_port_config usb3_ports[10];
@@ -130,9 +127,7 @@ struct soc_intel_cannonlake_config {
 	/* Wake Enable Bitmap for USB3 ports */
 	uint16_t usb3_wake_enable_bitmap;
 
-
 	/* SATA related */
-	uint8_t SataEnable;
 	uint8_t SataMode;
 	uint8_t SataSalpSupport;
 	uint8_t SataPortsEnable[8];
@@ -168,7 +163,6 @@ struct soc_intel_cannonlake_config {
 	uint8_t SmbusEnable;
 
 	/* eMMC and SD */
-	uint8_t ScsEmmcEnabled;
 	uint8_t ScsEmmcHs400Enabled;
 	/* Need to update DLL setting to get Emmc running at HS400 speed */
 	uint8_t EmmcHs400DllNeed;
@@ -176,8 +170,6 @@ struct soc_intel_cannonlake_config {
 	uint8_t EmmcHs400RxStrobeDll1;
 	/* 0-78: number of active delay for TX data, unit is 125 psec */
 	uint8_t EmmcHs400TxDataDll;
-	uint8_t ScsSdCardEnabled;
-	uint8_t ScsUfsEnabled;
 
 	/* Integrated Sensor */
 	uint8_t PchIshEnable;

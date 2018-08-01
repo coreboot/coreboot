@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016-2017 Intel Corporation.
+ * Copyright (C) 2016-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -208,16 +208,25 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchLockDownRtcMemoryLock = 0;
 
 	/* SATA */
-	params->SataEnable = config->SataEnable;
-	params->SataMode = config->SataMode;
-	params->SataSalpSupport = config->SataSalpSupport;
-	memcpy(params->SataPortsEnable, config->SataPortsEnable,
+	dev = dev_find_slot(0, PCH_DEVFN_SATA);
+	if (!dev)
+		params->SataEnable = 0;
+	else {
+		params->SataEnable = dev->enabled;
+		params->SataMode = config->SataMode;
+		params->SataSalpSupport = config->SataSalpSupport;
+		memcpy(params->SataPortsEnable, config->SataPortsEnable,
 			sizeof(params->SataPortsEnable));
-	memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
+		memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
 			sizeof(params->SataPortsDevSlp));
+	}
 
 	/* Lan */
-	params->PchLanEnable = config->PchLanEnable;
+	dev = dev_find_slot(0, PCH_DEVFN_GBE);
+	if (!dev)
+		params->PchLanEnable = 0;
+	else
+		params->PchLanEnable = dev->enabled;
 
 	/* Audio */
 	params->PchHdaDspEnable = config->PchHdaDspEnable;
@@ -237,18 +246,13 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* USB */
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
-		params->PortUsb20Enable[i] =
-			config->usb2_ports[i].enable;
-		params->Usb2OverCurrentPin[i] =
-			config->usb2_ports[i].ocpin;
-		params->Usb2AfePetxiset[i] =
-			config->usb2_ports[i].pre_emp_bias;
-		params->Usb2AfeTxiset[i] =
-			config->usb2_ports[i].tx_bias;
+		params->PortUsb20Enable[i] = config->usb2_ports[i].enable;
+		params->Usb2OverCurrentPin[i] = config->usb2_ports[i].ocpin;
+		params->Usb2AfePetxiset[i] = config->usb2_ports[i].pre_emp_bias;
+		params->Usb2AfeTxiset[i] = config->usb2_ports[i].tx_bias;
 		params->Usb2AfePredeemp[i] =
 			config->usb2_ports[i].tx_emp_enable;
-		params->Usb2AfePehalfbit[i] =
-			config->usb2_ports[i].pre_emp_bit;
+		params->Usb2AfePehalfbit[i] = config->usb2_ports[i].pre_emp_bit;
 	}
 
 	for (i = 0; i < ARRAY_SIZE(config->usb3_ports); i++) {
@@ -283,16 +287,32 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	       sizeof(config->PcieClkSrcClkReq));
 
 	/* eMMC and SD */
-	params->ScsEmmcEnabled = config->ScsEmmcEnabled;
-	params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
-	params->PchScsEmmcHs400DllDataValid = config->EmmcHs400DllNeed;
-	if (config->EmmcHs400DllNeed == 1) {
-		params->PchScsEmmcHs400RxStrobeDll1 =
-			config->EmmcHs400RxStrobeDll1;
-		params->PchScsEmmcHs400TxDataDll = config->EmmcHs400TxDataDll;
+	dev = dev_find_slot(0, PCH_DEVFN_EMMC);
+	if (!dev)
+		params->ScsEmmcEnabled = 0;
+	else {
+		params->ScsEmmcEnabled = dev->enabled;
+		params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
+		params->PchScsEmmcHs400DllDataValid = config->EmmcHs400DllNeed;
+		if (config->EmmcHs400DllNeed == 1) {
+			params->PchScsEmmcHs400RxStrobeDll1 =
+				config->EmmcHs400RxStrobeDll1;
+			params->PchScsEmmcHs400TxDataDll =
+				config->EmmcHs400TxDataDll;
+		}
 	}
-	params->ScsSdCardEnabled = config->ScsSdCardEnabled;
-	params->ScsUfsEnabled = config->ScsUfsEnabled;
+
+	dev = dev_find_slot(0, PCH_DEVFN_SDCARD);
+	if (!dev)
+		params->ScsSdCardEnabled = 0;
+	else
+		params->ScsSdCardEnabled = dev->enabled;
+
+	dev = dev_find_slot(0, PCH_DEVFN_UFS);
+	if (!dev)
+		params->ScsUfsEnabled = 0;
+	else
+		params->ScsUfsEnabled = dev->enabled;
 
 	params->Heci3Enabled = config->Heci3Enabled;
 	params->Device4Enable = config->Device4Enable;

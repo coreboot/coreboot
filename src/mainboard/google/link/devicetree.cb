@@ -86,6 +86,9 @@ chip northbridge/intel/sandybridge
 			device pci 1d.0 on end # USB2 EHCI #1
 			device pci 1e.0 off end # PCI bridge
 			device pci 1f.0 on
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
 				chip ec/google/chromeec
 					# We only have one init function that
 					# we need to call to initialize the

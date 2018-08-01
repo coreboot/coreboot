@@ -87,6 +87,9 @@ chip northbridge/intel/sandybridge
 			device pci 1d.0 on end # USB2 EHCI #1
 			device pci 1e.0 off end # PCI bridge
 			device pci 1f.0 on #LPC bridge
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
 				chip ec/quanta/ene_kb3940q
 					# 60/64 KBC
 					device pnp ff.1 on # dummy address

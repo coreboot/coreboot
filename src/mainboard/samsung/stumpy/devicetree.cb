@@ -116,6 +116,9 @@ chip northbridge/intel/sandybridge
 					end # Mouse
 					device pnp 2e.a off end # IR
 				end
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
 			end
 			device pci 1f.2 on end # SATA Controller 1
 			device pci 1f.3 on end # SMBus

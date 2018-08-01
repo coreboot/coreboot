@@ -85,6 +85,9 @@ chip soc/intel/baytrail
 		device pci 1e.4 off end # HSUART2
 		device pci 1e.5 off end # SPI
 		device pci 1f.0 on
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
 			chip ec/google/chromeec
 				# We only have one init function that
 				# we need to call to initialize the

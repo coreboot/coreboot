@@ -76,6 +76,9 @@ chip soc/intel/broadwell
 		device pci 1d.0 on end # USB2 EHCI
 		device pci 1e.0 off end # PCI bridge
 		device pci 1f.0 on
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
 			chip superio/ite/it8772f
 				# Skip keyboard init
 				register "skip_keyboard" = "1"

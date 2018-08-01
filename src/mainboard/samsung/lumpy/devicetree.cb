@@ -119,6 +119,9 @@ chip northbridge/intel/sandybridge
 				     register "base" = "(void *)0xfec00000"
 				     device ioapic 4 on end
 				end
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
 			end
 			device pci 1f.2 on # SATA Controller 1
 				ioapic_irq 4 INTA 0x10

@@ -148,6 +148,7 @@ static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
 VOID __weak OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly)
 {
 	InitEarly->GnbConfig.PcieComplexList = (void *)&PcieComplex;
+	InitEarly->GnbConfig.PsppPolicy = PsppBalanceLow;
 	InitEarly->PlatformConfig.GnbAzI2sBusSelect = GnbAcpI2sBus;
 	InitEarly->PlatformConfig.GnbAzI2sBusPinConfig = GnbAcp2Tx4RxBluetooth;
 

@@ -70,8 +70,8 @@ typedef uint8_t bool;
 #define false	0
 
 /* Types for `void *' pointers.  */
-typedef s64             intptr_t;
-typedef u64		uintptr_t;
+typedef long intptr_t;
+typedef unsigned long uintptr_t;
 
 /* FIXME: This is used in some print code and may be removed in the future. */
 #define PRIu64  "llu"

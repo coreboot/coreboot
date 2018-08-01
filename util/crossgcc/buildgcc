@@ -1195,9 +1195,9 @@ fi
 if ada_requested; then
 	if have_gnat; then
 		if [ "$BOOTSTRAP" != 1 ] && \
-			\( [ "$(hostcc_major)" -lt 4 ] || \
-			\( [ "$(hostcc_major)" -eq 4 ] && \
-			[ "$(hostcc_minor)" -lt 9 ] \) \) ]
+			{ [ "$(hostcc_major)" -lt 4 ] || \
+			{ [ "$(hostcc_major)" -eq 4 ] && \
+			[ "$(hostcc_minor)" -lt 9 ] ; } ; }
 		then
 			printf "\n${red}WARNING${NC}\n"
 			printf "Building the Ada compiler (GNAT $(buildcc_version)) with a host compiler older\n"

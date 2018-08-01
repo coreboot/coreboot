@@ -1,0 +1,13 @@
+#!/bin/bash
+files=`git diff --cached --name-only | grep '\.[ch]$'`
+if [ -z "$files" ]; then
+	exit 0
+fi
+# This has to be set here; otherwise a grep error seems to cause
+# us to exit with non-zero status.
+set -e
+clang-format -i $files
+git add $files
+u=`git config user.name`
+m="clang-formatted-by: $u"
+echo $m >> $1

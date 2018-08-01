@@ -597,6 +597,9 @@ update:
 gitconfig:
 	util/gitconfig/gitconfig.sh "$(MAKE)"
 
+install-git-commit-clangfmt:
+	cp util/scripts/prepare-commit-msg.clang-format .git/hooks/prepare-commit-msg
+
 include util/crossgcc/Makefile.inc
 
 .PHONY: tools

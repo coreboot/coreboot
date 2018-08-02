@@ -29,7 +29,7 @@ void gpio_input_pulldown(gpio_t gpio);
 void gpio_input_pullup(gpio_t gpio);
 void gpio_input(gpio_t gpio);
 void gpio_output(gpio_t gpio, int value);
-int _gpio_base3_value(const gpio_t gpio[], int num_gpio, int binary_first);
+uint32_t _gpio_base3_value(const gpio_t gpio[], int num_gpio, int binary_first);
 
 /*
  * This function may be implemented by SoC/board code to provide
@@ -60,9 +60,9 @@ uint16_t gpio_acpi_pin(gpio_t gpio);
  * There are also pulldown and pullup variants which default each gpio to
  * be configured with an internal pulldown and pullup, respectively.
  */
-int gpio_base2_value(const gpio_t gpio[], int num_gpio);
-int gpio_pulldown_base2_value(const gpio_t gpio[], int num_gpio);
-int gpio_pullup_base2_value(const gpio_t gpio[], int num_gpio);
+uint32_t gpio_base2_value(const gpio_t gpio[], int num_gpio);
+uint32_t gpio_pulldown_base2_value(const gpio_t gpio[], int num_gpio);
+uint32_t gpio_pullup_base2_value(const gpio_t gpio[], int num_gpio);
 
 /*
  * Read the value presented by the set of GPIOs, when each pin is interpreted
@@ -73,7 +73,7 @@ int gpio_pullup_base2_value(const gpio_t gpio[], int num_gpio);
  * gpio[]: pin positions to read. gpio[0] is less significant than gpio[1].
  * num_gpio: number of pins to read.
  */
-static inline int gpio_base3_value(const gpio_t gpio[], int num_gpio)
+static inline uint32_t gpio_base3_value(const gpio_t gpio[], int num_gpio)
 {
 	return _gpio_base3_value(gpio, num_gpio, 0);
 }
@@ -103,8 +103,8 @@ static inline int gpio_base3_value(const gpio_t gpio[], int num_gpio)
  * gpio[]: pin positions to read. gpio[0] is less significant than gpio[1].
  * num_gpio: number of pins to read.
  */
-static inline int gpio_binary_first_base3_value(const gpio_t gpio[],
-						int num_gpio)
+static inline uint32_t gpio_binary_first_base3_value(const gpio_t gpio[],
+						     int num_gpio)
 {
 	return _gpio_base3_value(gpio, num_gpio, 1);
 }

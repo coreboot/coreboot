@@ -20,9 +20,10 @@
 #include <delay.h>
 #include <gpio.h>
 
-static int _gpio_base2_value(const gpio_t gpio[], int num_gpio)
+static uint32_t _gpio_base2_value(const gpio_t gpio[], int num_gpio)
 {
-	int i, result = 0;
+	uint32_t result = 0;
+	int i;
 
 	/* Wait until signals become stable */
 	udelay(10);
@@ -33,7 +34,7 @@ static int _gpio_base2_value(const gpio_t gpio[], int num_gpio)
 	return result;
 }
 
-int gpio_base2_value(const gpio_t gpio[], int num_gpio)
+uint32_t gpio_base2_value(const gpio_t gpio[], int num_gpio)
 {
 	int i;
 
@@ -43,7 +44,7 @@ int gpio_base2_value(const gpio_t gpio[], int num_gpio)
 	return _gpio_base2_value(gpio, num_gpio);
 }
 
-int gpio_pulldown_base2_value(const gpio_t gpio[], int num_gpio)
+uint32_t gpio_pulldown_base2_value(const gpio_t gpio[], int num_gpio)
 {
 	int i;
 
@@ -53,7 +54,7 @@ int gpio_pulldown_base2_value(const gpio_t gpio[], int num_gpio)
 	return _gpio_base2_value(gpio, num_gpio);
 }
 
-int gpio_pullup_base2_value(const gpio_t gpio[], int num_gpio)
+uint32_t gpio_pullup_base2_value(const gpio_t gpio[], int num_gpio)
 {
 	int i;
 
@@ -63,7 +64,7 @@ int gpio_pullup_base2_value(const gpio_t gpio[], int num_gpio)
 	return _gpio_base2_value(gpio, num_gpio);
 }
 
-int _gpio_base3_value(const gpio_t gpio[], int num_gpio, int binary_first)
+uint32_t _gpio_base3_value(const gpio_t gpio[], int num_gpio, int binary_first)
 {
 	/*
 	 * GPIOs which are tied to stronger external pull up or pull down
@@ -75,11 +76,11 @@ int _gpio_base3_value(const gpio_t gpio[], int num_gpio, int binary_first)
 	 */
 
 	static const char tristate_char[] = {[0] = '0', [1] = '1', [Z] = 'Z'};
-	int temp;
-	int index;
-	int result = 0;
+	uint32_t result = 0;
 	int has_z = 0;
 	int binary_below = 0;
+	int index;
+	int temp;
 	char value[32];
 	assert(num_gpio <= 32);
 

@@ -129,7 +129,7 @@ config VARIANT_DIR
 	default "nami" if BOARD_GOOGLE_NAMI
 	default "nautilus" if BOARD_GOOGLE_NAUTILUS
 	default "nocturne" if BOARD_GOOGLE_NOCTURNE
-	default "poppy" if BOARD_GOOGLE_RAMMUS
+	default "rammus" if BOARD_GOOGLE_RAMMUS
 	default "soraka" if BOARD_GOOGLE_SORAKA
 
 # Select this option to enable camera ACPI support on the variant.
@@ -182,6 +182,11 @@ config VARIANT_SPECIFIC_OPTIONS_NOCTURNE
 	select MAINBOARD_HAS_SPI_TPM_CR50
 	select VARIANT_HAS_CAMERA_ACPI
 	select GEO_SAR_ENABLE if CHROMEOS_WIFI_SAR
+
+config VARIANT_SPECIFIC_OPTIONS_RAMMUS
+	def_bool n
+	select CHROMEOS_WIFI_SAR if CHROMEOS
+	select MAINBOARD_HAS_SPI_TPM_CR50
 
 config VARIANT_SPECIFIC_OPTIONS_SORAKA
 	def_bool n

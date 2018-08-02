@@ -944,7 +944,7 @@ static void ap_wait_for_instruction(void)
 			continue;
 		}
 
-		/* Copy to local variable before signalling consumption. */
+		/* Copy to local variable before signaling consumption. */
 		memcpy(&lcb, cb, sizeof(lcb));
 		mfence();
 		store_callback(per_cpu_slot, NULL);

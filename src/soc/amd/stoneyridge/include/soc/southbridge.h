@@ -367,6 +367,28 @@
 #define GPP_CLK0_CLOCK_REQ_MAP_MASK	(0xf << GPP_CLK0_CLOCK_REQ_MAP_SHIFT)
 #define GPP_CLK0_CLOCK_REQ_MAP_CLK_REQ0	1
 
+/* Bit definitions for MISC_MMIO_BASE register MiscClkCntl1 */
+#define MISC_CGPLL_CONFIG1			0x08
+#define   CG1PLL_SPREAD_SPECTRUM_ENABLE		BIT(0)
+#define MISC_CGPLL_CONFIG3			0x10
+#define   CG1PLL_REFDIV_SHIFT			0
+#define   CG1PLL_REFDIV_MASK			(0x3FF << CG1PLL_REFDIV_SHIFT)
+#define   CG1PLL_FBDIV_SHIFT			10
+#define   CG1PLL_FBDIV_MASK			(0xFFF << CG1PLL_FBDIV_SHIFT)
+#define MISC_CGPLL_CONFIG4			0x14
+#define   CG1PLL_SS_STEP_SIZE_DSFRAC_SHIFT	0
+#define   CG1PLL_SS_STEP_SIZE_DSFRAC_MASK	(0xFFFF << CG1PLL_SS_STEP_SIZE_DSFRAC_SHIFT)
+#define   CG1PLL_SS_AMOUNT_DSFRAC_SHIFT		16
+#define   CG1PLL_SS_AMOUNT_DSFRAC_MASK		(0xFFFF << CG1PLL_SS_AMOUNT_DSFRAC_SHIFT)
+#define MISC_CGPLL_CONFIG5			0x18
+#define   CG1PLL_SS_AMOUNT_NFRAC_SLIP_SHIFT	8
+#define   CG1PLL_SS_AMOUNT_NFRAC_SLIP_MASK	(0xF << CG1PLL_SS_AMOUNT_NFRAC_SLIP_SHIFT)
+#define MISC_CGPLL_CONFIG6			0x1C
+#define   CG1PLL_LF_MODE_SHIFT			9
+#define   CG1PLL_LF_MODE_MASK			(0x1FF << CG1PLL_LF_MODE_SHIFT)
+#define MISC_CLK_CNTL1				0x40
+#define   CG1PLL_FBDIV_TEST			BIT(26)
+
 struct stoneyridge_aoac {
 	int enable;
 	int status;
@@ -404,6 +426,8 @@ u32 pm_read32(u8 reg);
 void pm_write8(u8 reg, u8 value);
 void pm_write16(u8 reg, u16 value);
 void pm_write32(u8 reg, u32 value);
+u32 misc_read32(u8 reg);
+void misc_write32(u8 reg, u32 value);
 uint8_t smi_read8(uint8_t offset);
 uint16_t smi_read16(uint8_t offset);
 uint32_t smi_read32(uint8_t offset);

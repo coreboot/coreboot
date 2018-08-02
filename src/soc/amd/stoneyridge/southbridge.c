@@ -33,6 +33,7 @@
 #include <soc/pci_devs.h>
 #include <agesa_headers.h>
 #include <soc/nvs.h>
+#include <reset.h>
 
 /*
  * Table of devices that need their AOAC registers enabled and waited
@@ -555,6 +556,59 @@ static void sb_lpc_early_setup(void)
 	}
 }
 
+static void setup_spread_spectrum(void)
+{
+	uint16_t rstcfg = pm_read16(PWR_RESET_CFG);
+
+	rstcfg &= ~TOGGLE_ALL_PWR_GOOD;
+	pm_write16(PWR_RESET_CFG, rstcfg);
+
+	uint32_t cntl1 = misc_read32(MISC_CLK_CNTL1);
+
+	if (cntl1 & CG1PLL_FBDIV_TEST) {
+		printk(BIOS_DEBUG, "Spread spectrum is ready\n");
+		misc_write32(MISC_CGPLL_CONFIG1,
+			     misc_read32(MISC_CGPLL_CONFIG1) |
+				     CG1PLL_SPREAD_SPECTRUM_ENABLE);
+
+		return;
+	}
+
+	printk(BIOS_DEBUG, "Setting up spread spectrum\n");
+
+	uint32_t cfg6 = misc_read32(MISC_CGPLL_CONFIG6);
+	cfg6 &= ~CG1PLL_LF_MODE_MASK;
+	cfg6 |= (0x0F8 << CG1PLL_LF_MODE_SHIFT) & CG1PLL_LF_MODE_MASK;
+	misc_write32(MISC_CGPLL_CONFIG6, cfg6);
+
+	uint32_t cfg3 = misc_read32(MISC_CGPLL_CONFIG3);
+	cfg3 &= ~CG1PLL_REFDIV_MASK;
+	cfg3 |= (0x003 << CG1PLL_REFDIV_SHIFT) & CG1PLL_REFDIV_MASK;
+	cfg3 &= ~CG1PLL_FBDIV_MASK;
+	cfg3 |= (0x04B << CG1PLL_FBDIV_SHIFT) & CG1PLL_FBDIV_MASK;
+	misc_write32(MISC_CGPLL_CONFIG3, cfg3);
+
+	uint32_t cfg5 = misc_read32(MISC_CGPLL_CONFIG5);
+	cfg5 &= ~CG1PLL_SS_AMOUNT_NFRAC_SLIP_MASK;
+	cfg5 |= (0x2 << CG1PLL_SS_AMOUNT_NFRAC_SLIP_SHIFT) & CG1PLL_SS_AMOUNT_NFRAC_SLIP_MASK;
+	misc_write32(MISC_CGPLL_CONFIG5, cfg5);
+
+	uint32_t cfg4 = misc_read32(MISC_CGPLL_CONFIG4);
+	cfg4 &= ~CG1PLL_SS_AMOUNT_DSFRAC_MASK;
+	cfg4 |= (0xD000 << CG1PLL_SS_AMOUNT_DSFRAC_SHIFT) & CG1PLL_SS_AMOUNT_DSFRAC_MASK;
+	cfg4 &= ~CG1PLL_SS_STEP_SIZE_DSFRAC_MASK;
+	cfg4 |= (0x02D5 << CG1PLL_SS_STEP_SIZE_DSFRAC_SHIFT) & CG1PLL_SS_STEP_SIZE_DSFRAC_MASK;
+	misc_write32(MISC_CGPLL_CONFIG4, cfg4);
+
+	rstcfg |= TOGGLE_ALL_PWR_GOOD;
+	pm_write16(PWR_RESET_CFG, rstcfg);
+
+	cntl1 |= CG1PLL_FBDIV_TEST;
+	misc_write32(MISC_CLK_CNTL1, cntl1);
+
+	soft_reset();
+}
+
 void bootblock_fch_early_init(void)
 {
 	sb_enable_rom();
@@ -565,6 +619,7 @@ void bootblock_fch_early_init(void)
 	sb_disable_4dw_burst(); /* Must be disabled on CZ(ST) */
 	sb_acpi_mmio_decode();
 	sb_enable_cf9_io();
+	setup_spread_spectrum();
 	sb_enable_legacy_io();
 	enable_aoac_devices();
 }

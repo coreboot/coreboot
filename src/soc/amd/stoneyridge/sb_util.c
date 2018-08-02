@@ -36,6 +36,16 @@ u16 pm_read16(u8 reg)
 	return read16((void *)(PM_MMIO_BASE + reg));
 }
 
+void misc_write32(u8 reg, u32 value)
+{
+	write32((void *)(MISC_MMIO_BASE + reg), value);
+}
+
+u32 misc_read32(u8 reg)
+{
+	return read32((void *)(MISC_MMIO_BASE + reg));
+}
+
 void pm_write32(u8 reg, u32 value)
 {
 	write32((void *)(PM_MMIO_BASE + reg), value);

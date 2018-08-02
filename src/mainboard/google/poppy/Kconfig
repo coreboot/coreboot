@@ -30,6 +30,7 @@ config DEVICETREE
 	default "variants/nami/devicetree.cb" if BOARD_GOOGLE_NAMI
 	default "variants/nautilus/devicetree.cb" if BOARD_GOOGLE_NAUTILUS
 	default "variants/nocturne/devicetree.cb" if BOARD_GOOGLE_NOCTURNE
+	default "variants/rammus/devicetree.cb" if BOARD_GOOGLE_RAMMUS
 	default "variants/soraka/devicetree.cb" if BOARD_GOOGLE_SORAKA
 	default "variants/baseboard/devicetree.cb"
 

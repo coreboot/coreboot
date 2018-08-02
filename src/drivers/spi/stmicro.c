@@ -45,17 +45,18 @@
  * Device ID = (memory_type << 8) + memory_capacity
  */
 #define STM_ID_M25P10		0x2011
-#define STM_ID_M25P16		0x2015
 #define STM_ID_M25P20		0x2012
-#define STM_ID_M25P32		0x2016
 #define STM_ID_M25P40		0x2013
-#define STM_ID_M25P64		0x2017
 #define STM_ID_M25P80		0x2014
+#define STM_ID_M25P16		0x2015
+#define STM_ID_M25P32		0x2016
+#define STM_ID_M25P64		0x2017
 #define STM_ID_M25P128		0x2018
+#define STM_ID_N25Q032__3E	0xba16
+#define STM_ID_N25Q128A		0xba18
 #define STM_ID_N25Q256		0xba19
 #define STM_ID_N25Q064		0xbb17
 #define STM_ID_N25Q128		0xbb18
-#define STM_ID_N25Q128A		0xba18
 
 struct stmicro_spi_flash_params {
 	u16 device_id;
@@ -130,6 +131,14 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 		.pages_per_sector = 1024,
 		.nr_sectors = 64,
 		.name = "M25P128",
+	},
+	{
+		.device_id = STM_ID_N25Q032__3E,
+		.op_erase = CMD_M25PXX_SSE,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.nr_sectors = 1024,
+		.name = "N25Q032..3E",
 	},
 	{
 		.device_id = STM_ID_N25Q064,

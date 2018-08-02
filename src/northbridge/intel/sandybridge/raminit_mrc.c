@@ -190,8 +190,6 @@ void sdram_initialize(struct pei_data *pei_data)
 	struct sys_info sysinfo;
 	int (*entry) (struct pei_data *pei_data) __attribute__((regparm(1)));
 
-	report_platform_info();
-
 	/* Wait for ME to be ready */
 	intel_early_me_init();
 	intel_early_me_uma_size();

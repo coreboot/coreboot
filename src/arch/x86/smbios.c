@@ -336,8 +336,6 @@ const char *__weak smbios_mainboard_bios_version(void)
 {
 	if (strlen(CONFIG_LOCALVERSION))
 		return CONFIG_LOCALVERSION;
-	else if (strlen(coreboot_tag))
-		return coreboot_tag;
 	else
 		return coreboot_version;
 }

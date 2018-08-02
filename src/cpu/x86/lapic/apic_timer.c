@@ -138,22 +138,25 @@ void udelay(u32 usecs)
 	} while ((start - value) < ticks);
 }
 
-#if IS_ENABLED(CONFIG_LAPIC_MONOTONIC_TIMER) && !defined(__PRE_RAM__)
+#if IS_ENABLED(CONFIG_LAPIC_MONOTONIC_TIMER)
 #include <timer.h>
 
 static struct monotonic_counter {
 	int initialized;
 	struct mono_time time;
 	uint32_t last_value;
-} mono_counter;
+} mono_counter_g CAR_GLOBAL;
 
 void timer_monotonic_get(struct mono_time *mt)
 {
 	uint32_t current_tick;
 	uint32_t usecs_elapsed;
 	uint32_t timer_fsb;
+	struct monotonic_counter *mono_counter;
 
-	if (!mono_counter.initialized) {
+	mono_counter = car_get_var_ptr(&mono_counter_g);
+
+	if (!mono_counter->initialized) {
 		init_timer();
 		timer_fsb = get_timer_fsb();
 		/* An FSB frequency of 200Mhz provides a 20 second polling
@@ -163,22 +166,22 @@ void timer_monotonic_get(struct mono_time *mt)
 			printk(BIOS_WARNING,
 			       "apic timer freq (%d) may be too fast.\n",
 			       timer_fsb);
-		mono_counter.last_value = lapic_read(LAPIC_TMCCT);
-		mono_counter.initialized = 1;
+		mono_counter->last_value = lapic_read(LAPIC_TMCCT);
+		mono_counter->initialized = 1;
 	}
 
 	timer_fsb = get_timer_fsb();
 	current_tick = lapic_read(LAPIC_TMCCT);
 	/* Note that the APIC timer counts down. */
-	usecs_elapsed = (mono_counter.last_value - current_tick) / timer_fsb;
+	usecs_elapsed = (mono_counter->last_value - current_tick) / timer_fsb;
 
 	/* Update current time and tick values only if a full tick occurred. */
 	if (usecs_elapsed) {
-		mono_time_add_usecs(&mono_counter.time, usecs_elapsed);
-		mono_counter.last_value = current_tick;
+		mono_time_add_usecs(&mono_counter->time, usecs_elapsed);
+		mono_counter->last_value = current_tick;
 	}
 
 	/* Save result. */
-	*mt = mono_counter.time;
+	*mt = mono_counter->time;
 }
 #endif

@@ -3,6 +3,7 @@ ramstage-y += lapic_cpu_init.c
 ramstage-$(CONFIG_SMP) += secondary.S
 romstage-$(CONFIG_UDELAY_LAPIC) += apic_timer.c
 ramstage-$(CONFIG_UDELAY_LAPIC) += apic_timer.c
+postcar-$(CONFIG_UDELAY_LAPIC) += apic_timer.c
 bootblock-y += boot_cpu.c
 verstage-y += boot_cpu.c
 romstage-y += boot_cpu.c

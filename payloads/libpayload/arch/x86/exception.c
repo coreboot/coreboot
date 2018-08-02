@@ -59,7 +59,7 @@ static const char *names[EXC_COUNT] = {
 
 static void print_segment_error_code(u32 code)
 {
-	printf("%#x - descriptor %#x in the ", code, (code >> 3) & 0x1f);
+	printf("%#x - descriptor %#x in the ", code, (code >> 3) & 0x1FFF);
 	if (code & (0x1 << 1)) {
 		printf("IDT");
 	} else {

@@ -181,7 +181,8 @@ void pch_early_iorange_init(void)
 	}
 
 	/* IO Decode Enable */
-	dec_en |= SE_LPC_EN | KBC_LPC_EN | MC1_LPC_EN | GAMEL_LPC_EN;
+	dec_en |= SE_LPC_EN | KBC_LPC_EN | MC1_LPC_EN | GAMEL_LPC_EN |
+		LPC_IOE_KBC_60_64;
 	pci_write_config16(PCH_DEV_LPC, LPC_EN, dec_en);
 	pcr_write16(PID_DMI, PCR_DMI_LPCIOE, dec_en);
 

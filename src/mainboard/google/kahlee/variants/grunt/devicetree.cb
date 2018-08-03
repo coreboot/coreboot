@@ -73,7 +73,7 @@ chip soc/amd/stoneyridge
 		device pci 9.0 on  end # PCIe Host Bridge
 		device pci 9.2 on  end # HDA
 		device pci 10.0 on  end # xHCI
-		device pci 11.0 on  end # SATA
+		device pci 11.0 off  end # SATA
 		device pci 12.0 on  end # EHCI
 		device pci 14.0 on      # SMbus
 		end # SMbus

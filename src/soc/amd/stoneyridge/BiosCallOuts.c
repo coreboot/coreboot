@@ -53,6 +53,7 @@ AGESA_STATUS agesa_fch_initreset(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 AGESA_STATUS agesa_fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
+	const struct device *dev = dev_find_slot(0, SATA_DEVFN);
 
 	if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
@@ -67,19 +68,22 @@ AGESA_STATUS agesa_fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 
 		/* SATA configuration */
 		FchParams_env->Sata.SataClass = CONFIG_STONEYRIDGE_SATA_MODE;
-		switch ((SATA_CLASS)CONFIG_STONEYRIDGE_SATA_MODE) {
-		case SataRaid:
-		case SataAhci:
-		case SataAhci7804:
-		case SataLegacyIde:
+		if (dev && dev->enabled) {
+			switch ((SATA_CLASS)CONFIG_STONEYRIDGE_SATA_MODE) {
+			case SataRaid:
+			case SataAhci:
+			case SataAhci7804:
+			case SataLegacyIde:
+				FchParams_env->Sata.SataIdeMode = FALSE;
+				break;
+			case SataIde2Ahci:
+			case SataIde2Ahci7804:
+			default: /* SataNativeIde */
+				FchParams_env->Sata.SataIdeMode = TRUE;
+				break;
+			}
+		} else
 			FchParams_env->Sata.SataIdeMode = FALSE;
-			break;
-		case SataIde2Ahci:
-		case SataIde2Ahci7804:
-		default: /* SataNativeIde */
-			FchParams_env->Sata.SataIdeMode = TRUE;
-			break;
-		}
 
 		/* Platform updates */
 		platform_FchParams_env(FchParams_env);

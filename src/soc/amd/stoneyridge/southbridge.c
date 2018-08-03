@@ -72,18 +72,32 @@ static inline int sb_ide_enable(void)
 
 void SetFchResetParams(FCH_RESET_INTERFACE *params)
 {
+	const struct device *dev = dev_find_slot(0, SATA_DEVFN);
 	params->Xhci0Enable = IS_ENABLED(CONFIG_STONEYRIDGE_XHCI_ENABLE);
-	params->SataEnable = sb_sata_enable();
-	params->IdeEnable = sb_ide_enable();
+	if (dev && dev->enabled) {
+		params->SataEnable = sb_sata_enable();
+		params->IdeEnable = sb_ide_enable();
+	} else {
+		params->SataEnable = FALSE;
+		params->IdeEnable = FALSE;
+	}
 }
 
 void SetFchEnvParams(FCH_INTERFACE *params)
 {
+	const struct device *dev = dev_find_slot(0, SATA_DEVFN);
 	params->AzaliaController = AzEnable;
 	params->SataClass = CONFIG_STONEYRIDGE_SATA_MODE;
-	params->SataEnable = is_sata_config();
-	params->IdeEnable = !params->SataEnable;
-	params->SataIdeMode = (CONFIG_STONEYRIDGE_SATA_MODE == SataLegacyIde);
+	if (dev && dev->enabled) {
+		params->SataEnable = is_sata_config();
+		params->IdeEnable = !params->SataEnable;
+		params->SataIdeMode = (CONFIG_STONEYRIDGE_SATA_MODE ==
+					SataLegacyIde);
+	} else {
+		params->SataEnable = FALSE;
+		params->IdeEnable = FALSE;
+		params->SataIdeMode = FALSE;
+	}
 }
 
 void SetFchMidParams(FCH_INTERFACE *params)

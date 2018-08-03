@@ -39,8 +39,6 @@ static void run_payload(struct prog *prog)
 	else {
 		uint8_t current_el = get_current_el();
 
-		cache_sync_instructions();
-
 		printk(BIOS_SPEW, "entry    = %p\n", doit);
 
 		/* If current EL is not EL3, jump to payload at same EL. */

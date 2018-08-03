@@ -34,13 +34,6 @@
 #include <arch/early_variables.h>
 #include <cpu/x86/cache.h>
 
-/*
- * For the purposes of the currently executing CPU loading code that will be
- * run there aren't any cache coherency operations required. This just provides
- * symmetry between architectures.
- */
-static inline void cache_sync_instructions(void) {}
-
 /* Executing WBINVD when running out of CAR would not be good, prevent that. */
 static inline void dcache_clean_invalidate_all(void)
 {

@@ -118,16 +118,6 @@ void dcache_invalidate_by_mva(void const *addr, size_t len)
 	dcache_op_va(addr, len, OP_DCIVAC);
 }
 
-void cache_sync_instructions(void)
-{
-	uint32_t sctlr = raw_read_sctlr_current();
-	if (sctlr & SCTLR_C)
-		dcache_clean_all();	/* includes trailing DSB (assembly) */
-	else if (sctlr & SCTLR_I)
-		dcache_clean_invalidate_all();
-	icache_invalidate_all(); /* includdes leading DSB and trailing ISB. */
-}
-
 /*
  * For each segment of a program loaded this function is called
  * to invalidate caches for the addresses of the loaded segment

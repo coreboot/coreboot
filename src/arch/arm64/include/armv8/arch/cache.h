@@ -76,9 +76,6 @@ void dcache_clean_invalidate_all(void);
 /* returns number of bytes per cache line */
 unsigned int dcache_line_bytes(void);
 
-/* perform all icache/dcache maintenance needed after loading new code */
-void cache_sync_instructions(void);
-
 /* tlb invalidate all */
 void tlb_invalidate_all(void);
 

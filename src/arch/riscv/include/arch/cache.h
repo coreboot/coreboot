@@ -32,7 +32,6 @@
 #define ARCH_CACHE_H
 
 /* TODO: implement these API stubs once caching is available on RISC-V */
-static inline void cache_sync_instructions(void) {}
 static inline void dcache_clean_all(void) {}
 static inline void dcache_invalidate_all(void) {}
 static inline void dcache_clean_invalidate_all(void) {}

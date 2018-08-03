@@ -36,7 +36,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	current = acpi_madt_irq_overrides(current);
 
-	for (i = 0; i < 16; i++)
+	for (i = 0; i < CONFIG_MAX_CPUS; i++)
 		current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current, i, 0xD, 1);
 
 	return current;

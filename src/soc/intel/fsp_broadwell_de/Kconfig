@@ -49,7 +49,7 @@ config MMCONF_BASE_ADDRESS
 
 config MAX_CPUS
 	int
-	default 16
+	default 32
 
 config CPU_ADDR_BITS
 	int

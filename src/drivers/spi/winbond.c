@@ -27,111 +27,110 @@
 #define CMD_W25_RES		0xab	/* Release from DP, and Read Signature */
 
 struct winbond_spi_flash_params {
-	uint16_t	id;
-	/* Log2 of page size in power-of-two mode */
-	uint8_t		l2_page_size;
-	uint16_t	pages_per_sector;
-	uint16_t	sectors_per_block;
-	uint16_t	nr_blocks;
-	const char	*name;
+	uint16_t id;
+	uint8_t l2_page_size_shift;
+	uint8_t pages_per_sector_shift : 4;
+	uint8_t sectors_per_block_shift : 4;
+	uint8_t nr_blocks_shift;
+	char name[10];
 };
 
 static const struct winbond_spi_flash_params winbond_spi_flash_table[] = {
 	{
-		.id			= 0x3015,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 32,
-		.name			= "W25X16",
+		.id				= 0x3015,
+		.l2_page_size_shift		= 8,
+		.pages_per_sector_shift		= 4,
+		.sectors_per_block_shift	= 4,
+		.nr_blocks_shift		= 5,
+		.name				= "W25X16",
 	},
 	{
-		.id			= 0x3016,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 64,
-		.name			= "W25X32",
+		.id				= 0x3016,
+		.l2_page_size_shift		= 8,
+		.pages_per_sector_shift		= 4,
+		.sectors_per_block_shift	= 4,
+		.nr_blocks_shift		= 6,
+		.name				= "W25X32",
 	},
 	{
-		.id			= 0x3017,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 128,
-		.name			= "W25X64",
+		.id				= 0x3017,
+		.l2_page_size_shift		= 8,
+		.pages_per_sector_shift		= 4,
+		.sectors_per_block_shift	= 4,
+		.nr_blocks_shift		= 7,
+		.name				= "W25X64",
 	},
 	{
-		.id			= 0x4014,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 16,
-		.name			= "W25Q80",
+		.id				= 0x4014,
+		.l2_page_size_shift		= 8,
+		.pages_per_sector_shift		= 4,
+		.sectors_per_block_shift	= 4,
+		.nr_blocks_shift		= 4,
+		.name				= "W25Q80",
 	},
 	{
-		.id			= 0x4015,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 32,
-		.name			= "W25Q16",
+		.id				= 0x4015,
+		.l2_page_size_shift		= 8,
+		.pages_per_sector_shift		= 4,
+		.sectors_per_block_shift	= 4,
+		.nr_blocks_shift		= 5,
+		.name				= "W25Q16",
 	},
 	{
-		.id			= 0x4016,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 64,
-		.name			= "W25Q32",
+		.id				= 0x4016,
+		.l2_page_size_shift		= 8,
+		.pages_per_sector_shift		= 4,
+		.sectors_per_block_shift	= 4,
+		.nr_blocks_shift		= 6,
+		.name				= "W25Q32",
 	},
 	{
-		.id			= 0x6016,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 64,
-		.name			= "W25Q32DW",
+		.id				= 0x6016,
+		.l2_page_size_shift		= 8,
+		.pages_per_sector_shift		= 4,
+		.sectors_per_block_shift	= 4,
+		.nr_blocks_shift		= 6,
+		.name				= "W25Q32DW",
 	},
 	{
-		.id			= 0x4017,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 128,
-		.name			= "W25Q64",
+		.id				= 0x4017,
+		.l2_page_size_shift		= 8,
+		.pages_per_sector_shift		= 4,
+		.sectors_per_block_shift	= 4,
+		.nr_blocks_shift		= 7,
+		.name				= "W25Q64",
 	},
 	{
-		.id			= 0x6017,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 128,
-		.name			= "W25Q64DW",
+		.id				= 0x6017,
+		.l2_page_size_shift		= 8,
+		.pages_per_sector_shift		= 4,
+		.sectors_per_block_shift	= 4,
+		.nr_blocks_shift		= 7,
+		.name				= "W25Q64DW",
 	},
 	{
-		.id			= 0x4018,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 256,
-		.name			= "W25Q128",
+		.id				= 0x4018,
+		.l2_page_size_shift		= 8,
+		.pages_per_sector_shift		= 4,
+		.sectors_per_block_shift	= 4,
+		.nr_blocks_shift		= 8,
+		.name				= "W25Q128",
 	},
 	{
-		.id			= 0x6018,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 256,
-		.name			= "W25Q128FW",
+		.id				= 0x6018,
+		.l2_page_size_shift		= 8,
+		.pages_per_sector_shift		= 4,
+		.sectors_per_block_shift	= 4,
+		.nr_blocks_shift		= 8,
+		.name				= "W25Q128FW",
 	},
 	{
-		.id			= 0x4019,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 512,
-		.name			= "W25Q256",
+		.id				= 0x4019,
+		.l2_page_size_shift		= 8,
+		.pages_per_sector_shift		= 4,
+		.sectors_per_block_shift	= 4,
+		.nr_blocks_shift		= 9,
+		.name				= "W25Q256",
 	},
 };
 
@@ -223,11 +222,14 @@ int spi_flash_probe_winbond(const struct spi_slave *spi, u8 *idcode,
 
 	memcpy(&flash->spi, spi, sizeof(*spi));
 	flash->name = params->name;
-	/* Assuming power-of-two page size initially. */
-	flash->page_size = 1 << params->l2_page_size;
-	flash->sector_size = flash->page_size * params->pages_per_sector;
-	flash->size = flash->sector_size * params->sectors_per_block *
-			params->nr_blocks;
+
+	/* Params are in power-of-two. */
+	flash->page_size = 1 << params->l2_page_size_shift;
+	flash->sector_size = flash->page_size *
+			(1 << params->pages_per_sector_shift);
+	flash->size = flash->sector_size *
+			(1 << params->sectors_per_block_shift) *
+			(1 << params->nr_blocks_shift);
 	flash->erase_cmd = CMD_W25_SE;
 	flash->status_cmd = CMD_W25_RDSR;
 

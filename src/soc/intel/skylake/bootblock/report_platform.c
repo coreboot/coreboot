@@ -102,6 +102,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_KBL_GT2_SULTMR, "Kabylake-R ULT GT2"},
 	{ PCI_DEVICE_ID_INTEL_KBL_GT2_SHALM, "Kabylake HALO GT2" },
 	{ PCI_DEVICE_ID_INTEL_KBL_GT2_DT2P2, "Kabylake DT GT2" },
+	{ PCI_DEVICE_ID_INTEL_AML_GT2_ULX, "Amberlake ULX GT2" },
 };
 
 static uint8_t get_dev_revision(pci_devfn_t dev)

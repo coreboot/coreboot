@@ -186,7 +186,7 @@ static int get_kbl_sku(void)
 		sku = KBL_R_SKU;
 	else if (id == PCI_DEVICE_ID_INTEL_KBL_ID_Y) {
 		id = get_dev_id(SA_DEV_IGD);
-		if (id == PCI_DEVICE_ID_INTEL_KBL_GT2_ULX_R)
+		if (id == PCI_DEVICE_ID_INTEL_AML_GT2_ULX)
 			sku = AML_Y_SKU;
 		else
 			sku = KBL_Y_SKU;

@@ -130,6 +130,6 @@ chip soc/intel/cannonlake
 		device pci 1f.3 on  end # Intel HDA
 		device pci 1f.4 on  end # SMBus
 		device pci 1f.5 on  end # PCH SPI
-		device pci 1f.6 off end # GbE
+		device pci 1f.6 on  end # GbE
 	end
 end

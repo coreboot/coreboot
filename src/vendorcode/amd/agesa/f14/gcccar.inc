@@ -1451,6 +1451,13 @@ SetupStack:
     0:
     _WRMSR                              #
 
+    # All cores must see BSP stack region that is also used to
+    # communicate global variables before DRAM is up.
+    mov     $AMD_MTRR_FIX64k_00000, %ecx  # MSR:0000_0250
+    _RDMSR
+    or      $0x1e000000, %eax
+    _WRMSR
+
     # Enable MTRR defaults as UC type
     mov     $AMD_MTRR_DEFTYPE, %ecx       # MSR:0000_02FF
     _RDMSR                              # Read-modify-write the MSR

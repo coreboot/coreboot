@@ -21,28 +21,11 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include "chip.h"
+#include "bh720.h"
 
-enum {
-	BH720_PROTECT			= 0xd0,
-	BH720_PROTECT_LOCK_OFF		= 0,
-	BH720_PROTECT_LOCK_ON		= BIT(0),
-	BH720_PROTECT_OFF		= 0,
-	BH720_PROTECT_ON		= BIT(31),
-
-	BH720_LINK_CTRL			= 0x90,
-	BH720_LINK_CTRL_L0_ENABLE	= BIT(0),
-	BH720_LINK_CTRL_L1_ENABLE	= BIT(1),
-	BH720_LINK_CTRL_CLKREQ		= BIT(8),
-
-	BH720_MISC2			= 0xf0,
-	BH720_MISC2_ASPM_DISABLE	= BIT(0),
-	BH720_MISC2_APSM_CLKREQ_L1	= BIT(7),
-	BH720_MISC2_APSM_PHY_L1		= BIT(10),
-	BH720_MISC2_APSM_MORE		= BIT(12),
-
-	BH720_RTD3_L1			= 0x3e0,
-	BH720_RTD3_L1_DISABLE_L1	= BIT(28),
-};
+__attribute__((weak)) void bh720_driving_strength(struct device *dev)
+{
+}
 
 static void bh720_init(struct device *dev)
 {
@@ -71,6 +54,8 @@ static void bh720_init(struct device *dev)
 		printk(BIOS_INFO, "BayHub BH720: Power-saving enabled (link_ctrl=%#x)\n",
 		       pci_read_config32(dev, BH720_LINK_CTRL));
 	}
+
+	bh720_driving_strength(dev);
 }
 
 static struct pci_operations pci_ops = {

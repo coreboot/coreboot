@@ -17,6 +17,8 @@
 #include <chip.h>
 #include <gpio.h>
 #include <device/device.h>
+#include <smbios.h>
+#include <string.h>
 #include <variant/sku.h>
 
 uint32_t variant_board_sku(void)
@@ -38,6 +40,15 @@ uint32_t variant_board_sku(void)
 		sku_id = SKU_1_NAUTILUS_LTE;
 
 	return sku_id;
+}
+
+const char *smbios_mainboard_sku(void)
+{
+	static char sku_str[5]; /* sku{0-1} */
+
+	snprintf(sku_str, sizeof(sku_str), "sku%u", variant_board_sku());
+
+	return sku_str;
 }
 
 /* Override dev tree settings per board */

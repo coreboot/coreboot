@@ -21,6 +21,21 @@
 #include <device/pci_ops.h>
 #include <soc/southbridge.h>
 
+void set_warm_reset_flag(void)
+{
+	u32 htic;
+	htic = pci_read_config32(SOC_HT_DEV, HT_INIT_CONTROL);
+	htic |= HTIC_COLD_RST_DET;
+	pci_write_config32(SOC_HT_DEV, HT_INIT_CONTROL, htic);
+}
+
+int is_warm_reset(void)
+{
+	u32 htic;
+	htic = pci_read_config32(SOC_HT_DEV, HT_INIT_CONTROL);
+	return !!(htic & HTIC_COLD_RST_DET);
+}
+
 /* Clear bits 5, 9 & 10, used to signal the reset type */
 static void clear_bios_reset(void)
 {
@@ -42,6 +57,7 @@ void do_hard_reset(void)
 
 void do_soft_reset(void)
 {
+	set_warm_reset_flag();
 	clear_bios_reset();
 
 	/* Assert reset signals only. */

@@ -30,6 +30,7 @@
 # define CPU_CNT_MASK		0x1f /*  CpuCnt + 1 = no. CPUs */
 #define HT_INIT_CONTROL		0x6c
 # define HTIC_BIOSR_DETECT	((1 << 5) | (1 << 9) | (1 << 10))
+# define HTIC_COLD_RST_DET	BIT(4)
 
 /* NB IOAPIC registers */
 #define NB_IOAPIC_INDEX		0xf8
@@ -116,5 +117,7 @@ uint32_t nb_ioapic_read(unsigned int index);
 void nb_ioapic_write(unsigned int index, uint32_t value);
 void *get_ap_entry_ptr(void);
 void set_ap_entry_ptr(void *entry);
+void set_warm_reset_flag(void);
+int is_warm_reset(void);
 
 #endif /* __PI_STONEYRIDGE_NORTHBRIDGE_H__ */

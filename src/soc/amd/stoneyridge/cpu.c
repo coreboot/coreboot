@@ -113,6 +113,8 @@ void stoney_init_cpus(struct device *dev)
 
 	/* The flash is now no longer cacheable. Reset to WP for performance. */
 	mtrr_use_temp_range(FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
+
+	set_warm_reset_flag();
 }
 
 static void model_15_init(struct device *dev)

@@ -69,8 +69,10 @@ size_t iohole_in_mib(void)
 	return 2 * (GiB / MiB);
 }
 
-static void set_lpddr4_defaults(FSP_M_CONFIG *cfg)
+static void set_lpddr4_defaults(FSP_M_CONFIG *cfg, int speed)
 {
+	uint8_t odt_config;
+
 	/* Enable memory down BGA since it's the only LPDDR4 packaging. */
 	cfg->Package = 1;
 	cfg->MemoryDown = 1;
@@ -122,10 +124,16 @@ static void set_lpddr4_defaults(FSP_M_CONFIG *cfg)
 
 	/* Set CA ODT with default setting of ODT pins of LPDDR4 modules pulled
 	   up to 1.1V. */
-	cfg->Ch0_OdtConfig = ODT_A_B_HIGH_HIGH;
-	cfg->Ch1_OdtConfig = ODT_A_B_HIGH_HIGH;
-	cfg->Ch2_OdtConfig = ODT_A_B_HIGH_HIGH;
-	cfg->Ch3_OdtConfig = ODT_A_B_HIGH_HIGH;
+	odt_config = ODT_A_B_HIGH_HIGH;
+
+	/* Need to set correct Write-Recovery configuration based on speed. */
+	if (IS_ENABLED(CONFIG_SOC_INTEL_GLK) && speed >= LP4_SPEED_2133)
+		odt_config |= nWR_24;
+
+	cfg->Ch0_OdtConfig = odt_config;
+	cfg->Ch1_OdtConfig = odt_config;
+	cfg->Ch2_OdtConfig = odt_config;
+	cfg->Ch3_OdtConfig = odt_config;
 }
 
 struct speed_mapping {
@@ -205,7 +213,7 @@ void meminit_lpddr4(FSP_M_CONFIG *cfg, int speed)
 	printk(BIOS_INFO, "LP4DDR speed is %dMHz\n", speed);
 	cfg->Profile = fsp_memory_profile(speed);
 
-	set_lpddr4_defaults(cfg);
+	set_lpddr4_defaults(cfg, speed);
 }
 
 static void enable_logical_chan0(FSP_M_CONFIG *cfg,

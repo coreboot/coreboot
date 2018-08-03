@@ -81,6 +81,7 @@ enum {
 enum {
 	ODT_A_B_HIGH_LOW = 0 << 1,
 	ODT_A_B_HIGH_HIGH = 1 << 1,
+	nWR_24 = 1 << 5,
 };
 
 /* Provide bit swizzling per DQS and byte swapping within a channel. */

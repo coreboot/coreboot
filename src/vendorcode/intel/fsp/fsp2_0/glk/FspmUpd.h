@@ -474,6 +474,7 @@ typedef struct {
   1 - ODT_AB_HIGH_HIGH. DDR3L & LPDDR3:  X - Don't Care. [4] TX ODT. DDR3L only:
   0 = RZQ/4 (60 Ohms)  = MRC_SMIP_DDR3L_TX_ODT_RTT_WR_60_OHMS,   1 = RZQ/2 (120
   Ohms) = MRC_SMIP_DDR3L_TX_ODT_RTT_WR_120_OHMS. LPDDR3 & LPDDR4:   X = Don't Care
+  [5] nWR config: 0 - nWR6, 1 - nWR24.
 **/
   UINT8                       Ch0_OdtConfig;
 

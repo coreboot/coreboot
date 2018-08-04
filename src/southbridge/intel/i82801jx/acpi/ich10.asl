@@ -41,7 +41,6 @@ Scope(\)
 		SCIS, 1		// TCO DMI status
 	}
 
-	// FIXME: purposes of the GPIOs (comments) are probably wrong
 	// ICH10 GPIO IO mapped registers (0x1f.0 reg 0x48.l)
 	OperationRegion(GPIO, SystemIO, DEFAULT_GPIOBASE, 0x3c)
 	Field(GPIO, ByteAcc, NoLock, Preserve)
@@ -63,28 +62,28 @@ Scope(\)
 		GP03, 1,
 		GP04, 1,
 		GP05, 1,
-		GP06, 1,	// GDET
+		GP06, 1,
 		GP07, 1,
 		GP08, 1,
-		GP09, 1,	// HPMU
-		GP10, 1,	// GPSE
+		GP09, 1,
+		GP10, 1,
 		GP11, 1,
-		GP12, 1,	// WLED
-		GP13, 1,	// BLED
-		GP14, 1,	// GLED
-		GP15, 1,	// GDIS
+		GP12, 1,
+		GP13, 1,
+		GP14, 1,
+		GP15, 1,
 		GP16, 1,
 		GP17, 1,
-		GP18, 1,	// SPCI
-		GP19, 1,	// TSDT
-		GP20, 1,	// SCPU
+		GP18, 1,
+		GP19, 1,
+		GP20, 1,
 		GP21, 1,
 		GP22, 1,
-		GP23, 1,	// LANP
-		GP24, 1,	// DKLR
-		GP25, 1,	// WLAN
-		GP26, 1,	// SATA_PWR_EN #0 / SPOF
-		GP27, 1,	// SATA_PWR_EN #1 / SPMU
+		GP23, 1,
+		GP24, 1,
+		GP25, 1,
+		GP26, 1,
+		GP27, 1,
 		GP28, 1,
 		GP29, 1,
 		GP30, 1,
@@ -111,13 +110,13 @@ Scope(\)
 		GIO7, 8,
 		Offset(0x38),	// GPIO Level 2
 		GP32, 1,
-		GP33, 1,	// CREN
-		GP34, 1,	// CRRS
+		GP33, 1,
+		GP34, 1,
 		GP35, 1,
-		GP36, 1,	// STAD
-		GP37, 1,	// PATA_PWR_EN / HDDE
-		GP38, 1,	// Battery / Power (?) / MB00
-		GP39, 1,	// ?? / MB01
+		GP36, 1,
+		GP37, 1,
+		GP38, 1,
+		GP39, 1,
 		GL05, 8,
 		GL06, 8,
 		GL07, 8

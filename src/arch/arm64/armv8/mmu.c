@@ -242,7 +242,7 @@ void mmu_config_range(void *start, size_t size, uint64_t tag)
 
 	/* ARMv8 MMUs snoop L1 data cache, no need to flush it. */
 	dsb();
-	tlbiall_current();
+	tlbiall_el3();
 	dsb();
 	isb();
 }

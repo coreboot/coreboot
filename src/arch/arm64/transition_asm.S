@@ -164,7 +164,7 @@ ENTRY(exception_init_asm)
 	msr	SPSel, #SPSR_USE_L
 
 	adr	x0, exc_vectors
-	write_current vbar, x0, x1
+	msr	vbar_el3, x0
 	dsb	sy
 	isb
 	ret

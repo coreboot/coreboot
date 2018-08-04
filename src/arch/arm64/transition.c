@@ -38,62 +38,41 @@ void exc_entry(struct exc_state *exc_state, uint64_t id)
 {
 	struct elx_state *elx = &exc_state->elx;
 	struct regs *regs = &exc_state->regs;
-	uint8_t elx_mode, elx_el;
+	uint8_t elx_mode;
 
-	elx->spsr = raw_read_spsr_current();
+	elx->spsr = raw_read_spsr_el3();
 	elx_mode = get_mode_from_spsr(elx->spsr);
-	elx_el = get_el_from_spsr(elx->spsr);
 
-	if (elx_mode == SPSR_USE_H) {
-		if (elx_el == get_current_el())
-			regs->sp = (uint64_t)&exc_state[1];
-		else
-			regs->sp = raw_read_sp_elx(elx_el);
-	} else {
+	if (elx_mode == SPSR_USE_H)
+		regs->sp = (uint64_t)&exc_state[1];
+	else
 		regs->sp = raw_read_sp_el0();
-	}
 
-	elx->elr = raw_read_elr_current();
+	elx->elr = raw_read_elr_el3();
 
 	exc_dispatch(exc_state, id);
 }
 
-void transition_with_entry(void *entry, void *arg, struct exc_state *exc_state)
+void transition_to_el2(void *entry, void *arg, uint64_t spsr)
 {
-	/* Argument to entry point goes into X0 */
-	exc_state->regs.x[X0_INDEX] = (uint64_t)arg;
-	/* Entry point goes into ELR */
-	exc_state->elx.elr = (uint64_t)entry;
+	struct exc_state exc_state;
+	struct elx_state *elx = &exc_state.elx;
+	struct regs *regs = &exc_state.regs;
+	uint32_t sctlr;
 
-	transition(exc_state);
-}
-
-void transition(struct exc_state *exc_state)
-{
-	uint64_t sctlr;
-	uint32_t current_el = get_current_el();
-
-	struct elx_state *elx = &exc_state->elx;
-	struct regs *regs = &exc_state->regs;
-
-	uint8_t elx_el = get_el_from_spsr(elx->spsr);
+	regs->x[X0_INDEX] = (uint64_t)arg;
+	elx->elr = (uint64_t)entry;
+	elx->spsr = spsr;
 
 	/*
 	 * Policies enforced:
-	 * 1. We support only elx --> (elx - 1) transitions
+	 * 1. We support only transitions to EL2
 	 * 2. We support transitions to Aarch64 mode only
 	 *
 	 * If any of the above conditions holds false, then we need a proper way
 	 * to update SCR/HCR before removing the checks below
 	 */
-	if ((current_el - elx_el) != 1)
-		die("ARM64 Error: Do not support transition\n");
-
-	if (elx->spsr & SPSR_ERET_32)
-		die("ARM64 Error: Do not support eret to Aarch32\n");
-
-	/* Most parts of coreboot currently don't support EL2 anyway. */
-	assert(current_el == EL3);
+	assert(get_el_from_spsr(spsr) == EL2 && !(spsr & SPSR_ERET_32));
 
 	/* Initialize SCR with defaults for running without secure monitor. */
 	raw_write_scr_el3(SCR_TWE_DISABLE |	/* don't trap WFE */
@@ -114,16 +93,16 @@ void transition(struct exc_state *exc_state)
 			   CPTR_EL3_TFP_DISABLE);
 
 	/* ELR/SPSR: Write entry point and processor state of program */
-	raw_write_elr_current(elx->elr);
-	raw_write_spsr_current(elx->spsr);
+	raw_write_elr_el3(elx->elr);
+	raw_write_spsr_el3(elx->spsr);
 
 	/* SCTLR: Initialize EL with selected properties */
-	sctlr = raw_read_sctlr(elx_el);
+	sctlr = raw_read_sctlr_el2();
 	sctlr &= SCTLR_MASK;
-	raw_write_sctlr(sctlr, elx_el);
+	raw_write_sctlr_el2(sctlr);
 
 	/* SP_ELx: Initialize stack pointer */
-	raw_write_sp_elx(elx->sp_elx, elx_el);
+	raw_write_sp_el2(elx->sp_elx);
 
 	/* Payloads expect to be entered with MMU disabled. Includes an ISB. */
 	mmu_disable();

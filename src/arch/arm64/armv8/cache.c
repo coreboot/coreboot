@@ -40,7 +40,7 @@
 void tlb_invalidate_all(void)
 {
 	 /* TLBIALL includes dTLB and iTLB on systems that have them. */
-	tlbiall_current();
+	tlbiall_el3();
 	dsb();
 	isb();
 }
@@ -124,7 +124,7 @@ void dcache_invalidate_by_mva(void const *addr, size_t len)
  */
 void arch_segment_loaded(uintptr_t start, size_t size, int flags)
 {
-	uint32_t sctlr = raw_read_sctlr_current();
+	uint32_t sctlr = raw_read_sctlr_el3();
 	if (sctlr & SCTLR_C)
 		dcache_clean_by_mva((void *)start, size);
 	else if (sctlr & SCTLR_I)

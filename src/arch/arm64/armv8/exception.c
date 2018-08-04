@@ -79,9 +79,9 @@ static void print_regs(struct exc_state *exc_state)
 	struct regs *regs = &exc_state->regs;
 
 	printk(BIOS_DEBUG, "ELR = 0x%016llx         ESR = 0x%08x\n",
-	       elx->elr, raw_read_esr_current());
+	       elx->elr, raw_read_esr_el3());
 	printk(BIOS_DEBUG, "FAR = 0x%016llx        SPSR = 0x%08x\n",
-	       raw_read_far_current(), raw_read_spsr_current());
+	       raw_read_far_el3(), raw_read_spsr_el3());
 	for (i = 0; i < 30; i += 2) {
 		printk(BIOS_DEBUG,
 		       "X%02d = 0x%016llx         X%02d = 0x%016llx\n",
@@ -188,7 +188,7 @@ static int test_exception_handler(struct exc_state *state, uint64_t vector_id)
 {
 	/* Update instruction pointer to next instrution. */
 	state->elx.elr += sizeof(uint32_t);
-	raw_write_elr_current(state->elx.elr);
+	raw_write_elr_el3(state->elx.elr);
 	return EXC_RET_HANDLED;
 }
 

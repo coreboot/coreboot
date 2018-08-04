@@ -163,16 +163,10 @@ static inline uint8_t get_mode_from_spsr(uint64_t spsr)
  */
 
 /*
- * User of transition library can make a call to transition_with_entry and pass
- * the entry point and its argument which are put into elr and x0 by this
- * function. After that it makes a call to transition.
+ * Transitions to EL2 with given entry point and argument in X0. SPSR can be
+ * partially configured, but the exception level given must be EL2.
  */
-void transition_with_entry(void *entry, void *arg, struct exc_state *exc_state);
-/*
- * transition function sets up all the registers as per the struct elx_state
- * before jumping to trans_switch.
- */
-void transition(struct exc_state *exc_state);
+void transition_to_el2(void *entry, void *arg, uint64_t spsr);
 
 /*
  * exc_exit it called while returning from an exception. It expects pointer to

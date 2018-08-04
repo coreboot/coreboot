@@ -37,17 +37,6 @@ void tlbiall_el3(void)
 	__asm__ __volatile__("tlbi alle3\n\t" : : : "memory");
 }
 
-void tlbiall_current(void)
-{
-	uint32_t el = get_current_el();
-	tlbiall(el);
-}
-
-void tlbiall(uint32_t el)
-{
-	SWITCH_CASE_TLBI(tlbiall, el);
-}
-
 /* TLBIALLIS */
 void tlbiallis_el1(void)
 {
@@ -62,17 +51,6 @@ void tlbiallis_el2(void)
 void tlbiallis_el3(void)
 {
 	__asm__ __volatile__("tlbi alle3is\n\t" : : : "memory");
-}
-
-void tlbiallis_current(void)
-{
-	uint32_t el = get_current_el();
-	tlbiallis(el);
-}
-
-void tlbiallis(uint32_t el)
-{
-	SWITCH_CASE_TLBI(tlbiallis, el);
 }
 
 /* TLBIVAA */

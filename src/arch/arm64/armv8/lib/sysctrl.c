@@ -65,28 +65,6 @@ void raw_write_actlr_el3(uint32_t actlr_el3)
 	__asm__ __volatile__("msr ACTLR_EL3, %0\n\t" : : "r" ((uint64_t)actlr_el3) : "memory");
 }
 
-uint32_t raw_read_actlr_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_actlr(el);
-}
-
-void raw_write_actlr_current(uint32_t actlr)
-{
-	uint32_t el = get_current_el();
-	raw_write_actlr(actlr, el);
-}
-
-uint32_t raw_read_actlr(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_actlr, actlr, uint32_t, el);
-}
-
-void raw_write_actlr(uint32_t actlr, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_actlr, actlr, el);
-}
-
 /* AFSR0 */
 uint32_t raw_read_afsr0_el1(void)
 {
@@ -130,28 +108,6 @@ void raw_write_afsr0_el3(uint32_t afsr0_el3)
 	__asm__ __volatile__("msr AFSR0_EL3, %0\n\t" : : "r" ((uint64_t)afsr0_el3) : "memory");
 }
 
-uint32_t raw_read_afsr0_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_afsr0(el);
-}
-
-void raw_write_afsr0_current(uint32_t afsr0)
-{
-	uint32_t el = get_current_el();
-	raw_write_afsr0(afsr0, el);
-}
-
-uint32_t raw_read_afsr0(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_afsr0, afsr0, uint32_t, el);
-}
-
-void raw_write_afsr0(uint32_t afsr0, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_afsr0, afsr0, el);
-}
-
 /* AFSR1 */
 uint32_t raw_read_afsr1_el1(void)
 {
@@ -193,28 +149,6 @@ uint32_t raw_read_afsr1_el3(void)
 void raw_write_afsr1_el3(uint32_t afsr1_el3)
 {
 	__asm__ __volatile__("msr AFSR1_EL3, %0\n\t" : : "r" ((uint64_t)afsr1_el3) : "memory");
-}
-
-uint32_t raw_read_afsr1_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_afsr1(el);
-}
-
-void raw_write_afsr1_current(uint32_t afsr1)
-{
-	uint32_t el = get_current_el();
-	raw_write_afsr1(afsr1, el);
-}
-
-uint32_t raw_read_afsr1(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_afsr1, afsr1, uint32_t, el);
-}
-
-void raw_write_afsr1(uint32_t afsr1, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_afsr1, afsr1, el);
 }
 
 /* AIDR */
@@ -268,28 +202,6 @@ uint64_t raw_read_amair_el3(void)
 void raw_write_amair_el3(uint64_t amair_el3)
 {
 	__asm__ __volatile__("msr AMAIR_EL3, %0\n\t" : : "r" (amair_el3) : "memory");
-}
-
-uint64_t raw_read_amair_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_amair(el);
-}
-
-void raw_write_amair_current(uint64_t amair)
-{
-	uint32_t el = get_current_el();
-	raw_write_amair(amair, el);
-}
-
-uint64_t raw_read_amair(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_amair, amair, uint64_t, el);
-}
-
-void raw_write_amair(uint64_t amair, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_amair, amair, el);
 }
 
 /* CCSIDR */
@@ -424,28 +336,6 @@ void raw_write_esr_el3(uint32_t esr_el3)
 	__asm__ __volatile__("msr ESR_EL3, %0\n\t" : : "r" ((uint64_t)esr_el3) : "memory");
 }
 
-uint32_t raw_read_esr_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_esr(el);
-}
-
-void raw_write_esr_current(uint32_t esr)
-{
-	uint32_t el = get_current_el();
-	raw_write_esr(esr, el);
-}
-
-uint32_t raw_read_esr(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_esr, esr, uint32_t, el);
-}
-
-void raw_write_esr(uint32_t esr, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_esr, esr, el);
-}
-
 /* FAR */
 uint64_t raw_read_far_el1(void)
 {
@@ -487,28 +377,6 @@ uint64_t raw_read_far_el3(void)
 void raw_write_far_el3(uint64_t far_el3)
 {
 	__asm__ __volatile__("msr FAR_EL3, %0\n\t" : : "r" (far_el3) : "memory");
-}
-
-uint64_t raw_read_far_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_far(el);
-}
-
-void raw_write_far_current(uint64_t far)
-{
-	uint32_t el = get_current_el();
-	raw_write_far(far, el);
-}
-
-uint64_t raw_read_far(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_far, far, uint64_t, el);
-}
-
-void raw_write_far(uint64_t far, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_far, far, el);
 }
 
 /* HCR */
@@ -579,28 +447,6 @@ void raw_write_mair_el3(uint64_t mair_el3)
 	__asm__ __volatile__("msr MAIR_EL3, %0\n\t" : : "r" (mair_el3) : "memory");
 }
 
-uint64_t raw_read_mair_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_mair(el);
-}
-
-void raw_write_mair_current(uint64_t mair)
-{
-	uint32_t el = get_current_el();
-	raw_write_mair(mair, el);
-}
-
-uint64_t raw_read_mair(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_mair, mair, uint64_t, el);
-}
-
-void raw_write_mair(uint64_t mair, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_mair, mair, el);
-}
-
 /* MIDR */
 uint32_t raw_read_midr_el1(void)
 {
@@ -664,28 +510,6 @@ void raw_write_rmr_el3(uint32_t rmr_el3)
 	__asm__ __volatile__("msr RMR_EL3, %0\n\t" : : "r" ((uint64_t)rmr_el3) : "memory");
 }
 
-uint32_t raw_read_rmr_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_rmr(el);
-}
-
-void raw_write_rmr_current(uint32_t rmr)
-{
-	uint32_t el = get_current_el();
-	raw_write_rmr(rmr, el);
-}
-
-uint32_t raw_read_rmr(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_rmr, rmr, uint32_t, el);
-}
-
-void raw_write_rmr(uint32_t rmr, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_rmr, rmr, el);
-}
-
 /* RVBAR */
 uint64_t raw_read_rvbar_el1(void)
 {
@@ -727,28 +551,6 @@ uint64_t raw_read_rvbar_el3(void)
 void raw_write_rvbar_el3(uint64_t rvbar_el3)
 {
 	__asm__ __volatile__("msr RVBAR_EL3, %0\n\t" : : "r" (rvbar_el3) : "memory");
-}
-
-uint64_t raw_read_rvbar_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_rvbar(el);
-}
-
-void raw_write_rvbar_current(uint64_t rvbar)
-{
-	uint32_t el = get_current_el();
-	raw_write_rvbar(rvbar, el);
-}
-
-uint64_t raw_read_rvbar(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_rvbar, rvbar, uint64_t, el);
-}
-
-void raw_write_rvbar(uint64_t rvbar, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_rvbar, rvbar, el);
 }
 
 /* Scr */
@@ -809,28 +611,6 @@ void raw_write_sctlr_el3(uint32_t sctlr_el3)
 	__asm__ __volatile__("msr SCTLR_EL3, %0\n\t" : : "r" ((uint64_t)sctlr_el3) : "memory");
 }
 
-uint32_t raw_read_sctlr_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_sctlr(el);
-}
-
-void raw_write_sctlr_current(uint32_t sctlr)
-{
-	uint32_t el = get_current_el();
-	raw_write_sctlr(sctlr, el);
-}
-
-uint32_t raw_read_sctlr(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_sctlr, sctlr, uint32_t, el);
-}
-
-void raw_write_sctlr(uint32_t sctlr, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_sctlr, sctlr, el);
-}
-
 /* TCR */
 uint64_t raw_read_tcr_el1(void)
 {
@@ -874,34 +654,6 @@ void raw_write_tcr_el3(uint32_t tcr_el3)
 	__asm__ __volatile__("msr TCR_EL3, %0\n\t" : : "r" ((uint64_t)tcr_el3) : "memory");
 }
 
-
-/*
- * IMPORTANT: TCR_EL1 is 64-bit whereas TCR_EL2 and TCR_EL3 are 32-bit. Thus,
- * 64-bit is used to read/write for tcr_current. tcr_el2 and tcr_el3 handle them
- * with appropriate 32-bit types.
- */
-uint64_t raw_read_tcr_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_tcr(el);
-}
-
-void raw_write_tcr_current(uint64_t tcr)
-{
-	uint32_t el = get_current_el();
-	raw_write_tcr(tcr, el);
-}
-
-uint64_t raw_read_tcr(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_tcr, tcr, uint64_t, el);
-}
-
-void raw_write_tcr(uint64_t tcr, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_tcr, tcr, el);
-}
-
 /* TTBR0 */
 uint64_t raw_read_ttbr0_el1(void)
 {
@@ -943,28 +695,6 @@ uint64_t raw_read_ttbr0_el3(void)
 void raw_write_ttbr0_el3(uint64_t ttbr0_el3)
 {
 	__asm__ __volatile__("msr TTBR0_EL3, %0\n\t" : : "r" (ttbr0_el3) : "memory");
-}
-
-uint64_t raw_read_ttbr0_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_ttbr0(el);
-}
-
-void raw_write_ttbr0_current(uint64_t ttbr0)
-{
-	uint32_t el = get_current_el();
-	raw_write_ttbr0(ttbr0, el);
-}
-
-uint64_t raw_read_ttbr0(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_ttbr0, ttbr0, uint64_t, el);
-}
-
-void raw_write_ttbr0(uint64_t ttbr0, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_ttbr0, ttbr0, el);
 }
 
 /* TTBR1 */
@@ -1023,28 +753,6 @@ uint64_t raw_read_vbar_el3(void)
 void raw_write_vbar_el3(uint64_t vbar_el3)
 {
 	__asm__ __volatile__("msr VBAR_EL3, %0\n\t" : : "r" (vbar_el3) : "memory");
-}
-
-uint64_t raw_read_vbar_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_vbar(el);
-}
-
-void raw_write_vbar_current(uint64_t vbar)
-{
-	uint32_t el = get_current_el();
-	raw_write_vbar(vbar, el);
-}
-
-uint64_t raw_read_vbar(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_vbar, vbar, uint64_t, el);
-}
-
-void raw_write_vbar(uint64_t vbar, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_vbar, vbar, el);
 }
 
 uint32_t raw_read_cntfrq_el0(void)

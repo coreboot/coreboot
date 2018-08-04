@@ -32,12 +32,6 @@ uint32_t raw_read_current_el(void)
 	return current_el;
 }
 
-uint32_t get_current_el(void)
-{
-	uint32_t current_el = raw_read_current_el();
-	return ((current_el >> CURRENT_EL_SHIFT) & CURRENT_EL_MASK);
-}
-
 /* DAIF */
 uint32_t raw_read_daif(void)
 {
@@ -162,28 +156,6 @@ uint64_t raw_read_elr_el3(void)
 void raw_write_elr_el3(uint64_t elr_el3)
 {
 	__asm__ __volatile__("msr ELR_EL3, %0\n\t" : : "r" (elr_el3) : "memory");
-}
-
-uint64_t raw_read_elr_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_elr(el);
-}
-
-void raw_write_elr_current(uint64_t elr)
-{
-	uint32_t el = get_current_el();
-	raw_write_elr(elr, el);
-}
-
-uint64_t raw_read_elr(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_elr, elr, uint64_t, el);
-}
-
-void raw_write_elr(uint64_t elr, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_elr, elr, el);
 }
 
 /* FPCR */
@@ -320,16 +292,6 @@ void raw_write_sp_el3(uint64_t sp_el3)
 		raw_write_spsel(spsel);
 }
 
-uint64_t raw_read_sp_elx(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_sp, sp, uint64_t, el);
-}
-
-void raw_write_sp_elx(uint64_t sp_elx, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_sp, sp_elx, el);
-}
-
 /* SPSR */
 uint32_t raw_read_spsr_abt(void)
 {
@@ -385,28 +347,6 @@ uint32_t raw_read_spsr_el3(void)
 void raw_write_spsr_el3(uint32_t spsr_el3)
 {
 	__asm__ __volatile__("msr SPSR_EL3, %0\n\t" : : "r" ((uint64_t)spsr_el3) : "memory");
-}
-
-uint32_t raw_read_spsr_current(void)
-{
-	uint32_t el = get_current_el();
-	return raw_read_spsr(el);
-}
-
-void raw_write_spsr_current(uint32_t spsr)
-{
-	uint32_t el = get_current_el();
-	raw_write_spsr(spsr, el);
-}
-
-uint32_t raw_read_spsr(uint32_t el)
-{
-	SWITCH_CASE_READ(raw_read_spsr, spsr, uint32_t, el);
-}
-
-void raw_write_spsr(uint32_t spsr, uint32_t el)
-{
-	SWITCH_CASE_WRITE(raw_write_spsr, spsr, el);
 }
 
 uint32_t raw_read_spsr_fiq(void)

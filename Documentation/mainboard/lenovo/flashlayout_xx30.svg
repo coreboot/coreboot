@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="10cm" height="11cm" viewBox="265 -156 187 213" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="307.888" y="-152.131" width="49.1438" height="30.4667"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="307.888" y="-152.131" width="49.1438" height="30.4667"/>
+    <text font-size="6.77333" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="332.46" y="-134.831">
+      <tspan x="332.46" y="-134.831">IFD</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="308" y="-91.1844" width="49.1438" height="59.7756"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="308" y="-91.1844" width="49.1438" height="59.7756"/>
+    <text font-size="6.77333" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="332.572" y="-59.2299">
+      <tspan x="332.572" y="-59.2299">ME</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="307.934" y="-31.6442" width="49.1438" height="85.7161"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="307.934" y="-31.6442" width="49.1438" height="85.7161"/>
+    <text font-size="6.77333" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="332.506" y="13.2805">
+      <tspan x="332.506" y="13.2805">BIOS</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="308" y="-121.59" width="49.1438" height="30.4667"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="308" y="-121.59" width="49.1438" height="30.4667"/>
+    <text font-size="6.77333" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="332.572" y="-104.29">
+      <tspan x="332.572" y="-104.29">GBE</tspan>
+    </text>
+  </g>
+  <text font-size="6.77333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="265.968" y="-149.208">
+    <tspan x="265.968" y="-149.208">0x000000</tspan>
+  </text>
+  <text font-size="6.77333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="266.362" y="-120.102">
+    <tspan x="266.362" y="-120.102">0x001000</tspan>
+  </text>
+  <text font-size="6.77333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="266.162" y="-88.8972">
+    <tspan x="266.162" y="-88.8972">0x003000</tspan>
+  </text>
+  <text font-size="6.77333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="266.144" y="-29.6656">
+    <tspan x="266.144" y="-29.6656">0x500000</tspan>
+  </text>
+  <text font-size="6.77333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="266.326" y="1.87412">
+    <tspan x="266.326" y="1.87412">0x800000</tspan>
+  </text>
+  <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" d="M 380.877 -151.013 C 401.876,-151.013 379.377,-73.513 400.627,-72.513"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" d="M 381.377 -0.763268 C 395.238,-0.763268 387.016,-72.763 400.877,-72.763"/>
+  <text font-size="10.1598" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="406.127" y="-68.513">
+    <tspan x="406.127" y="-68.513">Flash #0</tspan>
+  </text>
+  <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" d="M 381.223 -0.537117 C 402.222,-0.537117 379.285,28.8102 399.872,27.8376"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" d="M 382.176 54.9128 C 396.037,54.9128 385.445,27.9997 399.548,27.8376"/>
+  <text font-size="10.1598" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="407.157" y="30.2529">
+    <tspan x="407.157" y="30.2529">Flash #1</tspan>
+  </text>
+  <text font-size="6.77333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="266.591" y="54.9733">
+    <tspan x="266.591" y="54.9733">0xc00000</tspan>
+  </text>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="305.271" y1="-1.2113" x2="378.831" y2="-1.17038"/>
+</svg>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="4cm" height="3cm" viewBox="311 435 65 45" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <g>
+      <rect style="fill: #ffffff" x="322.124" y="451.034" width="37.75" height="26.6444"/>
+      <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="322.124" y="451.034" width="37.75" height="26.6444"/>
+      <text font-size="4.51556" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="340.999" y="465.734">
+        <tspan x="340.999" y="465.734"></tspan>
+      </text>
+    </g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x1="359.874" y1="456.784" x2="368.528" y2="456.784"/>
+    <text font-size="4.51556" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="348.75" y="457.91">
+      <tspan x="348.75" y="457.91">VCC</tspan>
+    </text>
+    <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x1="359.762" y1="461.772" x2="368.652" y2="461.784"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x1="360.138" y1="466.872" x2="368.528" y2="466.91"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x1="360.278" y1="471.534" x2="368.402" y2="471.534"/>
+    <text font-size="4.51556" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="345.752" y="463.246">
+      <tspan x="345.752" y="463.246">HOLD</tspan>
+    </text>
+    <line style="fill: none; fill-opacity:0; stroke-width: 0.2; stroke: #000000" x1="346.652" y1="459.16" x2="358.402" y2="459.16"/>
+    <text font-size="4.51556" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="349.752" y="468.246">
+      <tspan x="349.752" y="468.246">CLK</tspan>
+    </text>
+    <text font-size="4.51556" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="353.502" y="472.996">
+      <tspan x="353.502" y="472.996">DI</tspan>
+    </text>
+    <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x1="313.49" y1="456.922" x2="322.142" y2="456.922"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x1="313.378" y1="461.91" x2="322.268" y2="461.922"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x1="313.752" y1="467.01" x2="322.142" y2="467.046"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x1="313.892" y1="471.672" x2="322.018" y2="471.672"/>
+    <text font-size="4.51556" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="323.752" y="458.372">
+      <tspan x="323.752" y="458.372">CS</tspan>
+    </text>
+    <text font-size="4.51556" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="324.128" y="468.496">
+      <tspan x="324.128" y="468.496">WP</tspan>
+    </text>
+    <text font-size="4.51556" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="323.752" y="472.996">
+      <tspan x="323.752" y="472.996">GND</tspan>
+    </text>
+    <text font-size="4.51556" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="324.128" y="463.496">
+      <tspan x="324.128" y="463.496">DO</tspan>
+    </text>
+    <line style="fill: none; fill-opacity:0; stroke-width: 0.2; stroke: #000000" x1="330.852" y1="454.396" x2="323.902" y2="454.41"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 0.2; stroke: #000000" x1="330.802" y1="464.396" x2="323.852" y2="464.41"/>
+  </g>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x1="368.252" y1="456.796" x2="373.902" y2="456.784"/>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x1="374.028" y1="456.784" x2="374.028" y2="438.896"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" points="375.028,439.778 374.028,437.778 373.028,439.778 "/>
+  </g>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x1="314.278" y1="471.784" x2="314.278" y2="479.66"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x1="317.028" y1="479.66" x2="311.502" y2="479.672"/>
+</svg>

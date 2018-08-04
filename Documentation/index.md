@@ -23,3 +23,4 @@ Contents:
 * [Vendorcode-specific documentation](vendorcode/index.md)
 * [Utilities](util.md)
 * [Release notes for past releases](releases/index.md)
+* [Flashing firmware tutorial](flash_tutorial/index.md)

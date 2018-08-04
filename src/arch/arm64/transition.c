@@ -15,6 +15,7 @@
 
 #include <arch/cache.h>
 #include <arch/lib_helpers.h>
+#include <arch/mmu.h>
 #include <arch/transition.h>
 #include <assert.h>
 #include <compiler.h>
@@ -123,7 +124,9 @@ void transition(struct exc_state *exc_state)
 
 	/* SP_ELx: Initialize stack pointer */
 	raw_write_sp_elx(elx->sp_elx, elx_el);
-	isb();
+
+	/* Payloads expect to be entered with MMU disabled. Includes an ISB. */
+	mmu_disable();
 
 	/* Eret to the entry point */
 	trans_switch(regs);

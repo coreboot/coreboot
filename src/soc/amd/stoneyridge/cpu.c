@@ -117,22 +117,65 @@ void stoney_init_cpus(struct device *dev)
 	set_warm_reset_flag();
 }
 
-static void model_15_init(struct device *dev)
-{
-	printk(BIOS_DEBUG, "Model 15 Init.\n");
+static const char *const mca_bank_name[] = {
+	"Load-store unit",
+	"Instruction fetch unit",
+	"Combined unit",
+	"Reserved",
+	"Northbridge",
+	"Execution unit",
+	"Floating point unit"
+};
 
+static void check_mca(void)
+{
 	int i;
 	msr_t msr;
 	int num_banks;
 
-	/* zero the machine check error status registers */
 	msr = rdmsr(MCG_CAP);
 	num_banks = msr.lo & MCA_BANKS_MASK;
+
+	if (is_warm_reset()) {
+		for (i = 0 ; i < num_banks ; i++) {
+			if (i == 3) /* Reserved in Family 15h */
+				continue;
+
+			msr = rdmsr(MC0_STATUS + (i * 4));
+			if (msr.hi || msr.lo) {
+				int core = cpuid_ebx(1) >> 24;
+
+				printk(BIOS_WARNING, "#MC Error: core %d, bank %d %s\n",
+						core, i, mca_bank_name[i]);
+
+				printk(BIOS_WARNING, "   MC%d_STATUS =   %08x_%08x\n",
+						i, msr.hi, msr.lo);
+				msr = rdmsr(MC0_ADDR + (i * 4));
+				printk(BIOS_WARNING, "   MC%d_ADDR =     %08x_%08x\n",
+						i, msr.hi, msr.lo);
+				msr = rdmsr(MC0_MISC + (i * 4));
+				printk(BIOS_WARNING, "   MC%d_MISC =     %08x_%08x\n",
+						i, msr.hi, msr.lo);
+				msr = rdmsr(MC0_CTL + (i * 4));
+				printk(BIOS_WARNING, "   MC%d_CTL =      %08x_%08x\n",
+						i, msr.hi, msr.lo);
+				msr = rdmsr(MC0_CTL_MASK + i);
+				printk(BIOS_WARNING, "   MC%d_CTL_MASK = %08x_%08x\n",
+						i, msr.hi, msr.lo);
+			}
+		}
+	}
+
+	/* zero the machine check error status registers */
 	msr.lo = 0;
 	msr.hi = 0;
 	for (i = 0 ; i < num_banks ; i++)
 		wrmsr(MC0_STATUS + (i * 4), msr);
+}
 
+static void model_15_init(struct device *dev)
+{
+	check_mca();
 	setup_lapic();
 }
 

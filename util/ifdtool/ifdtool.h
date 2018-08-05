@@ -56,8 +56,6 @@ typedef struct {
 	uint32_t flmap0;
 	uint32_t flmap1;
 	uint32_t flmap2;
-	uint8_t  reserved[0xefc - 0x20];
-	uint32_t flumap1;
 } __attribute__((packed)) fdbar_t;
 
 // regions
@@ -113,6 +111,8 @@ typedef struct {
 
 typedef struct {
 	// Actual number of entries specified in vtl
+	/* FIXME: Rationale for the limit of 8.
+	 *        AFAICT it's 127, cf. flashrom's ich_descriptors_tool). */
 	vscc_t entry[8];
 } vtba_t;
 

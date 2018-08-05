@@ -77,6 +77,21 @@ static fdbar_t *find_fd(char *image, int size)
 	return PTR_IN_RANGE(fdb, image, size) ? fdb : NULL;
 }
 
+static char *find_flumap(char *image, int size)
+{
+	/* The upper map is located in the word before the 256B-long OEM section
+	 * at the end of the 4kB-long flash descriptor. In the official
+	 * documentation this is defined as FDBAR + 0xEFC. However, starting
+	 * with B-Step of Ibex Peak (5 series) the signature (and thus FDBAR)
+	 * has moved 16 bytes back to offset 0x10 of the image. Although
+	 * official documentation still maintains the offset relative to FDBAR
+	 * this is wrong and a simple fixed offset from the start of the image
+	 * works.
+	*/
+	char *flumap = image + 4096 - 256 - 4;
+	return PTR_IN_RANGE(flumap, image, size) ? flumap : NULL;
+}
+
 static fcba_t *find_fcba(char *image, int size)
 {
 	fdbar_t *fdb = find_fd(image, size);
@@ -586,7 +601,8 @@ static void dump_vscc(uint32_t vscc)
 static void dump_vtba(const vtba_t *vtba, int vtl)
 {
 	int i;
-	int num = (vtl >> 1) < 8 ? (vtl >> 1) : 8;
+	int max_len = sizeof(vtba_t)/sizeof(vscc_t);
+	int num = (vtl >> 1) < max_len ? (vtl >> 1) : max_len;
 
 	printf("ME VSCC table:\n");
 	for (i = 0; i < num; i++) {
@@ -633,14 +649,16 @@ static void dump_fd(char *image, int size)
 	printf("  PSL:     0x%04x\n", (fdb->flmap2 >> 8) & 0xffff);
 	printf("  FMSBA:   0x%x\n", ((fdb->flmap2) & 0xff) << 4);
 
-	printf("FLUMAP1:   0x%08x\n", fdb->flumap1);
+	char *flumap = find_flumap(image, size);
+	uint32_t flumap1 = *(uint32_t *)flumap;
+	printf("FLUMAP1:   0x%08x\n", flumap1);
 	printf("  Intel ME VSCC Table Length (VTL):        %d\n",
-		(fdb->flumap1 >> 8) & 0xff);
+		(flumap1 >> 8) & 0xff);
 	printf("  Intel ME VSCC Table Base Address (VTBA): 0x%06x\n\n",
-		(fdb->flumap1 & 0xff) << 4);
+		(flumap1 & 0xff) << 4);
 	dump_vtba((vtba_t *)
-			(image + ((fdb->flumap1 & 0xff) << 4)),
-			(fdb->flumap1 >> 8) & 0xff);
+			(image + ((flumap1 & 0xff) << 4)),
+			(flumap1 >> 8) & 0xff);
 	dump_oem((const uint8_t *)image + 0xf00);
 
 	const frba_t *frba = find_frba(image, size);

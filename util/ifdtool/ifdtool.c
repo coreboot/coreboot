@@ -539,12 +539,12 @@ static void dump_fmsba(const fmsba_t *fmsba)
 
 static void dump_jid(uint32_t jid)
 {
-	printf("    SPI Componend Device ID 1:          0x%02x\n",
-		(jid >> 16) & 0xff);
-	printf("    SPI Componend Device ID 0:          0x%02x\n",
-		(jid >> 8) & 0xff);
 	printf("    SPI Componend Vendor ID:            0x%02x\n",
 		jid & 0xff);
+	printf("    SPI Componend Device ID 0:          0x%02x\n",
+		(jid >> 8) & 0xff);
+	printf("    SPI Componend Device ID 1:          0x%02x\n",
+		(jid >> 16) & 0xff);
 }
 
 static void dump_vscc(uint32_t vscc)

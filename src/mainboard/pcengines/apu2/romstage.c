@@ -87,7 +87,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		bool scon = check_console();
 
-		if(scon) {
+		data = *(u32*)FCH_PMIOxC0_S5ResetStatus;
+		// do not print SOL if reset will take place in FchInit
+		if(scon && !(data & FCH_PMIOxC0_S5ResetStatus_All_Status)) {
 			print_sign_of_life();
 		}
 		//

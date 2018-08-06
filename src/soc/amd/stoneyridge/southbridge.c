@@ -556,7 +556,7 @@ static void sb_lpc_early_setup(void)
 	}
 }
 
-static void setup_spread_spectrum(void)
+static void setup_spread_spectrum(int *reboot)
 {
 	uint16_t rstcfg = pm_read16(PWR_RESET_CFG);
 
@@ -606,11 +606,25 @@ static void setup_spread_spectrum(void)
 	cntl1 |= CG1PLL_FBDIV_TEST;
 	misc_write32(MISC_CLK_CNTL1, cntl1);
 
-	soft_reset();
+	*reboot = 1;
+}
+
+static void setup_misc(int *reboot)
+{
+	/* Undocumented register */
+	uint32_t reg = misc_read32(0x50);
+	if (!(reg & BIT(16))) {
+		reg |= BIT(16);
+
+		misc_write32(0x50, reg);
+		*reboot = 1;
+	}
 }
 
 void bootblock_fch_early_init(void)
 {
+	int reboot = 0;
+
 	sb_enable_rom();
 	sb_lpc_port80();
 	sb_lpc_decode();
@@ -619,7 +633,12 @@ void bootblock_fch_early_init(void)
 	sb_disable_4dw_burst(); /* Must be disabled on CZ(ST) */
 	sb_acpi_mmio_decode();
 	sb_enable_cf9_io();
-	setup_spread_spectrum();
+	setup_spread_spectrum(&reboot);
+	setup_misc(&reboot);
+
+	if (reboot)
+		soft_reset();
+
 	sb_enable_legacy_io();
 	enable_aoac_devices();
 }

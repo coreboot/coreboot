@@ -16,6 +16,7 @@
 /* SMM relocation with intention to work for i945-ivybridge.
    Right now used for sandybridge and ivybridge.  */
 
+#include <assert.h>
 #include <types.h>
 #include <string.h>
 #include <device/device.h>
@@ -120,10 +121,15 @@ static void asmlinkage cpu_smm_do_relocation(void *arg)
 	 * size * CPU num. */
 	save_state->smbase = relo_params->smram_base -
 			     cpu * runtime->save_state_size;
-	save_state->iedbase = relo_params->ied_base;
+	if (CONFIG_IED_REGION_SIZE != 0) {
+		save_state->iedbase = relo_params->ied_base;
 
-	printk(BIOS_DEBUG, "New SMBASE=0x%08x IEDBASE=0x%08x @ %p\n",
-	       save_state->smbase, save_state->iedbase, save_state);
+		printk(BIOS_DEBUG, "New SMBASE=0x%08x IEDBASE=0x%08x @ %p\n",
+		       save_state->smbase, save_state->iedbase, save_state);
+	} else {
+		printk(BIOS_DEBUG, "New SMBASE=0x%08x @ %p\n",
+		       save_state->smbase, save_state);
+	}
 
 	/* Write SMRR MSRs based on indicated support. */
 	mtrr_cap = rdmsr(MTRR_CAP_MSR);
@@ -144,16 +150,20 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	   configuration value instead. */
 	const u32 tseg_size = northbridge_get_tseg_size();
 
-	/* The SMRAM available to the handler is 4MiB
-	   since the IEDRAM lives at TSEGMB + 4MiB. */
 	params->smram_base = tsegmb;
-	params->smram_size = 4 << 20;
-	params->ied_base = tsegmb + params->smram_size;
-	params->ied_size = tseg_size - params->smram_size;
+	params->smram_size = tseg_size;
+	if (CONFIG_IED_REGION_SIZE != 0) {
+		ASSERT(params->smram_size > CONFIG_IED_REGION_SIZE);
+		params->smram_size -= CONFIG_IED_REGION_SIZE;
+		params->ied_base = tsegmb + tseg_size - CONFIG_IED_REGION_SIZE;
+		params->ied_size = CONFIG_IED_REGION_SIZE;
+	}
 
 	/* Adjust available SMM handler memory size. */
-	if (IS_ENABLED(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM))
+	if (IS_ENABLED(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM)) {
+		ASSERT(params->smram_size > CONFIG_SMM_RESERVED_SIZE);
 		params->smram_size -= CONFIG_SMM_RESERVED_SIZE;
+	}
 
 	if (IS_ALIGNED(tsegmb, tseg_size)) {
 		/* SMRR has 32-bits of valid address aligned to 4KiB. */
@@ -259,7 +269,8 @@ static int cpu_smm_setup(void)
 	/* enable the SMM memory window */
 	northbridge_write_smram(D_OPEN | G_SMRAME | C_BASE_SEG);
 
-	setup_ied_area(&smm_reloc_params);
+	if (CONFIG_IED_REGION_SIZE != 0)
+		setup_ied_area(&smm_reloc_params);
 
 	num_cpus = cpu_get_apic_id_map(apic_id_map);
 	if (num_cpus > CONFIG_MAX_CPUS) {

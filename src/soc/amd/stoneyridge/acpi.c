@@ -236,8 +236,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 
 void generate_cpu_entries(struct device *device)
 {
-	int cores, cpu, plen = 6;
-	u32 pcontrol_blk = ACPI_GPE0_BLK;
+	int cores, cpu;
 	struct device *cdb_dev;
 
 	/* Stoney Ridge is single node, just report # of cores */
@@ -247,14 +246,12 @@ void generate_cpu_entries(struct device *device)
 	printk(BIOS_DEBUG, "ACPI \\_PR report %d core(s)\n", cores);
 
 	/* Generate BSP \_PR.P000 */
-	acpigen_write_processor(0, pcontrol_blk, plen);
+	acpigen_write_processor(0, ACPI_GPE0_BLK, 6);
 	acpigen_pop_len();
 
 	/* Generate AP \_PR.Pxxx */
-	pcontrol_blk = 0;
-	plen = 0;
 	for (cpu = 1; cpu < cores; cpu++) {
-		acpigen_write_processor(cpu, pcontrol_blk, 0);
+		acpigen_write_processor(cpu, 0, 0);
 		acpigen_pop_len();
 	}
 }

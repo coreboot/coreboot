@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <console/console.h>
 #include <arch/io.h>
 #include <stdint.h>
@@ -55,7 +56,7 @@ static void mch_domain_read_resources(struct device *dev)
 {
 	u64 tom, touud;
 	u32 tomk, tolud, tseg_sizek;
-	u32 pcie_config_base, pcie_config_size;
+	u32 pcie_config_base, pcie_config_size, cbmem_topk, delta_cbmem;
 	u16 index;
 	const u32 top32memk = 4 * (GiB / KiB);
 
@@ -100,6 +101,16 @@ static void mch_domain_read_resources(struct device *dev)
 	/* Subtract TSEG size */
 	tseg_sizek = gtt_basek - tseg_basek;
 	tomk -= tseg_sizek;
+	printk(BIOS_DEBUG, "TSEG decoded, subtracting %dM\n", tseg_sizek >> 10);
+
+	/* cbmem_top can be shifted downwards due to alignment.
+	   Mark the region between cbmem_top and tomk as unusable */
+	cbmem_topk = (uint32_t)cbmem_top() >> 10;
+	delta_cbmem = tomk - cbmem_topk;
+	tomk -= delta_cbmem;
+
+	printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOMK: 0x%xK\n",
+	       delta_cbmem);
 
 	/* Report the memory regions */
 	ram_resource(dev, index++, 0, 640);
@@ -107,6 +118,7 @@ static void mch_domain_read_resources(struct device *dev)
 	reserved_ram_resource(dev, index++, tseg_basek, tseg_sizek);
 	reserved_ram_resource(dev, index++, gtt_basek, gsm_sizek);
 	reserved_ram_resource(dev, index++, igd_basek, gms_sizek);
+	reserved_ram_resource(dev, index++, cbmem_topk, delta_cbmem);
 
 	/*
 	 * If > 4GB installed then memory from TOLUD to 4GB

@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <console/console.h>
 #include <arch/io.h>
 #include <stdint.h>
@@ -72,7 +73,7 @@ static int decode_pcie_bar(u32 *const base, u32 *const len)
 static void mch_domain_read_resources(struct device *dev)
 {
 	u64 tom, touud;
-	u32 tomk, tolud, uma_sizek = 0;
+	u32 tomk, tolud, uma_sizek = 0, delta_cbmem;
 	u32 pcie_config_base, pcie_config_size;
 
 	/* Total Memory 2GB example:
@@ -137,6 +138,15 @@ static void mch_domain_read_resources(struct device *dev)
 	printk(BIOS_DEBUG, " and %uM TSEG\n", tseg_sizek >> 10);
 	tomk -= tseg_sizek;
 	uma_sizek += tseg_sizek;
+
+	/* cbmem_top can be shifted downwards due to alignment.
+	   Mark the region between cbmem_top and tomk as unusable */
+	delta_cbmem = tomk - ((uint32_t)cbmem_top() >> 10);
+	tomk -= delta_cbmem;
+	uma_sizek += delta_cbmem;
+
+	printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOM: 0x%xK\n",
+	       delta_cbmem);
 
 	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", tomk >> 10);
 

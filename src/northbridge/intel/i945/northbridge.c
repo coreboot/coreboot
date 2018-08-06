@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <console/console.h>
 #include <arch/io.h>
 #include <stdint.h>
@@ -59,7 +60,7 @@ static int get_pcie_bar(u32 *base)
 
 static void mch_domain_read_resources(struct device *dev)
 {
-	uint32_t pci_tolm, tseg_sizek;
+	uint32_t pci_tolm, tseg_sizek, cbmem_topk, delta_cbmem;
 	uint8_t tolud;
 	uint16_t reg16;
 	unsigned long long tomk, tomk_stolen;
@@ -104,6 +105,16 @@ static void mch_domain_read_resources(struct device *dev)
 	tseg_memory_base = tomk_stolen * 1024ULL;
 	tseg_memory_size = tseg_sizek * 1024ULL;
 
+	/* cbmem_top can be shifted downwards due to alignment.
+	   Mark the region between cbmem_top and tomk as unusable */
+	cbmem_topk = ((uint32_t)cbmem_top() >> 10);
+	delta_cbmem = tomk_stolen - cbmem_topk;
+	tomk_stolen -= delta_cbmem;
+
+	printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOM: 0x%xK\n",
+	       delta_cbmem);
+
+
 	/* The following needs to be 2 lines, otherwise the second
 	 * number is always 0
 	 */
@@ -115,6 +126,7 @@ static void mch_domain_read_resources(struct device *dev)
 	ram_resource(dev, 4, 768, (tomk - 768));
 	uma_resource(dev, 5, uma_memory_base >> 10, uma_memory_size >> 10);
 	mmio_resource(dev, 6, tseg_memory_base >> 10, tseg_memory_size >> 10);
+	uma_resource(dev, 7, cbmem_topk, delta_cbmem);
 }
 
 static void mch_domain_set_resources(struct device *dev)

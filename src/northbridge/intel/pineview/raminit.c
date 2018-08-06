@@ -2034,7 +2034,9 @@ static void sdram_mmap_regs(struct sysinfo *s)
 	gttsize = ggc_to_gtt[(ggc & 0x300) >> 8];
 	tom = s->channel_capacity[0];
 
-	tsegsize = 0x8; // 8MB
+	/* TSEG 2M, This amount can easily be covered by SMRR MTRR's,
+	   which requires to have TSEG_BASE aligned to TSEG_SIZE. */
+	tsegsize = 0x2;
 	mmiosize = 0x400; // 1GB
 
 	reclaim = false;
@@ -2071,7 +2073,7 @@ static void sdram_mmap_regs(struct sysinfo *s)
 
 	u8 reg8 = pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC);
 	reg8 &= ~0x7;
-	reg8 |= (2 << 1) | (1 << 0); /* 8M and TSEG_Enable */
+	reg8 |= (1 << 1) | (1 << 0); /* 2M and TSEG_Enable */
 	pci_write_config8(PCI_DEV(0, 0, 0), ESMRAMC, reg8);
 
 	printk(BIOS_DEBUG, "GBSM (igd) = verified %08x (written %08x)\n",

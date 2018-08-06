@@ -1242,12 +1242,13 @@ static void program_memory_map(const dimminfo_t *const dimms, const channel_mode
 
 			uma_sizem = (gms_sizek + gsm_sizek) >> 10;
 		}
-		/* TSEG 8M */
+		/* TSEG 2M, This amount can easily be covered by SMRR MTRR's,
+		   which requires to have TSEG_BASE aligned to TSEG_SIZE. */
 		u8 reg8 = pci_read_config8(PCI_DEV(0, 0, 0), D0F0_ESMRAMC);
 		reg8 &= ~0x7;
-		reg8 |= (2 << 1) | (1 << 0); /* 8M and TSEG_Enable */
+		reg8 |= (1 << 1) | (1 << 0); /* 2M and TSEG_Enable */
 		pci_write_config8(PCI_DEV(0, 0, 0), D0F0_ESMRAMC, reg8);
-		uma_sizem += 8;
+		uma_sizem += 2;
 	}
 
 	const unsigned int mmio_size = get_mmio_size();

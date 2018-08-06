@@ -191,10 +191,11 @@ static void i945_setup_bars(void)
 	if (gfxsize > 6)
 		gfxsize = 2;
 	pci_write_config16(PCI_DEV(0, 0x00, 0), GGC, ((gfxsize + 1) << 4));
-
+	/* TSEG 2M, This amount can easily be covered by SMRR MTRR's,
+	   which requires to have TSEG_BASE aligned to TSEG_SIZE. */
 	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC);
 	reg8 &= ~0x7;
-	reg8 |= (2 << 1) | (1 << 0); /* 8M and TSEG_Enable */
+	reg8 |= (1 << 1) | (1 << 0); /* 2M and TSEG_Enable */
 	pci_write_config8(PCI_DEV(0, 0, 0), ESMRAMC, reg8);
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */

@@ -1722,7 +1722,9 @@ static void configure_mmap(struct sysinfo *s)
 	ggc = pci_read_config16(PCI_DEV(0, 0, 0), 0x52);
 	gfxsize = ggc2uma[(ggc & 0xf0) >> 4];
 	gttsize = ggc2gtt[(ggc & 0xf00) >> 8];
-	tsegsize = 8; // 8MB TSEG
+	/* TSEG 2M, This amount can easily be covered by SMRR MTRR's,
+	   which requires to have TSEG_BASE aligned to TSEG_SIZE. */
+	tsegsize = 2;
 	mmiosize = 0x800; // 2GB MMIO
 	umasizem = gfxsize + gttsize + tsegsize;
 	mmiostart = 0x1000 - mmiosize + umasizem;
@@ -1759,10 +1761,10 @@ static void configure_mmap(struct sysinfo *s)
 	pci_write_config16(PCI_DEV(0, 0, 0), 0xa2, touud);
 	pci_write_config32(PCI_DEV(0, 0, 0), 0xa4, gfxbase << 20);
 	pci_write_config32(PCI_DEV(0, 0, 0), 0xa8, gttbase << 20);
-	/* Enable and set tseg size to 8M */
+	/* Enable and set tseg size to 2M */
 	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), D0F0_ESMRAMC);
 	reg8 &= ~0x7;
-	reg8 |= (2 << 1) | (1 << 0); /* 8M and TSEG_Enable */
+	reg8 |= (1 << 1) | (1 << 0); /* 2M and TSEG_Enable */
 	pci_write_config8(PCI_DEV(0, 0, 0), D0F0_ESMRAMC, reg8);
 	pci_write_config32(PCI_DEV(0, 0, 0), 0xac, tsegbase << 20);
 }

@@ -223,8 +223,13 @@ ifneq ($(CONFIG_GBB_BMPFV_FILE),)
 endif
 	mv $@.tmp $@
 
-$(obj)/fwid.region:
-	printf "$(CONFIG_VBOOT_FWID_MODEL)$(CONFIG_VBOOT_FWID_VERSION)\0" > $@
+$(obj)/fwid.version:
+	echo -n "$(CONFIG_VBOOT_FWID_VERSION)" > $@
+
+$(obj)/fwid.region: $(obj)/fwid.version
+	printf "%s%s\0" \
+		"$(CONFIG_VBOOT_FWID_MODEL)" \
+		"$(file < $(obj)/fwid.version)" > $@
 
 build_complete:: $(obj)/gbb.region $(obj)/fwid.region
 	@printf "    WRITE GBB\n"

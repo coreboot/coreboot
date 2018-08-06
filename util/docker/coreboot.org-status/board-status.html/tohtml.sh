@@ -3,6 +3,16 @@ export COREBOOT_DIR="../coreboot.git"
 export GIT_DIR="$COREBOOT_DIR/.git"
 CODE_GITWEB="https://review.coreboot.org/gitweb/cgit/coreboot.git/commit/?id="
 STATUS_GITWEB="https://review.coreboot.org/gitweb/cgit/board-status.git/tree/"
+
+cat <<EOF
+<html>
+<head>
+ <meta charset="utf-8">
+ <title>status report for coreboot boards</title>
+</head>
+<body>
+EOF
+
 if [ -f `dirname $0`/foreword.html ]; then
 	cat `dirname $0`/foreword.html
 fi
@@ -519,3 +529,7 @@ EOF
 
 
 echo "$detailed"
+cat <<EOF
+</body>
+</html>
+EOF

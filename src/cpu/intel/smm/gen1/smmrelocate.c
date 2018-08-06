@@ -160,20 +160,26 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	if (IS_ENABLED(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM))
 		params->smram_size -= CONFIG_SMM_RESERVED_SIZE;
 
-	/* SMRR has 32-bits of valid address aligned to 4KiB. */
-	struct cpuinfo_x86 c;
+	if (IS_ALIGNED(tsegmb, tseg_size)) {
+		/* SMRR has 32-bits of valid address aligned to 4KiB. */
+		struct cpuinfo_x86 c;
 
-	/* On model_6fx and model_1067x bits [0:11] on smrr_base are reserved */
-	get_fms(&c, cpuid_eax(1));
-	if (c.x86 == 6 && (c.x86_model == 0xf || c.x86_model == 0x17))
-		params->smrr_base.lo = (params->smram_base & rmask);
-	else
-		params->smrr_base.lo = (params->smram_base & rmask)
-			| MTRR_TYPE_WRBACK;
-	params->smrr_base.hi = 0;
-	params->smrr_mask.lo = (~(tseg_size - 1) & rmask)
-		| MTRR_PHYS_MASK_VALID;
-	params->smrr_mask.hi = 0;
+		/* On model_6fx and model_1067x bits [0:11] on smrr_base
+		   are reserved */
+		get_fms(&c, cpuid_eax(1));
+		if (c.x86 == 6 && (c.x86_model == 0xf || c.x86_model == 0x17))
+			params->smrr_base.lo = (params->smram_base & rmask);
+		else
+			params->smrr_base.lo = (params->smram_base & rmask)
+				| MTRR_TYPE_WRBACK;
+		params->smrr_base.hi = 0;
+		params->smrr_mask.lo = (~(tseg_size - 1) & rmask)
+			| MTRR_PHYS_MASK_VALID;
+		params->smrr_mask.hi = 0;
+	} else {
+		printk(BIOS_WARNING,
+		       "TSEG base not aligned with TSEG SIZE! Not setting SMRR\n");
+	}
 }
 
 static int install_relocation_handler(int *apic_id_map, int num_cpus,

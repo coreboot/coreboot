@@ -24,7 +24,6 @@
 #include <cpu/x86/lapic.h>
 #include <lib.h>
 #include <arch/acpi.h>
-#include <cbmem.h>
 #include <timestamp.h>
 #include <superio/ite/it8718f/it8718f.h>
 #include <superio/ite/common/ite.h>

@@ -34,7 +34,6 @@
 #include <delay.h>
 #include <timestamp.h>
 #include <arch/acpi.h>
-#include <cbmem.h>
 
 #include "dock.h"
 #include "arch/early_variables.h"

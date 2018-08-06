@@ -25,7 +25,6 @@
 #include <pc80/mc146818rtc.h>
 #include <cbfs.h>
 #include <arch/acpi.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <bootmode.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>

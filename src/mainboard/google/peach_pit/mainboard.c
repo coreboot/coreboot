@@ -15,7 +15,6 @@
 
 #include <arch/cache.h>
 #include <boot/coreboot_tables.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>

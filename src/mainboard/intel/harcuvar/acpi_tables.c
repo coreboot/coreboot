@@ -17,7 +17,6 @@
 
 #include <types.h>
 #include <string.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <arch/ioapic.h>

@@ -32,7 +32,6 @@
 #include <cpu/x86/lapic.h>
 #include <southbridge/amd/common/amd_defs.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
-#include "cbmem.h"
 #include "superio/fintek/f81216h/f81216h.h"
 
 #define SERIAL_DEV PNP_DEV(0x4e, F81216H_SP1)

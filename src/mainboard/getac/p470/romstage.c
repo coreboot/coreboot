@@ -22,7 +22,6 @@
 #include <cpu/x86/lapic.h>
 #include <lib.h>
 #include <arch/acpi.h>
-#include <cbmem.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>

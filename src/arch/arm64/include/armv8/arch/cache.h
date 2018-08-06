@@ -58,6 +58,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <arch/barrier.h>
+#include <arch/lib_helpers.h>
 
 /* dcache clean by virtual address to PoC */
 void dcache_clean_by_mva(void const *addr, size_t len);
@@ -76,18 +77,22 @@ void dcache_clean_invalidate_all(void);
 /* returns number of bytes per cache line */
 unsigned int dcache_line_bytes(void);
 
-/* tlb invalidate all */
-void tlb_invalidate_all(void);
+/* Invalidate all TLB entries. */
+static inline void tlb_invalidate_all(void)
+{
+	/* TLBIALL includes dTLB and iTLB on systems that have them. */
+	tlbiall_el3();
+	dsb();
+	isb();
+}
 
 /* Invalidate all of the instruction cache for PE to PoU. */
 static inline void icache_invalidate_all(void)
 {
-	__asm__ __volatile__(
-		"dsb	sy\n\t"
-		"ic	iallu\n\t"
-		"dsb	sy\n\t"
-		"isb\n\t"
-	: : : "memory");
+	dsb();
+	iciallu();
+	dsb();
+	isb();
 }
 
 #endif /* __ASSEMBLER__ */

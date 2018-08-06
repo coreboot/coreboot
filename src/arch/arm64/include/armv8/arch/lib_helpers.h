@@ -145,184 +145,239 @@
 
 #include <stdint.h>
 
-/* PSTATE and special purpose register access functions */
-uint32_t raw_read_current_el(void);
-uint32_t raw_read_daif(void);
-void raw_write_daif(uint32_t daif);
-void enable_debug_exceptions(void);
-void enable_serror_exceptions(void);
-void enable_irq(void);
-void enable_fiq(void);
-void disable_debug_exceptions(void);
-void disable_serror_exceptions(void);
-void disable_irq(void);
-void disable_fiq(void);
-uint64_t raw_read_dlr_el0(void);
-void raw_write_dlr_el0(uint64_t dlr_el0);
-uint64_t raw_read_dspsr_el0(void);
-void raw_write_dspsr_el0(uint64_t dspsr_el0);
-uint64_t raw_read_elr_el1(void);
-void raw_write_elr_el1(uint64_t elr_el1);
-uint64_t raw_read_elr_el2(void);
-void raw_write_elr_el2(uint64_t elr_el2);
-uint64_t raw_read_elr_el3(void);
-void raw_write_elr_el3(uint64_t elr_el3);
-uint32_t raw_read_fpcr(void);
-void raw_write_fpcr(uint32_t fpcr);
-uint32_t raw_read_fpsr(void);
-void raw_write_fpsr(uint32_t fpsr);
-uint32_t raw_read_nzcv(void);
-void raw_write_nzcv(uint32_t nzcv);
-uint64_t raw_read_sp_el0(void);
-void raw_write_sp_el0(uint64_t sp_el0);
-uint64_t raw_read_sp_el1(void);
-void raw_write_sp_el1(uint64_t sp_el1);
-uint64_t raw_read_sp_el2(void);
-void raw_write_sp_el2(uint64_t sp_el2);
-uint32_t raw_read_spsel(void);
-void raw_write_spsel(uint32_t spsel);
-uint64_t raw_read_sp_el3(void);
-void raw_write_sp_el3(uint64_t sp_el3);
-uint32_t raw_read_spsr_abt(void);
-void raw_write_spsr_abt(uint32_t spsr_abt);
-uint32_t raw_read_spsr_el1(void);
-void raw_write_spsr_el1(uint32_t spsr_el1);
-uint32_t raw_read_spsr_el2(void);
-void raw_write_spsr_el2(uint32_t spsr_el2);
-uint32_t raw_read_spsr_el3(void);
-void raw_write_spsr_el3(uint32_t spsr_el3);
-uint32_t raw_read_spsr_fiq(void);
-void raw_write_spsr_fiq(uint32_t spsr_fiq);
-uint32_t raw_read_spsr_irq(void);
-void raw_write_spsr_irq(uint32_t spsr_irq);
-uint32_t raw_read_spsr_und(void);
-void raw_write_spsr_und(uint32_t spsr_und);
+#define MAKE_REGISTER_ACCESSORS(reg) \
+	static inline uint64_t raw_read_##reg(void) \
+	{ \
+		uint64_t value; \
+		__asm__ __volatile__("mrs %0, " #reg "\n\t" \
+				     : "=r" (value) : : "memory"); \
+		return value; \
+	} \
+	static inline void raw_write_##reg(uint64_t value) \
+	{ \
+		__asm__ __volatile__("msr " #reg ", %0\n\t" \
+				     : : "r" (value) : "memory"); \
+	}
 
-/* System control register access */
-uint32_t raw_read_actlr_el1(void);
-void raw_write_actlr_el1(uint32_t actlr_el1);
-uint32_t raw_read_actlr_el2(void);
-void raw_write_actlr_el2(uint32_t actlr_el2);
-uint32_t raw_read_actlr_el3(void);
-void raw_write_actlr_el3(uint32_t actlr_el3);
-uint32_t raw_read_afsr0_el1(void);
-void raw_write_afsr0_el1(uint32_t afsr0_el1);
-uint32_t raw_read_afsr0_el2(void);
-void raw_write_afsr0_el2(uint32_t afsr0_el2);
-uint32_t raw_read_afsr0_el3(void);
-void raw_write_afsr0_el3(uint32_t afsr0_el3);
-uint32_t raw_read_afsr1_el1(void);
-void raw_write_afsr1_el1(uint32_t afsr1_el1);
-uint32_t raw_read_afsr1_el2(void);
-void raw_write_afsr1_el2(uint32_t afsr1_el2);
-uint32_t raw_read_afsr1_el3(void);
-void raw_write_afsr1_el3(uint32_t afsr1_el3);
-uint32_t raw_read_aidr_el1(void);
-uint64_t raw_read_amair_el1(void);
-void raw_write_amair_el1(uint64_t amair_el1);
-uint64_t raw_read_amair_el2(void);
-void raw_write_amair_el2(uint64_t amair_el2);
-uint64_t raw_read_amair_el3(void);
-void raw_write_amair_el3(uint64_t amair_el3);
-uint32_t raw_read_ccsidr_el1(void);
-uint32_t raw_read_clidr_el1(void);
-uint32_t raw_read_cpacr_el1(void);
-void raw_write_cpacr_el1(uint32_t cpacr_el1);
-uint32_t raw_read_cptr_el2(void);
-void raw_write_cptr_el2(uint32_t cptr_el2);
-uint32_t raw_read_cptr_el3(void);
-void raw_write_cptr_el3(uint32_t cptr_el3);
-uint32_t raw_read_csselr_el1(void);
-void raw_write_csselr_el1(uint32_t csselr_el1);
-uint32_t raw_read_ctr_el0(void);
-uint32_t raw_read_esr_el1(void);
-void raw_write_esr_el1(uint32_t esr_el1);
-uint32_t raw_read_esr_el2(void);
-void raw_write_esr_el2(uint32_t esr_el2);
-uint32_t raw_read_esr_el3(void);
-void raw_write_esr_el3(uint32_t esr_el3);
-uint64_t raw_read_far_el1(void);
-void raw_write_far_el1(uint64_t far_el1);
-uint64_t raw_read_far_el2(void);
-void raw_write_far_el2(uint64_t far_el2);
-uint64_t raw_read_far_el3(void);
-void raw_write_far_el3(uint64_t far_el3);
-uint64_t raw_read_hcr_el2(void);
-void raw_write_hcr_el2(uint64_t hcr_el2);
-uint64_t raw_read_aa64pfr0_el1(void);
-uint64_t raw_read_mair_el1(void);
-void raw_write_mair_el1(uint64_t mair_el1);
-uint64_t raw_read_mair_el2(void);
-void raw_write_mair_el2(uint64_t mair_el2);
-uint64_t raw_read_mair_el3(void);
-void raw_write_mair_el3(uint64_t mair_el3);
-uint32_t raw_read_midr_el1(void);
-uint64_t raw_read_mpidr_el1(void);
-uint32_t raw_read_rmr_el1(void);
-void raw_write_rmr_el1(uint32_t rmr_el1);
-uint32_t raw_read_rmr_el2(void);
-void raw_write_rmr_el2(uint32_t rmr_el2);
-uint32_t raw_read_rmr_el3(void);
-void raw_write_rmr_el3(uint32_t rmr_el3);
-uint64_t raw_read_rvbar_el1(void);
-void raw_write_rvbar_el1(uint64_t rvbar_el1);
-uint64_t raw_read_rvbar_el2(void);
-void raw_write_rvbar_el2(uint64_t rvbar_el2);
-uint64_t raw_read_rvbar_el3(void);
-void raw_write_rvbar_el3(uint64_t rvbar_el3);
-uint32_t raw_read_scr_el3(void);
-void raw_write_scr_el3(uint32_t scr_el3);
-uint32_t raw_read_sctlr_el1(void);
-void raw_write_sctlr_el1(uint32_t sctlr_el1);
-uint32_t raw_read_sctlr_el2(void);
-void raw_write_sctlr_el2(uint32_t sctlr_el2);
-uint32_t raw_read_sctlr_el3(void);
-void raw_write_sctlr_el3(uint32_t sctlr_el3);
-uint64_t raw_read_tcr_el1(void);
-void raw_write_tcr_el1(uint64_t tcr_el1);
-uint32_t raw_read_tcr_el2(void);
-void raw_write_tcr_el2(uint32_t tcr_el2);
-uint32_t raw_read_tcr_el3(void);
-void raw_write_tcr_el3(uint32_t tcr_el3);
-uint64_t raw_read_ttbr0_el1(void);
-void raw_write_ttbr0_el1(uint64_t ttbr0_el1);
-uint64_t raw_read_ttbr0_el2(void);
-void raw_write_ttbr0_el2(uint64_t ttbr0_el2);
-uint64_t raw_read_ttbr0_el3(void);
-void raw_write_ttbr0_el3(uint64_t ttbr0_el3);
-uint64_t raw_read_ttbr1_el1(void);
-void raw_write_ttbr1_el1(uint64_t ttbr1_el1);
-uint64_t raw_read_vbar_el1(void);
-void raw_write_vbar_el1(uint64_t vbar_el1);
-uint64_t raw_read_vbar_el2(void);
-void raw_write_vbar_el2(uint64_t vbar_el2);
-uint64_t raw_read_vbar_el3(void);
-void raw_write_vbar_el3(uint64_t vbar_el3);
-uint32_t raw_read_cntfrq_el0(void);
-void raw_write_cntfrq_el0(uint32_t cntfrq_el0);
-uint64_t raw_read_cntpct_el0(void);
+#define MAKE_REGISTER_ACCESSORS_EL123(reg) \
+	MAKE_REGISTER_ACCESSORS(reg##_el1) \
+	MAKE_REGISTER_ACCESSORS(reg##_el2) \
+	MAKE_REGISTER_ACCESSORS(reg##_el3)
+
+/* Architectural register accessors */
+MAKE_REGISTER_ACCESSORS_EL123(actlr)
+MAKE_REGISTER_ACCESSORS_EL123(afsr0)
+MAKE_REGISTER_ACCESSORS_EL123(afsr1)
+MAKE_REGISTER_ACCESSORS(aidr_el1)
+MAKE_REGISTER_ACCESSORS_EL123(amair)
+MAKE_REGISTER_ACCESSORS(ccsidr_el1)
+MAKE_REGISTER_ACCESSORS(clidr_el1)
+MAKE_REGISTER_ACCESSORS(cntfrq_el0)
+MAKE_REGISTER_ACCESSORS(cnthctl_el2)
+MAKE_REGISTER_ACCESSORS(cnthp_ctl_el2)
+MAKE_REGISTER_ACCESSORS(cnthp_cval_el2)
+MAKE_REGISTER_ACCESSORS(cnthp_tval_el2)
+MAKE_REGISTER_ACCESSORS(cntkctl_el1)
+MAKE_REGISTER_ACCESSORS(cntp_ctl_el0)
+MAKE_REGISTER_ACCESSORS(cntp_cval_el0)
+MAKE_REGISTER_ACCESSORS(cntp_tval_el0)
+MAKE_REGISTER_ACCESSORS(cntpct_el0)
+MAKE_REGISTER_ACCESSORS(cntps_ctl_el1)
+MAKE_REGISTER_ACCESSORS(cntps_cval_el1)
+MAKE_REGISTER_ACCESSORS(cntps_tval_el1)
+MAKE_REGISTER_ACCESSORS(cntv_ctl_el0)
+MAKE_REGISTER_ACCESSORS(cntv_cval_el0)
+MAKE_REGISTER_ACCESSORS(cntv_tval_el0)
+MAKE_REGISTER_ACCESSORS(cntvct_el0)
+MAKE_REGISTER_ACCESSORS(cntvoff_el2)
+MAKE_REGISTER_ACCESSORS(contextidr_el1)
+MAKE_REGISTER_ACCESSORS(cpacr_el1)
+MAKE_REGISTER_ACCESSORS(cptr_el2)
+MAKE_REGISTER_ACCESSORS(cptr_el3)
+MAKE_REGISTER_ACCESSORS(csselr_el1)
+MAKE_REGISTER_ACCESSORS(ctr_el0)
+MAKE_REGISTER_ACCESSORS(currentel)
+MAKE_REGISTER_ACCESSORS(daif)
+MAKE_REGISTER_ACCESSORS(dczid_el0)
+MAKE_REGISTER_ACCESSORS_EL123(elr)
+MAKE_REGISTER_ACCESSORS_EL123(esr)
+MAKE_REGISTER_ACCESSORS_EL123(far)
+MAKE_REGISTER_ACCESSORS(fpcr)
+MAKE_REGISTER_ACCESSORS(fpsr)
+MAKE_REGISTER_ACCESSORS(hacr_el2)
+MAKE_REGISTER_ACCESSORS(hcr_el2)
+MAKE_REGISTER_ACCESSORS(hpfar_el2)
+MAKE_REGISTER_ACCESSORS(hstr_el2)
+MAKE_REGISTER_ACCESSORS(isr_el1)
+MAKE_REGISTER_ACCESSORS_EL123(mair)
+MAKE_REGISTER_ACCESSORS(midr_el1)
+MAKE_REGISTER_ACCESSORS(mpidr_el1)
+MAKE_REGISTER_ACCESSORS(nzcv)
+MAKE_REGISTER_ACCESSORS(par_el1)
+MAKE_REGISTER_ACCESSORS(revdir_el1)
+MAKE_REGISTER_ACCESSORS_EL123(rmr)
+MAKE_REGISTER_ACCESSORS_EL123(rvbar)
+MAKE_REGISTER_ACCESSORS(scr_el3)
+MAKE_REGISTER_ACCESSORS_EL123(sctlr)
+MAKE_REGISTER_ACCESSORS(sp_el0)
+MAKE_REGISTER_ACCESSORS(sp_el1)
+MAKE_REGISTER_ACCESSORS(sp_el2)
+MAKE_REGISTER_ACCESSORS(spsel)
+MAKE_REGISTER_ACCESSORS_EL123(spsr)
+MAKE_REGISTER_ACCESSORS(spsr_abt)
+MAKE_REGISTER_ACCESSORS(spsr_fiq)
+MAKE_REGISTER_ACCESSORS(spsr_irq)
+MAKE_REGISTER_ACCESSORS(spsr_und)
+MAKE_REGISTER_ACCESSORS_EL123(tcr)
+MAKE_REGISTER_ACCESSORS_EL123(tpidr)
+MAKE_REGISTER_ACCESSORS_EL123(ttbr0)
+MAKE_REGISTER_ACCESSORS(ttbr1_el1)
+MAKE_REGISTER_ACCESSORS_EL123(vbar)
+MAKE_REGISTER_ACCESSORS(vmpidr_el2)
+MAKE_REGISTER_ACCESSORS(vpidr_el2)
+MAKE_REGISTER_ACCESSORS(vtcr_el2)
+MAKE_REGISTER_ACCESSORS(vttbr_el2)
+
+/* Special DAIF accessor functions */
+static inline void enable_debug_exceptions(void)
+{
+	__asm__ __volatile__("msr DAIFClr, %0\n\t"
+			     : : "i" (DAIF_DBG_BIT)  : "memory");
+}
+
+static inline void enable_serror_exceptions(void)
+{
+	__asm__ __volatile__("msr DAIFClr, %0\n\t"
+			     : : "i" (DAIF_ABT_BIT)  : "memory");
+}
+
+static inline void enable_irq(void)
+{
+	__asm__ __volatile__("msr DAIFClr, %0\n\t"
+			     : : "i" (DAIF_IRQ_BIT)  : "memory");
+}
+
+static inline void enable_fiq(void)
+{
+	__asm__ __volatile__("msr DAIFClr, %0\n\t"
+			     : : "i" (DAIF_FIQ_BIT)  : "memory");
+}
+
+static inline void disable_debug_exceptions(void)
+{
+	__asm__ __volatile__("msr DAIFSet, %0\n\t"
+			     : : "i" (DAIF_DBG_BIT)  : "memory");
+}
+
+static inline void disable_serror_exceptions(void)
+{
+	__asm__ __volatile__("msr DAIFSet, %0\n\t"
+			     : : "i" (DAIF_ABT_BIT)  : "memory");
+}
+
+static inline void disable_irq(void)
+{
+	__asm__ __volatile__("msr DAIFSet, %0\n\t"
+			     : : "i" (DAIF_IRQ_BIT)  : "memory");
+}
+
+static inline void disable_fiq(void)
+{
+	__asm__ __volatile__("msr DAIFSet, %0\n\t"
+			     : : "i" (DAIF_FIQ_BIT)  : "memory");
+}
 
 /* Cache maintenance system instructions */
-void dccisw(uint64_t cisw);
-void dccivac(uint64_t civac);
-void dccsw(uint64_t csw);
-void dccvac(uint64_t cvac);
-void dccvau(uint64_t cvau);
-void dcisw(uint64_t isw);
-void dcivac(uint64_t ivac);
-void dczva(uint64_t zva);
-void iciallu(void);
-void icialluis(void);
-void icivau(uint64_t ivau);
+static inline void dccisw(uint64_t cisw)
+{
+	__asm__ __volatile__("dc cisw, %0\n\t" : : "r" (cisw) : "memory");
+}
+
+static inline void dccivac(uint64_t civac)
+{
+	__asm__ __volatile__("dc civac, %0\n\t" : : "r" (civac) : "memory");
+}
+
+static inline void dccsw(uint64_t csw)
+{
+	__asm__ __volatile__("dc csw, %0\n\t" : : "r" (csw) : "memory");
+}
+
+static inline void dccvac(uint64_t cvac)
+{
+	__asm__ __volatile__("dc cvac, %0\n\t" : : "r" (cvac) : "memory");
+}
+
+static inline void dccvau(uint64_t cvau)
+{
+	__asm__ __volatile__("dc cvau, %0\n\t" : : "r" (cvau) : "memory");
+}
+
+static inline void dcisw(uint64_t isw)
+{
+	__asm__ __volatile__("dc isw, %0\n\t" : : "r" (isw) : "memory");
+}
+
+static inline void dcivac(uint64_t ivac)
+{
+	__asm__ __volatile__("dc ivac, %0\n\t" : : "r" (ivac) : "memory");
+}
+
+static inline void dczva(uint64_t zva)
+{
+	__asm__ __volatile__("dc zva, %0\n\t" : : "r" (zva) : "memory");
+}
+
+static inline void iciallu(void)
+{
+	__asm__ __volatile__("ic iallu\n\t" : : : "memory");
+}
+
+static inline void icialluis(void)
+{
+	__asm__ __volatile__("ic ialluis\n\t" : : : "memory");
+}
+
+static inline void icivau(uint64_t ivau)
+{
+	__asm__ __volatile__("ic ivau, %0\n\t" : : "r" (ivau) : "memory");
+}
 
 /* TLB maintenance instructions */
-void tlbiall_el1(void);
-void tlbiall_el2(void);
-void tlbiall_el3(void);
-void tlbiallis_el1(void);
-void tlbiallis_el2(void);
-void tlbiallis_el3(void);
-void tlbivaa_el1(uint64_t va);
+static inline void tlbiall_el1(void)
+{
+	__asm__ __volatile__("tlbi alle1\n\t" : : : "memory");
+}
+
+static inline void tlbiall_el2(void)
+{
+	__asm__ __volatile__("tlbi alle2\n\t" : : : "memory");
+}
+
+static inline void tlbiall_el3(void)
+{
+	__asm__ __volatile__("tlbi alle3\n\t" : : : "memory");
+}
+
+static inline void tlbiallis_el1(void)
+{
+	__asm__ __volatile__("tlbi alle1is\n\t" : : : "memory");
+}
+
+static inline void tlbiallis_el2(void)
+{
+	__asm__ __volatile__("tlbi alle2is\n\t" : : : "memory");
+}
+
+static inline void tlbiallis_el3(void)
+{
+	__asm__ __volatile__("tlbi alle3is\n\t" : : : "memory");
+}
+
+static inline void tlbivaa_el1(uint64_t va)
+{
+	__asm__ __volatile__("tlbi vaae1, %0\n\t" : : "r" (va) : "memory");
+}
 
 #endif /* __ASSEMBLER__ */
 

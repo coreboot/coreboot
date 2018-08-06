@@ -78,9 +78,9 @@ static void print_regs(struct exc_state *exc_state)
 	struct elx_state *elx = &exc_state->elx;
 	struct regs *regs = &exc_state->regs;
 
-	printk(BIOS_DEBUG, "ELR = 0x%016llx         ESR = 0x%08x\n",
+	printk(BIOS_DEBUG, "ELR = 0x%016llx         ESR = 0x%08llx\n",
 	       elx->elr, raw_read_esr_el3());
-	printk(BIOS_DEBUG, "FAR = 0x%016llx        SPSR = 0x%08x\n",
+	printk(BIOS_DEBUG, "FAR = 0x%016llx        SPSR = 0x%08llx\n",
 	       raw_read_far_el3(), raw_read_spsr_el3());
 	for (i = 0; i < 30; i += 2) {
 		printk(BIOS_DEBUG,

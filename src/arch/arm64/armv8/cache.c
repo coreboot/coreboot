@@ -37,14 +37,6 @@
 #include <arch/lib_helpers.h>
 #include <program_loading.h>
 
-void tlb_invalidate_all(void)
-{
-	 /* TLBIALL includes dTLB and iTLB on systems that have them. */
-	tlbiall_el3();
-	dsb();
-	isb();
-}
-
 unsigned int dcache_line_bytes(void)
 {
 	uint32_t ctr_el0;

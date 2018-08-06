@@ -15,8 +15,6 @@
 ##
 ################################################################################
 
-subdirs-y += lib/
-
 ifeq ($(CONFIG_ARCH_ARMV8_EXTENSION),0)
 march = armv8-a
 else

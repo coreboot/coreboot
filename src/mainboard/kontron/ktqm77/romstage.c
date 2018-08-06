@@ -18,7 +18,6 @@
 #include <string.h>
 #include <lib.h>
 #include <timestamp.h>
-#include <arch/io.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
@@ -31,6 +30,7 @@
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
+#include <superio/winbond/common/winbond.h>
 
 void pch_enable_lpc(void)
 {
@@ -59,25 +59,12 @@ void mainboard_rcba_config(void)
 	RCBA32(FD) = reg32;
 }
 
-static void pnp_enter_ext_func_mode(pnp_devfn_t dev)
-{
-	u16 port = dev >> 8;
-	outb(0x87, port);
-	outb(0x87, port);
-}
-
-static void pnp_exit_ext_func_mode(pnp_devfn_t dev)
-{
-	u16 port = dev >> 8;
-	outb(0xaa, port);
-}
-
 void mainboard_config_superio(void)
 {
 	int lvds_3v = 0; /* 0 (5V) or 1 (3V3) */
 	int dis_bl_inv = 1; /* backlight inversion: 1 = disabled, 0 = enabled */
 	pnp_devfn_t dev = PNP_DEV(0x2e, 0x9);
-	pnp_enter_ext_func_mode(dev);
+	pnp_enter_conf_state(dev);
 	pnp_write_config(dev, 0x29, 0x02); /* Pins 119, 120 are GPIO21, 20 */
 	pnp_write_config(dev, 0x30, 0x03); /* Enable GPIO2+3 */
 	pnp_write_config(dev, 0x2a, 0x01); /* Pins 62, 63, 65, 66 are
@@ -91,7 +78,7 @@ void mainboard_config_superio(void)
 	pnp_write_config(dev, 0xe3, 0xdd); /* GPIO2 bits 1, 5 are output */
 	pnp_write_config(dev, 0xe4, (dis_bl_inv << 5) | (lvds_3v << 1)); /* GPIO2 bits 1, 5 */
 	pnp_write_config(dev, 0xf3, 0x40); /* Disable suspend LED during normal operation */
-	pnp_exit_ext_func_mode(dev);
+	pnp_exit_conf_state(dev);
 }
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)

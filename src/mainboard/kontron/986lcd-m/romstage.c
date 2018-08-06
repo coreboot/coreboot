@@ -16,25 +16,22 @@
 /* __PRE_RAM__ means: use "unsigned" for device, not a struct. */
 
 #include <stdint.h>
-#include <string.h>
-#include <lib.h>
-#include <arch/acpi.h>
-#include <cbmem.h>
+#include <halt.h>
 #include <timestamp.h>
-#include <arch/io.h>
+#include <console/console.h>
+#include <cpu/intel/romstage.h>
+#include <cpu/x86/bist.h>
+#include <cpu/x86/lapic.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
-#include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
-#include "option_table.h"
-#include <console/console.h>
-#include <cpu/x86/bist.h>
-#include <cpu/intel/romstage.h>
-#include <halt.h>
-#include <superio/winbond/w83627thg/w83627thg.h>
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627thg/w83627thg.h>
+
+#include "option_table.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 
@@ -62,20 +59,6 @@ static void ich7_enable_lpc(void)
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN4_DEC, 0x00000301);
 }
 
-/* TODO: superio code should really not be in mainboard */
-static void pnp_enter_func_mode(pnp_devfn_t dev)
-{
-	u16 port = dev >> 8;
-	outb(0x87, port);
-	outb(0x87, port);
-}
-
-static void pnp_exit_func_mode(pnp_devfn_t dev)
-{
-	u16 port = dev >> 8;
-	outb(0xaa, port);
-}
-
 /* This box has two superios, so enabling serial becomes slightly excessive.
  * We disable a lot of stuff to make sure that there are no conflicts between
  * the two. Also set up the GPIOs from the beginning. This is the "no schematic
@@ -86,7 +69,7 @@ static void early_superio_config_w83627thg(void)
 	pnp_devfn_t dev;
 
 	dev = PNP_DEV(0x2e, W83627THG_SP1);
-	pnp_enter_func_mode(dev);
+	pnp_enter_conf_state(dev);
 
 	pnp_write_config(dev, 0x24, 0xc6); /* PNPCSV */
 
@@ -146,10 +129,10 @@ static void early_superio_config_w83627thg(void)
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0xa00);
 	pnp_set_enable(dev, 1);
 
-	pnp_exit_func_mode(dev);
+	pnp_exit_conf_state(dev);
 
 	dev = PNP_DEV(0x4e, W83627THG_SP1);
-	pnp_enter_func_mode(dev);
+	pnp_enter_conf_state(dev);
 
 	pnp_set_logical_device(dev); /* Set COM3 to sane non-conflicting values */
 	pnp_set_enable(dev, 0);
@@ -178,7 +161,7 @@ static void early_superio_config_w83627thg(void)
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x00);
 	pnp_set_iobase(dev, PNP_IDX_IO1, 0x00);
 
-	pnp_exit_func_mode(dev);
+	pnp_exit_conf_state(dev);
 }
 
 static void rcba_config(void)

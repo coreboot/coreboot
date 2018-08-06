@@ -174,6 +174,7 @@ real-all: real-target
 
 # must come rather early
 .SECONDEXPANSION:
+.DELETE_ON_ERROR:
 
 $(KCONFIG_AUTOHEADER): $(KCONFIG_CONFIG)
 	+$(MAKE) oldconfig

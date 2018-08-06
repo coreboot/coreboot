@@ -278,7 +278,6 @@ void *bootmem_allocate_buffer(size_t size)
 		return NULL;
 
 	/* region now points to the highest usable region for the given size. */
-	begin = range_entry_base(region);
 	end = range_entry_end(region);
 	if (end > max_addr)
 		end = max_addr;

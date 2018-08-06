@@ -343,9 +343,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* Initialize GPIO */
 	/* Access SuperIO GPI03 logical device */
-	uint16_t port = GPIO3_DEV >> 8;
-	outb(0x87, port);
-	outb(0x87, port);
+	pnp_enter_conf_state(GPIO3_DEV);
 	pnp_set_logical_device(GPIO3_DEV);
 	/* Set GP37 (power LED) to output */
 	pnp_write_config(GPIO3_DEV, 0xf0, 0x7f);
@@ -355,7 +353,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	uint8_t cr2c = pnp_read_config(GPIO3_DEV, 0x2c);
 	pnp_write_config(GPIO3_DEV, 0x2c, (cr2c & 0xf3) | 0x04);
 	/* Restore default SuperIO access */
-	outb(0xaa, port);
+	pnp_exit_conf_state(GPIO3_DEV);
 }
 
 /**

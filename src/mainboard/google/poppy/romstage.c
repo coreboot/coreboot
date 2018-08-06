@@ -17,8 +17,10 @@
 #include <baseboard/variants.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <soc/gpio.h>
 #include <soc/romstage.h>
 #include <string.h>
+#include <variant/gpio.h>
 
 #include <fsp/soc_binding.h>
 
@@ -146,6 +148,12 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	FSP_M_CONFIG *mem_cfg = &mupd->FspmConfig;
 	struct memory_params p;
+
+	const struct pad_config *pads;
+	size_t num;
+
+	pads = variant_romstage_gpio_table(&num);
+	gpio_configure_pads(pads, num);
 
 	memset(&p, 0, sizeof(p));
 	variant_memory_params(&p);

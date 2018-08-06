@@ -403,3 +403,9 @@ const struct cros_gpio * __weak variant_cros_gpios(size_t *num)
 	*num = ARRAY_SIZE(cros_gpios);
 	return cros_gpios;
 }
+
+const struct pad_config * __weak variant_romstage_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}

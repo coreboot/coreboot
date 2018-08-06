@@ -120,23 +120,9 @@ static const u8 spd_addr[] = {
 #define GPIO2_DEV PNP_DEV(0x2e, W83627HF_GPIO2)
 #define GPIO3_DEV PNP_DEV(0x2e, W83627HF_GPIO3)
 
-/* TODO: superio code should really not be in mainboard */
-static void pnp_enter_ext_func_mode(pnp_devfn_t dev)
-{
-	u16 port = dev >> 8;
-	outb(0x87, port);
-	outb(0x87, port);
-}
-
-static void pnp_exit_ext_func_mode(pnp_devfn_t dev)
-{
-	u16 port = dev >> 8;
-	outb(0xaa, port);
-}
-
 static void write_GPIO(void)
 {
-	pnp_enter_ext_func_mode(GPIO1_DEV);
+	pnp_enter_conf_state(GPIO1_DEV);
 	pnp_set_logical_device(GPIO1_DEV);
 	pnp_write_config(GPIO1_DEV, 0x30, 0x01);
 	pnp_write_config(GPIO1_DEV, 0x60, 0x00);
@@ -147,9 +133,9 @@ static void write_GPIO(void)
 	pnp_write_config(GPIO1_DEV, 0xf0, 0xff);
 	pnp_write_config(GPIO1_DEV, 0xf1, 0xff);
 	pnp_write_config(GPIO1_DEV, 0xf2, 0x00);
-	pnp_exit_ext_func_mode(GPIO1_DEV);
+	pnp_exit_conf_state(GPIO1_DEV);
 
-	pnp_enter_ext_func_mode(GPIO2_DEV);
+	pnp_enter_conf_state(GPIO2_DEV);
 	pnp_set_logical_device(GPIO2_DEV);
 	pnp_write_config(GPIO2_DEV, 0x30, 0x01);
 	pnp_write_config(GPIO2_DEV, 0xf0, 0xef);
@@ -159,16 +145,16 @@ static void write_GPIO(void)
 	pnp_write_config(GPIO2_DEV, 0xf5, 0x48);
 	pnp_write_config(GPIO2_DEV, 0xf6, 0x00);
 	pnp_write_config(GPIO2_DEV, 0xf7, 0xc0);
-	pnp_exit_ext_func_mode(GPIO2_DEV);
+	pnp_exit_conf_state(GPIO2_DEV);
 
-	pnp_enter_ext_func_mode(GPIO3_DEV);
+	pnp_enter_conf_state(GPIO3_DEV);
 	pnp_set_logical_device(GPIO3_DEV);
 	pnp_write_config(GPIO3_DEV, 0x30, 0x00);
 	pnp_write_config(GPIO3_DEV, 0xf0, 0xff);
 	pnp_write_config(GPIO3_DEV, 0xf1, 0xff);
 	pnp_write_config(GPIO3_DEV, 0xf2, 0xff);
 	pnp_write_config(GPIO3_DEV, 0xf3, 0x40);
-	pnp_exit_ext_func_mode(GPIO3_DEV);
+	pnp_exit_conf_state(GPIO3_DEV);
 }
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)

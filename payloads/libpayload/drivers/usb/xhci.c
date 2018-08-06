@@ -304,10 +304,10 @@ xhci_pci_init (pcidev_t addr)
 	u32 reg_addr;
 	hci_t *controller;
 
-	reg_addr = pci_read_config32 (addr, 0x10) & ~0xf;
-	if (pci_read_config32 (addr, 0x14) > 0) {
+	reg_addr = pci_read_config32(addr, PCI_BASE_ADDRESS_0) &
+		   PCI_BASE_ADDRESS_MEM_MASK;
+	if (pci_read_config32(addr, PCI_BASE_ADDRESS_1) > 0)
 		fatal("We don't do 64bit addressing.\n");
-	}
 
 	controller = xhci_init((unsigned long)reg_addr);
 	if (controller) {

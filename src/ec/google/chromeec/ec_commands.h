@@ -426,7 +426,7 @@
  * parent structure that the alignment will still be true given the packing of
  * the parent structure.  This is particularly important if the sub-structure
  * will be passed as a pointer to another function, since that function will
- * not know about the misaligment caused by the parent structure's packing.
+ * not know about the misalignment caused by the parent structure's packing.
  *
  * Also be very careful using __packed - particularly when nesting non-packed
  * structures inside packed ones.  In fact, DO NOT use __packed directly;

@@ -75,7 +75,7 @@ static void cardbus_size_bridge_resource(struct device *dev, unsigned int index)
 	if (resource) {
 		min_size = resource->size;
 		/*
-		 * Always allocate at least the miniumum size to a
+		 * Always allocate at least the minimum size to a
 		 * cardbus bridge in case a new card is plugged in.
 		 */
 		if (resource->size < min_size)

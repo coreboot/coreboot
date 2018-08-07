@@ -365,7 +365,7 @@ my_wrb(u32 addr, u8 val)
 	unsigned long translated_addr = addr;
 	u8 translated = biosemu_dev_translate_address(IORESOURCE_MEM, &translated_addr);
 	if (translated != 0) {
-		//translation successfull, access VGA Memory (BAR or Legacy...)
+		//translation successful, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%x, %x): access to VGA Memory\n",
 				 __func__, addr, val);
 		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __func__, addr, translated_addr);
@@ -390,7 +390,7 @@ my_wrw(u32 addr, u16 val)
 	unsigned long translated_addr = addr;
 	u8 translated = biosemu_dev_translate_address(IORESOURCE_MEM, &translated_addr);
 	if (translated != 0) {
-		//translation successfull, access VGA Memory (BAR or Legacy...)
+		//translation successful, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%x, %x): access to VGA Memory\n",
 				 __func__, addr, val);
 		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __func__, addr, translated_addr);
@@ -435,7 +435,7 @@ my_wrl(u32 addr, u32 val)
 	unsigned long translated_addr = addr;
 	u8 translated = biosemu_dev_translate_address(IORESOURCE_MEM, &translated_addr);
 	if (translated != 0) {
-		//translation successfull, access VGA Memory (BAR or Legacy...)
+		//translation successful, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%x, %x): access to VGA Memory\n",
 				 __func__, addr, val);
 		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n",  __func__, addr, translated_addr);

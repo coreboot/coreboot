@@ -68,7 +68,7 @@
 *
 * By inspection, one gets:  cc = ab +  r'(a + b)
 *
-* That represents alot of operations, but NO CHOICE....
+* That represents a lot of operations, but NO CHOICE....
 *
 * Borrow Chain Calculation.
 *

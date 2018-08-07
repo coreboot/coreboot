@@ -502,7 +502,7 @@ vbe_get_info(void)
 	vbe_get_ddc_info(&ddc_info);
 
 #if 0
-	DEBUG_PRINTF_VBE("DDC: edid_tranfer_time: %d\n",
+	DEBUG_PRINTF_VBE("DDC: edid_transfer_time: %d\n",
 			 ddc_info.edid_transfer_time);
 	DEBUG_PRINTF_VBE("DDC: ddc_level: %x\n", ddc_info.ddc_level);
 	DEBUG_PRINTF_VBE("DDC: EDID:\n");

@@ -743,7 +743,7 @@ static int tis_setup_interrupt(int vector, int polarity)
 	/* Set TPM interrupt vector */
 	tpm_write_int_vector(vector, locality);
 
-	/* Set TPM interupt polarity and disable interrupts */
+	/* Set TPM interrupt polarity and disable interrupts */
 	tpm_write_int_polarity(polarity, locality);
 
 	/* Close connection if it was opened */

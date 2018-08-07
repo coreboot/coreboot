@@ -107,7 +107,7 @@ void soc_update_memory_params_for_mma(FSP_M_CONFIG *memory_cfg,
  *
  * This function is responsible for loading and executing the notify code from
  * the FSP-S binary. It expects that fsp_silicon_init() has already been called
- * succesfully, and that the FSP-S binary is still loaded into memory.
+ * successfully, and that the FSP-S binary is still loaded into memory.
  */
 
 #endif /* _FSP2_0_API_H_ */

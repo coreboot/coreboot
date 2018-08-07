@@ -318,7 +318,7 @@ intel_gma_init_igd_opregion(igd_opregion_t *opregion)
 	opregion->header.size = sizeof(igd_opregion_t) / 1024;
 
 	/*
-	 * Left-shift version field to accomodate Intel Windows driver quirk
+	 * Left-shift version field to accommodate Intel Windows driver quirk
 	 * when not using a VBIOS.
 	 * Required for Legacy boot + NGI, UEFI + NGI, and UEFI + GOP driver.
 	 *

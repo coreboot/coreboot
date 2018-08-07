@@ -19,7 +19,7 @@ struct drivers_net_config {
 	unsigned wake;	/* Wake pin for ACPI _PRW */
 	/*
 	 * There maybe many NIC cards in a system.
-	 * This paramter is for driver to identify what
+	 * This parameter is for driver to identify what
 	 * the device number is and the valid range is [1-10].
 	 */
 	uint8_t device_index;

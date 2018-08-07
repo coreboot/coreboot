@@ -35,7 +35,7 @@ struct drivers_i2c_generic_config {
 	struct acpi_gpio irq_gpio;
 
 	/*
-	 * This flag will add a device propery which will indicate
+	 * This flag will add a device property which will indicate
 	 * to the OS that it should probe this device before adding it.
 	 *
 	 * This can be used to declare a device that may not exist on

@@ -670,7 +670,7 @@ static int elog_find_flash(void)
 	}
 
 	if (region_device_sz(rdev) < 4*KiB) {
-		printk(BIOS_WARNING, "ELOG: Needs a minium size of 4KiB: %zu\n",
+		printk(BIOS_WARNING, "ELOG: Needs a minimum size of 4KiB: %zu\n",
 			region_device_sz(rdev));
 		return -1;
 	}

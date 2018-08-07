@@ -227,7 +227,7 @@ enum {
 
 /*
  * MAX77802_REG_PMIC_BBAT set to
- * Back up batery charger on and
+ * Back up battery charger on and
  * limit voltage setting to 3.5v
  */
 #define MAX77802_BBCHOSTEN	(1 << 0)

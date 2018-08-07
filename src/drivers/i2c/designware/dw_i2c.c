@@ -360,7 +360,7 @@ static int _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segments,
 	}
 
 	/* The assumption is that the host controller is disabled -- either
-	   after running this function or from performing the intialization
+	   after running this function or from performing the initialization
 	   sequence in dw_i2c_init(). */
 
 	/* Set target slave address */

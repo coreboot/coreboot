@@ -74,7 +74,7 @@
 #define LP55231_RESET_VALUE	0xff
 
 /*
- * The controller has 192 bytes of SRAM for code/data, availabe as six 32 byte
+ * The controller has 192 bytes of SRAM for code/data, available as six 32 byte
  * pages.
  */
 #define LP55231_PROG_PAGE_SIZE  32
@@ -119,7 +119,7 @@ static int ledc_transfer(TiLp55231 *ledc, struct i2c_msg *segs,
 	while (max_attempts--) {
 		rv = i2c_transfer(ledc->i2c_bus, segs, seg_count);
 
-		/* Accessing reset regsiter is expected to fail. */
+		/* Accessing reset register is expected to fail. */
 		if (!rv || reset)
 			break;
 	}

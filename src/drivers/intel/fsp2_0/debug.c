@@ -36,7 +36,7 @@ void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
 	if (IS_ENABLED(CONFIG_DISPLAY_UPD_DATA))
 		fspm_display_upd_values(fspm_old_upd, fspm_new_upd);
 
-	/* Display the call entry point and paramters */
+	/* Display the call entry point and parameters */
 	if (!IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
 		return;
 	printk(BIOS_SPEW, "Calling FspMemoryInit: 0x%p\n", memory_init);

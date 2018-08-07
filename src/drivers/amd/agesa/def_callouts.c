@@ -91,7 +91,7 @@ AGESA_STATUS agesa_Reset (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 
 	//
 	// Perform the RESET based upon the ResetType. In case of
-	// WARM_RESET_WHENVER and COLD_RESET_WHENEVER, the request will go to
+	// WARM_RESET_WHENEVER and COLD_RESET_WHENEVER, the request will go to
 	// AmdResetManager. During the critical condition, where reset is required
 	// immediately, the reset will be invoked directly by writing 0x04 to port
 	// 0xCF9 (Reset Port).

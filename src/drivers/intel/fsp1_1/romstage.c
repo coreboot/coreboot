@@ -128,7 +128,7 @@ void romstage_common(struct romstage_params *params)
 			params->pei_data->saved_data_size =
 				region_device_sz(&rdev);
 			params->pei_data->saved_data = rdev_mmap_full(&rdev);
-			/* Assum boot device is memory mapped. */
+			/* Assume boot device is memory mapped. */
 			assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
 		} else if (params->pei_data->boot_mode == ACPI_S3) {
 			/* Waking from S3 and no cache. */

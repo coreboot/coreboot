@@ -609,7 +609,7 @@
 #define LM_FIFO_WATERMARK   0x0000001F
 #define MI_ARB_STATE	0x020e4 /* 915+ only */
 
-/* Make render/texture TLB fetches lower priorty than associated data
+/* Make render/texture TLB fetches lower priority than associated data
  *   fetches. This is not turned on by default
  */
 #define   MI_ARB_RENDER_TLB_LOW_PRIORITY	(1 << 15)
@@ -1636,9 +1636,9 @@
 #define   BLM_PIPE_C			(2 << 29) /* ivb + */
 #define   BLM_PIPE(pipe)		((pipe) << 29)
 #define   BLM_POLARITY_I965		(1 << 28) /* gen4 only */
-#define   BLM_PHASE_IN_INTERUPT_STATUS	(1 << 26)
+#define   BLM_PHASE_IN_INTERRUPT_STATUS	(1 << 26)
 #define   BLM_PHASE_IN_ENABLE		(1 << 25)
-#define   BLM_PHASE_IN_INTERUPT_ENABL	(1 << 24)
+#define   BLM_PHASE_IN_INTERRUPT_ENABL	(1 << 24)
 #define   BLM_PHASE_IN_TIME_BASE_SHIFT	(16)
 #define   BLM_PHASE_IN_TIME_BASE_MASK	(0xff << 16)
 #define   BLM_PHASE_IN_COUNT_SHIFT	(8)

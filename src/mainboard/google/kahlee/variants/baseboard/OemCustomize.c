@@ -151,5 +151,4 @@ VOID __weak OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly)
 	InitEarly->GnbConfig.PsppPolicy = PsppBalanceLow;
 	InitEarly->PlatformConfig.GnbAzI2sBusSelect = GnbAcpI2sBus;
 	InitEarly->PlatformConfig.GnbAzI2sBusPinConfig = GnbAcp2Tx4RxBluetooth;
-
 }

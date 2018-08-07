@@ -57,6 +57,10 @@ void tcpa_log_add_table_entry(const char *name, const uint32_t pcr,
 	struct tcpa_entry *tce;
 
 	tclt = tcpa_log_init();
+
+	if (!tclt)
+		return;
+
 	if (tclt->num_entries == tclt->max_entries) {
 		printk(BIOS_WARNING, "ERROR: TCPA log table is full\n");
 		return;

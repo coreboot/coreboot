@@ -16,6 +16,8 @@
 #ifndef CPU_AMD_FAM15_H
 #define CPU_AMD_FAM15_H
 
+#define MCG_CAP				0x00000179
+# define MCA_BANKS_MASK			0xff
 #define MC0_STATUS			0x00000401
 #define MSR_SMM_BASE			0xC0010111
 #define MSR_TSEG_BASE			0xC0010112

@@ -128,6 +128,7 @@
 #define CPUID_MODEL		1
 #define MCG_CAP			0x00000179
 	#define MCG_CTL_P	8
+	#define MCA_BANKS_MASK	0xff
 #define MC0_CTL			0x00000400
 #define MC0_STA			(MC0_CTL + 1)
 #define MC4_MISC0		0x00000413

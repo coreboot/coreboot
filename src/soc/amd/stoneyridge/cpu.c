@@ -121,11 +121,14 @@ static void model_15_init(struct device *dev)
 
 	int i;
 	msr_t msr;
+	int num_banks;
 
 	/* zero the machine check error status registers */
+	msr = rdmsr(MCG_CAP);
+	num_banks = msr.lo & MCA_BANKS_MASK;
 	msr.lo = 0;
 	msr.hi = 0;
-	for (i = 0 ; i < 6 ; i++)
+	for (i = 0 ; i < num_banks ; i++)
 		wrmsr(MC0_STATUS + (i * 4), msr);
 
 	setup_lapic();

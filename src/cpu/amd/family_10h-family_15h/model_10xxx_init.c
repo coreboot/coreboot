@@ -62,6 +62,7 @@ static void model_10xxx_init(struct device *dev)
 {
 	u8 i;
 	msr_t msr;
+	int num_banks;
 	struct node_core_id id;
 #if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	u32 siblings;
@@ -109,9 +110,11 @@ static void model_10xxx_init(struct device *dev)
 	disable_cache();
 
 	/* zero the machine check error status registers */
+	msr = rdmsr(MCG_CAP);
+	num_banks = msr.lo & MCA_BANKS_MASK;
 	msr.lo = 0;
 	msr.hi = 0;
-	for (i = 0; i < 5; i++)
+	for (i = 0; i < num_banks; i++)
 		wrmsr(MC0_STATUS + (i * 4), msr);
 
 	enable_cache();

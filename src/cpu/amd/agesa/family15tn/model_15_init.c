@@ -35,6 +35,7 @@ static void model_15_init(struct device *dev)
 
 	u8 i;
 	msr_t msr;
+	int num_banks;
 	int msrno;
 	unsigned int cpu_idx;
 #if IS_ENABLED(CONFIG_LOGICAL_CPUS)
@@ -72,9 +73,11 @@ static void model_15_init(struct device *dev)
 	x86_enable_cache();
 
 	/* zero the machine check error status registers */
+	msr = rdmsr(MCG_CAP);
+	num_banks = msr.lo & MCA_BANKS_MASK;
 	msr.lo = 0;
 	msr.hi = 0;
-	for (i = 0; i < 6; i++)
+	for (i = 0; i < num_banks; i++)
 		wrmsr(MC0_STATUS + (i * 4), msr);
 
 	/* Enable the local CPU APICs */

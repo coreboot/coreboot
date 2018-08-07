@@ -27,6 +27,8 @@
 #include <cpu/amd/multicore.h>
 #include <cpu/amd/amdfam12.h>
 
+#define MCG_CAP 0x179
+# define MCA_BANKS_MASK 0xff
 #define MC0_STATUS 0x401
 
 static void model_12_init(struct device *dev)
@@ -35,6 +37,7 @@ static void model_12_init(struct device *dev)
 
 	u8 i;
 	msr_t msr;
+	int num_banks;
 
 #if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	u32 siblings;
@@ -52,9 +55,11 @@ static void model_12_init(struct device *dev)
 	disable_cache();
 
 	/* zero the machine check error status registers */
+	msr = rdmsr(MCG_CAP);
+	num_banks = msr.lo & MCA_BANKS_MASK;
 	msr.lo = 0;
 	msr.hi = 0;
-	for (i = 0; i < 5; i++)
+	for (i = 0; i < num_banks; i++)
 		wrmsr(MC0_STATUS + (i * 4), msr);
 
 	enable_cache();

@@ -206,6 +206,10 @@ int spi_flash_cmd_erase(const struct spi_flash *flash, u32 offset, size_t len)
 		printk(BIOS_WARNING, "SF: Erase offset/length not multiple of erase size\n");
 		return -1;
 	}
+	if (len == 0) {
+		printk(BIOS_WARNING, "SF: Erase length cannot be 0\n");
+		return -1;
+	}
 
 	cmd[0] = flash->erase_cmd;
 	start = offset;

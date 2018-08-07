@@ -2,7 +2,8 @@ if BOARD_INTEL_COFFEELAKE_RVPU || BOARD_INTEL_COFFEELAKE_RVP11
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
-	select BOARD_ROMSIZE_KB_16384
+	select BOARD_ROMSIZE_KB_16384 if !BOARD_INTEL_COFFEELAKE_RVPU
+	select BOARD_ROMSIZE_KB_32768 if BOARD_INTEL_COFFEELAKE_RVPU
 	select GENERIC_SPD_BIN
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
@@ -40,6 +41,12 @@ config MAX_CPUS
 config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config FMDFILE
+	string
+	depends on VBOOT
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if BOARD_ROMSIZE_KB_16384
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos_32MB.fmd" if BOARD_ROMSIZE_KB_32768
 
 config INCLUDE_SND_MAX98357_DA7219_NHLT
 	bool "Include blobs for audio with MAX98357_DA7219"

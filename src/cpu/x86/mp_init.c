@@ -404,6 +404,7 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 		if (new == NULL) {
 			printk(BIOS_CRIT, "Could not allocate CPU device\n");
 			max_cpus--;
+			continue;
 		}
 		new->name = processor_name;
 		cpus[i].dev = new;

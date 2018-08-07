@@ -27,7 +27,7 @@
 	0x88, 0xc3, 0xee, 0xe8, 0xc4, 0x9e, 0xfb, 0x89	\
 }
 
-void save_lpddr4_dimm_info(const struct lpddr4_cfg *lp4cfg, size_t mem_sku)
+void save_lpddr4_dimm_info_part_num(const char *dram_part_num)
 {
 	int channel, dimm, dimm_max, index;
 	size_t hob_size;
@@ -39,11 +39,8 @@ void save_lpddr4_dimm_info(const struct lpddr4_cfg *lp4cfg, size_t mem_sku)
 	const uint8_t smbios_memory_info_guid[16] =
 			FSP_SMBIOS_MEMORY_INFO_GUID;
 
-	if (mem_sku >= lp4cfg->num_skus) {
-		printk(BIOS_ERR, "Too few LPDDR4 SKUs: 0x%zx/0x%zx\n",
-				mem_sku, lp4cfg->num_skus);
-		return;
-	}
+	if (!dram_part_num)
+		dram_part_num = "Unknown";
 
 	/* Locate the memory info HOB */
 	memory_info_hob = fsp_find_extension_hob_by_guid(
@@ -90,12 +87,26 @@ void save_lpddr4_dimm_info(const struct lpddr4_cfg *lp4cfg, size_t mem_sku)
 				memory_info_hob->MemoryFrequencyInMHz,
 				channel_info->ChannelId,
 				src_dimm->DimmId,
-				lp4cfg->skus[mem_sku].part_num,
-				strlen(lp4cfg->skus[mem_sku].part_num),
+				dram_part_num,
+				strlen(dram_part_num),
 				memory_info_hob->DataWidth);
 			index++;
 		}
 	}
 	mem_info->dimm_cnt = index;
 	printk(BIOS_DEBUG, "%d DIMMs found\n", mem_info->dimm_cnt);
+}
+
+void save_lpddr4_dimm_info(const struct lpddr4_cfg *lp4cfg, size_t mem_sku)
+{
+	const char *part_num = NULL;
+
+	if (mem_sku >= lp4cfg->num_skus) {
+		printk(BIOS_ERR, "Too few LPDDR4 SKUs: 0x%zx/0x%zx\n",
+			mem_sku, lp4cfg->num_skus);
+	} else {
+		part_num = lp4cfg->skus[mem_sku].part_num;
+	}
+
+	save_lpddr4_dimm_info_part_num(part_num);
 }

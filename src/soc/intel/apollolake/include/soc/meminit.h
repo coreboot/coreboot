@@ -131,7 +131,11 @@ struct lpddr4_cfg {
  */
 void meminit_lpddr4_by_sku(FSP_M_CONFIG *cfg,
 				const struct lpddr4_cfg *lpcfg, size_t sku_id);
+/* One of the two below needs to be called. If one is obtaining the part
+ * number out of band from the lpddr_cfg then the part_num variant will
+ * suffice. */
 void save_lpddr4_dimm_info(const struct lpddr4_cfg *lpcfg, size_t mem_sku);
+void save_lpddr4_dimm_info_part_num(const char *dram_part_num);
 
 /* Retrieve the amount of memory configured in the system in MiB. It's only
  * valid during romstage. */

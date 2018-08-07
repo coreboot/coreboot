@@ -846,7 +846,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data *persiste
 				dword &= (0x1 << 7);
 				write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x94, dword);
 
-				/* Restore DRAM Adddress/Timing Control Register */
+				/* Restore DRAM Address/Timing Control Register */
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x04, data->f2x9cx04);
 			} else {
 				/* Disable PHY auto-compensation engine */

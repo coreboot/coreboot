@@ -95,7 +95,7 @@ u32 decode_igd_gtt_size(const u32 gsm)
 }
 
 /* Depending of UMA and TSEG configuration, TSEG might start at any
- * 1 MiB aligment. As this may cause very greedy MTRR setup, push
+ * 1 MiB alignment. As this may cause very greedy MTRR setup, push
  * CBMEM top downwards to 4 MiB boundary.
  */
 void *cbmem_top(void)

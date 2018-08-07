@@ -1116,7 +1116,7 @@ static u8 readSbLink(cNorthBridge *nb)
  *	@param[in] *nb = this northbridge
  *	@return   = true - The link has the following status
  *					LinkCon = 1,     Link is connected
- *					InitComplete = 1,Link initilization is complete
+ *					InitComplete = 1,Link initialization is complete
  *					NC = 1,          Link is coherent
  *					UniP-cLDT = 0,   Link is not Uniprocessor cLDT
  *					LinkConPend = 0  Link connection is not pending

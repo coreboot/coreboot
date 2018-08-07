@@ -157,7 +157,7 @@ typedef struct {
 	 */
 	sPortDescriptor PortList[MAX_PLATFORM_LINKS*2];
 
-	/* The number of coherent links comming off of each node (i.e. the 'Degree' of the node) */
+	/* The number of coherent links coming off of each node (i.e. the 'Degree' of the node) */
 	u8 sysDegree[MAX_NODES];
 	/* The systems adjency (sysMatrix[i][j] is true if Node_i has a link to Node_j) */
 	BOOL sysMatrix[MAX_NODES][MAX_NODES];
@@ -169,7 +169,7 @@ typedef struct {
 	u8 Perm[MAX_NODES];	 /* The node mapping from the database to the system */
 	u8 ReversePerm[MAX_NODES];	 /* The node mapping from the system to the database */
 
-	/* Data for non-coherent initilization */
+	/* Data for non-coherent initialization */
 	u8 AutoBusCurrent;
 	u8 UsedCfgMapEntires;
 

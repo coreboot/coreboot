@@ -121,7 +121,7 @@ static void setup_default_resource_map(void)
 		 *	   0 = CPU writes may be posted
 		 *	   1 = CPU writes must be non-posted
 		 * [31: 8] Memory-Mapped I/O Limit Address i (39-16)
-		 *	   This field defines the upp adddress bits of a 40-bit
+		 *	   This field defines the upp address bits of a 40-bit
 		 *	   address that defines the end of a memory-mapped
 		 *	   I/O region n
 		 */

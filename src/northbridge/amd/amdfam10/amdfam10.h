@@ -314,7 +314,7 @@ struct MCTStatStruc;
 
 // for 0x98 index and 0x9c data for DCT0
 // for 0x198 index and 0x19c data for DCT1
-// even at ganged mode, 0x198/0x19c will be used for channnel B
+// even at ganged mode, 0x198/0x19c will be used for channel B
 
 #define DRAM_CTRL_ADDI_DATA_OFFSET	0x98
 #define  DCAO_DctOffset_SHIFT	0
@@ -368,9 +368,9 @@ struct MCTStatStruc;
 #define   DODCC_ProcOdt_75_OHMS  2
 
 /*
-   for DDR2 400, 533, 667, F2x[1,0]9C_x[02:01], [03], [06:05], [07] controll timing of all DIMMs
-   for DDR2 800, DDR3 800, 1067, 1333, 1600, F2x[1,0]9C_x[02:01], [03], [06:05], [07] controll timing of DIMM0
-					     F2x[1,0]9C_x[102:101], [103], [106:105], [107] controll timing of DIMM1
+   for DDR2 400, 533, 667, F2x[1,0]9C_x[02:01], [03], [06:05], [07] control timing of all DIMMs
+   for DDR2 800, DDR3 800, 1067, 1333, 1600, F2x[1,0]9C_x[02:01], [03], [06:05], [07] control timing of DIMM0
+					     F2x[1,0]9C_x[102:101], [103], [106:105], [107] control timing of DIMM1
 	So Socket F with Four Logical DIMM will only support DDR2 800  ?
 */
 /* there are index	   +100	   ===> for DIMM1

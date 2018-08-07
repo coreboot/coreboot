@@ -554,6 +554,9 @@ struct tpm2_response *tpm_unmarshal_response(TPM_CC command, struct ibuf *ib)
 		       command, ibuf_remaining(ib));
 		return NULL;
 	}
+	if (rc)
+		printk(BIOS_WARNING, "Warning: %s had one or more failures.\n",
+					__func__);
 
 	/* The entire message have been parsed. */
 	return tpm2_resp;

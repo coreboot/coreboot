@@ -622,7 +622,7 @@ asmlinkage void exception_init(void)
 {
 	int i;
 	uint16_t segment;
-	struct intr_gate *gates = car_get_var_ptr(idt);
+	struct intr_gate *gates;
 
 	segment = get_cs();
 	gates = car_get_var_ptr(idt);

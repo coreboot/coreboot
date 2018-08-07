@@ -1,0 +1,67 @@
+if BOARD_INTEL_COFFEELAKE_RVPU || BOARD_INTEL_COFFEELAKE_RVP11
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select GENERIC_SPD_BIN
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select MAINBOARD_HAS_CHROMEOS
+	select GENERIC_SPD_BIN
+	select DRIVERS_I2C_HID
+	select DRIVERS_I2C_GENERIC
+	select SOC_INTEL_COFFEELAKE
+
+config MAINBOARD_DIR
+	string
+	default "intel/coffeelake_rvp"
+
+config VARIANT_DIR
+	string
+	default "cfl_u" if BOARD_INTEL_COFFEELAKE_RVPU
+	default "cfl_h" if BOARD_INTEL_COFFEELAKE_RVP11
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Coffeelake RVP"
+
+config MAINBOARD_VENDOR
+	string
+	default "Intel"
+
+config MAINBOARD_FAMILY
+	string
+	default "Intel_coffeelake_rvp"
+
+config MAX_CPUS
+	int
+	default 8
+
+config DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config INCLUDE_SND_MAX98357_DA7219_NHLT
+	bool "Include blobs for audio with MAX98357_DA7219"
+	select DRIVERS_GENERIC_MAX98357A
+	select DRIVERS_I2C_DA7219
+	select NHLT_DMIC_4CH_16B
+	select NHLT_DMIC_2CH_16B
+	select NHLT_DA7219
+	select NHLT_MAX98357
+
+config INCLUDE_SND_MAX98373_NHLT
+	bool "Include blobs for audio with MAX98373"
+	select DRIVERS_I2C_MAX98373
+	select NHLT_DMIC_4CH_16B
+	select NHLT_DMIC_2CH_16B
+	select NHLT_MAX98373
+
+config DIMM_SPD_SIZE
+	int
+	default 512
+
+config VBOOT
+	select VBOOT_LID_SWITCH
+	select VBOOT_MOCK_SECDATA
+endif

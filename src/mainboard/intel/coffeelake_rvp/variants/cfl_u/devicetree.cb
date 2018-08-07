@@ -1,0 +1,156 @@
+chip soc/intel/cannonlake
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	# FSP configuration
+	register "SaGv" = "3"
+	register "SmbusEnable" = "1"
+	register "ScsEmmcEnabled" = "1"
+	register "ScsEmmcHs400Enabled" = "1"
+	register "ScsSdCardEnabled" = "1"
+
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC0)"
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC0)"
+
+	register "PchHdaDspEnable" = "1"
+	register "PchHdaAudioLinkHda" = "1"
+
+	register "PcieRpEnable[0]" = "1"
+	register "PcieRpEnable[1]" = "1"
+	register "PcieRpEnable[2]" = "1"
+	register "PcieRpEnable[3]" = "1"
+	register "PcieRpEnable[4]" = "1"
+	register "PcieRpEnable[5]" = "1"
+	register "PcieRpEnable[6]" = "1"
+	register "PcieRpEnable[7]" = "1"
+	register "PcieRpEnable[8]" = "1"
+	register "PcieRpEnable[9]" = "1"
+	register "PcieRpEnable[10]" = "1"
+	register "PcieRpEnable[11]" = "1"
+	register "PcieRpEnable[12]" = "1"
+	register "PcieRpEnable[13]" = "1"
+	register "PcieRpEnable[14]" = "1"
+	register "PcieRpEnable[15]" = "1"
+
+	register "PcieClkSrcUsage[0]" = "1"
+	register "PcieClkSrcUsage[1]" = "8"
+	register "PcieClkSrcUsage[2]" = "PCIE_CLK_LAN"
+	register "PcieClkSrcUsage[3]" = "13"
+	register "PcieClkSrcUsage[4]" = "4"
+	register "PcieClkSrcUsage[5]" = "14"
+
+	register "PcieClkSrcClkReq[0]" = "0"
+	register "PcieClkSrcClkReq[1]" = "1"
+	register "PcieClkSrcClkReq[2]" = "2"
+	register "PcieClkSrcClkReq[3]" = "3"
+	register "PcieClkSrcClkReq[4]" = "4"
+	register "PcieClkSrcClkReq[5]" = "5"
+
+	# Enable "Intel Speed Shift Technology"
+	register "speed_shift_enable" = "1"
+
+	# GPIO for SD card detect
+	register "sdcard_cd_gpio" = "GPP_G5"
+
+	# Enable S0ix
+	register "s0ix_enable" = "1"
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
+	#| I2C3              | Audio                     |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.i2c[3] = {
+			.speed = I2C_SPEED_STANDARD,
+			.rise_time_ns = 104,
+			.fall_time_ns = 52,
+		},
+	}"
+
+	device domain 0 on
+		device pci 00.0 on  end # Host Bridge
+		device pci 02.0 on  end # Integrated Graphics Device
+		device pci 04.0 on  end # SA Thermal device
+		device pci 12.0 on  end # Thermal Subsystem
+		device pci 12.5 off end # UFS SCS
+		device pci 12.6 off end # GSPI #2
+		device pci 14.0 on  end # USB xHCI
+		device pci 14.1 off end # USB xDCI (OTG)
+		device pci 14.3 on  end # CNVi wifi
+		device pci 14.5 on  end # SDCard
+		device pci 15.0 on  end # I2C #0
+		device pci 15.1 on  end # I2C #1
+		device pci 15.2 off end # I2C #2
+		device pci 15.3 on
+			chip drivers/i2c/max98373
+				register "interleave_mode" = "1"
+				register "vmon_slot_no" = "4"
+				register "imon_slot_no" = "5"
+				register "uid" = "0"
+				register "desc" = ""Right Speaker Amp""
+				register "name" = ""MAXR""
+				device i2c 32 on end
+			end
+		end # I2C #3
+		device pci 16.0 on  end # Management Engine Interface 1
+		device pci 16.1 off end # Management Engine Interface 2
+		device pci 16.2 off end # Management Engine IDE-R
+		device pci 16.3 off end # Management Engine KT Redirection
+		device pci 16.4 off end # Management Engine Interface 3
+		device pci 16.5 off end # Management Engine Interface 4
+		device pci 17.0 off  end # SATA
+		device pci 19.0 on  end # I2C #4
+		device pci 19.1 off end # I2C #5
+		device pci 19.2 on  end # UART #2
+		device pci 1a.0 on  end # eMMC
+		device pci 1c.0 on  end # PCI Express Port 1 x4 SLOT1
+		device pci 1c.4 on  end # PCI Express Port 5 x1 SLOT2/LAN
+		device pci 1c.5 off end # PCI Express Port 6
+		device pci 1c.6 off end # PCI Express Port 7
+		device pci 1c.7 off end # PCI Express Port 8
+		device pci 1d.0 on  end # PCI Express Port 9
+		device pci 1d.1 off end # PCI Express Port 10
+		device pci 1d.2 off end # PCI Express Port 11
+		device pci 1d.3 off end # PCI Express Port 12
+		device pci 1d.4 off end # PCI Express Port 13
+		device pci 1d.5 off end # PCI Express Port 14
+		device pci 1d.6 off end # PCI Express Port 15
+		device pci 1d.7 off end # PCI Express Port 16
+		device pci 1e.0 on  end # UART #0
+		device pci 1e.1 off end # UART #1
+		device pci 1e.2 off end # GSPI #0
+		device pci 1e.3 off end # GSPI #1
+		device pci 1f.0 on
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end # LPC Interface
+		device pci 1f.1 on  end # P2SB
+		device pci 1f.2 on  end # Power Management Controller
+		device pci 1f.3 on  end # Intel HDA
+		device pci 1f.4 on  end # SMBus
+		device pci 1f.5 on  end # PCH SPI
+		device pci 1f.6 off end # GbE
+	end
+end

@@ -1,0 +1,6 @@
+comment "Coffeelake RVP"
+
+config BOARD_INTEL_COFFEELAKE_RVPU
+	bool "-> Coffeelake U LPDDR4 RVP"
+config BOARD_INTEL_COFFEELAKE_RVP11
+	bool "-> Coffeelake H LPDDR4 RVP11"

@@ -607,6 +607,31 @@ int google_chromeec_cbi_get_oem_id(uint32_t *id)
 	return cbi_get_uint32(id, CBI_TAG_OEM_ID);
 }
 
+int google_chromeec_cbi_get_dram_part_num(char *buf, size_t bufsize)
+{
+	struct ec_params_get_cbi p = {
+		.tag = CBI_TAG_DRAM_PART_NUM,
+	};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_GET_CROS_BOARD_INFO,
+		.cmd_version = 0,
+		.cmd_data_in = &p,
+		.cmd_data_out = buf,
+		.cmd_size_in = sizeof(p),
+		.cmd_size_out = bufsize,
+	};
+	int rv;
+
+	rv = google_chromeec_command(&cmd);
+	if (rv < 0)
+		return rv;
+
+	/* Ensure NUL termination. */
+	buf[bufsize - 1] = '\0';
+
+	return 0;
+}
+
 #ifndef __SMM__
 u16 google_chromeec_get_board_version(void)
 {

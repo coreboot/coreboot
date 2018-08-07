@@ -4780,6 +4780,7 @@ enum cbi_data_tag {
 	CBI_TAG_BOARD_VERSION = 0, /* uint16_t or uint8_t[] = {minor,major} */
 	CBI_TAG_OEM_ID = 1,        /* uint8_t */
 	CBI_TAG_SKU_ID = 2,        /* uint8_t */
+	CBI_TAG_DRAM_PART_NUM = 3, /* variable length ascii, nul terminated. */
 	CBI_TAG_COUNT,
 };
 

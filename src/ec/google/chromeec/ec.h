@@ -74,6 +74,7 @@ int google_chromeec_reboot(int dev_idx, enum ec_reboot_cmd type, uint8_t flags);
  */
 int google_chromeec_cbi_get_oem_id(uint32_t *id);
 int google_chromeec_cbi_get_sku_id(uint32_t *id);
+int google_chromeec_cbi_get_dram_part_num(char *buf, size_t bufsize);
 
 /* MEC uses 0x800/0x804 as register/index pair, thus an 8-byte resource. */
 #define MEC_EMI_BASE		0x800

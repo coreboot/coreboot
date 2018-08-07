@@ -27,40 +27,46 @@
 #include "chromeos.h"
 #include "gnvs.h"
 
-chromeos_acpi_t *vboot_data = NULL;
+static chromeos_acpi_t *chromeos_acpi;
 static u32 me_hash_saved[8];
 
-void chromeos_init_vboot(chromeos_acpi_t *chromeos)
+void chromeos_init_vboot(chromeos_acpi_t *init)
 {
-	vboot_data = chromeos;
+	chromeos_acpi = init;
 
 	/* Copy saved ME hash into NVS */
-	memcpy(vboot_data->mehh, me_hash_saved, sizeof(vboot_data->mehh));
+	memcpy(chromeos_acpi->mehh, me_hash_saved, sizeof(chromeos_acpi->mehh));
 
 	struct vboot_handoff *vboot_handoff;
 
 	if (vboot_get_handoff_info((void **)&vboot_handoff, NULL) == 0)
-		memcpy(&chromeos->vdat[0], &vboot_handoff->shared_data[0],
-		       ARRAY_SIZE(chromeos->vdat));
+		memcpy(&chromeos_acpi->vdat[0], &vboot_handoff->shared_data[0],
+		       ARRAY_SIZE(chromeos_acpi->vdat));
 
-	chromeos_ram_oops_init(chromeos);
+	chromeos_ram_oops_init(chromeos_acpi);
 }
 
 void chromeos_set_me_hash(u32 *hash, int len)
 {
-	if ((len*sizeof(u32)) > sizeof(vboot_data->mehh))
+	if ((len*sizeof(u32)) > sizeof(chromeos_acpi->mehh))
 		return;
 
 	/* Copy to NVS or save until it is ready */
-	if (vboot_data)
+	if (chromeos_acpi)
 		/* This does never happen! */
-		memcpy(vboot_data->mehh, hash, len*sizeof(u32));
+		memcpy(chromeos_acpi->mehh, hash, len*sizeof(u32));
 	else
 		memcpy(me_hash_saved, hash, len*sizeof(u32));
 }
 
-void acpi_get_vdat_info(uint64_t *vdat_addr, uint32_t *vdat_size)
+void acpi_get_chromeos_acpi_info(uint64_t *chromeos_acpi_addr,
+				 uint32_t *chromeos_acpi_size)
 {
-	*vdat_addr = (intptr_t)vboot_data;
-	*vdat_size = sizeof(*vboot_data);
+	*chromeos_acpi_addr = (intptr_t)chromeos_acpi;
+	*chromeos_acpi_size = sizeof(*chromeos_acpi);
+}
+
+chromeos_acpi_t *acpi_get_chromeos_acpi(void)
+{
+	return chromeos_acpi;
 }

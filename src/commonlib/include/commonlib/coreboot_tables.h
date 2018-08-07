@@ -290,7 +290,7 @@ struct lb_gpios {
 	struct lb_gpio gpios[0];
 };
 
-#define LB_TAG_VDAT		0x0015
+#define LB_TAG_CHROMEOS_ACPI	0x0015
 #define LB_TAG_VBNV		0x0019
 #define LB_TAB_VBOOT_HANDOFF	0x0020
 #define LB_TAB_DMA		0x0022

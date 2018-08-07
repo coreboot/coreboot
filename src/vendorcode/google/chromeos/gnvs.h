@@ -53,7 +53,7 @@ typedef struct {
 	u32	vbt7;		// 18e active main firmware type
 	u32	vbt8;		// 192 recovery reason
 	u32	vbt9;		// 196 fmap base address
-	u8	vdat[3072];	// 19a
+	u8	vdat[3072];	// 19a VDAT space filled by verified boot
 	u32	vbt10;		// d9a smbios bios version
 	u32	mehh[8];	// d9e management engine hash
 	u32	ramoops_base;	// dbe ramoops base address
@@ -61,9 +61,10 @@ typedef struct {
 	u8	pad[314];	// dc6-eff
 } __packed chromeos_acpi_t;
 
-extern chromeos_acpi_t *vboot_data;
-void chromeos_init_vboot(chromeos_acpi_t *chromeos);
+void chromeos_init_vboot(chromeos_acpi_t *init);
 void chromeos_set_me_hash(u32*, int);
-void acpi_get_vdat_info(uint64_t *vdat_addr, uint32_t *vdat_size);
+void acpi_get_chromeos_acpi_info(uint64_t *chromeos_acpi_addr,
+				 uint32_t *chromeos_acpi_size);
+chromeos_acpi_t *acpi_get_chromeos_acpi(void);
 
 #endif

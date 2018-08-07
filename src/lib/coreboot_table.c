@@ -195,15 +195,16 @@ static void lb_gpios(struct lb_header *header)
 	}
 }
 
-static void lb_vdat(struct lb_header *header)
+static void lb_chromeos_acpi(struct lb_header *header)
 {
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	struct lb_range *vdat;
+	struct lb_range *chromeos_acpi;
 
-	vdat = (struct lb_range *)lb_new_record(header);
-	vdat->tag = LB_TAG_VDAT;
-	vdat->size = sizeof(*vdat);
-	acpi_get_vdat_info(&vdat->range_start, &vdat->range_size);
+	chromeos_acpi = (struct lb_range *)lb_new_record(header);
+	chromeos_acpi->tag = LB_TAG_CHROMEOS_ACPI;
+	chromeos_acpi->size = sizeof(*chromeos_acpi);
+	acpi_get_chromeos_acpi_info(&chromeos_acpi->range_start,
+				    &chromeos_acpi->range_size);
 #endif
 }
 
@@ -546,8 +547,8 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	/* Record our GPIO settings (ChromeOS specific) */
 	lb_gpios(head);
 
-	/* pass along the VDAT buffer address */
-	lb_vdat(head);
+	/* pass along the chromeos_acpi_t buffer address */
+	lb_chromeos_acpi(head);
 
 	/* pass along VBNV offsets in CMOS */
 	lb_vbnv(head);

@@ -367,7 +367,7 @@ static int smbios_write_type0(unsigned long *current, int handle)
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	/* SMBIOS offsets start at 1 rather than 0 */
-	vboot_data->vbt10 = (u32)t->eos + (version_offset - 1);
+	acpi_get_chromeos_acpi()->vbt10 = (u32)t->eos + (version_offset - 1);
 #endif
 #endif /* CONFIG_CHROMEOS */
 

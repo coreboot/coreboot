@@ -106,12 +106,12 @@ static void cb_parse_gpios(unsigned char *ptr, struct sysinfo_t *info)
 		info->gpios[i] = gpios->gpios[i];
 }
 
-static void cb_parse_vdat(unsigned char *ptr, struct sysinfo_t *info)
+static void cb_parse_chromeos_acpi(unsigned char *ptr, struct sysinfo_t *info)
 {
-	struct lb_range *vdat = (struct lb_range *) ptr;
+	struct lb_range *chromeos_acpi = (struct lb_range *) ptr;
 
-	info->vdat_addr = phys_to_virt(vdat->range_start);
-	info->vdat_size = vdat->range_size;
+	info->chromeos_acpi_addr = phys_to_virt(chromeos_acpi->range_start);
+	info->chromeos_acpi_size = chromeos_acpi->range_size;
 }
 
 static void cb_parse_mac_addresses(unsigned char *ptr,
@@ -357,8 +357,8 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_GPIO:
 			cb_parse_gpios(ptr, info);
 			break;
-		case CB_TAG_VDAT:
-			cb_parse_vdat(ptr, info);
+		case CB_TAG_CHROMEOS_ACPI:
+			cb_parse_chromeos_acpi(ptr, info);
 			break;
 		case CB_TAG_VBNV:
 			cb_parse_vbnv(ptr, info);

@@ -469,7 +469,7 @@ void rkclk_configure_i2s(unsigned int hz)
 
 	/* i2s source clock: gpll
 	   i2s0_outclk_sel: clk_i2s
-	   i2s0_clk_sel: divider ouput from fraction
+	   i2s0_clk_sel: divider output from fraction
 	   i2s0_pll_div_con: 0*/
 	write32(&cru_ptr->cru_clksel_con[4],
 		RK_CLRSETBITS(1 << 15 | 1 << 12 | 3 << 8 | 0x7f << 0,

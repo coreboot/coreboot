@@ -329,7 +329,7 @@ void uart_init(int idx)
 		GSBI_PROTOCOL_CODE_I2C_UART << GSBI_CTRL_REG_PROTOCOL_CODE_S);
 	write32(MSM_BOOT_UART_DM_CSR(dm_base), UART_DM_CLK_RX_TX_BIT_RATE);
 
-	/* Intialize UART_DM */
+	/* Initialize UART_DM */
 	msm_boot_uart_dm_init(dm_base);
 }
 

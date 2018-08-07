@@ -76,7 +76,7 @@ struct soc_nvidia_tegra210_config {
 		int hpd_plug_min_us;
 		int hpd_irq_min_us;
 
-		/* The minimum link configuraton settings */
+		/* The minimum link configuration settings */
 		u32 lane_count;
 		u32 enhanced_framing;
 		u32 link_bw;

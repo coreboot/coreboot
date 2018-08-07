@@ -116,7 +116,7 @@ struct soc_intel_skylake_config {
 	/* Estimated maximum platform power in Watts */
 	u16 psys_pmax;
 
-	/* Wether to ignore VT-d support of the SKU */
+	/* Whether to ignore VT-d support of the SKU */
 	int ignore_vtd;
 
 	/*

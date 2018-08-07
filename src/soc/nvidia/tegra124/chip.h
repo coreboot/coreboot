@@ -88,7 +88,7 @@ struct soc_nvidia_tegra124_config {
 
 	int pixel_clock;
 
-	/* The minimum link configuraton settings */
+	/* The minimum link configuration settings */
 	u32 lane_count;
 	u32 enhanced_framing;
 	u32 link_bw;

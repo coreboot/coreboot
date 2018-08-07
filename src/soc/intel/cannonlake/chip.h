@@ -156,7 +156,7 @@ struct soc_intel_cannonlake_config {
 
 	/* PCIe Root Ports */
 	uint8_t PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
-	/* PCIe ouput clocks type to Pcie devices.
+	/* PCIe output clocks type to Pcie devices.
 	 * 0-23: PCH rootport, 0x70: LAN, 0x80: unspecified but in use,
 	 * 0xFF: not used */
 	uint8_t PcieClkSrcUsage[CONFIG_MAX_ROOT_PORTS];

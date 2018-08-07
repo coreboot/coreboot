@@ -23,7 +23,7 @@
 #include <stdlib.h>
 
 /*
- * This function reads SDRAM parameters (and a few CLK_RST regsiter values) from
+ * This function reads SDRAM parameters (and a few CLK_RST register values) from
  * the common BCT format and writes them into PMC scratch registers (where the
  * BootROM expects them on LP0 resume). Since those store the same values in a
  * different format, we follow a "translation table" taken from Nvidia's U-Boot

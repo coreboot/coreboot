@@ -804,7 +804,7 @@ void rkclk_configure_i2s(unsigned int hz)
 	int v;
 
 	/**
-	 * clk_i2s0_sel: divider ouput from fraction
+	 * clk_i2s0_sel: divider output from fraction
 	 * clk_i2s0_pll_sel source clock: cpll
 	 * clk_i2s0_div_con: 1 (div+1)
 	 */

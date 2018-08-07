@@ -47,7 +47,7 @@ void arch_prepare_thread(struct thread *t,
 	stack = push_stack(stack, (uintptr_t)arg);
 	stack = push_stack(stack, (uintptr_t)0);
 	stack = push_stack(stack, (uintptr_t)thread_entry);
-	/* Make room for the registers. Ignore intial values. */
+	/* Make room for the registers. Ignore initial values. */
 	stack -= sizeof(struct pushad_regs);
 
 	t->stack_current = stack;

@@ -57,7 +57,7 @@ struct exception_handler {
 
 /*
  * Register a handler provided with the associated vector id. Returns 0 on
- * sucess, < 0 on error. Note that registration is not thread/interrupt safe.
+ * success, < 0 on error. Note that registration is not thread/interrupt safe.
  */
 int exception_handler_register(uint64_t vid, struct exception_handler *h);
 

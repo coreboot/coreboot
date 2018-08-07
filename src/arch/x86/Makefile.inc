@@ -374,7 +374,7 @@ ramstage-libs ?=
 
 ifeq ($(CONFIG_RELOCATABLE_RAMSTAGE),y)
 
-# The rmodule_link defintion creates an elf file with .rmod extension.
+# The rmodule_link definition creates an elf file with .rmod extension.
 $(objcbfs)/ramstage.elf: $(objcbfs)/ramstage.debug.rmod
 	cp $< $@
 

@@ -70,7 +70,7 @@ void arch_prepare_thread(struct thread *t,
 void __attribute__((naked))
 switch_to_thread(uintptr_t new_stack, uintptr_t *saved_stack)
 {
-	/* Defintions for those of us not totally familiar with ARM:
+	/* Definitions for those of us not totally familiar with ARM:
 	 * R15 -- PC, R14 -- LR, R13 -- SP
 	 * R0-R3 need not be saved, nor R12.
 	 * on entry, the only saved state is in LR -- the old PC.

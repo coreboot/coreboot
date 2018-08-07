@@ -16,9 +16,8 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
-#include <compiler.h>
 
-/* Pad configuration in ramstage*/
+#if IS_ENABLED(CONFIG_BOARD_INTEL_COFFEELAKE_RVPU)
 static const struct pad_config gpio_table[] = {
 	/* GPPC */
 	/* A0  : RCINB_TIME_SYNC_1 */
@@ -43,14 +42,14 @@ static const struct pad_config gpio_table[] = {
 	/* A15 : SUSACKB */
 	PAD_CFG_GPO(GPP_A15, 1, PLTRST),
 	/* A16 : SD_1P8_SEL */
-	PAD_CFG_GPO(GPP_A16, 0, PLTRST),
+	PAD_CFG_TERM_GPO(GPP_A16, 1, UP_20K, PLTRST),
 	/* A17 : SD_VDD1_PWR_EN_B_ISH_GP_7 */
 	/* A18 : ISH_GP_0 */
 	PAD_CFG_NF(GPP_A18, UP_20K, DEEP, NF1),
 	/* A19 : ISH_GP_1 */
 	PAD_CFG_NF(GPP_A19, UP_20K, DEEP, NF1),
-	/* A20 : aduio codec irq  */
-	PAD_CFG_GPI_APIC_LOW(GPP_A20, NONE, DEEP),
+	/* A20 : ISH_GP_2 */
+	PAD_CFG_NF(GPP_A20, UP_20K, DEEP, NF1),
 	/* A21 : ISH_GP_3 */
 	PAD_CFG_NF(GPP_A21, UP_20K, DEEP, NF1),
 	/* A22 : ISH_GP_4 */
@@ -110,7 +109,7 @@ static const struct pad_config gpio_table[] = {
 	/* C10 : UART0_RTSB */
 	PAD_CFG_GPO(GPP_C10, 0, PLTRST),
 	/* C11 : UART0_CTSB */
-	PAD_CFG_GPI_SCI_LOW(GPP_C11, UP_20K, DEEP, LEVEL),
+	PAD_CFG_TERM_GPO(GPP_C11, 1, UP_20K, DEEP),
 	/* C12 : UART1_RXD_ISH_UART1_RXD */
 	PAD_CFG_GPO(GPP_C12, 1, PLTRST),
 	/* C13 : UART1_RXD_ISH_UART1_TXD */
@@ -138,7 +137,7 @@ static const struct pad_config gpio_table[] = {
 	/* D9  : ISH_SPI_CSB */
 	PAD_CFG_GPO(GPP_D9, 1, PLTRST),
 	/* D10 : ISH_SPI_CLK */
-	PAD_CFG_GPI_APIC(GPP_D10, NONE, PLTRST, EDGE_SINGLE, NONE),
+	PAD_CFG_GPI_APIC(GPP_D10, UP_20K, PLTRST, LEVEL, INVERT),
 	/* D11 : ISH_SPI_MISO_GP_BSSB_CLK */
 	PAD_CFG_GPI_SCI_LOW(GPP_D11, NONE, DEEP, LEVEL),
 	/* D12 : ISH_SPI_MOSI_GP_BSSB_DI */
@@ -150,23 +149,15 @@ static const struct pad_config gpio_table[] = {
 	/* D16 : ISH_UART0_CTSB_SML0BALERTB */
 	PAD_CFG_GPI_SCI_HIGH(GPP_D16, NONE, DEEP, LEVEL),
 	/* D17 : DMIC_CLK_1_SNDW3_CLK */
-	PAD_CFG_NF(GPP_D17, UP_20K, DEEP, NF1),
 	/* D18 : DMIC_DATA_1_SNDW3_DATA */
-	PAD_CFG_NF(GPP_D18, UP_20K, DEEP, NF1),
 	/* D19 : DMIC_CLK_0_SNDW4_CLK */
-	PAD_CFG_NF(GPP_D19, UP_20K, DEEP, NF1),
 	/* D20 : DMIC_DATA_0_SNDW4_DATA */
-	PAD_CFG_NF(GPP_D20, UP_20K, DEEP, NF1),
 	/* D21 : SPI1_IO_2 */
 	PAD_CFG_NF(GPP_D21, NONE, PLTRST, NF1),
 	/* D22 : SPI1_IO_3 */
 	PAD_CFG_NF(GPP_D22, NONE, PLTRST, NF1),
 	/* D23 : SPP_MCLK */
-	PAD_CFG_NF(GPP_D23, NONE, DEEP, NF1),
-	/* E0  : SATAXPCIE_0_SATAGP_0 */
-#if IS_ENABLED(CONFIG_BOARD_INTEL_COFFEELAKE_RVP11)
-	PAD_CFG_NF(GPP_E0, UP_20K, DEEP, NF1),
-#endif
+
 	/* E1  : SATAXPCIE_1_SATAGP_1 */
 	/* E2  : SATAXPCIE_2_SATAGP_2 */
 	PAD_CFG_GPI(GPP_E2, UP_20K, PLTRST),
@@ -247,9 +238,7 @@ static const struct pad_config gpio_table[] = {
 	/* H4  : I2C2_SDA */
 	/* H5  : I2C2_SCL */
 	/* H6  : I2C3_SDA */
-	PAD_CFG_NF(GPP_H6, UP_2K, DEEP, NF1),
 	/* H7  : I2C3_SCL */
-	PAD_CFG_NF(GPP_H7, UP_2K, DEEP, NF1),
 	/* H8  : I2C4_SDA */
 	/* H9  : I2C4_SCL */
 	/* H10 : I2C5_SDA_ISH_I2C2_SDA */
@@ -261,7 +250,7 @@ static const struct pad_config gpio_table[] = {
 	/* H13 : M2_SKT2_CFG_1_DFLEXIO_1 */
 	PAD_CFG_GPO(GPP_H13, 1, PLTRST),
 	/* H14 : M2_SKT2_CFG_2 */
-	PAD_CFG_GPO(GPP_H14, 0, PLTRST),
+	PAD_CFG_GPO(GPP_H14, 1, PLTRST),
 	/* H15 : M2_SKT2_CFG_3 */
 	PAD_CFG_GPO(GPP_H15, 1, PLTRST),
 	/* H16 : CAM5_PWR_EN */
@@ -274,7 +263,7 @@ static const struct pad_config gpio_table[] = {
 	/* H20 : IMGCLKOUT_1 */
 	/* H21 : GPPC_H_21 */
 	/* H22 : GPPC_H_22 */
-	PAD_CFG_GPO(GPP_H22, 1, PLTRST),
+	PAD_CFG_GPI(GPP_H22, NONE, DEEP),
 	/* H23 : GPPC_H_23 */
 
 	/* GPD */
@@ -290,7 +279,14 @@ static const struct pad_config gpio_table[] = {
 	/* GPD-9  : SLP_WLANB */
 	/* GPD-10 : SLP_5B */
 	/* GPD_11 : LANPHYPC */
+
 };
+#elif IS_ENABLED(CONFIG_BOARD_INTEL_COFFEELAKE_RVP11)
+static const struct pad_config gpio_table[] = {
+
+};
+
+#endif
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
@@ -304,8 +300,7 @@ const struct pad_config *__weak variant_gpio_table(size_t *num)
 	return gpio_table;
 }
 
-const struct pad_config *__weak
-	variant_early_gpio_table(size_t *num)
+const struct pad_config *__weak variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
@@ -315,7 +310,7 @@ static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
 };
 
-const struct cros_gpio * __weak variant_cros_gpios(size_t *num)
+const struct cros_gpio *__weak variant_cros_gpios(size_t *num)
 {
 	*num = ARRAY_SIZE(cros_gpios);
 	return cros_gpios;

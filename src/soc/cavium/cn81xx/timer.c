@@ -17,6 +17,7 @@
  */
 
 #include <arch/io.h>
+#include <arch/lib_helpers.h>
 #include <console/console.h>
 #include <inttypes.h>
 #include <soc/clock.h>
@@ -25,7 +26,6 @@
 #include <timer.h>
 #include <soc/addressmap.h>
 #include <assert.h>
-#include <arch/clock.h>
 
 /* Global System Timers Unit (GTI) registers */
 struct cn81xx_timer {
@@ -131,7 +131,7 @@ void init_timer(void)
 
 void soc_timer_init(void)
 {
-	set_cntfrq(tickrate);
+	raw_write_cntfrq_el0(tickrate);
 }
 
 /**

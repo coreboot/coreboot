@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/clock.h>
 #include <arch/cpu.h>
+#include <arch/lib_helpers.h>
 #include <arch/stages.h>
 #include <gic.h>
 #include <soc/addressmap.h>
@@ -26,7 +26,7 @@ static void arm64_arch_timer_init(void)
 {
 	uint32_t freq = clock_get_osc_khz() * 1000;
 	// Set the cntfrq register.
-	set_cntfrq(freq);
+	raw_write_cntfrq_el0(freq);
 }
 
 static void mselect_enable_wrap(void)

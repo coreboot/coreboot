@@ -41,7 +41,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	rom_header = cbfs_boot_map_optionrom(dev->vendor, dev->device);
 
 	u32 vendev = (dev->vendor << 16) | dev->device;
-	u32 mapped_vendev = vendev;
+	u32 mapped_vendev;
 
 	mapped_vendev = map_oprom_vendev(vendev);
 

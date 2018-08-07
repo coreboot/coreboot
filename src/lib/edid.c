@@ -817,8 +817,9 @@ cea_hdmi_block(struct edid *out, unsigned char *x)
 				 * (optionally: 3D_Detail_X and reserved)
 				 */
 			}
-
 		}
+		/* Tell static analysis we know index b is left unused. */
+		(void)b;
 	}
 }
 

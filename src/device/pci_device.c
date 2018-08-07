@@ -249,7 +249,6 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 		resource->flags = 0;
 	} else if (attr & PCI_BASE_ADDRESS_SPACE_IO) {
 		/* An I/O mapped base address. */
-		attr &= PCI_BASE_ADDRESS_IO_ATTR_MASK;
 		resource->flags |= IORESOURCE_IO;
 		/* I don't want to deal with 32bit I/O resources. */
 		resource->limit = 0xffff;

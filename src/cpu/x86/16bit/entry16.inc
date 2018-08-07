@@ -89,7 +89,7 @@ _start16bit:
 	 * must be loaded at or above 0xffff0000 or below 0x100000.
 	 *
 	 * The linker scripts computes gdtptr16_offset by simply returning
-	 * the low 16 bits.  This means that the intial segment used
+	 * the low 16 bits.  This means that the initial segment used
 	 * when start is called must be 64K aligned.  This should not
 	 * restrict the address as the ip address can be anything.
 	 *

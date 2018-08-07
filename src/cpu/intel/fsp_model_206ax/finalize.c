@@ -69,7 +69,7 @@ void intel_model_206ax_finalize_smm(void)
 	msr_set_bit(MSR_PP1_POWER_LIMIT, 31);
 #endif
 
-	/* Lock TM interupts - route thermal events to all processors */
+	/* Lock TM interrupts - route thermal events to all processors */
 	msr_set_bit(MSR_MISC_PWR_MGMT, 22);
 
 	/* Lock memory configuration to protect SMM */

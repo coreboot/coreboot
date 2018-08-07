@@ -17,7 +17,7 @@
 #include <cpu/x86/cr.h>
 #include <cpu/amd/mtrr.h>
 
-/* The SIPI vector is responsible for initializing the APs in the sytem. It
+/* The SIPI vector is responsible for initializing the APs in the system. It
  * loads microcode, sets up MSRs, and enables caching before calling into
  * C code. */
 

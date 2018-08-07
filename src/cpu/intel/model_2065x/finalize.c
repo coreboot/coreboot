@@ -52,6 +52,6 @@ void intel_model_2065x_finalize_smm(void)
 	if (cpuid_ecx(1) & (1 << 25))
 		msr_set_bit(MSR_FEATURE_CONFIG, 0);
 
-	/* Lock TM interupts - route thermal events to all processors */
+	/* Lock TM interrupts - route thermal events to all processors */
 	msr_set_bit(MSR_MISC_PWR_MGMT, 22);
 }

@@ -63,7 +63,7 @@ static void vb2_clear_recovery_reason_vbnv(void *unused)
  * make sure that the stored recovery reason is cleared off before that
  * happens.
  * IMPORTANT: Any reboot occurring after BS_DEV_INIT state will cause loss of
- * recovery reason on reboot. Until now, we have seen reboots occuring on x86
+ * recovery reason on reboot. Until now, we have seen reboots occurring on x86
  * only in FSP stages which run before BS_DEV_INIT.
  */
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT,
@@ -99,7 +99,7 @@ static int vboot_possibly_executed(void)
  * from it.
  * 3. Checks recovery request in handoff for stages post-cbmem.
  * 4. For non-CBMEM stages, check if vboot verification is done and look-up
- * selected region to identify if vboot_refence library has requested recovery
+ * selected region to identify if vboot_reference library has requested recovery
  * path. If yes, return the reason code from shared data.
  * 5. If nothing applies, return 0 indicating no recovery request.
  */

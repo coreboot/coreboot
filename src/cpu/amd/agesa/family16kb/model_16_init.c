@@ -72,9 +72,8 @@ static void model_16_init(struct device *dev)
 	/* zero the machine check error status registers */
 	msr.lo = 0;
 	msr.hi = 0;
-	for (i = 0; i < 6; i++) {
+	for (i = 0; i < 6; i++)
 		wrmsr(MC0_STATUS + (i * 4), msr);
-	}
 
 	/* Enable the local CPU APICs */
 	setup_lapic();
@@ -98,7 +97,6 @@ static void model_16_init(struct device *dev)
 	msr = rdmsr(NB_CFG_MSR);
 	msr.hi &= ~(1 << (46 - 32));
 	wrmsr(NB_CFG_MSR, msr);
-
 
 	/* Write protect SMM space with SMMLOCK. */
 	msr = rdmsr(HWCR_MSR);

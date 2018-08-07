@@ -74,9 +74,8 @@ static void model_15_init(struct device *dev)
 	/* zero the machine check error status registers */
 	msr.lo = 0;
 	msr.hi = 0;
-	for (i = 0; i < 6; i++) {
+	for (i = 0; i < 6; i++)
 		wrmsr(MC0_STATUS + (i * 4), msr);
-	}
 
 	/* Enable the local CPU APICs */
 	setup_lapic();

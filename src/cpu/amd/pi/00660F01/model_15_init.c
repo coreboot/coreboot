@@ -86,7 +86,6 @@ static void model_15_init(struct device *dev)
 	for (i = 0; i < 6; i++)
 		wrmsr(MC0_STATUS + (i * 4), msr);
 
-
 	/* Enable the local CPU APICs */
 	setup_lapic();
 

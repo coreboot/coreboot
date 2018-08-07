@@ -54,9 +54,8 @@ static void model_12_init(struct device *dev)
 	/* zero the machine check error status registers */
 	msr.lo = 0;
 	msr.hi = 0;
-	for (i = 0; i < 5; i++) {
+	for (i = 0; i < 5; i++)
 		wrmsr(MC0_STATUS + (i * 4), msr);
-	}
 
 	enable_cache();
 

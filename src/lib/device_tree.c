@@ -751,7 +751,7 @@ uint32_t dt_get_phandle(struct device_tree_node *node)
  * Write an arbitrary sized big-endian integer into a pointer.
  *
  * @param dest		Pointer to the DT property data buffer to write.
- * @param src		The integer to write (in CPU endianess).
+ * @param src		The integer to write (in CPU endianness).
  * @param length	the length of the destination integer in bytes.
  */
 void dt_write_int(u8 *dest, u64 src, size_t length)

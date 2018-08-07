@@ -465,7 +465,7 @@ int region_file_update_data(struct region_file *f, const void *buf, size_t size)
 			break;
 		}
 
-		/* No more state changes and data commited. */
+		/* No more state changes and data committed. */
 		if (f->slot > RF_ONLY_METADATA && prev_slot != f->slot)
 			break;
 	}

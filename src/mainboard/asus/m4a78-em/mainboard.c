@@ -76,7 +76,7 @@ void set_pcie_reset(void)
 /*
  * justify the dev3 is exist or not
  * NOTE: This just copied from AMD Tilapia code.
- * It is completly unknown if it will work at all for this board.
+ * It is completely unknown if it will work at all for this board.
  */
 int is_dev3_present(void)
 {

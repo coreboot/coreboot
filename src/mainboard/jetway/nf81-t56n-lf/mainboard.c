@@ -87,7 +87,7 @@ static const u8 mainboard_intr_data[FCH_INT_TABLE_SIZE] = {
  */
 /*
  * Persimmon has PCI slot INTA/B/C/D connected to PIRQE/F/G/H
- * but because PCI INT_PIN swizzling isnt implemented to match
+ * but because PCI INT_PIN swizzling isn't implemented to match
  * the IDSEL (dev 3) of the slot, the table is adjusted for the
  * swizzle and INTA is connected to PIRQH so PINA/B/C/D on
  * off-chip devices should get mapped to PIRQH/E/F/G.

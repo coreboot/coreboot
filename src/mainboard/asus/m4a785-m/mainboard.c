@@ -86,7 +86,7 @@ void set_pcie_reset(void)
 /*
  * justify the dev3 is exist or not
  * NOTE: This just copied from AMD Tilapia code.
- * It is completly unknown it it will work at all for ASUS M4A785-M.
+ * It is completely unknown it it will work at all for ASUS M4A785-M.
  */
 int is_dev3_present(void)
 {

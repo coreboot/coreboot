@@ -88,7 +88,7 @@ static void setup_power(int is_resume)
 
 	if (error) {
 		printk(BIOS_CRIT, "%s: PMIC error: %#x\n", __func__, error);
-		die("Failed to intialize PMIC.\n");
+		die("Failed to initialize PMIC.\n");
 	}
 }
 

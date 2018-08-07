@@ -241,7 +241,7 @@ void main(void)
 	exception_init();
 
 	if (power_init_failed)
-		die("Failed to intialize power.\n");
+		die("Failed to initialize power.\n");
 
 	/* re-initialize PMIC I2C channel after (re-)setting system clocks */
 	i2c_init(PMIC_I2C_BUS, 1000000, 0x00); /* 1MHz */

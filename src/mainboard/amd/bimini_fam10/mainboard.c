@@ -29,7 +29,7 @@ static void enable_int_gfx(void)
 
 	volatile u8 *gpio_reg;
 
-	pm_iowrite(0xEA, 0x01);	/* diable the PCIB */
+	pm_iowrite(0xEA, 0x01);	/* disable the PCIB */
 	/* Disable Gec */
 	byte = pm_ioread(0xF6);
 	byte |= 1;

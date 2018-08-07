@@ -18,7 +18,7 @@
 #include <device/device.h>
 
 #include <southbridge/amd/sb800/sb800.h>
-#include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
+#include "SBPLATFORM.h" 	/* Platform Specific Definitions */
 
 /**
  * Southstation using SB GPIO 17/18 to control the Red/Green LED

@@ -329,7 +329,7 @@
 /**
  *   @section INCHIP_AZALIA_CONTROLLER INCHIP_AZALIA_CONTROLLER
  *    @li <b>0</b> - Auto   : Detect Azalia controller automatically.
- *    @li <b>1</b> - Diable : Disable Azalia controller.
+ *    @li <b>1</b> - Disable : Disable Azalia controller.
  *    @li <b>2</b> - Enable : Enable Azalia controller.
  */
 #define INCHIP_AZALIA_CONTROLLER   2

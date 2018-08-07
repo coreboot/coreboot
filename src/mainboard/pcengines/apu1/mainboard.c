@@ -91,7 +91,7 @@ static const u8 mainboard_intr_data[FCH_INT_TABLE_SIZE] = {
  */
 /*
  * The PCI slot INTA/B/C/D connected to PIRQE/F/G/H
- * but because of PCI INT_PIN swizzle isnt implemented to match
+ * but because of PCI INT_PIN swizzle isn't implemented to match
  * the IDSEL (dev 3) of the slot, the table is adjusted for the
  * swizzle and INTA is connected to PIRQH so PINA/B/C/D on
  * off-chip devices should get mapped to PIRQH/E/F/G.

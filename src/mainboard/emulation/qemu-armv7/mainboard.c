@@ -36,7 +36,7 @@ static void init_gfx(void)
 	write32(pl111 + 1, height - 1);
 	/* registers 2, 3 and 5 are ignored by qemu. Set them correctly if
 	   we ever go for real hw.  */
-	/* framebuffer adress offset. Has to be in vram.  */
+	/* framebuffer address offset. Has to be in vram.  */
 	write32(pl111 + 4, framebuffer);
 	write32(pl111 + 7, 0);
 	write32(pl111 + 10, 0xff);

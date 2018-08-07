@@ -298,8 +298,8 @@
 #define GPIO_187_SELECT     FUNCTION2           // USED AS AC LED INDICATOR, LOW ACTIVE
 #define GPIO_188_SELECT     FUNCTION2           // default used AS BATT LED INDICATOR, LOW ACTIVE
                                                 // option for HDMI CEC signal OW ACTIVE
-#define GPIO_189_SELECT     FUNCTION1           // USED AS AC_OK RECIEVER, INPUT, low active
-#define GPIO_190_SELECT     FUNCTION1           // USED TO MONITER INTERUPT FROM BATT CHARGER, INPUT
+#define GPIO_189_SELECT     FUNCTION1           // USED AS AC_OK RECEIVER, INPUT, low active
+#define GPIO_190_SELECT     FUNCTION1           // USED TO MONITER INTERRUPT FROM BATT CHARGER, INPUT
 #define GPIO_191_SELECT     FUNCTION0+NonGpio   // TOUCH PAD, DATA
 #define GPIO_192_SELECT     FUNCTION0+NonGpio   // TOUCH PAD, CLK
 #define GPIO_193_SELECT     FUNCTION0+NonGpio   // SMBUS CLK,

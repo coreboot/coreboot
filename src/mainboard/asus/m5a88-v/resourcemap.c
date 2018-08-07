@@ -119,7 +119,7 @@ static void setup_mb_resource_map(void)
 		 *	   0 = CPU writes may be posted
 		 *	   1 = CPU writes must be non-posted
 		 * [31: 8] Memory-Mapped I/O Limit Address i (39-16)
-		 *	   This field defines the upp adddress bits of a 40-bit address that
+		 *	   This field defines the upp address bits of a 40-bit address that
 		 *	   defines the end of a memory-mapped I/O region n
 		 */
 		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x84), 0x00000048, 0x00000000,

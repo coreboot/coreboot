@@ -38,7 +38,7 @@ int ptn3460_init(char *hwi_block)
 		return 1;
 	}
 
-	status = i2c_init(PTN_I2C_CONTROLER);
+	status = i2c_init(PTN_I2C_CONTROLLER);
 	if (status)
 		return (PTN_BUS_ERROR | status);
 
@@ -66,7 +66,7 @@ int ptn3460_init(char *hwi_block)
 	/* Select this table to be emulated */
 	ptn_select_edid(6);
 	/* Read PTN configuration data */
-	status = i2c_read(PTN_I2C_CONTROLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF,
+	status = i2c_read(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF,
 			  (u8*)&cfg, PTN_CONFIG_LEN);
 	if (status)
 		return (PTN_BUS_ERROR | status);
@@ -94,7 +94,7 @@ int ptn3460_init(char *hwi_block)
 	cfg.backlight_ctrl = 0;		  /* Enable backlight control */
 
 	/* Write back configuration data to PTN3460 */
-	status = i2c_write(PTN_I2C_CONTROLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF,
+	status = i2c_write(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF,
 			   (u8*)&cfg, PTN_CONFIG_LEN);
 	if (status)
 		return (PTN_BUS_ERROR | status);
@@ -114,13 +114,13 @@ int ptn3460_read_edid(u8 edid_num, u8 *data)
 	if (edid_num > PTN_MAX_EDID_NUM)
 		return PTN_INVALID_EDID;
 	/* First enable access to the desired EDID table */
-	status = i2c_write(PTN_I2C_CONTROLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF + 5,
+	status = i2c_write(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF + 5,
 			   &edid_num, 1);
 	if (status)
 		return (PTN_BUS_ERROR | status);
 
 	/* Now we can simply read back EDID-data */
-	status = i2c_read(PTN_I2C_CONTROLER, PTN_SLAVE_ADR, PTN_EDID_OFF,
+	status = i2c_read(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_EDID_OFF,
 			  data, PTN_EDID_LEN);
 	if (status)
 		return (PTN_BUS_ERROR | status);
@@ -140,13 +140,13 @@ int ptn3460_write_edid(u8 edid_num, u8 *data)
 	if (edid_num > PTN_MAX_EDID_NUM)
 		return PTN_INVALID_EDID;
 	/* First enable access to the desired EDID table */
-	status = i2c_write(PTN_I2C_CONTROLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF + 5,
+	status = i2c_write(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF + 5,
 			   &edid_num, 1);
 	if (status)
 		return (PTN_BUS_ERROR | status);
 
 	/* Now we can simply write EDID-data to ptn3460 */
-	status = i2c_write(PTN_I2C_CONTROLER, PTN_SLAVE_ADR, PTN_EDID_OFF,
+	status = i2c_write(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_EDID_OFF,
 			   data, PTN_EDID_LEN);
 	if (status)
 		return (PTN_BUS_ERROR | status);
@@ -168,7 +168,7 @@ int ptn_select_edid (u8 edid_num)
 		return PTN_INVALID_EDID;
 	/* Enable emulation of the desired EDID table */
 	val = (edid_num << 1) | 1;
-	status = i2c_write(PTN_I2C_CONTROLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF + 4,
+	status = i2c_write(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF + 4,
 			   &val, 1);
 	if (status)
 		return (PTN_BUS_ERROR | status);
@@ -191,7 +191,7 @@ int ptn3460_flash_config(void)
 	flash.cmd = 0x01;	/* perform erase and flash cycle */
 	flash.magic = 0x7845;	/* Magic number to protect flash operation */
 	flash.trigger = 0x56;	/* This value starts flash operation */
-	status = i2c_write(PTN_I2C_CONTROLER, PTN_SLAVE_ADR, PTN_FLASH_CFG_OFF,
+	status = i2c_write(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_FLASH_CFG_OFF,
 			   (u8*)&flash, PTN_FLASH_CFG_LEN);
 	if (status) {
 		return (PTN_BUS_ERROR | status);

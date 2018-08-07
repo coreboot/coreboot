@@ -17,7 +17,7 @@
 #define __MAINBOARD_GOOGLE_URARA_URARA_BOARDID_H__
 
 /*
- * List of URARA derivatives board ID defintions. They are stored in uint8_t
+ * List of URARA derivatives board ID definitions. They are stored in uint8_t
  * across the code, using #defines here not to imply any specific size.
  */
 #define URARA_BOARD_ID_BUB	0

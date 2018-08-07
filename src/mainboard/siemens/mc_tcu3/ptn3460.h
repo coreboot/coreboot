@@ -21,7 +21,7 @@
 #include "lcd_panel.h"
 
 #define PTN_SLAVE_ADR		0x20
-#define PTN_I2C_CONTROLER	0
+#define PTN_I2C_CONTROLLER	0
 
 #define PTN_EDID_OFF		0x00
 #define PTN_EDID_LEN		0x80

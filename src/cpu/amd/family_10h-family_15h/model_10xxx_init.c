@@ -32,7 +32,7 @@
 #include <cpu/amd/multicore.h>
 #include <cpu/amd/msr.h>
 
-#define MCI_STATUS 0x401
+#define MC0_STATUS 0x401
 
 static inline uint8_t is_gt_rev_d(void)
 {
@@ -112,7 +112,7 @@ static void model_10xxx_init(struct device *dev)
 	msr.lo = 0;
 	msr.hi = 0;
 	for (i = 0; i < 5; i++) {
-		wrmsr(MCI_STATUS + (i * 4), msr);
+		wrmsr(MC0_STATUS + (i * 4), msr);
 	}
 
 	enable_cache();

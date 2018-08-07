@@ -126,7 +126,7 @@ static void model_15_init(struct device *dev)
 	msr.lo = 0;
 	msr.hi = 0;
 	for (i = 0 ; i < 6 ; i++)
-		wrmsr(MCI_STATUS + (i * 4), msr);
+		wrmsr(MC0_STATUS + (i * 4), msr);
 
 	setup_lapic();
 }

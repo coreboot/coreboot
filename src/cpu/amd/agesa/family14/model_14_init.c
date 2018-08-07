@@ -28,7 +28,7 @@
 #include <arch/acpi.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
-#define MCI_STATUS 0x401
+#define MC0_STATUS 0x401
 
 static void model_14_init(struct device *dev)
 {
@@ -78,7 +78,7 @@ static void model_14_init(struct device *dev)
 	msr.lo = 0;
 	msr.hi = 0;
 	for (i = 0; i < 6; i++) {
-		wrmsr(MCI_STATUS + (i * 4), msr);
+		wrmsr(MC0_STATUS + (i * 4), msr);
 	}
 
 	/* Enable the local CPU APICs */

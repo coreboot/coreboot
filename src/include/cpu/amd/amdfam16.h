@@ -16,7 +16,7 @@
 #ifndef CPU_AMD_FAM16_H
 #define CPU_AMD_FAM16_H
 
-#define MCI_STATUS			0x00000401
+#define MC0_STATUS			0x00000401
 #define HWCR_MSR			0xC0010015
 #define NB_CFG_MSR			0xC001001f
 

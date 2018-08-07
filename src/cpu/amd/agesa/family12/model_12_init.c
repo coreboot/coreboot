@@ -27,7 +27,7 @@
 #include <cpu/amd/multicore.h>
 #include <cpu/amd/amdfam12.h>
 
-#define MCI_STATUS 0x401
+#define MC0_STATUS 0x401
 
 static void model_12_init(struct device *dev)
 {
@@ -55,7 +55,7 @@ static void model_12_init(struct device *dev)
 	msr.lo = 0;
 	msr.hi = 0;
 	for (i = 0; i < 5; i++) {
-		wrmsr(MCI_STATUS + (i * 4), msr);
+		wrmsr(MC0_STATUS + (i * 4), msr);
 	}
 
 	enable_cache();

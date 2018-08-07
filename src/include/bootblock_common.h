@@ -24,7 +24,7 @@
 /*
  * These are defined as weak no-ops that can be overridden by mainboard/SoC.
  * The 'early' variants are called prior to console initialization. Also, the
- * SoC functions are called prior to the mainboard fucntions.
+ * SoC functions are called prior to the mainboard functions.
  */
 void decompressor_soc_init(void);
 void bootblock_mainboard_early_init(void);

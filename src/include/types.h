@@ -34,7 +34,7 @@
  * 100.
  */
 enum cb_err {
-	CB_SUCCESS = 0,		/**< Call completed succesfully */
+	CB_SUCCESS = 0,		/**< Call completed successfully */
 	CB_ERR = -1,		/**< Generic error code */
 	CB_ERR_ARG = -2,	/**< Invalid argument */
 

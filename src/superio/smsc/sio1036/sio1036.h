@@ -20,7 +20,7 @@
 
 #define UART_POWER_DOWN		(1 << 7)
 #define LPT_POWER_DOWN		(1 << 2)
-#define IR_OUPUT_MUX		(1 << 6)
+#define IR_OUTPUT_MUX		(1 << 6)
 
 #include <arch/io.h>
 #include <stdint.h>

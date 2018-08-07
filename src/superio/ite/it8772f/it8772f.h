@@ -120,7 +120,7 @@ enum thermal_mode {
 /* GPIO Inernal Pull-up: 1: Enable, 0: Disable */
 #define GPIO_REG_PULLUP(x)   (0xb8 + (x))
 
-/* GPIO Fucntion Select: 1: Simple I/O, 0: Alternate function */
+/* GPIO Function Select: 1: Simple I/O, 0: Alternate function */
 #define GPIO_REG_ENABLE(x)   (0xc0 + (x))
 
 /* GPIO Mode: 0: input mode, 1: output mode */

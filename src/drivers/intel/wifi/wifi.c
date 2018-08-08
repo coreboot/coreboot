@@ -198,7 +198,7 @@ static void intel_wifi_fill_ssdt(struct device *dev)
 	const char *path = acpi_device_path(dev->bus->dev);
 	u32 address;
 
-	if (!path)
+	if (!path || !dev->enabled)
 		return;
 
 	/* Device */

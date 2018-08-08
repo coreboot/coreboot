@@ -259,6 +259,9 @@ void arch_write_tables(uintptr_t coreboot_table)
 	forwarding_table += sz;
 	/* Align up to page boundary for historical consistency. */
 	forwarding_table = ALIGN_UP(forwarding_table, 4*KiB);
+
+	/* Tell static analysis we know value is left unused. */
+	(void)rom_table_end;
 }
 
 void bootmem_arch_add_ranges(void)

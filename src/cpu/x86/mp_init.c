@@ -297,6 +297,9 @@ static int save_bsp_msrs(char *start, int size)
 
 	fixed_mtrrs_hide_amd_rwdram();
 
+	/* Tell static analysis we know value is left unused. */
+	(void)msr_entry;
+
 	return msr_count;
 }
 

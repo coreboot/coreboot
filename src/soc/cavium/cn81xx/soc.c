@@ -309,7 +309,8 @@ void bootmem_platform_add_ranges(void)
 			  BM_MEM_RESERVED);
 
 	/* Scratchpad for ATF SATA quirks */
-	bootmem_add_range(sdram_size_mb() * KiB, 1 * MiB, BM_MEM_RESERVED);
+	bootmem_add_range((sdram_size_mb() - 1) * MiB, 1 * MiB,
+			  BM_MEM_RESERVED);
 }
 
 static void soc_read_resources(device_t dev)

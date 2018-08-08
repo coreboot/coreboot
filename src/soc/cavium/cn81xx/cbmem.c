@@ -21,6 +21,7 @@
 
 void *cbmem_top(void)
 {
-	return (void *)min((uintptr_t)_dram + sdram_size_mb() * MiB,
-			   MAX_DRAM_ADDRESS);
+	/* Make sure not to overlap with reserved ATF scratchpad */
+	return (void *)min((uintptr_t)_dram + (sdram_size_mb() - 1) * MiB,
+			   4ULL * GiB);
 }

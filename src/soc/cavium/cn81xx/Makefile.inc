@@ -39,15 +39,10 @@ romstage-y += timer.c
 romstage-y += spi.c
 romstage-y += uart.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
-romstage-< += cpu.c
+romstage-y += cbmem.c
 
 romstage-y += sdram.c
 romstage-y += mmu.c
-
-romstage-y += ../common/cbmem.c
-# BDK coreboot interface
-romstage-y += ../common/bdk-coreboot.c
-
 
 ################################################################################
 # ramstage
@@ -64,11 +59,9 @@ ramstage-y += soc.c
 ramstage-y += cpu.c
 ramstage-y += cpu_secondary.S
 ramstage-y += ecam0.c
+ramstage-y += cbmem.c
 
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += bl31_plat_params.c
-
-# BDK coreboot interface
-ramstage-y += ../common/bdk-coreboot.c
 
 BL31_MAKEARGS += PLAT=t81 M0_CROSS_COMPILE="$(CROSS_COMPILE_arm)" ENABLE_SPE_FOR_LOWER_ELS=0
 

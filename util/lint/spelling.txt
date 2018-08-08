@@ -42,7 +42,6 @@ acient||ancient
 acitions||actions
 acitve||active
 acknowldegement||acknowledgment
-acknowledgement||acknowledgment
 ackowledge||acknowledge
 ackowledged||acknowledged
 acording||according

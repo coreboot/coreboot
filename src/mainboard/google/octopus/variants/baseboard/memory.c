@@ -14,6 +14,7 @@
  */
 
 #include <baseboard/variants.h>
+#include <boardid.h>
 #include <compiler.h>
 #include <gpio.h>
 #include <soc/meminit.h>
@@ -63,7 +64,7 @@ const struct lpddr4_swizzle_cfg baseboard_lpddr4_swizzle = {
 	},
 };
 
-static const struct lpddr4_sku skus[] = {
+static const struct lpddr4_sku non_cbi_skus[] = {
 	/*
 	 * K4F6E304HB-MGCJ - both logical channels While the parts
 	 * are listed at 16Gb there are 2 ranks per channel so indicate
@@ -140,15 +141,75 @@ static const struct lpddr4_sku skus[] = {
 	},
 };
 
-static const struct lpddr4_cfg lp4cfg = {
-	.skus = skus,
-	.num_skus = ARRAY_SIZE(skus),
+static const struct lpddr4_cfg non_cbi_lp4cfg = {
+	.skus = non_cbi_skus,
+	.num_skus = ARRAY_SIZE(non_cbi_skus),
+	.swizzle_config = &baseboard_lpddr4_swizzle,
+};
+
+static const struct lpddr4_sku cbi_skus[] = {
+	/* Dual Channel Config 4GiB System Capacity */
+	[0] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
+	},
+	/* Dual Channel Config 8GiB System Capacity */
+	[1] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_16Gb_DENSITY,
+		.ch1_rank_density = LP4_16Gb_DENSITY,
+	},
+	/* Dual Channel Config 8GiB System Capacity */
+	[2] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
+		.ch0_dual_rank = 1,
+		.ch1_dual_rank = 1,
+	},
+	/* Single Channel Configs 4GiB System Capacity Ch0 populated. */
+	[3] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_16Gb_DENSITY,
+	},
+	/* Single Channel Configs 4GiB System Capacity Ch0 populated. */
+	[4] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch0_dual_rank = 1,
+	},
+	/* Single Channel Configs 4GiB System Capacity Ch1 populated. */
+	[5] = {
+		.speed = LP4_SPEED_2400,
+		.ch1_rank_density = LP4_16Gb_DENSITY,
+	},
+	/* Single Channel Configs 4GiB System Capacity Ch1 populated. */
+	[6] = {
+		.speed = LP4_SPEED_2400,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
+		.ch1_dual_rank = 1,
+	},
+};
+
+static const struct lpddr4_cfg cbi_lp4cfg = {
+	.skus = cbi_skus,
+	.num_skus = ARRAY_SIZE(cbi_skus),
 	.swizzle_config = &baseboard_lpddr4_swizzle,
 };
 
 const struct lpddr4_cfg *__weak variant_lpddr4_config(void)
 {
-	return &lp4cfg;
+	if (!IS_ENABLED(CONFIG_DRAM_PART_NUM_IN_CBI))
+		return &non_cbi_lp4cfg;
+
+	if (!IS_ENABLED(CONFIG_DRAM_PART_NUM_ALWAYS_IN_CBI)) {
+		/* Fall back non cbi memory config. */
+		if (board_id() < CONFIG_DRAM_PART_IN_CBI_BOARD_ID_MIN)
+			return &non_cbi_lp4cfg;
+	}
+
+	return &cbi_lp4cfg;
 }
 
 size_t __weak variant_memory_sku(void)

@@ -25,17 +25,22 @@ void mtk_mmu_init(void)
 {
 	mmu_init();
 
-	/* Set 0x0 to the end of 2GB dram address as device memory */
-	mmu_config_range((void *)0, (uintptr_t)_dram + 2U * GiB, DEV_MEM);
+	/*
+	 * Set 0x0 to 4GB address as device memory. We want to config IO_PHYS
+	 * address to DEV_MEM, and map a proper range of dram for the memory
+	 * test during calibration.
+	 */
+	mmu_config_range((void *)0, (uintptr_t)4U * GiB, DEV_MEM);
 
 	/* SRAM is cached */
-	mmu_config_range(_sram, _sram_size, CACHED_MEM);
+	mmu_config_range(_sram, _sram_size, SECURE_CACHED_MEM);
 
 	/* L2C SRAM is cached */
-	mmu_config_range(_sram_l2c, _sram_l2c_size, CACHED_MEM);
+	mmu_config_range(_sram_l2c, _sram_l2c_size, SECURE_CACHED_MEM);
 
 	/* DMA is non-cached and is reserved for TPM & da9212 I2C DMA */
-	mmu_config_range(_dma_coherent, _dma_coherent_size, UNCACHED_MEM);
+	mmu_config_range(_dma_coherent, _dma_coherent_size,
+			 SECURE_UNCACHED_MEM);
 
 	mmu_enable();
 }
@@ -43,7 +48,7 @@ void mtk_mmu_init(void)
 void mtk_mmu_after_dram(void)
 {
 	/* Map DRAM as cached now that it's up and running */
-	mmu_config_range(_dram, (uintptr_t)sdram_size(), CACHED_MEM);
+	mmu_config_range(_dram, (uintptr_t)sdram_size(), NONSECURE_CACHED_MEM);
 
 	mtk_soc_after_dram();
 }

@@ -19,10 +19,11 @@
 #include <arch/mmu.h>
 
 enum {
-	DEV_MEM		= MA_DEV | MA_S  | MA_RW,
-	CACHED_MEM	= MA_MEM | MA_NS | MA_RW,
-	SECURE_MEM	= MA_MEM | MA_S  | MA_RW,
-	UNCACHED_MEM	= MA_MEM | MA_NS | MA_RW | MA_MEM_NC,
+	DEV_MEM			= MA_DEV | MA_S  | MA_RW,
+	SECURE_CACHED_MEM	= MA_MEM | MA_S  | MA_RW,
+	SECURE_UNCACHED_MEM	= MA_MEM | MA_S  | MA_RW | MA_MEM_NC,
+	NONSECURE_CACHED_MEM	= MA_MEM | MA_NS | MA_RW,
+	NONSECURE_UNCACHED_MEM	= MA_MEM | MA_NS | MA_RW | MA_MEM_NC,
 };
 
 extern unsigned char _sram_l2c[];

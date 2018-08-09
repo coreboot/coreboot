@@ -23,7 +23,7 @@
 
 void mtk_soc_after_dram(void)
 {
-	mmu_config_range(_dram_dma, _dram_dma_size, UNCACHED_MEM);
+	mmu_config_range(_dram_dma, _dram_dma_size, NONSECURE_UNCACHED_MEM);
 	mtk_mmu_disable_l2c_sram();
 }
 

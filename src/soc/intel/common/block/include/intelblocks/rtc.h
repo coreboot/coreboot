@@ -45,4 +45,6 @@ void configure_rtc_buc_top_swap(enum ts_config ts_state);
  */
 enum ts_config get_rtc_buc_top_swap_status(void);
 
+/* Set RTC Configuration BILD bit. */
+void rtc_conf_set_bios_interface_lockdown(void);
 #endif	/* SOC_INTEL_COMMON_BLOCK_RTC_H */

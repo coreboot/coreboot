@@ -163,6 +163,7 @@ void fit_payload(struct prog *payload)
 	if (config->ramdisk_node &&
 	    extract(&initrd, config->ramdisk_node)) {
 		printk(BIOS_ERR, "ERROR: Failed to extract initrd\n");
+		prog_set_entry(payload, NULL, NULL);
 		rdev_munmap(prog_rdev(payload), data);
 		return;
 	}
@@ -171,6 +172,7 @@ void fit_payload(struct prog *payload)
 
 	if (extract(&kernel, config->kernel_node)) {
 		printk(BIOS_ERR, "ERROR: Failed to extract kernel\n");
+		prog_set_entry(payload, NULL, NULL);
 		rdev_munmap(prog_rdev(payload), data);
 		return;
 	}

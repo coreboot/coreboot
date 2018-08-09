@@ -43,6 +43,8 @@ ifeq ($(CONFIG_ARCH_BOOTBLOCK_RISCV),y)
 bootblock-y = bootblock.S
 bootblock-y += trap_util.S
 bootblock-y += trap_handler.c
+bootblock-y += fp_asm.S
+bootblock-y += misaligned.c
 bootblock-y += mcall.c
 bootblock-y += virtual_memory.c
 bootblock-y += boot.c
@@ -101,6 +103,8 @@ ramstage-y += ramstage.S
 ramstage-y += mcall.c
 ramstage-y += trap_util.S
 ramstage-y += trap_handler.c
+ramstage-y += fp_asm.S
+ramstage-y += misaligned.c
 ramstage-y += virtual_memory.c
 ramstage-y += stages.c
 ramstage-y += misc.c

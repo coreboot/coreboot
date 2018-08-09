@@ -32,8 +32,7 @@
 
 #include <stdint.h>
 
-typedef struct
-{
+typedef struct {
 	uintptr_t gpr[32];
 	uintptr_t status;
 	uintptr_t epc;
@@ -53,9 +52,9 @@ static inline void exception_init(void)
 {
 }
 
-void trap_handler(trapframe* tf);
-void handle_supervisor_call(trapframe* tf);
-void handle_misaligned_load(trapframe *tf);
-void handle_misaligned_store(trapframe *tf);
+void redirect_trap(void);
+void trap_handler(trapframe *tf);
+void handle_supervisor_call(trapframe *tf);
+void handle_misaligned(trapframe *tf);
 
 #endif

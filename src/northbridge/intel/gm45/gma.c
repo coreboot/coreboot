@@ -771,11 +771,18 @@ static void gma_func0_init(struct device *dev)
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev, edid_lvds.ascii_string);
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
-		gma_ngi(dev, &edid_lvds);
-	} else if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
-		int lightup_ok;
-		gma_gfxinit(&lightup_ok);
+	int vga_disable = (pci_read_config16(dev, D0F0_GGC) & 2) >> 1;
+
+	if (vga_disable) {
+		printk(BIOS_INFO,
+		       "IGD is not decoding legacy VGA MEM and IO: skipping NATIVE graphic init\n");
+	} else {
+		if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+			gma_ngi(dev, &edid_lvds);
+		} else if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
+			int lightup_ok;
+			gma_gfxinit(&lightup_ok);
+		}
 	}
 
 	intel_gma_restore_opregion();

@@ -631,29 +631,38 @@ static void gma_func0_init(struct device *dev)
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev);
 
+	int vga_disable = (pci_read_config16(dev, GGC) & 2) >> 1;
+
 	/* Running graphics init on S3 breaks Linux drm driver. */
 	if (!acpi_is_wakeup_s3() &&
 	    (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) ||
 	    IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT))) {
-		/* This should probably run before post VBIOS init. */
-		printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
-		u8 *mmiobase;
-		u32 iobase, physbase, graphics_base;
-		struct northbridge_intel_sandybridge_config *conf = dev->chip_info;
-		iobase = dev->resource_list[2].base;
-		mmiobase = res2mmio(&dev->resource_list[0], 0, 0);
-		physbase = pci_read_config32(dev, 0x5c) & ~0xf;
-		graphics_base = dev->resource_list[1].base;
-
-		int lightup_ok;
-		if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
-			gma_gfxinit(&lightup_ok);
+		if (vga_disable) {
+			printk(BIOS_INFO,
+			       "IGD is not decoding legacy VGA MEM and IO: skipping NATIVE graphic init\n");
 		} else {
-			lightup_ok = i915lightup_sandy(&conf->gfx, physbase,
-					iobase, mmiobase, graphics_base);
+			/* This should probably run before post VBIOS init. */
+			printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
+			u8 *mmiobase;
+			u32 iobase, physbase, graphics_base;
+			struct northbridge_intel_sandybridge_config *conf = dev->chip_info;
+			iobase = dev->resource_list[2].base;
+			mmiobase = res2mmio(&dev->resource_list[0], 0, 0);
+			physbase = pci_read_config32(dev, 0x5c) & ~0xf;
+			graphics_base = dev->resource_list[1].base;
+
+			int lightup_ok;
+			if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
+				gma_gfxinit(&lightup_ok);
+			} else {
+				lightup_ok = i915lightup_sandy(&conf->gfx,
+							       physbase,
+							       iobase, mmiobase,
+							       graphics_base);
+			}
+			if (lightup_ok)
+				gfx_set_init_done(1);
 		}
-		if (lightup_ok)
-			gfx_set_init_done(1);
 	}
 
 	gma_enable_swsci();

@@ -700,12 +700,20 @@ static void gma_func0_init(struct device *dev)
 	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER
 		 | PCI_COMMAND_IO | PCI_COMMAND_MEMORY);
 
+	int vga_disable = (pci_read_config16(dev, GGC) & 2) >> 1;
+
 	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
-		if (acpi_is_wakeup_s3())
+		if (acpi_is_wakeup_s3()) {
 			printk(BIOS_INFO,
 				"Skipping native VGA initialization when resuming from ACPI S3.\n");
-		else
-			gma_ngi(dev);
+		} else {
+			if (vga_disable) {
+				printk(BIOS_INFO,
+				       "IGD is not decoding legacy VGA MEM and IO: skipping NATIVE graphic init\n");
+			} else {
+				gma_ngi(dev);
+			}
+		}
 	} else {
 		/* PCI Init, will run VBIOS */
 		pci_dev_init(dev);

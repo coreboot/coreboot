@@ -468,10 +468,17 @@ static void gma_func0_init(struct device *dev)
 	/* Pre panel init */
 	gma_setup_panel(dev);
 
+	int vga_disable = (pci_read_config16(dev, GGC) & 2) >> 1;
+
 	if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
-		printk(BIOS_SPEW, "NATIVE graphics, run native enable\n");
-		gma_gfxinit(&lightup_ok);
-		gfx_set_init_done(1);
+		if (vga_disable) {
+			printk(BIOS_INFO,
+			       "IGD is not decoding legacy VGA MEM and IO: skipping NATIVE graphic init\n");
+		} else {
+			printk(BIOS_SPEW, "NATIVE graphics, run native enable\n");
+			gma_gfxinit(&lightup_ok);
+			gfx_set_init_done(1);
+		}
 	}
 
 	if (! lightup_ok) {

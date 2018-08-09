@@ -60,7 +60,7 @@ void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
 
 static void gma_func0_init(struct device *dev)
 {
-	u16 reg16, ggc;
+	u16 reg16;
 	u32 reg32;
 
 	/* IGD needs to be Bus Master */
@@ -74,11 +74,16 @@ static void gma_func0_init(struct device *dev)
 	reg16 |= 0xbc;
 	pci_write_config16(dev_find_slot(0, PCI_DEVFN(0x2, 0)), 0xcc, reg16);
 
-	ggc = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0, 0)), D0F0_GGC);
+	int vga_disable = pci_read_config16(dev, D0F0_GGC);
 
 	if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
-		int lightup_ok;
-		gma_gfxinit(&lightup_ok);
+		if (vga_disable) {
+			printk(BIOS_INFO,
+			       "IGD is not decoding legacy VGA MEM and IO: skipping NATIVE graphic init\n");
+		} else {
+			int lightup_ok;
+			gma_gfxinit(&lightup_ok);
+		}
 	} else {
 		pci_dev_init(dev);
 	}

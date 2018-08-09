@@ -275,6 +275,8 @@ static void gma_func0_init(struct device *dev)
 		struct resource *pio_res;
 		struct northbridge_intel_pineview_config *conf = dev->chip_info;
 
+		int vga_disable = (pci_read_config16(dev, GGC) & 2) >> 1;
+
 		/* Find base addresses */
 		mmio_res = find_resource(dev, 0x10);
 		gtt_res = find_resource(dev, 0x1c);
@@ -282,11 +284,17 @@ static void gma_func0_init(struct device *dev)
 		physbase = pci_read_config32(dev, 0x5c) & ~0xf;
 
 		if (gtt_res && gtt_res->base && physbase && pio_res && pio_res->base) {
-			printk(BIOS_SPEW, "Initializing VGA. MMIO 0x%llx\n",
-			       mmio_res->base);
-			intel_gma_init(conf, dev, res2mmio(mmio_res, 0, 0),
-				res2mmio(gtt_res, 0, 0),
-				physbase, pio_res->base);
+			if (vga_disable) {
+				printk(BIOS_INFO,
+				       "IGD is not decoding legacy VGA MEM and IO: skipping NATIVE graphic init\n");
+			} else {
+				printk(BIOS_SPEW, "Initializing VGA. MMIO 0x%llx\n",
+				       mmio_res->base);
+				intel_gma_init(conf, dev,
+					       res2mmio(mmio_res, 0, 0),
+					       res2mmio(gtt_res, 0, 0),
+					       physbase, pio_res->base);
+			}
 		}
 
 		/* Linux relies on VBT for panel info.  */

@@ -229,7 +229,7 @@ $(obj)/fwid.version:
 $(obj)/fwid.region: $(obj)/fwid.version
 	printf "%s%s\0" \
 		"$(CONFIG_VBOOT_FWID_MODEL)" \
-		"$(file < $(obj)/fwid.version)" > $@
+		"$$(cat "$(obj)/fwid.version")" > $@
 
 build_complete:: $(obj)/gbb.region $(obj)/fwid.region
 	@printf "    WRITE GBB\n"

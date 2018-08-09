@@ -118,8 +118,8 @@ config LINUXBOOT_UROOT_COMMANDS
 	string "Select u-root commands"
 	default ""
 	help
-	  Comma separated list of additional modules to include. Otherwise all modules
-	  of u-root are included.
+	  List of additional modules to include, separated by space. Otherwise
+	  all modules of u-root are included.
 
 config LINUXBOOT_UROOT_FILES
 	string "Add files to u-root base"

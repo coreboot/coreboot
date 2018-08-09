@@ -62,10 +62,11 @@ ifneq ($(CONFIG_LINUXBOOT_UROOT_COMMANDS),)
 ifneq ($(CONFIG_LINUXBOOT_UROOT_FILES),)
 	cd $(uroot_dir); GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) ./u-root \
 	-build=bb -files $(CONFIG_LINUXBOOT_UROOT_FILES) -o $(project_dir)/initramfs.cpio \
-	./cmds/{$(CONFIG_LINUXBOOT_UROOT_COMMANDS)}
+	$(patsubst %,cmds/%,$(CONFIG_LINUXBOOT_UROOT_COMMANDS))
 else
 	cd $(uroot_dir); GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) ./u-root \
-	-build=bb -o $(project_dir)/initramfs.cpio ./cmds/{$(CONFIG_LINUXBOOT_UROOT_COMMANDS)}
+	-build=bb -o $(project_dir)/initramfs.cpio \
+	$(patsubst %,cmds/%,$(CONFIG_LINUXBOOT_UROOT_COMMANDS))
 endif
 else
 ifneq ($(CONFIG_LINUXBOOT_UROOT_FILES),)

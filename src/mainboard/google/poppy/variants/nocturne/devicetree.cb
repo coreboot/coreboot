@@ -87,7 +87,7 @@ chip soc/intel/skylake
 	#| Psi4Enable     | 1     | 1     | 1     | 1     |
 	#| ImonSlope      | 0     | 0     | 0     | 0     |
 	#| ImonOffset     | 0     | 0     | 0     | 0     |
-	#| IccMax         | 4A    | 28A   | 24A   | 24A   |
+	#| IccMax         | Set by SoC code per CPU SKU   |
 	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
 	#| AcLoadline     | 14.9  | 4     | 5.7   | 4.57  |
 	#| DcLoadline     | 14.2  | 4     | 4.2   | 4.3   |
@@ -101,7 +101,6 @@ chip soc/intel/skylake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(4),
 		.voltage_limit = 1520,
 		.ac_loadline = 1490,
 		.dc_loadline = 1420,
@@ -116,7 +115,6 @@ chip soc/intel/skylake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(28),
 		.voltage_limit = 1520,
 		.ac_loadline = 400,
 		.dc_loadline = 400,
@@ -131,7 +129,6 @@ chip soc/intel/skylake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(24),
 		.voltage_limit = 1520,
 		.ac_loadline = 570,
 		.dc_loadline = 420,
@@ -146,7 +143,6 @@ chip soc/intel/skylake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(24),
 		.voltage_limit = 1520,
 		.ac_loadline = 457,
 		.dc_loadline = 430,

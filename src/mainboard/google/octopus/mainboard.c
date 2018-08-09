@@ -50,6 +50,15 @@ static bool is_cnvi_held_in_reset(void)
 	return false;
 }
 
+static void disable_wifi_wake(void)
+{
+	static const struct pad_config wifi_wake_gpio[] = {
+		PAD_NC(GPIO_119, UP_20K),
+	};
+
+	gpio_configure_pads(wifi_wake_gpio, ARRAY_SIZE(wifi_wake_gpio));
+}
+
 static void mainboard_init(void *chip_info)
 {
 	int boardid;
@@ -65,6 +74,9 @@ static void mainboard_init(void *chip_info)
 
 	gpio_configure_pads_with_override(base_pads, base_num,
 			override_pads, override_num);
+
+	if (!is_cnvi_held_in_reset())
+		disable_wifi_wake();
 
 	mainboard_ec_init();
 }

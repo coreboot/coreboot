@@ -83,6 +83,7 @@ static struct param {
 	bool stage_xip;
 	bool autogen_attr;
 	bool machine_parseable;
+	bool unprocessed;
 	int fit_empty_entries;
 	enum comp_algo compression;
 	int precompression;
@@ -1095,7 +1096,7 @@ static int cbfs_extract(void)
 		return 1;
 
 	return cbfs_export_entry(&image, param.name, param.filename,
-				param.arch);
+				param.arch, !param.unprocessed);
 }
 
 static int cbfs_write(void)
@@ -1314,7 +1315,7 @@ static const struct command commands[] = {
 	{"compact", "r:h?", cbfs_compact, true, true},
 	{"copy", "r:R:h?", cbfs_copy, true, true},
 	{"create", "M:r:s:B:b:H:o:m:vh?", cbfs_create, true, true},
-	{"extract", "H:r:m:n:f:vh?", cbfs_extract, true, false},
+	{"extract", "H:r:m:n:f:Uvh?", cbfs_extract, true, false},
 	{"layout", "wvh?", cbfs_layout, false, false},
 	{"print", "H:r:vkh?", cbfs_print, true, false},
 	{"read", "r:f:vh?", cbfs_read, true, false},
@@ -1362,6 +1363,7 @@ static struct option long_options[] = {
 	{"xip",           no_argument,       0, 'y' },
 	{"gen-attribute", no_argument,       0, 'g' },
 	{"mach-parseable",no_argument,       0, 'k' },
+	{"unprocessed",   no_argument,       0, 'U' },
 	{NULL,            0,                 0,  0  }
 };
 
@@ -1428,6 +1430,7 @@ static void usage(char *name)
 	     "  -d               Accept short data; fill downward/from top\n"
 	     "  -F               Force action\n"
 	     "  -g               Generate position and alignment arguments\n"
+	     "  -U               Unprocessed; don't decompress or make ELF\n"
 	     "  -v               Provide verbose output\n"
 	     "  -h               Display this help message\n\n"
 	     "COMMANDs:\n"
@@ -1473,8 +1476,8 @@ static void usage(char *name)
 			"List mutable (or, with -w, readable) image regions\n"
 	     " print [-r image,regions]                                    "
 			"Show the contents of the ROM\n"
-	     " extract [-r image,regions] [-m ARCH] -n NAME -f FILE        "
-			"Extracts a raw payload from ROM\n"
+	     " extract [-r image,regions] [-m ARCH] -n NAME -f FILE [-U]   "
+			"Extracts a file from ROM\n"
 	     " write [-F] -r image,regions -f file [-u | -d] [-i int]      "
 			"Write file into same-size [or larger] raw region\n"
 	     " read [-r fmap-region] -f file                               "
@@ -1769,6 +1772,9 @@ int main(int argc, char **argv)
 				break;
 			case 'k':
 				param.machine_parseable = true;
+				break;
+			case 'U':
+				param.unprocessed = true;
 				break;
 			case 'h':
 			case '?':

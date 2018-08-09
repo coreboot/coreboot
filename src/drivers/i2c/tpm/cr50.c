@@ -181,6 +181,7 @@ static int cr50_i2c_write(struct tpm_chip *chip,
 static int process_reset(struct tpm_chip *chip)
 {
 	struct stopwatch sw;
+	int rv = 0;
 	uint8_t access;
 
 	/*
@@ -193,7 +194,6 @@ static int process_reset(struct tpm_chip *chip)
 	 */
 	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_INIT_MS);
 	do {
-		int rv;
 		const uint8_t mask =
 			TPM_ACCESS_VALID | TPM_ACCESS_ACTIVE_LOCALITY;
 
@@ -214,9 +214,12 @@ static int process_reset(struct tpm_chip *chip)
 		return 0;
 	} while (!stopwatch_expired(&sw));
 
-	printk(BIOS_ERR,
-	       "TPM failed to reset after %ld ms, status: %#x\n",
-	       stopwatch_duration_msecs(&sw), access);
+	if (rv)
+		printk(BIOS_ERR, "Failed to read TPM\n");
+	else
+		printk(BIOS_ERR,
+			"TPM failed to reset after %ld ms, status: %#x\n",
+			stopwatch_duration_msecs(&sw), access);
 
 	return -1;
 }

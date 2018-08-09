@@ -222,7 +222,7 @@ static int marshal_nv_read(struct obuf *ob,
 	return rc;
 }
 
-/* TPM2_Clear command does not require paramaters. */
+/* TPM2_Clear command does not require parameters. */
 static int marshal_clear(struct obuf *ob)
 {
 	const uint32_t handle[] = { TPM_RH_PLATFORM };

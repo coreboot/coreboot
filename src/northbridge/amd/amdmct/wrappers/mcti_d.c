@@ -170,7 +170,7 @@ u16 mctGet_NVbits(u8 index)
 	case NV_SPDCHK_RESTRT:
 		val = 0;	/* Exit current node initialization if any DIMM has SPD checksum error */
 		//val = 1;	/* Ignore faulty SPD checksum (DIMM will still be disabled), continue current node initialization */
-		//val = 2;	/* Override faulty SPD checksum (DIMM will be enabled), continue current node intialization */
+		//val = 2;	/* Override faulty SPD checksum (DIMM will be enabled), continue current node initialization */
 
 		if (get_option(&nvram, "dimm_spd_checksum") == CB_SUCCESS)
 			val = nvram & 0x3;

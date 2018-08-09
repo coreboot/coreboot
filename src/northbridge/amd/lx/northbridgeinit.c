@@ -122,7 +122,7 @@ static void SysmemInit(struct gliutable *gl)
 	int sizembytes, sizebytes;
 
 	/*
-	 * Figure out how much RAM is in the machine and alocate all to the
+	 * Figure out how much RAM is in the machine and allocate all to the
 	 * system. We will adjust for SMM now and Frame Buffer later.
 	 */
 	sizembytes = sizeram();
@@ -272,7 +272,7 @@ static void GLPCIInit(void)
 		 * base of 1M and top of around 256M
 		 */
 		/* we have to create a page-aligned (4KB page) address for base and top */
-		/* So we need a high page aligned addresss (pah) and low page aligned address (pal)
+		/* So we need a high page aligned address (pah) and low page aligned address (pal)
 		 * pah is from msr.hi << 12 | msr.low >> 20. pal is msr.lo << 12
 		 */
 		pah = ((msr.hi & 0xFF) << 12) | ((msr.lo >> 20) & 0xFFF);

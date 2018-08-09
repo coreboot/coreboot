@@ -42,7 +42,7 @@
  *
  * The capture window is not calibrated, but preset. Whether that preset is
  * universal or frequency dependent, and whether it is board-specific or not is
- * not yet clear. @see vx900_dram_calibrate_recieve_delays().
+ * not yet clear. @see vx900_dram_calibrate_receive_delays().
  *
  * 4GBit and 8GBit modules may not work. This is untested. Modules with 11
  * column address bits are not tested. @see vx900_dram_map_row_col_bank()
@@ -166,7 +166,7 @@ static pci_reg8 mcu_init_config[] = {
 	{0x66, 0x80},		/* DRAM Queue / Arbitration */
 	{0x69, 0xc6},		/* Bank Control: 8 banks, high priority refresh */
 	{0x6a, 0xfc},		/* DRAMC Request Reorder Control */
-	{0x6e, 0x38},		/* Burst lenght: 8, burst-chop: enable */
+	{0x6e, 0x38},		/* Burst length: 8, burst-chop: enable */
 	{0x73, 0x04},		/* Close All Pages Threshold */
 
 	/* The following need to be dynamically asserted */
@@ -1224,7 +1224,7 @@ static void vx900_rxdqs_adjust(delay_range * dly)
 	vx900_write_0x78_0x7f(dly->avg);
 }
 
-static void vx900_dram_calibrate_recieve_delays(vx900_delay_calib * delays,
+static void vx900_dram_calibrate_receive_delays(vx900_delay_calib * delays,
 						u8 pinswap)
 {
 	size_t n_tries = 0;
@@ -1417,7 +1417,7 @@ static void vx900_dram_calibrate_delays(const ramctr_timing * ctrl,
 		/* Only run on first rank, remember? */
 		break;
 	}
-	vx900_dram_calibrate_recieve_delays(&delay_cal,
+	vx900_dram_calibrate_receive_delays(&delay_cal,
 					    ranks->flags[i].pins_mirrored);
 	printram("RX DQS calibration results\n");
 	dump_delay_range(delay_cal.rx_dqs);

@@ -124,7 +124,7 @@ static void soc_config_tco(void)
 	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32);
 
 	/* Program TCO Base */
-	pci_write_config32(PCH_DEV_SMBUS, TCOBASE, TCO_BASE_ADDDRESS);
+	pci_write_config32(PCH_DEV_SMBUS, TCOBASE, TCO_BASE_ADDRESS);
 
 	/* Enable TCO in SMBUS */
 	pci_write_config32(PCH_DEV_SMBUS, TCOCTL, reg32 | TCO_EN);
@@ -133,7 +133,7 @@ static void soc_config_tco(void)
 	 * Program "TCO Base Address" PCR[DMI] + 2778h[15:5, 1]
 	 * to [SMBUS PCI offset 50h[15:5], 1].
 	 */
-	pcr_write32(PID_DMI, PCR_DMI_TCOBASE, TCO_BASE_ADDDRESS | (1 << 1));
+	pcr_write32(PID_DMI, PCR_DMI_TCOBASE, TCO_BASE_ADDRESS | (1 << 1));
 
 	/* Program TCO timer halt */
 	tcobase = pci_read_config16(PCH_DEV_SMBUS, TCOBASE);

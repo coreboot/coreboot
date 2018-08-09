@@ -74,7 +74,7 @@ static int send_heci_reset_message(void)
 		printk(BIOS_DEBUG, "Returned Mkhi Status is not success!\n");
 		return -1;
 	}
-	printk(BIOS_DEBUG, "Heci recieve success!\n");
+	printk(BIOS_DEBUG, "Heci receive success!\n");
 	return 0;
 }
 

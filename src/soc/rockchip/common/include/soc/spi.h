@@ -101,9 +101,9 @@ check_member(rockchip_spi, rxdr, 0x800);
 /* SSN to Sclk_out delay */
 #define SPI_SSN_DELAY_OFFSET	10
 #define SPI_SSN_DELAY_MASK	0x1
-/* the peroid between ss_n active and sclk_out active is half sclk_out cycles */
+/* the period between ss_n active and sclk_out active is half sclk_out cycles */
 #define SPI_SSN_DELAY_HALF	0x00
-/* the peroid between ss_n active and sclk_out active is one sclk_out cycle */
+/* the period between ss_n active and sclk_out active is one sclk_out cycle */
 #define SPI_SSN_DELAY_ONE	0x01
 
 /* Serial Endian Mode */

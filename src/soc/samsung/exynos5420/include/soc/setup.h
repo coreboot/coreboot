@@ -729,7 +729,7 @@ struct exynos5_phy_control;
 #define CTRL_RDLAT_OFFSET	0
 
 #define CMD_DEFAULT_LPDDR3	0xF
-#define CMD_DEFUALT_OFFSET	0
+#define CMD_DEFAULT_OFFSET	0
 #define T_WRDATA_EN		0x7
 #define T_WRDATA_EN_DDR3	0x8	/* FIXME(dhendrix): 6 for DDR3? see T_wrdata_en */
 #define T_WRDATA_EN_OFFSET	16

@@ -6,7 +6,7 @@
  * NOTE:  The program's loadable sections (text, module_params, and data) are
  * packed into the flat blob. The rmodule loader assumes the entire program
  * resides in one contiguous address space. Therefore, alignment for a given
- * section (if required) needs to be done at the end of the preceeding section.
+ * section (if required) needs to be done at the end of the preceding section.
  * e.g. if the data section should be aligned to an 8 byte address the text
  * section should have ALIGN(8) at the end of its section.  Otherwise there
  * won't be a consistent mapping between the flat blob and the loaded program.

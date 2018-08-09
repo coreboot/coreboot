@@ -869,7 +869,7 @@ static void configure_dram_control_mode(const timings_t *const timings, const di
 
 static void rcomp_initialization(const stepping_t stepping, const int sff)
 {
-	/* Programm RCOMP codes. */
+	/* Program RCOMP codes. */
 	if (sff)
 		die("SFF platform unsupported in RCOMP initialization.\n");
 	/* Values are for DDR3. */
@@ -1825,7 +1825,7 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 	/* Some last optimizations. */
 	dram_optimizations(timings, dimms);
 
-	/* Mark raminit beeing finished. :-) */
+	/* Mark raminit being finished. :-) */
 	u8 tmp8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2) & ~(1 << 7);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, tmp8);
 

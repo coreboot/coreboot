@@ -26,7 +26,7 @@ SECTIONS
 {
 	SRAM_START(0x2020000)
 	/* 17K hole, includes BL1 */
-	/* Bootblock is preceeded by 16 byte variable length BL2 checksum. */
+	/* Bootblock is preceded by 16 byte variable length BL2 checksum. */
 	BOOTBLOCK(0x2024410, 32K - 16)
 	/* 15K hole */
 	ROMSTAGE(0x2030000, 128K)

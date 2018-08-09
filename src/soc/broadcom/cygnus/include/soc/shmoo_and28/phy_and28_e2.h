@@ -38,7 +38,7 @@
 #endif /* GET & SET */
 
 /***************************************************************************
- *DDR34_CORE_PHY_CONTROL_REGS - DDR34 CORE DDR34 Address/Comand control registers
+ *DDR34_CORE_PHY_CONTROL_REGS - DDR34 CORE DDR34 Address/Command control registers
  ***************************************************************************/
 #define DDR34_CORE_PHY_CONTROL_REGS_REVISION     0x00000000 /* Address & Control revision register */
 #define DDR34_CORE_PHY_CONTROL_REGS_PLL_STATUS   0x00000004 /* PHY PLL status register */

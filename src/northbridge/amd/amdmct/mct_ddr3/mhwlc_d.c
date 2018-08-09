@@ -924,7 +924,7 @@ void programODT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 	u8 WrLvOdt1 = 0;
 
 	if (is_fam15h()) {
-		/* On Family15h processors, the value for the specific CS being targetted
+		/* On Family15h processors, the value for the specific CS being targeted
 		 * is taken from F2x238 / F2x23C as appropriate, then loaded into F2x9C_x0000_0008
 		 */
 

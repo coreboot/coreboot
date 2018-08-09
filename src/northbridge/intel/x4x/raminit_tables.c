@@ -332,7 +332,7 @@ const u32 ddr3_c2_tab[2][3][6][2] = { /* [n-mode][ddr3 freq][CAS][reg] */
 			{0x0189, 0x000aaa}, /* CAS = 5 */
 			{0x0189, 0x101aaa}, /* CAS = 6 */
 			{0x0000, 0x000000}, /* CAS = 7 - Not supported */
-			{0x0000, 0x000000} /* CAS = 8 - Not suppported */
+			{0x0000, 0x000000} /* CAS = 8 - Not supported */
 		},
 		{ /* DDR3 1067 */
 			{0x0000, 0x000000}, /* CAS = 5 - Not supported */

@@ -68,7 +68,7 @@ static u8 isDramECCEn_D(struct DCTStatStruc *pDCTstat);
  * (aka SW memhole, cs hoisting, etc..).To init ECC memory on this node, the
  * scrubber is used in two steps.  First, the Dram Limit for the node is adjusted
  * down to the bottom of the gap, and that ECC dram is initialized.  Second, the
- * orignal Limit is restored, the Scrub base is set to 4GB, and scrubber is
+ * original Limit is restored, the Scrub base is set to 4GB, and scrubber is
  * allowed to run until the Scrub Addr wraps around to zero.
  */
 u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)

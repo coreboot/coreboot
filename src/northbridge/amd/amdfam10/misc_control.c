@@ -19,7 +19,7 @@
 
 /* Turn off machine check triggers when reading
  * pci space where there are no devices.
- * This is necessary when scaning the bus for
+ * This is necessary when scanning the bus for
  * devices which is done by the kernel
  */
 

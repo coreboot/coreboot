@@ -1972,7 +1972,7 @@ static void sdram_rcven(struct sysinfo *s)
 			MCHBAR32(0x248) = (MCHBAR32(0x248) & ~0xf0000)
 						| (curcoarse << 16);
 			if (curcoarse == 0) {
-				PRINTK_DEBUG("Error: DQS didnt hit 0\n");
+				PRINTK_DEBUG("Error: DQS did not hit 0\n");
 				break;
 			}
 		}

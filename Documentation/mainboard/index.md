@@ -18,6 +18,10 @@ This section contains documentation about coreboot on specific mainboards.
 
 - [GA-H61M-S2PV](gigabyte/ga-h61m-s2pv.md)
 
+## Open Cellular
+
+- [Elgon](opencellular/elgon.md)
+
 ## HP
 
 - [Compaq 8200 Elite SFF](hp/compaq_8200_sff.md)

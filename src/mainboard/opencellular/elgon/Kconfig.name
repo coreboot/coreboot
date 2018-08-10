@@ -1,0 +1,2 @@
+config BOARD_OPENCELLULAR_ELGON
+	bool "Elgon (GBCv2)"

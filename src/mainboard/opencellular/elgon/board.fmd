@@ -1,0 +1,15 @@
+FLASH@0x0 16M {
+	WP_RO@0x0 0x1000000 {
+		RO_SECTION@0x0 0xffc000 {
+			# 0 - 0x10000 is free for firmware usage.
+			# bootblock starts at 0x20000
+			FMAP@0x0 0x1000
+			# bootblock includes trusted/non-trusted CLIB, CSIB,
+			# and BL1FWs packaged in
+			# src/soc/cavium/common/Makefile.inc.
+			BOOTBLOCK@0x10000 0x70000
+			COREBOOT(CBFS)@0x80000 0xf7c000
+		}
+		RO_VPD@0xffc000 0x4000
+	}
+}

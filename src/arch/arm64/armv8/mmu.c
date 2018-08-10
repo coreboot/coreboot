@@ -219,6 +219,16 @@ static uint64_t get_pte(void *addr)
 	}
 }
 
+/* Func : assert_correct_ttb_mapping
+ * Desc : Asserts that mapping for addr matches the access type used by the
+ * page table walk (i.e. addr is correctly mapped to be part of the TTB). */
+static void assert_correct_ttb_mapping(void *addr)
+{
+	uint64_t pte = get_pte(addr);
+	assert(((pte >> BLOCK_INDEX_SHIFT) & BLOCK_INDEX_MASK)
+	       == BLOCK_INDEX_MEM_NORMAL && !(pte & BLOCK_NS));
+}
+
 /* Func : mmu_config_range
  * Desc : This function repeatedly calls init_xlat_table with the base
  * address. Based on size returned from init_xlat_table, base_addr is updated
@@ -310,11 +320,8 @@ void mmu_restore_context(const struct mmu_context *mmu_context)
 
 void mmu_enable(void)
 {
-	if (((get_pte(_ttb) >> BLOCK_INDEX_SHIFT) & BLOCK_INDEX_MASK)
-	    != BLOCK_INDEX_MEM_NORMAL ||
-	    ((get_pte(_ettb - 1) >> BLOCK_INDEX_SHIFT) & BLOCK_INDEX_MASK)
-	    != BLOCK_INDEX_MEM_NORMAL)
-		die("TTB memory type must match TCR (normal, cacheable)!");
+	assert_correct_ttb_mapping(_ttb);
+	assert_correct_ttb_mapping(_ettb - 1);
 
 	uint32_t sctlr = raw_read_sctlr_el3();
 	sctlr |= SCTLR_C | SCTLR_M | SCTLR_I;

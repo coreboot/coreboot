@@ -13,17 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/exception.h>
-#include <cbmem.h>
-#include <halt.h>
-#include <program_loading.h>
-#include <console/console.h>
-#include <timestamp.h>
+#include <arch/stages.h>
 
-void main(void)
+void platform_romstage_main(void)
 {
-	console_init();
-	exception_init();
-	cbmem_initialize_empty();
-	run_ramstage();
 }

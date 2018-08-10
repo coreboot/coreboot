@@ -14,24 +14,14 @@
  *
  */
 
-#include <arch/cache.h>
-#include <arch/cpu.h>
-#include <arch/exception.h>
 #include <arch/mmu.h>
-#include <cbfs.h>
-#include <cbmem.h>
-#include <gpio.h>
-#include <console/console.h>
+#include <arch/stages.h>
 #include <delay.h>
-#include <program_loading.h>
-#include <romstage_handoff.h>
-#include <soc/addressmap.h>
 #include <soc/mmu_operations.h>
 #include <soc/tsadc.h>
 #include <soc/sdram.h>
 #include <symbols.h>
 #include <soc/usb.h>
-#include <stdlib.h>
 
 #include "board.h"
 #include "pwm_regulator.h"
@@ -70,11 +60,9 @@ static void prepare_usb(void)
 	reset_usb_otg1();
 }
 
-void main(void)
+void platform_romstage_main(void)
 {
-	console_init();
 	tsadc_init(TSHUT_POL_HIGH);
-	exception_init();
 
 	/* Init DVS to conservative values. */
 	init_dvs_outputs();
@@ -87,6 +75,4 @@ void main(void)
 	mmu_config_range((void *)0, (uintptr_t)sdram_size_mb() * MiB,
 			 CACHED_MEM);
 	mmu_config_range(_dma_coherent, _dma_coherent_size, UNCACHED_MEM);
-	cbmem_initialize_empty();
-	run_ramstage();
 }

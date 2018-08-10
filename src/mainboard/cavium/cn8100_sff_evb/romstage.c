@@ -14,26 +14,19 @@
  *
  */
 
-#include <arch/exception.h>
-#include <cbmem.h>
-#include <romstage_handoff.h>
+#include <arch/stages.h>
 #include <soc/sdram.h>
 #include <soc/timer.h>
 #include <soc/mmu.h>
 #include <stdlib.h>
-#include <console/console.h>
-#include <program_loading.h>
 #include <libbdk-hal/bdk-config.h>
 #include <string.h>
 
 extern const struct bdk_devicetree_key_value devtree[];
 
-void main(void)
+void platform_romstage_main(void)
 {
 	watchdog_poke(0);
-
-	console_init();
-	exception_init();
 
 	bdk_config_set_fdt(devtree);
 
@@ -41,7 +34,4 @@ void main(void)
 	soc_mmu_init();
 
 	watchdog_poke(0);
-
-	cbmem_initialize_empty();
-	run_ramstage();
 }

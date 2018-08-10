@@ -107,6 +107,7 @@ romstage-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 romstage-y += memset.S
 romstage-y += memcpy.S
 romstage-y += memmove.S
+romstage-y += romstage.c
 romstage-y += transition.c transition_asm.S
 
 rmodules_arm64-y += memset.S

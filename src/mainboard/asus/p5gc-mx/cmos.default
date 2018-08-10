@@ -1,5 +1,5 @@
 boot_option=Fallback
-debug_level=Spew
+debug_level=Debug
 hyper_threading=Enable
 nmi=Enable
 boot_devices=''

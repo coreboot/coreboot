@@ -1,4 +1,4 @@
-debug_level = Spew
+debug_level = Debug
 multi_core = Enable
 slow_cpu = off
 hypertransport_speed_limit = Auto

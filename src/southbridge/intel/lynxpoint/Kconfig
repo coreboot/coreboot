@@ -57,27 +57,9 @@ config SERIRQ_CONTINUOUS_MODE
 	  If you set this option to y, the serial IRQ machine will be
 	  operated in continuous mode.
 
-config HAVE_IFD_BIN
-	bool
-	default y
-
 config BUILD_WITH_FAKE_IFD
 	bool
 	default y if !HAVE_IFD_BIN
-
-config IFD_BIN_PATH
-	string
-	depends on !BUILD_WITH_FAKE_IFD
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/descriptor.bin"
-
-config HAVE_ME_BIN
-	bool
-	default y
-
-config ME_BIN_PATH
-	string
-	depends on HAVE_ME_BIN
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/me.bin"
 
 config ME_MBP_CLEAR_LATE
 	bool "Defer wait for ME MBP Cleared"

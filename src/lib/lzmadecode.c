@@ -422,6 +422,10 @@ int LzmaDecode(CLzmaDecoderState *vs,
 		}
 	}
 	RC_NORMALIZE;
+	/*
+	 * Tell static analysis we know len can have a dead assignment.
+	 */
+	 (void)len;
 
 
 	*inSizeProcessed = (SizeT)(Buffer - inStream);

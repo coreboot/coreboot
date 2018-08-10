@@ -212,12 +212,11 @@ void fit_add_ramdisk(struct device_tree *tree, void *ramdisk_addr,
 	struct device_tree_node *node;
 	node = dt_find_node(tree->root, path, NULL, NULL, 1);
 
-	/* Warning: this assumes the ramdisk is currently located below 4GiB. */
-	u32 start = (uintptr_t)ramdisk_addr;
-	u32 end = start + ramdisk_size;
+	u64 start = (uintptr_t)ramdisk_addr;
+	u64 end = start + ramdisk_size;
 
-	dt_add_u32_prop(node, "linux,initrd-start", start);
-	dt_add_u32_prop(node, "linux,initrd-end", end);
+	dt_add_u64_prop(node, "linux,initrd-start", start);
+	dt_add_u64_prop(node, "linux,initrd-end", end);
 }
 
 static void update_reserve_map(uint64_t start, uint64_t end,

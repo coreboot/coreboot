@@ -109,12 +109,4 @@ config VGA_BIOS_FILE
 	string
 	default "pci8086,0f31.rom"
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
 endif # BOARD_GOOGLE_BASEBOARD_RAMBI

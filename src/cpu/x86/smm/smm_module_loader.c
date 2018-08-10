@@ -371,13 +371,14 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 		base += alignment_size;
 	}
 
-	fxsave_size = 0;
-	fxsave_area = NULL;
 	if (IS_ENABLED(CONFIG_SSE)) {
 		fxsave_size = FXSAVE_SIZE * params->num_concurrent_stacks;
 		/* FXSAVE area below all the stacks stack. */
 		fxsave_area = params->stack_top;
 		fxsave_area -= total_stack_size + fxsave_size;
+	} else {
+		fxsave_size = 0;
+		fxsave_area = NULL;
 	}
 
 	/* Does the required amount of memory exceed the SMRAM region size? */

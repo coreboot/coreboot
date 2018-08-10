@@ -91,6 +91,7 @@
 #define   PM_ACPI_RTC_WAKE_EN		BIT(29)
 #define PM_RST_CTRL1			0xbe
 #define   SLPTYPE_CONTROL_EN		BIT(5)
+#define PM_RST_STATUS			0xc0
 #define PM_PMIO_DEBUG			0xd2
 #define PM_MANUAL_RESET			0xd3
 #define PM_HUD_SD_FLASH_CTRL		0xe7

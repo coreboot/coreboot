@@ -58,9 +58,6 @@ config SERIRQ_CONTINUOUS_MODE
 	  If you set this option to y, the serial IRQ machine will be
 	  operated in continuous mode.
 
-config BUILD_WITH_FAKE_IFD
-	def_bool !HAVE_IFD_BIN
-
 config HPET_MIN_TICKS
 	hex
 	default 0x80

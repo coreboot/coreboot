@@ -215,8 +215,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_E4),
 	/* E5  : SATA_DEVSLP1 ==> NC */
 	PAD_CFG_NC(GPP_E5),
-	/* E6  : SATA_DEVSLP2 ==> NC */
-	PAD_CFG_NC(GPP_E6),
+	/* E6  : SATA_DEVSLP2 ==> DISPLAY_DCR_EN */
+	PAD_CFG_GPO(GPP_E6, 1, DEEP),
 	/* E7  : CPU_GP1 ==> TOUCHSCREEN_INT_L */
 	PAD_CFG_GPI_APIC(GPP_E7, NONE, PLTRST),
 	/* E8  : SATALED# ==> NC */

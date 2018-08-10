@@ -37,14 +37,6 @@ config PCIEXP_L1_SUB_STATE
 config PCIEXP_AER
 	def_bool n
 
-config HAVE_IFD_BIN
-	bool
-	default n
-
-config HAVE_ME_BIN
-	bool
-	default n
-
 config MAINBOARD_DIR
 	string
 	default purism/librem_bdw

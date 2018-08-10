@@ -207,12 +207,6 @@ config REFCODE_BLOB_FILE
 
 endif # HAVE_REFCODE_BLOB
 
-config HAVE_ME_BIN
-	def_bool y
-
-config BUILD_WITH_FAKE_IFD
-	def_bool !HAVE_IFD_BIN
-
 config CHIPSET_BOOTBLOCK_INCLUDE
 	string
 	default "soc/intel/broadwell/bootblock/timestamp.inc"

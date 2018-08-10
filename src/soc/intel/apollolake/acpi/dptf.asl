@@ -16,7 +16,7 @@
 #define DPTF_CPU_DEVICE		TCPU
 
 #ifndef DPTF_CPU_PASSIVE
-#definie DPTF_CPU_PASSIVE	80
+#define DPTF_CPU_PASSIVE	80
 #endif
 
 #ifndef DPTF_CPU_CRITICAL

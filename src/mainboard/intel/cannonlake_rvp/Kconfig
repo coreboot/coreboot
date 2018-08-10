@@ -41,11 +41,6 @@ config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
-config IFD_BIN_PATH
-	string
-	depends on HAVE_IFD_BIN
-	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/descriptor.bin"
-
 config INCLUDE_SND_MAX98357_DA7219_NHLT
 	bool "Include blobs for audio with MAX98357_DA7219"
 	select DRIVERS_GENERIC_MAX98357A
@@ -61,16 +56,6 @@ config INCLUDE_SND_MAX98373_NHLT
 	select NHLT_DMIC_4CH_16B
 	select NHLT_DMIC_2CH_16B
 	select NHLT_MAX98373
-
-config ME_BIN_PATH
-	string
-	depends on HAVE_ME_BIN
-	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/me.bin"
-
-config EC_BIN_PATH
-	string
-	depends on HAVE_EC_BIN
-	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/ec.bin"
 
 config DIMM_SPD_SIZE
 	int

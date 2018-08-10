@@ -59,6 +59,7 @@ romstage-y += ../common/spi.c spi.c
 romstage-y += pmic_wrap.c mt6391.c
 romstage-y += memory.c
 romstage-y += emi.c dramc_pi_basic_api.c dramc_pi_calibration_api.c
+romstage-$(CONFIG_MEMORY_TEST) += ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c mmu_operations.c
 romstage-y += rtc.c
 

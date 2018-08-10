@@ -145,6 +145,7 @@ struct mt8173_sdram_params {
 	unsigned int dram_freq;
 };
 
+int complex_mem_test(u8 *start, unsigned int len);
 void mt_set_emi(const struct mt8173_sdram_params *sdram_params);
 void mt_mem_init(const struct mt8173_sdram_params *sdram_params);
 const struct mt8173_sdram_params *get_sdram_config(void);

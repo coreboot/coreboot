@@ -22,7 +22,6 @@
 enum {
 	VER_BASE	= 0x08000000,
 	IO_PHYS		= 0x10000000,
-	DDR_BASE	= 0x40000000
 };
 
 enum {

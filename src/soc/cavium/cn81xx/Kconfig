@@ -17,6 +17,11 @@ config SOC_CAVIUM_CN81XX
 
 if SOC_CAVIUM_CN81XX
 
+config VBOOT
+	select VBOOT_SEPARATE_VERSTAGE
+	select VBOOT_RETURN_FROM_VERSTAGE
+	select VBOOT_STARTS_IN_BOOTBLOCK
+
 config ARM64_BL31_EXTERNAL_FILE
 	string
 	default "3rdparty/blobs/soc/cavium/cn81xx/bl31.elf"

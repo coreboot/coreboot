@@ -1,6 +1,7 @@
 chip soc/intel/apollolake
 
 	device domain 0 on
+		device pci 16.1 off  end	# - I2C 1
 		device pci 17.1 on
 			chip drivers/i2c/da7219
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_137_IRQ)"

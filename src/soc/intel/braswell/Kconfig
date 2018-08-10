@@ -120,15 +120,6 @@ config ENABLE_BUILTIN_COM1
 	  configure the pads and enable it. This serial port can be used for
 	  the debug console.
 
-config HAVE_IFD_BIN
-	def_bool n
-
-config BUILD_WITH_FAKE_IFD
-	def_bool !HAVE_IFD_BIN
-
-config HAVE_ME_BIN
-	def_bool n
-
 config IED_REGION_SIZE
 	hex
 	default 0x400000

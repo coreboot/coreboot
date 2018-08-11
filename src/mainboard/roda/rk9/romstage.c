@@ -26,7 +26,6 @@
 #include <arch/acpi.h>
 #include <cbmem.h>
 #include <lib.h>
-#include <pc80/mc146818rtc.h>
 #include <romstage_handoff.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>

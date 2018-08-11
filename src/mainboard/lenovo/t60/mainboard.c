@@ -21,7 +21,6 @@
 #include <ec/lenovo/h8/h8.h>
 #include <ec/acpi/ec.h>
 #include <northbridge/intel/i945/i945.h>
-#include <pc80/mc146818rtc.h>
 #include <drivers/intel/gma/int15.h>
 #include <arch/acpigen.h>
 

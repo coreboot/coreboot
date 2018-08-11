@@ -26,7 +26,6 @@
 #if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
-#include <pc80/mc146818rtc.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <arch/interrupt.h>

@@ -19,7 +19,6 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <ec/acpi/ec.h>
-#include <pc80/mc146818rtc.h>
 #include <ec/lenovo/h8/h8.h>
 #include <delay.h>
 #include <southbridge/intel/bd82x6x/nvs.h>

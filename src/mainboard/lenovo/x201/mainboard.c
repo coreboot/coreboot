@@ -23,7 +23,6 @@
 #include <northbridge/intel/nehalem/nehalem.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
-#include <pc80/mc146818rtc.h>
 #include "dock.h"
 #include <drivers/intel/gma/int15.h>
 #include <pc80/keyboard.h>

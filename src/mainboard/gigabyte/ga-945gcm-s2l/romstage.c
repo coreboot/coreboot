@@ -27,7 +27,6 @@
 #include <timestamp.h>
 #include <superio/ite/it8718f/it8718f.h>
 #include <superio/ite/common/ite.h>
-#include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>

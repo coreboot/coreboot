@@ -24,9 +24,6 @@
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/x86/msr.h>
-#include <pc80/mc146818rtc.h>
-#include <console/console.h>
 #include <halt.h>
 #include <reset.h>
 #include <fsp_util.h>

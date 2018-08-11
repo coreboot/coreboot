@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <device/device.h>
 #include <arch/io.h>
 #include <delay.h>
@@ -25,7 +24,6 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <northbridge/intel/i945/i945.h>
-#include <pc80/mc146818rtc.h>
 #include <arch/x86/include/arch/acpigen.h>
 #include <drivers/intel/gma/int15.h>
 #include <ec/acpi/ec.h>

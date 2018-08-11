@@ -21,12 +21,10 @@
 #include <arch/io.h>
 #include <arch/acpi.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
 #include <cpu/intel/romstage.h>
 #include <cbmem.h>
 #include <lib.h>
-#include <pc80/mc146818rtc.h>
 #include <romstage_handoff.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>

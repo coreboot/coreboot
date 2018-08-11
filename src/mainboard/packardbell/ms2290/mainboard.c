@@ -27,8 +27,6 @@
 #include <northbridge/intel/nehalem/nehalem.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/acpi/ec.h>
-
-#include <pc80/mc146818rtc.h>
 #include <arch/x86/include/arch/acpigen.h>
 #include <drivers/intel/gma/int15.h>
 #include <arch/interrupt.h>

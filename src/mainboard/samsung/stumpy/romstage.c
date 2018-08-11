@@ -34,7 +34,6 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <arch/cpu.h>
-#include <cpu/x86/msr.h>
 #include <halt.h>
 #if IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)
 #include <superio/smsc/lpc47n207/lpc47n207.h>

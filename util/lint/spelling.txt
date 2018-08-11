@@ -7,6 +7,7 @@
 # The format of each line is:
 # mistake||correction
 #
+# Note that sepc has been commented out.
 abandonning||abandoning
 abigious||ambiguous
 abitrate||arbitrate
@@ -53,6 +54,7 @@ acumulator||accumulator
 adapater||adapter
 addional||additional
 additionaly||additionally
+additonal||additional
 addres||address
 adddress||address
 addreses||addresses
@@ -67,6 +69,8 @@ adviced||advised
 afecting||affecting
 againt||against
 agaist||against
+aggreataon||aggregation
+aggreation||aggregation
 albumns||albums
 alegorical||allegorical
 algined||aligned
@@ -80,6 +84,8 @@ aligment||alignment
 alignement||alignment
 allign||align
 alligned||aligned
+alllocate||allocate
+alloated||allocated
 allocatote||allocate
 allocatrd||allocated
 allocte||allocate
@@ -171,6 +177,7 @@ availale||available
 availavility||availability
 availble||available
 availiable||available
+availible||available
 avalable||available
 avaliable||available
 aysnc||async
@@ -203,6 +210,7 @@ broadcat||broadcast
 cacluated||calculated
 caculation||calculation
 calender||calendar
+calescing||coalescing
 calle||called
 callibration||calibration
 calucate||calculate
@@ -210,6 +218,7 @@ calulate||calculate
 cancelation||cancellation
 cancle||cancel
 capabilites||capabilities
+capabilty||capability
 capabitilies||capabilities
 capatibilities||capabilities
 capapbilities||capabilities
@@ -302,6 +311,7 @@ containts||contains
 contaisn||contains
 contant||contact
 contence||contents
+continious||continuous
 continous||continuous
 continously||continuously
 continueing||continuing
@@ -393,6 +403,7 @@ differrence||difference
 diffrent||different
 diffrentiate||differentiate
 difinition||definition
+dimesions||dimensions
 diplay||display
 direectly||directly
 disassocation||disassociation
@@ -449,6 +460,7 @@ equiped||equipped
 equivelant||equivalent
 equivilant||equivalent
 eror||error
+errorr||error
 estbalishment||establishment
 etsablishment||establishment
 etsbalishment||establishment
@@ -481,6 +493,7 @@ failied||failed
 faillure||failure
 failue||failure
 failuer||failure
+failng||failing
 faireness||fairness
 falied||failed
 faliure||failure
@@ -493,6 +506,7 @@ fetaure||feature
 fetaures||features
 fileystem||filesystem
 fimware||firmware
+firware||firmware
 finanize||finalize
 findn||find
 finilizes||finalizes
@@ -502,6 +516,7 @@ folloing||following
 followign||following
 followings||following
 follwing||following
+fonud||found
 forseeable||foreseeable
 forse||force
 fortan||fortran
@@ -532,6 +547,7 @@ grabing||grabbing
 grahical||graphical
 grahpical||graphical
 grapic||graphic
+grranted||granted
 guage||gauge
 guarenteed||guaranteed
 guarentee||guarantee
@@ -543,6 +559,7 @@ happend||happened
 harware||hardware
 heirarchically||hierarchically
 helpfull||helpful
+hybernate||hibernate
 hierachy||hierarchy
 hierarchie||hierarchy
 howver||however
@@ -565,16 +582,19 @@ implemenation||implementation
 implementaiton||implementation
 implementated||implemented
 implemention||implementation
+implementd||implemented
 implemetation||implementation
 implemntation||implementation
 implentation||implementation
 implmentation||implementation
 implmenting||implementing
+incative||inactive
 incomming||incoming
 incompatabilities||incompatibilities
 incompatable||incompatible
 inconsistant||inconsistent
 increas||increase
+incremeted||incremented
 incrment||increment
 indendation||indentation
 indended||intended
@@ -619,6 +639,7 @@ interger||integer
 intermittant||intermittent
 internel||internal
 interoprability||interoperability
+interuupt||interrupt
 interrface||interface
 interrrupt||interrupt
 interrup||interrupt
@@ -638,8 +659,10 @@ intrrupt||interrupt
 intterrupt||interrupt
 intuative||intuitive
 invaid||invalid
+invald||invalid
 invalde||invalid
 invalide||invalid
+invalidiate||invalidate
 invalud||invalid
 invididual||individual
 invokation||invocation
@@ -713,6 +736,7 @@ misformed||malformed
 mispelled||misspelled
 mispelt||misspelt
 mising||missing
+mismactch||mismatch
 missmanaged||mismanaged
 missmatch||mismatch
 miximum||maximum
@@ -731,6 +755,7 @@ multidimensionnal||multidimensional
 multple||multiple
 mumber||number
 muticast||multicast
+mutilcast||multicast
 mutiple||multiple
 mutli||multi
 nams||names
@@ -834,6 +859,7 @@ posible||possible
 positon||position
 possibilites||possibilities
 powerfull||powerful
+preample||preamble
 preapre||prepare
 preceeded||preceded
 preceeding||preceding
@@ -993,6 +1019,7 @@ senarios||scenarios
 sentivite||sensitive
 separatly||separately
 sepcify||specify
+#sepc||spec
 seperated||separated
 seperately||separately
 seperate||separate
@@ -1058,6 +1085,7 @@ sturcture||structure
 subdirectoires||subdirectories
 suble||subtle
 substract||subtract
+submition||submission
 succesfully||successfully
 succesful||successful
 successed||succeeded
@@ -1077,6 +1105,7 @@ suppoted||supported
 suppported||supported
 suppport||support
 supress||suppress
+surpressed||suppressed
 surpresses||suppresses
 susbsystem||subsystem
 suspeneded||suspended
@@ -1090,6 +1119,7 @@ swithced||switched
 swithcing||switching
 swithed||switched
 swithing||switching
+swtich||switch
 symetric||symmetric
 synax||syntax
 synchonized||synchronized
@@ -1110,7 +1140,9 @@ therfore||therefore
 thier||their
 threds||threads
 threshhold||threshold
+thresold||threshold
 throught||through
+troughput||throughput
 thses||these
 tiggered||triggered
 tipically||typically
@@ -1119,6 +1151,7 @@ tmis||this
 torerable||tolerable
 tramsmitted||transmitted
 tramsmit||transmit
+tranasction||transaction
 tranfer||transfer
 transciever||transceiver
 transferd||transferred
@@ -1132,6 +1165,7 @@ trasmission||transmission
 treshold||threshold
 trigerring||triggering
 trun||turn
+tunning||tuning
 ture||true
 tyep||type
 udpate||update
@@ -1154,6 +1188,10 @@ unknonw||unknown
 unknow||unknown
 unkown||unknown
 unneded||unneeded
+unneccecary||unnecessary
+unneccesary||unnecessary
+unneccessary||unnecessary
+unnecesary||unnecessary
 unneedingly||unnecessarily
 unnsupported||unsupported
 unmached||unmatched
@@ -1198,6 +1236,7 @@ visiters||visitors
 vitual||virtual
 wakeus||wakeups
 wating||waiting
+wiat||wait
 wether||whether
 whataver||whatever
 whcih||which

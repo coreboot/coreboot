@@ -46,11 +46,12 @@ void i82801ix_dmi_setup(void)
 
 	RCBA32(RCBA_V1CAP) = (RCBA32(RCBA_V1CAP) & ~(0x7f<<16)) | (0x12<<16);
 
-	RCBA32(0x0088) = 0x00109000;
-	RCBA16(0x01fc) = 0x060b;
-	RCBA32(0x01f4) = 0x86000040;
-	RCBA8 (0x0220) = 0x45;
-	RCBA32(0x2024) &= ~(1 << 7);
+	/* NB: other CIRs are handled in i82801ix_early_settings(). */
+	RCBA32(RCBA_CIR1) = 0x00109000;
+	RCBA16(RCBA_CIR3) = 0x060b;
+	RCBA32(RCBA_CIR2) = 0x86000040;
+	RCBA8(RCBA_BCR)   = 0x45;
+	RCBA32(RCBA_CIR6) &= ~(1 << 7);
 
 
 	/* VC1 setup for isochronous transfers: */

@@ -149,21 +149,32 @@
 #define RCBA_V1CTL		0x0020
 #define RCBA_V1STS		0x0026
 #define RCBA_PAT		0x0030
+#define RCBA_CIR1		0x0088
 #define RCBA_ESD		0x0104
 #define RCBA_ULD		0x0110
 #define RCBA_ULBA		0x0118
 #define RCBA_LCAP		0x01a4
 #define RCBA_LCTL		0x01a8
 #define RCBA_LSTS		0x01aa
+#define RCBA_CIR2		0x01f4
+#define RCBA_CIR3		0x01fc
+#define RCBA_BCR		0x0220
 #define RCBA_DMIC		0x0234
 #define RCBA_RPFN		0x0238
+#define RCBA_CIR13		0x0f20
+#define RCBA_CIR5		0x1d40
 #define RCBA_DMC		0x2010
+#define RCBA_CIR6		0x2024
+#define RCBA_CIR7		0x2034
 #define RCBA_HPTC		0x3404
 #define GCS			0x3410
 #define RCBA_BUC		0x3414
 #define RCBA_FD			0x3418 /* Function Disable, see below. */
 #define RCBA_CG			0x341c
 #define RCBA_FDSW		0x3420
+#define RCBA_CIR8		0x3430
+#define RCBA_CIR9		0x350c
+#define RCBA_CIR10		0x352c
 #define RCBA_MAP		0x35f0 /* UHCI controller #6 remapping */
 
 #define D31IP		0x3100	/* 32bit */

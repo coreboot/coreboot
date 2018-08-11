@@ -38,15 +38,16 @@ static void i82801ix_enable_device(struct device *dev)
 static void i82801ix_early_settings(const config_t *const info)
 {
 	/* Program FERR# as processor break event indicator. */
-	RCBA32(0x3410) |= (1 << 6);
-	/* BIOS must program... */
-	RCBA32(0x3430) = (RCBA32(0x3430) & ~(0x3 <<  0)) | (0x2 <<  0);
-	RCBA32(0x3418) |= (1 << 0);
-	RCBA32(0x350c) = (RCBA32(0x350c) & ~(0x3 << 26)) | (0x2 << 26);
-	RCBA32(0x2034) = (RCBA32(0x2034) & ~(0xf << 16)) | (0x5 << 16);
-	RCBA32(0x0f20) = (RCBA32(0x0f20) & ~(0xf << 16)) | (0x5 << 16);
-	RCBA32(0x1d40) |= (1 << 0);
-	RCBA32(0x352c) |= (3 << 16);
+	RCBA32(GCS) |= (1 << 6);
+	/* BIOS must program...
+	 * NB: other CIRs are handled in i82801ix_dmi_setup(). */
+	RCBA32(RCBA_CIR8) = (RCBA32(RCBA_CIR8) & ~(0x3 <<  0)) | (0x2 <<  0);
+	RCBA32(RCBA_FD) |= (1 << 0);
+	RCBA32(RCBA_CIR9) = (RCBA32(RCBA_CIR9) & ~(0x3 << 26)) | (0x2 << 26);
+	RCBA32(RCBA_CIR7) = (RCBA32(RCBA_CIR7) & ~(0xf << 16)) | (0x5 << 16);
+	RCBA32(RCBA_CIR13) = (RCBA32(RCBA_CIR13) & ~(0xf << 16)) | (0x5 << 16);
+	RCBA32(RCBA_CIR5) |= (1 << 0);
+	RCBA32(RCBA_CIR10) |= (3 << 16);
 }
 
 static void i82801ix_pcie_init(const config_t *const info)

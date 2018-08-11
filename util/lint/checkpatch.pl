@@ -1,9 +1,11 @@
 #!/usr/bin/env perl
+# SPDX-License-Identifier: GPL-2.0
+#
 # (c) 2001, Dave Jones. (the file handling bit)
 # (c) 2005, Joel Schopp <jschopp@austin.ibm.com> (the ugly bit)
 # (c) 2007,2008, Andy Whitcroft <apw@uk.ibm.com> (new conditions, test suite)
 # (c) 2008-2010 Andy Whitcroft <apw@canonical.com>
-# Licensed under the terms of the GNU GPL License version 2
+# (c) 2010-2018 Joe Perches <joe@perches.com>
 
 use strict;
 use warnings;
@@ -464,6 +466,7 @@ our $zero_initializer = qr{(?:(?:0[xX])?0+$Int_type?|NULL|false)\b};
 our $logFunctions = qr{(?x:
 	printk(?:_ratelimited|_once|_deferred_once|_deferred|)|
 	(?:[a-z0-9]+_){1,2}(?:printk|emerg|alert|crit|err|warning|warn|notice|info|debug|dbg|vdbg|devel|cont|WARN)(?:_ratelimited|_once|)|
+	TP_printk|
 	WARN(?:_RATELIMIT|_ONCE|)|
 	panic|
 	MODULE_[A-Z_]+|
@@ -575,6 +578,7 @@ foreach my $entry (@mode_permission_funcs) {
 	$mode_perms_search .= '|' if ($mode_perms_search ne "");
 	$mode_perms_search .= $entry->[0];
 }
+$mode_perms_search = "(?:${mode_perms_search})";
 
 our $mode_perms_world_writable = qr{
 	S_IWUGO		|
@@ -608,6 +612,37 @@ our $mode_perms_string_search = "";
 foreach my $entry (keys %mode_permission_string_types) {
 	$mode_perms_string_search .= '|' if ($mode_perms_string_search ne "");
 	$mode_perms_string_search .= $entry;
+}
+our $single_mode_perms_string_search = "(?:${mode_perms_string_search})";
+our $multi_mode_perms_string_search = qr{
+	${single_mode_perms_string_search}
+	(?:\s*\|\s*${single_mode_perms_string_search})*
+}x;
+
+sub perms_to_octal {
+	my ($string) = @_;
+
+	return trim($string) if ($string =~ /^\s*0[0-7]{3,3}\s*$/);
+
+	my $val = "";
+	my $oval = "";
+	my $to = 0;
+	my $curpos = 0;
+	my $lastpos = 0;
+	while ($string =~ /\b(($single_mode_perms_string_search)\b(?:\s*\|\s*)?\s*)/g) {
+		$curpos = pos($string);
+		my $match = $2;
+		my $omatch = $1;
+		last if ($lastpos > 0 && ($curpos - length($omatch) != $lastpos));
+		$lastpos = $curpos;
+		$to |= $mode_permission_string_types{$match};
+		$val .= '\s*\|\s*' if ($val ne "");
+		$val .= $match;
+		$oval .= $omatch;
+	}
+	$oval =~ s/^\s*\|\s*//;
+	$oval =~ s/\s*\|\s*$//;
+	return sprintf("%04o", $to);
 }
 
 our $allowed_asm_includes = qr{(?x:
@@ -768,7 +803,8 @@ our $FuncArg = qr{$Typecast{0,1}($LvalOrFunc|$Constant|$String)};
 our $declaration_macros = qr{(?x:
 	(?:$Storage\s+)?(?:[A-Z_][A-Z0-9]*_){0,2}(?:DEFINE|DECLARE)(?:_[A-Z0-9]+){1,6}\s*\(|
 	(?:$Storage\s+)?[HLP]?LIST_HEAD\s*\(|
-	(?:$Storage\s+)?${Type}\s+uninitialized_var\s*\(
+	(?:$Storage\s+)?${Type}\s+uninitialized_var\s*\(|
+	(?:SKCIPHER_REQUEST|SHASH_DESC|AHASH_REQUEST)_ON_STACK\s*\(
 )};
 
 sub deparenthesize {
@@ -1056,7 +1092,7 @@ sub parse_email {
 	} elsif ($formatted_email =~ /(\S+\@\S+)(.*)$/) {
 		$address = $1;
 		$comment = $2 if defined $2;
-		$formatted_email =~ s/$address.*$//;
+		$formatted_email =~ s/\Q$address\E.*$//;
 		$name = $formatted_email;
 		$name = trim($name);
 		$name =~ s/^\"|\"$//g;
@@ -1198,7 +1234,7 @@ sub sanitise_line {
 	for ($off = 1; $off < length($line); $off++) {
 		$c = substr($line, $off, 1);
 
-		# Comments we are wacking completly including the begin
+		# Comments we are whacking completely including the begin
 		# and end, all to $;.
 		if ($sanitise_quote eq '' && substr($line, $off, 2) eq '/*') {
 			$sanitise_quote = '*/';
@@ -1278,6 +1314,7 @@ sub sanitise_line {
 sub get_quoted_string {
 	my ($line, $rawline) = @_;
 
+	return "" if (!defined($line) || !defined($rawline));
 	return "" if ($line !~ m/($String)/g);
 	return substr($rawline, $-[0], $+[0] - $-[0]);
 }
@@ -1629,6 +1666,28 @@ sub raw_line {
 	} else {
 		return "";
 	}
+}
+
+sub get_stat_real {
+	my ($linenr, $lc) = @_;
+
+	my $stat_real = raw_line($linenr, 0);
+	for (my $count = $linenr + 1; $count <= $lc; $count++) {
+		$stat_real = $stat_real . "\n" . raw_line($count, 0);
+	}
+
+	return $stat_real;
+}
+
+sub get_stat_here {
+	my ($linenr, $cnt, $here) = @_;
+
+	my $herectx = $here . "\n";
+	for (my $n = 0; $n < $cnt; $n++) {
+		$herectx .= raw_line($linenr, $n) . "\n";
+	}
+
+	return $herectx;
 }
 
 sub cat_vet {
@@ -2244,6 +2303,8 @@ sub process {
 
 	my $camelcase_file_seeded = 0;
 
+	my $checklicenseline = 1;
+
 	sanitise_line_reset();
 	my $line;
 	foreach my $rawline (@rawlines) {
@@ -2335,6 +2396,14 @@ sub process {
 		$sline =~ s/$;/ /g;	#with comments as spaces
 
 		my $rawline = $rawlines[$linenr - 1];
+
+# check if it's a mode change, rename or start of a patch
+		if (!$in_commit_log &&
+		    ($line =~ /^ mode change [0-7]+ => [0-7]+ \S+\s*$/ ||
+		    ($line =~ /^rename (?:from|to) \S+\s*$/ ||
+		     $line =~ /^diff --git a\/[\w\/\.\_\-]+ b\/\S+\s*$/))) {
+			$is_patch = 1;
+		}
 
 #extract the line range in the file after the patch is applied
 		if (!$in_commit_log &&
@@ -2446,6 +2515,7 @@ sub process {
 			} else {
 				$check = $check_orig;
 			}
+			$checklicenseline = 1;
 			next;
 		}
 
@@ -2565,12 +2635,6 @@ sub process {
 		    $line =~ /^Subject:.*\b(?:checkpatch|sparse|smatch)\b[^:]/i) {
 			WARN("EMAIL_SUBJECT",
 			     "A patch subject line should describe the change not the tool that found it\n" . $herecurr);
-		}
-
-# Check for old stable address
-		if ($line =~ /^\s*cc:\s*.*<?\bstable\@kernel\.org\b>?.*$/i) {
-			ERROR("STABLE_ADDRESS",
-			      "The 'stable' address should be 'stable\@vger.kernel.org'\n" . $herecurr);
 		}
 
 # Check for unwanted Gerrit info
@@ -2795,7 +2859,10 @@ sub process {
 # Only applies when adding the entry originally, after that we do not have
 # sufficient context to determine whether it is indeed long enough.
 		if ($realfile =~ /Kconfig/ &&
-		    $line =~ /^\+\s*config\s+/) {
+		    # 'choice' is usually the last thing on the line (though
+		    # Kconfig supports named choices), so use a word boundary
+		    # (\b) rather than a whitespace character (\s)
+		    $line =~ /^\+\s*(?:config|menuconfig|choice)\b/) {
 			my $length = 0;
 			my $cnt = $realcnt;
 			my $ln = $linenr + 1;
@@ -2810,9 +2877,13 @@ sub process {
 				next if ($f =~ /^-/);
 				last if (!$file && $f =~ /^\@\@/);
 
-				if ($lines[$ln - 1] =~ /^\+\s*(?:bool|tristate)\s*\"/) {
+				if ($lines[$ln - 1] =~ /^\+\s*(?:bool|tristate|prompt)\s*["']/) {
 					$is_start = 1;
-				} elsif ($lines[$ln - 1] =~ /^\+\s*(?:---)?help(?:---)?$/) {
+				} elsif ($lines[$ln - 1] =~ /^\+\s*(?:help|---help---)\s*$/) {
+					if ($lines[$ln - 1] =~ "---help---") {
+						WARN("CONFIG_DESCRIPTION",
+						     "prefer 'help' over '---help---' for new help texts\n" . $herecurr);
+					}
 					$length = -1;
 				}
 
@@ -2820,7 +2891,13 @@ sub process {
 				$f =~ s/#.*//;
 				$f =~ s/^\s+//;
 				next if ($f =~ /^$/);
-				if ($f =~ /^\s*config\s/) {
+
+				# This only checks context lines in the patch
+				# and so hopefully shouldn't trigger false
+				# positives, even though some of these are
+				# common words in help texts
+				if ($f =~ /^\s*(?:config|menuconfig|choice|endchoice|
+						  if|endif|menu|endmenu|source)\b/x) {
 					$is_end = 1;
 					last;
 				}
@@ -2896,6 +2973,30 @@ sub process {
 			}
 		}
 
+# check for using SPDX license tag at beginning of files
+		if ($realline == $checklicenseline) {
+			if ($rawline =~ /^[ \+]\s*\#\!\s*\//) {
+				$checklicenseline = 2;
+			} elsif ($rawline =~ /^\+/) {
+				my $comment = "";
+				if ($realfile =~ /\.(h|s|S)$/) {
+					$comment = '/*';
+				} elsif ($realfile =~ /\.(c|dts|dtsi)$/) {
+					$comment = '//';
+				} elsif (($checklicenseline == 2) || $realfile =~ /\.(sh|pl|py|awk|tc)$/) {
+					$comment = '#';
+				} elsif ($realfile =~ /\.rst$/) {
+					$comment = '..';
+				}
+
+				if ($comment !~ /^$/ &&
+				    $rawline !~ /^\+\Q$comment\E SPDX-License-Identifier: /) {
+					WARN("SPDX_LICENSE_TAG",
+					     "Missing or malformed SPDX-License-Identifier tag in line $checklicenseline\n" . $herecurr);
+				}
+			}
+		}
+
 # check we are in a valid source file if not then ignore this hunk
 		next if ($realfile !~ /\.(h|c|s|S|sh|dtsi|dts)$/);
 
@@ -2905,6 +3006,7 @@ sub process {
 #	logging functions like pr_info that end in a string
 #	lines with a single string
 #	#defines that are a single string
+#	lines with an RFC3986 like URL
 #
 # There are 3 different line length message types:
 # LONG_LINE_COMMENT	a comment starts before but extends beyond $max_line_length
@@ -2931,8 +3033,13 @@ sub process {
 				 $line =~ /^\+\s*#\s*define\s+\w+\s+$String$/) {
 				$msg_type = "";
 
-			# EFI_GUID is another special case
-			} elsif ($line =~ /^\+.*\bEFI_GUID\s*\(/) {
+			# More special cases
+			} elsif ($line =~ /^\+.*\bEFI_GUID\s*\(/ ||
+				 $line =~ /^\+\s*(?:\w+)?\s*DEFINE_PER_CPU/) {
+				$msg_type = "";
+
+			# URL ($rawline is used in case the URL is in a comment)
+			} elsif ($rawline =~ /^\+.*\b[a-z][\w\.\+\-]*:\/\/\S+/i) {
 				$msg_type = "";
 
 			# Otherwise set the alternate message types
@@ -2959,20 +3066,6 @@ sub process {
 		if ($line =~ /^\+/ && defined $lines[$linenr] && $lines[$linenr] =~ /^\\ No newline at end of file/) {
 			WARN("MISSING_EOF_NEWLINE",
 			     "adding a line without newline at end of file\n" . $herecurr);
-		}
-
-# Blackfin: use hi/lo macros
-		if ($realfile =~ m@arch/blackfin/.*\.S$@) {
-			if ($line =~ /\.[lL][[:space:]]*=.*&[[:space:]]*0x[fF][fF][fF][fF]/) {
-				my $herevet = "$here\n" . cat_vet($line) . "\n";
-				ERROR("LO_MACRO",
-				      "use the LO() macro, not (... & 0xFFFF)\n" . $herevet);
-			}
-			if ($line =~ /\.[hH][[:space:]]*=.*>>[[:space:]]*16/) {
-				my $herevet = "$here\n" . cat_vet($line) . "\n";
-				ERROR("HI_MACRO",
-				      "use the HI() macro, not (... >> 16)\n" . $herevet);
-			}
 		}
 
 # check we are in a valid source file C or perl if not then ignore this hunk
@@ -3004,6 +3097,12 @@ sub process {
 			}
 		}
 
+# check for assignments on the start of a line
+		if ($sline =~ /^\+\s+($Assignment)[^=]/) {
+			CHK("ASSIGNMENT_CONTINUATIONS",
+			    "Assignment operator '$1' should be on the previous line\n" . $hereprev);
+		}
+
 # check for && or || at the start of a line
 		if ($rawline =~ /^\+\s*(&&|\|\|)/) {
 			CHK("LOGICAL_CONTINUATIONS",
@@ -3012,7 +3111,7 @@ sub process {
 
 # check indentation starts on a tab stop
 		if ($^V && $^V ge 5.10.0 &&
-		    $sline =~ /^\+\t+( +)(?:$c90_Keywords\b|\{\s*$|\}\s*(?:else\b|while\b|\s*$))/) {
+		    $sline =~ /^\+\t+( +)(?:$c90_Keywords\b|\{\s*$|\}\s*(?:else\b|while\b|\s*$)|$Declare\s*$Ident\s*[;=])/) {
 			my $indent = length($1);
 			if ($indent % 8) {
 				if (WARN("TABSTOP",
@@ -3134,6 +3233,7 @@ sub process {
 		      $line =~ /^\+[a-z_]*init/ ||
 		      $line =~ /^\+\s*(?:static\s+)?[A-Z_]*ATTR/ ||
 		      $line =~ /^\+\s*DECLARE/ ||
+		      $line =~ /^\+\s*builtin_[\w_]*driver/ ||
 		      $line =~ /^\+\s*__setup/)) {
 			if (CHK("LINE_SPACING",
 				"Please use a blank line after function/struct/union/enum declarations\n" . $hereprev) &&
@@ -3213,6 +3313,12 @@ sub process {
 # check we are in a valid C source file if not then ignore this hunk
 		next if ($realfile !~ /\.(h|c)$/);
 
+# check for unusual line ending [ or (
+		if ($line =~ /^\+.*([\[\(])\s*$/) {
+			CHK("OPEN_ENDED_LINE",
+			    "Lines should not end with a '$1'\n" . $herecurr);
+		}
+
 # check if this appears to be the start function declaration, save the name
 		if ($sline =~ /^\+\{\s*$/ &&
 		    $prevline =~ /^\+(?:(?:(?:$Storage|$Inline)\s*)*\s*$Type\s*)?($Ident)\(/) {
@@ -3252,18 +3358,6 @@ sub process {
 		if ($rawline =~ /^\+.*\$(Revision|Log|Id)(?:\$|)/) {
 			WARN("CVS_KEYWORD",
 			     "CVS style keyword markers, these will _not_ be updated\n". $herecurr);
-		}
-
-# Blackfin: don't use __builtin_bfin_[cs]sync
-		if ($line =~ /__builtin_bfin_csync/) {
-			my $herevet = "$here\n" . cat_vet($line) . "\n";
-			ERROR("CSYNC",
-			      "use the CSYNC() macro in asm/blackfin.h\n" . $herevet);
-		}
-		if ($line =~ /__builtin_bfin_ssync/) {
-			my $herevet = "$here\n" . cat_vet($line) . "\n";
-			ERROR("SSYNC",
-			      "use the SSYNC() macro in asm/blackfin.h\n" . $herevet);
 		}
 
 # check for old HOTPLUG __dev<foo> section markings
@@ -3860,28 +3954,10 @@ sub process {
 			     "Prefer printk_ratelimited or pr_<level>_ratelimited to printk_ratelimit\n" . $herecurr);
 		}
 
-# printk should use KERN_* levels.  Note that follow on printk's on the
-# same line do not need a level, so we use the current block context
-# to try and find and validate the current printk.  In summary the current
-# printk includes all preceding printk's which have no newline on the end.
-# we assume the first bad printk is the one to report.
-		if ($line =~ /\bprintk\((?!KERN_)\s*"/) {
-			my $ok = 0;
-			for (my $ln = $linenr - 1; $ln >= $first_line; $ln--) {
-				#print "CHECK<$lines[$ln - 1]\n";
-				# we have a preceding printk if it ends
-				# with "\n" ignore it, else it is to blame
-				if ($lines[$ln - 1] =~ m{\bprintk\(}) {
-					if ($rawlines[$ln - 1] !~ m{\\n"}) {
-						$ok = 1;
-					}
-					last;
-				}
-			}
-			if ($ok == 0) {
-				WARN("PRINTK_WITHOUT_KERN_LEVEL",
-				     "printk() should include KERN_ facility level\n" . $herecurr);
-			}
+# printk should use KERN_* levels
+		if ($line =~ /\bprintk\s*\(\s*(?!KERN_[A-Z]+\b)/) {
+			WARN("PRINTK_WITHOUT_KERN_LEVEL",
+			     "printk() should include KERN_<LEVEL> facility level\n" . $herecurr);
 		}
 
 		if ($line =~ /\bprintk\s*\(\s*KERN_([A-Z]+)/) {
@@ -3922,12 +3998,12 @@ sub process {
 
 # function brace can't be on same line, except for #defines of do while,
 # or if closed on same line
-		if (($line=~/$Type\s*$Ident\(.*\).*\s*{/) and
-		    #coreboot - Ignore struct lines with attributes - they're not functions
-		    ($line!~/struct.*__attribute__\(\(.*\)\)/) and
-		    !($line=~/\#\s*define.*do\s\{/) and !($line=~/}/)) {
+		if ($^V && $^V ge 5.10.0 &&
+		    $sline =~ /$Type\s*$Ident\s*$balanced_parens\s*\{/ &&
+		    $sline !~ /\#\s*define\b.*do\s*\{/ &&
+		    $sline !~ /}/) {
 			if (ERROR("OPEN_BRACE",
-				  "open brace '{' following function declarations go on the next line\n" . $herecurr) &&
+				  "open brace '{' following function definitions go on the next line\n" . $herecurr) &&
 			    $fix) {
 				fix_delete_line($fixlinenr, $rawline);
 				my $fixed_line = $rawline;
@@ -4533,7 +4609,9 @@ sub process {
 		}
 
 # check for unnecessary parentheses around comparisons in if uses
-		if ($^V && $^V ge 5.10.0 && defined($stat) &&
+# when !drivers/staging or command-line uses --strict
+		if (($realfile !~ m@^(?:drivers/staging/)@ || $check_orig) &&
+		    $^V && $^V ge 5.10.0 && defined($stat) &&
 		    $stat =~ /(^.\s*if\s*($balanced_parens))/) {
 			my $if_stat = $1;
 			my $test = substr($2, 1, -1);
@@ -4944,12 +5022,8 @@ sub process {
 			#print "REST<$rest> dstat<$dstat> ctx<$ctx>\n";
 
 			$ctx =~ s/\n*$//;
-			my $herectx = $here . "\n";
 			my $stmt_cnt = statement_rawlines($ctx);
-
-			for (my $n = 0; $n < $stmt_cnt; $n++) {
-				$herectx .= raw_line($linenr, $n) . "\n";
-			}
+			my $herectx = get_stat_here($linenr, $stmt_cnt, $here);
 
 			if ($dstat ne '' &&
 			    $dstat !~ /^(?:$Ident|-?$Constant),$/ &&			# 10, // foo(),
@@ -5004,7 +5078,7 @@ sub process {
 				$tmp_stmt =~ s/\b(typeof|__typeof__|__builtin\w+|typecheck\s*\(\s*$Type\s*,|\#+)\s*\(*\s*$arg\s*\)*\b//g;
 				$tmp_stmt =~ s/\#+\s*$arg\b//g;
 				$tmp_stmt =~ s/\b$arg\s*\#\#//g;
-				my $use_cnt = $tmp_stmt =~ s/\b$arg\b//g;
+				my $use_cnt = () = $tmp_stmt =~ /\b$arg\b/g;
 				if ($use_cnt > 1) {
 					CHK("MACRO_ARG_REUSE",
 					    "Macro argument reuse '$arg' - possible side-effects?\n" . "$herectx");
@@ -5021,12 +5095,9 @@ sub process {
 # check for macros with flow control, but without ## concatenation
 # ## concatenation is commonly a macro that defines a function so ignore those
 			if ($has_flow_statement && !$has_arg_concat) {
-				my $herectx = $here . "\n";
 				my $cnt = statement_rawlines($ctx);
+				my $herectx = get_stat_here($linenr, $cnt, $here);
 
-				for (my $n = 0; $n < $cnt; $n++) {
-					$herectx .= raw_line($linenr, $n) . "\n";
-				}
 				WARN("MACRO_WITH_FLOW_CONTROL",
 				     "Macros with flow control statements should be avoided\n" . "$herectx");
 			}
@@ -5066,11 +5137,7 @@ sub process {
 
 				$ctx =~ s/\n*$//;
 				my $cnt = statement_rawlines($ctx);
-				my $herectx = $here . "\n";
-
-				for (my $n = 0; $n < $cnt; $n++) {
-					$herectx .= raw_line($linenr, $n) . "\n";
-				}
+				my $herectx = get_stat_here($linenr, $cnt, $here);
 
 				if (($stmts =~ tr/;/;/) == 1 &&
 				    $stmts !~ /^\s*(if|while|for|switch)\b/) {
@@ -5084,25 +5151,11 @@ sub process {
 			} elsif ($dstat =~ /^\+\s*#\s*define\s+$Ident.*;\s*$/) {
 				$ctx =~ s/\n*$//;
 				my $cnt = statement_rawlines($ctx);
-				my $herectx = $here . "\n";
-
-				for (my $n = 0; $n < $cnt; $n++) {
-					$herectx .= raw_line($linenr, $n) . "\n";
-				}
+				my $herectx = get_stat_here($linenr, $cnt, $here);
 
 				WARN("TRAILING_SEMICOLON",
 				     "macros should not use a trailing semicolon\n" . "$herectx");
 			}
-		}
-
-# make sure symbols are always wrapped with VMLINUX_SYMBOL() ...
-# all assignments may have only one of the following with an assignment:
-#	.
-#	ALIGN(...)
-#	VMLINUX_SYMBOL(...)
-		if ($realfile eq 'vmlinux.lds.h' && $line =~ /(?:(?:^|\s)$Ident\s*=|=\s*$Ident(?:\s|$))/) {
-			WARN("MISSING_VMLINUX_SYMBOL",
-			     "vmlinux.lds.h needs VMLINUX_SYMBOL() around C-visible symbols\n" . $herecurr);
 		}
 
 # check for redundant bracing round if etc
@@ -5211,12 +5264,8 @@ sub process {
 				}
 			}
 			if ($level == 0 && $block =~ /^\s*\{/ && !$allowed) {
-				my $herectx = $here . "\n";
 				my $cnt = statement_rawlines($block);
-
-				for (my $n = 0; $n < $cnt; $n++) {
-					$herectx .= raw_line($linenr, $n) . "\n";
-				}
+				my $herectx = get_stat_here($linenr, $cnt, $here);
 
 				WARN("BRACES",
 				     "braces {} are not necessary for single statement blocks\n" . $herectx);
@@ -5351,7 +5400,7 @@ sub process {
 		}
 
 # check for line continuations in quoted strings with odd counts of "
-		if ($rawline =~ /\\$/ && $rawline =~ tr/"/"/ % 2) {
+		if ($rawline =~ /\\$/ && $sline =~ tr/"/"/ % 2) {
 			WARN("LINE_CONTINUATIONS",
 			     "Avoid line continuations in quoted strings\n" . $herecurr);
 		}
@@ -5630,6 +5679,12 @@ sub process {
 			}
 		}
 
+# check for smp_read_barrier_depends and read_barrier_depends
+		if (!$file && $line =~ /\b(smp_|)read_barrier_depends\s*\(/) {
+			WARN("READ_BARRIER_DEPENDS",
+			     "$1read_barrier_depends should only be used in READ_ONCE or DEC Alpha code\n" . $herecurr);
+		}
+
 # check of hardware specific defines
 		if ($line =~ m@^.\s*\#\s*if.*\b(__i386__|__powerpc64__|__sun__|__s390x__)\b@ && $realfile !~ m@include/asm-@) {
 			CHK("ARCH_DEFINES",
@@ -5786,29 +5841,50 @@ sub process {
 			}
 		}
 
-		# check for vsprintf extension %p<foo> misuses
+# check for vsprintf extension %p<foo> misuses
 		if ($^V && $^V ge 5.10.0 &&
 		    defined $stat &&
 		    $stat =~ /^\+(?![^\{]*\{\s*).*\b(\w+)\s*\(.*$String\s*,/s &&
 		    $1 !~ /^_*volatile_*$/) {
-			my $bad_extension = "";
+			my $stat_real;
+
 			my $lc = $stat =~ tr@\n@@;
 			$lc = $lc + $linenr;
 		        for (my $count = $linenr; $count <= $lc; $count++) {
+				my $specifier;
+				my $extension;
+				my $bad_specifier = "";
 				my $fmt = get_quoted_string($lines[$count - 1], raw_line($count, 0));
 				$fmt =~ s/%%//g;
-				if ($fmt =~ /(\%[\*\d\.]*p(?![\WFfSsBKRraEhMmIiUDdgVCbGNO]).)/) {
-					$bad_extension = $1;
-					last;
+
+				while ($fmt =~ /(\%[\*\d\.]*p(\w))/g) {
+					$specifier = $1;
+					$extension = $2;
+					if ($extension !~ /[SsBKRraEhMmIiUDdgVCbGNOx]/) {
+						$bad_specifier = $specifier;
+						last;
+					}
+					if ($extension eq "x" && !defined($stat_real)) {
+						if (!defined($stat_real)) {
+							$stat_real = get_stat_real($linenr, $lc);
+						}
+						WARN("VSPRINTF_SPECIFIER_PX",
+						     "Using vsprintf specifier '\%px' potentially exposes the kernel memory layout, if you don't really need the address please consider using '\%p'.\n" . "$here\n$stat_real\n");
+					}
 				}
-			}
-			if ($bad_extension ne "") {
-				my $stat_real = raw_line($linenr, 0);
-				for (my $count = $linenr + 1; $count <= $lc; $count++) {
-					$stat_real = $stat_real . "\n" . raw_line($count, 0);
+				if ($bad_specifier ne "") {
+					my $stat_real = get_stat_real($linenr, $lc);
+					my $ext_type = "Invalid";
+					my $use = "";
+					if ($bad_specifier =~ /p[Ff]/) {
+						$ext_type = "Deprecated";
+						$use = " - use %pS instead";
+						$use =~ s/pS/ps/ if ($bad_specifier =~ /pf/);
+					}
+
+					WARN("VSPRINTF_POINTER_EXTENSION",
+					     "$ext_type vsprintf pointer extension '$bad_specifier'$use\n" . "$here\n$stat_real\n");
 				}
-				WARN("VSPRINTF_POINTER_EXTENSION",
-				     "Invalid vsprintf pointer extension '$bad_extension'\n" . "$here\n$stat_real\n");
 			}
 		}
 
@@ -5921,10 +5997,7 @@ sub process {
 		     $stat !~ /(?:$Compare)\s*\bsscanf\s*$balanced_parens/)) {
 			my $lc = $stat =~ tr@\n@@;
 			$lc = $lc + $linenr;
-			my $stat_real = raw_line($linenr, 0);
-		        for (my $count = $linenr + 1; $count <= $lc; $count++) {
-				$stat_real = $stat_real . "\n" . raw_line($count, 0);
-			}
+			my $stat_real = get_stat_real($linenr, $lc);
 			WARN("NAKED_SSCANF",
 			     "unchecked sscanf return value\n" . "$here\n$stat_real\n");
 		}
@@ -5935,10 +6008,7 @@ sub process {
 		    $line =~ /\bsscanf\b/) {
 			my $lc = $stat =~ tr@\n@@;
 			$lc = $lc + $linenr;
-			my $stat_real = raw_line($linenr, 0);
-		        for (my $count = $linenr + 1; $count <= $lc; $count++) {
-				$stat_real = $stat_real . "\n" . raw_line($count, 0);
-			}
+			my $stat_real = get_stat_real($linenr, $lc);
 			if ($stat_real =~ /\bsscanf\b\s*\(\s*$FuncArg\s*,\s*("[^"]+")/) {
 				my $format = $6;
 				my $count = $format =~ tr@%@%@;
@@ -5992,7 +6062,7 @@ sub process {
 
 # check for function declarations that have arguments without identifier names
 		if (defined $stat &&
-		    $stat =~ /^.\s*(?:extern\s+)?$Type\s*$Ident\s*\(\s*([^{]+)\s*\)\s*;/s &&
+		    $stat =~ /^.\s*(?:extern\s+)?$Type\s*(?:$Ident|\(\s*\*\s*$Ident\s*\))\s*\(\s*([^{]+)\s*\)\s*;/s &&
 		    $1 ne "void") {
 			my $args = trim($1);
 			while ($args =~ m/\s*($Type\s*(?:$Ident|\(\s*\*\s*$Ident?\s*\)\s*$balanced_parens)?)/g) {
@@ -6068,12 +6138,9 @@ sub process {
 			}
 			if ($r1 !~ /^sizeof\b/ && $r2 =~ /^sizeof\s*\S/ &&
 			    !($r1 =~ /^$Constant$/ || $r1 =~ /^[A-Z_][A-Z0-9_]*$/)) {
-				my $ctx = '';
-				my $herectx = $here . "\n";
 				my $cnt = statement_rawlines($stat);
-				for (my $n = 0; $n < $cnt; $n++) {
-					$herectx .= raw_line($linenr, $n) . "\n";
-				}
+				my $herectx = get_stat_here($linenr, $cnt, $here);
+
 				if (WARN("ALLOC_WITH_MULTIPLY",
 					 "Prefer $newfunc over $oldfunc with multiply\n" . $herectx) &&
 				    $cnt == 1 &&
@@ -6144,7 +6211,7 @@ sub process {
 				next if ($fline =~ /^.[\s$;]*$/);
 				$has_statement = 1;
 				$count++;
-				$has_break = 1 if ($fline =~ /\bswitch\b|\b(?:break\s*;[\s$;]*$|return\b|goto\b|continue\b)/);
+				$has_break = 1 if ($fline =~ /\bswitch\b|\b(?:break\s*;[\s$;]*$|exit\s*\(\b|return\b|goto\b|continue\b)/);
 			}
 			if (!$has_break && $has_statement) {
 				WARN("MISSING_BREAK",
@@ -6156,12 +6223,9 @@ sub process {
 		if ($^V && $^V ge 5.10.0 &&
 		    defined $stat &&
 		    $stat =~ /^\+[$;\s]*(?:case[$;\s]+\w+[$;\s]*:[$;\s]*|)*[$;\s]*\bdefault[$;\s]*:[$;\s]*;/g) {
-			my $ctx = '';
-			my $herectx = $here . "\n";
 			my $cnt = statement_rawlines($stat);
-			for (my $n = 0; $n < $cnt; $n++) {
-				$herectx .= raw_line($linenr, $n) . "\n";
-			}
+			my $herectx = get_stat_here($linenr, $cnt, $here);
+
 			WARN("DEFAULT_NO_BREAK",
 			     "switch default: should use break\n" . $herectx);
 		}
@@ -6212,6 +6276,12 @@ sub process {
 ##				    "Using comparison to $otype is error prone.  Perhaps use '${lead}${op}${arg}${trail}'\n" . $herecurr);
 
 			}
+		}
+
+# check for bool bitfields
+		if ($sline =~ /^.\s+bool\s*$Ident\s*:\s*\d+\s*;/) {
+			WARN("BOOL_BITFIELD",
+			     "Avoid using bool as bitfield.  Prefer bool bitfields as unsigned int or u<8|16|32>\n" . $herecurr);
 		}
 
 # check for semaphores initialized locked
@@ -6277,28 +6347,6 @@ sub process {
 			}
 		}
 
-# whine about ACCESS_ONCE
-		if ($^V && $^V ge 5.10.0 &&
-		    $line =~ /\bACCESS_ONCE\s*$balanced_parens\s*(=(?!=))?\s*($FuncArg)?/) {
-			my $par = $1;
-			my $eq = $2;
-			my $fun = $3;
-			$par =~ s/^\(\s*(.*)\s*\)$/$1/;
-			if (defined($eq)) {
-				if (WARN("PREFER_WRITE_ONCE",
-					 "Prefer WRITE_ONCE(<FOO>, <BAR>) over ACCESS_ONCE(<FOO>) = <BAR>\n" . $herecurr) &&
-				    $fix) {
-					$fixed[$fixlinenr] =~ s/\bACCESS_ONCE\s*\(\s*\Q$par\E\s*\)\s*$eq\s*\Q$fun\E/WRITE_ONCE($par, $fun)/;
-				}
-			} else {
-				if (WARN("PREFER_READ_ONCE",
-					 "Prefer READ_ONCE(<FOO>) over ACCESS_ONCE(<FOO>)\n" . $herecurr) &&
-				    $fix) {
-					$fixed[$fixlinenr] =~ s/\bACCESS_ONCE\s*\(\s*\Q$par\E\s*\)/READ_ONCE($par)/;
-				}
-			}
-		}
-
 # check for mutex_trylock_recursive usage
 		if ($line =~ /mutex_trylock_recursive/) {
 			ERROR("LOCKING",
@@ -6322,8 +6370,69 @@ sub process {
 			     "Exporting world writable files is usually an error. Consider more restrictive permissions.\n" . $herecurr);
 		}
 
+# check for DEVICE_ATTR uses that could be DEVICE_ATTR_<FOO>
+# and whether or not function naming is typical and if
+# DEVICE_ATTR permissions uses are unusual too
+		if ($^V && $^V ge 5.10.0 &&
+		    defined $stat &&
+		    $stat =~ /\bDEVICE_ATTR\s*\(\s*(\w+)\s*,\s*\(?\s*(\s*(?:${multi_mode_perms_string_search}|0[0-7]{3,3})\s*)\s*\)?\s*,\s*(\w+)\s*,\s*(\w+)\s*\)/) {
+			my $var = $1;
+			my $perms = $2;
+			my $show = $3;
+			my $store = $4;
+			my $octal_perms = perms_to_octal($perms);
+			if ($show =~ /^${var}_show$/ &&
+			    $store =~ /^${var}_store$/ &&
+			    $octal_perms eq "0644") {
+				if (WARN("DEVICE_ATTR_RW",
+					 "Use DEVICE_ATTR_RW\n" . $herecurr) &&
+				    $fix) {
+					$fixed[$fixlinenr] =~ s/\bDEVICE_ATTR\s*\(\s*$var\s*,\s*\Q$perms\E\s*,\s*$show\s*,\s*$store\s*\)/DEVICE_ATTR_RW(${var})/;
+				}
+			} elsif ($show =~ /^${var}_show$/ &&
+				 $store =~ /^NULL$/ &&
+				 $octal_perms eq "0444") {
+				if (WARN("DEVICE_ATTR_RO",
+					 "Use DEVICE_ATTR_RO\n" . $herecurr) &&
+				    $fix) {
+					$fixed[$fixlinenr] =~ s/\bDEVICE_ATTR\s*\(\s*$var\s*,\s*\Q$perms\E\s*,\s*$show\s*,\s*NULL\s*\)/DEVICE_ATTR_RO(${var})/;
+				}
+			} elsif ($show =~ /^NULL$/ &&
+				 $store =~ /^${var}_store$/ &&
+				 $octal_perms eq "0200") {
+				if (WARN("DEVICE_ATTR_WO",
+					 "Use DEVICE_ATTR_WO\n" . $herecurr) &&
+				    $fix) {
+					$fixed[$fixlinenr] =~ s/\bDEVICE_ATTR\s*\(\s*$var\s*,\s*\Q$perms\E\s*,\s*NULL\s*,\s*$store\s*\)/DEVICE_ATTR_WO(${var})/;
+				}
+			} elsif ($octal_perms eq "0644" ||
+				 $octal_perms eq "0444" ||
+				 $octal_perms eq "0200") {
+				my $newshow = "$show";
+				$newshow = "${var}_show" if ($show ne "NULL" && $show ne "${var}_show");
+				my $newstore = $store;
+				$newstore = "${var}_store" if ($store ne "NULL" && $store ne "${var}_store");
+				my $rename = "";
+				if ($show ne $newshow) {
+					$rename .= " '$show' to '$newshow'";
+				}
+				if ($store ne $newstore) {
+					$rename .= " '$store' to '$newstore'";
+				}
+				WARN("DEVICE_ATTR_FUNCTIONS",
+				     "Consider renaming function(s)$rename\n" . $herecurr);
+			} else {
+				WARN("DEVICE_ATTR_PERMS",
+				     "DEVICE_ATTR unusual permissions '$perms' used\n" . $herecurr);
+			}
+		}
+
 # Mode permission misuses where it seems decimal should be octal
 # This uses a shortcut match to avoid unnecessary uses of a slow foreach loop
+# o Ignore module_param*(...) uses with a decimal 0 permission as that has a
+#   specific definition of not visible in sysfs.
+# o Ignore proc_create*(...) uses with a decimal 0 permission as that means
+#   use the default permissions
 		if ($^V && $^V ge 5.10.0 &&
 		    defined $stat &&
 		    $line =~ /$mode_perms_search/) {
@@ -6333,10 +6442,7 @@ sub process {
 
 				my $lc = $stat =~ tr@\n@@;
 				$lc = $lc + $linenr;
-				my $stat_real = raw_line($linenr, 0);
-				for (my $count = $linenr + 1; $count <= $lc; $count++) {
-					$stat_real = $stat_real . "\n" . raw_line($count, 0);
-				}
+				my $stat_real = get_stat_real($linenr, $lc);
 
 				my $skip_args = "";
 				if ($arg_pos > 1) {
@@ -6347,8 +6453,9 @@ sub process {
 				if ($stat =~ /$test/) {
 					my $val = $1;
 					$val = $6 if ($skip_args ne "");
-					if (($val =~ /^$Int$/ && $val !~ /^$Octal$/) ||
-					    ($val =~ /^$Octal$/ && length($val) ne 4)) {
+					if (!($func =~ /^(?:module_param|proc_create)/ && $val eq "0") &&
+					    (($val =~ /^$Int$/ && $val !~ /^$Octal$/) ||
+					     ($val =~ /^$Octal$/ && length($val) ne 4))) {
 						ERROR("NON_OCTAL_PERMISSIONS",
 						      "Use 4 digit octal (0777) not decimal permissions\n" . "$here\n" . $stat_real);
 					}
@@ -6361,30 +6468,13 @@ sub process {
 		}
 
 # check for uses of S_<PERMS> that could be octal for readability
-		if ($line =~ /\b$mode_perms_string_search\b/) {
-			my $val = "";
-			my $oval = "";
-			my $to = 0;
-			my $curpos = 0;
-			my $lastpos = 0;
-			while ($line =~ /\b(($mode_perms_string_search)\b(?:\s*\|\s*)?\s*)/g) {
-				$curpos = pos($line);
-				my $match = $2;
-				my $omatch = $1;
-				last if ($lastpos > 0 && ($curpos - length($omatch) != $lastpos));
-				$lastpos = $curpos;
-				$to |= $mode_permission_string_types{$match};
-				$val .= '\s*\|\s*' if ($val ne "");
-				$val .= $match;
-				$oval .= $omatch;
-			}
-			$oval =~ s/^\s*\|\s*//;
-			$oval =~ s/\s*\|\s*$//;
-			my $octal = sprintf("%04o", $to);
+		while ($line =~ m{\b($multi_mode_perms_string_search)\b}g) {
+			my $oval = $1;
+			my $octal = perms_to_octal($oval);
 			if (WARN("SYMBOLIC_PERMS",
 				 "Symbolic permissions '$oval' are not preferred. Consider using octal permissions '$octal'.\n" . $herecurr) &&
 			    $fix) {
-				$fixed[$fixlinenr] =~ s/$val/$octal/;
+				$fixed[$fixlinenr] =~ s/\Q$oval\E/$octal/;
 			}
 		}
 
@@ -6425,7 +6515,7 @@ sub process {
 		exit(0);
 	}
 
-	if (!$is_patch && $file !~ /cover-letter\.patch$/) {
+	if (!$is_patch && $filename !~ /cover-letter\.patch$/) {
 		ERROR("NOT_UNIFIED_DIFF",
 		      "Does not appear to be a unified-diff format patch\n");
 	}

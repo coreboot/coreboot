@@ -1,5 +1,5 @@
-boot_option = Fallback
-debug_level = Debug
-nmi = Enable
-power_on_after_fail = Enable
-sata_mode = AHCI
+boot_option=Fallback
+debug_level=Debug
+nmi=Enable
+power_on_after_fail=Enable
+sata_mode=AHCI

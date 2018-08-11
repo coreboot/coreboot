@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -106,11 +107,13 @@ func (l *LogDevReader) GetACPI() (Tables map[string][]byte) {
 	curTable := ""
 	for scanner.Scan() {
 		line := scanner.Text()
+		/* Only supports ACPI tables up to 0x10000 in size, FIXME if needed */
+		is_hexline, _ := regexp.MatchString(" *[0-9A-Fa-f]{4}: ", line)
 		switch {
 		case len(line) >= 6 && line[5] == '@':
 			curTable = line[0:4]
 			Tables[curTable] = make([]byte, 0, 100000)
-		case len(line) > 7 && line[0:2] == "  " && isXDigit(line[2]) && isXDigit(line[3]) && isXDigit(line[4]) && isXDigit(line[5]) && line[6] == ':':
+		case is_hexline:
 			Tables[curTable] = l.AssignHexLine(line, Tables[curTable])
 		}
 	}

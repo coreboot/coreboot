@@ -1339,6 +1339,55 @@ void acpigen_write_dsm_uuid_arr(struct dsm_uuid *ids, size_t count)
 	acpigen_pop_len();	/* Method _DSM */
 }
 
+#define CPPC_PACKAGE_NAME "\\GCPC"
+
+void acpigen_write_CPPC_package(const struct cppc_config *config)
+{
+	u32 i;
+	u32 max;
+	switch (config->version) {
+	case 1:
+		max = CPPC_MAX_FIELDS_VER_1;
+		break;
+	case 2:
+		max = CPPC_MAX_FIELDS_VER_2;
+		break;
+	case 3:
+		max = CPPC_MAX_FIELDS_VER_3;
+		break;
+	default:
+		printk(BIOS_ERR, "ERROR: CPPC version %u is not implemented\n",
+		       config->version);
+		return;
+	}
+	acpigen_write_name(CPPC_PACKAGE_NAME);
+
+	/* Adding 2 to account for length and version fields */
+	acpigen_write_package(max + 2);
+	acpigen_write_dword(max + 2);
+
+	acpigen_write_byte(config->version);
+
+	for (i = 0; i < max; ++i) {
+		const acpi_addr_t *reg = &(config->regs[i]);
+		if (reg->space_id == ACPI_ADDRESS_SPACE_MEMORY &&
+		    reg->bit_width == 32 && reg->access_size == 0) {
+			acpigen_write_dword(reg->addrl);
+		} else {
+			acpigen_write_register_resource(reg);
+		}
+	}
+	acpigen_pop_len();
+}
+
+void acpigen_write_CPPC_method(void)
+{
+	acpigen_write_method("_CPC", 0);
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_emit_namestring(CPPC_PACKAGE_NAME);
+	acpigen_pop_len();
+}
+
 /*
  * Generate ACPI AML code for _ROM method.
  * This function takes as input ROM data and ROM length.

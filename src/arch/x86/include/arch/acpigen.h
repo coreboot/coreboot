@@ -167,6 +167,56 @@ struct dsm_uuid {
 	void *arg;
 };
 
+/*version 1 has 15 fields, version 2 has 19, and version 3 has 21 */
+enum cppc_fields {
+	CPPC_HIGHEST_PERF, /* can be DWORD */
+	CPPC_NOMINAL_PERF, /* can be DWORD */
+	CPPC_LOWEST_NONL_PERF, /* can be DWORD */
+	CPPC_LOWEST_PERF, /* can be DWORD */
+	CPPC_GUARANTEED_PERF,
+	CPPC_DESIRED_PERF,
+	CPPC_MIN_PERF,
+	CPPC_MAX_PERF,
+	CPPC_PERF_REDUCE_TOLERANCE,
+	CPPC_TIME_WINDOW,
+	CPPC_COUNTER_WRAP, /* can be DWORD */
+	CPPC_REF_PERF_COUNTER,
+	CPPC_DELIVERED_PERF_COUNTER,
+	CPPC_PERF_LIMITED,
+	CPPC_ENABLE, /* can be System I/O */
+	CPPC_MAX_FIELDS_VER_1,
+	CPPC_AUTO_SELECT = /* can be DWORD */
+		CPPC_MAX_FIELDS_VER_1,
+	CPPC_AUTO_ACTIVITY_WINDOW,
+	CPPC_PERF_PREF,
+	CPPC_REF_PERF, /* can be DWORD */
+	CPPC_MAX_FIELDS_VER_2,
+	CPPC_LOWEST_FREQ = /* can be DWORD */
+		CPPC_MAX_FIELDS_VER_2,
+	CPPC_NOMINAL_FREQ, /* can be DWORD */
+	CPPC_MAX_FIELDS_VER_3,
+};
+
+struct cppc_config {
+	u32 version; /* must be 1, 2, or 3 */
+	/*
+	 * The generic acpi_addr_t structure is being used, though
+	 * anything besides PPC or FFIXED generally requires checking
+	 * if the OS has advertised support for it (via _OSC).
+	 *
+	 * NOTE: some fields permit DWORDs to be used.  If you
+	 * provide a System Memory register with all zeros (which
+	 * represents unsupported) then this will be used as-is.
+	 * Otherwise, a System Memory register with a 32-bit
+	 * width will be converted into a DWORD field (the value
+	 * of which will be the value of 'addrl'.  Any other use
+	 * of System Memory register is currently undefined.
+	 * (i.e., if you have an actual need for System Memory
+	 * then you'll need to adjust this kludge).
+	 */
+	acpi_addr_t regs[CPPC_MAX_FIELDS_VER_3];
+};
+
 void acpigen_write_return_integer(uint64_t arg);
 void acpigen_write_return_string(const char *arg);
 void acpigen_write_len_f(void);
@@ -267,6 +317,15 @@ void acpigen_write_pld(const struct acpi_pld *pld);
 void acpigen_write_dsm(const char *uuid, void (**callbacks)(void *),
 		       size_t count, void *arg);
 void acpigen_write_dsm_uuid_arr(struct dsm_uuid *ids, size_t count);
+
+/*
+ * Generate ACPI AML code for _CPC (Continuous Perfmance Control).
+ * Execute the package function once to create a global table, then
+ * execute the method function within each processor object to
+ * create a method that points to the global table.
+ */
+void acpigen_write_CPPC_package(const struct cppc_config *config);
+void acpigen_write_CPPC_method(void);
 
 /*
  * Generate ACPI AML code for _ROM method.

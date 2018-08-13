@@ -40,7 +40,7 @@ static void enable_hwm_smbus(struct device *dev)
 
 static void init_acpi(struct device *dev)
 {
-	u8 value = 0x20; /* FIXME: The 0x20 value here is never used? */
+	u8 value;
 	int power_on = 1;
 
 	get_option(&power_on, "power_on_after_fail");

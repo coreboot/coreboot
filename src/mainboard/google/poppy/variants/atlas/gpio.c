@@ -175,7 +175,7 @@ static const struct pad_config gpio_table[] = {
 	/* D7  : ISH_I2C1_SDA ==> SPKR_IRQ_L */
 	PAD_CFG_GPI_APIC(GPP_D7, NONE, PLTRST),
 	/* D8  : ISH_I2C1_SCL ==> EN_CAMERA_PWR */
-	PAD_CFG_GPO(GPP_D8, 1, DEEP),
+	PAD_CFG_GPO(GPP_D8, 0, DEEP),
 	/* D9  : ISH_SPI_CS# ==> ISH_SPI_CS_L */
 	PAD_CFG_NF_1V8(GPP_D9, NONE, DEEP, NF1),
 	/* D10 : ISH_SPI_CLK ==> ISH_SPI_CLK */
@@ -189,9 +189,9 @@ static const struct pad_config gpio_table[] = {
 	/* D16 : ISH_UART0_CTS# ==> NC */
 	PAD_CFG_NC(GPP_D16),
 	/* D17 : DMIC_CLK1 ==> PCH_CAMERA_RESET */
-	PAD_CFG_GPO(GPP_D17, 1, DEEP),
+	PAD_CFG_GPO(GPP_D17, 0, DEEP),
 	/* D18 : DMIC_DATA1 ==> PCH_CAMERA_CLOCK_ENABLE */
-	PAD_CFG_GPO(GPP_D18, 1, DEEP),
+	PAD_CFG_GPO(GPP_D18, 0, DEEP),
 	/* D19 : DMIC_CLK0 ==> PCH_DMIC_CLK_OUT */
 	PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
 	/* D20 : DMIC_DATA0 ==> PCH_DMIC_DATA_IN */

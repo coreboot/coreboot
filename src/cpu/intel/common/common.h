@@ -17,4 +17,12 @@
 
 void set_vmx(void);
 
+/*
+ * Init CPPC block with MSRs for Intel Enhanced Speed Step Technology.
+ * Version 2 is suggested--this function's implementation of version 3
+ * may have room for improvment.
+ */
+struct cppc_config;
+void cpu_init_cppc_config(struct cppc_config *config, u32 version);
+
 #endif

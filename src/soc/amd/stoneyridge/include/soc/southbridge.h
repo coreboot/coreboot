@@ -449,6 +449,7 @@ uint16_t xhci_pm_read16(uint8_t reg);
 void xhci_pm_write32(uint8_t reg, uint32_t value);
 uint32_t xhci_pm_read32(uint8_t reg);
 void bootblock_fch_early_init(void);
+void bootblock_fch_init(void);
 /**
  * @brief Save the UMA bize returned by AGESA
  *

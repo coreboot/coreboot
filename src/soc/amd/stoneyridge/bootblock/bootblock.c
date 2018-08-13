@@ -106,6 +106,8 @@ void bootblock_soc_init(void)
 	u32 val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
 
+	bootblock_fch_init();
+
 	/* Initialize any early i2c buses. */
 	i2c_soc_early_init();
 }

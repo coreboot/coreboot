@@ -621,6 +621,7 @@ static void setup_misc(int *reboot)
 	}
 }
 
+/* Before console init */
 void bootblock_fch_early_init(void)
 {
 	int reboot = 0;
@@ -642,6 +643,9 @@ void bootblock_fch_early_init(void)
 	sb_enable_legacy_io();
 	enable_aoac_devices();
 }
+
+/* After console init */
+void bootblock_fch_init(void) {}
 
 void sb_enable(device_t dev)
 {

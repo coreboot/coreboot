@@ -11,7 +11,13 @@
 #define  EFER_SCE	(1 << 0)
 
 /* Page attribute type MSR */
-#define MSR_IA32_PAT	0x277
+#define MSR_IA32_PAT			0x277
+#define MSR_IA32_MPERF			0xe7
+#define MSR_IA32_APERF			0xe8
+#define MSR_IA32_PM_ENABLE		0x770
+#define MSR_IA32_HWP_CAPABILITIES	0x771
+#define MSR_IA32_HWP_REQUEST		0x774
+#define MSR_IA32_HWP_STATUS		0x777
 
 #if defined(__ROMCC__)
 

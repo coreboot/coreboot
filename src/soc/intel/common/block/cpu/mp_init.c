@@ -134,7 +134,8 @@ static void init_cpus(void *unused)
 	microcode_patch = intel_microcode_find();
 	intel_microcode_load_unlocked(microcode_patch);
 
-	soc_init_cpus(dev->link_list);
+	if (dev && dev->link_list)
+		soc_init_cpus(dev->link_list);
 }
 
 static void wrapper_x86_setup_mtrrs(void *unused)

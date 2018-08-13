@@ -15,6 +15,7 @@
  */
 
 #include <compiler.h>
+#include <assert.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -36,9 +37,10 @@ static uintptr_t graphics_get_bar(unsigned long index)
 {
 	struct device *dev = SA_DEV_IGD;
 	struct resource *gm_res;
+	assert(dev != NULL);
 
 	/* Check if Graphics PCI device is disabled */
-	if (!dev->enabled)
+	if (!dev || !dev->enabled)
 		return 0;
 
 	gm_res = find_resource(dev, index);

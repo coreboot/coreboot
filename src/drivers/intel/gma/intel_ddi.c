@@ -29,7 +29,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <device/device.h>
-#include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <console/console.h>

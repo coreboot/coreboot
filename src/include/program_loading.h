@@ -68,10 +68,10 @@ struct prog {
 	void *arg;
 };
 
-#define PROG_INIT(type_, name_)				\
-	{						\
-		.type = (type_),			\
-		.name = (name_),			\
+#define PROG_INIT(type_, name_)  \
+	{                        \
+		.type = (type_), \
+		.name = (name_), \
 	}
 
 static inline const char *prog_name(const struct prog *prog)
@@ -120,7 +120,7 @@ static inline void *prog_entry_arg(const struct prog *prog)
 extern const struct mem_region_device addrspace_32bit;
 
 static inline void prog_memory_init(struct prog *prog, uintptr_t ptr,
-					size_t size)
+				    size_t size)
 {
 	rdev_chain(&prog->rdev, &addrspace_32bit.rdev, ptr, size);
 }
@@ -174,8 +174,12 @@ void run_romstage(void);
 /* Run ramstage from romstage. */
 void run_ramstage(void);
 
+/* Run a prog (stage or payload) from romstage. */
+void run_ramprog(void);
+
 /* Determine where stack for ramstage loader is located. */
-enum { ROMSTAGE_STACK_CBMEM, ROMSTAGE_STACK_LOW_MEM };
+enum { ROMSTAGE_STACK_CBMEM,
+       ROMSTAGE_STACK_LOW_MEM };
 uintptr_t romstage_ram_stack_base(size_t size, int src);
 uintptr_t romstage_ram_stack_top(void);
 uintptr_t romstage_ram_stack_bottom(void);

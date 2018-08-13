@@ -18,5 +18,7 @@
 
 asmlinkage void copy_and_run(void)
 {
+	if (IS_ENABLED(CONFIG_RAMPAYLOAD))
+		run_ramprog();
 	run_ramstage();
 }

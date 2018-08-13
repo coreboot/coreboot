@@ -111,6 +111,7 @@ smm-$(CONFIG_ARCH_RAMSTAGE_X86_32) += gcc.c
 endif
 
 romstage-$(CONFIG_GENERIC_UDELAY) += timer.c
+romstage-$(CONFIG_RAMPAYLOAD) += romselfboot.c
 
 ramstage-y += prog_loaders.c
 ramstage-y += prog_ops.c

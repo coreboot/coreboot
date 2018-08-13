@@ -39,6 +39,13 @@ config CBFS_PREFIX
 	  Select the prefix to all files put into the image. It's "fallback"
 	  by default, "normal" is a common alternative.
 
+config RAMPAYLOAD
+	prompt "Enable RAM payload from romstage"
+	bool
+	default n
+	help
+	  Enable romstage payload loader.
+
 choice
 	prompt "Compiler to use"
 	default COMPILER_GCC

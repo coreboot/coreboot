@@ -27,6 +27,7 @@ PAYLOADS_LIST=\
 payloads/coreinfo \
 payloads/nvramcui \
 payloads/libpayload \
+payloads/linuxcheck \
 payloads/external/depthcharge \
 payloads/external/SeaBIOS \
 payloads/external/U-Boot \

@@ -77,9 +77,13 @@ fail:
 }
 
 void __weak stage_cache_add(int stage_id,
-						const struct prog *stage) {}
+			    const struct prog *stage)
+{
+}
 void __weak stage_cache_load_stage(int stage_id,
-							struct prog *stage) {}
+				   struct prog *stage)
+{
+}
 
 static void ramstage_cache_invalid(void)
 {
@@ -138,9 +142,7 @@ void run_ramstage(void)
 	 * Only x86 systems using ramstage stage cache currently take the same
 	 * firmware path on resume.
 	 */
-	if (IS_ENABLED(CONFIG_ARCH_X86) &&
-	    !IS_ENABLED(CONFIG_NO_STAGE_CACHE) &&
-	    IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
+	if (IS_ENABLED(CONFIG_ARCH_X86) && !IS_ENABLED(CONFIG_NO_STAGE_CACHE) && IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
 		run_ramstage_from_resume(&ramstage);
 
 	if (prog_locate(&ramstage))
@@ -163,6 +165,30 @@ void run_ramstage(void)
 
 fail:
 	die("Ramstage was not loaded!\n");
+}
+
+/* run_ramprog tries to run CONFIG_CBFS_PREFIX "/rampayload"
+ * and returns on failure (or if, unlikely, the payload returns).
+ * It does not die, which allows us to run the ramstage. */
+void run_ramprog(void)
+{
+	struct prog rampayload = PROG_INIT(PROG_PAYLOAD,
+					   CONFIG_CBFS_PREFIX "/rampayload");
+	timestamp_add_now(TS_END_ROMSTAGE);
+	if (prog_locate(&rampayload)) {
+		printk(BIOS_ERR,
+		       "Can't find %s\n", CONFIG_CBFS_PREFIX "/rampayload");
+		return;
+	}
+
+	if (!selfload(&rampayload, 0)) {
+		printk(BIOS_ERR,
+		       "Can't load %s\n", CONFIG_CBFS_PREFIX "/rampayload");
+		return;
+	}
+	prog_run(&rampayload);
+	printk(BIOS_ERR, "rampayload %s returns\n",
+	       CONFIG_CBFS_PREFIX "/rampayload");
 }
 
 #ifdef __RAMSTAGE__ // gc-sections should take care of this
@@ -212,7 +238,7 @@ void payload_run(void)
 	boot_successful();
 
 	printk(BIOS_DEBUG, "Jumping to boot code at %p(%p)\n",
-		prog_entry(payload), prog_entry_arg(payload));
+	       prog_entry(payload), prog_entry_arg(payload));
 
 	post_code(POST_ENTER_ELF_BOOT);
 

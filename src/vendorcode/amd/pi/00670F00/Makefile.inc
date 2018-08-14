@@ -90,9 +90,6 @@ agesa_raw_files += $(wildcard $(AGESA_ROOT)/Lib/*.[cS])
 
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/binaryPI/*.[cS])
 
-ifeq ($(CONFIG_VENDORCODE_FULL_SUPPORT),y)
-agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Common/*.[cS])
-endif
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Psp/PspBaseLib/*.[cS])
 
 classes-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += libagesa

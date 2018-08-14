@@ -101,42 +101,6 @@ ProgramPciByteTable (
 
 /*----------------------------------------------------------------------------------------*/
 /**
- * ProgramFchAcpiMmioTbl - Program FCH ACPI MMIO register by table (8 bits data)
- *
- *
- *
- * @param[in] pAcpiTbl   - Table data pointer
- * @param[in] StdHeader
- *
- */
-VOID
-ProgramFchAcpiMmioTbl (
-  IN       ACPI_REG_WRITE      *pAcpiTbl,
-  IN       AMD_CONFIG_PARAMS   *StdHeader
-  )
-{
-  UINT8   i;
-  UINT8   Or8;
-  UINT8   Mask8;
-  UINT32  ddtempVar;
-
-  if (pAcpiTbl != NULL) {
-    if ((pAcpiTbl->MmioReg == 0) && (pAcpiTbl->MmioBase == 0) && (pAcpiTbl->DataAndMask == 0xB0) && (pAcpiTbl->DataOrMask == 0xAC)) {
-      // Signature Checking
-      pAcpiTbl++;
-      for ( i = 1; pAcpiTbl->MmioBase < 0x1D; i++ ) {
-        ddtempVar = ACPI_MMIO_BASE | (pAcpiTbl->MmioBase) << 8 | pAcpiTbl->MmioReg;
-        Or8 = pAcpiTbl->DataOrMask;
-        Mask8 = ~pAcpiTbl->DataAndMask;
-        LibAmdMemRMW (AccessWidth8, (UINT64) ddtempVar, &Or8, &Mask8, StdHeader);
-        pAcpiTbl++;
-      }
-    }
-  }
-}
-
-/*----------------------------------------------------------------------------------------*/
-/**
  * ProgramFchSciMapTbl - Program FCH SCI Map table (8 bits data)
  *
  *
@@ -263,33 +227,6 @@ IsImcEnabled (
 }
 
 #if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
-/**
- * GetEfuseStatue - Get Efuse status
- *
- *
- * @param[in] Value - Return Chip strap status
- * @param[in] StdHeader
- *
- */
-VOID
-GetEfuseStatus (
-  IN       VOID                *Value,
-  IN       AMD_CONFIG_PARAMS   *StdHeader
-  )
-{
-  UINT8    Or8;
-  UINT8    Mask8;
-
-  Or8 = BIT5;
-  Mask8 = BIT5;
-  LibAmdMemRMW (AccessWidth8, (UINT64) (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REGC8), &Or8, &Mask8, StdHeader);
-  LibAmdMemWrite (AccessWidth8, (UINT64) (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REGD8), Value, StdHeader);
-  LibAmdMemRead (AccessWidth8, (UINT64) (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REGD8 + 1), Value, StdHeader);
-  Or8 = 0;
-  Mask8 = BIT5;
-  LibAmdMemRMW (AccessWidth8, (UINT64) (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REGC8), &Or8, &Mask8, StdHeader);
-}
-
 /*----------------------------------------------------------------------------------------*/
 /**
  * SbSleepTrapControl - SB Sleep Trap Control

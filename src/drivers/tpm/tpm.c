@@ -18,16 +18,18 @@
 #include <bootstate.h>
 #include <security/tpm/tspi.h>
 
-#if IS_ENABLED(CONFIG_ARCH_X86)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 #include <arch/acpi.h>
 #endif
 
 static void init_tpm_dev(void *unused)
 {
-#if IS_ENABLED(CONFIG_ARCH_X86)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 	int s3resume = acpi_is_wakeup_s3();
 	tpm_setup(s3resume);
 #else
+	/* This can lead to PCR reset attacks but currently there
+	   is no generic way to detect resume on other platforms. */
 	tpm_setup(false);
 #endif
 }

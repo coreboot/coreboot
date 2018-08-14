@@ -25,15 +25,25 @@
 #if IS_ENABLED(CONFIG_TPM1)
 static uint32_t tpm1_invoke_state_machine(void)
 {
-	uint8_t disable;
+	uint8_t disabled;
 	uint8_t deactivated;
 	uint32_t result = TPM_SUCCESS;
 
 	/* Check that the TPM is enabled and activated. */
-	result = tlcl_get_flags(&disable, &deactivated, NULL);
+	result = tlcl_get_flags(&disabled, &deactivated, NULL);
 	if (result != TPM_SUCCESS) {
 		printk(BIOS_ERR, "TPM: Can't read capabilities.\n");
 		return result;
+	}
+
+	if (disabled) {
+		printk(BIOS_INFO, "TPM: is disabled. Enabling...\n");
+
+		result = tlcl_set_enable();
+		if (result != TPM_SUCCESS) {
+			printk(BIOS_ERR, "TPM: Can't set enabled state.\n");
+			return result;
+		}
 	}
 
 	if (!!deactivated != IS_ENABLED(CONFIG_TPM_DEACTIVATE)) {
@@ -47,19 +57,6 @@ static uint32_t tpm1_invoke_state_machine(void)
 		}
 
 		deactivated = !deactivated;
-		result = TPM_E_MUST_REBOOT;
-	}
-
-	if (disable && !deactivated) {
-		printk(BIOS_INFO, "TPM: disabled (%d). Enabling...\n", disable);
-
-		result = tlcl_set_enable();
-		if (result != TPM_SUCCESS) {
-			printk(BIOS_ERR, "TPM: Can't set enabled state.\n");
-			return result;
-		}
-
-		printk(BIOS_INFO, "TPM: Must reboot to re-enable\n");
 		result = TPM_E_MUST_REBOOT;
 	}
 
@@ -122,8 +119,8 @@ uint32_t tpm_setup(int s3flag)
 		result = tlcl_physical_presence_cmd_enable();
 		if (result != TPM_SUCCESS) {
 			printk(
-			    BIOS_ERR,
-			    "TPM: Can't enable physical presence command.\n");
+				BIOS_ERR,
+				"TPM: Can't enable physical presence command.\n");
 			goto out;
 		}
 

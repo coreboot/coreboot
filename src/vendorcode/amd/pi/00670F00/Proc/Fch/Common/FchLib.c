@@ -192,69 +192,6 @@ GetRomSigPtr (
   return RomSigPtr;
 }
 
-/** RwXhciIndReg - Reserved **/
-VOID
-RwXhciIndReg (
-  IN       UINT32              Index,
-  IN       UINT32              AndMask,
-  IN       UINT32              OrMask,
-  IN       AMD_CONFIG_PARAMS   *StdHeader
-  )
-{
-  UINT32    RevReg;
-  PCI_ADDR  PciAddress;
-
-  PciAddress.AddressValue = (USB_XHCI_BUS_DEV_FUN << 12) + 0x48;
-  LibAmdPciWrite (AccessWidth32, PciAddress, &Index, StdHeader);
-  PciAddress.AddressValue = (USB_XHCI_BUS_DEV_FUN << 12) + 0x4C;
-  RevReg = ~AndMask;
-  LibAmdPciRMW (AccessWidth32, PciAddress, &OrMask, &RevReg, StdHeader);
-
-  PciAddress.AddressValue = (USB_XHCI1_BUS_DEV_FUN << 12) + 0x48;
-  LibAmdPciWrite (AccessWidth32, PciAddress, &Index, StdHeader);
-  PciAddress.AddressValue = (USB_XHCI1_BUS_DEV_FUN << 12) + 0x4C;
-  RevReg = ~AndMask;
-  LibAmdPciRMW (AccessWidth32, PciAddress, &OrMask, &RevReg, StdHeader);
-}
-
-/** RwXhci0IndReg - Reserved **/
-VOID
-RwXhci0IndReg (
-  IN       UINT32              Index,
-  IN       UINT32              AndMask,
-  IN       UINT32              OrMask,
-  IN       AMD_CONFIG_PARAMS   *StdHeader
-  )
-{
-  UINT32    RevReg;
-  PCI_ADDR  PciAddress;
-
-  PciAddress.AddressValue = (USB_XHCI_BUS_DEV_FUN << 12) + 0x48;
-  LibAmdPciWrite (AccessWidth32, PciAddress, &Index, StdHeader);
-  PciAddress.AddressValue = (USB_XHCI_BUS_DEV_FUN << 12) + 0x4C;
-  RevReg = ~AndMask;
-  LibAmdPciRMW (AccessWidth32, PciAddress, &OrMask, &RevReg, StdHeader);
-}
-
-/** RwXhci1IndReg - Reserved **/
-VOID
-RwXhci1IndReg (
-  IN       UINT32              Index,
-  IN       UINT32              AndMask,
-  IN       UINT32              OrMask,
-  IN       AMD_CONFIG_PARAMS   *StdHeader
-  )
-{
-  UINT32    RevReg;
-  PCI_ADDR  PciAddress;
-
-  PciAddress.AddressValue = (USB_XHCI1_BUS_DEV_FUN << 12) + 0x48;
-  LibAmdPciWrite (AccessWidth32, PciAddress, &Index, StdHeader);
-  PciAddress.AddressValue = (USB_XHCI1_BUS_DEV_FUN << 12) + 0x4C;
-  RevReg = ~AndMask;
-  LibAmdPciRMW (AccessWidth32, PciAddress, &OrMask, &RevReg, StdHeader);
-}
-
 /** ReadXhci0Phy - Reserved **/
 VOID
 ReadXhci0Phy (

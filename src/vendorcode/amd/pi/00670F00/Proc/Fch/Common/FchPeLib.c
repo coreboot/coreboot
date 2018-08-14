@@ -55,52 +55,6 @@
 #if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /*----------------------------------------------------------------------------------------*/
 /**
- * ProgramPciByteTable - Program PCI register by table (8 bits data)
- *
- *
- *
- * @param[in] pPciByteTable    - Table data pointer
- * @param[in] dwTableSize      - Table length
- * @param[in] StdHeader
- *
- */
-VOID
-ProgramPciByteTable (
-  IN       REG8_MASK           *pPciByteTable,
-  IN       UINT16              dwTableSize,
-  IN       AMD_CONFIG_PARAMS   *StdHeader
-  )
-{
-  UINT8     i;
-  UINT8     dbBusNo;
-  UINT8     dbDevFnNo;
-  UINT8     Or8;
-  UINT8     Mask8;
-  PCI_ADDR  PciAddress;
-
-  dbBusNo = pPciByteTable->RegIndex;
-  dbDevFnNo = pPciByteTable->AndMask;
-  pPciByteTable++;
-
-  for ( i = 1; i < dwTableSize; i++ ) {
-    if ( (pPciByteTable->RegIndex == 0xFF) && (pPciByteTable->AndMask == 0xFF) && (pPciByteTable->OrMask == 0xFF) ) {
-      pPciByteTable++;
-      dbBusNo = pPciByteTable->RegIndex;
-      dbDevFnNo = pPciByteTable->AndMask;
-      pPciByteTable++;
-      i++;
-    } else {
-      PciAddress.AddressValue = (dbBusNo << 20) + (dbDevFnNo << 12) + pPciByteTable->RegIndex;
-      Or8 = pPciByteTable->OrMask;
-      Mask8 = ~pPciByteTable->AndMask;
-      LibAmdPciRMW (AccessWidth8, PciAddress, &Or8, &Mask8, StdHeader);
-      pPciByteTable++;
-    }
-  }
-}
-
-/*----------------------------------------------------------------------------------------*/
-/**
  * ProgramFchSciMapTbl - Program FCH SCI Map table (8 bits data)
  *
  *

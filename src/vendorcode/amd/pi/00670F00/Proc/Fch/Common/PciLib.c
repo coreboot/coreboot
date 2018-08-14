@@ -72,22 +72,3 @@ WritePci (
   LibAmdPciWrite ((ACCESS_WIDTH) OpFlag, PciAddress, Value, StdHeader);
 }
 
-
-VOID
-RwPci (
-  IN       UINT32                  Address,
-  IN       UINT8                   OpFlag,
-  IN       UINT32                  Mask,
-  IN       UINT32                  Data,
-  IN       AMD_CONFIG_PARAMS       *StdHeader
-  )
-{
-  PCI_ADDR  PciAddress;
-  UINT32    rMask;
-
-  PciAddress.AddressValue = ((Address >> 4) & ~0xFFF) + (Address & 0xFFF);
-  rMask = ~Mask;
-  LibAmdPciRMW ((ACCESS_WIDTH) OpFlag, PciAddress, &Data, &rMask, StdHeader);
-}
-
-

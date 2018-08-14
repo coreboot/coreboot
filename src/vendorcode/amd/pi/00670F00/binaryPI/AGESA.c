@@ -157,22 +157,6 @@ AmdInitLate (
 	return Dispatcher(LateParams);
 }
 
-#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
-/**********************************************************************
- * Interface call:  AmdInitRecovery
- **********************************************************************/
-AGESA_STATUS
-AmdInitRecovery (
-  IN OUT   AMD_RECOVERY_PARAMS    *RecoveryParams
-  )
-{
-	MODULE_ENTRY Dispatcher = agesa_get_dispatcher();
-	RecoveryParams->StdHeader.Func = AMD_INIT_RECOVERY;
-	if (!Dispatcher) return AGESA_UNSUPPORTED;
-	return Dispatcher(RecoveryParams);
-}
-#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
-
 /**********************************************************************
  * Interface call:  AmdInitResume
  **********************************************************************/
@@ -243,50 +227,6 @@ AmdLateRunApTask (
 	return Dispatcher(AmdApExeParams);
 }
 
-#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
-/**********************************************************************
- * Interface service call:  AmdGetApicId
- **********************************************************************/
-AGESA_STATUS
-AmdGetApicId (
-  IN OUT AMD_APIC_PARAMS *AmdParamApic
-)
-{
-	MODULE_ENTRY Dispatcher = agesa_get_dispatcher();
-	AmdParamApic->StdHeader.Func = AMD_GET_APIC_ID;
-	if (!Dispatcher) return AGESA_UNSUPPORTED;
-	return Dispatcher(AmdParamApic);
-}
-
-/**********************************************************************
- * Interface service call:  AmdGetPciAddress
- **********************************************************************/
-AGESA_STATUS
-AmdGetPciAddress (
-  IN OUT   AMD_GET_PCI_PARAMS *AmdParamGetPci
-)
-{
-	MODULE_ENTRY Dispatcher = agesa_get_dispatcher();
-	AmdParamGetPci->StdHeader.Func = AMD_GET_PCI_ADDRESS;
-	if (!Dispatcher) return AGESA_UNSUPPORTED;
-	return Dispatcher(AmdParamGetPci);
-}
-
-/**********************************************************************
- * Interface service call:  AmdIdentifyCore
- **********************************************************************/
-AGESA_STATUS
-AmdIdentifyCore (
-  IN OUT  AMD_IDENTIFY_PARAMS *AmdParamIdentify
-)
-{
-	MODULE_ENTRY Dispatcher = agesa_get_dispatcher();
-	AmdParamIdentify->StdHeader.Func = AMD_IDENTIFY_CORE;
-	if (!Dispatcher) return AGESA_UNSUPPORTED;
-	return Dispatcher(AmdParamIdentify);
-}
-#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
-
 /**********************************************************************
  * Interface service call:  AmdReadEventLog
  **********************************************************************/
@@ -300,42 +240,3 @@ AmdReadEventLog (
 	if (!Dispatcher) return AGESA_UNSUPPORTED;
 	return Dispatcher(Event);
 }
-
-#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
-/**********************************************************************
- * Interface service call:  AmdIdentifyDimm
- **********************************************************************/
-AGESA_STATUS
-AmdIdentifyDimm (
-  IN OUT   AMD_IDENTIFY_DIMM *AmdDimmIdentify
-)
-{
-	MODULE_ENTRY Dispatcher = agesa_get_dispatcher();
-	AmdDimmIdentify->StdHeader.Func = AMD_IDENTIFY_DIMMS;
-	if (!Dispatcher) return AGESA_UNSUPPORTED;
-	return Dispatcher(AmdDimmIdentify);
-}
-
-AGESA_STATUS
-AmdIdsRunApTaskLate (
-  IN       AP_EXE_PARAMS  *AmdApExeParams
-  )
-{
-	AmdApExeParams->StdHeader.Func = -1;
-	return AGESA_UNSUPPORTED;
-}
-
-/**********************************************************************
- * Interface service call:  AmdGet2DDataEye
- **********************************************************************/
-AGESA_STATUS
-AmdGet2DDataEye (
-  IN OUT   AMD_GET_DATAEYE *AmdGetDataEye
-  )
-{
-	MODULE_ENTRY Dispatcher = agesa_get_dispatcher();
-	AmdGetDataEye->StdHeader.Func = AMD_GET_2D_DATA_EYE;
-	if (!Dispatcher) return AGESA_UNSUPPORTED;
-	return Dispatcher(AmdGetDataEye);
-}
-#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */

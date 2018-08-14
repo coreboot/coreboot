@@ -242,6 +242,7 @@ chip soc/intel/skylake
 
 	register "speed_shift_enable" = "1"
 	register "dptf_enable" = "1"
+	register "tdp_pl1_override" = "7"
 	register "tdp_pl2_override" = "15"
 	register "tcc_offset" = "10"
 

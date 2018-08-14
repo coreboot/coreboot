@@ -61,6 +61,7 @@ GetPciMmioAddress (
   IN       AMD_CONFIG_PARAMS *StdHeader
   );
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 VOID
 STATIC
 LibAmdGetDataFromPtr (
@@ -70,6 +71,8 @@ LibAmdGetDataFromPtr (
      OUT   UINT32       *TemData,
      OUT   UINT32       *TempDataMask
   );
+#endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
+
 VOID
 IdsOutPort (
   IN       UINT32 Addr,
@@ -579,36 +582,6 @@ LibAmdIoWrite (
   }
 }
 
-/*---------------------------------------------------------------------------------------*/
-/**
- * IO read modify write
- *
- *
- * @param[in] AccessWidth   Access width
- * @param[in] IoAddress     IO address
- * @param[in] Data          OR data
- * @param[in] DataMask      Mask to be used before data write back to register.
- * @param[in] StdHeader     Standard configuration header
- *
- */
-VOID
-LibAmdIoRMW (
-  IN       ACCESS_WIDTH AccessWidth,
-  IN       UINT16 IoAddress,
-  IN       CONST VOID *Data,
-  IN       CONST VOID *DataMask,
-  IN OUT   AMD_CONFIG_PARAMS *StdHeader
-  )
-{
-  UINT32  TempData;
-  UINT32  TempMask;
-  UINT32  Value;
-  LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
-  LibAmdIoRead (AccessWidth, IoAddress, &Value, NULL);
-  Value = (Value & (~TempMask)) | TempData;
-  LibAmdIoWrite (AccessWidth, IoAddress, &Value, NULL);
-}
-
 #if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /*---------------------------------------------------------------------------------------*/
 /**
@@ -719,35 +692,6 @@ LibAmdMemWrite (
     ASSERT (FALSE);
     break;
   }
-}
-/*---------------------------------------------------------------------------------------*/
-/**
- * Memory/MMIO read modify write
- *
- *
- * @param[in] AccessWidth   Access width
- * @param[in] MemAddress    Memory address
- * @param[in] Data          OR data
- * @param[in] DataMask      Mask to be used before data write back to register.
- * @param[in] StdHeader     Standard configuration header
- *
- */
-VOID
-LibAmdMemRMW (
-  IN       ACCESS_WIDTH AccessWidth,
-  IN       UINT64 MemAddress,
-  IN       CONST VOID *Data,
-  IN       CONST VOID *DataMask,
-  IN OUT   AMD_CONFIG_PARAMS *StdHeader
-  )
-{
-  UINT32  TempData;
-  UINT32  TempMask;
-  UINT32  Value;
-  LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
-  LibAmdMemRead (AccessWidth, MemAddress, &Value, NULL);
-  Value = (Value & (~TempMask)) | TempData;
-  LibAmdMemWrite (AccessWidth, MemAddress, &Value, NULL);
 }
 
 #if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
@@ -889,36 +833,6 @@ LibAmdPciWrite (
     //printk(BIOS_DEBUG, "~MMIO WR %08x = %08x\n", (UINT32) MMIOAddress, *(UINT32 *)Value);
     //printk(BIOS_DEBUG, "LibAmdPciWrite mmio\n");
   }
-}
-
-/*---------------------------------------------------------------------------------------*/
-/**
- * PCI read modify write
- *
- *
- * @param[in] AccessWidth   Access width
- * @param[in] PciAddress    Pci address
- * @param[in] Data          OR Data
- * @param[in] DataMask      Mask to be used before data write back to register.
- * @param[in] StdHeader     Standard configuration header
- *
- */
-VOID
-LibAmdPciRMW (
-  IN       ACCESS_WIDTH AccessWidth,
-  IN       PCI_ADDR PciAddress,
-  IN       CONST VOID *Data,
-  IN       CONST VOID *DataMask,
-  IN OUT   AMD_CONFIG_PARAMS *StdHeader
-  )
-{
-  UINT32  TempData = 0;
-  UINT32  TempMask = 0;
-  UINT32  Value;
-  LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
-  LibAmdPciRead (AccessWidth, PciAddress, &Value, NULL);
-  Value = (Value & (~TempMask)) | TempData;
-  LibAmdPciWrite (AccessWidth, PciAddress, &Value, NULL);
 }
 
 #if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
@@ -1297,6 +1211,7 @@ LibAmdGetPackageType (
 }
 #endif /* IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT) */
 
+#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /*---------------------------------------------------------------------------------------*/
 /**
  * Returns the package type mask for the processor
@@ -1341,7 +1256,6 @@ LibAmdGetDataFromPtr (
   }
 }
 
-#if IS_ENABLED(CONFIG_VENDORCODE_FULL_SUPPORT)
 /*---------------------------------------------------------------------------------------*/
 /**
  * Returns the package type mask for the processor

@@ -164,15 +164,6 @@ LibAmdIoWrite (
   );
 
 VOID
-LibAmdIoRMW (
-  IN       ACCESS_WIDTH AccessWidth,
-  IN       UINT16 IoAddress,
-  IN       CONST VOID *Data,
-  IN       CONST VOID *DataMask,
-  IN OUT   AMD_CONFIG_PARAMS *StdHeader
-  );
-
-VOID
 LibAmdIoPoll (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT16 IoAddress,
@@ -200,15 +191,6 @@ LibAmdMemWrite (
   );
 
 VOID
-LibAmdMemRMW (
-  IN       ACCESS_WIDTH AccessWidth,
-  IN       UINT64 MemAddress,
-  IN       CONST VOID *Data,
-  IN       CONST VOID *DataMask,
-  IN OUT   AMD_CONFIG_PARAMS *StdHeader
-  );
-
-VOID
 LibAmdMemPoll (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT64 MemAddress,
@@ -232,15 +214,6 @@ LibAmdPciWrite (
   IN       ACCESS_WIDTH AccessWidth,
   IN       PCI_ADDR PciAddress,
   IN       CONST VOID *Value,
-  IN OUT   AMD_CONFIG_PARAMS *StdHeader
-  );
-
-VOID
-LibAmdPciRMW (
-  IN       ACCESS_WIDTH AccessWidth,
-  IN       PCI_ADDR PciAddress,
-  IN       CONST VOID *Data,
-  IN       CONST VOID *DataMask,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   );
 

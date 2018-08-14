@@ -130,7 +130,7 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt)
 	fadt->pm1b_cnt_blk = 0x0;
 	fadt->pm2_cnt_blk = pmbase + PM2_CNT;
 	fadt->pm_tmr_blk = pmbase + PM1_TMR;
-	fadt->gpe0_blk = pmbase + GPE0_STS;
+	fadt->gpe0_blk = pmbase + GPE0_STS(GPE_STD);
 	fadt->gpe1_blk = 0;
 
 	/* Control Registers - Length */

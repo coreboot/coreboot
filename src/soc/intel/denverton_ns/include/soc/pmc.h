@@ -120,7 +120,10 @@
 #define GPE_CTRL 0x40
 #define SWGPE_CTRL	(1 << 17)
 #define PM2_CNT 0x50
-#define GPE0_STS 0x80
+#define GPE0_REG_MAX		4
+#define GPE0_REG_SIZE		32
+#define GPE0_STS(x) (0x80 + (x * 4))
+#define  GPE_STD 0
 #define GPIO31_STS (1 << 31)
 #define GPIO30_STS (1 << 30)
 #define GPIO29_STS (1 << 29)
@@ -166,7 +169,7 @@
 #define IE_SCI_STS (1 << 3)
 #define SWGPE_STS (1 << 2)
 #define HOT_PLUG_STS (1 << 1)
-#define GPE0_EN 0x90
+#define GPE0_EN(x) (0x90 + (x * 4))
 #define GPIO31_EN (1 << 31)
 #define GPIO30_EN (1 << 30)
 #define GPIO29_EN (1 << 29)
@@ -235,6 +238,12 @@
 #define TCO_TMR_HLT (1 << 11)
 #define TCO2_CNT 0x0a
 #define TCO_TMR 0x12
+
+/* Memory mapped IO registers behind PMC_BASE_ADDRESS */
+#define PRSTS			0x10
+#define GPIO_GPE_CFG		0x120
+#define  GPE0_DWX_MASK		0x7
+#define GPE0_DW_SHIFT(x)	(4 + 4*(x))
 
 /* I/O ports */
 #define RST_CNT 0xcf9

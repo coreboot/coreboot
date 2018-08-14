@@ -189,17 +189,17 @@ uint32_t clear_tco_status(void) { return print_tco_status(reset_tco_status()); }
 void enable_gpe(uint32_t mask)
 {
 	uint16_t pmbase = get_pmbase();
-	uint32_t gpe0_en = inl((uint16_t)(pmbase + GPE0_EN));
+	uint32_t gpe0_en = inl((uint16_t)(pmbase + GPE0_EN(GPE_STD)));
 	gpe0_en |= mask;
-	outl(gpe0_en, (uint16_t)(pmbase + GPE0_EN));
+	outl(gpe0_en, (uint16_t)(pmbase + GPE0_EN(GPE_STD)));
 }
 
 void disable_gpe(uint32_t mask)
 {
 	uint16_t pmbase = get_pmbase();
-	uint32_t gpe0_en = inl((uint16_t)(pmbase + GPE0_EN));
+	uint32_t gpe0_en = inl((uint16_t)(pmbase + GPE0_EN(GPE_STD)));
 	gpe0_en &= ~mask;
-	outl(gpe0_en, (uint16_t)(pmbase + GPE0_EN));
+	outl(gpe0_en, (uint16_t)(pmbase + GPE0_EN(GPE_STD)));
 }
 
 void disable_all_gpe(void) { disable_gpe(~0); }
@@ -207,8 +207,8 @@ void disable_all_gpe(void) { disable_gpe(~0); }
 static uint32_t reset_gpe_status(void)
 {
 	uint16_t pmbase = get_pmbase();
-	uint32_t gpe_sts = inl((uint16_t)(pmbase + GPE0_STS));
-	outl(gpe_sts, (uint16_t)(pmbase + GPE0_STS));
+	uint32_t gpe_sts = inl((uint16_t)(pmbase + GPE0_STS(GPE_STD)));
+	outl(gpe_sts, (uint16_t)(pmbase + GPE0_STS(GPE_STD)));
 	return gpe_sts;
 }
 

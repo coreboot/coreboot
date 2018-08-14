@@ -20,10 +20,9 @@
 
 #include <arch/io.h>
 #include <soc/pmc.h>
+#include <arch/acpi.h>
 
-#define SLEEP_STATE_S0 0
-#define SLEEP_STATE_S3 3
-#define SLEEP_STATE_S5 5
+#define GPE_MAX 127
 
 struct chipset_power_state {
 	uint16_t pm1_sts;
@@ -31,8 +30,8 @@ struct chipset_power_state {
 	uint32_t pm1_cnt;
 	uint16_t tco1_sts;
 	uint16_t tco2_sts;
-	uint32_t gpe0_sts[4];
-	uint32_t gpe0_en[4];
+	uint32_t gpe0_sts[GPE0_REG_MAX];
+	uint32_t gpe0_en[GPE0_REG_MAX];
 	uint32_t gen_pmcon_a;
 	uint32_t gen_pmcon_b;
 	uint32_t gblrst_cause[2];

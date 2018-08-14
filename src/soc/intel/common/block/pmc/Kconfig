@@ -37,3 +37,11 @@ config PMC_INVALID_READ_AFTER_WRITE
 	help
 	  Enable this for PMC devices where a read back of ACPI BAR and
 	  IO access bit does not return the previously written value.
+
+config PMC_GLOBAL_RESET_ENABLE_LOCK
+	bool
+	help
+	  Enable this for PMC devices where the reset configuration
+	  and lock register is located under PMC BASE at offset ETR.
+	  Note that the reset register is still at 0xCF9 this only
+	  controls the enable and lock feature.

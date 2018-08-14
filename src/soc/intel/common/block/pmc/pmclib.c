@@ -419,6 +419,7 @@ int pmc_fill_power_state(struct chipset_power_state *ps)
 	return ps->prev_sleep_state;
 }
 
+#if IS_ENABLED(CONFIG_PMC_GLOBAL_RESET_ENABLE_LOCK)
 /*
  * If possible, lock 0xcf9. Once the register is locked, it can't be changed.
  * This lock is reset on cold boot, hard reset, soft reset and Sx.
@@ -451,6 +452,7 @@ void pmc_global_reset_enable(bool enable)
 	reg = enable ? reg | CF9_GLB_RST : reg & ~CF9_GLB_RST;
 	write32((void *)etr, reg);
 }
+#endif // CONFIG_PMC_GLOBAL_RESET_ENABLE_LOCK
 
 int vboot_platform_is_resuming(void)
 {

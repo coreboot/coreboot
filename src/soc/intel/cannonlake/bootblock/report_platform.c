@@ -47,7 +47,8 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_CNL_ID_U, "Cannonlake-U" },
 	{ PCI_DEVICE_ID_INTEL_CNL_ID_Y, "Cannonlake-Y" },
 	{ PCI_DEVICE_ID_INTEL_CFL_ID_U, "Coffeelake U (4+3e)"},
-	{ PCI_DEVICE_ID_INTEL_WHL_ID_W, "Whiskeylake"},
+	{ PCI_DEVICE_ID_INTEL_WHL_ID_Wx4, "Whiskeylake W (4+2)"},
+	{ PCI_DEVICE_ID_INTEL_WHL_ID_Wx2, "Whiskeylake W (2+2)"},
 };
 
 static struct {

@@ -46,7 +46,7 @@ static void i82801ix_early_settings(const config_t *const info)
 	RCBA32(RCBA_CIR9) = (RCBA32(RCBA_CIR9) & ~(0x3 << 26)) | (0x2 << 26);
 	RCBA32(RCBA_CIR7) = (RCBA32(RCBA_CIR7) & ~(0xf << 16)) | (0x5 << 16);
 	RCBA32(RCBA_CIR13) = (RCBA32(RCBA_CIR13) & ~(0xf << 16)) | (0x5 << 16);
-	RCBA32(RCBA_CIR5) |= (1 << 0);
+	/* RCBA32(RCBA_CIR5) |= (1 << 0); cf. Specification Update */
 	RCBA32(RCBA_CIR10) |= (3 << 16);
 }
 

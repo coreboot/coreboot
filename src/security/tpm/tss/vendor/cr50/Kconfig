@@ -25,4 +25,10 @@ config POWER_OFF_ON_CR50_UPDATE
 	help
 	  Power off machine while waiting for CR50 update to take effect.
 
+config DISABLE_POWER_OFF_EC_ON_CR50_UPDATE
+	bool
+	default n
+	help
+	  Disable powering off EC while waiting for CR50 update to take effect.
+
 endif

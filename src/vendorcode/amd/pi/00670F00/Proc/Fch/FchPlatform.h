@@ -110,9 +110,6 @@
 #include "Fch.h"
 #include "amdlib.h"
 #include "FchCommonCfg.h"
-#include "AcpiLib.h"
-#include "FchDef.h"
-#include "FchBiosRamUsage.h"
 #include "AmdFch.h"
 
 extern CONST BUILD_OPT_CFG    UserOptions;

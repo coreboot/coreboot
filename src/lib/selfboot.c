@@ -511,7 +511,7 @@ static int load_self_segments(struct segment *head, struct prog *payload,
 		}
 
 		/*
-		 * Each architecture can perform additonal operations
+		 * Each architecture can perform additional operations
 		 * on the loaded segment
 		 */
 		prog_segment_loaded((uintptr_t)dest, ptr->s_memsz,

@@ -197,7 +197,7 @@ static int mmc_select_hs(struct storage_media *media)
 	return ret;
 }
 
-static int mmc_send_tunning_seq(struct sd_mmc_ctrlr *ctrlr, char *buffer)
+static int mmc_send_tuning_seq(struct sd_mmc_ctrlr *ctrlr, char *buffer)
 {
 	struct mmc_command cmd;
 	struct mmc_data data;
@@ -225,7 +225,7 @@ static int mmc_bus_tuning(struct storage_media *media)
 	/* Request the device send the tuning sequence up to 40 times */
 	ctrlr->tuning_start(ctrlr, 0);
 	for (index = 0; index < 40; index++) {
-		mmc_send_tunning_seq(ctrlr, buffer);
+		mmc_send_tuning_seq(ctrlr, buffer);
 		if (ctrlr->is_tuning_complete(ctrlr, &successful)) {
 			if (successful)
 				return 0;

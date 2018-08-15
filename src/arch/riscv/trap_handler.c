@@ -19,6 +19,8 @@
 #include <console/console.h>
 #include <string.h>
 #include <vm.h>
+#include <mcall.h>
+#include <sbi.h>
 
 static const char *const exception_names[] = {
 	"Instruction address misaligned",
@@ -92,6 +94,20 @@ static void interrupt_handler(trapframe *tf)
 		set_csr(mip, MIP_STIP);
 
 		break;
+	case IRQ_M_SOFT:
+		if (HLS()->ipi_pending & IPI_SOFT) {
+			set_csr(mip, MIP_SSIP);
+		} else if (HLS()->ipi_pending & IPI_FENCE_I) {
+			asm volatile("fence.i");
+		} else if (HLS()->ipi_pending & IPI_SFENCE_VMA) {
+			asm volatile("sfence.vma");
+		} else if (HLS()->ipi_pending & IPI_SFENCE_VMA_ASID) {
+			asm volatile("sfence.vma");
+		} else if (HLS()->ipi_pending & IPI_SHUTDOWN) {
+			while (HLS()->ipi_pending & IPI_SHUTDOWN)
+				asm volatile("wfi");
+		}
+		break;
 	default:
 		printk(BIOS_EMERG, "======================================\n");
 		printk(BIOS_EMERG, "coreboot: Unknown machine interrupt: 0x%llx\n",
@@ -117,11 +133,13 @@ void trap_handler(trapframe *tf)
 		case CAUSE_LOAD_ACCESS:
 		case CAUSE_STORE_ACCESS:
 		case CAUSE_USER_ECALL:
-		case CAUSE_SUPERVISOR_ECALL:
 		case CAUSE_HYPERVISOR_ECALL:
 		case CAUSE_MACHINE_ECALL:
 			print_trap_information(tf);
 			break;
+		case CAUSE_SUPERVISOR_ECALL:
+			handle_sbi(tf);
+			return;
 		case CAUSE_MISALIGNED_LOAD:
 		case CAUSE_MISALIGNED_STORE:
 			print_trap_information(tf);

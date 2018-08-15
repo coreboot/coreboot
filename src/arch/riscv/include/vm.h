@@ -102,6 +102,14 @@ DEFINE_MPRV_WRITE(mprv_write_u64, uint64_t, sd)
 DEFINE_MPRV_WRITE(mprv_write_long, long, sd)
 DEFINE_MPRV_WRITE(mprv_write_ulong, unsigned long, sd)
 
+#if __riscv_xlen == 32
+	DEFINE_MPRV_READ(mprv_read_uintptr_t, uintptr_t, lw)
+	DEFINE_MPRV_READ(mprv_write_uintptr_t, uintptr_t, sw)
+#elif __riscv_xlen == 64
+	DEFINE_MPRV_READ(mprv_read_uintptr_t, uintptr_t, ld)
+	DEFINE_MPRV_READ(mprv_write_uintptr_t, uintptr_t, sd)
+#endif
+
 #undef DEFINE_MPRV_READ_FLAGS
 #undef DEFINE_MPRV_READ
 #undef DEFINE_MPRV_READ_MXR

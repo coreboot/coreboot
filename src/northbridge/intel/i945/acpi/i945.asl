@@ -20,17 +20,13 @@
 /* Operating System Capabilities Method */
 Method (_OSC, 4)
 {
-	// Create DWord-addressable fields from the Capabilities Buffer
-	CreateDWordField(Arg3, 0, CDW1)
-	CreateDWordField(Arg3, 4, CDW2)
-	CreateDWordField(Arg3, 8, CDW3)
-
 	/* Check for proper PCI/PCIe UUID */
 	If (LEqual(Arg0, ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
 	{
 		/* Let OS control everything */
 		Return(Arg3)
 	} Else {
+		CreateDWordField(Arg3, 0, CDW1)
 		Or(CDW1, 4, CDW1)	// Unrecognized UUID, so set bit 2 to 1
 		Return(Arg3)
 	}

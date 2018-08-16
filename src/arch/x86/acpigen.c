@@ -1454,7 +1454,7 @@ void acpigen_write_rom(void *bios, const size_t length)
 	ASSERT(length)
 
 	/* Method (_ROM, 2, NotSerialized) */
-	acpigen_write_method("_ROM", 2);
+	acpigen_write_method_serialized("_ROM", 2);
 
 	/* OperationRegion("ROMS", SYSTEMMEMORY, current, length) */
 	struct opregion opreg = OPREGION("ROMS", SYSTEMMEMORY,

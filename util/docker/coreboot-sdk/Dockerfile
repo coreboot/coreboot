@@ -43,6 +43,7 @@ RUN \
 		libglib2.0-dev \
 		libgmp-dev \
 		libisl-dev \
+		libjaylink-dev \
 		liblzma-dev \
 		libncurses5-dev \
 		libpci-dev \

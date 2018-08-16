@@ -467,25 +467,23 @@ Device (EC0)
 	 */
 	Method (_Q09, 0, NotSerialized)
 	{
-		If (Acquire (^PATM, 1000)) {
-			Return ()
-		}
+		If (LNot(Acquire (^PATM, 1000))) {
+			/* Read sensor ID for event */
+			Store (^PATI, Local0)
 
-		/* Read sensor ID for event */
-		Store (^PATI, Local0)
-
-		/* When sensor ID returns 0xFF then no more events */
-		While (LNotEqual (Local0, EC_TEMP_SENSOR_NOT_PRESENT))
-		{
+			/* When sensor ID returns 0xFF then no more events */
+			While (LNotEqual (Local0, EC_TEMP_SENSOR_NOT_PRESENT))
+			{
 #ifdef HAVE_THERM_EVENT_HANDLER
-			\_SB.DPTF.TEVT (Local0)
+				\_SB.DPTF.TEVT (Local0)
 #endif
 
-			/* Keep reaading sensor ID for event */
-			Store (^PATI, Local0)
-		}
+				/* Keep reaading sensor ID for event */
+				Store (^PATI, Local0)
+			}
 
-		Release (^PATM)
+			Release (^PATM)
+		}
 	}
 
 	/*

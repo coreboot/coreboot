@@ -28,6 +28,7 @@
 #include <timestamp.h>
 #include <amdblocks/s3_resume.h>
 #include <amdblocks/agesawrapper.h>
+#include <amdblocks/image.h>
 #include <amdblocks/BiosCallOuts.h>
 #include <soc/southbridge.h>
 
@@ -604,7 +605,7 @@ const void *agesawrapper_locate_module(const CHAR8 name[8])
 	if (!agesa)
 		return NULL;
 
-	image =  LibAmdLocateImage(agesa, agesa + file_size, 4096, name);
+	image =  amd_find_image(agesa, agesa + file_size, 4096, name);
 
 	if (!image)
 		return NULL;

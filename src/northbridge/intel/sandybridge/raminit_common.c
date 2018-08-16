@@ -195,7 +195,7 @@ void dram_xover(ramctr_timing * ctrl)
 static void dram_odt_stretch(ramctr_timing *ctrl, int channel)
 {
 	struct cpuid_result cpures;
-	u32 cpu, stretch;
+	u32 addr, cpu, stretch;
 
 	stretch = ctrl->ref_card_offset[channel];
 	/* ODT stretch: Delay ODT signal by stretch value.
@@ -205,14 +205,17 @@ static void dram_odt_stretch(ramctr_timing *ctrl, int channel)
 	if (IS_SANDY_CPU(cpu) && IS_SANDY_CPU_C(cpu)) {
 		if (stretch == 2)
 			stretch = 3;
-		MCHBAR32_AND_OR(0x401c + 0x400 * channel, 0xffffc3ff,
+		addr = 0x401c + 0x400 * channel;
+		MCHBAR32_AND_OR(addr, 0xffffc3ff,
 			(stretch << 12) | (stretch << 10));
-		printram("OTHP Workaround [%x] = %x\n", addr, reg);
+		printk(RAM_DEBUG, "OTHP Workaround [%x] = %x\n", addr,
+			MCHBAR32(addr));
 	} else {
 		// OTHP
-		MCHBAR32_AND_OR(0x400c + 0x400 * channel, 0xfff0ffff,
+		addr = 0x400c + 0x400 * channel;
+		MCHBAR32_AND_OR(addr, 0xfff0ffff,
 			(stretch << 16) | (stretch << 18));
-		printram("OTHP [%x] = %x\n", addr, reg);
+		printk(RAM_DEBUG, "OTHP [%x] = %x\n", addr, MCHBAR32(addr));
 	}
 }
 

@@ -31,7 +31,7 @@ Device (I2S)
 		}
 	})
 
-	Method (_CRS, 0x0, NotSerialized) {
+	Method (_CRS, 0x0, Serialized) {
 		Name (RBUF, ResourceTemplate () {
 			// Memory resource is for MISC FCH register set.
 			// It is needed for enabling the clock.

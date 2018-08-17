@@ -62,13 +62,6 @@ GetPciMmioAddress (
   );
 
 VOID
-IdsOutPort (
-  IN       UINT32 Addr,
-  IN       UINT32 Value,
-  IN       UINT32 Flag
-  );
-
-VOID
 CpuidRead (
   IN        UINT32      CpuidFcnAddress,
   OUT       CPUID_DATA  *Value
@@ -580,89 +573,6 @@ GetPciMmioAddress (
     MmioIsEnabled = TRUE;
   }
   return MmioIsEnabled;
-}
-
-/*---------------------------------------------------------------------------------------*/
-/**
- * Verify checksum of binary image (B1/B2/B3)
- *
- *
- * @param[in]   ImagePtr      Pointer to image  start
- * @retval      TRUE          Checksum valid
- * @retval      FALSE         Checksum invalid
- */
-BOOLEAN
-LibAmdVerifyImageChecksum (
-  IN       CONST VOID *ImagePtr
-  )
-{
-  // Assume ImagePtr points to the binary start ($AMD)
-  // Checksum is on an even boundary in AMD_IMAGE_HEADER
-
-  UINT16 Sum;
-  UINT32 i;
-
-  Sum = 0;
-
-  i = ((AMD_IMAGE_HEADER*) ImagePtr)->ImageSize;
-
-  while (i > 1) {
-    Sum = Sum + *((UINT16 *)ImagePtr);
-    ImagePtr = (VOID *) ((UINT8 *)ImagePtr + 2);
-    i = i - 2;
-  }
-  if (i > 0) {
-    Sum = Sum + *((UINT8 *) ImagePtr);
-  }
-
-  return (Sum == 0)?TRUE:FALSE;
-}
-
-/*---------------------------------------------------------------------------------------*/
-/**
- * Locate AMD binary image that contain specific module
- *
- *
- * @param[in]   StartAddress    Pointer to start range
- * @param[in]   EndAddress      Pointer to end range
- * @param[in]   Alignment       Image address alignment
- * @param[in]   ModuleSignature Module signature.
- * @retval     NULL  if image not found
- * @retval     pointer to image header
- */
-CONST VOID *
-LibAmdLocateImage (
-  IN       CONST VOID *StartAddress,
-  IN       CONST VOID *EndAddress,
-  IN       UINT32 Alignment,
-  IN       CONST CHAR8 ModuleSignature[8]
-  )
-
-{
-  CONST UINT8 *CurrentPtr = StartAddress;
-  AMD_MODULE_HEADER *ModuleHeaderPtr;
-  CONST UINT64 SearchStr = *((UINT64*)ModuleSignature);
-
-  // Search from start to end incrementing by alignment
-  while ((CurrentPtr >= (UINT8 *) StartAddress) && (CurrentPtr < (UINT8 *) EndAddress)) {
-    // First find a binary image
-    if (IMAGE_SIGNATURE == *((UINT32 *) CurrentPtr)) {
-      // TODO Figure out a way to fix the AGESA binary checksum
-//    if (LibAmdVerifyImageChecksum (CurrentPtr)) {
-        // If we have a valid image, search module linked list for a match
-        ModuleHeaderPtr = (AMD_MODULE_HEADER*)(((AMD_IMAGE_HEADER *) CurrentPtr)->ModuleInfoOffset);
-        while ((ModuleHeaderPtr != NULL) &&
-            (MODULE_SIGNATURE == *((UINT32*)&(ModuleHeaderPtr->ModuleHeaderSignature)))) {
-          if (SearchStr == *((UINT64*)&(ModuleHeaderPtr->ModuleIdentifier))) {
-            return  CurrentPtr;
-          }
-          ModuleHeaderPtr = (AMD_MODULE_HEADER *)ModuleHeaderPtr->NextBlock;
-        }
-//      }
-    }
-    CurrentPtr += Alignment;
-  }
-  return NULL;
 }
 
 BOOLEAN

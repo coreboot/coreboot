@@ -126,11 +126,6 @@ Write64Mem32 (
   IN       UINT32 Data
   );
 
-UINT64
-ReadTSC (
-  void
-  );
-
 // MSR
 VOID
 LibAmdMsrRead (
@@ -163,16 +158,6 @@ LibAmdIoWrite (
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   );
 
-VOID
-LibAmdIoPoll (
-  IN       ACCESS_WIDTH AccessWidth,
-  IN       UINT16 IoAddress,
-  IN       CONST VOID *Data,
-  IN       CONST VOID *DataMask,
-  IN       UINT64 Delay,
-  IN OUT   AMD_CONFIG_PARAMS *StdHeader
-  );
-
 // Memory or MMIO
 VOID
 LibAmdMemRead (
@@ -187,16 +172,6 @@ LibAmdMemWrite (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT64 MemAddress,
   IN       CONST VOID *Value,
-  IN OUT   AMD_CONFIG_PARAMS *StdHeader
-  );
-
-VOID
-LibAmdMemPoll (
-  IN       ACCESS_WIDTH AccessWidth,
-  IN       UINT64 MemAddress,
-  IN       CONST VOID *Data,
-  IN       CONST VOID *DataMask,
-  IN       UINT64 Delay,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   );
 
@@ -217,40 +192,6 @@ LibAmdPciWrite (
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   );
 
-VOID
-LibAmdPciPoll (
-  IN       ACCESS_WIDTH AccessWidth,
-  IN       PCI_ADDR PciAddress,
-  IN       CONST VOID *Data,
-  IN       CONST VOID *DataMask,
-  IN       UINT64 Delay,
-  IN OUT   AMD_CONFIG_PARAMS *StdHeader
-  );
-
-VOID
-LibAmdPciReadBits (
-  IN       PCI_ADDR Address,
-  IN       UINT8 Highbit,
-  IN       UINT8 Lowbit,
-     OUT   UINT32 *Value,
-  IN       AMD_CONFIG_PARAMS *StdHeader
-  );
-
-VOID
-LibAmdPciWriteBits (
-  IN       PCI_ADDR Address,
-  IN       UINT8 Highbit,
-  IN       UINT8 Lowbit,
-  IN       CONST UINT32 *Value,
-  IN       AMD_CONFIG_PARAMS *StdHeader
-  );
-
-VOID
-LibAmdPciFindNextCap (
-  IN OUT   PCI_ADDR *Address,
-  IN       AMD_CONFIG_PARAMS *StdHeader
-  );
-
 // CPUID
 VOID
 LibAmdCpuidRead (
@@ -258,111 +199,4 @@ LibAmdCpuidRead (
      OUT   CPUID_DATA *Value,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   );
-
-// Utility Functions
-VOID
-LibAmdMemFill (
-  IN       VOID *Destination,
-  IN       UINT8 Value,
-  IN       UINTN FillLength,
-  IN OUT   AMD_CONFIG_PARAMS *StdHeader
-  );
-
-VOID
-LibAmdMemCopy (
-  IN       VOID *Destination,
-  IN       CONST VOID *Source,
-  IN       UINTN CopyLength,
-  IN OUT   AMD_CONFIG_PARAMS *StdHeader
-  );
-
-CONST VOID *
-LibAmdLocateImage (
-  IN       CONST VOID *StartAddress,
-  IN       CONST VOID *EndAddress,
-  IN       UINT32 Alignment,
-  IN       CONST CHAR8 ModuleSignature[8]
-  );
-
-UINT32
-LibAmdGetPackageType (
-  IN       AMD_CONFIG_PARAMS *StdHeader
-  );
-
-BOOLEAN
-LibAmdVerifyImageChecksum (
-  IN       CONST VOID *ImagePtr
-  );
-
-UINT8
-LibAmdBitScanReverse (
-  IN       UINT32 value
-  );
-UINT8
-LibAmdBitScanForward (
-  IN       UINT32 value
-  );
-
-VOID
-LibAmdReadCpuReg (
-  IN       UINT8 RegNum,
-     OUT   UINT32 *Value
-  );
-VOID
-LibAmdWriteCpuReg (
-  IN       UINT8 RegNum,
-  IN       UINT32 Value
-  );
-
-VOID
-LibAmdWriteBackInvalidateCache (
-  void
-  );
-
-VOID
-LibAmdSimNowEnterDebugger (
-  void
-  );
-
-VOID
-LibAmdHDTBreakPoint (
-  void
-  );
-
-UINT8
-LibAmdAccessWidth (
-  IN       ACCESS_WIDTH AccessWidth
-  );
-
-VOID
-LibAmdCLFlush (
-  IN       UINT64 Address,
-  IN       UINT8  Count
-  );
-
-VOID
-StopHere (
-  void
-  );
-
-VOID
-LibAmdFinit (
-  void
-  );
-
-VOID
-LibAmdFnclex (
-  void
-  );
-
-VOID
-LibAmdReadMxcsr (
-     OUT   UINT32 *Value
-  );
-
-VOID
-LibAmdWriteMxcsr (
-  IN       UINT32 *Value
-  );
-
 #endif // _AMD_LIB_H_

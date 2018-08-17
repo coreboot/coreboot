@@ -542,7 +542,6 @@ void southcluster_inject_dsdt(struct device *device)
 			gnvs->cid1 = wifi_regulatory_domain();
 		else
 			gnvs->cid1 = WRDD_DEFAULT_REGULATORY_DOMAIN;
-		acpi_save_gnvs((unsigned long)gnvs);
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);
 

@@ -1252,13 +1252,6 @@ void *acpi_find_wakeup_vector(void)
 	return wake_vec;
 }
 
-void acpi_save_gnvs(u32 gnvs_address)
-{
-	u32 *gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS_PTR, sizeof(*gnvs));
-	if (gnvs)
-		*gnvs = gnvs_address;
-}
-
 __weak int acpi_get_gpe(int gpe)
 {
 	return -1; /* implemented by SOC */

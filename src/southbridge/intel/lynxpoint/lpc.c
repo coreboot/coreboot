@@ -779,7 +779,6 @@ static void southbridge_inject_dsdt(struct device *dev)
 		gnvs->ndid = gfx->ndid;
 		memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
 
-		acpi_save_gnvs((unsigned long)gnvs);
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);
 

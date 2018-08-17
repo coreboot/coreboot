@@ -237,7 +237,6 @@ void southbridge_inject_dsdt(struct device *device)
 
 	if (gnvs) {
 		acpi_create_gnvs(gnvs);
-		acpi_save_gnvs((uintptr_t) gnvs);
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);
 

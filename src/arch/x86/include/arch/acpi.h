@@ -771,8 +771,6 @@ void acpi_write_hest(acpi_hest_t *hest,
 unsigned long acpi_create_hest_error_source(acpi_hest_t *hest,
 	acpi_hest_esd_t *esd, u16 type, void *data, u16 len);
 
-void acpi_save_gnvs(u32 gnvs_address);
-
 /* For ACPI S3 support. */
 void acpi_fail_wakeup(void);
 void acpi_resume(void *wake_vec);

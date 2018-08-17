@@ -434,7 +434,6 @@ static void southbridge_inject_dsdt(struct device *dev)
 	if (gnvs) {
 		memset(gnvs, 0, sizeof(*gnvs));
 		acpi_create_gnvs(gnvs);
-		acpi_save_gnvs((unsigned long)gnvs);
 #if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);

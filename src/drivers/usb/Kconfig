@@ -82,7 +82,7 @@ config USBDEBUG_DONGLE_STD
 	  Net20DC, BeagleBone Black, Raspberry Pi Zero W
 
 config USBDEBUG_DONGLE_BEAGLEBONE
-	bool "BeagleBone"
+	bool "BeagleBone (not BeagleBone Black)"
 	help
 	  Use this to configure the USB hub on BeagleBone board.
 	  Do NOT select this for the BeagleBone Black.

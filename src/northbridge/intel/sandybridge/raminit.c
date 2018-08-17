@@ -112,7 +112,29 @@ static void fill_smbios17(ramctr_timing *ctrl)
 			memcpy(dimm->module_part_number,
 				   info->dimm[channel][slot].part_number, 16);
 			dimm->mod_id = info->dimm[channel][slot].manufacturer_id;
-			dimm->mod_type = info->dimm[channel][slot].dimm_type;
+
+			switch (info->dimm[channel][slot].dimm_type) {
+			case SPD_DIMM_TYPE_SO_DIMM:
+				dimm->mod_type = SPD_SODIMM;
+				break;
+			case SPD_DIMM_TYPE_72B_SO_CDIMM:
+				dimm->mod_type = SPD_72B_SO_CDIMM;
+				break;
+			case SPD_DIMM_TYPE_72B_SO_RDIMM:
+				dimm->mod_type = SPD_72B_SO_RDIMM;
+				break;
+			case SPD_DIMM_TYPE_UDIMM:
+				dimm->mod_type = SPD_UDIMM;
+				break;
+			case SPD_DIMM_TYPE_RDIMM:
+				dimm->mod_type = SPD_RDIMM;
+				break;
+			case SPD_DIMM_TYPE_UNDEFINED:
+			default:
+				dimm->mod_type = SPD_UNDEFINED;
+				break;
+			}
+
 			dimm->bus_width = MEMORY_BUS_WIDTH_64; // non-ECC only
 
 			memcpy(dimm->serial, info->dimm[channel][slot].serial,

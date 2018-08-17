@@ -961,7 +961,9 @@ endif # ifeq ($(CONFIG_FMDFILE),)
 
 # generated at the same time as fmap.fmap
 $(obj)/fmap_config.h: $(obj)/fmap.fmap
+	true
 $(obj)/fmap.desc: $(obj)/fmap.fmap
+	true
 
 $(obj)/fmap.fmap: $(obj)/fmap.fmd $(FMAPTOOL)
 	echo "    FMAP       $(FMAPTOOL) -h $(obj)/fmap_config.h $< $@"

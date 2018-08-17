@@ -398,6 +398,8 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 	memcpy(dimm->part_number, &spd[128], 16);
 	printram("  Part number        : %s\n", dimm->part_number);
 
+	memcpy(dimm->serial, &spd[SPD_DIMM_SERIAL_NUM], SPD_DIMM_SERIAL_LEN);
+
 	return ret;
 }
 

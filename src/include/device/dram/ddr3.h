@@ -174,6 +174,8 @@ typedef struct dimm_attr_st {
 	u16 manufacturer_id;
 	/* ASCII part number - NULL terminated */
 	u8 part_number[17];
+	/* Serial number */
+	u8 serial[SPD_DIMM_SERIAL_LEN];
 } dimm_attr;
 
 enum ddr3_xmp_profile {

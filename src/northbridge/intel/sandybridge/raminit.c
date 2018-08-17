@@ -114,6 +114,10 @@ static void fill_smbios17(ramctr_timing *ctrl)
 			dimm->mod_id = info->dimm[channel][slot].manufacturer_id;
 			dimm->mod_type = info->dimm[channel][slot].dimm_type;
 			dimm->bus_width = MEMORY_BUS_WIDTH_64; // non-ECC only
+
+			memcpy(dimm->serial, info->dimm[channel][slot].serial,
+			       MIN(sizeof(dimm->serial),
+				   sizeof(info->dimm[channel][slot].serial)));
 			mem_info->dimm_cnt++;
 		}
 	}

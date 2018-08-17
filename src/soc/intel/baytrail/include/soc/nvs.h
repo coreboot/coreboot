@@ -102,7 +102,7 @@ typedef struct global_nvs_t {
 	/* Baytrail LPSS (0x1000) */
 	device_nvs_t dev;
 } __packed global_nvs_t;
-check_member(global_nvs_t, chromeos, 0x100);
+check_member(global_nvs_t, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
 
 void acpi_create_gnvs(global_nvs_t *gnvs);
 #ifdef __SMM__

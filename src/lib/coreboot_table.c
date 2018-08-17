@@ -195,19 +195,6 @@ static void lb_gpios(struct lb_header *header)
 	}
 }
 
-static void lb_chromeos_acpi(struct lb_header *header)
-{
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	struct lb_range *chromeos_acpi;
-
-	chromeos_acpi = (struct lb_range *)lb_new_record(header);
-	chromeos_acpi->tag = LB_TAG_CHROMEOS_ACPI;
-	chromeos_acpi->size = sizeof(*chromeos_acpi);
-	acpi_get_chromeos_acpi_info(&chromeos_acpi->range_start,
-				    &chromeos_acpi->range_size);
-#endif
-}
-
 static void lb_vbnv(struct lb_header *header)
 {
 #if IS_ENABLED(CONFIG_PC80_SYSTEM)
@@ -546,9 +533,6 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 #if IS_ENABLED(CONFIG_CHROMEOS)
 	/* Record our GPIO settings (ChromeOS specific) */
 	lb_gpios(head);
-
-	/* pass along the chromeos_acpi_t buffer address */
-	lb_chromeos_acpi(head);
 
 	/* pass along VBNV offsets in CMOS */
 	lb_vbnv(head);

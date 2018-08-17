@@ -19,9 +19,6 @@
 #include <stdint.h>
 #include <compiler.h>
 
-/* Offset in Global NVS where this structure lives */
-#define DEVICE_NVS_OFFSET	0x1000
-
 #define LPSS_NVS_SIO_DMA1	0
 #define LPSS_NVS_I2C1		1
 #define LPSS_NVS_I2C2		2

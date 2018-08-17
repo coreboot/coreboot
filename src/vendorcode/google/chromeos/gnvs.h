@@ -41,6 +41,18 @@
 #define ACTIVE_ECFW_RO		0
 #define ACTIVE_ECFW_RW		1
 
+/*
+ * chromeos_acpi_t portion of ACPI GNVS is assumed to live at
+ * 0x100 - 0x1000.  When defining global_nvs_t, use check_member
+ * to ensure that it is properly aligned:
+ *
+ *   check_member(global_nvs_t, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
+ */
+#define GNVS_CHROMEOS_ACPI_OFFSET 0x100
+
+/* device_nvs_t is assumed to live directly after chromeos_acpi_t. */
+#define GNVS_DEVICE_NVS_OFFSET 0x1000
+
 typedef struct {
 	/* ChromeOS specific */
 	u32	vbt0;		// 00 boot reason

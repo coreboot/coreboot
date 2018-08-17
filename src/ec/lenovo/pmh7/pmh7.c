@@ -103,13 +103,15 @@ void pmh7_register_clear_bit(int reg, int bit)
 
 char pmh7_register_read(int reg)
 {
-	outb(reg, EC_LENOVO_PMH7_ADDR);
+	outb(reg & 0xff, EC_LENOVO_PMH7_ADDR_L);
+	outb((reg & 0xff00) >> 8, EC_LENOVO_PMH7_ADDR_H);
 	return inb(EC_LENOVO_PMH7_DATA);
 }
 
 void pmh7_register_write(int reg, int val)
 {
-	outb(reg, EC_LENOVO_PMH7_ADDR);
+	outb(reg & 0xff, EC_LENOVO_PMH7_ADDR_L);
+	outb((reg & 0xff00) >> 8, EC_LENOVO_PMH7_ADDR_H);
 	outb(val, EC_LENOVO_PMH7_DATA);
 }
 

@@ -30,4 +30,13 @@ Device (CREC)
 		Name (_DDN, "EC MKBP Device")
 	}
 #endif
+
+#ifdef EC_ENABLE_CBAS_DEVICE
+	Device (CBAS)
+	{
+		Name (_HID, "GOOG000B")
+		Name (_UID, 1)
+		Name (_DDN, "EC Base Switch Device")
+	}
+#endif
 }

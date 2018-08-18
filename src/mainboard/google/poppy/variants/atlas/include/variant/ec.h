@@ -78,4 +78,7 @@
 #define SIO_EC_HOST_ENABLE	/* EC Host Interface Resources */
 #define SIO_EC_ENABLE_PS2K	/* Enable PS/2 Keyboard */
 
+/* Enable EC backed Keyboard Backlight in ACPI */
+#define EC_ENABLE_KEYBOARD_BACKLIGHT
+
 #endif /* __MAINBOARD_EC_H__ */

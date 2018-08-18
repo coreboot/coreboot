@@ -303,7 +303,7 @@ enum cb_err get_option(void *dest, const char *name)
 		}
 	}
 	if (!found) {
-		printk(BIOS_DEBUG, "WARNING: No CMOS option '%s'.\n", name);
+		printk(BIOS_DEBUG, "No CMOS option '%s'.\n", name);
 		rdev_munmap(&rdev, ct);
 		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_OPTION_NOT_FOUND;

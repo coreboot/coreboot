@@ -74,3 +74,6 @@ clean: clean-sphinx
 
 distclean: clean
 	rm -f corebootPortingGuide.pdf Kconfig.pdf
+
+livesphinx:
+	$(MAKE) -f Makefile.sphinx livehtml

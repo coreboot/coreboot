@@ -24,6 +24,9 @@
 #include <device/device.h>
 #include <device/dram/ddr3.h>
 #include <string.h>
+#include <memory_info.h>
+#include <cbmem.h>
+#include <smbios.h>
 
 /*==============================================================================
  * = DDR3 SPD decoding helpers
@@ -520,6 +523,82 @@ int spd_xmp_decode_ddr3(dimm_attr *dimm,
 	dimm->tCMD = xmp[23] * mtb;
 
 	return ret;
+}
+
+
+/**
+ * Fill cbmem with information for SMBIOS type 17.
+ *
+ * @param channel Corresponding channel of provided @info
+ * @param slot Corresponding slot of provided @info
+ * @param selected_freq The actual frequency the DRAM is running on
+ * @param info DIMM parameters read from SPD
+ *
+ * @return CB_SUCCESS if DIMM info was written
+ */
+enum cb_err spd_add_smbios17(const u8 channel, const u8 slot,
+			     const u16 selected_freq,
+			     const dimm_attr *info)
+{
+	struct memory_info *mem_info;
+	struct dimm_info *dimm;
+
+	/*
+	 * Allocate CBMEM area for DIMM information used to populate SMBIOS
+	 * table 17
+	 */
+	mem_info = cbmem_find(CBMEM_ID_MEMINFO);
+	if (!mem_info) {
+		mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(*mem_info));
+
+		printk(BIOS_DEBUG, "CBMEM entry for DIMM info: 0x%p\n",
+				mem_info);
+		if (!mem_info)
+			return CB_ERR;
+
+		memset(mem_info, 0, sizeof(*mem_info));
+	}
+
+	dimm = &mem_info->dimm[mem_info->dimm_cnt];
+	if (info->size_mb) {
+		dimm->ddr_type = MEMORY_TYPE_DDR3;
+		dimm->ddr_frequency = selected_freq;
+		dimm->dimm_size = info->size_mb;
+		dimm->channel_num = channel;
+		dimm->rank_per_dimm = info->ranks;
+		dimm->dimm_num = slot;
+		memcpy(dimm->module_part_number, info->part_number, 16);
+		dimm->mod_id = info->manufacturer_id;
+
+		switch (info->dimm_type) {
+		case SPD_DIMM_TYPE_SO_DIMM:
+			dimm->mod_type = SPD_SODIMM;
+			break;
+		case SPD_DIMM_TYPE_72B_SO_CDIMM:
+			dimm->mod_type = SPD_72B_SO_CDIMM;
+			break;
+		case SPD_DIMM_TYPE_72B_SO_RDIMM:
+			dimm->mod_type = SPD_72B_SO_RDIMM;
+			break;
+		case SPD_DIMM_TYPE_UDIMM:
+			dimm->mod_type = SPD_UDIMM;
+			break;
+		case SPD_DIMM_TYPE_RDIMM:
+			dimm->mod_type = SPD_RDIMM;
+			break;
+		case SPD_DIMM_TYPE_UNDEFINED:
+		default:
+			dimm->mod_type = SPD_UNDEFINED;
+			break;
+		}
+
+		dimm->bus_width = MEMORY_BUS_WIDTH_64; // non-ECC only
+		memcpy(dimm->serial, info->serial,
+		       MIN(sizeof(dimm->serial), sizeof(info->serial)));
+		mem_info->dimm_cnt++;
+	}
+
+	return CB_SUCCESS;
 }
 
 /*

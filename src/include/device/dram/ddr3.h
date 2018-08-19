@@ -32,6 +32,7 @@
 #include <stdint.h>
 #include <spd.h>
 #include <device/dram/common.h>
+#include <types.h>
 
 
 /**
@@ -193,7 +194,9 @@ void dram_print_spd_ddr3(const dimm_attr *dimm);
 int spd_xmp_decode_ddr3(dimm_attr *dimm,
 			spd_raw_data spd,
 			enum ddr3_xmp_profile profile);
-
+enum cb_err spd_add_smbios17(const u8 channel, const u8 slot,
+			     const u16 selected_freq,
+			     const dimm_attr *info);
 /**
  * \brief Read double word from specified address
  *

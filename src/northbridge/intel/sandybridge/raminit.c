@@ -16,7 +16,6 @@
  */
 
 #include <console/console.h>
-#include <console/usb.h>
 #include <commonlib/region.h>
 #include <bootmode.h>
 #include <string.h>
@@ -29,8 +28,6 @@
 #include <southbridge/intel/common/smbus.h>
 #include <cpu/x86/msr.h>
 #include <delay.h>
-#include <smbios.h>
-#include <memory_info.h>
 #include <lib.h>
 #include "raminit_native.h"
 #include "raminit_common.h"
@@ -81,67 +78,14 @@ static void disable_channel(ramctr_timing *ctrl, int channel) {
  */
 static void fill_smbios17(ramctr_timing *ctrl)
 {
-	struct memory_info *mem_info;
 	int channel, slot;
-	struct dimm_info *dimm;
-	uint16_t ddr_freq;
-	dimm_info *info = &ctrl->info;
-
-	ddr_freq = (1000 << 8) / ctrl->tCK;
-
-	/*
-	 * Allocate CBMEM area for DIMM information used to populate SMBIOS
-	 * table 17
-	 */
-	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(*mem_info));
-	printk(BIOS_DEBUG, "CBMEM entry for DIMM info: 0x%p\n", mem_info);
-	if (!mem_info)
-		return;
-
-	memset(mem_info, 0, sizeof(*mem_info));
+	const u16 ddr_freq = (1000 << 8) / ctrl->tCK;
 
 	FOR_ALL_CHANNELS for (slot = 0; slot < NUM_SLOTS; slot++) {
-		dimm = &mem_info->dimm[mem_info->dimm_cnt];
-		if (info->dimm[channel][slot].size_mb) {
-			dimm->ddr_type = MEMORY_TYPE_DDR3;
-			dimm->ddr_frequency = ddr_freq;
-			dimm->dimm_size = info->dimm[channel][slot].size_mb;
-			dimm->channel_num = channel;
-			dimm->rank_per_dimm = info->dimm[channel][slot].ranks;
-			dimm->dimm_num = slot;
-			memcpy(dimm->module_part_number,
-				   info->dimm[channel][slot].part_number, 16);
-			dimm->mod_id = info->dimm[channel][slot].manufacturer_id;
-
-			switch (info->dimm[channel][slot].dimm_type) {
-			case SPD_DIMM_TYPE_SO_DIMM:
-				dimm->mod_type = SPD_SODIMM;
-				break;
-			case SPD_DIMM_TYPE_72B_SO_CDIMM:
-				dimm->mod_type = SPD_72B_SO_CDIMM;
-				break;
-			case SPD_DIMM_TYPE_72B_SO_RDIMM:
-				dimm->mod_type = SPD_72B_SO_RDIMM;
-				break;
-			case SPD_DIMM_TYPE_UDIMM:
-				dimm->mod_type = SPD_UDIMM;
-				break;
-			case SPD_DIMM_TYPE_RDIMM:
-				dimm->mod_type = SPD_RDIMM;
-				break;
-			case SPD_DIMM_TYPE_UNDEFINED:
-			default:
-				dimm->mod_type = SPD_UNDEFINED;
-				break;
-			}
-
-			dimm->bus_width = MEMORY_BUS_WIDTH_64; // non-ECC only
-
-			memcpy(dimm->serial, info->dimm[channel][slot].serial,
-			       MIN(sizeof(dimm->serial),
-				   sizeof(info->dimm[channel][slot].serial)));
-			mem_info->dimm_cnt++;
-		}
+		enum cb_err ret = spd_add_smbios17(channel, slot, ddr_freq,
+					&ctrl->info.dimm[channel][slot]);
+		if (ret != CB_SUCCESS)
+			printk(BIOS_ERR, "RAMINIT: Failed to add SMBIOS17\n");
 	}
 }
 

@@ -54,12 +54,22 @@ static struct device_operations ops = {
 	.ops_pnp_mode     = &pnp_conf_mode_870155_aa,
 };
 
-/* TODO: FDC, PP, EC, KBCM, IR. */
+/* Guessed */
 static struct pnp_info pnp_dev_info[] = {
+	{ NULL, IT8721F_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0
+	  | PNP_MSC0 | PNP_MSC1, 0x0ff8, },
 	{ NULL, IT8721F_SP1,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
 	{ NULL, IT8721F_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1,
 		0x07f8, },
+	{ NULL, IT8721F_PP,   PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_DRQ0 | PNP_MSC0,
+	  0x0ff8, 0x0ff8, },
+	{ NULL, IT8721F_EC,   PNP_IO0 | PNP_IO1 | PNP_IRQ0
+	  | PNP_MSC0 | PNP_MSC1 | PNP_MSC2 | PNP_MSC3
+	  | PNP_MSC4 | PNP_MSC5 | PNP_MSC6,
+	  0x0ff8, 0x0ff8, },
 	{ NULL, IT8721F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07f8, 0x07f8, },
+	{ NULL, IT8721F_KBCM, PNP_IRQ0 | PNP_MSC0, },
+	{ NULL, IT8721F_IR, },
 };
 
 static void enable_dev(struct device *dev)

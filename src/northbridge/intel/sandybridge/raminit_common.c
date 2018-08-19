@@ -16,12 +16,8 @@
  */
 
 #include <console/console.h>
-#include <console/usb.h>
 #include <string.h>
 #include <arch/io.h>
-#include <cbmem.h>
-#include <arch/cbfs.h>
-#include <cbfs.h>
 #include <northbridge/intel/sandybridge/chip.h>
 #include <device/pci_def.h>
 #include <delay.h>

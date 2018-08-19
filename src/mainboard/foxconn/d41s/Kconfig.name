@@ -1,0 +1,2 @@
+config BOARD_FOXCONN_D41S
+	bool "D41S, D42S, D51S, D52S"

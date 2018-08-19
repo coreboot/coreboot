@@ -10,6 +10,10 @@ This section contains documentation about coreboot on specific mainboards.
 
 - [CN81XX EVB SFF](cavium/cn8100_sff_evb.md)
 
+## Foxconn
+
+- [D41S](foxconn/d41s.md)
+
 ## Gigabyte
 
 - [GA-H61M-S2PV](gigabyte/ga-h61m-s2pv.md)

@@ -39,4 +39,8 @@ config VGA_BIOS_ID
 	string
 	default "8086,a001"
 
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xe0000000
+
 endif

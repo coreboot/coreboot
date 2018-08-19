@@ -34,10 +34,6 @@ config MAX_CPUS
 	int
 	default 4
 
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xe0000000
-
 config MAINBOARD_DIR
 	string
 	default intel/d510mo

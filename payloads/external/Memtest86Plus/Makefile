@@ -17,6 +17,7 @@ TAG-$(CONFIG_MEMTEST_MASTER)=origin/master
 NAME-$(CONFIG_MEMTEST_MASTER)=Master
 TAG-$(CONFIG_MEMTEST_STABLE)=3754fd440f4009b62244e0f95c56bbb12c2fffcb
 NAME-$(CONFIG_MEMTEST_STABLE)=Stable
+TAG-$(CONFIG_MEMTEST_REVISION)=$(CONFIG_MEMTEST_REVISION_ID)
 
 project_name=Memtest86+
 project_dir=$(CURDIR)/memtest86plus
@@ -29,6 +30,14 @@ $(project_dir):
 	git clone $(project_git_repo) $(project_dir)
 
 fetch: $(project_dir)
+ifeq ($(TAG-y),)
+	echo "Error: The specified tag is invalid"
+ifeq ($(CONFIG_MEMTEST_REVISION),y)
+	echo "Error: There is no revision specified for $(project_name)"
+	false
+endif
+	false
+endif
 	-cd $(project_dir); git show $(TAG-y) >/dev/null 2>&1 ; \
 		if [ $$? -ne 0 ] || [ "$(TAG-y)" = "origin/master" ]; then \
 		echo "    Fetching new commits from the $(project_name) git repo"; \

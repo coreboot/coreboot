@@ -129,27 +129,6 @@ config MEMTEST_SECONDARY_PAYLOAD
 	  Memtest86+ can be loaded as a secondary payload under SeaBIOS, GRUB,
 	  or any other payload that can load additional payloads.
 
-choice
-	prompt "Memtest86+ version"
-	default MEMTEST_STABLE
-	depends on MEMTEST_SECONDARY_PAYLOAD
-
-config MEMTEST_STABLE
-	bool "Stable"
-	help
-	  Stable Memtest86+ version.
-
-	  For reproducible builds, this option must be selected.
-config MEMTEST_MASTER
-	bool "Master"
-	help
-	  Newest Memtest86+ version.
-
-	  This option will fetch the newest version of the Memtest86+ code,
-	  updating as new changes are committed.  This makes the build
-	  non-reproducible, as it can fetch different code each time.
-endchoice
-
 config NVRAMCUI_SECONDARY_PAYLOAD
 	bool "Load nvramcui as a secondary payload"
 	default n
@@ -165,6 +144,8 @@ config TINT_SECONDARY_PAYLOAD
 	help
 	  tint can be loaded as a secondary payload under SeaBIOS, GRUB,
 	  or any other payload that can load additional payloads.
+
+source "payloads/external/*/Kconfig.secondary"
 
 endmenu # "Secondary Payloads"
 endmenu

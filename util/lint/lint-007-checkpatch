@@ -23,6 +23,7 @@ EXCLUDED_DIRS="^payloads/libpayload/util/kconfig\|\
 ^payloads/libpayload/curses/PDCurses\|\
 ^util/crossgcc/patches\|\
 ^util/kconfig\|\
+^util/superiotool\|\
 ^src/vendorcode\|\
 ^Documentation"
 

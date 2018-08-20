@@ -457,7 +457,7 @@ ADAFLAGS_common += -gnata
 endif
 
 additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool \
-		   $(objutil)/ifdfake $(objutil)/options $(objutil)/amdfwtool \
+		   $(objutil)/options $(objutil)/amdfwtool \
 		   $(objutil)/cbootimage $(objutil)/bimgtool
 
 export $(COREBOOT_EXPORTS)
@@ -531,11 +531,6 @@ $(IFDTOOL):
 	@printf "    Compile IFDTOOL\n"
 	+$(MAKE) -C $(top)/util/ifdtool
 	cp -a $(top)/util/ifdtool/ifdtool $@
-
-IFDFAKE:=$(objutil)/ifdfake/ifdfake
-$(IFDFAKE): $(top)/util/ifdfake/ifdfake.c
-	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
-	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
 
 AMDFWTOOL:=$(objutil)/amdfwtool/amdfwtool
 $(AMDFWTOOL): $(top)/util/amdfwtool/amdfwtool.c
@@ -616,7 +611,7 @@ install-git-commit-clangfmt:
 include util/crossgcc/Makefile.inc
 
 .PHONY: tools
-tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY) $(BINCFG)
+tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY) $(BINCFG)
 
 ###########################################################################
 # Common recipes for all stages

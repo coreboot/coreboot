@@ -24,29 +24,12 @@ ifeq ($(CONFIG_HAVE_IFD_BIN),y)
 INTERMEDIATE+=add_intel_firmware
 endif
 
-ifeq ($(CONFIG_BUILD_WITH_FAKE_IFD),y)
-INTERMEDIATE+=add_intel_firmware
-IFD_BIN_PATH := $(objgenerated)/ifdfake.bin
-IFD_SECTIONS := $(addprefix -b ,$(CONFIG_IFD_BIOS_SECTION:"%"=%)) \
-		$(addprefix -m ,$(CONFIG_IFD_ME_SECTION:"%"=%)) \
-		$(addprefix -g ,$(CONFIG_IFD_GBE_SECTION:"%"=%)) \
-		$(addprefix -p ,$(CONFIG_IFD_PLATFORM_SECTION:"%"=%))
-else
 IFD_BIN_PATH := $(CONFIG_IFD_BIN_PATH)
 ifneq ($(call strip_quotes,$(CONFIG_IFD_CHIPSET)),)
 IFDTOOL_USE_CHIPSET := -p $(CONFIG_IFD_CHIPSET)
 endif
-endif
 
-add_intel_firmware: $(obj)/coreboot.pre $(IFDTOOL) $(IFDFAKE)
-ifeq ($(CONFIG_BUILD_WITH_FAKE_IFD),y)
-	printf "\n** WARNING **\n"
-	printf "coreboot will be built with a fake Intel Firmware Descriptor (IFD).\n"
-	printf "Never write a complete coreboot.rom with a fake IFD to your board's\n"
-	printf "flash ROM! Make sure that you only write valid flash regions.\n\n"
-	printf "    IFDFAKE    Building a fake Intel Firmware Descriptor\n"
-	$(IFDFAKE) $(IFD_SECTIONS) $(IFD_BIN_PATH)
-endif
+add_intel_firmware: $(obj)/coreboot.pre $(IFDTOOL)
 	printf "    DD         Adding Intel Firmware Descriptor\n"
 	dd if=$(IFD_BIN_PATH) \
 		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1
@@ -88,7 +71,7 @@ ifeq ($(CONFIG_LOCK_MANAGEMENT_ENGINE),y)
 	$(objutil)/ifdtool/ifdtool \
 		$(IFDTOOL_USE_CHIPSET) -l $(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
-else ifneq ($(CONFIG_BUILD_WITH_FAKE_IFD),y)
+else
 	printf "    IFDTOOL    Unlocking Management Engine\n"
 	$(objutil)/ifdtool/ifdtool \
 	$(IFDTOOL_USE_CHIPSET) -u $(obj)/coreboot.pre

@@ -33,7 +33,7 @@ config HAVE_IFD_BIN
 config IFD_BIN_PATH
 	string "Path and filename of the descriptor.bin file"
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/descriptor.bin"
-	depends on HAVE_IFD_BIN && !BUILD_WITH_FAKE_IFD
+	depends on HAVE_IFD_BIN
 
 config HAVE_ME_BIN
 	bool "Add Intel ME/TXE firmware"
@@ -131,67 +131,6 @@ config EC_BIN_PATH
 	string "Path to EC firmware"
 	depends on HAVE_EC_BIN
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/ec.bin"
-
-##### Fake IFD #####
-
-config BUILD_WITH_FAKE_IFD
-	bool "Build with a fake IFD" if !HAVE_IFD_BIN
-	help
-	  If you don't have an Intel Firmware Descriptor (descriptor.bin) for your
-	  board, you can select this option and coreboot will build without it.
-	  The resulting coreboot.rom will not contain all parts required
-	  to get coreboot running on your board. You can however write only the
-	  BIOS section to your board's flash ROM and keep the other sections
-	  untouched. Unfortunately the current version of flashrom doesn't
-	  support this yet. But there is a patch pending [1].
-
-	  WARNING: Never write a complete coreboot.rom to your flash ROM if it
-	           was built with a fake IFD. It just won't work.
-
-	  [1] http://www.flashrom.org/pipermail/flashrom/2013-June/011083.html
-
-config IFD_BIOS_SECTION
-	depends on BUILD_WITH_FAKE_IFD
-	string "BIOS Region Starting:Ending addresses within the ROM"
-	default ""
-	help
-	  The BIOS region is typically the size of the CBFS area, and is located
-	  at the end of the ROM space.
-
-	  For an 8MB ROM with a 3MB CBFS area, this would look like:
-	  0x00500000:0x007fffff
-
-config IFD_ME_SECTION
-	depends on BUILD_WITH_FAKE_IFD
-	string "ME/TXE Region Starting:Ending addresses within the ROM"
-	default ""
-	help
-	  The ME/TXE region typically starts at around 0x1000 and often fills the
-	  ROM space not used by CBFS.
-
-	  For an 8MB ROM with a 3MB CBFS area, this might look like:
-	  0x00001000:0x004fffff
-
-config IFD_GBE_SECTION
-	depends on BUILD_WITH_FAKE_IFD
-	string "GBE Region Starting:Ending addresses within the ROM"
-	default ""
-	help
-	  The Gigabit Ethernet ROM region is used when an Intel NIC is built into
-	  the Southbridge/SOC and the platform uses this device instead of an external
-	  PCIe NIC.  It will be located between the ME/TXE and the BIOS region.
-
-	  Leave this empty if you're unsure.
-
-config IFD_PLATFORM_SECTION
-	depends on BUILD_WITH_FAKE_IFD
-	string "Platform Region Starting:Ending addresses within the Rom"
-	default ""
-	help
-	  The Platform region is used for platform specific data.
-	  It will be located between the ME/TXE and the BIOS region.
-
-	  Leave this empty if you're unsure.
 
 config LOCK_MANAGEMENT_ENGINE
 	bool "Lock ME/TXE section"

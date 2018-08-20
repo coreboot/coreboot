@@ -169,7 +169,8 @@ static void wifi_device_update(void)
 		devfn = PCH_DEVFN_PCIE1;
 
 	dev = dev_find_slot(0, devfn);
-	dev->enabled = 0;
+	if (dev)
+		dev->enabled = 0;
 }
 
 void mainboard_devtree_update(struct device *dev)

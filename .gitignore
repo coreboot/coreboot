@@ -99,7 +99,6 @@ util/futility/futility
 util/genprof/genprof
 util/getpir/getpir
 util/ifdtool/ifdtool
-util/ifdfake/ifdfake
 util/intelmetool/intelmetool
 util/inteltool/.dependencies
 util/inteltool/inteltool

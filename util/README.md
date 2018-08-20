@@ -44,8 +44,6 @@ Controller (EC). `C`
 * __genprof__ - Format function tracing logs `Bash` `C`
 * __gitconfig__ - Initialize git repository submodules install git
 hooks `Bash`
-* __ifdfake__ - Create an Intel Firmware Descriptor with just a section
-layout `C`
 * __ifdtool__ - Extract and dump Intel Firmware Descriptor information
 `C`
 * __intelmetool__ - Dump interesting things about Management Engine

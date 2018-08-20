@@ -414,7 +414,6 @@ F:	util/me_cleaner/
 IFDTOOL
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 F:	util/ifdtool/
-F:	util/ifdfake/
 
 BUILD SYSTEM
 M:	Patrick Georgi <patrick@georgi-clan.de>

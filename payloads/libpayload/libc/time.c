@@ -158,50 +158,12 @@ int gettimeofday(struct timeval *tv, void *tz)
 	return 0;
 }
 
-static inline void _delay(uint64_t delta)
+__attribute__((weak))
+void arch_ndelay(uint64_t ns)
 {
+	uint64_t delta = ns * timer_hz() / NSECS_PER_SEC;
 	uint64_t start = timer_raw_value();
 	while (timer_raw_value() - start < delta) ;
-}
-
-/**
- * Delay for a specified number of nanoseconds.
- *
- * @param n Number of nanoseconds to delay for.
- */
-void ndelay(unsigned int n)
-{
-	_delay((uint64_t)n * timer_hz() / 1000000000);
-}
-
-/**
- * Delay for a specified number of microseconds.
- *
- * @param n Number of microseconds to delay for.
- */
-void udelay(unsigned int n)
-{
-	_delay((uint64_t)n * timer_hz() / 1000000);
-}
-
-/**
- * Delay for a specified number of milliseconds.
- *
- * @param m Number of milliseconds to delay for.
- */
-void mdelay(unsigned int m)
-{
-	_delay((uint64_t)m * timer_hz() / 1000);
-}
-
-/**
- * Delay for a specified number of seconds.
- *
- * @param s Number of seconds to delay for.
- */
-void delay(unsigned int s)
-{
-	_delay((uint64_t)s * timer_hz());
 }
 
 u64 timer_us(u64 base)

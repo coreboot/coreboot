@@ -464,11 +464,48 @@ unsigned int get_cpu_speed(void);
 uint64_t timer_hz(void);
 uint64_t timer_raw_value(void);
 uint64_t timer_us(uint64_t base);
+void arch_ndelay(uint64_t n);
 /* Generic. */
-void ndelay(unsigned int n);
-void udelay(unsigned int n);
-void mdelay(unsigned int n);
-void delay(unsigned int n);
+
+/**
+ * Delay for a specified number of nanoseconds.
+ *
+ * @param ns Number of nanoseconds to delay for.
+ */
+static inline void ndelay(unsigned int ns)
+{
+	arch_ndelay((uint64_t)ns);
+}
+
+/**
+ * Delay for a specified number of microseconds.
+ *
+ * @param us Number of microseconds to delay for.
+ */
+static inline void udelay(unsigned int us)
+{
+	arch_ndelay((uint64_t)us * NSECS_PER_USEC);
+}
+
+/**
+ * Delay for a specified number of milliseconds.
+ *
+ * @param ms Number of milliseconds to delay for.
+ */
+static inline void mdelay(unsigned int ms)
+{
+	arch_ndelay((uint64_t)ms * NSECS_PER_MSEC);
+}
+
+/**
+ * Delay for a specified number of seconds.
+ *
+ * @param s Number of seconds to delay for.
+ */
+static inline void delay(unsigned int s)
+{
+	arch_ndelay((uint64_t)s * NSECS_PER_SEC);
+}
 
 /**
  * @defgroup readline Readline functions

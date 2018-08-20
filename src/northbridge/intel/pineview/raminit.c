@@ -271,20 +271,13 @@ static void find_ramconfig(struct sysinfo *s, u32 chan)
 
 static void sdram_read_spds(struct sysinfo *s)
 {
-	u8 i, j, chan;
-	int status = 0;
+	u8 i, chan;
 	s->dt0mode = 0;
 	FOR_EACH_DIMM(i) {
-		for (j = 0; j < 64; j++) {
-			status = spd_read_byte(s->spd_map[i], j);
-			if (status < 0) {
-				s->dimms[i].card_type = 0;
-				break;
-			}
-			s->dimms[i].spd_data[j] = (u8) status;
-			if (j == 62)
-				s->dimms[i].card_type = ((u8) status) & 0x1f;
-		}
+		if (i2c_block_read(s->spd_map[i], 0, 64, s->dimms[i].spd_data) != 64)
+			s->dimms[i].card_type = 0;
+
+		s->dimms[i].card_type = s->dimms[i].spd_data[62] & 0x1f;
 		hexdump(s->dimms[i].spd_data, 64);
 	}
 

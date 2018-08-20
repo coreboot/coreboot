@@ -35,6 +35,7 @@ libc-y += timer.c coreboot.c util.S
 libc-y += exec.S virtual.c
 libc-y += selfboot.c
 libc-y += exception_asm.S exception.c
+libc-y += delay.c
 
 # Will fall back to default_memXXX() in libc/memory.c if GPL not allowed.
 libc-$(CONFIG_LP_GPL) += string.c

@@ -115,7 +115,11 @@
 
 /* Sleep/Wake */
 #define ELOG_TYPE_ACPI_ENTER              0x9d
-/* Deep Sx wake variant is provided below - 0xad */
+/*
+ * Deep Sx wake variant is provided below - 0xad
+ * Sleep/"wake pending" event log provided below - 0xb1 - 0x01/0x02
+ */
+
 #define ELOG_TYPE_ACPI_WAKE               0x9e
 #define ELOG_TYPE_WAKE_SOURCE             0x9f
 #define  ELOG_WAKE_SOURCE_PCIE             0x00
@@ -219,6 +223,16 @@ struct elog_event_mem_cache_update {
 #define ELOG_TYPE_S0IX_ENTER              0xaf
 #define ELOG_TYPE_S0IX_EXIT               0xb0
 
+/* Extended events */
+#define ELOG_TYPE_EXTENDED_EVENT          0xb1
+#define  ELOG_SLEEP_PENDING_PM1_WAKE       0x01
+#define  ELOG_SLEEP_PENDING_GPE0_WAKE      0x02
+
+struct elog_event_extended_event {
+	u8 event_type;
+	u32 event_complement;
+} __packed;
+
 #if IS_ENABLED(CONFIG_ELOG)
 /* Eventlog backing storage must be initialized before calling elog_init(). */
 extern int elog_init(void);
@@ -231,6 +245,7 @@ extern int elog_add_event_word(u8 event_type, u16 data);
 extern int elog_add_event_dword(u8 event_type, u32 data);
 extern int elog_add_event_wake(u8 source, u32 instance);
 extern int elog_smbios_write_type15(unsigned long *current, int handle);
+extern int elog_add_extended_event(u8 type, u32 complement);
 #else
 /* Stubs to help avoid littering sources with #if CONFIG_ELOG */
 static inline int elog_init(void) { return -1; }
@@ -246,6 +261,7 @@ static inline int elog_smbios_write_type15(unsigned long *current,
 						int handle) {
 	return 0;
 }
+static inline int elog_add_extended_event(u8 type, u32 complement) { return 0; }
 #endif
 
 extern u32 gsmi_exec(u8 command, u32 *param);

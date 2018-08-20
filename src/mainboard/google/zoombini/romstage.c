@@ -14,7 +14,7 @@
  */
 
 #include <baseboard/variants.h>
-#include <soc/cnl_lpddr4_init.h>
+#include <soc/cnl_memcfg_init.h>
 #include <soc/romstage.h>
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
@@ -24,6 +24,6 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 		.spd_spec.spd_index = variant_memory_sku(),
 	};
 
-	cannonlake_lpddr4_init(&memupd->FspmConfig,
+	cannonlake_memcfg_init(&memupd->FspmConfig,
 				variant_lpddr4_config(), &spd);
 }

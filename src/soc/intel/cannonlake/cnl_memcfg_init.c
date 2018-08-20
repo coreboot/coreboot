@@ -15,13 +15,12 @@
 #include <assert.h>
 #include <console/console.h>
 #include <fsp/util.h>
-#include <soc/cnl_lpddr4_init.h>
+#include <soc/cnl_memcfg_init.h>
 #include <spd_bin.h>
 #include <string.h>
 
-static void meminit_lpddr4(FSP_M_CONFIG *mem_cfg,
-			const struct lpddr4_cfg *board_cfg,
-			size_t spd_data_len, uintptr_t spd_data_ptr)
+static void meminit_memcfg(FSP_M_CONFIG *mem_cfg,
+			const struct cnl_mb_cfg *board_cfg)
 {
 	/*
 	 * DqByteMapChx expects 12 bytes of data, but the last 6 bytes
@@ -29,17 +28,17 @@ static void meminit_lpddr4(FSP_M_CONFIG *mem_cfg,
 	 * we null out the rest of the data.
 	 */
 	memset(&mem_cfg->DqByteMapCh0, 0, sizeof(mem_cfg->DqByteMapCh0));
-	memcpy(&mem_cfg->DqByteMapCh0, &board_cfg->dq_map[LP4_CH0],
-		sizeof(board_cfg->dq_map[LP4_CH0]));
+	memcpy(&mem_cfg->DqByteMapCh0, &board_cfg->dq_map[DDR_CH0],
+		sizeof(board_cfg->dq_map[DDR_CH0]));
 
 	memset(&mem_cfg->DqByteMapCh1, 0, sizeof(mem_cfg->DqByteMapCh1));
-	memcpy(&mem_cfg->DqByteMapCh1, &board_cfg->dq_map[LP4_CH1],
-		sizeof(board_cfg->dq_map[LP4_CH1]));
+	memcpy(&mem_cfg->DqByteMapCh1, &board_cfg->dq_map[DDR_CH1],
+		sizeof(board_cfg->dq_map[DDR_CH1]));
 
-	memcpy(&mem_cfg->DqsMapCpu2DramCh0, &board_cfg->dqs_map[LP4_CH0],
-		sizeof(board_cfg->dqs_map[LP4_CH0]));
-	memcpy(&mem_cfg->DqsMapCpu2DramCh1, &board_cfg->dqs_map[LP4_CH1],
-		sizeof(board_cfg->dqs_map[LP4_CH1]));
+	memcpy(&mem_cfg->DqsMapCpu2DramCh0, &board_cfg->dqs_map[DDR_CH0],
+		sizeof(board_cfg->dqs_map[DDR_CH0]));
+	memcpy(&mem_cfg->DqsMapCpu2DramCh1, &board_cfg->dqs_map[DDR_CH1],
+		sizeof(board_cfg->dqs_map[DDR_CH1]));
 
 	memcpy(&mem_cfg->RcompResistor, &board_cfg->rcomp_resistor,
 		sizeof(mem_cfg->RcompResistor));
@@ -47,7 +46,12 @@ static void meminit_lpddr4(FSP_M_CONFIG *mem_cfg,
 	/* Early cannonlake requires rcomp targets to be 0 */
 	memcpy(&mem_cfg->RcompTarget, &board_cfg->rcomp_targets,
 		sizeof(mem_cfg->RcompTarget));
+}
 
+static void meminit_memcfg_spd(FSP_M_CONFIG *mem_cfg,
+			const struct cnl_mb_cfg *board_cfg,
+			size_t spd_data_len, uintptr_t spd_data_ptr)
+{
 	mem_cfg->MemorySpdDataLen = spd_data_len;
 	mem_cfg->MemorySpdPtr00 = spd_data_ptr;
 
@@ -56,23 +60,23 @@ static void meminit_lpddr4(FSP_M_CONFIG *mem_cfg,
 }
 
 /*
- * Initialize default LPDDR4 settings using spd data contained in a buffer.
+ * Initialize default memory settings using spd data contained in a buffer.
  */
-static void meminit_lpddr4_spd_data(FSP_M_CONFIG *mem_cfg,
-				const struct lpddr4_cfg *cnl_cfg,
+static void meminit_spd_data(FSP_M_CONFIG *mem_cfg,
+				const struct cnl_mb_cfg *cnl_cfg,
 				size_t spd_data_len, uintptr_t spd_data_ptr)
 {
 	assert(spd_data_ptr && spd_data_len);
-	meminit_lpddr4(mem_cfg, cnl_cfg, spd_data_len, spd_data_ptr);
+	meminit_memcfg_spd(mem_cfg, cnl_cfg, spd_data_len, spd_data_ptr);
 }
 
 /*
- * Initialize default LPDDR4 settings using the spd file specified by
+ * Initialize default memory settings using the spd file specified by
  * spd_index. The spd_index is an index into the SPD_SOURCES array defined
  * in spd/Makefile.inc.
  */
-static void meminit_lpddr4_cbfs_spd_index(FSP_M_CONFIG *mem_cfg,
-					const struct lpddr4_cfg *cnl_cfg,
+static void meminit_cbfs_spd_index(FSP_M_CONFIG *mem_cfg,
+					const struct cnl_mb_cfg *cnl_cfg,
 					int spd_index)
 {
 	size_t spd_data_len;
@@ -86,26 +90,40 @@ static void meminit_lpddr4_cbfs_spd_index(FSP_M_CONFIG *mem_cfg,
 	/* Memory leak is ok since we have memory mapped boot media */
 	assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
 	spd_data_ptr = (uintptr_t)rdev_mmap_full(&spd_rdev);
-	meminit_lpddr4_spd_data(mem_cfg, cnl_cfg, spd_data_len, spd_data_ptr);
+	meminit_spd_data(mem_cfg, cnl_cfg, spd_data_len, spd_data_ptr);
 }
 
-/* Initialize LPDDR4 settings for CannonLake */
-void cannonlake_lpddr4_init(FSP_M_CONFIG *mem_cfg,
-			const struct lpddr4_cfg *cnl_cfg,
+/* Initialize onboard memory configurations for CannonLake */
+void cannonlake_memcfg_init(FSP_M_CONFIG *mem_cfg,
+			const struct cnl_mb_cfg *cnl_cfg,
 			const struct spd_info *spd)
 {
+	bool OnModuleSpd;
 	/* Early Command Training Enabled */
 	mem_cfg->ECT = cnl_cfg->ect;
 	mem_cfg->DqPinsInterleaved = cnl_cfg->dq_pins_interleaved;
-	mem_cfg->RefClk = 0; /* Auto Select CLK freq */
-	mem_cfg->CaVrefConfig = 0; /* VREF_CA->CHA/CHB */
+	mem_cfg->CaVrefConfig = cnl_cfg->vref_ca_config;
 
-	if (spd->spd_by_index) {
-		meminit_lpddr4_cbfs_spd_index(mem_cfg, cnl_cfg,
+	/* Spd pointer will only be used if all smbus slave address of memory
+	* sockets on the platform is empty */
+	for (int i = 0; i < ARRAY_SIZE(mem_cfg->SpdAddressTable); i++) {
+		if (spd->spd_smbus_address[i] != 0) {
+			mem_cfg->SpdAddressTable[i] = spd->spd_smbus_address[i];
+			OnModuleSpd = 1;
+		}
+	}
+
+	if (!OnModuleSpd) {
+		if (spd->spd_by_index) {
+			meminit_cbfs_spd_index(mem_cfg, cnl_cfg,
 				spd->spd_spec.spd_index);
-	} else {
-		meminit_lpddr4_spd_data(mem_cfg, cnl_cfg,
+		} else {
+			meminit_spd_data(mem_cfg, cnl_cfg,
 				spd->spd_spec.spd_data_ptr_info.spd_data_len,
 				spd->spd_spec.spd_data_ptr_info.spd_data_ptr);
+		}
 	}
+
+	meminit_memcfg(mem_cfg, cnl_cfg);
+
 }

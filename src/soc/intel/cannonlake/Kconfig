@@ -184,7 +184,7 @@ config CPU_BCLK_MHZ
 	int
 	default 100
 
-config SOC_INTEL_CANNONLAKE_LPDDR4_INIT
+config SOC_INTEL_CANNONLAKE_MEMCFG_INIT
 	bool
 	default n
 

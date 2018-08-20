@@ -17,7 +17,7 @@
 #ifndef __BASEBOARD_VARIANTS_H__
 #define __BASEBOARD_VARIANTS_H__
 
-#include <soc/cnl_lpddr4_init.h>
+#include <soc/cnl_memcfg_init.h>
 #include <soc/gpio.h>
 #include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -35,7 +35,7 @@ const struct pad_config *variant_early_gpio_table(size_t *num);
 const struct cros_gpio *variant_cros_gpios(size_t *num);
 
 /* Return LPDDR4 configuration structure. */
-const struct lpddr4_cfg *variant_lpddr4_config(void);
+const struct cnl_mb_cfg *variant_lpddr4_config(void);
 
 /* Return memory SKU for the board. */
 size_t variant_memory_sku(void);

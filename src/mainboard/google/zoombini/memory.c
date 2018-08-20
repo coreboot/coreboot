@@ -17,10 +17,10 @@
 #include <baseboard/gpio.h>
 #include <compiler.h>
 #include <gpio.h>
-#include <soc/cnl_lpddr4_init.h>
+#include <soc/cnl_memcfg_init.h>
 
-static const struct lpddr4_cfg baseboard_lpddr4_cfg = {
-	.dq_map[LP4_CH0] = {
+static const struct cnl_mb_cfg baseboard_lpddr4_cfg = {
+	.dq_map[DDR_CH0] = {
 		/*
 		 * CLK0 goes to package 0 - Bytes[3:0],
 		 * CLK1 goes to package 1 - Bytes[7:4]
@@ -37,7 +37,7 @@ static const struct lpddr4_cfg baseboard_lpddr4_cfg = {
 		{ 0xFF, 0x00 },
 	},
 
-	.dq_map[LP4_CH1] = {
+	.dq_map[DDR_CH1] = {
 		/*
 		 * CLK0 goes to package 0 - Bytes[3:0],
 		 * CLK1 goes to package 1 - Bytes[7:4]
@@ -61,8 +61,8 @@ static const struct lpddr4_cfg baseboard_lpddr4_cfg = {
 	 * the index = pin number on lpddr4 part
 	 * the value = pin number on SoC
 	 */
-	.dqs_map[LP4_CH0] = { 3, 1, 2, 0, 7, 5, 6, 4 },
-	.dqs_map[LP4_CH1] = { 3, 2, 0, 1, 7, 5, 6, 4 },
+	.dqs_map[DDR_CH0] = { 3, 1, 2, 0, 7, 5, 6, 4 },
+	.dqs_map[DDR_CH1] = { 3, 2, 0, 1, 7, 5, 6, 4 },
 
 	/* Baseboard uses three 100 Ohm rcomp resistors */
 	.rcomp_resistor = { 100, 100, 100 },
@@ -82,7 +82,7 @@ static const struct lpddr4_cfg baseboard_lpddr4_cfg = {
 	.ect = 0,
 };
 
-const struct lpddr4_cfg *__weak variant_lpddr4_config(void)
+const struct cnl_mb_cfg *__weak variant_lpddr4_config(void)
 {
 	return &baseboard_lpddr4_cfg;
 }

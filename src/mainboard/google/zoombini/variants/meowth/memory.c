@@ -16,10 +16,10 @@
 #include <baseboard/variants.h>
 #include <baseboard/gpio.h>
 #include <gpio.h>
-#include <soc/cnl_lpddr4_init.h>
+#include <soc/cnl_memcfg_init.h>
 
-static const struct lpddr4_cfg meowth_lpddr4_cfg = {
-	.dq_map[LP4_CH0] = {
+static const struct cnl_mb_cfg meowth_lpddr4_cfg = {
+	.dq_map[DDR_CH0] = {
 		/*
 		 * CLK0 goes to package 0 - Bytes[3:0],
 		 * CLK1 goes to package 1 - Bytes[7:4]
@@ -36,7 +36,7 @@ static const struct lpddr4_cfg meowth_lpddr4_cfg = {
 		{ 0xFF, 0x00 },
 	},
 
-	.dq_map[LP4_CH1] = {
+	.dq_map[DDR_CH1] = {
 		/*
 		 * CLK0 goes to package 0 - Bytes[3:0],
 		 * CLK1 goes to package 1 - Bytes[7:4]
@@ -65,8 +65,8 @@ static const struct lpddr4_cfg meowth_lpddr4_cfg = {
 	 * and it will translate that and display 8 values per channel.
 	 * Those values are copied into the dqs_map arrays below.
 	 */
-	.dqs_map[LP4_CH0] = { 3, 1, 2, 0, 7, 5, 6, 4 },
-	.dqs_map[LP4_CH1] = { 2, 3, 1, 0, 7, 5, 6, 4 },
+	.dqs_map[DDR_CH0] = { 3, 1, 2, 0, 7, 5, 6, 4 },
+	.dqs_map[DDR_CH1] = { 2, 3, 1, 0, 7, 5, 6, 4 },
 
 	/* Meowth uses three 100 Ohm rcomp resistors */
 	.rcomp_resistor = { 100, 100, 100 },
@@ -86,7 +86,7 @@ static const struct lpddr4_cfg meowth_lpddr4_cfg = {
 	.ect = 1,
 };
 
-const struct lpddr4_cfg *variant_lpddr4_config(void)
+const struct cnl_mb_cfg *variant_lpddr4_config(void)
 {
 	return &meowth_lpddr4_cfg;
 }

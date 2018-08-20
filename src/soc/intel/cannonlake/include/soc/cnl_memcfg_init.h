@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_CANNONLAKE_LPDDR4_INIT_H_
-#define _SOC_CANNONLAKE_LPDDR4_INIT_H_
+#ifndef _SOC_CANNONLAKE_MEMCFG_INIT_H_
+#define _SOC_CANNONLAKE_MEMCFG_INIT_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -24,15 +24,15 @@
 #define DQ_BITS_PER_DQS 8
 
 /*
- * Number of LPDDR4 packages, where a "package" represents a 64-bit solution.
+ * Number of memory packages, where a "package" represents a 64-bit solution.
  */
-#define LP4_NUM_PACKAGES 2
+#define DDR_NUM_PACKAGES 2
 
 /* 64-bit Channel identification */
 enum {
-	LP4_CH0,
-	LP4_CH1,
-	LP4_NUM_CHANNELS
+	DDR_CH0,
+	DDR_CH1,
+	DDR_NUM_CHANNELS
 };
 
 struct spd_by_pointer {
@@ -46,10 +46,11 @@ struct spd_info {
 		int spd_index;
 		struct spd_by_pointer spd_data_ptr_info;
 	} spd_spec;
+	const uint8_t spd_smbus_address[4];
 };
 
-/* Board-specific lpddr4 dq mapping information */
-struct lpddr4_cfg {
+/* Board-specific memory dq mapping information */
+struct cnl_mb_cfg {
 	/*
 	 * For each channel, there are 3 sets of DQ byte mappings,
 	 * where each set has a package 0 and a package 1 value (package 0
@@ -61,7 +62,7 @@ struct lpddr4_cfg {
 	 * and let the meminit_lpddr4() routine take care of clearing the
 	 * unused fields for the caller.
 	 */
-	const uint8_t dq_map[LP4_NUM_CHANNELS][3][LP4_NUM_PACKAGES];
+	const uint8_t dq_map[DDR_NUM_CHANNELS][3][DDR_NUM_PACKAGES];
 
 	/*
 	 * DQS CPU<>DRAM map Ch0 and Ch1.  Each array entry represents a
@@ -70,7 +71,7 @@ struct lpddr4_cfg {
 	 * on the memory part, and the values in the array represent which
 	 * pin on the CPU that DRAM pin connects to.
 	 */
-	const uint8_t dqs_map[LP4_NUM_CHANNELS][DQ_BITS_PER_DQS];
+	const uint8_t dqs_map[DDR_NUM_CHANNELS][DQ_BITS_PER_DQS];
 
 	/*
 	 * Rcomp resistor values.  These values represent the resistance in
@@ -92,15 +93,23 @@ struct lpddr4_cfg {
 	 */
 	const uint8_t dq_pins_interleaved;
 
+	/*
+	 * VREF_CA configuraation.
+	 * Set to 0 VREF_CA goes to both CH_A and CH_B,
+	 * set to 1 VREF_CA goes to CH_A and VREF_DQ_A goes to CH_B,
+	 * set to 2 VREF_CA goes to CH_A and VREF_DQ_B goes to CH_B.
+	 */
+	const uint8_t vref_ca_config;
+
 	/* Early Command Training Enabled */
 	const uint8_t ect;
 };
 
 /*
- * Initialize default LPDDR4 settings for CannonLake.
+ * Initialize default memory configurations for CannonLake.
  */
-void cannonlake_lpddr4_init(FSP_M_CONFIG *mem_cfg,
-			const struct lpddr4_cfg *cnl_cfg,
+void cannonlake_memcfg_init(FSP_M_CONFIG *mem_cfg,
+			const struct cnl_mb_cfg *cnl_cfg,
 			const struct spd_info *spd);
 
-#endif /* _SOC_CANNONLAKE_LPDDR4_INIT_H_ */
+#endif /* _SOC_CANNONLAKE_MEMCFG_INIT_H_ */

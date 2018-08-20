@@ -28,6 +28,7 @@
  */
 
 #include <libpayload.h>
+#include <arch/apic.h>
 
 /* The pause instruction can delay 10-140 CPU cycles, so avoid calling it when
  * getting close to finishing. Depending on the timer source, the timer can be
@@ -35,11 +36,22 @@
  * that the timer is running at the CPU frequency. */
 #define PAUSE_THRESHOLD_TICKS		150
 
+/* Let's assume APIC interrupts take at least 100us */
+#define APIC_INTERRUPT_LATENCY_NS	(100 * NSECS_PER_USEC)
+
+
 void arch_ndelay(uint64_t ns)
 {
 	uint64_t delta = ns * timer_hz() / NSECS_PER_SEC;
 	uint64_t pause_delta = 0;
+	uint64_t apic_us = 0;
 	uint64_t start = timer_raw_value();
+
+	if (ns > APIC_INTERRUPT_LATENCY_NS)
+		apic_us = (ns - APIC_INTERRUPT_LATENCY_NS) / NSECS_PER_USEC;
+
+	if (IS_ENABLED(CONFIG_LP_ENABLE_APIC) && apic_initialized() && apic_us)
+		apic_delay(apic_us);
 
 	if (delta > PAUSE_THRESHOLD_TICKS)
 		pause_delta = delta - PAUSE_THRESHOLD_TICKS;

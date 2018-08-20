@@ -61,8 +61,13 @@
 
 #define APIC_LVT_SIZE			0x010
 
+#define APIC_TIMER_VECTOR		0x20
+
 static uint32_t apic_bar;
 static int _apic_initialized;
+// TODO: Build a lookup table to avoid calculating it.
+static uint32_t ticks_per_ms;
+static volatile uint8_t timer_waiting;
 
 enum APIC_CAPABILITY {
 	DISABLED = 0,
@@ -93,6 +98,47 @@ uint8_t apic_id(void)
 		(apic_read32(APIC_ID) & APIC_ID_MASK) >> APIC_ID_SHIFT;
 
 	return id;
+}
+
+void apic_delay(unsigned int usec)
+{
+	die_if(!ticks_per_ms, "apic_init_timer was not run.");
+	die_if(timer_waiting, "timer already started.");
+	die_if(!interrupts_enabled(), "Interrupts disabled.");
+
+	/* The order is important so we don't underflow */
+	uint64_t ticks = usec * ticks_per_ms / USECS_PER_MSEC;
+
+	/* Not enough resolution */
+	if (!ticks)
+		return;
+
+	/* Disable interrupts so we don't get a race condition between
+	 * starting the timer and the hlt instruction. */
+	disable_interrupts();
+
+	timer_waiting = 1;
+
+	apic_write32(APIC_TIMER_INIT_COUNT, ticks);
+
+	/* Loop in case another interrupt has fired and resumed execution. */
+	do {
+		asm volatile(
+			"sti\n\t"
+			"hlt\n\t"
+			/* Disable interrupts to prevent a race condition
+			 * between checking timer_waiting and executing the hlt
+			 * instruction again. */
+			"cli\n\t");
+	} while (timer_waiting);
+
+	/* Leave hardware interrupts enabled. */
+	enable_interrupts();
+}
+
+static void timer_interrupt_handler(u8 vector)
+{
+	timer_waiting = 0;
 }
 
 void apic_eoi(void)
@@ -150,6 +196,33 @@ static void apic_set_task_priority(uint8_t priority)
 	apic_write32(APIC_TASK_PRIORITY, priority);
 }
 
+static void apic_init_timer(void)
+{
+	die_if(!apic_bar, "APIC is not initialized");
+
+	apic_write32(APIC_LVT_TIMER, APIC_MASKED_BIT);
+
+	/* Divide the clock by 1. */
+	apic_write32(APIC_TIMER_DIV_CFG, 0xB);
+
+	/* Calibrate the APIC timer */
+	if (!ticks_per_ms) {
+		/* Set APIC init counter to MAX and count for 1 ms */
+		apic_write32(APIC_TIMER_INIT_COUNT, UINT32_MAX);
+
+		mdelay(1);
+
+		ticks_per_ms =
+			UINT32_MAX - apic_read32(APIC_TIMER_CUR_COUNT);
+	}
+
+	/* Clear the count so we don't get any stale interrupts */
+	apic_write32(APIC_TIMER_INIT_COUNT, 0);
+
+	/* Unmask the timer and set the vector. */
+	apic_write32(APIC_LVT_TIMER, APIC_TIMER_VECTOR);
+}
+
 static void apic_sw_enable(void)
 {
 	uint32_t reg = apic_read32(APIC_SPURIOUS);
@@ -182,6 +255,10 @@ void apic_init(void)
 	apic_set_task_priority(0);
 
 	apic_sw_enable();
+
+	apic_init_timer();
+
+	set_interrupt_handler(APIC_TIMER_VECTOR, &timer_interrupt_handler);
 
 	_apic_initialized = 1;
 

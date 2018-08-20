@@ -40,4 +40,6 @@ uint8_t apic_id(void);
 /** Signal the end of the interrupt handler. */
 void apic_eoi(void);
 
+void apic_delay(unsigned int usec);
+
 #endif /* __ARCH_X86_INCLUDES_ARCH_APIC_H__ */

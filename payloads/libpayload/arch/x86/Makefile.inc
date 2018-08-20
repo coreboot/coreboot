@@ -45,3 +45,5 @@ libcbfs-$(CONFIG_LP_CBFS) += rom_media.c
 
 # Multiboot support is configurable
 libc-$(CONFIG_LP_MULTIBOOT) += multiboot.c
+
+libc-$(CONFIG_LP_ENABLE_APIC) += apic.c

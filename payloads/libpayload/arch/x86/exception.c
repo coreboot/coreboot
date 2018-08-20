@@ -31,8 +31,16 @@
 #include <exception.h>
 #include <libpayload.h>
 #include <stdint.h>
+#include <arch/apic.h>
 
 #define IF_FLAG				(1 << 9)
+/*
+ * Local and I/O APICs support 240 vectors (in the range of 16 to 255) as valid
+ * interrupts. The Intel 64 and IA-32 architectures reserve vectors 16
+ * through 31 for predefined interrupts, exceptions, and Intel-reserved
+ * encodings.
+*/
+#define FIRST_USER_DEFINED_VECTOR	32
 
 u32 exception_stack[0x400] __attribute__((aligned(8)));
 
@@ -171,6 +179,9 @@ void exception_dispatch(void)
 
 	if (handlers[vec]) {
 		handlers[vec](vec);
+		if (IS_ENABLED(CONFIG_LP_ENABLE_APIC)
+				&& vec >= FIRST_USER_DEFINED_VECTOR)
+			apic_eoi();
 		return;
 	}
 

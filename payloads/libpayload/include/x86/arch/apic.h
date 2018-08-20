@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright 2018 Google LLC.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,56 +27,17 @@
  * SUCH DAMAGE.
  */
 
-#include <exception.h>
-#include <libpayload.h>
-#include <arch/apic.h>
+#ifndef __ARCH_X86_INCLUDES_ARCH_APIC_H__
+#define __ARCH_X86_INCLUDES_ARCH_APIC_H__
 
-unsigned long loader_eax;  /**< The value of EAX passed from the loader */
-unsigned long loader_ebx;  /**< The value of EBX passed from the loader */
+/** Returns 1 if apic_init has been called */
+int apic_initialized(void);
 
-unsigned int main_argc;    /**< The argc value to pass to main() */
+void apic_init(void);
 
-/** The argv value to pass to main() */
-char *main_argv[MAX_ARGC_COUNT];
+uint8_t apic_id(void);
 
-/**
- * This is our C entry function - set up the system
- * and jump into the payload entry point.
- */
-int start_main(void);
-int start_main(void)
-{
-	extern int main(int argc, char **argv);
+/** Signal the end of the interrupt handler. */
+void apic_eoi(void);
 
-	/* Gather system information. */
-	lib_get_sysinfo();
-
-	/* Optionally set up the consoles. */
-#if !IS_ENABLED(CONFIG_LP_SKIP_CONSOLE_INIT)
-	console_init();
-#endif
-
-	exception_init();
-
-	if (IS_ENABLED(CONFIG_LP_ENABLE_APIC)) {
-		apic_init();
-
-		enable_interrupts();
-	}
-
-	/*
-	 * Any other system init that has to happen before the
-	 * user gets control goes here.
-	 */
-
-	/*
-	 * Go to the entry point.
-	 * In the future we may care about the return value.
-	 */
-
-	/*
-	 * Returning from main() will go to the _leave function to return
-	 * us to the original context.
-	 */
-	return main(main_argc, (main_argc != 0) ? main_argv : NULL);
-}
+#endif /* __ARCH_X86_INCLUDES_ARCH_APIC_H__ */

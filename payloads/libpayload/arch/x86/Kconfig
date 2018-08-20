@@ -34,4 +34,7 @@ config ARCH_SPECIFIC_OPTIONS # dummy
 	select LITTLE_ENDIAN
 	select IO_ADDRESS_SPACE
 
+config ENABLE_APIC
+	bool "Enables the Local APIC"
+
 endif

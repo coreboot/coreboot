@@ -1875,7 +1875,9 @@ static void sdram_rcven(struct sysinfo *s)
 	u8 minbytelanecoarse = 0xff;
 	u8 bytelaneoffset;
 	u8 maxbytelane = 8;
-	u32 strobeaddr = (rank_is_populated(s->dimms, 0, 0)) ? 0 : 2*128*1024*1024;
+	/* Since dra/drb is already set up we know that at address 0x00000000
+	   we will always find the first available rank */
+	u32 strobeaddr = 0;
 	u32 dqshighaddr;
 
 	MCHBAR8(0x5d8) = MCHBAR8(0x5d8) & ~0xc;

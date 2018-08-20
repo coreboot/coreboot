@@ -1,7 +1,8 @@
 # Frequency selection
 
 ## Introduction
-This chapter explains the frequency selection done on Sandybride and Ivybridge.
+This chapter explains the frequency selection done on Sandy Bridge and Ivy
+Bridge memory initialization.
 
 ## Definitions
 ```eval_rst
@@ -58,7 +59,7 @@ and thus are called "soft" fuses, as it is possible to ignore them.
 
 > **Note:** Ignoring the fuses might cause system instability !
 
-On Sandy Bride *CAPID0_A* is being read, and on Ivybridge *CAPID0_B* is being
+On Sandy Bridge *CAPID0_A* is being read, and on Ivy Bridge *CAPID0_B* is being
 read. coreboot reads those registers and honors the limit in case the Kconfig
 option `CONFIG_NATIVE_RAMINIT_IGNORE_MAX_MEM_FUSES` wasn't set.
 Power users that want to let their RAM run at DRAM's "stock" frequency need to
@@ -84,7 +85,7 @@ by the board manufacturer.
 By using this register it's possible to force a minimum operating frequency.
 
 ## Reference clock
-While Sandybride supports 133 MHz reference clock (REFCK), Ivy Bridge also
+While Sandy Bridge supports 133 MHz reference clock (REFCK), Ivy Bridge also
 supports 100 MHz reference clock. The reference clock is multiplied by the DRAM
 multiplier to select the DRAM frequency (SCK) by the following formula:
 
@@ -92,7 +93,7 @@ multiplier to select the DRAM frequency (SCK) by the following formula:
 
 > **Note:** Since coreboot 4.6 Ivy Bridge supports 100MHz REFCK.
 
-## Sandy Bride's supported frequencies
+## Sandy Bridge's supported frequencies
 ```eval_rst
 +------------+-----------+------------------+-------------------------+---------------+
 | SCK [Mhz]  | DDR [Mhz] | Mutiplier (MULT) | Reference clock (REFCK) | Comment       |
@@ -111,7 +112,7 @@ multiplier to select the DRAM frequency (SCK) by the following formula:
 +------------+-----------+------------------+-------------------------+---------------+
 ```
 
-## Ivybridge's supported frequencies
+## Ivy Bridge's supported frequencies
 ```eval_rst
 +------------+-----------+------------------+-------------------------+---------------+
 | SCK [Mhz]  | DDR [Mhz] | Mutiplier (MULT) | Reference clock (REFCK) | Comment       |
@@ -144,7 +145,7 @@ multiplier to select the DRAM frequency (SCK) by the following formula:
 > '1: since coreboot 4.6
 
 ## Multiplier selection
-coreboot select the maximum frequency to operate at by the following formula:
+coreboot selects the maximum frequency to operate at by the following formula:
 ```
 if devicetree's max_mem_clock_mhz > 0:
      freq_max := max_mem_clock_mhz

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This chapter explains the read training sequence done on Sandy Bride and
+This chapter explains the read training sequence done on Sandy Bridge and
 Ivy Bridge memory initialization.
 
 Read training is done to compensate the skew between DQS and SCK and to find

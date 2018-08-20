@@ -1556,7 +1556,7 @@ Please handle with care !
 
 *Width:* 16 Bit
 
-*Desc:*  OTHP Workaround (SandyBridge only) Register,  Channel 0
+*Desc:*  OTHP Workaround (Sandy Bridge only) Register,  Channel 0
 
 ```eval_rst
 +-----------+------------------------------------------------------------------+
@@ -2138,7 +2138,7 @@ Please handle with care !
 |        0:7|                Selected multiplier: 100Mhz [7,12], 133Mhz [3,19] |
 +-----------+------------------------------------------------------------------+
 |         8 | - 1: 100Mhz reference clock                                      |
-|           | - 0: 133Mhz reference clock (IvyBridge only)                     |
+|           | - 0: 133Mhz reference clock (Ivy Bridge only)                     |
 +-----------+------------------------------------------------------------------+
 |        31 |                                                         PLL busy |
 +-----------+------------------------------------------------------------------+

@@ -3,7 +3,7 @@
 ## Introduction
 
 This documentation is intended to document the closed source memory controller
-hardware for Intel 2nd Gen (Sandy Bride) and 3rd Gen (Ivy Bridge) core-i CPUs.
+hardware for Intel 2nd Gen (Sandy Bridge) and 3rd Gen (Ivy Bridge) core-i CPUs.
 
 The memory initialization code has to take care of lots of duties:
 1. Selection of operating frequency
@@ -41,13 +41,13 @@ The memory initialization code has to take care of lots of duties:
 ```
 
 ## (Inoffical) register documentation
-- [Sandy Bride - Register documentation](nri_registers.md)
+- [Sandy Bridge - Register documentation](nri_registers.md)
 
 ## Frequency selection
-- [Sandy Bride - Frequency selection](nri_freq.md)
+- [Sandy Bridge - Frequency selection](nri_freq.md)
 
 ## Read training
-- [Sandy Bride - Read training](nri_read.md)
+- [Sandy Bridge - Read training](nri_read.md)
 
 ### SMBIOS type 17
 The SMBIOS specification allows to report the memory configuration in use.
@@ -113,7 +113,7 @@ than a board that doesn't boot at all.
 > **Note:** This feature is available since coreboot 4.5
 
 Try to swap memory modules and or try to use a different vendor. If nothing
-helps you could have a look at capter [Debuggin] or report a ticket
+helps you could have a look at chapter [Debugging] or report a ticket
 at [ticket.coreboot.org]. Please provide a full RAM init log,
 that has been captured using EHCI debug.
 

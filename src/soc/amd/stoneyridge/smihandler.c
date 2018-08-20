@@ -122,7 +122,8 @@ static void disable_all_smi_status(void)
 
 static void sb_slp_typ_handler(void)
 {
-	uint32_t pm1cnt, pci_ctrl;
+	uint32_t pm1cnt, pci_ctrl, reg32;
+	uint16_t reg16;
 	uint8_t slp_typ, rst_ctrl;
 
 	/* Figure out SLP_TYP */
@@ -170,6 +171,29 @@ static void sb_slp_typ_handler(void)
 		rst_ctrl = pm_read8(PM_RST_CTRL1);
 		rst_ctrl |= SLPTYPE_CONTROL_EN;
 		pm_write8(PM_RST_CTRL1, rst_ctrl);
+
+		/*
+		 * Before the final command, check if there's pending wake
+		 * event. Read enable first, so that reading the actual status
+		 * is as close as possible to entering S3. The idea is to
+		 * minimize the opportunity for a wake event to happen before
+		 * actually entering S3. If there's a pending wake event, log
+		 * it and continue normal path. S3 will fail and the wake event
+		 * becomes a SCI.
+		 */
+		if (IS_ENABLED(CONFIG_ELOG_GSMI)) {
+			reg16 = inw(ACPI_PM1_EN) & inw(ACPI_PM1_STS);
+			if (reg16)
+				elog_add_extended_event(
+						ELOG_SLEEP_PENDING_PM1_WAKE,
+						(u32)reg16);
+
+			reg32 = inl(ACPI_GPE0_EN) & inl(ACPI_GPE0_STS);
+			if (reg32)
+				elog_add_extended_event(
+						ELOG_SLEEP_PENDING_GPE0_WAKE,
+						reg32);
+		} /* if (IS_ENABLED(CONFIG_ELOG_GSMI)) */
 
 		/* Reissue Pm1 write */
 		outl(pm1cnt | SLP_EN, pm_acpi_pm_cnt_blk());

@@ -678,7 +678,7 @@ static void configure_xhci_host_mode_port0(void)
 	cfg0 = (void *)(uintptr_t)(res->base + DUAL_ROLE_CFG0);
 	cfg1 = (void *)(uintptr_t)(res->base + DUAL_ROLE_CFG1);
 	reg = read32(cfg0);
-	if (!(reg && SW_IDPIN_EN_MASK))
+	if (!(reg & SW_IDPIN_EN_MASK))
 		return;
 
 	reg &= ~(SW_IDPIN_MASK | SW_VBUS_VALID_MASK);

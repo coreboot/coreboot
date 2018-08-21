@@ -20,6 +20,10 @@ The boards in this section are not real mainboards, but emulators.
 
 - [Spike RISC-V emulator](emulation/spike-riscv.md)
 
+## Intel
+
+- [DG43GT](intel/dg43gt.md)
+
 ## Foxconn
 
 - [D41S](foxconn/d41s.md)

@@ -13,31 +13,13 @@
  * GNU General Public License for more details.
  */
 
-#include <bootmode.h>
-#include <boot/coreboot_tables.h>
-#include <gpio.h>
+#ifndef __MAINBOARD_GOOGLE_KUKUI_GPIO_H__
+#define __MAINBOARD_GOOGLE_KUKUI_GPIO_H__
 
-#include "gpio.h"
+#include <soc/gpio.h>
 
-void setup_chromeos_gpios(void)
-{
-	gpio_input_pullup(EC_IRQ);
-}
+#define EC_IRQ	GPIO(PERIPHERAL_EN1)
 
-void fill_lb_gpios(struct lb_gpios *gpios)
-{
-	struct lb_gpio chromeos_gpios[] = {
-		{EC_IRQ.id, ACTIVE_LOW, -1, "EC interrupt"},
-	};
-	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
-}
+void setup_chromeos_gpios(void);
 
-int get_recovery_mode_switch(void)
-{
-	return 0;
-}
-
-int get_write_protect_state(void)
-{
-	return 0;
-}
+#endif

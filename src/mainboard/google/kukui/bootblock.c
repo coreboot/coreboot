@@ -18,10 +18,14 @@
 #include <soc/gpio.h>
 #include <soc/spi.h>
 
+#include "gpio.h"
+
 #define BOOTBLOCK_EN_L (GPIO(KPROW0))
 
 void bootblock_mainboard_init(void)
 {
+	setup_chromeos_gpios();
+
 	/* Turn on real eMMC. */
 	gpio_output(BOOTBLOCK_EN_L, 1);
 

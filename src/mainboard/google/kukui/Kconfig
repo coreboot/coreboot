@@ -25,4 +25,8 @@ config BOOT_DEVICE_SPI_FLASH_BUS
 	int
 	default 1
 
+config EC_GOOGLE_CHROMEEC_SPI_BUS
+	hex
+	default 0x2
+
 endif

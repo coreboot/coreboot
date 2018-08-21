@@ -14,14 +14,13 @@
 ## GNU General Public License for more details.
 ##
 
-subdirs-y += spd
-
 bootblock-y += bootblock.c
 bootblock-$(CONFIG_CHROMEOS) += chromeos.c
 
 verstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
+romstage-y += memory.c
 
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += mainboard.c

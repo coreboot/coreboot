@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2016 Google Inc.
- * Copyright (C) 2018 Intel Corp.
+ * Copyright (C) 2017-20188 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,34 +14,19 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/byteorder.h>
-#include <cbfs.h>
-#include <console/console.h>
-#include <fsp/api.h>
+#include <baseboard/variants.h>
+#include <soc/cnl_memcfg_init.h>
 #include <soc/romstage.h>
-#include "spd/spd.h"
-#include <string.h>
-#include <spd_bin.h>
 
-void mainboard_memory_init_params(FSPM_UPD *mupd)
+void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
-	FSP_M_CONFIG *mem_cfg;
-	mem_cfg = &mupd->FspmConfig;
+	const struct spd_info spd = {
+		.spd_smbus_address[0] = 0xA0,
+		.spd_smbus_address[1] = 0xA2,
+		.spd_smbus_address[2] = 0xA4,
+		.spd_smbus_address[3] = 0xA6,
+	};
 
-	mainboard_fill_dq_map_ch0(&mem_cfg->DqByteMapCh0);
-	mainboard_fill_dq_map_ch1(&mem_cfg->DqByteMapCh1);
-	mainboard_fill_dqs_map_ch0(&mem_cfg->DqsMapCpu2DramCh0);
-	mainboard_fill_dqs_map_ch1(&mem_cfg->DqsMapCpu2DramCh1);
-	mainboard_fill_rcomp_res_data(&mem_cfg->RcompResistor);
-	mainboard_fill_rcomp_strength_data(&mem_cfg->RcompTarget);
-
-	mem_cfg->DqPinsInterleaved = 1;
-	mem_cfg->CaVrefConfig = 2; /* VREF_CA->CHA/CHB */
-	mem_cfg->ECT = 1; /* Early Command Training Enabled */
-
-	/* Setting standard SPD addresses */
-	mem_cfg->SpdAddressTable[0] = 0xA0;
-	mem_cfg->SpdAddressTable[1] = 0xA2;
-	mem_cfg->SpdAddressTable[2] = 0xA4;
-	mem_cfg->SpdAddressTable[3] = 0xA6;
+	cannonlake_memcfg_init(&memupd->FspmConfig,
+				variant_memcfg_config(), &spd);
 }

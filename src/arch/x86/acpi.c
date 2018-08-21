@@ -1263,7 +1263,7 @@ int get_acpi_table_revision(enum acpi_tables table)
 	case FADT:
 		return ACPI_FADT_REV_ACPI_3_0;
 	case MADT: /* ACPI 1.0/2.0: 1, ACPI 3.0: 2, ACPI 4.0: 3 */
-		return 1;
+		return 2;
 	case MCFG:
 		return 1;
 	case TCPA:

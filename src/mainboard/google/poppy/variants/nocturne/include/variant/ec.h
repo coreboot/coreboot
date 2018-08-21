@@ -77,5 +77,6 @@
 #define SIO_EC_HOST_ENABLE	/* EC Host Interface Resources */
 
 #define EC_ENABLE_MKBP_DEVICE  /* Enable cros_ec_keyb device */
+#define EC_ENABLE_CBAS_DEVICE  /* Enable "Base Attached Switch" device */
 
 #endif /* __MAINBOARD_EC_H__ */

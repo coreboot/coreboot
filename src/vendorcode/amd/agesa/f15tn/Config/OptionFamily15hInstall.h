@@ -808,9 +808,9 @@ extern F_IS_NB_PSTATE_ENABLED F15IsNbPstateEnabled;
       #define F15_TN_UCODE_0E
 
       #if AGESA_ENTRY_INIT_EARLY == TRUE
-        extern  CONST UINT8 ROMDATA CpuF15TnMicrocodePatch0600110F_Enc [];
+        extern  CONST UINT8 ROMDATA CpuF15TnMicrocodePatch0600111F_Enc [];
         #undef F15_TN_UCODE_10F
-        #define F15_TN_UCODE_10F CpuF15TnMicrocodePatch0600110F_Enc,
+        #define F15_TN_UCODE_10F CpuF15TnMicrocodePatch0600111F_Enc,
 
       #endif
 

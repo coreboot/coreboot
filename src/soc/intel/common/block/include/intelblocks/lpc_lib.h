@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2017-2018 Intel Corp.
+ * Copyright (C) 2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +47,11 @@
 
 #define PCR_DMI_LPCIOD          0x2770
 #define PCR_DMI_LPCIOE          0x2774
+
+/* LPC PCR configuration */
+#define PCR_LPC_PRC            0x341c
+#define PCR_LPC_CCE_EN         0xf
+#define PCR_LPC_PCE_EN         (9 << 8)
 
 /* Serial IRQ control. SERIRQ_QUIET is the default (0). */
 enum serirq_mode {

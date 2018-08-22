@@ -84,7 +84,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(LPC_AD1, NONE, DEEP, NF1),		/* LPC_AD1 */
 	PAD_CFG_NF(LPC_AD2, NONE, DEEP, NF1),		/* LPC_AD2 */
 	PAD_CFG_NF(LPC_AD3, NONE, DEEP, NF1),		/* LPC_AD3 */
-	PAD_CFG_GPI(LPC_CLKRUNB, NONE, DEEP),		/* LPC_CLKRUN_N */
+	PAD_CFG_NF(LPC_CLKRUNB, NONE, DEEP, NF1),	/* LPC_CLKRUN_N */
 	PAD_CFG_NF(LPC_FRAMEB, NONE, DEEP, NF1),	/* LPC_FRAME_N */
 
 	/* West Community */
@@ -402,7 +402,7 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(LPC_AD1, NONE, DEEP, NF1),		/* LPC_AD1 */
 	PAD_CFG_NF(LPC_AD2, NONE, DEEP, NF1),		/* LPC_AD2 */
 	PAD_CFG_NF(LPC_AD3, NONE, DEEP, NF1),		/* LPC_AD3 */
-	PAD_CFG_GPI(LPC_CLKRUNB, NONE, DEEP),		/* LPC_CLKRUN_N */
+	PAD_CFG_NF(LPC_CLKRUNB, NONE, DEEP, NF1),	/* LPC_CLKRUN_N */
 	PAD_CFG_NF(LPC_FRAMEB, NONE, DEEP, NF1),	/* LPC_FRAME_N */
 };
 

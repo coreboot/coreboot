@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2017 Intel Corporation.
+ * Copyright (C) 2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +32,7 @@
 #define PID_GPIO_N	0xC5
 #define PID_ITSS	0xD0
 #define PID_RTC		0xD1
+#define PID_LPC		0xD2
 
 #define PID_AUNIT	0x4d
 #define PID_BUNIT	0x4c

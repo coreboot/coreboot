@@ -42,9 +42,6 @@ void variant_mainboard_final(void)
 	else
 		printk(BIOS_INFO, "LCD: Set up PTN was successful.\n");
 
-	/* Enable additional I/O decoding range on LPC for COM 3 */
-	lpc_open_pmio_window(0x3e8, 8);
-
 	/*
 	 * PIR6 register mapping for PCIe root ports
 	 * INTA#->PIRQB#, INTB#->PIRQC#, INTC#->PIRQD#, INTD#-> PIRQA#
@@ -55,6 +52,17 @@ void variant_mainboard_final(void)
 	dev = dev_find_device(PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_XIO2001, 0);
 	if (dev)
 		pci_write_config8(dev, 0xd8, 0x3e);
+
+	/* Enable CLKRUN_EN for power gating LPC */
+	lpc_enable_pci_clk_cntl();
+
+	/*
+	 * Enable LPC PCE (Power Control Enable) by setting IOSF-SB port 0xD2
+	 * offset 0x341D bit3 and bit0.
+	 * Enable LPC CCE (Clock Control Enable) by setting IOSF-SB port 0xD2
+	 * offset 0x341C bit [3:0].
+	 */
+	pcr_or32(PID_LPC, PCR_LPC_PRC, (PCR_LPC_CCE_EN | PCR_LPC_PCE_EN));
 }
 
 static void wait_for_legacy_dev(void *unused)

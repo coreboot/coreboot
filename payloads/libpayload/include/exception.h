@@ -36,6 +36,10 @@
 typedef int (*exception_hook)(u32 type);
 
 void exception_init(void);
+/* Deprecated, use set_interrupt_handler. */
 void exception_install_hook(exception_hook h);
+
+typedef void (*interrupt_handler)(u8 vector);
+void set_interrupt_handler(u8 vector, interrupt_handler handler);
 
 #endif

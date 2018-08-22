@@ -37,6 +37,9 @@
 u32 exception_stack[0x400] __attribute__((aligned(8)));
 
 static exception_hook hook;
+
+static interrupt_handler handlers[256];
+
 static const char *names[EXC_COUNT] = {
 	[EXC_DE]  = "Divide by Zero",
 	[EXC_DB]  = "Debug",
@@ -163,7 +166,16 @@ static void dump_exception_state(void)
 void exception_dispatch(void)
 {
 	u32 vec = exception_state->vector;
-	die_if(vec >= EXC_COUNT || !names[vec], "Bad exception vector %u", vec);
+
+	die_if(vec >= ARRAY_SIZE(handlers), "Invalid vector %u\n", vec);
+
+	if (handlers[vec]) {
+		handlers[vec](vec);
+		return;
+	}
+
+	die_if(vec >= EXC_COUNT || !names[vec], "Bad exception vector %u\n",
+	       vec);
 
 	if (hook && hook(vec))
 		return;
@@ -183,6 +195,11 @@ void exception_install_hook(exception_hook h)
 {
 	die_if(hook, "Implement support for a list of hooks if you need it.");
 	hook = h;
+}
+
+void set_interrupt_handler(u8 vector, interrupt_handler handler)
+{
+	handlers[vector] = handler;
 }
 
 static uint32_t eflags(void)

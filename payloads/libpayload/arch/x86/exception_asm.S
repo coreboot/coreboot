@@ -68,6 +68,14 @@ exception_stub_\num:
 	jmp	exception_common
 	.endm
 
+	.altmacro
+	.macro	user_defined_stubs from, to
+	stub	\from
+	.if	\to-\from
+	user_defined_stubs	%(from+1),\to
+	.endif
+	.endm
+
 	stub 0
 	stub 1
 	stub 2
@@ -100,6 +108,11 @@ exception_stub_\num:
 	stub 29
 	stub_err 30
 	stub 31
+	/* Split the macro so we avoid a stack overflow. */
+	user_defined_stubs 32, 63
+	user_defined_stubs 64, 127
+	user_defined_stubs 128, 191
+	user_defined_stubs 192, 255
 
 exception_common:
 	/*
@@ -215,6 +228,14 @@ gdt_ptr:
 	.long \target
 	.endm
 
+	.altmacro
+	.macro	user_defined_gates from, to
+	interrupt_gate	exception_stub_\from
+	.if	\to-\from
+	user_defined_gates	%(from+1),\to
+	.endif
+	.endm
+
 	.align 8
 	.global	idt
 idt:
@@ -250,6 +271,10 @@ idt:
 	interrupt_gate exception_stub_29
 	interrupt_gate exception_stub_30
 	interrupt_gate exception_stub_31
+	user_defined_gates 32, 63
+	user_defined_gates 64, 127
+	user_defined_gates 128, 191
+	user_defined_gates 192, 255
 idt_end:
 
 /* IDT pointer for use with lidt */

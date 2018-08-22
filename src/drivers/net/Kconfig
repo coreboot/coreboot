@@ -29,3 +29,19 @@ config RT8168_SET_LED_MODE
 	  Please refer to RTL811x datasheet section 7.2 Customizable LED
 	  Configuration for details. With this flag enabled, the
 	  customized_leds variable will be read from devicetree setting.
+
+config ATHEROS_ATL1E_SETMAC
+	bool
+	help
+	  This sets the MAC address on boards featuring the atheros 1968:1026
+	  NIC which lack an eeprom to store it.
+
+config ATHEROS_ATL1E_MACADDRESS
+	string "Atheros AR8121/AR8113/AR8114 mac address"
+	depends on ATHEROS_ATL1E_SETMAC
+	default "90:e6:ba:24:f9:d2"
+	help
+	  This is a string to set the mac address on an Atheros atl1e card.
+	  It must be in the form  of "xx:xx:xx:xx:xx:xx", where x is a
+	  hexadecimal number for it to be valid. Failing to do so will
+	  result in the default MAC address being used.

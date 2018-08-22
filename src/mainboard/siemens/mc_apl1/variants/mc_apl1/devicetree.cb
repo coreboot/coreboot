@@ -8,7 +8,7 @@ chip soc/intel/apollolake
 
 	# Disable unused clkreq of PCIe root ports
 	register "pcie_rp_clkreq_pin[0]" = "3" # PCIe-PCI-Bridge
-	register "pcie_rp_clkreq_pin[1]" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[1]" = "2" # FPGA
 	register "pcie_rp_clkreq_pin[2]" = "0" # MACPHY
 	register "pcie_rp_clkreq_pin[3]" = "1" # MACPHY
 	register "pcie_rp_clkreq_pin[4]" = "CLKREQ_DISABLED"
@@ -73,7 +73,7 @@ chip soc/intel/apollolake
 		device pci 13.2 off end	# - RP 4 - PCIe-A 2
 		device pci 13.3 off end	# - RP 5 - PCIe-A 3
 		device pci 14.0 on  end	# - RP 0 - PCIe-B 0 - PCIe-PCI-Bridge
-		device pci 14.1 off end	# - RP 1 - PCIe-B 1
+		device pci 14.1 on  end	# - RP 1 - PCIe-B 1 - FPGA
 		device pci 15.0 on  end	# - XHCI
 		device pci 15.1 off end	# - XDCI
 		device pci 16.0 on	# - I2C 0
@@ -98,10 +98,10 @@ chip soc/intel/apollolake
 		device pci 17.1 off end	# - I2C 5
 		device pci 17.2 off end	# - I2C 6
 		device pci 17.3 on  end	# - I2C 7
-		device pci 18.0 off end	# - UART 0
-		device pci 18.1 off end	# - UART 1
-		device pci 18.2 off end	# - UART 2
-		device pci 18.3 off end	# - UART 3
+		device pci 18.0 on  end	# - UART 0
+		device pci 18.1 on  end	# - UART 1
+		device pci 18.2 on  end	# - UART 2
+		device pci 18.3 on  end	# - UART 3
 		device pci 19.0 off end	# - SPI 0
 		device pci 19.1 off end	# - SPI 1
 		device pci 19.2 off end	# - SPI 2

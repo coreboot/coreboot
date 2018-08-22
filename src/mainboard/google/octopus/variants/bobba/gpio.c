@@ -39,6 +39,7 @@ const struct pad_config *variant_override_gpio_table(size_t *num)
 	const struct pad_config *c = NULL;
 	switch (board_id()) {
 	case 0:
+	case 1:
 	case UNDEFINED_STRAPPING_ID:
 		*num = 0;
 		break;
@@ -81,11 +82,11 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 {
 	/*
 	 * This is a hack to configure EN_PP3300_WLAN based on board id. Once
-	 * board id 0 is deprecated, we can get rid of this.
+	 * board id 0/1 is deprecated, we can get rid of this.
 	 */
 	uint32_t bid = board_id();
 
-	if (bid == UNDEFINED_STRAPPING_ID || bid < 1)
+	if (bid == UNDEFINED_STRAPPING_ID || bid < 2)
 		gpio_output(GPIO_178, 1);
 	else
 		gpio_output(GPIO_178, 0);

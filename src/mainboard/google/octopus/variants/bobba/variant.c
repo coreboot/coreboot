@@ -38,7 +38,7 @@ void variant_update_devtree(struct device *dev)
 	bid = board_id();
 
 	/* Nothing to update. */
-	if (bid == UNDEFINED_STRAPPING_ID || bid < 1)
+	if (bid == UNDEFINED_STRAPPING_ID || bid < 2)
 		return;
 
 	touchscreen_i2c_host = dev_find_slot(0, PCH_DEVFN_I2C7);

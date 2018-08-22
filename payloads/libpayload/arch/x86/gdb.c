@@ -38,17 +38,17 @@ static const u8 type_to_signal[] = {
 	[EXC_SX]  = GDB_SIGFPE,
 };
 
-static int gdb_exception_hook(u32 type)
+static void gdb_exception_hook(u8 vector)
 {
-	if (type >= ARRAY_SIZE(type_to_signal) || !type_to_signal[type])
-		return 0;
-	gdb_command_loop(type_to_signal[type]);
-	return 1;
+	gdb_command_loop(type_to_signal[vector]);
 }
 
 void gdb_arch_init(void)
 {
-	exception_install_hook(&gdb_exception_hook);
+	for (int vector = 0; vector < ARRAY_SIZE(type_to_signal); ++vector) {
+		if (type_to_signal[vector])
+			set_interrupt_handler(vector, &gdb_exception_hook);
+	}
 }
 
 void gdb_arch_enter(void)

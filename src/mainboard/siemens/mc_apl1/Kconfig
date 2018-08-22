@@ -5,9 +5,6 @@ config BOARD_SIEMENS_BASEBOARD_MC_APL1
 	select BOARD_ROMSIZE_KB_16384
 	select HAVE_ACPI_TABLES
 	select USE_SIEMENS_HWILIB
-	select DRIVER_SIEMENS_NC_FPGA
-	select APL_SKIP_SET_POWER_LIMITS
-	select NC_FPGA_NOTIFY_CB_READY
 
 source "src/mainboard/siemens/mc_apl1/variants/*/Kconfig"
 

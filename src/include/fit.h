@@ -27,7 +27,7 @@
 struct fit_image_node
 {
 	const char *name;
-	void *data;
+	const void *data;
 	uint32_t size;
 	int compression;
 
@@ -54,7 +54,7 @@ struct fit_config_node
 /*
  * Updates the cmdline in the devicetree.
  */
-void fit_update_chosen(struct device_tree *tree, char *cmd_line);
+void fit_update_chosen(struct device_tree *tree, const char *cmd_line);
 
 /*
  * Add a compat string to the list of supported board ids.

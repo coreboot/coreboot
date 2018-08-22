@@ -158,7 +158,7 @@ static struct fit_image_node *find_image(const char *name)
 	return NULL;
 }
 
-static int fdt_find_compat(void *blob, uint32_t start_offset,
+static int fdt_find_compat(const void *blob, uint32_t start_offset,
 			   struct fdt_property *prop)
 {
 	int offset = start_offset;
@@ -196,7 +196,7 @@ static int fit_check_compat(struct fdt_property *compat_prop,
 	return -1;
 }
 
-void fit_update_chosen(struct device_tree *tree, char *cmd_line)
+void fit_update_chosen(struct device_tree *tree, const char *cmd_line)
 {
 	const char *path[] = { "chosen", NULL };
 	struct device_tree_node *node;
@@ -388,10 +388,12 @@ void fit_update_memory(struct device_tree *tree)
  * @param fdt_blob Pointer to FDT
  * @param config The current config node to operate on
  */
-static void fit_update_compat(void *fdt_blob, struct fit_config_node *config)
+static void fit_update_compat(const void *fdt_blob,
+			      struct fit_config_node *config)
 {
 	struct compat_string_entry *compat_node;
-	struct fdt_header *fdt_header = (struct fdt_header *)fdt_blob;
+	const struct fdt_header *fdt_header =
+		(const struct fdt_header *)fdt_blob;
 	uint32_t fdt_offset = be32_to_cpu(fdt_header->structure_offset);
 	size_t i = 0;
 

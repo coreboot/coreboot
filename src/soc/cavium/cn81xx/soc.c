@@ -64,9 +64,9 @@ static const char *QLM_BGX_MODE_MAP[BDK_QLM_MODE_LAST] = {
 static void dt_platform_fixup_phy(struct device_tree_node *node, char *path,
 				  int64_t phy_address, bdk_qlm_modes_t qlm_mode)
 {
-	char *data = NULL;
+	const char *data = NULL;
 	size_t size = 0;
-	dt_find_bin_prop(node, "qlm-mode", (void **)&data, &size);
+	dt_find_bin_prop(node, "qlm-mode", (const void **)&data, &size);
 
 	if (!data || strncmp(data, path, 6) != 0)
 		return; /* No key prefix match. */
@@ -127,10 +127,10 @@ static void dt_iterate_phy(struct device_tree_node *parent,
 static void dt_platform_fixup_mac(struct device_tree_node *node)
 {
 	const char *name = "local-mac-address";
-	u64 *localmac = NULL;
+	const u64 *localmac = NULL;
 	size_t size = 0;
 
-	dt_find_bin_prop(node, name, (void **)&localmac, &size);
+	dt_find_bin_prop(node, name, (const void **)&localmac, &size);
 
 	if (!localmac)
 		return;
@@ -150,8 +150,8 @@ static void dt_platform_fixup_mac(struct device_tree_node *node)
 		if (*localmac)
 			return;
 		if (used_mac < num_free_mac_addresses) {
-			*localmac = next_free_mac_address + used_mac;
-			dt_add_bin_prop(node, name, (void *)&localmac, 6);
+			const u64 genmac = next_free_mac_address + used_mac;
+			dt_add_bin_prop(node, name, &genmac, 6);
 			used_mac++;
 			return;
 		}
@@ -232,9 +232,10 @@ static int dt_platform_fixup(struct device_tree_fixup *fixup,
 			       __func__);
 			continue;
 		}
-		u32 *data = NULL;
+		const u32 *data = NULL;
 		size_t size = 0;
-		dt_find_bin_prop(dt_node, "mmu-masters", (void **)&data, &size);
+		dt_find_bin_prop(dt_node, "mmu-masters", (const void **)&data,
+				 &size);
 		if (!size) {
 			printk(BIOS_ERR, "%s: mmu-masters entry not found\n",
 			       __func__);

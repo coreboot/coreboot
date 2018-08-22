@@ -50,7 +50,7 @@ struct fdt_header {
 struct fdt_property
 {
 	const char *name;
-	void *data;
+	const void *data;
 	uint32_t size;
 };
 
@@ -88,7 +88,7 @@ struct device_tree_reserve_map_entry
 
 struct device_tree
 {
-	void *header;
+	const void *header;
 	uint32_t header_size;
 
 	struct list_node reserve_map;
@@ -104,17 +104,18 @@ struct device_tree
  */
 
 // Read the property, if any, at offset offset.
-int fdt_next_property(void *blob, uint32_t offset, struct fdt_property *prop);
+int fdt_next_property(const void *blob, uint32_t offset,
+		      struct fdt_property *prop);
 // Read the name of the node, if any, at offset offset.
-int fdt_node_name(void *blob, uint32_t offset, const char **name);
+int fdt_node_name(const void *blob, uint32_t offset, const char **name);
 
-void fdt_print_node(void *blob, uint32_t offset);
-int fdt_skip_node(void *blob, uint32_t offset);
+void fdt_print_node(const void *blob, uint32_t offset);
+int fdt_skip_node(const void *blob, uint32_t offset);
 
 // Read a flattened device tree into a heirarchical structure which refers to
 // the contents of the flattened tree in place. Modifying the flat tree
 // invalidates the unflattened one.
-struct device_tree *fdt_unflatten(void *blob);
+struct device_tree *fdt_unflatten(const void *blob);
 
 
 
@@ -123,12 +124,13 @@ struct device_tree *fdt_unflatten(void *blob);
  */
 
 // Figure out how big a device tree would be if it were flattened.
-uint32_t dt_flat_size(struct device_tree *tree);
+uint32_t dt_flat_size(const struct device_tree *tree);
 // Flatten a device tree into the buffer pointed to by dest.
-void dt_flatten(struct device_tree *tree, void *dest);
-void dt_print_node(struct device_tree_node *node);
+void dt_flatten(const struct device_tree *tree, void *dest);
+void dt_print_node(const struct device_tree_node *node);
 // Read #address-cells and #size-cells properties from a node.
-void dt_read_cell_props(struct device_tree_node *node, u32 *addrcp, u32 *sizecp);
+void dt_read_cell_props(const struct device_tree_node *node, u32 *addrcp,
+			u32 *sizecp);
 // Look up or create a node relative to a parent node, through its path
 // represented as an array of strings.
 struct device_tree_node *dt_find_node(struct device_tree_node *parent, const char **path,
@@ -148,15 +150,16 @@ struct device_tree_node *dt_find_next_compat_child(struct device_tree_node *pare
 struct device_tree_node *dt_find_prop_value(struct device_tree_node *parent, const char *name,
 				   void *data, size_t size);
 // Return the phandle
-uint32_t dt_get_phandle(struct device_tree_node *node);
+uint32_t dt_get_phandle(const struct device_tree_node *node);
 // Write src into *dest as a 'length'-byte big-endian integer.
 void dt_write_int(u8 *dest, u64 src, size_t length);
 // Delete a property
 void dt_delete_prop(struct device_tree_node *node, const char *name);
 // Add different kinds of properties to a node, or update existing ones.
-void dt_add_bin_prop(struct device_tree_node *node, const char *name, void *data,
-		     size_t size);
-void dt_add_string_prop(struct device_tree_node *node, const char *name, char *str);
+void dt_add_bin_prop(struct device_tree_node *node, const char *name,
+		     const void *data, size_t size);
+void dt_add_string_prop(struct device_tree_node *node, const char *name,
+			const char *str);
 void dt_add_u32_prop(struct device_tree_node *node, const char *name, u32 val);
 void dt_add_u64_prop(struct device_tree_node *node, const char *name, u64 val);
 void dt_add_reg_prop(struct device_tree_node *node, u64 *addrs, u64 *sizes,
@@ -164,9 +167,10 @@ void dt_add_reg_prop(struct device_tree_node *node, u64 *addrs, u64 *sizes,
 int dt_set_bin_prop_by_path(struct device_tree *tree, const char *path,
 			    void *data, size_t size, int create);
 
-void dt_find_bin_prop(struct device_tree_node *node, const char *name, void **data,
-		      size_t *size);
-const char *dt_find_string_prop(struct device_tree_node *node, const char *name);
+void dt_find_bin_prop(const struct device_tree_node *node, const char *name,
+		      const void **data, size_t *size);
+const char *dt_find_string_prop(const struct device_tree_node *node,
+				const char *name);
 
 /*
  * Fixups to apply to a kernel's device tree before booting it.

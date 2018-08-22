@@ -119,7 +119,7 @@ static void add_cb_fdt_data(struct device_tree *tree)
 	struct device_tree_node *coreboot_node = dt_find_node(firmware_node,
 		coreboot_path, &addr_cells, &size_cells, 1);
 
-	dt_add_string_prop(coreboot_node, "compatible", strdup("coreboot"));
+	dt_add_string_prop(coreboot_node, "compatible", "coreboot");
 
 	/* Fetch CB tables from cbmem */
 	void *cbtable = cbmem_find(CBMEM_ID_CBTABLE);

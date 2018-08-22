@@ -34,6 +34,10 @@
 
 void exception_init_asm(void);
 void exception_dispatch(void);
+void enable_interrupts(void);
+void disable_interrupts(void);
+/** Returns 1 if interrupts are enabled. */
+int interrupts_enabled(void);
 
 struct exception_state
 {

@@ -241,12 +241,24 @@ static int dt_platform_fixup(struct device_tree_fixup *fixup,
 			       __func__);
 			continue;
 		}
+
+		u32 *data_cleaned = malloc(size);
+		if (!data_cleaned)
+			continue;
+
+		size_t n = 0;
+		/* Remove phandle from mmu-masters list */
 		for (size_t j = 0; j < size / (sizeof(u32) * 2); j++)
-			if (be32_to_cpu(data[j * 2]) == phandle) {
-				data[j * 2] = 0;
-				data[j * 2 + 1] = 0;
-				break;
+			if (be32_to_cpu(data[j * 2]) != phandle) {
+				data_cleaned[n * 2] = data[j * 2];
+				data_cleaned[n * 2 + 1] = data[j * 2 + 1];
+				n++;
 			}
+
+		dt_add_bin_prop(dt_node, "mmu-masters", data_cleaned,
+				n * sizeof(u32) * 2);
+
+		free(data_cleaned);
 	}
 
 	/* Remove QLM mode entries */

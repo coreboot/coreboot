@@ -266,9 +266,6 @@ LibAmdMsrRead (
   IN OUT   AMD_CONFIG_PARAMS *ConfigPtr
   )
 {
-  if ((MsrAddress == 0xFFFFFFFF) || (MsrAddress == 0x00000000)) {
-	  IdsErrorStop(MsrAddress);
-  }
   *Value = __readmsr (MsrAddress);
 }
 
@@ -573,28 +570,4 @@ GetPciMmioAddress (
     MmioIsEnabled = TRUE;
   }
   return MmioIsEnabled;
-}
-
-BOOLEAN
-IdsErrorStop (
-  IN      UINT32 FileCode
-  )
-{
-	struct POST {
-		UINT16 deadlo;
-		UINT32 messagelo;
-		UINT16 deadhi;
-		UINT32 messagehi;
-	} post = {0xDEAD, FileCode, 0xDEAD, FileCode};
-	UINT16 offset = 0;
-	UINT16 j;
-
-	while(1) {
-		offset %= sizeof(struct POST) / 2;
-		WriteIo16(80, *((UINT16 *)&post)+offset);
-		++offset;
-		for (j=0; j<250; ++j) {
-			ReadIo8(80);
-		}
-	}
 }

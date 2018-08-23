@@ -55,7 +55,6 @@
  * Module are listed below:
  *
  *    IDSOPT_IDS_ENABLED
- *    IDSOPT_ERROR_TRAP_ENABLED
  *    IDSOPT_CONTROL_ENABLED
  *
  *      Warning: When you enable the IDSOPT_CONTROL_NV_TO_CMOS feature.
@@ -96,8 +95,6 @@
  *
  **/
 
-#define IDSOPT_ERROR_TRAP_ENABLED             FALSE
-
 #define IDS_MMAP_SERIAL_PORT
 
 #ifdef DEBUG
@@ -122,7 +119,6 @@
 //#define IDSOPT_ASSERT_ENABLED                 TRUE
 #else
 #define IDSOPT_IDS_ENABLED                    FALSE
-//#define IDSOPT_ERROR_TRAP_ENABLED             FALSE
 //#define IDSOPT_CONTROL_ENABLED                FALSE
 #define IDSOPT_TRACING_ENABLED                FALSE
 #define IDSOPT_TRACING_CONSOLE_SERIALPORT     TRUE

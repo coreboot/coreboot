@@ -271,10 +271,6 @@ typedef enum {                        //vv- for debug reference only
   #define IDSOPT_ASSERT_ENABLED         FALSE
 #endif
 
-#ifndef IDSOPT_ERROR_TRAP_ENABLED
-  #define IDSOPT_ERROR_TRAP_ENABLED   FALSE
-#endif
-
 #ifndef IDSOPT_CAR_CORRUPTION_CHECK_ENABLED
   #define IDSOPT_CAR_CORRUPTION_CHECK_ENABLED   FALSE
 #endif
@@ -313,7 +309,6 @@ typedef enum {                        //vv- for debug reference only
   #undef  IDSOPT_PERF_ANALYSIS
   #undef  IDSOPT_HEAP_CHECKING
   #undef  IDSOPT_ASSERT_ENABLED
-  #undef  IDSOPT_ERROR_TRAP_ENABLED
   #undef  IDSOPT_CAR_CORRUPTION_CHECK_ENABLED
   #undef  IDSOPT_DEBUG_CODE_ENABLED
   #undef  IDSOPT_TRACE_USER_OPTIONS
@@ -327,7 +322,6 @@ typedef enum {                        //vv- for debug reference only
   #define IDSOPT_PERF_ANALYSIS      FALSE
   #define IDSOPT_HEAP_CHECKING      FALSE
   #define IDSOPT_ASSERT_ENABLED     FALSE
-  #define IDSOPT_ERROR_TRAP_ENABLED FALSE
   #define IDSOPT_CAR_CORRUPTION_CHECK_ENABLED FALSE
   #define IDSOPT_DEBUG_CODE_ENABLED FALSE
   #define IDSOPT_TRACE_USER_OPTIONS FALSE
@@ -471,8 +465,6 @@ typedef enum {                        //vv- for debug reference only
 #endif
 
 #if IDSOPT_CAR_CORRUPTION_CHECK_ENABLED == TRUE
-  #undef  IDSOPT_ERROR_TRAP_ENABLED
-  #define IDSOPT_ERROR_TRAP_ENABLED TRUE
   #define IDS_CAR_CORRUPTION_CHECK(StdHeader)  IdsCarCorruptionCheck(StdHeader)
 #else
   #define IDS_CAR_CORRUPTION_CHECK(StdHeader)
@@ -488,26 +480,6 @@ typedef enum {                        //vv- for debug reference only
   #else
     #define  DEBUG_CODE(Code)
   #endif
-#endif
-
-/**
- * @def IDS_ERROR_TRAP
- * Trap AGESA Error events with stop code display.
- *
- * Works similarly to use of "ASSERT (FALSE);"
- *
- */
-#if IDSOPT_ERROR_TRAP_ENABLED == TRUE
-  #ifdef STOP_CODE
-    #undef STOP_CODE
-  #endif
-  #define STOP_CODE (((UINT32)FILECODE)*0x10000ul + \
-                      ((__LINE__) % 10) + (((__LINE__ / 10) % 10)*0x10) + \
-                      (((__LINE__ / 100) % 10)*0x100) + (((__LINE__ / 1000) % 10)*0x1000))
-
-  #define IDS_ERROR_TRAP  IdsErrorStop (STOP_CODE)
-#else
-  #define IDS_ERROR_TRAP
 #endif
 
 ///give the extended Macro default value

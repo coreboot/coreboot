@@ -916,36 +916,6 @@ typedef enum {                        //vv- for debug reference only
   #define IDS_PERF_ANALYSE(StdHeader)
 #endif
 
-///For IDS feat use
-#define IDS_FAMILY_ALL  0xFFFFFFFFFFFFFFFFull
-#define IDS_BSP_ONLY    TRUE
-#define IDS_ALL_CORES   FALSE
-
-#define IDS_LATE_RUN_AP_TASK_ID     PROC_IDS_LIBRARY_IDSLIB_FILECODE
-
-#define IDS_CALLOUT_INIT      0x01                             ///< The function data of IDS callout function of initialization.
-
-#define IDS_CALLOUT_GNB_PPFUSE_OVERRIDE           0x83        ///< The function data of IDS callout function of GNB pp fuse table.
-#define IDS_CALLOUT_GNB_INTEGRATED_TABLE_CONFIG   0x84        ///< The function data of IDS callout function of GNB integrated table.
-#define IDS_CALLOUT_GNB_NB_POWERGATE_CONFIG       0x85        ///< The function data of IDS callout function of GNB NB power gate config.
-#define IDS_CALLOUT_GNB_PCIE_POWERGATE_CONFIG     0x86        ///< The function data of IDS callout function of GNB PCIE power gateconfig.
-#define IDS_CALLOUT_GNB_PCIE_PLATFORM_CONFIG      0x87        ///< The function data of IDS callout function of GNB pcie platform config.
-#define IDS_CALLOUT_GNB_PCIE_PHY_CONFIG           0x88        ///< The function data of IDS callout function of GNB pcie PHY config.
-#define IDS_CALLOUT_GNB_GMM_REGISTER_OVERRIDE     0x89        ///< The function data of IDS callout function of GNB GMM register override
-#define IDS_CALLOUT_FCH_INIT_RESET                0x8A        ///< The function data of IDS callout function of FchInitReset
-#define IDS_CALLOUT_FCH_INIT_ENV                  0x8B        ///< The function data of IDS callout function of FchInitEnv.
-#define IDS_CALLOUT_POWER_PLAN_INIT               0x8C        ///< The function data of IDS callout function of Override Power Plan Init
-#define IDS_CALLOUT_GET_PERF_BUFFER               0x8D        ///< The function data of IDS callout function of get platform performance buffer.
-#define IDS_CALLOUT_GNB_PACKAGE_POWER_CONFIG      0x8E        ///< The function data of IDS callout function of Bapm Package Power.
-#define IDS_CALLOUT_SMU_PORT80_LOGGING_BUFFER     0x8F        ///< The function data of IDS callout function of SMU port80 logging buffer.
-#define IDS_CALLOUT_GNB_BEFORE_EARLY_INIT         0x90        ///< The function data of IDS callout function of GNB before early init.
-#define IDS_CALLOUT_GNB_SMUBIOSTABLE_OVERRIDE     0x91        ///< The function data of IDS callout function of GNB smu bios table.
-#define IDS_CALLOUT_GNB_PCIE_AER_CONFIG           0x92        ///< The function data of IDS callout function of GNB PCIE AER config.
-#define IDS_CALLOUT_GNB_PCIE_EARLY_PORT_CONFIG    0x93        ///< The function data of IDS callout function of GNB pcie early port config.
-#define IDS_CALLOUT_GNB_BUILDOPTIONS_OVERRIDE     0x94        ///< The function data of IDS callout function of GNB build options override.
-#define IDS_CALLOUT_GNB_SMUFEATURES_MASK_OVERRIDE 0x95        ///< The function data of IDS callout function of GNB SMU Features MASK override.
-#define IDS_CALLOUT_GNB_BEFORE_TXPRESET_LOADING   0x96        ///< The function data of IDS callout function of GNB pcie Tx preset loading sequence.
-
 /// Function entry for HDT script to call
 typedef struct _SCRIPT_FUNCTION {
   UINT32  FuncAddr;       ///< Function address in ROM

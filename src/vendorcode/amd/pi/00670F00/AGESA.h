@@ -3579,9 +3579,9 @@ typedef enum {
   CoreLevelModeMax              ///< Used for bounds checking
 } CORE_LEVELING_TYPE;
 
-
-
-
+#ifndef IDS_CALLOUT_INIT
+#define IDS_CALLOUT_INIT      0x01                             ///< The function data of IDS callout function of initialization.
+#endif
 
 /************************************************************************
  *

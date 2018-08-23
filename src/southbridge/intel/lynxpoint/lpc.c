@@ -770,7 +770,7 @@ static void southbridge_inject_dsdt(struct device *dev)
 		gnvs->pcnt = dev_count_cpu();
 
 #if IS_ENABLED(CONFIG_CHROMEOS)
-		chromeos_init_vboot(&(gnvs->chromeos));
+		chromeos_init_chromeos_acpi(&(gnvs->chromeos));
 #endif
 
 		/* Update the mem console pointer. */

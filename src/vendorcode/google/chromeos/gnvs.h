@@ -73,10 +73,8 @@ typedef struct {
 	u8	pad[314];	// dc6-eff
 } __packed chromeos_acpi_t;
 
-void chromeos_init_vboot(chromeos_acpi_t *init);
+void chromeos_init_chromeos_acpi(chromeos_acpi_t *init);
 void chromeos_set_me_hash(u32*, int);
-void acpi_get_chromeos_acpi_info(uint64_t *chromeos_acpi_addr,
-				 uint32_t *chromeos_acpi_size);
-chromeos_acpi_t *acpi_get_chromeos_acpi(void);
+chromeos_acpi_t *chromeos_get_chromeos_acpi(void);
 
 #endif

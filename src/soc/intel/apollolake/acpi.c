@@ -96,7 +96,7 @@ void acpi_create_gnvs(struct global_nvs_t *gnvs)
 
 	if (IS_ENABLED(CONFIG_CHROMEOS)) {
 		/* Initialize Verified Boot data */
-		chromeos_init_vboot(&gnvs->chromeos);
+		chromeos_init_chromeos_acpi(&gnvs->chromeos);
 		gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
 	}
 

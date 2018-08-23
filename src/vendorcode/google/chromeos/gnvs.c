@@ -30,7 +30,7 @@
 static chromeos_acpi_t *chromeos_acpi;
 static u32 me_hash_saved[8];
 
-void chromeos_init_vboot(chromeos_acpi_t *init)
+void chromeos_init_chromeos_acpi(chromeos_acpi_t *init)
 {
 	chromeos_acpi = init;
 
@@ -59,14 +59,7 @@ void chromeos_set_me_hash(u32 *hash, int len)
 		memcpy(me_hash_saved, hash, len*sizeof(u32));
 }
 
-void acpi_get_chromeos_acpi_info(uint64_t *chromeos_acpi_addr,
-				 uint32_t *chromeos_acpi_size)
-{
-	*chromeos_acpi_addr = (intptr_t)chromeos_acpi;
-	*chromeos_acpi_size = sizeof(*chromeos_acpi);
-}
-
-chromeos_acpi_t *acpi_get_chromeos_acpi(void)
+chromeos_acpi_t *chromeos_get_chromeos_acpi(void)
 {
 	return chromeos_acpi;
 }

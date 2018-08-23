@@ -739,7 +739,7 @@ static void southbridge_inject_dsdt(struct device *dev)
 		memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
 
 #if IS_ENABLED(CONFIG_CHROMEOS)
-		chromeos_init_vboot(&(gnvs->chromeos));
+		chromeos_init_chromeos_acpi(&(gnvs->chromeos));
 #endif
 
 		/* And tell SMI about it */

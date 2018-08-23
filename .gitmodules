@@ -21,3 +21,8 @@
 [submodule "libgfxinit"]
 	path = 3rdparty/libgfxinit
 	url = ../libgfxinit.git
+[submodule "3rdparty/fsp"]
+	path = 3rdparty/fsp
+	url = ../fsp.git
+	update = none
+	ignore = dirty

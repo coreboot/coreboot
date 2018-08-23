@@ -331,9 +331,16 @@ typedef struct {
 **/
   UINT8                       ScramblerSupport;
 
-/** Offset 0x00C8
+/** Offset 0x00C8 - Skip Multi-Processor Initialization
+  When this is skipped, boot loader must initialize processors before SilicionInit
+  API. </b>0: Initialize; <b>1: Skip
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace1[16];
+  UINT8                       SkipMpInit;
+
+/** Offset 0x00C9
+**/
+  UINT8                       UnusedUpdSpace1[15];
 
 /** Offset 0x00D8 - SPD Profile Selected
   Select DIMM timing profile. Options are 0=Default profile, 1=Custom profile, 2=XMP
@@ -479,7 +486,9 @@ typedef struct {
   UINT8                       CpuTraceHubMemReg1Size;
 
 /** Offset 0x00F6 - Enable or Disable Peci C10 Reset command
-  Enable or Disable Peci C10 Reset command; <b>0: Disable;</b> 1: Enable.
+  Enable or Disable Peci C10 Reset command. If Enabled, BIOS will send the CPU message
+  to disable peci reset on C10 exit. The default value is <b>0: Disable</b> for CNL,
+  and <b>1: Enable</b> for all other CPU's
   $EN_DIS
 **/
   UINT8                       PeciC10Reset;
@@ -949,7 +958,7 @@ typedef struct {
 
 /** Offset 0x0205 - Maximum Core Turbo Ratio Override
   Maximum core turbo ratio override allows to increase CPU core frequency beyond the
-  fused max turbo ratio limit. <b>0: Hardware defaults.</b> Range: 0-83
+  fused max turbo ratio limit. <b>0: Hardware defaults.</b> Range: 0-255
 **/
   UINT8                       CoreMaxOcRatio;
 
@@ -959,13 +968,15 @@ typedef struct {
 **/
   UINT8                       CoreVoltageMode;
 
-/** Offset 0x0207
+/** Offset 0x0207 - Program Cache Attributes
+  Program Cache Attributes; <b>0: Program</b>; 1: Disable Program.
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace6;
+  UINT8                       DisableMtrrProgram;
 
 /** Offset 0x0208 - Maximum clr turbo ratio override
   Maximum clr turbo ratio override allows to increase CPU clr frequency beyond the
-  fused max turbo ratio limit. <b>0: Hardware defaults.</b>  Range: 0-83
+  fused max turbo ratio limit. <b>0: Hardware defaults.</b>  Range: 0-255
 **/
   UINT8                       RingMaxOcRatio;
 
@@ -1116,7 +1127,7 @@ typedef struct {
 
 /** Offset 0x0227
 **/
-  UINT8                       UnusedUpdSpace7;
+  UINT8                       UnusedUpdSpace6;
 
 /** Offset 0x0228 - PrmrrSize
   0=Invalid, 32MB=0x2000000, 64MB=0x4000000, 128MB=0x8000000, 256MB=0x10000000
@@ -1861,12 +1872,12 @@ typedef struct {
   UINT8                       RhActProbability;
 
 /** Offset 0x04C1 - RAPL PL 2 WindowX
-  Power PL 2 time window X value, (1/1024)*(1+(x/4))*(2^y) (0=Def)
+  Power PL 2 time window X value, (1/1024)*(1+(x/4))*(2^y) (1=Def)
 **/
   UINT8                       RaplLim2WindX;
 
 /** Offset 0x04C2 - RAPL PL 2 WindowY
-  Power PL 2 time window Y value, (1/1024)*(1+(x/4))*(2^y) (0=Def)
+  Power PL 2 time window Y value, (1/1024)*(1+(x/4))*(2^y) (1=Def)
 **/
   UINT8                       RaplLim2WindY;
 
@@ -1881,52 +1892,52 @@ typedef struct {
   UINT8                       RaplLim1WindY;
 
 /** Offset 0x04C5 - RAPL PL 2 Power
-  range[0;2^14-1]= [2047.875;0]in W, (224= Def)
+  range[0;2^14-1]= [2047.875;0]in W, (222= Def)
 **/
   UINT16                      RaplLim2Pwr;
 
 /** Offset 0x04C7 - RAPL PL 1 Power
-  range[0;2^14-1]= [2047.875;0]in W, (224= Def)
+  range[0;2^14-1]= [2047.875;0]in W, (0= Def)
 **/
   UINT16                      RaplLim1Pwr;
 
 /** Offset 0x04C9 - Warm Threshold Ch0 Dimm0
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       WarmThresholdCh0Dimm0;
 
 /** Offset 0x04CA - Warm Threshold Ch0 Dimm1
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       WarmThresholdCh0Dimm1;
 
 /** Offset 0x04CB - Warm Threshold Ch1 Dimm0
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       WarmThresholdCh1Dimm0;
 
 /** Offset 0x04CC - Warm Threshold Ch1 Dimm1
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       WarmThresholdCh1Dimm1;
 
 /** Offset 0x04CD - Hot Threshold Ch0 Dimm0
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       HotThresholdCh0Dimm0;
 
 /** Offset 0x04CE - Hot Threshold Ch0 Dimm1
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       HotThresholdCh0Dimm1;
 
 /** Offset 0x04CF - Hot Threshold Ch1 Dimm0
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       HotThresholdCh1Dimm0;
 
 /** Offset 0x04D0 - Hot Threshold Ch1 Dimm1
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       HotThresholdCh1Dimm1;
 
@@ -2072,7 +2083,7 @@ typedef struct {
 
 /** Offset 0x04ED - Throttler CKEMin Timer
   Timer value for CKEMin, range[255;0]. Req'd min of SC_ROUND_T + BYTE_LENGTH (4).
-  Dfault is 0x30
+  Default is 0x30
 **/
   UINT8                       ThrtCkeMinTmr;
 
@@ -2286,9 +2297,34 @@ typedef struct {
 **/
   UINT8                       DualDimmPerChannelBoardType;
 
-/** Offset 0x0510
+/** Offset 0x0510 - DDR4 Mixed U-DIMM 2DPC Limitation
+  Enable/Disable 2667 Frequency Limitation for DDR4 U-DIMM Mixed Dimm 2DPC population.
+  Disable(Default)=0, Enable=1
+  $EN_DIS
 **/
-  UINT8                       ReservedFspmUpd[15];
+  UINT8                       Ddr4MixedUDimm2DpcLimit;
+
+/** Offset 0x0511 - CFL Reserved
+  Reserved FspmConfig CFL
+  $EN_DIS
+**/
+  UINT8                       ReservedFspmUpdCfl[2];
+
+/** Offset 0x0513 - Memory Test on Warm Boot
+  Run Base Memory Test on Warm Boot
+  0:Disable, 1:Enable
+**/
+  UINT8                       MemTestOnWarmBoot;
+
+/** Offset 0x0514 - Throttler CKEMin Timer - LPDDR
+  Timer value for CKEMin (For LPDDR Only), range[255;0]. Req'd min of SC_ROUND_T +
+  BYTE_LENGTH (4). Default is 0x40
+**/
+  UINT8                       ThrtCkeMinTmrLpddr;
+
+/** Offset 0x0515
+**/
+  UINT8                       ReservedFspmUpd[10];
 } FSP_M_CONFIG;
 
 /** Fsp M Test Configuration
@@ -2513,7 +2549,7 @@ typedef struct {
 
 /** Offset 0x0579
 **/
-  UINT8                       UnusedUpdSpace9;
+  UINT8                       UnusedUpdSpace8;
 
 /** Offset 0x057A - Jitter Dwell Time for PCIe Gen3 Software Equalization
   Range: 0-65535, default is 1000. @warning Do not change from the default
@@ -2596,14 +2632,13 @@ typedef struct {
   UINT8                       SmbusSpdWriteDisable;
 
 /** Offset 0x059B - ChipsetInit HECI message
-  Enable/Disable. 0: Disable, 1: enable, Enable or disable ChipsetInit HECI message.
-  If disabled, it prevents from sending ChipsetInit HECI message.
+  DEPRECATED
   $EN_DIS
 **/
   UINT8                       ChipsetInitMessage;
 
 /** Offset 0x059C - Bypass ChipsetInit sync reset.
-  0: disable, 1: enable, Set Enable to bypass the reset after ChipsetInit HECI message.
+  DEPRECATED
   $EN_DIS
 **/
   UINT8                       BypassPhySyncReset;
@@ -2788,7 +2823,7 @@ typedef struct {
 
 /** Offset 0x051F
 **/
-  UINT8                       UnusedUpdSpace8;
+  UINT8                       UnusedUpdSpace7;
 
 /** Offset 0x0520
 **/

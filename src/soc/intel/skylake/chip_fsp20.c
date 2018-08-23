@@ -336,6 +336,15 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
 	params->ScsSdCardEnabled = config->ScsSdCardEnabled;
 
+	if (!!params->ScsEmmcHs400Enabled && !!config->EmmcHs400DllNeed) {
+		params->PchScsEmmcHs400DllDataValid =
+			!!config->EmmcHs400DllNeed;
+		params->PchScsEmmcHs400RxStrobeDll1 =
+			config->ScsEmmcHs400RxStrobeDll1;
+		params->PchScsEmmcHs400TxDataDll =
+			config->ScsEmmcHs400TxDataDll;
+	}
+
 	/* If ISH is enabled, enable ISH elements */
 	dev = dev_find_slot(0, PCH_DEVFN_ISH);
 	if (dev)

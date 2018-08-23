@@ -232,7 +232,7 @@ const struct msrdef intel_core2_later_msrs[] = {
 		}},
 		{ 1, 1, "VMX inside of SMX operation", "R/WL", PRESENT_BIN, {
 			/* This bit enables a system executive to use
-			 * VMX in conjuction with SMX to support Intel
+			 * VMX in conjunction with SMX to support Intel
 			 * Trusted Execution Technology.
 			 */
 			{ MSR1(0), "VMX inside of SMX operation disabled" },
@@ -821,9 +821,9 @@ const struct msrdef intel_core2_later_msrs[] = {
 		/* if CPUID.0AH EAX[7:0] > 2 */
 		{ 10, 1, "AnyThread 2", "R/W", PRESENT_BIN, {
 			{ MSR1(0), "Counter only increments the associated event \
-				conditions occuring in the logical processor which programmed the MSR" },
+				conditions occurring in the logical processor which programmed the MSR" },
 			{ MSR1(1), "Counting the associated event conditions \
-				occuring across all logical processors sharing a processor core" },
+				occurring across all logical processors sharing a processor core" },
 			{ BITVAL_EOT }
 		}},
 		{ 9, 1, "EN2_Usr", "R/W", PRESENT_BIN, {
@@ -844,9 +844,9 @@ const struct msrdef intel_core2_later_msrs[] = {
 		/* if CPUID.0AH: EAX[7:0] > 2 */
 		{ 6, 1, "AnyThread 1", "R/W", PRESENT_BIN, {
 			{ MSR1(0), "Counter only increments the associated event \
-				conditions occuring in the logical processor which programmed the MSR" },
+				conditions occurring in the logical processor which programmed the MSR" },
 			{ MSR1(1), "Counting the associated event conditions \
-				occuring across all logical processors sharing a processor core" },
+				occurring across all logical processors sharing a processor core" },
 			{ BITVAL_EOT }
 		}},
 		{ 5, 1, "EN1_Usr", "R/W", PRESENT_BIN, {
@@ -867,9 +867,9 @@ const struct msrdef intel_core2_later_msrs[] = {
 		/* if CPUID.0AH: EAX[7:0] > 2 */
 		{ 2, 1, "AnyThread 0", "R/W", PRESENT_BIN, {
 			{ MSR1(0), "Counter only increments the associated event \
-				conditions occuring in the logical processor which programmed the MSR" },
+				conditions occurring in the logical processor which programmed the MSR" },
 			{ MSR1(1), "Counting the associated event conditions \
-				occuring across all logical processors sharing a processor core" },
+				occurring across all logical processors sharing a processor core" },
 			{ BITVAL_EOT }
 		}},
 		{ 1, 1, "EN0_Usr", "R/W", PRESENT_BIN, {

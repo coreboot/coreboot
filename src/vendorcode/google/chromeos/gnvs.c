@@ -37,12 +37,6 @@ void chromeos_init_chromeos_acpi(chromeos_acpi_t *init)
 	/* Copy saved ME hash into NVS */
 	memcpy(chromeos_acpi->mehh, me_hash_saved, sizeof(chromeos_acpi->mehh));
 
-	struct vboot_handoff *vboot_handoff;
-
-	if (vboot_get_handoff_info((void **)&vboot_handoff, NULL) == 0)
-		memcpy(&chromeos_acpi->vdat[0], &vboot_handoff->shared_data[0],
-		       ARRAY_SIZE(chromeos_acpi->vdat));
-
 	chromeos_ram_oops_init(chromeos_acpi);
 }
 

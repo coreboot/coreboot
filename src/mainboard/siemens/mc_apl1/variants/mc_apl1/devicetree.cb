@@ -43,6 +43,9 @@ chip soc/intel/apollolake
 	# [6:0] steps of delay for HS200, each 125ps.
 	register "emmc_rx_cmd_data_cntl2" = "0x10008"
 
+	# 0:HS400(Default), 1:HS200, 2:DDR50
+	register "emmc_host_max_speed" = "2"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

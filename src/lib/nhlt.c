@@ -413,7 +413,7 @@ uintptr_t nhlt_serialize_oem_overrides(struct nhlt *nhlt,
 	memset(header, 0, sizeof(acpi_header_t));
 	memcpy(header->signature, "NHLT", 4);
 	write_le32(&header->length, sz);
-	write_le8(&header->revision, 5);
+	write_le8(&header->revision, get_acpi_table_revision(NHLT));
 
 	if (oem_id == NULL)
 		oem_id = OEM_ID;

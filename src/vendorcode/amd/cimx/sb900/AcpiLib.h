@@ -40,7 +40,7 @@ typedef struct _RSDP {
   unsigned long long  XsdtAddress;      ///< physical address of XSDT
   unsigned char  ExtendedChecksum;  ///< chechsum of whole table
   unsigned char  Reserved[3];       ///< Reserved
-} RSDP;
+} RSDP_HEADER;
 
 
 /// DESCRIPTION_HEADER - ACPI common table header

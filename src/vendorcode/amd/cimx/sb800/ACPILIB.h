@@ -44,7 +44,7 @@ typedef struct _RSDP
   unsigned long long  XsdtAddress;      /* physical address of XSDT */
   unsigned char  ExtendedChecksum;  /* chechsum of whole table */
   unsigned char  Reserved[3];
-} RSDP;
+} RSDP_HEADER;
 
 
 /**

@@ -61,7 +61,7 @@ ACPI_LocateTable (
 //    if ( *RsdPtr == ' DSR' && *(RsdPtr + 1) == ' RTP' ) {
 //    if ( (*RsdPtr == 0x52534420) && (*(RsdPtr + 1) == 0x50545220) ) {
     if ( (*RsdPtr == 0x20445352) && (*(RsdPtr + 1) == 0x20525450) ) {
-      Rsdt = (UINT32*) (UINTN) ((RSDP*)RsdPtr)->RsdtAddress;
+      Rsdt = (UINT32*) (UINTN) ((RSDP_HEADER*)RsdPtr)->RsdtAddress;
       break;
     }
     RsdPtr += 4;

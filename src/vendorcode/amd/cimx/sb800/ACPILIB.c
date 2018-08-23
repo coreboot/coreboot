@@ -63,7 +63,7 @@ ACPI_LocateTable (
   Rsdt = NULL;
   do {
     if ( *RsdPtr == Int32FromChar('R', 'S', 'D', ' ') && *(RsdPtr + 1) == Int32FromChar('P', 'T', 'R', ' ')) {
-      Rsdt = (UINT32*) (UINTN) ((RSDP*)RsdPtr)->RsdtAddress;
+      Rsdt = (UINT32*) (UINTN) ((RSDP_HEADER*)RsdPtr)->RsdtAddress;
       break;
     }
     RsdPtr += 4;

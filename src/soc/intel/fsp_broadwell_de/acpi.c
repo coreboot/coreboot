@@ -125,7 +125,7 @@ void acpi_create_intel_hpet(acpi_hpet_t *hpet)
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
 	header->length = sizeof(acpi_hpet_t);
-	header->revision = 1;
+	header->revision = get_acpi_table_revision(HPET);
 
 	/* fill out HPET address */
 	addr->space_id   = 0;	/* Memory */

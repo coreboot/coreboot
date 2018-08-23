@@ -118,7 +118,7 @@ static const struct superio_registers reg_table[] = {
 		{NOLDN, "I/O Port Base Address for Descriptor 1 (IOBAD1)",
 			{0x62,0x63,EOT},
 			{NANA,NANA,EOT}},
-		{NOLDN, "Interupt Request Number and Wake-Up on IRQ Enable (IRQNUMX)",
+		{NOLDN, "Interrupt Request Number and Wake-Up on IRQ Enable (IRQNUMX)",
 			{0x70,EOT},
 			{NANA,EOT}},
 		{NOLDN, "Interrupt Request Type Select (IRQTP)",

@@ -98,36 +98,6 @@
 
 			Return (Ones)
 		}
-
-		/*
-		 * Get current back-light brightness through mailbox 3
-		 *
-		 * @Return The current brightness or Ones on error
-		 * Errors: * ASLS is zero
-		 *         * Mailbox 3 support not advertised
-		 *         * Driver not loaded or not ready
-		 *         * CBLV is not marked valid
-		 */
-		Method (XBQC, 0, NotSerialized)
-		{
-			If (LEqual(ASLS, Zero))
-			{
-				Return (Ones)
-			}
-			If (LEqual(And(MBOX, 0x4), Zero))
-			{
-				Return (Ones)
-			}
-			If (LEqual(ARDY, Zero))
-			{
-				Return (Ones)
-			}
-			If (LEqual(And (CBLV, 0x80000000), Zero))
-			{
-				Return (Ones)
-			}
-			Return (And (CBLV, 0xff))
-		}
 	}
 
 	/*
@@ -137,29 +107,45 @@
 	{
 		Name (_ADR, 0)
 
-		Method (XBCM, 1, NotSerialized)
+		/* Divide round closest */
+		Method (DRCL, 2)
 		{
-			Store (Divide (Multiply (Arg0, BCLM), 100), BCLV)
+			Return (Divide (Add (Arg0, Divide (Arg1, 2)), Arg1))
 		}
 
+		Method (XBCM, 1, NotSerialized)
+		{
+			Store (DRCL (Multiply (Arg0, BCLM), 100), BCLV)
+		}
+
+		/* Find value closest to BCLV in BRIG (which must be ordered) */
 		Method (XBQC, 0, NotSerialized)
 		{
-			/* Find value close to BCLV in BRIG (which must be ordered) */
-			Store (BCLV, Local0)			// Current value
-			Store (BCLM, Local1)			// For calculations
-			Store (2, Local2)			// Loop index
-			While (LLess (Local2, Subtract (SizeOf (BRIG), 1))) {
-				Store (DeRefOf (Index (BRIG, Local2)), Local3)
-				/* Use same calculation as XBCM, to get exact matches */
-				Store (Divide (Multiply (Local3, Local1), 100), Local3)
+			/* Local0: current percentage */
+			Store (DRCL (Multiply (BCLV, 100), BCLM), Local0)
 
-				If (LLessEqual (Local0, Local3)) {
-					Return (DeRefOf (Index (BRIG, Local2)))
+			/* Local1: loop index (selectable values start at 2 in BRIG) */
+			Store (2, Local1)
+			While (LLess (Local1, Subtract (SizeOf (BRIG), 1))) {
+				/* Local[23]: adjacent values in BRIG */
+				Store (DeRefOf (Index (BRIG, Local1)), Local2)
+				Store (DeRefOf (Index (BRIG, Add (Local1, 1))), Local3)
+
+				If (LLess (Local0, Local3)) {
+					If (LOr (LLess (Local0, Local2),
+						 LLess (Subtract (Local0, Local2),
+							Subtract (Local3, Local0)))) {
+						Return (Local2)
+					} Else {
+						Return (Local3)
+					}
 				}
-				Add (Local2, 1, Local2)
+
+				Increment (Local1)
 			}
+
 			/* Didn't find greater/equal value: use the last */
-			Return (DeRefOf (Index (BRIG, Local2)))
+			Return (Local3)
 		}
 	}
 
@@ -173,11 +159,10 @@
 
 	Method (XBQC, 0, NotSerialized)
 	{
-		Store (^BOX3.XBQC (), Local0)
-		If (LEqual(Local0, Ones))
-		{
-			Store (^LEGA.XBQC (), Local0)
-		}
-
-		Return (Local0)
+		/*
+		 * Always query the hardware directly. Not all OS drivers
+		 * keep CBLV up to date (one is Linux' i915). Some years
+		 * after that is fixed we can probably use CBLV?
+		 */
+		Return (^LEGA.XBQC ())
 	}

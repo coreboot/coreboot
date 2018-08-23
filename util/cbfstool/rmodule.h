@@ -36,7 +36,7 @@ struct rmod_context {
 	/* endian conversion ops */
 	struct xdr *xdr;
 
-	/* Parsed ELF sturcture. */
+	/* Parsed ELF structure. */
 	struct parsed_elf pelf;
 	/* Program segment. */
 	Elf64_Phdr *phdr;

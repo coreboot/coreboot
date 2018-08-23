@@ -25,7 +25,7 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 
-/* Endianess */
+/* Endianness */
 #include "swab.h"
 
 #define IS_TOP_ALIGNED_ADDRESS(x)	((uint32_t)(x) > 0x80000000)

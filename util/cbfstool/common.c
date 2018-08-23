@@ -29,7 +29,7 @@
 /* Utilities */
 int verbose = 0;
 
-/* Small, OS/libc independent runtime check for endianess */
+/* Small, OS/libc independent runtime check for endianness */
 int is_big_endian(void)
 {
 	static const uint32_t inttest = 0x12345678;

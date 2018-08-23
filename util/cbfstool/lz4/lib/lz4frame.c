@@ -184,7 +184,7 @@ static size_t LZ4F_getBlockSize(unsigned blockSizeID)
 }
 
 
-/* unoptimized version; solves endianess & alignment issues */
+/* unoptimized version; solves endianness & alignment issues */
 static U32 LZ4F_readLE32 (const BYTE* srcPtr)
 {
     U32 value32 = srcPtr[0];

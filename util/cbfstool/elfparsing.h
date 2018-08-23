@@ -84,7 +84,7 @@ struct elf_writer;
 void elf_init_eheader(Elf64_Ehdr *ehdr, int machine, int nbits, int endian);
 
 /*
- * Initialize a new ELF writer. Deafult machine type, endianness, etc is
+ * Initialize a new ELF writer. Default machine type, endianness, etc is
  * copied from the passed in Elf64_Ehdr. Returns NULL on failure, valid
  * pointer on success.
  */

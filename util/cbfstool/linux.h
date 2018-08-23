@@ -91,7 +91,7 @@ struct linux_header {
 	u32 init_size;		/* 0x260 */
 } __packed;
 
-/* Paramters passed to 32-bit part of Linux
+/* Parameters passed to 32-bit part of Linux
  * This is another view of the structure above.. */
 struct linux_params {
 	u8 orig_x;		/* 0x00 */

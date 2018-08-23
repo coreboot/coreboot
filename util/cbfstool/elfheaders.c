@@ -100,7 +100,7 @@
  * accurate but it is actually good enough in practice. It allows the
  * header transformation code to ignore the possibility of underrun.
  *
- * We also must accomodate different ELF files, and hence formats,
+ * We also must accommodate different ELF files, and hence formats,
  * in the same cbfs invocation. We might load a 64-bit payload
  * on a 32-bit machine; we might even have a mixed armv7/armv8
  * SOC or even a system with an x86/ARM!

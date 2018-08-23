@@ -155,8 +155,8 @@ static void setup_coherent_ht_domain(void)
 	 *         0 = No coherent HT configuration space restrictions
 	 *         1 = Limit coherent HT configuration space based on node count
 	 * [16:16] Local Interrupt Conversion Enable.
-	 *         0 = ExtInt/NMI interrups unaffected.
-	 *         1 = ExtInt/NMI broadcat interrupts converted to LINT0/1
+	 *         0 = ExtInt/NMI interrupts unaffected.
+	 *         1 = ExtInt/NMI broadcast interrupts converted to LINT0/1
 	 * [17:17] APIC Extended Broadcast Enable.
 	 *         0 = APIC broadcast is 0F
 	 *         1 = APIC broadcast is FF
@@ -484,7 +484,7 @@ static void setup_coherent_ht_domain(void)
 	 *         0 = CPU writes may be posted
 	 *         1 = CPU writes must be non-posted
 	 * [31: 8] Memory-Mapped I/O Limit Address i (39-16)
-	 *         This field defines the upp adddress bits of a 40-bit address that
+	 *         This field defines the upp address bits of a 40-bit address that
 	 *         defines the end of a memory-mapped I/O region n
 	 */
 	PCI_ADDR(0, 0x18, 1, 0x84), 0x00000048, 0x00e1ff00,

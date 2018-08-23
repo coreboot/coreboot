@@ -754,7 +754,7 @@ static void spd_set_dramc(void)
 {
 	/*
 	 * Effects:	Uses serial presence detect to set the
-	 *              DRAMC register, which records if ram is registerd or not,
+	 *              DRAMC register, which records if ram is registered or not,
 	 *              and controls the refresh rate.
 	 *              The refresh rate is not set here, as memory refresh
 	 *              cannot be enbaled until after memory is initialized.
@@ -997,7 +997,7 @@ static void spd_set_nbxcfg(void)
 	}
 	pcibios_write_config_byte(I440GX_BUS, I440GX_DEVFN, 0x53, reg);
 	/* Now see if reg is 0xff.  If it is we are done.  If not,
-	 * we need to set 0x18 into regster 0x50.l
+	 * we need to set 0x18 into register 0x50.l
 	 * we will do this in two steps, first or in 0x80 to 0x50.b,
 	 * then or in 0x1 to 0x51.b
 	 */

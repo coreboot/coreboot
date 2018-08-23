@@ -446,14 +446,14 @@ struct token {
 
 #define OP_UEXTRACT  34
 /* OP_UEXTRACT extracts an unsigned bitfield from a pseudo register
- * RHS(0) holds the psuedo register to extract from
+ * RHS(0) holds the pseudo register to extract from
  * ->type holds the size of the bitfield.
  * ->u.bitfield.size holds the size of the bitfield.
  * ->u.bitfield.offset holds the offset to extract from
  */
 #define OP_SEXTRACT  35
 /* OP_SEXTRACT extracts a signed bitfield from a pseudo register
- * RHS(0) holds the psuedo register to extract from
+ * RHS(0) holds the pseudo register to extract from
  * ->type holds the size of the bitfield.
  * ->u.bitfield.size holds the size of the bitfield.
  * ->u.bitfield.offset holds the offset to extract from
@@ -495,7 +495,7 @@ struct token {
 #define OP_WRITE     60
 /* OP_WRITE moves one pseudo register to another.
  * MISC(0) holds the destination pseudo register, which must be an OP_DECL.
- * RHS(0) holds the psuedo to move.
+ * RHS(0) holds the pseudo to move.
  */
 
 #define OP_READ      61
@@ -926,13 +926,13 @@ struct triple_set {
 #define MAX_MISC 3
 #define MAX_TARG 1
 
-struct occurance {
+struct occurrence {
 	int count;
 	const char *filename;
 	const char *function;
 	int line;
 	int col;
-	struct occurance *parent;
+	struct occurrence *parent;
 };
 struct bitfield {
 	ulong_t size : 8;
@@ -967,7 +967,7 @@ struct triple {
 #define TRIPLE_FLAG_LOCAL	(1 << 26)
 
 #define TRIPLE_FLAG_COPY TRIPLE_FLAG_VOLATILE
-	struct occurance *occurance;
+	struct occurrence *occurrence;
 	union {
 		ulong_t cval;
 		struct bitfield bitfield;
@@ -1081,7 +1081,7 @@ struct compile_state {
 	FILE *errout;
 	FILE *dbgout;
 	struct file_state *file;
-	struct occurance *last_occurance;
+	struct occurrence *last_occurrence;
 	const char *function;
 	int    token_base;
 	struct token token[6];
@@ -1765,9 +1765,9 @@ static int get_col(struct file_state *file)
 static void loc(FILE *fp, struct compile_state *state, struct triple *triple)
 {
 	int col;
-	if (triple && triple->occurance) {
-		struct occurance *spot;
-		for(spot = triple->occurance; spot; spot = spot->parent) {
+	if (triple && triple->occurrence) {
+		struct occurrence *spot;
+		for(spot = triple->occurrence; spot; spot = spot->parent) {
 			fprintf(fp, "%s:%d.%d: ",
 				spot->filename, spot->line, spot->col);
 		}
@@ -1944,30 +1944,30 @@ static void unuse_triple(struct triple *used, struct triple *unuser)
 	}
 }
 
-static void put_occurance(struct occurance *occurance)
+static void put_occurrence(struct occurrence *occurrence)
 {
-	if (occurance) {
-		occurance->count -= 1;
-		if (occurance->count <= 0) {
-			if (occurance->parent) {
-				put_occurance(occurance->parent);
+	if (occurrence) {
+		occurrence->count -= 1;
+		if (occurrence->count <= 0) {
+			if (occurrence->parent) {
+				put_occurrence(occurrence->parent);
 			}
-			xfree(occurance);
+			xfree(occurrence);
 		}
 	}
 }
 
-static void get_occurance(struct occurance *occurance)
+static void get_occurrence(struct occurrence *occurrence)
 {
-	if (occurance) {
-		occurance->count += 1;
+	if (occurrence) {
+		occurrence->count += 1;
 	}
 }
 
 
-static struct occurance *new_occurance(struct compile_state *state)
+static struct occurrence *new_occurrence(struct compile_state *state)
 {
-	struct occurance *result, *last;
+	struct occurrence *result, *last;
 	const char *filename;
 	const char *function;
 	int line, col;
@@ -1984,7 +1984,7 @@ static struct occurance *new_occurance(struct compile_state *state)
 	if (state->function) {
 		function = state->function;
 	}
-	last = state->last_occurance;
+	last = state->last_occurrence;
 	if (last &&
 		(last->col == col) &&
 		(last->line == line) &&
@@ -1992,28 +1992,28 @@ static struct occurance *new_occurance(struct compile_state *state)
 		((last->filename == filename) ||
 			(strcmp(last->filename, filename) == 0)))
 	{
-		get_occurance(last);
+		get_occurrence(last);
 		return last;
 	}
 	if (last) {
-		state->last_occurance = 0;
-		put_occurance(last);
+		state->last_occurrence = 0;
+		put_occurrence(last);
 	}
-	result = xmalloc(sizeof(*result), "occurance");
+	result = xmalloc(sizeof(*result), "occurrence");
 	result->count    = 2;
 	result->filename = filename;
 	result->function = function;
 	result->line     = line;
 	result->col      = col;
 	result->parent   = 0;
-	state->last_occurance = result;
+	state->last_occurrence = result;
 	return result;
 }
 
-static struct occurance *inline_occurance(struct compile_state *state,
-	struct occurance *base, struct occurance *top)
+static struct occurrence *inline_occurrence(struct compile_state *state,
+	struct occurrence *base, struct occurrence *top)
 {
-	struct occurance *result, *last;
+	struct occurrence *result, *last;
 	if (top->parent) {
 		internal_error(state, 0, "inlining an already inlined function?");
 	}
@@ -2025,36 +2025,36 @@ static struct occurance *inline_occurance(struct compile_state *state,
 		(base->filename[0] == '\0')) {
 		base = 0;
 	}
-	/* See if I can reuse the last occurance I had */
-	last = state->last_occurance;
+	/* See if I can reuse the last occurrence I had */
+	last = state->last_occurrence;
 	if (last &&
 		(last->parent   == base) &&
 		(last->col      == top->col) &&
 		(last->line     == top->line) &&
 		(last->function == top->function) &&
 		(last->filename == top->filename)) {
-		get_occurance(last);
+		get_occurrence(last);
 		return last;
 	}
-	/* I can't reuse the last occurance so free it */
+	/* I can't reuse the last occurrence so free it */
 	if (last) {
-		state->last_occurance = 0;
-		put_occurance(last);
+		state->last_occurrence = 0;
+		put_occurrence(last);
 	}
-	/* Generate a new occurance structure */
-	get_occurance(base);
-	result = xmalloc(sizeof(*result), "occurance");
+	/* Generate a new occurrence structure */
+	get_occurrence(base);
+	result = xmalloc(sizeof(*result), "occurrence");
 	result->count    = 2;
 	result->filename = top->filename;
 	result->function = top->function;
 	result->line     = top->line;
 	result->col      = top->col;
 	result->parent   = base;
-	state->last_occurance = result;
+	state->last_occurrence = result;
 	return result;
 }
 
-static struct occurance dummy_occurance = {
+static struct occurrence dummy_occurrence = {
 	.count    = 2,
 	.filename = __FILE__,
 	.function = "",
@@ -2079,7 +2079,7 @@ static struct triple unknown_triple = {
 	.type      = &unknown_type,
 	.id        = -1, /* An invalid id */
 	.u = { .cval = 0, },
-	.occurance = &dummy_occurance,
+	.occurrence = &dummy_occurrence,
 	.param = { [0] = 0, [1] = 0, },
 };
 
@@ -2088,13 +2088,13 @@ static size_t registers_of(struct compile_state *state, struct type *type);
 
 static struct triple *alloc_triple(struct compile_state *state,
 	int op, struct type *type, int lhs_wanted, int rhs_wanted,
-	struct occurance *occurance)
+	struct occurrence *occurrence)
 {
 	size_t size, extra_count, min_count;
 	int lhs, rhs, misc, targ;
 	struct triple *ret, dummy;
 	dummy.op = op;
-	dummy.occurance = occurance;
+	dummy.occurrence = occurrence;
 	valid_op(state, op);
 	lhs = table_ops[op].lhs;
 	rhs = table_ops[op].rhs;
@@ -2146,7 +2146,7 @@ static struct triple *alloc_triple(struct compile_state *state,
 	ret->type      = type;
 	ret->next      = ret;
 	ret->prev      = ret;
-	ret->occurance = occurance;
+	ret->occurrence = occurrence;
 	/* A simple sanity check */
 	if ((ret->op != op) ||
 		(ret->lhs != lhs) ||
@@ -2156,7 +2156,7 @@ static struct triple *alloc_triple(struct compile_state *state,
 		(ret->type != type) ||
 		(ret->next != ret) ||
 		(ret->prev != ret) ||
-		(ret->occurance != occurance)) {
+		(ret->occurrence != occurrence)) {
 		internal_error(state, ret, "huh?");
 	}
 	return ret;
@@ -2169,9 +2169,9 @@ struct triple *dup_triple(struct compile_state *state, struct triple *src)
 	src_lhs = src->lhs;
 	src_rhs = src->rhs;
 	src_size = TRIPLE_SIZE(src);
-	get_occurance(src->occurance);
+	get_occurrence(src->occurrence);
 	dup = alloc_triple(state, src->op, src->type, src_lhs, src_rhs,
-		src->occurance);
+		src->occurrence);
 	memcpy(dup, src, sizeof(*src));
 	memcpy(dup->param, src->param, src_size * sizeof(src->param[0]));
 	return dup;
@@ -2190,19 +2190,19 @@ static struct triple *new_triple(struct compile_state *state,
 	int op, struct type *type, int lhs, int rhs)
 {
 	struct triple *ret;
-	struct occurance *occurance;
-	occurance = new_occurance(state);
-	ret = alloc_triple(state, op, type, lhs, rhs, occurance);
+	struct occurrence *occurrence;
+	occurrence = new_occurrence(state);
+	ret = alloc_triple(state, op, type, lhs, rhs, occurrence);
 	return ret;
 }
 
 static struct triple *build_triple(struct compile_state *state,
 	int op, struct type *type, struct triple *left, struct triple *right,
-	struct occurance *occurance)
+	struct occurrence *occurrence)
 {
 	struct triple *ret;
 	size_t count;
-	ret = alloc_triple(state, op, type, -1, -1, occurance);
+	ret = alloc_triple(state, op, type, -1, -1, occurrence);
 	count = TRIPLE_SIZE(ret);
 	if (count > 0) {
 		ret->param[0] = left;
@@ -2314,8 +2314,8 @@ static struct triple *pre_triple(struct compile_state *state,
 		base = MISC(base, 0);
 	}
 	block = block_of_triple(state, base);
-	get_occurance(base->occurance);
-	ret = build_triple(state, op, type, left, right, base->occurance);
+	get_occurrence(base->occurrence);
+	ret = build_triple(state, op, type, left, right, base->occurrence);
 	generate_lhs_pieces(state, ret);
 	if (triple_stores_block(state, ret)) {
 		ret->u.block = block;
@@ -2352,8 +2352,8 @@ static struct triple *post_triple(struct compile_state *state,
 	}
 
 	block = block_of_triple(state, base);
-	get_occurance(base->occurance);
-	ret = build_triple(state, op, type, left, right, base->occurance);
+	get_occurrence(base->occurrence);
+	ret = build_triple(state, op, type, left, right, base->occurrence);
 	generate_lhs_pieces(state, ret);
 	if (triple_stores_block(state, ret)) {
 		ret->u.block = block;
@@ -2385,7 +2385,7 @@ static void generate_lhs_piece(
 {
 	struct type *piece_type;
 	struct triple *piece;
-	get_occurance(ins->occurance);
+	get_occurrence(ins->occurrence);
 	piece_type = reg_type(state, ins->type, index * REG_SIZEOF_REG);
 
 	if ((piece_type->type & TYPE_MASK) == TYPE_BITFIELD) {
@@ -2400,7 +2400,7 @@ static void generate_lhs_piece(
 	fprintf(fp, "\n");
 }
 #endif
-	piece = alloc_triple(state, OP_PIECE, piece_type, -1, -1, ins->occurance);
+	piece = alloc_triple(state, OP_PIECE, piece_type, -1, -1, ins->occurrence);
 	piece->u.cval  = index;
 	LHS(ins, piece->u.cval) = piece;
 	MISC(piece, 0) = ins;
@@ -2447,7 +2447,7 @@ static struct triple *mkprog(struct compile_state *state, ...)
 static void name_of(FILE *fp, struct type *type);
 static void display_triple(FILE *fp, struct triple *ins)
 {
-	struct occurance *ptr;
+	struct occurrence *ptr;
 	const char *reg;
 	char pre, post, vol;
 	pre = post = vol = ' ';
@@ -2519,7 +2519,7 @@ static void display_triple(FILE *fp, struct triple *ins)
 		fprintf(fp, " ]");
 #endif
 		fprintf(fp, " @");
-		for(ptr = ins->occurance; ptr; ptr = ptr->parent) {
+		for(ptr = ins->occurrence; ptr; ptr = ptr->parent) {
 			fprintf(fp, " %s,%s:%d.%d",
 				ptr->function,
 				ptr->filename,
@@ -2548,7 +2548,7 @@ static void display_triple_changes(
 			orig_count * sizeof(orig->param[0])) != 0) ||
 		(memcmp(&orig->u, &new->u, sizeof(orig->u)) != 0))
 	{
-		struct occurance *ptr;
+		struct occurrence *ptr;
 		int i, min_count, indent;
 		fprintf(fp, "(%p %p)", new, orig);
 		if (orig->op == new->op) {
@@ -2602,7 +2602,7 @@ static void display_triple_changes(
 #endif
 
 		fprintf(fp, " @");
-		for(ptr = orig->occurance; ptr; ptr = ptr->parent) {
+		for(ptr = orig->occurrence; ptr; ptr = ptr->parent) {
 			fprintf(fp, " %s,%s:%d.%d",
 				ptr->function,
 				ptr->filename,
@@ -2980,7 +2980,7 @@ static void free_triple(struct compile_state *state, struct triple *ptr)
 	if (ptr->use) {
 		internal_error(state, ptr, "ptr->use != 0");
 	}
-	put_occurance(ptr->occurance);
+	put_occurrence(ptr->occurrence);
 	memset(ptr, -1, size);
 	xfree(ptr);
 }
@@ -5534,7 +5534,7 @@ static void preprocess(struct compile_state *state, struct token *current_token)
 		break;
 	}
 	case TOK_EOL:
-		/* Ignore # without a follwing ident */
+		/* Ignore # without a following ident */
 		break;
 	default:
 	{
@@ -8145,7 +8145,7 @@ static void replace_use(struct compile_state *state,
 	}
 }
 
-static void propogate_use(struct compile_state *state,
+static void propagate_use(struct compile_state *state,
 	struct triple *orig, struct triple *new)
 {
 	struct triple_set *user, *next;
@@ -8158,7 +8158,7 @@ static void propogate_use(struct compile_state *state,
 		replace_use(state, orig, new, user->member);
 	}
 	if (orig->use) {
-		internal_error(state, orig, "used after propogate_use");
+		internal_error(state, orig, "used after propagate_use");
 	}
 }
 
@@ -8786,7 +8786,7 @@ static struct triple *decompose_with_tuple(struct compile_state *state,
 		tuple = tmp;
 	}
 
-	propogate_use(state, ins, tuple);
+	propagate_use(state, ins, tuple);
 	release_triple(state, ins);
 
 	return next;
@@ -8805,18 +8805,18 @@ static struct triple *decompose_unknownval(struct compile_state *state,
 	fprintf(fp, "\n");
 #endif
 
-	get_occurance(ins->occurance);
+	get_occurrence(ins->occurrence);
 	tuple = alloc_triple(state, OP_TUPLE, ins->type, -1, -1,
-		ins->occurance);
+		ins->occurrence);
 
 	for(i = 0; i < tuple->lhs; i++) {
 		struct type *piece_type;
 		struct triple *unknown;
 
 		piece_type = reg_type(state, ins->type, i * REG_SIZEOF_REG);
-		get_occurance(tuple->occurance);
+		get_occurrence(tuple->occurrence);
 		unknown = alloc_triple(state, OP_UNKNOWNVAL, piece_type, 0, 0,
-			tuple->occurance);
+			tuple->occurrence);
 		LHS(tuple, i) = unknown;
 	}
 	return decompose_with_tuple(state, ins, tuple);
@@ -8834,9 +8834,9 @@ static struct triple *decompose_read(struct compile_state *state,
 	if (lval->op == OP_PIECE) {
 		return ins->next;
 	}
-	get_occurance(ins->occurance);
+	get_occurrence(ins->occurrence);
 	tuple = alloc_triple(state, OP_TUPLE, lval->type, -1, -1,
-		ins->occurance);
+		ins->occurrence);
 
 	if ((tuple->lhs != lval->lhs) &&
 		(!triple_is_def(state, lval) || (tuple->lhs != 1)))
@@ -8858,9 +8858,9 @@ static struct triple *decompose_read(struct compile_state *state,
 			piece = RHS(bitref, 0);
 		}
 
-		get_occurance(tuple->occurance);
+		get_occurrence(tuple->occurrence);
 		read = alloc_triple(state, OP_READ, piece->type, -1, -1,
-			tuple->occurance);
+			tuple->occurrence);
 		RHS(read, 0) = piece;
 
 		if (bitref) {
@@ -8871,9 +8871,9 @@ static struct triple *decompose_read(struct compile_state *state,
 			} else {
 				op = OP_UEXTRACT;
 			}
-			get_occurance(tuple->occurance);
+			get_occurrence(tuple->occurrence);
 			extract = alloc_triple(state, op, bitref->type, -1, -1,
-				tuple->occurance);
+				tuple->occurrence);
 			RHS(extract, 0) = read;
 			extract->u.bitfield.size   = bitref->u.bitfield.size;
 			extract->u.bitfield.offset = bitref->u.bitfield.offset;
@@ -8894,9 +8894,9 @@ static struct triple *decompose_write(struct compile_state *state,
 
 	lval = MISC(ins, 0);
 	val = RHS(ins, 0);
-	get_occurance(ins->occurance);
+	get_occurrence(ins->occurrence);
 	tuple = alloc_triple(state, OP_TUPLE, ins->type, -1, -1,
-		ins->occurance);
+		ins->occurrence);
 
 	if ((tuple->lhs != lval->lhs) &&
 		(!triple_is_def(state, lval) || tuple->lhs != 1))
@@ -8928,15 +8928,15 @@ static struct triple *decompose_write(struct compile_state *state,
 			piece = RHS(bitref, 0);
 
 			/* Read the destination register */
-			get_occurance(tuple->occurance);
+			get_occurrence(tuple->occurrence);
 			read = alloc_triple(state, OP_READ, piece->type, -1, -1,
-				tuple->occurance);
+				tuple->occurrence);
 			RHS(read, 0) = piece;
 
 			/* Deposit the new bitfield value */
-			get_occurance(tuple->occurance);
+			get_occurrence(tuple->occurrence);
 			deposit = alloc_triple(state, OP_DEPOSIT, piece->type, -1, -1,
-				tuple->occurance);
+				tuple->occurrence);
 			RHS(deposit, 0) = read;
 			RHS(deposit, 1) = pval;
 			deposit->u.bitfield.size   = bitref->u.bitfield.size;
@@ -8946,9 +8946,9 @@ static struct triple *decompose_write(struct compile_state *state,
 			pval = deposit;
 		}
 
-		get_occurance(tuple->occurance);
+		get_occurrence(tuple->occurrence);
 		write = alloc_triple(state, OP_WRITE, piece->type, -1, -1,
-			tuple->occurance);
+			tuple->occurrence);
 		MISC(write, 0) = piece;
 		RHS(write, 0) = pval;
 		LHS(tuple, i) = write;
@@ -8957,7 +8957,7 @@ static struct triple *decompose_write(struct compile_state *state,
 }
 
 struct decompose_load_info {
-	struct occurance *occurance;
+	struct occurrence *occurrence;
 	struct triple *lval;
 	struct triple *tuple;
 };
@@ -8970,8 +8970,8 @@ static void decompose_load_cb(struct compile_state *state,
 	if (reg_offset > info->tuple->lhs) {
 		internal_error(state, info->tuple, "lhs to small?");
 	}
-	get_occurance(info->occurance);
-	load = alloc_triple(state, OP_LOAD, type, -1, -1, info->occurance);
+	get_occurrence(info->occurrence);
+	load = alloc_triple(state, OP_LOAD, type, -1, -1, info->occurrence);
 	RHS(load, 0) = mk_addr_expr(state, info->lval, mem_offset);
 	LHS(info->tuple, reg_offset/REG_SIZEOF_REG) = load;
 }
@@ -8985,11 +8985,11 @@ static struct triple *decompose_load(struct compile_state *state,
 	if (!is_compound_type(ins->type)) {
 		return ins->next;
 	}
-	get_occurance(ins->occurance);
+	get_occurrence(ins->occurrence);
 	tuple = alloc_triple(state, OP_TUPLE, ins->type, -1, -1,
-		ins->occurance);
+		ins->occurrence);
 
-	info.occurance = ins->occurance;
+	info.occurrence = ins->occurrence;
 	info.lval      = RHS(ins, 0);
 	info.tuple     = tuple;
 	walk_type_fields(state, ins->type, 0, 0, decompose_load_cb, &info);
@@ -8999,7 +8999,7 @@ static struct triple *decompose_load(struct compile_state *state,
 
 
 struct decompose_store_info {
-	struct occurance *occurance;
+	struct occurrence *occurrence;
 	struct triple *lval;
 	struct triple *val;
 	struct triple *tuple;
@@ -9013,8 +9013,8 @@ static void decompose_store_cb(struct compile_state *state,
 	if (reg_offset > info->tuple->lhs) {
 		internal_error(state, info->tuple, "lhs to small?");
 	}
-	get_occurance(info->occurance);
-	store = alloc_triple(state, OP_STORE, type, -1, -1, info->occurance);
+	get_occurrence(info->occurrence);
+	store = alloc_triple(state, OP_STORE, type, -1, -1, info->occurrence);
 	RHS(store, 0) = mk_addr_expr(state, info->lval, mem_offset);
 	RHS(store, 1) = LHS(info->val, reg_offset);
 	LHS(info->tuple, reg_offset/REG_SIZEOF_REG) = store;
@@ -9029,11 +9029,11 @@ static struct triple *decompose_store(struct compile_state *state,
 	if (!is_compound_type(ins->type)) {
 		return ins->next;
 	}
-	get_occurance(ins->occurance);
+	get_occurrence(ins->occurrence);
 	tuple = alloc_triple(state, OP_TUPLE, ins->type, -1, -1,
-		ins->occurance);
+		ins->occurrence);
 
-	info.occurance = ins->occurance;
+	info.occurrence = ins->occurrence;
 	info.lval      = RHS(ins, 0);
 	info.val       = RHS(ins, 1);
 	info.tuple     = tuple;
@@ -9063,9 +9063,9 @@ static struct triple *decompose_dot(struct compile_state *state,
 	}
 #endif
 
-	get_occurance(ins->occurance);
+	get_occurrence(ins->occurrence);
 	tuple = alloc_triple(state, OP_TUPLE, type, -1, -1,
-		ins->occurance);
+		ins->occurrence);
 
 	if (((ins->type->type & TYPE_MASK) == TYPE_BITFIELD) &&
 		(tuple->lhs != 1))
@@ -9092,9 +9092,9 @@ static struct triple *decompose_dot(struct compile_state *state,
 
 		/* Remember the offset of the bitfield */
 		if ((type->type & TYPE_MASK) == TYPE_BITFIELD) {
-			get_occurance(ins->occurance);
+			get_occurrence(ins->occurrence);
 			piece = build_triple(state, OP_BITREF, type, piece, 0,
-				ins->occurance);
+				ins->occurrence);
 			piece->u.bitfield.size   = size_of(state, type);
 			piece->u.bitfield.offset = reg_offset % REG_SIZEOF_REG;
 		}
@@ -9128,9 +9128,9 @@ static struct triple *decompose_index(struct compile_state *state,
 }
 #endif
 
-	get_occurance(ins->occurance);
+	get_occurrence(ins->occurrence);
 	tuple = alloc_triple(state, OP_TUPLE, type, -1, -1,
-		ins->occurance);
+		ins->occurrence);
 
 	for(i = 0; i < tuple->lhs; i++, idx++) {
 		struct triple *piece;
@@ -11907,8 +11907,8 @@ static void labeled_statement(struct compile_state *state, struct triple *first)
 	ident = eat(state, TOK_IDENT)->ident;
 	if (ident->sym_label && ident->sym_label->def) {
 		ins = ident->sym_label->def;
-		put_occurance(ins->occurance);
-		ins->occurance = new_occurance(state);
+		put_occurrence(ins->occurrence);
+		ins->occurrence = new_occurrence(state);
 	}
 	else {
 		ins = label(state);
@@ -12029,8 +12029,8 @@ static void default_statement(struct compile_state *state, struct triple *first)
 	dest = label(state);
 
 	/* Blame the branch on the default statement */
-	put_occurance(dbranch->occurance);
-	dbranch->occurance = new_occurance(state);
+	put_occurrence(dbranch->occurrence);
+	dbranch->occurrence = new_occurrence(state);
 
 	/* Thread the pieces together */
 	TARG(dbranch, 0) = dest;
@@ -13329,7 +13329,7 @@ static struct triple *function_definition(
 	}
 	i++;
 	if (((param->type & TYPE_MASK) != TYPE_VOID) && !param->field_ident) {
-		error(state, 0, "No identifier for paramter %d\n", i);
+		error(state, 0, "No identifier for parameter %d\n", i);
 	}
 
 	/* Get a list of statements for this function. */
@@ -13694,7 +13694,7 @@ static int local_triple(struct compile_state *state,
 }
 
 struct triple *copy_func(struct compile_state *state, struct triple *ofunc,
-	struct occurance *base_occurance)
+	struct occurrence *base_occurrence)
 {
 	struct triple *nfunc;
 	struct triple *nfirst, *ofirst;
@@ -13715,16 +13715,16 @@ struct triple *copy_func(struct compile_state *state, struct triple *ofunc,
 	ofirst = old = RHS(ofunc, 0);
 	do {
 		struct triple *new;
-		struct occurance *occurance;
+		struct occurrence *occurrence;
 		int old_lhs, old_rhs;
 		old_lhs = old->lhs;
 		old_rhs = old->rhs;
-		occurance = inline_occurance(state, base_occurance, old->occurance);
+		occurrence = inline_occurrence(state, base_occurrence, old->occurrence);
 		if (ofunc->u.cval && (old->op == OP_FCALL)) {
 			MISC(old, 0)->u.cval += 1;
 		}
 		new = alloc_triple(state, old->op, old->type, old_lhs, old_rhs,
-			occurance);
+			occurrence);
 		if (!triple_stores_block(state, new)) {
 			memcpy(&new->u, &old->u, sizeof(new->u));
 		}
@@ -13803,7 +13803,7 @@ static void expand_inline_call(
 	if (ofunc->op != OP_LIST) {
 		internal_error(state, 0, "improper function");
 	}
-	nfunc = copy_func(state, ofunc, fcall->occurance);
+	nfunc = copy_func(state, ofunc, fcall->occurrence);
 	/* Prepend the parameter reading into the new function list */
 	ptype = nfunc->type->right;
 	pvals = fcall->rhs;
@@ -13842,7 +13842,7 @@ static void expand_inline_call(
 	/* Remove the read of the return address */
 	ins = RHS(nfunc, 0)->prev->prev;
 	if ((ins->op != OP_READ) || (RHS(ins, 0) != fretaddr(state, nfunc))) {
-		internal_error(state, ins, "Not return addres read?");
+		internal_error(state, ins, "Not return address read?");
 	}
 	release_triple(state, ins);
 	/* Remove the return instruction */
@@ -13884,7 +13884,7 @@ static void expand_inline_call(
 	/* Now the result reading code */
 	if (result) {
 		result = flatten(state, fcall, result);
-		propogate_use(state, fcall, result);
+		propagate_use(state, fcall, result);
 	}
 
 	/* Release the original fcall instruction */
@@ -13971,7 +13971,7 @@ static int add_closure_type(struct compile_state *state,
 	}
 
 	/* Point everyone at the new variable */
-	propogate_use(state, var, new_var);
+	propagate_use(state, var, new_var);
 
 	/* Release the original variable */
 	for(i = 0; i < var->lhs; i++) {
@@ -14156,7 +14156,7 @@ static void compute_closure_variables(struct compile_state *state,
 		ins = ins->next;
 	} while(ins != first);
 
-	/* Allocate some memory to temorary hold the id info */
+	/* Allocate some memory to temporary hold the id info */
 	info = xcmalloc(sizeof(*info) * (count +1), "info");
 
 	/* Mark the local function */
@@ -14434,7 +14434,7 @@ static void expand_function_call(
 			read_expr(state,
 				deref_index(state, fresult(state, func), 1)));
 
-		propogate_use(state, fcall, result);
+		propagate_use(state, fcall, result);
 	}
 
 	/* Release the original fcall instruction */
@@ -15501,7 +15501,7 @@ static int initialize_sdblock(struct sdom_block *sd,
 		return vertex;
 	}
 	vertex += 1;
-	/* Renumber the blocks in a convinient fashion */
+	/* Renumber the blocks in a convenient fashion */
 	block->vertex = vertex;
 	sd[vertex].block    = block;
 	sd[vertex].sdom     = &sd[vertex];
@@ -15524,7 +15524,7 @@ static int initialize_spdblock(
 		return vertex;
 	}
 	vertex += 1;
-	/* Renumber the blocks in a convinient fashion */
+	/* Renumber the blocks in a convenient fashion */
 	block->vertex = vertex;
 	sd[vertex].block    = block;
 	sd[vertex].sdom     = &sd[vertex];
@@ -15743,7 +15743,7 @@ static void compute_ipdom(struct compile_state *state,
 	 */
 	/* Theorem 3:
 	 *   Let w != r and let u be a vertex for which sdom(u) is
-	 *   minimum amoung vertices u satisfying sdom(w) -> u -> w.
+	 *   minimum among vertices u satisfying sdom(w) -> u -> w.
 	 *   Then sdom(u) <= sdom(w) and idom(u) = idom(w).
 	 */
 	/* Lemma 5:  Let vertices v,w satisfy v -> w.
@@ -15765,7 +15765,7 @@ static void find_immediate_dominators(struct compile_state *state,
 	 */
 	/* Corollary 1:
 	 *   Let w != r and let u be a vertex for which sdom(u) is
-	 *   minimum amoung vertices u satisfying sdom(w) -> u -> w.
+	 *   minimum among vertices u satisfying sdom(w) -> u -> w.
 	 *   Then:
 	 *                   { sdom(w) if sdom(w) = sdom(u),
 	 *        idom(w) = {
@@ -15905,7 +15905,7 @@ static void print_dominated2(
 {
 	struct block_set *user;
 	struct triple *ins;
-	struct occurance *ptr, *ptr2;
+	struct occurrence *ptr, *ptr2;
 	const char *filename1, *filename2;
 	int equal_filenames;
 	int i;
@@ -15915,11 +15915,11 @@ static void print_dominated2(
 	fprintf(fp, "%3d: %p (%p - %p) @",
 		block->vertex, block, block->first, block->last);
 	ins = block->first;
-	while(ins != block->last && (ins->occurance->line == 0)) {
+	while(ins != block->last && (ins->occurrence->line == 0)) {
 		ins = ins->next;
 	}
-	ptr = ins->occurance;
-	ptr2 = block->last->occurance;
+	ptr = ins->occurrence;
+	ptr2 = block->last->occurrence;
 	filename1 = ptr->filename? ptr->filename : "";
 	filename2 = ptr2->filename? ptr2->filename : "";
 	equal_filenames = (strcmp(filename1, filename2) == 0);
@@ -16166,10 +16166,10 @@ static void insert_phi_operations(struct compile_state *state)
 				/* Count how many edges flow into this block */
 				in_edges = front->users;
 				/* Insert a phi function for this variable */
-				get_occurance(var->occurance);
+				get_occurrence(var->occurrence);
 				phi = alloc_triple(
 					state, OP_PHI, var->type, -1, in_edges,
-					var->occurance);
+					var->occurrence);
 				phi->u.block = front;
 				MISC(phi, 0) = var;
 				use_triple(var, phi);
@@ -16285,7 +16285,7 @@ static void pop_triple(struct stack *stacks, struct triple *var, struct triple *
 		if (set->member == oldval) {
 			*ptr = set->next;
 			xfree(set);
-			/* Only free one occurance from the stack */
+			/* Only free one occurrence from the stack */
 			return;
 		}
 		else {
@@ -16389,7 +16389,7 @@ static void rename_block_variables(
 			if ((val->op == OP_WRITE) || (val->op == OP_READ)) {
 				internal_error(state, val, "bad value in read");
 			}
-			propogate_use(state, ptr, val);
+			propagate_use(state, ptr, val);
 			release_triple(state, ptr);
 			continue;
 		}
@@ -16420,7 +16420,7 @@ static void rename_block_variables(
 				RHS(ptr, 0) = tval;
 				use_triple(tval, ptr);
 			}
-			propogate_use(state, ptr, tval);
+			propagate_use(state, ptr, tval);
 			unuse_triple(var, ptr);
 			/* Push OP_WRITE ptr->right onto a stack of variable uses */
 			push_triple(stacks, var, tval);
@@ -16622,10 +16622,10 @@ static void prune_unused_phis(struct compile_state *state)
 		for(j = 0; j < zrhs; j++) {
 			if(!slot[j]) {
 				struct triple *unknown;
-				get_occurance(phi->occurance);
+				get_occurrence(phi->occurrence);
 				unknown = flatten(state, state->global_pool,
 					alloc_triple(state, OP_UNKNOWNVAL,
-						phi->type, 0, 0, phi->occurance));
+						phi->type, 0, 0, phi->occurrence));
 				slot[j] = unknown;
 				use_triple(unknown, phi);
 				transform_to_arch_instruction(state, unknown);
@@ -16765,7 +16765,7 @@ static void transform_from_ssa_form(struct compile_state *state)
 		var = var->next; /* point at the var */
 
 		/* Replaces use of phi with var */
-		propogate_use(state, phi, var);
+		propagate_use(state, phi, var);
 
 		/* Count the readers */
 		readers = 0;
@@ -17268,9 +17268,9 @@ static void insert_copies_to_phi(struct compile_state *state)
 				continue;
 			}
 
-			get_occurance(val->occurance);
+			get_occurrence(val->occurrence);
 			move = build_triple(state, OP_COPY, val->type, val, 0,
-				val->occurance);
+				val->occurrence);
 			move->u.block = eblock;
 			move->id |= TRIPLE_FLAG_PRE_SPLIT;
 			use_triple(val, move);
@@ -17400,7 +17400,7 @@ static int initialize_regblock(struct reg_block *blocks,
 		return vertex;
 	}
 	vertex += 1;
-	/* Renumber the blocks in a convinient fashion */
+	/* Renumber the blocks in a convenient fashion */
 	block->vertex = vertex;
 	blocks[vertex].block    = block;
 	blocks[vertex].vertex   = vertex;
@@ -18750,7 +18750,7 @@ static struct live_range *coalesce_ranges(
 	lr1->color   = color;
 	lr1->classes = classes;
 
-	/* Keep the graph in sync by transfering the edges from lr2 to lr1 */
+	/* Keep the graph in sync by transferring the edges from lr2 to lr1 */
 	transfer_live_edges(rstate, lr1, lr2);
 
 	return lr1;
@@ -18835,7 +18835,7 @@ static void initialize_live_ranges(
 			rstate->lrd[j].lr = &rstate->lr[0];
 		}
 
-		/* Initalize the live_range_def */
+		/* Initialize the live_range_def */
 		rstate->lrd[j].next    = &rstate->lrd[j];
 		rstate->lrd[j].prev    = &rstate->lrd[j];
 		rstate->lrd[j].def     = ins;
@@ -18847,7 +18847,7 @@ static void initialize_live_ranges(
 	} while(ins != first);
 	rstate->ranges = i;
 
-	/* Make a second pass to handle achitecture specific register
+	/* Make a second pass to handle architecture specific register
 	 * constraints.
 	 */
 	ins = first;
@@ -19541,7 +19541,7 @@ static int split_ranges(
 	 *
 	 * So far I don't have a test case for this, the resolving
 	 * of mandatory constraints has solved all of my
-	 * know issues.  So I have choosen not to write any
+	 * know issues.  So I have chosen not to write any
 	 * code until I cat get a better feel for cases where
 	 * it would be useful to have.
 	 *
@@ -20749,7 +20749,7 @@ static int compute_lnode_val(struct compile_state *state, struct scc_state *scc,
 		lnode->val = lnode->def;
 	}
 	/* Only allow lattice high when all of my inputs
-	 * are also lattice high.  Occassionally I can
+	 * are also lattice high.  Occasionally I can
 	 * have constants with a lattice low input, so
 	 * I do not need to check that case.
 	 */
@@ -20779,7 +20779,7 @@ static int compute_lnode_val(struct compile_state *state, struct scc_state *scc,
 			!triple_is_cbranch(state, lnode->def)) ||
 			(lnode->def->op == OP_PIECE))) {
 #if DEBUG_ROMCC_WARNINGS
-#warning "FIXME constant propogate through expressions with multiple left hand sides"
+#warning "FIXME constant propagate through expressions with multiple left hand sides"
 #endif
 		if (changed) {
 			internal_warning(state, lnode->def, "non def changes value?");
@@ -21471,17 +21471,17 @@ static void verify_unknown(struct compile_state *state)
 		(unknown_triple.template_id != 0) ||
 		(unknown_triple.id != -1) ||
 		(unknown_triple.type != &unknown_type) ||
-		(unknown_triple.occurance != &dummy_occurance) ||
+		(unknown_triple.occurrence != &dummy_occurrence) ||
 		(unknown_triple.param[0] != 0) ||
 		(unknown_triple.param[1] != 0)) {
 		internal_error(state, &unknown_triple, "unknown_triple corrupted!");
 	}
-	if (	(dummy_occurance.count != 2) ||
-		(strcmp(dummy_occurance.filename, __FILE__) != 0) ||
-		(strcmp(dummy_occurance.function, "") != 0) ||
-		(dummy_occurance.col != 0) ||
-		(dummy_occurance.parent != 0)) {
-		internal_error(state, &unknown_triple, "dummy_occurance corrupted!");
+	if (	(dummy_occurrence.count != 2) ||
+		(strcmp(dummy_occurrence.filename, __FILE__) != 0) ||
+		(strcmp(dummy_occurrence.function, "") != 0) ||
+		(dummy_occurrence.col != 0) ||
+		(dummy_occurrence.parent != 0)) {
+		internal_error(state, &unknown_triple, "dummy_occurrence corrupted!");
 	}
 	if (	(unknown_type.type != TYPE_UNKNOWN)) {
 		internal_error(state, &unknown_triple, "unknown_type corrupted!");
@@ -21604,7 +21604,7 @@ static void optimize(struct compile_state *state)
 	/* Do strength reduction and simple constant optimizations */
 	simplify_all(state);
 	verify_consistency(state);
-	/* Propogate constants throughout the code */
+	/* Propagate constants throughout the code */
 	scc_transform(state);
 	verify_consistency(state);
 #if DEBUG_ROMCC_WARNINGS
@@ -23181,7 +23181,7 @@ static struct triple *mod_div(struct compile_state *state,
 	use_triple(LHS(div, 1), div);
 
 	/* Replate uses of ins with the appropriate piece of the div */
-	propogate_use(state, ins, LHS(div, index));
+	propagate_use(state, ins, LHS(div, index));
 	release_triple(state, ins);
 
 	/* Return the address of the next instruction */
@@ -23258,7 +23258,7 @@ static struct triple *x86_deposit(struct compile_state *state, struct triple *in
 	use_triple(val_mask, new);
 
 	/* Move all of the users over to the new expression */
-	propogate_use(state, ins, new);
+	propagate_use(state, ins, new);
 
 	/* Delete the original triple */
 	release_triple(state, ins);
@@ -23306,7 +23306,7 @@ static struct triple *x86_extract(struct compile_state *state, struct triple *in
 	use_triple(mask,      val_mask);
 
 	/* Move all of the users over to the new expression */
-	propogate_use(state, ins, val_mask);
+	propagate_use(state, ins, val_mask);
 
 	/* Release the original instruction */
 	release_triple(state, ins);
@@ -24796,12 +24796,12 @@ static void print_instructions(struct compile_state *state)
 {
 	struct triple *first, *ins;
 	int print_location;
-	struct occurance *last_occurance;
+	struct occurrence *last_occurrence;
 	FILE *fp;
 	int max_inline_depth;
 	max_inline_depth = 0;
 	print_location = 1;
-	last_occurance = 0;
+	last_occurrence = 0;
 	fp = state->output;
 	/* Masks for common sizes */
 	fprintf(fp, ".section \"" DATA_SECTION "\"\n");
@@ -24815,20 +24815,20 @@ static void print_instructions(struct compile_state *state)
 	ins = first;
 	do {
 		if (print_location &&
-			last_occurance != ins->occurance) {
-			if (!ins->occurance->parent) {
+			last_occurrence != ins->occurrence) {
+			if (!ins->occurrence->parent) {
 				fprintf(fp, "\t/* %s,%s:%d.%d */\n",
-					ins->occurance->function?ins->occurance->function:"(null)",
-					ins->occurance->filename?ins->occurance->filename:"(null)",
-					ins->occurance->line,
-					ins->occurance->col);
+					ins->occurrence->function?ins->occurrence->function:"(null)",
+					ins->occurrence->filename?ins->occurrence->filename:"(null)",
+					ins->occurrence->line,
+					ins->occurrence->col);
 			}
 			else {
-				struct occurance *ptr;
+				struct occurrence *ptr;
 				int inline_depth;
 				fprintf(fp, "\t/*\n");
 				inline_depth = 0;
-				for(ptr = ins->occurance; ptr; ptr = ptr->parent) {
+				for(ptr = ins->occurrence; ptr; ptr = ptr->parent) {
 					inline_depth++;
 					fprintf(fp, "\t * %s,%s:%d.%d\n",
 						ptr->function,
@@ -24841,11 +24841,11 @@ static void print_instructions(struct compile_state *state)
 					max_inline_depth = inline_depth;
 				}
 			}
-			if (last_occurance) {
-				put_occurance(last_occurance);
+			if (last_occurrence) {
+				put_occurrence(last_occurrence);
 			}
-			get_occurance(ins->occurance);
-			last_occurance = ins->occurance;
+			get_occurrence(ins->occurrence);
+			last_occurrence = ins->occurrence;
 		}
 
 		print_instruction(state, ins, fp);

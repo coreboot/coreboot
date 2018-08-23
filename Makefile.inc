@@ -195,6 +195,9 @@ ifeq ($(CONFIG_USE_BLOBS),y)
 # this is necessary because 3rdparty/blobs is update=none, and so is ignored
 # unless explicitly requested and enabled through --checkout
 forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty/blobs))
+ifeq ($(CONFIG_MAINBOARD_USES_FSP2_0),y)
+forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty/fsp))
+endif
 endif
 UPDATED_SUBMODULES:=1
 COREBOOT_EXPORTS += UPDATED_SUBMODULES

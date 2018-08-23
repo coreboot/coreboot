@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015 Nico Huber <nico.huber@secunet.com>
+ * Copyright (C) 2018 Nico Huber <nico.h@gmx.de>
  * Copyright (C) 2018 Patrick Rudolph
  *
  * This program is free software; you can redistribute it and/or modify
@@ -64,18 +65,20 @@
 			{
 				Return (Ones)
 			}
-			If (LEqual(ARDY, Zero))
-			{
-				Return (Ones)
-			}
 
-			/* BCLP requires brightness unsigned 8bit. 255 = 100 % */
+			/* Always keep BCLP up to date, even if driver is not ready.
+			   It requires a full 8-bit brightness value. 255 = 100% */
 			Store (Divide (Multiply (Arg0, 255), 100), Local1)
 			If (LGreater(Local1, 255)) {
 				Store (255, Local1)
 			}
-			/* set valid bit */
+			/* also set valid bit */
 			Store (Or (Local1, 0x80000000), BCLP)
+
+			If (LEqual(ARDY, Zero))
+			{
+				Return (Ones)
+			}
 
 			/* Request back-light change */
 			Store (0x2, ASLC)

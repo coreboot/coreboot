@@ -110,7 +110,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
 
 	/* Use ACPI 3.0 revision. */
-	fadt->header.revision = ACPI_FADT_REV_ACPI_3_0;
+	fadt->header.revision = get_acpi_table_revision(FADT);
 
 	fadt->sci_int = acpi_sci_irq();
 	fadt->smi_cmd = APM_CNT;

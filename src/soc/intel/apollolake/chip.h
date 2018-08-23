@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015 Intel Corp.
- * Copyright (C) 2017 Siemens AG
+ * Copyright (C) 2017 - 2018 Siemens AG
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -92,6 +92,9 @@ struct soc_intel_apollolake_config {
 	 * [6:0] SDR104/HS200 Number of dealy elements.Each = 125pSec.
 	 */
 	uint32_t emmc_rx_cmd_data_cntl2;
+
+	/* Select the eMMC max speed allowed. */
+	uint8_t emmc_host_max_speed;
 
 	/* Specifies on which IRQ the SCI will internally appear. */
 	uint8_t sci_irq;

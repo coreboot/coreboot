@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015 - 2017 Intel Corp.
- * Copyright (C) 2017 Siemens AG
+ * Copyright (C) 2017 - 2018 Siemens AG
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  * (Written by Andrey Petrov <andrey.petrov@intel.com> for Intel Corp.)
  *
@@ -616,6 +616,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 		silconfig->EmmcRxStrobeCntl = cfg->emmc_rx_strobe_cntl;
 	if (cfg->emmc_rx_cmd_data_cntl2 != 0)
 		silconfig->EmmcRxCmdDataCntl2 = cfg->emmc_rx_cmd_data_cntl2;
+	if (cfg->emmc_host_max_speed != 0)
+		silconfig->eMMCHostMaxSpeed = cfg->emmc_host_max_speed;
 
 	silconfig->LPSS_S0ixEnable = cfg->lpss_s0ix_enable;
 

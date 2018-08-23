@@ -27,6 +27,8 @@
 #include <baseboard/variants.h>
 #include <variant/ptn3460.h>
 
+#define TX_DWORD3	0xa8c
+
 void variant_mainboard_final(void)
 {
 	int status;
@@ -63,6 +65,14 @@ void variant_mainboard_final(void)
 	 * offset 0x341C bit [3:0].
 	 */
 	pcr_or32(PID_LPC, PCR_LPC_PRC, (PCR_LPC_CCE_EN | PCR_LPC_PCE_EN));
+
+	/*
+	 * Correct the SATA transmit signal via the High Speed I/O Transmit
+	 * Control Register 3.
+	 * Bit [23:16] set the output voltage swing for TX line.
+	 * The value 0x4a sets the swing level to 0.58 V.
+	 */
+	pcr_rmw32(PID_MODPHY, TX_DWORD3, (0x00 << 16), (0x4a << 16));
 }
 
 static void wait_for_legacy_dev(void *unused)

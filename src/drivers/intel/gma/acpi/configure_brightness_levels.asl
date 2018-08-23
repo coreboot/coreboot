@@ -69,7 +69,14 @@
 				Return (Ones)
 			}
 
-			Store (Or (Arg0, 0x80000000), BCLP)
+			/* BCLP requires brightness unsigned 8bit. 255 = 100 % */
+			Store (Divide (Multiply (Arg0, 255), 100), Local1)
+			If (LGreater(Local1, 255)) {
+				Store (255, Local1)
+			}
+			/* set valid bit */
+			Store (Or (Local1, 0x80000000), BCLP)
+
 			/* Request back-light change */
 			Store (0x2, ASLC)
 			/* Trigger IRQ */

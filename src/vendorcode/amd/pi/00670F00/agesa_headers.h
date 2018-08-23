@@ -22,10 +22,8 @@
 #include "AGESA.h"
 #include "AMD.h"
 
-#include "Include/Ids.h"
 #include "Include/PlatformMemoryConfiguration.h"
 #include "Proc/Fch/FchPlatform.h"
-#include "Proc/IDS/IdsLib.h"
 #include "Proc/Psp/PspBaseLib/PspBaseLib.h"
 #pragma pack(pop)
 #undef AGESA_HEADERS_ARE_WRAPPED

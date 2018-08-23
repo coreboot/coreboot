@@ -103,7 +103,7 @@ for region in $FMAP_REGIONS; do
 	fi
 
 	# special handling: COREBOOT region at 0, inject a 128K bootblock
-	# The size may need changes to accomodate the chipsets,
+	# The size may need changes to accommodate the chipsets,
 	# but should work for now.
 	if [ "${REGION_NAME}" = "COREBOOT" -a \
 		$(( ${REGION_START} )) -eq 0 ]; then

@@ -24,8 +24,8 @@ chip soc/amd/stoneyridge
 	# Enable I2C0 for audio, USB3 hub at 400kHz
 	register "i2c[0]" = "{
 		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 151,
-		.fall_time_ns = 50,
+		.rise_time_ns = 95,
+		.fall_time_ns = 3,
 	}"
 
 	# Enable I2C1 for H1 at 400kHz

@@ -15,6 +15,8 @@
 
 #include <bootstate.h>
 #include <console/console.h>
+#include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #include <gpio.h>
 #include <hwilib.h>
 #include <intelblocks/lpc_lib.h>
@@ -28,6 +30,7 @@
 void variant_mainboard_final(void)
 {
 	int status;
+	struct device *dev = NULL;
 
 	/*
 	 * Set up the DP2LVDS converter.
@@ -47,6 +50,11 @@ void variant_mainboard_final(void)
 	 * INTA#->PIRQB#, INTB#->PIRQC#, INTC#->PIRQD#, INTD#-> PIRQA#
 	 */
 	pcr_write16(PID_ITSS, 0x314c, 0x0321);
+
+	/* Disable clock outputs 1-5 (CLKOUT) for XIO2001 PCIe to PCI Bridge. */
+	dev = dev_find_device(PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_XIO2001, 0);
+	if (dev)
+		pci_write_config8(dev, 0xd8, 0x3e);
 }
 
 static void wait_for_legacy_dev(void *unused)

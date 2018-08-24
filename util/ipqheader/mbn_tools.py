@@ -1165,7 +1165,7 @@ def pboot_gen_elf(env, elf_in_file_name,
      bytes_to_pad = ELF_BLOCK_ALIGN - pad_hash_segment
      hash_seg_end = hash_tbl_end_addr + bytes_to_pad
 
-     # Check if a shifting is required to accomodate for the hash segment.
+     # Check if a shifting is required to accommodate for the hash segment.
      # Get the minimum offset by going through the program headers.
      # Note that the program headers in the input file do not contain
      # the dummy program header for ELF + Program header, and the

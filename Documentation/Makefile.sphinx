@@ -57,7 +57,7 @@ html:
 
 .PHONY: livehtml
 livehtml:
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)
+	$(SPHINXAUTOBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)
 	@echo
 	@echo "Autobuild finished. The HTML pages are in $(BUILDDIR)."
 

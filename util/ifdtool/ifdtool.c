@@ -1144,7 +1144,7 @@ unsigned int next_pow2(unsigned int x)
  * Determine if two memory regions overlap.
  *
  * @param r1, r2 Memory regions to compare.
- * @return 0 if the two regions are seperate
+ * @return 0 if the two regions are separate
  * @return 1 if the two regions overlap
  */
 static int regions_collide(const region_t *r1, const region_t *r2)

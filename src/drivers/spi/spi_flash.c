@@ -82,29 +82,24 @@ static int spi_flash_cmd_read(const struct spi_slave *spi, const u8 *cmd,
 	return ret;
 }
 
+/* TODO: This code is quite possibly broken and overflowing stacks. Fix ASAP! */
+#pragma GCC diagnostic push
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic ignored "-Wstack-usage="
+#endif
 int spi_flash_cmd_write(const struct spi_slave *spi, const u8 *cmd,
 			size_t cmd_len, const void *data, size_t data_len)
 {
-	int ret = 1;
-	struct spi_op vectors[] = {
-		[0] = { .dout = cmd, .bytesout = cmd_len,
-			.din = NULL, .bytesin = 0, },
-		[1] = { .dout = data, .bytesout = data_len,
-			.din = NULL, .bytesin = 0, }
-	};
-	size_t count = ARRAY_SIZE(vectors);
+	int ret;
+	u8 buff[cmd_len + data_len];
+	memcpy(buff, cmd, cmd_len);
+	memcpy(buff + cmd_len, data, data_len);
 
-	if (spi_claim_bus(spi))
-		return ret;
-
-	if (spi_xfer_vector(spi, vectors, count) == 0)
-		ret = 0;
-
+	ret = do_spi_flash_cmd(spi, buff, cmd_len + data_len, NULL, 0);
 	if (ret) {
 		printk(BIOS_WARNING, "SF: Failed to send write command (%zu bytes): %d\n",
 				data_len, ret);
 	}
-	spi_release_bus(spi);
 
 	return ret;
 }

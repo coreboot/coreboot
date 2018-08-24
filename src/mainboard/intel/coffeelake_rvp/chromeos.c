@@ -18,7 +18,6 @@
 #include <gpio.h>
 #include <rules.h>
 #include <soc/gpio.h>
-#include <variant/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #if ENV_RAMSTAGE

@@ -16,7 +16,6 @@
 #include <baseboard/variants.h>
 #include <bootblock_common.h>
 #include <soc/gpio.h>
-#include <variant/gpio.h>
 
 void bootblock_mainboard_init(void)
 {

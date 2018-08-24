@@ -20,7 +20,6 @@
 #include <soc/gpio.h>
 #include <soc/nhlt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <variant/gpio.h>
 
 static void mainboard_init(void *chip_info)
 {

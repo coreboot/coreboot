@@ -305,6 +305,11 @@
 #define OC_PORT2_SHIFT		8
 #define OC_PORT3_SHIFT		12
 
+#define EHCI_HUB_CONFIG4		0x90
+#define   DEBUG_PORT_SELECT_SHIFT	  16
+#define   DEBUG_PORT_ENABLE		  BIT(18)
+#define   DEBUG_PORT_MASK		(BIT(16) | BIT(17) | (BIT(18))
+
 #define WIDEIO_RANGE_ERROR		-1
 #define TOTAL_WIDEIO_PORTS		3
 

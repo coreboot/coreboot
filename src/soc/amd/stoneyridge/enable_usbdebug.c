@@ -22,8 +22,6 @@
 #include <device/pci_def.h>
 #include <soc/southbridge.h>
 
-#define DEBUGPORT_MISC_CONTROL		0x80
-
 pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
 {
 	/* Enable all of the USB controllers */
@@ -40,13 +38,12 @@ pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
 
 void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port)
 {
-	u8 *base_regs = pci_ehci_base_regs(dev);
-	u32 reg32;
+	u32 reg32, value;
 
-	/* Write the port number to DEBUGPORT_MISC_CONTROL[31:28]. */
-	reg32 = read32(base_regs + DEBUGPORT_MISC_CONTROL);
-	reg32 &= ~(0xf << 28);
-	reg32 |= (port << 28);
-	reg32 |= (1 << 27); /* Enable Debug Port port number remapping. */
-	write32(base_regs + DEBUGPORT_MISC_CONTROL, reg32);
+	value = (port & 0x3) << DEBUG_PORT_SELECT_SHIFT;
+	value |= DEBUG_PORT_ENABLE;
+	reg32 = pci_read_config32(SOC_EHCI1_DEV, EHCI_HUB_CONFIG4);
+	reg32 &= ~DEBUG_PORT_MASK;
+	reg32 |= value;
+	pci_write_config32(SOC_EHCI1_DEV, EHCI_HUB_CONFIG4, reg32);
 }

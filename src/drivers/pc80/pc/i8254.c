@@ -15,7 +15,6 @@
 
 #include <arch/io.h>
 #include <pc80/i8254.h>
-#include <console/console.h>
 
 /* Initialize i8254 timers */
 

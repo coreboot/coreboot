@@ -121,6 +121,7 @@ typedef struct ich9_spi_regs {
 typedef struct ich_spi_controller {
 	int locked;
 	uint32_t flmap0;
+	uint32_t flcomp;
 	uint32_t hsfs;
 
 	ich9_spi_regs *ich9_spi;
@@ -346,6 +347,8 @@ void spi_init(void)
 		if (cntlr->hsfs & HSFS_FDV) {
 			writel_ (4, &ich9_spi->fdoc);
 			cntlr->flmap0 = readl_(&ich9_spi->fdod);
+			writel_ (0x1000, &ich9_spi->fdoc);
+			cntlr->flcomp = readl_(&ich9_spi->fdod);
 		}
 	}
 
@@ -930,7 +933,6 @@ static int spi_flash_programmer_probe(const struct spi_slave *spi,
 					struct spi_flash *flash)
 {
 	ich_spi_controller *cntlr = car_get_var_ptr(&g_cntlr);
-	uint32_t flcomp;
 
 	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX))
 		return spi_flash_generic_probe(spi, flash);
@@ -959,15 +961,12 @@ static int spi_flash_programmer_probe(const struct spi_slave *spi,
 		break;
 	}
 
-	writel_ (0x1000, &cntlr->ich9_spi->fdoc);
-	flcomp = readl_(&cntlr->ich9_spi->fdod);
-
-	flash->size = 1 << (19 + (flcomp & 7));
+	flash->size = 1 << (19 + (cntlr->flcomp & 7));
 
 	flash->ops = &spi_flash_ops;
 
 	if ((cntlr->hsfs & HSFS_FDV) && ((cntlr->flmap0 >> 8) & 3))
-		flash->size += 1 << (19 + ((flcomp >> 3) & 7));
+		flash->size += 1 << (19 + ((cntlr->flcomp >> 3) & 7));
 	printk (BIOS_DEBUG, "flash size 0x%x bytes\n", flash->size);
 
 	return 0;

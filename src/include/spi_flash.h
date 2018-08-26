@@ -89,6 +89,8 @@ struct spi_flash_ops {
 
 struct spi_flash {
 	struct spi_slave spi;
+	u8 vendor;
+	u16 model;
 	const char *name;
 	u32 size;
 	u32 sector_size;

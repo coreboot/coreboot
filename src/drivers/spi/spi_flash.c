@@ -343,8 +343,11 @@ int spi_flash_generic_probe(const struct spi_slave *spi,
 	for (i = 0; i < ARRAY_SIZE(flashes); ++i)
 		if (flashes[i].shift == shift && flashes[i].idcode == *idp) {
 			/* we have a match, call probe */
-			if (flashes[i].probe(spi, idp, flash) == 0)
+			if (flashes[i].probe(spi, idp, flash) == 0) {
+				flash->vendor = idp[0];
+				flash->model = (idp[1] << 8) | idp[2];
 				return 0;
+			}
 		}
 
 	/* No match, return error. */

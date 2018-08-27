@@ -23,7 +23,7 @@
 #include "chip.h"
 #include "bh720.h"
 
-__attribute__((weak)) void bh720_driving_strength(struct device *dev)
+__attribute__((weak)) void board_bh720(struct device *dev)
 {
 }
 
@@ -55,7 +55,7 @@ static void bh720_init(struct device *dev)
 		       pci_read_config32(dev, BH720_LINK_CTRL));
 	}
 
-	bh720_driving_strength(dev);
+	board_bh720(dev);
 }
 
 static struct pci_operations pci_ops = {

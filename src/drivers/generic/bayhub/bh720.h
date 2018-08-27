@@ -35,13 +35,20 @@ enum {
 
 	BH720_MEM_RW_DATA               = 0x200,
 	BH720_MEM_RW_ADR                = 0x204,
+	BH720_MEM_RW_READ		= BIT(30),
+	BH720_MEM_RW_WRITE		= BIT(31),
 	BH720_MEM_ACCESS_EN             = 0x208,
-	BH720_PCR                       = 0x304,
+	BH720_PCR_DrvStrength_PLL	= 0x304,
 	BH720_PCR_DATA_CMD_DRV_MAX      = 7,
 	BH720_PCR_CLK_DRV_MAX           = 7,
+	BH720_PCR_EMMC_SETTING		= 0x308,
+	BH720_PCR_EMMC_SETTING_1_8V	= BIT(4),
 
 	BH720_RTD3_L1                   = 0x3e0,
 	BH720_RTD3_L1_DISABLE_L1        = BIT(28),
+
+	BH720_PCR_CSR			= 0x3e4,
+	BH720_PCR_CSR_EMMC_MODE_SEL	= BIT(22),
 };
 
-void bh720_driving_strength(struct device *dev);
+void board_bh720(struct device *dev);

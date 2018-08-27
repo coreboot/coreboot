@@ -14,9 +14,19 @@
  */
 
 #include <mcall.h>
+#include <arch/io.h>
+#include <soc/addressmap.h>
+#include <soc/clint.h>
 
-/* FIXME: This is an empty implementation, please improve */
-/* This function is used to initialize HLS()->time/HLS()->timecmp  */
 void mtime_init(void)
 {
+	long hart_id = read_csr(mhartid);
+	HLS()->time = (uint64_t *)(FU540_CLINT + 0xbff8);
+	HLS()->timecmp = (uint64_t *)(FU540_CLINT + 0x4000 + 8 * hart_id);
+}
+
+void set_msip(int hartid, int val)
+{
+	long hart_id = read_csr(mhartid);
+	write32((void *)(FU540_CLINT + 4 * hart_id), !!val);
 }

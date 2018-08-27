@@ -37,7 +37,7 @@
 /* Serial IO */
 #include "serialio.asl"
 
-/* SMBus 0:1f.3 */
+/* SMBus 0:1f.4 */
 #include "smbus.asl"
 
 /* USB XHCI 0:14.0 */

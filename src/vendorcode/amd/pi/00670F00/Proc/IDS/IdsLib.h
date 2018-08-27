@@ -45,22 +45,4 @@
 #ifndef _IDS_LIB_H_
 #define _IDS_LIB_H_
 
-/// Data Structure of Parameters for TestPoint_TSC.
-typedef struct {
-  UINT32 LineInFile;                    ///< Line of current time counter
-  UINT64 Description;                  ///<Description ID
-  UINT64 StartTsc;                  ///< The StartTimer of TestPoint_TSC
-} TestPoint_TSC;
-
-#define RESERVED_TP_NUMER 0x20
-#define MAX_PERFORMANCE_UNIT_NUM (IDS_TP_END - TP_BEGINPROCAMDINITEARLY + 1 + RESERVED_TP_NUMER)
-/// Data Structure of Parameters for TP_Perf_STRUCT.
-typedef struct {
-  UINT32 Signature;                ///< "PERF"
-  UINT32 Version;       ///< version
-  UINT32 Index;                    ///< The Index of TP_Perf_STRUCT
-  UINT32 TscInMhz;            ///< Tsc counter in 1 mhz
-  TestPoint_TSC TP[MAX_PERFORMANCE_UNIT_NUM];       ///< The TP of TP_Perf_STRUCT
-} TP_Perf_STRUCT;
-
 #endif //_IDS_LIB_H_

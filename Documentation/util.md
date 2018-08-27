@@ -77,6 +77,9 @@ partial deblobbing of Intel ME/TXE firmware images `Python`
 * __nvidia__ - nvidia blob parsers
 * __nvramtool__ - Reads and writes coreboot parameters and displaying
 information from the coreboot table in CMOS/NVRAM. `C`
+* __pmh7tool__ - Dumps, reads and writes PMH7 registers on Lenovo
+ThinkPads. PMH7 is used for switching on and off the power of some
+devices on the board such as dGPU. `C`
 * __post__ - Userspace utility that can be used to test POST cards. `C`
 * __qualcomm__ - CMM script to debug Qualcomm coreboot environments.
 `CMM`

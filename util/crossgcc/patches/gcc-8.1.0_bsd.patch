@@ -1,0 +1,12 @@
+diff -Naur gcc-8.1.0/gcc/ada/link.c gcc-8.1.0_/gcc/ada/link.c
+--- gcc-8.1.0/gcc/ada/link.c	2018-01-11 01:55:25.000000000 -0700
++++ gcc-8.1.0_/gcc/ada/link.c	2018-08-25 20:47:29.274166706 -0600
+@@ -104,7 +104,7 @@
+ const char *__gnat_default_libgcc_subdir = "lib";
+ 
+ #elif defined (__FreeBSD__) || defined (__DragonFly__) \
+-   || defined (__NetBSD__) || defined (__OpenBSD__)
++   || defined (__NetBSD__) || defined (__OpenBSD__) \
+    || defined (__QNX__)
+ const char *__gnat_object_file_option = "-Wl,@";
+ const char *__gnat_run_path_option = "-Wl,-rpath,";

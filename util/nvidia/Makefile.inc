@@ -43,6 +43,10 @@ CBOOTIMAGE_SRCS:=$(addprefix util/nvidia/cbootimage/src/,$(filter %.c,$(CBOOTIMA
 CBOOTIMAGE_OBJS:=$(addprefix $(objutil)/nvidia/cbootimage/,$(patsubst %.c,%.o,$(filter %.c,$(CBOOTIMAGE_RAW_SRCS))))
 CBOOTIMAGE_FLAGS:=-Wall -std=c99 -O2
 
+ifeq ($(OS_ARCH), FreeBSD)
+CBOOTIMAGE_FLAGS:=-DENODATA=ENOATTR
+endif
+
 additional-dirs += $(sort $(dir $(CBOOTIMAGE_OBJS)))
 
 $(objutil)/nvidia/cbootimage/%.o: util/nvidia/cbootimage/src/%.c

@@ -165,27 +165,44 @@ static enum cb_err check_region_overlap(const struct memranges *ranges,
 
 	return CB_SUCCESS;
 }
-
-static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
-					bool s3wake, uint32_t fsp_version,
-					const struct memranges *memmap)
+static enum cb_err setup_fsp_stack_frame(FSPM_ARCH_UPD *arch_upd,
+		const struct memranges *memmap)
 {
 	uintptr_t stack_begin;
 	uintptr_t stack_end;
 
 	/*
-	 * FSPM_UPD passed here is populated with default values provided by
-	 * the blob itself. We let FSPM use top of CAR region of the size it
-	 * requests.
+	 * FSP 2.1 version would use same stack as coreboot instead of
+	 * setting up seprate stack frame. FSP 2.1 would not relocate stack
+	 * top and does not reinitialize stack pointer.
+	 */
+	if (IS_ENABLED(CONFIG_FSP_USES_CB_STACK)) {
+		arch_upd->StackBase = (void *)_car_stack_end;
+		arch_upd->StackSize = CONFIG_DCACHE_BSP_STACK_SIZE;
+		return CB_SUCCESS;
+	}
+
+	/*
+	 * FSPM_UPD passed here is populated with default values
+	 * provided by the blob itself. We let FSPM use top of CAR
+	 * region of the size it requests.
 	 */
 	stack_end = (uintptr_t)_car_region_end;
 	stack_begin = stack_end - arch_upd->StackSize;
-
 	if (check_region_overlap(memmap, "FSPM stack", stack_begin,
 				stack_end) != CB_SUCCESS)
 		return CB_ERR;
 
 	arch_upd->StackBase = (void *)stack_begin;
+	return CB_SUCCESS;
+}
+
+static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
+					bool s3wake, uint32_t fsp_version,
+					const struct memranges *memmap)
+{
+	if (setup_fsp_stack_frame(arch_upd, memmap))
+		return CB_ERR;
 
 	fsp_fill_mrc_cache(arch_upd, fsp_version);
 

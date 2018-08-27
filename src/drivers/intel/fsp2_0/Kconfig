@@ -97,6 +97,15 @@ config FSP_M_XIP
 	help
 	  Select this value when FSP-M is execute-in-place.
 
+config FSP_USES_CB_STACK
+	bool
+	default n
+	help
+	  Enable support for fsp to use same stack as coreboot.
+	  This option allows fsp to continue using coreboot stack
+	  without reinitializing stack pointer. This feature is
+	  supported Icelake onwards.
+
 config VERIFY_HOBS
 	bool "Verify the FSP hand-off-blocks"
 	default n

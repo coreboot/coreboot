@@ -264,6 +264,11 @@ static const struct pad_config gpio_table[] = {
 	/* H21 : GPPC_H_21 */
 	/* H22 : GPPC_H_22 */
 	PAD_CFG_GPI(GPP_H22, NONE, DEEP),
+#if IS_ENABLED(CONFIG_BOARD_INTEL_WHISKEYLAKE_RVP)
+	PAD_CFG_GPO(GPP_H22, 1, PLTRST),
+#else
+	PAD_CFG_GPI(GPP_H22, NONE, DEEP),
+#endif
 	/* H23 : GPPC_H_23 */
 
 	/* GPD */
@@ -300,7 +305,8 @@ const struct pad_config *__weak variant_gpio_table(size_t *num)
 	return gpio_table;
 }
 
-const struct pad_config *__weak variant_early_gpio_table(size_t *num)
+const struct pad_config *__weak
+	variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
@@ -310,7 +316,7 @@ static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
 };
 
-const struct cros_gpio *__weak variant_cros_gpios(size_t *num)
+const struct cros_gpio * __weak variant_cros_gpios(size_t *num)
 {
 	*num = ARRAY_SIZE(cros_gpios);
 	return cros_gpios;

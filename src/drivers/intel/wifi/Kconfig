@@ -31,7 +31,7 @@ config GEO_SAR_ENABLE
 	depends on USE_SAR
 
 config WIFI_SAR_CBFS
-	bool
+	bool "Enable SAR table addition to CBFS"
 	default n
 	depends on USE_SAR
 	help

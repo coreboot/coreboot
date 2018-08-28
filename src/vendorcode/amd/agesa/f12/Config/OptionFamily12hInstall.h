@@ -337,9 +337,9 @@ extern F_IS_NB_PSTATE_ENABLED F12IsNbPstateEnabled;
       #define F12_LN_UCODE_0F
 
       #if AGESA_ENTRY_INIT_EARLY == TRUE
-        extern  CONST MICROCODE_PATCHES ROMDATA CpuF12MicrocodePatch0300000f;
+        extern  CONST MICROCODE_PATCHES ROMDATA CpuF12MicrocodePatch03000027;
         #undef F12_LN_UCODE_0F
-        #define F12_LN_UCODE_0F &CpuF12MicrocodePatch0300000f,
+        #define F12_LN_UCODE_0F &CpuF12MicrocodePatch03000027,
         #if OPTION_EARLY_SAMPLES == TRUE
           extern  CONST MICROCODE_PATCHES ROMDATA CpuF12MicrocodePatch03000002;
           extern  CONST MICROCODE_PATCHES ROMDATA CpuF12MicrocodePatch0300000e;

@@ -61,6 +61,9 @@ typedef struct {
 
 void hls_init(uint32_t hart_id); // need to call this before launching linux
 
+/* This function is used to initialize HLS()->time/HLS()->timecmp  */
+void mtime_init(void);
+
 #endif // __ASSEMBLER__
 
 #endif

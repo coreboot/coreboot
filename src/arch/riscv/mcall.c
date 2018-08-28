@@ -40,9 +40,7 @@ void hls_init(uint32_t hart_id)
 	memset(HLS(), 0, sizeof(*HLS()));
 	HLS()->hart_id = hart_id;
 
-	/* Initialize these pointers with dummy values, for now */
-	HLS()->time = NULL;
-	HLS()->timecmp = NULL;
+	mtime_init();
 
 	printk(BIOS_SPEW, "Time is %p and timecmp is %p\n",
 	       HLS()->time, HLS()->timecmp);

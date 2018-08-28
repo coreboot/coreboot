@@ -14,6 +14,7 @@
 ifeq ($(CONFIG_SOC_SIFIVE_FU540),y)
 
 bootblock-y += uart.c
+bootblock-y += mtime.c
 bootblock-y += media.c
 bootblock-y += bootblock.c
 

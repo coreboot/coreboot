@@ -40,7 +40,7 @@ int fsp_relocate(struct prog *fsp_relocd, const struct region_device *fsp_src)
 	fih_offset = fsp1_1_relocate((uintptr_t)new_loc, new_loc, size);
 
 	if (fih_offset <= 0) {
-		printk(BIOS_ERR, "ERROR: FSP relocation faiulre.\n");
+		printk(BIOS_ERR, "ERROR: FSP relocation failure.\n");
 		return -1;
 	}
 

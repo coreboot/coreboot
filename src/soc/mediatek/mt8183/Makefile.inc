@@ -67,6 +67,8 @@ sspm.bin-file := 3rdparty/blobs/soc/mediatek/mt8183/sspm.bin
 sspm.bin-type := raw
 sspm.bin-compression := $(CBFS_COMPRESS_FLAG)
 
+BL31_MAKEARGS += PLAT=mt8183
+
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8183/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
 

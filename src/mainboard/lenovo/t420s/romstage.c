@@ -32,6 +32,9 @@ static void hybrid_graphics_init(void)
 
 	early_hybrid_graphics(&igd, &peg);
 
+	if (peg && igd)
+		return;
+
 	/* Hide disabled devices */
 	reg32 = pci_read_config32(PCI_DEV(0, 0, 0), DEVEN);
 	reg32 &= ~(DEVEN_PEG10 | DEVEN_IGD);

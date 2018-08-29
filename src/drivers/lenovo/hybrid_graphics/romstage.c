@@ -20,7 +20,6 @@
 #include <southbridge/intel/common/gpio.h>
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <console/console.h>
-#include <delay.h>
 
 #include "hybrid_graphics.h"
 #include "chip.h"
@@ -87,18 +86,9 @@ void early_hybrid_graphics(bool *enable_igd, bool *enable_peg)
 			set_gpio(config->dgpu_power_gpio,
 				 config->dgpu_power_off_lvl);
 	} else if (config->has_thinker1) {
-		const size_t power_en = !!(pmh7_register_read(0x50) & 0x08);
-		if (*enable_peg && !power_en) {
-			pmh7_register_clear_bit(0x50, 7); // DGPU_RST
-			pmh7_register_set_bit(0x50, 3); // DGPU_PWR
-			mdelay(10);
-			pmh7_register_set_bit(0x50, 7); // DGPU_RST
-			mdelay(50);
-		} else if (!*enable_peg && power_en) {
-			pmh7_register_clear_bit(0x50, 7); // DGPU_RST
-			udelay(100);
-			pmh7_register_clear_bit(0x50, 3); // DGPU_PWR
-		}
+		bool power_en = pmh7_dgpu_power_state();
+		if (*enable_peg != power_en)
+			pmh7_dgpu_power_enable(!power_en);
 	} else {
 		printk(BIOS_ERR, "Hybrid graphics:"
 		       " FIXME: dGPU power handling not implemented\n");

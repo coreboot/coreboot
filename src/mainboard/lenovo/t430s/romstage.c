@@ -15,12 +15,14 @@
  * GNU General Public License for more details.
  */
 
+#include <option.h>
 #include <arch/byteorder.h>
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <ec/lenovo/pmh7/pmh7.h>
 
 void pch_enable_lpc(void)
 {
@@ -64,6 +66,22 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only) {
 }
 
 void mainboard_early_init(int s3resume) {
+	u8 enable_peg;
+	if (get_option(&enable_peg, "enable_dual_graphics") != CB_SUCCESS)
+		enable_peg = 0;
+
+	bool power_en = pmh7_dgpu_power_state();
+
+	if (enable_peg != power_en)
+		pmh7_dgpu_power_enable(!power_en);
+
+	if (!enable_peg) {
+		// Hide disabled dGPU device
+		u32 reg32 = pci_read_config32(PCI_DEV(0, 0, 0), DEVEN);
+		reg32 &= ~DEVEN_PEG10;
+
+		pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, reg32);
+	}
 }
 
 void mainboard_config_superio(void)

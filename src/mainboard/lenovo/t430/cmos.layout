@@ -128,6 +128,7 @@ enumerations
 11    6     224M
 12    0     Integrated Only
 12    1     Discrete Only
+12    2     Dual Graphics
 13    0     Disable
 13    1     AC and battery
 13    2     AC only

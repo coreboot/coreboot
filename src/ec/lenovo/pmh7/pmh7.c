@@ -19,6 +19,7 @@
 #include <device/pnp.h>
 #include <stdlib.h>
 #include <pc80/mc146818rtc.h>
+#include <delay.h>
 
 #include "pmh7.h"
 #include "chip.h"
@@ -62,6 +63,26 @@ void pmh7_ultrabay_power_enable(int onoff)
 		pmh7_register_clear_bit(0x62, 0);
 	else
 		pmh7_register_set_bit(0x62, 0);
+}
+
+void pmh7_dgpu_power_enable(int onoff)
+{
+	if (onoff) {
+		pmh7_register_clear_bit(0x50, 7); // DGPU_RST
+		pmh7_register_set_bit(0x50, 3); // DGPU_PWR
+		mdelay(10);
+		pmh7_register_set_bit(0x50, 7); // DGPU_RST
+		mdelay(50);
+	} else {
+		pmh7_register_clear_bit(0x50, 7); // DGPU_RST
+		udelay(100);
+		pmh7_register_clear_bit(0x50, 3); // DGPU_PWR
+	}
+}
+
+bool pmh7_dgpu_power_state(void)
+{
+	return (pmh7_register_read(0x50) & 0x08) == 8;
 }
 
 void pmh7_register_set_bit(int reg, int bit)

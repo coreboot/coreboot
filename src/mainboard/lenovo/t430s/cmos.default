@@ -13,4 +13,5 @@ fn_ctrl_swap=Disable
 sticky_fn=Disable
 trackpoint=Enable
 backlight=Both
+enable_dual_graphics=Disable
 usb_always_on=Disable

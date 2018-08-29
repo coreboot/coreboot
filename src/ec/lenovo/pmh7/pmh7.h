@@ -35,5 +35,7 @@ void pmh7_dock_event_enable(int onoff);
 void pmh7_touchpad_enable(int onoff);
 void pmh7_ultrabay_power_enable(int onoff);
 void pmh7_trackpoint_enable(int onoff);
+void pmh7_dgpu_power_enable(int onoff);
+bool pmh7_dgpu_power_state(void);
 
 #endif /* EC_LENOVO_PMH7_H */

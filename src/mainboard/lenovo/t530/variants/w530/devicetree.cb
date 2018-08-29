@@ -179,7 +179,7 @@ chip northbridge/intel/sandybridge
 					register "has_backlight_gpio" = "0"
 					register "has_dgpu_power_gpio" = "0"
 
-					register "has_thinker1" = "0"
+					register "has_thinker1" = "1"
 				end
 			end
 			device pci 1f.2 on # SATA Controller 1

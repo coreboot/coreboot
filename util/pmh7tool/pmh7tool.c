@@ -53,16 +53,25 @@ void pmh7_register_clear_bit(uint16_t reg, uint8_t bit)
 	pmh7_register_write(reg, val & ~(1 << bit));
 }
 
+uint8_t pmh7_register_read_bit(int16_t reg, uint8_t bit)
+{
+	uint8_t val;
+
+	val = pmh7_register_read(reg);
+	return (val >> bit) & 1;
+}
+
 void print_usage(const char *name)
 {
 	printf("usage: %s\n", name);
 	printf("\n"
-		   "	-h, --help:                 print this help\n"
-		   "	-d, --dump:                 print registers\n"
-		   "	-w, --write <addr> <data>:  write to register\n"
-		   "	-r, --read <addr>:          read from register\n"
-		   "	-c, --clear-bit <addr> <bit>\n"
-		   "	-s, --set-bit <addr> <bit>\n"
+		   "	-h, --help:                   print this help\n"
+		   "	-d, --dump:                   print registers\n"
+		   "	-w, --write <addr> <data>:    write to register\n"
+		   "	-r, --read <addr>:            read from register\n"
+		   "	-b, --read-bit <addr> <bit>   read bit\n"
+		   "	-c, --clear-bit <addr> <bit>  clear bit\n"
+		   "	-s, --set-bit <addr> <bit>    set bit\n"
 		   "\n"
 		   "Attention! Writing to PMH7 registers is very dangerous, as you\n"
 		   "           directly manipulate the power rails, enable lines,\n"
@@ -71,7 +80,7 @@ void print_usage(const char *name)
 		   "\n");
 }
 
-enum action {HELP, DUMP, WRITE, READ, CLEAR, SET};
+enum action {HELP, DUMP, WRITE, READ, READBIT, CLEAR, SET};
 
 int main(int argc, char *argv[])
 {
@@ -84,6 +93,7 @@ int main(int argc, char *argv[])
 		{"dump",        0, 0, 'd'},
 		{"write",       1, 0, 'w'},
 		{"read",        1, 0, 'r'},
+		{"read-bit",    1, 0, 'b'},
 		{"clear-bit",   1, 0, 'c'},
 		{"set-bit",     1, 0, 's'},
 		{0, 0, 0, 0}
@@ -94,7 +104,7 @@ int main(int argc, char *argv[])
 		exit(0);
 	}
 
-	while ((opt = getopt_long(argc, argv, "hdw:r:c:s:",
+	while ((opt = getopt_long(argc, argv, "hdw:r:c:s:b:",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
@@ -107,6 +117,7 @@ int main(int argc, char *argv[])
 			break;
 
 		case 'w':
+		case 'b':
 		case 'c':
 		case 's':
 			input_addr = strtoul(optarg, NULL, 16);
@@ -124,6 +135,9 @@ int main(int argc, char *argv[])
 			switch (opt) {
 			case 'w':
 				act = WRITE;
+				break;
+			case 'b':
+				act = READBIT;
 				break;
 			case 'c':
 				act = CLEAR;
@@ -153,7 +167,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	if (act == SET || act == CLEAR) {
+	if (act == SET || act == CLEAR || act == READBIT) {
 		if (input_data > 7) {
 			fprintf(stderr,
 				"Error: <bit> cannot be greater than 7.\n");
@@ -196,6 +210,10 @@ int main(int argc, char *argv[])
 
 	case WRITE:
 		pmh7_register_write(input_addr, input_data);
+		break;
+
+	case READBIT:
+		printf("%d\n", pmh7_register_read_bit(input_addr, input_data));
 		break;
 
 	case CLEAR:

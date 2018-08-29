@@ -20,6 +20,20 @@
 
 #define STACK(addr, size) REGION(stack, addr, size, 4096)
 
+#if defined(__PRE_RAM__)
+	#define CAR_STACK(addr, size) \
+		REGION(car_stack, addr, size, 4K) \
+		ALIAS_REGION(car_stack, stack)
+	#define MEM_STACK(addr, size) \
+		REGION(mem_stack, addr, size, 4K)
+#else
+	#define CAR_STACK(addr, size) \
+		REGION(car_stack, addr, size, 4K)
+	#define MEM_STACK(addr, size) \
+		REGION(mem_stack, addr, size, 4K) \
+		ALIAS_REGION(mem_stack, stack)
+#endif
+
 /* TODO: Need to add DMA_COHERENT region like on ARM? */
 
 #endif /* __ARCH_MEMLAYOUT_H */

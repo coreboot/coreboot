@@ -97,6 +97,10 @@ endif #CONFIG_ARCH_ROMSTAGE_RISCV
 ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
 
 ramstage-y =
+ramstage-y += ramstage.S
+ramstage-y += mcall.c
+ramstage-y += trap_util.S
+ramstage-y += trap_handler.c
 ramstage-y += virtual_memory.c
 ramstage-y += stages.c
 ramstage-y += misc.c

@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include <rules.h>
+
 /* We use ELF as output format. So that we can debug the code in some form. */
 OUTPUT_ARCH(riscv)
 
@@ -21,7 +23,7 @@ PHDRS
 	to_load PT_LOAD;
 }
 
-#ifdef __BOOTBLOCK__
+#if ENV_BOOTBLOCK || ENV_RAMSTAGE
 ENTRY(_start)
 #else
 ENTRY(stage_entry)

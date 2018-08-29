@@ -79,8 +79,8 @@ __weak int tis_plat_irq_status(void)
 }
 
 /*
- * TPM may trigger a irq after finish processing previous transfer.
- * Waiting for this irq to sync tpm status.
+ * TPM may trigger a IRQ after finish processing previous transfer.
+ * Waiting for this IRQ to sync TPM status.
  *
  * Returns 1 on success, 0 on failure (timeout).
  */
@@ -91,7 +91,7 @@ static int tpm_sync(void)
 	stopwatch_init_msecs_expire(&sw, 10);
 	while (!tis_plat_irq_status()) {
 		if (stopwatch_expired(&sw)) {
-			printk(BIOS_ERR, "Timeout wait for tpm irq!\n");
+			printk(BIOS_ERR, "Timeout wait for TPM IRQ!\n");
 			return 0;
 		}
 	}
@@ -119,7 +119,7 @@ static int start_transaction(int read_write, size_t bytes, unsigned addr)
 	 */
 	int wakeup_needed = 1;
 
-	/* Wait for tpm to finish previous transaction if needed */
+	/* Wait for TPM to finish previous transaction if needed */
 	if (car_get_var(tpm_sync_needed)) {
 		tpm_sync();
 		/*
@@ -430,7 +430,7 @@ int tpm2_init(struct spi_slave *spi_if)
 
 	memcpy(spi_slave, spi_if, sizeof(*spi_if));
 
-	/* clear any pending irqs */
+	/* clear any pending IRQs */
 	tis_plat_irq_status();
 
 	/*
@@ -442,12 +442,12 @@ int tpm2_init(struct spi_slave *spi_if)
 	for (retries = 15; retries > 0; retries--) {
 		int i;
 
-		/* In case of falure to read div_vid is set to zero. */
+		/* In case of failure to read div_vid is set to zero. */
 		tpm2_read_reg(TPM_DID_VID_REG, &did_vid, sizeof(did_vid));
 
 		for (i = 0; i < ARRAY_SIZE(supported_did_vids); i++)
 			if (did_vid == supported_did_vids[i])
-				break; /* Tpm is up and ready. */
+				break; /* TPM is up and ready. */
 
 		if (i < ARRAY_SIZE(supported_did_vids))
 			break;
@@ -643,7 +643,7 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	write_tpm_sts(TPM_STS_COMMAND_READY);
 
 	/*
-	 * Tpm commands and responses written to and read from the FIFO
+	 * TPM commands and responses written to and read from the FIFO
 	 * register (0x24) are datagrams of variable size, prepended by a 6
 	 * byte header.
 	 *
@@ -687,7 +687,7 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 		 * TODO(vbendeb): at least drain the FIFO here or somehow let
 		 * the TPM know that the response can be dropped.
 		 */
-		printk(BIOS_ERR, " tpm response too long (%zd bytes)",
+		printk(BIOS_ERR, " TPM response too long (%zd bytes)",
 		       payload_size);
 		return 0;
 	}

@@ -164,6 +164,7 @@ config NHLT_DA7219
 
 config MAX_ROOT_PORTS
 	int
+	default 24 if CANNONLAKE_SOC_PCH_H
 	default 16
 
 config SMM_TSEG_SIZE

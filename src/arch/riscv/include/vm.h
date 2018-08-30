@@ -38,11 +38,11 @@
 void mstatus_init(void); // need to setup mstatus so we know we have virtual memory
 
 
-#define DEFINE_MPRV_READ(name, type, insn)				\
+#define DEFINE_MPRV_READ_FLAGS(name, type, insn, flags)			\
 	static inline type name(type *p);				\
 	static inline type name(type *p)				\
 	{								\
-		size_t mprv = MSTATUS_MPRV;				\
+		size_t mprv = flags;		                        \
 		type value;						\
 		asm (							\
 			"csrs		mstatus, %1\n"			\
@@ -52,6 +52,12 @@ void mstatus_init(void); // need to setup mstatus so we know we have virtual mem
 		);							\
 		return value;						\
 	}
+
+#define DEFINE_MPRV_READ(name, type, insn) \
+	DEFINE_MPRV_READ_FLAGS(name, type, insn, MSTATUS_MPRV)
+
+#define DEFINE_MPRV_READ_MXR(name, type, insn) \
+	DEFINE_MPRV_READ_FLAGS(name, type, insn, MSTATUS_MPRV | MSTATUS_MXR)
 
 #define DEFINE_MPRV_WRITE(name, type, insn)				\
 	static inline void name(type *p, type value);			\
@@ -83,6 +89,12 @@ DEFINE_MPRV_READ(mprv_read_u32, uint32_t, lwu)
 DEFINE_MPRV_READ(mprv_read_u64, uint64_t, ld)
 DEFINE_MPRV_READ(mprv_read_long, long, ld)
 DEFINE_MPRV_READ(mprv_read_ulong, unsigned long, ld)
+DEFINE_MPRV_READ_MXR(mprv_read_mxr_u8, uint8_t, lbu)
+DEFINE_MPRV_READ_MXR(mprv_read_mxr_u16, uint16_t, lhu)
+DEFINE_MPRV_READ_MXR(mprv_read_mxr_u32, uint32_t, lwu)
+DEFINE_MPRV_READ_MXR(mprv_read_mxr_u64, uint64_t, ld)
+DEFINE_MPRV_READ_MXR(mprv_read_mxr_long, long, ld)
+DEFINE_MPRV_READ_MXR(mprv_read_mxr_ulong, unsigned long, ld)
 DEFINE_MPRV_WRITE(mprv_write_u8, uint8_t, sb)
 DEFINE_MPRV_WRITE(mprv_write_u16, uint16_t, sh)
 DEFINE_MPRV_WRITE(mprv_write_u32, uint32_t, sw)
@@ -90,8 +102,9 @@ DEFINE_MPRV_WRITE(mprv_write_u64, uint64_t, sd)
 DEFINE_MPRV_WRITE(mprv_write_long, long, sd)
 DEFINE_MPRV_WRITE(mprv_write_ulong, unsigned long, sd)
 
+#undef DEFINE_MPRV_READ_FLAGS
 #undef DEFINE_MPRV_READ
+#undef DEFINE_MPRV_READ_MXR
 #undef DEFINE_MPRV_WRITE
-
 
 #endif

@@ -71,10 +71,10 @@ endif
 else
 ifneq ($(CONFIG_LINUXBOOT_UROOT_FILES),)
 	cd $(uroot_dir); GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) ./u-root \
-	-build=bb -files $(CONFIG_LINUXBOOT_UROOT_FILES) -o $(project_dir)/initramfs.cpio
+	-build=bb -files $(CONFIG_LINUXBOOT_UROOT_FILES) -o $(project_dir)/initramfs.cpio coreboot-app
 else
 	cd $(uroot_dir); GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) ./u-root \
-	-build=bb -o $(project_dir)/initramfs.cpio
+	-build=bb -o $(project_dir)/initramfs.cpio coreboot-app
 endif
 endif
 	xz -f --check=crc32 -9 --lzma2=dict=1MiB --threads=$(CPUS) $(project_dir)/initramfs.cpio

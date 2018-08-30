@@ -77,26 +77,26 @@ else ifeq ($(CONFIG_LINUXBOOT_ARCH),arm64)
 $(project_dir)/vmlinux.bin: $(kernel_dir)/vmlinux
 	$(OBJCOPY) -O binary $< $@
 
-$(project_dir)/target.dtb: $(CONFIG_LINUXBOOT_DTB_FILE)
+$(project_dir)/target.dtb: $(PWD)/$(CONFIG_LINUXBOOT_DTB_FILE)
 	cp $< $@
 
 $(project_dir)/vmlinux.bin.lzma: $(project_dir)/vmlinux.bin
 	xz -c -k -f --format=lzma --lzma1=dict=1MiB,lc=3,lp=0,pb=3 $< > $@
 
-$(project_dir)/kernel-image: $(project_dir)/vmlinux.bin.lzma $(project_dir)/../arm64/kernel_fdt_lzma.its $(project_dir)/target.dtb $(project_dir)/initramfs.cpio.xz
+$(project_dir)/kernel-image: $(project_dir)/vmlinux.bin.lzma $(project_dir)/../arm64/kernel_fdt_lzma.its $(project_dir)/target.dtb $(PWD)/$(CONFIG_PAYLOAD_USERSPACE)
 	cp $(project_dir)/../arm64/kernel_fdt_lzma.its $(project_dir)
 	mkimage -f $(project_dir)/kernel_fdt_lzma.its $@
 endif
 
 ifeq ($(CONFIG_LINUXBOOT_UROOT),y)
-$(project_dir)/initramfs.cpio.xz:
+$(PWD)/$(CONFIG_PAYLOAD_USERSPACE):
 	$(MAKE) -f targets/u-root.mk
 else
-$(project_dir)/initramfs.cpio.xz:
+$(PWD)/$(CONFIG_PAYLOAD_USERSPACE):
 	echo "Building without u-root support"
 endif
 
-payload: $(project_dir)/kernel-image $(project_dir)/initramfs.cpio.xz
+payload: $(project_dir)/kernel-image $(PWD)/$(CONFIG_PAYLOAD_USERSPACE)
 
 clean:
 	if [ -d "$(kernel_dir)" ]; then rm -rf $(kernel_dir); fi

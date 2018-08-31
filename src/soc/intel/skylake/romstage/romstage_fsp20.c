@@ -224,6 +224,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->SaGv = config->SaGv;
 	m_cfg->UserBd = BOARD_TYPE_ULT_ULX;
 	m_cfg->RMT = config->Rmt;
+	m_cfg->CmdTriStateDis = config->CmdTriStateDis;
 	m_cfg->DdrFreqLimit = config->DdrFreqLimit;
 	m_cfg->VmxEnable = config->VmxEnable;
 	m_cfg->PrmrrSize = config->PrmrrSize;

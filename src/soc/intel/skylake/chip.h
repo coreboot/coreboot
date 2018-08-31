@@ -154,6 +154,9 @@ struct soc_intel_skylake_config {
 	/* Enable/disable Rank Margin Tool */
 	u8 Rmt;
 
+	/* Disable Command TriState */
+	u8 CmdTriStateDis;
+
 	/* Lan */
 	u8 EnableLan;
 	u8 EnableLanLtr;

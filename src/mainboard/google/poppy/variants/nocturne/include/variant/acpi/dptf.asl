@@ -30,7 +30,7 @@
 #define DPTF_TSR2_SENSOR_ID		3
 #define DPTF_TSR2_SENSOR_NAME		"DRAM"
 #define DPTF_TSR2_PASSIVE		45
-#define DPTF_TSR2_CRITICAL		48
+#define DPTF_TSR2_CRITICAL		55
 
 #define DPTF_TSR3_SENSOR_ID		4
 #define DPTF_TSR3_SENSOR_NAME		"eMMC"
@@ -56,7 +56,7 @@ Name (DTRT, Package () {
 	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR0, 100, 600, 0, 0, 0, 0 },
 
 	/* CPU Throttle Effect on DRAM (TSR2) */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR2, 100, 600, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR2, 100, 50, 0, 0, 0, 0 },
 
 	/* CPU Throttle Effect on eMMC (TSR3) */
 	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR3, 100, 600, 0, 0, 0, 0 },
@@ -66,7 +66,7 @@ Name (DTRT, Package () {
 	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR1, 100, 600, 0, 0, 0, 0 },
 
 	/* Charger Throttle Effect on DRAM (TSR2) */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR2, 100, 600, 0, 0, 0, 0 },
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR2, 200, 50, 0, 0, 0, 0 },
 #endif
 })
 

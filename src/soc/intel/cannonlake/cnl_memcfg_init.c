@@ -98,7 +98,7 @@ void cannonlake_memcfg_init(FSP_M_CONFIG *mem_cfg,
 			const struct cnl_mb_cfg *cnl_cfg,
 			const struct spd_info *spd)
 {
-	bool OnModuleSpd;
+	bool OnModuleSpd = false;
 	/* Early Command Training Enabled */
 	mem_cfg->ECT = cnl_cfg->ect;
 	mem_cfg->DqPinsInterleaved = cnl_cfg->dq_pins_interleaved;
@@ -109,7 +109,7 @@ void cannonlake_memcfg_init(FSP_M_CONFIG *mem_cfg,
 	for (int i = 0; i < ARRAY_SIZE(mem_cfg->SpdAddressTable); i++) {
 		if (spd->spd_smbus_address[i] != 0) {
 			mem_cfg->SpdAddressTable[i] = spd->spd_smbus_address[i];
-			OnModuleSpd = 1;
+			OnModuleSpd = true;
 		}
 	}
 

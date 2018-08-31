@@ -14,28 +14,28 @@
  * GNU General Public License for more details.
  */
 
-#define DPTF_CPU_PASSIVE		80
-#define DPTF_CPU_CRITICAL		105
+#define DPTF_CPU_PASSIVE		70
+#define DPTF_CPU_CRITICAL		100
 
 #define DPTF_TSR0_SENSOR_ID		1
 #define DPTF_TSR0_SENSOR_NAME		"Ambient"
-#define DPTF_TSR0_PASSIVE		48
-#define DPTF_TSR0_CRITICAL		90
+#define DPTF_TSR0_PASSIVE		50
+#define DPTF_TSR0_CRITICAL		55
 
 #define DPTF_TSR1_SENSOR_ID		2
 #define DPTF_TSR1_SENSOR_NAME		"Charger"
-#define DPTF_TSR1_PASSIVE		48
-#define DPTF_TSR1_CRITICAL		90
+#define DPTF_TSR1_PASSIVE		55
+#define DPTF_TSR1_CRITICAL		65
 
 #define DPTF_TSR2_SENSOR_ID		3
 #define DPTF_TSR2_SENSOR_NAME		"DRAM"
-#define DPTF_TSR2_PASSIVE		65
-#define DPTF_TSR2_CRITICAL		75
+#define DPTF_TSR2_PASSIVE		45
+#define DPTF_TSR2_CRITICAL		48
 
 #define DPTF_TSR3_SENSOR_ID		4
 #define DPTF_TSR3_SENSOR_NAME		"eMMC"
-#define DPTF_TSR3_PASSIVE		65
-#define DPTF_TSR3_CRITICAL		75
+#define DPTF_TSR3_PASSIVE		48
+#define DPTF_TSR3_CRITICAL		53
 
 #undef DPTF_ENABLE_FAN_CONTROL
 #define DPTF_ENABLE_CHARGER
@@ -64,6 +64,9 @@ Name (DTRT, Package () {
 #ifdef DPTF_ENABLE_CHARGER
 	/* Charger Throttle Effect on Charger (TSR1) */
 	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR1, 100, 600, 0, 0, 0, 0 },
+
+	/* Charger Throttle Effect on DRAM (TSR2) */
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR2, 100, 600, 0, 0, 0, 0 },
 #endif
 })
 

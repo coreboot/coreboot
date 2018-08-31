@@ -203,6 +203,10 @@ chip soc/intel/skylake
 				.sda_hold = 36,
 			},
 		},
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
 	}"
 
 	# Touchscreen

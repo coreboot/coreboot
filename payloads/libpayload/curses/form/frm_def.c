@@ -62,7 +62,7 @@ static FORM default_form =
 };
 
 NCURSES_EXPORT_VAR(FORM *) _nc_Default_Form = &default_form;
-
+
 /*---------------------------------------------------------------------------
 |   Facility      :  libnform
 |   Function      :  static FIELD *Insert_Field_By_Position(

@@ -806,7 +806,7 @@ HTML_HEADER            =
 
 HTML_FOOTER            =
 
-# If the HTML_FOOTER_DESCRIPTION tag is set to YES, Doxygen will 
+# If the HTML_FOOTER_DESCRIPTION tag is set to YES, Doxygen will
 # add generated date, project name and doxygen version to HTML footer.
 
 HTML_FOOTER_DESCRIPTION= YES

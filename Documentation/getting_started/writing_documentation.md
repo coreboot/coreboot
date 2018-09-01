@@ -74,6 +74,32 @@ code block to write tables in reStructuredText and embed them into the markdown:
     +------------+------------+-----------+
     ``` #just a code block is enough
 
+## TocTree
+
+To make sure that all documents are included into the final documentation, you
+must reference each document from at least one *toctree*. The *toctree* must
+only reference files in the same folder or in subfolders !
+To create a toctree, simply use a bullet list or numbered list with a single
+reference. References in regular text aren't considered as *toctree* .
+This feature is enabled by recommonmark's *enable_auto_toc_tree* .
+
+**Example toctree:**
+
+```
+* [Chapter 1](chapter1.md)
+* [Chapter 2](chapter2.md)
+* [Subchapter](sub/index.md)
+```
+
+```
+1. [Chapter 1](chapter1.md)
+2. [Chapter 2](chapter2.md)
+```
+
+If you do only reference the document, but do not include it in any toctree,
+you'll see the following warning:
+**WARNING: document isn't included in any toctree**
+
 [coreboot]: https://coreboot.org
 [Documentation]: https://review.coreboot.org/cgit/coreboot.git/tree/Documentation
 [shpinx-autobuild]: https://github.com/GaretJax/sphinx-autobuild

@@ -15,5 +15,21 @@
 # DESCR: Check for superfluous whitespace in the tree
 
 LC_ALL=C export LC_ALL
-grep -l "[[:space:]][[:space:]]*$" `git ls-files src util |egrep -v "(^3rdparty|^src/vendorcode/|^util/kconfig/|^util/nvidia/cbootimage$|\<COPYING\>|\<LICENSE\>|\<README\>|_shipped$|\.patch$|\.bin$|\.hex$|\.jpg$|\.ttf$|\.woff$|\.png$|\.eot$|\.vbt$)"` | \
-	sed -e "s,^.*$,File & has lines ending with whitespace.,"
+EXCLUDELIST='^3rdparty|^src/vendorcode/|^util/kconfig/|^util/nvidia/cbootimage$|\<COPYING\>|\<LICENSE\>|\<README\>|_shipped$|\.patch$|\.bin$|\.hex$|\.jpg$|\.ttf$|\.woff$|\.png$|\.eot$|\.vbt$'
+INCLUDELIST="src util"
+
+# shellcheck disable=SC2086,SC2046
+if uname | grep -qi "linux"; then
+	grep -l "[[:space:]][[:space:]]*$" \
+		$(git ls-files $INCLUDELIST | \
+			grep -Ev "($EXCLUDELIST)" ) | \
+		sed -e "s,^.*$,File & has lines ending with whitespace.,"
+else
+	# The above form is much (100x) faster, but doesn't work
+	# on all systems. A for loop also works but takes 30% longer
+	git ls-files $INCLUDELIST | \
+		grep -Ev "($EXCLUDELIST)" | \
+		xargs -I % \
+			grep -l "[[:space:]][[:space:]]*$" % | \
+			sed -e "s,^.*$,File & has lines ending with whitespace.,"
+fi

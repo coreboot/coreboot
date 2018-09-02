@@ -129,7 +129,7 @@ For chtype:
 	A_INVIS		invisible
 	A_ITALIC	italic
 	A_LEFTLINE	line along the left edge
-	A_PROTECT 	protected (?) -- PDCurses renders this as a
+	A_PROTECT	protected (?) -- PDCurses renders this as a
 			combination of the *LINE attributes
 	A_REVERSE	reverse video
 	A_RIGHTLINE	line along the right edge
@@ -291,62 +291,62 @@ particular terminal:
 	KEY_C1		lower left of virtual keypad
 	KEY_C3		lower right of virtual keypad
 
-	KEY_BTAB 	Back tab key
-	KEY_BEG 	Beginning key
-	KEY_CANCEL 	Cancel key
-	KEY_CLOSE 	Close key
-	KEY_COMMAND 	Cmd (command) key
-	KEY_COPY 	Copy key
-	KEY_CREATE 	Create key
-	KEY_END 	End key
-	KEY_EXIT 	Exit key
-	KEY_FIND 	Find key
-	KEY_HELP 	Help key
-	KEY_MARK 	Mark key
-	KEY_MESSAGE 	Message key
-	KEY_MOVE 	Move key
-	KEY_NEXT 	Next object key
-	KEY_OPEN 	Open key
-	KEY_OPTIONS 	Options key
-	KEY_PREVIOUS 	Previous object key
-	KEY_REDO 	Redo key
-	KEY_REFERENCE 	Reference key
-	KEY_REFRESH 	Refresh key
-	KEY_REPLACE 	Replace key
-	KEY_RESTART 	Restart key
-	KEY_RESUME 	Resume key
-	KEY_SAVE 	Save key
-	KEY_SBEG 	Shifted beginning key
-	KEY_SCANCEL 	Shifted cancel key
-	KEY_SCOMMAND 	Shifted command key
-	KEY_SCOPY 	Shifted copy key
-	KEY_SCREATE 	Shifted create key
-	KEY_SDC 	Shifted delete char key
-	KEY_SDL 	Shifted delete line key
-	KEY_SELECT 	Select key
-	KEY_SEND 	Shifted end key
-	KEY_SEOL 	Shifted clear line key
-	KEY_SEXIT 	Shifted exit key
-	KEY_SFIND 	Shifted find key
-	KEY_SHELP 	Shifted help key
-	KEY_SHOME 	Shifted home key
-	KEY_SIC 	Shifted input key
-	KEY_SLEFT 	Shifted left arrow key
-	KEY_SMESSAGE 	Shifted message key
-	KEY_SMOVE 	Shifted move key
-	KEY_SNEXT 	Shifted next key
-	KEY_SOPTIONS 	Shifted options key
-	KEY_SPREVIOUS 	Shifted prev key
-	KEY_SPRINT 	Shifted print key
-	KEY_SREDO 	Shifted redo key
-	KEY_SREPLACE 	Shifted replace key
-	KEY_SRIGHT 	Shifted right arrow
-	KEY_SRSUME 	Shifted resume key
-	KEY_SSAVE 	Shifted save key
-	KEY_SSUSPEND 	Shifted suspend key
-	KEY_SUNDO 	Shifted undo key
-	KEY_SUSPEND 	Suspend key
-	KEY_UNDO 	Undo key
+	KEY_BTAB	Back tab key
+	KEY_BEG		Beginning key
+	KEY_CANCEL	Cancel key
+	KEY_CLOSE	Close key
+	KEY_COMMAND	Cmd (command) key
+	KEY_COPY	Copy key
+	KEY_CREATE	Create key
+	KEY_END		End key
+	KEY_EXIT	Exit key
+	KEY_FIND	Find key
+	KEY_HELP	Help key
+	KEY_MARK	Mark key
+	KEY_MESSAGE	Message key
+	KEY_MOVE	Move key
+	KEY_NEXT	Next object key
+	KEY_OPEN	Open key
+	KEY_OPTIONS	Options key
+	KEY_PREVIOUS	Previous object key
+	KEY_REDO	Redo key
+	KEY_REFERENCE	Reference key
+	KEY_REFRESH	Refresh key
+	KEY_REPLACE	Replace key
+	KEY_RESTART	Restart key
+	KEY_RESUME	Resume key
+	KEY_SAVE	Save key
+	KEY_SBEG	Shifted beginning key
+	KEY_SCANCEL	Shifted cancel key
+	KEY_SCOMMAND	Shifted command key
+	KEY_SCOPY	Shifted copy key
+	KEY_SCREATE	Shifted create key
+	KEY_SDC		Shifted delete char key
+	KEY_SDL		Shifted delete line key
+	KEY_SELECT	Select key
+	KEY_SEND	Shifted end key
+	KEY_SEOL	Shifted clear line key
+	KEY_SEXIT	Shifted exit key
+	KEY_SFIND	Shifted find key
+	KEY_SHELP	Shifted help key
+	KEY_SHOME	Shifted home key
+	KEY_SIC		Shifted input key
+	KEY_SLEFT	Shifted left arrow key
+	KEY_SMESSAGE	Shifted message key
+	KEY_SMOVE	Shifted move key
+	KEY_SNEXT	Shifted next key
+	KEY_SOPTIONS	Shifted options key
+	KEY_SPREVIOUS	Shifted prev key
+	KEY_SPRINT	Shifted print key
+	KEY_SREDO	Shifted redo key
+	KEY_SREPLACE	Shifted replace key
+	KEY_SRIGHT	Shifted right arrow
+	KEY_SRSUME	Shifted resume key
+	KEY_SSAVE	Shifted save key
+	KEY_SSUSPEND	Shifted suspend key
+	KEY_SUNDO	Shifted undo key
+	KEY_SUSPEND	Suspend key
+	KEY_UNDO	Undo key
 
 The virtual keypad is arranged like this:
 

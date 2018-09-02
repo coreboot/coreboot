@@ -199,10 +199,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF1),
 	/* D18 : DMIC_DATA1 ==> PCH_DMIC_DATA */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
-	/* D19 : DMIC_CLK0 ==> NC */
-	PAD_CFG_NC(GPP_D19),
-	/* D20 : DMIC_DATA0 ==> NC */
-	PAD_CFG_NC(GPP_D20),
+	/* D19 : DMIC_CLK0 ==> PCH_DMIC_CLK_OUT */
+	PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
+	/* D20 : DMIC_DATA0 ==> PCH_DMIC_DATA_IN */
+	PAD_CFG_NF(GPP_D20, NONE, DEEP, NF1),
 	/* D21 : SPI1_IO2 ==> NC */
 	PAD_CFG_NC(GPP_D21),
 	/* D22 : SPI1_IO3 ==> NC */

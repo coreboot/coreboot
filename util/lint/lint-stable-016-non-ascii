@@ -21,13 +21,11 @@ EXCLUDED_DIRS='^payloads/\|^src/vendorcode/\|^Documentation/\|^build/\|^3rdparty
 EXCLUDED_FILES='to-wiki/towiki\.sh$\|vga/vga_font\|video/font\|PDCurses.*x11'
 EXCLUDED_PHRASES='Copyright\|Ported to\|Intel®\|°C\|°F\|Athlon™\|Copyright.*©\|A-Za-zÀ-ÿ'
 
-# Use git ls-files if the code is in a git repo, otherwise use find.
-if [ -n "$(command -v git)" ] && \
-	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
+# Exit if git isn't present or the code isn't in a git repo
+if [ -z "$(command -v git)" ] || \
+	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" != "true" ]
 then
-	FIND_FILES="git ls-files"
-else
-	FIND_FILES="find . "
+	exit
 fi
 
 # 1. Get the list of files to parse and send them through grep
@@ -36,10 +34,12 @@ fi
 # 3. Remove common phrases and names that have been found
 # 4. Run the result through grep again to highlight the issues that were
 #    found.  Without this step, the characters can be difficult to see.
-grep -n "[^	 -~]" \
-	$(${FIND_FILES} | sed 's|^\./||' | sort | \
-		grep "$INCLUDED_FILES" | \
-		grep -v "$EXCLUDED_DIRS" | \
-		grep -v "$EXCLUDED_FILES") | \
-	grep -iv "$EXCLUDED_PHRASES" | \
-	grep --color='auto' "[^	 -~]"
+# shellcheck disable=SC2046
+git grep -lP "[^\t-~]" | \
+	grep "$INCLUDED_FILES" | \
+	grep -v "$EXCLUDED_DIRS" | \
+	grep -v "$EXCLUDED_FILES" | \
+	xargs -I % \
+		grep -n "[^	 -~]" % | \
+		grep -iv "$EXCLUDED_PHRASES" | \
+		grep --color='auto' "[^	 -~]"

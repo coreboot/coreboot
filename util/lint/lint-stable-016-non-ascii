@@ -17,9 +17,9 @@
 LC_ALL=C export LC_ALL
 
 INCLUDED_FILES='\.[chsS]$\|\.asl$\|\.cb$\|\.inc$\|Kconfig\|\.ld$|\.txt\|\.hex'
-EXCLUDED_DIRS='^payloads/\|^src/vendorcode/\|^Documentation/\|^build/\|^3rdparty/\|^\.git/\|^coreboot-builds/\|^util/nvidia/cbootimage'
+EXCLUDED_DIRS='^payloads/external/\|^src/vendorcode/\|^Documentation/'
 EXCLUDED_FILES='to-wiki/towiki\.sh$\|vga/vga_font\|video/font\|PDCurses.*x11'
-EXCLUDED_PHRASES='Copyright\|Ported to\|Intel®\|°C\|°F\|Athlon™\|Copyright.*©\|A-Za-zÀ-ÿ'
+EXCLUDED_PHRASES='Copyright\|Ported to\|Intel®\|°C\|°F\|Athlon™\|Copyright.*©'
 
 # Exit if git isn't present or the code isn't in a git repo
 if [ -z "$(command -v git)" ] || \

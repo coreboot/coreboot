@@ -20,6 +20,14 @@
 #include <delay.h>
 #include <gpio.h>
 
+static void _check_num(const char *name, int num)
+{
+	if ((num > 31) || (num < 1)) {
+		printk(BIOS_EMERG, "%s: %d ", name, num);
+		die("is an invalid number of GPIOs");
+	}
+}
+
 static uint32_t _gpio_base2_value(const gpio_t gpio[], int num_gpio)
 {
 	uint32_t result = 0;
@@ -38,6 +46,7 @@ uint32_t gpio_base2_value(const gpio_t gpio[], int num_gpio)
 {
 	int i;
 
+	_check_num(__func__, num_gpio);
 	for (i = 0; i < num_gpio; i++)
 		gpio_input(gpio[i]);
 
@@ -48,6 +57,7 @@ uint32_t gpio_pulldown_base2_value(const gpio_t gpio[], int num_gpio)
 {
 	int i;
 
+	_check_num(__func__, num_gpio);
 	for (i = 0; i < num_gpio; i++)
 		gpio_input_pulldown(gpio[i]);
 
@@ -58,6 +68,7 @@ uint32_t gpio_pullup_base2_value(const gpio_t gpio[], int num_gpio)
 {
 	int i;
 
+	_check_num(__func__, num_gpio);
 	for (i = 0; i < num_gpio; i++)
 		gpio_input_pullup(gpio[i]);
 
@@ -82,8 +93,8 @@ uint32_t _gpio_base3_value(const gpio_t gpio[], int num_gpio, int binary_first)
 	int index;
 	int temp;
 	char value[32];
-	if ((num_gpio > 32) && (num_gpio < 1))
-		die("gpio_base3_value: Invalid number of GPIOs");
+
+	_check_num(__func__, num_gpio);
 
 	/* Enable internal pull up */
 	for (index = 0; index < num_gpio; ++index)

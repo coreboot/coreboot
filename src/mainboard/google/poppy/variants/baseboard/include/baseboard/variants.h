@@ -54,6 +54,12 @@ struct memory_params {
 	const void *rcomp_target;
 	size_t rcomp_target_size;
 	bool use_sec_spd;
+
+	/* Enable SA overclocking mailbox commands */
+	bool enable_sa_oc_support;
+
+	/* The voltage offset applied to the SA in mV. 1000(mV) = Maximum */
+	uint16_t sa_voltage_offset_val;
 };
 
 void variant_memory_params(struct memory_params *p);

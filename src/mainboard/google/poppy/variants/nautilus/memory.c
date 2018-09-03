@@ -14,6 +14,7 @@
  */
 
 #include <baseboard/variants.h>
+#include <variant/sku.h>
 
 /* DQ byte map */
 static const u8 dq_map[][12] = {
@@ -46,4 +47,13 @@ void variant_memory_params(struct memory_params *p)
 	p->rcomp_resistor_size = sizeof(rcomp_resistor);
 	p->rcomp_target = rcomp_target;
 	p->rcomp_target_size = sizeof(rcomp_target);
+
+	switch (variant_board_sku()) {
+	case SKU_0_NAUTILUS:
+		/* Bumping VCC_SA voltage offset 75mV to allow a
+		 * tolerance to PLLGT on Nautilus-Wifi sku */
+		p->enable_sa_oc_support = 1;
+		p->sa_voltage_offset_val = 75;
+		break;
+	}
 }

@@ -15,32 +15,16 @@
 
 #include <baseboard/variants.h>
 #include <chip.h>
-#include <gpio.h>
 #include <device/device.h>
+#include <device/pci.h>
 #include <smbios.h>
 #include <string.h>
 #include <variant/sku.h>
 
-uint32_t variant_board_sku(void)
-{
-	static uint32_t sku_id = SKU_UNKNOWN;
-
-	if (sku_id != SKU_UNKNOWN)
-		return sku_id;
-
-	/*
-	*  Nautilus uses GPP_B20 to determine SKU
-	*  0 - Wifi SKU
-	*  1 - LTE SKU
-	*/
-	gpio_input_pulldown(GPP_B20);
-	if (!gpio_get(GPP_B20))
-		sku_id = SKU_0_NAUTILUS;
-	else
-		sku_id = SKU_1_NAUTILUS_LTE;
-
-	return sku_id;
-}
+#define R_PCH_OC_WDT_CTL		0x54
+#define B_PCH_OC_WDT_CTL_FORCE_ALL	BIT15
+#define B_PCH_OC_WDT_CTL_EN		BIT14
+#define B_PCH_OC_WDT_CTL_UNXP_RESET_STS	BIT22
 
 const char *smbios_mainboard_sku(void)
 {
@@ -57,11 +41,22 @@ void variant_devtree_update(void)
 	uint32_t sku_id = variant_board_sku();
 	struct device *root = SA_DEV_ROOT;
 	config_t *cfg = root->chip_info;
+	uint16_t abase;
+	uint32_t val32;
 
 	switch (sku_id) {
 	case SKU_0_NAUTILUS:
 		/* Disable LTE module */
 		cfg->usb3_ports[3].enable = 0;
+
+		/* OC_WDT has been enabled in FSP-M by enabling SaOcSupport.
+		 * We should clear it to prevent turning the system off. */
+		abase = pci_read_config16(PCH_DEV_PMC, ABASE) & 0xfffc;
+		val32 = inl(abase + R_PCH_OC_WDT_CTL);
+		val32 &= ~(B_PCH_OC_WDT_CTL_EN |
+			B_PCH_OC_WDT_CTL_FORCE_ALL |
+			B_PCH_OC_WDT_CTL_UNXP_RESET_STS);
+		outl(val32, abase + R_PCH_OC_WDT_CTL);
 		break;
 
 	case SKU_1_NAUTILUS_LTE:

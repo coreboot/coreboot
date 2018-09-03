@@ -173,4 +173,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	mem_cfg->MemorySpdPtr00 = mainboard_get_spd_data(p.type, p.use_sec_spd);
 	mem_cfg->MemorySpdPtr10 = mem_cfg->MemorySpdPtr00;
 	mem_cfg->MemorySpdDataLen = spd_info[p.type].len;
+
+	mem_cfg->SaOcSupport = p.enable_sa_oc_support;
+	mem_cfg->SaVoltageOffset = p.sa_voltage_offset_val;
 }

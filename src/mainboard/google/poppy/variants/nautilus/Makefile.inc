@@ -7,9 +7,11 @@ bootblock-y += gpio.c
 
 romstage-y += memory.c
 romstage-y += gpio.c
+romstage-y += sku.c
 
 ramstage-y += gpio.c
 ramstage-y += nhlt.c
 ramstage-y += mainboard.c
+ramstage-y += sku.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c

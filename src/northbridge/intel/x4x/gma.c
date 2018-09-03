@@ -74,7 +74,7 @@ static void gma_func0_init(struct device *dev)
 	reg16 |= 0xbc;
 	pci_write_config16(dev_find_slot(0, PCI_DEVFN(0x2, 0)), 0xcc, reg16);
 
-	int vga_disable = pci_read_config16(dev, D0F0_GGC);
+	int vga_disable = (pci_read_config16(dev, D0F0_GGC) & 2) >> 1;
 
 	if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
 		if (vga_disable) {

@@ -1296,6 +1296,8 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return 1;
 	case NHLT:
 		return 5;
+	case BERT:
+		return 1;
 	default:
 		return -1;
 	}

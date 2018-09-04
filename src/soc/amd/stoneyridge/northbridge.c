@@ -33,6 +33,7 @@
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
 #include <agesa_headers.h>
+#include <soc/cpu.h>
 #include <soc/northbridge.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
@@ -40,6 +41,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <arch/bert_storage.h>
 
 static void set_io_addr_reg(struct device *dev, u32 nodeid, u32 linkn, u32 reg,
 			u32 io_min, u32 io_max)
@@ -228,6 +230,7 @@ static unsigned long agesa_write_acpi_tables(struct device *device,
 	acpi_header_t *alib;
 	acpi_header_t *ivrs;
 	acpi_hest_t *hest;
+	acpi_bert_t *bert;
 
 	/* HEST */
 	current = ALIGN(current, 8);
@@ -235,6 +238,26 @@ static unsigned long agesa_write_acpi_tables(struct device *device,
 	acpi_write_hest((void *)current, acpi_fill_hest);
 	acpi_add_table(rsdp, (void *)current);
 	current += ((acpi_header_t *)current)->length;
+
+	/* BERT */
+	if (IS_ENABLED(CONFIG_ACPI_BERT) && bert_errors_present()) {
+		/* Skip the table if no errors are present.  ACPI driver reports
+		 * a table with a 0-length region:
+		 *   BERT: [Firmware Bug]: table invalid.
+		 */
+		void *rgn;
+		size_t size;
+		bert_errors_region(&rgn, &size);
+		if (!rgn) {
+			printk(BIOS_ERR, "Error: Can't find BERT storage area\n");
+		} else {
+			current = ALIGN(current, 8);
+			bert = (acpi_bert_t *)current;
+			acpi_write_bert((void *)current, (uintptr_t)rgn, size);
+			acpi_add_table(rsdp, (void *)current);
+			current += ((acpi_header_t *)current)->length;
+		}
+	}
 
 	current = ALIGN(current, 8);
 	printk(BIOS_DEBUG, "ACPI:    * IVRS at %lx\n", current);

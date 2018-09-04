@@ -644,6 +644,13 @@ typedef struct acpi_hest_hen {
 	u32 error_threshold_win;
 } __packed acpi_hest_hen_t;
 
+/* BERT (Boot Error Record Table) */
+typedef struct acpi_bert {
+	struct acpi_table_header header;
+	u32 region_length;
+	u64 error_region;
+} __packed acpi_bert_t;
+
 /* Generic Error Data Entry (ACPI spec v6.2-A, table 382) */
 typedef struct acpi_hest_generic_data {
 	guid_t section_type;
@@ -751,6 +758,7 @@ unsigned long acpi_fill_madt(unsigned long current);
 unsigned long acpi_fill_mcfg(unsigned long current);
 unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current);
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id);
+void acpi_write_bert(acpi_bert_t *bert, uintptr_t region, size_t length);
 void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt);
 #if IS_ENABLED(CONFIG_COMMON_FADT)
 void acpi_fill_fadt(acpi_fadt_t *fadt);

@@ -958,6 +958,27 @@ void acpi_write_hest(acpi_hest_t *hest,
 	header->checksum = acpi_checksum((void *)hest, header->length);
 }
 
+/* ACPI 3.0b */
+void acpi_write_bert(acpi_bert_t *bert, uintptr_t region, size_t length)
+{
+	acpi_header_t *header = &(bert->header);
+
+	memset(bert, 0, sizeof(acpi_bert_t));
+
+	memcpy(header->signature, "BERT", 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+	header->length += sizeof(acpi_bert_t);
+	header->revision = get_acpi_table_revision(BERT);
+
+	bert->error_region = region;
+	bert->region_length = length;
+
+	/* Calculate checksums. */
+	header->checksum = acpi_checksum((void *)bert, header->length);
+}
+
 #if IS_ENABLED(CONFIG_COMMON_FADT)
 void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {

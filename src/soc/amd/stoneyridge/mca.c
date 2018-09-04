@@ -20,6 +20,14 @@
 #include <soc/northbridge.h>
 #include <console/console.h>
 
+struct mca_bank {
+	msr_t ctl;
+	msr_t sts;
+	msr_t addr;
+	msr_t misc;
+	msr_t cmask;
+};
+
 static const char *const mca_bank_name[] = {
 	"Load-store unit",
 	"Instruction fetch unit",
@@ -33,45 +41,46 @@ static const char *const mca_bank_name[] = {
 void check_mca(void)
 {
 	int i;
-	msr_t msr;
+	msr_t cap;
+	struct mca_bank mci;
 	int num_banks;
 
-	msr = rdmsr(MCG_CAP);
-	num_banks = msr.lo & MCA_BANKS_MASK;
+	cap = rdmsr(MCG_CAP);
+	num_banks = cap.lo & MCA_BANKS_MASK;
 
 	if (is_warm_reset()) {
 		for (i = 0 ; i < num_banks ; i++) {
 			if (i == 3) /* Reserved in Family 15h */
 				continue;
 
-			msr = rdmsr(MC0_STATUS + (i * 4));
-			if (msr.hi || msr.lo) {
+			mci.sts = rdmsr(MC0_STATUS + (i * 4));
+			if (mci.sts.hi || mci.sts.lo) {
 				int core = cpuid_ebx(1) >> 24;
 
 				printk(BIOS_WARNING, "#MC Error: core %d, bank %d %s\n",
 						core, i, mca_bank_name[i]);
 
 				printk(BIOS_WARNING, "   MC%d_STATUS =   %08x_%08x\n",
-						i, msr.hi, msr.lo);
-				msr = rdmsr(MC0_ADDR + (i * 4));
+						i, mci.sts.hi, mci.sts.lo);
+				mci.addr = rdmsr(MC0_ADDR + (i * 4));
 				printk(BIOS_WARNING, "   MC%d_ADDR =     %08x_%08x\n",
-						i, msr.hi, msr.lo);
-				msr = rdmsr(MC0_MISC + (i * 4));
+						i, mci.addr.hi, mci.addr.lo);
+				mci.misc = rdmsr(MC0_MISC + (i * 4));
 				printk(BIOS_WARNING, "   MC%d_MISC =     %08x_%08x\n",
-						i, msr.hi, msr.lo);
-				msr = rdmsr(MC0_CTL + (i * 4));
+						i, mci.misc.hi, mci.misc.lo);
+				mci.ctl = rdmsr(MC0_CTL + (i * 4));
 				printk(BIOS_WARNING, "   MC%d_CTL =      %08x_%08x\n",
-						i, msr.hi, msr.lo);
-				msr = rdmsr(MC0_CTL_MASK + i);
+						i, mci.ctl.hi, mci.ctl.lo);
+				mci.cmask = rdmsr(MC0_CTL_MASK + i);
 				printk(BIOS_WARNING, "   MC%d_CTL_MASK = %08x_%08x\n",
-						i, msr.hi, msr.lo);
+						i, mci.cmask.hi, mci.cmask.lo);
 			}
 		}
 	}
 
 	/* zero the machine check error status registers */
-	msr.lo = 0;
-	msr.hi = 0;
+	mci.sts.lo = 0;
+	mci.sts.hi = 0;
 	for (i = 0 ; i < num_banks ; i++)
-		wrmsr(MC0_STATUS + (i * 4), msr);
+		wrmsr(MC0_STATUS + (i * 4), mci.sts);
 }

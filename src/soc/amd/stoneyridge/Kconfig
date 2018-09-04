@@ -290,6 +290,15 @@ config ACPI_CPU_STRING
 	string
 	default "\\_PR.P%03d"
 
+config ACPI_BERT
+	bool "Build ACPI BERT Table"
+	default y
+	depends on HAVE_ACPI_TABLES
+	help
+	  Report Machine Check errors identified in POST to the OS in an
+	  ACPI Boot Error Record Table.  This option reserves an 8MB region
+	  for building the error structures.
+
 config USE_PSPSCUREOS
 	bool "Include PSP SecureOS blobs in AMD firmware"
 	default y

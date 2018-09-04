@@ -586,6 +586,12 @@ config ACPI_NHLT
 	help
 	  Build support for NHLT (non HD Audio) ACPI table generation.
 
+config ACPI_BERT
+	bool
+	depends on HAVE_ACPI_TABLES
+	help
+	  Build an ACPI Boot Error Record Table.
+
 #These Options are here to avoid "undefined" warnings.
 #The actual selection and help texts are in the following menu.
 

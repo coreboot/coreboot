@@ -23,6 +23,7 @@
 #include <cpu/amd/amdfam15.h>
 #include <cbmem.h>
 #include <stage_cache.h>
+#include <arch/bert_storage.h>
 #include <soc/northbridge.h>
 #include <soc/southbridge.h>
 
@@ -36,6 +37,22 @@ uintptr_t restore_top_of_low_cacheable(void)
 	return biosram_read32(BIOSRAM_CBMEM_TOP);
 }
 
+#if IS_ENABLED(CONFIG_ACPI_BERT)
+/* SMM_TSEG_SIZE must stay on a boundary appropriate for its granularity */
+#define BERT_REGION_MAX_SIZE CONFIG_SMM_TSEG_SIZE
+#else
+#define BERT_REGION_MAX_SIZE 0
+#endif
+
+void bert_reserved_region(void **start, size_t *size)
+{
+	if (IS_ENABLED(CONFIG_ACPI_BERT))
+		*start = cbmem_top();
+	else
+		start = NULL;
+	*size = BERT_REGION_MAX_SIZE;
+}
+
 void *cbmem_top(void)
 {
 	msr_t tom = rdmsr(TOP_MEM);
@@ -45,12 +62,13 @@ void *cbmem_top(void)
 	else
 		/* 8MB alignment to keep MTRR usage low */
 		return (void *)ALIGN_DOWN(restore_top_of_low_cacheable()
-				- CONFIG_SMM_TSEG_SIZE, 8*MiB);
+				- CONFIG_SMM_TSEG_SIZE
+				- BERT_REGION_MAX_SIZE, 8*MiB);
 }
 
 static uintptr_t smm_region_start(void)
 {
-	return (uintptr_t)cbmem_top();
+	return (uintptr_t)cbmem_top() + BERT_REGION_MAX_SIZE;
 }
 
 static size_t smm_region_size(void)

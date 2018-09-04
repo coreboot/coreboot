@@ -27,7 +27,7 @@ DefinitionBlock(
 {
 	// global NVS and variables
 	#include "acpi/platform.asl"
-	#include <southbridge/intel/i82801gx/acpi/globalnvs.asl>
+	#include <southbridge/intel/i82801jx/acpi/globalnvs.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)

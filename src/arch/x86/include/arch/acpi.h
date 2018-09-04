@@ -58,6 +58,8 @@
 #include <rules.h>
 #include <commonlib/helpers.h>
 #include <device/device.h>
+#include <uuid.h>
+#include <cper.h>
 
 #define RSDP_SIG		"RSD PTR "  /* RSDT pointer signature */
 #define ACPI_TABLE_CREATOR	"COREBOOT"  /* Must be exactly 8 bytes long! */
@@ -641,6 +643,66 @@ typedef struct acpi_hest_hen {
 	u32 error_threshold_val;
 	u32 error_threshold_win;
 } __packed acpi_hest_hen_t;
+
+/* Generic Error Data Entry (ACPI spec v6.2-A, table 382) */
+typedef struct acpi_hest_generic_data {
+	guid_t section_type;
+	u32 error_severity;
+	u16 revision;
+	u8 validation_bits;
+	u8 flags;
+	u32 data_length;
+	guid_t fru_id;
+	u8 fru_text[20];
+	/* error data */
+} __packed acpi_hest_generic_data_t;
+
+/* Generic Error Data Entry (ACPI spec v6.2-A, table 382) */
+typedef struct acpi_hest_generic_data_v300 {
+	guid_t section_type;
+	u32 error_severity;
+	u16 revision;
+	u8 validation_bits;
+	u8 flags;		/* see CPER Section Descriptor, Flags field */
+	u32 data_length;
+	guid_t fru_id;
+	u8 fru_text[20];
+	cper_timestamp_t timestamp;
+	/* error data */
+} __packed acpi_hest_generic_data_v300_t;
+#define HEST_GENERIC_ENTRY_V300			0x300
+
+/* Both Generic Error Status & Generic Error Data Entry, Error Severity field */
+#define ACPI_GENERROR_SEV_RECOVERABLE		0
+#define ACPI_GENERROR_SEV_FATAL			1
+#define ACPI_GENERROR_SEV_CORRECTED		2
+#define ACPI_GENERROR_SEV_NONE			3
+
+/* Generic Error Data Entry, Validation Bits field */
+#define ACPI_GENERROR_VALID_FRUID		BIT(0)
+#define ACPI_GENERROR_VALID_FRUID_TEXT		BIT(1)
+#define ACPI_GENERROR_VALID_TIMESTAMP		BIT(2)
+
+/* Generic Error Status Block (ACPI spec v6.2-A, table 381) */
+typedef struct acpi_generic_error_status {
+	u32 block_status;
+	u32 raw_data_offset;	/* must follow any generic entries */
+	u32 raw_data_length;
+	u32 data_length;	/* generic data */
+	u32 error_severity;
+	/* Generic Error Data structures, zero or more entries */
+} __packed acpi_generic_error_status_t;
+
+/* Generic Status Block, Block Status values */
+#define GENERIC_ERR_STS_UNCORRECTABLE_VALID	BIT(0)
+#define GENERIC_ERR_STS_CORRECTABLE_VALID	BIT(1)
+#define GENERIC_ERR_STS_MULT_UNCORRECTABLE	BIT(2)
+#define GENERIC_ERR_STS_MULT_CORRECTABLE	BIT(3)
+#define GENERIC_ERR_STS_ENTRY_COUNT_SHIFT	4
+#define GENERIC_ERR_STS_ENTRY_COUNT_MAX		0x3ff
+#define GENERIC_ERR_STS_ENTRY_COUNT_MASK	\
+					(GENERIC_ERR_STS_ENTRY_COUNT_MAX \
+					<< GENERIC_ERR_STS_ENTRY_COUNT_SHIFT)
 
 typedef struct acpi_cstate {
 	u8  ctype;

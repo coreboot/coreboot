@@ -92,6 +92,7 @@ ramstage-y += BiosCallOuts.c
 ramstage-y += i2c.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
+ramstage-y += mca.c
 ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += gpio.c

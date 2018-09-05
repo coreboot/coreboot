@@ -25,6 +25,12 @@ config HAVE_INTEL_CHIPSET_LOCKDOWN
 config SOUTHBRIDGE_INTEL_COMMON_SMM
 	def_bool n
 
+config INTEL_DESCRIPTOR_MODE_CAPABLE
+	def_bool n
+	help
+	  This config simply states that the platform is *capable* of running in
+	  descriptor mode (when the descriptor in flash is valid).
+
 config INTEL_CHIPSET_LOCKDOWN
 	depends on HAVE_INTEL_CHIPSET_LOCKDOWN && HAVE_SMI_HANDLER && !CHROMEOS
 	#ChromeOS's payload seems to handle finalization on its on.

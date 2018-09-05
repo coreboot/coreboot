@@ -16,9 +16,12 @@
 
 config HAVE_INTEL_FIRMWARE
 	bool
+	default y if INTEL_DESCRIPTOR_MODE_CAPABLE
 	help
-	  Chipset uses the Intel Firmware Descriptor to describe the
-	  layout of the SPI ROM chip.
+	  Platform uses the Intel Firmware Descriptor to describe the
+	  layout of the SPI ROM chip. Enabling this option will allow you to
+	  select further features that rely on this like providing individual
+	  firmware blobs.
 
 if HAVE_INTEL_FIRMWARE
 

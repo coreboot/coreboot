@@ -36,4 +36,9 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x10000
 
+# Do not show IFD/blob options since QEMU doesn't care
+config HAVE_INTEL_FIRMWARE
+	bool
+	default n
+
 endif # BOARD_EMULATION_QEMU_X86_Q35

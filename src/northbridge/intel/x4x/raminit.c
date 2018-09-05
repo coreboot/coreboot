@@ -669,9 +669,16 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 		/* check SPD checksum to make sure the DIMMs haven't been
 		 * replaced */
 		fast_boot = verify_spds(spd_map, ctrl_cached) == CB_SUCCESS;
-		if (!fast_boot)
+		if (!fast_boot) {
 			printk(BIOS_DEBUG, "SPD checksums don't match,"
 				" dimm's have been replaced\n");
+		} else {
+			find_fsb_speed(&s);
+			fast_boot = s.max_fsb == ctrl_cached->max_fsb;
+			if (!fast_boot)
+				printk(BIOS_DEBUG,
+				       "CPU FSB does not match and has been replaced\n");
+		}
 	} else {
 		fast_boot = boot_path == BOOT_PATH_RESUME;
 	}

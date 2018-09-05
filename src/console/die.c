@@ -20,7 +20,6 @@
 #include <halt.h>
 
 #ifndef __ROMCC__
-#define NORETURN __attribute__((noreturn))
 
 /*
  * The method should be overwritten in mainboard directory to signal that a
@@ -33,7 +32,7 @@ __weak void die_notify(void)
 }
 
 /* Report a fatal error */
-void NORETURN die(const char *msg)
+void __noreturn die(const char *msg)
 {
 	printk(BIOS_EMERG, "%s", msg);
 	die_notify();

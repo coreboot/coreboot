@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/lxdef.h>
@@ -33,7 +34,7 @@ static void banner(const char *s)
 	printk(BIOS_DEBUG, " * %s\n", s);
 }
 
-static void __attribute__((noreturn)) hcf(void)
+static void __noreturn hcf(void)
 {
 	printk(BIOS_EMERG, "DIE\n");
 	/* this guarantees we flush the UART fifos (if any) and also

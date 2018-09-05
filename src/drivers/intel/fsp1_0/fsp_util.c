@@ -15,6 +15,7 @@
 
 #include <types.h>
 #include <string.h>
+#include <compiler.h>
 #include <console/console.h>
 #include <bootstate.h>
 #include <cbmem.h>
@@ -66,7 +67,7 @@ void FspNotify (u32 Phase)
  * Call the FSP to do memory init. The FSP doesn't return to this function.
  * The FSP returns to the romstage_main_continue().
  */
-void __attribute__((noreturn)) fsp_early_init (FSP_INFO_HEADER *fsp_ptr)
+void __noreturn fsp_early_init (FSP_INFO_HEADER *fsp_ptr)
 {
 	FSP_FSP_INIT FspInitApi;
 	FSP_INIT_PARAMS FspInitParams;

@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <rules.h>
 #include <arch/cpu.h>
+#include <compiler.h>
 #include <console/post_codes.h>
 #include <commonlib/loglevel.h>
 
@@ -40,7 +41,7 @@ void post_log_clear(void);
 #endif
 /* this function is weak and can be overridden by a mainboard function. */
 void mainboard_post(u8 value);
-void __attribute__((noreturn)) die(const char *msg);
+void __noreturn die(const char *msg);
 
 /*
  * This function is weak and can be overridden to provide additional

@@ -43,8 +43,7 @@ typedef uintptr_t ubsan_value_handle_t;
 */
 #pragma GCC diagnostic ignored "-Wmissing-prototypes"
 
-__attribute__((noreturn))
-static void ubsan_abort(const struct ubsan_source_location *location,
+static void __noreturn ubsan_abort(const struct ubsan_source_location *location,
 			const char *violation) {
 	static const struct ubsan_source_location unknown_location = {
 		"<unknown file>",
@@ -61,8 +60,8 @@ static void ubsan_abort(const struct ubsan_source_location *location,
 }
 
 #define ABORT_VARIANT(name, params, call) \
-	__attribute__((noreturn)) void __ubsan_handle_##name##_abort params; \
-	__attribute__((noreturn)) void __ubsan_handle_##name##_abort params { \
+	__noreturn void __ubsan_handle_##name##_abort params; \
+	__noreturn void __ubsan_handle_##name##_abort params { \
 		__ubsan_handle_##name call; \
 		__builtin_unreachable(); \
 	}
@@ -212,16 +211,14 @@ struct ubsan_unreachable_data {
 	struct ubsan_source_location location;
 };
 
-__attribute__((noreturn))
-void __ubsan_handle_builtin_unreachable(void *data_raw)
+void __noreturn __ubsan_handle_builtin_unreachable(void *data_raw)
 {
 	struct ubsan_unreachable_data *data =
 		(struct ubsan_unreachable_data *)data_raw;
 	ubsan_abort(&data->location, "reached unreachable");
 }
 
-__attribute__((noreturn))
-void __ubsan_handle_missing_return(void *data_raw)
+void __noreturn __ubsan_handle_missing_return(void *data_raw)
 {
 	const struct ubsan_unreachable_data *data =
 		(struct ubsan_unreachable_data *)data_raw;

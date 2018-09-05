@@ -19,7 +19,7 @@
 #include <halt.h>
 #include <reset.h>
 
-__attribute__((noreturn)) static void __hard_reset(void) {
+__noreturn static void __hard_reset(void) {
 	if (IS_ENABLED(CONFIG_HAVE_HARD_RESET))
 		do_hard_reset();
 	else

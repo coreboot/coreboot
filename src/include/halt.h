@@ -20,10 +20,11 @@
 #ifdef __ROMCC__
 #include <lib/halt.c>
 #else
+#include <compiler.h>
 /**
  * halt the system reliably
  */
-void __attribute__((noreturn)) halt(void);
+void __noreturn halt(void);
 #endif /* __ROMCC__ */
 
 /* Power off the system. */

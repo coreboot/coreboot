@@ -265,7 +265,7 @@ static uint32_t *sysctr_cntfid0_ptr = (void *)(SYSCTR_CTLR_BASE + 0x20);
 /* Utility functions. */
 
 static inline void __attribute__((always_inline))
-		   __attribute__((noreturn)) halt(void)
+		   __noreturn halt(void)
 {
 	for (;;);
 }
@@ -290,7 +290,7 @@ static inline void clrbits32(uint32_t bits, void *addr)
 	write32(addr, read32(addr) & ~bits);
 }
 
-static void __attribute__((noreturn)) reset(void)
+static void __noreturn reset(void)
 {
 	write32(clk_rst_rst_devices_l_ptr, SWR_TRIG_SYS_RST);
 	halt();

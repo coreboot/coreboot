@@ -1,14 +1,16 @@
 #ifndef RESET_H
 #define RESET_H
 
+#include <compiler.h>
+
 /* Generic reset functions. Call from code that wants to trigger a reset. */
 
 /* Super-hard reset specific to some Intel SoCs. */
-__attribute__((noreturn)) void global_reset(void);
+__noreturn void global_reset(void);
 /* Full board reset. Resets SoC and most/all board components (e.g. DRAM). */
-__attribute__((noreturn)) void hard_reset(void);
+__noreturn void hard_reset(void);
 /* Board reset. Resets SoC some board components (e.g. TPM but not DRAM). */
-__attribute__((noreturn)) void soft_reset(void);
+__noreturn void soft_reset(void);
 
 /* Reset implementations. Implement these in SoC or mainboard code. Implement
    at least hard_reset() if possible, others fall back to it if necessary. */

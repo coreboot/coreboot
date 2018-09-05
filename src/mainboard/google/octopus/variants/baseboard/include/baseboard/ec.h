@@ -67,6 +67,9 @@
 #define EC_ENABLE_LID_SWITCH
 #define EC_ENABLE_WAKE_PIN      GPE_EC_WAKE
 
+/* Enable Tablet switch */
+#define EC_ENABLE_TBMC_DEVICE
+
 /* Enable EC backed PD MCU device in ACPI */
 #define EC_ENABLE_PD_MCU_DEVICE
 

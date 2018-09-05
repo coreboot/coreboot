@@ -124,7 +124,7 @@ u32 spd_decode_eeprom_size_ddr2(u8 byte1)
 /**
  * \brief Return index of MSB set
  *
- * Returns the index fof MSB set.
+ * Returns the index of MSB set.
  */
 u8 spd_get_msbs(u8 c)
 {

@@ -39,14 +39,14 @@ Name (CHPS, Package () {
 
 Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */
-	Package () { \_SB.PCI0.TCPU, \_SB.PCI0.TCPU, 500, 10, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.TCPU, \_SB.PCI0.TCPU, 100, 100, 0, 0, 0, 0 },
 
 	/* CPU Effect on Temp Sensor 1 */
-	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR1, 500, 10, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR1, 100, 150, 0, 0, 0, 0 },
 
 #ifdef DPTF_ENABLE_CHARGER
 	/* Charger Effect on Temp Sensor 2 */
-	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR2, 500, 10, 0, 0, 0, 0 },
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR2, 200, 300, 0, 0, 0, 0 },
 #endif
 })
 
@@ -56,18 +56,18 @@ Name (MPPC, Package ()
 	Package () {	/* Power Limit 1 */
 		0,	/* PowerLimitIndex, 0 for Power Limit 1 */
 		3000,	/* PowerLimitMinimum */
-		4500,	/* PowerLimitMaximum */
+		10000,	/* PowerLimitMaximum */
 		1000,	/* TimeWindowMinimum */
 		1000,	/* TimeWindowMaximum */
-		500	/* StepSize */
+		200	/* StepSize */
 	},
 
 	Package () {	/* Power Limit 2 */
 		1,	/* PowerLimitIndex, 1 for Power Limit 2 */
-		15000,	/* PowerLimitMinimum */
+		10000,	/* PowerLimitMinimum */
 		15000,	/* PowerLimitMaximum */
 		1000,	/* TimeWindowMinimum */
 		1000,	/* TimeWindowMaximum */
-		500	/* StepSize */
+		1000	/* StepSize */
 	}
 })

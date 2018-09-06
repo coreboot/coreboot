@@ -7,7 +7,11 @@ chip soc/intel/fsp_broadwell_de
 		device pci 14.0 on end # xHCI Controller
 		device pci 19.0 on end # Gigabit LAN Controller
 		device pci 1d.0 on end # EHCI Controller
-		device pci 1f.0 on end # LPC Bridge
+		device pci 1f.0 on
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end # LPC Bridge
 		device pci 1f.2 on end # SATA Controller
 		device pci 1f.3 on end # SMBus Controller
 		device pci 1f.5 on end # SATA Controller

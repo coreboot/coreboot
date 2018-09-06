@@ -216,6 +216,7 @@ enum cper_x86_check_type {
 	X86_PROCESSOR_BUS_CHK,		/* X86_PROCESSOR_BUS_CHK_ERROR_GUID */
 	X86_PROCESSOR_MS_CHK		/* X86_PROCESSOR_MS_CHK_ERROR_GUID */
 };
+#define X86_PROCESSOR_CHK_MAX X86_PROCESSOR_MS_CHK
 
 /* IA32/X64 Processor Error Information Structure, Validation Bits (Tbl 256) */
 #define I32X64ERRINFO_VALID_CHECK		BIT(0)

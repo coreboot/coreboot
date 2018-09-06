@@ -376,7 +376,7 @@ elif [ -n "$REMOTE_HOST" ]; then
 	echo "Verifying that CBMEM is available on remote device"
 	test_cmd $REMOTE "$cbmem_cmd"
 	echo "Getting coreboot boot log"
-	cmd $REMOTE "$cbmem_cmd -c" "${tmpdir}/${results}/coreboot_console.txt"
+	cmd $REMOTE "$cbmem_cmd -1" "${tmpdir}/${results}/coreboot_console.txt"
 	echo "Getting timestamp data"
 	cmd_nonfatal $REMOTE "$cbmem_cmd -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
 
@@ -398,7 +398,7 @@ else
 	fi
 
 	echo "Getting coreboot boot log"
-	cmd $LOCAL "$cbmem_cmd -c" "${tmpdir}/${results}/coreboot_console.txt"
+	cmd $LOCAL "$cbmem_cmd -1" "${tmpdir}/${results}/coreboot_console.txt"
 	echo "Getting timestamp data"
 	cmd_nonfatal $LOCAL "$cbmem_cmd -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
 

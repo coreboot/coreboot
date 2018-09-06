@@ -55,14 +55,14 @@ void punit_init(void)
 	/* Configure VR low power mode for C0 and above. */
 	if (rid >= RID_C_STEPPING_START && cfg != NULL &&
 	    (cfg->vnn_ps2_enable || cfg->vcc_ps2_enable)) {
-		printk(BIOS_DEBUG, "Enabling VR PS2 mode: ");
+		printk(BIOS_DEBUG, "Enabling VR PS2 mode:");
 		if (cfg->vnn_ps2_enable) {
 			reg |= SB_BIOS_CONFIG_PS2_EN_VNN;
-			printk(BIOS_DEBUG, "VNN ");
+			printk(BIOS_DEBUG, " VNN");
 		}
 		if (cfg->vcc_ps2_enable) {
 			reg |= SB_BIOS_CONFIG_PS2_EN_VCC;
-			printk(BIOS_DEBUG, "VCC ");
+			printk(BIOS_DEBUG, " VCC");
 		}
 		printk(BIOS_DEBUG, "\n");
 	}

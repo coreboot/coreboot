@@ -26,6 +26,7 @@
 #include <device/pci_ids.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
+#include <arch/early_variables.h>
 
 #ifdef __SMM__
 #define pci_read_config_byte(dev, reg, targ)\
@@ -59,7 +60,7 @@
 
 typedef struct spi_slave ich_spi_slave;
 
-static int ichspi_lock = 0;
+static int ichspi_lock CAR_GLOBAL = 0;
 
 typedef struct ich9_spi_regs {
 	uint32_t bfpr;
@@ -109,7 +110,7 @@ typedef struct ich_spi_controller {
 	uint32_t *bbar;
 } ich_spi_controller;
 
-static ich_spi_controller cntlr;
+static ich_spi_controller cntlr CAR_GLOBAL;
 
 enum {
 	SPIS_SCIP =		0x0001,
@@ -268,7 +269,7 @@ void spi_init(void)
 	uint8_t bios_cntl;
 	ich9_spi_regs *ich9_spi;
 
-#ifdef __SMM__
+#if defined(__SIMPLE_DEVICE__)
 	pci_devfn_t dev = PCI_DEV(0, 31, 0);
 #else
 	struct device *dev;

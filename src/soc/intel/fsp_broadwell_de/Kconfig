@@ -26,6 +26,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SMM_TSEG
 	select HAVE_SMI_HANDLER
 	select TSC_MONOTONIC_TIMER
+	select TSC_CONSTANT_RATE
 
 config CBFS_SIZE
 	hex

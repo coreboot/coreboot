@@ -787,6 +787,7 @@ build_cross_GCC() {
 		--with-system-zlib \
 		--with-gmp="$DESTDIR$TARGETDIR" --with-mpfr="$DESTDIR$TARGETDIR" \
 		--with-mpc="$DESTDIR$TARGETDIR" \
+		--with-gnu-as --with-gnu-ld \
 		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE" \
 		&& \
 	mkdir -p gcc/$TARGETARCH && \

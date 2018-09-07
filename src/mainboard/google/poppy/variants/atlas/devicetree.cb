@@ -147,13 +147,27 @@ chip soc/intel/skylake
 		.dc_loadline = 441,
 	}"
 
-	# PCIe Root port 1 with SRCCLKREQ1#
+	# PCIe Root port 1 with SRCCLKREQ1# (WLAN)
 	register "PcieRpEnable[0]" = "1"
 	register "PcieRpClkReqSupport[0]" = "1"
 	register "PcieRpClkReqNumber[0]" = "1"
 	register "PcieRpClkSrcNumber[0]" = "1"
 	register "PcieRpAdvancedErrorReporting[0]" = "1"
 	register "PcieRpLtrEnable[0]" = "1"
+
+        # PCIe Root port 5 (NVMe)
+        #  PcieRpEnable:                 Enable root port
+        #  PcieRpClkReqSupport:          Enable CLKREQ#
+        #  PcieRpClkReqNumber:           Uses SRCCLKREQ4#
+        #  PcieRpClkSrcNumber:           Uses CLKOUT_PCIE_4
+        #  PcieRpAdvancedErrorReporting: Enable Advanced Error Reporting
+        #  PcieRpLtrEnable:              Enable Latency Tolerance Reporting Mechanism
+        register "PcieRpEnable[4]" = "1"
+        register "PcieRpClkReqSupport[4]" = "1"
+        register "PcieRpClkReqNumber[4]" = "4"
+        register "PcieRpClkSrcNumber[4]" = "4"
+        register "PcieRpAdvancedErrorReporting[4]" = "1"
+        register "PcieRpLtrEnable[4]" = "1"
 
 	# USB 2.0
 	register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"	# Type-C Port 1
@@ -329,7 +343,7 @@ chip soc/intel/skylake
 		device pci 1c.1 off end # PCI Express Port 2
 		device pci 1c.2 off end # PCI Express Port 3
 		device pci 1c.3 off end # PCI Express Port 4
-		device pci 1c.4 off end # PCI Express Port 5
+		device pci 1c.4 on  end # PCI Express Port 5 (NVMe)
 		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8

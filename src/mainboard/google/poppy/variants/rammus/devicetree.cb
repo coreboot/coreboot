@@ -292,6 +292,23 @@ chip soc/intel/skylake
 				register "name" = ""MAXL""
 				device i2c 3A on end
 			end
+			chip drivers/i2c/da7219
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D9_IRQ)"
+				register "btn_cfg" = "50"
+				register "mic_det_thr" = "500"
+				register "jack_ins_deb" = "20"
+				register "jack_det_rate" = ""32ms_64ms""
+				register "jack_rem_deb" = "1"
+				register "a_d_btn_thr" = "0xa"
+				register "d_b_btn_thr" = "0x16"
+				register "b_c_btn_thr" = "0x21"
+				register "c_mic_btn_thr" = "0x3e"
+				register "btn_avg" = "4"
+				register "adc_1bit_rpt" = "1"
+				register "micbias_lvl" = "2600"
+				register "mic_amp_in_sel" = ""diff""
+				device i2c 1A on end
+			end
 		end # I2C #5
 		device pci 19.2 off end # I2C #4
 		device pci 1c.0 on

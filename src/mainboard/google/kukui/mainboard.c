@@ -14,10 +14,26 @@
  */
 
 #include <device/device.h>
+#include <soc/gpio.h>
 #include <soc/mmu_operations.h>
+
+static void configure_emmc(void)
+{
+	const gpio_t emmc_pin[] = {
+		GPIO(MSDC0_DAT0), GPIO(MSDC0_DAT1),
+		GPIO(MSDC0_DAT2), GPIO(MSDC0_DAT3),
+		GPIO(MSDC0_DAT4), GPIO(MSDC0_DAT5),
+		GPIO(MSDC0_DAT6), GPIO(MSDC0_DAT7),
+		GPIO(MSDC0_CMD), GPIO(MSDC0_RSTB),
+	};
+
+	for (size_t i = 0; i < ARRAY_SIZE(emmc_pin); i++)
+		gpio_set_pull(emmc_pin[i], GPIO_PULL_ENABLE, GPIO_PULL_UP);
+}
 
 static void mainboard_init(struct device *dev)
 {
+	configure_emmc();
 }
 
 static void mainboard_enable(struct device *dev)

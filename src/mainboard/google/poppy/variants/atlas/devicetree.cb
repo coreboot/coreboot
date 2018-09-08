@@ -27,6 +27,9 @@ chip soc/intel/skylake
 	# Enable S0ix
 	register "s0ix_enable" = "1"
 
+	# Disable Command TriState
+	register "CmdTriStateDis" = "1"
+
 	# FSP Configuration
 	register "ProbelessTrace" = "0"
 	register "EnableLan" = "0"

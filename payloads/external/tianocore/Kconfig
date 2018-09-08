@@ -88,4 +88,9 @@ config TIANOCORE_RELEASE
 
 endchoice
 
+config TIANOCORE_USE_8254_TIMER
+	bool "TianoCore 8254 Timer"
+	help
+	  Use 8254 Timer for legacy support.
+
 endif

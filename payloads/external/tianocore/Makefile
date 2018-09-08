@@ -33,10 +33,14 @@ else
 BUILD_TYPE=RELEASE
 endif
 
+ifneq ($(CONFIG_TIANOCORE_USE_8254_TIMER), y)
+TIMER=-DUSE_HPET_TIMER
+endif
+
 ifeq ($(CONFIG_TIANOCORE_TARGET_IA32), y)
-	BUILD_STR=-a IA32 -t COREBOOT -p CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc -b $(BUILD_TYPE)
+	BUILD_STR=-a IA32 -t COREBOOT -p CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc -b $(BUILD_TYPE) $(TIMER)
 else
-	BUILD_STR=-a IA32 -a X64 -t COREBOOT -p CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc -b $(BUILD_TYPE)
+	BUILD_STR=-a IA32 -a X64 -t COREBOOT -p CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc -b $(BUILD_TYPE) $(TIMER)
 endif
 
 all: build

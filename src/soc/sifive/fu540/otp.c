@@ -29,7 +29,7 @@
  * https://www.sifive.com/documentation/chips/freedom-u540-c000-manual/
  */
 
-typedef struct sifive_otp_registers {
+struct sifive_otp_registers {
 	u32 pa;     /* Address input */
 	u32 paio;   /* Program address input */
 	u32 pas;    /* Program redundancy cell selection input */

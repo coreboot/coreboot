@@ -17,6 +17,8 @@
 #include <amdblocks/agesawrapper.h>
 #include <variant/gpio.h>
 #include <boardid.h>
+#include <chip.h>
+#include <soc/pci_devs.h>
 
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	/* Initialize Port descriptor (PCIe port, Lanes 7:4, D2F1) for NC*/
@@ -147,8 +149,27 @@ static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
 /*---------------------------------------------------------------------------*/
 VOID __weak OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly)
 {
+	const struct soc_amd_stoneyridge_config *cfg;
+	const struct device *dev = dev_find_slot(0, GNB_DEVFN);
+	struct _PLATFORM_CONFIGURATION *platform;
+
 	InitEarly->GnbConfig.PcieComplexList = (void *)&PcieComplex;
 	InitEarly->GnbConfig.PsppPolicy = PsppBalanceLow;
 	InitEarly->PlatformConfig.GnbAzI2sBusSelect = GnbAcpI2sBus;
 	InitEarly->PlatformConfig.GnbAzI2sBusPinConfig = GnbAcp2Tx4RxBluetooth;
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_WARNING, "Warning: Cannot find SoC devicetree"
+					" config, STAPM unchanged\n");
+		return;
+	}
+	cfg = dev->chip_info;
+	platform = &InitEarly->PlatformConfig;
+	if ((cfg->stapm_percent) && (cfg->stapm_time) && (cfg->stapm_power)) {
+		platform->PlatStapmConfig.CfgStapmScalar = cfg->stapm_percent;
+		platform->PlatStapmConfig.CfgStapmTimeConstant =
+							cfg->stapm_time;
+		platform->PkgPwrLimitDC = cfg->stapm_power;
+		platform->PkgPwrLimitAC = cfg->stapm_power;
+		platform->PlatStapmConfig.CfgStapmBoost = StapmBoostEnabled;
+	}
 }

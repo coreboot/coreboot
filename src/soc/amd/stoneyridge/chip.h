@@ -51,6 +51,9 @@ struct soc_amd_stoneyridge_config {
 	size_t uma_size;
 
 	struct dw_i2c_bus_config i2c[STONEY_I2C_DEV_MAX];
+	u8 stapm_percent;
+	u32 stapm_time;
+	u32 stapm_power;
 };
 
 typedef struct soc_amd_stoneyridge_config config_t;

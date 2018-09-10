@@ -38,10 +38,14 @@ uintptr_t restore_top_of_low_cacheable(void)
 }
 
 #if IS_ENABLED(CONFIG_ACPI_BERT)
-/* SMM_TSEG_SIZE must stay on a boundary appropriate for its granularity */
-#define BERT_REGION_MAX_SIZE CONFIG_SMM_TSEG_SIZE
+ #if CONFIG_SMM_TSEG_SIZE == 0x0
+  #define BERT_REGION_MAX_SIZE 0x100000
+ #else
+  /* SMM_TSEG_SIZE must stay on a boundary appropriate for its granularity */
+  #define BERT_REGION_MAX_SIZE CONFIG_SMM_TSEG_SIZE
+ #endif
 #else
-#define BERT_REGION_MAX_SIZE 0
+ #define BERT_REGION_MAX_SIZE 0
 #endif
 
 void bert_reserved_region(void **start, size_t *size)

@@ -72,6 +72,12 @@ static struct prci_ctlr *prci = (void *)FU540_PRCI;
 
 #define PRCI_CORECLKSEL_CORECLKSEL 1
 
+#define PRCI_DEVICESRESET_DDR_CTRL_RST_N(x) (((x) & 0x1)  << 0)
+#define PRCI_DEVICESRESET_DDR_AXI_RST_N(x)  (((x) & 0x1)  << 1)
+#define PRCI_DEVICESRESET_DDR_AHB_RST_N(x)  (((x) & 0x1)  << 2)
+#define PRCI_DEVICESRESET_DDR_PHY_RST_N(x)  (((x) & 0x1)  << 3)
+#define PRCI_DEVICESRESET_GEMGXL_RST_N(x)   (((x) & 0x1)  << 5)
+
 /*
  * Set coreclk according to the SiFive FU540-C000 Manual
  * https://www.sifive.com/documentation/chips/freedom-u540-c000-manual/
@@ -198,5 +204,33 @@ void clock_init(void)
 
 	// put DDR and ethernet in reset
 	write32(&prci->devicesresetreg, 0);
+
 	init_pll_ddr();
+
+	// The following code and its comments is mostly derived from the SiFive
+	// u540 bootloader.
+	// https://github.com/sifive/freedom-u540-c000-bootloader
+
+	// get DDR out of reset
+	write32(&prci->devicesresetreg, PRCI_DEVICESRESET_DDR_CTRL_RST_N(1));
+
+	// HACK to get the '1 full controller clock cycle'.
+	asm volatile ("fence");
+
+	// get DDR out of reset
+	write32(&prci->devicesresetreg,
+		PRCI_DEVICESRESET_DDR_CTRL_RST_N(1) |
+		PRCI_DEVICESRESET_DDR_AXI_RST_N(1) |
+		PRCI_DEVICESRESET_DDR_AHB_RST_N(1) |
+		PRCI_DEVICESRESET_DDR_PHY_RST_N(1));
+
+	// HACK to get the '1 full controller clock cycle'.
+	asm volatile ("fence");
+
+	// These take like 16 cycles to actually propagate. We can't go sending
+	// stuff before they come out of reset. So wait.
+	// TODO: Add a register to read the current reset states, or DDR Control
+	// device?
+	for (int i = 0; i < 256; i++)
+		asm volatile ("nop");
 }

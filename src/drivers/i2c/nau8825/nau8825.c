@@ -55,7 +55,7 @@ static void nau8825_fill_ssdt(struct device *dev)
 	acpigen_write_name_string("_HID", NAU8825_ACPI_HID);
 	acpigen_write_name_integer("_UID", 0);
 	acpigen_write_name_string("_DDN", dev->chip_ops->name);
-	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
+	acpigen_write_STA(acpi_device_status(dev));
 
 	/* Resources */
 	acpigen_write_name("_CRS");

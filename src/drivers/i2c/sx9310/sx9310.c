@@ -53,7 +53,7 @@ static void i2c_sx9310_fill_ssdt(struct device *dev)
 	acpigen_write_name_string("_HID", I2C_SX9310_ACPI_ID);
 	acpigen_write_name_integer("_UID", config->uid);
 	acpigen_write_name_string("_DDN", config->desc);
-	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
+	acpigen_write_STA(acpi_device_status(dev));
 
 	/* Resources */
 	acpigen_write_name("_CRS");

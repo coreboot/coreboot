@@ -166,6 +166,15 @@ const char *acpi_device_path_join(struct device *dev, const char *name)
 	return buf;
 }
 
+int acpi_device_status(const struct device *dev)
+{
+	if (!dev->enabled)
+		return ACPI_STATUS_DEVICE_ALL_OFF;
+	if (dev->hidden)
+		return ACPI_STATUS_DEVICE_HIDDEN_ON;
+	return ACPI_STATUS_DEVICE_ALL_ON;
+}
+
 /* ACPI 6.1 section 6.4.3.6: Extended Interrupt Descriptor */
 void acpi_device_write_interrupt(const struct acpi_irq *irq)
 {

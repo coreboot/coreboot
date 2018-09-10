@@ -51,7 +51,7 @@ static void da7219_fill_ssdt(struct device *dev)
 	acpigen_write_name_integer("_UID", 1);
 	acpigen_write_name_string("_DDN", dev->chip_ops->name);
 	acpigen_write_name_integer("_S0W", 4);
-	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
+	acpigen_write_STA(acpi_device_status(dev));
 
 	/* Resources */
 	acpigen_write_name("_CRS");

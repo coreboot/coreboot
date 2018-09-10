@@ -51,7 +51,7 @@ static void max98373_fill_ssdt(struct device *dev)
 	acpigen_write_name_integer("_UID", config->uid);
 	if (config->desc)
 		acpigen_write_name_string("_DDN", config->desc);
-	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
+	acpigen_write_STA(acpi_device_status(dev));
 
 	/* Resources */
 	acpigen_write_name("_CRS");

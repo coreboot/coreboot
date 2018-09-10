@@ -66,6 +66,7 @@ const char *acpi_device_name(struct device *dev);
 const char *acpi_device_path(struct device *dev);
 const char *acpi_device_scope(struct device *dev);
 const char *acpi_device_path_join(struct device *dev, const char *name);
+int acpi_device_status(const struct device *dev);
 
 /*
  * ACPI Descriptor for extended Interrupt()

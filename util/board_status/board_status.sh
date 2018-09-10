@@ -27,6 +27,9 @@ NONFATAL=1
 # Used if cbmem is not in default $PATH, e.g. not installed or when using `sudo`
 CBMEM_PATH=""
 
+# Used if nvramtool is not in default $PATH, e.g. not installed or when using `sudo`
+NVRAMTOOL_PATH=""
+
 # test a command
 #
 # $1: 0 ($LOCAL) to run command locally,
@@ -176,6 +179,8 @@ show_help() {
 Options
     -c, --cbmem
         Path to cbmem on device under test (DUT).
+    -n, --nvramtool
+        Path to nvramtool on device under test (DUT).
     -C, --clobber
         Clobber temporary output when finished. Useful for debugging.
     -h, --help
@@ -207,7 +212,7 @@ LONGOPTS="cbmem:,clobber,help,image:,remote-host:,upload-results"
 LONGOPTS="${LONGOPTS},serial-device:,serial-speed:"
 LONGOPTS="${LONGOPTS},ssh-port:"
 
-ARGS=$(getopt -o c:Chi:r:s:S:u -l "$LONGOPTS" -n "$0" -- "$@");
+ARGS=$(getopt -o c:n:Chi:r:s:S:u -l "$LONGOPTS" -n "$0" -- "$@");
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 eval set -- "$ARGS"
 while true ; do
@@ -216,6 +221,10 @@ while true ; do
 		-c|--cbmem)
 			shift
 			CBMEM_PATH="$1"
+			;;
+		-n|--nvramtool)
+			shift
+			NVRAMTOOL_PATH="$1"
 			;;
 		-C|--clobber)
 			CLOBBER_OUTPUT=1
@@ -370,6 +379,17 @@ else
 	cbmem_cmd="cbmem"
 fi
 
+cmos_enabled=0
+if grep -q "CONFIG_USE_OPTION_TABLE=y" "${tmpdir}/${results}/config.short.txt" > /dev/null; then
+	cmos_enabled=1
+fi
+
+if [ -n "$NVRAMTOOL_PATH" ]; then
+	nvramtool_cmd="$NVRAMTOOL_PATH"
+else
+	nvramtool_cmd="nvramtool"
+fi
+
 if [ -n "$SERIAL_DEVICE" ]; then
 	get_serial_bootlog "$SERIAL_DEVICE" "$SERIAL_PORT_SPEED" "${tmpdir}/${results}/coreboot_console.txt"
 elif [ -n "$REMOTE_HOST" ]; then
@@ -379,6 +399,13 @@ elif [ -n "$REMOTE_HOST" ]; then
 	cmd $REMOTE "$cbmem_cmd -1" "${tmpdir}/${results}/coreboot_console.txt"
 	echo "Getting timestamp data"
 	cmd_nonfatal $REMOTE "$cbmem_cmd -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
+
+	if [ "$cmos_enabled" -eq 1 ]; then
+		echo "Verifying that nvramtool is available on remote device"
+		test_cmd $REMOTE "$nvramtool_cmd"
+		echo "Getting all CMOS values"
+		cmd $REMOTE "$nvramtool_cmd -a" "${tmpdir}/${results}/cmos_values.txt"
+	fi
 
 	echo "Getting remote dmesg"
 	cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"
@@ -401,6 +428,25 @@ else
 	cmd $LOCAL "$cbmem_cmd -1" "${tmpdir}/${results}/coreboot_console.txt"
 	echo "Getting timestamp data"
 	cmd_nonfatal $LOCAL "$cbmem_cmd -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
+
+	if [ "$cmos_enabled" -eq 1 ]; then
+		echo "Verifying that nvramtool is available"
+		if [ $(id -u) -ne 0 ]; then
+			command -v "$nvramtool_cmd" >/dev/null
+			if [ $? -ne 0 ]; then
+				echo "Failed to run $nvramtool_cmd. Check \$PATH or" \
+				"use -n to specify path to nvramtool binary."
+				exit $EXIT_FAILURE
+			else
+				nvramtool_cmd="sudo $nvramtool_cmd"
+			fi
+		else
+			test_cmd $LOCAL "$nvramtool_cmd"
+		fi
+
+		echo "Getting all CMOS values"
+		cmd $LOCAL "$nvramtool_cmd -a" "${tmpdir}/${results}/cmos_values.txt"
+	fi
 
 	echo "Getting local dmesg"
 	cmd $LOCAL "sudo dmesg" "${tmpdir}/${results}/kernel_log.txt"

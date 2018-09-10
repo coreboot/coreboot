@@ -29,6 +29,7 @@ device		{return(DEVICE);}
 register	{return(REGISTER);}
 on		{yylval.number=1; return(BOOL);}
 off		{yylval.number=0; return(BOOL);}
+hidden          {yylval.number=3; return(HIDDEN);}
 pci		{yylval.number=PCI; return(BUS);}
 ioapic          {yylval.number=IOAPIC; return(BUS);}
 pnp		{yylval.number=PNP; return(BUS);}

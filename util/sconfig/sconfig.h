@@ -102,8 +102,9 @@ struct device {
 	/* Monotonically increasing ID for the device. */
 	int id;
 
-	/* Indicates whether this device is enabled. */
+	/* Indicates device status (enabled / hidden or not). */
 	int enabled;
+	int hidden;
 
 	/* Subsystem IDs for the device. */
 	int subsystem_vendor;
@@ -147,7 +148,7 @@ extern struct bus *root_parent;
 struct device *new_device(struct bus *parent,
 			  struct chip_instance *chip_instance,
 			  const int bustype, const char *devnum,
-			  int enabled);
+			  int status);
 
 void add_resource(struct bus *bus, int type, int index, int base);
 

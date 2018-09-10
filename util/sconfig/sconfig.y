@@ -31,7 +31,7 @@ static struct chip_instance *cur_chip_instance;
 	int number;
 }
 
-%token CHIP DEVICE REGISTER BOOL BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC CPU_CLUSTER CPU DOMAIN IRQ DRQ IO NUMBER SUBSYSTEMID INHERIT IOAPIC_IRQ IOAPIC PCIINT GENERIC SPI USB MMIO
+%token CHIP DEVICE REGISTER BOOL HIDDEN BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC CPU_CLUSTER CPU DOMAIN IRQ DRQ IO NUMBER SUBSYSTEMID INHERIT IOAPIC_IRQ IOAPIC PCIINT GENERIC SPI USB MMIO
 %%
 devtree: { cur_parent = root_parent; } chip;
 
@@ -48,13 +48,15 @@ chip: CHIP STRING /* == path */ {
 	cur_chip_instance = chip_dequeue_tail();
 };
 
-device: DEVICE BUS NUMBER /* == devnum */ BOOL {
+device: DEVICE BUS NUMBER /* == devnum */ status {
 	$<dev>$ = new_device(cur_parent, cur_chip_instance, $<number>2, $<string>3, $<number>4);
 	cur_parent = $<dev>$->last_bus;
 }
 	devicechildren END {
 	cur_parent = $<dev>5->parent;
 };
+
+status: BOOL | HIDDEN;
 
 resource: RESOURCE NUMBER /* == resnum */ EQUALS NUMBER /* == resval */
 	{ add_resource(cur_parent, $<number>1, strtol($<string>2, NULL, 0), strtol($<string>4, NULL, 0)); } ;

@@ -54,6 +54,7 @@ bootblock-y += mcall.c
 bootblock-y += virtual_memory.c
 bootblock-y += boot.c
 bootblock-y += misc.c
+bootblock-y += pmp.c
 bootblock-y += \
 	$(top)/src/lib/memchr.c \
 	$(top)/src/lib/memcmp.c \
@@ -82,6 +83,7 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_RISCV),y)
 romstage-y += boot.c
 romstage-y += stages.c
 romstage-y += misc.c
+romstage-y += pmp.c
 romstage-y += \
 	$(top)/src/lib/memchr.c \
 	$(top)/src/lib/memcmp.c \
@@ -120,6 +122,7 @@ ramstage-y += misc.c
 ramstage-y += boot.c
 ramstage-y += tables.c
 ramstage-y += payload.S
+ramstage-y += pmp.c
 ramstage-y += \
 	$(top)/src/lib/memchr.c \
 	$(top)/src/lib/memcmp.c \

@@ -36,6 +36,11 @@ config EHCI_BAR
 	hex
 	default 0xfef00000
 
+## Some enterprise variants may require an IFD
+config INTEL_DESCRIPTOR_MODE_REQUIRED
+	bool
+	default n
+
 config HPET_MIN_TICKS
 	hex
 	default 0x80

@@ -31,6 +31,12 @@ config INTEL_DESCRIPTOR_MODE_CAPABLE
 	  This config simply states that the platform is *capable* of running in
 	  descriptor mode (when the descriptor in flash is valid).
 
+config INTEL_DESCRIPTOR_MODE_REQUIRED
+	def_bool y if INTEL_DESCRIPTOR_MODE_CAPABLE
+	help
+	  This config states descriptor mode is *required* for the platform to
+	  function properly, or to function at all.
+
 config INTEL_CHIPSET_LOCKDOWN
 	depends on HAVE_INTEL_CHIPSET_LOCKDOWN && HAVE_SMI_HANDLER && !CHROMEOS
 	#ChromeOS's payload seems to handle finalization on its on.

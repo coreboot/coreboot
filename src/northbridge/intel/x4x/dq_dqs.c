@@ -447,8 +447,12 @@ static int rt_find_dqs_limit(struct sysinfo *s, u8 channel,
  * - use the mean between the saved succeeding and failing value
  * - note0: bytelanes cannot be trained independently, so the delays need to be
  *   adjusted and tested for all of them at the same time
- * - note1: this memory controller appears to have per rank registers for these
- *   DQS rx delays, but only the one rank 0 seems to be used for all of them
+ * - note1: At this stage all ranks effectively use the rank0's rt_dqs settings,
+ *   but later on their respective settings are used (TODO where is the
+ *   'switch' register??). So programming the results for all ranks at the end
+ *   of the training. Programming on all ranks instead of all populated ranks,
+ *   seems to be required, most likely because the signals can't really be generated
+ *   separately.
  */
 int do_read_training(struct sysinfo *s)
 {
@@ -519,7 +523,9 @@ int do_read_training(struct sysinfo *s)
 					printk(BIOS_ERR,
 						"Huh? read training overflowed!!\n");
 			}
-			FOR_EACH_POPULATED_RANK_IN_CHANNEL(s->dimms, channel, rank)
+			/* Later on separate settings for each rank are used so program
+			   all of them */
+			FOR_EACH_RANK_IN_CHANNEL(rank)
 				rt_set_dqs(channel, lane, rank,
 					&s->rt_dqs[channel][lane]);
 			printk(BIOS_DEBUG, "\tlane%d: %d.%d\n",

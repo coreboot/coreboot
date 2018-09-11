@@ -50,6 +50,15 @@ struct soc_amd_stoneyridge_config {
 	/* Used if UMAMODE_SPECIFIED_SIZE is set. */
 	size_t uma_size;
 
+	/*
+	 * If sb_reset_i2c_slaves() is called, this devicetree register
+	 * defines which I2C SCL will be toggled 9 times at 100 KHz.
+	 * For example, should we need I2C0 and  I2C3 have their slave
+	 * devices reseted by toggling SCL, use:
+	 *
+	 * register i2c_scl_reset = (GPIO_I2C0_SCL | GPIO_I2C3_SCL)
+	 */
+	u8 i2c_scl_reset;
 	struct dw_i2c_bus_config i2c[STONEY_I2C_DEV_MAX];
 	u8 stapm_percent;
 	u32 stapm_time;

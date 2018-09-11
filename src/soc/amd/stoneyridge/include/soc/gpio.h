@@ -36,6 +36,17 @@ struct soc_amd_event {
 	uint8_t event;
 };
 
+struct soc_amd_i2c_save {
+	uint32_t control_value;
+	uint8_t mux_value;
+};
+
+#define GPIO_I2C0_SCL		BIT(0)
+#define GPIO_I2C1_SCL		BIT(1)
+#define GPIO_I2C2_SCL		BIT(2)
+#define GPIO_I2C3_SCL		BIT(3)
+#define GPIO_I2C_MASK		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
+
 #define GPIO_TOTAL_PINS		149
 #define GPIO_PIN_IN		(1 << 0)	/* for byte access */
 #define GPIO_PIN_OUT		(1 << 6)	/* for byte access */
@@ -170,6 +181,18 @@ struct soc_amd_event {
 #define GPIO_146			146
 #define GPIO_147			147
 #define GPIO_148			148
+
+#define I2C0_SCL_PIN			GPIO_145
+#define I2C1_SCL_PIN			GPIO_147
+#define I2C2_SCL_PIN			GPIO_113
+#define I2C3_SCL_PIN			GPIO_19
+
+#define GPIO_I2C0_ADDRESS		GPIO_BANK2_CONTROL(I2C0_SCL_PIN)
+#define GPIO_I2C1_ADDRESS		GPIO_BANK2_CONTROL(I2C1_SCL_PIN)
+#define GPIO_I2C2_ADDRESS		GPIO_BANK1_CONTROL(I2C2_SCL_PIN)
+#define GPIO_I2C3_ADDRESS		GPIO_BANK0_CONTROL(I2C3_SCL_PIN)
+#define GPIO_SCL_HIGH			0
+#define GPIO_SCL_LOW			GPIO_OUTPUT_ENABLE
 
 /* IOMUX function names and values generated from BKDG. */
 #define GPIO_0_IOMUX_PWR_BTN_L 0
@@ -345,6 +368,11 @@ struct soc_amd_event {
 #define GPIO_147_IOMUX_GPIOxx 1
 #define GPIO_148_IOMUX_I2C1_SDA 0
 #define GPIO_148_IOMUX_GPIOxx 1
+
+#define I2C0_SCL_PIN_IOMUX_GPIOxx	GPIO_145_IOMUX_GPIOxx
+#define I2C1_SCL_PIN_IOMUX_GPIOxx	GPIO_147_IOMUX_GPIOxx
+#define I2C2_SCL_PIN_IOMUX_GPIOxx	GPIO_113_IOMUX_GPIOxx
+#define I2C3_SCL_PIN_IOMUX_GPIOxx	GPIO_19_IOMUX_GPIOxx
 
 enum {
 	GEVENT_0,
@@ -571,6 +599,7 @@ uintptr_t gpio_get_address(gpio_t gpio_num);
  * @return none
  */
 void sb_program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size);
+void sb_reset_i2c_slaves(void);
 
 /* Return the interrupt status and clear if set. */
 int gpio_interrupt_status(gpio_t gpio);

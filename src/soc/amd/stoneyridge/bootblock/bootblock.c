@@ -93,6 +93,15 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 
 void bootblock_soc_early_init(void)
 {
+	/*
+	 * This call (sb_reset_i2c_slaves) was originally early at
+	 * bootblock_c_entry, but had to be moved here. There was an
+	 * unexplained delay in the middle of the i2c transaction when
+	 * we had it in bootblock_c_entry.  Moving it to this point
+	 * (or adding delays) fixes the issue.  It seems like the processor
+	 * just pauses but we don't know why.
+	 */
+	sb_reset_i2c_slaves();
 	bootblock_fch_early_init();
 	post_code(0x90);
 }

@@ -1453,7 +1453,7 @@ void acpigen_write_rom(void *bios, const size_t length)
 	ASSERT(bios)
 	ASSERT(length)
 
-	/* Method (_ROM, 2, NotSerialized) */
+	/* Method (_ROM, 2, Serialized) */
 	acpigen_write_method_serialized("_ROM", 2);
 
 	/* OperationRegion("ROMS", SYSTEMMEMORY, current, length) */

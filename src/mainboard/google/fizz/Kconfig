@@ -1,7 +1,6 @@
-if BOARD_GOOGLE_FIZZ
 
-config BOARD_SPECIFIC_OPTIONS
-	def_bool y
+config BOARD_GOOGLE_BASEBOARD_FIZZ
+	def_bool n
 	select BOARD_ROMSIZE_KB_16384
 	select DRIVERS_I2C_GENERIC
 	select DRIVERS_SPI_ACPI
@@ -24,6 +23,8 @@ config BOARD_SPECIFIC_OPTIONS
 	select RT8168_SET_LED_MODE
 	select SPD_READ_BY_WORD
 
+if BOARD_GOOGLE_BASEBOARD_FIZZ
+
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
 	select VBOOT_EC_EFS
@@ -37,7 +38,7 @@ config DRIVER_TPM_SPI_BUS
 config GBB_HWID
 	string
 	depends on CHROMEOS
-	default "FIZZ TEST 5997"
+	default "FIZZ TEST 5997" if BOARD_GOOGLE_FIZZ
 
 config MAINBOARD_DIR
 	string
@@ -45,11 +46,11 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Fizz"
+	default "Fizz" if BOARD_GOOGLE_FIZZ
 
 config MAINBOARD_FAMILY
 	string
-	default "Google_Fizz"
+	default "Google_Fizz" if BOARD_GOOGLE_FIZZ
 
 config MAX_CPUS
 	int
@@ -71,4 +72,4 @@ config INCLUDE_NHLT_BLOBS
 	bool "Include blobs for audio."
 	select NHLT_RT5663
 
-endif
+endif # BOARD_GOOGLE_BASEBOARD_FIZZ

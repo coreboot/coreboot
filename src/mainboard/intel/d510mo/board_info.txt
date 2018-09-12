@@ -1,4 +1,4 @@
-Category: desktop
+Category: mini
 Board URL: http://www.intel.com/p/en_US/support/highlights/dsktpboards/d510mo
 ROM package: SOIC-8
 ROM protocol: SPI

@@ -1,3 +1,3 @@
-Category: desktop
+Category: mini
 Board URL: http://www.intel.com/support/motherboards/desktop/d945gclf/sb/CS-029163.htm?wapkw=d945gclf+overview
 Release year: 2008

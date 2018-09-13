@@ -437,7 +437,8 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 		halt();
 	}
 
-	fill_smbios17(&ctrl);
+	if (!s3resume)
+		fill_smbios17(&ctrl);
 }
 
 void perform_raminit(int s3resume)

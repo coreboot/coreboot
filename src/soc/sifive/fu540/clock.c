@@ -121,6 +121,8 @@ static struct prci_ctlr *prci = (void *)FU540_PRCI;
 // 33.33 Mhz after reset
 #define FU540_BASE_FQY 33330
 
+#if ENV_ROMSTAGE
+
 static void init_coreclk(void)
 {
 	// switch coreclk to input reference frequency before modifying PLL
@@ -178,28 +180,32 @@ static void init_pll_ddr(void)
 	write32(&prci->ddrpllcfg1, cfg1);
 }
 
-int clock_get_coreclk_khz(void)
+#define FU540_UART_DEVICES 2
+#define FU540_UART_REG_DIV 0x18
+#define FU540_UART_DIV_VAL 4
+
+#define FU540_SPI_DIV 0x00
+#define FU540_SPI_DIV_VAL 4
+
+
+static void update_peripheral_clock_dividers(void)
 {
-	if (read32(&prci->coreclksel) & PRCI_CORECLK_MASK)
-		return FU540_BASE_FQY;
+	write32((uint32_t *)(FU540_QSPI0 + FU540_SPI_DIV), FU540_SPI_DIV_VAL);
+	write32((uint32_t *)(FU540_QSPI1 + FU540_SPI_DIV), FU540_SPI_DIV_VAL);
+	write32((uint32_t *)(FU540_QSPI2 + FU540_SPI_DIV), FU540_SPI_DIV_VAL);
 
-	u32 cfg  = read32(&prci->corepllcfg0);
-	u32 divr = (cfg & PRCI_COREPLLCFG0_DIVR_MASK)
-		>> PRCI_COREPLLCFG0_DIVR_SHIFT;
-	u32 divf = (cfg & PRCI_COREPLLCFG0_DIVF_MASK)
-		>> PRCI_COREPLLCFG0_DIVF_SHIFT;
-	u32 divq = (cfg & PRCI_COREPLLCFG0_DIVQ_MASK)
-		>> PRCI_COREPLLCFG0_DIVQ_SHIFT;
-
-	printk(BIOS_SPEW, "clk: r=%d f=%d q=%d\n", divr, divf, divq);
-	return FU540_BASE_FQY
-		* 2 * (divf + 1)
-		/ (divr + 1)
-		/ (1ul << divq);
+	for (size_t i = 0; i < FU540_UART_DEVICES; i++)
+		write32((uint32_t *)(FU540_UART(i) + FU540_UART_REG_DIV), FU540_UART_DIV_VAL);
 }
 
 void clock_init(void)
 {
+	/*
+	 * Update the peripheral clock dividers of UART, SPI and I2C to safe
+	 * values as we can't put them in reset before changing frequency.
+	 */
+	update_peripheral_clock_dividers();
+
 	init_coreclk();
 
 	// put DDR and ethernet in reset
@@ -233,4 +239,26 @@ void clock_init(void)
 	// device?
 	for (int i = 0; i < 256; i++)
 		asm volatile ("nop");
+}
+
+#endif
+
+int clock_get_coreclk_khz(void)
+{
+	if (read32(&prci->coreclksel) & PRCI_CORECLK_MASK)
+		return FU540_BASE_FQY;
+
+	u32 cfg  = read32(&prci->corepllcfg0);
+	u32 divr = (cfg & PRCI_COREPLLCFG0_DIVR_MASK)
+		>> PRCI_COREPLLCFG0_DIVR_SHIFT;
+	u32 divf = (cfg & PRCI_COREPLLCFG0_DIVF_MASK)
+		>> PRCI_COREPLLCFG0_DIVF_SHIFT;
+	u32 divq = (cfg & PRCI_COREPLLCFG0_DIVQ_MASK)
+		>> PRCI_COREPLLCFG0_DIVQ_SHIFT;
+
+	printk(BIOS_SPEW, "clk: r=%d f=%d q=%d\n", divr, divf, divq);
+	return FU540_BASE_FQY
+		* 2 * (divf + 1)
+		/ (divr + 1)
+		/ (1ul << divq);
 }

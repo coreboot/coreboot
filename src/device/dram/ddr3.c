@@ -559,6 +559,12 @@ enum cb_err spd_add_smbios17(const u8 channel, const u8 slot,
 		memset(mem_info, 0, sizeof(*mem_info));
 	}
 
+	if (mem_info->dimm_cnt >= ARRAY_SIZE(mem_info->dimm)) {
+		printk(BIOS_WARNING, "BUG: Too many DIMM infos for %s.\n",
+			__func__);
+		return CB_ERR;
+	}
+
 	dimm = &mem_info->dimm[mem_info->dimm_cnt];
 	if (info->size_mb) {
 		dimm->ddr_type = MEMORY_TYPE_DDR3;

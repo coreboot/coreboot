@@ -57,6 +57,8 @@ chip northbridge/intel/x4x		# Northbridge
 			device pci 1c.1 on end		# PCIe 2
 			device pci 1c.2 off end		# PCIe 3
 			device pci 1c.3 off end		# PCIe 4
+			device pci 1c.4 off end		# PCIe 5
+			device pci 1c.5 off end		# PCIe 6
 			device pci 1d.0 on		# USB
 				subsystemid 0x1849 0x27c8
 			end
@@ -73,6 +75,8 @@ chip northbridge/intel/x4x		# Northbridge
 				subsystemid 0x1849 0x27cc
 			end
 			device pci 1e.0 on end		# PCI bridge
+			device pci 1e.2 off end		# AC'97 Audio
+			device pci 1e.3 off end		# AC'97 Modem
 			device pci 1f.0 on		# ISA bridge
 				subsystemid 0x1849 0x27b8
 					chip superio/winbond/w83627dhg

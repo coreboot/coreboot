@@ -176,19 +176,18 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	const struct device *dev = PCH_DEV_LPC;
 	const struct soc_intel_cannonlake_config *config = dev->chip_info;
 
-	if (config->PmTimerDisabled != 0)
-		return;
+	if (!config->PmTimerDisabled) {
+		fadt->pm_tmr_blk = pmbase + PM1_TMR;
+		fadt->pm_tmr_len = 4;
+		fadt->x_pm_tmr_blk.space_id = 1;
+		fadt->x_pm_tmr_blk.bit_width = fadt->pm_tmr_len * 8;
+		fadt->x_pm_tmr_blk.bit_offset = 0;
+		fadt->x_pm_tmr_blk.resv = 0;
+		fadt->x_pm_tmr_blk.addrl = pmbase + PM1_TMR;
+		fadt->x_pm_tmr_blk.addrh = 0x0;
+	}
 
-	fadt->pm_tmr_blk = pmbase + PM1_TMR;
-	fadt->pm_tmr_len = 4;
-	fadt->x_pm_tmr_blk.space_id = 1;
-	fadt->x_pm_tmr_blk.bit_width = fadt->pm_tmr_len * 8;
-	fadt->x_pm_tmr_blk.bit_offset = 0;
-	fadt->x_pm_tmr_blk.resv = 0;
-	fadt->x_pm_tmr_blk.addrl = pmbase + PM1_TMR;
-	fadt->x_pm_tmr_blk.addrh = 0x0;
-
-	if(config->s0ix_enable)
+	if (config->s0ix_enable)
 		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;
 }
 uint32_t soc_read_sci_irq_select(void)

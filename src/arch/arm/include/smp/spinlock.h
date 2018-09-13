@@ -33,7 +33,7 @@ typedef struct {
 #define spin_is_locked(x)	(*(volatile char *)(&(x)->lock) != 0)
 #define spin_unlock_wait(x)	do { barrier(); } while (spin_is_locked(x))
 
-static inline __attribute__((always_inline)) void spin_lock(spinlock_t *lock)
+static __always_inline void spin_lock(spinlock_t *lock)
 {
 	unsigned long tmp;
 	__asm__ __volatile__ (
@@ -49,7 +49,7 @@ static inline __attribute__((always_inline)) void spin_lock(spinlock_t *lock)
 	barrier();
 }
 
-static inline __attribute__((always_inline)) void spin_unlock(spinlock_t *lock)
+static __always_inline void spin_unlock(spinlock_t *lock)
 {
 	__asm__ __volatile__(
 		"	str	%1, [%0]\n"

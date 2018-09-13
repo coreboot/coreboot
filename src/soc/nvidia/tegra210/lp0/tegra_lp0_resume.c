@@ -428,8 +428,7 @@ enum {
 
 /* Utility functions. */
 
-static inline void __attribute__((always_inline))
-		   __noreturn halt(void)
+static __always_inline void __noreturn halt(void)
 {
 	for (;;);
 }

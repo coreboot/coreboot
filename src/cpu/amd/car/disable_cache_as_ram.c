@@ -19,10 +19,11 @@
  * WARNING: this file will be used by both any AP cores and core 0 / node 0
  */
 
+#include <compiler.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 
-static inline __attribute__((always_inline)) uint32_t amd_fam1x_cpu_family(void)
+static __always_inline uint32_t amd_fam1x_cpu_family(void)
 {
 	uint32_t family;
 
@@ -32,7 +33,7 @@ static inline __attribute__((always_inline)) uint32_t amd_fam1x_cpu_family(void)
 	return family;
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void disable_cache_as_ram_real(uint8_t skip_sharedc_config)
 {
 	msr_t msr;

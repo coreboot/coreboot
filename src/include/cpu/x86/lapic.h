@@ -1,24 +1,23 @@
 #ifndef CPU_X86_LAPIC_H
 #define CPU_X86_LAPIC_H
 
+#include <compiler.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
 #include <smp/node.h>
 
-static inline __attribute__((always_inline)) unsigned long lapic_read(
-	unsigned long reg)
+static __always_inline unsigned long lapic_read(unsigned long reg)
 {
 	return *((volatile unsigned long *)(LAPIC_DEFAULT_BASE+reg));
 }
 
-static inline __attribute__((always_inline)) void lapic_write(unsigned long reg,
-	unsigned long v)
+static __always_inline void lapic_write(unsigned long reg, unsigned long v)
 {
 	*((volatile unsigned long *)(LAPIC_DEFAULT_BASE+reg)) = v;
 }
 
-static inline __attribute__((always_inline)) void lapic_wait_icr_idle(void)
+static __always_inline void lapic_wait_icr_idle(void)
 {
 	do { } while (lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY);
 }
@@ -42,7 +41,7 @@ static inline void disable_lapic(void)
 	wrmsr(LAPIC_BASE_MSR, msr);
 }
 
-static inline __attribute__((always_inline)) unsigned long lapicid(void)
+static __always_inline unsigned long lapicid(void)
 {
 	return lapic_read(LAPIC_ID) >> 24;
 }
@@ -51,7 +50,7 @@ static inline __attribute__((always_inline)) unsigned long lapicid(void)
 /* If we need to go back to sipi wait, we use the long non-inlined version of
  * this function in lapic_cpu_init.c
  */
-static inline __attribute__((always_inline)) void stop_this_cpu(void)
+static __always_inline void stop_this_cpu(void)
 {
 	/* Called by an AP when it is ready to halt and wait for a new task */
 	halt();

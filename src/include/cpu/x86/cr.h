@@ -18,6 +18,7 @@
 
 #if !defined(__ASSEMBLER__)
 
+#include <compiler.h>
 #include <stdint.h>
 #include <arch/cpu.h>
 
@@ -37,7 +38,7 @@
 #define CRx_IN   "r"
 #define CRx_RET  "=r"
 #endif
-static alwaysinline CRx_TYPE read_cr0(void)
+static __always_inline CRx_TYPE read_cr0(void)
 {
 	CRx_TYPE value;
 	__asm__ __volatile__ (
@@ -49,7 +50,7 @@ static alwaysinline CRx_TYPE read_cr0(void)
 	return value;
 }
 
-static alwaysinline void write_cr0(CRx_TYPE data)
+static __always_inline void write_cr0(CRx_TYPE data)
 {
 	__asm__ __volatile__ (
 		"mov %0, %%cr0"
@@ -59,7 +60,7 @@ static alwaysinline void write_cr0(CRx_TYPE data)
 	);
 }
 
-static alwaysinline CRx_TYPE read_cr2(void)
+static __always_inline CRx_TYPE read_cr2(void)
 {
 	CRx_TYPE value;
 	__asm__ __volatile__ (
@@ -71,7 +72,7 @@ static alwaysinline CRx_TYPE read_cr2(void)
 	return value;
 }
 
-static alwaysinline CRx_TYPE read_cr3(void)
+static __always_inline CRx_TYPE read_cr3(void)
 {
 	CRx_TYPE value;
 	__asm__ __volatile__ (
@@ -83,7 +84,7 @@ static alwaysinline CRx_TYPE read_cr3(void)
 	return value;
 }
 
-static alwaysinline void write_cr3(CRx_TYPE data)
+static __always_inline void write_cr3(CRx_TYPE data)
 {
 	__asm__ __volatile__ (
 		"mov %0, %%cr3"
@@ -92,7 +93,7 @@ static alwaysinline void write_cr3(CRx_TYPE data)
 		: COMPILER_BARRIER
 	);
 }
-static alwaysinline CRx_TYPE read_cr4(void)
+static __always_inline CRx_TYPE read_cr4(void)
 {
 	CRx_TYPE value;
 	__asm__ __volatile__ (
@@ -104,7 +105,7 @@ static alwaysinline CRx_TYPE read_cr4(void)
 	return value;
 }
 
-static alwaysinline void write_cr4(CRx_TYPE data)
+static __always_inline void write_cr4(CRx_TYPE data)
 {
 	__asm__ __volatile__ (
 		"mov %0, %%cr4"

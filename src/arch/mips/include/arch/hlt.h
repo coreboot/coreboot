@@ -16,7 +16,9 @@
 #ifndef __MIPS_ARCH_HLT_H
 #define __MIPS_ARCH_HLT_H
 
-static inline __attribute__((always_inline)) void hlt(void)
+#include <compiler.h>
+
+static inline __always_inline void hlt(void)
 {
 	for (;;)
 		;

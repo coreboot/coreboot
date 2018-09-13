@@ -264,8 +264,7 @@ static uint32_t *sysctr_cntfid0_ptr = (void *)(SYSCTR_CTLR_BASE + 0x20);
 
 /* Utility functions. */
 
-static inline void __attribute__((always_inline))
-		   __noreturn halt(void)
+static __always_inline void __noreturn halt(void)
 {
 	for (;;);
 }

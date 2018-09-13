@@ -27,5 +27,6 @@
 #define __must_check __attribute__((warn_unused_result))
 #define __weak __attribute__((weak))
 #define __noreturn __attribute__((noreturn))
+#define __always_inline inline __attribute__((always_inline))
 
 #endif

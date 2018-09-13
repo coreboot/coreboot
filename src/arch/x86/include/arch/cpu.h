@@ -242,7 +242,6 @@ static inline void get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
 #endif
 
 #define asmlinkage __attribute__((regparm(0)))
-#define alwaysinline inline __attribute__((always_inline))
 
 #ifndef __ROMCC__
 /*

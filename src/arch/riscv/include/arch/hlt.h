@@ -11,7 +11,9 @@
  * GNU General Public License for more details.
  */
 
-static inline __attribute__((always_inline)) void hlt(void)
+#include <compiler.h>
+
+static __always_inline void hlt(void)
 {
 	while (1);
 }

@@ -38,13 +38,14 @@
 
 #if !defined(__PRE_RAM__) && !defined(__ASSEMBLER__)
 
+#include <compiler.h>
 #include <cpu/x86/msr.h>
 
 void amd_setup_mtrrs(void);
 struct device;
 void add_uma_resource_below_tolm(struct device *nb, int idx);
 
-static inline __attribute__((always_inline)) msr_t rdmsr_amd(unsigned int index)
+static __always_inline msr_t rdmsr_amd(unsigned int index)
 {
 	msr_t result;
 	__asm__ __volatile__ (
@@ -55,8 +56,7 @@ static inline __attribute__((always_inline)) msr_t rdmsr_amd(unsigned int index)
 	return result;
 }
 
-static inline __attribute__((always_inline)) void wrmsr_amd(unsigned int index,
-	msr_t msr)
+static __always_inline void wrmsr_amd(unsigned int index, msr_t msr)
 {
 	__asm__ __volatile__ (
 		"wrmsr"

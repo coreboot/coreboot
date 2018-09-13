@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include "init_cpus.h"
 
 #if IS_ENABLED(CONFIG_HAVE_OPTION_TABLE)
@@ -231,7 +232,7 @@ static inline int lapic_remote_read(int apicid, int reg, u32 *pvalue)
 static void init_fidvid_ap(u32 apicid, u32 nodeid, u32 coreid);
 #endif
 
-static inline __attribute__((always_inline))
+static __always_inline
 void print_apicid_nodeid_coreid(u32 apicid, struct node_core_id id,
 				const char *str)
 {

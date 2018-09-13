@@ -60,7 +60,7 @@ void smi_release_lock(void)
 }
 
 #define LAPIC_ID 0xfee00020
-static inline __attribute__((always_inline)) unsigned long nodeid(void)
+static __always_inline unsigned long nodeid(void)
 {
 	return (*((volatile unsigned long *)(LAPIC_ID)) >> 24);
 }

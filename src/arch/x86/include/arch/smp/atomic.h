@@ -14,6 +14,8 @@
 #ifndef ARCH_SMP_ATOMIC_H
 #define ARCH_SMP_ATOMIC_H
 
+#include <compiler.h>
+
 /*
  * Make sure gcc doesn't try to be clever and move things around
  * on us. We need to use _exactly_ the address the user gave us,
@@ -55,7 +57,7 @@ typedef struct { volatile int counter; } atomic_t;
  * Atomically increments v by 1.  Note that the guaranteed
  * useful range of an atomic_t is only 24 bits.
  */
-static inline __attribute__((always_inline)) void atomic_inc(atomic_t *v)
+static __always_inline void atomic_inc(atomic_t *v)
 {
 	__asm__ __volatile__(
 		"lock ; incl %0"
@@ -70,7 +72,7 @@ static inline __attribute__((always_inline)) void atomic_inc(atomic_t *v)
  * Atomically decrements v by 1.  Note that the guaranteed
  * useful range of an atomic_t is only 24 bits.
  */
-static inline __attribute__((always_inline)) void atomic_dec(atomic_t *v)
+static __always_inline void atomic_dec(atomic_t *v)
 {
 	__asm__ __volatile__(
 		"lock ; decl %0"

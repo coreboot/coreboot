@@ -14,6 +14,8 @@
 #ifndef ARCH_SMP_SPINLOCK_H
 #define ARCH_SMP_SPINLOCK_H
 
+#include <compiler.h>
+
 #if !defined(__PRE_RAM__) \
 	|| IS_ENABLED(CONFIG_HAVE_ROMSTAGE_CONSOLE_SPINLOCK)	\
 	|| IS_ENABLED(CONFIG_HAVE_ROMSTAGE_NVRAM_CBFS_SPINLOCK)	\
@@ -73,14 +75,14 @@ void initialize_romstage_microcode_cbfs_lock(void);
 #define spin_unlock_string \
 	"movb $1,%0"
 
-static inline __attribute__((always_inline)) void spin_lock(spinlock_t *lock)
+static __always_inline void spin_lock(spinlock_t *lock)
 {
 	__asm__ __volatile__(
 		spin_lock_string
 		: "=m" (lock->lock) : : "memory");
 }
 
-static inline __attribute__((always_inline)) void spin_unlock(spinlock_t *lock)
+static __always_inline void spin_unlock(spinlock_t *lock)
 {
 	__asm__ __volatile__(
 		spin_unlock_string
@@ -88,7 +90,7 @@ static inline __attribute__((always_inline)) void spin_unlock(spinlock_t *lock)
 }
 
 /* REP NOP (PAUSE) is a good thing to insert into busy-wait loops. */
-static inline __attribute__((always_inline)) void cpu_relax(void)
+static __always_inline void cpu_relax(void)
 {
 	__asm__ __volatile__("rep;nop" : : : "memory");
 }

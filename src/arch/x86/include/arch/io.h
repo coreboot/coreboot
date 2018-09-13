@@ -14,6 +14,7 @@
 #ifndef _ASM_IO_H
 #define _ASM_IO_H
 
+#include <compiler.h>
 #include <endian.h>
 #include <stdint.h>
 #include <rules.h>
@@ -156,52 +157,52 @@ static inline void insl(uint16_t port, void *addr, unsigned long count)
 		);
 }
 
-static inline __attribute__((always_inline)) uint8_t read8(
+static __always_inline uint8_t read8(
 	const volatile void *addr)
 {
 	return *((volatile uint8_t *)(addr));
 }
 
-static inline __attribute__((always_inline)) uint16_t read16(
+static __always_inline uint16_t read16(
 	const volatile void *addr)
 {
 	return *((volatile uint16_t *)(addr));
 }
 
-static inline __attribute__((always_inline)) uint32_t read32(
+static __always_inline uint32_t read32(
 	const volatile void *addr)
 {
 	return *((volatile uint32_t *)(addr));
 }
 
 #ifndef __ROMCC__
-static inline __attribute__((always_inline)) uint64_t read64(
+static __always_inline uint64_t read64(
 	const volatile void *addr)
 {
 	return *((volatile uint64_t *)(addr));
 }
 #endif
 
-static inline __attribute__((always_inline)) void write8(volatile void *addr,
+static __always_inline void write8(volatile void *addr,
 	uint8_t value)
 {
 	*((volatile uint8_t *)(addr)) = value;
 }
 
-static inline __attribute__((always_inline)) void write16(volatile void *addr,
+static __always_inline void write16(volatile void *addr,
 	uint16_t value)
 {
 	*((volatile uint16_t *)(addr)) = value;
 }
 
-static inline __attribute__((always_inline)) void write32(volatile void *addr,
+static __always_inline void write32(volatile void *addr,
 	uint32_t value)
 {
 	*((volatile uint32_t *)(addr)) = value;
 }
 
 #ifndef __ROMCC__
-static inline __attribute__((always_inline)) void write64(volatile void *addr,
+static __always_inline void write64(volatile void *addr,
 	uint64_t value)
 {
 	*((volatile uint64_t *)(addr)) = value;
@@ -268,7 +269,7 @@ typedef u32 device_t;
 #include <arch/pci_io_cfg.h>
 #include <arch/pci_mmio_cfg.h>
 
-static inline __attribute__((always_inline))
+static __always_inline
 uint8_t pci_read_config8(pci_devfn_t dev, unsigned int where)
 {
 	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
@@ -277,7 +278,7 @@ uint8_t pci_read_config8(pci_devfn_t dev, unsigned int where)
 		return pci_io_read_config8(dev, where);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 uint16_t pci_read_config16(pci_devfn_t dev, unsigned int where)
 {
 	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
@@ -286,7 +287,7 @@ uint16_t pci_read_config16(pci_devfn_t dev, unsigned int where)
 		return pci_io_read_config16(dev, where);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 uint32_t pci_read_config32(pci_devfn_t dev, unsigned int where)
 {
 	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
@@ -295,7 +296,7 @@ uint32_t pci_read_config32(pci_devfn_t dev, unsigned int where)
 		return pci_io_read_config32(dev, where);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_write_config8(pci_devfn_t dev, unsigned int where, uint8_t value)
 {
 	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
@@ -304,7 +305,7 @@ void pci_write_config8(pci_devfn_t dev, unsigned int where, uint8_t value)
 		pci_io_write_config8(dev, where, value);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_write_config16(pci_devfn_t dev, unsigned int where, uint16_t value)
 {
 	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
@@ -313,7 +314,7 @@ void pci_write_config16(pci_devfn_t dev, unsigned int where, uint16_t value)
 		pci_io_write_config16(dev, where, value);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_write_config32(pci_devfn_t dev, unsigned int where, uint32_t value)
 {
 	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
@@ -365,7 +366,7 @@ static inline pci_devfn_t pci_locate_device_on_bus(unsigned int pci_id,
 }
 
 /* Generic functions for pnp devices */
-static inline __attribute__((always_inline)) void pnp_write_config(
+static __always_inline void pnp_write_config(
 	pnp_devfn_t dev, uint8_t reg, uint8_t value)
 {
 	unsigned int port = dev >> 8;
@@ -373,7 +374,7 @@ static inline __attribute__((always_inline)) void pnp_write_config(
 	outb(value, port + 1);
 }
 
-static inline __attribute__((always_inline)) uint8_t pnp_read_config(
+static __always_inline uint8_t pnp_read_config(
 	pnp_devfn_t dev, uint8_t reg)
 {
 	unsigned int port = dev >> 8;
@@ -381,46 +382,46 @@ static inline __attribute__((always_inline)) uint8_t pnp_read_config(
 	return inb(port + 1);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pnp_set_logical_device(pnp_devfn_t dev)
 {
 	unsigned int device = dev & 0xff;
 	pnp_write_config(dev, 0x07, device);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pnp_set_enable(pnp_devfn_t dev, int enable)
 {
 	pnp_write_config(dev, 0x30, enable?0x1:0x0);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 int pnp_read_enable(pnp_devfn_t dev)
 {
 	return !!pnp_read_config(dev, 0x30);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pnp_set_iobase(pnp_devfn_t dev, unsigned int index, unsigned int iobase)
 {
 	pnp_write_config(dev, index + 0, (iobase >> 8) & 0xff);
 	pnp_write_config(dev, index + 1, iobase & 0xff);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 uint16_t pnp_read_iobase(pnp_devfn_t dev, unsigned int index)
 {
 	return ((uint16_t)(pnp_read_config(dev, index)) << 8)
 		| pnp_read_config(dev, index + 1);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pnp_set_irq(pnp_devfn_t dev, unsigned int index, unsigned int irq)
 {
 	pnp_write_config(dev, index, irq);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pnp_set_drq(pnp_devfn_t dev, unsigned int index, unsigned int drq)
 {
 	pnp_write_config(dev, index, drq & 0xff);

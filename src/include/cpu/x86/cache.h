@@ -16,6 +16,7 @@
 #ifndef CPU_X86_CACHE
 #define CPU_X86_CACHE
 
+#include <compiler.h>
 #include <cpu/x86/cr.h>
 
 #define CR0_CacheDisable	(CR0_CD)
@@ -55,7 +56,7 @@ static inline void clflush(void *addr)
 	asm volatile ("clflush (%0)"::"r" (addr));
 }
 
-/* The following functions require the always_inline due to AMD
+/* The following functions require the __always_inline due to AMD
  * function STOP_CAR_AND_CPU that disables cache as
  * RAM, the cache as RAM stack can no longer be used. Called
  * functions must be inlined to avoid stack usage. Also, the
@@ -63,9 +64,9 @@ static inline void clflush(void *addr)
  * allocated them from the stack. With gcc 4.5.0, some functions
  * declared as inline are not being inlined. This patch forces
  * these functions to always be inlined by adding the qualifier
- * __attribute__((always_inline)) to their declaration.
+ * __always_inline to their declaration.
  */
-static inline __attribute__((always_inline)) void enable_cache(void)
+static __always_inline void enable_cache(void)
 {
 	unsigned long cr0;
 	cr0 = read_cr0();
@@ -73,7 +74,7 @@ static inline __attribute__((always_inline)) void enable_cache(void)
 	write_cr0(cr0);
 }
 
-static inline __attribute__((always_inline)) void disable_cache(void)
+static __always_inline void disable_cache(void)
 {
 	/* Disable and write back the cache */
 	unsigned long cr0;

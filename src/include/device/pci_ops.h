@@ -1,6 +1,7 @@
 #ifndef PCI_OPS_H
 #define PCI_OPS_H
 
+#include <compiler.h>
 #include <stdint.h>
 #include <device/device.h>
 #include <arch/pci_ops.h>
@@ -19,28 +20,28 @@ void pci_write_config32(struct device *dev, unsigned int where, u32 val);
  * Use device_t here as the functions are to be used with either
  * __SIMPLE_DEVICE__ defined or undefined.
  */
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_or_config8(device_t dev, unsigned int where, u8 ormask)
 {
 	u8 value = pci_read_config8(dev, where);
 	pci_write_config8(dev, where, value | ormask);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_or_config16(device_t dev, unsigned int where, u16 ormask)
 {
 	u16 value = pci_read_config16(dev, where);
 	pci_write_config16(dev, where, value | ormask);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_or_config32(device_t dev, unsigned int where, u32 ormask)
 {
 	u32 value = pci_read_config32(dev, where);
 	pci_write_config32(dev, where, value | ormask);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_update_config8(device_t dev, int reg, u8 mask, u8 or)
 {
 	u8 reg8;
@@ -51,7 +52,7 @@ void pci_update_config8(device_t dev, int reg, u8 mask, u8 or)
 	pci_write_config8(dev, reg, reg8);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_update_config16(device_t dev, int reg, u16 mask, u16 or)
 {
 	u16 reg16;
@@ -62,7 +63,7 @@ void pci_update_config16(device_t dev, int reg, u16 mask, u16 or)
 	pci_write_config16(dev, reg, reg16);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_update_config32(device_t dev, int reg, u32 mask, u32 or)
 {
 	u32 reg32;

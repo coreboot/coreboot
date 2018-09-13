@@ -17,10 +17,11 @@
 #define _PCI_MMIO_CFG_H
 
 #include <arch/io.h>
+#include <compiler.h>
 
 #define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS
 
-static inline __attribute__((always_inline))
+static __always_inline
 u8 pci_mmio_read_config8(pci_devfn_t dev, unsigned int where)
 {
 	void *addr;
@@ -28,7 +29,7 @@ u8 pci_mmio_read_config8(pci_devfn_t dev, unsigned int where)
 	return read8(addr);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 u16 pci_mmio_read_config16(pci_devfn_t dev, unsigned int where)
 {
 	void *addr;
@@ -36,7 +37,7 @@ u16 pci_mmio_read_config16(pci_devfn_t dev, unsigned int where)
 	return read16(addr);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 u32 pci_mmio_read_config32(pci_devfn_t dev, unsigned int where)
 {
 	void *addr;
@@ -44,7 +45,7 @@ u32 pci_mmio_read_config32(pci_devfn_t dev, unsigned int where)
 	return read32(addr);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_mmio_write_config8(pci_devfn_t dev, unsigned int where, u8 value)
 {
 	void *addr;
@@ -52,7 +53,7 @@ void pci_mmio_write_config8(pci_devfn_t dev, unsigned int where, u8 value)
 	write8(addr, value);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_mmio_write_config16(pci_devfn_t dev, unsigned int where, u16 value)
 {
 	void *addr;
@@ -60,7 +61,7 @@ void pci_mmio_write_config16(pci_devfn_t dev, unsigned int where, u16 value)
 	write16(addr, value);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_mmio_write_config32(pci_devfn_t dev, unsigned int where, u32 value)
 {
 	void *addr;

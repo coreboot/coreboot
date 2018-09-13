@@ -14,9 +14,10 @@
 #ifndef _PCI_IO_CFG_H
 #define _PCI_IO_CFG_H
 
+#include <compiler.h>
 #include <arch/io.h>
 
-static inline __attribute__((always_inline))
+static __always_inline
 unsigned int pci_io_encode_addr(pci_devfn_t dev, unsigned int where)
 {
 	if (IS_ENABLED(CONFIG_PCI_IO_CFG_EXT)) {
@@ -27,7 +28,7 @@ unsigned int pci_io_encode_addr(pci_devfn_t dev, unsigned int where)
 	}
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 uint8_t pci_io_read_config8(pci_devfn_t dev, unsigned int where)
 {
 	unsigned int addr = pci_io_encode_addr(dev, where);
@@ -35,7 +36,7 @@ uint8_t pci_io_read_config8(pci_devfn_t dev, unsigned int where)
 	return inb(0xCFC + (addr & 3));
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 uint16_t pci_io_read_config16(pci_devfn_t dev, unsigned int where)
 {
 	unsigned int addr = pci_io_encode_addr(dev, where);
@@ -43,7 +44,7 @@ uint16_t pci_io_read_config16(pci_devfn_t dev, unsigned int where)
 	return inw(0xCFC + (addr & 2));
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 uint32_t pci_io_read_config32(pci_devfn_t dev, unsigned int where)
 {
 	unsigned int addr = pci_io_encode_addr(dev, where);
@@ -51,7 +52,7 @@ uint32_t pci_io_read_config32(pci_devfn_t dev, unsigned int where)
 	return inl(0xCFC);
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_io_write_config8(pci_devfn_t dev, unsigned int where, uint8_t value)
 {
 	unsigned int addr = pci_io_encode_addr(dev, where);
@@ -59,7 +60,7 @@ void pci_io_write_config8(pci_devfn_t dev, unsigned int where, uint8_t value)
 	outb(value, 0xCFC + (addr & 3));
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_io_write_config16(pci_devfn_t dev, unsigned int where, uint16_t value)
 {
 	unsigned int addr = pci_io_encode_addr(dev, where);
@@ -67,7 +68,7 @@ void pci_io_write_config16(pci_devfn_t dev, unsigned int where, uint16_t value)
 	outw(value, 0xCFC + (addr & 2));
 }
 
-static inline __attribute__((always_inline))
+static __always_inline
 void pci_io_write_config32(pci_devfn_t dev, unsigned int where, uint32_t value)
 {
 	unsigned int addr = pci_io_encode_addr(dev, where);

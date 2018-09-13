@@ -20,6 +20,9 @@ chip soc/amd/stoneyridge
 	register "dram_clear_on_reset" = "DRAM_CONTENTS_KEEP"
 	register "uma_mode" = "UMAMODE_SPECIFIED_SIZE"
 	register "uma_size" = "32 * MiB"
+	register "stapm_percent" = "68"
+	register "stapm_time" = "2500"
+	register "stapm_power" = "7800"
 
 	# Enable I2C0 for audio, USB3 hub at 400kHz
 	register "i2c[0]" = "{

@@ -40,5 +40,7 @@ void main(void)
 		uart_init(CONFIG_UART_FOR_CONSOLE);
 	#endif
 
+	sdram_init();
+
 	run_ramstage();
 }

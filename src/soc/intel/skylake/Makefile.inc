@@ -102,7 +102,6 @@ CPPFLAGS_common += -I$(src)/soc/intel/skylake/include/fsp11
 CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp1_1/skylake
 else
 CPPFLAGS_common += -I$(src)/soc/intel/skylake/include/fsp20
-CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/skykabylake
 endif
 
 # Currently used for microcode path.

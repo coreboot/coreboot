@@ -230,6 +230,10 @@ config C_ENV_BOOTBLOCK_SIZE
 	hex
 	default 0x8000
 
+config CBFS_SIZE
+	hex
+	default 0x200000
+
 choice
 	prompt "Cache-as-ram implementation"
 	default USE_CANNONLAKE_CAR_NEM_ENHANCED if MAINBOARD_HAS_CHROMEOS
@@ -256,5 +260,15 @@ config USE_CANNONLAKE_FSP_CAR
 	  Use FSP APIs to initialize and tear down the Cache-As-Ram.
 
 endchoice
+
+config FSP_HEADER_PATH
+	string
+	default "src/vendorcode/intel/fsp/fsp2_0/cannonlake/" if !SOC_INTEL_COFFEELAKE
+	default "3rdparty/fsp/CoffeeLakeFspBinPkg/Include/" if SOC_INTEL_COFFEELAKE
+
+config FSP_FD_PATH
+	string
+	depends on FSP_USE_REPO
+	default "3rdparty/fsp/CoffeeLakeFspBinPkg/Fsp.fd" if SOC_INTEL_COFFEELAKE
 
 endif

@@ -100,11 +100,6 @@ ramstage-y += gpio_apl.c
 endif
 
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include
-ifeq ($(CONFIG_SOC_INTEL_GLK),y)
-CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/glk
-else
-CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/apollolake
-endif
 
 # Since FSP-M runs in CAR we need to relocate it to a specific address
 $(CONFIG_FSP_M_CBFS)-options := -b $(CONFIG_FSP_M_ADDR)

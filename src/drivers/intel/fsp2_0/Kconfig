@@ -66,21 +66,33 @@ config FSP_M_CBFS
 	string "Name of FSP-M in CBFS"
 	default "fspm.bin"
 
+config FSP_USE_REPO
+	bool "Use the IntelFSP based binaries"
+	depends on ADD_FSP_BINARIES
+	depends on SOC_INTEL_APOLLOLAKE || SOC_INTEL_SKYLAKE || \
+		SOC_INTEL_KABYLAKE || SOC_INTEL_COFFEELAKE
+	help
+	  When selecting this option, the SoC must set FSP_HEADER_PATH
+	  and FSP_FD_PATH correctly so FSP splitting works.
+
 config FSP_T_FILE
 	string "Intel FSP-T (temp ram init) binary path and filename"
 	depends on FSP_CAR
+	default "$(obj)/Fsp_T.fd" if FSP_USE_REPO
 	help
 	  The path and filename of the Intel FSP-M binary for this platform.
 
 config FSP_M_FILE
 	string "Intel FSP-M (memory init) binary path and filename"
 	depends on ADD_FSP_BINARIES
+	default "$(obj)/Fsp_M.fd" if FSP_USE_REPO
 	help
 	  The path and filename of the Intel FSP-M binary for this platform.
 
 config FSP_S_FILE
 	string "Intel FSP-S (silicon init) binary path and filename"
 	depends on ADD_FSP_BINARIES
+	default "$(obj)/Fsp_S.fd" if FSP_USE_REPO
 	help
 	  The path and filename of the Intel FSP-S binary for this platform.
 

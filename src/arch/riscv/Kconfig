@@ -28,3 +28,7 @@ config ARCH_ROMSTAGE_RISCV
 config ARCH_RAMSTAGE_RISCV
 	bool
 	default n
+
+config RISCV_USE_ARCH_TIMER
+	bool
+	default n

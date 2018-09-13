@@ -1,0 +1,139 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2017 Arthur Heymans <arthur@aheymans.xyz>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+chip northbridge/intel/x4x		# Northbridge
+	device cpu_cluster 0 on		# APIC cluster
+		chip cpu/intel/socket_LGA775
+			device lapic 0 on end
+		end
+		chip cpu/intel/model_1067x		# CPU
+			device lapic 0xACAC off end
+		end
+	end
+	device domain 0 on		# PCI domain
+		subsystemid 0x1458 0x5000 inherit
+		device pci 0.0 on			# Host Bridge
+			subsystemid 0x1849 0x2e30
+		end
+		device pci 1.0 on end			# PEG
+
+		device pci 2.0 on			# Integrated graphics controller
+			subsystemid 0x1849 0x2e32
+		end
+		device pci 3.0 off end		# ME
+		device pci 3.1 off end		# ME
+		chip southbridge/intel/i82801gx	# Southbridge
+			register "pirqa_routing" = "0x0b"
+			register "pirqb_routing" = "0x0b"
+			register "pirqc_routing" = "0x0b"
+			register "pirqd_routing" = "0x0b"
+			register "pirqe_routing" = "0x80"
+			register "pirqf_routing" = "0x80"
+			register "pirqg_routing" = "0x80"
+			register "pirqh_routing" = "0x0b"
+
+			register "ide_enable_primary" = "0x1"
+			register "sata_ahci" = "0x0" # AHCI not supported on this ICH7 variant
+			register "gpe0_en" = "0x440"
+
+			device pci 1b.0 on		# Audio
+				subsystemid 0x1849 0x3662
+			end
+			device pci 1c.0 on end		# PCIe 1
+			device pci 1c.1 on end		# PCIe 2 (ethernet)
+			device pci 1c.2 off end		# PCIe 3
+			device pci 1c.3 off end		# PCIe 4
+			device pci 1c.4 off end		# PCIe 5
+			device pci 1c.5 off end		# PCIe 6
+			device pci 1d.0 on		# USB
+				subsystemid 0x1849 0x27c8
+			end
+			device pci 1d.1 on		# USB
+				subsystemid 0x1849 0x27c9
+			end
+			device pci 1d.2 on		# USB
+				subsystemid 0x1849 0x27ca
+			end
+			device pci 1d.3 on		# USB
+				subsystemid 0x1849 0x27cb
+			end
+			device pci 1d.7 on		# USB
+				subsystemid 0x1849 0x27cc
+			end
+			device pci 1e.0 on end		# PCI bridge
+			device pci 1e.2 off end		# AC'97 Audio
+			device pci 1e.3 off end		# AC'97 Modem
+			device pci 1f.0 on		# ISA bridge
+				subsystemid 0x1849 0x27b8
+					chip superio/winbond/w83627dhg
+					device pnp 2e.0 off end		# Floppy
+					device pnp 2e.1 on		# Parallel port
+						# global
+						irq 0x28 = 0x70
+						irq 0x2c = 0xd2
+						# parallel port
+						io 0x60 = 0x378
+						irq 0x70 = 7
+						drq 0x74 = 3
+					end
+					device pnp 2e.2 on		# COM1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 off end		# COM2
+					device pnp 2e.5 on		# Keyboard & MOUSE
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 1
+						irq 0x72 = 0x0C
+					end
+					device pnp 2e.6 off end		# SPI
+					device pnp 2e.7 off end		# GPIO6
+					device pnp 2e.8 off end		# WDT0#, PLED
+					device pnp 2e.9 on end 		# GPIO2
+					device pnp 2e.109 off end	# GPIO3
+					device pnp 2e.209 on		# GPIO4
+						irq 0xf4 = 0xb3
+					end
+					device pnp 2e.309 off end	# GPIO5
+					device pnp 2e.a on		# ACPI
+						irq 0xe4 = 0x10 # Power dram during s3
+					end
+					device pnp 2e.b on		# HWM, front panel LED
+						io 0x60 = 0x290
+						irq 0x70 = 0
+					end
+					device pnp 2e.c off end		# PECI, SST
+				end
+			end
+			device pci 1f.1 on		# PATA/IDE
+				subsystemid 0x1849 0x27df
+			end
+			device pci 1f.2 on		# SATA
+				subsystemid 0x1849 0x27c0
+			end
+			device pci 1f.3 on		# SMbus
+				subsystemid 0x1849 0x27da
+				chip drivers/i2c/ck505	# W83115RG-965
+					# set SATA to fixed 100Mhz refclk
+					register "mask" = "{ 0x02 }"
+					register "regs" = "{ 0x02 }"
+					device i2c 69 on end
+				end
+			end
+		end
+	end
+end

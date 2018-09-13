@@ -6,3 +6,6 @@ config BOARD_ASROCK_G41C_GS
 
 config BOARD_ASROCK_G41M_GS
 	bool "G41M-GS"
+
+config BOARD_ASROCK_G41M_VS3_R2_0
+	bool "G41M-VS3 R2.0"

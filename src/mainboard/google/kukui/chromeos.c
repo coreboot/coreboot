@@ -21,12 +21,14 @@
 
 void setup_chromeos_gpios(void)
 {
+	gpio_input_pullup(EC_IN_RW);
 	gpio_input_pullup(EC_IRQ);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
+		{EC_IN_RW.id, ACTIVE_HIGH, -1, "EC in RW"},
 		{EC_IRQ.id, ACTIVE_LOW, -1, "EC interrupt"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));

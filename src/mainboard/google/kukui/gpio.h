@@ -18,7 +18,8 @@
 
 #include <soc/gpio.h>
 
-#define EC_IRQ	GPIO(PERIPHERAL_EN1)
+#define EC_IRQ		GPIO(PERIPHERAL_EN1)
+#define EC_IN_RW	GPIO(PERIPHERAL_EN14)
 
 void setup_chromeos_gpios(void);
 

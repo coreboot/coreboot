@@ -16,7 +16,7 @@
 #include <arch/acpi.h>
 #include <ec/google/chromeec/ec.h>
 
-#include "ec.h"
+#include <variant/ec.h>
 
 void mainboard_ec_init(void)
 {

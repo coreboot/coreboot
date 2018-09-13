@@ -20,7 +20,7 @@
 #include <ec/ec.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
-#include <mainboard/google/fizz/gpio.h>
+#include <variant/gpio.h>
 #include <smbios.h>
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>

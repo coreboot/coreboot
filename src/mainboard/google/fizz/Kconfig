@@ -25,6 +25,10 @@ config BOARD_GOOGLE_BASEBOARD_FIZZ
 
 if BOARD_GOOGLE_BASEBOARD_FIZZ
 
+config DEVICETREE
+	string
+	default "variants/baseboard/devicetree.cb"
+
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
 	select VBOOT_EC_EFS
@@ -67,6 +71,10 @@ config DIMM_SPD_SIZE
 config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 64  # GPE0_DW2_00 (GPP_E0)
+
+config VARIANT_DIR
+	string
+	default "fizz" if BOARD_GOOGLE_FIZZ
 
 config INCLUDE_NHLT_BLOBS
 	bool "Include blobs for audio."

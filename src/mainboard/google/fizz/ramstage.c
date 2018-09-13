@@ -18,12 +18,11 @@
 #include <delay.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
-#include <mainboard/google/fizz/gpio.h>
 #include <soc/gpio.h>
 #include <soc/ramstage.h>
 #include <timer.h>
 
-#include "gpio.h"
+#include <variant/gpio.h>
 
 #define GPIO_HDMI_HPD		GPP_E13
 #define GPIO_DP_HPD		GPP_E14

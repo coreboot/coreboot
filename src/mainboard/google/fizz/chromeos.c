@@ -18,7 +18,7 @@
 #include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-#include "gpio.h"
+#include <variant/gpio.h>
 
 #if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>

@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __MAINBOARD_GPIO_H__
-#define __MAINBOARD_GPIO_H__
+#ifndef __BASEBOARD_GPIO_H__
+#define __BASEBOARD_GPIO_H__
 
 #include <soc/gpe.h>
 #include <soc/gpio.h>
@@ -281,6 +281,6 @@ static const struct pad_config early_gpio_table[] = {
 /* SATA_DEVSLP1 */     PAD_CFG_NF(GPP_E5, NONE, DEEP, NF1), /* DEVSLP1_MB */
 };
 
-#endif
+#endif /* __ACPI__ */
 
-#endif
+#endif /* BASEBOARD_GPIO_H */

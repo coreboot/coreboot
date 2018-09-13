@@ -1,0 +1,47 @@
+if PAYLOAD_YABITS
+
+choice
+	prompt "Yabits version"
+	default YABITS_STABLE
+
+config YABITS_STABLE
+	bool "Stable"
+	help
+	  Stable Yabits version.
+
+	  For reproducible builds, this option must be selected.
+
+config YABITS_MASTER
+	bool "Master"
+	help
+	  Newest version.
+
+	  This option will fetch the newest version of the Yabits code,
+	  updating as new changes are committed.  This makes the build
+	  non-reproducible, as it can fetch different code each time.
+
+config YABITS_REVISION
+	bool "git revision"
+	help
+	  Select this option if you have a specific commit or branch
+	  that you want to use as the revision from which to
+	  build Yabits.  Using a branch name makes the build
+	  non-reproducible, as it can fetch different code as the
+	  branch changes.
+
+	  You will be able to specify the name of a branch or a commit id
+	  later.
+
+endchoice
+
+config YABITS_REVISION_ID
+	string "Insert a commit's SHA-1 or a branch name"
+	depends on YABITS_REVISION
+	default "origin/master"
+	help
+	   The commit's SHA-1 or branch name of the revision to use.
+
+config PAYLOAD_FILE
+	default "payloads/external/Yabits/uefi/build/uefi.elf"
+
+endif

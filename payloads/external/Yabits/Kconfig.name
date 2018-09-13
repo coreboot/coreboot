@@ -1,0 +1,11 @@
+config PAYLOAD_YABITS
+	bool "Yabits - Yet another UEFI Bootloader (Under Development)"
+	depends on ARCH_X86
+	help
+	  Yabits - yabits.github.io
+	  yabits is a pure UEFI coreboot payload. Compared with
+	  TianoCore, it is fast and lightweight. yabits is based on the
+	  part of Minoca OS. It can run GRUB2, Linux, OpenBSD, and other
+	  UEFI applications.
+
+	  It is still under the development and not ready for production.

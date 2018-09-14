@@ -104,6 +104,10 @@ ENTRY &TargetPkg &srcpath &xblsrcpath &ImageName
 
   if &BBStage
   (
+    IF "&debug"==""
+    (
+      d.load.binary build/coreboot.rom 0xA0000000
+    )
     &imgpath="build\cbfs\fallback\bootblock.elf"
     if (&RAMLoad)
       d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath
@@ -114,9 +118,17 @@ ENTRY &TargetPkg &srcpath &xblsrcpath &ImageName
     ;b.s run_romstage /o
     ;d.set &PreRamConsoleAddr++0x8000 0
     d.dump &PreRamConsoleAddr /spotlight
-    print %String "Now the control is in BootBlock, press enter after debugging to go to next stage"
-    print %String "Press enter to go to next stage"
-    enter
+    IF (STR.CP("&debug","DEBUG"))
+    (
+      print %String "Now the control is in BootBlock, press enter after debugging to go to next stage"
+      print %String "Press enter to go to next stage"
+      enter
+    )
+    ELSE
+    (
+      go
+      enddo
+    )
   )
 
   go &VEREntryAddr

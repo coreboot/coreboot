@@ -1,0 +1,165 @@
+;============================================================================
+;##
+;## This file is part of the coreboot project.
+;##
+;## Copyright (C) 2018, The Linux Foundation.  All rights reserved.
+;##
+;## This program is free software; you can redistribute it and/or modify
+;## it under the terms of the GNU General Public License version 2 and
+;## only version 2 as published by the Free Software Foundation.
+;##
+;## This program is distributed in the hope that it will be useful,
+;## but WITHOUT ANY WARRANTY; without even the implied warranty of
+;## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;## GNU General Public License for more details.
+;##
+;============================================================================
+;  Name:
+;    debug_cb_405.cmm
+;
+;  Description:
+;     Debug coreboot 405 front-end
+;============================================================================
+
+;============================================================================
+;  CMM script variables
+;============================================================================
+
+LOCAL &TargetPkg
+
+GLOBAL   &BBEntryAddr		// Bootblock   Entry
+GLOBAL   &BBExitAddr		// Bootblock   Exit to Xbl-Sec
+GLOBAL  &VEREntryAddr		// Verstage    Entry
+GLOBAL  &ROMEntryAddr		// Romstage    Entry
+GLOBAL  &QCLEntryAddr		// QCLstage    Entry
+GLOBAL  &RAMEntryAddr		// Ramstage    Entry
+GLOBAL &BL31EntryAddr		// BL31        Entry
+GLOBAL   &DCEntryAddr		// Depthcharge Entry
+GLOBAL &KernelEntryAddr         // Kernel      Entry
+
+GLOBAL &PreRamConsoleAddr
+GLOBAL &RamConsoleAddr
+GLOBAL &PreRamCbfsCache
+GLOBAL &VBoot2Work
+GLOBAL &Stack
+GLOBAL &Ttb
+GLOBAL &Timestamp
+GLOBAL &CbmemTop
+GLOBAL &PostRamCbfsCache
+
+GLOBAL &CBTablePtr
+
+GLOBAL &debug
+
+;============================================================================
+
+;---------------------------------------------------
+; Entry point
+;---------------------------------------------------
+ENTRY &ImageName
+
+  // Later these can be parameterized
+  &TargetPkg="Qcs405Pkg"
+
+  // These settings come from .../src/soc/qualcomm/qcs405/include/soc/memlayout.ld
+      &BBEntryAddr=0x8c2f000
+     &VEREntryAddr=0x8C00000
+     &ROMEntryAddr=0x8C00000
+     &QCLEntryAddr=0x1485AC00
+     &RAMEntryAddr=0x9F860000
+    &BL31EntryAddr=0x06820000
+      &DCEntryAddr=0xf1104800
+  &KernelEntryAddr=0x90080000
+
+  &PreRamConsoleAddr=0x8C4F400
+  &VBoot2Work=0x8C47000
+  &Stack=0x8C4B000
+  &Ttb=0x8C39000
+  &Timestamp=0x8C4F000
+  &PreRamCbfsCache=0x8C57400
+  &CbmemTop=0x280000000
+  &PostRamCbfsCache=0x9F800000
+  // End of memlayout.ld settings
+
+  // Common commands irrespective of &Mode
+  PATH
+  &CwDir=os.pwd()
+  PATH + &CwDir
+
+  // position at top of coreboot tree
+  // find depth count for source loading
+  cd ..\..\..\..
+  &srcpath=os.pwd()
+
+  b.sel PROGRAM onchip
+  ;sys.u
+
+  b.d /all
+
+  ;go &BBEntryAddr
+  ;wait !run()
+
+;---------------------------------------------------
+; Setup area and log
+;---------------------------------------------------
+  area.clear
+  area.reset
+  area.create CB_Logs 1000. 8192.
+  area.select CB_Logs
+
+  ;winclear
+  ;b.d /all
+
+  if FILE.EXIST("C:\TEMP\WIN.CMM")
+    do C:\TEMP\WIN.CMM
+
+  area.view CB_Logs
+
+  PRINT %String "Source Path:     &srcpath"
+
+  symbol.sourcepath.setbasedir &srcpath\src
+
+  PRINT "pbl32_to_bootblock64 jump"
+  do pbl32_to_bootblock64_jump.cmm
+  do clear_bss.cmm
+  WAIT 5s
+  b
+
+  // Make parsing simple, upper-case parameters
+  &Imagename=STRING.UPR("&Imagename")
+  IF (STR.CP("&ImageName","DEBUG,*"))
+  (
+    &debug="DEBUG"
+  )
+  ELSE
+  (
+    &debug=""
+  )
+  &Imagename=STR.CUT("&ImageName",6)
+  IF "&debug"==""
+  (
+    PRINT "SPI_RAM LOAD"
+    &ImageName=STRING.UPR("&ImageName")
+    IF "&ImageName"==""
+    (
+      &ImageName="RAM,BB" //for RAM load Bootblock only and jump till DC
+    )
+    PRINT "&ImageName"
+  )
+  ELSE
+  (
+    if (STR.CP("&debug","DEBUG"))
+    (
+      PRINT "DEBUG"
+      &ImageName=STRING.UPR("&ImageName")
+      IF "&ImageName"==""
+      (
+        &ImageName="RAM,ALL" //for RAM loading all the images
+      )
+      PRINT "&ImageName"
+    )
+  )
+
+  DO debug_cb_common.cmm &TargetPkg &srcpath &xblsrcpath &ImageName
+
+  enddo

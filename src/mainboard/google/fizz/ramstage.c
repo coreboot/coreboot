@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <baseboard/variants.h>
 #include <bootmode.h>
 #include <console/console.h>
 #include <delay.h>
@@ -50,6 +51,8 @@ static void wait_for_hpd(gpio_t gpio, long timeout)
 
 void mainboard_silicon_init_params(FSP_SIL_UPD *params)
 {
+	const struct pad_config *pads;
+	size_t num;
 	static const long display_timeout_ms = 3000;
 
 	/* This is reconfigured back to whatever FSP-S expects by
@@ -61,5 +64,6 @@ void mainboard_silicon_init_params(FSP_SIL_UPD *params)
 			wait_for_hpd(GPIO_DP_HPD, display_timeout_ms);
 	}
 
-	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+	pads = variant_gpio_table(&num);
+	gpio_configure_pads(pads, num);
 }

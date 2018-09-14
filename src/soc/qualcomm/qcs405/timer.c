@@ -13,15 +13,11 @@
  * GNU General Public License for more details.
  */
 
-#include <timer.h>
 #include <delay.h>
-
-void timer_monotonic_get(struct mono_time *mt)
-{
-
-}
+#include <arch/lib_helpers.h>
+#include <commonlib/helpers.h>
 
 void init_timer(void)
 {
-
+	raw_write_cntfrq_el0(19200*KHz);
 }

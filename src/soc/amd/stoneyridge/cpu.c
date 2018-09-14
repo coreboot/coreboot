@@ -121,6 +121,23 @@ static void model_15_init(struct device *dev)
 {
 	check_mca();
 	setup_lapic();
+
+	/*
+	 * Per AMD, sync an undocumented MSR with the PSP base address.
+	 * Experiments showed that if you write to the MSR after it has
+	 * been previously programmed, it causes a general protection fault.
+	 * Also, the MSR survives warm reset and S3 cycles, so we need to
+	 * test if it was previously written before writing to it.
+	 */
+	msr_t psp_msr;
+	uint32_t psp_bar; /* Note: NDA BKDG names this 32-bit register BAR3 */
+	psp_bar = pci_read_config32(SOC_PSP_DEV, PCI_BASE_ADDRESS_4);
+	psp_bar &= ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+	psp_msr = rdmsr(0xc00110a2);
+	if (psp_msr.lo == 0) {
+		psp_msr.lo = psp_bar;
+		wrmsr(0xc00110a2, psp_msr);
+	}
 }
 
 static struct device_operations cpu_dev_ops = {

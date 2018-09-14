@@ -29,4 +29,9 @@ const struct pad_config *variant_early_gpio_table(size_t *num);
 
 const struct cros_gpio *variant_cros_gpios(size_t *num);
 
+struct nhlt;
+void variant_nhlt_init(struct nhlt *nhlt);
+void variant_nhlt_oem_overrides(const char **oem_id, const char **oem_table_id,
+				uint32_t *oem_revision);
+
 #endif /* __BASEBOARD_VARIANTS_H__ */

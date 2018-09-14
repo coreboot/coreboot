@@ -14,7 +14,7 @@
  */
 
 #include <arch/acpi.h>
-#include <console/console.h>
+#include <baseboard/variants.h>
 #include <chip.h>
 #include <device/device.h>
 #include <ec/ec.h>
@@ -194,8 +194,9 @@ static void mainboard_init(struct device *dev)
 static unsigned long mainboard_write_acpi_tables(
 	struct device *device, unsigned long current, acpi_rsdp_t *rsdp)
 {
-	const char *oem_id = "GOOGLE";
-	const char *oem_table_id = "FIZZ";
+	const char *oem_id = NULL;
+	const char *oem_table_id = NULL;
+	uint32_t oem_revision = 0;
 	uintptr_t start_addr;
 	uintptr_t end_addr;
 	struct nhlt *nhlt;
@@ -206,12 +207,11 @@ static unsigned long mainboard_write_acpi_tables(
 	if (!nhlt)
 		return start_addr;
 
-	/* RT5663 Headset codec */
-	if (nhlt_soc_add_rt5663(nhlt, AUDIO_LINK_SSP1))
-		printk(BIOS_ERR, "Couldn't add headset codec.\n");
+	variant_nhlt_init(nhlt);
+	variant_nhlt_oem_overrides(&oem_id, &oem_table_id, &oem_revision);
 
 	end_addr = nhlt_soc_serialize_oem_overrides(nhlt, start_addr,
-				oem_id, oem_table_id, 0);
+				oem_id, oem_table_id, oem_revision);
 
 	if (end_addr != start_addr)
 		acpi_add_table(rsdp, (void *)start_addr);

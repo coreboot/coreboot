@@ -312,7 +312,11 @@ static void google_chromeec_set_lazy_wake_masks(uint64_t s5_mask,
 		printk(BIOS_DEBUG, "Error: Set S5 LAZY WAKE mask failed\n");
 	if (google_chromeec_set_s3_lazy_wake_mask(s3_mask))
 		printk(BIOS_DEBUG, "Error: Set S3 LAZY WAKE mask failed\n");
-	if (google_chromeec_set_s0ix_lazy_wake_mask(s0ix_mask))
+	/*
+	 * Make sure S0Ix is supported before trying to set up the EC's
+	 * S0Ix lazy wake mask.
+	 */
+	if (s0ix_mask && google_chromeec_set_s0ix_lazy_wake_mask(s0ix_mask))
 		printk(BIOS_DEBUG, "Error: Set S0iX LAZY WAKE mask failed\n");
 }
 

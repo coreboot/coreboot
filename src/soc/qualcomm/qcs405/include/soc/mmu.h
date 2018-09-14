@@ -13,10 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <bootblock_common.h>
-#include <soc/mmu.h>
+#ifndef _SOC_QUALCOMM_QCS405_MMU_H__
+#define _SOC_QUALCOMM_QCS405_MMU_H__
 
-void bootblock_soc_init(void)
-{
-	qcs405_mmu_init();
-}
+void qcs405_mmu_init(void);
+
+#endif  // _SOC_QUALCOMM_QCS405_MMU_H_

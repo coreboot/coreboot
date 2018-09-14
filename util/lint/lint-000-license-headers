@@ -106,6 +106,7 @@ check_for_license 'assumes any liability or responsibility for the use'
 check_for_license 'THE AUTHORS DISCLAIM.*ALL WARRANTIES WITH REGARD TO THIS SOFTWARE'
 check_for_license 'No license required'
 check_for_license 'GNU Lesser General Public'
+check_for_license 'SPDX-License-Identifier:.*GPL-2.0-or-later'
 
 for file in $headerlist; do
 	# Verify the file exists, and has content that requires a header

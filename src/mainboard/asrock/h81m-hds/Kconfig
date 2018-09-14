@@ -74,10 +74,6 @@ config MAX_CPUS
 	int
 	default 8
 
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf0000000
-
 #
 # Since this is a desktop board, the assumption is made that most users
 # would want CMOS configuration enabled by default.

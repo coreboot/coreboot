@@ -53,10 +53,6 @@ config GBB_HWID
 	default "X86 TRICKY TEST 4487" if BOARD_GOOGLE_TRICKY
 	default "X86 ZAKO TEST 8602" if BOARD_GOOGLE_ZAKO
 
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf0000000
-
 config MAX_CPUS
 	int
 	default 8

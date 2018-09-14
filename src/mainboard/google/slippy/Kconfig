@@ -58,10 +58,6 @@ config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf0000000
-
 config MAX_CPUS
 	int
 	default 8

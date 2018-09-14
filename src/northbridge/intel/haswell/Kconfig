@@ -36,6 +36,10 @@ config VGA_BIOS_ID
 	string
 	default "8086,0166"
 
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
 config CACHE_MRC_SIZE_KB
 	int
 	default 512

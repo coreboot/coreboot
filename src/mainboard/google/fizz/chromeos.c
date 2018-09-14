@@ -15,6 +15,7 @@
 
 #include <gpio.h>
 #include <rules.h>
+#include <baseboard/variants.h>
 #include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
@@ -44,12 +45,11 @@ int get_write_protect_state(void)
 	return gpio_get(GPIO_PCH_WP);
 }
 
-static const struct cros_gpio cros_gpios[] = {
-	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
-	CROS_GPIO_WP_AH(GPIO_PCH_WP, CROS_GPIO_DEVICE_NAME),
-};
-
 void mainboard_chromeos_acpi_generate(void)
 {
-	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
+	const struct cros_gpio *gpios;
+	size_t num;
+
+	gpios = variant_cros_gpios(&num);
+	chromeos_acpi_gpio_generate(gpios, num);
 }

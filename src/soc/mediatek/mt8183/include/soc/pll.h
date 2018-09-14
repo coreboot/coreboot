@@ -255,6 +255,7 @@ enum {
 	TVDPLL_HZ	= 594 * MHz,
 	APLL1_HZ	= 180633600,
 	APLL2_HZ	= 196608 * KHz,
+	MPLL_HZ		= 208 * MHz,
 };
 
 /* top_div rate */

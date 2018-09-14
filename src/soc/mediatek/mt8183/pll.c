@@ -208,15 +208,16 @@ enum pll_id {
 	APMIXED_TVDPLL,
 	APMIXED_APLL1,
 	APMIXED_APLL2,
-	APMIXED_NR_PLL
+	APMIXED_MPLL,
+	APMIXED_PLL_MAX
 };
 
 const u32 pll_div_rate[] = {
 	3800UL * MHz,
-	1248 * MHz,
-	624 * MHz,
-	384 * MHz,
-	200 * MHz,
+	1900 * MHz,
+	950 * MHz,
+	475 * MHz,
+	237500 * KHz,
 	0,
 };
 
@@ -254,6 +255,9 @@ static const struct pll plls[] = {
 	PLL(APMIXED_APLL2, apll2_con0, apll2_pwr_con0,
 		NO_RSTB_SHIFT, 32, apll2_con0, 1, apll2_con1, 0,
 		pll_div_rate),
+	PLL(APMIXED_MPLL, mpll_con0, mpll_pwr_con0,
+		NO_RSTB_SHIFT, 22, mpll_con1, 24, mpll_con1, 0,
+		pll_div_rate),
 };
 
 struct rate {
@@ -273,6 +277,7 @@ static const struct rate rates[] = {
 	{ .id = APMIXED_TVDPLL, .rate = TVDPLL_HZ },
 	{ .id = APMIXED_APLL1, .rate = APLL1_HZ },
 	{ .id = APMIXED_APLL2, .rate = APLL2_HZ },
+	{ .id = APMIXED_MPLL, .rate = MPLL_HZ },
 };
 
 void pll_set_pcw_change(const struct pll *pll)
@@ -291,13 +296,13 @@ void mt_pll_init(void)
 	setbits_le32(&mtk_apmixed->ap_pll_con0, 0x2);
 
 	/* xPLL PWR ON */
-	for (i = 0; i < APMIXED_NR_PLL; i++)
+	for (i = 0; i < APMIXED_PLL_MAX; i++)
 		setbits_le32(plls[i].pwr_reg, PLL_PWR_ON);
 
 	udelay(PLL_PWR_ON_DELAY);
 
 	/* xPLL ISO Disable */
-	for (i = 0; i < APMIXED_NR_PLL; i++)
+	for (i = 0; i < APMIXED_PLL_MAX; i++)
 		clrbits_le32(plls[i].pwr_reg, PLL_ISO);
 
 	udelay(PLL_ISO_DELAY);
@@ -313,14 +318,14 @@ void mt_pll_init(void)
 		read32(&mtk_apmixed->apll2_con1) + 1);
 
 	/* xPLL Frequency Enable */
-	for (i = 0; i < APMIXED_NR_PLL; i++)
+	for (i = 0; i < APMIXED_PLL_MAX; i++)
 		setbits_le32(plls[i].reg, PLL_EN);
 
 	/* wait for PLL stable */
 	udelay(PLL_EN_DELAY);
 
 	/* xPLL DIV RSTB */
-	for (i = 0; i < APMIXED_NR_PLL; i++) {
+	for (i = 0; i < APMIXED_PLL_MAX; i++) {
 		if (plls[i].rstb_shift != NO_RSTB_SHIFT)
 			setbits_le32(plls[i].reg, 1 << plls[i].rstb_shift);
 	}

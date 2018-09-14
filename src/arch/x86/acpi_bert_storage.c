@@ -311,9 +311,9 @@ cper_ia32x64_context_t *new_cper_ia32x64_ctx(
 			"MSR Registers",
 			"32-bit Mode Execution",
 			"64-bit Mode Execution",
-			"FXSAVE"
-			"32-bit Mode Debug"
-			"64-bit Mode Debug"
+			"FXSAVE",
+			"32-bit Mode Debug",
+			"64-bit Mode Debug",
 			"Memory Mapped"
 	};
 

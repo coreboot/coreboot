@@ -25,6 +25,10 @@
 #include <variant/spd.h>
 #include "variant.h"
 
+__weak void variant_romstage_entry(struct romstage_params *rp)
+{
+}
+
 void mainboard_romstage_entry(struct romstage_params *rp)
 {
 	struct pei_data pei_data;
@@ -43,6 +47,6 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 	/* Call into the real romstage main with this board's attributes. */
 	romstage_common(rp);
 
-	/* Do variant-specific (read: Samus) init */
+	/* Do variant-specific init */
 	variant_romstage_entry(rp);
 }

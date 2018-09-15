@@ -23,7 +23,9 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 romstage-y += variants/$(VARIANT_DIR)/pei_data.c
 ramstage-y += variants/$(VARIANT_DIR)/pei_data.c
 
+ifneq ($(CONFIG_BOARD_GOOGLE_BUDDY),y)
 romstage-y += variants/$(VARIANT_DIR)/variant.c
+endif
 ramstage-y += variants/$(VARIANT_DIR)/variant.c
 
 subdirs-y += variants/$(VARIANT_DIR)

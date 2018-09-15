@@ -20,5 +20,6 @@
 
 int variant_smbios_data(device_t dev, int *handle, unsigned long *current);
 void variant_romstage_entry(struct romstage_params *rp);
+void lan_init(void);
 
 #endif

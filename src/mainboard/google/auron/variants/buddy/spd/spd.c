@@ -14,30 +14,19 @@
  * GNU General Public License for more details.
  */
 
-#include <variant/onboard.h>
+#include <soc/pei_data.h>
+#include <variant/spd.h>
 
-#if !IS_ENABLED(CONFIG_BOARD_GOOGLE_BUDDY)
-Scope (\_SB.PCI0.RP01)
+/* Copy SPD data for on-board memory */
+void mainboard_fill_spd_data(struct pei_data *pei_data)
 {
-	Device (WLAN)
-	{
-		Name (_ADR, 0x00000000)
-
-		Name (_PRW, Package() { BOARD_WLAN_WAKE_GPIO, 3 })
-
-		Method (_DSW, 3, NotSerialized)
-		{
-			Store (BOARD_WLAN_WAKE_GPIO, Local0)
-			If (LEqual (Arg0, 1)) {
-				// Enable GPIO as wake source
-				\_SB.PCI0.LPCB.GPIO.GWAK (Local0)
-			}
-		}
-	}
+	pei_data->spd_addresses[0] = 0xa0;
+	pei_data->spd_addresses[1] = 0x00;
+	pei_data->spd_addresses[2] = 0xa4;
+	pei_data->spd_addresses[3] = 0x00;
+	pei_data->dimm_channel0_disabled = 2;
+	pei_data->dimm_channel1_disabled = 2;
+	/* Enable 2x refresh mode */
+	pei_data->ddr_refresh_2x = 1;
+	pei_data->dq_pins_interleaved = 1;
 }
-#endif
-
-#include <variant/acpi/mainboard.asl>
-
-/* USB port entries */
-#include <variant/acpi/usb.asl>

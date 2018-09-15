@@ -8,6 +8,10 @@ config BOARD_GOOGLE_AURON_YUNA
 	bool "->  Auron_Yuna (Acer Chromebook 15 (C910/CB5-531))"
 	select BOARD_GOOGLE_BASEBOARD_AURON
 
+config BOARD_GOOGLE_BUDDY
+	bool "->  Buddy (Acer Chromebase 24)"
+	select BOARD_GOOGLE_BASEBOARD_AURON
+
 config BOARD_GOOGLE_GANDOF
 	bool "->  Gandof (Toshiba Chromebook 2 (2015))"
 	select BOARD_GOOGLE_BASEBOARD_AURON

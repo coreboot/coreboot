@@ -20,9 +20,14 @@
 #include "variant.h"
 
 
+__weak void lan_init(void)
+{
+}
+
 static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
+	lan_init();
 }
 
 static int mainboard_smbios_data(struct device *dev, int *handle,

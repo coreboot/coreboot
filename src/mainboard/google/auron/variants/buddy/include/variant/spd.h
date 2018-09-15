@@ -14,30 +14,10 @@
  * GNU General Public License for more details.
  */
 
-#include <variant/onboard.h>
+#ifndef MAINBOARD_SPD_H
+#define MAINBOARD_SPD_H
 
-#if !IS_ENABLED(CONFIG_BOARD_GOOGLE_BUDDY)
-Scope (\_SB.PCI0.RP01)
-{
-	Device (WLAN)
-	{
-		Name (_ADR, 0x00000000)
+struct pei_data;
+void mainboard_fill_spd_data(struct pei_data *pei_data);
 
-		Name (_PRW, Package() { BOARD_WLAN_WAKE_GPIO, 3 })
-
-		Method (_DSW, 3, NotSerialized)
-		{
-			Store (BOARD_WLAN_WAKE_GPIO, Local0)
-			If (LEqual (Arg0, 1)) {
-				// Enable GPIO as wake source
-				\_SB.PCI0.LPCB.GPIO.GWAK (Local0)
-			}
-		}
-	}
-}
 #endif
-
-#include <variant/acpi/mainboard.asl>
-
-/* USB port entries */
-#include <variant/acpi/usb.asl>

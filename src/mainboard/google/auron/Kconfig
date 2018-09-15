@@ -12,7 +12,7 @@ config BOARD_GOOGLE_BASEBOARD_AURON
 	select MAINBOARD_HAS_LPC_TPM
 	select MAINBOARD_HAS_TPM1
 	select INTEL_INT15
-	select SYSTEM_TYPE_LAPTOP
+	select SYSTEM_TYPE_LAPTOP if !BOARD_GOOGLE_BUDDY
 
 if BOARD_GOOGLE_BASEBOARD_AURON
 
@@ -32,6 +32,7 @@ config VARIANT_DIR
 	string
 	default "auron_paine" if BOARD_GOOGLE_AURON_PAINE
 	default "auron_yuna" if BOARD_GOOGLE_AURON_YUNA
+	default "buddy" if BOARD_GOOGLE_BUDDY
 	default "gandof" if BOARD_GOOGLE_GANDOF
 	default "lulu" if BOARD_GOOGLE_LULU
 	default "samus" if BOARD_GOOGLE_SAMUS
@@ -40,6 +41,7 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Auron_Paine" if BOARD_GOOGLE_AURON_PAINE
 	default "Auron_Yuna" if BOARD_GOOGLE_AURON_YUNA
+	default "Buddy" if BOARD_GOOGLE_BUDDY
 	default "Gandof" if BOARD_GOOGLE_GANDOF
 	default "Lulu" if BOARD_GOOGLE_LULU
 	default "Samus" if BOARD_GOOGLE_SAMUS
@@ -49,6 +51,7 @@ config GBB_HWID
 	depends on CHROMEOS
 	default "PAINE TEST A-A 8843" if BOARD_GOOGLE_AURON_PAINE
 	default "YUNA TEST A-A 3347" if BOARD_GOOGLE_AURON_YUNA
+	default "BUDDY TEST A-A 6186" if BOARD_GOOGLE_BUDDY
 	default "GANDOF TEST A-A 7705" if BOARD_GOOGLE_GANDOF
 	default "LULU TEST A-A 7705" if BOARD_GOOGLE_LULU
 	default "SAMUS TEST 8028" if BOARD_GOOGLE_SAMUS
@@ -57,6 +60,7 @@ config DEVICETREE
 	string
 	default "variants/auron_paine/devicetree.cb" if BOARD_GOOGLE_AURON_PAINE
 	default "variants/auron_yuna/devicetree.cb" if BOARD_GOOGLE_AURON_YUNA
+	default "variants/buddy/devicetree.cb" if BOARD_GOOGLE_BUDDY
 	default "variants/gandof/devicetree.cb" if BOARD_GOOGLE_GANDOF
 	default "variants/lulu/devicetree.cb" if BOARD_GOOGLE_LULU
 	default "variants/samus/devicetree.cb" if BOARD_GOOGLE_SAMUS

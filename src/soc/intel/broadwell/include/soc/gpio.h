@@ -148,6 +148,11 @@
 	  .owner = GPIO_OWNER_GPIO, \
 	  .pirq  = GPIO_PIRQ_APIC_ROUTE }
 
+#define PCH_GPIO_PIRQ_INVERT \
+	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT | GPIO_INVERT, \
+	  .owner = GPIO_OWNER_GPIO, \
+	  .pirq  = GPIO_PIRQ_APIC_ROUTE }
+
 #define PCH_GPIO_OUT_HIGH \
 	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_OUTPUT | GPO_LEVEL_HIGH, \
 	  .owner = GPIO_OWNER_GPIO, \

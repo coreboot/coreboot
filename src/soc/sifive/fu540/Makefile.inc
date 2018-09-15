@@ -21,6 +21,7 @@ bootblock-y += bootblock.c
 romstage-y += uart.c
 romstage-y += media.c
 romstage-y += sdram.c
+romstage-y += cbmem.c
 romstage-y += otp.c
 romstage-y += clock.c
 

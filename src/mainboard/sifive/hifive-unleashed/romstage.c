@@ -42,5 +42,7 @@ void main(void)
 
 	sdram_init();
 
+	cbmem_initialize_empty();
+
 	run_ramstage();
 }

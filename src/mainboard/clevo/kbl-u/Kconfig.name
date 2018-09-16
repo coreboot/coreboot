@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+comment "Kaby Lake U"
+
+config BOARD_CLEVO_N130WU
+	bool "N130WU / N131WU"

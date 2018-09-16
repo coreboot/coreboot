@@ -26,6 +26,10 @@ This section contains documentation about coreboot on specific mainboards.
 
 - [CN81XX EVB SFF](cavium/cn8100_sff_evb.md)
 
+## Clevo
+
+- [N130WU / N131WU](clevo/n130wu/index.md)
+
 ## Dell
 
 - [OptiPlex 9010 SFF](dell/optiplex_9010.md)

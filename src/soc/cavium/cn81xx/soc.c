@@ -326,7 +326,7 @@ void bootmem_platform_add_ranges(void)
 			  BM_MEM_RESERVED);
 }
 
-static void soc_read_resources(device_t dev)
+static void soc_read_resources(struct device *dev)
 {
 	// HACK: Don't advertise bootblock romstage CAR region, it's broken...
 	ram_resource(dev, 0, 2 * KiB, sdram_size_mb() * KiB - 2 * KiB);
@@ -358,7 +358,7 @@ static void soc_init_atf(void)
 		register_bl31_param(&cbtable_param.h);
 }
 
-static void soc_init(device_t dev)
+static void soc_init(struct device *dev)
 {
 	/* Init ECAM, MDIO, PEM, PHY, QLM ... */
 	bdk_boot();
@@ -378,7 +378,7 @@ static void soc_init(device_t dev)
 		soc_init_atf();
 }
 
-static void soc_final(device_t dev)
+static void soc_final(struct device *dev)
 {
 	watchdog_disable(0);
 }
@@ -392,7 +392,7 @@ static struct device_operations soc_ops = {
 	.scan_bus         = NULL,
 };
 
-static void enable_soc_dev(device_t dev)
+static void enable_soc_dev(struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN &&
 		dev->path.domain.domain == 0) {

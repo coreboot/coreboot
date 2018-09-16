@@ -13,6 +13,7 @@
 ## GNU General Public License for more details.
 ##
 
+romstage-y += gpio.c
 romstage-y += dock.c
 
 ramstage-y += dock.c

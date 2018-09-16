@@ -583,7 +583,7 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 {
 	uint8_t *p;
 
-	device_t nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!nb_dev) {
 
 		printk(BIOS_WARNING, "%s: G-series northbridge device not present!\n", __func__);

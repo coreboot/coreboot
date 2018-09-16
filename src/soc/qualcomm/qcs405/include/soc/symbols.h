@@ -21,5 +21,6 @@
 
 DECLARE_REGION(ssram);
 DECLARE_REGION(bsram);
+DECLARE_REGION(dram_reserved);
 
 #endif // _SOC_QUALCOMM_QCS405_SYMBOLS_H_

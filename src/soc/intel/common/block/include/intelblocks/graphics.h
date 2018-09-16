@@ -34,7 +34,7 @@ void graphics_soc_init(struct device *dev);
 /*
  * Write ASL entry for Graphics opregion
  * Input:
- * device_t device: device structure
+ * struct device *device: device structure
  * current: start address of graphics opregion
  * rsdp: pointer to RSDT (and XSDT) structure
  *

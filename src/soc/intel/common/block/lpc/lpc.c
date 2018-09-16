@@ -46,7 +46,7 @@ void pch_lpc_add_new_resource(struct device *dev, uint8_t offset,
 	res->flags = flags;
 }
 
-static void pch_lpc_add_io_resources(device_t dev)
+static void pch_lpc_add_io_resources(struct device *dev)
 {
 	/* Add the default claimed legacy IO range for the LPC device. */
 	pch_lpc_add_new_resource(dev, 0, 0, 0x1000, IORESOURCE_IO |
@@ -56,7 +56,7 @@ static void pch_lpc_add_io_resources(device_t dev)
 	pch_lpc_soc_fill_io_resources(dev);
 }
 
-static void pch_lpc_read_resources(device_t dev)
+static void pch_lpc_read_resources(struct device *dev)
 {
 	/* Get the PCI resources of this device. */
 	pci_dev_read_resources(dev);
@@ -101,7 +101,7 @@ static void pch_lpc_set_child_resources(struct device *dev)
 	}
 }
 
-static void pch_lpc_set_resources(device_t dev)
+static void pch_lpc_set_resources(struct device *dev)
 {
 	pci_dev_set_resources(dev);
 

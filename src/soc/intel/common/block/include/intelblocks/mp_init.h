@@ -75,7 +75,7 @@ void get_microcode_info(const void **microcode, int *parallel);
  * In this function SOC must perform CPU feature programming
  * during Ramstage phase.
  */
-void soc_core_init(device_t dev);
+void soc_core_init(struct device *dev);
 
 /*
  * In this function SOC must fill required mp_ops params, also it

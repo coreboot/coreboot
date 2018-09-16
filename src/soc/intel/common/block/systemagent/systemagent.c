@@ -88,7 +88,7 @@ static const struct sa_mem_map_descriptor sa_memory_map[MAX_MAP_ENTRIES] = {
 };
 
 /* Read DRAM memory map register value through PCI configuration space */
-static void sa_read_map_entry(device_t dev,
+static void sa_read_map_entry(struct device *dev,
 		const struct sa_mem_map_descriptor *entry, uint64_t *result)
 {
 	uint64_t value = 0;
@@ -213,7 +213,8 @@ static bool is_imr_enabled(uint32_t imr_base_reg)
 	return !!(imr_base_reg & (1 << 31));
 }
 
-static void imr_resource(device_t dev, int idx, uint32_t base, uint32_t mask)
+static void imr_resource(struct device *dev, int idx, uint32_t base,
+			 uint32_t mask)
 {
 	uint32_t base_k, size_k;
 	/* Bits 28:0 encode the base address bits 38:10, hence the KiB unit. */

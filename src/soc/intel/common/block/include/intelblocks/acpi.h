@@ -42,7 +42,7 @@ void soc_write_sci_irq_select(uint32_t scis);
  * Calls acpi_write_hpet which creates and fills HPET table and
  * adds it to the RSDT (and XSDT) structure.
  */
-unsigned long southbridge_write_acpi_tables(device_t device,
+unsigned long southbridge_write_acpi_tables(struct device *device,
 					    unsigned long current,
 					    struct acpi_rsdp *rsdp);
 
@@ -50,7 +50,7 @@ unsigned long southbridge_write_acpi_tables(device_t device,
  * Creates acpi gnvs and adds it to the DSDT table.
  * GNVS creation is chipset specific and is done in soc specific acpi.c file.
  */
-void southbridge_inject_dsdt(device_t device);
+void southbridge_inject_dsdt(struct device *device);
 
 /*
  * This function populates the gnvs structure in acpi table.

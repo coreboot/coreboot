@@ -22,7 +22,7 @@
 #include <soc/smbus.h>
 #include "smbuslib.h"
 
-static int lsmbus_read_byte(device_t dev, u8 address)
+static int lsmbus_read_byte(struct device *dev, u8 address)
 {
 	u16 device;
 	struct resource *res;
@@ -33,7 +33,7 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	return smbus_read8(res->base, device, address);
 }
 
-static int lsmbus_write_byte(device_t dev, u8 address, u8 data)
+static int lsmbus_write_byte(struct device *dev, u8 address, u8 data)
 {
 	u16 device;
 	struct resource *res;
@@ -50,7 +50,7 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.write_byte	= lsmbus_write_byte,
 };
 
-static void pch_smbus_init(device_t dev)
+static void pch_smbus_init(struct device *dev)
 {
 	struct resource *res;
 
@@ -64,7 +64,7 @@ static void pch_smbus_init(device_t dev)
 		outb(SMBUS_SLAVE_ADDR, res->base + SMB_RCV_SLVA);
 }
 
-static void smbus_read_resources(device_t dev)
+static void smbus_read_resources(struct device *dev)
 {
 	struct resource *res = new_resource(dev, PCI_BASE_ADDRESS_4);
 	res->base = SMBUS_IO_BASE;

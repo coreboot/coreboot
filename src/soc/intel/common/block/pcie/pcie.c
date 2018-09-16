@@ -64,7 +64,7 @@ static void pch_pcie_init(struct device *dev)
 	pci_write_config16(dev, PCI_SEC_STATUS, reg16);
 }
 
-static void pcie_set_L1_ss_max_latency(device_t dev, unsigned int offset)
+static void pcie_set_L1_ss_max_latency(struct device *dev, unsigned int offset)
 {
 	/* Set max snoop and non-snoop latency for the SOC */
 	pci_write_config32(dev, offset,

@@ -52,10 +52,6 @@ config HEAP_SIZE
 	hex
 	default 0xc0000
 
-config RAMTOP
-	hex
-	default 0x400000
-
 config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 	default "northbridge/amd/amdfam10/bootblock.c"

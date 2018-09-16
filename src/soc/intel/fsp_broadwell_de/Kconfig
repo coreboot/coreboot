@@ -32,10 +32,6 @@ config CBFS_SIZE
 	hex
 	default 0x200000
 
-config RAMTOP
-	hex
-	default 0x400000
-
 config HEAP_SIZE
 	hex
 	default 0x100000

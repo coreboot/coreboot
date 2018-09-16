@@ -23,8 +23,3 @@ void arch_prog_run(struct prog *prog)
 
 	doit(cb_tables);
 }
-
-int arch_supports_bounce_buffer(void)
-{
-	return 0;
-}

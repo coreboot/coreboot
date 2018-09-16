@@ -89,47 +89,52 @@ typedef struct __PCIE_CFG__ {
 extern PCIE_CFG AtiPcieCfg;
 
 /* ----------------- export functions ----------------- */
-u32 nbpcie_p_read_index(device_t dev, u32 index);
-void nbpcie_p_write_index(device_t dev, u32 index, u32 data);
-u32 nbpcie_ind_read_index(device_t nb_dev, u32 index);
-void nbpcie_ind_write_index(device_t nb_dev, u32 index, u32 data);
-uint32_t l2cfg_ind_read_index(device_t nb_dev, uint32_t index);
-void l2cfg_ind_write_index(device_t nb_dev, uint32_t index, uint32_t data);
-uint32_t l1cfg_ind_read_index(device_t nb_dev, uint32_t index);
-void l1cfg_ind_write_index(device_t nb_dev, uint32_t index, uint32_t data);
-u32 pci_ext_read_config32(device_t nb_dev, device_t dev, u32 reg);
-void pci_ext_write_config32(device_t nb_dev, device_t dev, u32 reg, u32 mask, u32 val);
-void sr5650_set_tom(device_t nb_dev);
+u32 nbpcie_p_read_index(struct device *dev, u32 index);
+void nbpcie_p_write_index(struct device *dev, u32 index, u32 data);
+u32 nbpcie_ind_read_index(struct device *nb_dev, u32 index);
+void nbpcie_ind_write_index(struct device *nb_dev, u32 index, u32 data);
+uint32_t l2cfg_ind_read_index(struct device *nb_dev, uint32_t index);
+void l2cfg_ind_write_index(struct device *nb_dev, uint32_t index,
+			   uint32_t data);
+uint32_t l1cfg_ind_read_index(struct device *nb_dev, uint32_t index);
+void l1cfg_ind_write_index(struct device *nb_dev, uint32_t index,
+			   uint32_t data);
+u32 pci_ext_read_config32(struct device *nb_dev, struct device *dev, u32 reg);
+void pci_ext_write_config32(struct device *nb_dev, struct device *dev, u32 reg,
+			    u32 mask, u32 val);
+void sr5650_set_tom(struct device *nb_dev);
 
-unsigned long southbridge_write_acpi_tables(device_t device, unsigned long current,
-						struct acpi_rsdp *rsdp);
+unsigned long southbridge_write_acpi_tables(struct device *device,
+					    unsigned long current,
+					    struct acpi_rsdp *rsdp);
 
 void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add);
-void enable_pcie_bar3(device_t nb_dev);
-void disable_pcie_bar3(device_t nb_dev);
+void enable_pcie_bar3(struct device *nb_dev);
+void disable_pcie_bar3(struct device *nb_dev);
 
 void enable_sr5650_dev8(void);
 void sr5650_htinit(void);
 void sr5650_htinit_dect_and_enable_isochronous_link(void);
 void sr5650_early_setup(void);
 void sr5650_before_pci_init(void);
-void sr5650_enable(device_t dev);
-void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port);
-void sr5650_gfx_init(device_t nb_dev, device_t dev, u32 port);
-void avoid_lpc_dma_deadlock(device_t nb_dev, device_t sb_dev);
-void config_gpp_core(device_t nb_dev, device_t sb_dev);
-void PcieReleasePortTraining(device_t nb_dev, device_t dev, u32 port);
-u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port);
-void pcie_config_misc_clk(device_t nb_dev);
+void sr5650_enable(struct device *dev);
+void sr5650_gpp_sb_init(struct device *nb_dev, struct device *dev, u32 port);
+void sr5650_gfx_init(struct device *nb_dev, struct device *dev, u32 port);
+void avoid_lpc_dma_deadlock(struct device *nb_dev, struct device *sb_dev);
+void config_gpp_core(struct device *nb_dev, struct device *sb_dev);
+void PcieReleasePortTraining(struct device *nb_dev, struct device *dev,
+			     u32 port);
+u8 PcieTrainPort(struct device *nb_dev, struct device *dev, u32 port);
+void pcie_config_misc_clk(struct device *nb_dev);
 void fam10_optimization(void);
 void sr5650_disable_pcie_bridge(void);
-u32 get_vid_did(device_t dev);
-void detect_and_enable_iommu(device_t iommu_dev);
-void sr5650_iommu_read_resources(device_t dev);
-void sr5650_iommu_set_resources(device_t dev);
-void sr5650_iommu_enable_resources(device_t dev);
-void sr5650_nb_pci_table(device_t nb_dev);
-void init_gen2(device_t nb_dev, device_t dev, u8 port);
+u32 get_vid_did(struct device *dev);
+void detect_and_enable_iommu(struct device *iommu_dev);
+void sr5650_iommu_read_resources(struct device *dev);
+void sr5650_iommu_set_resources(struct device *dev);
+void sr5650_iommu_enable_resources(struct device *dev);
+void sr5650_nb_pci_table(struct device *nb_dev);
+void init_gen2(struct device *nb_dev, struct device *dev, u8 port);
 void sr56x0_lock_hwinitreg(void);
 struct resource * sr5650_retrieve_cpu_mmio_resource(void);
 #endif /* __SR5650_H__ */

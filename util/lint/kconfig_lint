@@ -682,6 +682,13 @@ sub build_and_parse_kconfig_tree {
             push( @inside_menu, $menu );
         }
 
+        # visible if <expr>
+        elsif ( $line =~ /^\s*visible if.*$/ ) {
+	    # Must come directly after menu line (and on a separate line)
+	    # but kconfig already checks for that.
+	    # Ignore it.
+        }
+
         # endmenu
         elsif ( $line =~ /^\s*endmenu/ ) {
             $inside_config = "";

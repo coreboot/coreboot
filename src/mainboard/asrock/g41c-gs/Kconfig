@@ -41,6 +41,12 @@ config MAINBOARD_DIR
 	string
 	default "asrock/g41c-gs"
 
+config VARIANT_DIR
+	string
+	default "g41c-gs-r2" if BOARD_ASROCK_G41C_GS_R2_0
+	default "g41c-gs" if BOARD_ASROCK_G41C_GS
+	default "g41m-gs" if BOARD_ASROCK_G41M_GS
+
 config MAINBOARD_PART_NUMBER
 	string
 	default "G41C-GS R2.0" if BOARD_ASROCK_G41C_GS_R2_0

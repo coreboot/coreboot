@@ -1,4 +1,5 @@
-if BOARD_LENOVO_T400 || BOARD_LENOVO_T500 || BOARD_LENOVO_R400 || BOARD_LENOVO_W500
+if BOARD_LENOVO_T400 || BOARD_LENOVO_T500 || BOARD_LENOVO_R400 \
+	|| BOARD_LENOVO_W500
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -28,13 +29,12 @@ config MAINBOARD_DIR
 	string
 	default lenovo/t400
 
-if BOARD_LENOVO_T400
-
 config MAINBOARD_PART_NUMBER
 	string
-	default "ThinkPad T400"
-
-endif
+	default "ThinkPad T400" if BOARD_LENOVO_T400
+	default "ThinkPad T500" if BOARD_LENOVO_T500
+	default "ThinkPad R400" if BOARD_LENOVO_R400
+	default "ThinkPad W500" if BOARD_LENOVO_W500
 
 config USBDEBUG_HCD_INDEX
 	int

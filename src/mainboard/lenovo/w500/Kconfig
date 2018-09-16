@@ -1,7 +1,0 @@
-if BOARD_LENOVO_W500
-
-config MAINBOARD_PART_NUMBER
-	string
-	default "ThinkPad W500"
-
-endif

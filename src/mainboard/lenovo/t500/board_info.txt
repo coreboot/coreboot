@@ -1,6 +1,0 @@
-Category: laptop
-ROM package: SOIC-16 or SOIC-8
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: n
-Clone of: lenovo/t400

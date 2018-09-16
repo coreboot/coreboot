@@ -1,7 +1,0 @@
-if BOARD_LENOVO_R400
-
-config MAINBOARD_PART_NUMBER
-	string
-	default "ThinkPad R400"
-
-endif

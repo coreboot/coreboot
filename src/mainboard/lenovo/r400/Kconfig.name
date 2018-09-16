@@ -1,2 +1,0 @@
-config BOARD_LENOVO_R400
-	bool "ThinkPad R400"

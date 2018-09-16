@@ -75,7 +75,21 @@ void mb_pre_raminit_setup(sysinfo_t *sysinfo)
 	else
 		dock_info();
 
-	hybrid_graphics_init(sysinfo);
+	if (CONFIG(BOARD_LENOVO_R500)) {
+		int use_integrated = get_gpio(21);
+		printk(BIOS_DEBUG, "R500 variant found with an %s GPU\n",
+		       use_integrated ? "integrated" : "discrete");
+		if (use_integrated) {
+			sysinfo->enable_igd = 1;
+			sysinfo->enable_peg = 0;
+		} else {
+			sysinfo->enable_igd = 0;
+			sysinfo->enable_peg = 1;
+		}
+	} else {
+		hybrid_graphics_init(sysinfo);
+	}
+
 }
 
 void mb_post_raminit_setup(void)

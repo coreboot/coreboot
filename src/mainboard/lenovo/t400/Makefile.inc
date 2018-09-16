@@ -13,8 +13,9 @@
 ## GNU General Public License for more details.
 ##
 
-romstage-y += gpio.c
 romstage-y += dock.c
+
+subdirs-y += variants/$(VARIANT_DIR)/
 
 ramstage-y += dock.c
 ramstage-y += cstates.c

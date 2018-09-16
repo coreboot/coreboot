@@ -7,5 +7,8 @@ config BOARD_LENOVO_T500
 config BOARD_LENOVO_R400
 	bool "ThinkPad R400"
 
+config BOARD_LENOVO_R500
+	bool "ThinkPad R500"
+
 config BOARD_LENOVO_W500
 	bool "ThinkPad W500"

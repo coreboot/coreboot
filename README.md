@@ -1,6 +1,5 @@
--------------------------------------------------------------------------------
 coreboot README
--------------------------------------------------------------------------------
+===============
 
 coreboot is a Free Software project aimed at replacing the proprietary BIOS
 (firmware) found in most computers.  coreboot performs a little bit of
@@ -24,7 +23,7 @@ Payloads
 After the basic initialization of the hardware has been performed, any
 desired "payload" can be started by coreboot.
 
-See https://www.coreboot.org/Payloads for a list of supported payloads.
+See <https://www.coreboot.org/Payloads> for a list of supported payloads.
 
 
 Supported Hardware
@@ -34,8 +33,8 @@ coreboot supports a wide range of chipsets, devices, and mainboards.
 
 For details please consult:
 
- * https://www.coreboot.org/Supported_Motherboards
- * https://www.coreboot.org/Supported_Chipsets_and_Devices
+ * <https://www.coreboot.org/Supported_Motherboards>
+ * <https://www.coreboot.org/Supported_Chipsets_and_Devices>
 
 
 Build Requirements
@@ -48,7 +47,7 @@ Build Requirements
    to those patches, sometimes by gcc aborting, sometimes - and that's worse -
    by generating broken object code.
    Two options: use our toolchain (eg. make crosstools-i386) or enable the
-   ANY_TOOLCHAIN Kconfig option if you're feeling lucky (no support in this
+   `ANY_TOOLCHAIN` Kconfig option if you're feeling lucky (no support in this
    case).
  * iasl (for targets with ACPI support)
  * pkg-config
@@ -58,14 +57,14 @@ Optional:
 
  * doxygen (for generating/viewing documentation)
  * gdb (for better debugging facilities on some targets)
- * ncurses (for 'make menuconfig' and 'make nconfig')
+ * ncurses (for `make menuconfig` and `make nconfig`)
  * flex and bison (for regenerating parsers)
 
 
 Building coreboot
 -----------------
 
-Please consult https://www.coreboot.org/Build_HOWTO for details.
+Please consult <https://www.coreboot.org/Build_HOWTO> for details.
 
 
 Testing coreboot Without Modifying Your Hardware
@@ -75,7 +74,7 @@ If you want to test coreboot without any risks before you really decide
 to use it on your hardware, you can use the QEMU system emulator to run
 coreboot virtually in QEMU.
 
-Please see https://www.coreboot.org/QEMU for details.
+Please see <https://www.coreboot.org/QEMU> for details.
 
 
 Website and Mailing List
@@ -84,11 +83,11 @@ Website and Mailing List
 Further details on the project, a FAQ, many HOWTOs, news, development
 guidelines and more can be found on the coreboot website:
 
-  https://www.coreboot.org
+  <https://www.coreboot.org>
 
 You can contact us directly on the coreboot mailing list:
 
-  https://www.coreboot.org/Mailinglist
+  <https://www.coreboot.org/Mailinglist>
 
 
 Copyright and License

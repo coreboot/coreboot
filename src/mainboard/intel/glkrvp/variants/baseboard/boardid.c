@@ -14,13 +14,21 @@
  */
 
 #include <baseboard/variants.h>
+#include <boardid.h>
 #include <compiler.h>
 #include <ec/google/chromeec/ec.h>
 
-uint8_t __weak variant_board_id(void)
+int variant_board_id(void)
 {
-	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
-		return google_chromeec_get_board_version();
-	else
+	MAYBE_STATIC uint32_t id = BOARD_ID_INIT;
+
+	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)) {
+		if (id == BOARD_ID_INIT) {
+			if (google_chromeec_get_board_version(&id))
+				id = BOARD_ID_UNKNOWN;
+		}
+		return id;
+	} else {
 		return 0;
+	}
 }

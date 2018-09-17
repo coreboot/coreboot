@@ -18,10 +18,12 @@
 
 uint32_t board_id(void)
 {
-	MAYBE_STATIC int id = -1;
+	MAYBE_STATIC uint32_t id = BOARD_ID_INIT;
 
-	if (id < 0)
-		id = google_chromeec_get_board_version();
+	if (id == BOARD_ID_INIT) {
+		if (google_chromeec_get_board_version(&id))
+			id = BOARD_ID_UNKNOWN;
+	}
 
 	return id;
 }

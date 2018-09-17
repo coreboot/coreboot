@@ -141,10 +141,13 @@ static int int15_handler(void)
 
 static void mainboard_init(struct device *dev)
 {
+	uint32_t board_version = 0;
+
 	/* Initialize the Embedded Controller */
 	link_ec_init();
 
-	if (google_chromeec_get_board_version() == 0) {
+	google_chromeec_get_board_version(&board_version);
+	if (board_version == 0) {
 		/* If running on proto1 - enable reversion of gpio11. */
 		u32 gpio_inv;
 		u16 gpio_base = pci_read_config16

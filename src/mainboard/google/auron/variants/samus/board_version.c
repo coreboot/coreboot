@@ -18,7 +18,10 @@
 
 const char *samus_board_version(void)
 {
-	switch (google_chromeec_get_board_version()) {
+	uint32_t board_version = SAMUS_EC_BOARD_VERSION_UNKNOWN;
+
+	google_chromeec_get_board_version(&board_version);
+	switch (board_version) {
 		case SAMUS_EC_BOARD_VERSION_EVT1:
 			return "EVT1";
 		case SAMUS_EC_BOARD_VERSION_EVT2:

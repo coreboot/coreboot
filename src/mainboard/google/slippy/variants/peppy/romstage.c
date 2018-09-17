@@ -78,6 +78,7 @@ static void copy_spd(struct pei_data *peid)
 	char *spd_file;
 	size_t spd_file_len;
 	size_t spd_len = sizeof(peid->spd_data[0]);
+	uint32_t board_version = PEPPY_BOARD_VERSION_PROTO;
 
 	printk(BIOS_DEBUG, "SPD index %d\n", spd_index);
 	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
@@ -95,7 +96,8 @@ static void copy_spd(struct pei_data *peid)
 
 	memcpy(peid->spd_data[0], spd_file + (spd_index * spd_len), spd_len);
 
-	switch (google_chromeec_get_board_version()) {
+	google_chromeec_get_board_version(&board_version);
+	switch (board_version) {
 	case PEPPY_BOARD_VERSION_PROTO:
 		/* Index 0 is 2GB config with CH0 only. */
 		if (spd_index == 0)

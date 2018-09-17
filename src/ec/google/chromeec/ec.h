@@ -46,7 +46,16 @@ uint64_t google_chromeec_get_device_current_events(void);
 
 int google_chromeec_check_feature(int feature);
 uint8_t google_chromeec_calc_checksum(const uint8_t *data, int size);
-u16 google_chromeec_get_board_version(void);
+
+/**
+ * google_chromeec_get_board_version() - Get the board version
+ * @version: Out parameter to retrieve the board Version
+ *
+ * Return: 0 on success or -1 on failure/error.
+ *
+ * This function is used to get the board version information from EC.
+ */
+int google_chromeec_get_board_version(uint32_t *version);
 u32 google_chromeec_get_sku_id(void);
 int google_chromeec_set_sku_id(u32 skuid);
 uint64_t  google_chromeec_get_events_b(void);

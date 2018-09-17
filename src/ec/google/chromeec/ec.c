@@ -637,7 +637,7 @@ int google_chromeec_cbi_get_dram_part_num(char *buf, size_t bufsize)
 }
 
 #ifndef __SMM__
-u16 google_chromeec_get_board_version(void)
+int google_chromeec_get_board_version(uint32_t *version)
 {
 	struct chromeec_command cmd;
 	struct ec_response_board_version board_v;
@@ -649,10 +649,11 @@ u16 google_chromeec_get_board_version(void)
 	cmd.cmd_data_out = &board_v;
 	cmd.cmd_dev_index = 0;
 
-	if (google_chromeec_command(&cmd) != 0)
-		return 0;
+	if (google_chromeec_command(&cmd))
+		return -1;
 
-	return board_v.board_version;
+	*version = board_v.board_version;
+	return 0;
 }
 
 u32 google_chromeec_get_sku_id(void)

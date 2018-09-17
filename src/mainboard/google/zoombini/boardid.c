@@ -19,9 +19,9 @@
 
 uint32_t board_id(void)
 {
-	MAYBE_STATIC int id = -1;
+	MAYBE_STATIC uint32_t id = BOARD_ID_INIT;
 
-	if (id < 0)
+	if (id == BOARD_ID_INIT)
 		id = variant_board_id();
 
 	return id;

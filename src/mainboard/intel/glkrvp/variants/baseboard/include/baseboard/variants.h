@@ -21,8 +21,12 @@
 #include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-/* Return the board id for the current variant board. */
-uint8_t variant_board_id(void);
+/**
+ * variant_board_id() - Get the board id for the current board variant
+ *
+ * Return: board id on success, -1 on failure/error.
+ */
+int variant_board_id(void);
 
 /* The next set of functions return the gpio table and fill in the number of
  * entries for each table. */

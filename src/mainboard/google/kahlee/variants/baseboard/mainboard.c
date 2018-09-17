@@ -15,7 +15,9 @@
 
 #include <ec/google/chromeec/ec.h>
 #include <baseboard/variants.h>
+#include <cbfs.h>
 #include <gpio.h>
+#include <smbios.h>
 #include <variant/gpio.h>
 #include <device/pci.h>
 #include <drivers/generic/bayhub/bh720.h>
@@ -72,4 +74,51 @@ void board_bh720(struct device *dev)
 	write32((void *)(sdbar + BH720_MEM_RW_DATA), 0x80000001);
 	write32((void *)(sdbar + BH720_MEM_RW_ADR), 0x800000D0);
 	write32((void *)(sdbar + BH720_MEM_ACCESS_EN), 0x80000000);
+}
+
+static uint8_t calc_oem_id(void)
+{
+	return variant_board_sku() / 0x10;
+}
+
+/* "oem.bin" in cbfs contains an array of records using the following structure. */
+struct oem_mapping {
+	uint8_t oem_id;
+	char oem_name[10];
+} __packed;
+
+/* Local buffer to read "oem.bin" */
+static char oem_bin_data[200];
+
+const char *smbios_mainboard_manufacturer(void)
+{
+	uint8_t oem_id;
+	const struct oem_mapping *oem_entry = (void *)&oem_bin_data;
+	size_t oem_data_size;
+	unsigned int i, oem_entries_count;
+	static const char *manuf;
+
+	if (!IS_ENABLED(CONFIG_USE_OEM_BIN))
+		return CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
+
+	if (manuf)
+		return manuf;
+
+	oem_data_size = cbfs_boot_load_file("oem.bin", oem_bin_data,
+					    sizeof(oem_bin_data),
+					    CBFS_TYPE_RAW);
+	oem_id = calc_oem_id();
+	oem_entries_count = oem_data_size / sizeof(*oem_entry);
+	for (i = 0; i < oem_entries_count; i++) {
+		if (oem_id == oem_entry->oem_id) {
+			manuf = oem_entry->oem_name;
+			break;
+		}
+		oem_entry++;
+	}
+
+	if (manuf == NULL)
+		manuf = CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
+
+	return manuf;
 }

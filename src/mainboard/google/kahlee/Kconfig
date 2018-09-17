@@ -128,4 +128,15 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x50
 
+config USE_OEM_BIN
+	bool "Add an oem.bin file"
+	help
+	  Add an oem.bin file to identify the manufacturer in SMBIOS, overriding the
+	  CONFIG_MAINBOARD_SMBIOS_MANUFACTURER value.
+
+config OEM_BIN_FILE
+	string "OEM ID table"
+	depends on USE_OEM_BIN
+	default ""
+
 endif # BOARD_GOOGLE_BASEBOARD_KAHLEE

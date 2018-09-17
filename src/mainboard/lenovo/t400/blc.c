@@ -37,6 +37,8 @@ static const struct blc_pwm_t blc_entries[] = {
 	{"LTN154P3-L02", 110},
 	{"LTN154X3-L02", 110},
 	{"LTN154U2-L05", 110},
+	/* R500 */
+	{"154WX5-TLB2", 220},
 };
 
 int get_blc_values(const struct blc_pwm_t **entries)

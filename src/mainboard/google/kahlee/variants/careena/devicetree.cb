@@ -54,7 +54,6 @@ chip soc/amd/stoneyridge
 		device lapic 10 on end
 	end
 	device domain 0 on
-		subsystemid 0x1022 0x1410 inherit
 		device pci 0.0 on  end # Root Complex
 		device pci 1.0 on  end # Internal Graphics P2P bridge 0x98e4
 		device pci 1.1 on  end # Internal Multimedia

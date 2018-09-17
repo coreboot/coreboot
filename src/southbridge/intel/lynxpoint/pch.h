@@ -93,9 +93,9 @@
 
 #if defined(__SMM__) && !defined(__ASSEMBLER__)
 void intel_pch_finalize_smm(void);
-void usb_ehci_sleep_prepare(device_t dev, u8 slp_typ);
-void usb_ehci_disable(device_t dev);
-void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ);
+void usb_ehci_sleep_prepare(pci_devfn_t dev, u8 slp_typ);
+void usb_ehci_disable(pci_devfn_t dev);
+void usb_xhci_sleep_prepare(pci_devfn_t dev, u8 slp_typ);
 void usb_xhci_route_all(void);
 #endif
 
@@ -179,8 +179,8 @@ int rtc_failure(void);
 #include <device/device.h>
 #include <arch/acpi.h>
 #include "chip.h"
-void pch_enable(device_t dev);
-void pch_disable_devfn(device_t dev);
+void pch_enable(struct device *dev);
+void pch_disable_devfn(struct device *dev);
 u32 pch_iobp_read(u32 address);
 void pch_iobp_write(u32 address, u32 data);
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);

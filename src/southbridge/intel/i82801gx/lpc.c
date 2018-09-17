@@ -724,7 +724,7 @@ static const char *lpc_acpi_name(const struct device *dev)
 	return "LPCB";
 }
 
-static void southbridge_fill_ssdt(device_t device)
+static void southbridge_fill_ssdt(struct device *device)
 {
 	intel_acpi_gen_def_acpi_pirq(device);
 }

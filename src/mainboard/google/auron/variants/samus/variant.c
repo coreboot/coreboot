@@ -26,8 +26,7 @@ const char *smbios_mainboard_version(void)
 	return samus_board_version();
 }
 
-int variant_smbios_data(device_t dev, int *handle,
-				 unsigned long *current)
+int variant_smbios_data(struct device *dev, int *handle, unsigned long *current)
 {
 	/* N/A for SAMUS */
 	return 0;

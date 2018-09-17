@@ -38,7 +38,7 @@
  * The BAR will be re-assigned during device
  * enumeration so these are only temporary.
  */
-static void enable_usb_bar_on_device(device_t dev, u32 bar)
+static void enable_usb_bar_on_device(pci_devfn_t dev, u32 bar)
 {
 	u32 cmd;
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, bar);

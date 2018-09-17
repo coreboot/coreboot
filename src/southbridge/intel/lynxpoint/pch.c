@@ -80,7 +80,7 @@ u16 get_gpiobase(void)
 #ifndef __SMM__
 
 /* Put device in D3Hot Power State */
-static void pch_enable_d3hot(device_t dev)
+static void pch_enable_d3hot(struct device *dev)
 {
 	u32 reg32 = pci_read_config32(dev, PCH_PCS);
 	reg32 |= PCH_PCS_PS_D3HOT;
@@ -88,7 +88,7 @@ static void pch_enable_d3hot(device_t dev)
 }
 
 /* Set bit in Function Disble register to hide this device */
-void pch_disable_devfn(device_t dev)
+void pch_disable_devfn(struct device *dev)
 {
 	switch (dev->path.pci.devfn) {
 	case PCI_DEVFN(19, 0): /* Audio DSP */
@@ -285,7 +285,7 @@ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue)
 	pch_iobp_write(address, data);
 }
 
-void pch_enable(device_t dev)
+void pch_enable(struct device *dev)
 {
 	u32 reg32;
 

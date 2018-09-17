@@ -237,8 +237,8 @@ static void serialio_init(struct device *dev)
 	}
 }
 
-static void serialio_set_subsystem(device_t dev, unsigned vendor,
-				   unsigned device)
+static void serialio_set_subsystem(struct device *dev, unsigned int vendor,
+				   unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

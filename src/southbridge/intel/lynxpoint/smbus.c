@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <device/smbus.h>
@@ -25,7 +24,7 @@
 #include <southbridge/intel/common/smbus.h>
 #include "pch.h"
 
-static void pch_smbus_init(device_t dev)
+static void pch_smbus_init(struct device *dev)
 {
 	struct resource *res;
 	u16 reg16;
@@ -41,7 +40,7 @@ static void pch_smbus_init(device_t dev)
 		outb(SMBUS_SLAVE_ADDR, res->base + SMB_RCV_SLVA);
 }
 
-static int lsmbus_read_byte(device_t dev, u8 address)
+static int lsmbus_read_byte(struct device *dev, u8 address)
 {
 	u16 device;
 	struct resource *res;
@@ -54,7 +53,7 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
-static int lsmbus_write_byte(device_t dev, u8 address, u8 data)
+static int lsmbus_write_byte(struct device *dev, u8 address, u8 data)
 {
 	u16 device;
 	struct resource *res;
@@ -71,7 +70,8 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.write_byte	= lsmbus_write_byte,
 };
 
-static void smbus_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void smbus_set_subsystem(struct device *dev, unsigned int vendor,
+				unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -86,7 +86,7 @@ static struct pci_operations smbus_pci_ops = {
 	.set_subsystem    = smbus_set_subsystem,
 };
 
-static void smbus_read_resources(device_t dev)
+static void smbus_read_resources(struct device *dev)
 {
 	struct resource *res = new_resource(dev, PCI_BASE_ADDRESS_4);
 	res->base = SMBUS_IO_BASE;

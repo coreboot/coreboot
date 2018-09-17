@@ -18,8 +18,7 @@
 #include <variant/onboard.h>
 #include <mainboard/google/auron/variant.h>
 
-int variant_smbios_data(device_t dev, int *handle,
-				 unsigned long *current)
+int variant_smbios_data(struct device *dev, int *handle, unsigned long *current)
 {
 	int len = 0;
 

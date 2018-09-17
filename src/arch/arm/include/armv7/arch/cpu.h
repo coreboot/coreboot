@@ -28,16 +28,6 @@ struct cpu_driver {
 	const struct cpu_device_id *id_table;
 };
 
-struct thread;
-
-struct cpu_info {
-	device_t cpu;
-	unsigned long index;
-#if IS_ENABLED(CONFIG_COOP_MULTITASKING)
-	struct thread *thread;
-#endif
-};
-
 struct cpuinfo_arm {
 	uint8_t    arm;            /* CPU family */
 	uint8_t    arm_vendor;     /* CPU vendor */

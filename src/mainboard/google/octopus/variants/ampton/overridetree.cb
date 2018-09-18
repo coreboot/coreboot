@@ -1,0 +1,55 @@
+chip soc/intel/apollolake
+
+	device domain 0 on
+		device pci 16.0 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""WCOM50C1""
+				register "generic.desc" = ""WCOM Digitizer""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_139_IRQ)"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_140)"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x1"
+				device i2c 0x9 on end
+			end
+		end	# - I2C 0
+		device pci 17.1 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Realtek RT5682""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_137_IRQ)"
+				register "probed" = "1"
+				register "property_count" = "1"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on end
+			end
+		end	# - I2C 5
+		device pci 17.2 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPIO_135_IRQ)"
+				register "wake" = "GPE0_DW2_02"
+				register "probed" = "1"
+				device i2c 15 on end
+			end
+		end	# - I2C 6
+		device pci 17.3 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0001""
+				register "desc" = ""ELAN Touchscreen""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPIO_212_IRQ)"
+				register "probed" = "1"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_105)"
+				register "reset_delay_ms" = "20"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_146)"
+				register "enable_delay_ms" = "1"
+				register "has_power_resource" = "1"
+				device i2c 10 on end
+			end
+		end	# - I2C 7
+	end
+end

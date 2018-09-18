@@ -53,6 +53,7 @@ config VARIANT_DIR
 	default "fleex" if BOARD_GOOGLE_FLEEX
 	default "bobba" if BOARD_GOOGLE_BOBBA
 	default "meep" if BOARD_GOOGLE_MEEP
+	default "ampton" if BOARD_GOOGLE_AMPTON
 	default "octopus" if BOARD_GOOGLE_OCTOPUS
 
 config DEVICETREE
@@ -71,6 +72,7 @@ config MAINBOARD_PART_NUMBER
 	default "Fleex" if BOARD_GOOGLE_FLEEX
 	default "Bobba" if BOARD_GOOGLE_BOBBA
 	default "Meep" if BOARD_GOOGLE_MEEP
+	default "Ampton" if BOARD_GOOGLE_AMPTON
 	default "Octopus" if BOARD_GOOGLE_OCTOPUS
 
 config MAINBOARD_FAMILY
@@ -86,6 +88,7 @@ config GBB_HWID
 	default "FLEEX TEST 7423" if BOARD_GOOGLE_FLEEX
 	default "BOBBA TEST 4516" if BOARD_GOOGLE_BOBBA
 	default "MEEP TEST 1118" if BOARD_GOOGLE_MEEP
+	default "AMPTON TEST 1285" if BOARD_GOOGLE_AMPTON
 	default "OCTOPUS TEST 6859" if BOARD_GOOGLE_OCTOPUS
 
 config MAX_CPUS
@@ -113,10 +116,12 @@ config DRAM_PART_NUM_IN_CBI
 	bool
 	default y if BOARD_GOOGLE_PHASER
 	default y if BOARD_GOOGLE_MEEP
+	default y if BOARD_GOOGLE_AMPTON
 
 config DRAM_PART_NUM_ALWAYS_IN_CBI
 	bool
 	depends on DRAM_PART_NUM_IN_CBI
+	default y if BOARD_GOOGLE_AMPTON
 
 config DRAM_PART_IN_CBI_BOARD_ID_MIN
 	int
@@ -127,6 +132,7 @@ config DRAM_PART_IN_CBI_BOARD_ID_MIN
 	default 9 if BOARD_GOOGLE_FLEEX
 	default 9 if BOARD_GOOGLE_BOBBA
 	default 1 if BOARD_GOOGLE_MEEP
+	default 255 if BOARD_GOOGLE_AMPTON
 	default 255 if BOARD_GOOGLE_OCTOPUS
 
 endif # BOARD_GOOGLE_OCTOPUS

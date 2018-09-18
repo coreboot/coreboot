@@ -46,7 +46,7 @@ struct spd_info {
 		int spd_index;
 		struct spd_by_pointer spd_data_ptr_info;
 	} spd_spec;
-	const uint8_t spd_smbus_address[4];
+	uint8_t spd_smbus_address[4];
 };
 
 /* Board-specific memory dq mapping information */

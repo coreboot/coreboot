@@ -64,7 +64,7 @@ void intel_pch_finalize_smm(void);
 #if !defined(__PRE_RAM__)
 #if !defined(__SIMPLE_DEVICE__)
 #include "chip.h"
-void pch_enable(device_t dev);
+void pch_enable(struct device *dev);
 #endif
 int pch_silicon_revision(void);
 int pch_silicon_type(void);

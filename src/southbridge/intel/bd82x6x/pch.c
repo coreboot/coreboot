@@ -208,9 +208,9 @@ static void pch_hide_devfn(unsigned devfn)
 }
 
 /* Check if any port in set X to X+3 is enabled */
-static int pch_pcie_check_set_enabled(device_t dev)
+static int pch_pcie_check_set_enabled(struct device *dev)
 {
-	device_t port;
+	struct device *port;
 	int port_func;
 	int dev_func = PCI_FUNC(dev->path.pci.devfn);
 
@@ -258,7 +258,7 @@ static void pch_pcie_function_swap(u8 old_fn, u8 new_fn)
 static void pch_pcie_devicetree_update(
 		struct southbridge_intel_bd82x6x_config *config)
 {
-	device_t dev;
+	struct device *dev;
 
 	/*
 	 * hotplug map should also be updated along with their
@@ -312,7 +312,7 @@ static void pch_pcie_devicetree_update(
 }
 
 /* Special handling for PCIe Root Port devices */
-static void pch_pcie_enable(device_t dev)
+static void pch_pcie_enable(struct device *dev)
 {
 	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
 	u32 reg32;
@@ -422,7 +422,7 @@ static void pch_pcie_enable(device_t dev)
 	}
 }
 
-void pch_enable(device_t dev)
+void pch_enable(struct device *dev)
 {
 	u32 reg32;
 

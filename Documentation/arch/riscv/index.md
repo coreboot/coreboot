@@ -1,6 +1,6 @@
-# RISCV architecture documentation
+# RISC-V architecture documentation
 
-This section contains documentation about coreboot on RISCV architecture.
+This section contains documentation about coreboot on RISC-V architecture.
 
 ## Mode usage
 All stages run in M mode.
@@ -17,7 +17,7 @@ will have been done. These payloads rely on the SBI and can not replace it.
 ## Stage handoff protocol
 On entry to a stage or payload,
 * all harts are running.
-* A0 is the hart ID
+* A0 is the hart ID.
 * A1 is the pointer to the Flattened Device Tree (FDT).
 
 ## Additional payload handoff requirements
@@ -27,11 +27,12 @@ The location of cbmem should be placed in a node in the FDT.
 Traps are delegated in the ramstage.
 
 ## SMP within a stage
-At the beginning of each stage, all harts save 0 are spinning in a loop on a semaphore.
-At the end of the stage harts 1..max are released by changing the
-semaphore.
+At the beginning of each stage, all harts save 0 are spinning in a loop on
+a semaphore.  At the end of the stage harts 1..max are released by changing
+the semaphore.
 
-A possible way to do this is to have a pointer to a struct containing variables, e.g.
+A possible way to do this is to have a pointer to a struct containing
+variables, e.g.
 
 ```c
 struct blocker {
@@ -39,9 +40,7 @@ struct blocker {
 }
 ```
 
-The hart blocks until fn is non-null, and then calls it.
-If fn returns we will panic if possible, but behavior
-is largely undefined.
+The hart blocks until fn is non-null, and then calls it.  If fn returns, we
+will panic if possible, but behavior is largely undefined.
 
 Only hart 0 runs through most of the code in each stage.
-

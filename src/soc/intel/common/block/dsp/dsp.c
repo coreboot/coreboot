@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  *  * Copyright (C) 2016 Google Inc.
- *  * Copyright (C) 2017 Intel Corporation.
+ *  * Copyright (C) 2017-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_INTEL_CNL_AUDIO,
 	PCI_DEVICE_ID_INTEL_GLK_AUDIO,
 	PCI_DEVICE_ID_INTEL_SKL_AUDIO,
+	PCI_DEVICE_ID_INTEL_CNP_H_AUDIO,
 	0,
 };
 

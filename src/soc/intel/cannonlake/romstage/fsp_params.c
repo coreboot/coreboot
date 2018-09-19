@@ -31,7 +31,10 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	m_cfg->IedSize = CONFIG_IED_REGION_SIZE;
 	m_cfg->SaGv = config->SaGv;
-	m_cfg->UserBd = BOARD_TYPE_ULT_ULX;
+	if (IS_ENABLED(CONFIG_CANNONLAKE_SOC_PCH_H))
+		m_cfg->UserBd = BOARD_TYPE_DESKTOP;
+	else
+		m_cfg->UserBd = BOARD_TYPE_ULT_ULX;
 	m_cfg->RMT = config->RMT;
 
 	for (i = 0; i < ARRAY_SIZE(config->PcieRpEnable); i++) {

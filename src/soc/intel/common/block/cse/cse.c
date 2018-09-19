@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2017 Intel Inc.
+ * Copyright 2017-2018 Intel Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -518,6 +518,7 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_INTEL_GLK_CSE0,
 	PCI_DEVICE_ID_INTEL_CNL_CSE0,
 	PCI_DEVICE_ID_INTEL_SKL_CSE0,
+	PCI_DEVICE_ID_INTEL_CNP_H_CSE0,
 	0,
 };
 

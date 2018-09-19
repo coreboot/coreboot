@@ -75,6 +75,14 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_PCIE14:	return "RP14";
 	case PCH_DEVFN_PCIE15:	return "RP15";
 	case PCH_DEVFN_PCIE16:	return "RP16";
+	case PCH_DEVFN_PCIE17:	return "RP17";
+	case PCH_DEVFN_PCIE18:	return "RP18";
+	case PCH_DEVFN_PCIE19:	return "RP19";
+	case PCH_DEVFN_PCIE20:	return "RP20";
+	case PCH_DEVFN_PCIE21:	return "RP21";
+	case PCH_DEVFN_PCIE22:	return "RP22";
+	case PCH_DEVFN_PCIE23:	return "RP23";
+	case PCH_DEVFN_PCIE24:	return "RP24";
 	case PCH_DEVFN_UART0:	return "UAR0";
 	case PCH_DEVFN_UART1:	return "UAR1";
 	case PCH_DEVFN_GSPI0:	return "SPI0";

@@ -204,6 +204,7 @@ config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 
 config SOC_INTEL_I2C_DEV_MAX
 	int
+	default 4 if CANNONLAKE_SOC_PCH_H
 	default 6
 
 # Clock divider parameters for 115200 baud rate

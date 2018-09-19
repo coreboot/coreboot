@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Intel Corporation.
+ * Copyright (C) 2017-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -304,6 +304,8 @@ static const unsigned short systemagent_ids[] = {
 	PCI_DEVICE_ID_INTEL_KBL_U_R,
 	PCI_DEVICE_ID_INTEL_KBL_ID_DT,
 	PCI_DEVICE_ID_INTEL_CFL_ID_U,
+	PCI_DEVICE_ID_INTEL_CFL_ID_H,
+	PCI_DEVICE_ID_INTEL_CFL_ID_S,
 	0
 };
 

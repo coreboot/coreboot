@@ -10,21 +10,21 @@
 #ifndef __SIMPLE_DEVICE__
 
 /* Primitive PNP resource manipulation */
-void pnp_write_config(device_t dev, u8 reg, u8 value);
-u8 pnp_read_config(device_t dev, u8 reg);
-void pnp_set_logical_device(device_t dev);
-void pnp_set_enable(device_t dev, int enable);
-int pnp_read_enable(device_t dev);
-void pnp_set_iobase(device_t dev, u8 index, u16 iobase);
-void pnp_set_irq(device_t dev, u8 index, u8 irq);
-void pnp_set_drq(device_t dev, u8 index, u8 drq);
+void pnp_write_config(struct device *dev, u8 reg, u8 value);
+u8 pnp_read_config(struct device *dev, u8 reg);
+void pnp_set_logical_device(struct device *dev);
+void pnp_set_enable(struct device *dev, int enable);
+int pnp_read_enable(struct device *dev);
+void pnp_set_iobase(struct device *dev, u8 index, u16 iobase);
+void pnp_set_irq(struct device *dev, u8 index, u8 irq);
+void pnp_set_drq(struct device *dev, u8 index, u8 drq);
 
 /* PNP device operations */
-void pnp_read_resources(device_t dev);
-void pnp_set_resources(device_t dev);
-void pnp_enable_resources(device_t dev);
-void pnp_enable(device_t dev);
-void pnp_alt_enable(device_t dev);
+void pnp_read_resources(struct device *dev);
+void pnp_set_resources(struct device *dev);
+void pnp_enable_resources(struct device *dev);
+void pnp_enable(struct device *dev);
+void pnp_alt_enable(struct device *dev);
 
 extern struct device_operations pnp_ops;
 
@@ -60,16 +60,16 @@ struct pnp_info {
 #define PNP_MSCE 0x800000
 	u16 io0, io1, io2, io3;
 };
-struct resource *pnp_get_resource(device_t dev, unsigned int index);
+struct resource *pnp_get_resource(struct device *dev, unsigned int index);
 void pnp_enable_devices(struct device *dev, struct device_operations *ops,
 			unsigned int functions, struct pnp_info *info);
 
 struct pnp_mode_ops {
-	void (*enter_conf_mode)(device_t dev);
-	void (*exit_conf_mode)(device_t dev);
+	void (*enter_conf_mode)(struct device *dev);
+	void (*exit_conf_mode)(struct device *dev);
 };
-void pnp_enter_conf_mode(device_t dev);
-void pnp_exit_conf_mode(device_t dev);
+void pnp_enter_conf_mode(struct device *dev);
+void pnp_exit_conf_mode(struct device *dev);
 
 /* PNP indexed I/O operations */
 

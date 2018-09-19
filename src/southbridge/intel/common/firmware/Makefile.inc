@@ -23,7 +23,7 @@ ifeq ($(CONFIG_HAVE_INTEL_FIRMWARE),y)
 ifeq ($(CONFIG_HAVE_IFD_BIN),y)
 INTERMEDIATE+=add_intel_firmware
 else ifeq ($(CONFIG_INTEL_DESCRIPTOR_MODE_REQUIRED),y)
-INTERMEDIATE += warn_intel_firmware
+files_added:: warn_intel_firmware
 endif
 
 IFD_BIN_PATH := $(CONFIG_IFD_BIN_PATH)
@@ -89,7 +89,7 @@ endif
 
 warn_intel_firmware:
 	printf "\n\t** WARNING **\n"
-	printf "coreboot will be built without an Intel Firmware Descriptor.\n"
+	printf "coreboot has been built without an Intel Firmware Descriptor.\n"
 	printf "Never write a complete coreboot.rom without an IFD to your\n"
 	printf "board's flash chip! You can use flashrom's IFD or layout\n"
 	printf "parameters to flash only to the BIOS region.\n\n"

@@ -30,7 +30,7 @@ struct cpu_driver {
 struct thread;
 
 struct cpu_info {
-	device_t cpu;
+	struct device *cpu;
 	unsigned long index;
 };
 

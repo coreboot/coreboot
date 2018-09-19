@@ -21,7 +21,7 @@
 #include <device/pci_ids.h>
 #include <soc/pci_devs.h>
 
-static void uart_read_resources(device_t dev)
+static void uart_read_resources(struct device *dev)
 {
 	struct resource *res;
 

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015-2016 Intel Corp.
- * Copyright (C) 2016 Siemens AG
+ * Copyright (C) 2016-2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,7 +137,6 @@ static void nc_enable(struct device *dev)
 static struct device_operations nc_ops = {
 	.read_resources           = nc_read_resources,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
-	.write_acpi_tables        = northcluster_write_acpi_tables,
 	.set_resources            = pci_dev_set_resources,
 	.enable_resources         = pci_dev_enable_resources,
 	.init                     = NULL,

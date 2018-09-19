@@ -34,6 +34,7 @@ ramstage-y += gpio.c
 ramstage-y += iou_complto.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += pmutil.c
+ramstage-y += vtd.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += pmutil.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c

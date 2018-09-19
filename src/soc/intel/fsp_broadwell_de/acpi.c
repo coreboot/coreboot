@@ -4,7 +4,7 @@
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015-2016 Intel Corp.
- * Copyright (C) 2016 Siemens AG
+ * Copyright (C) 2016-2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -390,15 +390,14 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	return current;
 }
 
-unsigned long northcluster_write_acpi_tables(struct device *const dev,
+unsigned long vtd_write_acpi_tables(struct device *const dev,
 					     unsigned long current,
 					     struct acpi_rsdp *const rsdp)
 {
 	acpi_dmar_t *const dmar = (acpi_dmar_t *)current;
-	struct device *vtdev = dev_find_slot(0, PCI_DEVFN(5, 0));
 
 	/* Create DMAR table only if virtualization is enabled */
-	if (!(pci_read_config32(vtdev, 0x180) & 0x01))
+	if (!(pci_read_config32(dev, VTBAR_OFFSET) & VTBAR_ENABLED))
 		return current;
 
 	printk(BIOS_DEBUG, "ACPI:    * DMAR\n");

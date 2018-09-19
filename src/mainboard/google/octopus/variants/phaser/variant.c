@@ -22,6 +22,9 @@
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>
 #include <string.h>
+#include <ec/google/chromeec/ec.h>
+
+#define SKU_UNKNOWN     0xFFFFFFFF
 
 extern struct chip_operations drivers_i2c_generic_ops;
 extern struct chip_operations drivers_i2c_hid_ops;
@@ -29,6 +32,7 @@ extern struct chip_operations drivers_i2c_hid_ops;
 void variant_update_devtree(struct device *dev)
 {
 	uint32_t bid;
+	uint32_t sku_id = SKU_UNKNOWN;
 	struct device *touchscreen_i2c_host;
 	struct device *child;
 	const struct bus *children_bus;
@@ -45,6 +49,16 @@ void variant_update_devtree(struct device *dev)
 
 	if (touchscreen_i2c_host == NULL)
 		return;
+
+	/* According to the sku id decide whether update touch
+	 * screen device information:
+	 * 1. sku id is 1 then dev->enabled = 0.
+	 */
+	google_chromeec_cbi_get_sku_id(&sku_id);
+	if (sku_id == 1) {
+		touchscreen_i2c_host->enabled = 0;
+		return;
+	}
 
 	children_bus = touchscreen_i2c_host->link_list;
 	child = NULL;

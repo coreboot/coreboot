@@ -92,11 +92,6 @@ asmlinkage void car_stage_entry(void)
 	int s3_resume = acpi_s3_resume_allowed() && acpi_is_wakeup_s3();
 	int i;
 
-	/*
-	 * When moving AGESA calls to romstage, place the call to
-	 * bsp_agesa_call() here.
-	 */
-
 	console_init();
 
 	if (IS_ENABLED(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW))

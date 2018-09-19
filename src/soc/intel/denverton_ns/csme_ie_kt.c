@@ -56,7 +56,7 @@ static void pci_read_bases(struct device *dev, unsigned int howmany)
 	compact_resources(dev);
 }
 
-static void pci_csme_ie_kt_read_resources(device_t dev)
+static void pci_csme_ie_kt_read_resources(struct device *dev)
 {
 	/**
 	* CSME/IE KT has 2 BARs to check:

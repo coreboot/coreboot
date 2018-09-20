@@ -83,8 +83,8 @@ chip soc/intel/skylake
 	#| ImonSlope      | 0     | 0     | 0     | 0     |
 	#| ImonOffset     | 0     | 0     | 0     | 0     |
 	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
-	#| AcLoadline     | 15    | 5.7   | 5.5   | 5.5   |
-	#| DcLoadline     | 14.3  | 4.83  | 4.2   | 4.2   |
+	#| AcLoadline     | 14.4  | 4.2   | 5.7   | 4.47  |
+	#| DcLoadline     | 14.0  | 4.17  | 4.2   | 4.3   |
 	#+----------------+-------+-------+-------+-------+
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
 		.vr_config_enable = 1,
@@ -96,8 +96,8 @@ chip soc/intel/skylake
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
 		.voltage_limit = 1520,
-		.ac_loadline = 1500,
-		.dc_loadline = 1430,
+		.ac_loadline = 1440,
+		.dc_loadline = 1400,
 	}"
 
 	register "domain_vr_config[VR_IA_CORE]" = "{
@@ -110,8 +110,8 @@ chip soc/intel/skylake
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
 		.voltage_limit = 1520,
-		.ac_loadline = 570,
-		.dc_loadline = 483,
+		.ac_loadline = 420,
+		.dc_loadline = 417,
 	}"
 
 	register "domain_vr_config[VR_GT_UNSLICED]" = "{
@@ -124,7 +124,7 @@ chip soc/intel/skylake
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
 		.voltage_limit = 1520,
-		.ac_loadline = 550,
+		.ac_loadline = 570,
 		.dc_loadline = 420,
 	}"
 
@@ -138,8 +138,8 @@ chip soc/intel/skylake
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
 		.voltage_limit = 1520,
-		.ac_loadline = 550,
-		.dc_loadline = 420,
+		.ac_loadline = 447,
+		.dc_loadline = 430,
 	}"
 
 	# Enable Root port 1.

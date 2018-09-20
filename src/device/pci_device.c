@@ -726,7 +726,8 @@ void pci_bus_reset(struct bus *bus)
 	delay(1);
 }
 
-void pci_dev_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
+void pci_dev_set_subsystem(struct device *dev, unsigned int vendor,
+			   unsigned int device)
 {
 	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));

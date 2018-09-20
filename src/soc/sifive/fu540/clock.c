@@ -121,8 +121,8 @@ static struct prci_ctlr *prci = (void *)FU540_PRCI;
 // 33.33 Mhz after reset
 #define FU540_BASE_FQY 33330
 
+/* Clock initialization should only be done in romstage. */
 #if ENV_ROMSTAGE
-
 static void init_coreclk(void)
 {
 	// switch coreclk to input reference frequency before modifying PLL
@@ -240,8 +240,7 @@ void clock_init(void)
 	for (int i = 0; i < 256; i++)
 		asm volatile ("nop");
 }
-
-#endif
+#endif /* ENV_ROMSTAGE */
 
 int clock_get_coreclk_khz(void)
 {

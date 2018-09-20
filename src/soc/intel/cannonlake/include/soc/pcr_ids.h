@@ -35,7 +35,7 @@
 #define PID_PSF4	0xbd
 #define PID_SCS		0xc0
 #define PID_RTC		0xc3
-#define PID_ITSS	0xc2
+#define PID_ITSS	0xc4
 #define PID_LPC		0xc7
 #define PID_SERIALIO	0xcb
 

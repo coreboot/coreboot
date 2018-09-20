@@ -35,6 +35,6 @@ int e7505_mch_is_ready(void);
 
 
 /* Mainboard exports this. */
-int spd_read_byte(unsigned device, unsigned address);
+int spd_read_byte(unsigned int device, unsigned int address);
 
 #endif /* RAMINIT_H */

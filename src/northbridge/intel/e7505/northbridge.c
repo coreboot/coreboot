@@ -75,8 +75,8 @@ static void mch_domain_set_resources(struct device *dev)
 	assign_resources(dev->link_list);
 }
 
-static void intel_set_subsystem(struct device *dev,
-				unsigned vendor, unsigned device)
+static void intel_set_subsystem(struct device *dev, unsigned int vendor,
+				unsigned int device)
 {
 	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 		((device & 0xffff) << 16) | (vendor & 0xffff));

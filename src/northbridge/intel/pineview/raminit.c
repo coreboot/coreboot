@@ -102,7 +102,7 @@ static inline void barrier(void)
 	 __asm__ __volatile__("": : :"memory");
 }
 
-static inline int spd_read_byte(unsigned device, unsigned address)
+static inline int spd_read_byte(unsigned int device, unsigned int address)
 {
 	return smbus_read_byte(device, address);
 }

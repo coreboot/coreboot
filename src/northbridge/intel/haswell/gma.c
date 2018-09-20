@@ -494,8 +494,8 @@ static void gma_func0_init(struct device *dev)
 	intel_gma_restore_opregion();
 }
 
-static void gma_set_subsystem(struct device *dev, unsigned vendor,
-			      unsigned device)
+static void gma_set_subsystem(struct device *dev, unsigned int vendor,
+			      unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

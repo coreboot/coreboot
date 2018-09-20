@@ -287,7 +287,8 @@ static void mc_read_resources(struct device *dev)
 	}
 }
 
-static void intel_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
+static void intel_set_subsystem(struct device *dev, unsigned int vendor,
+				unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

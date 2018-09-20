@@ -32,7 +32,7 @@ struct sys_info sysinfo_car CAR_GLOBAL;
 
 struct mem_controller;
 extern void activate_spd_rom(const struct mem_controller *ctrl);
-extern int spd_read_byte(unsigned device, unsigned address);
+extern int spd_read_byte(unsigned int device, unsigned int address);
 
 void fam15h_switch_dct(uint32_t dev, uint8_t dct)
 {

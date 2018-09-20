@@ -32,7 +32,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47M10X2_SP1)
 
-int spd_read_byte(unsigned device, unsigned address)
+int spd_read_byte(unsigned int device, unsigned int address)
 {
 	return smbus_read_byte(device, address);
 }

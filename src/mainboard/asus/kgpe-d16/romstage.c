@@ -54,10 +54,10 @@
 #define SERIAL_1_DEV PNP_DEV(0x2e, W83667HG_A_SP2)
 
 void activate_spd_rom(const struct mem_controller *ctrl);
-int spd_read_byte(unsigned device, unsigned address);
+int spd_read_byte(unsigned int device, unsigned int address);
 extern struct sys_info sysinfo_car;
 
-int spd_read_byte(unsigned device, unsigned address)
+int spd_read_byte(unsigned int device, unsigned int address)
 {
 	return do_smbus_read_byte(SMBUS_AUX_IO_BASE, device, address);
 }

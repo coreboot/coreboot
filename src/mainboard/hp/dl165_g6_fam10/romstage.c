@@ -57,7 +57,7 @@
 #define RTC_DEV PNP_DEV(0x4e, PC87417_RTC)
 
 void activate_spd_rom(const struct mem_controller *ctrl);
-int spd_read_byte(unsigned device, unsigned address);
+int spd_read_byte(unsigned int device, unsigned int address);
 extern struct sys_info sysinfo_car;
 
 inline void activate_spd_rom(const struct mem_controller *ctrl)
@@ -71,7 +71,7 @@ inline void activate_spd_rom(const struct mem_controller *ctrl)
 	outb((val & ~3) | ctrl->spd_switch_addr, 0xcd7);
 }
 
-inline int spd_read_byte(unsigned device, unsigned address)
+inline int spd_read_byte(unsigned int device, unsigned int address)
 {
 	return smbus_read_byte(device, address);
 }

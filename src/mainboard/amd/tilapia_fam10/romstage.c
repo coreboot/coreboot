@@ -53,7 +53,7 @@
 #define SERIAL_DEV PNP_DEV(0x2e, IT8718F_SP1)
 
 void activate_spd_rom(const struct mem_controller *ctrl);
-int spd_read_byte(unsigned device, unsigned address);
+int spd_read_byte(unsigned int device, unsigned int address);
 extern struct sys_info sysinfo_car;
 
 void activate_spd_rom(const struct mem_controller *ctrl) { }

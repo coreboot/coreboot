@@ -46,7 +46,7 @@ __weak void smihandler_soc_at_finalize(void)
 	return;
 }
 
-__weak int smihandler_soc_disable_busmaster(device_t dev)
+__weak int smihandler_soc_disable_busmaster(pci_devfn_t dev)
 {
 	return 1;
 }

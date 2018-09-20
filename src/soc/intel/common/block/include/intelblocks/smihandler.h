@@ -155,7 +155,7 @@ void smihandler_soc_at_finalize(void);
  * This function returns a 1 or 0 depending on whether disable_busmaster
  * needs to be done for the specified device on S5 entry
  */
-int smihandler_soc_disable_busmaster(device_t dev);
+int smihandler_soc_disable_busmaster(pci_devfn_t dev);
 
 /* SMI handlers that should be serviced in SCI mode too. */
 uint32_t smihandler_soc_get_sci_mask(void);

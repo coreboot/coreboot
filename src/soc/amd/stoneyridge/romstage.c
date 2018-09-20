@@ -222,3 +222,26 @@ void SetMemParams(AMD_POST_PARAMS *PostParams)
 		break;
 	}
 }
+
+void soc_customize_init_early(AMD_EARLY_PARAMS *InitEarly)
+{
+	const struct soc_amd_stoneyridge_config *cfg;
+	const struct device *dev = dev_find_slot(0, GNB_DEVFN);
+	struct _PLATFORM_CONFIGURATION *platform;
+
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_WARNING, "Warning: Cannot find SoC devicetree"
+					" config, STAPM unchanged\n");
+		return;
+	}
+	cfg = dev->chip_info;
+	platform = &InitEarly->PlatformConfig;
+	if ((cfg->stapm_percent) && (cfg->stapm_time) && (cfg->stapm_power)) {
+		platform->PlatStapmConfig.CfgStapmScalar = cfg->stapm_percent;
+		platform->PlatStapmConfig.CfgStapmTimeConstant =
+							cfg->stapm_time;
+		platform->PkgPwrLimitDC = cfg->stapm_power;
+		platform->PkgPwrLimitAC = cfg->stapm_power;
+		platform->PlatStapmConfig.CfgStapmBoost = StapmBoostEnabled;
+	}
+}

@@ -31,6 +31,8 @@
 #include <amdblocks/image.h>
 #include <amdblocks/BiosCallOuts.h>
 #include <soc/southbridge.h>
+#include <soc/northbridge.h>
+#include <soc/cpu.h>
 
 void __weak SetMemParams(AMD_POST_PARAMS *PostParams) {}
 void __weak OemPostParams(AMD_POST_PARAMS *PostParams) {}
@@ -129,6 +131,7 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 
 	AMD_EARLY_PARAMS *EarlyParams = create_struct(&AmdParamStruct);
 
+	soc_customize_init_early(EarlyParams);
 	OemCustomizeInitEarly(EarlyParams);
 
 	timestamp_add_now(TS_AGESA_INIT_EARLY_START);

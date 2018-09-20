@@ -63,5 +63,6 @@ void SetNbEnvParams(GNB_ENV_CONFIGURATION *params);
 void SetFchMidParams(FCH_INTERFACE *params);
 void SetNbMidParams(GNB_MID_CONFIGURATION *params);
 void set_board_env_params(GNB_ENV_CONFIGURATION *params);
+void soc_customize_init_early(AMD_EARLY_PARAMS *InitEarly);
 
 #endif /* __AGESAWRAPPER_H__ */

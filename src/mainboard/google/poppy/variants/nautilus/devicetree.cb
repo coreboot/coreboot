@@ -334,13 +334,6 @@ chip soc/intel/skylake
 				register "desc" = ""SAR Proximity Sensor""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_A18_IRQ)"
 				register "device_present_gpio" = "GPP_B20"
-				register "property_count" = "2"
-				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
-				register "property_list[0].name" = ""STH9321,reg_prox_ctrl6""
-				register "property_list[0].integer" = "75"
-				register "property_list[1].type" = "ACPI_DP_TYPE_INTEGER"
-				register "property_list[1].name" = ""STH9321,reg_prox_ctrl7""
-				register "property_list[1].integer" = "99"
 				device i2c 28 on end
 			end
 		end # I2C #2

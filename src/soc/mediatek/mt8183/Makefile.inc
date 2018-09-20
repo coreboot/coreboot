@@ -36,6 +36,7 @@ ramstage-y += soc.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 ramstage-y += ../common/timer.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
+ramstage-y += ../common/usb.c
 ramstage-y += ../common/wdt.c
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8183/include

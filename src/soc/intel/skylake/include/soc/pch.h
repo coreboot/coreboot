@@ -23,7 +23,7 @@
 
 void pch_log_state(void);
 #if ENV_RAMSTAGE
-void pch_disable_devfn(device_t dev);
+void pch_disable_devfn(struct device *dev);
 #endif
 
 #endif /* _SOC_PCH_H_ */

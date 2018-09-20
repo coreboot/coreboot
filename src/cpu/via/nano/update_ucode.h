@@ -16,7 +16,6 @@
 #ifndef __UPDATE_UCODE_H
 #define __UPDATE_UCODE_H
 
-#include <console/console.h>
 #include <cpu/cpu.h>
 
 #define MSR_IA32_BIOS_UPDT_TRIG         0x00000079

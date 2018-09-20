@@ -1,3 +1,0 @@
-Board name: lowrisc nexys4ddr
-Category: eval
-Board URL: https://www.google.com/search?q=Tutorial+for+the+debug+preview+of+lowRISC&oq=Tutorial+for+the+debug+preview+of+lowRISC&btnI

@@ -25,7 +25,7 @@
 #include <soc/cpu.h>
 
 #ifdef __SMM__
-static u8 *usb_xhci_mem_base(device_t dev)
+static u8 *usb_xhci_mem_base(pci_devfn_t dev)
 {
 	u32 mem_base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 
@@ -36,7 +36,7 @@ static u8 *usb_xhci_mem_base(device_t dev)
 	return (u8 *)(mem_base & ~0xf);
 }
 
-static int usb_xhci_port_count_usb3(device_t dev)
+static int usb_xhci_port_count_usb3(pci_devfn_t dev)
 {
 	/* PCH-LP has 4 SS ports */
 	return 4;
@@ -69,7 +69,7 @@ static void usb_xhci_reset_port_usb3(u8 *mem_base, int port)
  *  b) Poll for warm reset complete
  *  c) Write 1 to port change status bits
  */
-static void usb_xhci_reset_usb3(device_t dev, int all)
+static void usb_xhci_reset_usb3(pci_devfn_t dev, int all)
 {
 	u32 status, port_disabled;
 	int timeout, port;
@@ -140,7 +140,7 @@ static void usb_xhci_reset_usb3(device_t dev, int all)
 }
 
 /* Handler for XHCI controller on entry to S3/S4/S5 */
-void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
+void usb_xhci_sleep_prepare(pci_devfn_t dev, u8 slp_typ)
 {
 	u16 reg16;
 	u32 reg32;

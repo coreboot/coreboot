@@ -77,7 +77,7 @@ u32 pch_read_soft_strap(int id)
 #ifndef __PRE_RAM__
 
 /* Put device in D3Hot Power State */
-static void pch_enable_d3hot(device_t dev)
+static void pch_enable_d3hot(struct device *dev)
 {
 	u32 reg32 = pci_read_config32(dev, PCH_PCS);
 	reg32 |= PCH_PCS_PS_D3HOT;
@@ -92,7 +92,7 @@ static void rcba_function_disable(u32 reg, u32 bit)
 }
 
 /* Set bit in Function Disable register to hide this device */
-void pch_disable_devfn(device_t dev)
+void pch_disable_devfn(struct device *dev)
 {
 	switch (dev->path.pci.devfn) {
 	case PCH_DEVFN_ADSP: /* Audio DSP */
@@ -183,7 +183,7 @@ void pch_disable_devfn(device_t dev)
 	}
 }
 
-void broadwell_pch_enable_dev(device_t dev)
+void broadwell_pch_enable_dev(struct device *dev)
 {
 	u32 reg32;
 

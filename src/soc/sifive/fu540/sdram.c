@@ -25,8 +25,6 @@
 #include "ddrregs.h"
 
 #define DDR_SIZE  (8UL * 1024UL * 1024UL * 1024UL)
-#define DDRCTLPLL_F 55
-#define DDRCTLPLL_Q 2
 
 void sdram_init(void)
 {

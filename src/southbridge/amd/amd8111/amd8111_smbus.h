@@ -63,7 +63,7 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 	return loops?0:SMBUS_WAIT_UNTIL_DONE_TIMEOUT;
 }
 
-static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
+static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned int device)
 {
 	unsigned global_status_register;
 	unsigned byte;
@@ -109,7 +109,8 @@ static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 	return byte;
 }
 
-static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned value)
+static int do_smbus_send_byte(unsigned smbus_io_base, unsigned int device,
+			      unsigned value)
 {
 	unsigned global_status_register;
 
@@ -151,7 +152,8 @@ static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned 
 }
 
 
-static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned address)
+static int do_smbus_read_byte(unsigned smbus_io_base, unsigned int device,
+			      unsigned int address)
 {
 	unsigned global_status_register;
 	unsigned byte;
@@ -197,7 +199,8 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	return byte;
 }
 
-static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device, unsigned address, unsigned char val)
+static int do_smbus_write_byte(unsigned smbus_io_base, unsigned int device,
+			       unsigned int address, unsigned char val)
 {
 	unsigned global_status_register;
 
@@ -235,7 +238,8 @@ static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device, unsigned
 	return 0;
 }
 
-static int do_smbus_block_read(unsigned smbus_io_base, unsigned device, unsigned cmd, u8 bytes, u8 *buf)
+static int do_smbus_block_read(unsigned smbus_io_base, unsigned int device,
+			       unsigned cmd, u8 bytes, u8 *buf)
 {
 	unsigned global_status_register;
 	unsigned i;
@@ -291,7 +295,8 @@ static int do_smbus_block_read(unsigned smbus_io_base, unsigned device, unsigned
 	return i;
 }
 
-static int do_smbus_block_write(unsigned smbus_io_base, unsigned device, unsigned cmd, u8 bytes, const u8 *buf)
+static int do_smbus_block_write(unsigned smbus_io_base, unsigned int device,
+				unsigned cmd, u8 bytes, const u8 *buf)
 {
 	unsigned global_status_register;
 	unsigned i;

@@ -33,7 +33,7 @@ void cs5536_enable_smbus(void)
 
 }
 
-int smbus_read_byte(unsigned device, unsigned address)
+int smbus_read_byte(unsigned int device, unsigned int address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }

@@ -39,32 +39,35 @@ static void enable_smbus(void)
 	printk(BIOS_SPEW, "SMBus controller enabled\n");
 }
 
-static inline int smbus_recv_byte(unsigned device)
+static inline int smbus_recv_byte(unsigned int device)
 {
 	return do_smbus_recv_byte(SMBUS_IO_BASE, device);
 }
 
-static inline int smbus_send_byte(unsigned device, unsigned char val)
+static inline int smbus_send_byte(unsigned int device, unsigned char val)
 {
 	return do_smbus_send_byte(SMBUS_IO_BASE, device, val);
 }
 
-static inline int smbus_read_byte(unsigned device, unsigned address)
+static inline int smbus_read_byte(unsigned int device, unsigned int address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
-static inline int smbus_write_byte(unsigned device, unsigned address, unsigned char val)
+static inline int smbus_write_byte(unsigned int device, unsigned int address,
+				   unsigned char val)
 {
 	return do_smbus_write_byte(SMBUS_IO_BASE, device, address, val);
 }
 
-static inline int smbus_block_read(unsigned device, unsigned cmd, u8 bytes, u8 *buf)
+static inline int smbus_block_read(unsigned int device, unsigned cmd, u8 bytes,
+				   u8 *buf)
 {
 	return do_smbus_block_read(SMBUS_IO_BASE, device, cmd, bytes, buf);
 }
 
-static inline int smbus_block_write(unsigned device, unsigned cmd, u8 bytes, const u8 *buf)
+static inline int smbus_block_write(unsigned int device, unsigned cmd, u8 bytes,
+				    const u8 *buf)
 {
 	return do_smbus_block_write(SMBUS_IO_BASE, device, cmd, bytes, buf);
 }

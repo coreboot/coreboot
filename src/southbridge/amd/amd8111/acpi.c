@@ -36,7 +36,7 @@
 
 static int lsmbus_recv_byte(struct device *dev)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 
 	device = dev->path.i2c.device;
@@ -47,7 +47,7 @@ static int lsmbus_recv_byte(struct device *dev)
 
 static int lsmbus_send_byte(struct device *dev, uint8_t val)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 
 	device = dev->path.i2c.device;
@@ -59,7 +59,7 @@ static int lsmbus_send_byte(struct device *dev, uint8_t val)
 
 static int lsmbus_read_byte(struct device *dev, uint8_t address)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 
 	device = dev->path.i2c.device;
@@ -70,7 +70,7 @@ static int lsmbus_read_byte(struct device *dev, uint8_t address)
 
 static int lsmbus_write_byte(struct device *dev, uint8_t address, uint8_t val)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 
 	device = dev->path.i2c.device;
@@ -82,7 +82,7 @@ static int lsmbus_write_byte(struct device *dev, uint8_t address, uint8_t val)
 static int lsmbus_block_read(struct device *dev, uint8_t cmd, u8 bytes,
 			     u8 *buffer)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 
 	device = dev->path.i2c.device;
@@ -94,7 +94,7 @@ static int lsmbus_block_read(struct device *dev, uint8_t cmd, u8 bytes,
 static int lsmbus_block_write(struct device *dev, uint8_t cmd, u8 bytes,
 			      const u8 *buffer)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 
 	device = dev->path.i2c.device;
@@ -217,8 +217,8 @@ static void acpi_enable_resources(struct device *dev)
 
 }
 
-static void lpci_set_subsystem(struct device *dev, unsigned vendor,
-			       unsigned device)
+static void lpci_set_subsystem(struct device *dev, unsigned int vendor,
+			       unsigned int device)
 {
 	pci_write_config32(dev, 0x7c,
 		((device & 0xffff) << 16) | (vendor & 0xffff));

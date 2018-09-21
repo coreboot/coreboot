@@ -445,7 +445,7 @@ void cs5536_disable_internal_uart(void);
 void cs5536_early_setup(void);
 
 void cs5536_enable_smbus(void);
-int smbus_read_byte(unsigned device, unsigned address);
+int smbus_read_byte(unsigned int device, unsigned int address);
 #else
 void chipsetinit(void);
 #endif

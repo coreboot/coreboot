@@ -146,17 +146,18 @@ static struct memory_instruction_info *match_instruction(uintptr_t insn)
 }
 
 
-static int fetch_16bit_instruction(uintptr_t vaddr, uintptr_t *insn)
+static int fetch_16bit_instruction(uintptr_t vaddr, uintptr_t *insn, int *size)
 {
 	uint16_t ins = mprv_read_mxr_u16((uint16_t *)vaddr);
 	if (EXTRACT_FIELD(ins, 0x3) != 3) {
 		*insn = ins;
+		*size = 2;
 		return 0;
 	}
 	return -1;
 }
 
-static int fetch_32bit_instruction(uintptr_t vaddr, uintptr_t *insn)
+static int fetch_32bit_instruction(uintptr_t vaddr, uintptr_t *insn, int *size)
 {
 	uint32_t l = (uint32_t)mprv_read_mxr_u16((uint16_t *)vaddr + 0);
 	uint32_t h = (uint32_t)mprv_read_mxr_u16((uint16_t *)vaddr + 2);
@@ -164,6 +165,7 @@ static int fetch_32bit_instruction(uintptr_t vaddr, uintptr_t *insn)
 	if ((EXTRACT_FIELD(ins, 0x3) == 3) &&
 		(EXTRACT_FIELD(ins, 0x1c) != 0x7)) {
 		*insn = ins;
+		*size = 4;
 		return 0;
 	}
 	return -1;
@@ -174,11 +176,15 @@ void handle_misaligned(trapframe *tf)
 {
 	uintptr_t insn = 0;
 	union endian_buf buff;
+	int insn_size = 0;
 
 	/* try to fetch 16/32 bits instruction */
-	if (fetch_16bit_instruction(tf->epc, &insn))
-		if (fetch_32bit_instruction(tf->epc, &insn))
+	if (fetch_16bit_instruction(tf->epc, &insn, &insn_size) < 0) {
+		if (fetch_32bit_instruction(tf->epc, &insn, &insn_size) < 0) {
 			redirect_trap();
+			return;
+		}
+	}
 
 	/* matching instruction */
 	struct memory_instruction_info *match = match_instruction(insn);
@@ -264,4 +270,7 @@ void handle_misaligned(trapframe *tf)
 			mprv_write_u8(addr, buff.b[i]);
 		}
 	}
+
+	/* return to where we came from */
+	write_csr(mepc, read_csr(mepc) + insn_size);
 }

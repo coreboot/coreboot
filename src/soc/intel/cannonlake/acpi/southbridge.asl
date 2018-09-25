@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Intel Corp.
+ * Copyright (C) 2017-2018 Intel Corp.
  * (Written by Bora Guvendik <bora.guvendik@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -48,3 +48,6 @@
 
 /* CNVi */
 #include "cnvi.asl"
+
+/* GBe 0:1f.6 */
+#include "pch_glan.asl"

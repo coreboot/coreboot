@@ -293,12 +293,10 @@ static int winbond_get_write_protection(const struct spi_flash *flash,
 	const size_t granularity = (1 << params->protection_granularity_shift);
 
 	if (params->bp_bits == 3) {
-		union status_reg1_bp3 reg1_bp3;
+		union status_reg1_bp3 reg1_bp3 = { .u = 0 };
 
 		ret = spi_flash_cmd(&flash->spi, flash->status_cmd, &reg1_bp3.u,
 				    sizeof(reg1_bp3.u));
-		if (ret)
-			return ret;
 
 		if (reg1_bp3.sec) {
 			// FIXME: not supported
@@ -308,12 +306,10 @@ static int winbond_get_write_protection(const struct spi_flash *flash,
 		bp = reg1_bp3.bp;
 		tb = reg1_bp3.tb;
 	} else if (params->bp_bits == 4) {
-		union status_reg1_bp4 reg1_bp4;
+		union status_reg1_bp4 reg1_bp4 = { .u = 0 };
 
 		ret = spi_flash_cmd(&flash->spi, flash->status_cmd, &reg1_bp4.u,
 				    sizeof(reg1_bp4.u));
-		if (ret)
-			return ret;
 
 		bp = reg1_bp4.bp;
 		tb = reg1_bp4.tb;
@@ -321,6 +317,8 @@ static int winbond_get_write_protection(const struct spi_flash *flash,
 		// FIXME: not supported
 		return -1;
 	}
+	if (ret)
+		return ret;
 
 	ret = spi_flash_cmd(&flash->spi, CMD_W25_RDSR2, &reg2.u,
 			    sizeof(reg2.u));
@@ -330,14 +328,15 @@ static int winbond_get_write_protection(const struct spi_flash *flash,
 	winbond_bpbits_to_region(granularity, bp, tb, reg2.cmp, flash->size,
 				 &wp_region);
 
-	if (!reg2.srp1 || !wp_region.size) {
+	if (!region_sz(&wp_region)) {
 		printk(BIOS_DEBUG, "WINBOND: flash isn't protected\n");
 
 		return 0;
 	}
 
 	printk(BIOS_DEBUG, "WINBOND: flash protected range 0x%08zx-0x%08zx\n",
-	       wp_region.offset, wp_region.size);
+	       region_offset(&wp_region),
+	       region_offset(&wp_region) + region_sz(&wp_region));
 
 	return region_is_subregion(&wp_region, region);
 }

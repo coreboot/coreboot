@@ -122,17 +122,17 @@ the following example configuration:
 			};
 		};
 		ramdisk-1 {
-                        description = "Compressed Initramfs";
-                        data = /incbin/("initramfs.cpio.xz");
-                        type = "ramdisk";
-                        arch = "arm64";
-                        os = "linux";
-                        compression = "none";
-                        load = <00000000>;
-                        entry = <00000000>;
-                        hash-1 {
-                                algo = "sha1";
-                        };
+			description = "Compressed Initramfs";
+			data = /incbin/("initramfs.cpio.xz");
+			type = "ramdisk";
+			arch = "arm64";
+			os = "linux";
+			compression = "none";
+			load = <00000000>;
+			entry = <00000000>;
+			hash-1 {
+				algo = "sha1";
+			};
 		};
 	};
 

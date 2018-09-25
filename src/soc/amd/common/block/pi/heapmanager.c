@@ -13,7 +13,6 @@
 
 
 #include <amdblocks/agesawrapper.h>
-#include <amdlib.h>
 #include <arch/acpi.h>
 #include <amdblocks/BiosCallOuts.h>
 #include <cbmem.h>

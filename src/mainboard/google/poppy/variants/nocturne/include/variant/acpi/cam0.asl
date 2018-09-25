@@ -105,7 +105,7 @@ Scope (\_SB.PCI0.I2C3)
 					Package () { 1, 2, 3, 4 }
 				},
 				Package () { "link-frequencies",
-					Package() { 360000000 }
+					Package() { 482400000 }
 				},
 				Package () { "remote-endpoint",
 					Package() { \_SB.PCI0.CIO2, 0, 0 }

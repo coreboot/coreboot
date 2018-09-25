@@ -124,8 +124,11 @@ M:	Ronald Minnich <rminnich@gmail.com>
 M:	Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 S:	Maintained
 F:	src/arch/riscv/
+F:	src/soc/sifive/
 F:	src/soc/ucb/
 F:	src/mainboard/emulation/*-riscv/
+F:	src/mainboard/sifive/
+F:	util/riscv/
 
 POWER8 ARCHITECTURE
 M:	Ronald Minnich <rminnich@gmail.com>

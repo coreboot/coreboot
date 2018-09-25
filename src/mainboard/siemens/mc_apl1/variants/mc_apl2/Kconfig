@@ -1,0 +1,14 @@
+
+if BOARD_SIEMENS_MC_APL2
+
+config BOARD_SIEMENS_MC_APL2_VAR
+	def_bool y
+	select DRIVER_INTEL_I210
+	select DRIVERS_I2C_RX6110SA
+	select DRIVER_SIEMENS_NC_FPGA
+
+config DEVICETREE
+	string
+	default "variants/mc_apl2/devicetree.cb"
+
+endif # BOARD_SIEMENS_MC_APL2

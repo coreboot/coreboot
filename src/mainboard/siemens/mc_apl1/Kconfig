@@ -17,10 +17,12 @@ config MAINBOARD_DIR
 config VARIANT_DIR
 	string
 	default "mc_apl1" if BOARD_SIEMENS_MC_APL1
+	default "mc_apl2" if BOARD_SIEMENS_MC_APL2
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "MC APL1" if BOARD_SIEMENS_MC_APL1
+	default "MC APL2" if BOARD_SIEMENS_MC_APL2
 
 config MAX_CPUS
 	int

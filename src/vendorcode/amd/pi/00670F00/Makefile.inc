@@ -43,8 +43,6 @@ BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/CPU
 BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/CPU/Family
 BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/Fch
 BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/Fch/Common
-BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/Psp/PspBaseLib
-
 
 AGESA_INC = -I$(obj)
 AGESA_INC += $(BINARY_PI_INC)
@@ -89,8 +87,6 @@ endef
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Lib/*.[cS])
 
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/binaryPI/*.[cS])
-
-agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Psp/PspBaseLib/*.[cS])
 
 classes-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += libagesa
 

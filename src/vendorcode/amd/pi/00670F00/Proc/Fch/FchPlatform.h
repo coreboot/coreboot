@@ -108,7 +108,6 @@
 #endif
 
 #include "Fch.h"
-#include "amdlib.h"
 #include "FchCommonCfg.h"
 #include "AmdFch.h"
 

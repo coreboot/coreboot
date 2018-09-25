@@ -22,6 +22,7 @@
 #include <compiler.h>
 #include <console/console.h>
 #include <fsp/util.h>
+#include <intelblocks/chip.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/pmclib.h>
 #include <memory_info.h>
@@ -175,6 +176,9 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 		m_cfg->VmxEnable = 0;
 	else
 		m_cfg->VmxEnable = config->VmxEnable;
+#if IS_ENABLED(CONFIG_SOC_INTEL_COFFEELAKE)
+	m_cfg->SkipMpInit = !chip_get_fsp_mp_init();
+#endif
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

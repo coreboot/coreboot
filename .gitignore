@@ -127,10 +127,6 @@ documentation/*.log
 documentation/*.toc
 documentation/*.out
 documentation/*.pdf
-documentation/cpukconfig.tex
-documentation/mainboardkconfig.tex
-documentation/skconfig.tex
-documentation/socketfkconfig.tex
 Documentation/_build
 
 doxygen/*

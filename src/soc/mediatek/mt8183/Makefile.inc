@@ -21,6 +21,7 @@ verstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 verstage-y += ../common/wdt.c
 
 romstage-y += ../common/cbmem.c emi.c
+romstage-y += memory.c
 romstage-y += ../common/gpio.c gpio.c
 romstage-y += ../common/mmu_operations.c mmu_operations.c
 romstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c

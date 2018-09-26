@@ -1624,6 +1624,75 @@ static u8 dramc_window_perbit_cal(u8 chn, u8 rank,
 	return 0;
 }
 
+static void dle_factor_handler(u8 chn, u8 val)
+{
+	val = MAX(val, 2);
+	clrsetbits_le32(&ch[chn].ao.shu[0].conf[1],
+		SHU_CONF1_DATLAT_MASK | SHU_CONF1_DATLAT_DSEL_MASK |
+		SHU_CONF1_DATLAT_DSEL_PHY_MASK,
+		(val << SHU_CONF1_DATLAT_SHIFT) |
+		((val - 2) << SHU_CONF1_DATLAT_DSEL_SHIFT) |
+		((val - 2) << SHU_CONF1_DATLAT_DSEL_PHY_SHIFT));
+	dram_phy_reset(chn);
+}
+
+static u8 dramc_rx_datlat_cal(u8 chn, u8 rank)
+{
+	s32 datlat, first = -1, sum = 0, best_step;
+
+	best_step = read32(&ch[chn].ao.shu[0].conf[1]) & SHU_CONF1_DATLAT_MASK;
+
+	dramc_dbg("[DATLAT] start. CH%d RK%d DATLAT Default: %2x\n",
+		   chn, rank, best_step);
+
+	u32 dummy_rd_backup = read32(&ch[chn].ao.dummy_rd);
+	dramc_engine2_init(chn, rank, 0x400, false);
+
+	for (datlat = 12; datlat < DATLAT_TAP_NUMBER; datlat++) {
+		dle_factor_handler(chn, datlat);
+
+		u32 err = dramc_engine2_run(chn, TE_OP_WRITE_READ_CHECK);
+
+		if (err != 0 && first != -1)
+			break;
+
+		if (sum >= 4)
+			break;
+
+		if (err == 0) {
+			if (first == -1)
+				first = datlat;
+			sum++;
+		}
+
+		dramc_dbg("Datlat=%2d, err_value=0x%8x, sum=%d\n",
+			   datlat, err, sum);
+	}
+
+	dramc_engine2_end(chn);
+	write32(&ch[chn].ao.dummy_rd, dummy_rd_backup);
+
+	best_step = first + (sum >> 1);
+	dramc_dbg("First_step=%d, total pass=%d, best_step=%d\n",
+		  first, sum, best_step);
+
+	assert(sum != 0);
+
+	dle_factor_handler(chn, best_step);
+
+	clrsetbits_le32(&ch[chn].ao.padctrl, PADCTRL_DQIENQKEND_MASK,
+		(0x1 << PADCTRL_DQIENQKEND_SHIFT) |
+		(0x1 << PADCTRL_DQIENLATEBEGIN_SHIFT));
+
+	return (u8) best_step;
+}
+
+static void dramc_dual_rank_rx_datlat_cal(u8 chn, u8 datlat0, u8 datlat1)
+{
+	u8 final_datlat = MAX(datlat0, datlat1);
+	dle_factor_handler(chn, final_datlat);
+}
+
 static void dramc_rx_dqs_gating_post_process(u8 chn)
 {
 	u8 rank_rx_dvs, dqsinctl;
@@ -1720,6 +1789,7 @@ static void dramc_rx_dqs_gating_post_process(u8 chn)
 
 void dramc_calibrate_all_channels(const struct sdram_params *pams)
 {
+	u8 rx_datlat[RANK_MAX] = {0};
 	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
 		for (u8 rk = RANK_0; rk < RANK_MAX; rk++) {
 			dramc_show("Start K ch:%d, rank:%d\n", chn, rk);
@@ -1731,9 +1801,11 @@ void dramc_calibrate_all_channels(const struct sdram_params *pams)
 			dramc_window_perbit_cal(chn, rk, RX_WIN_RD_DQC, pams);
 			dramc_window_perbit_cal(chn, rk, TX_WIN_DQ_DQM, pams);
 			dramc_window_perbit_cal(chn, rk, TX_WIN_DQ_ONLY, pams);
+			rx_datlat[rk] = dramc_rx_datlat_cal(chn, rk);
 			dramc_window_perbit_cal(chn, rk, RX_WIN_TEST_ENG, pams);
 		}
 
 		dramc_rx_dqs_gating_post_process(chn);
+		dramc_dual_rank_rx_datlat_cal(chn, rx_datlat[0], rx_datlat[1]);
 	}
 }

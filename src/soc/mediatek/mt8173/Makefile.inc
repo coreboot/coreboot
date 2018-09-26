@@ -80,7 +80,7 @@ ramstage-y += ../common/wdt.c
 ramstage-y += ../common/pll.c pll.c
 ramstage-y += rtc.c
 
-ramstage-y += usb.c
+ramstage-y += ../common/usb.c usb.c
 
 ramstage-y += ddp.c
 ramstage-y += dsi.c

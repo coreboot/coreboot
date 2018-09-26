@@ -196,7 +196,7 @@ static const struct pad_config gpio_table[] = {
 	/* D16 : ISH_UART0_CTS# ==> RCAM_RST_L */
 	PAD_CFG_GPO(GPP_D16, 0, DEEP),
 	/* D17 : DMIC_CLK1 ==> EC_PCH_ARCORE_INT_L */
-	PAD_CFG_NC(GPP_D17),
+	PAD_CFG_GPI_APIC(GPP_D17, NONE, PLTRST),
 	/* D18 : DMIC_DATA1 ==> TP131 */
 	PAD_CFG_NC(GPP_D18),
 	/* D19 : DMIC_CLK0 ==> PCH_DMIC_CLK_OUT */

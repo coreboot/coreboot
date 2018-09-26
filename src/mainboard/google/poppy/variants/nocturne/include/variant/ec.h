@@ -79,4 +79,7 @@
 #define EC_ENABLE_MKBP_DEVICE  /* Enable cros_ec_keyb device */
 #define EC_ENABLE_CBAS_DEVICE  /* Enable "Base Attached Switch" device */
 
+/* Enable EC sync interrupt, EC_SYNC_IRQ is defined in variant/gpio.h */
+#define EC_ENABLE_SYNC_IRQ
+
 #endif /* __MAINBOARD_EC_H__ */

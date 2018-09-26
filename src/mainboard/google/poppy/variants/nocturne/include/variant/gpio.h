@@ -34,6 +34,9 @@
 /* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
 #define GPE_EC_WAKE		GPE0_LAN_WAK
 
+/* EC sync irq is GPP_D12 */
+#define EC_SYNC_IRQ		GPP_D17_IRQ
+
 /* eSPI virtual wire reporting */
 #define EC_SCI_GPI		GPE0_ESPI
 

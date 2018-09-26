@@ -185,3 +185,245 @@ Method(OSFL, 0){
 	}
 	Return(OSVR)
 }
+
+OperationRegion(SMIC, SystemMemory, 0xfed80000, 0x80000)
+Field( SMIC, ByteAcc, NoLock, Preserve) {
+	offset (0x03ee),
+	U3PS, 2,  /* Usb3PowerSel */
+
+	offset (0x0e28),
+	,29 ,
+	SARP, 1,  /* Sata Ref Clock Powerdown */
+	U2RP, 1,  /* Usb2 Ref Clock Powerdown */
+	U3RP, 1,  /* Usb3 Ref Clock Powerdown */
+
+	offset (0x1c00),
+	, 1,
+	,6,
+	U3PY, 1,
+	, 7,
+	UD3P, 1,  /* bit 15 */
+	U3PR, 1,  /* bit 16 */
+	, 11,
+	FWLM, 1,  /* FirmWare Load Mode  */
+	FPLS, 1,  /* Fw PreLoad Start    */
+	FPLC, 1,  /* Fw PreLoad Complete */
+
+	offset (0x1c04),
+	UA04, 16,
+	, 15,
+	ROAM, 1,  /* 1= ROM 0=RAM */
+
+	offset (0x1c08),
+	UA08, 32,
+
+	offset (0x1e4a),
+	I0TD, 2,
+	, 1,
+	I0PD, 1,
+	offset (0x1e4b),
+	I0DS, 3,
+
+	offset (0x1e4c),
+	I1TD, 2,
+	, 1,
+	I1PD, 1,
+	offset (0x1e4d),
+	I1DS, 3,
+
+	offset (0x1e4e),
+	I2TD, 2,
+	, 1,
+	I2PD, 1,
+	offset (0x1e4f),
+	I2DS, 3,
+
+	offset (0x1e50),
+	I3TD, 2,
+	, 1,
+	I3PD, 1,
+	offset (0x1e51),
+	I3DS, 3,
+
+	offset (0x1e56),
+	U0TD, 2,
+	, 1,
+	U0PD, 1,
+	offset (0x1e57),
+	U0DS, 3,
+
+	offset (0x1e58),
+	U1TD, 2,
+	, 1,
+	U1PD, 1,
+	offset (0x1e59),
+	U1DS, 3,
+
+	offset (0x1e5e),
+	SATD, 2,
+	, 1,
+	SAPD, 1,
+	offset (0x1e5f),
+	SADS, 3,
+
+	offset (0x1e64),
+	U2TD, 2,
+	, 1,
+	U2PD, 1,
+	offset (0x1e65),
+	U2DS, 3,
+
+	offset (0x1e6e),
+	U3TD, 2,
+	, 1,
+	U3PD, 1,
+	offset (0x1e6f),
+	U3DS, 3,
+
+	offset (0x1e70),
+	SDTD, 2,
+	, 1,
+	, 1,
+	, 2,
+	SDRT, 1,
+	SDSC, 1,
+
+	offset (0x1e71),
+	SDDS, 3,
+
+	offset (0x1e80),
+	, 15,
+	RQ15, 1,
+	, 2,
+	RQ18, 1,
+	, 4,
+	RQ23, 1,
+	RQ24, 1,
+	, 5,
+	RQTY, 1,
+	offset (0x1e84),
+	, 15,
+	SASR, 1,  /* SATA 15 Shadow Reg Request Status Register */
+	, 2,
+	U2SR, 1,  /* USB2 18 Shadow Reg Request Status Register */
+	, 4,
+	U3SR, 1,  /* USB3 23 Shadow Reg Request Status Register */
+	SDSR, 1,  /* SD 24 Shadow Reg Request Status Register */
+	offset (0x1e88),
+	SRSA, 32, /* Shadow Reg SRAM Addr */
+	SRSD, 32, /* Shadow Reg SRAM DATA */
+
+	offset (0x1e94),
+	SRDY, 1,  /* S0i3 bios ready */
+
+	offset (0x1ea0),
+	PG1A, 1,
+	PG2_, 1,
+	,1,
+	U3PG, 1,  /* Usb3 Power Good BIT3 */
+
+	offset (0x1ea3), /* Power Good Control */
+	PGA3, 8 ,
+}
+
+OperationRegion(FCFG, SystemMemory, PCBA, 0x01000000)
+Field(FCFG, DwordAcc, NoLock, Preserve)
+{
+	/* XHCI */
+	Offset(0x00080010),
+	XHBA, 32,
+	Offset(0x0008002c),
+	XH2C, 32,
+
+	Offset(0x00080048),
+	IDEX, 32,
+	DATA, 32,
+	Offset(0x00080054),
+	U_PS, 2,
+
+	/* SATA */
+	Offset(0x00088010),
+	ST10, 32,
+	ST14, 32,
+	ST18, 32,
+	ST1C, 32,
+	ST20, 32,
+	ST24, 32,
+
+	Offset(0x0008802c),
+	ST2C, 32,
+
+	Offset(0x00088040),
+	ST40, 1,
+
+	Offset(0x00088044),
+	ST44, 1,
+
+	Offset(0x0008804c),
+	, 2,
+	DDIC, 1, /* DisableDynamicInterfaceClockPowerSaving */
+
+	Offset(0x00088064),
+	S_PS, 2,
+
+	Offset(0x00088084),
+	, 1,
+	ST84, 1,
+	, 28,
+	DSDN, 1, /* DShutDowN */
+
+	Offset(0x0008808c),
+	ST8C, 8,
+
+	/* EHCI */
+	Offset(0x00090004),
+	, 1,
+	EHME, 1,
+	Offset(0x00090010),
+	EHBA, 32,
+	Offset(0x0009002c),
+	EH2C, 32,
+	Offset(0x00090054),
+	EH54, 8,
+	Offset(0x00090064),
+	EH64, 8,
+
+	Offset(0x000900c4),
+	E_PS, 2,
+
+	/* LPC Bridge */
+	Offset(0x000a3078),
+	, 2,
+	LDQ0,  1,
+
+	Offset(0x000a30cb),
+	,  7,
+	AUSS,  1, /* AutoSizeStart */
+
+	/* SD */
+	Offset(0x000a7004),
+	,  1,
+	SDME,  1,
+
+	Offset(0x000a7010),
+	SDBA,  32,
+	Offset(0x000a702c),
+	SD2C,  32,
+	Offset(0x000a7094),
+	D_PS,  2,
+	,  6,
+	SDPE, 1,
+	,  6,
+	PMES, 1,
+
+	Offset(0x000a70b3), /* Version 2.0 = 0x1, Version 3.0 = 0x2 */
+	SDB3,  8,
+	Offset(0x000a70b4), /* Set Enable */
+	,  8,
+	SETE, 1,
+
+	Offset(0x000a70d0),
+	,  17,
+	FC18, 1, /* Force 1.8v */
+
+}

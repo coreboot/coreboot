@@ -39,6 +39,8 @@ Method (_PTS, 1)
 	/* DBGO (Arg0) */
 	/* DBGO ("\n") */
 
+	\_SB.PCI0.FPTS ()
+
 	/* Clear wake status structure. */
 	Store (0, PEWD)
 	Store (0, Index(WKST,0))
@@ -84,6 +86,8 @@ Method (\_WAK, 1)
 	/* DBGO ("From S") */
 	/* DBGO (Arg0) */
 	/* DBGO (" to S0\n") */
+
+	\_SB.PCI0.FWAK ()
 
 	Return (WKST)
 }

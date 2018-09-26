@@ -121,12 +121,9 @@ size_t sdram_size(void)
 
 static void set_rank_info_to_conf(const struct sdram_params *params)
 {
-	u8 u4value = 0;
-
-	/* CONA 17th bit 0: Disable dual rank mode
-	   1: Enable dual rank mode */
-	u4value = ((params->emi_cona_val & (0x1 << 17)) >> 17) ? 0 : 1;
-	clrsetbits_le32(&ch[0].ao.arbctl, 0x1 << 12, u4value << 12);
+	bool is_dual_rank = (params->emi_cona_val & (0x1 << 17)) != 0;
+	clrsetbits_le32(&ch[0].ao.rstmask, 0x1 << 12,
+			(is_dual_rank ? 0 : 1) << 12);
 }
 
 static void set_MRR_pinmux_mapping(void)
@@ -271,6 +268,17 @@ static void dramc_init_pre_settings(void)
 	setbits_le32(&ch[0].phy.misc_ctrl1, 0x1 << 31);
 }
 
+static void dramc_ac_timing_optimize(void)
+{
+	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
+		clrsetbits_le32(&ch[chn].ao.shu[0].actim[3],
+			0xff << 16, 0x64 << 16);
+		clrbits_le32(&ch[chn].ao.shu[0].ac_time_05t, 0x1 << 2);
+		clrsetbits_le32(&ch[chn].ao.shu[0].actim[4],
+			0x3ff << 0, 0x77 << 0);
+	}
+}
+
 static void init_dram(const struct sdram_params *params)
 {
 	global_option_init(params);
@@ -288,6 +296,8 @@ static void do_calib(const struct sdram_params *params)
 {
 	dramc_apply_pre_calibration_config();
 	dramc_calibrate_all_channels(params);
+	dramc_ac_timing_optimize();
+	dramc_runtime_config();
 }
 
 void mt_set_emi(const struct sdram_params *params)

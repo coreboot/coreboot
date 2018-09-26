@@ -118,10 +118,13 @@ enum {
 };
 
 void dramc_get_rank_size(u64 *dram_rank_size);
+void dramc_runtime_config(void);
 void dramc_set_broadcast(u32 onoff);
 u32 dramc_get_broadcast(void);
 void dramc_init(void);
 void dramc_sw_impedance(const struct sdram_params *params);
 void dramc_apply_pre_calibration_config(void);
 void dramc_calibrate_all_channels(const struct sdram_params *params);
+void dramc_hw_gating_onoff(u8 chn, bool onoff);
+void dramc_enable_phy_dcm(bool bEn);
 #endif /* _DRAMC_PI_API_MT8183_H */

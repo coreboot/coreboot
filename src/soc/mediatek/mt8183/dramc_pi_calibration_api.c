@@ -190,22 +190,24 @@ static void dramc_write_dbi_onoff(bool on)
 			(on ? 1 : 0) << SHU1_WODT_DBIWR_SHIFT);
 }
 
-static void dramc_phy_dcm_disable(u8 chn)
+static void dramc_phy_dcm_2_channel(u8 chn, bool en)
 {
-	clrsetbits_le32(&ch[chn].phy.misc_cg_ctrl0,
-		(0x1 << 20) | (0x1 << 19) | 0x3ff << 8,
-		(0x0 << 20) | (0x1 << 19) | 0x3ff << 8);
+	clrsetbits_le32(&ch[chn].phy.misc_cg_ctrl0, (0x3 << 19) | (0x3ff << 8),
+		((en ? 0 : 0x1) << 19) | ((en ? 0 : 0x1ff) << 9) | (1 << 8));
 
 	for (size_t i = 0; i < DRAM_DFS_SHUFFLE_MAX; i++) {
 		struct ddrphy_ao_shu *shu = &ch[chn].phy.shu[i];
-		setbits_le32(&shu->b[0].dq[8], 0x1fff << 19);
-		setbits_le32(&shu->b[1].dq[8], 0x1fff << 19);
+		for (size_t b = 0; b < 2; b++)
+			clrsetbits_le32(&shu->b[b].dq[8], 0x1fff << 19,
+				((en ? 0 : 0x7ff) << 22) | (0x1 << 21) |
+				((en ? 0 : 0x3) << 19));
 		clrbits_le32(&shu->ca_cmd[8], 0x1fff << 19);
 	}
-	clrbits_le32(&ch[chn].phy.misc_cg_ctrl5, (0x7 << 16) | (0x7 << 20));
+	clrsetbits_le32(&ch[chn].phy.misc_cg_ctrl5, (0x7 << 16) | (0x7 << 20),
+		((en ? 0x7 : 0) << 16) | ((en ? 0x7 : 0) << 20));
 }
 
-static void dramc_enable_phy_dcm(bool en)
+void dramc_enable_phy_dcm(bool en)
 {
 	u32 broadcast_bak = dramc_get_broadcast();
 	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
@@ -250,8 +252,7 @@ static void dramc_enable_phy_dcm(bool en)
 			clrsetbits_le32(&shu->ca_cmd[7], mask, value);
 		}
 
-		if (!en)
-			dramc_phy_dcm_disable(chn);
+		dramc_phy_dcm_2_channel(chn, en);
 	}
 	dramc_set_broadcast(broadcast_bak);
 }
@@ -270,7 +271,7 @@ static void reset_delay_chain_before_calibration(void)
 		}
 }
 
-static void dramc_hw_gating_onoff(u8 chn, bool on)
+void dramc_hw_gating_onoff(u8 chn, bool on)
 {
 	clrsetbits_le32(&ch[chn].ao.shuctrl2, 0x3 << 14,
 		(on ? 0x3 : 0) << 14);

@@ -111,12 +111,10 @@ size_t sdram_size(void)
 	size_t dram_size = 0;
 	u64 rank_size[RANK_MAX];
 
-	dramc_get_rank_size(&rank_size[0]);
+	dramc_get_rank_size(rank_size);
 
-	for (int i = 0; i < RANK_MAX; i++) {
+	for (int i = 0; i < RANK_MAX; i++)
 		dram_size += rank_size[i];
-		dramc_show("Rank%d size:0x%llx\n", i, rank_size[i]);
-	}
 
 	return dram_size;
 }
@@ -286,7 +284,13 @@ static void init_dram(const struct sdram_params *params)
 	emi_init2(params);
 }
 
+static void do_calib(const struct sdram_params *params)
+{
+	dramc_apply_pre_calibration_config();
+}
+
 void mt_set_emi(const struct sdram_params *params)
 {
 	init_dram(params);
+	do_calib(params);
 }

@@ -26,6 +26,7 @@ romstage-y += auxadc.c
 romstage-y += ../common/cbmem.c emi.c
 romstage-y += dramc_init_setting.c
 romstage-y += dramc_pi_basic_api.c
+romstage-y += dramc_pi_calibration_api.c
 romstage-y += memory.c
 romstage-y += ../common/gpio.c gpio.c
 romstage-y += ../common/mmu_operations.c mmu_operations.c

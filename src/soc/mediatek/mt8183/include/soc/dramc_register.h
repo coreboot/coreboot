@@ -630,7 +630,7 @@ struct dramc_ddrphy_ao_regs {
 		};
 	};
 
-	struct {
+	struct ddrphy_ao_shu {
 		struct {
 			uint32_t dq[13];
 			uint32_t dll[2];

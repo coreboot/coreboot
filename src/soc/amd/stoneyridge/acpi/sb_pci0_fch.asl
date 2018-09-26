@@ -499,8 +499,8 @@ Method(FDDC, 2, Serialized)
 				}
 			}
 /* todo			Case(15) { STD0()} */ /* SATA */
-/* todo			Case(18) { U2D0()} */ /* EHCI */
-/* todo			Case(23) { U3D0()} */ /* XHCI */
+			Case(18) { U2D0()} /* EHCI */
+			Case(23) { U3D0()} /* XHCI */
 /* todo			Case(24) { SDD0()} */ /* SD   */
 		}
 	} else {
@@ -555,8 +555,8 @@ Method(FDDC, 2, Serialized)
 				Store(0x03, U1TD)
 			}
 /* todo			Case(15) { STD3()} */ /* SATA */
-/* todo			Case(18) { U2D3()} */ /* EHCI */
-/* todo			Case(23) { U3D3()} */ /* XHCI */
+			Case(18) { U2D3()} /* EHCI */
+			Case(23) { U3D3()} /* XHCI */
 /* todo			Case(24) { SDD3()} */ /* SD   */
 		}
 		/* Turn off Power */

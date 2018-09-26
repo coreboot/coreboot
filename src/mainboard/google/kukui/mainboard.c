@@ -16,6 +16,7 @@
 #include <device/device.h>
 #include <soc/gpio.h>
 #include <soc/mmu_operations.h>
+#include <soc/usb.h>
 
 static void configure_emmc(void)
 {
@@ -31,9 +32,15 @@ static void configure_emmc(void)
 		gpio_set_pull(emmc_pin[i], GPIO_PULL_ENABLE, GPIO_PULL_UP);
 }
 
+static void configure_usb(void)
+{
+	setup_usb_host();
+}
+
 static void mainboard_init(struct device *dev)
 {
 	configure_emmc();
+	configure_usb();
 }
 
 static void mainboard_enable(struct device *dev)

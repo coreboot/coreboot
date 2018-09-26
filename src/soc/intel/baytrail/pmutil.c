@@ -14,6 +14,7 @@
  */
 
 #include <stdint.h>
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -23,6 +24,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
 #include <security/vboot/vbnv.h>
+#include <security/vboot/vboot_common.h>
 
 #if defined(__SIMPLE_DEVICE__)
 
@@ -383,4 +385,12 @@ int rtc_failure(void)
 int vbnv_cmos_failed(void)
 {
 	return rtc_failure();
+}
+
+int vboot_platform_is_resuming(void)
+{
+	if (!(inw(ACPI_BASE_ADDRESS + PM1_STS) & WAK_STS))
+		return 0;
+
+	return acpi_sleep_from_pm1(inl(ACPI_BASE_ADDRESS + PM1_CNT)) == ACPI_S3;
 }

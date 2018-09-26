@@ -17,6 +17,8 @@
 #ifndef INTEL_COMMON_PMUTIL_H
 #define INTEL_COMMON_PMUTIL_H
 
+#include <cpu/x86/smm.h>
+
 #define D31F0_PMBASE		0x40
 #define D31F0_GEN_PMCON_3	0xa4
 #define D31F0_GPIO_ROUT		0xb8

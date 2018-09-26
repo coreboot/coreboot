@@ -18,6 +18,7 @@
  * and the differences between PCH variants.
  */
 
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -29,6 +30,7 @@
 #include <soc/pm.h>
 #include <soc/gpio.h>
 #include <security/vboot/vbnv.h>
+#include <security/vboot/vboot_common.h>
 
 /* Print status bits with descriptive names */
 static void print_status_bits(u32 status, const char *bit_names[])
@@ -472,4 +474,12 @@ int rtc_failure(void)
 int vbnv_cmos_failed(void)
 {
 	return rtc_failure();
+}
+
+int vboot_platform_is_resuming(void)
+{
+	if (!(inw(ACPI_BASE_ADDRESS + PM1_STS) & WAK_STS))
+		return 0;
+
+	return acpi_sleep_from_pm1(inl(ACPI_BASE_ADDRESS + PM1_CNT)) == ACPI_S3;
 }

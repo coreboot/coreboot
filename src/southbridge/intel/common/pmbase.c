@@ -14,13 +14,16 @@
  */
 
 #include <stdint.h>
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/early_variables.h>
 #include <assert.h>
+#include <security/vboot/vboot_common.h>
 
 #include "pmbase.h"
+#include "pmutil.h"
 
 /* LPC PM Base Address Register */
 #define PMBASE		0x40
@@ -90,4 +93,14 @@ u8 read_pmbase8(const u8 addr)
 	ASSERT(addr <= (PMSIZE - sizeof(u8)));
 
 	return inb(lpc_get_pmbase() + addr);
+}
+
+int vboot_platform_is_resuming(void)
+{
+	u16 reg16 = read_pmbase16(PM1_STS);
+
+	if (!(reg16 & WAK_STS))
+		return 0;
+
+	return acpi_sleep_from_pm1(reg16) == ACPI_S3;
 }

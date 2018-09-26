@@ -39,6 +39,7 @@
 #include <version.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
+#include <security/vboot/vboot_common.h>
 
 /* Return 0, 3, 4 or 5 to indicate the previous sleep state. */
 uint32_t chipset_prev_sleep_state(uint32_t clear)
@@ -270,4 +271,9 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 uint64_t get_initial_timestamp(void)
 {
 	return 0;
+}
+
+int vboot_platform_is_resuming(void)
+{
+	return !!romstage_handoff_is_resume();
 }

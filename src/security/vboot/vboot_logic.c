@@ -309,7 +309,6 @@ void verstage_main(void)
 	 * does verification of memory init and thus must ensure it resumes with
 	 * the same slot that it booted from. */
 	if (IS_ENABLED(CONFIG_RESUME_PATH_SAME_AS_BOOT) &&
-	    IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK) &&
 	    vboot_platform_is_resuming())
 		ctx.flags |= VB2_CONTEXT_S3_RESUME;
 

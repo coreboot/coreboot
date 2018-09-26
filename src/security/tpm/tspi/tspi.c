@@ -97,10 +97,25 @@ uint32_t tpm_setup(int s3flag)
 	/* Handle special init for S3 resume path */
 	if (s3flag) {
 		result = tlcl_resume();
-		if (result == TPM_E_INVALID_POSTINIT)
-			printk(BIOS_INFO, "TPM: Already initialized.\n");
+		switch (result) {
+		case TPM_SUCCESS:
+			break;
 
-		return TPM_SUCCESS;
+		case TPM_E_INVALID_POSTINIT:
+			/*
+			 * We're on a platform where the TPM maintains power
+			 * in S3, so it's already initialized.
+			 */
+			printk(BIOS_INFO, "TPM: Already initialized.\n");
+			result = TPM_SUCCESS;
+			break;
+
+		default:
+			printk(BIOS_ERR, "TPM: Resume failed (%#x).\n", result);
+			break;
+
+		}
+		goto out;
 	}
 
 	result = tlcl_startup();

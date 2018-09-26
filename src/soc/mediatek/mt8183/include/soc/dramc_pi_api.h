@@ -132,4 +132,5 @@ enum {
 void dramc_get_rank_size(u64 *dram_rank_size);
 void dramc_set_broadcast(u32 onoff);
 u32 dramc_get_broadcast(void);
+void dramc_init(void);
 #endif /* _DRAMC_PI_API_MT8183_H */

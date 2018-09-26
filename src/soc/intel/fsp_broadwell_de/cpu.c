@@ -128,11 +128,10 @@ void broadwell_de_init_cpus(struct device *dev)
 static void configure_mca(void)
 {
 	msr_t msr;
-	const unsigned int mcg_cap_msr = 0x179;
 	int i;
 	int num_banks;
 
-	msr = rdmsr(mcg_cap_msr);
+	msr = rdmsr(IA32_MCG_CAP);
 	num_banks = msr.lo & 0xff;
 
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some
@@ -140,14 +139,14 @@ static void configure_mca(void)
 	   every bank. */
 	msr.lo = msr.hi = 0;
 	for (i = 0; i < num_banks; i++) {
-		wrmsr(MSR_IA32_MC0_STATUS + (i * 4) + 1, msr);
-		wrmsr(MSR_IA32_MC0_STATUS + (i * 4) + 2, msr);
-		wrmsr(MSR_IA32_MC0_STATUS + (i * 4) + 3, msr);
+		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
+		wrmsr(IA32_MC0_STATUS + (i * 4) + 1, msr);
+		wrmsr(IA32_MC0_STATUS + (i * 4) + 2, msr);
 	}
 
 	msr.lo = msr.hi = 0xffffffff;
 	for (i = 0; i < num_banks; i++)
-		wrmsr(MSR_IA32_MC0_STATUS + (i * 4), msr);
+		wrmsr(IA32_MC0_CTL + (i * 4), msr);
 }
 
 static void broadwell_de_core_init(struct device *cpu)

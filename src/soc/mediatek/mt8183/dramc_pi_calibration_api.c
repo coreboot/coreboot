@@ -80,6 +80,25 @@ static void dramc_mode_reg_write_by_rank(u8 chn, u8 rank,
 	clrsetbits_le32(&ch[chn].ao.mrs, MRS_MRSRK_MASK, mrs_back);
 }
 
+static void dramc_write_leveling(u8 chn, u8 rank,
+		const u8 wr_level[CHANNEL_MAX][RANK_MAX][DQS_NUMBER])
+{
+	clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].ca_cmd[9],
+		SHU1_CA_CMD9_RG_RK_ARFINE_TUNE_CLK_MASK, 0);
+
+	for (u8 i = 0; i < DQS_NUMBER; i++) {
+		s32 wrlevel_dq_delay = wr_level[chn][rank][i] + 0x10;
+		assert(wrlevel_dq_delay < 0x40);
+
+		clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].b[i].dq[7],
+			FINE_TUNE_PBYTE_MASK | FINE_TUNE_DQM_MASK |
+			FINE_TUNE_DQ_MASK,
+			(wr_level[chn][rank][i] << FINE_TUNE_PBYTE_SHIFT) |
+			(wrlevel_dq_delay << FINE_TUNE_DQM_SHIFT) |
+			(wrlevel_dq_delay << FINE_TUNE_DQ_SHIFT));
+	}
+}
+
 static void cmd_bus_training(u8 chn, u8 rank,
 		const struct sdram_params *params)
 {
@@ -275,6 +294,8 @@ void dramc_calibrate_all_channels(const struct sdram_params *pams)
 			dramc_show("Start K ch:%d, rank:%d\n", chn, rk);
 			auto_refresh_switch(chn, 0);
 			cmd_bus_training(chn, rk, pams);
+			dramc_write_leveling(chn, rk, pams->wr_level);
+			auto_refresh_switch(chn, 1);
 		}
 	}
 }

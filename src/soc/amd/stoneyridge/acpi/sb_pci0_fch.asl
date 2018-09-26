@@ -581,3 +581,61 @@ Method(FDDC, 2, Serialized)
 	}
 	Release(FDAS)
 }
+
+Method(FPTS,0, Serialized)  /* FCH _PTS */
+{
+	if(LEqual(\XHCE, one)) {
+		if(LNotEqual(U3TD, 0x03)) {
+			FDDC(23, 3)
+		}
+	}
+	if(LNotEqual(U2TD, 0x03)) {
+		FDDC(18, 3)
+	}
+
+	if(LNotEqual(SATD, 0x00)) {
+		FDDC(15, 0) /* wake SATA before sleep */
+	}
+}
+
+Method(FWAK,0, Serialized)  /* FCH _WAK */
+{
+	if(LEqual(\XHCE, one)) {
+		if(LEqual(U3TD, 0x03)) {
+			FDDC(23, 0)
+		}
+	}
+	if(LEqual(U2TD, 0x03)) {
+		FDDC(18, 0)
+	}
+	if(LEqual(\UT0E, zero)) {
+		if(LNotEqual(U0TD, 0x03)) {
+			FDDC(11, 3)
+		}
+	}
+	if(LEqual(\UT1E, zero)) {
+		if(LNotEqual(U1TD, 0x03)) {
+			FDDC(12, 3)
+		}
+	}
+	if(LEqual(\IC0E, zero)) {
+		if(LNotEqual(I0TD, 0x03)) {
+			FDDC(5, 3)
+		}
+	}
+	if(LEqual(\IC1E, zero)) {
+		if(LNotEqual(I1TD, 0x03)) {
+			FDDC(6, 3)
+		}
+	}
+	if(LEqual(\IC2E, zero)) {
+		if(LNotEqual(I2TD, 0x03)) {
+			FDDC(7, 3)
+		}
+	}
+	if(LEqual(\IC3E, zero)) {
+		if(LNotEqual(I3TD, 0x03)) {
+			FDDC(8, 3)
+		}
+	}
+}

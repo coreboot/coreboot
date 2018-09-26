@@ -121,12 +121,12 @@ util/autoport/autoport
 util/kbc1126/kbc1126_ec_dump
 util/kbc1126/kbc1126_ec_insert
 
-documentation/*.aux
-documentation/*.idx
-documentation/*.log
-documentation/*.toc
-documentation/*.out
-documentation/*.pdf
+Documentation/*.aux
+Documentation/*.idx
+Documentation/*.log
+Documentation/*.toc
+Documentation/*.out
+Documentation/*.pdf
 Documentation/_build
 
 doxygen/*

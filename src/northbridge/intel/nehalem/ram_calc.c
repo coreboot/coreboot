@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 ChromeOS Authors
+ * Copyright (C) 2012 Google LLC
  * Copyright (C) 2013 Vladimir Serbinenko.
  *
  * This program is free software; you can redistribute it and/or modify

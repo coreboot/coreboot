@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
  *	 Raptor Engineering
- * Copyright (C) 2012 ChromeOS Authors
+ * Copyright (C) 2012 Google LLC
  * 2005.6 by yhlu
  * 2006.3 yhlu add copy data from CAR to ram
  *

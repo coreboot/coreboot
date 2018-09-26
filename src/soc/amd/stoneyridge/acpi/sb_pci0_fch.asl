@@ -639,3 +639,28 @@ Method(FWAK,0, Serialized)  /* FCH _WAK */
 		}
 	}
 }
+
+/*
+ * Helper for setting a bit in AOACxA0 PwrGood Control
+ * Arg0: bit to set or clear
+ * Arg1: 0 = clear bit[Arg0], non-zero = set bit[Arg0]
+ */
+Method(PWGC,2, Serialized)
+{
+	And (PGA3, 0xdf, Local0)  /* do SwUsb3SlpShutdown below */
+	if(Arg1) {
+		Or(Arg0, Local0, Local0)
+	} else {
+		Not(Arg0, Local1)
+		And(Local1, Local0, Local0)
+	}
+	Store(Local0, PGA3)
+	if(LEqual(Arg0, 0x20)) { /* if SwUsb3SlpShutdown */
+		Store(PGA3, Local0)
+		And(Arg0, Local0, Local0)
+		while(LNot(Local0)) { /* wait SwUsb3SlpShutdown to complete */
+			Store(PGA3, Local0)
+			And(Arg0, Local0, Local0)
+		}
+	}
+}

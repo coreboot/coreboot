@@ -13,7 +13,6 @@ bootblock-y += bootblock/cpu.c
 bootblock-y += bootblock/pch.c
 bootblock-y += pmutil.c
 bootblock-y += bootblock/report_platform.c
-bootblock-y += gpio.c
 bootblock-y += gspi.c
 bootblock-y += i2c.c
 bootblock-y += memmap.c
@@ -23,7 +22,6 @@ bootblock-y += p2sb.c
 bootblock-$(CONFIG_UART_DEBUG) += uart.c
 
 romstage-$(CONFIG_SOC_INTEL_CANNONLAKE_MEMCFG_INIT) += cnl_memcfg_init.c
-romstage-y += gpio.c
 romstage-y += gspi.c
 romstage-y += i2c.c
 romstage-y += lpc.c
@@ -38,10 +36,8 @@ ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-y += finalize.c
 ramstage-y += fsp_params.c
-ramstage-y += gpio.c
 ramstage-y += graphics.c
 ramstage-y += gspi.c
-ramstage-y += gpio.c
 ramstage-y += i2c.c
 ramstage-y += lockdown.c
 ramstage-y += lpc.c
@@ -58,7 +54,6 @@ ramstage-$(CONFIG_UART_DEBUG) += uart.c
 ramstage-y += vr_config.c
 ramstage-y += sd.c
 
-smm-y += gpio.c
 smm-y += p2sb.c
 smm-y += pmutil.c
 smm-y += smihandler.c
@@ -76,6 +71,18 @@ verstage-y += i2c.c
 verstage-y += pmutil.c
 verstage-y += spi.c
 verstage-$(CONFIG_UART_DEBUG) += uart.c
+
+ifeq ($(CONFIG_SOC_INTEL_CANNONLAKE_PCH_H),y)
+bootblock-y += gpio_cnp_h.c
+romstage-y += gpio_cnp_h.c
+ramstage-y += gpio_cnp_h.c
+smm-y += gpio_cnp_h.c
+else
+bootblock-y += gpio.c
+romstage-y += gpio.c
+ramstage-y += gpio.c
+smm-y += gpio.c
+endif
 
 CPPFLAGS_common += -I$(src)/soc/intel/cannonlake
 CPPFLAGS_common += -I$(src)/soc/intel/cannonlake/include

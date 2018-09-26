@@ -10,7 +10,7 @@ config SOC_INTEL_COFFEELAKE
 	help
 	  Intel Coffeelake support
 
-config CANNONLAKE_SOC_PCH_H
+config SOC_INTEL_CANNONLAKE_PCH_H
 	bool
 	default n
 	help
@@ -165,7 +165,7 @@ config NHLT_DA7219
 
 config MAX_ROOT_PORTS
 	int
-	default 24 if CANNONLAKE_SOC_PCH_H
+	default 24 if SOC_INTEL_CANNONLAKE_PCH_H
 	default 16
 
 config SMM_TSEG_SIZE
@@ -204,7 +204,7 @@ config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 
 config SOC_INTEL_I2C_DEV_MAX
 	int
-	default 4 if CANNONLAKE_SOC_PCH_H
+	default 4 if SOC_INTEL_CANNONLAKE_PCH_H
 	default 6
 
 # Clock divider parameters for 115200 baud rate

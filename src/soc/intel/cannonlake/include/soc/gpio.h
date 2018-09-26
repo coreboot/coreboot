@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Intel Corporation.
+ * Copyright (C) 2017-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +16,14 @@
 #ifndef _SOC_CANNONLAKE_GPIO_H_
 #define _SOC_CANNONLAKE_GPIO_H_
 
-#include <soc/gpio_defs.h>
-#include <intelblocks/gpio.h>
 
+#if IS_ENABLED(CONFIG_SOC_INTEL_CANNONLAKE_PCH_H)
+#include <soc/gpio_defs_cnp_h.h>
+#define CROS_GPIO_DEVICE_NAME	"INT3450:00"
+#else
+#include <soc/gpio_defs.h>
 #define CROS_GPIO_DEVICE_NAME	"INT34BB:00"
+#endif
+#include <intelblocks/gpio.h>
 
 #endif

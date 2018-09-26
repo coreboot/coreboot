@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2017 Intel Corporation.
+ * Copyright (C) 2017-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,6 +116,20 @@
 #define  GPE0_DWX_MASK			0xf
 #define  GPE0_DW_SHIFT(x)		(4*(x))
 
+#if IS_ENABLED(CONFIG_SOC_INTEL_CANNONLAKE_PCH_H)
+#define PMC_GPP_A			0x0
+#define PMC_GPP_B			0x1
+#define PMC_GPP_C			0x2
+#define PMC_GPP_D			0x3
+#define PMC_GPP_E			0x7
+#define PMC_GPP_F			0x8
+#define PMC_GPP_G			0x4
+#define PMC_GPP_H			0x6
+#define PMC_GPP_I			0x9
+#define PMC_GPP_J			0xA
+#define PMC_GPP_K			0x5
+#define PMC_GPD				0xC
+#else
 #define  PMC_GPP_A			0x0
 #define  PMC_GPP_B			0x1
 #define  PMC_GPP_C			0xD
@@ -125,6 +139,7 @@
 #define  PMC_GPP_G			0x2
 #define  PMC_GPP_H			0x6
 #define  PMC_GPD			0xA
+#endif
 
 #define GBLRST_CAUSE0			0x1924
 #define   GBLRST_CAUSE0_THERMTRIP	(1 << 5)

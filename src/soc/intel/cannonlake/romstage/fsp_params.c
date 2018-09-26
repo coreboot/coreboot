@@ -31,7 +31,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	m_cfg->IedSize = CONFIG_IED_REGION_SIZE;
 	m_cfg->SaGv = config->SaGv;
-	if (IS_ENABLED(CONFIG_CANNONLAKE_SOC_PCH_H))
+	if (IS_ENABLED(CONFIG_SOC_INTEL_CANNONLAKE_PCH_H))
 		m_cfg->UserBd = BOARD_TYPE_DESKTOP;
 	else
 		m_cfg->UserBd = BOARD_TYPE_ULT_ULX;

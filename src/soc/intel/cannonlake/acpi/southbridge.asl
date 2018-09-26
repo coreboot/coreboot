@@ -33,7 +33,11 @@
 #include "scs.asl"
 
 /* GPIO controller */
+#if IS_ENABLED(CONFIG_SOC_INTEL_CANNONLAKE_PCH_H)
+#include "gpio_cnp_h.asl"
+#else
 #include "gpio.asl"
+#endif
 
 /* LPC 0:1f.0 */
 #include "lpc.asl"

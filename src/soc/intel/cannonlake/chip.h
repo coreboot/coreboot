@@ -24,12 +24,18 @@
 #include <stdint.h>
 #include <soc/gpio.h>
 #include <soc/pch.h>
-#include <soc/gpio_defs.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
 #include <soc/serialio.h>
 #include <soc/usb.h>
 #include <soc/vr_config.h>
+#if IS_ENABLED(CONFIG_SOC_INTEL_CANNONLAKE_PCH_H)
+#include <soc/gpio_defs_cnp_h.h>
+#else
+#include <soc/gpio_defs.h>
+#endif
+
+
 
 struct soc_intel_cannonlake_config {
 

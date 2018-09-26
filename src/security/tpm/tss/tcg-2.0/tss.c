@@ -61,14 +61,13 @@ static uint32_t tlcl_send_startup(TPM_SU type)
 	startup.startup_type = type;
 	response = tpm_process_command(TPM2_Startup, &startup);
 
-	if (response && response->hdr.tpm_code &&
-	    (response->hdr.tpm_code != TPM_RC_INITIALIZE)) {
-		printk(BIOS_INFO, "%s: Startup return code is %x\n",
-		       __func__, response->hdr.tpm_code);
-		return TPM_E_IOERROR;
+	if (response && (response->hdr.tpm_code == 0 ||
+			 response->hdr.tpm_code == TPM_RC_INITIALIZE)) {
+		return TPM_SUCCESS;
 	}
-	return TPM_SUCCESS;
-
+	printk(BIOS_INFO, "%s: Startup return code is %x\n",
+	       __func__, response->hdr.tpm_code);
+	return TPM_E_IOERROR;
 }
 
 uint32_t tlcl_resume(void)

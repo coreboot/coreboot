@@ -19,4 +19,14 @@ config VBOOT
 	select VBOOT_STARTS_IN_BOOTBLOCK
 	select VBOOT_SEPARATE_VERSTAGE
 
+config DEBUG_DRAM
+	bool "Output verbose DRAM related debug messages"
+	default n
+	help
+	  This option enables additional DRAM related debug messages.
+
+config MEMORY_TEST
+	bool
+	default y
+
 endif

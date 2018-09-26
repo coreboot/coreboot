@@ -13,10 +13,39 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
+#include <console/console.h>
+#include <soc/dramc_pi_api.h>
 #include <soc/emi.h>
+#include <symbols.h>
 
 void mt_mem_init(const struct sdram_params *params)
 {
+	u64 rank_size[RANK_MAX];
+
 	/* memory calibration */
 	mt_set_emi(params);
+
+	if (IS_ENABLED(CONFIG_MEMORY_TEST)) {
+		size_t r;
+		u8 *addr = _dram;
+
+		dramc_get_rank_size(rank_size);
+
+		for (r = RANK_0; r < RANK_MAX; r++) {
+			int i;
+
+			if (rank_size[r] == 0)
+				break;
+
+			i = complex_mem_test(addr, 0x2000);
+
+			printk(BIOS_DEBUG, "[MEM] complex R/W mem test %s : %d\n",
+			       (i == 0) ? "pass" : "fail", i);
+
+			ASSERT(i == 0);
+
+			addr += rank_size[r];
+		}
+	}
 }

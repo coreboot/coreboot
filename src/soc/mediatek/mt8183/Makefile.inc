@@ -26,6 +26,7 @@ romstage-y += dramc_init_setting.c
 romstage-y += dramc_pi_basic_api.c
 romstage-y += dramc_pi_calibration_api.c
 romstage-y += memory.c
+romstage-$(CONFIG_MEMORY_TEST) += ../common/memory_test.c
 romstage-y += ../common/gpio.c gpio.c
 romstage-y += ../common/mmu_operations.c mmu_operations.c
 romstage-y += ../common/pmic_wrap.c pmic_wrap.c mt6358.c

@@ -429,6 +429,11 @@ struct soc_power_reg {
 	uint16_t wake_from;
 };
 
+#define XHCI_FW_SIG_OFFSET			0xc
+#define XHCI_FW_ADDR_OFFSET			0x6
+#define XHCI_FW_SIZE_OFFSET			0x8
+#define XHCI_FW_BOOTRAM_SIZE			0x8000
+
 void enable_aoac_devices(void);
 void sb_enable_rom(void);
 void configure_stoneyridge_i2c(void);

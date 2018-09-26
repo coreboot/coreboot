@@ -886,6 +886,50 @@ void southbridge_init(void *chip_info)
 	sb_clear_pm1_status();
 }
 
+static void set_sb_final_nvs(void)
+{
+	uintptr_t amdfw_rom;
+	uintptr_t xhci_fw;
+	uintptr_t fwaddr;
+	size_t fwsize;
+	const struct device *sd, *sata, *ehci;
+
+	struct global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs == NULL)
+		return;
+
+	gnvs->aoac.ic0e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C0);
+	gnvs->aoac.ic1e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C1);
+	gnvs->aoac.ic2e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C2);
+	gnvs->aoac.ic3e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C3);
+	gnvs->aoac.ut0e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_UART0);
+	gnvs->aoac.ut1e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_UART1);
+	gnvs->aoac.ehce = is_aoac_device_enabled(FCH_AOAC_D3_STATE_USB2);
+	gnvs->aoac.xhce = is_aoac_device_enabled(FCH_AOAC_D3_STATE_USB3);
+	/* Rely on these being in sync with devicetree */
+	sd = dev_find_slot(0, SD_DEVFN);
+	gnvs->aoac.st_e = sd && sd->enabled ? 1 : 0;
+	sata = dev_find_slot(0, SATA_DEVFN);
+	gnvs->aoac.sd_e = sata && sata->enabled ? 1 : 0;
+	gnvs->aoac.espi = 1;
+
+	amdfw_rom = 0x20000 - (0x80000 << CONFIG_AMD_FWM_POSITION_INDEX);
+	xhci_fw = read32((void *)(amdfw_rom + XHCI_FW_SIG_OFFSET));
+
+	fwaddr = 2 + read16((void *)(xhci_fw + XHCI_FW_ADDR_OFFSET
+			+ XHCI_FW_BOOTRAM_SIZE));
+	fwsize = read16((void *)(xhci_fw + XHCI_FW_SIZE_OFFSET
+			+ XHCI_FW_BOOTRAM_SIZE));
+	gnvs->fw00 = 0;
+	gnvs->fw01 = ((32 * KiB) << 16) + 0;
+	gnvs->fw02 = fwaddr + XHCI_FW_BOOTRAM_SIZE;
+	gnvs->fw03 = fwsize << 16;
+
+	ehci = dev_find_slot(0, EHCI1_DEVFN);
+	gnvs->eh10 = pci_read_config32(SOC_EHCI1_DEV, PCI_BASE_ADDRESS_0)
+			& ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+}
+
 void southbridge_final(void *chip_info)
 {
 	uint8_t restored_power = PM_S5_AT_POWER_RECOVERY;
@@ -893,6 +937,8 @@ void southbridge_final(void *chip_info)
 	if (IS_ENABLED(CONFIG_MAINBOARD_POWER_RESTORE))
 		restored_power = PM_RESTORE_S0_IF_PREV_S0;
 	pm_write8(PM_RTC_SHADOW, restored_power);
+
+	set_sb_final_nvs();
 }
 
 /*

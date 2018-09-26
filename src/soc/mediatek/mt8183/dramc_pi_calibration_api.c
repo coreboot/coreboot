@@ -20,6 +20,82 @@
 #include <soc/dramc_register.h>
 #include <soc/dramc_pi_api.h>
 
+static void auto_refresh_switch(u8 chn, u8 option)
+{
+	clrsetbits_le32(&ch[chn].ao.refctrl0, 1 << REFCTRL0_REFDIS_SHIFT,
+		(option ? 0 : 1) << REFCTRL0_REFDIS_SHIFT);
+
+	if (option == DISABLE) {
+		/*
+		 * Because HW will actually disable autorefresh after
+		 * refresh_queue empty, we need to wait until queue empty.
+		 */
+		udelay(((read32(&ch[chn].nao.misc_statusa) &
+				MISC_STATUSA_REFRESH_QUEUE_CNT_MASK) >>
+				MISC_STATUSA_REFRESH_QUEUE_CNT_SHIFT) * 4);
+	}
+}
+
+static void dramc_cke_fix_onoff(int option, u8 chn)
+{
+	u8 on = 0, off = 0;
+
+	/* If CKE is dynamic, set both CKE fix On and Off as 0. */
+	if (option != CKE_DYNAMIC) {
+		on = option;
+		off = (1 - option);
+	}
+
+	clrsetbits_le32(&ch[chn].ao.ckectrl,
+		(0x1 << 6) | (0x1 << 7), (on << 6) | (off << 7));
+}
+
+static void dramc_mode_reg_write(u8 chn, u8 mr_idx, u8 value)
+{
+	u32 ckectrl_bak = read32(&ch[chn].ao.ckectrl);
+
+	dramc_cke_fix_onoff(CKE_FIXON, chn);
+	clrsetbits_le32(&ch[chn].ao.mrs,
+		MRS_MRSMA_MASK, mr_idx << MRS_MRSMA_SHIFT);
+	clrsetbits_le32(&ch[chn].ao.mrs,
+		MRS_MRSOP_MASK, value << MRS_MRSOP_SHIFT);
+	setbits_le32(&ch[chn].ao.spcmd, 1 << SPCMD_MRWEN_SHIFT);
+
+	/* Wait MRW command fired */
+	while ((read32(&ch[chn].nao.spcmdresp) & 1) == 0)
+		;
+
+	clrbits_le32(&ch[chn].ao.spcmd, 1 << SPCMD_MRWEN_SHIFT);
+	setbits_le32(&ch[chn].ao.ckectrl, ckectrl_bak);
+}
+
+static void dramc_mode_reg_write_by_rank(u8 chn, u8 rank,
+		u8 mr_idx, u8 value)
+{
+	u32 mrs_back = read32(&ch[chn].ao.mrs) & MRS_MRSRK_MASK;
+
+	clrsetbits_le32(&ch[chn].ao.mrs,
+		MRS_MRSRK_MASK, rank << MRS_MRSRK_SHIFT);
+	dramc_mode_reg_write(chn, mr_idx, value);
+	clrsetbits_le32(&ch[chn].ao.mrs, MRS_MRSRK_MASK, mrs_back);
+}
+
+static void cmd_bus_training(u8 chn, u8 rank,
+		const struct sdram_params *params)
+{
+	u32 cbt_cs, mr12_value;
+
+	cbt_cs = params->cbt_cs[chn][rank];
+	mr12_value = params->cbt_mr12[chn][rank];
+
+	/* CBT adjust cs */
+	clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].ca_cmd[9],
+		SHU1_CA_CMD9_RG_RK_ARFINE_TUNE_CS_MASK, cbt_cs << 0);
+
+	/* CBT set vref */
+	dramc_mode_reg_write_by_rank(chn, rank, 12, mr12_value);
+}
+
 static void dramc_read_dbi_onoff(u8 onoff)
 {
 	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
@@ -189,5 +265,16 @@ void dramc_apply_pre_calibration_config(void)
 			clrbits_le32(&ch[0].phy.r[r].b[b].rxdvs[2],
 				(0x1 << 28) | (0x1 << 23) | (0x3 << 30));
 		clrbits_le32(&ch[0].phy.r0_ca_rxdvs[2], 0x3 << 30);
+	}
+}
+
+void dramc_calibrate_all_channels(const struct sdram_params *pams)
+{
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		for (u8 rk = RANK_0; rk < RANK_MAX; rk++) {
+			dramc_show("Start K ch:%d, rank:%d\n", chn, rk);
+			auto_refresh_switch(chn, 0);
+			cmd_bus_training(chn, rk, pams);
+		}
 	}
 }

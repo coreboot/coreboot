@@ -287,6 +287,7 @@ static void init_dram(const struct sdram_params *params)
 static void do_calib(const struct sdram_params *params)
 {
 	dramc_apply_pre_calibration_config();
+	dramc_calibrate_all_channels(params);
 }
 
 void mt_set_emi(const struct sdram_params *params)

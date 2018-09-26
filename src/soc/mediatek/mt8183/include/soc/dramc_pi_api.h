@@ -111,6 +111,11 @@ enum {
 	RESTORE_VALUE
 };
 
+struct reg_value {
+	u32 *addr;
+	u32 value;
+};
+
 enum {
 	DQ_DIV_SHIFT = 3,
 	DQ_DIV_MASK = BIT(DQ_DIV_SHIFT) - 1,

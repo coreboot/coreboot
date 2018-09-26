@@ -131,7 +131,7 @@ static void set_rank_info_to_conf(const struct sdram_params *params)
 
 static void set_MRR_pinmux_mapping(void)
 {
-	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
 		const u8 *map = phy_mapping[chn];
 		write32(&ch[chn].ao.mrr_bit_mux1,
 			(map[0] << 0) | (map[1] << 8) |

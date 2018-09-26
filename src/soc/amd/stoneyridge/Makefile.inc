@@ -97,6 +97,7 @@ ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += gpio.c
 ramstage-y += hda.c
+ramstage-y += iommu.c
 ramstage-y += monotonic_timer.c
 ramstage-y += southbridge.c
 ramstage-y += sb_util.c

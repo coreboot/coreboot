@@ -324,6 +324,9 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	 */
 	AMD_LATE_PARAMS *LateParams = create_struct(&AmdParamStruct);
 
+	LateParams->GnbLateConfiguration.GnbIoapicId = CONFIG_MAX_CPUS + 1;
+	LateParams->GnbLateConfiguration.FchIoapicId = CONFIG_MAX_CPUS;
+
 	timestamp_add_now(TS_AGESA_INIT_LATE_START);
 	Status = AmdInitLate(LateParams);
 	timestamp_add_now(TS_AGESA_INIT_LATE_DONE);

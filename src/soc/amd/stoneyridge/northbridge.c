@@ -508,7 +508,7 @@ __weak void set_board_env_params(GNB_ENV_CONFIGURATION *params) { }
 
 void SetNbEnvParams(GNB_ENV_CONFIGURATION *params)
 {
-	params->IommuSupport = FALSE;
+	params->IommuSupport = TRUE;
 	set_board_env_params(params);
 }
 

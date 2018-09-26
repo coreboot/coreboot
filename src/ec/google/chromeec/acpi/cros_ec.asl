@@ -22,6 +22,16 @@ Device (CREC)
 	Name (_PRW, Package () { EC_ENABLE_WAKE_PIN, 0x5 })
 #endif
 
+#ifdef EC_ENABLE_SYNC_IRQ
+	Name (_CRS, ResourceTemplate ()
+	{
+		Interrupt (ResourceConsumer, Edge, ActiveLow, Exclusive)
+		{
+			EC_SYNC_IRQ
+		}
+	})
+#endif
+
 #ifdef EC_ENABLE_MKBP_DEVICE
 	Device (CKSC)
 	{

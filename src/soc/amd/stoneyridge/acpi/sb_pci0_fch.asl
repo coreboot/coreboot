@@ -427,3 +427,157 @@ Field(FCFG, DwordAcc, NoLock, Preserve)
 	FC18, 1, /* Force 1.8v */
 
 }
+
+/*
+ * Arg0:device:
+ *  5=I2C0, 6=I2C1, 7=I2C2, 8=I2C3, 11=UART0, 12=UART1,
+ *  15=SATA, 18=EHCI, 23=xHCI, 24=SD
+ * Arg1:D-state
+ */
+Mutex (FDAS, 0) /* FCH Device AOAC Semophore */
+Method(FDDC, 2, Serialized)
+{
+	Acquire(FDAS, 0xffff)
+
+	if(LEqual(Arg1, 0)) {
+		Switch(ToInteger(Arg0)) {
+			Case(Package() {5, 15, 24}) {
+				Store(One, PG1A)
+			}
+			Case(Package() {6, 7, 8, 11, 12, 18}) {
+				Store(One, PG2_)
+			}
+		}
+		/* put device into D0 */
+		Switch(ToInteger(Arg0))
+		{
+			Case(5) {
+				Store(0x00, I0TD)
+				Store(One, I0PD)
+				Store(I0DS, Local0)
+				while(LNotEqual(Local0,0x7)) {
+					Store(I0DS, Local0)
+				}
+			}
+			Case(6) {
+				Store(0x00, I1TD)
+				Store(One, I1PD)
+				Store(I1DS, Local0)
+				while(LNotEqual(Local0,0x7)) {
+					Store(I1DS, Local0)
+				}
+			}
+			Case(7) {
+				Store(0x00, I2TD)
+				Store(One, I2PD)
+				Store(I2DS, Local0)
+				while(LNotEqual(Local0,0x7)) {
+					Store(I2DS, Local0)
+				}
+			}
+			Case(8) {Store(0x00, I3TD)
+				Store(One, I3PD)
+				Store(I3DS, Local0)
+				while(LNotEqual(Local0,0x7)) {
+					Store(I3DS, Local0)
+				}
+			}
+			Case(11) {
+				Store(0x00, U0TD)
+				Store(One, U0PD)
+				Store(U0DS, Local0)
+				while(LNotEqual(Local0,0x7)) {
+					Store(U0DS, Local0)
+				}
+			}
+			Case(12) {
+				Store(0x00, U1TD)
+				Store(One, U1PD)
+				Store(U1DS, Local0)
+				while(LNotEqual(Local0,0x7)) {
+					Store(U1DS, Local0)
+				}
+			}
+/* todo			Case(15) { STD0()} */ /* SATA */
+/* todo			Case(18) { U2D0()} */ /* EHCI */
+/* todo			Case(23) { U3D0()} */ /* XHCI */
+/* todo			Case(24) { SDD0()} */ /* SD   */
+		}
+	} else {
+		/* put device into D3cold */
+		Switch(ToInteger(Arg0))
+		{
+			Case(5) {
+				Store(Zero, I0PD)
+				Store(I0DS, Local0)
+				while(LNotEqual(Local0,0x0)) {
+					Store(I0DS, Local0)
+				}
+				Store(0x03, I0TD)
+			}
+			Case(6) {
+				Store(Zero, I1PD)
+				Store(I1DS, Local0)
+				while(LNotEqual(Local0,0x0)) {
+					Store(I1DS, Local0)
+				}
+				Store(0x03, I1TD)
+			}
+			Case(7)  {
+				Store(Zero, I2PD)
+				Store(I2DS, Local0)
+				while(LNotEqual(Local0,0x0)) {
+					Store(I2DS, Local0)
+				}
+				Store(0x03, I2TD)}
+			Case(8) {
+				Store(Zero, I3PD)
+				Store(I3DS, Local0)
+				while(LNotEqual(Local0,0x0)) {
+					Store(I3DS, Local0)
+				}
+				Store(0x03, I3TD)
+			}
+			Case(11) {
+				Store(Zero, U0PD)
+				Store(U0DS, Local0)
+				while(LNotEqual(Local0,0x0)) {
+					Store(U0DS, Local0)
+				}
+				Store(0x03, U0TD)
+			}
+			Case(12) {
+				Store(Zero, U1PD)
+				Store(U1DS, Local0)
+				while(LNotEqual(Local0,0x0)) {
+					Store(U1DS, Local0)
+				}
+				Store(0x03, U1TD)
+			}
+/* todo			Case(15) { STD3()} */ /* SATA */
+/* todo			Case(18) { U2D3()} */ /* EHCI */
+/* todo			Case(23) { U3D3()} */ /* XHCI */
+/* todo			Case(24) { SDD3()} */ /* SD   */
+		}
+		/* Turn off Power */
+		if(LEqual(I0TD, 3)) {
+			if(LEqual(SATD, 3)) {
+				if(LEqual(SDTD, 3)) { Store(Zero, PG1A) }
+			}
+		}
+		if(LEqual(I1TD, 3)) {
+			if(LEqual(I2TD, 3)) {
+				if(LEqual(I3TD, 3)) {
+					if(LEqual(U0TD, 3)) {
+						if(LEqual(U1TD, 3)) {
+							if(LEqual(U2TD, 3)) {
+								Store(Zero, PG2_)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	Release(FDAS)
+}

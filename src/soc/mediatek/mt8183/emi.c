@@ -280,6 +280,7 @@ static void init_dram(const struct sdram_params *params)
 
 	dramc_set_broadcast(DRAMC_BROADCAST_ON);
 	dramc_init_pre_settings();
+	dramc_sw_impedance(params);
 
 	dramc_init();
 	emi_init2(params);

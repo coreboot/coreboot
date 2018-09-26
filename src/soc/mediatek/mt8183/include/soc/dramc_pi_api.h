@@ -39,6 +39,11 @@
 #define DRAMC_BROADCAST_OFF 0x0
 #define MAX_BACKUP_REG_CNT 32
 
+#define IMP_LP4X_TERM_VREF_SEL		0x1b
+#define IMP_DRVP_LP4X_UNTERM_VREF_SEL	0x1a
+#define IMP_DRVN_LP4X_UNTERM_VREF_SEL	0x16
+#define IMP_TRACK_LP4X_UNTERM_VREF_SEL	0x1a
+
 enum dram_te_op {
 	TE_OP_WRITE_READ_CHECK = 0,
 	TE_OP_READ_CHECK
@@ -133,4 +138,5 @@ void dramc_get_rank_size(u64 *dram_rank_size);
 void dramc_set_broadcast(u32 onoff);
 u32 dramc_get_broadcast(void);
 void dramc_init(void);
+void dramc_sw_impedance(const struct sdram_params *params);
 #endif /* _DRAMC_PI_API_MT8183_H */

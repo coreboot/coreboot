@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2017 Intel Corporation.
+ * Copyright 2017-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -146,6 +146,29 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 	return (uintptr_t)NULL;
 }
 
+/*
+ * This function ensures that the device is actually out of reset and
+ * its ready for initialization sequence.
+ */
+static void dw_i2c_device_init(struct device *dev)
+{
+	uintptr_t base_address;
+	int bus = dw_i2c_soc_dev_to_bus(dev);
+
+	if (bus < 0)
+		return;
+
+	base_address = dw_i2c_base_address(bus);
+	if (!base_address)
+		return;
+
+	/* Take device out of reset if its not done before */
+	if (lpss_is_controller_in_reset(base_address))
+		lpss_reset_release(base_address);
+
+	dw_i2c_dev_init(dev);
+}
+
 static struct device_operations i2c_dev_ops = {
 	.read_resources			= &pci_dev_read_resources,
 	.set_resources			= &pci_dev_set_resources,
@@ -153,7 +176,7 @@ static struct device_operations i2c_dev_ops = {
 	.scan_bus			= &scan_smbus,
 	.ops_i2c_bus			= &dw_i2c_bus_ops,
 	.ops_pci			= &pci_dev_ops_pci,
-	.init				= &dw_i2c_dev_init,
+	.init				= &dw_i2c_device_init,
 	.acpi_fill_ssdt_generator	= &dw_i2c_acpi_fill_ssdt,
 };
 

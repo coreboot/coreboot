@@ -84,8 +84,8 @@ int ptn3460_init(const char *hwi_block)
 		/* Use 18 bits per pixel. */
 		cfg.lvds_interface_ctrl1 |= 0x20;
 
-	/* No clock spreading, 300 mV LVDS swing. */
-	cfg.lvds_interface_ctrl2 = 0x03;
+	/* 1 % clock spreading, 300 mV LVDS swing. */
+	cfg.lvds_interface_ctrl2 = 0x13;
 	/* No LVDS signal swap. */
 	cfg.lvds_interface_ctrl3 = 0x00;
 	/* Delay T2 (VDD to LVDS active) by 16 ms. */

@@ -1,5 +1,46 @@
 chip soc/intel/apollolake
 
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#| I2C5              | Audio                     |
+	#| I2C6              | Trackpad                  |
+	#| I2C7              | Touchscreen               |
+	#+-------------------+---------------------------+
+
+	register "common_soc_config" = "{
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 152,
+			.fall_time_ns = 30,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 104,
+			.fall_time_ns = 52,
+		},
+		.i2c[6] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 66,
+			.fall_time_ns = 90,
+			.data_hold_time_ns = 350,
+		},
+		.i2c[7] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 76,
+			.fall_time_ns = 164,
+		},
+	}"
+
 	device domain 0 on
 		device pci 16.1 off  end	# - I2C 1
 		device pci 17.1 on

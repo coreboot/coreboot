@@ -47,6 +47,25 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	TCRT,	8,	// 0x2E - Critical Threshold
 	TPSV,	8,	// 0x2F - Passive Threshold
 	TMAX,	8,	// 0x30 - CPU Tj_max
+	Offset (0x34),  // 0x34 - AOAC Device Enables
+	, 5,
+	IC0E,	1,	//        I2C0, 5
+	IC1E,	1,	//        I2C1, 6
+	IC2E,	1,	//        I2C2, 7
+	IC3E,	1,	//        I2C3, 8
+	, 2,
+	UT0E,	1,	//        UART0, 11
+	UT1E,	1,	//        UART1, 12
+	, 2,
+	ST_E,	1,	//        SATA, 15
+	, 2,
+	EHCE,	1,	//        EHCI, 18
+	, 4,
+	XHCE,	1,	//        XCHI, 23
+	SD_E,	1,	//        SD, 24
+	, 2,
+	ESPI,	1,	//        ESPI, 27
+	, 4,
 	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
 	Offset (0x100),
 	#include <vendorcode/google/chromeos/acpi/gnvs.asl>

@@ -400,6 +400,27 @@ struct stoneyridge_aoac {
 	int status;
 };
 
+typedef struct aoac_devs {
+	unsigned int :5;
+	unsigned int ic0e:1; /* 5: I2C0 */
+	unsigned int ic1e:1; /* 6: I2C1 */
+	unsigned int ic2e:1; /* 7: I2C2 */
+	unsigned int ic3e:1; /* 8: I2C3 */
+	unsigned int :2;
+	unsigned int ut0e:1; /* 11: UART0 */
+	unsigned int ut1e:1; /* 12: UART1 */
+	unsigned int :2;
+	unsigned int st_e:1; /* 15: SATA */
+	unsigned int :2;
+	unsigned int ehce:1; /* 18: EHCI */
+	unsigned int :4;
+	unsigned int xhce:1; /* 23: xHCI */
+	unsigned int sd_e:1; /* 24: SDIO */
+	unsigned int :2;
+	unsigned int espi:1; /* 27: ESPI */
+	unsigned int :4;
+} __packed aoac_devs_t;
+
 struct soc_power_reg {
 	uint16_t pm1_sts;
 	uint16_t pm1_en;

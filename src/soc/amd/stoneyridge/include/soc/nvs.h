@@ -28,6 +28,7 @@
 #include <compiler.h>
 #include <stdint.h>
 #include <vendorcode/google/chromeos/gnvs.h>
+#include <soc/southbridge.h>
 
 typedef struct global_nvs_t {
 	/* Miscellaneous */
@@ -50,7 +51,9 @@ typedef struct global_nvs_t {
 	uint8_t		tcrt; /* 0x2E - Critical Threshold */
 	uint8_t		tpsv; /* 0x2F - Passive Threshold */
 	uint8_t		tmax; /* 0x30 - CPU Tj_max */
-	uint8_t		unused[207];
+	uint8_t		pad1[3];
+	aoac_devs_t	aoac; /* 0x34 - AOAC device enables */
+	uint8_t		unused[200];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

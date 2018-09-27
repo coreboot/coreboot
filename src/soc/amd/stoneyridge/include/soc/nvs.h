@@ -53,7 +53,12 @@ typedef struct global_nvs_t {
 	uint8_t		tmax; /* 0x30 - CPU Tj_max */
 	uint8_t		pad1[3];
 	aoac_devs_t	aoac; /* 0x34 - AOAC device enables */
-	uint8_t		unused[200];
+	uint16_t	fw00; /* 0x38 - XhciFwRomAddr_Rom, Boot RAM */
+	uint16_t	fw02; /* 0x3A - XhciFwRomAddr_Ram, Instr RAM */
+	uint32_t	fw01; /* 0x3C - XhciFwRamAddr_Rom, Boot RAM sz/base */
+	uint32_t	fw03; /* 0x40 - XhciFwRomAddr_Ram, Instr RAM sz/base */
+	uint32_t	eh10; /* 0x40 - EHCI BAR */
+	uint8_t		unused[184];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

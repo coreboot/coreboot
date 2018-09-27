@@ -28,19 +28,19 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */
 	Offset (0x00),
-	PCNT,	8,      // 0x00 - Processor Count
-	PPCM,	8,      // 0x01 - Max PPC State
-	LIDS,	8,      // 0x02 - LID State
-	PWRS,	8,      // 0x03 - AC Power State
-	DPTE,	8,      // 0x04 - Enable DPTF
-	CBMC,	32,     // 0x05 - 0x08 - coreboot Memory Console
-	PM1I,	64,     // 0x09 - 0x10 - System Wake Source - PM1 Index
-	GPEI,	64,     // 0x11 - 0x18 - GPE Wake Source
-	NHLA,	64,     // 0x19 - 0x20 - NHLT Address
-	NHLL,	32,     // 0x21 - 0x24 - NHLT Length
-	PRT0,	32,     // 0x25 - 0x28 - PERST_0 Address
-	SCDP,	8,      // 0x29 - SD_CD GPIO portid
-	SCDO,	8,      // 0x2A - GPIO pad offset relative to the community
+	PCNT,	8,	// 0x00 - Processor Count
+	PPCM,	8,	// 0x01 - Max PPC State
+	LIDS,	8,	// 0x02 - LID State
+	PWRS,	8,	// 0x03 - AC Power State
+	DPTE,	8,	// 0x04 - Enable DPTF
+	CBMC,	32,	// 0x05 - 0x08 - coreboot Memory Console
+	PM1I,	64,	// 0x09 - 0x10 - System Wake Source - PM1 Index
+	GPEI,	64,	// 0x11 - 0x18 - GPE Wake Source
+	NHLA,	64,	// 0x19 - 0x20 - NHLT Address
+	NHLL,	32,	// 0x21 - 0x24 - NHLT Length
+	PRT0,	32,	// 0x25 - 0x28 - PERST_0 Address
+	SCDP,	8,	// 0x29 - SD_CD GPIO portid
+	SCDO,	8,	// 0x2A - GPIO pad offset relative to the community
 	TMPS,	8,	// 0x2B - Temperature Sensor ID
 	TLVL,	8,	// 0x2C - Throttle Level Limit
 	FLVL,	8,	// 0x2D - Current FAN Level

@@ -102,7 +102,7 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 
 	msr.lo = (unsigned long)m + sizeof(struct microcode);
 	msr.hi = 0;
-	wrmsr(0x79, msr);
+	wrmsr(IA32_BIOS_UPDT_TRIG, msr);
 
 #if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "microcode: updated to revision "
@@ -158,12 +158,12 @@ const void *intel_microcode_find(void)
 		return NULL;
 #endif
 
-	/* CPUID sets MSR 0x8B iff a microcode update has been loaded. */
+	/* CPUID sets MSR 0x8B if a microcode update has been loaded. */
 	msr.lo = 0;
 	msr.hi = 0;
-	wrmsr(0x8B, msr);
+	wrmsr(IA32_BIOS_SIGN_ID, msr);
 	eax = cpuid_eax(1);
-	msr = rdmsr(0x8B);
+	msr = rdmsr(IA32_BIOS_SIGN_ID);
 	rev = msr.hi;
 	x86_model = (eax >> 4) & 0x0f;
 	x86_family = (eax >> 8) & 0x0f;
@@ -171,7 +171,7 @@ const void *intel_microcode_find(void)
 
 	pf = 0;
 	if ((x86_model >= 5) || (x86_family > 6)) {
-		msr = rdmsr(0x17);
+		msr = rdmsr(IA32_PLATFORM_ID);
 		pf = 1 << ((msr.hi >> 18) & 7);
 	}
 #if !defined(__ROMCC__)

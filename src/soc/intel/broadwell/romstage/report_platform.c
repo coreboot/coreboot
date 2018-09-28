@@ -113,9 +113,9 @@ static void report_cpu_info(void)
 
 	microcode_ver.lo = 0;
 	microcode_ver.hi = 0;
-	wrmsr(0x8B, microcode_ver);
+	wrmsr(IA32_BIOS_SIGN_ID, microcode_ver);
 	cpuidr = cpuid(1);
-	microcode_ver = rdmsr(0x8b);
+	microcode_ver = rdmsr(IA32_BIOS_SIGN_ID);
 
 	/* Look for string to match the name */
 	for (i = 0; i < ARRAY_SIZE(cpu_table); i++) {

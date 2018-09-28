@@ -312,6 +312,11 @@ static const unsigned short pci_device_ids[] = {
 	/* Stone Peak 2 */
 	PCI_DEVICE_ID_SP_7265_SERIES_1_WIFI,
 	PCI_DEVICE_ID_SP_7265_SERIES_2_WIFI,
+	/* Stone Field Peak */
+	PCI_DEVICE_ID_SFP_8260_SERIES_1_WIFI,
+	PCI_DEVICE_ID_SFP_8260_SERIES_2_WIFI,
+	/* Windstorm Peak */
+	PCI_DEVICE_ID_WSP_8275_SERIES_1_WIFI,
 	/* Jefferson Peak */
 	PCI_DEVICE_ID_JP_9000_SERIES_1_WIFI,
 	PCI_DEVICE_ID_JP_9000_SERIES_2_WIFI,

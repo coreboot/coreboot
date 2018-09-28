@@ -86,6 +86,11 @@ void variant_devtree_update(void)
 		cfg->usb2_ports[4].tx_emp_enable = USB2_PRE_EMP_ON;
 		cfg->usb2_ports[4].pre_emp_bias = USB2_BIAS_56MV;
 		cfg->usb2_ports[4].pre_emp_bit = USB2_HALF_BIT_PRE_EMP;
+
+		/* Override SlowSlewRate settings */
+		cfg->SlowSlewRateForIa = 0;
+		cfg->SlowSlewRateForGt = 0;
+		cfg->SlowSlewRateForSa = 0;
 		break;
 
 	default:

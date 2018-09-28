@@ -21,9 +21,11 @@
 #include <fsp/util.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/chip.h>
+#include <intelblocks/itss.h>
 #include <intelblocks/xdci.h>
 #include <romstage_handoff.h>
 #include <soc/intel/common/vbt.h>
+#include <soc/itss.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <string.h>
@@ -96,11 +98,18 @@ const char *soc_acpi_name(const struct device *dev)
 
 void soc_init_pre_device(void *chip_info)
 {
+	/* Snapshot the current GPIO IRQ polarities. FSP is setting a
+	 * default policy that doesn't honor boards' requirements. */
+	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
+
 	/* Perform silicon specific init. */
 	fsp_silicon_init(romstage_handoff_is_resume());
 
 	 /* Display FIRMWARE_VERSION_INFO_HOB */
 	fsp_display_fvi_version_hob();
+
+	/* Restore GPIO IRQ polarities back to previous settings. */
+	itss_restore_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
 }
 
 static void pci_domain_set_resources(struct device *dev)

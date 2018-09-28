@@ -29,6 +29,7 @@ void spi_set_clock(const size_t bus,
 		   const size_t speed_hz,
 		   const size_t idle_low,
 		   const size_t idle_cycles);
+uint64_t spi_get_clock(const size_t bus);
 void spi_set_lsbmsb(const size_t bus, const size_t lsb_first);
 void spi_init_custom(const size_t bus,
 		     const size_t speed_hz,

@@ -218,6 +218,27 @@ void spi_set_clock(const size_t bus,
 }
 
 /**
+ * Get current SPI clock frequency in Hz.
+ *
+ * @param bus                 The SPI bus to operate on
+ */
+uint64_t spi_get_clock(const size_t bus)
+{
+	union cavium_spi_cfg cfg;
+
+	assert(bus < ARRAY_SIZE(cavium_spi_slaves));
+	if (bus >= ARRAY_SIZE(cavium_spi_slaves))
+		return 0;
+
+	struct cavium_spi *regs = cavium_spi_slaves[bus].regs;
+	const uint64_t sclk = thunderx_get_io_clock();
+
+	cfg.u = read64(&regs->cfg);
+
+	return (sclk / (2ULL * cfg.s.clkdiv));
+}
+
+/**
  * Set SPI LSB/MSB first.
  *
  * @param bus                 The SPI bus to operate on

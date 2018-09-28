@@ -309,11 +309,3 @@ void soc_fill_power_state(struct chipset_power_state *ps)
 	printk(BIOS_DEBUG, "GBLRST_CAUSE: %08x %08x\n",
 	       ps->gblrst_cause[0], ps->gblrst_cause[1]);
 }
-
-int acpi_get_sleep_type(void)
-{
-	struct chipset_power_state *ps;
-
-	ps = pmc_get_power_state();
-	return ps->prev_sleep_state;
-}

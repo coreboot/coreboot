@@ -24,14 +24,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 
-int acpi_get_sleep_type(void)
-{
-	struct chipset_power_state *ps;
-
-	ps = pmc_get_power_state();
-	return ps->prev_sleep_state;
-}
-
 static inline int deep_s3_enabled(void)
 {
 	uint32_t deep_s3_pol;

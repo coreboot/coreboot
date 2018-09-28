@@ -29,6 +29,7 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <intelblocks/chip.h>
+#include <intelblocks/itss.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <romstage_handoff.h>
@@ -37,6 +38,7 @@
 #include <soc/interrupt.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>
+#include <soc/itss.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
@@ -167,8 +169,16 @@ static void pcie_override_devicetree_after_silicon_init(void)
 
 void soc_init_pre_device(void *chip_info)
 {
+	/* Snapshot the current GPIO IRQ polarities. FSP is setting a
+	 * default policy that doesn't honor boards' requirements. */
+	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
+
 	/* Perform silicon specific init. */
 	fsp_silicon_init(romstage_handoff_is_resume());
+
+	/* Restore GPIO IRQ polarities back to previous settings. */
+	itss_restore_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
+
 	/* swap enabled PCI ports in device tree if needed */
 	pcie_override_devicetree_after_silicon_init();
 }

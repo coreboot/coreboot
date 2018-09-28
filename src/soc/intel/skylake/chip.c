@@ -21,19 +21,28 @@
 #include <device/pci.h>
 #include <fsp/util.h>
 #include <intelblocks/chip.h>
+#include <intelblocks/itss.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <soc/acpi.h>
 #include <soc/interrupt.h>
 #include <soc/irq.h>
+#include <soc/itss.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <string.h>
 
 void soc_init_pre_device(void *chip_info)
 {
+	/* Snapshot the current GPIO IRQ polarities. FSP is setting a
+	 * default policy that doesn't honor boards' requirements. */
+	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
+
 	/* Perform silicon specific init. */
 	intel_silicon_init();
+
+	/* Restore GPIO IRQ polarities back to previous settings. */
+	itss_restore_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
 }
 
 void soc_fsp_load(void)

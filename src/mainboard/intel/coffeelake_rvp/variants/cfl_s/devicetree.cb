@@ -10,31 +10,31 @@ chip soc/intel/cannonlake
 	register "SmbusEnable" = "1"
 	register "ScsEmmcHs400Enabled" = "1"
 
-	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC5)"
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC6)"
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC4)"
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC4)"
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC4)"
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC0)"
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC2)"
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC5)"
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC5)"
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC0)"
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC1)"
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC1)"
-	register "usb2_ports[8]" = "USB2_PORT_MID(OC2)"
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC7)"
-	register "usb2_ports[10]" = "USB2_PORT_MID(OC7)"
-	register "usb2_ports[11]" = "USB2_PORT_MID(OC3)"
-	register "usb2_ports[12]" = "USB2_PORT_MID(OC3)"
-	register "usb2_ports[13]" = "USB2_PORT_MID(OC_SKIP)"
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC3)"
+	register "usb2_ports[10]" = "USB2_PORT_MID(OC3)"
+	register "usb2_ports[11]" = "USB2_PORT_MID(OC6)"
+	register "usb2_ports[12]" = "USB2_PORT_MID(OC6)"
+	register "usb2_ports[13]" = "USB2_PORT_EMPTY"
 
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC5)"
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC7)"
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC4)"
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC4)"
-	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC4)"
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)"
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC5)"
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC5)"
 	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC0)"
 	register "usb3_ports[6]" = "USB3_PORT_DEFAULT(OC1)"
 	register "usb3_ports[7]" = "USB3_PORT_DEFAULT(OC1)"
-	register "usb3_ports[8]" = "USB3_PORT_DEFAULT(OC2)"
-	register "usb3_ports[9]" = "USB3_PORT_DEFAULT(OC7)"
+	register "usb3_ports[8]" = "USB3_PORT_DEFAULT(OC_SKIP)"
+	register "usb3_ports[9]" = "USB3_PORT_DEFAULT(OC3)"
 
 	register "SataSalpSupport" = "1"
 	register "SataPortsEnable[0]" = "1"
@@ -74,14 +74,16 @@ chip soc/intel/cannonlake
 	register "PcieRpEnable[22]" = "1"
 	register "PcieRpEnable[23]" = "1"
 
-	register "PcieClkSrcUsage[0]" = "1"
+	register "PcieClkSrcUsage[0]" = "PCIE_CLK_NOTUSED"
 	register "PcieClkSrcUsage[1]" = "8"
-	register "PcieClkSrcUsage[2]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[2]" = "PCIE_CLK_LAN"
 	register "PcieClkSrcUsage[3]" = "0x6"
 	register "PcieClkSrcUsage[4]" = "0x18"
-	register "PcieClkSrcUsage[5]" = "14"
+	register "PcieClkSrcUsage[5]" = "1"
+	register "PcieClkSrcUsage[6]" = "0x8"
 	register "PcieClkSrcUsage[8]" = "0x40"
-	register "PcieClkSrcUsage[9]" = "PCIE_CLK_LAN"
+	register "PcieClkSrcUsage[9]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[10]" = "0x14"
 
 	register "PcieClkSrcClkReq[0]" = "0"
 	register "PcieClkSrcClkReq[1]" = "1"
@@ -89,8 +91,10 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcClkReq[3]" = "3"
 	register "PcieClkSrcClkReq[4]" = "4"
 	register "PcieClkSrcClkReq[5]" = "5"
+	register "PcieClkSrcClkReq[6]" = "6"
 	register "PcieClkSrcClkReq[8]" = "8"
 	register "PcieClkSrcClkReq[9]" = "9"
+	register "PcieClkSrcClkReq[10]" = "10"
 
 	# Enable "Intel Speed Shift Technology"
 	register "speed_shift_enable" = "1"
@@ -107,11 +111,12 @@ chip soc/intel/cannonlake
 		device pci 12.6 off end # GSPI #2
 		device pci 14.0 on  end # USB xHCI
 		device pci 14.1 off end # USB xDCI (OTG)
+		device pci 14.3 on  end # CNVi wifi
 		device pci 14.5 on  end # SDCard
-		device pci 15.0 on  end # I2C #0
+		device pci 15.0 on  end # I2C 0
 		device pci 15.1 on  end # I2C #1
-		device pci 15.2 off end # I2C #2
-		device pci 15.3 off end # I2C #3
+		device pci 15.2 on  end # I2C #2
+		device pci 15.3 on  end # I2C #3
 		device pci 16.0 on  end # Management Engine Interface 1
 		device pci 16.1 off end # Management Engine Interface 2
 		device pci 16.2 off end # Management Engine IDE-R
@@ -122,12 +127,12 @@ chip soc/intel/cannonlake
 		device pci 19.0 off end # I2C #4
 		device pci 19.2 on  end # UART #2
 		device pci 1a.0 on  end # eMMC
-		device pci 1c.0 on  end # PCI Express Port 1 x4 SLOT1
-		device pci 1c.4 on  end # PCI Express Port 5 x1 SLOT2/LAN
+		device pci 1c.0 on  end # PCI Express Port 1
+		device pci 1c.4 on  end # PCI Express Port 5
 		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 on  end # PCI Express Port 9
+		device pci 1d.0 on  end # PCI Express Port 9  X4 SLOT 1
 		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
@@ -135,6 +140,8 @@ chip soc/intel/cannonlake
 		device pci 1d.5 off end # PCI Express Port 14
 		device pci 1d.6 off end # PCI Express Port 15
 		device pci 1d.7 off end # PCI Express Port 16
+		device pci 1b.0 on  end # PCI Express Port 17
+		device pci 1b.4 on  end # PCI Express Port 21 X4 SLOT 2
 		device pci 1e.0 on  end # UART #0
 		device pci 1e.1 off end # UART #1
 		device pci 1e.2 off end # GSPI #0

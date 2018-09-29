@@ -58,7 +58,7 @@ Name (PICP, Package () {
 	/* D20: xHCI, OTG, Thermal, Camera */
 	Package () { 0x0014FFFF, 0, 0, XHCI_IRQ },
 	Package () { 0x0014FFFF, 1, 0, OTG_IRQ },
-	Package () { 0x0014FFFF, 2, 0, THRMAL_IRQ },
+	Package () { 0x0014FFFF, 2, 0, THERMAL_IRQ },
 	Package () { 0x0014FFFF, 3, 0, CIO_INTD_IRQ },
 	/* D19: Integrated Sensor Hub */
 	Package () { 0x0013FFFF, 0, 0, ISH_IRQ },

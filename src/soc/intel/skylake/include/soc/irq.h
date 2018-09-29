@@ -86,7 +86,7 @@
 
 #define XHCI_IRQ 16
 #define OTG_IRQ 17
-#define THRMAL_IRQ 18
+#define THERMAL_IRQ 18
 #define CIO_INTA_IRQ 16
 #define CIO_INTD_IRQ 19
 #define ISH_IRQ 20

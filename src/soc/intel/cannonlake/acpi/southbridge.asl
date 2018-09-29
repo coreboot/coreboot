@@ -41,6 +41,9 @@
 /* PCH HDA */
 #include "pch_hda.asl"
 
+/* PCIE Ports */
+#include "pcie.asl"
+
 /* Serial IO */
 #include "serialio.asl"
 

@@ -87,8 +87,9 @@
 
 #define XHCI_IRQ 16
 #define OTG_IRQ 17
-#define THRMAL_IRQ 16
-#define CNViWIFI_IRQ 16
+#define PMC_SRAM_IRQ 18
+#define THERMAL_IRQ 16
+#define CNViWIFI_IRQ 19
 #define UFS_IRQ 16
 #define CIO_INTA_IRQ 16
 #define CIO_INTD_IRQ 19
@@ -101,6 +102,6 @@
 
 #define IGFX_IRQ 16
 #define SA_THERMAL_IRQ 16
-#define SKYCAM_IRQ 16
-#define GMM_IRQ 16
+#define IPU_IRQ 16
+#define GNA_IRQ 16
 #endif /* _SOC_IRQ_H_ */

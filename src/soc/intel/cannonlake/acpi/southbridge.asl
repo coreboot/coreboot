@@ -15,6 +15,13 @@
  * GNU General Public License for more details.
  */
 
+#include <intelblocks/itss.h>
+#include <intelblocks/pcr.h>
+#include <soc/itss.h>
+#include <soc/pcr_ids.h>
+
+/* Interrupt Routing */
+#include "irqlinks.asl"
 
 /* PCI IRQ assignment */
 #include "pci_irqs.asl"

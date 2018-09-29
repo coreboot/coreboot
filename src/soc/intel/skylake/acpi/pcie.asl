@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -249,7 +249,7 @@ Device (RP08)
 
 Device (RP09)
 {
-        Name (_ADR, 0x001D0000)
+	Name (_ADR, 0x001D0000)
 
 	OperationRegion (RPCS, PCI_Config, 0x4c, 4)
 	Field (RPCS, AnyAcc, NoLock, Preserve)
@@ -258,15 +258,15 @@ Device (RP09)
 		RPPN, 8,	/* Root Port Number */
 	}
 
-        Method (_PRT)
-        {
+	Method (_PRT)
+	{
 		Return (IRQM (RPPN))
-        }
+	}
 }
 
 Device (RP10)
 {
-        Name (_ADR, 0x001D0001)
+	Name (_ADR, 0x001D0001)
 
 	OperationRegion (RPCS, PCI_Config, 0x4c, 4)
 	Field (RPCS, AnyAcc, NoLock, Preserve)
@@ -275,15 +275,15 @@ Device (RP10)
 		RPPN, 8,	/* Root Port Number */
 	}
 
-        Method (_PRT)
-        {
+	Method (_PRT)
+	{
 		Return (IRQM (RPPN))
-        }
+	}
 }
 
 Device (RP11)
 {
-        Name (_ADR, 0x001D0002)
+	Name (_ADR, 0x001D0002)
 
 	OperationRegion (RPCS, PCI_Config, 0x4c, 4)
 	Field (RPCS, AnyAcc, NoLock, Preserve)
@@ -292,10 +292,10 @@ Device (RP11)
 		RPPN, 8,	/* Root Port Number */
 	}
 
-        Method (_PRT)
-        {
+	Method (_PRT)
+	{
 		Return (IRQM (RPPN))
-        }
+	}
 }
 
 Device (RP12)
@@ -309,8 +309,8 @@ Device (RP12)
 		RPPN, 8,	/* Root Port Number */
 	}
 
-        Method (_PRT)
-        {
+	Method (_PRT)
+	{
 		Return (IRQM (RPPN))
-        }
+	}
 }

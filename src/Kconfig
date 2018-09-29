@@ -153,7 +153,7 @@ config COMPRESS_BOOTBLOCK
 	  a small self-decompression stub to its front. This can drastically
 	  reduce boot time on platforms where the bootblock is loaded over a
 	  very slow connection and bootblock size trumps all other factors for
-	  speed. Since this using this option usually requires changes to the
+	  speed. Since using this option usually requires changes to the
 	  SoC memlayout and possibly extra support code, it should not be
 	  user-selectable. (There's no real point in offering this to the user
 	  anyway... if it works and saves boot time, you would always want it.)

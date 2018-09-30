@@ -3,7 +3,7 @@
 A skilled engineer takes around 40 minutes to disassemble, flash and reassemble
 the whole device.
 
-# Steps to access the flash IC:
+## Steps to access the flash IC
 
 * Unplug the main battery
 * Remove the harddisk, CDROM, ExpressCard, SIM-card, SDcard, SmartCard, ...

@@ -25,7 +25,12 @@ ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
 check-ramstage-overlap-regions += stack
 endif
 
-riscv_flags = -I$(src)/arch/riscv/ -mcmodel=$(CONFIG_RISCV_CODEMODEL) -march=$(CONFIG_RISCV_ARCH) -mabi=$(CONFIG_RISCV_ABI)
+riscv_flags = -I$(src)/arch/riscv/
+ifeq ($(CCC_ANALYZER_OUTPUT_FORMAT),)
+riscv_flags += -march=$(CONFIG_RISCV_ARCH) -mabi=$(CONFIG_RISCV_ABI) -mcmodel=$(CONFIG_RISCV_CODEMODEL)
+else
+riscv_flags += -D__riscv -D__riscv_xlen=64 -D__riscv_flen=64
+endif
 
 riscv_asm_flags = -march=$(CONFIG_RISCV_ARCH) -mabi=$(CONFIG_RISCV_ABI)
 

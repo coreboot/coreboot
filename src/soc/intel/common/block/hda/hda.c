@@ -22,6 +22,7 @@
 #include <soc/intel/common/hda_verb.h>
 #include <soc/ramstage.h>
 
+#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_HDA_VERB)
 static void codecs_init(uint8_t *base, u32 codec_mask)
 {
 	int i;
@@ -57,12 +58,15 @@ static void hda_init(struct device *dev)
 		codecs_init(base, codec_mask);
 	}
 }
+#endif
 
 static struct device_operations hda_ops = {
 	.read_resources		= &pci_dev_read_resources,
 	.set_resources		= &pci_dev_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
+#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_HDA_VERB)
 	.init			= &hda_init,
+#endif
 	.ops_pci		= &pci_dev_ops_pci,
 };
 

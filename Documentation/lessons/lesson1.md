@@ -144,7 +144,7 @@ hybrid configuration which may or may not work as expected.
 ### Step 6 summary - Build coreboot
 You may notice that a number of other pieces are downloaded at the beginning of
 the build process. These are the git submodules used in various coreboot builds.
-By default, the BLOBS submodule is not downloaded. This git submodule may be
+By default, the _blobs_ submodule is not downloaded. This git submodule may be
 required for other builds for microcode or other binaries. To enable downloading
 this submodule, select the option "Allow use of binary-only repository" in the
 "General Setup" menu of Kconfig

@@ -8,7 +8,7 @@
     * There might be errors to fix.
     * Position in romstage doesn't matter.
 2.  mrc.bin raminit
-    * Closed Source (aka BLOB)
+    * Closed Source (aka blob)
     * No known errors.
     * Needs to be placed at fixed offset in romstage.
 

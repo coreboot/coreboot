@@ -26,8 +26,8 @@
 * Do **NOT** accidently swap pins or power on the board while a SPI flasher
   is connected. It will permanently brick your device.
 * It's recommended to only flash the BIOS region. In that case you don't
-  need to extract BLOBs from vendor firmware.
-  If you want to flash the whole chip, you need BLOBs when building
+  need to extract blobs from vendor firmware.
+  If you want to flash the whole chip, you need blobs when building
   coreboot.
 * The *Flash layout* shows that by default 7MiB of space are available for
   the use with coreboot.

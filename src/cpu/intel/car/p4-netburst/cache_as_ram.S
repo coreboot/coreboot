@@ -53,7 +53,7 @@ clear_fixed_mtrr:
 	wrmsr
 	jnz	clear_fixed_mtrr
 
-	/* Figure put how many MTRRs we have, and clear them out */
+	/* Figure out how many MTRRs we have, and clear them out */
 	mov	$MTRR_CAP_MSR, %ecx
 	rdmsr
 	movzb	%al, %ebx		/* Number of variable MTRRs */

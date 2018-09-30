@@ -13,8 +13,8 @@ here, please discuss it in the mailing list to get this document  updated.
 Don't just assume that it's okay, even if someone on IRC says it is.
 
 
-Summary:
---------
+Summary
+-------
 These are the expectations for committing, reviewing, and submitting code
 into coreboot git and gerrit. While breaking individual rules may not have
 immediate consequences, the coreboot leadership may act on repeated or
@@ -33,8 +33,8 @@ addresses.
 * Don’t submit patches that you know will break other platforms.
 
 
-More detail:
-------------
+More detail
+-----------
 * Don't violate the licenses. If you're submitting code that you didn't
 write yourself, make sure the license is compatible with the license of the
 project you're submitting the changes to. If you’re submitting code that
@@ -98,8 +98,8 @@ must at least provide a path that will allow other platforms to continue
 working.
 
 
-Recommendations for gerrit activity:
-------------------------------------
+Recommendations for gerrit activity
+-----------------------------------
 These guidelines are less strict than the ones listed above. These are more
 of the “good idea” variety. You are requested to follow the below
 guidelines, but there will probably be no actual consequences if they’re
@@ -251,8 +251,8 @@ The script 'util/gitconfig/rebase.sh' can be used to help automate this.
 Other tags such as 'Commit-Queue' can simply be removed.
 
 
-Expectations contributors should have:
---------------------------------------
+Expectations contributors should have
+-------------------------------------
 * Don't expect that people will review your patch unless you ask them to.
 Adding other people as reviewers is the easiest way. Asking for reviews for
 individual patches in the IRC channel, or by sending a direct request to an

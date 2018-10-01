@@ -42,7 +42,6 @@
 #define XAPIC_ENABLED_BIT		(1 << 11)
 #define X2APIC_ENABLED_BIT		(1 << 10)
 #define APIC_MASKED_BIT			(1 << 16)
-#define APIC_SW_ENABLED_BIT		(1 << 8)
 
 #define APIC_ID				0x020
 #define   APIC_ID_SHIFT			24
@@ -54,6 +53,9 @@
 #define   APIC_TASK_PRIORITY_MASK	0xFFUL
 #define APIC_EOI			0x0B0
 #define APIC_SPURIOUS			0x0F0
+#define   APIC_SW_ENABLED_BIT		(1 << 8)
+#define   APIC_SPURIOUS_VECTOR_MASK	0xFFUL
+#define APIC_SPURIOUS			0x0F0
 #define APIC_LVT_TIMER			0x320
 #define APIC_TIMER_INIT_COUNT		0x380
 #define APIC_TIMER_CUR_COUNT		0x390
@@ -63,7 +65,8 @@
 
 #define APIC_LVT_SIZE			0x010
 
-#define APIC_TIMER_VECTOR		0x20
+#define APIC_TIMER_VECTOR		0x20UL
+#define APIC_SPURIOUS_VECTOR		0xFFUL
 
 static uint32_t apic_bar;
 static int _apic_initialized;
@@ -142,6 +145,8 @@ static void timer_interrupt_handler(u8 vector)
 {
 	timer_waiting = 0;
 }
+
+static void suprious_interrupt_handler(u8 vector) {}
 
 void apic_eoi(uint8_t vector)
 {
@@ -255,6 +260,17 @@ static void apic_sw_enable(void)
 	apic_write32(APIC_SPURIOUS, reg);
 }
 
+static void apic_setup_spurious(void)
+{
+	uint32_t reg = apic_read32(APIC_SPURIOUS);
+
+	reg &= ~APIC_SPURIOUS_VECTOR_MASK;
+
+	reg |= APIC_SPURIOUS_VECTOR;
+
+	apic_write32(APIC_SPURIOUS, reg);
+}
+
 void apic_init(void)
 {
 	uint64_t apic_bar_reg;
@@ -274,12 +290,15 @@ void apic_init(void)
 
 	apic_reset_all_lvts();
 	apic_set_task_priority(0);
+	apic_setup_spurious();
 
 	apic_sw_enable();
 
 	apic_init_timer();
 
 	set_interrupt_handler(APIC_TIMER_VECTOR, &timer_interrupt_handler);
+	set_interrupt_handler(APIC_SPURIOUS_VECTOR,
+			      &suprious_interrupt_handler);
 
 	_apic_initialized = 1;
 

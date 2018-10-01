@@ -589,7 +589,7 @@ static int mkhi_hmrfpo_lock(void)
 		return -1;
 	}
 
-	printk(BIOS_INFO, "ME: HMRPFO LOCK message successful (%d)\n", ack);
+	printk(BIOS_INFO, "ME: HMRFPO LOCK message successful (%d)\n", ack);
 	return 0;
 }
 
@@ -607,7 +607,7 @@ static int mkhi_hmrfpo_lock_noack(void)
 		return -1;
 	}
 
-	printk(BIOS_INFO, "ME: HMRPFO LOCK NOACK message successful\n");
+	printk(BIOS_INFO, "ME: HMRFPO LOCK NOACK message successful\n");
 	return 0;
 }
 

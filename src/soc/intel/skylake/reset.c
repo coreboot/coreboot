@@ -13,10 +13,11 @@
  * GNU General Public License for more details.
  */
 
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <intelblocks/pmclib.h>
-#include <reset.h>
+#include <soc/intel/common/reset.h>
 #include <soc/me.h>
 #include <soc/pm.h>
 #include <timer.h>
@@ -32,7 +33,7 @@ static void do_force_global_reset(void)
 
 	/* Now BIOS can write 0x06 or 0x0E to 0xCF9 port
 	 * to global reset platform */
-	hard_reset();
+	do_full_reset();
 }
 
 void do_global_reset(void)

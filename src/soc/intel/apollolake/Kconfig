@@ -104,7 +104,8 @@ config CPU_SPECIFIC_OPTIONS
 	select PLATFORM_USES_FSP2_0
 	select UDK_2015_BINDING if !SOC_INTEL_GLK
 	select UDK_2017_BINDING if SOC_INTEL_GLK
-	select HAVE_HARD_RESET
+	select SOC_INTEL_COMMON_RESET
+	select HAVE_CF9_RESET_PREPARE
 	select INTEL_GMA_ADD_VBT if RUN_FSP_GOP
 	select HAVE_FSP_GOP
 	select NO_UART_ON_SUPERIO
@@ -129,10 +130,6 @@ config TPM_ON_FAST_SPI
 	help
 	 TPM part is conntected on Fast SPI interface, but the LPC MMIO
 	 TPM transactions are decoded and serialized over the SPI interface.
-
-config SOC_INTEL_COMMON_RESET
-	bool
-	default y
 
 config PCR_BASE_ADDRESS
 	hex

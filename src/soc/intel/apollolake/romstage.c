@@ -24,6 +24,7 @@
 #include <bootmode.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/pae.h>
@@ -38,7 +39,6 @@
 #include <intelblocks/systemagent.h>
 #include <intelblocks/pmclib.h>
 #include <mrc_cache.h>
-#include <reset.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/meminit.h>
@@ -285,7 +285,7 @@ static void check_full_retrain(const FSPM_UPD *mupd)
 
 	if (ps->gen_pmcon1 & WARM_RESET_STS) {
 		printk(BIOS_INFO, "Full retrain unsupported on warm reboot.\n");
-		hard_reset();
+		full_reset();
 	}
 }
 

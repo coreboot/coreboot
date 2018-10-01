@@ -13,10 +13,10 @@
 
 #include <arch/io.h>
 #include <cbfs.h>
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <lib.h>
-#include <reset.h>
 #include <string.h>
 
 static bool looks_like_fsp_header(const uint8_t *raw_hdr)
@@ -109,10 +109,10 @@ void fsp_handle_reset(uint32_t status)
 
 	switch (status) {
 	case FSP_STATUS_RESET_REQUIRED_COLD:
-		hard_reset();
+		full_reset();
 		break;
 	case FSP_STATUS_RESET_REQUIRED_WARM:
-		soft_reset();
+		system_reset();
 		break;
 	case FSP_STATUS_RESET_REQUIRED_3:
 	case FSP_STATUS_RESET_REQUIRED_4:

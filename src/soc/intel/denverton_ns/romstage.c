@@ -15,9 +15,9 @@
  */
 
 #include <cbmem.h>
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
-#include <reset.h>
 #include <soc/fiamux.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -93,7 +93,7 @@ static void early_pmc_init(void)
 				pci_write_config32(dev, PMC_ETR3,
 					pci_read_config32(dev, PMC_ETR3)
 					| PMC_ETR3_CF9GR);
-				hard_reset();
+				full_reset();
 			}
 		}
 	}

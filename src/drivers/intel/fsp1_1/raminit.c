@@ -15,12 +15,12 @@
 
 #include <arch/acpi.h>
 #include <cbmem.h>
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <fsp/memmap.h>
 #include <fsp/romstage.h>
 #include <fsp/util.h>
 #include <lib.h> /* hexdump */
-#include <reset.h>
 #include <string.h>
 #include <timestamp.h>
 #include <security/vboot/vboot_common.h>
@@ -164,7 +164,8 @@ void raminit(struct romstage_params *params)
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
 		/* Failed S3 resume, reset to come up cleanly */
-		hard_reset();
+		/* FIXME: A "system" reset is likely enough: */
+		full_reset();
 #endif
 	}
 

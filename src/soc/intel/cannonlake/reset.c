@@ -13,11 +13,12 @@
  * GNU General Public License for more details.
  */
 
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/pmclib.h>
 #include <fsp/util.h>
-#include <reset.h>
+#include <soc/intel/common/reset.h>
 #include <string.h>
 #include <timer.h>
 #include <soc/pci_devs.h>
@@ -85,7 +86,7 @@ void do_global_reset(void)
 
 	/* global reset if CSE fail to reset */
 	pmc_global_reset_enable(1);
-	hard_reset();
+	do_full_reset();
 }
 
 void chipset_handle_reset(uint32_t status)
@@ -93,7 +94,7 @@ void chipset_handle_reset(uint32_t status)
 	switch (status) {
 	case FSP_STATUS_RESET_REQUIRED_3: /* Global Reset */
 		printk(BIOS_DEBUG, "GLOBAL RESET!!\n");
-		do_global_reset();
+		global_reset();
 		break;
 	default:
 		printk(BIOS_ERR, "unhandled reset type %x\n", status);

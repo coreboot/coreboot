@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Intel Corp.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -14,13 +12,17 @@
  * GNU General Public License for more details.
  */
 
-#ifndef CPU_INTEL_RESET_H
-#define CPU_INTEL_RESET_H
+#ifndef _INTEL_COMMON_RESET_H_
+#define _INTEL_COMMON_RESET_H_
 
-/* Reset control port */
-#define RST_CNT			0xcf9
-#define FULL_RST		(1 << 3)
-#define RST_CPU			(1 << 2)
-#define SYS_RST			(1 << 1)
+/*
+ * Implement SoC specific global reset (i.e. a reset of both host and
+ * ME partitions). Usually the ME is asked to perform the reset first.
+ * If that doesn't work out, fall back to a manual global reset.
+ */
+void do_global_reset(void);
 
-#endif	/* CPU_INTEL_RESET_H */
+/* Prepare for reset, run do_global_reset(), halt. */
+__noreturn void global_reset(void);
+
+#endif	/* _INTEL_COMMON_RESET_H_ */

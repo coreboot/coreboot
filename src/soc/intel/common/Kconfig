@@ -25,6 +25,7 @@ config DISPLAY_SMM_MEMORY_MAP
 config SOC_INTEL_COMMON_RESET
 	bool
 	default n
+	select HAVE_CF9_RESET
 
 config SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	bool

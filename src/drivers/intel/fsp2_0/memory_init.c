@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <elog.h>
 #include <fsp/api.h>
@@ -25,7 +26,6 @@
 #include <memrange.h>
 #include <mrc_cache.h>
 #include <program_loading.h>
-#include <reset.h>
 #include <romstage_handoff.h>
 #include <string.h>
 #include <symbols.h>
@@ -80,7 +80,8 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 			printk(BIOS_ERR,
 				"Failed to recover CBMEM in S3 resume.\n");
 			/* Failed S3 resume, reset to come up cleanly */
-			hard_reset();
+			/* FIXME: A "system" reset is likely enough: */
+			full_reset();
 		}
 	}
 
@@ -214,7 +215,8 @@ static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
 		 * returning error. Invoking a reset here saves time.
 		 */
 		if (!arch_upd->NvsBufferPtr)
-			hard_reset();
+			/* FIXME: A "system" reset is likely enough: */
+			full_reset();
 		arch_upd->BootMode = FSP_BOOT_ON_S3_RESUME;
 	} else {
 		if (arch_upd->NvsBufferPtr)

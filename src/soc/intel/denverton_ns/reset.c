@@ -15,13 +15,12 @@
 
 #include <console/console.h>
 #include <fsp/util.h>
-#include <reset.h>
 
 void chipset_handle_reset(uint32_t status)
 {
 	switch (status) {
 	case FSP_STATUS_RESET_REQUIRED_5: /* Global Reset */
-		global_reset();
+		die("Global Reset not implemented!\n");
 		break;
 	default:
 		printk(BIOS_ERR, "unhandled reset type %x\n", status);

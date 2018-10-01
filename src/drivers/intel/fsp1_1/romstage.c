@@ -22,6 +22,7 @@
 #include <assert.h>
 #include <console/console.h>
 #include <cbmem.h>
+#include <cf9_reset.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/mtrr.h>
 #include <ec/google/chromeec/ec.h>
@@ -29,7 +30,6 @@
 #include <elog.h>
 #include <fsp/romstage.h>
 #include <mrc_cache.h>
-#include <reset.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <smbios.h>
@@ -134,7 +134,8 @@ void romstage_common(struct romstage_params *params)
 			printk(BIOS_DEBUG,
 			       "No MRC cache found in S3 resume path.\n");
 			post_code(POST_RESUME_FAILURE);
-			hard_reset();
+			/* FIXME: A "system" reset is likely enough: */
+			full_reset();
 		} else {
 			printk(BIOS_DEBUG, "No MRC cache found.\n");
 		}
@@ -164,7 +165,8 @@ void romstage_common(struct romstage_params *params)
 	/* Create romstage handof information */
 	if (romstage_handoff_init(
 			params->power_state->prev_sleep_state == ACPI_S3) < 0)
-		hard_reset();
+		/* FIXME: A "system" reset is likely enough: */
+		full_reset();
 }
 
 void after_cache_as_ram_stage(void)

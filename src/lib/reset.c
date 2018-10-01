@@ -51,24 +51,11 @@ __noreturn static void __hard_reset(void) {
 }
 
 /* Not all platforms implement all reset types. Fall back to hard_reset. */
-__weak void do_global_reset(void) { __hard_reset(); }
 __weak void do_soft_reset(void) { __hard_reset(); }
-
-__weak void soc_reset_prepare(enum reset_type rt) { /* no-op */ }
-
-void global_reset(void)
-{
-	printk(BIOS_INFO, "%s() called!\n", __func__);
-	soc_reset_prepare(GLOBAL_RESET);
-	dcache_clean_all();
-	do_global_reset();
-	halt();
-}
 
 void hard_reset(void)
 {
 	printk(BIOS_INFO, "%s() called!\n", __func__);
-	soc_reset_prepare(HARD_RESET);
 	dcache_clean_all();
 	__hard_reset();
 }
@@ -76,7 +63,6 @@ void hard_reset(void)
 void soft_reset(void)
 {
 	printk(BIOS_INFO, "%s() called!\n", __func__);
-	soc_reset_prepare(SOFT_RESET);
 	dcache_clean_all();
 	do_soft_reset();
 	halt();

@@ -13,12 +13,13 @@
  * GNU General Public License for more details.
  */
 
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <delay.h>
 #include <fsp/util.h>
 #include <intelblocks/pmclib.h>
-#include <reset.h>
 #include <soc/heci.h>
+#include <soc/intel/common/reset.h>
 #include <soc/pm.h>
 #include <timer.h>
 
@@ -27,10 +28,10 @@
 void do_global_reset(void)
 {
 	pmc_global_reset_enable(1);
-	hard_reset();
+	do_full_reset();
 }
 
-void soc_reset_prepare(enum reset_type reset_type)
+void cf9_reset_prepare(void)
 {
 	struct stopwatch sw;
 

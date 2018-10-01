@@ -1,9 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008-2009 coresystems GmbH
- * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright 2017 Google, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,21 +13,24 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/hlt.h>
-#include <arch/io.h>
-#include <cpu/intel/reset.h>
+#include <arch/cache.h>
+#include <cf9_reset.h>
+#include <console/console.h>
+#include <halt.h>
 #include <reset.h>
 
-#if IS_ENABLED(CONFIG_HAVE_HARD_RESET)
-void do_hard_reset(void)
-{
-	/* S0->S5->S0 trip. */
-	outb(RST_CPU | SYS_RST | FULL_RST, RST_CNT);
-}
-#endif
+#include "reset.h"
 
-void do_soft_reset(void)
+void global_reset(void)
 {
-	/* PMC_PLTRST# asserted. */
-	outb(RST_CPU | SYS_RST, RST_CNT);
+	printk(BIOS_INFO, "%s() called!\n", __func__);
+	cf9_reset_prepare();
+	dcache_clean_all();
+	do_global_reset();
+	halt();
+}
+
+void do_board_reset(void)
+{
+	full_reset();
 }

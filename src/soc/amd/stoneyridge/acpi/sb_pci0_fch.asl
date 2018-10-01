@@ -592,10 +592,6 @@ Method(FPTS,0, Serialized)  /* FCH _PTS */
 	if(LNotEqual(U2TD, 0x03)) {
 		FDDC(18, 3)
 	}
-
-	if(LNotEqual(SATD, 0x00)) {
-		FDDC(15, 0) /* wake SATA before sleep */
-	}
 }
 
 Method(FWAK,0, Serialized)  /* FCH _WAK */

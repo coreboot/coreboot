@@ -309,12 +309,6 @@ Field( SMIC, ByteAcc, NoLock, Preserve) {
 	, 4,
 	U3SR, 1,  /* USB3 23 Shadow Reg Request Status Register */
 	SDSR, 1,  /* SD 24 Shadow Reg Request Status Register */
-	offset (0x1e88),
-	SRSA, 32, /* Shadow Reg SRAM Addr */
-	SRSD, 32, /* Shadow Reg SRAM DATA */
-
-	offset (0x1e94),
-	SRDY, 1,  /* S0i3 bios ready */
 
 	offset (0x1ea0),
 	PG1A, 1,
@@ -341,40 +335,6 @@ Field(FCFG, DwordAcc, NoLock, Preserve)
 	Offset(0x00080054),
 	U_PS, 2,
 
-	/* SATA */
-	Offset(0x00088010),
-	ST10, 32,
-	ST14, 32,
-	ST18, 32,
-	ST1C, 32,
-	ST20, 32,
-	ST24, 32,
-
-	Offset(0x0008802c),
-	ST2C, 32,
-
-	Offset(0x00088040),
-	ST40, 1,
-
-	Offset(0x00088044),
-	ST44, 1,
-
-	Offset(0x0008804c),
-	, 2,
-	DDIC, 1, /* DisableDynamicInterfaceClockPowerSaving */
-
-	Offset(0x00088064),
-	S_PS, 2,
-
-	Offset(0x00088084),
-	, 1,
-	ST84, 1,
-	, 28,
-	DSDN, 1, /* DShutDowN */
-
-	Offset(0x0008808c),
-	ST8C, 8,
-
 	/* EHCI */
 	Offset(0x00090004),
 	, 1,
@@ -392,40 +352,9 @@ Field(FCFG, DwordAcc, NoLock, Preserve)
 	E_PS, 2,
 
 	/* LPC Bridge */
-	Offset(0x000a3078),
-	, 2,
-	LDQ0,  1,
-
 	Offset(0x000a30cb),
 	,  7,
 	AUSS,  1, /* AutoSizeStart */
-
-	/* SD */
-	Offset(0x000a7004),
-	,  1,
-	SDME,  1,
-
-	Offset(0x000a7010),
-	SDBA,  32,
-	Offset(0x000a702c),
-	SD2C,  32,
-	Offset(0x000a7094),
-	D_PS,  2,
-	,  6,
-	SDPE, 1,
-	,  6,
-	PMES, 1,
-
-	Offset(0x000a70b3), /* Version 2.0 = 0x1, Version 3.0 = 0x2 */
-	SDB3,  8,
-	Offset(0x000a70b4), /* Set Enable */
-	,  8,
-	SETE, 1,
-
-	Offset(0x000a70d0),
-	,  17,
-	FC18, 1, /* Force 1.8v */
-
 }
 
 /*

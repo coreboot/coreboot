@@ -43,7 +43,7 @@ _start:
 	csrwi mip, 0
 
 	call exit_car
-	# set up the mstatus register for VM
+	# set up the mstatus register
 	call mstatus_init
 	tail main
 

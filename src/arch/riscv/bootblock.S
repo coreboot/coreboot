@@ -66,7 +66,7 @@ _hart_zero:
 	# clear any pending interrupts
 	csrwi mip, 0
 
-	# set up the mstatus register for VM
+	# set up the mstatus register
 	call mstatus_init
 	tail main
 

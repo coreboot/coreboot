@@ -37,8 +37,6 @@
 
 u32 exception_stack[0x400] __attribute__((aligned(8)));
 
-static exception_hook hook;
-
 static interrupt_handler handlers[256];
 
 static const char *names[EXC_COUNT] = {
@@ -181,9 +179,6 @@ void exception_dispatch(void)
 	die_if(vec >= EXC_COUNT || !names[vec], "Bad exception vector %u\n",
 	       vec);
 
-	if (hook && hook(vec))
-		return;
-
 	dump_exception_state();
 	dump_stack(exception_state->regs.esp, 512);
 	halt();
@@ -193,12 +188,6 @@ void exception_init(void)
 {
 	exception_stack_end = exception_stack + ARRAY_SIZE(exception_stack);
 	exception_init_asm();
-}
-
-void exception_install_hook(exception_hook h)
-{
-	die_if(hook, "Implement support for a list of hooks if you need it.");
-	hook = h;
 }
 
 void set_interrupt_handler(u8 vector, interrupt_handler handler)

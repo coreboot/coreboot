@@ -38,7 +38,7 @@ void apic_init(void);
 uint8_t apic_id(void);
 
 /** Signal the end of the interrupt handler. */
-void apic_eoi(void);
+void apic_eoi(uint8_t vector);
 
 void apic_delay(unsigned int usec);
 

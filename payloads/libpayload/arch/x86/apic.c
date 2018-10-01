@@ -58,6 +58,8 @@
 #define APIC_TIMER_INIT_COUNT		0x380
 #define APIC_TIMER_CUR_COUNT		0x390
 #define APIC_TIMER_DIV_CFG		0x3E0
+#define APIC_ISR_0			0x100
+#define APIC_ISR_OFFSET			0x010
 
 #define APIC_LVT_SIZE			0x010
 
@@ -141,11 +143,28 @@ static void timer_interrupt_handler(u8 vector)
 	timer_waiting = 0;
 }
 
-void apic_eoi(void)
+void apic_eoi(uint8_t vector)
 {
 	die_if(!apic_bar, "APIC is not initialized");
 
-	apic_write32(APIC_EOI, 0);
+	/*
+	 * Local and I/O APICs support 240 vectors (in the range of 16 to 255)
+	 * as valid interrupts.
+	 */
+	if (vector <= 15)
+		return;
+
+	/* Each bank handles 32 vectors */
+	uint8_t bank = vector / 32;
+
+	uint32_t offset = APIC_ISR_0 + bank * APIC_ISR_OFFSET;
+
+	uint32_t mask = apic_read32(offset);
+
+	uint8_t shift = vector % 32;
+
+	if (mask & (1 << shift))
+		apic_write32(APIC_EOI, 0);
 }
 
 static enum APIC_CAPABILITY apic_capabilities(void)

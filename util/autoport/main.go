@@ -827,10 +827,6 @@ func main() {
 		fmt.Fprintf(bi, "FIXME: put %s\n", missing)
 	}
 
-	rs := Create(ctx, "romstage.c")
-	defer rs.Close()
-	rs.WriteString("/* dummy file */\n")
-
 	if ROMSizeKB == 0 {
 		KconfigBool["BOARD_ROMSIZE_KB_2048"] = true
 		KconfigComment["BOARD_ROMSIZE_KB_2048"] = "FIXME: correct this"

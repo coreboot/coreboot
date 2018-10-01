@@ -299,9 +299,8 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 		File: "southbridge/intel/bd82x6x/acpi/pch.asl",
 	})
 
-	sb := Create(ctx, "early_southbridge.c")
+	sb := Create(ctx, "romstage.c")
 	defer sb.Close()
-	AddROMStageFile("early_southbridge.c", "")
 	Add_gpl(sb)
 	sb.WriteString(`#include <stdint.h>
 #include <string.h>

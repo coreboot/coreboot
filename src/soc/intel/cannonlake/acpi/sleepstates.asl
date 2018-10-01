@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Intel Corp.
+ * Copyright (C) 2017-2018 Intel Corp.
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,4 +17,5 @@
 
 Name (\_S0, Package () { 0x0, 0x0, 0x0, 0x0 })
 Name (\_S3, Package () { 0x5, 0x5, 0x0, 0x0 })
+Name (\_S4, Package () { 0x6, 0x6, 0x0, 0x0 })
 Name (\_S5, Package () { 0x7, 0x7, 0x0, 0x0 })

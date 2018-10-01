@@ -188,6 +188,7 @@ Method(OSFL, 0){
 
 OperationRegion(SMIC, SystemMemory, 0xfed80000, 0x80000)
 Field( SMIC, ByteAcc, NoLock, Preserve) {
+	/* MISC registers */
 	offset (0x03ee),
 	U3PS, 2,  /* Usb3PowerSel */
 
@@ -197,6 +198,7 @@ Field( SMIC, ByteAcc, NoLock, Preserve) {
 	U2RP, 1,  /* Usb2 Ref Clock Powerdown */
 	U3RP, 1,  /* Usb3 Ref Clock Powerdown */
 
+	/* XHCI_PM registers */
 	offset (0x1c00),
 	, 1,
 	,6,
@@ -217,70 +219,71 @@ Field( SMIC, ByteAcc, NoLock, Preserve) {
 	offset (0x1c08),
 	UA08, 32,
 
-	offset (0x1e4a),
+	/* AOAC Registers */
+	offset (0x1e4a), /* I2C0 D3 Control */
 	I0TD, 2,
 	, 1,
 	I0PD, 1,
-	offset (0x1e4b),
+	offset (0x1e4b), /* I2C0 D3 State */
 	I0DS, 3,
 
-	offset (0x1e4c),
+	offset (0x1e4c), /* I2C1 D3 Control */
 	I1TD, 2,
 	, 1,
 	I1PD, 1,
-	offset (0x1e4d),
+	offset (0x1e4d), /* I2C1 D3 State */
 	I1DS, 3,
 
-	offset (0x1e4e),
+	offset (0x1e4e), /* I2C2 D3 Control */
 	I2TD, 2,
 	, 1,
 	I2PD, 1,
-	offset (0x1e4f),
+	offset (0x1e4f), /* I2C2 D3 State */
 	I2DS, 3,
 
-	offset (0x1e50),
+	offset (0x1e50), /* I2C3 D3 Control */
 	I3TD, 2,
 	, 1,
 	I3PD, 1,
-	offset (0x1e51),
+	offset (0x1e51), /* I2C3 D3 State */
 	I3DS, 3,
 
-	offset (0x1e56),
+	offset (0x1e56), /* UART0 D3 Control */
 	U0TD, 2,
 	, 1,
 	U0PD, 1,
-	offset (0x1e57),
+	offset (0x1e57), /* UART0 D3 State */
 	U0DS, 3,
 
-	offset (0x1e58),
+	offset (0x1e58), /* UART1 D3 Control */
 	U1TD, 2,
 	, 1,
 	U1PD, 1,
-	offset (0x1e59),
+	offset (0x1e59), /* UART1 D3 State */
 	U1DS, 3,
 
-	offset (0x1e5e),
+	offset (0x1e5e), /* SATA D3 Control */
 	SATD, 2,
 	, 1,
 	SAPD, 1,
-	offset (0x1e5f),
+	offset (0x1e5f), /* SATA D3 State */
 	SADS, 3,
 
-	offset (0x1e64),
+	offset (0x1e64), /* USB2 D3 Control */
 	U2TD, 2,
 	, 1,
 	U2PD, 1,
-	offset (0x1e65),
+	offset (0x1e65), /* USB2 D3 State */
 	U2DS, 3,
 
-	offset (0x1e6e),
+	offset (0x1e6e), /* USB3 D3 Control */
 	U3TD, 2,
 	, 1,
 	U3PD, 1,
-	offset (0x1e6f),
+	offset (0x1e6f), /* USB3 D3 State */
 	U3DS, 3,
 
-	offset (0x1e70),
+	offset (0x1e70), /* SD D3 Control */
 	SDTD, 2,
 	, 1,
 	, 1,
@@ -288,10 +291,10 @@ Field( SMIC, ByteAcc, NoLock, Preserve) {
 	SDRT, 1,
 	SDSC, 1,
 
-	offset (0x1e71),
+	offset (0x1e71), /* SD D3 State */
 	SDDS, 3,
 
-	offset (0x1e80),
+	offset (0x1e80), /* Shadow Register Request */
 	, 15,
 	RQ15, 1,
 	, 2,
@@ -301,7 +304,7 @@ Field( SMIC, ByteAcc, NoLock, Preserve) {
 	RQ24, 1,
 	, 5,
 	RQTY, 1,
-	offset (0x1e84),
+	offset (0x1e84), /* Shadow Register Status */
 	, 15,
 	SASR, 1,  /* SATA 15 Shadow Reg Request Status Register */
 	, 2,
@@ -310,13 +313,13 @@ Field( SMIC, ByteAcc, NoLock, Preserve) {
 	U3SR, 1,  /* USB3 23 Shadow Reg Request Status Register */
 	SDSR, 1,  /* SD 24 Shadow Reg Request Status Register */
 
-	offset (0x1ea0),
+	offset (0x1ea0), /* PwrGood Control */
 	PG1A, 1,
 	PG2_, 1,
 	,1,
 	U3PG, 1,  /* Usb3 Power Good BIT3 */
 
-	offset (0x1ea3), /* Power Good Control */
+	offset (0x1ea3), /* PwrGood Control b[31:24] */
 	PGA3, 8 ,
 }
 
@@ -324,35 +327,35 @@ OperationRegion(FCFG, SystemMemory, PCBA, 0x01000000)
 Field(FCFG, DwordAcc, NoLock, Preserve)
 {
 	/* XHCI */
-	Offset(0x00080010),
+	Offset(0x00080010), /* Base address */
 	XHBA, 32,
-	Offset(0x0008002c),
+	Offset(0x0008002c), /* Subsystem ID / Vendor ID */
 	XH2C, 32,
 
-	Offset(0x00080048),
+	Offset(0x00080048), /* Indirect PCI Index Register */
 	IDEX, 32,
 	DATA, 32,
-	Offset(0x00080054),
+	Offset(0x00080054), /* PME Control / Status */
 	U_PS, 2,
 
 	/* EHCI */
-	Offset(0x00090004),
+	Offset(0x00090004), /* Control */
 	, 1,
 	EHME, 1,
-	Offset(0x00090010),
+	Offset(0x00090010), /* Base address */
 	EHBA, 32,
-	Offset(0x0009002c),
+	Offset(0x0009002c), /* Subsystem ID / Vendor ID */
 	EH2C, 32,
-	Offset(0x00090054),
+	Offset(0x00090054), /* EHCI Spare 1 */
 	EH54, 8,
-	Offset(0x00090064),
+	Offset(0x00090064), /* Misc Control 2 */
 	EH64, 8,
 
-	Offset(0x000900c4),
+	Offset(0x000900c4), /* PME Control / Status */
 	E_PS, 2,
 
 	/* LPC Bridge */
-	Offset(0x000a30cb),
+	Offset(0x000a30cb), /* ClientRomProtect[31:24] */
 	,  7,
 	AUSS,  1, /* AutoSizeStart */
 }

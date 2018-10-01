@@ -431,7 +431,7 @@ verify_hash() {
 		exit 1
 	fi
 
-	printf "${GREEN}hash verified (\"$known_hash\")${NC}\n"
+	printf "${GREEN}hash verified (${known_hash})${NC}\n"
 }
 
 unpack_and_patch() {

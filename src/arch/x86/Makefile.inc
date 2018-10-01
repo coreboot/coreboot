@@ -224,7 +224,7 @@ romstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 romstage-y += postcar_loader.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 
-romstage-srcs += $(src)/mainboard/$(MAINBOARDDIR)/romstage.c
+romstage-srcs += $(wildcard $(src)/mainboard/$(MAINBOARDDIR)/romstage.c)
 romstage-libs ?=
 
 $(eval $(call early_x86_assembly_entry_rule,romstage))

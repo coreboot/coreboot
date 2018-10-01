@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <lib.h>
@@ -33,7 +34,6 @@
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 #include <soc/pm.h>
-#include <soc/reset.h>
 #include <soc/romstage.h>
 #include <soc/smm.h>
 #include <soc/systemagent.h>
@@ -63,7 +63,7 @@ void raminit(struct pei_data *pei_data)
 		/* Waking from S3 and no cache. */
 		printk(BIOS_DEBUG, "No MRC cache found in S3 resume path.\n");
 		post_code(POST_RESUME_FAILURE);
-		reset_system();
+		system_reset();
 	} else {
 		printk(BIOS_DEBUG, "No MRC cache found.\n");
 	}
@@ -108,7 +108,7 @@ void raminit(struct pei_data *pei_data)
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
 		/* Failed S3 resume, reset to come up cleanly */
-		reset_system();
+		system_reset();
 #endif
 	}
 

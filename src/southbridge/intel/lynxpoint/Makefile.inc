@@ -36,7 +36,6 @@ endif
 
 ramstage-y += rcba.c
 ramstage-y += me_status.c
-ramstage-y += reset.c
 ramstage-y += watchdog.c
 ramstage-y += acpi.c
 
@@ -47,14 +46,12 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me_9.x.c finalize.c pch.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += pmutil.c usb_ehci.c usb_xhci.c
 
 romstage-y += early_usb.c early_smbus.c early_me.c me_status.c early_pch.c
-romstage-y += reset.c early_spi.c rcba.c pmutil.c
+romstage-y += early_spi.c rcba.c pmutil.c
 
 ifeq ($(CONFIG_INTEL_LYNXPOINT_LP),y)
 romstage-y += lp_gpio.c
 ramstage-y += lp_gpio.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += lp_gpio.c
 endif
-
-postcar-y += reset.c
 
 endif

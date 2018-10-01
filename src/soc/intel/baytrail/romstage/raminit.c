@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <halt.h>
@@ -26,17 +27,10 @@
 #include <soc/iomap.h>
 #include <soc/iosf.h>
 #include <soc/pci_devs.h>
-#include <soc/reset.h>
 #include <soc/romstage.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
 #include <security/vboot/vboot_common.h>
-
-static void reset_system(void)
-{
-	warm_reset();
-	halt();
-}
 
 static void enable_smbus(void)
 {
@@ -134,7 +128,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 		/* If waking from S3 and no cache then. */
 		printk(BIOS_DEBUG, "No MRC cache found in S3 resume path.\n");
 		post_code(POST_RESUME_FAILURE);
-		reset_system();
+		system_reset();
 	} else {
 		printk(BIOS_DEBUG, "No MRC cache found.\n");
 	}
@@ -165,7 +159,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
 		/* Failed S3 resume, reset to come up cleanly */
-		reset_system();
+		system_reset();
 	#endif
 	}
 

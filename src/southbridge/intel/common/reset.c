@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2004 Ronald G. Minnich
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -13,11 +11,10 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <cf9_reset.h>
 #include <reset.h>
 
-void do_hard_reset(void)
+void do_board_reset(void)
 {
-	/* Try rebooting through port 0xcf9 */
-	outb((0 << 3) | (1 << 2) | (1 << 1), 0xcf9);
+	system_reset();
 }

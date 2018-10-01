@@ -36,7 +36,6 @@
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
-#include <soc/reset.h>
 #include <soc/romstage.h>
 #include <soc/smm.h>
 #include <soc/spi.h>

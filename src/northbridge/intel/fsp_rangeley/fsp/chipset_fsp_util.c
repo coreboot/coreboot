@@ -19,12 +19,12 @@
 #include <console/console.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include <cf9_reset.h>
 #include <device/device.h>
 #include <southbridge/intel/fsp_rangeley/pci_devs.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #include <fspvpd.h>
 #include <fspbootmode.h>
-#include <reset.h>
 #include "../chip.h"
 
 #ifdef __PRE_RAM__
@@ -173,7 +173,7 @@ void ChipsetFspReturnPoint(EFI_STATUS Status,
 	*(void **)CBMEM_FSP_HOB_PTR = HobListPtr;
 
 	if (Status == 0xFFFFFFFF) {
-		soft_reset();
+		system_reset();
 	}
 	romstage_main_continue(Status, HobListPtr);
 }

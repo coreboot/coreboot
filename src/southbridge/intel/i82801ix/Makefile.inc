@@ -29,7 +29,6 @@ ramstage-y += ../common/pciehp.c
 
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 
-ramstage-y += ../i82801gx/reset.c
 ramstage-y += ../i82801gx/watchdog.c
 
 ifneq ($(CONFIG_SMM_TSEG),y)

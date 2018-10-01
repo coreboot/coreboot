@@ -22,7 +22,6 @@ config SOUTH_BRIDGE_OPTIONS # dummy
 	def_bool y
 	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
 	select IOAPIC
-	select HAVE_HARD_RESET
 	select HAVE_USBDEBUG
 	select HAVE_SMI_HANDLER
 	select USE_WATCHDOG_ON_BOOT

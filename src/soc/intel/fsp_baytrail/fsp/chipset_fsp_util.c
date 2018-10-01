@@ -19,13 +19,13 @@
 #include <console/console.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include <cf9_reset.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <soc/pci_devs.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #include "../chip.h"
 #include <arch/io.h>
-#include <soc/reset.h>
 #include <soc/pmc.h>
 #include <soc/acpi.h>
 #include <soc/iomap.h>
@@ -323,7 +323,7 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *pFspInitParams,
 				~(SLP_TYP), ACPI_BASE_ADDRESS + PM1_CNT);
 			/* Reboot */
 			printk(BIOS_WARNING,"Rebooting..\n" );
-			warm_reset();
+			system_reset();
 			/* Should not reach here.. */
 			die("Reboot System\n");
 		}
@@ -343,7 +343,7 @@ void ChipsetFspReturnPoint(EFI_STATUS Status,
 	*(void **)CBMEM_FSP_HOB_PTR=HobListPtr;
 
 	if (Status == 0xFFFFFFFF) {
-		warm_reset();
+		system_reset();
 	}
 	romstage_main_continue(Status, HobListPtr);
 }

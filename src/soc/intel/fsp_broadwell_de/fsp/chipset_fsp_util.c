@@ -20,11 +20,11 @@
 #include <bootstate.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <cf9_reset.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #include <soc/pci_devs.h>
-#include <soc/reset.h>
 #include <soc/romstage.h>
 #include <chip.h>
 #include <fsp.h>
@@ -142,7 +142,7 @@ void ChipsetFspReturnPoint(EFI_STATUS Status, VOID *HobListPtr)
 	*(void **)CBMEM_FSP_HOB_PTR = HobListPtr;
 
 	if (Status == 0xFFFFFFFF) {
-		warm_reset();
+		system_reset();
 	}
 
 	romstage_main_continue(Status, HobListPtr);

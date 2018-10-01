@@ -23,7 +23,6 @@ ramstage-y += sata.c
 ramstage-y += me.c
 ramstage-y += me_8.x.c
 ramstage-y += me_status.c
-ramstage-y += reset.c
 ramstage-y += watchdog.c
 
 ramstage-$(CONFIG_ELOG) += elog.c
@@ -37,7 +36,6 @@ romstage-y += early_usb.c early_smbus.c early_me.c me_status.c gpio.c early_init
 romstage-$(CONFIG_USBDEBUG) += usb_debug.c
 ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
 smm-$(CONFIG_USBDEBUG) += usb_debug.c
-romstage-y += reset.c
 romstage-y += early_spi.c
 
 CPPFLAGS_common += -I$(src)/southbridge/intel/fsp_bd82x6x

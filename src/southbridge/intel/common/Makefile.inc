@@ -16,6 +16,12 @@
 # CONFIG_HAVE_INTEL_FIRMWARE protects doing anything to the build.
 subdirs-y += firmware
 
+verstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RESET) += reset.c
+bootblock-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RESET) += reset.c
+romstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RESET) += reset.c
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RESET) += reset.c
+postcar-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RESET) += reset.c
+
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_COMMON),y)
 
 romstage-y += pmbase.c

@@ -32,7 +32,6 @@
 #include <soc/me.h>
 #include <soc/pei_data.h>
 #include <soc/pm.h>
-#include <soc/reset.h>
 #include <soc/romstage.h>
 #include <soc/spi.h>
 

@@ -31,7 +31,7 @@
 #include <console/usb.h>
 #include <halt.h>
 #include <program_loading.h>
-#include <reset.h>
+#include <cf9_reset.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #include <northbridge/intel/fsp_sandybridge/northbridge.h>
 #include <northbridge/intel/fsp_sandybridge/raminit.h>
@@ -41,12 +41,6 @@
 #include "me.h"
 #include "pch.h"
 #include "romstage.h"
-
-static inline void reset_system(void)
-{
-	hard_reset();
-	halt();
-}
 
 static void pch_enable_lpc(void)
 {
@@ -202,7 +196,7 @@ void romstage_main_continue(EFI_STATUS status, VOID *HobListPtr) {
 	cbmem_was_initted = !cbmem_recovery(0);
 
 	if (cbmem_was_initted) {
-		reset_system();
+		system_reset();
 	}
 
 	/* Save the HOB pointer in CBMEM to be used in ramstage. */

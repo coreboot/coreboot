@@ -183,7 +183,7 @@ void paging_set_pat(uint64_t pat)
 	msr_t msr;
 	msr.lo = pat;
 	msr.hi = pat >> 32;
-	wrmsr(MSR_IA32_PAT, msr);
+	wrmsr(IA32_PAT, msr);
 }
 
 /* PAT encoding used in util/x86/x86_page_tables.go. It matches the linux

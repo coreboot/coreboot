@@ -110,11 +110,11 @@ static void early_cpu_init (void)
 		m.lo = (m.lo & ~0xff) | reg8;
 		wrmsr(IA32_PERF_CTL, m);
 
-		m = rdmsr(MSR_IA32_MISC_ENABLES);
+		m = rdmsr(IA32_MISC_ENABLE);
 		m.hi &= ~0x00000040;
 		m.lo |= 0x10000;
 
-		wrmsr(MSR_IA32_MISC_ENABLES, m);
+		wrmsr(IA32_MISC_ENABLE, m);
 	}
 
 	m = rdmsr(MSR_FSB_CLOCK_VCC);
@@ -124,9 +124,9 @@ static void early_cpu_init (void)
 	m.lo = (m.lo & ~0xff) | reg8;
 	wrmsr(IA32_PERF_CTL, m);
 
-	m = rdmsr(MSR_IA32_MISC_ENABLES);
+	m = rdmsr(IA32_MISC_ENABLE);
 	m.lo |= 0x10000;
-	wrmsr(MSR_IA32_MISC_ENABLES, m);
+	wrmsr(IA32_MISC_ENABLE, m);
 }
 
 void nehalem_early_initialization(int chipset_type)

@@ -11,14 +11,44 @@
 #define  EFER_SCE	(1 << 0)
 
 /* Page attribute type MSR */
-#define MSR_IA32_PAT			0x277
-#define MSR_IA32_MPERF			0xe7
-#define MSR_IA32_APERF			0xe8
-#define MSR_IA32_PM_ENABLE		0x770
-#define MSR_IA32_HWP_CAPABILITIES	0x771
-#define MSR_IA32_HWP_REQUEST		0x774
-#define MSR_IA32_HWP_STATUS		0x777
+#define IA32_PLATFORM_ID		0x17
+#define IA32_FEATURE_CONTROL		0x3a
+#define  FEATURE_CONTROL_LOCK_BIT	(1 << 0)
+#define  FEATURE_ENABLE_VMX		(1 << 2)
+#define  SMRR_ENABLE			(1 << 3)
+#define  CPUID_VMX			(1 << 5)
+#define  CPUID_SMX			(1 << 6)
+#define  SGX_GLOBAL_ENABLE		(1 << 18)
+#define  PLATFORM_INFO_SET_TDP		(1 << 29)
+#define IA32_BIOS_UPDT_TRIG		0x79
+#define IA32_BIOS_SIGN_ID		0x8b
+#define IA32_MPERF			0xe7
+#define IA32_APERF			0xe8
+#define IA32_MCG_CAP			0x179
+#define IA32_PERF_STATUS		0x198
+#define IA32_PERF_CTL			0x199
+#define IA32_THERM_INTERRUPT		0x19b
+#define IA32_MISC_ENABLE		0x1a0
+#define IA32_ENERGY_PERF_BIAS		0x1b0
+#define  ENERGY_POLICY_PERFORMANCE	0
+#define  ENERGY_POLICY_NORMAL		6
+#define  ENERGY_POLICY_POWERSAVE	15
+#define IA32_PACKAGE_THERM_INTERRUPT	0x1b2
+#define IA32_PLATFORM_DCA_CAP		0x1f8
+#define IA32_PAT			0x277
+#define IA32_MC0_CTL			0x400
+#define IA32_MC0_STATUS			0x401
+#define IA32_PM_ENABLE			0x770
+#define IA32_HWP_CAPABILITIES		0x771
+#define IA32_HWP_REQUEST		0x774
+#define IA32_HWP_STATUS			0x777
+#define IA32_PQR_ASSOC			0xc8f
+/* MSR bits 33:32 encode slot number 0-3 */
+#define   IA32_PQR_ASSOC_MASK	(1 << 0 | 1 << 1)
+#define IA32_L3_MASK_1			0xc91
+#define IA32_L3_MASK_2			0xc92
 
+#ifndef __ASSEMBLER__
 #if defined(__ROMCC__)
 
 typedef __builtin_msr_t msr_t;
@@ -93,5 +123,5 @@ static __always_inline void wrmsr(unsigned int index, msr_t msr)
 
 #endif /* CONFIG_SOC_SETS_MSRS */
 #endif /* __ROMCC__ */
-
+#endif /* __ASSEMBLER__ */
 #endif /* CPU_X86_MSR_H */

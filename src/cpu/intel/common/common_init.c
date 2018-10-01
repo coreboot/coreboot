@@ -20,10 +20,6 @@
 #include <cpu/x86/msr.h>
 #include "common.h"
 
-#define IA32_FEATURE_CONTROL	0x3a
-#define CPUID_VMX		(1 << 5)
-#define CPUID_SMX		(1 << 6)
-
 void set_vmx(void)
 {
 	struct cpuid_result regs;
@@ -105,7 +101,7 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 
 	config->version = version;
 
-	msr.addrl = MSR_IA32_HWP_CAPABILITIES;
+	msr.addrl = IA32_HWP_CAPABILITIES;
 
 	/*
 	 * Highest Performance:
@@ -141,7 +137,7 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 	msr.bit_offset = 8;
 	config->regs[CPPC_GUARANTEED_PERF] = msr;
 
-	msr.addrl = MSR_IA32_HWP_REQUEST;
+	msr.addrl = IA32_HWP_REQUEST;
 
 	/*
 	 * Desired Performance Register:
@@ -182,7 +178,7 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 	 */
 	config->regs[CPPC_COUNTER_WRAP] = unsupported;
 
-	msr.addrl = MSR_IA32_MPERF;
+	msr.addrl = IA32_MPERF;
 
 	/*
 	 * Reference Performance Counter Register:
@@ -192,7 +188,7 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 	msr.bit_offset = 0;
 	config->regs[CPPC_REF_PERF_COUNTER] = msr;
 
-	msr.addrl = MSR_IA32_APERF;
+	msr.addrl = IA32_APERF;
 
 	/*
 	 * Delivered Performance Counter Register:
@@ -200,7 +196,7 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 	 */
 	config->regs[CPPC_DELIVERED_PERF_COUNTER] = msr;
 
-	msr.addrl = MSR_IA32_HWP_STATUS;
+	msr.addrl = IA32_HWP_STATUS;
 
 	/*
 	 * Performance Limited Register:
@@ -210,7 +206,7 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 	msr.bit_offset = 2;
 	config->regs[CPPC_PERF_LIMITED] = msr;
 
-	msr.addrl = MSR_IA32_PM_ENABLE;
+	msr.addrl = IA32_PM_ENABLE;
 
 	/*
 	 * CPPC Enable Register:

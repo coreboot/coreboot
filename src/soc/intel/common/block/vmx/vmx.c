@@ -58,7 +58,7 @@ void vmx_configure(void *unused)
 	msr = rdmsr(IA32_FEATURE_CONTROL);
 
 	/* Only enable it when it is not locked */
-	if ((msr.lo & FEATURE_CONTROL_LOCK) == 0) {
+	if ((msr.lo & FEATURE_CONTROL_LOCK_BIT) == 0) {
 		/* Enable VMX */
 		msr.lo |= FEATURE_ENABLE_VMX;
 		wrmsr(IA32_FEATURE_CONTROL, msr);
@@ -68,5 +68,5 @@ void vmx_configure(void *unused)
 	msr = rdmsr(IA32_FEATURE_CONTROL);
 	printk(BIOS_DEBUG, "VMX status: %s, %s\n",
 		(msr.lo & FEATURE_ENABLE_VMX) ? "enabled" : "disabled",
-		(msr.lo & FEATURE_CONTROL_LOCK) ? "locked" : "unlocked");
+		(msr.lo & FEATURE_CONTROL_LOCK_BIT) ? "locked" : "unlocked");
 }

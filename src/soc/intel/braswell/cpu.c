@@ -175,7 +175,7 @@ static void per_cpu_smm_trigger(void)
 	msr_t msr_value;
 
 	/* Need to make sure that all cores have microcode loaded. */
-	msr_value = rdmsr(MSR_IA32_BIOS_SIGN_ID);
+	msr_value = rdmsr(IA32_BIOS_SIGN_ID);
 	if (msr_value.hi == 0)
 		intel_microcode_load_unlocked(pattrs->microcode_patch);
 

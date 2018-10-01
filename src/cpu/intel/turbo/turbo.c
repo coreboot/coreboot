@@ -68,7 +68,7 @@ int get_turbo_state(void)
 	cpuid_regs = cpuid(CPUID_LEAF_PM);
 	turbo_cap = !!(cpuid_regs.eax & PM_CAP_TURBO_MODE);
 
-	msr = rdmsr(MSR_IA32_MISC_ENABLES);
+	msr = rdmsr(IA32_MISC_ENABLE);
 	turbo_en = !(msr.hi & H_MISC_DISABLE_TURBO);
 
 	if (!turbo_cap && turbo_en) {
@@ -97,9 +97,9 @@ void enable_turbo(void)
 	/* Only possible if turbo is available but hidden */
 	if (get_turbo_state() == TURBO_DISABLED) {
 		/* Clear Turbo Disable bit in Misc Enables */
-		msr = rdmsr(MSR_IA32_MISC_ENABLES);
+		msr = rdmsr(IA32_MISC_ENABLE);
 		msr.hi &= ~H_MISC_DISABLE_TURBO;
-		wrmsr(MSR_IA32_MISC_ENABLES, msr);
+		wrmsr(IA32_MISC_ENABLE, msr);
 
 		/* Update cached turbo state */
 		set_global_turbo_state(TURBO_ENABLED);
@@ -115,9 +115,9 @@ void disable_turbo(void)
 	msr_t msr;
 
 	/* Set Turbo Disable bit in Misc Enables */
-	msr = rdmsr(MSR_IA32_MISC_ENABLES);
+	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.hi |= H_MISC_DISABLE_TURBO;
-	wrmsr(MSR_IA32_MISC_ENABLES, msr);
+	wrmsr(IA32_MISC_ENABLE, msr);
 
 	/* Update cached turbo state */
 	set_global_turbo_state(TURBO_UNAVAILABLE);

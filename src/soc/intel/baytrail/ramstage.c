@@ -108,7 +108,7 @@ static void fill_in_pattrs(void)
 		       stepping_str[attrs->stepping]);
 	}
 
-	fill_in_msr(&attrs->platform_id, MSR_IA32_PLATFORM_ID);
+	fill_in_msr(&attrs->platform_id, IA32_PLATFORM_ID);
 	fill_in_msr(&attrs->platform_info, MSR_PLATFORM_INFO);
 
 	/* Set IA core speed ratio and voltages */

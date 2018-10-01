@@ -18,8 +18,6 @@
 
 #include <cpu/cpu.h>
 
-#define MSR_IA32_BIOS_UPDT_TRIG         0x00000079
-#define MSR_IA32_BIOS_SIGN_ID           0x0000008b
 #define MSR_UCODE_UPDATE_STATUS         0x00001205
 
 #define NANO_UCODE_SIGNATURE            0x53415252

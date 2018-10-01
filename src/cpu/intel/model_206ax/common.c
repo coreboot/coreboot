@@ -19,8 +19,6 @@
 #include <cpu/x86/msr.h>
 #include "model_206ax.h"
 
-#define IA32_PLATFORM_ID		0x17
-
 int get_platform_id(void)
 {
 	msr_t msr;

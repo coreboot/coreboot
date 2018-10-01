@@ -649,10 +649,10 @@ static void set_energy_perf_bias(u8 policy)
 		return;
 
 	/* Energy Policy is bits 3:0 */
-	msr = rdmsr(IA32_ENERGY_PERFORMANCE_BIAS);
+	msr = rdmsr(IA32_ENERGY_PERF_BIAS);
 	msr.lo &= ~0xf;
 	msr.lo |= policy & 0xf;
-	wrmsr(IA32_ENERGY_PERFORMANCE_BIAS, msr);
+	wrmsr(IA32_ENERGY_PERF_BIAS, msr);
 
 	printk(BIOS_DEBUG, "haswell: energy policy set to %u\n",
 	       policy);
@@ -661,11 +661,10 @@ static void set_energy_perf_bias(u8 policy)
 static void configure_mca(void)
 {
 	msr_t msr;
-	const unsigned int mcg_cap_msr = 0x179;
 	int i;
 	int num_banks;
 
-	msr = rdmsr(mcg_cap_msr);
+	msr = rdmsr(IA32_MCG_CAP);
 	num_banks = msr.lo & 0xff;
 	msr.lo = msr.hi = 0;
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some

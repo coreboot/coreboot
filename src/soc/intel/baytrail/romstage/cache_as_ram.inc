@@ -17,6 +17,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
+#include <cpu/x86/msr.h>
 
 #include "fmap_config.h"
 
@@ -35,7 +36,6 @@
 
 #define NoEvictMod_MSR 0x2e0
 #define BBL_CR_CTL3_MSR 0x11e
-#define MCG_CAP_MSR 0x179
 
 	/* Save the BIST result. */
 	movl	%eax, %ebp
@@ -64,7 +64,7 @@ wait_for_sipi:
 
 	post_code(0x22)
 	/* Zero the variable MTRRs. */
-	movl	$MCG_CAP_MSR, %ecx
+	movl	$IA32_MCG_CAP, %ecx
 	rdmsr
 	movzx	%al, %ebx
 	/* First variable MTRR. */

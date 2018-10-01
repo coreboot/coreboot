@@ -27,7 +27,6 @@
 #ifndef __P6_L2_CACHE_H
 #define __P6_L2_CACHE_H
 
-#define IA32_PLATFORM_ID	0x17
 #define EBL_CR_POWERON	0x2A
 
 #define BBL_CR_D0	0x88

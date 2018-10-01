@@ -72,7 +72,7 @@ static void speedstep_get_limits(sst_params_t *const params)
 	msr = rdmsr(MSR_FSB_CLOCK_VCC);
 	if ((msr.hi & (1 << (63 - 32))) &&
 		/* supported and */
-			!(rdmsr(IA32_MISC_ENABLES).hi & (1 << (38 - 32)))) {
+			!(rdmsr(IA32_MISC_ENABLE).hi & (1 << (38 - 32)))) {
 			/* not disabled */
 		params->turbo = SPEEDSTEP_STATE_FROM_MSR(msr.hi, state_mask);
 		params->turbo.is_turbo = 1;

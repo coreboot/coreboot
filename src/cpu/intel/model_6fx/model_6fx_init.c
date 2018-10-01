@@ -59,7 +59,6 @@ static void configure_c_states(void)
 	wrmsr(MSR_PMG_IO_CAPTURE_ADDR, msr);
 }
 
-#define IA32_MISC_ENABLE	0x1a0
 #define IA32_PECI_CTL		0x5a0
 
 static void configure_misc(void)

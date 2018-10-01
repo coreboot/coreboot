@@ -357,10 +357,10 @@ static void set_energy_perf_bias(u8 policy)
 		return;
 
 	/* Energy Policy is bits 3:0 */
-	msr = rdmsr(IA32_ENERGY_PERFORMANCE_BIAS);
+	msr = rdmsr(IA32_ENERGY_PERF_BIAS);
 	msr.lo &= ~0xf;
 	msr.lo |= policy & 0xf;
-	wrmsr(IA32_ENERGY_PERFORMANCE_BIAS, msr);
+	wrmsr(IA32_ENERGY_PERF_BIAS, msr);
 
 	printk(BIOS_DEBUG, "cpu: energy policy set to %u\n", policy);
 }

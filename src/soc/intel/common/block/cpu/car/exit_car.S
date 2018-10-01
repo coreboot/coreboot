@@ -15,6 +15,7 @@
  */
 
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/msr.h>
 #include <cpu/x86/cr.h>
 #include <intelblocks/msr.h>
 
@@ -80,7 +81,7 @@ car_cqos_teardown:
 	wrmsr
 
 	/* Reset CLOS selector to 0 */
-	mov	$MSR_IA32_PQR_ASSOC, %ecx
+	mov	$IA32_PQR_ASSOC, %ecx
 	rdmsr
 	and	$~IA32_PQR_ASSOC_MASK, %edx
 	wrmsr
@@ -101,7 +102,7 @@ car_nem_enhanced_teardown:
 	wrmsr
 
 	/* Reset CLOS selector to 0 */
-	mov	$MSR_IA32_PQR_ASSOC, %ecx
+	mov	$IA32_PQR_ASSOC, %ecx
 	rdmsr
 	and	$~IA32_PQR_ASSOC_MASK, %edx
 	wrmsr

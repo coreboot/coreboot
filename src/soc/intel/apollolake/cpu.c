@@ -54,7 +54,7 @@ static const struct reg_script core_msr_script[] = {
 	REG_MSR_WRITE(MSR_PMG_IO_CAPTURE_BASE,
 		(ACPI_PMIO_CST_REG | (PMG_IO_BASE_CST_RNG_BLK_SIZE << 16))),
 	/* Disable support for MONITOR and MWAIT instructions */
-	REG_MSR_RMW(MSR_IA32_MISC_ENABLES, ~MONITOR_MWAIT_DIS_MASK, 0),
+	REG_MSR_RMW(IA32_MISC_ENABLE, ~MONITOR_MWAIT_DIS_MASK, 0),
 #endif
 	/* Disable C1E */
 	REG_MSR_RMW(MSR_POWER_CTL, ~POWER_CTL_C1E_MASK, 0),

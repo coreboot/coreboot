@@ -32,7 +32,7 @@ static ucode_update_status nano_apply_ucode(const nano_ucode_header *ucode)
 	 * not the header. The header is just there to help us. */
 	msr.lo = (unsigned int)(&(ucode->ucode_start));
 	msr.hi = 0;
-	wrmsr(MSR_IA32_BIOS_UPDT_TRIG, msr);
+	wrmsr(IA32_BIOS_UPDT_TRIG, msr);
 
 	/* Let's see if we updated successfully */
 	msr = rdmsr(MSR_UCODE_UPDATE_STATUS);

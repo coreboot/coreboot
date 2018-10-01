@@ -74,7 +74,7 @@ void report_platform_info(void)
 		"Bay Trail-D (Desktop)",
 		"Bay Trail-M (Mobile)",
 	};
-	msr_t platform_id = rdmsr(MSR_IA32_PLATFORM_ID);
+	msr_t platform_id = rdmsr(IA32_PLATFORM_ID);
 	uint8_t variant = (platform_id.hi >> VARIANT_ID_BYTE) & VARIANT_ID_MASK;
 
 	printk(BIOS_INFO, "Baytrail Chip Variant: %s\n", variant < 4 ?

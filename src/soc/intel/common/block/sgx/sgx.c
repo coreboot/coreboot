@@ -137,7 +137,7 @@ static void enable_sgx(void)
 
 	msr = rdmsr(IA32_FEATURE_CONTROL);
 	/* Only enable it when it is not locked */
-	if ((msr.lo & FEATURE_CONTROL_LOCK) == 0) {
+	if ((msr.lo & FEATURE_CONTROL_LOCK_BIT) == 0) {
 		msr.lo |= SGX_GLOBAL_ENABLE; /* Enable it */
 		wrmsr(IA32_FEATURE_CONTROL, msr);
 	}

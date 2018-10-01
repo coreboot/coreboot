@@ -28,9 +28,6 @@
 #define MODEL_NANO_3000_B0	0x8
 #define MODEL_NANO_3000_B2	0xa
 
-#define MSR_IA32_PERF_STATUS	0x00000198
-#define MSR_IA32_PERF_CTL	0x00000199
-#define MSR_IA32_MISC_ENABLE	0x000001a0
 #define NANO_MYSTERIOUS_MSR	0x120e
 
 static void nano_finish_fid_vid_transition(void)
@@ -41,7 +38,7 @@ static void nano_finish_fid_vid_transition(void)
 	int cnt = 0;
 	do {
 		udelay(16);
-		msr = rdmsr(MSR_IA32_PERF_STATUS);
+		msr = rdmsr(IA32_PERF_STATUS);
 		cnt++;
 		if (cnt > 128) {
 			printk(BIOS_WARNING,
@@ -61,7 +58,7 @@ static void nano_set_max_fid_vid(void)
 {
 	msr_t msr;
 	/* Get voltage and frequency info */
-	msr = rdmsr(MSR_IA32_PERF_STATUS);
+	msr = rdmsr(IA32_PERF_STATUS);
 	u8 min_fid = (msr.hi >> 24);
 	u8 max_fid = (msr.hi >>  8) & 0xff;
 	u8 min_vid = (msr.hi >> 16) & 0xff;
@@ -78,7 +75,7 @@ static void nano_set_max_fid_vid(void)
 		/* Set highest frequency and VID */
 		msr.lo = msr.hi;
 		msr.hi = 0;
-		wrmsr(MSR_IA32_PERF_CTL, msr);
+		wrmsr(IA32_PERF_CTL, msr);
 		/* Wait for the transition to complete, otherwise, the CPU
 		 * might reset itself repeatedly */
 		nano_finish_fid_vid_transition();
@@ -96,9 +93,9 @@ static void nano_power(void)
 {
 	msr_t msr;
 	/* Enable Powersaver */
-	msr = rdmsr(MSR_IA32_MISC_ENABLE);
+	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 16);
-	wrmsr(MSR_IA32_MISC_ENABLE, msr);
+	wrmsr(IA32_MISC_ENABLE, msr);
 
 	/* Enable 6 bit or 7-bit VRM support
 	 * This MSR is not documented by VIA docs, other than setting these
@@ -116,24 +113,24 @@ static void nano_power(void)
 	nano_set_max_fid_vid();
 
 	/* Enable TM3 */
-	msr = rdmsr(MSR_IA32_MISC_ENABLE);
+	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= ( (1 << 3) | (1 << 13) );
-	wrmsr(MSR_IA32_MISC_ENABLE, msr);
+	wrmsr(IA32_MISC_ENABLE, msr);
 
 	u8 stepping = ( cpuid_eax(0x1) ) &0xf;
 	if (stepping >= MODEL_NANO_3000_B0) {
 		/* Hello Nano 3000. The Terminator needs a CPU upgrade */
 		/* Enable C1e, C2e, C3e, and C4e states */
-		msr = rdmsr(MSR_IA32_MISC_ENABLE);
+		msr = rdmsr(IA32_MISC_ENABLE);
 		msr.lo |= ( (1 << 25) | (1 << 26) | (1 << 31)); /* C1e, C2e, C3e */
 		msr.hi |= (1 << 0); /* C4e */
-		wrmsr(MSR_IA32_MISC_ENABLE, msr);
+		wrmsr(IA32_MISC_ENABLE, msr);
 	}
 
 	/* Lock on Powersaver */
-	msr = rdmsr(MSR_IA32_MISC_ENABLE);
+	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 20);
-	wrmsr(MSR_IA32_MISC_ENABLE, msr);
+	wrmsr(IA32_MISC_ENABLE, msr);
 }
 
 static void nano_init(struct device *dev)

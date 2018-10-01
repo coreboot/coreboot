@@ -36,10 +36,6 @@
 #define  G_SMRAME	(1 << 3)
 #define  C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
 
-#define IA32_FEATURE_CONTROL	0x3a
-#define FEATURE_CONTROL_LOCK_BIT	(1 << 0)
-#define SMRR_ENABLE			(1 << 3)
-
 struct ied_header {
 	char signature[10];
 	u32 size;

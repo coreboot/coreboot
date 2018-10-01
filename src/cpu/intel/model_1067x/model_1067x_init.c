@@ -190,7 +190,7 @@ static void configure_misc(const int eist, const int tm2, const int emttm)
 
 	const u32 sub_cstates = cpuid_edx(5);
 
-	msr = rdmsr(IA32_MISC_ENABLES);
+	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 3);	/* TM1 enable */
 	if (tm2)
 		msr.lo |= (1 << 13);	/* TM2 enable */
@@ -220,11 +220,11 @@ static void configure_misc(const int eist, const int tm2, const int emttm)
 	if (rdmsr(MSR_FSB_CLOCK_VCC).hi & (1 << (63 - 32)))
 		msr.hi &= ~(1 << (38 - 32));
 
-	wrmsr(IA32_MISC_ENABLES, msr);
+	wrmsr(IA32_MISC_ENABLE, msr);
 
 	if (eist) {
 		msr.lo |= (1 << 20);	/* Lock Enhanced SpeedStep Enable */
-		wrmsr(IA32_MISC_ENABLES, msr);
+		wrmsr(IA32_MISC_ENABLE, msr);
 	}
 }
 

@@ -95,7 +95,7 @@ void cpu_set_p_state_to_turbo_ratio(void)
 	perf_ctl.lo = (msr.lo & 0xff) << 8;
 	perf_ctl.hi = 0;
 
-	wrmsr(MSR_IA32_PERF_CTL, perf_ctl);
+	wrmsr(IA32_PERF_CTL, perf_ctl);
 	printk(BIOS_DEBUG, "CPU: frequency set to %d MHz\n",
 	       ((perf_ctl.lo >> 8) & 0xff) * CONFIG_CPU_BCLK_MHZ);
 }
@@ -115,7 +115,7 @@ void cpu_set_p_state_to_nominal_tdp_ratio(void)
 	perf_ctl.lo = (msr.lo & 0xff) << 8;
 	perf_ctl.hi = 0;
 
-	wrmsr(MSR_IA32_PERF_CTL, perf_ctl);
+	wrmsr(IA32_PERF_CTL, perf_ctl);
 	printk(BIOS_DEBUG, "CPU: frequency set to %d MHz\n",
 		((perf_ctl.lo >> 8) & 0xff) * CONFIG_CPU_BCLK_MHZ);
 }
@@ -135,7 +135,7 @@ void cpu_set_p_state_to_max_non_turbo_ratio(void)
 	perf_ctl.lo = msr.lo & 0xff00;
 	perf_ctl.hi = 0;
 
-	wrmsr(MSR_IA32_PERF_CTL, perf_ctl);
+	wrmsr(IA32_PERF_CTL, perf_ctl);
 	printk(BIOS_DEBUG, "CPU: frequency set to %d MHz\n",
 		((perf_ctl.lo >> 8) & 0xff) * CONFIG_CPU_BCLK_MHZ);
 }

@@ -35,11 +35,7 @@
 
 
 /* Speedstep related MSRs */
-#define IA32_PLATFORM_ID  0x017
-#define IA32_PERF_STATUS  0x198
-#define IA32_PERF_CTL     0x199
-#define MSR_THERM2_CTL    0x19D
-#define IA32_MISC_ENABLES 0x1A0
+#define MSR_THERM2_CTL		0x19D
 #define MSR_EBC_FREQUENCY_ID	0x2c
 #define MSR_FSB_FREQ		0xcd
 #define MSR_FSB_CLOCK_VCC	0xce

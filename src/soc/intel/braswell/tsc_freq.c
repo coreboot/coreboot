@@ -67,14 +67,14 @@ void set_max_freq(void)
 	msr_t msr;
 
 	/* Enable speed step. */
-	msr = rdmsr(MSR_IA32_MISC_ENABLES);
+	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 16);
-	wrmsr(MSR_IA32_MISC_ENABLES, msr);
+	wrmsr(IA32_MISC_ENABLE, msr);
 
 	/* Enable Burst Mode */
-	msr = rdmsr(MSR_IA32_MISC_ENABLES);
+	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.hi = 0;
-	wrmsr(MSR_IA32_MISC_ENABLES, msr);
+	wrmsr(IA32_MISC_ENABLE, msr);
 
 	/*
 	 * Set guranteed ratio [21:16] from IACORE_RATIOS to bits [15:8] of
@@ -91,7 +91,7 @@ void set_max_freq(void)
 	perf_ctl.lo |= (msr.lo & 0x7f0000) >> 16;
 	perf_ctl.hi = 0;
 
-	wrmsr(MSR_IA32_PERF_CTL, perf_ctl);
+	wrmsr(IA32_PERF_CTL, perf_ctl);
 }
 
 #endif /* ENV_SMM */

@@ -21,25 +21,12 @@
 /* Rangeley bus clock is fixed at 100MHz */
 #define RANGELEY_BCLK		100
 
-#define IA32_FEATURE_CONTROL		0x3a
-#define  CPUID_VMX			(1 << 5)
-#define  CPUID_SMX			(1 << 6)
 #define MSR_FEATURE_CONFIG		0x13c
 #define MSR_FLEX_RATIO			0x194
 #define  FLEX_RATIO_LOCK		(1 << 20)
 #define  FLEX_RATIO_EN			(1 << 16)
-#define IA32_PLATFORM_DCA_CAP		0x1f8
-#define IA32_MISC_ENABLE		0x1a0
 #define MSR_TEMPERATURE_TARGET		0x1a2
-#define IA32_PERF_CTL			0x199
-#define IA32_THERM_INTERRUPT		0x19b
-#define IA32_ENERGY_PERFORMANCE_BIAS	0x1b0
-#define  ENERGY_POLICY_PERFORMANCE	0
-#define  ENERGY_POLICY_NORMAL		6
-#define  ENERGY_POLICY_POWERSAVE	15
-#define IA32_PACKAGE_THERM_INTERRUPT	0x1b2
 #define MSR_LT_LOCK_MEMORY		0x2e7
-#define IA32_MC0_STATUS			0x401
 
 #define MSR_NO_EVICT_MODE		0x2e0
 #define MSR_PIC_MSG_CONTROL		0x2e

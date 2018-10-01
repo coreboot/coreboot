@@ -17,6 +17,7 @@
 #include <commonlib/helpers.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/cr.h>
+#include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/post_code.h>
 #include <rules.h>
@@ -306,7 +307,7 @@ car_cqos:
 	wrmsr
 
 	/* Set CLOS selector to 0 */
-	mov	$MSR_IA32_PQR_ASSOC, %ecx
+	mov	$IA32_PQR_ASSOC, %ecx
 	rdmsr
 	and	$~IA32_PQR_ASSOC_MASK, %edx	/* select mask 0 */
 	wrmsr
@@ -339,7 +340,7 @@ car_cqos:
 	post_code(0x27)
 
 	/* Cache is populated. Use mask 1 that will block evicts */
-	mov	$MSR_IA32_PQR_ASSOC, %ecx
+	mov	$IA32_PQR_ASSOC, %ecx
 	rdmsr
 	and	$~IA32_PQR_ASSOC_MASK, %edx	/* clear index bits first */
 	or	$1, %edx			/* select mask 1 */
@@ -410,7 +411,7 @@ find_llc_subleaf:
 	 */
 	shl	%cl, %eax
 	subl	$0x02, %eax
-	movl	$MSR_IA32_L3_MASK_1, %ecx
+	movl	$IA32_L3_MASK_1, %ecx
 	xorl	%edx, %edx
 	wrmsr
 	/*
@@ -419,12 +420,12 @@ find_llc_subleaf:
 	 * For SKL SOC, data size remains 256K consistently.
 	 * Hence, creating 1-way associative cache for Data
 	*/
-	mov	$MSR_IA32_L3_MASK_2, %ecx
+	mov	$IA32_L3_MASK_2, %ecx
 	mov	$0x01, %eax
 	xorl	%edx, %edx
 	wrmsr
 	/*
-	 * Set MSR_IA32_PQR_ASSOC = 0x02
+	 * Set IA32_PQR_ASSOC = 0x02
 	 *
 	 * Possible values:
 	 * 0: Default value, no way mask should be applied
@@ -432,7 +433,7 @@ find_llc_subleaf:
 	 * 2: Apply way mask 2 to LLC
 	 * 3: Shouldn't be use in NEM Mode
 	 */
-	movl	$MSR_IA32_PQR_ASSOC, %ecx
+	movl	$IA32_PQR_ASSOC, %ecx
 	movl	$0x02, %eax
 	xorl	%edx, %edx
 	wrmsr
@@ -444,11 +445,11 @@ find_llc_subleaf:
 	cld
 	rep	stosl
 	/*
-	 * Set MSR_IA32_PQR_ASSOC = 0x01
+	 * Set IA32_PQR_ASSOC = 0x01
 	 * At this stage we apply LLC_WAY_MASK_1 to the cache.
 	 * i.e. way 0 is protected from eviction.
 	*/
-	movl	$MSR_IA32_PQR_ASSOC, %ecx
+	movl	$IA32_PQR_ASSOC, %ecx
 	movl	$0x01, %eax
 	xorl	%edx, %edx
 	wrmsr

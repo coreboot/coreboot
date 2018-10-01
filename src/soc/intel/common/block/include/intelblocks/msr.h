@@ -17,13 +17,6 @@
 #define SOC_INTEL_COMMON_MSR_H
 
 #define MSR_CORE_THREAD_COUNT	0x35
-#define IA32_FEATURE_CONTROL	0x3a
-#define  FEATURE_CONTROL_LOCK	(1)
-#define  FEATURE_ENABLE_VMX	(1 << 2)
-#define  CPUID_VMX		(1 << 5)
-#define  CPUID_SMX		(1 << 6)
-#define  SGX_GLOBAL_ENABLE	(1 << 18)
-#define  PLATFORM_INFO_SET_TDP	(1 << 29)
 #define MSR_PLATFORM_INFO	0xce
 #define MSR_PKG_CST_CONFIG_CONTROL	0xe2
 /* Set MSR_PKG_CST_CONFIG_CONTROL[3:0] for Package C-State limit */
@@ -46,16 +39,13 @@
 #define MSR_FEATURE_CONFIG	0x13c
 #define   FEATURE_CONFIG_RESERVED_MASK	0x3ULL
 #define   FEATURE_CONFIG_LOCK	(1 << 0)
-#define IA32_MCG_CAP		0x179
 #define SMM_MCA_CAP_MSR		0x17d
 #define  SMM_CPU_SVRSTR_BIT	57
 #define  SMM_CPU_SVRSTR_MASK	(1 << (SMM_CPU_SVRSTR_BIT - 32))
 #define MSR_FLEX_RATIO		0x194
 #define  FLEX_RATIO_LOCK		(1 << 20)
 #define  FLEX_RATIO_EN			(1 << 16)
-#define MSR_IA32_PERF_CTL	0x199
-#define IA32_MISC_ENABLE	0x1a0
-/* This is burst mode BIT 38 in MSR_IA32_MISC_ENABLES MSR at offset 1A0h */
+/* This is burst mode BIT 38 in IA32_MISC_ENABLE MSR at offset 1A0h */
 #define BURST_MODE_DISABLE		(1 << 6)
 #define MSR_TEMPERATURE_TARGET	0x1a2
 #define MSR_PREFETCH_CTL	0x1a4
@@ -76,8 +66,6 @@
 #define MSR_EVICT_CTL			0x2e0
 #define MSR_SGX_OWNEREPOCH0		0x300
 #define MSR_SGX_OWNEREPOCH1		0x301
-#define IA32_MC0_CTL			0x400
-#define IA32_MC0_STATUS			0x401
 #define SMM_FEATURE_CONTROL_MSR		0x4e0
 #define  SMM_CPU_SAVE_EN		(1 << 1)
 #define MSR_PKG_POWER_SKU_UNIT		0x606
@@ -122,11 +110,6 @@
 #define SMBASE_MSR			0xc20
 #define IEDBASE_MSR			0xc22
 
-#define MSR_IA32_PQR_ASSOC		0x0c8f
-/* MSR bits 33:32 encode slot number 0-3 */
-#define   IA32_PQR_ASSOC_MASK		(1 << 0 | 1 << 1)
-#define MSR_IA32_L3_MASK_1		0x0c91
-#define MSR_IA32_L3_MASK_2		0x0c92
 #define MSR_L2_QOS_MASK(reg)		(0xd10 + reg)
 
 /* MTRR_CAP_MSR bits */

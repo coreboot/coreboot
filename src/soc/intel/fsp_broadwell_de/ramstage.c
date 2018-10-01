@@ -76,7 +76,7 @@ static void fill_in_pattrs(void)
 		printk(BIOS_DEBUG, "Revision ID: %02x\n", attrs->revid);
 	}
 
-	fill_in_msr(&attrs->platform_id, MSR_IA32_PLATFORM_ID);
+	fill_in_msr(&attrs->platform_id, IA32_PLATFORM_ID);
 	fill_in_msr(&attrs->platform_info, MSR_PLATFORM_INFO);
 }
 

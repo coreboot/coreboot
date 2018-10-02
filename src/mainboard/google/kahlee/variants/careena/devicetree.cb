@@ -27,7 +27,7 @@ chip soc/amd/stoneyridge
 	# Enable I2C0 for audio, USB3 hub at 400kHz
 	register "i2c[0]" = "{
 		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 95,
+		.rise_time_ns = 58,
 		.fall_time_ns = 3,
 	}"
 
@@ -42,8 +42,8 @@ chip soc/amd/stoneyridge
 	# Enable I2C2 for trackpad, pen at 400kHz
 	register "i2c[2]" = "{
 		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 67,
-		.fall_time_ns = 55,
+		.rise_time_ns = 25,
+		.fall_time_ns = 11,
 	}"
 
 	# Enable I2C3 for touchscreen at 400kHz

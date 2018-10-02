@@ -33,7 +33,7 @@ static void configure_c_states(void)
 {
 	msr_t msr;
 
-	msr = rdmsr(MSR_PMG_CST_CONFIG_CONTROL);
+	msr = rdmsr(MSR_PKG_CST_CONFIG_CONTROL);
 	msr.lo |= (1 << 15); // config lock until next reset
 	msr.lo |= (1 << 14); // Deeper Sleep
 	msr.lo |= (1 << 10); // Enable I/O MWAIT redirection for C-States
@@ -44,7 +44,7 @@ static void configure_c_states(void)
 	msr.lo &= ~7;
 	msr.lo |= HIGHEST_CLEVEL; // support at most C3
 
-	wrmsr(MSR_PMG_CST_CONFIG_CONTROL, msr);
+	wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
 
 	/* Set Processor MWAIT IO BASE (P_BLK) */
 	msr.hi = 0;

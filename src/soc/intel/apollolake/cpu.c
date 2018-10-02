@@ -47,7 +47,7 @@
 static const struct reg_script core_msr_script[] = {
 #if !IS_ENABLED(CONFIG_SOC_INTEL_GLK)
 	/* Enable C-state and IO/MWAIT redirect */
-	REG_MSR_WRITE(MSR_PMG_CST_CONFIG_CONTROL,
+	REG_MSR_WRITE(MSR_PKG_CST_CONFIG_CONTROL,
 		(PKG_C_STATE_LIMIT_C2_MASK | CORE_C_STATE_LIMIT_C10_MASK
 		| IO_MWAIT_REDIRECT_MASK | CST_CFG_LOCK_MASK)),
 	/* Power Management I/O base address for I/O trapping to C-states */

@@ -45,7 +45,7 @@ static void msr_set_bit(unsigned int reg, unsigned int bit)
 void intel_model_206ax_finalize_smm(void)
 {
 	/* Lock C-State MSR */
-	msr_set_bit(MSR_PMG_CST_CONFIG_CONTROL, 15);
+	msr_set_bit(MSR_PKG_CST_CONFIG_CONTROL, 15);
 
 	/* Lock AES-NI only if supported */
 	if (cpuid_ecx(1) & (1 << 25))

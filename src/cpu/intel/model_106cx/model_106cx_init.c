@@ -32,14 +32,14 @@ static void configure_c_states(void)
 {
 	msr_t msr;
 
-	msr = rdmsr(MSR_PMG_CST_CONFIG_CONTROL);
+	msr = rdmsr(MSR_PKG_CST_CONFIG_CONTROL);
 	msr.lo |= (1 << 15); // Lock configuration
 	msr.lo |= (1 << 10); // redirect IO-based CState transition requests to
 			     // MWAIT
 	msr.lo &= ~(1 << 9); // Issue a single stop grant cycle upon stpclk
 	msr.lo &= ~7; msr.lo |= HIGHEST_CLEVEL; // support at most C3
 	// TODO Do we want Deep C4 and  Dynamic L2 shrinking?
-	wrmsr(MSR_PMG_CST_CONFIG_CONTROL, msr);
+	wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
 
 	/* Set Processor MWAIT IO BASE (P_BLK) */
 	msr.hi = 0;

@@ -252,14 +252,14 @@ static void configure_c_states(void)
 {
 	msr_t msr;
 
-	msr = rdmsr(MSR_PMG_CST_CONFIG_CONTROL);
+	msr = rdmsr(MSR_PKG_CST_CONFIG_CONTROL);
 	msr.lo |= (1 << 28);	// C1 Auto Undemotion Enable
 	msr.lo |= (1 << 27);	// C3 Auto Undemotion Enable
 	msr.lo |= (1 << 26);	// C1 Auto Demotion Enable
 	msr.lo |= (1 << 25);	// C3 Auto Demotion Enable
 	msr.lo &= ~(1 << 10);	// Disable IO MWAIT redirection
 	msr.lo |= 7;		// No package C-state limit
-	wrmsr(MSR_PMG_CST_CONFIG_CONTROL, msr);
+	wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
 
 	msr = rdmsr(MSR_PMG_IO_CAPTURE_ADDR);
 	msr.lo &= ~0x7ffff;

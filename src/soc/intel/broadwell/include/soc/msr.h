@@ -23,7 +23,7 @@
 #define  CPUID_SMX			(1 << 6)
 #define MSR_PLATFORM_INFO		0xce
 #define  PLATFORM_INFO_SET_TDP		(1 << 29)
-#define MSR_PMG_CST_CONFIG_CONTROL	0xe2
+#define MSR_PKG_CST_CONFIG_CONTROL	0xe2
 #define MSR_PMG_IO_CAPTURE_BASE		0xe4
 #define MSR_FEATURE_CONFIG		0x13c
 #define SMM_MCA_CAP_MSR			0x17d

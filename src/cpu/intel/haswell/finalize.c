@@ -48,7 +48,7 @@ void intel_cpu_haswell_finalize_smm(void)
 {
 #if 0
 	/* Lock C-State MSR */
-	msr_set_bit(MSR_PMG_CST_CONFIG_CONTROL, 15);
+	msr_set_bit(MSR_PKG_CST_CONFIG_CONTROL, 15);
 
 	/* Lock AES-NI only if supported */
 	if (cpuid_ecx(1) & (1 << 25))

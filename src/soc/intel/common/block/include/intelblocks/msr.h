@@ -25,14 +25,14 @@
 #define  SGX_GLOBAL_ENABLE	(1 << 18)
 #define  PLATFORM_INFO_SET_TDP	(1 << 29)
 #define MSR_PLATFORM_INFO	0xce
-#define MSR_PMG_CST_CONFIG_CONTROL	0xe2
-/* Set MSR_PMG_CST_CONFIG_CONTROL[3:0] for Package C-State limit */
+#define MSR_PKG_CST_CONFIG_CONTROL	0xe2
+/* Set MSR_PKG_CST_CONFIG_CONTROL[3:0] for Package C-State limit */
 #define   PKG_C_STATE_LIMIT_C2_MASK	0x2
-/* Set MSR_PMG_CST_CONFIG_CONTROL[7:4] for Core C-State limit*/
+/* Set MSR_PKG_CST_CONFIG_CONTROL[7:4] for Core C-State limit*/
 #define   CORE_C_STATE_LIMIT_C10_MASK	0x70
-/* Set MSR_PMG_CST_CONFIG_CONTROL[10] to IO redirect to MWAIT */
+/* Set MSR_PKG_CST_CONFIG_CONTROL[10] to IO redirect to MWAIT */
 #define   IO_MWAIT_REDIRECT_MASK	0x400
-/* Set MSR_PMG_CST_CONFIG_CONTROL[15] to lock CST_CFG [0-15] bits */
+/* Set MSR_PKG_CST_CONFIG_CONTROL[15] to lock CST_CFG [0-15] bits */
 #define   CST_CFG_LOCK_MASK	0x8000
 #define MSR_BIOS_UPGD_TRIG	0x7a
 #define  SGX_ACTIVATE_BIT	(1)

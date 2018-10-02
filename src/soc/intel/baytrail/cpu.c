@@ -35,7 +35,7 @@
 /* Core level MSRs */
 const struct reg_script core_msr_script[] = {
 	/* Dynamic L2 shrink enable and threshold, clear SINGLE_PCTL bit 11 */
-	REG_MSR_RMW(MSR_PMG_CST_CONFIG_CONTROL, ~0x3f080f, 0xe0008),
+	REG_MSR_RMW(MSR_PKG_CST_CONFIG_CONTROL, ~0x3f080f, 0xe0008),
 	REG_MSR_RMW(MSR_POWER_MISC,
 		    ~(ENABLE_ULFM_AUTOCM_MASK | ENABLE_INDP_AUTOCM_MASK), 0),
 	/* Disable C1E */

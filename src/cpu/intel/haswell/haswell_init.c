@@ -486,7 +486,7 @@ static void configure_c_states(void)
 {
 	msr_t msr;
 
-	msr = rdmsr(MSR_PMG_CST_CONFIG_CONTROL);
+	msr = rdmsr(MSR_PKG_CST_CONFIG_CONTROL);
 	msr.lo |= (1 << 30);	// Package c-state Undemotion Enable
 	msr.lo |= (1 << 29);	// Package c-state Demotion Enable
 	msr.lo |= (1 << 28);	// C1 Auto Undemotion Enable
@@ -495,7 +495,7 @@ static void configure_c_states(void)
 	msr.lo |= (1 << 25);	// C3 Auto Demotion Enable
 	msr.lo &= ~(1 << 10);	// Disable IO MWAIT redirection
 	/* The deepest package c-state defaults to factory-configured value. */
-	wrmsr(MSR_PMG_CST_CONFIG_CONTROL, msr);
+	wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
 
 	msr = rdmsr(MSR_PMG_IO_CAPTURE_BASE);
 	msr.lo &= ~0xffff;

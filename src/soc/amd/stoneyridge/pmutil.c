@@ -32,3 +32,15 @@ int vboot_platform_is_resuming(void)
 
 	return acpi_sleep_from_pm1(inw(pm_acpi_pm_cnt_blk())) == ACPI_S3;
 }
+
+/* If vboot requests a system reset, modify the PM1 register so it will never be
+ * misinterpreted as an S3 resume. */
+void vboot_platform_prepare_reboot(void)
+{
+	uint16_t pm1;
+
+	pm1 = inw(pm_acpi_pm_cnt_blk());
+	pm1 &= ~SLP_TYP;
+	pm1 |= SLP_TYP_S5 << SLP_TYP_SHIFT;
+	outw(pm1, pm_acpi_pm_cnt_blk());
+}

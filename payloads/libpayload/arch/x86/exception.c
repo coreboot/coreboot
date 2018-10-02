@@ -171,9 +171,14 @@ void exception_dispatch(void)
 
 	if (handlers[vec]) {
 		handlers[vec](vec);
-		if (IS_ENABLED(CONFIG_LP_ENABLE_APIC))
-			apic_eoi(vec);
-		return;
+		goto success;
+	} else if (vec >= EXC_COUNT
+		   && IS_ENABLED(CONFIG_LP_IGNORE_UNKNOWN_INTERRUPTS)) {
+		goto success;
+	} else if (vec >= EXC_COUNT
+		   && IS_ENABLED(CONFIG_LP_LOG_UNKNOWN_INTERRUPTS)) {
+		printf("Ignoring interrupt vector %u\n", vec);
+		goto success;
 	}
 
 	die_if(vec >= EXC_COUNT || !names[vec], "Bad exception vector %u\n",
@@ -181,7 +186,14 @@ void exception_dispatch(void)
 
 	dump_exception_state();
 	dump_stack(exception_state->regs.esp, 512);
+	/* We don't call apic_eoi because we don't want to ack the interrupt and
+	   allow another interrupt to wake the processor. */
 	halt();
+	return;
+
+success:
+	if (IS_ENABLED(CONFIG_LP_ENABLE_APIC))
+		apic_eoi(vec);
 }
 
 void exception_init(void)

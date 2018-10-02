@@ -37,4 +37,21 @@ config ARCH_SPECIFIC_OPTIONS # dummy
 config ENABLE_APIC
 	bool "Enables the Local APIC"
 
+choice
+	prompt "Interrupt Handling"
+	default LOG_UNKNOWN_INTERRUPTS if ENABLE_APIC
+	default DIE_ON_UNKNOWN_INTERRUPT
+
+config IGNORE_UNKNOWN_INTERRUPTS
+	bool "Ignore unknown user defined interrupts"
+
+config LOG_UNKNOWN_INTERRUPTS
+	bool "Logs unknown user defined interrupts to the console"
+
+config DIE_ON_UNKNOWN_INTERRUPT
+	bool "Die if an unknown user defined interrupt is encountered"
+
+endchoice
+
+
 endif

@@ -151,7 +151,7 @@ static const struct pad_config gpio_table[] = {
 	/* C18 : I2C1_SDA ==> PCH_I2C1_DISPLAY_SAR_SDA */
 	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1),
 	/* C19 : I2C1_SCL ==> PCH_I2C1_DISPLAY_SAR_SCL */
-	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1),
 	/* C20 : UART2_RXD ==> PCHRX_SERVOTX_UART */
 	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
 	/* C21 : UART2_TXD ==> PCHTX_SERVORX_UART */
@@ -217,6 +217,8 @@ static const struct pad_config gpio_table[] = {
 	/* E2  : SATAXPCIE2 ==> BT_DISABLE_L */
 	PAD_CFG_GPO(GPP_E2, 1, DEEP),
 	/* E3  : CPU_GP0 ==> NC */
+	PAD_CFG_NC(GPP_E3),
+	/* E3  : DEVSLP0 ==> NC */
 	PAD_CFG_NC(GPP_E4),
 	/* E5  : SATA_DEVSLP1 ==> NC */
 	PAD_CFG_NC(GPP_E5),

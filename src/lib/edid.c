@@ -204,12 +204,13 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 {
 	struct edid *out = &tmp_edid;
 	int i;
-#if 1
-	printk(BIOS_SPEW, "Hex of detail: ");
-	for (i = 0; i < 18; i++)
-		printk(BIOS_SPEW, "%02x", x[i]);
-	printk(BIOS_SPEW, "\n");
-#endif
+
+	if (console_log_level(BIOS_SPEW)) {
+		printk(BIOS_SPEW, "Hex of detail: ");
+		for (i = 0; i < 18; i++)
+			printk(BIOS_SPEW, "%02x", x[i]);
+		printk(BIOS_SPEW, "\n");
+	}
 
 	/* Result might already have some valid fields like mode_is_supported */
 	*out = *result_edid;

@@ -1610,47 +1610,38 @@ int cbfs_merge_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
 			   unused void *arg)
 {
 	struct cbfs_file *next;
-	uint8_t *name;
-	uint32_t type, addr, last_addr;
+	uint32_t next_addr = 0;
 
-	type = ntohl(entry->type);
-	if (type == CBFS_COMPONENT_DELETED) {
-		// Ready to be recycled.
-		type = CBFS_COMPONENT_NULL;
-		entry->type = htonl(type);
-		// Place NUL byte as first byte of name to be viewed as "empty".
-		name = (void *)&entry[1];
-		*name = '\0';
+	/* We don't return here even if this entry is already empty because we
+	   want to merge the empty entries following after it. */
+
+	/* Loop until non-empty entry is found, starting from the current entry.
+	   After the loop, next_addr points to the next non-empty entry. */
+	next = entry;
+	while (ntohl(next->type) == CBFS_COMPONENT_DELETED ||
+			ntohl(next->type) == CBFS_COMPONENT_NULL) {
+		next = cbfs_find_next_entry(image, next);
+		if (!next)
+			break;
+		next_addr = cbfs_get_entry_addr(image, next);
+		if (!cbfs_is_valid_entry(image, next))
+			/* 'next' could be the end of cbfs */
+			break;
 	}
-	if (type != CBFS_COMPONENT_NULL)
+
+	if (!next_addr)
+		/* Nothing to empty */
 		return 0;
 
-	next = cbfs_find_next_entry(image, entry);
+	/* We can return here if we find only a single empty entry.
+	   For simplicity, we just proceed (and make it empty again). */
 
-	while (next && cbfs_is_valid_entry(image, next)) {
-		type = ntohl(next->type);
-		if (type == CBFS_COMPONENT_DELETED) {
-			type = CBFS_COMPONENT_NULL;
-			next->type = htonl(type);
-		}
-		if (type != CBFS_COMPONENT_NULL)
-			return 0;
+	/* We're creating one empty entry for combined empty spaces */
+	uint32_t addr = cbfs_get_entry_addr(image, entry);
+	size_t len = next_addr - addr - cbfs_calculate_file_header_size("");
+	DEBUG("join_empty_entry: [0x%x, 0x%x) len=%zu\n", addr, next_addr, len);
+	cbfs_create_empty_entry(entry, CBFS_COMPONENT_NULL, len, "");
 
-		addr = cbfs_get_entry_addr(image, entry);
-		last_addr = cbfs_get_entry_addr(
-				image, cbfs_find_next_entry(image, next));
-
-		// Now, we find two deleted/empty entries; try to merge now.
-		DEBUG("join_empty_entry: combine 0x%x+0x%x and 0x%x+0x%x.\n",
-		      cbfs_get_entry_addr(image, entry), ntohl(entry->len),
-		      cbfs_get_entry_addr(image, next), ntohl(next->len));
-		cbfs_create_empty_entry(entry, CBFS_COMPONENT_NULL,
-					(last_addr - addr -
-					 cbfs_calculate_file_header_size("")),
-					"");
-		DEBUG("new empty entry: length=0x%x\n", ntohl(entry->len));
-		next = cbfs_find_next_entry(image, entry);
-	}
 	return 0;
 }
 

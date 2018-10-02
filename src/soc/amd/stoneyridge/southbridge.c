@@ -667,7 +667,7 @@ static void sb_print_pmxc0_status(void)
 	/* PMxC0 S5/Reset Status shows the source of previous reset. */
 	uint32_t pmxc0_status = pm_read32(PM_RST_STATUS);
 
-	static const char *const pmxc0_status_bits[] = {
+	static const char *const pmxc0_status_bits[32] = {
 		[0] = "ThermalTrip",
 		[1] = "FourSecondPwrBtn",
 		[2] = "Shutdown",
@@ -688,13 +688,12 @@ static void sb_print_pmxc0_status(void)
 		[27] = "SyncFlood",
 		[28] = "HangReset",
 		[29] = "EcWatchdogRst",
-		[31] = "BIT31",
 	};
 
-	printk(BIOS_SPEW, "PMxC0 STATUS: 0x%x ", pmxc0_status);
+	printk(BIOS_DEBUG, "PMxC0 STATUS: 0x%x ", pmxc0_status);
 	print_num_status_bits(ARRAY_SIZE(pmxc0_status_bits), pmxc0_status,
 			      pmxc0_status_bits);
-	printk(BIOS_SPEW, "\n");
+	printk(BIOS_DEBUG, "\n");
 }
 
 /* After console init */
@@ -763,7 +762,7 @@ static uint16_t reset_pm1_status(void)
 
 static uint16_t print_pm1_status(uint16_t pm1_sts)
 {
-	static const char *const pm1_sts_bits[] = {
+	static const char *const pm1_sts_bits[16] = {
 		[0] = "TMROF",
 		[4] = "BMSTATUS",
 		[5] = "GBL",
@@ -776,9 +775,9 @@ static uint16_t print_pm1_status(uint16_t pm1_sts)
 	if (!pm1_sts)
 		return 0;
 
-	printk(BIOS_SPEW, "PM1_STS: ");
+	printk(BIOS_DEBUG, "PM1_STS: ");
 	print_num_status_bits(ARRAY_SIZE(pm1_sts_bits), pm1_sts, pm1_sts_bits);
-	printk(BIOS_SPEW, "\n");
+	printk(BIOS_DEBUG, "\n");
 
 	return pm1_sts;
 }

@@ -38,6 +38,6 @@ void variant_nhlt_oem_overrides(const char **oem_id, const char **oem_table_id,
 				uint32_t *oem_revision)
 {
 	*oem_id = "GOOGLE";
-	*oem_table_id = "RAMMUSMAX";
+	*oem_table_id = "RAMMUS";
 	*oem_revision = 0;
 }

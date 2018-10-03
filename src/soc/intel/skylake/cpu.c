@@ -547,9 +547,14 @@ void cpu_lock_sgx_memory(void)
 int soc_fill_sgx_param(struct sgx_param *sgx_param)
 {
 	struct device *dev = SA_DEV_ROOT;
-	assert(dev != NULL);
-	config_t *conf = dev->chip_info;
+	config_t *conf;
 
+	if (!dev) {
+		printk(BIOS_ERR, "Failed to get root dev for checking SGX param\n");
+		return -1;
+	}
+
+	conf = dev->chip_info;
 	if (!conf) {
 		printk(BIOS_ERR, "Failed to get chip_info for SGX param\n");
 		return -1;
@@ -561,9 +566,14 @@ int soc_fill_sgx_param(struct sgx_param *sgx_param)
 int soc_fill_vmx_param(struct vmx_param *vmx_param)
 {
 	struct device *dev = SA_DEV_ROOT;
-	assert(dev != NULL);
-	config_t *conf = dev->chip_info;
+	config_t *conf;
 
+	if (!dev) {
+		printk(BIOS_ERR, "Failed to get root dev for checking VMX param\n");
+		return -1;
+	}
+
+	conf = dev->chip_info;
 	if (!conf) {
 		printk(BIOS_ERR, "Failed to get chip_info for VMX param\n");
 		return -1;

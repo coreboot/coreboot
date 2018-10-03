@@ -79,7 +79,7 @@ void board_bh720(struct device *dev)
 
 const char *smbios_mainboard_manufacturer(void)
 {
-	static char oem_bin_data[10];
+	static char oem_bin_data[11];
 	static const char *manuf;
 
 	if (!IS_ENABLED(CONFIG_USE_OEM_BIN))

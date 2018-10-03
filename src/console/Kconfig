@@ -157,7 +157,7 @@ config SPKMODEM
 config CONSOLE_USB
 	bool "USB dongle console output"
 	depends on USBDEBUG
-	default n
+	default y
 	help
 	  Send coreboot debug output to USB.
 

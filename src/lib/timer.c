@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <timer.h>
 #include <delay.h>
 #include <thread.h>

@@ -21,7 +21,6 @@
 #include <adainit.h>
 #include <arch/exception.h>
 #include <bootstate.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <console/post_codes.h>
 #include <cbmem.h>

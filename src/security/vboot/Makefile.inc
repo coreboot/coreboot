@@ -91,10 +91,12 @@ endif
 endif # CONFIG_VBOOT_SEPARATE_VERSTAGE
 
 VB2_LIB = $(obj)/external/vboot_reference/vboot_fw20.a
-VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%, $(filter-out -I$(obj), $(filter-out -include $(src)/include/kconfig.h, $(CPPFLAGS_verstage))))
+VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%,\
+		$(patsubst $(src)/%.h,$(top)/$(src)/%.h,\
+		$(filter-out -I$(obj), $(CPPFLAGS_verstage))))
 VBOOT_CFLAGS += $(CFLAGS_verstage)
 VBOOT_CFLAGS += $(verstage-c-ccopts)
-VBOOT_CFLAGS += -I$(abspath $(obj)) -include $(top)/src/include/kconfig.h -Wno-missing-prototypes
+VBOOT_CFLAGS += -I$(abspath $(obj)) -Wno-missing-prototypes
 VBOOT_CFLAGS += -DVBOOT_DEBUG
 
 $(VB2_LIB): $(obj)/config.h

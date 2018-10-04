@@ -25,7 +25,6 @@
 #define __SOC_STONEYRIDGE_NVS_H__
 
 #include <commonlib/helpers.h>
-#include <compiler.h>
 #include <stdint.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <soc/southbridge.h>

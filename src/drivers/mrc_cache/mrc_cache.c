@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <string.h>
 #include <boot_device.h>
 #include <bootstate.h>

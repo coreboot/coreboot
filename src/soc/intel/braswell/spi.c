@@ -26,7 +26,6 @@
 #include <spi_flash.h>
 #include <spi-generic.h>
 #include <stdint.h>
-#include <compiler.h>
 #include <stdlib.h>
 #include <string.h>
 

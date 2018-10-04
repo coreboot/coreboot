@@ -15,7 +15,6 @@
 
 #include <bootstate.h>
 #include <bootmem.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <imd.h>

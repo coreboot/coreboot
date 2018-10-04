@@ -23,7 +23,6 @@
 #define DQS_TRAIN_DEBUG 0
 
 #include <inttypes.h>
-#include <compiler.h>
 #include "mct_d_gcc.h"
 #include <console/console.h>
 #include <northbridge/amd/amdfam10/debug.h>

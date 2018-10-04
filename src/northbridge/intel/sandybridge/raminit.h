@@ -16,7 +16,6 @@
 #ifndef RAMINIT_H
 #define RAMINIT_H
 
-#include <compiler.h>
 #include "pei_data.h"
 
 struct sys_info {

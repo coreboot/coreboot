@@ -10,7 +10,6 @@
  * (at your option) any later version.
  */
 
-#include <compiler.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <fsp/util.h>

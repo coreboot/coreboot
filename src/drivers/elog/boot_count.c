@@ -18,7 +18,6 @@
 #include <pc80/mc146818rtc.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <compiler.h>
 #include <elog.h>
 
 /*

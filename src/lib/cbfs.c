@@ -20,7 +20,6 @@
 #include <boot_device.h>
 #include <cbfs.h>
 #include <commonlib/compression.h>
-#include <compiler.h>
 #include <endian.h>
 #include <lib.h>
 #include <symbols.h>

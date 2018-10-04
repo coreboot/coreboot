@@ -18,7 +18,6 @@
 #define AMDFAM10_H
 
 #include <inttypes.h>
-#include <compiler.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include "early_ht.h"

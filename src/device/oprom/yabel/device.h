@@ -36,7 +36,6 @@
 #define DEVICE_LIB_H
 
 #include <types.h>
-#include <compiler.h>
 #include <endian.h>
 #include "compat/of.h"
 #include "debug.h"

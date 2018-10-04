@@ -16,7 +16,6 @@
 
 #include <cbfs.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <gpio.h>
 #include <lib.h>

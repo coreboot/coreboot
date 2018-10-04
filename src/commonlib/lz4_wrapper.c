@@ -34,7 +34,6 @@
 #include <commonlib/helpers.h>
 #include <stdint.h>
 #include <string.h>
-#include <compiler.h>
 
 /* LZ4 comes with its own supposedly portable memory access functions, but they
  * seem to be very inefficient in practice (at least on ARM64). Since coreboot

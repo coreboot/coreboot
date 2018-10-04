@@ -15,7 +15,6 @@
 
 #include <assert.h>
 #include <base3.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <delay.h>
 #include <gpio.h>

@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <cpu/x86/tsc.h>
 #include <timestamp.h>
 

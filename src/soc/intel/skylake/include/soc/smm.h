@@ -18,7 +18,6 @@
 #define _SOC_SMM_H_
 
 #include <stdint.h>
-#include <compiler.h>
 #include <cpu/x86/msr.h>
 #include <fsp/memmap.h>
 #include <intelblocks/smihandler.h>

@@ -28,8 +28,6 @@
 #ifndef _MRC_WRAPPER_H_
 #define _MRC_WRAPPER_H_
 
-#include <compiler.h>
-
 #define MRC_PARAMS_VER  5
 
 #define NUM_CHANNELS 2

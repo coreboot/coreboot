@@ -16,7 +16,6 @@
 
 #include <arch/exception.h>
 #include <bootblock_common.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <delay.h>
 #include <pc80/mc146818rtc.h>

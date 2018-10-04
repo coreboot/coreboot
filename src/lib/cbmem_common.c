@@ -14,7 +14,6 @@
  */
 #include <console/console.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <bootstate.h>
 #include <rules.h>
 #include <symbols.h>

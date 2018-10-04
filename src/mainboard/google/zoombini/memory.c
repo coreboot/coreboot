@@ -15,7 +15,6 @@
 
 #include <baseboard/variants.h>
 #include <baseboard/gpio.h>
-#include <compiler.h>
 #include <gpio.h>
 #include <soc/cnl_memcfg_init.h>
 

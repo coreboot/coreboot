@@ -1,7 +1,6 @@
 #ifndef PCI_OPS_H
 #define PCI_OPS_H
 
-#include <compiler.h>
 #include <stdint.h>
 #include <device/device.h>
 #include <arch/pci_ops.h>

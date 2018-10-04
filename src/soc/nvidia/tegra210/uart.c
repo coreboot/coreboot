@@ -19,7 +19,6 @@
 #include <console/uart.h>
 #include <drivers/uart/uart8250reg.h>
 #include <stdint.h>
-#include <compiler.h>
 
 struct tegra210_uart {
 	union {

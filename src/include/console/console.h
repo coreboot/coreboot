@@ -19,7 +19,6 @@
 #include <stdint.h>
 #include <rules.h>
 #include <arch/cpu.h>
-#include <compiler.h>
 #include <console/post_codes.h>
 #include <commonlib/loglevel.h>
 

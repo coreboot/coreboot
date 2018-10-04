@@ -31,7 +31,6 @@
 #define _PEI_WRAPPER_H_
 
 #include <types.h>
-#include <compiler.h>
 
 #define PEI_VERSION 22
 

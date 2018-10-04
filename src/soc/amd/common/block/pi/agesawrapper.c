@@ -19,7 +19,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cbfs.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <delay.h>
 #include <rules.h>
 #include <rmodule.h>

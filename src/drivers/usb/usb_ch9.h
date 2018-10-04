@@ -17,8 +17,6 @@
 #ifndef USB_CH9_H
 #define USB_CH9_H
 
-#include <compiler.h>
-
 #define USB_DIR_OUT                     0               /* to device */
 #define USB_DIR_IN                      0x80            /* to host */
 

@@ -16,8 +16,6 @@
 #ifndef _SIEMENS_NC_FPGA_H_
 #define _SIEMENS_NC_FPGA_H_
 
-#include <compiler.h>
-
 #define NC_MAGIC_OFFSET			0x020
 #define  NC_FPGA_MAGIC			0x4E433746
 #define NC_CAP1_OFFSET			0x080

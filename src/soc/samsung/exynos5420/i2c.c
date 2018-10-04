@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <arch/io.h>
 #include <assert.h>
 #include <console/console.h>

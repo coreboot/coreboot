@@ -22,7 +22,6 @@
 #include <arch/smp/mpspec.h>
 #include <cbfs.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/turbo.h>

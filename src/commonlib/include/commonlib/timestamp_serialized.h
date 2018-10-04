@@ -17,7 +17,6 @@
 #define __TIMESTAMP_SERIALIZED_H__
 
 #include <stdint.h>
-#include <compiler.h>
 
 struct timestamp_entry {
 	uint32_t	entry_id;

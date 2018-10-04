@@ -17,7 +17,6 @@
 #include <types.h>
 #include <arch/io.h>
 #include <arch/acpi.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <device/pci_def.h>

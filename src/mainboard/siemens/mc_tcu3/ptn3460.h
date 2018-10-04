@@ -16,7 +16,6 @@
 #ifndef PTN3460_H_
 #define PTN3460_H_
 
-#include <compiler.h>
 #include <delay.h>
 #include "lcd_panel.h"
 

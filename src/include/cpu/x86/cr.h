@@ -18,7 +18,6 @@
 
 #if !defined(__ASSEMBLER__)
 
-#include <compiler.h>
 #include <stdint.h>
 #include <arch/cpu.h>
 

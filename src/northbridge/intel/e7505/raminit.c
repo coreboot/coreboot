@@ -24,7 +24,6 @@
  * Steven James 02/06/2003
  */
 
-#include <compiler.h>
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>

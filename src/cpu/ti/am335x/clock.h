@@ -16,7 +16,6 @@
 #define __CPU_TI_AM335X_CLOCK_H__
 
 #include <stdint.h>
-#include <compiler.h>
 
 enum {
 	CM_ST_NO_SLEEP = 0x0,

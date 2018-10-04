@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>	/* for __console definition */

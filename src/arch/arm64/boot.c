@@ -19,7 +19,6 @@
 #include <arch/transition.h>
 #include <arm_tf.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <program_loading.h>
 #include <rules.h>

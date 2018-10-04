@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <program_loading.h>
 
 /* For each segment of a program loaded this function is called*/

@@ -17,7 +17,6 @@
 #define PTN3460_H_
 
 #include <stdint.h>
-#include <compiler.h>
 
 #define PTN_SLAVE_ADR		0x20
 #define PTN_I2C_CONTROLLER	0

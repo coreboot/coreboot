@@ -17,7 +17,6 @@
 #ifndef _SOC_PM_H_
 #define _SOC_PM_H_
 
-#include <compiler.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <soc/gpe.h>

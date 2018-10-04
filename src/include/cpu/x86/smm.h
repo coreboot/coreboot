@@ -22,7 +22,6 @@
 
 #include <arch/cpu.h>
 #include <types.h>
-#include <compiler.h>
 
 #define SMM_DEFAULT_BASE 0x30000
 #define SMM_DEFAULT_SIZE 0x10000

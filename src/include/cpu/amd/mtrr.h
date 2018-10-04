@@ -38,7 +38,6 @@
 
 #if !defined(__PRE_RAM__) && !defined(__ASSEMBLER__)
 
-#include <compiler.h>
 #include <cpu/x86/msr.h>
 
 void amd_setup_mtrrs(void);

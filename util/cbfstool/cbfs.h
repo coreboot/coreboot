@@ -18,7 +18,6 @@
 
 #include "common.h"
 #include <stdint.h>
-#include <compiler.h>
 
 #include <vb2_api.h>
 

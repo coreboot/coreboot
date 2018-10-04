@@ -15,7 +15,6 @@
 
 #include <baseboard/variants.h>
 #include <boardid.h>
-#include <compiler.h>
 #include <ec/google/chromeec/ec.h>
 
 int variant_board_id(void)

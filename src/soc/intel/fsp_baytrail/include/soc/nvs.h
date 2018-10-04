@@ -17,7 +17,6 @@
 #ifndef _BAYTRAIL_NVS_H_
 #define _BAYTRAIL_NVS_H_
 
-#include <compiler.h>
 #include <soc/device_nvs.h>
 
 typedef struct {

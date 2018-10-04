@@ -142,7 +142,6 @@
 
 #include <arch/acpi.h>
 #include <arch/io.h>
-#include <compiler.h>
 #include <soc/gpe.h>
 #include <soc/iomap.h>
 #include <soc/smbus.h>

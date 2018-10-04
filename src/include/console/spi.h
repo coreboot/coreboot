@@ -18,7 +18,6 @@
 
 #include <rules.h>
 #include <stdint.h>
-#include <compiler.h>
 
 void spiconsole_init(void);
 void spiconsole_tx_byte(unsigned char c);

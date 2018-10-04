@@ -15,7 +15,6 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <symbols.h>
-#include <compiler.h>
 
 #include "header.h"
 

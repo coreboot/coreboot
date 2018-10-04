@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <amdblocks/agesawrapper.h>
 #include <variant/gpio.h>
 #include <boardid.h>

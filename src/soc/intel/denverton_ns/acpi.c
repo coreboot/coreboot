@@ -19,7 +19,6 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <arch/smp/mpspec.h>
-#include <compiler.h>
 #include <cpu/x86/smm.h>
 #include <string.h>
 #include <device/pci.h>

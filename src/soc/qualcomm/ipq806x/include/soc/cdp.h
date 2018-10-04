@@ -17,7 +17,6 @@
 #define  _IPQ806X_CDP_H_
 
 #include <types.h>
-#include <compiler.h>
 
 unsigned smem_get_board_machtype(void);
 

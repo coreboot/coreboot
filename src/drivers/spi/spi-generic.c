@@ -15,7 +15,6 @@
  */
 
 #include <assert.h>
-#include <compiler.h>
 #include <spi-generic.h>
 #include <string.h>
 

@@ -1,7 +1,6 @@
 #ifndef CPU_X86_LAPIC_H
 #define CPU_X86_LAPIC_H
 
-#include <compiler.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>

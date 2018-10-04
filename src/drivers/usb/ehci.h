@@ -19,8 +19,6 @@
 #ifndef EHCI_H
 #define EHCI_H
 
-#include <compiler.h>
-
 /* EHCI register interface, corresponds to EHCI Revision 0.95 specification */
 
 /* Section 2.2 Host Controller Capability Registers */

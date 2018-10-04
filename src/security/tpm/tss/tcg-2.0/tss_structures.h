@@ -12,7 +12,6 @@
  * constants and structures needed for functions used in coreboot.
  */
 #include <stdint.h>
-#include <compiler.h>
 #include <types.h>
 #include "../common/tss_common.h"
 

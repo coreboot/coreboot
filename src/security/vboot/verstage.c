@@ -15,7 +15,6 @@
 
 #include <arch/exception.h>
 #include <arch/hlt.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <program_loading.h>
 #include <security/vboot/vboot_common.h>

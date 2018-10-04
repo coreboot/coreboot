@@ -15,7 +15,6 @@
 #ifndef _SAR_H_
 #define _SAR_H_
 
-#include <compiler.h>
 #include <stdint.h>
 
 #define NUM_SAR_LIMITS 4

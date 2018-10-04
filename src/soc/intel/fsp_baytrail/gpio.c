@@ -14,7 +14,6 @@
  */
 
 #include <device/pci.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <soc/gpio.h>
 #include <soc/pmc.h>

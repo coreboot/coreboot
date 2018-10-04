@@ -17,7 +17,6 @@
 #define __INTEL_MIPI_CAMERA_CHIP_H__
 
 #include <stdint.h>
-#include <compiler.h>
 
 #define MAX_PWDB_ENTRIES 12
 

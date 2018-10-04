@@ -16,7 +16,6 @@
 
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
-#include <compiler.h>
 #include <soc/meminit.h>
 
 const struct lpddr4_swizzle_cfg baseboard_lpddr4_swizzle = {

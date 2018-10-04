@@ -19,7 +19,6 @@
 
 #include <console/console.h>
 #include <commonlib/endian.h>
-#include <compiler.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

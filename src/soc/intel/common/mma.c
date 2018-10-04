@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <bootstate.h>
 #include <cbfs.h>
 #include <cbmem.h>

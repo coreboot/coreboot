@@ -16,8 +16,6 @@
 #ifndef ELOG_H_
 #define ELOG_H_
 
-#include <compiler.h>
-
 /* SMI command code for GSMI event logging */
 #define ELOG_GSMI_APM_CNT                 0xEF
 

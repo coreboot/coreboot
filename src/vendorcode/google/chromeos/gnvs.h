@@ -16,8 +16,6 @@
 #ifndef __VENDORCODE_GOOGLE_CHROMEOS_GNVS_H
 #define __VENDORCODE_GOOGLE_CHROMEOS_GNVS_H
 
-#include <compiler.h>
-
 #define BOOT_REASON_OTHER	0
 #define BOOT_REASON_S3DIAG	9
 

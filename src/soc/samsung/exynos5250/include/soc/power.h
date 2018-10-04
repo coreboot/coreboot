@@ -18,7 +18,6 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_POWER_H
 #define CPU_SAMSUNG_EXYNOS5250_POWER_H
 
-#include <compiler.h>
 #include <soc/cpu.h>
 
 /* Enable HW thermal trip with PS_HOLD_CONTROL register ENABLE_HW_TRIP bit */

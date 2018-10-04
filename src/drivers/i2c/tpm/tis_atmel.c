@@ -14,7 +14,6 @@
 
 #include <arch/early_variables.h>
 #include <stdint.h>
-#include <compiler.h>
 #include <string.h>
 #include <assert.h>
 #include <commonlib/endian.h>

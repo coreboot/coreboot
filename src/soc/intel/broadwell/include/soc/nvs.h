@@ -18,7 +18,6 @@
 #define _BROADWELL_NVS_H_
 
 #include <commonlib/helpers.h>
-#include <compiler.h>
 #include <soc/device_nvs.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 

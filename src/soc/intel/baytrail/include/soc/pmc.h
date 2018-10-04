@@ -16,7 +16,6 @@
 #ifndef _BAYTRAIL_PMC_H_
 #define _BAYTRAIL_PMC_H_
 
-#include <compiler.h>
 #include <arch/acpi.h>
 
 #define IOCOM1		0x3f8

@@ -15,7 +15,6 @@
 
 #include <arch/cpu.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <main_decl.h>
 #include <program_loading.h>

@@ -17,7 +17,6 @@
  /* rl5c476 routines and defines*/
 
 
-#include <compiler.h>
 #include <stdint.h>
 
 

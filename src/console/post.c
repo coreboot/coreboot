@@ -16,7 +16,6 @@
 
 #include <arch/io.h>
 #include <elog.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <pc80/mc146818rtc.h>

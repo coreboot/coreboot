@@ -19,7 +19,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <compiler.h>
 #include <bootstate.h>
 #include <commonlib/helpers.h>
 #include <delay.h>

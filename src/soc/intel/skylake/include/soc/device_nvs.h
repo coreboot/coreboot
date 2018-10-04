@@ -18,7 +18,6 @@
 #define _SOC_DEVICE_NVS_H_
 
 #include <stdint.h>
-#include <compiler.h>
 
 #define SIO_NVS_I2C0		0
 #define SIO_NVS_I2C1		1

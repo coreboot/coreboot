@@ -17,7 +17,6 @@
 #define _BROADWELL_DEVICE_NVS_H_
 
 #include <stdint.h>
-#include <compiler.h>
 
 #define SIO_NVS_DMA		0
 #define SIO_NVS_I2C0		1

@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <amdblocks/dimm_spd.h>
 #include <baseboard/variants.h>
 #include <soc/romstage.h>

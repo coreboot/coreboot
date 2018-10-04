@@ -10,7 +10,6 @@
  */
 
 #include <arch/cpu.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <lib.h>

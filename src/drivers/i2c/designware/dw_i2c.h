@@ -16,7 +16,6 @@
 #ifndef __DRIVERS_I2C_DESIGNWARE_I2C_H__
 #define __DRIVERS_I2C_DESIGNWARE_I2C_H__
 
-#include <compiler.h>
 #include <device/device.h>
 #include <device/i2c.h>
 #include <stdint.h>

@@ -11,8 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
-
 static __always_inline void hlt(void)
 {
 	while (1);

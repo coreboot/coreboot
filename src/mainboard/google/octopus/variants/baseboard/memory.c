@@ -15,7 +15,6 @@
 
 #include <baseboard/variants.h>
 #include <boardid.h>
-#include <compiler.h>
 #include <gpio.h>
 #include <soc/meminit.h>
 #include <variant/gpio.h>

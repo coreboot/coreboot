@@ -17,7 +17,6 @@
 #ifndef __NVIDIA_TEGRA210_SPI_H__
 #define __NVIDIA_TEGRA210_SPI_H__
 
-#include <compiler.h>
 #include <soc/dma.h>
 #include <spi-generic.h>
 #include <stddef.h>

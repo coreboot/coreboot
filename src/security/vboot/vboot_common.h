@@ -17,7 +17,6 @@
 
 #include <commonlib/region.h>
 #include <stdint.h>
-#include <compiler.h>
 #include <vboot_api.h>
 #include <vboot_struct.h>
 

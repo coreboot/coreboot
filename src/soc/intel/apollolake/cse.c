@@ -22,7 +22,6 @@
 #include <soc/pci_devs.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
-#include <compiler.h>
 
 #define PCI_ME_HFSTS1	0x40
 #define PCI_ME_HFSTS2	0x48

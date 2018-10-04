@@ -13,7 +13,6 @@
 
 #include <stdlib.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <arch/acpi.h>
 
 #if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)

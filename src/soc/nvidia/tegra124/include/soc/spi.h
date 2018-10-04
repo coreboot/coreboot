@@ -19,7 +19,6 @@
 #include <spi-generic.h>
 #include <soc/dma.h>
 #include <stddef.h>
-#include <compiler.h>
 
 struct tegra_spi_regs {
 	u32 command1;		/* 0x000: SPI_COMMAND1 */

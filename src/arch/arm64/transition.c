@@ -18,7 +18,6 @@
 #include <arch/mmu.h>
 #include <arch/transition.h>
 #include <assert.h>
-#include <compiler.h>
 #include <console/console.h>
 
 /* Litte-endian, No XN-forced, Instr cache disabled,

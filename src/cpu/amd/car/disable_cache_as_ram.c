@@ -19,7 +19,6 @@
  * WARNING: this file will be used by both any AP cores and core 0 / node 0
  */
 
-#include <compiler.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 

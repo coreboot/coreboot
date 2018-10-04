@@ -37,7 +37,6 @@
 #define FLASHMAP_SERIALIZED_H__
 
 #include <stdint.h>
-#include <compiler.h>
 
 #define FMAP_SIGNATURE		"__FMAP__"
 #define FMAP_VER_MAJOR		1	/* this header's FMAP minor version */

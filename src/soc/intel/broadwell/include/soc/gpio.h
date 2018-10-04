@@ -17,7 +17,6 @@
 #define _BROADWELL_GPIO_H_
 
 #include <stdint.h>
-#include <compiler.h>
 
 #define CROS_GPIO_DEVICE_NAME		"PCH-LP"
 #define CROS_GPIO_ACPI_DEVICE_NAME	"INT3437:00"

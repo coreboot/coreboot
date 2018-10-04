@@ -30,7 +30,6 @@
 #define PEI_DATA_H
 
 #include <types.h>
-#include <compiler.h>
 
 #define PEI_VERSION 22
 

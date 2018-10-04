@@ -24,7 +24,6 @@
 #include <bootmode.h>
 #include <cbfs.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/pae.h>
@@ -52,7 +51,6 @@
 #include <timestamp.h>
 #include <timer.h>
 #include <delay.h>
-#include <compiler.h>
 #include "chip.h"
 
 static const uint8_t hob_variable_guid[16] = {

@@ -29,8 +29,6 @@
 #ifndef __EFI_WRAPPER_H__
 #define __EFI_WRAPPER_H__
 
-#include <compiler.h>
-
 #define EFI_WRAPPER_VER 2
 
 /* Provide generic x86 calling conventions. */

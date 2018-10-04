@@ -19,7 +19,6 @@
 #define __CPU_ALLWINNER_A10_PINMUX_H
 
 #include <types.h>
-#include <compiler.h>
 
 #define GPIO_BASE		 0x01C20800
 

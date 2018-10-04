@@ -21,7 +21,6 @@
 #include <soc/gpio.h>
 #include <soc/southbridge.h>
 #include <assert.h>
-#include <compiler.h>
 
 static const struct soc_amd_event gpio_event_table[] = {
 	{ GPIO_1, GEVENT_19 },

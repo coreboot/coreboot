@@ -22,7 +22,6 @@
 #include <commonlib/sd_mmc_ctrlr.h>
 #include <commonlib/sdhci.h>
 #include <commonlib/storage.h>
-#include <compiler.h>
 #include <delay.h>
 #include <endian.h>
 #include <halt.h>

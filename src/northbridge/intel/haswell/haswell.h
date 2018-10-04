@@ -202,7 +202,6 @@
 #define DMIDRCCFG	0xeb4	/* 32bit */
 
 #ifndef __ASSEMBLER__
-#include <compiler.h>
 static inline void barrier(void) { asm("" ::: "memory"); }
 
 struct ied_header {

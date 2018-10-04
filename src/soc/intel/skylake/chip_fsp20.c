@@ -21,7 +21,6 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <chip.h>
-#include <compiler.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <device/device.h>

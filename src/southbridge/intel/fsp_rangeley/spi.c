@@ -17,7 +17,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <compiler.h>
 #include <commonlib/helpers.h>
 #include <delay.h>
 #include <arch/io.h>

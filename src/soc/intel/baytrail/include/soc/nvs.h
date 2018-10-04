@@ -18,7 +18,6 @@
 #define _BAYTRAIL_NVS_H_
 
 #include <commonlib/helpers.h>
-#include <compiler.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <soc/device_nvs.h>
 

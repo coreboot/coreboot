@@ -28,7 +28,6 @@
 #define MAX_INTX_ENTRIES 4
 
 #include <stdint.h>
-#include <compiler.h>
 
 #define PIRQ_SIGNATURE	(('$' << 0) + ('P' << 8) + ('I' << 16) + ('R' << 24))
 #define PIRQ_VERSION 0x0100

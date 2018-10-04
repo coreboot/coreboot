@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include "init_cpus.h"
 
 #if IS_ENABLED(CONFIG_HAVE_OPTION_TABLE)

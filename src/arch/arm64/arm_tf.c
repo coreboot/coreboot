@@ -21,7 +21,6 @@
 #include <assert.h>
 #include <cbfs.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <program_loading.h>
 
 /*

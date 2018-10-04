@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
 #include <console/console.h>

@@ -23,7 +23,6 @@
 
 #include "memmap.h"
 #include <types.h>
-#include <compiler.h>
 
 /* TMRx_CTRL values */
 #define TIMER_CTRL_MODE_SINGLE		(1 << 7)

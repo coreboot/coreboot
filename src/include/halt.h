@@ -20,7 +20,6 @@
 #ifdef __ROMCC__
 #include <lib/halt.c>
 #else
-#include <compiler.h>
 /**
  * halt the system reliably
  */

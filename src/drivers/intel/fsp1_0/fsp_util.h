@@ -16,7 +16,6 @@
 #ifndef FSP_UTIL_H
 #define FSP_UTIL_H
 
-#include <compiler.h>
 #include <chipset_fsp_util.h>
 #include "fsp_values.h"
 

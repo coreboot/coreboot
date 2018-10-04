@@ -16,7 +16,6 @@
 #include <arch/early_variables.h>
 #include <arch/io.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <halt.h>
 #include <intelblocks/pmclib.h>

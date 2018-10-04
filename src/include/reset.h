@@ -1,8 +1,6 @@
 #ifndef RESET_H
 #define RESET_H
 
-#include <compiler.h>
-
 /* Generic reset functions. Call from code that wants to trigger a reset. */
 
 /* Super-hard reset specific to some Intel SoCs. */

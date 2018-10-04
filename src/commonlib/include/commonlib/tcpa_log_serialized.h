@@ -16,7 +16,6 @@
 #ifndef __TCPA_LOG_SERIALIZED_H__
 #define __TCPA_LOG_SERIALIZED_H__
 
-#include <compiler.h>
 #include <stdint.h>
 
 #define MAX_TCPA_LOG_ENTRIES 50

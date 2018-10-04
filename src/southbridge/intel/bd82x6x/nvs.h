@@ -15,7 +15,6 @@
  */
 
 #include <commonlib/helpers.h>
-#include <compiler.h>
 #include <stdint.h>
 #include "vendorcode/google/chromeos/gnvs.h"
 

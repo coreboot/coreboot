@@ -80,6 +80,7 @@ TOOLCPPFLAGS += -I$(top)/util/cbfstool/flashmap
 TOOLCPPFLAGS += -I$(top)/util/cbfstool
 TOOLCPPFLAGS += -I$(objutil)/cbfstool
 TOOLCPPFLAGS += -I$(top)/src/commonlib/include
+TOOLCPPFLAGS += -include $(top)/src/commonlib/include/commonlib/compiler.h
 TOOLCPPFLAGS += -DNEED_VB2_SHA_LIBRARY
 TOOLCPPFLAGS += -I$(VBOOT_SOURCE)/firmware/include
 TOOLCPPFLAGS += -I$(VBOOT_SOURCE)/firmware/2lib/include
@@ -131,7 +132,7 @@ $(objutil)/cbfstool/%.o: $(top)/src/commonlib/%.c
 
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lz4/lib/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -include $(top)/util/cbfstool/compiler.h -c -o $@ $<
+	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/cbfstool: $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"

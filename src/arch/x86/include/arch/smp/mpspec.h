@@ -16,7 +16,6 @@
 #ifndef __ASM_MPSPEC_H
 #define __ASM_MPSPEC_H
 
-#include <compiler.h>
 #include <device/device.h>
 #include <cpu/x86/lapic_def.h>
 

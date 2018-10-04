@@ -26,7 +26,6 @@
 
 #include <arch/stages.h>
 #include <arch/cache.h>
-#include <compiler.h>
 
 /**
  * generic stage entry point. override this if board specific code is needed.

@@ -16,8 +16,6 @@
 #ifndef __MIPS_ARCH_HLT_H
 #define __MIPS_ARCH_HLT_H
 
-#include <compiler.h>
-
 static inline __always_inline void hlt(void)
 {
 	for (;;)

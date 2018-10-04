@@ -19,7 +19,6 @@
 #include <console/uart.h>
 #include <drivers/uart/uart8250reg.h>
 #include <stdint.h>
-#include <compiler.h>
 
 #include <soc/addressmap.h>
 

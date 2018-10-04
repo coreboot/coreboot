@@ -48,7 +48,6 @@
 #define _CBFS_SERIALIZED_H_
 
 #include <stdint.h>
-#include <compiler.h>
 
 /** These are standard values for the known compression
     algorithms that coreboot knows about for stages and

@@ -11,7 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <string.h>
 #include <swab.h>
 #include <smbios.h>

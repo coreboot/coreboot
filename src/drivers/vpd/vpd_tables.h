@@ -9,7 +9,6 @@
 #ifndef __LIB_VPD_TABLES_H__
 #define __LIB_VPD_TABLES_H__
 
-#include <compiler.h>
 #include <inttypes.h>
 
 #define VPD_ENTRY_MAGIC    "_SM_"

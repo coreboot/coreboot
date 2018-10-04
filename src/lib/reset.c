@@ -14,7 +14,6 @@
  */
 
 #include <arch/cache.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <halt.h>
 #include <reset.h>

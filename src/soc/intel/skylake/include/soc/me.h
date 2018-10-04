@@ -18,8 +18,6 @@
 #ifndef _SKYLAKE_ME_H_
 #define _SKYLAKE_ME_H_
 
-#include <compiler.h>
-
 /*
  * Management Engine PCI registers
  */

@@ -17,7 +17,6 @@
 #define INTEL_COMMON_GPIO_H
 
 #include <stdint.h>
-#include <compiler.h>
 
 /* ICH7 GPIOBASE */
 #define GPIO_USE_SEL	0x00

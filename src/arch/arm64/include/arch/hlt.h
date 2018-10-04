@@ -14,8 +14,6 @@
 #ifndef ARCH_HLT_H
 #define ARCH_HLT_H
 
-#include <compiler.h>
-
 static __always_inline void hlt(void)
 {
 	for (;;) ;

@@ -15,7 +15,6 @@
  */
 
 #include <stdint.h>
-#include <compiler.h>
 
 /* Function unit addresses. */
 enum {

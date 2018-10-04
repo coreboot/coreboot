@@ -15,7 +15,6 @@
  */
 
 #include <commonlib/helpers.h>
-#include <compiler.h>
 #include <baseboard/variants.h>
 
 /*

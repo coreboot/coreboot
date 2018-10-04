@@ -18,7 +18,6 @@
 #define _SOC_GPIO_H_
 
 #include <stdint.h>
-#include <compiler.h>
 #include <arch/io.h>
 #include <soc/gpio_defs.h>
 #include <soc/iomap.h>

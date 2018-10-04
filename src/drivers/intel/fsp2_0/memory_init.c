@@ -11,7 +11,6 @@
  * (at your option) any later version.
  */
 
-#include <compiler.h>
 #include <security/vboot/antirollback.h>
 #include <arch/io.h>
 #include <arch/cpu.h>

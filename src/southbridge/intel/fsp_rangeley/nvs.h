@@ -14,8 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
-
 typedef struct {
 	/* Miscellaneous */
 	u16	osys; /* 0x00 - Operating System */

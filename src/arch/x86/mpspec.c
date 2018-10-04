@@ -17,7 +17,6 @@
 #include <device/path.h>
 #include <device/pci_ids.h>
 #include <cpu/cpu.h>
-#include <compiler.h>
 #include <arch/smp/mpspec.h>
 #include <string.h>
 #include <arch/cpu.h>

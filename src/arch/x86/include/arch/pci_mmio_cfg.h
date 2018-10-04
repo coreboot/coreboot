@@ -17,7 +17,6 @@
 #define _PCI_MMIO_CFG_H
 
 #include <arch/io.h>
-#include <compiler.h>
 
 #define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS
 

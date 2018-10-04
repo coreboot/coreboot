@@ -14,7 +14,6 @@
  */
 
 #include <baseboard/variants.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <gpio.h> /* src/include/gpio.h */
 #include <spd_bin.h>

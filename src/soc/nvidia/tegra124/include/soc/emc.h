@@ -19,7 +19,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <compiler.h>
 
 enum {
 	EMC_PIN_RESET_MASK = 1 << 8,

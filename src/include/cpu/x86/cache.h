@@ -16,7 +16,6 @@
 #ifndef CPU_X86_CACHE
 #define CPU_X86_CACHE
 
-#include <compiler.h>
 #include <cpu/x86/cr.h>
 
 #define CR0_CacheDisable	(CR0_CD)

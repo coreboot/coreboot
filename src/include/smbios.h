@@ -19,7 +19,6 @@
 #define SMBIOS_H
 
 #include <types.h>
-#include <compiler.h>
 
 unsigned long smbios_write_tables(unsigned long start);
 int smbios_add_string(u8 *start, const char *str);

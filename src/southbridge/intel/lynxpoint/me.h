@@ -17,8 +17,6 @@
 #ifndef _INTEL_ME_H
 #define _INTEL_ME_H
 
-#include <compiler.h>
-
 #define ME_RETRY		100000	/* 1 second */
 #define ME_DELAY		10	/* 10 us */
 

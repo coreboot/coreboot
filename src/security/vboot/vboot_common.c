@@ -16,7 +16,6 @@
 #include <boot/coreboot_tables.h>
 #include <boot_device.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <console/cbmem_console.h>
 #include <console/console.h>
 #include <fmap.h>

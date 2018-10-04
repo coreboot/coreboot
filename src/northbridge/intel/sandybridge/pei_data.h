@@ -30,8 +30,6 @@
 #ifndef PEI_DATA_H
 #define PEI_DATA_H
 
-#include <compiler.h>
-
 typedef struct {
 	uint16_t mode;                // 0: Disable, 1: Enable, 2: Auto, 3: Smart Auto
 	uint16_t hs_port_switch_mask; // 4 bit mask, 1: switchable, 0: not switchable

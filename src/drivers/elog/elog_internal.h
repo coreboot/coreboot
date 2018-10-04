@@ -16,7 +16,6 @@
 #ifndef ELOG_INTERNAL_H_
 #define ELOG_INTERNAL_H_
 
-#include <compiler.h>
 /* ELOG header */
 struct elog_header {
 	u32 magic;

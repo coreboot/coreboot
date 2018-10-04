@@ -15,7 +15,6 @@
  *
  */
 
-#include <compiler.h>
 #include <console/console.h>
 #include <soc/fiamux.h>
 

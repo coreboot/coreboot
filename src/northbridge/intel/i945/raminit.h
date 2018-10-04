@@ -16,8 +16,6 @@
 #ifndef RAMINIT_H
 #define RAMINIT_H
 
-#include <compiler.h>
-
 #define DIMM_SOCKETS 2
 
 #define DIMM_TCO_BASE 0x30

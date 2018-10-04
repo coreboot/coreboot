@@ -16,7 +16,6 @@
 #define FSP_BROADWELL_DE_GPIO_H_
 
 #include <stdint.h>
-#include <compiler.h>
 
 /* Chipset owned GPIO configuration registers */
 #define GPIO_1_USE_SEL		0x00

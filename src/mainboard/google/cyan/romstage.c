@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <soc/romstage.h>
 #include <baseboard/variants.h>
 #include <chip.h>

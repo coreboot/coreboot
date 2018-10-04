@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
 #include <soc/pcr_ids.h>

@@ -18,7 +18,6 @@
 #include <cbmem.h>
 #include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <halt.h>
 #include <program_loading.h>

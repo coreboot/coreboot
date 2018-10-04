@@ -19,7 +19,6 @@
 #include <cbfs.h>
 #include <chip.h>
 #include <commonlib/cbfs_serialized.h>
-#include <compiler.h>
 #include <device/device.h>
 #include <drivers/intel/gma/opregion.h>
 #include <ec/google/chromeec/ec.h>

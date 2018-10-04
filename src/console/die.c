@@ -15,7 +15,6 @@
  */
 
 #include <arch/io.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <halt.h>
 

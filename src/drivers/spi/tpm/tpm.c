@@ -17,7 +17,6 @@
 
 #include <arch/early_variables.h>
 #include <assert.h>
-#include <compiler.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
 #include <delay.h>

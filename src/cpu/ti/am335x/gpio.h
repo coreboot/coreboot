@@ -16,7 +16,6 @@
 #define __CPU_TI_AM335X_GPIO_H__
 
 #include <stdint.h>
-#include <compiler.h>
 
 enum {
 	AM335X_GPIO_BITS_PER_BANK = 32

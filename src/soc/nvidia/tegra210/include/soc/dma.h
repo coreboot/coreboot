@@ -18,7 +18,6 @@
 #define __NVIDIA_TEGRA210_DMA_H__
 
 #include <inttypes.h>
-#include <compiler.h>
 #include <soc/addressmap.h>
 
 /*

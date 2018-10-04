@@ -1,5 +1,4 @@
 #include <fallback.h>
-#include <compiler.h>
 #include <watchdog.h>
 
 /* Implement platform specific override. */

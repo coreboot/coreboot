@@ -17,7 +17,6 @@
 #define _BAYTRAIL_GPIO_H_
 
 #include <stdint.h>
-#include <compiler.h>
 #include <arch/io.h>
 #include <soc/iomap.h>
 

@@ -31,7 +31,6 @@
 
 #include <arch/early_variables.h>
 #include <commonlib/endian.h>
-#include <compiler.h>
 #include <stdint.h>
 #include <string.h>
 #include <types.h>

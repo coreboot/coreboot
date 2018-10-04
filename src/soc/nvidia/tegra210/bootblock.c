@@ -17,7 +17,6 @@
 #include <arch/hlt.h>
 #include <arch/stages.h>
 #include <bootblock_common.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <delay.h>
 #include <program_loading.h>

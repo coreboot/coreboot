@@ -21,7 +21,6 @@
 #include <bootstate.h>
 #include <cbfs.h>
 #include <cbmem.h>
-#include <compiler.h>
 
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>

@@ -17,7 +17,6 @@
 #include <getopt.h>
 #include <stdlib.h>
 #include <time.h>
-#include <compiler.h>
 
 #include "common.h"
 

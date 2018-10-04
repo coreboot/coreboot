@@ -33,7 +33,6 @@
  *****************************************************************************/
 
 
-#include <compiler.h>
 #include "device.h"
 #include "compat/rtas.h"
 #include <string.h>

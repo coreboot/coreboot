@@ -16,8 +16,6 @@
 #ifndef _TEGRA124_CLK_RST_H_
 #define _TEGRA124_CLK_RST_H_
 
-#include <compiler.h>
-
 /* Clock/Reset Controller (CLK_RST_CONTROLLER_) regs */
 struct  __packed clk_rst_ctlr {
 	u32 rst_src;			/* _RST_SOURCE,             0x000 */

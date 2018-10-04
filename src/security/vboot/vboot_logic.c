@@ -16,7 +16,6 @@
 #include <arch/exception.h>
 #include <assert.h>
 #include <bootmode.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
 #include <delay.h>

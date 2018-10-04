@@ -17,7 +17,6 @@
 #include <string.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <cpu/cpu.h>
 #include <fallback.h>
 #include <timestamp.h>

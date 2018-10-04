@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <compiler.h>
 
 #define RMODULE_MAGIC 0xf8fe
 #define RMODULE_VERSION_1 1

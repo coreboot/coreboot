@@ -16,7 +16,6 @@
 #include <arch/io.h>
 #include <bootstate.h>
 #include <commonlib/helpers.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

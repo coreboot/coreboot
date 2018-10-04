@@ -16,7 +16,6 @@
 #include <AGESA.h>
 #include <cbfs.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <delay.h>
 #include <cpu/x86/mtrr.h>
 #include <FchPlatform.h>

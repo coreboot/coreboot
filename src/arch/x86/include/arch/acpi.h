@@ -54,7 +54,6 @@
 
 #if !defined(__ASSEMBLER__) && !defined(__ACPI__) && !defined(__ROMCC__)
 #include <stdint.h>
-#include <compiler.h>
 #include <rules.h>
 #include <commonlib/helpers.h>
 #include <device/device.h>

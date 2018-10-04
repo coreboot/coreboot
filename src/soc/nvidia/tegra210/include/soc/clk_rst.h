@@ -17,7 +17,6 @@
 #define _TEGRA210_CLK_RST_H_
 #include <stdint.h>
 #include <stddef.h>
-#include <compiler.h>
 
 /* Clock/Reset Controller (CLK_RST_CONTROLLER_) regs */
 struct  __packed clk_rst_ctlr {

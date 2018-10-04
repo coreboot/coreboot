@@ -18,7 +18,6 @@
 #include <arch/smp/mpspec.h>
 #include <bootstate.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <cpu/intel/reset.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/msr.h>

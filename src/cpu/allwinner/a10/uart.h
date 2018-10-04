@@ -26,7 +26,6 @@
 #define CPU_ALLWINNER_A10_UART_H
 
 #include <types.h>
-#include <compiler.h>
 
 struct a10_uart {
 	union {

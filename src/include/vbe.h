@@ -13,7 +13,6 @@
 #ifndef VBE_H
 #define VBE_H
 
-#include <compiler.h>
 #include <boot/coreboot_tables.h>
 // these structs are for input from and output to OF
 typedef struct {

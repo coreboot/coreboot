@@ -14,7 +14,6 @@
  */
 
 #include <cbfs.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <bootmode.h>

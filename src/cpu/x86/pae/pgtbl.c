@@ -14,7 +14,6 @@
  */
 
 #include <cbfs.h>
-#include <compiler.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/cpu.h>

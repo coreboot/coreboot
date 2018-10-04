@@ -16,7 +16,6 @@
  */
 
 #include <arch/cbconfig.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <console/uart.h>
 #include <ip_checksum.h>

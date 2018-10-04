@@ -20,7 +20,6 @@
 #include <arch/acpi.h>
 #include <bootstate.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mp.h>

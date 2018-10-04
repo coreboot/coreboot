@@ -15,7 +15,6 @@
 
 #include <arch/acpi.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <fsp/memmap.h>
 #include <fsp/romstage.h>

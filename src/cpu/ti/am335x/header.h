@@ -16,7 +16,6 @@
 #define __CPU_TI_AM335X_HEADER_H
 
 #include <stdint.h>
-#include <compiler.h>
 
 struct configuration_header_toc_item {
 	// Offset from the start address of the TOC to the actual address of

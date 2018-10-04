@@ -14,7 +14,6 @@
  */
 
 #include <arch/mmu.h>
-#include <compiler.h>
 #include <symbols.h>
 #include <soc/emi.h>
 #include <soc/mmu_operations.h>

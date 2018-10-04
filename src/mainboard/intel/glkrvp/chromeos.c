@@ -15,7 +15,6 @@
 
 #include <baseboard/variants.h>
 #include <boot/coreboot_tables.h>
-#include <compiler.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>

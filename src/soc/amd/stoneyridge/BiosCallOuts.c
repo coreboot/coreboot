@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <amdblocks/BiosCallOuts.h>

@@ -20,8 +20,6 @@ static void hlt(void)
 	__builtin_hlt();
 }
 #else
-#include <compiler.h>
-
 static __always_inline void hlt(void)
 {
 	asm("hlt");

@@ -19,7 +19,6 @@
 #define _SOC_NVS_H_
 
 #include <commonlib/helpers.h>
-#include <compiler.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 
 typedef struct global_nvs_t {

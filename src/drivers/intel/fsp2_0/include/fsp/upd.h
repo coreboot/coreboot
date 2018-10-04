@@ -12,8 +12,6 @@
 #ifndef _FSP2_0_UPD_H_
 #define _FSP2_0_UPD_H_
 
-#include <compiler.h>
-
 struct FSP_UPD_HEADER {
 	///
 	/// UPD Region Signature. This signature will be

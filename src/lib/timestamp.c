@@ -17,7 +17,6 @@
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <symbols.h>

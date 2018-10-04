@@ -15,7 +15,6 @@
 
 #include <arch/acpi.h>
 #include <assert.h>
-#include <compiler.h>
 #include <cbmem.h>
 #include <console/uart.h>
 #include <device/device.h>

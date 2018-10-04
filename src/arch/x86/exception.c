@@ -15,7 +15,6 @@
 #include <arch/early_variables.h>
 #include <arch/exception.h>
 #include <commonlib/helpers.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <console/streams.h>
 #include <cpu/x86/cr.h>

@@ -16,7 +16,6 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
-#include <compiler.h>
 
 /* Pad configuration in ramstage */
 /* Leave eSPI pins untouched from default settings */

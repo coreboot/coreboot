@@ -12,7 +12,6 @@
 
 #include <arch/cpu.h>
 #include <bootstate.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <soc/intel/common/util.h>

@@ -378,6 +378,7 @@ CPPFLAGS_common += -Isrc/device/oprom/include
 VBOOT_SOURCE ?= 3rdparty/vboot
 CPPFLAGS_common += -I$(VBOOT_SOURCE)/firmware/include
 CPPFLAGS_common += -include $(src)/include/kconfig.h
+CPPFLAGS_common += -include $(src)/commonlib/include/commonlib/compiler.h
 CPPFLAGS_common += -I3rdparty
 CPPFLAGS_common += -D__BUILD_DIR__=\"$(obj)\"
 

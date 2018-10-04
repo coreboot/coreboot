@@ -14,7 +14,6 @@
  */
 
 #include <boot_device.h>
-#include <compiler.h>
 
 void __weak boot_device_init(void)
 {

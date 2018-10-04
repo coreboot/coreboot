@@ -15,7 +15,6 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
-#include <compiler.h>
 
 /* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {

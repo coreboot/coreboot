@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 #include <console/console.h>
-#include <compiler.h>
 #include <arch/pirq_routing.h>
 #include <string.h>
 #include <device/pci.h>

@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <console/console.h>
 #include <commonlib/endian.h>
 #include <commonlib/fsp.h>

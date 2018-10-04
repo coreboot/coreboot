@@ -18,7 +18,6 @@
 #include <arch/io.h>
 #include <arch/symbols.h>
 #include <assert.h>
-#include <compiler.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cbmem.h>

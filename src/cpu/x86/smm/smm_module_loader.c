@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <string.h>
 #include <rmodule.h>
 #include <cpu/x86/smm.h>

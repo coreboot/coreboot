@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <smbios.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <version.h>
 #include <device/device.h>

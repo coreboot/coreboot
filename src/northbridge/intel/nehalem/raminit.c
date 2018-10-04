@@ -15,7 +15,6 @@
  */
 
 #include <stdlib.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <string.h>
 #include <arch/io.h>

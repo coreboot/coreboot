@@ -37,7 +37,6 @@
 #define FLASHMAP_LIB_FMAP_H__
 
 #include <inttypes.h>
-#include <compiler.h>
 #include <valstr.h>
 
 #define FMAP_SIGNATURE		"__FMAP__"

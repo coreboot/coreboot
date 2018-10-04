@@ -13,7 +13,6 @@
 #ifndef _FSP2_0_UTIL_H_
 #define _FSP2_0_UTIL_H_
 
-#include <compiler.h>
 #include <boot/coreboot_tables.h>
 #include <commonlib/region.h>
 #include <arch/cpu.h>

@@ -14,7 +14,6 @@
 #ifndef _PCI_IO_CFG_H
 #define _PCI_IO_CFG_H
 
-#include <compiler.h>
 #include <arch/io.h>
 
 static __always_inline

@@ -14,7 +14,6 @@
  */
 
 #include <arch/early_variables.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <fsp/car.h>
 #include <fsp/util.h>

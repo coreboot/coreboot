@@ -16,7 +16,6 @@
 #include <arch/acpi.h>
 #include <baseboard/variants.h>
 #include <boardid.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci_def.h>

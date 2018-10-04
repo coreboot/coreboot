@@ -16,7 +16,6 @@
 #ifndef _BROADWELL_ME_H_
 #define _BROADWELL_ME_H_
 
-#include <compiler.h>
 #include <commonlib/loglevel.h>
 
 #define ME_RETRY		100000	/* 1 second */

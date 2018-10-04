@@ -18,7 +18,6 @@
 #define _SOC_PM_H_
 
 #include <stdint.h>
-#include <compiler.h>
 #include <arch/acpi.h>
 
 struct chipset_power_state {

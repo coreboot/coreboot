@@ -19,7 +19,6 @@
 #include <chip.h>
 #include <cpu/x86/mtrr.h>
 #include <cbmem.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <intelblocks/chip.h>

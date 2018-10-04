@@ -17,8 +17,6 @@
 #ifndef INTEL_RANGELEY_GPIO_H
 #define INTEL_RANGELEY_GPIO_H
 
-#include <compiler.h>
-
 #define GPIO_MODE_NATIVE	0
 #define GPIO_MODE_GPIO		1
 #define GPIO_MODE_NONE		1

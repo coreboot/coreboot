@@ -14,7 +14,6 @@
  */
 
 #include <arch/io.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <rmodule.h>

@@ -28,7 +28,6 @@
 #include <lib.h>
 #include <string.h>
 #include <arch/acpigen.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <device/device.h>
 

@@ -19,7 +19,6 @@
 #define _COMMON_GMA_H_
 
 #include <types.h>
-#include <compiler.h>
 #include <commonlib/helpers.h>
 
 /* IGD PCI Configuration register */

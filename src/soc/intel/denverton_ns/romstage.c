@@ -15,7 +15,6 @@
  */
 
 #include <cbmem.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <reset.h>

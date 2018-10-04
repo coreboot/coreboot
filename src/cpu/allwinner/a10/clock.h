@@ -23,7 +23,6 @@
 
 #include "memmap.h"
 #include <types.h>
-#include <compiler.h>
 
 /* CPU_AHB_APB0 config values */
 #define CPU_CLK_SRC_MASK		(3 << 16)

@@ -14,7 +14,6 @@
  */
 
 #include <arch/ebda.h>
-#include <compiler.h>
 #include <intelblocks/ebda.h>
 #include <string.h>
 

@@ -17,7 +17,6 @@
 #define _BAYTRAIL_DEVICE_NVS_H_
 
 #include <stdint.h>
-#include <compiler.h>
 
 #define LPSS_NVS_SIO_DMA1	0
 #define LPSS_NVS_I2C1		1

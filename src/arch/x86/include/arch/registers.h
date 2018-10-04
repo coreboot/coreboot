@@ -16,8 +16,6 @@
 #ifndef __ARCH_REGISTERS_H
 #define __ARCH_REGISTERS_H
 
-#include <compiler.h>
-
 #if !defined(__ASSEMBLER__)
 #define DOWNTO8(A) \
 	union { \

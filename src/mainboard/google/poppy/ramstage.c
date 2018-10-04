@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <compiler.h>
 #include <baseboard/variants.h>
 #include <soc/ramstage.h>
 

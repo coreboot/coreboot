@@ -35,7 +35,6 @@
 #define _YABEL_PMM_H_
 
 #include <types.h>
-#include <compiler.h>
 
 /* PMM Structure see PMM Spec Version 1.01 Chapter 3.1.1
  * (search web for specspmm101.pdf)

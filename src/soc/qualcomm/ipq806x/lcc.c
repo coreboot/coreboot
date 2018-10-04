@@ -29,7 +29,6 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#include <compiler.h>
 #include <delay.h>
 #include <console/console.h>
 #include <soc/clock.h>

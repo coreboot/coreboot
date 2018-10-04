@@ -98,7 +98,7 @@ static void intel_gma_init(const struct northbridge_intel_pineview_config *info,
 
 	gtt_setup(mmio);
 
-	pci_write_config16(vga, 0x52, 0x130);
+	pci_write_config16(vga, GGC, 0x130);
 
 	/* Disable VGA.  */
 	write32(mmio + VGACNTRL, VGA_DISP_DISABLE);

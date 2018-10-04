@@ -46,7 +46,7 @@ void init_iommu()
 	MCHBAR32(0x20) = IOMMU_BASE4 | 1; /* all other DMA sources */
 
 	/* clear GTT */
-	u32 gtt = pci_read_config16(PCI_DEV(0, 0, 0), 0x52);
+	u16 gtt = pci_read_config16(PCI_DEV(0, 0, 0), D0F0_GGC);
 	if (gtt & 0x400) { /* VT mode */
 		pci_devfn_t igd = PCI_DEV(0, 2, 0);
 

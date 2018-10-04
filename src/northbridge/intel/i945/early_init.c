@@ -685,7 +685,7 @@ static void i945_setup_pci_express_x16(void)
 	if (reg32 == 0x030000) {
 		printk(BIOS_DEBUG, "PCIe device is VGA. Disabling IGD.\n");
 		reg16 = (1 << 1);
-		pci_write_config16(PCI_DEV(0, 0x0, 0), 0x52, reg16);
+		pci_write_config16(PCI_DEV(0, 0x0, 0), GGC, reg16);
 
 		reg32 = pci_read_config32(PCI_DEV(0, 0x0, 0), DEVEN);
 		reg32 &= ~(DEVEN_D2F0 | DEVEN_D2F1);

@@ -30,14 +30,13 @@ all: $(PROGRAM)
 $(PROGRAM): $(OBJS)
 
 clean:
-	rm -f $(PROGRAM) *.o *~ junit.xml
+	rm -f $(PROGRAM) *.o .dependencies *~ junit.xml
 
 install: $(PROGRAM)
 	$(INSTALL) -d $(DESTDIR)$(PREFIX)/sbin/
 	$(INSTALL) cbmem $(DESTDIR)$(PREFIX)/sbin/
 
 distclean: clean
-	rm -f .dependencies
 
 .dependencies:
 	@$(CC) $(CFLAGS) $(CPPFLAGS) -MM *.c > .dependencies

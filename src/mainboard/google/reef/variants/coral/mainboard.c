@@ -136,9 +136,9 @@ const char *mainboard_vbt_filename(void)
 
 static const struct pad_config nasher_gpio_tables[] = {
 	/* AVS_DMIC_CLK_A1 */
-	PAD_CFG_NF_IOSSTATE(GPIO_79, NATIVE, DEEP, NF1, Tx1RXDCRx0),
+	PAD_CFG_NF_IOSSTATE(GPIO_79, NATIVE, DEEP, NF1, Tx1RxDCRx0),
 	/* AVS_DMIC_CLK_B1 */
-	PAD_CFG_NF_IOSSTATE(GPIO_80, NATIVE, DEEP, NF1, Tx1RXDCRx0),
+	PAD_CFG_NF_IOSSTATE(GPIO_80, NATIVE, DEEP, NF1, Tx1RxDCRx0),
 };
 
 const struct pad_config *variant_sku_gpio_table(size_t *num)

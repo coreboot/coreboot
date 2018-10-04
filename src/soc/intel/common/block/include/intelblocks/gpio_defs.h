@@ -84,10 +84,10 @@
 #define PAD_CFG1_IOSSTATE_Tx0RxDCRx0	(0x1 << 14)
 /* Tx enabled driving 0, Rx disabled and Rx driving 1 back to its controller
  * internally */
-#define PAD_CFG1_IOSSTATE_Tx0RXDCRx1	(0x2 << 14)
+#define PAD_CFG1_IOSSTATE_Tx0RxDCRx1	(0x2 << 14)
 /* Tx enabled driving 1, Rx disabled and Rx driving 0 back to its controller
  * internally */
-#define PAD_CFG1_IOSSTATE_Tx1RXDCRx0	(0x3 << 14)
+#define PAD_CFG1_IOSSTATE_Tx1RxDCRx0	(0x3 << 14)
 /* Tx enabled driving 1, Rx disabled and Rx driving 1 back to its controller
  * internally */
 #define PAD_CFG1_IOSSTATE_Tx1RxDCRx1	(0x4 << 14)

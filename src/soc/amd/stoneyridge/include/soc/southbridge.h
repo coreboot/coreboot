@@ -40,7 +40,6 @@
 #define PM_PCI_CTRL			0x08
 #define   FORCE_SLPSTATE_RETRY		BIT(25)
 #define   FORCE_STPCLK_RETRY		BIT(24)
-#define PM_ACPI_MMIO_EN			0x24
 #define PM_SERIRQ_CONF			0x54
 #define   PM_SERIRQ_NUM_BITS_17		0x0000
 #define   PM_SERIRQ_NUM_BITS_18		0x0004
@@ -92,10 +91,6 @@
 #define PM_RST_CTRL1			0xbe
 #define   SLPTYPE_CONTROL_EN		BIT(5)
 #define PM_RST_STATUS			0xc0
-#define PM_PMIO_DEBUG			0xd2
-#define PM_MANUAL_RESET			0xd3
-#define PM_HUD_SD_FLASH_CTRL		0xe7
-#define PM_YANG_SD_FLASH_CTRL		0xe8
 #define PM_PCIB_CFG			0xea
 #define   PM_GENINT_DISABLE		BIT(0)
 #define PM_LPC_GATING			0xec

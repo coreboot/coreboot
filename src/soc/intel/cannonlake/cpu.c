@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Intel Corporation.
+ * Copyright (C) 2017-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,6 +166,27 @@ static void configure_c_states(void)
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
 }
 
+/*
+ * The emulated ACPI timer allows replacing of the ACPI timer
+ * (PM1_TMR) to have no impart on the system.
+ */
+static void enable_pm_timer_emulation(void)
+{
+	/* ACPI PM timer emulation */
+	msr_t msr;
+	/*
+	 * The derived frequency is calculated as follows:
+	 *    (CTC_FREQ * msr[63:32]) >> 32 = target frequency.
+	 * Back solve the multiplier so the 3.579545MHz ACPI timer
+	 * frequency is used.
+	 */
+	msr.hi = (3579545ULL << 32) / CTC_FREQ;
+	/* Set PM1 timer IO port and enable*/
+	msr.lo = (EMULATE_DELAY_VALUE << EMULATE_DELAY_OFFSET_VALUE) |
+			EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + PM1_TMR);
+	wrmsr(MSR_EMULATE_PM_TMR, msr);
+}
+
 /* All CPUs including BSP will run the following function. */
 void soc_core_init(struct device *cpu)
 {
@@ -187,6 +208,9 @@ void soc_core_init(struct device *cpu)
 
 	/* Configure Intel Speed Shift */
 	configure_isst();
+
+	/* Enable ACPI Timer Emulation via MSR 0x121 */
+	enable_pm_timer_emulation();
 
 	/* Enable Direct Cache Access */
 	configure_dca_cap();

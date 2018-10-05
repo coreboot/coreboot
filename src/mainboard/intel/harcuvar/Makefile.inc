@@ -22,7 +22,6 @@ romstage-y += hsio.c
 ramstage-y += ramstage.c
 ramstage-y += boardid.c
 ramstage-y += hsio.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi_tables.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 
 CPPFLAGS_common += -Isrc/mainboard/$(MAINBOARDDIR)/

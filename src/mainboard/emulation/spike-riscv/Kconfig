@@ -12,7 +12,7 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 
-if BOARD_EMULATION_SPIKE_UCB_RISCV
+if BOARD_EMULATION_SPIKE_RISCV
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -33,8 +33,4 @@ config MAX_CPUS
 	int
 	default 1
 
-config MAINBOARD_VENDOR
-	string
-	default "UCB"
-
-endif #  BOARD_EMULATION_SPIKE_UCB_RISCV
+endif #  BOARD_EMULATION_SPIKE_RISCV

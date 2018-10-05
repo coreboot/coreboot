@@ -1,5 +1,5 @@
-config BOARD_EMULATION_SPIKE_UCB_RISCV
-	bool "SPIKE ucb riscv"
+config BOARD_EMULATION_SPIKE_RISCV
+	bool "SPIKE riscv"
 	help
 	  To run coreboot in spike:
 	  * run "make" as usual

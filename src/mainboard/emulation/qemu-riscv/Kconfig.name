@@ -1,2 +1,2 @@
-config BOARD_EMULATION_QEMU_UCB_RISCV
-	bool "QEMU ucb riscv"
+config BOARD_EMULATION_QEMU_RISCV
+	bool "QEMU riscv"

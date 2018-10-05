@@ -15,7 +15,7 @@
 # To execute, do:
 # qemu-system-arm -M vexpress-a9 -m 1024M -nographic -kernel build/coreboot.rom
 
-if BOARD_EMULATION_QEMU_UCB_RISCV
+if BOARD_EMULATION_QEMU_RISCV
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -36,12 +36,8 @@ config MAX_CPUS
 	int
 	default 1
 
-config MAINBOARD_VENDOR
-	string
-	default "UCB"
-
 config DRAM_SIZE_MB
 	int
 	default 32768
 
-endif #  BOARD_EMULATION_QEMU_UCB_RISCV
+endif #  BOARD_EMULATION_QEMU_RISCV

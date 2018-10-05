@@ -225,4 +225,29 @@ static void pm1_enable_pwrbtn_smi(void *unused)
 
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, pm1_enable_pwrbtn_smi, NULL);
 
+/*
+ * Check if WAKE# pin is enabled based on DSX_EN_WAKE_PIN setting in
+ * deep_sx_config. If WAKE# pin is not enabled, then PCI Express Wake Disable
+ * bit needs to be set in PM1_EN to avoid unnecessary wakes caused by WAKE#
+ * pin.
+ */
+static void pm1_handle_wake_pin(void *unused)
+{
+	struct device *dev = SA_DEV_ROOT;
+
+	if (!dev || !dev->chip_info)
+		return;
+
+	const config_t *conf = dev->chip_info;
+
+	/* If WAKE# pin is enabled, bail out early. */
+	if (conf->deep_sx_config & DSX_EN_WAKE_PIN)
+		return;
+
+	pmc_update_pm1_enable(PCIEXPWAK_DIS);
+}
+
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, pm1_handle_wake_pin, NULL);
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_EXIT, pm1_handle_wake_pin, NULL);
+
 #endif

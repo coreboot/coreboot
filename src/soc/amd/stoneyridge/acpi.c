@@ -53,7 +53,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
 						current, 0, 0, 2, 0);
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-						current, 0, 9, 9, 0xF);
+						current, 0, 9, 9, 0xf);
 
 	/* create all subtables for processors */
 	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current,

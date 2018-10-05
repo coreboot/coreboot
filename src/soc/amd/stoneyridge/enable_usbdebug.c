@@ -25,8 +25,8 @@
 pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
 {
 	/* Enable all of the USB controllers */
-	outb(0xEF, PM_INDEX);
-	outb(0x7F, PM_DATA);
+	outb(0xef, PM_INDEX);
+	outb(0x7f, PM_DATA);
 
 	if (hcd_idx == 3)
 		return PCI_DEV(0, 0x16, 0);

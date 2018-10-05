@@ -17,6 +17,6 @@
 
 void *cbmem_top(void)
 {
-        /* not implemented yet */
+	/* not implemented yet */
 	return (void *) NULL;
 }

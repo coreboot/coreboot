@@ -155,8 +155,8 @@ static void sa_add_dram_resources(struct device *dev, int *resource_count)
 	if (IS_ENABLED(CONFIG_SA_ENABLE_DPR))
 		dpr_size = sa_get_dpr_size();
 
-        /* Get SoC reserve memory size as per user selection */
-        reserved_mmio_size = soc_reserved_mmio_size();
+	/* Get SoC reserve memory size as per user selection */
+	reserved_mmio_size = soc_reserved_mmio_size();
 
 	top_of_ram = (uintptr_t)cbmem_top();
 

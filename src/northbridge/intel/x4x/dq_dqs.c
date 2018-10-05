@@ -43,7 +43,7 @@ struct db_limit {
 
 static void set_db(const struct sysinfo *s, struct dll_setting *dq_dqs_setting)
 {
-        struct db_limit limit;
+	struct db_limit limit;
 
 	switch (s->selected_timings.mem_clk) {
 	default:

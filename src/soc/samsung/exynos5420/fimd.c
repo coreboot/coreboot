@@ -304,16 +304,16 @@ void exynos_fimd_window_off(unsigned int win_id)
 
 static void exynos5_set_system_display(void)
 {
-        unsigned int cfg = 0;
+	unsigned int cfg = 0;
 
-        /*
-         * system register path set
-         * 0: MIE/MDNIE
-         * 1: FIMD Bypass
-         */
-        cfg = lreadl(&exynos_sysreg->disp1blk_cfg);
-        cfg |= (1 << 15);
-        lwritel(cfg, &exynos_sysreg->disp1blk_cfg);
+	/*
+	 * system register path set
+	 * 0: MIE/MDNIE
+	 * 1: FIMD Bypass
+	 */
+	cfg = lreadl(&exynos_sysreg->disp1blk_cfg);
+	cfg |= (1 << 15);
+	lwritel(cfg, &exynos_sysreg->disp1blk_cfg);
 }
 
 void exynos_fimd_lcd_init(vidinfo_t *vid)

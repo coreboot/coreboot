@@ -343,7 +343,7 @@ static u8 dqs_gw_coarse_tune_calib(u32 channel, u8 coarse_val)
 		gw_ret[i] = dqs_gw_test(channel);
 		/* judge test result */
 		if (gw_ret[i] != 0)
-                        return opt_coarse_val[i];
+			return opt_coarse_val[i];
 	}
 
 	/* abnormal test result, set to default coarse tune value */
@@ -747,7 +747,7 @@ u8 rx_datlat_cal(u32 channel, u8 rank,
 	}
 
 	/* Default dle value is set when test error (error recovery).
-         * Others, adjusted dle calibration value is set normally.
+	 * Others, adjusted dle calibration value is set normally.
 	 */
 	set_dle_factor(channel, best_step);
 

@@ -41,7 +41,7 @@ void system_clock_init(void)
 	write32(&exynos_clock->ipll_lock, IPLL_LOCK_VAL);
 	write32(&exynos_clock->spll_lock, SPLL_LOCK_VAL);
 	write32(&exynos_clock->kpll_lock, KPLL_LOCK_VAL);
-        write32(&exynos_clock->rpll_lock, RPLL_LOCK_VAL);
+	write32(&exynos_clock->rpll_lock, RPLL_LOCK_VAL);
 
 	setbits_le32(&exynos_clock->clk_src_cpu, MUX_HPM_SEL_MASK);
 
@@ -138,7 +138,7 @@ void system_clock_init(void)
 	while ((read32(&exynos_clock->spll_con0) & PLL_LOCKED) == 0)
 		;
 
-        /* We use RPLL as the source for FIMD video stream clock */
+	/* We use RPLL as the source for FIMD video stream clock */
 	write32(&exynos_clock->rpll_con1, RPLL_CON1_VAL);
 	write32(&exynos_clock->rpll_con2, RPLL_CON2_VAL);
 	/* computed by gabe from first principles; u-boot is probably

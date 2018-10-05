@@ -21,7 +21,7 @@
  * @func         : Function to call after initializing stack
  */
 .macro stack_init stack_top, stack_bottom, seed, func
-        /* Check if stack seeding is required */
+	/* Check if stack seeding is required */
 	mov	r0, #\seed
 	cmp     r0, #1
 	bne     call_func

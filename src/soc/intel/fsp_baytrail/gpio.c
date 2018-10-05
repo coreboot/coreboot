@@ -186,7 +186,7 @@ static void setup_gpios(const struct soc_gpio_map *gpios,
 }
 
 static void setup_gpio_route(const struct soc_gpio_map *sus,
-                             const struct soc_gpio_map *core)
+			     const struct soc_gpio_map *core)
 {
 	uint32_t route_reg = 0;
 	int i;
@@ -319,7 +319,7 @@ void write_ssus_gpio(uint8_t gpio_num, uint8_t val)
  *        pad value: PAD_VAL_HIGH / PAD_VAL_LOW
  */
 static void configure_ssus_score_gpio(uint8_t ssus_gpio, uint8_t gpio_num,
-                           uint32_t pconf0, uint32_t pad_val)
+				      uint32_t pconf0, uint32_t pad_val)
 {
 	uint32_t reg;
 	uint32_t *pad_addr;

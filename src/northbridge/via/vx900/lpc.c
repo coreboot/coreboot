@@ -209,7 +209,7 @@ static void vx900_lpc_read_resources(struct device *dev)
 static void vx900_lpc_set_resources(struct device *dev)
 {
 	struct resource *mmio, *spi;
-        u32 reg;
+	u32 reg;
 
 	mmio = find_resource(dev, VX900_MMCONFIG_MBAR);
 	if (mmio) {

@@ -39,7 +39,7 @@ inline u8 is_dual_rank(u32 channel,
 		       const struct mt8173_sdram_params *sdram_params)
 {
 	/* judge ranks from EMI_CONA[17] (cha) and EMI_CONA[16] (chb) */
-        return (sdram_params->emi_set.cona & (1 << (17 - channel))) ? 1 : 0;
+	return (sdram_params->emi_set.cona & (1 << (17 - channel))) ? 1 : 0;
 }
 
 static void mem_pll_pre_init(u32 channel)

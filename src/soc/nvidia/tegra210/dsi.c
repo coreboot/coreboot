@@ -886,12 +886,12 @@ static int dsi_probe_if(int dsi_index,
 	/*
 	 * Set default value. Will be taken from attached device once detected
 	 */
-        dsi->flags = 0;
-        dsi->format = MIPI_DSI_FMT_RGB888;
-        dsi->lanes = 4;
+	dsi->flags = 0;
+	dsi->format = MIPI_DSI_FMT_RGB888;
+	dsi->lanes = 4;
 
 	/* get tegra_mipi_device */
-        dsi->mipi = tegra_mipi_request(&mipi_device_data[dsi_index], dsi_index);
+	dsi->mipi = tegra_mipi_request(&mipi_device_data[dsi_index], dsi_index);
 
 	/* calibrate */
 	err = tegra_dsi_pad_calibrate(dsi);

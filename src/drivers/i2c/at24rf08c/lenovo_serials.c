@@ -39,7 +39,7 @@ static int at24rf08c_read_byte(struct device *dev, u8 addr)
 	int t = -1;
 	int j;
 
-        /* After a register write AT24RF08C (which we issued in init function)
+	/* After a register write AT24RF08C (which we issued in init function)
 	   sometimes stops responding. Retry several times in case of failure.
 	*/
 	for (j = 0; j < 100; j++) {

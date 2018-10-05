@@ -265,7 +265,7 @@ static unsigned int do_hypertransport_scan_chain(struct bus *bus, unsigned min_d
 	min_unitid = (offset_unitid) ? CONFIG_HT_CHAIN_UNITID_BASE : 1;
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-        /*
+	/*
 	 * Let's record the device of last HT device, so we can set the unitid
 	 * to CONFIG_HT_CHAIN_END_UNITID_BASE.
 	 */

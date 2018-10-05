@@ -573,7 +573,7 @@ static void glk_fsp_silicon_init_params_cb(
 
 void __weak mainboard_devtree_update(struct device *dev)
 {
-       /* Override dev tree settings per board */
+	/* Override dev tree settings per board */
 }
 
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)

@@ -265,7 +265,7 @@ static void wifi_pci_dev_init(struct device *dev)
 		val = pci_read_config16(dev, PMCS_DR);
 		if (val & PME_STS)
 			elog_add_event_wake(ELOG_WAKE_SOURCE_PME_WIFI, 0);
-        }
+	}
 }
 
 static struct pci_operations pci_ops = {

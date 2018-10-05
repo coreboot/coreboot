@@ -52,7 +52,7 @@ uint16_t get_pmbase(void)
 }
 
 static void print_num_status_bits(int num_bits, uint32_t status,
-                                  const char *bit_names[])
+				  const char *bit_names[])
 {
 	int i;
 

@@ -34,8 +34,8 @@ enum {  /* export_type */
 
 /* Callback for decodeVpdString to invoke. */
 typedef int VpdDecodeCallback(const uint8_t *key, int32_t key_len,
-                              const uint8_t *value, int32_t value_len,
-                              void *arg);
+			      const uint8_t *value, int32_t value_len,
+			      void *arg);
 
 /* Container data types */
 struct StringPair {
@@ -153,53 +153,53 @@ int decodeVpdString(
 void initContainer(struct PairContainer *container);
 
 struct StringPair *findString(struct PairContainer *container,
-                              const uint8_t *key,
-                              struct StringPair ***prev_next);
+			      const uint8_t *key,
+			      struct StringPair ***prev_next);
 
 /* If key is already existed in container, its value will be replaced.
  * If not existed, creates new entry in container.
  */
 void setString(struct PairContainer *container,
-               const uint8_t *key,
-               const uint8_t *value,
-               const int pad_len);
+	       const uint8_t *key,
+	       const uint8_t *value,
+	       const int pad_len);
 
 /* merge all entries in src into dst. If key is duplicate, overwrite it.
  */
 void mergeContainer(struct PairContainer *dst,
-                    const struct PairContainer *src);
+		    const struct PairContainer *src);
 
 /* subtract src from dst.
 */
 int subtractContainer(struct PairContainer *dst,
-                      const struct PairContainer *src);
+		      const struct PairContainer *src);
 
 /* Given a container, encode its all entries into the buffer.
  */
 int encodeContainer(const struct PairContainer *container,
-                    const int max_buf_len,
-                    uint8_t *buf,
-                    int *generated);
+		    const int max_buf_len,
+		    uint8_t *buf,
+		    int *generated);
 
 /* Given a VPD blob, decode its entries and push into container.
  */
 int decodeToContainer(struct PairContainer *container,
-                      const int32_t max_len,
-                      const uint8_t *input_buf,
-                      int32_t *consumed);
+		      const int32_t max_len,
+		      const uint8_t *input_buf,
+		      int32_t *consumed);
 
 /* Set filter for exporting functions.
  * If filter is NULL, resets the filter so that everything can be exported.
  */
 int setContainerFilter(struct PairContainer *container,
-                       const uint8_t *filter);
+		       const uint8_t *filter);
 
 /*
  * Remove a key.
  * Returns VPD_OK if deleted successfully. Otherwise, VPD_FAIL.
  */
 int deleteKey(struct PairContainer *container,
-              const uint8_t *key);
+	      const uint8_t *key);
 
 /*
  * Returns number of pairs in container.
@@ -216,10 +216,10 @@ int lenOfContainer(const struct PairContainer *container);
  * generated.
  */
 int exportContainer(const int export_type,
-                    const struct PairContainer *container,
-                    const int max_buf_len,
-                    uint8_t *buf,
-                    int *generated);
+		    const struct PairContainer *container,
+		    const int max_buf_len,
+		    uint8_t *buf,
+		    int *generated);
 
 void destroyContainer(struct PairContainer *container);
 

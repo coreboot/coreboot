@@ -40,26 +40,26 @@ struct tegra_dc dc_data;
 int dump = 0;
 unsigned long READL(void *p)
 {
-        unsigned long value;
+	unsigned long value;
 
 	/*
 	 * In case of hard hung on readl(p), we can set dump > 1 to print out
 	 * the address accessed.
 	 */
-        if (dump > 1)
+	if (dump > 1)
 		printk(BIOS_SPEW, "readl %p\n", p);
 
-        value = read32(p);
-        if (dump)
+	value = read32(p);
+	if (dump)
 		printk(BIOS_SPEW, "readl %p %08lx\n", p, value);
-        return value;
+	return value;
 }
 
 void WRITEL(unsigned long value, void *p)
 {
-        if (dump)
+	if (dump)
 		printk(BIOS_SPEW, "writel %p %08lx\n", p, value);
-        write32(p, value);
+	write32(p, value);
 }
 
 /* return in 1000ths of a Hertz */

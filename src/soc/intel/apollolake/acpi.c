@@ -174,7 +174,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
 		return;
 	}
-        cfg = dev->chip_info;
+	cfg = dev->chip_info;
 
 	if(cfg->lpss_s0ix_enable)
 		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;

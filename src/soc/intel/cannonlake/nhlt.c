@@ -231,7 +231,7 @@ static const struct nhlt_endp_descriptor max98373_descriptors[] = {
 		.did = NHLT_DID_SSP,
 		.formats = max98373_capture_formats,
 		.num_formats = ARRAY_SIZE(max98373_capture_formats),
-       },
+	},
 };
 
 int nhlt_soc_add_dmic_array(struct nhlt *nhlt, int num_channels)

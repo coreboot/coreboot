@@ -260,7 +260,7 @@ int nhlt_soc_add_max98357(struct nhlt *nhlt, int hwlink)
 
 int nhlt_soc_add_rt5682(struct nhlt *nhlt, int hwlink)
 {
-        /* Virtual bus id of SSP links are the hardware port ids proper. */
-        return nhlt_add_ssp_endpoints(nhlt, hwlink, rt5682_descriptors,
-                                        ARRAY_SIZE(rt5682_descriptors));
+	/* Virtual bus id of SSP links are the hardware port ids proper. */
+	return nhlt_add_ssp_endpoints(nhlt, hwlink, rt5682_descriptors,
+					ARRAY_SIZE(rt5682_descriptors));
 }

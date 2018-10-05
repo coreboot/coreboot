@@ -146,12 +146,12 @@ Device (EC0)
 	{
 		Store ("-----> EC: _Q43", Debug)
 
-                Store (BRIG, Local0)
-                Increment (Local0)
-                If (LGreater (Local0, 0xAA)) {
+		Store (BRIG, Local0)
+		Increment (Local0)
+		If (LGreater (Local0, 0xAA)) {
 			Store (0xAA, Local0)
-                }
-                Store (Local0, BRIG)
+		}
+		Store (Local0, BRIG)
 
 		\_SB.PCI0.GFX0.INCB ()
 
@@ -162,13 +162,13 @@ Device (EC0)
 	{
 		Store ("-----> EC: _Q44", Debug)
 
-                Store (BRIG, Local0)
-                Decrement (Local0)
-                If (LLess (Local0, 0xA0))
-                {
+		Store (BRIG, Local0)
+		Decrement (Local0)
+		If (LLess (Local0, 0xA0))
+		{
 			Store (0xA0, Local0)
-                }
-                Store (Local0, BRIG)
+		}
+		Store (Local0, BRIG)
 
 		\_SB.PCI0.GFX0.DECB ()
 

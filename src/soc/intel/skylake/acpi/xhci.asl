@@ -195,8 +195,8 @@ Device (XHCI)
 		Store (3, ^UPSW)
 
 		/* Enable d3hot and SS link trunk clock gating */
-                Store(One, ^D3HE)
-                Store(One, ^STGE)
+		Store(One, ^D3HE)
+		Store(One, ^STGE)
 
 		/* Now put device in D3 */
 		Store (3, Local0)

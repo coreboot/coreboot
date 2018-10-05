@@ -657,7 +657,7 @@ static int spi_ctrlr_setup(const struct spi_slave *slave)
 		|| ((bus == BLSP1_SPI) && (cs > 0))) {
 		printk(BIOS_ERR,
 			"SPI error: unsupported bus %d (Supported busses 0, 1 and 2) "
-                        "or chipselect\n", bus);
+			"or chipselect\n", bus);
 		return -1;
 	}
 

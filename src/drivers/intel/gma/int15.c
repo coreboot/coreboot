@@ -103,7 +103,7 @@ int intel_vga_int15_handler(void)
 		}
 		break;
 
-        default:
+	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", X86_AX);
 		break;
 	}

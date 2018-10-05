@@ -108,14 +108,14 @@ struct vbios_data {
 #define BDB_SKIP		254 /* VBIOS private block, ignore */
 
 struct bdb_general_features {
-        /* bits 1 */
+	/* bits 1 */
 	u8 panel_fitting:2;
 	u8 flexaim:1;
 	u8 msg_enable:1;
 	u8 clear_screen:3;
 	u8 color_flip:1;
 
-        /* bits 2 */
+	/* bits 2 */
 	u8 download_ext_vbt:1;
 	u8 enable_ssc:1;
 	u8 ssc_freq:1;
@@ -125,17 +125,17 @@ struct bdb_general_features {
 	u8 display_clock_mode:1;
 	u8 rsvd8:1; /* finish byte */
 
-        /* bits 3 */
+	/* bits 3 */
 	u8 disable_smooth_vision:1;
 	u8 single_dvi:1;
 	u8 rsvd9:1;
 	u8 fdi_rx_polarity_inverted:1;
 	u8 rsvd10:4; /* finish byte */
 
-        /* bits 4 */
+	/* bits 4 */
 	u8 legacy_monitor_detect;
 
-        /* bits 5 */
+	/* bits 5 */
 	u8 int_crt_support:1;
 	u8 int_tv_support:1;
 	u8 int_efp_support:1;
@@ -603,7 +603,7 @@ struct bdb_edp {
 #define   SWF14_PM_APM_12	(0x2 << 16)
 #define   SWF14_PM_APM_11	(0x1 << 16)
 #define SWF14_HK_REQUEST_MASK	0x0000ffff /* see GR18 6:3 for event type */
-          /* if GR18 indicates a display switch */
+	  /* if GR18 indicates a display switch */
 #define   SWF14_DS_PIPEB_LFP2_EN (1<<15)
 #define   SWF14_DS_PIPEB_EFP2_EN (1<<14)
 #define   SWF14_DS_PIPEB_TV2_EN  (1<<13)
@@ -620,9 +620,9 @@ struct bdb_edp {
 #define   SWF14_DS_PIPEA_EFP_EN  (1<<2)
 #define   SWF14_DS_PIPEA_TV_EN   (1<<1)
 #define   SWF14_DS_PIPEA_CRT_EN  (1<<0)
-          /* if GR18 indicates a panel fitting request */
+	  /* if GR18 indicates a panel fitting request */
 #define   SWF14_PFIT_EN		(1<<0) /* 0 means disable */
-          /* if GR18 indicates an APM change request */
+	  /* if GR18 indicates an APM change request */
 #define   SWF14_APM_HIBERNATE	0x4
 #define   SWF14_APM_SUSPEND	0x3
 #define   SWF14_APM_STANDBY	0x1

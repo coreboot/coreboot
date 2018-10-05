@@ -48,6 +48,6 @@ Method(TRAP, 1, Serialized)
 
 Method(_PIC, 1)
 {
-       // Remember the OS' IRQ routing choice.
-       Store(Arg0, PICM)
+	// Remember the OS' IRQ routing choice.
+	Store(Arg0, PICM)
 }

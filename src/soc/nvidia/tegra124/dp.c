@@ -1362,10 +1362,10 @@ void dp_init(void *_config)
 	struct tegra_dc *dc = config->dc_data;
 	struct tegra_dc_dp_data *dp = &dp_data;
 
-        // set up links among config, dc, dp and sor
-        dp->dc = dc;
-        dc->out = dp;
-        dp->sor.dc = dc;
+	// set up links among config, dc, dp and sor
+	dp->dc = dc;
+	dc->out = dp;
+	dp->sor.dc = dc;
 
 	dp->sor.power_is_up = 0;
 	dp->sor.base = (void *)TEGRA_ARM_SOR;
@@ -1427,7 +1427,7 @@ void dp_enable(void *_dp)
 	if (tegra_dc_dp_init_max_link_cfg(config, dp, &dp->link_cfg)) {
 		printk(BIOS_ERR, "dp: failed to init link configuration\n");
 		goto error_enable;
-        }
+	}
 
 	tegra_dc_sor_enable_dp(&dp->sor);
 

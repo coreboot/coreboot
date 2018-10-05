@@ -170,7 +170,7 @@ static void setup_gpios(const struct soc_gpio_map *gpios,
 }
 
 static void setup_gpio_route(const struct soc_gpio_map *sus,
-                             const struct soc_gpio_map *core)
+			     const struct soc_gpio_map *core)
 {
 	uint32_t route_reg = 0;
 	int i;

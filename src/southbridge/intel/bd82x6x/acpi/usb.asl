@@ -59,7 +59,7 @@ Device (EHC1)
 			Store (Arg0, VISI)
 
 			Return (PCKG)
-                }
+		}
 
 		// How many are there?
 		Device (PRT1) { Name (_ADR, 1) } // USB Port 0
@@ -112,7 +112,7 @@ Device (EHC2)
 			Store (Arg0, VISI)
 
 			Return (PCKG)
-                }
+		}
 
 		// How many are there?
 		Device (PRT1) { Name (_ADR, 1) } // USB Port 0

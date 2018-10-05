@@ -26,7 +26,7 @@
 #include <include/device/pci_def.h>
 u32 Get_NB32(u32 dev, u32 reg)
 {
-        return pci_read_config32(dev_find_slot(0, PCI_DEV2DEVFN(dev)), reg);
+	return pci_read_config32(dev_find_slot(0, PCI_DEV2DEVFN(dev)), reg);
 }
 #endif
 

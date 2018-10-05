@@ -86,7 +86,7 @@ static void mt6391_configure_vcama(enum ldo_voltage vsel)
 	mt6391_write(PMIC_RG_ANALDO_CON6, vsel - 2, PMIC_RG_VCAMA_VOSEL_MASK,
 		     PMIC_RG_VCAMA_VOSEL_SHIFT);
 	mt6391_write(PMIC_RG_ANALDO_CON2, 1, PMIC_RG_VCAMA_EN_MASK,
-                     PMIC_RG_VCAMA_EN_SHIFT);
+		     PMIC_RG_VCAMA_EN_SHIFT);
 }
 
 void mt6391_configure_ldo(enum ldo_power ldo, enum ldo_voltage vsel)

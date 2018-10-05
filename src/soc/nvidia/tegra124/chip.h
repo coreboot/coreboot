@@ -75,7 +75,7 @@ struct soc_nvidia_tegra124_config {
 
 	int hpd_unplug_min_us;
 	int hpd_plug_min_us;
-        int hpd_irq_min_us;
+	int hpd_irq_min_us;
 
 	int href_to_sync;
 	int hsync_width;

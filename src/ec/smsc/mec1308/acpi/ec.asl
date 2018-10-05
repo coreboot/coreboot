@@ -193,7 +193,7 @@ Device (EC0)
 			} Else {
 				Return (Zero)
 			}
-                }
+		}
 		Method (_ON)  {
 			If (FCOS) {
 				Store (One, FSL4)

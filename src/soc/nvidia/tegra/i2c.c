@@ -212,7 +212,7 @@ void i2c_init(unsigned bus)
 	struct tegra_i2c_regs *regs;
 
 	if (bus >= g_num_i2c_buses) {
-                printk(BIOS_ERR, "%s: ERROR: invalid I2C bus (%u)\n", __func__,
+		printk(BIOS_ERR, "%s: ERROR: invalid I2C bus (%u)\n", __func__,
 		       bus);
 		return;
 	}

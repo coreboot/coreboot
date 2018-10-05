@@ -84,8 +84,7 @@ static void ramstage_cache_invalid(void)
 {
 	printk(BIOS_ERR, "ramstage cache invalid.\n");
 	if (IS_ENABLED(CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE)) {
-		hard_reset();
-		halt();
+		board_reset();
 	}
 }
 

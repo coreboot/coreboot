@@ -18,6 +18,30 @@
 #include <halt.h>
 #include <reset.h>
 
+__noreturn void board_reset(void)
+{
+	printk(BIOS_INFO, "%s() called!\n", __func__);
+	dcache_clean_all();
+	do_board_reset();
+	halt();
+}
+
+#if IS_ENABLED(CONFIG_MISSING_BOARD_RESET)
+void do_board_reset(void)
+{
+	printk(BIOS_CRIT, "No board_reset implementation, hanging...\n");
+}
+#else
+/*
+ * Fall back to hard_reset() for a regression free transition.
+ * FIXME: Remove after everything is converted to board_reset().
+ */
+__weak void do_board_reset(void)
+{
+	hard_reset();
+}
+#endif
+
 __noreturn static void __hard_reset(void) {
 	if (IS_ENABLED(CONFIG_HAVE_HARD_RESET))
 		do_hard_reset();

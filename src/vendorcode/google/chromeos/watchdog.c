@@ -52,5 +52,5 @@ void reboot_from_watchdog(void)
 {
 	printk(BIOS_INFO, "Last reset was watchdog, reboot again to reset TPM!\n");
 	mark_watchdog_tombstone();
-	hard_reset();
+	board_reset();
 }

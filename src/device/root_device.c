@@ -147,7 +147,7 @@ static void root_dev_scan_bus(struct device *bus)
 static void root_dev_reset(struct bus *bus)
 {
 	printk(BIOS_INFO, "Resetting board...\n");
-	hard_reset();
+	board_reset();
 }
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)

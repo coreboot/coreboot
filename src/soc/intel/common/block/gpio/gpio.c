@@ -73,7 +73,8 @@ static inline size_t gpio_group_index(const struct pad_community *comm,
 {
 	size_t i;
 
-	assert(comm->groups != NULL);
+	if (!comm->groups)
+		die("Failed to get comm->groups.");
 
 	/* find the base pad number for this pad's group */
 	for (i = 0; i < comm->num_groups; i++) {

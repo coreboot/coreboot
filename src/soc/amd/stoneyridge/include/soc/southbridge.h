@@ -279,27 +279,26 @@
 #define PWR_RESET_CFG			0x10
 #define   TOGGLE_ALL_PWR_GOOD		BIT(1)
 
+/* XHCI_PM Registers:  0xfed81c00 */
 #define XHCI_PM_INDIRECT_INDEX		0x48
 #define XHCI_PM_INDIRECT_DATA		0x4c
 #define   XHCI_OVER_CURRENT_CONTROL	0x30
+#define     USB_OC0			0
+#define     USB_OC1			1
+#define     USB_OC2			2
+#define     USB_OC3			3
+#define     USB_OC4			4
+#define     USB_OC5			5
+#define     USB_OC6			6
+#define     USB_OC7			7
+#define     USB_OC_DISABLE		0xf
+#define     USB_OC_DISABLE_ALL		0xffff
+#define     OC_PORT0_SHIFT		0
+#define     OC_PORT1_SHIFT		4
+#define     OC_PORT2_SHIFT		8
+#define     OC_PORT3_SHIFT		12
+
 #define EHCI_OVER_CURRENT_CONTROL	0x70
-
-#define USB_OC0				0
-#define USB_OC1				1
-#define USB_OC2				2
-#define USB_OC3				3
-#define USB_OC4				4
-#define USB_OC5				5
-#define USB_OC6				6
-#define USB_OC7				7
-#define USB_OC_DISABLE			0xf
-#define USB_OC_DISABLE_ALL		0xffff
-
-#define OC_PORT0_SHIFT		0
-#define OC_PORT1_SHIFT		4
-#define OC_PORT2_SHIFT		8
-#define OC_PORT3_SHIFT		12
-
 #define EHCI_HUB_CONFIG4		0x90
 #define   DEBUG_PORT_SELECT_SHIFT	  16
 #define   DEBUG_PORT_ENABLE		  BIT(18)

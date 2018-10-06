@@ -15,6 +15,6 @@
 
 #include <reset.h>
 
-void do_hard_reset(void)
+void do_board_reset(void)
 {
 }

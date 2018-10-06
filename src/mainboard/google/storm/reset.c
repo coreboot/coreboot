@@ -39,7 +39,7 @@ static void wdog_reset(void)
 	write32(APCS_WDT0_CPU0_WDOG_EXPIRED_ENABLE, 1);
 }
 
-void do_hard_reset(void)
+void do_board_reset(void)
 {
 	wdog_reset();
 }

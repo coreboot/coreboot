@@ -18,7 +18,7 @@
 #include <gpio.h>
 #include <reset.h>
 
-void do_hard_reset(void)
+void do_board_reset(void)
 {
 	gpio_output(GPIO(I5), 0);
 }

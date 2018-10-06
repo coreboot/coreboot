@@ -76,7 +76,7 @@ static void __attribute__((noinline)) romstage(void)
 	 */
 	if (power_reset_status() == POWER_RESET_WATCHDOG) {
 		printk(BIOS_INFO, "Watchdog reset detected, rebooting.\n");
-		hard_reset();
+		board_reset();
 	}
 
 	/* FIXME: this may require coordination with moving timestamps */

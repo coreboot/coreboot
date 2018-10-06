@@ -20,6 +20,7 @@
 #include <soc/pci_devs.h>
 #include <device/pci_ops.h>
 #include <soc/southbridge.h>
+#include <amdblocks/reset.h>
 
 void set_warm_reset_flag(void)
 {
@@ -45,7 +46,7 @@ static void clear_bios_reset(void)
 	pci_write_config32(SOC_HT_DEV, HT_INIT_CONTROL, htic);
 }
 
-void do_hard_reset(void)
+void do_cold_reset(void)
 {
 	clear_bios_reset();
 
@@ -55,11 +56,17 @@ void do_hard_reset(void)
 	outb(RST_CMD | SYS_RST, SYS_RESET);
 }
 
-void do_soft_reset(void)
+void do_warm_reset(void)
 {
 	set_warm_reset_flag();
 	clear_bios_reset();
 
 	/* Assert reset signals only. */
 	outb(RST_CMD | SYS_RST, SYS_RESET);
+}
+
+void do_board_reset(void)
+{
+	/* TODO: Would a warm_reset() suffice? */
+	do_cold_reset();
 }

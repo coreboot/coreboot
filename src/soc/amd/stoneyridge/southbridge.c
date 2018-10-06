@@ -26,6 +26,7 @@
 #include <elog.h>
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/agesawrapper.h>
+#include <amdblocks/reset.h>
 #include <soc/southbridge.h>
 #include <soc/smi.h>
 #include <soc/amd_pci_int_defs.h>
@@ -33,7 +34,6 @@
 #include <soc/pci_devs.h>
 #include <agesa_headers.h>
 #include <soc/nvs.h>
-#include <reset.h>
 
 /*
  * Table of devices that need their AOAC registers enabled and waited
@@ -639,7 +639,7 @@ void bootblock_fch_early_init(void)
 	setup_misc(&reboot);
 
 	if (reboot)
-		soft_reset();
+		warm_reset();
 
 	sb_enable_legacy_io();
 	enable_aoac_devices();

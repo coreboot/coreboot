@@ -21,7 +21,7 @@
 #include <amdblocks/BiosCallOuts.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
-#include <reset.h>
+#include <amdblocks/reset.h>
 #include <soc/southbridge.h>
 
 #if ENV_BOOTBLOCK
@@ -127,12 +127,12 @@ AGESA_STATUS agesa_Reset(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	switch (ResetType) {
 	case WARM_RESET_WHENEVER:
 	case WARM_RESET_IMMEDIATELY:
-		do_soft_reset();
+		warm_reset();
 		break;
 
 	case COLD_RESET_WHENEVER:
 	case COLD_RESET_IMMEDIATELY:
-		do_hard_reset();
+		cold_reset();
 		break;
 
 	default:

@@ -26,10 +26,10 @@
 #include "chip.h"
 #include <rules.h>
 
-/* PSP at D8F0 */
-#define PSP_MAILBOX_BAR			PCI_BASE_ADDRESS_4 /* BKDG: "BAR3" */
-#define PSP_BAR_ENABLES			0x48
-#define  PSP_MAILBOX_BAR_EN		0x10
+/*
+ * AcpiMmio Region
+ *  - fixed addresses offset from 0xfed80000
+ */
 
 /* Power management registers:  0xfed80300 or index/data at IO 0xcd6/cd7 */
 #define PM_DECODE_EN			0x00
@@ -40,6 +40,10 @@
 #define PM_PCI_CTRL			0x08
 #define   FORCE_SLPSTATE_RETRY		BIT(25)
 #define   FORCE_STPCLK_RETRY		BIT(24)
+
+#define PWR_RESET_CFG			0x10
+#define   TOGGLE_ALL_PWR_GOOD		BIT(1)
+
 #define PM_SERIRQ_CONF			0x54
 #define   PM_SERIRQ_NUM_BITS_17		0x0000
 #define   PM_SERIRQ_NUM_BITS_18		0x0004
@@ -105,179 +109,36 @@
 #define   SPI_ROM_ALT_ENABLE		BIT(0)
 #define   SPI_PRESERVE_BITS		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
 
-#define LPC_PCI_CONTROL			0x40
-#define   LEGACY_DMA_EN			BIT(2)
+/* FCH MISC Registers 0xfed80e00 */
+#define GPP_CLK_CNTRL			0
+#define GPP_CLK2_CLOCK_REQ_MAP_SHIFT	8
+#define GPP_CLK2_CLOCK_REQ_MAP_MASK	(0xf << GPP_CLK2_CLOCK_REQ_MAP_SHIFT)
+#define GPP_CLK2_CLOCK_REQ_MAP_CLK_REQ2	3
 
-#define LPC_IO_PORT_DECODE_ENABLE	0x44
-#define   DECODE_ENABLE_PARALLEL_PORT0	BIT(0)
-#define   DECODE_ENABLE_PARALLEL_PORT1	BIT(1)
-#define   DECODE_ENABLE_PARALLEL_PORT2	BIT(2)
-#define   DECODE_ENABLE_PARALLEL_PORT3	BIT(3)
-#define   DECODE_ENABLE_PARALLEL_PORT4	BIT(4)
-#define   DECODE_ENABLE_PARALLEL_PORT5	BIT(5)
-#define   DECODE_ENABLE_SERIAL_PORT0	BIT(6)
-#define   DECODE_ENABLE_SERIAL_PORT1	BIT(7)
-#define   DECODE_ENABLE_SERIAL_PORT2	BIT(8)
-#define   DECODE_ENABLE_SERIAL_PORT3	BIT(9)
-#define   DECODE_ENABLE_SERIAL_PORT4	BIT(10)
-#define   DECODE_ENABLE_SERIAL_PORT5	BIT(11)
-#define   DECODE_ENABLE_SERIAL_PORT6	BIT(12)
-#define   DECODE_ENABLE_SERIAL_PORT7	BIT(13)
-#define   DECODE_ENABLE_AUDIO_PORT0	BIT(14)
-#define   DECODE_ENABLE_AUDIO_PORT1	BIT(15)
-#define   DECODE_ENABLE_AUDIO_PORT2	BIT(16)
-#define   DECODE_ENABLE_AUDIO_PORT3	BIT(17)
-#define   DECODE_ENABLE_MIDI_PORT0	BIT(18)
-#define   DECODE_ENABLE_MIDI_PORT1	BIT(19)
-#define   DECODE_ENABLE_MIDI_PORT2	BIT(20)
-#define   DECODE_ENABLE_MIDI_PORT3	BIT(21)
-#define   DECODE_ENABLE_MSS_PORT0	BIT(22)
-#define   DECODE_ENABLE_MSS_PORT1	BIT(23)
-#define   DECODE_ENABLE_MSS_PORT2	BIT(24)
-#define   DECODE_ENABLE_MSS_PORT3	BIT(25)
-#define   DECODE_ENABLE_FDC_PORT0	BIT(26)
-#define   DECODE_ENABLE_FDC_PORT1	BIT(27)
-#define   DECODE_ENABLE_GAME_PORT	BIT(28)
-#define   DECODE_ENABLE_KBC_PORT	BIT(29)
-#define   DECODE_ENABLE_ACPIUC_PORT	BIT(30)
-#define   DECODE_ENABLE_ADLIB_PORT	BIT(31)
+#define GPP_CLK0_CLOCK_REQ_MAP_SHIFT	0
+#define GPP_CLK0_CLOCK_REQ_MAP_MASK	(0xf << GPP_CLK0_CLOCK_REQ_MAP_SHIFT)
+#define GPP_CLK0_CLOCK_REQ_MAP_CLK_REQ0	1
 
-#define LPC_IO_OR_MEM_DECODE_ENABLE	0x48
-#define   LPC_WIDEIO2_ENABLE		BIT(25)
-#define   LPC_WIDEIO1_ENABLE		BIT(24)
-#define   DECODE_IO_PORT_ENABLE6	BIT(23)
-#define   DECODE_IO_PORT_ENABLE5	BIT(22)
-#define   DECODE_IO_PORT_ENABLE4	BIT(21)
-#define   DECODE_MEM_PORT_ENABLE1	BIT(20)
-#define   DECODE_IO_PORT_ENABLE3	BIT(19)
-#define   DECODE_IO_PORT_ENABLE2	BIT(18)
-#define   DECODE_IO_PORT_ENABLE1	BIT(17)
-#define   DECODE_IO_PORT_ENABLE0	BIT(16)
-#define   LPC_SYNC_TIMEOUT_COUNT_ENABLE	BIT(7)
-#define   LPC_DECODE_RTC_IO_ENABLE	BIT(6)
-#define   DECODE_MEM_PORT_ENABLE0	BIT(5)
-#define   LPC_WIDEIO0_ENABLE		BIT(2)
-#define   DECODE_ALTERNATE_SIO_ENABLE	BIT(1)
-#define   DECODE_SIO_ENABLE		BIT(0)
-/* Assuming word access to higher word (register 0x4a) */
-#define LPC_IO_OR_MEM_DEC_EN_HIGH	0x4a
-#define   LPC_WIDEIO2_ENABLE_H		BIT(9)
-#define   LPC_WIDEIO1_ENABLE_H		BIT(8)
-#define   DECODE_IO_PORT_ENABLE6_H	BIT(7)
-#define   DECODE_IO_PORT_ENABLE5_H	BIT(6)
-#define   DECODE_IO_PORT_ENABLE4_H	BIT(5)
-#define   DECODE_IO_PORT_ENABLE3_H	BIT(3)
-#define   DECODE_IO_PORT_ENABLE2_H	BIT(2)
-#define   DECODE_IO_PORT_ENABLE1_H	BIT(1)
-#define   DECODE_IO_PORT_ENABLE0_H	BIT(0)
-
-#define LPC_MEM_PORT1			0x4c
-#define LPC_MEM_PORT0			0x60
-
-/*
- * Register 0x64 is 32-bit, composed by two 16-bit sub-registers.
- * For ease of access, each sub-register is declared separetely.
- */
-#define LPC_WIDEIO_GENERIC_PORT		0x64
-#define LPC_WIDEIO1_GENERIC_PORT	0x66
-#define ROM_ADDRESS_RANGE1_START	0x68
-#define ROM_ADDRESS_RANGE1_END		0x6a
-#define ROM_ADDRESS_RANGE2_START	0x6c
-#define ROM_ADDRESS_RANGE2_END		0x6e
-
-#define LPC_ALT_WIDEIO_RANGE_ENABLE	0x74
-#define   LPC_ALT_WIDEIO2_ENABLE	BIT(3)
-#define   LPC_ALT_WIDEIO1_ENABLE	BIT(2)
-#define   LPC_ALT_WIDEIO0_ENABLE	BIT(0)
-
-#define LPC_MISC_CONTROL_BITS		0x78
-#define   LPC_NOHOG			BIT(0)
-
-#define LPC_TRUSTED_PLATFORM_MODULE	0x7c
-#define   TPM_12_EN			BIT(0)
-#define   TPM_LEGACY_EN			BIT(2)
-
-#define LPC_WIDEIO2_GENERIC_PORT	0x90
-
-/*
- * LPC register 0xb8 is DWORD, here there are definitions for byte
- * access. For example, bits 31-24 are accessed through byte access
- * at register 0xbb ().
- */
-#define LPC_ROM_DMA_EC_HOST_CONTROL	0xb8
-#define   SPI_FROM_HOST_PREFETCH_EN	BIT(24)
-#define   SPI_FROM_USB_PREFETCH_EN	BIT(23)
-
-#define LPC_HOST_CONTROL		0xbb
-#define   PREFETCH_EN_SPI_FROM_HOST	BIT(0)
-#define   T_START_ENH			BIT(3)
-
-/* SPI Controller */
-#define SPI_CNTRL0			0x00
-#define   SPI_BUSY			BIT(31)
-#define   SPI_READ_MODE_MASK		(BIT(30) | BIT(29) | BIT(18))
-/* Nominal is 16.7MHz on older devices, 33MHz on newer */
-#define   SPI_READ_MODE_NOM		0x00000000
-#define   SPI_READ_MODE_DUAL112		(          BIT(29)          )
-#define   SPI_READ_MODE_QUAD114		(          BIT(29) | BIT(18))
-#define   SPI_READ_MODE_DUAL122		(BIT(30)                    )
-#define   SPI_READ_MODE_QUAD144		(BIT(30) |           BIT(18))
-#define   SPI_READ_MODE_NORMAL66	(BIT(30) | BIT(29)          )
-#define   SPI_READ_MODE_FAST		(BIT(30) | BIT(29) | BIT(18))
-#define   SPI_FIFO_PTR_CLR		BIT(20)
-#define   SPI_ARB_ENABLE		BIT(19)
-#define   EXEC_OPCODE			BIT(16)
-#define SPI_CNTRL1			0x0c
-#define SPI_CMD_CODE			0x45
-#define SPI_CMD_TRIGGER			0x47
-#define   SPI_CMD_TRIGGER_EXECUTE	BIT(7)
-#define SPI_TX_BYTE_COUNT		0x48
-#define SPI_RX_BYTE_COUNT		0x4b
-#define SPI_STATUS			0x4c
-#define   SPI_DONE_BYTE_COUNT_SHIFT	0
-#define   SPI_DONE_BYTE_COUNT_MASK	0xff
-#define   SPI_FIFO_WR_PTR_SHIFT		8
-#define   SPI_FIFO_WR_PTR_MASK		0x7f
-#define   SPI_FIFO_RD_PTR_SHIFT		16
-#define   SPI_FIFO_RD_PTR_MASK		0x7f
-#define SPI_FIFO			0x80
-#define   SPI_FIFO_DEPTH		(0xc7 - SPI_FIFO)
-
-#define SPI100_SPEED_CONFIG		0x22
-/* Use SPI_SPEED_16M-SPI_SPEED_66M below for the southbridge */
-#define   SPI_CNTRL1_SPEED_MASK		(BIT(15) | BIT(14) | BIT(13) | BIT(12))
-#define   SPI_NORM_SPEED_SH		12
-#define   SPI_FAST_SPEED_SH		8
-
-#define SPI100_ENABLE			0x20
-#define   SPI_USE_SPI100		BIT(0)
-
-#define SPI100_SPEED_CONFIG		0x22
-#define   SPI_SPEED_66M			(0x0)
-#define   SPI_SPEED_33M			(                  BIT(0))
-#define   SPI_SPEED_22M			(         BIT(1)         )
-#define   SPI_SPEED_16M			(         BIT(1) | BIT(0))
-#define   SPI_SPEED_100M		(BIT(2)                  )
-#define   SPI_SPEED_800K		(BIT(2) |          BIT(0))
-#define   SPI_NORM_SPEED_NEW_SH		12
-#define   SPI_FAST_SPEED_NEW_SH		8
-#define   SPI_ALT_SPEED_NEW_SH		4
-#define   SPI_TPM_SPEED_NEW_SH		0
-
-#define SPI100_HOST_PREF_CONFIG		0x2c
-#define   SPI_RD4DW_EN_HOST		BIT(15)
-
-#define MISC_MISC_CLK_CNTL_1		0x40
-#define   OSCOUT1_CLK_OUTPUT_ENB	BIT(2)  /* 0 = Enabled, 1 = Disabled */
-
-/* IO 0xcf9 - Reset control port*/
-#define   FULL_RST			BIT(3)
-#define   RST_CMD			BIT(2)
-#define   SYS_RST			BIT(1)
-
-/* PMx10 - Power Reset Config */
-#define PWR_RESET_CFG			0x10
-#define   TOGGLE_ALL_PWR_GOOD		BIT(1)
+#define MISC_CGPLL_CONFIG1			0x08
+#define   CG1PLL_SPREAD_SPECTRUM_ENABLE		BIT(0)
+#define MISC_CGPLL_CONFIG3			0x10
+#define   CG1PLL_REFDIV_SHIFT			0
+#define   CG1PLL_REFDIV_MASK			(0x3ff << CG1PLL_REFDIV_SHIFT)
+#define   CG1PLL_FBDIV_SHIFT			10
+#define   CG1PLL_FBDIV_MASK			(0xfff << CG1PLL_FBDIV_SHIFT)
+#define MISC_CGPLL_CONFIG4			0x14
+#define   CG1PLL_SS_STEP_SIZE_DSFRAC_SHIFT	0
+#define   CG1PLL_SS_STEP_SIZE_DSFRAC_MASK	(0xffff << CG1PLL_SS_STEP_SIZE_DSFRAC_SHIFT)
+#define   CG1PLL_SS_AMOUNT_DSFRAC_SHIFT		16
+#define   CG1PLL_SS_AMOUNT_DSFRAC_MASK		(0xffff << CG1PLL_SS_AMOUNT_DSFRAC_SHIFT)
+#define MISC_CGPLL_CONFIG5			0x18
+#define   CG1PLL_SS_AMOUNT_NFRAC_SLIP_SHIFT	8
+#define   CG1PLL_SS_AMOUNT_NFRAC_SLIP_MASK	(0xf << CG1PLL_SS_AMOUNT_NFRAC_SLIP_SHIFT)
+#define MISC_CGPLL_CONFIG6			0x1c
+#define   CG1PLL_LF_MODE_SHIFT			9
+#define   CG1PLL_LF_MODE_MASK			(0x1ff << CG1PLL_LF_MODE_SHIFT)
+#define MISC_CLK_CNTL1				0x40
+#define   CG1PLL_FBDIV_TEST			BIT(26)
 
 /* XHCI_PM Registers:  0xfed81c00 */
 #define XHCI_PM_INDIRECT_INDEX		0x48
@@ -351,37 +212,184 @@
 #define GPE0_LIMIT			28
 #define TOTAL_BITS(a)			(8 * sizeof(a))
 
-/* Bit definitions for MISC_MMIO_BASE register GPPClkCntrl */
-#define GPP_CLK_CNTRL			0
-#define GPP_CLK2_CLOCK_REQ_MAP_SHIFT	8
-#define GPP_CLK2_CLOCK_REQ_MAP_MASK	(0xf << GPP_CLK2_CLOCK_REQ_MAP_SHIFT)
-#define GPP_CLK2_CLOCK_REQ_MAP_CLK_REQ2	3
+/*
+ * PCI Config Space Definitions
+ */
 
-#define GPP_CLK0_CLOCK_REQ_MAP_SHIFT	0
-#define GPP_CLK0_CLOCK_REQ_MAP_MASK	(0xf << GPP_CLK0_CLOCK_REQ_MAP_SHIFT)
-#define GPP_CLK0_CLOCK_REQ_MAP_CLK_REQ0	1
+/* ISA Bridge D14F3 */
+#define LPC_PCI_CONTROL			0x40
+#define   LEGACY_DMA_EN			BIT(2)
 
-/* Bit definitions for MISC_MMIO_BASE register MiscClkCntl1 */
-#define MISC_CGPLL_CONFIG1			0x08
-#define   CG1PLL_SPREAD_SPECTRUM_ENABLE		BIT(0)
-#define MISC_CGPLL_CONFIG3			0x10
-#define   CG1PLL_REFDIV_SHIFT			0
-#define   CG1PLL_REFDIV_MASK			(0x3ff << CG1PLL_REFDIV_SHIFT)
-#define   CG1PLL_FBDIV_SHIFT			10
-#define   CG1PLL_FBDIV_MASK			(0xfff << CG1PLL_FBDIV_SHIFT)
-#define MISC_CGPLL_CONFIG4			0x14
-#define   CG1PLL_SS_STEP_SIZE_DSFRAC_SHIFT	0
-#define   CG1PLL_SS_STEP_SIZE_DSFRAC_MASK	(0xffff << CG1PLL_SS_STEP_SIZE_DSFRAC_SHIFT)
-#define   CG1PLL_SS_AMOUNT_DSFRAC_SHIFT		16
-#define   CG1PLL_SS_AMOUNT_DSFRAC_MASK		(0xffff << CG1PLL_SS_AMOUNT_DSFRAC_SHIFT)
-#define MISC_CGPLL_CONFIG5			0x18
-#define   CG1PLL_SS_AMOUNT_NFRAC_SLIP_SHIFT	8
-#define   CG1PLL_SS_AMOUNT_NFRAC_SLIP_MASK	(0xf << CG1PLL_SS_AMOUNT_NFRAC_SLIP_SHIFT)
-#define MISC_CGPLL_CONFIG6			0x1c
-#define   CG1PLL_LF_MODE_SHIFT			9
-#define   CG1PLL_LF_MODE_MASK			(0x1ff << CG1PLL_LF_MODE_SHIFT)
-#define MISC_CLK_CNTL1				0x40
-#define   CG1PLL_FBDIV_TEST			BIT(26)
+#define LPC_IO_PORT_DECODE_ENABLE	0x44
+#define   DECODE_ENABLE_PARALLEL_PORT0	BIT(0)
+#define   DECODE_ENABLE_PARALLEL_PORT1	BIT(1)
+#define   DECODE_ENABLE_PARALLEL_PORT2	BIT(2)
+#define   DECODE_ENABLE_PARALLEL_PORT3	BIT(3)
+#define   DECODE_ENABLE_PARALLEL_PORT4	BIT(4)
+#define   DECODE_ENABLE_PARALLEL_PORT5	BIT(5)
+#define   DECODE_ENABLE_SERIAL_PORT0	BIT(6)
+#define   DECODE_ENABLE_SERIAL_PORT1	BIT(7)
+#define   DECODE_ENABLE_SERIAL_PORT2	BIT(8)
+#define   DECODE_ENABLE_SERIAL_PORT3	BIT(9)
+#define   DECODE_ENABLE_SERIAL_PORT4	BIT(10)
+#define   DECODE_ENABLE_SERIAL_PORT5	BIT(11)
+#define   DECODE_ENABLE_SERIAL_PORT6	BIT(12)
+#define   DECODE_ENABLE_SERIAL_PORT7	BIT(13)
+#define   DECODE_ENABLE_AUDIO_PORT0	BIT(14)
+#define   DECODE_ENABLE_AUDIO_PORT1	BIT(15)
+#define   DECODE_ENABLE_AUDIO_PORT2	BIT(16)
+#define   DECODE_ENABLE_AUDIO_PORT3	BIT(17)
+#define   DECODE_ENABLE_MIDI_PORT0	BIT(18)
+#define   DECODE_ENABLE_MIDI_PORT1	BIT(19)
+#define   DECODE_ENABLE_MIDI_PORT2	BIT(20)
+#define   DECODE_ENABLE_MIDI_PORT3	BIT(21)
+#define   DECODE_ENABLE_MSS_PORT0	BIT(22)
+#define   DECODE_ENABLE_MSS_PORT1	BIT(23)
+#define   DECODE_ENABLE_MSS_PORT2	BIT(24)
+#define   DECODE_ENABLE_MSS_PORT3	BIT(25)
+#define   DECODE_ENABLE_FDC_PORT0	BIT(26)
+#define   DECODE_ENABLE_FDC_PORT1	BIT(27)
+#define   DECODE_ENABLE_GAME_PORT	BIT(28)
+#define   DECODE_ENABLE_KBC_PORT	BIT(29)
+#define   DECODE_ENABLE_ACPIUC_PORT	BIT(30)
+#define   DECODE_ENABLE_ADLIB_PORT	BIT(31)
+
+#define LPC_IO_OR_MEM_DECODE_ENABLE	0x48
+#define   LPC_WIDEIO2_ENABLE		BIT(25)
+#define   LPC_WIDEIO1_ENABLE		BIT(24)
+#define   DECODE_IO_PORT_ENABLE6	BIT(23)
+#define   DECODE_IO_PORT_ENABLE5	BIT(22)
+#define   DECODE_IO_PORT_ENABLE4	BIT(21)
+#define   DECODE_MEM_PORT_ENABLE1	BIT(20)
+#define   DECODE_IO_PORT_ENABLE3	BIT(19)
+#define   DECODE_IO_PORT_ENABLE2	BIT(18)
+#define   DECODE_IO_PORT_ENABLE1	BIT(17)
+#define   DECODE_IO_PORT_ENABLE0	BIT(16)
+#define   LPC_SYNC_TIMEOUT_COUNT_ENABLE	BIT(7)
+#define   LPC_DECODE_RTC_IO_ENABLE	BIT(6)
+#define   DECODE_MEM_PORT_ENABLE0	BIT(5)
+#define   LPC_WIDEIO0_ENABLE		BIT(2)
+#define   DECODE_ALTERNATE_SIO_ENABLE	BIT(1)
+#define   DECODE_SIO_ENABLE		BIT(0)
+#define   WIDEIO_RANGE_ERROR		-1
+#define   TOTAL_WIDEIO_PORTS		3
+
+/* Assuming word access to higher word (register 0x4a) */
+#define LPC_IO_OR_MEM_DEC_EN_HIGH	0x4a
+#define   LPC_WIDEIO2_ENABLE_H		BIT(9)
+#define   LPC_WIDEIO1_ENABLE_H		BIT(8)
+#define   DECODE_IO_PORT_ENABLE6_H	BIT(7)
+#define   DECODE_IO_PORT_ENABLE5_H	BIT(6)
+#define   DECODE_IO_PORT_ENABLE4_H	BIT(5)
+#define   DECODE_IO_PORT_ENABLE3_H	BIT(3)
+#define   DECODE_IO_PORT_ENABLE2_H	BIT(2)
+#define   DECODE_IO_PORT_ENABLE1_H	BIT(1)
+#define   DECODE_IO_PORT_ENABLE0_H	BIT(0)
+
+#define LPC_MEM_PORT1			0x4c
+#define LPC_MEM_PORT0			0x60
+
+/* Register 0x64 is 32-bit, composed by two 16-bit sub-registers.
+   For ease of access, each sub-register is declared separetely. */
+#define LPC_WIDEIO_GENERIC_PORT		0x64
+#define LPC_WIDEIO1_GENERIC_PORT	0x66
+#define ROM_ADDRESS_RANGE1_START	0x68
+#define ROM_ADDRESS_RANGE1_END		0x6a
+#define ROM_ADDRESS_RANGE2_START	0x6c
+#define ROM_ADDRESS_RANGE2_END		0x6e
+
+#define LPC_ALT_WIDEIO_RANGE_ENABLE	0x74
+#define   LPC_ALT_WIDEIO2_ENABLE	BIT(3)
+#define   LPC_ALT_WIDEIO1_ENABLE	BIT(2)
+#define   LPC_ALT_WIDEIO0_ENABLE	BIT(0)
+
+#define LPC_MISC_CONTROL_BITS		0x78
+#define   LPC_NOHOG			BIT(0)
+
+#define LPC_TRUSTED_PLATFORM_MODULE	0x7c
+#define   TPM_12_EN			BIT(0)
+#define   TPM_LEGACY_EN			BIT(2)
+
+#define LPC_WIDEIO2_GENERIC_PORT	0x90
+
+/* LPC register 0xb8 is DWORD, here there are definitions for byte
+   access. For example, bits 31-24 are accessed through byte access
+   at register 0xbb. */
+#define LPC_ROM_DMA_EC_HOST_CONTROL	0xb8
+#define   SPI_FROM_HOST_PREFETCH_EN	BIT(24)
+#define   SPI_FROM_USB_PREFETCH_EN	BIT(23)
+
+#define LPC_HOST_CONTROL		0xbb
+#define   PREFETCH_EN_SPI_FROM_HOST	BIT(0)
+#define   T_START_ENH			BIT(3)
+
+/* SPI Controller (base address in D14F3xA0) */
+#define SPI_CNTRL0			0x00
+#define   SPI_BUSY			BIT(31)
+#define   SPI_READ_MODE_MASK		(BIT(30) | BIT(29) | BIT(18))
+/* Nominal is 16.7MHz on older devices, 33MHz on newer */
+#define   SPI_READ_MODE_NOM		0x00000000
+#define   SPI_READ_MODE_DUAL112		(          BIT(29)          )
+#define   SPI_READ_MODE_QUAD114		(          BIT(29) | BIT(18))
+#define   SPI_READ_MODE_DUAL122		(BIT(30)                    )
+#define   SPI_READ_MODE_QUAD144		(BIT(30) |           BIT(18))
+#define   SPI_READ_MODE_NORMAL66	(BIT(30) | BIT(29)          )
+#define   SPI_READ_MODE_FAST		(BIT(30) | BIT(29) | BIT(18))
+#define   SPI_FIFO_PTR_CLR		BIT(20)
+#define   SPI_ARB_ENABLE		BIT(19)
+#define   EXEC_OPCODE			BIT(16)
+#define SPI_CNTRL1			0x0c
+#define SPI_CMD_CODE			0x45
+#define SPI_CMD_TRIGGER			0x47
+#define   SPI_CMD_TRIGGER_EXECUTE	BIT(7)
+#define SPI_TX_BYTE_COUNT		0x48
+#define SPI_RX_BYTE_COUNT		0x4b
+#define SPI_STATUS			0x4c
+#define   SPI_DONE_BYTE_COUNT_SHIFT	0
+#define   SPI_DONE_BYTE_COUNT_MASK	0xff
+#define   SPI_FIFO_WR_PTR_SHIFT		8
+#define   SPI_FIFO_WR_PTR_MASK		0x7f
+#define   SPI_FIFO_RD_PTR_SHIFT		16
+#define   SPI_FIFO_RD_PTR_MASK		0x7f
+#define SPI_FIFO			0x80
+#define   SPI_FIFO_DEPTH		(0xc7 - SPI_FIFO)
+
+#define SPI100_SPEED_CONFIG		0x22
+/* Use SPI_SPEED_16M-SPI_SPEED_66M below for the southbridge */
+#define   SPI_CNTRL1_SPEED_MASK		(BIT(15) | BIT(14) | BIT(13) | BIT(12))
+#define   SPI_NORM_SPEED_SH		12
+#define   SPI_FAST_SPEED_SH		8
+
+#define SPI100_ENABLE			0x20
+#define   SPI_USE_SPI100		BIT(0)
+
+#define SPI100_SPEED_CONFIG		0x22
+#define   SPI_SPEED_66M			(0x0)
+#define   SPI_SPEED_33M			(                  BIT(0))
+#define   SPI_SPEED_22M			(         BIT(1)         )
+#define   SPI_SPEED_16M			(         BIT(1) | BIT(0))
+#define   SPI_SPEED_100M		(BIT(2)                  )
+#define   SPI_SPEED_800K		(BIT(2) |          BIT(0))
+#define   SPI_NORM_SPEED_NEW_SH		12
+#define   SPI_FAST_SPEED_NEW_SH		8
+#define   SPI_ALT_SPEED_NEW_SH		4
+#define   SPI_TPM_SPEED_NEW_SH		0
+
+#define SPI100_HOST_PREF_CONFIG		0x2c
+#define   SPI_RD4DW_EN_HOST		BIT(15)
+
+#define MISC_MISC_CLK_CNTL_1		0x40
+#define   OSCOUT1_CLK_OUTPUT_ENB	BIT(2)  /* 0 = Enabled, 1 = Disabled */
+
+/* Platform Security Processor D8F0 */
+#define PSP_MAILBOX_BAR			PCI_BASE_ADDRESS_4 /* BKDG: "BAR3" */
+#define PSP_BAR_ENABLES			0x48
+#define  PSP_MAILBOX_BAR_EN		0x10
+
+/* IO 0xcf9 - Reset control port*/
+#define   FULL_RST			BIT(3)
+#define   RST_CMD			BIT(2)
+#define   SYS_RST			BIT(1)
 
 struct stoneyridge_aoac {
 	int enable;

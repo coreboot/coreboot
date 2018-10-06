@@ -263,7 +263,12 @@ int pcr_execute_sideband_msg(struct pcr_sbi_msg *msg, uint32_t *data,
 	uint16_t sbi_status;
 	uint16_t sbi_rid;
 
-	assert(msg && data && response);
+	if (!msg || !data || !response) {
+		printk(BIOS_ERR, "Pointer checked for NULL Fail! "
+		       "msg = %p \t data = %p \t response = %p\n",
+		       msg, data, response);
+		return -1;
+	}
 
 	switch (msg->opcode) {
 		case MEM_READ:
@@ -275,7 +280,8 @@ int pcr_execute_sideband_msg(struct pcr_sbi_msg *msg, uint32_t *data,
 		case GPIO_LOCK_UNLOCK:
 			break;
 		default:
-			printk(BIOS_ERR, "SBI Failure: Wrong Input!\n");
+			printk(BIOS_ERR, "SBI Failure: Wrong Input = %x!\n",
+					msg->opcode);
 			return -1;
 			break;
 	}

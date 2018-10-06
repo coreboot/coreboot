@@ -73,4 +73,11 @@ void variant_nhlt_init(struct nhlt *nhlt);
 void variant_nhlt_oem_overrides(const char **oem_id, const char **oem_table_id,
 				uint32_t *oem_revision);
 
+struct google_chromeec_event_info;
+/*
+ * Read google_chromeec_event_info structure from variant to set different masks
+ * on the EC e.g. SCI, S3, S5, S0ix, SMI.
+ */
+const struct google_chromeec_event_info *variant_get_event_info(void);
+
 #endif /* __BASEBOARD_VARIANTS_H__ */

@@ -34,20 +34,30 @@ void __weak variant_smi_sleep(u8 slp_typ) {}
 
 void mainboard_smi_sleep(u8 slp_typ)
 {
+	const struct google_chromeec_event_info *info;
+
+	info = variant_get_event_info();
+
 	variant_smi_sleep(slp_typ);
-	chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS,
-			MAINBOARD_EC_S5_WAKE_EVENTS);
+	chromeec_smi_sleep(slp_typ, info->s3_wake_events, info->s5_wake_events);
 }
 
 int mainboard_smi_apmc(u8 apmc)
 {
-	chromeec_smi_apmc(apmc, MAINBOARD_EC_SCI_EVENTS,
-			MAINBOARD_EC_SMI_EVENTS);
+	const struct google_chromeec_event_info *info;
+
+	info = variant_get_event_info();
+
+	chromeec_smi_apmc(apmc, info->sci_events, info->smi_events);
+
 	return 0;
 }
 
 void elog_gsmi_cb_mainboard_log_wake_source(void)
 {
-	google_chromeec_log_events(MAINBOARD_EC_LOG_EVENTS |
-					MAINBOARD_EC_S0IX_WAKE_EVENTS);
+	const struct google_chromeec_event_info *info;
+
+	info = variant_get_event_info();
+
+	google_chromeec_log_events(info->log_events | info->s0ix_wake_events);
 }

@@ -26,6 +26,7 @@ ramstage-y += mainboard.c
 ramstage-y += ramstage.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 
 subdirs-y += variants/baseboard
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include

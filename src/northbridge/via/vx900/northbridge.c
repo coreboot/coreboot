@@ -23,6 +23,7 @@
 #include <device/pci_ids.h>
 #include <cpu/cpu.h>
 #include <cbmem.h>
+#include <cf9_reset.h>
 #include <lib.h>
 #include <reset.h>
 #include <string.h>
@@ -43,9 +44,9 @@ static uint64_t uma_memory_size = 0;
  * remapping mechanism will overflow, the effects of which are unknown.
  */
 
-void do_hard_reset(void)
+void do_board_reset(void)
 {
-	outb((1 << 2) | (1 << 1), 0xcf9);
+	system_reset();
 }
 
 uint64_t get_uma_memory_base(void)

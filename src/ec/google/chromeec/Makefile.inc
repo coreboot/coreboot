@@ -3,6 +3,7 @@ ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC),y)
 bootblock-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c
 romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c
+smm-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c
 
 bootblock-y += ec.c
 bootblock-$(CONFIG_EC_GOOGLE_CHROMEEC_LPC) += ec_lpc.c

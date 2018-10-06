@@ -7,7 +7,6 @@ config CPU_SAMSUNG_EXYNOS5250
 	select GENERIC_UDELAY
 	select HAVE_UART_SPECIAL
 	select BOOTBLOCK_CONSOLE
-	select HAVE_HARD_RESET
 	bool
 	default n
 

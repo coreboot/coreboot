@@ -290,6 +290,10 @@ static void configure_isst(void)
 static void configure_misc(void)
 {
 	struct device *dev = SA_DEV_ROOT;
+	if (!dev) {
+		printk(BIOS_ERR, "SA_DEV_ROOT device not found!\n");
+		return;
+	}
 	config_t *conf = dev->chip_info;
 	msr_t msr;
 

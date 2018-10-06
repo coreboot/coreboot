@@ -83,6 +83,10 @@ void pch_thermal_configuration(void)
 {
 	uint16_t reg16;
 	struct device *dev = PCH_DEV_THERMAL;
+	if (!dev) {
+		printk(BIOS_ERR, "PCH_DEV_THERMAL device not found!\n");
+		return;
+	}
 	void *thermalbar = pch_thermal_get_bar(dev);
 
 	/* Use default pre-ram bar */

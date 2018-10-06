@@ -307,12 +307,6 @@
 #define WIDEIO_RANGE_ERROR		-1
 #define TOTAL_WIDEIO_PORTS		3
 
-#if ENV_BOOTBLOCK
-#define GPIO_TABLE_BOOTBLOCK		1
-#else
-#define GPIO_TABLE_BOOTBLOCK		0
-#endif
-
 /* FCH AOAC Registers 0xfed81e00 */
 #define FCH_AOAC_D3_CONTROL_CLK_GEN	0x40
 #define FCH_AOAC_D3_CONTROL_I2C0	0x4a

@@ -18,7 +18,7 @@
 
 #include "board.h"
 
-void do_hard_reset(void)
+void do_board_reset(void)
 {
 	gpio_output(GPIO_RESET, 1);
 }

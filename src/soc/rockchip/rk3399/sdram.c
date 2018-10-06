@@ -990,7 +990,7 @@ static void switch_to_phy_index1(const struct rk3399_sdram_params *sdram_params)
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR,
 			       "index1 frequency change overtime, reset\n");
-			hard_reset();
+			board_reset();
 		}
 	}
 
@@ -1000,7 +1000,7 @@ static void switch_to_phy_index1(const struct rk3399_sdram_params *sdram_params)
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR,
 			       "index1 frequency done overtime, reset\n");
-			hard_reset();
+			board_reset();
 		}
 	}
 
@@ -1009,7 +1009,7 @@ static void switch_to_phy_index1(const struct rk3399_sdram_params *sdram_params)
 		clrsetbits_le32(&denali_phy[896], (0x3 << 8) | 1, 1 << 8);
 		if (data_training(channel, sdram_params, PI_FULL_TRAINING)) {
 			printk(BIOS_ERR, "index1 training failed, reset\n");
-			hard_reset();
+			board_reset();
 		}
 	}
 }
@@ -1042,7 +1042,7 @@ void sdram_init(const struct rk3399_sdram_params *sdram_params)
 		 */
 		if (pctl_cfg(channel, sdram_params) != 0) {
 			printk(BIOS_ERR, "pctl_cfg fail, reset\n");
-			hard_reset();
+			board_reset();
 		}
 
 		/* LPDDR2/LPDDR3 need to wait DAI complete, max 10us */
@@ -1052,7 +1052,7 @@ void sdram_init(const struct rk3399_sdram_params *sdram_params)
 		if (data_training(channel, sdram_params, PI_FULL_TRAINING)) {
 			printk(BIOS_ERR,
 			       "SDRAM initialization failed, reset\n");
-			hard_reset();
+			board_reset();
 		}
 
 		set_ddrconfig(sdram_params, channel,

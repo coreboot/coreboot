@@ -25,7 +25,6 @@ bootblock-y += timer.c
 bootblock-y += spi.c
 bootblock-y += uart.c
 bootblock-y += cpu.c
-bootblock-y += reset.c
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
@@ -40,7 +39,6 @@ verstage-y += timer.c
 verstage-y += spi.c
 verstage-$(CONFIG_DRIVERS_UART) += uart.c
 verstage-y += cbmem.c
-verstage-y += reset.c
 
 ################################################################################
 # romstage
@@ -53,7 +51,6 @@ romstage-y += spi.c
 romstage-y += uart.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
 romstage-y += cbmem.c
-romstage-y += reset.c
 
 romstage-y += sdram.c
 romstage-y += mmu.c
@@ -74,7 +71,6 @@ ramstage-y += cpu.c
 ramstage-y += cpu_secondary.S
 ramstage-y += ecam0.c
 ramstage-y += cbmem.c
-ramstage-y += reset.c
 
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += bl31_plat_params.c
 

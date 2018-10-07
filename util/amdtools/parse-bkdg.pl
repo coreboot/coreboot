@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 
 my $NAME = $0;
 my $VERSION = '0.01';
@@ -11,6 +11,7 @@ my $URL = "https://coreboot.org";
 my $DEBUG = 0;
 
 use strict;
+use warnings;
 
 # Run the bkdg for k8 through pdftotext first (from the poppler package)
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 files=`git diff --cached --name-only | grep '\.[ch]$'`
 if [ -z "$files" ]; then
 	exit 0

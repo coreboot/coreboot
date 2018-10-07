@@ -1,7 +1,8 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 use Getopt::Long;
 
 use strict;
+use warnings;
 
 my $NAME = $0;
 my $VERSION = '0.01';

@@ -17,7 +17,7 @@
 PROGRAM = superiotool
 
 CC      ?= gcc
-INSTALL ?= /usr/bin/install
+INSTALL ?= /usr/bin/env install
 PREFIX  ?= /usr/local
 
 # Set the superiotool version string to the output of 'git describe'.

@@ -17,7 +17,7 @@
 CC = gcc
 CFLAGS = -O2 -Wall -W
 PROGRAM = ectool
-INSTALL = /usr/bin/install
+INSTALL = /usr/bin/env install
 PREFIX  = /usr/local
 OS_ARCH = $(shell uname)
 

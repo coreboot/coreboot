@@ -6,7 +6,7 @@ CONFIG_FMD_GENPARSER ?= n
 HOSTCC ?= $(CC)
 PREFIX ?= /usr/local
 BINDIR ?= $(PREFIX)/bin
-INSTALL ?= /usr/bin/install
+INSTALL ?= /usr/bin/env install
 OBJCOPY ?= objcopy
 
 VBOOT_SOURCE ?= $(top)/3rdparty/vboot

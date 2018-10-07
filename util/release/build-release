@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ${VERSION_NAME}: new version name
 # ${COMMIT_ID}: commit id (if not master)
 # ${USERNAME}: username (if not default to https)

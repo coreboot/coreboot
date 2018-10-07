@@ -15,7 +15,7 @@
 PROGRAM = intelmetool
 
 CC      ?= gcc
-INSTALL ?= /usr/bin/install
+INSTALL ?= /usr/bin/env install
 PREFIX  ?= /usr/local
 CFLAGS  ?= -O0 -g -Wall -W -Wno-unused-parameter -Wno-sign-compare -Wno-unused-function
 LDFLAGS += -lpci -lz

@@ -16,7 +16,7 @@
 PROGRAM   = cbmem
 ROOT      = ../../src
 CC       ?= $(CROSS_COMPILE)gcc
-INSTALL  ?= /usr/bin/install
+INSTALL  ?= /usr/bin/env install
 PREFIX   ?= /usr/local
 CFLAGS   ?= -O2
 CFLAGS   += -Wall -Werror

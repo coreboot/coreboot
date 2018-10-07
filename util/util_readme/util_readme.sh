@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Creates `./util/README.md` and `./Documentation/Util.md` of description files
 # in `./util` subdirectories

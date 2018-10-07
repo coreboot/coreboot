@@ -20,7 +20,7 @@ PROGRAM = inteltool
 top ?= $(abspath ../..)
 
 CC      ?= gcc
-INSTALL ?= /usr/bin/install
+INSTALL ?= /usr/bin/env install
 PREFIX  ?= /usr/local
 CFLAGS  ?= -O2 -g -Wall -W
 LDFLAGS += -lpci -lz

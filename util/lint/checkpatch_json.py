@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # Copyright (C) 2018 Intel Corporation.
 # written by Naresh G Solanki<naresh.solanki@intel.com> and
 #            Maulik V Vaghela <maulik.v.vaghela@intel.com>

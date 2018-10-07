@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This script is used to set up a ubuntu-based live image to be used
 # with coreboot's board_status script.  It modifies the system so that

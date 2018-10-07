@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #Parse a log and get back the function names and line numbers
 #Provide a log file as first argument
 

@@ -16,7 +16,7 @@
 PROGRAM = k8resdump
 
 CC      = gcc
-INSTALL = /usr/bin/install
+INSTALL = /usr/bin/env install
 PREFIX  = /usr/local
 #CFLAGS  = -O2 -g -Wall -Werror
 CFLAGS  = -Os -Wall -Werror

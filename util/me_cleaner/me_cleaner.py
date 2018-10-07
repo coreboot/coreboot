@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # me_cleaner - Tool for partial deblobbing of Intel ME/TXE firmware images
 # Copyright (C) 2016-2018 Nicola Corna <nicola@corna.info>

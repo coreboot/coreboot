@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This is an example that generates data files that are understood by the
 # k8-interpret-extended-memory-settings.pl script. Adjust the pci ids for your

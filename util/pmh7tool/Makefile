@@ -16,7 +16,7 @@
 CC = gcc
 CFLAGS = -O2 -Wall -W -Werror
 PROGRAM = pmh7tool
-INSTALL = /usr/bin/install
+INSTALL = /usr/bin/env install
 PREFIX	= /usr/local
 
 all: $(PROGRAM)

@@ -17,6 +17,7 @@
 #define __SIMPLE_DEVICE__
 
 #include <arch/io.h>
+#include <cf9_reset.h>
 #include <reset.h>
 
 #define HT_INIT_CONTROL     0x6c
@@ -24,7 +25,7 @@
 #define HTIC_BIOSR_Detect  (1<<5)
 #define HTIC_INIT_Detect   (1<<6)
 
-static void set_bios_reset(void)
+void cf9_reset_prepare(void)
 {
 	u32 htic;
 	htic = pci_io_read_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL);
@@ -32,11 +33,7 @@ static void set_bios_reset(void)
 	pci_io_write_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL, htic);
 }
 
-void do_hard_reset(void)
+void do_board_reset(void)
 {
-	set_bios_reset();
-	/* Try rebooting through port 0xcf9 */
-	/* Actually it is not a real hard_reset --- it only reset coherent link table, but not reset link freq and width */
-	outb((0 << 3) | (0 << 2) | (1 << 1), 0xcf9);
-	outb((0 << 3) | (1 << 2) | (1 << 1), 0xcf9);
+	system_reset();
 }

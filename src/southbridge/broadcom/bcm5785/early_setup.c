@@ -103,7 +103,7 @@ void ldtstop_sb(void)
 }
 
 
-void do_hard_reset(void)
+void do_board_reset(void)
 {
 	bcm5785_enable_wdt_port_cf9();
 

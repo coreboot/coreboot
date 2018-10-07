@@ -1,6 +1,5 @@
 config SOUTHBRIDGE_NVIDIA_CK804
 	bool
-	select HAVE_HARD_RESET
 	select HAVE_USBDEBUG
 	select IOAPIC
 

@@ -29,7 +29,7 @@ void do_soft_reset(void)
 	outb(0x06, 0x0cf9);
 }
 
-void do_hard_reset(void)
+void do_board_reset(void)
 {
 	set_bios_reset();
 

@@ -44,7 +44,7 @@ static void set_bios_reset(void)
 	}
 }
 
-void do_hard_reset(void)
+void do_board_reset(void)
 {
 	set_bios_reset();
 

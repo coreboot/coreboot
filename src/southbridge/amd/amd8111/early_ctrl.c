@@ -52,7 +52,7 @@ static void enable_cf9(void)
 	enable_cf9_x(sbbusn, sbdn);
 }
 
-void do_hard_reset(void)
+void do_board_reset(void)
 {
 	set_bios_reset();
 	/* reset */

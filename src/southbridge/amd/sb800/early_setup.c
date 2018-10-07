@@ -218,7 +218,7 @@ static void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 	pmio_write(0x81, byte);
 }
 
-void do_hard_reset(void)
+void do_board_reset(void)
 {
 	set_bios_reset();
 

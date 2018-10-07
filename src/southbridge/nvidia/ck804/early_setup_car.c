@@ -355,7 +355,7 @@ static int ck804_early_setup_x(void)
 	return set_ht_link_ck804(4);
 }
 
-void do_hard_reset(void)
+void do_board_reset(void)
 {
 	set_bios_reset();
 

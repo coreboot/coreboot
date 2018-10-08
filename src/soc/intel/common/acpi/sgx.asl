@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Intel Corp.
+ * Copyright (C) 2017-2018 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,10 +12,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
-External(\_SB.EPCS, IntObj) // Enclave Page Cache (EPC) Status
-External(\_SB.EMNA, IntObj) // EPC base address
-External(\_SB.ELNG, IntObj) // EPC length
 
 Scope(\_SB)
 {
@@ -54,15 +50,15 @@ Scope(\_SB)
 			CreateQwordField (RBUF, ^BAR0._MIN, EMIN)
 			CreateQwordField (RBUF, ^BAR0._MAX, EMAX)
 			CreateQwordField (RBUF, ^BAR0._LEN, ELEN)
-			Store (\_SB.EMNA, EMIN)
-			Store (\_SB.ELNG, ELEN)
-			Subtract (Add (\_SB.EMNA, \_SB.ELNG), 1, EMAX)
+			Store (EMNA, EMIN)
+			Store (ELNG, ELEN)
+			Subtract (Add (EMNA, ELNG), 1, EMAX)
 			Return (RBUF)
 		}
 
 		Method (_STA, 0x0, NotSerialized)
 		{
-			If (LNotEqual (\_SB.EPCS, 0))
+			If (LNotEqual (EPCS, 0))
 			{
 				Return (0xF)
 			}

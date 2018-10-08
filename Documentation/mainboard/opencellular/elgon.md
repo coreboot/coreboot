@@ -40,20 +40,32 @@ The SPI flash can be accessed using [flashrom].
 The EVT board does have a pinheader to flash the SOIC-8 in circuit.
 Directly connecting a Pomona test-clip on the flash is also possible.
 
-TODO: pinout
-
 **Total board view of EVT**
 
 ![][elgon1]
 
-[elgon1]: elgon1.png
+[elgon1]: elgon1.jpg
 
-**Closeup view of SOIC-8 flash IC, programming pin header and
-USB serial connector of EVT**
+**Closeup view of SOIC-8 flash IC and USB serial connector of EVT (marked blue)**
 
 ![][elgon2]
 
-[elgon2]: elgon2.png
+[elgon2]: elgon2.jpg
+
+
+**SPI header (marked blue)**
+
+![][elgon_conn_j9_pcb]
+
+[elgon_conn_j9_pcb]: elgon_conn_j9_pcb.jpg
+
+**SPI header pinout**
+
+Dediprog compatible pinout.
+
+![][elgon_conn_j9]
+
+[elgon_conn_j9]: elgon_conn_j9.png
 
 ## Technology
 

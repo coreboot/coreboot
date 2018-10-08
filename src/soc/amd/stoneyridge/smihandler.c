@@ -122,13 +122,13 @@ static void disable_all_smi_status(void)
 
 static void sb_slp_typ_handler(void)
 {
-	uint32_t pm1cnt, pci_ctrl, reg32;
-	uint16_t reg16;
+	uint32_t pci_ctrl, reg32;
+	uint16_t pm1cnt, reg16;
 	uint8_t slp_typ, rst_ctrl;
 
 	/* Figure out SLP_TYP */
-	pm1cnt = inl(pm_acpi_pm_cnt_blk());
-	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x\n", pm1cnt);
+	pm1cnt = inw(pm_acpi_pm_cnt_blk());
+	printk(BIOS_SPEW, "SMI#: SLP = 0x%04x\n", pm1cnt);
 	slp_typ = acpi_sleep_from_pm1(pm1cnt);
 
 	/* Do any mainboard sleep handling */
@@ -196,7 +196,7 @@ static void sb_slp_typ_handler(void)
 		} /* if (IS_ENABLED(CONFIG_ELOG_GSMI)) */
 
 		/* Reissue Pm1 write */
-		outl(pm1cnt | SLP_EN, pm_acpi_pm_cnt_blk());
+		outw(pm1cnt | SLP_EN, pm_acpi_pm_cnt_blk());
 		hlt();
 	}
 }

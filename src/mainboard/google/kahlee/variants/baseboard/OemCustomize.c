@@ -149,7 +149,7 @@ static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
 VOID __weak OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly)
 {
 	InitEarly->GnbConfig.PcieComplexList = (void *)&PcieComplex;
-	InitEarly->GnbConfig.PsppPolicy = PsppBalanceLow;
+	InitEarly->GnbConfig.PsppPolicy = PsppBalanceHigh;
 	InitEarly->PlatformConfig.GnbAzI2sBusSelect = GnbAcpI2sBus;
 	InitEarly->PlatformConfig.GnbAzI2sBusPinConfig = GnbAcp2Tx4RxBluetooth;
 	if ((IS_ENABLED(CONFIG_BOARD_GOOGLE_LIARA)) && (board_id() <= 4))

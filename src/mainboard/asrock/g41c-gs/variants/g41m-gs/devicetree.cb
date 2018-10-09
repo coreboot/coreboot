@@ -104,7 +104,7 @@ chip northbridge/intel/x4x		# Northbridge
 					device pnp 2e.6 off end		# SPI
 					device pnp 2e.7 off end		# GPIO6
 					device pnp 2e.8 off end		# WDT0#, PLED
-					device pnp 2e.9 on end 		# GPIO2
+					device pnp 2e.9 on end		# GPIO2
 					device pnp 2e.109 on	# GPIO3
 						irq 0xfe = 0x07
 					end

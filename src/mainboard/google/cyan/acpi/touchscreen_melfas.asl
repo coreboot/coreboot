@@ -36,7 +36,7 @@ Scope (\_SB.PCI0.I2C1)
 					"\\_SB.PCI0.I2C1",        /* ResourceSource */
 				)
 				GpioInt (Level, ActiveLow, ExclusiveAndWake, PullDefault,,
- 					"\\_SB.GPNC") { BOARD_TOUCH_GPIO_INDEX }
+					"\\_SB.GPNC") { BOARD_TOUCH_GPIO_INDEX }
 			})
 			Return (BUF0)
 		}

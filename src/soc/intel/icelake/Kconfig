@@ -19,6 +19,7 @@ config CPU_SPECIFIC_OPTIONS
 	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 	select COMMON_FADT
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
+	select FSP_USES_CB_STACK
 	select GENERIC_GPIO_LIB
 	select HAVE_FSP_GOP
 	select INTEL_DESCRIPTOR_MODE_CAPABLE
@@ -89,6 +90,7 @@ config DCACHE_RAM_SIZE
 
 config DCACHE_BSP_STACK_SIZE
 	hex
+	default 0x20000 if FSP_USES_CB_STACK
 	default 0x4000
 	help
 	  The amount of anticipated stack usage in CAR by bootblock and

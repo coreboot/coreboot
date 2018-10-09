@@ -24,6 +24,7 @@
 #include <soc/clock.h>
 #include <soc/sdram.h>
 #include <soc/timer.h>
+#include <soc/uart.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -207,6 +208,21 @@ static int dt_platform_fixup(struct device_tree_fixup *fixup,
 		printk(BIOS_ERR, "%s: Node not found. OS might miss-behave !\n",
 		       __func__);
 
+	/* Remove unused UART entries */
+	for (i = 0; i < 4; i++) {
+		char path[32];
+		const uint64_t addr = UAAx_PF_BAR0(i);
+		/* Remove the node */
+		snprintf(path, sizeof(path), "soc@0/serial@%llx", addr);
+		dt_node = dt_find_node_by_path(tree->root, path, NULL, NULL, 0);
+		if (!dt_node || uart_is_enabled(i)) {
+			printk(BIOS_INFO, "%s: ignoring %s\n", __func__, path);
+			continue;
+		}
+		printk(BIOS_INFO, "%s: Removing node %s\n", __func__, path);
+		list_remove(&dt_node->list_node);
+	}
+
 	/* Remove unused PEM entries */
 	for (i = 0; i < 8; i++) {
 		char path[32];
@@ -371,6 +387,18 @@ static void soc_init(struct device *dev)
 			dt_fixup->fixup = dt_platform_fixup;
 			list_insert_after(&dt_fixup->list_node,
 					  &device_tree_fixups);
+		}
+	}
+
+	/* Init UARTs */
+	size_t i;
+	struct device *uart_dev;
+	for (i = 0; i <= 3; i++) {
+		uart_dev = dev_find_slot(1, PCI_DEVFN(8, i));
+		/* using device enable state from devicetree.cb */
+		if (uart_dev && uart_dev->enabled) {
+			if (!uart_is_enabled(i))
+				uart_setup(i, 0);
 		}
 	}
 

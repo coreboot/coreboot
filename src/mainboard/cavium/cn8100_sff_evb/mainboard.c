@@ -83,12 +83,6 @@ static void mainboard_init(struct device *dev)
 {
 	size_t i;
 
-	/* Init UARTs */
-	for (i = 0; i < 4; i++) {
-		if (!uart_is_enabled(i))
-			uart_setup(i, 0);
-	}
-
 	/* Init timer */
 	soc_timer_init();
 

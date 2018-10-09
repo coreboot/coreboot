@@ -32,18 +32,17 @@
 
 void pch_enable_lpc(void)
 {
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x0c00);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x84, 0x00000000);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x000c0701);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x8c, 0x000c0069);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x90, 0x000c06a1);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), ETR3, 0x10000);
+	pci_write_config16(PCH_LPC_DEV, LPC_EN, MC_LPC_EN | KBC_LPC_EN);
+	pci_write_config32(PCH_LPC_DEV, LPC_GEN2_DEC, 0xc0701);
+	pci_write_config32(PCH_LPC_DEV, LPC_GEN3_DEC, 0xc0069);
+	pci_write_config32(PCH_LPC_DEV, LPC_GEN4_DEC, 0xc06a1);
+	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
 
 	/* Memory map KB9012 EC registers */
 	pci_write_config32(
-		PCI_DEV(0, 0x1f, 0), 0x98,
+		PCH_LPC_DEV, LGMR,
 		CONFIG_EC_BASE_ADDRESS | 1);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0xd8, 0xffc0);
+	pci_write_config16(PCH_LPC_DEV, BIOS_DEC_EN1, 0xffc0);
 
 	/* Enable external USB port power. */
 	if (IS_ENABLED(CONFIG_USBDEBUG))
@@ -53,7 +52,7 @@ void pch_enable_lpc(void)
 void mainboard_rcba_config(void)
 {
 	/* Disable devices.  */
-	RCBA32(0x3414) = 0x00000020;
+	RCBA32(BUC) = 0x00000020;
 }
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, 0 },

@@ -40,11 +40,6 @@ static int delegate = 0
 
 void mstatus_init(void)
 {
-	uintptr_t ms = 0;
-
-	ms = INSERT_FIELD(ms, MSTATUS_FS, 3);
-	write_csr(mstatus, ms);
-
 	// clear any pending timer interrupts.
 	clear_csr(mip,  MIP_STIP | MIP_SSIP);
 

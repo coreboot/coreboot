@@ -52,6 +52,9 @@ CPPFLAGS_common += -I$(src)/drivers/intel/fsp2_0/include
 cbfs-files-$(CONFIG_FSP_CAR) += $(CONFIG_FSP_T_CBFS)
 $(CONFIG_FSP_T_CBFS)-file := $(call strip_quotes,$(CONFIG_FSP_T_FILE))
 $(CONFIG_FSP_T_CBFS)-type := fsp
+ifeq ($(CONFIG_FSP_T_XIP),y)
+$(CONFIG_FSP_T_CBFS)-options := --xip
+endif
 
 cbfs-files-$(CONFIG_ADD_FSP_BINARIES) += $(CONFIG_FSP_M_CBFS)
 $(CONFIG_FSP_M_CBFS)-file := $(call strip_quotes,$(CONFIG_FSP_M_FILE))

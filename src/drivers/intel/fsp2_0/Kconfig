@@ -53,6 +53,21 @@ config DISPLAY_UPD_DATA
 	  Display the user specified product data prior to memory
 	  initialization.
 
+config CPU_MICROCODE_CBFS_LEN
+	hex "Microcode update region length in bytes"
+	depends on FSP_CAR
+	default 0x0
+	help
+	  The length in bytes of the microcode update region.
+
+config CPU_MICROCODE_CBFS_LOC
+	hex "Microcode update base address in CBFS"
+	depends on FSP_CAR
+	default 0x0
+	help
+	  The location (base address) in CBFS that contains the
+	  microcode update binary.
+
 config FSP_T_CBFS
 	string "Name of FSP-T in CBFS"
 	depends on FSP_CAR
@@ -108,6 +123,12 @@ config FSP_M_XIP
 	default n
 	help
 	  Select this value when FSP-M is execute-in-place.
+
+config FSP_T_XIP
+	bool
+	default n
+	help
+	  Select this value when FSP-T is execute-in-place.
 
 config FSP_USES_CB_STACK
 	bool

@@ -12,6 +12,6 @@ Release notes for previous releases
 
 Upcoming release
 ----------------
-* [4.9 - November 2018](coreboot-4.9-relnotes.md)
 
 Please add to the release notes as changes are added:
+* [4.9 - November 2018](coreboot-4.9-relnotes.md)

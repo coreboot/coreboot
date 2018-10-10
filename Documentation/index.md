@@ -15,6 +15,7 @@ Contents:
 * [ABI data consumption](abi-data-consumption.md)
 * [GPIO toggling in ACPI AML](acpi/gpio.md)
 * [Native Graphics Initialization with libgfxinit](gfx/libgfxinit.md)
+* [Architecture-specific documentation](arch/index.md)
 * [Northbridge-specific documentation](northbridge/index.md)
 * [System on Chip-specific documentation](soc/index.md)
 * [Mainboard-specific documentation](mainboard/index.md)

@@ -636,7 +636,6 @@ int google_chromeec_cbi_get_dram_part_num(char *buf, size_t bufsize)
 	return 0;
 }
 
-#ifndef __SMM__
 int google_chromeec_get_board_version(uint32_t *version)
 {
 	struct chromeec_command cmd;
@@ -712,8 +711,6 @@ retry:
 
 	return cec_cmd.cmd_code;
 }
-
-#endif /* ! __SMM__ */
 
 #ifndef __PRE_RAM__
 
@@ -920,8 +917,6 @@ int google_chromeec_set_usb_pd_role(u8 port, enum usb_pd_control_role role)
 	return google_chromeec_command(&cmd);
 }
 
-#ifndef __SMM__
-
 static int google_chromeec_hello(void)
 {
 	struct chromeec_command cec_cmd;
@@ -1106,7 +1101,6 @@ int google_ec_running_ro(void)
 {
 	return (ec_image_type == EC_IMAGE_RO);
 }
-#endif /* ! __SMM__ */
 
 #endif /* ! __PRE_RAM__ */
 

@@ -81,8 +81,8 @@ static void print_regs(struct exception_state *state)
 
 	printf("ELR = 0x%016llx         ESR = 0x%08llx\n",
 	       state->elr, state->esr);
-	printf("FAR = 0x%016llx        SPSR = 0x%08x\n",
-	       raw_read_far_current(), raw_read_spsr_current());
+	printf("FAR = 0x%016llx        SPSR = 0x%08llx\n",
+	       raw_read_far_el2(), raw_read_spsr_el2());
 	for (i = 0; i < 30; i += 2) {
 		printf("X%02d = 0x%016llx         X%02d = 0x%016llx\n",
 		       i, state->regs[i], i + 1, state->regs[i + 1]);

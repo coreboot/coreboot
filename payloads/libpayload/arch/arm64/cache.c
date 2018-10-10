@@ -39,7 +39,7 @@
 void tlb_invalidate_all(void)
 {
 	/* TLBIALL includes dTLB and iTLB on systems that have them. */
-	tlbiall_current();
+	tlbiall_el2();
 	dsb();
 	isb();
 }
@@ -119,7 +119,7 @@ void dcache_invalidate_by_mva(void const *addr, size_t len)
 
 void cache_sync_instructions(void)
 {
-	uint32_t sctlr = raw_read_sctlr_current();
+	uint32_t sctlr = raw_read_sctlr_el2();
 	if (sctlr & SCTLR_C)
 		dcache_clean_all();	/* includes trailing DSB (assembly) */
 	else if (sctlr & SCTLR_I)

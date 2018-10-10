@@ -252,7 +252,7 @@ void mmu_config_range(void *start, size_t size, uint64_t tag)
 
 	/* ARMv8 MMUs snoop L1 data cache, no need to flush it. */
 	dsb();
-	tlbiall_current();
+	tlbiall_el2();
 	dsb();
 	isb();
 }
@@ -298,7 +298,7 @@ static uint32_t is_mmu_enabled(void)
 {
 	uint32_t sctlr;
 
-	sctlr = raw_read_sctlr_current();
+	sctlr = raw_read_sctlr_el2();
 
 	return (sctlr & SCTLR_M);
 }
@@ -309,19 +309,18 @@ static uint32_t is_mmu_enabled(void)
  */
 void mmu_disable(void)
 {
-	uint32_t el = get_current_el();
 	uint32_t sctlr;
 
-	sctlr = raw_read_sctlr(el);
+	sctlr = raw_read_sctlr_el2();
 	sctlr &= ~(SCTLR_C | SCTLR_M | SCTLR_I);
 
-	tlbiall_current();
+	tlbiall_el2();
 	dcache_clean_invalidate_all();
 
 	dsb();
 	isb();
 
-	raw_write_sctlr(sctlr, el);
+	raw_write_sctlr_el2(sctlr);
 
 	dcache_clean_invalidate_all();
 	dsb();
@@ -338,26 +337,26 @@ void mmu_enable(void)
 	uint32_t sctlr;
 
 	/* Initialize MAIR indices */
-	raw_write_mair_current(MAIR_ATTRIBUTES);
+	raw_write_mair_el2(MAIR_ATTRIBUTES);
 
 	/* Invalidate TLBs */
-	tlbiall_current();
+	tlbiall_el2();
 
 	/* Initialize TCR flags */
-	raw_write_tcr_current(TCR_TOSZ | TCR_IRGN0_NM_WBWAC | TCR_ORGN0_NM_WBWAC |
+	raw_write_tcr_el2(TCR_TOSZ | TCR_IRGN0_NM_WBWAC | TCR_ORGN0_NM_WBWAC |
 			      TCR_SH0_IS | TCR_TG0_4KB | TCR_PS_256TB |
 			      TCR_TBI_USED);
 
 	/* Initialize TTBR */
-	raw_write_ttbr0_current((uintptr_t)xlat_addr);
+	raw_write_ttbr0_el2((uintptr_t)xlat_addr);
 
 	/* Ensure system register writes are committed before enabling MMU */
 	isb();
 
 	/* Enable MMU */
-	sctlr = raw_read_sctlr_current();
+	sctlr = raw_read_sctlr_el2();
 	sctlr |= SCTLR_C | SCTLR_M | SCTLR_I;
-	raw_write_sctlr_current(sctlr);
+	raw_write_sctlr_el2(sctlr);
 
 	isb();
 

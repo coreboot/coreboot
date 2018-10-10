@@ -27,11 +27,6 @@
  * SUCH DAMAGE.
  */
 
-#define __ASSEMBLY__
-#include <arch/lib_helpers.h>
-
-	.text
-
 	/* Macro for exception entry
 	 * Store x30 before any branch
 	 * Branch to exception_prologue to save rest of the registers
@@ -92,10 +87,10 @@ exception_prologue:
 	stp     x0, x1, [sp, #-16]!
 
 	/* Save the exception reason on stack */
-	read_current x1, esr
+	mrs	x1, esr_el2
 
 	/* Save the return address on stack */
-	read_current x0, elr
+	mrs	x0, elr_el2
 	stp     x0, x1, [sp, #-16]!
 
 	ret
@@ -109,8 +104,8 @@ exception_handler:
 
 	/* Pop return address saved on stack */
 	ldp     x0, x1, [sp], #16
-	write_current elr, x0, x2
-	write_current esr, x1, x2
+	msr	elr_el2, x0
+	msr	esr_el2, x1
 	/* Pop exception reason saved on stack, followed by regs x0-x30 */
 	ldp     x0, x1, [sp], #16
 	ldp     x2, x3, [sp], #16
@@ -132,5 +127,5 @@ exception_handler:
 
 	.global set_vbar
 set_vbar:
-	write_current vbar, x0, x1
+	msr	vbar_el2, x0
 	ret

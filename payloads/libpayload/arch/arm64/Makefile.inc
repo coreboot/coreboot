@@ -30,8 +30,6 @@
 CFLAGS += -march=armv8-a
 arm64_asm_flags =
 
-subdirs-y += lib/
-
 head.o-y += head.S
 libc-y += main.c sysinfo.c
 libc-y += timer.c coreboot.c util.S

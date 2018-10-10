@@ -93,11 +93,11 @@ chip soc/cavium/cn81xx
 				end
 				chip soc/cavium/common/pci
 					register "secure" = "1"
-					device pci 08.2 on end # UUA2
+					device pci 08.2 off end # UUA2
 				end
 				chip soc/cavium/common/pci
 					register "secure" = "1"
-					device pci 08.3 on end # UUA3
+					device pci 08.3 off end # UUA3
 				end
 				chip soc/cavium/common/pci
 					register "secure" = "1"

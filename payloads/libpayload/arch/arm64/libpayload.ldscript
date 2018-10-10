@@ -77,15 +77,6 @@ SECTIONS
 		. += CONFIG_LP_STACK_SIZE;
 		. = ALIGN(16);
 		_stack = .;
-
-		/* Exception stack. Having a separate exception stack
-		 * allows us to have later stages running in non-EL3 levels.
-		 */
-
-		_exc_estack = .;
-		. += CONFIG_LP_STACK_SIZE;
-		. = ALIGN(16);
-		_exc_stack = .;
 	}
 
 	_end = .;

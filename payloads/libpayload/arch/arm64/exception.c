@@ -31,6 +31,8 @@
 #include <libpayload.h>
 #include <stdint.h>
 
+u64 exception_stack[0x200] __attribute__((aligned(16)));
+u64 *exception_stack_end = exception_stack + ARRAY_SIZE(exception_stack);
 extern unsigned int test_exc;
 
 struct exception_handler_info
@@ -39,7 +41,7 @@ struct exception_handler_info
 };
 
 static exception_hook hook;
-struct exception_state *exception_state;
+struct exception_state exception_state;
 
 static struct exception_handler_info exceptions[EXC_COUNT] = {
 	[EXC_SYNC_SP0] = { "_sync_sp_el0" },
@@ -88,14 +90,12 @@ static void print_regs(struct exception_state *state)
 		       i, state->regs[i], i + 1, state->regs[i + 1]);
 	}
 	printf("X30 = 0x%016llx          SP = 0x%016llx\n",
-	       state->regs[30], raw_read_sp_el0());
+	       state->regs[30], state->sp);
 }
 
 void exception_dispatch(struct exception_state *state, int idx);
 void exception_dispatch(struct exception_state *state, int idx)
 {
-	exception_state = state;
-
 	if (idx >= EXC_COUNT) {
 		printf("Bad exception index %d.\n", idx);
 	} else {
@@ -110,7 +110,7 @@ void exception_dispatch(struct exception_state *state, int idx)
 	}
 	print_regs(state);
 	/* Few words below SP in case we need state from a returned function. */
-	dump_stack(raw_read_sp_el0() - 32, 512);
+	dump_stack(state->sp - 32, 512);
 
 	if (test_exc) {
 		state->elr += 4;
@@ -123,8 +123,9 @@ void exception_dispatch(struct exception_state *state, int idx)
 
 void exception_init(void)
 {
-	extern void* exception_table;
-	set_vbar(&exception_table);
+	extern uint64_t exception_table[];
+	raw_write_vbar_el2((uintptr_t)exception_table);
+	exception_set_state_ptr(&exception_state);
 }
 
 void exception_install_hook(exception_hook h)

@@ -38,18 +38,8 @@ ENTRY(_entry)
 	ldr x1, 1f
 	str x0, [x1]
 
-	/* Setup exception stack */
-	ldr x1, 3f
-	msr SPSel, #1
-	isb
-
-	mov sp, x1
-
 	/* Setup new stack */
 	ldr x1, 2f
-	msr SPSel, #0
-	isb
-
 	mov sp, x1
 
 	/* Let's rock. */
@@ -63,5 +53,3 @@ ENDPROC(_entry)
 .quad	cb_header_ptr
 2:
 .quad	_stack
-3:
-.quad   _exc_stack

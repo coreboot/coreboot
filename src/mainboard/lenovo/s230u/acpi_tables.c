@@ -14,6 +14,13 @@
  */
 
 #include <southbridge/intel/bd82x6x/nvs.h>
+#include "thermal.h"
+
+static void acpi_update_thermal_table(global_nvs_t *gnvs)
+{
+	gnvs->tcrt = CRITICAL_TEMPERATURE;
+	gnvs->tpsv = PASSIVE_TEMPERATURE;
+}
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
@@ -28,6 +35,5 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	/* The LID is open by default */
 	gnvs->lids = 1;
 
-	gnvs->tcrt = 100;
-	gnvs->tpsv = 90;
+	acpi_update_thermal_table(gnvs);
 }

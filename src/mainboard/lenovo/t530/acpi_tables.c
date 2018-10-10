@@ -32,7 +32,6 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->s5u0 = 0;
 	gnvs->s5u1 = 0;
 
-
 	// the lid is open by default.
 	gnvs->lids = 1;
 

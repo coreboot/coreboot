@@ -1,0 +1,46 @@
+From 147174ea833e14ef68a8c5f1366cfbd1468dd1c8 Mon Sep 17 00:00:00 2001
+From: Wonkyu Kim <wonkyu.kim@intel.com>
+Date: Wed, 10 Oct 2018 10:59:51 -0700
+Subject: [PATCH] CorebootPayloadPkg: don't use serial output for Release build
+
+Signed-off-by: Wonkyu Kim <wonkyu.kim@intel.com>
+---
+ CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc    | 4 ++++
+ CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc | 4 ++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc b/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
+index 6ddd64faf7a5..2e7055815add 100644
+--- a/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
++++ b/CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
+@@ -261,7 +261,11 @@
+ #
+ ################################################################################
+ [PcdsFeatureFlag]
++!if $(TARGET) == DEBUG
+   gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|TRUE
++!else
++  gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|FALSE
++!endif
+   gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseMemory|FALSE
+   gEfiMdeModulePkgTokenSpaceGuid.PcdDxeIplSwitchToLongMode|FALSE
+   gEfiMdeModulePkgTokenSpaceGuid.PcdConOutGopSupport|TRUE
+diff --git a/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc b/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
+index 19c203e6cbb6..b00b7b0e1134 100644
+--- a/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
++++ b/CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
+@@ -261,7 +261,11 @@
+ #
+ ################################################################################
+ [PcdsFeatureFlag]
++!if $(TARGET) == DEBUG
+   gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|TRUE
++!else
++  gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|FALSE
++!endif
+   gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseMemory|FALSE
+   gEfiMdeModulePkgTokenSpaceGuid.PcdDxeIplSwitchToLongMode|TRUE
+   gEfiMdeModulePkgTokenSpaceGuid.PcdConOutGopSupport|TRUE
+-- 
+2.17.1
+

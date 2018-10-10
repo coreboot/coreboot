@@ -118,3 +118,33 @@ void gdb_exit(s8 exit_status)
 	gdb_state.connected = 0;
 	printf("Detached from GDB connection.\n");
 }
+
+/*
+ * This is a check architecture backends can run before entering the GDB command
+ * loop during exception handling. If it returns true, GDB was already running
+ * and must have caused an exception itself, which may happen if the GDB server
+ * tells us to do something stupid (e.g. write to an unmapped address). In that
+ * case, all we can do is blindly send a generic error code (since we're not
+ * sure which command caused the exception) and continue serving commands. When
+ * GDB eventually tells us to resume, we'll return from this function to the
+ * architecture backend which will have to do a "super exception return" that
+ * returns right back from the original (outermost) exception, "jumping over"
+ * all the intermediate exception frames we may have accumulated since. (This is
+ * the best we can do because our architecture backends generally don't support
+ * "full", unlimited exception reentrancy.)
+ */
+int gdb_handle_reentrant_exception(void)
+{
+	if (!gdb_state.connected || gdb_state.resumed)
+		return 0;	/* This is not a reentrant exception. */
+
+	static const char error_code[] = "E22";	/* EINVAL? */
+	static const struct gdb_message tmp_reply = {
+		.buf = (u8 *)error_code,
+		.used = sizeof(error_code),
+		.size = sizeof(error_code),
+	};
+	gdb_send_reply(&tmp_reply);
+	gdb_command_loop(gdb_state.signal);	/* preserve old signal */
+	return 1;
+}

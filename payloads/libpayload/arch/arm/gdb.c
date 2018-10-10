@@ -39,23 +39,7 @@ static struct exception_state sentinel_exception_state;
 
 static int gdb_exception_hook(u32 type)
 {
-	/*
-	 * If we were not resumed we are in deep trouble here. GDB probably told
-	 * us to do something stupid and caused a reentrant exception. All we
-	 * can do is just blindly send an error code and keep going. Eventually
-	 * GDB will tell us to resume and we return right back to the original
-	 * exception state ("jumping over" all the nested ones).
-	 */
-	if (gdb_state.connected && !gdb_state.resumed) {
-		static const char error_code[] = "E22";	/* EINVAL? */
-		static const struct gdb_message tmp_reply = {
-			.buf = (u8 *)error_code,
-			.used = sizeof(error_code),
-			.size = sizeof(error_code),
-		};
-		gdb_send_reply(&tmp_reply);
-		gdb_command_loop(gdb_state.signal); /* preserve old signal */
-	} else {
+	if (!gdb_handle_reentrant_exception()) {
 		if (type >= ARRAY_SIZE(type_to_signal) || !type_to_signal[type])
 			return 0;
 		exception_state_ptr = &sentinel_exception_state;

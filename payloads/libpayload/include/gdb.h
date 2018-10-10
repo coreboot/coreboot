@@ -77,6 +77,7 @@ void gdb_send_reply(const struct gdb_message *reply);
 /* gdb/stub.c */
 
 void gdb_command_loop(uint8_t signal);
+int gdb_handle_reentrant_exception(void);
 
 enum {
 	GDB_SIG0 = 0, /* Signal 0 */

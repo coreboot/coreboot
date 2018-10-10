@@ -57,9 +57,10 @@ html:
 
 .PHONY: livehtml
 livehtml:
-	$(SPHINXAUTOBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)
+	@echo "Starting sphinx-autobuild. The HTML pages are in $(BUILDDIR)."
+	@echo "Press Ctrl-C to stop."
 	@echo
-	@echo "Autobuild finished. The HTML pages are in $(BUILDDIR)."
+	$(SPHINXAUTOBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)
 
 .PHONY: dirhtml
 dirhtml:

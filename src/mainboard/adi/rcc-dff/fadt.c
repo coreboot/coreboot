@@ -30,9 +30,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 
 
 #if PLATFORM_HAS_FADT_CUSTOMIZATIONS
-	header->checksum = 0;
-	header->checksum =
-		acpi_checksum((void *) fadt, sizeof(acpi_fadt_t));
+	header->checksum = acpi_checksum((void *) fadt, sizeof(acpi_fadt_t));
 #endif
 
 }

@@ -42,6 +42,5 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 
 	acpi_fill_in_fadt(fadt);
 
-	header->checksum =
-	    acpi_checksum((void *) fadt, header->length);
+	header->checksum = acpi_checksum((void *) fadt, header->length);
 }

@@ -148,6 +148,5 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_gpe1_blk.addrl = 0x0;
 	fadt->x_gpe1_blk.addrh = 0x0;
 
-	header->checksum =
-	    acpi_checksum((void *) fadt, header->length);
+	header->checksum = acpi_checksum((void *) fadt, header->length);
 }

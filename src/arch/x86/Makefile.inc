@@ -43,6 +43,12 @@ cbfs-files-$(CONFIG_VGA_BIOS) += pci$(stripped_vgabios_id).rom
 pci$(stripped_vgabios_id).rom-file := $(call strip_quotes,$(CONFIG_VGA_BIOS_FILE))
 pci$(stripped_vgabios_id).rom-type := optionrom
 
+verstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
+bootblock-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
+romstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
+ramstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
+postcar-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
+
 ###############################################################################
 # common support for early assembly includes
 ###############################################################################

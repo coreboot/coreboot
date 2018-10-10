@@ -315,3 +315,10 @@ config IDT_IN_EVERY_STAGE
 	bool
 	default n
 	depends on ARCH_X86
+
+config HAVE_CF9_RESET
+	bool
+
+config HAVE_CF9_RESET_PREPARE
+	bool
+	depends on HAVE_CF9_RESET

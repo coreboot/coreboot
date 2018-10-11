@@ -20,7 +20,6 @@
 #include <cpu/x86/smm.h>
 #include <ec/acpi/ec.h>
 #include <ec/lenovo/h8/h8.h>
-#include <delay.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/pmutil.h>
 
@@ -77,7 +76,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 		h8_usb_always_on();
 
 		u8 ec_wake = ec_read(0x32);
-		/* If EC wake events are enabled, enable wake on EC WAKE GPE.  */
+		/* If EC wake events are enabled, enable wake on EC WAKE GPE. */
 		if (ec_wake & 0x14) {
 			/* Redirect EC WAKE GPE to SCI.  */
 			gpi_route_interrupt(GPE_EC_WAKE, GPI_IS_SCI);

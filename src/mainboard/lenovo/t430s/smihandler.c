@@ -20,12 +20,8 @@
 #include <cpu/x86/smm.h>
 #include <ec/acpi/ec.h>
 #include <ec/lenovo/h8/h8.h>
-#include <southbridge/intel/bd82x6x/nvs.h>
-#include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/bd82x6x/me.h>
 #include <southbridge/intel/common/pmutil.h>
-#include <northbridge/intel/sandybridge/sandybridge.h>
-#include <cpu/intel/model_206ax/model_206ax.h>
+#include <southbridge/intel/bd82x6x/pch.h>
 
 #define GPE_EC_SCI	1
 #define GPE_EC_WAKE	13

@@ -14,9 +14,9 @@
  */
 
 #include <mcall.h>
+#include <stdint.h>
 #include <arch/io.h>
 #include <soc/addressmap.h>
-#include <soc/clint.h>
 
 void mtime_init(void)
 {
@@ -27,6 +27,5 @@ void mtime_init(void)
 
 void set_msip(int hartid, int val)
 {
-	long hart_id = read_csr(mhartid);
-	write32((void *)(FU540_CLINT + 4 * hart_id), !!val);
+	write32((void *)(FU540_CLINT + 4 * (uintptr_t)hartid), !!val);
 }

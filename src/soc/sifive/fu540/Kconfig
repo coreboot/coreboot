@@ -39,4 +39,12 @@ config RISCV_CODEMODEL
 	string
 	default "medany"
 
+config RISCV_HART_NUM
+	int
+	default 5
+
+config RISCV_WORKING_HARTID
+	int
+	default 0
+
 endif

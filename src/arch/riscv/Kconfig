@@ -32,3 +32,9 @@ config ARCH_RAMSTAGE_RISCV
 config RISCV_USE_ARCH_TIMER
 	bool
 	default n
+
+config RISCV_HART_NUM
+	int
+
+config RISCV_WORKING_HARTID
+	int

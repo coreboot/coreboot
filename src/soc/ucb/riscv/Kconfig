@@ -25,4 +25,8 @@ config RISCV_CODEMODEL
 	string
 	default "medany"
 
+config RISCV_WORKING_HARTID
+	int
+	default 0
+
 endif

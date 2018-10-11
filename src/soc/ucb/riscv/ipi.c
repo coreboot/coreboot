@@ -13,12 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SOC_SIFIVE_FU540_CLINT_H
-#define __SOC_SIFIVE_FU540_CLINT_H
+#include <mcall.h>
 
-/* This function is used to set MSIP.
- * It can be used to send an IPI (inter-processor interrupt) to
- * another hart*/
-void set_msip(int hartid, int val);
-
-#endif
+/* TODO: Please implement this function */
+void set_msip(int hartid, int val)
+{
+}

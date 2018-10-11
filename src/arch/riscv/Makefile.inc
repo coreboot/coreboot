@@ -53,6 +53,7 @@ bootblock-y += misaligned.c
 bootblock-y += mcall.c
 bootblock-y += virtual_memory.c
 bootblock-y += boot.c
+bootblock-y += smp.c
 bootblock-y += misc.c
 bootblock-y += pmp.c
 bootblock-y += \
@@ -84,6 +85,7 @@ romstage-y += boot.c
 romstage-y += stages.c
 romstage-y += misc.c
 romstage-y += pmp.c
+romstage-y += smp.c
 romstage-y += \
 	$(top)/src/lib/memchr.c \
 	$(top)/src/lib/memcmp.c \
@@ -119,6 +121,7 @@ ramstage-y += misaligned.c
 ramstage-y += virtual_memory.c
 ramstage-y += stages.c
 ramstage-y += misc.c
+ramstage-y += smp.c
 ramstage-y += boot.c
 ramstage-y += tables.c
 ramstage-y += payload.S

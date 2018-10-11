@@ -19,6 +19,7 @@ bootblock-y += media.c
 bootblock-y += bootblock.c
 
 romstage-y += uart.c
+romstage-y += clint.c
 romstage-y += media.c
 romstage-y += sdram.c
 romstage-y += cbmem.c

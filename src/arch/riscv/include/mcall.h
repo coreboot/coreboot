@@ -18,7 +18,7 @@
 
 // NOTE: this is the size of hls_t below. A static_assert would be
 // nice to have.
-#define HLS_SIZE 64
+#define HLS_SIZE 88
 
 /* We save 37 registers, currently. */
 #define MENTRY_FRAME_SIZE (HLS_SIZE + 37 * 8)
@@ -35,6 +35,12 @@ typedef struct {
 	unsigned long sbi_private_data;
 } sbi_device_message;
 
+struct blocker {
+	void *arg;
+	void (*fn)(void *arg);
+	uint32_t sync_a;
+	uint32_t sync_b;
+};
 
 typedef struct {
 	sbi_device_message *device_request_queue_head;
@@ -46,6 +52,7 @@ typedef struct {
 	int ipi_pending;
 	uint64_t *timecmp;
 	uint64_t *time;
+	struct blocker entry;
 } hls_t;
 
 #define MACHINE_STACK_TOP() ({ \
@@ -63,6 +70,15 @@ void hls_init(uint32_t hart_id); // need to call this before launching linux
 
 /* This function is used to initialize HLS()->time/HLS()->timecmp  */
 void mtime_init(void);
+
+/*
+ * This function needs be implement by SoC code.
+ * Although the privileged instruction set defines that MSIP will be
+ * memory-mapped, but does not define how to map. SoC can be implemented as
+ * a bit, a byte, a word, and so on.
+ * So we can't provide code that is related to implementation.
+ */
+void set_msip(int hartid, int val);
 
 #endif // __ASSEMBLER__
 

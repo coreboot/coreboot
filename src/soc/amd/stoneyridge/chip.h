@@ -61,8 +61,8 @@ struct soc_amd_stoneyridge_config {
 	u8 i2c_scl_reset;
 	struct dw_i2c_bus_config i2c[STONEY_I2C_DEV_MAX];
 	u8 stapm_percent;
-	u32 stapm_time;
-	u32 stapm_power;
+	u32 stapm_time_ms;
+	u32 stapm_power_mw;
 };
 
 typedef struct soc_amd_stoneyridge_config config_t;

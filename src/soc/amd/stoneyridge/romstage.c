@@ -235,12 +235,13 @@ void soc_customize_init_early(AMD_EARLY_PARAMS *InitEarly)
 	}
 	cfg = dev->chip_info;
 	platform = &InitEarly->PlatformConfig;
-	if ((cfg->stapm_percent) && (cfg->stapm_time) && (cfg->stapm_power)) {
+	if ((cfg->stapm_percent) && (cfg->stapm_time_ms) &&
+				    (cfg->stapm_power_mw)) {
 		platform->PlatStapmConfig.CfgStapmScalar = cfg->stapm_percent;
 		platform->PlatStapmConfig.CfgStapmTimeConstant =
-							cfg->stapm_time;
-		platform->PkgPwrLimitDC = cfg->stapm_power;
-		platform->PkgPwrLimitAC = cfg->stapm_power;
+							cfg->stapm_time_ms;
+		platform->PkgPwrLimitDC = cfg->stapm_power_mw;
+		platform->PkgPwrLimitAC = cfg->stapm_power_mw;
 		platform->PlatStapmConfig.CfgStapmBoost = StapmBoostEnabled;
 	}
 }

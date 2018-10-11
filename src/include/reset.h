@@ -39,14 +39,4 @@ __noreturn void board_reset(void);
  */
 void do_board_reset(void);
 
-/* Full board reset. Resets SoC and most/all board components (e.g. DRAM). */
-__noreturn void hard_reset(void);
-/* Board reset. Resets SoC some board components (e.g. TPM but not DRAM). */
-__noreturn void soft_reset(void);
-
-/* Reset implementations. Implement these in SoC or mainboard code. Implement
-   at least hard_reset() if possible, others fall back to it if necessary. */
-void do_hard_reset(void);
-void do_soft_reset(void);
-
 #endif

@@ -49,6 +49,7 @@
 #include <cpu/amd/family_10h-family_15h/init_cpus.h>
 #include <arch/early_variables.h>
 #include <cbmem.h>
+#include <southbridge/amd/common/reset.h>
 #include "southbridge/broadcom/bcm5785/early_smbus.c"
 #include "southbridge/broadcom/bcm5785/early_setup.c"
 

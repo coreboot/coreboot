@@ -40,6 +40,7 @@
 #include <northbridge/amd/amdfam10/raminit.h>
 #include <northbridge/amd/amdht/ht_wrapper.h>
 #include <cpu/amd/family_10h-family_15h/init_cpus.h>
+#include <southbridge/amd/common/reset.h>
 #include <southbridge/amd/sb800/smbus.h>
 #include <southbridge/amd/sb800/sb800.h>
 #include <southbridge/amd/rs780/rs780.h>
@@ -50,7 +51,6 @@
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
 #include "spd.h"
-#include <reset.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 

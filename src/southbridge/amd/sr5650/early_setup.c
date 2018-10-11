@@ -22,7 +22,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
 #include <option.h>
-#include <reset.h>
+#include <southbridge/amd/common/reset.h>
 #include "sr5650.h"
 #include "cmn.h"
 

@@ -15,6 +15,7 @@
  */
 
 #include <reset.h>
+#include <southbridge/amd/common/reset.h>
 #include "ck804.h"
 
 static int set_ht_link_ck804(u8 ht_c_num)

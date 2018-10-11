@@ -13,22 +13,23 @@
  * GNU General Public License for more details.
  */
 
+#ifndef _AMD_SB_RESET_H_
+#define _AMD_SB_RESET_H_
+
 #include <arch/cache.h>
 #include <console/console.h>
 #include <halt.h>
-#include <reset.h>
 
-__noreturn void board_reset(void)
+/* Implement the bare reset, e.g. write to cf9. */
+void do_soft_reset(void);
+
+/* Prepare for reset, run do_soft_reset(), halt. */
+static inline __noreturn void soft_reset(void)
 {
 	printk(BIOS_INFO, "%s() called!\n", __func__);
 	dcache_clean_all();
-	do_board_reset();
+	do_soft_reset();
 	halt();
 }
 
-#if IS_ENABLED(CONFIG_MISSING_BOARD_RESET)
-void do_board_reset(void)
-{
-	printk(BIOS_CRIT, "No board_reset implementation, hanging...\n");
-}
-#endif
+#endif	/* _AMD_SB_RESET_H_ */

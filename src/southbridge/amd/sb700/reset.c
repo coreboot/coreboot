@@ -18,6 +18,7 @@
 
 #include <arch/io.h>
 #include <reset.h>
+#include <southbridge/amd/common/reset.h>
 
 #define HT_INIT_CONTROL		0x6C
 #define HTIC_BIOSR_Detect	(1<<5)

@@ -42,6 +42,7 @@
 #include <cpu/amd/family_10h-family_15h/init_cpus.h>
 #include <arch/early_variables.h>
 #include <cbmem.h>
+#include <southbridge/amd/common/reset.h>
 #include <southbridge/nvidia/mcp55/mcp55.h>
 
 #include "resourcemap.c"

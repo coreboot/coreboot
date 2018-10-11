@@ -16,6 +16,7 @@
  * GNU General Public License for more details.
  */
 
+#include <southbridge/amd/common/reset.h>
 #include "ck804.h"
 
 /* Someone messed up and snuck in some K8-specific code */

@@ -36,7 +36,7 @@
 #include <northbridge/amd/amdfam10/debug.h>
 #include <northbridge/amd/amdfam10/raminit.h>
 #include <northbridge/amd/amdfam10/amdfam10.h>
-#include <reset.h>
+#include <southbridge/amd/common/reset.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
 #include <arch/acpi.h>

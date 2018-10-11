@@ -37,6 +37,7 @@
 #include <cpu/x86/bist.h>
 #include <cpu/amd/car.h>
 #include <cpu/amd/msr.h>
+#include <southbridge/amd/common/reset.h>
 #include <northbridge/amd/amdfam10/raminit.h>
 #include <northbridge/amd/amdht/ht_wrapper.h>
 #include <cpu/amd/family_10h-family_15h/init_cpus.h>

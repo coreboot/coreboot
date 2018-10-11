@@ -449,13 +449,6 @@ config RESUME_PATH_SAME_AS_BOOT
 	  same path as a regular boot. e.g. an x86 system runs from the
 	  reset vector at 0xfffffff0 on both resume and warm/cold boot.
 
-config HAVE_HARD_RESET
-	bool
-	default n
-	help
-	  This variable specifies whether a given board has a hard_reset
-	  function, no matter if it's provided by board code or chipset code.
-
 config HAVE_ROMSTAGE_CONSOLE_SPINLOCK
 	bool
 	depends on EARLY_CBMEM_INIT

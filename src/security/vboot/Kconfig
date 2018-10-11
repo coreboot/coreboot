@@ -18,7 +18,7 @@ config VBOOT
 	bool "Verify firmware with vboot."
 	default n
 	select VBOOT_MOCK_SECDATA if !TPM1 && !TPM2
-	depends on HAVE_HARD_RESET || !MISSING_BOARD_RESET
+	depends on !MISSING_BOARD_RESET
 	help
 	  Enabling VBOOT will use vboot to verify the components of the firmware
 	  (stages, payload, etc).

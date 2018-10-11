@@ -27,6 +27,8 @@
 #include <northbridge/amd/amdht/porting.h>
 #include <northbridge/amd/amdht/h3ncmn.h>
 
+#include <southbridge/amd/common/reset.h>
+
 #if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700)
 #include <southbridge/amd/sb700/sb700.h>
 #endif

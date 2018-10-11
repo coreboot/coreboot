@@ -15,6 +15,7 @@
 
 #include "amd8111.h"
 #include <reset.h>
+#include <southbridge/amd/common/reset.h>
 
 unsigned get_sbdn(unsigned bus)
 {

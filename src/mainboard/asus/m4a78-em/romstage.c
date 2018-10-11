@@ -39,6 +39,7 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/car.h>
 #include <cpu/amd/msr.h>
+#include <southbridge/amd/common/reset.h>
 #include <southbridge/amd/sb700/sb700.h>
 #include <southbridge/amd/sb700/smbus.h>
 #include <northbridge/amd/amdfam10/raminit.h>

@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <reset.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
@@ -39,6 +38,7 @@
 #include <cpu/amd/car.h>
 #include <cpu/amd/msr.h>
 #include <smp/spinlock.h>
+#include <southbridge/amd/common/reset.h>
 #include <southbridge/amd/sb700/sb700.h>
 #include <southbridge/amd/sb700/smbus.h>
 #include <southbridge/amd/sr5650/sr5650.h>

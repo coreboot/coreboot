@@ -22,7 +22,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <reset.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
@@ -36,6 +35,7 @@
 #include <cpu/amd/model_10xxx_rev.h>
 #include <cpu/amd/car.h>
 #include <cpu/amd/msr.h>
+#include <southbridge/amd/common/reset.h>
 #include <southbridge/nvidia/ck804/early_smbus.h>
 #include <delay.h>
 #include <cpu/x86/lapic.h>

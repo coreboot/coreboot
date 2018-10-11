@@ -15,6 +15,7 @@
  */
 
 #include <reset.h>
+#include <southbridge/amd/common/reset.h>
 #include "bcm5785.h"
 
 static void bcm5785_enable_lpc(void)

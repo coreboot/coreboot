@@ -64,6 +64,43 @@ static uint32_t tpm1_invoke_state_machine(void)
 }
 #endif
 
+static uint32_t tpm_setup_s3_helper(void)
+{
+	uint32_t result;
+
+	result = tlcl_resume();
+	switch (result) {
+	case TPM_SUCCESS:
+		break;
+
+	case TPM_E_INVALID_POSTINIT:
+		/*
+		 * We're on a platform where the TPM maintains power
+		 * in S3, so it's already initialized.
+		 */
+		printk(BIOS_INFO, "TPM: Already initialized.\n");
+		result = TPM_SUCCESS;
+		break;
+
+	default:
+		printk(BIOS_ERR, "TPM: Resume failed (%#x).\n", result);
+		break;
+
+	}
+
+	return result;
+}
+
+static uint32_t tpm_setup_epilogue(uint32_t result)
+{
+	if (result != TPM_SUCCESS)
+		post_code(POST_TPM_FAILURE);
+	else
+		printk(BIOS_INFO, "TPM: setup succeeded\n");
+
+	return result;
+}
+
 /*
  * tpm_setup starts the TPM and establishes the root of trust for the
  * anti-rollback mechanism.  SetupTPM can fail for three reasons.  1 A bug. 2 a
@@ -91,37 +128,19 @@ uint32_t tpm_setup(int s3flag)
 	result = tlcl_lib_init();
 	if (result != TPM_SUCCESS) {
 		printk(BIOS_ERR, "TPM: Can't initialize.\n");
-		goto out;
+		return tpm_setup_epilogue(result);
 	}
 
 	/* Handle special init for S3 resume path */
 	if (s3flag) {
-		result = tlcl_resume();
-		switch (result) {
-		case TPM_SUCCESS:
-			break;
-
-		case TPM_E_INVALID_POSTINIT:
-			/*
-			 * We're on a platform where the TPM maintains power
-			 * in S3, so it's already initialized.
-			 */
-			printk(BIOS_INFO, "TPM: Already initialized.\n");
-			result = TPM_SUCCESS;
-			break;
-
-		default:
-			printk(BIOS_ERR, "TPM: Resume failed (%#x).\n", result);
-			break;
-
-		}
-		goto out;
+		printk(BIOS_INFO, "TPM: Handle S3 resume.\n");
+		return tpm_setup_epilogue(tpm_setup_s3_helper());
 	}
 
 	result = tlcl_startup();
 	if (result != TPM_SUCCESS) {
 		printk(BIOS_ERR, "TPM: Can't run startup command.\n");
-		goto out;
+		return tpm_setup_epilogue(result);
 	}
 
 	result = tlcl_assert_physical_presence();
@@ -133,33 +152,22 @@ uint32_t tpm_setup(int s3flag)
 		 */
 		result = tlcl_physical_presence_cmd_enable();
 		if (result != TPM_SUCCESS) {
-			printk(
-				BIOS_ERR,
-				"TPM: Can't enable physical presence command.\n");
-			goto out;
+			printk(BIOS_ERR, "TPM: Can't enable physical presence command.\n");
+			return tpm_setup_epilogue(result);
 		}
 
 		result = tlcl_assert_physical_presence();
 		if (result != TPM_SUCCESS) {
-			printk(BIOS_ERR,
-			       "TPM: Can't assert physical presence.\n");
-			goto out;
+			printk(BIOS_ERR, "TPM: Can't assert physical presence.\n");
+			return tpm_setup_epilogue(result);
 		}
 	}
 
 #if IS_ENABLED(CONFIG_TPM1)
 	result = tpm1_invoke_state_machine();
-	if (result != TPM_SUCCESS)
-		return result;
 #endif
 
-out:
-	if (result != TPM_SUCCESS)
-		post_code(POST_TPM_FAILURE);
-	else
-		printk(BIOS_INFO, "TPM: setup succeeded\n");
-
-	return result;
+	return tpm_setup_epilogue(result);
 }
 
 uint32_t tpm_clear_and_reenable(void)

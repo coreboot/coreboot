@@ -87,7 +87,7 @@ static struct param {
 	enum comp_algo compression;
 	int precompression;
 	enum vb2_hash_algorithm hash;
-	/* for linux payloads */
+	/* For linux payloads */
 	char *initrd;
 	char *cmdline;
 	int force;
@@ -140,7 +140,7 @@ static unsigned convert_to_from_top_aligned(const struct buffer *region,
 {
 	assert(region);
 
-	/* cover the situation where a negative base address is given by the
+	/* Cover the situation where a negative base address is given by the
 	 * user. Callers of this function negate it, so it'll be a positive
 	 * number smaller than the region.
 	 */
@@ -283,7 +283,7 @@ static int is_valid_topswap(void)
 
 static void fill_header_offset(void *location, uint32_t offset)
 {
-	// TODO: when we have a BE target, we'll need to store this as BE
+	// TODO: When we have a BE target, we'll need to store this as BE
 	write_le32(location, offset);
 }
 
@@ -384,7 +384,7 @@ static int cbfs_add_master_header(void)
 				buffer_size(&image.buffer) - 4);
 	fill_header_offset(h_loc, header_offset);
 	/*
-	 * if top swap present, update the header
+	 * If top swap present, update the header
 	 * location in secondary bootblock
 	 */
 	if (param.topswap_size) {
@@ -413,7 +413,7 @@ static int add_topswap_bootblock(struct buffer *buffer, uint32_t *offset)
 	}
 
 	/*
-	 * allocate topswap_size*2 bytes for bootblock to
+	 * Allocate topswap_size*2 bytes for bootblock to
 	 * accommodate the second bootblock.
 	 */
 	struct buffer new_bootblock, bb1, bb2;
@@ -427,15 +427,15 @@ static int add_topswap_bootblock(struct buffer *buffer, uint32_t *offset)
 				buffer_size(&new_bootblock) - bb_buf_size,
 							bb_buf_size);
 
-	/* copy to first bootblock */
+	/* Copy to first bootblock */
 	memcpy(buffer_get(&bb1), buffer_get(buffer), bb_buf_size);
-	/* copy to second bootblock */
+	/* Copy to second bootblock */
 	memcpy(buffer_get(&bb2), buffer_get(buffer), bb_buf_size);
 
 	buffer_delete(buffer);
 	buffer_clone(buffer, &new_bootblock);
 
-	 /* update the location (offset) of bootblock in the region */
+	 /* Update the location (offset) of bootblock in the region */
 	*offset = convert_to_from_top_aligned(param.image_region,
 							buffer_size(buffer));
 
@@ -633,7 +633,6 @@ static int cbfstool_convert_fsp(struct buffer *buffer,
 	 * mapped one.
 	 * If the FSP component is not xip, then use param.baseaddress that is
 	 * passed in by the caller.
-	 *
 	 */
 	if (param.stage_xip) {
 		if (!IS_TOP_ALIGNED_ADDRESS(address))
@@ -711,7 +710,7 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 
 		/*
 		 * Ensure the address is a memory mapped one. This assumes
-		 * x86 semantics about th boot media being directly mapped
+		 * x86 semantics about the boot media being directly mapped
 		 * below 4GiB in the CPU address space.
 		 **/
 		address = -convert_to_from_absolute_top_aligned(
@@ -727,7 +726,7 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 	if (ret != 0)
 		return -1;
 	buffer_delete(buffer);
-	// direct assign, no dupe.
+	// Direct assign, no dupe.
 	memcpy(buffer, &output, sizeof(*buffer));
 	header->len = htonl(output.size);
 	return 0;
@@ -738,7 +737,7 @@ static int cbfstool_convert_mkpayload(struct buffer *buffer,
 {
 	struct buffer output;
 	int ret;
-	/* per default, try and see if payload is an ELF binary */
+	/* Per default, try and see if payload is an ELF binary */
 	ret = parse_elf_to_payload(buffer, &output, param.compression);
 
 	/* If it's not an ELF, see if it's a FIT */
@@ -765,7 +764,7 @@ static int cbfstool_convert_mkpayload(struct buffer *buffer,
 	}
 
 	buffer_delete(buffer);
-	// direct assign, no dupe.
+	// Direct assign, no dupe.
 	memcpy(buffer, &output, sizeof(*buffer));
 	header->len = htonl(output.size);
 	return 0;
@@ -782,7 +781,7 @@ static int cbfstool_convert_mkflatpayload(struct buffer *buffer,
 		return -1;
 	}
 	buffer_delete(buffer);
-	// direct assign, no dupe.
+	// Direct assign, no dupe.
 	memcpy(buffer, &output, sizeof(*buffer));
 	header->len = htonl(output.size);
 	return 0;
@@ -1215,7 +1214,7 @@ static int cbfs_update_fit(void)
 	uint32_t addr = 0;
 
 	/*
-	 * get the address of provided region for first row.
+	 * Get the address of provided region for first row.
 	 */
 	if (param.ucode_region) {
 		struct buffer ucode;
@@ -1558,7 +1557,7 @@ int main(int argc, char **argv)
 				break;
 			}
 
-			/* filter out illegal long options */
+			/* Filter out illegal long options */
 			if (strchr(commands[i].optstring, c) == NULL) {
 				/* TODO maybe print actual long option instead */
 				ERROR("%s: invalid option -- '%c'\n",

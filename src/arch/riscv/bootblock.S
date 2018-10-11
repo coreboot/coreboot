@@ -24,13 +24,6 @@
 .global _estack
 .globl _start
 _start:
-	csrr a0, mhartid
-	li a3, 0
-	beq a0, a3, _hart_zero
-_hart_loop:
-	j _hart_loop
-_hart_zero:
-
 	# The boot ROM may pass the following arguments to coreboot:
 	#   a0: the value of mhartid
 	#   a1: a pointer to the flattened devicetree
@@ -58,6 +51,9 @@ _hart_zero:
 	# initialize hart-local storage
 	csrr a0, mhartid
 	call hls_init
+
+	li   a0, CONFIG_RISCV_WORKING_HARTID
+	call smp_pause
 
 	# initialize entry of interrupt/exception
 	la t0, trap_entry

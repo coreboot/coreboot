@@ -27,10 +27,13 @@
 #include <arch/boot.h>
 #include <arch/encoding.h>
 #include <arch/stages.h>
+#include <arch/smp/smp.h>
 #include <rules.h>
 
 void stage_entry(void)
 {
+	smp_pause(CONFIG_RISCV_WORKING_HARTID);
+
 	/*
 	 * Save the FDT pointer before entering ramstage, because mscratch
 	 * might be overwritten in the trap handler, and there is code in

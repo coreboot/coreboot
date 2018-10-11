@@ -35,6 +35,9 @@ _start:
 	csrr a0, mhartid
 	call hls_init
 
+	li   a0, CONFIG_RISCV_WORKING_HARTID
+	call smp_pause
+
 	# initialize entry of interrupt/exception
 	la   t0, trap_entry
 	csrw mtvec, t0

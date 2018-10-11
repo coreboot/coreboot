@@ -420,6 +420,7 @@ chip soc/intel/skylake
 		end # GSPI #0
 		device pci 1e.3 on
 			chip drivers/spi/acpi
+				register "name" = ""CRFP""
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "uid" = "1"
 				register "compat_string" = ""google,cros-ec-spi""

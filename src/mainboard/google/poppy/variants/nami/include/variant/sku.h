@@ -30,5 +30,9 @@
 #define SKU_1_AKALI	0x2861
 #define SKU_0_AKALI360	0x2BE7
 #define SKU_1_AKALI360	0x2A67
+#define SKU_0_SYNDRA	0x2BC63
+#define SKU_1_SYNDRA	0x2BC62
+#define SKU_2_SYNDRA	0x2BC61
+#define SKU_3_SYNDRA	0X2BC60
 
 #endif /* __MAINBOARD_SKU_H__ */

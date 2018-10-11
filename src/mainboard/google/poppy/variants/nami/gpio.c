@@ -415,6 +415,10 @@ const struct pad_config *variant_sku_gpio_table(size_t *num)
 	case SKU_2_VAYNE:
 	case SKU_0_SONA:
 	case SKU_1_SONA:
+	case SKU_0_SYNDRA:
+	case SKU_1_SYNDRA:
+	case SKU_2_SYNDRA:
+	case SKU_3_SYNDRA:
 		*num = ARRAY_SIZE(no_dmic1_sku_gpio_table);
 		board_gpio_tables = no_dmic1_sku_gpio_table;
 		break;

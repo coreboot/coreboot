@@ -234,6 +234,10 @@ void variant_devtree_update(void)
 	case SKU_2_PANTHEON:
 	case SKU_0_SONA:
 	case SKU_1_SONA:
+	case SKU_0_SYNDRA:
+	case SKU_1_SYNDRA:
+	case SKU_2_SYNDRA:
+	case SKU_3_SYNDRA:
 		/* Disable unused port USB port */
 		cfg->usb2_ports[5].enable = 0;
 		break;

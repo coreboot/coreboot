@@ -14,8 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include "smi.h"
-
 #define THINKPAD_EC_GPE 28
 #define BRIGHTNESS_UP \_SB.PCI0.GFX0.INCB
 #define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.DECB

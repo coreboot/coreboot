@@ -20,7 +20,6 @@
 #define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.DECB
 #define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
 #define EC_LENOVO_H8_ME_WORKAROUND 1
-#define HAVE_LCD_SCREEN 1
 
 DefinitionBlock(
 	"dsdt.aml",

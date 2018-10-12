@@ -61,12 +61,24 @@ static uint32_t tlcl_send_startup(TPM_SU type)
 	startup.startup_type = type;
 	response = tpm_process_command(TPM2_Startup, &startup);
 
-	if (response && (response->hdr.tpm_code == 0 ||
-			 response->hdr.tpm_code == TPM_RC_INITIALIZE)) {
-		return TPM_SUCCESS;
+	/* IO error, tpm2_response pointer is empty. */
+	if (response == NULL) {
+		printk(BIOS_ERR, "%s: TPM communication error\n", __func__);
+		return TPM_E_IOERROR;
 	}
+
 	printk(BIOS_INFO, "%s: Startup return code is %x\n",
 	       __func__, response->hdr.tpm_code);
+
+	switch (response->hdr.tpm_code) {
+	case TPM_RC_INITIALIZE:
+		/* TPM already initialized. */
+		return TPM_E_INVALID_POSTINIT;
+	case TPM2_RC_SUCCESS:
+		return TPM_SUCCESS;
+	}
+
+	/* Collapse any other errors into TPM_E_IOERROR. */
 	return TPM_E_IOERROR;
 }
 

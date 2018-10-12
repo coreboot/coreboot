@@ -102,13 +102,6 @@
 #define   PM_LPC_A20_EN			BIT(1)
 #define   PM_LPC_ENABLE			BIT(0)
 
-#define SPIROM_BASE_ADDRESS_REGISTER	0xa0
-#define   ROUTE_TPM_2_SPI		BIT(3)
-#define   SPI_ABORT_ENABLE		BIT(2)
-#define   SPI_ROM_ENABLE		BIT(1)
-#define   SPI_ROM_ALT_ENABLE		BIT(0)
-#define   SPI_PRESERVE_BITS		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
-
 /* FCH MISC Registers 0xfed80e00 */
 #define GPP_CLK_CNTRL			0x00
 #define   GPP_CLK2_REQ_MAP_SHIFT	8
@@ -309,6 +302,13 @@
 #define   TPM_LEGACY_EN			BIT(2)
 
 #define LPC_WIDEIO2_GENERIC_PORT	0x90
+
+#define SPIROM_BASE_ADDRESS_REGISTER	0xa0
+#define   ROUTE_TPM_2_SPI		BIT(3)
+#define   SPI_ABORT_ENABLE		BIT(2)
+#define   SPI_ROM_ENABLE		BIT(1)
+#define   SPI_ROM_ALT_ENABLE		BIT(0)
+#define   SPI_PRESERVE_BITS		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
 
 /* LPC register 0xb8 is DWORD, here there are definitions for byte
    access. For example, bits 31-24 are accessed through byte access

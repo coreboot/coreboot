@@ -16,6 +16,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/msr.h>
 
 /*************************************************
  * enable the dedicated function in thatcher board.
@@ -26,18 +27,18 @@ static void mainboard_enable(struct device *dev)
 
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
-	msr = rdmsr(0xC0011020);
+	msr = rdmsr(LS_CFG_MSR);
 	msr.lo &= ~(1 << 28);
-	wrmsr(0xC0011020, msr);
+	wrmsr(LS_CFG_MSR, msr);
 
-	msr = rdmsr(0xC0011022);
+	msr = rdmsr(DC_CFG_MSR);
 	msr.lo &= ~(1 << 4);
 	msr.lo &= ~(1 << 13);
-	wrmsr(0xC0011022, msr);
+	wrmsr(DC_CFG_MSR, msr);
 
-	msr = rdmsr(0xC0011023);
+	msr = rdmsr(BU_CFG_MSR);
 	msr.lo &= ~(1 << 23);
-	wrmsr(0xC0011023, msr);
+	wrmsr(BU_CFG_MSR, msr);
 }
 
 struct chip_operations mainboard_ops = {

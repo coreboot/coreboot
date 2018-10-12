@@ -59,16 +59,8 @@ static void enable_update(void *unused)
 
 	printk(BIOS_INFO, "Waiting for CR50 reset to pick up update.\n");
 
-	if (IS_ENABLED(CONFIG_POWER_OFF_ON_CR50_UPDATE)) {
-		if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC) &&
-		    !IS_ENABLED(CONFIG_DISABLE_POWER_OFF_EC_ON_CR50_UPDATE)) {
-			printk(BIOS_INFO, "Hibernating EC. Clearing AP_OFF.\n");
-			google_chromeec_reboot(0,
-					       EC_REBOOT_HIBERNATE_CLEAR_AP_OFF,
-					       EC_REBOOT_FLAG_ON_AP_SHUTDOWN);
-		}
+	if (IS_ENABLED(CONFIG_POWER_OFF_ON_CR50_UPDATE))
 		poweroff();
-	}
 	halt();
 }
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_ENTRY, enable_update, NULL);

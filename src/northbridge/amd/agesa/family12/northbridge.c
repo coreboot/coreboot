@@ -29,6 +29,7 @@
 #include <cbmem.h>
 
 #include <cpu/x86/lapic.h>
+#include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
 
 #include "sb_cimx.h"
@@ -306,7 +307,7 @@ static void read_resources(struct device *dev)
 	 * It is not honored by the coreboot resource allocator if it is in
 	 * the CPU_CLUSTER.
 	 */
-	mmconf_resource(dev, 0xc0010058);
+	mmconf_resource(dev, MMIO_CONF_BASE);
 
 	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }

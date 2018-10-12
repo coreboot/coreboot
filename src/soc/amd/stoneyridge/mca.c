@@ -133,11 +133,11 @@ static void build_bert_mca_error(struct mca_bank *mci)
 	if (!chk)
 		goto failed;
 
-	ctx = cper_new_ia32x64_context_msr(status, x86_sec, MCG_CAP, 3);
+	ctx = cper_new_ia32x64_context_msr(status, x86_sec, IA32_MCG_CAP, 3);
 	if (!ctx)
 		goto failed;
 	ctx = cper_new_ia32x64_context_msr(status, x86_sec,
-					MC0_CTL + (mci->bank * 4), 4);
+					IA32_MC0_CTL + (mci->bank * 4), 4);
 	if (!ctx)
 		goto failed;
 	ctx = cper_new_ia32x64_context_msr(status, x86_sec,
@@ -169,7 +169,7 @@ void check_mca(void)
 	struct mca_bank mci;
 	int num_banks;
 
-	cap = rdmsr(MCG_CAP);
+	cap = rdmsr(IA32_MCG_CAP);
 	num_banks = cap.lo & MCA_BANKS_MASK;
 
 	if (is_warm_reset()) {
@@ -177,7 +177,7 @@ void check_mca(void)
 			if (i == 3) /* Reserved in Family 15h */
 				continue;
 
-			mci.sts = rdmsr(MC0_STATUS + (i * 4));
+			mci.sts = rdmsr(IA32_MC0_STATUS + (i * 4));
 			if (mci.sts.hi || mci.sts.lo) {
 				int core = cpuid_ebx(1) >> 24;
 
@@ -192,7 +192,7 @@ void check_mca(void)
 				mci.misc = rdmsr(MC0_MISC + (i * 4));
 				printk(BIOS_WARNING, "   MC%d_MISC =     %08x_%08x\n",
 						i, mci.misc.hi, mci.misc.lo);
-				mci.ctl = rdmsr(MC0_CTL + (i * 4));
+				mci.ctl = rdmsr(IA32_MC0_CTL + (i * 4));
 				printk(BIOS_WARNING, "   MC%d_CTL =      %08x_%08x\n",
 						i, mci.ctl.hi, mci.ctl.lo);
 				mci.cmask = rdmsr(MC0_CTL_MASK + i);
@@ -211,5 +211,5 @@ void check_mca(void)
 	mci.sts.lo = 0;
 	mci.sts.hi = 0;
 	for (i = 0 ; i < num_banks ; i++)
-		wrmsr(MC0_STATUS + (i * 4), mci.sts);
+		wrmsr(IA32_MC0_STATUS + (i * 4), mci.sts);
 }

@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/amd/msr.h>
 #include "init_cpus.h"
 
 #if IS_ENABLED(CONFIG_HAVE_OPTION_TABLE)
@@ -39,7 +40,7 @@
 #if IS_ENABLED(CONFIG_PCI_IO_CFG_EXT)
 static void set_EnableCf8ExtCfg(void)
 {
-	// set the NB_CFG[46]=1;
+	// set the NB_CFG_MSR[46]=1;
 	msr_t msr;
 	msr = rdmsr(NB_CFG_MSR);
 	// EnableCf8ExtCfg: We need that to access CONFIG_PCI_IO_CFG_EXT 4K range
@@ -332,9 +333,9 @@ static void STOP_CAR_AND_CPU(uint8_t skip_sharedc_config, uint32_t apicid)
 		/* Family 10h or earlier */
 
 		/* Disable L2 IC to L3 connection (Only for CAR) */
-		msr = rdmsr(BU_CFG2);
+		msr = rdmsr(BU_CFG2_MSR);
 		msr.lo &= ~(1 << ClLinesToNbDis);
-		wrmsr(BU_CFG2, msr);
+		wrmsr(BU_CFG2_MSR, msr);
 	} else {
 		/* Family 15h or later
 		 * DRAM setup is delayed on Fam15 in order to prevent
@@ -739,13 +740,13 @@ static void AMD_Errata298(void)
 	}
 
 	if (affectedRev) {
-		msr = rdmsr(HWCR);
+		msr = rdmsr(HWCR_MSR);
 		msr.lo |= 0x08;	/* Set TlbCacheDis bit[3] */
-		wrmsr(HWCR, msr);
+		wrmsr(HWCR_MSR, msr);
 
-		msr = rdmsr(BU_CFG);
+		msr = rdmsr(BU_CFG_MSR);
 		msr.lo |= 0x02;	/* Set TlbForceMemTypeUc bit[1] */
-		wrmsr(BU_CFG, msr);
+		wrmsr(BU_CFG_MSR, msr);
 
 		msr = rdmsr(OSVW_ID_Length);
 		msr.lo |= 0x01;	/* OS Visible Workaround - MSR */
@@ -805,7 +806,7 @@ static void AMD_SetupPSIVID_d(u32 platform_type, u8 node)
 		 */
 
 		for (i = 4; i >= 0; i--) {
-			msr = rdmsr(PS_REG_BASE + i);
+			msr = rdmsr(PSTATE_0_MSR + i);
 			/*  Pstate valid? */
 			if (msr.hi & PS_EN_MASK) {
 				dword = pci_read_config32(NODE_PCI(i, 3), 0xA0);
@@ -1010,7 +1011,7 @@ void cpuSetAMDMSR(uint8_t node_id)
 			enable_experimental_memory_speed_boost = !!nvram;
 
 		uint32_t f3x1fc = pci_read_config32(NODE_PCI(node_id, 3), 0x1fc);
-		msr = rdmsr(FP_CFG);
+		msr = rdmsr(FP_CFG_MSR);
 		msr.hi &= ~(0x7 << (42-32));			/* DiDtCfg4 */
 		msr.hi |= (((f3x1fc >> 17) & 0x7) << (42-32));
 		msr.hi &= ~(0x1 << (41-32));			/* DiDtCfg5 */
@@ -1027,19 +1028,19 @@ void cpuSetAMDMSR(uint8_t node_id)
 		msr.lo |= (((f3x1fc >> 1) & 0x1f) << 18);
 		msr.lo &= ~(0x1 << 16);				/* DiDtMode */
 		msr.lo |= ((f3x1fc & 0x1) << 16);
-		wrmsr(FP_CFG, msr);
+		wrmsr(FP_CFG_MSR, msr);
 
 		if (enable_experimental_memory_speed_boost) {
-			msr = rdmsr(BU_CFG3);
+			msr = rdmsr(BU_CFG3_MSR);
 			msr.lo |= (0x3 << 20);			/* PfcStrideMul = 0x3 */
-			wrmsr(BU_CFG3, msr);
+			wrmsr(BU_CFG3_MSR, msr);
 		}
 	}
 
 #if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700) || IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB800)
 	if (revision & (AMD_DR_GT_D0 | AMD_FAM15_ALL)) {
 		/* Set up message triggered C1E */
-		msr = rdmsr(0xc0010055);
+		msr = rdmsr(MSR_INTPEND);
 		msr.lo &= ~0xffff;		/* IOMsgAddr = ACPI_PM_EVT_BLK */
 		msr.lo |= ACPI_PM_EVT_BLK & 0xffff;
 		msr.lo |= (0x1 << 29);		/* BmStsClrOnHltEn = 1 */
@@ -1047,11 +1048,11 @@ void cpuSetAMDMSR(uint8_t node_id)
 			msr.lo &= ~(0x1 << 28);	/* C1eOnCmpHalt = 0 */
 			msr.lo &= ~(0x1 << 27);	/* SmiOnCmpHalt = 0 */
 		}
-		wrmsr(0xc0010055, msr);
+		wrmsr(MSR_INTPEND, msr);
 
-		msr = rdmsr(0xc0010015);
+		msr = rdmsr(HWCR_MSR);
 		msr.lo |= (0x1 << 12);		/* HltXSpCycEn = 1 */
-		wrmsr(0xc0010015, msr);
+		wrmsr(HWCR_MSR, msr);
 	}
 
 	if (revision & (AMD_DR_Ex | AMD_FAM15_ALL)) {
@@ -1063,9 +1064,9 @@ void cpuSetAMDMSR(uint8_t node_id)
 		if (enable_c_states) {
 			/* Set up the C-state base address */
 			msr_t c_state_addr_msr;
-			c_state_addr_msr = rdmsr(0xc0010073);
+			c_state_addr_msr = rdmsr(MSR_CSTATE_ADDRESS);
 			c_state_addr_msr.lo = ACPI_CPU_P_LVL2;	/* CstateAddr = ACPI_CPU_P_LVL2 */
-			wrmsr(0xc0010073, c_state_addr_msr);
+			wrmsr(MSR_CSTATE_ADDRESS, c_state_addr_msr);
 		}
 	}
 #else
@@ -1079,9 +1080,9 @@ void cpuSetAMDMSR(uint8_t node_id)
 
 		if (!enable_cpb) {
 			/* Disable Core Performance Boost */
-			msr = rdmsr(0xc0010015);
+			msr = rdmsr(HWCR_MSR);
 			msr.lo |= (0x1 << 25);		/* CpbDis = 1 */
-			wrmsr(0xc0010015, msr);
+			wrmsr(HWCR_MSR, msr);
 		}
 	}
 
@@ -1826,12 +1827,12 @@ static void cpuInitializeMCA(void)
 	u8 i;
 
 	if (cpuid_edx(1) & 0x4080) {	/* MCE and MCA (edx[7] and edx[14]) */
-		msr = rdmsr(MCG_CAP);
+		msr = rdmsr(IA32_MCG_CAP);
 		if (msr.lo & MCG_CTL_P) {	/* MCG_CTL_P bit is set? */
 			msr.lo &= 0xFF;
 			msr.lo--;
 			msr.lo <<= 2;	/* multiply the count by 4 */
-			reg = MC0_STA + msr.lo;
+			reg = IA32_MC0_STATUS + msr.lo;
 			msr.lo = msr.hi = 0;
 			for (i = 0; i < 4; i++) {
 				wrmsr(reg, msr);

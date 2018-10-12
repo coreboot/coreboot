@@ -17,9 +17,10 @@
 #include <inttypes.h>
 #include <console/console.h>
 #include <string.h>
+#include <cpu/amd/msr.h>
+#include <cpu/amd/mtrr.h>
 #include "mct_d.h"
 #include "mct_d_gcc.h"
-#include <cpu/amd/mtrr.h>
 
 static void CalcEccDQSPos_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u16 like,
@@ -431,7 +432,7 @@ static void TrainDQSRdWrPos_D_Fam10(struct MCTStatStruc *pMCTstat,
 	cr4 |= (1<<9);		/* OSFXSR enable SSE2 */
 	write_cr4(cr4);
 
-	addr = HWCR;
+	addr = HWCR_MSR;
 	_RDMSR(addr, &lo, &hi);
 	if (lo & (1<<17)) {
 		_Wrap32Dis = 1;
@@ -830,7 +831,7 @@ static void TrainDQSRdWrPos_D_Fam10(struct MCTStatStruc *pMCTstat,
 		mct_EnableDimmEccEn_D(pMCTstat, pDCTstat, _DisableDramECC);
 	}
 	if (!_Wrap32Dis) {
-		addr = HWCR;
+		addr = HWCR_MSR;
 		_RDMSR(addr, &lo, &hi);
 		lo &= ~(1<<17);		/* restore HWCR.wrap32dis */
 		_WRMSR(addr, lo, hi);
@@ -1648,7 +1649,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 	cr4 |= (1<<9);		/* OSFXSR enable SSE2 */
 	write_cr4(cr4);
 
-	addr = HWCR;
+	addr = HWCR_MSR;
 	_RDMSR(addr, &lo, &hi);
 	if (lo & (1<<17)) {
 		_Wrap32Dis = 1;
@@ -1861,7 +1862,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 		mct_EnableDimmEccEn_D(pMCTstat, pDCTstat, _DisableDramECC);
 	}
 	if (!_Wrap32Dis) {
-		addr = HWCR;
+		addr = HWCR_MSR;
 		_RDMSR(addr, &lo, &hi);
 		lo &= ~(1<<17);		/* restore HWCR.wrap32dis */
 		_WRMSR(addr, lo, hi);

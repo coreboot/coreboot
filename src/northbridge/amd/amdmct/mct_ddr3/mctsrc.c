@@ -22,9 +22,10 @@
 #include <inttypes.h>
 #include <console/console.h>
 #include <string.h>
+#include <cpu/x86/msr.h>
+#include <cpu/amd/msr.h>
 #include "mct_d.h"
 #include "mct_d_gcc.h"
-#include <cpu/x86/msr.h>
 
 static void dqsTrainRcvrEn_SW_Fam10(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 Pass);
@@ -661,14 +662,15 @@ static void dqsTrainRcvrEn_SW_Fam10(struct MCTStatStruc *pMCTstat,
 	cr4 |= (1 << 9);	/* OSFXSR enable SSE2 */
 	write_cr4(cr4);
 
-	msr = rdmsr(HWCR);
+	msr = rdmsr(HWCR_MSR);
 	/* FIXME: Why use SSEDIS */
 	if (msr.lo & (1 << 17)) {	/* save the old value */
 		_Wrap32Dis = 1;
 	}
 	msr.lo |= (1 << 17);	/* HWCR.wrap32dis */
 	msr.lo &= ~(1 << 15);	/* SSEDIS */
-	wrmsr(HWCR, msr);	/* Setting wrap32dis allows 64-bit memory references in real mode */
+	wrmsr(HWCR_MSR, msr);	/* Setting wrap32dis allows 64-bit memory
+				   references in real mode */
 
 	_DisableDramECC = mct_DisableDimmEccEn_D(pMCTstat, pDCTstat);
 
@@ -996,9 +998,9 @@ static void dqsTrainRcvrEn_SW_Fam10(struct MCTStatStruc *pMCTstat,
 	}
 
 	if (!_Wrap32Dis) {
-		msr = rdmsr(HWCR);
+		msr = rdmsr(HWCR_MSR);
 		msr.lo &= ~(1<<17);	/* restore HWCR.wrap32dis */
-		wrmsr(HWCR, msr);
+		wrmsr(HWCR_MSR, msr);
 	}
 	if (!_SSE2) {
 		cr4 = read_cr4();
@@ -1254,7 +1256,7 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 	cr4 |= (1 << 9);	/* OSFXSR enable SSE2 */
 	write_cr4(cr4);
 
-	msr = HWCR;
+	msr = HWCR_MSR;
 	_RDMSR(msr, &lo, &hi);
 	/* FIXME: Why use SSEDIS */
 	if (lo & (1 << 17)) {	/* save the old value */
@@ -1498,7 +1500,7 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 	}
 
 	if (!_Wrap32Dis) {
-		msr = HWCR;
+		msr = HWCR_MSR;
 		_RDMSR(msr, &lo, &hi);
 		lo &= ~(1<<17);		/* restore HWCR.wrap32dis */
 		_WRMSR(msr, lo, hi);
@@ -1613,7 +1615,7 @@ void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 	cr4 |= (1 << 9);	/* OSFXSR enable SSE2 */
 	write_cr4(cr4);
 
-	msr = HWCR;
+	msr = HWCR_MSR;
 	_RDMSR(msr, &lo, &hi);
 	/* FIXME: Why use SSEDIS */
 	if (lo & (1 << 17)) {	/* save the old value */
@@ -1718,7 +1720,7 @@ void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 	}
 
 	if (!_Wrap32Dis) {
-		msr = HWCR;
+		msr = HWCR_MSR;
 		_RDMSR(msr, &lo, &hi);
 		lo &= ~(1<<17);		/* restore HWCR.wrap32dis */
 		_WRMSR(msr, lo, hi);

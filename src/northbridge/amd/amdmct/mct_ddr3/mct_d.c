@@ -32,18 +32,19 @@
  * supported.
  */
 
-#include "mct_d_gcc.h"
-#include "mct_d.h"
 #include <console/console.h>
 #include <northbridge/amd/amdfam10/debug.h>
 #include <northbridge/amd/amdfam10/raminit.h>
 #include <northbridge/amd/amdfam10/amdfam10.h>
 #include <reset.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/msr.h>
 #include <arch/acpi.h>
 #include <string.h>
 #include <device/dram/ddr3.h>
 #include "s3utils.h"
+#include "mct_d_gcc.h"
+#include "mct_d.h"
 
 static u8 ReconfigureDIMMspare_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstatA);
@@ -7770,7 +7771,7 @@ void mct_SetClToNB_D(struct MCTStatStruc *pMCTstat,
 	/* FIXME: Maybe check the CPUID? - not for now. */
 	/* pDCTstat->LogicalCPUID; */
 
-	msr = BU_CFG2;
+	msr = BU_CFG2_MSR;
 	_RDMSR(msr, &lo, &hi);
 	lo |= 1 << ClLinesToNbDis;
 	_WRMSR(msr, lo, hi);
@@ -7786,7 +7787,7 @@ void mct_ClrClToNB_D(struct MCTStatStruc *pMCTstat,
 	/* FIXME: Maybe check the CPUID? - not for now. */
 	/* pDCTstat->LogicalCPUID; */
 
-	msr = BU_CFG2;
+	msr = BU_CFG2_MSR;
 	_RDMSR(msr, &lo, &hi);
 	if (!pDCTstat->ClToNB_flag)
 		lo &= ~(1<<ClLinesToNbDis);
@@ -7803,7 +7804,7 @@ void mct_SetWbEnhWsbDis_D(struct MCTStatStruc *pMCTstat,
 	/* FIXME: Maybe check the CPUID? - not for now. */
 	/* pDCTstat->LogicalCPUID; */
 
-	msr = BU_CFG;
+	msr = BU_CFG_MSR;
 	_RDMSR(msr, &lo, &hi);
 	hi |= (1 << WbEnhWsbDis_D);
 	_WRMSR(msr, lo, hi);
@@ -7818,7 +7819,7 @@ void mct_ClrWbEnhWsbDis_D(struct MCTStatStruc *pMCTstat,
 	/* FIXME: Maybe check the CPUID? - not for now. */
 	/* pDCTstat->LogicalCPUID; */
 
-	msr = BU_CFG;
+	msr = BU_CFG_MSR;
 	_RDMSR(msr, &lo, &hi);
 	hi &= ~(1 << WbEnhWsbDis_D);
 	_WRMSR(msr, lo, hi);
@@ -8048,7 +8049,7 @@ static void mct_ResetDLL_D(struct MCTStatStruc *pMCTstat,
 		return;
 	}
 
-	addr = HWCR;
+	addr = HWCR_MSR;
 	_RDMSR(addr, &lo, &hi);
 	if (lo & (1<<17)) {		/* save the old value */
 		wrap32dis = 1;
@@ -8079,7 +8080,7 @@ static void mct_ResetDLL_D(struct MCTStatStruc *pMCTstat,
 	}
 
 	if (!wrap32dis) {
-		addr = HWCR;
+		addr = HWCR_MSR;
 		_RDMSR(addr, &lo, &hi);
 		lo &= ~(1<<17);		/* restore HWCR.wrap32dis */
 		_WRMSR(addr, lo, hi);

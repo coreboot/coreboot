@@ -22,6 +22,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <stdlib.h>
 #include <delay.h>
@@ -40,7 +41,7 @@ struct resource *sr5650_retrieve_cpu_mmio_resource()
 	for (domain = all_devices; domain; domain = domain->next) {
 		if (domain->bus->dev->path.type != DEVICE_PATH_DOMAIN)
 			continue;
-		res = probe_resource(domain->bus->dev, 0xc0010058);
+		res = probe_resource(domain->bus->dev, MMIO_CONF_BASE);
 		if (res)
 			return res;
 	}

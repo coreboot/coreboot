@@ -27,15 +27,13 @@
 #include <lib.h>
 #include <cpu/cpu.h>
 #include <cbmem.h>
-
 #include <cpu/x86/lapic.h>
+#include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
-
 #include <Porting.h>
 #include <AGESA.h>
 #include <Options.h>
 #include <Topology.h>
-
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
@@ -306,7 +304,7 @@ static void read_resources(struct device *dev)
 	 * It is not honored by the coreboot resource allocator if it is in
 	 * the APIC_CLUSTER.
 	 */
-	mmconf_resource(dev, 0xc0010058);
+	mmconf_resource(dev, MMIO_CONF_BASE);
 }
 
 static void set_resource(struct device *dev, struct resource *resource, u32 nodeid)

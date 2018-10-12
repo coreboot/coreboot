@@ -14,8 +14,9 @@
  * GNU General Public License for more details.
  */
 
-#include "mct_d.h"
 #include <cpu/x86/cr.h>
+#include <cpu/amd/msr.h>
+#include "mct_d.h"
 
 /******************************************************************************
  Description: Receiver En and DQS Timing Training feature for DDR 2 MCT
@@ -170,7 +171,7 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 	write_cr4(cr4);
 	print_t("TrainRcvrEn: 2\n");
 
-	msr = HWCR;
+	msr = HWCR_MSR;
 	_RDMSR(msr, &lo, &hi);
 	//FIXME: Why use SSEDIS
 	if (lo & (1 << 17)) {	/* save the old value */
@@ -443,7 +444,7 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 	}
 
 	if (!_Wrap32Dis) {
-		msr = HWCR;
+		msr = HWCR_MSR;
 		_RDMSR(msr, &lo, &hi);
 		lo &= ~(1<<17);		/* restore HWCR.wrap32dis */
 		_WRMSR(msr, lo, hi);

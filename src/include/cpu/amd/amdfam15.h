@@ -19,9 +19,6 @@
 #include <types.h>
 #include <cpu/x86/msr.h>
 
-#define MCG_CAP				0x00000179
-# define MCA_BANKS_MASK			0xff
-#define MC0_CTL				0x00000400
 #define MC0_STATUS			0x00000401
 # define MCA_STATUS_HI_VAL		BIT(63 - 32)
 # define MCA_STATUS_HI_OVERFLOW		BIT(62 - 32)
@@ -188,31 +185,5 @@ static inline enum mca_err_code_types mca_err_type(msr_t reg)
 		return MCA_ERRTYPE_TLB;
 	return MCA_ERRTYPE_UNKNOWN;
 }
-
-#define MSR_SMM_BASE			0xC0010111
-#define MSR_TSEG_BASE			0xC0010112
-#define MSR_SMM_MASK			0xC0010113
-# define SMM_TSEG_VALID			(1 << 1)
-# define SMM_TSEG_WB			(6 << 12)
-#define HWCR_MSR			0xC0010015
-# define SMM_LOCK			(1 << 0)
-#define NB_CFG_MSR			0xC001001f
-
-#define MMIO_CONF_BASE			0xC0010058
-# define MMIO_BUS_RANGE_SHIFT		2
-# define MMIO_RANGE_EN			(1 << 0)
-
-#define PSTATE_0_MSR			0xC0010064
-
-#define LS_CFG_MSR			0xC0011020
-#define IC_CFG_MSR			0xC0011021
-#define DC_CFG_MSR			0xC0011022
-#define CU_CFG_MSR			0xC0011023
-#define CU_CFG2_MSR			0xC001102A
-
-#define CPU_ID_FEATURES_MSR		0xC0011004
-#define CPU_ID_EXT_FEATURES_MSR		0xC0011005
-
-#define CORE_PERF_BOOST_CTRL		0x15C
 
 #endif /* CPU_AMD_FAM15_H */

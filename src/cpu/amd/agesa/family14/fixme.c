@@ -14,7 +14,7 @@
  */
 
 #include <cpu/x86/mtrr.h>
-
+#include <cpu/amd/msr.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <AGESA.h>
 #include "amdlib.h"
@@ -78,7 +78,7 @@ void amd_initmmio(void)
 	   Address MSR register.
 	 */
 	MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (LibAmdBitScanReverse(CONFIG_MMCONF_BUS_NUMBER) << 2) | 1;
-	LibAmdMsrWrite(0xC0010058, &MsrReg, &StdHeader);
+	LibAmdMsrWrite(MMIO_CONF_BASE, &MsrReg, &StdHeader);
 
 	/* Set Ontario Link Data */
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0, 0, 0xE0);
@@ -96,7 +96,7 @@ void amd_initmmio(void)
 
 	/* Set P-state 0 (1600 MHz) early to save a few ms of boot time */
 	MsrReg = 0;
-	LibAmdMsrWrite (0xC0010062, &MsrReg, &StdHeader);
+	LibAmdMsrWrite(PS_CTL_REG, &MsrReg, &StdHeader);
 }
 
 void amd_initenv(void)

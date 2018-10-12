@@ -16,6 +16,7 @@
 
 #include <northbridge/amd/amdmct/amddefs.h>
 #include <cpu/amd/mtrr.h>
+#include <cpu/amd/msr.h>
 
 /*
  * Default MSR and errata settings.
@@ -33,7 +34,7 @@ static const struct {
 	  0x00000000, 0x00000000,
 	  0xFFFFFFFF, 0xFFFFFFFF },
 
-	{ SYSCFG, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL,
+	{ SYSCFG_MSR, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL,
 	  3 << 21, 0x00000000,
 	  3 << 21, 0x00000000 },	/* [MtrrTom2En]=1,[TOM2EnWB] = 1*/
 
@@ -65,92 +66,92 @@ static const struct {
 	  1 << 10, 0x00000000,
 	  1 << 10, 0x00000000 },	/* [GartTblWkEn]=1 */
 
-	{ DC_CFG, AMD_FAM10_ALL, AMD_PTYPE_SVR,
+	{ DC_CFG_MSR, AMD_FAM10_ALL, AMD_PTYPE_SVR,
 	  0x00000000, 0x00000004,
 	  0x00000000, 0x0000000C },	/* Family 10h: [REQ_CTR] = 1 for Server */
 
-	{ DC_CFG, AMD_DR_Bx, AMD_PTYPE_SVR,
+	{ DC_CFG_MSR, AMD_DR_Bx, AMD_PTYPE_SVR,
 	  0x00000000, 0x00000000,
 	  0x00000000, 0x00000C00 },	/* Erratum 326 */
 
-	{ NB_CFG, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_DC | AMD_PTYPE_MC,
+	{ NB_CFG_MSR, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_DC | AMD_PTYPE_MC,
 	  0x00000000, 1 << 22,
 	  0x00000000, 1 << 22 },	/* [ApicInitIDLo]=1 */
 
-	{ NB_CFG, AMD_FAM15_ALL, AMD_PTYPE_DC | AMD_PTYPE_MC,
+	{ NB_CFG_MSR, AMD_FAM15_ALL, AMD_PTYPE_DC | AMD_PTYPE_MC,
 	  1 << 23, 0x00000000,
 	  1 << 23, 0x00000000 },	/* Erratum 663: [bit 23]=1 */
 
-	{ BU_CFG2, AMD_DR_Bx, AMD_PTYPE_ALL,
+	{ BU_CFG2_MSR, AMD_DR_Bx, AMD_PTYPE_ALL,
 	  1 << 29, 0x00000000,
 	  1 << 29, 0x00000000 },	/* For Bx Smash1GPages=1 */
 
-	{ DC_CFG, AMD_FAM10_ALL, AMD_PTYPE_ALL,
+	{ DC_CFG_MSR, AMD_FAM10_ALL, AMD_PTYPE_ALL,
 	  1 << 24, 0x00000000,
 	  1 << 24, 0x00000000 },	/* Erratum #261 [DIS_PIGGY_BACK_SCRUB]=1 */
 
-	{ LS_CFG, AMD_DR_GT_B0, AMD_PTYPE_ALL,
+	{ LS_CFG_MSR, AMD_DR_GT_B0, AMD_PTYPE_ALL,
 	  0 << 1, 0x00000000,
 	  1 << 1, 0x00000000 },		/* IDX_MATCH_ALL=0 */
 
-	{ IC_CFG, AMD_OR_C0, AMD_PTYPE_ALL,
+	{ IC_CFG_MSR, AMD_OR_C0, AMD_PTYPE_ALL,
 	  0x00000000, 1 << (39-32),
 	  0x00000000, 1 << (39-32)},	/* C0 or above [DisLoopPredictor]=1 */
 
-	{ IC_CFG, AMD_OR_C0, AMD_PTYPE_ALL,
+	{ IC_CFG_MSR, AMD_OR_C0, AMD_PTYPE_ALL,
 	  0xf << 1, 0x00000000,
 	  0xf << 1, 0x00000000},	/* C0 or above [DisIcWayFilter]=0xf */
 
-	{ BU_CFG, AMD_DR_LT_B3, AMD_PTYPE_ALL,
+	{ BU_CFG_MSR, AMD_DR_LT_B3, AMD_PTYPE_ALL,
 	  1 << 21, 0x00000000,
-	  1 << 21, 0x00000000 },	/* Erratum #254 DR B1 BU_CFG[21]=1 */
+	  1 << 21, 0x00000000 },	/* Erratum #254 DR B1 BU_CFG_MSR[21]=1 */
 
-	{ BU_CFG, AMD_DR_LT_B3, AMD_PTYPE_ALL,
+	{ BU_CFG_MSR, AMD_DR_LT_B3, AMD_PTYPE_ALL,
 	  1 << 23, 0x00000000,
-	  1 << 23, 0x00000000 },	/* Erratum #309 BU_CFG[23]=1 */
+	  1 << 23, 0x00000000 },	/* Erratum #309 BU_CFG_MSR[23]=1 */
 
-	{ BU_CFG, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	{ BU_CFG_MSR, AMD_FAM15_ALL, AMD_PTYPE_ALL,
 	  0 << 10, 0x00000000,
 	  1 << 10, 0x00000000 },	/* [DcacheAgressivePriority]=0 */
 
 	/* CPUID_EXT_FEATURES */
-	{ CPUIDFEATURES, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_DC | AMD_PTYPE_MC,
+	{ CPU_ID_FEATURES_MSR, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_DC | AMD_PTYPE_MC,
 	  1 << 28, 0x00000000,
 	  1 << 28, 0x00000000 },	/* [HyperThreadFeatEn]=1 */
 
-	{ CPUIDFEATURES, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_DC,
+	{ CPU_ID_FEATURES_MSR, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_DC,
 	  0x00000000, 1 << (33-32),
 	  0x00000000, 1 << (33-32) },	/* [ExtendedFeatEn]=1 */
 
-	{ DE_CFG, AMD_OR_B2, AMD_PTYPE_ALL,
+	{ DE_CFG_MSR, AMD_OR_B2, AMD_PTYPE_ALL,
 	  1 << 10, 0x00000000,
 	  1 << 10, 0x00000000 },	/* Bx [ResyncPredSingleDispDis]=1 */
 
-	{ BU_CFG2, AMD_DRBH_Cx, AMD_PTYPE_ALL,
+	{ BU_CFG2_MSR, AMD_DRBH_Cx, AMD_PTYPE_ALL,
 	  0x00000000, 1 << (35-32),
 	  0x00000000, 1 << (35-32) },	/* Erratum 343 (set to 0 after CAR, in post_cache_as_ram()/model_10xxx_init() )  */
 
-	{ BU_CFG3, AMD_OR_B2, AMD_PTYPE_ALL,
+	{ BU_CFG3_MSR, AMD_OR_B2, AMD_PTYPE_ALL,
 	  0x00000000, 1 << (42-32),
 	  0x00000000, 1 << (42-32)},	/* Bx [PwcDisableWalkerSharing]=1 */
 
-	{ BU_CFG3, AMD_OR_C0, AMD_PTYPE_ALL,
+	{ BU_CFG3_MSR, AMD_OR_C0, AMD_PTYPE_ALL,
 	  1 << 22, 0x00000000,
 	  1 << 22, 0x00000000},		/* C0 or above [PfcDoubleStride]=1 */
 
-	{ EX_CFG, AMD_OR_C0, AMD_PTYPE_ALL,
+	{ EX_CFG_MSR, AMD_OR_C0, AMD_PTYPE_ALL,
 	  0x00000000, 1 << (54-32),
 	  0x00000000, 1 << (54-32)},	/* C0 or above [LateSbzResync]=1 */
 
-	{ LS_CFG2, AMD_OR_C0, AMD_PTYPE_ALL,
+	{ LS_CFG2_MSR, AMD_OR_C0, AMD_PTYPE_ALL,
 	  1 << 23, 0x00000000,
 	  1 << 23, 0x00000000},		/* C0 or above [DisScbThreshold]=1 */
 
-	{ LS_CFG2, AMD_OR_C0, AMD_PTYPE_ALL,
+	{ LS_CFG2_MSR, AMD_OR_C0, AMD_PTYPE_ALL,
 	  1 << 14, 0x00000000,
 	  1 << 14, 0x00000000},		/* C0 or above [ForceSmcCheckFlowStDis]=1 */
 
-	{ LS_CFG2, AMD_OR_C0, AMD_PTYPE_ALL,
+	{ LS_CFG2_MSR, AMD_OR_C0, AMD_PTYPE_ALL,
 	  1 << 12, 0x00000000,
 	  1 << 12, 0x00000000},		/* C0 or above [ForceBusLockDis]=1 */
 
@@ -170,19 +171,19 @@ static const struct {
 	  0x00000010, 0x00000000,
 	  0xffffffff, 0x00000000},	/* OsvwId4 = 0x1 */
 
-	{ BU_CFG2, AMD_DR_Dx, AMD_PTYPE_ALL,
+	{ BU_CFG2_MSR, AMD_DR_Dx, AMD_PTYPE_ALL,
 	  0x00000000, 1 << (50-32),
 	  0x00000000, 1 << (50-32)},	/* D0 or Above, RdMmExtCfgQwEn*/
 
-	{ BU_CFG2, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	{ BU_CFG2_MSR, AMD_FAM15_ALL, AMD_PTYPE_ALL,
 	  0x00000000, 0x0 << (36-32),
 	  0x00000000, 0x3 << (36-32)},	/* [ThrottleNbInterface]=0 */
 
-	{ BU_CFG2, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	{ BU_CFG2_MSR, AMD_FAM15_ALL, AMD_PTYPE_ALL,
 	  1 << 10, 0x00000000,
 	  1 << 10, 0x00000000},		/* [VicResyncChkEn]=1 */
 
-	{ BU_CFG2, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	{ BU_CFG2_MSR, AMD_FAM15_ALL, AMD_PTYPE_ALL,
 	  1 << 11, 0x00000000,
 	  1 << 11, 0x00000000},		/* Erratum 503: [bit 11]=1 */
 
@@ -198,7 +199,7 @@ static const struct {
 	  0x00000000, 1 << (55 - 32),
 	  0x00000000, 1 << (55 - 32)},	/* [PerfCtrExtCore]=1 */
 
-	{ IBS_OP_DATA3, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	{ IBS_OP_DATA3_MSR, AMD_FAM15_ALL, AMD_PTYPE_ALL,
 	  0 << 16, 0x00000000,
 	  1 << 16, 0x00000000},		/* [IbsDcMabHit]=0 */
 

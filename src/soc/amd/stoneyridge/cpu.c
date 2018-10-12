@@ -18,8 +18,8 @@
 #include <cpu/x86/mp.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/msr.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/amd/amdfam15.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
@@ -89,10 +89,10 @@ static void relocation_handler(int cpu, uintptr_t curr_smbase,
 
 	tseg_base.lo = relo_attrs.tseg_base;
 	tseg_base.hi = 0;
-	wrmsr(MSR_TSEG_BASE, tseg_base);
+	wrmsr(SMM_ADDR_MSR, tseg_base);
 	tseg_mask.lo = relo_attrs.tseg_mask;
 	tseg_mask.hi = ((1 << (cpu_phys_address_size() - 32)) - 1);
-	wrmsr(MSR_SMM_MASK, tseg_mask);
+	wrmsr(SMM_MASK_MSR, tseg_mask);
 	smm_state = (void *)(SMM_AMD64_SAVE_STATE_OFFSET + curr_smbase);
 	smm_state->smbase = staggered_smbase;
 }

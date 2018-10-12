@@ -18,6 +18,7 @@
 #include <northbridge/amd/amdmct/mct/mct_d.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/msr.h>
 
 #include "rev.h"
 #include "rs780.h"
@@ -317,10 +318,10 @@ static void k8_optimization(void)
 	set_nbcfg_enable_bits(k8_f2, 0xA0, 3 << 2, 3 << 2);
 	set_nbcfg_enable_bits(k8_f2, 0xA0, 1 << 5, 1 << 5);
 
-	msr = rdmsr(0xC001001F);
+	msr = rdmsr(NB_CFG_MSR);
 	msr.lo &= ~(1 << 9);
 	msr.hi &= ~(1 << 4);
-	wrmsr(0xC001001F, msr);
+	wrmsr(NB_CFG_MSR, msr);
 }
 #else
 #define k8_optimization() do {} while (0)

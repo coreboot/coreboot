@@ -89,6 +89,7 @@ b.-  prep_fid_change(...)
 
  */
 
+#include <cpu/amd/msr.h>
 #include <inttypes.h>
 #include <northbridge/amd/amdht/AsPsDefs.h>
 
@@ -146,12 +147,12 @@ static void applyBoostFIDOffset(pci_devfn_t dev, uint32_t nodeid)
 		&&  ((cpuid_ecx(0x80000008) & NC_MASK) == 5) ) {
 		u32 core =  get_node_core_id_x().coreid;
 		u32 asymetricBoostThisCore = ((pci_read_config32(dev, 0x10C) >> (core*2))) & 3;
-		msr_t msr =  rdmsr(PS_REG_BASE);
+		msr_t msr =  rdmsr(PSTATE_0_MSR);
 		u32 cpuFid = msr.lo & PS_CPU_FID_MASK;
 		cpuFid = cpuFid + asymetricBoostThisCore;
 		msr.lo &=   ~PS_CPU_FID_MASK;
 		msr.lo |= cpuFid;
-		wrmsr(PS_REG_BASE , msr);
+		wrmsr(PSTATE_0_MSR, msr);
 	} else if (is_fam15h()) {
 		uint32_t dword = pci_read_config32(NODE_PCI(nodeid, 4), 0x15c);
 		uint8_t boost_count = (dword >> 2) & 0x7;
@@ -173,12 +174,12 @@ static void enableNbPState1(pci_devfn_t dev)
 			u32 nbVid1 = (pci_read_config32(dev, 0x1F4) & NB_VID1_MASK) >> NB_VID1_SHIFT;
 			u32 i;
 			for (i = nbPState; i < NM_PS_REG; i++) {
-				msr_t msr =  rdmsr(PS_REG_BASE + i);
+				msr_t msr =  rdmsr(PSTATE_0_MSR + i);
 				if (msr.hi &  PS_EN_MASK ) {
 				msr.hi |= NB_DID_M_ON;
 				msr.lo &= NB_VID_MASK_OFF;
 				msr.lo |= ( nbVid1 << NB_VID_POS);
-				wrmsr(PS_REG_BASE + i, msr);
+				wrmsr(PSTATE_0_MSR + i, msr);
 				}
 			}
 		}
@@ -189,10 +190,10 @@ static u8 setPStateMaxVal(pci_devfn_t dev)
 {
 	u8 i, maxpstate=0;
 	for (i = 0; i < NM_PS_REG; i++) {
-		msr_t msr = rdmsr(PS_REG_BASE + i);
+		msr_t msr = rdmsr(PSTATE_0_MSR + i);
 		if (msr.hi & PS_IDD_VALUE_MASK) {
 			msr.hi |= PS_EN_MASK;
-			wrmsr(PS_REG_BASE + i, msr);
+			wrmsr(PSTATE_0_MSR + i, msr);
 		}
 		if (msr.hi & PS_EN_MASK) {
 			maxpstate = i;
@@ -215,16 +216,16 @@ static void dualPlaneOnly(pci_devfn_t dev)
 		&& (cpuRev & (AMD_DR_Cx | AMD_DR_Ex))) {
 		if ((pci_read_config32(dev, 0x1FC) & DUAL_PLANE_ONLY_MASK)
 			&& (pci_read_config32(dev, 0xA0) & PVI_MODE)) {
-			if (cpuid_edx(0x80000007) & CPB_MASK) {
+			if (cpuid_edx(CPUID_EXT_PM) & CPB_MASK) {
 				// revision E only, but E is apparently not supported yet, therefore untested
-				msr_t minPstate = rdmsr(0xC0010065);
-				wrmsr(0xC0010065, rdmsr(0xC0010068));
-				wrmsr(0xC0010068, minPstate);
+				msr_t minPstate = rdmsr(PSTATE_1_MSR);
+				wrmsr(PSTATE_1_MSR, rdmsr(PSTATE_4_MSR));
+				wrmsr(PSTATE_4_MSR, minPstate);
 			} else {
 				msr_t msr;
 				msr.lo=0; msr.hi=0;
-				wrmsr(0xC0010064, rdmsr(0xC0010068) );
-				wrmsr(0xC0010068, msr);
+				wrmsr(PSTATE_0_MSR, rdmsr(PSTATE_4_MSR));
+				wrmsr(PSTATE_4_MSR, msr);
 			}
 
 			//FIXME: CPTC2 and HTC_REG should get max per node, not per core ?
@@ -307,7 +308,7 @@ static void recalculateVsSlamTimeSettingOnCorePre(pci_devfn_t dev)
 	   prep_fid_change, one might use F4x1[F0:E0] instead, but
 	   theoretically MSRC001_00[68:64] are equal to them after
 	   reset. */
-	msr = rdmsr(0xC0010064);
+	msr = rdmsr(PSTATE_0_MSR);
 	highVoltageVid = (u8) ((msr.lo >> PS_CPU_VID_SHFT) & 0x7F);
 	if (!(msr.hi & 0x80000000)) {
 	    printk(BIOS_ERR,"P-state info in MSRC001_0064 is invalid !!!\n");
@@ -325,15 +326,16 @@ static void recalculateVsSlamTimeSettingOnCorePre(pci_devfn_t dev)
 	}
 
 	/* Get PSmax's index */
-	msr = rdmsr(0xC0010061);
+	msr = rdmsr(PS_LIM_REG);
 	bValue = (u8) ((msr.lo >> PS_MAX_VAL_SHFT) & BIT_MASK_3);
 
 	/* Get PSmax's VID */
-	msr = rdmsr(0xC0010064 + bValue);
+	msr = rdmsr(PSTATE_0_MSR + bValue);
 	lowVoltageVid = (u8) ((msr.lo >> PS_CPU_VID_SHFT) & 0x7F);
 	if (!(msr.hi & 0x80000000)) {
-	    printk(BIOS_ERR,"P-state info in MSR%8x is invalid !!!\n",0xC0010064 + bValue);
-	    lowVoltageVid = (u8) ((pci_read_config32(dev, 0x1E0+(bValue*4))
+		printk(BIOS_ERR, "P-state info in MSR%8x is invalid !!!\n",
+			PSTATE_0_MSR + bValue);
+		lowVoltageVid = (u8) ((pci_read_config32(dev, 0x1E0+(bValue*4))
 				     >> PS_CPU_VID_SHFT) & 0x7F);
 	}
 
@@ -644,7 +646,7 @@ void prep_fid_change(void)
 
 static void waitCurrentPstate(u32 target_pstate) {
 	msr_t initial_msr = rdmsr(TSC_MSR);
-	msr_t pstate_msr = rdmsr(CUR_PSTATE_MSR);
+	msr_t pstate_msr = rdmsr(PS_STS_REG);
 	msr_t tsc_msr;
 	u8 timedout;
 
@@ -655,7 +657,7 @@ static void waitCurrentPstate(u32 target_pstate) {
 	* misunderstand this...
 	*/
 	u32 corrected_timeout = ((pstate_msr.lo==1)
-				&& (!(rdmsr(0xC0010065).lo & NB_DID_M_ON)) ) ?
+				&& (!(rdmsr(PSTATE_1_MSR).lo & NB_DID_M_ON))) ?
 				WAIT_PSTATE_TIMEOUT*2 : WAIT_PSTATE_TIMEOUT;
 	msr_t timeout;
 
@@ -667,19 +669,19 @@ static void waitCurrentPstate(u32 target_pstate) {
 
 	// assuming TSC ticks at 1.25 ns per tick (800 MHz)
 	do {
-		pstate_msr = rdmsr(CUR_PSTATE_MSR);
+		pstate_msr = rdmsr(PS_STS_REG);
 		tsc_msr = rdmsr(TSC_MSR);
 		timedout = (tsc_msr.hi > timeout.hi)
 			|| ((tsc_msr.hi == timeout.hi) && (tsc_msr.lo > timeout.lo ));
 	} while ( (pstate_msr.lo != target_pstate) && (! timedout) );
 
 	if (pstate_msr.lo != target_pstate) {
-		msr_t limit_msr = rdmsr(0xc0010061);
+		msr_t limit_msr = rdmsr(PS_LIM_REG);
 		printk(BIOS_ERR, "*** APIC ID %02x: timed out waiting for P-state %01x. Current P-state %01x P-state current limit MSRC001_0061=%08x %08x\n",
 			cpuid_ebx(0x00000001) >> 24, target_pstate, pstate_msr.lo, limit_msr.hi, limit_msr.lo);
 
 		do { // should we just go on instead ?
-			pstate_msr = rdmsr(CUR_PSTATE_MSR);
+			pstate_msr = rdmsr(PS_STS_REG);
 		} while ( pstate_msr.lo != target_pstate  );
 	}
 }
@@ -689,10 +691,10 @@ static void set_pstate(u32 nonBoostedPState) {
 	uint8_t skip_wait;
 
 	// Transition P0 for calling core.
-	msr = rdmsr(0xC0010062);
+	msr = rdmsr(PS_CTL_REG);
 
 	msr.lo = nonBoostedPState;
-	wrmsr(0xC0010062, msr);
+	wrmsr(PS_CTL_REG, msr);
 
 	if (is_fam15h()) {
 		/* Do not wait for the first (even) set of cores to transition on Family 15h systems */
@@ -718,7 +720,7 @@ static void UpdateSinglePlaneNbVid(void)
 
 	/* copy higher voltage (lower VID) of NBVID & CPUVID to both */
 	for (i = 0; i < 5; i++) {
-		msr = rdmsr(PS_REG_BASE + i);
+		msr = rdmsr(PSTATE_0_MSR + i);
 		nbVid = (msr.lo & PS_CPU_VID_M_ON) >> PS_CPU_VID_SHFT;
 		cpuVid = (msr.lo & PS_NB_VID_M_ON) >> PS_NB_VID_SHFT;
 
@@ -729,7 +731,7 @@ static void UpdateSinglePlaneNbVid(void)
 			msr.lo = msr.lo & PS_BOTH_VID_OFF;
 			msr.lo = msr.lo | (u32) ((nbVid) << PS_NB_VID_SHFT);
 			msr.lo = msr.lo | (u32) ((nbVid) << PS_CPU_VID_SHFT);
-			wrmsr(PS_REG_BASE + i, msr);
+			wrmsr(PSTATE_0_MSR + i, msr);
 		}
 	}
 }
@@ -751,16 +753,16 @@ static void fixPsNbVidBeforeWR(u32 newNbVid, u32 coreid, u32 dev, u8 pviMode)
 	 *			      for SVI and Single-Plane PVI Systems
 	 */
 
-	msr = rdmsr(0xc0010071);
+	msr = rdmsr(MSR_COFVID_STS);
 	startup_pstate = (msr.hi >> (32 - 32)) & 0x07;
 
 	/* Copy startup pstate to P1 and P0 MSRs. Set the maxvid for
 	 * this node in P0.  Then transition to P1 for corex and P0
 	 * for core0.  These setting will be cleared by the warm reset
 	 */
-	msr = rdmsr(0xC0010064 + startup_pstate);
-	wrmsr(0xC0010065, msr);
-	wrmsr(0xC0010064, msr);
+	msr = rdmsr(PSTATE_0_MSR + startup_pstate);
+	wrmsr(PSTATE_1_MSR, msr);
+	wrmsr(PSTATE_0_MSR, msr);
 
 	/* missing step 2 from BDKG , F3xDC[PstateMaxVal] =
 	 * max(1,F3xDC[PstateMaxVal] ) because it would take
@@ -773,7 +775,7 @@ static void fixPsNbVidBeforeWR(u32 newNbVid, u32 coreid, u32 dev, u8 pviMode)
 
 	msr.lo &= ~0xFE000000;	// clear nbvid
 	msr.lo |= (newNbVid << 25);
-	wrmsr(0xC0010064, msr);
+	wrmsr(PSTATE_0_MSR, msr);
 
 	if (pviMode) { /* single plane*/
 	  UpdateSinglePlaneNbVid();
@@ -944,14 +946,14 @@ static void fixPsNbVidAfterWR(u32 newNbVid, u8 NbVidUpdatedAll,u8 pviMode)
 
 	/* write newNbVid to P-state Reg's NbVid if its NbDid=0 */
 	for (i = 0; i < 5; i++) {
-		msr = rdmsr(0xC0010064 + i);
+		msr = rdmsr(PSTATE_0_MSR + i);
 		/*  NbDid (bit 22 of P-state Reg) == 0  or NbVidUpdatedAll = 1 */
 		if (   (msr.hi & PS_IDD_VALUE_MASK)
 		    && (msr.hi & PS_EN_MASK)
 		    &&(((msr.lo & PS_NB_DID_MASK) == 0) || NbVidUpdatedAll)) {
 			msr.lo &= PS_NB_VID_M_OFF;
 			msr.lo |= (newNbVid & 0x7F) << PS_NB_VID_SHFT;
-			wrmsr(0xC0010064 + i, msr);
+			wrmsr(PSTATE_0_MSR + i, msr);
 		}
 	}
 
@@ -962,7 +964,7 @@ static void fixPsNbVidAfterWR(u32 newNbVid, u8 NbVidUpdatedAll,u8 pviMode)
 	    UpdateSinglePlaneNbVid();
 	}
 	/* For each core in the system, transition all cores to StartupPstate */
-	msr = rdmsr(0xC0010071);
+	msr = rdmsr(MSR_COFVID_STS);
 	StartupPstate = msr.hi & 0x07;
 
 	/* Set and wait for StartupPstate to set. */
@@ -1027,9 +1029,9 @@ void init_fidvid_stage2(u32 apicid, u32 nodeid)
 
 	if (!is_fam15h()) {
 		/* Set TSC to tick at the P0 ndfid rate */
-		msr = rdmsr(HWCR);
+		msr = rdmsr(HWCR_MSR);
 		msr.lo |= 1 << 24;
-		wrmsr(HWCR, msr);
+		wrmsr(HWCR_MSR, msr);
 	}
 }
 

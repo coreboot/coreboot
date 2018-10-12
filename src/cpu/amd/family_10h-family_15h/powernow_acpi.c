@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <option.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/msr.h>
 #include <arch/acpigen.h>
 #include <cpu/amd/powernow.h>
 #include <device/pci.h>
@@ -111,7 +112,7 @@ static void write_cstates_for_core(int coreID)
 		cstate.resource.space_id = ACPI_ADDRESS_SPACE_IO;
 		cstate.resource.bit_width = 8;
 		cstate.resource.bit_offset = 0;
-		cstate.resource.addrl = rdmsr(0xc0010073).lo + 1;
+		cstate.resource.addrl = rdmsr(MSR_CSTATE_ADDRESS).lo + 1;
 		cstate.resource.addrh = 0;
 		cstate.resource.resv = 1;
 	} else {
@@ -121,7 +122,7 @@ static void write_cstates_for_core(int coreID)
 		cstate.resource.space_id = ACPI_ADDRESS_SPACE_IO;
 		cstate.resource.bit_width = 8;
 		cstate.resource.bit_offset = 0;
-		cstate.resource.addrl = rdmsr(0xc0010073).lo;
+		cstate.resource.addrl = rdmsr(MSR_CSTATE_ADDRESS).lo;
 		cstate.resource.addrh = 0;
 		cstate.resource.resv = 1;
 	}
@@ -268,7 +269,8 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 
 	if (fam15h)
 		/* Set P_LVL2 P_BLK entry */
-		*(((uint8_t *)pcontrol_blk) + 0x04) = (rdmsr(0xc0010073).lo + 1) & 0xff;
+		*(((uint8_t *)pcontrol_blk) + 0x04) =
+			(rdmsr(MSR_CSTATE_ADDRESS).lo + 1) & 0xff;
 
 	uint8_t pviModeFlag;
 	uint8_t Pstate_max;
@@ -296,15 +298,15 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		pviModeFlag = 0;
 
 	/* Get PSmax's index */
-	msr = rdmsr(0xC0010061);
+	msr = rdmsr(PS_LIM_REG);
 	Pstate_max = (uint8_t) ((msr.lo >> PS_MAX_VAL_SHFT) & ((fam15h)?BIT_MASK_7:BIT_MASK_3));
 
 	/* Determine if all enabled Pstates have the same fidvid */
 	uint8_t i;
-	uint8_t cpufid_prev = (rdmsr(0xC0010064).lo & 0x3f);
+	uint8_t cpufid_prev = (rdmsr(PSTATE_0_MSR).lo & 0x3f);
 	uint8_t all_enabled_cores_have_same_cpufid = 1;
 	for (i = 1; i < Pstate_max; i++) {
-		cpufid = rdmsr(0xC0010064 + i).lo & 0x3f;
+		cpufid = rdmsr(PSTATE_0_MSR + i).lo & 0x3f;
 		if (cpufid != cpufid_prev) {
 			all_enabled_cores_have_same_cpufid = 0;
 			break;
@@ -318,7 +320,7 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	/* Populate tables with all Pstate information */
 	for (Pstate_num = 0; Pstate_num < Pstate_max; Pstate_num++) {
 		/* Get power state information */
-		msr = rdmsr(0xC0010064 + Pstate_num + boost_count);
+		msr = rdmsr(PSTATE_0_MSR + Pstate_num + boost_count);
 		cpufid = (msr.lo & 0x3f);
 		cpudid = (msr.lo & 0x1c0) >> 6;
 		cpuvid = (msr.lo & 0xfe00) >> 9;

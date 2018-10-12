@@ -21,19 +21,6 @@
 #define APIC_BAR 0x1b			/* APIC_BAR register */
 #define APIC_BAR_BP 0x100		/* APIC_BAR BSP bit */
 
-#define PS_LIM_REG 0xC0010061		/* P-state Current Limit Register */
-#define PS_MAX_VAL_SHFT 4		/* P-state Maximum Value shift position */
-
-#define PS_CTL_REG 0xC0010062		/* P-state Control Register */
-#define PS_CMD_MASK_OFF 0xfffffff8	/* P-state Control Register CMD Mask OFF */
-
-#define PS_STS_REG 0xC0010063		/* P-state Status Register */
-#define PS_STS_MASK 0x7		/* P-state Status Mask */
-
-#define PS_REG_BASE 0xC0010064		/* P-state Register base */
-#define PS_MAX_REG 0xC0010068		/* Maximum P-State Register */
-#define PS_MIN_REG 0xC0010064		/* Mimimum P-State Register */
-
 /* P-state register offset */
 #define PS_REG0 0			/* offset for P0 */
 #define PS_REG1 1			/* offset for P1 */
@@ -286,7 +273,6 @@
 
 
 #define TSC_MSR 0x10
-#define CUR_PSTATE_MSR 0xc0010063
 #define TSC_FREQ_SEL_SHIFT 24
 
 #define TSC_FREQ_SEL_MASK (1 << TSC_FREQ_SEL_SHIFT)

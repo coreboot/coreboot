@@ -21,6 +21,7 @@
 
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/msr.h>
 
 static __always_inline uint32_t amd_fam1x_cpu_family(void)
 {
@@ -72,9 +73,9 @@ void disable_cache_as_ram_real(uint8_t skip_sharedc_config)
 	}
 
 	/* INVDWBINVD = 1 */
-	msr = rdmsr(0xc0010015);
+	msr = rdmsr(HWCR_MSR);
 	msr.lo |= (0x1 << 4);
-	wrmsr(0xc0010015, msr);
+	wrmsr(HWCR_MSR, msr);
 
 	family = amd_fam1x_cpu_family();
 
@@ -83,15 +84,15 @@ void disable_cache_as_ram_real(uint8_t skip_sharedc_config)
 		/* Family 15h or later */
 
 		/* DisSS = 0 */
-		msr = rdmsr(0xc0011020);
+		msr = rdmsr(LS_CFG_MSR);
 		msr.lo &= ~(0x1 << 28);
-		wrmsr(0xc0011020, msr);
+		wrmsr(LS_CFG_MSR, msr);
 
 		if (!skip_sharedc_config) {
 			/* DisSpecTlbRld = 0 */
-			msr = rdmsr(0xc0011021);
+			msr = rdmsr(IC_CFG_MSR);
 			msr.lo &= ~(0x1 << 9);
-			wrmsr(0xc0011021, msr);
+			wrmsr(IC_CFG_MSR, msr);
 
 			/* Erratum 714: SpecNbReqDis = 0 */
 			msr = rdmsr(BU_CFG2_MSR);
@@ -101,10 +102,10 @@ void disable_cache_as_ram_real(uint8_t skip_sharedc_config)
 
 		/* DisSpecTlbRld = 0 */
 		/* DisHwPf = 0 */
-		msr = rdmsr(0xc0011022);
+		msr = rdmsr(DC_CFG_MSR);
 		msr.lo &= ~(0x1 << 4);
 		msr.lo &= ~(0x1 << 13);
-		wrmsr(0xc0011022, msr);
+		wrmsr(DC_CFG_MSR, msr);
 	}
 #endif
 }

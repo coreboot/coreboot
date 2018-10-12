@@ -17,8 +17,8 @@
 
 #include <arch/io.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/msr.h>
 #include <cpu/x86/tsc.h>
-#include <cpu/amd/amdfam15.h>
 #include <console/console.h>
 #include <soc/pci_devs.h>
 #include <device/pci_ops.h>

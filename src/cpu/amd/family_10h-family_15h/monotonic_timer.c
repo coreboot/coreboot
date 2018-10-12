@@ -16,12 +16,11 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/msr.h>
 #include <timer.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-
 #include <northbridge/amd/amdht/AsPsDefs.h>
-#include <cpu/amd/msr.h>
 
 static struct monotonic_counter {
 	int initialized;
@@ -62,7 +61,7 @@ static void init_timer(void)
 	wrmsr(HWCR_MSR, msr);
 
 	/* Get core Pstate 0 frequency in MHz */
-	msr = rdmsr(0xC0010064 + boost_capable);
+	msr = rdmsr(PSTATE_0_MSR + boost_capable);
 	cpufid = (msr.lo & 0x3f);
 	cpudid = (msr.lo & 0x1c0) >> 6;
 	mono_counter.core_frequency = (100 * (cpufid + 0x10)) / (0x01 << cpudid);

@@ -20,6 +20,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/msr.h>
 #include <option.h>
 #include <reset.h>
 #include "sr5650.h"
@@ -309,9 +310,9 @@ void fam10_optimization(void)
 		return;
 
 	printk(BIOS_INFO, "fam10_optimization()\n");
-	msr = rdmsr(0xC001001F);
+	msr = rdmsr(NB_CFG_MSR);
 	msr.hi |= 1 << 14;	/* bit 46: EnableCf8ExtCfg */
-	wrmsr(0xC001001F, msr);
+	wrmsr(NB_CFG_MSR, msr);
 
 	cpu_f0 = PCI_DEV(0, 0x18, 0);
 	cpu_f2 = PCI_DEV(0, 0x18, 2);

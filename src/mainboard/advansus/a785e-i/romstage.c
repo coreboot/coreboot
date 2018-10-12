@@ -34,6 +34,7 @@
 #include <cpu/x86/bist.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
+#include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/amdfam10/raminit.h>
@@ -159,7 +160,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sb800_early_setup();
 
 #if IS_ENABLED(CONFIG_SET_FIDVID)
-	msr = rdmsr(0xc0010071);
+	msr = rdmsr(MSR_COFVID_STS);
 	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 	post_code(0x39);
 
@@ -174,7 +175,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x3A);
 
 	/* show final fid and vid */
-	msr = rdmsr(0xc0010071);
+	msr = rdmsr(MSR_COFVID_STS);
 	printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 #endif
 

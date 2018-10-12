@@ -120,42 +120,6 @@
 #define HTPHY_DIRECT_MAP		0x20000000
 #define HTPHY_DIRECT_OFFSET_MASK	0xE000FFFF
 
-
-/*
- * Various AMD MSRs
- */
-#define CPUID_EXT_PM		0x80000007
-#define CPUID_MODEL		1
-#define MCG_CAP			0x00000179
-	#define MCG_CTL_P	8
-	#define MCA_BANKS_MASK	0xff
-#define MC0_CTL			0x00000400
-#define MC0_STA			(MC0_CTL + 1)
-#define MC4_MISC0		0x00000413
-#define MC4_MISC1		0xC0000408
-#define MC4_MISC2		0xC0000409
-#define FS_Base			0xC0000100
-#define SYSCFG			0xC0010010
-#define HWCR			0xC0010015
-#define NB_CFG			0xC001001F
-#define FidVidStatus		0xC0010042
-#define MC1_CTL_MASK		0xC0010045
-#define MC4_CTL_MASK		0xC0010048
-#define OSVW_ID_Length		0xC0010140
-#define OSVW_Status		0xC0010141
-#define CPUIDFEATURES		0xC0011004
-#define LS_CFG			0xC0011020
-#define IC_CFG			0xC0011021
-#define DC_CFG			0xC0011022
-#define BU_CFG			0xC0011023
-#define FP_CFG			0xC0011028
-#define DE_CFG			0xC0011029
-#define BU_CFG2			0xC001102A
-#define BU_CFG3			0xC001102B
-#define EX_CFG			0xC001102C
-#define LS_CFG2			0xC001102D
-#define IBS_OP_DATA3		0xC0011037
-
 /*
  * Processor package types
  */

@@ -15,7 +15,7 @@
 
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
-#include <cpu/amd/amdfam15.h>
+#include <cpu/amd/msr.h>
 #include <bootstate.h>
 #include <timer.h>
 #include <console/console.h>
@@ -30,9 +30,9 @@ static void per_core_finalize(void *unused)
 		return;
 
 	if (IS_ENABLED(CONFIG_SMM_TSEG)) {
-		mask = rdmsr(MSR_SMM_MASK);
+		mask = rdmsr(SMM_MASK_MSR);
 		mask.lo |= SMM_TSEG_VALID;
-		wrmsr(MSR_SMM_MASK, mask);
+		wrmsr(SMM_MASK_MSR, mask);
 	}
 
 	hwcr.lo |= SMM_LOCK;

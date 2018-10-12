@@ -21,6 +21,7 @@
  */
 
 #include <cpu/x86/msr.h>
+#include <cpu/amd/msr.h>
 #include <cpu/x86/tsc.h>
 #include <delay.h>
 #include <stdint.h>
@@ -36,11 +37,11 @@ void udelay(uint32_t us)
 	tsc_start = rdtscll();
 
 	/* Get the P-state. This determines which MSR to read */
-	msr = rdmsr(0xc0010063);
+	msr = rdmsr(PS_STS_REG);
 	pstate_idx = msr.lo & 0x07;
 
 	/* Get FID and VID for current P-State */
-	msr = rdmsr(0xc0010064 + pstate_idx);
+	msr = rdmsr(PSTATE_0_MSR + pstate_idx);
 
 	/* Extract the FID and VID values */
 	fid = msr.lo & 0x3f;

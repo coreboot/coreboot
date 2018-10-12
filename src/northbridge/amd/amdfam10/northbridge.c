@@ -28,7 +28,6 @@
 #include <smbios.h>
 #include <cpu/cpu.h>
 #include <delay.h>
-
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/cache.h>
 #include <cpu/amd/mtrr.h>
@@ -734,7 +733,7 @@ static void amdfam10_domain_read_resources(struct device *dev)
 	pci_domain_read_resources(dev);
 
 	/* We have MMCONF_SUPPORT, create the resource window. */
-	mmconf_resource(dev, 0xc0010058);
+	mmconf_resource(dev, MMIO_CONF_BASE);
 
 	/* Reserve lower DRAM region to force PCI MMIO region to correct location above 0xefffffff */
 	ram_resource(dev, 7, 0, rdmsr(TOP_MEM).lo >> 10);

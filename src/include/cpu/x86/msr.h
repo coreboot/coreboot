@@ -25,6 +25,8 @@
 #define IA32_MPERF			0xe7
 #define IA32_APERF			0xe8
 #define IA32_MCG_CAP			0x179
+#define  MCG_CTL_P			(1 << 3)
+#define  MCA_BANKS_MASK			0xff
 #define IA32_PERF_STATUS		0x198
 #define IA32_PERF_CTL			0x199
 #define IA32_THERM_INTERRUPT		0x19b

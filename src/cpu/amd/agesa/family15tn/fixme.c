@@ -14,6 +14,7 @@
  */
 
 #include <cpu/x86/mtrr.h>
+#include <cpu/amd/msr.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <AGESA.h>
 #include "amdlib.h"
@@ -71,7 +72,7 @@ void amd_initmmio(void)
 	  Address MSR register.
 	*/
 	MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (LibAmdBitScanReverse (CONFIG_MMCONF_BUS_NUMBER) << 2) | 1;
-	LibAmdMsrWrite (0xC0010058, &MsrReg, &StdHeader);
+	LibAmdMsrWrite(MMIO_CONF_BASE, &MsrReg, &StdHeader);
 
 	/* Set ROM cache onto WP to decrease post time */
 	MsrReg = (0x0100000000ull - CACHE_ROM_SIZE) | 5ull;

@@ -38,6 +38,7 @@
 #include <cpu/x86/bist.h>
 #include <smp/spinlock.h>
 #include <cpu/amd/car.h>
+#include <cpu/amd/msr.h>
 #include <southbridge/amd/sb700/sb700.h>
 #include <southbridge/amd/sb700/smbus.h>
 #include <southbridge/amd/sr5650/sr5650.h>
@@ -475,7 +476,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 
 	if (IS_ENABLED(CONFIG_SET_FIDVID)) {
-		msr = rdmsr(0xc0010071);
+		msr = rdmsr(MSR_COFVID_STS);
 		printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 
 		/* FIXME: The sb fid change may survive the warm reset and only need to be done once */
@@ -494,7 +495,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		post_code(0x3A);
 
 		/* show final fid and vid */
-		msr = rdmsr(0xc0010071);
+		msr = rdmsr(MSR_COFVID_STS);
 		printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 	}
 

@@ -18,6 +18,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/pnp.h>
+#include <ec/google/common/mec.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -40,7 +41,9 @@ static void read_bytes(u16 port, unsigned int length, u8 *dest, u8 *csum)
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_MEC)
 	/* Access desired range though EMI interface */
 	if (port >= MEC_EMI_RANGE_START && port <= MEC_EMI_RANGE_END) {
-		mec_io_bytes(0, port, length, dest, csum);
+		csum += mec_io_bytes(MEC_IO_READ, MEC_EMI_BASE,
+				     port - MEC_EMI_RANGE_START,
+				     dest, length);
 		return;
 	}
 #endif
@@ -75,7 +78,9 @@ static void write_bytes(u16 port, unsigned int length, u8 *msg, u8 *csum)
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_MEC)
 	/* Access desired range though EMI interface */
 	if (port >= MEC_EMI_RANGE_START && port <= MEC_EMI_RANGE_END) {
-		mec_io_bytes(1, port, length, msg, csum);
+		csum += mec_io_bytes(MEC_IO_WRITE, MEC_EMI_BASE,
+				     port - MEC_EMI_RANGE_START,
+				     msg, length);
 		return;
 	}
 #endif

@@ -93,9 +93,6 @@ int google_chromeec_cbi_get_dram_part_num(char *buf, size_t bufsize);
 #define MEC_EMI_RANGE_START EC_HOST_CMD_REGION0
 #define MEC_EMI_RANGE_END   (EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SIZE)
 
-void mec_io_bytes(int write, u16 offset, unsigned int length,
-		  u8 *buf, u8 *csum);
-
 enum usb_charge_mode {
 	USB_CHARGE_MODE_DISABLED,
 	USB_CHARGE_MODE_CHARGE_AUTO,

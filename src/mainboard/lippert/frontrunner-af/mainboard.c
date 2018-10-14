@@ -21,8 +21,8 @@
 #include <device/pci_def.h>
 #include <southbridge/amd/sb800/sb800.h>
 #include <arch/acpi.h>
-#include "SBPLATFORM.h"
-#include "OEM.h" /* SMBUS0_BASE_ADDRESS */
+#include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
+#include <vendorcode/amd/cimx/sb800/OEM.h> /* SMBUS0_BASE_ADDRESS */
 #include <southbridge/amd/cimx/sb800/gpio_oem.h>
 #include "sema.h"
 

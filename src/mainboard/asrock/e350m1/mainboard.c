@@ -16,9 +16,8 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/io.h>
-
 #include <southbridge/amd/cimx/cimx_util.h>
-#include "SBPLATFORM.h"
+#include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 
 /**********************************************
  * Enable the dedicated functions of the board.

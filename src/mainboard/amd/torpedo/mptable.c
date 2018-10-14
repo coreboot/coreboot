@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
 #include <device/pci.h>
@@ -22,7 +21,7 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
-#include "SbPlatform.h"
+#include <southbridge/amd/cimx/sb900/SbPlatform.h>
 
 #define IO_APIC_ID CONFIG_MAX_CPUS
 u32 apicid_sb900;

@@ -15,9 +15,8 @@
 
 #include <console/console.h>
 #include <device/device.h>
-
 #include <southbridge/amd/sb800/sb800.h>
-#include "SBPLATFORM.h"	/* Platform Specific Definitions */
+#include <southbridge/amd/cimx/sb800/SBPLATFORM.h>	/* Platform Specific Definitions */
 
 static void init_gpios(void)
 {

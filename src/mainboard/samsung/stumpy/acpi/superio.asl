@@ -28,4 +28,4 @@
 #define SIO_GPIO_IO0      0x720  // pnp 2e.7: io 0x60
 #define SIO_GPIO_IO1      0x730  // pnp 2e.7: io 0x60
 
-#include "superio/ite/it8772f/acpi/superio.asl"
+#include <superio/ite/it8772f/acpi/superio.asl>

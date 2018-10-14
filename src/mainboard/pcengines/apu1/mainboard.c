@@ -24,7 +24,7 @@
 #include <arch/acpi.h>
 #include <smbios.h>
 #include <string.h>
-#include "SBPLATFORM.h"
+#include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 #include <southbridge/amd/cimx/sb800/pci_devs.h>
 #include <northbridge/amd/agesa/family14/pci_devs.h>
 #include <superio/nuvoton/nct5104d/nct5104d.h>

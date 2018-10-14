@@ -13,9 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include "SbPlatform.h"
+#include <southbridge/amd/cimx/sb900/SbPlatform.h>
 #include "gpio.h"
-#include "vendorcode/amd/cimx/sb900/AmdSbLib.h"
+#include <vendorcode/amd/cimx/sb900/AmdSbLib.h>
 
 
 #ifndef SB_GPIO_REG01

@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
 #include <device/pci.h>
@@ -21,7 +20,7 @@
 #include <arch/ioapic.h>
 #include <string.h>
 #include <stdint.h>
-#include <SBPLATFORM.h>
+#include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 
 u8 intr_data[] = {
 	[0x00] = 0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17, /* INTA# - INTH# */

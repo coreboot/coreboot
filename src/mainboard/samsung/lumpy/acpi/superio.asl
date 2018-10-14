@@ -31,4 +31,4 @@
 #define SIO_ENABLE_SMBX          // pnp 2e.9: Enable Mailbox
 #define SIO_SMBX_IO0      0xa00  // pnp 2e.9: io 0xa00
 
-#include "superio/smsc/mec1308/acpi/superio.asl"
+#include <superio/smsc/mec1308/acpi/superio.asl>

@@ -248,7 +248,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 				}
 			}
 
-			#include "superio/winbond/w83977tf/acpi/superio.asl"
+			#include <superio/winbond/w83977tf/acpi/superio.asl>
 		}
 	}
 

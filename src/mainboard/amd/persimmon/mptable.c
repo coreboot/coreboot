@@ -14,14 +14,13 @@
  * GNU General Public License for more details.
  */
 
-
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
 #include <device/pci.h>
 #include <arch/io.h>
 #include <string.h>
 #include <stdint.h>
-#include <SBPLATFORM.h>
+#include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <drivers/generic/ioapic/chip.h>
 #include <arch/ioapic.h>

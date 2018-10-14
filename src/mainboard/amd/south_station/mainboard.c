@@ -16,9 +16,8 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
-
 #include <southbridge/amd/sb800/sb800.h>
-#include "SBPLATFORM.h" 	/* Platform Specific Definitions */
+#include <southbridge/amd/cimx/sb800/SBPLATFORM.h>	/* Platform Specific Definitions */
 
 /**
  * Southstation using SB GPIO 17/18 to control the Red/Green LED

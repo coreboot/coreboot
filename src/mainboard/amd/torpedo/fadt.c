@@ -18,13 +18,12 @@
  * ACPI - create the Fixed ACPI Description Tables (FADT)
  */
 
-
 #include <string.h>
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <device/device.h>
-#include "SbPlatform.h"
+#include <southbridge/amd/cimx/sb900/SbPlatform.h>
 
 /*extern*/ u16 pm_base = 0x800;
 /* pm_base should be set in sb ACPI */

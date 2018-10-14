@@ -25,4 +25,4 @@
 #define NCT6776_SHOW_HWM	1
 #define NCT6776_SHOW_GPIO	1
 
-#include "superio/nuvoton/nct6776/acpi/superio.asl"
+#include <superio/nuvoton/nct6776/acpi/superio.asl>

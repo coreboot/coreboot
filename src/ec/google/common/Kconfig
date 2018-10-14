@@ -1,0 +1,4 @@
+config EC_GOOGLE_COMMON_MEC
+	bool
+	help
+	  Google common EC functions for Microchip EMI region.

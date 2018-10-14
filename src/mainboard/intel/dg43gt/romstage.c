@@ -60,7 +60,10 @@ static void ich10_enable_lpc(void)
 {
 	/* Configure serial IRQs.*/
 	pci_write_config16(LPC_DEV, D31F0_LPC_IODEC, 0x0010);
-	pci_write_config16(LPC_DEV, D31F0_LPC_EN, 0x3f0f);
+	pci_write_config16(LPC_DEV, D31F0_LPC_EN, CNF2_LPC_EN | CNF1_LPC_EN
+			   | MC_LPC_EN | KBC_LPC_EN | GAMEH_LPC_EN
+			   | GAMEL_LPC_EN | FDD_LPC_EN | LPT_LPC_EN
+			   | COMB_LPC_EN | COMA_LPC_EN);
 	pci_write_config32(LPC_DEV, D31F0_GEN1_DEC, 0xfc0601);
 	pci_write_config32(LPC_DEV, D31F0_GEN2_DEC, 0xfc0291);
 	pci_write_config32(LPC_DEV, D31F0_GEN3_DEC, 0);

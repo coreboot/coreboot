@@ -296,6 +296,7 @@ static void select_cas_dramfreq_ddr3(struct sysinfo *s,
 		min_tCLK = MAX(min_tCLK, TCK_533MHZ);
 		break;
 	case 3: /* Only on P45 */
+	case 0:
 		min_tCLK = MAX(min_tCLK, TCK_666MHZ);
 		break;
 	}

@@ -1,2 +1,5 @@
 config BOARD_ASUS_P5QC
 	bool "P5QC"
+
+config BOARD_ASUS_P5Q_PRO
+	bool "P5Q PRO"

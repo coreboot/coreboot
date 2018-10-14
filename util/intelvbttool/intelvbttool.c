@@ -341,9 +341,11 @@ static struct fileobject *remalloc_fo(struct fileobject *old,
 		return NULL;
 
 	fo->data = realloc(fo->data, size);
-
 	if (!fo->data)
 		return NULL;
+
+	if (fo->size < size)
+		memset(&fo->data[fo->size], 0, size - fo->size);
 
 	fo->size = size;
 
@@ -882,7 +884,6 @@ static void parse_vbios(const struct fileobject *fo,
 			struct fileobject **vbt)
 {
 	const optionrom_header_t *oh = (const optionrom_header_t *)fo->data;
-	const struct vbt_header *head;
 	size_t i;
 
 	*vbt = NULL;
@@ -897,24 +898,23 @@ static void parse_vbios(const struct fileobject *fo,
 		return;
 	}
 
-	head = (const struct vbt_header *)fo->data;
-	if (memcmp(head->signature, "$VBT", 4) == 0) {
-		parse_vbt(fo, vbt);
+	struct fileobject *fo_vbt = malloc_fo_sub(fo, oh->vbt_offset);
+	if (fo_vbt) {
+		parse_vbt(fo_vbt, vbt);
+		free_fo(fo_vbt);
 		if (*vbt)
 			return;
 	}
-
-	printwarn("VBT wasn't found at specified offset\n");
+	printwarn("VBT wasn't found at specified offset of %04x\n",
+		  oh->vbt_offset);
 
 	for (i = sizeof(optionrom_header_t);
 	     i <= fo->size - sizeof(struct vbt_header); i++) {
 		struct fileobject *fo_vbt = malloc_fo_sub(fo, i);
 		if (!fo_vbt)
-			continue;
+			break;
 
-		head = (const struct vbt_header *)fo_vbt->data;
-		if (memcmp(head->signature, "$VBT", 4) == 0)
-			parse_vbt(fo_vbt, vbt);
+		parse_vbt(fo_vbt, vbt);
 
 		free_fo(fo_vbt);
 
@@ -980,32 +980,28 @@ static void print_usage(const char *argv0, struct option *long_options)
 	};
 }
 
-/* Open a VBIOS file, calculate the checksum and fix it */
-static int fix_vbios_checksum(const char *filename)
+/* Fix VBIOS header and PCIR */
+static int fix_vbios_header(struct fileobject *fo)
 {
-	struct fileobject *fo = read_file(filename);
-	if (!fo) {
-		printerr("%s open failed\n", filename);
-		return 1;
-	}
-
-	if (fo->size < sizeof(optionrom_header_t))
+	if (!fo || fo->size < sizeof(optionrom_header_t))
 		return 1;
 
 	optionrom_header_t *oh = (optionrom_header_t *)fo->data;
 
-	if (oh->size * 512 > fo->size)
-		return 1;
-
-	/* fix checksum */
-	oh->checksum = -(checksum_vbios(oh) - oh->checksum);
-
-	if (write_file(filename, fo)) {
-		printerr("%s write failed\n", filename);
-		free_fo(fo);
-		return 1;
+	/* Fix size alignment */
+	if (fo->size % 512) {
+		print("Aligning size to 512\n");
+		fo = remalloc_fo(fo, (fo->size + 511) / 512 * 512);
+		if (!fo)
+			return 1;
+		oh = (optionrom_header_t *)fo->data;
 	}
-	free_fo(fo);
+
+	/* Fix size field */
+	oh->size = fo->size / 512;
+
+	/* Fix checksum field */
+	oh->checksum = -(checksum_vbios(oh) - oh->checksum);
 
 	return 0;
 }
@@ -1042,8 +1038,10 @@ static int patch_vbios(struct fileobject *fo,
 			fo = remalloc_fo(fo, fo->size - vbt_size(old_vbt));
 			if (!fo) {
 				printerr("Failed to allocate memory\n");
+				free_fo(old_vbt);
 				return 1;
 			}
+			oh = (optionrom_header_t *)fo->data;
 			oh->vbt_offset = 0;
 		} else if (vbt_size(old_vbt) < vbt_size(fo_vbt)) {
 			/* In the middle of the file - Remove old VBT */
@@ -1061,7 +1059,7 @@ static int patch_vbios(struct fileobject *fo,
 
 	if (!oh->vbt_offset) {
 		print("increasing VBIOS to append VBT\n");
-		if ((fo->size + vbt_size(fo_vbt)) >= 64 * KiB) {
+		if ((fo->size + vbt_size(fo_vbt)) >= 2 * 64 * KiB) {
 			printerr("VBT won't fit\n");
 			return 1;
 		}
@@ -1072,7 +1070,7 @@ static int patch_vbios(struct fileobject *fo,
 			printerr("Failed to allocate memory\n");
 			return 1;
 		}
-		oh->size = (fo->size + 512 - 1) / 512;
+		oh = (optionrom_header_t *)fo->data;
 	}
 
 	head = (struct vbt_header *)((u8 *)oh + oh->vbt_offset);
@@ -1083,7 +1081,7 @@ static int patch_vbios(struct fileobject *fo,
 
 int main(int argc, char **argv)
 {
-	int opt, option_index = 0;
+	int opt, ret, option_index = 0;
 
 	size_t has_input = 0, has_output = 0;
 	size_t dump = 0, in_legacy = 0;
@@ -1180,40 +1178,41 @@ int main(int argc, char **argv)
 	if (!dump)
 		print_vbt(vbt);
 
+	ret = 0;
 	if (dump) {
 		dump_vbt(vbt);
 	} else if (out_vbt) {
-		if (write_file(out_vbt, vbt))
+		if (write_file(out_vbt, vbt)) {
 			printerr("Failed to write VBT\n");
-		else
+			ret = 1;
+		} else {
 			print("VBT written to %s\n", out_vbt);
+		}
 	} else if (patch_oprom) {
 		fo = read_file(patch_oprom);
 		if (!fo) {
 			printerr("Failed to read input file\n");
-			return 1;
+			ret = 1;
 		}
-		if (!is_valid_vbios(fo)) {
+		if (ret != 1 && !is_valid_vbios(fo)) {
 			printerr("Invalid input file\n");
-			free_fo(fo);
-			return 1;
+			ret = 1;
 		}
-		if (patch_vbios(fo, vbt)) {
+		if (ret != 1 && patch_vbios(fo, vbt)) {
 			printerr("Failed to patch VBIOS\n");
-			free_fo(fo);
-			return 1;
+			ret = 1;
 		}
-		if (write_file(patch_oprom, fo)) {
+		if (ret != 1 && fix_vbios_header(fo)) {
+			printerr("Failed to fix VBIOS header\n");
+			ret = 1;
+		}
+		if (ret != 1 && write_file(patch_oprom, fo)) {
 			printerr("Failed to write VBIOS\n");
-			free_fo(fo);
-			return 1;
+			ret = 1;
 		}
 		free_fo(fo);
-		if (fix_vbios_checksum(patch_oprom)) {
-			printerr("Failed to fix checksum\n");
-			return 1;
-		}
-		print("VBIOS %s successfully patched\n", patch_oprom);
+		if (ret != 1)
+			print("VBIOS %s successfully patched\n", patch_oprom);
 	}
 
 	/* cleanup */
@@ -1228,5 +1227,5 @@ int main(int argc, char **argv)
 
 	free_fo(vbt);
 
-	return 0;
+	return ret;
 }

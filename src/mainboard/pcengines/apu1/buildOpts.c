@@ -201,7 +201,7 @@
  * Uncomment and specify the value for the configuration options
  * needed by the system.
  */
-#include "AGESA.h"
+#include <AGESA.h>
 
 /* The fixed MTRR values to be set after memory initialization. */
 CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =

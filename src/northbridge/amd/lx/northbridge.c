@@ -27,9 +27,8 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/amd/vr.h>
-#include <cpu/cpu.h>
 #include "northbridge.h"
-#include "../../../southbridge/amd/cs5536/cs5536.h"
+#include <southbridge/amd/cs5536/cs5536.h>
 
 
 /* here is programming for the various MSRs.*/

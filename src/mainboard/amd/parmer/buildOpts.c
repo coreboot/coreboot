@@ -26,7 +26,7 @@
  */
 
 #include <stdlib.h>
-#include "AGESA.h"
+#include <AGESA.h>
 
 /*  Select the CPU family.  */
 #define INSTALL_FAMILY_10_SUPPORT FALSE

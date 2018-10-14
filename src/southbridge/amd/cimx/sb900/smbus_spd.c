@@ -27,9 +27,9 @@
  *
  ***************************************************************************/
 
-#include "Porting.h"
-#include "AGESA.h"
-#include "amdlib.h"
+#include <Porting.h>
+#include <AGESA.h>
+#include <amdlib.h>
 
 #include <northbridge/amd/agesa/dimmSpd.h>
 

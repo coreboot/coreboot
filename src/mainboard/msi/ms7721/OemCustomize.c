@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#include "Porting.h"
-#include "AGESA.h"
+#include <Porting.h>
+#include <AGESA.h>
 
 #include <northbridge/amd/agesa/state_machine.h>
 #include <PlatformMemoryConfiguration.h>

@@ -25,9 +25,9 @@
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
-#include "amdlib.h"
+#include <amdlib.h>
 
-#include "AMD.h"
+#include <AMD.h>
 
 #if IS_ENABLED(CONFIG_CPU_AMD_AGESA_OPENSOURCE)
 #include "Dispatcher.h"

@@ -16,7 +16,7 @@
 
 #include <stdint.h>
 #include <console/console.h>
-#include "AGESA.h"
+#include <AGESA.h>
 
 /*
  * Possible AGESA_STATUS values:

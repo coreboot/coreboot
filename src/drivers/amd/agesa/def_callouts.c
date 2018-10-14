@@ -18,8 +18,8 @@
 #include <spd_bin.h>
 #include <string.h>
 
-#include "AGESA.h"
-#include "amdlib.h"
+#include <AGESA.h>
+#include <amdlib.h>
 #include "Ids.h"
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>

@@ -16,7 +16,7 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <southbridge/amd/cimx/cimx_util.h>
-#include "FchPlatform.h"
+#include <FchPlatform.h>
 #include "gpio_ftns.h"
 
 void configure_gpio(u32 iomux_gpio, u8 iomux_ftn, u32 gpio, u32 setting)

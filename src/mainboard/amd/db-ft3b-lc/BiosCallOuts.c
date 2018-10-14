@@ -14,11 +14,11 @@
  * GNU General Public License for more details.
  */
 
-#include "AGESA.h"
+#include <AGESA.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <device/azalia.h>
-#include "FchPlatform.h"
-#include "cbfs.h"
+#include <FchPlatform.h>
+#include <cbfs.h>
 #include "imc.h"
 #include "hudson.h"
 #include <stdlib.h>

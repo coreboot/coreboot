@@ -18,7 +18,7 @@
 #include <cpu/amd/mtrr.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <AGESA.h>
-#include "amdlib.h"
+#include <amdlib.h>
 
 /* Define AMD Ontario APPU SSID/SVID */
 #define AMD_APU_SVID		0x1022

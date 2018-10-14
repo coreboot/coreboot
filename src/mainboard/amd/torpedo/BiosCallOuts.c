@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include "AGESA.h"
-#include "amdlib.h"
+#include <AGESA.h>
+#include <amdlib.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "Hudson-2.h"
 #include <stdlib.h>

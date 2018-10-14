@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include "AGESA.h"
+#include <AGESA.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <northbridge/amd/agesa/state_machine.h>
 

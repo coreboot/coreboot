@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include "Porting.h"
-#include "AGESA.h"
+#include <Porting.h>
+#include <AGESA.h>
 
 #include <arch/io.h>
 #include <cbmem.h>

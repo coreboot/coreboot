@@ -13,11 +13,11 @@
  * GNU General Public License for more details.
  */
 
-#include "AGESA.h"
+#include <AGESA.h>
 #include <spd_bin.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
-#include "FchPlatform.h"
-#include "cbfs.h"
+#include <FchPlatform.h>
+#include <cbfs.h>
 #include "gpio_ftns.h"
 #include "imc.h"
 #include "hudson.h"

@@ -13,10 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#include "AGESA.h"
+#include <AGESA.h>
 #include <spd_bin.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
-#include "SB800.h"
+#include <SB800.h>
 #include <stdlib.h>
 #include "gpio_ftns.h"
 

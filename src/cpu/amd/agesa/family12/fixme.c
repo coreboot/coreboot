@@ -18,7 +18,7 @@
 #include <cpu/amd/mtrr.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <AGESA.h>
-#include "amdlib.h"
+#include <amdlib.h>
 
 void amd_initcpuio(void)
 {

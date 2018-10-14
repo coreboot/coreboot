@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include "AGESA.h"
+#include <AGESA.h>
 #include <PlatformMemoryConfiguration.h>
 
 #include <northbridge/amd/agesa/state_machine.h>

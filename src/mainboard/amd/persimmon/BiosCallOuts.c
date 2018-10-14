@@ -13,10 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#include "AGESA.h"
-#include "amdlib.h"
+#include <AGESA.h>
+#include <amdlib.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
-#include "SB800.h"
+#include <SB800.h>
 #include <stdlib.h>
 
 static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigPtr);

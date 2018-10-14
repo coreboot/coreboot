@@ -19,8 +19,8 @@
 #if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
 
 #include <stdint.h>
-#include "Porting.h"
-#include "AGESA.h"
+#include <Porting.h>
+#include <AGESA.h>
 
 AGESA_STATUS agesawrapper_amdinitreset(void);
 AGESA_STATUS agesawrapper_amdinitearly(void);

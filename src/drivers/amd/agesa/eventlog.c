@@ -17,9 +17,9 @@
 
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
-#include "amdlib.h"
-#include "AGESA.h"
-#include "AMD.h"
+#include <amdlib.h>
+#include <AGESA.h>
+#include <AMD.h>
 
 #include <heapManager.h>
 

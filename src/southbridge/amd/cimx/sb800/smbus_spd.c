@@ -16,11 +16,11 @@
 #include <device/pci_def.h>
 #include <device/device.h>
 #include <stdlib.h>
-#include "OEM.h"		/* SMBUS0_BASE_ADDRESS */
+#include <OEM.h>		/* SMBUS0_BASE_ADDRESS */
 
 /* warning: Porting.h includes an open #pragma pack(1) */
 #include <vendorcode/amd/include/Porting.h>
-#include "AGESA.h"
+#include <AGESA.h>
 #include "chip.h"
 #include "smbus_spd.h"
 

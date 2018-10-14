@@ -16,8 +16,8 @@
 #include "imc.h"
 #include <arch/io.h>
 #include <delay.h>
-#include "Porting.h"
-#include "AGESA.h"
+#include <Porting.h>
+#include <AGESA.h>
 #include <amdlib.h>
 #include <Proc/Fch/Fch.h>
 #include <Proc/Fch/Common/FchCommonCfg.h>

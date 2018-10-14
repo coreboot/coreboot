@@ -17,11 +17,11 @@
 #include <device/device.h>
 
 /* warning: Porting.h includes an open #pragma pack(1) */
-#include "Porting.h"
-#include "AGESA.h"
+#include <Porting.h>
+#include <AGESA.h>
 #include "chip.h"
 
-#include "northbridge/amd/pi/dimmSpd.h"
+#include <northbridge/amd/pi/dimmSpd.h>
 
 #define DIMENSION(array)(sizeof(array)/ sizeof(array [0]))
 

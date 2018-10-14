@@ -17,7 +17,7 @@
 #include <Proc/Fch/Fch.h>
 #include <device/device.h>
 #include "hudson.h"
-#include "AGESA.h"
+#include <AGESA.h>
 
 #include <northbridge/amd/agesa/state_machine.h>
 

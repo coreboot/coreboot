@@ -26,7 +26,7 @@
  */
 
 #include <stdlib.h>
-#include "AGESA.h"
+#include <AGESA.h>
 
 #define INSTALL_FT3_SOCKET_SUPPORT           TRUE
 #define INSTALL_FAMILY_16_MODEL_0x_SUPPORT   TRUE

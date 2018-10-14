@@ -17,8 +17,8 @@
 #define __AMD_HUDSON_FCHEC__
 
 #include "imc.h"
-#include "Porting.h"
-#include "AGESA.h"
+#include <Porting.h>
+#include <AGESA.h>
 #include "FchCommonCfg.h"
 
 extern VOID FchECfancontrolservice (IN VOID *FchDataPtr);

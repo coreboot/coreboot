@@ -14,11 +14,11 @@
  * GNU General Public License for more details.
  */
 
-#include "AGESA.h"
+#include <AGESA.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <northbridge/amd/agesa/state_machine.h>
-#include "FchPlatform.h"
-#include "cbfs.h"
+#include <FchPlatform.h>
+#include <cbfs.h>
 #include <stdlib.h>
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =

@@ -16,7 +16,7 @@
 #include <console/console.h>
 #include "SBPLATFORM.h"
 #include "cfg.h"
-#include "OEM.h"
+#include <OEM.h>
 #include <cbmem.h>
 
 #include <arch/io.h>

@@ -17,7 +17,7 @@
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
-#include "AGESA.h"
+#include <AGESA.h>
 
 /* Fields were removed from the structure and we cannot add them back
  * without new builds of the binaryPI blobs.

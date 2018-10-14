@@ -17,8 +17,8 @@
 #ifndef CALLOUTS_AMD_AGESA_H
 #define CALLOUTS_AMD_AGESA_H
 
-#include "Porting.h"
-#include "AGESA.h"
+#include <Porting.h>
+#include <AGESA.h>
 
 AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINTN Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_NoopSuccess (UINT32 Func, UINTN Data, VOID *ConfigPtr);

@@ -132,6 +132,8 @@ Device (EC0)
 
 	#include "ec_dev.asl"
 	#include "ec_ram.asl"
+	#include "ac.asl"
+	#include "battery.asl"
 	#include "lid.asl"
 	#include "platform.asl"
 }

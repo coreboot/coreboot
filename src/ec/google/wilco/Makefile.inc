@@ -1,5 +1,5 @@
 ifeq ($(CONFIG_EC_GOOGLE_WILCO),y)
 
-ramstage-y += mailbox.c
+ramstage-y += commands.c mailbox.c
 
 endif

@@ -44,6 +44,12 @@ static void wilco_ec_post_video_init(void *unused)
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT,
 		      wilco_ec_post_video_init, NULL);
 
+static void wilco_ec_resume(void *unused)
+{
+	wilco_ec_send_noargs(KB_RESTORE);
+}
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, wilco_ec_resume, NULL);
+
 static void wilco_ec_init(struct device *dev)
 {
 	if (!dev->enabled)

@@ -25,6 +25,7 @@ void wilco_ec_smi_sleep(int slp_type)
 {
 	switch (slp_type) {
 	case ACPI_S3:
+		wilco_ec_send_noargs(KB_SAVE);
 		wilco_ec_slp_en();
 		break;
 	case ACPI_S5:

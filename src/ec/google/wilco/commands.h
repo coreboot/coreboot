@@ -26,6 +26,10 @@ enum {
 	KB_POWER_STATUS = 0x05,
 	/* Inform the EC aboout the reason host is turning off */
 	KB_POWER_OFF = 0x08,
+	/* Save PS/2 data before S3 suspend */
+	KB_SAVE = 0x2f,
+	/* Restore PS/2 data after S3 resume */
+	KB_RESTORE = 0x30,
 	/* Retrieve information about the EC */
 	KB_EC_INFO = 0x38,
 	/* Set ACPI mode on or off */

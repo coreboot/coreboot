@@ -69,7 +69,6 @@ void pch_enable_lpc(void)
 
 void mainboard_rcba_config(void)
 {
-	RCBA32(BUC) = 0;
 }
 
 void mainboard_early_init(int s3resume)

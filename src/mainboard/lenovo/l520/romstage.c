@@ -38,8 +38,8 @@ void pch_enable_lpc(void)
 
 void mainboard_rcba_config(void)
 {
-	RCBA32(0x3414) = 0x00000000;
 }
+
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, -1 },
 	{ 1, 0, -1 },

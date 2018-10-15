@@ -65,7 +65,6 @@ void pch_enable_lpc(void)
 
 void mainboard_rcba_config(void)
 {
-	RCBA32(BUC) = 0;
 }
 
 // OC3 set in bios to port 2-7, OC7 set in bios to port 10-13

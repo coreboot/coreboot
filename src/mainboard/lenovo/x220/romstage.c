@@ -50,7 +50,6 @@ void pch_enable_lpc(void)
 
 void mainboard_rcba_config(void)
 {
-	RCBA32(BUC) = 0;
 }
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)

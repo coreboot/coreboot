@@ -45,7 +45,7 @@
 
 static void pch_enable_lpc(void)
 {
-	/* X201 EC Decode Range Port60/64, Port62/66 */
+	/* EC Decode Range Port60/64, Port62/66 */
 	/* Enable EC, PS/2 Keyboard/Mouse */
 	pci_write_config16(PCH_LPC_DEV, LPC_EN,
 			   CNF2_LPC_EN | CNF1_LPC_EN | MC_LPC_EN | KBC_LPC_EN |

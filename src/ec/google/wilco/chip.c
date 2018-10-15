@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootstate.h>
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
 #include <stdint.h>
@@ -21,6 +22,27 @@
 #include "commands.h"
 #include "ec.h"
 #include "chip.h"
+
+static void wilco_ec_post_complete(void *unused)
+{
+	wilco_ec_send(KB_BIOS_PROGRESS, BIOS_PROGRESS_POST_COMPLETE);
+}
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT,
+		      wilco_ec_post_complete, NULL);
+
+static void wilco_ec_post_memory_init(void *unused)
+{
+	wilco_ec_send(KB_BIOS_PROGRESS, BIOS_PROGRESS_MEMORY_INIT);
+}
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT,
+		      wilco_ec_post_memory_init, NULL);
+
+static void wilco_ec_post_video_init(void *unused)
+{
+	wilco_ec_send(KB_BIOS_PROGRESS, BIOS_PROGRESS_VIDEO_INIT);
+}
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT,
+		      wilco_ec_post_video_init, NULL);
 
 static void wilco_ec_init(struct device *dev)
 {

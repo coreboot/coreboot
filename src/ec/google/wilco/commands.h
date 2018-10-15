@@ -34,11 +34,20 @@ enum {
 	KB_POWER_BUTTON_TO_HOST = 0x3e,
 	/* Inform the EC that the host is about to enter S3 */
 	KB_SLP_EN = 0x64,
+	/* Inform the EC about BIOS boot progress */
+	KB_BIOS_PROGRESS = 0xc2,
 };
 
 enum set_acpi_mode_cmd {
 	ACPI_OFF = 0,
 	ACPI_ON
+};
+
+enum bios_progress_code {
+	BIOS_PROGRESS_MEMORY_INIT = 0x01,
+	BIOS_PROGRESS_VIDEO_INIT = 0x02,
+	BIOS_PROGRESS_LOGO_DISPLAYED = 0x03,
+	BIOS_PROGRESS_POST_COMPLETE = 0x04,
 };
 
 /*

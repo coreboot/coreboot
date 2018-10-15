@@ -1,0 +1,47 @@
+config EC_GOOGLE_WILCO
+	bool
+	default n
+	select EC_GOOGLE_COMMON_MEC
+	help
+	  Google Wilco Embedded Controller interface.
+
+config EC_BASE_ACPI_DATA
+	hex
+	default 0x930
+	help
+	  This option provides the 16-bit IO base address for the ACPI
+	  data interface.  This is the standard ACPI EC interface that
+	  is used by the ACPI EC drivers in the OS.
+
+config EC_BASE_ACPI_COMMAND
+	hex
+	default 0x934
+	help
+	  This option provides the 16-bit IO base address for the ACPI
+	  EC command interface.  This is the standard ACPI EC interface
+	  that is used by the ACPI EC drivers in the OS.
+
+config EC_BASE_HOST_DATA
+	hex
+	default 0x940
+	help
+	  This option provides the 16-bit IO base address for the host
+	  data interface.  This is the interface that is used to drive
+	  the mailbox protocol.
+
+config EC_BASE_HOST_COMMAND
+	hex
+	default 0x944
+	help
+	  This option provides the 16-bit IO base address for the host
+	  command interface.  This is the interface that is used to drive
+	  the mailbox protocol.
+
+config EC_BASE_PACKET
+	hex
+	default 0x950
+	help
+	  This option provides the 16-bit IO base address for the EC
+	  mailbox interface data region.  This data buffer is used along
+	  with the host command and data registers to drive the EC
+	  mailbox interface.  This is also the MEC EMI base address.

@@ -369,6 +369,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->SataMode = config->SataMode;
 	params->SataSpeedLimit = config->SataSpeedLimit;
 	params->SataPwrOptEnable = config->SataPwrOptEnable;
+	params->EnableTcoTimer = !config->PmTimerDisabled;
 
 	tconfig->PchLockDownGlobalSmi = config->LockDownConfigGlobalSmi;
 	tconfig->PchLockDownRtcLock = config->LockDownConfigRtcLock;

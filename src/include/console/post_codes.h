@@ -82,6 +82,22 @@
 #define POST_ENTRY_C_START			0x13
 
 /**
+ * \brief Pre-memory init preparation start
+ *
+ * Post code emitted in romstage before making callbacks to allow SoC/mainboard
+ * to prepare params for FSP memory init.
+ */
+#define POST_MEM_PREINIT_PREP_START		0x34
+
+/**
+ * \brief Pre-memory init preparation end
+ *
+ * Post code emitted in romstage after returning from SoC/mainboard callbacks
+ * to prepare params for FSP memory init.
+ */
+#define POST_MEM_PREINIT_PREP_END		0x36
+
+/**
  * \brief Pre call to RAM stage main()
  *
  * POSTed right before RAM stage main() is called from c_start.S

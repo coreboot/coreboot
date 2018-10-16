@@ -20,6 +20,28 @@
 #include <arch/io.h>
 #include <device/device.h>
 
+/* D0F0 - Root Complex */
+
+/* NB IOAPIC registers */
+#define NB_IOAPIC_INDEX		0xf8
+#define NB_IOAPIC_DATA		0xfc
+#define  NB_IOAPIC_FEATURE_CTRL	0x00
+#define  NB_IOAPIC_ADDRESS_LOW	0x01
+#define  NB_IOAPIC_ADDRESS_HIGH	0x02
+#define  NB_IOAPIC_GBIF_IRR	0x0f
+#define  NB_IOAPIC_BR0_IRR	0x10
+#define  NB_IOAPIC_BR1_IRR	0x11
+#define  NB_IOAPIC_BR2_IRR	0x12
+#define  NB_IOAPIC_BR3_IRR	0x13
+#define  NB_IOAPIC_BR4_IRR	0x14
+#define  NB_IOAPIC_APG_IRR	0x2f
+#define  NB_IOAPIC_SPG_IRR	0x30
+#define  NB_IOAPIC_SER_IRQ_IRR	0x31
+#define  NB_IOAPIC_SCRATCH0	0x3e
+#define  NB_IOAPIC_SCRATCH1	0x3f
+
+#define AP_SCRATCH_REG		NB_IOAPIC_SCRATCH0
+
 /* D1F1 - HDA Configuration Registers */
 #define HDA_DEV_CTRL_STATUS	0x60
 #define   HDA_NO_SNOOP_EN	BIT(11)
@@ -31,26 +53,6 @@
 #define HT_INIT_CONTROL		0x6c
 # define HTIC_BIOSR_DETECT	((1 << 5) | (1 << 9) | (1 << 10))
 # define HTIC_COLD_RST_DET	BIT(4)
-
-/* NB IOAPIC registers */
-#define NB_IOAPIC_INDEX		0xf8
-#define NB_IOAPIC_DATA		0xfc
-#define NB_IOAPIC_FEATURE_CTRL	0x00
-#define NB_IOAPIC_ADDRESS_LOW	0x01
-#define NB_IOAPIC_ADDRESS_HIGH	0x02
-#define NB_IOAPIC_GBIF_IRR	0x0f
-#define NB_IOAPIC_BR0_IRR	0x10
-#define NB_IOAPIC_BR1_IRR	0x11
-#define NB_IOAPIC_BR2_IRR	0x12
-#define NB_IOAPIC_BR3_IRR	0x13
-#define NB_IOAPIC_BR4_IRR	0x14
-#define NB_IOAPIC_APG_IRR	0x2f
-#define NB_IOAPIC_SPG_IRR	0x30
-#define NB_IOAPIC_SER_IRQ_IRR	0x31
-#define NB_IOAPIC_SCRATCH0	0x3e
-#define NB_IOAPIC_SCRATCH1	0x3f
-
-#define AP_SCRATCH_REG		NB_IOAPIC_SCRATCH0
 
 /* D18F1 - Address Map Registers */
 

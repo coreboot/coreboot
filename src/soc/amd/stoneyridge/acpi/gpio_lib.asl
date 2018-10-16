@@ -19,7 +19,7 @@
 Method (GPAD, 0x1)
 {
 	/* Arg0 - GPIO pin number */
-	Return (Add(Multiply(Arg0, 4), GPIO_CONTROL_BASE))
+	Return (Add(Multiply(Arg0, 4), GPIO_CONTROL_MMIO_BASE))
 }
 
 /* Read pin control dword */

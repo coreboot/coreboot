@@ -37,10 +37,10 @@
 #define APU_SMI_BASE			0xfed80200
 #define PM_MMIO_BASE			0xfed80300
 #define BIOSRAM_MMIO_BASE		0xfed80500
-#define IOMUX_MMIO_BASE			0xfed80d00
+#define GPIO_IOMUX_MMIO_BASE		0xfed80d00
 #define MISC_MMIO_BASE			0xfed80e00
-#define GPIO_CONTROL_BASE		0xfed81500
 #define XHCI_ACPI_PM_MMIO_BASE		0xfed81c00
+#define GPIO_CONTROL_MMIO_BASE		0xfed81500
 #define AOAC_MMIO_BASE			0xfed81e00
 
 #define APU_UART0_BASE			0xfedc6000
@@ -70,10 +70,6 @@
 #define AB_INDX				0xcd8
 #define AB_DATA				(AB_INDX+4)
 #define SYS_RESET			0xcf9
-
-/* GPIO control and mux access */
-#define AMD_GPIO_MUX			(AMD_SB_ACPI_MMIO_ADDR + 0x00000d00)
-#define AMD_GPIO_CONTROL		(AMD_SB_ACPI_MMIO_ADDR + 0x00001500)
 
 /* BiosRam Ranges at 0xfed80500 or I/O 0xcd4/0xcd5 */
 #define BIOSRAM_CBMEM_TOP		0xf0 /* 4 bytes */

@@ -237,7 +237,7 @@ void sb_program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 		control = gpio_list_ptr[index].control;
 		control_flags = gpio_list_ptr[index].flags;
 
-		mux_ptr = (uint8_t *)(uintptr_t)(gpio + AMD_GPIO_MUX);
+		mux_ptr = (uint8_t *)(uintptr_t)(gpio + GPIO_IOMUX_MMIO_BASE);
 		write8(mux_ptr, mux & AMD_GPIO_MUX_MASK);
 		read8(mux_ptr); /* Flush posted write */
 		/* special case if pin 2 is assigned to wake */
@@ -323,7 +323,7 @@ static void save_i2c_pin_registers(uint8_t gpio,
 	uint32_t *gpio_ptr;
 	uint8_t *mux_ptr;
 
-	mux_ptr = (uint8_t *)(uintptr_t)(gpio + AMD_GPIO_MUX);
+	mux_ptr = (uint8_t *)(uintptr_t)(gpio + GPIO_IOMUX_MMIO_BASE);
 	gpio_ptr = (uint32_t *)gpio_get_address(gpio);
 	save_table->mux_value = read8(mux_ptr);
 	save_table->control_value = read32(gpio_ptr);
@@ -335,7 +335,7 @@ static void restore_i2c_pin_registers(uint8_t gpio,
 	uint32_t *gpio_ptr;
 	uint8_t *mux_ptr;
 
-	mux_ptr = (uint8_t *)(uintptr_t)(gpio + AMD_GPIO_MUX);
+	mux_ptr = (uint8_t *)(uintptr_t)(gpio + GPIO_IOMUX_MMIO_BASE);
 	gpio_ptr = (uint32_t *)gpio_get_address(gpio);
 	write8(mux_ptr, save_table->mux_value);
 	read8(mux_ptr);

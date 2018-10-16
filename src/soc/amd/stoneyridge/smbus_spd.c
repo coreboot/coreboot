@@ -50,10 +50,9 @@ static int readspd(uint16_t iobase, uint8_t SmbusSlaveAddress,
 	if (error < 0) {
 		printk(BIOS_ERR, "-------------SPD READ ERROR-----------\n");
 		return error;
-	} else {
-		*pbuf = (char) error;
-		pbuf++;
 	}
+	*pbuf = (char) error;
+	pbuf++;
 
 	/* Read the remaining SPD bytes using do_smbus_recv_byte for speed */
 	for (index = 1 ; index < count ; index++) {
@@ -61,10 +60,9 @@ static int readspd(uint16_t iobase, uint8_t SmbusSlaveAddress,
 		if (error < 0) {
 			printk(BIOS_ERR, "-------------SPD READ ERROR-----------\n");
 			return error;
-		} else {
-			*pbuf = (char) error;
-			pbuf++;
 		}
+		*pbuf = (char) error;
+		pbuf++;
 	}
 	printk(BIOS_SPEW, "\n");
 	printk(BIOS_SPEW, "-------------FINISHED READING SPD-----------\n");

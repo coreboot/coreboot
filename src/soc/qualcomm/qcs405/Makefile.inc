@@ -21,6 +21,7 @@ romstage-y += spi.c
 romstage-y += cbmem.c
 romstage-y += gpio.c
 romstage-y += clock.c
+romstage-y += usb.c
 
 ################################################################################
 ramstage-y += soc.c
@@ -29,6 +30,7 @@ ramstage-y += spi.c
 ramstage-y += cbmem.c
 ramstage-y += gpio.c
 ramstage-y += clock.c
+ramstage-y += usb.c
 
 ################################################################################
 

@@ -273,7 +273,7 @@ static void do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 	FSPM_ARCH_UPD *arch_upd;
 	uint32_t fsp_version;
 
-	post_code(0x34);
+	post_code(POST_MEM_PREINIT_PREP_START);
 
 	fsp_version = fsp_memory_settings_version(hdr);
 
@@ -300,6 +300,8 @@ static void do_fsp_memory_init(struct fsp_header *hdr, bool s3wake,
 
 	if (IS_ENABLED(CONFIG_MMA))
 		setup_mma(&fspm_upd.FspmConfig);
+
+	post_code(POST_MEM_PREINIT_PREP_END);
 
 	/* Call FspMemoryInit */
 	fsp_raminit = (void *)(hdr->image_base + hdr->memory_init_entry_offset);

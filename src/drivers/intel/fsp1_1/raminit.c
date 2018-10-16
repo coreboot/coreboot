@@ -64,7 +64,7 @@ void raminit(struct romstage_params *params)
 	 * set to NULL.  This indicates that the FSP code will use the UPD
 	 * region in the FSP binary.
 	 */
-	post_code(0x34);
+	post_code(POST_MEM_PREINIT_PREP_START);
 	fsp_header = params->chipset_context;
 	vpd_ptr = (VPD_DATA_REGION *)(fsp_header->CfgRegionOffset +
 					fsp_header->ImageBase);
@@ -103,7 +103,7 @@ void raminit(struct romstage_params *params)
 	if (IS_ENABLED(CONFIG_MMA))
 		setup_mma(&memory_init_params);
 
-	post_code(0x36);
+	post_code(POST_MEM_PREINIT_PREP_END);
 
 	/* Display the UPD data */
 	if (IS_ENABLED(CONFIG_DISPLAY_UPD_DATA))

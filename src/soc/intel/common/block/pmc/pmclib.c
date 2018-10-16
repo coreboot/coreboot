@@ -95,9 +95,13 @@ __weak void pmc_soc_restore_power_failure(void)
 int acpi_get_sleep_type(void)
 {
 	struct chipset_power_state *ps;
+	int prev_sleep_state = ACPI_S0;
 
 	ps = pmc_get_power_state();
-	return ps->prev_sleep_state;
+	if (ps)
+		prev_sleep_state = ps->prev_sleep_state;
+
+	return prev_sleep_state;
 }
 
 static uint32_t pmc_reset_smi_status(void)

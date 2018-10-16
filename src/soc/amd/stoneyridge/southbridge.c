@@ -53,22 +53,22 @@ const static struct stoneyridge_aoac aoac_devs[] = {
 
 static int is_sata_config(void)
 {
-	return !((CONFIG_STONEYRIDGE_SATA_MODE == SataNativeIde)
-			|| (CONFIG_STONEYRIDGE_SATA_MODE == SataLegacyIde));
+	return !((SataNativeIde == CONFIG_STONEYRIDGE_SATA_MODE)
+			|| (SataLegacyIde == CONFIG_STONEYRIDGE_SATA_MODE));
 }
 
 static inline int sb_sata_enable(void)
 {
 	/* True if IDE or AHCI. */
-	return (CONFIG_STONEYRIDGE_SATA_MODE == SataNativeIde) ||
-		(CONFIG_STONEYRIDGE_SATA_MODE == SataAhci);
+	return (SataNativeIde == CONFIG_STONEYRIDGE_SATA_MODE) ||
+		(SataAhci == CONFIG_STONEYRIDGE_SATA_MODE);
 }
 
 static inline int sb_ide_enable(void)
 {
 	/* True if IDE or LEGACY IDE. */
-	return (CONFIG_STONEYRIDGE_SATA_MODE == SataNativeIde) ||
-		(CONFIG_STONEYRIDGE_SATA_MODE == SataLegacyIde);
+	return (SataNativeIde == CONFIG_STONEYRIDGE_SATA_MODE) ||
+		(SataLegacyIde == CONFIG_STONEYRIDGE_SATA_MODE);
 }
 
 void SetFchResetParams(FCH_RESET_INTERFACE *params)

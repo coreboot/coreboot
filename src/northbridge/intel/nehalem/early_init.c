@@ -106,7 +106,7 @@ static void early_cpu_init (void)
 	if (!(result.eax & 0x2)) {
 		m = rdmsr(MSR_FSB_CLOCK_VCC);
 		reg8 = ((m.lo & 0xff00) >> 8) + 1;
-		m = rdmsr (IA32_PERF_CTL);
+		m = rdmsr(IA32_PERF_CTL);
 		m.lo = (m.lo & ~0xff) | reg8;
 		wrmsr(IA32_PERF_CTL, m);
 
@@ -120,7 +120,7 @@ static void early_cpu_init (void)
 	m = rdmsr(MSR_FSB_CLOCK_VCC);
 	reg8 = ((m.lo & 0xff00) >> 8) + 1;
 
-	m = rdmsr (IA32_PERF_CTL);
+	m = rdmsr(IA32_PERF_CTL);
 	m.lo = (m.lo & ~0xff) | reg8;
 	wrmsr(IA32_PERF_CTL, m);
 

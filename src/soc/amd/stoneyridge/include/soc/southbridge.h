@@ -158,9 +158,6 @@
 #define   DEBUG_PORT_ENABLE		  BIT(18)
 #define   DEBUG_PORT_MASK		(BIT(16) | BIT(17) | BIT(18))
 
-#define WIDEIO_RANGE_ERROR		-1
-#define TOTAL_WIDEIO_PORTS		3
-
 /* FCH AOAC Registers 0xfed81e00 */
 #define FCH_AOAC_D3_CONTROL_CLK_GEN	0x40
 #define FCH_AOAC_D3_CONTROL_I2C0	0x4a

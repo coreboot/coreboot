@@ -351,15 +351,10 @@
 #define SPI_FIFO			0x80
 #define   SPI_FIFO_DEPTH		(0xc7 - SPI_FIFO)
 
-#define SPI100_SPEED_CONFIG		0x22
-/* Use SPI_SPEED_16M-SPI_SPEED_66M below for the southbridge */
-#define   SPI_CNTRL1_SPEED_MASK		(BIT(15) | BIT(14) | BIT(13) | BIT(12))
-#define   SPI_NORM_SPEED_SH		12
-#define   SPI_FAST_SPEED_SH		8
-
 #define SPI100_ENABLE			0x20
 #define   SPI_USE_SPI100		BIT(0)
 
+/* Use SPI_SPEED_16M-SPI_SPEED_66M below for the southbridge */
 #define SPI100_SPEED_CONFIG		0x22
 #define   SPI_SPEED_66M			(0x0)
 #define   SPI_SPEED_33M			(                  BIT(0))

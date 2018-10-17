@@ -42,11 +42,11 @@ void backup_mtrr(void *mtrr_store, u32 *mtrr_store_size)
 	wrmsr(SYSCFG_MSR, msr_data);
 
 	/* Fixed MTRRs */
-	write_mtrr(&nvram_pos, 0x250);
-	write_mtrr(&nvram_pos, 0x258);
-	write_mtrr(&nvram_pos, 0x259);
+	write_mtrr(&nvram_pos, MTRR_FIX_64K_00000);
+	write_mtrr(&nvram_pos, MTRR_FIX_16K_80000);
+	write_mtrr(&nvram_pos, MTRR_FIX_16K_A0000);
 
-	for (i = 0x268; i < 0x270; i++)
+	for (i = MTRR_FIX_4K_C0000; i <= MTRR_FIX_4K_F8000; i++)
 		write_mtrr(&nvram_pos, i);
 
 	/* Disable access to AMD RdDram and WrDram extension bits */
@@ -55,7 +55,7 @@ void backup_mtrr(void *mtrr_store, u32 *mtrr_store_size)
 	wrmsr(SYSCFG_MSR, msr_data);
 
 	/* Variable MTRRs */
-	for (i = 0x200; i < 0x210; i++)
+	for (i = MTRR_PHYS_BASE(0); i < MTRR_PHYS_BASE(8); i++)
 		write_mtrr(&nvram_pos, i);
 
 	/* SYSCFG_MSR */
@@ -89,21 +89,21 @@ void restore_mtrr(void)
 	msrPtr ++;
 	msr_data.hi = *msrPtr;
 	msrPtr ++;
-	wrmsr(0x250, msr_data);
+	wrmsr(MTRR_FIX_64K_00000, msr_data);
 
 	msr_data.lo = *msrPtr;
 	msrPtr ++;
 	msr_data.hi = *msrPtr;
 	msrPtr ++;
-	wrmsr(0x258, msr_data);
+	wrmsr(MTRR_FIX_16K_80000, msr_data);
 
 	msr_data.lo = *msrPtr;
 	msrPtr ++;
 	msr_data.hi = *msrPtr;
 	msrPtr ++;
-	wrmsr(0x259, msr_data);
+	wrmsr(MTRR_FIX_16K_A0000, msr_data);
 
-	for (msr = 0x268; msr <= 0x26F; msr++) {
+	for (msr = MTRR_FIX_4K_C0000; msr <= MTRR_FIX_4K_F8000; msr++) {
 		msr_data.lo = *msrPtr;
 		msrPtr ++;
 		msr_data.hi = *msrPtr;
@@ -117,7 +117,7 @@ void restore_mtrr(void)
 	wrmsr(SYSCFG_MSR, msr_data);
 
 	/* Restore the Variable MTRRs */
-	for (msr = 0x200; msr <= 0x20F; msr++) {
+	for (msr = MTRR_PHYS_BASE(0); msr <= MTRR_PHYS_MASK(7); msr++) {
 		msr_data.lo = *msrPtr;
 		msrPtr ++;
 		msr_data.hi = *msrPtr;

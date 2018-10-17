@@ -54,12 +54,12 @@ static void model_15_init(struct device *dev)
 
 	// BSP: make a0000-bffff UC, c0000-fffff WB, same as OntarioApMtrrSettingsList for APs
 	msr.lo = msr.hi = 0;
-	wrmsr (0x259, msr);
+	wrmsr(MTRR_FIX_16K_A0000, msr);
 	msr.lo = msr.hi = 0x1e1e1e1e;
-	wrmsr(0x250, msr);
-	wrmsr(0x258, msr);
-	for (msrno = 0x268; msrno <= 0x26f; msrno++)
-		wrmsr (msrno, msr);
+	wrmsr(MTRR_FIX_64K_00000, msr);
+	wrmsr(MTRR_FIX_16K_80000, msr);
+	for (msrno = MTRR_FIX_4K_C0000; msrno <= MTRR_FIX_4K_F8000; msrno++)
+		wrmsr(msrno, msr);
 
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;

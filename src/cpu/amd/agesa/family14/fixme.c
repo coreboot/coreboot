@@ -90,9 +90,9 @@ void amd_initmmio(void)
 
 	/* Set ROM cache onto WP to decrease post time */
 	MsrReg = (0x0100000000ull - CACHE_ROM_SIZE) | MTRR_TYPE_WRPROT;
-	LibAmdMsrWrite (0x20C, &MsrReg, &StdHeader);
+	LibAmdMsrWrite(MTRR_PHYS_BASE(6), &MsrReg, &StdHeader);
 	MsrReg = ((1ULL << CONFIG_CPU_ADDR_BITS) - CACHE_ROM_SIZE) | MTRR_PHYS_MASK_VALID;
-	LibAmdMsrWrite (0x20D, &MsrReg, &StdHeader);
+	LibAmdMsrWrite(MTRR_PHYS_MASK(6), &MsrReg, &StdHeader);
 
 	/* Set P-state 0 (1600 MHz) early to save a few ms of boot time */
 	MsrReg = 0;

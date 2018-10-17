@@ -226,7 +226,7 @@ static void set_thermal_config(void)
 	 * pm_iowrite(0x55, byte);
 	 *
 	 * byte = pm_ioread(0x67);
-	 * byte &= ~( 1 << 6);
+	 * byte &= ~(1 << 6);
 	 * pm_iowrite(0x67, byte);
 	 */
 }

@@ -32,7 +32,7 @@ void backup_top_of_low_cacheable(uintptr_t ramtop)
 	int nvram_pos = 0xfc, i;
 	for (i = 0; i < 4; i++) {
 		outb(nvram_pos, BIOSRAM_INDEX);
-		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
+		outb((dword >> (8 * i)) & 0xff, BIOSRAM_DATA);
 		nvram_pos++;
 	}
 }

@@ -65,7 +65,7 @@ static uint32_t get_index(uint32_t channel, int *cached_id)
 		}
 	}
 
-	die("Read impossible value ( > 1023) from 10-bit ADC!");
+	die("Read impossible value (> 1023) from 10-bit ADC!");
 }
 
 uint32_t board_id(void)

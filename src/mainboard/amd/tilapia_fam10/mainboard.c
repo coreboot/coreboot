@@ -149,7 +149,7 @@ static void set_gpio40_gfx(void)
 		dword &= ~(1 << 10);
 
 		/* When the gpio40 is configured as GPIO, this will represent the output value*/
-		/* 1 :enable two x8  , 0 : master slot enable only */
+		/* 1: enable two x8, 0: master slot enable only */
 		dword |= (1 << 26);
 		pci_write_config32(sm_dev, 0xfc, dword);
 
@@ -161,7 +161,7 @@ static void set_gpio40_gfx(void)
 		dword &= ~(1 << 10);
 
 		/* When the gpio40 is configured as GPIO, this will represent the output value*/
-		/* 1 :enable two x8  , 0 : master slot enable only */
+		/* 1: enable two x8, 0: master slot enable only */
 		dword &=  ~(1 << 26);
 		pci_write_config32(sm_dev, 0xfc, dword);
 	}
@@ -187,7 +187,7 @@ static void set_thermal_config(void)
 
 	byte = ADT7461_read_byte(0x02);	/* read status register to clear it */
 	ARA_read_byte(0x05); /* A hardware alert can only be cleared by the master sending an ARA as a read command */
-	printk(BIOS_INFO, "Init adt7461 end , status 0x02 %02x\n", byte);
+	printk(BIOS_INFO, "Init adt7461 end, status 0x02 %02x\n", byte);
 
 	/* sb700 settings for thermal config */
 	/* set SB700 GPIO 64 to GPIO with pull-up */

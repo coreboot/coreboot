@@ -167,12 +167,12 @@ static void mainboard_enable(struct device *dev)
 	//
 	// Enable the RTC output
 	//
-	pm_write16 ( PM_RTC_CONTROL, pm_read16( PM_RTC_CONTROL ) | (1 << 11));
+	pm_write16(PM_RTC_CONTROL, pm_read16(PM_RTC_CONTROL) | (1 << 11));
 
 	//
 	// Enable power on from WAKE#
 	//
-	pm_write16 ( PM_S_STATE_CONTROL, pm_read16( PM_S_STATE_CONTROL ) | (1 << 14));
+	pm_write16(PM_S_STATE_CONTROL, pm_read16(PM_S_STATE_CONTROL) | (1 << 14));
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();

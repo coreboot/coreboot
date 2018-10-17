@@ -43,9 +43,9 @@ static ucode_update_status nano_apply_ucode(const nano_ucode_header *ucode)
 static void nano_print_ucode_info(const nano_ucode_header *ucode)
 {
 	printk(BIOS_SPEW, "Microcode update information:\n");
-	printk(BIOS_SPEW, "Name: %8s\n", ucode->name );
+	printk(BIOS_SPEW, "Name: %8s\n", ucode->name);
 	printk(BIOS_SPEW, "Date: %u/%u/%u\n", ucode->month,
-	       ucode->day, ucode->year );
+	       ucode->day, ucode->year);
 }
 
 static ucode_validity nano_ucode_is_valid(const nano_ucode_header *ucode)
@@ -54,7 +54,7 @@ static ucode_validity nano_ucode_is_valid(const nano_ucode_header *ucode)
 	if (ucode->signature != NANO_UCODE_SIGNATURE)
 		return NANO_UCODE_SIGNATURE_ERROR;
 	/* The size of the head must be exactly 12 double words */
-	if ( (ucode->total_size - ucode->payload_size) != NANO_UCODE_HEADER_SIZE)
+	if ((ucode->total_size - ucode->payload_size) != NANO_UCODE_HEADER_SIZE)
 		return NANO_UCODE_WRONG_SIZE;
 
 	/* How about a checksum ? Checksum must be 0
@@ -119,7 +119,7 @@ unsigned int nano_update_ucode(void)
 	/* We might do a lot of loops searching for the microcode updates, but
 	 * keep in mind, nano_ucode_is_valid searches for the signature before
 	 * doing anything else. */
-	for ( i = 0; i < (ucode_len >> 2); /* don't increment i here */ )
+	for (i = 0; i < (ucode_len >> 2); /* don't increment i here */)
 	{
 		ucode_update_status stat;
 		const nano_ucode_header * ucode = (void *)(&ucode_data[i]);

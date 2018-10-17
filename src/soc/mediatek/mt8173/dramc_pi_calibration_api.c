@@ -589,9 +589,9 @@ u8 dramk_calcu_best_dly(u8 bit, struct dqs_perbit_dly *p, u8 *p_max_byte)
 		}
 
 	} else if (hold < setup) {
-		/* like this: (hold time != 0 )*/
+		/* like this: (hold time != 0)*/
 		/* xxxoooooooooooooooooo|ooooooooxxxxxxxxxxxxxxxxx */
-		/* like this: (hold time == 0 ) */
+		/* like this: (hold time == 0) */
 		/* xxxoooooooooooooooxxx|xxxxxxxxxxxxxxxxxxxxxxxxx */
 
 		p->best_dqsdly = 0;
@@ -972,7 +972,7 @@ void perbit_window_cal(u32 channel, u8 type)
 		dqdqs_perbit_dly[i].best_last_dqsdly_pass = -2;
 	}
 
-	/* 1. delay DQ ,find the pass widnow (left boundary)
+	/* 1. delay DQ,find the pass widnow (left boundary)
 	 * 2. delay DQS find the pass window (right boundary)
 	 * 3. find the best DQ / DQS to satify the middle value
 	 *    of the overall pass window per bit
@@ -1121,7 +1121,7 @@ void perbit_window_cal(u32 channel, u8 type)
 	dramc_dbg_msg("DQ Delay :\n");
 	for (i = 0; i < DATA_WIDTH_32BIT; i++) {
 		dramc_dbg_msg("DQ%d = %d ", i, dqdqs_perbit_dly[i].best_dqdly);
-		if ( ((i + 1) % 4) == 0)
+		if (((i + 1) % 4) == 0)
 			dramc_dbg_msg("\n");
 	}
 

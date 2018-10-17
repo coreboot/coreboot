@@ -49,7 +49,7 @@ static void mainboard_smi_brightness_up(void)
 {
 	u8 *bar;
 	if ((bar = (u8 *)pci_read_config32(PCI_DEV(1, 0, 0), 0x18))) {
-		printk(BIOS_DEBUG, "bar: %08X, level %02X\n",  (unsigned int )bar, *(bar+LVTMA_BL_MOD_LEVEL));
+		printk(BIOS_DEBUG, "bar: %08X, level %02X\n",  (unsigned int)bar, *(bar+LVTMA_BL_MOD_LEVEL));
 		*(bar+LVTMA_BL_MOD_LEVEL) |= 0x0f;
 		if (*(bar+LVTMA_BL_MOD_LEVEL) < 0xf0)
 			*(bar+LVTMA_BL_MOD_LEVEL) += 0x10;

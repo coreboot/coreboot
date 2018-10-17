@@ -181,9 +181,9 @@ static void pineview_setup_bars(void)
 	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
 	pci_write_config32(LPC, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
 	pci_write_config32(LPC, PMBASE, DEFAULT_PMBASE | 1);
-	pci_write_config8(LPC, 0x44 /* ACPI_CNTL */ , 0x80); /* Enable ACPI */
+	pci_write_config8(LPC, 0x44 /* ACPI_CNTL */, 0x80); /* Enable ACPI */
 	pci_write_config32(LPC, GPIOBASE, DEFAULT_GPIOBASE | 1);
-	pci_write_config8(LPC, 0x4c /* GC */ , 0x10);	/* Enable GPIOs */
+	pci_write_config8(LPC, 0x4c /* GC */, 0x10);	/* Enable GPIOs */
 	pci_write_config32(LPC, 0x88, 0x007c0291);
 
 	pci_write_config32(PCI_DEV(0, 0x1e, 0), 0x1b, 0x20);

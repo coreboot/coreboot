@@ -463,7 +463,7 @@ int do_read_training(struct sysinfo *s)
 	struct rt_dqs_setting dqs_setting[TOTAL_BYTELANES];
 	u16 saved_dqs_center[TOTAL_CHANNELS][TOTAL_BYTELANES];
 
-	memset(saved_dqs_center, 0 , sizeof(saved_dqs_center));
+	memset(saved_dqs_center, 0, sizeof(saved_dqs_center));
 
 	printk(BIOS_DEBUG, "Starting DQS read training\n");
 

@@ -36,7 +36,7 @@ static void emmc_init(struct device *dev)
 {
 	struct soc_intel_braswell_config *config = dev->chip_info;
 
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 	printk(BIOS_DEBUG, "eMMC init\n");
 	reg_script_run_on_dev(dev, emmc_ops);

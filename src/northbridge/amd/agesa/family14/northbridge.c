@@ -149,7 +149,7 @@ static struct resource *amdfam14_find_iopair(struct device *dev,
 	/* Ext conf space */
 	if (!reg) {
 		/* Because of Extend conf space, we will never run out of reg,
-		 * but we need one index to differ them. So ,same node and same
+		 * but we need one index to differ them. So,same node and same
 		 *  link can have multi range
 		 */
 		u32 index = get_io_addr_index(nodeid, link);
@@ -185,7 +185,7 @@ static struct resource *amdfam14_find_mempair(struct device *dev, u32 nodeid,
 	/* Ext conf space */
 	if (!reg) {
 		/* Because of Extend conf space, we will never run out of reg,
-		 * but we need one index to differ them. So ,same node and same
+		 * but we need one index to differ them. So,same node and same
 		 *  link can have multi range
 		 */
 		u32 index = get_mmio_addr_index(nodeid, link);

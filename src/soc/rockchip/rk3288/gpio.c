@@ -47,7 +47,7 @@ void *gpio_grf_reg(gpio_t gpio)
 {
 	if (is_pmu_gpio(gpio))
 		return &rk3288_pmu->gpio0pull[gpio.bank];
-	/* There is one pmu gpio, gpio0 , so " - 1" */
+	/* There is one pmu gpio, gpio0, so " - 1" */
 	return &rk3288_grf->gpio1_p[(gpio.port - 1)][gpio.bank];
 }
 

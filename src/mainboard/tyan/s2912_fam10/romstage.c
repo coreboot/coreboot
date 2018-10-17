@@ -87,18 +87,18 @@ static void sio_setup(void)
 	uint32_t dword;
 	uint8_t byte;
 
-	byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
+	byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE+1, 0), 0x7b);
 	byte |= 0x20;
-	pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
+	pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1, 0), 0x7b, byte);
 
-	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
+	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1, 0), 0xa0);
 	/*serial 0 */
 	dword |= (1 << 0);
-	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
+	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1, 0), 0xa0, dword);
 
-	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4);
+	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1, 0), 0xa4);
 	dword |= (1 << 16);
-	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4, dword);
+	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1, 0), 0xa4, dword);
 }
 
 static const u8 spd_addr[] = {

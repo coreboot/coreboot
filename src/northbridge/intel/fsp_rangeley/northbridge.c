@@ -131,7 +131,7 @@ static void mc_add_dram_resources(struct device *dev)
 	mmio_resource(dev, index++, tomlow >> 10, (bmbound - bsmmrrl) >> 10);
 
 	if (bmbound_hi > 0x100000000) {
-		ram_resource(dev, index++, 0x100000000 >> 10, (bmbound_hi - 0x100000000) >> 10 );
+		ram_resource(dev, index++, 0x100000000 >> 10, (bmbound_hi - 0x100000000) >> 10);
 		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n", (bmbound_hi - 0x100000000) >> 20);
 	}
 

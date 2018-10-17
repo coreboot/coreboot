@@ -213,7 +213,7 @@ static void amd8132_pcix_init(struct device *dev)
 	if (chip_rev == 0x01) {
 		/* Errata #37 */
 		byte = pci_read_config8(dev, 0x0c);
-		if (byte == 0x08 )
+		if (byte == 0x08)
 			pci_write_config8(dev, 0x0c, 0x10);
 
 #if 0
@@ -272,7 +272,7 @@ static void amd8132_pcix_init(struct device *dev)
 
 	/* TxSlack0 [16:17] = 0, RxHwLookahdEn0 [18] = 1, TxSlack1 [24:25] = 0, RxHwLookahdEn1 [26] = 1 */
 	dword = pci_read_config32(dev, 0xdc);
-	dword |= (1<<1) |  (1<<4); // stream disable 1 to 0 , DBLINSRATE
+	dword |= (1<<1) |  (1<<4); // stream disable 1 to 0, DBLINSRATE
 	dword |= (1<<18)|(1<<26);
 	dword &= ~((3<<16)|(3<<24));
 	pci_write_config32(dev, 0xdc, dword);
@@ -385,7 +385,7 @@ static void amd8132_ioapic_init(struct device *dev)
 	}
 
 
-	if ( (chip_rev == 0x11) ||(chip_rev == 0x12) ) {
+	if ((chip_rev == 0x11) || (chip_rev == 0x12)) {
 		//for b1 b2
 		/* Errata #73 */
 		dword = pci_read_config32(dev, 0x80);

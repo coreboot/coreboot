@@ -173,7 +173,7 @@ static void emit_sar_acpi_structures(void)
 	acpigen_write_package(2);
 	acpigen_write_dword(wgds->version);
 	/* Emit 'Domain Type' +
-	 * Group specific delta of power ( 6 bytes * NUM_WGDS_SAR_GROUPS )
+	 * Group specific delta of power (6 bytes * NUM_WGDS_SAR_GROUPS)
 	 */
 	package_size = sizeof(sar_limits.wgds.group) + 1;
 	acpigen_write_package(package_size);

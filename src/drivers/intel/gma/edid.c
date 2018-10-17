@@ -46,15 +46,15 @@ static void intel_gmbus_stop_bus(u8 *mmio, u8 bus)
 	wait_rdy(mmio);
 	write32(GMBUS5_ADDR, 0);
 	write32(GMBUS1_ADDR, GMBUS_SW_RDY | GMBUS_CYCLE_WAIT | GMBUS_CYCLE_INDEX
-		| GMBUS_CYCLE_STOP | ( 0x4 << GMBUS_BYTE_COUNT_SHIFT )
-		| GMBUS_SLAVE_READ | (AT24_ADDR << 1) );
+		| GMBUS_CYCLE_STOP | (0x4 << GMBUS_BYTE_COUNT_SHIFT)
+		| GMBUS_SLAVE_READ | (AT24_ADDR << 1));
 	wait_rdy(mmio);
 	write32(GMBUS5_ADDR, 0);
 	write32(GMBUS1_ADDR, GMBUS_SW_CLR_INT);
 	write32(GMBUS1_ADDR, 0);
 	wait_rdy(mmio);
 	write32(GMBUS1_ADDR, GMBUS_SW_RDY | GMBUS_CYCLE_STOP | GMBUS_SLAVE_WRITE
-		| (AT24_ADDR << 1) );
+		| (AT24_ADDR << 1));
 	wait_rdy(mmio);
 	write32(GMBUS1_ADDR, GMBUS_SW_RDY | GMBUS_CYCLE_STOP);
 	write32(GMBUS2_ADDR, GMBUS_INUSE);
@@ -80,13 +80,13 @@ void intel_gmbus_read_edid(u8 *mmio, u8 bus, u8 slave, u8 *edid, u32 edid_size)
 	/* Ensure index bits are disabled.  */
 	write32(GMBUS5_ADDR, 0);
 	write32(GMBUS1_ADDR, GMBUS_SW_RDY | GMBUS_CYCLE_WAIT | GMBUS_CYCLE_INDEX
-		| (slave << 1) );
+		| (slave << 1));
 	wait_rdy(mmio);
 	/* Ensure index bits are disabled.  */
 	write32(GMBUS5_ADDR, 0);
 	write32(GMBUS1_ADDR, GMBUS_SW_RDY | GMBUS_SLAVE_READ | GMBUS_CYCLE_WAIT
 		| GMBUS_CYCLE_STOP
-		| (edid_size << GMBUS_BYTE_COUNT_SHIFT) | (slave << 1) );
+		| (edid_size << GMBUS_BYTE_COUNT_SHIFT) | (slave << 1));
 	for (i = 0; i < edid_size / 4; i++) {
 		u32 reg32;
 		wait_rdy(mmio);
@@ -99,9 +99,9 @@ void intel_gmbus_read_edid(u8 *mmio, u8 bus, u8 slave, u8 *edid, u32 edid_size)
 	wait_rdy(mmio);
 	write32(GMBUS1_ADDR, GMBUS_SW_RDY
 		| GMBUS_SLAVE_WRITE | GMBUS_CYCLE_WAIT | GMBUS_CYCLE_STOP
-		| (128 << GMBUS_BYTE_COUNT_SHIFT) | (slave << 1) );
+		| (128 << GMBUS_BYTE_COUNT_SHIFT) | (slave << 1));
 	wait_rdy(mmio);
-	write32(GMBUS1_ADDR, GMBUS_SW_RDY | GMBUS_CYCLE_STOP );
+	write32(GMBUS1_ADDR, GMBUS_SW_RDY | GMBUS_CYCLE_STOP);
 	write32(GMBUS2_ADDR, GMBUS_INUSE);
 
 	printk (BIOS_SPEW, "EDID:\n");

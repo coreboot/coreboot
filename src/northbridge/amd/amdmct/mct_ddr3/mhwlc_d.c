@@ -684,7 +684,7 @@ void prepareDimms(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
 			{tempW = bitTestSet(tempW, 7);}
 			if (bitTest(tempW1,18))
 			{tempW = bitTestSet(tempW, 6);}
-			/* tempW = tempW|(((tempW1 >> 20) & 0x7 )<< 3); */
+			/* tempW = tempW|(((tempW1 >> 20) & 0x7)<< 3); */
 			tempW = tempW|((tempW1&0x00700000) >> 17);
 			/* workaround for DR-B0 */
 			if ((pDCTData->LogicalCPUID & AMD_DR_Bx) && (pDCTData->Status[DCT_STATUS_REGISTERED]))

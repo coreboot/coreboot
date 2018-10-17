@@ -41,7 +41,7 @@ void sch4037_early_init(unsigned port)
 
 	/* Auto power management */
 	pnp_write_config(dev, 0x22, 0x38); /* BIT3+BIT4+BIT5 */
-	pnp_write_config(dev, 0x23, 0 );
+	pnp_write_config(dev, 0x23, 0);
 
 	/* Enable SMSC UART 0 */
 	dev = PNP_DEV(port, SMSCSUPERIO_SP1);

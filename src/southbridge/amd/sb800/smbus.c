@@ -222,7 +222,7 @@ void alink_rc_indx(u32 reg_space, u32 reg_addr, u32 port,
 /* space = 0: AX_INDXC, AX_DATAC
  * space = 1: AX_INDXP, AX_DATAP
  */
-void alink_ax_indx(u32 space /*c or p? */ , u32 axindc,
+void alink_ax_indx(u32 space /*c or p? */, u32 axindc,
 			  u32 mask, u32 val)
 {
 	u32 tmp;

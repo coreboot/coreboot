@@ -45,8 +45,8 @@
 #define BIT6	(1 << 6)
 #define BIT7	(1 << 7)
 
-#define BIT8	(1 << 8 )
-#define BIT9	(1 << 9 )
+#define BIT8	(1 << 8)
+#define BIT9	(1 << 9)
 #define BIT10	(1 << 10)
 #define BIT11	(1 << 11)
 #define BIT12	(1 << 12)

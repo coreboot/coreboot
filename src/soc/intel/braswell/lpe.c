@@ -153,7 +153,7 @@ static void lpe_init(struct device *dev)
 {
 	struct soc_intel_braswell_config *config = dev->chip_info;
 
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 
 	lpe_stash_firmware_info(dev);

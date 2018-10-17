@@ -148,7 +148,8 @@ void dump_smbus_registers(void)
 	printk(BIOS_DEBUG, "\n");
 	for (device = 1; device < 0x80; device++) {
 		int j;
-		if ( spd_read_byte(device, 0) < 0 ) continue;
+		if (spd_read_byte(device, 0) < 0)
+			continue;
 		printk(BIOS_DEBUG, "smbus: %02x", device);
 		for (j = 0; j < 256; j++) {
 			int status;

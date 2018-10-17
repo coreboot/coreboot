@@ -143,7 +143,7 @@ static void lpss_init(struct device *dev)
 	struct soc_intel_braswell_config *config = dev->chip_info;
 	int iosf_reg, nvs_index;
 
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 	printk(BIOS_SPEW, "%s - %s\n",
 			get_pci_class_name(dev),

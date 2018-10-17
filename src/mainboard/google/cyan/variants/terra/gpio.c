@@ -66,7 +66,7 @@ static const struct soc_gpio_map gpse_gpio_map[] = {
 	GPIO_NC, /* 69 MMC1_RCLK */
 	Native_M1, /* 75  GPO USB_OC1_B */
 	Native_M1, /* 76  PMU_RESETBUTTON_B */
-	GPI(trig_edge_both, L0, NA, non_maskable, en_edge_detect, NA , NA),
+	GPI(trig_edge_both, L0, NA, non_maskable, en_edge_detect, NA, NA),
 	/* GPIO_ALERT 77   */
 	Native_M1, /* 78  SDMMC3_PWR_EN_B */
 	GPIO_NC, /* 79  GPI ILB_SERIRQ */
@@ -128,7 +128,7 @@ static const struct soc_gpio_map  gpsw_gpio_map[] = {
 	GPIO_NC, /* 78 SATA_GP2 */
 	GPIO_NC, /* 79 MF_SMB_ALERTB */
 	GPIO_INPUT_NO_PULL, /* 80 SATA_GP3,RAMID0 */
-	Native_M1, /* 81 NFC_DEV_WAKE , MF_SMB_CLK */
+	Native_M1, /* 81 NFC_DEV_WAKE, MF_SMB_CLK */
 	Native_M1, /* 82 NFC_FW_DOWNLOAD, MF_SMB_DATA */
 	/* Per DE request, change PCIE_CLKREQ0123B to GPIO_INPUT */
 	Native_M1, /* 90 PCIE_CLKREQ0B */
@@ -155,7 +155,7 @@ static const struct soc_gpio_map  gpn_gpio_map[] = {
 	GPIO_NC, /* 06 GPIO_DFX8 */
 	GPIO_NC, /* 07 GPIO_DFX2 */
 	GPIO_NC, /* 08 GPIO_DFX6 */
-	GPI(trig_edge_low, L8, NA, non_maskable, en_edge_rx_data ,
+	GPI(trig_edge_low, L8, NA, non_maskable, en_edge_rx_data,
 	UNMASK_WAKE, SCI), /* 15 GPIO_SUS0 */
 	GPO_FUNC(NA, NA), /* 16 SEC_GPIO_SUS10 */
 	GPI(trig_edge_low, L0, P_1K_H, non_maskable, NA, NA, NA),

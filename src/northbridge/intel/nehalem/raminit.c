@@ -1420,7 +1420,7 @@ static void program_total_memory_map(struct raminfo *info)
 		TOM = 4032;
 	TOUUD = ALIGN_DOWN(TOM - info->memory_reserved_for_heci_mb, 64);
 	TOLUD = ALIGN_DOWN(min(4096 - mmio_size + ALIGN_UP(uma_size_igd + uma_size_gtt, 64)
-			       , TOUUD), 64);
+			      , TOUUD), 64);
 	memory_remap = 0;
 	if (TOUUD - TOLUD > 64) {
 		memory_remap = 1;

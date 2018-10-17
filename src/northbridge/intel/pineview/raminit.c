@@ -57,13 +57,13 @@
 
 #define DIMM_IS_POPULATED(dimms, idx) (dimms[idx].card_type != 0)
 #define IF_DIMM_POPULATED(dimms, idx) if (dimms[idx].card_type != 0)
-#define ONLY_DIMMA_IS_POPULATED(dimms, ch) ( \
+#define ONLY_DIMMA_IS_POPULATED(dimms, ch) (\
 	(DIMM_IS_POPULATED(dimms, (ch == 0) ? 0 : 2) && \
 	!DIMM_IS_POPULATED(dimms, (ch == 0) ? 1 : 3)))
-#define ONLY_DIMMB_IS_POPULATED(dimms, ch) ( \
+#define ONLY_DIMMB_IS_POPULATED(dimms, ch) (\
 	(DIMM_IS_POPULATED(dimms, (ch == 0) ? 1 : 3) && \
 	!DIMM_IS_POPULATED(dimms, (ch == 0) ? 0 : 2)))
-#define BOTH_DIMMS_ARE_POPULATED(dimms, ch) ( \
+#define BOTH_DIMMS_ARE_POPULATED(dimms, ch) (\
 	(DIMM_IS_POPULATED(dimms, (ch == 0) ? 0 : 2) && \
 	(DIMM_IS_POPULATED(dimms, (ch == 0) ? 1 : 3))))
 #define FOR_EACH_DIMM(idx) \
@@ -905,11 +905,11 @@ static void sdram_p_dqs(struct pllparam *pll, u8 f, u8 clk)
 	reg32 |= ((u32) pll->dben[f][clk]) << (dqs + 9);
 	reg32 |= ((u32) pll->dbsel[f][clk]) << dqs;
 	MCHBAR32(0x5b4+rank*4) = (MCHBAR32(0x5b4+rank*4) &
-		~( (1 << (dqs+9))|(1 << dqs) )) | reg32;
+		~((1 << (dqs+9))|(1 << dqs))) | reg32;
 
 	reg32 = ((u32) pll->clkdelay[f][clk]) << ((dqs*2) + 16);
 	MCHBAR32(0x5c8+rank*4) = (MCHBAR32(0x5c8+rank*4) &
-		~( (1 << (dqs*2 + 17))|(1 << (dqs*2 + 16)) )) | reg32;
+		~((1 << (dqs*2 + 17))|(1 << (dqs*2 + 16)))) | reg32;
 
 	reg8 = pll->pi[f][clk];
 	MCHBAR8(0x520+j) = (MCHBAR8(0x520+j) & ~0x3f) | reg8;
@@ -930,11 +930,11 @@ static void sdram_p_dq(struct pllparam *pll, u8 f, u8 clk)
 	reg32 |= ((u32) pll->dben[f][clk]) << (dq + 9);
 	reg32 |= ((u32) pll->dbsel[f][clk]) << dq;
 	MCHBAR32(0x5a4+rank*4) = (MCHBAR32(0x5a4+rank*4) &
-		~( (1 << (dq+9))|(1 << dq) )) | reg32;
+		~((1 << (dq+9))|(1 << dq))) | reg32;
 
 	reg32 = ((u32) pll->clkdelay[f][clk]) << (dq*2);
 	MCHBAR32(0x5c8+rank*4) = (MCHBAR32(0x5c8+rank*4) &
-		~( (1 << (dq*2 + 1))|(1 << (dq*2)) )) | reg32;
+		~((1 << (dq*2 + 1))|(1 << (dq*2)))) | reg32;
 
 	reg8 = pll->pi[f][clk];
 	MCHBAR8(0x500+j) = (MCHBAR8(0x500+j) & ~0x3f) | reg8;

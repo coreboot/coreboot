@@ -59,37 +59,37 @@ static void ite_exit_conf(pnp_devfn_t dev)
 static void ite_evc_conf(pnp_devfn_t dev)
 {
 	ite_enter_conf(dev);
-	it_sio_write(dev, 0xf1 , 0x40 );
-	it_sio_write(dev, 0xf4 , 0x80 );
-	it_sio_write(dev, 0xf5 , 0x00 );
-	it_sio_write(dev, 0xf6 , 0xf0 );
-	it_sio_write(dev, 0xf9 , 0x48 );
-	it_sio_write(dev, 0xfa , 0x00 );
-	it_sio_write(dev, 0xfb , 0x00 );
+	it_sio_write(dev, 0xf1, 0x40);
+	it_sio_write(dev, 0xf4, 0x80);
+	it_sio_write(dev, 0xf5, 0x00);
+	it_sio_write(dev, 0xf6, 0xf0);
+	it_sio_write(dev, 0xf9, 0x48);
+	it_sio_write(dev, 0xfa, 0x00);
+	it_sio_write(dev, 0xfb, 0x00);
 	ite_exit_conf(dev);
 }
 
 static void ite_gpio_conf(pnp_devfn_t dev)
 {
 	ite_enter_conf (dev);
-	it_sio_write (dev, 0x25 , 0x80 );
-	it_sio_write (dev, 0x26 , 0x07 );
-	it_sio_write (dev, 0x28 , 0x81 );
-	it_sio_write (dev, 0x2c , 0x06 );
-	it_sio_write (dev, 0x72 , 0x00 );
-	it_sio_write (dev, 0x73 , 0x00 );
-	it_sio_write (dev, 0xb3 , 0x01 );
-	it_sio_write (dev, 0xb8 , 0x00 );
-	it_sio_write (dev, 0xc0 , 0x00 );
-	it_sio_write (dev, 0xc3 , 0x00 );
-	it_sio_write (dev, 0xc8 , 0x00 );
-	it_sio_write (dev, 0xc9 , 0x07 );
-	it_sio_write (dev, 0xcb , 0x01 );
-	it_sio_write (dev, 0xf0 , 0x10 );
-	it_sio_write (dev, 0xf4 , 0x27 );
-	it_sio_write (dev, 0xf8 , 0x20 );
-	it_sio_write (dev, 0xf9 , 0x01 );
-	ite_exit_conf (dev);
+	it_sio_write(dev, 0x25, 0x80);
+	it_sio_write(dev, 0x26, 0x07);
+	it_sio_write(dev, 0x28, 0x81);
+	it_sio_write(dev, 0x2c, 0x06);
+	it_sio_write(dev, 0x72, 0x00);
+	it_sio_write(dev, 0x73, 0x00);
+	it_sio_write(dev, 0xb3, 0x01);
+	it_sio_write(dev, 0xb8, 0x00);
+	it_sio_write(dev, 0xc0, 0x00);
+	it_sio_write(dev, 0xc3, 0x00);
+	it_sio_write(dev, 0xc8, 0x00);
+	it_sio_write(dev, 0xc9, 0x07);
+	it_sio_write(dev, 0xcb, 0x01);
+	it_sio_write(dev, 0xf0, 0x10);
+	it_sio_write(dev, 0xf4, 0x27);
+	it_sio_write(dev, 0xf8, 0x20);
+	it_sio_write(dev, 0xf9, 0x01);
+	ite_exit_conf(dev);
 }
 
 void board_BeforeAgesa(struct sysinfo *cb)

@@ -99,7 +99,7 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 			FchParams->Usb.Ehci1Enable = TRUE;
 		}
 
-		// Enable EHCI 1 ( port 4 to 7)
+		// Enable EHCI 1 (port 4 to 7)
 		// port 4 and 5 to EHCI header port 6 and 7 to PCIe slot.
 		FchParams->Usb.Ehci2Enable = TRUE;
 

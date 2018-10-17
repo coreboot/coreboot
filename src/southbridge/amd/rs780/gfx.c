@@ -247,7 +247,7 @@ static void ProgramMMIO(MMIORANGE *pMMIO, u8 LinkID, u8 Attribute)
 			}
 		}
 		if (pMMIO[k].Limit != 0) {
-			if (Attribute & MMIO_ATTRIB_NP_ONLY && pMMIO[k].Attribute == 0 ) {
+			if (Attribute & MMIO_ATTRIB_NP_ONLY && pMMIO[k].Attribute == 0) {
 				Base = 0;
 			}
 			else

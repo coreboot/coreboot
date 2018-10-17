@@ -582,7 +582,7 @@ int clock_epll_set_rate(unsigned long rate)
 	epll_con |= epll_div[i].s_div << EPLL_CON0_SDIV_SHIFT;
 
 	/*
-	 * Required period ( in cycles) to generate a stable clock output.
+	 * Required period (in cycles) to generate a stable clock output.
 	 * The maximum clock time can be up to 3000 * PDIV cycles of PLLs
 	 * frequency input (as per spec)
 	 */

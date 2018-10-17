@@ -95,7 +95,7 @@ void get_bus_conf(void)
 	int i, j;
 	struct mb_sysconf_t *m;
 
-	if(get_bus_conf_done == 1)
+	if (get_bus_conf_done == 1)
 		return; /* do it only once */
 
 	get_bus_conf_done = 1;
@@ -105,7 +105,7 @@ void get_bus_conf(void)
 	m = sysconf.mb;
 
 	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
-	for(i = 0; i < sysconf.hc_possible_num; i++) {
+	for (i = 0; i < sysconf.hc_possible_num; i++) {
 		sysconf.pci1234[i] = pci1234x[i];
 		sysconf.hcdn[i] = hcdnx[i];
 	}
@@ -144,8 +144,9 @@ void get_bus_conf(void)
 
 	 /* HT chain 1 */
 	j = 0;
-	for(i = 1; i< sysconf.hc_possible_num; i++) {
-		if(!(sysconf.pci1234[i] & 0x1) ) continue;
+	for (i = 1; i < sysconf.hc_possible_num; i++) {
+		if (!(sysconf.pci1234[i] & 0x1))
+			continue;
 
 		/* check hcid type here */
 		sysconf.hcid[i] = get_hcid(i);
@@ -201,7 +202,7 @@ void get_bus_conf(void)
 	m->apicid_8111 = apicid_base + 0;
 	m->apicid_8132_1 = apicid_base + 1;
 	m->apicid_8132_2 = apicid_base + 2;
-	for(i = 0; i < j; i++) {
+	for (i = 0; i < j; i++) {
 		m->apicid_8132a[i][0] = apicid_base + 3 + i * 2;
 		m->apicid_8132a[i][1] = apicid_base + 3 + i * 2 + 1;
 	}

@@ -168,17 +168,17 @@ static void acpi_init(struct device *dev)
 	on = SLOW_CPU_OFF;
 	get_option(&on, "slow_cpu");
 	if (on) {
-		pm10_bar = (pci_read_config16(dev, 0x58)&0xff00);
-		outl(((on<<1)+0x10)  ,(pm10_bar + 0x10));
+		pm10_bar = (pci_read_config16(dev, 0x58) & 0xff00);
+		outl(((on << 1) + 0x10), (pm10_bar + 0x10));
 		inl(pm10_bar + 0x10);
 		on = 8-on;
 		printk(BIOS_DEBUG, "Throttling CPU %2d.%1.1d percent.\n",
-				(on*12)+(on>>1),(on&1)*5);
+				(on * 12) + (on >> 1), (on & 1) * 5);
 	}
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	pm_base = pci_read_config16(dev, 0x58) & 0xff00;
-	printk(BIOS_DEBUG, "pm_base: 0x%04x\n",pm_base);
+	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", pm_base);
 #endif
 
 }

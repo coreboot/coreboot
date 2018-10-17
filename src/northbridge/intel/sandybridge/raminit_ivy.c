@@ -225,7 +225,7 @@ static u8 get_XP(u32 tCK, u8 base_freq)
 		 * FRQ : | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 |
 		 * XP  : | 3  | 4  | 4  | 5  | 6  | 7  | 8  | 8  |
 		 */
-		static const u8 frq_xp_map[] = { 3, 4, 4, 5, 6, 7 , 8, 8 };
+		static const u8 frq_xp_map[] = { 3, 4, 4, 5, 6, 7, 8, 8 };
 		xp = frq_xp_map[get_FRQ(tCK, 133) - 3];
 	}
 

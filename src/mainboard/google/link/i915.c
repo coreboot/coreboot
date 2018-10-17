@@ -295,7 +295,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	index = run(index);
 	auxout[0] = 1 << 31 /* dp */|0x0 << 28/*W*/|DP_LINK_BW_SET << 8|0x8;
 	auxout[1] = 0x0a840000;
-	/*( DP_LINK_BW_2_7 &0xa)|0x0000840a*/
+	/*(DP_LINK_BW_2_7 &0xa)|0x0000840a*/
 	auxout[2] = 0x00000000;
 	auxout[3] = 0x01000000;
 	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 13, auxin, 0);

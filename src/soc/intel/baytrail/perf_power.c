@@ -221,7 +221,7 @@ E(CCU,  0x28,    MASK_VAL(31,    0,    0x0)),    //vlv.ccu.ccu_trunk_clkgate
 E(CCU,  0x38,    MASK_VAL(31,    0,    0x0)),    //vlv.ccu.ccu_trunk_clkgate_2
 E(CCU,  0x1c,    MASK_VAL(29,   28,    0x0)),    //vlv.ccu.clkgate_en_1.cr_lpe_pri_clkgate_en
 E(CCU,  0x1c,    MASK_VAL(25,   24,    0x0)),    //vlv.ccu.clkgate_en_1.cr_lpe_sb_clkgate_en
-E(CCU,  0x1c,    MASK_VAL( 1,    0,    0x0)),    //vlv.ccu.clkgate_en_1.lps_free_clkgate_en
+E(CCU,  0x1c,    MASK_VAL(1,    0,    0x0)),    //vlv.ccu.clkgate_en_1.lps_free_clkgate_en
 E(CCU,  0x54,    MASK_VAL(17,   16,    0x0)),    //vlv.ccu.clkgate_en_3.cr_lpe_func_ip_clkgate_en
 E(CCU,  0x54,    MASK_VAL(13,   12,    0x0)),    //vlv.ccu.clkgate_en_3.cr_lpe_osc_ip_clk_en
 E(CCU,  0x54,    MASK_VAL(15,   14,    0x0)),    //vlv.ccu.clkgate_en_3.cr_lpe_xtal_ip_clkgate_en

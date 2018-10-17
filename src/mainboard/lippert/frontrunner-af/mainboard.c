@@ -65,19 +65,19 @@ static void init(struct device *dev)
 
 	/* Init Hudson GPIOs. */
 	printk(BIOS_DEBUG, "Init FCH GPIOs @ 0x%08x\n", ACPI_MMIO_BASE+GPIO_BASE);
-	FCH_IOMUX( 50) = 2;    // GPIO50: FCH_ARST#_GATE resets stuck PCIe devices
-	FCH_GPIO ( 50) = 0xC0; // = output set to 1 as it's never needed
+	FCH_IOMUX(50) = 2;    // GPIO50: FCH_ARST#_GATE resets stuck PCIe devices
+	FCH_GPIO (50) = 0xC0; // = output set to 1 as it's never needed
 	FCH_IOMUX(197) = 2;    // GPIO197: BIOS_DEFAULTS# = input (int. PU)
-	FCH_IOMUX( 56) = 1;    // GPIO58-56: REV_ID2-0
-	FCH_GPIO ( 56) = 0x28; // = inputs, disable int. pull-ups
-	FCH_IOMUX( 57) = 1;
-	FCH_GPIO ( 57) = 0x28;
-	FCH_IOMUX( 58) = 1;
-	FCH_GPIO ( 58) = 0x28;
-	FCH_IOMUX( 96) = 1;    // "Gpio96": GEVENT0# signal on X2 connector (int. PU)
-	FCH_IOMUX( 52) = 1;    // GPIO52,61,62,187-192 free to use on X2 connector
-	FCH_IOMUX( 61) = 2;    // default to inputs with int. PU
-	FCH_IOMUX( 62) = 2;
+	FCH_IOMUX(56) = 1;    // GPIO58-56: REV_ID2-0
+	FCH_GPIO (56) = 0x28; // = inputs, disable int. pull-ups
+	FCH_IOMUX(57) = 1;
+	FCH_GPIO (57) = 0x28;
+	FCH_IOMUX(58) = 1;
+	FCH_GPIO (58) = 0x28;
+	FCH_IOMUX(96) = 1;    // "Gpio96": GEVENT0# signal on X2 connector (int. PU)
+	FCH_IOMUX(52) = 1;    // GPIO52,61,62,187-192 free to use on X2 connector
+	FCH_IOMUX(61) = 2;    // default to inputs with int. PU
+	FCH_IOMUX(62) = 2;
 	FCH_IOMUX(187) = 2;
 	FCH_IOMUX(188) = 2;
 	FCH_IOMUX(189) = 1;

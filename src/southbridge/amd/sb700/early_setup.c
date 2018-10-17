@@ -816,7 +816,7 @@ int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
 
 	for (i = 0; i < size; i++) {
 		outb(nvram_pos, BIOSRAM_INDEX);
-		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
+		outb((dword >> (8 * i)) & 0xff, BIOSRAM_DATA);
 		nvram_pos++;
 	}
 

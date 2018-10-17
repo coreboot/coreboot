@@ -47,7 +47,7 @@ static const struct reg_script core_msr_script[] = {
 
 static void soc_core_init(struct device *cpu)
 {
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(cpu));
 	printk(BIOS_DEBUG, "Init Braswell core.\n");
 
@@ -219,7 +219,7 @@ void soc_init_cpus(struct device *dev)
 {
 	struct bus *cpu_bus = dev->link_list;
 
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 
 	if (mp_init_with_smm(cpu_bus, &mp_ops))

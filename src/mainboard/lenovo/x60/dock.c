@@ -190,7 +190,7 @@ int dock_connect(void)
 	dock_gpio_set_mode(0x14, PC87392_GPIO_PIN_PULLUP, 0x00);
 	dock_gpio_set_mode(0x15, PC87392_GPIO_PIN_PULLUP, 0x00);
 	dock_gpio_set_mode(0x16, PC87392_GPIO_PIN_PULLUP |
-				 PC87392_GPIO_PIN_OE , 0x00);
+				 PC87392_GPIO_PIN_OE, 0x00);
 
 	dock_gpio_set_mode(0x17, PC87392_GPIO_PIN_PULLUP, 0x00);
 

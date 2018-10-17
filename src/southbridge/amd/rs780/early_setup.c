@@ -35,7 +35,7 @@ static u32 nb_read_index(pci_devfn_t dev, u32 index_reg, u32 index)
 
 static void nb_write_index(pci_devfn_t dev, u32 index_reg, u32 index, u32 data)
 {
-	pci_write_config32(dev, index_reg, index /* | 0x80 */ );
+	pci_write_config32(dev, index_reg, index /* | 0x80 */);
 	pci_write_config32(dev, index_reg + 0x4, data);
 }
 

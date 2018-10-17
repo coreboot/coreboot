@@ -71,7 +71,7 @@ static void nano_set_max_fid_vid(void)
 	printk(BIOS_INFO, "Voltage ID    : %dx (min %dx; max %dx)\n",
 	       cur_vid, min_vid, max_vid);
 
-	if ( (cur_fid != max_fid) || (cur_vid != max_vid) ) {
+	if ((cur_fid != max_fid) || (cur_vid != max_vid)) {
 		/* Set highest frequency and VID */
 		msr.lo = msr.hi;
 		msr.hi = 0;
@@ -101,7 +101,7 @@ static void nano_power(void)
 	 * This MSR is not documented by VIA docs, other than setting these
 	 * bits */
 	msr = rdmsr(NANO_MYSTERIOUS_MSR);
-	msr.lo |= ( (1 << 7) | (1 << 4) );
+	msr.lo |= ((1 << 7) | (1 << 4));
 	/* FIXME: Do we have a 6-bit or 7-bit VRM?
 	 * set bit [5] for 7-bit, or don't set it for 6 bit VRM
 	 * This will probably require a Kconfig option
@@ -114,15 +114,15 @@ static void nano_power(void)
 
 	/* Enable TM3 */
 	msr = rdmsr(IA32_MISC_ENABLE);
-	msr.lo |= ( (1 << 3) | (1 << 13) );
+	msr.lo |= ((1 << 3) | (1 << 13));
 	wrmsr(IA32_MISC_ENABLE, msr);
 
-	u8 stepping = ( cpuid_eax(0x1) ) &0xf;
+	u8 stepping = (cpuid_eax(0x1)) & 0xf;
 	if (stepping >= MODEL_NANO_3000_B0) {
 		/* Hello Nano 3000. The Terminator needs a CPU upgrade */
 		/* Enable C1e, C2e, C3e, and C4e states */
 		msr = rdmsr(IA32_MISC_ENABLE);
-		msr.lo |= ( (1 << 25) | (1 << 26) | (1 << 31)); /* C1e, C2e, C3e */
+		msr.lo |= ((1 << 25) | (1 << 26) | (1 << 31)); /* C1e, C2e, C3e */
 		msr.hi |= (1 << 0); /* C4e */
 		wrmsr(IA32_MISC_ENABLE, msr);
 	}

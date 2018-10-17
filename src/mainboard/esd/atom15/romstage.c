@@ -57,7 +57,7 @@ void late_mainboard_romstage_entry()
 			read_ssus_gpio(27),
 			read_ssus_gpio(28),
 			read_ssus_gpio(29),
-			read_ssus_gpio(30) );
+			read_ssus_gpio(30));
 
 }
 

@@ -155,7 +155,7 @@ detailed_cvt_descriptor(unsigned char *x, int first)
 		printk(BIOS_SPEW, "    (broken)\n");
 	} else {
 		printk(BIOS_SPEW,
-			"    %dx%d @ ( %s%s%s%s%s) Hz (%s%s preferred)\n",
+			"    %dx%d @ (%s%s%s%s%s) Hz (%s%s preferred)\n",
 		       width, height,
 		       fifty ? "50 " : "",
 		       sixty ? "60 " : "",

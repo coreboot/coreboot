@@ -105,15 +105,15 @@ u8 vx900_int15_get_5f18_bl(void)
 	 * 0000: 66MHz
 	 * 0001: 100MHz
 	 * 0010: 133MHz
-	 * 0011: 200MHz ( DDR200 )
-	 * 0100: 266MHz ( DDR266 )
-	 * 0101: 333MHz ( DDR333 )
-	 * 0110: 400MHz ( DDR400 )
-	 * 0111: 533MHz ( DDR I/II 533)
-	 * 1000: 667MHz ( DDR I/II 667)
-	 * 1001: 800MHz  ( DDR3 800)
-	 * 1010: 1066MHz ( DDR3 1066)
-	 * 1011: 1333MHz ( DDR3 1333)
+	 * 0011: 200MHz (DDR200)
+	 * 0100: 266MHz (DDR266)
+	 * 0101: 333MHz (DDR333)
+	 * 0110: 400MHz (DDR400)
+	 * 0111: 533MHz (DDR I/II 533)
+	 * 1000: 667MHz (DDR I/II 667)
+	 * 1001: 800MHz  (DDR3 800)
+	 * 1010: 1066MHz (DDR3 1066)
+	 * 1011: 1333MHz (DDR3 1333)
 	 * Bit[3:0]
 	 * N:  Frame Buffer Size 2^N  MB
 	 */

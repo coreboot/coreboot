@@ -46,7 +46,7 @@
 #define	TPM_DEBUG(fmt, args...)		\
 	if (IS_ENABLED(CONFIG_DEBUG_TPM)) {		\
 		printk(BIOS_DEBUG, PREFIX);		\
-		printk(BIOS_DEBUG, fmt , ##args);	\
+		printk(BIOS_DEBUG, fmt, ##args);	\
 	}
 #define TPM_DEBUG_IO_READ(reg_, val_) \
 	TPM_DEBUG("Read reg 0x%x returns 0x%x\n", (reg_), (val_))

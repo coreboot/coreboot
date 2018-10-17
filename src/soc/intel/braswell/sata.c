@@ -30,7 +30,7 @@ typedef struct soc_intel_braswell_config config_t;
 
 static void sata_init(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 }
 

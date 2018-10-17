@@ -138,19 +138,19 @@ size_t sdram_size(void)
 	if (value & CONA_DUAL_CH_EN)
 		bit_counter++;
 
-	/* check if 32bit , 32 = 2^5*/
+	/* check if 32bit, 32 = 2^5*/
 	if (value & CONA_32BIT_EN)
 		bit_counter += 5;
 	else
 		bit_counter += 4;
 
 	/* check column address */
-	/* 00 is 9 bits, 01 is 10 bits , 10 is 11 bits */
+	/* 00 is 9 bits, 01 is 10 bits, 10 is 11 bits */
 	bit_counter += ((value & COL_ADDR_BITS_MASK) >> COL_ADDR_BITS_SHIFT) +
 		       9;
 
 	/* check if row address */
-	/*00 is 13 bits , 01 is 14 bits , 10 is 15bits , 11 is 16 bits */
+	/*00 is 13 bits, 01 is 14 bits, 10 is 15bits, 11 is 16 bits */
 	bit_counter += ((value & ROW_ADDR_BITS_MASK) >> ROW_ADDR_BITS_SHIFT) +
 		       13;
 

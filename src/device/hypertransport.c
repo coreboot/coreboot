@@ -61,7 +61,7 @@ static struct device *ht_scan_get_devs(struct device **old_devices)
 
 		/* Now add the device to the list of devices on the bus. */
 		/* Find the last child of our parent. */
-		for (child = first->bus->children; child && child->sibling; )
+		for (child = first->bus->children; child && child->sibling;)
 			child = child->sibling;
 
 		/* Place the chain on the list of children of their parent. */

@@ -275,7 +275,7 @@ static void pciexp_L1_substate_commit(struct device *root, struct device *dev,
 	pci_update_config32(root, root_cap + 0x08, ~0xff00,
 		(comm_mode_rst_time << 8));
 
-	pci_update_config32(root, root_cap + 0x0c , 0xffffff04,
+	pci_update_config32(root, root_cap + 0x0c, 0xffffff04,
 		(endp_power_on_value << 3) | (power_on_scale));
 
 	/* TODO: 0xa0, 2 are values that work on some chipsets but really
@@ -291,7 +291,7 @@ static void pciexp_L1_substate_commit(struct device *root, struct device *dev,
 		L1SubStateSupport);
 
 	for (dev_t = dev; dev_t; dev_t = dev_t->sibling) {
-		pci_update_config32(dev_t, end_cap + 0x0c , 0xffffff04,
+		pci_update_config32(dev_t, end_cap + 0x0c, 0xffffff04,
 			(endp_power_on_value << 3) | (power_on_scale));
 
 		pci_update_config32(dev_t, end_cap + 0x08,

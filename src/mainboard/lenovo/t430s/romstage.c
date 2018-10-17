@@ -43,7 +43,7 @@ void mainboard_rcba_config(void)
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 0,  0 }, /* P0: , OC 0 */
+	{ 1, 0,  0 }, /* P0:, OC 0 */
 	{ 1, 1,  1 }, /* P1: (EHCI debug), OC 1 */
 	{ 1, 1,  3 }, /* P2:  OC 3 */
 	{ 1, 0, -1 }, /* P3: no OC */

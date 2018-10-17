@@ -53,7 +53,7 @@ int ptn3460_init(char *hwi_block)
 			hwi_block);
 		return 1;
 	}
-	if (hwilib_get_field(PF_Color_Depth ,&color_depth, 1) != 1) {
+	if (hwilib_get_field(PF_Color_Depth, &color_depth, 1) != 1) {
 		printk(BIOS_ERR, "LCD: Missing panel features from %s\n",
 			hwi_block);
 		return 1;

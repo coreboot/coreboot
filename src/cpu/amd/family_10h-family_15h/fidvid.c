@@ -682,7 +682,7 @@ static void waitCurrentPstate(u32 target_pstate) {
 
 		do { // should we just go on instead ?
 			pstate_msr = rdmsr(PS_STS_REG);
-		} while ( pstate_msr.lo != target_pstate  );
+		} while (pstate_msr.lo != target_pstate);
 	}
 }
 

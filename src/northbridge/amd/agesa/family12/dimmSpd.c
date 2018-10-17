@@ -55,7 +55,7 @@ AmdMemoryReadSPD (
   IN UINT32 Func,
   IN UINTN Data,
   IN OUT AGESA_READ_SPD_PARAMS *SpdData
-  )
+ )
 {
 	UINT8  SmBusAddress = 0;
 	UINTN  Index;

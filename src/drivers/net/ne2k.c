@@ -287,7 +287,7 @@ int ne2k_init(unsigned int eth_nic_base) {
 	if (dev == PCI_DEV_INVALID)
 		return 0;
 
-	pci_write_config32(dev, 0x10, eth_nic_base | 1 );
+	pci_write_config32(dev, 0x10, eth_nic_base | 1);
 	pci_write_config8(dev, 0x4, 0x1);
 
 	c = inb(eth_nic_base + NE_ASIC_OFFSET + NE_RESET);

@@ -36,7 +36,7 @@ static void nehalem_setup_bars(void)
 
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
 	/* Enable ACPI BAR */
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44 /* ACPI_CNTL */ , 0x80);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44 /* ACPI_CNTL */, 0x80);
 
 	printk(BIOS_DEBUG, " done.\n");
 

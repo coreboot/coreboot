@@ -70,70 +70,91 @@ void PRE_SRX(void)
 	uint32_t readvalue = 0;
 
 	// Disable low power receivers:  bit 0 of the byte lane STATIC_PAD_CTL register
-	readvalue = reg32_read ((volatile uint32_t *)DDR_PHY_CONTROL_REGS_STATIC_PAD_CTL);
-	reg32_write ((volatile uint32_t *)DDR_PHY_CONTROL_REGS_STATIC_PAD_CTL, ( readvalue & ~(1 << DDR_PHY_CONTROL_REGS_STATIC_PAD_CTL__RX_MODE_R)));
+	readvalue = reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_STATIC_PAD_CTL);
+	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_STATIC_PAD_CTL,
+		    (readvalue & ~(1 << DDR_PHY_CONTROL_REGS_STATIC_PAD_CTL__RX_MODE_R)));
 
 	// Turn off ZQ_CAL drivers: bits 0,1, and 17 of the ZQ_CAL register (other bits 0 & 1 are set to 1)
-	readvalue = reg32_read ((volatile uint32_t *)DDR_PHY_CONTROL_REGS_ZQ_CAL);
-	reg32_write ((volatile uint32_t *)DDR_PHY_CONTROL_REGS_ZQ_CAL, ( readvalue & ~(1 << DDR_PHY_CONTROL_REGS_ZQ_CAL__ZQ_IDDQ)));
+	readvalue = reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_ZQ_CAL);
+	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_ZQ_CAL,
+		    (readvalue & ~(1 << DDR_PHY_CONTROL_REGS_ZQ_CAL__ZQ_IDDQ)));
 
 	// Byte lane 0 power up
-	readvalue = reg32_read ((volatile uint32_t *)DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL);
-	reg32_write ((volatile uint32_t *)DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL, ( readvalue & ~(1 << DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL__IDLE)));
+	readvalue = reg32_read((volatile uint32_t *)DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL);
+	reg32_write((volatile uint32_t *)DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL,
+		    (readvalue & ~(1 << DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL__IDLE)));
 
-	readvalue = reg32_read ((volatile uint32_t *)DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL);
-	reg32_write ((volatile uint32_t *)DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL, ( readvalue & 0xffff800f));
+	readvalue = reg32_read((volatile uint32_t *)DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL);
+	reg32_write((volatile uint32_t *)DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL,
+		    (readvalue & 0xffff800f));
 
-	readvalue = reg32_read ((volatile uint32_t *)DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL);
-	reg32_write ((volatile uint32_t *)DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL, ( readvalue & ~(1 << DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL__IDDQ)));
+	readvalue = reg32_read((volatile uint32_t *)DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL);
+	reg32_write((volatile uint32_t *)DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL,
+		    (readvalue & ~(1 << DDR_PHY_BYTE_LANE_0_IDLE_PAD_CONTROL__IDDQ)));
 
 	// Byte lane 1 power up
-	readvalue = reg32_read ((volatile uint32_t *)DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL);
-	reg32_write ((volatile uint32_t *)DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL, ( readvalue & ~(1 << DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL__IDLE)));
+	readvalue = reg32_read((volatile uint32_t *)DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL);
+	reg32_write((volatile uint32_t *)DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL,
+		    (readvalue & ~(1 << DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL__IDLE)));
 
-	readvalue = reg32_read ((volatile uint32_t *)DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL);
-	reg32_write ((volatile uint32_t *)DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL, ( readvalue & 0xffff800f));
+	readvalue = reg32_read((volatile uint32_t *)DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL);
+	reg32_write((volatile uint32_t *)DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL,
+		    (readvalue & 0xffff800f));
 
-	readvalue = reg32_read ((volatile uint32_t *)DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL);
-	reg32_write ((volatile uint32_t *)DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL, ( readvalue & ~(1 << DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL__IDDQ)));
+	readvalue = reg32_read((volatile uint32_t *)DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL);
+	reg32_write((volatile uint32_t *)DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL,
+		    (readvalue & ~(1 << DDR_PHY_BYTE_LANE_1_IDLE_PAD_CONTROL__IDDQ)));
 
 	// Turn on PHY_CONTROL AUTO_OEB C not required
 	// Enable byte lane AUTO_DQ_RXENB_MODE: bits 18 and 19 of the byte lane IDLE_PAD_CONTROL C already set 180114c8: 000f000a
 
 	printk(BIOS_INFO, "\n....PLL power up.\n");
-	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG, (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG) & ~(1<<DDR_PHY_CONTROL_REGS_PLL_CONFIG__PWRDN)));
+	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG,
+		    (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG) &
+		    ~(1<<DDR_PHY_CONTROL_REGS_PLL_CONFIG__PWRDN)));
 
 	// PLL out of reset
-	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG, (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG) & ~(1<<DDR_PHY_CONTROL_REGS_PLL_CONFIG__RESET)));
+	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG,
+		    (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG) &
+		    ~(1<<DDR_PHY_CONTROL_REGS_PLL_CONFIG__RESET)));
 	printk(BIOS_INFO, "\n....poll lock..\n");
 	// Poll lock
 	readvalue = reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_STATUS);
-	while ( ( readvalue & 0x1) == 0x0 )
+	while ((readvalue & 0x1) == 0x0)
 	{
 		printk(BIOS_INFO, "\n....DDR_PHY_CONTROL_REGS_PLL_STATUS = %8x..\n",readvalue);
 		readvalue = reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_STATUS);
 	}
 	printk(BIOS_INFO, "\n....after while..\n");
 
-	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG, (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG) & ~(1<<DDR_PHY_CONTROL_REGS_PLL_CONFIG__RESET_POST_DIV)));
+	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG,
+		    (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG) &
+		    ~(1<<DDR_PHY_CONTROL_REGS_PLL_CONFIG__RESET_POST_DIV)));
 
 	printk(BIOS_INFO, "\n....remove hold..\n");
 	// Remove hold
-	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG, (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG) & ~(1<<DDR_PHY_CONTROL_REGS_PLL_CONFIG__HOLD)));
+	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG,
+		    (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_PLL_CONFIG) &
+		    ~(1<<DDR_PHY_CONTROL_REGS_PLL_CONFIG__HOLD)));
 	printk(BIOS_INFO, "\n....restore dac..\n");
 
 	// Restore DAC
-	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_VREF_DAC_CONTROL, (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_VREF_DAC_CONTROL) & 0xffff0fff));
+	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_VREF_DAC_CONTROL,
+		    (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_VREF_DAC_CONTROL) & 0xffff0fff));
 	printk(BIOS_INFO, "\n....set iddq bit..\n");
 
 	// Set the iddq bit in the idle control register and select all outputs except cke and rst in the idee select registers.
 	//	Do NOT assert any other bits in the idle control register.	(This step can be done during init on power up.)
-	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_IDLE_PAD_CONTROL, (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_IDLE_PAD_CONTROL) & ~(1 << DDR_PHY_CONTROL_REGS_IDLE_PAD_CONTROL__IDDQ)));
+	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_IDLE_PAD_CONTROL,
+		    (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_IDLE_PAD_CONTROL) &
+		    ~(1 << DDR_PHY_CONTROL_REGS_IDLE_PAD_CONTROL__IDDQ)));
 	printk(BIOS_INFO, "\n....idle pad enable 0..\n");
 	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_IDLE_PAD_ENABLE0, 0x0);
 	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_IDLE_PAD_ENABLE1, 0x0);
 	printk(BIOS_INFO, "\n....DDR_PHY_CONTROL_REGS_IDLE_PAD_CONTROL..\n");
-	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_IDLE_PAD_CONTROL, (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_IDLE_PAD_CONTROL) & ~(1 << DDR_PHY_CONTROL_REGS_IDLE_PAD_CONTROL__IDLE)));
+	reg32_write((volatile uint32_t *)DDR_PHY_CONTROL_REGS_IDLE_PAD_CONTROL,
+		    (reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_IDLE_PAD_CONTROL) &
+		    ~(1 << DDR_PHY_CONTROL_REGS_IDLE_PAD_CONTROL__IDLE)));
 }
 
 #endif
@@ -143,7 +164,7 @@ void iproc_ddr_ovrd_ecc_lane(void)
 {
 	uint32_t val;
 
-#define SET_OVR_STEP(v) ( 0x30000 | ( (v) & 0x3F ) )    /* OVR_FORCE = OVR_EN = 1, OVR_STEP = v */
+#define SET_OVR_STEP(v) (0x30000 | ((v) & 0x3F))    /* OVR_FORCE = OVR_EN = 1, OVR_STEP = v */
 
 	val = reg32_read((volatile uint32_t *)DDR_PHY_WORD_LANE_0_VDL_OVRIDE_BYTE_RD_EN);
 	val = SET_OVR_STEP(val & 0xff);
@@ -441,27 +462,27 @@ void ddr_phy_wl_regs_ovrd(unsigned int * tblptr)
 /*DDR_SHMOO_RELATED_CHANGE*/
 
 #ifdef CONFIG_RUN_DDR_SHMOO
-int ReWriteModeRegisters( void )
+int ReWriteModeRegisters(void)
 {
 	int nRet = 0;
 	int j = 100;
 
-	reg32_clear_bits( (volatile uint32_t *)DDR_DENALI_CTL_89 , 1 << 18 );
+	reg32_clear_bits((volatile uint32_t *)DDR_DENALI_CTL_89, 1 << 18);
 
 	/* Set mode register for MR0, MR1, MR2 and MR3 write for all chip selects */
-	reg32_write( (volatile uint32_t *)DDR_DENALI_CTL_43 , (1 << 17) | (1 << 24) | (1 << 25) );
+	reg32_write((volatile uint32_t *)DDR_DENALI_CTL_43, (1 << 17) | (1 << 24) | (1 << 25));
 
 	/* Trigger Mode Register Write(MRW) sequence */
-	reg32_set_bits( (volatile uint32_t *)DDR_DENALI_CTL_43 , 1 << 25 );
+	reg32_set_bits((volatile uint32_t *)DDR_DENALI_CTL_43, 1 << 25);
 
 	do {
-		if ( reg32_read( (volatile uint32_t *)DDR_DENALI_CTL_89) & (1 << 18) ) {
+		if (reg32_read((volatile uint32_t *)DDR_DENALI_CTL_89) & (1 << 18)) {
 			break;
 		}
 		--j;
-	} while ( j );
+	} while (j);
 
-	if ( j == 0 && (reg32_read( (volatile uint32_t *)DDR_DENALI_CTL_89) & (1 << 18) ) == 0 ) {
+	if (j == 0 && (reg32_read((volatile uint32_t *)DDR_DENALI_CTL_89) & (1 << 18)) == 0) {
 		printk(BIOS_ERR, "Error: DRAM mode registers write failed\n");
 		nRet = 1;
 	};
@@ -975,25 +996,24 @@ static int try_restore_shmoo(void)
 	) {
 		val |= (1 << 17); /* Force Override */
 	}
-        // printk(BIOS_INFO, "Writing 0x%x to 0x%x\n",val,reg);
-        reg32_write(reg,val);
+	// printk(BIOS_INFO, "Writing 0x%x to 0x%x\n",val,reg);
+	reg32_write(reg, val);
 
-        reg32_read(reg); /* Dummy read back */
-    }
-    printk(BIOS_INFO, "done\n");
+	reg32_read(reg); /* Dummy read back */
+	}
+	printk(BIOS_INFO, "done\n");
 
-    /* Perform memory test to see if the parameters work */
-    if (CONFIG_SHMOO_REUSE_MEMTEST_LENGTH > 0 ) {
-        printk(BIOS_INFO, "Running simple memory test ..... ");
-        i = simple_memory_test(
-            (void *)CONFIG_SHMOO_REUSE_MEMTEST_START,
-            CONFIG_SHMOO_REUSE_MEMTEST_LENGTH);
-        if (i) {
-            printk(BIOS_ERR, "failed!\n");
-            return 1;
-        }
-        printk(BIOS_INFO, "OK\n");
-    }
+	/* Perform memory test to see if the parameters work */
+	if (CONFIG_SHMOO_REUSE_MEMTEST_LENGTH > 0) {
+		printk(BIOS_INFO, "Running simple memory test ..... ");
+		i = simple_memory_test((void *)CONFIG_SHMOO_REUSE_MEMTEST_START,
+		    CONFIG_SHMOO_REUSE_MEMTEST_LENGTH);
+		if (i) {
+			printk(BIOS_ERR, "failed!\n");
+			return 1;
+		}
+		printk(BIOS_INFO, "OK\n");
+	}
 
     return 0;
 }
@@ -1116,9 +1136,11 @@ static int clear_ddr(uint32_t offset, uint32_t size)
 	unsigned long start;
 	unsigned int i, val;
 
-    reg32_write((uint32_t *)DDR_BistConfig,reg32_read((uint32_t *)DDR_BistConfig) & ~0x1);
+	reg32_write((uint32_t *)DDR_BistConfig,
+		    reg32_read((uint32_t *)DDR_BistConfig) & ~0x1);
 
-    for ( i = 0; i < 1000; i++);
+	for (i = 0; i < 1000; i++)
+		;
 
 #if !defined(CONFIG_IPROC_P7)
 	reg32_write((volatile uint32_t *)DDR_DENALI_CTL_213, 0x00FFFFFF);
@@ -1377,10 +1399,10 @@ void ddr_init2(void)
 	/* Wait for DDR PHY up */
 	for (i=0; i < 0x19000; i++) {
 		val = reg32_read((volatile uint32_t *)DDR_PHY_CONTROL_REGS_REVISION);
-		if ( val != 0) {
-            printk(BIOS_INFO, "PHY revision version: 0x%08x\n", val);
+		if (val != 0) {
+			printk(BIOS_INFO, "PHY revision version: 0x%08x\n", val);
 			break; /* DDR PHY is up */
-        }
+		}
 	}
 
 	if (i == 0x19000) {
@@ -1484,7 +1506,7 @@ void ddr_init2(void)
 	/* Enable auto self-refresh */
 	reg32_set_bits((unsigned int *)DDR_DENALI_CTL_57,
 		0x2 << DDR_DENALI_CTL_57__LP_AUTO_EXIT_EN_R |
-		0x2 << DDR_DENALI_CTL_57__LP_AUTO_ENTRY_EN_R );
+		0x2 << DDR_DENALI_CTL_57__LP_AUTO_ENTRY_EN_R);
 
 	reg32_set_bits((unsigned int *)DDR_DENALI_CTL_58,
 		DDR_AUTO_SELF_REFRESH_IDLE_COUNT << DDR_DENALI_CTL_58__LP_AUTO_SR_IDLE_R);
@@ -1495,9 +1517,9 @@ void ddr_init2(void)
 	/* Disable auto-self refresh */
 	reg32_clear_bits((unsigned int *)DDR_DENALI_CTL_57,
 		0x2 << DDR_DENALI_CTL_57__LP_AUTO_EXIT_EN_R |
-		0x2 << DDR_DENALI_CTL_57__LP_AUTO_ENTRY_EN_R );
+		0x2 << DDR_DENALI_CTL_57__LP_AUTO_ENTRY_EN_R);
 	reg32_clear_bits((unsigned int *)DDR_DENALI_CTL_58,
-		0xff << DDR_DENALI_CTL_58__LP_AUTO_SR_IDLE_R );
+		0xff << DDR_DENALI_CTL_58__LP_AUTO_SR_IDLE_R);
 #endif
 
 	/* Start the DDR */
@@ -1598,7 +1620,7 @@ void ddr_init2(void)
 	/* SRX */
 	if (skip_shmoo)
 	{
-		// Enter Self refresh (dummy) , to keep Denali happy
+		// Enter Self refresh (dummy), to keep Denali happy
 		reg32_write((unsigned int *)DDR_DENALI_CTL_56, 0x0a050505);
 
 		__udelay(200);

@@ -461,7 +461,7 @@ static void sata_init(struct device *dev)
 			else
 				printk(BIOS_DEBUG, "%s %s device is %sready after %i tries\n",
 						(i / 2) ? "Secondary" : "Primary",
-						(i % 2 ) ? "Slave" : "Master",
+						(i % 2) ? "Slave" : "Master",
 						(j == 10) ? "not " : "",
 						(j == 10) ? j : j + 1);
 		} else {
@@ -470,7 +470,7 @@ static void sata_init(struct device *dev)
 			else
 				printk(BIOS_DEBUG, "No %s %s SATA drive on Slot%i\n",
 						(i / 2) ? "Secondary" : "Primary",
-						(i % 2 ) ? "Slave" : "Master", i);
+						(i % 2) ? "Slave" : "Master", i);
 		}
 	}
 
@@ -510,7 +510,7 @@ static void sata_init(struct device *dev)
 	write32((sata_bar5 + 0x3b0), 0xFFFFFFFF);
 
 	/* Clear SATA status,Firstly we get the AcpiGpe0BlkAddr */
-	/* ????? why CIM does not set the AcpiGpe0BlkAddr , but use it??? */
+	/* ????? why CIM does not set the AcpiGpe0BlkAddr, but use it??? */
 
 	/* word = 0x0000; */
 	/* word = pm_ioread(0x28); */

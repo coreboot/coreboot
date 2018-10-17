@@ -665,7 +665,7 @@ void sr5650_gpp_sb_init(struct device *nb_dev, struct device *dev, u32 port)
 	/* CIMx CommonPortInit settings that are not set above. */
 	pci_ext_write_config32(nb_dev, dev, 0x88, 0xF0, 1 << 0); /* LINK_CRTL2 */
 
-	if ( port == 8 )
+	if (port == 8)
 		set_pcie_enable_bits(dev, 0xA0, 0, 1 << 23);
 
 #if 0 //SR56x0 pcie Gen2 code is not tested yet, we should enable it again when test finished.
@@ -687,7 +687,7 @@ void sr5650_gpp_sb_init(struct device *nb_dev, struct device *dev, u32 port)
 	pci_ext_write_config32(nb_dev, dev, 0x74, 1 << 3, 1 << 3);
 
 	/* 5.12.9.3 step 2 - PCIEP_PORT_CNTL - enable hotplug messages */
-	if ( port != 8)
+	if (port != 8)
 		set_pcie_enable_bits(dev, 0x10, 1 << 2, 1 << 2);
 
 	/* Not sure about this PME setup */
@@ -806,7 +806,7 @@ void sr5650_gpp_sb_init(struct device *nb_dev, struct device *dev, u32 port)
 	set_pcie_enable_bits(nb_dev, 0x40 | gpp_sb_sel, 1 << 6, 1 << 6);
 
 	/* Step 20: Disables immediate RCB timeout on link down */
-	if (!((pci_read_config32(dev, 0x6C ) >> 6) & 0x01)) {
+	if (!((pci_read_config32(dev, 0x6C) >> 6) & 0x01)) {
 		set_pcie_enable_bits(dev, 0x70, 1 << 19, 0 << 19);
 	}
 

@@ -130,7 +130,7 @@ uint64_t storage_block_fill_write(struct storage_media *media, uint64_t start,
 	uint32_t *buffer = malloc(buffer_bytes);
 	uint32_t *ptr = buffer;
 
-	for ( ; buffer_words ; buffer_words--)
+	for (; buffer_words ; buffer_words--)
 		*ptr++ = fill_pattern;
 
 	uint64_t todo = count;

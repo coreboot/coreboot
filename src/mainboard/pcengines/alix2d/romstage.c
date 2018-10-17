@@ -42,7 +42,7 @@
  * 4banks (2)
  * SSTL_2 (2)
  * 4th GEN die (C)
- * Normal Power Consumption (<blank> )
+ * Normal Power Consumption (<blank>)
  * TSOP (T)
  * Single Die (<blank>)
  * Lead Free (P)

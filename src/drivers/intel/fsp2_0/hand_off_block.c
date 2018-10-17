@@ -139,7 +139,7 @@ struct hob_resource *find_resource_hob_by_guid(const struct hob_header *hob,
 {
 	const struct hob_resource *res;
 
-	for ( ; hob->type != HOB_TYPE_END_OF_HOB_LIST;
+	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST;
 		hob = fsp_next_hob(hob)) {
 
 		if (hob->type != HOB_TYPE_RESOURCE_DESCRIPTOR)
@@ -202,7 +202,7 @@ const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size)
 	if (!hob)
 		return NULL;
 
-	for ( ; hob->type != HOB_TYPE_END_OF_HOB_LIST;
+	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST;
 		hob = fsp_next_hob(hob)) {
 
 		if (hob->type != HOB_TYPE_GUID_EXTENSION)
@@ -281,7 +281,7 @@ void fsp_display_fvi_version_hob(void)
 	if (!hob)
 		return;
 
-	for ( ; hob->type != HOB_TYPE_END_OF_HOB_LIST;
+	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST;
 			hob = fsp_next_hob(hob)) {
 		if (hob->type != HOB_TYPE_GUID_EXTENSION)
 			continue;

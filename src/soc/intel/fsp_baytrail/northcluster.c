@@ -158,7 +158,7 @@ static void mc_add_dram_resources(struct device *dev)
 			(bmbound - fsp_mem_base) >> 10);
 
 	if (highmem_size) {
-		ram_resource(dev, index++, 0x100000000 >> 10, highmem_size >> 10 );
+		ram_resource(dev, index++, 0x100000000 >> 10, highmem_size >> 10);
 	}
 	printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
 			highmem_size >> 20);

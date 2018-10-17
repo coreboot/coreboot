@@ -15,17 +15,17 @@
 
 uint32 REGRD (uint32 address) {
 
-  volatile unsigned long data;
+	volatile unsigned long data;
 
-  data = (* (volatile uint32 *) ( ((uint32)GLOBAL_REG_RBUS_START) | (address)));
-  //printf("REGRD %08X=%08X\n", address, data);
-  return data;
+	data = (* (volatile uint32 *) (((uint32)GLOBAL_REG_RBUS_START) | (address)));
+	//printf("REGRD %08X=%08X\n", address, data);
+	return data;
 }
 
 uint32 REGWR (uint32 address, uint32 data) {
 
-  ((* (volatile uint32 *) ( ((uint32)GLOBAL_REG_RBUS_START) | (address))) = data);
-  //printf("REGWR %08X=%08X\n", address, data);
-//  return SOC_E_NONE;
-   return 0;
+	((* (volatile uint32 *) (((uint32)GLOBAL_REG_RBUS_START) | (address))) = data);
+	//printf("REGWR %08X=%08X\n", address, data);
+	//  return SOC_E_NONE;
+	return 0;
 }

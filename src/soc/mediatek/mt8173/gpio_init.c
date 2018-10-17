@@ -58,7 +58,7 @@ static void gpio_set_duty(enum external_power ext_power)
 	}
 
 	/* other R/TDSEL */
-	/* msdc2_ctrl5 , bit[3:0] = b`1010 */
+	/* msdc2_ctrl5, bit[3:0] = b`1010 */
 	write16(&mtk_gpio->msdc2_ctrl5.set, 0xA);
 	write16(&mtk_gpio->msdc2_ctrl5.rst, 0x5);
 }

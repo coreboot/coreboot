@@ -2799,7 +2799,7 @@ static void XGI_SetCRT2Offset(unsigned short ModeNo,
 
 static void XGI_SetCRT2FIFO(struct vb_device_info *pVBInfo)
 {
-	/* threshold high ,disable auto threshold */
+	/* threshold high, disable auto threshold */
 	xgifb_reg_set(pVBInfo->Part1Port, 0x01, 0x3B);
 	/* threshold low default 04h */
 	xgifb_reg_and_or(pVBInfo->Part1Port, 0x02, ~(0x3F), 0x04);

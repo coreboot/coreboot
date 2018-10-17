@@ -314,7 +314,7 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *pFspInitParams,
 
 	if (prev_sleep_state == ACPI_S3) {
 		/* S3 resume */
-		if ( pFspInitParams->NvsBufferPtr == NULL) {
+		if (pFspInitParams->NvsBufferPtr == NULL) {
 			/* If waking from S3 and no cache then. */
 			printk(BIOS_WARNING, "No MRC cache found in S3 resume path.\n");
 			post_code(POST_RESUME_FAILURE);
@@ -322,7 +322,7 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *pFspInitParams,
 			outl(inl(ACPI_BASE_ADDRESS + PM1_CNT) &
 				~(SLP_TYP), ACPI_BASE_ADDRESS + PM1_CNT);
 			/* Reboot */
-			printk(BIOS_WARNING,"Rebooting..\n" );
+			printk(BIOS_WARNING, "Rebooting..\n" );
 			system_reset();
 			/* Should not reach here.. */
 			die("Reboot System\n");

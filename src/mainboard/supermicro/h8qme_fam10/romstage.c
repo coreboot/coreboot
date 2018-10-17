@@ -89,17 +89,17 @@ static void sio_setup(void)
 //	smbusx_write_byte(1, (0x58 >> 1), 0, 0x80); /* select bank0 */
 	smbusx_write_byte(1, (0x58 >> 1), 0xb1, 0xff); /* set FAN ctrl to DC mode */
 
-	byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
+	byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE+1, 0), 0x7b);
 	byte |= 0x20;
-	pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
+	pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1, 0), 0x7b, byte);
 
-	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
+	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1, 0), 0xa0);
 	dword |= (1 << 0);
-	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
+	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1, 0), 0xa0, dword);
 
-	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4);
+	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1, 0), 0xa4);
 	dword |= (1 << 16);
-	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4, dword);
+	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1, 0), 0xa4, dword);
 }
 
 static const u8 spd_addr[] = {
@@ -113,7 +113,7 @@ static const u8 spd_addr[] = {
 	/* third node */
 	RC02, DIMM0, DIMM2, 0, 0, DIMM1, DIMM3, 0, 0,
 	/* fourth node */
-	RC03, DIMM4, DIMM6,0 , 0, DIMM5, DIMM7, 0, 0,
+	RC03, DIMM4, DIMM6, 0, 0, DIMM5, DIMM7, 0, 0,
 #endif
 };
 

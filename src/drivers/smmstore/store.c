@@ -29,7 +29,7 @@
  *    uint8_t value[value_sz]
  *    uint8_t active
  *    align to 4 bytes
- *   )*
+ *  )*
  *   uint32le_t endmarker = 0xffffffff
  *
  * active needs to be set to 0x00 for the entry to be valid. This satisfies

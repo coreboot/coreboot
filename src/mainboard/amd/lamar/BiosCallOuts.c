@@ -159,7 +159,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 
 		FchParams->Imc.ImcEnable = TRUE;
 		FchParams->Hwm.HwmControl = 1;	/* 1 IMC, 0 HWM */
-		FchParams->Imc.ImcEnableOverWrite = 1; /* 2 disable IMC , 1 enable IMC, 0 following hw strap setting */
+		FchParams->Imc.ImcEnableOverWrite = 1; /* 2 disable IMC, 1 enable IMC, 0 following hw strap setting */
 
 		LibAmdMemFill(&(FchParams->Imc.EcStruct), 0, sizeof(FCH_EC), FchParams->StdHeader);
 

@@ -47,7 +47,7 @@
 struct bcm_phy_instance {
 	struct phy *generic_phy;
 	int port;
-	int host_mode; /* 1 - Host , 0 - device */
+	int host_mode; /* 1 - Host, 0 - device */
 	int power; /* 1 -powered_on 0 -powered off */
 	struct regulator *vbus_supply;
 };

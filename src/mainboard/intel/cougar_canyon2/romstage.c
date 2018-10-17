@@ -261,7 +261,7 @@ void romstage_main_continue(EFI_STATUS status, VOID *HobListPtr) {
 	/* For reference print FSP version */
 	u32 version = MCHBAR32(0x5034);
 	printk(BIOS_DEBUG, "FSP Version %d.%d.%d Build %d\n",
-		version >> 24 , (version >> 16) & 0xff,
+		version >> 24, (version >> 16) & 0xff,
 		(version >> 8) & 0xff, version & 0xff);
 	printk(BIOS_DEBUG, "FSP Status: 0x%0x\n", (u32)status);
 

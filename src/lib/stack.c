@@ -1,5 +1,5 @@
 /*
-This software and ancillary information (herein called SOFTWARE )
+This software and ancillary information (herein called SOFTWARE)
 called LinuxBIOS          is made available under the terms described
 here.  The SOFTWARE has been approved for release with associated
 LA-CC Number 00-34   .  Unless otherwise indicated, this SOFTWARE has

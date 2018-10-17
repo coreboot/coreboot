@@ -25,9 +25,9 @@ uintptr_t find_gpio_base(void)
 	uintptr_t base_addr = 0;
 
 	/* Find the ACPImmioAddr base address */
-	for ( pm_index = 0x27; pm_index > 0x23; pm_index-- ) {
-		outb( pm_index, PM_INDEX );
-		pm_data = inb( PM_DATA );
+	for (pm_index = 0x27; pm_index > 0x23; pm_index--) {
+		outb(pm_index, PM_INDEX);
+		pm_data = inb(PM_DATA);
 		base_addr <<= 8;
 		base_addr |= (u32)pm_data;
 	}

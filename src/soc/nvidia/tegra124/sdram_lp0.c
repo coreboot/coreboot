@@ -44,9 +44,9 @@ void sdram_lp0_save_params(const struct sdram_params *sdram)
 
 #define pack(src, src_bits, dst, dst_bits) { \
 	_Static_assert((1 ? src_bits) >= (0 ? src_bits) && (1 ? dst_bits) >= \
-		(0 ? dst_bits), "byte range flipped (must be MSB:LSB)" ); \
+		(0 ? dst_bits), "byte range flipped (must be MSB:LSB)"); \
 	_Static_assert((1 ? src_bits) - (0 ? src_bits) == (1 ? dst_bits) - \
-		(0 ? dst_bits), "src and dst byte range lengths differ" ); \
+		(0 ? dst_bits), "src and dst byte range lengths differ"); \
 	u32 mask = 0xffffffff >> (31 - ((1 ? src_bits) - (0 ? src_bits))); \
 	dst &= ~(mask << (0 ? dst_bits)); \
 	dst |= ((src >> (0 ? src_bits)) & mask) << (0 ? dst_bits); \

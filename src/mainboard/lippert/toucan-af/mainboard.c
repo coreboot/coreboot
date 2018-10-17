@@ -33,16 +33,16 @@ static void init(struct device *dev)
 
 	/* Init Hudson GPIOs. */
 	printk(BIOS_DEBUG, "Init FCH GPIOs @ 0x%08x\n", ACPI_MMIO_BASE+GPIO_BASE);
-	FCH_IOMUX( 50) = 2;    // GPIO50: FCH_ARST#_GATE resets stuck PCIe devices
-	FCH_GPIO ( 50) = 0xC0; // = output set to 1 as it's never needed
+	FCH_IOMUX(50) = 2;    // GPIO50: FCH_ARST#_GATE resets stuck PCIe devices
+	FCH_GPIO (50) = 0xC0; // = output set to 1 as it's never needed
 	FCH_IOMUX(197) = 2;    // GPIO197: BIOS_DEFAULTS#
 	FCH_GPIO (197) = 0x28; // = input, disable int. pull-up
-	FCH_IOMUX( 56) = 1;    // GPIO58-56: REV_ID2-0
-	FCH_GPIO ( 56) = 0x28; // = inputs, disable int. pull-ups
-	FCH_IOMUX( 57) = 1;
-	FCH_GPIO ( 57) = 0x28;
-	FCH_IOMUX( 58) = 1;
-	FCH_GPIO ( 58) = 0x28;
+	FCH_IOMUX(56) = 1;    // GPIO58-56: REV_ID2-0
+	FCH_GPIO (56) = 0x28; // = inputs, disable int. pull-ups
+	FCH_IOMUX(57) = 1;
+	FCH_GPIO (57) = 0x28;
+	FCH_IOMUX(58) = 1;
+	FCH_GPIO (58) = 0x28;
 	FCH_IOMUX(187) = 2;    // GPIO187,188,166,GPO160: GPO0-3 on COM Express connector
 	FCH_GPIO (187) = 0x08; // = outputs, disable PUs, default to 0
 	FCH_IOMUX(188) = 2;

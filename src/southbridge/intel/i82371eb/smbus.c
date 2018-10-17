@@ -68,7 +68,7 @@ static void pwrmgt_enable(struct device *dev)
 	 * power-on default is 0x7fffbfffh */
 	if (gpo) {
 		/* only 8bit access allowed */
-		outb( gpo        & 0xff, DEFAULT_PMBASE + GPO0);
+		outb(gpo        & 0xff, DEFAULT_PMBASE + GPO0);
 		outb((gpo >>  8) & 0xff, DEFAULT_PMBASE + GPO1);
 		outb((gpo >> 16) & 0xff, DEFAULT_PMBASE + GPO2);
 		outb((gpo >> 24) & 0xff, DEFAULT_PMBASE + GPO3);

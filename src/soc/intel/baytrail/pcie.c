@@ -229,7 +229,7 @@ static void byt_pcie_enable(struct device *dev)
 static void byt_pciexp_scan_bridge(struct device *dev)
 {
 	static const struct reg_script wait_for_link_active[] = {
-		REG_PCI_POLL32(LCTL, (1 << 29) , (1 << 29), 50000),
+		REG_PCI_POLL32(LCTL, (1 << 29), (1 << 29), 50000),
 		REG_SCRIPT_END,
 	};
 

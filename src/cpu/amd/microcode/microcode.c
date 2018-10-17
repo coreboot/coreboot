@@ -129,7 +129,7 @@ static void apply_microcode_patch(const struct microcode *m)
 	msr = rdmsr(0x8b);
 	new_patch_id = msr.lo;
 
-	UCODE_DEBUG("updated to patch id = 0x%08x %s\n", new_patch_id ,
+	UCODE_DEBUG("updated to patch id = 0x%08x %s\n", new_patch_id,
 		    (new_patch_id == m->patch_id) ? "success" : "fail");
 }
 

@@ -55,7 +55,7 @@ void flashconsole_init(void)
 	 * the sector is already erased, so we would need to read
 	 * anyways to check if it's all 0xff).
 	 */
-	for (i = 0; i < len && offset < size; ) {
+	for (i = 0; i < len && offset < size;) {
 		// Fill the buffer on first iteration
 		if (i == 0) {
 			len = min(READ_BUFFER_SIZE, size - offset);

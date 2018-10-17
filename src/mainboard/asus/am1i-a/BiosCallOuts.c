@@ -125,7 +125,7 @@ void board_FCH_InitEnv(struct sysinfo *cb_NA, FCH_DATA_BLOCK *FchParams_env)
 	/* Read SATA controller mode from CMOS */
 	enum cb_err ret;
 	ret = get_option(&FchParams_env->Sata.SataClass, "sata_mode");
-	if ( ret != CB_SUCCESS) {
+	if (ret != CB_SUCCESS) {
 		FchParams_env->Sata.SataClass = 0;
 		printk(BIOS_DEBUG, "ERROR: cannot read CMOS setting, falling back to default. Error code: %x\n", (int)ret);
 	}

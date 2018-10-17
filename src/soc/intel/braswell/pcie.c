@@ -41,7 +41,7 @@ static inline int is_first_port(struct device *dev)
 
 static void pcie_init(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 }
 
@@ -56,7 +56,7 @@ static void check_port_enabled(struct device *dev)
 {
 	int rp_config = (strpfusecfg & LANECFG_MASK) >> LANECFG_SHIFT;
 
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 
 	switch (root_port_offset(dev)) {
@@ -99,7 +99,7 @@ static void check_device_present(struct device *dev)
 
 	static uint32_t rootports_in_use = MAX_ROOT_PORTS_BSW;
 
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 	/* Set slot implemented. */
 	pci_write_config32(dev, XCAP, pci_read_config32(dev, XCAP) | SI);
@@ -137,7 +137,7 @@ static void check_device_present(struct device *dev)
 
 static void pcie_enable(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 	if (is_first_port(dev)) {
 		struct soc_intel_braswell_config *config = dev->chip_info;
@@ -162,7 +162,7 @@ static void pcie_enable(struct device *dev)
 static void pcie_root_set_subsystem(struct device *dev, unsigned int vid,
 	unsigned int did)
 {
-	printk(BIOS_SPEW, "%s/%s ( %s, 0x%04x, 0x%04x )\n",
+	printk(BIOS_SPEW, "%s/%s (%s, 0x%04x, 0x%04x)\n",
 			__FILE__, __func__, dev_name(dev), vid, did);
 	uint32_t didvid = ((did & 0xffff) << 16) | (vid & 0xffff);
 

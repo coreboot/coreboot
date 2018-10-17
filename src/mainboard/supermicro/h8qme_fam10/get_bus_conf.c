@@ -105,12 +105,12 @@ void get_bus_conf(void)
 		}
 
 		for(i = 2; i < 8; i++) {
-			dev = dev_find_slot(m->bus_mcp55[0], PCI_DEVFN(sysconf.sbdn + 0x0a + i - 2 , 0));
+			dev = dev_find_slot(m->bus_mcp55[0], PCI_DEVFN(sysconf.sbdn + 0x0a + i - 2, 0));
 			if (dev) {
 				m->bus_mcp55[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 			}
 			else {
-				printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_mcp55[0], sysconf.sbdn + 0x0a + i - 2 );
+				printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_mcp55[0], sysconf.sbdn + 0x0a + i - 2);
 			}
 		}
 

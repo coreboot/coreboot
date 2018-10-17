@@ -116,7 +116,7 @@ void fsp_print_memory_resource_hobs(void)
 {
 	const struct hob_header *hob = fsp_get_hob_list();
 
-	for ( ; hob->type != HOB_TYPE_END_OF_HOB_LIST;
+	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST;
 		hob = fsp_next_hob(hob)) {
 		if (hob->type == HOB_TYPE_RESOURCE_DESCRIPTOR)
 			fsp_print_resource_descriptor(hob);

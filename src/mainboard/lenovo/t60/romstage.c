@@ -183,7 +183,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	/* We want early GPIO setup, to be able to detect legacy I/O module */
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), GPIOBASE, DEFAULT_GPIOBASE | 1);
 	/* Enable GPIOs */
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x4c /* GC */ , 0x10);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x4c /* GC */, 0x10);
 	setup_pch_gpios(&mainboard_gpio_map);
 
 	dock_err = dlpc_init();

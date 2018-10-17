@@ -24,7 +24,7 @@
 
 static void pci_domain_set_resources(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 	assign_resources(dev->link_list);
 }
@@ -49,7 +49,7 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-	printk(BIOS_SPEW, "----------\n%s/%s ( %s ), type: %d\n",
+	printk(BIOS_SPEW, "----------\n%s/%s (%s), type: %d\n",
 			__FILE__, __func__,
 			dev_name(dev), dev->path.type);
 	printk(BIOS_SPEW, "vendor: 0x%04x. device: 0x%04x\n",
@@ -384,7 +384,7 @@ struct chip_operations soc_intel_braswell_ops = {
 static void pci_set_subsystem(struct device *dev, unsigned int vendor,
 	unsigned int device)
 {
-	printk(BIOS_SPEW, "%s/%s ( %s, 0x%04x, 0x%04x )\n",
+	printk(BIOS_SPEW, "%s/%s (%s, 0x%04x, 0x%04x)\n",
 			__FILE__, __func__, dev_name(dev), vendor, device);
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

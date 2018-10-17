@@ -99,7 +99,7 @@ static void bochs_init_linear_fb(struct device *dev)
 		return;
 
 	printk(BIOS_DEBUG, "QEMU VGA: bochs dispi interface found, "
-	       "%d MiB video memory\n", mem / ( 1024 * 1024));
+	       "%d MiB video memory\n", mem / (1024 * 1024));
 	printk(BIOS_DEBUG, "QEMU VGA: framebuffer @ %x (pci bar %d)\n",
 	       addr, bar);
 

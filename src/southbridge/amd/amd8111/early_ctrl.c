@@ -68,7 +68,7 @@ void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 
 	pci_write_config8(dev, 0x74, 4);
 
-	/* set VFSMAF ( VID/FID System Management Action Field) to 2 */
+	/* set VFSMAF (VID/FID System Management Action Field) to 2 */
 	pci_write_config32(dev, 0x70, 2<<12);
 
 }

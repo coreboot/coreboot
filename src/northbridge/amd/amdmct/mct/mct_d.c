@@ -1737,7 +1737,7 @@ static void SPDSetBanks_D(struct MCTStatStruc *pMCTstat,
 	 * and PCI 0:24N:2x60,64,68,6C config registers (CS Mask 0-3).
 	 */
 
-	u8 ChipSel, Rows, Cols, Ranks ,Banks, DevWidth;
+	u8 ChipSel, Rows, Cols, Ranks, Banks, DevWidth;
 	u32 BankAddrReg, csMask;
 
 	u32 val;

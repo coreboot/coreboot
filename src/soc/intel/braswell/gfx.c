@@ -49,7 +49,7 @@ static inline void gfx_run_script(struct device *dev,
 
 static void gfx_pre_vbios_init(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 	printk(BIOS_INFO, "GFX: Pre VBIOS Init\n");
 	gfx_run_script(dev, gpu_pre_vbios_script);
@@ -57,7 +57,7 @@ static void gfx_pre_vbios_init(struct device *dev)
 
 static void gfx_post_vbios_init(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 	printk(BIOS_INFO, "GFX: Post VBIOS Init\n");
 	gfx_run_script(dev, gfx_post_vbios_script);
@@ -65,7 +65,7 @@ static void gfx_post_vbios_init(struct device *dev)
 
 static void gfx_init(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 
 	/* Pre VBIOS Init */

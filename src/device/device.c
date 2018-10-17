@@ -123,7 +123,7 @@ static struct device *__alloc_dev(struct bus *parent, struct device_path *path)
 	struct device *dev, *child;
 
 	/* Find the last child of our parent. */
-	for (child = parent->children; child && child->sibling; /* */ )
+	for (child = parent->children; child && child->sibling; /* */)
 		child = child->sibling;
 
 	dev = malloc(sizeof(*dev));

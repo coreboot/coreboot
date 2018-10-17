@@ -86,7 +86,7 @@ static void mcp55_early_set_port(unsigned mcp55_num, unsigned *busn,
 	for (j = 0; j < mcp55_num; j++) {
 		setup_resource_map_offset(ctrl_devport_conf,
 			ARRAY_SIZE(ctrl_devport_conf),
-			PCI_DEV(busn[j], devn[j], 0) , io_base[j]);
+			PCI_DEV(busn[j], devn[j], 0), io_base[j]);
 	}
 }
 
@@ -103,7 +103,7 @@ static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn,
 	for (j = 0; j < mcp55_num; j++) {
 		setup_resource_map_offset(ctrl_devport_conf_clear,
 			ARRAY_SIZE(ctrl_devport_conf_clear),
-			PCI_DEV(busn[j], devn[j], 0) , io_base[j]);
+			PCI_DEV(busn[j], devn[j], 0), io_base[j]);
 	}
 }
 

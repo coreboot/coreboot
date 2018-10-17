@@ -869,9 +869,8 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 	case PCI_DEVICE_ID_INTEL_C226:
 	case PCI_DEVICE_ID_INTEL_H81:
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
-		gpio_registers = lynxpoint_lp_gpio_registers;
-		/* Shares register locations but has less of them */
-		size = 29;
+		gpio_registers = pch_gpio_registers;
+		size = ARRAY_SIZE(pch_gpio_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_3400:
 	case PCI_DEVICE_ID_INTEL_3420:

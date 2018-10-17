@@ -395,7 +395,7 @@ void sb_clk_output_48Mhz(void)
 {
 	u32 ctrl;
 	u32 *misc_clk_cntl_1_ptr = (u32 *)(uintptr_t)(MISC_MMIO_BASE
-				+ MISC_MISC_CLK_CNTL_1);
+				+ MISC_CLK_CNTL1);
 
 	/*
 	 * Enable the X14M_25M_48M_OSC pin and leaving it at it's default so

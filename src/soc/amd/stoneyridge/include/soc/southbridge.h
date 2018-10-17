@@ -132,6 +132,7 @@
 #define   CG1PLL_LF_MODE_MASK		(0x1ff << CG1PLL_LF_MODE_SHIFT)
 #define MISC_CLK_CNTL1			0x40
 #define   CG1PLL_FBDIV_TEST		BIT(26)
+#define   OSCOUT1_CLK_OUTPUT_ENB	BIT(2)  /* 0 = Enabled, 1 = Disabled */
 
 /* XHCI_PM Registers:  0xfed81c00 */
 #define XHCI_PM_INDIRECT_INDEX		0x48
@@ -369,9 +370,6 @@
 
 #define SPI100_HOST_PREF_CONFIG		0x2c
 #define   SPI_RD4DW_EN_HOST		BIT(15)
-
-#define MISC_MISC_CLK_CNTL_1		0x40
-#define   OSCOUT1_CLK_OUTPUT_ENB	BIT(2)  /* 0 = Enabled, 1 = Disabled */
 
 /* Platform Security Processor D8F0 */
 #define PSP_MAILBOX_BAR			PCI_BASE_ADDRESS_4 /* BKDG: "BAR3" */

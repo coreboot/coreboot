@@ -145,12 +145,6 @@
 #define PM_DEVID		0x15b4
 #define PM_DEVFN		PCI_DEVFN(PM_DEV, PM_FUNC)
 #define SOC_PM_DEV		_SOC_DEV(PM_DEV, PM_FUNC)
-#if !defined(__SIMPLE_DEVICE__)
- #include <device/device.h>
- #define DEV_D18F4 dev_find_slot(0, PM_DEVFN)
-#else
- #define DEV_D18F4 PCI_DEV(0, PM_DEV, PM_FUNC)
-#endif
 
 /* Northbridge Configuration */
 #define NB_DEV			0x18

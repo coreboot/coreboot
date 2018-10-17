@@ -76,9 +76,6 @@ DefinitionBlock (
 		#include <ec/google/chromeec/acpi/ec.asl>
 	}
 
-	/* Describe SMBUS for the Southbridge */
-	#include <smbus.asl>
-
 	/* Define the General Purpose Events for the platform */
 	#include <variant/acpi/gpe.asl>
 }

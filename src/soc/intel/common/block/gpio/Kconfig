@@ -42,3 +42,10 @@ config SOC_INTEL_COMMON_BLOCK_GPIO_MULTI_ACPI_DEVICES
 	depends on SOC_INTEL_COMMON_BLOCK_GPIO
 	bool
 	default n
+
+# Indicate if SoC supports dual-routing of GPIOs (to different paths like SCI,
+# NMI, SMI, IOAPIC). This is required to support IRQ and wake on the same pad.
+config SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT
+	depends on SOC_INTEL_COMMON_BLOCK_GPIO
+	bool
+	default n

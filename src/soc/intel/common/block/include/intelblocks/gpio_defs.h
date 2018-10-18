@@ -130,6 +130,14 @@
 				PAD_CFG0_TRIG_##trig | \
 				PAD_CFG0_RX_POL_##inv)
 
+#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT)
+#define PAD_IRQ_CFG_DUAL_ROUTE(route1, route2, trig, inv)  \
+				(PAD_CFG0_ROUTE_##route1 | \
+				PAD_CFG0_ROUTE_##route2 | \
+				PAD_CFG0_TRIG_##trig | \
+				PAD_CFG0_RX_POL_##inv)
+#endif /* CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT */
+
 #define _PAD_CFG_STRUCT(__pad, __config0, __config1)	\
 	{					\
 		.pad = __pad,			\
@@ -333,5 +341,17 @@
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
 		PAD_IRQ_CFG(NMI, trig, inv), PAD_PULL(pull) | \
 		PAD_IOSSTATE(TxDRxE))
+
+#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT)
+#define PAD_CFG_GPI_DUAL_ROUTE(pad, pull, rst, trig, inv, route1, route2) \
+	_PAD_CFG_STRUCT(pad,						\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
+		PAD_IRQ_CFG_DUAL_ROUTE(route1, route2,  trig, inv), \
+		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE))
+
+#define PAD_CFG_GPI_IRQ_WAKE(pad, pull, rst, trig, inv)	\
+	PAD_CFG_GPI_DUAL_ROUTE(pad, pull, rst, trig, inv, IOAPIC, SCI)
+
+#endif /* CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT */
 
 #endif /* _SOC_BLOCK_GPIO_DEFS_H_ */

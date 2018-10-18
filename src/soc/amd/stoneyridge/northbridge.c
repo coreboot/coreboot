@@ -22,7 +22,6 @@
 #include <chip.h>
 #include <console/console.h>
 #include <cpu/amd/mtrr.h>
-#include <cpu/amd/amdfam15.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/msr.h>

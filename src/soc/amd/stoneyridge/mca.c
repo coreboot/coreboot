@@ -15,7 +15,6 @@
 
 #include <cpu/x86/msr.h>
 #include <arch/acpi.h>
-#include <cpu/amd/amdfam15.h>
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
 #include <console/console.h>

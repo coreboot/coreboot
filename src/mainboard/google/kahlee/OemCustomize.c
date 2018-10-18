@@ -15,6 +15,7 @@
 
 #include <chip.h>
 #include <amdblocks/agesawrapper.h>
+#include <boardid.h>
 
 #define DIMMS_PER_CHANNEL 1
 #if DIMMS_PER_CHANNEL > MAX_DIMMS_PER_CH
@@ -34,12 +35,32 @@ static const PSO_ENTRY DDR4PlatformMemoryConfiguration[] = {
 				0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),
 	PSO_END
 };
+/* TODO: Remove when no longer needed */
+static const PSO_ENTRY DDR4LiaraMemoryConfiguration[] = {
+	DRAM_TECHNOLOGY(ANY_SOCKET, DDR4_TECHNOLOGY),
+	NUMBER_OF_DIMMS_SUPPORTED(ANY_SOCKET, ANY_CHANNEL, DIMMS_PER_CHANNEL),
+	NUMBER_OF_CHANNELS_SUPPORTED(ANY_SOCKET, MAX_DRAM_CH),
+	MOTHER_BOARD_LAYERS(LAYERS_6),
+	MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL,
+				0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),
+	CKE_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff),
+	ODT_TRI_MAP(ANY_SOCKET, ANY_CHANNEL, 0xff, 0xff, 0xff, 0xff),
+	CS_TRI_MAP(ANY_SOCKET, ANY_CHANNEL,
+				0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),
+	TBLDRV_CONFIG_TO_OVERRIDE(DIMMS_PER_CHANNEL, ANY_SPEED, VOLT_ANY_,
+	ANY_),
+	TBLDRV_CONFIG_ENTRY_SLOWACCMODE(1),
+	PSO_END
+};
 
 void OemPostParams(AMD_POST_PARAMS *PostParams)
 {
-	PostParams->MemConfig.PlatformMemoryConfiguration =
-				(PSO_ENTRY *)DDR4PlatformMemoryConfiguration;
-
+	if ((IS_ENABLED(CONFIG_BOARD_GOOGLE_LIARA)) && (board_id() <= 4))
+		PostParams->MemConfig.PlatformMemoryConfiguration =
+			(PSO_ENTRY *)DDR4LiaraMemoryConfiguration;
+	else
+		PostParams->MemConfig.PlatformMemoryConfiguration =
+			(PSO_ENTRY *)DDR4PlatformMemoryConfiguration;
 	/*
 	 * Bank interleaving is enabled by default in AGESA. However, from AMD's
 	 * explanation, bank interleaving is really chip select interleave,

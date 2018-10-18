@@ -191,6 +191,15 @@ typedef struct acpi_tcpa {
 	u64 lasa;
 } __packed acpi_tcpa_t;
 
+typedef struct acpi_tpm2 {
+	struct acpi_table_header header;
+	u16 platform_class;
+	u8  reserved[2];
+	u64 control_area;
+	u32 start_method;
+	u8  msp[12];
+} __packed acpi_tpm2_t;
+
 typedef struct acpi_mcfg_mmconfig {
 	u32 base_address;
 	u32 base_reserved;

@@ -101,33 +101,44 @@ struct acpi_irq {
 	enum acpi_irq_wake wake;
 };
 
-#define ACPI_IRQ_EDGE_LOW(x) { \
-	.pin = (x), \
-	.mode = ACPI_IRQ_EDGE_TRIGGERED, \
-	.polarity = ACPI_IRQ_ACTIVE_LOW, \
-	.shared = ACPI_IRQ_EXCLUSIVE, \
-	.wake = ACPI_IRQ_NO_WAKE }
+#define ACPI_IRQ_CFG(_pin, _mode, _pol, _shared, _wake) { \
+	.pin = (_pin),						\
+	.mode = (_mode),			\
+	.polarity = (_pol),			\
+	.shared = (_shared),	\
+	.wake = (_wake) }
 
-#define ACPI_IRQ_EDGE_HIGH(x) { \
-	.pin = (x), \
-	.mode = ACPI_IRQ_EDGE_TRIGGERED, \
-	.polarity = ACPI_IRQ_ACTIVE_HIGH, \
-	.shared = ACPI_IRQ_EXCLUSIVE, \
-	.wake = ACPI_IRQ_NO_WAKE }
+#define ACPI_IRQ_EDGE_LOW(x)	\
+	ACPI_IRQ_CFG((x), ACPI_IRQ_EDGE_TRIGGERED, ACPI_IRQ_ACTIVE_LOW, \
+		     ACPI_IRQ_EXCLUSIVE, ACPI_IRQ_NO_WAKE)
 
-#define ACPI_IRQ_LEVEL_LOW(x) { \
-	.pin = (x), \
-	.mode = ACPI_IRQ_LEVEL_TRIGGERED, \
-	.polarity = ACPI_IRQ_ACTIVE_LOW, \
-	.shared = ACPI_IRQ_SHARED, \
-	.wake = ACPI_IRQ_NO_WAKE }
+#define ACPI_IRQ_EDGE_HIGH(x)	\
+	ACPI_IRQ_CFG((x), ACPI_IRQ_EDGE_TRIGGERED, ACPI_IRQ_ACTIVE_HIGH, \
+		     ACPI_IRQ_EXCLUSIVE, ACPI_IRQ_NO_WAKE)
 
-#define ACPI_IRQ_LEVEL_HIGH(x) { \
-	.pin = (x), \
-	.mode = ACPI_IRQ_LEVEL_TRIGGERED, \
-	.polarity = ACPI_IRQ_ACTIVE_HIGH, \
-	.shared = ACPI_IRQ_SHARED, \
-	.wake = ACPI_IRQ_NO_WAKE }
+#define ACPI_IRQ_LEVEL_LOW(x)	\
+	ACPI_IRQ_CFG((x), ACPI_IRQ_LEVEL_TRIGGERED, ACPI_IRQ_ACTIVE_LOW, \
+		     ACPI_IRQ_SHARED, ACPI_IRQ_NO_WAKE)
+
+#define ACPI_IRQ_LEVEL_HIGH(x)	\
+	ACPI_IRQ_CFG((x), ACPI_IRQ_LEVEL_TRIGGERED, ACPI_IRQ_ACTIVE_HIGH, \
+		     ACPI_IRQ_SHARED, ACPI_IRQ_NO_WAKE)
+
+#define ACPI_IRQ_WAKE_EDGE_LOW(x)	\
+	ACPI_IRQ_CFG((x), ACPI_IRQ_EDGE_TRIGGERED, ACPI_IRQ_ACTIVE_LOW, \
+		     ACPI_IRQ_EXCLUSIVE, ACPI_IRQ_WAKE)
+
+#define ACPI_IRQ_WAKE_EDGE_HIGH(x)	\
+	ACPI_IRQ_CFG((x), ACPI_IRQ_EDGE_TRIGGERED, ACPI_IRQ_ACTIVE_HIGH, \
+		     ACPI_IRQ_EXCLUSIVE, ACPI_IRQ_WAKE)
+
+#define ACPI_IRQ_WAKE_LEVEL_LOW(x)	\
+	ACPI_IRQ_CFG((x), ACPI_IRQ_LEVEL_TRIGGERED, ACPI_IRQ_ACTIVE_LOW, \
+		     ACPI_IRQ_SHARED, ACPI_IRQ_WAKE)
+
+#define ACPI_IRQ_WAKE_LEVEL_HIGH(x)					\
+	ACPI_IRQ_CFG((x), ACPI_IRQ_LEVEL_TRIGGERED, ACPI_IRQ_ACTIVE_HIGH, \
+		     ACPI_IRQ_SHARED, ACPI_IRQ_WAKE)
 
 /* Write extended Interrupt() descriptor to SSDT AML output */
 void acpi_device_write_interrupt(const struct acpi_irq *irq);

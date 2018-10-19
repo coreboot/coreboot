@@ -13,15 +13,14 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __MAINBOARD_GOOGLE_KUKUI_GPIO_H__
-#define __MAINBOARD_GOOGLE_KUKUI_GPIO_H__
-
+#include <security/vboot/vboot_common.h>
 #include <soc/gpio.h>
+#include <soc/spi.h>
 
-#define EC_IRQ		GPIO(PERIPHERAL_EN1)
-#define EC_IN_RW	GPIO(PERIPHERAL_EN14)
-#define CR50_IRQ	GPIO(PERIPHERAL_EN3)
+#include "gpio.h"
 
-void setup_chromeos_gpios(void);
-
-#endif
+void verstage_mainboard_init(void)
+{
+	mtk_spi_init(CONFIG_DRIVER_TPM_SPI_BUS, SPI_PAD0_MASK, 1 * MHz);
+	gpio_eint_configure(CR50_IRQ, IRQ_TYPE_EDGE_RISING);
+}

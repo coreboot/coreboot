@@ -16,6 +16,7 @@
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
+#include <security/tpm/tis.h>
 
 #include "gpio.h"
 
@@ -31,6 +32,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
 		{EC_IN_RW.id, ACTIVE_HIGH, -1, "EC in RW"},
 		{EC_IRQ.id, ACTIVE_LOW, -1, "EC interrupt"},
+		{CR50_IRQ.id, ACTIVE_HIGH, -1, "TPM interrupt"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
@@ -38,4 +40,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 int get_write_protect_state(void)
 {
 	return 0;
+}
+
+int tis_plat_irq_status(void)
+{
+	return gpio_eint_poll(CR50_IRQ);
 }

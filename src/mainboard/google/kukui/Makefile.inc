@@ -5,6 +5,7 @@ bootblock-y += memlayout.ld
 decompressor-y += memlayout.ld
 
 verstage-y += chromeos.c
+verstage-y += verstage.c
 verstage-y += memlayout.ld
 
 romstage-y += boardid.c

@@ -141,7 +141,7 @@ F16KbIsCpbSupported (
 
 /*---------------------------------------------------------------------------------------*/
 /**
- * BSC entry point for for enabling Core Performance Boost.
+ * BSC entry point for enabling Core Performance Boost.
  *
  * Set up D18F4x15C[BoostSrc] and start the PDMs according to the BKDG.
  *

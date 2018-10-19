@@ -89,7 +89,7 @@ no_codec:
 }
 
 /**
- *  Wait 50usec for for the codec to indicate it is ready
+ *  Wait 50usec for the codec to indicate it is ready
  *  no response would imply that the codec is non-operative
  */
 static int wait_for_ready(void *base)
@@ -110,7 +110,7 @@ static int wait_for_ready(void *base)
 }
 
 /**
- *  Wait 50usec for for the codec to indicate that it accepted
+ *  Wait 50usec for the codec to indicate that it accepted
  *  the previous command.  No response would imply that the code
  *  is non-operative
  */

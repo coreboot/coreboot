@@ -1601,7 +1601,7 @@ static void hammerSublinkFixup(sMainData *pDat)
 		{
 			if (pDat->PortList[i].Type != PORTLIST_TYPE_CPU) /*  Must be a CPU link */
 				continue;
-			if (pDat->PortList[i].Link < 4) /*  Only look for for sublink1's */
+			if (pDat->PortList[i].Link < 4) /*  Only look for sublink1's */
 				continue;
 
 			for (j = 0; j < pDat->TotalLinks*2; j++)

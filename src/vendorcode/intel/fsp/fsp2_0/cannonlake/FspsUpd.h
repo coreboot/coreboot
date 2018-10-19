@@ -2978,8 +2978,8 @@ typedef struct {
 **/
   UINT8                       ThreeStrikeCounterDisable;
 
-/** Offset 0x0899 - Set HW P-State Interrupts Enabled for for MISC_PWR_MGMT
-  Set HW P-State Interrupts Enabled for for MISC_PWR_MGMT; <b>0: Disable</b>; 1: Enable.
+/** Offset 0x0899 - Set HW P-State Interrupts Enabled for MISC_PWR_MGMT
+  Set HW P-State Interrupts Enabled for MISC_PWR_MGMT; <b>0: Disable</b>; 1: Enable.
   $EN_DIS
 **/
   UINT8                       HwpInterruptControl;

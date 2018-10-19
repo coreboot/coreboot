@@ -85,7 +85,7 @@ STATIC CONST UINT16 ROMDATA MmioBaseLimitHiRegOffset[MMIO_REG_PAIR_NUM] = {0x180
 
 /*---------------------------------------------------------------------------------------*/
 /**
- * BSC entry point for for adding MMIO map
+ * BSC entry point for adding MMIO map
  *
  * program MMIO base/limit registers
  *

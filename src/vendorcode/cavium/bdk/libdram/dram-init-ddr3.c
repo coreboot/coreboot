@@ -3295,7 +3295,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
         mem_size_mbytes *= 2;
     }
 
-    /* Mask with 1 bits set for for each active rank, allowing 2 bits per dimm.
+    /* Mask with 1 bits set for each active rank, allowing 2 bits per dimm.
     ** This makes later calculations simpler, as a variety of CSRs use this layout.
     ** This init needs to be updated for dual configs (ie non-identical DIMMs).
     ** Bit 0 = dimm0, rank 0

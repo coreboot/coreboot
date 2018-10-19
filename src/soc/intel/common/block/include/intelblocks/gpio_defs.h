@@ -196,7 +196,7 @@
 #define PAD_CFG_GPI(pad, pull, rst) \
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE, \
-		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE))
+		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE))
 
 /* General purpose input. The following macro sets the
  * Host Software Pad Ownership to GPIO Driver mode.
@@ -204,7 +204,7 @@
 #define PAD_CFG_GPI_GPIO_DRIVER(pad, pull, rst) \
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE, \
-		PAD_PULL(pull) | PAD_CFG1_GPIO_DRIVER | PAD_IOSSTATE(TxLASTRxE))
+		PAD_PULL(pull) | PAD_CFG1_GPIO_DRIVER | PAD_IOSSTATE(TxDRxE))
 
 #define PAD_CFG_GPIO_DRIVER_HI_Z(pad, pull, rst, iosstate, iosterm) \
 	_PAD_CFG_STRUCT(pad,		\
@@ -224,7 +224,7 @@
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE |	\
 			PAD_CFG0_TRIG_##trig | PAD_CFG0_RX_POL_NONE,	\
-		PAD_PULL(pull) | PAD_CFG1_GPIO_DRIVER | PAD_IOSSTATE(TxLASTRxE))
+		PAD_PULL(pull) | PAD_CFG1_GPIO_DRIVER | PAD_IOSSTATE(TxDRxE))
 
 /* No Connect configuration for unused pad.
  * NC should be GPI with Term as PU20K, PD20K, NONE depending upon default Term
@@ -263,7 +263,7 @@
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
 		PAD_IRQ_CFG(IOAPIC, trig, inv), PAD_PULL(pull) | \
-		PAD_IOSSTATE(TxLASTRxE))
+		PAD_IOSSTATE(TxDRxE))
 #endif
 
 /* General purpose input, routed to APIC - with IOStandby Config*/
@@ -292,7 +292,7 @@
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
 		PAD_IRQ_CFG(SMI, trig, inv), PAD_PULL(pull) | \
-		PAD_IOSSTATE(TxLASTRxE))
+		PAD_IOSSTATE(TxDRxE))
 
 /* General purpose input, routed to SMI */
 #define PAD_CFG_GPI_SMI_IOS(pad, pull, rst, trig, inv, iosstate, iosterm) \
@@ -312,7 +312,7 @@
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
 		PAD_IRQ_CFG(SCI, trig, inv), PAD_PULL(pull) | \
-		PAD_IOSSTATE(TxLASTRxE))
+		PAD_IOSSTATE(TxDRxE))
 
 /* General purpose input, routed to SCI */
 #define PAD_CFG_GPI_SCI_IOS(pad, pull, rst, trig, inv, iosstate, iosterm) \
@@ -332,6 +332,6 @@
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
 		PAD_IRQ_CFG(NMI, trig, inv), PAD_PULL(pull) | \
-		PAD_IOSSTATE(TxLASTRxE))
+		PAD_IOSSTATE(TxDRxE))
 
 #endif /* _SOC_BLOCK_GPIO_DEFS_H_ */

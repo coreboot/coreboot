@@ -38,6 +38,9 @@ void h8_usb_always_on(void);
 
 void h8_mainboard_init_dock (void);
 
+int h8_get_fn_key(void);
+int h8_get_sense_ready(void);
+
 void h8_bluetooth_enable(int on);
 bool h8_bluetooth_nv_enable(void);
 bool h8_has_bdc(struct device *dev);
@@ -135,8 +138,10 @@ void h8_ssdt_generator(struct device *dev);
 #define H8_EVENT_FN_PRESS	0x39
 
 #define H8_STATUS0		0x46
+#define H8_STATUS0_FN_KEY_DOWN	0x01
 #define H8_STATUS1		0x47
 #define H8_STATUS2		0x48
+#define H8_STATUS3		0x49
 
 #define H8_EVENT_BAT0		0x4a
 #define H8_EVENT_BAT0_STATE	0x4b

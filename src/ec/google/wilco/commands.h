@@ -36,6 +36,8 @@ enum {
 	KB_ACPI = 0x3a,
 	/* Manage the EC power button passthru to the host */
 	KB_POWER_BUTTON_TO_HOST = 0x3e,
+	/* Manage the EC control of speaker mute */
+	KB_HW_MUTE_CONTROL = 0x60,
 	/* Inform the EC that the host is about to enter S3 */
 	KB_SLP_EN = 0x64,
 	/* Inform the EC about BIOS boot progress */
@@ -52,6 +54,11 @@ enum bios_progress_code {
 	BIOS_PROGRESS_VIDEO_INIT = 0x02,
 	BIOS_PROGRESS_LOGO_DISPLAYED = 0x03,
 	BIOS_PROGRESS_POST_COMPLETE = 0x04,
+};
+
+enum ec_audio_mute {
+	AUDIO_MUTE = 0,		/* Mute speakers immediately */
+	AUDIO_UNMUTE_125MS,	/* Unmute in 125ms */
 };
 
 /*

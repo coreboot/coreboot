@@ -63,6 +63,9 @@ static void wilco_ec_init(struct device *dev)
 
 	/* Direct power button to the host for processing */
 	wilco_ec_send(KB_POWER_BUTTON_TO_HOST, 1);
+
+	/* Unmute speakers */
+	wilco_ec_send(KB_HW_MUTE_CONTROL, AUDIO_UNMUTE_125MS);
 }
 
 static void wilco_ec_resource(struct device *dev, int index,

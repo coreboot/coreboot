@@ -86,48 +86,48 @@ static void read_resources(struct device *dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void set_resource(struct device *dev, struct resource *resource, u32 nodeid)
+static void set_resource(struct device *dev, struct resource *res, u32 nodeid)
 {
 	resource_t rbase, rend;
 	unsigned int reg, link_num;
 	char buf[50];
 
 	/* Make certain the resource has actually been set */
-	if (!(resource->flags & IORESOURCE_ASSIGNED))
+	if (!(res->flags & IORESOURCE_ASSIGNED))
 		return;
 
 	/* If I have already stored this resource don't worry about it */
-	if (resource->flags & IORESOURCE_STORED)
+	if (res->flags & IORESOURCE_STORED)
 		return;
 
 	/* Only handle PCI memory and IO resources */
-	if (!(resource->flags & (IORESOURCE_MEM | IORESOURCE_IO)))
+	if (!(res->flags & (IORESOURCE_MEM | IORESOURCE_IO)))
 		return;
 
 	/* Ensure I am actually looking at a resource of function 1 */
-	if ((resource->index & 0xffff) < 0x1000)
+	if ((res->index & 0xffff) < 0x1000)
 		return;
 
 	/* Get the base address */
-	rbase = resource->base;
+	rbase = res->base;
 
 	/* Get the limit (rounded up) */
-	rend  = resource_end(resource);
+	rend  = resource_end(res);
 
 	/* Get the register and link */
-	reg  = resource->index & 0xfff; /* 4k */
-	link_num = IOINDEX_LINK(resource->index);
+	reg  = res->index & 0xfff; /* 4k */
+	link_num = IOINDEX_LINK(res->index);
 
-	if (resource->flags & IORESOURCE_IO)
+	if (res->flags & IORESOURCE_IO)
 		set_io_addr_reg(dev, nodeid, link_num, reg, rbase>>8, rend>>8);
-	else if (resource->flags & IORESOURCE_MEM)
+	else if (res->flags & IORESOURCE_MEM)
 		set_mmio_addr_reg(nodeid, link_num, reg,
-				(resource->index >> 24), rbase >> 8, rend >> 8);
+				(res->index >> 24), rbase >> 8, rend >> 8);
 
-	resource->flags |= IORESOURCE_STORED;
+	res->flags |= IORESOURCE_STORED;
 	snprintf(buf, sizeof(buf), " <node %x link %x>",
 			nodeid, link_num);
-	report_resource_stored(dev, resource, buf);
+	report_resource_stored(dev, res, buf);
 }
 
 /**

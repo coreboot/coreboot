@@ -43,7 +43,7 @@ typedef struct global_nvs_t {
 	uint32_t	nhll; /* 0x21 - 0x24 - NHLT Length */
 	uint32_t	prt0; /* 0x25 - 0x28 - PERST_0 Address */
 	uint8_t		scdp; /* 0x29 - SD_CD GPIO portid */
-	uint8_t		scdo; /* 0x2A - GPIO pad offset relative to the community */
+	uint8_t		scdo; /* 0x2A - GPIO pad relative offset */
 	uint8_t		tmps; /* 0x2B - Temperature Sensor ID */
 	uint8_t		tlvl; /* 0x2C - Throttle Level Limit */
 	uint8_t		flvl; /* 0x2D - Current FAN Level */

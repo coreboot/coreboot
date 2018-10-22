@@ -98,14 +98,15 @@ void write_pci_int_table(void)
 void write_pci_cfg_irqs(void)
 {
 	struct device *dev = NULL;  /* Our current device to route IRQs */
-	struct device *target_dev = NULL; /* to bridge a device may be connected to */
-	u16 int_pin = 0;      /* Value of the INT_PIN register 0x3D */
-	u16 target_pin = 0;   /* Pin we will search our tables for */
-	u16 int_line = 0;     /* IRQ # read from PCI_INTR tbl and write to 3C */
+	struct device *target_dev = NULL; /* the bridge a device may be
+					   * connected to */
+	u16 int_pin = 0;
+	u16 target_pin = 0;
+	u16 int_line = 0;
 	u16 pci_intr_idx = 0; /* Index into PCI_INTR table, 0xC00/0xC01 */
-	u8  bus = 0;          /* A PCI Device Bus number */
-	u16 devfn = 0;        /* A PCI Device and Function number */
-	u8  bridged_device = 0;	/* This device is on a PCI bridge */
+	u8  bus = 0;          /* TODO: no longer used, remove it */
+	u16 devfn = 0;
+	u8  bridged_device = 0; /* TODO: Remove this */
 	u32 i = 0;
 	size_t limit;
 	const struct irq_idx_name *idx_name;

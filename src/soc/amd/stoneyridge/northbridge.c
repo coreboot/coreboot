@@ -48,27 +48,25 @@ static void set_io_addr_reg(struct device *dev, u32 nodeid, u32 linkn, u32 reg,
 			u32 io_min, u32 io_max)
 {
 	u32 tempreg;
-	struct device *addr_map = dev_find_slot(0, ADDR_DEVFN);
 
 	/* io range allocation.  Limit */
 	tempreg = (nodeid & 0xf) | ((nodeid & 0x30) << (8 - 4)) | (linkn << 4)
 						| ((io_max & 0xf0) << (12 - 4));
-	pci_write_config32(addr_map, reg + 4, tempreg);
+	pci_write_config32(SOC_ADDR_DEV, reg + 4, tempreg);
 	tempreg = 3 | ((io_min & 0xf0) << (12 - 4)); /* base: ISA and VGA ? */
-	pci_write_config32(addr_map, reg, tempreg);
+	pci_write_config32(SOC_ADDR_DEV, reg, tempreg);
 }
 
 static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index,
 						u32 mmio_min, u32 mmio_max)
 {
 	u32 tempreg;
-	struct device *addr_map = dev_find_slot(0, ADDR_DEVFN);
 
 	/* io range allocation.  Limit */
 	tempreg = (nodeid & 0xf) | (linkn << 4) | (mmio_max & 0xffffff00);
-		pci_write_config32(addr_map, reg + 4, tempreg);
+		pci_write_config32(SOC_ADDR_DEV, reg + 4, tempreg);
 	tempreg = 3 | (nodeid & 0x30) | (mmio_min & 0xffffff00);
-		pci_write_config32(addr_map, reg, tempreg);
+		pci_write_config32(SOC_ADDR_DEV, reg, tempreg);
 }
 
 static void read_resources(struct device *dev)
@@ -154,7 +152,7 @@ static void create_vga_resource(struct device *dev)
 
 	printk(BIOS_DEBUG, "VGA: %s has VGA device\n",	dev_path(dev));
 	/* Route A0000-BFFFF, IO 3B0-3BB 3C0-3DF */
-	pci_write_config32(dev_find_slot(0, ADDR_DEVFN), 0xf4, 1);
+	pci_write_config32(SOC_ADDR_DEV, D18F1_VGAEN, VGA_ADDR_ENABLE);
 }
 
 static void set_resources(struct device *dev)
@@ -379,17 +377,16 @@ void amd_initcpuio(void)
 
 void fam15_finalize(void *chip_info)
 {
-	struct device *dev;
 	u32 value;
-	dev = dev_find_slot(0, GNB_DEVFN); /* clear IoapicSbFeatureEn */
-	pci_write_config32(dev, 0xf8, 0);
-	pci_write_config32(dev, 0xfc, 5); /* TODO: move it to dsdt.asl */
+
+	/* TODO: move IOAPIC code to dsdt.asl */
+	pci_write_config32(SOC_GNB_DEV, NB_IOAPIC_INDEX, 0);
+	pci_write_config32(SOC_GNB_DEV, NB_IOAPIC_DATA, 5);
 
 	/* disable No Snoop */
-	dev = dev_find_slot(0, HDA0_DEVFN);
-	value = pci_read_config32(dev, HDA_DEV_CTRL_STATUS);
+	value = pci_read_config32(SOC_HDA0_DEV, HDA_DEV_CTRL_STATUS);
 	value &= ~HDA_NO_SNOOP_EN;
-	pci_write_config32(dev, HDA_DEV_CTRL_STATUS, value);
+	pci_write_config32(SOC_HDA0_DEV, HDA_DEV_CTRL_STATUS, value);
 }
 
 void domain_read_resources(struct device *dev)

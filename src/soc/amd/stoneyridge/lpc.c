@@ -38,32 +38,30 @@ static void lpc_init(struct device *dev)
 {
 	u8 byte;
 	u32 dword;
-	struct device *sm_dev;
 
 	/*
 	 * Enable the LPC Controller
 	 * SMBus register 0x64 is not defined in public datasheet.
 	 */
-	sm_dev = dev_find_slot(0, SMBUS_DEVFN);
-	dword = pci_read_config32(sm_dev, 0x64);
+	dword = pci_read_config32(SOC_SMBUS_DEV, 0x64);
 	dword |= 1 << 20;
-	pci_write_config32(sm_dev, 0x64, dword);
+	pci_write_config32(SOC_SMBUS_DEV, 0x64, dword);
 
 	/* Initialize isa dma */
 	isa_dma_init();
 
 	/* Enable DMA transaction on the LPC bus */
-	byte = pci_read_config8(dev, LPC_PCI_CONTROL);
+	byte = pci_read_config8(SOC_SMBUS_DEV, LPC_PCI_CONTROL);
 	byte |= LEGACY_DMA_EN;
-	pci_write_config8(dev, LPC_PCI_CONTROL, byte);
+	pci_write_config8(SOC_SMBUS_DEV, LPC_PCI_CONTROL, byte);
 
 	/* Disable the timeout mechanism on LPC */
-	byte = pci_read_config8(dev, LPC_IO_OR_MEM_DECODE_ENABLE);
+	byte = pci_read_config8(SOC_SMBUS_DEV, LPC_IO_OR_MEM_DECODE_ENABLE);
 	byte &= ~LPC_SYNC_TIMEOUT_COUNT_ENABLE;
-	pci_write_config8(dev, LPC_IO_OR_MEM_DECODE_ENABLE, byte);
+	pci_write_config8(SOC_SMBUS_DEV, LPC_IO_OR_MEM_DECODE_ENABLE, byte);
 
 	/* Disable LPC MSI Capability */
-	byte = pci_read_config8(dev, LPC_MISC_CONTROL_BITS);
+	byte = pci_read_config8(SOC_SMBUS_DEV, LPC_MISC_CONTROL_BITS);
 	/* BIT 1 is not defined in public datasheet. */
 	byte &= ~(1 << 1);
 
@@ -73,15 +71,15 @@ static void lpc_init(struct device *dev)
 	 * interrupt and visit LPC.
 	 */
 	byte &= ~LPC_NOHOG;
-	pci_write_config8(dev, LPC_MISC_CONTROL_BITS, byte);
+	pci_write_config8(SOC_SMBUS_DEV, LPC_MISC_CONTROL_BITS, byte);
 
 	/*
 	 * Enable hand-instance of the pulse generator and SPI
 	 * controller prefetch of flash.
 	 */
-	byte = pci_read_config8(dev, LPC_HOST_CONTROL);
+	byte = pci_read_config8(SOC_SMBUS_DEV, LPC_HOST_CONTROL);
 	byte |= PREFETCH_EN_SPI_FROM_HOST | T_START_ENH;
-	pci_write_config8(dev, LPC_HOST_CONTROL, byte);
+	pci_write_config8(SOC_SMBUS_DEV, LPC_HOST_CONTROL, byte);
 
 	cmos_check_update_date();
 

@@ -55,8 +55,8 @@ static void pre_mp_init(void)
 
 static int get_cpu_count(void)
 {
-	struct device *nb = dev_find_slot(0, HT_DEVFN);
-	return (pci_read_config16(nb, D18F0_CPU_CNT) & CPU_CNT_MASK) + 1;
+	return (pci_read_config16(SOC_NB_DEV, D18F0_CPU_CNT) & CPU_CNT_MASK)
+									+ 1;
 }
 
 static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,

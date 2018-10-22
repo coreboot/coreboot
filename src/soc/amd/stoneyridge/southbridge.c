@@ -892,7 +892,7 @@ static void set_sb_final_nvs(void)
 	uintptr_t xhci_fw;
 	uintptr_t fwaddr;
 	size_t fwsize;
-	const struct device *sd, *sata, *ehci;
+	const struct device *sd, *sata;
 
 	struct global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (gnvs == NULL)
@@ -925,7 +925,6 @@ static void set_sb_final_nvs(void)
 	gnvs->fw02 = fwaddr + XHCI_FW_BOOTRAM_SIZE;
 	gnvs->fw03 = fwsize << 16;
 
-	ehci = dev_find_slot(0, EHCI1_DEVFN);
 	gnvs->eh10 = pci_read_config32(SOC_EHCI1_DEV, PCI_BASE_ADDRESS_0)
 			& ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Intel Corporation..
+ * Copyright (C) 2017-2018 Intel Corporation..
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,24 @@
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
 #include <soc/pch.h>
+#include <FsptUpd.h>
+
+const FSPT_UPD temp_ram_init_params = {
+	.FspUpdHeader = {
+		.Signature = 0x545F4450554C4643ULL,	/* 'CFLUPD_T' */
+		.Revision = 1,
+		.Reserved = {0},
+	},
+	.FsptCoreUpd = {
+		.MicrocodeRegionBase =
+			(uint32_t)CONFIG_CPU_MICROCODE_CBFS_LOC,
+		.MicrocodeRegionSize =
+			(uint32_t)CONFIG_CPU_MICROCODE_CBFS_LEN,
+		.CodeRegionBase =
+			(uint32_t)(0x100000000ULL - CONFIG_ROM_SIZE),
+		.CodeRegionSize = (uint32_t)CONFIG_ROM_SIZE,
+	},
+};
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {

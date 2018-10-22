@@ -75,6 +75,7 @@ config CPU_SPECIFIC_OPTIONS
 	select UDELAY_TSC
 	select UDK_2017_BINDING
 	select DISPLAY_FSP_VERSION_INFO
+	select FSP_T_XIP if FSP_CAR
 
 config UART_DEBUG
 	bool "Enable UART debug port."

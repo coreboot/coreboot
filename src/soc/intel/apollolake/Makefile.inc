@@ -9,6 +9,7 @@ subdirs-y += ../../../cpu/x86/tsc
 subdirs-y += ../../../cpu/x86/cache
 
 bootblock-y += bootblock/bootblock.c
+bootblock-$(CONFIG_FSP_CAR) += fspcar.c
 bootblock-y += car.c
 bootblock-y += heci.c
 bootblock-y += gspi.c
@@ -18,7 +19,6 @@ bootblock-y += mmap_boot.c
 bootblock-y += pmutil.c
 bootblock-y += spi.c
 bootblock-$(CONFIG_UART_DEBUG) += uart.c
-bootblock-$(CONFIG_FSP_CAR) += bootblock/cache_as_ram_fsp.S
 
 romstage-y += car.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += romstage.c
@@ -75,8 +75,6 @@ postcar-y += i2c.c
 postcar-$(CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE) += heci.c
 postcar-$(CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE) += reset.c
 postcar-$(CONFIG_UART_DEBUG) += uart.c
-
-postcar-$(CONFIG_FSP_CAR) += exit_car_fsp.S
 
 verstage-y += car.c
 verstage-y += i2c.c

@@ -23,7 +23,6 @@ subdirs-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm
 subdirs-y += ../../../cpu/x86/tsc
 subdirs-y += ../../../cpu/x86/cache
 
-bootblock-$(CONFIG_FSP_CAR)+= bootblock/cache_as_ram_fsp.S
 bootblock-y += bootblock/bootblock.c
 bootblock-y += spi.c
 bootblock-y += tsc_freq.c
@@ -31,7 +30,6 @@ bootblock-$(CONFIG_CONSOLE_SERIAL) += bootblock/uart.c
 bootblock-$(CONFIG_DRIVERS_UART_8250MEM) += uart_debug.c
 
 postcar-y += memmap.c
-postcar-$(CONFIG_FSP_CAR) += exit_car_fsp.S
 postcar-y += spi.c
 postcar-$(CONFIG_DRIVERS_UART_8250MEM) += uart_debug.c
 

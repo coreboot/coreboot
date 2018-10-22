@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2018 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,10 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/post_code.h>
+#include <../../../../../arch/x86/walkcbfs.S>
 
-#include <../../../arch/x86/walkcbfs.S>
 
-#define FSP_HDR_OFFSET 0x94
+.extern	temp_ram_init_params
 
 .global	bootblock_pre_c_entry
 bootblock_pre_c_entry:
@@ -41,20 +41,26 @@ cache_as_ram:
 	mov	CBFS_FILE_OFFSET(%eax), %ebx
 	bswap	%ebx
 	add	%eax, %ebx
-	add	FSP_HDR_OFFSET, %ebx
+	add	$0x94, %ebx
+
+	/*
+	 * save mm2 into ebp, because TempRamInit API doesn't preserve
+	 * mm2 register
+	 */
+	movd	%mm2, %ebp
 
 	/*
 	 * ebx = FSP INFO HEADER
 	 * Calculate entry into FSP
 	 */
-	mov	0x30(%ebx), %eax	/* Load TempRamInitEntryOffset */
-	add	0x1c(%ebx), %eax	/* add the FSP ImageBase */
+	movl	0x30(%ebx), %eax	/* Load TempRamInitEntryOffset */
+	addl	0x1c(%ebx), %eax	/* add the FSP ImageBase */
 
 	/*
 	 * Pass early init variables on a fake stack (no memory yet)
 	 * as well as the return location
 	 */
-	lea	CAR_init_stack, %esp
+	leal	CAR_init_stack, %esp
 
 	/* call FSP binary to setup temporary stack */
 	jmp	*%eax
@@ -63,8 +69,7 @@ cache_as_ram:
  * If the TempRamInit API is successful, then when returning, the ECX and
  * EDX registers will point to the temporary but writeable memory range
  * available to the bootloader where ECX is the start and EDX is the end of
- * the range i.e. [ECX,EDX).  See Apollo Lake FSP Integration Guide for more
- * information.
+ * the range i.e. [ECX,EDX). See FSP Integration Guide for more information.
  *
  * Return Values:
  * EAX | Return Status
@@ -74,6 +79,8 @@ cache_as_ram:
  */
 
 CAR_init_done:
+	cmp	$0, %eax
+	jnz	.halt_forever
 
 	/* Setup bootblock stack */
 	mov	%edx, %esp
@@ -84,7 +91,13 @@ CAR_init_done:
 	movl	$(_car_global_end), %ecx
 	movl	$(_car_global_start), %edi
 	sub	%edi, %ecx
+	shrl	$2, %ecx
 	rep	stosl
+
+	/* Restore the timestamp from bootblock_crt0.S (ebp:mm1) */
+	push	%ebp
+	movd	%mm1, %eax
+	push	%eax
 
 	/* We can call into C functions now */
 	call	bootblock_c_entry
@@ -96,15 +109,9 @@ CAR_init_done:
 	hlt
 	jmp	.halt_forever
 
-CAR_init_params:
-	.long	0                                 /* Microcode Location */
-	.long	0                                 /* Microcode Length */
-	.long	0xFFFFFFFF - CONFIG_ROM_SIZE + 1 /* Firmware Location */
-	.long	CONFIG_ROM_SIZE                  /* Total Firmware Length */
-
 CAR_init_stack:
 	.long	CAR_init_done
-	.long	CAR_init_params
+	.long	temp_ram_init_params
 
 fsp_name:
-	.ascii	"blobs/fspt.bin\x00"
+	.string	"fspt.bin"

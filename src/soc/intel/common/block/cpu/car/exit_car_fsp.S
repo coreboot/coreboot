@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016-2017 Intel Corp.
+ * Copyright (C) 2018 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -16,7 +16,6 @@
 
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cr.h>
-//#include <soc/cpu.h>
 
 /*
  * This path for CAR teardown is taken when CONFIG_FSP_CAR is employed.
@@ -24,16 +23,8 @@
  * the rest of arch/x86/exit_car.S and calls main() itself instead of
  * returning to _start. In main(), the TempRamExit FSP API is called
  * to tear down the CAR and set up caching which can be overwritten
- * after the API call.  More info can be found in the Denverton-NS FSP
- * Integration Guide included with the FSP binary.  The below
- * caching settings are based on an 8MiB Flash Size given as a
- * parameter to TempRamInit.
- *
- *	TempRamExit MTRR Settings:
- *	0x00000000  - 0x0009FFFF           | Write Back
- *	0x000C0000  - Top of Low Memory    | Write Back
- *	0xFF800000  - 0xFFFFFFFF Flash Reg | Write Protect
- *	0x100000000 - Top of High Memory   | Write Back
+ * after the API call.  More info can be found in the FSP Integration
+ * Guide included with the FSP binary.
  */
 
 .text

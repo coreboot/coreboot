@@ -41,8 +41,8 @@ or romstage until DRAM has been set up. At the end of romstage the cachelines
 are unlocked and the contents are flushed to DRAM.
 Locked cachelines are never evicted.
 
-The CAR setup is done in '''bootblock_custom.S''' and thus doesn't use the common
-aarch64 '''bootblock.S''' code.
+The CAR setup is done in `bootblock_custom.S` and thus doesn't use the common
+aarch64 `bootblock.S` code.
 
 ## DRAM setup
 

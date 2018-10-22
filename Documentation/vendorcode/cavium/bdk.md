@@ -1,7 +1,7 @@
 # Cavium's BDK
 
 ## BDK
-A part of Cavium's BDK can be found in '''src/vendorcode/cavium/bdk'''.
+A part of Cavium's BDK can be found in `src/vendorcode/cavium/bdk`.
 It does the **DRAM init** in romstage and the **PCIe**, **QLM**, **SLI**,
 **PHY**, **BGX**, **SATA** init in ramstage.
 
@@ -11,9 +11,9 @@ compatible. The devicetree stores key-value pairs (see **bdk-devicetree.h**
 for implementation details), where the key and the value are stored as strings.
 
 The key-value pairs must be advertised in romstage and ramstage using the
-'''bdk_config_set_fdt()''' method.
+`bdk_config_set_fdt()` method.
 
-The tool '''util/cavium/devicetree_convert.py''' can be used to convert a
+The tool `util/cavium/devicetree_convert.py` can be used to convert a
 devicetree to a key-value array.
 
 ## Modifications

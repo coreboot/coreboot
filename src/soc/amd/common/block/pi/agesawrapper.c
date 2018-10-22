@@ -164,7 +164,7 @@ static void print_init_post_settings(AMD_POST_PARAMS *parms)
 		break;
 	}
 
-	syslimit = (u64)parms->MemConfig.SysLimit * 64 * KiB;
+	syslimit = (u64)(parms->MemConfig.SysLimit + 1) * 64 * KiB - 1;
 	bottomio = (u64)parms->MemConfig.BottomIo * 64 * KiB;
 
 	uma_size = (u64)parms->MemConfig.UmaSize * 64 * KiB;

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import subprocess
+from recommonmark.parser import CommonMarkParser
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -156,9 +157,14 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-source_parsers = {
-    '.md': 'recommonmark.parser.CommonMarkParser',
-}
+enable_auto_toc_tree = True
+
+class MyCommonMarkParser(CommonMarkParser):
+    # remove this hack once upsteam RecommonMark supports inline code
+    def visit_code(self, mdnode):
+        from docutils import nodes
+        n = nodes.literal(mdnode.literal, mdnode.literal)
+        self.current_node.append(n)
 
 # Documents to append as an appendix to all manuals.
 #
@@ -176,11 +182,11 @@ source_parsers = {
 #
 # texinfo_no_detailmenu = False
 
-enable_auto_toc_tree = True
-
 
 def setup(app):
     from recommonmark.transform import AutoStructify
+    app.add_source_parser('.md', MyCommonMarkParser)
+
     app.add_config_value('recommonmark_config', {
         'enable_auto_toc_tree': True,
         'enable_auto_doc_ref': False, # broken in Sphinx 1.6+

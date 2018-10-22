@@ -72,6 +72,8 @@ postcar-y += memmap.c
 postcar-y += mmap_boot.c
 postcar-y += spi.c
 postcar-y += i2c.c
+postcar-$(CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE) += heci.c
+postcar-$(CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE) += reset.c
 postcar-$(CONFIG_UART_DEBUG) += uart.c
 
 postcar-$(CONFIG_FSP_CAR) += exit_car_fsp.S

@@ -936,25 +936,12 @@ check_member(chn_emi_regs, chn_emi_shf0, 0x0710);
 
 struct emi_mpu_regs {
 	uint32_t mpu_ctrl;
-	uint32_t mpu_dbg;
-	uint32_t rsvd_2[62];
-	uint32_t mpu_sa0;
-	uint32_t rsvd_3[63];
-	uint32_t mpu_ea0;
-	uint32_t rsvd_4[63];
-	uint32_t mpu_apc0;
-	uint32_t rsvd_5[319];
-	uint32_t mpu_ctrl_d0;
-	uint32_t rsvd_6[63];
-	uint32_t rg_mask_d0;
+	uint32_t rsvd[511];
+	uint32_t mpu_ctrl_d[16];
 };
 
-check_member(emi_mpu_regs, mpu_dbg, 0x0004);
-check_member(emi_mpu_regs, mpu_sa0, 0x0100);
-check_member(emi_mpu_regs, mpu_ea0, 0x0200);
-check_member(emi_mpu_regs, mpu_apc0, 0x0300);
-check_member(emi_mpu_regs, mpu_ctrl_d0, 0x0800);
-check_member(emi_mpu_regs, rg_mask_d0, 0x0900);
+check_member(emi_mpu_regs, mpu_ctrl, 0x0000);
+check_member(emi_mpu_regs, mpu_ctrl_d[0], 0x0800);
 
 enum {
 	TESTCHIP_DMA1_DMA_LP4MATAB_OPT_SHIFT = 12,

@@ -54,7 +54,7 @@ static u64 get_ch_rank_size(u8 chn, u8 rank)
 	row_bit = ((((emi_cona >> (24 - chn * 20 + rank)) & 0x01) << 2) +
 		((emi_cona >> (12 + chn * 16 + rank * 2)) & 0x03)) + 13;
 
-	/* data width (bytes) * 8 banks */
+	/* Data width (bytes) * 8 banks */
 	return ((u64)(1 << (row_bit + col_bit))) *
 		((u64)(4 >> shift_for_16bit) * 8);
 }
@@ -80,7 +80,7 @@ void dramc_get_rank_size(u64 *dram_rank_size)
 	else
 		ch_rank0_size = (ch0_rank0_size * 256 << 20);
 
-	/* dual rank enable */
+	/* Dual rank enable */
 	if ((emi_cona & (1 << 17)) != 0) {
 		if (ch0_rank1_size == 0)
 			ch_rank1_size = get_ch_rank_size(CHANNEL_A, RANK_1);
@@ -115,7 +115,7 @@ size_t sdram_size(void)
 
 	for (int i = 0; i < RANK_MAX; i++) {
 		dram_size += rank_size[i];
-		dramc_show("rank%d size:0x%llx\n", i, rank_size[i]);
+		dramc_show("Rank%d size:0x%llx\n", i, rank_size[i]);
 	}
 
 	return dram_size;
@@ -126,7 +126,7 @@ static void set_rank_info_to_conf(const struct sdram_params *params)
 	u8 u4value = 0;
 
 	/* CONA 17th bit 0: Disable dual rank mode
-	 * 1: Enable dual rank mode */
+	   1: Enable dual rank mode */
 	u4value = ((params->emi_cona_val & (0x1 << 17)) >> 17) ? 0 : 1;
 	clrsetbits_le32(&ch[0].ao.arbctl, 0x1 << 12, u4value << 12);
 }
@@ -249,8 +249,8 @@ static void emi_init2(const struct sdram_params *params)
 {
 	emi_esl_setting2();
 
-	setbits_le32(&emi_mpu->mpu_ctrl_d0 + 0x4 * 1, 0x1 << 4);
-	setbits_le32(&emi_mpu->mpu_ctrl_d0 + 0x4 * 7, 0x1 << 4);
+	setbits_le32(&emi_mpu->mpu_ctrl_d[1], 0x1 << 4);
+	setbits_le32(&emi_mpu->mpu_ctrl_d[7], 0x1 << 4);
 
 	write32(&emi_regs->bwct0, 0x0a000705);
 	write32(&emi_regs->bwct0_3rd, 0x0);

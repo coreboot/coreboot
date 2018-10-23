@@ -104,9 +104,7 @@ void write_pci_cfg_irqs(void)
 	u16 target_pin = 0;
 	u16 int_line = 0;
 	u16 pci_intr_idx = 0; /* Index into PCI_INTR table, 0xC00/0xC01 */
-	u8  bus = 0;          /* TODO: no longer used, remove it */
 	u16 devfn = 0;
-	u8  bridged_device = 0; /* TODO: Remove this */
 	u32 i = 0;
 	size_t limit;
 	const struct irq_idx_name *idx_name;
@@ -141,7 +139,6 @@ void write_pci_cfg_irqs(void)
 		if (int_pin < 1 || int_pin > 4)
 			continue;	/* Device has invalid INT_PIN - skip  */
 
-		bus   = target_dev->bus->secondary;
 		devfn = target_dev->path.pci.devfn;
 
 		/*
@@ -217,10 +214,6 @@ void write_pci_cfg_irqs(void)
 		 */
 		printk(BIOS_SPEW, "\tOrig INT_PIN\t: %d (%s)\n",
 						int_pin, pin_to_str(int_pin));
-		if (bridged_device)
-			printk(BIOS_SPEW, "\tSwizzled to\t: %d (%s)\n",
-					target_pin, pin_to_str(target_pin));
-
 		printk(BIOS_SPEW, "\tPCI_INTR idx\t: 0x%02x (%s)\n"
 				  "\tINT_LINE\t: 0x%X (IRQ %d)\n",
 				  pci_intr_idx, idx_name[i].name,

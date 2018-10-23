@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
  * Copyright 2018 Facebook Inc.
+ * Copyright 2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +20,10 @@
 
 #include <security/tpm/tss.h>
 #include <commonlib/tcpa_log_serialized.h>
+#include <commonlib/region.h>
+
+#define TPM_PCR_MAX_LEN		64
+#define HASH_DATA_CHUNK_SIZE	1024
 
 /**
  * Add table entry for cbmem TCPA log.
@@ -50,5 +55,15 @@ uint32_t tpm_clear_and_reenable(void);
  * @return TPM_SUCCESS on success. If not a tpm error is returned
  */
 uint32_t tpm_setup(int s3flag);
+
+/**
+ * Measure a given region device and extend given PCR with the result.
+ * @param *rdev Pointer to the region device to measure
+ * @param pcr Index of the PCR which will be extended by this measure
+ * @param *rname Name of the region that is measured
+ * @return TPM error code in case of error otherwise TPM_SUCCESS
+ */
+uint32_t tpm_measure_region(const struct region_device *rdev, uint8_t pcr,
+			    const char *rname);
 
 #endif /* TSPI_H_ */

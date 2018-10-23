@@ -107,7 +107,11 @@ $(1)-srcs += $$(VB2_LIB_$(1))
 
 endef # vboot-for-stage
 
+CFLAGS_common += -I3rdparty/vboot/firmware/2lib/include
+
 $(eval $(call vboot-for-stage,verstage))
+$(eval $(call vboot-for-stage,bootblock))
+$(eval $(call vboot-for-stage,ramstage))
 
 ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
 

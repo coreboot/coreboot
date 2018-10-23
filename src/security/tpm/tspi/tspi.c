@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
  * Copyright 2017 Facebook Inc.
+ * Copyright 2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +22,10 @@
 #include <security/tpm/tss.h>
 #include <stdlib.h>
 #include <string.h>
+#if IS_ENABLED(CONFIG_VBOOT)
+#include <vb2_api.h>
+#include <assert.h>
+#endif
 
 #if IS_ENABLED(CONFIG_TPM1)
 static uint32_t tpm1_invoke_state_machine(void)
@@ -214,3 +219,63 @@ uint32_t tpm_extend_pcr(int pcr, uint8_t *digest,
 
 	return TPM_SUCCESS;
 }
+
+#if IS_ENABLED(CONFIG_VBOOT)
+uint32_t tpm_measure_region(const struct region_device *rdev, uint8_t pcr,
+			    const char *rname)
+{
+	uint8_t digest[TPM_PCR_MAX_LEN], digest_len;
+	uint8_t buf[HASH_DATA_CHUNK_SIZE];
+	uint32_t result, offset;
+	size_t len;
+	struct vb2_digest_context ctx;
+	enum vb2_hash_algorithm hash_alg;
+
+	if (!rdev || !rname)
+		return TPM_E_INVALID_ARG;
+	result = tlcl_lib_init();
+	if (result != TPM_SUCCESS) {
+		printk(BIOS_ERR, "TPM: Can't initialize library.\n");
+		return result;
+	}
+	if (IS_ENABLED(CONFIG_TPM1))
+		hash_alg = VB2_HASH_SHA1;
+	else  /* CONFIG_TPM2 */
+		hash_alg = VB2_HASH_SHA256;
+
+	digest_len = vb2_digest_size(hash_alg);
+	assert(digest_len <= sizeof(digest));
+	if (vb2_digest_init(&ctx, hash_alg)) {
+		printk(BIOS_ERR, "TPM: Error initializing hash.\n");
+		return TPM_E_HASH_ERROR;
+	}
+	/*
+	 * Though one can mmap the full needed region on x86 this is not the
+	 * case for e.g. ARM. In order to make this code as universal as
+	 * possible across different platforms read the data to hash in chunks.
+	 */
+	for (offset = 0; offset < region_device_sz(rdev); offset += len) {
+		len = MIN(sizeof(buf), region_device_sz(rdev) - offset);
+		if (rdev_readat(rdev, buf, offset, len) < 0) {
+			printk(BIOS_ERR, "TPM: Not able to read region %s.\n",
+					rname);
+			return TPM_E_READ_FAILURE;
+		}
+		if (vb2_digest_extend(&ctx, buf, len)) {
+			printk(BIOS_ERR, "TPM: Error extending hash.\n");
+			return TPM_E_HASH_ERROR;
+		}
+	}
+	if (vb2_digest_finalize(&ctx, digest, digest_len)) {
+		printk(BIOS_ERR, "TPM: Error finalizing hash.\n");
+		return TPM_E_HASH_ERROR;
+	}
+	result = tpm_extend_pcr(pcr, digest, digest_len, rname);
+	if (result != TPM_SUCCESS) {
+		printk(BIOS_ERR, "TPM: Extending hash into PCR failed.\n");
+		return result;
+	}
+	printk(BIOS_DEBUG, "TPM: Measured %s into PCR %d\n", rname, pcr);
+	return TPM_SUCCESS;
+}
+#endif /* VBOOT */

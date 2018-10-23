@@ -227,9 +227,6 @@ void southbridge_configure_default_intmap(void);
 
 #define PMBASE		0x40
 
-/* Root Complex Register Block */
-#define RCBA		0xf0
-
 #define VCH		0x0000	/* 32bit */
 #define VCAP1		0x0004	/* 32bit */
 #define VCAP2		0x0008	/* 32bit */

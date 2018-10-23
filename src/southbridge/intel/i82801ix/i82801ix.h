@@ -111,7 +111,6 @@
 #define D31F0_CxSTATE_CNF	0xa9
 #define D31F0_C4TIMING_CNT	0xaa
 #define D31F0_GPIO_ROUT		0xb8
-#define D31F0_RCBA		0xf0
 
 /* GEN_PMCON_3 bits */
 #define RTC_BATTERY_DEAD	(1 << 2)

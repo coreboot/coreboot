@@ -17,6 +17,7 @@
 #include <boardid.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
+#include <memory_info.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
 
@@ -33,7 +34,7 @@ static void save_dimm_info_by_sku_config(void)
 
 void mainboard_save_dimm_info(void)
 {
-	char part_num_store[32];
+	char part_num_store[DIMM_INFO_PART_NUMBER_SIZE];
 	const char *part_num = NULL;
 
 	if (!IS_ENABLED(CONFIG_DRAM_PART_NUM_IN_CBI)) {

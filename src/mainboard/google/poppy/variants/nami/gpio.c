@@ -179,8 +179,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NC(GPP_D8),
 	/* D9  : ISH_SPI_CS# ==> HP_IRQ_GPIO */
 	PAD_CFG_GPI_APIC(GPP_D9, NONE, PLTRST),
-	/* D10 : ISH_SPI_CLK ==> SPKR_RST_L (unstuffed) */
-	PAD_CFG_NC(GPP_D10),
+	/* D10 : ISH_SPI_CLK ==> SINGLE_CHANNEL */
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_D10, NONE, DEEP),
 	/* D11 : ISH_SPI_MISO ==> DCI_CLK (debug header) */
 	PAD_CFG_NC(GPP_D11),
 	/* D12 : ISH_SPI_MOSI ==> DCI_DATA (debug header) */
@@ -370,6 +370,9 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* E0  : SATAXPCI0 ==> H1_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC_INVERT(GPP_E0, NONE, PLTRST),
+
+	/* D10 : ISH_SPI_CLK ==> SINGLE_CHANNEL */
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_D10, 20K_PD, DEEP),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

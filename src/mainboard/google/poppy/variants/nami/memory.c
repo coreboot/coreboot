@@ -89,4 +89,8 @@ void variant_memory_params(struct memory_params *p)
 	else
 		/* default to DDR4 */
 		fill_ddr4_memory_params(p);
+
+	/* GPP_D10 set to 0 for dual channel and 1 for single channel */
+	if (gpio_get(GPP_D10))
+		p->single_channel = 1;
 }

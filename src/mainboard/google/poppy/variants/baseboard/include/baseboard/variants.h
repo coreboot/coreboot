@@ -60,6 +60,9 @@ struct memory_params {
 
 	/* The voltage offset applied to the SA in mV. 1000(mV) = Maximum */
 	uint16_t sa_voltage_offset_val;
+
+	/* This would be set to true if only have single DDR channel */
+	bool single_channel;
 };
 
 void variant_memory_params(struct memory_params *p);

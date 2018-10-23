@@ -171,7 +171,10 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	memcpy(&mem_cfg->RcompTarget, p.rcomp_target, p.rcomp_target_size);
 
 	mem_cfg->MemorySpdPtr00 = mainboard_get_spd_data(p.type, p.use_sec_spd);
-	mem_cfg->MemorySpdPtr10 = mem_cfg->MemorySpdPtr00;
+	if (p.single_channel)
+		mem_cfg->MemorySpdPtr10 = 0;
+	else
+		mem_cfg->MemorySpdPtr10 = mem_cfg->MemorySpdPtr00;
 	mem_cfg->MemorySpdDataLen = spd_info[p.type].len;
 
 	mem_cfg->SaOcSupport = p.enable_sa_oc_support;

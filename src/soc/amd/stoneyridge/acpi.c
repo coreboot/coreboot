@@ -31,6 +31,7 @@
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
+#include <soc/northbridge.h>
 #include <soc/nvs.h>
 #include <soc/gpio.h>
 
@@ -237,11 +238,10 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 void generate_cpu_entries(struct device *device)
 {
 	int cores, cpu;
-	struct device *cdb_dev;
 
 	/* Stoney Ridge is single node, just report # of cores */
-	cdb_dev = dev_find_slot(0, NB_DEVFN);
-	cores = (pci_read_config32(cdb_dev, 0x84) & 0xff) + 1;
+	cores = pci_read_config32(SOC_NB_DEV, NB_CAPABILITIES2) & CMP_CAP_MASK;
+	cores++; /* number of cores is CmpCap+1 */
 
 	printk(BIOS_DEBUG, "ACPI \\_PR report %d core(s)\n", cores);
 

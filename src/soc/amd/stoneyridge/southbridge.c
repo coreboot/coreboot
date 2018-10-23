@@ -414,8 +414,8 @@ static uintptr_t sb_spibase(void)
 
 	/* Make sure the base address is predictable */
 	base = pci_read_config32(SOC_LPC_DEV, SPIROM_BASE_ADDRESS_REGISTER);
-	enables = base & 0xf;
-	base &= ~0x3f;
+	enables = base & SPI_PRESERVE_BITS;
+	base &= ~(SPI_PRESERVE_BITS | SPI_BASE_RESERVED);
 
 	if (!base) {
 		base = SPI_BASE_ADDRESS;

@@ -62,9 +62,15 @@
 # define MMIO_RE		(1 << 0)
 #define D18F1_MMIO_LIMIT0_LO	0x84
 # define MMIO_NP		(1 << 7)
+#define D18F1_IO_BASE0_LO	0xc0
+#define D18F1_IO_BASE1_LO	0xc8
+#define D18F1_IO_BASE2_LO	0xd0
+#define D18F1_IO_BASE3_LO	0xd8
+#define D18F1_MMIO_BASE7_LO	0xb8
 #define D18F1_MMIO_BASELIM0_HI	0x180
 #define D18F1_MMIO_BASE8_LO	0x1a0
 #define D18F1_MMIO_LIMIT8_LO	0x1a4
+#define D18F1_MMIO_BASE11_LO	0x1b8
 #define D18F1_MMIO_BASELIM8_HI	0x1c0
 #define NB_MMIO_BASE_LO(reg)	((reg) * 2 * sizeof(uint32_t) + (((reg) < 8) \
 					? D18F1_MMIO_BASE0_LO \
@@ -88,6 +94,10 @@
 # define DRAM_HOLE_VALID	(1 << 0)
 #define D18F1_VGAEN		0xf4
 # define VGA_ADDR_ENABLE	(1 << 0)
+
+/* D18F5 */
+#define NB_CAPABILITIES2	0x84
+#define   CMP_CAP_MASK		0xff
 
 enum {
 	/* SMM handler area. */

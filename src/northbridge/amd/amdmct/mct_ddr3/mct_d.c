@@ -6789,7 +6789,7 @@ static void mct_InitialMCT_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc 
 		boost_states = (Get_NB32(pDCTstat->dev_link, 0x15c) >> 2) & 0x7;
 
 		/* Retrieve and store the TSC frequency (P0 COF) */
-		p0_state_msr = rdmsr(0xc0010064 + boost_states);
+		p0_state_msr = rdmsr(PSTATE_0_MSR + boost_states);
 		cpu_fid = p0_state_msr.lo & 0x3f;
 		cpu_did = (p0_state_msr.lo >> 6) & 0x7;
 		cpu_divisor = (0x1 << cpu_did);
@@ -6833,7 +6833,7 @@ static void mct_init(struct MCTStatStruc *pMCTstat,
 	pDCTstat->DRPresent = 1;
 
 	/* enable extend PCI configuration access */
-	addr = 0xC001001F;
+	addr = NB_CFG_MSR;
 	_RDMSR(addr, &lo, &hi);
 	if (hi & (1 << (46-32))) {
 		pDCTstat->Status |= 1 << SB_ExtConfig;
@@ -7333,7 +7333,7 @@ static u8 CheckNBCOFEarlyArbEn(struct MCTStatStruc *pMCTstat,
 	 */
 
 	/* 3*(Fn2xD4[NBFid]+4)/(2^NbDid)/(3+Fn2x94[MemClkFreq]) */
-	_RDMSR(0xC0010071, &lo, &hi);
+	_RDMSR(MSR_COFVID_STS, &lo, &hi);
 	if (lo & (1 << 22))
 		NbDid |= 1;
 

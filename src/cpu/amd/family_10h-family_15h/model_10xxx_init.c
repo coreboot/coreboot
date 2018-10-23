@@ -90,7 +90,7 @@ static void model_10xxx_init(struct device *dev)
 		disable_cache();
 
 		for (i = 0x2; i < 0x10; i++) {
-			wrmsr(0x00000200 | i, msr);
+			wrmsr(MTRR_PHYS_BASE(0) | i, msr);
 		}
 
 		enable_cache();

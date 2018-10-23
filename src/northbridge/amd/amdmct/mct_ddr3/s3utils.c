@@ -17,6 +17,9 @@
 #include <arch/cpu.h>
 #include <arch/acpi.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/msr.h>
+#include <cpu/x86/mtrr.h>
+#include <cpu/amd/mtrr.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
@@ -358,17 +361,18 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data *persistent_da
 			data->f2x1b0 = pci_read_config32(dev_fn2, 0x1b0);
 			data->f3x44 = pci_read_config32(dev_fn3, 0x44);
 			for (i = 0; i < 16; i++) {
-				data->msr0000020[i] = rdmsr_uint64_t(0x00000200 | i);
+				data->msr0000020[i] =
+					rdmsr_uint64_t(MTRR_PHYS_BASE(0) | i);
 			}
-			data->msr00000250 = rdmsr_uint64_t(0x00000250);
-			data->msr00000258 = rdmsr_uint64_t(0x00000258);
+			data->msr00000250 = rdmsr_uint64_t(MTRR_FIX_64K_00000);
+			data->msr00000258 = rdmsr_uint64_t(MTRR_FIX_16K_80000);
 			for (i = 0; i < 8; i++)
 				data->msr0000026[i] = rdmsr_uint64_t(0x00000260 | (i + 8));
-			data->msr000002ff = rdmsr_uint64_t(0x000002ff);
-			data->msrc0010010 = rdmsr_uint64_t(0xc0010010);
-			data->msrc001001a = rdmsr_uint64_t(0xc001001a);
-			data->msrc001001d = rdmsr_uint64_t(0xc001001d);
-			data->msrc001001f = rdmsr_uint64_t(0xc001001f);
+			data->msr000002ff = rdmsr_uint64_t(MTRR_DEF_TYPE_MSR);
+			data->msrc0010010 = rdmsr_uint64_t(SYSCFG_MSR);
+			data->msrc001001a = rdmsr_uint64_t(TOP_MEM);
+			data->msrc001001d = rdmsr_uint64_t(TOP_MEM2);
+			data->msrc001001f = rdmsr_uint64_t(NB_CFG_MSR);
 
 			/* Stage 3 */
 			data->f2x40 = read_config32_dct(dev_fn2, node, channel, 0x40);
@@ -697,10 +701,11 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data *persiste
 			write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x1b0, data->f2x1b0);
 			write_config32_dct(PCI_DEV(0, 0x18 + node, 3), node, channel, 0x44, data->f3x44);
 			for (i = 0; i < 16; i++) {
-				wrmsr_uint64_t(0x00000200 | i, data->msr0000020[i]);
+				wrmsr_uint64_t(MTRR_PHYS_BASE(0) | i,
+					       data->msr0000020[i]);
 			}
-			wrmsr_uint64_t(0x00000250, data->msr00000250);
-			wrmsr_uint64_t(0x00000258, data->msr00000258);
+			wrmsr_uint64_t(MTRR_FIX_64K_00000, data->msr00000250);
+			wrmsr_uint64_t(MTRR_FIX_16K_80000, data->msr00000258);
 			/* FIXME
 			 * Restoring these MSRs causes a hang on resume due to
 			 * destroying CAR while still executing from CAR!
@@ -708,11 +713,11 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data *persiste
 			 */
 			// for (i = 0; i < 8; i++)
 			//	wrmsr_uint64_t(0x00000260 | (i + 8), data->msr0000026[i]);
-			wrmsr_uint64_t(0x000002ff, data->msr000002ff);
-			wrmsr_uint64_t(0xc0010010, data->msrc0010010);
-			wrmsr_uint64_t(0xc001001a, data->msrc001001a);
-			wrmsr_uint64_t(0xc001001d, data->msrc001001d);
-			wrmsr_uint64_t(0xc001001f, data->msrc001001f);
+			wrmsr_uint64_t(MTRR_DEF_TYPE_MSR, data->msr000002ff);
+			wrmsr_uint64_t(SYSCFG_MSR, data->msrc0010010);
+			wrmsr_uint64_t(TOP_MEM, data->msrc001001a);
+			wrmsr_uint64_t(TOP_MEM2, data->msrc001001d);
+			wrmsr_uint64_t(NB_CFG_MSR, data->msrc001001f);
 		}
 	}
 

@@ -34,6 +34,7 @@
 #include <device/pci_ops.h>
 #include <delay.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/mtrr.h>
 #include "rs780.h"
 
 /* Trust the original resource allocation. Don't do it again. */
@@ -762,11 +763,11 @@ static void rs780_internal_gfx_enable(struct device *dev)
 	printk(BIOS_DEBUG, "rs780_internal_gfx_enable dev = 0x%p, nb_dev = 0x%p.\n", dev, nb_dev);
 
 	/* The system top memory in 780. */
-	sysmem = rdmsr(0xc001001a);
+	sysmem = rdmsr(TOP_MEM);
 	printk(BIOS_DEBUG, "Sysmem TOM = %x_%x\n", sysmem.hi, sysmem.lo);
 	pci_write_config32(nb_dev, 0x90, sysmem.lo);
 
-	sysmem = rdmsr(0xc001001D);
+	sysmem = rdmsr(TOP_MEM2);
 	printk(BIOS_DEBUG, "Sysmem TOM2 = %x_%x\n", sysmem.hi, sysmem.lo);
 	htiu_write_index(nb_dev, 0x31, sysmem.hi);
 	htiu_write_index(nb_dev, 0x30, sysmem.lo | 1);

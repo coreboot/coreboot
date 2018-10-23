@@ -304,11 +304,11 @@ void sr5650_set_tom(struct device *nb_dev)
 	msr_t sysmem;
 
 	/* The system top memory in SR56X0. */
-	sysmem = rdmsr(0xc001001A);
+	sysmem = rdmsr(TOP_MEM);
 	printk(BIOS_DEBUG, "Sysmem TOM = %x_%x\n", sysmem.hi, sysmem.lo);
 	pci_write_config32(nb_dev, 0x90, sysmem.lo);
 
-	sysmem = rdmsr(0xc001001D);
+	sysmem = rdmsr(TOP_MEM2);
 	printk(BIOS_DEBUG, "Sysmem TOM2 = %x_%x\n", sysmem.hi, sysmem.lo);
 	htiu_write_index(nb_dev, 0x31, sysmem.hi);
 	htiu_write_index(nb_dev, 0x30, sysmem.lo | 1);

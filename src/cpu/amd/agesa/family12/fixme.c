@@ -15,6 +15,7 @@
 
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/msr.h>
+#include <cpu/amd/mtrr.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <AGESA.h>
 #include "amdlib.h"
@@ -40,7 +41,7 @@ void amd_initcpuio(void)
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x8C);
 	PciData = 0x00DFFF00;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-	LibAmdMsrRead(0xC001001A, &MsrReg, &StdHeader);
+	LibAmdMsrRead(TOP_MEM, &MsrReg, &StdHeader);
 	MsrReg = (MsrReg >> 8) | 3;
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x88);
 	PciData = (UINT32) MsrReg;

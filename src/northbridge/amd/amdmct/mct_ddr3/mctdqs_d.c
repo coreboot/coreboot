@@ -2148,7 +2148,7 @@ void SetTargetWTIO_D(u32 TestAddr)
 	u32 lo, hi;
 	hi = TestAddr >> 24;
 	lo = TestAddr << 8;
-	_WRMSR(0xC0010016, lo, hi);		/* IORR0 Base */
+	_WRMSR(IORR_FIRST, lo, hi);		/* IORR0 Base */
 	hi = 0xFF;
 	lo = 0xFC000800;			/* 64MB Mask */
 	_WRMSR(0xC0010017, lo, hi);		/* IORR0 Mask */

@@ -61,9 +61,9 @@ void backup_mtrr(void *mtrr_store, u32 *mtrr_store_size)
 	/* SYSCFG_MSR */
 	write_mtrr(&nvram_pos, SYSCFG_MSR);
 	/* TOM */
-	write_mtrr(&nvram_pos, 0xC001001A);
+	write_mtrr(&nvram_pos, TOP_MEM);
 	/* TOM2 */
-	write_mtrr(&nvram_pos, 0xC001001D);
+	write_mtrr(&nvram_pos, TOP_MEM2);
 
 	*mtrr_store_size = nvram_pos - (u8*) mtrr_store;
 }

@@ -152,8 +152,8 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData,
 	pVbiosImageInfo->ImagePtr = cbfs_boot_map_with_leak(
 			"pci"CONFIG_VGA_BIOS_ID".rom",
 			CBFS_TYPE_OPTIONROM, NULL);
-	printk(BIOS_DEBUG, "agesa_GfxGetVbiosImage: IMGptr=%p\n",
-						pVbiosImageInfo->ImagePtr);
+	printk(BIOS_DEBUG, "%s: IMGptr=%p\n", __func__,
+			pVbiosImageInfo->ImagePtr);
 	return pVbiosImageInfo->ImagePtr ? AGESA_SUCCESS : AGESA_WARNING;
 }
 

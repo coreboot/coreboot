@@ -1,0 +1,16 @@
+chip soc/intel/skylake
+
+	device domain 0 on
+		device pci 19.1 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5663""
+				register "name" = ""RT53""
+				register "desc" = ""Realtek RT5663""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D9)"
+				device i2c 13 on end
+			end
+		end # I2C #5
+
+	end
+
+end

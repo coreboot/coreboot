@@ -73,8 +73,8 @@ static void early_superio_config(void)
 static void rcba_config(void)
 {
 	/* Set up virtual channel 0 */
-	RCBA32(0x0014) = 0x80000001;
-	RCBA32(0x001c) = 0x03128010;
+	RCBA32(V0CTL) = 0x80000001;
+	RCBA32(V1CAP) = 0x03128010;
 
 	/* Device 1f interrupt pin register */
 	RCBA32(D31IP) = 0x00001230;
@@ -99,12 +99,12 @@ static void rcba_config(void)
 	RCBA32(FD) |= FD_INTLAN;
 
 	/* Set up I/O Trap #0 for 0xfe00 (SMIC) */
-	RCBA32(0x1e84) = 0x00020001;
-	RCBA32(0x1e80) = 0x0000fe01;
+	RCBA32(IOTR0) = 0x0000fe01;
+	RCBA32(IOTR0+4) = 0x00020001;
 
 	/* Set up I/O Trap #3 for 0x800-0x80c (Trap) */
-	RCBA32(0x1e9c) = 0x000200f0;
-	RCBA32(0x1e98) = 0x000c0801;
+	RCBA32(IOTR3) = 0x000c0801;
+	RCBA32(IOTR3+4) = 0x000200f0;
 }
 
 static void early_ich7_init(void)

@@ -19,6 +19,7 @@
 #include <device/pci_ids.h>
 #include <arch/io.h>
 #include <arch/stages.h>
+#include <device/pnp.h>
 #include <device/pnp_def.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
@@ -32,9 +33,15 @@
 #include <cpu/x86/bist.h>
 #include <cpu/x86/lapic.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
+#include <superio/nuvoton/common/nuvoton.h>
+#include <superio/nuvoton/nct5104d/nct5104d.h>
 #include <Fch/Fch.h>
 
 #include "gpio_ftns.h"
+
+#define SIO_PORT 0x2e
+#define SERIAL1_DEV PNP_DEV(SIO_PORT, NCT5104D_SP1)
+#define SERIAL2_DEV PNP_DEV(SIO_PORT, NCT5104D_SP2)
 
 static void early_lpc_init(void);
 
@@ -56,6 +63,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	hudson_lpc_port80();
 
 	if (!cpu_init_detectedx && boot_cpu()) {
+		pci_devfn_t dev;
+		u32 data;
+
 		timestamp_init(timestamp_get());
 		timestamp_add_now(TS_START_ROMSTAGE);
 
@@ -64,6 +74,19 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		hudson_clk_output_48Mhz();
 		post_code(0x31);
+
+		dev = PCI_DEV(0, 0x14, 3);
+		data = pci_read_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE);
+		/* enable 0x2e/0x4e IO decoding before configuring SuperIO */
+		pci_write_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE, data | 3);
+
+		/* COM2 on apu5 is reserved so only COM1 should be supported */
+		if ((CONFIG_UART_FOR_CONSOLE == 1) &&
+			!IS_ENABLED(CONFIG_BOARD_PCENGINES_APU5))
+			nuvoton_enable_serial(SERIAL2_DEV, CONFIG_TTYS0_BASE);
+		else if (CONFIG_UART_FOR_CONSOLE == 0)
+			nuvoton_enable_serial(SERIAL1_DEV, CONFIG_TTYS0_BASE);
+
 		console_init();
 	}
 

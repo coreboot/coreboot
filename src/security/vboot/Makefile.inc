@@ -80,44 +80,39 @@ postcar-y += common.c
 
 romstage-$(CONFIG_FSP2_0_USES_TPM_MRC_HASH) += mrc_cache_hash_tpm.c
 
-ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
-VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-verstage-y))
-else
-ifeq ($(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK),y)
-VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-bootblock-y))
-else
-VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-romstage-y))
-endif
-endif # CONFIG_VBOOT_SEPARATE_VERSTAGE
 
-VB2_LIB = $(obj)/external/vboot_reference/vboot_fw20.a
-VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%,\
-		$(patsubst $(src)/%.h,$(top)/$(src)/%.h,\
-		$(filter-out -I$(obj), $(CPPFLAGS_verstage))))
-VBOOT_CFLAGS += $(CFLAGS_verstage)
-VBOOT_CFLAGS += $(verstage-c-ccopts)
-VBOOT_CFLAGS += -I$(abspath $(obj)) -Wno-missing-prototypes
-VBOOT_CFLAGS += -DVBOOT_DEBUG
+# call with $1 = stage name to create rules for building the library
+# for the stage and adding it to the stage's set of object files.
+define vboot-for-stage
+VB2_LIB_$(1) = $(obj)/external/vboot_reference-$(1)/vboot_fw20.a
+VBOOT_CFLAGS_$(1) += $$(patsubst -I%,-I$(top)/%,\
+		$$(patsubst $(src)/%.h,$(top)/$(src)/%.h,\
+		$$(filter-out -I$(obj), $$(CPPFLAGS_$(1)))))
+VBOOT_CFLAGS_$(1) += $$(CFLAGS_$(1))
+VBOOT_CFLAGS_$(1) += $$($(1)-c-ccopts)
+VBOOT_CFLAGS_$(1) += -I$(abspath $(obj)) -Wno-missing-prototypes
+VBOOT_CFLAGS_$(1) += -DVBOOT_DEBUG
 
-$(VB2_LIB): $(obj)/config.h
+$$(VB2_LIB_$(1)): $(obj)/config.h
 	printf "    MAKE       $(subst $(obj)/,,$(@))\n"
-	+FIRMWARE_ARCH=$(VB_FIRMWARE_ARCH) \
-	CC="$(CC_verstage)" \
-	CFLAGS="$(VBOOT_CFLAGS)" VBOOT2="y" \
+	+FIRMWARE_ARCH=$$(ARCHDIR-$$(ARCH-$(1)-y)) \
+	CC="$$(CC_$(1))" \
+	CFLAGS="$$(VBOOT_CFLAGS_$(1))" VBOOT2="y" \
 	$(MAKE) -C $(VBOOT_SOURCE) \
-		BUILD=$(abspath $(dir $(VB2_LIB))) \
+		BUILD=$$(abspath $$(dir $$(VB2_LIB_$(1)))) \
 		V=$(V) \
 		fwlib20
 
-verstage-srcs += $(VB2_LIB)
+$(1)-srcs += $$(VB2_LIB_$(1))
+
+endef # vboot-for-stage
+
+$(eval $(call vboot-for-stage,verstage))
 
 ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
 
-# This works under the assumption that romstage and verstage use the same
-# architecture and thus CC_verstage is the same as CC_romstage. If this is not
-# true, VB2_LIB needs to ensure that correct CC is being used.
 ifeq ($(CONFIG_VBOOT_HAS_REC_HASH_SPACE),y)
-romstage-srcs += $(VB2_LIB)
+$(eval $(call vboot-for-stage,romstage))
 endif
 
 cbfs-files-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += $(CONFIG_CBFS_PREFIX)/verstage

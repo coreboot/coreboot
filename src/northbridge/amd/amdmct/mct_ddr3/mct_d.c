@@ -2364,10 +2364,10 @@ void precise_ndelay_fam15(struct MCTStatStruc *pMCTstat, uint32_t nanoseconds) {
 	uint64_t start_timestamp;
 	uint64_t current_timestamp;
 
-	tsc_msr = rdmsr(0x00000010);
+	tsc_msr = rdmsr(TSC_MSR);
 	start_timestamp = (((uint64_t)tsc_msr.hi) << 32) | tsc_msr.lo;
 	do {
-		tsc_msr = rdmsr(0x00000010);
+		tsc_msr = rdmsr(TSC_MSR);
 		current_timestamp = (((uint64_t)tsc_msr.hi) << 32) | tsc_msr.lo;
 	} while ((current_timestamp - start_timestamp) < cycle_count);
 }

@@ -21,7 +21,7 @@
  * to 64k if we can though.
  */
 
-#define LAPIC_BASE_MSR 0x1b
+#include <cpu/x86/lapic_def.h>
 
 /*
  * +--------------------------------+ 0xaffff
@@ -48,8 +48,6 @@
  * +--------------------------------+ 0xa0000
  *
  */
-
-#define LAPIC_ID 0xfee00020
 
 /* SMM_HANDLER_OFFSET is the 16bit offset within the ASEG
  * at which smm_handler_start lives. At the moment the handler
@@ -134,7 +132,7 @@ untampered_lapic:
 	movw    %ax, %gs
 
 	/* Get this CPU's LAPIC ID */
-	movl $LAPIC_ID, %esi
+	movl $(LOCAL_APIC_ADDR | LAPIC_ID), %esi
 	movl (%esi), %ecx
 	shr  $24, %ecx
 

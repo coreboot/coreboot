@@ -2427,7 +2427,7 @@ void mct_Wait(u32 cycles)
 
 	cycles <<= 3;		/* x8 (number of 1.25ns ticks) */
 
-	msr = 0x10;			/* TSC */
+	msr = TSC_MSR;			/* TSC */
 	_RDMSR(msr, &lo, &hi);
 	saved = lo;
 	do {

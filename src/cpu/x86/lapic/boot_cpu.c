@@ -13,13 +13,14 @@
 
 #include <smp/node.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/lapic_def.h>
 
 #if IS_ENABLED(CONFIG_SMP)
 int boot_cpu(void)
 {
 	int bsp;
 	msr_t msr;
-	msr = rdmsr(0x1b);
+	msr = rdmsr(LAPIC_BASE_MSR);
 	bsp = !!(msr.lo & (1 << 8));
 	return bsp;
 }

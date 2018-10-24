@@ -18,9 +18,6 @@
 #ifndef ASPSDEFS_H
 #define ASPSDEFS_H
 
-#define APIC_BAR 0x1b			/* APIC_BAR register */
-#define APIC_BAR_BP 0x100		/* APIC_BAR BSP bit */
-
 /* P-state register offset */
 #define PS_REG0 0			/* offset for P0 */
 #define PS_REG1 1			/* offset for P1 */
@@ -237,7 +234,6 @@
 #define DUAL_PLANE_NB_VID_OFF_MASK 0x3e0000/* for CPU rev <= C */
 #define DUAL_PLANE_NB_VID_SHIFT 17/* for CPU rev <= C */
 
-
 #define NM_PS_REG (is_fam15h()?8:5)	/* number of P-state MSR registers */
 
 /* sFidVidInit.outFlags defines */
@@ -259,7 +255,6 @@
 #define VID_1_100V 0x12		/* 1.100V */
 #define VID_1_175V 0x1E		/* 1.175V */
 
-
 /* Nb Fid Code */
 #define NB_FID_800M 0x00		/* 800MHz */
 
@@ -268,13 +263,9 @@
 #define NB_DID_1 1
 
 /* GH Logical ID */
-
 #define GH_REV_A2 0x4			/* GH Rev A2 logical ID, Upper half */
 
-
-#define TSC_MSR 0x10
 #define TSC_FREQ_SEL_SHIFT 24
-
 #define TSC_FREQ_SEL_MASK (1 << TSC_FREQ_SEL_SHIFT)
 
 #define WAIT_PSTATE_TIMEOUT 80000000  /* 0.1 s , unit : 1.25 ns */

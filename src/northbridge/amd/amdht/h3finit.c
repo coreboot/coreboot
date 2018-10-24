@@ -29,6 +29,7 @@
 
 #include <device/pci.h>
 #include <console/console.h>
+#include <cpu/x86/lapic_def.h>
 #include <cpu/amd/msr.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
@@ -41,10 +42,6 @@
  *
  *----------------------------------------------------------------------------
  */
-
-/* APIC defines from amdgesa.inc, which can't be included in to c code. */
-#define APIC_Base_BSP	8
-#define APIC_Base	0x1b
 
 #define NVRAM_LIMIT_HT_SPEED_200  0x12
 #define NVRAM_LIMIT_HT_SPEED_300  0x11
@@ -1831,9 +1828,9 @@ static BOOL isSanityCheckOk(void)
 {
 	uint64 qValue;
 
-	AmdMSRRead(APIC_Base, &qValue);
+	AmdMSRRead(LAPIC_BASE_MSR, &qValue);
 
-	return ((qValue.lo & ((u32)1 << APIC_Base_BSP)) != 0);
+	return ((qValue.lo & LAPIC_BASE_MSR_BOOTSTRAP_PROCESSOR) != 0);
 }
 
 /***************************************************************************

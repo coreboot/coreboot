@@ -127,7 +127,7 @@ static void apply_microcode_patch(const struct microcode *m)
 	UCODE_DEBUG("patch id to apply = 0x%08x\n", m->patch_id);
 
 	/* read the patch_id again */
-	msr = rdmsr(0x8b);
+	msr = rdmsr(IA32_BIOS_SIGN_ID);
 	new_patch_id = msr.lo;
 
 	UCODE_DEBUG("updated to patch id = 0x%08x %s\n", new_patch_id,

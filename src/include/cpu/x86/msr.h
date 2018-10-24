@@ -14,6 +14,7 @@
 #define  EFER_SCE	(1 << 0)
 
 /* Page attribute type MSR */
+#define TSC_MSR				0x10
 #define IA32_PLATFORM_ID		0x17
 #define IA32_FEATURE_CONTROL		0x3a
 #define  FEATURE_CONTROL_LOCK_BIT	(1 << 0)

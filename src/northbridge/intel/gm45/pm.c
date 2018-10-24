@@ -20,8 +20,8 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
-#include <console/console.h>
 #include <cpu/x86/msr.h>
+#include <cpu/intel/speedstep.h>
 
 #include "gm45.h"
 
@@ -268,7 +268,8 @@ void init_pm(const sysinfo_t *const sysinfo, int do_freq_scaling_cfg)
 		MCHBAR32(0x94) |= 3 << 22;
 	}
 
-	const int cpu_supports_super_lfm = rdmsr(0xee).lo & (1 << 27);
+	const int cpu_supports_super_lfm =
+				rdmsr(MSR_EXTENDED_CONFIG).lo & (1 << 27);
 	if ((stepping >= STEPPING_B0) && cpu_supports_super_lfm) {
 		MCHBAR16(CLKCFG_MCHBAR) &= ~(1 << 7);
 		MCHBAR16(CLKCFG_MCHBAR) |= 1 << 14;

@@ -35,60 +35,49 @@ static void sm_init(struct device *dev)
 	setup_ioapic(VIO_APIC_VADDR, CONFIG_MAX_CPUS);
 }
 
-static int lsmbus_recv_byte(struct device *dev)
+static u32 get_sm_mmio(struct device *dev)
 {
-	u8 device;
 	struct resource *res;
 	struct bus *pbus;
 
-	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
-
 	res = find_resource(pbus->dev, 0x90);
+	if (res->base == SMB_BASE_ADDR)
+		return SMBUS_MMIO_BASE;
 
-	return do_smbus_recv_byte(res->base, device);
+	return ASF_MMIO_BASE;
+}
+
+static int lsmbus_recv_byte(struct device *dev)
+{
+	u8 device;
+
+	device = dev->path.i2c.device;
+	return do_smbus_recv_byte(get_sm_mmio(dev), device);
 }
 
 static int lsmbus_send_byte(struct device *dev, u8 val)
 {
 	u8 device;
-	struct resource *res;
-	struct bus *pbus;
 
 	device = dev->path.i2c.device;
-	pbus = get_pbus_smbus(dev);
-
-	res = find_resource(pbus->dev, 0x90);
-
-	return do_smbus_send_byte(res->base, device, val);
+	return do_smbus_send_byte(get_sm_mmio(dev), device, val);
 }
 
 static int lsmbus_read_byte(struct device *dev, u8 address)
 {
 	u8 device;
-	struct resource *res;
-	struct bus *pbus;
 
 	device = dev->path.i2c.device;
-	pbus = get_pbus_smbus(dev);
-
-	res = find_resource(pbus->dev, 0x90);
-
-	return do_smbus_read_byte(res->base, device, address);
+	return do_smbus_read_byte(get_sm_mmio(dev), device, address);
 }
 
 static int lsmbus_write_byte(struct device *dev, u8 address, u8 val)
 {
 	u8 device;
-	struct resource *res;
-	struct bus *pbus;
 
 	device = dev->path.i2c.device;
-	pbus = get_pbus_smbus(dev);
-
-	res = find_resource(pbus->dev, 0x90);
-
-	return do_smbus_write_byte(res->base, device, address, val);
+	return do_smbus_write_byte(get_sm_mmio(dev), device, address, val);
 }
 static struct smbus_bus_operations lops_smbus_bus = {
 	.recv_byte = lsmbus_recv_byte,

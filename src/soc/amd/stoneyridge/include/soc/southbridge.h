@@ -39,6 +39,8 @@
 #define   FORCE_SLPSTATE_RETRY		BIT(25)
 #define   FORCE_STPCLK_RETRY		BIT(24)
 
+#define SMB_ASF_IO_BASE			0x01 /* part of PM_DECODE_EN */
+
 #define PWR_RESET_CFG			0x10
 #define   TOGGLE_ALL_PWR_GOOD		BIT(1)
 
@@ -110,6 +112,50 @@
 #define MMIO_ACPI_GPE0_STS		0x14
 #define MMIO_ACPI_GPE0_EN		0x18
 #define MMIO_ACPI_PM_TMR_BLK		0x08
+
+/* SMBUS MMIO offsets 0xfed80a00 */
+#define SMBHSTSTAT			0x0
+#define   SMBHST_STAT_FAILED		0x10
+#define   SMBHST_STAT_COLLISION		0x08
+#define   SMBHST_STAT_ERROR		0x04
+#define   SMBHST_STAT_INTERRUPT		0x02
+#define   SMBHST_STAT_BUSY		0x01
+#define   SMBHST_STAT_CLEAR		0xff
+#define   SMBHST_STAT_NOERROR		0x02
+#define   SMBHST_STAT_VAL_BITS		0x1f
+#define   SMBHST_STAT_ERROR_BITS	0x1c
+
+#define SMBSLVSTAT			0x1
+#define   SMBSLV_STAT_ALERT		0x20
+#define   SMBSLV_STAT_SHADOW2		0x10
+#define   SMBSLV_STAT_SHADOW1		0x08
+#define   SMBSLV_STAT_SLV_STS		0x04
+#define   SMBSLV_STAT_SLV_INIT		0x02
+#define   SMBSLV_STAT_SLV_BUSY		0x01
+#define   SMBSLV_STAT_CLEAR		0x1f
+
+#define SMBHSTCTRL			0x2
+#define   SMBHST_CTRL_RST		0x80
+#define   SMBHST_CTRL_STRT		0x40
+#define   SMBHST_CTRL_QCK_RW		0x00
+#define   SMBHST_CTRL_BTE_RW		0x04
+#define   SMBHST_CTRL_BDT_RW		0x08
+#define   SMBHST_CTRL_WDT_RW		0x0c
+#define   SMBHST_CTRL_BLK_RW		0x14
+#define   SMBHST_CTRL_MODE_BITS		0x1c
+#define   SMBHST_CTRL_KILL		0x02
+#define   SMBHST_CTRL_IEN		0x01
+
+#define SMBHSTCMD			0x3
+#define SMBHSTADDR			0x4
+#define SMBHSTDAT0			0x5
+#define SMBHSTDAT1			0x6
+#define SMBHSTBLKDAT			0x7
+#define SMBSLVCTRL			0x8
+#define SMBSLVCMD_SHADOW		0x9
+#define SMBSLVEVT			0xa
+#define SMBSLVDAT			0xc
+#define SMBTIMING			0xe
 
 /* FCH MISC Registers 0xfed80e00 */
 #define GPP_CLK_CNTRL			0x00
@@ -480,6 +526,8 @@ void xhci_pm_write16(uint8_t reg, uint16_t value);
 uint16_t xhci_pm_read16(uint8_t reg);
 void xhci_pm_write32(uint8_t reg, uint32_t value);
 uint32_t xhci_pm_read32(uint8_t reg);
+void smbus_write8(uint32_t mmio, uint8_t reg, uint8_t value);
+uint8_t smbus_read8(uint32_t mmio, uint8_t reg);
 void bootblock_fch_early_init(void);
 void bootblock_fch_init(void);
 /**

@@ -28,6 +28,7 @@
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/reset.h>
 #include <soc/southbridge.h>
+#include <soc/smbus.h>
 #include <soc/smi.h>
 #include <soc/amd_pci_int_defs.h>
 #include <delay.h>
@@ -619,6 +620,17 @@ static void setup_misc(int *reboot)
 	}
 }
 
+static void fch_smbus_init(void)
+{
+	pm_write8(SMB_ASF_IO_BASE, SMB_BASE_ADDR >> 8);
+	smbus_write8(SMBUS_MMIO_BASE, SMBTIMING, SMB_SPEED_400KHZ);
+	/* Clear all SMBUS status bits */
+	smbus_write8(SMBUS_MMIO_BASE, SMBHSTSTAT, SMBHST_STAT_CLEAR);
+	smbus_write8(SMBUS_MMIO_BASE, SMBSLVSTAT, SMBSLV_STAT_CLEAR);
+	smbus_write8(ASF_MMIO_BASE, SMBHSTSTAT, SMBHST_STAT_CLEAR);
+	smbus_write8(ASF_MMIO_BASE, SMBSLVSTAT, SMBSLV_STAT_CLEAR);
+}
+
 /* Before console init */
 void bootblock_fch_early_init(void)
 {
@@ -631,6 +643,7 @@ void bootblock_fch_early_init(void)
 	sb_spibase();
 	sb_disable_4dw_burst(); /* Must be disabled on CZ(ST) */
 	sb_acpi_mmio_decode();
+	fch_smbus_init();
 	sb_enable_cf9_io();
 	setup_spread_spectrum(&reboot);
 	setup_misc(&reboot);

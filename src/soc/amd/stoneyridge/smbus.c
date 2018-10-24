@@ -16,143 +16,144 @@
 #include <io.h>
 #include <stdint.h>
 #include <soc/smbus.h>
+#include <soc/southbridge.h>
 
-static int smbus_wait_until_ready(u16 smbus_io_base)
+static int smbus_wait_until_ready(u32 mmio)
 {
 	u32 loops;
 	loops = SMBUS_TIMEOUT;
 	do {
 		u8 val;
-		val = inb(smbus_io_base + SMBHSTSTAT);
+		val = smbus_read8(mmio, SMBHSTSTAT);
 		val &= SMBHST_STAT_VAL_BITS;
 		if (val == 0) {	/* ready now */
 			return 0;
 		}
-		outb(val, smbus_io_base + SMBHSTSTAT);
+		smbus_write8(mmio, SMBHSTSTAT, val);
 	} while (--loops);
 	return -2;		/* time out */
 }
 
-static int smbus_wait_until_done(u16 smbus_io_base)
+static int smbus_wait_until_done(u32 mmio)
 {
 	u32 loops;
 	loops = SMBUS_TIMEOUT;
 	do {
 		u8 val;
 
-		val = inb(smbus_io_base + SMBHSTSTAT);
+		val = smbus_read8(mmio, SMBHSTSTAT);
 		val &= SMBHST_STAT_VAL_BITS;	/* mask off reserved bits */
 		if (val & SMBHST_STAT_ERROR_BITS)
 			return -5;	/* error */
 		if (val == SMBHST_STAT_NOERROR) {
-			outb(val, smbus_io_base + SMBHSTSTAT); /* clear sts */
+			smbus_write8(mmio, SMBHSTSTAT, val); /* clear sts */
 			return 0;
 		}
 	} while (--loops);
 	return -3;		/* timeout */
 }
 
-int do_smbus_recv_byte(u16 smbus_io_base, u8 device)
+int do_smbus_recv_byte(u32 mmio, u8 device)
 {
 	u8 byte;
 
-	if (smbus_wait_until_ready(smbus_io_base) < 0)
+	if (smbus_wait_until_ready(mmio) < 0)
 		return -2;	/* not ready */
 
 	/* set the device I'm talking to */
-	outb(((device & 0x7f) << 1) | 1, smbus_io_base + SMBHSTADDR);
+	smbus_write8(mmio, SMBHSTADDR, ((device & 0x7f) << 1) | 1);
 
-	byte = inb(smbus_io_base + SMBHSTCTRL);
+	byte = smbus_read8(mmio, SMBHSTCTRL);
 	byte &= ~SMBHST_CTRL_MODE_BITS;			/* Clear [4:2] */
 	byte |= SMBHST_CTRL_STRT | SMBHST_CTRL_BTE_RW;	/* set mode, start */
-	outb(byte, smbus_io_base + SMBHSTCTRL);
+	smbus_write8(mmio, SMBHSTCTRL, byte);
 
 	/* poll for transaction completion */
-	if (smbus_wait_until_done(smbus_io_base) < 0)
+	if (smbus_wait_until_done(mmio) < 0)
 		return -3;	/* timeout or error */
 
 	/* read results of transaction */
-	byte = inb(smbus_io_base + SMBHSTDAT0);
+	byte = smbus_read8(mmio, SMBHSTDAT0);
 
 	return byte;
 }
 
-int do_smbus_send_byte(u16 smbus_io_base, u8 device, u8 val)
+int do_smbus_send_byte(u32 mmio, u8 device, u8 val)
 {
 	u8 byte;
 
-	if (smbus_wait_until_ready(smbus_io_base) < 0)
+	if (smbus_wait_until_ready(mmio) < 0)
 		return -2;	/* not ready */
 
 	/* set the command... */
-	outb(val, smbus_io_base + SMBHSTDAT0);
+	smbus_write8(mmio, SMBHSTDAT0, val);
 
 	/* set the device I'm talking to */
-	outb(((device & 0x7f) << 1) | 0, smbus_io_base + SMBHSTADDR);
+	smbus_write8(mmio, SMBHSTADDR, ((device & 0x7f) << 1) | 0);
 
-	byte = inb(smbus_io_base + SMBHSTCTRL);
+	byte = smbus_read8(mmio, SMBHSTCTRL);
 	byte &= ~SMBHST_CTRL_MODE_BITS;			/* Clear [4:2] */
 	byte |= SMBHST_CTRL_STRT | SMBHST_CTRL_BTE_RW;	/* set mode, start */
-	outb(byte, smbus_io_base + SMBHSTCTRL);
+	smbus_write8(mmio, SMBHSTCTRL, byte);
 
 	/* poll for transaction completion */
-	if (smbus_wait_until_done(smbus_io_base) < 0)
+	if (smbus_wait_until_done(mmio) < 0)
 		return -3;	/* timeout or error */
 
 	return 0;
 }
 
-int do_smbus_read_byte(u16 smbus_io_base, u8 device, u8 address)
+int do_smbus_read_byte(u32 mmio, u8 device, u8 address)
 {
 	u8 byte;
 
-	if (smbus_wait_until_ready(smbus_io_base) < 0)
+	if (smbus_wait_until_ready(mmio) < 0)
 		return -2;	/* not ready */
 
 	/* set the command/address... */
-	outb(address & 0xff, smbus_io_base + SMBHSTCMD);
+	smbus_write8(mmio, SMBHSTCMD, address & 0xff);
 
 	/* set the device I'm talking to */
-	outb(((device & 0x7f) << 1) | 1, smbus_io_base + SMBHSTADDR);
+	smbus_write8(mmio, SMBHSTADDR, ((device & 0x7f) << 1) | 1);
 
-	byte = inb(smbus_io_base + SMBHSTCTRL);
+	byte = smbus_read8(mmio, SMBHSTCTRL);
 	byte &= ~SMBHST_CTRL_MODE_BITS;			/* Clear [4:2] */
 	byte |= SMBHST_CTRL_STRT | SMBHST_CTRL_BDT_RW;	/* set mode, start */
-	outb(byte, smbus_io_base + SMBHSTCTRL);
+	smbus_write8(mmio, SMBHSTCTRL, byte);
 
 	/* poll for transaction completion */
-	if (smbus_wait_until_done(smbus_io_base) < 0)
+	if (smbus_wait_until_done(mmio) < 0)
 		return -3;	/* timeout or error */
 
 	/* read results of transaction */
-	byte = inb(smbus_io_base + SMBHSTDAT0);
+	byte = smbus_read8(mmio, SMBHSTDAT0);
 
 	return byte;
 }
 
-int do_smbus_write_byte(u16 smbus_io_base, u8 device, u8 address, u8 val)
+int do_smbus_write_byte(u32 mmio, u8 device, u8 address, u8 val)
 {
 	u8 byte;
 
-	if (smbus_wait_until_ready(smbus_io_base) < 0)
+	if (smbus_wait_until_ready(mmio) < 0)
 		return -2;	/* not ready */
 
 	/* set the command/address... */
-	outb(address & 0xff, smbus_io_base + SMBHSTCMD);
+	smbus_write8(mmio, SMBHSTCMD, address & 0xff);
 
 	/* set the device I'm talking to */
-	outb(((device & 0x7f) << 1) | 0, smbus_io_base + SMBHSTADDR);
+	smbus_write8(mmio, SMBHSTADDR, ((device & 0x7f) << 1) | 0);
 
 	/* output value */
-	outb(val, smbus_io_base + SMBHSTDAT0);
+	smbus_write8(mmio, SMBHSTDAT0, val);
 
-	byte = inb(smbus_io_base + SMBHSTCTRL);
+	byte = smbus_read8(mmio, SMBHSTCTRL);
 	byte &= ~SMBHST_CTRL_MODE_BITS;			/* Clear [4:2] */
 	byte |= SMBHST_CTRL_STRT | SMBHST_CTRL_BDT_RW;	/* set mode, start */
-	outb(byte, smbus_io_base + SMBHSTCTRL);
+	smbus_write8(mmio, SMBHSTCTRL, byte);
 
 	/* poll for transaction completion */
-	if (smbus_wait_until_done(smbus_io_base) < 0)
+	if (smbus_wait_until_done(mmio) < 0)
 		return -3;	/* timeout or error */
 
 	return 0;

@@ -27,8 +27,7 @@
  *           sending offset for every byte.
  *          Reads 128 bytes in 7-8 ms at 400 KHz.
  */
-static int readspd(uint16_t iobase, uint8_t SmbusSlaveAddress,
-			char *buffer, size_t count)
+static int readspd(uint8_t SmbusSlaveAddress, char *buffer, size_t count)
 {
 	uint8_t dev_addr;
 	size_t index;
@@ -36,8 +35,8 @@ static int readspd(uint16_t iobase, uint8_t SmbusSlaveAddress,
 	char *pbuf = buffer;
 
 	printk(BIOS_SPEW, "-------------READING SPD-----------\n");
-	printk(BIOS_SPEW, "iobase: 0x%08X, SmbusSlave: 0x%08X, count: %d\n",
-					iobase, SmbusSlaveAddress, (int)count);
+	printk(BIOS_SPEW, "SmbusSlave: 0x%08X, count: %zd\n",
+					SmbusSlaveAddress, count);
 
 	/*
 	 * Convert received device address to the format accepted by
@@ -46,7 +45,7 @@ static int readspd(uint16_t iobase, uint8_t SmbusSlaveAddress,
 	dev_addr = (SmbusSlaveAddress >> 1);
 
 	/* Read the first SPD byte */
-	error = do_smbus_read_byte(iobase, dev_addr, 0);
+	error = do_smbus_read_byte(SMBUS_MMIO_BASE, dev_addr, 0);
 	if (error < 0) {
 		printk(BIOS_ERR, "-------------SPD READ ERROR-----------\n");
 		return error;
@@ -56,7 +55,7 @@ static int readspd(uint16_t iobase, uint8_t SmbusSlaveAddress,
 
 	/* Read the remaining SPD bytes using do_smbus_recv_byte for speed */
 	for (index = 1 ; index < count ; index++) {
-		error = do_smbus_recv_byte(iobase, dev_addr);
+		error = do_smbus_recv_byte(SMBUS_MMIO_BASE, dev_addr);
 		if (error < 0) {
 			printk(BIOS_ERR, "-------------SPD READ ERROR-----------\n");
 			return error;
@@ -70,24 +69,7 @@ static int readspd(uint16_t iobase, uint8_t SmbusSlaveAddress,
 	return 0;
 }
 
-static void write_pm_reg(int reg, int data)
-{
-	outb(reg, PM_INDEX);
-	outb(data, PM_DATA);
-}
-
-static void setup_fch(uint16_t ioBase)
-{
-	write_pm_reg(SMB_ASF_IO_BASE, ioBase >> 8);
-	outb(SMB_SPEED_400KHZ, ioBase + SMBTIMING);
-	/* Clear all SMBUS status bits */
-	outb(SMBHST_STAT_CLEAR, ioBase + SMBHSTSTAT);
-	outb(SMBSLV_STAT_CLEAR, ioBase + SMBSLVSTAT);
-}
-
 int sb_read_spd(uint8_t spdAddress, char *buf, size_t len)
 {
-	uint16_t ioBase = SMB_BASE_ADDR;
-	setup_fch(ioBase);
-	return readspd(ioBase, spdAddress, buf, len);
+	return readspd(spdAddress, buf, len);
 }

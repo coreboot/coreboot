@@ -52,6 +52,7 @@ Device (EC0)
 		PATC, 8,	// Programmable Auxiliary Trip Commit
 		CHGL, 8,	// Charger Current Limit
 		TBMD, 1,	// Tablet mode
+		DDPN, 3,	// Device DPTF Profile Number
 		// DFUD must be 0 for the other 31 values to be valid
 		Offset (0x0a),
 		DFUD, 1,	// Device Features Undefined
@@ -507,6 +508,21 @@ Device (EC0)
 	Method (RCTM, 0, NotSerialized)
 	{
 		Return (^TBMD)
+	}
+
+	/* Read current Device DPTF Profile Number */
+	Method (RCDP, 0, NotSerialized)
+	{
+		/*
+		 * DDPN = 0 is reserved for backwards compatibility.
+		 * If DDPN == 0 use TBMD to load appropriate DPTF table.
+		 */
+		If (LEqual (^DDPN, 0)) {
+			Return (^TBMD)
+		} Else {
+			Subtract (^DDPN, 1, Local0)
+			Return (Local0)
+		}
 	}
 
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_ACPI_USB_PORT_POWER)

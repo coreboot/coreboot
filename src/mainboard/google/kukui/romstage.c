@@ -15,8 +15,10 @@
 
 #include <arch/stages.h>
 #include <soc/mmu_operations.h>
+#include <soc/mt6358.h>
 
 void platform_romstage_main(void)
 {
+	mt6358_init();
 	mtk_mmu_after_dram();
 }

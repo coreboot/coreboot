@@ -185,7 +185,7 @@ void payload_load(void)
 
 	switch (prog_cbfs_type(payload)) {
 	case CBFS_TYPE_SELF: /* Simple ELF */
-		selfload(payload, true);
+		selfload_check(payload);
 		break;
 	case CBFS_TYPE_FIT: /* Flattened image tree */
 		if (IS_ENABLED(CONFIG_PAYLOAD_FIT_SUPPORT)) {

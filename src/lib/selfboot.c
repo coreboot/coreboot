@@ -30,6 +30,9 @@
 #include <timestamp.h>
 #include <cbmem.h>
 
+/* The type syntax for C is essentially unparsable. -- Rob Pike */
+typedef int (*checker_t)(struct cbfs_payload_segment *cbfssegs);
+
 /* Decode a serialized cbfs payload segment
  * from memory into native endianness.
  */
@@ -138,10 +141,26 @@ static int last_loadable_segment(struct cbfs_payload_segment *seg)
 	return read_be32(&(seg + 1)->type) == PAYLOAD_SEGMENT_ENTRY;
 }
 
-static int load_payload_segments(
-	struct cbfs_payload_segment *cbfssegs,
-	int check_regions,
-	uintptr_t *entry)
+static int check_payload_segments(struct cbfs_payload_segment *cbfssegs)
+{
+	uint8_t *dest;
+	size_t memsz;
+	struct cbfs_payload_segment *first_segment, *seg, segment;
+
+	for (first_segment = seg = cbfssegs;; ++seg) {
+		printk(BIOS_DEBUG, "Checking segment from ROM address 0x%p\n", seg);
+		cbfs_decode_payload_segment(&segment, seg);
+		dest = (uint8_t *)(uintptr_t)segment.load_addr;
+		memsz = segment.mem_len;
+		if (segment.type == PAYLOAD_SEGMENT_ENTRY)
+			break;
+		if (!segment_targets_usable_ram(dest, memsz))
+			return -1;
+	}
+	return 0;
+}
+
+static int load_payload_segments(struct cbfs_payload_segment *cbfssegs, uintptr_t *entry)
 {
 	uint8_t *dest, *src;
 	size_t filesz, memsz;
@@ -202,8 +221,6 @@ static int load_payload_segments(
 			printk(BIOS_EMERG, "Bad segment type %x\n", segment.type);
 			return -1;
 		}
-		if (check_regions && !segment_targets_usable_ram(dest, memsz))
-			return -1;
 		/* Note that the 'seg + 1' is safe as we only call this
 		 * function on "not the last" * items, since entry
 		 * is always last. */
@@ -221,19 +238,29 @@ __weak int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size)
 	return 0;
 }
 
-bool selfload(struct prog *payload, bool check_regions)
+static void *selfprepare(struct prog *payload)
+{
+	void *data;
+	data = rdev_mmap_full(prog_rdev(payload));
+	return data;
+}
+
+static bool _selfload(struct prog *payload, checker_t f)
 {
 	uintptr_t entry = 0;
 	struct cbfs_payload_segment *cbfssegs;
 	void *data;
 
-	data = rdev_mmap_full(prog_rdev(payload));
-
+	data = selfprepare(payload);
 	if (data == NULL)
 		return false;
 
 	cbfssegs = &((struct cbfs_payload *)data)->segments;
-	if (load_payload_segments(cbfssegs, check_regions, &entry))
+
+	if (f && f(cbfssegs))
+		goto out;
+
+	if (load_payload_segments(cbfssegs, &entry))
 		goto out;
 
 	printk(BIOS_SPEW, "Loaded segments\n");
@@ -247,4 +274,14 @@ bool selfload(struct prog *payload, bool check_regions)
 out:
 	rdev_munmap(prog_rdev(payload), data);
 	return false;
+}
+
+bool selfload_check(struct prog *payload)
+{
+	return _selfload(payload, check_payload_segments);
+}
+
+bool selfload(struct prog *payload)
+{
+	return _selfload(payload, NULL);
 }

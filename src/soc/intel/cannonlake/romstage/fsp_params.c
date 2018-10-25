@@ -25,6 +25,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 {
 	unsigned int i;
 	uint32_t mask = 0;
+	const struct device *dev = dev_find_slot(0, PCH_DEVFN_ISH);
 
 	/* Set IGD stolen size to 64MB. */
 	m_cfg->IgdDvmt50PreAlloc = 2;
@@ -55,6 +56,11 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 #if IS_ENABLED(CONFIG_SOC_INTEL_COFFEELAKE)
 	m_cfg->SkipMpInit = !chip_get_fsp_mp_init();
 #endif
+	/* If ISH is enabled, enable ISH elements */
+	if (!dev)
+		m_cfg->PchIshEnable = 0;
+	else
+		m_cfg->PchIshEnable = dev->enabled;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

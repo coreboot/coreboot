@@ -94,13 +94,7 @@ int is_dev3_present(void)
 	/* read the GPIO68 input status */
 	word = pci_read_config16(sm_dev, 0x7e);
 
-	if(word & (1 << 10)){
-		/*not exist*/
-		return 0;
-	}else{
-		/*exist*/
-		return 1;
-	}
+	return !(word & (1 << 10));
 }
 
 

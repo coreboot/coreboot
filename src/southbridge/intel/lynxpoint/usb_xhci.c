@@ -40,20 +40,19 @@ static int usb_xhci_port_count_usb3(device_t dev)
 	if (pch_is_lp()) {
 		/* LynxPoint-LP has 4 SS ports */
 		return 4;
-	} else {
-		/* LynxPoint-H can have 0, 2, 4, or 6 SS ports */
-		u8 *mem_base = usb_xhci_mem_base(dev);
-		u32 fus = read32(mem_base + XHCI_USB3FUS);
-		fus >>= XHCI_USB3FUS_SS_SHIFT;
-		fus &= XHCI_USB3FUS_SS_MASK;
-		switch (fus) {
-		case 3: return 0;
-		case 2: return 2;
-		case 1: return 4;
-		case 0: default: return 6;
-		}
 	}
-	return 0;
+		/* LynxPoint-H can have 0, 2, 4, or 6 SS ports */
+	u8 *mem_base = usb_xhci_mem_base(dev);
+	u32 fus = read32(mem_base + XHCI_USB3FUS);
+	fus >>= XHCI_USB3FUS_SS_SHIFT;
+	fus &= XHCI_USB3FUS_SS_MASK;
+	switch (fus) {
+	case 3: return 0;
+	case 2: return 2;
+	case 1: return 4;
+	case 0:
+	default: return 6;
+	}
 }
 
 static void usb_xhci_reset_status_usb3(u8 *mem_base, int port)

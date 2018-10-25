@@ -650,10 +650,9 @@ static int me_icc_set_clock_enables(u32 mask)
 	if (mei_sendrecv_icc(&icc, &clk, sizeof(clk), NULL, 0) < 0) {
 		printk(BIOS_ERR, "ME: ICC SET CLOCK ENABLES message failed\n");
 		return -1;
-	} else {
-		printk(BIOS_INFO, "ME: ICC SET CLOCK ENABLES 0x%08x\n", mask);
 	}
 
+	printk(BIOS_INFO, "ME: ICC SET CLOCK ENABLES 0x%08x\n", mask);
 	return 0;
 }
 

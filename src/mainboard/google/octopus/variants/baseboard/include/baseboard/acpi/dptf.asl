@@ -28,8 +28,8 @@ temperature trip value to avoid abrupt thermal shutdown. */
 
 #define DPTF_TSR1_SENSOR_ID	1
 #define DPTF_TSR1_SENSOR_NAME	"Ambient"
-#define DPTF_TSR1_PASSIVE	50
-#define DPTF_TSR1_CRITICAL	90
+#define DPTF_TSR1_PASSIVE	52
+#define DPTF_TSR1_CRITICAL	80
 
 #define DPTF_TSR2_SENSOR_ID	2
 #define DPTF_TSR2_SENSOR_NAME	"Charger"

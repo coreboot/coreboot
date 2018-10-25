@@ -30,7 +30,19 @@
 
 #define PL2_I7_SKU	44
 #define PL2_DEFAULT	29
-#define PL2_KBL_R	25
+#define PL2_KBL_U	25
+
+/* PL2 ID define*/
+#define PL2_ID_DEFAULT		0
+#define PL2_ID_SONA_SYNDRA	1
+
+static const struct pl2_config {
+	uint32_t cpuid_y0_pl2;
+	uint32_t cpuid_non_y0_pl2;
+} pl2_config_table[] = {
+	[PL2_ID_DEFAULT] = { PL2_I7_SKU, PL2_DEFAULT },
+	[PL2_ID_SONA_SYNDRA] = { PL2_DEFAULT, PL2_KBL_U },
+};
 
 /* Variant for AKALI */
 #define AKALI_SA_AC_LOADLINE	1100
@@ -67,18 +79,13 @@ static const struct {
 	},
 };
 
-static uint32_t get_pl2(uint32_t sku_id)
+static uint32_t get_pl2(int pl2_id)
 {
-	if ((sku_id == SKU_0_SONA) || (sku_id == SKU_1_SONA)) {
-		if (cpuid_eax(1) == CPUID_KABYLAKE_Y0)
-			return PL2_DEFAULT;
-
-		return PL2_KBL_R;
-	}
+	assert(pl2_id < ARRAY_SIZE(pl2_config_table));
 	if (cpuid_eax(1) == CPUID_KABYLAKE_Y0)
-		return PL2_I7_SKU;
+		return pl2_config_table[pl2_id].cpuid_y0_pl2;
 
-	return PL2_DEFAULT;
+	return pl2_config_table[pl2_id].cpuid_non_y0_pl2;
 }
 
 uint32_t variant_board_sku(void)
@@ -220,30 +227,30 @@ void variant_devtree_update(void)
 	int oem_index;
 	struct device *root = SA_DEV_ROOT;
 	config_t *cfg = root->chip_info;
-
-	/* Update PL2 based on SKU. */
-
-	cfg->tdp_pl2_override = get_pl2(sku_id);
+	uint8_t pl2_id = PL2_ID_DEFAULT;
 
 	switch (sku_id) {
-	case SKU_0_VAYNE:
-	case SKU_1_VAYNE:
-	case SKU_2_VAYNE:
-	case SKU_0_PANTHEON:
-	case SKU_1_PANTHEON:
-	case SKU_2_PANTHEON:
 	case SKU_0_SONA:
 	case SKU_1_SONA:
 	case SKU_0_SYNDRA:
 	case SKU_1_SYNDRA:
 	case SKU_2_SYNDRA:
 	case SKU_3_SYNDRA:
-		/* Disable unused port USB port */
+		pl2_id = PL2_ID_SONA_SYNDRA;
+	case SKU_0_VAYNE:
+	case SKU_1_VAYNE:
+	case SKU_2_VAYNE:
+	case SKU_0_PANTHEON:
+	case SKU_1_PANTHEON:
+	case SKU_2_PANTHEON:
 		cfg->usb2_ports[5].enable = 0;
 		break;
 	default:
 		break;
 	}
+
+	/* Update PL2 based on SKU. */
+	cfg->tdp_pl2_override = get_pl2(pl2_id);
 
 	/* Overwrite settings for different projects based on OEM ID*/
 	oem_index = find_sku_mapping(read_oem_id());

@@ -127,8 +127,8 @@ static const struct pad_config gpio_table[] = {
 						NF1), /* PCH_I2C0_8625_SCL */
 /* ISH_I2C1_SDA */	PAD_CFG_NC(GPP_D7),
 /* ISH_I2C1_SCL */	PAD_CFG_NC(GPP_D8),
-/* ISH_SPI_CS# */	PAD_CFG_GPI_INT(GPP_D9, NONE,
-					PLTRST, EDGE), /* HP_IRQ_GPIO */
+/* ISH_SPI_CS# */	PAD_CFG_GPI_APIC(GPP_D9, NONE,
+						PLTRST), /* HP_IRQ_GPIO */
 /* ISH_SPI_CLK */	PAD_CFG_GPI_GPIO_DRIVER(GPP_D10, NONE,
 						DEEP), /* OEM_ID1 */
 /* ISH_SPI_MISO */	PAD_CFG_GPI_GPIO_DRIVER(GPP_D11, NONE,

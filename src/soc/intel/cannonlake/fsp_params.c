@@ -67,7 +67,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
 	int i;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
-	FSP_S_TEST_CONFIG *tconfig = &supd->FspsTestConfig;
 	struct device *dev = SA_DEV_ROOT;
 	config_t *config = dev->chip_info;
 
@@ -203,16 +202,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	params->Heci3Enabled = config->Heci3Enabled;
 	params->Device4Enable = config->Device4Enable;
-	params->SkipMpInit = !chip_get_fsp_mp_init();
 
 	/* VrConfig Settings for 5 domains
 	 * 0 = System Agent, 1 = IA Core, 2 = Ring,
 	 * 3 = GT unsliced,  4 = GT sliced */
 	for (i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++)
 		fill_vr_domain_config(params, i, &config->domain_vr_config[i]);
-
-	/* Vt-D config */
-	tconfig->VtdDisable = config->VtdDisable;
 }
 
 /* Mainboard GPIO Configuration */

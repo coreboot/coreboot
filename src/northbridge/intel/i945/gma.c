@@ -588,16 +588,15 @@ static u32 get_cdclk(struct device *const dev)
 {
 	u16 gcfgc = pci_read_config16(dev, GCFGC);
 
-	if (gcfgc & GC_LOW_FREQUENCY_ENABLE) {
+	if (gcfgc & GC_LOW_FREQUENCY_ENABLE)
 		return 133333333;
-	} else {
-		switch (gcfgc & GC_DISPLAY_CLOCK_MASK) {
-		case GC_DISPLAY_CLOCK_333_320_MHZ:
-			return 320000000;
-		default:
-		case GC_DISPLAY_CLOCK_190_200_MHZ:
-			return 200000000;
-		}
+
+	switch (gcfgc & GC_DISPLAY_CLOCK_MASK) {
+	case GC_DISPLAY_CLOCK_333_320_MHZ:
+		return 320000000;
+	default:
+	case GC_DISPLAY_CLOCK_190_200_MHZ:
+		return 200000000;
 	}
 }
 

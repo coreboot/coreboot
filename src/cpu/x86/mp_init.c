@@ -773,7 +773,7 @@ static void adjust_smm_apic_id_map(struct smm_loader_params *smm_params)
 static int install_relocation_handler(int num_cpus, size_t save_state_size)
 {
 	struct smm_loader_params smm_params = {
-		.per_cpu_stack_size = save_state_size,
+		.per_cpu_stack_size = CONFIG_SMM_STUB_STACK_SIZE,
 		.num_concurrent_stacks = num_cpus,
 		.per_cpu_save_state_size = save_state_size,
 		.num_concurrent_save_states = 1,

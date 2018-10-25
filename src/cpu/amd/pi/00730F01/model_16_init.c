@@ -14,6 +14,7 @@
  */
 
 #include <console/console.h>
+#include <cpu/amd/microcode.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
 #include <cpu/x86/mtrr.h>
@@ -98,6 +99,8 @@ static void model_16_init(struct device *dev)
 	msr = rdmsr(HWCR_MSR);
 	msr.lo |= (1 << 0);
 	wrmsr(HWCR_MSR, msr);
+
+	update_microcode(cpuid_eax(1));
 }
 
 static struct device_operations cpu_dev_ops = {

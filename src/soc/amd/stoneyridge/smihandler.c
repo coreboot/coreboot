@@ -92,14 +92,14 @@ static void sb_apmc_smi_handler(void)
 
 	switch (cmd) {
 	case APM_CNT_ACPI_ENABLE:
-		reg32 = inl(ACPI_PM1_CNT_BLK);
+		reg32 = acpi_read32(MMIO_ACPI_PM1_CNT_BLK);
 		reg32 |= (1 << 0);	/* SCI_EN */
-		outl(reg32, ACPI_PM1_CNT_BLK);
+		acpi_write32(MMIO_ACPI_PM1_CNT_BLK, reg32);
 		break;
 	case APM_CNT_ACPI_DISABLE:
-		reg32 = inl(ACPI_PM1_CNT_BLK);
+		reg32 = acpi_read32(MMIO_ACPI_PM1_CNT_BLK);
 		reg32 &= ~(1 << 0);	/* clear SCI_EN */
-		outl(reg32, ACPI_PM1_CNT_BLK);
+		acpi_write32(MMIO_ACPI_PM1_CNT_BLK, reg32);
 		break;
 	case ELOG_GSMI_APM_CNT:
 		if (IS_ENABLED(CONFIG_ELOG_GSMI))
@@ -127,7 +127,7 @@ static void sb_slp_typ_handler(void)
 	uint8_t slp_typ, rst_ctrl;
 
 	/* Figure out SLP_TYP */
-	pm1cnt = inw(pm_acpi_pm_cnt_blk());
+	pm1cnt = acpi_read16(MMIO_ACPI_PM1_CNT_BLK);
 	printk(BIOS_SPEW, "SMI#: SLP = 0x%04x\n", pm1cnt);
 	slp_typ = acpi_sleep_from_pm1(pm1cnt);
 
@@ -182,20 +182,25 @@ static void sb_slp_typ_handler(void)
 		 * becomes a SCI.
 		 */
 		if (IS_ENABLED(CONFIG_ELOG_GSMI)) {
-			reg16 = inw(ACPI_PM1_EN) & inw(ACPI_PM1_STS);
+			reg16 = acpi_read16(MMIO_ACPI_PM1_EN);
+			reg16 &= acpi_read16(MMIO_ACPI_PM1_STS);
 			if (reg16)
 				elog_add_extended_event(
 						ELOG_SLEEP_PENDING_PM1_WAKE,
 						(u32)reg16);
 
-			reg32 = inl(ACPI_GPE0_EN) & inl(ACPI_GPE0_STS);
+			reg32 = acpi_read32(MMIO_ACPI_GPE0_EN);
+			reg32 &= acpi_read32(MMIO_ACPI_GPE0_STS);
 			if (reg32)
 				elog_add_extended_event(
 						ELOG_SLEEP_PENDING_GPE0_WAKE,
 						reg32);
 		} /* if (IS_ENABLED(CONFIG_ELOG_GSMI)) */
 
-		/* Reissue Pm1 write */
+		/*
+		 * An IO cycle is required to trigger the STPCLK/STPGNT
+		 * handshake when the Pm1 write is reissued.
+		 */
 		outw(pm1cnt | SLP_EN, pm_acpi_pm_cnt_blk());
 		hlt();
 	}

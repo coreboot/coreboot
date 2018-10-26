@@ -19,7 +19,8 @@
 
 void poweroff(void)
 {
-	outl((SLP_TYP_S5 << SLP_TYP_SHIFT) | SLP_EN, pm_acpi_pm_cnt_blk());
+	acpi_write32(MMIO_ACPI_PM1_CNT_BLK,
+			  (SLP_TYP_S5 << SLP_TYP_SHIFT) | SLP_EN);
 
 	/*
 	 * Setting SLP_TYP_S5 in PM1 triggers SLP_SMI, which is handled by SMM

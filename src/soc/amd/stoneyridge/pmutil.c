@@ -27,10 +27,11 @@ int vbnv_cmos_failed(void)
 
 int vboot_platform_is_resuming(void)
 {
-	if (!(inw(pm_acpi_pm_evt_blk()) & WAK_STS))
+	if (!(acpi_read16(MMIO_ACPI_PM1_STS) & WAK_STS))
 		return 0;
 
-	return acpi_sleep_from_pm1(inw(pm_acpi_pm_cnt_blk())) == ACPI_S3;
+	uint16_t pm_cnt = acpi_read16(MMIO_ACPI_PM1_CNT_BLK);
+	return acpi_sleep_from_pm1(pm_cnt) == ACPI_S3;
 }
 
 /* If vboot requests a system reset, modify the PM1 register so it will never be
@@ -39,8 +40,8 @@ void vboot_platform_prepare_reboot(void)
 {
 	uint16_t pm1;
 
-	pm1 = inw(pm_acpi_pm_cnt_blk());
+	pm1 = acpi_read16(MMIO_ACPI_PM1_CNT_BLK);
 	pm1 &= ~SLP_TYP;
 	pm1 |= SLP_TYP_S5 << SLP_TYP_SHIFT;
-	outw(pm1, pm_acpi_pm_cnt_blk());
+	acpi_write16(MMIO_ACPI_PM1_CNT_BLK, pm1);
 }

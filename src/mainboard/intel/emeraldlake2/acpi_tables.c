@@ -16,7 +16,6 @@
 #include <types.h>
 #include <string.h>
 #include <arch/acpi.h>
-#include <arch/ioapic.h>
 #include <arch/acpigen.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>

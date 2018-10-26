@@ -19,7 +19,6 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <arch/io.h>
-#include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
 #include <cpu/x86/smm.h>

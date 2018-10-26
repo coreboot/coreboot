@@ -18,7 +18,6 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <arch/ioapic.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>

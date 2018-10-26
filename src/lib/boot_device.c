@@ -20,6 +20,13 @@ void __weak boot_device_init(void)
 	/* Provide weak do-nothing init. */
 }
 
+int __weak boot_device_wp_region(struct region_device *rd,
+				 const enum bootdev_prot_type type)
+{
+	/* return a failure, make aware WP is not implemented */
+	return -1;
+}
+
 static int boot_device_subregion(const struct region *sub,
 				struct region_device *subrd,
 				const struct region_device *parent)

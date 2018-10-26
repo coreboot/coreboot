@@ -108,3 +108,46 @@ const struct spi_flash *boot_device_spi_flash(void)
 
 	return car_get_var_ptr(&sfg);
 }
+
+int boot_device_wp_region(struct region_device *rd,
+			  const enum bootdev_prot_type type)
+{
+	uint32_t ctrlr_pr;
+
+	/* Ensure boot device has been initialized at least once. */
+	boot_device_init();
+
+	const struct spi_flash *boot_dev = boot_device_spi_flash();
+
+	if (boot_dev == NULL)
+		return -1;
+
+	if (type == MEDIA_WP) {
+		if (spi_flash_is_write_protected(boot_dev,
+					region_device_region(rd)) != 1) {
+			return spi_flash_set_write_protected(boot_dev,
+						region_device_region(rd), true,
+						SPI_WRITE_PROTECTION_REBOOT);
+		}
+
+		/* Already write protected */
+		return 0;
+	}
+
+	switch (type) {
+	case CTRLR_WP:
+		ctrlr_pr = WRITE_PROTECT;
+		break;
+	case CTRLR_RP:
+		ctrlr_pr = READ_PROTECT;
+		break;
+	case CTRLR_RWP:
+		ctrlr_pr = READ_WRITE_PROTECT;
+		break;
+	default:
+		return -1;
+	}
+
+	return spi_flash_ctrlr_protect_region(boot_dev,
+					region_device_region(rd), ctrlr_pr);
+}

@@ -33,6 +33,7 @@ romstage-y += mt8183.c
 romstage-y += ../common/gpio.c gpio.c
 romstage-y += ../common/mmu_operations.c mmu_operations.c
 romstage-y += ../common/pmic_wrap.c pmic_wrap.c mt6358.c
+romstage-y += ../common/rtc.c rtc.c
 romstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 romstage-y += ../common/timer.c
 romstage-y += ../common/uart.c

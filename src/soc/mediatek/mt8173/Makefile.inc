@@ -60,7 +60,7 @@ romstage-y += memory.c
 romstage-y += emi.c dramc_pi_basic_api.c dramc_pi_calibration_api.c
 romstage-$(CONFIG_MEMORY_TEST) += ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c mmu_operations.c
-romstage-y += rtc.c
+romstage-y += ../common/rtc.c rtc.c
 
 ################################################################################
 
@@ -77,7 +77,7 @@ ramstage-y += da9212.c
 ramstage-y += ../common/gpio.c gpio.c
 ramstage-y += ../common/wdt.c ../common/reset.c
 ramstage-y += ../common/pll.c pll.c
-ramstage-y += rtc.c
+ramstage-y += ../common/rtc.c rtc.c
 
 ramstage-y += ../common/usb.c usb.c
 

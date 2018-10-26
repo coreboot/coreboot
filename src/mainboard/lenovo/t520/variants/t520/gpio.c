@@ -13,9 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#ifndef T520_GPIO_H
-#define T520_GPIO_H
-
 #include <southbridge/intel/common/gpio.h>
 
 const struct pch_gpio_set1 pch_gpio_set1_mode = {
@@ -302,4 +299,3 @@ const struct pch_gpio_map mainboard_gpio_map = {
 		.level		= &pch_gpio_set3_level,
 	},
 };
-#endif

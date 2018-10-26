@@ -13,11 +13,18 @@
  * GNU General Public License for more details.
  */
 
-#include <bootblock_common.h>
-#include <timestamp.h>
-#include "board.h"
+#ifndef __COREBOOT_SRC_MAINBOARD_GOOGLE_CHEZA_BOARD_H
+#define __COREBOOT_SRC_MAINBOARD_GOOGLE_CHEZA_BOARD_H
 
-void bootblock_mainboard_init(void)
-{
-	setup_chromeos_gpios();
-}
+#include <gpio.h>
+#include <soc/gpio.h>
+
+#define GPIO_EC_IN_RW	GPIO(11)
+#define GPIO_AP_EC_INT	GPIO(122)
+#define GPIO_AP_SUSPEND	GPIO(126)
+#define GPIO_WP_STATE	GPIO(128)
+#define GPIO_H1_AP_INT	GPIO(129)
+
+void setup_chromeos_gpios(void);
+
+#endif  /* ! __COREBOOT_SRC_MAINBOARD_GOOGLE_CHEZA_BOARD_H */

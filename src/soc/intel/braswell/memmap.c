@@ -16,7 +16,6 @@
 
 #include <arch/io.h>
 #include <cbmem.h>
-#include <console/console.h>
 #include <fsp/memmap.h>
 #include <soc/iosf.h>
 #include <soc/smm.h>

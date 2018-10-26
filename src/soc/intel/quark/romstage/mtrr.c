@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <soc/intel/common/util.h>

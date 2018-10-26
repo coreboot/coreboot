@@ -18,7 +18,6 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <superio/conf_mode.h>
-#include <console/console.h>
 #include <stdlib.h>
 #include "f71805f.h"
 

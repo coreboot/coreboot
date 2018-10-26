@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include "SBPLATFORM.h"
 #include "cfg.h"
 #include <OEM.h>

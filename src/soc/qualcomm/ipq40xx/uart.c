@@ -30,7 +30,6 @@
 
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
-#include <console/console.h>
 #include <console/uart.h>
 #include <delay.h>
 #include <gpio.h>

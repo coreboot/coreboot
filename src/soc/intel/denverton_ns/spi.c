@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <intelblocks/fast_spi.h>
 #include <spi-generic.h>
 

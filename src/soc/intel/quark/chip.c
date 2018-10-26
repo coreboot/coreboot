@@ -15,7 +15,6 @@
  */
 
 #include <assert.h>
-#include <console/console.h>
 #include <device/device.h>
 #include <romstage_handoff.h>
 #include <soc/ramstage.h>

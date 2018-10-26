@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <device/pci.h>
 #include <arch/io.h>
 #include "cimx_util.h"

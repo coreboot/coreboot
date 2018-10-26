@@ -15,7 +15,6 @@
 
 #include <device/i2c_bus.h>
 #include <device/device.h>
-#include <console/console.h>
 #include "pca9538.h"
 #include "chip.h"
 

@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <nhlt.h>
 #include <soc/nhlt.h>
 

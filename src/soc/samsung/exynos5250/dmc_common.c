@@ -17,7 +17,6 @@
  */
 
 #include <arch/io.h>
-#include <console/console.h>
 #include <delay.h>
 #include <soc/clk.h>
 #include <soc/dmc.h>

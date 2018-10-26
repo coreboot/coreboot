@@ -1,4 +1,3 @@
-#include <console/console.h>
 #include <device/device.h>
 #include <device/smbus.h>
 

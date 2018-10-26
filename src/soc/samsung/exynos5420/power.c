@@ -16,7 +16,6 @@
 /* Power setup code for EXYNOS5 */
 
 #include <arch/io.h>
-#include <console/console.h>
 #include <halt.h>
 #include <soc/dmc.h>
 #include <soc/power.h>

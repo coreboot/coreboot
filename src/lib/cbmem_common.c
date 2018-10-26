@@ -12,7 +12,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <console/console.h>
+
 #include <cbmem.h>
 #include <bootstate.h>
 #include <rules.h>

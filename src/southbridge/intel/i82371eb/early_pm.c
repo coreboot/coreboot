@@ -18,7 +18,6 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
-#include <console/console.h>
 #include "i82371eb.h"
 
 void enable_pm(void)

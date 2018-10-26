@@ -18,7 +18,6 @@
 #include <arch/mmu.h>
 #include <arch/transition.h>
 #include <assert.h>
-#include <console/console.h>
 
 /* Litte-endian, No XN-forced, Instr cache disabled,
  * Stack alignment disabled, Data and unified cache

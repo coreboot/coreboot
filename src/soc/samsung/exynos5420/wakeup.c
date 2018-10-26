@@ -14,7 +14,6 @@
  */
 
 #include <arch/cache.h>
-#include <console/console.h>
 #include <soc/power.h>
 #include <soc/wakeup.h>
 

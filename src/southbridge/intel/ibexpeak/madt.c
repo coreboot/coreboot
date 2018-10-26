@@ -16,7 +16,6 @@
  */
 
 #include <string.h>
-#include <console/console.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
 #include <arch/acpi.h>

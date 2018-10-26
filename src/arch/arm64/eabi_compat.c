@@ -14,8 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-
 int raise (int signum) __attribute__((used));
 int raise (int signum)
 {

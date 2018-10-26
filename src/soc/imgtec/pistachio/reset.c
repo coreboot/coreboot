@@ -14,7 +14,6 @@
  */
 
 #include <arch/io.h>
-#include <console/console.h>
 #include <reset.h>
 
 #define PISTACHIO_WD_ADDR		0xB8102100

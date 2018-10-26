@@ -11,7 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <console/uart.h>
 #include <types.h>
 #include <timer.h>

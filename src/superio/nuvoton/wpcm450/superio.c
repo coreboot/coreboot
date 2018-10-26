@@ -17,7 +17,6 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
-#include <console/console.h>
 #include <string.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>

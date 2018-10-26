@@ -15,7 +15,6 @@
 
 #include <arch/io.h>
 #include <types.h>
-#include <console/console.h>
 #include <delay.h>
 #include <timer.h>
 #include <timestamp.h>

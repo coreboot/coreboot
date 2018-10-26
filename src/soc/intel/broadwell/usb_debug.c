@@ -18,7 +18,6 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <console/console.h>
 #include <device/pci_ehci.h>
 #include <device/pci_def.h>
 

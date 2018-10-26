@@ -16,7 +16,6 @@
 /* Clock setup for SMDK5250 board based on EXYNOS5 */
 
 #include <delay.h>
-#include <console/console.h>
 #include <soc/clk.h>
 #include <soc/dp.h>
 #include <soc/setup.h>

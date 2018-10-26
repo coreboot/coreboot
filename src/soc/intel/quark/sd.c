@@ -16,7 +16,6 @@
 #include <arch/io.h>
 #include <commonlib/sdhci.h>
 #include <commonlib/storage.h>
-#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

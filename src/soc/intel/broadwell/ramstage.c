@@ -15,7 +15,6 @@
 
 #include <arch/acpi.h>
 #include <cbmem.h>
-#include <console/console.h>
 #include <device/device.h>
 #include <stdlib.h>
 #include <string.h>

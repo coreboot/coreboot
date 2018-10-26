@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>

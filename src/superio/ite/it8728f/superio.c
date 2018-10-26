@@ -18,7 +18,6 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <superio/conf_mode.h>
-#include <console/console.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
 #include <superio/ite/common/env_ctrl.h>

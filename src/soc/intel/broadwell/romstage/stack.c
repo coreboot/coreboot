@@ -17,7 +17,6 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <arch/early_variables.h>
-#include <console/console.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
 #include <soc/romstage.h>

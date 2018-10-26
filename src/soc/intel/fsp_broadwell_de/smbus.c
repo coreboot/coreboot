@@ -16,7 +16,6 @@
  */
 
 #include <arch/io.h>
-#include <console/console.h>
 #include <device/device.h>
 #include <device/smbus.h>
 #include <device/smbus_def.h>

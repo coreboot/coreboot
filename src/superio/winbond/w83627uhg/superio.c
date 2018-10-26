@@ -18,7 +18,6 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <superio/conf_mode.h>
-#include <console/console.h>
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>

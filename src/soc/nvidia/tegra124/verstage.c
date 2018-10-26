@@ -17,7 +17,6 @@
 #include <arch/exception.h>
 #include <arch/hlt.h>
 #include <arch/stages.h>
-#include <console/console.h>
 #include <program_loading.h>
 #include <soc/cache.h>
 #include <soc/early_configs.h>

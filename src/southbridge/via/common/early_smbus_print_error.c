@@ -15,7 +15,6 @@
  */
 
 #include "via_early_smbus.h"
-#include <console/console.h>
 
 /**
  * \brief Print an error, should it occur. If no error, just exit.

@@ -18,7 +18,6 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <commonlib/helpers.h>
-#include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <fast_spi_def.h>
 #include <intelblocks/fast_spi.h>

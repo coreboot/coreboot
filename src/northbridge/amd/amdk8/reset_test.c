@@ -12,7 +12,6 @@
  */
 
 #include <arch/io.h>
-#include <console/console.h>
 #include <stdint.h>
 #include <cpu/x86/lapic.h>
 #include "amdk8.h"

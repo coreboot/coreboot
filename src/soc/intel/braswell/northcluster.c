@@ -16,7 +16,6 @@
 
 #include <arch/acpi.h>
 #include <cbmem.h>
-#include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>

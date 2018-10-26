@@ -15,7 +15,6 @@
 
 #include <arch/io.h>
 #include <bootstate.h>
-#include <console/console.h>
 #include <intelblocks/chip.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pcr.h>

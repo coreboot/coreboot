@@ -15,7 +15,6 @@
 
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
-#include <console/console.h>	/* for __console definition */
 #include <console/uart.h>
 #include <drivers/uart/uart8250reg.h>
 

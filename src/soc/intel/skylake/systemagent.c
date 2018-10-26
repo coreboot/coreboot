@@ -17,7 +17,6 @@
 
 #include <arch/io.h>
 #include <cpu/x86/msr.h>
-#include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/pci_ops.h>

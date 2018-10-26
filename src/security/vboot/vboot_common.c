@@ -17,7 +17,6 @@
 #include <boot_device.h>
 #include <cbmem.h>
 #include <console/cbmem_console.h>
-#include <console/console.h>
 #include <fmap.h>
 #include <gbb_header.h>
 #include <reset.h>

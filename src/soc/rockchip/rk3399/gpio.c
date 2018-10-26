@@ -14,7 +14,6 @@
  */
 
 #include <arch/io.h>
-#include <console/console.h>
 #include <gpio.h>
 #include <soc/addressmap.h>
 #include <soc/gpio.h>

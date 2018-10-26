@@ -15,7 +15,6 @@
  */
 
 #include "via_early_smbus.h"
-#include <console/console.h>
 
 /**
  * \brief Wait for the SMBus to become ready to process a new transaction.

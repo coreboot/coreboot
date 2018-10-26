@@ -16,7 +16,6 @@
 
 #include <arch/io.h>
 #include <assert.h>
-#include <console/console.h>
 #include <delay.h>
 #include <soc/clock.h>
 #include <soc/saradc.h>

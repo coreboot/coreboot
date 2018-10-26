@@ -15,7 +15,6 @@
  */
 
 #include <chip.h>
-#include <console/console.h>
 #include <console/streams.h>
 #include <device/device.h>
 #include <device/pci_def.h>

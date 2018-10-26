@@ -13,8 +13,6 @@
  * GNU General Public License for more details.
  */
 
-
-#include <console/console.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>

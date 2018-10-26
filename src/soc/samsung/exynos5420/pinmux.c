@@ -14,7 +14,6 @@
  */
 
 #include <assert.h>
-#include <console/console.h>
 #include <soc/gpio.h>
 #include <soc/pinmux.h>
 #include <stdlib.h>

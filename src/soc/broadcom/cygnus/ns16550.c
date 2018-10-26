@@ -18,7 +18,6 @@
 
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
-#include <console/console.h>	/* for __console definition */
 #include <console/uart.h>
 #include <delay.h>
 #include <soc/ns16550.h>

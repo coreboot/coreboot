@@ -303,7 +303,7 @@ config USE_SKYLAKE_FSP_CAR
 endchoice
 
 config FSP_HEADER_PATH
-	string
+	string "Location of FSP headers"
 	depends on MAINBOARD_USES_FSP2_0
 	# Use KabylakeFsp for both Skylake and Kabylake as it supports both.
 	# SkylakeFsp is FSP 1.1 and therefore incompatible.

@@ -104,6 +104,15 @@
 #define PM_USB_ENABLE			0xef
 #define   PM_USB_ALL_CONTROLLERS	0x7f
 
+/* ACPI MMIO registers 0xfed80800 */
+#define MMIO_ACPI_PM1_STS		0x00
+#define MMIO_ACPI_PM1_EN		0x02
+#define MMIO_ACPI_PM1_CNT_BLK		0x04
+#define MMIO_ACPI_CPU_CONTROL		0x0c
+#define MMIO_ACPI_GPE0_STS		0x14
+#define MMIO_ACPI_GPE0_EN		0x18
+#define MMIO_ACPI_PM_TMR_BLK		0x08
+
 /* FCH MISC Registers 0xfed80e00 */
 #define GPP_CLK_CNTRL			0x00
 #define   GPP_CLK2_REQ_MAP_SHIFT	8

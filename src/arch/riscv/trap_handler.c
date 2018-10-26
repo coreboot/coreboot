@@ -57,6 +57,7 @@ static void print_trap_information(const trapframe *tf)
 {
 	const char *previous_mode;
 	bool mprv = !!(tf->status & MSTATUS_MPRV);
+	int hart_id = read_csr(mhartid);
 
 	/* Leave some space around the trap message */
 	printk(BIOS_DEBUG, "\n");
@@ -69,6 +70,7 @@ static void print_trap_information(const trapframe *tf)
 				(void *)tf->cause);
 
 	previous_mode = mstatus_to_previous_mode(read_csr(mstatus));
+	printk(BIOS_DEBUG, "Hart ID:            %d\n", hart_id);
 	printk(BIOS_DEBUG, "Previous mode:      %s%s\n",
 			previous_mode, mprv? " (MPRV)":"");
 	printk(BIOS_DEBUG, "Bad instruction pc: %p\n", (void *)tf->epc);

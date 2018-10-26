@@ -22,7 +22,6 @@
 #include <arch/stages.h>
 #include <device/pnp_def.h>
 #include <arch/cpu.h>
-#include <console/console.h>
 #include <commonlib/loglevel.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>

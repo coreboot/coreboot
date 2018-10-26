@@ -15,7 +15,6 @@
 
 #include <arch/byteorder.h>
 #include <cbfs.h>
-#include <console/console.h>
 #include <fsp/api.h>
 #include <gpio.h>
 #include "gpio.h"

@@ -15,7 +15,6 @@
 #include <drivers/intel/gma/int15.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/acpi/ec.h>
-#include <console/console.h>
 
 static void mainboard_init(struct device *dev)
 {

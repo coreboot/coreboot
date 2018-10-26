@@ -17,7 +17,6 @@
 #include <types.h>
 #include <bootblock_common.h>
 #include <console/uart.h>
-#include <console/console.h>
 #include <cpu/ti/am335x/clock.h>
 #include <cpu/ti/am335x/gpio.h>
 #include <cpu/ti/am335x/pinmux.h>

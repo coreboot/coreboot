@@ -20,7 +20,6 @@
 #include <arch/io.h>
 #include <arch/cbfs.h>
 #include <arch/stages.h>
-#include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <romstage_handoff.h>
 #include <timestamp.h>

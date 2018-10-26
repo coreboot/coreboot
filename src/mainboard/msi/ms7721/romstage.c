@@ -16,7 +16,6 @@
  */
 
 #include <arch/io.h>
-#include <console/console.h>
 #include <device/pnp.h>
 #include <stdint.h>
 

@@ -14,7 +14,6 @@
  */
 
 #include <boardid.h>
-#include <console/console.h>
 #include <soc/sdram.h>
 #include <stdlib.h>
 

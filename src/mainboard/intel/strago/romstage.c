@@ -15,7 +15,6 @@
  */
 
 #include <cbfs.h>
-#include <console/console.h>
 #include <lib.h>
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>

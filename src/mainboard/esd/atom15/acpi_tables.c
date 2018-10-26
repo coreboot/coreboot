@@ -17,7 +17,6 @@
 #include <types.h>
 #include <string.h>
 #include <lib.h> // hexdump
-#include <console/console.h>
 #include <arch/acpi.h>
 #include <arch/ioapic.h>
 #include <arch/acpigen.h>

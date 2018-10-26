@@ -16,7 +16,6 @@
  */
 
 #include <string.h>
-#include <console/console.h>
 #include <fsp/api.h>
 #include <soc/ramstage.h>
 #include <smbios.h>

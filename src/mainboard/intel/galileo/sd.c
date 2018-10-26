@@ -15,7 +15,6 @@
 
 #include <commonlib/sdhci.h>
 #include <commonlib/storage.h>
-#include <console/console.h>
 
 void soc_sd_mmc_controller_quirks(struct sd_mmc_ctrlr *ctrlr)
 {

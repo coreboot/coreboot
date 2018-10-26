@@ -17,7 +17,6 @@
 #include <stdlib.h>
 #include <arch/io.h>
 #include <device/device.h>
-#include <console/console.h>
 #include <drivers/intel/gma/int15.h>
 #include <pc80/keyboard.h>
 #include <ec/acpi/ec.h>

@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <string.h>

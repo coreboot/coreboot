@@ -17,7 +17,6 @@
 #include <arch/io.h>
 #include <assert.h>
 #include <bootblock_common.h>
-#include <console/console.h>
 #include <delay.h>
 #include <reset.h>
 #include <soc/clock.h>

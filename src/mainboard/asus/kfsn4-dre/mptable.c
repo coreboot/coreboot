@@ -22,7 +22,6 @@
 // These tables are INCOMPLETE for this mainboard!
 // The ACPI tables are correct; a backport to these MP tables is needed...
 
-#include <console/console.h>
 #include <arch/smp/mpspec.h>
 #include <device/pci.h>
 #include <string.h>

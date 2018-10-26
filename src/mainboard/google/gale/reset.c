@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <soc/iomap.h>
 #include <reset.h>
 

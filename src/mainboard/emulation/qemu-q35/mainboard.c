@@ -20,7 +20,6 @@
 #include <device/pci_ops.h>
 #include <pc80/keyboard.h>
 #include <arch/io.h>
-#include <console/console.h>
 #include <drivers/intel/gma/i915.h>
 
 #define Q35_PAM0            0x90

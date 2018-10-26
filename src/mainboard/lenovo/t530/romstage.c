@@ -19,7 +19,6 @@
 #include <arch/byteorder.h>
 #include <arch/io.h>
 #include <device/pci_def.h>
-#include <console/console.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>

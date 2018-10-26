@@ -20,7 +20,6 @@
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  */
 
-#include <console/console.h>
 #include <string.h>
 #include <assert.h>
 #include <arch/acpi.h>

@@ -18,7 +18,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <console/console.h>
 #include <cpu/intel/romstage.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/haswell.h>

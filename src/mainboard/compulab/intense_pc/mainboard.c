@@ -17,7 +17,6 @@
 #include <drivers/intel/gma/int15.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/acpi/ec.h>
-#include <console/console.h>
 #include <pc80/keyboard.h>
 
 static void mainboard_init(struct device *dev)

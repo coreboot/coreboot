@@ -15,7 +15,6 @@
  */
 
 #include <boardid.h>
-#include <console/console.h>
 #include <gpio.h>
 
 uint32_t board_id(void)

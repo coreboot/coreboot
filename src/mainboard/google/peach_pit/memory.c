@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <soc/clk.h>
 #include <soc/dmc.h>
 #include <soc/gpio.h>

@@ -10,7 +10,6 @@
  * (at your option) any later version.
  */
 
-#include <arch/cpu.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <fsp/util.h>

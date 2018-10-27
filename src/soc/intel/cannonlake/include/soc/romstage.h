@@ -17,7 +17,6 @@
 #ifndef _SOC_ROMSTAGE_H_
 #define _SOC_ROMSTAGE_H_
 
-#include <arch/cpu.h>
 #include <fsp/api.h>
 
 void mainboard_memory_init_params(FSPM_UPD *mupd);

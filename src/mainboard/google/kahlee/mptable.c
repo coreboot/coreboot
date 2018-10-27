@@ -19,7 +19,6 @@
 #include <arch/ioapic.h>
 #include <string.h>
 #include <stdint.h>
-#include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <soc/southbridge.h>
 #include <amdblocks/amd_pci_util.h>

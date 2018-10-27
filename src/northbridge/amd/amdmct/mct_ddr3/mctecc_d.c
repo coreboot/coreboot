@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cpu.h>
 #include <inttypes.h>
 #include <console/console.h>
 #include <string.h>

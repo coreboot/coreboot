@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <arch/acpi.h>
+#include <arch/cpu.h>
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -38,7 +39,6 @@
 #include "chip.h"
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
-#include <cpu/cpu.h>
 
 static inline void
 add_mmio_resource(struct device *dev, int i, unsigned long addr,

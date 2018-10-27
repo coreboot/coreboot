@@ -20,7 +20,6 @@
 #include <arch/ioapic.h>
 #include <string.h>
 #include <stdint.h>
-#include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <drivers/generic/ioapic/chip.h>

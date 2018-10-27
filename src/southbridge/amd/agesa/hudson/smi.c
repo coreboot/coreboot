@@ -21,7 +21,6 @@
 #include "smi.h"
 
 #include <console/console.h>
-#include <cpu/cpu.h>
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 {

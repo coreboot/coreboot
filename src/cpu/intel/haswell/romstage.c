@@ -19,7 +19,6 @@
 #include <console/console.h>
 #include <arch/cpu.h>
 #include <cf9_reset.h>
-#include <cpu/cpu.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>

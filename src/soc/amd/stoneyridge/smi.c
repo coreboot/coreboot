@@ -19,7 +19,6 @@
  */
 
 #include <console/console.h>
-#include <cpu/cpu.h>
 #include <soc/southbridge.h>
 #include <soc/smi.h>
 

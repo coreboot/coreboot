@@ -21,7 +21,6 @@
 #include <arch/io.h>
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
-#include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
 #include <bootstate.h>
 

@@ -19,7 +19,6 @@
 #include <string.h>
 #include <types.h>
 #include <arch/acpigen.h>
-#include <arch/cpu.h>
 #include <arch/io.h>
 #include <arch/smp/mpspec.h>
 #include <console/console.h>

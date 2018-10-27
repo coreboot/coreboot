@@ -15,7 +15,6 @@
  */
 
 #include <stdint.h>
-#include <arch/cpu.h>
 #include <console/console.h>
 #include <device/device.h>
 #include "w83793.h"

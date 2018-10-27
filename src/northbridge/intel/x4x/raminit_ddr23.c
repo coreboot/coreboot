@@ -17,7 +17,6 @@
 #include <assert.h>
 #include <stdint.h>
 #include <arch/io.h>
-#include <arch/cpu.h>
 #include <console/console.h>
 #include <commonlib/helpers.h>
 #include <delay.h>

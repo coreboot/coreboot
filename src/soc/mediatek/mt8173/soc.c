@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <cpu/cpu.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <symbols.h>

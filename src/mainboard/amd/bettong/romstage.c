@@ -17,6 +17,7 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <arch/stages.h>
+#include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/bist.h>
 #include <cpu/amd/car.h>

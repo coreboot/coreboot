@@ -18,7 +18,6 @@
 #define _SOC_ROMSTAGE_H_
 
 #include <stdint.h>
-#include <arch/cpu.h>
 #include <fsp/romstage.h>
 #include <fsp/util.h>
 #include <soc/pei_data.h>

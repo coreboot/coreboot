@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cpu.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <lib.h>

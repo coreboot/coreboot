@@ -16,7 +16,6 @@
 #include <console/console.h>
 #include <device/path.h>
 #include <device/pci_ids.h>
-#include <cpu/cpu.h>
 #include <arch/smp/mpspec.h>
 #include <string.h>
 #include <arch/cpu.h>

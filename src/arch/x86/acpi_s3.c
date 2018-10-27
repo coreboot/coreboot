@@ -16,8 +16,8 @@
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <arch/cpu.h>
 #include <cbmem.h>
-#include <cpu/cpu.h>
 #include <fallback.h>
 #include <timestamp.h>
 #include <program_loading.h>

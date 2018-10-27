@@ -14,8 +14,8 @@
  */
 
 #include <string.h>
+#include <arch/cpu.h>
 #include <device/device.h>
-#include <cpu/cpu.h>
 #include <cpu/x86/name.h>
 
 void fill_processor_name(char *processor_name)

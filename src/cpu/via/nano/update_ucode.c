@@ -18,7 +18,6 @@
 #include <cpu/x86/msr.h>
 #include <console/console.h>
 #include <stddef.h>
-#include <cpu/cpu.h>
 #include <arch/cpu.h>
 #include <cbfs.h>
 

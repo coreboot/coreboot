@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <cpu/cpu.h>
+#include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 

@@ -16,7 +16,6 @@
  */
 
 #include <console/console.h>
-#include <cpu/cpu.h>
 #include <bootmem.h>
 #include <bootstate.h>
 #include <boot/tables.h>

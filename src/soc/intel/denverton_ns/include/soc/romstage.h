@@ -18,7 +18,6 @@
 #ifndef _SOC_DENVERTON_NS_ROMSTAGE_H_
 #define _SOC_DENVERTON_NS_ROMSTAGE_H_
 
-#include <arch/cpu.h>
 #include <fsp/api.h>
 
 /* These functions are weak and can be overridden by a mainboard functions. */

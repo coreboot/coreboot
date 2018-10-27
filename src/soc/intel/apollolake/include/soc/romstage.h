@@ -18,7 +18,6 @@
 #ifndef _SOC_APOLLOLAKE_ROMSTAGE_H_
 #define _SOC_APOLLOLAKE_ROMSTAGE_H_
 
-#include <arch/cpu.h>
 #include <fsp/api.h>
 
 void set_max_freq(void);

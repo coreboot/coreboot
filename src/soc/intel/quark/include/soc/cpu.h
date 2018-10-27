@@ -16,7 +16,6 @@
 #ifndef _QUARK_CPU_H_
 #define _QUARK_CPU_H_
 
-#include <arch/cpu.h>
 #include <device/device.h>
 
 /* Supported CPUIDs */

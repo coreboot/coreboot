@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 #include <option.h>
-#include <arch/cpu.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>

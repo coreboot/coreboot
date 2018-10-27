@@ -10,7 +10,6 @@
  * (at your option) any later version.
  */
 
-#include <arch/cpu.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <commonlib/fsp.h>

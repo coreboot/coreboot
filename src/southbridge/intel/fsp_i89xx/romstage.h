@@ -21,7 +21,6 @@
 #endif
 
 #include <stdint.h>
-#include <arch/cpu.h>
 
 void early_mainboard_romstage_entry(void);
 void late_mainboard_romstage_entry(void);

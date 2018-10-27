@@ -21,7 +21,6 @@
 #include <arch/acpi.h>
 #include <console/console.h>
 #include <reset.h>
-#include <arch/cpu.h>
 #include <cbmem.h>
 #include "hudson.h"
 

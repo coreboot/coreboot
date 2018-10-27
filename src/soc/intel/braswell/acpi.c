@@ -23,7 +23,6 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <cpu/cpu.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/smm.h>

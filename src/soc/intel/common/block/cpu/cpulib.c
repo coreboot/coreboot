@@ -20,6 +20,7 @@
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <arch/cpu.h>
 #include <delay.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>

@@ -16,7 +16,6 @@
 #ifndef _SOC_ICELAKE_CPU_H_
 #define _SOC_ICELAKE_CPU_H_
 
-#include <arch/cpu.h>
 #include <device/device.h>
 #include <intelblocks/msr.h>
 

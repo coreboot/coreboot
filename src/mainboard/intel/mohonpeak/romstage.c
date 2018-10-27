@@ -23,7 +23,6 @@
 #include <southbridge/intel/fsp_rangeley/soc.h>
 #include <southbridge/intel/fsp_rangeley/gpio.h>
 #include <southbridge/intel/fsp_rangeley/romstage.h>
-#include <arch/cpu.h>
 #include "gpio.h"
 
 static void interrupt_routing_config(void)

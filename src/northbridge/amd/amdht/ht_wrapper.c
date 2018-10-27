@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <console/console.h>
 #include "ht_wrapper.h"

@@ -43,7 +43,6 @@
 #include <soc/msr.h>
 #include <soc/pattrs.h>
 #include <soc/pmc.h>
-#include <cpu/cpu.h>
 #include <cbmem.h>
 
 #include "chip.h"

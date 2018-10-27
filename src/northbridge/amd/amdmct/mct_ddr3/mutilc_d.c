@@ -15,6 +15,8 @@
  */
 
 /* This file contains functions for common utility functions */
+
+#include <arch/cpu.h>
 #include <inttypes.h>
 #include <console/console.h>
 #include <string.h>

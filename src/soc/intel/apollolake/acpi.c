@@ -22,7 +22,6 @@
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
 #include <cpu/x86/smm.h>
-#include <cpu/cpu.h>
 #include <gpio.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/pmclib.h>

@@ -29,8 +29,6 @@
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
-#include <arch/cpu.h>
-#include <cbfs.h>
 
 void pch_enable_lpc(void)
 {

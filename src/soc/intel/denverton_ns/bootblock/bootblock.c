@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cpu.h>
 #include <bootblock_common.h>
 #include <cpu/x86/mtrr.h>
 #include <device/pci.h>

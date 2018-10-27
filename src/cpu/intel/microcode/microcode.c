@@ -24,7 +24,7 @@
 #else
 #include <arch/cbfs.h>
 #endif
-#include <cpu/cpu.h>
+#include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/microcode.h>
 #include <rules.h>

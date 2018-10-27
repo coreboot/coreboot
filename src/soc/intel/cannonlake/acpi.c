@@ -17,12 +17,10 @@
 
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
-#include <arch/cpu.h>
 #include <arch/io.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
 #include <chip.h>
-#include <cpu/cpu.h>
 #include <ec/google/chromeec/ec.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pmclib.h>

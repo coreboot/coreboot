@@ -18,7 +18,6 @@
 
 #include <stdlib.h>
 #include <console/console.h>
-#include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/msr.h>

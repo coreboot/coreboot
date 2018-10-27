@@ -19,7 +19,6 @@
 #include <types.h>
 #include <string.h>
 #include <device/pci.h>
-#include <cpu/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/mtrr.h>

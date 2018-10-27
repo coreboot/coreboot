@@ -17,6 +17,8 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cpu.h>
+
 static void setup_mb_resource_map(void)
 {
 	static const unsigned int fam15h_register_values[] = {

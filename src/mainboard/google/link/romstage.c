@@ -30,7 +30,6 @@
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/common/gpio.h>
 #include "ec/google/chromeec/ec.h"
-#include <arch/cpu.h>
 #include <halt.h>
 #include <cbfs.h>
 

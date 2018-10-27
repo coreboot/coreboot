@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cpu.h>
 #include <assert.h>
 #include <cpu/x86/msr.h>
 #include <intelblocks/msr.h>

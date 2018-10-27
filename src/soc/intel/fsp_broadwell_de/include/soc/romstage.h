@@ -22,7 +22,6 @@
 #endif
 
 #include <stdint.h>
-#include <arch/cpu.h>
 #include <fsp.h>
 
 void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr);

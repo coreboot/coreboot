@@ -40,7 +40,6 @@
 
 #include <stdint.h>
 #include <console/console.h>
-#include <cpu/cpu.h>
 #include <cpu/intel/l2_cache.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>

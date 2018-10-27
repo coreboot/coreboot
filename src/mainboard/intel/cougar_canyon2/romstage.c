@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-
 #include <stdint.h>
 #include <string.h>
 #include <lib.h>
@@ -36,7 +35,6 @@
 #include <southbridge/intel/fsp_bd82x6x/pch.h>
 #include <southbridge/intel/fsp_bd82x6x/gpio.h>
 #include <southbridge/intel/fsp_bd82x6x/me.h>
-#include <arch/cpu.h>
 #include "gpio.h"
 
 #define SIO_PORT 0x164e

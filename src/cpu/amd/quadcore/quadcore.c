@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cpu.h>
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
 #if IS_ENABLED(CONFIG_HAVE_OPTION_TABLE)

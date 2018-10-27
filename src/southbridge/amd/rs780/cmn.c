@@ -14,9 +14,8 @@
  */
 
 #include <console/console.h>
-
 #include <arch/io.h>
-
+#include <arch/cpu.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -24,7 +23,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <delay.h>
-#include <cpu/cpu.h>
 #include "rs780.h"
 
 static u32 nb_read_index(struct device *dev, u32 index_reg, u32 index)

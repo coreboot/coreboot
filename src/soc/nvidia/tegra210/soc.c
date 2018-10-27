@@ -16,7 +16,6 @@
 
 #include <arch/io.h>
 #include <arch/cache.h>
-#include <cpu/cpu.h>
 #include <bootmode.h>
 #include <bootstate.h>
 #include <cbmem.h>

@@ -19,7 +19,6 @@
 #if !defined(__ASSEMBLER__)
 
 #include <stdint.h>
-#include <arch/cpu.h>
 
 /* ROMCC apparently chokes certain clobber registers. */
 #if defined(__ROMCC__)

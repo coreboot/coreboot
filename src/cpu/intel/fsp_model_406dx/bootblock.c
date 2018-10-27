@@ -15,7 +15,6 @@
  */
 
 #include <stdint.h>
-#include <arch/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/intel/microcode/microcode.c>
 #include <cpu/x86/msr.h>

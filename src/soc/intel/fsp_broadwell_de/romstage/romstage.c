@@ -16,7 +16,6 @@
  */
 
 #include <stddef.h>
-#include <arch/cpu.h>
 #include <lib.h>
 #include <arch/io.h>
 #include <arch/cbfs.h>

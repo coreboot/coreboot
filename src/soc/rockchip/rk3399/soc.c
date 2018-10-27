@@ -15,7 +15,6 @@
 
 #include <bootmode.h>
 #include <console/console.h>
-#include <cpu/cpu.h>
 #include <device/device.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>

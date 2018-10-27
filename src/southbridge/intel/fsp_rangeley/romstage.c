@@ -31,7 +31,6 @@
 #include "southbridge/intel/fsp_rangeley/soc.h"
 #include "southbridge/intel/fsp_rangeley/gpio.h"
 #include "southbridge/intel/fsp_rangeley/romstage.h"
-#include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include "gpio.h"
 

@@ -13,7 +13,6 @@
 
 #include <security/vboot/antirollback.h>
 #include <arch/io.h>
-#include <arch/cpu.h>
 #include <arch/symbols.h>
 #include <assert.h>
 #include <cbfs.h>

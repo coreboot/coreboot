@@ -11,7 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cpu.h>
 #include <console/console.h>
 #include <cpu/intel/romstage.h>
 #include <cpu/x86/mtrr.h>

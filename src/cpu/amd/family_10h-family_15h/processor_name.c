@@ -27,7 +27,6 @@
 #include <string.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
-#include <cpu/cpu.h>
 #include <cpu/amd/model_10xxx_rev.h>
 #include <device/device.h>
 #include <device/pci.h>

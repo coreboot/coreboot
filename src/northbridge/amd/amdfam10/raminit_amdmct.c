@@ -18,6 +18,7 @@
 #include <inttypes.h>
 #include <arch/io.h>
 #include <arch/acpi.h>
+#include <arch/cpu.h>
 #include <device/pci.h>
 #include <string.h>
 #include <cbmem.h>

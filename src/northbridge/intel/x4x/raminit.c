@@ -19,6 +19,7 @@
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
+#include <arch/cpu.h>
 #include <delay.h>
 #include <halt.h>
 #include <lib.h>

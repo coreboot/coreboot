@@ -21,7 +21,6 @@
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <cpu/cpu.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>

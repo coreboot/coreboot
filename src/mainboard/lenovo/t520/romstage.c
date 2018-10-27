@@ -29,8 +29,6 @@
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
-#include <arch/cpu.h>
-#include <cbfs.h>
 #include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
 #include <device/device.h>
 #include <device/pci.h>

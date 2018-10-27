@@ -17,6 +17,7 @@
 #include <inttypes.h>
 #include <console/console.h>
 #include <string.h>
+#include <arch/cpu.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
 #include "mct_d.h"

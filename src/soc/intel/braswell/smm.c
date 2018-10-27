@@ -17,7 +17,6 @@
 
 #include <arch/io.h>
 #include <console/console.h>
-#include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>

@@ -27,7 +27,6 @@
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
-#include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
 #include <superio/winbond/common/winbond.h>

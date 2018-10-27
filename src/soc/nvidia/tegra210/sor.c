@@ -26,7 +26,6 @@
 #include <device/device.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <cbmem.h>
 #include <soc/nvidia/tegra/dc.h>

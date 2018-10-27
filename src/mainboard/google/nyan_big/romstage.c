@@ -14,7 +14,6 @@
  */
 
 #include <arch/cache.h>
-#include <arch/cpu.h>
 #include <arch/exception.h>
 #include <arch/io.h>
 #include <cbfs.h>

@@ -42,7 +42,6 @@
 #include "chip.h"
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
-#include <cpu/cpu.h>
 
 #define ENABLE_ACPI_MODE_IN_COREBOOT	0
 #define TEST_SMM_FLASH_LOCKDOWN		0

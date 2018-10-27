@@ -15,6 +15,8 @@
  */
 
 /* Call-backs */
+
+#include <arch/cpu.h>
 #include <delay.h>
 #include <cpu/amd/msr.h>
 #include <console/console.h>

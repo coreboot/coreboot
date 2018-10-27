@@ -22,7 +22,6 @@
 #endif
 
 #include <stdint.h>
-#include <arch/cpu.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 
 void main(FSP_INFO_HEADER *fsp_info_header);

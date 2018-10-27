@@ -19,6 +19,7 @@
  Description: Receiver En and DQS Timing Training feature for DDR 3 MCT
 ******************************************************************************/
 
+#include <arch/cpu.h>
 #include <inttypes.h>
 #include <console/console.h>
 #include <string.h>

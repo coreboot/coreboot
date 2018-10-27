@@ -16,8 +16,6 @@
 #ifndef __CPU_AMD_MODEL_10XXX_REV_H__
 #define __CPU_AMD_MODEL_10XXX_REV_H__
 
-#include <arch/cpu.h>
-
 int init_processor_name(void);
 
 /* place holder for Family 10 revision code */

@@ -20,7 +20,6 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <arch/acpi.h>
-#include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <string.h>

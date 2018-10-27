@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cpu.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>

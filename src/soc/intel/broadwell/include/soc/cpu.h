@@ -16,7 +16,6 @@
 #ifndef _BROADWELL_CPU_H_
 #define _BROADWELL_CPU_H_
 
-#include <arch/cpu.h>
 #include <device/device.h>
 
 /* CPU types */

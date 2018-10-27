@@ -17,7 +17,6 @@
 #include <arch/io.h>
 #include <cbmem.h>
 #include <arch/cbfs.h>
-#include <cbfs.h>
 #include <ip_checksum.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>

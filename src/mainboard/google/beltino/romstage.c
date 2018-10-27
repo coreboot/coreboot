@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <cbfs.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>

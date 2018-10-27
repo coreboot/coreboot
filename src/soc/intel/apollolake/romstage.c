@@ -22,7 +22,6 @@
 #include <arch/symbols.h>
 #include <assert.h>
 #include <bootmode.h>
-#include <cbfs.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <console/console.h>

@@ -16,7 +16,6 @@
 #ifndef __SOC_MEDIATEK_MT8173_FLASH_CONTROLLER_H__
 #define __SOC_MEDIATEK_MT8173_FLASH_CONTROLLER_H__
 
-#include <cbfs.h>
 #include <spi-generic.h>
 #include <stdint.h>
 #include <soc/addressmap.h>

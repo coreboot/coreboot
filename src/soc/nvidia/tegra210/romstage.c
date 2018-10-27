@@ -15,7 +15,6 @@
 
 #include <arch/exception.h>
 #include <arch/stages.h>
-#include <cbfs.h>
 #include <cbmem.h>
 #include <console/cbmem_console.h>
 #include <console/console.h>

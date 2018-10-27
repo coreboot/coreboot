@@ -19,7 +19,6 @@
 #include <assert.h>
 #include <boot_device.h>
 #include <console/console.h>
-#include <cbfs.h>
 #include <delay.h>
 #include <inttypes.h>
 #include <soc/addressmap.h>

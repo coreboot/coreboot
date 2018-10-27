@@ -18,7 +18,6 @@
 #include <arch/io.h>
 #include <assert.h>
 #include <boot_device.h>
-#include <cbfs.h>
 #include <console/console.h>
 #include <delay.h>
 #include <inttypes.h>

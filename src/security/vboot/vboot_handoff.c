@@ -26,7 +26,6 @@
 #include <assert.h>
 #include <bootmode.h>
 #include <string.h>
-#include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>

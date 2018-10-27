@@ -24,7 +24,6 @@
  */
 
 #include <arch/stages.h>
-#include <cbfs.h>
 #include <console/console.h>
 #include <cpu/allwinner/a10/clock.h>
 #include <cpu/allwinner/a10/gpio.h>

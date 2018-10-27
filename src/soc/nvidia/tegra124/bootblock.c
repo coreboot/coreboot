@@ -17,7 +17,6 @@
 #include <arch/exception.h>
 #include <arch/stages.h>
 #include <bootblock_common.h>
-#include <cbfs.h>
 #include <console/console.h>
 #include <program_loading.h>
 #include <soc/clock.h>

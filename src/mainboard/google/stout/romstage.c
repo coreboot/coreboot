@@ -30,7 +30,6 @@
 #include <southbridge/intel/common/gpio.h>
 #include <halt.h>
 #include <bootmode.h>
-#include <cbfs.h>
 #include <ec/quanta/it8518/ec.h>
 #include "ec.h"
 #include "onboard.h"

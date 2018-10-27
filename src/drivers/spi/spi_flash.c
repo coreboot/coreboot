@@ -10,7 +10,6 @@
 #include <arch/early_variables.h>
 #include <assert.h>
 #include <boot_device.h>
-#include <cbfs.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>
 #include <rules.h>

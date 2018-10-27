@@ -14,7 +14,6 @@
  */
 
 #include <arch/io.h>
-#include <cbfs.h>
 #include <console/console.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>

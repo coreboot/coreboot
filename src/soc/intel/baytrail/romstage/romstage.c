@@ -18,7 +18,6 @@
 #include <arch/io.h>
 #include <arch/early_variables.h>
 #include <console/console.h>
-#include <cbfs.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)

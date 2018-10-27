@@ -20,7 +20,6 @@
 #include <arch/early_variables.h>
 #include <bootmode.h>
 #include <console/console.h>
-#include <cbfs.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
 #include <elog.h>

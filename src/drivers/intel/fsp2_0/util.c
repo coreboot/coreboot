@@ -12,7 +12,6 @@
  */
 
 #include <arch/io.h>
-#include <cbfs.h>
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <fsp/util.h>

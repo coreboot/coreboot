@@ -31,7 +31,6 @@
 #if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vendorcode/google/chromeos/chromeos.h>
 #endif
-#include <cbfs.h>
 
 void pch_enable_lpc(void)
 {

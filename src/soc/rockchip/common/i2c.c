@@ -15,7 +15,6 @@
 
 #include <arch/io.h>
 #include <assert.h>
-#include <cbfs.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/i2c_simple.h>

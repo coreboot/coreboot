@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <cbfs.h>
 #include <arch/acpi.h>
 #include <bootmode.h>
 #include <bootstate.h>

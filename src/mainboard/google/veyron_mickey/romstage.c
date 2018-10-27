@@ -18,7 +18,6 @@
 #include <arch/stages.h>
 #include <armv7.h>
 #include <assert.h>
-#include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <delay.h>

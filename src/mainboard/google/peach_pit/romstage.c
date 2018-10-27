@@ -18,7 +18,6 @@
 #include <arch/stages.h>
 #include <armv7.h>
 #include <boot_device.h>
-#include <cbfs.h>
 #include <cbmem.h>
 #include <commonlib/region.h>
 #include <console/console.h>

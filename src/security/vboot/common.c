@@ -14,7 +14,6 @@
  */
 
 #include <assert.h>
-#include <cbfs.h>
 #include <cbmem.h>
 #include <reset.h>
 #include <string.h>

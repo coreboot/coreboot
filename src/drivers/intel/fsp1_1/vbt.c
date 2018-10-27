@@ -15,7 +15,6 @@
  */
 
 #include <bootmode.h>
-#include <cbfs.h>
 #include <console/console.h>
 #include <drivers/intel/gma/opregion.h>
 #include <fsp/ramstage.h>

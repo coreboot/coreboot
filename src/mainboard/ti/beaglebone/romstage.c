@@ -16,7 +16,6 @@
 #include <types.h>
 
 #include <armv7.h>
-#include <cbfs.h>
 
 #include <program_loading.h>
 #include <console/console.h>

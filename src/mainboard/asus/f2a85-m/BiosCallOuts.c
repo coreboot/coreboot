@@ -17,7 +17,6 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
-#include <cbfs.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/Fch/FchPlatform.h>
 #include <stdlib.h>
 

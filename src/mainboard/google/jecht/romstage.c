@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <cbfs.h>
 #include <console/console.h>
 #include <string.h>
 #include <ec/google/chromeec/ec.h>

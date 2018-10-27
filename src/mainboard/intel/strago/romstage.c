@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <cbfs.h>
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>

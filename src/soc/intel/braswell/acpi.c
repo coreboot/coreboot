@@ -20,7 +20,6 @@
 #include <arch/cpu.h>
 #include <arch/io.h>
 #include <arch/smp/mpspec.h>
-#include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/intel/turbo.h>

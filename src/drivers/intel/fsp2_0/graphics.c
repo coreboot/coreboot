@@ -10,7 +10,6 @@
  * (at your option) any later version.
  */
 
-#include <cbfs.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <soc/intel/common/vbt.h>

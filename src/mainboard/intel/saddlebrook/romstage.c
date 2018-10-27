@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <cbfs.h>
 #include <console/console.h>
 #include <fsp/api.h>
 #include <string.h>

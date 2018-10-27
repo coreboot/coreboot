@@ -15,7 +15,6 @@
  */
 
 #include <arch/io.h>
-#include <cbfs.h>
 #include <cbmem.h>
 #include <assert.h>
 #include <device/device.h>

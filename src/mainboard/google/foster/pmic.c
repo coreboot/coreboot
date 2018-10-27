@@ -18,11 +18,11 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/i2c_simple.h>
+#include <reset.h>
 #include <stdint.h>
 #include <stdlib.h>
 
 #include "pmic.h"
-#include "reset.h"
 
 enum {
 	MAX77620_I2C_ADDR = 0x3c

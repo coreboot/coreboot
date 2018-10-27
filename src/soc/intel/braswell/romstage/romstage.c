@@ -31,7 +31,6 @@
 #include <mrc_cache.h>
 #include <string.h>
 #include <timestamp.h>
-#include <reset.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <fsp/util.h>
 #include <soc/gpio.h>

@@ -24,7 +24,6 @@
 #include <delay.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
-#include <reset.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>

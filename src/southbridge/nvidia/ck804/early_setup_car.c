@@ -17,7 +17,9 @@
  */
 
 #include <arch/io.h>
+#include <reset.h>
 #include <southbridge/amd/common/reset.h>
+
 #include "ck804.h"
 
 /* Someone messed up and snuck in some K8-specific code */

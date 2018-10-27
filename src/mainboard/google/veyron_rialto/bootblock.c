@@ -18,7 +18,6 @@
 #include <assert.h>
 #include <bootblock_common.h>
 #include <delay.h>
-#include <reset.h>
 #include <soc/clock.h>
 #include <soc/i2c.h>
 #include <soc/grf.h>

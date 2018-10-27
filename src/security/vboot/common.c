@@ -16,7 +16,6 @@
 #include <assert.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <reset.h>
 #include <stdint.h>
 #include <string.h>
 #include <symbols.h>

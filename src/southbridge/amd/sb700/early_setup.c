@@ -25,7 +25,6 @@
 #include <cpu/x86/msr.h>
 #include <device/pci.h>
 
-#include <reset.h>
 #include "sb700.h"
 #include "smbus.h"
 

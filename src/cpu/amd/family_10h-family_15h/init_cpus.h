@@ -22,7 +22,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/multicore.h>
-#include <reset.h>
 #include <northbridge/amd/amdfam10/raminit.h>
 #include "defaults.h"
 

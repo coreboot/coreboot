@@ -21,7 +21,6 @@
 #include <cpu/x86/mtrr.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
-#include <reset.h>
 #include <southbridge/intel/fsp_rangeley/soc.h>
 
 #include "model_406dx.h"

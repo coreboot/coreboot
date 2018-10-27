@@ -17,7 +17,6 @@
 
 #include <console/cbmem_console.h>
 #include <console/console.h>
-#include <reset.h>
 #include <security/tpm/tspi.h>
 #include <security/tpm/tss.h>
 #include <stdlib.h>

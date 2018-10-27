@@ -18,7 +18,6 @@
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <halt.h>
-#include <reset.h>
 
 /*
  * A system reset in terms of the CF9 register asserts the INIT#

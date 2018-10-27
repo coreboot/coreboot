@@ -22,7 +22,7 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#include <reset.h>
+
 #include "hudson.h"
 #include "pci_devs.h"
 #include <Fch/Fch.h>

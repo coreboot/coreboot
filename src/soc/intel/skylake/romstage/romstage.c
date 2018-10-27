@@ -26,7 +26,6 @@
 #include <elog.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pmclib.h>
-#include <reset.h>
 #include <soc/pci_devs.h>
 #include <soc/pei_wrapper.h>
 #include <soc/pm.h>

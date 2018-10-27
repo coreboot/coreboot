@@ -17,7 +17,6 @@
 #include <console/console.h>
 #include <fsp/memmap.h>
 #include <stage_cache.h>
-#include <reset.h>
 #include <program_loading.h>
 
 void stage_cache_external_region(void **base, size_t *size)

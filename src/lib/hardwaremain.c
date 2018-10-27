@@ -29,7 +29,6 @@
 #include <device/pci.h>
 #include <delay.h>
 #include <stdlib.h>
-#include <reset.h>
 #include <boot/tables.h>
 #include <program_loading.h>
 #if CONFIG(HAVE_ACPI_RESUME)

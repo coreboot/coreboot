@@ -22,7 +22,6 @@
 #include <device/i2c_simple.h>
 #include <endian.h>
 #include <delay.h>
-#include <reset.h>
 #include <soc/timer.h>
 
 // BDK

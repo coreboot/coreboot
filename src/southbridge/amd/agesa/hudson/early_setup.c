@@ -20,7 +20,7 @@
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#include <reset.h>
+
 #include "hudson.h"
 
 void hudson_pci_port80(void)

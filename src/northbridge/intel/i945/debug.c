@@ -15,7 +15,6 @@
  */
 
 #include <spd.h>
-#include <lib.h>
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <console/console.h>

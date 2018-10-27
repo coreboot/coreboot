@@ -29,8 +29,6 @@
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct6776/nct6776.h>
 
-#include <lib.h>
-
 #define SERIAL_DEV PNP_DEV(0x2e, NCT6776_SP1)
 
 void car_mainboard_pre_console_init(void)

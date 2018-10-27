@@ -17,7 +17,6 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <delay.h>
-#include <lib.h>
 #include <soc/dp.h>
 #include <soc/fimd.h>
 #include <soc/i2c.h>

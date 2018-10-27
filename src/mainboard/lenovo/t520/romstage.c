@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <lib.h>
 #include <timestamp.h>
 #include <arch/byteorder.h>
 #include <arch/io.h>

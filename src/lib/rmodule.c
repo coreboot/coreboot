@@ -18,7 +18,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <lib.h>
 #include <console/console.h>
 #include <program_loading.h>
 #include <rmodule.h>

@@ -15,7 +15,6 @@
 
 #include <arch/io.h>
 #include <stdint.h>
-#include <lib.h>
 #include <stdlib.h>
 
 #include <soc/addressmap.h>

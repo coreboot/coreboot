@@ -15,7 +15,6 @@
  */
 
 #include <stddef.h>
-#include <lib.h>
 #include <arch/io.h>
 #include <arch/cbfs.h>
 #include <arch/stages.h>

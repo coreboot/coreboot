@@ -20,7 +20,6 @@
  * GNU General Public License for more details.
  */
 
-#include <lib.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>

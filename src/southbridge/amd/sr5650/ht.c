@@ -20,7 +20,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
-#include <lib.h>
 #include "sr5650.h"
 #include "cmn.h"
 

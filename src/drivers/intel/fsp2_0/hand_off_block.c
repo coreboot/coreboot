@@ -18,7 +18,6 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <inttypes.h>
-#include <lib.h>
 #include <string.h>
 
 #define HOB_HEADER_LEN		8

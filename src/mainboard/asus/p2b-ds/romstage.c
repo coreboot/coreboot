@@ -23,7 +23,6 @@
 #include <cpu/intel/romstage.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83977tf/w83977tf.h>
-#include <lib.h>
 #include <cbmem.h>
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)

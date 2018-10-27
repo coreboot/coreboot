@@ -16,7 +16,6 @@
 
 #include <console/console.h>
 #include <hwilib.h>
-#include <lib.h>
 #include <string.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>

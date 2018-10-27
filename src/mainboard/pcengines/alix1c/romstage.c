@@ -20,7 +20,6 @@
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <console/console.h>
-#include <lib.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/lxdef.h>

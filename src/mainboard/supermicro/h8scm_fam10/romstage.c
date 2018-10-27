@@ -31,7 +31,6 @@
 #include <console/console.h>
 #include <timestamp.h>
 #include <cpu/amd/model_10xxx_rev.h>
-#include <lib.h>
 #include <commonlib/loglevel.h>
 #include <cpu/x86/bist.h>
 #include <cpu/amd/msr.h>

@@ -24,7 +24,6 @@
 #include <superio/winbond/common/winbond.h>
 /* FIXME: The ASUS P3B-F has a Winbond W83977EF, actually. */
 #include <superio/winbond/w83977tf/w83977tf.h>
-#include <lib.h>
 #include <cbmem.h>
 
 /* FIXME: The ASUS P3B-F has a Winbond W83977EF, actually. */

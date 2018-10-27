@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <lib.h>
 #include <string.h>
 #include <bootstate.h>
 #include <console/console.h>

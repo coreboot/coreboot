@@ -19,7 +19,6 @@
 #include <device/pci.h>
 #include <FsptUpd.h>
 #include <intelblocks/fast_spi.h>
-#include <lib.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
 #include <spi-generic.h>

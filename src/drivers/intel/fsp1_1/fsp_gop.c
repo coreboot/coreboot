@@ -16,7 +16,6 @@
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <fsp/util.h>
-#include <lib.h>
 
 int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 {

@@ -20,7 +20,6 @@
 #include <delay.h>
 #include <device/device.h>
 #include <edid.h>
-#include <lib.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/display.h>

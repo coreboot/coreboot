@@ -28,7 +28,6 @@
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <timestamp.h>
-#include <lib.h>
 #include <spd.h>
 #include <cpu/amd/model_10xxx_rev.h>
 #include <delay.h>

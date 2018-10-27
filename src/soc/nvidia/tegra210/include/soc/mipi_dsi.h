@@ -26,6 +26,8 @@
 #ifndef __MIPI_DSI_H__
 #define __MIPI_DSI_H__
 
+#include <types.h>
+
 struct mipi_dsi_host;
 struct mipi_dsi_device;
 

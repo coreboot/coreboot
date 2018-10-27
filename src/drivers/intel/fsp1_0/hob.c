@@ -16,7 +16,6 @@
 #include <types.h>
 #include <string.h>
 #include <console/console.h>
-#include <lib.h> // hexdump
 #include "fsp_util.h"
 
 

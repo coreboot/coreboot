@@ -22,7 +22,6 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <delay.h>
-#include <lib.h>
 #include <device/device.h>
 #include <soc/addressmap.h>
 #include <soc/clk_rst.h>

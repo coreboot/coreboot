@@ -31,7 +31,6 @@
 #include <delay.h>
 #include <device/device.h>
 #include <device/path.h>
-#include <lib.h>
 #include <smp/atomic.h>
 #include <smp/spinlock.h>
 #include <symbols.h>

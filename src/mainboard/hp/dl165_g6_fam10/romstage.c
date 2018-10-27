@@ -36,7 +36,6 @@
 #include <console/console.h>
 #include <timestamp.h>
 #include <cpu/amd/model_10xxx_rev.h>
-#include <lib.h>
 #include <spd.h>
 #include <delay.h>
 #include <superio/serverengines/pilot/pilot.h>

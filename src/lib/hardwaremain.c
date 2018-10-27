@@ -32,7 +32,6 @@
 #include <reset.h>
 #include <boot/tables.h>
 #include <program_loading.h>
-#include <lib.h>
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 #include <arch/acpi.h>
 #endif

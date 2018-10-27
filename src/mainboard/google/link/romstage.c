@@ -16,7 +16,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <lib.h>
 #include <timestamp.h>
 #include <arch/io.h>
 #include <device/pci.h>

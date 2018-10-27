@@ -20,7 +20,6 @@
 #include <arm_tf.h>
 #include <assert.h>
 #include <cbfs.h>
-#include <cbmem.h>
 #include <program_loading.h>
 
 /*

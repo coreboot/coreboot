@@ -19,7 +19,6 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <bootstate.h>
-#include <cbmem.h>
 #include "chip.h"
 #include <console/console.h>
 #include <cpu/x86/smm.h>

@@ -37,7 +37,6 @@
 #include <assert.h>
 #include <spd.h>
 #include <sdram_mode.h>
-#include <cbmem.h>
 
 #include "raminit.h"
 #include "e7505.h"

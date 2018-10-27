@@ -19,7 +19,6 @@
 #include <arch/stages.h>
 #include <arch/early_variables.h>
 #include <assert.h>
-#include <cbmem.h>
 #include <chip.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>

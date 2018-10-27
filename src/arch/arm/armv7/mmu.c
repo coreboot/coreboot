@@ -33,7 +33,6 @@
 #include <stdint.h>
 #include <symbols.h>
 
-#include <cbmem.h>
 #include <console/console.h>
 
 #include <arch/cache.h>

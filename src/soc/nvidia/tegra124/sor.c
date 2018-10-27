@@ -18,7 +18,6 @@
 
 #include <arch/io.h>
 #include <boot/tables.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <delay.h>

@@ -27,7 +27,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <cpu/cpu.h>
-#include <cbmem.h>
 #include "chip.h"
 #include "sandybridge.h"
 #include <cpu/intel/smm/gen1/smi.h>

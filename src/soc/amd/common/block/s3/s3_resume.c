@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <cbmem.h>
 #include <stage_cache.h>
 #include <mrc_cache.h>
 #include <console/console.h>

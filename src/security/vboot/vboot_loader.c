@@ -15,7 +15,6 @@
 
 #include <arch/early_variables.h>
 #include <cbfs.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <rmodule.h>

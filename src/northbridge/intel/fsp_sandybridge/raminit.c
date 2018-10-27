@@ -16,7 +16,6 @@
 #include <console/console.h>
 #include <string.h>
 #include <arch/io.h>
-#include <cbmem.h>
 #include <device/pci_def.h>
 #include "raminit.h"
 #include "northbridge.h"

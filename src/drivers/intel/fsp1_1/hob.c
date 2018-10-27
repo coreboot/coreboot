@@ -17,7 +17,6 @@
 #include <arch/early_variables.h>
 #include <arch/hlt.h>
 #include <bootstate.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <ip_checksum.h>

@@ -27,7 +27,6 @@
 #include <string.h>
 #include <cpu/x86/smm.h>
 #include <boot/tables.h>
-#include <cbmem.h>
 #include "chip.h"
 #include "haswell.h"
 

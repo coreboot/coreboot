@@ -26,7 +26,6 @@
 #include <cpu/amd/msr.h>
 #include <arch/acpi.h>
 #include <romstage_handoff.h>
-#include <cbmem.h>
 
 #include "cpu/amd/car/disable_cache_as_ram.c"
 

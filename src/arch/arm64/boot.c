@@ -18,7 +18,6 @@
 #include <arch/stages.h>
 #include <arch/transition.h>
 #include <arm_tf.h>
-#include <cbmem.h>
 #include <program_loading.h>
 #include <rules.h>
 #include <string.h>

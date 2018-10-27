@@ -15,7 +15,6 @@
 
 #include <string.h>
 #include <arch/io.h>
-#include <cbmem.h>
 #include <arch/cbfs.h>
 #include <ip_checksum.h>
 #include <pc80/mc146818rtc.h>

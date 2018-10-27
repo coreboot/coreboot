@@ -18,7 +18,6 @@
 #include <arch/acpi.h>
 #include <bootstate.h>
 #include <cbfs.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>

@@ -22,7 +22,6 @@
 #include <arch/acpi.h>
 #include <console/console.h>
 #include <reset.h>
-#include <cbmem.h>
 #include "hudson.h"
 #include "pci_devs.h"
 #include <Fch/Fch.h>

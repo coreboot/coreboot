@@ -21,7 +21,6 @@
 #include <arch/acpi.h>
 #include <device/pci_def.h>
 #include <elog.h>
-#include <cbmem.h>
 #include <pc80/mc146818rtc.h>
 #include <romstage_handoff.h>
 #include "sandybridge.h"

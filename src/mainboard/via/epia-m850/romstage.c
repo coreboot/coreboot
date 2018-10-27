@@ -27,6 +27,7 @@
 #include <cpu/x86/bist.h>
 #include <string.h>
 #include <timestamp.h>
+#include <cbmem.h>
 
 #include <northbridge/via/vx900/early_vx900.h>
 #include <northbridge/via/vx900/raminit.h>

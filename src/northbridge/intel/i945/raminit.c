@@ -26,7 +26,6 @@
 #include "raminit.h"
 #include "i945.h"
 #include "chip.h"
-#include <cbmem.h>
 #include <device/dram/ddr2.h>
 #include <timestamp.h>
 

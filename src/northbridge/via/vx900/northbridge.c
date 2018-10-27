@@ -22,7 +22,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <cpu/cpu.h>
-#include <cbmem.h>
 #include <cf9_reset.h>
 #include <reset.h>
 #include <string.h>

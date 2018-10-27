@@ -18,7 +18,6 @@
  */
 
 #include <device/device.h>
-#include <cbmem.h>
 #include <symbols.h>
 
 static void cpu_enable_resources(struct device *dev)

@@ -23,7 +23,6 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <cbmem.h>
 #include "hudson.h"
 #include "imc.h"
 #include "smbus.h"

@@ -15,7 +15,6 @@
 
 #include <arch/early_variables.h>
 #include <arch/io.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <intelblocks/pmclib.h>

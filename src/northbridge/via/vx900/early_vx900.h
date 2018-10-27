@@ -21,7 +21,6 @@
 #include "vx900.h"
 
 #include <arch/io.h>
-#include <cbmem.h>
 #include <stdint.h>
 
 /* North Module devices */

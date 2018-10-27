@@ -27,7 +27,6 @@
 #include <string.h>
 #include <lib.h>
 #include <cpu/cpu.h>
-#include <cbmem.h>
 #include <Porting.h>
 #include <AGESA.h>
 #include <FieldAccessors.h>

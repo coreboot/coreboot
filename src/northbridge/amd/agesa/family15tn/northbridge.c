@@ -27,7 +27,6 @@
 #include <string.h>
 #include <lib.h>
 #include <cpu/cpu.h>
-#include <cbmem.h>
 #include <AGESA.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/msr.h>

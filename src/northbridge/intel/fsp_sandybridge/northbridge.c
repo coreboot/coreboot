@@ -27,7 +27,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <cpu/cpu.h>
-#include <cbmem.h>
 #include "chip.h"
 #include "northbridge.h"
 #include <fsp_util.h>

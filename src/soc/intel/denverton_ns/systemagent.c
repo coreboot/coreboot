@@ -25,7 +25,6 @@
 #include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cbmem.h>
 #include <romstage_handoff.h>
 #include <timer.h>
 

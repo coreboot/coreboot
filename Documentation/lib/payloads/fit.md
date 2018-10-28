@@ -25,7 +25,7 @@ The section must be named in order to be found by the FIT parser:
 
 The FIT parser needs architecure support.
 ### aarch64
-The source code can be found in ''src/arch/arm64/fit.c''.
+The source code can be found in `src/arch/arm64/fit.c`.
 
 On aarch64 the kernel (a section named 'kernel') must be in **Image**
 format and it needs a devicetree (a section named 'fdt') to boot.
@@ -83,7 +83,7 @@ If no matching compat string is found, the default config is chosen.
 
 ## Building FIT image
 
-The FIT image has to be built by calling ''mkimage''. You can use
+The FIT image has to be built by calling `mkimage`. You can use
 the following example configuration:
 
 ```
@@ -148,9 +148,20 @@ the following example configuration:
 };
 ```
 
-It includes a compressed initrd **initramfs.cpio.xz**, which will be
-decompressed by the Linux kernel, a compressed kernel **Image.lzma**, which will
-be decompressed by the FIT loader and an uncompressed devicetree blob.
+Save it as ITS file `config.its` along with the other files defined here:
+* target.dtb
+* initramfs.cpio.xz
+* Image.lzma
+
+Generate the `uImage` that will be included into the CBFS by calling
+
+```bash
+mkimage -f config.its uImage
+```
+
+The generated file includes a compressed initrd **initramfs.cpio.xz**, which
+will be decompressed by the Linux kernel, a compressed kernel **Image.lzma**,
+which will be decompressed by the FIT loader and an uncompressed devicetree blob.
 
 [uImage.FIT]: https://raw.githubusercontent.com/u-boot/u-boot/master/doc/uImage.FIT/howto.txt
 [U-Boot]: https://www.denx.de/wiki/U-Boot

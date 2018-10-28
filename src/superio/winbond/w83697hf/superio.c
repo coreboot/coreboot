@@ -23,7 +23,6 @@
 #include <lib.h>
 #include <pc80/mc146818rtc.h>
 #include <stdlib.h>
-#include <pc80/keyboard.h>
 #include "chip.h"
 #include "w83697hf.h"
 

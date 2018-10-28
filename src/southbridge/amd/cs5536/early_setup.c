@@ -20,7 +20,6 @@
  */
 
 #include <arch/io.h>
-#include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/lxdef.h>
 #include "cs5536.h"

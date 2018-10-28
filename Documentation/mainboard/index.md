@@ -10,6 +10,12 @@ This section contains documentation about coreboot on specific mainboards.
 
 - [CN81XX EVB SFF](cavium/cn8100_sff_evb.md)
 
+## Emulation
+
+The boards in this section are not real mainboards, but emulators.
+
+- [Spike RISC-V emulator](emulation/spike-riscv.md)
+
 ## Foxconn
 
 - [D41S](foxconn/d41s.md)

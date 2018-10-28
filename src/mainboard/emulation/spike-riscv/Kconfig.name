@@ -1,7 +1,3 @@
 config BOARD_EMULATION_SPIKE_RISCV
 	bool "SPIKE riscv"
 	help
-	  To run coreboot in spike:
-	  * run "make" as usual
-	  * util/riscv/make-spike-elf.sh build/coreboot.{rom,elf}
-	  * spike -m1024 build/coreboot.elf

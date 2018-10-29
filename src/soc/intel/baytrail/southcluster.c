@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,10 +107,10 @@ static void sc_add_io_resources(struct device *dev)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	/* GPIO */
-	sc_add_io_resource(dev, GPIO_BASE_ADDRESS, 256, GBASE);
+	sc_add_io_resource(dev, GPIO_BASE_ADDRESS, GPIO_BASE_SIZE, GBASE);
 
 	/* ACPI */
-	sc_add_io_resource(dev, ACPI_BASE_ADDRESS, 128, ABASE);
+	sc_add_io_resource(dev, ACPI_BASE_ADDRESS, ACPI_BASE_SIZE, ABASE);
 }
 
 static void sc_read_resources(struct device *dev)

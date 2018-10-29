@@ -18,7 +18,6 @@
 #include <commonlib/compression.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
-#include <cpu/cpu.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>

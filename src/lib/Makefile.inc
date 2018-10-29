@@ -92,6 +92,7 @@ romstage-y += region_file.c
 ramstage-y += romstage_handoff.c
 romstage-y += romstage_handoff.c
 romstage-y += romstage_stack.c
+romstage-y += selfboot.c
 ramstage-y += romstage_stack.c
 romstage-y += stack.c
 ramstage-y += rtc.c

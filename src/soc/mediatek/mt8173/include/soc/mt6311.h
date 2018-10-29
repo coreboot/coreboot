@@ -16,6 +16,8 @@
 #ifndef __SOC_MEDIATEK_MT8173_MT6311_H__
 #define __SOC_MEDIATEK_MT8173_MT6311_H__
 
+#include <stdint.h>
+
 void mt6311_probe(uint8_t i2c_num);
 
 enum {

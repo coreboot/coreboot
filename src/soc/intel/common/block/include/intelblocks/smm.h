@@ -17,6 +17,8 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_SMM_H
 #define SOC_INTEL_COMMON_BLOCK_SMM_H
 
+#include <stdint.h>
+
 /*
  * This common code block relies on each specific SOC defining the macro
  * ENABLE_SMI_PARAMS for the values needed for SMI enabling on the

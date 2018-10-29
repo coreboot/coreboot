@@ -18,6 +18,8 @@
 #ifndef MAINBOARD_SPD_H
 #define MAINBOARD_SPD_H
 
+#include <stdint.h>
+
 #define SPD_LEN 512
 
 #define SPD_DRAM_TYPE 2

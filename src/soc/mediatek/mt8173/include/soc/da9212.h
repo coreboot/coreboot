@@ -16,6 +16,8 @@
 #ifndef __SOC_DA9212_H_
 #define __SOC_DA9212_H_
 
+#include <stdint.h>
+
 void da9212_probe(uint8_t i2c_num);
 
 enum {

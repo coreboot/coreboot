@@ -31,6 +31,8 @@
 #ifndef __SOC_QUALCOMM_IPQ40XX_EBI2_H_
 #define __SOC_QUALCOMM_IPQ40XX_EBI2_H_
 
+#include <stdint.h>
+
 #define EBI2CR_BASE                                       (0x1A600000)
 
 struct ebi2cr_regs {

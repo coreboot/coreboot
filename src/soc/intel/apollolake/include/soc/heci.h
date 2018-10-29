@@ -17,6 +17,8 @@
 #ifndef _SOC_APOLLOLAKE_HECI_H_
 #define _SOC_APOLLOLAKE_HECI_H_
 
+#include <stdint.h>
+
 enum sec_status {
 	SEC_STATE_RESET = 0,
 	SEC_STATE_INIT,

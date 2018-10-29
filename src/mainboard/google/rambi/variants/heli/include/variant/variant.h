@@ -14,6 +14,8 @@
 #ifndef VARIANT_H
 #define VARIANT_H
 
+#include <stdint.h>
+
 /*
  * RAM_ID[3:0] are on GPIO_SSUS[40:37]
  * RAM_ID	Vendor	Vendor_PN	Freq	Size	Total_size	channel

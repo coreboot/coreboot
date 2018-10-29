@@ -14,6 +14,8 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_VMX_H
 #define SOC_INTEL_COMMON_BLOCK_VMX_H
 
+#include <stdint.h>
+
 struct vmx_param {
 	uint8_t enable;
 };

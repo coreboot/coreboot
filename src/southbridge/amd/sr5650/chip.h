@@ -17,6 +17,8 @@
 #ifndef SR5650_CHIP_H
 #define SR5650_CHIP_H
 
+#include <stdint.h>
+
 /* Member variables are defined in Config.lb. */
 struct southbridge_amd_sr5650_config
 {

@@ -17,6 +17,8 @@
 #ifndef _SOC_CANNONLAKE_LPC_H_
 #define _SOC_CANNONLAKE_LPC_H_
 
+#include <stdint.h>
+
 /* PCI Configuration Space (D31:F0): LPC */
 #define SCI_IRQ_SEL		(7 << 0)
 #define SCIS_IRQ9		0

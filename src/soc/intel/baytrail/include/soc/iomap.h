@@ -16,7 +16,6 @@
 #ifndef _BAYTRAIL_IOMAP_H_
 #define _BAYTRAIL_IOMAP_H_
 
-
 /*
  * Memory Mapped IO bases.
  */
@@ -79,6 +78,8 @@
 #define SMBUS_BASE_ADDRESS		0xefa0
 
 #ifndef __ACPI__
+#include <stdint.h>
+
 /* Read Top of Low Memory (BMBOUND) */
 uint32_t nc_read_top_of_low_memory(void);
 #endif

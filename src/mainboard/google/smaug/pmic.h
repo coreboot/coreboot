@@ -17,6 +17,8 @@
 #ifndef __MAINBOARD_GOOGLE_FOSTER_PMIC_H__
 #define __MAINBOARD_GOOGLE_FOSTER_PMIC_H__
 
+#include <stdint.h>
+
 #define MAX77620_SD0_REG		0x16
 #define MAX77620_SD1_REG		0x17
 #define MAX77620_SD2_REG		0x18

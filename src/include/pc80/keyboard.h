@@ -1,6 +1,8 @@
 #ifndef PC80_KEYBOARD_H
 #define PC80_KEYBOARD_H
 
+#include <stdint.h>
+
 #define NO_AUX_DEVICE		0
 #define PROBE_AUX_DEVICE	1
 

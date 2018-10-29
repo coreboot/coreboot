@@ -16,6 +16,8 @@
 #ifndef CPU_AMD_QUADCORE_H
 #define CPU_AMD_QUADCORE_H
 
+#include <stdint.h>
+
 u32 read_nb_cfg_54(void);
 
 struct node_core_id {

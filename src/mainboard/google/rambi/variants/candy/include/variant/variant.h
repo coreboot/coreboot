@@ -14,6 +14,8 @@
 #ifndef VARIANT_H
 #define VARIANT_H
 
+#include <stdint.h>
+
 /*
  * RAM_ID[3:0] are on GPIO_SSUS[40:37]
  * 0b0000 - 4GiB total - 2 x 2GiB Micron MT41K256M16HA-125:E 1600MHz

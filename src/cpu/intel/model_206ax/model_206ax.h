@@ -17,6 +17,8 @@
 #ifndef _CPU_INTEL_MODEL_206AX_H
 #define _CPU_INTEL_MODEL_206AX_H
 
+#include <stdint.h>
+
 /* SandyBridge/IvyBridge bus clock is fixed at 100MHz */
 #define SANDYBRIDGE_BCLK		100
 

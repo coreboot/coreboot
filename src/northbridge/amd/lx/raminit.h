@@ -17,6 +17,8 @@
 #ifndef RAMINIT_H
 #define RAMINIT_H
 
+#include <stdint.h>
+
 #define DIMM_SOCKETS 2
 
 struct mem_controller {

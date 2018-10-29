@@ -16,6 +16,8 @@
 #ifndef __RISCV_PMP_H__
 #define __RISCV_PMP_H__
 
+#include <stdint.h>
+
 /*
  * this function needs to be implemented by a specific SoC.
  * return number of PMP entries for current hart

@@ -14,6 +14,8 @@
 #ifndef VARIANT_H
 #define VARIANT_H
 
+#include <stdint.h>
+
 /*
  * RAM_ID[2:0] are on GPIO_SSUS[39:37]
  * 0b000 - 2GiB total - 1 x 2GiB Samsung K4B4G1646Q-HYK0 1600MHz

@@ -144,7 +144,7 @@ uint32_t tlcl_assert_physical_presence(void);
 uint32_t tlcl_physical_presence_cmd_enable(void);
 
 /**
- * Finalize the physical presence settings: sofware PP is enabled, hardware PP
+ * Finalize the physical presence settings: software PP is enabled, hardware PP
  * is disabled, and the lifetime lock is set.  The TPM error code is returned.
  */
 uint32_t tlcl_finalize_physical_presence(void);

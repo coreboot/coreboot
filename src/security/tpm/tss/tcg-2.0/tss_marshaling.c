@@ -471,12 +471,12 @@ static int unmarshal_nv_read(struct ibuf *ib, struct nv_read_response *nvr)
 	}
 
 	/*
-	 * Let's ignore the authorisation section. It should be 5 bytes total,
+	 * Let's ignore the authorization section. It should be 5 bytes total,
 	 * just confirm that this is the case and report any discrepancy.
 	 */
 	if (ibuf_remaining(ib) != 5)
 		printk(BIOS_ERR,
-		       "%s:%d - unexpected authorisation seciton size %zd\n",
+		       "%s:%d - unexpected authorization section size %zd\n",
 		       __func__, __LINE__, ibuf_remaining(ib));
 
 	ibuf_oob_drain(ib, ibuf_remaining(ib));

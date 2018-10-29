@@ -103,10 +103,10 @@ static uint32_t tpm_setup_epilogue(uint32_t result)
 
 /*
  * tpm_setup starts the TPM and establishes the root of trust for the
- * anti-rollback mechanism.  SetupTPM can fail for three reasons.  1 A bug. 2 a
- * TPM hardware failure. 3 An unexpected TPM state due to some attack.  In
+ * anti-rollback mechanism.  tpm_setup can fail for three reasons.  1 A bug.
+ * 2 a TPM hardware failure. 3 An unexpected TPM state due to some attack.  In
  * general we cannot easily distinguish the kind of failure, so our strategy is
- * to reboot in recovery mode in all cases.  The recovery mode calls SetupTPM
+ * to reboot in recovery mode in all cases.  The recovery mode calls tpm_setup
  * again, which executes (almost) the same sequence of operations.  There is a
  * good chance that, if recovery mode was entered because of a TPM failure, the
  * failure will repeat itself.  (In general this is impossible to guarantee

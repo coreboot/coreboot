@@ -160,7 +160,7 @@ static int fetch_16bit_instruction(uintptr_t vaddr, uintptr_t *insn, int *size)
 static int fetch_32bit_instruction(uintptr_t vaddr, uintptr_t *insn, int *size)
 {
 	uint32_t l = (uint32_t)mprv_read_mxr_u16((uint16_t *)vaddr + 0);
-	uint32_t h = (uint32_t)mprv_read_mxr_u16((uint16_t *)vaddr + 2);
+	uint32_t h = (uint32_t)mprv_read_mxr_u16((uint16_t *)vaddr + 1);
 	uint32_t ins = (h << 16) | l;
 	if ((EXTRACT_FIELD(ins, 0x3) == 3) &&
 		(EXTRACT_FIELD(ins, 0x1c) != 0x7)) {

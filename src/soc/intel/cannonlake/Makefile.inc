@@ -77,11 +77,13 @@ bootblock-y += gpio_cnp_h.c
 romstage-y += gpio_cnp_h.c
 ramstage-y += gpio_cnp_h.c
 smm-y += gpio_cnp_h.c
+verstage-y += gpio_cnp_h.c
 else
 bootblock-y += gpio.c
 romstage-y += gpio.c
 ramstage-y += gpio.c
 smm-y += gpio.c
+verstage-y += gpio.c
 endif
 
 CPPFLAGS_common += -I$(src)/soc/intel/cannonlake

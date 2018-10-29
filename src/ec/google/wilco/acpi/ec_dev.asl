@@ -18,6 +18,9 @@ Device (WLCO)
 	Name (_HID, "GOOG000C")
 	Name (_UID, 1)
 	Name (_DDN, "Wilco EC Command Device")
+#ifdef EC_WAKE_PIN
+	Name (_PRW, Package () { EC_WAKE_PIN, 0x5 })
+#endif
 
 	Method (_STA)
 	{

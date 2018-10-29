@@ -69,7 +69,7 @@ static struct cbfile *getfile(struct cbfile *f)
 			return NULL;
 		if (f->magic == LARCHIVE_MAGIC)
 			return f;
-		f = (void *)f + ntohl(header->align);
+		f = (struct cbfile *)((u8 *)f + ntohl(header->align));
 	}
 }
 
@@ -81,8 +81,8 @@ static struct cbfile *firstfile(void)
 
 static struct cbfile *nextfile(struct cbfile *f)
 {
-	f = (void *)f + ALIGN(ntohl(f->len) + ntohl(f->offset),
-			      ntohl(header->align));
+	f = (struct cbfile *)((u8 *)f + ALIGN(ntohl(f->len) + ntohl(f->offset),
+			      ntohl(header->align)));
 	return getfile(f);
 }
 

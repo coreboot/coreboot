@@ -17,6 +17,7 @@ bootblock-y += uart.c
 bootblock-y += clint.c
 bootblock-y += media.c
 bootblock-y += bootblock.c
+bootblock-y += clock.c
 
 romstage-y += uart.c
 romstage-y += clint.c

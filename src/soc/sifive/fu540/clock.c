@@ -242,6 +242,7 @@ void clock_init(void)
 }
 #endif /* ENV_ROMSTAGE */
 
+/* Get the core clock's frequency, in KHz */
 int clock_get_coreclk_khz(void)
 {
 	if (read32(&prci->coreclksel) & PRCI_CORECLK_MASK)

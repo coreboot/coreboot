@@ -20,9 +20,6 @@
 #include <string.h>
 #include <vm.h>
 
-static uint64_t *time;
-static uint64_t *timecmp;
-
 static const char *const exception_names[] = {
 	"Instruction address misaligned",
 	"Instruction access fault",
@@ -78,62 +75,22 @@ static void print_trap_information(const trapframe *tf)
 	printk(BIOS_DEBUG, "Stored sp:          %p\n", (void*) tf->gpr[2]);
 }
 
-static void gettimer(void)
-{
-	/*
-	 * FIXME: This hard-coded value (currently) works on spike, but we
-	 * should really read it from the device tree.
-	 */
-	uintptr_t clint = 0x02000000;
-
-	time    = (void *)(clint + 0xbff8);
-	timecmp = (void *)(clint + 0x4000);
-
-	if (!time)
-		die("Got timer interrupt but found no timer.");
-	if (!timecmp)
-		die("Got timer interrupt but found no timecmp.");
-}
-
 static void interrupt_handler(trapframe *tf)
 {
 	uint64_t cause = tf->cause & ~0x8000000000000000ULL;
-	uint32_t msip, ssie;
 
 	switch (cause) {
 	case IRQ_M_TIMER:
-		// The only way to reset the timer interrupt is to
-		// write mtimecmp. But we also have to ensure the
-		// comparison fails, for a long time, to let
-		// supervisor interrupt handler compute a new value
-		// and set it. Finally, it fires if mtimecmp is <=
-		// mtime, not =, so setting mtimecmp to 0 won't work
-		// to clear the interrupt and disable a new one. We
-		// have to set the mtimecmp far into the future.
-		// Akward!
-		//
-		// Further, maybe the platform doesn't have the
-		// hardware or the payload never uses it. We hold off
-		// querying some things until we are sure we need
-		// them. What to do if we can not find them? There are
-		// no good options.
+		/*
+		 * Set interrupt pending for supervisor mode and disable timer
+		 * interrupt in machine mode.
+		 * To receive another timer interrupt just set timecmp and
+		 * enable machine mode timer interrupt again.
+		 */
 
-		// This hart may have disabled timer interrupts.  If
-		// so, just return. Kernels should only enable timer
-		// interrupts on one hart, and that should be hart 0
-		// at present, as we only search for
-		// "core{0{0{timecmp" above.
-		ssie = read_csr(sie);
-		if (!(ssie & SIP_STIP))
-			break;
+		clear_csr(mie, MIP_MTIP);
+		set_csr(mip, MIP_STIP);
 
-		if (!timecmp)
-			gettimer();
-		//printk(BIOS_SPEW, "timer interrupt\n");
-		*timecmp = (uint64_t) -1;
-		msip = read_csr(mip);
-		msip |= SIP_STIP;
-		write_csr(mip, msip);
 		break;
 	default:
 		printk(BIOS_EMERG, "======================================\n");

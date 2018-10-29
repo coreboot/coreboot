@@ -29,6 +29,7 @@
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/image.h>
 #include <amdblocks/BiosCallOuts.h>
+#include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <soc/northbridge.h>
 #include <soc/cpu.h>
@@ -323,8 +324,11 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	 */
 	AMD_LATE_PARAMS *LateParams = create_struct(&AmdParamStruct);
 
-	LateParams->GnbLateConfiguration.GnbIoapicId = CONFIG_MAX_CPUS + 1;
-	LateParams->GnbLateConfiguration.FchIoapicId = CONFIG_MAX_CPUS;
+	const struct device *dev = dev_find_slot(0, IOMMU_DEVFN);
+	if (dev && dev->enabled) {
+		LateParams->GnbLateConfiguration.GnbIoapicId = CONFIG_MAX_CPUS + 1;
+		LateParams->GnbLateConfiguration.FchIoapicId = CONFIG_MAX_CPUS;
+	}
 
 	timestamp_add_now(TS_AGESA_INIT_LATE_START);
 	Status = AmdInitLate(LateParams);

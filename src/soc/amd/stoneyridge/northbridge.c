@@ -506,7 +506,8 @@ __weak void set_board_env_params(GNB_ENV_CONFIGURATION *params) { }
 
 void SetNbEnvParams(GNB_ENV_CONFIGURATION *params)
 {
-	params->IommuSupport = TRUE;
+	const struct device *dev = SOC_IOMMU_DEV;
+	params->IommuSupport = dev && dev->enabled;
 	set_board_env_params(params);
 }
 

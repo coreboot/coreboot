@@ -388,43 +388,6 @@ void fam15_finalize(void *chip_info)
 	pci_write_config32(SOC_HDA0_DEV, HDA_DEV_CTRL_STATUS, value);
 }
 
-void domain_read_resources(struct device *dev)
-{
-	unsigned int reg;
-	struct device *addr_map = dev_find_slot(0, ADDR_DEVFN);
-
-	/* Find the already assigned resource pairs */
-	for (reg = 0x80 ; reg <= 0xd8 ; reg += 0x08) {
-		u32 base, limit;
-		base = pci_read_config32(addr_map, reg);
-		limit = pci_read_config32(addr_map, reg + 4);
-		/* Is this register allocated? */
-		if ((base & 3) != 0) {
-			unsigned int nodeid, reg_link;
-			struct device *reg_dev = dev_find_slot(0, HT_DEVFN);
-			if (reg < 0xc0) /* mmio */
-				nodeid = (limit & 0xf) + (base & 0x30);
-			else /* io */
-				nodeid =  (limit & 0xf) + ((base >> 4) & 0x30);
-
-			reg_link = (limit >> 4) & 7;
-			if (reg_dev) {
-				/* Reserve the resource  */
-				struct resource *res;
-				res = new_resource(reg_dev,
-						IOINDEX(0x1000 + reg,
-								reg_link));
-				if (res)
-					res->flags = 1;
-			}
-		}
-	}
-	/* FIXME: do we need to check extend conf space?
-	   I don't believe that much preset value */
-
-	pci_domain_read_resources(dev);
-}
-
 void domain_enable_resources(struct device *dev)
 {
 	/* Must be called after PCI enumeration and resource allocation */

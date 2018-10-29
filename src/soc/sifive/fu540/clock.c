@@ -250,3 +250,14 @@ int clock_get_coreclk_khz(void)
 		/ (divr + 1)
 		/ (1ul << divq);
 }
+
+/* Get the TileLink clock's frequency, in KHz */
+int clock_get_tlclk_khz(void)
+{
+	/*
+	 * The TileLink bus and most peripherals use tlclk, which is coreclk/2,
+	 * as input.
+	 */
+
+	return clock_get_coreclk_khz() / 2;
+}

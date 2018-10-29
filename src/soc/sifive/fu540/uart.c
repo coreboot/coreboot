@@ -29,9 +29,5 @@ uintptr_t uart_platform_base(int idx)
 
 unsigned int uart_platform_refclk(void)
 {
-	/*
-	 * The SiFive UART uses tlclk, which is coreclk/2, as input
-	 */
-
-	return clock_get_coreclk_khz() * KHz / 2;
+	return clock_get_tlclk_khz() * KHz;
 }

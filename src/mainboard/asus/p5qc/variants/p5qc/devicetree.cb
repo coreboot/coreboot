@@ -55,7 +55,7 @@ chip northbridge/intel/x4x		# Northbridge
 			device pci 1c.1 off end		# PCIe 2
 			device pci 1c.2 off end		# PCIe 3
 			device pci 1c.3 off end		# PCIe 4
-			device pci 1c.4 on end		# PCIe 5 MARVEL IDE
+			device pci 1c.4 on end		# PCIe 5 MARVELL IDE
 			device pci 1c.5 on end		# PCIe 6
 			device pci 1d.0 on end		# USB
 			device pci 1d.1 on end		# USB

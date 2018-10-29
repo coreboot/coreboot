@@ -53,7 +53,7 @@ config MAX_CPUS
 	int
 	default 4
 
-# The MARVEL IDE controller delays SeaBIOS a lot and results in an unbootable
+# The MARVELL IDE controller delays SeaBIOS a lot and results in an unbootable
 # bogus disk. Compiling SeaBIOS without ATA support is a workaround.
 
 config PAYLOAD_CONFIGFILE

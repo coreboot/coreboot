@@ -33,7 +33,7 @@ static const u8 dqs_map[][8] = {
 static const u16 rcomp_resistor[] = { 200, 81, 162 };
 
 /* Rcomp target */
-static const u16 rcomp_target[] = { 100, 40, 40, 23, 40 };
+static const u16 rcomp_target[] = { 100, 30, 40, 23, 40 };
 
 void variant_memory_params(struct memory_params *p)
 {

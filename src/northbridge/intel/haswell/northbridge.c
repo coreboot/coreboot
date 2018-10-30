@@ -461,6 +461,12 @@ static struct device_operations mc_ops = {
 	.ops_pci          = &intel_pci_ops,
 };
 
+static const struct pci_driver mc_driver_hsw_normal __pci_driver = {
+	.ops	= &mc_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_HSW_DESKTOP,
+};
+
 static const struct pci_driver mc_driver_hsw_mobile __pci_driver = {
 	.ops    = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,

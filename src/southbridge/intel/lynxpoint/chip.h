@@ -112,6 +112,9 @@ struct southbridge_intel_lynxpoint_config {
 
 	/* Route USB ports to XHCI per default */
 	uint8_t xhci_default;
+
+	/* Information for the ACPI FADT. */
+	bool docking_supported;
 };
 
 extern struct chip_operations southbridge_intel_lynxpoint_ops;

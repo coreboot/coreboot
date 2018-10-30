@@ -1715,9 +1715,15 @@ typedef struct {
 **/
   UINT8                       SkipSpiPCP;
 
-/** Offset 0x03AB
+/** Offset 0x03AB - PMIC PCH_PWROK delay configuration - IPC Configuration
+  Upd for changing PCH_PWROK delay configuration : I2C_Slave_Address (31:24) + Register_Offset
+  (23:16) + OR Value (15:8) + AND Value (7:0)
 **/
-  UINT8                       ReservedFspsUpd[5];
+  UINT32                      PmicPmcIpcCtrl;
+
+/** Offset 0x03AF
+**/
+  UINT8                       ReservedFspsUpd[1];
 } FSP_S_CONFIG;
 
 /** Fsp S SGX Configuration

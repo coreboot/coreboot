@@ -856,6 +856,11 @@ static const unsigned short pci_device_ids[] = {
 	0x8c4c, /* Q85 SKU */
 	0x8c4e, /* Q87 SKU */
 	0x8c4f, /* QM87 SKU */
+	0x8c50, /* B85 SKU */
+	0x8c52, /* C222 SKU */
+	0x8c54, /* C224 SKU */
+	0x8c56, /* C226 SKU */
+	0x8c5c, /* H81 SKU */
 	0x9c41, /* LP Full Featured Engineering Sample */
 	0x9c43, /* LP Premium SKU */
 	0x9c45, /* LP Mainstream SKU */

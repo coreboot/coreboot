@@ -47,6 +47,6 @@ else
 romstage-y += early_me_mrc.c early_usb_mrc.c
 endif
 
-ramstage-y += madt.c early_pch_common.c
+ramstage-y += early_pch_common.c
 
 endif

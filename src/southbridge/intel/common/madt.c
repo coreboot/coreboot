@@ -13,13 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include <types.h>
-#include <string.h>
-#include <cbmem.h>
-#include <console/console.h>
 #include <arch/acpi.h>
 #include <arch/ioapic.h>
-#include <arch/acpigen.h>
 #include <arch/smp/mpspec.h>
 
 unsigned long acpi_fill_madt(unsigned long current)

@@ -94,6 +94,7 @@ static void nc_read_resources(struct device *dev)
 	unsigned long fsp_res_base_k;
 	unsigned long base_k, size_k;
 	const unsigned long four_gig_kib = (4 << (30 - 10));
+	void *fsp_reserved_memory_area;
 	int index = 0;
 
 	/* Read standard PCI resources. */
@@ -105,7 +106,14 @@ static void nc_read_resources(struct device *dev)
 	tseg_top_k = tseg_base_k + RES_IN_KIB(smm_size);
 
 	/* Determine the base of the FSP reserved memory */
-	fsp_res_base_k = RES_IN_KIB((unsigned long) cbmem_top());
+	fsp_reserved_memory_area = cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY);
+	if (fsp_reserved_memory_area) {
+		fsp_res_base_k =
+			RES_IN_KIB((unsigned int)fsp_reserved_memory_area);
+	} else {
+		/* If no FSP reserverd area */
+		fsp_res_base_k = tseg_base_k;
+	}
 
 	/* PCIe memory-mapped config space access - 256 MiB. */
 	mmconf = iosf_bunit_read(BUNIT_MMCONF_REG) & ~((1 << 28) - 1);
@@ -116,8 +124,8 @@ static void nc_read_resources(struct device *dev)
 	size_k = RES_IN_KIB(0xa0000) - base_k;
 	ram_resource(dev, index++, base_k, size_k);
 
-	/* 0xc0000 -> fsp_res_base - cacheable and usable */
-	base_k = RES_IN_KIB(0xc0000);
+	/* High memory -> fsp_res_base - cacheable and usable */
+	base_k = RES_IN_KIB(0x100000);
 	size_k = fsp_res_base_k - base_k;
 	ram_resource(dev, index++, base_k, size_k);
 

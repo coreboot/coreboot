@@ -1,20 +1,10 @@
 #ifndef CPU_AMD_MTRR_H
 #define CPU_AMD_MTRR_H
 
-/* FIXME
- * Replace
- * #define IORR_FIRST 0xC0010016
- * #define IORR_LAST  0xC0010019
- * with
- * #define IORR0_BASE 0xC0010016
- * #define IORR0_MASK 0xC0010017
- * #define IORR1_BASE 0xC0010018
- * #define IORR1_MASK 0xC0010019
- * those are also defined in vendorcode <AGESA.h> file.
- */
-
-#define IORR_FIRST 0xC0010016
-#define IORR_LAST  0xC0010019
+#define MTRR_IORR0_BASE	0xC0010016
+#define MTRR_IORR0_MASK	0xC0010017
+#define MTRR_IORR1_BASE	0xC0010018
+#define MTRR_IORR1_MASK	0xC0010019
 
 #define MTRR_READ_MEM			(1 << 4)
 #define MTRR_WRITE_MEM			(1 << 3)

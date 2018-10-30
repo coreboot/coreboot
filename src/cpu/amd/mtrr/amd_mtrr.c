@@ -138,7 +138,7 @@ void amd_setup_mtrrs(void)
 	 * undefined side effects.
 	 */
 	msr.lo = msr.hi = 0;
-	for (i = IORR_FIRST; i <= IORR_LAST; i++)
+	for (i = MTRR_IORR0_BASE; i <= MTRR_IORR1_MASK; i++)
 		wrmsr(i, msr);
 
 	/* Enable Variable Mtrrs

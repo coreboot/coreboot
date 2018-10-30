@@ -2148,10 +2148,10 @@ void SetTargetWTIO_D(u32 TestAddr)
 	u32 lo, hi;
 	hi = TestAddr >> 24;
 	lo = TestAddr << 8;
-	_WRMSR(IORR_FIRST, lo, hi);		/* IORR0 Base */
+	_WRMSR(MTRR_IORR0_BASE, lo, hi);		/* IORR0 Base */
 	hi = 0xFF;
 	lo = 0xFC000800;			/* 64MB Mask */
-	_WRMSR(0xC0010017, lo, hi);		/* IORR0 Mask */
+	_WRMSR(MTRR_IORR0_MASK, lo, hi);		/* IORR0 Mask */
 }
 
 void ResetTargetWTIO_D(void)
@@ -2160,7 +2160,7 @@ void ResetTargetWTIO_D(void)
 
 	hi = 0;
 	lo = 0;
-	_WRMSR(0xc0010017, lo, hi); /* IORR0 Mask */
+	_WRMSR(MTRR_IORR0_MASK, lo, hi); /* IORR0 Mask */
 }
 
 u32 SetUpperFSbase(u32 addr_hi)

@@ -333,9 +333,11 @@ static void initialize_vr_config(void)
 	msr.hi &= ~(1 << (51 - 32));
 	/* Enable decay mode on C-state entry. */
 	msr.hi |= (1 << (52 - 32));
-	/* Set the slow ramp rate to be fast ramp rate / 4 */
-	msr.hi &= ~(0x3 << (53 - 32));
-	msr.hi |= (0x01 << (53 - 32));
+	if (haswell_is_ult()) {
+		/* Set the slow ramp rate to be fast ramp rate / 4 */
+		msr.hi &= ~(0x3 << (53 - 32));
+		msr.hi |= (0x01 << (53 - 32));
+	}
 	/* Set MIN_VID (31:24) to allow CPU to have full control. */
 	msr.lo &= ~0xff000000;
 	wrmsr(MSR_VR_MISC_CONFIG, msr);

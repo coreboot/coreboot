@@ -36,6 +36,7 @@
 #include <arch/acpigen.h>
 #include <cbmem.h>
 #include <drivers/intel/gma/i915.h>
+#include <southbridge/intel/common/acpi_pirq_gen.h>
 
 #define NMI_OFF	0
 
@@ -789,6 +790,16 @@ static void southbridge_inject_dsdt(struct device *dev)
 	}
 }
 
+static const char *lpc_acpi_name(const struct device *dev)
+{
+	return "LPCB";
+}
+
+static void southbridge_fill_ssdt(struct device *dev)
+{
+	intel_acpi_gen_def_acpi_pirq(dev);
+}
+
 static unsigned long southbridge_write_acpi_tables(struct device *device,
 						   unsigned long start,
 						   struct acpi_rsdp *rsdp)
@@ -835,7 +846,9 @@ static struct device_operations device_ops = {
 	.read_resources		= pch_lpc_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
+	.acpi_fill_ssdt_generator   = southbridge_fill_ssdt,
 	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
+	.acpi_name		= lpc_acpi_name,
 	.write_acpi_tables      = southbridge_write_acpi_tables,
 	.init			= lpc_init,
 	.enable			= pch_lpc_enable,

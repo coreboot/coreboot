@@ -74,6 +74,22 @@ static void pci_domain_set_resources(struct device *dev)
 	assign_resources(dev->link_list);
 }
 
+static const char *northbridge_acpi_name(const struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PCI0";
+
+	if (dev->path.type != DEVICE_PATH_PCI || dev->bus->secondary != 0)
+		return NULL;
+
+	switch (dev->path.pci.devfn) {
+	case PCI_DEVFN(0, 0):
+		return "MCHC";
+	}
+
+	return NULL;
+}
+
 	/* TODO We could determine how many PCIe busses we need in
 	 * the bar. For now that number is hardcoded to a max of 64.
 	 * See e7525/northbridge.c for an example.
@@ -84,6 +100,7 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init             = NULL,
 	.scan_bus         = pci_domain_scan_bus,
+	.acpi_name	  = northbridge_acpi_name,
 	.write_acpi_tables = northbridge_write_acpi_tables,
 };
 

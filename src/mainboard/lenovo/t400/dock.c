@@ -34,10 +34,8 @@ struct pin_config {
 	u8 mode;
 };
 
-static int poll_clk_stable(pnp_devfn_t dev)
+static int poll_clk_stable(pnp_devfn_t dev, int timeout)
 {
-	int timeout = 1000;
-
 	/* Enable 14.318MHz CLK on CLKIN */
 	pnp_write_config(dev, 0x29, 0xa0);
 	while(!(pnp_read_config(dev, 0x29) & 0x10) && timeout--)
@@ -69,20 +67,10 @@ static int gpio_init(pnp_devfn_t gpio, u16 gpio_base,
 static const pnp_devfn_t l_dlpc = PNP_DEV(0x164e, PC87382_DOCK);
 static const pnp_devfn_t l_gpio = PNP_DEV(0x164e, PC87382_GPIO);
 
-#define DLPC_CONTROL	0x164c
-#define DLPC_GPIO_BASE	0x1680
-
-#define DLPC_GPDO0		(DLPC_GPIO_BASE + 0x0)
-#define DLPC_GPDI0		(DLPC_GPIO_BASE + 0x1)
-#define		D_PLTRST	0x01
-#define		D_LPCPD		0x02
-
-#define DLPC_GPDO2		(DLPC_GPIO_BASE + 0x8)
-#define DLPC_GPDI2		(DLPC_GPIO_BASE + 0x9)
-
 static int pc87382_init(pnp_devfn_t dlpc, u16 dlpc_base)
 {
-	int timeout = 1000;
+	/* Maximum 3300 LCLKs at 14.318MHz */
+	int timeout = 230;
 
 	/* Enable LPC bridge LDN. */
 	pnp_set_logical_device(dlpc);
@@ -93,7 +81,7 @@ static int pc87382_init(pnp_devfn_t dlpc, u16 dlpc_base)
 	outb(0x00, dlpc_base);
 	outb(0x07, dlpc_base);
 	while (!(inb(dlpc_base) & 8) && timeout--)
-		udelay(1000);
+		udelay(1);
 	if (!timeout)
 		return 1;
 
@@ -106,8 +94,10 @@ static void pc87382_close(pnp_devfn_t dlpc)
 
 	/* Disconnect LPC bus */
 	u16 dlpc_base = pnp_read_iobase(dlpc, PNP_IDX_IO0);
-	outb(0x00, dlpc_base);
-	pnp_set_enable(dlpc, 0);
+	if (dlpc_base) {
+		outb(0x00, dlpc_base);
+		pnp_set_enable(dlpc, 0);
+	}
 }
 
 static const struct pin_config local_gpio[] = {
@@ -115,17 +105,25 @@ static const struct pin_config local_gpio[] = {
 	{0x04, 4},	{0x20, 4},	{0x21, 4},	{0x23, 4},
 };
 
-static int pc87382_connect(void)
+/* Enable internal clock and configure GPIO LDN */
+int pc87382_early(void)
 {
-	u8 reg;
-
-	if (poll_clk_stable(l_gpio) != 0)
+	/* Wake-up time is 33 msec (maximum). */
+	if (poll_clk_stable(l_gpio, 33) != 0)
 		return 1;
 
+	/* Set up GPIOs */
 	if (gpio_init(l_gpio, DLPC_GPIO_BASE,
 		local_gpio, ARRAY_SIZE(local_gpio)) != 0) {
 		return 1;
 	}
+
+	return 0;
+}
+
+static int pc87382_connect(void)
+{
+	u8 reg;
 
 	reg = inb(DLPC_GPDO0);
 	reg |= D_PLTRST | D_LPCPD;
@@ -158,10 +156,12 @@ static void pc87382_disconnect(void)
 	outb(reg, DLPC_GPDO0);
 }
 
+/* Returns 3bit dock id */
 static u8 dock_identify(void)
 {
 	u8 id;
 
+	/* Make sure GPIO LDN is configured first ! */
 	id = (inb(DLPC_GPDI0) >> 4) & 1;
 	id |= (inb(DLPC_GPDI2) & 3) << 1;
 
@@ -172,10 +172,8 @@ static u8 dock_identify(void)
 
 #include <superio/nsc/pc87384/pc87384.h>
 
-static const pnp_devfn_t r_gpio = PNP_DEV(0x2e, PC87384_GPIO);
-static const pnp_devfn_t r_serial = PNP_DEV(0x2e, PC87384_SP1);
-
-#define DOCK_GPIO_BASE	0x1620
+static const pnp_devfn_t r_gpio = PNP_DEV(SUPERIO_DEV, PC87384_GPIO);
+static const pnp_devfn_t r_serial = PNP_DEV(SUPERIO_DEV, PC87384_SP1);
 
 static const struct pin_config remote_gpio[] = {
 	{0x00, PC87384_GPIO_PIN_DEBOUNCE | PC87384_GPIO_PIN_PULLUP},
@@ -190,7 +188,7 @@ static const struct pin_config remote_gpio[] = {
 
 static int pc87384_init(void)
 {
-	if (poll_clk_stable(r_gpio) != 0)
+	if (poll_clk_stable(r_gpio, 1000) != 0)
 		return 1;
 
 	/* set GPIO pins to Serial/Parallel Port
@@ -199,9 +197,12 @@ static int pc87384_init(void)
 	pnp_write_config(r_gpio, 0x22, 0xa9);
 
 	/* enable serial port */
-	pnp_set_logical_device(r_serial);
-	pnp_set_iobase(r_serial, PNP_IDX_IO0, 0x3f8);
-	pnp_set_enable(r_serial, 1);
+
+	if (CONFIG_TTYS0_BASE > 0) {
+		pnp_set_logical_device(r_serial);
+		pnp_set_iobase(r_serial, PNP_IDX_IO0, CONFIG_TTYS0_BASE);
+		pnp_set_enable(r_serial, 1);
+	}
 
 	if (gpio_init(r_gpio, DOCK_GPIO_BASE,
 		remote_gpio, ARRAY_SIZE(remote_gpio)) != 0)
@@ -228,14 +229,16 @@ static int pc87384_init(void)
 
 void dock_connect(void)
 {
-	if (dock_identify() == 0)
+	const u8 id = dock_identify();
+
+	/* Dock type 2505 doesn't have serial, LPT port or LEDs */
+	if (id == DOCK_TYPE_NONE || id == DOCK_TYPE_2505)
 		return;
 
-	if (pc87382_connect() != 0) {
+	if (pc87382_connect() != 0 || pc87384_init() != 0) {
 		pc87382_disconnect();
 		return;
 	}
-	pc87384_init();
 
 	ec_write(H8_LED_CONTROL,
 		 H8_LED_CONTROL_OFF | H8_LED_CONTROL_DOCK_LED1);
@@ -253,13 +256,12 @@ void dock_disconnect(void)
 		 H8_LED_CONTROL_OFF | H8_LED_CONTROL_DOCK_LED2);
 }
 
-void h8_mainboard_init_dock(void)
+void dock_info(void)
 {
-	u8 id = dock_identify();
+	const u8 id = dock_identify();
 
-	if (id != 0) {
-		printk(BIOS_DEBUG, "dock (id=%d) is present\n", id);
-		dock_connect();
-	} else
-		printk(BIOS_DEBUG, "dock is not connected\n");
+	if (id != DOCK_TYPE_NONE)
+		printk(BIOS_DEBUG, "DOCK: is present: id=%d\n", id);
+	else
+		printk(BIOS_DEBUG, "DOCK: not connected\n");
 }

@@ -18,3 +18,17 @@ the whole device.
 * Unplug the power cable
 * Remove the bottom enclosure
 * Flip the mainboard and remove the main frame
+
+## Docking stations
+The following docking stations are supported by coreboot:
+* Type 2505
+  * VGA, Ethernet, Modem, PS2, 4 USB Ports
+  * Dock ID on pc87382 reads as: 2
+* Type 2504
+  * Serial, LPT, LEDs, Audio, DVI, VGA, Ethernet, Modem, PS2, 4 USB Ports
+  * Dock ID on pc87382 reads as: 1
+  * PNP IO address of SuperIO pc87384: 0x2e
+
+There's no hotplug support for LPT and Serial on Type 2504.
+
+The Dock ID reads as 7 if no dock is connected.

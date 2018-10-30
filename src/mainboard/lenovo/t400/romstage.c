@@ -66,6 +66,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	sysinfo_t sysinfo;
 	int s3resume = 0;
 	int cbmem_initted;
+	int err;
 	u16 reg16;
 
 	timestamp_init(get_initial_timestamp());
@@ -81,10 +82,19 @@ void mainboard_romstage_entry(unsigned long bist)
 	i82801ix_early_init();
 	early_lpc_setup();
 
-	dock_connect();
+	/* Minimal setup to detect dock */
+	err = pc87382_early();
+	if (err == 0)
+		dock_connect();
 
 	console_init();
 	printk(BIOS_DEBUG, "running main(bist = %lu)\n", bist);
+
+	/* Print dock info */
+	if (err)
+		printk(BIOS_ERR, "DOCK: Failed to init pc87382\n");
+	else
+		dock_info();
 
 	reg16 = pci_read_config16(LPC_DEV, D31F0_GEN_PMCON_3);
 	pci_write_config16(LPC_DEV, D31F0_GEN_PMCON_3, reg16);

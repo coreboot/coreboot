@@ -56,6 +56,36 @@ u32 pm_read32(u8 reg)
 	return read32((void *)(PM_MMIO_BASE + reg));
 }
 
+u8 acpi_read8(u8 reg)
+{
+	return read8((void *)(ACPI_REG_MMIO_BASE + reg));
+}
+
+u16 acpi_read16(u8 reg)
+{
+	return read16((void *)(ACPI_REG_MMIO_BASE + reg));
+}
+
+u32 acpi_read32(u8 reg)
+{
+	return read32((void *)(ACPI_REG_MMIO_BASE + reg));
+}
+
+void acpi_write8(u8 reg, u8 value)
+{
+	write8((void *)(ACPI_REG_MMIO_BASE + reg), value);
+}
+
+void acpi_write16(u8 reg, u16 value)
+{
+	write16((void *)(ACPI_REG_MMIO_BASE + reg), value);
+}
+
+void acpi_write32(u8 reg, u32 value)
+{
+	write32((void *)(ACPI_REG_MMIO_BASE + reg), value);
+}
+
 void smi_write32(uint8_t offset, uint32_t value)
 {
 	write32((void *)(APU_SMI_BASE + offset), value);

@@ -6,6 +6,10 @@ This section contains documentation about coreboot on specific mainboards.
 
 - [P8H61-M LX](asus/p8h61-m_lx.md)
 
+## ASRock
+
+- [H81M-HDS](asrock/h81m-hds.md)
+
 ## Cavium
 
 - [CN81XX EVB SFF](cavium/cn8100_sff_evb.md)

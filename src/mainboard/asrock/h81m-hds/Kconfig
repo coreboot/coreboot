@@ -1,0 +1,89 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2018 Tristan Corrick <tristan@corrick.kiwi>
+##
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+if BOARD_ASROCK_H81M_HDS
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_4096
+	select CPU_INTEL_HASWELL
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select HAVE_SMI_HANDLER
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_INT15
+	select MAINBOARD_HAS_LIBGFXINIT
+	select NORTHBRIDGE_INTEL_HASWELL
+	select REALTEK_8168_RESET
+	select RT8168_SET_LED_MODE
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_LYNXPOINT
+	select SUPERIO_NUVOTON_NCT6776
+	select SUPERIO_NUVOTON_NCT6776_COM_A
+	select TSC_MONOTONIC_TIMER
+
+config CBFS_SIZE
+	hex
+	default 0x200000
+
+#
+# The override of GFX_GMA_CPU_VARIANT should be removed once the patches
+# for dynamic CPU detection are merged in libgfxinit.
+#
+config GFX_GMA_CPU_VARIANT
+	string
+	default "Normal"
+
+config MAINBOARD_DIR
+	string
+	default asrock/h81m-hds
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "H81M-HDS"
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x8c5c
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1849
+
+# This is overridden if CMOS is used for configuration values.
+config MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+	bool
+	default n
+
+config MAX_CPUS
+	int
+	default 8
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+#
+# Since this is a desktop board, the assumption is made that most users
+# would want CMOS configuration enabled by default.
+#
+config USE_OPTION_TABLE
+	bool
+	default y
+
+endif

@@ -1,0 +1,2 @@
+config BOARD_ASROCK_H81M_HDS
+	bool "H81M-HDS"

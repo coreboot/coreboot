@@ -124,6 +124,10 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN4_DEC, config->gen4_dec);
 }
 
+void __weak mainboard_config_superio(void)
+{
+}
+
 int early_pch_init(const void *gpio_map,
 		   const struct rcba_config_instruction *rcba_config)
 {
@@ -138,6 +142,8 @@ int early_pch_init(const void *gpio_map,
 #else
 	setup_pch_gpios(gpio_map);
 #endif
+
+	mainboard_config_superio();
 
 	console_init();
 

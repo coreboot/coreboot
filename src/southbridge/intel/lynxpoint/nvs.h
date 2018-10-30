@@ -15,6 +15,7 @@
  */
 
 #include <commonlib/helpers.h>
+#include <stdint.h>
 #include "vendorcode/google/chromeos/gnvs.h"
 
 typedef struct global_nvs_t {

@@ -368,7 +368,10 @@ static void gma_setup_panel(struct device *dev)
 	   bit 4: DDI A supports 4 lanes and DDI E is not used
 	   bit 7: DDI buffer is idle
 	*/
-	gtt_write(DDI_BUF_CTL_A, DDI_BUF_IS_IDLE | DDI_A_4_LANES | DDI_INIT_DISPLAY_DETECTED);
+	reg32 = DDI_BUF_IS_IDLE | DDI_INIT_DISPLAY_DETECTED;
+	if (!conf->gpu_ddi_e_connected)
+		reg32 |= DDI_A_4_LANES;
+	gtt_write(DDI_BUF_CTL_A, reg32);
 
 	/* Set FDI registers - is this required? */
 	gtt_write(_FDI_RXA_MISC, 0x00200090);

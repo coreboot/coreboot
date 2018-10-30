@@ -791,6 +791,7 @@ static struct device_operations cpu_dev_ops = {
 static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x306c1 }, /* Intel Haswell 4+2 A0 */
 	{ X86_VENDOR_INTEL, 0x306c2 }, /* Intel Haswell 4+2 B0 */
+	{ X86_VENDOR_INTEL, 0x306c3 }, /* Intel Haswell C0 */
 	{ X86_VENDOR_INTEL, 0x40650 }, /* Intel Haswell ULT B0 */
 	{ X86_VENDOR_INTEL, 0x40651 }, /* Intel Haswell ULT B1 */
 	{ 0, 0 },

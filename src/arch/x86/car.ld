@@ -71,7 +71,17 @@
 	 * cbmem console. This is useful for clearing this area on a per-stage
 	 * basis when more than one stage uses cache-as-ram for CAR_GLOBALs. */
 	_car_global_start = .;
+#if IS_ENABLED(CONFIG_NO_CAR_GLOBAL_MIGRATION)
+	/* Allow global unitialized variables when CAR_GLOBALs are not used. */
+	*(.bss)
+	*(.bss.*)
+	*(.sbss)
+	*(.sbss.*)
+#else
+	/* .car.global_data objects only around when
+	 * !CONFIG_NO_CAR_GLOBAL_MIGRATION is employed. */
 	*(.car.global_data);
+#endif
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_car_global_end = .;
 	_car_relocatable_data_end = .;
@@ -88,10 +98,15 @@
 .illegal_globals . : {
 	*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/romstage*/buildOpts.o" "*/romstage*/agesawrapper.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data)
 		*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/romstage*/buildOpts.o" "*/romstage*/agesawrapper.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data.*)
+#if !IS_ENABLED(CONFIG_NO_CAR_GLOBAL_MIGRATION)
 	*(.bss)
 	*(.bss.*)
 	*(.sbss)
 	*(.sbss.*)
+#else
+	/* In case something sneaks through when it shouldn't. */
+	*(.car.global_data);
+#endif
 }
 
 _bogus = ASSERT((CONFIG_DCACHE_RAM_SIZE == 0) || (SIZEOF(.car.data) <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");

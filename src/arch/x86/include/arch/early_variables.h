@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <rules.h>
 
-#if ENV_CACHE_AS_RAM
+#if ENV_CACHE_AS_RAM && !IS_ENABLED(CONFIG_NO_CAR_GLOBAL_MIGRATION)
 asm(".section .car.global_data,\"w\",@nobits");
 asm(".previous");
 #ifdef __clang__
@@ -34,7 +34,7 @@ asm(".previous");
  * accessed unconditionally because cbmem is never initialized until romstage
  * when dram comes up.
  */
-#if ENV_VERSTAGE || ENV_BOOTBLOCK || IS_ENABLED(CONFIG_NO_CAR_GLOBAL_MIGRATION)
+#if ENV_VERSTAGE || ENV_BOOTBLOCK
 static inline void *car_get_var_ptr(void *var)
 {
 	return var;

@@ -16,8 +16,6 @@
 
 config FSP_VENDORCODE_HEADER_PATH
 	string
-	default "fsp1_0/ivybridge_bd82x6x" if CPU_INTEL_FSP_MODEL_306AX && SOUTHBRIDGE_INTEL_FSP_BD82X6X
-	default "fsp1_0/ivybridge_i89xx/" if CPU_INTEL_FSP_MODEL_306AX && SOUTHBRIDGE_INTEL_FSP_I89XX
 	default "fsp1_0/baytrail" if SOC_INTEL_FSP_BAYTRAIL
 	default "fsp1_0/broadwell_de" if SOC_INTEL_FSP_BROADWELL_DE
 	default "fsp1_0/rangeley" if CPU_INTEL_FSP_MODEL_406DX

@@ -19,6 +19,8 @@ ramstage-y += ramstage.c
 
 romstage-y += romstage.c
 
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+
 bootblock-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 romstage-$(CONFIG_CHROMEOS) += chromeos.c

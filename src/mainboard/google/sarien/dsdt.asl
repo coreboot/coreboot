@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include <variant/ec.h>
+
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
@@ -50,4 +52,15 @@ DefinitionBlock(
 
 	/* Chipset specific sleep states */
 	#include <soc/intel/cannonlake/acpi/sleepstates.asl>
+
+#if IS_ENABLED(CONFIG_EC_GOOGLE_WILCO)
+	/* Chrome OS Embedded Controller */
+	Scope (\_SB.PCI0.LPCB)
+	{
+		/* ACPI code for EC SuperIO functions */
+		#include <ec/google/wilco/acpi/superio.asl>
+		/* ACPI code for EC functions */
+		#include <ec/google/wilco/acpi/ec.asl>
+	}
+#endif
 }

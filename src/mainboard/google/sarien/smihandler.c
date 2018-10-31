@@ -13,22 +13,23 @@
  * GNU General Public License for more details.
  */
 
-#include <bootblock_common.h>
-#include <ec/google/wilco/bootblock.h>
-#include <soc/gpio.h>
-#include <variant/gpio.h>
+#include <cpu/x86/smm.h>
+#include <ec/google/wilco/smm.h>
+#include <soc/smm.h>
+#include <variant/ec.h>
 
-static void early_config_gpio(void)
+void mainboard_smi_espi_handler(void)
 {
-	const struct pad_config *early_gpio_table;
-	size_t num_gpios = 0;
-
-	early_gpio_table = variant_early_gpio_table(&num_gpios);
-	gpio_configure_pads(early_gpio_table, num_gpios);
+	wilco_ec_smi_espi();
 }
 
-void bootblock_mainboard_init(void)
+void mainboard_smi_sleep(u8 slp_typ)
 {
-	early_config_gpio();
-	wilco_ec_early_init();
+	wilco_ec_smi_sleep(slp_typ);
+}
+
+int mainboard_smi_apmc(u8 apmc)
+{
+	wilco_ec_smi_apmc(apmc);
+	return 0;
 }

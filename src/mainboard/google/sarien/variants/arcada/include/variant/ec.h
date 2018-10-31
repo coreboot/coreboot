@@ -13,22 +13,19 @@
  * GNU General Public License for more details.
  */
 
-#include <bootblock_common.h>
-#include <ec/google/wilco/bootblock.h>
+#ifndef VARIANT_EC_H
+#define VARIANT_EC_H
+
+#include <soc/gpe.h>
 #include <soc/gpio.h>
-#include <variant/gpio.h>
 
-static void early_config_gpio(void)
-{
-	const struct pad_config *early_gpio_table;
-	size_t num_gpios = 0;
+/* EC wake pin */
+#define EC_WAKE_PIN		GPE0_DW1_12
 
-	early_gpio_table = variant_early_gpio_table(&num_gpios);
-	gpio_configure_pads(early_gpio_table, num_gpios);
-}
+/* eSPI virtual wire reporting */
+#define EC_SCI_GPI		GPE0_ESPI
 
-void bootblock_mainboard_init(void)
-{
-	early_config_gpio();
-	wilco_ec_early_init();
-}
+/* Enable PS/2 keyboard */
+#define SIO_EC_ENABLE_PS2K
+
+#endif

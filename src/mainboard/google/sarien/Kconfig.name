@@ -1,0 +1,5 @@
+comment "Sarien"
+
+config BOARD_GOOGLE_SARIEN
+	bool "->  Sarien"
+	select BOARD_GOOGLE_BASEBOARD_SARIEN

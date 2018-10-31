@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +36,7 @@
 
 /* IO Memory */
 #define IO_BASE_ADDRESS			0xfed80000
-#define IO_BASE_SIZE			0x4000
+#define IO_BASE_SIZE			0x40000
 #define COMMUNITY_OFFSET_GPSOUTHWEST            0x00000
 #define COMMUNITY_OFFSET_GPNORTH                0x08000
 #define COMMUNITY_OFFSET_GPEAST                 0x10000
@@ -43,7 +44,7 @@
 
 /* Intel Legacy Block */
 #define ILB_BASE_ADDRESS		0xfed08000
-#define ILB_BASE_SIZE			0x400
+#define ILB_BASE_SIZE			0x2000
 
 /* SPI Bus */
 #define SPI_BASE_ADDRESS		0xfed01000

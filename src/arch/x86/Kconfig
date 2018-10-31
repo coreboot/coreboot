@@ -35,6 +35,10 @@ config ARCH_ROMSTAGE_X86_32
 	bool
 	default n
 
+config ARCH_POSTCAR_X86_32
+	bool
+	default ARCH_ROMSTAGE_X86_32 && POSTCAR_STAGE
+
 config ARCH_RAMSTAGE_X86_32
 	bool
 	default n
@@ -54,6 +58,10 @@ config ARCH_VERSTAGE_X86_64
 config ARCH_ROMSTAGE_X86_64
 	bool
 	default n
+
+config ARCH_POSTCAR_X86_64
+	bool
+	default ARCH_ROMSTAGE_X86_64 && POSTCAR_STAGE
 
 config ARCH_RAMSTAGE_X86_64
 	bool

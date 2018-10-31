@@ -16,6 +16,10 @@
 ## GNU General Public License for more details.
 ##
 
+ifeq ($(CONFIG_POSTCAR_STAGE),y)
+$(eval $(call init_standard_toolchain,postcar))
+endif
+
 ################################################################################
 # i386 specific tools
 NVRAMTOOL:=$(objutil)/nvramtool/nvramtool

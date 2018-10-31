@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2019, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -37,11 +37,11 @@ are permitted provided that the following conditions are met:
 
 #pragma pack(1)
 
-#define FSPT_UPD_SIGNATURE               0x545F4450554C4349	/* 'ICLUPD_T' */
+#define FSPT_UPD_SIGNATURE               0x545F4450554C4349        /* 'ICLUPD_T' */
 
-#define FSPM_UPD_SIGNATURE               0x4D5F4450554C4349	/* 'ICLUPD_M' */
+#define FSPM_UPD_SIGNATURE               0x4D5F4450554C4349        /* 'ICLUPD_M' */
 
-#define FSPS_UPD_SIGNATURE               0x535F4450554C4349	/* 'ICLUPD_S' */
+#define FSPS_UPD_SIGNATURE               0x535F4450554C4349        /* 'ICLUPD_S' */
 
 #pragma pack()
 

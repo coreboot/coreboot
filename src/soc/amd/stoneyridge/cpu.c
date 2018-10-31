@@ -55,7 +55,7 @@ static void pre_mp_init(void)
 
 static int get_cpu_count(void)
 {
-	return (pci_read_config16(SOC_NB_DEV, D18F0_CPU_CNT) & CPU_CNT_MASK)
+	return (pci_read_config16(SOC_HT_DEV, D18F0_CPU_CNT) & CPU_CNT_MASK)
 									+ 1;
 }
 

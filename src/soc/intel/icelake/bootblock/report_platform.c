@@ -46,16 +46,16 @@ static struct {
 };
 
 static struct {
-	u16 lpcid;
+	u16 espiid;
 	const char *name;
 } pch_table[] = {
-	{ PCI_DEVICE_ID_INTEL_ICL_BASE_U_LPC, "Icelake-U Base" },
-	{ PCI_DEVICE_ID_INTEL_ICL_BASE_Y_LPC, "Icelake-Y Base" },
-	{ PCI_DEVICE_ID_INTEL_ICL_U_PREMIUM_LPC, "Icelake-U Premium" },
-	{ PCI_DEVICE_ID_INTEL_ICL_U_SUPER_U_LPC, "Icelake-U Super" },
-	{ PCI_DEVICE_ID_INTEL_ICL_U_SUPER_U_LPC_REV0, "Icelake-U Super REV0" },
-	{ PCI_DEVICE_ID_INTEL_ICL_SUPER_Y_LPC, "Icelake-Y Super" },
-	{ PCI_DEVICE_ID_INTEL_ICL_Y_PREMIUM_LPC, "Icelake-Y Premium" },
+	{ PCI_DEVICE_ID_INTEL_ICL_BASE_U_ESPI, "Icelake-U Base" },
+	{ PCI_DEVICE_ID_INTEL_ICL_BASE_Y_ESPI, "Icelake-Y Base" },
+	{ PCI_DEVICE_ID_INTEL_ICL_U_PREMIUM_ESPI, "Icelake-U Premium" },
+	{ PCI_DEVICE_ID_INTEL_ICL_U_SUPER_U_ESPI, "Icelake-U Super" },
+	{ PCI_DEVICE_ID_INTEL_ICL_U_SUPER_U_ESPI_REV0, "Icelake-U Super REV0" },
+	{ PCI_DEVICE_ID_INTEL_ICL_SUPER_Y_ESPI, "Icelake-Y Super" },
+	{ PCI_DEVICE_ID_INTEL_ICL_Y_PREMIUM_ESPI, "Icelake-Y Premium" },
 };
 
 static struct {
@@ -170,18 +170,18 @@ static void report_mch_info(void)
 static void report_pch_info(void)
 {
 	int i;
-	pci_devfn_t dev = PCH_DEV_LPC;
-	uint16_t lpcid = get_dev_id(dev);
+	pci_devfn_t dev = PCH_DEV_ESPI;
+	uint16_t espiid = get_dev_id(dev);
 	const char *pch_type = "Unknown";
 
 	for (i = 0; i < ARRAY_SIZE(pch_table); i++) {
-		if (pch_table[i].lpcid == lpcid) {
+		if (pch_table[i].espiid == espiid) {
 			pch_type = pch_table[i].name;
 			break;
 		}
 	}
 	printk(BIOS_DEBUG, "PCH: device id %04x (rev %02x) is %s\n",
-		lpcid, get_dev_revision(dev), pch_type);
+		espiid, get_dev_revision(dev), pch_type);
 }
 
 static void report_igd_info(void)

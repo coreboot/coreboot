@@ -24,9 +24,9 @@
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <reg_script.h>
+#include <soc/espi.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>
-#include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 
@@ -71,10 +71,10 @@ uint8_t get_pch_series(void)
 	uint16_t lpc_did_hi_byte;
 
 	/*
-	 * Fetch upper 8 bits on LPC device ID to determine PCH type
+	 * Fetch upper 8 bits on ESPI device ID to determine PCH type
 	 * Adding 1 to the offset to fetch upper 8 bits
 	 */
-	lpc_did_hi_byte = pci_read_config8(PCH_DEV_LPC, PCI_DEVICE_ID + 1);
+	lpc_did_hi_byte = pci_read_config8(PCH_DEV_ESPI, PCI_DEVICE_ID + 1);
 
 	if (lpc_did_hi_byte == 0x9D)
 		return PCH_LP;
@@ -87,11 +87,12 @@ uint8_t get_pch_series(void)
 #if ENV_RAMSTAGE
 static void soc_mirror_dmi_pcr_io_dec(void)
 {
+	struct device *dev = pcidev_on_root(PCH_DEV_SLOT_ESPI, 0);
 	uint32_t io_dec_arr[] = {
-		pci_read_config32(PCH_DEV_LPC, LPC_GEN1_DEC),
-		pci_read_config32(PCH_DEV_LPC, LPC_GEN2_DEC),
-		pci_read_config32(PCH_DEV_LPC, LPC_GEN3_DEC),
-		pci_read_config32(PCH_DEV_LPC, LPC_GEN4_DEC),
+		pci_read_config32(dev, ESPI_GEN1_DEC),
+		pci_read_config32(dev, ESPI_GEN2_DEC),
+		pci_read_config32(dev, ESPI_GEN3_DEC),
+		pci_read_config32(dev, ESPI_GEN4_DEC),
 	};
 	/* Mirror these same settings in DMI PCR */
 	soc_setup_dmi_pcr_io_dec(&io_dec_arr[0]);
@@ -215,10 +216,10 @@ void lpc_soc_init(struct device *dev)
 	isa_dma_init();
 	pch_misc_init();
 
-	/* Enable CLKRUN_EN for power gating LPC */
+	/* Enable CLKRUN_EN for power gating ESPI */
 	lpc_enable_pci_clk_cntl();
 
-	/* Set LPC Serial IRQ mode */
+	/* Set ESPI Serial IRQ mode */
 	if (CONFIG(SERIRQ_CONTINUOUS_MODE))
 		lpc_set_serirq_mode(SERIRQ_CONTINUOUS);
 	else
@@ -233,13 +234,13 @@ void lpc_soc_init(struct device *dev)
 	soc_mirror_dmi_pcr_io_dec();
 }
 
-/* Fill up LPC IO resource structure inside SoC directory */
+/* Fill up ESPI IO resource structure inside SoC directory */
 void pch_lpc_soc_fill_io_resources(struct device *dev)
 {
 	/*
 	 * PMC pci device gets hidden from PCI bus due to Silicon
 	 * policy hence bind ACPI BASE aka ABASE (offset 0x20) with
-	 * LPC IO resources to ensure that ABASE falls under PCI reserved
+	 * ESPI IO resources to ensure that ABASE falls under PCI reserved
 	 * IO memory range.
 	 *
 	 * Note: Don't add any more resource with same offset 0x20

@@ -13,10 +13,12 @@
  * GNU General Public License for more details.
  */
 
+
+/* Device identifier is not changed to ESPI to maintain coherency with ec.asl */
 Device (LPCB)
 {
 	Name (_ADR, 0x001f0000)
-	Name (_DDN, "LPC Bus Device")
+	Name (_DDN, "ESPI Bus Device")
 
 	Device (FWH)
 	{

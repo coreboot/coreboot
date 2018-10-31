@@ -30,10 +30,10 @@
 #include <intelblocks/rtc.h>
 #include <intelblocks/tco.h>
 #include <stdlib.h>
+#include <soc/espi.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
-#include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/smbus.h>

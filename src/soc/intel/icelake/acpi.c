@@ -169,7 +169,7 @@ void soc_power_states_generation(int core_id, int cores_per_package)
 void soc_fill_fadt(acpi_fadt_t *fadt)
 {
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
-	const struct device *dev = PCH_DEV_LPC;
+	const struct device *dev = pcidev_on_root(0, 0);
 	const struct soc_intel_icelake_config *config = dev->chip_info;
 
 	if (!config->PmTimerDisabled) {
@@ -194,7 +194,7 @@ uint32_t soc_read_sci_irq_select(void)
 
 void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {
-	const struct device *dev = PCH_DEV_LPC;
+	const struct device *dev = pcidev_on_root(0, 0);
 	const struct soc_intel_icelake_config *config = dev->chip_info;
 
 	/* Set unknown wake source */

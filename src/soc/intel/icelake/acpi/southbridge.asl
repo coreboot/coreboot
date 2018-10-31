@@ -32,8 +32,8 @@
 /* GPIO controller */
 #include "gpio.asl"
 
-/* LPC 0:1f.0 */
-#include "lpc.asl"
+/* ESPI 0:1f.0 */
+#include "espi.asl"
 
 /* PCH HDA */
 #include "pch_hda.asl"

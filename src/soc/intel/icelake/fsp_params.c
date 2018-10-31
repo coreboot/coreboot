@@ -102,7 +102,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* Lan */
-	dev = pcidev_on_root(PCH_DEV_SLOT_LPC, 6);
+	dev = pcidev_on_root(PCH_DEV_SLOT_ESPI, 6);
 	if (!dev)
 		params->PchLanEnable = 0;
 	else

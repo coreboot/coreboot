@@ -415,26 +415,26 @@ fam10_mtrr_setup_complete:
 
 jmp_if_not_fam15h(fam15_car_msr_setup_complete)
 	/* Disable streaming store (DisSS = 1) */
-	mov	$0xc0011020, %ecx
+	mov	$LS_CFG_MSR, %ecx
 	rdmsr
 	bts	$28, %eax
 	wrmsr
 
 	/* Disable speculative ITLB reloads (DisSpecTlbRld = 1) */
-	mov	$0xc0011021, %ecx
+	mov	$IC_CFG_MSR, %ecx
 	rdmsr
 	bts	$9, %eax
 	wrmsr
 
 	/* Disable speculative DTLB reloads (DisSpecTlbRld = 1) and set DisHwPf = 1 */
-	mov	$0xc0011022, %ecx
+	mov	$DC_CFG_MSR, %ecx
 	rdmsr
 	bts	$4, %eax
 	bts	$13, %eax
 	wrmsr
 
 	/* Disable CR0 combining (CombineCr0Cd = 0) */
-	mov	$0xc001102b, %ecx
+	mov	$BU_CFG3_MSR, %ecx
 	rdmsr
 	btr	$49-32, %edx
 	wrmsr

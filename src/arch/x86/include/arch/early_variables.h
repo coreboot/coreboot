@@ -34,7 +34,7 @@ asm(".previous");
  * accessed unconditionally because cbmem is never initialized until romstage
  * when dram comes up.
  */
-#if ENV_VERSTAGE || ENV_BOOTBLOCK
+#if !ENV_ROMSTAGE
 static inline void *car_get_var_ptr(void *var)
 {
 	return var;
@@ -58,7 +58,7 @@ void *car_sync_var_ptr(void *var);
 
 /* Return 1 when currently running with globals in Cache-as-RAM, 0 otherwise. */
 int car_active(void);
-#endif /* ENV_VERSTAGE */
+#endif /* !ENV_ROMSTAGE */
 
 /* Get and set a primitive type global variable. */
 #define car_get_var(var) \

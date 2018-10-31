@@ -210,10 +210,6 @@ struct ied_header {
 	u8 reserved[34];
 } __packed;
 
-#define PCI_DEVICE_ID_HSW_DESKTOP 0x0c00
-#define PCI_DEVICE_ID_HSW_MOBILE 0x0c04
-#define PCI_DEVICE_ID_HSW_ULT 0x0a04
-
 #ifdef __SMM__
 void intel_northbridge_haswell_finalize_smm(void);
 #else /* !__SMM__ */

@@ -478,22 +478,17 @@ static struct device_operations mc_ops = {
 	.ops_pci          = &intel_pci_ops,
 };
 
-static const struct pci_driver mc_driver_hsw_normal __pci_driver = {
-	.ops	= &mc_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_HSW_DESKTOP,
+static const unsigned short mc_pci_device_ids[] = {
+	0x0c00, /* Desktop */
+	0x0c04, /* Mobile */
+	0x0a04, /* ULT */
+	0
 };
 
-static const struct pci_driver mc_driver_hsw_mobile __pci_driver = {
-	.ops    = &mc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_HSW_MOBILE,
-};
-
-static const struct pci_driver mc_driver_hsw_ult __pci_driver = {
-	.ops    = &mc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_HSW_ULT,
+static const struct pci_driver mc_driver_hsw __pci_driver = {
+	.ops     = &mc_ops,
+	.vendor  = PCI_VENDOR_ID_INTEL,
+	.devices = mc_pci_device_ids,
 };
 
 static void cpu_bus_init(struct device *dev)

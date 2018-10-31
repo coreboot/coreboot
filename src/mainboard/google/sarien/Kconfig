@@ -30,6 +30,7 @@ config CHROMEOS
 
 config DEVICETREE
 	string
+	default "variants/arcada/devicetree.cb" if BOARD_GOOGLE_ARCADA
 	default "variants/sarien/devicetree.cb" if BOARD_GOOGLE_SARIEN
 
 config DIMM_MAX
@@ -55,6 +56,7 @@ config TPM_TIS_ACPI_INTERRUPT
 config GBB_HWID
 	string
 	depends on CHROMEOS
+	default "ARCADA TEST 3556" if BOARD_GOOGLE_ARCADA
 	default "SARIEN TEST 2787" if BOARD_GOOGLE_SARIEN
 
 config MAINBOARD_DIR
@@ -63,10 +65,12 @@ config MAINBOARD_DIR
 
 config MAINBOARD_FAMILY
 	string
+	default "Google_Arcada" if BOARD_GOOGLE_ARCADA
 	default "Google_Sarien" if BOARD_GOOGLE_SARIEN
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Arcada" if BOARD_GOOGLE_ARCADA
 	default "Sarien" if BOARD_GOOGLE_SARIEN
 
 config MAINBOARD_VENDOR
@@ -79,6 +83,7 @@ config MAX_CPUS
 
 config VARIANT_DIR
 	string
+	default "arcada" if BOARD_GOOGLE_ARCADA
 	default "sarien" if BOARD_GOOGLE_SARIEN
 
 config VBOOT

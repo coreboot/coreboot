@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,7 +143,7 @@
 
 
 /* PIC IRQ settings. */
-#define PIRQ_PIC_IRQDISABLE		0x0
+#define PIRQ_PIC_IRQDISABLE		0x80
 #define PIRQ_PIC_IRQ3			0x3
 #define PIRQ_PIC_IRQ4			0x4
 #define PIRQ_PIC_IRQ5			0x5

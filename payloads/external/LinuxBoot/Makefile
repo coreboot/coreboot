@@ -52,8 +52,7 @@ config: $(kernel_dir)/.config
 	echo "    CONFIG     Linux $(CONFIG_LINUXBOOT_KERNEL_VERSION)"
 ifneq ($(CONFIG_LINUXBOOT_KERNEL_CONFIGFILE),)
 	cp $(CONFIG_LINUXBOOT_KERNEL_CONFIGFILE) $(kernel_dir)/.config
-endif
-ifeq ($(CONFIG_LINUXBOOT_ARCH),386)
+else ifeq ($(CONFIG_LINUXBOOT_ARCH),386)
 	cp x86/defconfig $(kernel_dir)/.config
 else ifeq ($(CONFIG_LINUXBOOT_ARCH),amd64)
 	cp x86_64/defconfig $(kernel_dir)/.config

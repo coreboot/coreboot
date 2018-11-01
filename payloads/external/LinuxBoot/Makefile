@@ -45,7 +45,7 @@ $(kernel_dir)/.config:
 	echo "    WWW        Download Linux $(CONFIG_LINUXBOOT_KERNEL_VERSION)"
 	mkdir -p $(kernel_dir)
 ifeq ("$(wildcard $(kernel_dir)/README)","")
-	wget -qO- $(kernel_tarball) | tar xJ -C $(kernel_dir) --strip 1
+	curl -s $(kernel_tarball) | tar xJ -C $(kernel_dir) --strip 1
 endif
 
 config: $(kernel_dir)/.config

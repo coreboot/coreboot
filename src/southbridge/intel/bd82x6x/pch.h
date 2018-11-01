@@ -100,9 +100,6 @@ void
 early_usb_init (const struct southbridge_usb_port *portmap);
 
 #endif
-
-/* Return non-zero when RTC failure happened. */
-int rtc_failure(void);
 #endif
 
 /* PM I/O Space */

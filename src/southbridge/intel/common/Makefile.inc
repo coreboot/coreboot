@@ -54,4 +54,9 @@ smm-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SMM) += pmutil.c smihandler.c
 
 ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_ACPI_MADT) += madt.c
 
+romstage-y += rtc.c
+ramstage-y += rtc.c
+postcar-y += rtc.c
+smm-y += rtc.c
+
 endif

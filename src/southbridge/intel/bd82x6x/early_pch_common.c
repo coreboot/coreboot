@@ -23,7 +23,6 @@
 #include <arch/acpi.h>
 #include <console/console.h>
 #include <rules.h>
-#include <security/vboot/vbnv.h>
 
 #if ENV_ROMSTAGE
 uint64_t get_initial_timestamp(void)
@@ -62,18 +61,3 @@ int southbridge_detect_s3_resume(void)
 	return 0;
 }
 #endif
-
-int rtc_failure(void)
-{
-#if defined(__SIMPLE_DEVICE__)
-	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
-#else
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
-#endif
-	return !!(pci_read_config8(dev, GEN_PMCON_3) & RTC_BATTERY_DEAD);
-}
-
-int vbnv_cmos_failed(void)
-{
-	return rtc_failure();
-}

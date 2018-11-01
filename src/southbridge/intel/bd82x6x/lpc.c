@@ -27,7 +27,6 @@
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
 #include <cpu/cpu.h>
-#include <elog.h>
 #include <arch/acpigen.h>
 #include <drivers/intel/gma/i915.h>
 #include <cpu/x86/smm.h>
@@ -39,6 +38,7 @@
 #include <southbridge/intel/common/pciehp.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <southbridge/intel/common/pmutil.h>
+#include <southbridge/intel/common/rtc.h>
 
 #define NMI_OFF	0
 
@@ -277,21 +277,6 @@ static void pch_power_options(struct device *dev)
 	reg32 = RCBA32(0x3f02);
 	reg32 &= ~0xf;
 	RCBA32(0x3f02) = reg32;
-}
-
-static void pch_rtc_init(struct device *dev)
-{
-	int rtc_failed = rtc_failure();
-
-	if (rtc_failed) {
-		if (IS_ENABLED(CONFIG_ELOG))
-			elog_add_event(ELOG_TYPE_RTC_RESET);
-		pci_update_config8(dev, GEN_PMCON_3, ~RTC_BATTERY_DEAD, 0);
-	}
-
-	printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
-
-	cmos_init(rtc_failed);
 }
 
 /* CougarPoint PCH Power Management init */
@@ -605,7 +590,7 @@ static void lpc_init(struct device *dev)
 	//gpio_init(dev);
 
 	/* Initialize the real time clock. */
-	pch_rtc_init(dev);
+	sb_rtc_init();
 
 	/* Initialize ISA DMA. */
 	isa_dma_init();

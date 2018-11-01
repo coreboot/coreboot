@@ -234,6 +234,8 @@ static const struct pad_config early_gpio_table[] = {
 /* I2C4_SCL */		PAD_CFG_NF(GPP_H9, NONE, DEEP, NF1), /* I2C_SCL_H1 */
 /* DMIC_DATA1 */	PAD_CFG_GPI_APIC(GPP_D18, NONE, DEEP,
 				 EDGE_SINGLE, INVERT), /* H1_PCH_INT_ODL */
+/* RESET# need to stay low before FULL_CARD_POWER_OFF assert */
+/* SPI1_IO2 */		PAD_CFG_GPO(GPP_D21, 0, DEEP), /* WWAN_BB_RST# */
 /* CPU_GP0 */		PAD_CFG_GPI(GPP_E3, NONE, DEEP), /* MEM_INTERLEAVED */
 /* SATALED# */		PAD_CFG_GPI(GPP_E8, NONE, DEEP), /* RECOVERY# */
 /* DDPD_HPD2 */		PAD_CFG_GPI(GPP_E15, NONE, DEEP), /* PCH_WP */

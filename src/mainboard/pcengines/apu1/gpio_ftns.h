@@ -16,6 +16,8 @@
 #ifndef GPIO_FTNS_H
 #define GPIO_FTNS_H
 
+#include <stdint.h>
+
 uintptr_t find_gpio_base(void);
 void configure_gpio(uintptr_t base_addr, u32 gpio, u8 iomux_ftn, u8 setting);
 u8 read_gpio(uintptr_t base_addr, u32 gpio);

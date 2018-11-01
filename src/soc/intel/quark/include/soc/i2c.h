@@ -16,6 +16,8 @@
 #ifndef _QUARK_I2C_H_
 #define _QUARK_I2C_H_
 
+#include <stdint.h>
+
 typedef volatile struct _I2C_REGS {
 	volatile uint32_t ic_con;  /* 00: Control Register */
 	volatile uint32_t ic_tar;  /* 04: Master Target Address */

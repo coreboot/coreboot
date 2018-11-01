@@ -16,6 +16,8 @@
 #ifndef SOUTHBRIDGE_INTEL_FSP_BD82X6X_CHIP_H
 #define SOUTHBRIDGE_INTEL_FSP_BD82X6X_CHIP_H
 
+#include <stdint.h>
+
 struct southbridge_intel_fsp_bd82x6x_config {
 	/**
 	 * Interrupt Routing configuration

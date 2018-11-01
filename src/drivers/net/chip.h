@@ -14,6 +14,8 @@
 #ifndef __DRIVERS_R8168_CHIP_H__
 #define __DRIVERS_R8168_CHIP_H__
 
+#include <stdint.h>
+
 struct drivers_net_config {
 	uint16_t customized_leds;
 	unsigned wake;	/* Wake pin for ACPI _PRW */

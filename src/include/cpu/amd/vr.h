@@ -7,6 +7,8 @@
 #ifndef CPU_AMD_VR_H
 #define CPU_AMD_VR_H
 
+#include <stdint.h>
+
 #define VRC_INDEX				0xAC1C	// Index register
 #define VRC_DATA				0xAC1E	// Data register
 #define VR_UNLOCK				0xFC53	// Virtual register unlock code

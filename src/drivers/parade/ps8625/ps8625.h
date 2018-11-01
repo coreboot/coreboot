@@ -16,6 +16,8 @@
 #ifndef __PS8625_H__
 #define __PS8625_H__
 
+#include <stdint.h>
+
 struct parade_write {
 	uint8_t offset;
 	uint8_t reg;

@@ -15,6 +15,8 @@
 #ifndef AM335X_UART_H
 #define AM335X_UART_H
 
+#include <stdint.h>
+
 #define AM335X_UART0_BASE	0x44e09000
 #define AM335X_UART1_BASE	0x48020000
 #define AM335X_UART2_BASE	0x48024000

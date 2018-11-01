@@ -17,6 +17,8 @@
 #ifndef SUPERIO_NUVOTON_NPCD378_H
 #define SUPERIO_NUVOTON_NPCD378_H
 
+#include <stdint.h>
+
 /* HWM at LDN8 */
 #define NPCD837_HWM_WRITE_LOCK_CTRL 0x4
 #define NPCD837_HWM_WRITE_LOCK_BIT 0x1

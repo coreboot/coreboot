@@ -1,6 +1,8 @@
 #ifndef DEVICE_PATH_H
 #define DEVICE_PATH_H
 
+#include <stdint.h>
+
 enum device_path_type {
 	DEVICE_PATH_NONE = 0,
 	DEVICE_PATH_ROOT,

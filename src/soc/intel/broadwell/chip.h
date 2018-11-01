@@ -17,6 +17,8 @@
 #ifndef _SOC_INTEL_BROADWELL_CHIP_H_
 #define _SOC_INTEL_BROADWELL_CHIP_H_
 
+#include <stdint.h>
+
 struct soc_intel_broadwell_config {
 	/*
 	 * Interrupt Routing configuration

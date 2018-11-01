@@ -14,6 +14,8 @@
  * GNU General Public License for more details.
  */
 
+#include <stdint.h>
+
 const struct s_tpm_extend_cmd{
 	uint8_t buffer[34];
 	uint16_t pcrNum;

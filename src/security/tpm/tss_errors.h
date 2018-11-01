@@ -12,6 +12,8 @@
 #ifndef TSS_ERRORS_H_
 #define TSS_ERRORS_H_
 
+#include <stdint.h>
+
 #define TPM_E_BASE 0x0
 #define TPM_E_NON_FATAL 0x800
 

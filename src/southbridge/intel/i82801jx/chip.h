@@ -17,6 +17,8 @@
 #ifndef SOUTHBRIDGE_INTEL_I82801JX_CHIP_H
 #define SOUTHBRIDGE_INTEL_I82801JX_CHIP_H
 
+#include <stdint.h>
+
 enum {
 	THTL_DEF = 0, THTL_87_5 = 1, THTL_75_0 = 2, THTL_62_5 = 3,
 	THTL_50_0 = 4, THTL_37_5 = 5, THTL_25_0 = 6, THTL_12_5 = 7

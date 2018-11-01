@@ -6,6 +6,8 @@
 #ifndef TCG_TSS_INTERNAL_H_
 #define TCG_TSS_INTERNAL_H_
 
+#include <stdint.h>
+
 /*
  * These numbers derive from adding the sizes of command fields as shown in the
  * TPM commands manual.

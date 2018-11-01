@@ -16,6 +16,8 @@
 #ifndef SOUTHBRIDGE_INTEL_I89XX_CHIP_H
 #define SOUTHBRIDGE_INTEL_I89XX_CHIP_H
 
+#include <stdint.h>
+
 struct southbridge_intel_fsp_i89xx_config {
 	/**
 	 * Interrupt Routing configuration

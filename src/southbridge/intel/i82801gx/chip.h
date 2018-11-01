@@ -16,6 +16,8 @@
 #ifndef SOUTHBRIDGE_INTEL_I82801GX_CHIP_H
 #define SOUTHBRIDGE_INTEL_I82801GX_CHIP_H
 
+#include <stdint.h>
+
 struct southbridge_intel_i82801gx_config {
 	/**
 	 * Interrupt Routing configuration

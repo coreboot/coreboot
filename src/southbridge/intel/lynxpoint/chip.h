@@ -16,6 +16,8 @@
 #ifndef SOUTHBRIDGE_INTEL_LYNXPOINT_CHIP_H
 #define SOUTHBRIDGE_INTEL_LYNXPOINT_CHIP_H
 
+#include <stdint.h>
+
 struct southbridge_intel_lynxpoint_config {
 	/**
 	 * Interrupt Routing configuration

@@ -18,6 +18,8 @@
 #ifndef _SOC_APOLLOLAKE_USB_H_
 #define _SOC_APOLLOLAKE_USB_H_
 
+#include <stdint.h>
+
 #define APOLLOLAKE_USB2_PORT_MAX 8
 
 struct usb2_eye_per_port {

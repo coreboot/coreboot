@@ -16,6 +16,9 @@
 /*
  * Maxim MAX98373 audio codec devicetree bindings
  */
+
+#include <stdint.h>
+
 struct drivers_i2c_max98373_config {
 	/* I2C Bus Frequency in Hertz (default 400kHz) */
 	uint32_t bus_speed;

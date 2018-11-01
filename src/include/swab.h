@@ -1,6 +1,3 @@
-#ifndef _SWAB_H
-#define _SWAB_H
-
 /*
  * linux/byteorder/swab.h
  * Byte-swapping, independently from CPU endianness
@@ -18,6 +15,12 @@
 /* casts are necessary for constants, because we never know how for sure
  * how U/UL/ULL map to __u16, __u32, __u64. At least not in a portable way.
  */
+
+#ifndef _SWAB_H
+#define _SWAB_H
+
+#include <stdint.h>
+
 #define swab16(x) \
 	((unsigned short)( \
 		(((unsigned short)(x) & (unsigned short)0x00ffU) << 8) | \

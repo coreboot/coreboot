@@ -17,6 +17,8 @@
 #ifndef SOC_INTEL_DENVERTON_NS_CHIP_H
 #define SOC_INTEL_DENVERTON_NS_CHIP_H
 
+#include <stdint.h>
+
 struct soc_intel_denverton_ns_config {
 	/**
 	 * Interrupt Routing configuration

@@ -16,6 +16,8 @@
 #ifndef SOUTHBRIDGE_INTEL_BD82X6X_CHIP_H
 #define SOUTHBRIDGE_INTEL_BD82X6X_CHIP_H
 
+#include <stdint.h>
+
 struct southbridge_intel_bd82x6x_config {
 	/**
 	 * GPI Routing configuration

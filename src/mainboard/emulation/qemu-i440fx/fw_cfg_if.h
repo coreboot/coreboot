@@ -17,6 +17,8 @@
  * Copyed over from qemu soure tree, include/hw/nvram/fw_cfg.h
  */
 
+#include <stdint.h>
+
 #define FW_CFG_SIGNATURE        0x00
 #define FW_CFG_ID               0x01
 #define FW_CFG_UUID             0x02

@@ -14,6 +14,8 @@
 #ifndef __SOC_BROADCOM_CYGNUS_TZ_H__
 #define __SOC_BROADCOM_CYGNUS_TZ_H__
 
+#include <stdint.h>
+
 #define TZ_STATE_SECURE				0
 #define TZ_STATE_NON_SECURE			1
 

@@ -17,6 +17,8 @@
 #ifndef __SOC_CAVIUM_CN81XX_CPU_H__
 #define __SOC_CAVIUM_CN81XX_CPU_H__
 
+#include <stdint.h>
+
 /**
  * Number of the Core on which the program is currently running.
  *

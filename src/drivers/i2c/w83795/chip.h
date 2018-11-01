@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include <stdint.h>
+
 struct drivers_i2c_w83795_config {
 	uint8_t fanin_ctl1;
 	uint8_t fanin_ctl2;

@@ -17,6 +17,8 @@
 #ifndef I82801DX_CHIP_H
 #define I82801DX_CHIP_H
 
+#include <stdint.h>
+
 struct southbridge_intel_i82801dx_config {
 	int enable_usb;
 	int enable_native_ide;

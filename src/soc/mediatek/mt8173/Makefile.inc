@@ -27,7 +27,8 @@ ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 endif
 
-bootblock-y += ../common/gpio.c gpio.c gpio_init.c pmic_wrap.c mt6391.c
+bootblock-y += ../common/gpio.c gpio.c gpio_init.c
+bootblock-y +=  ../common/pmic_wrap.c pmic_wrap.c mt6391.c
 bootblock-y += ../common/wdt.c
 bootblock-y += ../common/mmu_operations.c mmu_operations.c
 
@@ -56,7 +57,7 @@ romstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
 romstage-y += ../common/cbmem.c
 romstage-y += ../common/gpio.c gpio.c
 romstage-y += ../common/spi.c spi.c
-romstage-y += pmic_wrap.c mt6391.c
+romstage-y += ../common/pmic_wrap.c pmic_wrap.c mt6391.c
 romstage-y += memory.c
 romstage-y += emi.c dramc_pi_basic_api.c dramc_pi_calibration_api.c
 romstage-$(CONFIG_MEMORY_TEST) += ../common/memory_test.c
@@ -72,7 +73,7 @@ ramstage-y += soc.c ../common/mtcmos.c
 ramstage-y += ../common/timer.c
 ramstage-y += timer.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
-ramstage-y += pmic_wrap.c mt6391.c i2c.c
+ramstage-y += ../common/pmic_wrap.c pmic_wrap.c mt6391.c i2c.c
 ramstage-y += mt6311.c
 ramstage-y += da9212.c
 ramstage-y += ../common/gpio.c gpio.c

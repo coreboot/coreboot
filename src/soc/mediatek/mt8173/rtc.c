@@ -102,7 +102,7 @@ static void rtc_xosc_write(u16 val)
 
 	pwrap_write(RTC_OSC32CON, val);
 	udelay(200);
-	mt6391_write(RTC_BBPU, RTC_BBPU_KEY | RTC_BBPU_RELOAD, 0, 0);
+	pwrap_write_field(RTC_BBPU, RTC_BBPU_KEY | RTC_BBPU_RELOAD, 0, 0);
 	write_trigger();
 }
 
@@ -175,15 +175,15 @@ static void rtc_osc_init(void)
 /* low power detect setting */
 static int rtc_lpd_init(void)
 {
-	mt6391_write(RTC_CON, RTC_CON_LPEN, RTC_CON_LPRST, 0);
+	pwrap_write_field(RTC_CON, RTC_CON_LPEN, RTC_CON_LPRST, 0);
 	if (!write_trigger())
 		return 0;
 
-	mt6391_write(RTC_CON, RTC_CON_LPRST, 0, 0);
+	pwrap_write_field(RTC_CON, RTC_CON_LPRST, 0, 0);
 	if (!write_trigger())
 		return 0;
 
-	mt6391_write(RTC_CON, 0, RTC_CON_LPRST, 0);
+	pwrap_write_field(RTC_CON, 0, RTC_CON_LPRST, 0);
 	if (!write_trigger())
 		return 0;
 
@@ -203,7 +203,7 @@ static int rtc_init(u8 recover)
 
 	/* Use SW to detect 32K mode instead of HW */
 	if (recover)
-		mt6391_write(PMIC_RG_CHRSTATUS, 0x4, 0x1, 9);
+		pwrap_write_field(PMIC_RG_CHRSTATUS, 0x4, 0x1, 9);
 
 	rtc_xosc_write(0x3);
 
@@ -217,7 +217,7 @@ static int rtc_init(u8 recover)
 		return 0;
 
 	if (recover)
-		mt6391_write(PMIC_RG_CHRSTATUS, 0, 0x4, 9);
+		pwrap_write_field(PMIC_RG_CHRSTATUS, 0, 0x4, 9);
 
 	rtc_xosc_write(0);
 
@@ -243,17 +243,17 @@ static void rtc_bbpu_power_on(void)
 
 	/* enable DCXO to transform external 32KHz clock to 26MHz clock
 	   directly sent to SoC */
-	mt6391_write(PMIC_RG_DCXO_FORCE_MODE1, BIT(11), 0, 0);
-	mt6391_write(PMIC_RG_DCXO_POR2_CON3,
+	pwrap_write_field(PMIC_RG_DCXO_FORCE_MODE1, BIT(11), 0, 0);
+	pwrap_write_field(PMIC_RG_DCXO_POR2_CON3,
 		     BIT(8) | BIT(9) | BIT(10) | BIT(11), 0, 0);
-	mt6391_write(PMIC_RG_DCXO_CON2,
+	pwrap_write_field(PMIC_RG_DCXO_CON2,
 		     BIT(1) | BIT(3) | BIT(5) | BIT(6), 0, 0);
 
 	pwrap_read(RTC_BBPU, &bbpu);
 	printk(BIOS_INFO, "[RTC] %s done BBPU=%#x\n", __func__, bbpu);
 
 	/* detect hw clock done,close RG_RTC_75K_PDN for low power setting. */
-	mt6391_write(PMIC_RG_TOP_CKPDN2, 0x1, 0, 14);
+	pwrap_write_field(PMIC_RG_TOP_CKPDN2, 0x1, 0, 14);
 }
 
 static u8 rtc_check_state(void)
@@ -293,7 +293,8 @@ void rtc_boot(void)
 
 	switch (rtc_check_state()) {
 	case RTC_STATE_REBOOT:
-		mt6391_write(RTC_BBPU, RTC_BBPU_KEY | RTC_BBPU_RELOAD, 0, 0);
+		pwrap_write_field(RTC_BBPU, RTC_BBPU_KEY | RTC_BBPU_RELOAD, 0,
+				  0);
 		write_trigger();
 		rtc_osc_init();
 		break;

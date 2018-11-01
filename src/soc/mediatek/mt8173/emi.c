@@ -24,6 +24,7 @@
 #include <soc/dramc_register.h>
 #include <soc/dramc_pi_api.h>
 #include <soc/mt6391.h>
+#include <soc/pmic_wrap.h>
 #include <soc/pll.h>
 #include <soc/infracfg.h>
 #include <soc/pericfg.h>
@@ -33,15 +34,15 @@ struct emi_regs *emi_regs = (void *)EMI_BASE;
 static void dram_vcore_adjust(void)
 {
 	/* options: Vcore_HV_LPPDR3/Vcore_NV_LPPDR3/Vcore_LV_LPPDR3 */
-	mt6391_write(PMIC_RG_VCORE_CON9, Vcore_NV_LPPDR3, 0x7F, 0);
-	mt6391_write(PMIC_RG_VCORE_CON10, Vcore_NV_LPPDR3, 0x7F, 0);
+	pwrap_write_field(PMIC_RG_VCORE_CON9, Vcore_NV_LPPDR3, 0x7F, 0);
+	pwrap_write_field(PMIC_RG_VCORE_CON10, Vcore_NV_LPPDR3, 0x7F, 0);
 }
 
 static void dram_vmem_adjust(void)
 {
 	/* options: Vmem_HV_LPPDR3/Vmem_NV_LPPDR3/Vmem_LV_LPPDR3 */
-	mt6391_write(PMIC_RG_VDRM_CON9, Vmem_NV_LPDDR3, 0x7F, 0);
-	mt6391_write(PMIC_RG_VDRM_CON10, Vmem_NV_LPDDR3, 0x7F, 0);
+	pwrap_write_field(PMIC_RG_VDRM_CON9, Vmem_NV_LPDDR3, 0x7F, 0);
+	pwrap_write_field(PMIC_RG_VDRM_CON10, Vmem_NV_LPDDR3, 0x7F, 0);
 }
 
 static void emi_init(const struct mt8173_sdram_params *sdram_params)

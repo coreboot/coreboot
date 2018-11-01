@@ -294,8 +294,6 @@ enum ldo_voltage {
  */
 int mt6391_configure_ca53_voltage(int uv);
 void mt6391_configure_ldo(enum ldo_power ldo, enum ldo_voltage vsel);
-u32 mt6391_read(u16 reg, u32 mask, u32 shift);
-void mt6391_write(u16 reg, u16 val, u32 mask, u32 shift);
 void mt6391_enable_reset_when_ap_resets(void);
 void mt6391_init(void);
 

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +44,9 @@
 #include <soc/romstage.h>
 #include <soc/smm.h>
 #include <soc/spi.h>
+#include <build.h>
+#include <rtc.h>
+#include <pc80/mc146818rtc.h>
 
 void program_base_addresses(void)
 {
@@ -87,6 +91,22 @@ static void spi_init(void)
 	reg = (read32(bcr) & ~SRC_MASK) | SRC_CACHE_PREFETCH | BCR_WPD;
 	reg &= ~EISS;
 	write32(bcr, reg);
+}
+
+static void soc_rtc_init(void)
+{
+	int rtc_failed = rtc_failure();
+
+	if (rtc_failed) {
+		printk(BIOS_ERR,
+			"RTC Failure detected. Resetting date to %x/%x/%x%x\n",
+			COREBOOT_BUILD_MONTH_BCD,
+			COREBOOT_BUILD_DAY_BCD,
+			0x20,
+			COREBOOT_BUILD_YEAR_BCD);
+	}
+
+	cmos_init(rtc_failed);
 }
 
 static struct chipset_power_state power_state CAR_GLOBAL;
@@ -172,6 +192,7 @@ void car_soc_pre_console_init(void)
 void car_soc_post_console_init(void)
 {
 	/* Continue chipset initialization */
+	soc_rtc_init();
 	set_max_freq();
 	spi_init();
 

@@ -26,7 +26,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <pc80/mc146818rtc.h>
 #include <romstage_handoff.h>
 #include <soc/acpi.h>
 #include <soc/iomap.h>
@@ -149,12 +148,6 @@ static void sc_read_resources(struct device *dev)
 	sc_add_io_resources(dev);
 }
 
-static void sc_rtc_init(void)
-{
-	printk(BIOS_SPEW, "%s/%s\n", __FILE__, __func__);
-	cmos_init(rtc_failure());
-}
-
 static void sc_init(struct device *dev)
 {
 	int i;
@@ -180,8 +173,6 @@ static void sc_init(struct device *dev)
 
 	/* Route SCI to IRQ9 */
 	write32(actl, (read32(actl) & ~SCIS_MASK) | SCIS_IRQ9);
-
-	sc_rtc_init();
 
 	if (config->disable_slp_x_stretch_sus_fail) {
 		printk(BIOS_DEBUG, "Disabling slp_x stretching.\n");

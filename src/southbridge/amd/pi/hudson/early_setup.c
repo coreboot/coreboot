@@ -37,19 +37,22 @@ void configure_hudson_uart(void)
 {
 	u8 byte;
 
-	byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56 + CONFIG_UART_FOR_CONSOLE * 2);
+	byte = read8((void *)(ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56 +
+				CONFIG_UART_FOR_CONSOLE * sizeof(word)));
 	byte |= 1 << 3;
-	write8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56 + CONFIG_UART_FOR_CONSOLE * 2, byte);
-	byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62);
+	write8((void *)(ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56 +
+			CONFIG_UART_FOR_CONSOLE * sizeof(word)), byte);
+	byte = read8((void *)(ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62));
 	byte |= 1 << 3;
-	write8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62, byte);
+	write8((void *)(ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62), byte);
 	write8((void *)FCH_IOMUXx89_UART0_RTS_L_EGPIO137, 0);
 	write8((void *)FCH_IOMUXx8A_UART0_TXD_EGPIO138, 0);
 	write8((void *)FCH_IOMUXx8E_UART1_RTS_L_EGPIO142, 0);
 	write8((void *)FCH_IOMUXx8F_UART1_TXD_EGPIO143, 0);
 
 	udelay(2000);
-	write8((void *)0xFEDC6000 + 0x2000 * CONFIG_UART_FOR_CONSOLE + 0x88, 0x01); /* reset UART */
+	write8((void *)(0xFEDC6000 + 0x2000 * CONFIG_UART_FOR_CONSOLE + 0x88),
+			0x01); /* reset UART */
 }
 
 #endif
@@ -292,19 +295,19 @@ static uintptr_t hudson_spibase(void)
 void hudson_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
 {
 	uintptr_t base = hudson_spibase();
-	write16((void *)base + SPI100_SPEED_CONFIG,
+	write16((void *)(base + SPI100_SPEED_CONFIG),
 				(norm << SPI_NORM_SPEED_NEW_SH) |
 				(fast << SPI_FAST_SPEED_NEW_SH) |
 				(alt << SPI_ALT_SPEED_NEW_SH) |
 				(tpm << SPI_TPM_SPEED_NEW_SH));
-	write16((void *)base + SPI100_ENABLE, SPI_USE_SPI100);
+	write16((void *)(base + SPI100_ENABLE), SPI_USE_SPI100);
 }
 
 void hudson_disable_4dw_burst(void)
 {
 	uintptr_t base = hudson_spibase();
-	write16((void *)base + SPI100_HOST_PREF_CONFIG,
-			read16((void *)base + SPI100_HOST_PREF_CONFIG)
+	write16((void *)(base + SPI100_HOST_PREF_CONFIG),
+			read16((void *)(base + SPI100_HOST_PREF_CONFIG))
 					& ~SPI_RD4DW_EN_HOST);
 }
 
@@ -312,17 +315,18 @@ void hudson_disable_4dw_burst(void)
 void hudson_set_readspeed(u16 norm, u16 fast)
 {
 	uintptr_t base = hudson_spibase();
-	write16((void *)base + SPI_CNTRL1, (read16((void *)base + SPI_CNTRL1)
-					& ~SPI_CNTRL1_SPEED_MASK)
-					| (norm << SPI_NORM_SPEED_SH)
-					| (fast << SPI_FAST_SPEED_SH));
+	write16((void *)(base + SPI_CNTRL1),
+			(read16((void *)(base + SPI_CNTRL1))
+			& ~SPI_CNTRL1_SPEED_MASK)
+			| (norm << SPI_NORM_SPEED_SH)
+			| (fast << SPI_FAST_SPEED_SH));
 }
 
 void hudson_read_mode(u32 mode)
 {
 	uintptr_t base = hudson_spibase();
-	write32((void *)base + SPI_CNTRL0,
-			(read32((void *)base + SPI_CNTRL0)
+	write32((void *)(base + SPI_CNTRL0),
+			(read32((void *)(base + SPI_CNTRL0))
 					& ~SPI_READ_MODE_MASK) | mode);
 }
 

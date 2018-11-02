@@ -159,8 +159,6 @@ chip northbridge/intel/sandybridge
 					register "event7_enable" = "0x81"
 					register "event8_enable" = "0x7b"
 					register "event9_enable" = "0xff"
-					register "eventa_enable" = "0x01"
-					register "eventb_enable" = "0xf0"
 					register "eventc_enable" = "0xff"
 					register "eventd_enable" = "0xff"
 					register "evente_enable" = "0x0d"

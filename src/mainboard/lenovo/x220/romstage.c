@@ -98,23 +98,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	*pei_data = pei_data_template;
 }
 
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 0, 0 },
-	{ 1, 1, 1 },
-	{ 1, 1, 3 },
-	{ 1, 1, 3 },
-	{ 1, 1, -1 },
-	{ 1, 1, -1 },
-	{ 1, 0, 2 },
-	{ 1, 0, 2 },
-	{ 1, 1, 6 },
-	{ 1, 1, 5 },
-	{ 1, 1, 6 },
-	{ 1, 1, 6 },
-	{ 1, 1, 7 },
-	{ 1, 1, 6 },
-};
-
 void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 {
 	read_spd (&spd[0], 0x50, id_only);

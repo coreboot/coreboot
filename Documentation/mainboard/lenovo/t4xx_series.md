@@ -3,6 +3,8 @@
 A skilled engineer takes around 40 minutes to disassemble, flash and reassemble
 the whole device.
 
+Read their [Hardware Maintenance Manual](thinkpad_hmm.md) for detailed steps.
+
 ## Steps to access the flash IC
 
 * Unplug the main battery

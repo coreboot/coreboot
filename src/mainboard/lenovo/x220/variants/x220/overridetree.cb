@@ -1,0 +1,12 @@
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			device pci 1f.0 on #LPC bridge
+				chip ec/lenovo/h8
+					register "eventa_enable" = "0x01"
+					register "eventb_enable" = "0xf0"
+				end
+			end # LPC bridge
+		end
+	end
+end

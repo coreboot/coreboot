@@ -1,0 +1,85 @@
+chip northbridge/intel/sandybridge
+
+	register "gpu_dp_b_hotplug" = "0x04"
+	register "gpu_dp_c_hotplug" = "0x04"
+	register "gpu_dp_d_hotplug" = "0x04"
+	register "gpu_panel_power_cycle_delay" = "3"
+	register "gpu_panel_power_up_delay" = "250"		# T1+T2: 25ms
+	register "gpu_panel_power_down_delay" = "250"		# T5+T6: 35ms
+	register "gpu_panel_power_backlight_on_delay" = "2500"	# T3: 250ms
+	register "gpu_panel_power_backlight_off_delay" = "2500"	# T4: 250ms
+
+	register "gpu_cpu_backlight" = "0x1312"
+	register "gpu_pch_backlight" = "0x13121312"
+
+	device domain 0 on
+		device pci 00.0 on
+			subsystemid 0x17aa 0x21e8
+		end # host bridge
+		device pci 02.0 on
+			subsystemid 0x17aa 0x21e8
+		end # vga controller
+
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			# Enable SATA ports 0 (HDD bay) & 2 (msata) & 3 (esatap)
+			register "sata_port_map" = "0x1d"
+			# X1 does not have ExpressCard slot
+			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"
+
+			device pci 1a.0 on
+				subsystemid 0x17aa 0x21e8
+			end # USB2 EHCI #2
+			device pci 1b.0 on
+				subsystemid 0x17aa 0x21e8
+			end # High Definition Audio
+			device pci 1c.0 off end # PCIe Port #1
+			device pci 1c.1 on
+				subsystemid 0x17aa 0x21e8
+			end # PCIe Port #2 (wlan)
+			device pci 1c.2 off end # PCIe Port #3
+			device pci 1c.3 off end # PCIe Port #4
+			device pci 1c.4 on
+				subsystemid 0x17aa 0x21e8
+				chip drivers/ricoh/rce822 # Ricoh cardreader
+					device pci 00.0 on
+						subsystemid 0x17aa 0x21e8
+					end
+				end
+			end # PCIe Port #5 (SD)
+			device pci 1c.5 off end # PCIe Port #6
+			device pci 1c.6 on
+				subsystemid 0x17aa 0x21e8
+			end # PCIe Port #7
+			device pci 1c.7 off end # PCIe Port #8
+			device pci 1d.0 on
+				subsystemid 0x17aa 0x21e8
+			end # USB2 EHCI #1
+			device pci 1e.0 off end # PCI bridge
+			device pci 1f.0 on #LPC bridge
+				subsystemid 0x17aa 0x21e8
+				chip ec/lenovo/h8
+					register "config2" = "0xe0"
+					register "config3" = "0xc0"
+
+					register "beepmask0" = "0xfe"
+					register "beepmask1" = "0x96"
+
+					register "event5_enable" = "0x3c"
+					register "evente_enable" = "0x3d"
+
+					# BDC detection is broken on this board:
+					register "has_bdc_detection" = "0"
+				end
+			end # LPC bridge
+			device pci 1f.2 on
+				subsystemid 0x17aa 0x21e8
+			end # SATA Controller 1
+			device pci 1f.3 on
+				subsystemid 0x17aa 0x21e8
+			end # SMBus
+			device pci 1f.6 on
+				subsystemid 0x17aa 0x21e8
+			end # Thermal
+		end
+	end
+end

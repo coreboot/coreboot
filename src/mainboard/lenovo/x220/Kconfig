@@ -1,4 +1,4 @@
-if BOARD_LENOVO_X220 || BOARD_LENOVO_X220I
+if BOARD_LENOVO_X220 || BOARD_LENOVO_X220I || BOARD_LENOVO_X1
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -29,9 +29,21 @@ config MAINBOARD_DIR
 	string
 	default lenovo/x220
 
+config VARIANT_DIR
+	string
+	default "x220" if BOARD_LENOVO_X220 || BOARD_LENOVO_X220I
+	default "x1" if BOARD_LENOVO_X1
+
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "ThinkPad X220"
+	default "ThinkPad X220" if BOARD_LENOVO_X220
+	default "ThinkPad X220i" if BOARD_LENOVO_X220I
+	default "ThinkPad X1" if BOARD_LENOVO_X1
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAX_CPUS
 	int
@@ -48,6 +60,7 @@ config DRAM_RESET_GATE_GPIO
 config VGA_BIOS_FILE
 	string
 	default "pci8086,0116.rom" if BOARD_LENOVO_X220I
+	# FIXME: x1 with i3 cpu may also use "pci8086,0116.rom"
 	default "pci8086,0126.rom"
 
 config VGA_BIOS_ID
@@ -61,6 +74,7 @@ config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
-	default 0x21db
+	default 0x21db if BOARD_LENOVO_X220 || BOARD_LENOVO_X220I
+	default 0x21e8 if BOARD_LENOVO_X1
 
-endif # BOARD_LENOVO_X220 || BOARD_LENOVO_X220I
+endif # BOARD_LENOVO_X220 || BOARD_LENOVO_X220I || BOARD_LENOVO_X1

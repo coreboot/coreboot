@@ -51,6 +51,8 @@ install: all
 	$(INSTALL) ifwitool $(DESTDIR)$(BINDIR)
 	$(INSTALL) cbfs-compression-tool $(DESTDIR)$(BINDIR)
 
+ifneq ($(V),1)
 .SILENT:
+endif
 
 include Makefile.inc

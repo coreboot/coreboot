@@ -24,33 +24,17 @@
 
 static struct mtk_auxadc_regs *const mtk_auxadc = (void *)AUXADC_BASE;
 
-/*
- * Wait until a condition becomes true or times out
- *
- * cond : a C expression to wait for
- * timeout : msecs
- */
-#define wait_ms(cond, timeout)					\
-({								\
-	struct stopwatch sw;					\
-	int expired = 0;					\
-	stopwatch_init_msecs_expire(&sw, timeout);		\
-	while (!(cond) && !(expired = stopwatch_expired(&sw)))	\
-		; /* wait */					\
-	assert(!expired);					\
-})
-
 static uint32_t auxadc_get_rawdata(int channel)
 {
 	setbits_le32(&mt8183_infracfg->module_sw_cg_1_clr, 1 << 10);
-	wait_ms(!(read32(&mtk_auxadc->con2) & 0x1), 300);
+	assert(wait_ms(300, !(read32(&mtk_auxadc->con2) & 0x1)));
 
 	clrbits_le32(&mtk_auxadc->con1, 1 << channel);
-	wait_ms(!(read32(&mtk_auxadc->data[channel]) & (1 << 12)), 300);
+	assert(wait_ms(300, !(read32(&mtk_auxadc->data[channel]) & (1 << 12))));
 
 	setbits_le32(&mtk_auxadc->con1, 1 << channel);
 	udelay(25);
-	wait_ms(read32(&mtk_auxadc->data[channel]) & (1 << 12), 300);
+	assert(wait_ms(300, read32(&mtk_auxadc->data[channel]) & (1 << 12)));
 
 	uint32_t value = read32(&mtk_auxadc->data[channel]) & 0x0FFF;
 

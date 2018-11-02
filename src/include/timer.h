@@ -15,6 +15,8 @@
 #ifndef TIMER_H
 #define TIMER_H
 
+#include <types.h>
+
 #define NSECS_PER_SEC 1000000000
 #define USECS_PER_SEC 1000000
 #define MSECS_PER_SEC 1000
@@ -194,5 +196,37 @@ static inline long stopwatch_duration_msecs(struct stopwatch *sw)
 {
 	return stopwatch_duration_usecs(sw) / USECS_PER_MSEC;
 }
+
+/*
+ * Helper macro to wait until a condition becomes true or a timeout elapses.
+ *
+ * condition: a C expression to wait for
+ * timeout: timeout, in microseconds
+ *
+ * Returns:
+ *  0   if the condition still evaluates to false after the timeout elapsed,
+ * >0   if the condition evaluates to true. The return value is the amount of
+ *      microseconds waited (at least 1).
+ */
+#define wait_us(timeout_us, condition)					\
+({									\
+	long __ret = 0;							\
+	struct stopwatch __sw;						\
+	stopwatch_init_usecs_expire(&__sw, timeout_us);			\
+	do {								\
+		if (condition) {					\
+			stopwatch_tick(&__sw);				\
+			__ret = stopwatch_duration_usecs(&__sw);	\
+			if (!__ret) /* make sure it evaluates to true */\
+				__ret = 1;				\
+			break;						\
+		}							\
+	} while (!stopwatch_expired(&__sw));				\
+	__ret;								\
+})
+
+#define wait_ms(timeout_ms, condition)					\
+	DIV_ROUND_UP(wait_us((timeout_ms) * USECS_PER_MSEC, condition), \
+		     USECS_PER_MSEC)
 
 #endif /* TIMER_H */

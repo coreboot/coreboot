@@ -419,8 +419,8 @@ int cbfs_copy_instance(struct cbfs_image *image, struct buffer *dst)
 		dst_entry = (struct cbfs_file *)(
 			(uintptr_t)dst_entry + align_up(entry_size, align));
 
-		if ((size_t)((void *)dst_entry - buffer_get(dst)) >=
-								copy_end) {
+		if ((size_t)((uint8_t *)dst_entry - (uint8_t *)buffer_get(dst))
+					>= copy_end) {
 			ERROR("Ran out of room in copy region.\n");
 			return 1;
 		}
@@ -430,8 +430,9 @@ int cbfs_copy_instance(struct cbfs_image *image, struct buffer *dst)
 	 * which may be used by the master header pointer. This messes with
 	 * the ability to stash something "top-aligned" into the region, but
 	 * keeps things simpler. */
-	last_entry_size = copy_end - ((void *)dst_entry - buffer_get(dst))
-		- cbfs_calculate_file_header_size("") - sizeof(int32_t);
+	last_entry_size = copy_end -
+		((uint8_t *)dst_entry - (uint8_t *)buffer_get(dst)) -
+		cbfs_calculate_file_header_size("") - sizeof(int32_t);
 
 	if (last_entry_size < 0)
 		WARN("No room to create the last entry!\n")
@@ -467,8 +468,9 @@ int cbfs_expand_to_region(struct buffer *region)
 	 * file header. That's either outside the image or exactly the place
 	 * where we need to create a new file.
 	 */
-	int last_entry_size = region_sz - ((void *)entry - buffer_get(region))
-		- cbfs_calculate_file_header_size("") - sizeof(int32_t);
+	int last_entry_size = region_sz -
+		((uint8_t *)entry - (uint8_t *)buffer_get(region)) -
+		cbfs_calculate_file_header_size("") - sizeof(int32_t);
 
 	if (last_entry_size > 0) {
 		cbfs_create_empty_entry(entry, CBFS_COMPONENT_NULL,
@@ -509,10 +511,10 @@ int cbfs_truncate_space(struct buffer *region, uint32_t *size)
 	    (trailer->type != htonl(CBFS_COMPONENT_DELETED))) {
 		/* nothing to truncate. Return de-facto CBFS size in case it
 		 * was already truncated. */
-		*size = (void *)entry - buffer_get(region);
+		*size = (uint8_t *)entry - (uint8_t *)buffer_get(region);
 		return 0;
 	}
-	*size = (void *)trailer - buffer_get(region);
+	*size = (uint8_t *)trailer - (uint8_t *)buffer_get(region);
 	memset(trailer, 0xff, buffer_size(region) - *size);
 
 	return 0;
@@ -723,8 +725,9 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 
 	len = addr_next - addr - min_entry_size;
 	/* keep space for master header pointer */
-	if ((void *)entry + min_entry_size + len > buffer_get(&image->buffer) +
-		buffer_size(&image->buffer) - sizeof(int32_t)) {
+	if ((uint8_t *)entry + min_entry_size + len >
+			(uint8_t *)buffer_get(&image->buffer) +
+			buffer_size(&image->buffer) - sizeof(int32_t)) {
 		len -= sizeof(int32_t);
 	}
 	cbfs_create_empty_entry(entry, CBFS_COMPONENT_NULL, len, "");

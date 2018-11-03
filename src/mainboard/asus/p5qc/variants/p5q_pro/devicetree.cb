@@ -85,15 +85,15 @@ chip northbridge/intel/x4x		# Northbridge
 						irq 0x72 = 12
 					end
 					device pnp 2e.106 off end	# SPI1
-					device pnp 2e.107 off end	# GIPO6
-					device pnp 2e.207 off end	# GIPO7
-					device pnp 2e.307 on		# GIPO8
+					device pnp 2e.107 off end	# GPIO6
+					device pnp 2e.207 off end	# GPIO7
+					device pnp 2e.307 on		# GPIO8
 						irq 0xe4 = 0xfb
 						irq 0xe5 = 0x82
 					end
-					device pnp 2e.407 off end	# GIPO9
+					device pnp 2e.407 off end	# GPIO9
 					device pnp 2e.8 off end		# WDT
-					device pnp 2e.108 off end	# GPIO 1
+					device pnp 2e.108 off end	# GPIO1
 					device pnp 2e.9 off end		# GPIO2
 					device pnp 2e.109 on end	# GPIO3
 					device pnp 2e.209 on		# GPIO4

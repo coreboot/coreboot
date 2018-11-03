@@ -1,5 +1,5 @@
 boot_option=Fallback
-debug_level=Spew
+debug_level=Debug
 power_on_after_fail=Disable
 nmi=Enable
 sata_mode=AHCI

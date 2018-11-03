@@ -48,6 +48,10 @@ config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
+config GPIO_C
+	string
+	default "gpio.c"
+
 config MAX_CPUS
 	int
 	default 4

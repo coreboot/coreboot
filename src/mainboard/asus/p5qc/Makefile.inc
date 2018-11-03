@@ -11,5 +11,7 @@
 # GNU General Public License for more details.
 #
 
+CONFIG_GPIO_C:=$(call strip_quotes, $(CONFIG_GPIO_C))
+
 ramstage-y += cstates.c
-romstage-y += gpio.c
+romstage-y += $(CONFIG_GPIO_C)

@@ -14,7 +14,10 @@
 
 uroot_git_repo=https://github.com/u-root/u-root.git
 uroot_dir=$(project_dir)/go/src/github.com/u-root/u-root
-go_check=$(shell command -v go 1>/dev/null 2>&1 && echo go)
+go_version=$(shell go version | sed -nr 's/.*go([0-9]+\.[0-9]+.?[0-9]?).*/\1/p' )
+go_version_major=$(shell echo $(go_version) |  sed -nr 's/^([0-9]+)\.([0-9]+)\.?([0-9]*)$$/\1/p')
+go_version_minor=$(shell echo $(go_version) |  sed -nr 's/^([0-9]+)\.([0-9]+)\.?([0-9]*)$$/\2/p')
+
 project_dir=$(shell pwd)/linuxboot
 project_name=u-root
 go_path_dir=$(shell pwd)/linuxboot/go
@@ -22,9 +25,16 @@ go_path_dir=$(shell pwd)/linuxboot/go
 all: build
 
 check:
-ifneq ($(go_check),go)
+ifeq ("$(go_version)","")
 	printf "\n<<Please install Golang >= 1.9 for u-root mode>>\n\n"
 	exit 1
+endif
+ifeq ($(shell if [ $(go_version_major) -eq 1 ]; then echo y; fi),y)
+ifeq ($(shell if [ $(go_version_minor) -lt 9 ]; then echo y; fi),y)
+	printf "\n  Golang version $(go_version) currently installed.\n\
+	<<Please install Golang >= 1.9 for u-root mode>>\n\n"
+	exit 1
+endif
 endif
 	mkdir -p $(project_dir)/go/src/github.com/u-root
 

@@ -16,6 +16,7 @@ payloads/coreinfo/lp.config*
 payloads/external/depthcharge/depthcharge/
 payloads/external/FILO/filo/
 payloads/external/GRUB2/grub2/
+payloads/external/LinuxBoot/linuxboot/
 payloads/external/SeaBIOS/seabios/
 payloads/external/tianocore/tianocore/
 payloads/external/tint/tint/

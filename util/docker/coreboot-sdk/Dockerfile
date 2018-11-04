@@ -34,7 +34,7 @@ RUN \
 		gawk \
 		gcc \
 		git \
-		gnat-6 \
+		gnat \
 		graphviz \
 		libfreetype6-dev \
 		libftdi-dev \

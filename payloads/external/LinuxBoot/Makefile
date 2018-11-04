@@ -33,7 +33,7 @@ endif
 
 OBJCOPY:=$(LINUXBOOT_COMPILE)objcopy
 
-all: payload
+all: linuxboot
 
 toolchain:
 	if [[ ! -x "$(LINUXBOOT_COMPILE)gcc" ]]; then \
@@ -95,7 +95,7 @@ $(PWD)/$(CONFIG_PAYLOAD_USERSPACE):
 	echo "Building without u-root support"
 endif
 
-payload: $(project_dir)/kernel-image $(PWD)/$(CONFIG_PAYLOAD_USERSPACE)
+linuxboot: $(project_dir)/kernel-image $(PWD)/$(CONFIG_PAYLOAD_USERSPACE)
 
 clean:
 	if [ -d "$(kernel_dir)" ]; then rm -rf $(kernel_dir); fi

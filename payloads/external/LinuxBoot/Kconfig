@@ -129,11 +129,8 @@ config LINUXBOOT_UROOT_FILES
 	  initramfs.
 
 config PAYLOAD_USERSPACE
-	string "LinuxBoot initramfs"
+	string
 	default "payloads/external/LinuxBoot/linuxboot/initramfs.cpio.xz"
-	help
-	  The initramfs to use with the compiled kernel.
-	  Useful for debugging or custom initramfs.
 
 endif
 endif

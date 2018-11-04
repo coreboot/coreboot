@@ -95,29 +95,23 @@ docker-cleanall:
 		$(DOCKER) rmi $$($(DOCKER) images | grep -v "REPOSITORY" | tr -s ' ' | cut -f3 -d ' '); \
 	fi
 
-docker-build-coreboot: test-docker
+docker-run-local: test-docker
 	$(DOCKER) run -u root -it -v $(top):/home/coreboot/coreboot \
 		--user $(UID):$(GID) \
 		--rm coreboot/coreboot-sdk:$(COREBOOT_CONTAINER_VERSION) \
-		/bin/bash -c "cd /home/coreboot/coreboot && \
-		make clean && \
-		make $(BUILD_CMD); \
-		rm .xcompile"
+		/bin/bash -c "cd /home/coreboot/coreboot && $(DOCKER_RUN_LOCAL)"
 
-docker-abuild: test-docker
-	$(DOCKER) run -u root -it -v $(top):/home/coreboot/coreboot \
-		--user $(UID):$(GID) \
-		--rm coreboot/coreboot-sdk:$(COREBOOT_CONTAINER_VERSION) \
-		/bin/bash -c "cd /home/coreboot/coreboot && \
-		make clean && \
-		util/abuild/abuild $(ABUILD_ARGS); \
-		rm -f .xcompile"
+docker-build-coreboot: docker-run-local
+docker-build-coreboot: override DOCKER_RUN_LOCAL := \
+	make clean && make $(BUILD_CMD); rm -f .xcompile
 
-docker-what-jenkins-does: test-docker
-	$(DOCKER) run -u root -it -v $(top):/home/coreboot/coreboot \
-		--rm coreboot/coreboot-sdk:$(COREBOOT_CONTAINER_VERSION) \
-		/bin/bash -c "cd /home/coreboot/coreboot && \
-		make clean && make what-jenkins-does CPUS=$(CPUS)"
+docker-abuild: docker-run-local
+docker-abuild: override DOCKER_RUN_LOCAL := \
+	make clean && util/abuild/abuild $(ABUILD_ARGS); rm -f .xcompile
+
+docker-what-jenkins-does: docker-run-local
+docker-what-jenkins-does: override DOCKER_RUN_LOCAL := \
+	make clean && make what-jenkins-does CPUS=$(CPUS)
 
 docker-jenkins-server: test-docker
 	@if [ ! -d "$(COREBOOT_JENKINS_CACHE_DIR)" ]; then \

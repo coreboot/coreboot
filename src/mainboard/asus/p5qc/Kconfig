@@ -14,7 +14,7 @@
 # GNU General Public License for more details.
 #
 
-if BOARD_ASUS_P5QC || BOARD_ASUS_P5Q_PRO
+if BOARD_ASUS_P5QC || BOARD_ASUS_P5Q_PRO || BOARD_ASUS_P5QL_PRO
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -38,11 +38,13 @@ config VARIANT_DIR
 	string
 	default "p5qc" if BOARD_ASUS_P5QC
 	default "p5q_pro" if BOARD_ASUS_P5Q_PRO
+	default "p5ql_pro" if BOARD_ASUS_P5QL_PRO
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "P5QC" if BOARD_ASUS_P5QC
 	default "P5Q PRO" if BOARD_ASUS_P5Q_PRO
+	default "P5QL PRO" if BOARD_ASUS_P5QL_PRO
 
 config DEVICETREE
 	string
@@ -50,6 +52,7 @@ config DEVICETREE
 
 config GPIO_C
 	string
+	default "variants/p5ql_pro/gpio.c" if BOARD_ASUS_P5QL_PRO
 	default "gpio.c"
 
 config MAX_CPUS
@@ -59,8 +62,11 @@ config MAX_CPUS
 # The MARVELL IDE controller delays SeaBIOS a lot and results in an unbootable
 # bogus disk. Compiling SeaBIOS without ATA support is a workaround.
 
+# The Asus P5QL PRO's Marvell controller (88SE6102-NNC2) does not need this, apparently.
+
 config PAYLOAD_CONFIGFILE
 	string
+	default "" if PAYLOAD_SEABIOS && BOARD_ASUS_P5QL_PRO
 	default "$(top)/src/mainboard/$(MAINBOARDDIR)/config_seabios" if PAYLOAD_SEABIOS
 
-endif # BOARD_ASUS_P5QC
+endif # BOARD_ASUS_P5Q*

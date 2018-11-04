@@ -74,12 +74,19 @@ RUN \
 RUN \
 	cd /root && \
 	git clone https://review.coreboot.org/coreboot && \
-	cd coreboot/util/crossgcc && \
-	git checkout {{DOCKER_COMMIT}} && \
-	make {{CROSSGCC_PARAM}} \
+	cd coreboot && \
+	git checkout {{DOCKER_COMMIT}}
+
+RUN \
+	if echo {{CROSSGCC_PARAM}} | grep -q ^all; then \
+		make -C/root/coreboot/util/crossgcc/ build_clang \
+			BUILD_LANGUAGES=c,ada CPUS=$(nproc) DEST=/opt/xgcc; \
+	fi
+
+RUN \
+	make -C/root/coreboot/util/crossgcc/ {{CROSSGCC_PARAM}} \
 		BUILD_LANGUAGES=c,ada CPUS=$(nproc) DEST=/opt/xgcc && \
-	cd /root && \
-	rm -rf coreboot
+	rm -rf /root/coreboot
 
 RUN mkdir /home/coreboot/.ccache && \
 	chown coreboot:coreboot /home/coreboot/.ccache && \

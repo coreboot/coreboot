@@ -31,6 +31,9 @@ export COREBOOT_CONTAINER_VERSION?=$(crossgcc_version)
 # Commit id to build from
 export DOCKER_COMMIT?=$(shell git log -n 1 --pretty=%h)
 
+# .ccache dir to use
+export DOCKER_CCACHE?=$(HOME)/.ccache
+
 # SDK architecture
 export COREBOOT_CROSSGCC_PARAM?=all_without_gdb
 
@@ -95,11 +98,17 @@ docker-cleanall:
 		$(DOCKER) rmi $$($(DOCKER) images | grep -v "REPOSITORY" | tr -s ' ' | cut -f3 -d ' '); \
 	fi
 
-docker-run-local: test-docker
-	$(DOCKER) run -u root -it -v $(top):/home/coreboot/coreboot \
+$(DOCKER_CCACHE):
+	@mkdir -p $@
+
+docker-run-local: test-docker $(DOCKER_CCACHE)
+	$(DOCKER) run -it --rm \
+		--volume $(DOCKER_CCACHE):/home/coreboot/.ccache \
+		--volume $(top):/home/coreboot/coreboot \
+		--env HOME=/home/coreboot \
 		--user $(UID):$(GID) \
-		--rm coreboot/coreboot-sdk:$(COREBOOT_CONTAINER_VERSION) \
-		/bin/bash -c "cd /home/coreboot/coreboot && $(DOCKER_RUN_LOCAL)"
+		coreboot/coreboot-sdk:$(COREBOOT_CONTAINER_VERSION) \
+		/bin/bash -c 'cd $${HOME}/coreboot && $(DOCKER_RUN_LOCAL)'
 
 docker-build-coreboot: docker-run-local
 docker-build-coreboot: override DOCKER_RUN_LOCAL := \

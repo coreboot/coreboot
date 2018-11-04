@@ -1278,8 +1278,11 @@ void *acpi_find_wakeup_vector(void)
 			break;
 	}
 
-	if (rsdp == NULL)
+	if (rsdp == NULL) {
+		printk(BIOS_ALERT,
+		       "No RSDP found, wake up from S3 not possible.\n");
 		return NULL;
+	}
 
 	printk(BIOS_DEBUG, "RSDP found at %p\n", rsdp);
 	rsdt = (acpi_rsdt_t *)(uintptr_t)rsdp->rsdt_address;
@@ -1294,15 +1297,18 @@ void *acpi_find_wakeup_vector(void)
 		fadt = NULL;
 	}
 
-	if (fadt == NULL)
+	if (fadt == NULL) {
+		printk(BIOS_ALERT,
+		       "No FADT found, wake up from S3 not possible.\n");
 		return NULL;
+	}
 
 	printk(BIOS_DEBUG, "FADT found at %p\n", fadt);
 	facs = (acpi_facs_t *)(uintptr_t)fadt->firmware_ctrl;
 
 	if (facs == NULL) {
-		printk(BIOS_DEBUG, "No FACS found, wake up from S3 not "
-		       "possible.\n");
+		printk(BIOS_ALERT,
+		       "No FACS found, wake up from S3 not possible.\n");
 		return NULL;
 	}
 

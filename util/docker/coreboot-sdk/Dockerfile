@@ -36,7 +36,6 @@ RUN \
 		git \
 		gnat-6 \
 		graphviz \
-		libelf-dev \
 		libfreetype6-dev \
 		libftdi-dev \
 		libftdi1-dev \

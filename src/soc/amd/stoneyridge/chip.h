@@ -63,6 +63,15 @@ struct soc_amd_stoneyridge_config {
 	u8 stapm_percent;
 	u32 stapm_time_ms;
 	u32 stapm_power_mw;
+	/*
+	 * This specifies the LVDS/eDP power-up sequence time for the delay
+	 * between VaryBL and BLON.
+	 * 0 - Use the VBIOS default (default). The video BIOS default is 32ms.
+	 * n - Values other than zero specify a setting of (4 * n) milliseconds
+	 *     time delay.
+	 */
+	u8 lvds_poseq_varybl_to_blon;
+	u8 lvds_poseq_blon_to_varybl;
 };
 
 typedef struct soc_amd_stoneyridge_config config_t;

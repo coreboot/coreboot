@@ -16,6 +16,9 @@
 #include <chip.h>
 #include <amdblocks/agesawrapper.h>
 #include <boardid.h>
+#include <gpio.h>
+#include <console/console.h>
+#include <soc/pci_devs.h>
 
 #define DIMMS_PER_CHANNEL 1
 #if DIMMS_PER_CHANNEL > MAX_DIMMS_PER_CH
@@ -75,5 +78,28 @@ void OemPostParams(AMD_POST_PARAMS *PostParams)
 
 void set_board_env_params(GNB_ENV_CONFIGURATION *params)
 {
+	const struct soc_amd_stoneyridge_config *cfg;
+	const struct device *dev = dev_find_slot(0, GNB_DEVFN);
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_WARNING, "Warning: Cannot find SoC devicetree config\n");
+		return;
+	}
+	cfg = dev->chip_info;
+	if (cfg->lvds_poseq_blon_to_varybl && cfg->lvds_poseq_varybl_to_blon) {
+		/*
+		 * GPIO 133 - Backlight enable (active low)
+		 * Pass control of the backlight to the video BIOS
+		 */
+		gpio_set(GPIO_133, 0);
+		printk(BIOS_INFO, "Change panel init timing\n");
+		params->LvdsPowerOnSeqVaryBlToBlon =
+			cfg->lvds_poseq_varybl_to_blon;
+		params->LvdsPowerOnSeqBlonToVaryBl =
+			cfg->lvds_poseq_blon_to_varybl;
+		printk(BIOS_INFO, "LvdsPowerOnSeqVaryBlToBlon: %dms\n",
+			(params->LvdsPowerOnSeqVaryBlToBlon)*4);
+		printk(BIOS_INFO, "LvdsPowerOnSeqBlonToVaryBl: %dms\n",
+			(params->LvdsPowerOnSeqBlonToVaryBl)*4);
+	}
 	params->EDPv1_4VSMode = EDP_VS_HIGH_VDIFF_MODE;
 }

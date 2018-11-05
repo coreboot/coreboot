@@ -77,6 +77,9 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	/* GPIO_132 - CONFIG_STRAP4 */
 	PAD_GPI(GPIO_132, PULL_NONE),
 
+	/* GPIO_133 - APU_EDP_BKLTEN_L (backlight - Active LOW) */
+	PAD_GPO(GPIO_133, HIGH),
+
 	/* GPIO_136 - UART_PCH_RX_DEBUG_TX */
 	PAD_NF(GPIO_136, UART0_RXD, PULL_NONE),
 
@@ -216,9 +219,6 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 
 	/* GPIO_130 - Unused (TP55) */
 	PAD_GPI(GPIO_130, PULL_UP),
-
-	/* GPIO_133 - APU_EDP_BKLTEN_L (backlight - Active LOW) */
-	PAD_GPO(GPIO_133, HIGH),
 
 	/* GPIO_135 - BCLK Buffer Enable */
 	PAD_GPO(GPIO_135, HIGH),

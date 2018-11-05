@@ -23,7 +23,7 @@
 #include <delay.h>
 #include "dock.h"
 #include <southbridge/intel/i82801ix/i82801ix.h>
-#include "ec/lenovo/h8/h8.h"
+#include <ec/lenovo/h8/h8.h>
 #include <ec/acpi/ec.h>
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)

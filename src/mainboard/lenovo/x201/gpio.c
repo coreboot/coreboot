@@ -380,6 +380,7 @@ const struct pch_gpio_map mainboard_gpio_map = {
 		.mode      = &pch_gpio_set1_mode,
 		.direction = &pch_gpio_set1_direction,
 		.level     = &pch_gpio_set1_level,
+		.reset     = &pch_gpio_set1_reset,
 		.blink     = &pch_gpio_set1_blink,
 		.invert    = &pch_gpio_set1_invert,
 	},

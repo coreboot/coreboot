@@ -770,6 +770,8 @@ if ! mkdir -p "$TARGET"; then
 	exit 1
 fi
 
+$MAKE -C"${ROOT}" .xcompile || exit 1
+
 customizing=$(echo "$customizing" | cut -c3-)
 if [ "$customizing" = "" ]; then
 	customizing="default configuration"

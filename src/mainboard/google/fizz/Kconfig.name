@@ -1,7 +1,9 @@
+comment "Fizz"
+
 config BOARD_GOOGLE_FIZZ
-	bool "Fizz"
+	bool "->  Fizz"
 	select BOARD_GOOGLE_BASEBOARD_FIZZ
 
 config BOARD_GOOGLE_KARMA
-	bool "Karma"
+	bool "->  Karma"
 	select BOARD_GOOGLE_BASEBOARD_FIZZ

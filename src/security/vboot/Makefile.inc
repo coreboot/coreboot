@@ -112,6 +112,7 @@ CFLAGS_common += -I3rdparty/vboot/firmware/2lib/include
 $(eval $(call vboot-for-stage,verstage))
 $(eval $(call vboot-for-stage,bootblock))
 $(eval $(call vboot-for-stage,ramstage))
+$(eval $(call vboot-for-stage,postcar))
 
 ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
 

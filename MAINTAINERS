@@ -263,12 +263,9 @@ F:	src/vendorcode/intel/fsp1_0/broadwell_de/
 F:	src/mainboard/intel/camelbackmountain_fsp/
 
 INTEL FSP DENVERTON-NS SOC & HARCUVAR CRB
-M:	SweeHeng Wong <swee.heng.wong@intel.com>
-M:	Jeff Daly <jeffrey.daly@intel.com>
 M:	Vanessa Eusebio <vanessa.f.eusebio@intel.com>
 M:	David Guckian <david.guckian@intel.com>
-M:	Shine Liu <shine.liu@intel.com>
-S:	Supported
+S:	Odd Fixes
 F:	src/mainboard/intel/harcuvar/
 F:	src/soc/intel/denverton_ns/
 F:	src/vendorcode/intel/fsp/fsp2_0/denverton_ns/

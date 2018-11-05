@@ -33,6 +33,11 @@ Field (POST, ByteAcc, Lock, Preserve)
 Method (_PTS, 1)
 {
 	Store (POST_OS_ENTER_PTS, DBG0)
+
+#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_ACPI_EC_PTS_WAK)
+	/* Call EC _PTS handler */
+	\_SB.PCI0.LPCB.EC0.PTS (Arg0)
+#endif
 }
 
 /* The _WAK method is called on system wakeup */
@@ -40,5 +45,11 @@ Method (_PTS, 1)
 Method (_WAK, 1)
 {
 	Store (POST_OS_ENTER_WAKE, DBG0)
+
+#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_ACPI_EC_PTS_WAK)
+	/* Call EC _WAK handler */
+	\_SB.PCI0.LPCB.EC0.WAK (Arg0)
+#endif
+
 	Return (Package(){0,0})
 }

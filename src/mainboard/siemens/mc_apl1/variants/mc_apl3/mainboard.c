@@ -32,11 +32,10 @@ void variant_mainboard_final(void)
 {
 	struct device *dev = NULL;
 
-	/*
-	 * PIR6 register mapping for PCIe root ports
-	 * INTA#->PIRQB#, INTB#->PIRQC#, INTC#->PIRQD#, INTD#-> PIRQA#
+	/* PIR6 register mapping for PCIe root ports
+	 * INTA#->PIRQD#, INTB#->PIRQA#, INTC#->PIRQB#, INTD#-> PIRQC#
 	 */
-	pcr_write16(PID_ITSS, 0x314c, 0x0321);
+	pcr_write16(PID_ITSS, 0x314c, 0x2103);
 
 	/* Disable clock outputs 1-5 (CLKOUT) for XIO2001 PCIe to PCI Bridge. */
 	dev = dev_find_device(PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_XIO2001, 0);

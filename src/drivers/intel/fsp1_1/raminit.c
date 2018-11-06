@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014-2016 Intel Corporation
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -201,7 +202,8 @@ void raminit(struct romstage_params *params)
 	 * Verify that FSP is generating the required HOBs:
 	 *	7.1: FSP_BOOTLOADER_TEMP_MEMORY_HOB only produced for FSP 1.0
 	 *	7.2: FSP_RESERVED_MEMORY_RESOURCE_HOB verified above
-	 *	7.3: FSP_NON_VOLATILE_STORAGE_HOB verified below
+	 *	7.3: FSP_NON_VOLATILE_STORAGE_HOB only produced when
+	 *          new NVS data is generated, verified below
 	 *	7.4: FSP_BOOTLOADER_TOLUM_HOB verified above
 	 *	7.5: EFI_PEI_GRAPHICS_INFO_HOB produced by SiliconInit
 	 *	FSP_SMBIOS_MEMORY_INFO HOB verified above
@@ -217,9 +219,10 @@ void raminit(struct romstage_params *params)
 	}
 	hob_ptr.Raw = get_next_guid_hob(&mrc_guid, hob_list_ptr);
 	if (hob_ptr.Raw == NULL) {
-		printk(BIOS_ERR, "7.3: FSP_NON_VOLATILE_STORAGE_HOB missing!\n");
-		fsp_verification_failure =
-			(params->pei_data->saved_data == NULL) ? 1 : 0;
+		if (params->pei_data->saved_data == NULL) {
+			printk(BIOS_ERR, "7.3: FSP_NON_VOLATILE_STORAGE_HOB missing!\n");
+			fsp_verification_failure = 1;
+		}
 	} else {
 		printk(BIOS_DEBUG,
 			"7.3: FSP_NON_VOLATILE_STORAGE_HOB: 0x%p\n",

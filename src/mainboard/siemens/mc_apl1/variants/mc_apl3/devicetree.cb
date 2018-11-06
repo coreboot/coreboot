@@ -88,7 +88,7 @@ chip soc/intel/apollolake
 		device pci 17.0 off end	# - I2C 4
 		device pci 17.1 off end	# - I2C 5
 		device pci 17.2 off end	# - I2C 6
-		device pci 17.3 on  end	# - I2C 7
+		device pci 17.3 off end	# - I2C 7
 		device pci 18.0 on  end	# - UART 0
 		device pci 18.1 on  end	# - UART 1
 		device pci 18.2 on  end	# - UART 2

@@ -20,6 +20,7 @@
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/gspi.h>
 #include <stdint.h>
+#include <soc/gpe.h>
 #include <soc/gpio.h>
 #include <soc/pch.h>
 #include <soc/gpio_defs.h>

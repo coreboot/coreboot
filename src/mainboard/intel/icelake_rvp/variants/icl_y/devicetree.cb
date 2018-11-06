@@ -79,7 +79,10 @@ chip soc/intel/icelake
 		device pci 12.6 off end # GSPI #2
 		device pci 14.0 on  end # USB xHCI
 		device pci 14.1 off end # USB xDCI (OTG)
-		device pci 14.3 on  end # CNVi wifi
+		chip drivers/intel/wifi
+			register "wake" = "GPE0_PME_B0"
+			device pci 14.3 on  end # CNVi wifi
+		end
 		device pci 14.5 on  end # SDCard
 		device pci 15.0 on  end # I2C 0
 		device pci 15.1 on  end # I2C #1

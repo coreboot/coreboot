@@ -73,7 +73,7 @@ config LINUXBOOT_KERNEL_CONFIGFILE
 	  Add your own kernel configuration file. Otherwise a default
 	  minimal defconfig is used.
 
-config LINUXBOOT_KERNEL_COMMANDLINE
+config LINUX_COMMAND_LINE
 	string "Kernel command-line"
 	default ""
 	help
@@ -128,7 +128,7 @@ config LINUXBOOT_UROOT_FILES
 	  Path to directory containing root structure for embedding into the
 	  initramfs.
 
-config PAYLOAD_USERSPACE
+config LINUX_INITRD
 	string
 	default "payloads/external/LinuxBoot/linuxboot/initramfs.cpio.xz"
 

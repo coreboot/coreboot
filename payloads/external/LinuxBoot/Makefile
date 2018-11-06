@@ -82,20 +82,20 @@ $(project_dir)/target.dtb: $(PWD)/$(CONFIG_LINUXBOOT_DTB_FILE)
 $(project_dir)/vmlinux.bin.lzma: $(project_dir)/vmlinux.bin
 	xz -c -k -f --format=lzma --lzma1=dict=1MiB,lc=3,lp=0,pb=3 $< > $@
 
-$(project_dir)/kernel-image: $(project_dir)/vmlinux.bin.lzma $(project_dir)/../arm64/kernel_fdt_lzma.its $(project_dir)/target.dtb $(PWD)/$(CONFIG_PAYLOAD_USERSPACE)
+$(project_dir)/kernel-image: $(project_dir)/vmlinux.bin.lzma $(project_dir)/../arm64/kernel_fdt_lzma.its $(project_dir)/target.dtb $(PWD)/$(CONFIG_LINUX_INITRD)
 	cp $(project_dir)/../arm64/kernel_fdt_lzma.its $(project_dir)
 	mkimage -f $(project_dir)/kernel_fdt_lzma.its $@
 endif
 
 ifeq ($(CONFIG_LINUXBOOT_UROOT),y)
-$(PWD)/$(CONFIG_PAYLOAD_USERSPACE):
+$(PWD)/$(CONFIG_LINUX_INITRD):
 	$(MAKE) -f targets/u-root.mk
 else
-$(PWD)/$(CONFIG_PAYLOAD_USERSPACE):
+$(PWD)/$(CONFIG_LINUX_INITRD):
 	echo "Building without u-root support"
 endif
 
-linuxboot: $(project_dir)/kernel-image $(PWD)/$(CONFIG_PAYLOAD_USERSPACE)
+linuxboot: $(project_dir)/kernel-image $(PWD)/$(CONFIG_LINUX_INITRD)
 
 clean:
 	if [ -d "$(kernel_dir)" ]; then rm -rf $(kernel_dir); fi

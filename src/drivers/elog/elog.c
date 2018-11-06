@@ -789,6 +789,19 @@ static bool elog_do_add_boot_count(void)
 #endif
 }
 
+static void ramstage_elog_add_boot_count(void)
+{
+	if (elog_do_add_boot_count()) {
+		elog_add_event_dword(ELOG_TYPE_BOOT, boot_count_read());
+
+#if IS_ENABLED(CONFIG_ARCH_X86)
+		/* Check and log POST codes from previous boot */
+		if (IS_ENABLED(CONFIG_CMOS_POST))
+			cmos_post_log();
+#endif
+	}
+}
+
 /*
  * Event log main entry point
  */
@@ -838,15 +851,8 @@ int elog_init(void)
 	       " shrink size %d\n", region_device_sz(&es->nv_dev),
 		es->full_threshold, es->shrink_size);
 
-	if (elog_do_add_boot_count()) {
-		elog_add_event_dword(ELOG_TYPE_BOOT, boot_count_read());
-
-#if IS_ENABLED(CONFIG_ARCH_X86)
-		/* Check and log POST codes from previous boot */
-		if (IS_ENABLED(CONFIG_CMOS_POST))
-			cmos_post_log();
-#endif
-	}
+	if (ENV_RAMSTAGE)
+		ramstage_elog_add_boot_count();
 	return 0;
 }
 

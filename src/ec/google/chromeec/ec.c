@@ -611,10 +611,10 @@ int google_chromeec_cbi_get_oem_id(uint32_t *id)
 	return cbi_get_uint32(id, CBI_TAG_OEM_ID);
 }
 
-int google_chromeec_cbi_get_dram_part_num(char *buf, size_t bufsize)
+static int cbi_get_string(char *buf, size_t bufsize, uint32_t tag)
 {
 	struct ec_params_get_cbi p = {
-		.tag = CBI_TAG_DRAM_PART_NUM,
+		.tag = tag,
 	};
 	struct chromeec_command cmd = {
 		.cmd_code = EC_CMD_GET_CROS_BOARD_INFO,
@@ -634,6 +634,16 @@ int google_chromeec_cbi_get_dram_part_num(char *buf, size_t bufsize)
 	buf[bufsize - 1] = '\0';
 
 	return 0;
+}
+
+int google_chromeec_cbi_get_dram_part_num(char *buf, size_t bufsize)
+{
+	return cbi_get_string(buf, bufsize, CBI_TAG_DRAM_PART_NUM);
+}
+
+int google_chromeec_cbi_get_oem_name(char *buf, size_t bufsize)
+{
+	return cbi_get_string(buf, bufsize, CBI_TAG_OEM_NAME);
 }
 
 int google_chromeec_get_board_version(uint32_t *version)

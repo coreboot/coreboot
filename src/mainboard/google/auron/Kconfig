@@ -58,12 +58,7 @@ config GBB_HWID
 
 config DEVICETREE
 	string
-	default "variants/auron_paine/devicetree.cb" if BOARD_GOOGLE_AURON_PAINE
-	default "variants/auron_yuna/devicetree.cb" if BOARD_GOOGLE_AURON_YUNA
-	default "variants/buddy/devicetree.cb" if BOARD_GOOGLE_BUDDY
-	default "variants/gandof/devicetree.cb" if BOARD_GOOGLE_GANDOF
-	default "variants/lulu/devicetree.cb" if BOARD_GOOGLE_LULU
-	default "variants/samus/devicetree.cb" if BOARD_GOOGLE_SAMUS
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string

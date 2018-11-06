@@ -46,8 +46,7 @@ config MAINBOARD_PART_NUMBER
 
 config DEVICETREE
 	string
-	default "variants/p5qc/devicetree.cb" if BOARD_ASUS_P5QC
-	default "variants/p5q_pro/devicetree.cb" if BOARD_ASUS_P5Q_PRO
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAX_CPUS
 	int

@@ -47,8 +47,7 @@ config MAINBOARD_DIR
 
 config DEVICETREE
 	string
-	default "variants/librem13v2/devicetree.cb" if BOARD_PURISM_LIBREM13_V2
-	default "variants/librem15v3/devicetree.cb" if BOARD_PURISM_LIBREM15_V3
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAX_CPUS
 	int

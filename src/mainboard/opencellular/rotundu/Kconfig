@@ -59,8 +59,7 @@ config MAINBOARD_PART_NUMBER
 
 config DEVICETREE
 	string
-	default "variants/rotundu/devicetree.cb" if BOARD_OPENCELLULAR_ROTUNDU
-	default "variants/supabrckv1/devicetree.cb" if BOARD_OPENCELLULAR_SUPABRCKV1
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAINBOARD_DIR
 	string

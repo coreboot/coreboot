@@ -39,8 +39,7 @@ config MAINBOARD_DIR
 
 config DEVICETREE
 	string
-	default "variants/t530/devicetree.cb" if BOARD_LENOVO_T530
-	default "variants/w530/devicetree.cb" if BOARD_LENOVO_W530
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAINBOARD_PART_NUMBER
 	string

@@ -77,18 +77,7 @@ config MAINBOARD_VENDOR
 
 config DEVICETREE
 	string
-	default "variants/banon/devicetree.cb" if BOARD_GOOGLE_BANON
-	default "variants/celes/devicetree.cb" if BOARD_GOOGLE_CELES
-	default "variants/cyan/devicetree.cb" if BOARD_GOOGLE_CYAN
-	default "variants/edgar/devicetree.cb" if BOARD_GOOGLE_EDGAR
-	default "variants/kefka/devicetree.cb" if BOARD_GOOGLE_KEFKA
-	default "variants/reks/devicetree.cb" if BOARD_GOOGLE_REKS
-	default "variants/relm/devicetree.cb" if BOARD_GOOGLE_RELM
-	default "variants/setzer/devicetree.cb" if BOARD_GOOGLE_SETZER
-	default "variants/terra/devicetree.cb" if BOARD_GOOGLE_TERRA
-	default "variants/ultima/devicetree.cb" if BOARD_GOOGLE_ULTIMA
-	default "variants/wizpig/devicetree.cb" if BOARD_GOOGLE_WIZPIG
-
+	default "variants/${CONFIG_VARIANT_DIR}/devicetree.cb"
 
 config VGA_BIOS_FILE
 	string

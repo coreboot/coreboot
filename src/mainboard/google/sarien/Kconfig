@@ -31,11 +31,6 @@ config CHROMEOS
 	select GBB_FLAG_FORCE_DEV_BOOT_LEGACY
 	select GBB_FLAG_FORCE_MANUAL_RECOVERY
 
-config DEVICETREE
-	string
-	default "variants/arcada/devicetree.cb" if BOARD_GOOGLE_ARCADA
-	default "variants/sarien/devicetree.cb" if BOARD_GOOGLE_SARIEN
-
 config DIMM_MAX
 	int
 	default 2
@@ -88,6 +83,10 @@ config VARIANT_DIR
 	string
 	default "arcada" if BOARD_GOOGLE_ARCADA
 	default "sarien" if BOARD_GOOGLE_SARIEN
+
+config DEVICETREE
+	string
+	default "variants/${CONFIG_VARIANT_DIR}/devicetree.cb"
 
 config VBOOT
 	select HAS_RECOVERY_MRC_CACHE

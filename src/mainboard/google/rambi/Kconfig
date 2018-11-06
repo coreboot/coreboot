@@ -84,22 +84,7 @@ config GBB_HWID
 
 config DEVICETREE
 	string
-	default "variants/banjo/devicetree.cb" if BOARD_GOOGLE_BANJO
-	default "variants/candy/devicetree.cb" if BOARD_GOOGLE_CANDY
-	default "variants/clapper/devicetree.cb" if BOARD_GOOGLE_CLAPPER
-	default "variants/enguarde/devicetree.cb" if BOARD_GOOGLE_ENGUARDE
-	default "variants/glimmer/devicetree.cb" if BOARD_GOOGLE_GLIMMER
-	default "variants/gnawty/devicetree.cb" if BOARD_GOOGLE_GNAWTY
-	default "variants/heli/devicetree.cb" if BOARD_GOOGLE_HELI
-	default "variants/kip/devicetree.cb" if BOARD_GOOGLE_KIP
-	default "variants/ninja/devicetree.cb" if BOARD_GOOGLE_NINJA
-	default "variants/orco/devicetree.cb" if BOARD_GOOGLE_ORCO
-	default "variants/quawks/devicetree.cb" if BOARD_GOOGLE_QUAWKS
-	default "variants/rambi/devicetree.cb" if BOARD_GOOGLE_RAMBI
-	default "variants/squawks/devicetree.cb" if BOARD_GOOGLE_SQUAWKS
-	default "variants/sumo/devicetree.cb" if BOARD_GOOGLE_SUMO
-	default "variants/swanky/devicetree.cb" if BOARD_GOOGLE_SWANKY
-	default "variants/winky/devicetree.cb" if BOARD_GOOGLE_WINKY
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string

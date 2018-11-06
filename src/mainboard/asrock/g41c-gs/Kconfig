@@ -62,11 +62,7 @@ config MAINBOARD_PART_NUMBER
 
 config DEVICETREE
 	string
-	default "variants/g41c-gs-r2/devicetree.cb" if BOARD_ASROCK_G41C_GS_R2_0
-	default "variants/g41c-gs/devicetree.cb" if BOARD_ASROCK_G41C_GS
-	default "variants/g41m-gs/devicetree.cb" if BOARD_ASROCK_G41M_GS
-	default "variants/g41m-s3/devicetree.cb" if BOARD_ASROCK_G41M_S3
-	default "variants/g41m-vs3-r2/devicetree.cb" if BOARD_ASROCK_G41M_VS3_R2_0
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAX_CPUS
 	int

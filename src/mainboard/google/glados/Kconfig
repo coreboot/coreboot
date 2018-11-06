@@ -60,13 +60,7 @@ config VARIANT_DIR
 
 config DEVICETREE
 	string
-	default "variants/asuka/devicetree.cb" if BOARD_GOOGLE_ASUKA
-	default "variants/caroline/devicetree.cb" if BOARD_GOOGLE_CAROLINE
-	default "variants/cave/devicetree.cb" if BOARD_GOOGLE_CAVE
-	default "variants/chell/devicetree.cb" if BOARD_GOOGLE_CHELL
-	default "variants/glados/devicetree.cb" if BOARD_GOOGLE_GLADOS
-	default "variants/lars/devicetree.cb" if BOARD_GOOGLE_LARS
-	default "variants/sentry/devicetree.cb" if BOARD_GOOGLE_SENTRY
+	default "variants/${CONFIG_VARIANT_DIR}/devicetree.cb"
 
 config MAX_CPUS
 	int

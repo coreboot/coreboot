@@ -20,26 +20,26 @@
 #define MSR_PLATFORM_INFO	0xce
 #define MSR_PKG_CST_CONFIG_CONTROL	0xe2
 /* Set MSR_PKG_CST_CONFIG_CONTROL[3:0] for Package C-State limit */
-#define   PKG_C_STATE_LIMIT_C2_MASK	0x2
+#define  PKG_C_STATE_LIMIT_C2_MASK	0x2
 /* Set MSR_PKG_CST_CONFIG_CONTROL[7:4] for Core C-State limit*/
-#define   CORE_C_STATE_LIMIT_C10_MASK	0x70
+#define  CORE_C_STATE_LIMIT_C10_MASK	0x70
 /* Set MSR_PKG_CST_CONFIG_CONTROL[10] to IO redirect to MWAIT */
-#define   IO_MWAIT_REDIRECT_MASK	0x400
+#define  IO_MWAIT_REDIRECT_MASK	0x400
 /* Set MSR_PKG_CST_CONFIG_CONTROL[15] to lock CST_CFG [0-15] bits */
-#define   CST_CFG_LOCK_MASK	0x8000
+#define  CST_CFG_LOCK_MASK	0x8000
 #define MSR_BIOS_UPGD_TRIG	0x7a
 #define  SGX_ACTIVATE_BIT	(1)
 #define MSR_PMG_IO_CAPTURE_BASE	0xe4
 #define MSR_POWER_MISC		0x120
-#define   ENABLE_IA_UNTRUSTED	(1 << 6)
-#define   FLUSH_DL1_L2		(1 << 8)
+#define  ENABLE_IA_UNTRUSTED	(1 << 6)
+#define  FLUSH_DL1_L2		(1 << 8)
 #define MSR_EMULATE_PM_TMR	0x121
-#define   EMULATE_DELAY_OFFSET_VALUE	20
-#define   EMULATE_PM_TMR_EN	(1 << 16)
-#define   EMULATE_DELAY_VALUE	0x13
+#define  EMULATE_DELAY_OFFSET_VALUE	20
+#define  EMULATE_PM_TMR_EN	(1 << 16)
+#define  EMULATE_DELAY_VALUE	0x13
 #define MSR_FEATURE_CONFIG	0x13c
-#define   FEATURE_CONFIG_RESERVED_MASK	0x3ULL
-#define   FEATURE_CONFIG_LOCK	(1 << 0)
+#define  FEATURE_CONFIG_RESERVED_MASK	0x3ULL
+#define  FEATURE_CONFIG_LOCK	(1 << 0)
 #define SMM_MCA_CAP_MSR		0x17d
 #define  SMM_CPU_SVRSTR_BIT	57
 #define  SMM_CPU_SVRSTR_MASK	(1 << (SMM_CPU_SVRSTR_BIT - 32))
@@ -49,9 +49,11 @@
 /* This is burst mode BIT 38 in IA32_MISC_ENABLE MSR at offset 1A0h */
 #define BURST_MODE_DISABLE		(1 << 6)
 #define MSR_TEMPERATURE_TARGET	0x1a2
+#define  TEMPERATURE_TCC_MASK	0xf
+#define  TEMPERATURE_TCC_SHIFT	24
 #define MSR_PREFETCH_CTL	0x1a4
-#define   PREFETCH_L1_DISABLE	(1 << 0)
-#define   PREFETCH_L2_DISABLE	(1 << 2)
+#define  PREFETCH_L1_DISABLE	(1 << 0)
+#define  PREFETCH_L2_DISABLE	(1 << 2)
 #define MSR_MISC_PWR_MGMT	0x1aa
 #define  MISC_PWR_MGMT_EIST_HW_DIS	(1 << 0)
 #define  MISC_PWR_MGMT_ISST_EN		(1 << 6)
@@ -80,7 +82,7 @@
  * Time Window = (float)((1+X/4)*(2*^Y), X Corresponds to [23:22],
  * Y to [21:17] in MSR 0x610. 28 sec is equal to 0x6e.
  */
-#define   MB_POWER_LIMIT1_TIME_DEFAULT	0x6e
+#define  MB_POWER_LIMIT1_TIME_DEFAULT	0x6e
 #define MSR_PKG_POWER_SKU		0x614
 #define MSR_DDR_RAPL_LIMIT		0x618
 #define MSR_C_STATE_LATENCY_CONTROL_3	0x633

@@ -112,6 +112,9 @@ struct soc_intel_apollolake_config {
 	/* Enable DPTF support */
 	int dptf_enable;
 
+	/* TCC activation offset value in degrees Celsius */
+	int tcc_offset;
+
 	/* PL1 override value in mW for APL */
 	uint16_t tdp_pl1_override_mw;
 	/* PL2 override value in mW for APL */

@@ -28,29 +28,30 @@
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/pae.h>
+#include <delay.h>
 #include <device/pci_def.h>
 #include <device/resource.h>
-#include <intelblocks/lpc_lib.h>
 #include <fsp/api.h>
 #include <fsp/memmap.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
+#include <intelblocks/lpc_lib.h>
+#include <intelblocks/msr.h>
+#include <intelblocks/pmclib.h>
 #include <intelblocks/smm.h>
 #include <intelblocks/systemagent.h>
-#include <intelblocks/pmclib.h>
 #include <mrc_cache.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/meminit.h>
-#include <soc/systemagent.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
+#include <soc/systemagent.h>
 #include <spi_flash.h>
 #include <string.h>
-#include <timestamp.h>
 #include <timer.h>
-#include <delay.h>
+#include <timestamp.h>
 #include "chip.h"
 
 static const uint8_t hob_variable_guid[16] = {
@@ -99,6 +100,32 @@ static void soc_early_romstage_init(void)
 		lpc_io_setup_comm_a_b();
 }
 
+/* Thermal throttle activation offset */
+static void configure_thermal_target(void)
+{
+	const struct device *dev = dev_find_slot(0, SA_DEVFN_ROOT);
+	if (!dev) {
+		printk(BIOS_ERR, "Could not find SOC devicetree config\n");
+		return;
+	}
+	const config_t *conf = dev->chip_info;
+	if (!dev->chip_info) {
+		printk(BIOS_ERR, "Could not find chip info\n");
+		return;
+	}
+	msr_t msr;
+
+	if (!conf->tcc_offset)
+		return;
+
+	msr = rdmsr(MSR_TEMPERATURE_TARGET);
+	/* Bits 27:24 */
+	msr.lo &= ~(TEMPERATURE_TCC_MASK << TEMPERATURE_TCC_SHIFT);
+	msr.lo |= (conf->tcc_offset & TEMPERATURE_TCC_MASK)
+		<< TEMPERATURE_TCC_SHIFT;
+	wrmsr(MSR_TEMPERATURE_TARGET, msr);
+}
+
 /*
  * Punit Initialization code. This all isn't documented, but
  * this is the recipe.
@@ -108,6 +135,9 @@ static bool punit_init(void)
 	uint32_t reg;
 	uint32_t data;
 	struct stopwatch sw;
+
+	/* Thermal throttle activation offset */
+	configure_thermal_target();
 
 	/*
 	 * Software Core Disable Mask (P_CR_CORE_DISABLE_MASK_0_0_0_MCHBAR).

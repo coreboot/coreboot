@@ -41,7 +41,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void);
 AGESA_STATUS agesawrapper_amdinitpost(void);
 AGESA_STATUS agesawrapper_amdinitmid(void);
 void *agesawrapper_getlateinitptr(int pick);
-AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINTN Data,
+AGESA_STATUS agesawrapper_amdlaterunaptask(uint32_t Func, uintptr_t Data,
 							void *ConfigPtr);
 AGESA_STATUS agesawrapper_amdinitrtb(void);
 AGESA_STATUS agesawrapper_amdinitresume(void);
@@ -51,9 +51,9 @@ AGESA_STATUS agesawrapper_amds3finalrestore(void);
 AGESA_STATUS agesawrapper_fchs3earlyrestore(void);
 AGESA_STATUS agesawrapper_fchs3laterestore(void);
 
-VOID OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly);
-VOID amd_initcpuio(void);
-const void *agesawrapper_locate_module(const CHAR8 name[8]);
+void OemCustomizeInitEarly(AMD_EARLY_PARAMS *InitEarly);
+void amd_initcpuio(void);
+const void *agesawrapper_locate_module(const char name[8]);
 
 void SetFchResetParams(FCH_RESET_INTERFACE *params);
 void OemPostParams(AMD_POST_PARAMS *PostParams);

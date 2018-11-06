@@ -27,10 +27,10 @@
 #include "chip.h"
 #include <amdblocks/car.h>
 
-void __weak platform_FchParams_reset(
-				FCH_RESET_DATA_BLOCK *FchParams_reset) {}
+void __weak platform_FchParams_reset(FCH_RESET_DATA_BLOCK *FchParams_reset) {}
 
-AGESA_STATUS agesa_fch_initreset(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
+AGESA_STATUS agesa_fch_initreset(uint32_t Func, uintptr_t FchData,
+							void *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
 
@@ -48,7 +48,8 @@ AGESA_STATUS agesa_fch_initreset(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
+AGESA_STATUS agesa_fch_initenv(uint32_t Func, uintptr_t FchData,
+							void *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
 	const struct device *dev = dev_find_slot(0, SATA_DEVFN);
@@ -92,7 +93,7 @@ AGESA_STATUS agesa_fch_initenv(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_ReadSpd(uint32_t Func, uintptr_t Data, void *ConfigPtr)
 {
 	uint8_t spd_address;
 	int err;
@@ -137,7 +138,7 @@ AGESA_STATUS agesa_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_HaltThisAp(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_HaltThisAp(uint32_t Func, uintptr_t Data, void *ConfigPtr)
 {
 	AGESA_HALT_THIS_AP_PARAMS *info = ConfigPtr;
 	uint32_t flags = 0;

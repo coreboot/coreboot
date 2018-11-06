@@ -74,9 +74,9 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
 
 const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 
-AGESA_STATUS GetBiosCallout(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS GetBiosCallout(uint32_t Func, uintptr_t Data, void *ConfigPtr)
 {
-	UINTN i;
+	uintptr_t i;
 
 	for (i = 0 ; i < BiosCalloutsLen ; i++) {
 		if (BiosCallouts[i].CalloutName == Func)
@@ -92,17 +92,19 @@ AGESA_STATUS GetBiosCallout(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	return BiosCallouts[i].CalloutPtr(Func, Data, ConfigPtr);
 }
 
-AGESA_STATUS agesa_NoopUnsupported(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_NoopUnsupported(uint32_t Func, uintptr_t Data,
+							void *ConfigPtr)
 {
 	return AGESA_UNSUPPORTED;
 }
 
-AGESA_STATUS agesa_NoopSuccess(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_NoopSuccess(uint32_t Func, uintptr_t Data, void *ConfigPtr)
 {
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_EmptyIdsInitData(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_EmptyIdsInitData(uint32_t Func, uintptr_t Data,
+							void *ConfigPtr)
 {
 	IDS_NV_ITEM *IdsPtr = ((IDS_CALLOUT_STRUCT *) ConfigPtr)->IdsNvPtr;
 	if (Data == IDS_CALLOUT_INIT)
@@ -110,10 +112,10 @@ AGESA_STATUS agesa_EmptyIdsInitData(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_Reset(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_Reset(uint32_t Func, uintptr_t Data, void *ConfigPtr)
 {
 	AGESA_STATUS Status;
-	UINTN ResetType;
+	uintptr_t ResetType;
 	AMD_CONFIG_PARAMS *StdHeader;
 
 	ResetType = Data;
@@ -143,8 +145,8 @@ AGESA_STATUS agesa_Reset(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	return Status;
 }
 
-AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData,
-							VOID *ConfigPrt)
+AGESA_STATUS agesa_GfxGetVbiosImage(uint32_t Func, uintptr_t FchData,
+							void *ConfigPrt)
 {
 	GFX_VBIOS_IMAGE_INFO *pVbiosImageInfo;
 
@@ -157,16 +159,16 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData,
 	return pVbiosImageInfo->ImagePtr ? AGESA_SUCCESS : AGESA_WARNING;
 }
 
-AGESA_STATUS __weak platform_PcieSlotResetControl(UINT32 Func,
-	UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS __weak platform_PcieSlotResetControl(uint32_t Func,
+	uintptr_t Data, void *ConfigPtr)
 {
 	printk(BIOS_WARNING, "Warning - AGESA callout: %s not supported\n",
 		__func__);
 	return AGESA_UNSUPPORTED;
 }
 
-AGESA_STATUS agesa_PcieSlotResetControl(UINT32 Func, UINTN Data,
-	VOID *ConfigPtr)
+AGESA_STATUS agesa_PcieSlotResetControl(uint32_t Func, uintptr_t Data,
+	void *ConfigPtr)
 {
 	return platform_PcieSlotResetControl(Func, Data, ConfigPtr);
 }
@@ -184,9 +186,9 @@ AGESA_STATUS agesa_PcieSlotResetControl(UINT32 Func, UINTN Data,
  * Passed from the AGESA_Callout for the agesawrapper_amdlaterunaptask.
  */
 static struct agesa_data {
-	UINT32 Func;
-	UINTN Data;
-	VOID *ConfigPtr;
+	uint32_t Func;
+	uintptr_t Data;
+	void *ConfigPtr;
 } agesadata;
 
 /*
@@ -213,7 +215,7 @@ static void callout_ap_entry(void *unused)
 			lapicid(), decodeAGESA_STATUS(Status));
 }
 
-AGESA_STATUS agesa_RunFuncOnAp(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_RunFuncOnAp(uint32_t Func, uintptr_t Data, void *ConfigPtr)
 {
 	printk(BIOS_DEBUG, "%s\n", __func__);
 
@@ -226,7 +228,8 @@ AGESA_STATUS agesa_RunFuncOnAp(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_RunFcnOnAllAps(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_RunFcnOnAllAps(uint32_t Func, uintptr_t Data,
+							void *ConfigPtr)
 {
 	printk(BIOS_DEBUG, "%s\n", __func__);
 
@@ -239,8 +242,8 @@ AGESA_STATUS agesa_RunFcnOnAllAps(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_WaitForAllApsFinished(UINT32 Func, UINTN Data,
-	VOID *ConfigPtr)
+AGESA_STATUS agesa_WaitForAllApsFinished(uint32_t Func, uintptr_t Data,
+	void *ConfigPtr)
 {
 	printk(BIOS_WARNING, "Warning - AGESA callout: %s not supported\n",
 		__func__);
@@ -249,7 +252,7 @@ AGESA_STATUS agesa_WaitForAllApsFinished(UINT32 Func, UINTN Data,
 	return Status;
 }
 
-AGESA_STATUS agesa_IdleAnAp(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_IdleAnAp(uint32_t Func, uintptr_t Data, void *ConfigPtr)
 {
 	printk(BIOS_WARNING, "Warning - AGESA callout: %s no supported\n",
 		__func__);

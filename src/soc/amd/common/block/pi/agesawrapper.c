@@ -49,7 +49,7 @@ static void *AcpiAlib;
 static void *AcpiIvrs;
 static void *AcpiCrat;
 
-static AGESA_STATUS agesawrapper_readeventlog(UINT8 HeapStatus)
+static AGESA_STATUS agesawrapper_readeventlog(uint8_t HeapStatus)
 {
 	AGESA_STATUS Status;
 	EVENT_PARAMS AmdEventParams = {
@@ -190,7 +190,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 
 	PostParams->MemConfig.UmaMode = CONFIG_GFXUMA ? UMA_AUTO : UMA_NONE;
 	PostParams->MemConfig.UmaSize = 0;
-	PostParams->MemConfig.BottomIo = (UINT16)
+	PostParams->MemConfig.BottomIo = (uint16_t)
 					 (CONFIG_BOTTOMIO_POSITION >> 24);
 
 	SetMemParams(PostParams);
@@ -257,7 +257,7 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	return status;
 }
 
-VOID *agesawrapper_getlateinitptr(int pick)
+void *agesawrapper_getlateinitptr(int pick)
 {
 	switch (pick) {
 	case PICK_DMI:
@@ -326,7 +326,8 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 
 	const struct device *dev = dev_find_slot(0, IOMMU_DEVFN);
 	if (dev && dev->enabled) {
-		LateParams->GnbLateConfiguration.GnbIoapicId = CONFIG_MAX_CPUS + 1;
+		LateParams->GnbLateConfiguration.GnbIoapicId = CONFIG_MAX_CPUS
+									+ 1;
 		LateParams->GnbLateConfiguration.FchIoapicId = CONFIG_MAX_CPUS;
 	}
 
@@ -359,8 +360,8 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	return Status;
 }
 
-AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINTN Data,
-				VOID *ConfigPtr)
+AGESA_STATUS agesawrapper_amdlaterunaptask(uint32_t Func, uintptr_t Data,
+				void *ConfigPtr)
 {
 	AGESA_STATUS Status;
 	AP_EXE_PARAMS ApExeParams;
@@ -585,7 +586,7 @@ static const char *get_agesa_cbfs_name(void)
 	return CONFIG_AGESA_POST_MEMORY_CBFS_NAME;
 }
 
-const void *agesawrapper_locate_module(const CHAR8 name[8])
+const void *agesawrapper_locate_module(const char name[8])
 {
 	const void *agesa;
 	const AMD_IMAGE_HEADER *image;
@@ -627,7 +628,7 @@ static MODULE_ENTRY agesa_dispatcher CAR_GLOBAL;
 MODULE_ENTRY agesa_get_dispatcher(void)
 {
 	const AMD_MODULE_HEADER *module;
-	static const CHAR8 id[8] = AGESA_ID;
+	static const char id[8] = AGESA_ID;
 	MODULE_ENTRY val = car_get_var(agesa_dispatcher);
 
 	if (val != NULL)

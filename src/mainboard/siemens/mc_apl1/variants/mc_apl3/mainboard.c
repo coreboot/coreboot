@@ -15,6 +15,7 @@
 
 #include <bootstate.h>
 #include <console/console.h>
+#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <gpio.h>
@@ -31,6 +32,7 @@
 void variant_mainboard_final(void)
 {
 	struct device *dev = NULL;
+	uint16_t cmd = 0;
 
 	/* PIR6 register mapping for PCIe root ports
 	 * INTA#->PIRQD#, INTB#->PIRQA#, INTC#->PIRQB#, INTD#-> PIRQC#
@@ -52,6 +54,14 @@ void variant_mainboard_final(void)
 	 * offset 0x341C bit [3:0].
 	 */
 	pcr_or32(PID_LPC, PCR_LPC_PRC, (PCR_LPC_CCE_EN | PCR_LPC_PCE_EN));
+
+	/* Set Master Enable for on-board PCI device. */
+	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403e, 0);
+	if (dev) {
+		cmd = pci_read_config16(dev, PCI_COMMAND);
+		cmd |= PCI_COMMAND_MASTER;
+		pci_write_config16(dev, PCI_COMMAND, cmd);
+	}
 }
 
 static void wait_for_legacy_dev(void *unused)

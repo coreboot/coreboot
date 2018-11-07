@@ -180,9 +180,9 @@ static const struct pad_config gpio_table[] = {
 	/* D8  : ISH_I2C1_SCL ==> NC */
 	PAD_CFG_NC(GPP_D8),
 	/* D9  : ISH_SPI_CS# ==> PCH_SR1_INT_L */
-	PAD_CFG_GPI_APIC(GPP_D9, NONE, DEEP),
+	PAD_CFG_GPI_APIC(GPP_D9, NONE, PLTRST),
 	/* D10 : ISH_SPI_CLK ==> PCH_SR0_INT_L */
-	PAD_CFG_GPI_APIC(GPP_D10, NONE, DEEP),
+	PAD_CFG_GPI_APIC(GPP_D10, NONE, PLTRST),
 	/* D11 : ISH_SPI_MISO ==> NC */
 	PAD_CFG_NC(GPP_D11),
 	/* D12 : ISH_SPI_MOSI ==> NC */

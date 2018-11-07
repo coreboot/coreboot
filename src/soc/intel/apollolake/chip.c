@@ -39,15 +39,16 @@
 #include <intelblocks/itss.h>
 #include <intelblocks/pmclib.h>
 #include <romstage_handoff.h>
+#include <soc/cpu.h>
+#include <soc/heci.h>
+#include <soc/intel/common/vbt.h>
 #include <soc/iomap.h>
 #include <soc/itss.h>
-#include <soc/intel/common/vbt.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
-#include <spi-generic.h>
-#include <soc/cpu.h>
 #include <soc/pm.h>
 #include <soc/systemagent.h>
+#include <spi-generic.h>
 #include <timer.h>
 
 #include "chip.h"
@@ -715,8 +716,16 @@ static int check_xdci_enable(void)
 void platform_fsp_notify_status(enum fsp_notify_phase phase)
 {
 	if (phase == END_OF_FIRMWARE) {
+
+		/*
+		 * Before hiding P2SB device and dropping privilege level,
+		 * dump CSE status and disable HECI1 interface.
+		 */
+		heci_cse_lockdown();
+
 		/* Hide the P2SB device to align with previous behavior. */
 		p2sb_hide();
+
 		/*
 		 * As per guidelines BIOS is recommended to drop CPU privilege
 		 * level to IA_UNTRUSTED. After that certain device registers

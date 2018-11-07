@@ -35,8 +35,10 @@
 #define PID_LPC		0xD2
 #define PID_MODPHY	0xA5
 
-#define PID_AUNIT	0x4d
-#define PID_BUNIT	0x4c
+#define PID_AUNIT	0x4D
+#define PID_BUNIT	0x4C
 #define PID_TUNIT	0x52
+
+#define PID_PSF3	0xC6
 
 #endif	/* SOC_INTEL_APL_PCR_H */

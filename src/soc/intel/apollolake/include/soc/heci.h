@@ -42,4 +42,7 @@ bool heci_cse_normal(void);
 /* Returns true if CSE is done with whatever it was doing */
 bool heci_cse_done(void);
 
+/* Dump CSE state and lockdown HECI1 interface using P2SB message. */
+void heci_cse_lockdown(void);
+
 #endif

@@ -19,6 +19,11 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <intelblocks/cse.h>
+#include <intelblocks/p2sb.h>
+#include <intelblocks/pcr.h>
+#include <soc/heci.h>
+#include <soc/iomap.h>
+#include <soc/pcr_ids.h>
 #include <soc/pci_devs.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
@@ -187,7 +192,7 @@ static uint32_t dump_status(int index, int reg_addr)
 	return reg;
 }
 
-static void dump_cse_state(void *unused)
+static void dump_cse_state(void)
 {
 	uint32_t fwsts1;
 
@@ -218,6 +223,25 @@ static void dump_cse_state(void *unused)
 	}
 	printk(BIOS_DEBUG, "\n");
 }
+
+#define PCR_PSFX_T0_SHDW_PCIEN		0x1C
+#define PCR_PSFX_T0_SHDW_PCIEN_FUNDIS	(1 << 8)
+
+static void disable_heci1(void)
+{
+	pcr_or32(PID_PSF3, PSF3_BASE_ADDRESS + PCR_PSFX_T0_SHDW_PCIEN,
+		 PCR_PSFX_T0_SHDW_PCIEN_FUNDIS);
+}
+
+void heci_cse_lockdown(void)
+{
+	dump_cse_state();
+
+	/*
+	 * It is safe to disable HECI1 now since we won't be talking to the ME
+	 * anymore.
+	 */
+	disable_heci1();
+}
+
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, fpf_blown, NULL);
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, dump_cse_state, NULL);
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, dump_cse_state, NULL);

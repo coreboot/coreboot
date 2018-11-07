@@ -83,10 +83,8 @@ void soc_memory_init_params(struct romstage_params *params,
 		upd->SaGv = config->SaGv;
 	upd->RMT = config->Rmt;
 	upd->DdrFreqLimit = config->DdrFreqLimit;
-	if (IS_ENABLED(CONFIG_SKIP_FSP_CAR)) {
-		upd->FspCarBase = CONFIG_DCACHE_RAM_BASE;
-		upd->FspCarSize = CONFIG_DCACHE_RAM_SIZE;
-	}
+	upd->FspCarBase = CONFIG_DCACHE_RAM_BASE;
+	upd->FspCarSize = CONFIG_DCACHE_RAM_SIZE;
 }
 
 void soc_update_memory_params_for_mma(MEMORY_INIT_UPD *memory_cfg,

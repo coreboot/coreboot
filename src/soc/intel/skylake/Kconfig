@@ -34,6 +34,7 @@ config CPU_SPECIFIC_OPTIONS
 	select INTEL_DESCRIPTOR_MODE_CAPABLE
 	select HAVE_MONOTONIC_TIMER
 	select HAVE_SMI_HANDLER
+	select INTEL_CAR_NEM_ENHANCED
 	select INTEL_GMA_ACPI
 	select IOAPIC
 	select MRC_SETTINGS_PROTECT
@@ -50,6 +51,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	select SOC_INTEL_COMMON_BLOCK
+	select SOC_INTEL_COMMON_BLOCK_CAR
 	select SOC_INTEL_COMMON_BLOCK_CHIP_CONFIG
 	select SOC_INTEL_COMMON_BLOCK_CPU
 	select SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
@@ -97,6 +99,7 @@ config USE_FSP1_1_DRIVER
 	depends on !MAINBOARD_USES_FSP2_0
 	select PLATFORM_USES_FSP1_1
 	select DISPLAY_FSP_ENTRY_POINTS
+	select SKIP_FSP_CAR
 
 config CHROMEOS
 	select CHROMEOS_RAMOOPS_DYNAMIC
@@ -269,32 +272,6 @@ config NHLT_DA7219
 	help
 	  Include DSP firmware settings for DA7219 headset codec.
 
-choice
-	prompt "Cache-as-ram implementation"
-	default USE_SKYLAKE_CAR_NEM_ENHANCED
-	help
-	  This option allows you to select how cache-as-ram (CAR) is set up.
-
-config USE_SKYLAKE_CAR_NEM_ENHANCED
-	bool "Enhanced Non-evict mode"
-	select SOC_INTEL_COMMON_BLOCK_CAR
-	select INTEL_CAR_NEM_ENHANCED
-	help
-	  A current limitation of NEM (Non-Evict mode) is that code and data
-	  sizes are derived from the requirement to not write out any modified
-	  cache line. With NEM, if there is no physical memory behind the
-	  cached area, the modified data will be lost and NEM results will be
-	  inconsistent. ENHANCED NEM guarantees that modified data is always
-	  kept in cache while clean data is replaced.
-
-config USE_SKYLAKE_FSP_CAR
-	bool "Use FSP CAR"
-	select FSP_CAR
-	help
-	  Use FSP APIs to initialize and tear down the Cache-As-Ram.
-
-endchoice
-
 config FSP_HEADER_PATH
 	string "Location of FSP headers"
 	depends on MAINBOARD_USES_FSP2_0
@@ -308,12 +285,6 @@ config FSP_FD_PATH
 	depends on FSP_USE_REPO
 	default "3rdparty/fsp/KabylakeFspBinPkg/Fsp.fd" if SOC_INTEL_SKYLAKE
 	default "3rdparty/fsp/KabylakeFspBinPkg/Fsp.fd" if SOC_INTEL_KABYLAKE
-
-config SKIP_FSP_CAR
-	bool "Skip cache as RAM setup in FSP"
-	default y
-	help
-	  Skip Cache as RAM setup in FSP.
 
 config SPI_FLASH_INCLUDE_ALL_DRIVERS
 	bool

@@ -94,4 +94,9 @@ config RESET_ON_INVALID_RAMSTAGE_CACHE
 	bool "Reset the system on S3 wake when ramstage cache invalid."
 	default n
 
+config SKIP_FSP_CAR
+	def_bool n
+	help
+	  Selected by platforms that implement their own CAR setup.
+
 endif #PLATFORM_USES_FSP1_1

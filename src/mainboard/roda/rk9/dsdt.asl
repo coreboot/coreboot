@@ -14,8 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#define DISPLAY_DEVICE_2_IS_LCD_SCREEN 1
-
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

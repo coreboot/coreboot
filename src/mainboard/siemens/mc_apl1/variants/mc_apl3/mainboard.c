@@ -14,6 +14,7 @@
  */
 
 #include <bootstate.h>
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
@@ -62,6 +63,13 @@ void variant_mainboard_final(void)
 		cmd |= PCI_COMMAND_MASTER;
 		pci_write_config16(dev, PCI_COMMAND, cmd);
 	}
+
+	/* Set Full Reset Bit in Reset Control Register (I/O port CF9h).
+	 * When Bit 3 is set to 1 and then the reset button is pressed the PCH
+	 * will drive SLP_S3 active (low). SLP_S3 is then used on the mainboard
+	 * to generate the right reset timing.
+	 */
+	outb(FULL_RST, RST_CNT);
 }
 
 static void wait_for_legacy_dev(void *unused)

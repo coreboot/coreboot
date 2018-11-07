@@ -448,7 +448,7 @@ int spi_flash_is_write_protected(const struct spi_flash *flash,
 	if (!flash->ops->get_write_protection) {
 		printk(BIOS_WARNING, "SPI: Write-protection gathering not "
 		       "implemented for this vendor.\n");
-		return 0;
+		return -1;
 	}
 
 	return flash->ops->get_write_protection(flash, region);
@@ -473,7 +473,7 @@ int spi_flash_set_write_protected(const struct spi_flash *flash,
 	if (!flash->ops->set_write_protection) {
 		printk(BIOS_WARNING, "SPI: Setting write-protection is not "
 		       "implemented for this vendor.\n");
-		return 0;
+		return -1;
 	}
 
 	ret = flash->ops->set_write_protection(flash, region, non_volatile,

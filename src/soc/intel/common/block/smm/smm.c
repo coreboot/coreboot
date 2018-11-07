@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootstate.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <intelblocks/pmclib.h>
@@ -93,3 +94,11 @@ void smm_region_info(void **start, size_t *size)
 	*start = (void *)sa_get_tseg_base();
 	*size = sa_get_tseg_size();
 }
+
+#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SMM_ESPI_ACPI_DIS)
+static void smm_disable_espi(void *dest)
+{
+	pmc_disable_smi(ESPI_SMI_EN);
+}
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, smm_disable_espi, NULL);
+#endif

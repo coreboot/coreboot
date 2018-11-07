@@ -362,10 +362,14 @@ void smihandler_southbridge_apmc(
 		break;
 	case APM_CNT_ACPI_DISABLE:
 		pmc_disable_pm1_control(SCI_EN);
+		if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SMM_ESPI_ACPI_DIS))
+			pmc_enable_smi(ESPI_SMI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI disabled.\n");
 		break;
 	case APM_CNT_ACPI_ENABLE:
 		pmc_enable_pm1_control(SCI_EN);
+		if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SMM_ESPI_ACPI_DIS))
+			pmc_disable_smi(ESPI_SMI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
 		break;
 	case APM_CNT_GNVS_UPDATE:

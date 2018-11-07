@@ -8,6 +8,14 @@ config SOC_INTEL_COMMON_BLOCK_SMM_IO_TRAP
 	help
 	  Intel Processor trap flag if it is supported
 
+config SOC_INTEL_COMMON_BLOCK_SMM_ESPI_ACPI_DIS
+	bool
+	default n
+	help
+	  Disable eSPI SMI when ACPI mode is enabled.  This will
+	  prevent the embedded controller from asserting SMI when
+	  booted into an ACPI aware OS.
+
 config SOC_INTEL_COMMON_BLOCK_SMM_S5_DELAY_MS
 	int
 	default 100 if CHROMEOS

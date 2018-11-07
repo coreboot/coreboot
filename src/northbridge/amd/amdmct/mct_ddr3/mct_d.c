@@ -39,6 +39,7 @@
 #include <southbridge/amd/common/reset.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
+#include <cpu/x86/mtrr.h>
 #include <arch/acpi.h>
 #include <string.h>
 #include <device/dram/ddr3.h>
@@ -3577,10 +3578,10 @@ retry_dqs_training_and_levelization:
 	mctHookBeforeAnyTraining(pMCTstat, pDCTstatA);
 	if (!is_fam15h()) {
 		/* TODO: should be in mctHookBeforeAnyTraining */
-		_WRMSR(0x26C, 0x04040404, 0x04040404);
-		_WRMSR(0x26D, 0x04040404, 0x04040404);
-		_WRMSR(0x26E, 0x04040404, 0x04040404);
-		_WRMSR(0x26F, 0x04040404, 0x04040404);
+		_WRMSR(MTRR_FIX_4K_E0000, 0x04040404, 0x04040404);
+		_WRMSR(MTRR_FIX_4K_E8000, 0x04040404, 0x04040404);
+		_WRMSR(MTRR_FIX_4K_F0000, 0x04040404, 0x04040404);
+		_WRMSR(MTRR_FIX_4K_F8000, 0x04040404, 0x04040404);
 	}
 
 	if (nv_DQSTrainCTL) {

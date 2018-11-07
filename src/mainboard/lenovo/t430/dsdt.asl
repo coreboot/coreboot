@@ -15,6 +15,12 @@
  * GNU General Public License for more details.
  */
 
+#define THINKPAD_EC_GPE 17
+#define BRIGHTNESS_UP \_SB.PCI0.GFX0.INCB
+#define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.DECB
+#define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
+#define EC_LENOVO_H8_ME_WORKAROUND 1
+
 #include <arch/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",

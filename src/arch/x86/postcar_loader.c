@@ -167,7 +167,7 @@ static void load_postcar_cbfs(struct prog *prog, struct postcar_frame *pcf)
 void run_postcar_phase(struct postcar_frame *pcf)
 {
 	struct prog prog =
-		PROG_INIT(PROG_UNKNOWN, CONFIG_CBFS_PREFIX "/postcar");
+		PROG_INIT(PROG_POSTCAR, CONFIG_CBFS_PREFIX "/postcar");
 
 	postcar_commit_mtrrs(pcf);
 

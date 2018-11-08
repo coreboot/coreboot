@@ -36,6 +36,7 @@ enum prog_type {
 	PROG_PAYLOAD,
 	PROG_BL31,
 	PROG_BL32,
+	PROG_POSTCAR,
 };
 
 /*

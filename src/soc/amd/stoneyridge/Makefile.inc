@@ -89,6 +89,7 @@ postcar-y += ramtop.c
 postcar-y += sb_util.c
 postcar-y += nb_util.c
 postcar-$(CONFIG_VBOOT_MEASURED_BOOT) += i2c.c
+postcar-y += tsc_freq.c
 
 ramstage-y += BiosCallOuts.c
 ramstage-y += i2c.c

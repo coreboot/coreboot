@@ -12,6 +12,7 @@ subdirs-y += ../common
 
 ramstage-y += tsc_freq.c
 romstage-y += tsc_freq.c
+postcar-y += tsc_freq.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c
 
 ramstage-y += acpi.c

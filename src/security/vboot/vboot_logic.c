@@ -24,6 +24,7 @@
 #include <vb2_api.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vbnv.h>
+#include <security/vboot/vboot_crtm.h>
 
 #include "antirollback.h"
 
@@ -86,24 +87,21 @@ int vb2ex_read_resource(struct vb2_context *ctx,
 }
 
 /* No-op stubs that can be overridden by SoCs with hardware crypto support. */
-__weak
-int vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg,
-			       uint32_t data_size)
+__weak int vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg,
+				      uint32_t data_size)
 {
 	return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
 }
 
-__weak
-int vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
+__weak int vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
 {
-	BUG();	/* Should never get called if init() returned an error. */
+	BUG(); /* Should never get called if init() returned an error. */
 	return VB2_ERROR_UNKNOWN;
 }
 
-__weak
-int vb2ex_hwcrypto_digest_finalize(uint8_t *digest, uint32_t digest_size)
+__weak int vb2ex_hwcrypto_digest_finalize(uint8_t *digest, uint32_t digest_size)
 {
-	BUG();	/* Should never get called if init() returned an error. */
+	BUG(); /* Should never get called if init() returned an error. */
 	return VB2_ERROR_UNKNOWN;
 }
 
@@ -249,7 +247,7 @@ static int hash_body(struct vb2_context *ctx, struct region_device *fw_main)
 }
 
 static int locate_firmware(struct vb2_context *ctx,
-				struct region_device *fw_main)
+			   struct region_device *fw_main)
 {
 	const char *name;
 
@@ -281,7 +279,7 @@ static void save_if_needed(struct vb2_context *ctx)
 static uint32_t extend_pcrs(struct vb2_context *ctx)
 {
 	return vboot_extend_pcr(ctx, 0, BOOT_MODE_PCR) ||
-	       vboot_extend_pcr(ctx, 1, HWID_DIGEST_PCR);
+		   vboot_extend_pcr(ctx, 1, HWID_DIGEST_PCR);
 }
 
 /**
@@ -309,7 +307,7 @@ void verstage_main(void)
 	 * does verification of memory init and thus must ensure it resumes with
 	 * the same slot that it booted from. */
 	if (IS_ENABLED(CONFIG_RESUME_PATH_SAME_AS_BOOT) &&
-	    vboot_platform_is_resuming())
+		vboot_platform_is_resuming())
 		ctx.flags |= VB2_CONTEXT_S3_RESUME;
 
 	/* Read secdata from TPM. Initialize TPM if secdata not found. We don't
@@ -319,8 +317,15 @@ void verstage_main(void)
 	antirollback_read_space_firmware(&ctx);
 	timestamp_add_now(TS_END_TPMINIT);
 
+	/* Enable measured boot mode */
+	if (IS_ENABLED(CONFIG_VBOOT_MEASURED_BOOT) &&
+		!(ctx.flags & VB2_CONTEXT_S3_RESUME)) {
+		if (vboot_init_crtm() != VB2_SUCCESS)
+			die("Initializing measured boot mode failed!");
+	}
+
 	if (IS_ENABLED(CONFIG_VBOOT_PHYSICAL_DEV_SWITCH) &&
-	    get_developer_mode_switch())
+		get_developer_mode_switch())
 		ctx.flags |= VB2_CONTEXT_FORCE_DEVELOPER_MODE;
 
 	if (get_recovery_mode_switch()) {
@@ -330,7 +335,7 @@ void verstage_main(void)
 	}
 
 	if (IS_ENABLED(CONFIG_VBOOT_WIPEOUT_SUPPORTED) &&
-	    get_wipeout_mode_switch())
+		get_wipeout_mode_switch())
 		ctx.flags |= VB2_CONTEXT_FORCE_WIPEOUT_MODE;
 
 	if (IS_ENABLED(CONFIG_VBOOT_LID_SWITCH) && !get_lid_switch())
@@ -350,7 +355,7 @@ void verstage_main(void)
 		if (rv == VB2_ERROR_API_PHASE1_RECOVERY) {
 			printk(BIOS_INFO, "Recovery requested (%x)\n", rv);
 			save_if_needed(&ctx);
-			extend_pcrs(&ctx);	/* ignore failures */
+			extend_pcrs(&ctx); /* ignore failures */
 			timestamp_add_now(TS_END_VBOOT);
 			return;
 		}

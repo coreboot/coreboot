@@ -69,6 +69,13 @@ romstage-y += vboot_common.c
 ramstage-y += vboot_common.c
 postcar-y += vboot_common.c
 
+ifeq ($(CONFIG_VBOOT_MEASURED_BOOT),y)
+verstage-y += vboot_crtm.c
+romstage-y += vboot_crtm.c
+ramstage-y += vboot_crtm.c
+postcar-y += vboot_crtm.c
+endif
+
 bootblock-y += common.c
 verstage-y += vboot_logic.c
 verstage-y += common.c

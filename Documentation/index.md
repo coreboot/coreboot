@@ -167,6 +167,7 @@ Contents:
 * [Code of Conduct](community/code_of_conduct.md)
 * [Community forums](community/forums.md)
 * [coreboot at conferences](community/conferences.md)
+* [Security](security.md)
 * [Payloads](payloads.md)
 * [Distributions](distributions.md)
 * [Timestamps](timestamp.md)

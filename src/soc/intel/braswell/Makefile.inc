@@ -16,6 +16,8 @@ romstage-y += memmap.c
 romstage-y += pmutil.c
 romstage-y += tsc_freq.c
 
+postcar-y += tsc_freq.c
+
 ramstage-y += acpi.c
 ramstage-y += chip.c
 ramstage-y += cpu.c

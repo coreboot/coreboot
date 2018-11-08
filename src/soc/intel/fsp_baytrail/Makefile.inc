@@ -32,6 +32,7 @@ ramstage-y += memmap.c
 romstage-y += memmap.c
 ramstage-y += tsc_freq.c
 romstage-y += tsc_freq.c
+postcar-y += tsc_freq.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c
 ramstage-y += spi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += spi.c

@@ -14,6 +14,7 @@ romstage-y += memmap.c
 postcar-y += memmap.c
 ramstage-y += tsc_freq.c
 romstage-y += tsc_freq.c
+postcar-y += tsc_freq.c
 smm-y += tsc_freq.c
 ramstage-y += spi.c
 smm-y += spi.c

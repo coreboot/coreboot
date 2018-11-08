@@ -4,6 +4,8 @@ romstage-y += romstage.c
 romstage-y += tsc_freq.c
 romstage-y += ../car/romstage.c
 
+postcar-y += tsc_freq.c
+
 ramstage-y += acpi.c
 ramstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c

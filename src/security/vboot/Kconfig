@@ -26,6 +26,22 @@ config VBOOT
 
 if VBOOT
 
+config VBOOT_MEASURED_BOOT
+	bool "Enable Measured Boot"
+	default n
+	depends on !VBOOT_MOCK_SECDATA
+	depends on !VBOOT_RETURN_FROM_VERSTAGE
+	help
+	  Enables measured boot mode in vboot (experimental)
+
+config VBOOT_MEASURED_BOOT_RUNTIME_DATA
+	string "Runtime data whitelist"
+	default ""
+	depends on VBOOT_MEASURED_BOOT
+	help
+	  Runtime data whitelist of cbfs filenames. Needs to be a comma separated
+	  list
+
 config VBOOT_SLOTS_RW_A
 	bool "Firmware RO + RW_A"
 	help
@@ -36,7 +52,6 @@ config VBOOT_SLOTS_RW_AB
 	select VBOOT_SLOTS_RW_A
 	help
 	  Have two update partitions beside the RO partition.
-
 
 config VBOOT_VBNV_CMOS
 	bool

@@ -24,6 +24,7 @@ ramstage-y += acpi.c
 ramstage-y += smbus_common.c
 ramstage-y += smbus.c
 romstage-y += tsc_freq.c
+postcar-y += tsc_freq.c
 ramstage-y += smi.c
 ramstage-y += gpio.c
 ramstage-y += iou_complto.c

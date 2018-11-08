@@ -90,7 +90,6 @@ static uint32_t tpm_setup_s3_helper(void)
 	default:
 		printk(BIOS_ERR, "TPM: Resume failed (%#x).\n", result);
 		break;
-
 	}
 
 	return result;
@@ -215,8 +214,6 @@ uint32_t tpm_extend_pcr(int pcr, uint8_t *digest,
 	if (result != TPM_SUCCESS)
 		return result;
 
-	tcpa_log_add_table_entry(name, pcr, digest, digest_len);
-
 	return TPM_SUCCESS;
 }
 
@@ -240,7 +237,7 @@ uint32_t tpm_measure_region(const struct region_device *rdev, uint8_t pcr,
 	}
 	if (IS_ENABLED(CONFIG_TPM1))
 		hash_alg = VB2_HASH_SHA1;
-	else  /* CONFIG_TPM2 */
+	else /* CONFIG_TPM2 */
 		hash_alg = VB2_HASH_SHA256;
 
 	digest_len = vb2_digest_size(hash_alg);
@@ -258,7 +255,7 @@ uint32_t tpm_measure_region(const struct region_device *rdev, uint8_t pcr,
 		len = MIN(sizeof(buf), region_device_sz(rdev) - offset);
 		if (rdev_readat(rdev, buf, offset, len) < 0) {
 			printk(BIOS_ERR, "TPM: Not able to read region %s.\n",
-					rname);
+			       rname);
 			return TPM_E_READ_FAILURE;
 		}
 		if (vb2_digest_extend(&ctx, buf, len)) {

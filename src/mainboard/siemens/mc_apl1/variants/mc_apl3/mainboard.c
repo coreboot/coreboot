@@ -40,11 +40,6 @@ void variant_mainboard_final(void)
 	 */
 	pcr_write16(PID_ITSS, 0x314c, 0x2103);
 
-	/* Disable clock outputs 1-5 (CLKOUT) for XIO2001 PCIe to PCI Bridge. */
-	dev = dev_find_device(PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_XIO2001, 0);
-	if (dev)
-		pci_write_config8(dev, 0xd8, 0x3e);
-
 	/* Enable CLKRUN_EN for power gating LPC */
 	lpc_enable_pci_clk_cntl();
 
@@ -62,6 +57,23 @@ void variant_mainboard_final(void)
 		cmd = pci_read_config16(dev, PCI_COMMAND);
 		cmd |= PCI_COMMAND_MASTER;
 		pci_write_config16(dev, PCI_COMMAND, cmd);
+
+		/* Disable clock outputs 0 and 2-4 (CLKOUT) for upstream
+		 * XIO2001 PCIe to PCI Bridge.
+		 */
+		struct device *parent = dev->bus->dev;
+		if (parent && parent->device == PCI_DEVICE_ID_TI_XIO2001)
+			pci_write_config8(parent, 0xd8, 0x1d);
+	}
+
+	/* Disable clock outputs 2-5 (CLKOUT) for another XIO2001 PCIe to PCI
+	 * Bridge on this mainboard.
+	 */
+	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403f, 0);
+	if (dev) {
+		struct device *parent = dev->bus->dev;
+		if (parent && parent->device == PCI_DEVICE_ID_TI_XIO2001)
+			pci_write_config8(parent, 0xd8, 0x3c);
 	}
 
 	/* Set Full Reset Bit in Reset Control Register (I/O port CF9h).

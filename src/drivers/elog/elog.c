@@ -70,6 +70,14 @@ struct elog_state {
 
 static struct elog_state g_elog_state CAR_GLOBAL;
 
+#define ELOG_SIZE (4 * KiB)
+static uint8_t elog_mirror_buf[ELOG_SIZE] CAR_GLOBAL;
+
+static void *get_elog_mirror_buffer(void)
+{
+	return car_get_var_ptr(elog_mirror_buf);
+}
+
 static inline struct region_device *mirror_dev_get(void)
 {
 	struct elog_state *es = car_get_var_ptr(&g_elog_state);
@@ -706,9 +714,9 @@ static int elog_find_flash(void)
 		return -1;
 	}
 
-	if (region_device_sz(rdev) < 4*KiB) {
-		printk(BIOS_WARNING, "ELOG: Needs a minimum size of 4KiB: %zu\n",
-			region_device_sz(rdev));
+	if (region_device_sz(rdev) < ELOG_SIZE) {
+		printk(BIOS_WARNING, "ELOG: Needs a minimum size of %dKiB: %zu\n",
+			ELOG_SIZE / KiB, region_device_sz(rdev));
 		return -1;
 	}
 
@@ -716,7 +724,7 @@ static int elog_find_flash(void)
 		region_device_offset(rdev), region_device_sz(rdev));
 
 	/* Keep 4KiB max size until large malloc()s have been fixed. */
-	total_size = MIN(4*KiB, region_device_sz(rdev));
+	total_size = MIN(ELOG_SIZE, region_device_sz(rdev));
 	rdev_chain(rdev, rdev, 0, total_size);
 
 	es->full_threshold = total_size - reserved_space;
@@ -828,7 +836,7 @@ int elog_init(void)
 		return -1;
 
 	elog_size = region_device_sz(&es->nv_dev);
-	mirror_buffer = malloc(elog_size);
+	mirror_buffer = get_elog_mirror_buffer();
 	if (!mirror_buffer) {
 		printk(BIOS_ERR, "ELOG: Unable to allocate backing store\n");
 		return -1;

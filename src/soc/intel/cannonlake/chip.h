@@ -166,9 +166,6 @@ struct soc_intel_cannonlake_config {
 	 * clksrc. */
 	uint8_t PcieClkSrcClkReq[CONFIG_MAX_ROOT_PORTS];
 
-	/* SMBus */
-	uint8_t SmbusEnable;
-
 	/* eMMC and SD */
 	uint8_t ScsEmmcHs400Enabled;
 	/* Need to update DLL setting to get Emmc running at HS400 speed */

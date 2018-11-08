@@ -66,6 +66,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	const struct device *smbus = dev_find_slot(0, PCH_DEVFN_SMBUS);
 	assert(dev != NULL);
 	const config_t *config = dev->chip_info;
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
@@ -73,7 +74,10 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	soc_memory_init_params(m_cfg, config);
 
 	/* Enable SMBus controller based on config */
-	m_cfg->SmbusEnable = config->SmbusEnable;
+	if (!smbus)
+		m_cfg->SmbusEnable = 0;
+	else
+		m_cfg->SmbusEnable = smbus->enabled;
 	/* Set debug probe type */
 	m_cfg->PlatformDebugConsent = config->DebugConsent;
 

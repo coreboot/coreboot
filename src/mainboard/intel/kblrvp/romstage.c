@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corporation.
+ * Copyright (C) 2016-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,13 +61,17 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		mem_cfg->MemorySpdDataLen = blk.len;
 		mem_cfg->MemorySpdPtr00 = (uintptr_t)blk.spd_array[0];
 		mem_cfg->MemorySpdPtr10 = (uintptr_t)blk.spd_array[2];
-		if (IS_ENABLED(CONFIG_BOARD_INTEL_KBLRVP8)) {
+
+		switch (get_board_id()) {
+		case BOARD_ID_KBL_RVP8:
+		case BOARD_ID_KBL_RVP11:
 			mem_cfg->MemorySpdPtr01 = (uintptr_t)blk.spd_array[1];
 			mem_cfg->MemorySpdPtr11 = (uintptr_t)blk.spd_array[3];
+			mem_cfg->UserBd = BOARD_TYPE_DESKTOP;
+			break;
+		default:
+			break;
 		}
-
 	}
 	mupd->FspmTestConfig.DmiVc1 = 1;
-	if (IS_ENABLED(CONFIG_BOARD_INTEL_KBLRVP8))
-		mem_cfg->UserBd = BOARD_TYPE_DESKTOP;
 }

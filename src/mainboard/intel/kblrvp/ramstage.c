@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corporation
+ * Copyright (C) 2016-2018 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,9 @@ void mainboard_silicon_init_params(FSP_SIL_UPD *params)
 
 static void ioexpander_init(void *unused)
 {
+	if (IS_ENABLED(CONFIG_BOARD_INTEL_KBLRVP11))
+		return;
+
 	printk(BIOS_DEBUG, "Programming TCA6424A I/O expander\n");
 
 	/* I/O Expander 1, Port 0 Data */

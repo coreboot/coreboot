@@ -19,6 +19,7 @@
 /* Mobile Board Id 0x00 - 0xFF */
 #define BOARD_ID_SKL_A0_RVP3	0x04
 #define BOARD_ID_SKL_RVP7	0x0B
+#define BOARD_ID_KBL_RVP8	0x42
 #define BOARD_ID_KBL_RVP11	0x44
 
 /* 60-6F reserved for KBL RVPs */

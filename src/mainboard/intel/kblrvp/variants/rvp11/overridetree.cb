@@ -1,0 +1,134 @@
+chip soc/intel/skylake
+
+	# FSP Configuration
+	register "EnableAzalia" = "1"
+	register "DspEnable" = "0"
+	register "IoBufferOwnership" = "0"
+	register "ScsEmmcEnabled" = "0"
+	register "ScsEmmcHs400Enabled" = "0"
+	register "ScsSdCardEnabled" = "0"
+	register "Device4Enable" = "0"
+	register "Heci3Enabled" = "0"
+	register "PmTimerDisabled" = "0"
+
+        register "SerialIrqConfigSirqMode" = "0x01"
+
+	# Enable PCIE slot
+	register "PcieRpEnable[5]" = "1"
+	register "PcieRpClkReqSupport[5]" = "1"
+	register "PcieRpClkReqNumber[5]" = "1" #uses SRCCLKREQ1
+	# RP6, uses uses CLK SRC 1
+	register "PcieRpClkSrcNumber[5]" = "1"
+
+	register "PcieRpEnable[6]" = "1"
+	register "PcieRpClkReqSupport[6]" = "1"
+	register "PcieRpClkReqNumber[6]" = "2" #uses SRCCLKREQ2
+	# RP7, uses uses CLK SRC 2
+	register "PcieRpClkSrcNumber[6]" = "2"
+
+	register "PcieRpEnable[7]" = "1"
+	register "PcieRpClkReqSupport[7]" = "1"
+	register "PcieRpClkReqNumber[7]" = "3" #uses SRCCLKREQ3
+	# RP8, uses uses CLK SRC 3
+	register "PcieRpClkSrcNumber[7]" = "3"
+
+	register "PcieRpEnable[8]" = "1"
+	register "PcieRpClkReqSupport[8]" = "1"
+	register "PcieRpClkReqNumber[8]" = "4" #uses SRCCLKREQ4
+	# RP9, uses uses CLK SRC 4
+	register "PcieRpClkSrcNumber[8]" = "4"
+
+	register "PcieRpEnable[13]" = "1"
+	register "PcieRpClkReqSupport[13]" = "1"
+	register "PcieRpClkReqNumber[13]" = "5" #uses SRCCLKREQ5
+	# RP14, uses uses CLK SRC 5
+	register "PcieRpClkSrcNumber[13]" = "5"
+
+	register "PcieRpEnable[16]" = "1"
+	register "PcieRpClkReqSupport[16]" = "1"
+	register "PcieRpClkReqNumber[16]" = "7" #uses SRCCLKREQ7
+	# RP17, uses uses CLK SRC 7
+	register "PcieRpClkSrcNumber[16]" = "7"
+
+	register EnableLan = "1"
+
+	# USB related
+	register "SsicPortEnable" = "1"
+
+	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"  # OTG
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC3)"  # Touch Pad
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"  # M.2 BT
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"  # Touch Panel
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"  # M.2 WWAN
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC0)"  # Front Panel
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC0)"  # Front Panel
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC2)"  # Stacked conn (lan + usb)
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC2)"  # Stacked conn (lan + usb)
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC1)"  # LAN MAGJACK
+	register "usb2_ports[10]" = "USB2_PORT_MID(OC1)" # LAN MAGJACK
+	register "usb2_ports[11]" = "USB2_PORT_MID(OC_SKIP)" # Finger print sensor
+	register "usb2_ports[12]" = "USB2_PORT_MID(OC4)" # USB 2 stack conn
+	register "usb2_ports[13]" = "USB2_PORT_MID(OC4)" # USB 2 stack conn
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC5)" # OTG
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # M.2 WWAN
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC3)" # Flex
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # IVCAM
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC1)" # LAN MAGJACK
+	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC0)" # Front Panel
+	register "usb3_ports[6]" = "USB3_PORT_DEFAULT(OC0)" # Front Panel
+	register "usb3_ports[7]" = "USB3_PORT_DEFAULT(OC2)" # Stack Conn
+	register "usb3_ports[8]" = "USB3_PORT_DEFAULT(OC2)" # Stack Conn
+	register "usb3_ports[9]" = "USB3_PORT_DEFAULT(OC1)" # LAN MAGJACK
+
+
+	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"  # I2C4 is 1.8V
+
+	register "EnableSata" = "1"
+	register "SataSalpSupport" = "1"
+	register "SataPortsEnable" = "{ \
+		[0]	= 1, \
+		[1]	= 1, \
+		[2]	= 1, \
+		[3]	= 1, \
+		[4]	= 1, \
+		[5]	= 1, \
+		[6]	= 1, \
+		[7]	= 1, \
+	}"
+	register "SerialIoDevMode" = "{ \
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexUart0] = PchSerialIoPci, \
+		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \
+		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, \
+	}"
+
+	# PL2 override 60W
+	register "tdp_pl2_override" = "60"
+
+	# Power Limit Related
+	register "PowerLimit4" = "0"
+
+	# Lock Down
+	register "common_soc_config" = "{
+	.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+	}"
+
+	device domain 0 on
+		device pci 17.0 on  end # SATA
+		device pci 19.1 on  end # I2C #5
+		device pci 1e.1 on  end # UART #1
+		device pci 1e.2 on  end # GSPI #0
+		device pci 1e.3 on  end # GSPI #1
+		device pci 1e.4 off end # eMMC
+		device pci 1e.6 off end # SDCard
+		device pci 1f.6 on  end # GbE
+	end
+end

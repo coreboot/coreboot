@@ -79,12 +79,28 @@ static inline size_t car_object_offset(void *ptr)
 }
 
 #else
+
+/*
+ * We might end up here if:
+ * 1. ENV_CACHE_AS_RAM is not set for the stage or
+ * 2. ENV_CACHE_AS_RAM is set for the stage but CONFIG_NO_CAR_GLOBAL_MIGRATION
+ * is also set. In this case, there is no need to migrate CAR global
+ * variables. But, since we might still be running out of CAR, car_active needs
+ * to return 1 if ENV_CACHE_AS_RAM is set.
+ */
+
 #define CAR_GLOBAL
 static inline void *car_get_var_ptr(void *var) { return var; }
+
+#if ENV_CACHE_AS_RAM
+static inline int car_active(void) { return 1; }
+#else
 static inline int car_active(void) { return 0; }
+#endif /* ENV_CACHE_AS_RAM */
+
 #define car_get_var(var) (var)
 #define car_sync_var(var) (var)
 #define car_set_var(var, val)	(var) = (val)
-#endif
+#endif /* ENV_CACHE_AS_RAM && !IS_ENABLED(CONFIG_NO_CAR_GLOBAL_MIGRATION) */
 
-#endif
+#endif /* ARCH_EARLY_VARIABLES_H */

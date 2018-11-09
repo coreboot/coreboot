@@ -47,6 +47,10 @@ extern const u32 pc_beep_verbs_size;
 	(((codec) << 28) | ((pin) << 20) | (0x71f << 8)	\
 		| (((val) >> 24) & 0xff))
 
+#define AZALIA_RESET(pin)					\
+	(((pin) << 20) | 0x7ff00), (((pin) << 20) | 0x7ff00),	\
+	(((pin) << 20) | 0x7ff00), (((pin) << 20) | 0x7ff00)
+
 #define AZALIA_SUBVENDOR(codec, val)		    \
 	(((codec) << 28) | (0x01720 << 8) | ((val) & 0xff)),	\
 	(((codec) << 28) | (0x01721 << 8) | (((val) >> 8) & 0xff)), \

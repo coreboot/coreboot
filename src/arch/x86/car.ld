@@ -31,6 +31,10 @@
 #if IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK)
 	VBOOT2_WORK(., 16K)
 #endif
+	/* Vboot measured boot TCPA log measurements.
+	 * Needs to be transferred until CBMEM is available
+	 */
+	VBOOT2_TPM_LOG(., 2K)
 	/* Stack for CAR stages. Since it persists across all stages that
 	 * use CAR it can be reused. The chipset/SoC is expected to provide
 	 * the stack size. */

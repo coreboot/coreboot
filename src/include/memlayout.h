@@ -164,6 +164,10 @@
 	REGION(vboot2_work, addr, size, 16) \
 	_ = ASSERT(size >= 12K, "vboot2 work buffer must be at least 12K!");
 
+#define VBOOT2_TPM_LOG(addr, size) \
+	REGION(vboot2_tpm_log, addr, size, 16) \
+	_ = ASSERT(size >= 2K, "vboot2 tpm log buffer must be at least 2K!");
+
 #if ENV_VERSTAGE
 	#define VERSTAGE(addr, sz) \
 		SYMBOL(verstage, addr) \

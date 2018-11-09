@@ -690,8 +690,6 @@ static void dump_tcpa_log(void)
 	const struct tcpa_table *tclt_p;
 	size_t size;
 	struct mapping tcpa_mapping;
-	char log_string[TCPA_LOG_STRING_LENGTH];
-	char hash[TCPA_FORMAT_HASH_LENGTH];
 
 	if (tcpa_log.tag != LB_TAG_TCPA_LOG) {
 		fprintf(stderr, "No tcpa log found in coreboot table.\n");
@@ -716,13 +714,12 @@ static void dump_tcpa_log(void)
 	for (i = 0; i < tclt_p->num_entries; i++) {
 		const struct tcpa_entry *tce = &tclt_p->entries[i];
 
-		memset(log_string, 0, TCPA_LOG_STRING_LENGTH);
-		for (j = 0; j < tce->digest_length; j++)
-			sprintf((char *)&(hash[j * 2]), "%02x", tce->digest[j]);
+		printf(" PCR-%u ", tce->pcr);
 
-		snprintf(log_string, TCPA_LOG_STRING_LENGTH, "%u %s 00 [%s]\n",
-			 tce->pcr, hash, tce->name);
-		printf("%s", log_string);
+		for (j = 0; j < tce->digest_length; j++)
+			printf("%02x", tce->digest[j]);
+
+		printf(" %s [%s]\n", tce->digest_type, tce->name);
 	}
 
 	unmap_memory(&tcpa_mapping);

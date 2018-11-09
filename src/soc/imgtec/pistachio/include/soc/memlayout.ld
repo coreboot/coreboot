@@ -46,7 +46,8 @@ SECTIONS
 	REGION(gram_bootblock, 0x1a000000, 28K, 1)
 	ROMSTAGE(0x1a007000, 60K)
 	VBOOT2_WORK(0x1a016000, 12K)
-	PRERAM_CBFS_CACHE(0x1a019000, 48K)
+	VBOOT2_TPM_LOG(0x1a019000, 2K)
+	PRERAM_CBFS_CACHE(0x1a019800, 46K)
 	SRAM_END(0x1a066000)
 
 	/* Bootblock executes out of KSEG0 and sets up the identity mapping.

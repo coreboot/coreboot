@@ -80,10 +80,11 @@ uint32_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
 
 	switch (which_digest) {
 	case BOOT_MODE_PCR:
-		return tpm_extend_pcr(pcr, buffer, size,
+		return tpm_extend_pcr(pcr, VB2_HASH_SHA1, buffer, size,
 				      TPM_PCR_GBB_FLAGS_NAME);
 	case HWID_DIGEST_PCR:
-		return tpm_extend_pcr(pcr, buffer, size, TPM_PCR_GBB_HWID_NAME);
+		return tpm_extend_pcr(pcr, VB2_HASH_SHA256, buffer,
+					  size, TPM_PCR_GBB_HWID_NAME);
 	default:
 		return VB2_ERROR_UNKNOWN;
 	}

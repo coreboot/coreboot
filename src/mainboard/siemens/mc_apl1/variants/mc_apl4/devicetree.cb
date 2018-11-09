@@ -6,11 +6,12 @@ chip soc/intel/apollolake
 
 	register "sci_irq" = "SCIS_IRQ10"
 
-	# Disable unused clkreq of PCIe root ports
-	register "pcie_rp_clkreq_pin[0]" = "3" # PCIe-PCI-Bridge
-	register "pcie_rp_clkreq_pin[1]" = "2" # FPGA
-	register "pcie_rp_clkreq_pin[2]" = "0" # MACPHY
-	register "pcie_rp_clkreq_pin[3]" = "1" # MACPHY
+	# Disable all clkreq of PCIe root ports as SMARC interface do not
+	# have this pins.
+	register "pcie_rp_clkreq_pin[0]" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[1]" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[2]" = "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[3]" = "CLKREQ_DISABLED"
 	register "pcie_rp_clkreq_pin[4]" = "CLKREQ_DISABLED"
 	register "pcie_rp_clkreq_pin[5]" = "CLKREQ_DISABLED"
 

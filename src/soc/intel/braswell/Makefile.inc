@@ -7,6 +7,7 @@ subdirs-y += ../../../cpu/x86/smm
 subdirs-y += ../../../cpu/x86/tsc
 subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
+subdirs-y += ../../../cpu/intel/common
 
 romstage-y += gpio_support.c
 romstage-y += iosf.c

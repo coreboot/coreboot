@@ -128,6 +128,34 @@ void h8_disable_event(int event)
 
 }
 
+void h8_usb_always_on_enable(enum usb_always_on on)
+{
+	u8 val;
+
+	switch (on) {
+	case UAO_OFF:
+		val = ec_read(H8_USB_ALWAYS_ON);
+		// Clear bits 0,2,3
+		val &= ~(H8_USB_ALWAYS_ON_ENABLE | H8_USB_ALWAYS_ON_AC_ONLY);
+		ec_write(H8_USB_ALWAYS_ON, val);
+		break;
+
+	case UAO_AC_AND_BATTERY:
+		val = ec_read(H8_USB_ALWAYS_ON);
+		val |= H8_USB_ALWAYS_ON_ENABLE; // Set bit 0
+		val &= ~H8_USB_ALWAYS_ON_AC_ONLY; // Clear bits 2 and 3
+		ec_write(H8_USB_ALWAYS_ON, val);
+		break;
+
+	case UAO_AC_ONLY:
+		val = ec_read(H8_USB_ALWAYS_ON);
+		// Set bits 0,2,3
+		val |= (H8_USB_ALWAYS_ON_ENABLE | H8_USB_ALWAYS_ON_AC_ONLY);
+		ec_write(H8_USB_ALWAYS_ON, val);
+		break;
+	}
+}
+
 void h8_usb_power_enable(int onoff)
 {
 	if (onoff)
@@ -270,8 +298,10 @@ static void h8_enable(struct device *dev)
 	ec_write(0x1f, conf->eventf_enable);
 
 	ec_write(H8_FAN_CONTROL, H8_FAN_CONTROL_AUTO);
-	ec_write(H8_USB_ALWAYS_ON, ec_read(H8_USB_ALWAYS_ON) &
-			~H8_USB_ALWAYS_ON_ENABLE);
+
+	if (get_option(&val, "usb_always_on") != CB_SUCCESS)
+		val = 0;
+	h8_usb_always_on_enable(val);
 
 	if (get_option(&val, "wlan") != CB_SUCCESS)
 		val = 1;

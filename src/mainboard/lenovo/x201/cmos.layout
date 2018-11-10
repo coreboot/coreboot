@@ -70,7 +70,7 @@ entries
 419         1       e       1        power_management_beeps
 420         1       e       1        low_battery_beep
 421         1       e       9        sata_mode
-422         1       e       11       usb_always_on
+422         2       e       11       usb_always_on
 #423        1       r       1        unused
 
 # coreboot config options: northbridge

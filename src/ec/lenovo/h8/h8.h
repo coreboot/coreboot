@@ -19,9 +19,16 @@
 #include <stdint.h>
 #include <device/device.h>
 
+enum usb_always_on {
+	UAO_OFF = 0,
+	UAO_AC_AND_BATTERY = 1,
+	UAO_AC_ONLY = 2
+};
+
 void h8_trackpoint_enable(int on);
 void h8_wlan_enable(int on);
 void h8_set_audio_mute(int on);
+void h8_usb_always_on_enable(enum usb_always_on on);
 void h8_usb_power_enable(int on);
 void h8_enable_event(int event);
 void h8_disable_event(int event);

@@ -130,9 +130,8 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 
 	fadt->reset_value = 6;
 
-	fadt->res3 = 0;		/* reserved, MUST be 0 ACPI 3.0 */
-	fadt->res4 = 0;		/* reserved, MUST be 0 ACPI 3.0 */
-	fadt->res5 = 0;		/* reserved, MUST be 0 ACPI 3.0 */
+	fadt->ARM_boot_arch = 0;	/* MUST be 0 ACPI 3.0 */
+	fadt->FADT_MinorVersion = 0;	/* MUST be 0 ACPI 3.0 */
 
 	fadt->x_firmware_ctl_l = 0;	/* set to 0 if firmware_ctrl is used */
 	fadt->x_firmware_ctl_h = 0;

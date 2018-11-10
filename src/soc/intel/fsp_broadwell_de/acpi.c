@@ -238,10 +238,8 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->reset_reg.addrh       = 0x00;
 	fadt->reset_value           = 6;
 
-	/* Reserved Bits */
-	fadt->res3 = 0x00; /* reserved, MUST be 0 ACPI 3.0 */
-	fadt->res4 = 0x00; /* reserved, MUST be 0 ACPI 3.0 */
-	fadt->res5 = 0x00; /* reserved, MUST be 0 ACPI 3.0 */
+	fadt->ARM_boot_arch = 0;	/* MUST be 0 ACPI 3.0 */
+	fadt->FADT_MinorVersion = 0;	/* MUST be 0 ACPI 3.0 */
 
 	/* Extended ACPI Pointers */
 	fadt->x_firmware_ctl_l = (unsigned long)facs;

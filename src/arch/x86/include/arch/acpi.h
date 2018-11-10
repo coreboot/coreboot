@@ -95,7 +95,7 @@ typedef struct acpi_rsdp {
 	char  signature[8];	/* RSDP signature */
 	u8    checksum;		/* Checksum of the first 20 bytes */
 	char  oem_id[6];	/* OEM ID */
-	u8    revision;		/* 0 for ACPI 1.0, 2 for ACPI 2.0/3.0/4.0 */
+	u8    revision;		/* 0 for ACPI 1.0, 2 for ACPI 2.0/3.0/4.0/6.2a */
 	u32   rsdt_address;	/* Physical address of RSDT (32 bits) */
 	u32   length;		/* Total RSDP length (incl. extended part) */
 	u64   xsdt_address;	/* Physical address of XSDT (64 bits) */
@@ -111,7 +111,8 @@ typedef struct acpi_gen_regaddr {
 	u8  bit_offset;		/* Register bit offset */
 	union {
 		u8  resv;		/* Reserved in ACPI 2.0 - 2.0b */
-		u8  access_size;	/* Access size in ACPI 2.0c/3.0/4.0/5.0
+		u8  access_size;	/* Access size in
+					 * ACPI 2.0c/3.0/4.0/5.0/6.2a
 					 */
 	};
 	u32 addrl;		/* Register address, low 32 bits */
@@ -229,7 +230,7 @@ typedef struct acpi_srat_lapic {
 	u32 flags; /* Enable bit 0 = 1, other bits reserved to 0 */
 	u8 local_sapic_eid;		/* Local SAPIC EID */
 	u8 proximity_domain_31_8[3];	/* Proximity domain bits[31:8] */
-	u32 resv;			/* TODO: Clock domain in ACPI 4.0. */
+	u32 clock_domain;		/* _CDM Clock Domain */
 } __packed acpi_srat_lapic_t;
 
 /* SRAT: Memory Affinity Structure */
@@ -316,7 +317,8 @@ enum dev_scope_type {
 	SCOPE_PCI_ENDPOINT = 1,
 	SCOPE_PCI_SUB = 2,
 	SCOPE_IOAPIC = 3,
-	SCOPE_MSI_HPET = 4
+	SCOPE_MSI_HPET = 4,
+	SCOPE_ACPI_NAMESPACE_DEVICE = 5
 };
 
 typedef struct dev_scope {
@@ -335,7 +337,8 @@ enum dmar_type {
 	DMAR_DRHD = 0,
 	DMAR_RMRR = 1,
 	DMAR_ATSR = 2,
-	DMAR_RHSA = 3
+	DMAR_RHSA = 3,
+	DMAR_ANDD = 4
 };
 
 enum {
@@ -343,8 +346,9 @@ enum {
 };
 
 enum dmar_flags {
-	DMAR_INTR_REMAP		= 1,
-	DMAR_X2APIC_OPT_OUT	= 2,
+	DMAR_INTR_REMAP			= 1,
+	DMAR_X2APIC_OPT_OUT		= 2,
+	DMA_CTRL_PLATFORM_OPT_IN_FLAG	= 3,
 };
 
 typedef struct dmar_entry {
@@ -396,7 +400,12 @@ enum acpi_apic_types {
 	PlatformIRQSources	= 8,	/* Platform interrupt sources */
 	Localx2Apic		= 9,	/* Processor local x2APIC */
 	Localx2ApicNMI		= 10,	/* Local x2APIC NMI */
-	/* 0x0b-0x7f: Reserved */
+	GICC			= 11,	/* GIC CPU Interface */
+	GICD			= 12,	/* GIC Distributor */
+	GIC_MSI_FRAME		= 13,	/* GIC MSI Frame */
+	GICR			= 14,	/* GIC Redistributor */
+	GIC_ITS			= 15,	/* Interrupt Translation Service */
+	/* 0x10-0x7f: Reserved */
 	/* 0x80-0xff: Reserved for OEM use */
 };
 
@@ -480,7 +489,11 @@ typedef struct acpi_fadt {
 	struct acpi_table_header header;
 	u32 firmware_ctrl;
 	u32 dsdt;
-	u8 model;
+	u8 model;	/* Eliminated in ACPI 2.0. Platforms should set
+			 * this field to zero but field values of one
+			 * are also allowed to maintain compatibility
+			 * with ACPI 1.0.
+			 */
 	u8 preferred_pm_profile;
 	u16 sci_int;
 	u32 smi_cmd;
@@ -518,9 +531,8 @@ typedef struct acpi_fadt {
 	u32 flags;
 	struct acpi_gen_regaddr reset_reg;
 	u8 reset_value;
-	u8 res3;
-	u8 res4;
-	u8 res5;
+	u16 ARM_boot_arch;
+	u8 FADT_MinorVersion;
 	u32 x_firmware_ctl_l;
 	u32 x_firmware_ctl_h;
 	u32 x_dsdt_l;
@@ -541,6 +553,7 @@ typedef struct acpi_fadt {
 #define ACPI_FADT_REV_ACPI_3_0		4
 #define ACPI_FADT_REV_ACPI_4_0		4
 #define ACPI_FADT_REV_ACPI_5_0		5
+#define ACPI_FADT_REV_ACPI_6_0		6
 
 /* Flags for p_lvl2_lat and p_lvl3_lat */
 #define ACPI_FADT_C2_NOT_SUPPORTED	101
@@ -570,7 +583,7 @@ typedef struct acpi_fadt {
 /* Bits 20-31: reserved ACPI 3.0 & 4.0 */
 #define ACPI_FADT_HW_REDUCED_ACPI	(1 << 20)
 #define ACPI_FADT_LOW_PWR_IDLE_S0	(1 << 21)
-/* bits 22-31: reserved ACPI 5.0 */
+/* bits 22-31: reserved ACPI 5.0/6.2a */
 
 /* FADT Boot Architecture Flags */
 #define ACPI_FADT_LEGACY_DEVICES	(1 << 0)
@@ -578,7 +591,13 @@ typedef struct acpi_fadt {
 #define ACPI_FADT_VGA_NOT_PRESENT	(1 << 2)
 #define ACPI_FADT_MSI_NOT_SUPPORTED	(1 << 3)
 #define ACPI_FADT_NO_PCIE_ASPM_CONTROL	(1 << 4)
+#define ACPI_FADT_NO_CMOS_RTC		(1 << 5)
 #define ACPI_FADT_LEGACY_FREE	0x00	/* No legacy devices (including 8042) */
+
+/* FADT ARM Boot Architecture Flags */
+#define ACPI_FADT_ARM_PSCI_COMPLIANT	(1 << 0)
+#define ACPI_FADT_ARM_PSCI_USE_HVC	(1 << 1)
+/* bits 2-16: reserved ACPI 6.2a */
 
 /* FADT Preferred Power Management Profile */
 enum acpi_preferred_pm_profiles {
@@ -590,7 +609,7 @@ enum acpi_preferred_pm_profiles {
 	PM_SOHO_SERVER		= 5,
 	PM_APPLIANCE_PC		= 6,
 	PM_PERFORMANCE_SERVER	= 7,
-	PM_TABLET		= 8,	/* ACPI 5.0 */
+	PM_TABLET		= 8,	/* ACPI 5.0/6.2a */
 };
 
 /* FACS (Firmware ACPI Control Structure) */
@@ -603,8 +622,10 @@ typedef struct acpi_facs {
 	u32 flags;				/* FACS flags */
 	u32 x_firmware_waking_vector_l;		/* X FW waking vector, low */
 	u32 x_firmware_waking_vector_h;		/* X FW waking vector, high */
-	u8 version;				/* ACPI 4.0: 2 */
-	u8 resv[31];				/* FIXME: 4.0: ospm_flags */
+	u8 version;				/* ACPI 6.2-A: 2 */
+	u8 resv1[3];				/* ACPI 6.2-A: 0 */
+	u32 ospm_flags;				/* 64BIT_WAKE_F */
+	u8 resv2[24];				/* ACPI 6.2-A: 0 */
 } __packed acpi_facs_t;
 
 /* FACS flags */

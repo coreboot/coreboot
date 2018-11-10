@@ -162,7 +162,7 @@ config LEGACY_UART_MODE
 endchoice
 
 config ENABLE_HSUART
-	depends on (!DRIVERS_UART_8250IO && NON_LEGACY_UART_MODE)
+	depends on NON_LEGACY_UART_MODE
 	bool "Enable High-speed UART debug port selected by UART_FOR_CONSOLE."
 	default n
 	select CONSOLE_SERIAL

@@ -132,7 +132,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	reset_internal_fifo_pointer();
 	/* Skip the bytes we sent. */
 	for (count = 0; count < bytesout; count++) {
-		cmd = spi_read(SPI_REG_FIFO);
+		spi_read(SPI_REG_FIFO);
 	}
 
 	for (count = 0; count < bytesin; count++, din++) {

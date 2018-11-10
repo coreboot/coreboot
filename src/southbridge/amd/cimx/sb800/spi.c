@@ -57,7 +57,7 @@ void spi_init()
 static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		size_t bytesout, void *din, size_t bytesin)
 {
-	/* First byte is cmd which can not being sent through FIFO. */
+	/* First byte is cmd which can not be sent through FIFO. */
 	u8 cmd = *(u8 *)dout++;
 	u8 readoffby1;
 	u8 readwrite;

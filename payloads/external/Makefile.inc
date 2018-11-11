@@ -37,7 +37,10 @@ ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUX_COMMAND_LINE))),)
       ADDITIONAL_PAYLOAD_CONFIG+=-C $(CONFIG_LINUX_COMMAND_LINE)
 endif
 ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUX_INITRD))),)
+ifneq ($(CONFIG_LINUXBOOT_ARM64),y)
       ADDITIONAL_PAYLOAD_CONFIG+=-I $(CONFIG_LINUX_INITRD)
+      prebuilt-files += $(strip $(call strip_quotes,$(CONFIG_LINUX_INITRD)))
+endif
 endif
 endif
 ifneq ($(strip $(call strip_quotes,$(CONFIG_PAYLOAD_OPTIONS))),)
@@ -256,21 +259,24 @@ payloads/external/iPXE/ipxe/ipxe.rom ipxe: $(DOTCONFIG)
 linuxboot:
 	$(MAKE) -C payloads/external/LinuxBoot \
 		CPUS=$(CPUS) \
+		CONFIG_LINUXBOOT_ARCH=$(CONFIG_LINUXBOOT_ARCH) \
+		CONFIG_LINUXBOOT_KERNEL=$(CONFIG_PAYLOAD_FILE) \
+		CONFIG_LINUXBOOT_INITRAMFS=$(CONFIG_LINUX_INITRD) \
+		CONFIG_LINUXBOOT_COMPILE_KERNEL=$(CONFIG_LINUXBOOT_COMPILE_KERNEL) \
+		CONFIG_LINUXBOOT_BUILD_INITRAMFS=$(CONFIG_LINUXBOOT_BUILD_INITRAMFS) \
 		CONFIG_LINUXBOOT_KERNEL_VERSION=$(CONFIG_LINUXBOOT_KERNEL_VERSION) \
 		CONFIG_LINUXBOOT_KERNEL_CONFIGFILE=$(CONFIG_LINUXBOOT_KERNEL_CONFIGFILE) \
+		CONFIG_LINUXBOOT_UROOT=$(CONFIG_LINUXBOOT_UROOT) \
 		CONFIG_LINUXBOOT_UROOT_VERSION=$(CONFIG_LINUXBOOT_UROOT_VERSION) \
 		CONFIG_LINUXBOOT_UROOT_COMMANDS=$(CONFIG_LINUXBOOT_UROOT_COMMANDS) \
-		CONFIG_LINUXBOOT_ARCH=$(CONFIG_LINUXBOOT_ARCH) \
-		CONFIG_LINUXBOOT_UROOT=$(CONFIG_LINUXBOOT_UROOT) \
 		CONFIG_LINUXBOOT_UROOT_FILES=$(CONFIG_LINUXBOOT_UROOT_FILES) \
-		CONFIG_LINUXBOOT_DTB_FILE=$(CONFIG_LINUXBOOT_DTB_FILE) \
-		CONFIG_LINUX_INITRD=$(CONFIG_LINUX_INITRD)
+		CONFIG_LINUXBOOT_DTB_FILE=$(CONFIG_LINUXBOOT_DTB_FILE)
 
+payloads/external/LinuxBoot/linuxboot/bzImage: linuxboot
+payloads/external/LinuxBoot/linuxboot/uImage: linuxboot
+payloads/external/LinuxBoot/linuxboot/initramfs_u-root.cpio.xz: linuxboot
 
-payloads/external/LinuxBoot/linuxboot/kernel-image: linuxboot
-payloads/external/LinuxBoot/linuxboot/initramfs.cpio.xz: linuxboot
-payloads/external/LinuxBoot/linuxboot/kernel/.config: linuxboot
-payloads/external/LinuxBoot/linuxboot/go/src/github.com/u-root/u-root/.git: linuxboot
+# Yabits
 
 payloads/external/Yabits/uefi/build/uefi.elf yabits:
 	$(MAKE) -C payloads/external/Yabits all \

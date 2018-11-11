@@ -1,6 +1,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2017 Facebook Inc.
+## Copyright (C) 2018 9elements Cyber Security
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -16,6 +17,7 @@ if PAYLOAD_LINUXBOOT
 
 choice
 	prompt "Architecture"
+	depends on LINUXBOOT_COMPILE_KERNEL || LINUXBOOT_BUILD_INITRAMFS
 	default LINUXBOOT_X86_64
 
 config LINUXBOOT_X86_64
@@ -42,8 +44,21 @@ endchoice
 config LINUXBOOT_ARCH
 	string
 	default "amd64" if LINUXBOOT_X86_64
-	default "386" if LINUXBOOT_X86
+	default "i386" if LINUXBOOT_X86
 	default "arm64" if LINUXBOOT_ARM64
+
+comment "Linux kernel"
+
+config LINUXBOOT_COMPILE_KERNEL
+	bool "Compile kernel"
+	default n
+
+config LINUXBOOT_KERNEL_PATH
+	string "Path to kernel"
+	default "Image"
+	depends on !LINUXBOOT_COMPILE_KERNEL
+
+if LINUXBOOT_COMPILE_KERNEL
 
 choice
 	prompt "Kernel version"
@@ -73,19 +88,35 @@ config LINUXBOOT_KERNEL_CONFIGFILE
 	  Add your own kernel configuration file. Otherwise a default
 	  minimal defconfig is used.
 
+config LINUXBOOT_DTB_FILE
+	string "Compiled devicetree file"
+	depends on LINUXBOOT_ARM64
+	default ""
+
+endif #LINUXBOOT_COMPILE_KERNEL
+
 config LINUX_COMMAND_LINE
 	string "Kernel command-line"
 	default ""
 	help
 	  Add your own kernel command-line arguments.
 
-config LINUXBOOT_DTB_FILE
-	string "Compiled devicetree file"
-	depends on LINUXBOOT_ARM64
-	default ""
-
 config PAYLOAD_FILE
-	default "payloads/external/LinuxBoot/linuxboot/kernel-image"
+	default "payloads/external/LinuxBoot/linuxboot/bzImage" if LINUXBOOT_COMPILE_KERNEL && ( LINUXBOOT_X86 || LINUXBOOT_X86_64 )
+	default "payloads/external/LinuxBoot/linuxboot/uImage" if LINUXBOOT_COMPILE_KERNEL && LINUXBOOT_ARM64
+	default LINUXBOOT_KERNEL_PATH if !LINUXBOOT_COMPILE_KERNEL
+
+comment "Linux initramfs"
+
+config LINUXBOOT_BUILD_INITRAMFS
+	bool "Build initramfs"
+	default n
+
+config LINUXBOOT_INITRAMFS_PATH
+	string "Path to initramfs"
+	depends on !LINUXBOOT_BUILD_INITRAMFS
+
+if LINUXBOOT_BUILD_INITRAMFS
 
 choice
 	prompt "Payload Mode"
@@ -128,9 +159,13 @@ config LINUXBOOT_UROOT_FILES
 	  Path to directory containing root structure for embedding into the
 	  initramfs.
 
+endif #LINUXBOOT_UROOT
+
+endif #LINUXBOOT_BUILD_INITRAMFS
+
 config LINUX_INITRD
 	string
-	default "payloads/external/LinuxBoot/linuxboot/initramfs.cpio.xz"
+	default "payloads/external/LinuxBoot/linuxboot/initramfs_u-root.cpio.xz" if LINUXBOOT_UROOT
+	default LINUXBOOT_INITRAMFS_PATH if !LINUXBOOT_BUILD_INITRAMFS
 
-endif
-endif
+endif #PAYLOAD_LINUXBOOT

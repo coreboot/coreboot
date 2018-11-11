@@ -1,6 +1,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2017 Facebook Inc.
+## Copyright (C) 2018 9elements Cyber Security
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -22,7 +23,7 @@ project_dir=$(shell pwd)/linuxboot
 project_name=u-root
 go_path_dir=$(shell pwd)/linuxboot/go
 
-all: build
+all: u-root
 
 check:
 ifeq ("$(go_version)","")
@@ -66,29 +67,29 @@ $(uroot_dir)/u-root: $(uroot_dir)/u-root.go
 	echo "    GO        u-root"
 	cd $(uroot_dir); GOPATH=$(go_path_dir) go build u-root.go
 
-$(project_dir)/initramfs.cpio.xz: checkout $(uroot_dir)/u-root
+$(project_dir)/initramfs_u-root.cpio.xz: checkout $(uroot_dir)/u-root
 	echo "    MAKE       u-root $(CONFIG_LINUXBOOT_UROOT_VERSION)"
 ifneq ($(CONFIG_LINUXBOOT_UROOT_COMMANDS),)
 ifneq ($(CONFIG_LINUXBOOT_UROOT_FILES),)
 	cd $(uroot_dir); GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) ./u-root \
-	-build=bb -files $(CONFIG_LINUXBOOT_UROOT_FILES) -o $(project_dir)/initramfs.cpio \
+	-build=bb -files $(CONFIG_LINUXBOOT_UROOT_FILES) -o $(project_dir)/initramfs_u-root.cpio \
 	$(patsubst %,cmds/%,$(CONFIG_LINUXBOOT_UROOT_COMMANDS))
 else
 	cd $(uroot_dir); GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) ./u-root \
-	-build=bb -o $(project_dir)/initramfs.cpio \
+	-build=bb -o $(project_dir)/initramfs_u-root.cpio \
 	$(patsubst %,cmds/%,$(CONFIG_LINUXBOOT_UROOT_COMMANDS))
 endif
 else
 ifneq ($(CONFIG_LINUXBOOT_UROOT_FILES),)
 	cd $(uroot_dir); GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) ./u-root \
-	-build=bb -files $(CONFIG_LINUXBOOT_UROOT_FILES) -o $(project_dir)/initramfs.cpio coreboot-app
+	-build=bb -files $(CONFIG_LINUXBOOT_UROOT_FILES) -o $(project_dir)/initramfs_u-root.cpio coreboot-app
 else
 	cd $(uroot_dir); GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) ./u-root \
-	-build=bb -o $(project_dir)/initramfs.cpio coreboot-app
+	-build=bb -o $(project_dir)/initramfs_u-root.cpio coreboot-app
 endif
 endif
-	xz -f --check=crc32 -9 --lzma2=dict=1MiB --threads=$(CPUS) $(project_dir)/initramfs.cpio
+	xz -f --check=crc32 -9 --lzma2=dict=1MiB --threads=$(CPUS) $(project_dir)/initramfs_u-root.cpio
 
-build: $(project_dir)/initramfs.cpio.xz
+u-root: $(project_dir)/initramfs_u-root.cpio.xz
 
-.PHONY: build checkout fetch all check
+.PHONY: u-root checkout fetch all check

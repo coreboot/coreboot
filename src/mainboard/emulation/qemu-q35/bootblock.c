@@ -12,6 +12,8 @@
  */
 
 #include <arch/io.h>
+#include <bootblock_common.h>
+#include <southbridge/intel/i82801ix/i82801ix.h>
 
 /* Just define these here, there is no gm35.h file to include. */
 #define D0F0_PCIEXBAR_LO 0x60
@@ -39,7 +41,29 @@ static void bootblock_northbridge_init(void)
 	pci_io_write_config32(PCI_DEV(0,0,0), D0F0_PCIEXBAR_LO, reg);
 }
 
-static void bootblock_mainboard_init(void)
+static void enable_spi_prefetch(void)
+{
+	u8 reg8;
+	pci_devfn_t dev;
+
+	dev = PCI_DEV(0, 0x1f, 0);
+
+	reg8 = pci_read_config8(dev, 0xdc);
+	reg8 &= ~(3 << 2);
+	reg8 |= (2 << 2); /* Prefetching and Caching Enabled */
+	pci_write_config8(dev, 0xdc, reg8);
+}
+
+static void bootblock_southbridge_init(void)
+{
+	enable_spi_prefetch();
+
+	/* Enable RCBA */
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), D31F0_RCBA,
+			(uintptr_t)DEFAULT_RCBA | 1);
+}
+
+void bootblock_soc_init(void)
 {
 	bootblock_northbridge_init();
 	bootblock_southbridge_init();

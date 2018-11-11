@@ -14,22 +14,22 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
-#include <cbmem.h>
+#include <bootblock_common.h>
 #include <console/console.h>
-#include <cpu/intel/romstage.h>
-#include <timestamp.h>
-#include <southbridge/intel/i82801ix/i82801ix.h>
-#include <program_loading.h>
+#include <cpu/x86/bist.h>
 
-asmlinkage void car_stage_entry(void)
+asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist);
+
+asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
 {
-	i82801ix_early_init();
-	console_init();
+	post_code(0x05);
 
-	cbmem_recovery(0);
+	/* Halt if there was a built in self test failure */
+	if (bist) {
+		console_init();
+		report_bist_failure(bist);
+	}
 
-	timestamp_add_now(TS_START_ROMSTAGE);
-
-	run_ramstage();
+	/* Call lib/bootblock.c main */
+	bootblock_main_with_timestamp(base_timestamp, NULL, 0);
 }

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
  * Copyright (C) 2007-2008 coresystems GmbH
+ * Copyright (C) 2018 Patrick Rudolph <siro@das-labor.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,14 +15,11 @@
  * GNU General Public License for more details.
  */
 
-#include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
 
-#define CPU_PHYSMASK_HI  (1 << (CONFIG_CPU_ADDR_BITS - 32) - 1)
-
-	/* Save the BIST result. */
-	movl	%eax, %ebp
+.global bootblock_pre_c_entry
+bootblock_pre_c_entry:
 
 cache_as_ram:
 	post_code(0x20)
@@ -31,33 +29,34 @@ cache_as_ram:
 	 */
 
 	post_code(0x21)
-	/*
-	 * Set up the stack pointer, use top of real mode (640k) memory.
-	 * This value also keeps the copy_and_run stack out of the way
-	 * of big ramstages. The ramstage will load its own %esp so
-	 * there is no harm in using this value.
-	 */
-	movl	$0xa0000, %eax
-	movl	%eax, %esp
 
-	/* Restore the BIST result. */
-	movl	%ebp, %eax
-	movl	%esp, %ebp
+	movl $_car_stack_end, %esp
+	/* Align the stack and keep aligned for call to bootblock_c_entry() */
+	and	$0xfffffff0, %esp
+	sub	$12, %esp
+
+	/* Clear the cache memory region. This will also clear CAR GLOBAL */
+	movl	$_car_region_start, %esi
+	movl	%esi, %edi
+	movl	$_car_region_end, %ecx
+	sub	$_car_region_start, %ecx
+	shr	$2, %ecx
+	xorl	%eax, %eax
+	rep	stosl
+
+	/* Restore the BIST result and timestamps. */
+	movd	%mm0, %ebx
+	movd	%mm1, %eax
+	movd	%mm2, %edx
+
+	pushl	%ebx
+	pushl	%edx
 	pushl	%eax
 
-before_romstage:
+before_c_entry:
 	post_code(0x29)
-	/* Call romstage.c main function. */
-	call	romstage_main
-
-	post_code(0x30)
-
-__main:
-	post_code(POST_PREPARE_RAMSTAGE)
-	cld			/* Clear direction flag. */
-
-	call	copy_and_run
-
+	call	bootblock_c_entry_bist
+	/* Never returns */
 .Lhlt:
 	post_code(POST_DEAD_CODE)
 	hlt

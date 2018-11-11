@@ -11,6 +11,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_2048
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
 	select MAINBOARD_FORCE_NATIVE_VGA_INIT
+	select BOOTBLOCK_CONSOLE
 
 config MAINBOARD_DIR
 	string
@@ -28,17 +29,24 @@ config MMCONF_BASE_ADDRESS
 	hex
 	default 0xb0000000
 
+# Skip the first 64KiB as coreboot table pointer is installed
+# at address 0
 config DCACHE_RAM_BASE
 	hex
-	default 0xd0000
+	default 0x10000
 
+# Memory at 0xa0000 decodes to VGA
 config DCACHE_RAM_SIZE
 	hex
-	default 0x10000
+	default 0x90000
 
 # Do not show IFD/blob options since QEMU doesn't care
 config HAVE_INTEL_FIRMWARE
 	bool
 	default n
+
+config C_ENV_BOOTBLOCK_SIZE
+	hex
+	default 0x4000
 
 endif # BOARD_EMULATION_QEMU_X86_Q35

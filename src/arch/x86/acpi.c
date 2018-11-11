@@ -1394,7 +1394,7 @@ int get_acpi_table_revision(enum acpi_tables table)
 	switch (table) {
 	case FADT:
 		return ACPI_FADT_REV_ACPI_3_0;
-	case MADT: /* ACPI 1.0/2.0: 1, ACPI 3.0: 2, ACPI 4.0: 3 */
+	case MADT: /* ACPI 3.0: 2, ACPI 4.0/5.0: 3, ACPI 6.2b/6.3: 5 */
 		return 2;
 	case MCFG:
 		return 1;
@@ -1402,29 +1402,29 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return 2;
 	case TPM2:
 		return 4;
-	case SSDT: /* ACPI 1.0/2.0: ?, ACPI 3.0/4.0: 2 */
+	case SSDT: /* ACPI 3.0 upto 6.3: 2 */
 		return 2;
-	case SRAT:  /* ACPI 1.0: N/A, 2.0: 1, 3.0: 2, 4.0: 3 */
+	case SRAT: /* ACPI 2.0: 1, ACPI 3.0: 2, ACPI 4.0 upto 6.3: 3 */
 		return 1; /* TODO Should probably be upgraded to 2 */
 	case DMAR:
 		return 1;
-	case SLIT:  /* ACPI 1.0: N/A, ACPI 2.0/3.0/4.0: 1 */
+	case SLIT: /* ACPI 2.0 upto 6.3: 1 */
 		return 1;
 	case HPET: /* Currently 1. Table added in ACPI 2.0. */
 		return 1;
-	case VFCT:  /* ACPI 1.0: N/A, ACPI 2.0/3.0/4.0: 1 */
+	case VFCT: /* ACPI 2.0/3.0/4.0: 1 */
 		return 1;
 	case IVRS:
 		return IVRS_FORMAT_FIXED;
 	case DBG2:
 		return 0;
-	case FACS: /* ACPI 1.0: 0, ACPI 2.0/3.0: 1, ACPI 4.0: 2 */
+	case FACS: /* ACPI 2.0/3.0: 1, ACPI 4.0 upto 6.3: 2 */
 		return 1;
-	case RSDT: /* ACPI 1.0/2.0/3.0/4.0: 1 */
+	case RSDT: /* ACPI 1.0 upto 6.3: 1 */
 		return 1;
-	case XSDT: /* ACPI 1.0: N/A, 2.0/3.0/4.0: 1 */
+	case XSDT: /* ACPI 2.0 upto 6.3: 1 */
 		return 1;
-	case RSDP:  /* ACPI 1.0: 0, ACPI 2.0/3.0/4.0: 2. */
+	case RSDP: /* ACPI 2.0 upto 6.3: 2 */
 		return 2;
 	case HEST:
 		return 1;

@@ -13,9 +13,9 @@
  * GNU General Public License for more details.
  */
 
-
 #include "mct_d.h"
 #include <cpu/amd/mtrr.h>
+#include <cpu/x86/mtrr.h>
 
 static void SetMTRRrangeWB_D(u32 Base, u32 *pLimit, u32 *pMtrrAddr);
 static void SetMTRRrange_D(u32 Base, u32 *pLimit, u32 *pMtrrAddr, u16 MtrrType);
@@ -67,11 +67,11 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 	/* NOTE : For coreboot, we don't need to set mtrr enables here because
 	they are still enable from cache_as_ram.inc */
 
-	addr = 0x250;
+	addr = MTRR_FIX_64K_00000;
 	lo = 0x1E1E1E1E;
 	hi = lo;
 	_WRMSR(addr, lo, hi);		/* 0 - 512K = WB Mem */
-	addr = 0x258;
+	addr = MTRR_FIX_16K_80000;
 	_WRMSR(addr, lo, hi);		/* 512K - 640K = WB Mem */
 
 	/*======================================================================
@@ -81,7 +81,7 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 		0x200, 0x201 for [1M, CONFIG_TOP_MEM)
 		0x202, 0x203 for ROM Caching
 		 */
-	addr = 0x204;	/* MTRR phys base 2*/
+	addr = MTRR_PHYS_BASE(2);	/* MTRR phys base 2*/
 			/* use TOP_MEM as limit*/
 			/* Limit = TOP_MEM|TOM2*/
 			/* Base = 0*/
@@ -112,14 +112,14 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 		addr += 3;		/* TOM2 */
 		_WRMSR(addr, lo, hi);
 	}
-	addr = 0xC0010010;		/* SYS_CFG */
+	addr = SYSCFG_MSR;		/* SYS_CFG */
 	_RDMSR(addr, &lo, &hi);
 	if (Bottom40bIO) {
-		lo |= (1<<21);		/* MtrrTom2En = 1 */
-		lo |= (1<<22);		/* Tom2ForceMemTypeWB */
+		lo |= SYSCFG_MSR_TOM2En;	/* MtrrTom2En = 1 */
+		lo |= SYSCFG_MSR_TOM2WB;	/* Tom2ForceMemTypeWB */
 	} else {
-		lo &= ~(1<<21);		/* MtrrTom2En = 0 */
-		lo &= ~(1<<22);		/* Tom2ForceMemTypeWB */
+		lo &= ~SYSCFG_MSR_TOM2En;	/* MtrrTom2En = 0 */
+		lo &= ~SYSCFG_MSR_TOM2WB;	/* Tom2ForceMemTypeWB */
 	}
 	_WRMSR(addr, lo, hi);
 }
@@ -235,10 +235,10 @@ void UMAMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat
 	/*======================================================================
 	 * Clear variable MTRR values
 	 *======================================================================*/
-		addr = 0x200;
+		addr = MTRR_PHYS_BASE(0);
 		lo = 0;
 		hi = lo;
-		while (addr < 0x20C) {
+		while (addr < MTRR_PHYS_BASE(6)) {
 			_WRMSR(addr, lo, hi);		/* prog. MTRR with current region Mask */
 			addr++;						/* next MTRR pair addr */
 		}

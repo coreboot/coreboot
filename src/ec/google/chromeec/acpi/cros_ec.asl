@@ -25,7 +25,7 @@ Device (CREC)
 #ifdef EC_ENABLE_SYNC_IRQ
 	Name (_CRS, ResourceTemplate ()
 	{
-		Interrupt (ResourceConsumer, Edge, ActiveLow, Exclusive)
+		Interrupt (ResourceConsumer, Level, ActiveLow, Exclusive)
 		{
 			EC_SYNC_IRQ
 		}

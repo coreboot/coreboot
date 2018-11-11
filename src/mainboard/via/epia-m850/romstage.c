@@ -22,7 +22,6 @@
 #include <device/pci_ids.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/io.h>
 #include <console/console.h>
 #include <lib.h>
 #include <cpu/x86/bist.h>

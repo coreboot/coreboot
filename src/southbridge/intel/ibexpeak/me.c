@@ -31,11 +31,9 @@
 #include <delay.h>
 #include <elog.h>
 
-#ifdef __SMM__
-#include <arch/io.h>
-#else
-# include <device/device.h>
-# include <device/pci.h>
+#ifndef __SMM__
+#include <device/device.h>
+#include <device/pci.h>
 #endif
 
 #include "me.h"

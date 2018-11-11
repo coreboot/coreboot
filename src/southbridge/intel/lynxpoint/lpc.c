@@ -33,7 +33,6 @@
 #include "nvs.h"
 #include "pch.h"
 #include <arch/acpigen.h>
-#include <cbmem.h>
 #include <drivers/intel/gma/i915.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <southbridge/intel/common/rtc.h>

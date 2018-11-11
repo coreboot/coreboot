@@ -33,7 +33,6 @@
 #include <timestamp.h>
 #include <cpu/amd/model_10xxx_rev.h>
 #include <lib.h>
-#include <cpu/x86/lapic.h>
 #include <commonlib/loglevel.h>
 #include <cpu/x86/bist.h>
 #include <superio/ite/common/ite.h>

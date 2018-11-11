@@ -25,7 +25,6 @@
 #include <soc/uart.h>
 #include <console/console.h>
 #include <soc/clock.h>
-#include <soc/gpio.h>
 #include <soc/timer.h>
 #include <soc/cpu.h>
 #include <soc/sdram.h>

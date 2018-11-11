@@ -24,14 +24,12 @@
 #include <soc/uart.h>
 #include <console/console.h>
 #include <soc/clock.h>
-#include <soc/gpio.h>
 #include <soc/timer.h>
 #include <soc/cpu.h>
 #include <soc/sdram.h>
 #include <soc/spi.h>
 #include <spi_flash.h>
 #include <fmap.h>
-#include <libbdk-hal/bdk-config.h>
 
 static void mainboard_print_info(void)
 {

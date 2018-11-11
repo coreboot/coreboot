@@ -174,7 +174,6 @@ void disable_gpe(u32 mask);
 
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
 #include <device/device.h>
-#include <arch/acpi.h>
 #include "chip.h"
 void pch_enable(struct device *dev);
 void pch_disable_devfn(struct device *dev);

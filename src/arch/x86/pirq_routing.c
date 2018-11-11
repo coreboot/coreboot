@@ -18,7 +18,6 @@
 #include <arch/pirq_routing.h>
 #include <string.h>
 #include <device/pci.h>
-#include <arch/pirq_routing.h>
 
 void __weak pirq_assign_irqs(const unsigned char pirq[CONFIG_MAX_PIRQ_LINKS])
 {

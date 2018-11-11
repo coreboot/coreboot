@@ -24,7 +24,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/smbus.h>
-#include <stdint.h>
 
 static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 {

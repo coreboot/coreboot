@@ -24,7 +24,6 @@
 #include <delay.h>
 #include <soc/addressmap.h>
 #include <device/device.h>
-#include <stdlib.h>
 #include <string.h>
 #include <boot/tables.h>
 #include <cbmem.h>

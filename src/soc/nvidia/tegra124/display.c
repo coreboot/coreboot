@@ -29,7 +29,6 @@
 #include <soc/nvidia/tegra/pwm.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "chip.h"

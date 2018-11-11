@@ -20,13 +20,9 @@
 #include <fsp/api.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
-#include <chip.h>
-#include <bootstate.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <device/pci_ids.h>
-#include <fsp/api.h>
 #include <fsp/util.h>
 #include <intelblocks/chip.h>
 #include <intelblocks/itss.h>

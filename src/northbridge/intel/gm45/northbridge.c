@@ -25,7 +25,6 @@
 #include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <arch/acpi.h>
-#include <cbmem.h>
 #include <cpu/intel/smm/gen1/smi.h>
 #include "chip.h"
 #include "gm45.h"

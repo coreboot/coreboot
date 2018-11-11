@@ -13,7 +13,6 @@
 
 #include <device/device.h>
 #include <arch/acpi.h>
-#include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include "mainboard.h"
 

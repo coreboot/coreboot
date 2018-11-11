@@ -37,7 +37,6 @@
 #include <soc/ramstage.h>
 #include <soc/spi.h>
 #include "chip.h"
-#include <arch/acpi.h>
 #include <arch/acpigen.h>
 
 static inline void

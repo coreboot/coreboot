@@ -21,7 +21,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <console/console.h>
 #include <types.h>
 #include <string.h>
 #include <cpu/x86/msr.h>

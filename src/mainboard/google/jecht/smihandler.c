@@ -25,8 +25,6 @@
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/nvs.h>
-#include <soc/pm.h>
-#include <soc/smm.h>
 #include "onboard.h"
 
 int mainboard_io_trap_handler(int smif)

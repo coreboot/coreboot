@@ -32,7 +32,6 @@
 #include <soc/ecam0.h>
 #include <console/uart.h>
 #include <libbdk-hal/bdk-pcie.h>
-#include <soc/ecam0.h>
 #include <device/pci.h>
 #include <libbdk-hal/bdk-qlm.h>
 #include <libbdk-hal/bdk-config.h>

@@ -47,7 +47,6 @@
 #include <stdio.h>
 #define VBDEBUG(format, args...) printf(format, ## args)
 #else
-#include <console/console.h>
 #define VBDEBUG(format, args...) \
 	printk(BIOS_INFO, "%s():%d: " format,  __func__, __LINE__, ## args)
 #endif

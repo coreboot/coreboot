@@ -35,14 +35,12 @@
 #include <string.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
-#include <soc/pci_devs.h>
 #include <soc/pmc.h>
 #include <soc/irq.h>
 #include <soc/iosf.h>
 #include <arch/io.h>
 #include <soc/msr.h>
 #include <soc/pattrs.h>
-#include <soc/pmc.h>
 #include <cbmem.h>
 
 #include "chip.h"

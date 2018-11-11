@@ -33,7 +33,6 @@
 #include <arch/acpi.h>
 #include <stdlib.h>
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-#include <arch/acpi.h>
 #include <arch/acpigen.h>
 #endif
 #include <cpu/amd/powernow.h>

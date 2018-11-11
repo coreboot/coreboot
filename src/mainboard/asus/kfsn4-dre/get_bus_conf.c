@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #include <cpu/amd/multicore.h>
 #include <cpu/amd/amdfam10_sysconf.h>
-#include <stdlib.h>
 
 /*
  * Global variables for MB layouts and these will be shared by irqtable,

@@ -42,9 +42,7 @@
 #include <soc/ramstage.h>
 #include <soc/rcba.h>
 #include <soc/intel/broadwell/chip.h>
-#include <arch/acpi.h>
 #include <arch/acpigen.h>
-#include <cpu/cpu.h>
 
 static void pch_enable_ioapic(struct device *dev)
 {

@@ -29,7 +29,6 @@
 #include <elog.h>
 #include <string.h>
 #include <cbmem.h>
-#include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include "soc.h"
 #include "irq.h"

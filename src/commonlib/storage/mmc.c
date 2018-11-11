@@ -21,7 +21,6 @@
 
 #include <commonlib/storage.h>
 #include <delay.h>
-#include "sd_mmc.h"
 #include "mmc.h"
 #include "sd_mmc.h"
 #include "storage.h"

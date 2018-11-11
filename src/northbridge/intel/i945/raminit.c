@@ -23,7 +23,6 @@
 #include <spd.h>
 #include <string.h>
 #include <halt.h>
-#include <lib.h>
 #include "raminit.h"
 #include "i945.h"
 #include "chip.h"

@@ -18,7 +18,6 @@
 #include <device/device.h>
 #include <arch/io.h>
 #include <delay.h>
-#include <arch/io.h>
 #include "dock.h"
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/nsc/pc87392/pc87392.h>

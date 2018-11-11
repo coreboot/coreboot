@@ -29,7 +29,6 @@
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #include <cpu/x86/bist.h>
-#include <cpu/x86/lapic.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <superio/fintek/common/fintek.h>
 #include <superio/fintek/f81866d/f81866d.h>

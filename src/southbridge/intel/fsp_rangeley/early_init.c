@@ -22,7 +22,6 @@
 #include <device/pci_def.h>
 #include <pc80/mc146818rtc.h>
 #include <version.h>
-#include <device/pci_def.h>
 #include "pci_devs.h"
 #include "soc.h"
 

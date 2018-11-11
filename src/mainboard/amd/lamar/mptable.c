@@ -22,7 +22,6 @@
 #include <cpu/x86/lapic.h>
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <drivers/generic/ioapic/chip.h>
-#include <arch/ioapic.h>
 #include <southbridge/amd/pi/hudson/amd_pci_int_defs.h>
 #include <northbridge/amd/pi/00630F01/pci_devs.h>
 

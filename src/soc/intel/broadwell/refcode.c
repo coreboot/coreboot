@@ -22,7 +22,6 @@
 #include <program_loading.h>
 #include <rmodule.h>
 #include <stage_cache.h>
-#include <string.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 #include <soc/pm.h>

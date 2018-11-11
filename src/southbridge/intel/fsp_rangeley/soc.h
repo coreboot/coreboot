@@ -62,7 +62,6 @@ int soc_silicon_type(void);
 int soc_silicon_supported(int type, int rev);
 void soc_enable(struct device *dev);
 
-#include <arch/acpi.h>
 void acpi_fill_in_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt);
 
 #if IS_ENABLED(CONFIG_ELOG)

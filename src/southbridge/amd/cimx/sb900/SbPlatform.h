@@ -56,7 +56,6 @@ typedef union _PCI_ADDR {
 #include "SbType.h"
 #include "AcpiLib.h"
 #include "SbDef.h"
-#include "AmdSbLib.h"
 #include "SbSubFun.h"
 #include "platform_cfg.h"	/* mainboard specific configuration */
 #include <OEM.h>		/* platform default configuration */

@@ -33,7 +33,6 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
-#include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <assert.h>
 #include <northbridge/amd/agesa/agesa_helper.h>

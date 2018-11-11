@@ -32,7 +32,6 @@
 #include <spd.h>
 #include <cpu/amd/model_10xxx_rev.h>
 #include <delay.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/amd/car.h>
 #include <cpu/amd/msr.h>
 #include <superio/winbond/common/winbond.h>

@@ -24,7 +24,6 @@
 #include <soc/iosf.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
-#include <device/pci.h>
 #include <cbmem.h>
 #include <soc/baytrail.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>

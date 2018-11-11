@@ -39,7 +39,6 @@
 #include <southbridge/amd/common/reset.h>
 #include <southbridge/nvidia/ck804/early_smbus.h>
 #include <delay.h>
-#include <cpu/x86/lapic.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
 #include <cpu/x86/bist.h>

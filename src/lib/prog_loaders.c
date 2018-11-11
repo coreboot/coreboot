@@ -29,7 +29,6 @@
 #include <stage_cache.h>
 #include <symbols.h>
 #include <timestamp.h>
-#include <cbfs.h>
 #include <fit_payload.h>
 
 /* Only can represent up to 1 byte less than size_t. */

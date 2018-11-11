@@ -23,7 +23,6 @@
 
 #if !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
-#include <device/pci_def.h>
 #define _SA_DEV(slot)		dev_find_slot(0, _SA_DEVFN(slot))
 #define _PCH_DEV(slot, func)	dev_find_slot(0, _PCH_DEVFN(slot, func))
 #else

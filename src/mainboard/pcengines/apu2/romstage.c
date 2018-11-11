@@ -31,7 +31,6 @@
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #include <cpu/x86/bist.h>
-#include <cpu/x86/lapic.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct5104d/nct5104d.h>

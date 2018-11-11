@@ -17,7 +17,6 @@
 #include "early_vx900.h"
 #include "raminit.h"
 #include <arch/io.h>
-#include <arch/io.h>
 #include <console/console.h>
 #include <device/pci_ids.h>
 #include <delay.h>

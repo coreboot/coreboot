@@ -33,7 +33,6 @@
 #include <intelblocks/xdci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
-#include <intelblocks/acpi.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/pmclib.h>

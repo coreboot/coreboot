@@ -32,7 +32,6 @@
 #include <spd.h>
 #include <cpu/amd/model_10xxx_rev.h>
 #include <delay.h>
-#include <cpu/x86/lapic.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83667hg-a/w83667hg-a.h>
 #include <cpu/x86/bist.h>

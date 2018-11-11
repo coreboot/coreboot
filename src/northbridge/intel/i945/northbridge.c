@@ -22,7 +22,6 @@
 #include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cbmem.h>
 #include <cpu/cpu.h>
 #include <arch/acpi.h>
 #include "i945.h"

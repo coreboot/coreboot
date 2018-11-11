@@ -14,11 +14,6 @@
  */
 
 #include <stdint.h>
-#include <device/pci_def.h>
-#include <device/pci_ids.h>
-#include <arch/io.h>
-#include <device/pnp_def.h>
-#include <pc80/mc146818rtc.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>

@@ -16,10 +16,8 @@
 
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <pc80/keyboard.h>
-#include <arch/io.h>
 
 static const unsigned char qemu_i440fx_irqs[] = {
 	11, 10, 10, 11,

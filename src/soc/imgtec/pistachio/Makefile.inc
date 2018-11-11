@@ -22,11 +22,9 @@ bootblock-y += spi.c
 romstage-y += spi.c
 ramstage-y += spi.c
 
-ifeq ($(CONFIG_DRIVERS_UART),y)
-bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
+bootblock-y += uart.c
 romstage-y += uart.c
 ramstage-y += uart.c
-endif
 
 bootblock-y += monotonic_timer.c
 

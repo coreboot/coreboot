@@ -23,13 +23,13 @@ bootblock-y += tz.c
 bootblock-y += hw_init.c
 bootblock-$(CONFIG_SPI_FLASH) += spi.c
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
-bootblock-$(CONFIG_DRIVERS_UART) += ns16550.c
+bootblock-y += ns16550.c
 endif
 
 verstage-y += i2c.c
 verstage-y += timer.c
 verstage-$(CONFIG_SPI_FLASH) += spi.c
-verstage-$(CONFIG_DRIVERS_UART) += ns16550.c
+verstage-y += ns16550.c
 
 romstage-y += cbmem.c
 romstage-y += i2c.c
@@ -37,7 +37,7 @@ romstage-y += timer.c
 romstage-y += romstage.c
 romstage-y += sdram.c
 romstage-$(CONFIG_SPI_FLASH) += spi.c
-romstage-$(CONFIG_DRIVERS_UART) += ns16550.c
+romstage-y += ns16550.c
 romstage-y += ddr_init.c
 romstage-y += ddr_init_table.c
 romstage-y += shmoo_and28.c
@@ -53,7 +53,7 @@ ramstage-y += sdram.c
 ramstage-y += soc.c
 ramstage-y += timer.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
-ramstage-$(CONFIG_DRIVERS_UART) += ns16550.c
+ramstage-y += ns16550.c
 ramstage-y += usb.c
 
 CPPFLAGS_common += -Isrc/soc/broadcom/cygnus/include/

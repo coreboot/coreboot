@@ -22,9 +22,7 @@ decompressor-y += timer.c
 
 bootblock-y += ../common/i2c.c
 bootblock-y += ../common/spi.c
-ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
-bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart.c
-endif
+bootblock-y += ../common/uart.c
 bootblock-y += ../common/gpio.c
 bootblock-y += ../common/pwm.c
 bootblock-y += bootblock.c
@@ -39,7 +37,7 @@ verstage-y += gpio.c
 verstage-y += sdram.c
 verstage-y += ../common/i2c.c
 verstage-y += ../common/spi.c
-verstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
+verstage-y += ../common/uart.c
 verstage-y += clock.c
 verstage-y += timer.c
 
@@ -48,7 +46,7 @@ verstage-y += timer.c
 romstage-y += ../common/cbmem.c
 romstage-y += sdram.c
 romstage-y += ../common/spi.c
-romstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
+romstage-y += ../common/uart.c
 romstage-y += clock.c
 romstage-y += ../common/pwm.c
 romstage-y += timer.c
@@ -64,7 +62,7 @@ romstage-y += ../common/i2c.c
 ramstage-y += ../common/cbmem.c
 ramstage-y += sdram.c
 ramstage-y += ../common/spi.c
-ramstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
+ramstage-y += ../common/uart.c
 ramstage-y += clock.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += ../common/edp.c

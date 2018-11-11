@@ -29,7 +29,7 @@ config SQUELCH_EARLY_SMP
 config CONSOLE_SERIAL
 	bool "Serial port console output"
 	default y
-	depends on DRIVERS_UART_8250IO || DRIVERS_UART_8250MEM || HAVE_UART_SPECIAL
+	depends on DRIVERS_UART
 	help
 	  Send coreboot debug output to a serial port.
 

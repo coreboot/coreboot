@@ -23,9 +23,7 @@ bootblock-y += ../common/spi.c spi.c
 bootblock-y += ../common/timer.c
 bootblock-y += timer.c
 
-ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
-bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart.c
-endif
+bootblock-y += ../common/uart.c
 
 bootblock-y += ../common/gpio.c gpio.c gpio_init.c
 bootblock-y +=  ../common/pmic_wrap.c pmic_wrap.c mt6391.c
@@ -37,7 +35,7 @@ bootblock-y += ../common/mmu_operations.c mmu_operations.c
 verstage-y += i2c.c
 verstage-y += ../common/spi.c spi.c
 
-verstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
+verstage-y += ../common/uart.c
 
 verstage-y += ../common/timer.c
 verstage-y += timer.c
@@ -53,7 +51,7 @@ romstage-y += ../common/timer.c
 romstage-y += timer.c
 romstage-y += i2c.c
 
-romstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
+romstage-y += ../common/uart.c
 romstage-y += ../common/cbmem.c
 romstage-y += ../common/gpio.c gpio.c
 romstage-y += ../common/spi.c spi.c
@@ -72,7 +70,7 @@ ramstage-$(CONFIG_SPI_FLASH) += flash_controller.c
 ramstage-y += soc.c ../common/mtcmos.c
 ramstage-y += ../common/timer.c
 ramstage-y += timer.c
-ramstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
+ramstage-y += ../common/uart.c
 ramstage-y += ../common/pmic_wrap.c pmic_wrap.c mt6391.c i2c.c
 ramstage-y += mt6311.c
 ramstage-y += da9212.c

@@ -1,7 +1,5 @@
 config DRIVERS_UART
 	bool
-	default y if CONSOLE_SERIAL
-	default n
 
 config DRIVERS_UART_8250IO
 	# FIXME: Shouldn't have a prompt, should default to n, and
@@ -11,6 +9,7 @@ config DRIVERS_UART_8250IO
 	default n if DRIVERS_UART_8250MEM || HAVE_UART_SPECIAL
 	default n if NO_UART_ON_SUPERIO
 	default y
+	select DRIVERS_UART
 
 config DRIVERS_UART_8250IO_SKIP_INIT
 	def_bool n
@@ -37,6 +36,7 @@ config UART_OVERRIDE_REFCLK
 config DRIVERS_UART_8250MEM
 	bool
 	default n
+	select DRIVERS_UART
 
 config DRIVERS_UART_8250MEM_32
 	bool
@@ -46,6 +46,7 @@ config DRIVERS_UART_8250MEM_32
 config HAVE_UART_SPECIAL
 	bool
 	default n
+	select DRIVERS_UART
 
 config DRIVERS_UART_OXPCIE
 	bool "Oxford OXPCIe952"

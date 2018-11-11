@@ -18,16 +18,14 @@ bootblock-y += ../tegra/pingroup.c
 bootblock-y += ../tegra/pinmux.c
 bootblock-y += ../tegra/apbmisc.c
 bootblock-y += ../tegra/usb.c
-ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
-bootblock-$(CONFIG_DRIVERS_UART) += uart.c
-endif
+bootblock-y += uart.c
 
 verstage-y += dma.c
 verstage-y += monotonic_timer.c
 verstage-y += spi.c
 verstage-y += padconfig.c
 verstage-y += funitcfg.c
-verstage-$(CONFIG_DRIVERS_UART) += uart.c
+verstage-y += uart.c
 verstage-y += ../tegra/gpio.c
 verstage-y += ../tegra/i2c.c
 verstage-y += ../tegra/pinmux.c
@@ -57,7 +55,7 @@ romstage-y += ../tegra/gpio.c
 romstage-y += ../tegra/i2c.c
 romstage-y += ../tegra/pinmux.c
 romstage-y += ../tegra/usb.c
-romstage-$(CONFIG_DRIVERS_UART) += uart.c
+romstage-y += uart.c
 
 ramstage-y += addressmap.c
 ramstage-y += cbmem.c
@@ -92,7 +90,7 @@ ramstage-y += ../tegra/i2c.c
 ramstage-y += ../tegra/pinmux.c
 ramstage-y += ramstage.c
 ramstage-y += mmu_operations.c
-ramstage-$(CONFIG_DRIVERS_UART) += uart.c
+ramstage-y += uart.c
 ramstage-y += ../tegra/usb.c
 ramstage-$(CONFIG_HAVE_MTC) += mtc.c
 ramstage-y += stage_entry.S

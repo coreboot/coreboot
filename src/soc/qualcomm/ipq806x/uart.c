@@ -109,7 +109,6 @@ static unsigned int msm_boot_uart_dm_init_rx_transfer(void *uart_dm_base)
 	return MSM_BOOT_UART_DM_E_SUCCESS;
 }
 
-#if IS_ENABLED(CONFIG_DRIVERS_UART)
 static unsigned int msm_boot_uart_dm_init(void  *uart_dm_base);
 
 /* Received data is valid or not */
@@ -212,7 +211,6 @@ void uart_tx_byte(int idx, unsigned char data)
 	/* And now write the character(s) */
 	write32(MSM_BOOT_UART_DM_TF(base, 0), tx_data);
 }
-#endif /* CONFIG_SERIAL_UART */
 
 /*
  * msm_boot_uart_dm_reset - resets UART controller
@@ -380,7 +378,6 @@ int uart_can_rx_byte(void)
 }
 #endif
 
-#if IS_ENABLED(CONFIG_DRIVERS_UART)
 /**
  * ipq806x_serial_getc - reads a character
  *
@@ -401,7 +398,6 @@ uint8_t uart_rx_byte(int idx)
 
 	return byte;
 }
-#endif
 
 #ifndef __PRE_RAM__
 /* TODO: Implement fuction */

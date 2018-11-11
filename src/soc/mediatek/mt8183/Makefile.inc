@@ -6,9 +6,7 @@ bootblock-y += ../common/gpio.c gpio.c
 bootblock-y += ../common/pll.c pll.c
 bootblock-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 bootblock-y += ../common/timer.c
-ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
-bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart.c
-endif
+bootblock-y += ../common/uart.c
 bootblock-y += ../common/wdt.c
 
 decompressor-y += decompressor.c
@@ -19,7 +17,7 @@ verstage-y += auxadc.c
 verstage-y += ../common/gpio.c gpio.c
 verstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 verstage-y += ../common/timer.c
-verstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
+verstage-y += ../common/uart.c
 verstage-y += ../common/wdt.c
 
 romstage-y += auxadc.c
@@ -32,7 +30,7 @@ romstage-y += ../common/gpio.c gpio.c
 romstage-y += ../common/mmu_operations.c mmu_operations.c
 romstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 romstage-y += ../common/timer.c
-romstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
+romstage-y += ../common/uart.c
 romstage-y += ../common/wdt.c
 
 ramstage-y += auxadc.c
@@ -43,7 +41,7 @@ ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-y += soc.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 ramstage-y += ../common/timer.c
-ramstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
+ramstage-y += ../common/uart.c
 ramstage-y += ../common/usb.c
 ramstage-y += ../common/wdt.c
 

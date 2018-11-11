@@ -49,16 +49,16 @@ void bootblock_mainboard_early_init(void)
 	if (!IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
 		gpio_output(GPIO_P15V_EN, 1);	/* Scarlet: EC-controlled */
 
-#if IS_ENABLED(CONFIG_DRIVERS_UART)
-	_Static_assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE,
-		       "CONSOLE_SERIAL_UART should be UART2");
+	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL)) {
+		_Static_assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE,
+			       "CONSOLE_SERIAL_UART should be UART2");
 
-	/* iomux: select gpio4c[4:3] as uart2 dbg port */
-	write32(&rk3399_grf->iomux_uart2c, IOMUX_UART2C);
+		/* iomux: select gpio4c[4:3] as uart2 dbg port */
+		write32(&rk3399_grf->iomux_uart2c, IOMUX_UART2C);
 
-	/* grf soc_con7[11:10] use for uart2 select */
-	write32(&rk3399_grf->soc_con7, UART2C_SEL);
-#endif
+		/* grf soc_con7[11:10] use for uart2 select */
+		write32(&rk3399_grf->soc_con7, UART2C_SEL);
+	}
 }
 
 static void configure_spi_flash(void)

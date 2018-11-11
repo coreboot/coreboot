@@ -21,11 +21,9 @@ ramstage-y	+= monotonic_timer.c
 ramstage-y	+= timer.c
 ramstage-y	+= twi.c
 
-ifeq ($(CONFIG_DRIVERS_UART),y)
-bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c uart_console.c
+bootblock-y	+= uart.c uart_console.c
 romstage-y	+= uart.c uart_console.c
 ramstage-y	+= uart.c uart_console.c
-endif
 
 real-target: $(obj)/BOOT0
 

@@ -31,11 +31,10 @@
 
 void bootblock_mainboard_early_init()
 {
-	if (IS_ENABLED(CONFIG_DRIVERS_UART)) {
+	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL)) {
 		assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE);
 		write32(&rk3288_grf->iomux_uart2, IOMUX_UART2);
 	}
-
 }
 
 void bootblock_mainboard_init(void)

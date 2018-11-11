@@ -20,7 +20,7 @@ bootblock-y += cbmem.c
 bootblock-y += gpio.c
 bootblock-$(CONFIG_SPI_FLASH) += spi.c
 bootblock-y += timer.c
-bootblock-$(CONFIG_DRIVERS_UART) += uart.c
+bootblock-y += uart.c
 
 verstage-y += clock.c
 verstage-y += gpio.c
@@ -29,14 +29,14 @@ verstage-y += i2c.c
 verstage-y += qup.c
 verstage-y += spi.c
 verstage-y += timer.c
-verstage-$(CONFIG_DRIVERS_UART) += uart.c
+verstage-y += uart.c
 
 romstage-y += clock.c
 romstage-y += blobs_init.c
 romstage-y += gpio.c
 romstage-$(CONFIG_SPI_FLASH) += spi.c
 romstage-y += timer.c
-romstage-$(CONFIG_DRIVERS_UART) += uart.c
+romstage-y += uart.c
 romstage-y += cbmem.c
 romstage-y += i2c.c
 romstage-y += blsp.c

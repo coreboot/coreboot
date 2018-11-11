@@ -19,9 +19,7 @@ IDBTOOL = util/rockchip/make_idb.py
 
 bootblock-y += bootblock.c
 bootblock-y += ../common/cbmem.c
-ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
-bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart.c
-endif
+bootblock-y += ../common/uart.c
 bootblock-y += timer.c
 bootblock-y += clock.c
 bootblock-y += ../common/spi.c
@@ -33,7 +31,7 @@ bootblock-y += ../common/rk808.c
 
 verstage-y += ../common/spi.c
 verstage-y += timer.c
-verstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
+verstage-y += ../common/uart.c
 verstage-y += ../common/gpio.c
 verstage-y += gpio.c
 verstage-y += clock.c
@@ -43,7 +41,7 @@ verstage-$(CONFIG_SOFTWARE_I2C) += software_i2c.c
 
 romstage-y += ../common/cbmem.c
 romstage-y += timer.c
-romstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
+romstage-y += ../common/uart.c
 romstage-y += ../common/i2c.c
 romstage-$(CONFIG_SOFTWARE_I2C) += software_i2c.c
 romstage-y += clock.c
@@ -72,7 +70,7 @@ ramstage-y += ../common/vop.c
 ramstage-y += ../common/edp.c
 ramstage-y += hdmi.c
 ramstage-y += display.c
-ramstage-$(CONFIG_DRIVERS_UART) += ../common/uart.c
+ramstage-y += ../common/uart.c
 
 CPPFLAGS_common += -Isrc/soc/rockchip/rk3288/include
 CPPFLAGS_common += -Isrc/soc/rockchip/common/include

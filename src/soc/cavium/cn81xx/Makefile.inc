@@ -25,9 +25,6 @@ bootblock-y += timer.c
 bootblock-y += spi.c
 bootblock-y += uart.c
 bootblock-y += cpu.c
-ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
-bootblock-$(CONFIG_DRIVERS_UART) += uart.c
-endif
 
 ################################################################################
 # verstage
@@ -37,7 +34,7 @@ verstage-y += clock.c
 verstage-y += gpio.c
 verstage-y += timer.c
 verstage-y += spi.c
-verstage-$(CONFIG_DRIVERS_UART) += uart.c
+verstage-y += uart.c
 verstage-y += cbmem.c
 
 ################################################################################
@@ -49,7 +46,6 @@ romstage-y += gpio.c
 romstage-y += timer.c
 romstage-y += spi.c
 romstage-y += uart.c
-romstage-$(CONFIG_DRIVERS_UART) += uart.c
 romstage-y += cbmem.c
 
 romstage-y += sdram.c
@@ -64,7 +60,6 @@ ramstage-y += gpio.c
 ramstage-y += timer.c
 ramstage-y += spi.c
 ramstage-y += uart.c
-ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += sdram.c
 ramstage-y += soc.c
 ramstage-y += cpu.c

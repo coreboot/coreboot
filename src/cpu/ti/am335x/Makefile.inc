@@ -12,11 +12,9 @@ ramstage-y	+= monotonic_timer.c
 ramstage-y	+= nand.c
 ramstage-y	+= cbmem.c
 
-ifeq ($(CONFIG_DRIVERS_UART),y)
-bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
+bootblock-y	+= uart.c
 romstage-y	+= uart.c
 ramstage-y	+= uart.c
-endif
 
 $(call add-class,omap-header)
 $(eval $(call create_class_compiler,omap-header,arm))

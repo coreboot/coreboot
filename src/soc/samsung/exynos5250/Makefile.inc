@@ -4,11 +4,9 @@ bootblock-y += spi.c alternate_cbfs.c
 bootblock-y += bootblock.c
 bootblock-y += pinmux.c timer.c power.c
 # Clock is required for UART
-bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += clock_init.c
-bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += clock.c
-ifeq ($(CONFIG_DRIVERS_UART),y)
-bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
-endif
+bootblock-y += clock_init.c
+bootblock-y += clock.c
+bootblock-y += uart.c
 bootblock-y += wakeup.c
 bootblock-y += gpio.c
 
@@ -20,7 +18,7 @@ romstage-y += dmc_common.c
 romstage-y += dmc_init_ddr3.c
 romstage-y += power.c
 romstage-y += timer.c
-romstage-$(CONFIG_DRIVERS_UART) += uart.c
+romstage-y += uart.c
 romstage-y += wakeup.c
 romstage-y += gpio.c
 romstage-y += trustzone.c
@@ -33,7 +31,7 @@ ramstage-y += clock.c
 ramstage-y += clock_init.c
 ramstage-y += pinmux.c
 ramstage-y += power.c
-ramstage-$(CONFIG_DRIVERS_UART) += uart.c
+ramstage-y += uart.c
 ramstage-y += cpu.c
 ramstage-y += tmu.c
 ramstage-y += timer.c

@@ -23,25 +23,12 @@
 #include <string.h>
 #include <delay.h>
 #include <smbios.h>
-#include <cbmem.h>
+#include "memory.h"
 
 #include "fw_cfg.h"
 #include "fw_cfg_if.h"
 
-#include "memory.c"
 #include "acpi.h"
-
-static unsigned long qemu_get_high_memory_size(void)
-{
-	unsigned long high;
-	outb (HIGH_HIGHRAM_ADDR, CMOS_ADDR_PORT);
-	high = ((unsigned long) inb(CMOS_DATA_PORT)) << 22;
-	outb (MID_HIGHRAM_ADDR, CMOS_ADDR_PORT);
-	high |= ((unsigned long) inb(CMOS_DATA_PORT)) << 14;
-	outb (LOW_HIGHRAM_ADDR, CMOS_ADDR_PORT);
-	high |= ((unsigned long) inb(CMOS_DATA_PORT)) << 6;
-	return high;
-}
 
 static void qemu_reserve_ports(struct device *dev, unsigned int idx,
 			       unsigned int base, unsigned int size,

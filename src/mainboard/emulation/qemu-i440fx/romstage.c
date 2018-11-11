@@ -18,6 +18,7 @@
 #include <device/pci_ids.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
@@ -25,7 +26,6 @@
 #include <delay.h>
 #include <cpu/x86/lapic.h>
 
-#include "memory.c"
 
 void *asmlinkage romstage_main(unsigned long bist)
 {

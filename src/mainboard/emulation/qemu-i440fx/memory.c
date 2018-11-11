@@ -14,6 +14,8 @@
  */
 
 #include <cbmem.h>
+#include <arch/io.h>
+#include "memory.h"
 
 #define CMOS_ADDR_PORT 0x70
 #define CMOS_DATA_PORT 0x71
@@ -25,12 +27,24 @@
 #define MID_HIGHRAM_ADDR 0x5c
 #define LOW_HIGHRAM_ADDR 0x5b
 
-static unsigned long qemu_get_memory_size(void)
+unsigned long qemu_get_high_memory_size(void)
+{
+	unsigned long high;
+	outb(HIGH_HIGHRAM_ADDR, CMOS_ADDR_PORT);
+	high = ((unsigned long) inb(CMOS_DATA_PORT)) << 22;
+	outb(MID_HIGHRAM_ADDR, CMOS_ADDR_PORT);
+	high |= ((unsigned long) inb(CMOS_DATA_PORT)) << 14;
+	outb(LOW_HIGHRAM_ADDR, CMOS_ADDR_PORT);
+	high |= ((unsigned long) inb(CMOS_DATA_PORT)) << 6;
+	return high;
+}
+
+unsigned long qemu_get_memory_size(void)
 {
 	unsigned long tomk;
-	outb (HIGH_RAM_ADDR, CMOS_ADDR_PORT);
+	outb(HIGH_RAM_ADDR, CMOS_ADDR_PORT);
 	tomk = ((unsigned long) inb(CMOS_DATA_PORT)) << 14;
-	outb (LOW_RAM_ADDR, CMOS_ADDR_PORT);
+	outb(LOW_RAM_ADDR, CMOS_ADDR_PORT);
 	tomk |= ((unsigned long) inb(CMOS_DATA_PORT)) << 6;
 	tomk += 16 * 1024;
 	return tomk;

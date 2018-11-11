@@ -22,13 +22,13 @@ bootblock-y += p2sb.c
 bootblock-y += pmutil.c
 bootblock-y += spi.c
 bootblock-y += lpc.c
-bootblock-$(CONFIG_UART_DEBUG) += uart.c
+bootblock-y += uart.c
 
 verstage-y += gspi.c
 verstage-y += pmutil.c
 verstage-y += i2c.c
 verstage-y += spi.c
-verstage-$(CONFIG_UART_DEBUG) += uart.c
+verstage-y += uart.c
 
 romstage-y += gpio.c
 romstage-y += gspi.c
@@ -40,7 +40,7 @@ romstage-y += pmc.c
 romstage-y += pmutil.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 romstage-y += spi.c
-romstage-$(CONFIG_UART_DEBUG) += uart.c
+romstage-y += uart.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP1_1) += chip.c
@@ -67,7 +67,7 @@ ramstage-y += smmrelocate.c
 ramstage-y += spi.c
 ramstage-y += systemagent.c
 ramstage-y += thermal.c
-ramstage-$(CONFIG_UART_DEBUG) += uart.c
+ramstage-y += uart.c
 ramstage-y += vr_config.c
 
 smm-y += elog.c
@@ -75,13 +75,13 @@ smm-y += gpio.c
 smm-y += p2sb.c
 smm-y += pmutil.c
 smm-y += smihandler.c
-smm-$(CONFIG_UART_DEBUG) += uart.c
+smm-y += uart.c
 
 postcar-y += memmap.c
 postcar-y += gspi.c
 postcar-y += spi.c
 postcar-y += i2c.c
-postcar-$(CONFIG_UART_DEBUG) += uart.c
+postcar-y += uart.c
 
 
 # Skylake D0

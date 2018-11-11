@@ -48,8 +48,16 @@ if CONSOLE_SERIAL
 	comment "device-specific UART"
 	depends on HAVE_UART_SPECIAL
 
+config FIXED_UART_FOR_CONSOLE
+	bool
+	help
+	  Select to remove the prompt from UART_FOR_CONSOLE in case a
+	  specific UART has to be used (e.g. when the platform code
+	  performs dangerous configurations).
+
 config UART_FOR_CONSOLE
-	int "Index for UART port to use for console"
+	int
+	prompt "Index for UART port to use for console" if !FIXED_UART_FOR_CONSOLE
 	default 0
 	help
 	  Select an I/O port to use for serial console:

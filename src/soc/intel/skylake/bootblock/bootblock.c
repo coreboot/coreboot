@@ -32,7 +32,7 @@ void bootblock_soc_early_init(void)
 	bootblock_cpu_init();
 	pch_early_iorange_init();
 
-	if (IS_ENABLED(CONFIG_UART_DEBUG))
+	if (IS_ENABLED(CONFIG_INTEL_LPSS_UART_FOR_CONSOLE))
 		uart_bootblock_init();
 }
 

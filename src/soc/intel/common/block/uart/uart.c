@@ -88,12 +88,11 @@ void uart_common_init(struct device *device, uintptr_t baseaddr)
 struct device *uart_get_device(void)
 {
 	/*
-	 * This function will get called even if UART_DEBUG config options is
-	 * not selected.
-	 * By default returning NULL in case CONFIG_UART_DEBUG option is not
-	 * selected to avoid compilation errors.
+	 * This function will get called even if INTEL_LPSS_UART_FOR_CONSOLE
+	 * config option is not selected.
+	 * By default return NULL in this case to avoid compilation errors.
 	 */
-	if (!IS_ENABLED(CONFIG_UART_DEBUG))
+	if (!IS_ENABLED(CONFIG_INTEL_LPSS_UART_FOR_CONSOLE))
 		return NULL;
 
 	int console_index = uart_get_valid_index();
@@ -157,7 +156,8 @@ static void uart_read_resources(struct device *dev)
 	pci_dev_read_resources(dev);
 
 	/* Set the configured UART base address for the debug port */
-	if (IS_ENABLED(CONFIG_UART_DEBUG) && uart_is_debug_controller(dev)) {
+	if (IS_ENABLED(CONFIG_INTEL_LPSS_UART_FOR_CONSOLE) &&
+	    uart_is_debug_controller(dev)) {
 		struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
 		/* Need to set the base and size for the resource allocator. */
 		res->base = UART_BASE(CONFIG_UART_FOR_CONSOLE);

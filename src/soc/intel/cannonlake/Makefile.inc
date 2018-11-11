@@ -19,7 +19,7 @@ bootblock-y += memmap.c
 bootblock-y += spi.c
 bootblock-y += lpc.c
 bootblock-y += p2sb.c
-bootblock-$(CONFIG_UART_DEBUG) += uart.c
+bootblock-y += uart.c
 
 romstage-$(CONFIG_SOC_INTEL_CANNONLAKE_MEMCFG_INIT) += cnl_memcfg_init.c
 romstage-y += gspi.c
@@ -29,7 +29,7 @@ romstage-y += memmap.c
 romstage-y += pmutil.c
 romstage-y += reset.c
 romstage-y += spi.c
-romstage-$(CONFIG_UART_DEBUG) += uart.c
+romstage-y += uart.c
 
 ramstage-y += acpi.c
 ramstage-y += chip.c
@@ -51,27 +51,27 @@ ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
 ramstage-y += smmrelocate.c
 ramstage-y += spi.c
 ramstage-y += systemagent.c
-ramstage-$(CONFIG_UART_DEBUG) += uart.c
+ramstage-y += uart.c
 ramstage-y += vr_config.c
 ramstage-y += sd.c
 
 smm-y += p2sb.c
 smm-y += pmutil.c
 smm-y += smihandler.c
-smm-$(CONFIG_UART_DEBUG) += uart.c
+smm-y += uart.c
 
 postcar-y += memmap.c
 postcar-y += pmutil.c
 postcar-y += i2c.c
 postcar-y += gspi.c
 postcar-y += spi.c
-postcar-$(CONFIG_UART_DEBUG) += uart.c
+postcar-y += uart.c
 
 verstage-y += gspi.c
 verstage-y += i2c.c
 verstage-y += pmutil.c
 verstage-y += spi.c
-verstage-$(CONFIG_UART_DEBUG) += uart.c
+verstage-y += uart.c
 
 ifeq ($(CONFIG_SOC_INTEL_CANNONLAKE_PCH_H),y)
 bootblock-y += gpio_cnp_h.c

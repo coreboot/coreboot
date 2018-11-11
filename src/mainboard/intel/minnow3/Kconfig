@@ -5,7 +5,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_INTEL_APOLLOLAKE
 	select BOARD_ROMSIZE_KB_16384
 	select HAVE_ACPI_TABLES
-	select UART_DEBUG
+	select INTEL_LPSS_UART_FOR_CONSOLE
 
 config MAINBOARD_DIR
 	string
@@ -20,7 +20,6 @@ config FMDFILE
 	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/minnow3.fmd"
 
 config UART_FOR_CONSOLE
-	int "Number of UART port to use for serial log"
 	default 2
 
 config NEED_IFWI

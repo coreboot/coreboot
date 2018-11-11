@@ -95,7 +95,7 @@ void bootblock_soc_early_init(void)
 	pmc_global_reset_enable(0);
 
 	/* Prepare UART for serial console. */
-	if (IS_ENABLED(CONFIG_UART_DEBUG))
+	if (IS_ENABLED(CONFIG_INTEL_LPSS_UART_FOR_CONSOLE))
 		uart_bootblock_init();
 
 	if (IS_ENABLED(CONFIG_TPM_ON_FAST_SPI))

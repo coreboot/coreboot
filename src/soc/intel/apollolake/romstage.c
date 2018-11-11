@@ -278,7 +278,7 @@ asmlinkage void car_stage_entry(void)
 static void fill_console_params(FSPM_UPD *mupd)
 {
 	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL)) {
-		if (IS_ENABLED(CONFIG_UART_DEBUG)) {
+		if (IS_ENABLED(CONFIG_INTEL_LPSS_UART_FOR_CONSOLE)) {
 			mupd->FspmConfig.SerialDebugPortDevice =
 					CONFIG_UART_FOR_CONSOLE;
 			/* use MMIO port type */

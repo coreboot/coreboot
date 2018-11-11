@@ -239,7 +239,7 @@ static void print_me_version(void *unused)
 	 * Print ME version only if UART debugging is enabled. Else, it takes ~1
 	 * second to talk to ME and get this information.
 	 */
-	if (!IS_ENABLED(CONFIG_UART_DEBUG))
+	if (!IS_ENABLED(CONFIG_CONSOLE_SERIAL))
 		return;
 
 	hfs.data = me_read_config32(PCI_ME_HFSTS1);

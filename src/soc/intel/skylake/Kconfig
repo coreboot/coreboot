@@ -182,22 +182,6 @@ config VGA_BIOS_ID
 	string
 	default "8086,0406"
 
-config UART_DEBUG
-	bool "Enable UART debug port."
-	default n
-	select CONSOLE_SERIAL
-	select DRIVERS_UART
-	select DRIVERS_UART_8250MEM_32
-	select NO_UART_ON_SUPERIO
-
-config UART_FOR_CONSOLE
-	int "Index for LPSS UART port to use for console"
-	default 2 if DRIVERS_UART_8250MEM
-	default 0
-	help
-	    Index for LPSS UART port to use for console:
-	    0 = LPSS UART0, 1 = LPSS UART1, 2 = LPSS UART2
-
 config SKYLAKE_SOC_PCH_H
 	bool
 	default n

@@ -77,23 +77,6 @@ config CPU_SPECIFIC_OPTIONS
 	select DISPLAY_FSP_VERSION_INFO
 	select FSP_T_XIP if FSP_CAR
 
-config UART_DEBUG
-	bool "Enable UART debug port."
-	default n
-	select CONSOLE_SERIAL
-	select BOOTBLOCK_CONSOLE
-	select DRIVERS_UART
-	select DRIVERS_UART_8250MEM_32
-	select NO_UART_ON_SUPERIO
-
-config UART_FOR_CONSOLE
-	int "Index for LPSS UART port to use for console"
-	default 2 if DRIVERS_UART_8250MEM_32
-	default 0
-	help
-	    Index for LPSS UART port to use for console:
-	    0 = LPSS UART0, 1 = LPSS UART1, 2 = LPSS UART2
-
 config DCACHE_RAM_BASE
 	default 0xfef00000
 

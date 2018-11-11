@@ -23,7 +23,7 @@ static const struct pad_config default_override_table[] = {
 	PAD_NC(GPIO_104, UP_20K),
 
 	/* CAM_SOC_EC_SYNC */
-	PAD_CFG_GPI_APIC_IOS(GPIO_134, NONE, DEEP, EDGE_SINGLE, INVERT, TxDRxE,
+	PAD_CFG_GPI_APIC_IOS(GPIO_134, NONE, DEEP, LEVEL, INVERT, TxDRxE,
 			     DISPUPD),
 
 	/* EN_PP3300_TOUCHSCREEN */

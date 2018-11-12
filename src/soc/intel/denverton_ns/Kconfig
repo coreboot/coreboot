@@ -146,10 +146,6 @@ config HSUART_DEV
 	hex
 	default 0x1a
 
-config HSUART_FUNC
-	hex
-	default 0x0
-
 choice
 	prompt "UART mode selection"
 	default NON_LEGACY_UART_MODE

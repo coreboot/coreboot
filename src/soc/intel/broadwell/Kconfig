@@ -80,10 +80,6 @@ config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf0000000
 
-config SERIAL_CPU_INIT
-	bool
-	default n
-
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000

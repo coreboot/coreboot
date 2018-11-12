@@ -168,10 +168,6 @@ config PCR_BASE_ADDRESS
 	help
 	  This option allows you to select MMIO Base Address of sideband bus.
 
-config SERIAL_CPU_INIT
-	bool
-	default n
-
 config SERIRQ_CONTINUOUS_MODE
 	bool
 	default n

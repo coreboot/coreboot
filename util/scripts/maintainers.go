@@ -177,6 +177,8 @@ func match_file(fname string, files []string) (bool, error) {
 }
 
 func find_maintainer(fname string) {
+	var success bool
+
 	for _, subsystem := range subsystems {
 		matched, err := match_file(fname, subsystem.file)
 		if err != nil {
@@ -184,16 +186,20 @@ func find_maintainer(fname string) {
 			return
 		}
 		if matched && subsystem.name != "THE REST" {
+			success = true
 			fmt.Println(fname, "is in subsystem",
 				subsystem.name)
 			fmt.Println("Maintainers: ", subsystem.maintainer)
-			return
 		}
 	}
-	fmt.Println(fname, "has no subsystem defined in MAINTAINERS")
+	if !success {
+		fmt.Println(fname, "has no subsystem defined in MAINTAINERS")
+	}
 }
 
 func find_unmaintained(fname string) {
+	var success bool
+
 	for _, subsystem := range subsystems {
 		matched, err := match_file(fname, subsystem.file)
 		if err != nil {
@@ -201,12 +207,14 @@ func find_unmaintained(fname string) {
 			return
 		}
 		if matched && subsystem.name != "THE REST" {
+			success = true
 			fmt.Println(fname, "is in subsystem",
 				subsystem.name)
-			return
 		}
 	}
-	fmt.Println(fname, "has no subsystem defined in MAINTAINERS")
+	if !success {
+		fmt.Println(fname, "has no subsystem defined in MAINTAINERS")
+	}
 }
 
 func main() {

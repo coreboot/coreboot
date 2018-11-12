@@ -18,11 +18,3 @@ config VPD
 	default n
 	help
 	  Enable support for flash based vital product data.
-
-if VPD
-
-config VPD_DEBUG
-	bool "Enable VPD debug output"
-	default n
-
-endif

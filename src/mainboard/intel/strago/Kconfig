@@ -21,9 +21,6 @@ config VBOOT
 	select VBOOT_LID_SWITCH
 	select VBOOT_VBNV_CMOS
 
-config DYNAMIC_VNN_SUPPORT
-	bool "Enables support for Dynamic VNN"
-	default n
 config MAINBOARD_DIR
 	string
 	default intel/strago

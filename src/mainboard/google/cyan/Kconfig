@@ -30,10 +30,6 @@ config DISPLAY_SPD_DATA
 	help
 	  When enabled displays the memory configuration data.
 
-config DYNAMIC_VNN_SUPPORT
-	bool "Enables support for Dynamic VNN"
-	default n
-
 config MAINBOARD_DIR
 	string
 	default google/cyan

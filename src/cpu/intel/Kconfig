@@ -14,12 +14,9 @@ source src/cpu/intel/model_206ax/Kconfig
 source src/cpu/intel/fsp_model_206ax/Kconfig
 source src/cpu/intel/fsp_model_406dx/Kconfig
 source src/cpu/intel/model_2065x/Kconfig
-source src/cpu/intel/model_f0x/Kconfig
-source src/cpu/intel/model_f1x/Kconfig
 source src/cpu/intel/model_f2x/Kconfig
 source src/cpu/intel/model_f3x/Kconfig
 source src/cpu/intel/model_f4x/Kconfig
-source src/cpu/intel/ep80579/Kconfig
 source src/cpu/intel/haswell/Kconfig
 # Sockets/Slots
 source src/cpu/intel/slot_1/Kconfig

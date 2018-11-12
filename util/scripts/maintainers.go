@@ -15,6 +15,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -258,12 +259,26 @@ func glob_to_regex(glob string) string {
 }
 
 func main() {
-	var files []string
-	var maint bool
-	var debug bool
-	var err error
+	var (
+		files []string
+		err   error
+		debug = flag.Bool("debug", false, "emit additional debug output")
+	)
+	flag.Parse()
 
-	args := os.Args[1:]
+	/* get and build subsystem database */
+	maintainers, err := get_maintainers()
+	if err != nil {
+		log.Fatalf("Oops.")
+		return
+	}
+	build_maintainers(maintainers)
+
+	if *debug {
+		print_maintainers()
+	}
+
+	args := flag.Args()
 	if len(args) == 0 {
 		/* get the filenames */
 		files, err = get_git_files()
@@ -271,33 +286,15 @@ func main() {
 			log.Fatalf("Oops.")
 			return
 		}
-		maint = false
+		for _, file := range files {
+			find_unmaintained(file)
+		}
 	} else {
 		files = args
-		maint = true
-	}
 
-	maintainers, err := get_maintainers()
-	if err != nil {
-		log.Fatalf("Oops.")
-		return
-	}
-
-	/* build subsystem database */
-	build_maintainers(maintainers)
-
-	if debug {
-		print_maintainers()
-	}
-
-	if maint {
 		/* Find maintainers for each file */
 		for _, file := range files {
 			find_maintainer(file)
-		}
-	} else {
-		for _, file := range files {
-			find_unmaintained(file)
 		}
 	}
 }

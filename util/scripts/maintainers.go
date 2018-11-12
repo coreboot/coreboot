@@ -95,40 +95,15 @@ func build_maintainers(maintainers []string) {
 			current.name = line
 		} else {
 			switch line[0] {
-			case 'R':
-			case 'M':
-				{
-					/* Add subsystem maintainer */
-					current.maintainer =
-						append(current.maintainer,
-							line[3:len(line)])
-					break
-				}
-			case 'S':
-				{
-					break
-				}
-			case 'L':
-				{
-					break
-				}
-			case 'T':
-				{
-					break
-				}
+			case 'R', 'M':
+				/* Add subsystem maintainer */
+				current.maintainer = append(current.maintainer, line[3:len(line)])
 			case 'F':
-				{
-					// add files
-					current.file =
-						append(current.file,
-							line[3:len(line)])
-					break
-				}
+				// add files
+				current.file = append(current.file, line[3:len(line)])
+			case 'L', 'S', 'T', 'W': // ignore
 			default:
-				{
-					fmt.Println("No such specifier: ", line)
-					break
-				}
+				fmt.Println("No such specifier: ", line)
 			}
 		}
 	}

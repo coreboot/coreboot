@@ -59,10 +59,6 @@ config SB_HT_CHAIN_UNITID_OFFSET_ONLY
 config HT_CHAIN_DISTRIBUTE
 	def_bool n
 
-config DIMM_FBDIMM
-	bool
-	default n
-
 config DIMM_DDR2
 	bool
 	default n
@@ -79,12 +75,6 @@ config DIMM_VOLTAGE_SET_SUPPORT
 	bool
 	default n
 
-if DIMM_FBDIMM
-	config DIMM_SUPPORT
-		hex
-		default 0x0110
-endif
-
 config S3_DATA_SIZE
 	int
 	default 32768
@@ -94,28 +84,6 @@ config S3_DATA_POS
 	hex
 	default 0x0
 	depends on (HAVE_ACPI_RESUME)
-
-if DIMM_DDR2
-	if DIMM_REGISTERED
-	config DIMM_SUPPORT
-		hex
-		default 0x0104
-	endif
-
-	if !DIMM_REGISTERED
-	config DIMM_SUPPORT
-		hex
-		default 0x0004
-	endif
-endif
-
-if DIMM_DDR3
-	if DIMM_REGISTERED
-	config DIMM_SUPPORT
-		hex
-		default 0x0005
-	endif
-endif
 
 config SVI_HIGH_FREQ
 	bool

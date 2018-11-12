@@ -81,6 +81,7 @@ entries
 408          1       e       1        nmi
 409          2       e       7        power_on_after_fail
 #411          5       r       0        unused
+416          128      r      0        vbnv
 
 # MRC Scrambler Seed values
 896         32        r       0        mrc_scrambler_seed

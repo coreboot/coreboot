@@ -16,6 +16,14 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_LPC_TPM
 	select MAINBOARD_HAS_TPM1
 
+config VBOOT
+	select VBOOT_VBNV_CMOS
+	select VBOOT_NO_BOARD_SUPPORT
+	select GBB_FLAG_DISABLE_LID_SHUTDOWN
+	select GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+	select GBB_FLAG_DISABLE_FWMP
+
 config MAINBOARD_DIR
 	string
 	default "ocp/wedge100s"
@@ -30,6 +38,7 @@ config IRQ_SLOT_COUNT
 
 config CBFS_SIZE
 	hex
+	default 0x006fa000 if VBOOT
 	default 0x00200000
 
 config VIRTUAL_ROM_SIZE
@@ -45,6 +54,7 @@ config FSP_PACKAGE_DEFAULT
 
 config FMDFILE
 	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/vboot-ro.fmd" if VBOOT
 	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd"
 
 endif # BOARD_OCP_WEDGE100S

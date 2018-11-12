@@ -41,10 +41,6 @@ config CPU_SPECIFIC_OPTIONS
 	select UNCOMPRESSED_RAMSTAGE
 	select USE_MARCH_586
 
-config MMCOMF_SUPPORT_DEFAULT
-	bool
-	default n
-
 #####
 # Debug serial output
 #     The following options configure the debug serial port

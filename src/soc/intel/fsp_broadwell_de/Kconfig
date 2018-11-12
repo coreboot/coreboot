@@ -29,6 +29,9 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_MONOTONIC_TIMER
 	select TSC_CONSTANT_RATE
 
+config VBOOT
+	select VBOOT_STARTS_IN_ROMSTAGE
+
 config CBFS_SIZE
 	hex
 	default 0x200000

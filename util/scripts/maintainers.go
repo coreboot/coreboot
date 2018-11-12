@@ -258,11 +258,41 @@ func glob_to_regex(glob string) string {
 	return "^" + regex + "$"
 }
 
+var is_email *regexp.Regexp
+
+func extract_maintainer(maintainer string) string {
+	if is_email == nil {
+		is_email = regexp.MustCompile("<[^>]*>")
+	}
+
+	if match := is_email.FindStringSubmatch(maintainer); match != nil {
+		return match[0][1 : len(match[0])-1]
+	}
+	return maintainer
+}
+
+func do_print_gerrit_rules() {
+	for _, subsystem := range subsystems {
+		if len(subsystem.paths) == 0 || len(subsystem.maintainer) == 0 {
+			continue
+		}
+		fmt.Println("#", subsystem.name)
+		for _, path := range subsystem.paths {
+			fmt.Println("[filter \"file:" + path_to_regexstr(path) + "\"]")
+			for _, maint := range subsystem.maintainer {
+				fmt.Println("  reviewer =", extract_maintainer(maint))
+			}
+		}
+		fmt.Println()
+	}
+}
+
 func main() {
 	var (
-		files []string
-		err   error
-		debug = flag.Bool("debug", false, "emit additional debug output")
+		files              []string
+		err                error
+		print_gerrit_rules = flag.Bool("print-gerrit-rules", false, "emit the MAINTAINERS rules in a format suitable for Gerrit's reviewers plugin")
+		debug              = flag.Bool("debug", false, "emit additional debug output")
 	)
 	flag.Parse()
 
@@ -276,6 +306,11 @@ func main() {
 
 	if *debug {
 		print_maintainers()
+	}
+
+	if *print_gerrit_rules {
+		do_print_gerrit_rules()
+		return
 	}
 
 	args := flag.Args()

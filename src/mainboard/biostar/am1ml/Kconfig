@@ -47,10 +47,6 @@ config MAX_CPUS
 	int
 	default 4
 
-config HW_MEM_HOLE_SIZE_AUTO_INC
-	bool
-	default n
-
 config IRQ_SLOT_COUNT
 	int
 	default 10

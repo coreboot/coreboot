@@ -20,6 +20,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strings"
 )
 
 type subsystem struct {
@@ -151,7 +152,7 @@ func find_maintainer(fname string) {
 			success = true
 			fmt.Println(fname, "is in subsystem",
 				subsystem.name)
-			fmt.Println("Maintainers: ", subsystem.maintainer)
+			fmt.Println("Maintainers: ", strings.Join(subsystem.maintainer, ", "))
 		}
 	}
 	if !success {

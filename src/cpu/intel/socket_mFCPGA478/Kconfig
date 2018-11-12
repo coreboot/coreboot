@@ -5,6 +5,8 @@ if CPU_INTEL_SOCKET_MFCPGA478
 
 config SOCKET_SPECIFIC_OPTIONS # dummy
 	def_bool y
+	select CPU_INTEL_MODEL_69X
+	select CPU_INTEL_MODEL_6DX
 	select CPU_INTEL_MODEL_6EX
 	select CPU_INTEL_MODEL_6FX
 	select MMX

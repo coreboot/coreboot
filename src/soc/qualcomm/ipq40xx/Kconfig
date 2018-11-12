@@ -24,11 +24,6 @@ config IPQ_QFN_PART
 	help
 	  Is the SoC a QFN part (as opposed to a BGA part)
 
-config MBN_ENCAPSULATION
-	depends on USE_BLOBS
-	bool "bootblock encapsulation for ipq40xx"
-	default y
-
 config CDT_MBN
 	string "CDT binary blob"
 	default "cdt-AP.DK01.1-C1.bin"

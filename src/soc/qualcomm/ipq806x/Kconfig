@@ -17,11 +17,6 @@ config VBOOT
 	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_RETURN_FROM_VERSTAGE
 
-config MBN_ENCAPSULATION
-	depends on USE_BLOBS
-	bool "bootblock encapsulation for ipq8064"
-	default y
-
 config SBL_BLOB
 	depends on USE_BLOBS
 	string "file name of the Qualcomm SBL blob"

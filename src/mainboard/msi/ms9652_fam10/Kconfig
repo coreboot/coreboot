@@ -75,10 +75,6 @@ config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x00
 
-config VAR_MTRR_HOLE
-	bool
-	default n
-
 config APIC_ID_OFFSET
 	hex
 	default 0x00

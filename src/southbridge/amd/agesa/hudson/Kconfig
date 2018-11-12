@@ -90,11 +90,6 @@ config HUDSON_GEC_FWM_FILE
 	default "3rdparty/blobs/southbridge/amd/yangtze/gec.bin"  if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	depends on HUDSON_GEC_FWM
 
-config HUDSON_FWM
-	bool
-	default y if HUDSON_XHCI_FWM || HUDSON_IMC_FWM || HUDSON_GEC_FWM
-	default n
-
 config HUDSON_SATA_MODE
 	int "SATA Mode"
 	default 0

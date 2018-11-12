@@ -113,3 +113,6 @@ _bogus = ASSERT((CONFIG_DCACHE_RAM_SIZE == 0) || (SIZEOF(.car.data) <= CONFIG_DC
 #if IS_ENABLED(CONFIG_PAGING_IN_CACHE_AS_RAM)
 _bogus2 = ASSERT(_pagetables == ALIGN(_pagetables, 4096), "_pagetables aren't 4KiB aligned");
 #endif
+#if IS_ENABLED(CONFIG_C_ENVIRONMENT_BOOTBLOCK)
+_bogus3 = ASSERT(CONFIG_DCACHE_BSP_STACK_SIZE > 0x0, "BSP stack size not configured");
+#endif

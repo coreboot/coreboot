@@ -16,7 +16,7 @@
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
-	0x02,		// DSDT revision: ACPI v2.0
+	0x02,		// DSDT revision: ACPI v2.0 and up
 	"COREv2",	// OEM id
 	"COREBOOT",	// OEM table id
 	0x20090419	// OEM revision

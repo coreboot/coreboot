@@ -15,10 +15,10 @@
 
 #include <arch/early_variables.h>
 #include <console/console.h>
+#include <cpu/x86/mtrr.h>
 #include <fsp/car.h>
 #include <fsp/util.h>
 #include <program_loading.h>
-#include <soc/intel/common/util.h>
 #include <timestamp.h>
 
 FSP_INFO_HEADER *fih_car CAR_GLOBAL;
@@ -95,7 +95,7 @@ asmlinkage void after_cache_as_ram(void *chipset_context)
 {
 	timestamp_add_now(TS_FSP_TEMP_RAM_EXIT_END);
 	printk(BIOS_DEBUG, "FspTempRamExit returned successfully\n");
-	soc_display_mtrrs();
+	display_mtrrs();
 
 	after_cache_as_ram_stage();
 }

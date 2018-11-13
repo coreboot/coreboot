@@ -99,9 +99,16 @@ void x86_mtrr_check(void);
  * This function needs to be called after the first MTRR solution is derived. */
 void mtrr_use_temp_range(uintptr_t begin, size_t size, int type);
 
+static inline int get_var_mtrr_count(void)
+{
+	return rdmsr(MTRR_CAP_MSR).lo & MTRR_CAP_VCNT;
+}
+
 void set_var_mtrr(unsigned int reg, unsigned int base, unsigned int size,
 	unsigned int type);
 int get_free_var_mtrr(void);
+
+asmlinkage void display_mtrrs(void);
 
 /*
  * Set the MTRRs using the data on the stack from setup_stack_and_mtrrs.

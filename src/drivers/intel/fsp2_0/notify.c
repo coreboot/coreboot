@@ -12,8 +12,8 @@
 
 #include <bootstate.h>
 #include <console/console.h>
+#include <cpu/x86/mtrr.h>
 #include <fsp/util.h>
-#include <soc/intel/common/util.h>
 #include <string.h>
 #include <timestamp.h>
 
@@ -70,9 +70,7 @@ static void fsp_notify_dummy(void *arg)
 {
 	enum fsp_notify_phase phase = (uint32_t)arg;
 
-	/* Display the MTRRs */
-	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
-		soc_display_mtrrs();
+	display_mtrrs();
 
 	fsp_notify(phase);
 	if (phase == READY_TO_BOOT)

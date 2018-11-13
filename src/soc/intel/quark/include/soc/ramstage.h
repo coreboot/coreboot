@@ -17,6 +17,7 @@
 #ifndef _SOC_RAMSTAGE_H_
 #define _SOC_RAMSTAGE_H_
 
+#include <arch/cpu.h>
 #include <chip.h>
 #include <device/device.h>
 #if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)

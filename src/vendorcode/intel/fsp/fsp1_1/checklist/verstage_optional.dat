@@ -9,8 +9,6 @@ mainboard_check_ec_image
 mainboard_post
 platform_prog_run
 platform_segment_loaded
-soc_display_mtrrs
-soc_get_variable_mtrr_count
 stage_cache_add
 stage_cache_load_stage
 timestamp_get

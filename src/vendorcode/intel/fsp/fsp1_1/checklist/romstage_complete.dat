@@ -40,8 +40,6 @@ smm_region
 smm_region_size
 soc_after_ram_init
 soc_display_memory_init_params
-soc_display_mtrrs
-soc_get_variable_mtrr_count
 soc_memory_init_params
 soc_pre_ram_init
 southbridge_smi_handler

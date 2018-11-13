@@ -16,7 +16,6 @@
 
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
-#include <soc/intel/common/util.h>
 #include <soc/pci_devs.h>
 #include <soc/reg_access.h>
 

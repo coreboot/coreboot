@@ -4,23 +4,18 @@ subdirs-y += basecode/
 subdirs-y += block/
 subdirs-y += pch/
 
-bootblock-y += util.c
-
 verstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 
 bootblock-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 
 romstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
-romstage-y += util.c
 romstage-$(CONFIG_MMA) += mma.c
 romstage-y += smbios.c
 
-postcar-y += util.c
 postcar-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 
 ramstage-y += hda_verb.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
-ramstage-y += util.c
 ramstage-$(CONFIG_MMA) += mma.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_ACPI_WAKE_SOURCE) += acpi_wake_source.c
 ramstage-y += vbt.c

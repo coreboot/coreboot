@@ -22,7 +22,6 @@
 #include <memory_info.h>
 #include <fsp/car.h>
 #include <fsp/util.h>
-#include <soc/intel/common/util.h>
 #include <soc/intel/common/mma.h>
 #include <soc/pei_wrapper.h>
 #include <soc/pm.h>		/* chip_power_state */

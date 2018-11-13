@@ -670,6 +670,11 @@ source "payloads/Kconfig"
 
 menu "Debugging"
 
+comment "CPU Debug Settings"
+source "src/cpu/*/Kconfig.debug"
+
+comment "General Debug Settings"
+
 # TODO: Better help text and detailed instructions.
 config GDB_STUB
 	bool "GDB debugging support"

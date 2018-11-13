@@ -38,12 +38,12 @@ void *setup_stack_and_mtrrs(void)
 	uint32_t *slot;
 
 	/* Display the MTRRs */
-	soc_display_mtrrs();
+	display_mtrrs();
 
 	/* Top of stack needs to be aligned to a 8-byte boundary. */
 	slot = (void *)romstage_ram_stack_top();
 	num_mtrrs = 0;
-	max_mtrrs = soc_get_variable_mtrr_count(NULL);
+	max_mtrrs = get_var_mtrr_count();
 
 	/*
 	 * The upper bits of the MTRR mask need to set according to the number

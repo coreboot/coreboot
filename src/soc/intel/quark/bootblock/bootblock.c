@@ -15,10 +15,10 @@
  */
 #include <bootblock_common.h>
 #include <console/console.h>
+#include <cpu/x86/mtrr.h>
 #include <device/pci_def.h>
 #include <program_loading.h>
 #include <soc/iomap.h>
-#include <soc/intel/common/util.h>
 #include <soc/pci_devs.h>
 #include <soc/reg_access.h>
 
@@ -112,8 +112,7 @@ void bootblock_soc_init(void)
 	if (IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_SOC_INIT_ENTRY))
 		light_sd_led();
 
-	/* Display the MTRRs */
-	soc_display_mtrrs();
+	display_mtrrs();
 }
 
 void platform_prog_run(struct prog *prog)

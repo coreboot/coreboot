@@ -16,9 +16,9 @@
 #include <arch/cpu.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <cpu/x86/mtrr.h>
 #include <main_decl.h>
 #include <program_loading.h>
-#include <soc/intel/common/util.h>
 
 /*
  * Systems without a native coreboot cache-as-ram teardown may implement
@@ -35,9 +35,7 @@ void main(void)
 	/* Recover cbmem so infrastruture using it is functional. */
 	cbmem_initialize();
 
-	/* Display the MTRRs */
-	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
-		soc_display_mtrrs();
+	display_mtrrs();
 
 	/* Load and run ramstage. */
 	run_ramstage();

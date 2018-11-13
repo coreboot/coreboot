@@ -11,8 +11,8 @@
 
 #include <console/console.h>
 #include <console/streams.h>
+#include <cpu/x86/mtrr.h>
 #include <fsp/util.h>
-#include <soc/intel/common/util.h>
 
 asmlinkage size_t fsp_write_line(uint8_t *buffer, size_t number_of_bytes)
 {
@@ -28,9 +28,7 @@ void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
 	const FSPM_UPD *fspm_old_upd,
 	const FSPM_UPD *fspm_new_upd)
 {
-	/* Display the MTRRs */
-	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
-		soc_display_mtrrs();
+	display_mtrrs();
 
 	/* Display the UPD values */
 	if (IS_ENABLED(CONFIG_DISPLAY_UPD_DATA))
@@ -62,9 +60,7 @@ void fsp_debug_after_memory_init(uint32_t status)
 	if (IS_ENABLED(CONFIG_VERIFY_HOBS))
 		fsp_verify_memory_init_hobs();
 
-	/* Display the MTRRs */
-	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
-		soc_display_mtrrs();
+	display_mtrrs();
 }
 
 /*-----------
@@ -75,9 +71,7 @@ void fsp_debug_before_silicon_init(fsp_silicon_init_fn silicon_init,
 	const FSPS_UPD *fsps_old_upd,
 	const FSPS_UPD *fsps_new_upd)
 {
-	/* Display the MTRRs */
-	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
-		soc_display_mtrrs();
+	display_mtrrs();
 
 	/* Display the UPD values */
 	if (IS_ENABLED(CONFIG_DISPLAY_UPD_DATA))
@@ -99,9 +93,7 @@ void fsp_debug_after_silicon_init(uint32_t status)
 	if (IS_ENABLED(CONFIG_DISPLAY_HOBS))
 		fsp_display_hobs();
 
-	/* Display the MTRRs */
-	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
-		soc_display_mtrrs();
+	display_mtrrs();
 }
 
 /*-----------
@@ -129,7 +121,5 @@ void fsp_debug_after_notify(uint32_t status)
 	if (IS_ENABLED(CONFIG_DISPLAY_HOBS))
 		fsp_display_hobs();
 
-	/* Display the MTRRs */
-	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
-		soc_display_mtrrs();
+	display_mtrrs();
 }

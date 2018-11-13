@@ -20,13 +20,11 @@
  */
 int get_free_var_mtrr(void)
 {
-	msr_t msr, maskm;
+	msr_t maskm;
 	int vcnt;
 	int i;
 
-	/* Read MTRRCap and get vcnt - variable memory type ranges. */
-	msr = rdmsr(MTRR_CAP_MSR);
-	vcnt = msr.lo & 0xff;
+	vcnt = get_var_mtrr_count();
 
 	/* Identify the first var mtrr which is not valid. */
 	for (i = 0; i < vcnt; i++) {

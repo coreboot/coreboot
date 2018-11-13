@@ -66,7 +66,7 @@
 1:
 #endif
 	/* Display the MTRRs */
-	call	soc_display_mtrrs
+	call	display_mtrrs
 
 	/*
 	 * The stack contents are initialized in src/soc/intel/common/stack.c

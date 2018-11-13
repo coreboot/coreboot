@@ -1,0 +1,6 @@
+config HAVE_DISPLAY_MTRRS
+	bool
+
+config DISPLAY_MTRRS
+	bool "Display intermediate MTRR settings"
+	depends on HAVE_DISPLAY_MTRRS

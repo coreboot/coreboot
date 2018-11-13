@@ -1,5 +1,6 @@
 config SOC_INTEL_COMMON
 	bool
+	select HAVE_DISPLAY_MTRRS
 	help
 	  common code for Intel SOCs
 
@@ -13,10 +14,6 @@ source "src/soc/intel/common/pch/Kconfig"
 
 comment "Intel SoC Common coreboot stages"
 source "src/soc/intel/common/basecode/Kconfig"
-
-config DISPLAY_MTRRS
-	bool "MTRRs: Display the MTRR settings"
-	default n
 
 config DISPLAY_SMM_MEMORY_MAP
 	bool "SMM: Display the SMM memory map"

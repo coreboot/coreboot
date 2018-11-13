@@ -22,8 +22,6 @@ map_oprom_vendev
 platform_prog_run
 platform_segment_loaded
 save_chromeos_gpios
-soc_display_mtrrs
-soc_get_variable_mtrr_count
 stage_cache_add
 stage_cache_load_stage
 timestamp_get

@@ -18,7 +18,6 @@
 #define _INTEL_COMMON_RAMSTAGE_H_
 
 #include <fsp/util.h>
-#include <soc/intel/common/util.h>
 #include <stdint.h>
 
 /*

@@ -30,7 +30,7 @@ static void w83627thg_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case W83627THG_KBC:
 		pc_keyboard_init(NO_AUX_DEVICE);
 		break;

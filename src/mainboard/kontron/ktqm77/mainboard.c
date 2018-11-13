@@ -39,7 +39,7 @@ static int int15_handler(void)
 	printk(BIOS_DEBUG, "%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
 			  __func__, X86_AX, X86_BX, X86_CX, X86_DX);
 
-	switch(X86_EAX & 0xffff) {
+	switch (X86_EAX & 0xffff) {
 	case 0x5f34:
 		/*
 		 * Set Panel Fitting Hook:

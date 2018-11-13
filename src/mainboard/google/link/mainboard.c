@@ -58,7 +58,7 @@ static int int15_handler(void)
 	printk(BIOS_DEBUG, "%s: INT15 function %04x!\n",
 			__func__, X86_AX);
 
-	switch(X86_AX) {
+	switch (X86_AX) {
 	case 0x5f34:
 		/*
 		 * Set Panel Fitting Hook:

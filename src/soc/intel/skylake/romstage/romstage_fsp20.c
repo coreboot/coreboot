@@ -101,7 +101,7 @@ static void save_dimm_info(void)
 			if (src_dimm->Status != DIMM_PRESENT)
 				continue;
 
-			switch(memory_info_hob->MemoryType) {
+			switch (memory_info_hob->MemoryType) {
 			case MRC_DDR_TYPE_DDR4:
 				ddr_type = MEMORY_TYPE_DDR4;
 				break;

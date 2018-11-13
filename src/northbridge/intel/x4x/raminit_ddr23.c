@@ -820,7 +820,7 @@ static void program_dll(struct sysinfo *s)
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
 		const struct dll_setting *setting;
 
-		switch(s->selected_timings.mem_clk) {
+		switch (s->selected_timings.mem_clk) {
 		default: /* Should not happen */
 	        case MEM_CLOCK_667MHz:
 			setting = default_ddr2_667_ctrl;

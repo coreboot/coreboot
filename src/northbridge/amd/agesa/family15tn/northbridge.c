@@ -964,7 +964,7 @@ u32 map_oprom_vendev(u32 vendev)
 {
 	u32 new_vendev = vendev;
 
-	switch(vendev) {
+	switch (vendev) {
 	case 0x10029900:	/* AMD Radeon HD 7660G (Trinity)  */
 	case 0x10029901:	/* AMD Radeon HD 7660D (Trinity)  */
 	case 0x10029903:	/* AMD Radeon HD 7640G (Trinity)  */

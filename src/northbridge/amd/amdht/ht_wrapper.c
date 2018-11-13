@@ -132,7 +132,7 @@ static void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
 	}
 	printk(log_level, ": ");
 
-	switch(event) {
+	switch (event) {
 		case HT_EVENT_COH_EVENTS:
 		case HT_EVENT_COH_NO_TOPOLOGY:
 		case HT_EVENT_COH_LINK_EXCEED:

@@ -126,7 +126,7 @@ u32 map_oprom_vendev(u32 vendev)
 {
 	u32 new_vendev = vendev;
 
-	switch(vendev) {
+	switch (vendev) {
 	case 0x10029809:
 	case 0x10029808:
 	case 0x10029807:

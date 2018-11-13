@@ -163,7 +163,7 @@ static void lpc47n217_pnp_set_iobase(struct device *dev, u16 iobase)
 {
 	ASSERT(!(iobase & 0x3));
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case LPC47N217_PP:
 		pnp_write_config(dev, 0x23, (iobase >> 2) & 0xff);
 		break;
@@ -201,7 +201,7 @@ static void lpc47n217_pnp_set_irq(struct device *dev, u8 irq)
 	u8 irq_config_register = 0, irq_config_mask = 0;
 	u8 current_config, new_config;
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case LPC47N217_PP:
 		irq_config_register = 0x27;
 		irq_config_mask = 0x0F;
@@ -231,7 +231,7 @@ static void lpc47n217_pnp_set_enable(struct device *dev, int enable)
 {
 	u8 power_register = 0, power_mask = 0, current_power, new_power;
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case LPC47N217_PP:
 		power_register = 0x01;
 		power_mask = 0x04;

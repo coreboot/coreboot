@@ -168,7 +168,7 @@ const char *dev_path(const struct device *dev)
 	if (!dev) {
 		memcpy(buffer, "<null>", 7);
 	} else {
-		switch(dev->path.type) {
+		switch (dev->path.type) {
 		case DEVICE_PATH_NONE:
 			memcpy(buffer, "NONE", 5);
 			break;

@@ -161,7 +161,7 @@ static int run(int index)
 		return index;
 	/* state machine! */
 	for(i = index, id = &iodefs[i]; id->op; i++, id++){
-		switch(id->op){
+		switch (id->op) {
 		case M:
 			if (verbose & vmsg) printk(BIOS_SPEW, "%ld: %s\n",
 						globalmicroseconds(), id->msg);
@@ -193,7 +193,7 @@ static int run(int index)
 			if (id->addr == PCH_PP_CONTROL){
 				if (verbose & vio)
 					printk(BIOS_SPEW, "PCH_PP_CONTROL\n");
-				switch(id->data & 0xf){
+				switch (id->data & 0xf) {
 				case 8: break;
 				case 7: break;
 				default: udelay(100000);

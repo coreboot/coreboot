@@ -150,7 +150,7 @@ unsigned long mainboard_write_acpi_tables(struct device *device,
 		current = ALIGN(current, 8);
 		printk(BIOS_DEBUG, "ACPI:    * SSDT for PCI%c at %lx\n", c, current); /* pci0 and pci1 are in dsdt */
 		ssdtx = (acpi_header_t *)current;
-		switch(sysconf.hcid[i]) {
+		switch (sysconf.hcid[i]) {
 		case 1:
 			file_name = CONFIG_CBFS_PREFIX "/ssdt2.aml";
 			break;

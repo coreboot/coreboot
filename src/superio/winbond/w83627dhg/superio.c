@@ -38,7 +38,7 @@ static void w83627dhg_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case W83627DHG_SP2:
 		w83627dhg_enable_UR2(dev);
 		break;

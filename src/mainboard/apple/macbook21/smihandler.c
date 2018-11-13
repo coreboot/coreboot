@@ -49,7 +49,7 @@ int mainboard_io_trap_handler(int smif)
 
 int mainboard_smi_apmc(u8 data)
 {
-	switch(data) {
+	switch (data) {
 		case APM_CNT_ACPI_ENABLE:
 			/* route H8SCI to SCI */
 			gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SCI);

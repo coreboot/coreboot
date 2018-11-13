@@ -91,7 +91,7 @@ static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigP
 	TempData8 |= Data8;
 	Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, TempData8);
 
-	switch(MemData->ParameterListPtr->DDR3Voltage){
+	switch (MemData->ParameterListPtr->DDR3Voltage) {
 		case VOLT1_35:
 			Data8 =  Read64Mem8 (GpioMmioAddr+SB_GPIO_REG178);
 			Data8 &= ~(UINT8)BIT6;

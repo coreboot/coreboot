@@ -73,7 +73,7 @@ static ucode_validity nano_ucode_is_valid(const nano_ucode_header *ucode)
 
 static void nano_print_ucode_status(ucode_update_status stat)
 {
-	switch(stat)
+	switch (stat)
 	{
 	case UCODE_UPDATE_SUCCESS:
 		printk(BIOS_INFO, "Microcode update successful.\n");

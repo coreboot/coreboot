@@ -31,7 +31,7 @@ static void w83977tf_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case W83977TF_KBC:
 		pc_keyboard_init(NO_AUX_DEVICE);
 		break;

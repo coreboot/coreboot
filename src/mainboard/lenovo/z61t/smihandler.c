@@ -121,7 +121,7 @@ static void mainboard_smi_handle_ec_sci(void)
 	event = ec_query();
 	printk(BIOS_DEBUG, "EC event %02x\n", event);
 
-	switch(event) {
+	switch (event) {
 		/* brightness up */
 		case 0x14:
 			mainboard_smi_brightness_up();
@@ -155,7 +155,7 @@ void mainboard_smi_gpi(u32 gpi)
 
 int mainboard_smi_apmc(u8 data)
 {
-	switch(data) {
+	switch (data) {
 		case APM_CNT_ACPI_ENABLE:
 			/* use 0x1600/0x1604 to prevent races with userspace */
 			ec_set_ports(0x1604, 0x1600);

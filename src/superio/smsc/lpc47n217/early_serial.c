@@ -43,7 +43,7 @@ static void lpc47n217_pnp_set_iobase(pnp_devfn_t dev, u16 iobase)
 	/* LPC47N217 requires base ports to be a multiple of 4. */
 	ASSERT(!(iobase & 0x3));
 
-	switch(dev & 0xFF) {
+	switch (dev & 0xFF) {
 	case LPC47N217_PP:
 		pnp_write_config(dev, 0x23, (iobase >> 2) & 0xff);
 		break;
@@ -74,7 +74,7 @@ static void lpc47n217_pnp_set_enable(pnp_devfn_t dev, int enable)
 {
 	u8 power_register = 0, power_mask = 0, current_power, new_power;
 
-	switch(dev & 0xFF) {
+	switch (dev & 0xFF) {
 	case LPC47N217_PP:
 		power_register = 0x01;
 		power_mask = 0x04;

@@ -379,7 +379,7 @@ int xgifb_modeset(struct pci_dev *pdev, struct xgifb_video_info *xgifb_info)
 
 		xgi_fb.reserved_mask_pos = 0;
 		xgi_fb.reserved_mask_size = 0;
-		switch(xgifb_info->video_bpp){
+		switch (xgifb_info->video_bpp) {
 		case 32:
 		case 24:
 			/* packed into 4-byte words */

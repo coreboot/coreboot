@@ -125,7 +125,7 @@ void trap_handler(trapframe *tf)
 		return;
 	}
 
-	switch(tf->cause) {
+	switch (tf->cause) {
 		case CAUSE_MISALIGNED_FETCH:
 		case CAUSE_FETCH_ACCESS:
 		case CAUSE_ILLEGAL_INSTRUCTION:

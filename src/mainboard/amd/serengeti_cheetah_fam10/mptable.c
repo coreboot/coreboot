@@ -70,7 +70,7 @@ static void *smp_write_config_table(void *v)
 			if (!(sysconf.pci1234[i] & 0x1))
 				continue;
 
-			switch(sysconf.hcid[i]) {
+			switch (sysconf.hcid[i]) {
 			case 1:
 			case 3:
 				dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j], 1));
@@ -137,7 +137,7 @@ static void *smp_write_config_table(void *v)
 		int jj;
 		struct device *dev;
 		struct resource *res;
-		switch(sysconf.hcid[i]) {
+		switch (sysconf.hcid[i]) {
 		case 1:
 		case 3:
 			dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j], 1));

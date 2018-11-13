@@ -38,7 +38,7 @@ static void pnp_exit_conf_state(pnp_devfn_t dev)
 void f81216h_enable_serial(pnp_devfn_t dev, u16 iobase, mode_key k)
 {
 	u8 key;
-	switch(k) {
+	switch (k) {
 	case MODE_6767:
 		key = 0x67;
 		break;

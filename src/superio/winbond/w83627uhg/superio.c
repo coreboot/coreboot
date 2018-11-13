@@ -58,7 +58,7 @@ static void w83627uhg_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case W83627UHG_SP1:
 		set_uart_clock_source(dev, 0);
 		break;

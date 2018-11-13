@@ -44,7 +44,7 @@ static void w83667hg_a_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	/* TODO: Might potentially need code for HWM or FDC etc. */
 	case W83667HG_A_KBC:
 		/* Enable mouse controller */

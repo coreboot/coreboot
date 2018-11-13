@@ -195,7 +195,7 @@ static int ast_detect_chip(struct drm_device *dev, bool *need_post)
 	}
 
 	/* Print stuff for diagnostic purposes */
-	switch(ast->tx_chip_type) {
+	switch (ast->tx_chip_type) {
 	case AST_TX_SIL164:
 		DRM_INFO("Using Sil164 TMDS transmitter\n");
 		break;

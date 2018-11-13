@@ -43,7 +43,7 @@ static void lpc47b397_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case LPC47B397_KBC:
 		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
@@ -55,7 +55,7 @@ static void lpc47b397_pnp_enable_resources(struct device *dev)
 	pnp_enable_resources(dev);
 
 	pnp_enter_conf_mode(dev);
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case LPC47B397_HWM:
 		printk(BIOS_DEBUG, "LPC47B397 SensorBus register access enabled\n");
 		pnp_set_logical_device(dev);

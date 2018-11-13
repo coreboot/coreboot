@@ -151,7 +151,7 @@ void get_bus_conf(void)
 		/* check hcid type here */
 		sysconf.hcid[i] = get_hcid(i);
 
-		switch(sysconf.hcid[i]) {
+		switch (sysconf.hcid[i]) {
 
 		case 1:	/* 8132 */
 		case 3: /* 8131 */

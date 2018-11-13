@@ -30,7 +30,7 @@ static void set_irq_trigger_type(struct device *dev, bool trig_level)
 	reg26 |= CR26_LOCK_REG;
 	pnp_write_config(dev, GLOBAL_OPTION_CR26, reg26);
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	//SP1 (UARTA) IRQ type selection (1:level,0:edge) is controlled by CR 10, bit 5
 	case NCT5104D_SP1:
 		reg10 = pnp_read_config(dev, IRQ_TYPE_SEL_CR10);
@@ -116,7 +116,7 @@ static void nct5104d_init(struct device *dev)
 
 	pnp_enter_conf_mode(dev);
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case NCT5104D_SP1:
 	case NCT5104D_SP2:
 		set_irq_trigger_type(dev, conf->irq_trigger_type != 0);

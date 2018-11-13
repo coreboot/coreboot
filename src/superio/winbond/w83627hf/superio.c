@@ -90,7 +90,7 @@ static void w83627hf_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case W83627HF_KBC:
 		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
@@ -110,7 +110,7 @@ static void w83627hf_pnp_enable_resources(struct device *dev)
 	pnp_enable_resources(dev);
 
 	pnp_enter_conf_mode(dev);
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case W83627HF_HWM:
 		printk(BIOS_DEBUG, "W83627HF HWM SMBus enabled\n");
 		enable_hwm_smbus(dev);

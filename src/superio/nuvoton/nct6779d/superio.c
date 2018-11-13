@@ -32,7 +32,7 @@ static void nct6779d_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	/* TODO: Might potentially need code for HWM or FDC etc. */
 	case NCT6779D_KBC:
 		pc_keyboard_init(NO_AUX_DEVICE);

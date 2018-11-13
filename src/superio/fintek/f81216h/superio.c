@@ -40,7 +40,7 @@ static void pnp_enter_ext_func_mode(struct device *dev)
 	 *
 	 *  See page 17 of data sheet.
 	 */
-	switch(conf->conf_key_mode) {
+	switch (conf->conf_key_mode) {
 	case MODE_6767:
 	case MODE_7777:
 	case MODE_8787:
@@ -74,7 +74,7 @@ static void f81216h_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case F81216H_SP1:
 	case F81216H_SP2:
 	case F81216H_SP3:

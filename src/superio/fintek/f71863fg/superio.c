@@ -29,7 +29,7 @@ static void f71863fg_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	/* TODO: Might potentially need code for HWM or FDC etc. */
 	case F71863FG_KBC:
 		res0 = find_resource(dev, PNP_IDX_IO0);

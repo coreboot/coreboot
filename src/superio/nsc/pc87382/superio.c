@@ -26,7 +26,7 @@ static void init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
-	switch(dev->path.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case PC87382_DOCK:
 		break;
 

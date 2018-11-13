@@ -59,10 +59,6 @@ config FSP_LOC
 	  value that is set in the FSP binary.  If the FSP needs to be moved,
 	  rebase the FSP with Intel's BCT (tool).
 
-config DISPLAY_FAST_BOOT_DATA
-	bool "Display fast boot data"
-	default n
-
 config DISPLAY_HOBS
 	bool "Display hand-off-blocks (HOBs)"
 	default n

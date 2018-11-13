@@ -177,3 +177,57 @@ config ENABLE_POWER_BUTTON
 config ENABLE_POWER_BUTTON
 	def_bool y if !POWER_BUTTON_IS_OPTIONAL && POWER_BUTTON_FORCE_ENABLE
 	def_bool n if !POWER_BUTTON_IS_OPTIONAL && POWER_BUTTON_FORCE_DISABLE
+
+config HAVE_POWER_STATE_AFTER_FAILURE
+	bool
+
+if HAVE_POWER_STATE_AFTER_FAILURE
+
+config HAVE_POWER_STATE_PREVIOUS_AFTER_FAILURE
+	bool
+
+config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
+	bool
+	help
+	  Selected by platforms or mainboards that want a "default on"
+	  behaviour.
+
+choice
+	prompt "System Power State after Failure"
+	default POWER_STATE_ON_AFTER_FAILURE \
+		if POWER_STATE_DEFAULT_ON_AFTER_FAILURE
+	default POWER_STATE_OFF_AFTER_FAILURE
+	help
+	  Provides a default for the power state the system should
+	  go into after G3 (power loss). On many boards this can be
+	  overridden by an NVRAM option.
+
+config POWER_STATE_OFF_AFTER_FAILURE
+	bool "S5 Soft Off"
+	help
+	  Choose this option if you want to put system into
+	  S5 after reapplying power after failure.
+
+config POWER_STATE_ON_AFTER_FAILURE
+	bool "S0 Full On"
+	help
+	  Choose this option if you want to keep system in
+	  S0 after reapplying power after failure.
+
+config POWER_STATE_PREVIOUS_AFTER_FAILURE
+	bool "Keep Previous State"
+	depends on HAVE_POWER_STATE_PREVIOUS_AFTER_FAILURE
+	help
+	  Choose this option if you want to keep system in the
+	  same power state as before failure after reapplying
+	  power.
+
+endchoice
+
+config MAINBOARD_POWER_FAILURE_STATE
+	int
+	default 2 if POWER_STATE_PREVIOUS_AFTER_FAILURE
+	default 1 if POWER_STATE_ON_AFTER_FAILURE
+	default 0
+
+endif # HAVE_POWER_STATE_AFTER_FAILURE

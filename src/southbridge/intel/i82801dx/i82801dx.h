@@ -45,10 +45,6 @@ int smbus_read_byte(unsigned device, unsigned address);
 #define MAINBOARD_POWER_ON	1
 #define MAINBOARD_POWER_KEEP	2
 
-#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
-#endif
-
 /*
  * 000 = Non-combined. P0 is primary master. P1 is secondary master.
  * 001 = Non-combined. P0 is secondary master. P1 is primary master.

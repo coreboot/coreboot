@@ -587,10 +587,5 @@ void pmc_gpe_init(void)
  */
 int pmc_get_mainboard_power_failure_state_choice(void)
 {
-	if (IS_ENABLED(CONFIG_POWER_STATE_PREVIOUS_AFTER_FAILURE))
-		return MAINBOARD_POWER_STATE_PREVIOUS;
-	else if (IS_ENABLED(CONFIG_POWER_STATE_ON_AFTER_FAILURE))
-		return MAINBOARD_POWER_STATE_ON;
-
-	return MAINBOARD_POWER_STATE_OFF;
+	return CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 }

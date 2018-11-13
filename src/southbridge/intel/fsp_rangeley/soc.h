@@ -80,10 +80,6 @@ void rangeley_sb_early_initialization(void);
 #define MAINBOARD_POWER_ON	1
 #define MAINBOARD_POWER_KEEP	2
 
-#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
-#endif
-
 #define SOC_EHCI1_DEV		PCI_DEV(0, 0x1d, 0)
 #define PCIE_DEV_SLOT0	1
 #define PCIE_DEV_SLOT1	2

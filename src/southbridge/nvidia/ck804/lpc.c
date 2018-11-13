@@ -47,10 +47,6 @@
 #define SLOW_CPU_OFF 0
 #define SLOW_CPU__ON 1
 
-#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
-#endif
-
 static void lpc_common_init(struct device *dev)
 {
 	u32 dword;
@@ -114,7 +110,7 @@ static void lpc_init(struct device *dev)
 	printk(BIOS_INFO, "%s: pm_base = %x\n", __func__, pm_base);
 
 	/* Power after power fail */
-	on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	on = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 	get_option(&on, "power_on_after_fail");
 	byte = pci_read_config8(dev, PREVIOUS_POWER_STATE);
 	byte &= ~0x45;

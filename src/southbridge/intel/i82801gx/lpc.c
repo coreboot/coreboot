@@ -172,7 +172,7 @@ static void i82801gx_power_options(struct device *dev)
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
-	int pwr_on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	int pwr_on = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 	int nmi_option;
 
 	/* Which state do we want to goto after g3 (power restored)?

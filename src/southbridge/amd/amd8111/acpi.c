@@ -29,11 +29,6 @@
 #define SLOW_CPU_OFF 0
 #define SLOW_CPU__ON 1
 
-#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
-#endif
-
-
 static int lsmbus_recv_byte(struct device *dev)
 {
 	unsigned int device;
@@ -148,7 +143,7 @@ static void acpi_init(struct device *dev)
 	pci_write_config8(dev, 0x41, byte | (1<<6)|(1<<5));
 
 	/* power on after power fail */
-	on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	on = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 	get_option(&on, "power_on_after_fail");
 	byte = pci_read_config8(dev, PREVIOUS_POWER_STATE);
 	byte &= ~0x40;

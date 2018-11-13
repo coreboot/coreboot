@@ -276,7 +276,7 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	 * CMOS or even better from GNVS. Right now it's hard
 	 * coded at compile time.
 	 */
-	u8 s5pwr = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	u8 s5pwr = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 
 	/* First, disable further SMIs */
 	reg8 = inb(pmbase + SMI_EN);

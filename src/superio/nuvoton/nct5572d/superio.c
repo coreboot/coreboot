@@ -28,12 +28,9 @@
 
 #include "nct5572d.h"
 
-#define MAINBOARD_POWER_OFF 0
-#define MAINBOARD_POWER_ON 1
-
-#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
-#endif
+#define MAINBOARD_POWER_OFF	0
+#define MAINBOARD_POWER_ON	1
+#define MAINBOARD_POWER_KEEP	2
 
 static void nct5572d_init(struct device *dev)
 {
@@ -68,16 +65,16 @@ static void nct5572d_init(struct device *dev)
 		break;
 	case NCT5572D_ACPI:
 		/* Set power state after power fail */
-		power_status = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+		power_status = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 		get_option(&power_status, "power_on_after_fail");
 		pnp_enter_conf_mode_8787(dev);
 		pnp_set_logical_device(dev);
 		byte = pnp_read_config(dev, 0xe4);
 		byte &= ~0x60;
-		if (power_status == 1)
-			byte |= (0x1 << 5);    /* Force power on */
-		else if (power_status == 2)
-			byte |= (0x2 << 5);    /* Use last power state */
+		if (power_status == MAINBOARD_POWER_ON)
+			byte |= (0x1 << 5);
+		else if (power_status == MAINBOARD_POWER_KEEP)
+			byte |= (0x2 << 5);
 		pnp_write_config(dev, 0xe4, byte);
 		pnp_exit_conf_mode_aa(dev);
 		printk(BIOS_INFO, "set power %s after power fail\n", power_status ? "on" : "off");

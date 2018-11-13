@@ -403,7 +403,7 @@ static void southbridge_smi_sleep(void)
 	u8 reg8;
 	u32 reg32;
 	u8 slp_typ;
-	u8 s5pwr = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	u8 s5pwr = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 
 	// save and recover RTC port values
 	u8 tmp70, tmp72;

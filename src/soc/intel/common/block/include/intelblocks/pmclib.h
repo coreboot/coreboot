@@ -213,6 +213,7 @@ void soc_fill_power_state(struct chipset_power_state *ps);
  * 0 == S5 Soft Off
  * 1 == S0 Full On
  * 2 == Keep Previous State
+ * Keep in sync with `config MAINBOARD_POWER_FAILURE_STATE`.
  */
 enum {
 	MAINBOARD_POWER_STATE_OFF,

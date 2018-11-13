@@ -44,10 +44,6 @@ enum power_mode {
 	POWER_MODE_LAST = 2,
 };
 
-#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL POWER_MODE_ON
-#endif
-
 static const char *power_mode_names[] = {
 	[POWER_MODE_OFF] = "off",
 	[POWER_MODE_ON] = "on",
@@ -152,11 +148,11 @@ static void sm_init(struct device *dev)
 	pm_iowrite(0x53, byte);
 
 	/* power after power fail */
-	power_state = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	power_state = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 	get_option(&power_state, "power_on_after_fail");
 	if (power_state > 2) {
 		printk(BIOS_WARNING, "Invalid power_on_after_fail setting, using default\n");
-		power_state = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+		power_state = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 	}
 	byte = pm_ioread(0x74);
 	byte &= ~0x03;

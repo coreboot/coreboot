@@ -19,6 +19,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select ENABLE_APIC_EXT_ID
 	select DRIVERS_I2C_W83793
 	select DRIVERS_XGI_Z9S
+	select POWER_STATE_DEFAULT_ON_AFTER_FAILURE
 
 config MAINBOARD_DIR
 	string
@@ -77,10 +78,6 @@ config CK804_PCIE_PME_WAKE
 	default y
 
 config ONBOARD_VGA_IS_PRIMARY
-	bool
-	default y
-
-config MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 	bool
 	default y
 

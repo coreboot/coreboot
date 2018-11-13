@@ -82,10 +82,6 @@ void southbridge_configure_default_intmap(void);
 #define MAINBOARD_POWER_ON	1
 #define MAINBOARD_POWER_KEEP	2
 
-#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
-#endif
-
 /* PCI Configuration Space (D30:F0): PCI2PCI */
 #define PSTS	0x06
 #define SMLT	0x1b

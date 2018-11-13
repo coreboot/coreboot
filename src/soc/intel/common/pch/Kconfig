@@ -12,7 +12,6 @@ config SOC_INTEL_COMMON_PCH_BASE
 
 if SOC_INTEL_COMMON_PCH_BASE
 
-comment "Intel SoC Common PCH Code"
 source "src/soc/intel/common/pch/*/Kconfig"
 
 config PCH_SPECIFIC_OPTIONS

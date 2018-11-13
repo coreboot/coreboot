@@ -83,52 +83,56 @@ Name (PICP, Package () {
 })
 
 Name (PICN, Package () {
+	/*
+	 * If the setting change in soc_pch_pirq_init(), then
+	 * please make the same static IRQ changes here as well.
+	 */
 	/* D31: cAVS, SMBus, GbE, Nothpeak */
-	Package () { 0x001FFFFF, 0, \_SB.PCI0.LNKA, 0 },
-	Package () { 0x001FFFFF, 1, \_SB.PCI0.LNKB, 0 },
-	Package () { 0x001FFFFF, 2, \_SB.PCI0.LNKC, 0 },
-	Package () { 0x001FFFFF, 3, \_SB.PCI0.LNKD, 0 },
-	/* D32: Can't use PIC*/
+	Package () { 0x001FFFFF, 0, 0, 11 },
+	Package () { 0x001FFFFF, 1, 0, 10 },
+	Package () { 0x001FFFFF, 2, 0, 11 },
+	Package () { 0x001FFFFF, 3, 0, 11 },
+	/* D30: Can't use PIC*/
 	/* D29: PCI Express Port 9-16 */
-	Package () { 0x001DFFFF, 0, \_SB.PCI0.LNKA, 0 },
-	Package () { 0x001DFFFF, 1, \_SB.PCI0.LNKB, 0 },
-	Package () { 0x001DFFFF, 2, \_SB.PCI0.LNKC, 0 },
-	Package () { 0x001DFFFF, 3, \_SB.PCI0.LNKD, 0 },
+	Package () { 0x001DFFFF, 0, 0, 11 },
+	Package () { 0x001DFFFF, 1, 0, 10 },
+	Package () { 0x001DFFFF, 2, 0, 11 },
+	Package () { 0x001DFFFF, 3, 0, 11 },
 	/* D28: PCI Express Port 1-8 */
-	Package () { 0x001CFFFF, 0, \_SB.PCI0.LNKA, 0 },
-	Package () { 0x001CFFFF, 1, \_SB.PCI0.LNKB, 0 },
-	Package () { 0x001CFFFF, 2, \_SB.PCI0.LNKC, 0 },
-	Package () { 0x001CFFFF, 3, \_SB.PCI0.LNKD, 0 },
+	Package () { 0x001CFFFF, 0, 0, 11 },
+	Package () { 0x001CFFFF, 1, 0, 10 },
+	Package () { 0x001CFFFF, 2, 0, 11 },
+	Package () { 0x001CFFFF, 3, 0, 11 },
 	/* D25: Can't use PIC*/
 	/* D23 */
-	Package () { 0x0017FFFF, 0, \_SB.PCI0.LNKA, 0 },
+	Package () { 0x0017FFFF, 0, 0, 11 },
 	/* D22: CSME (HECI, IDE-R, KT redirection */
-	Package () { 0x0016FFFF, 0, \_SB.PCI0.LNKA, 0 },
-	Package () { 0x0016FFFF, 1, \_SB.PCI0.LNKB, 0 },
-	Package () { 0x0016FFFF, 2, \_SB.PCI0.LNKC, 0 },
-	Package () { 0x0016FFFF, 3, \_SB.PCI0.LNKD, 0 },
+	Package () { 0x0016FFFF, 0, 0, 11 },
+	Package () { 0x0016FFFF, 1, 0, 10 },
+	Package () { 0x0016FFFF, 2, 0, 11 },
+	Package () { 0x0016FFFF, 3, 0, 11 },
 	/* D21: Can't use PIC*/
 	/* D20: xHCI, OTG, SRAM, CNVi WiFi */
-	Package () { 0x0014FFFF, 0, \_SB.PCI0.LNKA, 0 },
-	Package () { 0x0014FFFF, 1, \_SB.PCI0.LNKB, 0 },
-	Package () { 0x0014FFFF, 2, \_SB.PCI0.LNKC, 0 },
-	Package () { 0x0014FFFF, 3, \_SB.PCI0.LNKD, 0 },
+	Package () { 0x0014FFFF, 0, 0, 11 },
+	Package () { 0x0014FFFF, 1, 0, 10 },
+	Package () { 0x0014FFFF, 2, 0, 11 },
+	Package () { 0x0014FFFF, 3, 0, 11 },
 	/* D19: Can't use PIC*/
 	/* Thermal */
-	Package () { 0x0012FFFF, 0, \_SB.PCI0.LNKA, 0 },
+	Package () { 0x0012FFFF, 0, 0, 11 },
 	/* P.E.G. Root Port D1F0 */
-	Package () { 0x0001FFFF, 0, \_SB.PCI0.LNKA, 0 },
-	Package () { 0x0001FFFF, 1, \_SB.PCI0.LNKB, 0 },
-	Package () { 0x0001FFFF, 2, \_SB.PCI0.LNKC, 0 },
-	Package () { 0x0001FFFF, 3, \_SB.PCI0.LNKD, 0 },
+	Package () { 0x0001FFFF, 0, 0, 11 },
+	Package () { 0x0001FFFF, 1, 0, 10 },
+	Package () { 0x0001FFFF, 2, 0, 11 },
+	Package () { 0x0001FFFF, 3, 0, 11 },
 	/* SA IGFX Device */
-	Package () { 0x0002FFFF, 0, \_SB.PCI0.LNKA, 0 },
+	Package () { 0x0002FFFF, 0, 0, 11 },
 	/* SA Thermal Device */
-	Package () { 0x0004FFFF, 0, \_SB.PCI0.LNKA, 0 },
+	Package () { 0x0004FFFF, 0, 0, 11 },
 	/* SA IPU Device */
-	Package () { 0x0005FFFF, 0, \_SB.PCI0.LNKA, 0 },
+	Package () { 0x0005FFFF, 0, 0, 11 },
 	/* SA GNA Device */
-	Package () { 0x0008FFFF, 0, \_SB.PCI0.LNKA, 0 },
+	Package () { 0x0008FFFF, 0, 0, 11 },
 })
 
 Method (_PRT)

@@ -24,10 +24,10 @@ Method (IRQM, 1, Serialized) {
 		Package () { 0x0000ffff, 2, 0, 18 },
 		Package () { 0x0000ffff, 3, 0, 19 } })
 	Name (IQAP, Package () {
-		Package () { 0x0000ffff, 0, \_SB.PCI0.LNKA, 0 },
-		Package () { 0x0000ffff, 1, \_SB.PCI0.LNKB, 0 },
-		Package () { 0x0000ffff, 2, \_SB.PCI0.LNKC, 0 },
-		Package () { 0x0000ffff, 3, \_SB.PCI0.LNKD, 0 } })
+		Package () { 0x0000ffff, 0, 0, 11 },
+		Package () { 0x0000ffff, 1, 0, 10 },
+		Package () { 0x0000ffff, 2, 0, 11 },
+		Package () { 0x0000ffff, 3, 0, 11 } })
 
 	/* Interrupt Map INTA->INTB, INTB->INTC, INTC->INTD, INTD->INTA */
 	Name (IQBA, Package () {
@@ -36,10 +36,10 @@ Method (IRQM, 1, Serialized) {
 		Package () { 0x0000ffff, 2, 0, 19 },
 		Package () { 0x0000ffff, 3, 0, 16 } })
 	Name (IQBP, Package () {
-		Package () { 0x0000ffff, 0, \_SB.PCI0.LNKB, 0 },
-		Package () { 0x0000ffff, 1, \_SB.PCI0.LNKC, 0 },
-		Package () { 0x0000ffff, 2, \_SB.PCI0.LNKD, 0 },
-		Package () { 0x0000ffff, 3, \_SB.PCI0.LNKA, 0 } })
+		Package () { 0x0000ffff, 0, 0, 10 },
+		Package () { 0x0000ffff, 1, 0, 11 },
+		Package () { 0x0000ffff, 2, 0, 11 },
+		Package () { 0x0000ffff, 3, 0, 11 } })
 
 	/* Interrupt Map INTA->INTC, INTB->INTD, INTC->INTA, INTD->INTB */
 	Name (IQCA, Package () {
@@ -48,10 +48,10 @@ Method (IRQM, 1, Serialized) {
 		Package () { 0x0000ffff, 2, 0, 16 },
 		Package () { 0x0000ffff, 3, 0, 17 } })
 	Name (IQCP, Package () {
-		Package () { 0x0000ffff, 0, \_SB.PCI0.LNKC, 0 },
-		Package () { 0x0000ffff, 1, \_SB.PCI0.LNKD, 0 },
-		Package () { 0x0000ffff, 2, \_SB.PCI0.LNKA, 0 },
-		Package () { 0x0000ffff, 3, \_SB.PCI0.LNKB, 0 } })
+		Package () { 0x0000ffff, 0, 0, 11 },
+		Package () { 0x0000ffff, 1, 0, 11 },
+		Package () { 0x0000ffff, 2, 0, 11 },
+		Package () { 0x0000ffff, 3, 0, 10 } })
 
 	/* Interrupt Map INTA->INTD, INTB->INTA, INTC->INTB, INTD->INTC */
 	Name (IQDA, Package () {
@@ -60,10 +60,10 @@ Method (IRQM, 1, Serialized) {
 		Package () { 0x0000ffff, 2, 0, 17 },
 		Package () { 0x0000ffff, 3, 0, 18 } })
 	Name (IQDP, Package () {
-		Package () { 0x0000ffff, 0, \_SB.PCI0.LNKD, 0 },
-		Package () { 0x0000ffff, 1, \_SB.PCI0.LNKA, 0 },
-		Package () { 0x0000ffff, 2, \_SB.PCI0.LNKB, 0 },
-		Package () { 0x0000ffff, 3, \_SB.PCI0.LNKC, 0 } })
+		Package () { 0x0000ffff, 0, 0, 11 },
+		Package () { 0x0000ffff, 1, 0, 11 },
+		Package () { 0x0000ffff, 2, 0, 10 },
+		Package () { 0x0000ffff, 3, 0, 11 } })
 
 	Switch (ToInteger (Arg0))
 	{

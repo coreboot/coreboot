@@ -3,11 +3,3 @@ config SOC_INTEL_COMMON_BLOCK_I2C
 	select DRIVERS_I2C_DESIGNWARE
 	help
 	  Intel Processor Common I2C support
-
-config SOC_INTEL_COMMON_BLOCK_I2C_DEBUG
-	bool "Enable debug output for LPSS I2C transactions"
-	default n
-	depends on SOC_INTEL_COMMON_BLOCK_I2C
-	help
-	  Enable debug output for I2C transactions.  This can be useful
-	  when debugging I2C drivers.

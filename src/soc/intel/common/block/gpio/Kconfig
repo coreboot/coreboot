@@ -1,14 +1,8 @@
 config SOC_INTEL_COMMON_BLOCK_GPIO
 	bool
+	select HAVE_DEBUG_GPIO
 	help
 	  Intel Processor common GPIO support
-
-config DEBUG_SOC_COMMON_BLOCK_GPIO
-	depends on SOC_INTEL_COMMON_BLOCK_GPIO
-	bool "Output verbose GPIO debug messages"
-	default n
-	help
-	  This option enables GPIO debug messages
 
 # Use to program Interrupt Polarity Control (IPCx) register
 # Each bit represents IRQx Active High Polarity Disable configuration:

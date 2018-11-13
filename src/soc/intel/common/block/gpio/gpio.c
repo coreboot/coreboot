@@ -265,7 +265,7 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 		soc_pad_conf &= mask[i];
 		soc_pad_conf |= pad_conf & ~mask[i];
 
-		if (IS_ENABLED(CONFIG_DEBUG_SOC_COMMON_BLOCK_GPIO))
+		if (IS_ENABLED(CONFIG_DEBUG_GPIO))
 			printk(BIOS_DEBUG,
 			"gpio_padcfg [0x%02x, %02zd] DW%d [0x%08x : 0x%08x"
 			" : 0x%08x]\n",
@@ -533,7 +533,7 @@ void gpio_route_gpe(uint8_t gpe0b, uint8_t gpe0c, uint8_t gpe0d)
 			MISCCFG_GPE0_DW1_MASK |
 			MISCCFG_GPE0_DW0_MASK);
 
-	if (IS_ENABLED(CONFIG_DEBUG_SOC_COMMON_BLOCK_GPIO))
+	if (IS_ENABLED(CONFIG_DEBUG_GPIO))
 		printk(BIOS_DEBUG, "misccfg_mask:%x misccfg_value:%x\n",
 			misccfg_mask, misccfg_value);
 	comm = soc_gpio_get_community(&gpio_communities);

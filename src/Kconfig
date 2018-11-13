@@ -693,6 +693,13 @@ config FATAL_ASSERTS
 	help
 	  If enabled, coreboot will call hlt() on a BUG() or failed ASSERT().
 
+config HAVE_DEBUG_GPIO
+	bool
+
+config DEBUG_GPIO
+	bool "Output verbose GPIO debug messages"
+	depends on HAVE_DEBUG_GPIO
+
 config DEBUG_CBFS
 	bool "Output verbose CBFS debug messages"
 	default n

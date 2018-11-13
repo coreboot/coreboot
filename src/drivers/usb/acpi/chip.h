@@ -49,6 +49,8 @@ struct drivers_usb_acpi_config {
 	/* Define a custom physical location for the port */
 	bool use_custom_pld;
 	struct acpi_pld custom_pld;
+
+	struct acpi_gpio reset_gpio;
 };
 
 #endif /* __USB_ACPI_CHIP_H__ */

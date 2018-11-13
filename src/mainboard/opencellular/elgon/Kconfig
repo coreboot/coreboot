@@ -80,9 +80,6 @@ config MAX_CPUS
 ##########################################################
 #### Update below when adding a new derivative board. ####
 ##########################################################
-config DEVICETREE
-	string
-	default "devicetree.cb"
 
 config MAINBOARD_PART_NUMBER
 	string

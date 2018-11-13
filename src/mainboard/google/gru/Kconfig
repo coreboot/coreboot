@@ -105,7 +105,6 @@ config CONSOLE_SERIAL_UART_ADDRESS
 config DEVICETREE
 	string
 	default "devicetree.scarlet.cb" if BOARD_GOOGLE_SCARLET
-	default "devicetree.cb"
 
 config MAINBOARD_PART_NUMBER
 	string

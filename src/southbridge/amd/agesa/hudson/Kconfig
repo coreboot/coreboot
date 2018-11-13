@@ -35,10 +35,6 @@ config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
 	default "southbridge/amd/agesa/hudson/bootblock.c"
 
-config SOUTHBRIDGE_AMD_HUDSON_SKIP_ISA_DMA_INIT
-	bool
-	default n
-
 config EHCI_BAR
 	hex
 	default 0xfef00000

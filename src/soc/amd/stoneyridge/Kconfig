@@ -147,10 +147,6 @@ config HEAP_SIZE
 	hex
 	default 0xc0000
 
-config SOUTHBRIDGE_AMD_STONEYRIDGE_SKIP_ISA_DMA_INIT
-	bool
-	default n
-
 config EHCI_BAR
 	hex
 	default 0xfef00000

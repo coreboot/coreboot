@@ -24,10 +24,6 @@ config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
 	default "southbridge/amd/sb800/bootblock.c"
 
-config SOUTHBRIDGE_AMD_SB800_SKIP_ISA_DMA_INIT
-	bool
-	default n
-
 config EHCI_BAR
 	hex
 	default 0xfef00000

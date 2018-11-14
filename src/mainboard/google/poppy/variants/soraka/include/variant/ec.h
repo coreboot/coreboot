@@ -18,6 +18,6 @@
 
 #include <baseboard/ec.h>
 
-#define EC_ENABLE_TABLET_EVENT	/* Tablet event to support DPTF */
+#define EC_ENABLE_MULTIPLE_DPTF_PROFILES /* Config for multi-DPTF profiles */
 
 #endif /* __MAINBOARD_EC_H__ */

@@ -21,7 +21,7 @@
 #include <ec/google/chromeec/ec_commands.h>
 #include <variant/ec.h>
 
-#ifdef EC_ENABLE_TABLET_EVENT
+#ifdef EC_ENABLE_MULTIPLE_DPTF_PROFILES
 #define MAINBOARD_EC_SCI_EVENTS \
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED)        |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_OPEN)          |\

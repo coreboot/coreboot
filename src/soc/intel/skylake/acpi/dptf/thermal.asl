@@ -82,13 +82,13 @@ Method (TPET)
  */
 Method (DTRP, 2, Serialized)
 {
-#ifdef EC_ENABLE_TABLET_EVENT
+#ifdef EC_ENABLE_MULTIPLE_DPTF_PROFILES
 	If (LEqual (\_SB.PCI0.LPCB.EC0.RCTM, One)) {
 		Return (CTOK (Arg0))
 	} Else {
 #endif
 		Return (CTOK (Arg1))
-#ifdef EC_ENABLE_TABLET_EVENT
+#ifdef EC_ENABLE_MULTIPLE_DPTF_PROFILES
 	}
 #endif
 }

@@ -371,7 +371,7 @@ Device (EC0)
 	{
 		Store ("EC: TABLET mode switch Event", Debug)
 		Notify (CREC, 0x2)
-#ifdef EC_ENABLE_TABLET_EVENT
+#ifdef EC_ENABLE_MULTIPLE_DPTF_PROFILES
 		\_SB.DPTF.TPET()
 #endif
 #ifdef EC_ENABLE_TBMC_DEVICE

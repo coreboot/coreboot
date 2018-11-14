@@ -71,7 +71,7 @@
 /* Enable LID switch and provide wake pin for EC */
 #define EC_ENABLE_LID_SWITCH
 #define EC_ENABLE_WAKE_PIN	GPE_EC_WAKE
-#define EC_ENABLE_TABLET_EVENT
+#define EC_ENABLE_MULTIPLE_DPTF_PROFILES
 #define EC_ENABLE_TBMC_DEVICE
 
 #define SIO_EC_MEMMAP_ENABLE	/* EC Memory Map Resources */

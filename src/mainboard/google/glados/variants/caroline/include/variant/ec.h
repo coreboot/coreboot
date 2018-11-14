@@ -13,5 +13,5 @@
  * GNU General Public License for more details.
  */
 
-/* EC ENABLE TABLET EVENT */
-#define EC_ENABLE_TABLET_EVENT
+/* EC ENABLE MULTIPLE DPTF PROFILES */
+#define EC_ENABLE_MULTIPLE_DPTF_PROFILES

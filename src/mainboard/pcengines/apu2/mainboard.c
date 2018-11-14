@@ -142,16 +142,16 @@ static void config_gpio_mux(void)
 	uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP3);
 	gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO0);
 	if (uart)
-		uart->enabled = CONFIG_APU2_PINMUX_UART_C;
+		uart->enabled = IS_ENABLED(CONFIG_APU2_PINMUX_UART_C);
 	if (gpio)
-		gpio->enabled = CONFIG_APU2_PINMUX_GPIO0;
+		gpio->enabled = IS_ENABLED(CONFIG_APU2_PINMUX_GPIO0);
 
 	uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP4);
 	gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO1);
 	if (uart)
-		uart->enabled = CONFIG_APU2_PINMUX_UART_D;
+		uart->enabled = IS_ENABLED(CONFIG_APU2_PINMUX_UART_D);
 	if (gpio)
-		gpio->enabled = CONFIG_APU2_PINMUX_GPIO1;
+		gpio->enabled = IS_ENABLED(CONFIG_APU2_PINMUX_GPIO1);
 }
 
 /**********************************************

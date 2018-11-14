@@ -20,6 +20,7 @@ config VARIANT_DIR
 	default "mc_apl2" if BOARD_SIEMENS_MC_APL2
 	default "mc_apl3" if BOARD_SIEMENS_MC_APL3
 	default "mc_apl4" if BOARD_SIEMENS_MC_APL4
+	default "mc_apl5" if BOARD_SIEMENS_MC_APL5
 
 config DEVICETREE
 	string
@@ -31,6 +32,7 @@ config MAINBOARD_PART_NUMBER
 	default "MC APL2" if BOARD_SIEMENS_MC_APL2
 	default "MC APL3" if BOARD_SIEMENS_MC_APL3
 	default "MC APL4" if BOARD_SIEMENS_MC_APL4
+	default "MC APL5" if BOARD_SIEMENS_MC_APL5
 
 config MAX_CPUS
 	int

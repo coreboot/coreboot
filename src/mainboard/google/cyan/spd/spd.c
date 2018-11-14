@@ -138,9 +138,9 @@ static void set_dimm_info(uint8_t *spd, struct dimm_info *dimm)
 
 	/* Parse the SPD data to determine the DIMM information */
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_CYAN)) {
-		dimm->ddr_type = MEMORY_DEVICE_DDR3;
+		dimm->ddr_type = MEMORY_TYPE_DDR3;
 	} else {
-		dimm->ddr_type = MEMORY_DEVICE_LPDDR3;
+		dimm->ddr_type = MEMORY_TYPE_LPDDR3;
 	}
 	dimm->dimm_size = capmb / 8 * busw / devw * ranks;  /* MiB */
 	dimm->mod_type = spd[3] & 0xf;

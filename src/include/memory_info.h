@@ -36,7 +36,7 @@ struct dimm_info {
 	/*
 	 * SMBIOS (not SPD) device type.
 	 *
-	 * See the smbios.h smbios_memory_device_type enum.
+	 * See the smbios.h smbios_memory_type enum.
 	 */
 	uint16_t ddr_type;
 	uint16_t ddr_frequency;

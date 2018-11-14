@@ -103,16 +103,16 @@ static void save_dimm_info(void)
 
 			switch(memory_info_hob->MemoryType) {
 			case MRC_DDR_TYPE_DDR4:
-				ddr_type = MEMORY_DEVICE_DDR4;
+				ddr_type = MEMORY_TYPE_DDR4;
 				break;
 			case MRC_DDR_TYPE_DDR3:
-				ddr_type = MEMORY_DEVICE_DDR3;
+				ddr_type = MEMORY_TYPE_DDR3;
 				break;
 			case MRC_DDR_TYPE_LPDDR3:
-				ddr_type = MEMORY_DEVICE_LPDDR3;
+				ddr_type = MEMORY_TYPE_LPDDR3;
 				break;
 			default:
-				ddr_type = MEMORY_DEVICE_UNKNOWN;
+				ddr_type = MEMORY_TYPE_UNKNOWN;
 				break;
 			}
 

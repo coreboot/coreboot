@@ -12,9 +12,6 @@ subdirs-y += ../../../lib/fsp
 subdirs-y += fsp
 
 romstage-y += gpio.c
-romstage-y += spi.c
-
-ramstage-y += spi.c
 ramstage-y += cpu.c
 ramstage-y += chip.c
 ramstage-y += northcluster.c

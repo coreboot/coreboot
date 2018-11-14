@@ -2,6 +2,7 @@
  * Copyright (c) 2011 The Chromium OS Authors.
  * Copyright (C) 2009, 2010 Carl-Daniel Hailfinger
  * Copyright (C) 2011 Stefan Tauner
+ * Copyright (C) 2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -608,7 +609,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 			return -1;
 		}
 
-		return 0;
+		goto spi_xfer_exit;
 	}
 
 	/*
@@ -673,6 +674,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		}
 	}
 
+spi_xfer_exit:
 	/* Clear atomic preop now that xfer is done */
 	writew_(0, cntlr->preop);
 

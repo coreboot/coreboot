@@ -13,6 +13,9 @@ chip soc/intel/apollolake
 	#| I2C6              | Trackpad                  |
 	#| I2C7              | Touchscreen               |
 	#+-------------------+---------------------------+
+
+	register "tcc_offset" = "10"
+
 	register "common_soc_config" = "{
 		.gspi[0] = {
 			.speed_mhz = 1,

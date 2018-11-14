@@ -34,17 +34,6 @@ struct soc_intel_icelake_config {
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
 
-	/* Interrupt Routing configuration.
-	 * If bit7 is 1, the interrupt is disabled. */
-	uint8_t pirqa_routing;
-	uint8_t pirqb_routing;
-	uint8_t pirqc_routing;
-	uint8_t pirqd_routing;
-	uint8_t pirqe_routing;
-	uint8_t pirqf_routing;
-	uint8_t pirqg_routing;
-	uint8_t pirqh_routing;
-
 	/* GPE configuration */
 	uint32_t gpe0_en_1; /* GPE0_EN_31_0 */
 	uint32_t gpe0_en_2; /* GPE0_EN_63_32 */

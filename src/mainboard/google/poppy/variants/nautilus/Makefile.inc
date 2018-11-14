@@ -15,3 +15,4 @@ ramstage-y += mainboard.c
 ramstage-y += sku.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += sku.c

@@ -28,6 +28,11 @@ static int marshal_startup(struct obuf *ob, struct tpm2_startup *cmd_body)
 	return obuf_write_be16(ob, cmd_body->startup_type);
 }
 
+static int marshal_shutdown(struct obuf *ob, struct tpm2_shutdown *cmd_body)
+{
+	return obuf_write_be16(ob, cmd_body->shutdown_type);
+}
+
 static int marshal_get_capability(struct obuf *ob,
 				   struct tpm2_get_capability *cmd_body)
 {
@@ -302,6 +307,10 @@ int tpm_marshal_command(TPM_CC command, void *tpm_command_body, struct obuf *ob)
 		rc |= marshal_startup(ob, tpm_command_body);
 		break;
 
+	case TPM2_Shutdown:
+		rc |= marshal_shutdown(ob, tpm_command_body);
+		break;
+
 	case TPM2_GetCapability:
 		rc |= marshal_get_capability(ob, tpm_command_body);
 		break;
@@ -497,6 +506,7 @@ struct tpm2_response *tpm_unmarshal_response(TPM_CC command, struct ibuf *ib)
 
 	switch (command) {
 	case TPM2_Startup:
+	case TPM2_Shutdown:
 		break;
 
 	case TPM2_GetCapability:

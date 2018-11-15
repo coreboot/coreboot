@@ -71,6 +71,7 @@ struct tpm_header {
 #define TPM2_NV_WriteLock      ((TPM_CC)0x00000138)
 #define TPM2_SelfTest          ((TPM_CC)0x00000143)
 #define TPM2_Startup           ((TPM_CC)0x00000144)
+#define TPM2_Shutdown          ((TPM_CC)0x00000145)
 #define TPM2_NV_Read           ((TPM_CC)0x0000014E)
 #define TPM2_GetCapability     ((TPM_CC)0x0000017A)
 #define TPM2_PCR_Extend        ((TPM_CC)0x00000182)
@@ -136,6 +137,10 @@ struct tpm_header {
 
 struct tpm2_startup {
 	TPM_SU  startup_type;
+};
+
+struct tpm2_shutdown {
+	TPM_SU  shutdown_type;
 };
 
 /* Various TPM capability types to use when querying the device. */

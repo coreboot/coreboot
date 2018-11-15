@@ -178,6 +178,12 @@ uint32_t tlcl_resume(void)
 	return send(tpm_resume_cmd.buffer);
 }
 
+uint32_t tlcl_save_state(void)
+{
+	VBDEBUG("TPM: Save state\n");
+	return send(tpm_savestate_cmd.buffer);
+}
+
 uint32_t tlcl_self_test_full(void)
 {
 	VBDEBUG("TPM: Self test full\n");

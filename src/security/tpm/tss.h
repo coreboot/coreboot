@@ -102,6 +102,13 @@ uint32_t tlcl_startup(void);
 uint32_t tlcl_resume(void);
 
 /**
+ * Save TPM state by sending either TPM_SaveState() (TPM1.2) or
+ * TPM_Shutdown(ST_STATE) (TPM2.0).  The TPM error code is returned (0 for
+ * success).
+ */
+uint32_t tlcl_save_state(void);
+
+/**
  * Run the self test.
  *
  * Note---this is synchronous.  To run this in parallel with other firmware,

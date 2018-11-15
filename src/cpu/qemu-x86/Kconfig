@@ -2,12 +2,29 @@
 
 config CPU_QEMU_X86
 	bool
-	select ARCH_BOOTBLOCK_X86_32
-	select ARCH_VERSTAGE_X86_32
-	select ARCH_ROMSTAGE_X86_32
-	select ARCH_RAMSTAGE_X86_32
 	select SMP
 	select UDELAY_TSC
 	select TSC_MONOTONIC_TIMER
 	select UNKNOWN_TSC_RATE
 	select SMM_ASEG
+
+if CPU_QEMU_X86
+
+config CPU_QEMU_X86_64
+	bool "Experimental 64bit support"
+	select ARCH_BOOTBLOCK_X86_64
+	select ARCH_VERSTAGE_X86_64
+	select ARCH_ROMSTAGE_X86_64
+	select ARCH_POSTCAR_X86_64
+	select ARCH_RAMSTAGE_X86_64
+
+config CPU_QEMU_X86_32
+	bool
+	default n if CPU_QEMU_X86_64
+	default y
+	select ARCH_BOOTBLOCK_X86_32
+	select ARCH_VERSTAGE_X86_32
+	select ARCH_ROMSTAGE_X86_32
+	select ARCH_POSTCAR_X86_32
+	select ARCH_RAMSTAGE_X86_32
+endif

@@ -5,10 +5,11 @@ This section contains documentation about coreboot on x86 architecture.
 * [x86 PAE support](pae.md)
 
 ## State of x86_64 support
-At the moment there's no single board that supports x86_64 or to be exact
-`ARCH_RAMSTAGE_X86_64` and `ARCH_ROMSTAGE_X86_64`.
+At the moment there's only experimental x86_64 support.
+The `emulation/qemu-i440fx` and `emulation/qemu-q35` boards do support
+*ARCH_RAMSTAGE_X86_64* , *ARCH_POSTCAR_X86_64* and *ARCH_ROMSTAGE_X86_64*.
 
-In order to add support for x86_64 the following assumptions are made:
+In order to add support for x86_64 the following assumptions were made:
 * The CPU supports long mode
 * All memory returned by malloc must be below 4GiB in physical memory
 * All code that is to be run must be below 4GiB in physical memory
@@ -39,18 +40,16 @@ The page tables contains the following structure:
 
 At the moment *$n* is 4, which results in identity mapping the lower 4 GiB.
 
-## Steps to add basic support for x86_64
-* Add x86_64 toolchain support - *DONE*
-* Fix compilation errors - *DONE*
-* Fix linker errors - *TODO*
-* Add x86_64 rmodule support - *DONE*
-* Add x86_64 exception handlers - *DONE*
-* Setup page tables for long mode - *DONE*
-* Add assembly code for long mode - *DONE*
-* Add assembly code for SMM - *DONE*
-* Add assembly code for postcar stage - *DONE*
-* Add assembly code to return to protected mode - *DONE*
-* Implement reference code for mainboard `emulation/qemu-q35` - *TODO*
+## Basic x86_64 support
+Basic support for x86_64 has been implemented for QEMU mainboard target.
+
+## Reference implementation
+The reference implementation is
+* [QEMU i440fx](../../mainboard/emulation/qemu-i440fx.md)
+* [QEMU Q35](../../mainboard/emulation/qemu-q35.md)
+
+## TODO
+* Identity map memory above 4GiB in ramstage
 
 ## Future work
 

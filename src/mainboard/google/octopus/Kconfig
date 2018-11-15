@@ -54,6 +54,7 @@ config VARIANT_DIR
 	default "bobba" if BOARD_GOOGLE_BOBBA
 	default "meep" if BOARD_GOOGLE_MEEP
 	default "ampton" if BOARD_GOOGLE_AMPTON
+	default "casta" if BOARD_GOOGLE_CASTA
 	default "octopus" if BOARD_GOOGLE_OCTOPUS
 
 config DEVICETREE
@@ -73,6 +74,7 @@ config MAINBOARD_PART_NUMBER
 	default "Bobba" if BOARD_GOOGLE_BOBBA
 	default "Meep" if BOARD_GOOGLE_MEEP
 	default "Ampton" if BOARD_GOOGLE_AMPTON
+	default "Casta" if BOARD_GOOGLE_CASTA
 	default "Octopus" if BOARD_GOOGLE_OCTOPUS
 
 config MAINBOARD_FAMILY
@@ -89,6 +91,7 @@ config GBB_HWID
 	default "BOBBA TEST 4516" if BOARD_GOOGLE_BOBBA
 	default "MEEP TEST 1118" if BOARD_GOOGLE_MEEP
 	default "AMPTON TEST 1285" if BOARD_GOOGLE_AMPTON
+	default "CASTA TEST 8105" if BOARD_GOOGLE_CASTA
 	default "OCTOPUS TEST 6859" if BOARD_GOOGLE_OCTOPUS
 
 config MAX_CPUS
@@ -119,11 +122,13 @@ config DRAM_PART_NUM_IN_CBI
 	default y if BOARD_GOOGLE_AMPTON
 	default y if BOARD_GOOGLE_FLEEX
 	default y if BOARD_GOOGLE_BOBBA
+	default y if BOARD_GOOGLE_CASTA
 
 config DRAM_PART_NUM_ALWAYS_IN_CBI
 	bool
 	depends on DRAM_PART_NUM_IN_CBI
 	default y if BOARD_GOOGLE_AMPTON
+	default y if BOARD_GOOGLE_CASTA
 
 config DRAM_PART_IN_CBI_BOARD_ID_MIN
 	int

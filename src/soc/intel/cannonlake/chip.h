@@ -154,6 +154,8 @@ struct soc_intel_cannonlake_config {
 	/* PCIe ClkReq-to-ClkSrc mapping, number of clkreq signal assigned to
 	 * clksrc. */
 	uint8_t PcieClkSrcClkReq[CONFIG_MAX_ROOT_PORTS];
+	/* PCIe LTR(Latency Tolerance Reporting) mechanism */
+	uint8_t PcieRpLtrEnable[CONFIG_MAX_ROOT_PORTS];
 
 	/* eMMC and SD */
 	uint8_t ScsEmmcHs400Enabled;

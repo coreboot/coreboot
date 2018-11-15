@@ -171,6 +171,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	       sizeof(config->PcieClkSrcUsage));
 	memcpy(params->PcieClkSrcClkReq, config->PcieClkSrcClkReq,
 	       sizeof(config->PcieClkSrcClkReq));
+	memcpy(params->PcieRpLtrEnable, config->PcieRpLtrEnable,
+	       sizeof(config->PcieRpLtrEnable));
 
 	/* eMMC and SD */
 	dev = dev_find_slot(0, PCH_DEVFN_EMMC);

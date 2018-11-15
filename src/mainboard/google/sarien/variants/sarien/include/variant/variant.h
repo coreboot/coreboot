@@ -18,5 +18,6 @@
 
 /* Sarien is SKU ID 1 */
 #define VARIANT_SKU_ID	1
+#define VARIANT_SKU_NAME "sku1"
 
 #endif

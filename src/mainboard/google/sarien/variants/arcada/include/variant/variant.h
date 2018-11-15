@@ -18,5 +18,6 @@
 
 /* Arcada is SKU ID 2 */
 #define VARIANT_SKU_ID	2
+#define VARIANT_SKU_NAME "sku2"
 
 #endif

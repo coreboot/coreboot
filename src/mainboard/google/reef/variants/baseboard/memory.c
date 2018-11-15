@@ -17,6 +17,7 @@
 #include <gpio.h>
 #include <soc/meminit.h>
 #include <variant/gpio.h>
+#include <fsp/api.h>
 
 const struct lpddr4_swizzle_cfg baseboard_lpddr4_swizzle = {
 	/* CH0_DQA[0:31] SoC pins -> U22 LPDDR4 module pins */
@@ -166,4 +167,9 @@ size_t __weak variant_memory_sku(void)
 	/* Need internal pullups enabled as only pulldown stuffing options
 	 * exist. */
 	return gpio_pullup_base2_value(pads, ARRAY_SIZE(pads));
+}
+
+uint8_t fsp_memory_mainboard_version(void)
+{
+	return 1;
 }

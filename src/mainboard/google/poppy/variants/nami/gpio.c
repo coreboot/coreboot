@@ -426,7 +426,7 @@ static const struct pad_config fpmcu_gpio_table[] = {
 	/* D5  : ISH_I2C0_SDA ==> FPMCU_BOOT0 */
 	PAD_CFG_GPO(GPP_D5, 0, DEEP),
 	/* D6  : ISH_I2C0_SCL ==> FPMCU_INT_L */
-	PAD_CFG_GPI_IRQ_WAKE(GPP_D6, 20K_PU, DEEP, LEVEL, NONE),
+	PAD_CFG_GPI_IRQ_WAKE(GPP_D6, 20K_PU, DEEP, LEVEL, INVERT),
 	/* D17 : DMIC_CLK1 ==> NC */
 	PAD_CFG_NC(GPP_D17),
 };

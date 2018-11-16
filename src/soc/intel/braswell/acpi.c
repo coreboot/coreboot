@@ -4,6 +4,7 @@
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -486,8 +487,10 @@ unsigned long southcluster_write_acpi_tables(struct device *device,
 	acpi_header_t *ssdt2;
 	global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 
-	current = acpi_write_hpet(device, current, rsdp);
-	current = acpi_align_current(current);
+	if (!IS_ENABLED(CONFIG_DISABLE_HPET)) {
+		current = acpi_write_hpet(device, current, rsdp);
+		current = acpi_align_current(current);
+	}
 
 	if (IS_ENABLED(CONFIG_INTEL_GMA_ADD_VBT)) {
 		igd_opregion_t *opregion;

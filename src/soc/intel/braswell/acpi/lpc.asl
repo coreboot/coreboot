@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -47,6 +48,7 @@ Device (LPCB)
 		})
 	}
 
+#if !IS_ENABLED(CONFIG_DISABLE_HPET)
 	Device (HPET)
 	{
 		Name (_HID, EISAID("PNP0103"))
@@ -62,6 +64,7 @@ Device (LPCB)
 			Memory32Fixed(ReadOnly, 0xfed00000, 0x400)
 		})
 	}
+#endif
 
 	Device(PIC)	/* 8259 Interrupt Controller */
 	{

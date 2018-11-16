@@ -7,6 +7,7 @@ chip soc/intel/skylake
 	#| Touchsreen     |   10  |                                   |
 	#+----------------+-------+-----------------------------------+
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Touchscreen
+	register "psys_pmax" = "151"
 
 	device domain 0 on
 		device pci 14.0 on

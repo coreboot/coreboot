@@ -660,13 +660,13 @@ static void sdram_program_dram_width(struct sys_info *sysinfo)
 			c1dramw |= (0x0000) << 4*(i % 2);
 			break;
 		case SYSINFO_DIMM_X8DS:
-			c1dramw |= (0x0001) << 4*(i % 2);
+			c1dramw |= (0x0010) << 4*(i % 2);
 			break;
 		case SYSINFO_DIMM_X16SS:
 			c1dramw |= (0x0000) << 4*(i % 2);
 			break;
 		case SYSINFO_DIMM_X8DDS:
-			c1dramw |= (0x0005) << 4*(i % 2);
+			c1dramw |= (0x0050) << 4*(i % 2);
 			break;
 		case SYSINFO_DIMM_NOT_POPULATED:
 			c1dramw |= (0x0000) << 4*(i % 2);

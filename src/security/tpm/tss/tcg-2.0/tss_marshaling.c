@@ -475,7 +475,6 @@ static int unmarshal_vendor_command(struct ibuf *ib,
 		break;
 	case TPM2_CR50_SUB_CMD_TURN_UPDATE_ON:
 		return ibuf_read_be8(ib, &vcr->num_restored_headers);
-		break;
 	case TPM2_CR50_SUB_CMD_GET_REC_BTN:
 		return ibuf_read_be8(ib, &vcr->recovery_button_state);
 	default:

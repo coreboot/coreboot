@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 # devicetree_convert Tool to convert a DTB to a static C file
 # Copyright (C) 2018 Facebook Inc.

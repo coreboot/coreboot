@@ -67,7 +67,7 @@ Name (E1SS, Package () { 0x07, 0x80, RD })	/* SMI-SCI */
 Name (EVT2, Package () { 0x08, 0xff, RD })	/* Event 2 */
 Name (E2BS, Package () { 0x08, 0x02, RD })	/* BSS */
 Name (E2OR, Package () { 0x08, 0x04, RD })	/* Orientation */
-Name (E2QS, Package () { 0x08, 0x08, RD })	/* Quickset */
+Name (E2QS, Package () { 0x08, 0x08, RD })	/* QS Event */
 Name (E2PN, Package () { 0x08, 0x20, RD })	/* Panel */
 Name (E2DP, Package () { 0x08, 0x40, RD })	/* Display Port */
 Name (E2VT, Package () { 0x08, 0x80, RD })	/* Video Throttle */
@@ -100,8 +100,8 @@ Name (BSMN, Package () { 0x28, 0xff, RD })	/* BSTATIC: Manufacturer Name */
 Name (BSDC, Package () { 0x29, 0xff, RD })	/* BSTATIC: Device Chemistry */
 Name (BSBS, Package () { 0x2a, 0xff, RD })	/* BSTATIC: Battery String */
 
-Name (QSEC, Package () { 0x2b, 0xff, RD })	/* QuickSet Event Count */
-Name (QSEB, Package () { 0x2c, 0xff, RD })	/* QuickSet Event Byte */
+Name (QSEC, Package () { 0x2b, 0xff, RD })	/* QS Event Count */
+Name (QSEB, Package () { 0x2c, 0xff, RD })	/* QS Event Byte */
 
 Name (ORST, Package () { 0x39, 0xff, RD })	/* Orientation State */
 Name (OREV, Package () { 0x3a, 0xff, RD })	/* Orientation Events */

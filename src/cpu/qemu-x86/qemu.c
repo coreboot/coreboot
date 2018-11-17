@@ -35,6 +35,6 @@ static const struct cpu_driver driver __cpu_driver = {
 	.id_table = cpu_table,
 };
 
-struct chip_operations cpu_x86_qemu_ops = {
+struct chip_operations cpu_qemu_x86_ops = {
 	CHIP_NAME("QEMU x86 CPU")
 };

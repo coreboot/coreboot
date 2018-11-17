@@ -1,3 +1,0 @@
-config SOC_INTEL_COMMON_BLOCK_VMX
-	bool "Enable VMX for virtualization"
-	default n

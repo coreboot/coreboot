@@ -381,7 +381,7 @@ elif [ -n "$REMOTE_HOST" ]; then
 	cmd_nonfatal $REMOTE "$cbmem_cmd -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
 
 	echo "Getting remote dmesg"
-	cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"
+	cmd $REMOTE sudo dmesg "${tmpdir}/${results}/kernel_log.txt"
 else
 	echo "Verifying that CBMEM is available"
 	if [ $(id -u) -ne 0 ]; then

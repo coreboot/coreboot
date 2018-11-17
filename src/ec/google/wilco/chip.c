@@ -66,6 +66,9 @@ static void wilco_ec_init(struct device *dev)
 
 	/* Unmute speakers */
 	wilco_ec_send(KB_HW_MUTE_CONTROL, AUDIO_UNMUTE_125MS);
+
+	/* Enable WiFi radio */
+	wilco_ec_radio_control(RADIO_WIFI, 1);
 }
 
 static void wilco_ec_resource(struct device *dev, int index,

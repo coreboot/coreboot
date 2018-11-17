@@ -149,3 +149,12 @@ void wilco_ec_power_off(enum ec_power_off_reason reason)
 			     KB_POWER_OFF, &reason, 1, NULL, 0) < 0)
 		printk(BIOS_ERR, "%s: command failed\n", __func__);
 }
+
+int wilco_ec_radio_control(enum ec_radio radio, uint8_t state)
+{
+	uint8_t radio_control[3] = { 0, radio, state };
+
+	return wilco_ec_mailbox(WILCO_EC_MSG_DEFAULT, KB_RADIO_CONTROL,
+				radio_control, ARRAY_SIZE(radio_control),
+				NULL, 0);
+}

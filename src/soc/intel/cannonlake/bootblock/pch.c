@@ -46,6 +46,9 @@
 #define PCR_PSFX_TO_SHDW_PCIEN_IOEN	0x01
 #define PCR_PSFX_T0_SHDW_PCIEN	0x1C
 
+#define PCR_DMI_DMICTL		0x2234
+#define  PCR_DMI_DMICTL_SRLOCK	(1 << 31)
+
 #define PCR_DMI_ACPIBA		0x27B4
 #define PCR_DMI_ACPIBDID	0x27B8
 #define PCR_DMI_PMBASEA		0x27AC
@@ -168,23 +171,38 @@ static void soc_config_tco(void)
 	outw(tcocnt, tcobase + TCO1_CNT);
 }
 
+static int pch_check_decode_enable(void)
+{
+	uint32_t dmi_control;
+
+	/*
+	 * This cycle decoding is only allowed to set when
+	 * DMICTL.SRLOCK is 0.
+	 */
+	dmi_control = pcr_read32(PID_DMI, PCR_DMI_DMICTL);
+	if (dmi_control & PCR_DMI_DMICTL_SRLOCK)
+		return -1;
+	return 0;
+}
+
 void pch_early_iorange_init(void)
 {
-	uint16_t dec_rng, dec_en = 0;
+	uint16_t io_enables = LPC_IOE_SUPERIO_2E_2F | LPC_IOE_KBC_60_64 |
+		LPC_IOE_EC_62_66 | LPC_IOE_LGE_200;
 
 	/* IO Decode Range */
-	if (IS_ENABLED(CONFIG_DRIVERS_UART_8250IO) &&
-	    IS_ENABLED(CONFIG_UART_DEBUG)) {
-		dec_rng = COMA_RANGE | (COMB_RANGE << 4);
-		dec_en = COMA_LPC_EN | COMB_LPC_EN;
-		pci_write_config16(PCH_DEV_LPC, LPC_IO_DEC, dec_rng);
-		pcr_write16(PID_DMI, PCR_DMI_LPCIOD, dec_rng);
-	}
+	if (IS_ENABLED(CONFIG_DRIVERS_UART_8250IO))
+		lpc_io_setup_comm_a_b();
 
 	/* IO Decode Enable */
-	dec_en |= SE_LPC_EN | KBC_LPC_EN | MC1_LPC_EN | GAMEL_LPC_EN;
-	pci_write_config16(PCH_DEV_LPC, LPC_EN, dec_en);
-	pcr_write16(PID_DMI, PCR_DMI_LPCIOE, dec_en);
+	if (pch_check_decode_enable() == 0) {
+		io_enables = lpc_enable_fixed_io_ranges(io_enables);
+		/*
+		 * Set up LPC IO Enables PCR[DMI] + 2774h [15:0] to the same
+		 * value program in LPC PCI offset 82h.
+		 */
+		pcr_write16(PID_DMI, PCR_DMI_LPCIOE, io_enables);
+	}
 
 	/* Program generic IO Decode Range */
 	pch_enable_lpc();

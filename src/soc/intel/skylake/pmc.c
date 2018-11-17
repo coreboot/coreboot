@@ -108,8 +108,7 @@ static void pch_power_options(struct device *dev)
 {
 	const char *state;
 
-	/* Get the chip configuration */
-	int pwr_on = pmc_get_mainboard_power_failure_state_choice();
+	const int pwr_on = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 
 	/*
 	 * Which state do we want to goto after g3 (power restored)?
@@ -206,8 +205,7 @@ void pmc_soc_init(struct device *dev)
  */
 void pmc_soc_restore_power_failure(void)
 {
-	pmc_set_afterg3(PCH_DEV_PMC,
-		pmc_get_mainboard_power_failure_state_choice());
+	pmc_set_afterg3(PCH_DEV_PMC, CONFIG_MAINBOARD_POWER_FAILURE_STATE);
 }
 
 static void pm1_enable_pwrbtn_smi(void *unused)

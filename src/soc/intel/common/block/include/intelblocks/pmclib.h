@@ -221,10 +221,4 @@ enum {
 	MAINBOARD_POWER_STATE_PREVIOUS,
 };
 
-/*
- * Determines what state to go to when power is reapplied
- * after a power failure (G3 State)
- */
-int pmc_get_mainboard_power_failure_state_choice(void);
-
 #endif /* SOC_INTEL_COMMON_BLOCK_PMCLIB_H */

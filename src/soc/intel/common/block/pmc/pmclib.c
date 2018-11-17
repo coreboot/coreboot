@@ -580,12 +580,3 @@ void pmc_gpe_init(void)
 	/* Set the routes in the GPIO communities as well. */
 	gpio_route_gpe(dw0, dw1, dw2);
 }
-
-/*
- * Determines what state to go to when power is reapplied
- * after a power failure (G3 State)
- */
-int pmc_get_mainboard_power_failure_state_choice(void)
-{
-	return CONFIG_MAINBOARD_POWER_FAILURE_STATE;
-}

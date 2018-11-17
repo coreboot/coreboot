@@ -29,7 +29,7 @@ Device (SIO)
 
 		Method (_STA, 0, NotSerialized)
 		{
-#ifdef SIO_EC_ENABLE_COM1
+#if IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)
 			Return (0x0f)
 #else
 			Return (Zero)

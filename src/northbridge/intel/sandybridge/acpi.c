@@ -17,6 +17,7 @@
 
 #include <types.h>
 #include <console/console.h>
+#include <commonlib/helpers.h>
 #include <arch/acpi.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -66,16 +67,42 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
+static unsigned long acpi_create_igfx_rmrr(const unsigned long current)
+{
+	const u32 base_mask = ~(u32)(MiB - 1);
+
+	struct device *const host = dev_find_slot(0, PCI_DEVFN(0, 0));
+	if (!host)
+		return 0;
+
+	const u32 bgsm = pci_read_config32(host, BGSM) & base_mask;
+	const u32 tolud = pci_read_config32(host, TOLUD) & base_mask;
+	if (!bgsm || !tolud)
+		return 0;
+
+	return acpi_create_dmar_rmrr(current, 0, bgsm, tolud - 1);
+}
+
 static unsigned long acpi_fill_dmar(unsigned long current)
 {
 	const struct device *const igfx = pcidev_on_root(2, 0);
 
 	if (igfx && igfx->enabled) {
-		const unsigned long tmp = current;
+		unsigned long tmp;
+
+		tmp = current;
 		current += acpi_create_dmar_drhd(current, 0, 0, IOMMU_BASE1);
 		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
 		current += acpi_create_dmar_ds_pci(current, 0, 2, 1);
 		acpi_dmar_drhd_fixup(tmp, current);
+
+		tmp = current;
+		current += acpi_create_igfx_rmrr(current);
+		if (current != tmp) {
+			current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
+			current += acpi_create_dmar_ds_pci(current, 0, 2, 1);
+			acpi_dmar_rmrr_fixup(tmp, current);
+		}
 	}
 
 	const unsigned long tmp = current;

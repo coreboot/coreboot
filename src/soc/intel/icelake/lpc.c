@@ -144,6 +144,7 @@ static void pch_enable_ioapic(const struct device *dev)
 
 void soc_pch_pirq_init(const struct device *dev)
 {
+	struct device *irq_dev;
 	uint8_t pch_interrupt_routing[MAX_PXRC_CONFIG];
 
 	pch_interrupt_routing[0] = PCH_IRQ11;
@@ -156,11 +157,7 @@ void soc_pch_pirq_init(const struct device *dev)
 	pch_interrupt_routing[7] = PCH_IRQ11;
 
 	itss_irq_init(pch_interrupt_routing);
-#if defined(__SIMPLE_DEVICE__)
-	pci_devfn_t irq_dev;
-#else
-	struct device *irq_dev;
-#endif
+
 	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
 		u8 int_pin = 0, int_line = 0;
 

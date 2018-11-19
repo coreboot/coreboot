@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2016 Intel Corporation.
+ * Copryight (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +52,8 @@ void bootblock_fsp_temp_ram_init(void)
 	fsp_temp_ram_init = (FSP_TEMP_RAM_INIT)(fih->ImageBase
 			+ fih->TempRamInitEntryOffset);
 	status = fsp_temp_ram_init(&temp_ram_init_params);
+	printk(BIOS_DEBUG, "FspTempRamInit returned 0x%08x\n", status);
 	if (status != FSP_SUCCESS)
 		die("FspTempRamInit failed. Giving up.");
 
-	printk(BIOS_DEBUG, "FspTempRamInit returned 0x%08x\n", status);
 }

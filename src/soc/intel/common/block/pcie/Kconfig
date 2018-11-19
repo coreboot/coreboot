@@ -1,5 +1,9 @@
 config SOC_INTEL_COMMON_BLOCK_PCIE
 	bool
+	select PCIEXP_ASPM
+	select PCIEXP_CLK_PM
+	select PCIEXP_COMMON_CLOCK
+	select PCIEXP_L1_SUB_STATE
 	help
 	  Intel Processor common PCIE support
 

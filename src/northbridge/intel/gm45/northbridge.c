@@ -228,14 +228,23 @@ u32 northbridge_get_tseg_base(void)
 
 u32 northbridge_get_tseg_size(void)
 {
-	const u8 esmramc = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)),
-					D0F0_ESMRAMC);
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+
+	if (dev == NULL)
+		die("could not find pci 00:00.0!\n");
+
+	const u8 esmramc = pci_read_config8(dev, D0F0_ESMRAMC);
 	return decode_tseg_size(esmramc) << 10;
 }
 
 void northbridge_write_smram(u8 smram)
 {
-	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), D0F0_SMRAM, smram);
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+
+	if (dev == NULL)
+		die("could not find pci 00:00.0!\n");
+
+	pci_write_config8(dev, D0F0_SMRAM, smram);
 }
 
 /*

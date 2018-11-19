@@ -37,19 +37,6 @@
 cache_as_ram:
 	post_code(0x20)
 
-#if IS_ENABLED(CONFIG_SKIP_FSP_CAR)
-
-	/*
-	 * SOC specific setup
-	 * NOTE: This has to preserve the registers
-	 * mm0, mm1 and edi.
-	 */
-	#include <soc/car_setup.S>
-
-	post_code(0x28)
-
-#endif
-
 	/*
 	 * Find the FSP binary in cbfs.
 	 * Make a fake stack that has the return value back to this code.

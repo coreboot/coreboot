@@ -4,9 +4,14 @@ chip soc/intel/skylake
 	#+----------------+-------+-----------------------------------+
 	#| Device         | Port# | Rev                               |
 	#+----------------+-------+-----------------------------------+
+	#| SD Card        |   4   |                                   |
 	#| Touchsreen     |   10  |                                   |
 	#+----------------+-------+-----------------------------------+
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Card reader
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Touchscreen
+
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Card reader
+
 	register "psys_pmax" = "151"
 
 	device domain 0 on
@@ -14,9 +19,19 @@ chip soc/intel/skylake
 			chip drivers/usb/acpi
 				device usb 0.0 on
 					chip drivers/usb/acpi
+						register "desc" = ""USB2 SD Card""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.3 on end
+					end
+					chip drivers/usb/acpi
 						register "desc" = ""USB2 Touchscreen""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device usb 2.9 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 SD Card""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 3.3 on end
 					end
 				end
 			end
@@ -45,5 +60,6 @@ chip soc/intel/skylake
 				device i2c 1a on end
 			end
 		end # I2C #5
+		device pci 1e.6 off end # SDCard
 	end
 end

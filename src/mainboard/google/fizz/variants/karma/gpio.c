@@ -27,8 +27,7 @@ static const struct pad_config gpio_table[] = {
 /* ESPI_IO3 */
 /* ESPI_CS# */
 /* SERIRQ */		PAD_CFG_NC(GPP_A6), /* TP331 */
-/* PIRQA# */		PAD_CFG_GPI_INT(GPP_A7, 20K_PU, DEEP,
-					EDGE), /* SD_CDZ */
+/* PIRQA# */		PAD_CFG_NC(GPP_A7), /* TP104 */
 /* CLKRUN# */		PAD_CFG_NC(GPP_A8), /* TP329 */
 /* ESPI_CLK */
 /* CLKOUT_LPC1 */	PAD_CFG_NC(GPP_A10), /* TP188 */
@@ -38,8 +37,8 @@ static const struct pad_config gpio_table[] = {
 						DEEP), /* eSPI mode */
 /* ESPI_RESET# */
 /* SUSACK# */		PAD_CFG_NC(GPP_A15), /* TP150 */
-/* SD_1P8_SEL */	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
-/* SD_PWR_EN# */	PAD_CFG_NF(GPP_A17, NONE, DEEP, NF1),
+/* SD_1P8_SEL */	PAD_CFG_NC(GPP_A16),
+/* SD_PWR_EN# */	PAD_CFG_NC(GPP_A17),
 /* ISH_GP0 */		PAD_CFG_GPO(GPP_A18, 0, DEEP), /* 7322_OE */
 /* ISH_GP1 */		PAD_CFG_GPI_GPIO_DRIVER(GPP_A19, NONE, DEEP), /* HDPO */
 /* ISH_GP2 */		PAD_CFG_NC(GPP_A20),
@@ -217,13 +216,13 @@ static const struct pad_config gpio_table[] = {
 /* EMMC_CLK */		PAD_CFG_NC(GPP_F22),
 /* RSVD */		PAD_CFG_NC(GPP_F23),
 
-/* SD_CMD */		PAD_CFG_NF(GPP_G0, NONE, DEEP, NF1),
-/* SD_DATA0 */		PAD_CFG_NF(GPP_G1, NONE, DEEP, NF1),
-/* SD_DATA1 */		PAD_CFG_NF(GPP_G2, NONE, DEEP, NF1),
-/* SD_DATA2 */		PAD_CFG_NF(GPP_G3, NONE, DEEP, NF1),
-/* SD_DATA3 */		PAD_CFG_NF(GPP_G4, NONE, DEEP, NF1),
-/* SD_CD# */		PAD_CFG_NF(GPP_G5, NONE, DEEP, NF1), /* SD_CDZ */
-/* SD_CLK */		PAD_CFG_NF(GPP_G6, NONE, DEEP, NF1),
+/* SD_CMD */		PAD_CFG_NC(GPP_G0),
+/* SD_DATA0 */		PAD_CFG_NC(GPP_G1),
+/* SD_DATA1 */		PAD_CFG_NC(GPP_G2),
+/* SD_DATA2 */		PAD_CFG_NC(GPP_G3),
+/* SD_DATA3 */		PAD_CFG_NC(GPP_G4),
+/* SD_CD# */		PAD_CFG_NC(GPP_G5),
+/* SD_CLK */		PAD_CFG_NC(GPP_G6),
 /* SD_WP */		PAD_CFG_NC(GPP_G7), /* TP292 */
 
 /* BATLOW# */		PAD_CFG_NC(GPD0), /* TP148 */

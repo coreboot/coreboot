@@ -102,8 +102,8 @@ chip soc/intel/icelake
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C4]  = PchSerialIoSkipInit,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
 	}"
 
 	register "SerialIoGSpiMode" = "{

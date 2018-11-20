@@ -27,6 +27,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
+#include <cpu/intel/common/common.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
@@ -39,7 +40,6 @@
 #include <intelblocks/mp_init.h>
 #include <intelblocks/sgx.h>
 #include <intelblocks/smm.h>
-#include <intelblocks/vmx.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -467,6 +467,16 @@ static void per_cpu_smm_trigger(void)
 	smm_relocate();
 }
 
+static void vmx_configure(void *unused)
+{
+	set_feature_ctrl_vmx();
+}
+
+static void fc_lock_configure(void *unused)
+{
+	set_feature_ctrl_lock();
+}
+
 static void post_mp_init(void)
 {
 	/* Set Max Ratio */
@@ -486,6 +496,8 @@ static void post_mp_init(void)
 	mp_run_on_all_cpus(vmx_configure, NULL, 2 * USECS_PER_MSEC);
 
 	mp_run_on_all_cpus(sgx_configure, NULL, 14 * USECS_PER_MSEC);
+
+	mp_run_on_all_cpus(fc_lock_configure, NULL, 2 * USECS_PER_MSEC);
 }
 
 static const struct mp_ops mp_ops = {
@@ -564,24 +576,5 @@ int soc_fill_sgx_param(struct sgx_param *sgx_param)
 	}
 
 	sgx_param->enable = conf->sgx_enable;
-	return 0;
-}
-int soc_fill_vmx_param(struct vmx_param *vmx_param)
-{
-	struct device *dev = SA_DEV_ROOT;
-	config_t *conf;
-
-	if (!dev) {
-		printk(BIOS_ERR, "Failed to get root dev for checking VMX param\n");
-		return -1;
-	}
-
-	conf = dev->chip_info;
-	if (!conf) {
-		printk(BIOS_ERR, "Failed to get chip_info for VMX param\n");
-		return -1;
-	}
-
-	vmx_param->enable = conf->VmxEnable;
 	return 0;
 }

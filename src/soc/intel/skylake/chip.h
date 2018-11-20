@@ -465,9 +465,6 @@ struct soc_intel_skylake_config {
 	*/
 	u8 SendVrMbxCmd;
 
-	/* Enable/Disable VMX feature */
-	u8 VmxEnable;
-
 	/*
 	 * PRMRR size setting with three options
 	 * 0x02000000 - 32MiB

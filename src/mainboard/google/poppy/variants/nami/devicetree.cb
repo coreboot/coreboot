@@ -56,7 +56,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpSusMinAssert" = "1"       # 500ms
 	register "PmConfigSlpAMinAssert" = "3"         # 2s
 	register "PmTimerDisabled" = "1"
-	register "VmxEnable" = "1"
 
 	# Intersil VR c-state issue workaround
 	# send VR mailbox command for IA/GT/SA rails

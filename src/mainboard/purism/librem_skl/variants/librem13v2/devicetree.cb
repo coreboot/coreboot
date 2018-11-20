@@ -8,7 +8,6 @@ chip soc/intel/skylake
 	register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN"
 
 	register "eist_enable" = "1"
-	register "VmxEnable" = "1"
 
 	# Set the Thermal Control Circuit (TCC) activaction value to 95C
 	# even though FSP integration guide says to set it to 100C for SKL-U

@@ -186,9 +186,6 @@ chip soc/intel/skylake
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"
 
-	# Enable/Disable VMX feature
-	register "VmxEnable" = "0"
-
 	# Use default SD card detect GPIO configuration
 	register "sdcard_cd_gpio_default" = "GPP_A7"
 

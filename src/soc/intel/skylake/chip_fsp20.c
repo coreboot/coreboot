@@ -322,7 +322,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->LogoPtr = config->LogoPtr;
 	params->LogoSize = config->LogoSize;
 
-	params->CpuConfig.Bits.VmxEnable = config->VmxEnable;
+	params->CpuConfig.Bits.VmxEnable = IS_ENABLED(CONFIG_ENABLE_VMX);
 
 	params->PchPmWoWlanEnable = config->PchPmWoWlanEnable;
 	params->PchPmWoWlanDeepSxEnable = config->PchPmWoWlanDeepSxEnable;

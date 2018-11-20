@@ -70,11 +70,36 @@ void pcr_init(struct pci_dev *const sb)
 {
 	bool error_exit = false;
 	bool p2sb_revealed = false;
+	struct pci_dev *p2sb;
 
 	if (sbbar)
 		return;
 
-	struct pci_dev *const p2sb = pci_get_dev(sb->access, 0, 0, 0x1f, 1);
+	switch (sb->device_id) {
+	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_PRE:
+	case PCI_DEVICE_ID_INTEL_H110:
+	case PCI_DEVICE_ID_INTEL_H170:
+	case PCI_DEVICE_ID_INTEL_Z170:
+	case PCI_DEVICE_ID_INTEL_Q170:
+	case PCI_DEVICE_ID_INTEL_Q150:
+	case PCI_DEVICE_ID_INTEL_B150:
+	case PCI_DEVICE_ID_INTEL_C236:
+	case PCI_DEVICE_ID_INTEL_C232:
+	case PCI_DEVICE_ID_INTEL_QM170:
+	case PCI_DEVICE_ID_INTEL_HM170:
+	case PCI_DEVICE_ID_INTEL_CM236:
+	case PCI_DEVICE_ID_INTEL_HM175:
+	case PCI_DEVICE_ID_INTEL_QM175:
+	case PCI_DEVICE_ID_INTEL_CM238:
+		p2sb = pci_get_dev(sb->access, 0, 0, 0x1f, 1);
+		break;
+	case PCI_DEVICE_ID_INTEL_APL_LPC:
+		p2sb = pci_get_dev(sb->access, 0, 0, 0x0d, 0);
+		break;
+	default:
+		perror("Unknown LPC device.");
+		exit(1);
+	}
 
 	if (!p2sb) {
 		perror("Can't allocate device node for P2SB.");
@@ -86,8 +111,8 @@ void pcr_init(struct pci_dev *const sb)
 	if (p2sb->vendor_id == 0xffff && p2sb->device_id == 0xffff) {
 		printf("Trying to reveal Primary to Sideband Bridge "
 		       "(P2SB),\nlet's hope the OS doesn't mind... ");
-		/* Do not use pci_write_long(). Surrounding
-		   bytes 0xe0 must be maintained. */
+		/* Do not use pci_write_long(). Bytes
+		   surrounding 0xe0 must be maintained. */
 		pci_write_byte(p2sb, 0xe0 + 1, 0);
 
 		pci_fill_info(p2sb, PCI_FILL_IDENT | PCI_FILL_RESCAN);

@@ -227,6 +227,8 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_BAYTRAIL_GFX	0x0f31
 #define CPUID_BAYTRAIL						0x30670
 
+#define PCI_DEVICE_ID_INTEL_APL_LPC		0x5ae8
+
 /* Intel starts counting these generations with the integration of the DRAM controller */
 #define PCI_DEVICE_ID_INTEL_CORE_0TH_GEN	0xd132 /* Nehalem */
 #define PCI_DEVICE_ID_INTEL_CORE_1ST_GEN	0x0044 /* Westmere */

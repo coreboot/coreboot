@@ -1,5 +1,14 @@
 ifeq ($(CONFIG_INTEL_TXT),y)
 
+romstage-y += common.c
+romstage-$(CONFIG_INTEL_TXT_LOGGING) += logging.c
+
+ramstage-y += common.c
+ramstage-y += getsec.c
+ramstage-y += getsec_enteraccs.S
+ramstage-y += ramstage.c
+ramstage-$(CONFIG_INTEL_TXT_LOGGING) += logging.c
+
 cbfs-files-y += txt_bios_acm.bin
 txt_bios_acm.bin-file := $(CONFIG_INTEL_TXT_BIOSACM_FILE)
 txt_bios_acm.bin-type := raw
@@ -12,6 +21,8 @@ txt_sinit_acm.bin-type := raw
 txt_sinit_acm.bin-align := 0x10
 txt_sinit_acm.bin-compression := lzma
 endif
+
+ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
 
 INTERMEDIATE+=add_acm_fit
 add_acm_fit: $(obj)/coreboot.pre $(IFITTOOL)
@@ -26,7 +37,9 @@ ibb-files += bootblock
 
 INTERMEDIATE+=add_ibb_fit
 add_ibb_fit: $(obj)/coreboot.pre $(IFITTOOL)
-	$(foreach file, $(ibb-files), $(shell $(IFITTOOL) -f $< -a -n $(file) -t 7 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) \
-        -r COREBOOT)) true
+	$(foreach file, $(ibb-files), $(shell $(IFITTOOL) -f $< -a -n $(file) -t 7 \
+                -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) -r COREBOOT)) true
 
-endif
+endif # CPU_INTEL_FIRMWARE_INTERFACE_TABLE
+
+endif # INTEL_TXT

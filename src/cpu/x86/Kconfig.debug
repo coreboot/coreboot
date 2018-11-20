@@ -1,6 +1,30 @@
+config HAVE_DEBUG_CAR
+	bool
+
+config DEBUG_CAR
+	bool
+	depends on HAVE_DEBUG_CAR
+	# Only visible if debug level is DEBUG (7) or SPEW (8) as it does
+	# additional printk(BIOS_DEBUG, ...) calls.
+	prompt "Output verbose Cache-as-RAM debug messages" \
+		if DEFAULT_CONSOLE_LOGLEVEL_7 || DEFAULT_CONSOLE_LOGLEVEL_8
+	help
+	  This option enables additional CAR related debug messages.
+
 config HAVE_DISPLAY_MTRRS
 	bool
 
 config DISPLAY_MTRRS
 	bool "Display intermediate MTRR settings"
 	depends on HAVE_DISPLAY_MTRRS
+
+config DEBUG_SMM_RELOCATION
+	bool "Debug SMM relocation code"
+	depends on HAVE_SMI_HANDLER
+	help
+	  This option enables additional SMM handler relocation related
+	  debug messages.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.

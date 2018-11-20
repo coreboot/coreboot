@@ -727,24 +727,6 @@ config DEBUG_RAM_SETUP
 
 	  If unsure, say N.
 
-config HAVE_DEBUG_CAR
-	def_bool n
-
-config DEBUG_CAR
-	def_bool n
-	depends on HAVE_DEBUG_CAR
-
-if DEFAULT_CONSOLE_LOGLEVEL_7 || DEFAULT_CONSOLE_LOGLEVEL_8
-# Only visible if debug level is DEBUG (7) or SPEW (8) as it does additional
-# printk(BIOS_DEBUG, ...) calls.
-config DEBUG_CAR
-	bool "Output verbose Cache-as-RAM debug messages"
-	default n
-	depends on HAVE_DEBUG_CAR
-	help
-	  This option enables additional CAR related debug messages.
-endif
-
 config DEBUG_PIRQ
 	bool "Check PIRQ table consistency"
 	default n
@@ -773,18 +755,6 @@ config DEBUG_SMI
 	select SPI_FLASH_SMM if SPI_CONSOLE || CONSOLE_SPI_FLASH
 	help
 	  This option enables additional SMI related debug messages.
-
-	  Note: This option will increase the size of the coreboot image.
-
-	  If unsure, say N.
-
-config DEBUG_SMM_RELOCATION
-	bool "Debug SMM relocation code"
-	default n
-	depends on HAVE_SMI_HANDLER
-	help
-	  This option enables additional SMM handler relocation related
-	  debug messages.
 
 	  Note: This option will increase the size of the coreboot image.
 

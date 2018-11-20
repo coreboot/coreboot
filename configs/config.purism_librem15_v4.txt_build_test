@@ -1,0 +1,8 @@
+# Not meant for actual use. Exercises Intel TXT code. Since BIOS
+# and SINIT ACM blobs are missing, use something else as placeholder.
+CONFIG_VENDOR_PURISM=y
+CONFIG_BOARD_PURISM_LIBREM15_V4=y
+CONFIG_INTEL_TXT=y
+CONFIG_INTEL_TXT_BIOSACM_FILE="3rdparty/blobs/cpu/intel/stm/stm.bin"
+CONFIG_INTEL_TXT_SINITACM_FILE="3rdparty/blobs/cpu/intel/stm/stm.bin"
+CONFIG_INTEL_TXT_LOGGING=y

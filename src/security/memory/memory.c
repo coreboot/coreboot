@@ -14,7 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#include <types.h>
+#include <stdint.h>
+#include <security/intel/txt/txt.h>
 #include "memory.h"
 
 /**
@@ -25,6 +26,9 @@
 bool security_clear_dram_request(void)
 {
 	if (CONFIG(SECURITY_CLEAR_DRAM_ON_REGULAR_BOOT))
+		return true;
+
+	if (CONFIG(INTEL_TXT) && intel_txt_memory_has_secrets())
 		return true;
 
 	/* TODO: Add TEE environments here */

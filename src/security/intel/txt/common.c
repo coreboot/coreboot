@@ -1,0 +1,421 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#include <arch/mmio.h>
+#include <string.h>
+#include <console/console.h>
+#include <types.h>
+#include <cbfs.h>
+#include <cpu/x86/lapic.h>
+#include <cpu/x86/cr.h>
+#include <cpu/x86/mp.h>
+#include <lib.h>
+#include <smp/node.h>
+#include <cf9_reset.h>
+#include "txt.h"
+#include "txt_register.h"
+#include "txt_getsec.h"
+
+/**
+ * Dump the ACM error status bits.
+ *
+ * @param  acm_error The status register to dump
+ * @return -1 on error (register is not valid)
+ *	  0 on error (Class > 0 and Major > 0)
+ *	  1 on success (Class == 0 and Major == 0 and progress > 0)
+ */
+int intel_txt_log_acm_error(const uint32_t acm_error)
+{
+	if (!(acm_error & ACMERROR_TXT_VALID))
+		return -1;
+
+	const uint8_t type = (acm_error & ACMERROR_TXT_TYPE_CODE)
+			      >> ACMERROR_TXT_TYPE_SHIFT;
+
+	switch (type) {
+	case ACMERROR_TXT_AC_MODULE_TYPE_BIOS:
+		printk(BIOS_ERR, "BIOSACM");
+		break;
+	case ACMERROR_TXT_AC_MODULE_TYPE_SINIT:
+		printk(BIOS_ERR, "SINIT");
+		break;
+	default:
+		printk(BIOS_ERR, "ACM");
+		break;
+	}
+	printk(BIOS_ERR, ": Error code valid\n");
+
+	if (acm_error & ACMERROR_TXT_EXTERNAL)
+		printk(BIOS_ERR, " Caused by: External\n");
+	else
+		printk(BIOS_ERR, " Caused by: Processor\n");
+
+	const uint32_t class = (acm_error & ACMERROR_TXT_CLASS_CODE)
+							>> ACMERROR_TXT_CLASS_SHIFT;
+	const uint32_t major = (acm_error & ACMERROR_TXT_MAJOR_CODE)
+							>> ACMERROR_TXT_MAJOR_SHIFT;
+	const uint32_t minor = (acm_error & ACMERROR_TXT_MINOR_CODE)
+							>> ACMERROR_TXT_MINOR_SHIFT;
+	const uint32_t progress = (acm_error & ACMERROR_TXT_PROGRESS_CODE)
+							>> ACMERROR_TXT_PROGRESS_SHIFT;
+
+	if (!minor) {
+		if (class == 0 && major == 0 && progress > 0) {
+			printk(BIOS_ERR, " Execution successful\n");
+			printk(BIOS_ERR, " Progress code 0x%x\n", progress);
+		} else {
+			printk(BIOS_ERR, " Error Class: %x\n", class);
+			printk(BIOS_ERR, " Error: %x.%x\n", major, progress);
+		}
+	} else {
+		printk(BIOS_ERR, " ACM didn't start\n");
+		printk(BIOS_ERR, " Error Type: 0x%x\n", acm_error & 0xffffff);
+		return -1;
+	}
+
+	return (acm_error & ACMERROR_TXT_EXTERNAL) && class == 0 && major == 0 && progress > 0;
+}
+
+void intel_txt_log_spad(void)
+{
+	const uint64_t acm_status = read64((void *)TXT_SPAD);
+
+	printk(BIOS_INFO, "TXT-STS: ACM verification ");
+
+	if (acm_status & ACMSTS_VERIFICATION_ERROR)
+		printk(BIOS_INFO, "error\n");
+	else
+		printk(BIOS_INFO, "successful\n");
+
+	printk(BIOS_INFO, "TXT-STS: IBB ");
+
+	if (acm_status & ACMSTS_IBB_MEASURED)
+		printk(BIOS_INFO, "measured\n");
+	else
+		printk(BIOS_INFO, "not measured\n");
+
+	printk(BIOS_INFO, "TXT-STS: TXT is ");
+
+	if (acm_status & ACMSTS_TXT_DISABLED)
+		printk(BIOS_INFO, "disabled\n");
+	else
+		printk(BIOS_INFO, "not disabled\n");
+
+	printk(BIOS_INFO, "TXT-STS: BIOS is ");
+
+	if (acm_status & ACMSTS_BIOS_TRUSTED)
+		printk(BIOS_INFO, "trusted\n");
+	else
+		printk(BIOS_INFO, "not trusted\n");
+}
+
+/* Returns true if secrets might be in memory */
+bool intel_txt_memory_has_secrets(void)
+{
+	bool ret;
+	if (!CONFIG(INTEL_TXT))
+		return false;
+
+	ret = (read8((void *)TXT_ESTS) & TXT_ESTS_WAKE_ERROR_STS) ||
+	      (read64((void *)TXT_E2STS) & TXT_E2STS_SECRET_STS);
+
+	if (ret)
+		printk(BIOS_CRIT, "TXT-STS: Secrets in memory!\n");
+	return ret;
+}
+
+static struct acm_info_table *find_info_table(const void *ptr)
+{
+	const struct acm_header_v0 *acm_header = (struct acm_header_v0 *)ptr;
+
+	return (struct acm_info_table *)(ptr +
+		(acm_header->header_len + acm_header->scratch_size) * sizeof(uint32_t));
+}
+
+/**
+ * Validate that the provided ACM is useable on this platform.
+ */
+static int validate_acm(const void *ptr)
+{
+	const struct acm_header_v0 *acm_header = (struct acm_header_v0 *)ptr;
+	uint32_t max_size_acm_area = 0;
+
+	if (acm_header->module_type != CHIPSET_ACM)
+		return ACM_E_TYPE_NOT_MATCH;
+
+	/* Seems inconsistent across generations. */
+	if (acm_header->module_sub_type != 0 && acm_header->module_sub_type != 1)
+		return ACM_E_MODULE_SUB_TYPE_WRONG;
+
+	if (acm_header->module_vendor != INTEL_ACM_VENDOR)
+		return ACM_E_MODULE_VENDOR_NOT_INTEL;
+
+	if (((acm_header->header_len + acm_header->scratch_size) * sizeof(uint32_t) +
+	    sizeof(struct acm_info_table)) > (acm_header->size & 0xffffff) * sizeof(uint32_t)) {
+		return ACM_E_SIZE_INCORRECT;
+	}
+
+	if (!getsec_parameter(NULL, NULL, &max_size_acm_area, NULL, NULL, NULL))
+		return ACM_E_CANT_CALL_GETSEC;
+
+	/*
+	 * Causes #GP if acm_header->size > processor internal authenticated
+	 * code area capacity.
+	 * SAFER MODE EXTENSIONS REFERENCE.
+	 * Intel 64 and IA-32 Architectures Software Developer Manuals Vol 2D
+	 */
+	const size_t acm_len = 1UL << log2_ceil((acm_header->size & 0xffffff) << 2);
+	if (max_size_acm_area < acm_len) {
+		printk(BIOS_ERR, "TEE-TXT: BIOS ACM doesn't fit into AC execution region\n");
+		return ACM_E_NOT_FIT_INTO_CPU_ACM_MEM;
+	}
+
+	struct acm_info_table *info = find_info_table(ptr);
+	if (!info)
+		return ACM_E_NO_INFO_TABLE;
+	if (info->chipset_acm_type != BIOS)
+		return ACM_E_NOT_BIOS_ACM;
+
+	static const u8 acm_uuid[] = {
+		0xaa, 0x3a, 0xc0, 0x7f, 0xa7, 0x46, 0xdb, 0x18,
+		0x2e, 0xac, 0x69, 0x8f, 0x8d, 0x41, 0x7f, 0x5a,
+	};
+	if (memcmp(acm_uuid, info->uuid, sizeof(acm_uuid)) != 0)
+		return ACM_E_UUID_NOT_MATCH;
+
+	if ((acm_header->flags & ACM_FORMAT_FLAGS_DEBUG) ==
+	    (read64((void *)TXT_VER_FSBIF) & TXT_VER_PRODUCTION_FUSED))
+		return ACM_E_PLATFORM_IS_NOT_PROD;
+
+	return 0;
+}
+
+/*
+ * Test all bits for TXT execution.
+ *
+ * @return 0 on success
+ */
+int intel_txt_run_bios_acm(const u8 input_params)
+{
+	struct cbfsf file;
+	void *acm_data;
+	struct region_device acm;
+	size_t acm_len;
+	int ret;
+
+	if (cbfs_boot_locate(&file, CONFIG_INTEL_TXT_CBFS_BIOS_ACM, NULL)) {
+		printk(BIOS_ERR, "TEE-TXT: Couldn't locate BIOS ACM in CBFS.\n");
+		return -1;
+	}
+
+	cbfs_file_data(&acm, &file);
+	acm_data = rdev_mmap_full(&acm);
+	acm_len = region_device_sz(&acm);
+	if (!acm_data || acm_len == 0) {
+		printk(BIOS_ERR, "TEE-TXT: Couldn't map BIOS ACM from CBFS.\n");
+		return -1;
+	}
+
+	/*
+	 * CPU enforces only 4KiB alignment.
+	 * Chapter A.1.1
+	 * Intel TXT Software Development Guide (Document: 315168-015)
+	 */
+	if (!IS_ALIGNED((uintptr_t)acm_data, 4096)) {
+		printk(BIOS_ERR, "TEE-TXT: BIOS ACM isn't mapped at page boundary.\n");
+		rdev_munmap(&acm, acm_data);
+		return -1;
+	}
+
+	/*
+	 * Causes #GP if not multiple of 64.
+	 * SAFER MODE EXTENSIONS REFERENCE.
+	 * Intel 64 and IA-32 Architectures Software Developer Manuals Vol 2D
+	 */
+	if (!IS_ALIGNED(acm_len, 64)) {
+		printk(BIOS_ERR, "TEE-TXT: BIOS ACM size isn't multiple of 64.\n");
+		rdev_munmap(&acm, acm_data);
+		return -1;
+	}
+
+	/*
+	 * The ACM should be aligned to it's size, but that's not possible, as
+	 * some ACMs are not power of two. Use the next power of two for verification.
+	 */
+	if (!IS_ALIGNED((uintptr_t)acm_data, (1UL << log2_ceil(acm_len)))) {
+		printk(BIOS_ERR, "TEE-TXT: BIOS ACM isn't aligned to its size.\n");
+		rdev_munmap(&acm, acm_data);
+		return -1;
+	}
+
+	if (CONFIG(INTEL_TXT_LOGGING))
+		txt_dump_acm_info(acm_data);
+
+	ret = validate_acm(acm_data);
+	if (ret < 0) {
+		printk(BIOS_ERR, "TEE-TXT: Validation of ACM failed with: %d\n", ret);
+		rdev_munmap(&acm, acm_data);
+		return ret;
+	}
+
+	/* Call into assembly which invokes the referenced ACM */
+	getsec_enteraccs(input_params, (uintptr_t)acm_data, acm_len);
+
+	rdev_munmap(&acm, acm_data);
+
+	const uint64_t acm_status = read64((void *)TXT_SPAD);
+	if (acm_status & ACMERROR_TXT_VALID) {
+		printk(BIOS_ERR, "TEE-TXT: FATAL ACM launch error !\n");
+		/*
+		 * WARNING !
+		 * To clear TXT.BIOSACM.ERRORCODE you must issue a cold reboot!
+		 */
+		intel_txt_log_acm_error(read32((void *)TXT_BIOSACM_ERRORCODE));
+		return -1;
+	}
+	if (intel_txt_log_acm_error(read32((void *)TXT_BIOSACM_ERRORCODE)) != 1)
+		return -1;
+
+	return 0;
+}
+
+ /* Returns true if cond is not met */
+static bool check_precondition(const int cond)
+{
+	printk(BIOS_DEBUG, "%s\n", cond ? "true" : "false");
+	return !cond;
+}
+
+/*
+ * Test all bits that are required for Intel TXT.
+ * Enable SMX if available.
+ *
+ * @return 0 on success
+ */
+bool intel_txt_prepare_txt_env(void)
+{
+	bool failure = false;
+	uint32_t txt_feature_flags = 0;
+
+	unsigned int ecx = cpuid_ecx(1);
+
+	printk(BIOS_DEBUG, "TEE-TXT: CPU supports SMX: ");
+	failure |= check_precondition(ecx & CPUID_SMX);
+
+	printk(BIOS_DEBUG, "TEE-TXT: CPU supports VMX: ");
+	failure |= check_precondition(ecx & CPUID_VMX);
+
+	msr_t msr = rdmsr(IA32_FEATURE_CONTROL);
+	if (!(msr.lo & BIT(0))) {
+		printk(BIOS_ERR, "TEE-TXT: IA32_FEATURE_CONTROL is not locked\n");
+		full_reset();
+	}
+
+	printk(BIOS_DEBUG, "TEE-TXT: IA32_FEATURE_CONTROL\n");
+	printk(BIOS_DEBUG, " VMXON in SMX enable: ");
+	failure |= check_precondition(msr.lo & BIT(1));
+
+	printk(BIOS_DEBUG, " VMXON outside SMX enable: ");
+	failure |= check_precondition(msr.lo & FEATURE_ENABLE_VMX);
+
+	printk(BIOS_DEBUG, " register is locked: ");
+	failure |= check_precondition(msr.lo & BIT(0));
+
+	/* IA32_FEATURE_CONTROL enables getsec instructions */
+	printk(BIOS_DEBUG, " GETSEC (all instructions) is enabled: ");
+	failure |= check_precondition((msr.lo & 0xff00) == 0xff00);
+
+	/* Prevent crash and opt out early */
+	if (failure)
+		return true;
+
+	uint32_t eax = 0;
+	/*
+	 * GetSec[CAPABILITIES]
+	 * SAFER MODE EXTENSIONS REFERENCE.
+	 * Intel 64 and IA-32 Architectures Software Developer Manuals Vol 2D
+	 * Must check BIT0 of TXT chipset has been detected by CPU.
+	 */
+	if (!getsec_capabilities(&eax))
+		return true;
+
+	printk(BIOS_DEBUG, "TEE-TXT: GETSEC[CAPABILITIES] returned:\n");
+	printk(BIOS_DEBUG, " TXT capable chipset:  %s\n", (eax & BIT(0)) ? "true" : "false");
+
+	printk(BIOS_DEBUG, " ENTERACCS available:  %s\n", (eax & BIT(2)) ? "true" : "false");
+	printk(BIOS_DEBUG, " EXITAC available:     %s\n", (eax & BIT(3)) ? "true" : "false");
+	printk(BIOS_DEBUG, " SENTER available:     %s\n", (eax & BIT(4)) ? "true" : "false");
+	printk(BIOS_DEBUG, " SEXIT available:      %s\n", (eax & BIT(5)) ? "true" : "false");
+	printk(BIOS_DEBUG, " PARAMETERS available: %s\n", (eax & BIT(6)) ? "true" : "false");
+
+	/*
+	 * Causes #GP if function is not supported by getsec.
+	 * SAFER MODE EXTENSIONS REFERENCE.
+	 * Intel 64 and IA-32 Architectures Software Developer Manuals Vol 2D
+	 * Order Number:  325383-060US
+	 */
+	if ((eax & 0x7d) != 0x7d)
+		failure = true;
+
+	const uint64_t status = read64((void *)TXT_SPAD);
+
+	if (status & ACMSTS_TXT_DISABLED) {
+		printk(BIOS_INFO, "TEE-TXT: TXT disabled by BIOS policy in FIT.\n");
+		failure = true;
+	}
+
+	/*
+	 * Only the BSP must call getsec[ENTERACCS].
+	 * SAFER MODE EXTENSIONS REFERENCE.
+	 * Intel 64 and IA-32 Architectures Software Developer Manuals Vol 2D
+	 * Order Number:  325383-060US
+	 */
+	if (!boot_cpu()) {
+		printk(BIOS_ERR, "TEE-TXT: BSP flag not set in APICBASE_MSR.\n");
+		failure = true;
+	}
+
+	/*
+	 * There must be no MCEs pending.
+	 * Intel 64 and IA-32 Architectures Software Developer Manuals Vol 2D
+	 * Order Number:  325383-060US
+	 */
+	msr = rdmsr(IA32_MCG_STATUS);
+	if (msr.lo & 0x4) {
+		printk(BIOS_ERR, "TEE-TXT: IA32_MCG_STATUS.MCIP is set.\n");
+		failure = true;
+	}
+
+	if (!getsec_parameter(NULL, NULL, NULL, NULL, NULL, &txt_feature_flags)) {
+		return true;
+	} else {
+		printk(BIOS_DEBUG, "TEE-TXT: Machine Check Register: ");
+		if (txt_feature_flags & GETSEC_PARAMS_TXT_EXT_MACHINE_CHECK)
+			printk(BIOS_DEBUG, "preserved\n");
+		else
+			printk(BIOS_DEBUG, "must be clear\n");
+	}
+
+	if (!(txt_feature_flags & GETSEC_PARAMS_TXT_EXT_MACHINE_CHECK)) {
+		/*
+		* Make sure there are no uncorrectable MCE errors.
+		* Intel 64 and IA-32 Architectures Software Developer Manuals Vol 2D
+		*/
+		msr = rdmsr(IA32_MCG_CAP);
+		size_t max_mc_msr = msr.lo & MCA_BANKS_MASK;
+		for (size_t i = 0; i < max_mc_msr; i++) {
+			msr = rdmsr(IA32_MC0_STATUS + 4 * i);
+			if (!(msr.hi & MCA_STATUS_HI_UC))
+				continue;
+
+			printk(BIOS_ERR, "TEE-TXT: IA32_MC%zd_STATUS.UC is set.\n", i);
+			failure = true;
+			break;
+		}
+	}
+
+	/* Need to park all APs. */
+	if (CONFIG(PARALLEL_MP_AP_WORK))
+		mp_park_aps();
+
+	return failure;
+}

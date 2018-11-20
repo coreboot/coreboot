@@ -33,7 +33,7 @@ config INTEL_TXT_BIOSACM_FILE
 	default "3rdparty/blobs/soc/intel/fsp_broadwell_de/biosacm.bin" if SOC_INTEL_FSP_BROADWELL_DE
 	default "3rdparty/blobs/soc/intel/skylake/biosacm.bin" if SOC_INTEL_COMMON_SKYLAKE_BASE
 	help
-	  Intel TXT BIOS ACM file. This file can be obtained by privileged
+	  Intel TXT BIOS ACM file. This file can be obtained through privileged
 	  access to Intel resources. Or for some platforms found inside the
 	  blob repository.
 
@@ -42,16 +42,34 @@ config INTEL_TXT_SINITACM_FILE
 	default "3rdparty/blobs/soc/intel/fsp_broadwell_de/sinitacm.bin" if SOC_INTEL_FSP_BROADWELL_DE
 	default "3rdparty/blobs/soc/intel/skylake/sinitacm.bin" if SOC_INTEL_COMMON_SKYLAKE_BASE
 	help
-	  Intel TXT SINIT ACM file. This file can be obtained by privileged
+	  Intel TXT SINIT ACM file. This file can be obtained through privileged
 	  access to Intel resources. Or for some platforms found inside the
 	  blob repository.
 
+config INTEL_TXT_LOGGING
+	bool "Enable verbose logging"
+	help
+	  Print more TXT related debug output.
+	  Use in pre-production environments only!
+
 config INTEL_TXT_BIOSACM_ALIGNMENT
 	hex
-	default 0x20000 # 128KB
+	default 0x20000 # 128 KiB
 	help
-	  Exceptions are Ivy- and Sandy Bridge with 64KB and Purely with 256KB
-	  alignment size. Please overwrite it SoC specific.
+	  Exceptions are Ivy and Sandy Bridge with 64 KiB and Purley with 256 KiB
+	  alignment size. If necessary, override from platform-specific Kconfig.
+
+config INTEL_TXT_CBFS_BIOS_POLICY
+	string
+	default "txt_bios_policy.bin"
+
+config INTEL_TXT_CBFS_BIOS_ACM
+	string
+	default "txt_bios_acm.bin"
+
+config INTEL_TXT_CBFS_SINIT_ACM
+	string
+	default "txt_sinit_acm.bin"
 
 endmenu # Intel
 

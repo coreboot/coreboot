@@ -19,29 +19,12 @@
 #include <arch/io.h>
 #include <console/console.h>
 
+#include <intelblocks/pmclib.h>
 #include <soc/iomap.h>
 #include <soc/soc_util.h>
 #include <soc/pm.h>
 
-static void print_num_status_bits(int num_bits, uint32_t status,
-				  const char *const bit_names[])
-{
-	int i;
-
-	if (!status)
-		return;
-
-	for (i = num_bits - 1; i >= 0; i--) {
-		if (status & (1 << i)) {
-			if (bit_names[i])
-				printk(BIOS_DEBUG, "%s ", bit_names[i]);
-			else
-				printk(BIOS_DEBUG, "BIT%d ", i);
-		}
-	}
-}
-
-static uint32_t print_smi_status(uint32_t smi_sts)
+const char *const *soc_smi_sts_array(size_t *a)
 {
 	static const char *const smi_sts_bits[] = {
 		[2] = "BIOS",
@@ -67,93 +50,11 @@ static uint32_t print_smi_status(uint32_t smi_sts)
 		[31] = "LEGACY_USB3",
 	};
 
-	if (!smi_sts)
-		return 0;
-
-	printk(BIOS_DEBUG, "SMI_STS: ");
-	print_num_status_bits(ARRAY_SIZE(smi_sts_bits), smi_sts, smi_sts_bits);
-	printk(BIOS_DEBUG, "\n");
-
-	return smi_sts;
+	*a = ARRAY_SIZE(smi_sts_bits);
+	return smi_sts_bits;
 }
 
-static uint32_t reset_smi_status(void)
-{
-	uint16_t pmbase = get_pmbase();
-	uint32_t smi_sts = inl((uint16_t)(pmbase + SMI_STS));
-	outl(smi_sts, (uint16_t)(pmbase + SMI_STS));
-	return smi_sts;
-}
-
-uint32_t clear_smi_status(void) { return print_smi_status(reset_smi_status()); }
-
-void enable_smi(uint32_t mask)
-{
-	uint16_t pmbase = get_pmbase();
-	uint32_t smi_en = inl((uint16_t)(pmbase + SMI_EN));
-	smi_en |= mask;
-	outl(smi_en, (uint16_t)(pmbase + SMI_EN));
-}
-
-void disable_smi(uint32_t mask)
-{
-	uint16_t pmbase = get_pmbase();
-	uint32_t smi_en = inl((uint16_t)(pmbase + SMI_EN));
-	smi_en &= ~mask;
-	outl(smi_en, (uint16_t)(pmbase + SMI_EN));
-}
-
-void enable_pm1_control(uint32_t mask)
-{
-	uint16_t pmbase = get_pmbase();
-	uint32_t pm1_cnt = inl((uint16_t)(pmbase + PM1_CNT));
-	pm1_cnt |= mask;
-	outl(pm1_cnt, (uint16_t)(pmbase + PM1_CNT));
-}
-
-void disable_pm1_control(uint32_t mask)
-{
-	uint16_t pmbase = get_pmbase();
-	uint32_t pm1_cnt = inl((uint16_t)(pmbase + PM1_CNT));
-	pm1_cnt &= ~mask;
-	outl(pm1_cnt, (uint16_t)(pmbase + PM1_CNT));
-}
-
-static uint16_t reset_pm1_status(void)
-{
-	uint16_t pmbase = get_pmbase();
-	uint16_t pm1_sts = inw((uint16_t)(pmbase + PM1_STS));
-	outw(pm1_sts, (uint16_t)(pmbase + PM1_STS));
-	return pm1_sts;
-}
-
-static uint16_t print_pm1_status(uint16_t pm1_sts)
-{
-	static const char *const pm1_sts_bits[] = {
-		[0] = "TMROF",  [4] = "BM",   [5] = "GBL",
-		[8] = "PWRBTN", [10] = "RTC", [11] = "PRBTNOR",
-		[15] = "WAK",
-	};
-
-	if (!pm1_sts)
-		return 0;
-
-	printk(BIOS_SPEW, "PM1_STS: ");
-	print_num_status_bits(ARRAY_SIZE(pm1_sts_bits), pm1_sts, pm1_sts_bits);
-	printk(BIOS_SPEW, "\n");
-
-	return pm1_sts;
-}
-
-uint16_t clear_pm1_status(void) { return print_pm1_status(reset_pm1_status()); }
-
-void enable_pm1(uint16_t events)
-{
-	uint16_t pmbase = get_pmbase();
-	outw(events, (uint16_t)(pmbase + PM1_EN));
-}
-
-static uint32_t print_tco_status(uint32_t tco_sts)
+const char *const *soc_tco_sts_array(size_t *a)
 {
 	static const char *const tco_sts_bits[] = {
 		[0] = "NMI2SMI",     [1] = "OS_TCO_SMI",
@@ -164,17 +65,11 @@ static uint32_t print_tco_status(uint32_t tco_sts)
 		[17] = "SECOND_TO",  [20] = "SMLINK_SLV_SMI",
 	};
 
-	if (!tco_sts)
-		return 0;
-
-	printk(BIOS_DEBUG, "TCO_STS: ");
-	print_num_status_bits(ARRAY_SIZE(tco_sts_bits), tco_sts, tco_sts_bits);
-	printk(BIOS_DEBUG, "\n");
-
-	return tco_sts;
+	*a = ARRAY_SIZE(tco_sts_bits);
+	return tco_sts_bits;
 }
 
-static uint32_t reset_tco_status(void)
+uint32_t soc_reset_tco_status(void)
 {
 	uint16_t tcobase = get_tcobase();
 	uint32_t tco_sts = inl((uint16_t)(tcobase + TCO1_STS));
@@ -184,35 +79,7 @@ static uint32_t reset_tco_status(void)
 	return tco_sts & tco_en;
 }
 
-uint32_t clear_tco_status(void) { return print_tco_status(reset_tco_status()); }
-
-void enable_gpe(uint32_t mask)
-{
-	uint16_t pmbase = get_pmbase();
-	uint32_t gpe0_en = inl((uint16_t)(pmbase + GPE0_EN(GPE_STD)));
-	gpe0_en |= mask;
-	outl(gpe0_en, (uint16_t)(pmbase + GPE0_EN(GPE_STD)));
-}
-
-void disable_gpe(uint32_t mask)
-{
-	uint16_t pmbase = get_pmbase();
-	uint32_t gpe0_en = inl((uint16_t)(pmbase + GPE0_EN(GPE_STD)));
-	gpe0_en &= ~mask;
-	outl(gpe0_en, (uint16_t)(pmbase + GPE0_EN(GPE_STD)));
-}
-
-void disable_all_gpe(void) { disable_gpe(~0); }
-
-static uint32_t reset_gpe_status(void)
-{
-	uint16_t pmbase = get_pmbase();
-	uint32_t gpe_sts = inl((uint16_t)(pmbase + GPE0_STS(GPE_STD)));
-	outl(gpe_sts, (uint16_t)(pmbase + GPE0_STS(GPE_STD)));
-	return gpe_sts;
-}
-
-static uint32_t print_gpe_sts(uint32_t gpe_sts)
+const char *const *soc_std_gpe_sts_array(size_t *a)
 {
 	static const char *const gpe_sts_bits[] = {
 		[0] = "GPIO_0", [1] = "GPIO_1",
@@ -233,16 +100,8 @@ static uint32_t print_gpe_sts(uint32_t gpe_sts)
 		[30] = "GPIO_30", [31] = "GPIO_31",
 	};
 
-	if (!gpe_sts)
-		return gpe_sts;
-
-	printk(BIOS_DEBUG, "GPE0a_STS: ");
-	print_num_status_bits(ARRAY_SIZE(gpe_sts_bits), gpe_sts, gpe_sts_bits);
-	printk(BIOS_DEBUG, "\n");
-
-	return gpe_sts;
+	*a = ARRAY_SIZE(gpe_sts_bits);
+	return gpe_sts_bits;
 }
-
-uint32_t clear_gpe_status(void) { return print_gpe_sts(reset_gpe_status()); }
 
 void clear_pmc_status(void) { /* TODO */ }

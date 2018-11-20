@@ -41,18 +41,6 @@ struct chipset_power_state {
 struct chipset_power_state *fill_power_state(void);
 
 /* Power Management Utility Functions. */
-uint32_t clear_smi_status(void);
-uint16_t clear_pm1_status(void);
-uint32_t clear_tco_status(void);
-uint32_t clear_gpe_status(void);
 void clear_pmc_status(void);
-void enable_smi(uint32_t mask);
-void disable_smi(uint32_t mask);
-void enable_pm1(uint16_t events);
-void enable_pm1_control(uint32_t mask);
-void disable_pm1_control(uint32_t mask);
-void enable_gpe(uint32_t mask);
-void disable_gpe(uint32_t mask);
-void disable_all_gpe(void);
 
 #endif /* _DENVERTON_NS_PM_H_ */

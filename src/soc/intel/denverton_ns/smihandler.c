@@ -25,6 +25,7 @@
 #include <device/pci_def.h>
 #include <elog.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/pmclib.h>
 #include <spi-generic.h>
 #include <soc/iomap.h>
 #include <soc/soc_util.h>
@@ -52,7 +53,7 @@ int southbridge_io_trap_handler(int smif)
 	return 0;
 }
 
-void southbridge_smi_set_eos(void) { enable_smi(EOS); }
+void southbridge_smi_set_eos(void) { pmc_enable_smi(EOS); }
 
 global_nvs_t *smm_get_gnvs(void) { return gnvs; }
 
@@ -98,7 +99,7 @@ static void southbridge_smi_sleep(void)
 	uint16_t pmbase = get_pmbase();
 
 	/* First, disable further SMIs */
-	disable_smi(SLP_SMI_EN);
+	pmc_disable_smi(SLP_SMI_EN);
 
 	/* Figure out SLP_TYP */
 	reg32 = inl((uint16_t)(pmbase + PM1_CNT));
@@ -131,7 +132,7 @@ static void southbridge_smi_sleep(void)
 		printk(BIOS_DEBUG, "SMI#: Entering S5 (Soft Power off)\n");
 
 		/* Disable all GPE */
-		disable_all_gpe();
+		pmc_disable_all_gpe();
 
 		/* also iterates over all bridges on bus 0 */
 		busmaster_disable_on_bus(0);
@@ -145,7 +146,7 @@ static void southbridge_smi_sleep(void)
 	 * event again. We need to set BIT13 (SLP_EN) though to make the
 	 * sleep happen.
 	 */
-	enable_pm1_control(SLP_EN);
+	pmc_enable_pm1_control(SLP_EN);
 
 	/* Make sure to stop executing code here for S3/S4/S5 */
 	if (slp_typ > 1)
@@ -158,7 +159,7 @@ static void southbridge_smi_sleep(void)
 	reg32 = inl((uint16_t)(pmbase + PM1_CNT));
 	if (reg32 & SCI_EN) {
 		/* The OS is not an ACPI OS, so we set the state to S0 */
-		disable_pm1_control(SLP_EN | SLP_TYP);
+		pmc_disable_pm1_control(SLP_EN | SLP_TYP);
 	}
 }
 
@@ -237,11 +238,11 @@ static void southbridge_smi_apmc(void)
 		printk(BIOS_DEBUG, "P-state control\n");
 		break;
 	case APM_CNT_ACPI_DISABLE:
-		disable_pm1_control(SCI_EN);
+		pmc_disable_pm1_control(SCI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI disabled.\n");
 		break;
 	case APM_CNT_ACPI_ENABLE:
-		enable_pm1_control(SCI_EN);
+		pmc_enable_pm1_control(SCI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
 		break;
 	case APM_CNT_FINALIZE:
@@ -268,23 +269,23 @@ static void southbridge_smi_apmc(void)
 
 static void southbridge_smi_pm1(void)
 {
-	uint16_t pm1_sts = clear_pm1_status();
+	uint16_t pm1_sts = pmc_clear_pm1_status();
 
 	/* While OSPM is not active, poweroff immediately
 	 * on a power button event.
 	 */
 	if (pm1_sts & PWRBTN_STS) {
 		// power button pressed
-		disable_pm1_control(-1UL);
-		enable_pm1_control(SLP_EN | (SLP_TYP_S5 << SLP_TYP_SHIFT));
+		pmc_disable_pm1_control(-1UL);
+		pmc_enable_pm1_control(SLP_EN | (SLP_TYP_S5 << SLP_TYP_SHIFT));
 	}
 }
 
-static void southbridge_smi_gpe0(void) { clear_gpe_status(); }
+static void southbridge_smi_gpe0(void) { pmc_clear_all_gpe_status(); }
 
 static void southbridge_smi_tco(void)
 {
-	uint32_t tco_sts = clear_tco_status();
+	uint32_t tco_sts = pmc_clear_tco_status();
 
 	/* Any TCO event? */
 	if (!tco_sts)
@@ -354,7 +355,7 @@ void southbridge_smi_handler(void)
 	/* We need to clear the SMI status registers, or we won't see what's
 	 * happening in the following calls.
 	 */
-	smi_sts = clear_smi_status();
+	smi_sts = pmc_clear_smi_status();
 
 	/* Call SMI sub handler for each of the status bits */
 	for (i = 0; i < ARRAY_SIZE(southbridge_smi); i++) {

@@ -23,6 +23,7 @@
 #include <cpu/x86/smm.h>
 #include <string.h>
 
+#include <intelblocks/pmclib.h>
 #include <soc/iomap.h>
 #include <soc/soc_util.h>
 #include <soc/pm.h>
@@ -48,10 +49,10 @@ void southcluster_smm_clear_state(void)
 	}
 
 	/* Dump and clear status registers */
-	clear_smi_status();
-	clear_pm1_status();
-	clear_tco_status();
-	clear_gpe_status();
+	pmc_clear_smi_status();
+	pmc_clear_pm1_status();
+	pmc_clear_tco_status();
+	pmc_clear_all_gpe_status();
 	clear_pmc_status();
 }
 
@@ -60,8 +61,8 @@ void southcluster_smm_enable_smi(void)
 
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	/* Configure events Disable pcie wake. */
-	enable_pm1(PWRBTN_EN | GBL_EN | PCIEXPWAK_DIS);
-	disable_gpe(PME_B0_EN);
+	pmc_enable_pm1(PWRBTN_EN | GBL_EN | PCIEXPWAK_DIS);
+	pmc_disable_std_gpe(PME_B0_EN);
 
 	/* Enable SMI generation:
 	 *  - on APMC writes (io 0xb2)
@@ -71,7 +72,7 @@ void southcluster_smm_enable_smi(void)
 	 *  - on TCO events
 	 *  - on microcontroller writes (io 0x62/0x66)
 	 */
-	enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS);
+	pmc_enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS);
 }
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)

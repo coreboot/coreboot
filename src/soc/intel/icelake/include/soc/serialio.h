@@ -16,27 +16,33 @@
 #ifndef _SERIALIO_H_
 #define _SERIALIO_H_
 
-typedef enum {
+enum {
 	PchSerialIoDisabled,
 	PchSerialIoPci,
-	PchSerialIoAcpi,
 	PchSerialIoHidden,
-} PCH_SERIAL_IO_MODE;
+	PchSerialIoLegacyUart,
+	PchSerialIoSkipInit
+};
 
-typedef enum {
+enum {
 	PchSerialIoIndexI2C0,
 	PchSerialIoIndexI2C1,
 	PchSerialIoIndexI2C2,
 	PchSerialIoIndexI2C3,
 	PchSerialIoIndexI2C4,
-	PchSerialIoIndexI2C5,
-	PchSerialIoIndexSPI0,
-	PchSerialIoIndexSPI1,
-	PchSerialIoIndexSPI2,
+	PchSerialIoIndexI2C5
+};
+
+enum {
+	PchSerialIoIndexGSPI0,
+	PchSerialIoIndexGSPI1,
+	PchSerialIoIndexGSPI2
+};
+
+enum {
 	PchSerialIoIndexUART0,
 	PchSerialIoIndexUART1,
-	PchSerialIoIndexUART2,
-	PchSerialIoIndexMAX
-} PCH_SERIAL_IO_CONTROLLER;
+	PchSerialIoIndexUART2
+};
 
 #endif

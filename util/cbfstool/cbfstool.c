@@ -5,6 +5,8 @@
  *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
  * Copyright (C) 2012 Google, Inc.
  * Copyright (C) 2016 Siemens AG
+ * Copyright (C) 2019 9elements Agency GmbH
+ * Copyright (C) 2019 Facebook Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,6 +85,7 @@ static struct param {
 	bool autogen_attr;
 	bool machine_parseable;
 	bool unprocessed;
+	bool ibb;
 	enum comp_algo compression;
 	int precompression;
 	enum vb2_hash_algorithm hash;
@@ -249,7 +252,7 @@ static int cbfs_add_integer_component(const char *name,
 
 	header = cbfs_create_file_header(CBFS_COMPONENT_RAW,
 		buffer.size, name);
-	if (cbfs_add_entry(&image, &buffer, offset, header) != 0) {
+	if (cbfs_add_entry(&image, &buffer, offset, header, 0) != 0) {
 		ERROR("Failed to add %llu into ROM image as '%s'.\n",
 					(long long unsigned)u64val, name);
 		goto done;
@@ -364,7 +367,7 @@ static int cbfs_add_master_header(void)
 
 	header = cbfs_create_file_header(CBFS_COMPONENT_CBFSHEADER,
 		buffer_size(&buffer), name);
-	if (cbfs_add_entry(&image, &buffer, 0, header) != 0) {
+	if (cbfs_add_entry(&image, &buffer, 0, header, 0) != 0) {
 		ERROR("Failed to add cbfs master header into ROM image.\n");
 		goto done;
 	}
@@ -448,6 +451,8 @@ static int cbfs_add_component(const char *filename,
 			      uint32_t headeroffset,
 			      convert_buffer_t convert)
 {
+	size_t len_align = 0;
+
 	if (!filename) {
 		ERROR("You need to specify -f/--filename.\n");
 		return 1;
@@ -539,6 +544,17 @@ static int cbfs_add_component(const char *filename,
 		}
 	}
 
+	if (param.ibb) {
+		/* Mark as Initial Boot Block */
+		struct cbfs_file_attribute *attrs = cbfs_add_file_attr(header,
+				CBFS_FILE_ATTR_TAG_IBB,
+				sizeof(struct cbfs_file_attribute));
+		if (attrs == NULL)
+			return -1;
+		/* For Intel TXT minimum align is 16 */
+		len_align = 16;
+	}
+
 	if (param.padding) {
 		const uint32_t hs = sizeof(struct cbfs_file_attribute);
 		uint32_t size = MAX(hs, param.padding);
@@ -554,7 +570,7 @@ static int cbfs_add_component(const char *filename,
 	if (IS_TOP_ALIGNED_ADDRESS(offset))
 		offset = convert_to_from_top_aligned(param.image_region,
 								-offset);
-	if (cbfs_add_entry(&image, &buffer, offset, header) != 0) {
+	if (cbfs_add_entry(&image, &buffer, offset, header, len_align) != 0) {
 		ERROR("Failed to add '%s' into ROM image.\n", filename);
 		free(header);
 		buffer_delete(&buffer);
@@ -1277,6 +1293,11 @@ static const struct command commands[] = {
 	{"truncate", "r:h?", cbfs_truncate, true, true},
 };
 
+enum {
+	/* begin after ASCII characters */
+	LONGOPT_IBB = 256,
+};
+
 static struct option long_options[] = {
 	{"alignment",     required_argument, 0, 'a' },
 	{"base-address",  required_argument, 0, 'b' },
@@ -1315,6 +1336,7 @@ static struct option long_options[] = {
 	{"gen-attribute", no_argument,       0, 'g' },
 	{"mach-parseable",no_argument,       0, 'k' },
 	{"unprocessed",   no_argument,       0, 'U' },
+	{"ibb",           no_argument,       0, LONGOPT_IBB },
 	{NULL,            0,                 0,  0  }
 };
 
@@ -1388,7 +1410,7 @@ static void usage(char *name)
 	     " add [-r image,regions] -f FILE -n NAME -t TYPE [-A hash] \\\n"
 	     "        [-c compression] [-b base-address | -a alignment] \\\n"
 	     "        [-p padding size] [-y|--xip if TYPE is FSP]       \\\n"
-	     "        [-j topswap-size] (Intel CPUs only)                   "
+	     "        [-j topswap-size] (Intel CPUs only) [--ibb]           "
 			"Add a component\n"
 	     "                                                         "
 	     "    -j valid size: 0x10000 0x20000 0x40000 0x80000 0x100000 \n"
@@ -1398,7 +1420,7 @@ static void usage(char *name)
 			"Add a payload to the ROM\n"
 	     " add-stage [-r image,regions] -f FILE -n NAME [-A hash] \\\n"
 	     "        [-c compression] [-b base] [-S section-to-ignore] \\\n"
-	     "        [-a alignment] [-y|--xip] [-P page-size]             "
+	     "        [-a alignment] [-y|--xip] [-P page-size] [--ibb]     "
 			"Add a stage to the ROM\n"
 	     " add-flat-binary [-r image,regions] -f FILE -n NAME \\\n"
 	     "        [-A hash] -l load-address -e entry-point \\\n"
@@ -1708,6 +1730,9 @@ int main(int argc, char **argv)
 				break;
 			case 'U':
 				param.unprocessed = true;
+				break;
+			case LONGOPT_IBB:
+				param.ibb = true;
 				break;
 			case 'h':
 			case '?':

@@ -144,6 +144,7 @@ struct cbfs_file {
 #define CBFS_FILE_ATTR_TAG_UNUSED2 0xffffffff
 #define CBFS_FILE_ATTR_TAG_COMPRESSION 0x42435a4c
 #define CBFS_FILE_ATTR_TAG_HASH 0x68736148
+#define CBFS_FILE_ATTR_TAG_IBB 0x32494242 /* Initial BootBlock */
 
 /* The common fields of extended cbfs file attributes.
    Attributes are expected to start with tag/len, then append their

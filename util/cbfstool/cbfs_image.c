@@ -3,6 +3,8 @@
  *
  * Copyright (C) 2013 The Chromium OS Authors. All rights reserved.
  * Copyright (C) 2016 Siemens AG. All rights reserved.
+ * Copyright (C) 2019 9elements Agency GmbH
+ * Copyright (C) 2019 Facebook Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -656,7 +658,8 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 			     struct cbfs_file *entry,
 			     const void *data,
 			     uint32_t content_offset,
-			     const struct cbfs_file *header)
+			     const struct cbfs_file *header,
+			     const size_t len_align)
 {
 	struct cbfs_file *next = cbfs_find_next_entry(image, entry);
 	uint32_t addr = cbfs_get_entry_addr(image, entry),
@@ -708,6 +711,13 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 	memcpy(CBFS_SUBHEADER(entry), data, ntohl(entry->len));
 	if (verbose > 1) cbfs_print_entry_info(image, entry, stderr);
 
+	// Align the length to a multiple of len_align
+	if (len_align &&
+	    ((ntohl(entry->offset) + ntohl(entry->len)) % len_align)) {
+		size_t off = (ntohl(entry->offset) + ntohl(entry->len)) % len_align;
+		entry->len = htonl(ntohl(entry->len) + len_align - off);
+	}
+
 	// Process buffer AFTER entry.
 	entry = cbfs_find_next_entry(image, entry);
 	addr = cbfs_get_entry_addr(image, entry);
@@ -738,7 +748,8 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 
 int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		   uint32_t content_offset,
-		   struct cbfs_file *header)
+		   struct cbfs_file *header,
+		   const size_t len_align)
 {
 	assert(image);
 	assert(buffer);
@@ -812,7 +823,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		      addr, addr_next - addr, content_offset);
 
 		if (cbfs_add_entry_at(image, entry, buffer->data,
-				      content_offset, header) == 0) {
+				      content_offset, header, len_align) == 0) {
 			return 0;
 		}
 		break;

@@ -157,6 +157,7 @@ struct cbfs_file_attribute {
 #define CBFS_FILE_ATTR_TAG_HASH 0x68736148
 #define CBFS_FILE_ATTR_TAG_POSITION 0x42435350  /* PSCB */
 #define CBFS_FILE_ATTR_TAG_ALIGNMENT 0x42434c41 /* ALCB */
+#define CBFS_FILE_ATTR_TAG_IBB 0x32494242 /* Initial BootBlock */
 
 struct cbfs_file_attr_compression {
 	uint32_t tag;

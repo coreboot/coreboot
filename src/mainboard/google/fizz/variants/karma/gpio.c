@@ -51,7 +51,7 @@ static const struct pad_config gpio_table[] = {
 /* CORE_VID1 */		PAD_CFG_NC(GPP_B1),
 /* VRALERT# */		PAD_CFG_NC(GPP_B2), /* TP152 */
 /* CPU_GP2 */		PAD_CFG_GPO(GPP_B3, 0, DEEP), /* TOUCHSCREEN_RST# */
-/* CPU_GP3 */		PAD_CFG_GPO(GPP_B4, 0, DEEP), /* PCH_TS_EN */
+/* CPU_GP3 */		PAD_CFG_GPO(GPP_B4, 1, DEEP), /* PCH_TS_EN */
 /* SRCCLKREQ0# */	PAD_CFG_NF(GPP_B5, NONE, DEEP,
 				   NF1), /* CLK_PCIE_LAN_REQ# */
 /* SRCCLKREQ1# */	PAD_CFG_NF(GPP_B6, NONE, DEEP,

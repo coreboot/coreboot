@@ -88,7 +88,7 @@ class GPTHeader:
     def pack_with_crc(self, crc):
         header_size = 92
         header = struct.pack('<8sIIIIQQQQ16sQIII',
-                b'EFI PART', 0x100, header_size, crc, 0,
+                b'EFI PART', 0x10000, header_size, crc, 0,
                 self.current_lba, self.backup_lba, self.first_usable_lba,
                 self.last_usable_lba, self.uniq.get_bytes(),
                 self.part_entries_lba, self.part_entries_number,

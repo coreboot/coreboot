@@ -23,7 +23,7 @@ External (\_SB.MPDL, IntObj)
 
 Device (DPTF_CPU_DEVICE)
 {
-	Name(_ADR, 0x00000001)
+	Name(_ADR, DPTF_CPU_ADDR)
 
 	Method (_STA)
 	{

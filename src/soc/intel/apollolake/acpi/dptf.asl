@@ -14,6 +14,7 @@
  */
 
 #define DPTF_CPU_DEVICE		TCPU
+#define DPTF_CPU_ADDR		0x00000001
 
 #ifndef DPTF_CPU_PASSIVE
 #define DPTF_CPU_PASSIVE	80

@@ -209,7 +209,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_118, SPI_CS1_L, PULL_NONE),
 
 	/* GPIO_119 - SPK_PA_EN */
-	PAD_GPO(GPIO_119, HIGH),
+	PAD_GPO(GPIO_119, LOW),
 
 	/* GPIO_126 - DMIC_CLK2_EN */
 	PAD_GPO(GPIO_126, HIGH),

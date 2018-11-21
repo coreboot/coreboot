@@ -49,6 +49,11 @@ Device (EC0)
 
 		/* Tell EC to stop emulating PS/2 mouse */
 		W (PS2M, Zero)
+
+		/* Enable DPTF support if enabled in devicetree */
+		If (\DPTE == One) {
+			W (DWST, Arg1)
+		}
 	}
 
 	/*
@@ -142,4 +147,5 @@ Device (EC0)
 	#include "event.asl"
 	#include "lid.asl"
 	#include "platform.asl"
+	#include "dptf.asl"
 }

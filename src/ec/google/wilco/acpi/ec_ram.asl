@@ -106,6 +106,14 @@ Name (BSBS, Package () { 0x2a, 0xff, RD })	/* BSTATIC: Battery String */
 Name (QSEC, Package () { 0x2b, 0xff, RD })	/* QS Event Count */
 Name (QSEB, Package () { 0x2c, 0xff, RD })	/* QS Event Byte */
 
+Name (DRST, Package () { 0x32, 0xff, RD })	/* DPTF: Read State */
+Name (DRTI, Package () { 0x33, 0xff, RD })	/* DPTF: Read Thermal Index */
+Name (DRTV, Package () { 0x34, 0xff, RD })	/* DPTF: Read Thermal Value */
+Name (DRTL, Package () { 0x35, 0xff, RD })	/* DPTF: Read Trip Low */
+Name (DRTH, Package () { 0x36, 0xff, RD })	/* DPTF: Read Trip High */
+Name (DRHY, Package () { 0x37, 0xff, RD })	/* DPTF: Read Hysteresis */
+Name (DRTQ, Package () { 0x38, 0xff, RD })	/* DPTF: Read Trip Query */
+
 Name (ORST, Package () { 0x39, 0xff, RD })	/* Orientation State */
 Name (OREV, Package () { 0x3a, 0xff, RD })	/* Orientation Events */
 Name (OECH, Package () { 0x3a, 0x01, RD })	/* Event: Orientation */
@@ -128,3 +136,9 @@ Name (SSEL, Package () { 0x04, 0xff, WR })	/* Battery String Select */
 Name (ERDY, Package () { 0x05, 0xff, WR })	/* EC Ready */
 Name (FWAK, Package () { 0x06, 0xff, WR })	/* EC _WAK */
 Name (PS2M, Package () { 0x20, 0xff, WR })	/* EC PS/2 Mouse Emulation */
+Name (DWST, Package () { 0x32, 0xff, WR })	/* DPTF: Write State */
+Name (DWTI, Package () { 0x33, 0xff, WR })	/* DPTF: Write Thermal Index */
+Name (DWTL, Package () { 0x35, 0xff, WR })	/* DPTF: Write Trip Low */
+Name (DWTH, Package () { 0x36, 0xff, WR })	/* DPTF: Write Trip High */
+Name (DWHY, Package () { 0x37, 0xff, WR })	/* DPTF: Write Hysteresis */
+Name (DWTQ, Package () { 0x38, 0xff, WR })	/* DPTF: Write Trip Query */

@@ -87,6 +87,11 @@ Method (ECQ2, 1, Serialized)
 Method (ECQ3, 1, Serialized)
 {
 	Printf ("EVT3: %o", Arg0)
+
+	/* Theraml Events */
+	If (EBIT (E3TH, Arg0)) {
+		^PATX ()
+	}
 }
 
 /* Handle events in PmEv4 */

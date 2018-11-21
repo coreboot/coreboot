@@ -92,6 +92,9 @@ void soc_core_init(struct device *cpu)
 	if (IS_ENABLED(CONFIG_APL_SKIP_SET_POWER_LIMITS)) {
 		cpu_set_p_state_to_max_non_turbo_ratio();
 		cpu_disable_eist();
+	} else if (IS_ENABLED(CONFIG_APL_SET_MIN_CLOCK_RATIO)) {
+		cpu_set_p_state_to_min_clock_ratio();
+		cpu_disable_eist();
 	}
 }
 

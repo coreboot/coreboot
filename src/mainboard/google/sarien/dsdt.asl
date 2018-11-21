@@ -64,4 +64,15 @@ DefinitionBlock(
 		#include <ec/google/wilco/acpi/ec.asl>
 	}
 #endif
+
+	/* Dynamic Platform Thermal Framework */
+	Scope (\_SB)
+	{
+		/* Per board variant specific definitions. */
+		#include <variant/acpi/dptf.asl>
+		/* Include soc specific DPTF changes */
+		#include <soc/intel/cannonlake/acpi/dptf.asl>
+		/* Include common dptf ASL files */
+		#include <soc/intel/common/acpi/dptf/dptf.asl>
+	}
 }

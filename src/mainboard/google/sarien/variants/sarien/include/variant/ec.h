@@ -28,4 +28,7 @@
 /* Enable PS/2 keyboard */
 #define SIO_EC_ENABLE_PS2K
 
+/* Enable DPTF */
+#define EC_ENABLE_DPTF
+
 #endif

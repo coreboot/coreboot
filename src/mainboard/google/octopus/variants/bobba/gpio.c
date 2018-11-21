@@ -32,20 +32,13 @@ static const struct pad_config default_override_table[] = {
 
 	/* EN_PP3300_WLAN_L */
 	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_178, 0, DEEP, NONE, Tx0RxDCRx0, DISPUPD),
+
+	PAD_NC(GPIO_213, DN_20K),
 };
 
 const struct pad_config *variant_override_gpio_table(size_t *num)
 {
-	const struct pad_config *c = NULL;
-	switch (board_id()) {
-	case 0:
-	case 1:
-	case UNDEFINED_STRAPPING_ID:
-		*num = 0;
-		break;
-	default:
-		c = default_override_table;
-		*num = ARRAY_SIZE(default_override_table);
-	}
-	return c;
+	*num = ARRAY_SIZE(default_override_table);
+
+	return default_override_table;
 }

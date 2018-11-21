@@ -52,37 +52,9 @@ static const struct pad_config default_override_table[] = {
 	PAD_NC(GPIO_214, DN_20K),
 };
 
-static const struct pad_config bid0_override_table[] = {
-	PAD_NC(GPIO_50, UP_20K),
-	PAD_NC(GPIO_51, UP_20K),
-	PAD_NC(GPIO_52, UP_20K),
-	PAD_NC(GPIO_53, UP_20K),
-	PAD_NC(GPIO_67, UP_20K),
-	PAD_NC(GPIO_117, UP_20K),
-	PAD_NC(GPIO_138, DN_20K),
-	PAD_NC(GPIO_139, DN_20K),
-	PAD_NC(GPIO_140, UP_20K),
-	PAD_NC(GPIO_143, UP_20K),
-	PAD_NC(GPIO_144, UP_20K),
-	PAD_NC(GPIO_145, UP_20K),
-	PAD_NC(GPIO_161, UP_20K),
-	PAD_NC(GPIO_214, DN_20K),
-};
-
 const struct pad_config *variant_override_gpio_table(size_t *num)
 {
-	const struct pad_config *c;
+	*num = ARRAY_SIZE(default_override_table);
 
-	switch (board_id()) {
-	case 0:
-	case UNDEFINED_STRAPPING_ID:
-		c = bid0_override_table;
-		*num = ARRAY_SIZE(bid0_override_table);
-		break;
-	default:
-		c = default_override_table;
-		*num = ARRAY_SIZE(default_override_table);
-	}
-
-	return c;
+	return default_override_table;
 }

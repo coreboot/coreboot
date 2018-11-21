@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2017 Intel Corporation.
+ * Copyright (C) 2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +72,13 @@ void cpu_set_p_state_to_nominal_tdp_ratio(void);
  * Set PERF_CTL MSR (0x199) P_Req (14:8 bits) with that value.
  */
 void cpu_set_p_state_to_max_non_turbo_ratio(void);
+
+/*
+ * Set PERF_CTL MSR (0x199) P_Req (14:8 bits) with the value
+ * for maximum efficiency. This value is reported in PLATFORM_INFO MSR (0xCE)
+ * in Bits 47:40 and is extracted with cpu_get_min_ratio().
+ */
+void cpu_set_p_state_to_min_clock_ratio(void);
 
 /*
  * Get the Burst/Turbo Mode State from MSR IA32_MISC_ENABLE 0x1A0

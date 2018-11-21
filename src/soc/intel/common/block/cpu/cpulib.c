@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2014 Google Inc.
  * Copyright (C) 2015-2018 Intel Corporation.
+ * Copyright (C) 2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,6 +139,25 @@ void cpu_set_p_state_to_max_non_turbo_ratio(void)
 	wrmsr(IA32_PERF_CTL, perf_ctl);
 	printk(BIOS_DEBUG, "CPU: frequency set to %d MHz\n",
 		((perf_ctl.lo >> 8) & 0xff) * CONFIG_CPU_BCLK_MHZ);
+}
+
+/*
+ * Set PERF_CTL MSR (0x199) P_Req (14:8 bits) with the value
+ * for maximum efficiency. This value is reported in PLATFORM_INFO MSR (0xCE)
+ * in Bits 47:40 and is extracted with cpu_get_min_ratio().
+ */
+void cpu_set_p_state_to_min_clock_ratio(void)
+{
+	uint32_t min_ratio;
+	msr_t perf_ctl;
+
+	/* Read the minimum ratio for the best efficiency. */
+	min_ratio = cpu_get_min_ratio();
+	perf_ctl.lo = (min_ratio << 8) & 0xff00;
+	perf_ctl.hi = 0;
+	wrmsr(IA32_PERF_CTL, perf_ctl);
+	printk(BIOS_DEBUG, "CPU: frequency set to %u MHz\n",
+			    (min_ratio * CONFIG_CPU_BCLK_MHZ));
 }
 
 /*

@@ -95,6 +95,21 @@ Device (DPTF)
 		Return (Local0)
 	}
 
+	/* Convert from 1/10 Kelvin to Degrees C for ACPI */
+	Method (KTOC, 1) {
+		If (LLessEqual (Arg0, 2732)) {
+			Return (0)
+		}
+
+		/* Convert to Celsius */
+		Subtract (Arg0, 2732, Local0)
+
+		/* Convert from 10th of degrees */
+		Divide (Local0, 10,, Local0)
+
+		Return (Local0)
+	}
+
 	/* Include Thermal Participants */
 	#include "thermal.asl"
 

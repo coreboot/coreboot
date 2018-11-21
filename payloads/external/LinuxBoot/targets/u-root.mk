@@ -13,19 +13,27 @@
 ## GNU General Public License for more details.
 ##
 
-uroot_git_repo=https://github.com/u-root/u-root.git
-uroot_dir=$(project_dir)/go/src/github.com/u-root/u-root
+project_dir=$(shell pwd)/linuxboot
+go_path_dir=$(project_dir)/go
+uroot_bin=$(project_dir)/u-root
+uroot_package=github.com/u-root/u-root
+
 go_version=$(shell go version | sed -nr 's/.*go([0-9]+\.[0-9]+.?[0-9]?).*/\1/p' )
 go_version_major=$(shell echo $(go_version) |  sed -nr 's/^([0-9]+)\.([0-9]+)\.?([0-9]*)$$/\1/p')
 go_version_minor=$(shell echo $(go_version) |  sed -nr 's/^([0-9]+)\.([0-9]+)\.?([0-9]*)$$/\2/p')
 
-project_dir=$(shell pwd)/linuxboot
-project_name=u-root
-go_path_dir=$(shell pwd)/linuxboot/go
+uroot_args+=-build=$(CONFIG_LINUXBOOT_UROOT_FORMAT)
+uroot_args+=-initcmd $(CONFIG_LINUXBOOT_UROOT_INITCMD)
+uroot_args+=-defaultsh $(CONFIG_LINUXBOOT_UROOT_SHELL)
+ifneq (CONFIG_LINUXBOOT_UROOT_FILES,)
+uroot_args+=$(foreach file,$(CONFIG_LINUXBOOT_UROOT_FILES),-files $(PWD)/$(file))
+endif
+
+uroot_cmds=$(CONFIG_LINUXBOOT_UROOT_COMMANDS)
 
 all: u-root
 
-check:
+version:
 ifeq ("$(go_version)","")
 	printf "\n<<Please install Golang >= 1.9 for u-root mode>>\n\n"
 	exit 1
@@ -37,59 +45,26 @@ ifeq ($(shell if [ $(go_version_minor) -lt 9 ]; then echo y; fi),y)
 	exit 1
 endif
 endif
-	mkdir -p $(project_dir)/go/src/github.com/u-root
 
-$(uroot_dir)/.git:
-	echo "    Git        Cloning u-root $(CONFIG_LINUXBOOT_UROOT_VERSION)"
-	git clone $(uroot_git_repo) $(uroot_dir)
-
-fetch: check $(uroot_dir)/.git
-	-cd "$(uroot_dir)" && git fetch origin
-
-checkout: fetch
-	cd "$(uroot_dir)" && \
-	if ! git diff --quiet _cb_checkout "$(CONFIG_LINUXBOOT_UROOT_VERSION)" -- 2>/dev/null; \
-	then \
-		printf "    CHECKOUT    $(project_name) [$(CONFIG_LINUXBOOT_UROOT_VERSION)]\n"; \
-		git checkout $$(git rev-parse HEAD) >/dev/null 2>&1; \
-		git branch -f _cb_checkout "$(CONFIG_LINUXBOOT_UROOT_VERSION)" && \
-		git checkout _cb_checkout && \
-		$(if $(project_patches), \
-		for patch in $(project_patches); do \
-			printf "    PATCH       $$patch\n"; \
-			git am --keep-cr "$$patch" || \
-				( printf "Error when applying patches.\n"; \
-				  git am --abort; exit 1; ); \
-		done;,true;) \
+get: version
+	if [ -d "$(go_path_dir)/src/$(uroot_package)" ]; then \
+	git -C $(go_path_dir)/src/$(uroot_package) checkout --quiet master; \
+	GOPATH=$(go_path_dir) go get -d -u -v $(uroot_package) || \
+	echo -e "\n<<u-root package update failed>>\n"; \
+	else \
+	GOPATH=$(go_path_dir) go get -d -u -v $(uroot_package) || \
+	(echo -e "\n<<failed to get u-root package. Please check your internet access>>\n" && \
+	exit 1); \
 	fi
 
-$(uroot_dir)/u-root: $(uroot_dir)/u-root.go
-	echo "    GO        u-root"
-	cd $(uroot_dir); GOPATH=$(go_path_dir) go build u-root.go
+checkout: get
+	git -C $(go_path_dir)/src/$(uroot_package) checkout --quiet $(CONFIG_LINUXBOOT_UROOT_VERSION)
 
-$(project_dir)/initramfs_u-root.cpio.xz: checkout $(uroot_dir)/u-root
-	echo "    MAKE       u-root $(CONFIG_LINUXBOOT_UROOT_VERSION)"
-ifneq ($(CONFIG_LINUXBOOT_UROOT_COMMANDS),)
-ifneq ($(CONFIG_LINUXBOOT_UROOT_FILES),)
-	cd $(uroot_dir); GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) ./u-root \
-	-build=bb -files $(CONFIG_LINUXBOOT_UROOT_FILES) -o $(project_dir)/initramfs_u-root.cpio \
-	$(patsubst %,cmds/%,$(CONFIG_LINUXBOOT_UROOT_COMMANDS))
-else
-	cd $(uroot_dir); GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) ./u-root \
-	-build=bb -o $(project_dir)/initramfs_u-root.cpio \
-	$(patsubst %,cmds/%,$(CONFIG_LINUXBOOT_UROOT_COMMANDS))
-endif
-else
-ifneq ($(CONFIG_LINUXBOOT_UROOT_FILES),)
-	cd $(uroot_dir); GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) ./u-root \
-	-build=bb -files $(CONFIG_LINUXBOOT_UROOT_FILES) -o $(project_dir)/initramfs_u-root.cpio coreboot-app
-else
-	cd $(uroot_dir); GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) ./u-root \
-	-build=bb -o $(project_dir)/initramfs_u-root.cpio coreboot-app
-endif
-endif
-	xz -f --check=crc32 -9 --lzma2=dict=1MiB --threads=$(CPUS) $(project_dir)/initramfs_u-root.cpio
+build: checkout
+	GOPATH=$(go_path_dir) go build -o $(uroot_bin) $(uroot_package)
 
-u-root: $(project_dir)/initramfs_u-root.cpio.xz
+u-root: build
+	GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) $(uroot_bin) \
+	$(uroot_args) -o $(project_dir)/initramfs_u-root.cpio $(uroot_cmds)
 
-.PHONY: u-root checkout fetch all check
+.PHONY: all u-root build checkout get version

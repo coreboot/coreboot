@@ -17,7 +17,6 @@ project_dir=linuxboot
 kernel_dir=$(project_dir)/kernel
 
 unexport $(COREBOOT_EXPORTS)
-unexport MAKEFLAGS
 
 all: linuxboot
 
@@ -38,6 +37,11 @@ initramfs:
 endif
 endif
 
+initramfs_compressed: initramfs
+ifeq ($(CONFIG_LINUXBOOT_INITRAMFS_COMPRESSION_XZ),y)
+	xz --keep --force --lzma2=dict=1MiB $(top)/$(CONFIG_LINUXBOOT_INITRAMFS)
+endif
+
 ifeq ($(CONFIG_LINUXBOOT_COMPILE_KERNEL),y)
 ifeq ($(CONFIG_LINUXBOOT_ARCH),arm64)
 kernel: initramfs
@@ -54,13 +58,14 @@ kernel:
 	fi
 endif
 
-linuxboot: kernel initramfs
+linuxboot: kernel initramfs_compressed
 
 clean:
 	if [ -d "$(kernel_dir)" ]; then rm -rf $(kernel_dir); fi
-	rm -f $(project_dir)/initramfs.cpio.xz
+	rm -f $(project_dir)/u-root
+	rm -f $(project_dir)/initramfs*
 
 distclean:
 	rm -rf $(project_dir)
 
-.PHONY: linuxboot kernel initramfs u-root clean distclean
+.PHONY: linuxboot kernel initramfs_compressed initramfs u-root clean distclean

@@ -127,6 +127,7 @@ config LINUXBOOT_UROOT
 	help
 	  Enable u-root linuxboot mode.
 	  See http://u-root.tk/ for more information.
+
 endchoice
 
 if LINUXBOOT_UROOT
@@ -135,37 +136,109 @@ choice
 	prompt "U-root version"
 	default LINUXBOOT_UROOT_MASTER
 
+config LINUXBOOT_UROOT_CUSTOM
+	bool "custom"
+	help
+	  choose a custom u-root branch
+
 config LINUXBOOT_UROOT_MASTER
 	bool "master"
 	help
 	  Latest u-root version
+
+config LINUXBOOT_UROOT_V3_0_0
+	bool "v3.0.0"
+
+config LINUXBOOT_UROOT_V2_0_0
+	bool "v2.0.0"
+
+config LINUXBOOT_UROOT_V1_0_0
+	bool "v1.0.0"
+
 endchoice
+
+config LINUXBOOT_UROOT_CHECKOUT
+	string "U-root custom branch"
+	depends on LINUXBOOT_UROOT_CUSTOM
 
 config LINUXBOOT_UROOT_VERSION
 	string
+	default LINUXBOOT_UROOT_CHECKOUT if LINUXBOOT_UROOT_CUSTOM
 	default "master" if LINUXBOOT_UROOT_MASTER
+	default "v3.0.0" if LINUXBOOT_UROOT_V3_0_0
+	default "v2.0.0" if LINUXBOOT_UROOT_V2_0_0
+	default "v1.0.0" if LINUXBOOT_UROOT_V1_0_0
 
-config LINUXBOOT_UROOT_COMMANDS
-	string "Select u-root commands"
-	default ""
+choice
+	prompt "Build format"
+	default LINUXBOOT_UROOT_BB
 	help
-	  List of additional modules to include, separated by space. Otherwise
-	  all modules of u-root are included.
+	  u-root build format (e.g. bb or source). (default "bb")
+
+config LINUXBOOT_UROOT_BB
+	bool "bb"
+
+config LINUXBOOT_UROOT_SOURCE
+	bool "source (experimental)"
+
+endchoice
+
+config LINUXBOOT_UROOT_FORMAT
+	string
+	default "bb" if LINUXBOOT_UROOT_BB
+	default "source" if LINUXBOOT_UROOT_SOURCE
 
 config LINUXBOOT_UROOT_FILES
 	string "Add files to u-root base"
-	default ""
 	help
-	  Path to directory containing root structure for embedding into the
-	  initramfs.
+	  Additional files, directories, and binaries (with their ldd dependencies) to add to archive.
+	  Can be speficified multiple times.
+
+config LINUXBOOT_UROOT_INITCMD
+	string "Init target"
+	default "init"
+	help
+	  Symlink target for /init.
+	  Can be an absolute path or a u-root command name. (default "init")
+
+config LINUXBOOT_UROOT_SHELL
+	string "default shell"
+	default "elvish"
+	help
+	  Default shell.
+	  Can be an absolute path or a u-root command name. (default "elvish")
+
+config LINUXBOOT_UROOT_COMMANDS
+	string "U-root commands"
+	default "coreboot-app"
+	help
+	  List of additional modules to include,
+	  separated by space. (default "coreboot-app")
 
 endif #LINUXBOOT_UROOT
 
 endif #LINUXBOOT_BUILD_INITRAMFS
 
+choice LINUXBOOT_INITRAMFS_COMPRESSION
+	prompt "Initramfs compression format"
+	default LINUXBOOT_INITRAMFS_COMPRESSION_XZ
+
+config LINUXBOOT_INITRAMFS_COMPRESSION_NONE
+	bool "none"
+
+config LINUXBOOT_INITRAMFS_COMPRESSION_XZ
+	bool "xz compression"
+
+endchoice
+
 config LINUX_INITRD
 	string
-	default "payloads/external/LinuxBoot/linuxboot/initramfs_u-root.cpio.xz" if LINUXBOOT_UROOT
+	default "payloads/external/LinuxBoot/linuxboot/initramfs_u-root.cpio" if LINUXBOOT_UROOT
 	default LINUXBOOT_INITRAMFS_PATH if !LINUXBOOT_BUILD_INITRAMFS
+
+config LINUXBOOT_INITRAMFS_SUFFIX
+	string
+	default "" if LINUXBOOT_INITRAMFS_COMPRESSION_NONE
+	default ".xz" if LINUXBOOT_INITRAMFS_COMPRESSION_XZ
 
 endif #PAYLOAD_LINUXBOOT

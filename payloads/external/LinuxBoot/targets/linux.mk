@@ -82,7 +82,7 @@ $(project_dir)/vmlinux.bin.lzma: $(project_dir)/vmlinux.bin
 
 $(project_dir)/uImage: $(project_dir)/vmlinux.bin.lzma $(project_dir)/../arm64/kernel_fdt_lzma.its $(project_dir)/target.dtb
 	cp $(project_dir)/../arm64/kernel_fdt_lzma.its $(project_dir)
-	cp $(PWD)/$(CONFIG_LINUXBOOT_INITRAMFS) $(project_dir)/u-initramfs
+	cp $(PWD)/$(CONFIG_LINUXBOOT_INITRAMFS)$(CONFIG_LINUXBOOT_INITRAMFS_SUFFIX) $(project_dir)/u-initramfs
 	mkimage -f $(project_dir)/kernel_fdt_lzma.its $@
 endif
 

@@ -278,7 +278,7 @@ func do_print_gerrit_rules() {
 		}
 		fmt.Println("#", subsystem.name)
 		for _, path := range subsystem.paths {
-			fmt.Println("[filter \"file:" + path_to_regexstr(path) + "\"]")
+			fmt.Println("[filter \"file:\\\"" + path_to_regexstr(path) + "\\\"\"]")
 			for _, maint := range subsystem.maintainer {
 				fmt.Println("  reviewer =", extract_maintainer(maint))
 			}

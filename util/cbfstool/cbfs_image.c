@@ -1299,7 +1299,7 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 	unsigned int decompressed_size = 0;
 	unsigned int compression = cbfs_file_get_compression_info(entry,
 		&decompressed_size);
-	unsigned int buffer_size;
+	unsigned int buffer_len;
 	decomp_func_ptr decompress;
 
 	if (do_processing) {
@@ -1308,11 +1308,11 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 			ERROR("looking up decompression routine failed\n");
 			return -1;
 		}
-		buffer_size = decompressed_size;
+		buffer_len = decompressed_size;
 	} else {
 		/* Force nop decompression */
 		decompress = decompression_function(CBFS_COMPRESS_NONE);
-		buffer_size = compressed_size;
+		buffer_len = compressed_size;
 	}
 
 	LOG("Found file %.30s at 0x%x, type %.12s, compressed %d, size %d\n",
@@ -1321,8 +1321,8 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 	    decompressed_size);
 
 	buffer_init(&buffer, strdup("(cbfs_export_entry)"), NULL, 0);
-	buffer.data = malloc(buffer_size);
-	buffer.size = buffer_size;
+	buffer.data = malloc(buffer_len);
+	buffer.size = buffer_len;
 
 	if (decompress(CBFS_SUBHEADER(entry), compressed_size,
 		       buffer.data, buffer.size, NULL)) {

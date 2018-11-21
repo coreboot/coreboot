@@ -38,39 +38,3 @@ const struct pad_config *variant_override_gpio_table(size_t *num)
 	*num = ARRAY_SIZE(default_override_table);
 	return default_override_table;
 }
-
-/* GPIOs needed prior to ramstage. */
-static const struct pad_config early_gpio_table[] = {
-	/* PCH_WP_OD */
-	PAD_CFG_GPI(GPIO_190, NONE, DEEP),
-	/* H1_PCH_INT_ODL */
-	PAD_CFG_GPI_APIC_IOS(GPIO_63, NONE, DEEP, LEVEL, INVERT, TxDRxE,
-			     DISPUPD),
-	/* H1_SLAVE_SPI_CLK_R */
-	PAD_CFG_NF(GPIO_79, NONE, DEEP, NF1),
-	/* H1_SLAVE_SPI_CS_L_R */
-	PAD_CFG_NF(GPIO_80, NONE, DEEP, NF1),
-	/* H1_SLAVE_SPI_MISO */
-	PAD_CFG_NF(GPIO_82, NONE, DEEP, NF1),
-	/* H1_SLAVE_SPI_MOSI_R */
-	PAD_CFG_NF(GPIO_83, NONE, DEEP, NF1),
-
-	PAD_CFG_GPO(GPIO_178, 0, DEEP),
-
-	/* WLAN_PE_RST */
-	PAD_CFG_GPO(GPIO_164, 0, DEEP),
-
-	/*
-	 * ESPI_IO1 acts as ALERT# (which is open-drain) and requies a weak
-	 * pull-up for proper operation. Since there is no external pull present
-	 * on this platform, configure an internal weak pull-up.
-	 */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_151, UP_20K, DEEP, NF2, HIZCRx1,
-				    ENPU),
-};
-
-const struct pad_config *variant_early_gpio_table(size_t *num)
-{
-	*num = ARRAY_SIZE(early_gpio_table);
-	return early_gpio_table;
-}

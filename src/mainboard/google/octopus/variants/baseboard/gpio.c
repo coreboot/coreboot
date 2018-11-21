@@ -308,7 +308,7 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPIO_83, NONE, DEEP, NF1), /* H1_SLAVE_SPI_MOSI_R */
 
 	/* Enable power to wifi early in bootblock and de-assert PERST#. */
-	PAD_CFG_GPO(GPIO_178, 1, DEEP), /* EN_PP3300_WLAN */
+	PAD_CFG_GPO(GPIO_178, 0, DEEP), /* EN_PP3300_WLAN_L */
 	PAD_CFG_GPO(GPIO_164, 0, DEEP), /* WLAN_PE_RST */
 
 	/*

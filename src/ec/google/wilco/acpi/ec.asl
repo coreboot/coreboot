@@ -20,6 +20,7 @@ Device (EC0)
 	Name (_UID, 1)
 	Name (_GPE, EC_SCI_GPI)
 	Name (_STA, 0xf)
+	Name (DBUG, Zero)
 
 	Name (_CRS, ResourceTemplate() {
 		IO (Decode16,
@@ -44,7 +45,7 @@ Device (EC0)
 		ECPR = R (APWR)
 
 		/* Indicate to EC that OS is ready for queries */
-		W (ERDY, One)
+		W (ERDY, Arg1)
 
 		/* Tell EC to stop emulating PS/2 mouse */
 		W (PS2M, Zero)
@@ -71,7 +72,7 @@ Device (EC0)
 	 *  Arg0 = EC field structure
 	 *  Arg1 = Value to write
 	 */
-	Method (ECRW, 2, Serialized)
+	Method (ECRW, 2, Serialized, 2)
 	{
 		If (!EREG) {
 			Return (Zero)
@@ -101,11 +102,15 @@ Device (EC0)
 			}
 
 			Local5 = EBIT (Arg0, Local3)
-			Printf ("ECRD %o = %o", Local0, Local5)
+			If (DBUG) {
+				Printf ("ECRD %o = %o", Local0, Local5)
+			}
 			Return (Local5)
 		} ElseIf (Local2 == WR) {
 			/* Write byte */
-			Printf ("ECWR %o = %o", Local0, Arg1)
+			If (DBUG) {
+				Printf ("ECWR %o = %o", Local0, Arg1)
+			}
 			BYT1 = Arg1
 		}
 		Return (Zero)
@@ -115,7 +120,7 @@ Device (EC0)
 	 * Read a field from EC
 	 *  Arg0 = EC field structure
 	 */
-	Method (R, 1, Serialized)
+	Method (R, 1, Serialized, 2)
 	{
 		Return (ECRW (Arg0, Zero))
 	}
@@ -125,7 +130,7 @@ Device (EC0)
 	 *  Arg0 = EC field structure
 	 *  Arg1 = Value to write
 	 */
-	Method (W, 2, Serialized)
+	Method (W, 2, Serialized, 2)
 	{
 		Return (ECRW (Arg0, Arg1))
 	}

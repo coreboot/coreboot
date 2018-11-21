@@ -81,6 +81,9 @@ Name (WRTC, Package () { 0x09, 0x20, RD })	/* Wake: RTC */
 Name (WBAT, Package () { 0x09, 0x80, RD })	/* Wake: Low Battery */
 
 Name (EVT3, Package () { 0x0b, 0xff, RD })	/* Event 3 */
+Name (E3CP, Package () { 0x0b, 0x08, RD })	/* CS Power Button */
+Name (E3TH, Package () { 0x0b, 0x10, RD })	/* Thermal Event */
+
 Name (EVT4, Package () { 0x0c, 0xff, RD })	/* Event 4 */
 
 Name (BCST, Package () { 0x10, 0xff, RD })	/* BCACHE: BST */

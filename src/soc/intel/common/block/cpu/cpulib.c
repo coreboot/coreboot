@@ -34,7 +34,7 @@
 #include <stdint.h>
 
 /*
- * Set PERF_CTL MSR (0x199) P_Req (14:8 bits) with
+ * Set PERF_CTL MSR (0x199) P_Req with
  * Turbo Ratio which is the Maximum Ratio.
  */
 void cpu_set_max_ratio(void)
@@ -86,7 +86,7 @@ int cpu_config_tdp_levels(void)
  * 23:16 -	MAX_TURBO_3_CORES
  * 31:24 -	MAX_TURBO_4_CORES
  *
- * Set PERF_CTL MSR (0x199) P_Req (14:8 bits) with that value.
+ * Set PERF_CTL MSR (0x199) P_Req with that value.
  */
 void cpu_set_p_state_to_turbo_ratio(void)
 {
@@ -106,7 +106,7 @@ void cpu_set_p_state_to_turbo_ratio(void)
  * TDP level ratio to be used for specific processor (in units
  * of 100MHz).
  *
- * Set PERF_CTL MSR (0x199) P_Req (14:8 bits) with that value.
+ * Set PERF_CTL MSR (0x199) P_Req with that value.
  */
 void cpu_set_p_state_to_nominal_tdp_ratio(void)
 {
@@ -125,7 +125,7 @@ void cpu_set_p_state_to_nominal_tdp_ratio(void)
  * PLATFORM_INFO MSR (0xCE) Bits 15:8 tells
  * MAX_NON_TURBO_LIM_RATIO.
  *
- * Set PERF_CTL MSR (0x199) P_Req (14:8 bits) with that value.
+ * Set PERF_CTL MSR (0x199) P_Req with that value.
  */
 void cpu_set_p_state_to_max_non_turbo_ratio(void)
 {
@@ -142,7 +142,7 @@ void cpu_set_p_state_to_max_non_turbo_ratio(void)
 }
 
 /*
- * Set PERF_CTL MSR (0x199) P_Req (14:8 bits) with the value
+ * Set PERF_CTL MSR (0x199) P_Req with the value
  * for maximum efficiency. This value is reported in PLATFORM_INFO MSR (0xCE)
  * in Bits 47:40 and is extracted with cpu_get_min_ratio().
  */

@@ -308,11 +308,46 @@ static void acpi_create_tcpa(acpi_tcpa_t *tcpa)
 	header->checksum = acpi_checksum((void *)tcpa, header->length);
 }
 
+static void *get_tpm2_log(u32 *size)
+{
+	const struct cbmem_entry *ce;
+	const u32 tpm2_default_log_len = 0x10000;
+	void *lasa;
+	ce = cbmem_entry_find(CBMEM_ID_TPM2_TCG_LOG);
+	if (ce) {
+		lasa = cbmem_entry_start(ce);
+		*size = cbmem_entry_size(ce);
+		printk(BIOS_DEBUG, "TPM2 log found at %p\n", lasa);
+		return lasa;
+	}
+	lasa = cbmem_add(CBMEM_ID_TPM2_TCG_LOG, tpm2_default_log_len);
+	if (!lasa) {
+		printk(BIOS_ERR, "TPM2 log creation failed\n");
+		return NULL;
+	}
+
+	printk(BIOS_DEBUG, "TPM2 log created at %p\n", lasa);
+	memset(lasa, 0, tpm2_default_log_len);
+
+	*size = tpm2_default_log_len;
+	return lasa;
+}
+
 static void acpi_create_tpm2(acpi_tpm2_t *tpm2)
 {
 	acpi_header_t *header = &(tpm2->header);
+	u32 tpm2_log_len;
+	void *lasa;
 
 	memset((void *)tpm2, 0, sizeof(acpi_tpm2_t));
+
+	/*
+	 * Some payloads like SeaBIOS depend on log area to use TPM2.
+	 * Get the memory size and address of TPM2 log area or initialize it.
+	 */
+	lasa = get_tpm2_log(&tpm2_log_len);
+	if (!lasa)
+		tpm2_log_len = 0;
 
 	/* Fill out header fields. */
 	memcpy(header->signature, "TPM2", 4);
@@ -330,6 +365,10 @@ static void acpi_create_tpm2(acpi_tpm2_t *tpm2)
 	/* coreboot only supports the TIS interface driver. */
 	tpm2->start_method = 6;
 	memset(tpm2->msp, 0, sizeof(tpm2->msp));
+
+	/* Fill the log area size and start address fields. */
+	tpm2->laml = tpm2_log_len;
+	tpm2->lasa = (uintptr_t) lasa;
 
 	/* Calculate checksum. */
 	header->checksum = acpi_checksum((void *)tpm2, header->length);

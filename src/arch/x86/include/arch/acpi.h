@@ -199,6 +199,8 @@ typedef struct acpi_tpm2 {
 	u64 control_area;
 	u32 start_method;
 	u8  msp[12];
+	u32 laml;
+	u64 lasa;
 } __packed acpi_tpm2_t;
 
 typedef struct acpi_mcfg_mmconfig {

@@ -29,6 +29,8 @@ const struct pad_config *variant_early_gpio_table(size_t *num);
 
 const struct cros_gpio *variant_cros_gpios(size_t *num);
 
+void variant_smi_sleep(u8 slp_typ);
+
 struct nhlt;
 void variant_nhlt_init(struct nhlt *nhlt);
 void variant_nhlt_oem_overrides(const char **oem_id, const char **oem_table_id,

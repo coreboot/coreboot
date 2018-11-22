@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Google Inc.
+ * Copyright (C) 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,29 +13,16 @@
  * GNU General Public License for more details.
  */
 
-#include <cpu/x86/smm.h>
-#include <ec/google/chromeec/smm.h>
-#include <soc/smm.h>
-
+#include <arch/acpi.h>
 #include <baseboard/variants.h>
-#include <variant/ec.h>
+#include <gpio.h>
 
-void mainboard_smi_espi_handler(void)
+#define TS_ENABLE	GPP_B4
+
+void variant_smi_sleep(u8 slp_typ)
 {
-	chromeec_smi_process_events();
-}
-
-void __weak variant_smi_sleep(u8 slp_typ) {}
-
-void mainboard_smi_sleep(u8 slp_typ)
-{
-	variant_smi_sleep(slp_typ);
-	chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS,
-			MAINBOARD_EC_S5_WAKE_EVENTS);
-}
-
-int mainboard_smi_apmc(u8 apmc)
-{
-	chromeec_smi_apmc(apmc, MAINBOARD_EC_SCI_EVENTS, 0);
-	return 0;
+	if (slp_typ == ACPI_S5) {
+		/* Set TS to disable */
+		gpio_set(TS_ENABLE, 0);
+	}
 }

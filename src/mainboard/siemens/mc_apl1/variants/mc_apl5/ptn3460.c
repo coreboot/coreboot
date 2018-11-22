@@ -110,12 +110,6 @@ int ptn3460_init(const char *hwi_block)
 			return (PTN_BUS_ERROR | status);
 	}
 
-	/* Read PTN configuration data. */
-	status = i2c_read_bytes(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR,
-			PTN_CONFIG_OFF, (uint8_t *)&cfg, sizeof(cfg));
-	if (status)
-		return (PTN_BUS_ERROR | status);
-
 	return PTN_NO_ERROR;
 }
 

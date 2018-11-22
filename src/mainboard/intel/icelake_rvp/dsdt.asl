@@ -14,6 +14,9 @@
  */
 
 #include <arch/acpi.h>
+#include "variant/ec.h"
+#include "variant/gpio.h"
+
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
@@ -45,7 +48,21 @@ DefinitionBlock(
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 #endif
 
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+	/* Chrome OS Embedded Controller */
+		Scope (\_SB.PCI0.LPCB)
+		{
+			/* ACPI code for EC SuperIO functions */
+			#include <ec/google/chromeec/acpi/superio.asl>
+			/* ACPI code for EC functions */
+			#include <ec/google/chromeec/acpi/ec.asl>
+		}
+#endif
+
 	// Chipset specific sleep states
 	#include <soc/intel/icelake/acpi/sleepstates.asl>
+
+	// Mainboard specific
+	#include "acpi/mainboard.asl"
 
 }

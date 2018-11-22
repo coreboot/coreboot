@@ -1,5 +1,6 @@
 /*
- ;* Copyright (C) 2014 Google, Inc.
+ * Copyright (C) 2014 Google, Inc.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -540,7 +541,7 @@ write_elf(const struct rmod_context *ctx, const struct buffer *in,
 	 * section and the relocations can fit entirely within occupied memory
 	 * region for the program. The other is that the relocations increase
 	 * the memory footprint of the program if it was loaded directly into
-	 * the region it would run. The rmdoule header is a fixed cost that
+	 * the region it would run. The rmodule header is a fixed cost that
 	 * is considered a part of the program.
 	 */
 	total_size += buffer_size(&rmod_header);

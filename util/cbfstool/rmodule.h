@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 Google, Inc.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +82,7 @@ int rmodule_init(struct rmod_context *ctx, const struct buffer *elfin);
  */
 int rmodule_collect_relocations(struct rmod_context *c, struct reloc_filter *f);
 
-/* Clean up the memory consumed by the rmdoule context. */
+/* Clean up the memory consumed by the rmodule context. */
 void rmodule_cleanup(struct rmod_context *ctx);
 
 /*

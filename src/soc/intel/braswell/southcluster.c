@@ -126,10 +126,10 @@ static void sc_add_io_resources(struct device *dev)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	/* GPIO */
-	sc_add_io_resource(dev, GPIO_BASE_ADDRESS, 256, GBASE);
+	sc_add_io_resource(dev, GPIO_BASE_ADDRESS, GPIO_BASE_SIZE, GBASE);
 
 	/* ACPI */
-	sc_add_io_resource(dev, ACPI_BASE_ADDRESS, 128, ABASE);
+	sc_add_io_resource(dev, ACPI_BASE_ADDRESS, ACPI_BASE_SIZE, ABASE);
 }
 
 static void sc_read_resources(struct device *dev)

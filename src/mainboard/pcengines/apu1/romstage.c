@@ -17,14 +17,9 @@
 
 #include <amdblocks/acpimmio.h>
 #include <northbridge/amd/agesa/state_machine.h>
-#include <superio/nuvoton/common/nuvoton.h>
-#include <superio/nuvoton/nct5104d/nct5104d.h>
 #include "gpio_ftns.h"
 #include <SB800.h>
 #include <sb_cimx.h>
-
-#define SIO_PORT 0x2e
-#define SERIAL_DEV PNP_DEV(SIO_PORT, NCT5104D_SP1)
 
 static void early_lpc_init(void)
 {

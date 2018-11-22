@@ -19,7 +19,8 @@
  * characteristics.
 */
 /*
-DefinitionBlock ("DSDT.AML","DSDT",0x01,"XXXXXX","XXXXXXXX",0x00010001)
+#include <arch/acpi.h>
+DefinitionBlock ("DSDT.AML", "DSDT", 0x01, OEM_ID, ACPI_TABLE_CREATOR, 0x00010001)
 	{
 		Scope (\_PR) {
 		Processor(CPU0,0,0x808,0x06) {

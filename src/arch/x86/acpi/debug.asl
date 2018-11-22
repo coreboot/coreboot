@@ -14,12 +14,13 @@
  */
 
 /*
+	#include <arch/acpi.h>
 	DefinitionBlock (
 		"DSDT.AML",
 		"DSDT",
 		0x01,
-		"XXXXXX",
-		"XXXXXXXX",
+		OEM_ID,
+		ACPI_TABLE_CREATOR,
 		0x00010001
 		)
 	{

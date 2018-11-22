@@ -16,12 +16,13 @@
 #define BRIGHTNESS_UP \_SB.PCI0.GFX0.INCB
 #define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.DECB
 #define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
+#include <arch/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
 	0x02,		// DSDT revision: ACPI v2.0 and up
-	"COREv4",	// OEM id
-	"COREBOOT",	// OEM table id
+	OEM_ID,
+	ACPI_TABLE_CREATOR,
 	0x20141018	// OEM revision
 )
 {

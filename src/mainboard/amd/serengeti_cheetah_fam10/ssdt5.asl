@@ -13,7 +13,8 @@
 // GNU General Public License for more details.
 //
 
-DefinitionBlock ("SSDT5.aml", "SSDT", 1, "AMDF10", "AMDACPI ", 100925440)
+#include <arch/acpi.h>
+DefinitionBlock ("SSDT5.aml", "SSDT", 1, OEM_ID, ACPI_TABLE_CREATOR, 100925440)
 {
 	Scope (_SB)
 	{

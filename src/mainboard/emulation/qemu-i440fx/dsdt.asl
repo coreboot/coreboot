@@ -13,12 +13,13 @@
  * Lesser General Public License for more details.
  */
 
+#include <arch/acpi.h>
 DefinitionBlock (
 	"dsdt.aml",         // Output Filename
 	"DSDT",             // Signature
 	0x01,               // DSDT Compliance Revision
-	"CORE",             // OEMID
-	"COREBOOT",         // TABLE ID
+	OEM_ID,
+	ACPI_TABLE_CREATOR,
 	0x1                 // OEM Revision
 	)
 {

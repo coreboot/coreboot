@@ -30,12 +30,13 @@
  * PCI link routing templates taken from ck804.asl and modified for this board
  */
 
+#include <arch/acpi.h>
 DefinitionBlock (
 		"DSDT.AML",	/* Output filename */
 		"DSDT",		/* Signature */
 		0x02,		/* DSDT Revision, needs to be 2 for 64bit */
-		"ASUS  ",	/* OEMID */
-		"COREBOOT",	/* TABLE ID */
+		OEM_ID,
+		ACPI_TABLE_CREATOR,
 		0x00000001	/* OEM Revision */
 		)
 {

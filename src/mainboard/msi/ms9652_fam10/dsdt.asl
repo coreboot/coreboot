@@ -17,7 +17,8 @@
  * GNU General Public License for more details.
  */
 
-DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
+#include <arch/acpi.h>
+DefinitionBlock ("DSDT.aml", "DSDT", 1, OEM_ID, ACPI_TABLE_CREATOR, 1)
 {
 	#include "acpi/util.asl"
 

@@ -14,12 +14,13 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
 	0x02,		/* DSDT Revision: ACPI v3.0 */
-	"COREv4",	/* OEM ID */
-	"COREBOOT",	/* OEM Table ID */
+	OEM_ID,
+	ACPI_TABLE_CREATOR,
 	0x20181031	/* OEM Revision */
 )
 {

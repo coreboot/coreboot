@@ -21,12 +21,13 @@
 #define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
 #define EC_LENOVO_H8_ME_WORKAROUND 1
 
+#include <arch/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
 	0x02,		// DSDT revision: ACPI v2.0 and up
-	"COREv4",	// OEM id
-	"COREBOOT",	// OEM table id
+	OEM_ID,
+	ACPI_TABLE_CREATOR,
 	0x20110725	// OEM revision
 )
 {

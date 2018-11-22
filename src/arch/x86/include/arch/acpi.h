@@ -52,6 +52,9 @@
  #define  SLP_TYP_S5	5
 #endif
 
+#define ACPI_TABLE_CREATOR	"COREBOOT"  /* Must be exactly 8 bytes long! */
+#define OEM_ID			"COREv4"    /* Must be exactly 6 bytes long! */
+
 #if !defined(__ASSEMBLER__) && !defined(__ACPI__) && !defined(__ROMCC__)
 #include <stdint.h>
 #include <rules.h>
@@ -61,8 +64,6 @@
 #include <cper.h>
 
 #define RSDP_SIG		"RSD PTR "  /* RSDT pointer signature */
-#define ACPI_TABLE_CREATOR	"COREBOOT"  /* Must be exactly 8 bytes long! */
-#define OEM_ID			"CORE  "    /* Must be exactly 6 bytes long! */
 #define ASLC			"CORE"      /* Must be exactly 4 bytes long! */
 
 /*

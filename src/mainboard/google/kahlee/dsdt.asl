@@ -16,12 +16,13 @@
 #include <variant/ec.h>
 
 /* DefinitionBlock Statement */
+#include <arch/acpi.h>
 DefinitionBlock (
 	"DSDT.AML",	/* Output filename */
 	"DSDT",		/* Signature */
 	0x02,		/* DSDT Revision, needs to be 2 for 64bit */
-	"GOOGLE",	/* OEMID */
-	"COREBOOT",	/* TABLE ID */
+	OEM_ID,
+	ACPI_TABLE_CREATOR,
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */

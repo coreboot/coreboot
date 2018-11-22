@@ -48,8 +48,34 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	U2WE,	16,	// 0x2b - 0x2c USB2 Wake Enable Bitmap
 	U3WE,	16,	// 0x2d - 0x2e USB3 Wake Enable Bitmap
 	UIOR,	8,	// 0x2f - UART debug controller init on S3 resume
+	S5U0,	8,	// 0x30 - Enable USB in S5
+	S3U0,	8,	// 0x31 - Enable USB in S3
 
 	/* ChromeOS specific */
 	Offset (0x100),
 	#include <vendorcode/google/chromeos/acpi/gnvs.asl>
+}
+
+/* Set flag to enable USB charging in S3 */
+Method (S3UE)
+{
+	Store (One, \S3U0)
+}
+
+/* Set flag to disable USB charging in S3 */
+Method (S3UD)
+{
+	Store (Zero, \S3U0)
+}
+
+/* Set flag to enable USB charging in S5 */
+Method (S5UE)
+{
+	Store (One, \S5U0)
+}
+
+/* Set flag to disable USB charging in S5 */
+Method (S5UD)
+{
+	Store (Zero, \S5U0)
 }

@@ -29,7 +29,6 @@
 #include <cpu/allwinner/a10/gpio.h>
 #include <cpu/allwinner/a10/twi.h>
 #include <program_loading.h>
-#define __SIMPLE_DEVICE__
 #include <device/device.h>
 #include <drivers/xpowers/axp209/axp209.h>
 #include <drivers/xpowers/axp209/chip.h>

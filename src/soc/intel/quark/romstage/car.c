@@ -13,7 +13,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#define __SIMPLE_DEVICE__
 
 #include <console/console.h>
 #include <fsp/util.h>

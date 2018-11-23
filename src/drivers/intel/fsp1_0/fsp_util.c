@@ -22,6 +22,7 @@
 #include <lib.h> // hexdump
 #include <ip_checksum.h>
 #include <timestamp.h>
+#include <cpu/intel/microcode.h>
 
 #ifndef __PRE_RAM__
 /* Globals pointers for FSP structures */
@@ -74,6 +75,10 @@ void __noreturn fsp_early_init (FSP_INFO_HEADER *fsp_ptr)
 #if IS_ENABLED(CONFIG_FSP_USES_UPD)
 	UPD_DATA_REGION fsp_upd_data;
 #endif
+
+	/* Load microcode before RAM init */
+	if (IS_ENABLED(CONFIG_SUPPORT_CPU_UCODE_IN_CBFS))
+		intel_update_microcode_from_cbfs();
 
 	memset((void *)&FspRtBuffer, 0, sizeof(FSP_INIT_RT_BUFFER));
 	FspRtBuffer.Common.StackTop = (u32 *)CONFIG_RAMTOP;

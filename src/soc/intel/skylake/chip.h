@@ -97,6 +97,9 @@ struct soc_intel_skylake_config {
 	/* TCC activation offset */
 	int tcc_offset;
 
+	/* Package PL4 power limit in Watts */
+	u32 PowerLimit4;
+
 	/* PL2 Override value in Watts */
 	u32 tdp_pl2_override;
 	/* PL1 Override value in Watts */

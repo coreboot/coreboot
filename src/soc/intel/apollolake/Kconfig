@@ -370,7 +370,6 @@ config CPU_BCLK_MHZ
 
 config APL_SKIP_SET_POWER_LIMITS
 	bool
-	depends on !APL_SET_MIN_CLOCK_RATIO
 	default n
 	help
 	  Some Apollo Lake mainboards do not need the Running Average Power

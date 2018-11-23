@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
 #define THINKPAD_EC_GPE 17
 #define BRIGHTNESS_UP \_SB.PCI0.GFX0.INCB
 #define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.DECB

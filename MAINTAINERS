@@ -292,6 +292,13 @@ M:	Michał Żygowski <michal.zygowski@3mdeb.com>
 S:	Supported
 F:	src/mainboard/pcengines/
 
+SIEMENS MC_xxxx MAINBOARDS
+M:	Werner Zeh <werner.zeh@siemens.com>
+S:	Maintained
+F:	src/mainboard/siemens/mc_apl1/
+F:	src/mainboard/siemens/mc_bdx1/
+F:	src/mainboard/siemens/mc_tcu3/
+
 AMD FAMILY10H & FAMILY15H (NON-AGESA) CPUS & NORTHBRIDGE
 M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
 S:	Supported

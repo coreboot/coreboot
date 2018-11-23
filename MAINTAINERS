@@ -193,6 +193,20 @@ M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 S:	Supported
 F:	src/mainboard/google/panther/
 
+OCP MAINBOARDS
+M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
+M:	Patrick Rudolph <patrick.rudolph@9elements.com>
+S:	Supported
+F:	src/mainboard/ocp/wedge100s/
+F:	src/mainboard/ocp/monolake/
+
+OPENCELLULAR MAINBOARDS
+M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
+M:	Patrick Rudolph <patrick.rudolph@9elements.com>
+S:	Supported
+F:	src/mainboard/opencellular/rotundu/
+F:	src/mainboard/opencellular/elgon/
+
 INTEL MINNOWBOARD MAX MAINBOARD
 M:	Huang Jin <huang.jin@intel.com>
 M:	York Yang <york.yang@intel.com>
@@ -202,6 +216,7 @@ F:	src/mainboard/intel/minnowmax/
 INTEL FSP BAYTRAIL CHIP & CRBs
 M:	Huang Jin <huang.jin@intel.com>
 M:	York Yang <york.yang@intel.com>
+M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
 S:	Supported
 F:	src/soc/intel/fsp_baytrail/
 F:	src/vendorcode/intel/fsp1_0/baytrail/
@@ -210,6 +225,7 @@ F:	src/mainboard/intel/bayleybay_fsp/
 
 INTEL FSP BROADWELL-DE SOC & CRB
 M:	York Yang <york.yang@intel.com>
+M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
 S:	Supported
 F:	src/soc/intel/fsp_broadwell_de/
 F:	src/vendorcode/intel/fsp1_0/broadwell_de/
@@ -239,8 +255,10 @@ F:	src/mainboard/intel/mohonpeak/
 INTEL FSP 1.0
 M:	Huang Jin <huang.jin@intel.com>
 M:	York Yang <york.yang@intel.com>
+M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
 S:	Supported
 F:	src/drivers/intel/fsp1_0/
+F:	src/vendorcode/intel/fsp1_0/broadwell_de/
 
 INTEL FSP 1.1
 M:	Lee Leahy <leroy.p.leahy@intel.com>
@@ -496,16 +514,22 @@ M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 M:	Martin Roth <gaumless@gmail.com>
 F:	payloads/external
 
+LINUXBOOT PAYLOAD INTEGRATION
+M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
+M:	Marcello Sylvester Bauer <info@marcellobauer.com>
+S:	Supported
+F:	payloads/external/LinuxBoot
+
 VERIFIED BOOT 2
 M:	Aaron Durbin <adurbin@chromium.org>
-F:	src/vendorcode/google/chromeos/vboot2/
+F:	src/security/vboot/
 
 TPM SUPPORT
 M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
+S:	Supported
 F:	src/drivers/*/tpm/
-F:	src/security/tpm12/
-F:	src/security/tpm20/
-F:	util/tss-generator/
+F:	src/security/vboot/vboot_crtm.*
+F:	src/security/tpm
 
 DOCKER
 M:	Martin Roth <gaumless@gmail.com>

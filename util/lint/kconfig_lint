@@ -530,6 +530,7 @@ sub build_and_parse_kconfig_tree {
     my $inside_config = "";    # set to symbol name of the config section
     my @inside_menu   = ();    # stack of menu names
     my $inside_choice = "";
+    my $choice_symbol = "";
     my $configs_inside_choice;
     my %fileinfo;
 
@@ -617,6 +618,7 @@ sub build_and_parse_kconfig_tree {
                 my $symbol = $1;
                 add_symbol( $symbol, \@inside_menu, $filename, $line_no, \@inside_if );
                 handle_type( "bool", $symbol, $filename, $line_no );
+		$choice_symbol = $symbol;
             }
             $inside_config         = "";
             $inside_choice         = "$filename $line_no";
@@ -633,10 +635,12 @@ sub build_and_parse_kconfig_tree {
             }
 
             $inside_choice = "";
-            if ( $configs_inside_choice == 0 ) {
-                show_error("choice block has no symbols at $filename:$line_no.");
+            if (( $configs_inside_choice == 0 ) &&
+	        ( $choice_symbol eq "" )) {
+                show_error("unnamed choice block has no symbols at $filename:$line_no.");
             }
             $configs_inside_choice = 0;
+	    $choice_symbol="";
         }
 
         # [optional]

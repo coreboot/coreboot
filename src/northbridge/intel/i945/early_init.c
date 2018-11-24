@@ -701,7 +701,7 @@ static void i945_setup_pci_express_x16(void)
 	/* Enable GPEs */
 	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0xec);
 	reg32 |= (1 << 2) | (1 << 1) | (1 << 0); /* PMEGPE, HPGPE, GENGPE */
-	pci_write_config32(PCI_DEV(0, 0x01, 0), 0x114, reg32);
+	pci_write_config32(PCI_DEV(0, 0x01, 0), 0xec, reg32);
 
 	/* Virtual Channel Configuration: Only VC0 on PCIe x16 */
 	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0x114);

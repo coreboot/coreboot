@@ -28,6 +28,7 @@ help_toolchain help::
 	@echo  '  crosstools-ARCH - Build cross-compiler with GDB for specific architecture'
 	@echo  '  ARCH can be "$(subst $(spc),"$(comma) ",$(TOOLCHAIN_ARCHES))"'
 	@echo  '  Use "make [target] CPUS=#" to build toolchain using multiple cores'
+	@echo  '  Use "make [target] DEST=some/path" to install toolchain there'
 	@echo
 
 # For the toolchain builds, use CPUS=x to use multiple processors to build

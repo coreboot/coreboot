@@ -566,9 +566,9 @@ static void i945_setup_pci_express_x16(void)
 	reg16 |= DEVEN_D1F0;
 	pci_write_config16(PCI_DEV(0, 0x00, 0), DEVEN, reg16);
 
-	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0x208);
+	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), PEGCC);
 	reg32 &= ~(1 << 8);
-	pci_write_config32(PCI_DEV(0, 0x01, 0), 0x208, reg32);
+	pci_write_config32(PCI_DEV(0, 0x01, 0), PEGCC, reg32);
 
 	/* We have no success with querying the usual PCIe registers
 	 * for link setup success on the i945. Hence we assign a temporary
@@ -576,25 +576,25 @@ static void i945_setup_pci_express_x16(void)
 	 */
 
 	/* First we reset the secondary bus */
-	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0x3e);
+	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), BCTRL1);
 	reg16 |= (1 << 6); /* SRESET */
-	pci_write_config16(PCI_DEV(0, 0x01, 0), 0x3e, reg16);
+	pci_write_config16(PCI_DEV(0, 0x01, 0), BCTRL1, reg16);
 	/* Read back and clear reset bit. */
-	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0x3e);
+	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), BCTRL1);
 	reg16 &= ~(1 << 6); /* SRESET */
-	pci_write_config16(PCI_DEV(0, 0x01, 0), 0x3e, reg16);
+	pci_write_config16(PCI_DEV(0, 0x01, 0), BCTRL1, reg16);
 
-	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0xba);
+	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), SLOTSTS);
 	printk(BIOS_DEBUG, "SLOTSTS: %04x\n", reg16);
 	if (!(reg16 & 0x48))
 		goto disable_pciexpress_x16_link;
 	reg16 |= (1 << 4) | (1 << 0);
-	pci_write_config16(PCI_DEV(0, 0x01, 0), 0xba, reg16);
+	pci_write_config16(PCI_DEV(0, 0x01, 0), SLOTSTS, reg16);
 
-	pci_write_config8(PCI_DEV(0, 0x01, 0), 0x19, 0x00);
-	pci_write_config8(PCI_DEV(0, 0x01, 0), 0x1a, 0x00);
-	pci_write_config8(PCI_DEV(0, 0x01, 0), 0x19, 0x0a);
-	pci_write_config8(PCI_DEV(0, 0x01, 0), 0x1a, 0x0a);
+	pci_write_config8(PCI_DEV(0, 0x01, 0), SBUSN1, 0x00);
+	pci_write_config8(PCI_DEV(0, 0x01, 0), SUBUSN1, 0x00);
+	pci_write_config8(PCI_DEV(0, 0x01, 0), SBUSN1, 0x0a);
+	pci_write_config8(PCI_DEV(0, 0x01, 0), SUBUSN1, 0x0a);
 
 	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0x224);
 	reg32 &= ~(1 << 8);
@@ -603,21 +603,21 @@ static void i945_setup_pci_express_x16(void)
 	MCHBAR16(UPMC1) &= ~((1 << 5) | (1 << 0));
 
 	/* Initialize PEG_CAP */
-	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0xa2);
+	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), PEG_CAP);
 	reg16 |= (1 << 8);
-	pci_write_config16(PCI_DEV(0, 0x01, 0), 0xa2, reg16);
+	pci_write_config16(PCI_DEV(0, 0x01, 0), PEG_CAP, reg16);
 
 	/* Setup SLOTCAP */
 	/* TODO: These values are mainboard dependent and should
 	 * be set from devicetree.cb.
 	 */
 	/* NOTE: SLOTCAP becomes RO after the first write! */
-	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0xb4);
+	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), SLOTCAP);
 	reg32 &= 0x0007ffff;
 
 	reg32 &= 0xfffe007f;
 
-	pci_write_config32(PCI_DEV(0, 0x01, 0), 0xb4, reg32);
+	pci_write_config32(PCI_DEV(0, 0x01, 0), SLOTCAP, reg32);
 
 	/* Wait for training to succeed */
 	printk(BIOS_DEBUG, "PCIe link training ...");
@@ -640,12 +640,12 @@ static void i945_setup_pci_express_x16(void)
 		reg32 |= 1;
 		pci_write_config32(PCI_DEV(0, 0x01, 0), PEGSTS, reg32);
 
-		reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0x3e);
+		reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), BCTRL1);
 
 		reg16 |= (1 << 6);
-		pci_write_config16(PCI_DEV(0, 0x01, 0), 0x3e, reg16);
+		pci_write_config16(PCI_DEV(0, 0x01, 0), BCTRL1, reg16);
 		reg16 &= ~(1 << 6);
-		pci_write_config16(PCI_DEV(0, 0x01, 0), 0x3e, reg16);
+		pci_write_config16(PCI_DEV(0, 0x01, 0), BCTRL1, reg16);
 
 		printk(BIOS_DEBUG, "PCIe link training ...");
 		timeout = 0x7ffff;
@@ -670,16 +670,16 @@ static void i945_setup_pci_express_x16(void)
 	/* reg16 == 1 -> x1; reg16 == 16 -> x16 */
 	printk(BIOS_DEBUG, "PCIe x%d link training succeeded.\n", reg16);
 
-	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0x204);
+	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), PEGTC);
 	reg32 &= 0xfffffc00; /* clear [9:0] */
 	if (reg16 == 1)
 		reg32 |= 0x32b;
 		// TODO
-		/* pci_write_config32(PCI_DEV(0, 0x01, 0), 0x204, reg32); */
+		/* pci_write_config32(PCI_DEV(0, 0x01, 0), PEGTC, reg32); */
 	else if (reg16 == 16)
 		reg32 |= 0x0f4;
 		// TODO
-		/* pci_write_config32(PCI_DEV(0, 0x01, 0), 0x204, reg32); */
+		/* pci_write_config32(PCI_DEV(0, 0x01, 0), PEGTC, reg32); */
 
 	reg32 = (pci_read_config32(PCI_DEV(0xa, 0, 0), 0x8) >> 8);
 	printk(BIOS_DEBUG, "PCIe device class: %06x\n", reg32);
@@ -693,36 +693,36 @@ static void i945_setup_pci_express_x16(void)
 		pci_write_config32(PCI_DEV(0, 0x0, 0), DEVEN, reg32);
 
 		/* Set VGA enable bit in PCIe bridge */
-		reg16 = pci_read_config16(PCI_DEV(0, 0x1, 0), 0x3e);
+		reg16 = pci_read_config16(PCI_DEV(0, 0x1, 0), BCTRL1);
 		reg16 |= (1 << 3);
-		pci_write_config16(PCI_DEV(0, 0x1, 0), 0x3e, reg16);
+		pci_write_config16(PCI_DEV(0, 0x1, 0), BCTRL1, reg16);
 	}
 
 	/* Enable GPEs */
-	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0xec);
+	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), PEG_LC);
 	reg32 |= (1 << 2) | (1 << 1) | (1 << 0); /* PMEGPE, HPGPE, GENGPE */
-	pci_write_config32(PCI_DEV(0, 0x01, 0), 0xec, reg32);
+	pci_write_config32(PCI_DEV(0, 0x01, 0), PEG_LC, reg32);
 
 	/* Virtual Channel Configuration: Only VC0 on PCIe x16 */
-	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0x114);
+	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), VC0RCTL);
 	reg32 &= 0xffffff01;
-	pci_write_config32(PCI_DEV(0, 0x01, 0), 0x114, reg32);
+	pci_write_config32(PCI_DEV(0, 0x01, 0), VC0RCTL, reg32);
 
 	/* Extended VC count */
-	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0x104);
+	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), PVCCAP1);
 	reg32 &= ~(7 << 0);
-	pci_write_config32(PCI_DEV(0, 0x01, 0), 0x104, reg32);
+	pci_write_config32(PCI_DEV(0, 0x01, 0), PVCCAP1, reg32);
 
 	/* Active State Power Management ASPM */
 
 	/* TODO */
 
 	/* Clear error bits */
-	pci_write_config16(PCI_DEV(0, 0x01, 0), 0x06, 0xffff);
-	pci_write_config16(PCI_DEV(0, 0x01, 0), 0x1e, 0xffff);
-	pci_write_config16(PCI_DEV(0, 0x01, 0), 0xaa, 0xffff);
-	pci_write_config32(PCI_DEV(0, 0x01, 0), 0x1c4, 0xffffffff);
-	pci_write_config32(PCI_DEV(0, 0x01, 0), 0x1d0, 0xffffffff);
+	pci_write_config16(PCI_DEV(0, 0x01, 0), PCISTS1, 0xffff);
+	pci_write_config16(PCI_DEV(0, 0x01, 0), SSTS1, 0xffff);
+	pci_write_config16(PCI_DEV(0, 0x01, 0), DSTS, 0xffff);
+	pci_write_config32(PCI_DEV(0, 0x01, 0), UESTS, 0xffffffff);
+	pci_write_config32(PCI_DEV(0, 0x01, 0), CESTS, 0xffffffff);
 	pci_write_config32(PCI_DEV(0, 0x01, 0), 0x1f0, 0xffffffff);
 	pci_write_config32(PCI_DEV(0, 0x01, 0), 0x228, 0xffffffff);
 
@@ -739,8 +739,8 @@ static void i945_setup_pci_express_x16(void)
 	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0x328);
 	pci_write_config32(PCI_DEV(0, 0x01, 0), 0x328, reg32);
 
-	reg8 = pci_read_config8(PCI_DEV(0, 0x01, 0), 0xb4);
-	pci_write_config8(PCI_DEV(0, 0x01, 0), 0xb4, reg8);
+	reg8 = pci_read_config8(PCI_DEV(0, 0x01, 0), SLOTCAP);
+	pci_write_config8(PCI_DEV(0, 0x01, 0), SLOTCAP, reg8);
 
 	/* Additional PCIe graphics setup */
 	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0xf0);
@@ -874,10 +874,10 @@ static void i945_setup_root_complex_topology(void)
 
 	/* PCI Express x16 Port Root Topology */
 	if (pci_read_config8(PCI_DEV(0, 0x00, 0), DEVEN) & DEVEN_D1F0) {
-		pci_write_config32(PCI_DEV(0, 0x01, 0), 0x158, DEFAULT_EPBAR);
-		reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0x150);
+		pci_write_config32(PCI_DEV(0, 0x01, 0), LE1A, DEFAULT_EPBAR);
+		reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), LE1D);
 		reg32 |= (1 << 0);
-		pci_write_config32(PCI_DEV(0, 0x01, 0), 0x150, reg32);
+		pci_write_config32(PCI_DEV(0, 0x01, 0), LE1D, reg32);
 	}
 }
 

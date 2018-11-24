@@ -83,7 +83,24 @@
 
 /* Device 0:1.0 PCI configuration space (PCI Express) */
 
+#define PCISTS1		0x06	/* 16bit */
+#define SBUSN1		0x19	/*  8bit */
+#define SUBUSN1		0x1a	/*  8bit */
+#define SSTS1		0x1e	/* 16bit */
 #define BCTRL1		0x3e	/* 16bit */
+#define PEG_CAP		0xa2	/* 16bit */
+#define DSTS		0xaa	/* 16bit */
+#define SLOTCAP		0xb4	/* 32bit */
+#define SLOTSTS		0xba	/* 16bit */
+#define PEG_LC		0xec	/* 32bit */
+#define PVCCAP1		0x104	/* 32bit */
+#define VC0RCTL		0x114	/* 32bit */
+#define LE1D		0x150	/* 32bit */
+#define LE1A		0x158	/* 64bit */
+#define UESTS		0x1c4	/* 32bit */
+#define CESTS		0x1d0	/* 32bit */
+#define PEGTC		0x204	/* 32bit */
+#define PEGCC		0x208	/* 32bit */
 #define PEGSTS		0x214	/* 32bit */
 
 

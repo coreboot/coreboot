@@ -229,7 +229,8 @@ void acpi_create_madt(acpi_madt_t *madt)
 	header->revision = get_acpi_table_revision(MADT);
 
 	madt->lapic_addr = LOCAL_APIC_ADDR;
-	madt->flags = 0x1; /* PCAT_COMPAT */
+	if (CONFIG(ACPI_HAVE_PCAT_8259))
+		madt->flags |= 1;
 
 	current = acpi_fill_madt(current);
 

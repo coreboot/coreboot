@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Nico Huber <nico.h@gmx.de>
+ * Copyright (C) 2017-2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +47,12 @@ void pnp_enter_conf_mode_a0a0(struct device *dev)
 {
 	outb(0xa0, dev->path.pnp.port);
 	outb(0xa0, dev->path.pnp.port);
+}
+
+void pnp_enter_conf_mode_a5a5(struct device *dev)
+{
+	outb(0xa5, dev->path.pnp.port);
+	outb(0xa5, dev->path.pnp.port);
 }
 
 void pnp_exit_conf_mode_aa(struct device *dev)
@@ -93,6 +100,11 @@ const struct pnp_mode_ops pnp_conf_mode_8787_aa = {
 
 const struct pnp_mode_ops pnp_conf_mode_a0a0_aa = {
 	.enter_conf_mode = pnp_enter_conf_mode_a0a0,
+	.exit_conf_mode  = pnp_exit_conf_mode_aa,
+};
+
+const struct pnp_mode_ops pnp_conf_mode_a5a5_aa = {
+	.enter_conf_mode = pnp_enter_conf_mode_a5a5,
 	.exit_conf_mode  = pnp_exit_conf_mode_aa,
 };
 

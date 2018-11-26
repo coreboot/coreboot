@@ -14,17 +14,11 @@
 ## GNU General Public License for more details.
 ##
 
-subdirs-y += aspeed
-subdirs-y += fintek
-subdirs-y += intel
-subdirs-y += ite
-subdirs-y += nsc
-subdirs-y += nuvoton
-subdirs-y += renesas
-subdirs-y += serverengines
-subdirs-y += smsc
-subdirs-y += via
-subdirs-y += winbond
+## include generic fintek pre-ram stage driver
+romstage-$(CONFIG_SUPERIO_ASPEED_COMMON_PRE_RAM) += common/early_serial.c
+bootblock-$(CONFIG_SUPERIO_ASPEED_COMMON_PRE_RAM) += common/early_serial.c
 
-ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += common/conf_mode.c
-ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_64) += common/conf_mode.c
+subdirs-y += ast2400
+subdirs-y += common
+
+CPPFLAGS_common += -Isrc/superio/aspeed

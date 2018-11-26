@@ -1,12 +1,13 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2009 Ronald G. Minnich
+## Copyright (C) 2008 Corey Osgood <corey.osgood@gmail.com>
 ## Copyright (C) 2018 Eltan B.V.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; version 2 of the License.
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,17 +15,4 @@
 ## GNU General Public License for more details.
 ##
 
-subdirs-y += aspeed
-subdirs-y += fintek
-subdirs-y += intel
-subdirs-y += ite
-subdirs-y += nsc
-subdirs-y += nuvoton
-subdirs-y += renesas
-subdirs-y += serverengines
-subdirs-y += smsc
-subdirs-y += via
-subdirs-y += winbond
-
-ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += common/conf_mode.c
-ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_64) += common/conf_mode.c
+ramstage-$(CONFIG_SUPERIO_ASPEED_AST2400) += superio.c

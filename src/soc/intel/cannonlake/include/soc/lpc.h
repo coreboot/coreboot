@@ -33,16 +33,6 @@
 #define   COMA_RANGE		0x0 /* 0x3F8 - 0x3FF COM1*/
 #define   COMB_RANGE		0x1 /* 0x2F8 - 0x2FF COM2*/
 #define LPC_EN			0x82 /* LPC IF Enables Register */
-#define   MC2_LPC_EN		(1 << 13) /* 0x4e/0x4f */
-#define   SE_LPC_EN		(1 << 12) /* 0x2e/0x2f */
-#define   MC1_LPC_EN		(1 << 11) /* 0x62/0x66 */
-#define   KBC_LPC_EN		(1 << 10) /* 0x60/0x64 */
-#define   GAMEH_LPC_EN		(1 << 9)  /* 0x208/0x20f */
-#define   GAMEL_LPC_EN		(1 << 8)  /* 0x200/0x207 */
-#define   FDD_LPC_EN		(1 << 3)  /* Floppy Drive Enable */
-#define   LPT_LPC_EN		(1 << 2)  /* Parallel Port Enable */
-#define   COMB_LPC_EN		(1 << 1)  /* Com Port B Enable */
-#define   COMA_LPC_EN		(1 << 0)  /* Com Port A Enable */
 #define LPC_GEN1_DEC		0x84 /* LPC IF Generic Decode Range 1 */
 #define LPC_GEN2_DEC		0x88 /* LPC IF Generic Decode Range 2 */
 #define LPC_GEN3_DEC		0x8c /* LPC IF Generic Decode Range 3 */

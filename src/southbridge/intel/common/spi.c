@@ -345,7 +345,7 @@ void spi_init(void)
 		cntlr->fpr_max = 5;
 
 		if (cntlr->hsfs & HSFS_FDV) {
-			writel_ (4, &ich9_spi->fdoc);
+			writel_(4, &ich9_spi->fdoc);
 			cntlr->flmap0 = readl_(&ich9_spi->fdod);
 			writel_ (0x1000, &ich9_spi->fdoc);
 			cntlr->flcomp = readl_(&ich9_spi->fdod);

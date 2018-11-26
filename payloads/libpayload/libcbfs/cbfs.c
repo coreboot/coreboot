@@ -193,7 +193,7 @@ const struct cbfs_header *get_cbfs_header(void) {
 void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
 			     struct cbfs_media *media,
 			     size_t offset, size_t count) {
-	void *address = buffer->buffer + buffer->allocated;;
+	void *address = buffer->buffer + buffer->allocated;
 	DEBUG("simple_buffer_map(offset=%zu, count=%zu): "
 	      "allocated=%zu, size=%zu, last_allocate=%zu\n",
 	    offset, count, buffer->allocated, buffer->size,

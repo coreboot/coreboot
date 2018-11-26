@@ -1072,6 +1072,9 @@ static void fixup_relocations(struct elf_writer *ew)
 	case EM_386:
 		type = R_386_32;
 		break;
+	case EM_X86_64:
+		type =  R_AMD64_64;
+		break;
 	case EM_ARM:
 		type = R_ARM_ABS32;
 		break;

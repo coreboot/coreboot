@@ -1148,6 +1148,43 @@ typedef struct
 /* Keep this the last entry.  */
 #define R_386_NUM	   38
 
+/* AMD64 specific definitions. */
+#define	R_AMD64_NONE		0	/* relocation types */
+#define	R_AMD64_64		1
+#define	R_AMD64_PC32		2
+#define	R_AMD64_GOT32		3
+#define	R_AMD64_PLT32		4
+#define	R_AMD64_COPY		5
+#define	R_AMD64_GLOB_DAT	6
+#define	R_AMD64_JUMP_SLOT	7
+#define	R_AMD64_RELATIVE	8
+#define	R_AMD64_GOTPCREL	9
+#define	R_AMD64_32		10
+#define	R_AMD64_32S		11
+#define	R_AMD64_16		12
+#define	R_AMD64_PC16		13
+#define	R_AMD64_8		14
+#define	R_AMD64_PC8		15
+#define	R_AMD64_DTPMOD64	16
+#define	R_AMD64_DTPOFF64	17
+#define	R_AMD64_TPOFF64		18
+#define	R_AMD64_TLSGD		19
+#define	R_AMD64_TLSLD		20
+#define	R_AMD64_DTPOFF32	21
+#define	R_AMD64_GOTTPOFF	22
+#define	R_AMD64_TPOFF32		23
+#define	R_AMD64_PC64		24
+#define	R_AMD64_GOTOFF64	25
+#define	R_AMD64_GOTPC32		26
+#define	R_AMD64_GOT64		27	/* reserved for future expansion */
+#define	R_AMD64_GOTPCREL64	28	/* reserved for future expansion */
+#define	R_AMD64_GOTPC64		29	/* reserved for future expansion */
+#define	R_AMD64_GOTPLT64	30	/* reserved for future expansion */
+#define	R_AMD64_PLTOFF64	31	/* reserved for future expansion */
+#define	R_AMD64_SIZE32		32
+#define	R_AMD64_SIZE64		33
+#define	R_AMD64_NUM	34
+
 /* SUN SPARC specific definitions.  */
 
 /* Legal values for ST_TYPE subfield of st_info (symbol type).  */

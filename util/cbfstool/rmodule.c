@@ -44,6 +44,33 @@ static int should_emit_386(Elf64_Rela *rel)
 	return (type == R_386_32);
 }
 
+static int valid_reloc_amd64(Elf64_Rela *rel)
+{
+	int type;
+
+	type = ELF64_R_TYPE(rel->r_info);
+
+	/* Only these 5 relocations are expected to be found. */
+	return (type == R_AMD64_64 ||
+		type == R_AMD64_PC64 ||
+		type == R_AMD64_32S ||
+		type == R_AMD64_32 ||
+		type == R_AMD64_PC32);
+}
+
+static int should_emit_amd64(Elf64_Rela *rel)
+{
+	int type;
+
+	type = ELF64_R_TYPE(rel->r_info);
+
+	/* Only emit absolute relocations */
+	return (type == R_AMD64_64 ||
+		type == R_AMD64_PC64 ||
+		type == R_AMD64_32S ||
+		type == R_AMD64_32);
+}
+
 static int valid_reloc_arm(Elf64_Rela *rel)
 {
 	int type;
@@ -99,6 +126,11 @@ static const struct arch_ops reloc_ops[] = {
 		.arch = EM_386,
 		.valid_type = valid_reloc_386,
 		.should_emit = should_emit_386,
+	},
+	{
+		.arch = EM_X86_64,
+		.valid_type = valid_reloc_amd64,
+		.should_emit = should_emit_amd64,
 	},
 	{
 		.arch = EM_ARM,

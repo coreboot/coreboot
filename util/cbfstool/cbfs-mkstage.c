@@ -362,7 +362,9 @@ static int rmod_filter(struct reloc_filter *f, const Elf64_Rela *r)
 	/* If there is any relocation to the ignored section that isn't
 	 * absolute fail as current assumptions are that all relocations
 	 * are absolute. */
-	if (reloc_type != R_386_32) {
+	if ((reloc_type != R_386_32) &&
+	    (reloc_type != R_AMD64_64) &&
+	    (reloc_type != R_AMD64_32)) {
 		ERROR("Invalid reloc to ignored section: %x\n", reloc_type);
 		return -1;
 	}
@@ -392,9 +394,10 @@ int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
 	if (rmodule_init(rmodctx, input))
 		return -1;
 
-	/* Only support x86 XIP currently. */
-	if (rmodctx->pelf.ehdr.e_machine != EM_386) {
-		ERROR("Only support XIP stages for x86\n");
+	/* Only support x86 / x86_64 XIP currently. */
+	if ((rmodctx->pelf.ehdr.e_machine != EM_386) &&
+	    (rmodctx->pelf.ehdr.e_machine != EM_X86_64)) {
+		ERROR("Only support XIP stages for x86/x86_64\n");
 		goto out;
 	}
 

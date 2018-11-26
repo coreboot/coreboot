@@ -313,7 +313,6 @@ get_log_dedupe "Google Reef / Pyro / Sand / Snappy / Nasher" "src/mainboard/goog
 get_log_dedupe "Siemens mc_apl1" "src/mainboard/siemens/mc_apl1" "mc_apl1"
 get_log_dedupe "Intel Apollolake" "src/soc/intel/apollolake" "apollolake\|apollo.lake"
 
-get_log_dedupe "Google Zoombini / Intel cannonlake_rvp" "src/mainboard/google/zoombini src/mainboard/intel/cannonlake_rvp" "zoombini\|cannonlake_rvp"
 get_log_dedupe "Intel CannonLake" "src/soc/intel/cannonlake src/mainboard/intel/cannonlake_rvp" "cannonlake"
 
 get_log_dedupe "Intel Galileo" "src/mainboard/intel/galileo" "galileo"

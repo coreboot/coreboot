@@ -110,16 +110,14 @@ endef # vboot-for-stage
 
 CFLAGS_common += -I3rdparty/vboot/firmware/2lib/include
 
-$(eval $(call vboot-for-stage,verstage))
 $(eval $(call vboot-for-stage,bootblock))
+$(eval $(call vboot-for-stage,romstage))
 $(eval $(call vboot-for-stage,ramstage))
 $(eval $(call vboot-for-stage,postcar))
 
 ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
 
-ifeq ($(CONFIG_VBOOT_HAS_REC_HASH_SPACE),y)
-$(eval $(call vboot-for-stage,romstage))
-endif
+$(eval $(call vboot-for-stage,verstage))
 
 cbfs-files-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += $(CONFIG_CBFS_PREFIX)/verstage
 $(CONFIG_CBFS_PREFIX)/verstage-file := $(objcbfs)/verstage.elf

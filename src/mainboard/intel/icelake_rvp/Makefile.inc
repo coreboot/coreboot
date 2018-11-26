@@ -25,6 +25,7 @@ romstage-y += romstage_fsp_params.c
 romstage-y += board_id.c
 
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
+ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_HDA_VERB) += hda_verb.c
 ramstage-y += mainboard.c
 ramstage-y += board_id.c
 

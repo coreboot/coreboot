@@ -196,6 +196,7 @@ enum {
 static u8 readb_(const void *addr)
 {
 	u8 v = read8(addr);
+
 	printk(BIOS_DEBUG, "read %2.2x from %4.4x\n",
 	       v, ((unsigned) addr & 0xffff) - 0xf020);
 	return v;
@@ -204,6 +205,7 @@ static u8 readb_(const void *addr)
 static u16 readw_(const void *addr)
 {
 	u16 v = read16(addr);
+
 	printk(BIOS_DEBUG, "read %4.4x from %4.4x\n",
 	       v, ((unsigned) addr & 0xffff) - 0xf020);
 	return v;
@@ -212,6 +214,7 @@ static u16 readw_(const void *addr)
 static u32 readl_(const void *addr)
 {
 	u32 v = read32(addr);
+
 	printk(BIOS_DEBUG, "read %8.8x from %4.4x\n",
 	       v, ((unsigned) addr & 0xffff) - 0xf020);
 	return v;
@@ -347,7 +350,7 @@ void spi_init(void)
 		if (cntlr->hsfs & HSFS_FDV) {
 			writel_(4, &ich9_spi->fdoc);
 			cntlr->flmap0 = readl_(&ich9_spi->fdod);
-			writel_ (0x1000, &ich9_spi->fdoc);
+			writel_(0x1000, &ich9_spi->fdoc);
 			cntlr->flcomp = readl_(&ich9_spi->fdod);
 		}
 	}
@@ -439,43 +442,43 @@ static int spi_setup_opcode(spi_transaction *trans)
 		optypes = (optypes & 0xfffc) | (trans->type & 0x3);
 		writew_(optypes, cntlr->optype);
 		return 0;
-	} else {
-		/* The lock is on. See if what we need is on the menu. */
-		uint8_t optype;
-		uint16_t opcode_index;
-
-		/* Write Enable is handled as atomic prefix */
-		if (trans->opcode == SPI_OPCODE_WREN)
-			return 0;
-
-		read_reg(cntlr->opmenu, opmenu, sizeof(opmenu));
-		for (opcode_index = 0; opcode_index < cntlr->menubytes;
-				opcode_index++) {
-			if (opmenu[opcode_index] == trans->opcode)
-				break;
-		}
-
-		if (opcode_index == cntlr->menubytes) {
-			printk(BIOS_DEBUG, "ICH SPI: Opcode %x not found\n",
-				trans->opcode);
-			return -1;
-		}
-
-		optypes = readw_(cntlr->optype);
-		optype = (optypes >> (opcode_index * 2)) & 0x3;
-		if (trans->type == SPI_OPCODE_TYPE_WRITE_NO_ADDRESS &&
-			optype == SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS &&
-			trans->bytesout >= 3) {
-			/* We guessed wrong earlier. Fix it up. */
-			trans->type = optype;
-		}
-		if (optype != trans->type) {
-			printk(BIOS_DEBUG, "ICH SPI: Transaction doesn't fit type %d\n",
-				optype);
-			return -1;
-		}
-		return opcode_index;
 	}
+
+	/* The lock is on. See if what we need is on the menu. */
+	uint8_t optype;
+	uint16_t opcode_index;
+
+	/* Write Enable is handled as atomic prefix */
+	if (trans->opcode == SPI_OPCODE_WREN)
+		return 0;
+
+	read_reg(cntlr->opmenu, opmenu, sizeof(opmenu));
+	for (opcode_index = 0; opcode_index < cntlr->menubytes;
+			opcode_index++) {
+		if (opmenu[opcode_index] == trans->opcode)
+			break;
+	}
+
+	if (opcode_index == cntlr->menubytes) {
+		printk(BIOS_DEBUG, "ICH SPI: Opcode %x not found\n",
+			trans->opcode);
+		return -1;
+	}
+
+	optypes = readw_(cntlr->optype);
+	optype = (optypes >> (opcode_index * 2)) & 0x3;
+	if (trans->type == SPI_OPCODE_TYPE_WRITE_NO_ADDRESS &&
+		optype == SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS &&
+		trans->bytesout >= 3) {
+		/* We guessed wrong earlier. Fix it up. */
+		trans->type = optype;
+	}
+	if (optype != trans->type) {
+		printk(BIOS_DEBUG, "ICH SPI: Transaction doesn't fit type %d\n",
+			optype);
+		return -1;
+	}
+	return opcode_index;
 }
 
 static int spi_setup_offset(spi_transaction *trans)
@@ -526,7 +529,7 @@ static int ich_status_poll(u16 bitmask, int wait_til_set)
 	return -1;
 }
 
-static int spi_is_multichip (void)
+static int spi_is_multichip(void)
 {
 	ich_spi_controller *cntlr = car_get_var_ptr(&g_cntlr);
 	if (!(cntlr->hsfs & HSFS_FDV))
@@ -689,6 +692,7 @@ static void ich_hwseq_set_addr(uint32_t addr)
 {
 	ich_spi_controller *cntlr = car_get_var_ptr(&g_cntlr);
 	uint32_t addr_old = readl_(&cntlr->ich9_spi->faddr) & ~0x01FFFFFF;
+
 	writel_((addr & 0x01FFFFFF) | addr_old, &cntlr->ich9_spi->faddr);
 }
 
@@ -773,8 +777,7 @@ static int ich_hwseq_erase(const struct spi_flash *flash, u32 offset,
 		hsfc |= (0x3 << HSFC_FCYCLE_OFF); /* set erase operation */
 		hsfc |= HSFC_FGO; /* start */
 		writew_(hsfc, &cntlr->ich9_spi->hsfc);
-		if (ich_hwseq_wait_for_cycle_complete(timeout, len))
-		{
+		if (ich_hwseq_wait_for_cycle_complete(timeout, len)) {
 			printk(BIOS_ERR, "SF: Erase failed at %x\n", offset - erase_size);
 			ret = -1;
 			goto out;
@@ -811,7 +814,7 @@ static int ich_hwseq_read(const struct spi_flash *flash, u32 addr, size_t len,
 	uint8_t block_len;
 
 	if (addr + len > flash->size) {
-		printk (BIOS_ERR,
+		printk(BIOS_ERR,
 			"Attempt to read %x-%x which is out of chip\n",
 			(unsigned) addr,
 			(unsigned) addr+(unsigned) len);
@@ -882,7 +885,7 @@ static int ich_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
 	uint32_t start = addr;
 
 	if (addr + len > flash->size) {
-		printk (BIOS_ERR,
+		printk(BIOS_ERR,
 			"Attempt to write 0x%x-0x%x which is out of chip\n",
 			(unsigned)addr, (unsigned) (addr+len));
 		return -1;
@@ -908,9 +911,8 @@ static int ich_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
 		hsfc |= HSFC_FGO; /* start */
 		writew_(hsfc, &cntlr->ich9_spi->hsfc);
 
-		if (ich_hwseq_wait_for_cycle_complete(timeout, block_len))
-		{
-			printk (BIOS_ERR, "SF: write failure at %x\n",
+		if (ich_hwseq_wait_for_cycle_complete(timeout, block_len)) {
+			printk(BIOS_ERR, "SF: write failure at %x\n",
 				addr);
 			return -1;
 		}
@@ -944,9 +946,8 @@ static int spi_flash_programmer_probe(const struct spi_slave *spi,
 	memcpy(&flash->spi, spi, sizeof(*spi));
 	flash->name = "Opaque HW-sequencing";
 
-	ich_hwseq_set_addr (0);
-	switch ((cntlr->hsfs >> 3) & 3)
-	{
+	ich_hwseq_set_addr(0);
+	switch ((cntlr->hsfs >> 3) & 3) {
 	case 0:
 		flash->sector_size = 256;
 		break;
@@ -967,7 +968,7 @@ static int spi_flash_programmer_probe(const struct spi_slave *spi,
 
 	if ((cntlr->hsfs & HSFS_FDV) && ((cntlr->flmap0 >> 8) & 3))
 		flash->size += 1 << (19 + ((cntlr->flcomp >> 3) & 7));
-	printk (BIOS_DEBUG, "flash size 0x%x bytes\n", flash->size);
+	printk(BIOS_DEBUG, "flash size 0x%x bytes\n", flash->size);
 
 	return 0;
 }
@@ -978,19 +979,20 @@ static int xfer_vectors(const struct spi_slave *slave,
 	return spi_flash_vector_helper(slave, vectors, count, spi_ctrlr_xfer);
 }
 
-#define SPI_FPR_SHIFT		12
+#define SPI_FPR_SHIFT			12
 #define ICH7_SPI_FPR_MASK		0xfff
 #define ICH9_SPI_FPR_MASK		0x1fff
-#define SPI_FPR_BASE_SHIFT	0
+#define SPI_FPR_BASE_SHIFT		0
 #define ICH7_SPI_FPR_LIMIT_SHIFT	12
 #define ICH9_SPI_FPR_LIMIT_SHIFT	16
 #define ICH9_SPI_FPR_RPE		(1 << 15) /* Read Protect */
-#define SPI_FPR_WPE		(1 << 31) /* Write Protect */
+#define SPI_FPR_WPE			(1 << 31) /* Write Protect */
 
 static u32 spi_fpr(u32 base, u32 limit)
 {
 	u32 ret;
 	u32 mask, limit_shift;
+
 	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)) {
 		mask = ICH7_SPI_FPR_MASK;
 		limit_shift = ICH7_SPI_FPR_LIMIT_SHIFT;

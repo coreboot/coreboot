@@ -19,7 +19,7 @@
 /*
  * Intel's code does not have a handle on changing global packing state.
  * Therefore, one needs to protect against packing policies that are set
- * globally for a compliation unit just by including a header file.
+ * globally for a compilation unit just by including a header file.
  */
 #pragma pack(push)
 

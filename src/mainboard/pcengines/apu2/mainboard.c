@@ -194,17 +194,30 @@ static void mainboard_final(void *chip_info)
 const char *smbios_mainboard_serial_number(void)
 {
 	static char serial[10];
-	struct device *nic_dev;
+	struct device *dev;
 	uintptr_t bar10;
 	u32 mac_addr = 0;
+	u32 bus_no;
 	int i;
 
-	nic_dev = dev_find_slot(1, PCI_DEVFN(0, 0));
-	if ((serial[0] != 0) || !nic_dev)
+	/*
+	 * In case we have PCIe module connected to mPCIe2 slot, BDF 1:0.0 may
+	 * not be a NIC, because mPCIe2 slot is routed to the very first PCIe
+	 * bridge and the first NIC is connected to the second PCIe bridge.
+	 * Read secondary bus number from the PCIe bridge where the first NIC is
+	 * connected.
+	 */
+	dev = dev_find_slot(0, PCI_DEVFN(2, 2));
+	if ((serial[0] != 0) || !dev)
+		return serial;
+
+	bus_no = dev->link_list->secondary;
+	dev = dev_find_slot(bus_no, PCI_DEVFN(0, 0));
+	if (!dev)
 		return serial;
 
 	/* Read in the last 3 bytes of NIC's MAC address. */
-	bar10 = pci_read_config32(nic_dev, 0x10);
+	bar10 = pci_read_config32(dev, 0x10);
 	bar10 &= 0xFFFE0000;
 	bar10 += 0x5400;
 	for (i = 3; i < 6; i++) {

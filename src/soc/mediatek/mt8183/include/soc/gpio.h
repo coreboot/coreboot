@@ -26,17 +26,6 @@ enum {
 	GPIO_MODE_BITS = 4,
 };
 
-typedef union {
-	u32 raw;
-	struct {
-		u32 id     : 8;
-		u32 flag   : 3;
-		u32 bit    : 5;
-		u32 base   : 8;
-		u32 offset : 8;
-	};
-} gpio_t;
-
 #define IOCFG_TO_GPIO_BASE(x) ((x >> 16) & 0xff)
 #define GPIO_TO_IOCFG_BASE(x) ((void *)(IOCFG_RT_BASE & 0xff000000) + \
 			       ((x) << 16))
@@ -627,9 +616,5 @@ struct gpio_regs {
 check_member(gpio_regs, mode[22].val, 0x460);
 
 static struct gpio_regs *const mtk_gpio = (void *)(GPIO_BASE);
-
-void gpio_set_pull(gpio_t gpio, enum pull_enable enable,
-		   enum pull_select select);
-void gpio_set_mode(gpio_t gpio, int mode);
 
 #endif

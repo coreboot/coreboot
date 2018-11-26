@@ -126,3 +126,64 @@ void gpio_output(gpio_t gpio, int value)
 	gpio_set_dir(gpio, GPIO_DIRECTION_OUT);
 	gpio_set_mode(gpio, GPIO_MODE);
 }
+
+enum {
+	MAX_EINT_REG_BITS = 32,
+};
+
+static void pos_bit_calc_for_eint(gpio_t gpio, u32 *pos, u32 *bit)
+{
+	*pos = gpio.id / MAX_EINT_REG_BITS;
+	*bit = gpio.id % MAX_EINT_REG_BITS;
+}
+
+int gpio_eint_poll(gpio_t gpio)
+{
+	u32 pos;
+	u32 bit;
+	u32 status;
+
+	pos_bit_calc_for_eint(gpio, &pos, &bit);
+
+	status = (read32(&mtk_eint->sta.regs[pos]) >> bit) & 0x1;
+
+	if (status)
+		write32(&mtk_eint->ack.regs[pos], 1 << bit);
+
+	return status;
+}
+
+void gpio_eint_configure(gpio_t gpio, enum gpio_irq_type type)
+{
+	u32 pos;
+	u32 bit, mask;
+
+	pos_bit_calc_for_eint(gpio, &pos, &bit);
+	mask = 1 << bit;
+
+	/* Make it an input first. */
+	gpio_input_pullup(gpio);
+
+	write32(&mtk_eint->d0en[pos], mask);
+
+	switch (type) {
+	case IRQ_TYPE_EDGE_FALLING:
+		write32(&mtk_eint->sens_clr.regs[pos], mask);
+		write32(&mtk_eint->pol_clr.regs[pos], mask);
+		break;
+	case IRQ_TYPE_EDGE_RISING:
+		write32(&mtk_eint->sens_clr.regs[pos], mask);
+		write32(&mtk_eint->pol_set.regs[pos], mask);
+		break;
+	case IRQ_TYPE_LEVEL_LOW:
+		write32(&mtk_eint->sens_set.regs[pos], mask);
+		write32(&mtk_eint->pol_clr.regs[pos], mask);
+		break;
+	case IRQ_TYPE_LEVEL_HIGH:
+		write32(&mtk_eint->sens_set.regs[pos], mask);
+		write32(&mtk_eint->pol_set.regs[pos], mask);
+		break;
+	}
+
+	write32(&mtk_eint->mask_clr.regs[pos], mask);
+}

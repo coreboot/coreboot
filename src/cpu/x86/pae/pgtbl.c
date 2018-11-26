@@ -135,10 +135,10 @@ void *map_2M_page(unsigned long page)
 			memset(&pgtbl[index].pdp, 0, sizeof(pgtbl[index].pdp));
 			pd = pgtbl[index].pd;
 			pdp = pgtbl[index].pdp;
-			pdp[0].addr_lo = ((uint32_t)&pd[512*0])|1;
-			pdp[1].addr_lo = ((uint32_t)&pd[512*1])|1;
-			pdp[2].addr_lo = ((uint32_t)&pd[512*2])|1;
-			pdp[3].addr_lo = ((uint32_t)&pd[512*3])|1;
+			pdp[0].addr_lo = ((uintptr_t)&pd[512*0])|1;
+			pdp[1].addr_lo = ((uintptr_t)&pd[512*1])|1;
+			pdp[2].addr_lo = ((uintptr_t)&pd[512*2])|1;
+			pdp[3].addr_lo = ((uintptr_t)&pd[512*3])|1;
 			/* The first half of the page table is identity mapped
 			 */
 			for (i = 0; i < 1024; i++) {

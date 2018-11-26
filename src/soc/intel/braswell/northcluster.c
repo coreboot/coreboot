@@ -21,6 +21,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <fsp/memmap.h>
+#include <cpu/x86/lapic.h>
 #include <fsp/util.h>
 #include <soc/iomap.h>
 #include <soc/iosf.h>
@@ -147,6 +148,13 @@ static void nc_read_resources(struct device *dev)
 	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
 	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
 			      (0x100000 - 0xc0000) >> 10);
+
+	/*
+	 * Reserve local APIC
+	 */
+	base_k = RES_IN_KIB(LAPIC_DEFAULT_BASE);
+	size_k = RES_IN_KIB(0x00100000);
+	mmio_resource(dev, index++, base_k, size_k);
 
 	chromeos_reserve_ram_oops(dev, index++);
 }

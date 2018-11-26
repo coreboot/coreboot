@@ -150,7 +150,7 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 		"outb %%al, %%dx\n\t"
 		: /* ignore result */
 		: "a" (APM_CNT_GNVS_UPDATE),
-		  "b" ((u32)gnvs),
+		  "b" ((uintptr_t)gnvs),
 		  "d" (APM_CNT)
 	);
 }

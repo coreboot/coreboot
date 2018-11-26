@@ -75,6 +75,7 @@ postcar-y += i2c.c
 postcar-$(CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE) += heci.c
 postcar-$(CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE) += reset.c
 postcar-$(CONFIG_UART_DEBUG) += uart.c
+postcar-$(CONFIG_VBOOT_MEASURED_BOOT) += gspi.c
 
 verstage-y += car.c
 verstage-y += i2c.c

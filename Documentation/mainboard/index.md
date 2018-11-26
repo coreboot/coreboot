@@ -33,6 +33,10 @@ The boards in this section are not real mainboards, but emulators.
 
 - [GA-H61M-S2PV](gigabyte/ga-h61m-s2pv.md)
 
+## Google
+
+- [Dragonegg](google/dragonegg.md)
+
 ## Open Cellular
 
 - [Elgon](opencellular/elgon.md)

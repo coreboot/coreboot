@@ -1689,7 +1689,7 @@ void edid_set_framebuffer_bits_per_pixel(struct edid *edid, int fb_bpp,
 
 	edid->framebuffer_bits_per_pixel = fb_bpp;
 	edid->bytes_per_line = ALIGN_UP(edid->mode.ha *
-		div_round_up(fb_bpp, 8), row_byte_alignment);
+		DIV_ROUND_UP(fb_bpp, 8), row_byte_alignment);
 	edid->x_resolution = edid->bytes_per_line / (fb_bpp / 8);
 	edid->y_resolution = edid->mode.va;
 }

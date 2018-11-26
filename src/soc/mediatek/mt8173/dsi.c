@@ -216,11 +216,11 @@ static void mtk_dsi_phy_timconfig(u32 data_rate)
 	timcon0 = (8 << 24) | (0xa << 16) | (0x6 << 8) | lpx;
 	timcon1 = (7 << 24) | (5 * lpx << 16) | ((3 * lpx) / 2) << 8 |
 		  (4 * lpx);
-	timcon2 = ((div_round_up(0x64, cycle_time) + 0xa) << 24) |
-		  (div_round_up(0x150, cycle_time) << 16);
+	timcon2 = ((DIV_ROUND_UP(0x64, cycle_time) + 0xa) << 24) |
+		  (DIV_ROUND_UP(0x150, cycle_time) << 16);
 	timcon3 = (2 * lpx) << 16 |
-		  div_round_up(80 + 52 * ui, cycle_time) << 8 |
-		  div_round_up(0x40, cycle_time);
+		  DIV_ROUND_UP(80 + 52 * ui, cycle_time) << 8 |
+		  DIV_ROUND_UP(0x40, cycle_time);
 
 	dsi_write32(&dsi0->dsi_phy_timecon0, timcon0);
 	dsi_write32(&dsi0->dsi_phy_timecon1, timcon1);

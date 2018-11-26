@@ -98,7 +98,7 @@ void mtk_i2c_bus_init(uint8_t bus)
 
 	/* Calculate i2c frequency */
 	sample_div = 1;
-	step_div = div_round_up(I2C_CLK_HZ, (400 * KHz * sample_div * 2));
+	step_div = DIV_ROUND_UP(I2C_CLK_HZ, (400 * KHz * sample_div * 2));
 	i2c_freq = I2C_CLK_HZ / (step_div * sample_div * 2);
 	assert(sample_div < 8 && step_div < 64 && i2c_freq < 400 * KHz &&
 	       i2c_freq >= 380 * KHz);

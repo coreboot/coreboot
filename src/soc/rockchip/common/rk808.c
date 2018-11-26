@@ -92,13 +92,13 @@ void rk808_configure_ldo(int ldo, int millivolts)
 	case 4:
 	case 5:
 	case 8:
-		vsel = div_round_up(millivolts, 100) - 18;
+		vsel = DIV_ROUND_UP(millivolts, 100) - 18;
 		assert(vsel <= 0x10);
 		break;
 	case 3:
 	case 6:
 	case 7:
-		vsel = div_round_up(millivolts, 100) - 8;
+		vsel = DIV_ROUND_UP(millivolts, 100) - 8;
 		assert(vsel <= 0x11);
 		break;
 	default:
@@ -118,12 +118,12 @@ void rk808_configure_buck(int buck, int millivolts)
 	case 1:
 	case 2:
 		/* 25mV steps. base = 29 * 25mV = 725 */
-		vsel = (div_round_up(millivolts, 25) - 29) * 2 + 1;
+		vsel = (DIV_ROUND_UP(millivolts, 25) - 29) * 2 + 1;
 		assert(vsel <= 0x3f);
 		buck_reg = BUCK1SEL + 4 * (buck - 1);
 		break;
 	case 4:
-		vsel = div_round_up(millivolts, 100) - 18;
+		vsel = DIV_ROUND_UP(millivolts, 100) - 18;
 		assert(vsel <= 0xf);
 		buck_reg = BUCK4SEL;
 		break;

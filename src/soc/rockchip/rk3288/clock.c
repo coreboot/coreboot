@@ -519,15 +519,15 @@ static int pll_para_config(u32 freq_hz, struct pll_div *div, u32 *ext_div)
 		return -1;
 	}
 
-	no = div_round_up(VCO_MIN_KHZ, freq_khz);
+	no = DIV_ROUND_UP(VCO_MIN_KHZ, freq_khz);
 	if (ext_div) {
-		*ext_div = div_round_up(no, max_no);
-		no = div_round_up(no, *ext_div);
+		*ext_div = DIV_ROUND_UP(no, max_no);
+		no = DIV_ROUND_UP(no, *ext_div);
 	}
 
 	/* only even divisors (and 1) are supported */
 	if (no > 1)
-		no = div_round_up(no, 2) * 2;
+		no = DIV_ROUND_UP(no, 2) * 2;
 
 	vco_khz = freq_khz * no;
 	if (ext_div)

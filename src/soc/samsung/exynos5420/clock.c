@@ -345,7 +345,7 @@ int clock_set_dwmci(enum periph_id peripheral)
 	}
 	printk(BIOS_DEBUG, "%s(%d): sdclkin: %ld\n", __func__, device_index, sdclkin);
 
-	cclkin = CEIL_DIV(sdclkin, freq);
+	cclkin = DIV_ROUND_UP(sdclkin, freq);
 	set_mmc_clk(device_index, cclkin);
 	return 0;
 }

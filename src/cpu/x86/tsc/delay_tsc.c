@@ -83,7 +83,7 @@ static unsigned long calibrate_tsc_with_pit(void)
 		if (end.lo <= CALIBRATE_DIVISOR)
 			goto bad_ctc;
 
-		return CEIL_DIV(end.lo, CALIBRATE_DIVISOR);
+		return DIV_ROUND_UP(end.lo, CALIBRATE_DIVISOR);
 	}
 
 	/*

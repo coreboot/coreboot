@@ -644,7 +644,7 @@ static void pctl_cfg(u32 channel,
 static void phy_cfg(u32 channel, const struct rk3288_sdram_params *sdram_params)
 {
 	u32 i;
-	u32 dinit2 = div_round_up(sdram_params->ddr_freq/MHz * 200000, 1000);
+	u32 dinit2 = DIV_ROUND_UP(sdram_params->ddr_freq/MHz * 200000, 1000);
 	struct rk3288_ddr_publ_regs *ddr_publ_regs = rk3288_ddr_publ[channel];
 	struct rk3288_msch_regs *msch_regs = rk3288_msch[channel];
 
@@ -658,14 +658,14 @@ static void phy_cfg(u32 channel, const struct rk3288_sdram_params *sdram_params)
 	write32(&msch_regs->devtodev,
 		BUSWRTORD(2) | BUSRDTOWR(2) | BUSRDTORD(1));
 	write32(&ddr_publ_regs->ptr[0],
-	   PRT_DLLLOCK(div_round_up(sdram_params->ddr_freq / MHz * 5120, 1000))
-	 | PRT_DLLSRST(div_round_up(sdram_params->ddr_freq / MHz * 50, 1000))
+	   PRT_DLLLOCK(DIV_ROUND_UP(sdram_params->ddr_freq / MHz * 5120, 1000))
+	 | PRT_DLLSRST(DIV_ROUND_UP(sdram_params->ddr_freq / MHz * 50, 1000))
 	 | PRT_ITMSRST(8));
 	write32(&ddr_publ_regs->ptr[1],
-	   PRT_DINIT0(div_round_up(sdram_params->ddr_freq / MHz * 500000, 1000))
-	 | PRT_DINIT1(div_round_up(sdram_params->ddr_freq / MHz * 400, 1000)));
+	   PRT_DINIT0(DIV_ROUND_UP(sdram_params->ddr_freq / MHz * 500000, 1000))
+	 | PRT_DINIT1(DIV_ROUND_UP(sdram_params->ddr_freq / MHz * 400, 1000)));
 	write32(&ddr_publ_regs->ptr[2], PRT_DINIT2(MIN(dinit2, 0x1ffff))
-	 | PRT_DINIT3(div_round_up(sdram_params->ddr_freq / MHz * 1000, 1000)));
+	 | PRT_DINIT3(DIV_ROUND_UP(sdram_params->ddr_freq / MHz * 1000, 1000)));
 
 	switch (sdram_params->dramtype) {
 	case LPDDR3:

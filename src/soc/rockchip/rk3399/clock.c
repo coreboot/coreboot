@@ -429,10 +429,10 @@ static int pll_para_config(u32 freq_hz, struct pll_div *div)
 		return -1;
 	}
 
-	postdiv1 = div_round_up(VCO_MIN_KHZ, freq_khz);
+	postdiv1 = DIV_ROUND_UP(VCO_MIN_KHZ, freq_khz);
 	if (postdiv1 > max_postdiv1) {
-		postdiv2 = div_round_up(postdiv1, max_postdiv1);
-		postdiv1 = div_round_up(postdiv1, postdiv2);
+		postdiv2 = DIV_ROUND_UP(postdiv1, max_postdiv1);
+		postdiv1 = DIV_ROUND_UP(postdiv1, postdiv2);
 	}
 
 	vco_khz = freq_khz * postdiv1 * postdiv2;
@@ -605,9 +605,9 @@ void rkclk_configure_cpu(enum apll_frequencies freq, enum cpu_cluster cluster)
 	apll_hz = apll_cfgs[freq]->freq;
 	rkclk_set_pll(pll_con, apll_cfgs[freq]);
 
-	aclkm_div = div_round_up(apll_hz, ACLKM_CORE_HZ) - 1;
-	pclk_dbg_div = div_round_up(apll_hz, PCLK_DBG_HZ) - 1;
-	atclk_div = div_round_up(apll_hz, ATCLK_CORE_HZ) - 1;
+	aclkm_div = DIV_ROUND_UP(apll_hz, ACLKM_CORE_HZ) - 1;
+	pclk_dbg_div = DIV_ROUND_UP(apll_hz, PCLK_DBG_HZ) - 1;
+	atclk_div = DIV_ROUND_UP(apll_hz, ATCLK_CORE_HZ) - 1;
 
 	write32(&cru_ptr->clksel_con[con_base],
 		RK_CLRSETBITS(ACLKM_CORE_DIV_CON_MASK <<

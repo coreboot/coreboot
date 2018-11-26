@@ -602,7 +602,7 @@ static void calculate_timings(struct raminfo *info)
 			break;
 		}
 	}
-	min_cas_latency = CEIL_DIV(cas_latency_time, cycletime);
+	min_cas_latency = DIV_ROUND_UP(cas_latency_time, cycletime);
 	cas_latency = 0;
 	while (supported_cas_latencies) {
 		cas_latency = find_highest_bit_set(supported_cas_latencies) + 3;
@@ -3231,7 +3231,7 @@ static unsigned gcd(unsigned a, unsigned b)
 
 static inline int div_roundup(int a, int b)
 {
-	return CEIL_DIV(a, b);
+	return DIV_ROUND_UP(a, b);
 }
 
 static unsigned lcm(unsigned a, unsigned b)

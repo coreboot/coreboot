@@ -361,8 +361,6 @@ static void collect_ddr3(sysinfo_t *const sysinfo, spdinfo_t *const config)
 	}
 }
 
-#define ROUNDUP_DIV(val, by) CEIL_DIV(val, by)
-#define ROUNDUP_DIV_THIS(val, by) val = ROUNDUP_DIV(val, by)
 static fsb_clock_t read_fsb_clock(void)
 {
 	switch (MCHBAR32(CLKCFG_MCHBAR) & CLKCFG_FSBCLK_MASK) {
@@ -452,7 +450,7 @@ static unsigned int find_common_clock_cas(sysinfo_t *const sysinfo,
 		if (!clock)
 			die("Couldn't find compatible clock / CAS settings.\n");
 		tCKproposed = 8000 / clock;
-		CAS = ROUNDUP_DIV(tAAmin, tCKproposed);
+		CAS = DIV_ROUND_UP(tAAmin, tCKproposed);
 		printk(BIOS_SPEW, "Trying CAS %u, tCK %u.\n", CAS, tCKproposed);
 		for (; CAS <= DDR3_MAX_CAS; ++CAS)
 			if (cas_latencies & (1 << CAS))
@@ -488,10 +486,10 @@ static void calculate_derived_timings(sysinfo_t *const sysinfo,
 		if (spdinfo->channel[i].tWR > tWRmin)
 			tWRmin = spdinfo->channel[i].tWR;
 	}
-	ROUNDUP_DIV_THIS(tRASmin, tCLK);
-	ROUNDUP_DIV_THIS(tRPmin, tCLK);
-	ROUNDUP_DIV_THIS(tRCDmin, tCLK);
-	ROUNDUP_DIV_THIS(tWRmin, tCLK);
+	tRASmin = DIV_ROUND_UP(tRASmin, tCLK);
+	tRPmin = DIV_ROUND_UP(tRPmin, tCLK);
+	tRCDmin = DIV_ROUND_UP(tRCDmin, tCLK);
+	tWRmin = DIV_ROUND_UP(tWRmin, tCLK);
 
 	/* Lookup tRFC and calculate common tRFCmin. */
 	const unsigned int tRFC_from_clock_and_cap[][4] = {

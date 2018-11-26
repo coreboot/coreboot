@@ -36,7 +36,6 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #endif
 #define ABS(a) (((a) < 0) ? (-(a)) : (a))
-#define CEIL_DIV(a, b)  (((a) + (b) - 1) / (b))
 #define IS_POWER_OF_2(x)  (((x) & ((x) - 1)) == 0)
 #define DIV_ROUND_UP(x, y)  (((x) + (y) - 1) / (y))
 /*

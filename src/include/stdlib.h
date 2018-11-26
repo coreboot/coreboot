@@ -11,12 +11,4 @@ void *malloc(size_t size);
 /* We never free memory */
 static inline void free(void *ptr) {}
 
-#ifndef __ROMCC__
-static inline unsigned long div_round_up(unsigned int n, unsigned int d)
-{
-	return (n + d - 1) / d;
-}
-#endif
-
-
 #endif /* STDLIB_H */

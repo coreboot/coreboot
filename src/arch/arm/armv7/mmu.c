@@ -236,7 +236,7 @@ void mmu_disable_range_kb(u32 start_kb, u32 size_kb)
 	printk(BIOS_DEBUG, "Setting address range [%#.8x:%#.8x) as unmapped\n",
 	       start_kb * KiB, (start_kb + size_kb) * KiB);
 	mmu_fill_table(table, (start_kb & mask) / (PAGE_SIZE/KiB),
-		       div_round_up((start_kb + size_kb) & mask, PAGE_SIZE/KiB),
+		       DIV_ROUND_UP((start_kb + size_kb) & mask, PAGE_SIZE/KiB),
 		       (start_kb & ~mask) * KiB, PAGE_SHIFT, 0);
 }
 
@@ -246,7 +246,7 @@ void mmu_disable_range(u32 start_mb, u32 size_mb)
 	       start_mb * MiB, (start_mb + size_mb) * MiB);
 	assert(start_mb + size_mb <= 4 * (GiB/MiB));
 	mmu_fill_table(ttb_buff, start_mb / (BLOCK_SIZE/MiB),
-		       div_round_up(start_mb + size_mb, BLOCK_SIZE/MiB),
+		       DIV_ROUND_UP(start_mb + size_mb, BLOCK_SIZE/MiB),
 		       0, BLOCK_SHIFT, 0);
 }
 
@@ -256,7 +256,7 @@ void mmu_config_range(u32 start_mb, u32 size_mb, enum dcache_policy policy)
 	       start_mb * MiB, (start_mb + size_mb) * MiB, attrs[policy].name);
 	assert(start_mb + size_mb <= 4 * (GiB/MiB));
 	mmu_fill_table(ttb_buff, start_mb / (BLOCK_SIZE/MiB),
-		       div_round_up(start_mb + size_mb, BLOCK_SIZE/MiB),
+		       DIV_ROUND_UP(start_mb + size_mb, BLOCK_SIZE/MiB),
 		       0, BLOCK_SHIFT, ATTR_BLOCK | attrs[policy].value);
 }
 

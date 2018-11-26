@@ -62,11 +62,11 @@ void mtk_spi_init(unsigned int bus, enum spi_pad_mask pad_select,
 	struct mtk_spi_regs *regs = slave->regs;
 
 	if (speed_hz < SPI_HZ / 2)
-		div = div_round_up(SPI_HZ, speed_hz);
+		div = DIV_ROUND_UP(SPI_HZ, speed_hz);
 	else
 		div = 1;
 
-	sck_ticks = div_round_up(div, 2);
+	sck_ticks = DIV_ROUND_UP(div, 2);
 	cs_ticks = sck_ticks * 2;
 
 	printk(BIOS_DEBUG, "SPI%u(PAD%u) initialized at %u Hz\n",
@@ -153,7 +153,7 @@ static int do_transfer(const struct spi_slave *slave, void *in, const void *out,
 		 * therefore we need arbitrary data on MOSI which the slave
 		 * must ignore.
 		 */
-		uint32_t word_count = div_round_up(size, sizeof(u32));
+		uint32_t word_count = DIV_ROUND_UP(size, sizeof(u32));
 		for (i = 0; i < word_count; i++)
 			write32(&regs->spi_tx_data_reg, MTK_ARBITRARY_VALUE);
 	}

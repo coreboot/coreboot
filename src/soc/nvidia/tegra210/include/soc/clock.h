@@ -289,7 +289,7 @@ enum {
  * and voila, upper 7 bits are (ref/freq-1), and lowest bit is h. Since you
  * will assign this to a u8, it gets nicely truncated for you.
  */
-#define CLK_DIVIDER(REF, FREQ)	(div_round_up(((REF) * 2), (FREQ)) - 2)
+#define CLK_DIVIDER(REF, FREQ)	(DIV_ROUND_UP(((REF) * 2), (FREQ)) - 2)
 
 /* Calculate clock frequency value from reference and clock divider value
  * The discussion in the book is pretty lacking.
@@ -324,7 +324,8 @@ static inline void _clock_set_div(u32 *reg, const char *name, u32 div,
 			src << CLK_SOURCE_SHIFT | div);
 }
 
-#define get_i2c_clk_div(src,freq) (div_round_up(src, (freq) * (0x19 + 1) * 8) - 1)
+#define get_i2c_clk_div(src, freq)	\
+				(DIV_ROUND_UP(src, (freq) * (0x19 + 1) * 8) - 1)
 #define get_clk_div(src,freq)     CLK_DIVIDER(src,freq)
 #define CLK_DIV_MASK              0xff
 #define CLK_DIV_MASK_I2C          0xffff

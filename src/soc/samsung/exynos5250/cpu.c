@@ -112,7 +112,7 @@ static void cpu_enable(struct device *dev)
 	u32 lcdbase = get_fb_base_kb() * KiB;
 
 	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB - FB_SIZE_KB);
-	mmio_resource(dev, 1, lcdbase / KiB, CEIL_DIV(fb_size, KiB));
+	mmio_resource(dev, 1, lcdbase / KiB, DIV_ROUND_UP(fb_size, KiB));
 
 	exynos_displayport_init(dev, lcdbase, fb_size);
 

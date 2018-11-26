@@ -45,7 +45,7 @@ static void rk_mipi_dsi_wait_for_two_frames(struct rk_mipi_dsi *dsi,
 	int two_frames;
 	unsigned int refresh = edid->mode.refresh;
 
-	two_frames = div_round_up(MSECS_PER_SEC * 2, refresh);
+	two_frames = DIV_ROUND_UP(MSECS_PER_SEC * 2, refresh);
 	mdelay(two_frames);
 }
 
@@ -158,7 +158,7 @@ static int rk_mipi_dsi_wait_phy_lock(struct rk_mipi_dsi *dsi)
 static int rk_mipi_dsi_phy_init(struct rk_mipi_dsi *dsi)
 {
 	int i, vco, val;
-	int lane_mbps = div_round_up(dsi->lane_bps, USECS_PER_SEC);
+	int lane_mbps = DIV_ROUND_UP(dsi->lane_bps, USECS_PER_SEC);
 	struct stopwatch sw;
 
 	vco = (lane_mbps < 200) ? 0 : (lane_mbps + 100) / 200;
@@ -318,7 +318,7 @@ static int rk_mipi_dsi_get_lane_bps(struct rk_mipi_dsi *dsi,
 	fref = OSC_HZ;
 
 	/* constraint: 5Mhz <= Fref / N <= 40MHz */
-	min_prediv = div_round_up(fref, 40 * MHz);
+	min_prediv = DIV_ROUND_UP(fref, 40 * MHz);
 	max_prediv = fref / (5 * MHz);
 
 	/* constraint: 80MHz <= Fvco <= 1500Mhz */
@@ -441,7 +441,7 @@ static u32 rk_mipi_dsi_get_hcomponent_lbcc(struct rk_mipi_dsi *dsi,
 	u64 lbcc_tmp;
 
 	lbcc_tmp = hcomponent * dsi->lane_bps / (8 * MSECS_PER_SEC);
-	lbcc = div_round_up(lbcc_tmp, edid->mode.pixel_clock);
+	lbcc = DIV_ROUND_UP(lbcc_tmp, edid->mode.pixel_clock);
 
 	return lbcc;
 }
@@ -532,7 +532,7 @@ static void rk_mipi_dsi_init(struct rk_mipi_dsi *dsi)
 	 * which is:
 	 *     (lane_mbps >> 3) / 20 > esc_clk_division
 	 */
-	u32 esc_clk_division = div_round_up(dsi->lane_bps,
+	u32 esc_clk_division = DIV_ROUND_UP(dsi->lane_bps,
 					    8 * 20 * USECS_PER_SEC);
 
 	write32(&dsi->mipi_regs->dsi_pwr_up, RESET);

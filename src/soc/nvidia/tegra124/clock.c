@@ -247,17 +247,17 @@ static void init_utmip_pll(void)
 		 1 <<  8);			/* (rst) phy_divm */
 
 	write32(&clk_rst->utmip_pll_cfg1,
-		CEIL_DIV(khz, 8000) << 27 |	/* pllu_enbl_cnt / 8 (1us) */
+		DIV_ROUND_UP(khz, 8000) << 27 |	/* pllu_enbl_cnt / 8 (1us) */
 				  0 << 16 |	/* PLLU pwrdn */
 				  0 << 14 |	/* pll_enable pwrdn */
 				  0 << 12 |	/* pll_active pwrdn */
-		 CEIL_DIV(khz, 102) << 0);	/* phy_stbl_cnt / 256 (2.5ms) */
+		 DIV_ROUND_UP(khz, 102) << 0);	/* phy_stbl_cnt / 256 (2.5ms) */
 
 	/* TODO: TRM can't decide if actv is 5us or 10us, keep an eye on it */
 	write32(&clk_rst->utmip_pll_cfg2,
 				  0 << 24 |	/* SAMP_D/XDEV pwrdn */
-		CEIL_DIV(khz, 3200) << 18 |	/* phy_actv_cnt / 16 (5us) */
-		 CEIL_DIV(khz, 256) <<  6 |	/* pllu_stbl_cnt / 256 (1ms) */
+		DIV_ROUND_UP(khz, 3200) << 18 |	/* phy_actv_cnt / 16 (5us) */
+		 DIV_ROUND_UP(khz, 256) <<  6 |	/* pllu_stbl_cnt / 256 (1ms) */
 				  0 <<  4 |	/* SAMP_C/USB3 pwrdn */
 				  0 <<  2 |	/* SAMP_B/XHOST pwrdn */
 				  0 <<  0);	/* SAMP_A/USBD pwrdn */

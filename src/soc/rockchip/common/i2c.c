@@ -280,7 +280,7 @@ void i2c_init(unsigned int bus, unsigned int hz)
 
 	/* SCL Divisor = 8*(CLKDIVL + 1 + CLKDIVH + 1)
 	   SCL = PCLK / SCLK Divisor */
-	clk_div = div_round_up(i2c_src_clk, hz * 8);
+	clk_div = DIV_ROUND_UP(i2c_src_clk, hz * 8);
 	divh = clk_div * 3 / 7 - 1;
 	divl = clk_div - divh - 2;
 	i2c_clk = i2c_src_clk / (8 * (divl + 1 + divh + 1));

@@ -330,7 +330,7 @@ static void init_utmip_pll(void)
 
 	/* CFG1 */
 	u32 pllu_enb_ct = 0;
-	u32 phy_stb_ct = div_round_up(khz, 300);  /* phy_stb_ct = 128 */
+	u32 phy_stb_ct = DIV_ROUND_UP(khz, 300);  /* phy_stb_ct = 128 */
 	write32(CLK_RST_REG(utmip_pll_cfg1),
 		pllu_enb_ct << UTMIP_CFG1_PLLU_ENABLE_DLY_COUNT_SHIFT |
 		UTMIP_CFG1_FORCE_PLLU_POWERDOWN_ENABLE |
@@ -341,7 +341,7 @@ static void init_utmip_pll(void)
 
 	/* CFG2 */
 	u32 pllu_stb_ct = 0;
-	u32 phy_act_ct = div_round_up(khz, 6400); /* phy_act_ct = 6 */
+	u32 phy_act_ct = DIV_ROUND_UP(khz, 6400); /* phy_act_ct = 6 */
 	write32(CLK_RST_REG(utmip_pll_cfg2),
 		phy_act_ct << UTMIP_CFG2_PLL_ACTIVE_DLY_COUNT_SHIFT |
 		pllu_stb_ct << UTMIP_CFG2_PLLU_STABLE_COUNT_SHIFT |

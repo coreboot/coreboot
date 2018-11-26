@@ -247,9 +247,9 @@ void a1x_set_cpu_clock(u16 cpu_clk_mhz)
 	 * will always be in spec, as long as AHB is in spec, although the max
 	 * AHB0 clock we can get is 125 MHz
 	 */
-	axi = CEIL_DIV(actual_mhz, 450);	/* Max 450 MHz */
-	ahb = CEIL_DIV(actual_mhz/axi, 250);	/* Max 250 MHz */
-	apb0 = 2;				/* Max 150 MHz */
+	axi = DIV_ROUND_UP(actual_mhz, 450);		/* Max 450 MHz */
+	ahb = DIV_ROUND_UP(actual_mhz/axi, 250);	/* Max 250 MHz */
+	apb0 = 2;					/* Max 150 MHz */
 
 	ahb_exp = log2_ceil(ahb);
 	ahb = 1 << ahb_exp;

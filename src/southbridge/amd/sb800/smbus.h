@@ -16,8 +16,6 @@
 #ifndef SB800_SMBUS_H
 #define SB800_SMBUS_H
 
-//#include <stdint.h>
-
 #define SMBHSTSTAT 0x0
 #define SMBSLVSTAT 0x1
 #define SMBHSTCTRL 0x2

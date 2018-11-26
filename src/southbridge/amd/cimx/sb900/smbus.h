@@ -16,8 +16,6 @@
 #ifndef _SB900_SMBUS_H_
 #define _SB900_SMBUS_H_
 
-//#include <stdint.h>
-
 #define SMBUS_IO_BASE	SMBUS0_BASE_ADDRESS
 
 #define SMBHSTSTAT 0x0

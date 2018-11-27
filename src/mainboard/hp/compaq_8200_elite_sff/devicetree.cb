@@ -52,7 +52,7 @@ chip northbridge/intel/sandybridge
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"
 			register "pcie_port_coalesce" = "1"
 			register "sata_interface_speed_support" = "0x3"
-			register "sata_port_map" = "0x13"
+			register "sata_port_map" = "0xf"
 			register "spi_lvscc" = "0x2005"
 			register "spi_uvscc" = "0x0"
 			device pci 16.0 on # Management Engine Interface 1

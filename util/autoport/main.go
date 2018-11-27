@@ -548,7 +548,7 @@ func makeKconfig(ctx Context) {
 
 	fmt.Fprintf(kc, "if %s\n\n", ctx.KconfigName)
 
-	fmt.Fprintf(kc, "config BOARD_SPECIFIC_OPTIONS # dummy\n\tdef_bool y\n")
+	fmt.Fprintf(kc, "config BOARD_SPECIFIC_OPTIONS\n\tdef_bool y\n")
 	keys := []string{}
 	for name, val := range KconfigBool {
 		if val {

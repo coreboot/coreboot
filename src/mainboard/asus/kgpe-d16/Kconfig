@@ -1,6 +1,6 @@
 if BOARD_ASUS_KGPE_D16
 
-config BOARD_SPECIFIC_OPTIONS # dummy
+config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select CPU_AMD_SOCKET_G34_NON_AGESA
 	select DIMM_DDR3

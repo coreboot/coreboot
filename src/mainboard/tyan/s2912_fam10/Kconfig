@@ -1,6 +1,6 @@
 if BOARD_TYAN_S2912_FAM10
 
-config BOARD_SPECIFIC_OPTIONS # dummy
+config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select CPU_AMD_SOCKET_F_1207
 	select DIMM_DDR2

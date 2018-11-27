@@ -1,6 +1,6 @@
 if BOARD_GIGABYTE_MA785GM
 
-config BOARD_SPECIFIC_OPTIONS # dummy
+config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select CPU_AMD_SOCKET_AM3
 	select DIMM_DDR2

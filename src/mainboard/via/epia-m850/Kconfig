@@ -16,7 +16,7 @@
 
 if BOARD_VIA_EPIA_M850
 
-config BOARD_SPECIFIC_OPTIONS # dummy
+config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select CPU_VIA_NANO
 	select NORTHBRIDGE_VIA_VX900

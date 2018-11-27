@@ -14,7 +14,7 @@
 ##
 if BOARD_ASUS_P2B
 
-config BOARD_SPECIFIC_OPTIONS # dummy
+config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select CPU_INTEL_SLOT_1
 	select NORTHBRIDGE_INTEL_I440BX

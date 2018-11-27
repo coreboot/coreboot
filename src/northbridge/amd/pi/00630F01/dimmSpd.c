@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <commonlib/helpers.h>
 #include <device/pci_def.h>
 #include <device/device.h>
 
@@ -23,8 +24,6 @@
 
 #include <northbridge/amd/pi/dimmSpd.h>
 
-#define DIMENSION(array)(sizeof(array)/ sizeof(array [0]))
-
 AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINTN unused2, AGESA_READ_SPD_PARAMS *info)
 {
 	int spdAddress;
@@ -34,11 +33,11 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINTN unused2, AGESA_READ_SPD_PAR
 	if ((dev == 0) || (config == 0))
 		return AGESA_ERROR;
 
-	if (info->SocketId     >= DIMENSION(config->spdAddrLookup     ))
+	if (info->SocketId >= ARRAY_SIZE(config->spdAddrLookup))
 		return AGESA_ERROR;
-	if (info->MemChannelId >= DIMENSION(config->spdAddrLookup[0]  ))
+	if (info->MemChannelId >= ARRAY_SIZE(config->spdAddrLookup[0]))
 		return AGESA_ERROR;
-	if (info->DimmId       >= DIMENSION(config->spdAddrLookup[0][0]))
+	if (info->DimmId >= ARRAY_SIZE(config->spdAddrLookup[0][0]))
 		return AGESA_ERROR;
 
 	spdAddress = config->spdAddrLookup

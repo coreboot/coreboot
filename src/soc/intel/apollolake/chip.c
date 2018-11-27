@@ -609,6 +609,21 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	memcpy(silconfig->PcieRpHotPlug, cfg->pcie_rp_hotplug_enable,
 	       sizeof(silconfig->PcieRpHotPlug));
 
+	switch (cfg->serirq_mode) {
+	case SERIRQ_QUIET:
+		silconfig->SirqEnable = 1;
+		silconfig->SirqMode = 0;
+		break;
+	case SERIRQ_CONTINUOUS:
+		silconfig->SirqEnable = 1;
+		silconfig->SirqMode = 1;
+		break;
+	case SERIRQ_OFF:
+	default:
+		silconfig->SirqEnable = 0;
+		break;
+	}
+
 	if (cfg->emmc_tx_cmd_cntl != 0)
 		silconfig->EmmcTxCmdCntl = cfg->emmc_tx_cmd_cntl;
 	if (cfg->emmc_tx_data_cntl1 != 0)

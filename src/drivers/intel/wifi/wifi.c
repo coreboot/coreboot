@@ -306,8 +306,8 @@ struct device_operations device_ops = {
 #endif
 	.ops_pci                  = &pci_ops,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	.acpi_name                = &intel_wifi_acpi_name,
-	.acpi_fill_ssdt_generator = &intel_wifi_fill_ssdt,
+	.acpi_name                = intel_wifi_acpi_name,
+	.acpi_fill_ssdt_generator = intel_wifi_fill_ssdt,
 #endif
 };
 
@@ -366,5 +366,5 @@ static void intel_wifi_enable(struct device *dev)
 
 struct chip_operations drivers_intel_wifi_ops = {
 	CHIP_NAME("Intel WiFi")
-	.enable_dev = &intel_wifi_enable
+	.enable_dev = intel_wifi_enable
 };

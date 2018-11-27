@@ -85,8 +85,8 @@ static struct device_operations i2c_sx9310_ops = {
 	.read_resources		  = DEVICE_NOOP,
 	.set_resources		  = DEVICE_NOOP,
 	.enable_resources	  = DEVICE_NOOP,
-	.acpi_name		  = &i2c_sx9310_acpi_name,
-	.acpi_fill_ssdt_generator = &i2c_sx9310_fill_ssdt,
+	.acpi_name		  = i2c_sx9310_acpi_name,
+	.acpi_fill_ssdt_generator = i2c_sx9310_fill_ssdt,
 };
 
 static void i2c_sx9310_enable(struct device *dev)
@@ -106,5 +106,5 @@ static void i2c_sx9310_enable(struct device *dev)
 
 struct chip_operations drivers_i2c_sx9310_ops = {
 	CHIP_NAME(I2C_SX9310_ACPI_NAME)
-	.enable_dev = &i2c_sx9310_enable
+	.enable_dev = i2c_sx9310_enable
 };

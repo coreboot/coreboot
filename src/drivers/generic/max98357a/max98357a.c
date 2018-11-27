@@ -77,8 +77,8 @@ static struct device_operations max98357a_ops = {
 	.set_resources		  = DEVICE_NOOP,
 	.enable_resources	  = DEVICE_NOOP,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	.acpi_name                = &max98357a_acpi_name,
-	.acpi_fill_ssdt_generator = &max98357a_fill_ssdt,
+	.acpi_name                = max98357a_acpi_name,
+	.acpi_fill_ssdt_generator = max98357a_fill_ssdt,
 #endif
 };
 
@@ -105,5 +105,5 @@ static void max98357a_enable(struct device *dev)
 
 struct chip_operations drivers_generic_max98357a_ops = {
 	CHIP_NAME("Maxim Integrated 98357A Amplifier")
-	.enable_dev = &max98357a_enable
+	.enable_dev = max98357a_enable
 };

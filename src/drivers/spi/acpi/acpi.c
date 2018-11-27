@@ -205,8 +205,8 @@ static struct device_operations spi_acpi_ops = {
 	.read_resources		  = DEVICE_NOOP,
 	.set_resources		  = DEVICE_NOOP,
 	.enable_resources	  = DEVICE_NOOP,
-	.acpi_name		  = &spi_acpi_name,
-	.acpi_fill_ssdt_generator = &spi_acpi_fill_ssdt_generator,
+	.acpi_name		  = spi_acpi_name,
+	.acpi_fill_ssdt_generator = spi_acpi_fill_ssdt_generator,
 };
 
 static void spi_acpi_enable(struct device *dev)
@@ -216,5 +216,5 @@ static void spi_acpi_enable(struct device *dev)
 
 struct chip_operations drivers_spi_acpi_ops = {
 	CHIP_NAME("SPI Device")
-	.enable_dev = &spi_acpi_enable
+	.enable_dev = spi_acpi_enable
 };

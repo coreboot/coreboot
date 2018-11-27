@@ -75,8 +75,8 @@ static struct device_operations gpio_regulator_ops = {
 	.read_resources = DEVICE_NOOP,
 	.set_resources = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
-	.acpi_name = &gpio_regulator_acpi_name,
-	.acpi_fill_ssdt_generator = &gpio_regulator_fill_ssdt_generator,
+	.acpi_name = gpio_regulator_acpi_name,
+	.acpi_fill_ssdt_generator = gpio_regulator_fill_ssdt_generator,
 };
 
 static void gpio_regulator_enable(struct device *dev)
@@ -86,5 +86,5 @@ static void gpio_regulator_enable(struct device *dev)
 
 struct chip_operations drivers_generic_gpio_regulator_ops = {
 	CHIP_NAME("GPIO Regulator")
-	.enable_dev = &gpio_regulator_enable
+	.enable_dev = gpio_regulator_enable
 };

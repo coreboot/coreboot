@@ -91,8 +91,8 @@ static struct device_operations rt5663_ops = {
 	.read_resources			= DEVICE_NOOP,
 	.set_resources			= DEVICE_NOOP,
 	.enable_resources		= DEVICE_NOOP,
-	.acpi_name			= &rt5663_acpi_name,
-	.acpi_fill_ssdt_generator	= &rt5663_fill_ssdt,
+	.acpi_name			= rt5663_acpi_name,
+	.acpi_fill_ssdt_generator	= rt5663_fill_ssdt,
 };
 
 static void rt5663_enable(struct device *dev)
@@ -102,5 +102,5 @@ static void rt5663_enable(struct device *dev)
 
 struct chip_operations drivers_i2c_rt5663_ops = {
 	CHIP_NAME("Realtek RT5663 Codec")
-	.enable_dev = &rt5663_enable
+	.enable_dev = rt5663_enable
 };

@@ -116,8 +116,8 @@ static struct device_operations gpio_keys_ops = {
 	.read_resources			= DEVICE_NOOP,
 	.set_resources			= DEVICE_NOOP,
 	.enable_resources		= DEVICE_NOOP,
-	.acpi_name			= &gpio_keys_acpi_name,
-	.acpi_fill_ssdt_generator	= &gpio_keys_fill_ssdt_generator,
+	.acpi_name			= gpio_keys_acpi_name,
+	.acpi_fill_ssdt_generator	= gpio_keys_fill_ssdt_generator,
 };
 
 static void gpio_keys_enable(struct device *dev)
@@ -127,5 +127,5 @@ static void gpio_keys_enable(struct device *dev)
 
 struct chip_operations drivers_generic_gpio_keys_ops = {
 	CHIP_NAME("GPIO Keys")
-	.enable_dev = &gpio_keys_enable
+	.enable_dev = gpio_keys_enable
 };

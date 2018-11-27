@@ -83,8 +83,8 @@ static struct device_operations generic_dev_ops = {
 	.read_resources			= DEVICE_NOOP,
 	.set_resources			= DEVICE_NOOP,
 	.enable_resources		= DEVICE_NOOP,
-	.acpi_name			= &generic_dev_acpi_name,
-	.acpi_fill_ssdt_generator	= &generic_dev_fill_ssdt_generator,
+	.acpi_name			= generic_dev_acpi_name,
+	.acpi_fill_ssdt_generator	= generic_dev_fill_ssdt_generator,
 };
 
 static void generic_dev_enable(struct device *dev)
@@ -94,5 +94,5 @@ static void generic_dev_enable(struct device *dev)
 
 struct chip_operations drivers_generic_generic_ops = {
 	CHIP_NAME("Generic Device")
-	.enable_dev = &generic_dev_enable
+	.enable_dev = generic_dev_enable
 };

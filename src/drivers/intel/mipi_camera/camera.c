@@ -84,8 +84,8 @@ static struct device_operations camera_ops = {
 	.read_resources			= DEVICE_NOOP,
 	.set_resources			= DEVICE_NOOP,
 	.enable_resources		= DEVICE_NOOP,
-	.acpi_name			= &camera_acpi_name,
-	.acpi_fill_ssdt_generator	= &camera_fill_ssdt,
+	.acpi_name			= camera_acpi_name,
+	.acpi_fill_ssdt_generator	= camera_fill_ssdt,
 };
 
 static void camera_enable(struct device *dev)
@@ -95,5 +95,5 @@ static void camera_enable(struct device *dev)
 
 struct chip_operations drivers_intel_mipi_camera_ops = {
 	CHIP_NAME("Intel MIPI Camera Device")
-	.enable_dev = &camera_enable
+	.enable_dev = camera_enable
 };

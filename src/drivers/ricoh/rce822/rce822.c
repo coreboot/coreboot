@@ -51,7 +51,7 @@ static void rce822_set_subsystem(struct device *dev, unsigned int vendor,
 }
 
 static struct pci_operations lops_pci = {
-	.set_subsystem	= &rce822_set_subsystem,
+	.set_subsystem	= rce822_set_subsystem,
 };
 
 static struct device_operations rce822_ops = {

@@ -114,8 +114,8 @@ static struct device_operations da7219_ops = {
 	.set_resources		  = DEVICE_NOOP,
 	.enable_resources	  = DEVICE_NOOP,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	.acpi_name		  = &da7219_acpi_name,
-	.acpi_fill_ssdt_generator = &da7219_fill_ssdt,
+	.acpi_name		  = da7219_acpi_name,
+	.acpi_fill_ssdt_generator = da7219_fill_ssdt,
 #endif
 };
 
@@ -126,5 +126,5 @@ static void da7219_enable(struct device *dev)
 
 struct chip_operations drivers_i2c_da7219_ops = {
 	CHIP_NAME("Dialog Semiconductor DA7219 Audio Codec")
-	.enable_dev = &da7219_enable
+	.enable_dev = da7219_enable
 };

@@ -68,5 +68,5 @@ static void lenovo_hybrid_graphics_enable(struct device *dev)
 
 struct chip_operations drivers_lenovo_hybrid_graphics_ops = {
 	CHIP_NAME("Lenovo hybrid graphics driver")
-	.enable_dev = &lenovo_hybrid_graphics_enable
+	.enable_dev = lenovo_hybrid_graphics_enable
 };

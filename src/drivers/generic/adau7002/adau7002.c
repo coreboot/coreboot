@@ -72,8 +72,8 @@ static struct device_operations adau7002_ops = {
 	.set_resources			= DEVICE_NOOP,
 	.enable_resources		= DEVICE_NOOP,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	.acpi_name			= &adau7002_acpi_name,
-	.acpi_fill_ssdt_generator	= &adau7002_fill_ssdt,
+	.acpi_name			= adau7002_acpi_name,
+	.acpi_fill_ssdt_generator	= adau7002_fill_ssdt,
 #endif
 };
 
@@ -84,5 +84,5 @@ static void adau7002_enable(struct device *dev)
 
 struct chip_operations drivers_generic_adau7002_ops = {
 	CHIP_NAME("Analog Digital DMIC")
-	.enable_dev = &adau7002_enable
+	.enable_dev = adau7002_enable
 };

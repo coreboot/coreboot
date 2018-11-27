@@ -979,11 +979,11 @@ static const char *lpc_tpm_acpi_name(const struct device *dev)
 #endif
 
 static struct device_operations lpc_tpm_ops = {
-	.read_resources   = &lpc_tpm_read_resources,
-	.set_resources    = &lpc_tpm_set_resources,
+	.read_resources   = lpc_tpm_read_resources,
+	.set_resources    = lpc_tpm_set_resources,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	.acpi_name		= &lpc_tpm_acpi_name,
-	.acpi_fill_ssdt_generator = &lpc_tpm_fill_ssdt,
+	.acpi_name		= lpc_tpm_acpi_name,
+	.acpi_fill_ssdt_generator = lpc_tpm_fill_ssdt,
 #endif
 };
 

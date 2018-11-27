@@ -86,8 +86,8 @@ static struct device_operations usb_acpi_ops = {
 	.read_resources			= DEVICE_NOOP,
 	.set_resources			= DEVICE_NOOP,
 	.enable_resources		= DEVICE_NOOP,
-	.scan_bus			= &scan_usb_bus,
-	.acpi_fill_ssdt_generator	= &usb_acpi_fill_ssdt_generator,
+	.scan_bus			= scan_usb_bus,
+	.acpi_fill_ssdt_generator	= usb_acpi_fill_ssdt_generator,
 };
 
 static void usb_acpi_enable(struct device *dev)
@@ -97,5 +97,5 @@ static void usb_acpi_enable(struct device *dev)
 
 struct chip_operations drivers_usb_acpi_ops = {
 	CHIP_NAME("USB ACPI Device")
-	.enable_dev = &usb_acpi_enable
+	.enable_dev = usb_acpi_enable
 };

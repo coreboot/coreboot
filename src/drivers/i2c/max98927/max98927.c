@@ -87,8 +87,8 @@ static struct device_operations max98927_ops = {
 	.read_resources		  = DEVICE_NOOP,
 	.set_resources		  = DEVICE_NOOP,
 	.enable_resources	  = DEVICE_NOOP,
-	.acpi_name		  = &max98927_acpi_name,
-	.acpi_fill_ssdt_generator = &max98927_fill_ssdt,
+	.acpi_name		  = max98927_acpi_name,
+	.acpi_fill_ssdt_generator = max98927_fill_ssdt,
 };
 
 static void max98927_enable(struct device *dev)
@@ -104,5 +104,5 @@ static void max98927_enable(struct device *dev)
 
 struct chip_operations drivers_i2c_max98927_ops = {
 	CHIP_NAME("Maxim MAX98927 Codec")
-	.enable_dev = &max98927_enable
+	.enable_dev = max98927_enable
 };

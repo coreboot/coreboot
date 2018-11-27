@@ -88,8 +88,12 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 	current_rev = read_microcode_rev();
 
 	/* No use loading the same revision. */
-	if (current_rev == m->rev)
+	if (current_rev == m->rev) {
+#if !defined(__ROMCC__)
+		printk(BIOS_INFO, "microcode: Update skipped, already up-to-date\n");
+#endif
 		return;
+	}
 
 #if ENV_RAMSTAGE
 	/*SoC specific check to update microcode*/
@@ -103,11 +107,19 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 	msr.hi = 0;
 	wrmsr(IA32_BIOS_UPDT_TRIG, msr);
 
+	current_rev = read_microcode_rev();
+	if (current_rev == m->rev) {
 #if !defined(__ROMCC__)
-	printk(BIOS_DEBUG, "microcode: updated to revision "
+		printk(BIOS_INFO, "microcode: updated to revision "
 		    "0x%x date=%04x-%02x-%02x\n", read_microcode_rev(),
 		    m->date & 0xffff, (m->date >> 24) & 0xff,
 		    (m->date >> 16) & 0xff);
+#endif
+		return;
+	}
+
+#if !defined(__ROMCC__)
+	printk(BIOS_INFO, "microcode: Update failed\n");
 #endif
 }
 

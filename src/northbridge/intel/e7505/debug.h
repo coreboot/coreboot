@@ -22,6 +22,5 @@ void dump_pci_devices_on_bus(unsigned busn);
 void dump_spd_registers(const struct mem_controller *ctrl);
 void dump_smbus_registers(void);
 void dump_io_resources(unsigned port);
-void dump_mem(unsigned start, unsigned end);
 
 #endif

@@ -219,7 +219,6 @@ void print_pci_devices(void);
 void dump_pci_device(unsigned dev);
 void dump_pci_devices(void);
 void dump_spd_registers(void);
-void dump_mem(unsigned start, unsigned end);
 
 #endif /* !__SMM__ */
 

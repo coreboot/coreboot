@@ -38,7 +38,6 @@ void dump_smbus_registers(void);
 #endif
 
 void dump_io_resources(u32 port);
-void dump_mem(u32 start, u32 end);
 
 void print_tx(const char *strval, u32 val);
 void print_t(const char *strval);

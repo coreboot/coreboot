@@ -96,15 +96,3 @@ void dump_spd_registers(void)
 		printk(BIOS_DEBUG, "\n");
 	}
 }
-
-void dump_mem(unsigned int start, unsigned int end)
-{
-	unsigned int i;
-	printk(BIOS_DEBUG, "dump_mem:");
-	for (i = start; i < end; i++) {
-		if ((i & 0xf) == 0)
-			printk(BIOS_DEBUG, "\n%08x:", i);
-		printk(BIOS_DEBUG, " %02x", (unsigned char)*((unsigned char *)i));
-	}
-	printk(BIOS_DEBUG, "\n");
-}

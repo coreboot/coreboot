@@ -299,19 +299,6 @@ void dump_io_resources(u32 port)
 	}
 }
 
-void dump_mem(u32 start, u32 end)
-{
-	u32 i;
-	printk(BIOS_DEBUG, "dump_mem:");
-	for (i = start; i < end; i++) {
-		if ((i & 0xf) == 0) {
-			printk(BIOS_DEBUG, "\n%08x:", i);
-		}
-		printk(BIOS_DEBUG, " %02x", (u8)*((u8 *)i));
-	}
-	printk(BIOS_DEBUG, "\n");
-}
-
 #if IS_ENABLED(CONFIG_DIMM_DDR2)
 void print_tx(const char *strval, u32 val)
 {

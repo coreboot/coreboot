@@ -183,15 +183,3 @@ void dump_io_resources(unsigned port)
 		port++;
 	}
 }
-
-void dump_mem(unsigned start, unsigned end)
-{
-	unsigned i;
-	printk(BIOS_DEBUG, "dump_mem:");
-	for (i = start; i < end; i++) {
-		if ((i & 0xf)==0)
-			printk(BIOS_DEBUG, "\n%08x:", i);
-		printk(BIOS_DEBUG, " %02x", (unsigned char)*((unsigned char *)i));
-	}
-	printk(BIOS_DEBUG, "\n");
-}

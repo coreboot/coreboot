@@ -24,6 +24,7 @@ The boards in this section are not real mainboards, but emulators.
 
 - [DG43GT](intel/dg43gt.md)
 - [IceLake RVP](intel/icelake_rvp.md)
+- [KBLRVP11](intel/kblrvp11.md)
 
 ## Foxconn
 

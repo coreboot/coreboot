@@ -265,6 +265,16 @@
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_BUF(TX_DISABLE), \
 		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE))
 
+#define PAD_CFG_GPI_IOSSTATE(pad, pull, rst, iosstate) \
+	_PAD_CFG_STRUCT(pad,		\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE, \
+		PAD_PULL(pull) | PAD_IOSSTATE(iosstate))
+
+#define PAD_CFG_GPI_IOSSTATE_IOSTERM(pad, pull, rst, iosstate, iosterm) \
+	_PAD_CFG_STRUCT(pad,		\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE, \
+		PAD_PULL(pull) | PAD_IOSSTATE(iosstate) | PAD_IOSTERM(iosterm))
+
 /* General purpose input. The following macro sets the
  * Host Software Pad Ownership to GPIO Driver mode.
  */

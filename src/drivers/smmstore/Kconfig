@@ -27,6 +27,6 @@ config SMMSTORE_REGION
 
 config SMMSTORE_FILENAME
 	string "SMM store file name"
-	default "smm store"
+	default "smm_store"
 
 endif

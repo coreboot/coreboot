@@ -235,9 +235,9 @@ static void uart_common_enable_resources(struct device *dev)
 }
 
 static struct device_operations device_ops = {
-	.read_resources		= &uart_read_resources,
-	.set_resources		= &pci_dev_set_resources,
-	.enable_resources	= &uart_common_enable_resources,
+	.read_resources		= uart_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= uart_common_enable_resources,
 	.ops_pci		= &pci_dev_ops_pci,
 };
 

@@ -24,14 +24,14 @@
 __weak void soc_xhci_init(struct device *dev) { /* no-op */ }
 
 static struct device_operations usb_xhci_ops = {
-	.read_resources		= &pci_dev_read_resources,
-	.set_resources		= &pci_dev_set_resources,
-	.enable_resources	= &pci_dev_enable_resources,
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
 	.init			= soc_xhci_init,
 	.ops_pci		= &pci_dev_ops_pci,
-	.scan_bus		= &scan_usb_bus,
+	.scan_bus		= scan_usb_bus,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	.acpi_name		= &soc_acpi_name,
+	.acpi_name		= soc_acpi_name,
 #endif
 };
 

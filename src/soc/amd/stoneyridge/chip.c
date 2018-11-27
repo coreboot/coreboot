@@ -148,9 +148,9 @@ static void soc_final(void *chip_info)
 
 struct chip_operations soc_amd_stoneyridge_ops = {
 	CHIP_NAME("AMD StoneyRidge SOC")
-	.enable_dev = &enable_dev,
-	.init = &soc_init,
-	.final = &soc_final
+	.enable_dev = enable_dev,
+	.init = soc_init,
+	.final = soc_final
 };
 
 static void earliest_ramstage(void *unused)

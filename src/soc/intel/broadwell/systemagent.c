@@ -439,11 +439,11 @@ static void systemagent_init(struct device *dev)
 }
 
 static struct device_operations systemagent_ops = {
-	.read_resources   = &systemagent_read_resources,
-	.acpi_fill_ssdt_generator = &generate_cpu_entries,
-	.set_resources    = &pci_dev_set_resources,
-	.enable_resources = &pci_dev_enable_resources,
-	.init             = &systemagent_init,
+	.read_resources   = systemagent_read_resources,
+	.acpi_fill_ssdt_generator = generate_cpu_entries,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init             = systemagent_init,
 	.ops_pci          = &broadwell_pci_ops,
 };
 

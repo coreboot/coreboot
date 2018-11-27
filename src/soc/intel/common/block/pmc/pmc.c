@@ -112,12 +112,12 @@ void pmc_set_acpi_mode(void)
 }
 
 static struct device_operations device_ops = {
-	.read_resources		= &pch_pmc_read_resources,
-	.set_resources		= &pci_dev_set_resources,
-	.enable_resources	= &pci_dev_enable_resources,
-	.init			= &pmc_soc_init,
+	.read_resources		= pch_pmc_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= pmc_soc_init,
 	.ops_pci		= &pci_dev_ops_pci,
-	.scan_bus		= &scan_lpc_bus,
+	.scan_bus		= scan_lpc_bus,
 };
 
 static const unsigned short pci_device_ids[] = {

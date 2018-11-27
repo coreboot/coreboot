@@ -71,9 +71,9 @@ static void nc_read_resources(struct device *dev)
 }
 
 static struct device_operations nc_ops = {
-	.read_resources   = &nc_read_resources,
-	.set_resources    = &pci_dev_set_resources,
-	.enable_resources = &pci_dev_enable_resources,
+	.read_resources   = nc_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
 };
 
 static const struct pci_driver systemagent_driver __pci_driver = {

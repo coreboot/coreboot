@@ -216,11 +216,11 @@ static void xhci_init(struct device *dev)
 }
 
 static struct device_operations usb_xhci_ops = {
-	.read_resources		= &pci_dev_read_resources,
-	.set_resources		= &pci_dev_set_resources,
-	.enable_resources	= &pci_dev_enable_resources,
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
 	.ops_pci		= &broadwell_pci_ops,
-	.init			= &xhci_init,
+	.init			= xhci_init,
 };
 
 static const unsigned short pci_device_ids[] = {

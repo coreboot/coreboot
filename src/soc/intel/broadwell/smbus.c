@@ -86,11 +86,11 @@ static void smbus_read_resources(struct device *dev)
 }
 
 static struct device_operations smbus_ops = {
-	.read_resources		= &smbus_read_resources,
-	.set_resources		= &pci_dev_set_resources,
-	.enable_resources	= &pci_dev_enable_resources,
-	.scan_bus		= &scan_smbus,
-	.init			= &pch_smbus_init,
+	.read_resources		= smbus_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.scan_bus		= scan_smbus,
+	.init			= pch_smbus_init,
 	.ops_smbus_bus		= &lops_smbus_bus,
 	.ops_pci		= &broadwell_pci_ops,
 };

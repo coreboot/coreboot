@@ -142,10 +142,10 @@ static void adsp_init(struct device *dev)
 }
 
 static struct device_operations adsp_ops = {
-	.read_resources		= &pci_dev_read_resources,
-	.set_resources		= &pci_dev_set_resources,
-	.enable_resources	= &pci_dev_enable_resources,
-	.init			= &adsp_init,
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= adsp_init,
 	.ops_pci		= &broadwell_pci_ops,
 };
 

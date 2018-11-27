@@ -123,9 +123,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 
 struct chip_operations soc_intel_denverton_ns_ops = {
 	CHIP_NAME("Intel Denverton-NS SOC")
-	.enable_dev = &soc_enable_dev,
-	.init = &soc_init,
-	.final = &soc_final
+	.enable_dev = soc_enable_dev,
+	.init = soc_init,
+	.final = soc_final
 };
 
 static void soc_set_subsystem(struct device *dev, uint32_t vendor,

@@ -278,9 +278,9 @@ void enable_power_aware_intr(void)
 }
 
 static struct device_operations systemagent_ops = {
-	.read_resources   = &systemagent_read_resources,
-	.set_resources    = &pci_dev_set_resources,
-	.enable_resources = &pci_dev_enable_resources,
+	.read_resources   = systemagent_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
 	.init             = soc_systemagent_init,
 	.ops_pci          = &pci_dev_ops_pci,
 };

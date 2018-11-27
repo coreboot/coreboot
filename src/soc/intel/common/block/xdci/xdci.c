@@ -29,9 +29,9 @@ int xdci_can_enable(void)
 }
 
 static struct device_operations usb_xdci_ops = {
-	.read_resources		= &pci_dev_read_resources,
-	.set_resources		= &pci_dev_set_resources,
-	.enable_resources	= &pci_dev_enable_resources,
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
 	.init			= soc_xdci_init,
 	.ops_pci		= &pci_dev_ops_pci,
 };

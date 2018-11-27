@@ -3629,7 +3629,7 @@ static void register_builtin_macro(struct compile_state *state,
 
 static void register_builtin_macros(struct compile_state *state)
 {
-	char buf[30];
+	char buf[32];
 	char scratch[30];
 	time_t now;
 	struct tm *tm;

@@ -37,6 +37,7 @@
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
 #include <bdk.h>
+#include <bdk-coreboot.h>
 #include "libbdk-arch/bdk-csrs-l2c_tad.h"
 #include "libbdk-arch/bdk-csrs-mio_fus.h"
 #include "dram-internal.h"

@@ -39,6 +39,7 @@
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
 #include "libbdk-arch/bdk-csrs-rst.h"
+#include <bdk-coreboot.h>
 #include <string.h>
 
 /**

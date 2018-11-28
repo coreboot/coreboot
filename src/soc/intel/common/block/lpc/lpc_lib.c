@@ -301,3 +301,9 @@ void lpc_enable_pci_clk_cntl(void)
 {
 	pci_write_config8(PCH_DEV_LPC, LPC_PCCTL, LPC_PCCTL_CLKRUN_EN);
 }
+
+void lpc_disable_clkrun(void)
+{
+	const uint8_t pcctl = pci_read_config8(PCH_DEV_LPC, LPC_PCCTL);
+	pci_write_config8(PCH_DEV_LPC, LPC_PCCTL, pcctl & ~LPC_PCCTL_CLKRUN_EN);
+}

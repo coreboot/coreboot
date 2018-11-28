@@ -97,6 +97,8 @@ void lpc_set_eiss(void);
 void lpc_set_serirq_mode(enum serirq_mode mode);
 /* Enable CLKRUN_EN for power gating LPC. */
 void lpc_enable_pci_clk_cntl(void);
+/* LPC Clock Run is a feature to stop LPC clock unless a peripheral objects. */
+void lpc_disable_clkrun(void);
 /*
 * Setup I/O Decode Range Register for LPC
 * ComA Range 3F8h-3FFh [2:0]

@@ -16,6 +16,8 @@
 
 // Thermal Zone
 
+External (\PPKG, MethodObj)
+
 #define HAVE_THERMALZONE
 Scope (\_TZ)
 {

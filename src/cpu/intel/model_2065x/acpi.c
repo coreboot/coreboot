@@ -331,6 +331,13 @@ void generate_cpu_entries(struct device *device)
 			acpigen_pop_len();
 		}
 	}
+
+	/* PPKG is usually used for thermal management
+	   of the first and only package. */
+	acpigen_write_processor_package("PPKG", 0, cores_per_package);
+
+	/* Add a method to notify processor nodes */
+	acpigen_write_processor_cnot(cores_per_package);
 }
 
 struct chip_operations cpu_intel_model_2065x_ops = {

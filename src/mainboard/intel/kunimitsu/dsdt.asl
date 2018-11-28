@@ -32,7 +32,7 @@ DefinitionBlock(
 	#include <soc/intel/skylake/acpi/globalnvs.asl>
 
 	// CPU
-	#include <soc/intel/skylake/acpi/cpu.asl>
+	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)

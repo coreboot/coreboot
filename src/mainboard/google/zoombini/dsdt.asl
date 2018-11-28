@@ -35,7 +35,7 @@ DefinitionBlock(
 	#include <soc/intel/cannonlake/acpi/globalnvs.asl>
 
 	// CPU
-	#include <soc/intel/cannonlake/acpi/cpu.asl>
+	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)

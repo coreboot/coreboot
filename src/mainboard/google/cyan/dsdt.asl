@@ -31,7 +31,7 @@ DefinitionBlock(
 	/* global NVS and variables */
 	#include <acpi/globalnvs.asl>
 
-	#include <acpi/cpu.asl>
+	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)

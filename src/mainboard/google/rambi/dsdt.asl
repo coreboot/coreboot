@@ -32,7 +32,7 @@ DefinitionBlock(
 	// global NVS and variables
 	#include <soc/intel/baytrail/acpi/globalnvs.asl>
 
-	#include <soc/intel/baytrail/acpi/cpu.asl>
+	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)

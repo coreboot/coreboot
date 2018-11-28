@@ -25,7 +25,7 @@ DefinitionBlock(
 
 	// Some generic macros
 	#include "acpi/platform.asl"
-	#include <cpu/intel/model_206ax/acpi/cpu.asl>
+	#include <cpu/intel/common/acpi/cpu.asl>
 	/* global NVS and variables. */
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
 	#include <southbridge/intel/bd82x6x/acpi/sleepstates.asl>

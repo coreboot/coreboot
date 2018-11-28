@@ -40,7 +40,7 @@ DefinitionBlock(
 	//#include "acpi/gpe.asl"
 
 
-	#include <cpu/intel/model_206ax/acpi/cpu.asl>
+	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)

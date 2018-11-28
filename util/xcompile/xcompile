@@ -236,7 +236,13 @@ EOF
 # The Quark processor doesn't support the instructions
 # introduced with the Pentium 6 architecture, so allow it
 # to use i586 instead.
-if [ "${TARCH}" = "x86_64" ] || [ "${TARCH}" = "x86_32" ]; then
+if [ "${TARCH}" = "x86_64" ]; then
+cat <<EOF
+        GCC_CFLAGS_${TARCH} += -march=nocona
+EOF
+fi
+
+if [ "${TARCH}" = "x86_32" ]; then
 cat <<EOF
 
 ifneq (\$(CONFIG_USE_MARCH_586)\$(CONFIG_LP_USE_MARCH_586),)

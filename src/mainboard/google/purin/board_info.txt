@@ -1,6 +1,0 @@
-Vendor name: Google
-Board name: Purin Broadcom Cygnus reference board
-Category: eval
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: y

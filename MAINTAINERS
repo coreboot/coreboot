@@ -404,12 +404,10 @@ S:	Orphaned
 F:	src/cpu/allwinner/
 F:	src/cpu/armltd/
 F:	src/cpu/ti/
-F:	src/soc/broadcom/
 F:	src/soc/marvell/
 F:	src/soc/qualcomm/
 F:	src/soc/samsung/
 F:	util/arm_boot_tools/
-F:	util/broadcom/
 F:	util/exynos/
 F:	util/ipqheader/
 

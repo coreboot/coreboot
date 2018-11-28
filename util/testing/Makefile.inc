@@ -60,7 +60,6 @@ junit.xml:
 	echo
 
 TOOLLIST= \
-broadcom/secimage \
 cbmem \
 ectool \
 futility \

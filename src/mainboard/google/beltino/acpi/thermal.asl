@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+External (\PPKG, MethodObj)
+
 #include <variant/thermal.h>
 
 // Thermal Zone

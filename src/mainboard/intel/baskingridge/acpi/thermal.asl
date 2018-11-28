@@ -15,6 +15,8 @@
 
 // Thermal Zone
 
+External (\PPKG, MethodObj)
+
 Scope (\_TZ)
 {
 	ThermalZone (THRM)

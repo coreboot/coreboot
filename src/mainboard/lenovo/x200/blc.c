@@ -15,7 +15,9 @@
 
 #include <stdint.h>
 #include <commonlib/helpers.h>
+#include <console/console.h>
 #include <northbridge/intel/gm45/gm45.h>
+#include <drivers/intel/gma/opregion.h>
 
 static const struct blc_pwm_t blc_entries[] = {
 	/* corrected to 320MHz CDClk, vendor set 753; works fine at both: */
@@ -42,4 +44,23 @@ int get_blc_values(const struct blc_pwm_t **entries)
 {
 	*entries = blc_entries;
 	return ARRAY_SIZE(blc_entries);
+}
+
+const char *mainboard_vbt_filename(void)
+{
+	u16 pwm_freq;
+
+	pwm_freq = get_blc_pwm_freq_value(NULL);
+
+	if (pwm_freq == 0) {
+		printk(BIOS_DEBUG,
+		       "GMA: Display backlight type not found, assuming LED\n");
+		return "data_led.vbt";
+	} else if (pwm_freq > 200) {
+		printk(BIOS_DEBUG, "GMA: Using LED backlight VBT\n");
+		return "data_led.vbt";
+	} else {
+		printk(BIOS_DEBUG, "GMA: Using CCFL backlight VBT\n");
+		return "data_ccfl.vbt";
+	}
 }

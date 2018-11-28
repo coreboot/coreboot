@@ -447,7 +447,7 @@ void generate_cpu_entries(struct device *device)
 	int pcontrol_blk = get_pmbase(), plen = 6;
 	const struct pattrs *pattrs = pattrs_get();
 
-	for (core=0; core<pattrs->num_cpus; core++) {
+	for (core = 0; core < pattrs->num_cpus; core++) {
 		if (core > 0) {
 			pcontrol_blk = 0;
 			plen = 0;
@@ -471,6 +471,13 @@ void generate_cpu_entries(struct device *device)
 
 		acpigen_pop_len();
 	}
+
+	/* PPKG is usually used for thermal management
+	   of the first and only package. */
+	acpigen_write_processor_package("PPKG", 0, pattrs->num_cpus);
+
+	/* Add a method to notify processor nodes */
+	acpigen_write_processor_cnot(pattrs->num_cpus);
 }
 
 unsigned long acpi_madt_irq_overrides(unsigned long current)

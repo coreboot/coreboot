@@ -15,6 +15,7 @@
 
 #include <bootstate.h>
 #include <console/console.h>
+#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <gpio.h>
@@ -33,6 +34,7 @@ void variant_mainboard_final(void)
 {
 	int status;
 	struct device *dev = NULL;
+	uint16_t cmd;
 
 	/*
 	 * Set up the DP2LVDS converter.
@@ -73,6 +75,14 @@ void variant_mainboard_final(void)
 	 * The value 0x4a sets the swing level to 0.58 V.
 	 */
 	pcr_rmw32(PID_MODPHY, TX_DWORD3, (0x00 << 16), (0x4a << 16));
+
+	/* Set Master Enable for on-board PCI device. */
+	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403e, 0);
+	if (dev) {
+		cmd = pci_read_config16(dev, PCI_COMMAND);
+		cmd |= PCI_COMMAND_MASTER;
+		pci_write_config16(dev, PCI_COMMAND, cmd);
+	}
 }
 
 static void wait_for_legacy_dev(void *unused)

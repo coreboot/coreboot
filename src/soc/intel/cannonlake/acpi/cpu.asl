@@ -13,31 +13,23 @@
  * GNU General Public License for more details.
  */
 
-/* These devices are created at runtime */
-External (\_PR.CP00, DeviceObj)
-External (\_PR.CP01, DeviceObj)
-External (\_PR.CP02, DeviceObj)
-External (\_PR.CP03, DeviceObj)
-External (\_PR.CP04, DeviceObj)
-External (\_PR.CP05, DeviceObj)
-External (\_PR.CP06, DeviceObj)
-External (\_PR.CP07, DeviceObj)
+/* These come from the dynamically created CPU SSDT */
+External (\_PR.CNOT, MethodObj)
 
-/* Notify OS to re-read CPU tables, assuming ^2 CPU count */
+/* Notify OS to re-read CPU tables */
 Method (PNOT)
 {
-	If (LGreaterEqual (\PCNT, 2)) {
-		Notify (\_PR.CP00, 0x81)  // _CST
-		Notify (\_PR.CP01, 0x81)  // _CST
-	}
-	If (LGreaterEqual (\PCNT, 4)) {
-		Notify (\_PR.CP02, 0x81)  // _CST
-		Notify (\_PR.CP03, 0x81)  // _CST
-	}
-	If (LGreaterEqual (\PCNT, 8)) {
-		Notify (\_PR.CP04, 0x81)  // _CST
-		Notify (\_PR.CP05, 0x81)  // _CST
-		Notify (\_PR.CP06, 0x81)  // _CST
-		Notify (\_PR.CP07, 0x81)  // _CST
-	}
+	\_PR.CNOT (0x81)
+}
+
+/* Notify OS to re-read CPU _PPC limit */
+Method (PPCN)
+{
+	\_PR.CNOT (0x80)
+}
+
+/* Notify OS to re-read Throttle Limit tables */
+Method (TNOT)
+{
+	\_PR.CNOT (0x82)
 }

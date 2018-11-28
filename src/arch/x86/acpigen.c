@@ -369,6 +369,23 @@ void acpigen_write_processor_package(const char *const name,
 	acpigen_pop_len();
 }
 
+/* Method to notify all CPU cores */
+void acpigen_write_processor_cnot(const unsigned int number_of_cores)
+{
+	int core_id;
+
+	acpigen_write_method("\\_PR.CNOT", 1);
+	for (core_id = 0; core_id < number_of_cores; core_id++) {
+		char buffer[DEVICE_PATH_MAX];
+		snprintf(buffer, sizeof(buffer), CONFIG_ACPI_CPU_STRING,
+			 core_id);
+		acpigen_emit_byte(NOTIFY_OP);
+		acpigen_emit_namestring(buffer);
+		acpigen_emit_byte(ARG0_OP);
+	}
+	acpigen_pop_len();
+}
+
 /*
  * Generate ACPI AML code for OperationRegion
  * Arg0: Pointer to struct opregion opreg = OPREGION(rname, space, offset, len)

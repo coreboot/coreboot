@@ -47,7 +47,7 @@
  * Because we can't use global variables the stack is used for allocations --
  * thus the need to call back and forth. */
 
-static void *setup_stack_and_mtrrs(void);
+static void platform_enter_postcar(void);
 
 static void program_base_addresses(void)
 {
@@ -128,7 +128,10 @@ void *asmlinkage romstage_main(unsigned long bist, uint32_t tsc_low,
 	/* Call into mainboard. */
 	mainboard_romstage_entry(&rp);
 
-	return setup_stack_and_mtrrs();
+	platform_enter_postcar();
+
+	/* We don't return here */
+	return NULL;
 }
 
 static struct chipset_power_state power_state CAR_GLOBAL;
@@ -245,7 +248,7 @@ static inline uint32_t *stack_push(u32 *stack, u32 value)
 
 /* setup_stack_and_mtrrs() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use. */
-static void *setup_stack_and_mtrrs(void)
+static void platform_enter_postcar(void)
 {
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
@@ -267,5 +270,5 @@ static void *setup_stack_and_mtrrs(void)
 	postcar_frame_add_mtrr(&pcf, top_of_ram - 8*MiB, 16*MiB,
 			       MTRR_TYPE_WRBACK);
 
-	return postcar_commit_mtrrs(&pcf);
+	run_postcar_phase(&pcf);
 }

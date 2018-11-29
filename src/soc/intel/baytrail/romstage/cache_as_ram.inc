@@ -197,95 +197,11 @@ before_romstage:
 	post_code(0x2a)
 	/* Call romstage.c main function. */
 	call	romstage_main
-	/* Save return value from romstage_main. It contains the stack to use
-	 * after cache-as-ram is torn down. It also contains the information
-	 * for setting up MTRRs. */
-	movl	%eax, %ebx
 
-	post_code(0x2b)
-
-	/* Disable cache. */
-	movl	%cr0, %eax
-	orl	$CR0_CacheDisable, %eax
-	movl	%eax, %cr0
-
-	post_code(0x2c)
-
-	/* Disable MTRR. */
-	movl	$MTRR_DEF_TYPE_MSR, %ecx
-	rdmsr
-	andl	$(~MTRR_DEF_TYPE_EN), %eax
-	wrmsr
-
-	invd
-
-	post_code(0x2d)
-
-	/* Disable the no eviction run state */
-	movl	$NoEvictMod_MSR, %ecx
-	rdmsr
-	andl	$~2, %eax
-	wrmsr
-
-	/* Disable the no eviction mode */
-	rdmsr
-	andl	$~1, %eax
-	wrmsr
-
-	post_code(0x2e)
-
-	/* Setup stack as indicated by return value from romstage_main(). */
-	movl	%ebx, %esp
-
-	/* Get number of MTRRs. */
-	popl	%ebx
-	movl	$MTRR_PHYS_BASE(0), %ecx
-1:
-	testl	%ebx, %ebx
-	jz	1f
-
-	/* Low 32 bits of MTRR base. */
-	popl	%eax
-	/* Upper 32 bits of MTRR base. */
-	popl	%edx
-	/* Write MTRR base. */
-	wrmsr
-	inc	%ecx
-	/* Low 32 bits of MTRR mask. */
-	popl	%eax
-	/* Upper 32 bits of MTRR mask. */
-	popl	%edx
-	/* Write MTRR mask. */
-	wrmsr
-	inc	%ecx
-
-	dec	%ebx
-	jmp	1b
-1:
-	post_code(0x2f)
-
-	/* And enable cache again after setting MTRRs. */
-	movl	%cr0, %eax
-	andl	$~(CR0_CacheDisable | CR0_NoWriteThrough), %eax
-	movl	%eax, %cr0
-
-	post_code(0x30)
-
-	/* Enable MTRR. */
-	movl	$MTRR_DEF_TYPE_MSR, %ecx
-	rdmsr
-	orl	$MTRR_DEF_TYPE_EN, %eax
-	wrmsr
-
-	post_code(0x31)
-
-__main:
-	post_code(POST_PREPARE_RAMSTAGE)
-	cld			/* Clear direction flag. */
-	call	romstage_after_car
+	/* Should never see this postcode */
+	post_code(POST_DEAD_CODE)
 
 .Lhlt:
-	post_code(POST_DEAD_CODE)
 	hlt
 	jmp	.Lhlt
 

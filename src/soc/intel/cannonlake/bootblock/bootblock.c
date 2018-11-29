@@ -19,6 +19,8 @@
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
 #include <soc/pch.h>
+
+#if IS_ENABLED(CONFIG_FSP_CAR)
 #include <FsptUpd.h>
 
 const FSPT_UPD temp_ram_init_params = {
@@ -37,6 +39,7 @@ const FSPT_UPD temp_ram_init_params = {
 		.CodeRegionSize = (uint32_t)CONFIG_ROM_SIZE,
 	},
 };
+#endif
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {

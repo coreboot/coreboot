@@ -26,7 +26,7 @@ static void mainboard_init(void *chip_info)
 	mainboard_ec_init();
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->write_acpi_tables = NULL;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;

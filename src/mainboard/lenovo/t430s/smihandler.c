@@ -28,17 +28,17 @@
 
 static void mainboard_smi_brightness_up(void)
 {
-	u8 value;
+	u8 value = pci_read_config8(PCI_DEV(0, 2, 1), 0xf4);
 
-	if ((value = pci_read_config8(PCI_DEV(0, 2, 1), 0xf4)) < 0xf0)
+	if (value < 0xf0)
 		pci_write_config8(PCI_DEV(0, 2, 1), 0xf4, (value + 0x10) | 0xf);
 }
 
 static void mainboard_smi_brightness_down(void)
 {
-	u8 value;
+	u8 value = pci_read_config8(PCI_DEV(0, 2, 1), 0xf4);
 
-	if ((value = pci_read_config8(PCI_DEV(0, 2, 1), 0xf4)) > 0x10)
+	if (value > 0x10)
 		pci_write_config8(PCI_DEV(0, 2, 1), 0xf4,
 				  (value - 0x10) & 0xf0);
 }
@@ -55,16 +55,16 @@ static void mainboard_smi_handle_ec_sci(void)
 	printk(BIOS_DEBUG, "EC event %02x\n", event);
 
 	switch (event) {
-		case 0x14:
-			/* brightness up */
-			mainboard_smi_brightness_up();
-			break;
-		case 0x15:
-			/* brightness down */
-			mainboard_smi_brightness_down();
-			break;
-		default:
-			break;
+	case 0x14:
+		/* brightness up */
+		mainboard_smi_brightness_up();
+		break;
+	case 0x15:
+		/* brightness down */
+		mainboard_smi_brightness_down();
+		break;
+	default:
+		break;
 	}
 }
 
@@ -77,25 +77,25 @@ void mainboard_smi_gpi(u32 gpi_sts)
 int mainboard_smi_apmc(u8 data)
 {
 	switch (data) {
-		case APM_CNT_ACPI_ENABLE:
-			/* use 0x1600/0x1604 to prevent races with userspace */
-			ec_set_ports(0x1604, 0x1600);
-			/* route EC_SCI to SCI */
-			gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SCI);
-			/* discard all events, and enable attention */
-			ec_write(0x80, 0x01);
-			break;
-		case APM_CNT_ACPI_DISABLE:
-			/* we have to use port 0x62/0x66, as 0x1600/0x1604 doesn't
-			   provide a EC query function */
-			ec_set_ports(0x66, 0x62);
-			/* route EC_SCI to SMI */
-			gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SMI);
-			/* discard all events, and enable attention */
-			ec_write(0x80, 0x01);
-			break;
-		default:
-			break;
+	case APM_CNT_ACPI_ENABLE:
+		/* use 0x1600/0x1604 to prevent races with userspace */
+		ec_set_ports(0x1604, 0x1600);
+		/* route EC_SCI to SCI */
+		gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SCI);
+		/* discard all events, and enable attention */
+		ec_write(0x80, 0x01);
+		break;
+	case APM_CNT_ACPI_DISABLE:
+		/* we have to use port 0x62/0x66, as 0x1600/0x1604 doesn't
+		   provide a EC query function */
+		ec_set_ports(0x66, 0x62);
+		/* route EC_SCI to SMI */
+		gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SMI);
+		/* discard all events, and enable attention */
+		ec_write(0x80, 0x01);
+		break;
+	default:
+		break;
 	}
 	return 0;
 }

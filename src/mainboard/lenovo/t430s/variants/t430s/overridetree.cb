@@ -1,0 +1,13 @@
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
+			device pci 1f.0 on
+				chip ec/lenovo/h8
+					register "has_bdc_detection" = "1"
+					register "bdc_gpio_num" = "54"
+					register "bdc_gpio_lvl" = "0"
+				end
+			end # LPC Controller
+		end
+	end
+end

@@ -1,5 +1,5 @@
 Category: laptop
-Board name: ThinkPad T430s baseboard
+Board name: ThinkPad T430s
 ROM package: SOIC-8 / WSON-8
 ROM protocol: SPI
 ROM socketed: n

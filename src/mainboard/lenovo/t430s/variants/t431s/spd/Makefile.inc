@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2011 The ChromiumOS Authors.  All rights reserved.
+## Copyright (C) 2016 Alexander Couzens <lynxis@fe80.eu>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -13,9 +13,19 @@
 ## GNU General Public License for more details.
 ##
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
-romstage-y += variants/$(VARIANT_DIR)/gpio.c
-romstage-y += variants/$(VARIANT_DIR)/romstage.c
-ramstage-y += variants/$(VARIANT_DIR)/hda_verb.c
-ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
-subdirs-$(CONFIG_BOARD_LENOVO_T431S) += variants/$(VARIANT_DIR)/spd
+SPD_BIN = $(obj)/spd.bin
+
+SPD_SOURCES  = samsung_4gb  # 0b0010 4GiB
+SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/spd/$(f).spd.hex)
+
+# Include spd ROM data
+$(SPD_BIN): $(SPD_DEPS)
+	for f in $+; \
+	  do for c in $$(cat $$f | grep -v ^#); \
+	    do printf $$(printf '\%o' 0x$$c); \
+	  done; \
+	done > $@
+
+cbfs-files-y += spd.bin
+spd.bin-file := $(SPD_BIN)
+spd.bin-type := spd

@@ -1,4 +1,4 @@
-if BOARD_LENOVO_T430S
+if BOARD_LENOVO_T430S || BOARD_LENOVO_T431S
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -16,12 +16,12 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_CMOS_DEFAULT
 	select HAVE_ACPI_RESUME
 	select INTEL_INT15
-	select SANDYBRIDGE_IVYBRIDGE_LVDS
+	select SANDYBRIDGE_IVYBRIDGE_LVDS if BOARD_LENOVO_T430S
 	select ENABLE_VMX
 	select MAINBOARD_HAS_LPC_TPM
 	select MAINBOARD_HAS_TPM1
 	select MAINBOARD_HAS_LIBGFXINIT
-	select GFX_GMA_INTERNAL_IS_LVDS
+	select GFX_GMA_INTERNAL_IS_LVDS if BOARD_LENOVO_T430S
 	select INTEL_GMA_HAVE_VBT
 
 	# Workaround for EC/KBC IRQ1.
@@ -31,9 +31,19 @@ config MAINBOARD_DIR
 	string
 	default lenovo/t430s
 
+config VARIANT_DIR
+	string
+	default "t430s" if BOARD_LENOVO_T430S
+	default "t431s" if BOARD_LENOVO_T431S
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "ThinkPad T430s"
+	default "ThinkPad T430s" if BOARD_LENOVO_T430S
+	default "ThinkPad T431s" if BOARD_LENOVO_T431S
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAX_CPUS
 	int
@@ -57,10 +67,11 @@ config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
-	default 0x21fb
+	default 0x21fb if BOARD_LENOVO_T430S
+	default 0x2208 if BOARD_LENOVO_T431S
 
 config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-endif # BOARD_LENOVO_T430S
+endif # BOARD_LENOVO_T430S || BOARD_LENOVO_T431S

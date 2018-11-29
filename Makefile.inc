@@ -1054,7 +1054,7 @@ ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_HEADER),y)
 	$(FIT_OPTIONS)
 endif
 
-ifeq ($(CONFIG_CPU_MICROCODE_CBFS_GENERATE),y)
+ifeq ($(CONFIG_USE_CPU_MICROCODE_CBFS_BINS),y)
 	@printf "    UPDATE-FIT\n"
 	$(CBFSTOOL) $@.tmp update-fit -n cpu_microcode_blob.bin -x $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) \
 	$(FIT_OPTIONS)

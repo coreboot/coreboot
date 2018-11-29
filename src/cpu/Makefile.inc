@@ -17,7 +17,7 @@ $(eval $(call create_class_compiler,cpu_microcode,x86_32))
 ################################################################################
 
 ifneq ($(CONFIG_CPU_MICROCODE_MULTIPLE_FILES), y)
-cbfs-files-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE)  += cpu_microcode_blob.bin
+cbfs-files-$(CONFIG_USE_CPU_MICROCODE_CBFS_BINS) += cpu_microcode_blob.bin
 endif
 
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_HEADER),y)
@@ -28,6 +28,11 @@ $(objgenerated)/microcode.bin: $(call strip_quotes,$(CONFIG_CPU_MICROCODE_HEADER
 	echo "   util/scripts/ucode_h_to_bin.sh $(objgenerated)/microcode.bin \"$(CONFIG_CPU_MICROCODE_HEADER_FILES)\""
 	util/scripts/ucode_h_to_bin.sh $(objgenerated)/microcode.bin $(CONFIG_CPU_MICROCODE_HEADER_FILES)
 endif
+
+ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_BINS),y)
+cpu_microcode_bins := $(call strip_quotes,$(CONFIG_CPU_UCODE_BINARIES))
+endif
+# otherwise `cpu_microcode_bins` should be filled by platform makefiles
 
 # We just mash all microcode binaries together into one binary to rule them all.
 # This approach assumes that the microcode binaries are properly padded, and
@@ -44,14 +49,15 @@ $(obj)/cpu_microcode_blob.bin: $$(wildcard $$(cpu_microcode_bins))
 		fi; \
 	done; \
 	if [ -n "$$NO_MICROCODE_FILE" ]; then \
-		if [ -z "$(CONFIG_USE_BLOBS)" ] && [ -n "$(CONFIG_CPU_MICROCODE_CBFS_GENERATE)" ]; then \
+		if [ -z "$(CONFIG_USE_BLOBS)" ] && [ -n "$(CONFIG_CPU_MICROCODE_CBFS_DEFAULT_BINS)" ]; then \
 			echo "Try enabling binary-only repository in Kconfig 'General setup' menu."; \
 		fi; \
 		false; \
 	fi
+	$(if $^,,false) # fail if no file is given at all
 	@printf "    MICROCODE  $(subst $(obj)/,,$(@))\n"
 	@echo $(cpu_microcode_bins)
-	cat /dev/null $+ > $@
+	cat $^ > $@
 
 cpu_microcode_blob.bin-file ?= $(obj)/cpu_microcode_blob.bin
 cpu_microcode_blob.bin-type := microcode

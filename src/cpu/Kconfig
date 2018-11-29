@@ -84,14 +84,43 @@ config USES_MICROCODE_HEADER_FILES
 	  This is selected by a board or chipset to set the default for the
 	  microcode source choice to a list of external microcode headers
 
+config MICROCODE_BLOB_NOT_IN_BLOB_REPO
+	bool
+	help
+	  Selected by platforms that don't maintain microcode updates in the
+	  blobs repo yet.
+
+config MICROCODE_BLOB_NOT_HOOKED_UP
+	bool
+	help
+	  Selected by platforms that haven't hooked microcode updates up yet.
+
+config MICROCODE_BLOB_UNDISCLOSED
+	bool
+	help
+	  Selected by work-in-progress platforms that don't have microcode
+	  updates available yet.
+
+config USE_CPU_MICROCODE_CBFS_BINS
+	bool
+	help
+	  Automatically selected below to add binary microcode files
+	  (`cpu_microcode_bins` in the makefiles) to CBFS.
+
 choice
 	prompt "Include CPU microcode in CBFS" if ARCH_X86
 	default CPU_MICROCODE_CBFS_EXTERNAL_HEADER if USES_MICROCODE_HEADER_FILES
-	default CPU_MICROCODE_CBFS_GENERATE if SUPPORT_CPU_UCODE_IN_CBFS && USE_BLOBS
-	default CPU_MICROCODE_CBFS_NONE if !SUPPORT_CPU_UCODE_IN_CBFS
+	default CPU_MICROCODE_CBFS_NONE if MICROCODE_BLOB_NOT_IN_BLOB_REPO || \
+					   MICROCODE_BLOB_NOT_HOOKED_UP || \
+					   MICROCODE_BLOB_UNDISCLOSED
+	depends on SUPPORT_CPU_UCODE_IN_CBFS
 
-config CPU_MICROCODE_CBFS_GENERATE
+config CPU_MICROCODE_CBFS_DEFAULT_BINS
 	bool "Generate from tree"
+	select USE_CPU_MICROCODE_CBFS_BINS
+	depends on !(MICROCODE_BLOB_NOT_IN_BLOB_REPO || \
+		     MICROCODE_BLOB_NOT_HOOKED_UP || \
+		     MICROCODE_BLOB_UNDISCLOSED)
 	help
 	  Select this option if you want microcode updates to be assembled when
 	  building coreboot and included in the final image as a separate CBFS
@@ -102,8 +131,27 @@ config CPU_MICROCODE_CBFS_GENERATE
 
 	  If unsure, select this option.
 
+config CPU_MICROCODE_CBFS_EXTERNAL_BINS
+	bool "Include external microcode binary"
+	select USE_CPU_MICROCODE_CBFS_BINS
+	depends on !CPU_MICROCODE_MULTIPLE_FILES
+	help
+	  Select this option if you want to include external binary files
+	  in the CPUs native format. They will be included as a separate
+	  file in CBFS.
+
+	  A word of caution: only select this option if you are sure the
+	  microcode that you have is newer than the microcode shipping with
+	  coreboot.
+
+	  The microcode file may be removed from the ROM image at a later
+	  time with cbfstool, if desired.
+
+	  If unsure, and applicable, select "Generate from tree"
+
 config CPU_MICROCODE_CBFS_EXTERNAL_HEADER
 	bool "Include external microcode header files"
+	depends on !CPU_MICROCODE_MULTIPLE_FILES
 	help
 	  Select this option if you want to include external c header files
 	  containing the CPU microcode. This will be included as a separate
@@ -116,25 +164,17 @@ config CPU_MICROCODE_CBFS_EXTERNAL_HEADER
 	  The microcode file may be removed from the ROM image at a later
 	  time with cbfstool, if desired.
 
-	  If unsure, select "Generate from tree"
+	  If unsure, and applicable, select "Generate from tree"
 
 config CPU_MICROCODE_CBFS_NONE
 	bool "Do not include microcode updates"
 	help
 	  Select this option if you do not want CPU microcode included in CBFS.
-	  Note that for some CPUs, the microcode is hard-coded into the source
-	  tree and is not loaded from CBFS. In this case, microcode will still
-	  be updated. There is a push to move all microcode to CBFS, but this
-	  change is not implemented for all CPUs.
-
-	  This option currently applies to:
-	    - Intel SandyBridge/IvyBridge
-	    - VIA Nano
 
 	  Microcode may be added to the ROM image at a later time with cbfstool,
 	  if desired.
 
-	  If unsure, select "Generate from tree"
+	  If unsure, and applicable, select "Generate from tree"
 
 	  The GOOD:
 	  Microcode updates intend to solve issues that have been discovered
@@ -164,8 +204,6 @@ endchoice
 
 config CPU_MICROCODE_MULTIPLE_FILES
 	bool
-	default n
-	depends on CPU_MICROCODE_CBFS_GENERATE
 	help
 	  Select this option to install separate microcode container files into
 	  CBFS instead of using the traditional monolithic microcode file format.
@@ -179,7 +217,7 @@ config CPU_MICROCODE_HEADER_FILES
 
 config CPU_UCODE_BINARIES
 	string "Microcode binary path and filename"
-	depends on CPU_MICROCODE_CBFS_GENERATE
+	depends on CPU_MICROCODE_CBFS_EXTERNAL_BINS
 	default ""
 	help
 	  Some platforms have microcode in the blobs directory, and these can

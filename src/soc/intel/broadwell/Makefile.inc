@@ -30,6 +30,7 @@ ramstage-y += me_status.c
 romstage-y += me_status.c
 ramstage-y += memmap.c
 romstage-y += memmap.c
+postcar-y += memmap.c
 ramstage-y += minihd.c
 ramstage-y += monotonic_timer.c
 smm-y      += monotonic_timer.c
@@ -55,6 +56,7 @@ ramstage-y += spi.c
 smm-$(CONFIG_SPI_FLASH_SMM) += spi.c
 ramstage-y += stage_cache.c
 romstage-y += stage_cache.c
+postcar-y += stage_cache.c
 ramstage-y += systemagent.c
 ramstage-y += tsc_freq.c
 romstage-y += tsc_freq.c
@@ -64,6 +66,8 @@ ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
 ramstage-y += ehci.c
 ramstage-y += xhci.c
 smm-y      += xhci.c
+
+postcar-y += ../../../cpu/intel/car/non-evict/exit_car.S
 
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 

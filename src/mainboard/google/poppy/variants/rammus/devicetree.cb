@@ -191,7 +191,7 @@ chip soc/intel/skylake
 			.speed = I2C_SPEED_FAST,
 			.speed_config[0] = {
 				.speed = I2C_SPEED_FAST,
-				.scl_lcnt = 190,
+				.scl_lcnt = 170,
 				.scl_hcnt = 100,
 				.sda_hold = 36,
 			},

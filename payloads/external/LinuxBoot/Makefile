@@ -39,7 +39,7 @@ endif
 
 initramfs_compressed: initramfs
 ifeq ($(CONFIG_LINUXBOOT_INITRAMFS_COMPRESSION_XZ),y)
-	xz --keep --force --lzma2=dict=1MiB $(top)/$(CONFIG_LINUXBOOT_INITRAMFS)
+	xz --keep --force --check=crc32 --lzma2=dict=1MiB $(top)/$(CONFIG_LINUXBOOT_INITRAMFS)
 endif
 
 ifeq ($(CONFIG_LINUXBOOT_COMPILE_KERNEL),y)

@@ -668,7 +668,7 @@ static u32 freq_to_blc_pwm_ctl(struct device *const dev,
 		return (blc_mod << 16) | blc_mod;
 }
 
-static u16 get_blc_pwm_freq_value(const char *edid_ascii_string)
+u16 get_blc_pwm_freq_value(const char *edid_ascii_string)
 {
 	static u16 blc_pwm_freq;
 	const struct blc_pwm_t *blc_pwm;

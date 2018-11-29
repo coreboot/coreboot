@@ -442,6 +442,7 @@ struct blc_pwm_t {
 	int pwm_freq; /* In Hz */
 };
 int get_blc_values(const struct blc_pwm_t **entries);
+u16 get_blc_pwm_freq_value(const char *edid_ascii_string);
 
 
 #if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)

@@ -193,6 +193,20 @@ M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 S:	Supported
 F:	src/mainboard/google/panther/
 
+GOOGLE MAINBOARDS (Intel-based, legacy/inactive)
+M:	Matt DeVillier <MrChromebox@gmail.com>
+S:	Maintained
+F:	src/mainboard/google/auron/
+F:	src/mainboard/google/beltino/
+F:	src/mainboard/google/butterfly/
+F:	src/mainboard/google/cyan/
+F:	src/mainboard/google/glados/
+F:	src/mainboard/google/jecht/
+F:	src/mainboard/google/link/
+F:	src/mainboard/google/parrot/
+F:	src/mainboard/google/slippy/
+F:	src/mainboard/google/stout/
+
 OCP MAINBOARDS
 M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
 M:	Patrick Rudolph <patrick.rudolph@9elements.com>
@@ -206,6 +220,17 @@ M:	Patrick Rudolph <patrick.rudolph@9elements.com>
 S:	Supported
 F:	src/mainboard/opencellular/rotundu/
 F:	src/mainboard/opencellular/elgon/
+
+PURISM MAINBOARDS
+M:	Matt DeVillier <matt.devillier@puri.sm>
+S:	Supported
+F:	src/mainboard/purism
+
+SAMSUNG CHROMEOS MAINBOARDS
+M:	Matt DeVillier <MrChromebox@gmail.com>
+S:	Maintained
+F:	src/mainboard/samsung/lumpy/
+F:	src/mainboard/samsung/stumpy/
 
 INTEL MINNOWBOARD MAX MAINBOARD
 M:	Huang Jin <huang.jin@intel.com>

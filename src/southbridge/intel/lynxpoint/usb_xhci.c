@@ -154,7 +154,7 @@ static void usb_xhci_reset_usb3(device_t dev, int all)
 #ifdef __SMM__
 
 /* Handler for XHCI controller on entry to S3/S4/S5 */
-void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
+void usb_xhci_sleep_prepare(pci_devfn_t dev, u8 slp_typ)
 {
 	u16 reg16;
 	u32 reg32;
@@ -238,7 +238,7 @@ void usb_xhci_route_all(void)
 
 #else /* !__SMM__ */
 
-static void usb_xhci_clock_gating(device_t dev)
+static void usb_xhci_clock_gating(struct device *dev)
 {
 	u32 reg32;
 	u16 reg16;
@@ -285,7 +285,7 @@ static void usb_xhci_clock_gating(device_t dev)
 	pci_write_config32(dev, 0xa4, reg32);
 }
 
-static void usb_xhci_init(device_t dev)
+static void usb_xhci_init(struct device *dev)
 {
 	u32 reg32;
 	u16 reg16;
@@ -359,8 +359,8 @@ static void usb_xhci_init(device_t dev)
 	}
 }
 
-static void usb_xhci_set_subsystem(device_t dev, unsigned vendor,
-				   unsigned device)
+static void usb_xhci_set_subsystem(struct device *dev, unsigned int vendor,
+				   unsigned int device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

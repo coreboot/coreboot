@@ -25,7 +25,7 @@
 
 #ifdef __SMM__
 
-void usb_ehci_disable(device_t dev)
+void usb_ehci_disable(pci_devfn_t dev)
 {
 	u16 reg16;
 	u32 reg32;
@@ -57,7 +57,7 @@ void usb_ehci_disable(device_t dev)
 }
 
 /* Handler for EHCI controller on entry to S3/S4/S5 */
-void usb_ehci_sleep_prepare(device_t dev, u8 slp_typ)
+void usb_ehci_sleep_prepare(pci_devfn_t dev, u8 slp_typ)
 {
 	u32 reg32;
 	u8 *bar0_base;
@@ -164,7 +164,8 @@ static void usb_ehci_init(struct device *dev)
 	printk(BIOS_DEBUG, "done.\n");
 }
 
-static void usb_ehci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void usb_ehci_set_subsystem(struct device *dev, unsigned int vendor,
+				   unsigned int device)
 {
 	u8 access_cntl;
 

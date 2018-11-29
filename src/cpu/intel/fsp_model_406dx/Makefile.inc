@@ -19,8 +19,4 @@ subdirs-y += ../common
 
 ramstage-y += acpi.c
 
-ifeq ($(CONFIG_HAVE_CPU_MICROCODE_FILE), y)
-cpu_microcode_bins += $(call strip_quotes,$(CONFIG_CPU_MICROCODE_FILE))
-endif
-
 CPPFLAGS_romstage += -I$(src)/cpu/intel/fsp_model_406dx

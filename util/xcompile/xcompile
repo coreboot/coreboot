@@ -303,7 +303,7 @@ EOF
 }
 
 # Architecture definitions
-SUPPORTED_ARCHITECTURES="arm arm64 mipsel riscv x64 x86 power8"
+SUPPORTED_ARCHITECTURES="arm arm64 mipsel riscv x64 x86 ppc64"
 
 # TARCH: local name for the architecture
 # (used as CC_${TARCH} in the build system)
@@ -366,12 +366,12 @@ arch_config_mipsel() {
 	TENDIAN="EL"
 }
 
-arch_config_power8() {
-	TARCH="power8"
+arch_config_ppc64() {
+	TARCH="ppc64"
 	TBFDARCHS="powerpc"
 	TCLIST="powerpc64"
 	TWIDTH="64"
-	TSUPP="power8"
+	TSUPP="ppc64"
 	TABI="linux-gnu" # there is no generic ABI on ppc64
 	CC_RT_EXTRA_GCC="-mcpu=power8 -mbig-endian"
 }

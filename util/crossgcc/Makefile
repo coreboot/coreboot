@@ -9,12 +9,12 @@ DEST ?= $(CURDIR)/xgcc
 
 all all_with_gdb:
 	$(MAKE) build-i386 build-x64 build-arm build-mips \
-		build-riscv build-aarch64 build-power8 build-nds32le \
+		build-riscv build-aarch64 build-ppc64 build-nds32le \
 		build_clang build_iasl build_make
 
 all_without_gdb:
 	$(MAKE) SKIP_GDB=1 build-i386 build-x64 build-arm build-mips \
-		build-riscv build-aarch64 build-power8 build-nds32le \
+		build-riscv build-aarch64 build-ppc64 build-nds32le \
 		build_clang build_iasl build_make
 
 build_tools: build_gcc build_gdb
@@ -63,7 +63,7 @@ build-riscv:
 	# GDB is currently not supported on RISC-V
 	@$(MAKE) build_gcc BUILD_PLATFORM=riscv-elf
 
-build-power8:
+build-ppc64:
 	@$(MAKE) build_tools BUILD_PLATFORM=powerpc64-linux-gnu
 
 build-nds32le:
@@ -85,6 +85,6 @@ distclean: clean
 
 .PHONY: build_gcc build_iasl build_gdb build_clang all all_with_gdb \
 	all_without_gdb build_tools build-i386 build-x64 build-arm  \
-	build-aarch64 build-mips build-riscv build-power8 build-nds32le \
+	build-aarch64 build-mips build-riscv build-ppc64 build-nds32le \
 	clean distclean clean_tempfiles
 .NOTPARALLEL:

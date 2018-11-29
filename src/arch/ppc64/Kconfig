@@ -1,0 +1,25 @@
+config ARCH_PPC64
+	bool
+	default n
+
+config ARCH_BOOTBLOCK_PPC64
+	bool
+	default n
+	select ARCH_PPC64
+	select BOOTBLOCK_CUSTOM
+	select C_ENVIRONMENT_BOOTBLOCK
+	select ARCH_VERSTAGE_PPC64
+	select ARCH_ROMSTAGE_PPC64
+	select ARCH_RAMSTAGE_PPC64
+
+config ARCH_VERSTAGE_PPC64
+	bool
+	default n
+
+config ARCH_ROMSTAGE_PPC64
+	bool
+	default n
+
+config ARCH_RAMSTAGE_PPC64
+	bool
+	default n

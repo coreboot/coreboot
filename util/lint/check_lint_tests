@@ -6,7 +6,7 @@ UNDERSCORE='_'
 
 #lint-stable-000-license-headers
 TESTFILE000a=src/arch/x86/thread.c
-TESTFILE000b=src/arch/power8/misc.c
+TESTFILE000b=src/arch/ppc64/misc.c
 sed -i.bak 's/^[[:space:]]\*[[:space:]].*//' ${TESTFILE000a}
 sed -i.bak 's/^[[:space:]]\*[[:space:]]but WITHOUT ANY WARRANTY;//' ${TESTFILE000b}
 

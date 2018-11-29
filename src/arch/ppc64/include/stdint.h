@@ -11,8 +11,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef POWER8_STDINT_H
-#define POWER8_STDINT_H
+#ifndef PPC64_STDINT_H
+#define PPC64_STDINT_H
 
 /* Exact integral types */
 typedef unsigned char      uint8_t;
@@ -73,4 +73,4 @@ typedef uint8_t bool;
 typedef s64             intptr_t;
 typedef u64		uintptr_t;
 
-#endif /* POWER8_STDINT_H */
+#endif /* PPC64_STDINT_H */

@@ -36,10 +36,10 @@ struct cpu_info {
 #endif
 };
 
-struct cpuinfo_power8 {
-	uint8_t    power8;            /* CPU family */
-	uint8_t    power8_vendor;     /* CPU vendor */
-	uint8_t    power8_model;
+struct cpuinfo_ppc64 {
+	uint8_t    ppc64;            /* CPU family */
+	uint8_t    ppc64_vendor;     /* CPU vendor */
+	uint8_t    ppc64_model;
 };
 
 #endif

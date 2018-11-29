@@ -23,6 +23,8 @@ General changes
 * Add bootblock compression capability: on systems that copy the bootblock
   from very slow flash to ERAM, allow adding a stub that decompresses the
   bootblock into ERAM to minimize the amount of flash reads
+* Rename the POWER8 architecture port to PPC64 to reflect that it isn't limited
+  to POWER8
 
 Toolchain
 ---------

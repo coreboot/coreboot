@@ -57,7 +57,7 @@ ARCHDIR-arm	:= arm
 ARCHDIR-arm64	:= arm64
 ARCHDIR-riscv	:= riscv
 ARCHDIR-mips	:= mips
-ARCHDIR-power8	:= power8
+ARCHDIR-ppc64	:= ppc64
 
 CFLAGS_arm	+=
 CFLAGS_arm64	+= -mgeneral-regs-only
@@ -65,7 +65,7 @@ CFLAGS_mips	+= -mips32r2 -G 0 -mno-abicalls -fno-pic
 CFLAGS_riscv	+=
 CFLAGS_x86_32	+=
 CFLAGS_x86_64	+= -mcmodel=large -mno-red-zone
-CFLAGS_power8	+=
+CFLAGS_ppc64	+=
 
 # Some boards only provide 2K stacks, so storing lots of data there leads to
 # problems. Since C rules don't allow us to statically determine the maximum
@@ -85,7 +85,7 @@ CFLAGS_arm	+= -Wstack-usage=1536
 CFLAGS_arm64	+= -Wstack-usage=1536
 CFLAGS_mips	+= -Wstack-usage=1536
 CFLAGS_riscv	+= -Wstack-usage=1536
-CFLAGS_power8	+= -Wstack-usage=1536
+CFLAGS_ppc64	+= -Wstack-usage=1536
 endif
 
 toolchain_to_dir = \

@@ -16,14 +16,14 @@
 ##
 ################################################################################
 
-power8_flags = -I$(src)/arch/power8/ -mbig-endian -mcpu=power8 -mtune=power8
+ppc64_flags = -I$(src)/arch/ppc64/ -mbig-endian -mcpu=power8 -mtune=power8
 
-power8_asm_flags =
+ppc64_asm_flags =
 
 ################################################################################
 ## bootblock
 ################################################################################
-ifeq ($(CONFIG_ARCH_BOOTBLOCK_POWER8),y)
+ifeq ($(CONFIG_ARCH_BOOTBLOCK_PPC64),y)
 
 bootblock-y = bootblock.S stages.c
 bootblock-y += boot.c
@@ -35,7 +35,7 @@ bootblock-y += \
 	$(top)/src/lib/memmove.c \
 	$(top)/src/lib/memset.c
 
-bootblock-generic-ccopts += $(power8_flags)
+bootblock-generic-ccopts += $(ppc64_flags)
 
 $(objcbfs)/bootblock.debug: $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
@@ -48,7 +48,7 @@ endif
 ################################################################################
 ## romstage
 ################################################################################
-ifeq ($(CONFIG_ARCH_ROMSTAGE_POWER8),y)
+ifeq ($(CONFIG_ARCH_ROMSTAGE_PPC64),y)
 
 romstage-y += boot.c
 romstage-y += stages.c
@@ -68,15 +68,15 @@ $(objcbfs)/romstage.debug: $$(romstage-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_romstage) $(LDFLAGS_romstage) -o $@ -L$(obj) -T $(call src-to-obj,romstage,src/mainboard/$(MAINBOARDDIR)/memlayout.ld) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) --end-group $(COMPILER_RT_romstage)
 
-romstage-c-ccopts += $(power8_flags)
-romstage-S-ccopts += $(power8_asm_flags)
+romstage-c-ccopts += $(ppc64_flags)
+romstage-S-ccopts += $(ppc64_asm_flags)
 
 endif
 
 ################################################################################
 ## ramstage
 ################################################################################
-ifeq ($(CONFIG_ARCH_RAMSTAGE_POWER8),y)
+ifeq ($(CONFIG_ARCH_RAMSTAGE_PPC64),y)
 
 ramstage-y += rom_media.c
 ramstage-y += stages.c
@@ -102,7 +102,7 @@ $(objcbfs)/ramstage.debug: $$(ramstage-objs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(LD_ramstage) $(LDFLAGS_ramstage) -o $@ -L$(obj) -T $(call src-to-obj,ramstage,src/mainboard/$(MAINBOARDDIR)/memlayout.ld) --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) --end-group $(COMPILER_RT_ramstage)
 
-ramstage-c-ccopts += $(power8_flags)
-ramstage-S-ccopts += $(power8_asm_flags)
+ramstage-c-ccopts += $(ppc64_flags)
+ramstage-S-ccopts += $(ppc64_asm_flags)
 
 endif

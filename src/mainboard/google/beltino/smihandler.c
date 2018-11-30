@@ -27,29 +27,6 @@
 #include <superio/ite/it8772f/it8772f.h>
 #include "onboard.h"
 
-static int mainboard_finalized = 0;
-
-int mainboard_smi_apmc(u8 apmc)
-{
-	switch (apmc) {
-	case APM_CNT_FINALIZE:
-		if (mainboard_finalized) {
-			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
-			return 0;
-		}
-
-		intel_pch_finalize_smm();
-		intel_northbridge_haswell_finalize_smm();
-		intel_cpu_haswell_finalize_smm();
-
-		mainboard_finalized = 1;
-		break;
-	default:
-		break;
-	}
-	return 0;
-}
-
 void mainboard_smi_sleep(u8 slp_typ)
 {
 	switch (slp_typ) {

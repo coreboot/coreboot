@@ -46,25 +46,3 @@ void mainboard_smi_sleep(u8 slp_typ)
 		break;
 	}
 }
-
-
-static int mainboard_finalized = 0;
-
-int mainboard_smi_apmc(u8 apmc)
-{
-	switch (apmc) {
-	case APM_CNT_FINALIZE:
-		if (mainboard_finalized) {
-			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
-			return 0;
-		}
-
-		intel_pch_finalize_smm();
-		intel_northbridge_haswell_finalize_smm();
-		intel_cpu_haswell_finalize_smm();
-
-		mainboard_finalized = 1;
-		break;
-	}
-	return 0;
-}

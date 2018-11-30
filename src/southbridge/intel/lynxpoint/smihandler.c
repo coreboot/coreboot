@@ -25,6 +25,8 @@
 #include <elog.h>
 #include <halt.h>
 #include <pc80/mc146818rtc.h>
+#include <northbridge/intel/haswell/haswell.h>
+#include <cpu/intel/haswell/haswell.h>
 #include "pch.h"
 
 #include "nvs.h"
@@ -270,11 +272,24 @@ static void southbridge_smi_apmc(void)
 {
 	u8 reg8;
 	em64t101_smm_state_save_area_t *state;
+	static int chipset_finalized = 0;
 
 	/* Emulate B2 register as the FADT / Linux expects it */
 
 	reg8 = inb(APM_CNT);
 	switch (reg8) {
+	case APM_CNT_FINALIZE:
+		if (chipset_finalized) {
+			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
+			return;
+		}
+
+		intel_pch_finalize_smm();
+		intel_northbridge_haswell_finalize_smm();
+		intel_cpu_haswell_finalize_smm();
+
+		chipset_finalized = 1;
+		break;
 	case APM_CNT_CST_CONTROL:
 		/* Calling this function seems to cause
 		 * some kind of race condition in Linux

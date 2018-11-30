@@ -119,24 +119,9 @@ void mainboard_smi_sleep(u8 slp_typ)
 	while (google_chromeec_get_event() != 0);
 }
 
-
-static int mainboard_finalized = 0;
-
 int mainboard_smi_apmc(u8 apmc)
 {
 	switch (apmc) {
-	case APM_CNT_FINALIZE:
-		if (mainboard_finalized) {
-			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
-			return 0;
-		}
-
-		intel_pch_finalize_smm();
-		intel_northbridge_haswell_finalize_smm();
-		intel_cpu_haswell_finalize_smm();
-
-		mainboard_finalized = 1;
-		break;
 	case APM_CNT_ACPI_ENABLE:
 		google_chromeec_set_smi_mask(0);
 		/* Clear all pending events */

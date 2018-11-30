@@ -116,10 +116,8 @@ AGESA_STATUS agesa_Reset(uint32_t Func, uintptr_t Data, void *ConfigPtr)
 {
 	AGESA_STATUS Status;
 	uintptr_t ResetType;
-	AMD_CONFIG_PARAMS *StdHeader;
 
 	ResetType = Data;
-	StdHeader = ConfigPtr;
 
 	/*
 	 * This should perform the RESET based upon the ResetType, but coreboot

@@ -145,6 +145,7 @@ static void lpc_read_resources(struct device *dev)
 
 	/* Allocate ACPI NVS in CBMEM */
 	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(global_nvs_t));
+	printk(BIOS_DEBUG, "ACPI GNVS at %p\n", gnvs);
 }
 
 static void lpc_set_resources(struct device *dev)

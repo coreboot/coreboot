@@ -217,13 +217,10 @@ uint16_t sb_wideio_size(int index)
  */
 int sb_find_wideio_range(uint16_t start, uint16_t size)
 {
-	uint32_t enable_register;
 	int i, index = WIDEIO_RANGE_ERROR;
 	uint16_t end, current_size, start_wideio, end_wideio;
 
 	end = start + size;
-	enable_register = pci_read_config32(SOC_LPC_DEV,
-					   LPC_IO_OR_MEM_DECODE_ENABLE);
 	for (i = 0; i < TOTAL_WIDEIO_PORTS; i++) {
 		current_size = sb_wideio_size(i);
 		if (current_size == 0)

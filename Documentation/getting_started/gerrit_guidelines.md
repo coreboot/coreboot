@@ -151,7 +151,7 @@ gerrit. Topics can be set for individual patches in gerrit by going into
 the patch and clicking on the icon next to the topic line. Topics can also
 be set when you push the patches into gerrit. For example, to push a set of
 commits with the i915-kernel-x60 set, use the command:
-        git push origin HEAD:refs/for/master/i915-kernel-x60
+        git push origin HEAD:refs/for/master%topic=i915-kernel-x60
 
 * If one of your patches isn't ready to be merged, make sure it's obvious
 that you don't feel it's ready for merge yet. The preferred way to show

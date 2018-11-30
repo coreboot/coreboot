@@ -15,30 +15,35 @@
  */
 
 #include <arch/io.h>
-#include <device/pci_ops.h>
 #include <console/post_codes.h>
+#include <device/pci_ops.h>
+#include <southbridge/intel/common/pmbase.h>
+#include <southbridge/intel/common/pmutil.h>
+#include <southbridge/intel/common/rcba.h>
 #include <spi-generic.h>
-#include "me.h"
-#include "pch.h"
+
+#include "finalize.h"
 
 void intel_pch_finalize_smm(void)
 {
-	/* Lock down Management Engine */
-	intel_me_finalize_smm();
+	const pci_devfn_t lpc_dev = PCI_DEV(0, 0x1f, 0);
 
-	/* Set SPI opcode menu */
-	RCBA16(0x3894) = SPI_OPPREFIX;
-	RCBA16(0x3896) = SPI_OPTYPE;
-	RCBA32(0x3898) = SPI_OPMENU_LOWER;
-	RCBA32(0x389c) = SPI_OPMENU_UPPER;
+	if (IS_ENABLED(CONFIG_LOCK_SPI_FLASH_RO) ||
+	    IS_ENABLED(CONFIG_LOCK_SPI_FLASH_NO_ACCESS)) {
+		int i;
+		u32 lockmask = 1UL << 31;
+		if (IS_ENABLED(CONFIG_LOCK_SPI_FLASH_NO_ACCESS))
+			lockmask |= 1 << 15;
+		for (i = 0; i < 20; i += 4)
+			RCBA32(0x3874 + i) = RCBA32(0x3854 + i) | lockmask;
+	}
 
 	/* Lock SPIBAR */
 	RCBA32_OR(0x3804, (1 << 15));
 
-#if IS_ENABLED(CONFIG_SPI_FLASH_SMM)
-	/* Re-init SPI driver to handle locked BAR */
-	spi_init();
-#endif
+	if (IS_ENABLED(CONFIG_SPI_FLASH_SMM))
+		/* Re-init SPI driver to handle locked BAR */
+		spi_init();
 
 	/* TCLOCKDN: TC Lockdown */
 	RCBA32_OR(0x0050, (1UL << 31));
@@ -49,20 +54,23 @@ void intel_pch_finalize_smm(void)
 	/* Function Disable SUS Well Lockdown */
 	RCBA_AND_OR(8, 0x3420, ~0U, (1 << 7));
 
-	/* Global SMI Lock */
-	pci_or_config16(PCH_LPC_DEV, 0xa0, 1 << 4);
+	pci_or_config16(lpc_dev, D31F0_GEN_PMCON_1, SMI_LOCK);
 
-	/* GEN_PMCON Lock */
-	pci_or_config8(PCH_LPC_DEV, 0xa6, (1 << 1) | (1 << 2));
+	pci_or_config8(lpc_dev, D31F0_GEN_PMCON_LOCK,
+		       ACPI_BASE_LOCK | SLP_STR_POL_LOCK);
 
-	/* PMSYNC */
-	RCBA32_OR(PMSYNC_CONFIG, (1UL << 31));
+	pci_update_config32(lpc_dev, D31F0_ETR3, ~ETR3_CF9GR, ETR3_CF9LOCK);
+
+	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_LYNXPOINT))
+		/* PMSYNC */
+		RCBA32_OR(0x33c4, (1UL << 31));
 
 	/* R/WO registers */
 	RCBA32(0x21a4) = RCBA32(0x21a4);
 	pci_write_config32(PCI_DEV(0, 27, 0), 0x74,
 		    pci_read_config32(PCI_DEV(0, 27, 0), 0x74));
 
-	/* Indicate finalize step with post code */
-	outb(POST_OS_BOOT, 0x80);
+	write_pmbase16(TCO1_CNT, read_pmbase16(TCO1_CNT) | TCO_LOCK);
+
+	outb(POST_OS_BOOT, CONFIG_POST_IO_PORT);
 }

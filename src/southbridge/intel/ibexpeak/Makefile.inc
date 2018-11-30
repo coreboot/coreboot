@@ -37,7 +37,7 @@ ramstage-$(CONFIG_ELOG) += ../bd82x6x/elog.c
 ramstage-y += madt.c
 
 ramstage-y += smi.c
-smm-y += smihandler.c me.c ../bd82x6x/me_8.x.c ../bd82x6x/finalize.c ../bd82x6x/pch.c
+smm-y += smihandler.c me.c ../bd82x6x/me_8.x.c ../bd82x6x/pch.c
 
 romstage-y += ../bd82x6x/early_usb.c early_smbus.c ../bd82x6x/early_me.c ../bd82x6x/me_status.c ../common/gpio.c early_thermal.c
 romstage-y += ../bd82x6x/early_rcba.c

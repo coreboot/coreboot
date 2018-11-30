@@ -32,6 +32,7 @@
 #include <southbridge/intel/common/gpio.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
 #include <southbridge/intel/common/pmutil.h>
+#include <southbridge/intel/common/finalize.h>
 
 static global_nvs_t *gnvs;
 global_nvs_t *smm_get_gnvs(void)

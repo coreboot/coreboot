@@ -20,10 +20,20 @@
 #include <cpu/x86/smm.h>
 
 #define D31F0_PMBASE		0x40
+#define D31F0_GEN_PMCON_1	0xa0
+#define   SMI_LOCK		(1 << 4)
+#define D31F0_GEN_PMCON_2	0xa2
 #define D31F0_GEN_PMCON_3	0xa4
 #define   RTC_BATTERY_DEAD		(1 << 2)
 #define   RTC_POWER_FAILED		(1 << 1)
 #define   SLEEP_AFTER_POWER_FAIL	(1 << 0)
+#define D31F0_GEN_PMCON_LOCK	0xa6
+#define   ACPI_BASE_LOCK	(1 << 1)
+#define   SLP_STR_POL_LOCK	(1 << 2)
+#define D31F0_ETR3		0xac
+#define   ETR3_CWORWRE		(1 << 18)
+#define   ETR3_CF9GR		(1 << 20)
+#define   ETR3_CF9LOCK		(1 << 31)
 #define D31F0_GPIO_ROUT		0xb8
 #define  GPI_DISABLE		0x00
 #define  GPI_IS_SMI		0x01

@@ -42,7 +42,7 @@ ramstage-y += acpi.c
 ramstage-$(CONFIG_ELOG) += elog.c
 
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c pmutil.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me_9.x.c finalize.c pch.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me_9.x.c pch.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += pmutil.c usb_ehci.c usb_xhci.c
 
 romstage-y += early_usb.c early_smbus.c early_me.c me_status.c early_pch.c

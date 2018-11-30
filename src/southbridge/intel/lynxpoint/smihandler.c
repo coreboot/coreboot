@@ -25,8 +25,10 @@
 #include <elog.h>
 #include <halt.h>
 #include <pc80/mc146818rtc.h>
+#include <southbridge/intel/common/finalize.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <cpu/intel/haswell/haswell.h>
+#include "me.h"
 #include "pch.h"
 
 #include "nvs.h"
@@ -284,6 +286,7 @@ static void southbridge_smi_apmc(void)
 			return;
 		}
 
+		intel_me_finalize_smm();
 		intel_pch_finalize_smm();
 		intel_northbridge_haswell_finalize_smm();
 		intel_cpu_haswell_finalize_smm();

@@ -969,6 +969,11 @@ static unsigned long southbridge_write_acpi_tables(struct device *device,
 
 static void lpc_final(struct device *dev)
 {
+	RCBA16(0x3894) = SPI_OPPREFIX;
+	RCBA16(0x3896) = SPI_OPTYPE;
+	RCBA32(0x3898) = SPI_OPMENU_LOWER;
+	RCBA32(0x389c) = SPI_OPMENU_UPPER;
+
 	if (acpi_is_wakeup_s3() || IS_ENABLED(CONFIG_INTEL_CHIPSET_LOCKDOWN))
 		outb(APM_CNT_FINALIZE, APM_CNT);
 }

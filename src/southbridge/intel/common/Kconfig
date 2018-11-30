@@ -33,6 +33,9 @@ config SOUTHBRIDGE_INTEL_COMMON_SMM
 config SOUTHBRIDGE_INTEL_COMMON_ACPI_MADT
 	bool
 
+config SOUTHBRIDGE_INTEL_COMMON_FINALIZE
+	bool
+
 config INTEL_DESCRIPTOR_MODE_CAPABLE
 	def_bool n
 	help
@@ -55,3 +58,42 @@ config INTEL_CHIPSET_LOCKDOWN
 	  locked down on each normal boot path (done by either coreboot or payload)
 	  and S3 resume (always done by coreboot). Select this to let coreboot
 	  to do this on normal boot path.
+
+if SOUTHBRIDGE_INTEL_COMMON_FINALIZE
+
+choice
+	prompt "Flash locking during chipset lockdown"
+	default LOCK_SPI_FLASH_NONE
+
+config LOCK_SPI_FLASH_NONE
+	bool "Don't lock flash sections"
+
+config LOCK_SPI_FLASH_RO
+	bool "Write-protect all flash sections"
+	help
+	  Select this if you want to write-protect the whole firmware flash
+	  chip. The locking will take place during the chipset lockdown, which
+	  is either triggered by coreboot (when INTEL_CHIPSET_LOCKDOWN is set)
+	  or has to be triggered later (e.g. by the payload or the OS).
+
+	        NOTE: If you trigger the chipset lockdown unconditionally,
+	        you won't be able to write to the flash chip using the
+	        internal programmer any more.
+
+config LOCK_SPI_FLASH_NO_ACCESS
+	bool "Write-protect all flash sections and read-protect non-BIOS sections"
+	help
+	  Select this if you want to protect the firmware flash against all
+	  further accesses (with the exception of the memory mapped BIOS re-
+	  gion which is always readable). The locking will take place during
+	  the chipset lockdown, which is either triggered by coreboot (when
+	  INTEL_CHIPSET_LOCKDOWN is set) or has to be triggered later (e.g.
+	  by the payload or the OS).
+
+	        NOTE: If you trigger the chipset lockdown unconditionally,
+	        you won't be able to write to the flash chip using the
+	        internal programmer any more.
+
+endchoice
+
+endif

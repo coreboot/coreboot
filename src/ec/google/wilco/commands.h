@@ -32,6 +32,8 @@ enum {
 	KB_SAVE = 0x2f,
 	/* Restore PS/2 data after S3 resume */
 	KB_RESTORE = 0x30,
+	/* Manage the EC control of camera power */
+	KB_CAMERA = 0x33,
 	/* Retrieve information about the EC */
 	KB_EC_INFO = 0x38,
 	/* Set ACPI mode on or off */
@@ -65,6 +67,11 @@ enum ec_audio_mute {
 
 enum ec_radio {
 	RADIO_WIFI = 0x02,
+};
+
+enum ec_camera {
+	CAMERA_ON = 0,
+	CAMERA_OFF
 };
 
 /**

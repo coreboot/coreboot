@@ -69,6 +69,9 @@ static void wilco_ec_init(struct device *dev)
 
 	/* Enable WiFi radio */
 	wilco_ec_radio_control(RADIO_WIFI, 1);
+
+	/* Turn on camera power */
+	wilco_ec_send(KB_CAMERA, CAMERA_ON);
 }
 
 static void wilco_ec_resource(struct device *dev, int index,

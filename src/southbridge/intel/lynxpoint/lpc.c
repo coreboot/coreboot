@@ -967,6 +967,11 @@ static unsigned long southbridge_write_acpi_tables(struct device *device,
 	return current;
 }
 
+static void lpc_final(struct device *dev)
+{
+	if (acpi_is_wakeup_s3() || IS_ENABLED(CONFIG_INTEL_CHIPSET_LOCKDOWN))
+		outb(APM_CNT_FINALIZE, APM_CNT);
+}
 
 static struct pci_operations pci_ops = {
 	.set_subsystem = set_subsystem,
@@ -981,6 +986,7 @@ static struct device_operations device_ops = {
 	.acpi_name		= lpc_acpi_name,
 	.write_acpi_tables      = southbridge_write_acpi_tables,
 	.init			= lpc_init,
+	.final			= lpc_final,
 	.enable			= pch_lpc_enable,
 	.scan_bus		= scan_lpc_bus,
 	.ops_pci		= &pci_ops,

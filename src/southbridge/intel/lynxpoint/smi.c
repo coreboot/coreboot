@@ -118,17 +118,3 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 		  "d" (APM_CNT)
 	);
 }
-
-/*
- * Finalize system before payload boot if INTEL_CHIPSET_LOCKDOWN=y
- */
-#if IS_ENABLED(CONFIG_INTEL_CHIPSET_LOCKDOWN)
-
-static void finalize_boot(void *unused)
-{
-	outb(APM_CNT_FINALIZE, APM_CNT);
-}
-
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, finalize_boot, NULL);
-
-#endif

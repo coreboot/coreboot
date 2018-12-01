@@ -15,6 +15,7 @@
 
 #include <boot_device.h>
 #include <cbfs.h>
+#include <fmap.h>
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <smmstore.h>
@@ -57,15 +58,25 @@
 static int lookup_store(struct region_device *rstore)
 {
 	struct cbfsf file;
-	if (cbfs_locate_file_in_region(&file,
-		CONFIG_SMMSTORE_REGION, CONFIG_SMMSTORE_FILENAME, NULL) < 0) {
-		printk(BIOS_WARNING, "smm store: "
-			"Unable to find SMM store file in region '%s'\n",
-			CONFIG_SMMSTORE_REGION);
-		return -1;
-	}
+	if (IS_ENABLED(CONFIG_SMMSTORE_IN_CBFS)) {
+		if (cbfs_locate_file_in_region(&file,
+			       CONFIG_SMMSTORE_REGION,
+			       CONFIG_SMMSTORE_FILENAME, NULL) < 0) {
+			printk(BIOS_WARNING, "smm store: "
+			       "Unable to find SMM store file in region '%s'\n",
+			       CONFIG_SMMSTORE_REGION);
+			return -1;
+		}
 
-	cbfs_file_data(rstore, &file);
+		cbfs_file_data(rstore, &file);
+	} else {
+		if (fmap_locate_area_as_rdev_rw(CONFIG_SMMSTORE_REGION, rstore)) {
+			printk(BIOS_WARNING,
+			       "smm store: Unable to find SMM store FMAP region '%s'\n",
+			       CONFIG_SMMSTORE_REGION);
+			return -1;
+		}
+	}
 
 	return 0;
 }

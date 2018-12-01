@@ -19,14 +19,22 @@ config SMMSTORE
 	depends on BOOT_DEVICE_SUPPORTS_WRITES
 	select SPI_FLASH_SMM if BOOT_DEVICE_SPI_FLASH_RW_NOMMAP
 
+config SMMSTORE_IN_CBFS
+	bool
+	default n
+	help
+	  Select this if you want to the SMMSTORE region in a
+	  cbfsfile in a cbfs FMAP region
+
 if SMMSTORE
 config SMMSTORE_REGION
-	string "fmap region in which SMM store file is kept"
-	default "RW_LEGACY" if CHROMEOS
-	default "COREBOOT"
+	string "fmap region in which SMM store file is kept" if SMMSTORE_IN_CBFS
+	default "RW_LEGACY" if CHROMEOS && SMMSTORE_IN_CBFS
+	default "COREBOOT" if SMMSTORE_IN_CBFS
+	default "SMMSTORE"
 
 config SMMSTORE_FILENAME
-	string "SMM store file name"
+	string "SMM store file name" if SMMSTORE_IN_CBFS
 	default "smm_store"
 
 endif

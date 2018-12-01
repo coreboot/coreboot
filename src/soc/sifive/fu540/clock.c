@@ -20,6 +20,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+// 33.33 Mhz after reset
+#define FU540_BASE_FQY 33330
+
 struct prci_ctlr {
 	u32 hfxosccfg;		/* offset 0x00 */
 	u32 corepllcfg0;	/* offset 0x04 */
@@ -40,33 +43,19 @@ static struct prci_ctlr *prci = (void *)FU540_PRCI;
 #define PRCI_CORECLK_CORE_PLL 0
 #define PRCI_CORECLK_HFCLK 1
 
-#define PRCI_COREPLLCFG0_LOCK (1u << 31)
-#define PRCI_COREPLLCFG0_DIVR_SHIFT 0
-#define PRCI_COREPLLCFG0_DIVF_SHIFT 6
-#define PRCI_COREPLLCFG0_DIVQ_SHIFT 15
-#define PRCI_COREPLLCFG0_RANGE_SHIFT 18
-#define PRCI_COREPLLCFG0_BYPASS_SHIFT 24
-#define PRCI_COREPLLCFG0_FSE_SHIFT 25
-#define PRCI_COREPLLCFG0_DIVR_MASK (0x03f << PRCI_COREPLLCFG0_DIVR_SHIFT)
-#define PRCI_COREPLLCFG0_DIVF_MASK (0x1ff << PRCI_COREPLLCFG0_DIVF_SHIFT)
-#define PRCI_COREPLLCFG0_DIVQ_MASK (0x007 << PRCI_COREPLLCFG0_DIVQ_SHIFT)
-#define PRCI_COREPLLCFG0_RANGE_MASK (0x07 << PRCI_COREPLLCFG0_RANGE_SHIFT)
-#define PRCI_COREPLLCFG0_BYPASS_MASK (0x1 << PRCI_COREPLLCFG0_BYPASS_SHIFT)
-#define PRCI_COREPLLCFG0_FSE_MASK (0x1 << PRCI_COREPLLCFG0_FSE_SHIFT)
-
-#define PRCI_DDRPLLCFG0_LOCK (1u << 31)
-#define PRCI_DDRPLLCFG0_DIVR_SHIFT 0
-#define PRCI_DDRPLLCFG0_DIVF_SHIFT 6
-#define PRCI_DDRPLLCFG0_DIVQ_SHIFT 15
-#define PRCI_DDRPLLCFG0_RANGE_SHIFT 18
-#define PRCI_DDRPLLCFG0_BYPASS_SHIFT 24
-#define PRCI_DDRPLLCFG0_FSE_SHIFT 25
-#define PRCI_DDRPLLCFG0_DIVR_MASK (0x03f << PRCI_DDRPLLCFG0_DIVR_SHIFT)
-#define PRCI_DDRPLLCFG0_DIVF_MASK (0x1ff << PRCI_DDRPLLCFG0_DIVF_SHIFT)
-#define PRCI_DDRPLLCFG0_DIVQ_MASK (0x007 << PRCI_DDRPLLCFG0_DIVQ_SHIFT)
-#define PRCI_DDRPLLCFG0_RANGE_MASK (0x07 << PRCI_DDRPLLCFG0_RANGE_SHIFT)
-#define PRCI_DDRPLLCFG0_BYPASS_MASK (0x1 << PRCI_DDRPLLCFG0_BYPASS_SHIFT)
-#define PRCI_DDRPLLCFG0_FSE_MASK (0x1 << PRCI_DDRPLLCFG0_FSE_SHIFT)
+#define PRCI_PLLCFG_LOCK (1u << 31)
+#define PRCI_PLLCFG_DIVR_SHIFT 0
+#define PRCI_PLLCFG_DIVF_SHIFT 6
+#define PRCI_PLLCFG_DIVQ_SHIFT 15
+#define PRCI_PLLCFG_RANGE_SHIFT 18
+#define PRCI_PLLCFG_BYPASS_SHIFT 24
+#define PRCI_PLLCFG_FSE_SHIFT 25
+#define PRCI_PLLCFG_DIVR_MASK (0x03f << PRCI_PLLCFG_DIVR_SHIFT)
+#define PRCI_PLLCFG_DIVF_MASK (0x1ff << PRCI_PLLCFG_DIVF_SHIFT)
+#define PRCI_PLLCFG_DIVQ_MASK (0x007 << PRCI_PLLCFG_DIVQ_SHIFT)
+#define PRCI_PLLCFG_RANGE_MASK (0x07 << PRCI_PLLCFG_RANGE_SHIFT)
+#define PRCI_PLLCFG_BYPASS_MASK (0x1 << PRCI_PLLCFG_BYPASS_SHIFT)
+#define PRCI_PLLCFG_FSE_MASK (0x1 << PRCI_PLLCFG_FSE_SHIFT)
 
 #define PRCI_DDRPLLCFG1_MASK (1u << 31)
 
@@ -78,6 +67,38 @@ static struct prci_ctlr *prci = (void *)FU540_PRCI;
 #define PRCI_DEVICESRESET_DDR_PHY_RST_N(x)  (((x) & 0x1)  << 3)
 #define PRCI_DEVICESRESET_GEMGXL_RST_N(x)   (((x) & 0x1)  << 5)
 
+/* Clock initialization should only be done in romstage. */
+#if ENV_ROMSTAGE
+struct pll_settings {
+	unsigned int divr:6;
+	unsigned int divf:9;
+	unsigned int divq:3;
+	unsigned int range:3;
+	unsigned int bypass:1;
+	unsigned int fse:1;
+};
+
+static void configure_pll(u32 *reg, const struct pll_settings *s)
+{
+	// Write the settings to the register
+	u32 c = read32(reg);
+	clrsetbits_le32(&c, PRCI_PLLCFG_DIVR_MASK
+		| PRCI_PLLCFG_DIVF_MASK | PRCI_PLLCFG_DIVQ_MASK
+		| PRCI_PLLCFG_RANGE_MASK | PRCI_PLLCFG_BYPASS_MASK
+		| PRCI_PLLCFG_FSE_MASK,
+		(s->divr << PRCI_PLLCFG_DIVR_SHIFT)
+		| (s->divf << PRCI_PLLCFG_DIVF_SHIFT)
+		| (s->divq << PRCI_PLLCFG_DIVQ_SHIFT)
+		| (s->range << PRCI_PLLCFG_RANGE_SHIFT)
+		| (s->bypass << PRCI_PLLCFG_BYPASS_SHIFT)
+		| (s->fse << PRCI_PLLCFG_FSE_SHIFT));
+	write32(reg, c);
+
+	// Wait for PLL lock
+	while (!(read32(reg) & PRCI_PLLCFG_LOCK))
+		; /* TODO: implement a timeout */
+}
+
 /*
  * Set coreclk according to the SiFive FU540-C000 Manual
  * https://www.sifive.com/documentation/chips/freedom-u540-c000-manual/
@@ -88,13 +109,14 @@ static struct prci_ctlr *prci = (void *)FU540_PRCI;
  * For example, to setup COREPLL for 1 GHz operation, program divr = 0 (x1),
  * divf = 59 (4000 MHz VCO), divq = 2 (/4 Output divider)
  */
-
-#define PRCI_CORECLK_DIVR 0
-#define PRCI_CORECLK_DIVF 59
-#define PRCI_CORECLK_DIVQ 2
-#define PRCI_CORECLK_RANGE 4
-#define PRCI_CORECLK_BYPASS 0
-#define PRCI_CORECLK_FSE 1
+static const struct pll_settings corepll_settings = {
+	.divr = 0,
+	.divf = 59,
+	.divq = 2,
+	.range = 4,
+	.bypass = 0,
+	.fse = 1,
+};
 
 /*
  * Section 7.4.3: DDR and Ethernet Subsystem Clocking and Reset
@@ -110,41 +132,22 @@ static struct prci_ctlr *prci = (void *)FU540_PRCI;
  * GEMGXLPLL is set up for 125 MHz output frequency.
  * divr = 0, divf = 59 (4000 MHz VCO), divq = 5
  */
+static const struct pll_settings ddrpll_settings = {
+	.divr = 0,
+	.divf = 55,
+	.divq = 2,
+	.range = 4,
+	.bypass = 0,
+	.fse = 1,
+};
 
-#define PRCI_DDRCLK_DIVR 0
-#define PRCI_DDRCLK_DIVF 55
-#define PRCI_DDRCLK_DIVQ 2
-#define PRCI_DDRCLK_RANGE 4
-#define PRCI_DDRCLK_BYPASS 0
-#define PRCI_DDRCLK_FSE 1
-
-// 33.33 Mhz after reset
-#define FU540_BASE_FQY 33330
-
-/* Clock initialization should only be done in romstage. */
-#if ENV_ROMSTAGE
 static void init_coreclk(void)
 {
 	// switch coreclk to input reference frequency before modifying PLL
 	clrsetbits_le32(&prci->coreclksel, PRCI_CORECLK_MASK,
 		PRCI_CORECLK_HFCLK);
 
-	u32 c = read32(&prci->corepllcfg0);
-	clrsetbits_le32(&c, PRCI_COREPLLCFG0_DIVR_MASK
-		| PRCI_COREPLLCFG0_DIVF_MASK | PRCI_COREPLLCFG0_DIVQ_MASK
-		| PRCI_COREPLLCFG0_RANGE_MASK | PRCI_COREPLLCFG0_BYPASS_MASK
-		| PRCI_COREPLLCFG0_FSE_MASK,
-		(PRCI_CORECLK_DIVR << PRCI_COREPLLCFG0_DIVR_SHIFT)
-		| (PRCI_CORECLK_DIVF << PRCI_COREPLLCFG0_DIVF_SHIFT)
-		| (PRCI_CORECLK_DIVQ << PRCI_COREPLLCFG0_DIVQ_SHIFT)
-		| (PRCI_CORECLK_RANGE << PRCI_COREPLLCFG0_RANGE_SHIFT)
-		| (PRCI_CORECLK_BYPASS << PRCI_COREPLLCFG0_BYPASS_SHIFT)
-		| (PRCI_CORECLK_FSE << PRCI_COREPLLCFG0_FSE_SHIFT));
-	write32(&prci->corepllcfg0, c);
-
-	// wait for PLL lock
-	while (!(read32(&prci->corepllcfg0) & PRCI_COREPLLCFG0_LOCK))
-		; /* TODO: implement a timeout */
+	configure_pll(&prci->corepllcfg0, &corepll_settings);
 
 	// switch coreclk to use corepll
 	clrsetbits_le32(&prci->coreclksel, PRCI_CORECLK_MASK,
@@ -158,22 +161,7 @@ static void init_pll_ddr(void)
 	clrbits_le32(&cfg1, PRCI_DDRPLLCFG1_MASK);
 	write32(&prci->ddrpllcfg1, cfg1);
 
-	u32 c = read32(&prci->ddrpllcfg0);
-	clrsetbits_le32(&c, PRCI_DDRPLLCFG0_DIVR_MASK
-		| PRCI_DDRPLLCFG0_DIVF_MASK | PRCI_DDRPLLCFG0_DIVQ_MASK
-		| PRCI_DDRPLLCFG0_RANGE_MASK | PRCI_DDRPLLCFG0_BYPASS_MASK
-		| PRCI_DDRPLLCFG0_FSE_MASK,
-		(PRCI_DDRCLK_DIVR << PRCI_DDRPLLCFG0_DIVR_SHIFT)
-		| (PRCI_DDRCLK_DIVF << PRCI_DDRPLLCFG0_DIVF_SHIFT)
-		| (PRCI_DDRCLK_DIVQ << PRCI_DDRPLLCFG0_DIVQ_SHIFT)
-		| (PRCI_DDRCLK_RANGE << PRCI_DDRPLLCFG0_RANGE_SHIFT)
-		| (PRCI_DDRCLK_BYPASS << PRCI_DDRPLLCFG0_BYPASS_SHIFT)
-		| (PRCI_DDRCLK_FSE << PRCI_DDRPLLCFG0_FSE_SHIFT));
-	write32(&prci->ddrpllcfg0, c);
-
-	// wait for PLL lock
-	while (!(read32(&prci->ddrpllcfg0) & PRCI_DDRPLLCFG0_LOCK))
-		; /* TODO: implement a timeout */
+	configure_pll(&prci->ddrpllcfg0, &ddrpll_settings);
 
 	// enable ddr clock output
 	setbits_le32(&cfg1, PRCI_DDRPLLCFG1_MASK);
@@ -249,12 +237,12 @@ int clock_get_coreclk_khz(void)
 		return FU540_BASE_FQY;
 
 	u32 cfg  = read32(&prci->corepllcfg0);
-	u32 divr = (cfg & PRCI_COREPLLCFG0_DIVR_MASK)
-		>> PRCI_COREPLLCFG0_DIVR_SHIFT;
-	u32 divf = (cfg & PRCI_COREPLLCFG0_DIVF_MASK)
-		>> PRCI_COREPLLCFG0_DIVF_SHIFT;
-	u32 divq = (cfg & PRCI_COREPLLCFG0_DIVQ_MASK)
-		>> PRCI_COREPLLCFG0_DIVQ_SHIFT;
+	u32 divr = (cfg & PRCI_PLLCFG_DIVR_MASK)
+		>> PRCI_PLLCFG_DIVR_SHIFT;
+	u32 divf = (cfg & PRCI_PLLCFG_DIVF_MASK)
+		>> PRCI_PLLCFG_DIVF_SHIFT;
+	u32 divq = (cfg & PRCI_PLLCFG_DIVQ_MASK)
+		>> PRCI_PLLCFG_DIVQ_SHIFT;
 
 	printk(BIOS_SPEW, "clk: r=%d f=%d q=%d\n", divr, divf, divq);
 	return FU540_BASE_FQY

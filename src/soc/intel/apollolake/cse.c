@@ -42,6 +42,9 @@
 #define   READ_FILE_FLAG_EMULATED		(1 << 2)
 #define   READ_FILE_FLAG_HW			(1 << 3)
 
+#define MKHI_GROUP_ID_GEN			0xff
+#define GET_FW_VERSION				0x02
+
 #define MCA_MAX_FILE_PATH_SIZE			64
 
 #define FUSE_LOCK_FILE				"/fpf/intel/SocCfgLock"
@@ -55,6 +58,17 @@ static enum fuse_flash_state {
 
 #define FPF_STATUS_FMAP				"FPF_STATUS"
 
+union mkhi_header {
+	uint32_t data;
+	struct {
+		uint32_t group_id: 8;
+		uint32_t command: 7;
+		uint32_t is_response: 1;
+		uint32_t reserved: 8;
+		uint32_t result: 8;
+	} __packed fields;
+};
+
 /*
  * Read file from CSE internal filesystem.
  * size is maximum length of provided buffer buff, which is updated with actual
@@ -66,17 +80,6 @@ static int read_cse_file(const char *path, void *buff, size_t *size,
 {
 	int res;
 	size_t reply_size;
-
-	union mkhi_header {
-		uint32_t data;
-		struct {
-			uint32_t group_id: 8;
-			uint32_t command: 7;
-			uint32_t is_response: 1;
-			uint32_t reserved: 8;
-			uint32_t result: 8;
-		} __packed fields;
-	};
 
 	struct mca_command {
 		union mkhi_header mkhi_hdr;
@@ -192,6 +195,63 @@ static uint32_t dump_status(int index, int reg_addr)
 	return reg;
 }
 
+static void dump_cse_version(void)
+{
+	int res;
+	size_t reply_size;
+
+	struct fw_version_cmd {
+		union mkhi_header mkhi_hdr;
+	} __packed msg;
+
+	struct version {
+		uint16_t minor;
+		uint16_t major;
+		uint16_t build;
+		uint16_t hotfix;
+	} __packed;
+
+	struct fw_version_response {
+		union mkhi_header mkhi_hdr;
+		struct version code;
+		struct version nftp;
+		struct version fitc;
+	} __packed rsp;
+
+	/*
+	 * Print ME version only if UART debugging is enabled. Else, it takes
+	 * ~0.6 second to talk to ME and get this information.
+	 */
+	if (!IS_ENABLED(CONFIG_UART_DEBUG))
+		return;
+
+	msg.mkhi_hdr.fields.group_id = MKHI_GROUP_ID_GEN;
+	msg.mkhi_hdr.fields.command = GET_FW_VERSION;
+
+	res = heci_send(&msg, sizeof(msg), BIOS_HOST_ADDR, HECI_MKHI_ADDR);
+
+	if (!res) {
+		printk(BIOS_ERR, "Failed to send HECI message.\n");
+		return;
+	}
+
+	reply_size = sizeof(rsp);
+	res = heci_receive(&rsp, &reply_size);
+
+	if (!res) {
+		printk(BIOS_ERR, "Failed to receive HECI reply.\n");
+		return;
+	}
+
+	if (rsp.mkhi_hdr.fields.result != 0) {
+		printk(BIOS_ERR, "Failed to get ME version.\n");
+		return;
+	}
+
+	printk(BIOS_DEBUG, "ME: Version: %d.%d.%d.%d\n", rsp.code.major,
+	       rsp.code.minor, rsp.code.hotfix, rsp.code.build);
+}
+
 static void dump_cse_state(void)
 {
 	uint32_t fwsts1;
@@ -222,6 +282,8 @@ static void dump_cse_state(void)
 		printk(BIOS_DEBUG, "unknown");
 	}
 	printk(BIOS_DEBUG, "\n");
+
+	dump_cse_version();
 }
 
 #define PCR_PSFX_T0_SHDW_PCIEN		0x1C

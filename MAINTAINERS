@@ -189,6 +189,11 @@ M:	Damien Zammit <damien@zamaudio.com>
 S:	Odd Fixes
 F:	src/mainboard/gigabyte/ga-g41m-es2l
 
+GIGABYTE GA-H61M-S2PV MAINBOARD
+M:	Angel Pons <th3fanbus@gmail.com>
+S:	Maintained
+F:	src/mainboard/gigabyte/ga-h61m-s2pv
+
 GOOGLE PANTHER MAINBOARD
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 S:	Supported
@@ -314,6 +319,11 @@ M:	Andrey Petrov <andrey.petrov@gmail.com>
 S:	Maintained
 F:	src/soc/intel/apollolake/
 
+ASROCK G41C-GS MAINBOARD & VARIANTS
+M:	Angel Pons <th3fanbus@gmail.com>
+S:	Maintained
+F:	src/mainboard/asrock/g41c-gs/
+
 ASUS KFSN4-DRE & KFSN4-DRE_K8 MAINBOARDS
 M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
 S:	Supported
@@ -329,6 +339,16 @@ ASUS KGPE-D16 MAINBOARD
 M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
 S:	Supported
 F:	src/mainboard/asus/kgpe-d16/
+
+ASUS P5QC PRO MAINBOARD & VARIANTS
+M:	Angel Pons <th3fanbus@gmail.com>
+S:	Maintained
+F:	src/mainboard/asus/p5qc/
+
+ASUS P8H61-M PRO MAINBOARD
+M:	Angel Pons <th3fanbus@gmail.com>
+S:	Maintained
+F:	src/mainboard/asus/p8h61-m_pro/
 
 PC ENGINES ALL MAINBOARDS
 M:	Piotr Król <piotr.krol@3mdeb.com>

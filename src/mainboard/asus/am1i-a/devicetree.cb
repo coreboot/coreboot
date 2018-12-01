@@ -82,7 +82,9 @@ chip northbridge/amd/agesa/family16kb/root_complex
 							irq 0x70 = 12
 						end
 						device pnp 2e.7 on		# GPIO
+							io 0x60 = 0x320
 							io 0x62 = 0x300
+							io 0x64 = 0x321
 						end
 					end	#superio/ite/it8623e
 					chip drivers/pc80/tpm

@@ -55,7 +55,7 @@ void smp_pause(int working_hartid)
 		/* waiting for other Hart to enter the halt */
 		do {
 			barrier();
-		} while (SYNCB + 1 < CONFIG_RISCV_HART_NUM);
+		} while (SYNCB + 1 < CONFIG_MAX_CPUS);
 
 		/* initialize for the next call */
 		SYNCA = 0;
@@ -72,14 +72,17 @@ void smp_resume(void (*fn)(void *), void *arg)
 	if (fn == NULL)
 		die("must pass a non-null function pointer\n");
 
-	for (int i = 0; i < CONFIG_RISCV_HART_NUM; i++) {
+	for (int i = 0; i < CONFIG_MAX_CPUS; i++) {
 		OTHER_HLS(i)->entry.fn = fn;
 		OTHER_HLS(i)->entry.arg = arg;
 	}
 
-	for (int i = 0; i < CONFIG_RISCV_HART_NUM; i++)
+	for (int i = 0; i < CONFIG_MAX_CPUS; i++)
 		if (i != hartid)
 			set_msip(i, 1);
+
+	if (HLS()->entry.fn == NULL)
+		die("entry fn not set\n");
 
 	HLS()->entry.fn(HLS()->entry.arg);
 }

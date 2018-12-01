@@ -39,7 +39,6 @@
 #define NMI_OFF	0
 
 #define ENABLE_ACPI_MODE_IN_COREBOOT	0
-#define TEST_SMM_FLASH_LOCKDOWN		0
 
 typedef struct southbridge_intel_i82801ix_config config_t;
 
@@ -370,10 +369,6 @@ static void enable_clock_gating(void)
 #if CONFIG(HAVE_SMI_HANDLER)
 static void i82801ix_lock_smm(struct device *dev)
 {
-#if TEST_SMM_FLASH_LOCKDOWN
-	u8 reg8;
-#endif
-
 	if (!acpi_is_wakeup_s3()) {
 #if ENABLE_ACPI_MODE_IN_COREBOOT
 		printk(BIOS_DEBUG, "Enabling ACPI via APMC:\n");
@@ -393,33 +388,6 @@ static void i82801ix_lock_smm(struct device *dev)
 	 */
 	if (!CONFIG(PARALLEL_MP))
 		smm_lock();
-
-#if TEST_SMM_FLASH_LOCKDOWN
-	/* Now try this: */
-	printk(BIOS_DEBUG, "Locking BIOS to RO... ");
-	reg8 = pci_read_config8(dev, 0xdc);	/* BIOS_CNTL */
-	printk(BIOS_DEBUG, " BLE: %s; BWE: %s\n", (reg8&2)?"on":"off",
-			(reg8&1)?"rw":"ro");
-	reg8 &= ~(1 << 0);			/* clear BIOSWE */
-	pci_write_config8(dev, 0xdc, reg8);
-	reg8 |= (1 << 1);			/* set BLE */
-	pci_write_config8(dev, 0xdc, reg8);
-	printk(BIOS_DEBUG, "ok.\n");
-	reg8 = pci_read_config8(dev, 0xdc);	/* BIOS_CNTL */
-	printk(BIOS_DEBUG, " BLE: %s; BWE: %s\n", (reg8&2)?"on":"off",
-			(reg8&1)?"rw":"ro");
-
-	printk(BIOS_DEBUG, "Writing:\n");
-	*(volatile u8 *)0xfff00000 = 0x00;
-	printk(BIOS_DEBUG, "Testing:\n");
-	reg8 |= (1 << 0);			/* set BIOSWE */
-	pci_write_config8(dev, 0xdc, reg8);
-
-	reg8 = pci_read_config8(dev, 0xdc);	/* BIOS_CNTL */
-	printk(BIOS_DEBUG, " BLE: %s; BWE: %s\n", (reg8&2)?"on":"off",
-			(reg8&1)?"rw":"ro");
-	printk(BIOS_DEBUG, "Done.\n");
-#endif
 }
 #endif
 

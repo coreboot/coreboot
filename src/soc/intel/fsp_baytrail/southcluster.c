@@ -42,9 +42,6 @@
 #include "chip.h"
 #include <arch/acpi.h>
 
-#define ENABLE_ACPI_MODE_IN_COREBOOT	0
-#define TEST_SMM_FLASH_LOCKDOWN		0
-
 typedef struct soc_intel_fsp_baytrail_config config_t;
 
 static inline void

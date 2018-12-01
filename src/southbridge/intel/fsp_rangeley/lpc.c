@@ -38,9 +38,6 @@
 
 #define NMI_OFF	0
 
-#define ENABLE_ACPI_MODE_IN_COREBOOT	0
-#define TEST_SMM_FLASH_LOCKDOWN		0
-
 typedef struct southbridge_intel_fsp_rangeley_config config_t;
 
 static void soc_enable_apic(struct device *dev)

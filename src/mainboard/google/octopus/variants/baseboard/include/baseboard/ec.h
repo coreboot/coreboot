@@ -43,10 +43,17 @@
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_OPEN)     |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_POWER_BUTTON))
 
-/* EC can wake from S3 with lid or power button or key press */
+/*
+ * EC can wake from S3/S0ix with:
+ * 1. Lid open
+ * 2. Power button
+ * 3. Key press
+ * 4. Mode change
+ */
 #define MAINBOARD_EC_S3_WAKE_EVENTS \
 	(MAINBOARD_EC_S5_WAKE_EVENTS |\
-	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEY_PRESSED))
+	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEY_PRESSED) |\
+	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_MODE_CHANGE))
 
 #define MAINBOARD_EC_S0IX_WAKE_EVENTS	(MAINBOARD_EC_S3_WAKE_EVENTS)
 

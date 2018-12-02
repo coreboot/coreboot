@@ -18,7 +18,8 @@
 #include <arch/acpi.h>
 #include <arch/acpi_pld.h>
 
-int acpi_pld_fill_usb(struct acpi_pld *pld, enum acpi_upc_type type)
+int acpi_pld_fill_usb(struct acpi_pld *pld, enum acpi_upc_type type,
+		      struct acpi_pld_group *group)
 {
 	if (!pld)
 		return -1;
@@ -32,6 +33,8 @@ int acpi_pld_fill_usb(struct acpi_pld *pld, enum acpi_upc_type type)
 	pld->horizontal_position = PLD_HORIZONTAL_POSITION_CENTER;
 	pld->rotation = PLD_ROTATE_0;
 	pld->visible = 1;
+	pld->group.token = group->token;
+	pld->group.position = group->position;
 
 	/* Set the shape based on port type */
 	switch (type) {
@@ -114,16 +117,16 @@ int acpi_pld_to_buffer(const struct acpi_pld *pld, uint8_t *buf, int buf_len)
 	/* [77:74] Shape */
 	buf[9] |= (pld->shape & 0xf) << 2;
 
-	/* [78] Group Orientation */
-	buf[9] |= (pld->group_orientation & 0x1) << 6;
+	/* [78] Orientation */
+	buf[9] |= (pld->orientation & 0x1) << 6;
 
 	/* [86:79] Group Token (incorrectly defined as 1 bit in ACPI 6.2A) */
-	buf[9] |= (pld->group_token & 0x1) << 7;
-	buf[10] |= (pld->group_token >> 0x1) & 0x7f;
+	buf[9] |= (pld->group.token & 0x1) << 7;
+	buf[10] |= (pld->group.token >> 0x1) & 0x7f;
 
 	/* [94:87] Group Position */
-	buf[10] |= (pld->group_position & 0x1) << 7;
-	buf[11] |= (pld->group_position >> 0x1) & 0x7f;
+	buf[10] |= (pld->group.position & 0x1) << 7;
+	buf[11] |= (pld->group.position >> 0x1) & 0x7f;
 
 	/* [95] Bay */
 	buf[11] |= (pld->bay & 0x1) << 7;

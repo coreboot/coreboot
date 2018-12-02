@@ -57,7 +57,7 @@ static void usb_acpi_fill_ssdt_generator(struct device *dev)
 	} else {
 		/* Fill PLD strucutre based on port type */
 		struct acpi_pld pld;
-		acpi_pld_fill_usb(&pld, config->type);
+		acpi_pld_fill_usb(&pld, config->type, &config->group);
 		acpigen_write_pld(&pld);
 	}
 

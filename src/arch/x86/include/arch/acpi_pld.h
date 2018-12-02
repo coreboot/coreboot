@@ -75,6 +75,17 @@ enum acpi_pld_rotate {
 	PLD_ROTATE_315
 };
 
+#define ACPI_PLD_GROUP(__token, __position)	\
+	{					\
+		.token = __token,		\
+		.position = __position,		\
+	}
+
+struct acpi_pld_group {
+	uint8_t token;
+	uint8_t position;
+};
+
 struct acpi_pld {
 	/* Color field can be explicitly ignored */
 	bool ignore_color;
@@ -100,9 +111,8 @@ struct acpi_pld {
 	enum acpi_pld_rotate rotation;
 
 	/* Port grouping */
-	enum acpi_pld_orientation group_orientation;
-	uint8_t group_token;
-	uint8_t group_position;
+	enum acpi_pld_orientation orientation;
+	struct acpi_pld_group group;
 	uint8_t draw_order;
 	uint8_t cabinet_number;
 	uint8_t card_cage_number;
@@ -112,7 +122,8 @@ struct acpi_pld {
 };
 
 /* Fill out PLD structure with defaults based on USB port type */
-int acpi_pld_fill_usb(struct acpi_pld *pld, enum acpi_upc_type type);
+int acpi_pld_fill_usb(struct acpi_pld *pld, enum acpi_upc_type type,
+		      struct acpi_pld_group *group);
 
 /* Turn PLD structure into a 20 byte ACPI buffer */
 int acpi_pld_to_buffer(const struct acpi_pld *pld, uint8_t *buf, int buf_len);

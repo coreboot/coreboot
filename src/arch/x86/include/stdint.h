@@ -99,23 +99,11 @@ typedef uint8_t bool;
 # define UINT64_MAX (18446744073709551615ULL)
 #endif
 
-#ifdef __x86_64__
-
-#ifndef UINT64_C
-#define UINT64_C(c) c ## UL
-#endif
-#ifndef PRIu64
-#define PRIu64 "lu"
-#endif
-
-#else
-
 #ifndef UINT64_C
 #define UINT64_C(c) c ## ULL
 #endif
 #ifndef PRIu64
 #define PRIu64 "llu"
-#endif
 
 #endif
 

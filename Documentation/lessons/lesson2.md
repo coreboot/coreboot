@@ -209,7 +209,7 @@ only visible to those you add as reviewers.
 
 ## Part 5: Getting your commit reviewed
 
-Your commits can now be seen on review.coreboot.org if you select “My”
+Your commits can now be seen on review.coreboot.org if you select “Your”
 and click on “Changes” and can be reviewed by others. Your code will
 first be reviewed by build bot (Jenkins), which will either give you a warning
 or verify a successful build; if so, your commit will receive a +1. Other

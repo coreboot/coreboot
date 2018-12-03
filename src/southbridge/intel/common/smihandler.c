@@ -27,6 +27,7 @@
 #include <halt.h>
 #include <pc80/mc146818rtc.h>
 #include <southbridge/intel/common/pmbase.h>
+#include <smmstore.h>
 
 #include "pmutil.h"
 
@@ -268,6 +269,26 @@ static void southbridge_smi_gsmi(void)
 }
 #endif
 
+static void southbridge_smi_store(void)
+{
+	u8 sub_command, ret;
+	em64t101_smm_state_save_area_t *io_smi =
+		smi_apmc_find_state_save(APM_CNT_SMMSTORE);
+	uint32_t reg_ebx;
+
+	if (!io_smi)
+		return;
+	/* Command and return value in EAX */
+	sub_command = (io_smi->rax >> 8) & 0xff;
+
+	/* Parameter buffer in EBX */
+	reg_ebx = io_smi->rbx;
+
+	/* drivers/smmstore/smi.c */
+	ret = smmstore_exec(sub_command, (uintptr_t *)reg_ebx);
+	io_smi->rax = ret;
+}
+
 static int mainboard_finalized = 0;
 
 static void southbridge_smi_apmc(void)
@@ -322,6 +343,10 @@ static void southbridge_smi_apmc(void)
 		southbridge_smi_gsmi();
 		break;
 #endif
+	case APM_CNT_SMMSTORE:
+		if (CONFIG(SMMSTORE))
+			southbridge_smi_store();
+		break;
 	}
 
 	mainboard_smi_apmc(reg8);

@@ -100,60 +100,6 @@ static void write_smrr(struct smm_relocation_params *relo_params)
 	}
 }
 
-/* The relocation work is actually performed in SMM context, but the code
- * resides in the ramstage module. This occurs by trampolining from the default
- * SMRAM entry point to here. */
-static void asmlinkage cpu_smm_do_relocation(void *arg)
-{
-	em64t101_smm_state_save_area_t *save_state;
-	msr_t mtrr_cap;
-	struct smm_relocation_params *relo_params;
-	const struct smm_module_params *p;
-	const struct smm_runtime *runtime;
-	int cpu;
-
-	p = arg;
-	runtime = p->runtime;
-	relo_params = p->arg;
-	cpu = p->cpu;
-
-	if (cpu >= CONFIG_MAX_CPUS) {
-		printk(BIOS_CRIT,
-		       "Invalid CPU number assigned in SMM stub: %d\n", cpu);
-		return;
-	}
-
-	printk(BIOS_DEBUG, "In relocation handler: cpu %d\n", cpu);
-
-	/* All threads need to set IEDBASE and SMBASE in the save state area.
-	 * Since one thread runs at a time during the relocation the save state
-	 * is the same for all cpus. */
-	save_state = (void *)(runtime->smbase + SMM_DEFAULT_SIZE -
-			      runtime->save_state_size);
-
-	/* The relocated handler runs with all CPUs concurrently. Therefore
-	 * stagger the entry points adjusting SMBASE downwards by save state
-	 * size * CPU num. */
-	save_state->smbase = relo_params->smram_base -
-			     cpu * runtime->save_state_size;
-	if (CONFIG_IED_REGION_SIZE != 0) {
-		save_state->iedbase = relo_params->ied_base;
-
-		printk(BIOS_DEBUG, "New SMBASE=0x%08x IEDBASE=0x%08x @ %p\n",
-		       save_state->smbase, save_state->iedbase, save_state);
-	} else {
-		printk(BIOS_DEBUG, "New SMBASE=0x%08x @ %p\n",
-		       save_state->smbase, save_state);
-	}
-
-	/* Write SMRR MSRs based on indicated support. */
-	mtrr_cap = rdmsr(MTRR_CAP_MSR);
-	if (mtrr_cap.lo & SMRR_SUPPORTED && relo_params->smrr_mask.lo != 0)
-		write_smrr(relo_params);
-
-	southbridge_clear_smi_status();
-}
-
 static void fill_in_relocation_params(struct smm_relocation_params *params)
 {
 	/* All range registers are aligned to 4KiB */
@@ -202,33 +148,6 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	}
 }
 
-static int install_relocation_handler(int *apic_id_map, int num_cpus,
-				      struct smm_relocation_params *relo_params)
-{
-	/* The default SMM entry happens serially at the default location.
-	 * Therefore, there is only 1 concurrent save state area. Set the
-	 * stack size to the save state size, and call into the
-	 * do_relocation handler. */
-	int save_state_size = sizeof(em64t101_smm_state_save_area_t);
-	struct smm_loader_params smm_params = {
-		.per_cpu_stack_size = save_state_size,
-		.num_concurrent_stacks = num_cpus,
-		.per_cpu_save_state_size = save_state_size,
-		.num_concurrent_save_states = 1,
-		.handler = &cpu_smm_do_relocation,
-		.handler_arg = (void *)relo_params,
-	};
-
-	default_smm_area = backup_default_smm_area();
-
-	if (smm_setup_relocation_handler(&smm_params))
-		return -1;
-	int i;
-	for (i = 0; i < num_cpus; i++)
-		smm_params.runtime->apic_id_to_cpu[i] = apic_id_map[i];
-	return 0;
-}
-
 static void setup_ied_area(struct smm_relocation_params *params)
 {
 	char *ied_base;
@@ -246,94 +165,6 @@ static void setup_ied_area(struct smm_relocation_params *params)
 
 	/* Zero out 32KiB at IEDBASE + 1MiB */
 	memset(ied_base + (1 << 20), 0, (32 << 10));
-}
-
-static int install_permanent_handler(int *apic_id_map, int num_cpus,
-				     struct smm_relocation_params *relo_params)
-{
-	/* There are num_cpus concurrent stacks and num_cpus concurrent save
-	 * state areas. Lastly, set the stack size to the save state size. */
-	int save_state_size = sizeof(em64t101_smm_state_save_area_t);
-	struct smm_loader_params smm_params = {
-		.per_cpu_stack_size = save_state_size,
-		.num_concurrent_stacks = num_cpus,
-		.per_cpu_save_state_size = save_state_size,
-		.num_concurrent_save_states = num_cpus,
-	};
-
-	printk(BIOS_DEBUG, "Installing SMM handler to 0x%08x\n",
-	       relo_params->smram_base);
-	if (smm_load_module((void *)relo_params->smram_base,
-			    relo_params->smram_size, &smm_params))
-		return -1;
-	int i;
-	for (i = 0; i < num_cpus; i++)
-		smm_params.runtime->apic_id_to_cpu[i] = apic_id_map[i];
-	return 0;
-}
-
-static int cpu_smm_setup(void)
-{
-	int num_cpus;
-	int apic_id_map[CONFIG_MAX_CPUS];
-
-	printk(BIOS_DEBUG, "Setting up SMI for CPU\n");
-
-	fill_in_relocation_params(&smm_reloc_params);
-
-	/* enable the SMM memory window */
-	northbridge_write_smram(D_OPEN | G_SMRAME | C_BASE_SEG);
-
-	if (CONFIG_IED_REGION_SIZE != 0)
-		setup_ied_area(&smm_reloc_params);
-
-	num_cpus = cpu_get_apic_id_map(apic_id_map);
-	if (num_cpus > CONFIG_MAX_CPUS) {
-		printk(BIOS_CRIT,
-		       "Error: Hardware CPUs (%d) > MAX_CPUS (%d)\n",
-		       num_cpus, CONFIG_MAX_CPUS);
-	}
-
-	if (install_relocation_handler(apic_id_map, num_cpus,
-		&smm_reloc_params)) {
-		printk(BIOS_CRIT, "SMM Relocation handler install failed.\n");
-		return -1;
-	}
-
-	if (install_permanent_handler(apic_id_map, num_cpus,
-		&smm_reloc_params)) {
-		printk(BIOS_CRIT, "SMM Permanent handler install failed.\n");
-		return -1;
-	}
-
-	/* Ensure the SMM handlers hit DRAM before performing first SMI. */
-	/* TODO(adurbin): Is this really needed? */
-	wbinvd();
-
-	/* close the SMM memory window and enable normal SMM */
-	northbridge_write_smram(G_SMRAME | C_BASE_SEG);
-
-	return 0;
-}
-
-void smm_init(void)
-{
-	/* Return early if CPU SMM setup failed. */
-	if (cpu_smm_setup())
-		return;
-
-	southbridge_smm_init();
-
-	/* Initiate first SMI to kick off SMM-context relocation. Note: this
-	 * SMI being triggered here queues up an SMI in the APs which are in
-	 * wait-for-SIPI state. Once an AP gets an SIPI it will service the SMI
-	 * at the SMM_DEFAULT_BASE before jumping to startup vector. */
-	southbridge_trigger_smi();
-
-	printk(BIOS_DEBUG, "Relocation complete.\n");
-
-	/* Lock down the SMRAM space. */
-	smm_lock();
 }
 
 void smm_init_completion(void)

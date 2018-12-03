@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2014 Google Inc.
  * Copyright (C) 2015-2016 Intel Corporation.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -188,7 +189,7 @@ __weak void mainboard_romstage_entry(
 {
 	post_code(0x31);
 
-	/* Initliaze memory */
+	/* Initialize memory */
 	romstage_common(params);
 }
 

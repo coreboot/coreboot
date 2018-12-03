@@ -63,6 +63,11 @@ possible methods:
 **WARNING:** Using the wrong method or accidentally using the wrong pinout might
   permanently damage your hardware!
 
+**WARNING:** Do not rely on dots *painted* on flash ICs to orient the pins!
+Any dots painted on flash ICs may only indicate if they've been tested.  Dots
+that appear in datasheets to indicate pin 1 correspond to some kind of physical
+marker, such as a drilled hole, or one side being more flat than the other.
+
 ## Using a layout file
 On platforms where the flash IC is shared with other components you might want
 to write only a part of the flash IC. On Intel for example there are IFD, ME and

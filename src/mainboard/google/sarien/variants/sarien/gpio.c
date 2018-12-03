@@ -121,7 +121,7 @@ static const struct pad_config gpio_table[] = {
 /* DMIC_CLK0 */		PAD_NC(GPP_D19, NONE),
 /* DMIC_DATA0 */	PAD_NC(GPP_D20, NONE),
 /* SPI1_IO2 */		PAD_CFG_GPO(GPP_D21, 1, DEEP), /* WWAN_BB_RST# */
-/* SPI1_IO3 */		PAD_CFG_GPO(GPP_D22, 1, DEEP), /* WWAN_GPIO_PERST# */
+/* SPI1_IO3 */		PAD_CFG_GPO(GPP_D22, 0, DEEP), /* WWAN_GPIO_PERST# */
 /* I2S_MCLK */		PAD_CFG_GPI_SCI_LOW(GPP_D23, NONE, DEEP,
 				 EDGE_SINGLE), /* WWAN_GPIO_WAKE# */
 

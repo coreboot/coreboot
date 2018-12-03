@@ -17,8 +17,7 @@
 #define ARCH_ARM_PCI_OPS_H
 
 #include <stdint.h>
-
-typedef u32 pci_devfn_t;
+#include <device/pci_type.h>
 
 #ifdef __SIMPLE_DEVICE__
 u8 pci_read_config8(pci_devfn_t dev, unsigned int where);

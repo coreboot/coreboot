@@ -17,9 +17,7 @@
 #include <endian.h>
 #include <stdint.h>
 #include <rules.h>
-
-typedef u32 pci_devfn_t;
-typedef u32 pnp_devfn_t;
+#include <device/pci_type.h>
 
 /*
  * This file contains the definitions for the x86 IO instructions

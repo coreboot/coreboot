@@ -301,7 +301,7 @@ static void southbridge_smi_store(
 	void *io_smi;
 	uint32_t reg_ebx;
 
-	io_smi = find_save_state(save_state_ops, SMMSTORE_APM_CNT);
+	io_smi = find_save_state(save_state_ops, APM_CNT_SMMSTORE);
 	if (!io_smi)
 		return;
 	/* Command and return value in EAX */
@@ -391,7 +391,7 @@ void smihandler_southbridge_apmc(
 		if (IS_ENABLED(CONFIG_ELOG_GSMI))
 			southbridge_smi_gsmi(save_state_ops);
 		break;
-	case SMMSTORE_APM_CNT:
+	case APM_CNT_SMMSTORE:
 		if (IS_ENABLED(CONFIG_SMMSTORE))
 			southbridge_smi_store(save_state_ops);
 		break;

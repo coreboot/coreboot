@@ -19,8 +19,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define SMMSTORE_APM_CNT 0xed
-
 #define SMMSTORE_RET_SUCCESS 0
 #define SMMSTORE_RET_FAILURE 1
 #define SMMSTORE_RET_UNSUPPORTED 2

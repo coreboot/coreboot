@@ -16,9 +16,6 @@
 #ifndef ELOG_H_
 #define ELOG_H_
 
-/* SMI command code for GSMI event logging */
-#define ELOG_GSMI_APM_CNT                 0xEF
-
 #define MAX_EVENT_SIZE                    0x7F
 
 /* End of log */

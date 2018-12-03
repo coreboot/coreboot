@@ -72,7 +72,7 @@ static void southbridge_smi_gsmi(void)
 	amd64_smm_state_save_area_t *io_smi;
 	u32 reg_ebx;
 
-	io_smi = find_save_state(ELOG_GSMI_APM_CNT);
+	io_smi = find_save_state(APM_CNT_ELOG_GSMI);
 	if (!io_smi)
 		return;
 	/* Command and return value in EAX */
@@ -101,7 +101,7 @@ static void sb_apmc_smi_handler(void)
 		reg32 &= ~(1 << 0);	/* clear SCI_EN */
 		acpi_write32(MMIO_ACPI_PM1_CNT_BLK, reg32);
 		break;
-	case ELOG_GSMI_APM_CNT:
+	case APM_CNT_ELOG_GSMI:
 		if (IS_ENABLED(CONFIG_ELOG_GSMI))
 			southbridge_smi_gsmi();
 		break;

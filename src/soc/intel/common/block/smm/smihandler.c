@@ -279,7 +279,7 @@ static void southbridge_smi_gsmi(
 	void *io_smi = NULL;
 	uint32_t reg_ebx;
 
-	io_smi = find_save_state(save_state_ops, ELOG_GSMI_APM_CNT);
+	io_smi = find_save_state(save_state_ops, APM_CNT_ELOG_GSMI);
 	if (!io_smi)
 		return;
 	/* Command and return value in EAX */
@@ -387,7 +387,7 @@ void smihandler_southbridge_apmc(
 			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
 		}
 		break;
-	case ELOG_GSMI_APM_CNT:
+	case APM_CNT_ELOG_GSMI:
 		if (IS_ENABLED(CONFIG_ELOG_GSMI))
 			southbridge_smi_gsmi(save_state_ops);
 		break;

@@ -214,7 +214,7 @@ static void southbridge_smi_gsmi(void)
 	u32 *ret, *param;
 	uint8_t sub_command;
 	em64t100_smm_state_save_area_t *io_smi =
-		smi_apmc_find_state_save(ELOG_GSMI_APM_CNT);
+		smi_apmc_find_state_save(APM_CNT_ELOG_GSMI);
 
 	if (!io_smi)
 		return;
@@ -347,7 +347,7 @@ static void southbridge_smi_apmc(void)
 		}
 		break;
 #if IS_ENABLED(CONFIG_ELOG_GSMI)
-	case ELOG_GSMI_APM_CNT:
+	case APM_CNT_ELOG_GSMI:
 		southbridge_smi_gsmi();
 		break;
 #endif

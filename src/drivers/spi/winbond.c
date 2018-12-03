@@ -303,7 +303,7 @@ static void winbond_bpbits_to_region(const size_t granularity,
 		tb = !tb;
 	}
 
-	out->offset = tb ? flash_size - protected_size : 0;
+	out->offset = tb ? 0 : flash_size - protected_size;
 	out->size = protected_size;
 }
 
@@ -519,9 +519,9 @@ winbond_set_write_protection(const struct spi_flash *flash,
 	wp_region = *region;
 
 	if (region_offset(&wp_region) == 0)
-		tb = 0;
-	else
 		tb = 1;
+	else
+		tb = 0;
 
 	if (region_sz(&wp_region) > flash->size / 2) {
 		cmp = 1;

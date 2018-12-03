@@ -60,12 +60,13 @@ just generated.
 
 ## Part 3: Clone coreboot and configure it for submitting patches
 
-Go to the **Projects** tab in the upper left corner and select **List**.
-From the dropdown menu that appears, select "coreboot".
+On Gerrit, click on the **Browse** tab in the upper left corner and select
+**Repositories**.  From the listing, select the "coreboot" repo.  You may have
+to click the next page arrow at the bottom a few times to find it.
 
-If you are using SSH keys, select **ssh** from the tabs under "Project coreboot"
-and run the command that appears. This should prompt you for your id_rsa passphrase,
-if you previously set one.
+If you are using SSH keys, select **ssh** from the tabs under "Project
+coreboot" and run the clone with commit-msg hook command that's provided.  This
+should prompt you for your id_rsa passphrase, if you previously set one.
 
 If you are using HTTP, instead, select **http** from the tabs under "Project coreboot"
 and run the command that appears

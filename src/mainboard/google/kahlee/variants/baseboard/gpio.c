@@ -77,9 +77,6 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	/* GPIO_132 - CONFIG_STRAP4 */
 	PAD_GPI(GPIO_132, PULL_NONE),
 
-	/* GPIO_133 - APU_EDP_BKLTEN_L (backlight - Active LOW) */
-	PAD_GPO(GPIO_133, HIGH),
-
 	/* GPIO_136 - UART_PCH_RX_DEBUG_TX */
 	PAD_NF(GPIO_136, UART0_RXD, PULL_NONE),
 
@@ -91,6 +88,11 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 
 	/* GPIO_142 - CONFIG_STRAP2 */
 	PAD_GPI(GPIO_142, PULL_NONE),
+};
+
+static const struct soc_amd_gpio gpio_set_stage_rom[] = {
+	/* GPIO_133 - APU_EDP_BKLTEN_L (backlight - Active LOW) */
+	PAD_GPO(GPIO_133, HIGH),
 };
 
 static const struct soc_amd_gpio gpio_set_stage_ram[] = {
@@ -256,6 +258,13 @@ struct soc_amd_gpio *variant_early_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(gpio_set_stage_reset);
 	return gpio_set_stage_reset;
+}
+
+const __weak
+struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(gpio_set_stage_rom);
+	return gpio_set_stage_rom;
 }
 
 const __weak

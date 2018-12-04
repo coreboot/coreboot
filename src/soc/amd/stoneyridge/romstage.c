@@ -96,10 +96,9 @@ asmlinkage void car_stage_entry(void)
 	if (IS_ENABLED(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW))
 		load_smu_fw1();
 
+	mainboard_romstage_entry(s3_resume);
 
 	bsp_agesa_call();
-
-	mainboard_romstage_entry(s3_resume);
 
 	if (!s3_resume) {
 		post_code(0x40);

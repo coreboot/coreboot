@@ -34,13 +34,14 @@
 #define SKU_1_SYNDRA	0x2BC62
 #define SKU_2_SYNDRA	0x2BC61
 #define SKU_3_SYNDRA	0X2BC60
-#define SKU_0_EKKO	0x118E3
-#define SKU_1_EKKO	0x18E3
-#define SKU_2_EKKO	0x118E1
-#define SKU_3_EKKO	0X18E1
-#define SKU_0_BARD	0x19CE3
-#define SKU_1_BARD	0x9CE3
-#define SKU_2_BARD	0x19CE1
-#define SKU_3_BARD	0X9CE1
+#define SKU_0_EKKO     0x10118E3
+#define SKU_1_EKKO     0x10018E3
+#define SKU_2_EKKO     0x10118E1
+#define SKU_3_EKKO     0X10018E1
+#define SKU_0_BARD     0x1019CE3
+#define SKU_1_BARD     0x1009CE3
+#define SKU_2_BARD     0x1019CE1
+#define SKU_3_BARD     0X1009CE1
+
 
 #endif /* __MAINBOARD_SKU_H__ */

@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#define MAINBOARD_HAS_SPEAKER 1
+
 /* DefinitionBlock Statement */
 #include <arch/acpi.h>
 DefinitionBlock (

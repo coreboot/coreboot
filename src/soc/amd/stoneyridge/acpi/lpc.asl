@@ -13,6 +13,12 @@
  * GNU General Public License for more details.
  */
 
+#if IS_ENABLED(MAINBOARD_HAS_SPEAKER)
+#define IO61_HID "PNP0800" /* AT style speaker */
+#else
+#define IO61_HID "PNP0C02" /* reserved resource */
+#endif
+
 /* 0:14.3 - LPC */
 Device(LPCB) {
 	Name(_ADR, 0x00140003)
@@ -66,7 +72,7 @@ Device(LPCB) {
 	} /* End Device(_SB.PCI0.LpcIsaBr.TMR) */
 
 	Device(SPKR) {	/* Speaker */
-		Name(_HID,EISAID("PNP0800"))	/* AT style speaker */
+		Name(_HID,EISAID(IO61_HID))
 		Name(_CRS, ResourceTemplate() {
 			IO(Decode16, 0x0061, 0x0061, 0, 1)
 		})

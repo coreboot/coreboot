@@ -88,10 +88,12 @@ Method (ECQ3, 1, Serialized)
 {
 	Printf ("EVT3: %o", Arg0)
 
+#ifdef EC_ENABLE_DPTF
 	/* Theraml Events */
 	If (EBIT (E3TH, Arg0)) {
 		^PATX ()
 	}
+#endif
 }
 
 /* Handle events in PmEv4 */

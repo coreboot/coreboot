@@ -18,10 +18,6 @@
  * Dynamic Platform Thermal Framework support
  */
 
-External (\_SB.DPTF.CTOK, MethodObj)
-External (\_SB.DPTF.KTOC, MethodObj)
-External (\_SB.DPTF.TEVT, MethodObj)
-
 /* Mutex for EC PAT interface */
 Mutex (PATM, 1)
 

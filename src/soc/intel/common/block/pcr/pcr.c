@@ -221,7 +221,11 @@ void pcr_or8(uint8_t pid, uint16_t offset, uint8_t ordata)
 
 #if !IS_ENABLED(CONFIG_PCR_COMMON_IOSF_1_0)
 
-static int pcr_wait_for_completion(device_t dev)
+#ifdef __SIMPLE_DEVICE__
+static int pcr_wait_for_completion(pci_devfn_t dev)
+#else
+static int pcr_wait_for_completion(struct device *dev)
+#endif
 {
 	struct stopwatch sw;
 

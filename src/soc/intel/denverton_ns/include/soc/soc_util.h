@@ -28,10 +28,17 @@ typedef enum {
 } silicon_revision;
 
 /* soc_util.c */
-device_t get_hostbridge_dev(void);
-device_t get_lpc_dev(void);
-device_t get_pmc_dev(void);
-device_t get_smbus_dev(void);
+#ifdef __SIMPLE_DEVICE__
+pci_devfn_t get_hostbridge_dev(void);
+pci_devfn_t get_lpc_dev(void);
+pci_devfn_t get_pmc_dev(void);
+pci_devfn_t get_smbus_dev(void);
+#else
+struct device *get_hostbridge_dev(void);
+struct device *get_lpc_dev(void);
+struct device *get_pmc_dev(void);
+struct device *get_smbus_dev(void);
+#endif
 
 uint32_t get_pciebase(void);
 uint32_t get_pcielength(void);

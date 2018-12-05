@@ -15,14 +15,6 @@
  * GNU General Public License for more details.
  */
 
-/*
- * The device_t returned by dev_find_slot() is different than the device_t
- * passed to pci_write_config32(). If one needs to get access to the config.h
- * of a device and perform i/o things are incorrect. One is a pointer while
- * the other is a 32-bit integer.
- */
-#define __SIMPLE_DEVICE__
-
 #include <arch/io.h>
 #include <assert.h>
 #include <cbmem.h>

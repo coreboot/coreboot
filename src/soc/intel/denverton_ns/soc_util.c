@@ -28,45 +28,61 @@
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
 
-device_t get_hostbridge_dev(void)
+#ifdef __SIMPLE_DEVICE__
+pci_devfn_t get_hostbridge_dev(void)
 {
-#if defined(__PRE_RAM__) || defined(__SMM__)
 	return PCI_DEV(0, SA_DEV, SA_FUNC);
+}
 #else
+struct device *get_hostbridge_dev(void)
+{
 	return dev_find_slot(0, PCI_DEVFN(SA_DEV, SA_FUNC));
-#endif
 }
+#endif
 
-device_t get_lpc_dev(void)
+#ifdef __SIMPLE_DEVICE__
+pci_devfn_t get_lpc_dev(void)
 {
-#if defined(__PRE_RAM__) || defined(__SMM__)
 	return PCI_DEV(0, LPC_DEV, LPC_FUNC);
+}
 #else
+struct device *get_lpc_dev(void)
+{
 	return dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
-#endif
 }
+#endif
 
-device_t get_pmc_dev(void)
+#ifdef __SIMPLE_DEVICE__
+pci_devfn_t get_pmc_dev(void)
 {
-#if defined(__PRE_RAM__) || defined(__SMM__)
 	return PCI_DEV(0, PMC_DEV, PMC_FUNC);
-#else
-	return dev_find_slot(0, PCI_DEVFN(PMC_DEV, PMC_FUNC));
-#endif
 }
-
-device_t get_smbus_dev(void)
+#else
+struct device *get_pmc_dev(void)
 {
-#if defined(__PRE_RAM__) || defined(__SMM__)
-	return PCI_DEV(0, SMBUS_DEV, SMBUS_FUNC);
-#else
-	return dev_find_slot(0, PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC));
-#endif
+	return dev_find_slot(0, PCI_DEVFN(PMC_DEV, PMC_FUNC));
 }
+#endif
+
+#ifdef __SIMPLE_DEVICE__
+pci_devfn_t get_smbus_dev(void)
+{
+	return PCI_DEV(0, SMBUS_DEV, SMBUS_FUNC);
+}
+#else
+struct device *get_smbus_dev(void)
+{
+	return dev_find_slot(0, PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC));
+}
+#endif
 
 uint32_t get_pciebase(void)
 {
-	device_t dev;
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
 	u32 pciexbar_reg;
 
 	dev = get_hostbridge_dev();
@@ -98,7 +114,11 @@ uint32_t get_pciebase(void)
 
 uint32_t get_pcielength(void)
 {
-	device_t dev;
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
 	u32 pciexbar_reg;
 
 	dev = get_hostbridge_dev();
@@ -130,7 +150,12 @@ uint32_t get_pcielength(void)
 
 uint32_t get_tseg_memory(void)
 {
-	device_t dev = get_hostbridge_dev();
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
+	dev = get_hostbridge_dev();
 
 	if (!dev)
 		return 0;
@@ -140,7 +165,12 @@ uint32_t get_tseg_memory(void)
 
 uint32_t get_top_of_low_memory(void)
 {
-	device_t dev = get_hostbridge_dev();
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
+	dev = get_hostbridge_dev();
 
 	if (!dev)
 		return 0;
@@ -150,7 +180,12 @@ uint32_t get_top_of_low_memory(void)
 
 uint64_t get_top_of_upper_memory(void)
 {
-	device_t dev = get_hostbridge_dev();
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
+	dev = get_hostbridge_dev();
 
 	if (!dev)
 		return 0;
@@ -162,7 +197,12 @@ uint64_t get_top_of_upper_memory(void)
 
 uint16_t get_pmbase(void)
 {
-	device_t dev = get_pmc_dev();
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
+	dev = get_pmc_dev();
 
 	if (!dev)
 		return 0;
@@ -172,7 +212,12 @@ uint16_t get_pmbase(void)
 
 uint16_t get_tcobase(void)
 {
-	device_t dev = get_smbus_dev();
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
+	dev = get_smbus_dev();
 
 	if (!dev)
 		return 0;
@@ -193,7 +238,12 @@ void mmio_andthenor32(void *addr, uint32_t val2and, uint32_t val2or)
 uint8_t silicon_stepping(void)
 {
 	uint8_t revision_id;
-	device_t dev = get_lpc_dev();
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
+	dev = get_lpc_dev();
 
 	if (!dev)
 		return 0;

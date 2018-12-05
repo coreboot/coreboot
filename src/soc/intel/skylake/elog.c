@@ -159,7 +159,11 @@ static inline bool pch_xhci_usb3_update_wake_event(uintptr_t mmio_base)
 					ELOG_WAKE_SOURCE_PME_XHCI_USB_3);
 }
 
-static bool pch_xhci_update_wake_event(device_t dev)
+#ifdef __SIMPLE_DEVICE__
+static bool pch_xhci_update_wake_event(pci_devfn_t dev)
+#else
+static bool pch_xhci_update_wake_event(struct device *dev)
+#endif
 {
 	uintptr_t mmio_base;
 	bool event_found = false;
@@ -175,15 +179,24 @@ static bool pch_xhci_update_wake_event(device_t dev)
 }
 
 struct pme_status_info {
-	device_t dev;
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
 	uint8_t reg_offset;
 	uint32_t elog_event;
 };
 
 #define PME_STS_BIT		(1 << 15)
 
+#ifdef __SIMPLE_DEVICE__
 static void pch_log_add_elog_event(const struct pme_status_info *info,
-					device_t dev)
+				   pci_devfn_t dev)
+#else
+static void pch_log_add_elog_event(const struct pme_status_info *info,
+				   struct device *dev)
+#endif
 {
 	/*
 	 * If wake source is XHCI, check for detailed wake source events on
@@ -198,7 +211,11 @@ static void pch_log_add_elog_event(const struct pme_status_info *info,
 static void pch_log_pme_internal_wake_source(void)
 {
 	size_t i;
-	device_t dev;
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
 	uint16_t val;
 	bool dev_found = false;
 
@@ -243,7 +260,11 @@ static void pch_log_pme_internal_wake_source(void)
 static void pch_log_rp_wake_source(void)
 {
 	size_t i;
-	device_t dev;
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
 	uint32_t val;
 
 	struct pme_status_info pme_status_info[] = {

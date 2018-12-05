@@ -38,7 +38,7 @@ asmlinkage void *car_stage_c_entry(void)
 
 	if (IS_ENABLED(CONFIG_STORAGE_TEST)) {
 		uint32_t bar;
-		dev_t dev;
+		pci_devfn_t dev;
 		uint32_t previous_bar;
 		uint16_t previous_command;
 

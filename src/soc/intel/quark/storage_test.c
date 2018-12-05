@@ -39,8 +39,13 @@ extern uint8_t _car_drivers_storage_end;
 #define STORAGE_DEBUG  BIOS_DEBUG
 #define LOG_DEBUG  (IS_ENABLED(CONFIG_STORAGE_LOG) ? STORAGE_DEBUG : BIOS_NEVER)
 
-uint32_t storage_test_init(dev_t dev, uint32_t *previous_bar,
+#ifdef __SIMPLE_DEVICE__
+uint32_t storage_test_init(pci_devfn_t dev, uint32_t *previous_bar,
 	uint16_t *previous_command)
+#else
+uint32_t storage_test_init(struct device *dev, uint32_t *previous_bar,
+	uint16_t *previous_command)
+#endif
 {
 	uint32_t bar;
 
@@ -67,8 +72,13 @@ uint32_t storage_test_init(dev_t dev, uint32_t *previous_bar,
 	return bar;
 }
 
-void storage_test_complete(dev_t dev, uint32_t previous_bar,
+#ifdef __SIMPLE_DEVICE__
+void storage_test_complete(pci_devfn_t dev, uint32_t previous_bar,
 	uint16_t previous_command)
+#else
+void storage_test_complete(struct device *dev, uint32_t previous_bar,
+	uint16_t previous_command)
+#endif
 {
 	pci_write_config16(dev, PCI_COMMAND, previous_command);
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, previous_bar);

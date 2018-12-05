@@ -16,8 +16,6 @@
 #ifndef _QUARK_REG_ACCESS_H_
 #define _QUARK_REG_ACCESS_H_
 
-#define __SIMPLE_DEVICE__
-
 #include <arch/io.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>

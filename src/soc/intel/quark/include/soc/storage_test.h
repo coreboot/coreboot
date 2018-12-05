@@ -22,16 +22,19 @@
 #include <timer.h>
 
 #ifdef __SIMPLE_DEVICE__
-#define dev_t		uintptr_t
-#else
-#define dev_t		device_t
-#endif /* __SIMPLE_DEVICE__ */
-
-uint32_t storage_test_init(dev_t dev, uint32_t *previous_bar,
+uint32_t storage_test_init(pci_devfn_t dev, uint32_t *previous_bar,
 	uint16_t *previous_command);
 void storage_test(uint32_t bar, int full_initialization);
-void storage_test_complete(dev_t dev, uint32_t previous_bar,
+void storage_test_complete(pci_devfn_t dev, uint32_t previous_bar,
 	uint16_t previous_command);
+#else
+uint32_t storage_test_init(struct device *dev, uint32_t *previous_bar,
+	uint16_t *previous_command);
+void storage_test(uint32_t bar, int full_initialization);
+void storage_test_complete(struct device *dev, uint32_t previous_bar,
+	uint16_t previous_command);
+#endif
+
 
 /* Logging support */
 struct log_entry {

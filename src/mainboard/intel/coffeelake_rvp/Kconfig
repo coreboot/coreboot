@@ -30,7 +30,8 @@ config VARIANT_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Coffeelake RVP"
+	default "whlrvp" if BOARD_INTEL_WHISKEYLAKE_RVP
+	default "cflrvp"
 
 config MAINBOARD_VENDOR
 	string
@@ -38,7 +39,8 @@ config MAINBOARD_VENDOR
 
 config MAINBOARD_FAMILY
 	string
-	default "Intel_coffeelake_rvp"
+	default "Intel_whlrvp" if BOARD_INTEL_WHISKEYLAKE_RVP
+	default "Intel_cflrvp"
 
 config MAX_CPUS
 	int

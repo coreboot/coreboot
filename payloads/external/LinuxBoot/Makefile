@@ -45,6 +45,10 @@ endif
 ifeq ($(CONFIG_LINUXBOOT_COMPILE_KERNEL),y)
 ifeq ($(CONFIG_LINUXBOOT_ARCH),arm64)
 kernel: initramfs
+	if [[ ! -f "$(top)/$(CONFIG_LINUXBOOT_DTB_FILE)" ]]; then \
+	echo "<< Linux kernel devicetree is missing. >>"; \
+	exit 1; \
+	fi
 	$(MAKE) -f targets/linux.mk
 else
 kernel:

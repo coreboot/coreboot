@@ -41,17 +41,15 @@ config LINUXBOOT_ARM64
 
 endchoice
 
-config LINUXBOOT_ARCH
-	string
-	default "amd64" if LINUXBOOT_X86_64
-	default "i386" if LINUXBOOT_X86
-	default "arm64" if LINUXBOOT_ARM64
-
 comment "Linux kernel"
 
 config LINUXBOOT_COMPILE_KERNEL
 	bool "Compile kernel"
 	default n
+
+if LINUXBOOT_COMPILE_KERNEL
+comment "parse linux crosscompiler with: LINUXBOOT_CROSS_COMPILE"
+endif
 
 config LINUXBOOT_KERNEL_PATH
 	string "Path to kernel"
@@ -61,32 +59,85 @@ config LINUXBOOT_KERNEL_PATH
 if LINUXBOOT_COMPILE_KERNEL
 
 choice
-	prompt "Kernel version"
+	prompt "Kernel release"
 	default LINUXBOOT_KERNEL_STABLE
+	help
+	  Choose the kernel release.
+
+	  Select 'custom' if your want to define the kernel version.
+	  For more information about the current 'mainline', 'stable' or 'longterm'
+	  version, visit: https://www.kernel.org/
+
+config LINUXBOOT_KERNEL_MAINLINE
+	bool "mainline"
+	help
+	  Mainline kernel version
 
 config LINUXBOOT_KERNEL_STABLE
-	bool "4.14.67"
+	bool "stable"
 	help
 	  Stable kernel version
 
-config LINUXBOOT_KERNEL_LATEST
-	bool "4.18.5"
+config LINUXBOOT_KERNEL_LONGTERM
+	bool "longterm"
 	help
-	  Latest kernel version
+	  Longterm (LTS) kernel version
+
+config LINUXBOOT_KERNEL_CUSTOM
+	bool "custom"
+	help
+	  Custom kernel version
 
 endchoice
 
-config LINUXBOOT_KERNEL_VERSION
-	string
-	default "4.18.5" if LINUXBOOT_KERNEL_LATEST
-	default "4.14.67" if LINUXBOOT_KERNEL_STABLE
+config LINUXBOOT_KERNEL_CUSTOM_VERSION
+	string "kernel version"
+	default ""
+	depends on LINUXBOOT_KERNEL_CUSTOM
+	help
+	  Choose the Linux kernel version number. (x.x.x)
+	  Release candidate kernels (rc) are currently are not supported.
+
+choice
+	prompt "Kernel configuration"
+	default LINUXBOOT_KERNEL_ARCH_DEFAULT_CONFIG
+
+config LINUXBOOT_KERNEL_ARCH_DEFAULT_CONFIG
+	bool "Default architecture configuration"
+	help
+	  This option will use the default configuration for the
+	  selected architecture.
+
+config LINUXBOOT_KERNEL_CUSTOM_CONFIG
+	bool "Custom (def)config file"
+	help
+
+endchoice
 
 config LINUXBOOT_KERNEL_CONFIGFILE
-	string "Kernel config file"
-	default ""
+	string "Config file path"
+	default "defconfig"
+	depends on LINUXBOOT_KERNEL_CUSTOM_CONFIG
 	help
-	  Add your own kernel configuration file. Otherwise a default
-	  minimal defconfig is used.
+	  Path to the kernel configuration file.
+
+	  Note: this can be a defconfig file or a complete .config file.
+
+choice LINUXBOOT_KERNEL_FORMAT
+	prompt "Kernel binary format"
+	default LINUXBOOT_KERNEL_BZIMAGE if LINUXBOOT_X86 || LINUXBOOT_X86_64
+	default LINUXBOOT_KERNEL_UIMAGE if LINUXBOOT_ARM64
+
+config LINUXBOOT_KERNEL_BZIMAGE
+	bool "bzImage"
+	depends on LINUXBOOT_X86 || LINUXBOOT_X86_64
+
+config LINUXBOOT_KERNEL_UIMAGE
+	bool "uImage"
+	depends on LINUXBOOT_ARM64
+
+endchoice
+
 
 config LINUXBOOT_DTB_FILE
 	string "Compiled devicetree file"

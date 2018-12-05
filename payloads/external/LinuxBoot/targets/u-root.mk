@@ -18,6 +18,10 @@ go_path_dir=$(project_dir)/go
 uroot_bin=$(project_dir)/u-root
 uroot_package=github.com/u-root/u-root
 
+ARCH-$(CONFIG_LIBUXBOOT_X86_64)=amd64
+ARCH-$(CONFIG_LINUXBOOT_X86)=i386
+ARCH-$(CONFIG_LINUXBOOT_ARM64)=arm64
+
 go_version=$(shell go version | sed -nr 's/.*go([0-9]+\.[0-9]+.?[0-9]?).*/\1/p' )
 go_version_major=$(shell echo $(go_version) |  sed -nr 's/^([0-9]+)\.([0-9]+)\.?([0-9]*)$$/\1/p')
 go_version_minor=$(shell echo $(go_version) |  sed -nr 's/^([0-9]+)\.([0-9]+)\.?([0-9]*)$$/\2/p')
@@ -64,7 +68,7 @@ build: checkout
 	GOPATH=$(go_path_dir) go build -o $(uroot_bin) $(uroot_package)
 
 u-root: build
-	GOARCH=$(CONFIG_LINUXBOOT_ARCH) GOPATH=$(go_path_dir) $(uroot_bin) \
+	GOARCH=$(ARCH-y) GOPATH=$(go_path_dir) $(uroot_bin) \
 	$(uroot_args) -o $(project_dir)/initramfs_u-root.cpio $(uroot_cmds)
 
 .PHONY: all u-root build checkout get version

@@ -46,7 +46,7 @@
 		};
 		ramdisk-1 {
 			description = "Compressed Initramfs";
-			data = /incbin/("u-initramfs");
+			data = /incbin/("initramfs");
 			type = "ramdisk";
 			arch = "arm64";
 			os = "linux";

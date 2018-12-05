@@ -14,14 +14,9 @@
 #include <rules.h>
 #include <device/resource.h>
 #include <device/path.h>
-
-struct device;
-
-#ifndef __SIMPLE_DEVICE__
-typedef struct device *device_t;
-#endif
 #include <arch/io.h>
 
+struct device;
 struct pci_operations;
 struct pci_bus_operations;
 struct i2c_bus_operations;

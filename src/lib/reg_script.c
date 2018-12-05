@@ -40,8 +40,13 @@
 #define EMPTY_DEV NULL
 #endif
 
+#ifdef __SIMPLE_DEVICE__
 static inline void reg_script_set_dev(struct reg_script_context *ctx,
-				      device_t dev)
+				      pci_devfn_t dev)
+#else
+static inline void reg_script_set_dev(struct reg_script_context *ctx,
+				      struct device *dev)
+#endif
 {
 	ctx->dev = dev;
 	ctx->res = NULL;
@@ -677,7 +682,11 @@ static void reg_script_run_next(struct reg_script_context *prev_ctx,
 	reg_script_run_with_context(&ctx);
 }
 
-void reg_script_run_on_dev(device_t dev, const struct reg_script *step)
+#ifdef __SIMPLE_DEVICE__
+void reg_script_run_on_dev(pci_devfn_t dev, const struct reg_script *step)
+#else
+void reg_script_run_on_dev(struct device *dev, const struct reg_script *step)
+#endif
 {
 	struct reg_script_context ctx;
 

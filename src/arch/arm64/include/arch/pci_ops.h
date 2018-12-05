@@ -21,9 +21,6 @@
 typedef u32 pci_devfn_t;
 
 #ifdef __SIMPLE_DEVICE__
-// FIXME: Use of device_t is deprecated
-typedef pci_devfn_t device_t;
-
 u8 pci_read_config8(pci_devfn_t dev, unsigned int where);
 u16 pci_read_config16(pci_devfn_t dev, unsigned int where);
 u32 pci_read_config32(pci_devfn_t dev, unsigned int where);

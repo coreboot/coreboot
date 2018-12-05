@@ -30,8 +30,6 @@
  * are employed:
  * - Chaining of tables that allow runtime tables to chain to compile-time
  *   tables.
- * - Notion of current device (device_t) being worked on. This allows for
- *   PCI config, io, and mmio on a particular device's resources.
  *
  * Note that when using REG_SCRIPT_COMMAND_NEXT there is an implicit push
  * and pop of the context. A chained reg_script inherits the previous
@@ -87,13 +85,21 @@ struct reg_script {
 	union {
 		uint32_t id;
 		const struct reg_script *next;
-		device_t dev;
+#ifdef __SIMPLE_DEVICE__
+		pci_devfn_t dev;
+#else
+		struct device *dev;
+#endif
 		unsigned int res_index;
 	};
 };
 
 struct reg_script_context {
-	device_t dev;
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev;
+#else
+	struct device *dev;
+#endif
 	struct resource *res;
 	const struct reg_script *step;
 	uint8_t display_state;    /* Only modified by reg_script_run_step */
@@ -437,6 +443,10 @@ IS_ENABLED(CONFIG_SOC_INTEL_FSP_BAYTRAIL)
 	_REG_SCRIPT_ENCODE_RAW(REG_SCRIPT_COMMAND_END, 0, 0, 0, 0, 0, 0, 0)
 
 void reg_script_run(const struct reg_script *script);
-void reg_script_run_on_dev(device_t dev, const struct reg_script *step);
+#ifdef __SIMPLE_DEVICE__
+void reg_script_run_on_dev(pci_devfn_t dev, const struct reg_script *step);
+#else
+void reg_script_run_on_dev(struct device *dev, const struct reg_script *step);
+#endif
 
 #endif /* REG_SCRIPT_H */

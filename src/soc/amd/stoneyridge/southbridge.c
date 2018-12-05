@@ -700,7 +700,7 @@ void bootblock_fch_init(void)
 	sb_print_pmxc0_status();
 }
 
-void sb_enable(device_t dev)
+void sb_enable(struct device *dev)
 {
 	printk(BIOS_DEBUG, "%s\n", __func__);
 }

@@ -434,7 +434,7 @@ void sb_enable_rom(void);
 void configure_stoneyridge_i2c(void);
 void sb_clk_output_48Mhz(void);
 void sb_disable_4dw_burst(void);
-void sb_enable(device_t dev);
+void sb_enable(struct device *dev);
 void southbridge_final(void *chip_info);
 void southbridge_init(void *chip_info);
 void sb_lpc_port80(void);

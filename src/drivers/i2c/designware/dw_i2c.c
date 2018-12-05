@@ -217,6 +217,13 @@ static const struct soc_clock {
 			.ns = 3000,
 		},
 	},
+	{
+		.clk_speed_mhz = 216,
+		.freq = {
+			.ticks = 1080,
+			.ns = 5000,
+		},
+	},
 };
 
 static const struct i2c_descriptor *get_bus_descriptor(enum i2c_speed speed)

@@ -23,7 +23,11 @@
 
 typedef struct southbridge_intel_lynxpoint_config config_t;
 
-static u8 *usb_xhci_mem_base(device_t dev)
+#ifdef __SIMPLE_DEVICE__
+static u8 *usb_xhci_mem_base(pci_devfn_t dev)
+#else
+static u8 *usb_xhci_mem_base(struct device *dev)
+#endif
 {
 	u32 mem_base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 
@@ -34,7 +38,11 @@ static u8 *usb_xhci_mem_base(device_t dev)
 	return (u8 *)(mem_base & ~0xf);
 }
 
-static int usb_xhci_port_count_usb3(device_t dev)
+#ifdef __SIMPLE_DEVICE__
+static int usb_xhci_port_count_usb3(pci_devfn_t dev)
+#else
+static int usb_xhci_port_count_usb3(struct device *dev)
+#endif
 {
 	if (pch_is_lp()) {
 		/* LynxPoint-LP has 4 SS ports */
@@ -81,7 +89,11 @@ static void usb_xhci_reset_port_usb3(u8 *mem_base, int port)
  *  b) Poll for warm reset complete
  *  c) Write 1 to port change status bits
  */
-static void usb_xhci_reset_usb3(device_t dev, int all)
+#ifdef __SIMPLE_DEVICE__
+static void usb_xhci_reset_usb3(pci_devfn_t dev, int all)
+#else
+static void usb_xhci_reset_usb3(struct device *dev, int all)
+#endif
 {
 	u32 status, port_disabled;
 	int timeout, port;

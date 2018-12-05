@@ -23,14 +23,17 @@
 #include <device/pci_def.h>
 #include "pch.h"
 
-static device_t pch_get_lpc_device(void)
+#ifdef __SIMPLE_DEVICE__
+static pci_devfn_t pch_get_lpc_device(void)
 {
-#ifdef __SMM__
 	return PCI_DEV(0, 0x1f, 0);
-#else
-	return dev_find_slot(0, PCI_DEVFN(0x1f, 0));
-#endif
 }
+#else
+static struct device *pch_get_lpc_device(void)
+{
+	return dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+}
+#endif
 
 int pch_silicon_revision(void)
 {

@@ -71,13 +71,17 @@ This should prompt you for your id_rsa passphrase, if you previously set one.
 If you are using HTTP, instead, select **http** from the tabs under "Project coreboot"
 and run the command that appears
 
-After it finishes cloning, "cd coreboot" will take you into the local
-git repository. Run "make gitconfig" to set up the hooks and configurations.
-For example, you will be asked to run the following commands to set your
-username and email.
+Now is a good time to configure your global git identity, if you haven't
+already.
 
 	git config --global user.name "Your Name"
 	git config --global user.email "Your Email"
+
+Finally, enter the local git repository and set up repository specific hooks
+and other configurations.
+
+	cd coreboot
+	make gitconfig
 
 ## Part 4: Submit a commit
 
@@ -148,6 +152,11 @@ coreboot.org. **Note:** To submit as a draft, use
 'git push origin HEAD:refs/drafts/master' Submitting as a draft means that
 your commit will be on coreboot.org, but is only visible to those you add
 as reviewers.
+
+This has been a quick primer on how to submit a change to Gerrit for review
+using git.  You may wish to review the [Gerrit code review workflow
+documentation](https://gerrit-review.googlesource.com/Documentation/intro-user.html#code-review),
+especially if you plan to work on multiple changes at the same time.
 
 ## Part 4b: Using git cola to stage and submit a commit
 

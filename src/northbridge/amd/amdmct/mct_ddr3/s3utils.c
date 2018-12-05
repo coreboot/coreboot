@@ -67,7 +67,14 @@ ssize_t get_s3nv_file_offset(void)
 	return s3nv_region.region.offset;
 }
 
-static uint32_t read_config32_dct(device_t dev, uint8_t node, uint8_t dct, uint32_t reg) {
+#ifdef __SIMPLE_DEVICE__
+static uint32_t read_config32_dct(pci_devfn_t dev, uint8_t node, uint8_t dct,
+				  uint32_t reg)
+#else
+static uint32_t read_config32_dct(struct device *dev, uint8_t node, uint8_t dct,
+				  uint32_t reg)
+#endif
+{
 	if (is_fam15h()) {
 		uint32_t dword;
 #ifdef __PRE_RAM__
@@ -89,7 +96,14 @@ static uint32_t read_config32_dct(device_t dev, uint8_t node, uint8_t dct, uint3
 	return pci_read_config32(dev, reg);
 }
 
-static void write_config32_dct(device_t dev, uint8_t node, uint8_t dct, uint32_t reg, uint32_t value) {
+#ifdef __SIMPLE_DEVICE__
+static void write_config32_dct(pci_devfn_t dev, uint8_t node, uint8_t dct,
+			       uint32_t reg, uint32_t value)
+#else
+static void write_config32_dct(struct device *dev, uint8_t node, uint8_t dct,
+			       uint32_t reg, uint32_t value)
+#endif
+{
 	if (is_fam15h()) {
 		uint32_t dword;
 #ifdef __PRE_RAM__
@@ -111,7 +125,13 @@ static void write_config32_dct(device_t dev, uint8_t node, uint8_t dct, uint32_t
 	pci_write_config32(dev, reg, value);
 }
 
-static uint32_t read_amd_dct_index_register(device_t dev, uint32_t index_ctl_reg, uint32_t index)
+#ifdef __SIMPLE_DEVICE__
+static uint32_t read_amd_dct_index_register(pci_devfn_t dev,
+					uint32_t index_ctl_reg, uint32_t index)
+#else
+static uint32_t read_amd_dct_index_register(struct device *dev,
+					uint32_t index_ctl_reg, uint32_t index)
+#endif
 {
 	uint32_t dword;
 
@@ -125,7 +145,14 @@ static uint32_t read_amd_dct_index_register(device_t dev, uint32_t index_ctl_reg
 	return dword;
 }
 
-static uint32_t read_amd_dct_index_register_dct(device_t dev, uint8_t node, uint8_t dct, uint32_t index_ctl_reg, uint32_t index)
+#ifdef __SIMPLE_DEVICE__
+static uint32_t read_amd_dct_index_register_dct(pci_devfn_t dev, uint8_t node,
+			uint8_t dct, uint32_t index_ctl_reg, uint32_t index)
+#else
+static uint32_t read_amd_dct_index_register_dct(struct device *dev,
+			uint8_t node, uint8_t dct, uint32_t index_ctl_reg,
+			uint32_t index)
+#endif
 {
 	if (is_fam15h()) {
 		uint32_t dword;

@@ -16,7 +16,11 @@
 
 #include "vx900.h"
 
-void dump_pci_device(device_t dev)
+#ifdef __SIMPLE_DEVICE__
+void dump_pci_device(pci_devfn_t dev)
+#else
+void dump_pci_device(struct device *dev)
+#endif
 {
 	int i;
 	for (i = 0; i <= 0xff; i++) {
@@ -35,8 +39,13 @@ void dump_pci_device(device_t dev)
 	}
 }
 
-void pci_mod_config8(device_t dev, unsigned int where,
-		     uint8_t clr_mask, uint8_t set_mask)
+#ifdef __SIMPLE_DEVICE__
+void pci_mod_config8(pci_devfn_t dev, unsigned int where, uint8_t clr_mask,
+		     uint8_t set_mask)
+#else
+void pci_mod_config8(struct device *dev, unsigned int where, uint8_t clr_mask,
+		     uint8_t set_mask)
+#endif
 {
 	uint8_t reg8 = pci_read_config8(dev, where);
 	reg8 &= ~clr_mask;
@@ -44,8 +53,13 @@ void pci_mod_config8(device_t dev, unsigned int where,
 	pci_write_config8(dev, where, reg8);
 }
 
-void pci_mod_config16(device_t dev, unsigned int where,
+#ifdef __SIMPLE_DEVICE__
+void pci_mod_config16(pci_devfn_t dev, unsigned int where,
 		      uint16_t clr_mask, uint16_t set_mask)
+#else
+void pci_mod_config16(struct device *dev, unsigned int where,
+		      uint16_t clr_mask, uint16_t set_mask)
+#endif
 {
 	uint16_t reg16 = pci_read_config16(dev, where);
 	reg16 &= ~clr_mask;
@@ -53,8 +67,13 @@ void pci_mod_config16(device_t dev, unsigned int where,
 	pci_write_config16(dev, where, reg16);
 }
 
-void pci_mod_config32(device_t dev, unsigned int where,
+#ifdef __SIMPLE_DEVICE__
+void pci_mod_config32(pci_devfn_t dev, unsigned int where,
 		      uint32_t clr_mask, uint32_t set_mask)
+#else
+void pci_mod_config32(struct device *dev, unsigned int where,
+		      uint32_t clr_mask, uint32_t set_mask)
+#endif
 {
 	uint32_t reg32 = pci_read_config32(dev, where);
 	reg32 &= ~clr_mask;

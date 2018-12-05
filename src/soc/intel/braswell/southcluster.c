@@ -4,6 +4,7 @@
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +26,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <pc80/i8254.h>
 #include <romstage_handoff.h>
 #include <soc/acpi.h>
 #include <soc/iomap.h>
@@ -182,6 +184,8 @@ static void sc_init(struct device *dev)
 			read32(gen_pmcon1) & ~DIS_SLP_X_STRCH_SUS_UP);
 	}
 
+	/* Initialize i8254 timers */
+	setup_i8254();
 }
 
 /*

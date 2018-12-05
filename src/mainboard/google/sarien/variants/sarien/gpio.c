@@ -49,11 +49,11 @@ static const struct pad_config gpio_table[] = {
 /* CPU_GP2 */		PAD_CFG_GPI_APIC(GPP_B3, NONE, PLTRST,
 				 EDGE_SINGLE, INVERT), /* TOUCHPAD_INTR# */
 /* CPU_GP3 */		PAD_CFG_GPI(GPP_B4, NONE, DEEP), /* TOUCH_SCREEN_DET# */
-/* SRCCLKREQ0# */	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF1),
-/* SRCCLKREQ1# */	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF1),
-/* SRCCLKREQ2# */	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF1),
-/* SRCCLKREQ3# */	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF1),
-/* SRCCLKREQ4# */	PAD_CFG_NF(GPP_B9, NONE, DEEP, NF1),
+/* SRCCLKREQ0# */	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF1), /* CLKREQ_PCIE#0 */
+/* SRCCLKREQ1# */	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF1), /* CLKREQ_PCIE#1 */
+/* SRCCLKREQ2# */	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF1), /* CLKREQ_PCIE#2 */
+/* SRCCLKREQ3# */	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF1), /* CLKREQ_PCIE#3 */
+/* SRCCLKREQ4# */	PAD_CFG_NF(GPP_B9, NONE, DEEP, NF1), /* CLKREQ_PCIE#4 */
 /* SRCCLKREQ5# */	PAD_NC(GPP_B10, NONE),
 /* EXT_PWR_GATE# */	PAD_CFG_GPO(GPP_B11, 0, DEEP), /* 3.3V_CAM_EN# */
 /* SLP_S0# */		PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
@@ -63,8 +63,7 @@ static const struct pad_config gpio_table[] = {
 /* GSPI0_CLK */		PAD_NC(GPP_B16, NONE),
 /* GSPI0_MISO */	PAD_NC(GPP_B17, NONE),
 /* GSPI0_MOSI */	PAD_NC(GPP_B18, NONE),
-/* GSPI1_CS# */		PAD_CFG_GPI_APIC(GPP_B19, NONE, PLTRST,
-				 EDGE_SINGLE, INVERT), /* HDD_FALL_INT */
+/* GSPI1_CS# */		PAD_NC(GPP_B19, NONE), /* HDD_FALL_INT (nostuff) */
 /* GSPI1_CLK */		PAD_NC(GPP_B20, NONE), /* TPM_PIRQ# (nostuff) */
 /* GSPI1_MISO */	PAD_CFG_GPO(GPP_B21, 1, DEEP), /* PCH_3.3V_TS_EN */
 /* GSPI1_MOSI */	PAD_NC(GPP_B22, NONE),
@@ -101,7 +100,7 @@ static const struct pad_config gpio_table[] = {
 				 EDGE_SINGLE, INVERT), /* MEDIACARD_IRQ# */
 /* SPI1_CLK */		PAD_NC(GPP_D1, NONE),
 /* SPI1_MISO */		PAD_NC(GPP_D2, NONE),
-/* SPI1_MOSI */		PAD_NC(GPP_D3, NONE),
+/* SPI1_MOSI */		PAD_CFG_GPI(GPP_D3, NONE, DEEP), /* RTC_DET# */
 /* FASHTRIG */		PAD_NC(GPP_D4, NONE),
 /* ISH_I2C0_SDA */	PAD_NC(GPP_D5, NONE),
 /* ISH_I2C0_SCL */	PAD_NC(GPP_D6, NONE),
@@ -135,7 +134,7 @@ static const struct pad_config gpio_table[] = {
 /* SATA_DEVSLP1 */	PAD_CFG_NF(GPP_E5, NONE, DEEP, NF1), /* M3042_DEVSLP */
 /* SATA_DEVSLP2 */	PAD_CFG_NF(GPP_E6, NONE, DEEP, NF1), /* M2280_DEVSLP */
 /* CPU_GP1 */		PAD_CFG_GPO(GPP_E7, 1, DEEP), /* TOUCH_SCREEN_PD# */
-/* SATALED# */		PAD_CFG_GPI(GPP_E8, NONE, DEEP), /* RECOVERY */
+/* SATALED# */		PAD_CFG_GPI(GPP_E8, NONE, DEEP), /* RECOVERY# */
 /* USB2_OCO# */		PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1), /* USB_OC0# */
 /* USB2_OC1# */		PAD_CFG_NF(GPP_E10, NONE, DEEP, NF1), /* USB_OC1# */
 /* USB2_OC2# */		PAD_CFG_NF(GPP_E11, NONE, DEEP, NF1), /* USB_OC2# */
@@ -143,8 +142,7 @@ static const struct pad_config gpio_table[] = {
 /* DDPB_HPD0 */		PAD_CFG_NF(GPP_E13, NONE, DEEP, NF1), /* HDMI_DP1_HPD */
 /* DDPC_HPD1 */		PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1), /* CPU_DP2_HPD */
 /* DDPD_HPD2 */		PAD_CFG_GPI(GPP_E15, NONE, DEEP), /* H1_FLASH_WP */
-/* DDPE_HPD3 */		PAD_CFG_GPI_APIC(GPP_E16, NONE, PLTRST,
-				 EDGE_SINGLE, INVERT), /* FFS_INT2 */
+/* DDPE_HPD3 */		PAD_NC(GPP_E16, NONE), /* FFS_INT2 (nostuff) */
 /* EDP_HPD */		PAD_CFG_NF(GPP_E17, NONE, DEEP, NF1),
 /* DDPB_CTRLCLK */	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF1),
 /* DDPB_CTRLDATA */	PAD_CFG_NF(GPP_E19, NONE, DEEP, NF1),
@@ -237,7 +235,7 @@ static const struct pad_config early_gpio_table[] = {
 /* RESET# need to stay low before FULL_CARD_POWER_OFF assert */
 /* SPI1_IO2 */		PAD_CFG_GPO(GPP_D21, 0, DEEP), /* WWAN_BB_RST# */
 /* CPU_GP0 */		PAD_CFG_GPI(GPP_E3, NONE, DEEP), /* MEM_INTERLEAVED */
-/* SATALED# */		PAD_CFG_GPI(GPP_E8, NONE, DEEP), /* RECOVERY */
+/* SATALED# */		PAD_CFG_GPI(GPP_E8, NONE, DEEP), /* RECOVERY# */
 /* DDPD_HPD2 */		PAD_CFG_GPI(GPP_E15, NONE, DEEP), /* H1_FLASH_WP */
 };
 
@@ -254,7 +252,10 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 }
 
 static const struct cros_gpio cros_gpios[] = {
-	CROS_GPIO_REC_AH(GPP_E8, CROS_GPIO_DEVICE_NAME),
+	/*
+	 * TODO: re-enable recovery mode when boards are updated:
+	 * CROS_GPIO_REC_AL(GPP_E8, CROS_GPIO_DEVICE_NAME),
+	 */
 	CROS_GPIO_WP_AH(GPP_E15, CROS_GPIO_DEVICE_NAME),
 };
 

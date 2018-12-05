@@ -110,6 +110,8 @@ const struct region_device *boot_device_ro(void)
 
 static int iafw_boot_region_properties(struct cbfs_props *props)
 {
+	struct xlate_region_device *real_dev_ptr;
+	struct region *real_dev_reg;
 	struct region regn;
 
 	/* use fmap to locate CBFS area */
@@ -119,7 +121,19 @@ static int iafw_boot_region_properties(struct cbfs_props *props)
 	props->offset = region_offset(&regn);
 	props->size = region_sz(&regn);
 
-	printk(BIOS_DEBUG, "CBFS @ %zx size %zx\n", props->offset, props->size);
+	/* Check that we are within the memory mapped area. It's too
+	   easy to forget the SRAM mapping when crafting an FMAP file. */
+	real_dev_ptr = car_get_var_ptr(&real_dev);
+	real_dev_reg = &real_dev_ptr->sub_region;
+	if (region_is_subregion(real_dev_reg, &regn)) {
+		printk(BIOS_DEBUG, "CBFS @ %zx size %zx\n",
+		       props->offset, props->size);
+	} else {
+		printk(BIOS_CRIT,
+		       "ERROR: CBFS @ %zx size %zx exceeds mem-mapped area @ %zx size %zx\n",
+		       props->offset, props->size,
+		       region_offset(real_dev_reg), region_sz(real_dev_reg));
+	}
 
 	return 0;
 }

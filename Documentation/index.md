@@ -9,6 +9,7 @@ Contents:
 
 * [Getting Started](getting_started/index.md)
 * [Rookie Guide](lessons/index.md)
+* [Code of Conduct](code_of_conduct.md)
 * [Timestamps](timestamp.md)
 * [Intel IFD Binary Extraction](Binary_Extraction.md)
 * [Dealing with Untrusted Input in SMM](technotes/2017-02-dealing-with-untrusted-input-in-smm.md)

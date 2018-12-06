@@ -41,17 +41,23 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 	const struct region_device *boot_dev;
 	struct cbfs_props props;
 
-	if (cbfs_boot_region_properties(&props))
+	if (cbfs_boot_region_properties(&props)) {
+		printk(BIOS_ALERT, "ERROR: Failed to locate boot region\n");
 		return -1;
+	}
 
 	/* All boot CBFS operations are performed using the RO device. */
 	boot_dev = boot_device_ro();
 
-	if (boot_dev == NULL)
+	if (boot_dev == NULL) {
+		printk(BIOS_ALERT, "ERROR: Failed to find boot device\n");
 		return -1;
+	}
 
-	if (rdev_chain(&rdev, boot_dev, props.offset, props.size))
+	if (rdev_chain(&rdev, boot_dev, props.offset, props.size)) {
+		printk(BIOS_ALERT, "ERROR: Failed to access boot region inside boot device\n");
 		return -1;
+	}
 
 	return cbfs_locate(fh, &rdev, name, type);
 }

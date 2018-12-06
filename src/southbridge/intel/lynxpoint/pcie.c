@@ -395,7 +395,7 @@ static void root_port_check_disable(struct device *dev)
 		case 7:
 			if (is_lp)
 				break;
-			/* Root Port 3 is disabled in config 11b (1x4 links). */
+			/* Root Port 7 is disabled in config 11b (1x4 links). */
 			if (((rpc.strpfusecfg2 >> 14) & 0x3) == 0x3) {
 				root_port_mark_disable(dev);
 				return;

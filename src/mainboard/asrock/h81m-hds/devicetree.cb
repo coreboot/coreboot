@@ -102,8 +102,6 @@ chip northbridge/intel/haswell
 			device pci 1c.5 on      # PCIe 1x slot
 				subsystemid 0x1849 0x8c1a
 			end
-			device pci 1c.6 off end # PCIe port #7
-			device pci 1c.7 off end # PCIe port #8
 			device pci 1d.0 on      # EHCI controller #1
 				subsystemid 0x1849 0x8c26
 			end

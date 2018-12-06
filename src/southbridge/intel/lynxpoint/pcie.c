@@ -23,10 +23,7 @@
 #include "pch.h"
 #include <southbridge/intel/common/gpio.h>
 
-/* LynxPoint-LP has 6 root ports while non-LP has 8. */
 #define MAX_NUM_ROOT_PORTS 8
-#define H_NUM_ROOT_PORTS MAX_NUM_ROOT_PORTS
-#define LP_NUM_ROOT_PORTS (MAX_NUM_ROOT_PORTS - 2)
 
 struct root_port_config {
 	/* RPFN is a write-once register so keep a copy until it is written */
@@ -49,10 +46,10 @@ static struct root_port_config rpc;
 
 static inline int max_root_ports(void)
 {
-	if (pch_is_lp())
-		return LP_NUM_ROOT_PORTS;
-	else
-		return H_NUM_ROOT_PORTS;
+	if (pch_is_lp() || pch_silicon_id() == PCI_DEVICE_ID_INTEL_LPT_H81)
+		return 6;
+
+	return 8;
 }
 
 static inline int root_port_is_first(struct device *dev)
@@ -208,8 +205,10 @@ static void pcie_enable_clock_gating(void)
 					pci_update_config8(dev, 0xe1, 0x7f, 0x80);
 				}
 				if (rp == 5 && !rpc.ports[5]->enabled &&
-				    !rpc.ports[6]->enabled &&
-				    !rpc.ports[7]->enabled) {
+				    (rpc.ports[6] == NULL ||
+				     !rpc.ports[6]->enabled) &&
+				    (rpc.ports[7] == NULL ||
+				     !rpc.ports[7]->enabled)) {
 					pci_update_config8(dev, 0xe2, ~1, 1);
 					pci_update_config8(dev, 0xe1, 0x7f, 0x80);
 				}

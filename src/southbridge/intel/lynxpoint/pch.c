@@ -45,6 +45,16 @@ int pch_silicon_revision(void)
 	return pch_revision_id;
 }
 
+int pch_silicon_id(void)
+{
+	static int pch_id = -1;
+
+	if (pch_id < 0)
+		pch_id = pci_read_config16(pch_get_lpc_device(), PCI_DEVICE_ID);
+
+	return pch_id;
+}
+
 int pch_silicon_type(void)
 {
 	static int pch_type = -1;

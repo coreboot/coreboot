@@ -141,6 +141,7 @@ struct rcba_config_instruction
 #if !defined(__ASSEMBLER__)
 void pch_config_rcba(const struct rcba_config_instruction *rcba_config);
 int pch_silicon_revision(void);
+int pch_silicon_id(void);
 int pch_silicon_type(void);
 int pch_is_lp(void);
 u16 get_pmbase(void);

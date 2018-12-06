@@ -25,11 +25,20 @@ Most of our community members are not native English speakers, thus
 misunderstandings can (and do) happen. Always assume that others are
 friendly and may have picked less-than-stellar wording by accident.
 
-If you feel that you have been treated unfairly, we want to hear about
-it so we can handle the situation. Please contact our arbitration team
-directly: They will listen to you. If you don't get a response within
-a few days, your mail was probably lost. Please resend your mail to
-another member of the arbitration team in that case.
+If you have a grievance due to conduct in this community, we want to hear
+about it so we can handle the situation. Please contact our arbitration
+team directly: They will listen to you and react in a timely fashion.
+
+For transparency there is no alias or private mailing list address for
+you to reach out to, since we want to make sure that you know who will
+(and who won't) read your message.
+
+However since people might be on travel or otherwise be unavailable at
+times, consider reaching out to multiple persons.
+
+The team will treat your messages confidential as far as the law permits.
+For the purpose of knowing what law applies, the list provides the usual
+country of residence of each team member.
 
 ## Unacceptable Behavior
 
@@ -90,10 +99,10 @@ communications pertaining to community business.
 ## Contact info
 
 Our arbitration team consists of the following people
-* Stefan Reinauer <stefan.reinauer@coreboot.org>
-* Patrick Georgi <patrick@coreboot.org>
-* Ronald Minnich <rminnich@coreboot.org>
-* Marc Jones <mjones@coreboot.org>
+* Stefan Reinauer <stefan.reinauer@coreboot.org> (USA)
+* Patrick Georgi <patrick@coreboot.org> (Germany)
+* Ronald Minnich <rminnich@coreboot.org> (USA)
+* Marc Jones <mjones@coreboot.org> (USA)
 
 ## License and attribution
 

@@ -87,6 +87,9 @@ static void video_console_fixup_cursor(void)
 		cursory++;
 	}
 
+	if (console->rows <= 0)
+		return;
+
 	while(cursory >= console->rows) {
 		console->scroll_up();
 		cursory--;

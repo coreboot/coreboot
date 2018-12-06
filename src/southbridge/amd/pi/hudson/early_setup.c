@@ -36,10 +36,10 @@ void configure_hudson_uart(void)
 	u8 byte;
 
 	byte = read8((void *)(ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56 +
-				CONFIG_UART_FOR_CONSOLE * sizeof(word)));
+				CONFIG_UART_FOR_CONSOLE * sizeof(u16)));
 	byte |= 1 << 3;
 	write8((void *)(ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56 +
-			CONFIG_UART_FOR_CONSOLE * sizeof(word)), byte);
+			CONFIG_UART_FOR_CONSOLE * sizeof(u16)), byte);
 	byte = read8((void *)(ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62));
 	byte |= 1 << 3;
 	write8((void *)(ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62), byte);

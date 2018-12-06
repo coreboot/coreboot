@@ -124,7 +124,10 @@ struct soc_intel_cannonlake_config {
 	uint16_t usb3_wake_enable_bitmap;
 
 	/* SATA related */
-	uint8_t SataMode;
+	enum {
+		Sata_AHCI,
+		Sata_RAID,
+	} SataMode;
 	uint8_t SataSalpSupport;
 	uint8_t SataPortsEnable[8];
 	uint8_t SataPortsDevSlp[8];

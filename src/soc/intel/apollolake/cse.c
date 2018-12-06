@@ -195,7 +195,7 @@ static uint32_t dump_status(int index, int reg_addr)
 	return reg;
 }
 
-static void dump_cse_version(void)
+static void dump_cse_version(void *unused)
 {
 	int res;
 	size_t reply_size;
@@ -282,8 +282,6 @@ static void dump_cse_state(void)
 		printk(BIOS_DEBUG, "unknown");
 	}
 	printk(BIOS_DEBUG, "\n");
-
-	dump_cse_version();
 }
 
 #define PCR_PSFX_T0_SHDW_PCIEN		0x1C
@@ -307,3 +305,4 @@ void heci_cse_lockdown(void)
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, fpf_blown, NULL);
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, dump_cse_version, NULL);

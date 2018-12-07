@@ -3,11 +3,11 @@
 This code of conduct outlines our rules and expectations for everybody
 participating in the coreboot community.
 
-## Mailing list and chat etiquette
+## coreboot community etiquette
 
 We have a friendly and productive atmosphere on our mailing lists,
-development / code review tools and IRC chat rooms. Our principles evolve
-around the following:
+development / code review tools, IRC chat rooms and when we meet in
+person.  Our principles evolve around the following:
 
 * It's not the user's fault if something goes wrong.
 * Attempt collaboration before conflict.

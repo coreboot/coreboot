@@ -80,7 +80,7 @@ chip soc/intel/cannonlake
 
 	# PCIe port 9 for LAN
 	register "PcieRpEnable[8]" = "1"
-	register "PcieClkSrcUsage[0]" = "8"
+	register "PcieClkSrcUsage[0]" = "PCIE_CLK_LAN"
 	register "PcieClkSrcClkReq[0]" = "0"
 
 	# PCIe port 10 for M.2 2230 WLAN

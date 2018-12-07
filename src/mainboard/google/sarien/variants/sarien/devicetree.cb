@@ -17,7 +17,7 @@ chip soc/intel/cannonlake
 	register "SaGv" = "3"
 	register "HeciEnabled" = "1"
 	register "SataSalpSupport" = "1"
-	register "SataMode" = "0"
+	register "SataMode" = "Sata_AHCI"
 	register "SataPortsEnable[0]" = "1"
 	register "SataPortsEnable[1]" = "1"
 	register "SataPortsEnable[2]" = "1"

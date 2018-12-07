@@ -97,6 +97,18 @@ chip soc/intel/apollolake
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0x9 on end
 			end
+			chip drivers/generic/gpio_keys
+				register "name" = ""PENH""
+				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPIO_145)"
+				register "key.dev_name" = ""EJCT""
+				register "key.linux_code" = "SW_PEN_INSERTED"
+				register "key.linux_input_type" = "EV_SW"
+				register "key.label" = ""pen_eject""
+				register "key.is_wakeup_source" = "1"
+				register "key.wake" = "GPE0_DW2_04"
+				register "key.wakeup_event_action" = "EV_ACT_DEASSERTED"
+				device generic 0 on end
+			end
 		end	# - I2C 0
 		device pci 17.1 on
 			chip drivers/i2c/da7219

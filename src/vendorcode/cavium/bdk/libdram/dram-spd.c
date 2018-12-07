@@ -155,7 +155,7 @@ int read_spd(bdk_node_t node, const dimm_config_t *dimm_config, int spd_field)
         if (bank) {
             bdk_twsix_write_ia(node, bus, 0x36 | 0, 0, 2, 1, 0);
         }
-        
+
         return data;
     }
     else

@@ -16,7 +16,7 @@
  *
  * Copyright (c) 2011, Advanced Micro Devices, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
@@ -24,10 +24,10 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Advanced Micro Devices, Inc. nor the names of 
- *       its contributors may be used to endorse or promote products derived 
+ *     * Neither the name of Advanced Micro Devices, Inc. nor the names of
+ *       its contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -38,7 +38,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * ***************************************************************************
  *
  */
@@ -67,7 +67,7 @@
    *  PCIe port info
    *
    */
-   
+
   Name (
     AD07,
     Package () {
@@ -100,19 +100,19 @@
   Method (ALIB, 2, NotSerialized) {
     If (Lequal (Arg0, 0x1)) {
       return (procPsppReportAcDsState (Arg1))
-    } 
+    }
     If (LEqual (Arg0, 0x2)) {
       return (procPsppPerformanceRequest (Arg1))
-    } 
+    }
     If (LEqual (Arg0, 0x3)) {
       return (procPsppControl (Arg1))
-    } 
+    }
     If (LEqual (Arg0, 0x4)) {
       return (procPcieSetBusWidth (Arg1))
-    } 
+    }
     If (LEqual (Arg0, 0x5)) {
       return (procAlibInit ())
-    } 
+    }
     If (LEqual (Arg0, 0x6)) {
       return (procPciePortHotplug (Arg1))
     }
@@ -180,7 +180,7 @@
     procPciDwordWrite (Arg0, Arg1, Local0)
   }
 
-  Mutex(varPciePortAccessMutex, 0)    
+  Mutex(varPciePortAccessMutex, 0)
   /*----------------------------------------------------------------------------------------*/
   /**
    *  Read PCIe port indirect register
@@ -194,7 +194,7 @@
     Store (ShiftLeft (Add( Arg0, 2), 3), Local0)
     procPciDwordWrite (Local0, 0xe0, Arg1)
     Store (procPciDwordRead (Local0, 0xe4), Local0)
-    Release (varPciePortAccessMutex)  
+    Release (varPciePortAccessMutex)
     return (Local0)
   }
 
@@ -281,7 +281,7 @@
 
   /*----------------------------------------------------------------------------------------*/
   /**
-   *  
+   *
    *
    *  Arg0 	- Port ID
    *  Retval	- buffer that represent port data set
@@ -320,7 +320,7 @@
 
   /*----------------------------------------------------------------------------------------*/
   /**
-   *  
+   *
    *
    *  Arg0 	- Aspm
    *  Arg1 	- 0: Read, 1: Write
@@ -336,7 +336,7 @@
 	  IndexField (PMRI, PMRD, ByteAcc, NoLock, Preserve)
 	  {
 	  	Offset(0xE0),               // IO Base address of A-Link Express/ A-Link Bridge register
-	  	ABAR, 32, 
+	  	ABAR, 32,
 	  }
     OperationRegion (ACFG, SystemIO, ABAR, 0x8)
 	  Field (ACFG, DWordAcc, Nolock, Preserve) //AB_INDX/AB_DATA

@@ -1,7 +1,7 @@
 /** @file
   Stall Services that perform stalls and also enable the Stall operatation
   to be replayed during an S3 resume. This library class maps directly on top
-  of the Timer class. 
+  of the Timer class.
 
   Copyright (c) 2007 - 2010, Intel Corporation. All rights reserved.<BR>
 

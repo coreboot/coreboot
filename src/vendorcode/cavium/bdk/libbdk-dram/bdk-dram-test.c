@@ -380,7 +380,7 @@ static int __bdk_dram_run_test(const dram_test_info_t *test_info, uint64_t start
         /* Wait for threads to finish, with progress */
         int cur_count;
         uint64_t cur_time;
-        uint64_t period = bdk_clock_get_rate(bdk_numa_local(), BDK_CLOCK_TIME) * TIMEOUT_SECS; // FIXME? 
+        uint64_t period = bdk_clock_get_rate(bdk_numa_local(), BDK_CLOCK_TIME) * TIMEOUT_SECS; // FIXME?
         uint64_t timeout = bdk_clock_get_count(BDK_CLOCK_TIME) + period;
         do {
             cur_count = bdk_atomic_get64(&dram_test_thread_done);
@@ -652,7 +652,7 @@ static void __bdk_dram_report_address_decode_new(uint64_t address, uint64_t orig
  * @param data    Data read from memory
  * @param correct Correct data
  * @param burst   Which burst this is from, informational only
- * @param fails   -1 for no retries done, >= 0 number of failures during retries 
+ * @param fails   -1 for no retries done, >= 0 number of failures during retries
  *
  * @return Zero if a message was logged, non-zero if the error limit has been reached
  */
@@ -691,7 +691,7 @@ void __bdk_dram_report_error(uint64_t address, uint64_t data, uint64_t correct, 
  * @param address2 Second address involved in the failure
  * @param data2    Data from second address
  * @param burst    Which burst this is from, informational only
- * @param fails    -1 for no retries done, >= 0 number of failures during retries 
+ * @param fails    -1 for no retries done, >= 0 number of failures during retries
  *
  * @return Zero if a message was logged, non-zero if the error limit has been reached
  */

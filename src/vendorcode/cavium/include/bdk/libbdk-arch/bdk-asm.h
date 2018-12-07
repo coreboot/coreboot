@@ -85,7 +85,7 @@
 #define BDK_CACHE_WB_L2(address) { asm volatile ("sys " BDK_SYS_CVMCACHE_WB_L2 ", %0" : : "r" (address)); } // Push to memory, don't invalidate, don't unlock
 #define BDK_CACHE_LCK_L2(address) { asm volatile ("sys " BDK_SYS_CVMCACHE_LCK_L2 ", %0" : : "r" (address)); } // Lock into L2
 #define BDK_DCACHE_INVALIDATE { asm volatile ("sys " BDK_SYS_CVMCACHE_INVALL_DC ", xzr"); } // Invalidate the entire Dcache on local core
-#define BDK_CACHE_LTG_L2_INDEXED(encoded) { asm volatile ("sys " BDK_SYS_CVMCACHE_LTG_L2_INDEXED ", %0" : : "r" (encoded)); } // Load L2 TAG, index by set/way 
+#define BDK_CACHE_LTG_L2_INDEXED(encoded) { asm volatile ("sys " BDK_SYS_CVMCACHE_LTG_L2_INDEXED ", %0" : : "r" (encoded)); } // Load L2 TAG, index by set/way
 
 #define BDK_STORE_PAIR(ptr, data1, data2) { asm volatile ("stp %x[d1], %x[d2], [%[b]]" : [mem] "+m" (*(__uint128_t*)ptr) : [b] "r" (ptr), [d1] "r" (data1), [d2] "r" (data2)); }
 

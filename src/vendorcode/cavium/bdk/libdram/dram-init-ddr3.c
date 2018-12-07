@@ -80,7 +80,7 @@
 #define USE_ORIG_TEST_DRAM_BYTE 1
 
 // collect and print LMC utilization using SWL software algorithm
-#define ENABLE_SW_WLEVEL_UTILIZATION 0 
+#define ENABLE_SW_WLEVEL_UTILIZATION 0
 
 #define COUNT_RL_CANDIDATES 1
 
@@ -224,7 +224,7 @@ change_wr_deskew_ena(bdk_node_t node, int ddr_interface_num, int new_state)
 {
     bdk_lmcx_dll_ctl3_t ddr_dll_ctl3;
     int saved_wr_deskew_ena;
-    
+
     // return original WR_DESKEW_ENA setting
     ddr_dll_ctl3.u = BDK_CSR_READ(node, BDK_LMCX_DLL_CTL3(ddr_interface_num));
     saved_wr_deskew_ena = !!GET_DDR_DLL_CTL3(wr_deskew_ena);
@@ -270,15 +270,15 @@ Validate_Read_Deskew_Training(bdk_node_t node, int rank_mask, int ddr_interface_
     uint64_t bl_mask[2]; // enough for 128 values
     int bit_values;
 #endif
-    deskew_data_t dskdat;    
+    deskew_data_t dskdat;
     int bit_index;
     int16_t flags, deskew;
     const char *fc = " ?-=+*#&";
     int saved_wr_deskew_ena;
     int bit_last;
-    
+
     // save original WR_DESKEW_ENA setting, and disable it for read deskew
-    saved_wr_deskew_ena = change_wr_deskew_ena(node, ddr_interface_num, 0); 
+    saved_wr_deskew_ena = change_wr_deskew_ena(node, ddr_interface_num, 0);
 
     lmc_config.u = BDK_CSR_READ(node, BDK_LMCX_CONFIG(ddr_interface_num));
     byte_limit = ((!lmc_config.s.mode32b) ? 8 : 4) + lmc_config.s.ecc_ena;
@@ -407,7 +407,7 @@ Validate_Read_Deskew_Training(bdk_node_t node, int rank_mask, int ddr_interface_
         // just for completeness, allow print of the stuck values bitmask after the bytelane print
         if ((bit_values < 3) && print_enable) {
             VB_PRT(VBL_DEV, "N%d.LMC%d: Deskew byte %d STUCK on value 0x%016lx.%016lx\n",
-                   node, ddr_interface_num, byte_lane, 
+                   node, ddr_interface_num, byte_lane,
                    bl_mask[1], bl_mask[0]);
         }
 #endif
@@ -415,7 +415,7 @@ Validate_Read_Deskew_Training(bdk_node_t node, int rank_mask, int ddr_interface_
     } /* for (byte_lane = 0; byte_lane < byte_limit; byte_lane++) */
 
     // restore original WR_DESKEW_ENA setting
-    change_wr_deskew_ena(node, ddr_interface_num, saved_wr_deskew_ena); 
+    change_wr_deskew_ena(node, ddr_interface_num, saved_wr_deskew_ena);
 
     return;
 }
@@ -433,13 +433,13 @@ unsigned short load_dac_override(int node, int ddr_interface_num,
 
     ddr_dll_ctl3.s.bit_select    = 0x9; /* No-op */
     DRAM_CSR_WRITE(node, BDK_LMCX_DLL_CTL3(ddr_interface_num), ddr_dll_ctl3.u);
-               
+
     ddr_dll_ctl3.s.bit_select    = 0xC; /* Vref bypass setting load */
     DRAM_CSR_WRITE(node, BDK_LMCX_DLL_CTL3(ddr_interface_num), ddr_dll_ctl3.u);
-               
+
     ddr_dll_ctl3.s.bit_select    = 0xD; /* Vref bypass on. */
     DRAM_CSR_WRITE(node, BDK_LMCX_DLL_CTL3(ddr_interface_num), ddr_dll_ctl3.u);
-               
+
     ddr_dll_ctl3.s.bit_select    = 0x9; /* No-op */
     DRAM_CSR_WRITE(node, BDK_LMCX_DLL_CTL3(ddr_interface_num), ddr_dll_ctl3.u);
 
@@ -545,9 +545,9 @@ Perform_Offset_Training(bdk_node_t node, int rank_mask, int ddr_interface_num)
 
     /*
      * 6.9.8 LMC Offset Training
-     * 
+     *
      * LMC requires input-receiver offset training.
-     * 
+     *
      * 1. Write LMC(0)_PHY_CTL[DAC_ON] = 1
      */
     lmc_phy_ctl.u = BDK_CSR_READ(node, BDK_LMCX_PHY_CTL(ddr_interface_num));
@@ -576,7 +576,7 @@ Perform_Offset_Training(bdk_node_t node, int rank_mask, int ddr_interface_num)
     /*
      * 2. Write LMC(0)_SEQ_CTL[SEQ_SEL] = 0x0B and
      *    LMC(0)_SEQ_CTL[INIT_START] = 1.
-     * 
+     *
      * 3. Wait for LMC(0)_SEQ_CTL[SEQ_COMPLETE] to be set to 1.
      */
     perform_octeon3_ddr3_sequence(node, rank_mask, ddr_interface_num, 0x0B); /* Offset training sequence */
@@ -590,9 +590,9 @@ Perform_Internal_VREF_Training(bdk_node_t node, int rank_mask, int ddr_interface
 
     /*
      * 6.9.9 LMC Internal Vref Training
-     * 
+     *
      * LMC requires input-reference-voltage training.
-     * 
+     *
      * 1. Write LMC(0)_EXT_CONFIG[VREFINT_SEQ_DESKEW] = 0.
      */
     ext_config.u = BDK_CSR_READ(node, BDK_LMCX_EXT_CONFIG(ddr_interface_num));
@@ -606,7 +606,7 @@ Perform_Internal_VREF_Training(bdk_node_t node, int rank_mask, int ddr_interface
     /*
      * 2. Write LMC(0)_SEQ_CTL[SEQ_SEL] = 0x0a and
      *    LMC(0)_SEQ_CTL[INIT_START] = 1.
-     * 
+     *
      * 3. Wait for LMC(0)_SEQ_CTL[SEQ_COMPLETE] to be set to 1.
      */
     perform_octeon3_ddr3_sequence(node, rank_mask, ddr_interface_num, 0x0A); /* LMC Internal Vref Training */
@@ -646,7 +646,7 @@ process_samples_average(int16_t *bytes, int num_samples, int lmc, int lane_no)
         ret = trunc;
     else if (sadj & 1)
         ret = sadj;
-    else 
+    else
         ret = trunc + 1;
 
     dbg_avg(" -> %3d\n", ret);
@@ -678,7 +678,7 @@ Perform_Read_Deskew_Training(bdk_node_t node, int rank_mask, int ddr_interface_n
     VB_PRT(VBL_FAE, "N%d.LMC%d: Performing Read Deskew Training.\n", node, ddr_interface_num);
 
     // save original WR_DESKEW_ENA setting, and disable it for read deskew
-    saved_wr_deskew_ena = change_wr_deskew_ena(node, ddr_interface_num, 0); 
+    saved_wr_deskew_ena = change_wr_deskew_ena(node, ddr_interface_num, 0);
 
     sat_retries = 0;
     lock_retries_total = 0;
@@ -718,9 +718,9 @@ Perform_Read_Deskew_Training(bdk_node_t node, int rank_mask, int ddr_interface_n
 
         /*
          * 6.9.10 LMC Deskew Training
-         * 
+         *
          * LMC requires input-read-data deskew training.
-         * 
+         *
          * 1. Write LMC(0)_EXT_CONFIG[VREFINT_SEQ_DESKEW] = 1.
          */
         VB_PRT(VBL_SEQ, "N%d.LMC%d: Performing LMC sequence: Set vrefint_seq_deskew = 1\n",
@@ -731,7 +731,7 @@ Perform_Read_Deskew_Training(bdk_node_t node, int rank_mask, int ddr_interface_n
         /*
          * 2. Write LMC(0)_SEQ_CTL[SEQ_SEL] = 0x0A and
          *    LMC(0)_SEQ_CTL[INIT_START] = 1.
-         * 
+         *
          * 3. Wait for LMC(0)_SEQ_CTL[SEQ_COMPLETE] to be set to 1.
          */
         DRAM_CSR_MODIFY(phy_ctl, node, BDK_LMCX_PHY_CTL(ddr_interface_num),
@@ -742,7 +742,7 @@ Perform_Read_Deskew_Training(bdk_node_t node, int rank_mask, int ddr_interface_n
 
     perform_read_deskew_training:
         // maybe perform the NORMAL deskew training sequence multiple times before looking at lock status
-        for (loops = 0; loops < normal_loops; loops++) { 
+        for (loops = 0; loops < normal_loops; loops++) {
             DRAM_CSR_MODIFY(phy_ctl, node, BDK_LMCX_PHY_CTL(ddr_interface_num),
                             phy_ctl.s.phy_dsk_reset = 0); /* Normal Deskew sequence */
             perform_octeon3_ddr3_sequence(node, rank_mask, ddr_interface_num, 0x0A); /* LMC Deskew Training */
@@ -823,7 +823,7 @@ Perform_Read_Deskew_Training(bdk_node_t node, int rank_mask, int ddr_interface_n
            sat_retries-1, lock_retries_total);
 
     // restore original WR_DESKEW_ENA setting
-    change_wr_deskew_ena(node, ddr_interface_num, saved_wr_deskew_ena); 
+    change_wr_deskew_ena(node, ddr_interface_num, saved_wr_deskew_ena);
 
     if ((dsk_counts.nibrng_errs != 0) || (dsk_counts.nibunl_errs != 0)) {
         debug_print("N%d.LMC%d: NIBBLE ERROR(S) found, returning FAULT\n",
@@ -831,7 +831,7 @@ Perform_Read_Deskew_Training(bdk_node_t node, int rank_mask, int ddr_interface_n
         return -1; // we did retry locally, they did not help
     }
 
-    // NOTE: we (currently) always print one last training validation before starting Read Leveling... 
+    // NOTE: we (currently) always print one last training validation before starting Read Leveling...
 
     return 0;
 }
@@ -907,7 +907,7 @@ Set_Write_Deskew_Settings(bdk_node_t node, int ddr_interface_num, int value)
     VB_PRT(VBL_DEV2, "N%d.LMC%d: SetWriteDeskew: WRITE %d\n", node, ddr_interface_num, value);
 
     for (bit_num = 0; bit_num <= 7; ++bit_num) {
- 
+
         // write a bit-deskew value to all bit-lanes of all bytes
         ddr_dll_ctl3.u = BDK_CSR_READ(node, BDK_LMCX_DLL_CTL3(ddr_interface_num));
         SET_DDR_DLL_CTL3(bit_select, bit_num);
@@ -949,13 +949,13 @@ Neutral_Write_Deskew_Setup(bdk_node_t node, int ddr_interface_num)
 {
     // first: NO-OP, Select all bytes, Disable write bit-deskew
     ddr_print("N%d.LMC%d: NEUTRAL Write Deskew Setup: first: NOOP\n", node, ddr_interface_num);
-    do_write_deskew_op(node, ddr_interface_num, BS_NOOP, ALL_BYTES, 0); 
+    do_write_deskew_op(node, ddr_interface_num, BS_NOOP, ALL_BYTES, 0);
     //Get_Deskew_Settings(node, ddr_interface_num, &dskdat);
     //Display_Deskew_Data(node, ddr_interface_num, &dskdat, VBL_NORM);
 
     // enable write bit-deskew and RESET the settings
     ddr_print("N%d.LMC%d: NEUTRAL Write Deskew Setup: wr_ena: RESET\n", node, ddr_interface_num);
-    do_write_deskew_op(node, ddr_interface_num, BS_RESET, ALL_BYTES, 1); 
+    do_write_deskew_op(node, ddr_interface_num, BS_RESET, ALL_BYTES, 1);
     //Get_Deskew_Settings(node, ddr_interface_num, &dskdat);
     //Display_Deskew_Data(node, ddr_interface_num, &dskdat, VBL_NORM);
 }
@@ -982,20 +982,20 @@ Perform_Write_Deskew_Training(bdk_node_t node, int ddr_interface_num)
 
     // first: NO-OP, Select all bytes, Disable write bit-deskew
     ddr_print("N%d.LMC%d: WriteDeskewConfig: first: NOOP\n", node, ddr_interface_num);
-    do_write_deskew_op(node, ddr_interface_num, BS_NOOP, ALL_BYTES, 0); 
+    do_write_deskew_op(node, ddr_interface_num, BS_NOOP, ALL_BYTES, 0);
     //Get_Deskew_Settings(node, ddr_interface_num, &dskdat);
     //Display_Deskew_Data(node, ddr_interface_num, &dskdat, VBL_NORM);
 
     // enable write bit-deskew and RESET the settings
     ddr_print("N%d.LMC%d: WriteDeskewConfig: wr_ena: RESET\n", node, ddr_interface_num);
-    do_write_deskew_op(node, ddr_interface_num, BS_RESET, ALL_BYTES, 1); 
+    do_write_deskew_op(node, ddr_interface_num, BS_RESET, ALL_BYTES, 1);
     //Get_Deskew_Settings(node, ddr_interface_num, &dskdat);
     //Display_Deskew_Data(node, ddr_interface_num, &dskdat, VBL_NORM);
 
 #if 0
     // enable write bit-deskew and REUSE read bit-deskew settings
     ddr_print("N%d.LMC%d: WriteDeskewConfig: wr_ena: REUSE\n", node, ddr_interface_num);
-    do_write_deskew_op(node, ddr_interface_num, BS_REUSE, ALL_BYTES, 1); 
+    do_write_deskew_op(node, ddr_interface_num, BS_REUSE, ALL_BYTES, 1);
     Get_Deskew_Settings(node, ddr_interface_num, &dskdat);
     Display_Deskew_Data(node, ddr_interface_num, &dskdat, VBL_NORM);
 #endif
@@ -1107,7 +1107,7 @@ Perform_Write_Deskew_Training(bdk_node_t node, int ddr_interface_num)
 
     // last: NO-OP, Select all bytes, MUST leave write bit-deskew enabled
     ddr_print("N%d.LMC%d: WriteDeskewConfig: last: wr_ena: NOOP\n", node, ddr_interface_num);
-    do_write_deskew_op(node, ddr_interface_num, BS_NOOP, ALL_BYTES, 1); 
+    do_write_deskew_op(node, ddr_interface_num, BS_NOOP, ALL_BYTES, 1);
     //Get_Deskew_Settings(node, ddr_interface_num, &dskdat);
     //Display_Deskew_Data(node, ddr_interface_num, &dskdat, VBL_NORM);
 
@@ -1115,7 +1115,7 @@ Perform_Write_Deskew_Training(bdk_node_t node, int ddr_interface_num)
     // FIXME: disable/delete this when write bit-deskew works...
     // final: NO-OP, Select all bytes, do NOT leave write bit-deskew enabled
     ddr_print("N%d.LMC%d: WriteDeskewConfig: final: read: NOOP\n", node, ddr_interface_num);
-    do_write_deskew_op(node, ddr_interface_num, BS_NOOP, ALL_BYTES, 0); 
+    do_write_deskew_op(node, ddr_interface_num, BS_NOOP, ALL_BYTES, 0);
     Get_Deskew_Settings(node, ddr_interface_num, &dskdat);
     Display_Deskew_Data(node, ddr_interface_num, &dskdat, VBL_NORM);
 #endif
@@ -1291,7 +1291,7 @@ compute_vref_value(bdk_node_t node, int ddr_interface_num,
         BDK_CSR_INIT(lmc_config, node, BDK_LMCX_CONFIG(ddr_interface_num));
         /*
           New computed Vref = existing computed Vref – X
- 
+
           The value of X is depending on different conditions. Both #122 and #139 are 2Rx4 RDIMM,
           while #124 is stacked die 2Rx4, so I conclude the results into two conditions:
 
@@ -1315,7 +1315,7 @@ compute_vref_value(bdk_node_t node, int ddr_interface_num,
             }
             // we have adjusted it, so print it out if verbosity is right
             VB_PRT(VBL_TME, "N%d.LMC%d.R%d: adjusting computed vref from %2d (0x%02x) to %2d (0x%02x)\n",
-                   node, ddr_interface_num, rankx, 
+                   node, ddr_interface_num, rankx,
                    saved_final_vref_value, saved_final_vref_value,
                    computed_final_vref_value, computed_final_vref_value);
         }
@@ -1505,7 +1505,7 @@ validate_ddr3_rlevel_bitmask(rlevel_bitmask_t *rlevel_bitmask_p, int ddr_type)
                     extras++; // count the number of extra bits
             }
         }
-        
+
         /* Penalize any extra 1's beyond the maximum desired mask */
         if (extras > 0)
             toolong = RLEVEL_BITMASK_TOOLONG_ERROR * ((1 << extras) - 1);
@@ -1634,13 +1634,13 @@ Validate_HW_WL_Settings(bdk_node_t node, int ddr_interface_num,
 {
     int wl[9], byte, errors;
 
-    // arrange the sequences so 
+    // arrange the sequences so
     int useq[] = { 0,1,2,3,8,4,5,6,7,-1 }; // index 0 has byte 0, etc, ECC in middle
     int rseq1[] = { 8,3,2,1,0,-1 }; // index 0 is ECC, then go down
     int rseq2[] = { 4,5,6,7,-1 }; // index 0 has byte 4, then go up
     int useqno[] = { 0,1,2,3,4,5,6,7,-1 }; // index 0 has byte 0, etc, no ECC
     int rseq1no[] = { 3,2,1,0,-1 }; // index 0 is byte 3, then go down, no ECC
-    
+
     // in the CSR, bytes 0-7 are always data, byte 8 is ECC
     for (byte = 0; byte < 8+ecc_ena; byte++) {
         wl[byte] = (get_wlevel_rank_struct(lmc_wlevel_rank, byte) >> 1) & 3; // preprocess :-)
@@ -1683,7 +1683,7 @@ static int  get_rlevel_rank_struct(bdk_lmcx_rlevel_rankx_t *lmc_rlevel_rank,
 }
 #endif
 
-static void unpack_rlevel_settings(int ddr_interface_bytemask, int ecc_ena, 
+static void unpack_rlevel_settings(int ddr_interface_bytemask, int ecc_ena,
                                    rlevel_byte_data_t *rlevel_byte,
                                    bdk_lmcx_rlevel_rankx_t lmc_rlevel_rank)
 {
@@ -1713,11 +1713,11 @@ static void unpack_rlevel_settings(int ddr_interface_bytemask, int ecc_ena,
     rlevel_byte[0].delay = lmc_rlevel_rank.cn83xx.byte0;
 }
 
-static void pack_rlevel_settings(int ddr_interface_bytemask, int ecc_ena, 
+static void pack_rlevel_settings(int ddr_interface_bytemask, int ecc_ena,
                                  rlevel_byte_data_t *rlevel_byte,
                                  bdk_lmcx_rlevel_rankx_t *final_rlevel_rank)
 {
-    bdk_lmcx_rlevel_rankx_t lmc_rlevel_rank = *final_rlevel_rank; 
+    bdk_lmcx_rlevel_rankx_t lmc_rlevel_rank = *final_rlevel_rank;
 
     if ((ddr_interface_bytemask & 0xff) == 0xff) {
         if (ecc_ena) {
@@ -1808,7 +1808,7 @@ static int nonsequential_delays(rlevel_byte_data_t *rlevel_byte,
         }
 
         delay_inc = _abs(delay_diff); // how big was the delay change, if any
-        
+
         /* Even if the trend did not change to the opposite direction, check for
            the magnitude of the change, and scale the penalty by the amount that
            the size is larger than the provided limit.
@@ -1954,9 +1954,9 @@ display_RL_with_computed(bdk_node_t node, int ddr_interface_num, bdk_lmcx_rlevel
 // control
 #define SKIP_SKIPPING 1
 
-static const char *with_rodt_canned_msgs[4] = { "          ", "SKIPPING  ", "BEST ROW  ", "BEST SCORE" }; 
+static const char *with_rodt_canned_msgs[4] = { "          ", "SKIPPING  ", "BEST ROW  ", "BEST SCORE" };
 
-static void display_RL_with_RODT(bdk_node_t node, int ddr_interface_num, 
+static void display_RL_with_RODT(bdk_node_t node, int ddr_interface_num,
                                  bdk_lmcx_rlevel_rankx_t lmc_rlevel_rank, int rank, int score,
                                  int nom_ohms, int rodt_ohms, int flag)
 {
@@ -1969,9 +1969,9 @@ static void display_RL_with_RODT(bdk_node_t node, int ddr_interface_num,
     if (nom_ohms < 0) {
         snprintf(set_buf, sizeof(set_buf), "    RODT %3d    ", rodt_ohms);
     } else {
-        snprintf(set_buf, sizeof(set_buf), "NOM %3d RODT %3d", nom_ohms, rodt_ohms);        
+        snprintf(set_buf, sizeof(set_buf), "NOM %3d RODT %3d", nom_ohms, rodt_ohms);
     }
-    
+
     VB_PRT(VBL_TME, "N%d.LMC%d.R%d: Rlevel %s   %s  : %5d %5d %5d %5d %5d %5d %5d %5d %5d (%d)\n",
            node, ddr_interface_num, rank,
            set_buf, msg_buf,
@@ -2249,7 +2249,7 @@ void perform_octeon3_ddr3_sequence(bdk_node_t node, int rank_mask, int ddr_inter
      *    LMC(0)_SEQ_CTL[SEQ_SEL,INIT_START] = 1 with a single CSR write
      *    operation. LMC(0)_CONFIG[RANKMASK] bits should be set to indicate
      *    the ranks that will participate in the sequence.
-     * 
+     *
      *    The LMC(0)_SEQ_CTL[SEQ_SEL] value should select power-up/init or
      *    selfrefresh exit, depending on whether the DRAM parts are in
      *    self-refresh and whether their contents should be preserved. While
@@ -2257,7 +2257,7 @@ void perform_octeon3_ddr3_sequence(bdk_node_t node, int rank_mask, int ddr_inter
      *    transactions. When the sequence is complete, hardware sets the
      *    LMC(0)_CONFIG[INIT_STATUS] bits for the ranks that have been
      *    initialized.
-     * 
+     *
      *    If power-up/init is selected immediately following a DRESET
      *    assertion, LMC executes the sequence described in the "Reset and
      *    Initialization Procedure" section of the JEDEC DDR3
@@ -2270,16 +2270,16 @@ void perform_octeon3_ddr3_sequence(bdk_node_t node, int rank_mask, int ddr_inter
      *    the first DDR3 mode register write operation.
      *    LMC(0)_DIMM_CTL[DIMM*_WMASK] should be cleared to 0 if the
      *    corresponding DIMM is not present.
-     * 
+     *
      *    If self-refresh exit is selected, LMC executes the required SRX
      *    command followed by a refresh and ZQ calibration. Section 4.5
      *    describes behavior of a REF + ZQCS.  LMC does not write the DDR3
      *    mode registers as part of this sequence, and the mode register
      *    parameters must match at self-refresh entry and exit times.
-     * 
+     *
      * 4. Read LMC(0)_SEQ_CTL and wait for LMC(0)_SEQ_CTL[SEQ_COMPLETE] to be
      *    set.
-     * 
+     *
      * 5. Read LMC(0)_CONFIG[INIT_STATUS] and confirm that all ranks have
      *    been initialized.
      */
@@ -2351,8 +2351,8 @@ void ddr4_mrw(bdk_node_t node, int ddr_interface_num, int rank,
     lmc_mr_mpr_ctl.s.mr_wr_rank                 = rank;
     //lmc_mr_mpr_ctl.s.mr_wr_pda_mask           =
     //lmc_mr_mpr_ctl.s.mr_wr_pda_enable         =
-    //lmc_mr_mpr_ctl.s.mpr_loc                  = 
-    //lmc_mr_mpr_ctl.s.mpr_wr                   = 
+    //lmc_mr_mpr_ctl.s.mpr_loc                  =
+    //lmc_mr_mpr_ctl.s.mpr_wr                   =
     //lmc_mr_mpr_ctl.s.mpr_bit_select           =
     //lmc_mr_mpr_ctl.s.mpr_byte_select          =
     //lmc_mr_mpr_ctl.s.mpr_whole_byte_enable    =
@@ -3032,7 +3032,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
     if ((s = lookup_env_parameter("ddr_deskew_validation_delay")) != NULL) {
         deskew_validation_delay = strtoul(s, NULL, 0);
     }
-    // this one is in Perform_Read_Deskew_Training and controls lock retries 
+    // this one is in Perform_Read_Deskew_Training and controls lock retries
     if ((s = lookup_env_parameter("ddr_lock_retries")) != NULL) {
         default_lock_retry_limit = strtoul(s, NULL, 0);
     }
@@ -3164,7 +3164,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
             // FIXME: print non-zero monolithic device definition
             ddr_print("DDR4: Package Type MONOLITHIC: %d die, signal load %d\n",
                       ((spd_package >> 4) & 7) + 1, (spd_package & 3));
-        }   
+        }
 
         asymmetric = (spd_org >> 6) & 1;
         if (asymmetric) {
@@ -3208,7 +3208,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
             ddr_print("DDR4: RDIMM Register Manufacturer ID 0x%x Revision 0x%x\n",
                       spd_mfgr_id, spd_register_rev);
 
-            // RAWCARD A or B must be bit 7=0 and bits 4-0 either 00000(A) or 00001(B) 
+            // RAWCARD A or B must be bit 7=0 and bits 4-0 either 00000(A) or 00001(B)
             spd_rawcard_AorB = ((spd_rawcard & 0x9fUL) <= 1);
         }
     } else {
@@ -3762,14 +3762,14 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
 
      /*
      * 6.9.7 Early LMC Initialization
-     * 
+     *
      * All of DDR PLL, LMC CK, and LMC DRESET initializations must be
      * completed prior to starting this LMC initialization sequence.
-     * 
+     *
      * Perform the following five substeps for early LMC initialization:
-     * 
+     *
      * 1. Software must ensure there are no pending DRAM transactions.
-     * 
+     *
      * 2. Write LMC(0)_CONFIG, LMC(0)_CONTROL, LMC(0)_TIMING_PARAMS0,
      *    LMC(0)_TIMING_PARAMS1, LMC(0)_MODEREG_PARAMS0,
      *    LMC(0)_MODEREG_PARAMS1, LMC(0)_DUAL_MEMCFG, LMC(0)_NXM,
@@ -5073,7 +5073,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
 
  perform_internal_vref_training:
 
-    for (sample = 0; sample < num_samples; sample++) { 
+    for (sample = 0; sample < num_samples; sample++) {
 
         dac_eval_retries = 0;
 
@@ -5265,48 +5265,48 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
 
     /*
      * 6.9.11 LMC Write Leveling
-     * 
+     *
      * LMC supports an automatic write leveling like that described in the
      * JEDEC DDR3 specifications separately per byte-lane.
-     * 
+     *
      * All of DDR PLL, LMC CK, LMC DRESET, and early LMC initializations must
      * be completed prior to starting this LMC write-leveling sequence.
-     * 
+     *
      * There are many possible procedures that will write-level all the
      * attached DDR3 DRAM parts. One possibility is for software to simply
      * write the desired values into LMC(0)_WLEVEL_RANK(0..3). This section
      * describes one possible sequence that uses LMC's autowrite-leveling
      * capabilities.
-     * 
+     *
      * 1. If the DQS/DQ delays on the board may be more than the ADD/CMD
      *    delays, then ensure that LMC(0)_CONFIG[EARLY_DQX] is set at this
      *    point.
-     * 
+     *
      * Do the remaining steps 2-7 separately for each rank i with attached
      * DRAM.
-     * 
+     *
      * 2. Write LMC(0)_WLEVEL_RANKi = 0.
-     * 
+     *
      * 3. For ×8 parts:
-     * 
+     *
      *    Without changing any other fields in LMC(0)_WLEVEL_CTL, write
      *    LMC(0)_WLEVEL_CTL[LANEMASK] to select all byte lanes with attached
      *    DRAM.
-     * 
+     *
      *    For ×16 parts:
-     * 
+     *
      *    Without changing any other fields in LMC(0)_WLEVEL_CTL, write
      *    LMC(0)_WLEVEL_CTL[LANEMASK] to select all even byte lanes with
      *    attached DRAM.
-     * 
+     *
      * 4. Without changing any other fields in LMC(0)_CONFIG,
-     * 
+     *
      *    o write LMC(0)_SEQ_CTL[SEQ_SEL] to select write-leveling
-     * 
+     *
      *    o write LMC(0)_CONFIG[RANKMASK] = (1 << i)
-     * 
+     *
      *    o write LMC(0)_SEQ_CTL[INIT_START] = 1
-     * 
+     *
      *    LMC will initiate write-leveling at this point. Assuming
      *    LMC(0)_WLEVEL_CTL [SSET] = 0, LMC first enables write-leveling on
      *    the selected DRAM rank via a DDR3 MR1 write, then sequences through
@@ -5315,17 +5315,17 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
      *    LMC(0)_WLEVEL_RANKi[BYTE*<4:3>] = 0, increasing by 1/8 CK each
      *    setting, covering a total distance of one CK, then disables the
      *    write-leveling via another DDR3 MR1 write.
-     * 
+     *
      *    After the sequence through 16 delay settings is complete:
-     * 
+     *
      *    o LMC sets LMC(0)_WLEVEL_RANKi[STATUS] = 3
-     * 
+     *
      *    o LMC sets LMC(0)_WLEVEL_RANKi[BYTE*<2:0>] (for all ranks selected
      *      by LMC(0)_WLEVEL_CTL[LANEMASK]) to indicate the first write
      *      leveling result of 1 that followed result of 0 during the
      *      sequence, except that the LMC always writes
      *      LMC(0)_WLEVEL_RANKi[BYTE*<0>]=0.
-     * 
+     *
      *    o Software can read the eight write-leveling results from the first
      *      pass through the delay settings by reading
      *      LMC(0)_WLEVEL_DBG[BITMASK] (after writing
@@ -5333,66 +5333,66 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
      *      results from the second pass through the eight delay
      *      settings. They should often be identical to the
      *      LMC(0)_WLEVEL_DBG[BITMASK] results, though.)
-     * 
+     *
      * 5. Wait until LMC(0)_WLEVEL_RANKi[STATUS] != 2.
-     * 
+     *
      *    LMC will have updated LMC(0)_WLEVEL_RANKi[BYTE*<2:0>] for all byte
      *    lanes selected by LMC(0)_WLEVEL_CTL[LANEMASK] at this point.
      *    LMC(0)_WLEVEL_RANKi[BYTE*<4:3>] will still be the value that
      *    software wrote in substep 2 above, which is 0.
-     * 
+     *
      * 6. For ×16 parts:
-     * 
+     *
      *    Without changing any other fields in LMC(0)_WLEVEL_CTL, write
      *    LMC(0)_WLEVEL_CTL[LANEMASK] to select all odd byte lanes with
      *    attached DRAM.
-     * 
+     *
      *    Repeat substeps 4 and 5 with this new LMC(0)_WLEVEL_CTL[LANEMASK]
      *    setting. Skip to substep 7 if this has already been done.
-     * 
+     *
      *    For ×8 parts:
-     * 
+     *
      *    Skip this substep. Go to substep 7.
-     * 
+     *
      * 7. Calculate LMC(0)_WLEVEL_RANKi[BYTE*<4:3>] settings for all byte
      *    lanes on all ranks with attached DRAM.
-     * 
+     *
      *    At this point, all byte lanes on rank i with attached DRAM should
      *    have been write-leveled, and LMC(0)_WLEVEL_RANKi[BYTE*<2:0>] has
      *    the result for each byte lane.
-     * 
+     *
      *    But note that the DDR3 write-leveling sequence will only determine
      *    the delay modulo the CK cycle time, and cannot determine how many
      *    additional CK cycles of delay are present. Software must calculate
      *    the number of CK cycles, or equivalently, the
      *    LMC(0)_WLEVEL_RANKi[BYTE*<4:3>] settings.
-     * 
+     *
      *    This BYTE*<4:3> calculation is system/board specific.
-     * 
+     *
      * Many techniques can be used to calculate write-leveling BYTE*<4:3> values,
      * including:
-     * 
+     *
      *    o Known values for some byte lanes.
-     * 
+     *
      *    o Relative values for some byte lanes relative to others.
-     * 
+     *
      *    For example, suppose lane X is likely to require a larger
      *    write-leveling delay than lane Y. A BYTEX<2:0> value that is much
      *    smaller than the BYTEY<2:0> value may then indicate that the
      *    required lane X delay wrapped into the next CK, so BYTEX<4:3>
      *    should be set to BYTEY<4:3>+1.
-     * 
+     *
      *    When ECC DRAM is not present (i.e. when DRAM is not attached to the
      *    DDR_CBS_0_* and DDR_CB<7:0> chip signals, or the DDR_DQS_<4>_* and
      *    DDR_DQ<35:32> chip signals), write LMC(0)_WLEVEL_RANK*[BYTE8] =
      *    LMC(0)_WLEVEL_RANK*[BYTE0], using the final calculated BYTE0 value.
      *    Write LMC(0)_WLEVEL_RANK*[BYTE4] = LMC(0)_WLEVEL_RANK*[BYTE0],
      *    using the final calculated BYTE0 value.
-     * 
+     *
      * 8. Initialize LMC(0)_WLEVEL_RANK* values for all unused ranks.
-     * 
+     *
      *    Let rank i be a rank with attached DRAM.
-     * 
+     *
      *    For all ranks j that do not have attached DRAM, set
      *    LMC(0)_WLEVEL_RANKj = LMC(0)_WLEVEL_RANKi.
      */
@@ -5794,18 +5794,18 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
 
     /*
      * 6.9.12 LMC Read Leveling
-     * 
+     *
      * LMC supports an automatic read-leveling separately per byte-lane using
      * the DDR3 multipurpose register predefined pattern for system
      * calibration defined in the JEDEC DDR3 specifications.
-     * 
+     *
      * All of DDR PLL, LMC CK, and LMC DRESET, and early LMC initializations
      * must be completed prior to starting this LMC read-leveling sequence.
-     * 
+     *
      * Software could simply write the desired read-leveling values into
      * LMC(0)_RLEVEL_RANK(0..3). This section describes a sequence that uses
      * LMC's autoread-leveling capabilities.
-     * 
+     *
      * When LMC does the read-leveling sequence for a rank, it first enables
      * the DDR3 multipurpose register predefined pattern for system
      * calibration on the selected DRAM rank via a DDR3 MR3 write, then
@@ -5814,13 +5814,13 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
      * operation. LMC determines the pass or fail of each of the 64 settings
      * independently for each byte lane, then writes appropriate
      * LMC(0)_RLEVEL_RANK(0..3)[BYTE*] values for the rank.
-     * 
+     *
      * After read-leveling for a rank, software can read the 64 pass/fail
      * indications for one byte lane via LMC(0)_RLEVEL_DBG[BITMASK]. Software
      * can observe all pass/fail results for all byte lanes in a rank via
      * separate read-leveling sequences on the rank with different
      * LMC(0)_RLEVEL_CTL[BYTE] values.
-     * 
+     *
      * The 64 pass/fail results will typically have failures for the low
      * delays, followed by a run of some passing settings, followed by more
      * failures in the remaining high delays.  LMC sets
@@ -5834,46 +5834,46 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
      * the run (rounding earlier when necessary). We expect the read-leveling
      * sequence to produce good results with the reset values
      * LMC(0)_RLEVEL_CTL [OFFSET_EN]=1, LMC(0)_RLEVEL_CTL[OFFSET] = 2.
-     * 
+     *
      * The read-leveling sequence has the following steps:
-     * 
+     *
      * 1. Select desired LMC(0)_RLEVEL_CTL[OFFSET_EN,OFFSET,BYTE] settings.
      *    Do the remaining substeps 2-4 separately for each rank i with
      *    attached DRAM.
-     * 
+     *
      * 2. Without changing any other fields in LMC(0)_CONFIG,
-     * 
+     *
      *    o write LMC(0)_SEQ_CTL[SEQ_SEL] to select read-leveling
-     * 
+     *
      *    o write LMC(0)_CONFIG[RANKMASK] = (1 << i)
-     * 
+     *
      *    o write LMC(0)_SEQ_CTL[INIT_START] = 1
-     * 
+     *
      *    This initiates the previously-described read-leveling.
-     * 
+     *
      * 3. Wait until LMC(0)_RLEVEL_RANKi[STATUS] != 2
-     * 
+     *
      *    LMC will have updated LMC(0)_RLEVEL_RANKi[BYTE*] for all byte lanes
      *    at this point.
-     * 
+     *
      *    If ECC DRAM is not present (i.e. when DRAM is not attached to the
      *    DDR_CBS_0_* and DDR_CB<7:0> chip signals, or the DDR_DQS_<4>_* and
      *    DDR_DQ<35:32> chip signals), write LMC(0)_RLEVEL_RANK*[BYTE8] =
      *    LMC(0)_RLEVEL_RANK*[BYTE0]. Write LMC(0)_RLEVEL_RANK*[BYTE4] =
      *    LMC(0)_RLEVEL_RANK*[BYTE0].
-     * 
+     *
      * 4. If desired, consult LMC(0)_RLEVEL_DBG[BITMASK] and compare to
      *    LMC(0)_RLEVEL_RANKi[BYTE*] for the lane selected by
      *    LMC(0)_RLEVEL_CTL[BYTE]. If desired, modify LMC(0)_RLEVEL_CTL[BYTE]
      *    to a new value and repeat so that all BITMASKs can be observed.
-     * 
+     *
      * 5. Initialize LMC(0)_RLEVEL_RANK* values for all unused ranks.
-     * 
+     *
      *    Let rank i be a rank with attached DRAM.
-     * 
+     *
      *    For all ranks j that do not have attached DRAM, set
      *    LMC(0)_RLEVEL_RANKj = LMC(0)_RLEVEL_RANKi.
-     * 
+     *
      * This read-leveling sequence can help select the proper CN70XX ODT
      * resistance value (LMC(0)_COMP_CTL2[RODT_CTL]). A hardware-generated
      * LMC(0)_RLEVEL_RANKi[BYTEj] value (for a used byte lane j) that is
@@ -6083,7 +6083,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
                 i = 0;
                 while (custom_lmc_config->rlevel_table[i].part != NULL) {
                     debug_print("DIMM part number:\"%s\", SPD: \"%s\"\n", custom_lmc_config->rlevel_table[i].part, part_number);
-                    if ((strcmp(part_number, custom_lmc_config->rlevel_table[i].part) == 0) 
+                    if ((strcmp(part_number, custom_lmc_config->rlevel_table[i].part) == 0)
                         && (_abs(custom_lmc_config->rlevel_table[i].speed - 2*ddr_hertz/(1000*1000)) < 10 ))
                     {
                         ddr_print("Using hard-coded read leveling for DIMM part number: \"%s\"\n", part_number);
@@ -6290,7 +6290,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
                                     rlevel_bitmask[7].bm = octeon_read_lmcx_ddr3_rlevel_dbg(node, ddr_interface_num, 7);
                                     /* B-side complete */
 
-                        
+
                                     update_rlevel_rank_struct(&lmc_rlevel_rank, 0, lmc_rlevel_rank_aside.cn83xx.byte0);
                                     update_rlevel_rank_struct(&lmc_rlevel_rank, 1, lmc_rlevel_rank_aside.cn83xx.byte1);
                                     update_rlevel_rank_struct(&lmc_rlevel_rank, 2, lmc_rlevel_rank_aside.cn83xx.byte2);
@@ -6390,7 +6390,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
 #else
                                 rlevel_rank_errors = rlevel_bitmask_errors + rlevel_nonseq_errors;
 #endif
-                                
+
                                 // print original sample here only if we are not really averaging or picking best
                                 // also do not print if we were redoing the NONSEQ score for using COMPUTED
                                 if (!redoing_nonseq_errs && ((rlevel_avg_loops < 2) || dram_is_verbose(VBL_DEV2))) {
@@ -6833,7 +6833,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
                                 best_rank_ohms      = next_ohms;
                                 best_rankx          = orankx;
                                 lmc_rlevel_rank.u   = rlevel_scoreboard[rtt_nom][rodt_ctl][orankx].setting;
- 
+
                             } /* for (int orankx = 0; orankx < dimm_count * 4; orankx++) */
                         } /* for (rodt_ctl = max_rodt_ctl; rodt_ctl >= min_rodt_ctl; --rodt_ctl) */
                     } /* for (rtt_idx = min_rtt_nom_idx; rtt_idx <= max_rtt_nom_idx; ++rtt_idx) */
@@ -7233,7 +7233,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
                             if (delay_value >= 0) {
                                 if (ties != 0) {
                                     if (ties & (1UL << (int)new_byte)) {
-                                        // leave choice as new_byte if any tied one is the same... 
+                                        // leave choice as new_byte if any tied one is the same...
 
 
                                         delay_value = (int)new_byte;
@@ -7251,7 +7251,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
                                 if (delay_value != (int)new_byte) {
                                     delay_count = rank_perfect_counts[rankx].count[byte_idx][(int)new_byte];
                                     VB_PRT(VBL_DEV, "N%d.LMC%d.R%d: PERFECT: Byte %d: DIFF from %d (%d), USING %d (%d)\n",
-                                           node, ddr_interface_num, rankx, byte_idx, (int)new_byte, 
+                                           node, ddr_interface_num, rankx, byte_idx, (int)new_byte,
                                            delay_count, delay_value, delay_max);
                                     new_byte = (uint64_t)delay_value; // FIXME: make this optional via envvar?
                                 } else {
@@ -7522,7 +7522,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
 
         /* Get the measured_vref setting from the config, check for an override... */
         /* NOTE: measured_vref=1 (ON) means force use of MEASURED Vref... */
-        // NOTE: measured VREF can only be done for DDR4 
+        // NOTE: measured VREF can only be done for DDR4
         if (ddr_type == DDR4_DRAM) {
             measured_vref_flag = custom_lmc_config->measured_vref;
             if ((s = lookup_env_parameter("ddr_measured_vref")) != NULL) {
@@ -7650,7 +7650,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
                                     } else {
                                         vrlo = 1; vvlo -= VREF_RANGE2_LIMIT;
                                     }
-                                    
+
                                     int vvhi = best_vref_values_start + best_vref_values_count - 1;
                                     int vrhi;
                                     if (vvhi < VREF_RANGE2_LIMIT) {
@@ -7678,7 +7678,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
                                 ddr_print("N%d.LMC%d.R%d: Vref Using Default                    :"
                                           "    %2d <----- %2d (0x%02x) -----> %2d, range%1d\n",
                                           node, ddr_interface_num, rankx,
-                                          final_vref_value, final_vref_value, 
+                                          final_vref_value, final_vref_value,
                                           final_vref_value, final_vref_value, final_vref_range+1);
                             }
                         }
@@ -7890,7 +7890,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
                                 if (!measured_vref_flag) {
                                     test_byte8 &= ~1; /* Use only even settings, rounding down... */
 
-                                    // do validity check on the calculated ECC delay value 
+                                    // do validity check on the calculated ECC delay value
                                     // this depends on the DIMM type
                                     if (spd_rdimm) { // RDIMM
                                         if (spd_dimm_type != 5) { // but not mini-RDIMM
@@ -8155,7 +8155,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
 
                     // do the test
                     if (sw_wlevel_hw) {
-                        errors = run_best_hw_patterns(node, ddr_interface_num, rank_addr, 
+                        errors = run_best_hw_patterns(node, ddr_interface_num, rank_addr,
                                                       DBTRAIN_TEST, NULL) & 0x0ff;
                     } else {
 #if USE_ORIG_TEST_DRAM_BYTE
@@ -8323,7 +8323,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
 
     process_custom_dll_offsets(node, ddr_interface_num, "ddr_dll_write_offset",
                                custom_lmc_config->dll_write_offset, "ddr%d_dll_write_offset_byte%d", 1);
-    process_custom_dll_offsets(node, ddr_interface_num, "ddr_dll_read_offset", 
+    process_custom_dll_offsets(node, ddr_interface_num, "ddr_dll_read_offset",
                                custom_lmc_config->dll_read_offset,  "ddr%d_dll_read_offset_byte%d",  2);
 
     // we want to train write bit-deskew here...
@@ -8337,29 +8337,29 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
 
     /*
      * 6.9.14 Final LMC Initialization
-     * 
+     *
      * Early LMC initialization, LMC write-leveling, and LMC read-leveling
      * must be completed prior to starting this final LMC initialization.
-     * 
+     *
      * LMC hardware updates the LMC(0)_SLOT_CTL0, LMC(0)_SLOT_CTL1,
      * LMC(0)_SLOT_CTL2 CSRs with minimum values based on the selected
      * readleveling and write-leveling settings. Software should not write
      * the final LMC(0)_SLOT_CTL0, LMC(0)_SLOT_CTL1, and LMC(0)_SLOT_CTL2
      * values until after the final read-leveling and write-leveling settings
      * are written.
-     * 
+     *
      * Software must ensure the LMC(0)_SLOT_CTL0, LMC(0)_SLOT_CTL1, and
      * LMC(0)_SLOT_CTL2 CSR values are appropriate for this step. These CSRs
      * select the minimum gaps between read operations and write operations
      * of various types.
-     * 
+     *
      * Software must not reduce the values in these CSR fields below the
      * values previously selected by the LMC hardware (during write-leveling
      * and read-leveling steps above).
-     * 
+     *
      * All sections in this chapter may be used to derive proper settings for
      * these registers.
-     * 
+     *
      * For minimal read latency, L2C_CTL[EF_ENA,EF_CNT] should be programmed
      * properly. This should be done prior to the first read.
      */

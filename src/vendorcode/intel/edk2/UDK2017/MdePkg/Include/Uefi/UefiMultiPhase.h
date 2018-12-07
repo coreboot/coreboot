@@ -83,7 +83,7 @@ typedef enum {
   ///
   EfiPalCode,
   ///
-  /// A memory region that operates as EfiConventionalMemory, 
+  /// A memory region that operates as EfiConventionalMemory,
   /// however it happens to also support byte-addressable non-volatility.
   ///
   EfiPersistentMemory,

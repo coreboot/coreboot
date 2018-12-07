@@ -43,7 +43,7 @@ typedef enum {
   ///
   HttpBootHttpRequest,
   ///
-  /// Data points to an EFI_HTTP_MESSAGE structure, which contians a received HTTP 
+  /// Data points to an EFI_HTTP_MESSAGE structure, which contians a received HTTP
   /// response message.
   ///
   HttpBootHttpResponse,
@@ -72,7 +72,7 @@ typedef enum {
   @param[in]  DataLength          The length in bytes of the buffer pointed to by Data.
   @param[in]  Data                A pointer to the buffer of data, the data type is specified by
                                   DataType.
-                                  
+
   @retval EFI_SUCCESS             Tells the HTTP Boot driver to continue the HTTP Boot process.
   @retval EFI_ABORTED             Tells the HTTP Boot driver to abort the current HTTP Boot process.
 **/
@@ -87,7 +87,7 @@ EFI_STATUS
  );
 
 ///
-/// EFI HTTP Boot Callback Protocol is invoked when the HTTP Boot driver is about to transmit or 
+/// EFI HTTP Boot Callback Protocol is invoked when the HTTP Boot driver is about to transmit or
 /// has received a packet. The EFI HTTP Boot Callback Protocol must be installed on the same handle
 /// as the Load File Protocol for the HTTP Boot.
 ///

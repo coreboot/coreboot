@@ -423,7 +423,7 @@ static void boot_init_qlm_mode(void)
             }
         }
     }
-   /* 
+   /*
     * Check if QLM autoconfig from DIP switch settings is requested
     */
     else if (bdk_config_get_int(BDK_CONFIG_QLM_DIP_AUTO_CONFIG))

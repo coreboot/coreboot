@@ -46,7 +46,7 @@
 #include <libbdk-hal/bdk-rng.h>
 #include <libbdk-os/bdk-init.h>
 
-// if enhanced verbosity levels are defined, use them 
+// if enhanced verbosity levels are defined, use them
 #if defined(VB_PRT)
 #define ddr_print2(format, ...) VB_PRT(VBL_FAE,  format, ##__VA_ARGS__)
 #define ddr_print3(format, ...) VB_PRT(VBL_TME,  format, ##__VA_ARGS__)
@@ -149,7 +149,7 @@ static const uint64_t *dram_tune_test_pattern = test_pattern_1;
 
 // set this to 1 to shorten the testing to exit when all byte lanes have errors
 // having this at 0 forces the testing to take place over the entire range every iteration,
-// hopefully ensuring an even load on the memory subsystem 
+// hopefully ensuring an even load on the memory subsystem
 #define EXIT_WHEN_ALL_LANES_HAVE_ERRORS 0
 
 #define DEFAULT_TEST_BURSTS 5 // FIXME: this is what works so far...// FIXME: was 7
@@ -198,7 +198,7 @@ get_speed_bin(bdk_node_t node, int lmc)
             ret = 1;
     }
 
-    debug_print("N%d.LMC%d: %s: returning bin %d for MTS %d\n", 
+    debug_print("N%d.LMC%d: %s: returning bin %d for MTS %d\n",
                 node, lmc, __FUNCTION__, ret, mts_speed);
 
     return ret;
@@ -260,13 +260,13 @@ int dram_tuning_mem_xor(bdk_node_t node, int lmc, uint64_t p, uint64_t bitmask, 
 #define I_INC  (1ULL <<  3)
 #define I_MAX  (1ULL <<  7)
 
-    debug_print("N%d.LMC%d: dram_tuning_mem_xor: phys_addr=0x%lx\n", 
+    debug_print("N%d.LMC%d: dram_tuning_mem_xor: phys_addr=0x%lx\n",
               node, lmc, p);
 
 #if 0
     int ix;
     // add this loop to fill memory with the test pattern first
-    // loops are ordered so that only entire cachelines are written 
+    // loops are ordered so that only entire cachelines are written
     for (ii = 0; ii < II_MAX; ii += II_INC) { // FIXME? extend the range of memory tested!!
         for (k = 0; k < K_MAX; k += K_INC) {
             for (j = 0; j < J_MAX; j += J_INC) {
@@ -329,7 +329,7 @@ int dram_tuning_mem_xor(bdk_node_t node, int lmc, uint64_t p, uint64_t bitmask, 
 
     BDK_DCACHE_INVALIDATE;
 
-    debug_print("N%d.LMC%d: dram_tuning_mem_xor: done INIT loop\n", 
+    debug_print("N%d.LMC%d: dram_tuning_mem_xor: done INIT loop\n",
               node, lmc);
 
     /* Make a series of passes over the memory areas. */
@@ -384,7 +384,7 @@ int dram_tuning_mem_xor(bdk_node_t node, int lmc, uint64_t p, uint64_t bitmask, 
 
         BDK_DCACHE_INVALIDATE;
 
-        debug_print("N%d.LMC%d: dram_tuning_mem_xor: done MODIFY loop\n", 
+        debug_print("N%d.LMC%d: dram_tuning_mem_xor: done MODIFY loop\n",
                   node, lmc);
 
 #if ENABLE_PREFETCH
@@ -460,7 +460,7 @@ int dram_tuning_mem_xor(bdk_node_t node, int lmc, uint64_t p, uint64_t bitmask, 
             }
         } /* for (ii = 0; ii < (1ULL << 31); ii += (1ULL << 29)) */
 
-        debug_print("N%d.LMC%d: dram_tuning_mem_xor: done TEST loop\n", 
+        debug_print("N%d.LMC%d: dram_tuning_mem_xor: done TEST loop\n",
                   node, lmc);
 
     } /* for (int burst = 0; burst < dram_tune_use_bursts; burst++) */
@@ -534,7 +534,7 @@ run_dram_tuning_threads(bdk_node_t node, int num_lmcs, uint64_t bytemask)
         /* Wait for threads to finish, with progress */
         int cur_count;
         uint64_t cur_time;
-        uint64_t period = bdk_clock_get_rate(bdk_numa_local(), BDK_CLOCK_TIME) * TIMEOUT_SECS; // FIXME? 
+        uint64_t period = bdk_clock_get_rate(bdk_numa_local(), BDK_CLOCK_TIME) * TIMEOUT_SECS; // FIXME?
         uint64_t timeout = bdk_clock_get_count(BDK_CLOCK_TIME) + period;
         do {
 //            bdk_thread_yield();        /* FIXME(dhendrix): don't yield... */
@@ -854,7 +854,7 @@ auto_set_dll_offset(bdk_node_t node, int dll_offset_mode,
     } /* for (lmc = 0; lmc < num_lmcs; lmc++) */
 
     // FIXME: only when verbose, or only when there are errors?
-    // run the test one last time 
+    // run the test one last time
     // print whether there are errors or not, but only when verbose...
     bdk_watchdog_poke();
     debug_print("N%d: %s: Start running test one last time\n", node, __FUNCTION__);
@@ -912,7 +912,7 @@ int perform_dll_offset_tuning(bdk_node_t node, int dll_offset_mode, int do_tune)
         loops = strtoul(s, NULL, 0);
     }
 
-    // see if we want to change the granularity of the byte_offset sampling 
+    // see if we want to change the granularity of the byte_offset sampling
     if ((s = getenv("ddr_tune_use_gran"))) {
         dram_tune_use_gran = strtoul(s, NULL, 0);
     }
@@ -1018,7 +1018,7 @@ int perform_dll_offset_tuning(bdk_node_t node, int dll_offset_mode, int do_tune)
     limit_l2_ways(node, ways, ways_print);
 #endif
 
-    // perform cleanup on all active LMCs   
+    // perform cleanup on all active LMCs
     debug_print("N%d: %s: starting LMCs cleanup.\n", node, __FUNCTION__);
     for (lmc = 0; lmc < num_lmcs; lmc++) {
 
@@ -1420,7 +1420,7 @@ hw_assist_test_dll_offset(bdk_node_t node, int dll_offset_mode,
             ddr_print("%5d ", new_best_offset[byte]);
         else
             ddr_print("(byte %d) %5d ", byte, new_best_offset[byte]);
-        
+
 
 #if 1
         // done with testing, load up the best offsets we found...
@@ -1433,7 +1433,7 @@ hw_assist_test_dll_offset(bdk_node_t node, int dll_offset_mode,
     ddr_print("\n");
 
 #if 0
-    // run the test one last time 
+    // run the test one last time
     // print whether there are errors or not, but only when verbose...
     tot_errors = run_test_dram_byte_threads(node, num_lmcs, bytemask);
     printf("N%d.LMC%d: Bytelane %d DLL %s Offset Final Test: errors 0x%x\n",

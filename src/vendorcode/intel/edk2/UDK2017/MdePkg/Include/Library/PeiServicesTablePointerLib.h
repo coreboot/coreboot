@@ -18,10 +18,10 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 /**
   Retrieves the cached value of the PEI Services Table pointer.
 
-  Returns the cached value of the PEI Services Table pointer in a CPU specific manner 
-  as specified in the CPU binding section of the Platform Initialization Pre-EFI 
+  Returns the cached value of the PEI Services Table pointer in a CPU specific manner
+  as specified in the CPU binding section of the Platform Initialization Pre-EFI
   Initialization Core Interface Specification.
-  
+
   If the cached PEI Services Table pointer is NULL, then ASSERT().
 
   @return  The pointer to PeiServices.
@@ -34,14 +34,14 @@ GetPeiServicesTablePointer (
   );
 
 /**
-  Caches a pointer PEI Services Table. 
- 
-  Caches the pointer to the PEI Services Table specified by PeiServicesTablePointer 
-  in a CPU specific manner as specified in the CPU binding section of the Platform Initialization 
-  Pre-EFI Initialization Core Interface Specification. 
-  
+  Caches a pointer PEI Services Table.
+
+  Caches the pointer to the PEI Services Table specified by PeiServicesTablePointer
+  in a CPU specific manner as specified in the CPU binding section of the Platform Initialization
+  Pre-EFI Initialization Core Interface Specification.
+
   If PeiServicesTablePointer is NULL, then ASSERT().
-  
+
   @param    PeiServicesTablePointer   The address of PeiServices pointer.
 **/
 VOID
@@ -51,16 +51,16 @@ SetPeiServicesTablePointer (
   );
 
 /**
-  Perform CPU specific actions required to migrate the PEI Services Table 
+  Perform CPU specific actions required to migrate the PEI Services Table
   pointer from temporary RAM to permanent RAM.
 
-  For IA32 CPUs, the PEI Services Table pointer is stored in the 4 bytes 
+  For IA32 CPUs, the PEI Services Table pointer is stored in the 4 bytes
   immediately preceding the Interrupt Descriptor Table (IDT) in memory.
-  For X64 CPUs, the PEI Services Table pointer is stored in the 8 bytes 
+  For X64 CPUs, the PEI Services Table pointer is stored in the 8 bytes
   immediately preceding the Interrupt Descriptor Table (IDT) in memory.
   For Itanium and ARM CPUs, a the PEI Services Table Pointer is stored in
-  a dedicated CPU register.  This means that there is no memory storage 
-  associated with storing the PEI Services Table pointer, so no additional 
+  a dedicated CPU register.  This means that there is no memory storage
+  associated with storing the PEI Services Table pointer, so no additional
   migration actions are required for Itanium or ARM CPUs.
 
 **/

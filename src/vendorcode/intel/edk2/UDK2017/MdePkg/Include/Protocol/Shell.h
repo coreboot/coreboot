@@ -547,7 +547,7 @@ CONST CHAR16 *
   );
 
 /**
-  Gets the environment variable and Attributes, or list of environment variables.  Can be 
+  Gets the environment variable and Attributes, or list of environment variables.  Can be
   used instead of GetEnv().
 
   This function returns the current value of the specified environment variable and
@@ -555,18 +555,18 @@ CONST CHAR16 *
   variables will be returned.
 
   @param[in] Name               A pointer to the environment variable name. If Name is NULL,
-                                then the function will return all of the defined shell 
+                                then the function will return all of the defined shell
                                 environment variables. In the case where multiple environment
-                                variables are being returned, each variable will be terminated 
+                                variables are being returned, each variable will be terminated
                                 by a NULL, and the list will be terminated by a double NULL.
   @param[out] Attributes        If not NULL, a pointer to the returned attributes bitmask for
                                 the environment variable. In the case where Name is NULL, and
                                 multiple environment variables are being returned, Attributes
                                 is undefined.
 
-  @retval NULL                  The environment variable doesn't exist.  
-  @return                       The environment variable's value. The returned pointer does not 
-                                need to be freed by the caller.  
+  @retval NULL                  The environment variable doesn't exist.
+  @return                       The environment variable's value. The returned pointer does not
+                                need to be freed by the caller.
 **/
 typedef
 CONST CHAR16 *

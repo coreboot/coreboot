@@ -2,9 +2,9 @@
   Native Platform Configuration Database (PCD) INFO PPI
 
   The PPI that provides additional information about items that reside in the PCD database.
-  
+
   Different with the EFI_GET_PCD_INFO_PPI defined in PI 1.2.1 specification,
-  the native PCD INFO PPI provide interfaces for dynamic and dynamic-ex type PCD. 
+  the native PCD INFO PPI provide interfaces for dynamic and dynamic-ex type PCD.
   The interfaces for dynamic type PCD do not require the token space guid as parameter,
   but interfaces for dynamic-ex type PCD require token space guid as parameter.
 

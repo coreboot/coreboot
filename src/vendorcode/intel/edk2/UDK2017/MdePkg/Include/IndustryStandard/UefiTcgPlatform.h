@@ -190,7 +190,7 @@ typedef struct {
 
 typedef struct tdEFI_GPT_DATA {
   EFI_PARTITION_TABLE_HEADER  EfiPartitionHeader;
-  UINTN                       NumberOfPartitions; 
+  UINTN                       NumberOfPartitions;
   EFI_PARTITION_ENTRY         Partitions[1];
 } EFI_GPT_DATA;
 

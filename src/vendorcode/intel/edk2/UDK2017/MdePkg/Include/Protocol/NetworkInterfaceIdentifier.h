@@ -74,8 +74,8 @@ struct _EFI_NETWORK_INTERFACE_IDENTIFIER_PROTOCOL {
   UINT8     MajorVer;   ///< Major version number.
   UINT8     MinorVer;   ///< Minor version number.
   BOOLEAN   Ipv6Supported; ///< TRUE if the network interface supports IPv6; otherwise FALSE.
-  UINT16    IfNum;      ///< The network interface number that is being identified by this Network 
-                        ///< Interface Identifier Protocol. This field must be less than or 
+  UINT16    IfNum;      ///< The network interface number that is being identified by this Network
+                        ///< Interface Identifier Protocol. This field must be less than or
                         ///< equal to the (IFcnt | IFcntExt <<8 ) fields in the !PXE structure.
 
 };
@@ -109,7 +109,7 @@ struct undiconfig_table {
   struct {
     VOID             *NII_InterfacePointer; ///< Pointer to the NII interface structure.
     VOID             *DevicePathPointer;    ///< Pointer to the device path for this NIC.
-  } NII_entry[1]; 
+  } NII_entry[1];
 };
 
 extern EFI_GUID gEfiNetworkInterfaceIdentifierProtocolGuid;

@@ -72,7 +72,7 @@
 // 1. looking for the best sample score
 // 2. averaging the samples into a composite score
 // symbol PICK_BEST_RANK_SCORE_NOT_AVG is used to choose
-// (see dram-init-ddr3.c: 
+// (see dram-init-ddr3.c:
 #define RLEVEL_AVG_LOOPS_DEFAULT 3
 #define PICK_BEST_RANK_SCORE_NOT_AVG 1
 
@@ -125,7 +125,7 @@ extern int dram_tuning_mem_xor(bdk_node_t node, int ddr_interface_num, uint64_t 
 
 // "mode" arg
 #define DBTRAIN_TEST 0
-#define DBTRAIN_DBI  1 
+#define DBTRAIN_DBI  1
 #define DBTRAIN_LFSR 2
 extern int test_dram_byte_hw(bdk_node_t node, int ddr_interface_num,
                              uint64_t p, int mode, uint64_t *xor_data);

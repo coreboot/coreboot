@@ -24,8 +24,8 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * Neither the name of Advanced Micro Devices, Inc. nor the names of 
-*       its contributors may be used to endorse or promote products derived 
+*     * Neither the name of Advanced Micro Devices, Inc. nor the names of
+*       its contributors may be used to endorse or promote products derived
 *       from this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
@@ -446,7 +446,7 @@ Name (varLinkWidthBuffer, Buffer () {0, 1, 2, 4, 8, 12, 16})
     Store (Concatenate ("Lane Bitmap : ", ToHexString (varLaneBitmapOrMaskLocal3), varStringBuffer), Debug)
     if (Lequal (Arg3, 1)) {
       Store (0, varLaneBitmapOrMaskLocal3)
-    } 
+    }
     procIndirectRegisterRMW (0x0, 0xE0, Or (ShiftLeft (varWrapperId, 16), 0x8023), varLaneBitmapAndMaskLocal4, varLaneBitmapOrMaskLocal3);
     Stall (10)
     Store ("PcieLaneEnableControl Exit", Debug)

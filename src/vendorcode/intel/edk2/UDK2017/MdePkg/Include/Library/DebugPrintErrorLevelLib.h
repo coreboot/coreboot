@@ -28,9 +28,9 @@ GetDebugPrintErrorLevel (
 
 /**
   Sets the global debug print error level mask fpr the entire platform.
-  
+
   @param   ErrorLevel     Global debug print error level
-  
+
   @retval  TRUE           The debug print error level mask was successfully set.
   @retval  FALSE          The debug print error level mask could not be set.
 

@@ -1,5 +1,5 @@
 /** @file
-  Support for Microsoft Secure MOR implementation, defined at 
+  Support for Microsoft Secure MOR implementation, defined at
   Microsoft Secure MOR implementation.
   https://msdn.microsoft.com/en-us/library/windows/hardware/mt270973(v=vs.85).aspx
 

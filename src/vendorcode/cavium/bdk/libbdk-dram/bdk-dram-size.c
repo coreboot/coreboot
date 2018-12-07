@@ -136,7 +136,7 @@ int __bdk_dram_get_num_bank_bits(bdk_node_t node, int lmc)
     if (__bdk_dram_is_lmc_in_dreset(node, lmc)) // check LMCn
         return 0;
     BDK_CSR_INIT(lmcx_config, node, BDK_LMCX_CONFIG(lmc)); // sample LMCn
-    int bank_width = (__bdk_dram_is_ddr4(node, lmc) && (lmcx_config.s.bg2_enable)) ? 4 : 3; 
+    int bank_width = (__bdk_dram_is_ddr4(node, lmc) && (lmcx_config.s.bg2_enable)) ? 4 : 3;
     return bank_width;
 }
 

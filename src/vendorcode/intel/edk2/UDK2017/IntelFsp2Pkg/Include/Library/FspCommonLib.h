@@ -268,7 +268,7 @@ SetFspApiCallingIndex (
 
 /**
   This function gets FSP Phase StatusCode.
-  
+
   @retval StatusCode
 **/
 UINT32

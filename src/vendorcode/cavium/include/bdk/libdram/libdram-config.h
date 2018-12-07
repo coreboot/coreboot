@@ -163,7 +163,7 @@ typedef struct {
   	the delays of adjacent bytes.  A value of 0 disables this
   	check.
 
-    .fprch2 Front Porch Enable: When set, the turn-off               
+    .fprch2 Front Porch Enable: When set, the turn-off
         time for the default DDR_DQ/DQS drivers is FPRCH2 CKs earlier.
         00 = 0 CKs
         01 = 1 CKs

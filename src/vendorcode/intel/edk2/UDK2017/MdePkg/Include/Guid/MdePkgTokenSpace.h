@@ -1,5 +1,5 @@
 /** @file
-  GUID for MdePkg PCD Token Space 
+  GUID for MdePkg PCD Token Space
 
   Copyright (c) 2009, Intel Corporation. All rights reserved.<BR>
   This program and the accompanying materials

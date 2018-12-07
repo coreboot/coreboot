@@ -90,7 +90,7 @@ static void vitesse_init_script(bdk_node_t node, int mdio_bus, int phy_addr)
     uint16_t    reg_addr;
     uint16_t    reg_val;
     uint16_t    mask;
-    
+
     BDK_TRACE(PHY,"In %s\n",__FUNCTION__);
     BDK_TRACE(PHY,"Loading init script for VSC8514\n");
 
@@ -122,20 +122,20 @@ static void vitesse_program(bdk_node_t node, int mdio_bus, int phy_addr)
 
 /**
  * Setup Vitesse PHYs
- * This function sets up one port in a Vitesse VSC8514 
+ * This function sets up one port in a Vitesse VSC8514
  */
 static void setup_vitesse_phy(bdk_node_t node, int mdio_bus, int phy_addr)
 {
     /*setting MAC if*/
     bdk_mdio_write(node, mdio_bus, phy_addr, 31, VSC_PHY_GPIO_PAGE);
-    wr_masked(node,mdio_bus,phy_addr, 19, 0x4000, 0xc000); 
+    wr_masked(node,mdio_bus,phy_addr, 19, 0x4000, 0xc000);
     bdk_mdio_write(node, mdio_bus, phy_addr, 18, 0x80e0);
 
     /*Setting media if*/
     bdk_mdio_write(node, mdio_bus, phy_addr, 31, VSC_PHY_STD_PAGE);
     // Reg23, 10:8 Select copper,  CAT5 copper only
     wr_masked(node,mdio_bus,phy_addr, 23, 0x0000, 0x0700);
-    
+
     // Reg0:15, soft Reset
     wr_masked(node,mdio_bus,phy_addr, 0, 0x8000, 0x8000);
     int time_out = 100;
@@ -159,9 +159,9 @@ static void setup_vitesse_phy(bdk_node_t node, int mdio_bus, int phy_addr)
     bdk_mdio_write(node, mdio_bus, phy_addr, 16, 0x80);
     // Select main registers
     bdk_mdio_write(node, mdio_bus, phy_addr, 31, VSC_PHY_STD_PAGE);
-    
+
   /*
-  
+
     if (LOOP_INTERNAL)
     {
         reg0 = bdk_mdio_read(node, mdio_bus, phy_addr, 0);
@@ -176,7 +176,7 @@ static void setup_vitesse_phy(bdk_node_t node, int mdio_bus, int phy_addr)
         reg23 = bdk_insert(reg23, 1, 3, 1);
         bdk_mdio_write(node, mdio_bus, phy_addr, 23, reg23);
     }
-    
+
 
     // Dump registers
     if (false)

@@ -319,7 +319,7 @@ typedef struct {
   /// Zero or more image signatures. If the image contained no signatures,
   /// then this field is empty.
   /// EFI_SIGNATURE_LIST            Signature;
-  /// 
+  ///
 } EFI_IMAGE_EXECUTION_INFO;
 
 

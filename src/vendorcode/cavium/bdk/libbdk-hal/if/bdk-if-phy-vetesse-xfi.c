@@ -48,10 +48,10 @@ BDK_REQUIRE_DEFINE(XFI);
 
 /*
 Rate Select Settings
-Mode State			: 6/8 
-Rate Select State	: 0 
-RSEL1				: 0 
-RSEL0				: 0 
+Mode State			: 6/8
+Rate Select State	: 0
+RSEL1				: 0
+RSEL0				: 0
 Ref Clock Gen(MHz)	: 156.25
 Data Rate(Gbps)		: 10.3125
 Description			: 10 GbE
@@ -60,60 +60,60 @@ Description			: 10 GbE
 Data Rate Detection Configuration Registers
 
 Mode Pin Settings:
-Mode State	: 0 
-MODE1		: 0 
-MODE0		: 0 
+Mode State	: 0
+MODE1		: 0
+MODE0		: 0
 Mode		: Two-wire serial interface mode
 
 LOS Pin Strap Mode Settings
-Mode State			: 2/6/8 
-State				: 4 
+Mode State			: 2/6/8
+State				: 4
 LOS1				: Float
-LOS0				: Float 
-LOS Amplitude(mVpp)	: 20 
+LOS0				: Float
+LOS Amplitude(mVpp)	: 20
 LOS Hysteresis(dB)	: 2
 
 Input Equalization Retimer Mode Settings
 Mode State		: 6/8
-EQ State		: 0 
-EQ1				: 0 
-EQ0				: 0 
-EQ(dB)			: Auto 
-DFE				: Auto 
+EQ State		: 0
+EQ1				: 0
+EQ0				: 0
+EQ(dB)			: Auto
+DFE				: Auto
 Comment			: Full Auto
 
 Input Equalization Re-Driver Mode Settings
-Mode State		: 
-EQ State		: 0 
-EQ1				: 0 
-EQ0				: 0 
-EQ(dB)			: Auto 
-DFE				: APowered Down 
+Mode State		:
+EQ State		: 0
+EQ1				: 0
+EQ0				: 0
+EQ(dB)			: Auto
+DFE				: APowered Down
 Comment			: Analog EQ Only
 
 
 
 Output De-Emphasis Retimer Mode Settings
-Mode State		: 6/8 
-DE State		: 3 
-TX1				: Float 
-TX0				: 0 
-PRE  c(-1) mA	: -1 
+Mode State		: 6/8
+DE State		: 3
+TX1				: Float
+TX0				: 0
+PRE  c(-1) mA	: -1
 MAIN c( 0) mA	: 15
-POST c(+1) mA	: 4 
+POST c(+1) mA	: 4
 DC Amplitude(mV): 500
 De-Emphasis(dB)	: -6.02
-Comment			: 
+Comment			:
 
 
 Output De-Emphasis Re-Driver Mode Settings
-Mode State		: 2 
-DE State		: 3 
-TX1				: Float 
-TX0				: 0 
-Frequency(Gbps)	: 10.3125 
+Mode State		: 2
+DE State		: 3
+TX1				: Float
+TX0				: 0
+Frequency(Gbps)	: 10.3125
 DC Amplitude(mV): 600
-De-Emphasis(dB)	: 4 
+De-Emphasis(dB)	: 4
 Comment			: 10GbE
 
 
@@ -181,10 +181,10 @@ Page Reg Position Mask val RegFieldName
 0x00 0x97 b09 0x0200 1 PD_OD
 0x00 0xA0 b11 0x0800 1 PD_LOS
 0x00 0xA4 b15 0x8000 1 PD_CH
-0x00 0xB5 b07 0x0080 1 PD_INBUF 
-0x00 0xB9 b15 0x8000 1 ASYN_SYNN 
+0x00 0xB5 b07 0x0080 1 PD_INBUF
+0x00 0xB9 b15 0x8000 1 ASYN_SYNN
 0x00 0xB9 b09 0x0200 1 PD_OD
-0x00 0xBF b07 0x0080 1 PD_INBUF 
+0x00 0xBF b07 0x0080 1 PD_INBUF
 0x00 0xF0 b15 0x8000 1 ASYN_SYNN
 0x00 0xF0 b09 0x0200 1 PD_OD
 0x00 0xF6 b07 0x0080 1 PD_INBUF

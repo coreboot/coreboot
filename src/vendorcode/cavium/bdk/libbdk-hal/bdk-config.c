@@ -498,7 +498,7 @@ bdk_config_info_t config_info[] = {
         .min_value = 0,
         .max_value = 1,
     },
-    
+
     [BDK_CONFIG_QLM_MODE] = {
         .format = "QLM-MODE.N%d.QLM%d", /* Parameters: Node, QLM */
         .ctype = BDK_CONFIG_TYPE_STR,

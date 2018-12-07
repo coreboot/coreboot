@@ -21,8 +21,8 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 #define PERFORMANCE_LIBRARY_PROPERTY_MEASUREMENT_ENABLED  0x00000001
 
 /**
-  Creates a record for the beginning of a performance measurement. 
-  
+  Creates a record for the beginning of a performance measurement.
+
   Creates a record that contains the Handle, Token, and Module.
   If TimeStamp is not zero, then TimeStamp is added to the record as the start time.
   If TimeStamp is zero, then this function reads the current time stamp
@@ -51,8 +51,8 @@ StartPerformanceMeasurement (
   );
 
 /**
-  Fills in the end time of a performance measurement. 
-  
+  Fills in the end time of a performance measurement.
+
   Looks up the record that matches Handle, Token, and Module.
   If the record can not be found then return RETURN_NOT_FOUND.
   If the record is found and TimeStamp is not zero,
@@ -83,7 +83,7 @@ EndPerformanceMeasurement (
   );
 
 /**
-  Attempts to retrieve a performance measurement log entry from the performance measurement log. 
+  Attempts to retrieve a performance measurement log entry from the performance measurement log.
   It can also retrieve the log created by StartPerformanceMeasurementEx and EndPerformanceMeasurementEx,
   and then eliminate the Identifier.
 
@@ -108,9 +108,9 @@ EndPerformanceMeasurement (
                                   0, then the first performance measurement log entry is retrieved.
                                   On exit, the key of the next performance lof entry entry.
   @param  Handle                  Pointer to environment specific context used to identify the component
-                                  being measured.  
+                                  being measured.
   @param  Token                   Pointer to a Null-terminated ASCII string that identifies the component
-                                  being measured. 
+                                  being measured.
   @param  Module                  Pointer to a Null-terminated ASCII string that identifies the module
                                   being measured.
   @param  StartTimeStamp          Pointer to the 64-bit time stamp that was recorded when the measurement
@@ -124,7 +124,7 @@ EndPerformanceMeasurement (
 UINTN
 EFIAPI
 GetPerformanceMeasurement (
-  IN  UINTN       LogEntryKey, 
+  IN  UINTN       LogEntryKey,
   OUT CONST VOID  **Handle,
   OUT CONST CHAR8 **Token,
   OUT CONST CHAR8 **Module,
@@ -244,7 +244,7 @@ EndPerformanceMeasurementEx (
 UINTN
 EFIAPI
 GetPerformanceMeasurementEx (
-  IN  UINTN       LogEntryKey, 
+  IN  UINTN       LogEntryKey,
   OUT CONST VOID  **Handle,
   OUT CONST CHAR8 **Token,
   OUT CONST CHAR8 **Module,
@@ -254,8 +254,8 @@ GetPerformanceMeasurementEx (
   );
 
 /**
-  Returns TRUE if the performance measurement macros are enabled. 
-  
+  Returns TRUE if the performance measurement macros are enabled.
+
   This function returns TRUE if the PERFORMANCE_LIBRARY_PROPERTY_MEASUREMENT_ENABLED bit of
   PcdPerformanceLibraryPropertyMask is set.  Otherwise FALSE is returned.
 

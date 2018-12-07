@@ -170,7 +170,7 @@ bdk_dram_address_construct_info(bdk_node_t node, int lmc, int dimm,
     if (lmcx_control.s.xor_bank)
         new_bank ^= EXTRACT(address, 12 + xbits, bank_width);
     INSERT(address, new_bank, bank_lsb, bank_width);
-      
+
     /* Determine the actual C bits from the input LMC controller arg */
     /* The input LMC number was probably aliased with other fields */
     BDK_CSR_INIT(l2c_ctl, node, BDK_L2C_CTL);

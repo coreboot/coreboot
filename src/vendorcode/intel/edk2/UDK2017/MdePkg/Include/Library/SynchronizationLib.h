@@ -26,7 +26,7 @@ typedef volatile UINTN              SPIN_LOCK;
   optimal spin lock performance.
 
   This function retrieves the spin lock alignment requirements for optimal
-  performance on a given CPU architecture. The spin lock alignment is byte alignment. 
+  performance on a given CPU architecture. The spin lock alignment is byte alignment.
   It must be a power of two and is returned by this function. If there are no alignment
   requirements, then 1 must be returned. The spin lock synchronization
   functions must function correctly if the spin lock size and alignment values

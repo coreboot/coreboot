@@ -500,8 +500,8 @@ typedef struct {
 **/
   UINT8                       PchCnviMfUart1Type;
 
-/** Offset 0x014C - Espi Lgmr Memory Range decode 
-  This option enables or disables espi lgmr 
+/** Offset 0x014C - Espi Lgmr Memory Range decode
+  This option enables or disables espi lgmr
   $EN_DIS
 **/
   UINT8                       PchEspiLgmrEnable;
@@ -836,7 +836,7 @@ typedef struct {
 
 /** Offset 0x025F - PCIE RP Disable Gen2PLL Shutdown and L1 Clock Gating Enable
   PCIE RP Disable Gen2PLL Shutdown and L1 Clock Gating Enable Workaround needed for
-  Alpine ridge 
+  Alpine ridge
 **/
   UINT8                       PcieRootPortGen2PllL1CgDisable[24];
 
@@ -1611,7 +1611,7 @@ typedef struct {
   Select 'Auto', it will be auto-configured according to probe type. Select 'Enabled'
   will disable SLP_S0# assertion whereas 'Disabled' will enable SLP_S0# assertion
   when debug is enabled. \n
-  Note: This BIOS option should keep 'Auto', other options are intended for advanced 
+  Note: This BIOS option should keep 'Auto', other options are intended for advanced
   configuration only.
   0:Disabled, 1:Enabled, 2:Auto
 **/
@@ -1622,7 +1622,7 @@ typedef struct {
   keep PMC default settings. Or select the desired debug probe type for S0ix Override
   settings.\n
   Reminder: DCI OOB (aka BSSB) uses CCA probe.\n
-  Note: This BIOS option should keep 'Auto', other options are intended for advanced 
+  Note: This BIOS option should keep 'Auto', other options are intended for advanced
   configuration only.
   0:No Change, 1:DCI OOB, 2:USB2 DbC, 3:Auto
 **/
@@ -2218,7 +2218,7 @@ typedef struct {
 
 /** Offset 0x0785 - SendEcCmd
   SendEcCmd function pointer. \n
-  @code typedef EFI_STATUS (EFIAPI *PLATFORM_SEND_EC_COMMAND) (IN EC_COMMAND_TYPE 
+  @code typedef EFI_STATUS (EFIAPI *PLATFORM_SEND_EC_COMMAND) (IN EC_COMMAND_TYPE
   EcCmdType, IN UINT8  EcCmd, IN UINT8  SendData, IN OUT UINT8  *ReceiveData); @endcode
 **/
   UINT64                      SendEcCmd;
@@ -2310,7 +2310,7 @@ typedef struct {
 **/
   UINT32                      Signature;
 
-/** Offset 0x07B1 - Enable/Disable Device 7 
+/** Offset 0x07B1 - Enable/Disable Device 7
   Enable: Device  7 enabled, Disable (Default): Device 7 disabled
   $EN_DIS
 **/

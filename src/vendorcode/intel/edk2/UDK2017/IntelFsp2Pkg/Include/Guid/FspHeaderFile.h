@@ -144,7 +144,7 @@ typedef struct {
   ///
   UINT8   Reserved;
   ///
-  /// Byte 0x0A: FSP producer identification string 
+  /// Byte 0x0A: FSP producer identification string
   ///
   CHAR8   FspProducerId[6];
   ///

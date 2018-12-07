@@ -75,7 +75,7 @@ int bdk_dram_config(int node, int ddr_clock_override)
 }
 
 /**
- * Do all the DRAM Margin tests 
+ * Do all the DRAM Margin tests
  *
  * @param node   Node to test
  *

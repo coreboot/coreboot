@@ -693,7 +693,7 @@ typedef struct {
   UINT8                       LanLtrEnable;
 
 /** Offset 0x033D - SATA eSATASpeedLimit
-  When enabled, BIOS will configure the PxSCTL.SPD to 2 to limit the eSATA port speed. 0: disable, 1: enable. 
+  When enabled, BIOS will configure the PxSCTL.SPD to 2 to limit the eSATA port speed. 0: disable, 1: enable.
   $EN_DIS
 **/
   UINT8                       eSATASpeedLimit;
@@ -1030,7 +1030,7 @@ typedef struct {
 } UPD_DATA_REGION;
 
 #define FSP_IMAGE_ID    0x245053464C4B5324        /* '$SKLFSP$' */
-#define FSP_IMAGE_REV   0x01090000 
+#define FSP_IMAGE_REV   0x01090000
 
 /** VPD data structure
 **/
@@ -1054,7 +1054,7 @@ typedef struct {
   UINT8                       UnusedVpdSpace0[32];
 
 /** Offset 0x0030 - PcdSerialIoUartDebugEnable
-  Enable SerialIo Uart debug library with/without initializing SerialIo Uart device in FSP. 
+  Enable SerialIo Uart debug library with/without initializing SerialIo Uart device in FSP.
   0:Disable, 1:Enable and Initialize, 2:Enable without Initializing
 **/
   UINT8                       PcdSerialIoUartDebugEnable;

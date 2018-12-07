@@ -68,7 +68,7 @@ typedef struct {
 typedef struct {
 
 /** Offset 0x0040 - PcdSerialIoUartDebugEnable
-  Enable SerialIo Uart debug library with/without initializing SerialIo Uart device in FSP. 
+  Enable SerialIo Uart debug library with/without initializing SerialIo Uart device in FSP.
   0:Disable, 1:Enable and Initialize, 2:Enable without Initializing
 **/
   UINT8                       PcdSerialIoUartDebugEnable;
@@ -96,12 +96,12 @@ typedef struct {
   UINT32                      PcdSerialIoUartInputClock;
 
 /** Offset 0x0048 - Pci Express Base Address
-  Base address to be programmed for Pci Express 
+  Base address to be programmed for Pci Express
 **/
   UINT64                      PcdPciExpressBaseAddress;
 
 /** Offset 0x0050 - Pci Express Region Length
-  Region Length to be programmed for Pci Express 
+  Region Length to be programmed for Pci Express
 **/
   UINT32                      PcdPciExpressRegionLength;
 

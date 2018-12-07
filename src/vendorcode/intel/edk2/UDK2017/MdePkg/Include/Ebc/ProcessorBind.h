@@ -5,13 +5,13 @@
   specific functions in this file.
 
 Copyright (c) 2006 - 2013, Intel Corporation. All rights reserved.<BR>
-This program and the accompanying materials are licensed and made available under 
-the terms and conditions of the BSD License that accompanies this distribution.  
+This program and the accompanying materials are licensed and made available under
+the terms and conditions of the BSD License that accompanies this distribution.
 The full text of the license may be found at
-http://opensource.org/licenses/bsd-license.php.                                          
-    
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
+http://opensource.org/licenses/bsd-license.php.
+
+THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 
 **/
 
@@ -91,7 +91,7 @@ typedef unsigned long         UINTN;
 /// A value of native width with the highest bit set.
 /// Scalable macro to set the most significant bit in a natural number.
 ///
-#define MAX_BIT     (1ULL << (sizeof (INTN) * 8 - 1)) 
+#define MAX_BIT     (1ULL << (sizeof (INTN) * 8 - 1))
 ///
 /// A value of native width with the two highest bits set.
 /// Scalable macro to set the most 2 significant bits in a natural number.
@@ -130,14 +130,14 @@ typedef unsigned long         UINTN;
   /// If EFIAPI is already defined, then we use that definition.
   ///
 #else
-#define EFIAPI    
+#define EFIAPI
 #endif
 
 /**
   Return the pointer to the first instruction of a function given a function pointer.
-  On EBC architectures, these two pointer values are the same, 
+  On EBC architectures, these two pointer values are the same,
   so the implementation of this macro is very simple.
-  
+
   @param  FunctionPointer   A pointer to a function.
 
   @return The pointer to the first instruction of a function given a function pointer.
@@ -148,5 +148,5 @@ typedef unsigned long         UINTN;
 #define __USER_LABEL_PREFIX__
 #endif
 
-#endif 
+#endif
 

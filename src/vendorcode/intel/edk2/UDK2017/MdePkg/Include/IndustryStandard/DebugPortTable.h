@@ -1,5 +1,5 @@
-/** @file   
-  ACPI debug port table definition, defined at 
+/** @file
+  ACPI debug port table definition, defined at
   Microsoft DebugPortSpecification.
 
   Copyright (c) 2012, Intel Corporation. All rights reserved.<BR>

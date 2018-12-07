@@ -460,7 +460,7 @@ int test_dram_byte_hw(bdk_node_t node, int ddr_interface_num,
 
     // FIXME: K iterations set to 4 for now.
     // FIXME: decrement to increase interations.
-    // FIXME: must be no less than 22 to stay above an LMC hash field. 
+    // FIXME: must be no less than 22 to stay above an LMC hash field.
     int kshift = 26;
     const char *s;
 
@@ -560,8 +560,8 @@ int test_dram_byte_hw(bdk_node_t node, int ddr_interface_num,
         dbtrain_ctl.s.column_a       = col;
         dbtrain_ctl.s.row_a          = row;
         dbtrain_ctl.s.bg             = (bank >> 2) & 3;
-        dbtrain_ctl.s.prank          = (dimm * 2) + prank; // FIXME? 
-        dbtrain_ctl.s.lrank          = lrank; // FIXME? 
+        dbtrain_ctl.s.prank          = (dimm * 2) + prank; // FIXME?
+        dbtrain_ctl.s.lrank          = lrank; // FIXME?
         dbtrain_ctl.s.activate       = (mode == DBTRAIN_DBI);
         dbtrain_ctl.s.write_ena      = 1;
         dbtrain_ctl.s.read_cmd_count = 31; // max count pass 1.x
@@ -892,7 +892,7 @@ int initialize_ddr_clock(bdk_node_t node,
          *
          * 13. DRAM Vref Training for DDR4
 	 *
-         * 14. Final LMC initialization	 
+         * 14. Final LMC initialization
          *
          * CN88XX supports two modes:
          *
@@ -1014,7 +1014,7 @@ int initialize_ddr_clock(bdk_node_t node,
                 ddr_print("LMC0: override DDR_PLL_CTL[dclk_invert] to %d\n",
                           ddr_pll_ctl.cn83xx.dclk_invert);
             }
-            
+
             // always write LMC0 CSR, it must be active
             DRAM_CSR_WRITE(node, BDK_LMCX_DDR_PLL_CTL(0), ddr_pll_ctl.u);
             ddr_print("%-45s : 0x%016llx\n", "LMC0: DDR_PLL_CTL", ddr_pll_ctl.u);
@@ -1719,8 +1719,8 @@ static void dbi_switchover_interface(int node, int lmc)
     read_DAC_DBI_settings(node, lmc, /*DBI*/0, dbi_settings);
 
     display_DAC_DBI_settings(node, lmc, /* DBI */0, ecc_ena, dbi_settings, " INIT");
- 
-   /* 2. set DBI related CSRs as below and issue MR write. 
+
+   /* 2. set DBI related CSRs as below and issue MR write.
          MODEREG_PARAMS3.WR_DBI=1
          MODEREG_PARAMS3.RD_DBI=1
          PHY_CTL.DBI_MODE_ENA=1
@@ -1738,7 +1738,7 @@ static void dbi_switchover_interface(int node, int lmc)
 
     /*
         there are two options for data to send.  Lets start with (1) and could move to (2) in the future:
-        
+
         1) DBTRAIN_CTL[LFSR_PATTERN_SEL] = 0 (or for older chips where this does not exist)
            set data directly in these reigsters.  this will yield a clk/2 pattern:
            GENERAL_PURPOSE0.DATA == 64'h00ff00ff00ff00ff;
@@ -1756,10 +1756,10 @@ static void dbi_switchover_interface(int node, int lmc)
     DRAM_CSR_WRITE(node, BDK_LMCX_GENERAL_PURPOSE1(lmc), dbi_pattern[1]);
     DRAM_CSR_WRITE(node, BDK_LMCX_GENERAL_PURPOSE2(lmc), dbi_pattern[2]);
 
-    /* 
+    /*
       3. adjust cas_latency (only necessary if RD_DBI is set).
          here is my code for doing this:
- 
+
          if (csr_model.MODEREG_PARAMS3.RD_DBI.value == 1) begin
            case (csr_model.MODEREG_PARAMS0.CL.value)
              0,1,2,3,4: csr_model.MODEREG_PARAMS0.CL.value += 2; // CL 9-13 -> 11-15
@@ -1774,7 +1774,7 @@ static void dbi_switchover_interface(int node, int lmc)
              7: csr_model.MODEREG_PARAMS0.CL.value = 14; // 16->19
              8: csr_model.MODEREG_PARAMS0.CL.value = 15; // 18->21
              default:
-             `cn_fatal(("Error mem_cfg (%s) CL (%d) with RD_DBI=1, I am not sure what to do.", 
+             `cn_fatal(("Error mem_cfg (%s) CL (%d) with RD_DBI=1, I am not sure what to do.",
                         mem_cfg, csr_model.MODEREG_PARAMS3.RD_DBI.value))
            endcase
         end
@@ -2056,7 +2056,7 @@ int octeon_ddr_initialize(bdk_node_t node,
 	    continue;
 
     try_again:
-        // if we are LMC0 
+        // if we are LMC0
         if (interface_index == 0) {
             // if we are asking for 100 MHz refclk, we can only get it via alternate, so switch to it
             if (ddr_ref_hertz == 100000000) {

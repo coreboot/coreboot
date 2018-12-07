@@ -1,6 +1,6 @@
 /** @file
   Provides services to perform additional actions when a PE/COFF image is loaded
-  or unloaded.  This is useful for environment where symbols need to be loaded 
+  or unloaded.  This is useful for environment where symbols need to be loaded
   and unloaded to support source level debugging.
 
   Copyright (c) 2009, Intel Corporation. All rights reserved.<BR>
@@ -37,9 +37,9 @@ PeCoffLoaderRelocateImageExtraAction (
 /**
   Performs additional actions just before a PE/COFF image is unloaded.  Any resources
   that were allocated by PeCoffLoaderRelocateImageExtraAction() must be freed.
-  
+
   If ImageContext is NULL, then ASSERT().
-  
+
   @param  ImageContext  Pointer to the image context structure that describes the
                         PE/COFF image that is being unloaded.
 

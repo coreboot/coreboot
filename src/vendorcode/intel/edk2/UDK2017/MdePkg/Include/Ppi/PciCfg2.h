@@ -1,7 +1,7 @@
 /** @file
   This file declares PciCfg2 PPI.
 
-  This ppi Provides platform or chipset-specific access to 
+  This ppi Provides platform or chipset-specific access to
   the PCI configuration space for a specific PCI segment.
 
   Copyright (c) 2006 - 2011, Intel Corporation. All rights reserved.<BR>
@@ -124,7 +124,7 @@ EFI_STATUS
 
 
 /**
-  Performs a read-modify-write operation on the contents 
+  Performs a read-modify-write operation on the contents
   from a given location in the PCI configuration space.
 
   @param  PeiServices     An indirect pointer to the PEI Services Table

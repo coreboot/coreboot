@@ -157,13 +157,13 @@ static int bdk_libdram_tune_node(int node)
 
     // Automatically tune the data byte DLL read offsets
     // always done by default, but allow use of HW-assist
-    // NOTE: HW-assist will also tune the ECC byte 
+    // NOTE: HW-assist will also tune the ECC byte
 
     BDK_TRACE(DRAM, "N%d: Starting DLL Read Offset Tuning for LMCs\n", node);
     if (!do_dllro_hw || (lmc_config.s.mode32b != 0)) {
-        errs = perform_dll_offset_tuning(node, 2, /* tune */1); 
+        errs = perform_dll_offset_tuning(node, 2, /* tune */1);
     } else {
-        errs = perform_HW_dll_offset_tuning(node, /* read */2, 0x0A/* all bytelanes */); 
+        errs = perform_HW_dll_offset_tuning(node, /* read */2, 0x0A/* all bytelanes */);
     }
     BDK_TRACE(DRAM, "N%d: Finished DLL Read Offset Tuning for LMCs, %d errors)\n",
               node, errs);
@@ -183,10 +183,10 @@ static int bdk_libdram_tune_node(int node)
     // disabled by default for now, does not seem to be needed much?
     // Automatically tune the ECC byte DLL read offsets
     // FIXME? allow override of the filtering
-    // FIXME? allow programmatic override, not via envvar? 
+    // FIXME? allow programmatic override, not via envvar?
     if (do_eccdll && !do_dllro_hw && (lmc_config.s.mode32b == 0)) { // do not do HW-assist twice for ECC
         BDK_TRACE(DRAM, "N%d: Starting ECC DLL Read Offset Tuning for LMCs\n", node);
-        errs = perform_HW_dll_offset_tuning(node, 2, 8/* ECC bytelane */); 
+        errs = perform_HW_dll_offset_tuning(node, 2, 8/* ECC bytelane */);
         BDK_TRACE(DRAM, "N%d: Finished ECC DLL Read Offset Tuning for LMCs, %d errors\n",
                   node, errs);
         tot_errs += errs;
@@ -207,7 +207,7 @@ static int bdk_libdram_tune_node(int node)
 
 // FIXME: DDR3 is not tuned
 static const uint32_t ddr_speed_filter[2][2][2] = {
-    [IS_DDR4] = { 
+    [IS_DDR4] = {
         [IS_RDIMM] = {
             [IS_1SLOT] =  940,
             [IS_2SLOT] =  800
@@ -473,7 +473,7 @@ int libdram_tune(int node)
         ddr_print("N%d: %s: non-zero node, not worrying about L2C lock status\n", node, __FUNCTION__);
     }
 
-    // make sure to clear memory and any ECC errs when done... 
+    // make sure to clear memory and any ECC errs when done...
     bdk_dram_clear_mem(node);
     bdk_dram_clear_ecc(node);
 
@@ -498,7 +498,7 @@ int libdram_margin_write_voltage(int node)
     // call the margining routine
     tot_errs = perform_margin_write_voltage(node);
 
-    // make sure to clear memory and any ECC errs when done... 
+    // make sure to clear memory and any ECC errs when done...
     bdk_dram_clear_mem(node);
     bdk_dram_clear_ecc(node);
 
@@ -523,7 +523,7 @@ int libdram_margin_read_voltage(int node)
     // call the margining routine
     tot_errs = perform_margin_read_voltage(node);
 
-    // make sure to clear memory and any ECC errs when done... 
+    // make sure to clear memory and any ECC errs when done...
     bdk_dram_clear_mem(node);
     bdk_dram_clear_ecc(node);
 
@@ -548,7 +548,7 @@ int libdram_margin_write_timing(int node)
     // call the tuning routine, tell it we are margining not tuning...
     tot_errs = perform_dll_offset_tuning(node, /* write offsets */1, /* margin */0);
 
-    // make sure to clear memory and any ECC errs when done... 
+    // make sure to clear memory and any ECC errs when done...
     bdk_dram_clear_mem(node);
     bdk_dram_clear_ecc(node);
 
@@ -573,7 +573,7 @@ int libdram_margin_read_timing(int node)
     // call the tuning routine, tell it we are margining not tuning...
     tot_errs = perform_dll_offset_tuning(node, /* read offsets */2, /* margin */0);
 
-    // make sure to clear memory and any ECC errs when done... 
+    // make sure to clear memory and any ECC errs when done...
     bdk_dram_clear_mem(node);
     bdk_dram_clear_ecc(node);
 
@@ -596,7 +596,7 @@ int libdram_margin(int node)
     const char *risk[2] = { "Low Risk", "Needs Review" };
     int l2c_is_locked = bdk_l2c_is_locked(node);
 
-    // for now, no margining on 81xx, until we can reduce the dynamic runtime size... 
+    // for now, no margining on 81xx, until we can reduce the dynamic runtime size...
     if (CAVIUM_IS_MODEL(CAVIUM_CN81XX)) {
         printf("Sorry, margining is not available on 81xx yet...\n");
         return 0;
@@ -637,7 +637,7 @@ int libdram_margin(int node)
       >>> N0: Read Timing Margin   : Low Risk
       >>> N0: Write Timing Margin  : Low Risk
       >>> N0: Read Voltage Margin  : Low Risk
-      >>> N0: Write Voltage Margin : Low Risk  
+      >>> N0: Write Voltage Margin : Low Risk
      */
     printf("  \n");
     printf("-------------------------------------\n");
@@ -647,7 +647,7 @@ int libdram_margin(int node)
     printf("N%d: Write Timing Margin  : %s\n", node, risk[!!ret_wt]);
 
     // these may not have been done due to DDR3 and/or THUNDER pass 1.x
-    // FIXME? would it be better to print an appropriate message here? 
+    // FIXME? would it be better to print an appropriate message here?
     if (ret_rv != -1) printf("N%d: Read Voltage Margin  : %s\n", node, risk[!!ret_rv]);
     if (ret_wv != -1) printf("N%d: Write Voltage Margin : %s\n", node, risk[!!ret_wv]);
 

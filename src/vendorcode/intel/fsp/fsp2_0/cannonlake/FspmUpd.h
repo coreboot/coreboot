@@ -998,7 +998,7 @@ typedef struct {
 /** Offset 0x020D - Processor Early Power On Configuration FCLK setting
   <b>0: 800 MHz (ULT/ULX)</b>. <b>1: 1 GHz (DT/Halo)</b>. Not supported on ULT/ULX.-
   2: 400 MHz. - 3: Reserved
-  0:800 MHz, 1: 1 GHz, 2: 400 MHz, 3: Reserved 
+  0:800 MHz, 1: 1 GHz, 2: 400 MHz, 3: Reserved
 **/
   UINT8                       FClkFrequency;
 
@@ -2133,18 +2133,18 @@ typedef struct {
 /** Offset 0x04F7 -   TcritMax
   Maximum Critical Temperature in Centigrade of the On-DIMM Thermal Sensor. TCRITMax
   has to be greater than THIGHMax .\n
-  Critical temperature will be  TcritMax 
+  Critical temperature will be  TcritMax
 **/
   UINT8                       TsodTcritMax;
 
-/** Offset 0x04F8 - Event mode 
+/** Offset 0x04F8 - Event mode
   Disable:Comparator mode.\n
   Enable:Interrupt mode
   $EN_DIS
 **/
   UINT8                       TsodEventMode;
 
-/** Offset 0x04F9 - EVENT polarity 
+/** Offset 0x04F9 - EVENT polarity
   Disable:Active LOW.\n
   Enable:Active HIGH
   $EN_DIS
@@ -2609,7 +2609,7 @@ typedef struct {
 
 /** Offset 0x059B - ChipsetInit HECI message
   Enable/Disable. 0: Disable, 1: enable, Enable or disable ChipsetInit HECI message.
-  If disabled, it prevents from sending ChipsetInit HECI message. 
+  If disabled, it prevents from sending ChipsetInit HECI message.
   $EN_DIS
 **/
   UINT8                       ChipsetInitMessage;

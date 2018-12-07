@@ -133,7 +133,6 @@ struct soc_intel_cannonlake_config {
 	uint8_t SataPortsDevSlp[8];
 
 	/* Audio related */
-	uint8_t PchHdaEnable;
 	uint8_t PchHdaDspEnable;
 
 	/* Enable/Disable HD Audio Link. Muxed with SSP0/SSP1/SNDW1 */

@@ -45,6 +45,8 @@ struct key_info {
 	const char *label;
 	/* Can this key wake-up the system? */
 	bool is_wakeup_source;
+	/* Wake GPE */
+	unsigned int wake;
 	/* Can this key be disabled? */
 	bool can_be_disabled;
 	/* Debounce interval time in milliseconds */

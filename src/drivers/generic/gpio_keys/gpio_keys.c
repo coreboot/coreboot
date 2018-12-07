@@ -43,6 +43,8 @@ static struct acpi_dp *gpio_keys_add_child_node(
 	if (key->is_wakeup_source)
 		acpi_dp_add_integer(dsd, "wakeup-source",
 				    key->is_wakeup_source);
+	if (key->wake)
+		acpigen_write_PRW(key->wake, 3);
 	if (key->can_be_disabled)
 		acpi_dp_add_integer(dsd, "linux,can-disable",
 				    key->can_be_disabled);

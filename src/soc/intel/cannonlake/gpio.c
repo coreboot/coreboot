@@ -43,7 +43,7 @@ static const struct pad_group cnl_community1_groups[] = {
 	INTEL_GPP(GPP_D0, GPP_D0, GPIO_RSVD_12),	/* GPP_D */
 	INTEL_GPP(GPP_D0, GPP_F0, GPP_F23),		/* GPP_F */
 	INTEL_GPP(GPP_D0, GPP_H0, GPP_H23),		/* GPP_H */
-	INTEL_GPP(GPP_D0, GPIO_RSVD_12, GPIO_RSVD_52),	/* VGPIO */
+	INTEL_GPP(GPP_D0, GPIO_RSVD_13, GPIO_RSVD_52),	/* VGPIO */
 };
 
 static const struct pad_group cnl_community2_groups[] = {

@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/boot/boot.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <program_loading.h>
 #include <ip_checksum.h>
 #include <symbols.h>
+#include <assert.h>
 
 int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size)
 {
@@ -19,6 +21,13 @@ int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size)
 
 void arch_prog_run(struct prog *prog)
 {
+#if ENV_RAMSTAGE && defined(__x86_64__)
+	const uint32_t arg = pointer_to_uint32_safe(prog_entry_arg(prog));
+	const uint32_t entry = pointer_to_uint32_safe(prog_entry(prog));
+
+	/* On x86 coreboot payloads expect to be called in protected mode */
+	protected_mode_jump(entry, arg);
+#else
 #ifdef __x86_64__
 	void (*doit)(void *arg);
 #else
@@ -27,4 +36,5 @@ void arch_prog_run(struct prog *prog)
 #endif
 	doit = prog_entry(prog);
 	doit(prog_entry_arg(prog));
+#endif
 }

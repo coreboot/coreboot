@@ -80,4 +80,15 @@ extern void _dead_code_assertion_failed(void) __attribute__((noreturn));
 	*(type *)(uintptr_t)0; \
 })
 
+#ifdef __x86_64__
+#define pointer_to_uint32_safe(x) ({ \
+	if ((uintptr_t)(x) > 0xffffffffUL) \
+		die("Cast from pointer to uint32_t overflows"); \
+	(uint32_t)(uintptr_t)(x); \
+})
+#else
+#define pointer_to_uint32_safe(x) ({ \
+	(uint32_t)(uintptr_t)(x); \
+})
+#endif
 #endif // __ASSERT_H__

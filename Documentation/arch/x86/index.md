@@ -15,6 +15,8 @@ In order to add support for x86_64 the following assumptions are made:
 * The high dword of pointers is always zero
 * The reference implementation is qemu
 * The CPU supports 1GiB hugepages
+* x86 payloads are loaded below 4GiB in physical memory and are jumped
+  to in *protected mode*
 
 ## Assuptions for all stages using the reference implementation
 * 0-4GiB are identity mapped using 2MiB-pages as WB
@@ -47,7 +49,7 @@ At the moment *$n* is 4, which results in identity mapping the lower 4 GiB.
 * Add assembly code for long mode - *DONE*
 * Add assembly code for SMM - *DONE*
 * Add assembly code for postcar stage - *DONE*
-* Add assembly code to return to protected mode - *TODO*
+* Add assembly code to return to protected mode - *DONE*
 * Implement reference code for mainboard `emulation/qemu-q35` - *TODO*
 
 ## Future work

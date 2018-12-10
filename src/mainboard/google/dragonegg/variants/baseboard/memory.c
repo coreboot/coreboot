@@ -36,19 +36,6 @@ static const u8 dqs_map[][8] = {
 /* Rcomp resistor */
 static const u16 rcomp_resistor[] = { 100, 100, 100 };
 
-/*
- * get processor id using cpuid eax=1
- * return value will be in EAX register
- */
-static uint32_t get_cpuid(void)
-{
-	struct cpuid_result cpuidr;
-
-	cpuidr = cpuid(1);
-
-	return cpuidr.eax;
-}
-
 void __weak variant_memory_params(struct lpddr4_config *mem_config)
 {
 	/* Rcomp target */
@@ -61,7 +48,7 @@ void __weak variant_memory_params(struct lpddr4_config *mem_config)
 	mem_config->dqs_map_size = sizeof(dqs_map);
 	mem_config->rcomp_resistor = rcomp_resistor;
 	mem_config->rcomp_resistor_size = sizeof(rcomp_resistor);
-	if (get_cpuid() == CPUID_ICELAKE_A0) {
+	if (cpu_get_cpuid() == CPUID_ICELAKE_A0) {
 		mem_config->rcomp_target = rcomp_target_es0;
 		mem_config->rcomp_target_size = sizeof(rcomp_target_es0);
 	} else {

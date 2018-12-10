@@ -111,19 +111,6 @@ void mainboard_fill_rcomp_res_data(void *rcomp_ptr)
 	memcpy(rcomp_ptr, RcompResistor, sizeof(RcompResistor));
 }
 
-/*
- * get processor id using cpuid eax=1
- * return value will be in EAX register
- */
-static uint32_t get_cpuid(void)
-{
-	struct cpuid_result cpuidr;
-
-	cpuidr = cpuid(1);
-
-	return cpuidr.eax;
-}
-
 void mainboard_fill_rcomp_strength_data(void *rcomp_strength_ptr)
 {
 	/* Rcomp target */
@@ -142,7 +129,7 @@ void mainboard_fill_rcomp_strength_data(void *rcomp_strength_ptr)
 	case icl_y_lpddr4:
 	case icl_u_lpddr4:
 	case icl_u_lpddr4_type_3:
-		if (get_cpuid() == CPUID_ICELAKE_A0)
+		if (cpu_get_cpuid() == CPUID_ICELAKE_A0)
 			memcpy(rcomp_strength_ptr, RcompTarget_LPDDR4_Ax,
 				sizeof(RcompTarget_LPDDR4_Ax));
 		else

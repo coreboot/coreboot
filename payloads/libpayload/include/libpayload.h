@@ -58,6 +58,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <sys/types.h>
 #include <arch/types.h>
 #include <arch/io.h>
 #include <arch/virtual.h>

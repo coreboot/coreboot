@@ -27,4 +27,11 @@
  * SUCH DAMAGE.
  */
 
+#ifndef _SYS_TYPES_H
+#define _SYS_TYPES_H
+
 #include <arch/types.h>
+
+typedef signed long int off_t;
+
+#endif /* _SYS_TYPES_H */

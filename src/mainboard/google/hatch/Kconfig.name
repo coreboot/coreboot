@@ -1,0 +1,5 @@
+comment "Hatch"
+
+config BOARD_GOOGLE_HATCH
+	bool "->  Hatch"
+	select BOARD_GOOGLE_BASEBOARD_HATCH

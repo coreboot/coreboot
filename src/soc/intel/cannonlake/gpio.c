@@ -32,34 +32,49 @@ static const struct reset_mapping rst_map_com0[] = {
 	{ .logical = PAD_CFG0_LOGICAL_RESET_RSMRST, .chipset = 3U << 30 },
 };
 
+/*
+ * The GPIO driver for Cannonlake on Windows/Linux expects 32 GPIOs per pad
+ * group, regardless of whether or not there is a physical pad for each
+ * exposed GPIO number.
+ *
+ * This results in the OS having a sparse GPIO map, and devices that need
+ * to export an ACPI GPIO must use the OS expected number.
+ *
+ * Not all pins are usable as GPIO and those groups do not have a pad base.
+ *
+ * This layout matches the Linux kernel pinctrl map for CNL-LP at:
+ * linux/drivers/pinctrl/intel/pinctrl-cannonlake.c
+ */
 static const struct pad_group cnl_community0_groups[] = {
-	INTEL_GPP(GPP_A0, GPP_A0, GPIO_RSVD_0),		/* GPP_A */
-	INTEL_GPP(GPP_A0, GPP_B0, GPIO_RSVD_2),		/* GPP_B */
-	INTEL_GPP(GPP_A0, GPP_G0, GPP_G7),		/* GPP_G */
-	INTEL_GPP(GPP_A0, GPIO_RSVD_3, GPIO_RSVD_11),	/* SPI */
+	INTEL_GPP_BASE(GPP_A0, GPP_A0, GPIO_RSVD_0, 0),		/* GPP_A */
+	INTEL_GPP_BASE(GPP_A0, GPP_B0, GPIO_RSVD_2, 32),	/* GPP_B */
+	INTEL_GPP_BASE(GPP_A0, GPP_G0, GPP_G7, 64),		/* GPP_G */
+	INTEL_GPP(GPP_A0, GPIO_RSVD_3, GPIO_RSVD_11),		/* SPI */
 };
 
 static const struct pad_group cnl_community1_groups[] = {
-	INTEL_GPP(GPP_D0, GPP_D0, GPIO_RSVD_12),	/* GPP_D */
-	INTEL_GPP(GPP_D0, GPP_F0, GPP_F23),		/* GPP_F */
-	INTEL_GPP(GPP_D0, GPP_H0, GPP_H23),		/* GPP_H */
-	INTEL_GPP(GPP_D0, GPIO_RSVD_13, GPIO_RSVD_52),	/* VGPIO */
+	INTEL_GPP_BASE(GPP_D0, GPP_D0, GPIO_RSVD_12, 96),	/* GPP_D */
+	INTEL_GPP_BASE(GPP_D0, GPP_F0, GPP_F23, 128),		/* GPP_F */
+	INTEL_GPP_BASE(GPP_D0, GPP_H0, GPP_H23, 160),		/* GPP_H */
+	INTEL_GPP_BASE(GPP_D0, GPIO_RSVD_13, GPIO_RSVD_52, 192),/* VGPIO */
 };
 
+/* This community is not visible to the OS */
 static const struct pad_group cnl_community2_groups[] = {
-	INTEL_GPP(GPD0, GPD0, GPD11),			/* GPD */
+	INTEL_GPP(GPD0, GPD0, GPD11),				/* GPD */
 };
 
+/* This community is not visible to the OS */
 static const struct pad_group cnl_community3_groups[] = {
 	INTEL_GPP(HDA_BCLK, HDA_BCLK, SSP1_TXD),		/* AZA */
 	INTEL_GPP(HDA_BCLK, GPIO_RSVD_68, GPIO_RSVD_78),	/* CPU */
 };
 
 static const struct pad_group cnl_community4_groups[] = {
-	INTEL_GPP(GPP_C0, GPP_C0, GPP_C23),		/* GPP_C */
-	INTEL_GPP(GPP_C0, GPP_E0, GPP_E23),		/* GPP_E */
-	INTEL_GPP(GPP_C0, GPIO_RSVD_53, GPIO_RSVD_61),	/* JTAG */
-	INTEL_GPP(GPP_C0, GPIO_RSVD_62, GPIO_RSVD_67),	/* HVMOS */
+	INTEL_GPP_BASE(GPP_C0, GPP_C0, GPP_C23, 256),		/* GPP_C */
+	INTEL_GPP_BASE(GPP_C0, GPP_E0, GPP_E23, 288),		/* GPP_E */
+	INTEL_GPP(GPP_C0, GPIO_RSVD_53, GPIO_RSVD_61),		/* JTAG */
+	INTEL_GPP(GPP_C0, GPIO_RSVD_62, GPIO_RSVD_67),		/* HVMOS */
 };
 
 static const struct pad_community cnl_communities[] = {

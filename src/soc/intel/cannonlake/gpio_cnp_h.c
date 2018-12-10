@@ -32,38 +32,58 @@ static const struct reset_mapping rst_map_com0[] = {
 	{ .logical = PAD_CFG0_LOGICAL_RESET_RSMRST, .chipset = 3U << 30 },
 };
 
+/*
+ * The GPIO driver for Cannonlake on Windows/Linux expects 32 GPIOs per pad
+ * group, regardless of whether or not there is a physical pad for each
+ * exposed GPIO number.
+ *
+ * This results in the OS having a sparse GPIO map, and devices that need
+ * to export an ACPI GPIO must use the OS expected number.
+ *
+ * Not all pins are usable as GPIO and those groups do not have a pad base.
+ *
+ * This layout matches the Linux kernel pinctrl map for CNL-H at:
+ * linux/drivers/pinctrl/intel/pinctrl-cannonlake.c
+ */
 static const struct pad_group cnl_community0_groups[] = {
-	INTEL_GPP(GPP_A0, GPP_A0, GPP_A23),		/* GPP_A */
-	INTEL_GPP(GPP_A0, GPP_B0, GPP_B23),		/* GPP_B */
+	INTEL_GPP_BASE(GPP_A0, GPP_A0, GPIO_RSVD_0, 0),		/* GPP_A */
+	INTEL_GPP_BASE(GPP_A0, GPP_B0, GPIO_RSVD_2, 32),	/* GPP_B */
 };
 
 static const struct pad_group cnl_community1_groups[] = {
-	INTEL_GPP(GPP_C0, GPP_C0, GPP_C23),		/* GPP_C */
-	INTEL_GPP(GPP_C0, GPP_D0, GPP_D23),		/* GPP_D */
-	INTEL_GPP(GPP_C0, GPP_G0, GPP_G7),		/* GPP_G */
+	INTEL_GPP_BASE(GPP_C0, GPP_C0, GPP_C23, 64),		/* GPP_C */
+	INTEL_GPP_BASE(GPP_C0, GPP_D0, GPP_D23, 96),		/* GPP_D */
+	INTEL_GPP_BASE(GPP_C0, GPP_G0, GPP_G7, 128),		/* GPP_G */
+	INTEL_GPP(GPP_C0, GPIO_RSVD_3, GPIO_RSVD_10),		/* AZA */
+	INTEL_GPP_BASE(GPP_C0, GPIO_RSVD_11, GPIO_RSVD_42, 160),/* VGPIO_0 */
+	INTEL_GPP(GPP_C0, GPIO_RSVD_43, GPIO_RSVD_50),		/* VGPIO_0 */
 };
 
+/* This community is not visible to the OS */
 static const struct pad_group cnl_community2_groups[] = {
-	INTEL_GPP(GPD0, GPD0, GPD11),			/* GPD */
+	INTEL_GPP(GPD0, GPD0, GPD11),				/* GPD */
 };
 
 static const struct pad_group cnl_community3_groups[] = {
-	INTEL_GPP(GPP_K0, GPP_K0, GPP_K23),		/* GPP_K*/
-	INTEL_GPP(GPP_K0, GPP_H0, GPP_H23),		/* GPP_H */
-	INTEL_GPP(GPP_K0, GPP_E0, GPP_E12),		/* GPP_E */
-	INTEL_GPP(GPP_K0, GPP_F0, GPP_F23),		/* GPP_F */
+	INTEL_GPP_BASE(GPP_K0, GPP_K0, GPP_K23, 192),		/* GPP_K */
+	INTEL_GPP_BASE(GPP_K0, GPP_H0, GPP_H23, 224),		/* GPP_H */
+	INTEL_GPP_BASE(GPP_K0, GPP_E0, GPP_E12, 256),		/* GPP_E */
+	INTEL_GPP_BASE(GPP_K0, GPP_F0, GPP_F23, 288),		/* GPP_F */
+	INTEL_GPP(GPP_K0, GPIO_RSVD_51, GPIO_RSVD_59),		/* SPI */
 };
 
 static const struct pad_group cnl_community4_groups[] = {
-	INTEL_GPP(GPP_I0, GPP_I0, GPP_I14),		/* GPP_I */
-	INTEL_GPP(GPP_I0, GPP_J0, GPP_J11),		/* GPP_J */
+	INTEL_GPP(GPIO_RSVD_60, GPIO_RSVD_60, GPIO_RSVD_70),	/* CPU */
+	INTEL_GPP(GPIO_RSVD_60, GPIO_RSVD_71, GPIO_RSVD_79),	/* JTAG */
+	INTEL_GPP_BASE(GPIO_RSVD_60, GPP_I0, GPP_I14, 320),	/* GPP_I */
+	INTEL_GPP_BASE(GPIO_RSVD_60, GPP_J0, GPP_J11, 352),	/* GPP_J */
 };
 
 static const struct pad_community cnl_communities[] = {
 	{ /* GPP A, B */
 		.port = PID_GPIOCOM0,
 		.first_pad = GPP_A0,
-		.last_pad = GPP_B23,
+		.last_pad = GPIO_RSVD_2,
 		.num_gpi_regs = NUM_GPIO_COM0_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -79,7 +99,7 @@ static const struct pad_community cnl_communities[] = {
 	}, { /* GPP C, D, G */
 		.port = PID_GPIOCOM1,
 		.first_pad = GPP_C0,
-		.last_pad = GPP_G7,
+		.last_pad = GPIO_RSVD_50,
 		.num_gpi_regs = NUM_GPIO_COM1_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -111,7 +131,7 @@ static const struct pad_community cnl_communities[] = {
 	}, { /* GPP K, H, E, F */
 		.port = PID_GPIOCOM3,
 		.first_pad = GPP_K0,
-		.last_pad = GPP_F23,
+		.last_pad = GPIO_RSVD_59,
 		.num_gpi_regs = NUM_GPIO_COM3_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -126,7 +146,7 @@ static const struct pad_community cnl_communities[] = {
 		.num_groups = ARRAY_SIZE(cnl_community3_groups),
 	}, { /* GPP I, J */
 		.port = PID_GPIOCOM4,
-		.first_pad = GPP_I0,
+		.first_pad = GPIO_RSVD_60,
 		.last_pad = GPP_J11,
 		.num_gpi_regs = NUM_GPIO_COM4_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,

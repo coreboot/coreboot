@@ -66,3 +66,30 @@ int cpu_phys_address_size(void)
 		return 36;
 	return 32;
 }
+
+/*
+ * Get processor id using cpuid eax=1
+ * return value in EAX register
+ */
+uint32_t cpu_get_cpuid(void)
+{
+	return cpuid_eax(1);
+}
+
+/*
+ * Get processor feature flag using cpuid eax=1
+ * return value in ECX register
+ */
+uint32_t cpu_get_feature_flags_ecx(void)
+{
+	return cpuid_ecx(1);
+}
+
+/*
+ * Get processor feature flag using cpuid eax=1
+ * return value in EDX register
+ */
+uint32_t cpu_get_feature_flags_edx(void)
+{
+	return cpuid_edx(1);
+}

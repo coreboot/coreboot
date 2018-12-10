@@ -161,14 +161,12 @@ void smp_write_processors(struct mp_config_table *mc)
 	unsigned int apic_version;
 	unsigned int cpu_features;
 	unsigned int cpu_feature_flags;
-	struct cpuid_result result;
 	struct device *cpu;
 
 	boot_apic_id = lapicid();
 	apic_version = lapic_read(LAPIC_LVR) & 0xff;
-	result = cpuid(1);
-	cpu_features = result.eax;
-	cpu_feature_flags = result.edx;
+	cpu_features = cpu_get_cpuid();
+	cpu_feature_flags = cpu_get_feature_flags_edx();
 	/* order the output of the cpus to fix a bug in kernel 2.6.11 */
 	for (order_id = 0; order_id < 256; order_id++) {
 		for (cpu = all_devices; cpu; cpu = cpu->next) {

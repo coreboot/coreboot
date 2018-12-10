@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <arch/cpu.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
@@ -498,12 +499,12 @@ static void enable_lapic_tpr(void)
 
 static void configure_dca_cap(void)
 {
-	struct cpuid_result cpuid_regs;
+	uint32_t feature_flag;
 	msr_t msr;
 
 	/* Check feature flag in CPUID.(EAX=1):ECX[18]==1 */
-	cpuid_regs = cpuid(1);
-	if (cpuid_regs.ecx & (1 << 18)) {
+	feature_flag = cpu_get_feature_flags_ecx();
+	if (feature_flag & CPUID_DCA) {
 		msr = rdmsr(IA32_PLATFORM_DCA_CAP);
 		msr.lo |= 1;
 		wrmsr(IA32_PLATFORM_DCA_CAP, msr);

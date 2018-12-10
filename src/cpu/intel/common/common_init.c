@@ -16,20 +16,21 @@
  */
 
 #include <arch/acpigen.h>
+#include <arch/cpu.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include "common.h"
 
 void set_vmx(void)
 {
-	struct cpuid_result regs;
 	msr_t msr;
+	uint32_t feature_flag;
 	int enable = IS_ENABLED(CONFIG_ENABLE_VMX);
 	int lock = IS_ENABLED(CONFIG_SET_VMX_LOCK_BIT);
 
-	regs = cpuid(1);
+	feature_flag = cpu_get_feature_flags_ecx();
 	/* Check that the VMX is supported before reading or writing the MSR. */
-	if (!((regs.ecx & CPUID_VMX) || (regs.ecx & CPUID_SMX))) {
+	if (!((feature_flag & CPUID_VMX) || (feature_flag & CPUID_SMX))) {
 		printk(BIOS_DEBUG, "CPU doesn't support VMX; exiting\n");
 		return;
 	}
@@ -52,7 +53,7 @@ void set_vmx(void)
 
 	if (enable) {
 		msr.lo |= (1 << 2);
-		if (regs.ecx & CPUID_SMX)
+		if (feature_flag & CPUID_SMX)
 			msr.lo |= (1 << 1);
 	}
 

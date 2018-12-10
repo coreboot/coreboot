@@ -311,4 +311,22 @@ void late_car_teardown(void);
 
 #endif
 
+/*
+ * Get processor id using cpuid eax=1
+ * return value in EAX register
+ */
+uint32_t cpu_get_cpuid(void);
+
+/*
+ * Get processor feature flag using cpuid eax=1
+ * return value in ECX register
+ */
+uint32_t cpu_get_feature_flags_ecx(void);
+
+/*
+ * Get processor feature flag using cpuid eax=1
+ * return value in EDX register
+ */
+uint32_t cpu_get_feature_flags_edx(void);
+
 #endif /* ARCH_CPU_H */

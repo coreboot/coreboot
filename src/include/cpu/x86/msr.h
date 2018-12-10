@@ -22,6 +22,8 @@
 #define  SMRR_ENABLE			(1 << 3)
 #define  CPUID_VMX			(1 << 5)
 #define  CPUID_SMX			(1 << 6)
+#define  CPUID_DCA			(1 << 18)
+#define  CPUID_AES			(1 << 25)
 #define  SGX_GLOBAL_ENABLE		(1 << 18)
 #define  PLATFORM_INFO_SET_TDP		(1 << 29)
 #define IA32_BIOS_UPDT_TRIG		0x79

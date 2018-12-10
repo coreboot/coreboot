@@ -19,6 +19,7 @@
 #include <commonlib/region.h>
 #include <bootmode.h>
 #include <string.h>
+#include <arch/cpu.h>
 #include <arch/io.h>
 #include <cbmem.h>
 #include <halt.h>
@@ -287,7 +288,6 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 	spd_raw_data spds[4];
 	struct region_device rdev;
 	ramctr_timing *ctrl_cached;
-	struct cpuid_result cpures;
 	int err;
 	u32 cpu;
 
@@ -369,8 +369,7 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 		ctrl.tCK = min_tck;
 
 		/* Get architecture */
-		cpures = cpuid(1);
-		cpu = cpures.eax;
+		cpu = cpu_get_cpuid();
 		ctrl.sandybridge = IS_SANDY_CPU(cpu);
 
 		/* Get DDR3 SPD data */
@@ -391,8 +390,7 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 		ctrl.tCK = min_tck;
 
 		/* Get architecture */
-		cpures = cpuid(1);
-		cpu = cpures.eax;
+		cpu = cpu_get_cpuid();
 		ctrl.sandybridge = IS_SANDY_CPU(cpu);
 
 		/* Reset DDR3 frequency */

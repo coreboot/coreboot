@@ -183,7 +183,7 @@ static void identify_cpu(struct device *cpu)
 
 		/* Intel-defined flags: level 0x00000001 */
 		if (cpuid_level >= 0x00000001)
-			cpu->device = cpuid_eax(0x00000001);
+			cpu->device = cpu_get_cpuid();
 		else
 			/* Have CPUID level 0 only unheard of */
 			cpu->device = 0x00000400;

@@ -92,7 +92,7 @@ static uint16_t get_dev_id(pci_devfn_t dev)
 static void report_cpu_info(void)
 {
 	struct cpuid_result cpuidr;
-	u32 i, index;
+	u32 i, index, cpu_id, cpu_feature_flag;
 	char cpu_string[50], *cpu_name = cpu_string; /* 48 bytes are reported */
 	int vt, txt, aes;
 	msr_t microcode_ver;
@@ -124,12 +124,12 @@ static void report_cpu_info(void)
 	microcode_ver.lo = 0;
 	microcode_ver.hi = 0;
 	wrmsr(BIOS_SIGN_ID, microcode_ver);
-	cpuidr = cpuid(1);
+	cpu_id = cpu_get_cpuid();
 	microcode_ver = rdmsr(BIOS_SIGN_ID);
 
 	/* Look for string to match the name */
 	for (i = 0; i < ARRAY_SIZE(cpu_table); i++) {
-		if (cpu_table[i].cpuid == cpuidr.eax) {
+		if (cpu_table[i].cpuid == cpu_id) {
 			cpu_type = cpu_table[i].name;
 			break;
 		}
@@ -137,11 +137,12 @@ static void report_cpu_info(void)
 
 	printk(BIOS_DEBUG, "CPU: %s\n", cpu_name);
 	printk(BIOS_DEBUG, "CPU: ID %x, %s, ucode: %08x\n",
-	       cpuidr.eax, cpu_type, microcode_ver.hi);
+	       cpu_id, cpu_type, microcode_ver.hi);
 
-	aes = (cpuidr.ecx & (1 << 25)) ? 1 : 0;
-	txt = (cpuidr.ecx & (1 << 6)) ? 1 : 0;
-	vt = (cpuidr.ecx & (1 << 5)) ? 1 : 0;
+	cpu_feature_flag = cpu_get_feature_flags_ecx();
+	aes = (cpu_feature_flag & CPUID_AES) ? 1 : 0;
+	txt = (cpu_feature_flag & CPUID_SMX) ? 1 : 0;
+	vt = (cpu_feature_flag & CPUID_VMX) ? 1 : 0;
 	printk(BIOS_DEBUG,
 		"CPU: AES %ssupported, TXT %ssupported, VT %ssupported\n",
 		mode[aes], mode[txt], mode[vt]);

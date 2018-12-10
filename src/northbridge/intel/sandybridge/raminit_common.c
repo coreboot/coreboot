@@ -17,6 +17,7 @@
 
 #include <console/console.h>
 #include <string.h>
+#include <arch/cpu.h>
 #include <arch/io.h>
 #include <northbridge/intel/sandybridge/chip.h>
 #include <device/pci_def.h>
@@ -190,14 +191,12 @@ void dram_xover(ramctr_timing * ctrl)
 
 static void dram_odt_stretch(ramctr_timing *ctrl, int channel)
 {
-	struct cpuid_result cpures;
 	u32 addr, cpu, stretch;
 
 	stretch = ctrl->ref_card_offset[channel];
 	/* ODT stretch: Delay ODT signal by stretch value.
 	 * Useful for multi DIMM setups on the same channel. */
-	cpures = cpuid(1);
-	cpu = cpures.eax;
+	cpu = cpu_get_cpuid();
 	if (IS_SANDY_CPU(cpu) && IS_SANDY_CPU_C(cpu)) {
 		if (stretch == 2)
 			stretch = 3;
@@ -3020,11 +3019,9 @@ void set_scrambling_seed(ramctr_timing * ctrl)
 
 void set_4f8c(void)
 {
-	struct cpuid_result cpures;
 	u32 cpu;
 
-	cpures = cpuid(1);
-	cpu = (cpures.eax);
+	cpu = cpu_get_cpuid();
 	if (IS_SANDY_CPU(cpu) && (IS_SANDY_CPU_D0(cpu) || IS_SANDY_CPU_D1(cpu))) {
 		MCHBAR32(0x4f8c) = 0x141D1519;
 	} else {

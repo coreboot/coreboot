@@ -67,14 +67,13 @@ static uint32_t fuse_port_read(uint32_t offset)
 
 static void report_cpu_info(void)
 {
-	struct cpuid_result cpuidr;
 	const char *cpu_type = "Unknown";
 	u32 d_variant;
 	u32 ecc_enabled;
 	u32 extended_temp;
 	u32 i;
 	u8 revision;
-	u32 secure_boot;
+	u32 secure_boot, cpu_id;
 	const char *stepping = "Unknown";
 
 	/* Determine if ECC is enabled */
@@ -94,9 +93,9 @@ static void report_cpu_info(void)
 	extended_temp = 0;
 
 	/* Look for string to match the CPU ID value */
-	cpuidr = cpuid(1);
+	cpu_id = cpu_get_cpuid();
 	for (i = 0; i < ARRAY_SIZE(cpu_table); i++) {
-		if ((cpu_table[i].cpuid == cpuidr.eax)
+		if ((cpu_table[i].cpuid == cpu_id)
 			&& (cpu_table[i].extended_temp == extended_temp)
 			&& (cpu_table[i].ecc == ecc_enabled)
 			&& (cpu_table[i].secure_boot == secure_boot)
@@ -118,7 +117,7 @@ static void report_cpu_info(void)
 		}
 	}
 
-	printk(BIOS_DEBUG, "CPU: ID %x:%x, %s %s Stepping\n", cpuidr.eax,
+	printk(BIOS_DEBUG, "CPU: ID %x:%x, %s %s Stepping\n", cpu_id,
 		revision, cpu_type, stepping);
 }
 

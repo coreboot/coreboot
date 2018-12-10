@@ -24,7 +24,7 @@
 static void report_cpu_info(void)
 {
 	struct cpuid_result cpuidr;
-	u32 i, index;
+	u32 i, index, cpu_id, cpu_feature_flag;
 	char cpu_string[50], *cpu_name = cpu_string; /* 48 bytes are reported */
 	int vt, txt, aes;
 	msr_t microcode_ver;
@@ -51,12 +51,15 @@ static void report_cpu_info(void)
 	microcode_ver.lo = 0;
 	microcode_ver.hi = 0;
 	wrmsr(IA32_BIOS_SIGN_ID, microcode_ver);
-	cpuidr = cpuid(1);
+	cpu_id = cpu_get_cpuid();
 	microcode_ver = rdmsr(IA32_BIOS_SIGN_ID);
-	printk(BIOS_DEBUG, "CPU id(%x) ucode:%08x %s\n", cpuidr.eax, microcode_ver.hi, cpu_name);
-	aes = (cpuidr.ecx & (1 << 25)) ? 1 : 0;
-	txt = (cpuidr.ecx & (1 << 6)) ? 1 : 0;
-	vt = (cpuidr.ecx & (1 << 5)) ? 1 : 0;
+	printk(BIOS_DEBUG, "CPU id(%x) ucode:%08x %s\n", cpu_id,
+		microcode_ver.hi, cpu_name);
+
+	cpu_feature_flag = cpu_get_feature_flags_ecx();
+	aes = (cpu_feature_flag & CPUID_AES) ? 1 : 0;
+	txt = (cpu_feature_flag & CPUID_SMX) ? 1 : 0;
+	vt = (cpu_feature_flag & CPUID_VMX) ? 1 : 0;
 	printk(BIOS_DEBUG, "AES %ssupported, TXT %ssupported, VT %ssupported\n",
 	       mode[aes], mode[txt], mode[vt]);
 }

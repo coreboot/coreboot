@@ -11,8 +11,10 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cpu.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
+#include <intelblocks/cpulib.h>
 #include <intelblocks/msr.h>
 #include <intelblocks/vmx.h>
 #include <soc/cpu.h>
@@ -46,11 +48,11 @@ static int soc_vmx_enabled(void)
 void vmx_configure(void *unused)
 {
 	msr_t msr;
-	struct cpuid_result regs;
+	uint32_t feature_flag;
 
-	regs = cpuid(1);
+	feature_flag = cpu_get_feature_flags_ecx();
 
-	if (!soc_vmx_enabled() || !(regs.ecx & CPUID_VMX)) {
+	if (!soc_vmx_enabled() || !(feature_flag & CPUID_VMX)) {
 		printk(BIOS_ERR, "VMX: pre-conditions not met\n");
 		return;
 	}

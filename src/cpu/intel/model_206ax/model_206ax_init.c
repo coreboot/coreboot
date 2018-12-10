@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <arch/cpu.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
@@ -362,12 +363,12 @@ static void enable_lapic_tpr(void)
 
 static void configure_dca_cap(void)
 {
-	struct cpuid_result cpuid_regs;
+	uint32_t feature_flag;
 	msr_t msr;
 
 	/* Check feature flag in CPUID.(EAX=1):ECX[18]==1 */
-	cpuid_regs = cpuid(1);
-	if (cpuid_regs.ecx & (1 << 18)) {
+	feature_flag = cpu_get_feature_flags_ecx();
+	if (feature_flag & CPUID_DCA) {
 		msr = rdmsr(IA32_PLATFORM_DCA_CAP);
 		msr.lo |= 1;
 		wrmsr(IA32_PLATFORM_DCA_CAP, msr);
@@ -505,9 +506,9 @@ static void intel_cores_init(struct device *cpu)
 static void model_206ax_report(void)
 {
 	static const char *const mode[] = {"NOT ", ""};
-	struct cpuid_result cpuidr;
 	char processor_name[49];
 	int vt, txt, aes;
+	uint32_t cpu_id, cpu_feature_flag;
 
 	/* Print processor name */
 	fill_processor_name(processor_name);
@@ -517,11 +518,13 @@ static void model_206ax_report(void)
 	printk(BIOS_INFO, "CPU: platform id %x\n", get_platform_id());
 
 	/* CPUID and features */
-	cpuidr = cpuid(1);
-	printk(BIOS_INFO, "CPU: cpuid(1) 0x%x\n", cpuidr.eax);
-	aes = (cpuidr.ecx & (1 << 25)) ? 1 : 0;
-	txt = (cpuidr.ecx & (1 << 6)) ? 1 : 0;
-	vt = (cpuidr.ecx & (1 << 5)) ? 1 : 0;
+	cpu_id = cpu_get_cpuid();
+	printk(BIOS_INFO, "CPU: cpuid(1) 0x%x\n", cpu_id);
+
+	cpu_feature_flag = cpu_get_feature_flags_ecx();
+	aes = (cpu_feature_flag & CPUID_AES) ? 1 : 0;
+	txt = (cpu_feature_flag & CPUID_SMX) ? 1 : 0;
+	vt = (cpu_feature_flag & CPUID_VMX) ? 1 : 0;
 	printk(BIOS_INFO, "CPU: AES %ssupported\n", mode[aes]);
 	printk(BIOS_INFO, "CPU: TXT %ssupported\n", mode[txt]);
 	printk(BIOS_INFO, "CPU: VT %ssupported\n", mode[vt]);

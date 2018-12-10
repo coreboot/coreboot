@@ -155,6 +155,7 @@
 #define PIRQ_PIC_IRQ12			0xc
 #define PIRQ_PIC_IRQ14			0xe
 #define PIRQ_PIC_IRQ15			0xf
+#define PIRQ_PIC_UNKNOWN_UNUSED		0xff
 
 /* Overloaded term, but these values determine the per device route. */
 #define PIRQA				0

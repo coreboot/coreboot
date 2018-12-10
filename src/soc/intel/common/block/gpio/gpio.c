@@ -397,10 +397,26 @@ void gpio_set(gpio_t gpio_num, int value)
 
 uint16_t gpio_acpi_pin(gpio_t gpio_num)
 {
-	if (!IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_MULTI_ACPI_DEVICES))
+	const struct pad_community *comm;
+	size_t group, pin;
+
+	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_MULTI_ACPI_DEVICES))
+		return relative_pad_in_comm(gpio_get_community(gpio_num),
+					    gpio_num);
+
+	comm = gpio_get_community(gpio_num);
+	pin = relative_pad_in_comm(comm, gpio_num);
+	group = gpio_group_index(comm, pin);
+
+	/* If pad base is not set then use GPIO number as ACPI pin number. */
+	if (comm->groups[group].acpi_pad_base == PAD_BASE_NONE)
 		return gpio_num;
 
-	return relative_pad_in_comm(gpio_get_community(gpio_num), gpio_num);
+	/*
+	 * If this group has a non-zero pad base then compute the ACPI pin
+	 * number from the pad base and the relative pad in the group.
+	 */
+	return comm->groups[group].acpi_pad_base + gpio_within_group(comm, pin);
 }
 
 static void print_gpi_status(const struct gpi_status *sts)

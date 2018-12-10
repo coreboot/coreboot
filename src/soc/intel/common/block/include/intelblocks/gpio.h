@@ -23,11 +23,28 @@
 #ifndef __ACPI__
 #include <types.h>
 
-#define INTEL_GPP(first_of_community, start_of_group, end_of_group) \
-	{                                               \
-		.first_pad = (start_of_group) - (first_of_community), \
-		.size = (end_of_group) - (start_of_group) + 1,        \
+/*
+ * GPIO numbers may not be contiguous and instead will have a different
+ * starting pin number for each pad group.
+ */
+#define INTEL_GPP_BASE(first_of_community, start_of_group, end_of_group,\
+			group_pad_base)					\
+	{								\
+		.first_pad = (start_of_group) - (first_of_community),	\
+		.size = (end_of_group) - (start_of_group) + 1,		\
+		.acpi_pad_base = (group_pad_base),			\
 	}
+
+/*
+ * A pad base of -1 indicates that this group uses contiguous numbering
+ * and a pad base should not be used for this group.
+ */
+#define PAD_BASE_NONE	-1
+
+/* The common/default group numbering is contiguous */
+#define INTEL_GPP(first_of_community, start_of_group, end_of_group)	\
+	INTEL_GPP_BASE(first_of_community, start_of_group, end_of_group,\
+		       PAD_BASE_NONE)
 
 /*
  * Following should be defined in soc/gpio.h
@@ -67,6 +84,13 @@ struct pad_group {
 	int		first_pad; /* offset of first pad of the group relative
 	to the community */
 	unsigned int	size; /* Size of the group */
+	/*
+	 * This is the starting pin number for the pads in this group when
+	 * they are used in ACPI.  This is only needed if the pins are not
+	 * contiguous across groups, most groups will have this set to
+	 * PAD_BASE_NONE and use contiguous numbering for ACPI.
+	 */
+	int		acpi_pad_base;
 };
 
 /* This structure will be used to describe a community or each group within a

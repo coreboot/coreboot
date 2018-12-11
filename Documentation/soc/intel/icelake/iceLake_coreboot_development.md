@@ -17,12 +17,12 @@ Like any other Intel SoC, Ice Lake coreboot development is also based on "Intel 
 
 2. Additionally provides Firmware code support for Intel Reference Platform (RVP), known as Ice lake RVP with same SoC.
    ```eval_rst
-   :doc:`../../../mainboard/intel/icelake_rvp.md`
+   :doc:`../../../mainboard/intel/icelake_rvp`
    ```
 
 3. OEMs to design based on reference platform and make use of mainboard sample code. Dragonegg is Ice Lake based mainboard developed by Google
    ```eval_rst
-   :doc:`../../../mainboard/google/dragonegg.md`
+   :doc:`../../../mainboard/google/dragonegg`
    ```
 
 ### Summary:

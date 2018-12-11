@@ -174,7 +174,7 @@ with
 regards to the erase block sizes on the ROM - allowing one to replace a
 component at runtime without disturbing the others.
 
-'offset' is the offset of the the first CBFS component (from the start of
+'offset' is the offset of the first CBFS component (from the start of
 the ROM).  This is to allow for arbitrary space to be left at the beginning
 of the ROM for things like embedded controller firmware.
 

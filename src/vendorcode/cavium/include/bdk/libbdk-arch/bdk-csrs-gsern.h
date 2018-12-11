@@ -11862,7 +11862,7 @@ union bdk_gsernx_lanex_rx_idle_cal_cfg
                                                                  FIXME no such field RECALIBRATION_OOB_COUNT_ADDER then remove above exempt attribute. */
         uint64_t reserved_40_60        : 21;
         uint64_t max_oob_adder_count   : 8;  /**< [ 39: 32](R/W) Maximum number of OOB forced pushouts of the idle recalibrations allowed.  If the
-                                                                 number of pushouts matches this number, the the idle offset is forced to recalibrate
+                                                                 number of pushouts matches this number, the idle offset is forced to recalibrate
                                                                  regardless of the state of the link. */
         uint64_t oob_delay_adder_count : 32; /**< [ 31:  0](R/W) Number of svc_clk ticks allowed to delay the idle recalibration.  Default is equal to
                                                                  1 second based on a 10 ns service clock cycle time. */
@@ -11870,7 +11870,7 @@ union bdk_gsernx_lanex_rx_idle_cal_cfg
         uint64_t oob_delay_adder_count : 32; /**< [ 31:  0](R/W) Number of svc_clk ticks allowed to delay the idle recalibration.  Default is equal to
                                                                  1 second based on a 10 ns service clock cycle time. */
         uint64_t max_oob_adder_count   : 8;  /**< [ 39: 32](R/W) Maximum number of OOB forced pushouts of the idle recalibrations allowed.  If the
-                                                                 number of pushouts matches this number, the the idle offset is forced to recalibrate
+                                                                 number of pushouts matches this number, the idle offset is forced to recalibrate
                                                                  regardless of the state of the link. */
         uint64_t reserved_40_60        : 21;
         uint64_t idle_oob_adder_counter_clear : 1;/**< [ 61: 61](R/W) This bit one set to high, forces the counter counting the number of OOB caused

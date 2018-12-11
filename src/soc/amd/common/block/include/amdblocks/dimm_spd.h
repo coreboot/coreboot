@@ -22,7 +22,7 @@
 
 /*
  * Fill the buf and returns 0 on success.
- * Return -1 on failure and the the caller tries sb_read_spd()
+ * Return -1 on failure and the caller tries sb_read_spd()
  * to get the SPD from I2C.
  */
 int mainboard_read_spd(uint8_t spdAddress, char *buf, size_t len);

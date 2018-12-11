@@ -1616,13 +1616,13 @@ union bdk_rvu_pf_block_addrx_disc
         uint64_t reserved_9_10         : 2;
         uint64_t num_lfs               : 9;  /**< [  8:  0](RO/H) Number of local functions from the block that are provisioned to the VF/PF.
                                                                  When non-zero, the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in
-                                                                 the the block.
+                                                                 the block.
                                                                  Returns 0 for block types that do not have local functions, 0 or 1 for
                                                                  single-slot blocks; see RVU_BLOCK_TYPE_E. */
 #else /* Word 0 - Little Endian */
         uint64_t num_lfs               : 9;  /**< [  8:  0](RO/H) Number of local functions from the block that are provisioned to the VF/PF.
                                                                  When non-zero, the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in
-                                                                 the the block.
+                                                                 the block.
                                                                  Returns 0 for block types that do not have local functions, 0 or 1 for
                                                                  single-slot blocks; see RVU_BLOCK_TYPE_E. */
         uint64_t reserved_9_10         : 2;
@@ -2972,10 +2972,10 @@ union bdk_rvu_priv_hwvfx_cptx_cfg
 #if __BYTE_ORDER == __BIG_ENDIAN /* Word 0 - Big Endian */
         uint64_t reserved_9_63         : 55;
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
 #else /* Word 0 - Little Endian */
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
         uint64_t reserved_9_63         : 55;
 #endif /* Word 0 - End */
     } s;
@@ -3140,10 +3140,10 @@ union bdk_rvu_priv_hwvfx_sso_cfg
 #if __BYTE_ORDER == __BIG_ENDIAN /* Word 0 - Big Endian */
         uint64_t reserved_9_63         : 55;
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
 #else /* Word 0 - Little Endian */
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
         uint64_t reserved_9_63         : 55;
 #endif /* Word 0 - End */
     } s;
@@ -3180,10 +3180,10 @@ union bdk_rvu_priv_hwvfx_ssow_cfg
 #if __BYTE_ORDER == __BIG_ENDIAN /* Word 0 - Big Endian */
         uint64_t reserved_9_63         : 55;
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
 #else /* Word 0 - Little Endian */
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
         uint64_t reserved_9_63         : 55;
 #endif /* Word 0 - End */
     } s;
@@ -3220,10 +3220,10 @@ union bdk_rvu_priv_hwvfx_tim_cfg
 #if __BYTE_ORDER == __BIG_ENDIAN /* Word 0 - Big Endian */
         uint64_t reserved_9_63         : 55;
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
 #else /* Word 0 - Little Endian */
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
         uint64_t reserved_9_63         : 55;
 #endif /* Word 0 - End */
     } s;
@@ -3357,10 +3357,10 @@ union bdk_rvu_priv_pfx_cptx_cfg
 #if __BYTE_ORDER == __BIG_ENDIAN /* Word 0 - Big Endian */
         uint64_t reserved_9_63         : 55;
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
 #else /* Word 0 - Little Endian */
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
         uint64_t reserved_9_63         : 55;
 #endif /* Word 0 - End */
     } s;
@@ -3660,10 +3660,10 @@ union bdk_rvu_priv_pfx_sso_cfg
 #if __BYTE_ORDER == __BIG_ENDIAN /* Word 0 - Big Endian */
         uint64_t reserved_9_63         : 55;
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
 #else /* Word 0 - Little Endian */
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
         uint64_t reserved_9_63         : 55;
 #endif /* Word 0 - End */
     } s;
@@ -3700,10 +3700,10 @@ union bdk_rvu_priv_pfx_ssow_cfg
 #if __BYTE_ORDER == __BIG_ENDIAN /* Word 0 - Big Endian */
         uint64_t reserved_9_63         : 55;
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
 #else /* Word 0 - Little Endian */
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
         uint64_t reserved_9_63         : 55;
 #endif /* Word 0 - End */
     } s;
@@ -3740,10 +3740,10 @@ union bdk_rvu_priv_pfx_tim_cfg
 #if __BYTE_ORDER == __BIG_ENDIAN /* Word 0 - Big Endian */
         uint64_t reserved_9_63         : 55;
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
 #else /* Word 0 - Little Endian */
         uint64_t num_lfs               : 9;  /**< [  8:  0](R/W) Number of LFs from the block that are provisioned to the PF/VF. When non-zero,
-                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the the block. */
+                                                                 the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in the block. */
         uint64_t reserved_9_63         : 55;
 #endif /* Word 0 - End */
     } s;
@@ -3792,13 +3792,13 @@ union bdk_rvu_vf_block_addrx_disc
         uint64_t reserved_9_10         : 2;
         uint64_t num_lfs               : 9;  /**< [  8:  0](RO/H) Number of local functions from the block that are provisioned to the VF/PF.
                                                                  When non-zero, the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in
-                                                                 the the block.
+                                                                 the block.
                                                                  Returns 0 for block types that do not have local functions, 0 or 1 for
                                                                  single-slot blocks; see RVU_BLOCK_TYPE_E. */
 #else /* Word 0 - Little Endian */
         uint64_t num_lfs               : 9;  /**< [  8:  0](RO/H) Number of local functions from the block that are provisioned to the VF/PF.
                                                                  When non-zero, the provisioned LFs are mapped to slots 0 to [NUM_LFS]-1 in
-                                                                 the the block.
+                                                                 the block.
                                                                  Returns 0 for block types that do not have local functions, 0 or 1 for
                                                                  single-slot blocks; see RVU_BLOCK_TYPE_E. */
         uint64_t reserved_9_10         : 2;

@@ -150,7 +150,7 @@ static bdk_dram_test_flags_t dram_test_flags; // FIXME: Don't use global
  * variables at the beginning of this file.
  *
  * @param arg    Number of the region we should check
- * @param arg1   Pointer the the test_info structure
+ * @param arg1   Pointer to the test_info structure
  */
 static void dram_test_thread(int arg, void *arg1)
 {

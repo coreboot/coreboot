@@ -49,7 +49,7 @@ config HUDSON_XHCI_ENABLE
 	  The XHCI controller must be enabled and the XHCI firmware
 	  must be added in order to have USB 3.0 support configured
 	  by coreboot. The OS will be responsible for enabling the XHCI
-	  controller if the the XHCI firmware is available but the
+	  controller if the XHCI firmware is available but the
 	  XHCI controller is not enabled by coreboot.
 
 config HUDSON_XHCI_FWM

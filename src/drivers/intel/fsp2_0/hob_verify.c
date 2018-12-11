@@ -37,7 +37,7 @@ void fsp_verify_memory_init_hobs(void)
 	if (fsp_find_reserved_memory(&fsp_mem))
 		die("9.1: FSP_RESERVED_MEMORY_RESOURCE_HOB missing!\n");
 
-	/* Verify the the bootloader tolum is above the FSP reserved area */
+	/* Verify the bootloader tolum is above the FSP reserved area */
 	if (range_entry_end(&tolum) <= range_entry_base(&fsp_mem)) {
 		printk(BIOS_CRIT,
 			"TOLUM end: 0x%08llx != 0x%08llx: FSP rsvd base\n",

@@ -23,7 +23,7 @@ RCSID("$Id: clear.c,v 1.35 2008/07/13 16:08:18 wmcbrine Exp $")
         every cell of the window.
 
         clear() and wclear() are similar to erase() and werase(), but
-        they also call clearok() to ensure that the the window is
+        they also call clearok() to ensure that the window is
         cleared on the next wrefresh().
 
         clrtobot() and wclrtobot() clear the window from the current

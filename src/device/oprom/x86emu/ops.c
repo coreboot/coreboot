@@ -58,7 +58,7 @@
 * modularize it, was basically: 1) no unnecessary subroutine calls,
 * 2) no routines more than about 200 lines in size, and 3) modularize
 * any code that I might not get right the first time.  The fetch_*
-* subroutines fall into the latter category.  The The decode_* fall
+* subroutines fall into the latter category.  The decode_* fall
 * into the second category.  The coding of the "switch(mod){ .... }"
 * in many of the subroutines below falls into the first category.
 * Especially, the coding of {add,and,or,sub,...}_{byte,word}

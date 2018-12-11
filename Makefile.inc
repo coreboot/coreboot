@@ -120,7 +120,7 @@ $(foreach supported_arch,$(ARCH_SUPPORTED), \
 # values are space separated if using more than one value
 #
 # int-add:        adds an arbitrary length list of integers
-# int-subtract:   subtracts the the second of two integers from the first
+# int-subtract:   subtracts the second of two integers from the first
 # int-multiply:   multiplies an arbitrary length list of integers
 # int-divide:     divides the first integer by the second
 # int-remainder:  arithmetic remainder of the first number divided by the second

@@ -103,7 +103,7 @@ typedef struct _S3_MEM_NB_BLOCK {
 
 /// Header for heap space to store the special case register.
 typedef struct _S3_SPECIAL_CASE_HEAP_HEADER {
-  UINT8 Node;  ///< Node ID for the the header
+  UINT8 Node;  ///< Node ID for the header
   UINT8 Offset;  ///< Offset for the target node
 } S3_SPECIAL_CASE_HEAP_HEADER;
 /*----------------------------------------------------------------------------

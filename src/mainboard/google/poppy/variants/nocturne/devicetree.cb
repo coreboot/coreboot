@@ -468,18 +468,7 @@ chip soc/intel/skylake
 		end # LPC Interface
 		device pci 1f.1 on  end # P2SB
 		device pci 1f.2 on  end # Power Management Controller
-		device pci 1f.3 on
-			chip drivers/generic/generic
-				register "hid" = ""DMIC""
-				register "name" = ""DMIC""
-				register "desc" = ""Generic DMIC""
-				register "property_count" = "1"
-				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
-				register "property_list[0].name" = ""modeswitch_delay_ms""
-				register "property_list[0].integer" = "35"
-				device generic 0 on end
-			end
-		end # Intel HDA
+		device pci 1f.3 on  end # Intel HDA
 		device pci 1f.4 on  end # SMBus
 		device pci 1f.5 on  end # PCH SPI
 		device pci 1f.6 off end # GbE

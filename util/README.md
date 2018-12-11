@@ -16,6 +16,7 @@ Technologies, for example the Pistachio SoC. `C`
 `Yacc`
 * __board_status__ - Tools to collect logs and upload them to the board
 status repository `Bash` `Go`
+* __bucts__ - A tool to manipulate the BUC.TS bit on Intel targets. `C`
 * __cavium__ - Devicetree_convert Tool to convert a DTB to a static C
 file `Python`
 * __cbfstool__

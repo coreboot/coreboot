@@ -113,7 +113,7 @@ void handle_sbi(trapframe *tf)
 		ret = send_ipi((uintptr_t *)arg0, IPI_SHUTDOWN);
 		break;
 	default:
-		ret = -38;
+		ret = -SBI_ENOSYS;
 		break;
 	}
 	tf->gpr[10] = ret;

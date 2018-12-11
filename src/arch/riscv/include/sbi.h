@@ -26,6 +26,8 @@
 #define SBI_REMOTE_SFENCE_VMA_ASID 7
 #define SBI_SHUTDOWN               8
 
+#define SBI_ENOSYS 38
+
 #define IPI_SOFT            1
 #define IPI_FENCE_I         2
 #define IPI_SFENCE_VMA      4

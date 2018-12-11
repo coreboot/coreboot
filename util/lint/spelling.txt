@@ -7,7 +7,7 @@
 # The format of each line is:
 # mistake||correction
 #
-# Note that sepc has been commented out.
+# Note that "sepc" and "acknowledgement" have been commented out.
 abandonning||abandoning
 abigious||ambiguous
 abitrate||arbitrate
@@ -42,6 +42,7 @@ acient||ancient
 acitions||actions
 acitve||active
 acknowldegement||acknowledgment
+#acknowledgement||acknowledgment
 ackowledge||acknowledge
 ackowledged||acknowledged
 acording||according

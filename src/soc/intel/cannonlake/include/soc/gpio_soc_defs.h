@@ -196,7 +196,7 @@
 #define GPP_H21			138
 #define GPP_H22			139
 #define GPP_H23			140
-/* Group VGOIO */
+/* Group VGPIO */
 #define GPIO_RSVD_13		141
 #define GPIO_RSVD_14		142
 #define GPIO_RSVD_15		143

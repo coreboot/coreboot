@@ -665,12 +665,12 @@ static void mp_initialize_cpu(void)
 }
 
 /* Returns APIC id for coreboot CPU number or < 0 on failure. */
-static int mp_get_apic_id(int cpu_slot)
+int mp_get_apic_id(int logical_cpu)
 {
-	if (cpu_slot >= CONFIG_MAX_CPUS || cpu_slot < 0)
+	if (logical_cpu >= CONFIG_MAX_CPUS || logical_cpu < 0)
 		return -1;
 
-	return cpus[cpu_slot].default_apic_id;
+	return cpus[logical_cpu].default_apic_id;
 }
 
 void smm_initiate_relocation_parallel(void)

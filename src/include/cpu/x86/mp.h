@@ -145,6 +145,9 @@ int mp_run_on_all_cpus(void (*func)(void *), void *arg, long expire_us);
  */
 int mp_park_aps(void);
 
+/* Returns APIC id for coreboot CPU number or < 0 on failure. */
+int mp_get_apic_id(int logical_cpu);
+
 /*
  * SMM helpers to use with initializing CPUs.
  */

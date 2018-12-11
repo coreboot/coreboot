@@ -491,7 +491,7 @@ enum {
 
 /*
  * Several macros are available to declare programming of GPIO pins, and if
- * needed more than 1 macro can be used for any pin. However, some macros
+ * needed, more than 1 macro can be used for any pin. However, some macros
  * will have no effect if combined. For example debounce only affects input
  * or one of the interrupts. Some macros should not be combined, such as SMI
  * and regular interrupt. The defined macros and their parameters are:

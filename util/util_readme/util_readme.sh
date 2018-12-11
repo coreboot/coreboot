@@ -4,7 +4,7 @@
 # in `./util` subdirectories
 #
 # Execute from root of project.  Example:
-# `sh util/util_readme/util_readme.sh`
+# `util/util_readme/util_readme.sh`
 
 UTIL_README_DIR="$(cd "$(dirname "$0")" || exit; pwd -P)"
 UTIL_DIR=$(dirname "$UTIL_README_DIR")

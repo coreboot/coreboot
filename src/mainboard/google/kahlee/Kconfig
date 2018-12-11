@@ -72,7 +72,7 @@ config MAINBOARD_PART_NUMBER
 
 config DEVICETREE
 	string
-	default "variants/${CONFIG_VARIANT_DIR}/devicetree.cb"
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAINBOARD_FAMILY
 	string

@@ -73,7 +73,7 @@ config MAINBOARD_VENDOR
 
 config DEVICETREE
 	string
-	default "variants/${CONFIG_VARIANT_DIR}/devicetree.cb"
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config VGA_BIOS_FILE
 	string

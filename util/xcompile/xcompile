@@ -238,7 +238,7 @@ EOF
 # to use i586 instead.
 if [ "${TARCH}" = "x86_64" ]; then
 cat <<EOF
-	GCC_CFLAGS_${TARCH} += -march=nocona
+	GCC_CFLAGS_${TARCH} += -march=nocona -malign-data=abi
 EOF
 fi
 

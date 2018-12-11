@@ -287,7 +287,7 @@ cbfs-files-processor-vsa= \
 # arg1: input
 # arg2: output
 cbfs-files-processor-defconfig= \
-	$(eval $(2): $(1) $(obj)/build.h; \
+	$(eval $(2): $(1) $(obj)/build.h $(objutil)/kconfig/conf; \
 		+printf "    CREATE     $(2) (from $(1))\n"; \
 		printf "\# This image was built using coreboot " > $(2).tmp && \
 		grep "\<COREBOOT_VERSION\>" $(obj)/build.h |cut -d\" -f2 >> $(2).tmp && \

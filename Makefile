@@ -176,7 +176,7 @@ real-all: real-target
 .SECONDEXPANSION:
 .DELETE_ON_ERROR:
 
-$(KCONFIG_AUTOHEADER): $(KCONFIG_CONFIG)
+$(KCONFIG_AUTOHEADER): $(KCONFIG_CONFIG) $(objutil)/kconfig/conf
 	+$(MAKE) oldconfig
 
 # Add a new class of source/object files to the build system

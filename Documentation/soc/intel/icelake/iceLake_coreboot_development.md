@@ -33,27 +33,27 @@ Like any other Intel SoC, Ice Lake coreboot development is also based on "Intel 
 ## Create coreboot Image
 
 1. Clone latest coreboot code as below
-```bash
-$ git clone https://review.coreboot.org/coreboot.git
-```
+   ```bash
+   $ git clone https://review.coreboot.org/coreboot.git
+   ```
 
 2. Place blobs (ucode, me.bin and FSP packages) in appropriate locations
 
-Note:
-Consider the fact that ucode and ME kit for Ice Lake SoC will be available from Intel VIP site.
-After product launch, FSP binary will be available externally as any other program.
+   Note:
+   Consider the fact that ucode and ME kit for Ice Lake SoC will be available from Intel VIP site.
+   After product launch, FSP binary will be available externally as any other program.
 
 3. Create coreboot .config
 
 4. Build toolchain
-```bash
-CPUS=$(nproc--ignore=1)  make  crossgcc-i386  iasl
-```
+   ```bash
+   CPUS=$(nproc--ignore=1)  make  crossgcc-i386  iasl
+   ```
 
 5. Build image
-```bash
-$ make # the image is generated as build/coreboot.rom
-```
+   ```bash
+   $ make # the image is generated as build/coreboot.rom
+   ```
 
 ## Flashing coreboot
 

@@ -65,8 +65,8 @@ On Gerrit, click on the **Browse** tab in the upper left corner and select
 to click the next page arrow at the bottom a few times to find it.
 
 If you are using SSH keys, select **ssh** from the tabs under "Project
-coreboot" and run the clone with commit-msg hook command that's provided.  This
-should prompt you for your id_rsa passphrase, if you previously set one.
+coreboot" and run the "clone with commit-msg hook" command that's provided.
+This should prompt you for your id_rsa passphrase, if you previously set one.
 
 If you are using HTTP, instead, select **http** from the tabs under "Project coreboot"
 and run the command that appears

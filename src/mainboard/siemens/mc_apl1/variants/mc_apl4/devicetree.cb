@@ -75,7 +75,21 @@ chip soc/intel/apollolake
 		device pci 17.0 on  end	# - I2C 4
 		device pci 17.1 on  end	# - I2C 5
 		device pci 17.2 on  end	# - I2C 6
-		device pci 17.3 on  end	# - I2C 7
+		device pci 17.3 on	# - I2C 7
+		# Enable external RTC chip
+			chip drivers/i2c/rx6110sa
+				register "pmon_sampling" = "PMON_SAMPL_256_MS"
+				register "bks_on" = "0"
+				register "bks_off" = "1"
+				register "iocut_en" = "1"
+				register "set_user_date" = "1"
+				register "user_year" = "04"
+				register "user_month" = "07"
+				register "user_day" = "01"
+				register "user_weekday" = "4"
+				device i2c 0x32 on end	# RTC RX6110 SA
+			end
+		end
 		device pci 18.0 on  end	# - UART 0
 		device pci 18.1 on  end	# - UART 1
 		device pci 18.2 on  end	# - UART 2

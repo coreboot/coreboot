@@ -22,7 +22,6 @@
 #include <lib.h>
 #include "pineview.h"
 #include "raminit.h"
-#include <pc80/mc146818rtc.h>
 #include <spd.h>
 #include <string.h>
 

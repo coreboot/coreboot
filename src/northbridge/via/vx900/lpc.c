@@ -20,7 +20,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <pc80/i8259.h>
-#include <pc80/mc146818rtc.h>
 #include <drivers/generic/ioapic/chip.h>
 
 #include "vx900.h"

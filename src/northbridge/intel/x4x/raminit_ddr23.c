@@ -20,7 +20,6 @@
 #include <console/console.h>
 #include <commonlib/helpers.h>
 #include <delay.h>
-#include <pc80/mc146818rtc.h>
 #if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #else

@@ -23,7 +23,6 @@
 #include <ip_checksum.h>
 #include <memory_info.h>
 #include <mrc_cache.h>
-#include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
 #include <device/dram/ddr3.h>
 #include <smbios.h>

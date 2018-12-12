@@ -29,7 +29,6 @@
 #include <southbridge/intel/i82801jx/i82801jx.h> /* smbus_read_byte */
 #endif
 #include "x4x.h"
-#include <pc80/mc146818rtc.h>
 #include <spd.h>
 #include <string.h>
 #include <device/dram/ddr2.h>

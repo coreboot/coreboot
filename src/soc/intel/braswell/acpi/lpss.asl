@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -519,115 +520,6 @@ Device (I2C7)
 	{
 		And (PSAT, 0xfffffffc, PSAT)
 		Or (PSAT, 0x00000000, PSAT)
-	}
-}
-
-Device (SPI1)
-{
-	Name (_HID, "8086228E")
-	Name (_UID, 1)
-	Name (_DDN, "SPI Controller #2")
-
-	Name (RBUF, ResourceTemplate()
-	{
-		Memory32Fixed (ReadWrite, 0, 0x1000, BAR0)
-		Interrupt (ResourceConsumer, Level, ActiveLow, Exclusive,,,)
-		{
-			LPSS_SPI_IRQ
-		}
-		FixedDMA (0x0, 0x0, Width32Bit, )
-		FixedDMA (0x1, 0x1, Width32Bit, )
-	})
-
-	Method (_CRS)
-	{
-		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\S9B0, RBAS)
-		Return (^RBUF)
-	}
-
-	Method (_STA)
-	{
-		If (LEqual (\S9EN, 1)) {
-			Return (0xF)
-		} Else {
-			Return (0x0)
-		}
-	}
-
-	OperationRegion (KEYS, SystemMemory, S9B1, 0x100)
-	Field (KEYS, DWordAcc, NoLock, WriteAsZeros)
-	{
-		Offset (0x84),
-		PSAT, 32,
-	}
-
-	Method (_PS3)
-	{
-		Or (PSAT, 0x00000003, PSAT)
-		Or (PSAT, 0x00000000, PSAT)
-	}
-
-	Method (_PS0)
-	{
-		And (PSAT, 0xfffffffc, PSAT)
-		Or (PSAT, 0x00000000, PSAT)
-	}
-}
-
-Device (PWM1)
-{
-	Name (_HID, "80862288")
-	Name (_UID, 1)
-	Name (_DDN, "PWM Controller #1")
-
-	Name (RBUF, ResourceTemplate()
-	{
-		Memory32Fixed (ReadWrite, 0, 0x1000, BAR0)
-	})
-
-	Method (_CRS)
-	{
-		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\SAB0, RBAS)
-		Return (^RBUF)
-	}
-
-	Method (_STA)
-	{
-		If (LEqual (\SAEN, 1)) {
-			Return (0xF)
-		} Else {
-			Return (0x0)
-		}
-	}
-}
-
-Device (PWM2)
-{
-	Name (_HID, "80862288")
-	Name (_UID, 2)
-	Name (_DDN, "PWM Controller #2")
-
-	Name (RBUF, ResourceTemplate()
-	{
-		Memory32Fixed (ReadWrite, 0, 0x1000, BAR0)
-	})
-
-	Method (_CRS)
-	{
-		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\SBB0, RBAS)
-		Return (^RBUF)
-	}
-
-	Method (_STA)
-	{
-		If (LEqual (\SBEN, 1)) {
-			Return (0xF)
-		} Else {
-			Return (0x0)
-		}
 	}
 }
 

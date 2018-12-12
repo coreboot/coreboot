@@ -32,7 +32,6 @@
 #include <device/pci.h>
 #include <cpu/amd/msr.h>
 #include <device/pci_def.h>
-#include <device/pci_ids.h>
 #include <northbridge/amd/amdfam10/raminit.h>
 #include <northbridge/amd/amdfam10/amdfam10.h>
 

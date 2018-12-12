@@ -20,7 +20,6 @@
 #include <arch/acpi.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include "haswell.h"
 #include <southbridge/intel/lynxpoint/pch.h>
 

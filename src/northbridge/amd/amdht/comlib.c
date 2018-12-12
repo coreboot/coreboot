@@ -21,7 +21,6 @@
 #include <console/console.h>
 #include <cpu/amd/msr.h>
 #include <device/pci_def.h>
-#include <device/pci_ids.h>
 
 
 /*

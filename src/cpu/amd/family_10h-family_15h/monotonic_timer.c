@@ -19,7 +19,6 @@
 #include <cpu/amd/msr.h>
 #include <timer.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <northbridge/amd/amdht/AsPsDefs.h>
 
 static struct monotonic_counter {

@@ -24,7 +24,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
-#include <pc80/mc146818rtc.h>
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
 #include <pc80/isa-dma.h>

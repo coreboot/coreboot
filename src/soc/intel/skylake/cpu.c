@@ -40,7 +40,6 @@
 #include <intelblocks/sgx.h>
 #include <intelblocks/smm.h>
 #include <intelblocks/vmx.h>
-#include <pc80/mc146818rtc.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>

@@ -25,7 +25,6 @@
 #include <spi-generic.h>
 #include <elog.h>
 #include <halt.h>
-#include <pc80/mc146818rtc.h>
 #include <soc/lpc.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>

@@ -17,7 +17,6 @@
 #ifndef SB700_H
 #define SB700_H
 
-#include <device/pci_ids.h>
 #include "chip.h"
 
 /* Power management index/data registers */

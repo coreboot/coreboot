@@ -17,7 +17,6 @@
 #ifndef HUDSON_H
 #define HUDSON_H
 
-#include <device/pci_ids.h>
 #include <device/device.h>
 #include "chip.h"
 

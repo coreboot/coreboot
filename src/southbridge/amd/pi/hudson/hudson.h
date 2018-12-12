@@ -18,7 +18,6 @@
 #define HUDSON_H
 
 #include <types.h>
-#include <device/pci_ids.h>
 #include <device/device.h>
 #include "chip.h"
 

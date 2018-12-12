@@ -23,7 +23,6 @@
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 
 unsigned long acpi_fill_madt(unsigned long current)
 {

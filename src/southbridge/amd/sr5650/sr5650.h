@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 #include <arch/acpi.h>
-#include <device/pci_ids.h>
 #include "chip.h"
 #include "rev.h"
 

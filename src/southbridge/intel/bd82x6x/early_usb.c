@@ -15,7 +15,6 @@
  */
 
 #include <arch/io.h>
-#include <device/pci_ids.h>
 #include <device/pci_def.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include "pch.h"

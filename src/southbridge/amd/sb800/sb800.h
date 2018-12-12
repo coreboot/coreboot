@@ -17,7 +17,6 @@
 #ifndef SB800_H
 #define SB800_H
 
-#include <device/pci_ids.h>
 #include "chip.h"
 
 /* Power management index/data registers */

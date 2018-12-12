@@ -18,7 +18,6 @@
 
 #include <rules.h>
 #include <stdint.h>
-#include <device/pci_ids.h>
 #include "chip.h"
 #include "rev.h"
 

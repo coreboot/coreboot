@@ -13,9 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#include "amd8111.h"
+#include <device/pci_ids.h>
 #include <reset.h>
 #include <southbridge/amd/common/reset.h>
+#include "amd8111.h"
 
 unsigned get_sbdn(unsigned bus)
 {

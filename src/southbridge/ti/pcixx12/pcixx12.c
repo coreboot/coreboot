@@ -17,7 +17,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
-#include <device/pci_ids.h>
 #include <console/console.h>
 #include <device/cardbus.h>
 

@@ -16,7 +16,6 @@
 
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include "i82801dx.h"
 
 void i82801dx_enable(struct device *dev)

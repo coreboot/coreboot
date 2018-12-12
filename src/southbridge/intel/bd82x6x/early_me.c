@@ -17,7 +17,6 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <delay.h>
-#include <device/pci_ids.h>
 #include <device/pci_def.h>
 #include <halt.h>
 #include <string.h>

@@ -19,7 +19,6 @@
 
 #include <arch/io.h>
 #include <types.h>
-#include <device/pci_ids.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <soc/iomap.h>

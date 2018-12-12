@@ -19,7 +19,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <soc/iosf.h>
 #include <soc/nvs.h>
 #include <soc/ramstage.h>

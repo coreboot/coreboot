@@ -15,7 +15,6 @@
 
 #include <delay.h>
 #include <device/device.h>
-#include <device/pci_ids.h>
 #include <soc/pci_devs.h>
 #include <soc/reg_access.h>
 #include <soc/romstage.h>

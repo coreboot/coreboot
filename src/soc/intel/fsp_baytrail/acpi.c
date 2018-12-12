@@ -29,7 +29,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/baytrail.h>
-#include <device/pci_ids.h>
 #include <soc/pci_devs.h>
 #include <soc/acpi.h>
 #include <string.h>

@@ -28,7 +28,6 @@
 #include <cpu/x86/smm.h>
 #include <cpu/x86/tsc.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <ec/google/chromeec/ec.h>
 #include <drivers/intel/gma/opregion.h>
 #include <rules.h>

@@ -21,7 +21,6 @@
 #include <device/path.h>
 #include <device/smbus_def.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <soc/ramstage.h>
 #include <soc/smbus.h>
 

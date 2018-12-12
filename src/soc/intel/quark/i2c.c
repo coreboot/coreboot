@@ -19,7 +19,6 @@
 #include <device/device.h>
 #include <device/i2c_simple.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <soc/i2c.h>
 #include <soc/ramstage.h>
 #include <soc/reg_access.h>

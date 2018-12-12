@@ -19,7 +19,6 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <delay.h>
-#include <device/pci_ids.h>
 #include <rules.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>

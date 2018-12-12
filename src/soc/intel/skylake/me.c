@@ -18,7 +18,6 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <intelblocks/cse.h>
 #include <soc/iomap.h>
 #include <soc/me.h>

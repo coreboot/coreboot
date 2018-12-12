@@ -16,7 +16,6 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci_ids.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpc_lib.h>

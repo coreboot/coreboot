@@ -263,6 +263,37 @@ struct soc_intel_cannonlake_config {
 	/* Intel VT configuration */
 	uint8_t VtdDisable;
 	uint8_t VmxEnable;
+
+	/*
+	 * Acoustic Noise Mitigation
+	 * 0b - Disable
+	 * 1b - Enable noise mitigation
+	 */
+	uint8_t AcousticNoiseMitigation;
+
+	/*
+	 * Disable Fast Package C-state ramping
+	 * Need to set AcousticNoiseMitigation = '1' first
+	 * 0b - Enabled
+	 * 1b - Disabled
+	 */
+	uint8_t FastPkgCRampDisableIa;
+	uint8_t FastPkgCRampDisableGt;
+	uint8_t FastPkgCRampDisableSa;
+	uint8_t FastPkgCRampDisableFivr;
+
+	/*
+	 * Adjust the VR slew rates
+	 * Need to set AcousticNoiseMitigation = '1' first
+	 * 000b - Fast/2
+	 * 001b - Fast/4
+	 * 010b - Fast/8
+	 * 011b - Fast/16
+	 */
+	uint8_t SlowSlewRateForIa;
+	uint8_t SlowSlewRateForGt;
+	uint8_t SlowSlewRateForSa;
+	uint8_t SlowSlewRateForFivr;
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

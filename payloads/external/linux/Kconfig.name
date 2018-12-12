@@ -1,6 +1,6 @@
 config PAYLOAD_LINUX
 	bool "A Linux payload"
-	depends on ARCH_X86 || ARCH_ARM
+	depends on ARCH_X86 || ARCH_ARM || ARCH_RISCV
 	help
 	  Select this option if you have a Linux bzImage which coreboot
 	  should run as soon as the basic hardware initialization

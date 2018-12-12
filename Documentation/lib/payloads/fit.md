@@ -6,6 +6,7 @@
 ## Supported architectures
 
 * aarch64
+* riscv
 
 ## Supported FIT sections
 
@@ -24,10 +25,18 @@ The section must be named in order to be found by the FIT parser:
 ## Architecture specifics
 
 The FIT parser needs architecure support.
+
 ### aarch64
 The source code can be found in `src/arch/arm64/fit_payload.c`.
 
 On aarch64 the kernel (a section named 'kernel') must be in **Image**
+format and it needs a devicetree (a section named 'fdt') to boot.
+The kernel will be placed close to "*DRAMSTART*".
+
+### RISC-V
+The source code can be found in `src/arch/riscv/fit_payload.c`.
+
+On RISC-V the kernel (a section named 'kernel') must be in **Image**
 format and it needs a devicetree (a section named 'fdt') to boot.
 The kernel will be placed close to "*DRAMSTART*".
 

@@ -21,7 +21,6 @@
 #include <console/console.h>
 #include <string.h>
 #include <lib.h>
-#include <pc80/mc146818rtc.h>
 #include <stdlib.h>
 #include "chip.h"
 #include "w83697hf.h"

@@ -31,7 +31,6 @@
 #include <cpu/x86/name.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>
-#include <pc80/mc146818rtc.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <cpu/intel/common/common.h>

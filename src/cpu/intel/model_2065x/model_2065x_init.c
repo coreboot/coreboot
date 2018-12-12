@@ -28,7 +28,6 @@
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
-#include <pc80/mc146818rtc.h>
 #include "model_2065x.h"
 #include "chip.h"
 #include <cpu/intel/smm/gen1/smi.h>

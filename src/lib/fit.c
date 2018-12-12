@@ -38,12 +38,12 @@ struct compat_string_entry {
 	struct list_node list_node;
 };
 
-/* Convert string to lowercase and replace '_' with '-'. */
+/* Convert string to lowercase and replace '_' and spaces with '-'. */
 static char *clean_compat_string(char *str)
 {
 	for (size_t i = 0; i < strlen(str); i++) {
 		str[i] = tolower(str[i]);
-		if (str[i] == '_')
+		if (str[i] == '_' || str[i] == ' ')
 			str[i] = '-';
 	}
 

@@ -21,7 +21,6 @@
 #include <string.h>
 #include <arch/acpi.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <assert.h>
 #include "bus.h"
 

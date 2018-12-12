@@ -20,7 +20,6 @@
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <ec/acpi/ec.h>
 #if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vendorcode/google/chromeos/gnvs.h>

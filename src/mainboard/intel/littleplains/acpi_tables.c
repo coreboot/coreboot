@@ -22,7 +22,6 @@
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <southbridge/intel/fsp_rangeley/nvs.h>
 #include <northbridge/intel/fsp_rangeley/northbridge.h>
 

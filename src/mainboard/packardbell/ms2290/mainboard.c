@@ -22,7 +22,6 @@
 #include <delay.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <device/pci_ids.h>
 #include <northbridge/intel/nehalem/nehalem.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/acpi/ec.h>

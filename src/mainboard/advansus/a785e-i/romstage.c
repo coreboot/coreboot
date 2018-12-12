@@ -21,7 +21,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
-#include <device/pci_ids.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>

@@ -26,7 +26,6 @@
 #include <arch/io.h>
 #include <arch/smp/mpspec.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <cpu/amd/amdfam10_sysconf.h>
 
 /* APIC */

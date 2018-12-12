@@ -20,7 +20,6 @@
 #include <delay.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <device/pci_ids.h>
 #include <arch/interrupt.h>
 #include <northbridge/intel/i945/i945.h>
 #include <arch/x86/include/arch/acpigen.h>

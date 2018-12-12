@@ -18,7 +18,6 @@
 #include <arch/acpigen.h>
 #include <arch/ioapic.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 
 #define IO_APIC2_ADDR 0xFEC20000
 

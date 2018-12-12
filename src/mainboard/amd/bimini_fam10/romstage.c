@@ -22,7 +22,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
-#include <device/pci_ids.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
 #include <device/pnp_def.h>

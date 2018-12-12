@@ -20,7 +20,6 @@
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <bootmode.h>
 #include <ec/quanta/it8518/ec.h>

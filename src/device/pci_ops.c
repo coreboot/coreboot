@@ -17,7 +17,6 @@
 
 #include <console/console.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
 static const struct pci_bus_operations *pci_bus_ops(struct bus *bus, struct device *dev)

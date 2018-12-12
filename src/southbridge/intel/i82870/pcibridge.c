@@ -15,7 +15,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <pc80/mc146818rtc.h>
 #include "82870.h"
 
 static void p64h2_pcix_init(struct device *dev)

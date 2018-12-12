@@ -22,7 +22,6 @@
 #include <cpu/x86/smm.h>
 #include <elog.h>
 #include <halt.h>
-#include <pc80/mc146818rtc.h>
 #include "pch.h"
 
 #include "nvs.h"

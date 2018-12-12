@@ -21,7 +21,6 @@
 #include <device/pci_def.h>
 #include <cpu/x86/smm.h>
 #include <elog.h>
-#include <pc80/mc146818rtc.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/common/gpio.h>
 

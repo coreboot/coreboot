@@ -221,6 +221,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->FastPkgCRampDisableGt = config->FastPkgCRampDisableGt;
 	params->FastPkgCRampDisableSa = config->FastPkgCRampDisableSa;
 	params->FastPkgCRampDisableFivr = config->FastPkgCRampDisableFivr;
+
+	/* Power Optimizer */
+	params->PchPwrOptEnable = config->dmipwroptimize;
+	params->SataPwrOptEnable = config->satapwroptimize;
 }
 
 /* Mainboard GPIO Configuration */

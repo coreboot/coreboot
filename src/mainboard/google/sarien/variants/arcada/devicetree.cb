@@ -27,6 +27,8 @@ chip soc/intel/cannonlake
 	register "speed_shift_enable" = "1"
 	register "s0ix_enable" = "1"
 	register "dptf_enable" = "1"
+	register "dmipwroptimize" = "1"
+	register "satapwroptimize" = "1"
 
 	# Intel Common SoC Config
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Left Type-C Port

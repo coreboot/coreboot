@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2017-2018 Intel Corporation.
+ * Copyright (C) 2019 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +19,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/systemagent.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -46,6 +48,13 @@ __weak int soc_get_uncore_prmmr_base_and_mask(uint64_t *base,
 __weak size_t soc_reserved_mmio_size(void)
 {
 	return 0;
+}
+
+__weak unsigned long sa_write_acpi_tables(struct device *dev,
+					  unsigned long current,
+					  struct acpi_rsdp *rsdp)
+{
+	return current;
 }
 
 /*
@@ -283,6 +292,9 @@ static struct device_operations systemagent_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = soc_systemagent_init,
 	.ops_pci          = &pci_dev_ops_pci,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.write_acpi_tables = sa_write_acpi_tables,
+#endif
 };
 
 static const unsigned short systemagent_ids[] = {

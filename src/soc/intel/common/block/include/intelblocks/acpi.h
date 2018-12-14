@@ -81,6 +81,11 @@ uint32_t acpi_fill_soc_wake(uint32_t generic_pm1_en,
 /* Chipset specific settings for filling up fadt table */
 void soc_fill_fadt(acpi_fadt_t *fadt);
 
+/* Chipset specific settings for filling up dmar table */
+unsigned long sa_write_acpi_tables(struct device *dev,
+				   unsigned long current,
+				   struct acpi_rsdp *rsdp);
+
 /* Return the polarity flag for SCI IRQ */
 int soc_madt_sci_irq_polarity(int sci);
 

@@ -26,7 +26,10 @@
 
 static int load_sar_file_from_cbfs(void *buf, size_t buffer_size)
 {
-	return cbfs_boot_load_file(WIFI_SAR_CBFS_FILENAME, buf,
+	const char *filename = get_wifi_sar_cbfs_filename();
+	if (filename == NULL)
+		filename = WIFI_SAR_CBFS_FILENAME;
+	return cbfs_boot_load_file(filename, buf,
 			buffer_size, CBFS_TYPE_RAW);
 }
 
@@ -119,4 +122,10 @@ int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
 	memset(sar_limits, 0, sizeof(*sar_limits));
 	memcpy(sar_limits, bin_buffer, bin_buff_adjusted_size);
 	return 0;
+}
+
+__weak
+const char *get_wifi_sar_cbfs_filename(void)
+{
+	return NULL;
 }

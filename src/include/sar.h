@@ -54,4 +54,6 @@ struct wifi_sar_limits {
  */
 int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits);
 
+const char *get_wifi_sar_cbfs_filename(void);
+
 #endif /* _SAR_H_ */

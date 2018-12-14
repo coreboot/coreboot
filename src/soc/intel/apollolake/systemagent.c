@@ -4,6 +4,7 @@
  * Copyright (C) 2015 Intel Corp.
  * (Written by Andrey Petrov <andrey.petrov@intel.com> for Intel Corp.)
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
+ * Copyright (C) 2019 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +20,7 @@
 #include <cpu/cpu.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <device/pci_ops.h>
 #include <fsp/util.h>
 #include <intelblocks/systemagent.h>
 #include <soc/iomap.h>
@@ -40,6 +42,24 @@ void soc_add_fixed_mmio_resources(struct device *dev, int *index)
 
 	sa_add_fixed_mmio_resources(dev, index, soc_fixed_resources,
 			ARRAY_SIZE(soc_fixed_resources));
+
+	/* Add VTd resources if VTd is enabled. These resources were
+	   set up by the FSP-S call. */
+	if ((pci_read_config32(dev, CAPID0_A) & VTD_DISABLE))
+		return;
+
+	if (MCHBAR32(GFXVTBAR) & VTBAR_ENABLED) {
+		mmio_resource(dev, *index,
+			      (MCHBAR64(GFXVTBAR) & VTBAR_MASK) / KiB,
+			      VTBAR_SIZE / KiB);
+		(*index)++;
+	}
+	if (MCHBAR32(DEFVTBAR) & VTBAR_ENABLED) {
+		mmio_resource(dev, *index,
+			      (MCHBAR64(DEFVTBAR) & VTBAR_MASK) / KiB,
+			      VTBAR_SIZE / KiB);
+		(*index)++;
+	}
 }
 
 int soc_get_uncore_prmmr_base_and_mask(uint64_t *prmrr_base,

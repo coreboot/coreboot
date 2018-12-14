@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
 #include <southbridge/intel/ibexpeak/nvs.h>
 #include "thermal.h"
 

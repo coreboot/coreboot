@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -156,7 +157,8 @@ static void nc_read_resources(struct device *dev)
 	size_k = RES_IN_KIB(0x00100000);
 	mmio_resource(dev, index++, base_k, size_k);
 
-	chromeos_reserve_ram_oops(dev, index++);
+	if (IS_ENABLED(CONFIG_CHROMEOS))
+		chromeos_reserve_ram_oops(dev, index++);
 }
 
 static struct device_operations nc_ops = {

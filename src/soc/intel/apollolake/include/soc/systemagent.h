@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2015 Intel Corp.
  * (Written by Andrey Petrov <andrey.petrov@intel.com> for Intel Corp.)
+ * Copyright (C) 2019 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,5 +29,12 @@
 #define   PCODE_INIT_DONE	(1 << 8)
 #define MCHBAR_RAPL_PPL		0x70A8
 #define CORE_DISABLE_MASK	0x7168
+#define CAPID0_A		0xE4
+#define   VTD_DISABLE		(1 << 23)
+#define DEFVTBAR		0x6c80
+#define GFXVTBAR		0x6c88
+#define   VTBAR_ENABLED		0x01
+#define VTBAR_MASK		0xfffffff000ull
+#define VTBAR_SIZE		0x1000
 
 #endif /* SOC_APOLLOLAKE_SYSTEMAGENT_H */

@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2016 Intel Corp.
- * Copyright (C) 2017 Siemens AG
+ * Copyright (C) 2017-2019 Siemens AG
  * (Written by Lance Zhao <lijian.zhao@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,19 @@
 #include <arch/acpigen.h>
 #include <arch/io.h>
 #include <arch/smp/mpspec.h>
+#include <device/pci_ops.h>
 #include <cbmem.h>
 #include <cpu/x86/smm.h>
 #include <gpio.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/sgx.h>
+#include <intelblocks/p2sb.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
+#include <soc/systemagent.h>
 #include <string.h>
 #include "chip.h"
 
@@ -176,6 +179,88 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 
 	if(cfg->lpss_s0ix_enable)
 		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;
+}
+
+static unsigned long soc_fill_dmar(unsigned long current)
+{
+	struct device *const igfx_dev = dev_find_slot(0, SA_DEVFN_IGD);
+	uint64_t gfxvtbar = MCHBAR64(GFXVTBAR) & VTBAR_MASK;
+	uint64_t defvtbar = MCHBAR64(DEFVTBAR) & VTBAR_MASK;
+	bool gfxvten = MCHBAR32(GFXVTBAR) & VTBAR_ENABLED;
+	bool defvten = MCHBAR32(DEFVTBAR) & VTBAR_ENABLED;
+	unsigned long tmp;
+
+	/* IGD has to be enabled, GFXVTBAR set and enabled. */
+	if (igfx_dev && igfx_dev->enabled && gfxvtbar && gfxvten) {
+		tmp = current;
+
+		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);
+		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
+		acpi_dmar_drhd_fixup(tmp, current);
+
+		/* Add RMRR entry */
+		tmp = current;
+		current += acpi_create_dmar_rmrr(current, 0,
+				sa_get_gsm_base(), sa_get_tolud_base() - 1);
+		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
+		acpi_dmar_rmrr_fixup(tmp, current);
+	}
+
+	/* DEFVTBAR has to be set and enabled. */
+	if (defvtbar && defvten) {
+		tmp = current;
+		/*
+		 * P2SB may already be hidden. There's no clear rule, when.
+		 * It is needed to get bus, device and function for IOAPIC and
+		 * HPET device which is stored in P2SB device. So unhide it to
+		 * get the info and hide it again when done.
+		 */
+		p2sb_unhide();
+		struct device *p2sb_dev = dev_find_slot(0, PCH_DEVFN_P2SB);
+		uint16_t ibdf = pci_read_config16(p2sb_dev, PCH_P2SB_IBDF);
+		uint16_t hbdf = pci_read_config16(p2sb_dev, PCH_P2SB_HBDF);
+		p2sb_hide();
+
+		current += acpi_create_dmar_drhd(current,
+				DRHD_INCLUDE_PCI_ALL, 0, defvtbar);
+		current += acpi_create_dmar_ds_ioapic(current,
+				2, ibdf >> 8, PCI_SLOT(ibdf), PCI_FUNC(ibdf));
+		current += acpi_create_dmar_ds_msi_hpet(current,
+				0, hbdf >> 8, PCI_SLOT(hbdf), PCI_FUNC(hbdf));
+		acpi_dmar_drhd_fixup(tmp, current);
+	}
+
+	return current;
+}
+
+unsigned long sa_write_acpi_tables(struct device *const dev,
+				     unsigned long current,
+				     struct acpi_rsdp *const rsdp)
+{
+	acpi_dmar_t *const dmar = (acpi_dmar_t *)current;
+
+	/* Create DMAR table only if virtualization is enabled. Due to some
+	 * constraints on Apollo Lake SoC (some stepping affected), VTD could
+	 * not be enabled together with IPU. Doing so will override and disable
+	 * VTD while leaving CAPID0_A still reporting that VTD is available.
+	 * As in this case FSP will lock VTD to disabled state, we need to make
+	 * sure that DMAR table generation only happens when at least DEFVTBAR
+	 * is enabled. Otherwise the DMAR header will be generated while the
+	 * content of the table will be missing.
+	 */
+
+	if ((pci_read_config32(dev, CAPID0_A) & VTD_DISABLE) ||
+	    !(MCHBAR32(DEFVTBAR) & VTBAR_ENABLED))
+		return current;
+
+	printk(BIOS_DEBUG, "ACPI:    * DMAR\n");
+	acpi_create_dmar(dmar, DMAR_INTR_REMAP, soc_fill_dmar);
+	current += dmar->header.length;
+	current = acpi_align_current(current);
+	acpi_add_table(rsdp, dmar);
+	current = acpi_align_current(current);
+
+	return current;
 }
 
 void soc_power_states_generation(int core_id, int cores_per_package)

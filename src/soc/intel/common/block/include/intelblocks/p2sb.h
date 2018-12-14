@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2017-2018 Intel Corporation.
+ * Copyright (C) 2019 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +20,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define PCH_P2SB_E0 0xe0
-#define   P2SB_E0_MASKLOCK (1 << 1)
+#define PCH_P2SB_E0		0xe0
+#define   P2SB_E0_MASKLOCK	(1 << 1)
+#define PCH_P2SB_IBDF		0x6c
+#define PCH_P2SB_HBDF		0x70
 
 enum {
 	P2SB_EP_MASK_0_REG,

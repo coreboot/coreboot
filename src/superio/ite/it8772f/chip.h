@@ -44,7 +44,7 @@ struct superio_ite_it8772f_config {
 	enum thermal_mode tmpin2_mode;
 
 	/*
-	 * Enable a FAN for sofware control.
+	 * Enable a FAN for software control.
 	 */
 	u8 fan1_enable;
 	u8 fan2_enable;

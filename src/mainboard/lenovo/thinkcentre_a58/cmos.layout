@@ -1,0 +1,104 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007-2008 coresystems GmbH
+## Copyright (C) 2014 Vladimir Serbinenko
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+# -----------------------------------------------------------------
+entries
+
+# -----------------------------------------------------------------
+# Status Register A
+# -----------------------------------------------------------------
+# Status Register B
+# -----------------------------------------------------------------
+# Status Register C
+#96           4       r       0        status_c_rsvd
+#100          1       r       0        uf_flag
+#101          1       r       0        af_flag
+#102          1       r       0        pf_flag
+#103          1       r       0        irqf_flag
+# -----------------------------------------------------------------
+# Status Register D
+#104          7       r       0        status_d_rsvd
+#111          1       r       0        valid_cmos_ram
+# -----------------------------------------------------------------
+# Diagnostic Status Register
+#112          8       r       0        diag_rsvd1
+
+# -----------------------------------------------------------------
+0          120       r       0        reserved_memory
+#120        264       r       0        unused
+
+# -----------------------------------------------------------------
+# RTC_BOOT_BYTE (coreboot hardcoded)
+384          1       e       4        boot_option
+388          4       h       0        reboot_counter
+#390          5       r       0        unused?
+
+# -----------------------------------------------------------------
+# coreboot config options: console
+395          4       e       6        debug_level
+#399          1       r       0        unused
+
+# coreboot config options: southbridge
+408          1       e       1        nmi
+409          2       e       7        power_on_after_fail
+
+# coreboot config options: cpu
+#424        8       r       0        unused
+
+# coreboot config options: northbridge
+432         4        e      11        gfx_uma_size
+#435        549       r       0        unused
+
+
+# coreboot config options: check sums
+984         16       h       0        check_sum
+
+1024        144       r       0        recv_enable_results
+# -----------------------------------------------------------------
+
+enumerations
+
+#ID value   text
+1     0     Disable
+1     1     Enable
+2     0     Enable
+2     1     Disable
+4     0     Fallback
+4     1     Normal
+6     1     Emergency
+6     2     Alert
+6     3     Critical
+6     4     Error
+6     5     Warning
+6     6     Notice
+6     7     Info
+6     8     Debug
+6     9     Spew
+7     0     Disable
+7     1     Enable
+7     2     Keep
+11    6     64M
+11    7     128M
+11    8     256M
+11    9     96M
+11    10     160M
+11    11     224M
+11    12     352M
+
+# -----------------------------------------------------------------
+checksums
+
+checksum 392 983 984

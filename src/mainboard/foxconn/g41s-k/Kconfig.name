@@ -1,2 +1,4 @@
 config BOARD_FOXCONN_G41S_K
 	bool "G41S-K"
+config BOARD_FOXCONN_G41M
+	bool "G41M/G41M-S/G41M-V"

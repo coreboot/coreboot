@@ -14,7 +14,7 @@
 ## GNU General Public License for more details.
 ##
 
-if BOARD_FOXCONN_G41S_K
+if BOARD_FOXCONN_G41S_K || BOARD_FOXCONN_G41M
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -39,9 +39,18 @@ config MAINBOARD_DIR
 	string
 	default "foxconn/g41s-k"
 
+config VARIANT_DIR
+	default "g41s-k" if BOARD_FOXCONN_G41S_K
+	default "g41m" if BOARD_FOXCONN_G41M
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "G41S-K"
+	default "G41S-K" if BOARD_FOXCONN_G41S_K
+	default "G41M/G41M-S/G41M-V" if BOARD_FOXCONN_G41M
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAX_CPUS
 	int

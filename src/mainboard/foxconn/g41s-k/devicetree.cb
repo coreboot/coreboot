@@ -26,7 +26,6 @@ chip northbridge/intel/x4x		# Northbridge
 		end
 	end
 	device domain 0 on		# PCI domain
-		subsystemid 0x105b 0x0dda inherit
 		device pci 0.0 on end			# Host Bridge
 		device pci 1.0 on end			# PEG
 		device pci 2.0 on end			# Integrated graphics controller

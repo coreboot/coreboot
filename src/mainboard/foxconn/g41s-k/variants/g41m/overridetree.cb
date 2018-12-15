@@ -1,0 +1,17 @@
+chip northbridge/intel/x4x		# Northbridge
+	device domain 0 on		# PCI domain
+		subsystemid 0x105b 0x0dc0 inherit
+		chip southbridge/intel/i82801gx		# Southbridge
+			device pci 1f.0 on		# ISA bridge
+				device pnp 2e.0 on	# Floppy
+					io 0x60 = 0x3f0
+					irq 0x70 = 6
+					drq 0x74 = 2
+				end
+				device pnp 2e.2 off end	# COM2 (IR)
+				device pnp 2e.a off end	# CIR
+			end
+			device pci 1f.1 on end		# PATA/IDE
+		end
+	end
+end

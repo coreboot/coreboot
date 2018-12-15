@@ -1,0 +1,5 @@
+chip northbridge/intel/x4x		# Northbridge
+	device domain 0 on		# PCI domain
+		subsystemid 0x105b 0x0dda inherit
+	end
+end

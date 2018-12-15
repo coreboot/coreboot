@@ -66,8 +66,7 @@ static void mb_lpc_setup(void)
 	RCBA8(OIC) = 0x03;
 	RCBA8(OIC);
 
-	RCBA32(FD) = FD_PCIE6 | FD_PCIE5 | FD_PCIE4 | FD_PCIE3 | FD_INTLAN |
-		FD_ACMOD | FD_ACAUD | FD_PATA | 1;
+	RCBA32(FD) |= FD_INTLAN;
 	RCBA32(CG) = 0x00000001;
 }
 

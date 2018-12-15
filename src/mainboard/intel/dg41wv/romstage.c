@@ -59,8 +59,6 @@ static void mb_lpc_setup(void)
 	reg32 = RCBA32(GCS);
 	reg32 |= (1 << 5);
 	RCBA32(GCS) = reg32;
-	RCBA32(FD) = FD_PCIE6 | FD_PCIE5 | FD_PCIE4 | FD_PCIE3 | FD_ACMOD
-		| FD_ACAUD | FD_PATA |1;
 	RCBA32(CG) = 0x00000001;
 }
 

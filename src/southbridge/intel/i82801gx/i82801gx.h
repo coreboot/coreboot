@@ -68,6 +68,8 @@ int southbridge_detect_s3_resume(void);
 #define   SEE	(1 << 1)
 #define   PERE	(1 << 0)
 
+#define ICH_PCIE_DEV_SLOT	28
+
 /* PCI Configuration Space (D31:F0): LPC */
 
 #define SERIRQ_CNTL		0x64
@@ -227,6 +229,13 @@ int southbridge_detect_s3_resume(void);
 #define RPC		0x0224	/* 32bit */
 #define RPFN		0x0238	/* 32bit */
 
+/* Get the function number assigned to a Root Port */
+#define RPFN_FNGET(reg, port)	(((reg) >> ((port) * 4)) & 7)
+/* Set the function number for a Root Port */
+#define RPFN_FNSET(port, func)	(((func) & 7) << ((port) * 4))
+/* Root Port function number mask */
+#define RPFN_FNMASK(port)	(7 << ((port) * 4))
+
 #define TRSR		0x1e00	/*  8bit */
 #define TRCR		0x1e10	/* 64bit */
 #define TWDR		0x1e18	/* 64bit */
@@ -269,16 +278,14 @@ int southbridge_detect_s3_resume(void);
 #define FD_PCIE3	(1 << 18)
 #define FD_PCIE2	(1 << 17)
 #define FD_PCIE1	(1 << 16)
+#define ICH_DISABLE_PCIE(x)	(1 << (16 + (x)))
 #define FD_EHCI		(1 << 15)
 #define FD_LPCB		(1 << 14)
 
 /* UHCI must be disabled from 4 downwards.
  * If UHCI controllers get disabled, EHCI
  * must know about it, too! */
-#define FD_UHCI4	(1 << 11)
-#define FD_UHCI34	((1 << 10) | FD_UHCI4)
-#define FD_UHCI234	((1 <<  9) | FD_UHCI3)
-#define FD_UHCI1234	((1 <<  8) | FD_UHCI2)
+#define ICH_DISABLE_UHCI(x)	(1 << (8 + (x)))
 
 #define FD_INTLAN	(1 <<  7)
 #define FD_ACMOD	(1 <<  6)

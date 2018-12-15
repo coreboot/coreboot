@@ -166,7 +166,7 @@ static void early_superio_config_w83627thg(void)
 
 static void rcba_config(void)
 {
-	u32 reg32;
+	u32 reg32 = 0;
 
 	/* Set up virtual channel 0 */
 
@@ -199,9 +199,6 @@ static void rcba_config(void)
 	int port_shuffle = 0;
 
 	/* Disable unused devices */
-	reg32 = FD_ACMOD|FD_ACAUD|FD_PATA;
-	reg32 |= FD_PCIE6|FD_PCIE5|FD_PCIE4;
-
 	if (read_option(ethernet1, 0) != 0) {
 		printk(BIOS_DEBUG, "Disabling ethernet adapter 1.\n");
 		reg32 |= FD_PCIE1;

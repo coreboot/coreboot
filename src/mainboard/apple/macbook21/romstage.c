@@ -167,9 +167,7 @@ static void rcba_config(void)
 	RCBA8(OIC) = 0x03;
 
 	/* Disable unused devices */
-	RCBA32(FD) = FD_PCIE6 | FD_PCIE5 | FD_PCIE4 | FD_PCIE3 | FD_INTLAN
-		| FD_ACMOD | FD_ACAUD;
-	RCBA32(FD) |= (1 << 0);	/* Required. */
+	RCBA32(FD) |= FD_INTLAN;
 
 	/* Set up I/O Trap #0 for 0xfe00 (SMIC) */
 
@@ -217,7 +215,6 @@ static void early_ich7_init(void)
 	reg32 &= ~(3 << 0);
 	reg32 |= (1 << 0);
 	RCBA32(0x3430) = reg32;
-	RCBA32(FD) |= (1 << 0);
 	RCBA16(0x0200) = 0x2008;
 	RCBA8(0x2027) = 0x0d;
 	RCBA16(0x3e08) |= (1 << 7);

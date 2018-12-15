@@ -75,10 +75,6 @@ static void rcba_config(void)
 
 	/* Enable IOAPIC */
 	RCBA8(OIC) = 0x03;
-
-	RCBA32(FD) = FD_PCIE6 | FD_PCIE5 | FD_PCIE4 | FD_PCIE3 | FD_ACMOD
-		| FD_ACAUD | FD_PATA;
-	RCBA32(FD) |= 1;
 }
 
 void mainboard_romstage_entry(unsigned long bist)

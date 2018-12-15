@@ -62,7 +62,7 @@ static void soc_core_init(struct device *cpu)
 		enable_turbo();
 
 	/* Set virtualization based on Kconfig option */
-	set_vmx();
+	set_vmx_and_lock();
 
 	/* Set core MSRs */
 	reg_script_run(core_msr_script);

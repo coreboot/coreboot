@@ -296,7 +296,7 @@ static void model_1067x_init(struct device *cpu)
 	init_timer();
 
 	/* Set virtualization based on Kconfig option */
-	set_vmx();
+	set_vmx_and_lock();
 
 	/* Configure C States */
 	configure_c_states(quad);

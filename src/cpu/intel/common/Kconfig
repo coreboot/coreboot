@@ -7,9 +7,8 @@ config ENABLE_VMX
 	bool "Enable VMX for virtualization"
 	default y
 
-config SET_VMX_LOCK_BIT
-	bool "Set lock bit after configuring VMX"
-	depends on ENABLE_VMX
+config SET_IA32_FC_LOCK_BIT
+	bool "Set IA32_FEATURE_CONTROL lock bit"
 	default y
 	help
 	  Although the Intel manual says you must set the lock bit in addition

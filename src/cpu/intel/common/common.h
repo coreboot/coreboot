@@ -15,7 +15,9 @@
 #ifndef _CPU_INTEL_COMMON_H
 #define _CPU_INTEL_COMMON_H
 
-void set_vmx(void);
+void set_vmx_and_lock(void);
+void set_feature_ctrl_vmx(void);
+void set_feature_ctrl_lock(void);
 
 /*
  * Init CPPC block with MSRs for Intel Enhanced Speed Step Technology.

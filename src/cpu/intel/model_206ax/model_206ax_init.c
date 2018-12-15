@@ -556,7 +556,7 @@ static void model_206ax_init(struct device *cpu)
 	setup_lapic();
 
 	/* Set virtualization based on Kconfig option */
-	set_vmx();
+	set_vmx_and_lock();
 
 	/* Configure C States */
 	configure_c_states();

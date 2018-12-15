@@ -333,7 +333,7 @@ static void model_2065x_init(struct device *cpu)
 	setup_lapic();
 
 	/* Set virtualization based on Kconfig option */
-	set_vmx();
+	set_vmx_and_lock();
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();

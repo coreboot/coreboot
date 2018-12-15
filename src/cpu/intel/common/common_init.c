@@ -21,12 +21,17 @@
 #include <cpu/x86/msr.h>
 #include "common.h"
 
-void set_vmx(void)
+void set_vmx_and_lock(void)
+{
+	set_feature_ctrl_vmx();
+	set_feature_ctrl_lock();
+}
+
+void set_feature_ctrl_vmx(void)
 {
 	msr_t msr;
 	uint32_t feature_flag;
 	int enable = IS_ENABLED(CONFIG_ENABLE_VMX);
-	int lock = IS_ENABLED(CONFIG_SET_VMX_LOCK_BIT);
 
 	feature_flag = cpu_get_feature_flags_ecx();
 	/* Check that the VMX is supported before reading or writing the MSR. */
@@ -38,10 +43,10 @@ void set_vmx(void)
 	msr = rdmsr(IA32_FEATURE_CONTROL);
 
 	if (msr.lo & (1 << 0)) {
-		printk(BIOS_ERR, "VMX is locked, so %s will do nothing\n",
+		printk(BIOS_ERR, "IA32_FEATURE_CONTROL is locked, so %s will do nothing\n",
 			__func__);
-		/* VMX locked. If we set it again we get an illegal
-		 * instruction
+		/* IA32_FEATURE_CONTROL locked. If we set it again we get an
+		 * illegal instruction
 		 */
 		return;
 	}
@@ -59,14 +64,32 @@ void set_vmx(void)
 
 	wrmsr(IA32_FEATURE_CONTROL, msr);
 
+	printk(BIOS_DEBUG, "VMX status: %s\n",
+		enable ? "enabled" : "disabled");
+}
+void set_feature_ctrl_lock(void)
+{
+	msr_t msr;
+	int lock = IS_ENABLED(CONFIG_SET_IA32_FC_LOCK_BIT);
+
+	msr = rdmsr(IA32_FEATURE_CONTROL);
+
+	if (msr.lo & (1 << 0)) {
+		printk(BIOS_ERR, "IA32_FEATURE_CONTROL is locked, so %s will do nothing\n",
+			__func__);
+		/* IA32_FEATURE_CONTROL locked. If we set it again we get an
+		 * illegal instruction
+		 */
+		return;
+	}
+
 	if (lock) {
 		/* Set lock bit */
 		msr.lo |= (1 << 0);
 		wrmsr(IA32_FEATURE_CONTROL, msr);
 	}
 
-	printk(BIOS_DEBUG, "VMX status: %s, %s\n",
-		enable ? "enabled" : "disabled",
+	printk(BIOS_DEBUG, "IA32_FEATURE_CONTROL status: %s\n",
 		lock ? "locked" : "unlocked");
 }
 

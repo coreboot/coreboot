@@ -13,8 +13,17 @@
  * GNU General Public License for more details.
  */
 
+#include <baseboard/variants.h>
+#include <soc/cnl_memcfg_init.h>
 #include <soc/romstage.h>
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
+	const struct spd_info spd = {
+		.spd_by_index = true,
+		.spd_spec.spd_index = variant_memory_sku(),
+	};
+
+	cannonlake_memcfg_init(&memupd->FspmConfig,
+			variant_memory_params(), &spd);
 }

@@ -1,3 +1,4 @@
+##
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2018 Intel Corporation.
@@ -12,18 +13,22 @@
 ## GNU General Public License for more details.
 ##
 
-SPD_SOURCES = samsung_dimm_K4A4G165WE-BCRC-4GB	# 0b000
-SPD_SOURCES += empty_ddr4	# 0b001
-SPD_SOURCES += empty_ddr4	# 0b010
-SPD_SOURCES += empty_ddr4	# 0b011
-SPD_SOURCES += empty_ddr4	# 0b100
-SPD_SOURCES += hynix_dimm_H5AN8G6NCJR-VKC-8GB	# 0b101
+SPD_BIN = $(obj)/spd.bin
 
-bootblock-y += gpio.c
+ifeq ($(SPD_SOURCES),)
+	SPD_DEPS := $(error SPD_SOURCES is not set. Variant must provide this)
+else
+	SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.hex)
+endif
 
-romstage-y += gpio.c
-romstage-y += memory.c
+# Include spd ROM data
+$(SPD_BIN): $(SPD_DEPS)
+	for f in $+; \
+	  do for c in $$(cat $$f | grep -v ^#); \
+	    do printf $$(printf '\%o' 0x$$c); \
+	  done; \
+	done > $@
 
-ramstage-y += gpio.c
-
-verstage-y += gpio.c
+cbfs-files-y += spd.bin
+spd.bin-file := $(SPD_BIN)
+spd.bin-type := spd

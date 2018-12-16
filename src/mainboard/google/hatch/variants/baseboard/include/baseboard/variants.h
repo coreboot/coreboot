@@ -26,7 +26,10 @@ const struct pad_config *variant_gpio_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
 
 /* Return memory SKU for the board. */
-size_t variant_memory_sku(void);
+int variant_memory_sku(void);
+
+/* Return board specific memory configuration */
+const struct cnl_mb_cfg *variant_memory_params(void);
 
 /* Return ChromeOS gpio table and fill in number of entries. */
 const struct cros_gpio *variant_cros_gpios(size_t *num);

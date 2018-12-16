@@ -272,12 +272,6 @@ int southbridge_detect_s3_resume(void);
  * Not all features might be disabled on
  * all chipsets. Esp. ICH-7U is picky.
  */
-#define FD_PCIE6	(1 << 21)
-#define FD_PCIE5	(1 << 20)
-#define FD_PCIE4	(1 << 19)
-#define FD_PCIE3	(1 << 18)
-#define FD_PCIE2	(1 << 17)
-#define FD_PCIE1	(1 << 16)
 #define ICH_DISABLE_PCIE(x)	(1 << (16 + (x)))
 #define FD_EHCI		(1 << 15)
 #define FD_LPCB		(1 << 14)

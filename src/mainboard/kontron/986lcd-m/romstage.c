@@ -165,8 +165,6 @@ static void early_superio_config_w83627thg(void)
 
 static void rcba_config(void)
 {
-	u32 reg32 = 0;
-
 	/* Set up virtual channel 0 */
 
 	/* Device 1f interrupt pin register */
@@ -183,50 +181,6 @@ static void rcba_config(void)
 
 	/* Enable IOAPIC */
 	RCBA8(OIC) = 0x03;
-
-	/* Now, this is a bit ugly. As per PCI specification, function 0 of a
-	 * device always has to be implemented. So disabling ethernet port 1
-	 * would essentially disable all three ethernet ports of the mainboard.
-	 * It's possible to rename the ports to achieve compatibility to the
-	 * PCI spec but this will confuse all (static!) tables containing
-	 * interrupt routing information.
-	 * To avoid this, we enable (unused) port 6 and swap it with port 1
-	 * in the case that ethernet port 1 is disabled. Since no devices
-	 * are connected to that port, we don't have to worry about interrupt
-	 * routing.
-	 */
-	int port_shuffle = 0;
-
-	/* Disable unused devices */
-	if (read_option(ethernet1, 0) != 0) {
-		printk(BIOS_DEBUG, "Disabling ethernet adapter 1.\n");
-		reg32 |= FD_PCIE1;
-	}
-	if (read_option(ethernet2, 0) != 0) {
-		printk(BIOS_DEBUG, "Disabling ethernet adapter 2.\n");
-		reg32 |= FD_PCIE2;
-	} else {
-		if (reg32 & FD_PCIE1)
-			port_shuffle = 1;
-	}
-	if (read_option(ethernet3, 0) != 0) {
-		printk(BIOS_DEBUG, "Disabling ethernet adapter 3.\n");
-		reg32 |= FD_PCIE3;
-	} else {
-		if (reg32 & FD_PCIE1)
-			port_shuffle = 1;
-	}
-
-	if (port_shuffle) {
-		/* Enable PCIE6 again */
-		reg32 &= ~FD_PCIE6;
-		/* Swap PCIE6 and PCIE1 */
-		RCBA32(RPFN) = 0x00043215;
-	}
-
-	reg32 |= 1;
-
-	RCBA32(FD) = reg32;
 
 	/* Enable PCIe Root Port Clock Gate */
 
@@ -271,7 +225,6 @@ static void early_ich7_init(void)
 	reg32 &= ~(3 << 0);
 	reg32 |= (1 << 0);
 	RCBA32(0x3430) = reg32;
-	RCBA32(FD) |= (1 << 0);
 	RCBA16(0x0200) = 0x2008;
 	RCBA8(0x2027) = 0x0d;
 	RCBA16(0x3e08) |= (1 << 7);

@@ -13,8 +13,10 @@
  * GNU General Public License for more details.
  */
 
+#include <string.h>
 #include <types.h>
 #include <device/device.h>
+#include <device/pci_def.h>
 #include <console/console.h>
 #include <drivers/intel/gma/int15.h>
 #include <pc80/mc146818rtc.h>
@@ -157,6 +159,32 @@ static void mainboard_enable(struct device *dev)
 	hwm_setup();
 }
 
+static void mainboard_init(void *chip_info)
+{
+	int i;
+	struct device *dev;
+
+	for (i = 1; i <= 3; i++) {
+		int ethernet_disable = 0;
+		char cmos_option_name[] = "ethernetx";
+		snprintf(cmos_option_name, sizeof(cmos_option_name),
+			 "ethernet%01d", i);
+		get_option(&ethernet_disable, cmos_option_name);
+		if (!ethernet_disable)
+			continue;
+		printk(BIOS_DEBUG, "Disabling Ethernet NIC #%d\n", i);
+		dev = dev_find_slot(0, PCI_DEVFN(28, i - 1));
+		if (dev == NULL) {
+			printk(BIOS_ERR,
+			       "Disabling Ethernet NIC: Cannot find 00:1c.%d!\n",
+			       i - 1);
+			continue;
+		}
+		dev->enabled = 0;
+	}
+}
+
 struct chip_operations mainboard_ops = {
+	.init = mainboard_init,
 	.enable_dev = mainboard_enable,
 };

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +50,7 @@ typedef struct {
 	u32	scc_bar0[3];
 	u32	lpe_bar0;
 
-	/* BAR 0 */
+	/* BAR 1 */
 	u32	lpss_bar1[14];
 	u32	scc_bar1[3];
 	u32	lpe_bar1;

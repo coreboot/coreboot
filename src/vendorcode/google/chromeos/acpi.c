@@ -14,9 +14,6 @@
  */
 
 #include <arch/acpigen.h>
-#if IS_ENABLED(CONFIG_GENERIC_GPIO_LIB)
-#include <gpio.h>
-#endif
 #include "chromeos.h"
 
 void chromeos_acpi_gpio_generate(const struct cros_gpio *gpios, size_t num)
@@ -31,12 +28,7 @@ void chromeos_acpi_gpio_generate(const struct cros_gpio *gpios, size_t num)
 		acpigen_write_package(4);
 		acpigen_write_integer(gpios[i].type);
 		acpigen_write_integer(gpios[i].polarity);
-		/* Get ACPI pin from GPIO library if available */
-#if IS_ENABLED(CONFIG_GENERIC_GPIO_LIB)
-			acpigen_write_integer(gpio_acpi_pin(gpios[i].gpio_num));
-#else
-			acpigen_write_integer(gpios[i].gpio_num);
-#endif
+		acpigen_write_integer(gpios[i].gpio_num);
 		acpigen_write_string(gpios[i].device);
 		acpigen_pop_len();
 	}

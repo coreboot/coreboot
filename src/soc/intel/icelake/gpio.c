@@ -32,34 +32,48 @@ static const struct reset_mapping rst_map_com0[] = {
 	{ .logical = PAD_CFG0_LOGICAL_RESET_RSMRST, .chipset = 3U << 30 },
 };
 
+/*
+ * The GPIO driver for Icelake on Windows/Linux expects 32 GPIOs per pad
+ * group, regardless of whether or not there is a physical pad for each
+ * exposed GPIO number.
+ *
+ * This results in the OS having a sparse GPIO map, and devices that need
+ * to export an ACPI GPIO must use the OS expected number.
+ *
+ * Not all pins are usable as GPIO and those groups do not have a pad base.
+ *
+ * This layout matches the Linux kernel pinctrl map for CNL-LP at:
+ * linux/drivers/pinctrl/intel/pinctrl-icelake.c
+ */
 static const struct pad_group icl_community0_groups[] = {
-	INTEL_GPP(GPP_G0, GPP_G0, GPP_G7),			/* GPP_G */
-	INTEL_GPP(GPP_G0, GPP_B0, GPP_B23),			/* GPP_B */
+	INTEL_GPP_BASE(GPP_G0, GPP_G0, GPP_G7, 0),		/* GPP_G */
+	INTEL_GPP_BASE(GPP_G0, GPP_B0, GPP_B23, 32),		/* GPP_B */
 	INTEL_GPP(GPP_G0, GPIO_RSVD_0, GPIO_RSVD_1),
-	INTEL_GPP(GPP_G0, GPP_A0, GPP_A23),			/* GPP_A */
+	INTEL_GPP_BASE(GPP_G0, GPP_A0, GPP_A23, 64),		/* GPP_A */
 };
 
 static const struct pad_group icl_community1_groups[] = {
-	INTEL_GPP(GPP_H0, GPP_H0, GPP_H23),			/* GPP_H */
-	INTEL_GPP(GPP_H0, GPP_D0, GPIO_RSVD_2),		/* GPP_D */
-	INTEL_GPP(GPP_H0, GPP_F0, GPP_F19),			/* GPP_F */
+	INTEL_GPP_BASE(GPP_H0, GPP_H0, GPP_H23, 96),		/* GPP_H */
+	INTEL_GPP_BASE(GPP_H0, GPP_D0, GPIO_RSVD_2, 128),	/* GPP_D */
+	INTEL_GPP_BASE(GPP_H0, GPP_F0, GPP_F19, 160),		/* GPP_F */
 };
 
+/* This community is not visible to the OS */
 static const struct pad_group icl_community2_groups[] = {
 	INTEL_GPP(GPD0, GPD0, GPD11),				/* GPD */
 };
 
 
 static const struct pad_group icl_community4_groups[] = {
-	INTEL_GPP(GPP_C0, GPP_C0, GPP_C23),			/* GPP_C */
-	INTEL_GPP(GPP_C0, GPP_E0, GPP_E23),			/* GPP_E */
+	INTEL_GPP_BASE(GPP_C0, GPP_C0, GPP_C23, 224),		/* GPP_C */
+	INTEL_GPP_BASE(GPP_C0, GPP_E0, GPP_E23, 256),		/* GPP_E */
 	INTEL_GPP(GPP_C0, GPIO_RSVD_3, GPIO_RSVD_8),
 };
 
 
 static const struct pad_group icl_community5_groups[] = {
-	INTEL_GPP(GPP_R0, GPP_R0, GPP_R7),			/* GPP_R */
-	INTEL_GPP(GPP_C0, GPP_S0, GPP_S7),			/* GPP_S */
+	INTEL_GPP_BASE(GPP_R0, GPP_R0, GPP_R7, 288),		/* GPP_R */
+	INTEL_GPP_BASE(GPP_C0, GPP_S0, GPP_S7, 320),		/* GPP_S */
 };
 
 static const struct pad_community icl_communities[] = {

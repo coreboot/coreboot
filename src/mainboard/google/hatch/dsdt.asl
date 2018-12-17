@@ -14,6 +14,9 @@
  */
 
 #include <arch/acpi.h>
+#include <variant/ec.h>
+#include <variant/gpio.h>
+
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
@@ -23,4 +26,37 @@ DefinitionBlock(
 	0x20110725	/* OEM revision */
 )
 {
+	/* Some generic macros */
+	#include <soc/intel/cannonlake/acpi/platform.asl>
+
+	/* global NVS and variables */
+	#include <soc/intel/cannonlake/acpi/globalnvs.asl>
+
+	/* CPU */
+	#include <cpu/intel/common/acpi/cpu.asl>
+
+	Scope (\_SB) {
+		Device (PCI0)
+		{
+			#include <soc/intel/cannonlake/acpi/northbridge.asl>
+			#include <soc/intel/cannonlake/acpi/southbridge.asl>
+		}
+	}
+
+#if IS_ENABLED(CONFIG_CHROMEOS)
+	/* Chrome OS specific */
+	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
+#endif
+
+	/* Chipset specific sleep states */
+	#include <soc/intel/cannonlake/acpi/sleepstates.asl>
+
+	/* Chrome OS Embedded Controller */
+	Scope (\_SB.PCI0.LPCB)
+	{
+		/* ACPI code for EC SuperIO functions */
+		#include <ec/google/chromeec/acpi/superio.asl>
+		/* ACPI code for EC functions */
+		#include <ec/google/chromeec/acpi/ec.asl>
+	}
 }

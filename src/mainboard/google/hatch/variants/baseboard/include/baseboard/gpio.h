@@ -32,4 +32,7 @@
 /* EC wake pin is LAN_WAKE# */
 #define GPE_EC_WAKE		GPE0_LAN_WAK
 
+/* eSPI virtual wire reporting */
+#define EC_SCI_GPI		GPE0_ESPI
+
 #endif /* BASEBOARD_GPIO_H */

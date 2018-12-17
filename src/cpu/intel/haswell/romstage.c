@@ -143,6 +143,8 @@ void romstage_common(const struct romstage_params *params)
 	#endif
 	}
 
+	haswell_unhide_peg();
+
 	setup_sdram_meminfo(params->pei_data);
 
 	romstage_handoff_init(wake_from_s3);

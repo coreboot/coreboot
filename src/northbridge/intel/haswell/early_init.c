@@ -19,8 +19,11 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <device/pci_def.h>
+#include <device/pci_ops.h>
 #include <elog.h>
 #include "haswell.h"
+
+static bool peg_hidden[3];
 
 static void haswell_setup_bars(void)
 {
@@ -45,13 +48,13 @@ static void haswell_setup_bars(void)
 	printk(BIOS_DEBUG, " done.\n");
 }
 
-static void haswell_setup_graphics(void)
+static void haswell_setup_igd(void)
 {
 	bool igd_enabled;
 	u16 ggc;
 	u8 reg8;
 
-	printk(BIOS_DEBUG, "Initializing Graphics...\n");
+	printk(BIOS_DEBUG, "Initializing IGD...\n");
 
 	igd_enabled = !!(pci_read_config32(PCI_DEV(0, 0, 0), DEVEN)
 			 & DEVEN_D2EN);
@@ -77,6 +80,66 @@ static void haswell_setup_graphics(void)
 	reg8 &= ~0x06;
 	reg8 |= 0x02;
 	pci_write_config8(PCI_DEV(0, 2, 0), MSAC, reg8);
+}
+
+static void start_peg2_link_training(const pci_devfn_t dev)
+{
+	u32 mask;
+
+	switch (dev) {
+	case PCI_DEV(0, 1, 2):
+		mask = DEVEN_D1F2EN;
+		break;
+	case PCI_DEV(0, 1, 1):
+		mask = DEVEN_D1F1EN;
+		break;
+	case PCI_DEV(0, 1, 0):
+		mask = DEVEN_D1F0EN;
+		break;
+	default:
+		printk(BIOS_ERR, "Link training tried on a non-PEG device!\n");
+		return;
+	}
+
+	pci_update_config32(dev, 0xc24, ~(1 << 16), 1 << 5);
+	printk(BIOS_DEBUG, "Started PEG1%d link training.\n", PCI_FUNC(dev));
+
+	/*
+	 * The PEG device is hidden while the MRC runs. This is because the
+	 * MRC makes configurations that are not ideal if it sees a VGA
+	 * device in a PEG slot, and it locks registers preventing changes
+	 * to these configurations.
+	 */
+	pci_update_config32(PCI_DEV(0, 0, 0), DEVEN, ~mask, 0);
+	peg_hidden[PCI_FUNC(dev)] = true;
+	printk(BIOS_DEBUG, "Temporarily hiding PEG1%d.\n", PCI_FUNC(dev));
+}
+
+void haswell_unhide_peg(void)
+{
+	u32 deven = pci_read_config32(PCI_DEV(0, 0, 0), DEVEN);
+
+	for (u8 fn = 0; fn <= 2; fn++) {
+		if (peg_hidden[fn]) {
+			deven |= DEVEN_D1F0EN >> fn;
+			peg_hidden[fn] = false;
+			printk(BIOS_DEBUG, "Unhiding PEG1%d.\n", fn);
+		}
+	}
+
+	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, deven);
+}
+
+static void haswell_setup_peg(void)
+{
+	u32 deven = pci_read_config32(PCI_DEV(0, 0, 0), DEVEN);
+
+	if (deven & DEVEN_D1F2EN)
+		start_peg2_link_training(PCI_DEV(0, 1, 2));
+	if (deven & DEVEN_D1F1EN)
+		start_peg2_link_training(PCI_DEV(0, 1, 1));
+	if (deven & DEVEN_D1F0EN)
+		start_peg2_link_training(PCI_DEV(0, 1, 0));
 }
 
 static void haswell_setup_misc(void)
@@ -140,7 +203,8 @@ void haswell_early_initialization(int chipset_type)
 	/* Setup IOMMU BARs */
 	haswell_setup_iommu();
 
-	haswell_setup_graphics();
+	haswell_setup_peg();
+	haswell_setup_igd();
 
 	haswell_setup_misc();
 }

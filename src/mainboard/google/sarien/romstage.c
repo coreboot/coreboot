@@ -37,6 +37,9 @@ static const struct cnl_mb_cfg memcfg = {
 
 	/* Disable Early Command Training */
 	.ect = 0,
+
+	/* Base on board design */
+	.vref_ca_config = 2,
 };
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)

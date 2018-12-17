@@ -19,6 +19,8 @@
 #include <commonlib/helpers.h>
 
 static const struct pad_config gpio_table[] = {
+	/* TRACKPAD_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_A21, NONE, PLTRST, LEVEL, INVERT),
 	/* H1_SLAVE_SPI_CS_L */
 	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),
 	/* H1_SLAVE_SPI_CLK */
@@ -27,6 +29,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
 	/* H1_SLAVE_SPI_MOSI_R */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
+	/* PCH_I2C_TRACKPAD_SDA */
+	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
+	/* PCH_I2C_TRACKPAD_SCL */
+	PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),
 	/* H1_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_C21, NONE, DEEP, LEVEL, INVERT),
 	/* PCH_WP_OD */

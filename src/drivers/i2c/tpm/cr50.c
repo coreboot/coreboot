@@ -456,10 +456,44 @@ int tpm_vendor_probe(unsigned int bus, uint32_t addr)
 	return 0;
 }
 
+static int cr50_i2c_probe(struct tpm_chip *chip, uint32_t *did_vid)
+{
+	int retries;
+
+	/*
+	 * 150 ms should be enough to synchronize with the TPM even under the
+	 * worst nested reset request conditions. In vast majority of cases
+	 * there would be no wait at all.
+	 */
+	printk(BIOS_INFO, "Probing TPM I2C: ");
+
+	for (retries = 15; retries > 0; retries--) {
+		int rc;
+
+		rc = cr50_i2c_read(chip, TPM_DID_VID(0), (uint8_t *)did_vid, 4);
+
+		/* Exit once DID and VID verified */
+		if (!rc && (*did_vid == CR50_DID_VID)) {
+			printk(BIOS_INFO, "done! DID_VID 0x%08x\n", *did_vid);
+			return 0;
+		}
+
+		/* TPM might be resetting, let's retry in a bit. */
+		mdelay(10);
+		printk(BIOS_INFO, ".");
+	}
+
+	/*
+	 * I2C reads failed, or the DID and VID didn't match
+	 */
+	printk(BIOS_ERR, "DID_VID 0x%08x not recognized\n", *did_vid);
+	return -1;
+}
+
 int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 {
 	struct tpm_inf_dev *tpm_dev = car_get_var_ptr(&g_tpm_dev);
-	uint32_t vendor;
+	uint32_t did_vid = 0;
 
 	if (dev_addr == 0) {
 		printk(BIOS_ERR, "%s: missing device address\n", __func__);
@@ -471,6 +505,9 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 
 	cr50_vendor_init(chip);
 
+	if (cr50_i2c_probe(chip, &did_vid))
+		return -1;
+
 	if (ENV_VERSTAGE || ENV_BOOTBLOCK)
 		if (process_reset(chip))
 			return -1;
@@ -478,17 +515,8 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 	if (claim_locality(chip))
 		return -1;
 
-	/* Read four bytes from DID_VID register */
-	if (cr50_i2c_read(chip, TPM_DID_VID(0), (uint8_t *)&vendor, 4) < 0)
-		return -1;
-
-	if (vendor != CR50_DID_VID) {
-		printk(BIOS_DEBUG, "Vendor ID 0x%08x not recognized\n", vendor);
-		return -1;
-	}
-
 	printk(BIOS_DEBUG, "cr50 TPM 2.0 (i2c %u:0x%02x id 0x%x)\n",
-	       bus, dev_addr, vendor >> 16);
+	       bus, dev_addr, did_vid >> 16);
 
 	chip->is_open = 1;
 	return 0;

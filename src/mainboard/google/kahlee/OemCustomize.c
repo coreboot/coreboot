@@ -38,7 +38,7 @@ static const PSO_ENTRY DDR4PlatformMemoryConfiguration[] = {
 				0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00),
 	PSO_END
 };
-/* TODO: Remove when no longer needed */
+/* Liara-specific 2T memory configuration */
 static const PSO_ENTRY DDR4LiaraMemoryConfiguration[] = {
 	DRAM_TECHNOLOGY(ANY_SOCKET, DDR4_TECHNOLOGY),
 	NUMBER_OF_DIMMS_SUPPORTED(ANY_SOCKET, ANY_CHANNEL, DIMMS_PER_CHANNEL),
@@ -58,7 +58,7 @@ static const PSO_ENTRY DDR4LiaraMemoryConfiguration[] = {
 
 void OemPostParams(AMD_POST_PARAMS *PostParams)
 {
-	if ((IS_ENABLED(CONFIG_BOARD_GOOGLE_LIARA)) && (board_id() <= 5))
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_LIARA))
 		PostParams->MemConfig.PlatformMemoryConfiguration =
 			(PSO_ENTRY *)DDR4LiaraMemoryConfiguration;
 	else

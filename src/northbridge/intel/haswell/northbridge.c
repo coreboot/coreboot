@@ -371,13 +371,15 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 			  IORESOURCE_STORED | IORESOURCE_RESERVE |
 			  IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
 
-	/* BGSM -> TOLUD */
-	resource = new_resource(dev, index++);
-	resource->base = mc_values[BGSM_REG];
-	resource->size = mc_values[TOLUD_REG] - resource->base;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-			  IORESOURCE_STORED | IORESOURCE_RESERVE |
-			  IORESOURCE_ASSIGNED;
+	/* BGSM -> TOLUD. If the IGD is disabled, BGSM can equal TOLUD */
+	if (mc_values[BGSM_REG] != mc_values[TOLUD_REG]) {
+		resource = new_resource(dev, index++);
+		resource->base = mc_values[BGSM_REG];
+		resource->size = mc_values[TOLUD_REG] - resource->base;
+		resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
+				  IORESOURCE_STORED | IORESOURCE_RESERVE |
+				  IORESOURCE_ASSIGNED;
+	}
 
 	/* 4GiB -> TOUUD */
 	base_k = 4096 * 1024; /* 4GiB */

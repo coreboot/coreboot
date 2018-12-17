@@ -67,9 +67,6 @@ facing towards the bottom of the board.
 
 ## Known issues
 
-- PCIe graphics is non-functional. The PCIe 16x slot doesn't work
-  with other devices, either.
-
 - The VGA port doesn't work until the OS reinitialises the display.
 
 - There is no automatic, OS-independent fan control. This is because
@@ -98,7 +95,7 @@ Please also see :doc:`../../northbridge/intel/haswell/known-issues`.
 - S3 suspend/resume
 - Gigabit Ethernet
 - integrated graphics
-- PCIe (but not the 16x slot, see [Known issues](#known-issues))
+- PCIe
 - SATA
 - PS/2 mouse
 - serial port

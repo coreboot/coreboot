@@ -238,6 +238,10 @@ void variant_devtree_update(void)
 	case SKU_1_SYNDRA:
 	case SKU_2_SYNDRA:
 	case SKU_3_SYNDRA:
+	case SKU_4_SYNDRA:
+	case SKU_5_SYNDRA:
+	case SKU_6_SYNDRA:
+	case SKU_7_SYNDRA:
 		pl2_id = PL2_ID_SONA_SYNDRA;
 	case SKU_0_VAYNE:
 	case SKU_1_VAYNE:

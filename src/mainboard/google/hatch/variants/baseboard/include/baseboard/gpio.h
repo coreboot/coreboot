@@ -28,4 +28,8 @@
 #define GPIO_MEM_CONFIG_2	GPP_F11
 #define GPIO_MEM_CONFIG_3	GPP_F22
 
+
+/* EC wake pin is LAN_WAKE# */
+#define GPE_EC_WAKE		GPE0_LAN_WAK
+
 #endif /* BASEBOARD_GPIO_H */

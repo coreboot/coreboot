@@ -127,9 +127,5 @@ void haswell_early_initialization(int chipset_type)
 	/* Setup IOMMU BARs */
 	haswell_setup_iommu();
 
-	/* Device Enable: IGD and Mini-HD Audio */
-	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN,
-			   DEVEN_D0EN | DEVEN_D2EN | DEVEN_D3EN);
-
 	haswell_setup_graphics();
 }

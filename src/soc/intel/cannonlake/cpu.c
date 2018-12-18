@@ -185,7 +185,7 @@ static void enable_pm_timer_emulation(void)
 	/* Set PM1 timer IO port and enable*/
 	msr.lo = (EMULATE_DELAY_VALUE << EMULATE_DELAY_OFFSET_VALUE) |
 			EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + PM1_TMR);
-	wrmsr(MSR_EMULATE_PM_TMR, msr);
+	wrmsr(MSR_EMULATE_PM_TIMER, msr);
 }
 
 /* All CPUs including BSP will run the following function. */

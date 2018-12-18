@@ -46,8 +46,8 @@ static inline void write_prmrr(struct smm_relocation_params *relo_params)
 {
 	printk(BIOS_DEBUG, "Writing PRMRR. base = 0x%08x, mask=0x%08x\n",
 			relo_params->prmrr_base.lo, relo_params->prmrr_mask.lo);
-	wrmsr(PRMRRphysBase_MSR, relo_params->prmrr_base);
-	wrmsr(PRMRRphysMask_MSR, relo_params->prmrr_mask);
+	wrmsr(MSR_PRMRR_PHYS_BASE, relo_params->prmrr_base);
+	wrmsr(MSR_PRMRR_PHYS_MASK, relo_params->prmrr_mask);
 }
 
 static void update_save_state(int cpu, uintptr_t curr_smbase,

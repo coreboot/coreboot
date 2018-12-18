@@ -17,7 +17,7 @@
 #define _BROADWELL_MSR_H_
 
 #define MSR_PIC_MSG_CONTROL		0x2e
-#define CORE_THREAD_COUNT_MSR		0x35
+#define MSR_CORE_THREAD_COUNT		0x35
 #define MSR_PLATFORM_INFO		0xce
 #define  PLATFORM_INFO_SET_TDP		(1 << 29)
 #define MSR_PKG_CST_CONFIG_CONTROL	0xe2
@@ -33,12 +33,12 @@
 #define  MISC_PWR_MGMT_EIST_HW_DIS	(1 << 0)
 #define MSR_TURBO_RATIO_LIMIT		0x1ad
 #define MSR_TEMPERATURE_TARGET		0x1a2
-#define EMRRphysBase_MSR		0x1f4
-#define EMRRphysMask_MSR		0x1f5
+#define MSR_PRMRR_PHYS_BASE		0x1f4
+#define MSR_PRMRR_PHYS_MASK		0x1f5
 #define MSR_POWER_CTL			0x1fc
 #define MSR_LT_LOCK_MEMORY		0x2e7
-#define UNCORE_EMRRphysBase_MSR		0x2f4
-#define UNCORE_EMRRphysMask_MSR		0x2f5
+#define MSR_UNCORE_PRMRR_PHYS_BASE	0x2f4
+#define MSR_UNCORE_PRMRR_PHYS_MASK	0x2f5
 #define SMM_FEATURE_CONTROL_MSR		0x4e0
 #define  SMM_CPU_SAVE_EN		(1 << 1)
 

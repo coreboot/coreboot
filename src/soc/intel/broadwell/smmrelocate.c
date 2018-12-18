@@ -45,8 +45,8 @@ static inline void write_emrr(struct smm_relocation_params *relo_params)
 {
 	printk(BIOS_DEBUG, "Writing EMRR. base = 0x%08x, mask=0x%08x\n",
 	       relo_params->emrr_base.lo, relo_params->emrr_mask.lo);
-	wrmsr(EMRRphysBase_MSR, relo_params->emrr_base);
-	wrmsr(EMRRphysMask_MSR, relo_params->emrr_mask);
+	wrmsr(MSR_PRMRR_PHYS_BASE, relo_params->emrr_base);
+	wrmsr(MSR_PRMRR_PHYS_MASK, relo_params->emrr_mask);
 }
 
 static inline void write_uncore_emrr(struct smm_relocation_params *relo_params)
@@ -55,8 +55,8 @@ static inline void write_uncore_emrr(struct smm_relocation_params *relo_params)
 	       "Writing UNCORE_EMRR. base = 0x%08x, mask=0x%08x\n",
 	       relo_params->uncore_emrr_base.lo,
 	       relo_params->uncore_emrr_mask.lo);
-	wrmsr(UNCORE_EMRRphysBase_MSR, relo_params->uncore_emrr_base);
-	wrmsr(UNCORE_EMRRphysMask_MSR, relo_params->uncore_emrr_mask);
+	wrmsr(MSR_UNCORE_PRMRR_PHYS_BASE, relo_params->uncore_emrr_base);
+	wrmsr(MSR_UNCORE_PRMRR_PHYS_MASK, relo_params->uncore_emrr_mask);
 }
 
 static void update_save_state(int cpu, uintptr_t curr_smbase,

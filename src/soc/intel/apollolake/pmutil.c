@@ -210,7 +210,7 @@ void enable_pm_timer_emulation(void)
 	msr.hi = (3579545ULL << 32) / CTC_FREQ;
 	/* Set PM1 timer IO port and enable */
 	msr.lo = EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + R_ACPI_PM1_TMR);
-	wrmsr(MSR_EMULATE_PM_TMR, msr);
+	wrmsr(MSR_EMULATE_PM_TIMER, msr);
 }
 
 static int rtc_failed(uint32_t gen_pmcon1)

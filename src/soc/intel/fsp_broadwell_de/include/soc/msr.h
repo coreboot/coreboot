@@ -35,7 +35,7 @@
 /* MTRR_CAP_MSR bits */
 #define SMRR_SUPPORTED		(1 << 11)
 #define PRMRR_SUPPORTED		(1 << 12)
-#define PRMRRphysBase_MSR	0x1f4
-#define PRMRRphysMask_MSR	0x1f5
+#define MSR_PRMRR_PHYS_BASE	0x1f4
+#define MSR_PRMRR_PHYS_MASK	0x1f5
 
 #endif /* _SOC_MSR_H_ */

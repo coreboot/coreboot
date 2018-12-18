@@ -83,7 +83,7 @@ void prmrr_core_configure(void)
 	if (!soc_sgx_enabled() || !is_sgx_supported())
 		return;
 
-	msr = rdmsr(PRMRR_PHYS_MASK_MSR);
+	msr = rdmsr(MSR_PRMRR_PHYS_MASK);
 	/* If it is locked don't attempt to write PRMRR MSRs. */
 	if (msr.lo & PRMRR_PHYS_MASK_LOCK)
 		return;
@@ -109,19 +109,19 @@ void prmrr_core_configure(void)
 	 * - Clear the valid bit in PRMRR mask MSR
 	 * - Lock PRMRR MASK MSR */
 	prmrr_base.data32.lo |= MTRR_TYPE_WRBACK;
-	wrmsr(PRMRR_PHYS_BASE_MSR, (msr_t) {.lo = prmrr_base.data32.lo,
+	wrmsr(MSR_PRMRR_PHYS_BASE, (msr_t) {.lo = prmrr_base.data32.lo,
 					.hi = prmrr_base.data32.hi});
 	prmrr_mask.data32.lo &= ~PRMRR_PHYS_MASK_VALID;
 	prmrr_mask.data32.lo |= PRMRR_PHYS_MASK_LOCK;
-	wrmsr(PRMRR_PHYS_MASK_MSR, (msr_t) {.lo = prmrr_mask.data32.lo,
+	wrmsr(MSR_PRMRR_PHYS_MASK, (msr_t) {.lo = prmrr_mask.data32.lo,
 					.hi = prmrr_mask.data32.hi});
 }
 
 static int is_prmrr_set(void)
 {
 	msr_t prmrr_base, prmrr_mask;
-	prmrr_base = rdmsr(PRMRR_PHYS_BASE_MSR);
-	prmrr_mask = rdmsr(PRMRR_PHYS_MASK_MSR);
+	prmrr_base = rdmsr(MSR_PRMRR_PHYS_BASE);
+	prmrr_mask = rdmsr(MSR_PRMRR_PHYS_MASK);
 
 	/* If PRMRR base is zero and PRMRR mask is locked
 	 * then PRMRR is not set */
@@ -191,7 +191,7 @@ static void activate_sgx(void)
 static int is_prmrr_approved(void)
 {
 	msr_t msr;
-	msr = rdmsr(PRMRR_PHYS_MASK_MSR);
+	msr = rdmsr(MSR_PRMRR_PHYS_MASK);
 	if (msr.lo & PRMRR_PHYS_MASK_VALID) {
 		printk(BIOS_INFO, "SGX: MCHECK approved SGX PRMRR\n");
 		return 1;

@@ -1,4 +1,31 @@
 chip soc/intel/cannonlake
+
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route. i.e. If this route changes then the affected GPE
+	# offset bits also need to be changed.
+	# DW1 is used by:
+	#   - GPP_C21 - H1_PCH_INT_ODL
+	register "gpe0_dw0" = "PMC_GPP_A"
+	register "gpe0_dw1" = "PMC_GPP_C"
+	register "gpe0_dw2" = "PMC_GPP_D"
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+	}"
+
 	device domain 0 on
 		device pci 00.0 off end # Host Bridge
 		device pci 02.0 off end # Integrated Graphics Device
@@ -39,7 +66,14 @@ chip soc/intel/cannonlake
 		device pci 1d.4 off end # PCI Express Port 13 (x4)
 		device pci 1e.0 off end # UART #0
 		device pci 1e.1 off end # UART #1
-		device pci 1e.2 off end # GSPI #0
+		device pci 1e.2 on
+			chip drivers/spi/acpi
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "compat_string" = ""google,cr50""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_C21_IRQ)"
+				device spi 0 on end
+			end
+		end # GSPI #0
 		device pci 1e.3 off end # GSPI #1
 		device pci 1f.0 off end # LPC/eSPI
 		device pci 1f.1 off end # P2SB

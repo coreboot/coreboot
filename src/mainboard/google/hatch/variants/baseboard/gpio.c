@@ -19,6 +19,16 @@
 #include <commonlib/helpers.h>
 
 static const struct pad_config gpio_table[] = {
+	/* H1_SLAVE_SPI_CS_L */
+	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),
+	/* H1_SLAVE_SPI_CLK */
+	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF1),
+	/* H1_SLAVE_SPI_MISO_R */
+	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
+	/* H1_SLAVE_SPI_MOSI_R */
+	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
+	/* H1_PCH_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_C21, NONE, DEEP, LEVEL, INVERT),
 };
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)
@@ -29,6 +39,16 @@ const struct pad_config *__weak variant_gpio_table(size_t *num)
 
 /* GPIOs needed prior to ramstage. */
 static const struct pad_config early_gpio_table[] = {
+	/* H1_SLAVE_SPI_CS_L */
+	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),
+	/* H1_SLAVE_SPI_CLK */
+	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF1),
+	/* H1_SLAVE_SPI_MISO_R */
+	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
+	/* H1_SLAVE_SPI_MOSI_R */
+	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
+	/* H1_PCH_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_C21, NONE, DEEP, LEVEL, INVERT),
 };
 
 const struct pad_config *__weak variant_early_gpio_table(size_t *num)

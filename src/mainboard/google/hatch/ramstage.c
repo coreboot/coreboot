@@ -24,7 +24,7 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	const struct pad_config *gpio_table;
 	size_t num_gpios;
 
-	gpio_table = variant_base_gpio_table(&num_gpios);
+	gpio_table = variant_gpio_table(&num_gpios);
 	gpio_configure_pads(gpio_table, num_gpios);
 }
 

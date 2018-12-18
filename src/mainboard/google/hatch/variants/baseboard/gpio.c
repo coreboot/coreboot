@@ -29,6 +29,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
 	/* H1_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_C21, NONE, DEEP, LEVEL, INVERT),
+	/* PCH_WP_OD */
+	PAD_CFG_GPI(GPP_C20, NONE, DEEP),
+	/* EC_IN_RW_OD */
+	PAD_CFG_GPI(GPP_C22, NONE, DEEP),
 };
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)

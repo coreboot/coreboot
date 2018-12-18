@@ -18,4 +18,8 @@
 
 #include <soc/gpio.h>
 
+#define GPIO_EC_IN_RW	        GPP_C22
+
+#define GPIO_PCH_WP	        GPP_C20
+
 #endif /* BASEBOARD_GPIO_H */

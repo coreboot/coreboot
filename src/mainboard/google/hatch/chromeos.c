@@ -29,29 +29,15 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
 		{-1, ACTIVE_HIGH, 0, "power"},
 		{-1, ACTIVE_HIGH, gfx_get_init_done(), "oprom"},
-		{-1, ACTIVE_HIGH, 0, "EC in RW"},
+		{GPIO_EC_IN_RW, ACTIVE_HIGH, gpio_get(GPIO_EC_IN_RW),
+		 "EC in RW"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 
-static int cros_get_gpio_value(int type)
+int get_write_protect_state(void)
 {
-	const struct cros_gpio *cros_gpios;
-	size_t i, num_gpios = 0;
-
-	cros_gpios = variant_cros_gpios(&num_gpios);
-
-	for (i = 0; i < num_gpios; i++) {
-		const struct cros_gpio *gpio = &cros_gpios[i];
-		if (gpio->type == type) {
-			int state = gpio_get(gpio->gpio_num);
-			if (gpio->polarity == CROS_GPIO_ACTIVE_LOW)
-				return !state;
-			else
-				return state;
-		}
-	}
-	return 0;
+	return gpio_get(GPIO_PCH_WP);
 }
 
 void mainboard_chromeos_acpi_generate(void)
@@ -62,19 +48,4 @@ void mainboard_chromeos_acpi_generate(void)
 	cros_gpios = variant_cros_gpios(&num_gpios);
 
 	chromeos_acpi_gpio_generate(cros_gpios, num_gpios);
-}
-
-int get_write_protect_state(void)
-{
-	return cros_get_gpio_value(CROS_GPIO_WP);
-}
-
-int get_recovery_mode_switch(void)
-{
-	return cros_get_gpio_value(CROS_GPIO_REC);
-}
-
-int get_lid_switch(void)
-{
-	return 1;
 }

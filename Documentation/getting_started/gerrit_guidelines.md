@@ -159,15 +159,19 @@ this is by marking in the commit message that it’s not ready until X. The
 commit message can be updated easily when it’s ready to be pushed.
 Examples of this are "WIP: title" or "[NEEDS_TEST]: title".  Another way to
 mark the patch as not ready would be to give it a -1 or -2 review, but
-isn't as obvious as the commit message. These patches can also be pushed as
-drafts as shown in the next guideline.
+isn't as obvious as the commit message. These patches can also be pushed with
+the wip flag:
+	git push origin HEAD:refs/for/master%wip
 
 * When pushing patches that are not for submission, these should be marked
 as such. This can be done in the title ‘[DONOTSUBMIT]’, or can be pushed as
-draft commits, so that only explicitly added reviewers will see them. These
+private changes, so that only explicitly added reviewers will see them. These
 sorts of patches are frequently posted as ideas or RFCs for the community
-to look at. To push a draft, use the command:
-        git push origin HEAD:refs/for/master%private,wip
+to look at. To push a private change, use the command:
+        git push origin HEAD:refs/for/master%private
+
+* Multiple push options can be combined:
+        git push origin HEAD:refs/for/master%private,wip,topic=experiment
 
 * Respond to anyone who has taken the time to review your patches, even if
 it's just to say that you disagree. While it may seem annoying to address a

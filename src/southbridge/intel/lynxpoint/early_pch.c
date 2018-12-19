@@ -104,8 +104,6 @@ int early_pch_init(const void *gpio_map,
 {
 	int wake_from_s3;
 
-	pch_enable_lpc();
-
 	pch_enable_bars();
 
 #if CONFIG(INTEL_LYNXPOINT_LP)
@@ -113,9 +111,6 @@ int early_pch_init(const void *gpio_map,
 #else
 	setup_pch_gpios(gpio_map);
 #endif
-
-	mainboard_config_superio();
-
 	pch_generic_setup();
 
 	/* Enable SMBus for reading SPDs. */

@@ -79,4 +79,7 @@ void bootblock_early_southbridge_init(void)
 
 	/* Enable upper 128bytes of CMOS */
 	RCBA32(RC) = (1 << 2);
+
+	pch_enable_lpc();
+	mainboard_config_superio();
 }

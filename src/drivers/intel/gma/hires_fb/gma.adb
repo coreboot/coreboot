@@ -60,8 +60,8 @@ is
 
       success : boolean;
 
-      min_h : pos16 := pos16'last;
-      min_v : pos16 := pos16'last;
+      min_h : pos32 := pos32'last;
+      min_v : pos32 := pos32'last;
    begin
       lightup_ok := 0;
 
@@ -75,8 +75,8 @@ is
             for i in Pipe_Index loop
                exit when configs (i).Port = Disabled;
 
-               min_h := pos16'min (min_h, configs (i).Mode.H_Visible);
-               min_v := pos16'min (min_v, configs (i).Mode.V_Visible);
+               min_h := pos32'min (min_h, configs (i).Mode.H_Visible);
+               min_v := pos32'min (min_v, configs (i).Mode.V_Visible);
             end loop;
 
             fb := configs (Primary).Framebuffer;

@@ -133,7 +133,7 @@ static void init_cpus(void *unused)
 	struct device *dev = dev_find_path(NULL, DEVICE_PATH_CPU_CLUSTER);
 	assert(dev != NULL);
 
-	if (chip_get_fsp_mp_init())
+	if (CONFIG(USE_INTEL_FSP_MP_INIT))
 		return;
 
 	microcode_patch = intel_microcode_find();
@@ -151,7 +151,7 @@ static void wrapper_x86_setup_mtrrs(void *unused)
 /* Ensure to re-program all MTRRs based on DRAM resource settings */
 static void post_cpus_init(void *unused)
 {
-	if (chip_get_fsp_mp_init())
+	if (CONFIG(USE_INTEL_FSP_MP_INIT))
 		return;
 
 	if (mp_run_on_all_cpus(&wrapper_x86_setup_mtrrs, NULL, 1000) < 0)

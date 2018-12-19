@@ -27,6 +27,7 @@
 #include <intelblocks/chip.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
+#include <intelblocks/mp_init.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <romstage_handoff.h>
@@ -422,7 +423,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchSirqEnable = config->serirq_mode != SERIRQ_OFF;
 	params->PchSirqMode = config->serirq_mode == SERIRQ_CONTINUOUS;
 
-	params->CpuConfig.Bits.SkipMpInit = !chip_get_fsp_mp_init();
+	params->CpuConfig.Bits.SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
 
 	for (i = 0; i < ARRAY_SIZE(config->i2c_voltage); i++)
 		params->SerialIoI2cVoltage[i] = config->i2c_voltage[i];

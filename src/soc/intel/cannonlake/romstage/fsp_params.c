@@ -64,8 +64,9 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 		m_cfg->VmxEnable = 0;
 	else
 		m_cfg->VmxEnable = config->VmxEnable;
+
 #if CONFIG(SOC_INTEL_COMMON_CANNONLAKE_BASE)
-	m_cfg->SkipMpInit = !chip_get_fsp_mp_init();
+	m_cfg->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
 #endif
 
 	/* Disable CPU Flex Ratio and SaGv in recovery mode */

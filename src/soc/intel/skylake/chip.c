@@ -197,7 +197,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->SerialIrqConfigStartFramePulse =
 		config->SerialIrqConfigStartFramePulse;
 
-	params->SkipMpInit = !chip_get_fsp_mp_init();
+	params->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
 
 	for (i = 0; i < ARRAY_SIZE(config->i2c_voltage); i++)
 		params->SerialIoI2cVoltage[i] = config->i2c_voltage[i];

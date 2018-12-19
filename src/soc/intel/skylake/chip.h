@@ -152,7 +152,12 @@ struct soc_intel_skylake_config {
 	 * 2 = FixedHigh
 	 * 3 = Enabled
 	*/
-	u8 SaGv;
+	enum {
+		SaGv_Disabled,
+		SaGv_FixedLow,
+		SaGv_FixedHigh,
+		SaGv_Enabled,
+	} SaGv;
 
 	/* Enable/disable Rank Margin Tool */
 	u8 Rmt;

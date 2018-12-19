@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corporation.
+ * Copyright (C) 2016-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 /* Mobile Board Id 0x00 - 0xFF */
 #define BOARD_ID_SKL_A0_RVP3	0x04
 #define BOARD_ID_SKL_RVP7	0x0B
+#define BOARD_ID_KBL_RVP11	0x44
 
 /* 60-6F reserved for KBL RVPs */
 #define BOARD_ID_KBL_LPDDR3_RVP3	0x60
@@ -31,6 +32,12 @@
  * Returns board information (board id[15:8] and
  * Fab info[7:0]) on success and < 0 on error
  */
+int get_ec_boardinfo(void);
+
+/* Return spd index */
+int get_spd_index(void);
+
+/* Board id[15:8] */
 int get_board_id(void);
 
 #endif /* _MAINBOARD_BOARD_ID_H_ */

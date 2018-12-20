@@ -24,6 +24,7 @@
 
 asmlinkage void car_stage_entry(void)
 {
+	struct postcar_frame pcf;
 	i82801ix_early_init();
 	console_init();
 
@@ -31,5 +32,18 @@ asmlinkage void car_stage_entry(void)
 
 	timestamp_add_now(TS_START_ROMSTAGE);
 
-	run_ramstage();
+	/**
+	 * The LZMA decoder needs about 4 KiB stack.
+	 * Leave 1 KiB stack for general postcar code.
+	 */
+	if (postcar_frame_init(&pcf, 5 * KiB))
+		die("Unable to initialize postcar frame.\n");
+
+	/**
+	 * Run postcar to tear down CAR and load relocatable ramstage.
+	 * There's no CAR on qemu, but for educational purposes and
+	 * testing the postcar stage is used on qemu, too.
+	 */
+
+	run_postcar_phase(&pcf);
 }

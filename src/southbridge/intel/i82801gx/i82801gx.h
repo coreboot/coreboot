@@ -84,6 +84,9 @@ int southbridge_detect_s3_resume(void);
 #define   GPI_IS_SCI		0x02
 #define   GPI_IS_NMI		0x03
 
+#define FDVCT			0xe4
+#define   PCIE_4_PORTS_MAX	(1 << 7)
+
 /* GEN_PMCON_3 bits */
 #define RTC_BATTERY_DEAD	(1 << 2)
 #define RTC_POWER_FAILED	(1 << 1)

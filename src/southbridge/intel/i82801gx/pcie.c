@@ -18,6 +18,36 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include "i82801gx.h"
+
+/* Low Power variant has 6 root ports. */
+#define NUM_ROOT_PORTS 6
+
+struct root_port_config {
+	/* RPFN is a write-once register so keep a copy until it is written */
+	u32 orig_rpfn;
+	u32 new_rpfn;
+	int num_ports;
+	struct device *ports[NUM_ROOT_PORTS];
+};
+
+static struct root_port_config rpc;
+
+static inline int root_port_is_first(struct device *dev)
+{
+	return PCI_FUNC(dev->path.pci.devfn) == 0;
+}
+
+static inline int root_port_is_last(struct device *dev)
+{
+	return PCI_FUNC(dev->path.pci.devfn) == (rpc.num_ports - 1);
+}
+
+/* Root ports are numbered 1..N in the documentation. */
+static inline int root_port_number(struct device *dev)
+{
+	return PCI_FUNC(dev->path.pci.devfn) + 1;
+}
 
 static void pci_init(struct device *dev)
 {
@@ -89,6 +119,139 @@ static void pci_init(struct device *dev)
 	pci_write_config16(dev, 0x1e, reg16);
 }
 
+static int get_num_ports(void)
+{
+	struct device *dev = pcidev_on_root(31, 0);
+	if (pci_read_config32(dev, FDVCT) & PCIE_4_PORTS_MAX)
+		return 4;
+	else
+		return 6;
+}
+
+static void root_port_init_config(struct device *dev)
+{
+	int rp;
+
+	if (root_port_is_first(dev)) {
+		rpc.orig_rpfn = RCBA32(RPFN);
+		rpc.new_rpfn = rpc.orig_rpfn;
+		rpc.num_ports = get_num_ports();
+	}
+
+	rp = root_port_number(dev);
+	if (rp > rpc.num_ports) {
+		printk(BIOS_ERR, "Found Root Port %d, expecting %d\n",
+		       rp, rpc.num_ports);
+		return;
+	}
+
+	/* Cache pci device. */
+	rpc.ports[rp - 1] = dev;
+}
+
+/* Update devicetree with new Root Port function number assignment */
+static void ich_pcie_device_set_func(int index, int pci_func)
+{
+	struct device *dev;
+	unsigned int new_devfn;
+
+	dev = rpc.ports[index];
+
+	/* Set the new PCI function field for this Root Port. */
+	rpc.new_rpfn &= ~RPFN_FNMASK(index);
+	rpc.new_rpfn |= RPFN_FNSET(index, pci_func);
+
+	/* Determine the new devfn for this port */
+	new_devfn = PCI_DEVFN(ICH_PCIE_DEV_SLOT, pci_func);
+
+	if (dev->path.pci.devfn != new_devfn) {
+		printk(BIOS_DEBUG,
+		       "ICH: PCIe map %02x.%1x -> %02x.%1x\n",
+		       PCI_SLOT(dev->path.pci.devfn),
+		       PCI_FUNC(dev->path.pci.devfn),
+		       PCI_SLOT(new_devfn), PCI_FUNC(new_devfn));
+
+		dev->path.pci.devfn = new_devfn;
+	}
+}
+
+static void root_port_commit_config(struct device *dev)
+{
+	int i;
+	int coalesce = 0;
+
+	if (dev->chip_info != NULL) {
+		struct southbridge_intel_i82801gx_config *config
+			= dev->chip_info;
+		coalesce = config->pcie_port_coalesce;
+	}
+
+	if (!rpc.ports[0]->enabled)
+		coalesce = 1;
+
+	for (i = 0; i < rpc.num_ports; i++) {
+		struct device *pcie_dev;
+
+		pcie_dev = rpc.ports[i];
+
+		if (dev == NULL) {
+			printk(BIOS_ERR, "Root Port %d device is NULL?\n",
+			       i + 1);
+			continue;
+		}
+
+		if (pcie_dev->enabled)
+			continue;
+
+		printk(BIOS_DEBUG, "%s: Disabling device\n",
+		       dev_path(pcie_dev));
+
+		/* Disable this device if possible */
+		i82801gx_enable(pcie_dev);
+	}
+
+	if (coalesce) {
+		int current_func;
+
+		/* For all Root Ports N enabled ports get assigned the lower
+		 * PCI function number. The disabled ones get upper PCI
+		 * function numbers. */
+		current_func = 0;
+		for (i = 0; i < rpc.num_ports; i++) {
+			if (!rpc.ports[i]->enabled)
+				continue;
+			ich_pcie_device_set_func(i, current_func);
+			current_func++;
+		}
+
+		/* Allocate the disabled devices' PCI function number. */
+		for (i = 0; i < rpc.num_ports; i++) {
+			if (rpc.ports[i]->enabled)
+				continue;
+			ich_pcie_device_set_func(i, current_func);
+			current_func++;
+		}
+	}
+
+	printk(BIOS_SPEW, "ICH: RPFN 0x%08x -> 0x%08x\n",
+	       rpc.orig_rpfn, rpc.new_rpfn);
+	RCBA32(RPFN) = rpc.new_rpfn;
+}
+
+static void ich_pcie_enable(struct device *dev)
+{
+	/* Add this device to the root port config structure. */
+	root_port_init_config(dev);
+
+	/*
+	 * When processing the last PCIe root port we can now
+	 * update the Root Port Function Number and Hide register.
+	 */
+	if (root_port_is_last(dev))
+		root_port_commit_config(dev);
+}
+
+
 static void pcie_set_subsystem(struct device *dev, unsigned int vendor,
 			       unsigned int device)
 {
@@ -111,6 +274,7 @@ static struct device_operations device_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_bus_enable_resources,
 	.init			= pci_init,
+	.enable			= ich_pcie_enable,
 	.scan_bus		= pci_scan_bridge,
 	.ops_pci		= &pci_ops,
 };

@@ -68,6 +68,9 @@ struct southbridge_intel_i82801gx_config {
 	uint32_t sata_ahci;
 	uint32_t sata_ports_implemented;
 
+	/* Enable linear PCIe Root Port function numbers starting at zero */
+	uint8_t pcie_port_coalesce;
+
 	int c4onc3_enable:1;
 	int docking_supported:1;
 	int p_cnt_throttling_supported:1;

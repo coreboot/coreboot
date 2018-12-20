@@ -7,7 +7,6 @@ source src/cpu/amd/socket_ASB2/Kconfig
 source src/cpu/amd/socket_F_1207/Kconfig
 
 source src/cpu/amd/family_10h-family_15h/Kconfig
-source src/cpu/amd/geode_lx/Kconfig
 
 source src/cpu/amd/agesa/Kconfig
 source src/cpu/amd/pi/Kconfig

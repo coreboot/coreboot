@@ -38,4 +38,6 @@ CPPFLAGS_common += -I$(src)/soc/intel/fsp_broadwell_de/include
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_broadwell_de/fsp
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_broadwell_de/
 
+cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_5066x/microcode.bin
+
 endif # ifeq ($(CONFIG_SOC_INTEL_FSP_BROADWELL_DE),y)

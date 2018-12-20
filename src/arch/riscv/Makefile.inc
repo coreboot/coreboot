@@ -26,10 +26,21 @@ check-ramstage-overlap-regions += stack
 endif
 
 riscv_flags = -I$(src)/arch/riscv/
+
+ifeq ($(CONFIG_ARCH_RISCV_RV64),y)
+_rv_flags += -D__riscv -D__riscv_xlen=64 -D__riscv_flen=64
+else
+ifeq ($(CONFIG_ARCH_RISCV_RV32),y)
+_rv_flags += -D__riscv -D__riscv_xlen=32 -D__riscv_flen=32
+else
+$(error "You need to select ARCH_RISCV_RV64 or ARCH_RISCV_RV32")
+endif
+endif
+
 ifeq ($(CCC_ANALYZER_OUTPUT_FORMAT),)
 riscv_flags += -march=$(CONFIG_RISCV_ARCH) -mabi=$(CONFIG_RISCV_ABI) -mcmodel=$(CONFIG_RISCV_CODEMODEL)
 else
-riscv_flags += -D__riscv -D__riscv_xlen=64 -D__riscv_flen=64
+riscv_flags += $(_rv_flags)
 endif
 
 riscv_asm_flags = -march=$(CONFIG_RISCV_ARCH) -mabi=$(CONFIG_RISCV_ABI)
@@ -56,7 +67,7 @@ bootblock-y += virtual_memory.c
 bootblock-y += boot.c
 bootblock-y += smp.c
 bootblock-y += misc.c
-bootblock-y += pmp.c
+bootblock-$(ARCH_RISCV_PMP) += pmp.c
 bootblock-y += \
 	$(top)/src/lib/memchr.c \
 	$(top)/src/lib/memcmp.c \
@@ -85,7 +96,7 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_RISCV),y)
 romstage-y += boot.c
 romstage-y += stages.c
 romstage-y += misc.c
-romstage-y += pmp.c
+romstage-$(ARCH_RISCV_PMP) += pmp.c
 romstage-y += smp.c
 romstage-y += \
 	$(top)/src/lib/memchr.c \
@@ -127,7 +138,7 @@ ramstage-y += smp.c
 ramstage-y += boot.c
 ramstage-y += tables.c
 ramstage-y += payload.S
-ramstage-y += pmp.c
+ramstage-$(ARCH_RISCV_PMP) += pmp.c
 ramstage-y += \
 	$(top)/src/lib/memchr.c \
 	$(top)/src/lib/memcmp.c \

@@ -11,6 +11,44 @@ config RISCV_ABI
 config RISCV_CODEMODEL
 	string
 
+config ARCH_RISCV_M_DISABLED
+	bool
+
+config ARCH_RISCV_M
+	# Whether a SOC implements M mode.
+	# M mode is the most privileged mode, it is
+	# the equivalent in some ways of x86 SMM mode
+	# save that in M mode it is impossible to turn
+	# on paging.
+	# While the spec requires it, there is at least
+	# one implementation that will not have it due
+	# to security concerns.
+	bool
+	default n if ARCH_RISCV_M_DISABLED
+	default y
+
+config ARCH_RISCV_S
+	# S (supervisor) mode is for kernels. It is optional.
+	bool
+	default n
+
+config ARCH_RISCV_U
+	# U (user) mode is for programs.
+	bool
+	default n
+
+config ARCH_RISCV_RV64
+	bool
+	default n
+
+config ARCH_RISCV_RV32
+	bool
+	default n
+
+config ARCH_RISCV_PMP
+	bool
+	default n
+
 config ARCH_BOOTBLOCK_RISCV
 	bool
 	default n

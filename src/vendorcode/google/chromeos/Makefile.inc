@@ -24,5 +24,6 @@ ramstage-$(CONFIG_USE_SAR) += sar.c
 ramstage-$(CONFIG_TPM_CR50) += cr50_enable_update.c
 ifeq ($(CONFIG_ARCH_MIPS),)
 bootblock-y += watchdog.c
+verstage-y += watchdog.c
 ramstage-y += watchdog.c
 endif

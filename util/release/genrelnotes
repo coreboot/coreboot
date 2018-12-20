@@ -39,8 +39,7 @@ then
 fi
 
 # Try to verify that the repo is clean before losing state.
-if ! git diff-index --quiet --cached HEAD 2>/dev/null || \
-	[ "$(git diff origin/master --shortstat 2>/dev/null | tail -n1)" != "" ]; then
+if ! git diff-index --quiet --cached HEAD 2>/dev/null; then
 	echo "ERROR: repo is not clean.  Exiting."
 	exit 1
 fi

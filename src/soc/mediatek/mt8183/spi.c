@@ -42,69 +42,71 @@ struct mtk_spi_bus spi_bus[SPI_BUS_NUMBER] = {
 	}
 };
 
-void mtk_spi_set_gpio_pinmux(unsigned int bus,
-			     enum spi_pad_mask pad_select)
-{
-	switch (bus) {
-	case 0:
-		if (pad_select == SPI_PAD0_MASK) {
-			gpio_set_mode(GPIO(SPI_MI), PAD_SPI_MI_FUNC_SPI0_MI);
-			gpio_set_mode(GPIO(SPI_CSB), PAD_SPI_CSB_FUNC_SPI0_CSB);
-			gpio_set_mode(GPIO(SPI_MO), PAD_SPI_MO_FUNC_SPI0_MO);
-			gpio_set_mode(GPIO(SPI_CLK), PAD_SPI_CLK_FUNC_SPI0_CLK);
-		}
-		break;
-	case 1:
-		if (pad_select == SPI_PAD0_MASK) {
-			gpio_set_mode(GPIO(SPI1_MI),
-					PAD_SPI1_MI_FUNC_SPI1_A_MI);
-			gpio_set_mode(GPIO(SPI1_CSB),
-					PAD_SPI1_CSB_FUNC_SPI1_A_CSB);
-			gpio_set_mode(GPIO(SPI1_MO),
-					PAD_SPI1_MO_FUNC_SPI1_A_MO);
-			gpio_set_mode(GPIO(SPI1_CLK),
-					PAD_SPI1_CLK_FUNC_SPI1_A_CLK);
-		}
-		if (pad_select == SPI_PAD1_MASK) {
-			gpio_set_mode(GPIO(EINT7), PAD_EINT7_FUNC_SPI1_B_MI);
-			gpio_set_mode(GPIO(EINT8), PAD_EINT8_FUNC_SPI1_B_CSB);
-			gpio_set_mode(GPIO(EINT9), PAD_EINT9_FUNC_SPI1_B_MO);
-			gpio_set_mode(GPIO(EINT10), PAD_EINT10_FUNC_SPI1_B_CLK);
-		}
-		break;
-	case 2:
-		if (pad_select == SPI_PAD0_MASK) {
-			gpio_set_mode(GPIO(KPCOL1), PAD_KPCOL1_FUNC_SPI2_MI);
-			gpio_set_mode(GPIO(EINT0), PAD_EINT0_FUNC_SPI2_CSB);
-			gpio_set_mode(GPIO(EINT1), PAD_EINT1_FUNC_SPI2_MO);
-			gpio_set_mode(GPIO(EINT2), PAD_EINT2_FUNC_SPI2_CLK);
-		}
-		break;
-	case 3:
-		if (pad_select == SPI_PAD0_MASK) {
-			gpio_set_mode(GPIO(DPI_D8), PAD_DPI_D8_FUNC_SPI3_MI);
-			gpio_set_mode(GPIO(DPI_D9), PAD_DPI_D9_FUNC_SPI3_CSB);
-			gpio_set_mode(GPIO(DPI_D10), PAD_DPI_D10_FUNC_SPI3_MO);
-			gpio_set_mode(GPIO(DPI_D11), PAD_DPI_D11_FUNC_SPI3_CLK);
-		}
-		break;
-	case 4:
-		if (pad_select == SPI_PAD0_MASK) {
-			gpio_set_mode(GPIO(DPI_D4), PAD_DPI_D4_FUNC_SPI4_MI);
-			gpio_set_mode(GPIO(DPI_D5), PAD_DPI_D5_FUNC_SPI4_CSB);
-			gpio_set_mode(GPIO(DPI_D6), PAD_DPI_D6_FUNC_SPI4_MO);
-			gpio_set_mode(GPIO(DPI_D7), PAD_DPI_D7_FUNC_SPI4_CLK);
-		}
-		break;
-	case 5:
-		if (pad_select == SPI_PAD0_MASK) {
-			gpio_set_mode(GPIO(DPI_D0), PAD_DPI_D0_FUNC_SPI5_MI);
-			gpio_set_mode(GPIO(DPI_D1), PAD_DPI_D1_FUNC_SPI5_CSB);
-			gpio_set_mode(GPIO(DPI_D2), PAD_DPI_D2_FUNC_SPI5_MO);
-			gpio_set_mode(GPIO(DPI_D3), PAD_DPI_D3_FUNC_SPI5_CLK);
-		}
-		break;
+struct pad_func {
+	u8 pin_id;
+	u8 func;
+};
+
+#define PAD_FUNC(name, func) {PAD_##name##_ID, PAD_##name##_FUNC_##func}
+
+static const struct pad_func pad0_funcs[SPI_BUS_NUMBER][4] = {
+	{
+		PAD_FUNC(SPI_MI, SPI0_MI),
+		PAD_FUNC(SPI_CSB, SPI0_CSB),
+		PAD_FUNC(SPI_MO, SPI0_MO),
+		PAD_FUNC(SPI_CLK, SPI0_CLK),
+	},
+	{
+		PAD_FUNC(SPI1_MI, SPI1_A_MI),
+		PAD_FUNC(SPI1_CSB, SPI1_A_CSB),
+		PAD_FUNC(SPI1_MO, SPI1_A_MO),
+		PAD_FUNC(SPI1_CLK, SPI1_A_CLK),
+	},
+	{
+		PAD_FUNC(KPCOL1, SPI2_MI),
+		PAD_FUNC(EINT0, SPI2_CSB),
+		PAD_FUNC(EINT1, SPI2_MO),
+		PAD_FUNC(EINT2, SPI2_CLK),
+	},
+	{
+		PAD_FUNC(DPI_D8, SPI3_MI),
+		PAD_FUNC(DPI_D9, SPI3_CSB),
+		PAD_FUNC(DPI_D10, SPI3_MO),
+		PAD_FUNC(DPI_D11, SPI3_CLK),
+	},
+	{
+		PAD_FUNC(DPI_D4, SPI4_MI),
+		PAD_FUNC(DPI_D5, SPI4_CSB),
+		PAD_FUNC(DPI_D6, SPI4_MO),
+		PAD_FUNC(DPI_D7, SPI4_CLK),
+	},
+	{
+		PAD_FUNC(DPI_D0, SPI5_MI),
+		PAD_FUNC(DPI_D1, SPI5_CSB),
+		PAD_FUNC(DPI_D2, SPI5_MO),
+		PAD_FUNC(DPI_D3, SPI5_CLK),
 	}
+};
+
+static const struct pad_func bus1_pad1_funcs[4] = {
+	PAD_FUNC(EINT7, SPI1_B_MI),
+	PAD_FUNC(EINT8, SPI1_B_CSB),
+	PAD_FUNC(EINT9, SPI1_B_MO),
+	PAD_FUNC(EINT10, SPI1_B_CLK),
+};
+
+void mtk_spi_set_gpio_pinmux(unsigned int bus, enum spi_pad_mask pad_select)
+{
+	assert(bus < SPI_BUS_NUMBER);
+	const struct pad_func *ptr;
+	if (pad_select == SPI_PAD0_MASK) {
+		ptr = pad0_funcs[bus];
+	} else {
+		assert(bus == 1 && pad_select == SPI_PAD1_MASK);
+		ptr = bus1_pad1_funcs;
+	}
+	for (int i = 0; i < 4; i++)
+		gpio_set_mode((gpio_t){.id = ptr[i].pin_id}, ptr[i].func);
 }
 
 void mtk_spi_set_timing(struct mtk_spi_regs *regs, u32 sck_ticks, u32 cs_ticks)

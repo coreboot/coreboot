@@ -135,7 +135,7 @@ static unsigned convert_to_from_absolute_top_aligned(
  * "top-aligned" offsets from the top of the image region. Works in either
  * direction: pass in one type of offset and receive the other type.
  * N.B. A top-aligned offset is always a positive number, and should not be
- * confused with a top-aliged *address*, which is its arithmetic inverse. */
+ * confused with a top-aligned *address*, which is its arithmetic inverse. */
 static unsigned convert_to_from_top_aligned(const struct buffer *region,
 								unsigned offset)
 {

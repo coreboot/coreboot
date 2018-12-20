@@ -16,7 +16,6 @@
 
 #include "hostbridge.asl"
 #include "../iomap.h"
-#include <southbridge/intel/i82801gx/i82801gx.h>
 
 /* PCI Device Resource Consumption */
 Device (PDRC)

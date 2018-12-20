@@ -16,6 +16,8 @@
 
 /* Intel 82801Gx support */
 
+#include "../i82801gx.h"
+
 Scope(\)
 {
 	// IO-Trap at 0x800. This is the ACPI->SMI communication interface.

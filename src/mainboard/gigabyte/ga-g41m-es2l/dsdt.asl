@@ -14,8 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <southbridge/intel/i82801gx/i82801gx.h>
-
 #include <arch/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",

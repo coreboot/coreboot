@@ -1,4 +1,0 @@
-boot_option=Fallback
-ECC_memory=Disable
-power_on_after_fail=Disable
-debug_level=Debug

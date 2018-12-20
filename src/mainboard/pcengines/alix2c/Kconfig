@@ -1,9 +1,0 @@
-if BOARD_PCENGINES_ALIX2C
-
-# Dummy for abuild
-
-config MAINBOARD_PART_NUMBER
-	string
-	default "ALIX.2C"
-
-endif

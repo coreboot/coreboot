@@ -62,6 +62,6 @@ tar --sort=name --mtime="$tstamp" --owner=coreboot:1000 --group=coreboot:1000 --
 tar --sort=name --mtime="$tstamp" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore -cvf - "coreboot-${VERSION_NAME}/3rdparty/blobs" "coreboot-${VERSION_NAME}/3rdparty/fsp" |xz -9 > "coreboot-blobs-${VERSION_NAME}.tar.xz"
 
 if [ -n "${GPG_KEY_ID}" ]; then
-	gpg2 --armor --local-user "$GPG_KEY_ID" --output "coreboot-${VERSION_NAME}.tar.xz.sig" --detach-sig "coreboot-${VERSION_NAME}.tar.xz"
-	gpg2 --armor --local-user "$GPG_KEY_ID" --output "coreboot-blobs-${VERSION_NAME}.tar.xz.sig" --detach-sig "coreboot-blobs-${VERSION_NAME}.tar.xz"
+	gpg --armor --local-user "$GPG_KEY_ID" --output "coreboot-${VERSION_NAME}.tar.xz.sig" --detach-sig "coreboot-${VERSION_NAME}.tar.xz"
+	gpg --armor --local-user "$GPG_KEY_ID" --output "coreboot-blobs-${VERSION_NAME}.tar.xz.sig" --detach-sig "coreboot-blobs-${VERSION_NAME}.tar.xz"
 fi

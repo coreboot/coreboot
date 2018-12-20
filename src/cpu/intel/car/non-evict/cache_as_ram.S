@@ -128,10 +128,10 @@ addrsize_set_high:
 	movl	%eax, %cr0
 
 	/* enable the 'no eviction' mode */
-	movl    $NoEvictMod_MSR, %ecx
+	movl	$NoEvictMod_MSR, %ecx
 	rdmsr
-	orl     $1, %eax
-	andl    $~2, %eax
+	orl	$1, %eax
+	andl	$~2, %eax
 	wrmsr
 
 	/* Clear the cache memory region. This will also fill up the cache. */
@@ -142,9 +142,9 @@ addrsize_set_high:
 	rep	stosl
 
 	/* enable the 'no eviction run' state */
-	movl    $NoEvictMod_MSR, %ecx
+	movl	$NoEvictMod_MSR, %ecx
 	rdmsr
-	orl     $3, %eax
+	orl	$3, %eax
 	wrmsr
 
 	post_code(0x26)

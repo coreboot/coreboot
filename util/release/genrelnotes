@@ -410,7 +410,7 @@ printf "Submodules\n----------\n" >> "$LOGFILE"
 for module in $(git submodule --quiet foreach pwd); do
 	name=$(basename "$module")
 	# shellcheck disable=SC2001
-	path=$(echo "$module" | sed 's|.*coreboot||')
+	path=${module#$PWD}
 	old_version=$(echo "${name^^}_OLD_VERSION" | sed 's/-/_/g')
 	new_version=$(echo "${name^^}_NEW_VERSION" | sed 's/-/_/g')
 	get_log_submodule "${!old_version}" "${!new_version}" "$path"

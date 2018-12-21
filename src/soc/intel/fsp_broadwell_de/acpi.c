@@ -307,8 +307,6 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->x_gpe1_blk.access_size     = 0;
 	fadt->x_gpe1_blk.addrl           = fadt->gpe1_blk;
 	fadt->x_gpe1_blk.addrh           = 0x00;
-
-	header->checksum = acpi_checksum((void *) fadt, sizeof(acpi_fadt_t));
 }
 
 static unsigned long acpi_fill_dmar(unsigned long current)

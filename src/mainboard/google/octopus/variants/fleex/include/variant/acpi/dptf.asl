@@ -26,8 +26,6 @@
 #define DPTF_TSR2_PASSIVE	53
 #define DPTF_TSR2_CRITICAL	127
 
-#define DPTF_ENABLE_CHARGER
-
 /* Charger performance states, board-specific values from charger and EC */
 Name (CHPS, Package () {
 	Package () { 0, 0, 0, 0, 255, 0xBB8, "mA", 0 },	/* 3A (MAX) */
@@ -44,10 +42,8 @@ Name (DTRT, Package () {
 	/* CPU Effect on Temp Sensor 1 */
 	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR1, 100, 150, 0, 0, 0, 0 },
 
-#ifdef DPTF_ENABLE_CHARGER
-	/* Charger Effect on Temp Sensor 2 */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR2, 200, 300, 0, 0, 0, 0 },
-#endif
+	/* CPU Effect on Temp Sensor 2 */
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR2, 200, 300, 0, 0, 0, 0 },
 })
 
 Name (MPPC, Package ()
@@ -55,7 +51,7 @@ Name (MPPC, Package ()
 	0x2,		/* Revision */
 	Package () {	/* Power Limit 1 */
 		0,	/* PowerLimitIndex, 0 for Power Limit 1 */
-		3000,	/* PowerLimitMinimum */
+		4500,	/* PowerLimitMinimum */
 		10000,	/* PowerLimitMaximum */
 		1000,	/* TimeWindowMinimum */
 		1000,	/* TimeWindowMaximum */

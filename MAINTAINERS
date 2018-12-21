@@ -378,6 +378,11 @@ F:	src/mainboard/siemens/mc_apl1/
 F:	src/mainboard/siemens/mc_bdx1/
 F:	src/mainboard/siemens/mc_tcu3/
 
+SUPERMICRO X10SLM+-F MAINBOARD
+M:	Tristan Corrick <tristan@corrick.kiwi>
+S:	Maintained
+F:	src/mainboard/supermicro/x10slm-f/
+
 AMD FAMILY10H & FAMILY15H (NON-AGESA) CPUS & NORTHBRIDGE
 M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
 S:	Supported

@@ -1,0 +1,2 @@
+config BOARD_SUPERMICRO_X10SLM_PLUS_F
+	bool "X10SLM+-F"

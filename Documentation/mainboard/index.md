@@ -66,3 +66,7 @@ The boards in this section are not real mainboards, but emulators.
 ## SiFive
 
 - [SiFive HiFive Unleashed](sifive/hifive-unleashed.md)
+
+## Supermicro
+
+- [X10SLM+-F](supermicro/x10slm-f.md)

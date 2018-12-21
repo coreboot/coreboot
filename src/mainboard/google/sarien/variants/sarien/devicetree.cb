@@ -95,11 +95,6 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcUsage[1]" = "9"
 	register "PcieClkSrcClkReq[1]" = "1"
 
-	# PCIe port 12 for M.2 3042
-	register "PcieRpEnable[11]" = "1"
-	register "PcieClkSrcUsage[0]" = "11"
-	register "PcieClkSrcClkReq[0]" = "0"
-
 	# PCIe port 13 for M.2 2280 SSD
 	register "PcieRpEnable[12]" = "1"
 	register "PcieClkSrcUsage[2]" = "12"
@@ -259,7 +254,7 @@ chip soc/intel/cannonlake
 		device pci 1d.0 on  end # PCI Express Port 9
 		device pci 1d.1 on  end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
-		device pci 1d.3 on  end # PCI Express Port 12
+		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1d.4 on  end # PCI Express Port 13 (x4)
 		device pci 1e.0 off end # UART #0
 		device pci 1e.1 off end # UART #1

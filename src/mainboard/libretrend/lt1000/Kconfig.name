@@ -1,0 +1,2 @@
+config BOARD_LIBRETREND_LT1000
+	bool "LT1000"

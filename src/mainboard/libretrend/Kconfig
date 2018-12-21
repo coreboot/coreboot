@@ -1,0 +1,16 @@
+if VENDOR_LIBRETREND
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/libretrend/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/libretrend/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	string "Mainboard Vendor"
+	default "Libretrend"
+
+endif # VENDOR_LIBRETREND

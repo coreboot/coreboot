@@ -4,23 +4,9 @@ This page describes how to run coreboot on the [ASRock H81M-HDS].
 
 ## Required proprietary blobs
 
-This board currently requires a proprietary blob in order to initialise
-the RAM and a few other components. The blob largely consists of Intel's
-Memory Reference Code (shortened to mrc), and is just under 200 KiB
-in size. It is also known as a system agent binary. Unfortunately,
-it is not currently possible to distribute this as part of coreboot.
-However, the mrc can be obtained from a Haswell Chromebook firmware
-image, and you might find one online. The mrc from a ChromeOS image can
-be extracted with the following command. If extracting from a "standard"
-coreboot image, omit `-r RO_SECTION`.
-
-```bash
-cbfstool coreboot.rom extract -f mrc.bin -n mrc.bin -r RO_SECTION
+```eval_rst
+Please see :doc:`../../northbridge/intel/haswell/mrc.bin`.
 ```
-
-Now, place mrc.bin in the root of the coreboot directory.
-Alternatively, place it anywhere you want, and set `MRC_FILE` to its
-location when building coreboot.
 
 ## Building coreboot
 

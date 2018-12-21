@@ -4,4 +4,5 @@ This section contains documentation about coreboot on specific Intel Northbridge
 
 ## Platforms
 
+- [Haswell](haswell/index.md)
 - [Sandy Bridge](sandybridge/index.md)

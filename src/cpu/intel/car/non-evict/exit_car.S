@@ -42,11 +42,11 @@ chipset_teardown_car:
 	wrmsr
 
 	/* Disable the no eviction run state */
-	movl    $NoEvictMod_MSR, %ecx
+	movl	$NoEvictMod_MSR, %ecx
 	rdmsr
-	andl    $~2, %eax
+	andl	$~2, %eax
 	wrmsr
-	andl    $~1, %eax
+	andl	$~1, %eax
 	wrmsr
 
 	post_code(0x32)

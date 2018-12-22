@@ -1,5 +1,3 @@
-cpu_incs-y += $(src)/cpu/intel/car/non-evict/cache_as_ram.S
-
 romstage-y += ../../../../cpu/intel/car/romstage.c
 romstage-y += cpu.c
 romstage-y += pch.c

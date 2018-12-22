@@ -9,6 +9,13 @@ subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
 subdirs-y += ../../../cpu/intel/common
 
+bootblock-y += bootblock/cpu.c
+bootblock-y += bootblock/pch.c
+bootblock-y += bootblock/systemagent.c
+bootblock-y += ../../../cpu/intel/car/bootblock.c
+bootblock-y += ../../../cpu/intel/car/non-evict/cache_as_ram.S
+bootblock-y += ../../../cpu/x86/early_reset.S
+
 ramstage-y += acpi.c
 ramstage-y += adsp.c
 ramstage-y += chip.c
@@ -58,6 +65,7 @@ ramstage-y += stage_cache.c
 romstage-y += stage_cache.c
 postcar-y += stage_cache.c
 ramstage-y += systemagent.c
+bootblock-y += tsc_freq.c
 ramstage-y += tsc_freq.c
 romstage-y += tsc_freq.c
 smm-y      += tsc_freq.c

@@ -19,6 +19,7 @@
 #include <soc/pci_devs.h>
 #include <soc/rcba.h>
 #include <soc/spi.h>
+#include <cpu/intel/car/bootblock.h>
 
 /*
  * Enable Prefetching and Caching.
@@ -66,7 +67,7 @@ static void set_spi_speed(void)
 	SPIBAR8(SPIBAR_SSFC + 2) = ssfc;
 }
 
-static void bootblock_southbridge_init(void)
+void bootblock_early_southbridge_init(void)
 {
 	map_rcba();
 	enable_spi_prefetch();

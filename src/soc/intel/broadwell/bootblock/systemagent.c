@@ -16,8 +16,9 @@
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
+#include <cpu/intel/car/bootblock.h>
 
-static void bootblock_northbridge_init(void)
+void bootblock_early_northbridge_init(void)
 {
 	uint32_t reg;
 

@@ -16,6 +16,7 @@
 subdirs-y += spd
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
+verstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += lan.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c led.c

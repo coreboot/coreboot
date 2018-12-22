@@ -45,6 +45,8 @@ void raminit(struct pei_data *pei_data)
 	struct memory_info *mem_info;
 	pei_wrapper_entry_t entry;
 	int ret;
+	struct cbfsf f;
+	uint32_t type = CBFS_TYPE_MRC;
 
 	broadwell_fill_pei_data(pei_data);
 
@@ -77,7 +79,10 @@ void raminit(struct pei_data *pei_data)
 	}
 
 	/* Determine if mrc.bin is in the cbfs. */
-	entry = cbfs_boot_map_with_leak("mrc.bin", CBFS_TYPE_MRC, NULL);
+	if (cbfs_locate_file_in_region(&f, "COREBOOT", "mrc.bin", &type) < 0)
+		die("mrc.bin not found!");
+	/* We don't care about leaking the mapping */
+	entry = (pei_wrapper_entry_t)rdev_mmap_full(&f.data);
 	if (entry == NULL) {
 		printk(BIOS_DEBUG, "Couldn't find mrc.bin\n");
 		return;

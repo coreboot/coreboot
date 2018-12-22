@@ -77,13 +77,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	/* PCH Early Initialization */
 	pch_early_init();
 
-	/* Call into mainboard pre console init. Needed to enable serial port
-	   on IT8772 */
-	mainboard_pre_console_init();
-
-	/* Start console drivers */
-	console_init();
-
 	/* Get power state */
 	rp.power_state = fill_power_state();
 
@@ -125,5 +118,3 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	mainboard_post_raminit(&rp);
 }
-
-void __weak mainboard_pre_console_init(void) {}

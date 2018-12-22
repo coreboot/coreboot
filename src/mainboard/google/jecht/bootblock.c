@@ -14,28 +14,18 @@
  * GNU General Public License for more details.
  */
 
-#include <bootmode.h>
-#include <console/console.h>
-#include <string.h>
-#include <ec/google/chromeec/ec.h>
-#include <soc/pei_data.h>
-#include <soc/pei_wrapper.h>
-#include <soc/romstage.h>
+#include <bootblock_common.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8772f/it8772f.h>
-#include <mainboard/google/jecht/spd/spd.h>
 #include "onboard.h"
 
-
-void mainboard_pre_raminit(struct romstage_params *rp)
+void bootblock_mainboard_early_init(void)
 {
-	/* Fill out PEI DATA */
-	mainboard_fill_pei_data(&rp->pei_data);
-	mainboard_fill_spd_data(&rp->pei_data);
-}
+	/* Early SuperIO setup */
+	it8772f_ac_resume_southbridge(IT8772F_SUPERIO_DEV);
+	ite_kill_watchdog(IT8772F_GPIO_DEV);
+	ite_enable_serial(IT8772F_SERIAL_DEV, CONFIG_TTYS0_BASE);
 
-void mainboard_post_raminit(struct romstage_params *rp)
-{
-	if (CONFIG(CHROMEOS))
-		init_bootmode_straps();
+	/* Turn On Power LED */
+	set_power_led(LED_ON);
 }

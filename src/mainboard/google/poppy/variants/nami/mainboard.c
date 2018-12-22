@@ -205,6 +205,11 @@ const char *mainboard_vbt_filename(void)
 	case SKU_0_AKALI360:
 	case SKU_1_AKALI360:
 		return "vbt-akali.bin";
+	case SKU_0_BARD:
+	case SKU_1_BARD:
+	case SKU_2_BARD:
+	case SKU_3_BARD:
+		return "vbt-bard.bin";
 	default:
 		return "vbt.bin";
 		break;

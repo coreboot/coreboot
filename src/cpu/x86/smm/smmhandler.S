@@ -107,13 +107,13 @@ smm_handler_start:
 	ud2
 untampered_lapic:
 #endif
-	movw    $(smm_gdtptr16 - smm_handler_start + SMM_HANDLER_OFFSET), %bx
+	movw	$(smm_gdtptr16 - smm_handler_start + SMM_HANDLER_OFFSET), %bx
 	lgdtl	%cs:(%bx)
 
-	movl    %cr0, %eax
-	andl    $0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
-	orl     $0x60000001, %eax /* CD, NW, PE = 1 */
-	movl    %eax, %cr0
+	movl	%cr0, %eax
+	andl	$0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
+	orl	$0x60000001, %eax /* CD, NW, PE = 1 */
+	movl	%eax, %cr0
 
 	/* Enable protected mode */
 	ljmpl	$0x08, $1f
@@ -124,39 +124,39 @@ untampered_lapic:
 	wbinvd
 
 	/* Use flat data segment */
-	movw    $0x10, %ax
-	movw    %ax, %ds
-	movw    %ax, %es
-	movw    %ax, %ss
-	movw    %ax, %fs
-	movw    %ax, %gs
+	movw	$0x10, %ax
+	movw	%ax, %ds
+	movw	%ax, %es
+	movw	%ax, %ss
+	movw	%ax, %fs
+	movw	%ax, %gs
 
 	/* Get this CPU's LAPIC ID */
-	movl $(LOCAL_APIC_ADDR | LAPIC_ID), %esi
-	movl (%esi), %ecx
-	shr  $24, %ecx
+	movl	$(LOCAL_APIC_ADDR | LAPIC_ID), %esi
+	movl	(%esi), %ecx
+	shr	$24, %ecx
 
 	/* This is an ugly hack, and we should find a way to read the CPU index
 	 * without relying on the LAPIC ID.
 	 */
 #if IS_ENABLED(CONFIG_CPU_AMD_AGESA_FAMILY15_TN)
 	/* LAPIC IDs start from 0x10; map that to the proper core index */
-	subl $0x10, %ecx
+	subl	$0x10, %ecx
 #endif
 
 	/* calculate stack offset by multiplying the APIC ID
 	 * by 1024 (0x400), and save that offset in ebp.
 	 */
-	shl $10, %ecx
-	movl %ecx, %ebp
+	shl	$10, %ecx
+	movl	%ecx, %ebp
 
 	/* We put the stack for each core right above
 	 * its SMM entry point. Core 0 starts at 0xa8000,
 	 * we spare 0x10 bytes for the jump to be sure.
 	 */
-	movl $0xa8010, %eax
-	subl %ecx, %eax		/* subtract offset, see above */
-	movl %eax, %ebx		/* Save bottom of stack in ebx */
+	movl	$0xa8010, %eax
+	subl	%ecx, %eax		/* subtract offset, see above */
+	movl	%eax, %ebx		/* Save bottom of stack in ebx */
 
 #define SMM_STACK_SIZE	(0x400 - 0x10)
 	/* clear stack */
@@ -171,13 +171,13 @@ untampered_lapic:
 	movl	%ebx, %esp
 
 	/* Get SMM revision */
-	movl $0xa8000 + 0x7efc, %ebx	/* core 0 address */
-	subl %ebp, %ebx			/* subtract core X offset */
-	movl (%ebx), %eax
-	pushl %eax
+	movl	$0xa8000 + 0x7efc, %ebx	/* core 0 address */
+	subl	%ebp, %ebx		/* subtract core X offset */
+	movl	(%ebx), %eax
+	pushl	%eax
 
 	/* Call 32bit C handler */
-	call smi_handler
+	call	smi_handler
 
 	/* To return, just do rsm. It will "clean up" protected mode */
 	rsm
@@ -227,14 +227,14 @@ smm_gdt_end:
 .code16
 jumptable:
 	/* core 3 */
-	ljmp $0xa000, $SMM_HANDLER_OFFSET
+	ljmp	$0xa000, $SMM_HANDLER_OFFSET
 .align 1024, 0x00
 	/* core 2 */
-	ljmp $0xa000, $SMM_HANDLER_OFFSET
+	ljmp	$0xa000, $SMM_HANDLER_OFFSET
 .align 1024, 0x00
 	/* core 1 */
-	ljmp $0xa000, $SMM_HANDLER_OFFSET
+	ljmp	$0xa000, $SMM_HANDLER_OFFSET
 .align 1024, 0x00
 	/* core 0 */
-	ljmp $0xa000, $SMM_HANDLER_OFFSET
+	ljmp	$0xa000, $SMM_HANDLER_OFFSET
 .align 1024, 0x00

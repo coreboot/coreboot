@@ -208,10 +208,6 @@ config SKYLAKE_SOC_PCH_H
 	help
 	  Choose this option if you have a PCH-H chipset.
 
-config CHIPSET_BOOTBLOCK_INCLUDE
-	string
-	default "soc/intel/skylake/bootblock/timestamp.inc"
-
 config NHLT_DMIC_2CH
 	bool
 	default n

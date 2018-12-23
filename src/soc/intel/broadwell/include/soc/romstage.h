@@ -31,7 +31,6 @@ void mainboard_romstage_entry(struct romstage_params *params);
 void romstage_common(struct romstage_params *params);
 asmlinkage void *romstage_main(unsigned long bist, uint32_t tsc_lo,
 			       uint32_t tsc_high);
-asmlinkage void romstage_after_car(void);
 void raminit(struct pei_data *pei_data);
 void *setup_stack_and_mtrrs(void);
 

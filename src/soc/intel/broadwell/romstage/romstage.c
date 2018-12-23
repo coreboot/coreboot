@@ -139,12 +139,4 @@ void romstage_common(struct romstage_params *params)
 	romstage_handoff_init(params->power_state->prev_sleep_state == ACPI_S3);
 }
 
-asmlinkage void romstage_after_car(void)
-{
-	/* Load the ramstage. */
-	run_ramstage();
-	while (1)
-		;
-}
-
 void __weak mainboard_pre_console_init(void) {}

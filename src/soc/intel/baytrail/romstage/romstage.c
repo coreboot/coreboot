@@ -230,13 +230,6 @@ void romstage_common(struct romstage_params *params)
 	romstage_handoff_init(prev_sleep_state == ACPI_S3);
 }
 
-void asmlinkage romstage_after_car(void)
-{
-	/* Load the ramstage. */
-	run_ramstage();
-	while (1);
-}
-
 static inline uint32_t *stack_push(u32 *stack, u32 value)
 {
 	stack = &stack[-1];

@@ -58,9 +58,3 @@ asmlinkage void *romstage_main(unsigned long bist)
 	/* We do not return. */
 	return NULL;
 }
-
-asmlinkage void romstage_after_car(void)
-{
-	/* Load the ramstage. */
-	run_ramstage();
-}

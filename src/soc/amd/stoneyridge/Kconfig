@@ -62,7 +62,6 @@ config CPU_SPECIFIC_OPTIONS
 	select SMM_TSEG
 	select POSTCAR_STAGE
 	select POSTCAR_CONSOLE
-	select SSE
 	select SSE2
 	select RTC
 	select SOC_AMD_PSP_SELECTABLE_SMU_FW

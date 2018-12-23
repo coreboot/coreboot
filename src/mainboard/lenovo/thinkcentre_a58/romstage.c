@@ -23,7 +23,6 @@
 #include <cpu/intel/romstage.h>
 #include <superio/smsc/smscsuperio/smscsuperio.h>
 #include <lib.h>
-#include <arch/stages.h>
 #include <northbridge/intel/x4x/iomap.h>
 #include <device/pnp_def.h>
 #include <timestamp.h>

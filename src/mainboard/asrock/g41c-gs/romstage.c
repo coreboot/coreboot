@@ -26,7 +26,6 @@
 #include <superio/winbond/common/winbond.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <lib.h>
-#include <arch/stages.h>
 #include <northbridge/intel/x4x/iomap.h>
 #include <device/pnp_def.h>
 #include <timestamp.h>

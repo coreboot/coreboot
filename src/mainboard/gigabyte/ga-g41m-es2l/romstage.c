@@ -28,7 +28,6 @@
 #include <superio/ite/it8718f/it8718f.h>
 #include <superio/ite/common/ite.h>
 #include <lib.h>
-#include <arch/stages.h>
 #include <northbridge/intel/x4x/iomap.h>
 #include <timestamp.h>
 

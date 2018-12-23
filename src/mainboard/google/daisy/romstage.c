@@ -15,7 +15,6 @@
 
 #include <arch/cache.h>
 #include <arch/exception.h>
-#include <arch/stages.h>
 #include <armv7.h>
 #include <cbmem.h>
 #include <console/console.h>

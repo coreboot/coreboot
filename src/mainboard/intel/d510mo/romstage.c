@@ -30,7 +30,6 @@
 #include <superio/winbond/w83627thg/w83627thg.h>
 #include <superio/winbond/common/winbond.h>
 #include <lib.h>
-#include <arch/stages.h>
 #include <cbmem.h>
 #include <romstage_handoff.h>
 #include <timestamp.h>

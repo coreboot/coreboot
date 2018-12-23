@@ -17,7 +17,6 @@
 #include <string.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
-#include <arch/stages.h>
 #include <device/pnp_def.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>

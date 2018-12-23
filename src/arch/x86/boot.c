@@ -13,7 +13,6 @@
 
 #include <commonlib/helpers.h>
 #include <console/console.h>
-#include <arch/stages.h>
 #include <program_loading.h>
 #include <ip_checksum.h>
 #include <string.h>

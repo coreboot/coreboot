@@ -31,7 +31,6 @@
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8721f/it8721f.h>
 #include <lib.h>
-#include <arch/stages.h>
 #include <cbmem.h>
 #include <romstage_handoff.h>
 #include <timestamp.h>

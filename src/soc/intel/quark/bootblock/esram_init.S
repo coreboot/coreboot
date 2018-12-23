@@ -99,28 +99,13 @@
 .equ  CFGNONSTICKY_W1_OFFSET, (0x52)
 .equ    FORCE_WARM_RESET, (0x00000001)
 
-	.global	bootblock_save_bist_and_timestamp
-
-bootblock_save_bist_and_timestamp:
-
-	/* eax: Low 32-bits of timestamp
-	 * ebx: BIST result
-	 * ebp: return address
-	 * edx: High 32-bits of timestamp
-	 */
-
-	/* No values to save since Quark does not generate a BIST value
-	 * and the timestamp is not saved since future expansion in
-	 * bootblock_crt0.S could use ebp and edi.  This code prevents
-	 * the use of the MMx registers by the default implementation.
-	 */
-	jmp	*%ebp
-
 	.global bootblock_pre_c_entry
 
 bootblock_pre_c_entry:
 
-	/* Get the timestamp since value from bootblock_crt0.S was discarded */
+	/* Get the timestamp since code in bootblock_crt0.S requires
+	 * MMX register support.
+	 */
 	rdtsc
 	movl	%eax, %ebp
 	movl	%edx, %edi

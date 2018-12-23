@@ -44,23 +44,14 @@ debug_spinloop:
 
 bootblock_protected_mode_entry:
 
+#if !IS_ENABLED(CONFIG_USE_MARCH_586)
+	/* MMX registers required here */
+
 	/* BIST result in eax */
 	movl	%eax, %ebx
 
 	/* Get an early timestamp */
 	rdtsc
-
-#if IS_ENABLED(CONFIG_BOOTBLOCK_SAVE_BIST_AND_TIMESTAMP)
-	lea	1f, %ebp
-
-	/* eax: Low 32-bits of timestamp
-	 * ebx: BIST result
-	 * ebp: return address
-	 * edx: High 32-bits of timestamp
-	 */
-	jmp	bootblock_save_bist_and_timestamp
-1:
-#else
 	movd	%ebx, %mm0
 	movd	%eax, %mm1
 	movd	%edx, %mm2

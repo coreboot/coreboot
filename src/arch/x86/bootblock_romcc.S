@@ -19,7 +19,7 @@
  *     - reset16.inc: the reset vector
  *     - entry16.inc: protected mode setup
  *     - entry32.inc: segment descriptor setup
- *     - CONFIG_CHIPSET_BOOTBLOCK_INCLUDE: chipset-specific initialization
+ *     - timestamp.inc: store TSC in MMX registers
  *     - generated/bootblock.inc: ROMCC part of the bootblock
  *
  * This is used on platforms which do not select C_ENVIRONMENT_BOOTBLOCK, and it
@@ -35,9 +35,7 @@
 #include <cpu/x86/16bit/reset16.inc>
 #include <cpu/x86/32bit/entry32.inc>
 
-#ifdef CONFIG_CHIPSET_BOOTBLOCK_INCLUDE
-#include CONFIG_CHIPSET_BOOTBLOCK_INCLUDE
-#endif
+#include <arch/x86/timestamp.inc>
 
 #if IS_ENABLED(CONFIG_SSE)
 #include <cpu/x86/sse_enable.inc>

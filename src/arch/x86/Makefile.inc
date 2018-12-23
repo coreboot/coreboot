@@ -225,7 +225,6 @@ romstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 # environment.
 romstage-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += gdt_init.S
 romstage-y += cbmem.c
-romstage-y += cbfs_and_run.c
 romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
 romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 romstage-y += memmove.c
@@ -259,7 +258,6 @@ postcar-generic-ccopts += -D__POSTCAR__
 
 postcar-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 postcar-y += gdt_init.S
-postcar-y += cbfs_and_run.c
 postcar-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
 postcar-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 postcar-y += exit_car.S

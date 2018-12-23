@@ -14,8 +14,4 @@
 #ifndef __ARCH_STAGES_H
 #define __ARCH_STAGES_H
 
-#include <arch/cpu.h>
-
-asmlinkage void copy_and_run(void);
-
 #endif

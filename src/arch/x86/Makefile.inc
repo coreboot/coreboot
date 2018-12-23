@@ -143,7 +143,7 @@ $(call src-to-obj,bootblock,$(dir)/bootblock.ld): $(objgenerated)/bootblock.ld
 
 bootblock_romccflags := -mcpu=i386 -O2 -D__PRE_RAM__ -D__BOOTBLOCK__
 ifeq ($(CONFIG_SSE),y)
-bootblock_romccflags := -mcpu=k7 -msse -O2 -D__PRE_RAM__ -D__BOOTBLOCK__
+bootblock_romccflags := -mcpu=k7 -mno-mmx -msse -O2 -D__PRE_RAM__ -D__BOOTBLOCK__
 endif
 
 # This is a hack in case there are no per chipset linker files.

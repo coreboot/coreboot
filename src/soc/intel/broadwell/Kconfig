@@ -30,7 +30,6 @@ config CPU_SPECIFIC_OPTIONS
 	select SMP
 	select SPI_FLASH
 	select SSE2
-	select SUPPORT_CPU_UCODE_IN_CBFS
 	select TSC_CONSTANT_RATE
 	select TSC_SYNC_MFENCE
 	select UDELAY_TSC

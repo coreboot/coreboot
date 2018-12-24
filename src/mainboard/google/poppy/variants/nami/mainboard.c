@@ -254,6 +254,8 @@ void variant_devtree_update(void)
 	case SKU_0_PANTHEON:
 	case SKU_1_PANTHEON:
 	case SKU_2_PANTHEON:
+	case SKU_3_PANTHEON:
+	case SKU_4_PANTHEON:
 		cfg->usb2_ports[5].enable = 0;
 		break;
 	case SKU_0_BARD:

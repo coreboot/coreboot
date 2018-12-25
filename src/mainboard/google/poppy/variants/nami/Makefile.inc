@@ -43,3 +43,6 @@ oem.bin-file := $(call strip_quotes,$(CONFIG_OEM_BIN_FILE))
 oem.bin-type := raw
 
 $(call add_vbt_to_cbfs, vbt-bard.bin, bard-data.vbt)
+$(call add_vbt_to_cbfs, vbt-akali.bin, akali-data.vbt)
+$(call add_vbt_to_cbfs, vbt-pantheon.bin, pantheon-data.vbt)
+$(call add_vbt_to_cbfs, vbt-vayne.bin, vayne-data.vbt)

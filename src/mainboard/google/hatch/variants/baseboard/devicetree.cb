@@ -85,7 +85,7 @@ chip soc/intel/cannonlake
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1d.4 off end # PCI Express Port 13 (x4)
-		device pci 1e.0 off end # UART #0
+		device pci 1e.0 on  end # UART #0
 		device pci 1e.1 off end # UART #1
 		device pci 1e.2 on
 			chip drivers/spi/acpi

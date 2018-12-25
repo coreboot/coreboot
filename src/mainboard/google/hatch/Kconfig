@@ -45,6 +45,9 @@ config DIMM_SPD_SIZE
 config DRIVER_TPM_SPI_BUS
 	default 0x1
 
+config UART_FOR_CONSOLE
+	default 0
+
 config GBB_HWID
 	string
 	depends on CHROMEOS

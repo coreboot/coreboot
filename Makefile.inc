@@ -146,6 +146,7 @@ int-lt=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(wor
 int-gt=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) \> $(call _toint,$(word 2,$1))))
 int-eq=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) = $(call _toint,$(word 2,$1))))
 int-align=$(shell A=$(call _toint,$1) B=$(call _toint,$2); expr $$A + \( \( $$B - \( $$A % $$B \) \) % $$B \) )
+int-align-down=$(shell A=$(call _toint,$1) B=$(call _toint,$2); expr $$A - \( $$A % $$B \) )
 file-size=$(strip $(shell cat $1 | wc -c))
 tolower=$(shell echo '$1' | tr '[:upper:]' '[:lower:]')
 toupper=$(shell echo '$1' | tr '[:lower:]' '[:upper:]')
@@ -849,8 +850,8 @@ FMAP_ROM_ADDR := $(call int-subtract, 0x100000000 $(CONFIG_ROM_SIZE))
 FMAP_ROM_SIZE := $(CONFIG_ROM_SIZE)
 # entire "BIOS" region (everything directly of concern to the host system)
 # relative to ROM_BASE
-FMAP_BIOS_BASE := $(call int-subtract, $(CONFIG_ROM_SIZE) $(CONFIG_CBFS_SIZE))
-FMAP_BIOS_SIZE := $(shell echo $(CONFIG_CBFS_SIZE) | tr A-F a-f)
+FMAP_BIOS_BASE := $(call int-align, $(call int-subtract, $(CONFIG_ROM_SIZE) $(CONFIG_CBFS_SIZE)), 0x10000)
+FMAP_BIOS_SIZE := $(call int-align-down, $(shell echo $(CONFIG_CBFS_SIZE) | tr A-F a-f), 0x10000)
 # position and size of flashmap, relative to BIOS_BASE
 
 #

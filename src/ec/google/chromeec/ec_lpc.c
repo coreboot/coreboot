@@ -41,9 +41,11 @@ static void read_bytes(u16 port, unsigned int length, u8 *dest, u8 *csum)
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_MEC)
 	/* Access desired range though EMI interface */
 	if (port >= MEC_EMI_RANGE_START && port <= MEC_EMI_RANGE_END) {
-		csum += mec_io_bytes(MEC_IO_READ, MEC_EMI_BASE,
+		u8 ret = mec_io_bytes(MEC_IO_READ, MEC_EMI_BASE,
 				     port - MEC_EMI_RANGE_START,
 				     dest, length);
+		if (csum)
+			*csum += ret;
 		return;
 	}
 #endif
@@ -78,9 +80,11 @@ static void write_bytes(u16 port, unsigned int length, u8 *msg, u8 *csum)
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_MEC)
 	/* Access desired range though EMI interface */
 	if (port >= MEC_EMI_RANGE_START && port <= MEC_EMI_RANGE_END) {
-		csum += mec_io_bytes(MEC_IO_WRITE, MEC_EMI_BASE,
+		u8 ret = mec_io_bytes(MEC_IO_WRITE, MEC_EMI_BASE,
 				     port - MEC_EMI_RANGE_START,
 				     msg, length);
+		if (csum)
+			*csum += ret;
 		return;
 	}
 #endif

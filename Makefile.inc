@@ -883,11 +883,27 @@ FMAP_MRC_CACHE_ENTRY :=
 endif # ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
 
 #
+# X86 SMMSTORE FMAP region
+#
+# position, size and entry line of SMMSTORE relative to BIOS_BASE, if enabled
+ifeq ($(CONFIG_SMMSTORE),y)
+FMAP_SMMSTORE_BASE := $(call int-align, $(call int-add, $(FMAP_CONSOLE_BASE) \
+	$(FMAP_CONSOLE_SIZE) $(FMAP_MRC_CACHE_SIZE)), 0x10000)
+FMAP_SMMSTORE_SIZE := $(CONFIG_SMMSTORE_SIZE)
+FMAP_SMMSTORE_ENTRY := SMMSTORE@$(FMAP_SMMSTORE_BASE) $(FMAP_SMMSTORE_SIZE)
+else # ifeq ($(CONFIG_SMMSTORE),y)
+FMAP_SMMSTORE_BASE := 0
+FMAP_SMMSTORE_SIZE := 0
+FMAP_SMMSTORE_ENTRY :=
+endif # ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
+
+#
 # X86 FMAP region
 #
 #
 # position, size
-FMAP_FMAP_BASE := $(call int-add, $(FMAP_CONSOLE_SIZE) $(FMAP_MRC_CACHE_SIZE))
+FMAP_FMAP_BASE := $(call int-add, $(FMAP_CONSOLE_BASE) $(FMAP_CONSOLE_SIZE) \
+	$(FMAP_MRC_CACHE_SIZE) $(FMAP_SMMSTORE_SIZE))
 FMAP_FMAP_SIZE := 0x200
 
 #
@@ -961,6 +977,7 @@ $(obj)/fmap.fmd: $(top)/Makefile.inc $(DEFAULT_FLASHMAP) $(obj)/config.h
 	    -e "s,##FMAP_SIZE##,$(FMAP_FMAP_SIZE)," \
 	    -e "s,##CONSOLE_ENTRY##,$(FMAP_CONSOLE_ENTRY)," \
 	    -e "s,##MRC_CACHE_ENTRY##,$(FMAP_MRC_CACHE_ENTRY)," \
+	    -e "s,##SMMSTORE_ENTRY##,$(FMAP_SMMSTORE_ENTRY)," \
 	    -e "s,##CBFS_BASE##,$(FMAP_CBFS_BASE)," \
 	    -e "s,##CBFS_SIZE##,$(FMAP_CBFS_SIZE)," \
 		$(DEFAULT_FLASHMAP) > $@.tmp

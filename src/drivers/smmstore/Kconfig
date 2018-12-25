@@ -37,4 +37,15 @@ config SMMSTORE_FILENAME
 	string "SMM store file name" if SMMSTORE_IN_CBFS
 	default "smm_store"
 
+config SMMSTORE_SIZE
+	hex "size of the SMMSTORE FMAP region"
+	depends on !SMMSTORE_IN_CBFS
+	default 0x40000
+	help
+	  Sets the size of the default SMMSTORE FMAP region.
+	  If using an UEFI payload, note that UEFI specifies at least 64K.
+	  The current implementation of SMMSTORE is append only, so until
+	  garbage collection is implemented it is better to set this to
+	  a rather large value.
+
 endif

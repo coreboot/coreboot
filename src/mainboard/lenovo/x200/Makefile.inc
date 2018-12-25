@@ -20,11 +20,5 @@ romstage-y += gpio.c
 
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
 
-add_vbt_to_cbfs= \
-	$(eval cbfs-files-y += $1) \
-	$(eval $1-file := $2) \
-	$(eval $1-type := raw) \
-        $(eval $1-compression := lzma)
-
 $(call add_vbt_to_cbfs, data_ccfl.vbt, data_ccfl.vbt)
 $(call add_vbt_to_cbfs, data_led.vbt, data_led.vbt)

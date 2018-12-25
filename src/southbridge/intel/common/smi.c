@@ -23,6 +23,7 @@
 #include <cpu/x86/smm.h>
 #include <cpu/intel/smm/gen1/smi.h>
 #include <southbridge/intel/common/pmbase.h>
+#include <southbridge/intel/common/pmutil.h>
 
 #include "pmutil.h"
 
@@ -39,10 +40,9 @@ void southbridge_smm_init(void)
 	u16 pm1_en;
 	u32 gpe0_en;
 
-#if IS_ENABLED(CONFIG_ELOG)
+	if (IS_ENABLED(CONFIG_ELOG))
 	/* Log events from chipset before clearing */
-	pch_log_state();
-#endif
+		pch_log_state();
 
 	printk(BIOS_DEBUG, "Initializing southbridge SMI...");
 

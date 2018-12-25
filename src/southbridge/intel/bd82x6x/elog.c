@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <elog.h>
+#include <southbridge/intel/common/pmutil.h>
 #include "pch.h"
 
 void pch_log_state(void)

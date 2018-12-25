@@ -7,6 +7,7 @@ chip soc/intel/apollolake
 				register "generic.desc" = ""WCOM Digitizer""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_139_IRQ)"
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_140)"
+				register "generic.reset_delay_ms" = "20"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0x9 on end

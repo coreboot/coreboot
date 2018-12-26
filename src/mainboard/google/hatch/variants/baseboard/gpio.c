@@ -21,6 +21,8 @@
 static const struct pad_config gpio_table[] = {
 	/* TRACKPAD_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A21, NONE, PLTRST, LEVEL, INVERT),
+	/* SRCCLKREQ1 */
+	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF1),
 	/* H1_SLAVE_SPI_CS_L */
 	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),
 	/* H1_SLAVE_SPI_CLK */

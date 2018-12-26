@@ -10,6 +10,30 @@ post_car_stack_top:
 .long	0
 .long	0
 
+#if defined(__x86_64__)
+.code64
+.macro pop_eax_edx
+	pop	%rax
+	mov	%rax, %rdx
+	shr	$32, %rdx
+.endm
+.macro pop_ebx_esi
+	pop	%rbx
+	mov	%rbx, %rsi
+	shr	$32, %rsi
+.endm
+#else
+.code32
+.macro pop_eax_edx
+	pop	%eax
+	pop	%edx
+.endm
+.macro pop_ebx_esi
+	pop	%ebx
+	pop	%esi
+.endm
+#endif
+
 .text
 .global _start
 _start:
@@ -17,7 +41,11 @@ _start:
 	   is expected to be implemented in assembly. */
 
 	/* Migrate GDT to this text segment */
+#if defined(__x86_64__)
+	call	gdt_init64
+#else
 	call	gdt_init
+#endif
 
 #ifdef	__x86_64__
 	mov	%rdi, _cbmem_top_ptr
@@ -31,10 +59,15 @@ _start:
 	call	chipset_teardown_car
 
 	/* Enable caching if not already enabled. */
+#ifdef  __x86_64__
+	mov	%cr0, %rax
+	and     $(~(CR0_CD | CR0_NW)), %eax
+	mov	%rax, %cr0
+#else
 	mov	%cr0, %eax
 	and	$(~(CR0_CD | CR0_NW)), %eax
 	mov	%eax, %cr0
-
+#endif
 	/* Ensure cache is clean. */
 	invd
 
@@ -61,8 +94,13 @@ _start:
 	/* Need to align stack to 16 bytes at the call instruction. Therefore
 	   account for the 1 push. */
 	andl	$0xfffffff0, %esp
+#if defined(__x86_64__)
+	mov	%rbp, %rdi
+#else
 	sub	$12, %esp
 	push	%ebp
+#endif
+
 	call	soc_set_mtrrs
 	/* Ignore fixing up %esp since we're setting it a new value. */
 
@@ -73,7 +111,7 @@ _start:
 	call	soc_enable_mtrrs
 #else /* CONFIG_SOC_SETS_MSRS */
 	/* Clear variable MTRRs. */
-	pop	%ebx	/* Number to clear */
+	pop_ebx_esi	/* ebx: Number to clear, esi: Number to set */
 	test	%ebx, %ebx
 	jz	2f
 	xor	%eax, %eax
@@ -89,23 +127,20 @@ _start:
 2:
 
 	/* Set Variable MTRRs based on stack contents. */
-	pop	%ebx	/* Number to set. */
-	test	%ebx, %ebx
+	test	%esi, %esi
 	jz	2f
 	mov	$(MTRR_PHYS_BASE(0)), %ecx
 1:
 	/* Write MTRR base. */
-	pop	%eax
-	pop	%edx
+	pop_eax_edx
 	wrmsr
 	inc	%ecx
 	/* Write MTRR mask. */
-	pop	%eax
-	pop	%edx
+	pop_eax_edx
 	wrmsr
 	inc	%ecx
 
-	dec	%ebx
+	dec	%esi
 	jnz	1b
 2:
 

@@ -195,7 +195,11 @@ endif # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
 # postcar
 ###############################################################################
 
+ifeq ($(CONFIG_ARCH_POSTCAR_X86_32),y)
 $(eval $(call create_class_compiler,postcar,x86_32))
+else
+$(eval $(call create_class_compiler,postcar,x86_64))
+endif
 postcar-generic-ccopts += -D__POSTCAR__
 
 postcar-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c

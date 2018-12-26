@@ -46,7 +46,7 @@ At the moment *$n* is 4, which results in identity mapping the lower 4 GiB.
 * Setup page tables for long mode - *DONE*
 * Add assembly code for long mode - *DONE*
 * Add assembly code for SMM - *DONE*
-* Add assembly code for postcar stage - *TODO*
+* Add assembly code for postcar stage - *DONE*
 * Add assembly code to return to protected mode - *TODO*
 * Implement reference code for mainboard `emulation/qemu-q35` - *TODO*
 

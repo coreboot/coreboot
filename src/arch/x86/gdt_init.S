@@ -15,6 +15,22 @@ gdtptr:
 	.word	gdt_end - gdt -1 /* compute the table limit */
 	.long	gdt		 /* we know the offset */
 
+#ifdef __x86_64__
+.code64
+.section ".text._gdt64_", "ax", @progbits
+	.globl gdt_init64
+gdt_init64:
+	lgdt	gdtptr64
+	ret
+
+.previous
+	.align	4
+.globl gdtptr64
+gdtptr64:
+	.word	gdt_end - gdt -1 /* compute the table limit */
+	.quad	gdt		 /* we know the offset */
+#endif
+
 	.align	4
 gdt:
 	/* selgdt 0, unused */

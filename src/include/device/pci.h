@@ -145,6 +145,8 @@ unsigned int pci_find_capability(struct device *dev, unsigned int cap);
 #endif /* __SIMPLE_DEVICE__ */
 
 void pci_early_bridge_init(void);
+void pci_early_mmio_window(pci_devfn_t p2p_bridge, u32 mmio_base,
+			   u32 mmio_size);
 int pci_early_device_probe(u8 bus, u8 dev, u32 mmio_base);
 
 #ifndef __ROMCC__

@@ -72,8 +72,9 @@ asmlinkage void console_init(void)
 {
 	init_log_level();
 
-#if IS_ENABLED(CONFIG_EARLY_PCI_BRIDGE) && !defined(__SMM__)
-	pci_early_bridge_init();
+#if IS_ENABLED(CONFIG_EARLY_PCI_BRIDGE)
+	if (!ENV_SMM && !ENV_RAMSTAGE)
+		pci_early_bridge_init();
 #endif
 
 	console_hw_init();

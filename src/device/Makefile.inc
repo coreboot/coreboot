@@ -27,7 +27,13 @@ smm-y += device_const.c
 verstage-y += device_const.c
 romstage-y += device_const.c
 ramstage-y += device_const.c
+
+ifeq ($(CONFIG_ARCH_X86),y)
+bootblock-$(CONFIG_PCI) += pci_early.c
+verstage-$(CONFIG_PCI) += pci_early.c
 romstage-$(CONFIG_PCI) += pci_early.c
+postcar-$(CONFIG_PCI) += pci_early.c
+endif
 
 subdirs-y += oprom dram
 

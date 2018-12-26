@@ -20,7 +20,7 @@
 #include <device/pci_def.h>
 #include <delay.h>
 
-#ifdef __PRE_RAM__
+#if !ENV_RAMSTAGE
 unsigned pci_find_next_capability(pci_devfn_t dev, unsigned cap, unsigned last)
 {
 	unsigned pos = 0;
@@ -68,12 +68,11 @@ unsigned pci_find_capability(pci_devfn_t dev, unsigned cap)
 {
 	return pci_find_next_capability(dev, cap, 0);
 }
-#endif /* __PRE_RAM__ */
-
+#endif
 
 #if IS_ENABLED(CONFIG_EARLY_PCI_BRIDGE)
 
-static void pci_bridge_reset_secondary(device_t p2p_bridge)
+static void pci_bridge_reset_secondary(pci_devfn_t p2p_bridge)
 {
 	u16 reg16;
 
@@ -90,7 +89,7 @@ static void pci_bridge_reset_secondary(device_t p2p_bridge)
 	pci_write_config16(p2p_bridge, PCI_BRIDGE_CONTROL, reg16);
 }
 
-static void pci_bridge_set_secondary(device_t p2p_bridge, u8 secondary)
+static void pci_bridge_set_secondary(pci_devfn_t p2p_bridge, u8 secondary)
 {
 	/* Disable config transaction forwarding. */
 	pci_write_config8(p2p_bridge, PCI_SECONDARY_BUS, 0x00);
@@ -100,7 +99,7 @@ static void pci_bridge_set_secondary(device_t p2p_bridge, u8 secondary)
 	pci_write_config8(p2p_bridge, PCI_SUBORDINATE_BUS, secondary);
 }
 
-static void pci_bridge_set_mmio(device_t p2p_bridge, u32 base, u32 size)
+static void pci_bridge_set_mmio(pci_devfn_t p2p_bridge, u32 base, u32 size)
 {
 	u16 reg16;
 
@@ -122,27 +121,20 @@ static void pci_bridge_set_mmio(device_t p2p_bridge, u32 base, u32 size)
 	pci_write_config16(p2p_bridge, PCI_COMMAND, reg16);
 }
 
-void pci_early_bridge_init(void)
+void pci_early_mmio_window(pci_devfn_t p2p_bridge, u32 mmio_base, u32 mmio_size)
 {
 	int timeout, ret = -1;
-
-	/* No PCI-to-PCI bridges are enabled yet, so the one we try to
-	 * configure must have its primary on bus 0.
-	 */
-	pci_devfn_t p2p_bridge = PCI_DEV(0, CONFIG_EARLY_PCI_BRIDGE_DEVICE,
-		CONFIG_EARLY_PCI_BRIDGE_FUNCTION);
 
 	/* Secondary bus number is mostly irrelevant as we disable
 	 * configuration transactions right after the probe.
 	 */
 	u8 secondary = 15;
 	u8 dev = 0;
-	u32 mmio_base = CONFIG_EARLY_PCI_MMIO_BASE;
 
 	/* Enable configuration and MMIO over bridge. */
 	pci_bridge_reset_secondary(p2p_bridge);
 	pci_bridge_set_secondary(p2p_bridge, secondary);
-	pci_bridge_set_mmio(p2p_bridge, mmio_base, 0x4000);
+	pci_bridge_set_mmio(p2p_bridge, mmio_base, mmio_size);
 
 	for (timeout = 20000; timeout; timeout--) {
 		u32 id = pci_read_config32(PCI_DEV(secondary, dev, 0), PCI_VENDOR_ID);
@@ -163,5 +155,16 @@ void pci_early_bridge_init(void)
 	 * transactions from here on, so we may as well disable them.
 	 */
 	pci_bridge_set_secondary(p2p_bridge, 0);
+}
+
+void pci_early_bridge_init(void)
+{
+	/* No PCI-to-PCI bridges are enabled yet, so the one we try to
+	 * configure must have its primary on bus 0.
+	 */
+	pci_devfn_t p2p_bridge = PCI_DEV(0, CONFIG_EARLY_PCI_BRIDGE_DEVICE,
+		CONFIG_EARLY_PCI_BRIDGE_FUNCTION);
+
+	pci_early_mmio_window(p2p_bridge, CONFIG_EARLY_PCI_MMIO_BASE, 0x4000);
 }
 #endif /* CONFIG_EARLY_PCI_BRIDGE */

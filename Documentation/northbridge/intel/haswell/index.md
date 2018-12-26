@@ -6,3 +6,7 @@ coreboot.
 ## Proprietary blobs
 
 - [mrc.bin](mrc.bin.md)
+
+## Issues
+
+- [Known issues](known-issues.md)

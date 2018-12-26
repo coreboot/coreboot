@@ -78,6 +78,10 @@ facing towards the bottom of the board.
   in coreboot. The `coretemp` driver can still be used for accurate CPU
   temperature readings from an OS.
 
+```eval_rst
+Please also see :doc:`../../northbridge/intel/haswell/known-issues`.
+```
+
 ## Untested
 
 - parallel port

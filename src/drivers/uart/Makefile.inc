@@ -29,9 +29,11 @@ smm-$(CONFIG_DEBUG_SMI) += uart8250mem.c
 endif
 
 ifeq ($(CONFIG_DRIVERS_UART_OXPCIE),y)
-ramstage-y += oxpcie_early.c oxpcie.c
-postcar-y += oxpcie_early.c
+bootblock-y += oxpcie_early.c
+verstage-y += oxpcie_early.c
 romstage-y += oxpcie_early.c
+postcar-y += oxpcie_early.c
+ramstage-y += oxpcie_early.c oxpcie.c
 endif
 
 ifeq ($(CONFIG_DRIVERS_UART_PL011),y)

@@ -79,12 +79,12 @@ uintptr_t uart_platform_base(int idx)
 	return 0;
 }
 
-#ifndef __PRE_RAM__
 void oxford_remap(u32 new_base)
 {
+#if ENV_RAMSTAGE
 	uart0_base = new_base + 0x1000;
-}
 #endif
+}
 
 unsigned int uart_platform_refclk(void)
 {

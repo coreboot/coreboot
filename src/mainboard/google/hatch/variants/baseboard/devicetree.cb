@@ -101,7 +101,7 @@ chip soc/intel/cannonlake
 		device pci 1f.2 off end # Power Management Controller
 		device pci 1f.3 off end # Intel HDA
 		device pci 1f.4 off end # SMBus
-		device pci 1f.5 off end # PCH SPI
+		device pci 1f.5 on  end # PCH SPI
 		device pci 1f.6 off end # GbE
 	end
 end

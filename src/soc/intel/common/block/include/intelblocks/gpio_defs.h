@@ -107,6 +107,23 @@
 #define PAD_CFG1_IOSSTATE_MASK		0
 #endif /* CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_IOSTANDBY */
 
+#define PAD_CFG2_DEBEN			1
+/* Debounce Duration = (2 ^ PAD_CFG2_DEBOUNCE_x_RTC) * RTC clock duration */
+#define PAD_CFG2_DEBOUNCE_8_RTC		(0x3 << 1)
+#define PAD_CFG2_DEBOUNCE_16_RTC	(0x4 << 1)
+#define PAD_CFG2_DEBOUNCE_32_RTC	(0x5 << 1)
+#define PAD_CFG2_DEBOUNCE_64_RTC	(0x6 << 1)
+#define PAD_CFG2_DEBOUNCE_128_RTC	(0x7 << 1)
+#define PAD_CFG2_DEBOUNCE_256_RTC	(0x8 << 1)
+#define PAD_CFG2_DEBOUNCE_512_RTC	(0x9 << 1)
+#define PAD_CFG2_DEBOUNCE_1K_RTC	(0xa << 1)
+#define PAD_CFG2_DEBOUNCE_2K_RTC	(0xb << 1)
+#define PAD_CFG2_DEBOUNCE_4K_RTC	(0xc << 1)
+#define PAD_CFG2_DEBOUNCE_8K_RTC	(0xd << 1)
+#define PAD_CFG2_DEBOUNCE_16K_RTC	(0xe << 1)
+#define PAD_CFG2_DEBOUNCE_32K_RTC	(0xf << 1)
+#define PAD_CFG2_DEBOUNCE_MASK		0x1f
+
 /* voltage tolerance  0=3.3V default 1=1.8V tolerant */
 #if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL)
 #define PAD_CFG1_TOL_MASK		(0x1 << 25)
@@ -347,6 +364,18 @@
 
 #define PAD_CFG_GPI_SCI_HIGH(pad, pull, rst, trig) \
 	PAD_CFG_GPI_SCI(pad, pull, rst, trig, NONE)
+
+#define PAD_CFG_GPI_SCI_DEBEN(pad, pull, rst, trig, inv, dur) \
+	_PAD_CFG_STRUCT_3(pad,		\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \
+		PAD_IRQ_CFG(SCI, trig, inv), PAD_PULL(pull) | \
+		PAD_IOSSTATE(TxDRxE), PAD_CFG2_DEBEN | PAD_CFG2_##dur)
+
+#define PAD_CFG_GPI_SCI_LOW_DEBEN(pad, pull, rst, trig, dur) \
+	PAD_CFG_GPI_SCI_DEBEN(pad, pull, rst, trig, INVERT, dur)
+
+#define PAD_CFG_GPI_SCI_HIGH_DEBEN(pad, pull, rst, trig, dur) \
+	PAD_CFG_GPI_SCI_DEBEN(pad, pull, rst, trig, NONE, dur)
 
 /* General purpose input, routed to NMI */
 #define PAD_CFG_GPI_NMI(pad, pull, rst, trig, inv) \

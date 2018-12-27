@@ -122,7 +122,7 @@ Device(SUPERIO_DEV) {
 
 #ifdef SCH5147_SHOW_KBC
 	/* we can't read back the IO resources so hardcode them */
- 	#define SUPERIO_KBC_LDN 7
+	#define SUPERIO_KBC_LDN 7
 Device (SUPERIO_ID(KBD, SUPERIO_KBC_LDN)) {
 	Name (_HID, EisaId ("PNP0303"))
 	Name (_UID, SUPERIO_UID(KBD, SUPERIO_KBC_LDN))
@@ -153,7 +153,7 @@ Device (SUPERIO_ID(KBD, SUPERIO_KBC_LDN)) {
 		Name (CRS, ResourceTemplate () {
 			FixedIO (0x0060, 0x01)
 			FixedIO (0x0064, 0x01)
-		        IRQNoFlags (IR0) {}
+			IRQNoFlags (IR0) {}
 		})
 		ENTER_CONFIG_MODE (SUPERIO_KBC_LDN)
 		  PNP_READ_IRQ(PNP_IRQ0, CRS, IR0)

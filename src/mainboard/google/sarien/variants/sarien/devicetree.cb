@@ -33,6 +33,11 @@ chip soc/intel/cannonlake
 	register "dptf_enable" = "1"
 	register "dmipwroptimize" = "1"
 	register "satapwroptimize" = "1"
+	register "AcousticNoiseMitigation" = "1"
+	register "SlowSlewRateForIa" = "2"
+	register "SlowSlewRateForGt" = "2"
+	register "SlowSlewRateForSa" = "2"
+	register "SlowSlewRateForFivr" = "2"
 
 	# Intel Common SoC Config
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Left Type-C Port

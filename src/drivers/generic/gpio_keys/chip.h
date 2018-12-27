@@ -30,6 +30,13 @@ enum {
 	SW_PEN_INSERTED = 0xf,
 };
 
+/* Trigger for wakeup event action */
+enum {
+	EV_ACT_ANY,
+	EV_ACT_ASSERTED,
+	EV_ACT_DEASSERTED,
+};
+
 /* Details of the child node defining key */
 struct key_info {
 	/* Device name of the child node - Mandatory */
@@ -47,6 +54,8 @@ struct key_info {
 	bool is_wakeup_source;
 	/* Wake GPE */
 	unsigned int wake;
+	/* Trigger for Wakeup Event Action as defined in EV_ACT_* enum */
+	unsigned int wakeup_event_action;
 	/* Can this key be disabled? */
 	bool can_be_disabled;
 	/* Debounce interval time in milliseconds */

@@ -145,6 +145,19 @@
 		.pad_config[1] = __config1,	\
 	}
 
+#if GPIO_NUM_PAD_CFG_REGS > 2
+#define _PAD_CFG_STRUCT_3(__pad, __config0, __config1, __config2)	\
+	{					\
+		.pad = __pad,			\
+		.pad_config[0] = __config0,	\
+		.pad_config[1] = __config1,	\
+		.pad_config[2] = __config2,	\
+	}
+#else
+#define _PAD_CFG_STRUCT_3(__pad, __config0, __config1, __config2)	\
+	_PAD_CFG_STRUCT(__pad, __config0, __config1)
+#endif
+
 /* Native function configuration */
 #define PAD_CFG_NF(pad, pull, rst, func) \
 	_PAD_CFG_STRUCT(pad, PAD_RESET(rst) | PAD_FUNC(func), PAD_PULL(pull) | \

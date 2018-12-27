@@ -49,8 +49,8 @@ _start:
 	movl	%eax, %fs
 	movl	%eax, %gs
 #ifdef __x86_64__
-	mov     $0x48, %ecx
-	call    SetCodeSelector
+	mov	$0x48, %ecx
+	call	SetCodeSelector
 #endif
 
 	post_code(POST_ENTRY_C_START)		/* post 13 */
@@ -177,12 +177,12 @@ gdt:
 	/* The next two entries are used for executing VGA option ROMs */
 
 	/* selgdt 0x28 16 bit 64k code at 0x00000000 */
-	.word   0xffff, 0x0000
-	.byte   0, 0x9a, 0, 0
+	.word	0xffff, 0x0000
+	.byte	0, 0x9a, 0, 0
 
 	/* selgdt 0x30 16 bit 64k data at 0x00000000 */
-	.word   0xffff, 0x0000
-	.byte   0, 0x92, 0, 0
+	.word	0xffff, 0x0000
+	.byte	0, 0x92, 0, 0
 
 	/* The next two entries are used for ACPI S3 RESUME */
 

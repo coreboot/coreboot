@@ -274,6 +274,11 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	AmdLateParams = (AMD_LATE_PARAMS *)AmdParamStruct.NewStructPtr;
 	AmdLateParams->GnbLateConfiguration.GnbIoapicId = CONFIG_MAX_CPUS + 1;
 	AmdLateParams->GnbLateConfiguration.FchIoapicId = CONFIG_MAX_CPUS;
+	/* Code for creating CDIT requires hop count table. If it is not
+	 * present AGESA_ERROR is returned, which confuses users. CDIT is not
+	 * written to the ACPI tables anyway. */
+	AmdLateParams->PlatformConfig.UserOptionCdit = 0;
+
 	Status = AmdInitLate(AmdLateParams);
 	if (Status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog(AmdLateParams->StdHeader.HeapStatus);

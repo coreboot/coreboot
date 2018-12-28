@@ -26,6 +26,7 @@ chip northbridge/intel/pineview		# Northbridge
     end
   end
   device domain 0 on			# PCI domain
+    subsystemid 0x105b 0x0d55 inherit
     device pci 0.0 on end		# Host Bridge
     device pci 1.0 off end		# PEG
     device pci 2.0 on end		# Integrated graphics controller
@@ -45,7 +46,9 @@ chip northbridge/intel/pineview		# Northbridge
 
       device pci 1b.0 on end		# Audio
       device pci 1c.0 on end		# PCIe 1
-      device pci 1c.1 on end		# PCIe 2 (NIC)
+      device pci 1c.1 on		# PCIe 2 (NIC)
+        device pci 00.0 on end
+      end
       device pci 1c.2 off end		# PCIe 3
       device pci 1c.3 off end		# PCIe 4
       # (PCIe 5 and 6 not on nm10?)

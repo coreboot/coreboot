@@ -15,6 +15,7 @@ config BOARD_GOOGLE_BASEBOARD_SLIPPY
 	select MAINBOARD_HAS_TPM1
 	select INTEL_INT15
 	select MAINBOARD_HAS_LIBGFXINIT
+	select INTEL_GMA_HAVE_VBT
 
 if BOARD_GOOGLE_BASEBOARD_SLIPPY
 
@@ -64,5 +65,11 @@ config MAX_CPUS
 config VGA_BIOS_FILE
 	string
 	default "pci8086,0406.rom"
+
+# Override the default variant behavior, since the data.vbt is the same
+# for all variants.
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
+
 
 endif # BOARD_GOOGLE_BASEBOARD_SLIPPY

@@ -27,6 +27,7 @@ ramstage-y += acpi.c
 romstage-y += early_usb.c early_smbus.c gpio.c early_spi.c early_init.c
 romstage-y += romstage.c
 
+bootblock-$(CONFIG_USBDEBUG) += usb_debug.c
 romstage-$(CONFIG_USBDEBUG) += usb_debug.c
 ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
 

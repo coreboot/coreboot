@@ -239,7 +239,7 @@ void sdram_initialize(struct pei_data *pei_data)
 	}
 
 	/* mrc.bin reconfigures USB, so reinit it to have debug */
-	if (IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE))
+	if (IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM))
 		usbdebug_hw_init(true);
 
 	/* For reference print the System Agent version

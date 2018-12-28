@@ -28,8 +28,10 @@
 #
 #*****************************************************************************
 
+bootblock-$(CONFIG_USBDEBUG) += enable_usbdebug.c
+
 romstage-y += early_setup.c
-romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
+romstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 romstage-$(CONFIG_HUDSON_IMC_FWM) += imc.c
 romstage-y += smbus.c
 romstage-y += smbus_spd.c

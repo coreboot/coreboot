@@ -34,7 +34,8 @@ postcar-y += ramtop.c
 romstage-y += ramtop.c
 ramstage-y += ramtop.c
 
-romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += ../../sb800/enable_usbdebug.c
+bootblock-$(CONFIG_USBDEBUG) += ../../sb800/enable_usbdebug.c
+romstage-$(CONFIG_USBDEBUG) += ../../sb800/enable_usbdebug.c
 ramstage-$(CONFIG_USBDEBUG) += ../../sb800/enable_usbdebug.c
 
 ramstage-y   += smbus.c

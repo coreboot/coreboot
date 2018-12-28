@@ -683,7 +683,7 @@ static void migrate_ehci_debug(int is_recovery)
 		return;
 	}
 
-	if (IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE)) {
+	if (IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM)) {
 		/* Use state in CBMEM. */
 		dbg_info_cbmem = cbmem_find(CBMEM_ID_EHCI_DEBUG);
 		if (dbg_info_cbmem)
@@ -722,12 +722,13 @@ void usbdebug_init(void)
 	 * CBMEM_INIT_HOOKs for postcar and ramstage as we recover state
 	 * from CBMEM.
 	 */
-	if (IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE) && ENV_ROMSTAGE)
+	if (IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM)
+	    && (ENV_ROMSTAGE || ENV_BOOTBLOCK))
 		usbdebug_hw_init(false);
 
 	/* USB console init is done early in ramstage if it was
 	 * not done in romstage, this does not require CBMEM.
 	 */
-	if (!IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE) && ENV_RAMSTAGE)
+	if (!IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM) && ENV_RAMSTAGE)
 		usbdebug_hw_init(false);
 }

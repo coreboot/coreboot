@@ -15,7 +15,7 @@
 #include <soc/gpio_defs_cnp_h.h>
 #include <soc/irq.h>
 #include <soc/pcr_ids.h>
-
+#include "gpio_op.asl"
 
 Device (GPIO)
 {
@@ -106,20 +106,4 @@ Method (GADD, 1, NotSerialized)
 	Store (PCRB (Local0), Local2)
 	Add (Local2, PAD_CFG_BASE, Local2)
 	Return (Add (Local2, Multiply (Local1, 16)))
-}
-
-/*
- * Get GPIO Value
- * Arg0 - GPIO Number
- */
-Method (GRXS, 1, Serialized)
-{
-	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
-	Field (PREG, AnyAcc, NoLock, Preserve)
-	{
-		VAL0, 32
-	}
-	And (GPIORXSTATE_MASK, ShiftRight (VAL0, GPIORXSTATE_SHIFT), Local0)
-
-	Return (Local0)
 }

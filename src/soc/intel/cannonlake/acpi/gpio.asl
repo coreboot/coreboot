@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 #include <soc/gpio_defs.h>
 #include <soc/irq.h>
 #include <soc/pcr_ids.h>
-
+#include "gpio_op.asl"
 
 Device (GPIO)
 {
@@ -106,20 +106,4 @@ Method (GADD, 1, NotSerialized)
 	Store (PCRB (Local0), Local2)
 	Add (Local2, PAD_CFG_BASE, Local2)
 	Return (Add (Local2, Multiply (Local1, 16)))
-}
-
-/*
- * Get GPIO Value
- * Arg0 - GPIO Number
- */
-Method (GRXS, 1, Serialized)
-{
-	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
-	Field (PREG, AnyAcc, NoLock, Preserve)
-	{
-		VAL0, 32
-	}
-	And (GPIORXSTATE_MASK, ShiftRight (VAL0, GPIORXSTATE_SHIFT), Local0)
-
-	Return (Local0)
 }

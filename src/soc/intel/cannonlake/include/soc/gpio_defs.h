@@ -252,4 +252,5 @@
 
 #define GPIORXSTATE_MASK			0x1
 #define GPIORXSTATE_SHIFT			1
+#define GPIOTXSTATE_MASK			0x1
 #endif

@@ -34,6 +34,8 @@ extern char _car_stack_start[];
 extern char _car_stack_end[];
 #define _car_stack_size (_car_stack_end - _car_stack_start)
 
+extern char _car_ehci_dbg_info_start[];
+
 /*
  * The _car_relocatable_data_[start|end] symbols cover CAR data which is
  * relocatable once memory comes online. Variables with CAR_GLOBAL decoration

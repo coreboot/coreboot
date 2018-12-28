@@ -18,6 +18,7 @@
 #include <console/console.h>
 #include <console/usb.h>
 #include <arch/io.h>
+#include <arch/symbols.h>
 #include <arch/early_variables.h>
 #include <string.h>
 #include <cbmem.h>
@@ -61,6 +62,10 @@ static struct ehci_debug_info * glob_dbg_info_p CAR_GLOBAL;
 
 static inline struct ehci_debug_info *dbgp_ehci_info(void)
 {
+	if (IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM)
+	    && (ENV_ROMSTAGE || ENV_BOOTBLOCK || ENV_VERSTAGE))
+		glob_dbg_info_p =
+			(struct ehci_debug_info *)_car_ehci_dbg_info_start;
 	if (car_get_var(glob_dbg_info_p) == NULL)
 		car_set_var(glob_dbg_info_p, &glob_dbg_info);
 

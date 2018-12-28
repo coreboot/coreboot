@@ -50,9 +50,6 @@ asmlinkage void *romstage_main(unsigned long bist)
 		printk(BIOS_DEBUG, "Smashed stack detected in romstage!\n");
 	}
 
-	if (!IS_ENABLED(CONFIG_POSTCAR_STAGE))
-		return setup_stack_and_mtrrs();
-
 	platform_enter_postcar();
 
 	/* We do not return. */

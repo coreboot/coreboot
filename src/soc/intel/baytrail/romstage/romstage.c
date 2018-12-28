@@ -230,13 +230,6 @@ void romstage_common(struct romstage_params *params)
 	romstage_handoff_init(prev_sleep_state == ACPI_S3);
 }
 
-static inline uint32_t *stack_push(u32 *stack, u32 value)
-{
-	stack = &stack[-1];
-	*stack = value;
-	return stack;
-}
-
 #define ROMSTAGE_RAM_STACK_SIZE 0x5000
 
 /* setup_stack_and_mtrrs() determines the stack to use after

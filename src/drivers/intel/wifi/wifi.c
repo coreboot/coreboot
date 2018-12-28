@@ -255,9 +255,34 @@ static const char *intel_wifi_acpi_name(const struct device *dev)
 }
 #endif
 
+static void pci_dev_apply_quirks(struct device *dev)
+{
+	unsigned int cap;
+	uint16_t val;
+	struct device *root = dev->bus->dev;
+
+	switch (dev->device) {
+	case PCI_DEVICE_ID_TP_9260_SERIES_WIFI:
+		cap = pci_find_capability(root, PCI_CAP_ID_PCIE);
+		/* Check the LTR for root port and enable it */
+		if (cap) {
+			val = pci_read_config16(root, cap +
+				PCI_EXP_DEV_CAP2_OFFSET);
+			if (val & LTR_MECHANISM_SUPPORT) {
+				val = pci_read_config16(root, cap +
+					PCI_EXP_DEV_CTL_STS2_CAP_OFFSET);
+				val |= LTR_MECHANISM_EN;
+				pci_write_config16(root, cap +
+					PCI_EXP_DEV_CTL_STS2_CAP_OFFSET, val);
+			}
+		}
+	}
+}
+
 static void wifi_pci_dev_init(struct device *dev)
 {
 	pci_dev_init(dev);
+	pci_dev_apply_quirks(dev);
 
 	if (IS_ENABLED(CONFIG_ELOG)) {
 		uint32_t val;

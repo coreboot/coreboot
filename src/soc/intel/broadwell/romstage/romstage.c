@@ -18,6 +18,7 @@
 #include <arch/io.h>
 #include <arch/cbfs.h>
 #include <arch/early_variables.h>
+#include <bootblock_common.h>
 #include <bootmode.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -64,8 +65,7 @@ static void platform_enter_postcar(void)
 }
 
 /* Entry from cache-as-ram.inc. */
-asmlinkage void *romstage_main(unsigned long bist,
-				uint32_t tsc_low, uint32_t tsc_hi)
+static void romstage_main(uint64_t tsc, uint32_t bist)
 {
 	struct romstage_params rp = {
 		.bist = bist,
@@ -75,7 +75,7 @@ asmlinkage void *romstage_main(unsigned long bist,
 	post_code(0x30);
 
 	/* Save initial timestamp from bootblock. */
-	timestamp_init((((uint64_t)tsc_hi) << 32) | (uint64_t)tsc_low);
+	timestamp_init(tsc);
 
 	/* Save romstage begin */
 	timestamp_add_now(TS_START_ROMSTAGE);
@@ -106,8 +106,14 @@ asmlinkage void *romstage_main(unsigned long bist,
 	mainboard_romstage_entry(&rp);
 
 	platform_enter_postcar();
+}
 
-	return NULL;
+/* This wrapper enables easy transition towards C_ENVIRONMENT_BOOTBLOCK,
+ * keeping changes in cache_as_ram.S easy to manage.
+ */
+asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
+{
+	romstage_main(base_timestamp, bist);
 }
 
 /* Entry from the mainboard. */

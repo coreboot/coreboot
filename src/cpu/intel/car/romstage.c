@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <console/console.h>
 #include <cpu/intel/romstage.h>
 #include <cpu/x86/mtrr.h>
@@ -19,7 +20,7 @@
 
 #define DCACHE_RAM_ROMSTAGE_STACK_SIZE 0x2000
 
-asmlinkage void *romstage_main(unsigned long bist)
+static void romstage_main(unsigned long bist)
 {
 	int i;
 	const int num_guards = 4;
@@ -50,7 +51,12 @@ asmlinkage void *romstage_main(unsigned long bist)
 	}
 
 	platform_enter_postcar();
+}
 
-	/* We do not return. */
-	return NULL;
+/* This wrapper enables easy transition towards C_ENVIRONMENT_BOOTBLOCK,
+ * keeping changes in cache_as_ram.S easy to manage.
+ */
+asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
+{
+	romstage_main(bist);
 }

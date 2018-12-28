@@ -31,8 +31,7 @@ struct romstage_params {
 
 void mainboard_romstage_entry(struct romstage_params *params);
 void romstage_common(struct romstage_params *params);
-void *asmlinkage romstage_main(unsigned long bist, uint32_t tsc_lo,
-                                uint32_t tsc_high);
+
 void raminit(struct mrc_params *mp, int prev_sleep_state);
 void gfx_init(void);
 void tco_disable(void);

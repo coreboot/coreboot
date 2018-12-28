@@ -22,11 +22,12 @@
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
+.global bootblock_pre_c_entry
+
 .code32
 _cache_as_ram_setup:
 
-	/* Save the BIST result. */
-	movl	%eax, %ebp
+bootblock_pre_c_entry:
 
 cache_as_ram:
 	post_code(0x20)
@@ -167,22 +168,24 @@ addrsize_set_high:
 	movl	%eax, %cr0
 
 	/* Setup the stack. */
-	movl	$(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE), %eax
-	movl	%eax, %esp
-	/* Align the stack 16 bytes */
+	mov	$_car_stack_end, %esp
+
+	/* Need to align stack to 16 bytes at call instruction. Account for
+	the pushes below. */
 	andl	$0xfffffff0, %esp
-	/* Account for pushing the BIST result */
-	subl	$12, %esp
+	subl	$4, %esp
 
-	/* Restore the BIST result. */
-	movl	%ebp, %eax
-	movl	%esp, %ebp
-	pushl	%eax
+	/* push TSC and BIST to stack */
+	movd	%mm0, %eax
+	pushl	%eax 	/* BIST */
+	movd	%mm2, %eax
+	pushl	%eax	/* tsc[63:32] */
+	movd	%mm1, %eax
+	pushl	%eax 	/* tsc[31:0] */
 
-before_romstage:
+before_c_entry:
 	post_code(0x29)
-	/* Call romstage.c main function. */
-	call	romstage_main
+	call	bootblock_c_entry_bist
 
 	/* Should never see this postcode */
 	post_code(POST_DEAD_CODE)

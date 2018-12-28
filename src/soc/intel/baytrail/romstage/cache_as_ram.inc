@@ -176,23 +176,24 @@ addrsize_set_high:
 	post_code(0x29)
 
 	/* Setup the stack. */
-	movl	$(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE), %eax
-	movl	%eax, %esp
+	mov	$_car_stack_end, %esp
 
-	/* Push the initial TSC value from boot block. The low 32 bits are
-	 * in mm1, and the high 32 bits are in mm2. */
-	movd	%mm2, %eax
-	pushl	%eax
-	movd	%mm1, %eax
-	pushl	%eax
-	/* Restore the BIST result. */
+	/* Need to align stack to 16 bytes at call instruction. Account for
+	the pushes below. */
+	andl	$0xfffffff0, %esp
+	subl	$4, %esp
+
+	/* push TSC and BIST to stack */
 	movd	%mm0, %eax
-	pushl	%eax
+	pushl	%eax 	/* BIST */
+	movd	%mm2, %eax
+	pushl	%eax	/* tsc[63:32] */
+	movd	%mm1, %eax
+	pushl	%eax 	/* tsc[31:0] */
 
-before_romstage:
+before_c_entry:
 	post_code(0x2a)
-	/* Call romstage.c main function. */
-	call	romstage_main
+	call	bootblock_c_entry_bist
 
 	/* Should never see this postcode */
 	post_code(POST_DEAD_CODE)

@@ -13,8 +13,8 @@
 
 /*
  * Store the initial timestamp for booting in mmx registers. This works
- * because the bootblock isn't being compiled with MMX support so mm0 and
- * mm1 will be preserved into romstage.
+ * because the bootblock isn't being compiled with MMX support so mm1 and
+ * mm2 will be preserved into romstage.
  */
 	.code32
 
@@ -22,12 +22,13 @@
 stash_timestamp:
 
 	/* Save the BIST value */
-	movl	%eax, %ebp
+	movl	%eax, %ebx
 
 	finit
 	rdtsc
-	movd	%eax, %mm0
-	movd	%edx, %mm1
+	movd	%ebx, %mm0
+	movd	%eax, %mm1
+	movd	%edx, %mm2
 
 	/* Restore the BIST value to %eax */
-	movl	%ebp, %eax
+	movl	%ebx, %eax

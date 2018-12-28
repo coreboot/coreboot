@@ -36,9 +36,6 @@
 #define NoEvictMod_MSR 0x2e0
 #define BBL_CR_CTL3_MSR 0x11e
 
-	/* Save the BIST result. */
-	movl	%eax, %ebp
-
 cache_as_ram:
 	post_code(0x20)
 
@@ -183,14 +180,13 @@ addrsize_set_high:
 	movl	%eax, %esp
 
 	/* Push the initial TSC value from boot block. The low 32 bits are
-	 * in mm0, and the high 32 bits are in mm1. */
+	 * in mm1, and the high 32 bits are in mm2. */
+	movd	%mm2, %eax
+	pushl	%eax
 	movd	%mm1, %eax
 	pushl	%eax
-	movd	%mm0, %eax
-	pushl	%eax
 	/* Restore the BIST result. */
-	movl	%ebp, %eax
-	movl	%esp, %ebp
+	movd	%mm0, %eax
 	pushl	%eax
 
 before_romstage:

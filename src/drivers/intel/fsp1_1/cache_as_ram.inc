@@ -29,11 +29,20 @@
 #define LHLT_DELAY	0x50000		/* I/O delay between post codes on failure */
 
 	/*
-	 * eax:  BIST value
-	 * mm0:  low 32-bits of TSC value
-	 * mm1:  high 32-bits of TSC value
+	 * Per FSP1.1 specs, following registers are preserved:
+	 * EBX, EDI, ESI, EBP, MM0, MM1
+	 *
+	 * Shift values to release MM2.
+	 * mm0 -> edi:  BIST value
+	 * mm1 -> mm0:  low 32-bits of TSC value
+	 * mm2 -> mm1:  high 32-bits of TSC value
 	 */
-	movl	%eax, %edi
+	movd	%mm0, %edi
+	movd	%mm1, %eax
+	movd	%eax, %mm0
+	movd	%mm2, %eax
+	movd	%eax, %mm1
+
 cache_as_ram:
 	post_code(0x20)
 

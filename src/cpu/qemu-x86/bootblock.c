@@ -18,8 +18,6 @@
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 
-asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist);
-
 asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
 {
 	post_code(0x05);

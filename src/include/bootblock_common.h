@@ -36,6 +36,7 @@ void bootblock_soc_init(void);
  * C code entry point for the boot block.
  */
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp);
+asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist);
 
 /*
  * This is a the same as the bootblock main(), with the difference that it does

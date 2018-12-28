@@ -20,6 +20,6 @@ romstage-y += memory.c
 ramstage-y += gpio.c
 ramstage-y += nhlt.c
 ramstage-y += mainboard.c
-
-smm-y += ec.c
 ramstage-y += ec.c
+
+smm-$(CONFIG_HAVE_SMI_HANDLER) += ec.c

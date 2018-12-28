@@ -86,6 +86,10 @@
 	_car_global_end = .;
 	_car_relocatable_data_end = .;
 
+#if !IS_ENABLED(CONFIG_C_ENVIRONMENT_BOOTBLOCK)
+	_car_stack_start = .;
+	_car_stack_end = _car_region_end;
+#endif
 	_car_region_end = . + CONFIG_DCACHE_RAM_SIZE - (. - _car_region_start);
 }
 

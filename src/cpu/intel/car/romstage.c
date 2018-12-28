@@ -28,15 +28,14 @@ asmlinkage void *romstage_main(unsigned long bist)
 	u32 size;
 
 	/* Size of unallocated CAR. */
-	size = _car_region_end - _car_relocatable_data_end;
-	size = ALIGN_DOWN(size, 16);
+	size = ALIGN_DOWN(_car_stack_size, 16);
 
 	size = MIN(size, DCACHE_RAM_ROMSTAGE_STACK_SIZE);
 	if (size < DCACHE_RAM_ROMSTAGE_STACK_SIZE)
 		printk(BIOS_DEBUG, "Romstage stack size limited to 0x%x!\n",
 			size);
 
-	stack_base = (u32 *) (_car_region_end - size);
+	stack_base = (u32 *) (_car_stack_end - size);
 
 	for (i = 0; i < num_guards; i++)
 		stack_base[i] = stack_guard;

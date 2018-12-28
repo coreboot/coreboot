@@ -5,6 +5,7 @@ chip soc/intel/cannonlake
 	# route. i.e. If this route changes then the affected GPE
 	# offset bits also need to be changed.
 	# DW1 is used by:
+	#   - GPP_C1  - PCIE_14_WLAN_WAKE_ODL
 	#   - GPP_C21 - H1_PCH_INT_ODL
 	register "gpe0_dw0" = "PMC_GPP_A"
 	register "gpe0_dw1" = "PMC_GPP_C"
@@ -81,7 +82,13 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcClkReq[1]" = "1"
 
 	# GPIO for SD card detect
-        register "sdcard_cd_gpio" = "GPP_G5"
+	register "sdcard_cd_gpio" = "GPP_G5"
+
+	# PCIe port 14 for M.2 E-key WLAN
+	register "PcieRpEnable[13]" = "1"
+	# RP 14 uses CLK SRC 3
+	register "PcieClkSrcUsage[3]" = "13"
+	register "PcieClkSrcClkReq[3]" = "3"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end
@@ -225,7 +232,13 @@ chip soc/intel/cannonlake
 		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
-		device pci 1d.4 off end # PCI Express Port 13 (x4)
+		device pci 1d.4 off end # PCI Express port 13
+		device pci 1d.5 on
+			chip drivers/intel/wifi
+				register "wake" = "GPE0_DW1_01"
+				device pci 00.0 on  end
+			end
+		end # PCI Express Port 14 (x4)
 		device pci 1e.0 on  end # UART #0
 		device pci 1e.1 off end # UART #1
 		device pci 1e.2 on

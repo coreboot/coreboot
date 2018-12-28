@@ -27,6 +27,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_A21, NONE, PLTRST, LEVEL, INVERT),
 	/* SRCCLKREQ1 */
 	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF1),
+	/* PCIE_14_WLAN_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF1),
 	/* H1_SLAVE_SPI_CS_L */
 	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),
 	/* H1_SLAVE_SPI_CLK */
@@ -37,10 +39,14 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
 	/* TOUCHSCREEN_DIS_L */
 	PAD_CFG_GPO(GPP_C4, 0, DEEP),
-	/* GPP_C11_TP => NC */
-	PAD_NC(GPP_C11, DN_20K),
-	/* GPP_C10_TP => NC */
+	/* PCIE_14_WLAN_WAKE_ODL */
+	PAD_CFG_GPI_SCI_LOW(GPP_C1, NONE, DEEP, EDGE_SINGLE),
+	/* GPP_C10_TP */
 	PAD_NC(GPP_C10, DN_20K),
+	/* GPP_C11_TP */
+	PAD_NC(GPP_C11, DN_20K),
+	/* BT_DISABLE_L */
+	PAD_CFG_GPO(GPP_C14, 1, DEEP),
 	/* PCH_I2C_TRACKPAD_SDA */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 	/* PCH_I2C_TRACKPAD_SCL */
@@ -55,6 +61,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_C21, NONE, DEEP, LEVEL, INVERT),
 	/* EC_IN_RW_OD */
 	PAD_CFG_GPI(GPP_C22, NONE, DEEP),
+	/* WLAN_PE_RST# */
+	PAD_CFG_GPO(GPP_C23, 1, DEEP),
 	/* TOUCHSCREEN_RST_L */
 	PAD_CFG_GPO(GPP_D15, 0, DEEP),
 	/* TOUCHSCREEN_INT_L */
@@ -135,6 +143,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
 	/* H1_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_C21, NONE, DEEP, LEVEL, INVERT),
+	/* WLAN_PE_RST# */
+	PAD_CFG_GPO(GPP_C23, 1, DEEP),
 };
 
 const struct pad_config *__weak variant_early_gpio_table(size_t *num)

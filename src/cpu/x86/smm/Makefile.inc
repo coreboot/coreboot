@@ -47,8 +47,8 @@ ramstage-srcs += $(obj)/cpu/x86/smm/smmstub.manual
 
 # SMM Stub Module. The stub is used as a trampoline for relocation and normal
 # SMM handling.
-$(obj)/smmstub/smmstub.o: $$(smmstub-objs)
-	$(CC_smmstub) $(CFLAGS_smmstub) -nostdlib -r -o $@ $^
+$(obj)/smmstub/smmstub.o: $$(smmstub-objs) $(COMPILER_RT_smmstub)
+	$(LD_smmstub) -nostdlib -r -o $@ $(COMPILER_RT_FLAGS_smmstub) --whole-archive --start-group $(smmstub-objs) --no-whole-archive $(COMPILER_RT_smmstub) --end-group
 
 # Link the SMM stub module with a 0-byte heap.
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)

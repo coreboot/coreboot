@@ -12,7 +12,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <arch/early_variables.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <memory_info.h>
@@ -21,11 +20,11 @@
 #include <fsp/soc_binding.h>
 #include <string.h>
 
-static size_t memory_size_mib CAR_GLOBAL;
+static size_t memory_size_mib;
 
 size_t memory_in_system_in_mib(void)
 {
-	return car_get_var(memory_size_mib);
+	return memory_size_mib;
 }
 
 static void accumulate_channel_memory(int density, int dual_rank)
@@ -61,7 +60,7 @@ static void accumulate_channel_memory(int density, int dual_rank)
 
 	sz *= GiB / MiB;
 
-	car_set_var(memory_size_mib, car_get_var(memory_size_mib) + sz);
+	memory_size_mib += sz;
 }
 
 size_t iohole_in_mib(void)

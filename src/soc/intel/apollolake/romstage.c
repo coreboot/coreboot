@@ -17,7 +17,6 @@
  */
 
 #include <arch/cpu.h>
-#include <arch/early_variables.h>
 #include <device/pci_ops.h>
 #include <arch/symbols.h>
 #include <assert.h>
@@ -57,7 +56,7 @@ static const uint8_t hob_variable_guid[16] = {
 	0x8d, 0xe6, 0xc0, 0x44, 0x64, 0x1d, 0xe9, 0x42,
 };
 
-static uint32_t fsp_version CAR_GLOBAL;
+static uint32_t fsp_version;
 
 /* High Performance Event Timer Configuration */
 #define P2SB_HPTC				0x60
@@ -236,7 +235,7 @@ asmlinkage void car_stage_entry(void)
 							&var_size);
 	if (new_var_data)
 		mrc_cache_stash_data(MRC_VARIABLE_DATA,
-				car_get_var(fsp_version), new_var_data,
+				fsp_version, new_var_data,
 				var_size);
 	else
 		printk(BIOS_ERR, "Failed to determine variable data\n");
@@ -410,7 +409,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		mupd->FspmConfig.VariableNvsBufferPtr = rdev_mmap_full(&rdev);
 	}
 
-	car_set_var(fsp_version, version);
+	fsp_version = version;
 
 }
 

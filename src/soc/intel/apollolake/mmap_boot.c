@@ -16,7 +16,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <boot_device.h>
 #include <cbfs.h>
 #include <commonlib/region.h>
@@ -57,17 +56,17 @@
  *
  */
 
-static size_t bios_size CAR_GLOBAL;
+static size_t bios_size;
 
-static struct mem_region_device shadow_dev CAR_GLOBAL;
-static struct xlate_region_device real_dev CAR_GLOBAL;
+static struct mem_region_device shadow_dev;
+static struct xlate_region_device real_dev;
 
 static void bios_mmap_init(void)
 {
 	size_t size, start, bios_mapped_size;
 	uintptr_t base;
 
-	size = car_get_var(bios_size);
+	size = bios_size;
 
 	/* If bios_size is initialized, then bail out. */
 	if (size != 0)
@@ -83,34 +82,25 @@ static void bios_mmap_init(void)
 	 */
 	bios_mapped_size = size - 256 * KiB;
 
-	struct mem_region_device *shadow_dev_ptr;
-	struct xlate_region_device *real_dev_ptr;
-	shadow_dev_ptr = car_get_var_ptr(&shadow_dev);
-	real_dev_ptr = car_get_var_ptr(&real_dev);
-
-	mem_region_device_ro_init(shadow_dev_ptr, (void *)base,
+	mem_region_device_ro_init(&shadow_dev, (void *)base,
 			       bios_mapped_size);
 
-	xlate_region_device_ro_init(real_dev_ptr, &shadow_dev_ptr->rdev,
+	xlate_region_device_ro_init(&real_dev, &shadow_dev.rdev,
 				 start, bios_mapped_size,
 				 CONFIG_ROM_SIZE);
 
-	car_set_var(bios_size, size);
+	bios_size = size;
 }
 
 const struct region_device *boot_device_ro(void)
 {
 	bios_mmap_init();
 
-	struct xlate_region_device *real_dev_ptr;
-	real_dev_ptr = car_get_var_ptr(&real_dev);
-
-	return &real_dev_ptr->rdev;
+	return &real_dev.rdev;
 }
 
 static int iafw_boot_region_properties(struct cbfs_props *props)
 {
-	struct xlate_region_device *real_dev_ptr;
 	struct region *real_dev_reg;
 	struct region regn;
 
@@ -123,8 +113,7 @@ static int iafw_boot_region_properties(struct cbfs_props *props)
 
 	/* Check that we are within the memory mapped area. It's too
 	   easy to forget the SRAM mapping when crafting an FMAP file. */
-	real_dev_ptr = car_get_var_ptr(&real_dev);
-	real_dev_reg = &real_dev_ptr->sub_region;
+	real_dev_reg = &real_dev.sub_region;
 	if (region_is_subregion(real_dev_reg, &regn)) {
 		printk(BIOS_DEBUG, "CBFS @ %zx size %zx\n",
 		       props->offset, props->size);

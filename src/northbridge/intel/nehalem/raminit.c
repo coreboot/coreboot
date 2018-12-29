@@ -34,7 +34,6 @@
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
 #include <mrc_cache.h>
-#include <arch/early_variables.h>
 
 #include "nehalem.h"
 
@@ -225,7 +224,7 @@ struct raminfo {
 };
 
 /* Global allocation of timings_car */
-timing_bounds_t timings_car[64] CAR_GLOBAL;
+timing_bounds_t timings_car[64];
 
 static void
 write_500(struct raminfo *info, int channel, u32 val, u16 addr, int bits,

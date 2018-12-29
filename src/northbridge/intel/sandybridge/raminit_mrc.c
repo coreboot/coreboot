@@ -238,10 +238,9 @@ void sdram_initialize(struct pei_data *pei_data)
 		die("UEFI PEI System Agent not found.\n");
 	}
 
-#if IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE)
 	/* mrc.bin reconfigures USB, so reinit it to have debug */
-	usbdebug_init();
-#endif
+	if (IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE))
+		usbdebug_hw_init(true);
 
 	/* For reference print the System Agent version
 	 * after executing the UEFI PEI stage.

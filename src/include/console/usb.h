@@ -21,6 +21,7 @@
 #include <stdint.h>
 
 void usbdebug_init(void);
+int usbdebug_hw_init(bool force);
 
 void usb_tx_byte(int idx, unsigned char data);
 void usb_tx_flush(int idx);

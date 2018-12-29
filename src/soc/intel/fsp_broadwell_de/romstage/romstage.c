@@ -21,6 +21,7 @@
 #include <arch/cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <console/usb.h>
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
@@ -101,10 +102,9 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 	printk(BIOS_DEBUG, "%s status: %x  hob_list_ptr: %x\n",
 		__func__, (u32) status, (u32) hob_list_ptr);
 
-#if IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE)
 	/* FSP reconfigures USB, so reinit it to have debug */
-	usbdebug_init();
-#endif	/* IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE) */
+	if (IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE))
+		usbdebug_hw_init(true);
 
 	printk(BIOS_DEBUG, "FSP Status: 0x%0x\n", (u32)status);
 

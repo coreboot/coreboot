@@ -648,11 +648,19 @@ void usbdebug_disable(void)
 
 #endif
 
-static int usbdebug_hw_init(void)
+int usbdebug_hw_init(bool force)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 	unsigned int ehci_base, dbg_offset;
 
+	if (dbgp_enabled() && !force)
+		return 0;
+
+	/* Do not attempt slow gadget init in postcar. */
+	if (ENV_POSTCAR)
+		return -1;
+
+	/* Do full init if state claims we are still not enabled. */
 	if (ehci_debug_hw_enable(&ehci_base, &dbg_offset))
 		return -1;
 	return usbdebug_init_(ehci_base, dbg_offset, dbg_info);
@@ -682,12 +690,7 @@ static void migrate_ehci_debug(int is_recovery)
 			car_set_var(glob_dbg_info_p, dbg_info_cbmem);
 	}
 
-	/* Redo full init in ramstage if state claims we
-	 * are still not enabled. Should never happen. */
-	rv = dbgp_enabled() ? 0 : -1;
-	if (!ENV_POSTCAR && rv < 0)
-		rv = usbdebug_hw_init();
-
+	rv = usbdebug_hw_init(false);
 	if (rv < 0)
 		printk(BIOS_DEBUG, "usbdebug: Failed hardware init\n");
 	else
@@ -720,11 +723,11 @@ void usbdebug_init(void)
 	 * from CBMEM.
 	 */
 	if (IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE) && ENV_ROMSTAGE)
-		usbdebug_hw_init();
+		usbdebug_hw_init(false);
 
 	/* USB console init is done early in ramstage if it was
 	 * not done in romstage, this does not require CBMEM.
 	 */
 	if (!IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE) && ENV_RAMSTAGE)
-		usbdebug_hw_init();
+		usbdebug_hw_init(false);
 }

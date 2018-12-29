@@ -92,7 +92,7 @@ void rangeley_sb_early_initialization(void);
 
 /* PCI Configuration Space (D31:F0): LPC */
 #define SOC_LPC_DEV		PCI_DEV(0, 0x1f, 0)
-#define SOC_LPC_DEVFN 0, PCI_DEVFN(0x1f,0)
+#define SOC_LPC_DEVFN		PCI_DEVFN(0x1f, 0)
 
 
 /* Southbridge IO BARs */

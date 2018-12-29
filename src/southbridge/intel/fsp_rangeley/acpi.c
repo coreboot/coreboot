@@ -34,7 +34,7 @@ typedef struct southbridge_intel_fsp_rangeley_config config_t;
 void acpi_fill_in_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
-	struct device *lpcdev = dev_find_slot(SOC_LPC_DEVFN);
+	struct device *lpcdev = dev_find_slot(0, SOC_LPC_DEVFN);
 	u16 pmbase = pci_read_config16(lpcdev, ABASE) & 0xfff0;
 	config_t *config = lpcdev->chip_info;
 

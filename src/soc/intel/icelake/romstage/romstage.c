@@ -14,7 +14,6 @@
  */
 
 #include <arch/io.h>
-#include <arch/early_variables.h>
 #include <assert.h>
 #include <chip.h>
 #include <cpu/x86/mtrr.h>
@@ -33,7 +32,7 @@
 #include <string.h>
 #include <timestamp.h>
 
-static struct chipset_power_state power_state CAR_GLOBAL;
+static struct chipset_power_state power_state;
 
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
 {	\
@@ -112,7 +111,7 @@ asmlinkage void car_stage_entry(void)
 	bool s3wake;
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
-	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
+	struct chipset_power_state *ps = &power_state;
 
 	console_init();
 

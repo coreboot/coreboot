@@ -14,7 +14,6 @@
  */
 
 #include <arch/acpi.h>
-#include <arch/early_variables.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
 #include <soc/gpio.h>
@@ -31,7 +30,7 @@ enum rec_mode_state {
 	REC_MODE_NOT_REQUESTED,
 	REC_MODE_REQUESTED,
 };
-static enum rec_mode_state saved_rec_mode CAR_GLOBAL;
+static enum rec_mode_state saved_rec_mode;
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -85,7 +84,7 @@ int get_write_protect_state(void)
 
 int get_recovery_mode_switch(void)
 {
-	enum rec_mode_state state = car_get_var(saved_rec_mode);
+	enum rec_mode_state state = saved_rec_mode;
 	uint8_t recovery_button_state = 0;
 
 	/* Check the global variable first. */
@@ -106,7 +105,7 @@ int get_recovery_mode_switch(void)
 			REC_MODE_REQUESTED : REC_MODE_NOT_REQUESTED;
 
 	/* Store the state in case this is called again in verstage. */
-	car_set_var(saved_rec_mode, state);
+	saved_rec_mode = state;
 
 	return state == REC_MODE_REQUESTED;
 }

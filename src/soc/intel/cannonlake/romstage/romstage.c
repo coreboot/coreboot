@@ -14,7 +14,6 @@
  */
 
 #include <arch/io.h>
-#include <arch/early_variables.h>
 #include <assert.h>
 #include <chip.h>
 #include <cpu/x86/mtrr.h>

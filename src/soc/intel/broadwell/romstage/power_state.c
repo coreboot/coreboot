@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <arch/io.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -30,14 +29,14 @@
 #include <soc/pm.h>
 #include <soc/romstage.h>
 
-static struct chipset_power_state power_state CAR_GLOBAL;
+static struct chipset_power_state power_state;
 
 static void migrate_power_state(int is_recovery)
 {
 	struct chipset_power_state *ps_cbmem;
 	struct chipset_power_state *ps_car;
 
-	ps_car = car_get_var_ptr(&power_state);
+	ps_car = &power_state;
 	ps_cbmem = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*ps_cbmem));
 
 	if (ps_cbmem == NULL) {
@@ -99,7 +98,7 @@ static void dump_power_state(struct chipset_power_state *ps)
 /* Fill power state structure from ACPI PM registers */
 struct chipset_power_state *fill_power_state(void)
 {
-	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
+	struct chipset_power_state *ps = &power_state;
 
 	ps->pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
 	ps->pm1_en = inw(ACPI_BASE_ADDRESS + PM1_EN);

@@ -17,7 +17,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <arch/io.h>
-#include <arch/early_variables.h>
 #include <lib.h>
 #include <timer.h>
 #include <console/console.h>
@@ -32,36 +31,31 @@
 
 #define SPI_DEBUG_DRIVER IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 
-static uintptr_t spibar CAR_GLOBAL;
-
-static uintptr_t get_spibase(void)
-{
-	return car_get_var(spibar);
-}
+static uintptr_t spibar;
 
 static void set_spibar(uintptr_t base)
 {
-	car_set_var(spibar, base);
+	spibar = base;
 }
 
 static inline uint8_t spi_read8(uint8_t reg)
 {
-	return read8((void *)(get_spibase() + reg));
+	return read8((void *)(spibar + reg));
 }
 
 static inline uint32_t spi_read32(uint8_t reg)
 {
-	return read32((void *)(get_spibase() + reg));
+	return read32((void *)(spibar + reg));
 }
 
 static inline void spi_write8(uint8_t reg, uint8_t val)
 {
-	write8((void *)(get_spibase() + reg), val);
+	write8((void *)(spibar + reg), val);
 }
 
 static inline void spi_write32(uint8_t reg, uint32_t val)
 {
-	write32((void *)(get_spibase() + reg), val);
+	write32((void *)(spibar + reg), val);
 }
 
 static void dump_state(const char *str)
@@ -75,7 +69,7 @@ static void dump_state(const char *str)
 	printk(BIOS_DEBUG, "TxByteCount: %x\n", spi_read8(SPI_TX_BYTE_COUNT));
 	printk(BIOS_DEBUG, "RxByteCount: %x\n", spi_read8(SPI_RX_BYTE_COUNT));
 	printk(BIOS_DEBUG, "CmdCode: %x\n", spi_read8(SPI_CMD_CODE));
-	hexdump((void *)(get_spibase() + SPI_FIFO), SPI_FIFO_DEPTH);
+	hexdump((void *)(spibar + SPI_FIFO), SPI_FIFO_DEPTH);
 }
 
 static int wait_for_ready(void)

@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <arch/acpi.h>
 #include <cpu/x86/mtrr.h>
 #include <cbfs.h>
@@ -613,23 +612,20 @@ const void *agesawrapper_locate_module(const char name[8])
 	return (AMD_MODULE_HEADER *)image->ModuleInfoOffset;
 }
 
-static MODULE_ENTRY agesa_dispatcher CAR_GLOBAL;
+static MODULE_ENTRY agesa_dispatcher;
 
 MODULE_ENTRY agesa_get_dispatcher(void)
 {
 	const AMD_MODULE_HEADER *module;
 	static const char id[8] = AGESA_ID;
-	MODULE_ENTRY val = car_get_var(agesa_dispatcher);
 
-	if (val != NULL)
-		return val;
+	if (agesa_dispatcher != NULL)
+		return agesa_dispatcher;
 
 	module = agesawrapper_locate_module(id);
 	if (!module)
 		return NULL;
 
-	val = module->ModuleDispatcher;
-	car_set_var(agesa_dispatcher, val);
-
-	return val;
+	agesa_dispatcher = module->ModuleDispatcher;
+	return agesa_dispatcher;
 }

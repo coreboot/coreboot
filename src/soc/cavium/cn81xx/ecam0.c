@@ -273,7 +273,7 @@ static void ecam0_init(struct device *dev)
 	u32 reg32;
 
 	printk(BIOS_INFO, "ECAM0: init\n");
-	const struct device *bridge = dev_find_slot(0, PCI_DEVFN(1, 0));
+	const struct device *bridge = pcidev_on_root(1, 0);
 	if (!bridge) {
 		printk(BIOS_INFO, "ECAM0: ERROR: PCI 00:01.0 not found.\n");
 		return;
@@ -287,7 +287,7 @@ static void ecam0_init(struct device *dev)
 	/* Program secure ARI capability on bus 1 */
 	child_last = NULL;
 	for (i = 0; i <= PCI_DEVFN(0x1f, 7); i++) {
-		child = dev_find_slot(bridge->link_list->secondary, i);
+		child = pcidev_path_behind(bridge->link_list, i);
 		if (!child || !child->enabled)
 			continue;
 
@@ -306,7 +306,7 @@ static void ecam0_init(struct device *dev)
 	/* Program insecure ARI capability on bus 1 */
 	child_last = NULL;
 	for (i = 0; i <= PCI_DEVFN(0x1f, 7); i++) {
-		child = dev_find_slot(bridge->link_list->secondary, i);
+		child = pcidev_path_behind(bridge->link_list, i);
 		if (!child)
 			continue;
 		config = child->chip_info;
@@ -327,7 +327,7 @@ static void ecam0_init(struct device *dev)
 
 	/* Enable / disable devices on bus 0 */
 	for (i = 0; i <= 0x1f; i++) {
-		child = dev_find_slot(0, PCI_DEVFN(i, 0));
+		child = pcidev_on_root(i, 0);
 		config = child ? child->chip_info : NULL;
 		if (child && child->enabled && config && !config->secure)
 			enable_device(i);
@@ -337,7 +337,7 @@ static void ecam0_init(struct device *dev)
 
 	/* Enable / disable devices and functions on bus 1 */
 	for (i = 0; i <= PCI_DEVFN(0x1f, 7); i++) {
-		child = dev_find_slot(bridge->link_list->secondary, i);
+		child = pcidev_path_behind(bridge->link_list, i);
 		config = child ? child->chip_info : NULL;
 		if (child && child->enabled &&
 		    ((config && !config->secure) || !config))
@@ -349,7 +349,7 @@ static void ecam0_init(struct device *dev)
 	/* Apply IRQ on PCI devices */
 	/* UUA */
 	for (i = 0; i < 4; i++) {
-		child = dev_find_slot(bridge->link_list->secondary,
+		child = pcidev_path_behind(bridge->link_list,
 				      PCI_DEVFN(8, i));
 		if (!child)
 			continue;

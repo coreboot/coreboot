@@ -162,6 +162,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		dev->enabled = 0;
 	params->XdciEnable = dev->enabled;
 
+	/* Enable CNVi Wifi if enabled in device tree */
+	dev = dev_find_slot(0, PCH_DEVFN_CNViWIFI);
+	params->PchCnviMode = dev->enabled;
+
 	/* PCI Express */
 	for (i = 0; i < ARRAY_SIZE(config->PcieClkSrcUsage); i++) {
 		if (config->PcieClkSrcUsage[i] == 0)

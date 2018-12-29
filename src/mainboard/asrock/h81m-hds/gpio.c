@@ -14,9 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#ifndef ASROCK_H81M_HDS_GPIO_H
-#define ASROCK_H81M_HDS_GPIO_H
-
 #include <southbridge/intel/common/gpio.h>
 
 static const struct pch_gpio_set1 pch_gpio_set1_mode = {
@@ -164,5 +161,3 @@ const struct pch_gpio_map mainboard_gpio_map = {
 		.reset		= &pch_gpio_set3_reset,
 	},
 };
-
-#endif /* ASROCK_H81M_HDS_GPIO_H */

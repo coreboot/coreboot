@@ -20,10 +20,10 @@
 #include <cpu/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/pei_data.h>
+#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct6776/nct6776.h>
-#include "gpio.h"
 
 static const struct rcba_config_instruction rcba_config[] = {
 	RCBA_SET_REG_16(D31IR, DIR_ROUTE(PIRQA, PIRQD, PIRQC, PIRQA)),

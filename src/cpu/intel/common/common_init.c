@@ -43,8 +43,9 @@ void set_feature_ctrl_vmx(void)
 	msr = rdmsr(IA32_FEATURE_CONTROL);
 
 	if (msr.lo & (1 << 0)) {
-		printk(BIOS_ERR, "IA32_FEATURE_CONTROL is locked, so %s will do nothing\n",
-			__func__);
+		printk(BIOS_DEBUG, "IA32_FEATURE_CONTROL already locked; ");
+		printk(BIOS_DEBUG, "VMX status: %s\n", msr.lo & (1 << 2)  ?
+			"enabled" : "disabled");
 		/* IA32_FEATURE_CONTROL locked. If we set it again we get an
 		 * illegal instruction
 		 */
@@ -75,8 +76,7 @@ void set_feature_ctrl_lock(void)
 	msr = rdmsr(IA32_FEATURE_CONTROL);
 
 	if (msr.lo & (1 << 0)) {
-		printk(BIOS_ERR, "IA32_FEATURE_CONTROL is locked, so %s will do nothing\n",
-			__func__);
+		printk(BIOS_DEBUG, "IA32_FEATURE_CONTROL already locked; ");
 		/* IA32_FEATURE_CONTROL locked. If we set it again we get an
 		 * illegal instruction
 		 */

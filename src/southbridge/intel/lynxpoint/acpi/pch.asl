@@ -81,7 +81,7 @@ Scope(\)
 #include "audio.asl"
 
 // PCI Express Ports 0:1c.x
-#include "pcie.asl"
+#include <southbridge/intel/common/acpi/pcie.asl>
 
 // USB 0:1d.0 and 0:1a.0
 #include "usb.asl"

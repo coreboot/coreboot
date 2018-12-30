@@ -163,7 +163,7 @@ Scope(\)
 #include "audio.asl"
 
 // PCI Express Ports
-#include "pcie.asl"
+#include <southbridge/intel/common/acpi/pcie.asl>
 
 // USB
 #include "usb.asl"

@@ -16,8 +16,14 @@
 
 #include <variant/onboard.h>
 
-#if !CONFIG(BOARD_GOOGLE_BUDDY)
+/*
+ * WLAN on Buddy connected to RP4, becomes RP2 after coalesce
+ */
+#if CONFIG(BOARD_GOOGLE_BUDDY)
+Scope (\_SB.PCI0.RP02)
+#else
 Scope (\_SB.PCI0.RP01)
+#endif
 {
 	Device (WLAN)
 	{
@@ -35,7 +41,6 @@ Scope (\_SB.PCI0.RP01)
 		}
 	}
 }
-#endif
 
 #include <variant/acpi/mainboard.asl>
 

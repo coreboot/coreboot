@@ -72,6 +72,9 @@ asmlinkage void console_init(void)
 {
 	init_log_level();
 
+	if (IS_ENABLED(CONFIG_DEBUG_CONSOLE_INIT))
+		car_set_var(console_inited, 1);
+
 #if IS_ENABLED(CONFIG_EARLY_PCI_BRIDGE)
 	if (!ENV_SMM && !ENV_RAMSTAGE)
 		pci_early_bridge_init();

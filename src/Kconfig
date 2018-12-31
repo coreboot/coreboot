@@ -782,6 +782,18 @@ config DEBUG_ACPI
 
 	  If unsure, say N.
 
+config DEBUG_CONSOLE_INIT
+	bool "Debug console initialisation code"
+	default n
+	help
+	  With this option printk()'s are attempted before console hardware
+	  initialisation has been completed. Your mileage may vary.
+
+	  Typically you will need to modify source in console_hw_init() such
+	  that a working console appears before the one you want to debug.
+
+	  If unsure, say N.
+
 # Only visible if debug level is DEBUG (7) or SPEW (8) as it does additional
 # printk(BIOS_DEBUG, ...) calls.
 config REALMODE_DEBUG

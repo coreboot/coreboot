@@ -19,7 +19,7 @@ Scope (\_SB.PCI0.I2C0)
 	Device (RTEK)
 	{
 		Name (_HID, "10EC5650")
-		Name (_CID, "10EC5650")
+		Name (_CID, "INTCCFFD")
 		Name (_DDN, "RTEK Codec Controller ")
 		Name (_UID, 1)
 

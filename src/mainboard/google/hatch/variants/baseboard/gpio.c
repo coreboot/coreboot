@@ -55,6 +55,22 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E11, NONE, DEEP, NF1),
 	/* USB_A_OC_OD USB_OC3*/
 	PAD_CFG_NF(GPP_E12, NONE, DEEP, NF1),
+	/* USB_C0_DP_HPD */
+	PAD_CFG_NF(GPP_E13, NONE, DEEP, NF1),
+	/* DDI2_HPD_ODL */
+	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
+	/* DDPD_HPD2 =>  NC */
+	PAD_NC(GPP_E15, DN_20K),
+	/* DDPE_HPD2 => NC */
+	PAD_NC(GPP_E16, DN_20K),
+	/* EDP_HPD */
+	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF1),
+	/* DDPB_CTRLCLK => NC */
+	PAD_NC(GPP_E18, DN_20K),
+	/* DDPC_CTRLCLK => NC */
+	PAD_NC(GPP_E20, DN_20K),
+	/* DDPD_CTRLCLK => NC */
+	PAD_NC(GPP_E22, DN_20K),
 	/* PCH_MEM_STRAP0 */
 	PAD_CFG_GPI(GPP_F20, NONE, PLTRST),
 	/* PCH_MEM_STRAP1 */
@@ -63,12 +79,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_F11, NONE, PLTRST),
 	/* PCH_MEM_STRAP3 */
 	PAD_CFG_GPI(GPP_F22, NONE, PLTRST),
-	/* USB_C0_DP_HPD */
-	PAD_CFG_NF(GPP_E13, NONE, DEEP, NF1),
-	/* DDI2_HPD_ODL */
-	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
-	/* EDP_HPD */
-	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF1),
 };
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)

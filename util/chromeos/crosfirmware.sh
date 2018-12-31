@@ -19,6 +19,9 @@
 
 #DEBUG=1
 
+# On some systems, `parted` and `debugfs` are located in /sbin.
+export PATH="$PATH:/sbin"
+
 debug()
 {
 	test "$DEBUG" == "1" && echo "$*"

@@ -43,7 +43,7 @@ download_image()
 	_file=$2
 
 	debug "Downloading recovery image"
-	curl -s "$_url" > "$_file.zip"
+	curl "$_url" > "$_file.zip"
 	debug "Decompressing recovery image"
 	unzip -q "$_file.zip"
 	rm "$_file.zip"

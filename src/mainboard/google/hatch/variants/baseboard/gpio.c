@@ -19,6 +19,10 @@
 #include <commonlib/helpers.h>
 
 static const struct pad_config gpio_table[] = {
+	/* SD_1P8_SEL => NC */
+	PAD_NC(GPP_A16, DN_20K),
+	/* EN_PP3300_SD_DX */
+	PAD_CFG_NF(GPP_A17, NONE, DEEP, NF1),
 	/* TRACKPAD_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A21, NONE, PLTRST, LEVEL, INVERT),
 	/* SRCCLKREQ1 */
@@ -95,6 +99,22 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_F11, NONE, PLTRST),
 	/* PCH_MEM_STRAP3 */
 	PAD_CFG_GPI(GPP_F22, NONE, PLTRST),
+	/* SD_CMD */
+	PAD_CFG_NF(GPP_G0, NONE, DEEP, NF1),
+	/* SD_DATA0 */
+	PAD_CFG_NF(GPP_G1, NONE, DEEP, NF1),
+	/* SD_DATA1 */
+	PAD_CFG_NF(GPP_G2, NONE, DEEP, NF1),
+	/* SD_DATA2 */
+	PAD_CFG_NF(GPP_G3, NONE, DEEP, NF1),
+	/* SD_DATA3 */
+	PAD_CFG_NF(GPP_G4, NONE, DEEP, NF1),
+	/* SD_CD# */
+	PAD_CFG_NF(GPP_G5, NONE, DEEP, NF1),
+	/* SD_CLK */
+	PAD_CFG_NF(GPP_G6, NONE, DEEP, NF1),
+	/* SD_WP => NC */
+	PAD_NC(GPP_G7, DN_20K),
 };
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)

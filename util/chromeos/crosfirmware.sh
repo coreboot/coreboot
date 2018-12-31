@@ -14,15 +14,8 @@
 # GNU General Public License for more details.
 #
 
-#DEBUG=1
-
 # On some systems, `parted` and `debugfs` are located in /sbin.
 export PATH="$PATH:/sbin"
-
-debug()
-{
-	test "$DEBUG" == "1" && echo "$*"
-}
 
 exit_if_uninstalled() {
 	local cmd_name="$1"
@@ -51,7 +44,7 @@ get_inventory()
 	_conf=$1
 	_url=https://dl.google.com/dl/edgedl/chromeos/recovery/recovery.conf
 
-	debug "Downloading recovery image inventory..."
+	echo "Downloading recovery image inventory..."
 
 	curl -s "$_url" > $_conf
 }
@@ -61,9 +54,9 @@ download_image()
 	_url=$1
 	_file=$2
 
-	debug "Downloading recovery image"
+	echo "Downloading recovery image"
 	curl "$_url" > "$_file.zip"
-	debug "Decompressing recovery image"
+	echo "Decompressing recovery image"
 	unzip -q "$_file.zip"
 	rm "$_file.zip"
 }
@@ -75,7 +68,7 @@ extract_partition()
 	ROOTFS=$3
 	_bs=1024
 
-	debug "Extracting ROOT-A partition"
+	echo "Extracting ROOT-A partition"
 	ROOTP=$( printf "unit\nB\nprint\nquit\n" | \
 		 parted $FILE 2>/dev/null | grep $NAME )
 
@@ -91,7 +84,7 @@ extract_shellball()
 	ROOTFS=$1
 	SHELLBALL=$2
 
-	debug "Extracting chromeos-firmwareupdate"
+	echo "Extracting chromeos-firmwareupdate"
 	printf "cd /usr/sbin\ndump chromeos-firmwareupdate $SHELLBALL\nquit" | \
 		debugfs $ROOTFS > /dev/null 2>&1
 }
@@ -101,7 +94,7 @@ extract_coreboot()
 	_shellball=$1
 	_unpacked=$( mktemp -d )
 
-	debug "Extracting coreboot image"
+	echo "Extracting coreboot image"
 	sh $_shellball --sb_extract $_unpacked > /dev/null
 
 	_version=$( cat $_unpacked/VERSION | grep BIOS\ version: | \

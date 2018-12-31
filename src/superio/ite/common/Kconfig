@@ -51,4 +51,11 @@ config SUPERIO_ITE_ENV_CTRL_5FANS
 	bool
 	help
 	  ITE FAN controller has 5 independent outputs.
+
+config SUPERIO_ITE_ENV_CTRL_7BIT_SLOPE_REG
+	bool
+	help
+	  Slope PWM registers have no separate BIT6 and are set directly by
+	  7-bit values instead.
+
 endif

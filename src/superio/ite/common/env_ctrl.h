@@ -4,6 +4,7 @@
  * Copyright (C) 2011 The ChromiumOS Authors.  All rights reserved.
  * Copyright (C) 2016 secunet Security Networks AG
  * Copyright (C) 2019 Protectli
+ * Copyright (C) 2019 Libretrend LDA
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +51,14 @@
 #define   ITE_EC_FAN_PWM_SMOOTHING_256HZ	(1 << 6)
 #define   ITE_EC_FAN_PWM_SMOOTHING_64HZ		(2 << 6)
 #define   ITE_EC_FAN_PWM_SMOOTHING_16HZ		(3 << 6)
+/* ITE IT8786E PWM_SMOOTHING_FREQ */
+#define   ITE_EC_FAN_ALT_PWM_SMOOTHING_16HZ	(1 << 6)
+#define   ITE_EC_FAN_ALT_PWM_SMOOTHING_8HZ	(2 << 6)
+#define   ITE_EC_FAN_ALT_PWM_SMOOTHING_4HZ	(3 << 6)
+#define   ITE_EC_FAN_CTL5_SEL(FAN_CTLx)		((((FAN_CTLx)-1) & 3) << 2)
+#define   ITE_EC_FAN_CTL5_SEL_NONE		(3 << 2)
+#define   ITE_EC_FAN_CTL4_SEL(FAN_CTLx)		(((FAN_CTLx)-1) & 3)
+#define   ITE_EC_FAN_CTL4_SEL_NONE		(3 << 0)
 
 #define ITE_EC_FAN_TAC_COUNTER_ENABLE		0x0c
 #define   ITE_EC_FAN_TAC_16BIT_ENABLE(x)	(1 << ((x)-1))
@@ -67,6 +76,14 @@
 						? (0x85 + ((x)-4) * 2)	\
 						: (0x1b + ((x)-1))	\
 	)
+
+#define ITE_EC_FAN_TAC_CNTRL			0x0c
+#define   ITE_EC_TMPIN3_ENHANCED_INT_MODE	(1 << 7)
+#define   ITE_EC_TMPIN2_ENHANCED_INT_MODE	(1 << 6)
+#define   ITE_EC_FAN_TAC5_EN			(1 << 5)
+#define   ITE_EC_FAN_TAC4_EN			(1 << 4)
+#define   ITE_EC_TMPIN1_ENHANCED_INT_MODE	(1 << 3)
+#define   ITE_EC_AMDTSI_ERR_EN			(1 << 0)
 
 #define ITE_EC_FAN_MAIN_CTL			0x13
 #define   ITE_EC_FAN_MAIN_CTL_TAC_EN(x)		(1 << ((x)+3))
@@ -185,6 +202,8 @@ static const u8 ITE_EC_TEMP_ADJUST[] = { 0x56, 0x57, 0x59 };
 
 /* Common for ITE_EC_FAN_CTL_DELTA_TEMP */
 #define   ITE_EC_FAN_CTL_DELTA_TEMP_INTRVL(c)	((c) & 0x1f)
+#define ITE_EC_FAN_CTL_TARGET_ZONE(x)		(0x66 + ((x)-1) * 8)
+#define   ITE_EC_FAN_CTL_TARGET_ZONE_MASK	0x0f
 
 #define ITE_EC_EXTEMP_STATUS			0x88
 #define   ITE_EC_EXTEMP_STATUS_HOST_BUSY	(1 << 0)

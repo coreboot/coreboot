@@ -101,6 +101,11 @@ struct ite_ec_config {
 	bool tmpin_beep;
 	bool fan_beep;
 	bool vin_beep;
+
+	/*
+	 * Enable SMBus for external thermal sensor.
+	 */
+	bool smbus_en;
 };
 
 /* Some shorthands for device trees */

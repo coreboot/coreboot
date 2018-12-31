@@ -4,6 +4,7 @@
  * Copyright (C) 2011 The ChromiumOS Authors.  All rights reserved.
  * Copyright (C) 2016 secunet Security Networks AG
  * Copyright (C) 2019 Protectli
+ * Copyright (C) 2019 Libretrend LDA
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -165,9 +166,14 @@ static void fan_smartconfig(const u16 base, const u8 fan,
 		pwm_ctrl |= ITE_EC_FAN_CTL_TEMPIN(conf->tmpin);
 
 		pwm_start = ITE_EC_FAN_CTL_PWM_START_DUTY(conf->pwm_start);
-		pwm_start |= ITE_EC_FAN_CTL_PWM_SLOPE_BIT6(conf->slope);
 
-		pwm_auto = ITE_EC_FAN_CTL_PWM_SLOPE_LOWER(conf->slope);
+		if (CONFIG(SUPERIO_ITE_ENV_CTRL_7BIT_SLOPE_REG)) {
+			pwm_auto = conf->slope & 0x7f;
+		} else {
+			pwm_start |= ITE_EC_FAN_CTL_PWM_SLOPE_BIT6(conf->slope);
+			pwm_auto = ITE_EC_FAN_CTL_PWM_SLOPE_LOWER(conf->slope);
+		}
+
 		if (conf->smoothing)
 			pwm_auto |= ITE_EC_FAN_CTL_AUTO_SMOOTHING_EN;
 
@@ -286,6 +292,13 @@ void ite_ec_init(const u16 base, const struct ite_ec_config *const conf)
 	/* Enable HWM if configured */
 	for (i = 0; i < ITE_EC_TMPIN_CNT; ++i)
 		enable_tmpin(base, i + 1, &conf->tmpin[i]);
+
+	/* Enable External Sensor SMBus Host if configured */
+	if (conf->smbus_en) {
+		ite_ec_write(base, ITE_EC_INTERFACE_SELECT,
+				ite_ec_read(base, ITE_EC_INTERFACE_SELECT) |
+				ITE_EC_INTERFACE_SMB_ENABLE);
+	}
 
 	/* Enable reading of voltage pins */
 	ite_ec_write(base, ITE_EC_ADC_VOLTAGE_CHANNEL_ENABLE, conf->vin_mask);

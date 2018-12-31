@@ -14,9 +14,6 @@
 # GNU General Public License for more details.
 #
 
-# This script needs
-# * sharutils
-
 #DEBUG=1
 
 # On some systems, `parted` and `debugfs` are located in /sbin.
@@ -25,6 +22,28 @@ export PATH="$PATH:/sbin"
 debug()
 {
 	test "$DEBUG" == "1" && echo "$*"
+}
+
+exit_if_uninstalled() {
+	local cmd_name="$1"
+	local deb_pkg_name="$2"
+
+	if type "$cmd_name" >/dev/null 2>&1; then
+		return
+	fi
+
+	printf '`%s` was not found. ' "$cmd_name" >&2
+	printf 'On Debian-based systems, it can be installed\n' >&2
+	printf 'by running `apt install %s`.\n' "$deb_pkg_name" >&2
+
+	exit 1
+}
+
+exit_if_dependencies_are_missing() {
+	exit_if_uninstalled "uudecode" "sharutils"
+	exit_if_uninstalled "debugfs" "e2fsprogs"
+	exit_if_uninstalled "parted" "parted"
+	exit_if_uninstalled "curl" "curl"
 }
 
 get_inventory()
@@ -112,6 +131,8 @@ do_one_board()
 #
 
 BOARD=$1
+
+exit_if_dependencies_are_missing
 
 if [ "$BOARD" == "all" ]; then
 	CONF=$( mktemp )

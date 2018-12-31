@@ -367,11 +367,13 @@ static int fast_spi_flash_ctrlr_setup(const struct spi_slave *dev)
  * Protected Range (FPR) register if available.
  */
 static int fast_spi_flash_protect(const struct spi_flash *flash,
-					const struct region *region)
+				  const struct region *region,
+				  const enum ctrlr_prot_type type)
 {
 	u32 start = region_offset(region);
 	u32 end = start + region_sz(region) - 1;
 	u32 reg;
+	u32 protect_mask = 0;
 	int fpr;
 	uintptr_t fpr_base;
 	BOILERPLATE_CREATE_CTX(ctx);
@@ -391,13 +393,28 @@ static int fast_spi_flash_protect(const struct spi_flash *flash,
 		return -1;
 	}
 
+	switch (type) {
+	case WRITE_PROTECT:
+		protect_mask |= SPI_FPR_WPE;
+		break;
+	case READ_PROTECT:
+		protect_mask |= SPI_FPR_RPE;
+		break;
+	case READ_WRITE_PROTECT:
+		protect_mask |= (SPI_FPR_RPE | SPI_FPR_WPE);
+		break;
+	default:
+		printk(BIOS_ERR, "ERROR: Seeking invalid protection!\n");
+		return -1;
+	}
+
 	/* Set protected range base and limit */
-	reg = SPI_FPR(start, end) | SPI_FPR_WPE;
+	reg = SPI_FPR(start, end) | protect_mask;
 
 	/* Set the FPR register and verify it is protected */
 	write32((void *)fpr_base, reg);
 	reg = read32((void *)fpr_base);
-	if (!(reg & SPI_FPR_WPE)) {
+	if (!(reg & protect_mask)) {
 		printk(BIOS_ERR, "ERROR: Unable to set SPI FPR %d\n", fpr);
 		return -1;
 	}

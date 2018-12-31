@@ -38,6 +38,7 @@
 #define SPI_PRR_BASE_SHIFT	0
 #define SPI_PRR_LIMIT_SHIFT	16
 #define SPI_PRR_WPE		(1 << 31)
+#define SPI_PRR_RPE		(1 << 15)
 
 #define SPIBAR_PREOP		0x94
 #define SPIBAR_OPTYPE		0x96

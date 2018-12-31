@@ -207,7 +207,8 @@ const struct spi_flash *boot_device_spi_flash(void);
 /* Protect a region of spi flash using its controller, if available. Returns
  * < 0 on error, else 0 on success. */
 int spi_flash_ctrlr_protect_region(const struct spi_flash *flash,
-					const struct region *region);
+				   const struct region *region,
+				   const enum ctrlr_prot_type type);
 
 /*
  * This function is provided to support spi flash command-response transactions.

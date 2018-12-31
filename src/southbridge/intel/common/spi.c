@@ -1010,12 +1010,14 @@ static u32 spi_fpr(u32 base, u32 limit)
  * Returns 0 on success, -1 on failure of programming fpr registers.
  */
 static int spi_flash_protect(const struct spi_flash *flash,
-			const struct region *region)
+			const struct region *region,
+			const enum ctrlr_prot_type type)
 {
 	ich_spi_controller *cntlr = car_get_var_ptr(&g_cntlr);
 	u32 start = region_offset(region);
 	u32 end = start + region_sz(region) - 1;
 	u32 reg;
+	u32 protect_mask = 0;
 	int fpr;
 	uint32_t *fpr_base;
 
@@ -1033,13 +1035,32 @@ static int spi_flash_protect(const struct spi_flash *flash,
 		return -1;
 	}
 
+	switch (type) {
+	case WRITE_PROTECT:
+		protect_mask |= SPI_FPR_WPE;
+		break;
+	case READ_PROTECT:
+		if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX))
+			return -1;
+		protect_mask |= ICH9_SPI_FPR_RPE;
+		break;
+	case READ_WRITE_PROTECT:
+		if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX))
+			return -1;
+		protect_mask |= (ICH9_SPI_FPR_RPE | SPI_FPR_WPE);
+		break;
+	default:
+		printk(BIOS_ERR, "ERROR: Seeking invalid protection!\n");
+		return -1;
+	}
+
 	/* Set protected range base and limit */
-	reg = spi_fpr(start, end) | SPI_FPR_WPE;
+	reg = spi_fpr(start, end) | protect_mask;
 
 	/* Set the FPR register and verify it is protected */
 	write32(&fpr_base[fpr], reg);
 	reg = read32(&fpr_base[fpr]);
-	if (!(reg & SPI_FPR_WPE)) {
+	if (!(reg & protect_mask)) {
 		printk(BIOS_ERR, "ERROR: Unable to set SPI FPR %d\n", fpr);
 		return -1;
 	}

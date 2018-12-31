@@ -97,6 +97,12 @@ struct spi_cfg {
 
 struct spi_flash;
 
+enum ctrlr_prot_type {
+	READ_PROTECT = 1,
+	WRITE_PROTECT = 2,
+	READ_WRITE_PROTECT = 3,
+};
+
 enum {
 	/* Deduct the command length from the spi_crop_chunk() calculation for
 	   sizing a transaction. */
@@ -144,7 +150,8 @@ struct spi_ctrlr {
 	int (*flash_probe)(const struct spi_slave *slave,
 				struct spi_flash *flash);
 	int (*flash_protect)(const struct spi_flash *flash,
-				const struct region *region);
+				const struct region *region,
+				const enum ctrlr_prot_type type);
 };
 
 /*-----------------------------------------------------------------------

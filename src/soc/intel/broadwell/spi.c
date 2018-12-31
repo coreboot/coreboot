@@ -615,11 +615,13 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 
 /* Use first empty Protected Range Register to cover region of flash */
 static int spi_flash_protect(const struct spi_flash *flash,
-				const struct region *region)
+				const struct region *region,
+				const enum ctrlr_prot_type type)
 {
 	u32 start = region_offset(region);
 	u32 end = start + region_sz(region) - 1;
 	u32 reg;
+	u32 protect_mask = 0;
 	int prr;
 
 	/* Find first empty PRR */
@@ -637,12 +639,28 @@ static int spi_flash_protect(const struct spi_flash *flash,
 	reg = ((end >> SPI_PRR_SHIFT) & SPI_PRR_MASK);
 	reg <<= SPI_PRR_LIMIT_SHIFT;
 	reg |= ((start >> SPI_PRR_SHIFT) & SPI_PRR_MASK);
-	reg |= SPI_PRR_WPE;
+
+	switch (type) {
+	case WRITE_PROTECT:
+		protect_mask |= SPI_PRR_WPE;
+		break;
+	case READ_PROTECT:
+		protect_mask |= SPI_PRR_RPE;
+		break;
+	case READ_WRITE_PROTECT:
+		protect_mask |= (SPI_PRR_RPE | SPI_PRR_WPE);
+		break;
+	default:
+		printk(BIOS_ERR, "ERROR: Seeking invalid protection!\n");
+		return -1;
+	}
+
+	reg |= protect_mask;
 
 	/* Set the PRR register and verify it is protected */
 	SPIBAR32(SPI_PRR(prr)) = reg;
 	reg = SPIBAR32(SPI_PRR(prr));
-	if (!(reg & SPI_PRR_WPE)) {
+	if (!(reg & protect_mask)) {
 		printk(BIOS_ERR, "ERROR: Unable to set SPI PRR %d\n", prr);
 		return -1;
 	}

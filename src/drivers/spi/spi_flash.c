@@ -572,7 +572,8 @@ void lb_spi_flash(struct lb_header *header)
 
 
 int spi_flash_ctrlr_protect_region(const struct spi_flash *flash,
-					const struct region *region)
+				   const struct region *region,
+				   const enum ctrlr_prot_type type)
 {
 	const struct spi_ctrlr *ctrlr;
 	struct region flash_region = { 0 };
@@ -591,7 +592,7 @@ int spi_flash_ctrlr_protect_region(const struct spi_flash *flash,
 		return -1;
 
 	if (ctrlr->flash_protect)
-		return ctrlr->flash_protect(flash, region);
+		return ctrlr->flash_protect(flash, region, type);
 
 	return -1;
 }

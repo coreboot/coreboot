@@ -14,12 +14,13 @@ much desired, but it is not an easy task.
 
 Unfortunately, it is not currently possible to distribute `mrc.bin` as
 part of coreboot. Though, it can be obtained from a Haswell Chromebook
-or Chromebox firmware image, and you might find one online. `mrc.bin`
-can be extracted with the following command. If extracting from a
-"standard" coreboot image, omit `-r RO_SECTION`.
+firmware image like so, starting in the root of the coreboot directory:
 
 ```bash
-cbfstool coreboot.rom extract -f mrc.bin -n mrc.bin -r RO_SECTION
+make -C util/cbfstool
+cd util/chromeos
+./crosfirmware.sh peppy
+../cbfstool/cbfstool coreboot-*.bin extract -f mrc.bin -n mrc.bin -r RO_SECTION
 ```
 
 Now, place `mrc.bin` in the root of the coreboot directory.

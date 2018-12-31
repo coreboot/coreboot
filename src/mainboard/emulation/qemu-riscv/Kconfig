@@ -13,7 +13,8 @@
 ## GNU General Public License for more details.
 
 # To execute, do:
-# qemu-system-arm -M vexpress-a9 -m 1024M -nographic -kernel build/coreboot.rom
+# util/riscv/make-spike-elf.sh build/coreboot.rom build/coreboot.elf
+# qemu-system-riscv64 -M virt -m 1024M -nographic -kernel build/coreboot.elf
 
 if BOARD_EMULATION_QEMU_RISCV
 

@@ -14,11 +14,12 @@
  * GNU General Public License for more details.
  */
 #include <boot_device.h>
+#include <symbols.h>
 
-/* This assumes that the CBFS resides at 0x0, which is true for the default
- * configuration. */
+/* This assumes that the CBFS resides at start of dram, which is true for the
+ * default configuration. */
 static const struct mem_region_device boot_dev =
-	MEM_REGION_DEV_RO_INIT(NULL, CONFIG_ROM_SIZE);
+	MEM_REGION_DEV_RO_INIT(_dram, CONFIG_ROM_SIZE);
 
 const struct region_device *boot_device_ro(void)
 {

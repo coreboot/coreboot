@@ -19,6 +19,7 @@ This section contains documentation about coreboot on specific mainboards.
 The boards in this section are not real mainboards, but emulators.
 
 - [Spike RISC-V emulator](emulation/spike-riscv.md)
+- [Qemu RISC-V emulator](emulation/qemu-riscv.md)
 
 ## Intel
 

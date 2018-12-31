@@ -16,6 +16,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <cbmem.h>
+#include <symbols.h>
 
 static void mainboard_enable(struct device *dev)
 {
@@ -24,7 +25,7 @@ static void mainboard_enable(struct device *dev)
 		die("No dev0; die\n");
 	}
 
-	ram_resource(dev, 0, 2048, 32768);
+	ram_resource(dev, 0, (uintptr_t)_dram / KiB, CONFIG_DRAM_SIZE_MB * KiB);
 	cbmem_recovery(0);
 }
 

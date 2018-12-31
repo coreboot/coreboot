@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2014 Google Inc.
+ * Copyright (C) 2018 Philipp Hug
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,17 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include <memlayout.h>
-#include <arch/header.ld>
-
-#define START 0x80000000
-
-SECTIONS
-{
-	DRAM_START(START)
-	BOOTBLOCK(START, 64K)
-	STACK(START + 4M, 4K)
-	ROMSTAGE(START + 4M + 64K, 128K)
-	PRERAM_CBMEM_CONSOLE(START + 4M + 192K, 8K)
-	RAMSTAGE(START + 4M + 200K, 16M)
-}
+#define QEMU_VIRT_CLINT		0x02000000
+#define QEMU_VIRT_PLIC		0x0c000000
+#define QEMU_VIRT_UART0		0x10000000
+#define QEMU_VIRT_VIRTIO	0x10001000
+#define QEMU_VIRT_DRAM		0x80000000

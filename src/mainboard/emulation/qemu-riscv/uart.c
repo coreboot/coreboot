@@ -17,8 +17,9 @@
 #include <console/uart.h>
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
+#include <mainboard/addressmap.h>
 
-static uint8_t *buf = (void *)0x3f8;
+static uint8_t *buf = (void *)QEMU_VIRT_UART0;
 uintptr_t uart_platform_base(int idx)
 {
 	return (uintptr_t) buf;
@@ -47,7 +48,7 @@ void uart_fill_lb(void *data)
 {
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial.baseaddr = 0x3f8;
+	serial.baseaddr = QEMU_VIRT_UART0;
 	serial.baud = 115200;
 	serial.regwidth = 1;
 	lb_add_serial(&serial, data);

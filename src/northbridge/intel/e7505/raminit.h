@@ -31,7 +31,6 @@ struct mem_controller {
 };
 
 void e7505_mch_init(const struct mem_controller *memctrl);
-void e7505_mch_scrub_ecc(unsigned long ret_addr);
 void e7505_mch_done(const struct mem_controller *memctrl);
 int e7505_mch_is_ready(void);
 

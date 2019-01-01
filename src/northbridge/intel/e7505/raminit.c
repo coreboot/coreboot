@@ -905,95 +905,6 @@ static void configure_e7501_ram_addresses(const struct mem_controller
 }
 
 /**
- * Execute ECC full-speed scrub once and leave scrubber disabled.
- *
- * NOTE: All cache and stack is lost during ECC scrub loop.
- */
-static __always_inline void
-		initialize_ecc(unsigned long ret_addr, unsigned long ret_addr2)
-{
-	uint16_t scrubbed = pci_read_config16(MCHDEV, MCHCFGNS) & 0x08;
-
-	if (!scrubbed) {
-		RAM_DEBUG_MESSAGE("Initializing ECC state...\n");
-
-		/* ECC scrub flushes cache-lines and stack, need to
-		 * store return address from romstage.c:main().
-		 */
-		asm volatile(
-			"movd %0, %%xmm0;"
-			"movd (%0), %%xmm1;"
-			"movd %1, %%xmm2;"
-			"movd (%1), %%xmm3;"
-			:: "r" (ret_addr), "r" (ret_addr2) :
-		);
-
-		/* NOTE: All cache is lost during this loop.
-		 * Make sure PCI access does not use stack.
-		 */
-
-		pci_write_config16(MCHDEV, MCHCFGNS, 0x01);
-		do {
-			scrubbed = pci_read_config16(MCHDEV, MCHCFGNS);
-		} while (! (scrubbed & 0x08));
-		pci_write_config16(MCHDEV, MCHCFGNS, (scrubbed & ~0x07) | 0x04);
-
-		/* Some problem remains with XIP cache from ROM, so for
-		 * now, I disable XIP and also invalidate cache (again)
-		 * before the remaining small portion of romstage.
-		 *
-		 * Adding NOPs here has unexpected results, making
-		 * the first do_printk()/vtxprintf() after ECC scrub
-		 * fail midway. Sometimes vtxprintf() dumps strings
-		 * completely but with every 4th (fourth) character as "/".
-		 *
-		 * An inlined dump to console of the same string,
-		 * before vtxprintf() call, is successful. So the
-		 * source string should be completely in cache already.
-		 *
-		 * I need to review this again with CPU microcode
-		 * update applied pre-CAR.
-		 */
-
-		/* Disable and invalidate all cache. */
-		msr_t xip_mtrr = rdmsr(MTRR_PHYS_MASK(1));
-		xip_mtrr.lo &= ~MTRR_PHYS_MASK_VALID;
-		invd();
-		wrmsr(MTRR_PHYS_MASK(1), xip_mtrr);
-		invd();
-
-		RAM_DEBUG_MESSAGE("ECC state initialized.\n");
-
-		/* Recover IP for return from main. */
-		asm volatile(
-			"movd %%xmm0, %%edi;"
-			"movd %%xmm1, (%%edi);"
-			"movd %%xmm2, %%edi;"
-			"movd %%xmm3, (%%edi);"
-			 ::: "edi"
-		);
-
-#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
-		unsigned int a1, a2;
-		asm volatile("movd %%xmm2, %%eax;" : "=a" (a1) ::);
-		asm volatile("movd %%xmm3, %%eax;" : "=a" (a2) ::);
-		printk(BIOS_DEBUG, "return EIP @ %x = %x\n", a1, a2);
-		asm volatile("movd %%xmm0, %%eax;" : "=a" (a1) ::);
-		asm volatile("movd %%xmm1, %%eax;" : "=a" (a2) ::);
-		printk(BIOS_DEBUG, "return EIP @ %x = %x\n", a1, a2);
-#endif
-	}
-
-	/* Clear the ECC error bits. */
-	pci_write_config8(RASDEV, DRAM_FERR, 0x03);
-	pci_write_config8(RASDEV, DRAM_NERR, 0x03);
-
-	/* Clear DRAM Interface error bits. */
-	pci_write_config32(RASDEV, FERR_GLOBAL, 1 << 18);
-	pci_write_config32(RASDEV, NERR_GLOBAL, 1 << 18);
-}
-
-/**
  * Program the DRAM Timing register (DRT) of the E7501 (except for CAS#
  * latency, which is assumed to have been programmed already), based on the
  * parameters of the various installed DIMMs.
@@ -1860,19 +1771,6 @@ void e7505_mch_init(const struct mem_controller *memctrl)
 	sdram_set_registers(memctrl);
 	sdram_set_spd_registers(memctrl);
 	sdram_enable(memctrl);
-}
-
-/**
- * Scrub and reset error counts for ECC dimms.
- *
- * NOTE: this will invalidate cache and disable XIP cache for the
- * short remaining part of romstage.
- */
-void e7505_mch_scrub_ecc(unsigned long ret_addr)
-{
-	unsigned long ret_addr2 = (unsigned long)((unsigned long*)&ret_addr-1);
-	if ((pci_read_config32(MCHDEV, DRC)>>20 & 3) == 2)
-		initialize_ecc(ret_addr, ret_addr2);
 }
 
 void e7505_mch_done(const struct mem_controller *memctrl)

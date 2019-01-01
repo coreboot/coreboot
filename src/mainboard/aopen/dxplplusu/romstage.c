@@ -66,18 +66,6 @@ void mainboard_romstage_entry(unsigned long bist)
 		/* The real MCH initialisation. */
 		e7505_mch_init(memctrl);
 
-		/*
-		 * ECC scrub invalidates cache, so all stack in CAR
-		 * is lost. Only return addresses from main() and
-		 * scrub_ecc() are recovered to stack via xmm0-xmm3.
-		 */
-#if IS_ENABLED(CONFIG_HW_SCRUBBER)
-#if !IS_ENABLED(CONFIG_USBDEBUG_IN_ROMSTAGE)
-		unsigned long ret_addr = (unsigned long)((unsigned long*)&bist - 1);
-		e7505_mch_scrub_ecc(ret_addr);
-#endif
-#endif
-
 		/* Hook for post ECC scrub settings and debug. */
 		e7505_mch_done(memctrl);
 

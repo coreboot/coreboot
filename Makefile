@@ -188,6 +188,9 @@ $(KCONFIG_AUTOCONFIG): $(KCONFIG_AUTOHEADER)
 $(KCONFIG_AUTOADS): $(KCONFIG_AUTOCONFIG) $(objutil)/kconfig/toada
 	$(objutil)/kconfig/toada CB.Config <$< >$@
 
+$(obj)/%/$(notdir $(KCONFIG_AUTOADS)): $(KCONFIG_AUTOADS)
+	cp $< $@
+
 # Add a new class of source/object files to the build system
 add-class= \
 	$(eval $(1)-srcs:=) \
@@ -272,6 +275,11 @@ $(eval $(postinclude-hooks))
 # Eliminate duplicate mentions of source files in a class
 $(foreach class,$(classes),$(eval $(class)-srcs:=$(sort $($(class)-srcs))))
 
+# Build Kconfig .ads if necessary
+ifeq ($(CONFIG_RAMSTAGE_ADA),y)
+ramstage-srcs += $(obj)/ramstage/$(notdir $(KCONFIG_AUTOADS))
+endif
+
 # To track dependencies, we need all Ada specification (.ads) files in
 # *-srcs. Extract / filter all specification files that have a matching
 # body (.adb) file here (specifications without a body are valid sources
@@ -320,7 +328,7 @@ define create_cc_template
 ifn$(EMPTY)def $(1)-objs_$(2)_template
 de$(EMPTY)fine $(1)-objs_$(2)_template
 ifn$(EMPTY)eq ($(filter ads adb,$(2)),)
-$$(call src-to-obj,$1,$$(1).$2): $$(1).$2 $$(call create_ada_deps,$1,$$(call src-to-ali,$1,$$(1).$2)) $(KCONFIG_AUTOHEADER) $(4)
+$$(call src-to-obj,$1,$$(1).$2): $$(1).$2 $$(call create_ada_deps,$1,$$(call src-to-ali,$1,$$(1).$2)) $(4)
 	@printf "    GCC        $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$(GCC_$(1)) \
 		$$$$(ADAFLAGS_$(1)) $$$$(addprefix -I,$$$$($(1)-ada-dirs)) \

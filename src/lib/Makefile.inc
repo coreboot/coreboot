@@ -296,6 +296,8 @@ $(objcbfs)/%.debug.rmod: $(objcbfs)/%.debug | $(RMODTOOL)
 $(obj)/%.elf.rmod: $(obj)/%.elf | $(RMODTOOL)
 	$(RMODTOOL) -i $< -o $@
 
+ramstage-$(CONFIG_RAMSTAGE_ADA) += cb.ads
+
 ifeq ($(CONFIG_RAMSTAGE_LIBHWBASE),y)
 
 to-ada-hex = $(eval $(1) := 16\\\#$(patsubst 0x%,%,$($(1)))\\\#)

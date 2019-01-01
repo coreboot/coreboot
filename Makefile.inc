@@ -215,7 +215,9 @@ verstage-c-deps:=$$(OPTION_TABLE_H)
 bootblock-c-deps:=$$(OPTION_TABLE_H)
 $(foreach type,ads adb, \
   $(foreach stage,$(COREBOOT_STANDARD_STAGES), \
-    $(eval $(stage)-$(type)-deps := $(obj)/libgnat-$(ARCH-$(stage)-y)/libgnat.a)))
+    $(eval $(stage)-$(type)-deps := \
+	$(obj)/$(stage)/$(notdir $(KCONFIG_AUTOADS)) \
+	$(obj)/libgnat-$(ARCH-$(stage)-y)/libgnat.a)))
 
 # Add handler to copy linker scripts
 define generic-objs_ld_template_gen

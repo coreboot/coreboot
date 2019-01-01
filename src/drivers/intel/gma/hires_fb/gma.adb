@@ -1,3 +1,7 @@
+with CB.Config;
+
+use CB;
+
 with HW.GFX;
 with HW.GFX.Framebuffer_Filler;
 with HW.GFX.GMA;
@@ -60,8 +64,8 @@ is
 
       success : boolean;
 
-      min_h : pos32 := pos32'last;
-      min_v : pos32 := pos32'last;
+      min_h : pos32 := Config.LINEAR_FRAMEBUFFER_MAX_WIDTH;
+      min_v : pos32 := Config.LINEAR_FRAMEBUFFER_MAX_HEIGHT;
    begin
       lightup_ok := 0;
 

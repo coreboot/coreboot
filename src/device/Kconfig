@@ -445,6 +445,22 @@ config LINEAR_FRAMEBUFFER
 	def_bool y
 	depends on VBE_LINEAR_FRAMEBUFFER || GENERIC_LINEAR_FRAMEBUFFER
 
+config LINEAR_FRAMEBUFFER_MAX_WIDTH
+	int "Maximum width in pixels"
+	depends on LINEAR_FRAMEBUFFER && MAINBOARD_USE_LIBGFXINIT
+	default 2560
+	help
+	  Set the maximum width of the framebuffer. This may help with
+	  default fonts too tiny for high-resolution displays.
+
+config LINEAR_FRAMEBUFFER_MAX_HEIGHT
+	int "Maximum height in pixels"
+	depends on LINEAR_FRAMEBUFFER && MAINBOARD_USE_LIBGFXINIT
+	default 1600
+	help
+	  Set the maximum height of the framebuffer. This may help with
+	  default fonts too tiny for high-resolution displays.
+
 endmenu # "Display"
 
 config SMBUS_HAS_AUX_CHANNELS

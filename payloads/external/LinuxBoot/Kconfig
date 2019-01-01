@@ -219,7 +219,7 @@ endif #LINUXBOOT_UROOT
 
 endif #LINUXBOOT_BUILD_INITRAMFS
 
-choice LINUXBOOT_INITRAMFS_COMPRESSION
+choice
 	prompt "Initramfs compression format"
 	default LINUXBOOT_INITRAMFS_COMPRESSION_XZ
 

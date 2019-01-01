@@ -20,7 +20,7 @@ config BASEBOARD_GLKRVP_LAPTOP
 	def_bool n
 	select SYSTEM_TYPE_LAPTOP
 
-choice GLK_EC
+choice
 	prompt "ON BOARD EC"
 	default GLK_CHROME_EC
 	help

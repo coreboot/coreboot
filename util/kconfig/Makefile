@@ -344,6 +344,8 @@ $(objk)/nconf: $(patsubst %,$(objk)/%,$(nconf-objs))
 	$(HOSTCC) $(HOSTCFLAGS) -o $@ $^ $(HOSTLOADLIBES_nconf)
 $(objk)/conf: $(patsubst %,$(objk)/%,$(conf-objs))
 	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -o $@ $^
+$(objk)/toada: $(objk)/toada.o
+	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -o $@ $^
 
 $(objk)/mconf.o: $(srck)/mconf.c
 	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<
@@ -381,6 +383,9 @@ $(objk)/lxdialog/lxdialog: $(objk)/dochecklxdialog \
 		$(patsubst %,$(objk)/lxdialog/%,$(lxdialog)) $(HOST_LOADLIBES) -o $@
 $(objk)/lxdialog/%.o: $(srck)/lxdialog/%.c
 	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $^ -c -o $@
+
+$(objk)/toada.o: $(srck)/toada.c
+	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<
 
 $(objk)/%.o: HOSTCFLAGS+=-I$(srck) -I$(objk)
 $(objk)/%.o: HOSTCXXFLAGS+=-I$(srck) -I$(objk)

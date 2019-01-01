@@ -44,6 +44,7 @@ COREBOOT_EXPORTS += top src srck obj objutil objk
 
 DOTCONFIG ?= $(top)/.config
 KCONFIG_CONFIG = $(DOTCONFIG)
+KCONFIG_AUTOADS := $(obj)/cb-config.ads
 KCONFIG_AUTOHEADER := $(obj)/config.h
 KCONFIG_AUTOCONFIG := $(obj)/auto.conf
 KCONFIG_DEPENDENCIES := $(obj)/auto.conf.cmd
@@ -51,10 +52,12 @@ KCONFIG_SPLITCONFIG := $(obj)/config
 KCONFIG_TRISTATE := $(obj)/tristate.conf
 KCONFIG_NEGATIVES := 1
 KCONFIG_STRICT := 1
+KCONFIG_PACKAGE := CB.Config
 
 COREBOOT_EXPORTS += KCONFIG_CONFIG KCONFIG_AUTOHEADER KCONFIG_AUTOCONFIG
 COREBOOT_EXPORTS += KCONFIG_DEPENDENCIES KCONFIG_SPLITCONFIG KCONFIG_TRISTATE
 COREBOOT_EXPORTS += KCONFIG_NEGATIVES KCONFIG_STRICT
+COREBOOT_EXPORTS += KCONFIG_AUTOADS KCONFIG_PACKAGE
 
 # directory containing the toplevel Makefile.inc
 TOPLEVEL := .
@@ -178,6 +181,12 @@ real-all: real-target
 
 $(KCONFIG_AUTOHEADER): $(KCONFIG_CONFIG) $(objutil)/kconfig/conf
 	+$(MAKE) oldconfig
+
+$(KCONFIG_AUTOCONFIG): $(KCONFIG_AUTOHEADER)
+	true
+
+$(KCONFIG_AUTOADS): $(KCONFIG_AUTOCONFIG) $(objutil)/kconfig/toada
+	$(objutil)/kconfig/toada CB.Config <$< >$@
 
 # Add a new class of source/object files to the build system
 add-class= \

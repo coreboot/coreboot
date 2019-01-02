@@ -31,6 +31,7 @@ void ehci_debug_select_port(unsigned int port);
 #define DBGP_EP_VALID		(1<<0)
 #define DBGP_EP_ENABLED		(1<<1)
 #define DBGP_EP_BUSY		(1<<2)
+#define DBGP_EP_NOT_PRESENT	(1<<3)
 #define DBGP_EP_STATMASK	(DBGP_EP_VALID | DBGP_EP_ENABLED)
 
 #define DBGP_MAX_ENDPOINTS	4

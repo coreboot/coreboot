@@ -435,6 +435,7 @@ static int usbdebug_init_(unsigned ehci_bar, unsigned offset, struct ehci_debug_
 	memset(info, 0, sizeof (*info));
 	info->ehci_base = (void *)ehci_bar;
 	info->ehci_debug = (void *)(ehci_bar + offset);
+	info->ep_pipe[0].status	|= DBGP_EP_NOT_PRESENT;
 
 	dprintk(BIOS_INFO, "ehci_bar: 0x%x debug_offset 0x%x\n", ehci_bar, offset);
 
@@ -574,6 +575,8 @@ try_next_port:
 		goto err;
 	}
 
+	info->ep_pipe[0].status	&= ~DBGP_EP_NOT_PRESENT;
+
 	return 0;
 err:
 	/* Things didn't work so remove my claim */
@@ -608,6 +611,12 @@ static int dbgp_enabled(void)
 {
 	struct dbgp_pipe *globals = &dbgp_ehci_info()->ep_pipe[DBGP_SETUP_EP0];
 	return (globals->status & DBGP_EP_ENABLED);
+}
+
+static int dbgp_not_present(void)
+{
+	struct dbgp_pipe *globals = &dbgp_ehci_info()->ep_pipe[DBGP_SETUP_EP0];
+	return (globals->status & DBGP_EP_NOT_PRESENT);
 }
 
 int dbgp_try_get(struct dbgp_pipe *pipe)
@@ -660,6 +669,9 @@ int usbdebug_hw_init(bool force)
 
 	if (dbgp_enabled() && !force)
 		return 0;
+
+	if (dbgp_not_present() && !force)
+		return -1;
 
 	/* Do not attempt slow gadget init in postcar. */
 	if (ENV_POSTCAR)

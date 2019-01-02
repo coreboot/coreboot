@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2014 Rockchip Inc.
+ * Copyright 2019 9Elements GmbH <patrick.rudolph@9elements.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +23,5 @@
 void *cbmem_top(void)
 {
 	/* Make sure not to overlap with reserved ATF scratchpad */
-	return (void *)min((uintptr_t)_dram + (sdram_size_mb() - 1) * MiB,
-			   4ULL * GiB);
+	return (void *)((uintptr_t)_dram + (sdram_size_mb() - 1) * MiB);
 }

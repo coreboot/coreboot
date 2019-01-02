@@ -1062,7 +1062,7 @@ static void sdram_calibratehwpll(struct sysinfo *s)
 
 static void sdram_dlltiming(struct sysinfo *s)
 {
-	u8 reg8, i, pipost;
+	u8 reg8, i;
 	u16 reg16;
 	u32 reg32;
 
@@ -1119,7 +1119,6 @@ static void sdram_dlltiming(struct sysinfo *s)
 		MCHBAR8(0x18e) = (MCHBAR8(0x18e) & ~0x7f) | 0x55;
 		sdram_calibratehwpll(s);
 	}
-	pipost = 0x34;
 
 	MCHBAR32(0x248) = MCHBAR32(0x248) & ~(1 << 22);
 	MCHBAR8(0x5d9) = MCHBAR8(0x5d9) & ~0x2;

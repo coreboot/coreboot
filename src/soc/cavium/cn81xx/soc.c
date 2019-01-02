@@ -381,18 +381,6 @@ static void soc_init(struct device *dev)
 		}
 	}
 
-	/* Init UARTs */
-	size_t i;
-	struct device *uart_dev;
-	for (i = 0; i <= 3; i++) {
-		uart_dev = dev_find_slot(1, PCI_DEVFN(8, i));
-		/* using device enable state from devicetree.cb */
-		if (uart_dev && uart_dev->enabled) {
-			if (!uart_is_enabled(i))
-				uart_setup(i, 0);
-		}
-	}
-
 	if (IS_ENABLED(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE))
 		soc_init_atf();
 }

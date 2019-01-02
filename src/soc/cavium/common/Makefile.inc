@@ -15,6 +15,8 @@
 
 ifeq ($(CONFIG_SOC_CAVIUM_COMMON),y)
 
+subdirs-y += pci
+
 CFLAGS_arm64   += -Wstack-usage=$(CONFIG_STACK_SIZE)
 
 bootblock-$(CONFIG_BOOTBLOCK_CUSTOM) += bootblock.c

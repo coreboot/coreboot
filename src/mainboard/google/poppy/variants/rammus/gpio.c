@@ -127,8 +127,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_C6, 20K_PU, DEEP),
 	/* C7  : SM1DATA ==> NC */
 	PAD_CFG_NC(GPP_C7),
-	/* C8  : UART0_RXD ==> NC(BT_OFF#) */
-	PAD_CFG_NC(GPP_C8),
+	/* C8  : UART0_RXD ==> BT_OFF# */
+	PAD_CFG_GPO(GPP_C8, 1, DEEP),
 	/* C9  : UART0_TXD ==> NC(WLAN_OFF#) */
 	PAD_CFG_NC(GPP_C9),
 	/* C10 : UART0_RTS# ==> NC(T0817) */

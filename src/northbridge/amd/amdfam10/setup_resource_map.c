@@ -30,8 +30,8 @@ void setup_resource_map(const u32 *register_values, u32 max)
 		u32 where;
 		u32 reg;
 
-		dev = register_values[i] & ~0xff;
-		where = register_values[i] & 0xff;
+		dev = register_values[i] & ~0xfff;
+		where = register_values[i] & 0xfff;
 		reg = pci_read_config32(dev, where);
 		reg &= register_values[i+1];
 		reg |= register_values[i+2];
@@ -144,8 +144,8 @@ void setup_resource_map_x(const u32 *register_values, u32 max)
 			pci_devfn_t dev;
 			u32 where;
 			u32 reg;
-			dev = register_values[i+1] & ~0xff;
-			where = register_values[i+1] & 0xff;
+			dev = register_values[i+1] & ~0xfff;
+			where = register_values[i+1] & 0xfff;
 			reg = pci_read_config32(dev, where);
 			reg &= register_values[i+2];
 			reg |= register_values[i+3];

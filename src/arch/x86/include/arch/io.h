@@ -235,12 +235,6 @@ static inline int __ffs(u32 value)
 
 #ifdef __SIMPLE_DEVICE__
 
-#define PCI_ADDR(SEGBUS, DEV, FN, WHERE) ( \
-	(((SEGBUS) & 0xFFF) << 20) | \
-	(((DEV) & 0x1F) << 15) | \
-	(((FN) & 0x07) << 12) | \
-	((WHERE) & 0xFFF))
-
 #define PCI_DEV(SEGBUS, DEV, FN) ( \
 	(((SEGBUS) & 0xFFF) << 20) | \
 	(((DEV) & 0x1F) << 15) | \

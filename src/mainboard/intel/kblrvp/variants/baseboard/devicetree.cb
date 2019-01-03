@@ -9,13 +9,12 @@ chip soc/intel/skylake
 	# Note that GPE events called out in ASL code rely on this
 	# route. i.e. If this route changes then the affected GPE
 	# offset bits also need to be changed.
-	register "gpe0_dw0" = "GPP_C"
+	register "gpe0_dw0" = "GPP_B"
 	register "gpe0_dw1" = "GPP_D"
 	register "gpe0_dw2" = "GPP_E"
 
 	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
 	register "gen1_dec" = "0x00fc0801"
-	register "gen2_dec" = "0x000c0201"
 
 	# Enable "Intel Speed Shift Technology"
 	register "speed_shift_enable" = "1"
@@ -24,9 +23,6 @@ chip soc/intel/skylake
 	register "dptf_enable" = "1"
 
 	# FSP Configuration
-        register "EnableAzalia" = "1"
-        register "DspEnable" = "1"
-        register "IoBufferOwnership" = "0"
 	register "SmbusEnable" = "1"
 	register "ScsEmmcEnabled" = "1"
 	register "ScsEmmcHs400Enabled" = "1"
@@ -34,11 +30,7 @@ chip soc/intel/skylake
 	register "InternalGfx" = "1"
 	register "SkipExtGfxScan" = "1"
 	register "Device4Enable" = "1"
-	register "HeciEnabled" = "0"
-	register "SaGv" = "3"
-	register "PmTimerDisabled" = "1"
-	register "Cio2Enable" = "1"
-	register "SaImguEnable" = "1"
+	register "SaGv" = "SaGv_Enabled"
 
 	register "pirqa_routing" = "PCH_IRQ11"
 	register "pirqb_routing" = "PCH_IRQ10"
@@ -82,7 +74,7 @@ chip soc/intel/skylake
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
 		.vr_config_enable = 1, \
 		.psi1threshold = 0x50, \
-		.psi2threshold = 0x14, \
+		.psi2threshold = 0x10, \
 		.psi3threshold = 0x4, \
 		.psi3enable = 1, \
 		.psi4enable = 1, \
@@ -131,92 +123,11 @@ chip soc/intel/skylake
 		.voltage_limit = 0x5F0 \
 	}"
 
-	# Enable Root ports.
-	# PCIE Port 1 x4 -> SLOT1
-	register "PcieRpEnable[0]" = "1"
-	register "PcieRpClkReqSupport[0]" = "1"
-	register "PcieRpClkReqNumber[0]" = "2"
-	# RP1, uses uses CLK SRC 2
-	register "PcieRpClkSrcNumber[0]" = "2"
-
-	# PCIE Port 5 x1 -> SLOT2/LAN
-	register "PcieRpEnable[4]" = "1"
-	register "PcieRpClkReqSupport[4]" = "1"
-	register "PcieRpClkReqNumber[4]" = "3"
-	# RP5, uses uses CLK SRC 3
-	register "PcieRpClkSrcNumber[4]" = "3"
-
-	# PCIE Port 6 x1 -> SLOT3
-	register "PcieRpEnable[5]" = "1"
-	register "PcieRpClkReqSupport[5]" = "1"
-	register "PcieRpClkReqNumber[5]" = "1"
-	# RP6, uses uses CLK SRC 1
-	register "PcieRpClkSrcNumber[5]" = "1"
-
-	# PCIE Port 7 Disabled
-	# PCIE Port 8 Disabled
-	# PCIE Port 9 x1 -> WLAN
-	register "PcieRpEnable[8]" = "1"
-	register "PcieRpClkReqSupport[8]" = "1"
-	register "PcieRpClkReqNumber[8]" = "5"
-	# RP9, uses uses CLK SRC 5
-	register "PcieRpClkSrcNumber[8]" = "5"
-
-	# PCIE Port 10 x1 -> WiGig
-	register "PcieRpEnable[9]" = "1"
-	register "PcieRpClkReqSupport[9]" = "1"
-	register "PcieRpClkReqNumber[9]" = "4"
-	# RP10, uses uses CLK SRC 4
-	register "PcieRpClkSrcNumber[9]" = "4"
-
-	# USB 2.0 Enable all ports
-	register "usb2_ports[0]" = "USB2_PORT_MAX(OC0)"		# TYPE-A Port
-	register "usb2_ports[1]" = "USB2_PORT_MAX(OC2)"		# TYPE-A Port
-	register "usb2_ports[2]" = "USB2_PORT_MAX(OC_SKIP)"	# Bluetooth
-	register "usb2_ports[4]" = "USB2_PORT_MAX(OC_SKIP)"	# Type-A Port
-	register "usb2_ports[5]" = "USB2_PORT_MAX(OC2)"		# TYPE-A Port
-	register "usb2_ports[6]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
-	register "usb2_ports[7]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
-	register "usb2_ports[8]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
-	register "usb2_ports[9]" = "USB2_PORT_MAX(OC1)"		# TYPE-A Port
-	register "usb2_ports[10]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
-	register "usb2_ports[11]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
-
-	# USB 3.0 Enable Port 1-4. Port 5 & 6 Disabled
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# TYPE-A Port
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)"	# TYPE-A Port
-	register "usb3_ports[4]" = "USB3_PORT_EMPTY"	# Disabled
-	register "usb3_ports[5]" = "USB3_PORT_EMPTY"	# Disabled
-
-	register "SsicPortEnable" = "1" # Enable SSIC for WWAN
-
-	# Must leave UART0 enabled or SD/eMMC will not work as PCI
-	register "SerialIoDevMode" = "{ \
-		[PchSerialIoIndexI2C0]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C1]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C2]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C3]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C4]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart0] = PchSerialIoPci, \
-		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, \
-	}"
-
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"
 
 	# Enable/Disable VMX feature
 	register "VmxEnable" = "0"
-
-	# Lock Down
-	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
-	}"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end
@@ -239,14 +150,19 @@ chip soc/intel/skylake
 		device pci 17.0 off end # SATA
 		device pci 19.0 on  end # UART #2
 		device pci 19.1 off end # I2C #5
-		device pci 19.2 on  end
-		device pci 1c.0 on  end # PCI Express Port 1 x4 SLOT1
-		device pci 1c.4 on  end # PCI Express Port 5 x1 SLOT2/LAN
-		device pci 1c.5 on  end # PCI Express Port 6 x1 SLOT3
+		device pci 19.2 on  end # I2C #4
+		device pci 1c.0 on  end # PCI Express Port 1
+		device pci 1c.1 off end # PCI Express Port 2
+		device pci 1c.2 off end # PCI Express Port 3
+		device pci 1c.3 off end # PCI Express Port 4
+		device pci 1c.4 off end # PCI Express Port 5
+		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 on  end # PCI Express Port 9  x1 WLAN
-		device pci 1d.1 on  end # PCI Express Port 10 x1 WIGIG
+		device pci 1d.0 on  end # PCI Express Port 9
+		device pci 1d.1 off end # PCI Express Port 10
+		device pci 1d.2 off end # PCI Express Port 11
+		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1e.0 on  end # UART #0
 		device pci 1e.1 off end # UART #1
 		device pci 1e.2 off end # GSPI #0
@@ -254,11 +170,7 @@ chip soc/intel/skylake
 		device pci 1e.4 on  end # eMMC
 		device pci 1e.5 off end # SDIO
 		device pci 1e.6 on  end # SDCard
-		device pci 1f.0 on
-			chip drivers/pc80/tpm
-				device pnp 0c31.0 on end
-			end
-		end # LPC Interface
+		device pci 1f.0 on  end # LPC Interface
 		device pci 1f.1 on  end # P2SB
 		device pci 1f.2 on  end # Power Management Controller
 		device pci 1f.3 on  end # Intel HDA

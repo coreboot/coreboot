@@ -1,0 +1,138 @@
+chip soc/intel/skylake
+
+	# GPE configuration
+	register "gpe0_dw0" = "GPP_C"
+
+	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
+	register "gen2_dec" = "0x000c0201"
+
+	# FSP Configuration
+        register "EnableAzalia" = "1"
+        register "DspEnable" = "1"
+        register "IoBufferOwnership" = "0"
+	register "HeciEnabled" = "0"
+	register "PmTimerDisabled" = "1"
+	register "Cio2Enable" = "1"
+	register "SaImguEnable" = "1"
+
+	# VR Settings Configuration for 4 Domains
+	#+----------------+-------+-------+-------+-------+
+	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |
+	#+----------------+-------+-------+-------+-------+
+	#| Psi1Threshold  | 20A   | 20A   | 20A   | 20A   |
+	#| Psi2Threshold  | 5A    | 5A    | 5A    | 5A    |
+	#| Psi3Threshold  | 1A    | 1A    | 1A    | 1A    |
+	#| Psi3Enable     | 1     | 1     | 1     | 1     |
+	#| Psi4Enable     | 1     | 1     | 1     | 1     |
+	#| ImonSlope      | 0     | 0     | 0     | 0     |
+	#| ImonOffset     | 0     | 0     | 0     | 0     |
+	#| IccMax         | 7A    | 34A   | 35A   | 35A   |
+	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
+	#+----------------+-------+-------+-------+-------+
+	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
+		.vr_config_enable = 1, \
+		.psi1threshold = 0x50, \
+		.psi2threshold = 0x14, \
+		.psi3threshold = 0x4, \
+		.psi3enable = 1, \
+		.psi4enable = 1, \
+		.imon_slope = 0x0, \
+		.imon_offset = 0x0, \
+		.icc_max = 0x1C, \
+		.voltage_limit = 0x5F0 \
+	}"
+
+	# Enable Root ports.
+	# PCIE Port 1 x4 -> SLOT1
+	register "PcieRpEnable[0]" = "1"
+	register "PcieRpClkReqSupport[0]" = "1"
+	register "PcieRpClkReqNumber[0]" = "2"
+	# RP1, uses uses CLK SRC 2
+	register "PcieRpClkSrcNumber[0]" = "2"
+
+	# PCIE Port 5 x1 -> SLOT2/LAN
+	register "PcieRpEnable[4]" = "1"
+	register "PcieRpClkReqSupport[4]" = "1"
+	register "PcieRpClkReqNumber[4]" = "3"
+	# RP5, uses uses CLK SRC 3
+	register "PcieRpClkSrcNumber[4]" = "3"
+
+	# PCIE Port 6 x1 -> SLOT3
+	register "PcieRpEnable[5]" = "1"
+	register "PcieRpClkReqSupport[5]" = "1"
+	register "PcieRpClkReqNumber[5]" = "1"
+	# RP6, uses uses CLK SRC 1
+	register "PcieRpClkSrcNumber[5]" = "1"
+
+	# PCIE Port 7 Disabled
+	# PCIE Port 8 Disabled
+	# PCIE Port 9 x1 -> WLAN
+	register "PcieRpEnable[8]" = "1"
+	register "PcieRpClkReqSupport[8]" = "1"
+	register "PcieRpClkReqNumber[8]" = "5"
+	# RP9, uses uses CLK SRC 5
+	register "PcieRpClkSrcNumber[8]" = "5"
+
+	# PCIE Port 10 x1 -> WiGig
+	register "PcieRpEnable[9]" = "1"
+	register "PcieRpClkReqSupport[9]" = "1"
+	register "PcieRpClkReqNumber[9]" = "4"
+	# RP10, uses uses CLK SRC 4
+	register "PcieRpClkSrcNumber[9]" = "4"
+
+	# USB 2.0 Enable all ports
+	register "usb2_ports[0]" = "USB2_PORT_MAX(OC0)"		# TYPE-A Port
+	register "usb2_ports[1]" = "USB2_PORT_MAX(OC2)"		# TYPE-A Port
+	register "usb2_ports[2]" = "USB2_PORT_MAX(OC_SKIP)"	# Bluetooth
+	register "usb2_ports[4]" = "USB2_PORT_MAX(OC_SKIP)"	# Type-A Port
+	register "usb2_ports[5]" = "USB2_PORT_MAX(OC2)"		# TYPE-A Port
+	register "usb2_ports[6]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
+	register "usb2_ports[7]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
+	register "usb2_ports[8]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
+	register "usb2_ports[9]" = "USB2_PORT_MAX(OC1)"		# TYPE-A Port
+	register "usb2_ports[10]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
+	register "usb2_ports[11]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
+
+	# USB 3.0 Enable Port 1-4. Port 5 & 6 Disabled
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# TYPE-A Port
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)"	# TYPE-A Port
+	register "usb3_ports[4]" = "USB3_PORT_EMPTY"	# Disabled
+	register "usb3_ports[5]" = "USB3_PORT_EMPTY"	# Disabled
+
+	register "SsicPortEnable" = "1" # Enable SSIC for WWAN
+
+	# Must leave UART0 enabled or SD/eMMC will not work as PCI
+	register "SerialIoDevMode" = "{ \
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C2]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C3]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexUart0] = PchSerialIoPci, \
+		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \
+		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, \
+	}"
+
+	# Lock Down
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+	}"
+
+	device domain 0 on
+		device pci 1c.0 on  end # PCI Express Port 1 x4 SLOT1
+		device pci 1c.4 on  end # PCI Express Port 5 x1 SLOT2/LAN
+		device pci 1c.5 on  end # PCI Express Port 6 x1 SLOT3
+		device pci 1d.0 on  end # PCI Express Port 9  x1 WLAN
+		device pci 1d.1 on  end # PCI Express Port 10 x1 WIGIG
+		device pci 1f.0 on
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end # LPC Interface
+	end
+end

@@ -24,7 +24,6 @@
 /* Global variables for MB layouts and these will be shared by irqtable mptable
 * and acpi_tables busnum is default.
 */
-static u8 bus_rs780[11];
 u8 bus_sb700[2];
 u32 apicid_sb700;
 
@@ -65,25 +64,13 @@ void get_bus_conf(void)
 	for (i = 0; i < 2; i++) {
 		bus_sb700[i] = 0;
 	}
-	for (i = 0; i < ARRAY_SIZE(bus_rs780); i++) {
-		bus_rs780[i] = 0;
-	}
 
-	bus_rs780[0] = (sysconf.pci1234[0] >> 16) & 0xff;
-	bus_sb700[0] = bus_rs780[0];
+	bus_sb700[0] = (sysconf.pci1234[0] >> 16) & 0xff;
 
 	/* sb700 */
 	dev = dev_find_slot(bus_sb700[0], PCI_DEVFN(0x14, 4));
 	if (dev) {
 		bus_sb700[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-	}
-
-	/* rs780 */
-	for (i = 1; i < ARRAY_SIZE(bus_rs780); i++) {
-		dev = dev_find_slot(bus_rs780[0], PCI_DEVFN(sysconf.sbdn + i, 0));
-		if (dev) {
-			bus_rs780[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-		}
 	}
 
 	/* I/O APICs:   APIC ID Version State   Address */

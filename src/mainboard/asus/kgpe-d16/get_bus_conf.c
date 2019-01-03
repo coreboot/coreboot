@@ -47,7 +47,6 @@ u32 hcdnx[] = {
 };
 
 
-static u32 sbdn_sr5650;
 u32 sbdn_sp5100;
 
 void get_bus_conf(void)
@@ -65,7 +64,6 @@ void get_bus_conf(void)
 	get_pci1234();
 
 	sysconf.sbdn = (sysconf.hcdn[0] & 0xff);
-	sbdn_sr5650 = sysconf.sbdn;
 	sbdn_sp5100 = 0;
 
 	for (i = 0; i < 2; i++) {
@@ -88,7 +86,7 @@ void get_bus_conf(void)
 
 	/* sr5650 */
 	for (i = 1; i < ARRAY_SIZE(bus_sr5650); i++) {
-		dev = dev_find_slot(bus_sr5650[0], PCI_DEVFN(sbdn_sr5650 + i, 0));
+		dev = dev_find_slot(bus_sr5650[0], PCI_DEVFN(sysconf.sbdn + i, 0));
 		if (dev) {
 			bus_sr5650[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 			if(255 != bus_sr5650[i]) {

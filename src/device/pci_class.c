@@ -263,7 +263,7 @@ const char *get_pci_subclass_name(struct device *dev)
 	subclass_name = "???";
 	class_entry = get_pci_class_entry(dev);
 	subclass_entry = class_entry ? class_entry->subclass_list : NULL;
-	if (NULL != subclass_entry) {
+	if (subclass_entry != NULL) {
 		subclass_list_end =
 			&subclass_entry[class_entry->subclass_entries];
 		while (subclass_list_end > subclass_entry) {

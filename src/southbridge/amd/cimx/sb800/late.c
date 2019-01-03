@@ -353,9 +353,9 @@ static void sb800_enable(struct device *dev)
 	case PCI_DEVFN(0x11, 0): /* 0:11.0  SATA */
 		if (dev->enabled) {
 			sb_config->SATAMODE.SataMode.SataController = CIMX_OPTION_ENABLED;
-			if (1 == sb_chip->boot_switch_sata_ide)
+			if (sb_chip->boot_switch_sata_ide == 1)
 				sb_config->SATAMODE.SataMode.SataIdeCombMdPriSecOpt = 0; //0 -IDE as primary.
-			else if (0 == sb_chip->boot_switch_sata_ide)
+			else if (sb_chip->boot_switch_sata_ide == 0)
 				sb_config->SATAMODE.SataMode.SataIdeCombMdPriSecOpt = 1; //1 -IDE as secondary.
 		} else {
 			sb_config->SATAMODE.SataMode.SataController = CIMX_OPTION_DISABLED;
@@ -387,7 +387,7 @@ static void sb800_enable(struct device *dev)
 
 	case PCI_DEVFN(0x14, 2): /* 0:14:2 HDA */
 		if (dev->enabled) {
-			if (AZALIA_DISABLE == sb_config->AzaliaController) {
+			if (sb_config->AzaliaController == AZALIA_DISABLE) {
 				sb_config->AzaliaController = AZALIA_AUTO;
 			}
 		} else {

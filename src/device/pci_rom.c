@@ -150,7 +150,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 	 * whether the ROM image is for a VGA device because some
 	 * devices have a mismatch between the hardware and the ROM.
 	 */
-	if (PCI_CLASS_DISPLAY_VGA == (dev->class >> 8)) {
+	if ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA) {
 #if !IS_ENABLED(CONFIG_MULTIPLE_VGA_ADAPTERS)
 		extern struct device *vga_pri; /* Primary VGA device (device.c). */
 		if (dev != vga_pri) return NULL; /* Only one VGA supported. */

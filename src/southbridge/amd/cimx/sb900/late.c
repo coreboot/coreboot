@@ -354,9 +354,9 @@ static void sb900_enable(struct device *dev)
 	case (0x11 << 3) | 0: /* 0:11.0  SATA */
 		if (dev->enabled) {
 			sb_config->SATAMODE.SataMode.SataController = ENABLED;
-			if (1 == sb_chip->boot_switch_sata_ide)
+			if (sb_chip->boot_switch_sata_ide == 1)
 				sb_config->SATAMODE.SataMode.SataIdeCombMdPriSecOpt = 0; //0 -IDE as primary.
-			else if (0 == sb_chip->boot_switch_sata_ide)
+			else if (sb_chip->boot_switch_sata_ide == 0)
 				sb_config->SATAMODE.SataMode.SataIdeCombMdPriSecOpt = 1; //1 -IDE as secondary.
 		} else {
 			sb_config->SATAMODE.SataMode.SataController = DISABLED;

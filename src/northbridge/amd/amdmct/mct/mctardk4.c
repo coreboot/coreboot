@@ -146,6 +146,6 @@ static void Get_ChannelPS_Cfg0_D(u8 MAAdimms, u8 Speed, u8 MAAload,
 			}
 		}
 		p+=10;
-	} while (0xFF == *p);
+	} while (*p == 0xff);
 	}
 }

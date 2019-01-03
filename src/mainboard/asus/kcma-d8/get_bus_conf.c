@@ -47,7 +47,6 @@ u32 hcdnx[] = {
 };
 
 
-u32 sbdn_sp5100;
 
 void get_bus_conf(void)
 {
@@ -64,7 +63,6 @@ void get_bus_conf(void)
 	get_pci1234();
 
 	sysconf.sbdn = (sysconf.hcdn[0] & 0xff);
-	sbdn_sp5100 = 0;
 
 	for (i = 0; i < 2; i++) {
 		bus_sp5100[i] = 0;
@@ -79,7 +77,7 @@ void get_bus_conf(void)
 
 
 	/* sp5100 */
-	dev = dev_find_slot(bus_sp5100[0], PCI_DEVFN(sbdn_sp5100 + 0x14, 4));
+	dev = dev_find_slot(bus_sp5100[0], PCI_DEVFN(0x14, 4));
 	if (dev) {
 		bus_sp5100[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	}

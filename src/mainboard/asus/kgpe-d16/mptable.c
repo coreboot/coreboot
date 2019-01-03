@@ -25,7 +25,6 @@ extern u8 bus_sp5100[2];
 
 extern u32 apicid_sp5100;
 
-extern u32 sbdn_sp5100;
 
 
 static void *smp_write_config_table(void *v)
@@ -58,7 +57,7 @@ static void *smp_write_config_table(void *v)
 
 		sp5100_bus_number = 0; //bus_sp5100[0]; TODO: why bus_sp5100[0] use same value of bus_sr5650[0] assigned by get_pci1234(), instead of 0.
 
-		dev = dev_find_slot(sp5100_bus_number, PCI_DEVFN(sbdn_sp5100 + 0x14, 0));
+		dev = dev_find_slot(sp5100_bus_number, PCI_DEVFN(0x14, 0));
 		if (dev) {
 			dword_ptr = (u32 *)(pci_read_config32(dev, 0x74) & 0xfffffff0);
 			smp_write_ioapic(mc, apicid_sp5100, 0x11, dword_ptr);

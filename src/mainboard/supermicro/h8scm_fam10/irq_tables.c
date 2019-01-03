@@ -41,7 +41,6 @@ static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 }
 
 extern u8 bus_sp5100[2];
-extern unsigned long sbdn_sp5100;
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
@@ -67,7 +66,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq->version = PIRQ_VERSION;
 
 	pirq->rtr_bus = bus_sp5100[0];
-	pirq->rtr_devfn = ((sbdn_sp5100 + 0x14) << 3) | 4;
+	pirq->rtr_devfn = (0x14 << 3) | 4;
 
 	pirq->exclusive_irqs = 0;
 
@@ -83,7 +82,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	/* pci bridge */
 	write_pirq_info(pirq_info, bus_sp5100[0],
-			((sbdn_sp5100 + 0x14) << 3) | 4, 0x1, 0xdef8, 0x2,
+			(0x14 << 3) | 4, 0x1, 0xdef8, 0x2,
 			0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 	pirq_info++;
 	slot_num++;

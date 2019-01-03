@@ -19,9 +19,6 @@
 #include <stdlib.h>
 #include <cpu/amd/multicore.h>
 #include <cpu/amd/amdfam10_sysconf.h>
-#if IS_ENABLED(CONFIG_AMD_SB_CIMX)
-#include <sb_cimx.h>
-#endif
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable
 * and acpi_tables busnum is default.
@@ -125,8 +122,4 @@ void get_bus_conf(void)
 	else
 		apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 	apicid_sb800 = apicid_base + 0;
-
-#if IS_ENABLED(CONFIG_AMD_SB_CIMX)
-	sb_Late_Post();
-#endif
 }

@@ -49,10 +49,6 @@
 #include <cpu/amd/model_10xxx_rev.h>
 #endif
 
-#if IS_ENABLED(CONFIG_AMD_SB_CIMX)
-#include <sb_cimx.h>
-#endif
-
 #if IS_ENABLED(CONFIG_DIMM_DDR3)
 #include "../amdmct/mct_ddr3/s3utils.h"
 #endif
@@ -1948,10 +1944,6 @@ static void cpu_bus_init(struct device *dev)
 	detect_and_enable_probe_filter(dev);
 	detect_and_enable_cache_partitioning(dev);
 	initialize_cpus(dev->link_list);
-#if IS_ENABLED(CONFIG_AMD_SB_CIMX)
-	sb_After_Pci_Init();
-	sb_Mid_Post_Init();
-#endif
 }
 
 static struct device_operations cpu_bus_ops = {

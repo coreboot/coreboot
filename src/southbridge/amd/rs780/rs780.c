@@ -349,7 +349,6 @@ void rs780_enable(struct device *dev)
 	}
 }
 
-#if !IS_ENABLED(CONFIG_AMD_SB_CIMX)
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
 	/* FIXME
@@ -358,7 +357,6 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	 */
 	return current;
 }
-#endif
 
 struct chip_operations southbridge_amd_rs780_ops = {
 	CHIP_NAME("ATI RS780")

@@ -58,10 +58,20 @@ static uint32_t get_index(unsigned int channel, uint32_t *cached_id)
 	return id;
 }
 
-uint32_t board_id(void)
+/* board_id is provided by ec/google/chromeec/ec_boardid.c */
+
+uint32_t sku_id(void)
 {
-	static uint32_t cached_board_id = BOARD_ID_INIT;
-	return get_index(4, &cached_board_id);
+	static uint32_t cached_sku_id = BOARD_ID_INIT;
+
+	/* Quirk for KUKUI: All P1/SKU0 had incorrectly set SKU=1. */
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KUKUI)) {
+		if (cached_sku_id == BOARD_ID_INIT && board_id() == 1) {
+			cached_sku_id = 0;
+			return cached_sku_id;
+		}
+	}
+	return get_index(4, &cached_sku_id);
 }
 
 uint32_t ram_code(void)

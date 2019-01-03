@@ -36,7 +36,7 @@ static acpi_cstate_t cst_entries[] = {
 	{2, 17, 250, {0x01, 8, 0, {0}, DEFAULT_PMBASE + LV3, 0}},
 };
 
-int get_cst_entries(acpi_cstate_t ** entries)
+int get_cst_entries(acpi_cstate_t **entries)
 {
 	*entries = cst_entries;
 	return ARRAY_SIZE(cst_entries);

@@ -160,7 +160,7 @@ static int hda_wait_for_valid(u8 *base)
  */
 static u32 hda_find_verb(u32 verb_table_bytes,
 			 const u32 *verb_table_data,
-			 u32 viddid, const u32 ** verb)
+			 u32 viddid, const u32 **verb)
 {
 	int idx=0;
 

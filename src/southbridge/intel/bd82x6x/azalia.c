@@ -88,7 +88,7 @@ no_codec:
 	return 0;
 }
 
-static u32 find_verb(struct device *dev, u32 viddid, const u32 ** verb)
+static u32 find_verb(struct device *dev, u32 viddid, const u32 **verb)
 {
 	int idx=0;
 

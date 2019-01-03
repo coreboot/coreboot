@@ -21,7 +21,6 @@
 #include <cpu/amd/amdfam10_sysconf.h>
 
 extern u8 bus_sr5650[14];
-extern u8 bus_sp5100[2];
 
 extern u32 apicid_sp5100;
 
@@ -49,7 +48,7 @@ static void *smp_write_config_table(void *v)
 		u32 *dword;
 		u8 byte;
 
-		dev = dev_find_slot(0, //bus_sp5100[0], TODO: why bus_sp5100[0] use same value of bus_sr5650[0] assigned by get_pci1234(), instead of 0.
+		dev = dev_find_slot(0, //pirq_router_bus TODO: why bus_sp5100[0] use same value of bus_sr5650[0] assigned by get_pci1234(), instead of 0.
 				  PCI_DEVFN(0x14, 0));
 		if (dev) {
 			dword = (u32 *)(pci_read_config32(dev, 0x74) & 0xfffffff0);

@@ -25,7 +25,6 @@
 * and acpi_tables busnum is default.
 */
 u8 bus_sr5650[14];
-u8 bus_sp5100[2];
 u32 apicid_sp5100;
 
 /*
@@ -63,23 +62,13 @@ void get_bus_conf(void)
 
 	sysconf.sbdn = (sysconf.hcdn[0] & 0xff);
 
-	for (i = 0; i < 2; i++) {
-		bus_sp5100[i] = 0;
-	}
 	for (i = 0; i < ARRAY_SIZE(bus_sr5650); i++) {
 		bus_sr5650[i] = 0;
 	}
 
 
 	bus_sr5650[0] = (sysconf.pci1234[0] >> 16) & 0xff;
-	bus_sp5100[0] = bus_sr5650[0];
-
-
-	/* sp5100 */
-	dev = dev_find_slot(bus_sp5100[0], PCI_DEVFN(0x14, 4));
-	if (dev) {
-		bus_sp5100[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-	}
+	pirq_router_bus = bus_sr5650[0];
 
 	/* sr5650 */
 	for (i = 1; i < ARRAY_SIZE(bus_sr5650); i++) {

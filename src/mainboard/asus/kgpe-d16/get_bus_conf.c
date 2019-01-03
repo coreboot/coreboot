@@ -25,7 +25,6 @@
 /* Global variables for MB layouts and these will be shared by irqtable mptable
 * and acpi_tables busnum is default.
 */
-u8 bus_sp5100[2];
 u32 apicid_sp5100;
 
 /*
@@ -50,7 +49,6 @@ u32 hcdnx[] = {
 void get_bus_conf(void)
 {
 	u32 apicid_base;
-	struct device *dev;
 	int i;
 
 	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
@@ -63,17 +61,7 @@ void get_bus_conf(void)
 
 	sysconf.sbdn = (sysconf.hcdn[0] & 0xff);
 
-	for (i = 0; i < 2; i++) {
-		bus_sp5100[i] = 0;
-	}
-
-	bus_sp5100[0] = (sysconf.pci1234[0] >> 16) & 0xff;
-
-	/* sp5100 */
-	dev = dev_find_slot(bus_sp5100[0], PCI_DEVFN(0x14, 4));
-	if (dev) {
-		bus_sp5100[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-	}
+	pirq_router_bus = (sysconf.pci1234[0] >> 16) & 0xff;
 
 	/* I/O APICs:   APIC ID Version State   Address */
 	if (IS_ENABLED(CONFIG_LOGICAL_CPUS))

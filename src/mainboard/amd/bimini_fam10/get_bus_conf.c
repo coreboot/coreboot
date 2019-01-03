@@ -45,7 +45,6 @@ u32 hcdnx[] = {
 };
 
 
-static u32 sbdn_rs780;
 
 void get_bus_conf(void)
 {
@@ -62,7 +61,6 @@ void get_bus_conf(void)
 	get_pci1234();
 
 	sysconf.sbdn = (sysconf.hcdn[0] & 0xff);
-	sbdn_rs780 = sysconf.sbdn;
 
 	memset(bus_sb800, 0, sizeof(bus_sb800));
 
@@ -89,7 +87,7 @@ void get_bus_conf(void)
 
 	/* rs780 */
 	for (i = 1; i < ARRAY_SIZE(bus_rs780); i++) {
-		dev = dev_find_slot(bus_rs780[0], PCI_DEVFN(sbdn_rs780 + i, 0));
+		dev = dev_find_slot(bus_rs780[0], PCI_DEVFN(sysconf.sbdn + i, 0));
 		if (dev) {
 			bus_rs780[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 			if(255 != bus_rs780[i]) {

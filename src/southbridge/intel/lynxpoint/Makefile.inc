@@ -55,4 +55,7 @@ ramstage-y += lp_gpio.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += lp_gpio.c
 endif
 
+verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += pmutil.c
+verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += lp_gpio.c
+
 endif

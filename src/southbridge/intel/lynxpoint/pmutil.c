@@ -24,6 +24,9 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <console/console.h>
+#include <security/vboot/vbnv.h>
+#include <security/vboot/vboot_common.h>
+#include <southbridge/intel/common/rtc.h>
 #include "pch.h"
 
 #if CONFIG(INTEL_LYNXPOINT_LP)

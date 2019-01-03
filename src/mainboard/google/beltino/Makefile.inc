@@ -15,6 +15,7 @@
 
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
+verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += chromeos.c
 ramstage-y += lan.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c variants/$(VARIANT_DIR)/led.c

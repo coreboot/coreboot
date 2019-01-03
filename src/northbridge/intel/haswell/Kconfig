@@ -27,9 +27,25 @@ config NORTHBRIDGE_INTEL_HASWELL
 
 if NORTHBRIDGE_INTEL_HASWELL
 
+config HASWELL_VBOOT_IN_BOOTBLOCK
+	depends on VBOOT
+	bool "Start verstage in bootblock"
+	default y
+	select VBOOT_STARTS_IN_BOOTBLOCK
+	select VBOOT_SEPARATE_VERSTAGE
+	help
+	  Haswell can either start verstage in a separate stage
+	  right after the bootblock has run or it can start it
+	  after romstage for compatibility reasons.
+	  Haswell however uses a mrc.bin to initialse memory which
+	  needs to be located at a fixed offset. Therefore even with
+	  a separate verstage starting after the bootblock that same
+	  binary is used meaning a jump is made from RW to the RO region
+	  and back to the RW region after the binary is done.
+
 config VBOOT
 	select VBOOT_OPROM_MATTERS
-	select VBOOT_STARTS_IN_ROMSTAGE
+	select VBOOT_STARTS_IN_ROMSTAGE if !HASWELL_VBOOT_IN_BOOTBLOCK
 
 config VGA_BIOS_ID
 	string
@@ -92,5 +108,12 @@ config PRE_GRAPHICS_DELAY
 	  (mostly TVs) won't be able to wake up fast enough to talk to the
 	  VBIOS. On those systems we need to wait for a bit before executing
 	  the VBIOS.
+
+# The UEFI System Agent binary needs to be at a fixed offset in the flash
+# and can therefore only reside in the COREBOOT fmap region
+config RO_REGION_ONLY
+	string
+	depends on VBOOT
+	default "mrc.bin"
 
 endif

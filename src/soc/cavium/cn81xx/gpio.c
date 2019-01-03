@@ -37,9 +37,9 @@ union bit_cfg {
 		u64 filt_cnt	: 4; /* Glitch filter counter */
 		u64 filt_sel	: 4; /* Glitch filter select */
 		u64 tx_od	: 1; /* Set Output to Open Drain */
-		u64 		: 3;
+		u64		: 3;
 		u64 pin_sel	: 10; /* Select type of pin */
-		u64 		: 38;
+		u64		: 38;
 	} s;
 };
 

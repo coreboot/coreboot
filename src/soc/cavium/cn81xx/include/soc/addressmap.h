@@ -36,7 +36,7 @@
 
 /* LMC */
 #define LMC0_PF_BAR0		0x87E088000000ULL
-#define LMC0_DDR_PLL_CTL0 	0x258
+#define LMC0_DDR_PLL_CTL0	0x258
 
 /* OCLA */
 

@@ -44,7 +44,7 @@ union cavium_spi_cfg {
 		u64 cslate	: 1;
 		u64 csena	: 4; /* Must be one */
 		u64 clkdiv	: 13;
-		u64 		: 35;
+		u64		: 35;
 	} s;
 };
 
@@ -69,7 +69,7 @@ union cavium_spi_tx {
 		u64 leavecs	: 1;
 		u64		: 3;
 		u64 csid	: 2;
-		u64 		: 42;
+		u64		: 42;
 	} s;
 };
 

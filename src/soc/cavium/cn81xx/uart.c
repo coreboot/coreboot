@@ -34,13 +34,13 @@ union cn81xx_uart_ctl {
 		u64 uaa_rst		: 1;
 		u64			: 2;
 		u64 csclk_en		: 1;
-		u64 			: 19;
+		u64			: 19;
 		u64 h_clkdiv_sel	: 3;
-		u64 			: 1;
+		u64			: 1;
 		u64 h_clkdiv_rst	: 1;
 		u64 h_clk_byp_sel	: 1;
 		u64 h_clk_en		: 1;
-		u64 			: 33;
+		u64			: 33;
 	} s;
 };
 

@@ -39,10 +39,10 @@
  * @param twsi_id   which TWSI bus to use
  * @param dev_addr  Device address (7 bit)
  * @param internal_addr
- *      	    Internal address.  Can be 0, 1 or 2 bytes in width
+ *		    Internal address.  Can be 0, 1 or 2 bytes in width
  * @param num_bytes Number of data bytes to read (1-4)
  * @param ia_width_bytes
- *      	    Internal address size in bytes (0, 1, or 2)
+ *		    Internal address size in bytes (0, 1, or 2)
  *
  * @return Read data, or -1 on failure
  */
@@ -77,14 +77,14 @@ int64_t bdk_twsix_read_ia(bdk_node_t node, int twsi_id, uint8_t dev_addr,
  * @param twsi_id   which TWSI interface to use
  * @param dev_addr  TWSI device address (7 bit only)
  * @param internal_addr
- *      	    TWSI internal address (0, 8, or 16 bits)
+ *		    TWSI internal address (0, 8, or 16 bits)
  * @param num_bytes Number of bytes to write (1-8)
  * @param ia_width_bytes
- *      	    internal address width, in bytes (0, 1, 2)
- * @param data      Data to write.  Data is written MSB first on the twsi bus, and
- *      	    only the lower num_bytes bytes of the argument are valid.  (If
- *      	    a 2 byte write is done, only the low 2 bytes of the argument is
- *      	    used.
+ *		    internal address width, in bytes (0, 1, 2)
+ * @param data      Data to write.  Data is written MSB first on the twsi bus,
+ *		    and only the lower num_bytes bytes of the argument are
+ *		    valid.  If a 2 byte write is done, only the low 2 bytes of
+ *		    the argument is used.
  *
  * @return Zero on success, -1 on error
  */

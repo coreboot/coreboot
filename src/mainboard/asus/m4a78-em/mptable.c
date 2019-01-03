@@ -20,12 +20,10 @@
 #include <stdint.h>
 #include <cpu/amd/amdfam10_sysconf.h>
 
-extern u8 bus_rs780[11];
 extern u8 bus_sb700[2];
 
 extern u32 apicid_sb700;
 
-extern u32 sbdn_rs780;
 extern u32 sbdn_sb700;
 
 static void *smp_write_config_table(void *v)

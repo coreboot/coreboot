@@ -41,8 +41,6 @@ static void *smp_write_config_table(void *v)
 
 	smp_write_processors(mc);
 
-	get_bus_conf();
-
 	apicid_sp5100 = 0x20;
 	apicid_sr5650 = apicid_sp5100 + 1;
 

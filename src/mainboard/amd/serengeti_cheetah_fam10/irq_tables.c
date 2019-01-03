@@ -54,8 +54,6 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	struct mb_sysconf_t *m;
 
-	get_bus_conf();		/* it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c */
-
 	m = sysconf.mb;
 
 	/* Align the table to be 16 byte aligned. */

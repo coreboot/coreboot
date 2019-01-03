@@ -57,8 +57,6 @@ static unsigned hcdnx[] = {
 
 unsigned sbdn3;
 
-static unsigned get_bus_conf_done = 0;
-
 void get_bus_conf(void)
 {
 
@@ -67,10 +65,6 @@ void get_bus_conf(void)
 
 	struct device *dev;
 	int i;
-
-	if(get_bus_conf_done == 1) return; //do it only once
-
-	get_bus_conf_done = 1;
 
 	sysconf.mb = &mb_sysconf;
 

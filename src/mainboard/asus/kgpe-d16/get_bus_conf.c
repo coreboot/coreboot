@@ -50,17 +50,11 @@ u32 hcdnx[] = {
 u32 sbdn_sr5650;
 u32 sbdn_sp5100;
 
-static u32 get_bus_conf_done = 0;
-
 void get_bus_conf(void)
 {
 	u32 apicid_base;
 	struct device *dev;
 	int i;
-
-	if (get_bus_conf_done == 1)
-		return;		/* do it only once */
-	get_bus_conf_done = 1;
 
 	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
 	for (i = 0; i < sysconf.hc_possible_num; i++) {

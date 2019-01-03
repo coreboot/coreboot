@@ -57,8 +57,6 @@ static unsigned hcdnx[] = {
 
 
 
-static u32 get_bus_conf_done = 0;
-
 static u32 get_hcid(u32 i)
 {
 	u32 id = 0;
@@ -91,11 +89,6 @@ void get_bus_conf(void)
 	struct device *dev;
 	int i, j;
 	struct mb_sysconf_t *m;
-
-	if (get_bus_conf_done == 1)
-		return; /* do it only once */
-
-	get_bus_conf_done = 1;
 
 	sysconf.mb = &mb_sysconf;
 

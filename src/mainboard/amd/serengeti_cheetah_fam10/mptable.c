@@ -36,8 +36,6 @@ static void *smp_write_config_table(void *v)
 
 	smp_write_processors(mc);
 
-	get_bus_conf();
-
 	m = sysconf.mb;
 
 	mptable_write_buses(mc, NULL, &bus_isa);

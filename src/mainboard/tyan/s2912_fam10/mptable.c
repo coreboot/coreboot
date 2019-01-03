@@ -35,7 +35,6 @@ static void *smp_write_config_table(void *v)
 
 	smp_write_processors(mc);
 
-	get_bus_conf();
 	sbdn = sysconf.sbdn;
 	m = sysconf.mb;
 

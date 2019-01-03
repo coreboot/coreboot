@@ -129,8 +129,6 @@ unsigned long mainboard_write_acpi_tables(struct device *device,
 
 	int i;
 
-	get_bus_conf(); /* it will get sblk, pci1234, hcdn, and sbdn */
-
 	/* same htio, but different possition? We may have to copy,
 	 * change HCIN, and recalculate the checknum and add_table
 	 */

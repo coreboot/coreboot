@@ -215,8 +215,6 @@ void northbridge_acpi_write_vars(struct device *device)
 	char pscope[] = "\\_SB.PCI0";
 	int i;
 
-	get_bus_conf();	/* it will get sblk, pci1234, hcdn, and sbdn */
-
 	acpigen_write_scope(pscope);
 
 	acpigen_write_name("BUSN");
@@ -332,8 +330,6 @@ unsigned long northbridge_write_acpi_tables(struct device *device,
 {
 	acpi_srat_t *srat;
 	acpi_slit_t *slit;
-
-	get_bus_conf();	/* it will get sblk, pci1234, hcdn, and sbdn */
 
 	/* SRAT */
 	current = ALIGN(current, 8);

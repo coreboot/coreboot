@@ -44,8 +44,6 @@ static void *smp_write_config_table(void *v)
 
 	smp_write_processors(mc);
 
-	get_bus_conf();
-
 	if (IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0))
 		apicid_sp5100 = 0x0;
 	else

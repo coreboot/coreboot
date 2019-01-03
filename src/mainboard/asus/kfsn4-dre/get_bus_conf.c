@@ -60,18 +60,12 @@ static unsigned hcdnx[] = {
 	0x20202020, 0x20202020,
 };
 
-static unsigned get_bus_conf_done = 0;
-
 void get_bus_conf(void)
 {
 	unsigned apicid_base, sbdn;
 	struct device *dev;
 	int i;
 
-	if (get_bus_conf_done == 1)
-		return;		/* Do it only once. */
-
-	get_bus_conf_done = 1;
 
 	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
 	for (i = 0; i < sysconf.hc_possible_num; i++) {

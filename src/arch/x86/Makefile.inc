@@ -378,9 +378,6 @@ ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/smihandler.c),)
 smm-srcs += src/mainboard/$(MAINBOARDDIR)/smihandler.c
 endif
 endif
-ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/get_bus_conf.c),)
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/get_bus_conf.c
-endif
 
 ramstage-libs ?=
 

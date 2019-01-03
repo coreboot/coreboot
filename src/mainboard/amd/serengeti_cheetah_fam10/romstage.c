@@ -44,7 +44,6 @@
 #include "southbridge/amd/amd8111/early_smbus.c"
 #include "southbridge/amd/amd8111/early_ctrl.c"
 
-#include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)

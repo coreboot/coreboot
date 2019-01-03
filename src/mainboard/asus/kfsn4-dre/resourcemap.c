@@ -17,7 +17,11 @@
  * GNU General Public License for more details.
  */
 
-static void setup_mb_resource_map(void)
+#include <arch/io.h>
+#include <commonlib/helpers.h>
+#include <northbridge/amd/amdfam10/amdfam10.h>
+
+void setup_mb_resource_map(void)
 {
 	static const unsigned int register_values[] = {
 		/* Careful set limit registers before base registers which contain the enables */

@@ -46,7 +46,6 @@
 #include <arch/early_variables.h>
 #include <cbmem.h>
 
-#include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
 
 #define SERIAL_0_DEV PNP_DEV(0x2e, W83667HG_A_SP1)

@@ -44,7 +44,6 @@
 #include <cbmem.h>
 #include <southbridge/nvidia/mcp55/mcp55.h> // for enable the FAN
 
-#include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
 #include <southbridge/nvidia/mcp55/early_setup_ss.h>
 #include "southbridge/nvidia/mcp55/early_setup_car.c"

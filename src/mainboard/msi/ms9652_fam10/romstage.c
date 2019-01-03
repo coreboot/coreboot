@@ -44,7 +44,6 @@
 #include <southbridge/amd/common/reset.h>
 #include <southbridge/nvidia/mcp55/mcp55.h>
 
-#include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)

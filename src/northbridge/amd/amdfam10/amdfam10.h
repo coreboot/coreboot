@@ -1000,6 +1000,7 @@ void setup_resource_map_x_offset(const u32 *register_values, u32 max, u32
 
 void setup_resource_map_x(const u32 *register_values, u32 max);
 void setup_resource_map(const u32 *register_values, u32 max);
+void setup_mb_resource_map(void);
 
 /* reset_test.c */
 u32 cpu_init_detected(u8 nodeid);

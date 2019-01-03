@@ -45,7 +45,6 @@
 #include <northbridge/amd/amdfam10/raminit.h>
 #include <cpu/amd/family_10h-family_15h/init_cpus.h>
 
-#include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)

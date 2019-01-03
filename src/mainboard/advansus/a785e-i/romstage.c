@@ -46,7 +46,6 @@
 #include <arch/early_variables.h>
 #include <cbmem.h>
 
-#include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
 #include "spd.h"
 

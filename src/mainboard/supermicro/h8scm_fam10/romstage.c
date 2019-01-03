@@ -47,7 +47,6 @@
 #include <arch/early_variables.h>
 #include <cbmem.h>
 
-#include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
 
 void activate_spd_rom(const struct mem_controller *ctrl);

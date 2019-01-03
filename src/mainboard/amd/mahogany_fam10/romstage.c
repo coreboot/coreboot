@@ -51,7 +51,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8718F_SP1)
 
-#include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
 
 void activate_spd_rom(const struct mem_controller *ctrl);

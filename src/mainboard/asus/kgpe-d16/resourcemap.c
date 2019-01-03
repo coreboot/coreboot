@@ -17,9 +17,11 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cpu.h>
+#include <arch/io.h>
+#include <commonlib/helpers.h>
+#include <northbridge/amd/amdfam10/amdfam10.h>
 
-static void setup_mb_resource_map(void)
+void setup_mb_resource_map(void)
 {
 	static const unsigned int fam15h_register_values[] = {
 		/* Careful set limit registers before base registers which contain the enables */

@@ -49,7 +49,6 @@
 #include <cbmem.h>
 #include <southbridge/amd/rs780/rs780.h>
 
-#include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
 
 #if CONFIG_TTYS0_BASE == 0x2f8

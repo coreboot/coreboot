@@ -21,7 +21,6 @@
 #include <southbridge/amd/sb800/sb800.h>
 #include <cpu/amd/amdfam10_sysconf.h>
 
-extern u8 bus_sb800[6];
 extern u32 apicid_sb800;
 
 u8 intr_data[] = {

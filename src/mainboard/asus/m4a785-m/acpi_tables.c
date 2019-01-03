@@ -20,7 +20,6 @@
 #include <arch/ioapic.h>
 #include <device/pci.h>
 #include <cpu/amd/amdfam10_sysconf.h>
-#include "mb_sysconf.h"
 
 unsigned long acpi_fill_madt(unsigned long current)
 {

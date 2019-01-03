@@ -103,7 +103,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	/* pci bridge */
 	write_pirq_info(pirq_info, bus_sp5100[0],
-			(0x14 << 3) | 4, LNKA, IRQBM, LNKB,
+			PCI_DEVFN(0x14, 4), LNKA, IRQBM, LNKB,
 			IRQBM, LNKC, IRQBM, LNKD, IRQBM, 0, 0);
 	pirq_info++;
 	slot_num++;

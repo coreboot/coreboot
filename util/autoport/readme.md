@@ -80,7 +80,7 @@ If you're able to use full memory with any combination of inserted modules than 
 most likely correct. In order to initialize the memory coreboot needs to know RAM timings.
 For socketed RAM it's stored in a small EEPROM chip which can be accessed through SPD. Unfortunately
 mapping between SPD addresses and RAM slots differs and cannot always be detected automatically.
-Resulting SPD map is encoded in function `mainboard_get_spd` in `early_southbridge.c`.
+Resulting SPD map is encoded in function `mainboard_get_spd` in `romstage.c`.
 autoport uses the most common map `0x50, 0x51, 0x52, 0x53` except for lenovos which are
 known to use `0x50, 0x52, 0x51, 0x53`. To detect the correct memory map the easiest way is with
 vendor BIOS to boot with just one module in channel 0 slot 0 and then see where does it show

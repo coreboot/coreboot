@@ -29,32 +29,6 @@
 // Global variables for MB layouts and these will be shared by irqtable mptable and acpi_tables
 struct mb_sysconf_t mb_sysconf;
 
-/* Here you only need to set value in pci1234 for HT-IO that could be
-installed or not You may need to preset pci1234 for HTIO board, please
-refer to src/northbridge/amd/amdfam10/get_pci1234.c for detail */
-static u32 pci1234x[] = {
-	0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc,
-	0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc,
-	0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc,
-	0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc,
-	0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc,
-	0x0000ffc, 0x0000ffc,
-	};
-
-
-/* HT Chain device num, actually it is unit id base of every ht device
-in chain, assume every chain only have 4 ht device at most */
-
-static unsigned hcdnx[] = {
-	0x20202020, 0x20202020, 0x20202020, 0x20202020, 0x20202020,
-	0x20202020, 0x20202020, 0x20202020, 0x20202020, 0x20202020,
-	0x20202020, 0x20202020, 0x20202020, 0x20202020, 0x20202020,
-	0x20202020, 0x20202020, 0x20202020, 0x20202020, 0x20202020,
-	0x20202020, 0x20202020, 0x20202020, 0x20202020, 0x20202020,
-	0x20202020, 0x20202020, 0x20202020, 0x20202020, 0x20202020,
-	0x20202020, 0x20202020,
-};
-
 void get_bus_conf(void)
 {
 	unsigned apicid_base;
@@ -69,13 +43,7 @@ void get_bus_conf(void)
 	m = sysconf.mb;
 	memset(m, 0, sizeof(struct mb_sysconf_t));
 
-	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
-	for (i = 0; i < sysconf.hc_possible_num; i++) {
-		sysconf.pci1234[i] = pci1234x[i];
-		sysconf.hcdn[i] = hcdnx[i];
-	}
-
-	get_pci1234();
+	get_default_pci1234(32);
 
 	sysconf.sbdn = (sysconf.hcdn[0] & 0xff); // first byte of first chain
 	m->bus_mcp55[0] = (sysconf.pci1234[0] >> 12) & 0xff;

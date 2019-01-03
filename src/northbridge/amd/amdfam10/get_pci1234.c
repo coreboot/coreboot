@@ -110,6 +110,18 @@ void get_pci1234(void)
 	}
 }
 
+void get_default_pci1234(int mb_hc_possible)
+{
+	int i;
+
+	for (i = 0; i < mb_hc_possible; i++) {
+		sysconf.pci1234[i] = 0x0000ffc;
+		sysconf.hcdn[i] = 0x20202020;
+	}
+	sysconf.hc_possible_num = mb_hc_possible;
+	get_pci1234();
+}
+
 static void amd_bs_sysconf(void *arg)
 {
 	/* Prepare sysconf structures, which are used to generate IRQ,

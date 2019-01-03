@@ -27,38 +27,13 @@
 u8 bus_sr5650[14];
 u32 apicid_sp5100;
 
-/*
-* Here you only need to set value in pci1234 for HT-IO that could be installed or not
-* You may need to preset pci1234 for HTIO board,
-* please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
-*/
-u32 pci1234x[] = {
-	0x0000ff0,
-};
-
-/*
-* HT Chain device num, actually it is unit id base of every ht device in chain,
-* assume every chain only have 4 ht device at most
-*/
-u32 hcdnx[] = {
-	0x20202020,
-};
-
-
-
 void get_bus_conf(void)
 {
 	u32 apicid_base;
 	struct device *dev;
 	int i;
 
-	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
-	for (i = 0; i < sysconf.hc_possible_num; i++) {
-		sysconf.pci1234[i] = pci1234x[i];
-		sysconf.hcdn[i] = hcdnx[i];
-	}
-
-	get_pci1234();
+	get_default_pci1234(1);
 
 	sysconf.sbdn = (sysconf.hcdn[0] & 0xff);
 

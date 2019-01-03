@@ -46,7 +46,6 @@ u32 hcdnx[] = {
 };
 
 static u32 sbdn_rs780;
-u32 sbdn_sb700;
 
 void get_bus_conf(void)
 {
@@ -64,7 +63,6 @@ void get_bus_conf(void)
 
 	sysconf.sbdn = (sysconf.hcdn[0] & 0xff);
 	sbdn_rs780 = sysconf.sbdn;
-	sbdn_sb700 = 0;
 
 	for (i = 0; i < 2; i++) {
 		bus_sb700[i] = 0;
@@ -77,7 +75,7 @@ void get_bus_conf(void)
 	bus_sb700[0] = bus_rs780[0];
 
 	/* sb700 */
-	dev = dev_find_slot(bus_sb700[0], PCI_DEVFN(sbdn_sb700 + 0x14, 4));
+	dev = dev_find_slot(bus_sb700[0], PCI_DEVFN(0x14, 4));
 	if (dev) {
 		bus_sb700[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	}

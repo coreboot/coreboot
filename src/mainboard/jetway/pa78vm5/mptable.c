@@ -25,7 +25,6 @@ extern u8 bus_sb700[2];
 
 extern u32 apicid_sb700;
 
-extern u32 sbdn_sb700;
 
 static void *smp_write_config_table(void *v)
 {
@@ -48,7 +47,7 @@ static void *smp_write_config_table(void *v)
 
 		dev =
 		    dev_find_slot(bus_sb700[0],
-				  PCI_DEVFN(sbdn_sb700 + 0x14, 0));
+				  PCI_DEVFN(0x14, 0));
 		if (dev) {
 			dword = pci_read_config32(dev, 0x74) & 0xfffffff0;
 			smp_write_ioapic(mc, apicid_sb700,

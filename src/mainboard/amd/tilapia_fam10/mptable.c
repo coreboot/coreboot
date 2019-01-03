@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <cpu/amd/amdfam10_sysconf.h>
 
-extern u8 bus_sb700[2];
 
 extern u32 apicid_sb700;
 
@@ -45,7 +44,7 @@ static void *smp_write_config_table(void *v)
 		u8 byte;
 
 		dev =
-		    dev_find_slot(bus_sb700[0],
+		    dev_find_slot(pirq_router_bus,
 				  PCI_DEVFN(0x14, 0));
 		if (dev) {
 			dword = pci_read_config32(dev, 0x74) & 0xfffffff0;

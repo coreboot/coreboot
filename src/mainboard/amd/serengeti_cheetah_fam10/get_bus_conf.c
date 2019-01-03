@@ -57,8 +57,6 @@ static unsigned hcdnx[] = {
 
 
 
-extern void get_pci1234(void);
-
 static u32 get_bus_conf_done = 0;
 
 static u32 get_hcid(u32 i)

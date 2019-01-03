@@ -17,6 +17,5 @@
 #define NORTHBRIDGE_AMD_AMDFAM10_H
 
 u32 amdfam10_scan_root_bus(struct device *root, u32 max);
-void get_pci1234(void);
 
 #endif /* NORTHBRIDGE_AMD_AMDFAM10_H */

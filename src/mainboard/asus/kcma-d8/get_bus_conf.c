@@ -51,8 +51,6 @@ u32 hcdnx[] = {
 u32 sbdn_sr5650;
 u32 sbdn_sp5100;
 
-extern void get_pci1234(void);
-
 static u32 get_bus_conf_done = 0;
 
 void get_bus_conf(void)

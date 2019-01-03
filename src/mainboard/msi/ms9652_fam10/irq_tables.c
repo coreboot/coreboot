@@ -74,7 +74,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq->version = PIRQ_VERSION;
 
 	pirq->rtr_bus = m->bus_mcp55[0];
-	pirq->rtr_devfn = ((sbdn + 6) << 3) | 0;
+	pirq->rtr_devfn = PCI_DEVFN(sbdn + 6, 0);
 
 	pirq->exclusive_irqs = 0;
 
@@ -88,7 +88,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq_info = (void *)(&pirq->checksum + 1);
 	slot_num = 0;
 //pci bridge
-	write_pirq_info(pirq_info, m->bus_mcp55[0], ((sbdn + 6) << 3) | 0, 0x1,
+	write_pirq_info(pirq_info, m->bus_mcp55[0], PCI_DEVFN(sbdn + 6, 0), 0x1,
 			0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 	pirq_info++;
 	slot_num++;
@@ -99,19 +99,19 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 		unsigned busn = (sysconf.pci1234[i] >> 12) & 0xff;
 		unsigned devn = sysconf.hcdn[i] & 0xff;
 
-		write_pirq_info(pirq_info, busn, (devn << 3) | 0, 0x1, 0xdef8,
+		write_pirq_info(pirq_info, busn, PCI_DEVFN(devn, 0), 0x1, 0xdef8,
 				0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 		pirq_info++;
 		slot_num++;
 	}
 
 #if CONFIG_CBB
-	write_pirq_info(pirq_info, CONFIG_CBB, (0 << 3) | 0, 0x1, 0xdef8, 0x2,
+	write_pirq_info(pirq_info, CONFIG_CBB, PCI_DEVFN(0, 0), 0x1, 0xdef8, 0x2,
 			0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 	pirq_info++;
 	slot_num++;
 	if (sysconf.nodes > 32) {
-		write_pirq_info(pirq_info, CONFIG_CBB - 1, (0 << 3) | 0, 0x1,
+		write_pirq_info(pirq_info, CONFIG_CBB - 1, PCI_DEVFN(0, 0), 0x1,
 				0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8,
 				0, 0);
 		pirq_info++;

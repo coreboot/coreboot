@@ -83,7 +83,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq->signature = PIRQ_SIGNATURE;
 	pirq->version = PIRQ_VERSION;
 	pirq->rtr_bus = bus_ck804[0];
-	pirq->rtr_devfn = ((sbdn + 9) << 3) | 0;
+	pirq->rtr_devfn = PCI_DEVFN(sbdn + 9, 0);
 	pirq->exclusive_irqs = 0x828;
 	pirq->rtr_vendor = 0x10de;
 	pirq->rtr_device = 0x005c;
@@ -95,26 +95,26 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	slot_num = 0;
 
 	/* Slot1 PCIE 16x */
-	write_pirq_info(pirq_info, bus_ck804[1], (0 << 3) | 0, 0x3, 0xdeb8, 0x4,
+	write_pirq_info(pirq_info, bus_ck804[1], PCI_DEVFN(0, 0), 0x3, 0xdeb8, 0x4,
 			0xdeb8, 0x1, 0xdeb8, 0x2, 0xdeb8, 4, 0);
 	pirq_info++;
 	slot_num++;
 
 
 	/* Slot2 PCIE 1x */
-	write_pirq_info(pirq_info, bus_ck804[2], (0 << 3) | 0, 0x4, 0xdeb8, 0x1,
+	write_pirq_info(pirq_info, bus_ck804[2], PCI_DEVFN(0, 0), 0x4, 0xdeb8, 0x1,
 			0xdeb8, 0x2, 0xdeb8, 0x3, 0xdeb8, 5, 0);
 	pirq_info++;
 	slot_num++;
 
 	/* Slot3 PCIE 1x */
-	write_pirq_info(pirq_info, bus_ck804[3], (0 << 3) | 0, 0x1, 0xdeb8, 0x2,
+	write_pirq_info(pirq_info, bus_ck804[3], PCI_DEVFN(0, 0), 0x1, 0xdeb8, 0x2,
 			0xdeb8, 0x3, 0xdeb8, 0x4, 0xdeb8, 6, 0);
 	pirq_info++;
 	slot_num++;
 
 	/* Slot4 PCIE 4x */
-	write_pirq_info(pirq_info, bus_ck804[4], (0x4 << 3) | 0, 0x2,
+	write_pirq_info(pirq_info, bus_ck804[4], PCI_DEVFN(0x4, 0), 0x2,
 			0xdeb8, 0x3, 0xdeb8, 0x4, 0xdeb8, 0x1, 0xdeb8, 7, 0);
 	pirq_info++;
 	slot_num++;
@@ -131,31 +131,31 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	}
 
 	/* PCI bridge */
-	write_pirq_info(pirq_info, bus_ck804[0], ((sbdn + 9) << 3) | 0, 0x1,
+	write_pirq_info(pirq_info, bus_ck804[0], PCI_DEVFN(sbdn + 9, 0), 0x1,
 			0xdeb8, 0x2, 0xdeb8, 0x3, 0xdeb8, 0x4, 0xdeb8, 0, 0);
 	pirq_info++;
 	slot_num++;
 
 	/* SMBus */
-	write_pirq_info(pirq_info, bus_ck804[0], ((sbdn + 1) << 3) | 0, 0x2,
+	write_pirq_info(pirq_info, bus_ck804[0], PCI_DEVFN(sbdn + 1, 0), 0x2,
 			0xdeb8, 0, 0, 0, 0, 0, 0, 0, 0);
 	pirq_info++;
 	slot_num++;
 
 	/* USB */
-	write_pirq_info(pirq_info, bus_ck804[0], ((sbdn + 2) << 3) | 0, 0x1,
+	write_pirq_info(pirq_info, bus_ck804[0], PCI_DEVFN(sbdn + 2, 0), 0x1,
 			0xdeb8, 0x2, 0xdeb8, 0, 0, 0, 0, 0, 0);
 	pirq_info++;
 	slot_num++;
 
 	/* SATA */
-	write_pirq_info(pirq_info, bus_ck804[0], ((sbdn + 7) << 3) | 0, 0x1,
+	write_pirq_info(pirq_info, bus_ck804[0], PCI_DEVFN(sbdn + 7, 0), 0x1,
 			0xdeb8, 0, 0, 0, 0, 0, 0, 0, 0);
 	pirq_info++;
 	slot_num++;
 
 	/* SATA */
-	write_pirq_info(pirq_info, bus_ck804[0], ((sbdn + 8) << 3) | 0, 0x1,
+	write_pirq_info(pirq_info, bus_ck804[0], PCI_DEVFN(sbdn + 8, 0), 0x1,
 			0xdeb8, 0, 0, 0, 0, 0, 0, 0, 0);
 	pirq_info++;
 	slot_num++;

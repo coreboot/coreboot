@@ -25,7 +25,6 @@ extern u8 bus_sp5100[2];
 
 extern u32 apicid_sp5100;
 
-extern u32 sbdn_sr5650;
 extern u32 sbdn_sp5100;
 
 

@@ -25,7 +25,7 @@
 /* Global variables for MB layouts and these will be shared by irqtable mptable
 * and acpi_tables busnum is default.
 */
-u8 bus_sr5650[14];
+static u8 bus_sr5650[14];
 u8 bus_sp5100[2];
 u32 apicid_sp5100;
 
@@ -47,7 +47,7 @@ u32 hcdnx[] = {
 };
 
 
-u32 sbdn_sr5650;
+static u32 sbdn_sr5650;
 u32 sbdn_sp5100;
 
 void get_bus_conf(void)

@@ -46,7 +46,7 @@ u32 hcdnx[] = {
 };
 
 
-u32 sbdn_sr5650;
+static u32 sbdn_sr5650;
 u32 sbdn_sp5100;
 
 void get_bus_conf(void)

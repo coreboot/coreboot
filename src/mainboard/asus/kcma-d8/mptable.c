@@ -21,12 +21,10 @@
 #include <stdint.h>
 #include <cpu/amd/amdfam10_sysconf.h>
 
-extern u8 bus_sr5650[14];
 extern u8 bus_sp5100[2];
 
 extern u32 apicid_sp5100;
 
-extern u32 sbdn_sr5650;
 extern u32 sbdn_sp5100;
 
 

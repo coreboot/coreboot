@@ -60,10 +60,8 @@ static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 	pirq_info->rfu = rfu;
 }
 
-extern u8 bus_sr5650[14];
 extern u8 bus_sp5100[2];
 extern u32 sbdn_sp5100;
-extern u32 sbdn_sr5650;
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {

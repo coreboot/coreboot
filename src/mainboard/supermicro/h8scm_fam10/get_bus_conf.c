@@ -24,7 +24,6 @@
 /* Global variables for MB layouts and these will be shared by irqtable mptable
 * and acpi_tables busnum is default.
 */
-u8 bus_isa;
 u8 bus_sr5650[14];
 u8 bus_sp5100[2];
 u32 apicid_sp5100;
@@ -90,8 +89,6 @@ void get_bus_conf(void)
 	dev = dev_find_slot(bus_sp5100[0], PCI_DEVFN(sbdn_sp5100 + 0x14, 4));
 	if (dev) {
 		bus_sp5100[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-		bus_isa++;
 	}
 
 	/* sr5650 */
@@ -100,14 +97,11 @@ void get_bus_conf(void)
 		if (dev) {
 			bus_sr5650[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 			if(255 != bus_sr5650[i]) {
-				bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-				bus_isa++;
 			}
 		}
 	}
 
 	/* I/O APICs:   APIC ID Version State   Address */
-	bus_isa = 10;
 	if (IS_ENABLED(CONFIG_LOGICAL_CPUS))
 		apicid_base = get_apicid_base(1);
 	else

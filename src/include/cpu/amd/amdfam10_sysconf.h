@@ -69,4 +69,6 @@ extern struct amdfam10_sysconf_t sysconf;
 void get_bus_conf(void);
 void get_pci1234(void);
 
+extern u8 pirq_router_bus;
+
 #endif

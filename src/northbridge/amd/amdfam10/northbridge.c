@@ -54,6 +54,7 @@
 #endif
 
 struct amdfam10_sysconf_t sysconf;
+u8 pirq_router_bus;
 
 #define FX_DEVS NODE_NUMS
 static struct device *__f0_dev[FX_DEVS];

@@ -25,11 +25,9 @@
 * and acpi_tables busnum is default.
 */
 u8 bus_sr5650[14];
-u32 apicid_sp5100;
 
 void get_bus_conf(void)
 {
-	u32 apicid_base;
 	struct device *dev;
 	int i;
 
@@ -54,11 +52,4 @@ void get_bus_conf(void)
 			}
 		}
 	}
-
-	/* I/O APICs:   APIC ID Version State   Address */
-	if (IS_ENABLED(CONFIG_LOGICAL_CPUS))
-		apicid_base = get_apicid_base(1);
-	else
-		apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
-	apicid_sp5100 = apicid_base + 0;
 }

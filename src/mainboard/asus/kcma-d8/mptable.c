@@ -21,14 +21,11 @@
 #include <stdint.h>
 #include <cpu/amd/amdfam10_sysconf.h>
 
-extern u32 apicid_sp5100;
-
-
-
 static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
 	int bus_isa;
+	u32 apicid_sp5100;
 	u32 apicid_sr5650;
 	struct device *dev;
 	uint8_t sp5100_bus_number;

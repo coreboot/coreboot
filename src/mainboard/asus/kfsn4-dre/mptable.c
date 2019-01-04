@@ -111,28 +111,28 @@ static void *smp_write_config_table(void *v)
 	mptable_add_isa_interrupts(mc, bus_isa, apicid_ck804, 0);
 
 	// Onboard ck804 smbus
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_ck804[0], ((sbdn + 1) << 2) | 1, apicid_ck804,
+	smp_write_pci_intsrc(mc, mp_INT,
+			 bus_ck804[0], sbdn + 1, 1, apicid_ck804,
 			 0xa);
 
 	// Onboard ck804 USB 1.1
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_ck804[0], ((sbdn + 2) << 2) | 0, apicid_ck804,
+	smp_write_pci_intsrc(mc, mp_INT,
+			 bus_ck804[0], sbdn + 2, 0, apicid_ck804,
 			 0x15);
 
 	// Onboard ck804 USB 2
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_ck804[0], ((sbdn + 2) << 2) | 1, apicid_ck804,
+	smp_write_pci_intsrc(mc, mp_INT,
+			 bus_ck804[0], sbdn + 2, 1, apicid_ck804,
 			 0x14);
 
 	// Onboard ck804 SATA 0
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_ck804[0], ((sbdn + 7) << 2) | 0, apicid_ck804,
+	smp_write_pci_intsrc(mc, mp_INT,
+			 bus_ck804[0], sbdn + 7, 0, apicid_ck804,
 			 0x17);
 
 	// Onboard ck804 SATA 1
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_ck804[0], ((sbdn + 8) << 2) | 0, apicid_ck804,
+	smp_write_pci_intsrc(mc, mp_INT,
+			 bus_ck804[0], sbdn + 8, 0, apicid_ck804,
 			 0x16);
 
 	/* Local Ints: Type Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */

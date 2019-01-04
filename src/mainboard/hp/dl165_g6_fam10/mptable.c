@@ -112,16 +112,16 @@ static void *smp_write_config_table(void *v)
 	mptable_add_isa_interrupts(mc, isa_bus, m->apicid_bcm5785[0], 0);
 
 	/* I/O Ints:		Type	Polarity/Trigger			Bus ID		IRQ	APIC ID		PIN#  */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_1, (0xe << 2)|0,	m->apicid_bcm5785[0], 0x5);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x3 << 2)|0,	m->apicid_bcm5785[0], 0xa);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x6 << 2)|0,	m->apicid_bcm5785[2], 0x4);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x7 << 2)|0,	m->apicid_bcm5785[2], 0x3);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x8 << 2)|0,	m->apicid_bcm5785[2], 0x2);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x9 << 2)|0,	m->apicid_bcm5785[2], 0x1);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0xa << 2)|0,	m->apicid_bcm5785[2], 0x0);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_1_1, (0x2 << 2)|0,	m->apicid_bcm5785[2], 0x8);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_1_1, (0x2 << 2)|1,	m->apicid_bcm5785[2], 0x7);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5780[5], (0x0 << 2)|0,	m->apicid_bcm5785[2], 0xa);
+	smp_write_pci_intsrc(mc, mp_INT, m->bus_bcm5785_1, 0xe, 0,	m->apicid_bcm5785[0], 0x5);
+	smp_write_pci_intsrc(mc, mp_INT, m->bus_bcm5785_0, 0x3, 0,	m->apicid_bcm5785[0], 0xa);
+	smp_write_pci_intsrc(mc, mp_INT, m->bus_bcm5785_0, 0x6, 0,	m->apicid_bcm5785[2], 0x4);
+	smp_write_pci_intsrc(mc, mp_INT, m->bus_bcm5785_0, 0x7, 0,	m->apicid_bcm5785[2], 0x3);
+	smp_write_pci_intsrc(mc, mp_INT, m->bus_bcm5785_0, 0x8, 0,	m->apicid_bcm5785[2], 0x2);
+	smp_write_pci_intsrc(mc, mp_INT, m->bus_bcm5785_0, 0x9, 0,	m->apicid_bcm5785[2], 0x1);
+	smp_write_pci_intsrc(mc, mp_INT, m->bus_bcm5785_0, 0xa, 0,	m->apicid_bcm5785[2], 0x0);
+	smp_write_pci_intsrc(mc, mp_INT, m->bus_bcm5785_1_1, 0x2, 0,	m->apicid_bcm5785[2], 0x8);
+	smp_write_pci_intsrc(mc, mp_INT, m->bus_bcm5785_1_1, 0x2, 1,	m->apicid_bcm5785[2], 0x7);
+	smp_write_pci_intsrc(mc, mp_INT, m->bus_bcm5780[5], 0x0, 0,	m->apicid_bcm5785[2], 0xa);
 
 	/* enable int */
 	/* why here? must get the BAR and PCI command bit 1 set before enable it ....*/

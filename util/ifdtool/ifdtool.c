@@ -1153,11 +1153,8 @@ static int regions_collide(const region_t *r1, const region_t *r2)
 	if ((r1->size == 0) || (r2->size == 0))
 		return 0;
 
-	if ( ((r1->base >= r2->base) && (r1->base <= r2->limit)) ||
-	     ((r1->limit >= r2->base) && (r1->limit <= r2->limit)) )
-		return 1;
-
-	return 0;
+	/* r1 should be either completely below or completely above r2 */
+	return !(r1->limit < r2->base || r1->base > r2->limit);
 }
 
 void new_layout(const char *filename, char *image, int size,

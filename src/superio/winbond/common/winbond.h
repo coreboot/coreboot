@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef SUPERIO_WINBOND_COMMON_ROMSTAGE_H
-#define SUPERIO_WINBOND_COMMON_ROMSTAGE_H
+#ifndef SUPERIO_WINBOND_COMMON_PRE_RAM_H
+#define SUPERIO_WINBOND_COMMON_PRE_RAM_H
 
 #include <arch/io.h>
 #include <stdint.h>
@@ -27,4 +27,4 @@ void winbond_set_clksel_48(pnp_devfn_t dev);
 void pnp_enter_conf_state(pnp_devfn_t dev);
 void pnp_exit_conf_state(pnp_devfn_t dev);
 
-#endif /* SUPERIO_WINBOND_COMMON_ROMSTAGE_H */
+#endif /* SUPERIO_WINBOND_COMMON_PRE_RAM_H */

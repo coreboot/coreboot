@@ -17,7 +17,7 @@
 
 # Generic ITE romstage driver - Just enough UART initialisation code for
 # romstage.
-config SUPERIO_ITE_COMMON_ROMSTAGE
+config SUPERIO_ITE_COMMON_PRE_RAM
 	bool
 
 # Generic ITE environment controller driver

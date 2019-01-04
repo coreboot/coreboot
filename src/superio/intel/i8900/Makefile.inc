@@ -14,5 +14,6 @@
 ## GNU General Public License for more details.
 ##
 
+bootblock-$(CONFIG_SUPERIO_INTEL_I8900) += early_serial.c
 romstage-$(CONFIG_SUPERIO_INTEL_I8900) += early_serial.c
 ramstage-$(CONFIG_SUPERIO_INTEL_I8900) += superio.c

@@ -13,4 +13,5 @@
 ## GNU General Public License for more details.
 ##
 
+bootblock-$(CONFIG_SUPERIO_SMSC_SIO1007) += early_serial.c
 romstage-$(CONFIG_SUPERIO_SMSC_SIO1007) += early_serial.c

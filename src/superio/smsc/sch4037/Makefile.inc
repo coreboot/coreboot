@@ -13,5 +13,6 @@
 # GNU General Public License for more details.
 #
 
+bootblock-$(CONFIG_SUPERIO_SMSC_SCH4037) += sch4037_early_init.c
 romstage-$(CONFIG_SUPERIO_SMSC_SCH4037) += sch4037_early_init.c
 ramstage-$(CONFIG_SUPERIO_SMSC_SCH4037) += superio.c

@@ -15,5 +15,6 @@
 ## GNU General Public License for more details.
 ##
 
+bootblock-$(CONFIG_SUPERIO_WINBOND_WPCD376I) += early_serial.c
 romstage-$(CONFIG_SUPERIO_WINBOND_WPCD376I) += early_serial.c
 ramstage-$(CONFIG_SUPERIO_WINBOND_WPCD376I) += superio.c

@@ -16,5 +16,6 @@
 ## GNU General Public License for more details.
 ##
 
+bootblock-$(CONFIG_SUPERIO_SMSC_DME1737) += early_serial.c
 romstage-$(CONFIG_SUPERIO_SMSC_DME1737) += early_serial.c
 ramstage-$(CONFIG_SUPERIO_SMSC_DME1737) += superio.c

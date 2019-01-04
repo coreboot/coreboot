@@ -16,6 +16,8 @@
 ## GNU General Public License for more details.
 ##
 
+bootblock-$(CONFIG_SUPERIO_NSC_PC87417) += early_init.c
 romstage-$(CONFIG_SUPERIO_NSC_PC87417) += early_init.c
+bootblock-$(CONFIG_SUPERIO_NSC_PC87417) += early_serial.c
 romstage-$(CONFIG_SUPERIO_NSC_PC87417) += early_serial.c
 ramstage-$(CONFIG_SUPERIO_NSC_PC87417) += superio.c

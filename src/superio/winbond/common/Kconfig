@@ -16,5 +16,5 @@
 
 # Generic Winbond romstage driver - Just enough UART initialisation code for
 # romstage.
-config SUPERIO_WINBOND_COMMON_ROMSTAGE
+config SUPERIO_WINBOND_COMMON_PRE_RAM
 	bool

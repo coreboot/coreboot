@@ -15,8 +15,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef SUPERIO_NUVOTON_COMMON_ROMSTAGE_H
-#define SUPERIO_NUVOTON_COMMON_ROMSTAGE_H
+#ifndef SUPERIO_NUVOTON_COMMON_PRE_RAM_H
+#define SUPERIO_NUVOTON_COMMON_PRE_RAM_H
 
 #include <arch/io.h>
 #include <stdint.h>
@@ -25,4 +25,4 @@ void nuvoton_pnp_enter_conf_state(pnp_devfn_t dev);
 void nuvoton_pnp_exit_conf_state(pnp_devfn_t dev);
 void nuvoton_enable_serial(pnp_devfn_t dev, u16 iobase);
 
-#endif /* SUPERIO_NUVOTON_COMMON_ROMSTAGE_H */
+#endif /* SUPERIO_NUVOTON_COMMON_PRE_RAM_H */

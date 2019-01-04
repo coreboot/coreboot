@@ -14,12 +14,12 @@
  * GNU General Public License for more details.
  */
 
-#ifndef SUPERIO_FINTEK_COMMON_ROMSTAGE_H
-#define SUPERIO_FINTEK_COMMON_ROMSTAGE_H
+#ifndef SUPERIO_FINTEK_COMMON_PRE_RAM_H
+#define SUPERIO_FINTEK_COMMON_PRE_RAM_H
 
 #include <arch/io.h>
 #include <stdint.h>
 
 void fintek_enable_serial(pnp_devfn_t dev, u16 iobase);
 
-#endif /* SUPERIO_FINTEK_COMMON_ROMSTAGE_H */
+#endif /* SUPERIO_FINTEK_COMMON_PRE_RAM_H */

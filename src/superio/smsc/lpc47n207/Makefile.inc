@@ -14,4 +14,5 @@
 ## GNU General Public License for more details.
 ##
 
+bootblock-$(CONFIG_SUPERIO_SMSC_LPC47N207) += early_serial.c
 romstage-$(CONFIG_SUPERIO_SMSC_LPC47N207) += early_serial.c

@@ -14,7 +14,8 @@
 ##
 
 ## include generic fintek pre-ram stage driver
-romstage-$(CONFIG_SUPERIO_FINTEK_COMMON_ROMSTAGE) += common/early_serial.c
+bootblock-$(CONFIG_SUPERIO_FINTEK_COMMON_PRE_RAM) += common/early_serial.c
+romstage-$(CONFIG_SUPERIO_FINTEK_COMMON_PRE_RAM) += common/early_serial.c
 
 subdirs-y += f71805f
 subdirs-y += f71808a

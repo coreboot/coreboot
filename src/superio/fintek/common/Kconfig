@@ -16,5 +16,5 @@
 
 # Generic Fintek romstage driver - Just enough UART initialisation code for
 # romstage.
-config SUPERIO_FINTEK_COMMON_ROMSTAGE
+config SUPERIO_FINTEK_COMMON_PRE_RAM
 	bool

@@ -14,5 +14,7 @@
 ## GNU General Public License for more details.
 ##
 
+bootblock-$(CONFIG_SUPERIO_SERVERENGINES_PILOT) += early_init.c
+bootblock-$(CONFIG_SUPERIO_SERVERENGINES_PILOT) += early_serial.c
 romstage-$(CONFIG_SUPERIO_SERVERENGINES_PILOT) += early_init.c
 romstage-$(CONFIG_SUPERIO_SERVERENGINES_PILOT) += early_serial.c

@@ -13,5 +13,6 @@
 # GNU General Public License for more details.
 #
 
+bootblock-$(CONFIG_SUPERIO_SMSC_KBC1100) += early_init.c
 romstage-$(CONFIG_SUPERIO_SMSC_KBC1100) += early_init.c
 ramstage-$(CONFIG_SUPERIO_SMSC_KBC1100) += superio.c

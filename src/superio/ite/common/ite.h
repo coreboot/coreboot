@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef SUPERIO_ITE_COMMON_ROMSTAGE_H
-#define SUPERIO_ITE_COMMON_ROMSTAGE_H
+#ifndef SUPERIO_ITE_COMMON_PRE_RAM_H
+#define SUPERIO_ITE_COMMON_PRE_RAM_H
 
 #include <arch/io.h>
 #include <stdint.h>
@@ -34,4 +34,4 @@ void ite_kill_watchdog(pnp_devfn_t dev);
 void pnp_enter_conf_state(pnp_devfn_t dev);
 void pnp_exit_conf_state(pnp_devfn_t dev);
 
-#endif /* SUPERIO_ITE_COMMON_ROMSTAGE_H */
+#endif /* SUPERIO_ITE_COMMON_PRE_RAM_H */

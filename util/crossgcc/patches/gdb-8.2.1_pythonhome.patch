@@ -1,7 +1,7 @@
-diff -urN gdb-8.0.orig/gdb/python/python.c gdb-8.0/gdb/python/python.c
---- gdb-8.0.orig/gdb/python/python.c	2016-02-09 19:19:39.000000000 -0800
-+++ gdb-8.0/gdb/python/python.c	2016-04-21 17:45:39.119833428 -0700
-@@ -1748,6 +1748,15 @@
+diff -urN gdb-8.2.1.orig/gdb/python/python.c gdb-8.2.1/gdb/python/python.c
+--- gdb-8.2.1.org/gdb/python/python.c	2019-01-04 12:48:32.440687758 +0100
++++ gdb-8.2.1/gdb/python/python.c	2019-01-04 12:54:09.917677688 +0100
+@@ -1727,6 +1727,15 @@
  #endif
  #endif
  

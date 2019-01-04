@@ -1,7 +1,7 @@
 diff -urN gdb-8.0.orig/gdb/Makefile.in gdb-8.0/gdb/Makefile.in
---- gdb-8.0.orig/gdb/Makefile.in	2016-02-24 01:55:15.000000000 -0800
-+++ gdb-8.0/gdb/Makefile.in	2016-04-21 17:44:32.721472633 -0700
-@@ -1092,7 +1092,7 @@
+--- gdb-8.2.1.orig/gdb/Makefile.in	2019-01-04 12:58:10.227572419 +0100
++++ gdb-8.2.1/gdb/Makefile.in	2019-01-04 12:59:00.539134274 +0100
+@@ -1568,7 +1568,7 @@
  
  TSOBS = inflow.o
  

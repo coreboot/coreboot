@@ -13,9 +13,13 @@
 
 #include <bootblock_common.h>
 #include <cpu/intel/car/bootblock.h>
+#include <cpu/x86/bist.h>
+
+static uint32_t saved_bist;
 
 asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
 {
+	saved_bist = bist;
 	/* Call lib/bootblock.c main */
 	bootblock_main_with_timestamp(base_timestamp, NULL, 0);
 }
@@ -33,4 +37,6 @@ void bootblock_soc_early_init(void)
 
 void bootblock_soc_init(void)
 {
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(saved_bist);
 }

@@ -53,9 +53,6 @@ void mainboard_romstage_entry(unsigned long bist)
 		halt ();
 	}
 
-	timestamp_init(get_initial_timestamp());
-	timestamp_add_now(TS_START_ROMSTAGE);
-
 	if (bist == 0)
 		enable_lapic();
 

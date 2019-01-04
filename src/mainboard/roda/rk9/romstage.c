@@ -30,7 +30,6 @@
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <northbridge/intel/gm45/gm45.h>
 #include <superio/smsc/lpc47n227/lpc47n227.h>
-#include <timestamp.h>
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47N227_SP1)
@@ -107,7 +106,6 @@ static void default_superio_gpio_setup(void)
 	/* Exit configuration state. */
 	pnp_exit_conf_state(sio);
 
-
 	/* Enable decoding of 0x600-0x60f through lpc. */
 	pci_write_config32(LPC_DEV, D31F0_GEN1_DEC, 0x000c0601);
 
@@ -122,9 +120,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	int s3resume = 0;
 	int cbmem_initted;
 	u16 reg16;
-
-	timestamp_init(get_initial_timestamp());
-	timestamp_add_now(TS_START_ROMSTAGE);
 
 	/* basic northbridge setup, including MMCONF BAR */
 	gm45_early_init();

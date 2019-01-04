@@ -24,7 +24,6 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <arch/acpi.h>
-#include <timestamp.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
 #include <console/console.h>
@@ -182,9 +181,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	int s3resume = 0, boot_mode = 0;
 
 	u8 c_bsel = msr_get_fsb();
-
-	timestamp_init(get_initial_timestamp());
-	timestamp_add_now(TS_START_ROMSTAGE);
 
 	if (bist == 0)
 		enable_lapic();

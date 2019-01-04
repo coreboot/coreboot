@@ -15,18 +15,7 @@
  */
 
 #include <arch/io.h>
-#include <timestamp.h>
-#include <cpu/x86/tsc.h>
 #include "i82801ix.h"
-
-uint64_t get_initial_timestamp(void)
-{
-	tsc_t base_time = {
-		.lo = pci_read_config32(PCI_DEV(0, 0x00, 0), 0xdc),
-		.hi = pci_read_config32(PCI_DEV(0, 0x1f, 2), 0xd0)
-	};
-	return tsc_to_uint64(base_time);
-}
 
 void i82801ix_early_init(void)
 {

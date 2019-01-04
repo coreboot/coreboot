@@ -30,7 +30,6 @@
 #include <southbridge/intel/common/gpio.h>
 #include <northbridge/intel/gm45/gm45.h>
 #include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
-#include <timestamp.h>
 #include "dock.h"
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
@@ -67,9 +66,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	int cbmem_initted;
 	int err;
 	u16 reg16;
-
-	timestamp_init(get_initial_timestamp());
-	timestamp_add_now(TS_START_ROMSTAGE);
 
 	/* basic northbridge setup, including MMCONF BAR */
 	gm45_early_init();

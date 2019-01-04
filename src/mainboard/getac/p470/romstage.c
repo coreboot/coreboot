@@ -29,7 +29,6 @@
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
-#include <timestamp.h>
 #include "option_table.h"
 
 static void setup_special_ich7_gpios(void)
@@ -170,7 +169,6 @@ static void rcba_config(void)
 	/* Enable PCIe Root Port Clock Gate */
 	// RCBA32(0x341c) = 0x00000001;
 
-
 	/* This should probably go into the ACPI enable trap */
 	/* Set up I/O Trap #0 for 0xfe00 (SMIC) */
 	RCBA32(0x1e84) = 0x00020001;
@@ -237,9 +235,6 @@ static void early_ich7_init(void)
 void mainboard_romstage_entry(unsigned long bist)
 {
 	int s3resume = 0;
-
-	timestamp_init(timestamp_get());
-	timestamp_add_now(TS_START_ROMSTAGE);
 
 	if (bist == 0)
 		enable_lapic();

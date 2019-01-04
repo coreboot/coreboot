@@ -15,8 +15,6 @@
  */
 
 #include <arch/io.h>
-#include <timestamp.h>
-#include <cpu/x86/tsc.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include "pch.h"
@@ -25,15 +23,6 @@
 #include <rules.h>
 
 #if ENV_ROMSTAGE
-uint64_t get_initial_timestamp(void)
-{
-	tsc_t base_time = {
-		.lo = pci_read_config32(PCI_DEV(0, 0x00, 0), 0xdc),
-		.hi = pci_read_config32(PCI_DEV(0, 0x1f, 2), 0xd0)
-	};
-	return tsc_to_uint64(base_time);
-}
-
 int southbridge_detect_s3_resume(void)
 {
 	u32 pm1_cnt;

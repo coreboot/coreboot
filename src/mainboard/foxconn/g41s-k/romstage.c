@@ -87,9 +87,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	u8 boot_path = 0;
 	u8 s3_resume;
 
-	timestamp_init(get_initial_timestamp());
-	timestamp_add_now(TS_START_ROMSTAGE);
-
 	/* Set up southbridge and Super I/O GPIOs. */
 	ich7_enable_lpc();
 	mb_lpc_setup();

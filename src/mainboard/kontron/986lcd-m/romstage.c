@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 #include <halt.h>
-#include <timestamp.h>
 #include <console/console.h>
 #include <cpu/intel/romstage.h>
 #include <cpu/x86/bist.h>
@@ -290,10 +289,6 @@ static void early_ich7_init(void)
 void mainboard_romstage_entry(unsigned long bist)
 {
 	int s3resume = 0;
-
-
-	timestamp_init(get_initial_timestamp());
-	timestamp_add_now(TS_START_ROMSTAGE);
 
 	if (bist == 0)
 		enable_lapic();

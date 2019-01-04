@@ -37,7 +37,6 @@
 #define SERIAL_DEV PNP_DEV(0x4e, W83627THG_SP1)
 #define SUPERIO_DEV PNP_DEV(0x4e, 0)
 
-
 /* Early mainboard specific GPIO setup */
 static void mb_gpio_init(void)
 {
@@ -92,9 +91,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	int cbmem_was_initted;
 	int s3resume = 0;
 	int boot_path;
-
-	timestamp_init(get_initial_timestamp());
-	timestamp_add_now(TS_START_ROMSTAGE);
 
 	if (bist == 0)
 		enable_lapic();

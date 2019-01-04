@@ -17,6 +17,7 @@
 #include <cpu/x86/mtrr.h>
 #include <arch/symbols.h>
 #include <program_loading.h>
+#include <timestamp.h>
 
 #define DCACHE_RAM_ROMSTAGE_STACK_SIZE 0x2000
 
@@ -59,6 +60,8 @@ static void romstage_main(unsigned long bist)
  */
 asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
 {
+	timestamp_init(base_timestamp);
+	timestamp_add_now(TS_START_ROMSTAGE);
 	romstage_main(bist);
 }
 #endif

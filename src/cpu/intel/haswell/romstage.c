@@ -77,9 +77,6 @@ void romstage_common(const struct romstage_params *params)
 	int boot_mode;
 	int wake_from_s3;
 
-	timestamp_init(get_initial_timestamp());
-	timestamp_add_now(TS_START_ROMSTAGE);
-
 	if (params->bist == 0)
 		enable_lapic();
 

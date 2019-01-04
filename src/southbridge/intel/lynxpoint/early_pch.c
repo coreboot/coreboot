@@ -18,8 +18,6 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci_def.h>
-#include <timestamp.h>
-#include <cpu/x86/tsc.h>
 #include <elog.h>
 #include "pch.h"
 #include "chip.h"
@@ -66,15 +64,6 @@ static void pch_generic_setup(void)
 	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
 	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
 	printk(BIOS_DEBUG, " done.\n");
-}
-
-uint64_t get_initial_timestamp(void)
-{
-	tsc_t base_time = {
-		.lo = pci_read_config32(PCI_DEV(0, 0x00, 0), 0xdc),
-		.hi = pci_read_config32(PCI_DEV(0, 0x1f, 2), 0xd0)
-	};
-	return tsc_to_uint64(base_time);
 }
 
 static int sleep_type_s3(void)

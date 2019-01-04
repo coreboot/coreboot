@@ -23,7 +23,6 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <arch/acpi.h>
-#include <timestamp.h>
 #include <superio/ite/it8718f/it8718f.h>
 #include <superio/ite/common/ite.h>
 #include <console/console.h>
@@ -143,10 +142,6 @@ static void early_ich7_init(void)
 void mainboard_romstage_entry(unsigned long bist)
 {
 	int s3resume = 0, boot_mode = 0;
-
-
-	timestamp_init(get_initial_timestamp());
-	timestamp_add_now(TS_START_ROMSTAGE);
 
 	if (bist == 0)
 		enable_lapic();

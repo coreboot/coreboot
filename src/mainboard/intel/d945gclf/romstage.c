@@ -20,7 +20,6 @@
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
-#include <timestamp.h>
 #include <superio/smsc/lpc47m15x/lpc47m15x.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
@@ -124,10 +123,6 @@ static void early_ich7_init(void)
 void mainboard_romstage_entry(unsigned long bist)
 {
 	int s3resume = 0, boot_mode = 0;
-
-
-	timestamp_init(get_initial_timestamp());
-	timestamp_add_now(TS_START_ROMSTAGE);
 
 	if (bist == 0)
 		enable_lapic();

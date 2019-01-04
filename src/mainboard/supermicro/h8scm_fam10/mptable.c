@@ -86,7 +86,7 @@ static void *smp_write_config_table(void *v)
 		if (dev) {
 			pci_write_config32(dev, 0xF8, 0x1);
 			dword = (u32 *)(pci_read_config32(dev, 0xFC) & 0xfffffff0);
-			smp_write_ioapic(mc, apicid_sp5100+1, 0x11, dword);
+			smp_write_ioapic(mc, apicid_sr5650, 0x11, dword);
 		}
 	}
 
@@ -103,18 +103,18 @@ static void *smp_write_config_table(void *v)
 	 * PCI_INT(bus_sr5650[0x6], 0x0, 0x0, 0x12);
 	 * PCI_INT(bus_sr5650[0x7], 0x0, 0x0, 0x13);
 	 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((2)<<2)|(0)), apicid_sp5100+1, 28); /* dev 2 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((4)<<2)|(0)), apicid_sp5100+1, 28); /* dev 4 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((12)<<2)|(0)), apicid_sp5100+1, 30); /* dev 11 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((12)<<2)|(0)), apicid_sp5100+1, 30); /* dev 12 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((2)<<2)|(0)), apicid_sr5650, 28); /* dev 2 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((4)<<2)|(0)), apicid_sr5650, 28); /* dev 4 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((12)<<2)|(0)), apicid_sr5650, 30); /* dev 11 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((12)<<2)|(0)), apicid_sr5650, 30); /* dev 12 */
 
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[2], (((0)<<2)|(0)), apicid_sp5100+1, 0); /* card behind dev2 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[4], (((0)<<2)|(0)), apicid_sp5100+1, 20);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[4], (((0)<<2)|(1)), apicid_sp5100+1, 21); /* NIC */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[11], (((0)<<2)|(0)), apicid_sp5100+1, 8);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[11], (((0)<<2)|(1)), apicid_sp5100+1, 9); /* card behind dev11 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[12], (((0)<<2)|(0)), apicid_sp5100+1, 12);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[12], (((0)<<2)|(1)), apicid_sp5100+1, 13); /* card behind dev12 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[2], (((0)<<2)|(0)), apicid_sr5650, 0); /* card behind dev2 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[4], (((0)<<2)|(0)), apicid_sr5650, 20);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[4], (((0)<<2)|(1)), apicid_sr5650, 21); /* NIC */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[11], (((0)<<2)|(0)), apicid_sr5650, 8);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[11], (((0)<<2)|(1)), apicid_sr5650, 9); /* card behind dev11 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[12], (((0)<<2)|(0)), apicid_sr5650, 12);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[12], (((0)<<2)|(1)), apicid_sr5650, 13); /* card behind dev12 */
 
 	/*Local Ints:   Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
 	IO_LOCAL_INT(mp_ExtINT, 0x0, MP_APIC_ALL, 0x0);

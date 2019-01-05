@@ -23,10 +23,6 @@ config CPU_ADDR_BITS
 	int
 	default 48
 
-config EXT_CONF_SUPPORT
-	bool
-	default n
-
 config CBB
 	hex
 	default 0x0

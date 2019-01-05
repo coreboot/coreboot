@@ -26,6 +26,11 @@
 struct DCTStatStruc;
 struct MCTStatStruc;
 
+
+/* Definitions for setup_resourcemap() variants. */
+
+#define ADDRMAP_REG(r) PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, r)
+
 #define RES_PCI_IO 0x10
 #define RES_PORT_IO_8 0x22
 #define RES_PORT_IO_32 0x20

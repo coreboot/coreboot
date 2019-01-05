@@ -93,7 +93,7 @@ Scope(\)
 		GIO2, 8,
 		GIO3, 8,
 		Offset(0x0c),	// GPIO Level
-		GL00, 1,
+		GP00, 1,
 		GP01, 1,
 		GP02, 1,
 		GP0e, 1,

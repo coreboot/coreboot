@@ -34,10 +34,6 @@ config CK804_PCIE_PME_WAKE
 	bool "Enable system wake on PCIe PME# signal"
 	default n
 
-config CK804_NUM
-	int
-	default 1
-
 config HPET_MIN_TICKS
 	hex
 	default 0xfa

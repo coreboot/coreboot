@@ -23,6 +23,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A16, DN_20K),
 	/* EN_PP3300_SD_DX */
 	PAD_CFG_NF(GPP_A17, NONE, DEEP, NF1),
+	/* EN_PP3300_WWAN */
+	PAD_CFG_GPO(GPP_A18, 1, DEEP),
+	/* WWAN_RADIO_DISABLE_1V8_ODL */
+	PAD_CFG_GPO(GPP_A19, 1, DEEP),
 	/* TRACKPAD_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A21, NONE, PLTRST, LEVEL, INVERT),
 	/* SRCCLKREQ1 */
@@ -47,6 +51,12 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C11, DN_20K),
 	/* BT_DISABLE_L */
 	PAD_CFG_GPO(GPP_C14, 1, DEEP),
+	/* WWAN_DPR_SAR_ODL
+	 *
+	 * TODO: Driver doesn't use this pin as of now. In case driver starts
+	 * using this pin, expose this pin to driver.
+	 */
+	PAD_CFG_GPO(GPP_C15, 1, DEEP),
 	/* PCH_I2C_TRACKPAD_SDA */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 	/* PCH_I2C_TRACKPAD_SCL */
@@ -63,6 +73,14 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_C22, NONE, DEEP),
 	/* WLAN_PE_RST# */
 	PAD_CFG_GPO(GPP_C23, 1, DEEP),
+	/* WWAN_CONFIG_0 */
+	PAD_NC(GPP_D5, NONE),
+	/* WWAN_CONFIG_1 */
+	PAD_NC(GPP_D6, NONE),
+	/* WWAN_CONFIG_2 */
+	PAD_NC(GPP_D7, NONE),
+	/* WWAN_CONFIG_3 */
+	PAD_NC(GPP_D8, NONE),
 	/* TOUCHSCREEN_RST_L */
 	PAD_CFG_GPO(GPP_D15, 0, DEEP),
 	/* TOUCHSCREEN_INT_L */
@@ -95,6 +113,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E22, DN_20K),
 	/* GPIO_WWAN_WLAN_COEX3 */
 	PAD_CFG_NF(GPP_F0, NONE, DEEP, NF1),
+	/* WWAN_RESET_1V8_ODL */
+	PAD_CFG_GPO(GPP_F1, 1, DEEP),
 	/* UART_WWANTX_WLANRX_COEX1 */
 	PAD_CFG_NF(GPP_F8, NONE, DEEP, NF1),
 	/* UART_WWANRX_WLANTX_COEX2 */

@@ -20,7 +20,12 @@
 
 #include <cpu/x86/post_code.h>
 #include <cpu/x86/msr.h>
-#include <arch/x86/walkcbfs.S>
+
+#define CBFS_FILE_MAGIC 0
+#define CBFS_FILE_LEN (CBFS_FILE_MAGIC + 8)
+#define CBFS_FILE_TYPE (CBFS_FILE_LEN + 4)
+#define CBFS_FILE_CHECKSUM (CBFS_FILE_TYPE + 4)
+#define CBFS_FILE_OFFSET (CBFS_FILE_CHECKSUM + 4)
 
 #define HEADER_VER_OFFSET 0
 #define UPDATE_VER_OFFSET 4

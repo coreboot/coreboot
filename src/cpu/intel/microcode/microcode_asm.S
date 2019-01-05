@@ -88,11 +88,6 @@ update_bsp_microcode:
 	 * Current installed microcode revision -> %edx
 	 */
 
-	/* Processor family+model signature=cpuid_eax(1) */
-	movl	$1, %eax
-	cpuid
-	movl	%eax, %ebx
-
 	/* Processor flags
 	 * rdmsr 0x17
 	 * pf = 1 << ((msr.hi >> 18) & 7) */
@@ -113,6 +108,10 @@ update_bsp_microcode:
 	wrmsr
 	movl	$0x1, %eax
 	cpuid
+
+	/* Processor family+model signature=cpuid_eax(1) */
+	movl	%eax, %ebx
+
 	movl	$IA32_BIOS_SIGN_ID, %ecx
 	rdmsr
 
@@ -126,8 +125,8 @@ check_microcode_entry:
 	jne	next_entry
 
 	/* Processor flags */
-	cmpl	PROCESSOR_FLAG(%esi), %ebp
-	jne	next_entry
+	test	PROCESSOR_FLAG(%esi), %ebp
+	jz	next_entry
 
 	/* Check if revision is higher than current */
 	cmpl	UPDATE_VER_OFFSET(%esi), %edx

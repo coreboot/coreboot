@@ -34,6 +34,10 @@ int ehci_debug_hw_enable(unsigned int *base, unsigned int *dbg_offset)
 {
 	pci_devfn_t dbg_dev = pci_ehci_dbg_dev(CONFIG_USBDEBUG_HCD_INDEX);
 
+	/* We only support controllers on bus 0. */
+	if (PCI_DEV2SEGBUS(dbg_dev) != 0)
+		return -1;
+
 #ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev = dbg_dev;
 #else

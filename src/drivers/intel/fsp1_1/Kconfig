@@ -86,10 +86,6 @@ config USE_GENERIC_FSP_CAR_INC
 	  The chipset can select this to use a generic cache_as_ram.inc file
 	  that should be good for all FSP based platforms.
 
-config CHECKLIST_DATA_FILE_LOCATION
-	string
-	default "src/vendorcode/intel/fsp/fsp1_1/checklist"
-
 config RESET_ON_INVALID_RAMSTAGE_CACHE
 	bool "Reset the system on S3 wake when ramstage cache invalid."
 	default n

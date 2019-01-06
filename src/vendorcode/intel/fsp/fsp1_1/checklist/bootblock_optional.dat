@@ -1,6 +1,0 @@
-bootblock_c_entry
-bootblock_mainboard_early_init
-bootblock_mainboard_init
-bootblock_soc_early_init
-bootblock_soc_init
-uart_init

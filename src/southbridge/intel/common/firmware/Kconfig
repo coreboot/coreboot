@@ -120,9 +120,12 @@ config GBE_BIN_PATH
 	depends on HAVE_GBE_BIN
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/gbe.bin"
 
+config MAINBOARD_USES_IFD_EC_REGION
+	def_bool n
+
 config HAVE_EC_BIN
 	bool "Add EC firmware"
-	depends on HAVE_IFD_BIN
+	depends on HAVE_IFD_BIN && MAINBOARD_USES_IFD_EC_REGION
 	help
 	  The embedded controller needs a firmware file.
 

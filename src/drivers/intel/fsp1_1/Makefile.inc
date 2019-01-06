@@ -28,7 +28,6 @@ romstage-y += fsp_util.c
 romstage-y += hob.c
 romstage-y += raminit.c
 romstage-y += romstage.c
-romstage-y += stack.c
 romstage-y += stage_cache.c
 romstage-$(CONFIG_MMA) += mma_core.c
 
@@ -44,6 +43,13 @@ ramstage-$(CONFIG_MMA) += mma_core.c
 CPPFLAGS_common += -Isrc/drivers/intel/fsp1_1/include
 
 cpu_incs-$(CONFIG_USE_GENERIC_FSP_CAR_INC) += $(src)/drivers/intel/fsp1_1/cache_as_ram.inc
+
+postcar-y += stage_cache.c
+ifneq ($(CONFIG_SKIP_FSP_CAR),y)
+postcar-y += temp_ram_exit.c
+postcar-y += exit_car.S
+endif
+postcar-y += fsp_util.c
 
 # Add the FSP binary to the cbfs image
 ifeq ($(CONFIG_HAVE_FSP_BIN),y)

@@ -18,35 +18,96 @@
 #include <cpu/x86/mtrr.h>
 #include <fsp/car.h>
 #include <fsp/util.h>
+#include <fsp/memmap.h>
 #include <program_loading.h>
 #include <timestamp.h>
 
-FSP_INFO_HEADER *fih_car CAR_GLOBAL;
+#define ROMSTAGE_RAM_STACK_SIZE 0x5000
 
-/* Save FSP_INFO_HEADER for TempRamExit() call in assembly. */
-static inline void set_fih_car(FSP_INFO_HEADER *fih)
+/* platform_enter_postcar() determines the stack to use after
+ * cache-as-ram is torn down as well as the MTRR settings to use,
+ * and continues execution in postcar stage. */
+static void platform_enter_postcar(void)
 {
-	/* This variable is written in the raw form because it's only
-	 * ever accessed in code that that has the cache-as-ram enabled. The
-	 * assembly routine which tears down cache-as-ram utilizes this
-	 * variable for determining where to find FSP. */
-	fih_car = fih;
+	struct postcar_frame pcf;
+	size_t alignment;
+	uint32_t aligned_ram;
+
+	if (postcar_frame_init(&pcf, ROMSTAGE_RAM_STACK_SIZE))
+		die("Unable to initialize postcar frame.\n");
+	/* Cache the ROM as WP just below 4GiB. */
+	postcar_frame_add_mtrr(&pcf, CACHE_ROM_BASE, CACHE_ROM_SIZE,
+			       MTRR_TYPE_WRPROT);
+
+	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
+	postcar_frame_add_mtrr(&pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
+
+	/*
+	 *     +-------------------------+  Top of RAM (aligned)
+	 *     | System Management Mode  |
+	 *     |      code and data      |  Length: CONFIG_TSEG_SIZE
+	 *     |         (TSEG)          |
+	 *     +-------------------------+  SMM base (aligned)
+	 *     |                         |
+	 *     | Chipset Reserved Memory |  Length: Multiple of CONFIG_TSEG_SIZE
+	 *     |                         |
+	 *     +-------------------------+  top_of_ram (aligned)
+	 *     |                         |
+	 *     |       CBMEM Root        |
+	 *     |                         |
+	 *     +-------------------------+
+	 *     |                         |
+	 *     |   FSP Reserved Memory   |
+	 *     |                         |
+	 *     +-------------------------+
+	 *     |                         |
+	 *     |  Various CBMEM Entries  |
+	 *     |                         |
+	 *     +-------------------------+  top_of_stack (8 byte aligned)
+	 *     |                         |
+	 *     |   stack (CBMEM Entry)   |
+	 *     |                         |
+	 *     +-------------------------+
+	 */
+
+	alignment = mmap_region_granularity();
+	aligned_ram = ALIGN_DOWN(romstage_ram_stack_bottom(), alignment);
+	postcar_frame_add_mtrr(&pcf, aligned_ram, alignment, MTRR_TYPE_WRBACK);
+
+	if (CONFIG(HAVE_SMI_HANDLER)) {
+		void *smm_base;
+		size_t smm_size;
+
+		/*
+		 * Cache the TSEG region at the top of ram. This region is not
+		 * restricted to SMM mode until SMM has been relocated. By
+		 * setting the region to cacheable it provides faster access
+		 * when relocating the SMM handler as well as using the TSEG
+		 * region for other purposes.
+		 */
+		smm_region(&smm_base, &smm_size);
+		postcar_frame_add_mtrr(&pcf, (uintptr_t)smm_base, alignment,
+				       MTRR_TYPE_WRBACK);
+	}
+
+	run_postcar_phase(&pcf);
 }
 
-asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params)
+/* This is the romstage C entry for platforms without
+   CONFIG_C_ENVIRONMENT_BOOTBLOCK */
+asmlinkage void cache_as_ram_main(struct cache_as_ram_params *car_params)
 {
 	int i;
 	const int num_guards = 4;
 	const u32 stack_guard = 0xdeadbeef;
 	u32 *stack_base;
-	void *ram_stack;
 	u32 size;
 
 	/* Size of unallocated CAR. */
 	size = _car_region_end - _car_relocatable_data_end;
 	size = ALIGN_DOWN(size, 16);
 
-	stack_base = (u32 *) (_car_region_end - size);
+	stack_base = (u32 *)(_car_region_end - size);
 
 	for (i = 0; i < num_guards; i++)
 		stack_base[i] = stack_guard;
@@ -66,23 +127,20 @@ asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params)
 
 	display_mtrrs();
 
-	if (car_params->bootloader_car_start != CONFIG_DCACHE_RAM_BASE ||
-	    car_params->bootloader_car_end !=
-			(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)) {
+	if (car_params->bootloader_car_start != CONFIG_DCACHE_RAM_BASE
+	    || car_params->bootloader_car_end != (CONFIG_DCACHE_RAM_BASE
+						  + CONFIG_DCACHE_RAM_SIZE)) {
 		printk(BIOS_INFO, "CAR mismatch: %08x--%08x vs %08lx--%08lx\n",
-			CONFIG_DCACHE_RAM_BASE,
-			CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE,
-			(long)car_params->bootloader_car_start,
-			(long)car_params->bootloader_car_end);
+		       CONFIG_DCACHE_RAM_BASE,
+		       CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE,
+		       (long)car_params->bootloader_car_start,
+		       (long)car_params->bootloader_car_end);
 	}
 
 	car_soc_post_console_init();
 	car_mainboard_post_console_init();
 
-	set_fih_car(car_params->fih);
-
-	/* Return new stack value in RAM back to assembly stub. */
-	ram_stack = cache_as_ram_stage_main(car_params->fih);
+	cache_as_ram_stage_main(car_params->fih);
 
 	/* Check the stack. */
 	for (i = 0; i < num_guards; i++) {
@@ -91,11 +149,13 @@ asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params)
 		printk(BIOS_DEBUG, "Smashed stack detected in romstage!\n");
 	}
 
-	return ram_stack;
+	/* we don't return here */
+	platform_enter_postcar();
 }
 
-/* Entry point taken when romstage is called after a separate verstage. */
-asmlinkage void *romstage_c_entry(void)
+/* This is the romstage C entry for platforms with
+   CONFIG_C_ENVIRONMENT_BOOTBLOCK */
+asmlinkage void romstage_c_entry(void)
 {
 	/* Need to locate the current FSP_INFO_HEADER. The cache-as-ram
 	 * is still enabled. We can directly access work buffer here. */
@@ -107,24 +167,16 @@ asmlinkage void *romstage_c_entry(void)
 	if (prog_locate(&fsp)) {
 		fih = NULL;
 		printk(BIOS_ERR, "Unable to locate %s\n", prog_name(&fsp));
-	} else
+	} else {
 		/* This leaks a mapping which this code assumes is benign as
 		 * the flash is memory mapped CPU's address space. */
 		fih = find_fsp((uintptr_t)rdev_mmap_full(prog_rdev(&fsp)));
+	}
 
-	set_fih_car(fih);
+	cache_as_ram_stage_main(fih);
 
-	/* Return new stack value in RAM back to assembly stub. */
-	return cache_as_ram_stage_main(fih);
-}
-
-asmlinkage void after_cache_as_ram(void *chipset_context)
-{
-	timestamp_add_now(TS_FSP_TEMP_RAM_EXIT_END);
-	printk(BIOS_DEBUG, "FspTempRamExit returned successfully\n");
-	display_mtrrs();
-
-	after_cache_as_ram_stage();
+	/* we don't return here */
+	platform_enter_postcar();
 }
 
 void __weak car_mainboard_pre_console_init(void)

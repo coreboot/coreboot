@@ -17,6 +17,8 @@ romstage-y += pmutil.c
 romstage-y += smbus.c
 romstage-y += tsc_freq.c
 
+postcar-y += memmap.c
+postcar-y += iosf.c
 postcar-y += tsc_freq.c
 
 ramstage-y += acpi.c

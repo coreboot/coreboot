@@ -26,7 +26,7 @@
 #include <soc/reg_access.h>
 #include <soc/storage_test.h>
 
-asmlinkage void *car_stage_c_entry(void)
+asmlinkage void car_stage_c_entry(void)
 {
 	struct postcar_frame pcf;
 	bool s3wake;
@@ -83,7 +83,6 @@ asmlinkage void *car_stage_c_entry(void)
 	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRTHROUGH);
 
 	run_postcar_phase(&pcf);
-	return NULL;
 }
 
 static struct chipset_power_state power_state CAR_GLOBAL;

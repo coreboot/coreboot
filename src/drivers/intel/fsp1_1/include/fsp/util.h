@@ -17,6 +17,8 @@
 #ifndef FSP1_1_UTIL_H
 #define FSP1_1_UTIL_H
 
+#include <rules.h>
+#include <arch/cpu.h>
 #include <fsp/api.h>
 /* Current users expect to get the SoC's FSP definitions by including util.h. */
 #include <fsp/soc_binding.h>
@@ -106,5 +108,7 @@ void *get_first_guid_hob(const EFI_GUID *guid);
  */
 __attribute__((cdecl)) size_t fsp_write_line(uint8_t *buffer,
 	size_t number_of_bytes);
+
+asmlinkage void chipset_teardown_car_main(void);
 
 #endif	/* FSP1_1_UTIL_H */

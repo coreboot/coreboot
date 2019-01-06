@@ -87,7 +87,7 @@ void mainboard_add_dimm_info(struct romstage_params *params,
 void raminit(struct romstage_params *params);
 void report_memory_config(void);
 void romstage_common(struct romstage_params *params);
-asmlinkage void *romstage_main(FSP_INFO_HEADER *fih);
+asmlinkage void romstage_main(FSP_INFO_HEADER *fih);
 /* Initialize memory margin analysis settings. */
 void setup_mma(MEMORY_INIT_UPD *memory_upd);
 void *setup_stack_and_mtrrs(void);

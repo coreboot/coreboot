@@ -30,14 +30,12 @@ struct cache_as_ram_params {
 };
 
 /* Entry points from the cache-as-ram assembly code. */
-asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params);
-asmlinkage void after_cache_as_ram(void *chipset_context);
-asmlinkage void *romstage_c_entry(void);
+asmlinkage void cache_as_ram_main(struct cache_as_ram_params *car_params);
+asmlinkage void romstage_c_entry(void);
 /* Per stage calls from the above two functions. The void * return from
  * cache_as_ram_stage_main() is the stack pointer to use in RAM after
  * exiting cache-as-ram mode. */
-void *cache_as_ram_stage_main(FSP_INFO_HEADER *fih);
-void after_cache_as_ram_stage(void);
+void cache_as_ram_stage_main(FSP_INFO_HEADER *fih);
 
 /* Mainboard and SoC initialization prior to console. */
 void car_mainboard_pre_console_init(void);

@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2015 Google Inc
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -13,29 +11,17 @@
  * GNU General Public License for more details.
  */
 
-#include <cpu/x86/post_code.h>
-
-/* I/O delay between post codes on failure */
-#define LHLT_DELAY	0x50000
 
 .text
-.global car_stage_entry
-car_stage_entry:
-	call	romstage_c_entry
+.global chipset_teardown_car
+chipset_teardown_car:
 
-	/* we don't return here */
-	movb	$0x69, %ah
-	jmp	.Lhlt
+	pop	%ebx
+	/* Move the stack pointer to real ram */
+	movl	post_car_stack_top, %esp
+	/* Align the stack 16 bytes */
+	andl	$0xfffffff0, %esp
 
-.Lhlt:
-	xchg	%al, %ah
-#if CONFIG(POST_IO)
-	outb	%al, $CONFIG_POST_IO_PORT
-#else
-	post_code(POST_DEAD_CODE)
-#endif
-	movl	$LHLT_DELAY, %ecx
-.Lhlt_Delay:
-	outb	%al, $0xED
-	loop	.Lhlt_Delay
-	jmp	.Lhlt
+	call	chipset_teardown_car_main
+
+	jmp	*%ebx

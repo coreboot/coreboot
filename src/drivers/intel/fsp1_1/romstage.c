@@ -38,9 +38,8 @@
 #include <timestamp.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)
+asmlinkage void romstage_main(FSP_INFO_HEADER *fih)
 {
-	void *top_of_stack;
 	struct romstage_params params = {
 		.chipset_context = fih,
 	};
@@ -72,17 +71,11 @@ asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)
 	mainboard_romstage_entry(&params);
 	soc_after_ram_init(&params);
 	post_code(0x38);
-
-	top_of_stack = setup_stack_and_mtrrs();
-
-	printk(BIOS_DEBUG, "Calling FspTempRamExit API\n");
-	timestamp_add_now(TS_FSP_TEMP_RAM_EXIT_START);
-	return top_of_stack;
 }
 
-void *cache_as_ram_stage_main(FSP_INFO_HEADER *fih)
+void cache_as_ram_stage_main(FSP_INFO_HEADER *fih)
 {
-	return romstage_main(fih);
+	romstage_main(fih);
 }
 
 /* Entry from the mainboard. */
@@ -159,13 +152,6 @@ void romstage_common(struct romstage_params *params)
 			params->power_state->prev_sleep_state == ACPI_S3) < 0)
 		/* FIXME: A "system" reset is likely enough: */
 		full_reset();
-}
-
-void after_cache_as_ram_stage(void)
-{
-	/* Load the ramstage. */
-	run_ramstage();
-	die("ERROR - Failed to load ramstage!");
 }
 
 /* Initialize the power state */

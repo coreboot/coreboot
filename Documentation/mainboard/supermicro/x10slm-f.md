@@ -128,10 +128,6 @@ for caveats.
 
 ## Known issues
 
-- The x8 PCIe slots do not work, as the Haswell code is missing support.
-  The code to support it has been written, but it still needs to be
-  reviewed and merged.
-
 - Broadwell CPUs are not supported. They might work with minimal changes
   to the code, but this has not been tested.
 
@@ -144,10 +140,14 @@ for caveats.
   in coreboot. The `coretemp` driver can still be used for accurate CPU
   temperature readings from an OS, and hence the OS can do fan control.
 
+```eval_rst
+Please also see :doc:`../../northbridge/intel/haswell/known-issues`.
+```
+
 ## Untested
 
 - TPM
-- PCIe x4 slot (it will almost certainly work)
+- PCIe (likely to work, but maybe not at Gen 3 speeds)
 - BMC (IPMI) functionality
 - internal serial port
 - chassis intrusion header

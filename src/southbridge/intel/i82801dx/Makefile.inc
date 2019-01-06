@@ -30,4 +30,6 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
 romstage-y += early_smbus.c
 
+bootblock-y += bootblock.c
+
 endif

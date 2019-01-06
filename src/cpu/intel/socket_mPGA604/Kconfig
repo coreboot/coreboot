@@ -10,6 +10,7 @@ config SOCKET_SPECIFIC_OPTIONS # dummy
 	select SSE
 	select UDELAY_TSC
 	select SIPI_VECTOR_IN_ROM
+	select C_ENVIRONMENT_BOOTBLOCK
 
 # mPGA604 are usually Intel Netburst CPUs which should have SSE2
 # but the ramtest.c code on the Dell S1850 seems to choke on
@@ -25,5 +26,9 @@ config DCACHE_RAM_BASE
 config DCACHE_RAM_SIZE
 	hex
 	default 0x4000
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x2000
 
 endif # CPU_INTEL_SOCKET_MPGA604

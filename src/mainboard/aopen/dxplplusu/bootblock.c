@@ -1,6 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2019 Kyösti Mälkki <kyosti.malkki@gmail.com>
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -11,12 +13,14 @@
  * GNU General Public License for more details.
  */
 
-#include <cpu/intel/car/bootblock.h>
-#include <arch/io.h>
+#include <bootblock_common.h>
+#include <device/pnp_def.h>
+#include <superio/smsc/lpc47m10x/lpc47m10x.h>
 
-void bootblock_early_southbridge_init(void)
+#define SERIAL_DEV PNP_DEV(0x2e, LPC47M10X2_SP1)
+
+void bootblock_mainboard_early_init(void)
 {
-	/* Set FWH IDs for 2 MB flash part. */
-	if (CONFIG_ROM_SIZE == 0x200000)
-		pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xe8, 0x00001111);
+	/* Get the serial port configured. */
+	lpc47m10x_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

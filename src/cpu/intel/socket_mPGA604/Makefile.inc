@@ -7,6 +7,8 @@ subdirs-y += ../../x86/smm
 subdirs-y += ../microcode
 subdirs-y += ../hyperthreading
 
-cpu_incs-y += $(src)/cpu/intel/car/p4-netburst/cache_as_ram.S
+bootblock-y += ../car/p4-netburst/cache_as_ram.S
+bootblock-y += ../car/bootblock.c
+
 postcar-y += ../car/p4-netburst/exit_car.S
 romstage-y += ../car/romstage.c

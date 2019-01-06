@@ -113,7 +113,7 @@ Please also see :doc:`../../northbridge/intel/haswell/known-issues`.
 
 ```eval_rst
 +------------------+--------------------------------------------------+
-| Northbridge      | Intel Haswell                                    |
+| Northbridge      | :doc:`../../northbridge/intel/haswell/index`     |
 +------------------+--------------------------------------------------+
 | Southbridge      | Intel Lynx Point (H81)                           |
 +------------------+--------------------------------------------------+

@@ -35,10 +35,6 @@ DefinitionBlock(
 	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB) {
-		Device (PWRB)
-		{
-			Name (_HID, EisaId ("PNP0C0C"))
-		}
 		Device (PCI0)
 		{
 			#include <soc/intel/cannonlake/acpi/northbridge.asl>

@@ -252,10 +252,7 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 }
 
 static const struct cros_gpio cros_gpios[] = {
-	/*
-	 * TODO: re-enable recovery mode when boards are updated:
-	 * CROS_GPIO_REC_AL(GPP_E8, CROS_GPIO_DEVICE_NAME),
-	 */
+	CROS_GPIO_REC_AL(GPP_E8, CROS_GPIO_DEVICE_NAME),
 	CROS_GPIO_WP_AH(GPP_E15, CROS_GPIO_DEVICE_NAME),
 };
 

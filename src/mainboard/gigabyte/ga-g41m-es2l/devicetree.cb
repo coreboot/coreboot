@@ -61,7 +61,7 @@ chip northbridge/intel/x4x		# Northbridge
           subsystemid 0x1458 0xe000
         end
       end
-      device pci 1c.2 on end		# PCIe 3
+      device pci 1c.2 off end		# PCIe 3
       device pci 1c.3 off end		# PCIe 4
       device pci 1c.4 off end		# PCIe 5
       device pci 1c.5 off end		# PCIe 6

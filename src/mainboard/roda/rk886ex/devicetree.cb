@@ -63,7 +63,7 @@ chip northbridge/intel/i945
 			register "ide_enable_secondary" = "0x0"
 			register "sata_ahci" = "0x0"
 
-			device pci 1b.0 on end # High Definition Audio
+			device pci 1b.0 off end # High Definition Audio
 			device pci 1c.0 on end # PCIe port 1
 			device pci 1c.1 off end # PCIe port 2
 			device pci 1c.2 off end # PCIe port 3
@@ -84,7 +84,7 @@ chip northbridge/intel/i945
 					device pci 3.3 off end  # smartcard
 				end
 			end # PCI bridge
-			device pci 1e.2 off end # AC'97 Audio
+			device pci 1e.2 on end # AC'97 Audio
 			device pci 1e.3 off end # AC'97 Modem
 			device pci 1f.0 on # LPC bridge
 				chip superio/smsc/lpc47n227

@@ -67,6 +67,11 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 	else
 		m_cfg->PchHdaEnable = dev->enabled;
 
+	/* Enable IPU only if the device is enabled */
+	m_cfg->SaIpuEnable = 0;
+	dev = pcidev_path_on_root(SA_DEVFN_IPU);
+	if (dev)
+		m_cfg->SaIpuEnable = dev->enabled;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

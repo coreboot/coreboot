@@ -47,6 +47,10 @@
 #define  SA_DEVFN_DSP		_SA_DEVFN(DSP)
 #define  SA_DEV_DSP		_SA_DEV(DSP)
 
+#define SA_DEV_SLOT_IPU		0x05
+#define  SA_DEVFN_IPU		_SA_DEVFN(IPU)
+#define  SA_DEV_IPU		_SA_DEV(IPU)
+
 /* PCH Devices */
 #define PCH_DEV_SLOT_THERMAL	0x12
 #define  PCH_DEVFN_THERMAL	_PCH_DEVFN(THERMAL, 0)

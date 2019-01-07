@@ -72,6 +72,13 @@ void set_feature_ctrl_lock(void)
 {
 	msr_t msr;
 	int lock = IS_ENABLED(CONFIG_SET_IA32_FC_LOCK_BIT);
+	uint32_t feature_flag = cpu_get_feature_flags_ecx();
+
+	/* Check if VMX is supported before reading or writing the MSR */
+	if (!((feature_flag & CPUID_VMX) || (feature_flag & CPUID_SMX))) {
+		printk(BIOS_DEBUG, "Read IA32_FEATURE_CONTROL unsupported\n");
+		return;
+	}
 
 	msr = rdmsr(IA32_FEATURE_CONTROL);
 

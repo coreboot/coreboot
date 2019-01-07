@@ -132,7 +132,7 @@ static void asmlinkage cpu_smm_do_relocation(void *arg)
 
 	/* Write SMRR MSRs based on indicated support. */
 	mtrr_cap = rdmsr(MTRR_CAP_MSR);
-	if (mtrr_cap.lo & SMRR_SUPPORTED)
+	if (mtrr_cap.lo & SMRR_SUPPORTED && relo_params->smrr_mask.lo != 0)
 		write_smrr(relo_params);
 
 	southbridge_clear_smi_status();

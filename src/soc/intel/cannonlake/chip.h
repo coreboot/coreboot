@@ -222,6 +222,43 @@ struct soc_intel_cannonlake_config {
 	 */
 	uint32_t PrmrrSize;
 	uint8_t PmTimerDisabled;
+
+	/*
+	 * SLP_S3 Minimum Assertion Width Policy
+	 *  1 = 60us
+	 *  2 = 1ms (default)
+	 *  3 = 50ms
+	 *  4 = 2s
+	 */
+	uint8_t PchPmSlpS3MinAssert;
+
+	/*
+	 * SLP_S4 Minimum Assertion Width Policy
+	 *  1 = 1s
+	 *  2 = 2s
+	 *  3 = 3s
+	 *  4 = 4s (default)
+	 */
+	uint8_t PchPmSlpS4MinAssert;
+
+	/*
+	 * SLP_SUS Minimum Assertion Width Policy
+	 *  1 = 0ms
+	 *  2 = 500ms
+	 *  3 = 1s (default)
+	 *  4 = 4s
+	 */
+	uint8_t PchPmSlpSusMinAssert;
+
+	/*
+	 * SLP_A Minimum Assertion Width Policy
+	 *  1 = 0ms
+	 *  2 = 4s
+	 *  3 = 98ms (default)
+	 *  4 = 2s
+	 */
+	uint8_t PchPmSlpAMinAssert;
+
 	/* Desired platform debug type. */
 	enum {
 		DebugConsent_Disabled,

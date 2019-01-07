@@ -176,7 +176,7 @@ config VBOOT
 
 config C_ENV_BOOTBLOCK_SIZE
 	hex
-	default 0x8000
+	default 0xC000
 
 config CBFS_SIZE
 	hex

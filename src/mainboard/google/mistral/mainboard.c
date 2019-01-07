@@ -16,10 +16,14 @@
 #include <device/device.h>
 #include <bootblock_common.h>
 #include <timestamp.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 static void mainboard_init(struct device *dev)
 {
-
+	if (CONFIG(CHROMEOS)) {
+		/* Copy WIFI calibration data into CBMEM. */
+		cbmem_add_vpd_calibration_data();
+	}
 }
 
 static void mainboard_enable(struct device *dev)

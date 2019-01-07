@@ -51,7 +51,6 @@ chip northbridge/intel/pineview		# Northbridge
       end
       device pci 1c.2 off end		# PCIe 3
       device pci 1c.3 off end		# PCIe 4
-      # (PCIe 5 and 6 not on nm10?)
       device pci 1d.0 on end		# USB
       device pci 1d.1 on end		# USB
       device pci 1d.2 on end		# USB

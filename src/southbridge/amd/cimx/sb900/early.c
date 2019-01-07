@@ -25,25 +25,6 @@
 #include <commonlib/loglevel.h>
 #include "smbus.h"
 
-/**
- * @brief Get SouthBridge device number
- * @param[in] bus target bus number
- * @return southbridge device number
- */
-u32 get_sbdn(u32 bus)
-{
-	pci_devfn_t dev;
-
-	printk(BIOS_SPEW, "SB900 - Early.c - get_sbdn - Start.\n");
-
-	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_AMD,
-				PCI_DEVICE_ID_AMD_SB900_SM), bus);
-
-	printk(BIOS_SPEW, "SB900 - Early.c - get_sbdn - End.\n");
-
-	return (dev >> 15) & 0x1f;
-}
-
 
 /**
  * @brief South Bridge CIMx romstage entry,

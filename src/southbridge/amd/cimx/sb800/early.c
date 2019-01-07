@@ -22,25 +22,6 @@
 #include "cbmem.h"
 
 /**
- * @brief Get SouthBridge device number
- * @param[in] bus target bus number
- * @return southbridge device number
- */
-u32 get_sbdn(u32 bus)
-{
-	pci_devfn_t dev;
-
-	printk(BIOS_DEBUG, "SB800 - %s - %s - Start.\n", __FILE__, __func__);
-	//dev = PCI_DEV(bus, 0x14, 0);
-	dev = pci_locate_device_on_bus(
-			PCI_ID(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB800_SM),
-			bus);
-
-	printk(BIOS_DEBUG, "SB800 - %s - %s - End.\n", __FILE__, __func__);
-	return (dev >> 15) & 0x1f;
-}
-
-/**
  * @brief South Bridge CIMx romstage entry,
  *        wrapper of sbPowerOnInit entry point.
  */

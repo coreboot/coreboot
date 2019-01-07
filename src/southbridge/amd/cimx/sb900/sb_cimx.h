@@ -33,13 +33,6 @@
 #define REV_SB900_A12	0x12
 
 /**
- * @brief Get SouthBridge device number, called by finalize_node_setup()
- * @param[in] bus target bus number
- * @return southbridge device number
- */
-u32 get_sbdn(u32 bus);
-
-/**
  * South Bridge CIMx romstage entry, sbPowerOnInit entry point wrapper.
  */
 void sb_poweron_init(void);

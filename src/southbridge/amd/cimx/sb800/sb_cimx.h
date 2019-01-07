@@ -34,10 +34,4 @@ void sb_After_Pci_Restore_Init(void);
  */
 void sb800_clk_output_48Mhz(void);
 
-/**
- * @brief Get SouthBridge device number, called by finalize_node_setup()
- * @param[in] bus target bus number
- * @return southbridge device number
- */
-u32 get_sbdn(u32 bus);
 #endif

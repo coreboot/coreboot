@@ -54,7 +54,7 @@ static u8 msr_get_fsb(void)
 }
 
 /*
- * BSEL mch straps are not hooked up to the CPU as usual but the the SIO
+ * BSEL MCH straps are not hooked up to the CPU as usual but to the SIO
  * BSEL0 -> not hooked up (such configs are not supported anyways)
  * BSEL1 -> GPIO33
  * BSEL2 -> GPIO40

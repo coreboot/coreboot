@@ -83,6 +83,7 @@ asmlinkage void console_init(void)
 
 	car_set_var(console_inited, 1);
 
-	printk(BIOS_NOTICE, "\n\ncoreboot-%s%s %s " ENV_STRING " starting...\n",
-	       coreboot_version, coreboot_extra_version, coreboot_build);
+	printk(BIOS_NOTICE, "\n\ncoreboot-%s%s %s " ENV_STRING " starting (log level: %i)...\n",
+	       coreboot_version, coreboot_extra_version, coreboot_build,
+	       get_log_level());
 }

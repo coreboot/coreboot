@@ -28,6 +28,4 @@
 #define PCIE_CLK_LAN			0x70
 #define PCIE_CLK_FREE			0x80
 
-void pch_log_state(void);
-
 #endif

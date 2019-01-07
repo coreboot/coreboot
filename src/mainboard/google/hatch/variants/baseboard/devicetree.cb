@@ -78,6 +78,7 @@ chip soc/intel/cannonlake
 		device pci 00.0 on end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
 		device pci 04.0 off end # SA Thermal device
+		device pci 05.0 off end # SA IPU
 		device pci 12.0 off end # Thermal Subsystem
 		device pci 12.5 off end # UFS SCS
 		device pci 12.6 off end # GSPI #2

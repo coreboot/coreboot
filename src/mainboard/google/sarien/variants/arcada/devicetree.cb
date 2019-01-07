@@ -23,6 +23,10 @@ chip soc/intel/cannonlake
 	register "InternalGfx" = "1"
 	register "SkipExtGfxScan" = "1"
 	register "VmxEnable" = "1"
+	register "PchPmSlpS3MinAssert" = "3"  # 50ms
+	register "PchPmSlpS4MinAssert" = "4"  # 4s
+	register "PchPmSlpSusMinAssert" = "4" # 4s
+	register "PchPmSlpAMinAssert" = "4"   # 2s
 
 	register "speed_shift_enable" = "1"
 	register "s0ix_enable" = "1"

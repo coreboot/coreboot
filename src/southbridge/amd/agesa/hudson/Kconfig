@@ -55,8 +55,13 @@ config HUDSON_XHCI_FWM
 	help
 	  Add Hudson 2/3/4 XHCI Firmware to support the onboard USB 3.0
 
+config HUDSON_IMC_ENABLE
+	bool
+	default n
+
 config HUDSON_IMC_FWM
-	bool "Add imc firmware"
+	bool "Add IMC firmware"
+	depends on HUDSON_IMC_ENABLE
 	default y if USE_BLOBS
 	select SPI_FLASH_HAS_VOLATILE_GROUP if SPI_FLASH
 	help

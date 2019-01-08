@@ -30,7 +30,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_NUVOTON_NCT6779D if BOARD_ASUS_F2A85_M_PRO
 	select BOARD_ROMSIZE_KB_8192
 	select GFXUMA
-	select HUDSON_DISABLE_IMC
 
 choice
 	prompt "DDR3 memory voltage"

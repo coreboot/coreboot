@@ -22,10 +22,8 @@
 #include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
 #include <superio/smsc/smscsuperio/smscsuperio.h>
-#include <lib.h>
 #include <northbridge/intel/x4x/iomap.h>
 #include <device/pnp_def.h>
-#include <timestamp.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
@@ -86,12 +84,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	if (MCHBAR32(PMSTS_MCHBAR) & PMSTS_WARM_RESET)
 		boot_path = BOOT_PATH_WARM_RESET;
 
-	printk(BIOS_DEBUG, "Initializing memory\n");
-	timestamp_add_now(TS_BEFORE_INITRAM);
 	sdram_initialize(boot_path, spd_addrmap);
-	timestamp_add_now(TS_AFTER_INITRAM);
-	quick_ram_check();
-	printk(BIOS_DEBUG, "Memory initialized\n");
 
 	x4x_late_init(s3_resume);
 

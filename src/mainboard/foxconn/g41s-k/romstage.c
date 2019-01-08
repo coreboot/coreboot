@@ -24,8 +24,6 @@
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8720f/it8720f.h>
-#include <lib.h>
-#include <timestamp.h>
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 #define SERIAL_DEV PNP_DEV(0x2e, IT8720F_SP1)
@@ -105,12 +103,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	if (MCHBAR32(PMSTS_MCHBAR) & PMSTS_WARM_RESET)
 		boot_path = BOOT_PATH_WARM_RESET;
 
-	printk(BIOS_DEBUG, "Initializing memory\n");
-	timestamp_add_now(TS_BEFORE_INITRAM);
 	sdram_initialize(boot_path, spd_addrmap);
-	timestamp_add_now(TS_AFTER_INITRAM);
-	quick_ram_check();
-	printk(BIOS_DEBUG, "Memory initialized\n");
 
 	x4x_late_init(s3_resume);
 

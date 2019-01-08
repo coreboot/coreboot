@@ -15,7 +15,6 @@
  */
 
 #include <stdint.h>
-#include <stdlib.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
@@ -27,9 +26,7 @@
 #include <cpu/intel/romstage.h>
 #include <superio/ite/it8718f/it8718f.h>
 #include <superio/ite/common/ite.h>
-#include <lib.h>
 #include <northbridge/intel/x4x/iomap.h>
-#include <timestamp.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8718F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8718F_GPIO)
@@ -153,12 +150,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	if (MCHBAR32(PMSTS_MCHBAR) & PMSTS_WARM_RESET)
 		boot_path = BOOT_PATH_WARM_RESET;
 
-	printk(BIOS_DEBUG, "Initializing memory\n");
-	timestamp_add_now(TS_BEFORE_INITRAM);
 	sdram_initialize(boot_path, spd_addrmap);
-	timestamp_add_now(TS_AFTER_INITRAM);
-	quick_ram_check();
-	printk(BIOS_DEBUG, "Memory initialized\n");
 
 	x4x_late_init(s3_resume);
 

@@ -22,6 +22,7 @@
 #include <arch/cpu.h>
 #include <delay.h>
 #include <halt.h>
+#include <lib.h>
 #include "iomap.h"
 #if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)
 #include <southbridge/intel/i82801gx/i82801gx.h> /* smbus_read_byte */
@@ -34,6 +35,7 @@
 #include <device/dram/ddr2.h>
 #include <device/dram/ddr3.h>
 #include <mrc_cache.h>
+#include <timestamp.h>
 
 #define MRC_CACHE_VERSION 0
 
@@ -639,6 +641,7 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 	int fast_boot, cbmem_was_inited, cache_not_found;
 	struct region_device rdev;
 
+	timestamp_add_now(TS_BEFORE_INITRAM);
 	printk(BIOS_DEBUG, "Setting up RAM controller.\n");
 
 	pci_write_config8(PCI_DEV(0, 0, 0), 0xdf, 0xff);
@@ -728,4 +731,8 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 		outb(0x6, 0xcf9);
 		halt();
 	}
+
+	timestamp_add_now(TS_AFTER_INITRAM);
+	quick_ram_check();
+	printk(BIOS_DEBUG, "Memory initialized\n");
 }

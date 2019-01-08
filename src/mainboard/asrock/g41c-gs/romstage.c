@@ -25,10 +25,8 @@
 #include <superio/winbond/w83627dhg/w83627dhg.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/nuvoton/common/nuvoton.h>
-#include <lib.h>
 #include <northbridge/intel/x4x/iomap.h>
 #include <device/pnp_def.h>
-#include <timestamp.h>
 
 #define SERIAL_DEV_R2 PNP_DEV(0x2e, NCT6776_SP1)
 #define SERIAL_DEV_R1 PNP_DEV(0x2e, W83627DHG_SP1)
@@ -106,12 +104,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	if (MCHBAR32(PMSTS_MCHBAR) & PMSTS_WARM_RESET)
 		boot_path = BOOT_PATH_WARM_RESET;
 
-	printk(BIOS_DEBUG, "Initializing memory\n");
-	timestamp_add_now(TS_BEFORE_INITRAM);
 	sdram_initialize(boot_path, spd_addrmap);
-	timestamp_add_now(TS_AFTER_INITRAM);
-	quick_ram_check();
-	printk(BIOS_DEBUG, "Memory initialized\n");
 
 	x4x_late_init(s3_resume);
 

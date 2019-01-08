@@ -29,6 +29,9 @@
 
 static void adau7002_fill_ssdt(struct device *dev)
 {
+	struct drivers_generic_adau7002_config *config;
+	struct acpi_dp *dp;
+
 	if (!dev || !dev->enabled)
 		return;
 
@@ -44,6 +47,12 @@ static void adau7002_fill_ssdt(struct device *dev)
 	acpigen_write_name_integer("_UID", 0);
 	acpigen_write_name_string("_DDN", dev->chip_ops->name);
 	acpigen_write_STA(acpi_device_status(dev));
+
+	/* _DSD for devicetree properties */
+	config = dev->chip_info;
+	dp = acpi_dp_new_table("_DSD");
+	acpi_dp_add_integer(dp, "wakeup-delay-ms", config->wakeup_delay);
+	acpi_dp_write(dp);
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

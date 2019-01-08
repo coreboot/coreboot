@@ -197,8 +197,22 @@ struct soc_intel_cannonlake_config {
 	/* HeciEnabled decides the state of Heci1 at end of boot
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS */
 	uint8_t HeciEnabled;
+
+	/* PL1 Override value in Watts */
+	uint32_t tdp_pl1_override;
 	/* PL2 Override value in Watts */
 	uint32_t tdp_pl2_override;
+	/* SysPL2 Value in Watts */
+	uint32_t tdp_psyspl2;
+	/* SysPL3 Value in Watts */
+	uint32_t tdp_psyspl3;
+	/* SysPL3 window size */
+	uint32_t tdp_psyspl3_time;
+	/* SysPL3 duty cycle */
+	uint32_t tdp_psyspl3_dutycycle;
+	/* PL4 Value in Watts */
+	uint32_t tdp_pl4;
+
 	/* Intel Speed Shift Technology */
 	uint8_t speed_shift_enable;
 	/* Enable VR specific mailbox command

@@ -98,6 +98,7 @@ chip soc/amd/stoneyridge
 	end #domain
 	device mmio 0xfedc2000 on
 		chip drivers/generic/adau7002
+			register "wakeup_delay" = "20"
 			device generic 0.0 on end
 		end
 		chip drivers/i2c/da7219

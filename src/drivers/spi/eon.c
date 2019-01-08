@@ -27,10 +27,27 @@
 #define CMD_EN25_DP		0xb9	/* Deep Power-down */
 #define CMD_EN25_RES		0xab	/* Release from DP, and Read Signature */
 
-#define EON_ID_EN25Q128		0x3018
-#define EON_ID_EN25Q64		0x3017
-#define EON_ID_EN25S64		0x3817
+#define EON_ID_EN25B80		0x2014
+#define EON_ID_EN25B16		0x2015
+#define EON_ID_EN25B32		0x2016
+#define EON_ID_EN25B64		0x2017
 #define EON_ID_EN25F80		0x3114
+#define EON_ID_EN25F16		0x3115
+#define EON_ID_EN25F32		0x3116
+#define EON_ID_EN25F64		0x3117
+#define EON_ID_EN25Q80		0x3014
+#define EON_ID_EN25Q16		0x3015	/* Same as EN25D16 */
+#define EON_ID_EN25Q32		0x3016	/* Same as EN25Q32A and EN25Q32B */
+#define EON_ID_EN25Q64		0x3017
+#define EON_ID_EN25Q128		0x3018
+#define EON_ID_EN25QH16		0x7015
+#define EON_ID_EN25QH32		0x7016
+#define EON_ID_EN25QH64		0x7017
+#define EON_ID_EN25QH128	0x7018
+#define EON_ID_EN25S80		0x3814
+#define EON_ID_EN25S16		0x3815
+#define EON_ID_EN25S32		0x3816
+#define EON_ID_EN25S64		0x3817
 
 struct eon_spi_flash_params {
 	u16 id;
@@ -43,12 +60,92 @@ struct eon_spi_flash_params {
 
 static const struct eon_spi_flash_params eon_spi_flash_table[] = {
 	{
-		.id = EON_ID_EN25Q128,
+		.id = EON_ID_EN25B80,
 		.page_size = 256,
 		.pages_per_sector = 16,
 		.sectors_per_block = 16,
-		.nr_sectors = 4096,
-		.name = "EN25Q128",
+		.nr_sectors = 256,
+		.name = "EN25B80",
+	},
+	{
+		.id = EON_ID_EN25B16,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 512,
+		.name = "EN25B16",
+	},
+	{
+		.id = EON_ID_EN25B32,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 1024,
+		.name = "EN25B32",
+	},
+	{
+		.id = EON_ID_EN25B64,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 2048,
+		.name = "EN25B64",
+	},
+	{
+		.id = EON_ID_EN25F80,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 256,
+		.name = "EN25F80",
+	},
+	{
+		.id = EON_ID_EN25F16,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 512,
+		.name = "EN25F16",
+	},
+	{
+		.id = EON_ID_EN25F32,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 1024,
+		.name = "EN25F32",
+	},
+	{
+		.id = EON_ID_EN25F64,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 2048,
+		.name = "EN25F64",
+	},
+	{
+		.id = EON_ID_EN25Q80,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 256,
+		.name = "EN25Q80(A)",
+	},
+	{
+		.id = EON_ID_EN25Q16,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 512,
+		.name = "EN25Q16(D16)",
+	},
+	{
+		.id = EON_ID_EN25Q32,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 1024,
+		.name = "EN25Q32(A/B)",
 	},
 	{
 		.id = EON_ID_EN25Q64,
@@ -59,20 +156,76 @@ static const struct eon_spi_flash_params eon_spi_flash_table[] = {
 		.name = "EN25Q64",
 	},
 	{
+		.id = EON_ID_EN25Q128,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 4096,
+		.name = "EN25Q128",
+	},
+	{
+		.id = EON_ID_EN25QH16,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 512,
+		.name = "EN25QH16",
+	},
+	{
+		.id = EON_ID_EN25QH32,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 1024,
+		.name = "EN25QH32",
+	},
+	{
+		.id = EON_ID_EN25QH64,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 2048,
+		.name = "EN25QH64",
+	},
+	{
+		.id = EON_ID_EN25QH128,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 4096,
+		.name = "EN25QH128",
+	},
+	{
+		.id = EON_ID_EN25S80,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 256,
+		.name = "EN25S80",
+	},
+	{
+		.id = EON_ID_EN25S16,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 512,
+		.name = "EN25S16",
+	},
+	{
+		.id = EON_ID_EN25S32,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 1024,
+		.name = "EN25S32",
+	},
+	{
 		.id = EON_ID_EN25S64,
 		.page_size = 256,
 		.pages_per_sector = 16,
 		.sectors_per_block = 16,
 		.nr_sectors = 2048,
 		.name = "EN25S64",
-	},
-	{
-		.id = EON_ID_EN25F80,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 256,
-		.name = "EN25F80",
 	},
 };
 

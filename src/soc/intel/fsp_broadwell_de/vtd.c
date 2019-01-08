@@ -34,6 +34,7 @@ static void vtd_read_resources(struct device *dev)
 
 static struct device_operations vtd_ops = {
 	.read_resources		= vtd_read_resources,
+	.set_resources		= DEVICE_NOOP,
 	.write_acpi_tables	= vtd_write_acpi_tables,
 };
 

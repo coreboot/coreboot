@@ -20,13 +20,12 @@ config CPU_SPECIFIC_OPTIONS
 	select IOAPIC
 	select UDELAY_TSC
 	select SUPPORT_CPU_UCODE_IN_CBFS
-	# Microcode header files are delivered in FSP package
-	select USES_MICROCODE_HEADER_FILES if HAVE_FSP_BIN
 	select INTEL_DESCRIPTOR_MODE_CAPABLE
 	select SMM_TSEG
 	select HAVE_SMI_HANDLER
 	select TSC_MONOTONIC_TIMER
 	select TSC_CONSTANT_RATE
+	select HAVE_FSP_BIN
 
 config VBOOT
 	select VBOOT_STARTS_IN_ROMSTAGE
@@ -79,10 +78,6 @@ config INTEGRATED_UART
 config CONSOLE_CBMEM
 	bool "Send console output to a CBMEM buffer"
 	default n
-
-config CPU_MICROCODE_HEADER_FILES
-	string
-	default "../intel/cpu/broadwell_de/microcode/M1050663_07000001.h ../intel/cpu/broadwell_de/microcode/M1050662_0000000A.h ../intel/cpu/broadwell_de/microcode/MFF50661_F1000008.h"
 
 config SERIRQ_CONTINUOUS_MODE
 	bool

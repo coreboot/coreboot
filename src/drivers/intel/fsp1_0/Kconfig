@@ -45,6 +45,16 @@ config FSP_1_0_DEBUG_LEVEL
 	   2: NORMAL
 	   3: MAXIMUM
 
+config FSP_HEADER_PATH
+	string "Location of FSP headers"
+	help
+	  The path to headers files that are released with the FSP binary.
+
+config FSP_SRC_PATH
+	string "Additional FSP source file"
+	help
+	  Additional source files that are released with the FSP binary.
+
 if HAVE_FSP_BIN
 
 config FSP_FILE

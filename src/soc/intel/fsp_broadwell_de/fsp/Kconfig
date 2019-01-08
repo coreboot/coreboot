@@ -6,9 +6,17 @@ config BROADWELL_DE_FSP_SPECIFIC_OPTIONS
 
 config FSP_FILE
 	string
-	default "../intel/fsp/broadwell_de/BROADWELLDE_FSP.bin"
+	default "3rdparty/fsp/BroadwellDEFspBinPkg/FspBin/BROADWELLDE_FSP.bin"
 	help
 	  The path and filename of the Intel FSP binary for this platform.
+
+config FSP_HEADER_PATH
+	string
+	default "$(top)/3rdparty/fsp/BroadwellDEFspBinPkg/include/"
+
+config FSP_SRC_PATH
+	string
+	default "$(top)/3rdparty/fsp/BroadwellDEFspBinPkg/include/fspsupport.c"
 
 config FSP_LOC
 	hex

@@ -47,4 +47,12 @@ mrc.cache-type := mrc_cache
 endif
 endif
 
+ifneq ($(call strip_quotes,$(CONFIG_FSP_SRC_PATH)),)
+ramstage-y += $(call strip_quotes,$(CONFIG_FSP_SRC_PATH))
+endif
+
+ifneq ($(call strip_quotes,$(CONFIG_FSP_HEADER_PATH)),)
+CPPFLAGS_common += -I$(CONFIG_FSP_HEADER_PATH)
+endif
+
 endif

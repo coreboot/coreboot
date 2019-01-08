@@ -198,6 +198,11 @@ forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty/
 ifeq ($(CONFIG_PLATFORM_USES_FSP2_0),y)
 forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty/fsp))
 endif
+ifeq ($(CONFIG_PLATFORM_USES_FSP1_0),y)
+ifeq ($(CONFIG_SOC_INTEL_FSP_BROADWELL_DE),y)
+forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty/fsp))
+endif
+endif
 endif
 UPDATED_SUBMODULES:=1
 COREBOOT_EXPORTS += UPDATED_SUBMODULES

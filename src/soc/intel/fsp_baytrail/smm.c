@@ -20,6 +20,7 @@
 #include <arch/io.h>
 #include <device/mmio.h>
 #include <cpu/x86/smm.h>
+#include <bootstate.h>
 #include <soc/iomap.h>
 #include <soc/pmc.h>
 #include <soc/smm.h>
@@ -123,3 +124,16 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 		  "d" (APM_CNT)
 	);
 }
+
+static void finalize_chipset(void *unused)
+{
+	printk(BIOS_DEBUG, "Finalizing SMM.\n");
+	/* Lock sleep stretching policy and set SMI lock. */
+	write32((void *)(PMC_BASE_ADDRESS + GEN_PMCON2),
+		read32((void *)(PMC_BASE_ADDRESS + GEN_PMCON2))
+		| SLPSX_STR_POL_LOCK | SMI_LOCK);
+	outb(APM_CNT_FINALIZE, APM_CNT);
+}
+
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, finalize_chipset, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, finalize_chipset, NULL);

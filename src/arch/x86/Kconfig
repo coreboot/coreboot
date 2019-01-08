@@ -263,7 +263,7 @@ config SKIP_MAX_REBOOT_CNT_CLEAR
 	  Do not clear the reboot count immediately after successful boot.
 	  Set to allow the payload to control normal/fallback image recovery.
 	  Note that it is the responsibility of the payload to reset the
-	  normal boot bit to 1 after each successsful boot.
+	  normal boot bit to 1 after each successful boot.
 
 config ACPI_CPU_STRING
 	string

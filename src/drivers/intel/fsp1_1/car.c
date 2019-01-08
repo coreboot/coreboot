@@ -35,6 +35,21 @@ static inline void set_fih_car(FSP_INFO_HEADER *fih)
 
 asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params)
 {
+	int i;
+	const int num_guards = 4;
+	const u32 stack_guard = 0xdeadbeef;
+	u32 *stack_base;
+	u32 size;
+
+	/* Size of unallocated CAR. */
+	size = _car_region_end - _car_relocatable_data_end;
+	size = ALIGN_DOWN(size, 16);
+
+	stack_base = (u32 *) (_car_region_end - size);
+
+	for (i = 0; i < num_guards; i++)
+		stack_base[i] = stack_guard;
+
 	/* Initialize timestamp book keeping only once. */
 	timestamp_init(car_params->tsc);
 
@@ -62,6 +77,13 @@ asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params)
 	car_mainboard_post_console_init();
 
 	set_fih_car(car_params->fih);
+
+	/* Check the stack. */
+	for (i = 0; i < num_guards; i++) {
+		if (stack_base[i] == stack_guard)
+			continue;
+		printk(BIOS_DEBUG, "Smashed stack detected in romstage!\n");
+	}
 
 	/* Return new stack value in RAM back to assembly stub. */
 	return cache_as_ram_stage_main(car_params->fih);

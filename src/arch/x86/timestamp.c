@@ -21,15 +21,14 @@ uint64_t timestamp_get(void)
 	return rdtscll();
 }
 
-unsigned long __weak tsc_freq_mhz(void)
-{
-	/* Default to not knowing TSC frequency. cbmem will have to fallback
-	 * on trying to determine it in userspace. */
-	return 0;
-}
-
 int timestamp_tick_freq_mhz(void)
 {
 	/* Chipsets that have a constant TSC provide this value correctly. */
-	return tsc_freq_mhz();
+	if (IS_ENABLED(CONFIG_TSC_CONSTANT_RATE))
+		return tsc_freq_mhz();
+
+	/* Filling tick_freq_mhz = 0 in timestamps-table will trigger
+	 * userspace utility to try deduce it from the running system.
+	 */
+	return 0;
 }

@@ -74,6 +74,10 @@ chip soc/intel/cannonlake
 	# ClkReq-to-ClkSrc mapping for CLK SRC 1
 	register "PcieClkSrcClkReq[1]" = "1"
 
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
 	device domain 0 on
 		device pci 00.0 on end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device

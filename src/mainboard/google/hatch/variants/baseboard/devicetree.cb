@@ -48,6 +48,12 @@ chip soc/intel/cannonlake
 	register "SataPortsEnable[1]" = "1"
 	register "SataPortsDevSlp[1]" = "1"
 	register "satapwroptimize" = "1"
+	# Enable System Agent dynamic frequency
+	register "SaGv" = "SaGv_Enabled"
+	# Enable heci communication
+	register "HeciEnabled" = "1"
+	# Enable Speed Shift Technology support
+	register "speed_shift_enable" = "1"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 1

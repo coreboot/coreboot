@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <arch/io.h>
+#include <arch/acpi.h>
 #include <arch/ebda.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
@@ -104,6 +105,9 @@ void setup_ebda(u32 low_memory_size, u16 ebda_segment, u16 ebda_size)
 
 void setup_default_ebda(void)
 {
+	if (acpi_is_wakeup_s3())
+		return;
+
 	setup_ebda(DEFAULT_EBDA_LOWMEM,
 		   DEFAULT_EBDA_SEGMENT,
 		   DEFAULT_EBDA_SIZE);

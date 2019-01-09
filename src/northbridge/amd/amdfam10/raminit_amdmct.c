@@ -26,6 +26,7 @@
 #include <northbridge/amd/amdfam10/debug.h>
 #include <northbridge/amd/amdfam10/raminit.h>
 #include <northbridge/amd/amdfam10/amdfam10.h>
+#include <timestamp.h>
 
 /* Global allocation of sysinfo_car */
 #include <arch/early_variables.h>
@@ -562,9 +563,11 @@ void raminit_amdmct(struct sys_info *sysinfo)
 	struct DCTStatStruc *pDCTstatA = sysinfo->DCTstatA;
 
 	printk(BIOS_DEBUG, "raminit_amdmct begin:\n");
+	timestamp_add_now(TS_BEFORE_INITRAM);
 
 	mctAutoInitMCT_D(pMCTstat, pDCTstatA);
 
+	timestamp_add_now(TS_AFTER_INITRAM);
 	printk(BIOS_DEBUG, "raminit_amdmct end:\n");
 }
 

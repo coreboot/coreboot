@@ -192,26 +192,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x40);
 
-//	die("Die Before MCT init.");
-
-	timestamp_add_now(TS_BEFORE_INITRAM);
-	printk(BIOS_DEBUG, "raminit_amdmct()\n");
 	raminit_amdmct(sysinfo);
-	timestamp_add_now(TS_AFTER_INITRAM);
 
 	cbmem_initialize_empty();
 	post_code(0x41);
 
 	amdmct_cbmem_store_info(sysinfo);
-
-/*
-	dump_pci_device_range(PCI_DEV(0, 0x18, 0), 0, 0x200);
-	dump_pci_device_range(PCI_DEV(0, 0x18, 1), 0, 0x200);
-	dump_pci_device_range(PCI_DEV(0, 0x18, 2), 0, 0x200);
-	dump_pci_device_range(PCI_DEV(0, 0x18, 3), 0, 0x200);
-*/
-
-//	die("After MCT init before CAR disabled.");
 
 	sb7xx_51xx_before_pci_init();
 

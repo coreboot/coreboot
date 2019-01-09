@@ -550,10 +550,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x40);
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
-	printk(BIOS_DEBUG, "raminit_amdmct()\n");
 	raminit_amdmct(sysinfo);
-	timestamp_add_now(TS_AFTER_INITRAM);
 
 #ifdef TEST_MEMORY
 	execute_memory_test();

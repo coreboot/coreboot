@@ -1,6 +1,6 @@
-diff -Naur acpica-unix2-20181213_/source/compiler/asloptions.c acpica-unix2-20181213/source/compiler/asloptions.c > acpica-unix2-20181213_iasl.patch
---- acpica-unix2-20181213_/source/compiler/asloptions.c
-+++ acpica-unix2-20181213/source/compiler/asloptions.c
+diff -Naur acpica-unix2-20190108_/source/compiler/asloptions.c acpica-unix2-20190108/source/compiler/asloptions.c > acpica-unix2-20190108_iasl.patch
+--- acpica-unix2-20190108_/source/compiler/asloptions.c
++++ acpica-unix2-20190108/source/compiler/asloptions.c
 @@ -126,6 +126,7 @@
      if (Gbl_DoSignon)
      {

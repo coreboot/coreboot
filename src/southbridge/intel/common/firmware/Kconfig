@@ -107,9 +107,12 @@ config ME_CLEANER_ARGS
 	depends on USE_ME_CLEANER
 	default "-S"
 
+config MAINBOARD_USES_IFD_GBE_REGION
+	def_bool n
+
 config HAVE_GBE_BIN
 	bool "Add gigabit ethernet firmware"
-	depends on HAVE_IFD_BIN
+	depends on HAVE_IFD_BIN && MAINBOARD_USES_IFD_GBE_REGION
 	help
 	  The integrated gigabit ethernet controller needs a firmware file.
 	  Select this if you are going to use the PCH integrated controller

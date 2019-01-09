@@ -297,21 +297,32 @@ no_msr_11e:
 
 	post_code(0x2c)
 
+	/* Cache the whole rom to fetch microcode updates */
+	movl	$MTRR_PHYS_BASE(1), %ecx
+	xorl	%edx, %edx
+	movl	$CACHE_ROM_BASE | MTRR_TYPE_WRPROT, %eax
+	wrmsr
+
+	movl	$MTRR_PHYS_MASK(1), %ecx
+	rdmsr
+	movl	$(~(CACHE_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
+	wrmsr
+
 	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
 	movl	%cr0, %eax
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	invd
 	movl	%eax, %cr0
 
-	/* Clear the cache memory region. This will also fill up the cache. */
-	cld
-	xorl	%eax, %eax
-	movl	$CACHE_AS_RAM_BASE, %edi
-	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
-	rep	stosl
-
+#if IS_ENABLED(CONFIG_MICROCODE_UPDATE_PRE_RAM)
+	update_microcode:
+	/* put the return address in %esp */
+	movl	$end_microcode_update, %esp
+	jmp	update_bsp_microcode
+	end_microcode_update:
+#endif
 	post_code(0x2d)
-	/* Enable Cache-as-RAM mode by disabling cache. */
+	/* Disable caching to change MTRR's. */
 	movl	%cr0, %eax
 	orl	$CR0_CacheDisable, %eax
 	movl	%eax, %cr0
@@ -326,8 +337,16 @@ no_msr_11e:
 	movl	$1, %eax
 	cpuid
 	cmp	$0xf, %ah
-	je	skip_cache_rom
+	jne	cache_rom
 
+disable_cache_rom:
+	movl	$MTRR_PHYS_MASK(1), %ecx
+	rdmsr
+	andl	$(~MTRR_PHYS_MASK_VALID), %eax
+	wrmsr
+	jmp	fill_cache
+
+cache_rom:
 	/* Enable cache for our code in Flash because we do XIP here */
 	movl	$MTRR_PHYS_BASE(1), %ecx
 	xorl	%edx, %edx
@@ -345,13 +364,20 @@ no_msr_11e:
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 
-skip_cache_rom:
-
+fill_cache:
 	post_code(0x2e)
 	/* Enable cache. */
 	movl	%cr0, %eax
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
+	invd
 	movl	%eax, %cr0
+
+	/* Clear the cache memory region. This will also fill up the cache. */
+	cld
+	xorl	%eax, %eax
+	movl	$CACHE_AS_RAM_BASE, %edi
+	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
+	rep	stosl
 
 	/* Setup the stack. */
 	mov	$_car_stack_end, %esp

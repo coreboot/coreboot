@@ -37,6 +37,7 @@
 #include <assert.h>
 #include <spd.h>
 #include <sdram_mode.h>
+#include <timestamp.h>
 
 #include "raminit.h"
 #include "e7505.h"
@@ -1768,6 +1769,8 @@ void e7505_mch_init(const struct mem_controller *memctrl)
 	RAM_DEBUG_MESSAGE("Northbridge prior to SDRAM init:\n");
 	DUMPNORTH();
 
+	timestamp_add_now(TS_BEFORE_INITRAM);
+
 	sdram_set_registers(memctrl);
 	sdram_set_spd_registers(memctrl);
 	sdram_enable(memctrl);
@@ -1776,6 +1779,8 @@ void e7505_mch_init(const struct mem_controller *memctrl)
 void e7505_mch_done(const struct mem_controller *memctrl)
 {
 	sdram_post_ecc(memctrl);
+
+	timestamp_add_now(TS_AFTER_INITRAM);
 
 	RAM_DEBUG_MESSAGE("Northbridge following SDRAM init:\n");
 	DUMPNORTH();

@@ -23,7 +23,10 @@
 
 /* Macro to access Local APIC registers at default base. */
 #define LAPIC(x)		$(LAPIC_DEFAULT_BASE | LAPIC_ ## x)
-#define START_IPI_VECTOR	((CONFIG_AP_SIPI_VECTOR >> 12) & 0xff)
+#if !IS_ENABLED(CONFIG_C_ENVIRONMENT_BOOTBLOCK)
+/* Fixed location, ASSERTED in failover.ld if it changes. */
+.set ap_sipi_vector_in_rom, 0xff
+#endif
 
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
@@ -180,7 +183,8 @@ hyper_threading_cpu:
 
 	/* Send Start IPI to all excluding ourself. */
 	movl	LAPIC(ICR), %edi
-	movl	$(LAPIC_DEST_ALLBUT | LAPIC_DM_STARTUP | START_IPI_VECTOR), %eax
+	movl	$(LAPIC_DEST_ALLBUT | LAPIC_DM_STARTUP), %eax
+	orl	$ap_sipi_vector_in_rom, %eax
 1:	movl	%eax, (%edi)
 	movl	$0x30, %ecx
 2:	pause

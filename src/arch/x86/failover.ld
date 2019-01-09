@@ -35,7 +35,6 @@ SECTIONS
 	/* This section might be better named .setup */
 	.rom ROMLOC : {
 		_rom = .;
-		ap_sipi_vector = .;
 		*(.rom.text);
 		*(.rom.data);
 		*(.rom.data.*);
@@ -54,9 +53,7 @@ SECTIONS
 		(CONFIG_SIPI_VECTOR_IN_ROM ? 4096 : 0);
 
 	/* Post-check proper SIPI vector. */
-	_bogus = ASSERT(!CONFIG_SIPI_VECTOR_IN_ROM || ((ap_sipi_vector & 0x0fff) == 0x0),
-		"Bad SIPI vector alignment");
-	_bogus = ASSERT(!CONFIG_SIPI_VECTOR_IN_ROM || (ap_sipi_vector == CONFIG_AP_SIPI_VECTOR),
+	_bogus = ASSERT(!CONFIG_SIPI_VECTOR_IN_ROM || (ap_sipi_vector_in_rom == 0xff),
 		"Address mismatch on AP_SIPI_VECTOR");
 
 	/DISCARD/ : {

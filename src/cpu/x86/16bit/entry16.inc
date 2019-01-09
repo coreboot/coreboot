@@ -28,6 +28,13 @@
  */
 
 #include <arch/rom_segs.h>
+
+#if IS_ENABLED(CONFIG_SIPI_VECTOR_IN_ROM)
+/* Symbol _start16bit must be aligned to 4kB to start AP CPUs with
+ * Startup IPI message without RAM.
+ */
+.align 4096
+#endif
 .code16
 .globl _start16bit
 .type _start16bit, @function

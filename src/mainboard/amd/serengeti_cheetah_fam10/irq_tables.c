@@ -101,7 +101,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 		u32 busn = (sysconf.pci1234[i] >> 12) & 0xff;
 		u32 devn = sysconf.hcdn[i] & 0xff;
 
-		write_pirq_info(pirq_info, busn, (devn << 3) | 0, 0x1, 0xdef8,
+		write_pirq_info(pirq_info, busn, PCI_DEVFN(devn, 0), 0x1, 0xdef8,
 				0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 		pirq_info++;
 		slot_num++;
@@ -110,12 +110,12 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	}
 
 #if CONFIG_CBB
-	write_pirq_info(pirq_info, CONFIG_CBB, (0 << 3) | 0, 0x1, 0xdef8, 0x2,
+	write_pirq_info(pirq_info, CONFIG_CBB, PCI_DEVFN(0, 0), 0x1, 0xdef8, 0x2,
 			0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 	pirq_info++;
 	slot_num++;
 	if (sysconf.nodes > 32) {
-		write_pirq_info(pirq_info, CONFIG_CBB - 1, (0 << 3) | 0, 0x1,
+		write_pirq_info(pirq_info, CONFIG_CBB - 1, PCI_DEVFN(0, 0), 0x1,
 				0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8,
 				0, 0);
 		pirq_info++;

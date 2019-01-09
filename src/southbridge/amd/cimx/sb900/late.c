@@ -347,11 +347,11 @@ static void sb900_enable(struct device *dev)
 //-	commonInitEarlyPost(sb_config);
 
 	switch (dev->path.pci.devfn) {
-	case (0x10 << 3) | 0: /* 0:10:0 XHCI-USB */
+	case PCI_DEVFN(0x10, 0): /* XHCI-USB */
 //-		usbInitBeforePciEnum(sb_config);  // USB POST TIME Only
 		break;
 
-	case (0x11 << 3) | 0: /* 0:11.0  SATA */
+	case PCI_DEVFN(0x11, 0): /* SATA */
 		if (dev->enabled) {
 			sb_config->SATAMODE.SataMode.SataController = ENABLED;
 			if (sb_chip->boot_switch_sata_ide == 1)
@@ -365,18 +365,18 @@ static void sb900_enable(struct device *dev)
 //-		sataInitBeforePciEnum(sb_config); // Init SATA class code and PHY
 		break;
 
-	case (0x12 << 3) | 0: /* 0:12:0 OHCI-USB1 */
-	case (0x12 << 3) | 2: /* 0:12:2 EHCI-USB1 */
-	case (0x13 << 3) | 0: /* 0:13:0 OHCI-USB2 */
-	case (0x13 << 3) | 2: /* 0:13:2 EHCI-USB2 */
-	case (0x14 << 3) | 5: /* 0:14:5 OHCI-USB4 */
+	case PCI_DEVFN(0x12, 0): /* OHCI-USB1 */
+	case PCI_DEVFN(0x12, 2): /* EHCI-USB1 */
+	case PCI_DEVFN(0x13, 0): /* OHCI-USB2 */
+	case PCI_DEVFN(0x13, 2): /* EHCI-USB2 */
+	case PCI_DEVFN(0x14, 5): /* OHCI-USB4 */
 //-		usbInitBeforePciEnum(sb_config);  // USB POST TIME Only
 		break;
 
-	case (0x14 << 3) | 0: /* 0:14:0 SMBUS */
+	case PCI_DEVFN(0x14, 0): /* SMBUS */
 		break;
 
-	case (0x14 << 3) | 1: /* 0:14:1 IDE */
+	case PCI_DEVFN(0x14, 1): /* IDE */
 		if (dev->enabled) {
 			sb_config->SATAMODE.SataMode.SataIdeCombinedMode = ENABLED;
 		} else {
@@ -385,7 +385,7 @@ static void sb900_enable(struct device *dev)
 //-		sataInitBeforePciEnum(sb_config); // Init SATA class code and PHY
 		break;
 
-	case (0x14 << 3) | 2: /* 0:14:2 HDA */
+	case PCI_DEVFN(0x14, 2): /* HDA */
 		if (dev->enabled) {
 			if (sb_config->AzaliaController == AZALIA_DISABLE) {
 				sb_config->AzaliaController = AZALIA_AUTO;
@@ -399,13 +399,13 @@ static void sb900_enable(struct device *dev)
 		break;
 
 
-	case (0x14 << 3) | 3: /* 0:14:3 LPC */
+	case PCI_DEVFN(0x14, 3): /* LPC */
 		break;
 
-	case (0x14 << 3) | 4: /* 0:14:4 PCI */
+	case PCI_DEVFN(0x14, 4): /* PCI */
 		break;
 
-	case (0x14 << 3) | 6: /* 0:14:6 GEC */
+	case PCI_DEVFN(0x14, 6): /* GEC */
 		if (dev->enabled) {
 			sb_config->GecConfig = 0;
 			printk(BIOS_DEBUG, "gec enabled\n");
@@ -416,10 +416,10 @@ static void sb900_enable(struct device *dev)
 //-		gecInitBeforePciEnum(sb_config); // Init GEC
 		break;
 
-	case (0x15 << 3) | 0: /* 0:15:0 PCIe PortA */
-	case (0x15 << 3) | 1: /* 0:15:1 PCIe PortB */
-	case (0x15 << 3) | 2: /* 0:15:2 PCIe PortC */
-	case (0x15 << 3) | 3: /* 0:15:3 PCIe PortD */
+	case PCI_DEVFN(0x15, 0): /* PCIe PortA */
+	case PCI_DEVFN(0x15, 1): /* PCIe PortB */
+	case PCI_DEVFN(0x15, 2): /* PCIe PortC */
+	case PCI_DEVFN(0x15, 3): /* PCIe PortD */
 		gpp_port = (dev->path.pci.devfn) & 0x03;
 		if (dev->enabled) {
 			sb_config->PORTCONFIG[gpp_port].PortCfg.PortPresent = ENABLED;

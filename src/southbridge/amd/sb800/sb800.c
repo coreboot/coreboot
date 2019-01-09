@@ -294,7 +294,7 @@ void sb800_enable(struct device *dev)
 	printk(BIOS_DEBUG, "sb800_enable() 2\n");
 
 	switch (dev->path.pci.devfn - (devfn - (0x14 << 3))) {
-	case (0x11 << 3) | 0:
+	case PCI_DEVFN(0x11, 0):
 		index = 8;
 		set_pmio_enable_bits(0xDA, 1 << 0,
 				     (dev->enabled ? 1 : 0) << 0);
@@ -307,63 +307,63 @@ void sb800_enable(struct device *dev)
 		pci_write_config32(dev, 0x40, dword);//for (;;);
 		index += 32 * 3;
 		break;
-	case (0x12 << 3) | 0:
-	case (0x12 << 3) | 2:
+	case PCI_DEVFN(0x12, 0):
+	case PCI_DEVFN(0x12, 2):
 		index = (dev->path.pci.devfn & 0x3) / 2;
 		set_pmio_enable_bits(0xEF, 1 << index,
 				     (dev->enabled ? 1 : 0) << index);
 		break;
-	case (0x13 << 3) | 0:
-	case (0x13 << 3) | 2:
+	case PCI_DEVFN(0x13, 0):
+	case PCI_DEVFN(0x13, 2):
 		index = (dev->path.pci.devfn & 0x3) / 2 + 2;
 		set_pmio_enable_bits(0xEF, 1 << index,
 				     (dev->enabled ? 1 : 0) << index);
 		index += 32 * 2;
 		break;
-	case (0x14 << 3) | 0:
+	case PCI_DEVFN(0x14, 0):
 		index = 0;
 		break;
-	case (0x14 << 3) | 1:
+	case PCI_DEVFN(0x14, 1):
 		index = 1;
 		set_pmio_enable_bits(0xDA, 1 << 3,
 				     (dev->enabled ? 0 : 1) << 3);
 		break;
-	case (0x14 << 3) | 2:
+	case PCI_DEVFN(0x14, 2):
 		index = 0;
 		set_pmio_enable_bits(0xEB, 1 << index,
 				     (dev->enabled ? 1 : 0) << index);
 		break;
-	case (0x14 << 3) | 3:
+	case PCI_DEVFN(0x14, 3):
 		index = 0;
 		set_pmio_enable_bits(0xEC, 1 << index,
 				     (dev->enabled ? 1 : 0) << index);
 		index += 32 * 1;
 		break;
-	case (0x14 << 3) | 4:
+	case PCI_DEVFN(0x14, 4):
 		index = 0;
 		set_pmio_enable_bits(0xEA, 1 << index,
 				     (dev->enabled ? 0 : 1) << index);
 		break;
-	case (0x14 << 3) | 5:
+	case PCI_DEVFN(0x14, 5):
 		index = 6;
 		set_pmio_enable_bits(0xEF, 1 << index,
 				     (dev->enabled ? 1 : 0) << index);
 		break;
-	case (0x14 << 3) | 6:
+	case PCI_DEVFN(0x14, 6):
 		index = 0;
 		set_pmio_enable_bits(0xF6, 1 << index,
 				     (dev->enabled ? 0 : 1) << index);
 		break;
-	case (0x15 << 3) | 0:
+	case PCI_DEVFN(0x15, 0):
 		set_sb800_gpp(dev);
 		index = 4;
 		break;
-	case (0x15 << 3) | 1:
-	case (0x15 << 3) | 2:
-	case (0x15 << 3) | 3:
+	case PCI_DEVFN(0x15, 1):
+	case PCI_DEVFN(0x15, 2):
+	case PCI_DEVFN(0x15, 3):
 		break;
-	case (0x16 << 3) | 0:
-	case (0x16 << 3) | 2:
+	case PCI_DEVFN(0x16, 0):
+	case PCI_DEVFN(0x16, 2):
 		index = (dev->path.pci.devfn & 0x3) / 2 + 4;
 		set_pmio_enable_bits(0xEF, 1 << index,
 				     (dev->enabled ? 1 : 0) << index);

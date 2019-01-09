@@ -167,53 +167,53 @@ void sb7xx_51xx_enable(struct device *dev)
 		return;
 
 	switch (dev->path.pci.devfn - (devfn - (0x14 << 3))) {
-	case (0x11 << 3) | 0:
+	case PCI_DEVFN(0x11, 0):
 		index = 8;
 		set_sm_enable_bits(sm_dev, 0xac, 1 << index,
 				   (dev->enabled ? 1 : 0) << index);
 		index += 32 * 3;
 		break;
-	case (0x12 << 3) | 0:
-	case (0x12 << 3) | 1:
-	case (0x12 << 3) | 2:
+	case PCI_DEVFN(0x12, 0):
+	case PCI_DEVFN(0x12, 1):
+	case PCI_DEVFN(0x12, 2):
 		index = dev->path.pci.devfn & 3;
 		set_sm_enable_bits(sm_dev, 0x68, 1 << index,
 				   (dev->enabled ? 1 : 0) << index);
 		index += 32 * 2;
 		break;
-	case (0x13 << 3) | 0:
-	case (0x13 << 3) | 1:
-	case (0x13 << 3) | 2:
+	case PCI_DEVFN(0x13, 0):
+	case PCI_DEVFN(0x13, 1):
+	case PCI_DEVFN(0x13, 2):
 		index = (dev->path.pci.devfn & 3) + 4;
 		set_sm_enable_bits(sm_dev, 0x68, 1 << index,
 				   (dev->enabled ? 1 : 0) << index);
 		index += 32 * 2;
 		break;
-	case (0x14 << 3) | 5:
+	case PCI_DEVFN(0x14, 5):
 		index = 7;
 		set_sm_enable_bits(sm_dev, 0x68, 1 << index,
 				   (dev->enabled ? 1 : 0) << index);
 		index += 32 * 2;
 		break;
-	case (0x14 << 3) | 0:
+	case PCI_DEVFN(0x14, 0):
 		index = 0;
 		break;
-	case (0x14 << 3) | 1:
+	case PCI_DEVFN(0x14, 1):
 		index = 1;
 		break;
-	case (0x14 << 3) | 2:
+	case PCI_DEVFN(0x14, 2):
 		index = 3;
 		set_pmio_enable_bits(sm_dev, 0x59, 1 << index,
 				     (dev->enabled ? 1 : 0) << index);
 		index += 32 * 4;
 		break;
-	case (0x14 << 3) | 3:
+	case PCI_DEVFN(0x14, 3):
 		index = 20;
 		set_sm_enable_bits(sm_dev, 0x64, 1 << index,
 				   (dev->enabled ? 1 : 0) << index);
 		index += 32 * 1;
 		break;
-	case (0x14 << 3) | 4:
+	case PCI_DEVFN(0x14, 4):
 		index = 4;
 		break;
 	default:

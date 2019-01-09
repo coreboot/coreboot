@@ -989,33 +989,33 @@ bad:
 /**
  * See if we have already allocated a device structure for a given devfn.
  *
- * Given a linked list of PCI device structures and a devfn number, find the
- * device structure correspond to the devfn, if present. This function also
- * removes the device structure from the linked list.
+ * Given a PCI bus structure and a devfn number, find the device structure
+ * corresponding to the devfn, if present. Then move the device structure
+ * as the last child on the bus.
  *
- * @param list The device structure list.
+ * @param bus Pointer to the bus structure.
  * @param devfn A device/function number.
  * @return Pointer to the device structure found or NULL if we have not
  *	   allocated a device for this devfn yet.
  */
-static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
+static struct device *pci_scan_get_dev(struct bus *bus, unsigned int devfn)
 {
-	struct device *dev;
+	struct device *dev, **prev;
 
-	dev = 0;
-	for (; *list; list = &(*list)->sibling) {
-		if ((*list)->path.type != DEVICE_PATH_PCI) {
+	prev = &bus->children;
+	for (dev = bus->children; dev; dev = dev->sibling) {
+		if (dev->path.type == DEVICE_PATH_PCI) {
+			if (dev->path.pci.devfn == devfn) {
+				/* Unlink from the list. */
+				*prev = dev->sibling;
+				dev->sibling = NULL;
+				break;
+			}
+		} else {
 			printk(BIOS_ERR, "child %s not a PCI device\n",
-			       dev_path(*list));
-			continue;
+			       dev_path(dev));
 		}
-		if ((*list)->path.pci.devfn == devfn) {
-			/* Unlink from the list. */
-			dev = *list;
-			*list = (*list)->sibling;
-			dev->sibling = NULL;
-			break;
-		}
+		prev = &dev->sibling;
 	}
 
 	/*
@@ -1027,15 +1027,15 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 	if (dev) {
 		struct device *child;
 
-		/* Find the last child of our parent. */
-		for (child = dev->bus->children; child && child->sibling;)
+		/* Find the last child on the bus. */
+		for (child = bus->children; child && child->sibling;)
 			child = child->sibling;
 
-		/* Place the device on the list of children of its parent. */
+		/* Place the device as last on the bus. */
 		if (child)
 			child->sibling = dev;
 		else
-			dev->bus->children = dev;
+			bus->children = dev;
 	}
 
 	return dev;
@@ -1180,7 +1180,8 @@ void pci_scan_bus(struct bus *bus, unsigned min_devfn,
 			  unsigned max_devfn)
 {
 	unsigned int devfn;
-	struct device *old_devices;
+	struct device *dev, **prev;
+	int once = 0;
 
 	printk(BIOS_DEBUG, "PCI: pci_scan_bus for bus %02x\n", bus->secondary);
 
@@ -1193,9 +1194,6 @@ void pci_scan_bus(struct bus *bus, unsigned min_devfn,
 		max_devfn=0xff;
 	}
 
-	old_devices = bus->children;
-	bus->children = NULL;
-
 	post_code(0x24);
 
 	/*
@@ -1203,10 +1201,8 @@ void pci_scan_bus(struct bus *bus, unsigned min_devfn,
 	 * non-existence and single function devices.
 	 */
 	for (devfn = min_devfn; devfn <= max_devfn; devfn++) {
-		struct device *dev;
-
 		/* First thing setup the device structure. */
-		dev = pci_scan_get_dev(&old_devices, devfn);
+		dev = pci_scan_get_dev(bus, devfn);
 
 		/* See if a device is present and setup the device structure. */
 		dev = pci_probe_dev(dev, bus, devfn);
@@ -1228,14 +1224,25 @@ void pci_scan_bus(struct bus *bus, unsigned min_devfn,
 	 * Warn if any leftover static devices are are found.
 	 * There's probably a problem in devicetree.cb.
 	 */
-	if (old_devices) {
-		struct device *left;
-		printk(BIOS_WARNING, "PCI: Left over static devices:\n");
-		for (left = old_devices; left; left = left->sibling)
-			printk(BIOS_WARNING, "%s\n", dev_path(left));
 
-		printk(BIOS_WARNING, "PCI: Check your devicetree.cb.\n");
+	prev = &bus->children;
+	for (dev = bus->children; dev; dev = dev->sibling) {
+		/* If we read valid vendor id, it is not leftover device. */
+		if (dev->vendor != 0) {
+			prev = &dev->sibling;
+			continue;
+		}
+
+		/* Unlink it from list. */
+		*prev = dev->sibling;
+
+		if (!once++)
+			printk(BIOS_WARNING, "PCI: Leftover static devices:\n");
+		printk(BIOS_WARNING, "%s\n", dev_path(dev));
 	}
+
+	if (once)
+		printk(BIOS_WARNING, "PCI: Check your devicetree.cb.\n");
 
 	/*
 	 * For all children that implement scan_bus() (i.e. bridges)

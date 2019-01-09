@@ -31,6 +31,7 @@ bootblock-$(CONFIG_DRIVERS_UART_8250MEM) += uart_debug.c
 
 postcar-y += memmap.c
 postcar-y += spi.c
+postcar-y += tsc_freq.c
 postcar-$(CONFIG_DRIVERS_UART_8250MEM) += uart_debug.c
 
 romstage-y += memmap.c
@@ -80,6 +81,7 @@ smm-$(CONFIG_DRIVERS_UART_8250MEM) += uart_debug.c
 verstage-y += memmap.c
 verstage-y += reset.c
 verstage-y += spi.c
+verstage-y += tsc_freq.c
 verstage-$(CONFIG_DRIVERS_UART_8250MEM) += uart_debug.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/denverton_ns/include

@@ -18,4 +18,7 @@
 
 #include <baseboard/gpio.h>
 
+/* EC sync irq is GPP_134_IRQ */
+#define EC_SYNC_IRQ	GPIO_134_IRQ
+
 #endif /* MAINBOARD_GPIO_H */

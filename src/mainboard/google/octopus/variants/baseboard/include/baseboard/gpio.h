@@ -39,4 +39,7 @@
 #define MEM_CONFIG2	GPIO_70
 #define MEM_CONFIG3	GPIO_71
 
+/* EC sync irq is GPP_134_IRQ */
+#define EC_SYNC_IRQ	GPIO_134_IRQ
+
 #endif /* BASEBOARD_GPIO_H */

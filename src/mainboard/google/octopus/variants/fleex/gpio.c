@@ -28,10 +28,6 @@ static const struct pad_config default_override_table[] = {
 	PAD_NC(GPIO_67, UP_20K),
 	PAD_NC(GPIO_117, UP_20K),
 
-	/* CAM_SOC_EC_SYNC */
-	PAD_CFG_GPI_APIC_IOS(GPIO_134, NONE, DEEP, EDGE_SINGLE, INVERT, TxDRxE,
-			     DISPUPD),
-
 	PAD_NC(GPIO_138, DN_20K),
 	PAD_NC(GPIO_139, DN_20K),
 	PAD_NC(GPIO_140, UP_20K),

@@ -38,9 +38,6 @@ static const struct pad_config default_override_table[] = {
 
 	/* PCIE_CLKREQ3_B -- unused */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_122, UP_20K, DEEP, NF1, HIZCRx1, ENPU),
-	/* CAM_SOC_EC_SYNC */
-	PAD_CFG_GPI_APIC_IOS(GPIO_134, NONE, DEEP, EDGE_SINGLE, INVERT, TxDRxE,
-			     DISPUPD),
 
 	PAD_NC(GPIO_138, UP_20K), /* PEN_PDCT_ODL -- unused */
 	PAD_NC(GPIO_139, UP_20K), /* PEN_INT_ODL -- unused */

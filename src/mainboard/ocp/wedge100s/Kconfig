@@ -15,6 +15,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select ENABLE_FSP_FAST_BOOT
 	select MAINBOARD_HAS_LPC_TPM
 	select MAINBOARD_HAS_TPM1
+	select DRIVERS_UART_8250IO
 
 config VBOOT
 	select VBOOT_VBNV_CMOS
@@ -45,9 +46,6 @@ config VIRTUAL_ROM_SIZE
 	hex
 	default 0x1000000
 
-config DRIVERS_UART_8250IO
-	def_bool n
-
 config FSP_PACKAGE_DEFAULT
 	bool "Configure defaults for the Intel FSP package"
 	default n
@@ -56,5 +54,8 @@ config FMDFILE
 	string
 	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/vboot-ro.fmd" if VBOOT
 	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+config INTEGRATED_UART
+	def_bool n
 
 endif # BOARD_OCP_WEDGE100S

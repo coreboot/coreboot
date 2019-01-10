@@ -20,6 +20,12 @@
 #include <cpu/x86/msr.h>
 #include <cf9_reset.h>
 #include <console/console.h>
+#include <soc/pci_devs.h>
+#include <soc/lpc.h>
+#include <superio/ite/common/ite.h>
+
+#define SUPERIO_DEV 0x6e
+#define SERIAL_DEV PNP_DEV(SUPERIO_DEV, 1)
 
 /**
  * /brief mainboard call for setup that needs to be done before fsp init
@@ -27,6 +33,14 @@
  */
 void early_mainboard_romstage_entry(void)
 {
+	/* Decode 0x6e/0x6f on LPC bus (actually 0x6c-0x6f) */
+	pci_write_config32(PCI_DEV(0x0, LPC_DEV, LPC_FUNC), LPC_GEN1_DEC,
+			   (0 << 16) | ALIGN_DOWN(SUPERIO_DEV, 4) | 1);
+
+	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL))
+		ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+
+
 	/*
 	 * Sometimes the system boots in an invalid state, where random values
 	 * have been written to MSRs and then the MSRs are locked.
@@ -60,5 +74,25 @@ void late_mainboard_romstage_entry(void)
  */
 void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
 {
+	UPD_DATA_REGION *fsp_upd_data = FspRtBuffer->Common.UpdDataRgnPtr;
+	if (IS_ENABLED(CONFIG_FSP_USES_UPD)) {
+		/* The internal UART operates on 0x3f8/0x2f8.
+		 * As it's not wired up and conflicts with SuperIO decoding
+		 * the same range, make sure to disable it.
+		 */
+		fsp_upd_data->SerialPortControllerInit0 = 0;
+		fsp_upd_data->SerialPortControllerInit1 = 0;
 
+		/* coreboot will initialize UART.
+		 * No need for FSP to do it again.
+		 */
+		fsp_upd_data->SerialPortConfigure = 0;
+		fsp_upd_data->SerialPortBaudRate = 0;
+
+		/* Make FSP use serial IO */
+		if (IS_ENABLED(CONFIG_CONSOLE_SERIAL))
+			fsp_upd_data->SerialPortType = 1;
+		else
+			fsp_upd_data->SerialPortType = 0;
+	}
 }

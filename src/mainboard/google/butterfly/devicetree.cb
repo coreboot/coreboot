@@ -15,6 +15,10 @@ chip northbridge/intel/sandybridge
 	register "gpu_panel_power_backlight_on_delay" = "2100"	# T3: 210ms
 	register "gpu_panel_power_backlight_off_delay" = "2100"	# T4: 210ms
 
+	# Set backlight PWM values
+	register "gpu_cpu_backlight" = "0x000001e8"
+	register "gpu_pch_backlight" = "0x03d00000"
+
 	register "max_mem_clock_mhz" = "666"			# DDR3-1333
 
 	device cpu_cluster 0 on

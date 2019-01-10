@@ -83,6 +83,45 @@ int fw_cfg_check_file(FWCfgFile *file, const char *name)
 	return fw_cfg_find_file(file, name);
 }
 
+static int fw_cfg_e820_select(uint32_t *size)
+{
+	FWCfgFile file;
+
+	if (!fw_cfg_present() || fw_cfg_find_file(&file, "etc/e820"))
+		return -1;
+	fw_cfg_select(file.select);
+	*size = file.size;
+	return 0;
+}
+
+static int fw_cfg_e820_read(FwCfgE820Entry *entry, uint32_t *size,
+		uint32_t *pos)
+{
+	if (*pos + sizeof(*entry) > *size)
+		return -1;
+
+	fw_cfg_read(entry, sizeof(*entry));
+	*pos += sizeof(*entry);
+	return 0;
+}
+
+/* returns tolud on success or 0 on failure */
+uintptr_t fw_cfg_tolud(void)
+{
+	FwCfgE820Entry e;
+	uint64_t top = 0;
+	uint32_t size = 0, pos = 0;
+
+	if (fw_cfg_e820_select(&size)) {
+		while (!fw_cfg_e820_read(&e, &size, &pos)) {
+			uint64_t limit = e.address + e.length;
+			if (e.type == 1 && limit < 4ULL * GiB && limit > top)
+				top = limit;
+		}
+	}
+	return (uintptr_t)top;
+}
+
 int fw_cfg_max_cpus(void)
 {
 	unsigned short max_cpus;

@@ -16,6 +16,7 @@
 #include <cbmem.h>
 #include <arch/io.h>
 #include "memory.h"
+#include "fw_cfg.h"
 
 #define CMOS_ADDR_PORT 0x70
 #define CMOS_DATA_PORT 0x71
@@ -52,5 +53,11 @@ unsigned long qemu_get_memory_size(void)
 
 void *cbmem_top(void)
 {
-	return (void *) (qemu_get_memory_size() * 1024);
+	uintptr_t top = 0;
+
+	top = fw_cfg_tolud();
+	if (!top)
+		top = (uintptr_t)qemu_get_memory_size() * 1024;
+
+	return (void *)top;
 }

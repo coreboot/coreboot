@@ -28,6 +28,7 @@
 #define RCBA8(x) (*((volatile u8 *)(DEFAULT_RCBA + x)))
 #define RCBA16(x) (*((volatile u16 *)(DEFAULT_RCBA + x)))
 #define RCBA32(x) (*((volatile u32 *)(DEFAULT_RCBA + x)))
+#define RCBA64(x) (*((volatile u64 *)(DEFAULT_RCBA + x)))
 
 #define RCBA_AND_OR(bits, x, and, or) \
 	(RCBA##bits(x) = ((RCBA##bits(x) & (and)) | (or)))

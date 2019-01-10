@@ -29,6 +29,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
+#include <northbridge/amd/agesa/nb_common.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <sb_cimx.h>
@@ -43,7 +44,7 @@ static unsigned fx_devs = 0;
 
 static struct device *get_node_pci(u32 nodeid, u32 fn)
 {
-	return pcidev_on_root(CONFIG_CDB + nodeid, fn);
+	return pcidev_on_root(DEV_CDB + nodeid, fn);
 }
 
 static void get_fx_devs(void)
@@ -85,7 +86,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 
 static u32 amdfam14_nodeid(struct device *dev)
 {
-	return (dev->path.pci.devfn >> 3) - CONFIG_CDB;
+	return (dev->path.pci.devfn >> 3) - DEV_CDB;
 }
 
 #include "amdfam14_conf.c"

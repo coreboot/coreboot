@@ -51,18 +51,42 @@ static u8 get_ich7_sata_ports(void)
 void sata_enable(struct device *dev)
 {
 	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
+	struct southbridge_intel_i82801gx_config *config = dev->chip_info;
 
-	if (config->sata_ahci) {
-		/* Set map to ahci */
-		pci_write_config8(dev, SATA_MAP,
-			(pci_read_config8(dev, SATA_MAP) & ~0xc3) | 0x40);
-	} else {
-		/* Set map to ide */
-		pci_write_config8(dev, SATA_MAP,
-			pci_read_config8(dev, SATA_MAP) & ~0xc3);
+	if (config->sata_mode == SATA_MODE_AHCI) {
+		/* Check if the southbridge supports AHCI */
+		struct device *lpc_dev = pcidev_on_root(31, 0);
+		if (!lpc_dev) {
+			/* According to the PCI spec function 0 on a bus:device
+			   needs to be active for other functions to be enabled.
+			   Since SATA is on the same bus:device as the LPC
+			   bridge, it makes little sense to continue. */
+			die("Couldn't find the LPC device!\n");
+		}
+
+		const bool ahci_supported = !(pci_read_config32(lpc_dev, FDVCT)
+					      & AHCI_UNSUPPORTED);
+
+		if (!ahci_supported) {
+			/* Fallback to IDE PLAIN for sata for the rest of the
+			   initialization */
+			config->sata_mode = SATA_MODE_IDE_PLAIN;
+			printk(BIOS_DEBUG,
+			       "AHCI not supported, falling back to plain mode.\n");
+		}
+
 	}
 
+	if (config->sata_mode == SATA_MODE_AHCI) {
+		/* Set map to ahci */
+		pci_write_config8(dev, SATA_MAP,
+				  (pci_read_config8(dev, SATA_MAP)
+				   & ~0xc3) | 0x40);
+	} else {
+	/* Set map to ide */
+		pci_write_config8(dev, SATA_MAP,
+				  pci_read_config8(dev, SATA_MAP) & ~0xc3);
+	}
 	/* At this point, the new pci id will appear on the bus */
 }
 
@@ -89,7 +113,8 @@ static void sata_init(struct device *dev)
 	/* Enable BARs */
 	pci_write_config16(dev, PCI_COMMAND, 0x0007);
 
-	if (config->ide_legacy_combined) {
+	switch (config->sata_mode) {
+	case SATA_MODE_IDE_LEGACY_COMBINED:
 		printk(BIOS_DEBUG, "SATA controller in combined mode.\n");
 		/* No AHCI: clear AHCI base */
 		pci_write_config32(dev, 0x24, 0x00000000);
@@ -120,7 +145,8 @@ static void sata_init(struct device *dev)
 
 		/* Restrict ports - 0 and 2 only available */
 		ports &= 0x5;
-	} else if (config->sata_ahci) {
+		break;
+	case SATA_MODE_AHCI:
 		printk(BIOS_DEBUG, "SATA controller in AHCI mode.\n");
 		/* Allow both Legacy and Native mode */
 		pci_write_config8(dev, 0x09, 0x8f);
@@ -131,7 +157,9 @@ static void sata_init(struct device *dev)
 
 		ahci_bar = (u32 *)(pci_read_config32(dev, 0x27) & ~0x3ff);
 		ahci_bar[3] = config->sata_ports_implemented;
-	} else {
+		break;
+	default:
+	case SATA_MODE_IDE_PLAIN:
 		printk(BIOS_DEBUG, "SATA controller in plain mode.\n");
 		/* Set Sata Controller Mode. No Mapping(?) */
 		pci_write_config8(dev, SATA_MAP, 0x00);
@@ -168,6 +196,7 @@ static void sata_init(struct device *dev)
 		/* Set IDE I/O Configuration */
 		reg32 = SIG_MODE_PRI_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
 		pci_write_config32(dev, IDE_CONFIG, reg32);
+		break;
 	}
 
 	/* Set port control */

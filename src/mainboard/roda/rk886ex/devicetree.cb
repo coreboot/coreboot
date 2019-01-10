@@ -61,7 +61,6 @@ chip northbridge/intel/i945
 			register "ide_legacy_combined" = "0x1"
 			register "ide_enable_primary" = "0x1"
 			register "ide_enable_secondary" = "0x0"
-			register "sata_ahci" = "0x0"
 
 			device pci 1b.0 off end # High Definition Audio
 			device pci 1c.0 on end # PCIe port 1

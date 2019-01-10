@@ -71,7 +71,6 @@ chip northbridge/intel/i945
 			register "gpi12_routing" = "2"
 			register "gpi8_routing" = "2"
 
-			register "sata_ahci" = "0x1"
 			register "sata_ports_implemented" = "0x01"
 
 			register "gpe0_en" = "0x11000006"

@@ -18,6 +18,12 @@
 
 #include <stdint.h>
 
+enum sata_mode {
+	SATA_MODE_AHCI = 0,
+	SATA_MODE_IDE_LEGACY_COMBINED,
+	SATA_MODE_IDE_PLAIN,
+};
+
 struct southbridge_intel_i82801gx_config {
 	/**
 	 * Interrupt Routing configuration
@@ -65,7 +71,7 @@ struct southbridge_intel_i82801gx_config {
 	uint32_t ide_legacy_combined;
 	uint32_t ide_enable_primary;
 	uint32_t ide_enable_secondary;
-	uint32_t sata_ahci;
+	enum sata_mode sata_mode;
 	uint32_t sata_ports_implemented;
 
 	/* Enable linear PCIe Root Port function numbers starting at zero */

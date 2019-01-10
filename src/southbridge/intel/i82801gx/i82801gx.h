@@ -82,6 +82,7 @@ int smbus_block_write(unsigned int device, unsigned int cmd, u8 bytes,
 
 #define FDVCT			0xe4
 #define   PCIE_4_PORTS_MAX	(1 << 7)
+#define   AHCI_UNSUPPORTED	(1 << 3)
 
 /* GEN_PMCON_3 bits */
 #define RTC_BATTERY_DEAD	(1 << 2)

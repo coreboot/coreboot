@@ -47,7 +47,6 @@ chip northbridge/intel/x4x		# Northbridge
 
 			register "ide_enable_primary" = "0x0"
 			register "ide_enable_secondary" = "0x0"
-			register "sata_ahci" = "0x0"	# AHCI does not work
 			register "sata_ports_implemented" = "0x3"
 
 			device pci 1b.0 on end		# Audio

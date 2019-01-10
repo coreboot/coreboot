@@ -63,7 +63,6 @@ chip northbridge/intel/x4x		# Northbridge
 			register "gpi15_routing" = "2"
 
 			register "ide_enable_primary" = "0x1"
-			register "sata_ahci" = "0x0" # AHCI not supported on this ICH7 variant
 			register "gpe0_en" = "0x440"
 
 			device pci 1b.0 on		# Audio

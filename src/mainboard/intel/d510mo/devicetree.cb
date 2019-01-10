@@ -38,7 +38,6 @@ chip northbridge/intel/pineview		# Northbridge
       register "pirqf_routing" = "0x0b"
       register "pirqg_routing" = "0x0b"
       register "pirqh_routing" = "0x0b"
-      register "sata_ahci" = "0x1"
       register "sata_ports_implemented" = "0x3"
       register "gpe0_en" = "0x20000040"
 

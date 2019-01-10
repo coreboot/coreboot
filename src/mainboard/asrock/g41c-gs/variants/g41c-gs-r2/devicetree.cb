@@ -51,7 +51,6 @@ chip northbridge/intel/x4x		# Northbridge
 			register "gpi13_routing" = "2"
 
 			register "ide_enable_primary" = "0x1"
-			register "sata_ahci" = "0x0" # AHCI not supported on this ICH7 variant
 			register "sata_ports_implemented" = "0x3"
 			register "gpe0_en" = "0x440"
 

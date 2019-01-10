@@ -25,20 +25,22 @@
 #define FW_CFG_PORT_CTL       0x0510
 #define FW_CFG_PORT_DATA      0x0511
 
-static unsigned char fw_cfg_detected = 0xff;
+static int fw_cfg_detected;
 
 static int fw_cfg_present(void)
 {
 	static const char qsig[] = "QEMU";
 	unsigned char sig[4];
+	int detected = 0;
 
-	if (fw_cfg_detected == 0xff) {
+	if (fw_cfg_detected == 0) {
 		fw_cfg_get(FW_CFG_SIGNATURE, sig, sizeof(sig));
-		fw_cfg_detected = (memcmp(sig, qsig, 4) == 0) ? 1 : 0;
+		detected = memcmp(sig, qsig, 4) == 0;
 		printk(BIOS_INFO, "QEMU: firmware config interface %s\n",
-		       fw_cfg_detected ? "detected" : "not found");
+				detected ? "detected" : "not found");
+		fw_cfg_detected = detected + 1;
 	}
-	return fw_cfg_detected;
+	return fw_cfg_detected - 1;
 }
 
 static void fw_cfg_select(uint16_t entry)

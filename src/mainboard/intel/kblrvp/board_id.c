@@ -36,12 +36,13 @@ int get_ec_boardinfo(void)
 }
 
 /* Get spd index */
-int get_spd_index(void)
+int get_spd_index(u8 *spd_index)
 {
 	int ec_info = get_ec_boardinfo();
-	if (ec_info >= 0)
-		return ((uint16_t)ec_info >> 5) & 0x7;
-
+	if (ec_info >= 0) {
+		*spd_index = ((uint16_t)ec_info >> 5) & 0x7;
+		return 0;
+	}
 	return -1;
 }
 

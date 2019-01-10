@@ -31,8 +31,8 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	FSP_M_CONFIG *mem_cfg;
 	mem_cfg = &mupd->FspmConfig;
-	u8 spd_index = get_spd_index();
-	if ((int)spd_index < 0)
+	u8 spd_index;
+	if (get_spd_index(&spd_index) < 0)
 		return;
 
 	printk(BIOS_INFO, "SPD index %d\n", spd_index);

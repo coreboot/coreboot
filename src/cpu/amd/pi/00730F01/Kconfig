@@ -23,14 +23,6 @@ config CPU_ADDR_BITS
 	int
 	default 40
 
-config CBB
-	hex
-	default 0x0
-
-config CDB
-	hex
-	default 0x18
-
 config XIP_ROM_SIZE
 	hex
 	default 0x100000

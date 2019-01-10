@@ -35,6 +35,7 @@
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <arch/acpigen.h>
+#include <northbridge/amd/pi/nb_common.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
 #include <northbridge/amd/pi/agesawrapper.h>
@@ -103,7 +104,7 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 
 static struct device *get_node_pci(u32 nodeid, u32 fn)
 {
-	return pcidev_on_root(CONFIG_CDB + nodeid, fn);
+	return pcidev_on_root(DEV_CDB + nodeid, fn);
 }
 
 static void get_fx_devs(void)
@@ -146,7 +147,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 
 static u32 amdfam16_nodeid(struct device *dev)
 {
-	return (dev->path.pci.devfn >> 3) - CONFIG_CDB;
+	return (dev->path.pci.devfn >> 3) - DEV_CDB;
 }
 
 static void set_vga_enable_reg(u32 nodeid, u32 linkn)
@@ -1089,9 +1090,9 @@ static void cpu_bus_scan(struct device *dev)
 	printk(BIOS_SPEW, "MullinsPI Debug: AMD Topology Number of Modules (@0x%p) is %d\n", modules_ptr, modules);
 	printk(BIOS_SPEW, "MullinsPI Debug: AMD Topology Number of IOAPICs (@0x%p) is %d\n", options, (int)options->CfgPlatNumIoApics);
 
-	dev_mc = pcidev_on_root(CONFIG_CDB, 0);
+	dev_mc = pcidev_on_root(DEV_CDB, 0);
 	if (!dev_mc) {
-		printk(BIOS_ERR, "%02x:%02x.0 not found", CONFIG_CBB, CONFIG_CDB);
+		printk(BIOS_ERR, "0:%02x.0 not found", DEV_CDB);
 		die("");
 	}
 	sysconf_init(dev_mc);
@@ -1114,7 +1115,7 @@ static void cpu_bus_scan(struct device *dev)
 		unsigned devn;
 		struct bus *pbus;
 
-		devn = CONFIG_CDB + i;
+		devn = DEV_CDB + i;
 		pbus = dev_mc->bus;
 
 		/* Find the cpu's pci device */

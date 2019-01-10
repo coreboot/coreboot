@@ -67,6 +67,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
 	int i;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
+	FSP_S_TEST_CONFIG *tconfig = &supd->FspsTestConfig;
 	struct device *dev = SA_DEV_ROOT;
 	config_t *config = dev->chip_info;
 
@@ -239,6 +240,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PchPmSlpSusMinAssert = config->PchPmSlpSusMinAssert;
 	if (config->PchPmSlpAMinAssert)
 		params->PchPmSlpAMinAssert = config->PchPmSlpAMinAssert;
+
+	/* Set TccActivationOffset */
+	tconfig->TccActivationOffset = config->tcc_offset;
 }
 
 /* Mainboard GPIO Configuration */

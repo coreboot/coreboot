@@ -167,6 +167,26 @@ static void configure_c_states(void)
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
 }
 
+static void configure_thermal_target(void)
+{
+	struct device *dev = SA_DEV_ROOT;
+	config_t *conf = dev->chip_info;
+	msr_t msr;
+
+	/* Set TCC activation offset if supported */
+	msr = rdmsr(MSR_PLATFORM_INFO);
+	if ((msr.lo & (1 << 30)) && conf->tcc_offset) {
+		msr = rdmsr(MSR_TEMPERATURE_TARGET);
+		msr.lo &= ~(0xf << 24); /* Bits 27:24 */
+		msr.lo |= (conf->tcc_offset & 0xf) << 24;
+		wrmsr(MSR_TEMPERATURE_TARGET, msr);
+	}
+	msr = rdmsr(MSR_TEMPERATURE_TARGET);
+	msr.lo &= ~0x7f; /* Bits 6:0 */
+	msr.lo |= 0xe6; /* setting 100ms thermal time window */
+	wrmsr(MSR_TEMPERATURE_TARGET, msr);
+}
+
 /*
  * The emulated ACPI timer allows replacing of the ACPI timer
  * (PM1_TMR) to have no impart on the system.
@@ -264,4 +284,7 @@ void soc_init_cpus(struct bus *cpu_bus)
 {
 	if (mp_init_with_smm(cpu_bus, &mp_ops))
 		printk(BIOS_ERR, "MP initialization failure.\n");
+
+	/* Thermal throttle activation offset */
+	configure_thermal_target();
 }

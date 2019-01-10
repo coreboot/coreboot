@@ -34,13 +34,14 @@ struct ehci_debug_info {
 	struct dbgp_pipe ep_pipe[DBGP_MAX_ENDPOINTS];
 };
 
-#if IS_ENABLED(CONFIG_DEBUG_USBDEBUG)
-static void dbgp_print_data(struct ehci_dbg_port *ehci_debug);
-static int dbgp_enabled(void);
+#if IS_ENABLED(CONFIG_DEBUG_CONSOLE_INIT)
+/* When selected, you can debug the connection of usbdebug dongle.
+ * EHCI port register bits and USB packets are dumped on console,
+ * assuming some other console already works.
+ */
 # define dprintk(LEVEL, args...) \
 	do { if (!dbgp_enabled()) printk(LEVEL, ##args); } while (0)
 #else
-# define dbgp_print_data(x)	do {} while (0)
 # define dprintk(LEVEL, args...)   do {} while (0)
 #endif
 
@@ -56,6 +57,9 @@ static int dbgp_enabled(void);
 #define DBGP_MICROFRAME_TIMEOUT_LOOPS	1000
 #define DBGP_MICROFRAME_RETRIES		10
 #define DBGP_MAX_PACKET		8
+
+static int dbgp_enabled(void);
+static void dbgp_print_data(struct ehci_dbg_port *ehci_debug);
 
 static struct ehci_debug_info glob_dbg_info CAR_GLOBAL;
 static struct ehci_debug_info * glob_dbg_info_p CAR_GLOBAL;
@@ -202,13 +206,19 @@ static void dbgp_get_data(struct ehci_dbg_port *ehci_debug, void *buf, int size)
 		bytes[i] = (hi >> (8*(i - 4))) & 0xff;
 }
 
-#if IS_ENABLED(CONFIG_DEBUG_USBDEBUG)
 static void dbgp_print_data(struct ehci_dbg_port *ehci_debug)
 {
-	u32 ctrl = read32(&ehci_debug->control);
-	u32	lo = read32(&ehci_debug->data03);
-	u32	hi = read32(&ehci_debug->data47);
-	int len = DBGP_LEN(ctrl);
+	int len;
+	u32 ctrl, lo, hi;
+
+	if (!IS_ENABLED(CONFIG_DEBUG_CONSOLE_INIT) || dbgp_enabled())
+		return;
+
+	ctrl = read32(&ehci_debug->control);
+	lo = read32(&ehci_debug->data03);
+	hi = read32(&ehci_debug->data47);
+
+	len = DBGP_LEN(ctrl);
 	if (len) {
 		int i;
 		dprintk(BIOS_SPEW, "dbgp:    buf:");
@@ -219,7 +229,6 @@ static void dbgp_print_data(struct ehci_dbg_port *ehci_debug)
 		dprintk(BIOS_SPEW, "\n");
 	}
 }
-#endif
 
 static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe,
 	const char *bytes, int size)

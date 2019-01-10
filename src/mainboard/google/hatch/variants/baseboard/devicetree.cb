@@ -58,7 +58,7 @@ chip soc/intel/cannonlake
 	register "usb2_ports[6]" = "USB2_PORT_LONG(OC_SKIP)"	# Camera
 	register "usb2_ports[7]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
-	register "usb2_ports[9]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# CnVi BT
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)"	# Type-C Port 0
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC2)"	# Type-C Port 1

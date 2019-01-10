@@ -33,10 +33,10 @@ static void acpi_handoff_wakeup(void)
 {
 	if (acpi_slp_type < 0) {
 		if (romstage_handoff_is_resume()) {
-			printk(BIOS_DEBUG, "S3 Resume.\n");
+			printk(BIOS_DEBUG, "S3 Resume\n");
 			acpi_slp_type = ACPI_S3;
 		} else {
-			printk(BIOS_DEBUG, "Normal boot.\n");
+			printk(BIOS_DEBUG, "Normal boot\n");
 			acpi_slp_type = ACPI_S0;
 		}
 	}

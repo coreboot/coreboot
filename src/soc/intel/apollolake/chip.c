@@ -571,8 +571,13 @@ static void glk_fsp_silicon_init_params_cb(
 	 * FSP provides UPD interface to execute IPC command. In order to
 	 * improve boot performance, configure PmicPmcIpcCtrl for PMC to program
 	 * PMIC PCH_PWROK delay.
-	*/
+	 */
 	silconfig->PmicPmcIpcCtrl = cfg->PmicPmcIpcCtrl;
+
+	/*
+	 * Options to disable XHCI Link Compliance Mode.
+	 */
+	silconfig->DisableComplianceMode = cfg->DisableComplianceMode;
 #endif
 }
 

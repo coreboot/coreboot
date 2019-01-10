@@ -162,6 +162,12 @@ struct soc_intel_apollolake_config {
 	 * (31:24) + Register_Offset (23:16) + OR Value (15:8) + AND Value (7:0)
 	 */
 	uint32_t PmicPmcIpcCtrl;
+
+	/* Options to disable XHCI Link Compliance Mode. Default is FALSE to not
+	 * disable Compliance Mode. Set TRUE to disable Compliance Mode.
+	 * 0:FALSE(Default), 1:True.
+	 */
+	uint8_t DisableComplianceMode;
 };
 
 typedef struct soc_intel_apollolake_config config_t;

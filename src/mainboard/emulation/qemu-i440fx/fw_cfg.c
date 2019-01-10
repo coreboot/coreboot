@@ -42,10 +42,20 @@ static int fw_cfg_present(void)
 	return fw_cfg_detected;
 }
 
-void fw_cfg_get(int entry, void *dst, int dstlen)
+static void fw_cfg_select(uint16_t entry)
 {
 	outw(entry, FW_CFG_PORT_CTL);
+}
+
+static void fw_cfg_read(void *dst, int dstlen)
+{
 	insb(FW_CFG_PORT_DATA, dst, dstlen);
+}
+
+void fw_cfg_get(uint16_t entry, void *dst, int dstlen)
+{
+	fw_cfg_select(entry);
+	fw_cfg_read(dst, dstlen);
 }
 
 static void fw_cfg_init_file(void)

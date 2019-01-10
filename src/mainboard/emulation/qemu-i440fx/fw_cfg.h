@@ -14,7 +14,7 @@
 #define FW_CFG_H
 #include "fw_cfg_if.h"
 
-void fw_cfg_get(int entry, void *dst, int dstlen);
+void fw_cfg_get(uint16_t entry, void *dst, int dstlen);
 int fw_cfg_check_file(FWCfgFile *file, const char *name);
 int fw_cfg_max_cpus(void);
 unsigned long fw_cfg_smbios_tables(int *handle, unsigned long *current);

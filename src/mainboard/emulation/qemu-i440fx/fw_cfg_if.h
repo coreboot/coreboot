@@ -16,6 +16,8 @@
  * This are the qemu firmware config interface defines and structs.
  * Copyed over from qemu soure tree, include/hw/nvram/fw_cfg.h
  */
+#ifndef FW_CFG_IF_H
+#define FW_CFG_IF_H
 
 #include <stdint.h>
 
@@ -90,3 +92,5 @@ typedef struct FwCfgSmbios {
 	uint8_t  tabletype;
 	uint16_t fieldoffset;
 } FwCfgSmbios;
+
+#endif /* FW_CFG_IF_H */

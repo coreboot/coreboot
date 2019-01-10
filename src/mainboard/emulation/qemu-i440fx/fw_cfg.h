@@ -10,9 +10,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+#ifndef FW_CFG_H
+#define FW_CFG_H
+#include "fw_cfg_if.h"
 
 void fw_cfg_get(int entry, void *dst, int dstlen);
-int fw_cfg_check_file(const char *name);
-void fw_cfg_load_file(const char *name, void *dst);
+int fw_cfg_check_file(FWCfgFile *file, const char *name);
 int fw_cfg_max_cpus(void);
 unsigned long fw_cfg_smbios_tables(int *handle, unsigned long *current);
+
+#endif /* FW_CFG_H */

@@ -81,28 +81,16 @@ static FWCfgFile *fw_cfg_find_file(const char *name)
 	return NULL;
 }
 
-int fw_cfg_check_file(const char *name)
+int fw_cfg_check_file(FWCfgFile *file, const char *name)
 {
-	FWCfgFile *file;
-
+	FWCfgFile *f;
 	if (!fw_cfg_present())
 		return -1;
-	file = fw_cfg_find_file(name);
-	if (!file)
+	f = fw_cfg_find_file(name);
+	if (!f)
 		return -1;
-	return file->size;
-}
-
-void fw_cfg_load_file(const char *name, void *dst)
-{
-	FWCfgFile *file;
-
-	if (!fw_cfg_present())
-		return;
-	file = fw_cfg_find_file(name);
-	if (!file)
-		return;
-	fw_cfg_get(file->select, dst, file->size);
+	*file = *f;
+	return 0;
 }
 
 int fw_cfg_max_cpus(void)
@@ -202,21 +190,21 @@ enum {
 
 unsigned long fw_cfg_acpi_tables(unsigned long start)
 {
+	FWCfgFile f;
 	BiosLinkerLoaderEntry *s;
 	unsigned long *addrs, current;
 	uint8_t *ptr;
-	int rc, i, j, src, dst, max;
+	int i, j, src, dst, max;
 
-	rc = fw_cfg_check_file("etc/table-loader");
-	if (rc < 0)
+	if (fw_cfg_check_file(&f, "etc/table-loader"))
 		return 0;
 
 	printk(BIOS_DEBUG, "QEMU: found ACPI tables in fw_cfg.\n");
 
-	max = rc / sizeof(*s);
-	s = malloc(rc);
+	max = f.size / sizeof(*s);
+	s = malloc(f.size);
 	addrs = malloc(max * sizeof(*addrs));
-	fw_cfg_load_file("etc/table-loader", s);
+	fw_cfg_get(f.select, s, f.size);
 
 	current = start;
 	for (i = 0; i < max && s[i].command != 0; i++) {
@@ -227,14 +215,14 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 		switch (s[i].command) {
 		case BIOS_LINKER_LOADER_COMMAND_ALLOCATE:
 			current = ALIGN(current, s[i].alloc.align);
-			rc = fw_cfg_check_file(s[i].alloc.file);
-			if (rc < 0)
+			if (fw_cfg_check_file(&f, s[i].alloc.file))
 				goto err;
+
 			printk(BIOS_DEBUG, "QEMU: loading \"%s\" to 0x%lx (len %d)\n",
-			       s[i].alloc.file, current, rc);
-			fw_cfg_load_file(s[i].alloc.file, (void*)current);
+			       s[i].alloc.file, current, f.size);
+			fw_cfg_get(f.select, (void *)current, sizeof(current));
 			addrs[i] = current;
-			current += rc;
+			current += f.size;
 			break;
 
 		case BIOS_LINKER_LOADER_COMMAND_ADD_POINTER:
@@ -400,15 +388,16 @@ static unsigned long smbios_next(unsigned long current)
  */
 unsigned long fw_cfg_smbios_tables(int *handle, unsigned long *current)
 {
+	FWCfgFile f;
 	struct smbios_type0 *t0;
 	unsigned long start, end;
-	int len, ret, i, count = 1;
+	int ret, i, count = 1;
 	char *str;
 
-	len = fw_cfg_check_file("etc/smbios/smbios-tables");
-	if (len < 0)
+	if (fw_cfg_check_file(&f, "etc/smbios/smbios-tables"))
 		return 0;
-	printk(BIOS_DEBUG, "QEMU: found smbios tables in fw_cfg (len %d).\n", len);
+
+	printk(BIOS_DEBUG, "QEMU: found smbios tables in fw_cfg (len %d).\n", f.size);
 
 	/*
 	 * Search backwards for "coreboot" (first string in type0 table,
@@ -434,7 +423,7 @@ unsigned long fw_cfg_smbios_tables(int *handle, unsigned long *current)
 	 * We'll exclude the end marker as coreboot will add one.
 	 */
 	printk(BIOS_DEBUG, "QEMU: loading smbios tables to 0x%lx\n", start);
-	fw_cfg_load_file("etc/smbios/smbios-tables", (void*)start);
+	fw_cfg_get(f.select, (void *)start, sizeof(start));
 	end = start;
 	do {
 		t0 = (struct smbios_type0*)end;
@@ -442,7 +431,7 @@ unsigned long fw_cfg_smbios_tables(int *handle, unsigned long *current)
 			break;
 		end = smbios_next(end);
 		count++;
-	} while (end < start + len);
+	} while (end < start + f.size);
 
 	/* final fixups. */
 	ret = end - *current;

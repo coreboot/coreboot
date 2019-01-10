@@ -59,17 +59,16 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 	struct resource *res;
 	unsigned long tomk = 0, high;
 	int idx = 10;
-	int size;
+	FWCfgFile f;
 
 	pci_domain_read_resources(dev);
 
-	size = fw_cfg_check_file("etc/e820");
-	if (size > 0) {
+	if (!fw_cfg_check_file(&f, "etc/e820") && f.size > 0) {
 		/* supported by qemu 1.7+ */
-		FwCfgE820Entry *list = malloc(size);
+		FwCfgE820Entry *list = malloc(f.size);
 		int i;
-		fw_cfg_load_file("etc/e820", list);
-		for (i = 0; i < size/sizeof(*list); i++) {
+		fw_cfg_get(f.select, list, f.size);
+		for (i = 0; i < f.size / sizeof(*list); i++) {
 			switch (list[i].type) {
 			case 1: /* RAM */
 				printk(BIOS_DEBUG, "QEMU: e820/ram: 0x%08llx +0x%08llx\n",

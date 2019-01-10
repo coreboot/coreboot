@@ -74,6 +74,9 @@ chip soc/intel/cannonlake
 	#| I2C1              | Touchpad                  |
 	#| I2C4              | H1 TPM                    |
 	#+-------------------+---------------------------+
+
+	register "tcc_offset" = "3"
+
 	register "common_soc_config" = "{
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.i2c[0] = {

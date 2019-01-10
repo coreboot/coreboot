@@ -64,8 +64,6 @@ chip northbridge/intel/i945
 			device pci 1c.1 on end # PCIe
 			device pci 1c.2 off end # PCIe port 3
 			device pci 1c.3 off end # PCIe port 4
-			device pci 1c.4 off end # PCIe port 5
-			device pci 1c.5 off end # PCIe port 6
 			device pci 1d.0 on # USB UHCI
 				ioapic_irq 2 INTA 0x10
 			end

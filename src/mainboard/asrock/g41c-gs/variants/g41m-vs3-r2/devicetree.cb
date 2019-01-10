@@ -56,8 +56,6 @@ chip northbridge/intel/x4x		# Northbridge
 			device pci 1c.1 on end		# PCIe 2 (ethernet)
 			device pci 1c.2 off end		# PCIe 3
 			device pci 1c.3 off end		# PCIe 4
-			device pci 1c.4 off end		# PCIe 5
-			device pci 1c.5 off end		# PCIe 6
 			device pci 1d.0 on		# USB
 				subsystemid 0x1849 0x27c8
 			end

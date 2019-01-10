@@ -40,8 +40,6 @@
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #endif
 
-#include "northbridge.h"
-
 #define MAX_NODE_NUMS MAX_NODES
 
 typedef struct dram_base_mask {

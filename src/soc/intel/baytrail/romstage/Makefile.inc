@@ -1,4 +1,4 @@
-cpu_incs-y += $(src)/soc/intel/baytrail/romstage/cache_as_ram.inc
+cpu_incs-y += $(src)/cpu/intel/car/non-evict/cache_as_ram.S
 cpu_incs-y += $(obj)/fmap_config.h
 romstage-y += romstage.c
 romstage-y += raminit.c

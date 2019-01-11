@@ -68,13 +68,15 @@ void *asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
 		pci_write_config16(PCI_DEV(0x0, LPC_DEV, LPC_FUNC),
 					   LPC_EN, 0x340f);
 	}
-	console_init();
-	init_rtc();
-	setup_gpio_io_address();
 
 	/* Call into mainboard. */
 	post_code(0x41);
 	early_mainboard_romstage_entry();
+
+	post_code(0x42);
+	console_init();
+	init_rtc();
+	setup_gpio_io_address();
 
 	/*
 	 * Call early init to initialize memory and chipset. This function returns

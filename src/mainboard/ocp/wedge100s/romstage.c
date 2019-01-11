@@ -40,6 +40,7 @@ void early_mainboard_romstage_entry(void)
 	 */
 	msr_t msr = rdmsr(IA32_FEATURE_CONTROL);
 	if (msr.lo & 1) {
+		console_init();
 		printk(BIOS_EMERG, "Detected broken platform state. Issuing full reset\n");
 		full_reset();
 	}

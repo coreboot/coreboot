@@ -331,7 +331,7 @@ void verstage_main(void)
 	if (get_recovery_mode_switch()) {
 		ctx.flags |= VB2_CONTEXT_FORCE_RECOVERY_MODE;
 		if (IS_ENABLED(CONFIG_VBOOT_DISABLE_DEV_ON_RECOVERY))
-			ctx.flags |= VB2_DISABLE_DEVELOPER_MODE;
+			ctx.flags |= VB2_CONTEXT_DISABLE_DEVELOPER_MODE;
 	}
 
 	if (IS_ENABLED(CONFIG_VBOOT_WIPEOUT_SUPPORTED) &&

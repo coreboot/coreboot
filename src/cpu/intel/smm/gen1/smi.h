@@ -19,3 +19,5 @@ u32 northbridge_get_tseg_base(void);
 u32 northbridge_get_tseg_size(void);
 int cpu_get_apic_id_map(int *apic_id_map);
 void northbridge_write_smram(u8 smram);
+
+bool cpu_has_alternative_smrr(void);

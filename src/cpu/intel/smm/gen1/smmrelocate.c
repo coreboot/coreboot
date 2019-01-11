@@ -56,17 +56,31 @@ struct smm_relocation_params {
 static struct smm_relocation_params smm_reloc_params;
 static void *default_smm_area = NULL;
 
-static void write_smrr(struct smm_relocation_params *relo_params)
+/* On model_6fx, model_1067x and model_106cx SMRR functions slightly
+   differently. The MSR are at different location from the rest
+   and need to be explicitly enabled in IA32_FEATURE_CONTROL MSR. */
+bool cpu_has_alternative_smrr(void)
 {
 	struct cpuinfo_x86 c;
+	get_fms(&c, cpuid_eax(1));
+	if (c.x86 != 6)
+		return false;
+	switch (c.x86_model) {
+	case 0xf:
+	case 0x17: /* core2 */
+	case 0x1c: /* Bonnell */
+		return true;
+	default:
+		return false;
+	}
+}
 
+static void write_smrr(struct smm_relocation_params *relo_params)
+{
 	printk(BIOS_DEBUG, "Writing SMRR. base = 0x%08x, mask=0x%08x\n",
 	       relo_params->smrr_base.lo, relo_params->smrr_mask.lo);
-	/* Both model_6fx and model_1067x SMRR function slightly differently
-	   from the rest. The MSR are at different location from the rest
-	   and need to be explicitly enabled. */
-	get_fms(&c, cpuid_eax(1));
-	if (c.x86 == 6 && (c.x86_model == 0xf || c.x86_model == 0x17)) {
+
+	if (cpu_has_alternative_smrr()) {
 		msr_t msr;
 		msr = rdmsr(IA32_FEATURE_CONTROL);
 		/* SMRR enabled and feature locked */
@@ -171,7 +185,7 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 		/* On model_6fx and model_1067x bits [0:11] on smrr_base
 		   are reserved */
 		get_fms(&c, cpuid_eax(1));
-		if (c.x86 == 6 && (c.x86_model == 0xf || c.x86_model == 0x17))
+		if (cpu_has_alternative_smrr())
 			params->smrr_base.lo = (params->smram_base & rmask);
 		else
 			params->smrr_base.lo = (params->smram_base & rmask)

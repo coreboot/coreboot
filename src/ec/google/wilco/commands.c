@@ -158,3 +158,12 @@ int wilco_ec_radio_control(enum ec_radio radio, uint8_t state)
 				radio_control, ARRAY_SIZE(radio_control),
 				NULL, 0);
 }
+
+int wilco_ec_change_wake(uint8_t source, enum ec_wake_change change)
+{
+	uint8_t wake_source[3] = { change, source };
+
+	return wilco_ec_mailbox(WILCO_EC_MSG_DEFAULT, KB_ACPI_WAKEUP_CHANGE,
+				wake_source, ARRAY_SIZE(wake_source),
+				NULL, 0);
+}

@@ -38,6 +38,8 @@ enum {
 	KB_EC_INFO = 0x38,
 	/* Set ACPI mode on or off */
 	KB_ACPI = 0x3a,
+	/* Change ACPI wake up source */
+	KB_ACPI_WAKEUP_CHANGE = 0x4a,
 	/* Manage the EC power button passthru to the host */
 	KB_POWER_BUTTON_TO_HOST = 0x3e,
 	/* Manage the EC control of speaker mute */
@@ -256,5 +258,26 @@ int wilco_ec_get_pm(struct ec_pm_event_state *pm, bool clear);
  * Returns -1 if the EC command failed
  */
 int wilco_ec_get_lid_state(void);
+
+enum ec_wake_change {
+	WAKE_OFF = 0,
+	WAKE_ON
+};
+/**
+ * wilco_ec_change_wake_source
+ *
+ * Change acpi wake up source.
+ * @source:		Wake up source that can be enabled/disabled.
+ * @ec_wake_change:	On/off switch.
+ *
+ * Returns -1 if the EC command failed
+ */
+int wilco_ec_change_wake(uint8_t source, enum ec_wake_change change);
+
+enum ec_acpi_wake_events {
+	EC_ACPI_WAKE_PWRB = BIT(0),	/* Wake up by power button */
+	EC_ACPI_WAKE_LID = BIT(1),	/* Wake up by lid switch */
+	EC_ACPI_WAKE_RTC = BIT(5),	/* Wake up by RTC */
+};
 
 #endif /* EC_GOOGLE_WILCO_COMMANDS_H */

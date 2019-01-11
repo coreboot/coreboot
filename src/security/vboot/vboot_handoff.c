@@ -70,7 +70,7 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 		*oflags |= VB_INIT_OUT_ENABLE_DISPLAY;
 		*oflags |= VB_INIT_OUT_ENABLE_USB_STORAGE;
 	}
-	if (vb2_sd->flags & VB2_SD_DEV_MODE_ENABLED) {
+	if (vb2_sd->flags & VB2_SD_FLAG_DEV_MODE_ENABLED) {
 		*oflags |= VB_INIT_OUT_ENABLE_DEVELOPER;
 		*oflags |= VB_INIT_OUT_CLEAR_RAM;
 		*oflags |= VB_INIT_OUT_ENABLE_DISPLAY;

@@ -234,7 +234,7 @@ static void configure_isst(void)
 	config_t *conf = dev->chip_info;
 	msr_t msr;
 
-	if (conf->speed_shift_enable) {
+	if (conf && conf->speed_shift_enable) {
 		/*
 		 * Kernel driver checks CPUID.06h:EAX[Bit 7] to determine if HWP
 		 * is supported or not. coreboot needs to configure MSR 0x1AA
@@ -267,7 +267,7 @@ static void configure_misc(void)
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 0);	/* Fast String enable */
 	msr.lo |= (1 << 3);	/* TM1/TM2/EMTTM enable */
-	if (conf->eist_enable)
+	if (conf && conf->eist_enable)
 		cpu_enable_eist();
 	else
 		cpu_disable_eist();

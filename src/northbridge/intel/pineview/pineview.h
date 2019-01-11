@@ -235,9 +235,6 @@ u32 decode_igd_memory_size(const u32 gms);
 u32 decode_igd_gtt_size(const u32 gsm);
 u8 decode_pciebar(u32 *const base, u32 *const len);
 
-/* provided by mainboard code */
-void setup_ich7_gpios(void);
-
 struct acpi_rsdp;
 unsigned long northbridge_write_acpi_tables(unsigned long start, struct acpi_rsdp *rsdp);
 

@@ -35,6 +35,7 @@ chip soc/intel/cannonlake
 	register "satapwroptimize" = "1"
 	register "tdp_pl1_override" = "25"
 	register "tdp_pl2_override" = "51"
+	register "Device4Enable" = "1"
 
 	# Intel Common SoC Config
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Left Type-C Port

@@ -87,6 +87,11 @@ smm-y += gpio.c
 verstage-y += gpio.c
 endif
 
+# Coffeelake U43e D0
+cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_806ex/microcode.bin
+# Coffeelake H/S/E3 B0 U0
+cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_906ex/microcode.bin
+
 CPPFLAGS_common += -I$(src)/soc/intel/cannonlake
 CPPFLAGS_common += -I$(src)/soc/intel/cannonlake/include
 

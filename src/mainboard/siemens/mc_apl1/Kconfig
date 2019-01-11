@@ -5,6 +5,7 @@ config BOARD_SIEMENS_BASEBOARD_MC_APL1
 	select BOARD_ROMSIZE_KB_16384
 	select HAVE_ACPI_TABLES
 	select USE_SIEMENS_HWILIB
+	select INTEL_LPSS_UART_FOR_CONSOLE
 
 source "src/mainboard/siemens/mc_apl1/variants/*/Kconfig"
 
@@ -33,6 +34,9 @@ config MAINBOARD_PART_NUMBER
 	default "MC APL3" if BOARD_SIEMENS_MC_APL3
 	default "MC APL4" if BOARD_SIEMENS_MC_APL4
 	default "MC APL5" if BOARD_SIEMENS_MC_APL5
+
+config UART_FOR_CONSOLE
+	default 2
 
 config MAX_CPUS
 	int

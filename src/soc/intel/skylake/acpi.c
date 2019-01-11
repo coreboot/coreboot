@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2019 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -519,7 +519,7 @@ void generate_cpu_entries(struct device *device)
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
 
-	if (config->eist_enable && config->speed_shift_enable) {
+	if (config && config->eist_enable && config->speed_shift_enable) {
 		struct cppc_config cppc_config;
 		cpu_init_cppc_config(&cppc_config, 2 /* version 2 */);
 		acpigen_write_CPPC_package(&cppc_config);

@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+/* CACHE_ROM_SIZE defined here. */
+#include <cpu/x86/mtrr.h>
+
 /* This file is included inside a SECTIONS block */
 . = CONFIG_DCACHE_RAM_BASE;
 .car.data . (NOLOAD) : {
@@ -73,6 +76,27 @@
 
 	_car_region_end = . + CONFIG_DCACHE_RAM_SIZE - (. - _car_region_start);
 }
+. = _car_region_end;
+.car.mrc_var . (NOLOAD) : {
+	. += CONFIG_DCACHE_RAM_MRC_VAR_SIZE;
+}
+
+#if ENV_BOOTBLOCK
+_car_mtrr_end = .;
+_car_mtrr_start = _car_region_start;
+
+_car_mtrr_size = _car_mtrr_end - _car_mtrr_start;
+_car_mtrr_sz_log2 = 1 << LOG2CEIL(_car_mtrr_size);
+_car_mtrr_mask = ~(MAX(4096, _car_mtrr_sz_log2) - 1);
+
+#if !CONFIG(NO_XIP_EARLY_STAGES)
+_xip_program_sz_log2 = 1 << LOG2CEIL(_ebootblock - _bootblock);
+_xip_mtrr_mask = ~(MAX(4096, _xip_program_sz_log2) - 1);
+#endif
+
+_rom_mtrr_mask = ~(CACHE_ROM_SIZE - 1);
+_rom_mtrr_base = _rom_mtrr_mask;
+#endif
 
 /* Global variables are not allowed in romstage
  * This section is checked during stage creation to ensure
